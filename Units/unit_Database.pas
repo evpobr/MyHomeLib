@@ -511,9 +511,9 @@ var
   i: Integer;
   p: Integer;
   S: string;
-  ParentCode: WideString;
-  Code: WideString;
-  Fb2Code: WideString;
+  ParentCode: String;
+  Code: String;
+  Fb2Code: String;
 begin
   CheckActive;
 

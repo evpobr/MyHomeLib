@@ -115,7 +115,6 @@ type
     RzBitBtn1: TRzBitBtn;
     cbRefreshListAfterDownload: TCheckBox;
     rgDeviceFormat: TRadioGroup;
-    rgLang: TRadioGroup;
     RzGroupBox5: TRzGroupBox;
     cbSquareFilter: TCheckBox;
     tbtnInsert1: TRzToolButton;
@@ -132,7 +131,6 @@ type
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
     procedure pnlCAClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
-    procedure rgLangClick(Sender: TObject);
 
     procedure btnAddExtClick(Sender: TObject);
     procedure btnChangeExtClick(Sender: TObject);
@@ -208,11 +206,6 @@ begin
     end;
   end;
 
-  // Page 3 - Interface
-  case Settings.AppLanguage of
-    alEng: rgLang.ItemIndex := 0;
-    alRus: rgLang.ItemIndex := 1;
-  end;
 
   seFontSize.Value := Settings.TreeFontSize;
   seShortFontSize.Value := Settings.ShortFontSize;
@@ -260,18 +253,6 @@ begin
   end;
   cbDefaultAction.ItemIndex := Settings.DefaultScript;
 
-  //
-  // Настройка формы
-  //
-  if rgLang.ItemIndex = 0 then
-  begin
-    tvSections.Items.Clear;
-    tvSections.Items.Add(nil, 'Folders');
-    tvSections.Items.Add(nil, 'File types');
-    tvSections.Items.Add(nil, 'Interface');
-    tvSections.Items.Add(nil, 'Connection');
-    tvSections.Items.Add(nil, 'Scripts');
-  end;
   tvSections.Select(tvSections.Items[0]);
 end;
 
@@ -295,11 +276,6 @@ begin
   // Page 2 - Readers
   SaveReaders;
 
-  // Page 3 - Interface
-  case rgLang.ItemIndex of
-    0: Settings.AppLanguage := alEng;
-    1: Settings.AppLanguage := alRus;
-  end;
   Settings.TreeFontSize := Trunc(seFontSize.Value);
   Settings.ShortFontSize := Trunc(seShortFontSize.Value);
   Settings.BookColor := pnlCT.Color;
@@ -350,32 +326,6 @@ begin
   for i := 0 to lvScripts.Items.Count - 1 do
   begin
     Scripts.Add(lvScripts.Items[i].Caption, lvScripts.Items[i].SubItems[0], lvScripts.Items[i].SubItems[1]);
-  end;
-end;
-
-procedure TfrmSettings.rgLangClick(Sender: TObject);
-begin
-  if rgLang.ItemIndex = 0 then
-    Settings.AppLanguage := alEng
-  else
-    Settings.AppLanguage := alRus;
-
-  tvSections.Items.Clear;
-  if rgLang.ItemIndex = 0 then
-  begin
-    tvSections.Items.Add(nil, 'Folders');
-    tvSections.Items.Add(nil, 'File types');
-    tvSections.Items.Add(nil, 'Interface');
-    tvSections.Items.Add(nil, 'Connection');
-    tvSections.Items.Add(nil, 'Scripts');
-  end
-  else
-  begin
-    tvSections.Items.Add(nil, 'Папки/Устройства');
-    tvSections.Items.Add(nil, 'Типы файлов');
-    tvSections.Items.Add(nil, 'Интерфейс');
-    tvSections.Items.Add(nil, 'Интернет');
-    tvSections.Items.Add(nil, 'Скрипты');
   end;
 end;
 

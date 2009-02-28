@@ -19,7 +19,6 @@ resourcestring
   main_connecttodb = 'Подключение БД...';
   main_loading_collection = 'Загрузка коллекции...';
   main_check_updates = 'Проверка обновлений...';
-  main_set_interface_lang = 'Установка языка интерфейса...';
 
   rstrCancelOperationWarningMsg = 'Вы действительно хотите прервать операцию?';
 
