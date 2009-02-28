@@ -1,0 +1,194 @@
+{******************************************************************************}
+{                                                                              }
+{ MyHomeLib                                                                    }
+{                                                                              }
+{ Version 0.9                                                                  }
+{ 20.08.2008                                                                   }
+{ Copyright (c) Aleksey Penkov  alex.penkov@gmail.com                          }
+{                                                                              }
+{ @author Nick Rymanov nrymanov@gmail.com                                      }
+{                                                                              }
+{******************************************************************************}
+
+unit unit_ImportFB2ZIPThread;
+
+interface
+
+uses
+  Classes,
+  SysUtils,
+  unit_WorkerThread,
+  unit_ImportFB2ThreadBase,
+  ZipMstr;
+
+type
+  TImportFB2ZIPThread = class(TImportFB2ThreadBase)
+  private
+    FZipper: TZipMaster;
+
+    procedure ShowZipErrorMessage(Sender: TObject; ErrCode: Integer; Message: string);
+
+  protected
+    procedure AddFile2List(Sender: TObject; const F: TSearchRec); override;
+    procedure ProcessFileList; override;
+  public
+
+  end;
+
+
+implementation
+
+uses
+  unit_Helpers,
+  unit_Consts,
+  unit_Settings,
+  globals,
+  fictionbook_21;
+
+{ TImportFB2ZIPThread }
+
+procedure TImportFB2ZIPThread.ShowZipErrorMessage(Sender: TObject; ErrCode: Integer; Message: string);
+begin
+  if ErrCode <> 0 then
+    Teletype(Format('Ошибка распаковки архива %s, Код: %d', [FZipper.ZipFileName, FZipper.ErrCode]), tsError);
+end;
+
+procedure TImportFB2ZIPThread.AddFile2List(Sender: TObject; const F: TSearchRec);
+var
+  FullName: string;
+begin
+  if ExtractFileExt(F.Name) = ZIP_EXTENSION then
+  begin
+    FullName := ExtractRelativePath(FRootPath, FFilesList.LastDir + F.Name);
+
+    if FCheckExistsFiles then
+    begin
+      { TODO -oNickR -cRefactoring : Переписать. Для начала необходимо разобраться с использование поля Books.Folder }
+      if FLibrary.CheckFileInCollection(FullName, ZIP_EXTENSION) then
+        Exit;
+    end;
+
+    FFiles.Add(FullName);
+  end;
+end;
+
+procedure TImportFB2ZIPThread.ProcessFileList;
+var
+  i: Integer;
+  j: Integer;
+  R: TBookRecord;
+  AZipFileName: string;
+  AFileName: string;
+  book: IXMLFictionBook;
+  FS: TStream;
+  AddCount:Integer;
+  DefectCount:Integer;
+begin
+  AddCount := 0;
+  DefectCount := 0;
+
+  SetProgress(0);
+  Teletype(Format('Обнаружено новых архивов: %u', [FFiles.Count]));
+
+  FZipper := TZipMaster.Create(nil);
+  try
+    FZipper.Dll_Load := True;
+    FZipper.ExtrOptions := [ExtrTest];
+    FZipper.Unattended := True;
+    FZipper.OnMessage := ShowZipErrorMessage;
+
+    for i := 0 to FFiles.Count - 1 do
+    begin
+      if Canceled then
+        Break;
+
+      //
+      // Обрабатываемый файл: H:\eBooks\Л\Лаберж Стивен\Исследование мира осознанных сновидений.fb2.zip
+      //
+
+      //
+      // Л\Лаберж Стивен\Исследование мира осознанных сновидений.fb2.zip
+      //
+
+
+      AZipFileName := FFiles[i];
+
+      Assert(ExtractFileExt(AZipFileName) = ZIP_EXTENSION);
+
+      //
+      // H:\eBooks\Л\Лаберж Стивен\Исследование мира осознанных сновидений.fb2.zip
+      //
+      FZipper.ZipFileName := FRootPath + AZipFileName;
+      if FZipper.ErrCode <> 0 then
+        Continue;
+
+      for j := 0 to FZipper.Count - 1 do
+      begin
+        R.Clear;
+
+        R.Folder := AZipFileName;
+
+        //
+        // Исследование мира осознанных сновидений.fb2
+        //
+
+        AFileName := FZipper.DirEntry[j]^.FileName;
+
+        //
+        // .fb2
+        //
+        R.FileExt := ExtractFileExt(AFileName);
+        if R.FileExt <> FB2_EXTENSION then
+          Continue;
+
+        //
+        // Исследование мира осознанных сновидений
+        //
+        R.FileName := Copy(AFileName, 1, Length(AFileName) - Length(R.FileExt));
+
+        R.Size := FZipper.DirEntry[j]^.UncompressedSize;
+
+        R.InsideNo := j;
+
+        R.Date := Now;
+        //
+        // ExtractFileToStream вовращает указатель на внутренний объект стрим (TZMWorker.ZipStream)
+        // поэтому освобождать FS _не надо_ !!!
+        //
+        // FZipper.ExtractFileToStream в случае ошибки возврашает nil
+        //
+        FS := FZipper.ExtractFileToStream(AFileName);
+        if not Assigned(FS) then        
+          Continue;
+
+        try
+          book := LoadFictionBook(FS);
+          GetBookInfo(Book, R);
+          FLibrary.InsertBook(R);
+          Inc(AddCount);
+        except
+          on e: Exception do
+          begin
+            Teletype('Ошибка структуры fb2: ' + R.Folder + '.zip -> ' + R.FileName + FB2_EXTENSION, tsError);
+            //Teletype(e.Message, tsError);
+            Inc(DefectCount);
+          end;
+        end;
+      end;
+
+      if (i mod ProcessedItemThreshold) = 0 then
+        SetComment(Format('Обработано архивов: %u из %u', [i + 1, FFiles.Count]));
+      SetProgress((i + 1) * 100 div FFiles.Count);
+    end;
+  finally
+    FreeAndNil(FZipper);
+  end;
+
+  SetComment(Format('Обработано архивов: %u из %u', [FFiles.Count, FFiles.Count]));
+
+  if FFiles.Count > 0 then
+    Teletype(Format('Добавленo книг: %u, пропущено книг: %u', [AddCount, DefectCount]));
+end;
+
+end.
+
