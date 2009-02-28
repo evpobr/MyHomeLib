@@ -1789,9 +1789,6 @@ begin
       if MessageDlg('Доступно обновление для коллекций "lib.rus.ec".' + #13 + ' Начать обновление ?', mtWarning, [mbYes, mbNo], 0) = mrYes then
         miUpdateClick(Sender);
 
-  frmSplash.lblState.Caption := main_set_interface_lang;
-
-
   Application.HelpFile := Settings.SystemFileName[sfAppHelp];
   pgControlChange(Self);
   SetHeaderPopUp;

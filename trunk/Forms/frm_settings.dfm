@@ -60,17 +60,13 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 404
     Height = 401
-    ActivePage = tsScripts
+    ActivePage = tsInterface
     Align = alClient
     TabOrder = 1
     object tsDevices: TTabSheet
       HelpContext = 143
       Caption = 'tsDevices'
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object RzGroupBox3: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -361,19 +357,16 @@ object frmSettings: TfrmSettings
       Caption = 'tsInterface'
       ImageIndex = 2
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object RzGroupBox6: TRzGroupBox
         AlignWithMargins = True
         Left = 3
-        Top = 66
+        Top = 3
         Width = 390
         Height = 163
         Align = alTop
         Caption = #1057#1087#1080#1089#1082#1080
         TabOrder = 0
+        ExplicitTop = 66
         object Label9: TLabel
           Left = 19
           Top = 45
@@ -506,12 +499,13 @@ object frmSettings: TfrmSettings
       object RzGroupBox7: TRzGroupBox
         AlignWithMargins = True
         Left = 3
-        Top = 235
+        Top = 172
         Width = 390
         Height = 78
         Align = alTop
         Caption = #1055#1086#1074#1077#1076#1077#1085#1080#1077
         TabOrder = 1
+        ExplicitTop = 235
         object cbShowSubGenreBooks: TCheckBox
           Left = 24
           Top = 26
@@ -529,31 +523,17 @@ object frmSettings: TfrmSettings
           TabOrder = 1
         end
       end
-      object rgLang: TRadioGroup
-        AlignWithMargins = True
-        Left = 3
-        Top = 3
-        Width = 390
-        Height = 57
-        Align = alTop
-        Caption = #1071#1079#1099#1082' '#1080#1085#1090#1077#1088#1092#1077#1081#1089#1072
-        Columns = 2
-        ItemIndex = 0
-        Items.Strings = (
-          'English'
-          'Russian')
-        TabOrder = 2
-        OnClick = rgLangClick
-      end
       object RzGroupBox10: TRzGroupBox
         AlignWithMargins = True
         Left = 3
-        Top = 319
+        Top = 256
         Width = 390
-        Height = 69
+        Height = 132
         Align = alClient
         Caption = #1056#1072#1079#1085#1086#1077
-        TabOrder = 3
+        TabOrder = 2
+        ExplicitTop = 319
+        ExplicitHeight = 69
         object cbShowFb2Info: TCheckBox
           Left = 24
           Top = 18
@@ -569,10 +549,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsInternet'
       ImageIndex = 4
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object RzGroupBox1: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -811,7 +787,7 @@ object frmSettings: TfrmSettings
           Top = 24
           Width = 379
           Height = 21
-          ItemHeight = 0
+          ItemHeight = 13
           TabOrder = 0
           Text = #1057#1090#1072#1085#1076#1072#1088#1090#1085#1086#1077
         end

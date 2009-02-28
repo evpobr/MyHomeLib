@@ -11,15 +11,15 @@ type
    TFb2ToText = class
    private
      FEncoding : (enUnknown, en1251,enUTF8, enUnicode);
-     FS: string;
+     FS: Ansistring;
      FLinesIn : TStringList;
      FLinesOut : TStringList;
-     procedure ProceedString(TagStart,TagEnd:string);
+     procedure ProceedString(TagStart,TagEnd:ansistring);
      procedure ClearString;
      procedure GetEncoding( S: string);
   public
     constructor Create;
-    destructor Destroy;
+    destructor Destroy; override;
     procedure Convert(FileIn: string);
     property Output:TStringList read FLinesOut;
   end;
@@ -95,7 +95,7 @@ begin
 
 end;
 
-procedure TFb2ToText.ProceedString(TagStart,TagEnd: string);
+procedure TFb2ToText.ProceedString(TagStart,TagEnd: ansistring);
 var
  p1,p2: integer;
  L : integer;
@@ -109,7 +109,7 @@ begin
       US := AnsiToUTF8(FS)
   else
     US := FS;
- 
+
   while p1 <> 0 do
   begin
     p2 := pos(TagEnd, US);

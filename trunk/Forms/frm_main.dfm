@@ -425,6 +425,10 @@ object frmMain: TfrmMain
     object TabSheet1: TRzTabSheet
       OnShow = TabSheet1Show
       Caption = #1040#1074#1090#1086#1088#1099
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object rzsSplitterA: TRzSplitter
         Left = 0
         Top = 0
@@ -594,7 +598,7 @@ object frmMain: TfrmMain
                 Left = 10
                 Top = 3
                 Width = 76
-                Height = 25
+                Height = 19
                 Margins.Left = 10
                 Align = alLeft
                 AutoSize = True
@@ -606,14 +610,13 @@ object frmMain: TfrmMain
                 ParentFont = False
                 DataField = 'FullName'
                 DataSource = DMMain.dsAuthors
-                ExplicitHeight = 19
               end
               object lblBooksTotalA: TRzLabel
                 AlignWithMargins = True
                 Left = 421
                 Top = 3
                 Width = 12
-                Height = 25
+                Height = 19
                 Align = alRight
                 Alignment = taRightJustify
                 Caption = '()'
@@ -624,7 +627,6 @@ object frmMain: TfrmMain
                 Font.Style = []
                 ParentFont = False
                 CenterPoint = cpLowerRight
-                ExplicitHeight = 19
               end
             end
             object RzPanel23: TRzPanel
@@ -796,6 +798,10 @@ object frmMain: TfrmMain
     object TabSheet2: TRzTabSheet
       OnShow = TabSheet2Show
       Caption = #1057#1077#1088#1080#1080
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object rzsSplitterS: TRzSplitter
         Left = 0
         Top = 0
@@ -956,7 +962,7 @@ object frmMain: TfrmMain
                 Left = 10
                 Top = 3
                 Width = 70
-                Height = 25
+                Height = 19
                 Margins.Left = 10
                 Align = alLeft
                 AutoSize = True
@@ -968,14 +974,13 @@ object frmMain: TfrmMain
                 ParentFont = False
                 DataField = 'Title'
                 DataSource = DMMain.dsSeries
-                ExplicitHeight = 19
               end
               object lblBooksTotalS: TRzLabel
                 AlignWithMargins = True
                 Left = 402
                 Top = 3
                 Width = 12
-                Height = 25
+                Height = 19
                 Align = alRight
                 Alignment = taRightJustify
                 Caption = '()'
@@ -986,7 +991,6 @@ object frmMain: TfrmMain
                 Font.Style = []
                 ParentFont = False
                 CenterPoint = cpLowerRight
-                ExplicitHeight = 19
               end
             end
             object tvBooksS: TVirtualStringTree
@@ -1157,6 +1161,10 @@ object frmMain: TfrmMain
     object TabSheet3: TRzTabSheet
       OnShow = TabSheet2Show
       Caption = #1046#1072#1085#1088#1099
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object rzsSplitterG: TRzSplitter
         Left = 0
         Top = 0
@@ -1404,7 +1412,7 @@ object frmMain: TfrmMain
               Left = 397
               Top = 3
               Width = 12
-              Height = 25
+              Height = 19
               Align = alRight
               Alignment = taRightJustify
               Caption = '()'
@@ -1415,14 +1423,13 @@ object frmMain: TfrmMain
               Font.Style = []
               ParentFont = False
               CenterPoint = cpLowerRight
-              ExplicitHeight = 19
             end
             object lblGenreTitle: TRzLabel
               AlignWithMargins = True
               Left = 3
               Top = 3
               Width = 15
-              Height = 25
+              Height = 19
               Align = alLeft
               Caption = '...'
               Font.Charset = DEFAULT_CHARSET
@@ -1432,7 +1439,6 @@ object frmMain: TfrmMain
               Font.Style = [fsBold]
               ParentFont = False
               CenterPoint = cpLowerRight
-              ExplicitHeight = 19
             end
           end
           object ipnlGenres: TMHLInfoPanel
@@ -1458,6 +1464,10 @@ object frmMain: TfrmMain
       HelpContext = 142
       OnShow = TabSheet2Show
       Caption = #1055#1086#1080#1089#1082
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object RzPanel9: TRzPanel
         AlignWithMargins = True
         Left = 3
@@ -1757,6 +1767,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 1
         TabOrder = 1
@@ -1768,6 +1779,10 @@ object frmMain: TfrmMain
       HelpContext = 125
       OnShow = TabSheet5Show
       Caption = #1048#1079#1073#1088#1072#1085#1085#1086#1077
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object RzPanel20: TRzPanel
         AlignWithMargins = True
         Left = 3
@@ -1966,6 +1981,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 1
         TabOrder = 1
@@ -2498,6 +2514,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 1
         TabOrder = 1

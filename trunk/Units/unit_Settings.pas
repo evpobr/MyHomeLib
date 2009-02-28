@@ -253,7 +253,8 @@ implementation
 uses
   StrUtils,
   unit_Consts,
-  ShlObj;
+  ShlObj,
+  ShellAPI;
 
 var
   g_objSettings: TMHLSettings;
@@ -310,13 +311,17 @@ const
 constructor TMHLSettings.Create;
 var
   AppDataPath : string;
+  Param: string;
 begin
   FAppPath := ExtractFilePath(Application.ExeName);
 
   AppDataPath := GetSpecialPath(CSIDL_APPDATA) + APPDATA_DIR_NAME;
 
 
-  if DirectoryExists(AppDataPath) then
+  if ParamCount > 0  then  Param := paramstr(1)
+    else Param := '';
+
+  if DirectoryExists(AppDataPath) and (Param <> '-isolated') then
   begin                                             // работаем с AppData
     FWorkDir := AppDataPath;
     FDataDir := WorkPath + DATA_DIR_NAME;
