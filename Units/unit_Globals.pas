@@ -392,9 +392,8 @@ var
 begin
   Converter := TFb2ToText.Create;
   try
-    Converter.Convert(SourceFileName);
     DestFileName := ChangeFileExt(DestFileName,'.txt');
-    Converter.Output.SaveToFile(DestFileName);
+    Converter.Convert(SourceFileName,DestFileName);
   finally
     Converter.Free;
   end;
@@ -433,7 +432,6 @@ begin
 end;
 
 {$WARNINGS OFF}
-
 function ClearDir(const DirectoryName: string): Boolean;
 var
   SearchRec: TSearchRec;
@@ -455,8 +453,6 @@ begin
     Result := False;
   end;
 end;
-
-
 {$WARNINGS ON}
 
 function Transliterate(Input: string): string;
@@ -468,10 +464,10 @@ begin
   for f := 1 to length(input) do
   begin
     o := ord(Input[f]);
-    if (Input[f] in RusL) and (o >= 224) then
-      s := TransL[o - 224]
-    else if (Input[f] in RusU) and (o >= 192) then
-      s := TransU[o - 192]
+    if (o >= 1072) and (o <= 1104) then
+      s := TransL[o - 1072]
+    else if (o >= 1040 ) and (o <= 1071) then
+      s := TransU[o - 1040]
     else if Input[f] in lat then
       s := Input[f]
     else

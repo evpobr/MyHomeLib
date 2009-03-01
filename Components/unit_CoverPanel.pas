@@ -42,6 +42,8 @@ type
     FBook: IXMLFictionBook;
     XML: TXMLDocument;
 
+    FIsTemp : boolean;
+
     FOnProgress: boolean;
     FFb2InfoVisible: boolean;
     FFontSize: integer;
@@ -116,7 +118,8 @@ begin
   BorderOuter := fsFlatRounded;
   ParentFont := False;
   Font.Size := 8;
-  SizeBarWidth := 1;
+  SizeBarWidth := 5;
+  Margins.Left := 0;
   MarginMin := 150;
 
 
@@ -292,6 +295,7 @@ var
   fs: TMemoryStream;
 
 begin
+  FIsTemp := False;
   if ExtractFileExt(FFolder) = '.zip' then
   begin
     if not FileExists(FFolder) then
@@ -309,6 +313,7 @@ begin
       FWorkFile := FTmp + Format('%.6d.fb2',[Random(999999)]);
       fs := Zip.ExtractFileToStream(FFile);
       fs.SaveToFile(FWorkFile);
+      FIsTemp := True;
     finally
       FOnProgress := False;
       Zip.Free;
@@ -470,7 +475,7 @@ begin
     except
     end
     else ShowEmptyCover;
-    DeleteFile(PChar(FWorkFile));
+    if FIsTemp then DeleteFile(PChar(FWorkFile));
     FText.Lines.Add(Short);
 
     Refresh;

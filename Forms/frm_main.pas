@@ -274,7 +274,6 @@ type
     lblBooksTotalA: TRzLabel;
     RzPanel23: TRzPanel;
     tvBooksA: TVirtualStringTree;
-    edClpBrd: TRichEdit;
     ipnlAuthors: TMHLInfoPanel;
     cpCoverA: TMHLCoverPanel;
     pmHeaders: TPopupMenu;
@@ -320,6 +319,8 @@ type
     ipnlGenres: TMHLInfoPanel;
     cpCoverG: TMHLCoverPanel;
     btnClearSerach: TRzBitBtn;
+    ToolButton4: TToolButton;
+    ToolButton6: TToolButton;
 
     //
     // События формы
@@ -479,7 +480,12 @@ type
     procedure btnClearSerachClick(Sender: TObject);
 
   private
+
+    // посик аторов, серий
+
     FSimulateAlphabetClick: Boolean;
+    FIgnoreChange : boolean;
+
     //
     // Построение деревьев
     //
@@ -566,6 +572,7 @@ type
       const Column: integer): integer;
     function GetText(Tag: integer; Data: PBookData): string;
     procedure SetHeaderPopUp;
+    procedure RestorePositions;
     type
       TView = (ByAuthorView, BySeriesView, ByGenreView, SearchView, FavoritesView,FilterView);
 
@@ -626,6 +633,47 @@ const
                                     );
 
 
+
+procedure TfrmMain.RestorePositions;
+begin
+  // восстанавливаем последнего автора, серию и отмеченные книги
+  // порядок зависит от авктивной вкладки.
+
+
+  FSimulateAlphabetClick := False;
+
+  case ActiveView of
+    ByAuthorView,
+    ByGenreView,
+    FavoritesView,
+    SearchView,
+    FilterView:begin
+                    edLocateSeries.Text := Settings.LastSeries;
+                    FSimulateAlphabetClick := True;
+
+                    SelectBookById(tvBooksF,Settings.LastBookInFavorites);
+                    SelectBookById(tvBooksS,Settings.LastBookInSeries);
+
+                    edLocateAuthor.Text := Settings.LastAuthor;
+                    SelectBookById(tvBooksA,Settings.LastBookInAuthors);
+                  end;
+    BySeriesView: begin
+                    edLocateAuthor.Text := Settings.LastAuthor;
+                    FSimulateAlphabetClick := True;
+
+                    SelectBookById(tvBooksA,Settings.LastBookInAuthors);
+                    SelectBookById(tvBooksF,Settings.LastBookInFavorites);
+
+                    edLocateSeries.Text := Settings.LastSeries;
+                    SelectBookById(tvBooksS,Settings.LastBookInSeries);
+                  end;
+    end; // Case
+
+  FIgnoreChange := True;
+  edLocateAuthor.Text := '';
+  edLocateSeries.Text := '';
+  FIgnoreChange := False;
+end;
 
 procedure TfrmMain.SetColumns;
 var
@@ -858,9 +906,6 @@ begin
 
   pgControl.ActivePageIndex := Settings.ActivePage;
 
-  if not Settings.UseSystemTemp then
-    Settings.TempDir := c_GetTempPath + '_myhomelib';
-
   cpCoverA.TmpFolder := Settings.TempPath;
   cpCoverS.TmpFolder := Settings.TempPath;
   cpCoverG.TmpFolder := Settings.TempPath;
@@ -999,16 +1044,15 @@ begin
 
       DMMain.tblBooks.Filtered := True;
       FillBooksTree(0, tvBooksFL, nil, DMmain.tblBooks, True, True);
-
-      DMMain.tblBooks.Filtered := False;
-      DMMain.tblBooks.Filter := OldFilter;
-      DMMain.tblBooks.Filtered := Filtered;
-
     except
       on E: Exception do
         ShowMessage('Синтаксическая ошибка. Проверьте параметры фильтра');
     end;
   finally
+    DMMain.tblBooks.Filtered := False;
+    DMMain.tblBooks.Filter := OldFilter;
+    DMMain.tblBooks.Filtered := Filtered;
+
     Screen.Cursor := crDefault;
     spStatus.Caption := 'Готово.';
     ClearLabels(PAGE_FILTER);
@@ -1306,6 +1350,8 @@ begin
   DMUser.ActivateCollection(Settings.ActiveCollection);
   FDoNotLocate := False;
   CreateScriptMenu;
+  FIgnoreChange := False;
+
 end;
 
 procedure TfrmMain.GetBookRecord(const ID: integer; var R: TBookRecord);
@@ -1327,7 +1373,7 @@ begin
   begin
     B := TToolButton.Create(EngBar);
     B.Caption := E[i];
-    B.Left := i * 27;
+    B.Left := 100 + i * 27;
     B.Width := 25;
     B.Height := 25;
     B.Style := tbsTextButton;
@@ -1339,7 +1385,7 @@ begin
   begin
     B := TToolButton.Create(RusBar);
     B.Caption := R[i];
-    B.Left := i * 27;
+    B.Left := 100 + i * 27;
     B.Width := 25;
     B.Height := 25;
     B.Style := tbsTextButton;
@@ -1797,46 +1843,8 @@ begin
   rzsSplitterS.Position := Settings.Splitters[1];
   rzsSplitterG.Position := Settings.Splitters[2];
 
-  // восстанавливаем последнего автора, серию и отмеченные книги
-  // порядок зависит от авктивной вкладки.
-  if not DMUser.tblBases.IsEmpty then
-  begin
-    FSimulateAlphabetClick := False;
-    case ActiveView of
-      ByAuthorView,
-      ByGenreView,
-      SearchView,
-      FilterView:begin
-                    edLocateSeries.Text := Settings.LastSeries;
-                    FSimulateAlphabetClick := True;
+  if not DMUser.tblBases.IsEmpty then  RestorePositions;
 
-                    SelectBookById(tvBooksF,Settings.LastBookInFavorites);
-                    SelectBookById(tvBooksS,Settings.LastBookInSeries);
-
-                    edLocateAuthor.Text := Settings.LastAuthor;
-                    SelectBookById(tvBooksA,Settings.LastBookInAuthors);
-                  end;
-      BySeriesView: begin
-                    edLocateAuthor.Text := Settings.LastAuthor;
-                    FSimulateAlphabetClick := True;
-
-                    SelectBookById(tvBooksA,Settings.LastBookInAuthors);
-                    SelectBookById(tvBooksF,Settings.LastBookInFavorites);
-
-                    edLocateSeries.Text := Settings.LastSeries;
-                    SelectBookById(tvBooksS,Settings.LastBookInSeries);
-                  end;
-      FavoritesView: begin
-                    edLocateAuthor.Text := Settings.LastAuthor;
-                    FSimulateAlphabetClick := True;
-                    edLocateSeries.Text := Settings.LastSeries;
-
-                    SelectBookById(tvBooksA,Settings.LastBookInAuthors);
-                    SelectBookById(tvBooksS,Settings.LastBookInSeries);
-                    SelectBookById(tvBooksF,Settings.LastBookInFavorites);
-                  end;
-    end; // Case
-  end;  
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
@@ -2192,18 +2200,22 @@ begin
 
   InfoPanel.Title := Data.Title;
   InfoPanel.Author := Data.FullName;
-  InfoPanel.FileName := FileName;
+  InfoPanel.Genre := Data.Genre;
 
-  if ActiveView <> FavoritesView then
+
+  if not (isOnlineCollection(DMUser.ActiveCollection.CollectionType) and not Data.Locale) then
+  begin
+    InfoPanel.FileName := FileName;
+
+    if ActiveView <> FavoritesView then
      if (Folder = '') then
        InfoPanel.Folder := FCollectionRoot
      else
        InfoPanel.Folder := FCollectionRoot + Folder
-  else
-    InfoPanel.Folder := Folder;
-
-  InfoPanel.Genre := Data.Genre;
-  Cover.Show(InfoPanel.Folder,InfoPanel.FileName,No);
+    else
+      InfoPanel.Folder := Folder;
+    Cover.Show(InfoPanel.Folder,InfoPanel.FileName,No);
+  end;
 end;
 
 procedure TfrmMain.tvBooksTreeCompareNodes(Sender: TBaseVirtualTree; Node1,
@@ -2715,43 +2727,34 @@ begin
   case ActiveView of
     ByAuthorView:
       begin
-        if (Sender as TToolButton).Caption = '*' then
+        if (Sender as TToolButton).Tag > 90 then
         case (Sender as TToolButton).Tag of
-          90: DMMain.tblAuthors.Filter := 'Family > "а*"';
-          91: DMMain.tblAuthors.Filter := 'Family < "а*"';
+          91: DMMain.tblAuthors.Filter := 'Family > "а*"';
+          92: DMMain.tblAuthors.Filter := 'Family < "а*"';
         end
         else
         begin
           edLocateAuthor.Text := (Sender as TToolButton).Caption;
           DMMain.tblAuthors.Filter := 'Family=' + QuotedStr((Sender as TToolButton).Caption + '*');
-
         end;
-        DMMain.tblAuthors.Filtered := True;        
+        DMMain.tblAuthors.Filtered := (Sender as TToolButton).Tag <> 90;
         FillAuthorTree;
         tvAuthors.Selected[tvAuthors.GetFirst] := True;
         edLocateAuthor.Perform(WM_KEYDOWN, VK_RIGHT, 0);
       end;
-
     BySeriesView:
       begin
-        if (Sender as TToolButton).Caption = '*' then
+        if (Sender as TToolButton).Tag > 90 then
         case (Sender as TToolButton).Tag of
-          90: DMMain.tblSeries.Filter := 'Title > "а*"';
-          91: DMMain.tblSeries.Filter := 'Title < "а*" and Title <>' + QuotedStr(NO_SERIES_TITLE);
+          91: DMMain.tblSeries.Filter := 'Title > "а*"';
+          92: DMMain.tblSeries.Filter := 'Title < "а*" and Title <>' + QuotedStr(NO_SERIES_TITLE);
         end
-//
-//
-//        if (Sender as TToolButton).Caption = '*' then
-//        begin
-//          edSeriesLocate.Text := '';
-//          DMMain.tblSeries.Filter := 'Title<>' + QuotedStr(NO_SERIES_TITLE);
-//        end
         else
         begin
           edLocateSeries.Text := (Sender as TToolButton).Caption;
           DMMain.tblSeries.Filter := 'Title=' + QuotedStr((Sender as TToolButton).Caption + '*');
         end;
-        DMMain.tblSeries.Filtered := True;
+        DMMain.tblSeries.Filtered := (Sender as TToolButton).Tag <> 90;
         FillSeriesTree;
         tvSeries.Selected[tvSeries.GetFirst] := True;
         edLocateSeries.Perform(WM_KEYDOWN, VK_RIGHT, 0);
@@ -3091,15 +3094,7 @@ begin
         strText := DataG.Text;
       end;
   end;
-
-  //
-  // Похоже тут проблема с кодировкой
-  //
-  //Clipboard.AsText := strText;
-
-  edClpBrd.Text := strText;
-  edClpBrd.SelectAll;
-  edClpBrd.CopyToClipboard;
+  Clipboard.AsText := strText;
 end;
 
 procedure TfrmMain.miCopyClBrdClick(Sender: TObject);
@@ -3123,9 +3118,7 @@ begin
       else
         S := Data.FullName + '. Серия:' + Data.Series + '. ' + Data.Title;
   end;
-  edClpBrd.Text := S;
-  edClpBrd.SelectAll;
-  edClpBrd.CopyToClipboard;
+  Clipboard.AsText := S;
 end;
 
 procedure TfrmMain.miDeleteBookClick(Sender: TObject);
@@ -3811,6 +3804,7 @@ var
   S : string;
   OldText:string;
 begin
+  if FIgnoreChange then Exit;
   S := AnsiUpperCase(copy(edLocateAuthor.Text,1,1));
   if S <> FLastLetter.Caption then
   begin
@@ -3835,11 +3829,12 @@ var
   S : string;
   OldText:string;
 begin
+  if FIgnoreChange then Exit;
   S := AnsiUpperCase(copy(edLocateSeries.Text,1,1));
   if S <> FLastLetter.Caption then
   begin
-    OldText := edLocateSeries.Text;
     if FSimulateAlphabetClick then ChangeLetterButton(S);
+    OldText := edLocateSeries.Text;
     edLocateSeries.Text := OldText;
     edLocateSeries.Perform(WM_KEYDOWN, VK_RIGHT, 0);
   end;
@@ -4166,7 +4161,6 @@ begin
 
   Screen.Cursor := crHourGlass;
   try
-    edLocateAuthor.Text := '';
     if ActiveView = FavoritesView then
     begin
       I := DMUser.tblFavoritesDatabaseID.Value;
@@ -4174,7 +4168,6 @@ begin
       begin
         if DMUser.ActivateCollection(I) then
         begin
-          //(Sender as TMenuItem).Checked:=True;
           Settings.ActiveCollection := I;
           InitCollection(True);
           CreateCollectionMenu;
@@ -4188,14 +4181,8 @@ begin
       DMMain.tblBooks.Locate('ID', Data.ID, []);
       FN := DMMain.tblBooksFullName.Value;
     end;
-
-    DMMain.tblAuthors.Filtered := False;
-    (RusBar.Controls[0] as TToolButton).Down := True;
-    if Assigned(FLastLetter) then
-      FLastLetter.Down := False;
-    FillAuthorTree;
-    LocateBookList(FN, tvAuthors);
     pgControl.ActivePageIndex := 0;
+    edLocateAuthor.Text := FN;
   finally
     Screen.Cursor := crDefault;
   end;
@@ -4468,7 +4455,8 @@ end;
 
 procedure TfrmMain.miShowHelpClick(Sender: TObject);
 begin
-  Application.HelpSystem.ShowTableOfContents;
+ // Application.HelpSystem.ShowTableOfContents;
+  ShellExecute(handle, 'open',PChar(Settings.SystemFileName[sfAppHelp]), nil, nil, SW_SHOW);
 end;
 
 procedure TfrmMain.miPdfdjvuClick(Sender: TObject);

@@ -3,7 +3,7 @@ object DMMain: TDMMain
   Height = 567
   Width = 565
   object DBMain: TABSDatabase
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     Exclusive = True
     MaxConnections = 5
@@ -24,7 +24,7 @@ object DMMain: TDMMain
     Top = 208
   end
   object tblBooksA: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -140,6 +140,7 @@ object DMMain: TDMMain
     end
     object tblBooksATitle: TWideStringField
       FieldName = 'Title'
+      Size = 255
     end
     object tblBooksASeries: TWideStringField
       FieldKind = fkLookup
@@ -152,7 +153,9 @@ object DMMain: TDMMain
       Lookup = True
     end
     object tblBooksAFullName: TWideStringField
+      DisplayWidth = 255
       FieldName = 'FullName'
+      Size = 255
     end
     object tblBooksARate: TIntegerField
       FieldKind = fkLookup
@@ -200,7 +203,7 @@ object DMMain: TDMMain
     end
   end
   object tblBooksG: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -390,7 +393,7 @@ object DMMain: TDMMain
     end
   end
   object tblGenres: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -475,7 +478,7 @@ object DMMain: TDMMain
     Top = 216
   end
   object tblAuthorsS: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -502,7 +505,7 @@ object DMMain: TDMMain
     end
   end
   object tblBooksS: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -688,7 +691,7 @@ object DMMain: TDMMain
     end
   end
   object tblSeries: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -773,7 +776,7 @@ object DMMain: TDMMain
     Top = 200
   end
   object tblAuthors: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -806,7 +809,7 @@ object DMMain: TDMMain
     end
   end
   object tblBooks_Genre_List: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -893,7 +896,7 @@ object DMMain: TDMMain
     Top = 424
   end
   object tblGenre_List: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -977,7 +980,7 @@ object DMMain: TDMMain
     Top = 152
   end
   object tblAuthor_List: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1050,7 +1053,7 @@ object DMMain: TDMMain
     Top = 152
   end
   object tblBooks: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1243,7 +1246,7 @@ object DMMain: TDMMain
     end
   end
   object tblSeriesA: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1318,7 +1321,7 @@ object DMMain: TDMMain
     Top = 352
   end
   object tblBooks_Genres: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1347,7 +1350,7 @@ object DMMain: TDMMain
     end
   end
   object tblAuthor_Detail: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1381,7 +1384,7 @@ object DMMain: TDMMain
     end
   end
   object tblAuthor_Master: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False

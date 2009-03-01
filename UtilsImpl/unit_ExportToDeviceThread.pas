@@ -181,7 +181,8 @@ begin
 
     FZipper.ZipFileName := FFileOpRecord.SArch;
     fs := FZipper.ExtractFileToStream(ZipDirEntry(FZipper.ZipContents[FFileOpRecord.SNo]^).FileName);
-    FFileOprecord.SArch := Settings.TempPath + FFileopRecord.FileName;
+//    FFileOprecord.SArch := Settings.TempPath + FFileopRecord.FileName;
+    FFileOprecord.SArch := Settings.TempPath + Format('%.6d.fb2',[Random(999999)]);
     fs.SaveToFile(FFileopRecord.SArch);
     FIsTmp := True;
   end;

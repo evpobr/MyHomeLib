@@ -325,6 +325,7 @@ begin
   begin                                             // работаем с AppData
     FWorkDir := AppDataPath;
     FDataDir := WorkPath + DATA_DIR_NAME;
+    FTempDir := c_GetTempPath + '_myhomelib';
   end
   else
   begin
@@ -335,7 +336,6 @@ begin
 
   FReaders := TReaders.Create;
   FScripts := TScripts.Create;
-
 
   FInitialDirs := TStringList.Create;
 end;

@@ -11,17 +11,14 @@ type
    TFb2ToText = class
    private
      FEncoding : (enUnknown, en1251,enUTF8, enUnicode);
-     FS: Ansistring;
-     FLinesIn : TStringList;
-     FLinesOut : TStringList;
-     procedure ProceedString(TagStart,TagEnd:ansistring);
-     procedure ClearString;
+
+     FIn,FOut: Text;
+
+     procedure ProceedString(FS,TagStart,TagEnd:UTF8String);
+     procedure ClearString(var FS:UTF8String);
      procedure GetEncoding( S: string);
   public
-    constructor Create;
-    destructor Destroy; override;
-    procedure Convert(FileIn: string);
-    property Output:TStringList read FLinesOut;
+    procedure Convert(FileIn, FileOut: string);
   end;
 
 implementation
@@ -31,7 +28,7 @@ implementation
 uses
   StrUtils;
 
-procedure TFb2ToText.ClearString;
+procedure TFb2ToText.ClearString(var FS:UTF8String);
 begin
   FS := ReplaceStr(FS,'<strong>','');
   FS := ReplaceStr(FS,'</strong>','');
@@ -39,51 +36,59 @@ begin
   FS := ReplaceStr(FS,'</i>','');
   FS := ReplaceStr(FS,'<emphasis>','');
   FS := ReplaceStr(FS,'</emphasis>','');
-
 end;
 
-procedure TFb2ToText.Convert(FileIn: string);
+procedure TFb2ToText.Convert(FileIn, FileOut: string);
 var
   i: integer;
+
+  SA: AnsiString;
+  S:  UTF8String;
 begin
-  FLinesOut.Clear;
-  FLinesIn.LoadFromFile(FileIn);
 
+  AssignFile(FIn, FileIn);
+  Reset(FIn);
 
-  GetEncoding(FLinesIn[0]);
+  AssignFile(FOut, FileOut);
+  Rewrite(FOut);
 
-  i := 0;
-  while pos('<body',FLinesIn[i]) = 0 do
+  try
+    Readln(FIn,S);
+    GetEncoding(S);
+    i := 1;
+
+    while (pos('<body',S) = 0) and not Eof(FIn) do
+    begin
+      Readln(FIn,S);
       inc(i);
+    end;
 
-  for i := i to FLinesIn.Count - 1 do
-  begin
-    FS := FLinesIn[i];
 
-    if (pos('</section>',FS) <> 0)  or
-       (pos('</title>',FS)   <> 0)  or
-       (pos('<empty-line',FS)<> 0)   or
-       (pos('<subtitle>',FS) <> 0)
+
+    while  not Eof(FIn) do
+    begin
+      case FEncoding of
+        en1251: begin
+                  Readln(FIn,SA);
+                  S := AnsiToUTF8(SA);
+                end;
+        enUTF8: Readln(FIn,S);
+      end;
+
+      if (pos('</section>',S) <> 0)  or
+         (pos('</title>',S)   <> 0)  or
+         (pos('<empty-line',S)<> 0)   or
+         (pos('<subtitle>',S) <> 0)
       then
-        FLinesOut.Add('');
-    ClearString;
-    ProceedString('<subtitle>','</subtitle>');
-    ProceedString('<p>','</p>');
+        Writeln(FOut,'');
+      ClearString(S);
+      ProceedString(S,'<subtitle>','</subtitle>');
+      ProceedString(S,'<p>','</p>');
+    end;
+  finally
+    CloseFile(FIn);
+    CloseFile(FOut);
   end;
-end;
-
-constructor TFb2ToText.Create;
-begin
-  inherited;
-  FLinesIn := TStringList.Create;
-  FLinesOut := TStringList.Create;
-end;
-
-destructor TFb2ToText.Destroy;
-begin
-  FLinesIn.Free;
-  FLinesOut.Free;
-  inherited Destroy;
 end;
 
 procedure TFb2ToText.GetEncoding(S: string);
@@ -95,29 +100,27 @@ begin
 
 end;
 
-procedure TFb2ToText.ProceedString(TagStart,TagEnd: ansistring);
+procedure TFb2ToText.ProceedString(FS,TagStart, TagEnd: UTF8String);
 var
  p1,p2: integer;
  L : integer;
  US: UTF8String;
-
+ OS: UTF8String;
 begin
   L := Length(TagStart);
   p1 := pos(TagStart, FS);
 
-  if FEncoding = en1251 then
-      US := AnsiToUTF8(FS)
-  else
-    US := FS;
+  US := FS;
 
   while p1 <> 0 do
   begin
     p2 := pos(TagEnd, US);
-    FLinesOut.Add(copy(US,p1 + L, p2 - p1 - L));
+    OS := copy(US,p1 + L, p2 - p1 - L);
+    writeln(FOut,OS);
     Delete(US,1,p2 + 3);
     p1 := pos(TagStart,US);
   end;
-
 end;
+
 
 end.

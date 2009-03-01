@@ -84,7 +84,6 @@ uses
   frame_NCWImport in 'Wizards\NewCollection\frame_NCWImport.pas' {frameNCWImport: TFrame},
   unit_NCWParams in 'Wizards\NewCollection\unit_NCWParams.pas',
   frame_NCWCollectionFileTypes in 'Wizards\NewCollection\frame_NCWCollectionFileTypes.pas' {frameNCWCollectionFileTypes: TFrame},
-  StoHtmlHelp in 'UtilsImpl\StoHtmlHelp.pas',
   unit_fb2ToText in 'UtilsImpl\unit_fb2ToText.pas',
   unit_StaticTip in 'Components\unit_StaticTip.pas',
   files_list in 'Components\files_list.pas',
@@ -96,7 +95,8 @@ uses
   unit_InfoPanel in 'Components\unit_InfoPanel.pas',
   unit_DownloadBooksThread in 'DwnldImpl\unit_DownloadBooksThread.pas',
   frm_DownloadProgressForm in 'DwnldImpl\frm_DownloadProgressForm.pas' {DownloadProgressForm},
-  unit_Columns in 'Units\unit_Columns.pas';
+  unit_Columns in 'Units\unit_Columns.pas',
+  StoHtmlHelp in 'UtilsImpl\StoHtmlHelp.pas';
 
 {$R *.res}
 
