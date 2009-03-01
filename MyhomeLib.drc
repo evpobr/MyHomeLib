@@ -8,485 +8,485 @@
   resources were bound to the produced executable.
 */
 
-#define frame_NCWCollectionType_LISTBASED 64752
-#define frame_NCWCollectionType_SELECTTYPE 64753
-#define frame_NCWCollectionType_FROMDIFFERNTSOURCES 64754
-#define frame_NCWCollectionType_FROMLIBRUSECARCH 64755
-#define frame_NCWCollectionType_LIBRUSECDOWNLOAD 64756
-#define frame_NCWCollectionType_SERVERDOWNLOAD 64757
-#define frame_NCWOperation_CREATENEW 64758
-#define frame_NCWOperation_ADDEXISTS 64759
-#define frm_NCWizard_CAPTIONCANCEL 64760
-#define frm_NCWizard_CAPTIONCLOSE 64761
-#define frm_NCWizard_CREATIONCOLLECTION 64762
-#define frm_NCWizard_DATAIMPORT 64763
-#define frm_NCWizard_DATAIMPORTING 64764
-#define frm_NCWizard_REGISTRATION 64765
+#define RzShellConsts_SColumnSize 64752
+#define RzShellConsts_SColumnType 64753
+#define RzShellConsts_SColumnModified 64754
+#define RzShellConsts_SSystemFolder 64755
+#define RzShellConsts_SDeleteHint 64756
+#define RzShellConsts_SBrowseForFolder 64757
+#define RzShellConsts_SShKey_SelectAll 64758
+#define RzShellConsts_SShKey_Delete 64759
+#define RzShellConsts_SShKey_Copy 64760
+#define RzShellConsts_SShKey_Cut 64761
+#define RzShellConsts_SShKey_Paste 64762
+#define RzShellConsts_SShKey_Refresh 64763
+#define RzShellConsts_SShKey_Edit 64764
+#define RzShellConsts_SDialogFontName 64765
 #define WinHelpViewer_hNoKeyword 64766
-#define unit_libupdateThread_rstrUpdatingFromLocalArchive 64768
-#define unit_libupdateThread_rstrListsUpdateIsAvailable 64769
-#define unit_libupdateThread_rstrNothingToUpdate 64770
-#define unit_libupdateThread_rstrUpdateComplete 64771
-#define unit_libupdateThread_rstrRemovingOldCollection 64772
-#define unit_libupdateThread_rstrCreatingCollection 64773
-#define frame_NCWSelectGenreFile_STANDARTGENRES 64774
-#define frame_NCWSelectGenreFile_USERGENRES 64775
-#define frame_NCWCollectionFileTypes_COLLECTIONTYPEFB2 64776
-#define frame_NCWCollectionFileTypes_COLLECTIONTYPEANY 64777
-#define frame_NCWCollectionNameAndLocation_SHOWCOLLECTIONTYPE 64778
-#define frame_NCWCollectionNameAndLocation_SHOWCOLLECTIONFILE 64779
-#define frame_NCWCollectionNameAndLocation_SHOWCOLLECTIONFOLDER 64780
-#define frame_NCWCollectionNameAndLocation_SELECTFOLDER 64781
-#define frame_NCWCollectionType_EMPTYCOLLECTION 64782
-#define frame_NCWCollectionType_PRIVATECOLLECTION 64783
-#define unit_MHL_strings_rstrLocalLibRusEcDefName 64784
-#define unit_MHL_strings_rstrOnlineLibRusEcDefName 64785
-#define unit_MHL_strings_rstrOnlineGenesisDefName 64786
-#define unit_MHL_strings_rstrLocalLibRusEcDefLocation 64787
-#define unit_MHL_strings_rstrOnlineLibRusEcDefLocation 64788
-#define unit_MHL_strings_rstrOnlineGenesisDefLocation 64789
-#define unit_ImportXMLThread_rstrOpeningXMLFileMsg 64790
-#define unit_ImportXMLThread_rstrImportingMsg 64791
-#define unit_ImportXMLThread_rstrCollectionTypeMismatchErrorMsg 64792
-#define unit_ImportXMLThread_rstrCollectionNameMismatchWarningMsg 64793
-#define unit_libupdateThread_rstrCheckingUpdate 64794
-#define unit_libupdateThread_rstrErrorCheckingUpdate 64795
-#define unit_libupdateThread_rstrErrorDownloadUpdate 64796
-#define unit_libupdateThread_rstrReady 64797
-#define unit_libupdateThread_rstrDownloadingUpdates 64798
-#define unit_libupdateThread_rstrYouHaveLatestListsVersion 64799
-#define unit_Helpers_rstrSelectReaderDlgTitle 64800
-#define unit_Helpers_rstrSelectScriptDlgTitle 64801
-#define unit_Helpers_rstrSelectProgrammDlgFilter 64802
-#define unit_Helpers_rstrSelectProgrammDlgDefaultExt 64803
-#define unit_Helpers_rstrOpenImportFileDlgTitle 64804
-#define unit_Helpers_rstrSaveImportFileDlgTitle 64805
-#define unit_Helpers_rstrImportFileDlgFilter 64806
-#define unit_Helpers_rstrImportFileDlgDefaultExt 64807
-#define unit_Helpers_rstrSaveLogDlgTitle 64808
-#define unit_Helpers_rstrSaveLogDlgFilter 64809
-#define unit_Helpers_rstrSaveLogDlgDefaultExt 64810
-#define unit_MHL_strings_main_unable_to_copy 64811
-#define unit_MHL_strings_main_connecttodb 64812
-#define unit_MHL_strings_main_loading_collection 64813
-#define unit_MHL_strings_main_check_updates 64814
-#define unit_MHL_strings_rstrCancelOperationWarningMsg 64815
-#define RzShellConsts_SBrowseForFolder 64816
-#define RzShellConsts_SShKey_SelectAll 64817
-#define RzShellConsts_SShKey_Delete 64818
-#define RzShellConsts_SShKey_Copy 64819
-#define RzShellConsts_SShKey_Cut 64820
-#define RzShellConsts_SShKey_Paste 64821
-#define RzShellConsts_SShKey_Refresh 64822
-#define RzShellConsts_SShKey_Edit 64823
-#define RzShellConsts_SDialogFontName 64824
-#define unit_Helpers_rstrGenreListDlgTitle 64825
-#define unit_Helpers_rstrGenreListDlgFilter 64826
-#define unit_Helpers_rstrGenreListDlgDefaultExt 64827
-#define unit_Helpers_rstrOpenCollectionDlgTitle 64828
-#define unit_Helpers_rstrSaveCollectionDlgTitle 64829
-#define unit_Helpers_rstrCollectionDlgFilter 64830
-#define unit_Helpers_rstrCollectionDlgDefaultExt 64831
-#define xdom_SNegativeSizeInvalid 64832
-#define xdom_SCapacityLessSize 64833
-#define xdom_STargetNil 64834
+#define unit_libupdateThread_rstrReady 64768
+#define unit_libupdateThread_rstrDownloadingUpdates 64769
+#define unit_libupdateThread_rstrYouHaveLatestListsVersion 64770
+#define unit_libupdateThread_rstrUpdatingFromLocalArchive 64771
+#define unit_libupdateThread_rstrListsUpdateIsAvailable 64772
+#define unit_libupdateThread_rstrNothingToUpdate 64773
+#define unit_libupdateThread_rstrUpdateComplete 64774
+#define unit_libupdateThread_rstrRemovingOldCollection 64775
+#define unit_libupdateThread_rstrCreatingCollection 64776
+#define RzShellConsts_SCancelButton 64777
+#define RzShellConsts_SOKButton 64778
+#define RzShellConsts_SCreateFolder 64779
+#define RzShellConsts_SFilesizeKB 64780
+#define RzShellConsts_SNewFolder 64781
+#define RzShellConsts_SUnableToCreateFolder 64782
+#define RzShellConsts_SColumnName 64783
+#define frame_NCWCollectionType_SERVERDOWNLOAD 64784
+#define frame_NCWOperation_CREATENEW 64785
+#define frame_NCWOperation_ADDEXISTS 64786
+#define unit_ImportXMLThread_rstrOpeningXMLFileMsg 64787
+#define unit_ImportXMLThread_rstrImportingMsg 64788
+#define unit_ImportXMLThread_rstrCollectionTypeMismatchErrorMsg 64789
+#define unit_ImportXMLThread_rstrCollectionNameMismatchWarningMsg 64790
+#define frm_NCWizard_CAPTIONCANCEL 64791
+#define frm_NCWizard_CAPTIONCLOSE 64792
+#define frm_NCWizard_CREATIONCOLLECTION 64793
+#define frm_NCWizard_DATAIMPORT 64794
+#define frm_NCWizard_DATAIMPORTING 64795
+#define frm_NCWizard_REGISTRATION 64796
+#define unit_libupdateThread_rstrCheckingUpdate 64797
+#define unit_libupdateThread_rstrErrorCheckingUpdate 64798
+#define unit_libupdateThread_rstrErrorDownloadUpdate 64799
+#define unit_MHL_strings_rstrOnlineLibRusEcDefName 64800
+#define unit_MHL_strings_rstrOnlineGenesisDefName 64801
+#define unit_MHL_strings_rstrLocalLibRusEcDefLocation 64802
+#define unit_MHL_strings_rstrOnlineLibRusEcDefLocation 64803
+#define unit_MHL_strings_rstrOnlineGenesisDefLocation 64804
+#define frame_NCWCollectionNameAndLocation_SHOWCOLLECTIONTYPE 64805
+#define frame_NCWCollectionNameAndLocation_SHOWCOLLECTIONFILE 64806
+#define frame_NCWCollectionNameAndLocation_SHOWCOLLECTIONFOLDER 64807
+#define frame_NCWCollectionNameAndLocation_SELECTFOLDER 64808
+#define frame_NCWCollectionType_EMPTYCOLLECTION 64809
+#define frame_NCWCollectionType_PRIVATECOLLECTION 64810
+#define frame_NCWCollectionType_LISTBASED 64811
+#define frame_NCWCollectionType_SELECTTYPE 64812
+#define frame_NCWCollectionType_FROMDIFFERNTSOURCES 64813
+#define frame_NCWCollectionType_FROMLIBRUSECARCH 64814
+#define frame_NCWCollectionType_LIBRUSECDOWNLOAD 64815
+#define unit_Helpers_rstrSaveImportFileDlgTitle 64816
+#define unit_Helpers_rstrImportFileDlgFilter 64817
+#define unit_Helpers_rstrImportFileDlgDefaultExt 64818
+#define unit_Helpers_rstrSaveLogDlgTitle 64819
+#define unit_Helpers_rstrSaveLogDlgFilter 64820
+#define unit_Helpers_rstrSaveLogDlgDefaultExt 64821
+#define frame_NCWSelectGenreFile_STANDARTGENRES 64822
+#define frame_NCWSelectGenreFile_USERGENRES 64823
+#define frame_NCWCollectionFileTypes_COLLECTIONTYPEFB2 64824
+#define frame_NCWCollectionFileTypes_COLLECTIONTYPEANY 64825
+#define unit_MHL_strings_main_unable_to_copy 64826
+#define unit_MHL_strings_main_connecttodb 64827
+#define unit_MHL_strings_main_loading_collection 64828
+#define unit_MHL_strings_main_check_updates 64829
+#define unit_MHL_strings_rstrCancelOperationWarningMsg 64830
+#define unit_MHL_strings_rstrLocalLibRusEcDefName 64831
+#define VDBConsts_SRefreshRecord 64832
+#define VDBConsts_SDataSourceFixed 64833
+#define VDBConsts_SRemoteLogin 64834
 #define dm_user_rstrNamelessColection 64835
-#define RzShellConsts_SCancelButton 64836
-#define RzShellConsts_SOKButton 64837
-#define RzShellConsts_SCreateFolder 64838
-#define RzShellConsts_SFilesizeKB 64839
-#define RzShellConsts_SNewFolder 64840
-#define RzShellConsts_SUnableToCreateFolder 64841
-#define RzShellConsts_SColumnName 64842
-#define RzShellConsts_SColumnSize 64843
-#define RzShellConsts_SColumnType 64844
-#define RzShellConsts_SColumnModified 64845
-#define RzShellConsts_SSystemFolder 64846
-#define RzShellConsts_SDeleteHint 64847
-#define bdeconst_SDatabaseClosed 64848
-#define bdeconst_SDatabaseHandleSet 64849
-#define bdeconst_SSessionActive 64850
-#define bdeconst_SHandleError 64851
-#define bdeconst_SNoReferenceTableName 64852
-#define bdeconst_SNoParameterValue 64853
-#define bdeconst_SLoginError 64854
-#define bdeconst_SInitError 64855
-#define bdeconst_SIDAPILangID 64856
-#define bdeconst_SBDEError 64857
-#define bdeconst_SNoDataSetField 64858
-#define bdeconst_SNoCachedUpdates 64859
-#define bdeconst_SNoFieldAccess 64860
-#define bdeconst_SUntitled 64861
-#define bdeconst_SLocalTransDirty 64862
-#define xdom_SOddSizeInvalid 64863
-#define pnglang_EPNGNoImageDataText 64864
-#define pnglang_EPNGOutMemoryText 64865
-#define pnglang_EPNGHeaderNotPresentText 64866
-#define pnglang_EInvalidNewSize 64867
-#define JConsts_sChangeJPGSize 64868
-#define JConsts_sJPEGError 64869
-#define JConsts_sJPEGImageFile 64870
-#define bdeconst_SAutoSessionExclusive 64871
-#define bdeconst_SAutoSessionExists 64872
-#define bdeconst_SAutoSessionActive 64873
-#define bdeconst_SDuplicateDatabaseName 64874
-#define bdeconst_SDuplicateSessionName 64875
-#define bdeconst_SInvalidSessionName 64876
-#define bdeconst_SDatabaseNameMissing 64877
-#define bdeconst_SSessionNameMissing 64878
-#define bdeconst_SDatabaseOpen 64879
-#define XMLConst_SMissingFileName 64880
-#define XMLConst_SLine 64881
-#define pnglang_EPngInvalidCRCText 64882
-#define pnglang_EPNGInvalidIHDRText 64883
-#define pnglang_EPNGMissingMultipleIDATText 64884
-#define pnglang_EPNGZLIBErrorText 64885
-#define pnglang_EPNGInvalidPaletteText 64886
-#define pnglang_EPNGInvalidFileHeaderText 64887
-#define pnglang_EPNGIHDRNotFirstText 64888
-#define pnglang_EPNGSizeExceedsText 64889
-#define pnglang_EPNGUnknownPalEntryText 64890
-#define pnglang_EPNGUnknownCriticalChunkText 64891
-#define pnglang_EPNGUnknownCompressionText 64892
-#define pnglang_EPNGUnknownInterlaceText 64893
-#define pnglang_EPNGCannotAssignChunkText 64894
-#define pnglang_EPNGUnexpectedEndText 64895
-#define XMLConst_SDOMNotSupported 64896
-#define XMLConst_SNodeExpected 64897
-#define XMLConst_SMSDOMNotInstalled 64898
-#define XMLConst_SErrorDownloadingURL 64899
-#define XMLConst_SUrlMonDllMissing 64900
-#define XMLConst_SNotActive 64901
-#define XMLConst_SNodeNotFound 64902
-#define XMLConst_SMissingNode 64903
-#define XMLConst_SNoAttributes 64904
-#define XMLConst_SInvalidNodeType 64905
-#define XMLConst_SMismatchedRegItems 64906
-#define XMLConst_SNotSingleTextNode 64907
-#define XMLConst_SNoDOMParseOptions 64908
-#define XMLConst_SMissingItemTag 64909
-#define XMLConst_SNodeReadOnly 64910
-#define XMLConst_SNoRefresh 64911
-#define IdResourceStringsProtocols_RSOSSLCouldNotLoadSSLLibrary 64912
-#define IdResourceStringsProtocols_RSOSSLStatusString 64913
-#define IdResourceStringsProtocols_RSURINoProto 64914
-#define IdResourceStringsProtocols_RSURINoHost 64915
-#define unit_Errors_rstrErrorInvalidArgument 64916
-#define unit_Errors_rstrAllFieldsShouldBeFilled 64917
-#define unit_Errors_rstrCollectionAlreadyExists 64918
-#define unit_Errors_rstrFileDoesntExists 64919
-#define unit_Errors_rstrFileAlreadyExistsInDB 64920
-#define RzFilSys_sRzFileDoesNotExist 64921
-#define RzFilSys_sRzDirectoryDoesNotExist 64922
-#define RzSelDirForm_sRzConfirmNewDirectory 64923
-#define RzSelDirForm_sRzCreateDirError 64924
-#define XMLConst_SDuplicateRegistration 64925
-#define XMLConst_SNoMatchingDOMVendor 64926
-#define XMLConst_SNoDOMNodeEx 64927
-#define IdResourceStringsProtocols_RSHTTPUnknownProtocol 64928
-#define IdResourceStringsProtocols_RSHTTPMethodRequiresVersion 64929
-#define IdResourceStringsProtocols_RSHTTPAuthAlreadyRegistered 64930
-#define IdResourceStringsProtocols_RSHTTPAuthInvalidHash 64931
-#define IdResourceStringsProtocols_RSSSLAcceptError 64932
-#define IdResourceStringsProtocols_RSSSLConnectError 64933
-#define IdResourceStringsProtocols_RSSSLSettingCipherError 64934
-#define IdResourceStringsProtocols_RSSSLCreatingContextError 64935
-#define IdResourceStringsProtocols_RSSSLLoadingRootCertError 64936
-#define IdResourceStringsProtocols_RSSSLLoadingCertError 64937
-#define IdResourceStringsProtocols_RSSSLLoadingKeyError 64938
-#define IdResourceStringsProtocols_RSSSLGetMethodError 64939
-#define IdResourceStringsProtocols_RSSSLFDSetError 64940
-#define IdResourceStringsProtocols_RSSSLDataBindingError 64941
-#define IdResourceStringsProtocols_RSSSLEOFViolation 64942
-#define IdResourceStringsProtocols_RSOSSLModeNotSet 64943
-#define IdResourceStringsCore_RSReadTimeout 64944
-#define IdResourceStringsCore_RSReadLnWaitMaxAttemptsExceeded 64945
-#define IdResourceStringsCore_RSReadLnMaxLineLengthExceeded 64946
-#define IdResourceStringsCore_RSConnectTimeout 64947
-#define IdResourceStringsCore_RSAlreadyConnected 64948
-#define IdResourceStringsCore_RSMaximumNumberOfCaptureLineExceeded 64949
-#define IdResourceStringsCore_RSInterceptIsDifferent 64950
-#define IdResourceStringsCore_RSTransparentProxyCannotBind 64951
-#define IdResourceStringsCore_RSTransparentProxyCanNotSupportUDP 64952
-#define IdResourceStringsCore_RSBufferMissingTerminator 64953
-#define IdResourceStringsCore_RSBufferInvalidStartPos 64954
-#define IdResourceStringsCore_RSReplyInvalidCode 64955
-#define IdResourceStringsCore_RSReplyCodeAlreadyExists 64956
-#define IdResourceStringsProtocols_RSIOHandlerPropInvalid 64957
-#define IdResourceStringsProtocols_RSHTTPChunkStarted 64958
-#define IdResourceStringsProtocols_RSHTTPNotAcceptable 64959
-#define IdResourceStringsCore_RSSocksAuthError 64960
-#define IdResourceStringsCore_RSSocksServerGeneralError 64961
-#define IdResourceStringsCore_RSSocksServerPermissionError 64962
-#define IdResourceStringsCore_RSSocksServerNetUnreachableError 64963
-#define IdResourceStringsCore_RSSocksServerHostUnreachableError 64964
-#define IdResourceStringsCore_RSSocksServerConnectionRefusedError 64965
-#define IdResourceStringsCore_RSSocksServerTTLExpiredError 64966
-#define IdResourceStringsCore_RSSocksServerCommandError 64967
-#define IdResourceStringsCore_RSSocksServerAddressError 64968
-#define IdResourceStringsCore_RSInterceptCircularLink 64969
-#define IdResourceStringsCore_RSNotEnoughDataInBuffer 64970
-#define IdResourceStringsCore_RSTooMuchDataInBuffer 64971
-#define IdResourceStringsCore_RSFileNotFound 64972
-#define IdResourceStringsCore_RSNotConnected 64973
-#define IdResourceStringsCore_RSObjectTypeNotSupported 64974
-#define IdResourceStringsCore_RSIdNoDataToRead 64975
-#define IdResourceStrings_RSInvalidPortRange 64976
-#define IdResourceStrings_RSInvalidServiceName 64977
-#define IdResourceStrings_RSIPv6Unavailable 64978
-#define IdResourceStrings_RSInvalidIPv6Address 64979
-#define IdResourceStrings_RSIPVersionUnsupported 64980
-#define IdResourceStrings_RSNotAllBytesSent 64981
-#define IdResourceStrings_RSPackageSizeTooBig 64982
-#define IdResourceStrings_RSSetSizeExceeded 64983
-#define IdResourceStrings_RSNoEncodingSpecified 64984
-#define IdResourceStringsCore_RSSocksUDPNotSupported 64985
-#define IdResourceStringsCore_RSSocksRequestFailed 64986
-#define IdResourceStringsCore_RSSocksRequestServerFailed 64987
-#define IdResourceStringsCore_RSSocksRequestIdentFailed 64988
-#define IdResourceStringsCore_RSSocksUnknownError 64989
-#define IdResourceStringsCore_RSSocksServerRespondError 64990
-#define IdResourceStringsCore_RSSocksAuthMethodError 64991
-#define IdResourceStrings_RSStackETOOMANYREFS 64992
-#define IdResourceStrings_RSStackETIMEDOUT 64993
-#define IdResourceStrings_RSStackECONNREFUSED 64994
-#define IdResourceStrings_RSStackELOOP 64995
-#define IdResourceStrings_RSStackENAMETOOLONG 64996
-#define IdResourceStrings_RSStackEHOSTDOWN 64997
-#define IdResourceStrings_RSStackEHOSTUNREACH 64998
-#define IdResourceStrings_RSStackENOTEMPTY 64999
-#define IdResourceStrings_RSStackHOST_NOT_FOUND 65000
-#define IdResourceStrings_RSStackClassUndefined 65001
-#define IdResourceStrings_RSStackAlreadyCreated 65002
-#define IdResourceStrings_RSAntiFreezeOnlyOne 65003
-#define IdResourceStrings_RSCannotSetIPVersionWhenConnected 65004
-#define IdResourceStrings_RSCannotBindRange 65005
-#define IdResourceStrings_RSConnectionClosedGracefully 65006
-#define IdResourceStrings_RSCouldNotBindSocket 65007
-#define IdResourceStrings_RSStackEPROTONOSUPPORT 65008
-#define IdResourceStrings_RSStackESOCKTNOSUPPORT 65009
-#define IdResourceStrings_RSStackEOPNOTSUPP 65010
-#define IdResourceStrings_RSStackEPFNOSUPPORT 65011
-#define IdResourceStrings_RSStackEAFNOSUPPORT 65012
-#define IdResourceStrings_RSStackEADDRINUSE 65013
-#define IdResourceStrings_RSStackEADDRNOTAVAIL 65014
-#define IdResourceStrings_RSStackENETDOWN 65015
-#define IdResourceStrings_RSStackENETUNREACH 65016
-#define IdResourceStrings_RSStackENETRESET 65017
-#define IdResourceStrings_RSStackECONNABORTED 65018
-#define IdResourceStrings_RSStackECONNRESET 65019
-#define IdResourceStrings_RSStackENOBUFS 65020
-#define IdResourceStrings_RSStackEISCONN 65021
-#define IdResourceStrings_RSStackENOTCONN 65022
-#define IdResourceStrings_RSStackESHUTDOWN 65023
-#define IdResourceStrings_RSStatusText 65024
-#define IdResourceStrings_RSStackError 65025
-#define IdResourceStrings_RSStackEINTR 65026
-#define IdResourceStrings_RSStackEBADF 65027
-#define IdResourceStrings_RSStackEACCES 65028
-#define IdResourceStrings_RSStackEFAULT 65029
-#define IdResourceStrings_RSStackEINVAL 65030
-#define IdResourceStrings_RSStackEMFILE 65031
-#define IdResourceStrings_RSStackEWOULDBLOCK 65032
-#define IdResourceStrings_RSStackEINPROGRESS 65033
-#define IdResourceStrings_RSStackEALREADY 65034
-#define IdResourceStrings_RSStackENOTSOCK 65035
-#define IdResourceStrings_RSStackEDESTADDRREQ 65036
-#define IdResourceStrings_RSStackEMSGSIZE 65037
-#define IdResourceStrings_RSStackEPROTOTYPE 65038
-#define IdResourceStrings_RSStackENOPROTOOPT 65039
-#define ABSDecConst2_sFMT_COPY 65040
-#define ABSDecConst2_sFMT_HEX 65041
-#define ABSDecConst2_sFMT_HEXL 65042
-#define ABSDecConst2_sFMT_MIME64 65043
-#define ABSDecConst2_sFMT_UU 65044
-#define ABSDecConst2_sFMT_XX 65045
-#define ABSDecConst2_sInvalidKeySize 65046
-#define ABSDecConst2_sNotInitialized 65047
-#define IdResourceStrings_RSFailedTimeZoneInfo 65048
-#define IdResourceStrings_RSWinsockCallError 65049
-#define IdResourceStrings_RSWinsockLoadError 65050
-#define IdResourceStrings_RSStatusResolving 65051
-#define IdResourceStrings_RSStatusConnecting 65052
-#define IdResourceStrings_RSStatusConnected 65053
-#define IdResourceStrings_RSStatusDisconnecting 65054
-#define IdResourceStrings_RSStatusDisconnected 65055
-#define VDBConsts_SEditRecord 65056
-#define VDBConsts_SPostEdit 65057
-#define VDBConsts_SCancelEdit 65058
-#define VDBConsts_SRefreshRecord 65059
-#define VDBConsts_SDataSourceFixed 65060
-#define VDBConsts_SRemoteLogin 65061
-#define RzTabs_sRzIncorrectNumberOfPoints 65062
-#define RzTabs_sRzTabRegionCapacityError 65063
-#define RzTabs_sRzSavingDCError 65064
-#define RzTabs_sRzCreateRegionError 65065
-#define RzTabs_sRzPageIndexOutOfRange 65066
-#define RzTabs_sRzInvalidVisibilityChange 65067
-#define ABSDecConst2_sProtectionCircular 65068
-#define ABSDecConst2_sStringFormatExists 65069
-#define ABSDecConst2_sInvalidStringFormat 65070
-#define ABSDecConst2_sInvalidFormatString 65071
-#define DBConsts_SProviderExecuteNotSupported 65072
-#define DBConsts_SExprNoAggOnCalcs 65073
-#define DBConsts_SDataSetUnidirectional 65074
-#define DBConsts_SUnassignedVar 65075
-#define DBConsts_SRecordNotFound 65076
-#define DBConsts_SBcdOverflow 65077
-#define DBConsts_SInvalidBcdValue 65078
-#define DBConsts_SInvalidFormatType 65079
-#define DBConsts_SCouldNotParseTimeStamp 65080
-#define DBConsts_SInvalidSqlTimeStamp 65081
-#define VDBConsts_SFirstRecord 65082
-#define VDBConsts_SPriorRecord 65083
-#define VDBConsts_SNextRecord 65084
-#define VDBConsts_SLastRecord 65085
-#define VDBConsts_SInsertRecord 65086
-#define VDBConsts_SDeleteRecord 65087
-#define DBConsts_SExprIncorrect 65088
-#define DBConsts_SExprNothing 65089
-#define DBConsts_SExprTypeMis 65090
-#define DBConsts_SExprBadScope 65091
-#define DBConsts_SExprNoArith 65092
-#define DBConsts_SExprNotAgg 65093
-#define DBConsts_SExprBadConst 65094
-#define DBConsts_SExprNoAggFilter 65095
-#define DBConsts_SExprEmptyInList 65096
-#define DBConsts_SInvalidKeywordUse 65097
-#define DBConsts_STextFalse 65098
-#define DBConsts_STextTrue 65099
-#define DBConsts_SParameterNotFound 65100
-#define DBConsts_SInvalidVersion 65101
-#define DBConsts_SBadFieldType 65102
-#define DBConsts_SProviderSQLNotSupported 65103
-#define DBConsts_SNotEditing 65104
-#define DBConsts_SDataSetClosed 65105
-#define DBConsts_SDataSetEmpty 65106
-#define DBConsts_SDataSetReadOnly 65107
-#define DBConsts_SNestedDataSetClass 65108
-#define DBConsts_SExprTermination 65109
-#define DBConsts_SExprNameError 65110
-#define DBConsts_SExprStringError 65111
-#define DBConsts_SExprInvalidChar 65112
-#define DBConsts_SExprNoLParen 65113
-#define DBConsts_SExprNoRParen 65114
-#define DBConsts_SExprNoRParenOrComma 65115
-#define DBConsts_SExprExpected 65116
-#define DBConsts_SExprBadField 65117
-#define DBConsts_SExprBadNullTest 65118
-#define DBConsts_SExprRangeError 65119
-#define DBConsts_SFieldSizeMismatch 65120
-#define DBConsts_SInvalidVarByteArray 65121
-#define DBConsts_SFieldOutOfRange 65122
-#define DBConsts_SFieldRequired 65123
-#define DBConsts_SDataSetMissing 65124
-#define DBConsts_SInvalidCalcType 65125
-#define DBConsts_SFieldReadOnly 65126
-#define DBConsts_SNotIndexField 65127
-#define DBConsts_SDuplicateIndexName 65128
-#define DBConsts_SNoIndexForFields 65129
-#define DBConsts_SIndexNotFound 65130
-#define DBConsts_SDBDuplicateName 65131
-#define DBConsts_SCircularDataLink 65132
-#define DBConsts_SLookupInfoError 65133
-#define DBConsts_SDataSourceChange 65134
-#define DBConsts_SDataSetOpen 65135
-#define RzBorder_sRzColorMenuHighlight 65136
-#define RzBorder_sRzColorMenuBar 65137
-#define DBConsts_SInvalidFieldSize 65138
-#define DBConsts_SInvalidFieldKind 65139
-#define DBConsts_SUnknownFieldType 65140
-#define DBConsts_SFieldNameMissing 65141
-#define DBConsts_SDuplicateFieldName 65142
-#define DBConsts_SFieldNotFound 65143
-#define DBConsts_SFieldAccessError 65144
-#define DBConsts_SFieldValueError 65145
-#define DBConsts_SFieldRangeError 65146
-#define DBConsts_SBcdFieldRangeError 65147
-#define DBConsts_SInvalidIntegerValue 65148
-#define DBConsts_SInvalidBoolValue 65149
-#define DBConsts_SInvalidFloatValue 65150
-#define DBConsts_SFieldTypeMismatch 65151
-#define RzBorder_sRzColorAppWorkSpace 65152
-#define RzBorder_sRzColorHighlight 65153
-#define RzBorder_sRzColorHighlightText 65154
-#define RzBorder_sRzColorBtnFace 65155
-#define RzBorder_sRzColorBtnShadow 65156
-#define RzBorder_sRzColorGrayText 65157
-#define RzBorder_sRzColorBtnText 65158
-#define RzBorder_sRzColorInactiveCaptionText 65159
-#define RzBorder_sRzColorBtnHighlight 65160
-#define RzBorder_sRzColor3DDkShadow 65161
-#define RzBorder_sRzColor3DLight 65162
-#define RzBorder_sRzColorInfoText 65163
-#define RzBorder_sRzColorInfoBk 65164
-#define RzBorder_sRzColorHotLight 65165
-#define RzBorder_sRzColorGradientActiveCaption 65166
-#define RzBorder_sRzColorGradientInactiveCaption 65167
-#define RzBorder_sRzColorLightTurquoise 65168
-#define RzBorder_sRzColorPaleBlue 65169
-#define RzBorder_sRzColorLavender 65170
-#define RzBorder_sRzColorWhite 65171
-#define RzBorder_sRzColorScrollBar 65172
-#define RzBorder_sRzColorBackground 65173
-#define RzBorder_sRzColorActiveCaption 65174
-#define RzBorder_sRzColorInactiveCaption 65175
-#define RzBorder_sRzColorMenu 65176
-#define RzBorder_sRzColorWindow 65177
-#define RzBorder_sRzColorWindowFrame 65178
-#define RzBorder_sRzColorMenuText 65179
-#define RzBorder_sRzColorWindowText 65180
-#define RzBorder_sRzColorCaptionText 65181
-#define RzBorder_sRzColorActiveBorder 65182
-#define RzBorder_sRzColorInactiveBorder 65183
-#define RzBorder_sRzColorAqua 65184
-#define RzBorder_sRzColorLightBlue 65185
-#define RzBorder_sRzColorViolet 65186
-#define RzBorder_sRzColorGray40 65187
-#define RzBorder_sRzColorPink 65188
-#define RzBorder_sRzColorGold 65189
-#define RzBorder_sRzColorYellow 65190
-#define RzBorder_sRzColorBrightGreen 65191
-#define RzBorder_sRzColorTurquoise 65192
-#define RzBorder_sRzColorSkyBlue 65193
-#define RzBorder_sRzColorPlum 65194
-#define RzBorder_sRzColorGray25 65195
-#define RzBorder_sRzColorRose 65196
-#define RzBorder_sRzColorTan 65197
-#define RzBorder_sRzColorLightYellow 65198
-#define RzBorder_sRzColorLightGreen 65199
-#define RzBorder_sRzColorDarkTeal 65200
-#define RzBorder_sRzColorDarkBlue 65201
-#define RzBorder_sRzColorIndigo 65202
-#define RzBorder_sRzColorGray80 65203
-#define RzBorder_sRzColorDarkRed 65204
-#define RzBorder_sRzColorOrange 65205
-#define RzBorder_sRzColorDarkYellow 65206
-#define RzBorder_sRzColorGreen 65207
-#define RzBorder_sRzColorTeal 65208
-#define RzBorder_sRzColorBlue 65209
-#define RzBorder_sRzColorBlueGray 65210
-#define RzBorder_sRzColorGray50 65211
-#define RzBorder_sRzColorRed 65212
-#define RzBorder_sRzColorLightOrange 65213
-#define RzBorder_sRzColorLime 65214
-#define RzBorder_sRzColorSeaGreen 65215
-#define ComConst_SNoMethod 65216
-#define ComConst_SVarNotObject 65217
-#define ComConst_STooManyParams 65218
-#define VirtualTrees_SEditLinkIsNil 65219
-#define VirtualTrees_SWrongMoveError 65220
-#define VirtualTrees_SWrongStreamFormat 65221
-#define VirtualTrees_SWrongStreamVersion 65222
-#define VirtualTrees_SStreamTooSmall 65223
-#define VirtualTrees_SCorruptStream1 65224
-#define VirtualTrees_SCorruptStream2 65225
-#define VirtualTrees_SClipboardFailed 65226
-#define VirtualTrees_SCannotSetUserData 65227
-#define RzBorder_sRzColorBlack 65228
-#define RzBorder_sRzColorBrown 65229
-#define RzBorder_sRzColorOliveGreen 65230
-#define RzBorder_sRzColorDarkGreen 65231
+#define unit_Helpers_rstrGenreListDlgTitle 64836
+#define unit_Helpers_rstrGenreListDlgFilter 64837
+#define unit_Helpers_rstrGenreListDlgDefaultExt 64838
+#define unit_Helpers_rstrOpenCollectionDlgTitle 64839
+#define unit_Helpers_rstrSaveCollectionDlgTitle 64840
+#define unit_Helpers_rstrCollectionDlgFilter 64841
+#define unit_Helpers_rstrCollectionDlgDefaultExt 64842
+#define unit_Helpers_rstrSelectReaderDlgTitle 64843
+#define unit_Helpers_rstrSelectScriptDlgTitle 64844
+#define unit_Helpers_rstrSelectProgrammDlgFilter 64845
+#define unit_Helpers_rstrSelectProgrammDlgDefaultExt 64846
+#define unit_Helpers_rstrOpenImportFileDlgTitle 64847
+#define RzSelDirForm_sRzCreateDirError 64848
+#define RzTabs_sRzIncorrectNumberOfPoints 64849
+#define RzTabs_sRzTabRegionCapacityError 64850
+#define RzTabs_sRzSavingDCError 64851
+#define RzTabs_sRzCreateRegionError 64852
+#define RzTabs_sRzPageIndexOutOfRange 64853
+#define RzTabs_sRzInvalidVisibilityChange 64854
+#define VDBConsts_SFirstRecord 64855
+#define VDBConsts_SPriorRecord 64856
+#define VDBConsts_SNextRecord 64857
+#define VDBConsts_SLastRecord 64858
+#define VDBConsts_SInsertRecord 64859
+#define VDBConsts_SDeleteRecord 64860
+#define VDBConsts_SEditRecord 64861
+#define VDBConsts_SPostEdit 64862
+#define VDBConsts_SCancelEdit 64863
+#define pnglang_EPNGInvalidFileHeaderText 64864
+#define pnglang_EPNGIHDRNotFirstText 64865
+#define pnglang_EPNGSizeExceedsText 64866
+#define pnglang_EPNGUnknownPalEntryText 64867
+#define pnglang_EPNGUnknownCriticalChunkText 64868
+#define pnglang_EPNGUnknownCompressionText 64869
+#define pnglang_EPNGUnknownInterlaceText 64870
+#define pnglang_EPNGCannotAssignChunkText 64871
+#define pnglang_EPNGUnexpectedEndText 64872
+#define pnglang_EPNGNoImageDataText 64873
+#define pnglang_EPNGOutMemoryText 64874
+#define pnglang_EPNGHeaderNotPresentText 64875
+#define pnglang_EInvalidNewSize 64876
+#define RzFilSys_sRzFileDoesNotExist 64877
+#define RzFilSys_sRzDirectoryDoesNotExist 64878
+#define RzSelDirForm_sRzConfirmNewDirectory 64879
+#define bdeconst_SNoCachedUpdates 64880
+#define bdeconst_SNoFieldAccess 64881
+#define bdeconst_SUntitled 64882
+#define bdeconst_SLocalTransDirty 64883
+#define xdom_SOddSizeInvalid 64884
+#define xdom_SNegativeSizeInvalid 64885
+#define xdom_SCapacityLessSize 64886
+#define xdom_STargetNil 64887
+#define JConsts_sChangeJPGSize 64888
+#define JConsts_sJPEGError 64889
+#define JConsts_sJPEGImageFile 64890
+#define pnglang_EPngInvalidCRCText 64891
+#define pnglang_EPNGInvalidIHDRText 64892
+#define pnglang_EPNGMissingMultipleIDATText 64893
+#define pnglang_EPNGZLIBErrorText 64894
+#define pnglang_EPNGInvalidPaletteText 64895
+#define bdeconst_SDuplicateSessionName 64896
+#define bdeconst_SInvalidSessionName 64897
+#define bdeconst_SDatabaseNameMissing 64898
+#define bdeconst_SSessionNameMissing 64899
+#define bdeconst_SDatabaseOpen 64900
+#define bdeconst_SDatabaseClosed 64901
+#define bdeconst_SDatabaseHandleSet 64902
+#define bdeconst_SSessionActive 64903
+#define bdeconst_SHandleError 64904
+#define bdeconst_SNoReferenceTableName 64905
+#define bdeconst_SNoParameterValue 64906
+#define bdeconst_SLoginError 64907
+#define bdeconst_SInitError 64908
+#define bdeconst_SIDAPILangID 64909
+#define bdeconst_SBDEError 64910
+#define bdeconst_SNoDataSetField 64911
+#define XMLConst_SNodeNotFound 64912
+#define XMLConst_SMissingNode 64913
+#define XMLConst_SNoAttributes 64914
+#define XMLConst_SInvalidNodeType 64915
+#define XMLConst_SMismatchedRegItems 64916
+#define XMLConst_SNotSingleTextNode 64917
+#define XMLConst_SNoDOMParseOptions 64918
+#define XMLConst_SMissingItemTag 64919
+#define XMLConst_SNodeReadOnly 64920
+#define XMLConst_SNoRefresh 64921
+#define XMLConst_SMissingFileName 64922
+#define XMLConst_SLine 64923
+#define bdeconst_SAutoSessionExclusive 64924
+#define bdeconst_SAutoSessionExists 64925
+#define bdeconst_SAutoSessionActive 64926
+#define bdeconst_SDuplicateDatabaseName 64927
+#define RzBorder_sRzColorInfoText 64928
+#define RzBorder_sRzColorInfoBk 64929
+#define RzBorder_sRzColorHotLight 64930
+#define RzBorder_sRzColorGradientActiveCaption 64931
+#define RzBorder_sRzColorGradientInactiveCaption 64932
+#define RzBorder_sRzColorMenuHighlight 64933
+#define RzBorder_sRzColorMenuBar 64934
+#define XMLConst_SDuplicateRegistration 64935
+#define XMLConst_SNoMatchingDOMVendor 64936
+#define XMLConst_SNoDOMNodeEx 64937
+#define XMLConst_SDOMNotSupported 64938
+#define XMLConst_SNodeExpected 64939
+#define XMLConst_SMSDOMNotInstalled 64940
+#define XMLConst_SErrorDownloadingURL 64941
+#define XMLConst_SUrlMonDllMissing 64942
+#define XMLConst_SNotActive 64943
+#define RzBorder_sRzColorMenuText 64944
+#define RzBorder_sRzColorWindowText 64945
+#define RzBorder_sRzColorCaptionText 64946
+#define RzBorder_sRzColorActiveBorder 64947
+#define RzBorder_sRzColorInactiveBorder 64948
+#define RzBorder_sRzColorAppWorkSpace 64949
+#define RzBorder_sRzColorHighlight 64950
+#define RzBorder_sRzColorHighlightText 64951
+#define RzBorder_sRzColorBtnFace 64952
+#define RzBorder_sRzColorBtnShadow 64953
+#define RzBorder_sRzColorGrayText 64954
+#define RzBorder_sRzColorBtnText 64955
+#define RzBorder_sRzColorInactiveCaptionText 64956
+#define RzBorder_sRzColorBtnHighlight 64957
+#define RzBorder_sRzColor3DDkShadow 64958
+#define RzBorder_sRzColor3DLight 64959
+#define RzBorder_sRzColorGray25 64960
+#define RzBorder_sRzColorRose 64961
+#define RzBorder_sRzColorTan 64962
+#define RzBorder_sRzColorLightYellow 64963
+#define RzBorder_sRzColorLightGreen 64964
+#define RzBorder_sRzColorLightTurquoise 64965
+#define RzBorder_sRzColorPaleBlue 64966
+#define RzBorder_sRzColorLavender 64967
+#define RzBorder_sRzColorWhite 64968
+#define RzBorder_sRzColorScrollBar 64969
+#define RzBorder_sRzColorBackground 64970
+#define RzBorder_sRzColorActiveCaption 64971
+#define RzBorder_sRzColorInactiveCaption 64972
+#define RzBorder_sRzColorMenu 64973
+#define RzBorder_sRzColorWindow 64974
+#define RzBorder_sRzColorWindowFrame 64975
+#define RzBorder_sRzColorGray50 64976
+#define RzBorder_sRzColorRed 64977
+#define RzBorder_sRzColorLightOrange 64978
+#define RzBorder_sRzColorLime 64979
+#define RzBorder_sRzColorSeaGreen 64980
+#define RzBorder_sRzColorAqua 64981
+#define RzBorder_sRzColorLightBlue 64982
+#define RzBorder_sRzColorViolet 64983
+#define RzBorder_sRzColorGray40 64984
+#define RzBorder_sRzColorPink 64985
+#define RzBorder_sRzColorGold 64986
+#define RzBorder_sRzColorYellow 64987
+#define RzBorder_sRzColorBrightGreen 64988
+#define RzBorder_sRzColorTurquoise 64989
+#define RzBorder_sRzColorSkyBlue 64990
+#define RzBorder_sRzColorPlum 64991
+#define unit_Errors_rstrFileAlreadyExistsInDB 64992
+#define RzBorder_sRzColorBlack 64993
+#define RzBorder_sRzColorBrown 64994
+#define RzBorder_sRzColorOliveGreen 64995
+#define RzBorder_sRzColorDarkGreen 64996
+#define RzBorder_sRzColorDarkTeal 64997
+#define RzBorder_sRzColorDarkBlue 64998
+#define RzBorder_sRzColorIndigo 64999
+#define RzBorder_sRzColorGray80 65000
+#define RzBorder_sRzColorDarkRed 65001
+#define RzBorder_sRzColorOrange 65002
+#define RzBorder_sRzColorDarkYellow 65003
+#define RzBorder_sRzColorGreen 65004
+#define RzBorder_sRzColorTeal 65005
+#define RzBorder_sRzColorBlue 65006
+#define RzBorder_sRzColorBlueGray 65007
+#define DBConsts_SBadFieldType 65008
+#define DBConsts_SProviderSQLNotSupported 65009
+#define DBConsts_SProviderExecuteNotSupported 65010
+#define DBConsts_SExprNoAggOnCalcs 65011
+#define DBConsts_SDataSetUnidirectional 65012
+#define DBConsts_SUnassignedVar 65013
+#define DBConsts_SRecordNotFound 65014
+#define DBConsts_SBcdOverflow 65015
+#define DBConsts_SInvalidBcdValue 65016
+#define DBConsts_SInvalidFormatType 65017
+#define DBConsts_SCouldNotParseTimeStamp 65018
+#define DBConsts_SInvalidSqlTimeStamp 65019
+#define unit_Errors_rstrErrorInvalidArgument 65020
+#define unit_Errors_rstrAllFieldsShouldBeFilled 65021
+#define unit_Errors_rstrCollectionAlreadyExists 65022
+#define unit_Errors_rstrFileDoesntExists 65023
+#define DBConsts_SExprBadNullTest 65024
+#define DBConsts_SExprRangeError 65025
+#define DBConsts_SExprIncorrect 65026
+#define DBConsts_SExprNothing 65027
+#define DBConsts_SExprTypeMis 65028
+#define DBConsts_SExprBadScope 65029
+#define DBConsts_SExprNoArith 65030
+#define DBConsts_SExprNotAgg 65031
+#define DBConsts_SExprBadConst 65032
+#define DBConsts_SExprNoAggFilter 65033
+#define DBConsts_SExprEmptyInList 65034
+#define DBConsts_SInvalidKeywordUse 65035
+#define DBConsts_STextFalse 65036
+#define DBConsts_STextTrue 65037
+#define DBConsts_SParameterNotFound 65038
+#define DBConsts_SInvalidVersion 65039
+#define DBConsts_SDataSourceChange 65040
+#define DBConsts_SDataSetOpen 65041
+#define DBConsts_SNotEditing 65042
+#define DBConsts_SDataSetClosed 65043
+#define DBConsts_SDataSetEmpty 65044
+#define DBConsts_SDataSetReadOnly 65045
+#define DBConsts_SNestedDataSetClass 65046
+#define DBConsts_SExprTermination 65047
+#define DBConsts_SExprNameError 65048
+#define DBConsts_SExprStringError 65049
+#define DBConsts_SExprInvalidChar 65050
+#define DBConsts_SExprNoLParen 65051
+#define DBConsts_SExprNoRParen 65052
+#define DBConsts_SExprNoRParenOrComma 65053
+#define DBConsts_SExprExpected 65054
+#define DBConsts_SExprBadField 65055
+#define DBConsts_SInvalidFloatValue 65056
+#define DBConsts_SFieldTypeMismatch 65057
+#define DBConsts_SFieldSizeMismatch 65058
+#define DBConsts_SInvalidVarByteArray 65059
+#define DBConsts_SFieldOutOfRange 65060
+#define DBConsts_SFieldRequired 65061
+#define DBConsts_SDataSetMissing 65062
+#define DBConsts_SInvalidCalcType 65063
+#define DBConsts_SFieldReadOnly 65064
+#define DBConsts_SNotIndexField 65065
+#define DBConsts_SDuplicateIndexName 65066
+#define DBConsts_SNoIndexForFields 65067
+#define DBConsts_SIndexNotFound 65068
+#define DBConsts_SDBDuplicateName 65069
+#define DBConsts_SCircularDataLink 65070
+#define DBConsts_SLookupInfoError 65071
+#define ABSDecConst2_sFMT_UU 65072
+#define ABSDecConst2_sFMT_XX 65073
+#define ABSDecConst2_sInvalidKeySize 65074
+#define ABSDecConst2_sNotInitialized 65075
+#define DBConsts_SInvalidFieldSize 65076
+#define DBConsts_SInvalidFieldKind 65077
+#define DBConsts_SUnknownFieldType 65078
+#define DBConsts_SFieldNameMissing 65079
+#define DBConsts_SDuplicateFieldName 65080
+#define DBConsts_SFieldNotFound 65081
+#define DBConsts_SFieldAccessError 65082
+#define DBConsts_SFieldValueError 65083
+#define DBConsts_SFieldRangeError 65084
+#define DBConsts_SBcdFieldRangeError 65085
+#define DBConsts_SInvalidIntegerValue 65086
+#define DBConsts_SInvalidBoolValue 65087
+#define VirtualTrees_SWrongMoveError 65088
+#define VirtualTrees_SWrongStreamFormat 65089
+#define VirtualTrees_SWrongStreamVersion 65090
+#define VirtualTrees_SStreamTooSmall 65091
+#define VirtualTrees_SCorruptStream1 65092
+#define VirtualTrees_SCorruptStream2 65093
+#define VirtualTrees_SClipboardFailed 65094
+#define VirtualTrees_SCannotSetUserData 65095
+#define ABSDecConst2_sProtectionCircular 65096
+#define ABSDecConst2_sStringFormatExists 65097
+#define ABSDecConst2_sInvalidStringFormat 65098
+#define ABSDecConst2_sInvalidFormatString 65099
+#define ABSDecConst2_sFMT_COPY 65100
+#define ABSDecConst2_sFMT_HEX 65101
+#define ABSDecConst2_sFMT_HEXL 65102
+#define ABSDecConst2_sFMT_MIME64 65103
+#define IdResourceStringsProtocols_RSSSLLoadingCertError 65104
+#define IdResourceStringsProtocols_RSSSLLoadingKeyError 65105
+#define IdResourceStringsProtocols_RSSSLGetMethodError 65106
+#define IdResourceStringsProtocols_RSSSLFDSetError 65107
+#define IdResourceStringsProtocols_RSSSLDataBindingError 65108
+#define IdResourceStringsProtocols_RSSSLEOFViolation 65109
+#define IdResourceStringsProtocols_RSOSSLModeNotSet 65110
+#define IdResourceStringsProtocols_RSOSSLCouldNotLoadSSLLibrary 65111
+#define IdResourceStringsProtocols_RSOSSLStatusString 65112
+#define IdResourceStringsProtocols_RSURINoProto 65113
+#define IdResourceStringsProtocols_RSURINoHost 65114
+#define ComConst_SOleError 65115
+#define ComConst_SNoMethod 65116
+#define ComConst_SVarNotObject 65117
+#define ComConst_STooManyParams 65118
+#define VirtualTrees_SEditLinkIsNil 65119
+#define IdResourceStringsCore_RSBufferMissingTerminator 65120
+#define IdResourceStringsCore_RSBufferInvalidStartPos 65121
+#define IdResourceStringsCore_RSReplyInvalidCode 65122
+#define IdResourceStringsCore_RSReplyCodeAlreadyExists 65123
+#define IdResourceStringsProtocols_RSIOHandlerPropInvalid 65124
+#define IdResourceStringsProtocols_RSHTTPChunkStarted 65125
+#define IdResourceStringsProtocols_RSHTTPNotAcceptable 65126
+#define IdResourceStringsProtocols_RSHTTPUnknownProtocol 65127
+#define IdResourceStringsProtocols_RSHTTPMethodRequiresVersion 65128
+#define IdResourceStringsProtocols_RSHTTPAuthAlreadyRegistered 65129
+#define IdResourceStringsProtocols_RSHTTPAuthInvalidHash 65130
+#define IdResourceStringsProtocols_RSSSLAcceptError 65131
+#define IdResourceStringsProtocols_RSSSLConnectError 65132
+#define IdResourceStringsProtocols_RSSSLSettingCipherError 65133
+#define IdResourceStringsProtocols_RSSSLCreatingContextError 65134
+#define IdResourceStringsProtocols_RSSSLLoadingRootCertError 65135
+#define IdResourceStringsCore_RSInterceptCircularLink 65136
+#define IdResourceStringsCore_RSNotEnoughDataInBuffer 65137
+#define IdResourceStringsCore_RSTooMuchDataInBuffer 65138
+#define IdResourceStringsCore_RSFileNotFound 65139
+#define IdResourceStringsCore_RSNotConnected 65140
+#define IdResourceStringsCore_RSObjectTypeNotSupported 65141
+#define IdResourceStringsCore_RSIdNoDataToRead 65142
+#define IdResourceStringsCore_RSReadTimeout 65143
+#define IdResourceStringsCore_RSReadLnWaitMaxAttemptsExceeded 65144
+#define IdResourceStringsCore_RSReadLnMaxLineLengthExceeded 65145
+#define IdResourceStringsCore_RSConnectTimeout 65146
+#define IdResourceStringsCore_RSAlreadyConnected 65147
+#define IdResourceStringsCore_RSMaximumNumberOfCaptureLineExceeded 65148
+#define IdResourceStringsCore_RSInterceptIsDifferent 65149
+#define IdResourceStringsCore_RSTransparentProxyCannotBind 65150
+#define IdResourceStringsCore_RSTransparentProxyCanNotSupportUDP 65151
+#define IdResourceStringsCore_RSSocksUDPNotSupported 65152
+#define IdResourceStringsCore_RSSocksRequestFailed 65153
+#define IdResourceStringsCore_RSSocksRequestServerFailed 65154
+#define IdResourceStringsCore_RSSocksRequestIdentFailed 65155
+#define IdResourceStringsCore_RSSocksUnknownError 65156
+#define IdResourceStringsCore_RSSocksServerRespondError 65157
+#define IdResourceStringsCore_RSSocksAuthMethodError 65158
+#define IdResourceStringsCore_RSSocksAuthError 65159
+#define IdResourceStringsCore_RSSocksServerGeneralError 65160
+#define IdResourceStringsCore_RSSocksServerPermissionError 65161
+#define IdResourceStringsCore_RSSocksServerNetUnreachableError 65162
+#define IdResourceStringsCore_RSSocksServerHostUnreachableError 65163
+#define IdResourceStringsCore_RSSocksServerConnectionRefusedError 65164
+#define IdResourceStringsCore_RSSocksServerTTLExpiredError 65165
+#define IdResourceStringsCore_RSSocksServerCommandError 65166
+#define IdResourceStringsCore_RSSocksServerAddressError 65167
+#define IdResourceStrings_RSStackClassUndefined 65168
+#define IdResourceStrings_RSStackAlreadyCreated 65169
+#define IdResourceStrings_RSAntiFreezeOnlyOne 65170
+#define IdResourceStrings_RSCannotSetIPVersionWhenConnected 65171
+#define IdResourceStrings_RSCannotBindRange 65172
+#define IdResourceStrings_RSConnectionClosedGracefully 65173
+#define IdResourceStrings_RSCouldNotBindSocket 65174
+#define IdResourceStrings_RSInvalidPortRange 65175
+#define IdResourceStrings_RSInvalidServiceName 65176
+#define IdResourceStrings_RSIPv6Unavailable 65177
+#define IdResourceStrings_RSInvalidIPv6Address 65178
+#define IdResourceStrings_RSIPVersionUnsupported 65179
+#define IdResourceStrings_RSNotAllBytesSent 65180
+#define IdResourceStrings_RSPackageSizeTooBig 65181
+#define IdResourceStrings_RSSetSizeExceeded 65182
+#define IdResourceStrings_RSNoEncodingSpecified 65183
+#define IdResourceStrings_RSStackENETRESET 65184
+#define IdResourceStrings_RSStackECONNABORTED 65185
+#define IdResourceStrings_RSStackECONNRESET 65186
+#define IdResourceStrings_RSStackENOBUFS 65187
+#define IdResourceStrings_RSStackEISCONN 65188
+#define IdResourceStrings_RSStackENOTCONN 65189
+#define IdResourceStrings_RSStackESHUTDOWN 65190
+#define IdResourceStrings_RSStackETOOMANYREFS 65191
+#define IdResourceStrings_RSStackETIMEDOUT 65192
+#define IdResourceStrings_RSStackECONNREFUSED 65193
+#define IdResourceStrings_RSStackELOOP 65194
+#define IdResourceStrings_RSStackENAMETOOLONG 65195
+#define IdResourceStrings_RSStackEHOSTDOWN 65196
+#define IdResourceStrings_RSStackEHOSTUNREACH 65197
+#define IdResourceStrings_RSStackENOTEMPTY 65198
+#define IdResourceStrings_RSStackHOST_NOT_FOUND 65199
+#define IdResourceStrings_RSStackEINPROGRESS 65200
+#define IdResourceStrings_RSStackEALREADY 65201
+#define IdResourceStrings_RSStackENOTSOCK 65202
+#define IdResourceStrings_RSStackEDESTADDRREQ 65203
+#define IdResourceStrings_RSStackEMSGSIZE 65204
+#define IdResourceStrings_RSStackEPROTOTYPE 65205
+#define IdResourceStrings_RSStackENOPROTOOPT 65206
+#define IdResourceStrings_RSStackEPROTONOSUPPORT 65207
+#define IdResourceStrings_RSStackESOCKTNOSUPPORT 65208
+#define IdResourceStrings_RSStackEOPNOTSUPP 65209
+#define IdResourceStrings_RSStackEPFNOSUPPORT 65210
+#define IdResourceStrings_RSStackEAFNOSUPPORT 65211
+#define IdResourceStrings_RSStackEADDRINUSE 65212
+#define IdResourceStrings_RSStackEADDRNOTAVAIL 65213
+#define IdResourceStrings_RSStackENETDOWN 65214
+#define IdResourceStrings_RSStackENETUNREACH 65215
+#define IdResourceStrings_RSWinsockCallError 65216
+#define IdResourceStrings_RSWinsockLoadError 65217
+#define IdResourceStrings_RSStatusResolving 65218
+#define IdResourceStrings_RSStatusConnecting 65219
+#define IdResourceStrings_RSStatusConnected 65220
+#define IdResourceStrings_RSStatusDisconnecting 65221
+#define IdResourceStrings_RSStatusDisconnected 65222
+#define IdResourceStrings_RSStatusText 65223
+#define IdResourceStrings_RSStackError 65224
+#define IdResourceStrings_RSStackEINTR 65225
+#define IdResourceStrings_RSStackEBADF 65226
+#define IdResourceStrings_RSStackEACCES 65227
+#define IdResourceStrings_RSStackEFAULT 65228
+#define IdResourceStrings_RSStackEINVAL 65229
+#define IdResourceStrings_RSStackEMFILE 65230
+#define IdResourceStrings_RSStackEWOULDBLOCK 65231
 #define ComStrs_sTabFailDelete 65232
 #define ComStrs_sTabFailRetrieve 65233
 #define ComStrs_sTabFailGetObject 65234
@@ -502,7 +502,7 @@
 #define ComStrs_sRichEditSaveFail 65244
 #define ComStrs_sPageIndexError 65245
 #define ComStrs_sInvalidComCtl32 65246
-#define ComConst_SOleError 65247
+#define IdResourceStrings_RSFailedTimeZoneInfo 65247
 #define Consts_SErrorSettingCount 65248
 #define Consts_SListBoxMustBeVirtual 65249
 #define Consts_SNoGetItemEventHandler 65250
@@ -793,69 +793,11 @@
 #define SysConst_SIntOverflow 65535
 STRINGTABLE
 BEGIN
-	frame_NCWCollectionType_LISTBASED,	"Создание коллекции на основе списков книг"
-	frame_NCWCollectionType_SELECTTYPE,	"Укажите тип поключаемой коллекции"
-	frame_NCWCollectionType_FROMDIFFERNTSOURCES,	"Создавайте такую коллекцию для хранения книг, полученных из различных источников."
-	frame_NCWCollectionType_FROMLIBRUSECARCH,	"Создавайте такую коллекцию если вы уже скачали архивы lib.rus.ec."
-	frame_NCWCollectionType_LIBRUSECDOWNLOAD,	"Книги будут скачиваться с сервера lib.rus.ec по мере необходимости."
-	frame_NCWCollectionType_SERVERDOWNLOAD,	"Книги будут скачиваться с сервера по мере необходимости."
-	frame_NCWOperation_CREATENEW,	"Создать новую коллекцию. Такой тип коллекций лучше всего подходит для хранения книг, полученных из различных источников."
-	frame_NCWOperation_ADDEXISTS,	"Подключить ранее созданную коллекцию."
-	frm_NCWizard_CAPTIONCANCEL,	"Отмена"
-	frm_NCWizard_CAPTIONCLOSE,	"Закрыть"
-	frm_NCWizard_CREATIONCOLLECTION,	"Создание коллекции"
-	frm_NCWizard_DATAIMPORT,	"Импорт данныx"
-	frm_NCWizard_DATAIMPORTING,	"Импортируем данные"
-	frm_NCWizard_REGISTRATION,	"Регистрируем коллекцию"
-	WinHelpViewer_hNoKeyword,	"No help keyword specified."
-	unit_libupdateThread_rstrUpdatingFromLocalArchive,	"Обновление из локального архива"
-	unit_libupdateThread_rstrListsUpdateIsAvailable,	"Доступно обновление списков до версии %d"
-	unit_libupdateThread_rstrNothingToUpdate,	"Нечего обновлять!"
-	unit_libupdateThread_rstrUpdateComplete,	"Обновление завершено."
-	unit_libupdateThread_rstrRemovingOldCollection,	"Удаление старой коллекции \"%s\"..."
-	unit_libupdateThread_rstrCreatingCollection,	"Создание новой коллекции  \"%s\"..."
-	frame_NCWSelectGenreFile_STANDARTGENRES,	"Использовать файл описания жанров, поставляемый с программой."
-	frame_NCWSelectGenreFile_USERGENRES,	"Использовать собственный файл описания жанров."
-	frame_NCWCollectionFileTypes_COLLECTIONTYPEFB2,	"Книги в формате fb2 (обычно художественная литература). Книги могут быть упакованы в архив по несколько штук (zip) или по одиночке (fb2.zip). "
-	frame_NCWCollectionFileTypes_COLLECTIONTYPEANY,	"Книги в любом формате. Вы будете сами заполнять информацию о книге при добавлении ее в коллекцию. Вы также можете указать файл с описанием жанров на следующей странице."
-	frame_NCWCollectionNameAndLocation_SHOWCOLLECTIONTYPE,	"Укажите название коллекции."
-	frame_NCWCollectionNameAndLocation_SHOWCOLLECTIONFILE,	"Укажите файл коллекции."
-	frame_NCWCollectionNameAndLocation_SHOWCOLLECTIONFOLDER,	"Укажите расположение папки с книгами."
-	frame_NCWCollectionNameAndLocation_SELECTFOLDER,	"Выберите папку с книгами"
-	frame_NCWCollectionType_EMPTYCOLLECTION,	"Пустая коллекция"
-	frame_NCWCollectionType_PRIVATECOLLECTION,	"Частная коллекция"
-	unit_MHL_strings_rstrLocalLibRusEcDefName,	"Локальная коллекция Либрусек"
-	unit_MHL_strings_rstrOnlineLibRusEcDefName,	"Онлайн коллекция Либрусек"
-	unit_MHL_strings_rstrOnlineGenesisDefName,	"Онлайн коллекция Genesis"
-	unit_MHL_strings_rstrLocalLibRusEcDefLocation,	"librusec_local"
-	unit_MHL_strings_rstrOnlineLibRusEcDefLocation,	"librusec_online"
-	unit_MHL_strings_rstrOnlineGenesisDefLocation,	"genesis_online"
-	unit_ImportXMLThread_rstrOpeningXMLFileMsg,	"Читаем файл. Пожалуйста, подожите..."
-	unit_ImportXMLThread_rstrImportingMsg,	"Импортируем..."
-	unit_ImportXMLThread_rstrCollectionTypeMismatchErrorMsg,	"Тип импортируемых данных не соответствует типу коллекции!"
-	unit_ImportXMLThread_rstrCollectionNameMismatchWarningMsg,	"Название импортируемой коллекции не совпадает."
-	unit_libupdateThread_rstrCheckingUpdate,	"Проверяем наличие обновлений ..."
-	unit_libupdateThread_rstrErrorCheckingUpdate,	"ОШИБКА. Не удалось проверить обновление."
-	unit_libupdateThread_rstrErrorDownloadUpdate,	"ОШИБКА. Не удалось скачать обновление."
-	unit_libupdateThread_rstrReady,	"Готово"
-	unit_libupdateThread_rstrDownloadingUpdates,	"Загрузка обновлений ..."
-	unit_libupdateThread_rstrYouHaveLatestListsVersion,	"У вас самая свежая версия списков."
-	unit_Helpers_rstrSelectReaderDlgTitle,	"Выбор программы для просмотра"
-	unit_Helpers_rstrSelectScriptDlgTitle,	"Выбор скрипта"
-	unit_Helpers_rstrSelectProgrammDlgFilter,	"Скрипты, программы (*.exe;*.bat;*.cmd;*.vbs;*.js)|*.exe;*.bat;*.cmd;*.vbs;*.js|Все типы|*.*"
-	unit_Helpers_rstrSelectProgrammDlgDefaultExt,	"exe"
-	unit_Helpers_rstrOpenImportFileDlgTitle,	"Открыть xml"
-	unit_Helpers_rstrSaveImportFileDlgTitle,	"Сохранить xml"
-	unit_Helpers_rstrImportFileDlgFilter,	"xml (*.xml)|*.xml|Все типы|*.*"
-	unit_Helpers_rstrImportFileDlgDefaultExt,	"xml"
-	unit_Helpers_rstrSaveLogDlgTitle,	"Сохранить лог работы"
-	unit_Helpers_rstrSaveLogDlgFilter,	"Файл протокола (*.log)|*.log|Все типы|*.*"
-	unit_Helpers_rstrSaveLogDlgDefaultExt,	"log"
-	unit_MHL_strings_main_unable_to_copy,	"Копирование книг из избранного невозможно."
-	unit_MHL_strings_main_connecttodb,	"Подключение БД..."
-	unit_MHL_strings_main_loading_collection,	"Загрузка коллекции..."
-	unit_MHL_strings_main_check_updates,	"Проверка обновлений..."
-	unit_MHL_strings_rstrCancelOperationWarningMsg,	"Вы действительно хотите прервать операцию?"
+	RzShellConsts_SColumnSize,	"Size"
+	RzShellConsts_SColumnType,	"Type"
+	RzShellConsts_SColumnModified,	"Modified"
+	RzShellConsts_SSystemFolder,	"System Folder"
+	RzShellConsts_SDeleteHint,	"Delete"
 	RzShellConsts_SBrowseForFolder,	"Browse for Folder"
 	RzShellConsts_SShKey_SelectAll,	"Ctrl+A"
 	RzShellConsts_SShKey_Delete,	"Del"
@@ -865,17 +807,16 @@ BEGIN
 	RzShellConsts_SShKey_Refresh,	"F5"
 	RzShellConsts_SShKey_Edit,	"F2"
 	RzShellConsts_SDialogFontName,	"MS Sans Serif"
-	unit_Helpers_rstrGenreListDlgTitle,	"Выбор списка жанров"
-	unit_Helpers_rstrGenreListDlgFilter,	"Список жанров MyHomeLib (*.glst)|*.glst|Все типы|*.*"
-	unit_Helpers_rstrGenreListDlgDefaultExt,	"glst"
-	unit_Helpers_rstrOpenCollectionDlgTitle,	"Открыть файл коллекции"
-	unit_Helpers_rstrSaveCollectionDlgTitle,	"Сохранить файл коллекции"
-	unit_Helpers_rstrCollectionDlgFilter,	"Коллекция MyHomeLib (*.hlc)|*.hlc|Все типы|*.*"
-	unit_Helpers_rstrCollectionDlgDefaultExt,	"hlc"
-	xdom_SNegativeSizeInvalid,	"Negative stream size invalid"
-	xdom_SCapacityLessSize,	"Capacity cannot be less than size"
-	xdom_STargetNil,	"Must have a target stream"
-	dm_user_rstrNamelessColection,	"безымянная коллекция"
+	WinHelpViewer_hNoKeyword,	"No help keyword specified."
+	unit_libupdateThread_rstrReady,	"Готово"
+	unit_libupdateThread_rstrDownloadingUpdates,	"Загрузка обновлений ..."
+	unit_libupdateThread_rstrYouHaveLatestListsVersion,	"У вас самая свежая версия списков."
+	unit_libupdateThread_rstrUpdatingFromLocalArchive,	"Обновление из локального архива"
+	unit_libupdateThread_rstrListsUpdateIsAvailable,	"Доступно обновление списков до версии %d"
+	unit_libupdateThread_rstrNothingToUpdate,	"Нечего обновлять!"
+	unit_libupdateThread_rstrUpdateComplete,	"Обновление завершено."
+	unit_libupdateThread_rstrRemovingOldCollection,	"Удаление старой коллекции \"%s\"..."
+	unit_libupdateThread_rstrCreatingCollection,	"Создание новой коллекции  \"%s\"..."
 	RzShellConsts_SCancelButton,	"Cancel"
 	RzShellConsts_SOKButton,	"OK"
 	RzShellConsts_SCreateFolder,	"Create Folder"
@@ -883,11 +824,123 @@ BEGIN
 	RzShellConsts_SNewFolder,	"New Folder"
 	RzShellConsts_SUnableToCreateFolder,	"Unable to create the folder '%2'\n\n%1"
 	RzShellConsts_SColumnName,	"Name"
-	RzShellConsts_SColumnSize,	"Size"
-	RzShellConsts_SColumnType,	"Type"
-	RzShellConsts_SColumnModified,	"Modified"
-	RzShellConsts_SSystemFolder,	"System Folder"
-	RzShellConsts_SDeleteHint,	"Delete"
+	frame_NCWCollectionType_SERVERDOWNLOAD,	"Книги будут скачиваться с сервера по мере необходимости."
+	frame_NCWOperation_CREATENEW,	"Создать новую коллекцию. Такой тип коллекций лучше всего подходит для хранения книг, полученных из различных источников."
+	frame_NCWOperation_ADDEXISTS,	"Подключить ранее созданную коллекцию."
+	unit_ImportXMLThread_rstrOpeningXMLFileMsg,	"Читаем файл. Пожалуйста, подожите..."
+	unit_ImportXMLThread_rstrImportingMsg,	"Импортируем..."
+	unit_ImportXMLThread_rstrCollectionTypeMismatchErrorMsg,	"Тип импортируемых данных не соответствует типу коллекции!"
+	unit_ImportXMLThread_rstrCollectionNameMismatchWarningMsg,	"Название импортируемой коллекции не совпадает."
+	frm_NCWizard_CAPTIONCANCEL,	"Отмена"
+	frm_NCWizard_CAPTIONCLOSE,	"Закрыть"
+	frm_NCWizard_CREATIONCOLLECTION,	"Создание коллекции"
+	frm_NCWizard_DATAIMPORT,	"Импорт данныx"
+	frm_NCWizard_DATAIMPORTING,	"Импортируем данные"
+	frm_NCWizard_REGISTRATION,	"Регистрируем коллекцию"
+	unit_libupdateThread_rstrCheckingUpdate,	"Проверяем наличие обновлений ..."
+	unit_libupdateThread_rstrErrorCheckingUpdate,	"ОШИБКА. Не удалось проверить обновление."
+	unit_libupdateThread_rstrErrorDownloadUpdate,	"ОШИБКА. Не удалось скачать обновление."
+	unit_MHL_strings_rstrOnlineLibRusEcDefName,	"Онлайн коллекция Либрусек"
+	unit_MHL_strings_rstrOnlineGenesisDefName,	"Онлайн коллекция Genesis"
+	unit_MHL_strings_rstrLocalLibRusEcDefLocation,	"librusec_local"
+	unit_MHL_strings_rstrOnlineLibRusEcDefLocation,	"librusec_online"
+	unit_MHL_strings_rstrOnlineGenesisDefLocation,	"genesis_online"
+	frame_NCWCollectionNameAndLocation_SHOWCOLLECTIONTYPE,	"Укажите название коллекции."
+	frame_NCWCollectionNameAndLocation_SHOWCOLLECTIONFILE,	"Укажите файл коллекции."
+	frame_NCWCollectionNameAndLocation_SHOWCOLLECTIONFOLDER,	"Укажите расположение папки с книгами."
+	frame_NCWCollectionNameAndLocation_SELECTFOLDER,	"Выберите папку с книгами"
+	frame_NCWCollectionType_EMPTYCOLLECTION,	"Пустая коллекция"
+	frame_NCWCollectionType_PRIVATECOLLECTION,	"Частная коллекция"
+	frame_NCWCollectionType_LISTBASED,	"Создание коллекции на основе списков книг"
+	frame_NCWCollectionType_SELECTTYPE,	"Укажите тип поключаемой коллекции"
+	frame_NCWCollectionType_FROMDIFFERNTSOURCES,	"Создавайте такую коллекцию для хранения книг, полученных из различных источников."
+	frame_NCWCollectionType_FROMLIBRUSECARCH,	"Создавайте такую коллекцию если вы уже скачали архивы lib.rus.ec."
+	frame_NCWCollectionType_LIBRUSECDOWNLOAD,	"Книги будут скачиваться с сервера lib.rus.ec по мере необходимости."
+	unit_Helpers_rstrSaveImportFileDlgTitle,	"Сохранить xml"
+	unit_Helpers_rstrImportFileDlgFilter,	"xml (*.xml)|*.xml|Все типы|*.*"
+	unit_Helpers_rstrImportFileDlgDefaultExt,	"xml"
+	unit_Helpers_rstrSaveLogDlgTitle,	"Сохранить лог работы"
+	unit_Helpers_rstrSaveLogDlgFilter,	"Файл протокола (*.log)|*.log|Все типы|*.*"
+	unit_Helpers_rstrSaveLogDlgDefaultExt,	"log"
+	frame_NCWSelectGenreFile_STANDARTGENRES,	"Использовать файл описания жанров, поставляемый с программой."
+	frame_NCWSelectGenreFile_USERGENRES,	"Использовать собственный файл описания жанров."
+	frame_NCWCollectionFileTypes_COLLECTIONTYPEFB2,	"Книги в формате fb2 (обычно художественная литература). Книги могут быть упакованы в архив по несколько штук (zip) или по одиночке (fb2.zip). "
+	frame_NCWCollectionFileTypes_COLLECTIONTYPEANY,	"Книги в любом формате. Вы будете сами заполнять информацию о книге при добавлении ее в коллекцию. Вы также можете указать файл с описанием жанров на следующей странице."
+	unit_MHL_strings_main_unable_to_copy,	"Копирование книг из избранного невозможно."
+	unit_MHL_strings_main_connecttodb,	"Подключение БД..."
+	unit_MHL_strings_main_loading_collection,	"Загрузка коллекции..."
+	unit_MHL_strings_main_check_updates,	"Проверка обновлений..."
+	unit_MHL_strings_rstrCancelOperationWarningMsg,	"Вы действительно хотите прервать операцию?"
+	unit_MHL_strings_rstrLocalLibRusEcDefName,	"Локальная коллекция Либрусек"
+	VDBConsts_SRefreshRecord,	"Refresh data"
+	VDBConsts_SDataSourceFixed,	"Operation not allowed in a DBCtrlGrid"
+	VDBConsts_SRemoteLogin,	"Remote Login"
+	dm_user_rstrNamelessColection,	"безымянная коллекция"
+	unit_Helpers_rstrGenreListDlgTitle,	"Выбор списка жанров"
+	unit_Helpers_rstrGenreListDlgFilter,	"Список жанров MyHomeLib (*.glst)|*.glst|Все типы|*.*"
+	unit_Helpers_rstrGenreListDlgDefaultExt,	"glst"
+	unit_Helpers_rstrOpenCollectionDlgTitle,	"Открыть файл коллекции"
+	unit_Helpers_rstrSaveCollectionDlgTitle,	"Сохранить файл коллекции"
+	unit_Helpers_rstrCollectionDlgFilter,	"Коллекция MyHomeLib (*.hlc)|*.hlc|Все типы|*.*"
+	unit_Helpers_rstrCollectionDlgDefaultExt,	"hlc"
+	unit_Helpers_rstrSelectReaderDlgTitle,	"Выбор программы для просмотра"
+	unit_Helpers_rstrSelectScriptDlgTitle,	"Выбор скрипта"
+	unit_Helpers_rstrSelectProgrammDlgFilter,	"Скрипты, программы (*.exe;*.bat;*.cmd;*.vbs;*.js)|*.exe;*.bat;*.cmd;*.vbs;*.js|Все типы|*.*"
+	unit_Helpers_rstrSelectProgrammDlgDefaultExt,	"exe"
+	unit_Helpers_rstrOpenImportFileDlgTitle,	"Открыть xml"
+	RzSelDirForm_sRzCreateDirError,	"Directory could not be created. Access Denied."
+	RzTabs_sRzIncorrectNumberOfPoints,	"Incorrect number of points in tab shape"
+	RzTabs_sRzTabRegionCapacityError,	"Capacity must be -1 (to cache all regions) or > 0"
+	RzTabs_sRzSavingDCError,	"Error saving device context"
+	RzTabs_sRzCreateRegionError,	"Error creating region"
+	RzTabs_sRzPageIndexOutOfRange,	"%d is an invalid PageIndex value. PageIndex must be between 0 and %d"
+	RzTabs_sRzInvalidVisibilityChange,	"You cannot change the Visible property of a page"
+	VDBConsts_SFirstRecord,	"First record"
+	VDBConsts_SPriorRecord,	"Prior record"
+	VDBConsts_SNextRecord,	"Next record"
+	VDBConsts_SLastRecord,	"Last record"
+	VDBConsts_SInsertRecord,	"Insert record"
+	VDBConsts_SDeleteRecord,	"Delete record"
+	VDBConsts_SEditRecord,	"Edit record"
+	VDBConsts_SPostEdit,	"Post edit"
+	VDBConsts_SCancelEdit,	"Cancel edit"
+	pnglang_EPNGInvalidFileHeaderText,	"The file being readed is not a valid \"Portable Network Graphics\" image because it contains an invalid header. This file may be corruped, try obtaining it again."
+	pnglang_EPNGIHDRNotFirstText,	"This \"Portable Network Graphics\" image is not supported or it might be invalid.\r\n(IHDR chunk is not the first)"
+	pnglang_EPNGSizeExceedsText,	"This \"Portable Network Graphics\" image is not supported because either it's width or height exceeds the maximum size, which is 65535 pixels length."
+	pnglang_EPNGUnknownPalEntryText,	"There is no such palette entry."
+	pnglang_EPNGUnknownCriticalChunkText,	"This \"Portable Network Graphics\" image contains an unknown critical part which could not be decoded."
+	pnglang_EPNGUnknownCompressionText,	"This \"Portable Network Graphics\" image is encoded with an unknown compression scheme which could not be decoded."
+	pnglang_EPNGUnknownInterlaceText,	"This \"Portable Network Graphics\" image uses an unknown interlace scheme which could not be decoded."
+	pnglang_EPNGCannotAssignChunkText,	"The chunks must be compatible to be assigned."
+	pnglang_EPNGUnexpectedEndText,	"This \"Portable Network Graphics\" image is invalid because the decoder found an unexpected end of the file."
+	pnglang_EPNGNoImageDataText,	"This \"Portable Network Graphics\" image contains no data."
+	pnglang_EPNGOutMemoryText,	"Some operation could not be performed because the system is out of resources. Close some windows and try again."
+	pnglang_EPNGHeaderNotPresentText,	"This operation is not valid because the current image contains no valid header."
+	pnglang_EInvalidNewSize,	"The new size provided for image resizing is invalid."
+	RzFilSys_sRzFileDoesNotExist,	"The %s file does not exist"
+	RzFilSys_sRzDirectoryDoesNotExist,	"The %s directory does not exist"
+	RzSelDirForm_sRzConfirmNewDirectory,	"Please confirm that you wish to create the \"%s\" directory."
+	bdeconst_SNoCachedUpdates,	"Not in cached update mode"
+	bdeconst_SNoFieldAccess,	"Cannot access field '%s' in a filter"
+	bdeconst_SUntitled,	"Untitled Application"
+	bdeconst_SLocalTransDirty,	"The transaction isolation level must be dirty read for local databases"
+	xdom_SOddSizeInvalid,	"Odd size not valid for WideString"
+	xdom_SNegativeSizeInvalid,	"Negative stream size invalid"
+	xdom_SCapacityLessSize,	"Capacity cannot be less than size"
+	xdom_STargetNil,	"Must have a target stream"
+	JConsts_sChangeJPGSize,	"Cannot change the size of a JPEG image"
+	JConsts_sJPEGError,	"JPEG error #%d"
+	JConsts_sJPEGImageFile,	"JPEG Image File"
+	pnglang_EPngInvalidCRCText,	"This \"Portable Network Graphics\" image is not valid because it contains invalid pieces of data (crc error)"
+	pnglang_EPNGInvalidIHDRText,	"The \"Portable Network Graphics\" image could not be loaded because one of its main piece of data (ihdr) might be corrupted"
+	pnglang_EPNGMissingMultipleIDATText,	"This \"Portable Network Graphics\" image is invalid because it has missing image parts."
+	pnglang_EPNGZLIBErrorText,	"Could not decompress the image because it contains invalid compressed data.\r\n Description: "
+	pnglang_EPNGInvalidPaletteText,	"The \"Portable Network Graphics\" image contains an invalid palette."
+	bdeconst_SDuplicateSessionName,	"Duplicate session name '%s'"
+	bdeconst_SInvalidSessionName,	"Invalid session name %s"
+	bdeconst_SDatabaseNameMissing,	"Database name missing"
+	bdeconst_SSessionNameMissing,	"Session name missing"
+	bdeconst_SDatabaseOpen,	"Cannot perform this operation on an open database"
 	bdeconst_SDatabaseClosed,	"Cannot perform this operation on a closed database"
 	bdeconst_SDatabaseHandleSet,	"Database handle owned by a different session"
 	bdeconst_SSessionActive,	"Cannot perform this operation on an active session"
@@ -899,49 +952,6 @@ BEGIN
 	bdeconst_SIDAPILangID,	"0009"
 	bdeconst_SBDEError,	"BDE error $%.4x"
 	bdeconst_SNoDataSetField,	"Missing DataSetField property"
-	bdeconst_SNoCachedUpdates,	"Not in cached update mode"
-	bdeconst_SNoFieldAccess,	"Cannot access field '%s' in a filter"
-	bdeconst_SUntitled,	"Untitled Application"
-	bdeconst_SLocalTransDirty,	"The transaction isolation level must be dirty read for local databases"
-	xdom_SOddSizeInvalid,	"Odd size not valid for WideString"
-	pnglang_EPNGNoImageDataText,	"This \"Portable Network Graphics\" image contains no data."
-	pnglang_EPNGOutMemoryText,	"Some operation could not be performed because the system is out of resources. Close some windows and try again."
-	pnglang_EPNGHeaderNotPresentText,	"This operation is not valid because the current image contains no valid header."
-	pnglang_EInvalidNewSize,	"The new size provided for image resizing is invalid."
-	JConsts_sChangeJPGSize,	"Cannot change the size of a JPEG image"
-	JConsts_sJPEGError,	"JPEG error #%d"
-	JConsts_sJPEGImageFile,	"JPEG Image File"
-	bdeconst_SAutoSessionExclusive,	"Cannot enable AutoSessionName property with more than one session on a form or data-module"
-	bdeconst_SAutoSessionExists,	"Cannot add a session to the form or data-module while session '%s' has AutoSessionName enabled"
-	bdeconst_SAutoSessionActive,	"Cannot modify SessionName while AutoSessionName is enabled"
-	bdeconst_SDuplicateDatabaseName,	"Duplicate database name '%s'"
-	bdeconst_SDuplicateSessionName,	"Duplicate session name '%s'"
-	bdeconst_SInvalidSessionName,	"Invalid session name %s"
-	bdeconst_SDatabaseNameMissing,	"Database name missing"
-	bdeconst_SSessionNameMissing,	"Session name missing"
-	bdeconst_SDatabaseOpen,	"Cannot perform this operation on an open database"
-	XMLConst_SMissingFileName,	"FileName cannot be blank"
-	XMLConst_SLine,	"Line"
-	pnglang_EPngInvalidCRCText,	"This \"Portable Network Graphics\" image is not valid because it contains invalid pieces of data (crc error)"
-	pnglang_EPNGInvalidIHDRText,	"The \"Portable Network Graphics\" image could not be loaded because one of its main piece of data (ihdr) might be corrupted"
-	pnglang_EPNGMissingMultipleIDATText,	"This \"Portable Network Graphics\" image is invalid because it has missing image parts."
-	pnglang_EPNGZLIBErrorText,	"Could not decompress the image because it contains invalid compressed data.\r\n Description: "
-	pnglang_EPNGInvalidPaletteText,	"The \"Portable Network Graphics\" image contains an invalid palette."
-	pnglang_EPNGInvalidFileHeaderText,	"The file being readed is not a valid \"Portable Network Graphics\" image because it contains an invalid header. This file may be corruped, try obtaining it again."
-	pnglang_EPNGIHDRNotFirstText,	"This \"Portable Network Graphics\" image is not supported or it might be invalid.\r\n(IHDR chunk is not the first)"
-	pnglang_EPNGSizeExceedsText,	"This \"Portable Network Graphics\" image is not supported because either it's width or height exceeds the maximum size, which is 65535 pixels length."
-	pnglang_EPNGUnknownPalEntryText,	"There is no such palette entry."
-	pnglang_EPNGUnknownCriticalChunkText,	"This \"Portable Network Graphics\" image contains an unknown critical part which could not be decoded."
-	pnglang_EPNGUnknownCompressionText,	"This \"Portable Network Graphics\" image is encoded with an unknown compression scheme which could not be decoded."
-	pnglang_EPNGUnknownInterlaceText,	"This \"Portable Network Graphics\" image uses an unknown interlace scheme which could not be decoded."
-	pnglang_EPNGCannotAssignChunkText,	"The chunks must be compatible to be assigned."
-	pnglang_EPNGUnexpectedEndText,	"This \"Portable Network Graphics\" image is invalid because the decoder found an unexpected end of the file."
-	XMLConst_SDOMNotSupported,	"Property or Method \"%s\" is not supported by DOM Vendor \"%s\""
-	XMLConst_SNodeExpected,	"Node cannot be null"
-	XMLConst_SMSDOMNotInstalled,	"Microsoft MSXML is not installed"
-	XMLConst_SErrorDownloadingURL,	"Error downloading URL: %s"
-	XMLConst_SUrlMonDllMissing,	"Unable to load %s"
-	XMLConst_SNotActive,	"No active document"
 	XMLConst_SNodeNotFound,	"Node \"%s\" not found"
 	XMLConst_SMissingNode,	"IDOMNode required"
 	XMLConst_SNoAttributes,	"Attributes are not supported on this node type"
@@ -952,166 +962,94 @@ BEGIN
 	XMLConst_SMissingItemTag,	"ItemTag property is not initialized"
 	XMLConst_SNodeReadOnly,	"Node is readonly"
 	XMLConst_SNoRefresh,	"Refresh is only supported if the FileName or XML properties are set"
-	IdResourceStringsProtocols_RSOSSLCouldNotLoadSSLLibrary,	"Could not load SSL library."
-	IdResourceStringsProtocols_RSOSSLStatusString,	"SSL status: \"%s\""
-	IdResourceStringsProtocols_RSURINoProto,	"Protocol field is empty"
-	IdResourceStringsProtocols_RSURINoHost,	"Host field is empty"
-	unit_Errors_rstrErrorInvalidArgument,	"Invalid argument"
-	unit_Errors_rstrAllFieldsShouldBeFilled,	"Все поля должны быть заполнены!"
-	unit_Errors_rstrCollectionAlreadyExists,	"Коллекция \"%s\" уже существует!"
-	unit_Errors_rstrFileDoesntExists,	"Файл \"%s\" не существует!"
-	unit_Errors_rstrFileAlreadyExistsInDB,	"Файл \"%s\" используется другой коллекцией!"
-	RzFilSys_sRzFileDoesNotExist,	"The %s file does not exist"
-	RzFilSys_sRzDirectoryDoesNotExist,	"The %s directory does not exist"
-	RzSelDirForm_sRzConfirmNewDirectory,	"Please confirm that you wish to create the \"%s\" directory."
-	RzSelDirForm_sRzCreateDirError,	"Directory could not be created. Access Denied."
+	XMLConst_SMissingFileName,	"FileName cannot be blank"
+	XMLConst_SLine,	"Line"
+	bdeconst_SAutoSessionExclusive,	"Cannot enable AutoSessionName property with more than one session on a form or data-module"
+	bdeconst_SAutoSessionExists,	"Cannot add a session to the form or data-module while session '%s' has AutoSessionName enabled"
+	bdeconst_SAutoSessionActive,	"Cannot modify SessionName while AutoSessionName is enabled"
+	bdeconst_SDuplicateDatabaseName,	"Duplicate database name '%s'"
+	RzBorder_sRzColorInfoText,	"Info Text"
+	RzBorder_sRzColorInfoBk,	"Info Background"
+	RzBorder_sRzColorHotLight,	"Hot Light"
+	RzBorder_sRzColorGradientActiveCaption,	"Gradient Active Caption"
+	RzBorder_sRzColorGradientInactiveCaption,	"Gradient Inactive Caption"
+	RzBorder_sRzColorMenuHighlight,	"Menu Highlight"
+	RzBorder_sRzColorMenuBar,	"Menu Bar"
 	XMLConst_SDuplicateRegistration,	"\"%s\" DOMImplementation already registered"
 	XMLConst_SNoMatchingDOMVendor,	"No matching DOM Vendor: \"%s\""
 	XMLConst_SNoDOMNodeEx,	"Selected DOM Vendor does not support this property or method"
-	IdResourceStringsProtocols_RSHTTPUnknownProtocol,	"Unknown Protocol"
-	IdResourceStringsProtocols_RSHTTPMethodRequiresVersion,	"Request method requires HTTP version 1.1"
-	IdResourceStringsProtocols_RSHTTPAuthAlreadyRegistered,	"This authentication method is already registered with class name %s."
-	IdResourceStringsProtocols_RSHTTPAuthInvalidHash,	"Unsupported hash algorithm. This implementation supports only MD5 encoding."
-	IdResourceStringsProtocols_RSSSLAcceptError,	"Error accepting connection with SSL."
-	IdResourceStringsProtocols_RSSSLConnectError,	"Error connecting with SSL."
-	IdResourceStringsProtocols_RSSSLSettingCipherError,	"SetCipher failed."
-	IdResourceStringsProtocols_RSSSLCreatingContextError,	"Error creating SSL context."
-	IdResourceStringsProtocols_RSSSLLoadingRootCertError,	"Could not load root certificate."
-	IdResourceStringsProtocols_RSSSLLoadingCertError,	"Could not load certificate."
-	IdResourceStringsProtocols_RSSSLLoadingKeyError,	"Could not load key, check password."
-	IdResourceStringsProtocols_RSSSLGetMethodError,	"Error geting SSL method."
-	IdResourceStringsProtocols_RSSSLFDSetError,	"Error setting File Descriptor for SSL"
-	IdResourceStringsProtocols_RSSSLDataBindingError,	"Error binding data to SSL socket."
-	IdResourceStringsProtocols_RSSSLEOFViolation,	"EOF was observed that violates the protocol"
-	IdResourceStringsProtocols_RSOSSLModeNotSet,	"Mode has not been set."
-	IdResourceStringsCore_RSReadTimeout,	"Read timed out."
-	IdResourceStringsCore_RSReadLnWaitMaxAttemptsExceeded,	"Max line read attempts exceeded."
-	IdResourceStringsCore_RSReadLnMaxLineLengthExceeded,	"Max line length exceeded."
-	IdResourceStringsCore_RSConnectTimeout,	"Connect timed out."
-	IdResourceStringsCore_RSAlreadyConnected,	"Already connected."
-	IdResourceStringsCore_RSMaximumNumberOfCaptureLineExceeded,	"Maximum number of line allowed exceeded"
-	IdResourceStringsCore_RSInterceptIsDifferent,	"The IOHandler already has a different Intercept assigned"
-	IdResourceStringsCore_RSTransparentProxyCannotBind,	"Transparent proxy cannot bind."
-	IdResourceStringsCore_RSTransparentProxyCanNotSupportUDP,	"UDP Not supported by this proxy."
-	IdResourceStringsCore_RSBufferMissingTerminator,	"Buffer terminator must be specified."
-	IdResourceStringsCore_RSBufferInvalidStartPos,	"Buffer start position is invalid."
-	IdResourceStringsCore_RSReplyInvalidCode,	"Reply Code is not valid: %s"
-	IdResourceStringsCore_RSReplyCodeAlreadyExists,	"Reply Code already exists: %s"
-	IdResourceStringsProtocols_RSIOHandlerPropInvalid,	"IOHandler value is not valid"
-	IdResourceStringsProtocols_RSHTTPChunkStarted,	"Chunk Started"
-	IdResourceStringsProtocols_RSHTTPNotAcceptable,	"Not Acceptable"
-	IdResourceStringsCore_RSSocksAuthError,	"Authentication error to socks server."
-	IdResourceStringsCore_RSSocksServerGeneralError,	"General SOCKS server failure."
-	IdResourceStringsCore_RSSocksServerPermissionError,	"Connection not allowed by ruleset."
-	IdResourceStringsCore_RSSocksServerNetUnreachableError,	"Network unreachable."
-	IdResourceStringsCore_RSSocksServerHostUnreachableError,	"Host unreachable."
-	IdResourceStringsCore_RSSocksServerConnectionRefusedError,	"Connection refused."
-	IdResourceStringsCore_RSSocksServerTTLExpiredError,	"TTL expired."
-	IdResourceStringsCore_RSSocksServerCommandError,	"Command not supported."
-	IdResourceStringsCore_RSSocksServerAddressError,	"Address type not supported."
-	IdResourceStringsCore_RSInterceptCircularLink,	"%d: Circular links are not allowed"
-	IdResourceStringsCore_RSNotEnoughDataInBuffer,	"Not enough data in buffer."
-	IdResourceStringsCore_RSTooMuchDataInBuffer,	"Too much data in buffer."
-	IdResourceStringsCore_RSFileNotFound,	"File \"%s\" not found"
-	IdResourceStringsCore_RSNotConnected,	"Not Connected"
-	IdResourceStringsCore_RSObjectTypeNotSupported,	"Object type not supported."
-	IdResourceStringsCore_RSIdNoDataToRead,	"No data to read."
-	IdResourceStrings_RSInvalidPortRange,	"Invalid Port Range (%d - %d)"
-	IdResourceStrings_RSInvalidServiceName,	"%s is not a valid service."
-	IdResourceStrings_RSIPv6Unavailable,	"IPv6 unavailable"
-	IdResourceStrings_RSInvalidIPv6Address,	"%s is not a valid IPv6 address"
-	IdResourceStrings_RSIPVersionUnsupported,	"The requested IPVersion / Address family is not supported."
-	IdResourceStrings_RSNotAllBytesSent,	"Not all bytes sent."
-	IdResourceStrings_RSPackageSizeTooBig,	"Package Size Too Big."
-	IdResourceStrings_RSSetSizeExceeded,	"Set Size Exceeded."
-	IdResourceStrings_RSNoEncodingSpecified,	"No encoding specified."
-	IdResourceStringsCore_RSSocksUDPNotSupported,	"UDP is not support in this SOCKS version."
-	IdResourceStringsCore_RSSocksRequestFailed,	"Request rejected or failed."
-	IdResourceStringsCore_RSSocksRequestServerFailed,	"Request rejected because SOCKS server cannot connect."
-	IdResourceStringsCore_RSSocksRequestIdentFailed,	"Request rejected because the client program and identd report different user-ids."
-	IdResourceStringsCore_RSSocksUnknownError,	"Unknown socks error."
-	IdResourceStringsCore_RSSocksServerRespondError,	"Socks server did not respond."
-	IdResourceStringsCore_RSSocksAuthMethodError,	"Invalid socks authentication method."
-	IdResourceStrings_RSStackETOOMANYREFS,	"Too many references, cannot splice."
-	IdResourceStrings_RSStackETIMEDOUT,	"Connection timed out."
-	IdResourceStrings_RSStackECONNREFUSED,	"Connection refused."
-	IdResourceStrings_RSStackELOOP,	"Too many levels of symbolic links."
-	IdResourceStrings_RSStackENAMETOOLONG,	"File name too long."
-	IdResourceStrings_RSStackEHOSTDOWN,	"Host is down."
-	IdResourceStrings_RSStackEHOSTUNREACH,	"No route to host."
-	IdResourceStrings_RSStackENOTEMPTY,	"Directory not empty"
-	IdResourceStrings_RSStackHOST_NOT_FOUND,	"Host not found."
-	IdResourceStrings_RSStackClassUndefined,	"Stack Class is undefined."
-	IdResourceStrings_RSStackAlreadyCreated,	"Stack already created."
-	IdResourceStrings_RSAntiFreezeOnlyOne,	"Only one TIdAntiFreeze can exist per application."
-	IdResourceStrings_RSCannotSetIPVersionWhenConnected,	"Cannot change IPVersion when connected"
-	IdResourceStrings_RSCannotBindRange,	"Can not bind in port range (%d - %d)"
-	IdResourceStrings_RSConnectionClosedGracefully,	"Connection Closed Gracefully."
-	IdResourceStrings_RSCouldNotBindSocket,	"Could not bind socket. Address and port are already in use."
-	IdResourceStrings_RSStackEPROTONOSUPPORT,	"Protocol not supported."
-	IdResourceStrings_RSStackESOCKTNOSUPPORT,	"Socket type not supported."
-	IdResourceStrings_RSStackEOPNOTSUPP,	"Operation not supported on socket."
-	IdResourceStrings_RSStackEPFNOSUPPORT,	"Protocol family not supported."
-	IdResourceStrings_RSStackEAFNOSUPPORT,	"Address family not supported by protocol family."
-	IdResourceStrings_RSStackEADDRINUSE,	"Address already in use."
-	IdResourceStrings_RSStackEADDRNOTAVAIL,	"Cannot assign requested address."
-	IdResourceStrings_RSStackENETDOWN,	"Network is down."
-	IdResourceStrings_RSStackENETUNREACH,	"Network is unreachable."
-	IdResourceStrings_RSStackENETRESET,	"Net dropped connection or reset."
-	IdResourceStrings_RSStackECONNABORTED,	"Software caused connection abort."
-	IdResourceStrings_RSStackECONNRESET,	"Connection reset by peer."
-	IdResourceStrings_RSStackENOBUFS,	"No buffer space available."
-	IdResourceStrings_RSStackEISCONN,	"Socket is already connected."
-	IdResourceStrings_RSStackENOTCONN,	"Socket is not connected."
-	IdResourceStrings_RSStackESHUTDOWN,	"Cannot send or receive after socket is closed."
-	IdResourceStrings_RSStatusText,	"%s"
-	IdResourceStrings_RSStackError,	"Socket Error # %d\r\n%s"
-	IdResourceStrings_RSStackEINTR,	"Interrupted system call."
-	IdResourceStrings_RSStackEBADF,	"Bad file number."
-	IdResourceStrings_RSStackEACCES,	"Access denied."
-	IdResourceStrings_RSStackEFAULT,	"Buffer fault."
-	IdResourceStrings_RSStackEINVAL,	"Invalid argument."
-	IdResourceStrings_RSStackEMFILE,	"Too many open files."
-	IdResourceStrings_RSStackEWOULDBLOCK,	"Operation would block."
-	IdResourceStrings_RSStackEINPROGRESS,	"Operation now in progress."
-	IdResourceStrings_RSStackEALREADY,	"Operation already in progress."
-	IdResourceStrings_RSStackENOTSOCK,	"Socket operation on non-socket."
-	IdResourceStrings_RSStackEDESTADDRREQ,	"Destination address required."
-	IdResourceStrings_RSStackEMSGSIZE,	"Message too long."
-	IdResourceStrings_RSStackEPROTOTYPE,	"Protocol wrong type for socket."
-	IdResourceStrings_RSStackENOPROTOOPT,	"Bad protocol option."
-	ABSDecConst2_sFMT_COPY,	"copy Input to Output"
-	ABSDecConst2_sFMT_HEX,	"Hexadecimal"
-	ABSDecConst2_sFMT_HEXL,	"Hexadecimal lowercase"
-	ABSDecConst2_sFMT_MIME64,	"MIME Base 64"
-	ABSDecConst2_sFMT_UU,	"UU Coding"
-	ABSDecConst2_sFMT_XX,	"XX Coding"
-	ABSDecConst2_sInvalidKeySize,	"Length from Encryptionkey is invalid.\r\nKeysize for %s must be to %d-%d bytes"
-	ABSDecConst2_sNotInitialized,	"%s is not initialized call Init() or InitKey() before."
-	IdResourceStrings_RSFailedTimeZoneInfo,	"Failed attempting to retrieve time zone information."
-	IdResourceStrings_RSWinsockCallError,	"Error on call to Winsock2 library function %s"
-	IdResourceStrings_RSWinsockLoadError,	"Error on loading Winsock2 library (%s)"
-	IdResourceStrings_RSStatusResolving,	"Resolving hostname %s."
-	IdResourceStrings_RSStatusConnecting,	"Connecting to %s."
-	IdResourceStrings_RSStatusConnected,	"Connected."
-	IdResourceStrings_RSStatusDisconnecting,	"Disconnecting."
-	IdResourceStrings_RSStatusDisconnected,	"Disconnected."
-	VDBConsts_SEditRecord,	"Edit record"
-	VDBConsts_SPostEdit,	"Post edit"
-	VDBConsts_SCancelEdit,	"Cancel edit"
-	VDBConsts_SRefreshRecord,	"Refresh data"
-	VDBConsts_SDataSourceFixed,	"Operation not allowed in a DBCtrlGrid"
-	VDBConsts_SRemoteLogin,	"Remote Login"
-	RzTabs_sRzIncorrectNumberOfPoints,	"Incorrect number of points in tab shape"
-	RzTabs_sRzTabRegionCapacityError,	"Capacity must be -1 (to cache all regions) or > 0"
-	RzTabs_sRzSavingDCError,	"Error saving device context"
-	RzTabs_sRzCreateRegionError,	"Error creating region"
-	RzTabs_sRzPageIndexOutOfRange,	"%d is an invalid PageIndex value. PageIndex must be between 0 and %d"
-	RzTabs_sRzInvalidVisibilityChange,	"You cannot change the Visible property of a page"
-	ABSDecConst2_sProtectionCircular,	"Circular Protection detected, Protection Object is invalid."
-	ABSDecConst2_sStringFormatExists,	"String Format \"%d\" not exists."
-	ABSDecConst2_sInvalidStringFormat,	"Input is not an valid %s Format."
-	ABSDecConst2_sInvalidFormatString,	"Input can not be convert to %s Format."
+	XMLConst_SDOMNotSupported,	"Property or Method \"%s\" is not supported by DOM Vendor \"%s\""
+	XMLConst_SNodeExpected,	"Node cannot be null"
+	XMLConst_SMSDOMNotInstalled,	"Microsoft MSXML is not installed"
+	XMLConst_SErrorDownloadingURL,	"Error downloading URL: %s"
+	XMLConst_SUrlMonDllMissing,	"Unable to load %s"
+	XMLConst_SNotActive,	"No active document"
+	RzBorder_sRzColorMenuText,	"Menu Text"
+	RzBorder_sRzColorWindowText,	"Window Text"
+	RzBorder_sRzColorCaptionText,	"Caption Text"
+	RzBorder_sRzColorActiveBorder,	"Active Border"
+	RzBorder_sRzColorInactiveBorder,	"Inactive Border"
+	RzBorder_sRzColorAppWorkSpace,	"App WorkSpace"
+	RzBorder_sRzColorHighlight,	"Highlight"
+	RzBorder_sRzColorHighlightText,	"Highlight Text"
+	RzBorder_sRzColorBtnFace,	"Button Face"
+	RzBorder_sRzColorBtnShadow,	"Button Shadow"
+	RzBorder_sRzColorGrayText,	"Gray Text"
+	RzBorder_sRzColorBtnText,	"Button Text"
+	RzBorder_sRzColorInactiveCaptionText,	"Inactive Caption Text"
+	RzBorder_sRzColorBtnHighlight,	"Button Highlight"
+	RzBorder_sRzColor3DDkShadow,	"3D Dark Shadow"
+	RzBorder_sRzColor3DLight,	"3D Light"
+	RzBorder_sRzColorGray25,	"Gray 25%"
+	RzBorder_sRzColorRose,	"Rose"
+	RzBorder_sRzColorTan,	"Tan"
+	RzBorder_sRzColorLightYellow,	"Light Yellow"
+	RzBorder_sRzColorLightGreen,	"Light Green"
+	RzBorder_sRzColorLightTurquoise,	"Light Turquoise"
+	RzBorder_sRzColorPaleBlue,	"Pale Blue"
+	RzBorder_sRzColorLavender,	"Lavender"
+	RzBorder_sRzColorWhite,	"White"
+	RzBorder_sRzColorScrollBar,	"Scroll Bar"
+	RzBorder_sRzColorBackground,	"Background"
+	RzBorder_sRzColorActiveCaption,	"Active Caption"
+	RzBorder_sRzColorInactiveCaption,	"Inactive Caption"
+	RzBorder_sRzColorMenu,	"Menu"
+	RzBorder_sRzColorWindow,	"Window"
+	RzBorder_sRzColorWindowFrame,	"Window Frame"
+	RzBorder_sRzColorGray50,	"Gray 50%"
+	RzBorder_sRzColorRed,	"Red"
+	RzBorder_sRzColorLightOrange,	"Light Orange"
+	RzBorder_sRzColorLime,	"Lime"
+	RzBorder_sRzColorSeaGreen,	"Sea Green"
+	RzBorder_sRzColorAqua,	"Aqua"
+	RzBorder_sRzColorLightBlue,	"Light Blue"
+	RzBorder_sRzColorViolet,	"Violet"
+	RzBorder_sRzColorGray40,	"Gray 40%"
+	RzBorder_sRzColorPink,	"Pink"
+	RzBorder_sRzColorGold,	"Gold"
+	RzBorder_sRzColorYellow,	"Yellow"
+	RzBorder_sRzColorBrightGreen,	"Bright Green"
+	RzBorder_sRzColorTurquoise,	"Turquoise"
+	RzBorder_sRzColorSkyBlue,	"Sky Blue"
+	RzBorder_sRzColorPlum,	"Plum"
+	unit_Errors_rstrFileAlreadyExistsInDB,	"Файл \"%s\" используется другой коллекцией!"
+	RzBorder_sRzColorBlack,	"Black"
+	RzBorder_sRzColorBrown,	"Brown"
+	RzBorder_sRzColorOliveGreen,	"Olive Green"
+	RzBorder_sRzColorDarkGreen,	"Dark Green"
+	RzBorder_sRzColorDarkTeal,	"Dark Teal"
+	RzBorder_sRzColorDarkBlue,	"Dark Blue"
+	RzBorder_sRzColorIndigo,	"Indigo"
+	RzBorder_sRzColorGray80,	"Gray 80%"
+	RzBorder_sRzColorDarkRed,	"Dark Red"
+	RzBorder_sRzColorOrange,	"Orange"
+	RzBorder_sRzColorDarkYellow,	"Dark Yellow"
+	RzBorder_sRzColorGreen,	"Green"
+	RzBorder_sRzColorTeal,	"Teal"
+	RzBorder_sRzColorBlue,	"Blue"
+	RzBorder_sRzColorBlueGray,	"Blue Gray"
+	DBConsts_SBadFieldType,	"Field '%s' is of an unsupported type"
+	DBConsts_SProviderSQLNotSupported,	"SQL not supported"
 	DBConsts_SProviderExecuteNotSupported,	"Execute not supported"
 	DBConsts_SExprNoAggOnCalcs,	"Field '%s' is not the correct type of calculated field to be used in an aggregate, use an internalcalc"
 	DBConsts_SDataSetUnidirectional,	"Operation not allowed on a unidirectional dataset"
@@ -1122,12 +1060,12 @@ BEGIN
 	DBConsts_SInvalidFormatType,	"Invalid format type for BCD"
 	DBConsts_SCouldNotParseTimeStamp,	"Could not parse SQL TimeStamp string"
 	DBConsts_SInvalidSqlTimeStamp,	"Invalid SQL date/time values"
-	VDBConsts_SFirstRecord,	"First record"
-	VDBConsts_SPriorRecord,	"Prior record"
-	VDBConsts_SNextRecord,	"Next record"
-	VDBConsts_SLastRecord,	"Last record"
-	VDBConsts_SInsertRecord,	"Insert record"
-	VDBConsts_SDeleteRecord,	"Delete record"
+	unit_Errors_rstrErrorInvalidArgument,	"Invalid argument"
+	unit_Errors_rstrAllFieldsShouldBeFilled,	"Все поля должны быть заполнены!"
+	unit_Errors_rstrCollectionAlreadyExists,	"Коллекция \"%s\" уже существует!"
+	unit_Errors_rstrFileDoesntExists,	"Файл \"%s\" не существует!"
+	DBConsts_SExprBadNullTest,	"NULL only allowed with '=' and '<>'"
+	DBConsts_SExprRangeError,	"Constant out of range"
 	DBConsts_SExprIncorrect,	"Incorrectly formed filter expression"
 	DBConsts_SExprNothing,	"nothing"
 	DBConsts_SExprTypeMis,	"Type mismatch in expression"
@@ -1142,8 +1080,8 @@ BEGIN
 	DBConsts_STextTrue,	"True"
 	DBConsts_SParameterNotFound,	"Parameter '%s' not found"
 	DBConsts_SInvalidVersion,	"Unable to load bind parameters"
-	DBConsts_SBadFieldType,	"Field '%s' is of an unsupported type"
-	DBConsts_SProviderSQLNotSupported,	"SQL not supported"
+	DBConsts_SDataSourceChange,	"DataSource cannot be changed"
+	DBConsts_SDataSetOpen,	"Cannot perform this operation on an open dataset"
 	DBConsts_SNotEditing,	"Dataset not in edit or insert mode"
 	DBConsts_SDataSetClosed,	"Cannot perform this operation on a closed dataset"
 	DBConsts_SDataSetEmpty,	"Cannot perform this operation on an empty dataset"
@@ -1158,8 +1096,8 @@ BEGIN
 	DBConsts_SExprNoRParenOrComma,	"')' or ',' expected but %s found"
 	DBConsts_SExprExpected,	"Expression expected but %s found"
 	DBConsts_SExprBadField,	"Field '%s' cannot be used in a filter expression"
-	DBConsts_SExprBadNullTest,	"NULL only allowed with '=' and '<>'"
-	DBConsts_SExprRangeError,	"Constant out of range"
+	DBConsts_SInvalidFloatValue,	"'%s' is not a valid floating point value for field '%s'"
+	DBConsts_SFieldTypeMismatch,	"Type mismatch for field '%s', expecting: %s actual: %s"
 	DBConsts_SFieldSizeMismatch,	"Size mismatch for field '%s', expecting: %d actual: %d"
 	DBConsts_SInvalidVarByteArray,	"Invalid variant type or size for field '%s'"
 	DBConsts_SFieldOutOfRange,	"Value of field '%s' is out of range"
@@ -1174,10 +1112,10 @@ BEGIN
 	DBConsts_SDBDuplicateName,	"Duplicate name '%s' in %s"
 	DBConsts_SCircularDataLink,	"Circular datalinks are not allowed"
 	DBConsts_SLookupInfoError,	"Lookup information for field '%s' is incomplete"
-	DBConsts_SDataSourceChange,	"DataSource cannot be changed"
-	DBConsts_SDataSetOpen,	"Cannot perform this operation on an open dataset"
-	RzBorder_sRzColorMenuHighlight,	"Menu Highlight"
-	RzBorder_sRzColorMenuBar,	"Menu Bar"
+	ABSDecConst2_sFMT_UU,	"UU Coding"
+	ABSDecConst2_sFMT_XX,	"XX Coding"
+	ABSDecConst2_sInvalidKeySize,	"Length from Encryptionkey is invalid.\r\nKeysize for %s must be to %d-%d bytes"
+	ABSDecConst2_sNotInitialized,	"%s is not initialized call Init() or InitKey() before."
 	DBConsts_SInvalidFieldSize,	"Invalid field size"
 	DBConsts_SInvalidFieldKind,	"Invalid FieldKind"
 	DBConsts_SUnknownFieldType,	"Field '%s' is of an unknown type"
@@ -1190,76 +1128,6 @@ BEGIN
 	DBConsts_SBcdFieldRangeError,	"%s is not a valid value for field '%s'. The allowed range is %s to %s"
 	DBConsts_SInvalidIntegerValue,	"'%s' is not a valid integer value for field '%s'"
 	DBConsts_SInvalidBoolValue,	"'%s' is not a valid boolean value for field '%s'"
-	DBConsts_SInvalidFloatValue,	"'%s' is not a valid floating point value for field '%s'"
-	DBConsts_SFieldTypeMismatch,	"Type mismatch for field '%s', expecting: %s actual: %s"
-	RzBorder_sRzColorAppWorkSpace,	"App WorkSpace"
-	RzBorder_sRzColorHighlight,	"Highlight"
-	RzBorder_sRzColorHighlightText,	"Highlight Text"
-	RzBorder_sRzColorBtnFace,	"Button Face"
-	RzBorder_sRzColorBtnShadow,	"Button Shadow"
-	RzBorder_sRzColorGrayText,	"Gray Text"
-	RzBorder_sRzColorBtnText,	"Button Text"
-	RzBorder_sRzColorInactiveCaptionText,	"Inactive Caption Text"
-	RzBorder_sRzColorBtnHighlight,	"Button Highlight"
-	RzBorder_sRzColor3DDkShadow,	"3D Dark Shadow"
-	RzBorder_sRzColor3DLight,	"3D Light"
-	RzBorder_sRzColorInfoText,	"Info Text"
-	RzBorder_sRzColorInfoBk,	"Info Background"
-	RzBorder_sRzColorHotLight,	"Hot Light"
-	RzBorder_sRzColorGradientActiveCaption,	"Gradient Active Caption"
-	RzBorder_sRzColorGradientInactiveCaption,	"Gradient Inactive Caption"
-	RzBorder_sRzColorLightTurquoise,	"Light Turquoise"
-	RzBorder_sRzColorPaleBlue,	"Pale Blue"
-	RzBorder_sRzColorLavender,	"Lavender"
-	RzBorder_sRzColorWhite,	"White"
-	RzBorder_sRzColorScrollBar,	"Scroll Bar"
-	RzBorder_sRzColorBackground,	"Background"
-	RzBorder_sRzColorActiveCaption,	"Active Caption"
-	RzBorder_sRzColorInactiveCaption,	"Inactive Caption"
-	RzBorder_sRzColorMenu,	"Menu"
-	RzBorder_sRzColorWindow,	"Window"
-	RzBorder_sRzColorWindowFrame,	"Window Frame"
-	RzBorder_sRzColorMenuText,	"Menu Text"
-	RzBorder_sRzColorWindowText,	"Window Text"
-	RzBorder_sRzColorCaptionText,	"Caption Text"
-	RzBorder_sRzColorActiveBorder,	"Active Border"
-	RzBorder_sRzColorInactiveBorder,	"Inactive Border"
-	RzBorder_sRzColorAqua,	"Aqua"
-	RzBorder_sRzColorLightBlue,	"Light Blue"
-	RzBorder_sRzColorViolet,	"Violet"
-	RzBorder_sRzColorGray40,	"Gray 40%"
-	RzBorder_sRzColorPink,	"Pink"
-	RzBorder_sRzColorGold,	"Gold"
-	RzBorder_sRzColorYellow,	"Yellow"
-	RzBorder_sRzColorBrightGreen,	"Bright Green"
-	RzBorder_sRzColorTurquoise,	"Turquoise"
-	RzBorder_sRzColorSkyBlue,	"Sky Blue"
-	RzBorder_sRzColorPlum,	"Plum"
-	RzBorder_sRzColorGray25,	"Gray 25%"
-	RzBorder_sRzColorRose,	"Rose"
-	RzBorder_sRzColorTan,	"Tan"
-	RzBorder_sRzColorLightYellow,	"Light Yellow"
-	RzBorder_sRzColorLightGreen,	"Light Green"
-	RzBorder_sRzColorDarkTeal,	"Dark Teal"
-	RzBorder_sRzColorDarkBlue,	"Dark Blue"
-	RzBorder_sRzColorIndigo,	"Indigo"
-	RzBorder_sRzColorGray80,	"Gray 80%"
-	RzBorder_sRzColorDarkRed,	"Dark Red"
-	RzBorder_sRzColorOrange,	"Orange"
-	RzBorder_sRzColorDarkYellow,	"Dark Yellow"
-	RzBorder_sRzColorGreen,	"Green"
-	RzBorder_sRzColorTeal,	"Teal"
-	RzBorder_sRzColorBlue,	"Blue"
-	RzBorder_sRzColorBlueGray,	"Blue Gray"
-	RzBorder_sRzColorGray50,	"Gray 50%"
-	RzBorder_sRzColorRed,	"Red"
-	RzBorder_sRzColorLightOrange,	"Light Orange"
-	RzBorder_sRzColorLime,	"Lime"
-	RzBorder_sRzColorSeaGreen,	"Sea Green"
-	ComConst_SNoMethod,	"Method '%s' not supported by automation object"
-	ComConst_SVarNotObject,	"Variant does not reference an automation object"
-	ComConst_STooManyParams,	"Dispatch methods do not support more than 64 parameters"
-	VirtualTrees_SEditLinkIsNil,	"Edit link must not be nil."
 	VirtualTrees_SWrongMoveError,	"Target node cannot be a child node of the node to be moved."
 	VirtualTrees_SWrongStreamFormat,	"Unable to load tree structure, the format is wrong."
 	VirtualTrees_SWrongStreamVersion,	"Unable to load tree structure, the version is unknown."
@@ -1268,10 +1136,142 @@ BEGIN
 	VirtualTrees_SCorruptStream2,	"Stream data corrupt. Unexpected data after node's end position."
 	VirtualTrees_SClipboardFailed,	"Clipboard operation failed."
 	VirtualTrees_SCannotSetUserData,	"Cannot set initial user data because there is not enough user data space allocated."
-	RzBorder_sRzColorBlack,	"Black"
-	RzBorder_sRzColorBrown,	"Brown"
-	RzBorder_sRzColorOliveGreen,	"Olive Green"
-	RzBorder_sRzColorDarkGreen,	"Dark Green"
+	ABSDecConst2_sProtectionCircular,	"Circular Protection detected, Protection Object is invalid."
+	ABSDecConst2_sStringFormatExists,	"String Format \"%d\" not exists."
+	ABSDecConst2_sInvalidStringFormat,	"Input is not an valid %s Format."
+	ABSDecConst2_sInvalidFormatString,	"Input can not be convert to %s Format."
+	ABSDecConst2_sFMT_COPY,	"copy Input to Output"
+	ABSDecConst2_sFMT_HEX,	"Hexadecimal"
+	ABSDecConst2_sFMT_HEXL,	"Hexadecimal lowercase"
+	ABSDecConst2_sFMT_MIME64,	"MIME Base 64"
+	IdResourceStringsProtocols_RSSSLLoadingCertError,	"Could not load certificate."
+	IdResourceStringsProtocols_RSSSLLoadingKeyError,	"Could not load key, check password."
+	IdResourceStringsProtocols_RSSSLGetMethodError,	"Error geting SSL method."
+	IdResourceStringsProtocols_RSSSLFDSetError,	"Error setting File Descriptor for SSL"
+	IdResourceStringsProtocols_RSSSLDataBindingError,	"Error binding data to SSL socket."
+	IdResourceStringsProtocols_RSSSLEOFViolation,	"EOF was observed that violates the protocol"
+	IdResourceStringsProtocols_RSOSSLModeNotSet,	"Mode has not been set."
+	IdResourceStringsProtocols_RSOSSLCouldNotLoadSSLLibrary,	"Could not load SSL library."
+	IdResourceStringsProtocols_RSOSSLStatusString,	"SSL status: \"%s\""
+	IdResourceStringsProtocols_RSURINoProto,	"Protocol field is empty"
+	IdResourceStringsProtocols_RSURINoHost,	"Host field is empty"
+	ComConst_SOleError,	"OLE error %.8x"
+	ComConst_SNoMethod,	"Method '%s' not supported by automation object"
+	ComConst_SVarNotObject,	"Variant does not reference an automation object"
+	ComConst_STooManyParams,	"Dispatch methods do not support more than 64 parameters"
+	VirtualTrees_SEditLinkIsNil,	"Edit link must not be nil."
+	IdResourceStringsCore_RSBufferMissingTerminator,	"Buffer terminator must be specified."
+	IdResourceStringsCore_RSBufferInvalidStartPos,	"Buffer start position is invalid."
+	IdResourceStringsCore_RSReplyInvalidCode,	"Reply Code is not valid: %s"
+	IdResourceStringsCore_RSReplyCodeAlreadyExists,	"Reply Code already exists: %s"
+	IdResourceStringsProtocols_RSIOHandlerPropInvalid,	"IOHandler value is not valid"
+	IdResourceStringsProtocols_RSHTTPChunkStarted,	"Chunk Started"
+	IdResourceStringsProtocols_RSHTTPNotAcceptable,	"Not Acceptable"
+	IdResourceStringsProtocols_RSHTTPUnknownProtocol,	"Unknown Protocol"
+	IdResourceStringsProtocols_RSHTTPMethodRequiresVersion,	"Request method requires HTTP version 1.1"
+	IdResourceStringsProtocols_RSHTTPAuthAlreadyRegistered,	"This authentication method is already registered with class name %s."
+	IdResourceStringsProtocols_RSHTTPAuthInvalidHash,	"Unsupported hash algorithm. This implementation supports only MD5 encoding."
+	IdResourceStringsProtocols_RSSSLAcceptError,	"Error accepting connection with SSL."
+	IdResourceStringsProtocols_RSSSLConnectError,	"Error connecting with SSL."
+	IdResourceStringsProtocols_RSSSLSettingCipherError,	"SetCipher failed."
+	IdResourceStringsProtocols_RSSSLCreatingContextError,	"Error creating SSL context."
+	IdResourceStringsProtocols_RSSSLLoadingRootCertError,	"Could not load root certificate."
+	IdResourceStringsCore_RSInterceptCircularLink,	"%d: Circular links are not allowed"
+	IdResourceStringsCore_RSNotEnoughDataInBuffer,	"Not enough data in buffer."
+	IdResourceStringsCore_RSTooMuchDataInBuffer,	"Too much data in buffer."
+	IdResourceStringsCore_RSFileNotFound,	"File \"%s\" not found"
+	IdResourceStringsCore_RSNotConnected,	"Not Connected"
+	IdResourceStringsCore_RSObjectTypeNotSupported,	"Object type not supported."
+	IdResourceStringsCore_RSIdNoDataToRead,	"No data to read."
+	IdResourceStringsCore_RSReadTimeout,	"Read timed out."
+	IdResourceStringsCore_RSReadLnWaitMaxAttemptsExceeded,	"Max line read attempts exceeded."
+	IdResourceStringsCore_RSReadLnMaxLineLengthExceeded,	"Max line length exceeded."
+	IdResourceStringsCore_RSConnectTimeout,	"Connect timed out."
+	IdResourceStringsCore_RSAlreadyConnected,	"Already connected."
+	IdResourceStringsCore_RSMaximumNumberOfCaptureLineExceeded,	"Maximum number of line allowed exceeded"
+	IdResourceStringsCore_RSInterceptIsDifferent,	"The IOHandler already has a different Intercept assigned"
+	IdResourceStringsCore_RSTransparentProxyCannotBind,	"Transparent proxy cannot bind."
+	IdResourceStringsCore_RSTransparentProxyCanNotSupportUDP,	"UDP Not supported by this proxy."
+	IdResourceStringsCore_RSSocksUDPNotSupported,	"UDP is not support in this SOCKS version."
+	IdResourceStringsCore_RSSocksRequestFailed,	"Request rejected or failed."
+	IdResourceStringsCore_RSSocksRequestServerFailed,	"Request rejected because SOCKS server cannot connect."
+	IdResourceStringsCore_RSSocksRequestIdentFailed,	"Request rejected because the client program and identd report different user-ids."
+	IdResourceStringsCore_RSSocksUnknownError,	"Unknown socks error."
+	IdResourceStringsCore_RSSocksServerRespondError,	"Socks server did not respond."
+	IdResourceStringsCore_RSSocksAuthMethodError,	"Invalid socks authentication method."
+	IdResourceStringsCore_RSSocksAuthError,	"Authentication error to socks server."
+	IdResourceStringsCore_RSSocksServerGeneralError,	"General SOCKS server failure."
+	IdResourceStringsCore_RSSocksServerPermissionError,	"Connection not allowed by ruleset."
+	IdResourceStringsCore_RSSocksServerNetUnreachableError,	"Network unreachable."
+	IdResourceStringsCore_RSSocksServerHostUnreachableError,	"Host unreachable."
+	IdResourceStringsCore_RSSocksServerConnectionRefusedError,	"Connection refused."
+	IdResourceStringsCore_RSSocksServerTTLExpiredError,	"TTL expired."
+	IdResourceStringsCore_RSSocksServerCommandError,	"Command not supported."
+	IdResourceStringsCore_RSSocksServerAddressError,	"Address type not supported."
+	IdResourceStrings_RSStackClassUndefined,	"Stack Class is undefined."
+	IdResourceStrings_RSStackAlreadyCreated,	"Stack already created."
+	IdResourceStrings_RSAntiFreezeOnlyOne,	"Only one TIdAntiFreeze can exist per application."
+	IdResourceStrings_RSCannotSetIPVersionWhenConnected,	"Cannot change IPVersion when connected"
+	IdResourceStrings_RSCannotBindRange,	"Can not bind in port range (%d - %d)"
+	IdResourceStrings_RSConnectionClosedGracefully,	"Connection Closed Gracefully."
+	IdResourceStrings_RSCouldNotBindSocket,	"Could not bind socket. Address and port are already in use."
+	IdResourceStrings_RSInvalidPortRange,	"Invalid Port Range (%d - %d)"
+	IdResourceStrings_RSInvalidServiceName,	"%s is not a valid service."
+	IdResourceStrings_RSIPv6Unavailable,	"IPv6 unavailable"
+	IdResourceStrings_RSInvalidIPv6Address,	"%s is not a valid IPv6 address"
+	IdResourceStrings_RSIPVersionUnsupported,	"The requested IPVersion / Address family is not supported."
+	IdResourceStrings_RSNotAllBytesSent,	"Not all bytes sent."
+	IdResourceStrings_RSPackageSizeTooBig,	"Package Size Too Big."
+	IdResourceStrings_RSSetSizeExceeded,	"Set Size Exceeded."
+	IdResourceStrings_RSNoEncodingSpecified,	"No encoding specified."
+	IdResourceStrings_RSStackENETRESET,	"Net dropped connection or reset."
+	IdResourceStrings_RSStackECONNABORTED,	"Software caused connection abort."
+	IdResourceStrings_RSStackECONNRESET,	"Connection reset by peer."
+	IdResourceStrings_RSStackENOBUFS,	"No buffer space available."
+	IdResourceStrings_RSStackEISCONN,	"Socket is already connected."
+	IdResourceStrings_RSStackENOTCONN,	"Socket is not connected."
+	IdResourceStrings_RSStackESHUTDOWN,	"Cannot send or receive after socket is closed."
+	IdResourceStrings_RSStackETOOMANYREFS,	"Too many references, cannot splice."
+	IdResourceStrings_RSStackETIMEDOUT,	"Connection timed out."
+	IdResourceStrings_RSStackECONNREFUSED,	"Connection refused."
+	IdResourceStrings_RSStackELOOP,	"Too many levels of symbolic links."
+	IdResourceStrings_RSStackENAMETOOLONG,	"File name too long."
+	IdResourceStrings_RSStackEHOSTDOWN,	"Host is down."
+	IdResourceStrings_RSStackEHOSTUNREACH,	"No route to host."
+	IdResourceStrings_RSStackENOTEMPTY,	"Directory not empty"
+	IdResourceStrings_RSStackHOST_NOT_FOUND,	"Host not found."
+	IdResourceStrings_RSStackEINPROGRESS,	"Operation now in progress."
+	IdResourceStrings_RSStackEALREADY,	"Operation already in progress."
+	IdResourceStrings_RSStackENOTSOCK,	"Socket operation on non-socket."
+	IdResourceStrings_RSStackEDESTADDRREQ,	"Destination address required."
+	IdResourceStrings_RSStackEMSGSIZE,	"Message too long."
+	IdResourceStrings_RSStackEPROTOTYPE,	"Protocol wrong type for socket."
+	IdResourceStrings_RSStackENOPROTOOPT,	"Bad protocol option."
+	IdResourceStrings_RSStackEPROTONOSUPPORT,	"Protocol not supported."
+	IdResourceStrings_RSStackESOCKTNOSUPPORT,	"Socket type not supported."
+	IdResourceStrings_RSStackEOPNOTSUPP,	"Operation not supported on socket."
+	IdResourceStrings_RSStackEPFNOSUPPORT,	"Protocol family not supported."
+	IdResourceStrings_RSStackEAFNOSUPPORT,	"Address family not supported by protocol family."
+	IdResourceStrings_RSStackEADDRINUSE,	"Address already in use."
+	IdResourceStrings_RSStackEADDRNOTAVAIL,	"Cannot assign requested address."
+	IdResourceStrings_RSStackENETDOWN,	"Network is down."
+	IdResourceStrings_RSStackENETUNREACH,	"Network is unreachable."
+	IdResourceStrings_RSWinsockCallError,	"Error on call to Winsock2 library function %s"
+	IdResourceStrings_RSWinsockLoadError,	"Error on loading Winsock2 library (%s)"
+	IdResourceStrings_RSStatusResolving,	"Resolving hostname %s."
+	IdResourceStrings_RSStatusConnecting,	"Connecting to %s."
+	IdResourceStrings_RSStatusConnected,	"Connected."
+	IdResourceStrings_RSStatusDisconnecting,	"Disconnecting."
+	IdResourceStrings_RSStatusDisconnected,	"Disconnected."
+	IdResourceStrings_RSStatusText,	"%s"
+	IdResourceStrings_RSStackError,	"Socket Error # %d\r\n%s"
+	IdResourceStrings_RSStackEINTR,	"Interrupted system call."
+	IdResourceStrings_RSStackEBADF,	"Bad file number."
+	IdResourceStrings_RSStackEACCES,	"Access denied."
+	IdResourceStrings_RSStackEFAULT,	"Buffer fault."
+	IdResourceStrings_RSStackEINVAL,	"Invalid argument."
+	IdResourceStrings_RSStackEMFILE,	"Too many open files."
+	IdResourceStrings_RSStackEWOULDBLOCK,	"Operation would block."
 	ComStrs_sTabFailDelete,	"Failed to delete tab at index %d"
 	ComStrs_sTabFailRetrieve,	"Failed to retrieve tab at index %d"
 	ComStrs_sTabFailGetObject,	"Failed to get object at index %d"
@@ -1287,7 +1287,7 @@ BEGIN
 	ComStrs_sRichEditSaveFail,	"Failed to Save Stream"
 	ComStrs_sPageIndexError,	"%d is an invalid PageIndex value.  PageIndex must be between 0 and %d"
 	ComStrs_sInvalidComCtl32,	"This control requires version 4.70 or greater of COMCTL32.DLL"
-	ComConst_SOleError,	"OLE error %.8x"
+	IdResourceStrings_RSFailedTimeZoneInfo,	"Failed attempting to retrieve time zone information."
 	Consts_SErrorSettingCount,	"Error setting %s.Count"
 	Consts_SListBoxMustBeVirtual,	"Listbox (%s) style must be virtual in order to set Count"
 	Consts_SNoGetItemEventHandler,	"No OnGetItem event handler assigned"
@@ -1582,51 +1582,28 @@ END
 /* c:\program files\codegear\rad studio\6.0\lib\Buttons.res */
 /* c:\program files\codegear\rad studio\6.0\lib\ExtDlgs.res */
 /* c:\program files\codegear\rad studio\6.0\lib\Controls.res */
-/* D:\DelphiProjects\Libraries\VirtualTreeView\Source\VirtualTrees.res */
-/* D:\DelphiProjects\Libraries\RC5\Lib\RS2009\RzCmboBx.res */
-/* D:\DelphiProjects\Libraries\RC5\Lib\RS2009\RzCommonBitmaps.res */
-/* D:\DelphiProjects\Libraries\RC5\Lib\RS2009\RzCommonCursors.res */
-/* D:\DelphiProjects\Libraries\RC5\Lib\RS2009\RzToolbarForm.dfm */
-/* D:\DelphiProjects\Libraries\RC5\Lib\RS2009\RzSplit.res */
+/* D:\My Docs\RAD Studio\Libraries\Virtual Treeview\Source\VirtualTrees.res */
+/* D:\My Docs\RAD Studio\Libraries\AbsoluteDatabase\\Lib\Delphi 2009 and C++ Builder 2009\ABSDlgWait.DFM */
+/* D:\My Docs\RAD Studio\Libraries\AbsoluteDatabase\\Lib\Delphi 2009 and C++ Builder 2009\ABSPasswordDialog.DFM */
+/* c:\program files\codegear\rad studio\6.0\lib\FileCtrl.res */
+/* D:\My Docs\RAD Studio\Libraries\ZipMaster\ZipMstr.Res */
+/* D:\My Docs\RAD Studio\Libraries\RC5\Lib\RS2009\RzCmboBx.res */
+/* D:\My Docs\RAD Studio\Libraries\RC5\Lib\RS2009\RzCommonBitmaps.res */
+/* D:\My Docs\RAD Studio\Libraries\RC5\Lib\RS2009\RzCommonCursors.res */
+/* D:\My Docs\RAD Studio\Libraries\RC5\Lib\RS2009\RzToolbarForm.dfm */
+/* D:\My Docs\RAD Studio\Libraries\RC5\Lib\RS2009\RzSplit.res */
+/* D:\My Docs\RAD Studio\Libraries\RC5\Lib\RS2009\RzFilSys.res */
+/* D:\My Docs\RAD Studio\Libraries\RC5\Lib\RS2009\RzSelDirForm.dfm */
+/* c:\program files\codegear\rad studio\6.0\lib\WindowsXP.res */
 /* c:\program files\codegear\rad studio\6.0\lib\DBPWDlg.dfm */
 /* c:\program files\codegear\rad studio\6.0\lib\DBLogDlg.dfm */
 /* c:\program files\codegear\rad studio\6.0\lib\DBCtrls.res */
-/* D:\DelphiProjects\Libraries\AbsoluteDatabase\Lib\Delphi 2009 and C++ Builder 2009\ABSDlgWait.DFM */
-/* D:\DelphiProjects\Libraries\AbsoluteDatabase\Lib\Delphi 2009 and C++ Builder 2009\ABSPasswordDialog.DFM */
-/* c:\program files\codegear\rad studio\6.0\lib\FileCtrl.res */
-/* D:\DelphiProjects\Libraries\ZipMaster\ZipMstr.Res */
-/* c:\program files\codegear\rad studio\6.0\lib\WindowsXP.res */
-/* D:\DelphiProjects\Libraries\RC5\Lib\RS2009\RzFilSys.res */
-/* D:\DelphiProjects\Libraries\RC5\Lib\RS2009\RzSelDirForm.dfm */
-/* DataModules\dm_user.dfm */
-/* DataModules\dm_main.dfm */
-/* Forms\frm_statistic.dfm */
-/* Forms\frm_splash.dfm */
-/* D:\DelphiProjects\Libraries\RC5\Lib\RS2009\RzShellOpenForm.dfm */
-/* D:\DelphiProjects\Libraries\RC5\Lib\RS2009\RzShellFolderForm.dfm */
-/* D:\DelphiProjects\Libraries\RC5\Lib\RS2009\RzBtnEdt.res */
-/* Forms\frm_edit_script.dfm */
-/* Forms\frm_edit_reader.dfm */
-/* Forms\frm_settings.dfm */
-/* Forms\frm_genre_tree.dfm */
-/* Forms\frm_edit_author.dfm */
-/* Forms\frm_edit_book_info.dfm */
-/* Forms\frm_book_info.dfm */
-/* Forms\frm_bases.dfm */
-/* Forms\frm_add_nonfb2.dfm */
-/* Forms\frm_about.dfm */
-/* ImportImpl\frm_BaseProgressForm.dfm */
-/* ImportImpl\frm_ImportProgressForm.dfm */
-/* ImportImpl\frm_ImportProgressFormEx.dfm */
-/* ImportImpl\frm_ExportProgressForm.dfm */
-/* UtilsImpl\frm_SyncOnLineProgressForm.dfm */
-/* DwnldImpl\frm_DownloadProgressForm.dfm */
-/* UtilsImpl\frm_ExportToDeviceProgressForm.dfm */
 /* Wizards\NewCollection\frame_WizardPageBase.dfm */
 /* Wizards\NewCollection\frame_DecorativePageBase.dfm */
 /* Wizards\NewCollection\frame_NCWFinish.dfm */
 /* Wizards\NewCollection\frame_InteriorPageBase.dfm */
 /* Wizards\NewCollection\frame_NCWProgress.dfm */
+/* DataModules\dm_user.dfm */
 /* Wizards\NewCollection\frame_NCWImport.dfm */
 /* Wizards\NewCollection\frame_NCWSelectGenreFile.dfm */
 /* Wizards\NewCollection\frame_NCWCollectionFileTypes.dfm */
@@ -1635,6 +1612,29 @@ END
 /* Wizards\NewCollection\frame_NCWOperation.dfm */
 /* Wizards\NewCollection\frame_NCWWelcom.dfm */
 /* Wizards\NewCollection\frm_NCWizard.dfm */
-/* D:\DelphiProjects\MyHomeLib\Forms\frm_main.dfm */
-/* D:\DelphiProjects\MyHomeLib\MyhomeLib.res */
-/* D:\DelphiProjects\MyHomeLib\MyhomeLib.drf */
+/* DataModules\dm_main.dfm */
+/* ImportImpl\frm_BaseProgressForm.dfm */
+/* ImportImpl\frm_ImportProgressForm.dfm */
+/* DwnldImpl\frm_DownloadProgressForm.dfm */
+/* UtilsImpl\frm_ExportToDeviceProgressForm.dfm */
+/* ImportImpl\frm_ImportProgressFormEx.dfm */
+/* UtilsImpl\frm_SyncOnLineProgressForm.dfm */
+/* ImportImpl\frm_ExportProgressForm.dfm */
+/* Forms\frm_about.dfm */
+/* D:\My Docs\RAD Studio\Libraries\RC5\Lib\RS2009\RzBtnEdt.res */
+/* Forms\frm_edit_author.dfm */
+/* Forms\frm_genre_tree.dfm */
+/* Forms\frm_add_nonfb2.dfm */
+/* Forms\frm_bases.dfm */
+/* Forms\frm_book_info.dfm */
+/* D:\My Docs\RAD Studio\Libraries\RC5\Lib\RS2009\RzShellOpenForm.dfm */
+/* D:\My Docs\RAD Studio\Libraries\RC5\Lib\RS2009\RzShellFolderForm.dfm */
+/* Forms\frm_edit_book_info.dfm */
+/* Forms\frm_edit_reader.dfm */
+/* Forms\frm_edit_script.dfm */
+/* Forms\frm_settings.dfm */
+/* Forms\frm_splash.dfm */
+/* Forms\frm_statistic.dfm */
+/* Forms\frm_main.dfm */
+/* D:\My Docs\RAD Studio\Projects\MyHomeLib\MyhomeLib.res */
+/* D:\My Docs\RAD Studio\Projects\MyHomeLib\MyhomeLib.drf */
