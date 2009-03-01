@@ -626,7 +626,7 @@ resourcestring
 //
 
 const
-  TreeIcons : array [0 .. 1] of integer = (15,14);
+  TreeIcons : array [0 .. 1] of integer = (10,11);
   TreeHints : array [0 .. 1] of string =(
                                     'Переключится в режим "Таблица"',
                                     'Переключится в режим "Дерево"'
@@ -1484,7 +1484,7 @@ end;
 procedure TfrmMain.CreateScriptMenu;
 const
     ExpTypes : array [0..3] of string = ('  fb2','  fb2.zip','  LRF','  txt');
-    Icons: array [0..3] of integer = (19,20,21,22);
+    Icons: array [0..3] of integer = (18,19,20,21);
 var
   Item, ItemP, ItemM: TMenuItem;
   F:integer;
@@ -2484,7 +2484,7 @@ begin
   miDelFavorites.Visible := False;
   miAddFavorites.Visible := True;
   btnFav_add.Hint := 'Добавить в избранное';
-  btnFav_add.ImageIndex := 10;
+  btnFav_add.ImageIndex := 15;
 end;
 
 procedure TfrmMain.TabSheet2Show(Sender: TObject);
@@ -2499,7 +2499,7 @@ begin
   miDelFavorites.Visible := True;
   miAddFavorites.Visible := False;
   btnFav_add.Hint := 'Удалить из избранного';
-  btnFav_add.ImageIndex := 12;
+  btnFav_add.ImageIndex := 16;
 end;
 
 procedure TfrmMain.FillBookIdList(const Tree: TVirtualStringTree; var BookIDList: TBookIdList );
@@ -3259,7 +3259,6 @@ begin
   GetActiveTree(Tree);
 
   FillBookIdList(Tree, BookIDList);
-
   unit_exporttodevice.DownloadBooks(DMMain.ActiveTable, BookIdList );
 
   RefreshBooksState(Tree, BookIDList);
