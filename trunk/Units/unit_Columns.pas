@@ -327,6 +327,7 @@ begin
     Add(COL_SIZE,70,4);   Add(COL_RATE,80,5);
     Add(COL_DATE,200,6); Add(COL_GENRE,200,7);
   end;
+
   if Section = SECTION_A_TREE then
   begin
     Add(COL_STATE,15,0);
@@ -338,20 +339,19 @@ begin
 
   if Section = SECTION_S_FLAT then
   begin
-    Add(COL_STATE,15,0); Add(COL_TITLE,200,1);
-    Add(COL_NO,40,2);
-    Add(COL_SIZE,70,3);   Add(COL_RATE,80,4);
-    Add(COL_DATE,200,5); Add(COL_GENRE,200,6);
+    Add(COL_STATE,15,0);  Add(COL_AUTHOR,200,1);
+    Add(COL_TITLE,200,2); Add(COL_NO,40,3);
+    Add(COL_SIZE,70,4);   Add(COL_RATE,80,5);
+    Add(COL_DATE,200,7); Add(COL_GENRE,200,6);
   end;
 
   if Section = SECTION_S_TREE then
   begin
-    Add(COL_STATE,15,0); Add(COL_TITLE,200,1);
-    Add(COL_NO,40,2);
-    Add(COL_SIZE,70,3);   Add(COL_RATE,80,4);
-    Add(COL_DATE,200,5); Add(COL_GENRE,200,6);
+    Add(COL_STATE,15,0);  Add(COL_AUTHOR,200,1);
+    Add(COL_TITLE,200,2); Add(COL_NO,40,3);
+    Add(COL_SIZE,70,4);   Add(COL_RATE,80,5);
+    Add(COL_DATE,200,7); Add(COL_GENRE,200,6);
   end;
-
 
   if Section = SECTION_G_FLAT then
   begin
@@ -359,7 +359,7 @@ begin
     Add(COL_AUTHOR,200,1); Add(COL_TITLE,200,2);
     Add(COL_SERIES,200,3); Add(COL_NO,30,4);
     Add(COL_SIZE,70,5);   Add(COL_RATE,80,6);
-    Add(COL_DATE,200,7); Add(COL_GENRE,200,8);
+    Add(COL_DATE,200,8); Add(COL_GENRE,200,7);
   end;
   if Section = SECTION_G_TREE then
   begin
@@ -375,14 +375,14 @@ begin
     Add(COL_AUTHOR,200,1); Add(COL_TITLE,200,2);
     Add(COL_SERIES,200,3); Add(COL_NO,30,4);
     Add(COL_SIZE,70,5);   Add(COL_RATE,80,6);
-    Add(COL_DATE,200,7); Add(COL_GENRE,200,8);
+    Add(COL_DATE,200,8); Add(COL_GENRE,200,7);
   end;
   if Section = SECTION_F_TREE then
   begin
     Add(COL_STATE,15,0);
     Add(COL_TITLE,300,1); Add(COL_NO,30,2);
     Add(COL_SIZE,70,3);   Add(COL_RATE,80,4);
-    Add(COL_DATE,200,5); Add(COL_GENRE,200,6);
+    Add(COL_DATE,200,6); Add(COL_GENRE,200,5);
     Add(COL_COLLECTION,200,7);
   end;
 
@@ -392,7 +392,7 @@ begin
     Add(COL_AUTHOR,200,1); Add(COL_TITLE,200,2);
     Add(COL_SERIES,200,3); Add(COL_NO,30,4);
     Add(COL_SIZE,70,5);   Add(COL_RATE,80,6);
-    Add(COL_DATE,200,7); Add(COL_GENRE,200,8);
+    Add(COL_DATE,200,8); Add(COL_GENRE,200,7);
   end;
 
   if Section = SECTION_SR_TREE then
@@ -400,7 +400,7 @@ begin
     Add(COL_STATE,15,0);
     Add(COL_TITLE,300,1); Add(COL_NO,30,2);
     Add(COL_SIZE,70,3);   Add(COL_RATE,80,4);
-    Add(COL_DATE,200,5); Add(COL_GENRE,200,6);
+    Add(COL_DATE,200,6); Add(COL_GENRE,200,5);
   end;
 
   if Section = SECTION_FL_FLAT then
@@ -409,7 +409,7 @@ begin
     Add(COL_AUTHOR,200,1); Add(COL_TITLE,200,2);
     Add(COL_SERIES,200,3); Add(COL_NO,30,4);
     Add(COL_SIZE,70,5);   Add(COL_RATE,80,6);
-    Add(COL_DATE,200,7); Add(COL_GENRE,200,8);
+    Add(COL_DATE,200,8); Add(COL_GENRE,200,7);
   end;
 
   if Section = SECTION_FL_TREE then
@@ -417,7 +417,7 @@ begin
     Add(COL_STATE,15,0);
     Add(COL_TITLE,300,1); Add(COL_NO,30,2);
     Add(COL_SIZE,70,3);   Add(COL_RATE,80,4);
-    Add(COL_DATE,200,5); Add(COL_GENRE,200,6);
+    Add(COL_DATE,200,6); Add(COL_GENRE,200,5);
   end;
 
 end;

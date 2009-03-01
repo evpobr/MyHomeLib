@@ -170,7 +170,7 @@ begin
       );
 
   if AHInst <= 32 then
-    raise Exception.Create(SysErrorMessage(AHInst));
+    raise Exception.Create(SysErrorMessage(AHInst) + ': ' + AReader.Path);
 end;
 
 procedure TReaders.SetReader(Index: Integer; const Value: TReaderDesc);
