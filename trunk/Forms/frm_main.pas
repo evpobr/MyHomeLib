@@ -478,6 +478,7 @@ type
     procedure HeaderPopupItemClick(Sender: TObject);
     procedure N27Click(Sender: TObject);
     procedure btnClearSerachClick(Sender: TObject);
+    procedure CoverPanelResize(Sender: TObject);
 
   private
 
@@ -1842,6 +1843,7 @@ begin
   rzsSplitterA.Position := Settings.Splitters[0];
   rzsSplitterS.Position := Settings.Splitters[1];
   rzsSplitterG.Position := Settings.Splitters[2];
+  cpCoverA.Width := Settings.Splitters[3];
 
   if not DMUser.tblBases.IsEmpty then  RestorePositions;
 
@@ -1862,6 +1864,7 @@ begin
   Settings.Splitters[0] := rzsSplitterA.Position;
   Settings.Splitters[1] := rzsSplitterS.Position;
   Settings.Splitters[2] := rzsSplitterG.Position;
+  Settings.Splitters[3] := cpCoverA.Width;
 
   Settings.SaveSettings;
   FreeSettings;
@@ -2478,6 +2481,19 @@ begin
   Screen.Cursor := crDefault;
 end;
 
+procedure TfrmMain.CoverPanelResize(Sender: TObject);
+var
+  NewSize: integer;
+begin
+  NewSize := (Sender as TWinControl).Width;
+  cpCoverA.Width := NewSize;
+  cpCoverS.Width := NewSize;
+  cpCoverG.Width := NewSize;
+  cpCoverF.Width := NewSize;
+  cpCoverFL.Width := NewSize;
+  cpCoverSR.Width := NewSize;
+end;
+
 procedure TfrmMain.TabSheet1Show(Sender: TObject);
 begin
   miGotoAuthor.Visible := False;
@@ -2744,10 +2760,16 @@ begin
       end;
     BySeriesView:
       begin
+        if (Sender as TToolButton).Tag > 90 then
         case (Sender as TToolButton).Tag of
           90: DMMain.tblSeries.Filter := 'Title <>' + QuotedStr(NO_SERIES_TITLE);
           91: DMMain.tblSeries.Filter := 'Title > "à*"';
           92: DMMain.tblSeries.Filter := 'Title < "à*" and Title <>' + QuotedStr(NO_SERIES_TITLE);
+        end
+        else
+        begin
+          edLocateSeries.Text := (Sender as TToolButton).Caption;
+          DMMain.tblSeries.Filter := 'Title =' + QuotedStr((Sender as TToolButton).Caption + '*');
         end;
         DMMain.tblSeries.Filtered := true;
         FillSeriesTree;
@@ -2864,12 +2886,25 @@ var
   TableB: TAbsTable;
   LastAuth: String;
   CollectionName: String;
+  Columns: TColumnSet;
+
+      function GetColumns: TColumnSet;
+      var
+        i: integer;
+      begin
+        Result := [];
+        for I := 0 to Tree.Header.Columns.Count - 1 do
+          Include(Result,Tree.Header.Columns[i].Tag);
+      end;
+
+
 begin
   if Assigned(Master) then
     TableA := Master
   else
     TableA := Detail;
 
+  Columns := GetColumns;
   spProgress.Visible := True;  
   TableB := Detail;
 
@@ -2974,27 +3009,32 @@ begin
 
               bookNode := Tree.AddChild(seriesNode);
               Data := Tree.GetNodeData(bookNode);
-              Data.Title := TableB.FieldByName('Title').AsString;
-              Data.FullName := TableB.FieldByName('FullName').AsString;
-              Data.No := TableB.FieldByName('SeqNumber').AsInteger;
               Data.ID := TableB.FieldByName('ID').AsInteger;
-              Data.Size := TableB.FieldByName('Size').AsInteger;
-              Data.Date := TableB.FieldByName('Date').AsDateTime;
+              Data.Title := TableB.FieldByName('Title').AsString;
 
-              if Tree.Tag = 4 then Data.ColName := CollectionName;
+              if (COL_AUTHOR) in Columns then Data.FullName := TableB.FieldByName('FullName').AsString;
 
-              if Tree.Tag <> 4 then
-                Data.Genre := DMMain.GetBookGenres(TableB.FieldByName('ID').AsInteger,False)
-              else
-                Data.Genre := TableB.FieldByName('Genres').AsString;
+              if (COL_NO) in Columns then Data.No := TableB.FieldByName('SeqNumber').AsInteger;
 
-              if TableB.FieldByName('SerID').AsInteger <> 1 then
+              if (COL_SIZE in Columns) then Data.Size := TableB.FieldByName('Size').AsInteger;
+
+              if (COL_DATE in Columns) then Data.Date := TableB.FieldByName('Date').AsDateTime;
+
+              if (COL_COLLECTION in Columns) then Data.ColName := CollectionName;
+
+              if (Col_Genre in Columns) then
+                if Tree.Tag <> 4 then
+                  Data.Genre := DMMain.GetBookGenres(TableB.FieldByName('ID').AsInteger,False)
+                else
+                  Data.Genre := TableB.FieldByName('Genres').AsString;
+
+              if (COL_SERIES in Columns) and (TableB.FieldByName('SerID').AsInteger <> 1) then
                 Data.Series := TableB.FieldByName('Series').AsString;
 
               if isOnlineCollection(DBCode) and not TableB.FieldByName('Local').IsNull then
                 Data.Locale := TableB.FieldByName('Local').AsBoolean;
 
-              if not TableB.FieldByName('Rate').IsNull then
+              if (COL_RATE in Columns) and (not TableB.FieldByName('Rate').IsNull) then
                 Data.Rate := TableB.FieldByName('Rate').AsInteger;
 
               Data.nodeType := ntBookInfo;

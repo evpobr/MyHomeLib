@@ -86,6 +86,9 @@ uses
   Windows,
   xmldom;
 
+const
+  W = 55;
+
 { TMHLCoverPanel }
 
 procedure TMHLCoverPanel.Clear;
@@ -155,7 +158,7 @@ begin
   lbl.Font.Style := [fsBold];
   lbl.Top := 0;
   lbl.Tag := 1;
-  lbl.Left := 5;   lbl.Width := 50;
+  lbl.Left := 5;   lbl.Width := W;
   lbl.Alignment := taRightJustify;
 
   lbl := TLabel.Create(FInfo);
@@ -164,7 +167,7 @@ begin
   lbl.Font.Style := [fsBold];
   lbl.Top := 15;
   lbl.Tag := 2;
-  lbl.Left := 5;   lbl.Width := 50;
+  lbl.Left := 5;   lbl.Width := W;
   lbl.Alignment := taRightJustify;
   
 
@@ -174,7 +177,7 @@ begin
   lbl.Font.Style := [fsBold];
   lbl.Top := 30;
   lbl.Tag := 3;
-  lbl.Left := 5;   lbl.Width := 50;
+  lbl.Left := 5;   lbl.Width := W;
   lbl.Alignment := taRightJustify;
 
 
@@ -184,7 +187,7 @@ begin
   lbl.Font.Style := [fsBold];
   lbl.Top := 45;
   lbl.Tag := 4;
-  lbl.Left := 5;   lbl.Width := 50;
+  lbl.Left := 5;   lbl.Width := W;
   lbl.Alignment := taRightJustify;
 
 
@@ -194,7 +197,7 @@ begin
   lbl.Font.Style := [fsBold];
   lbl.Top := 65;
   lbl.Tag := 5;
-  lbl.Left := 5;   lbl.Width := 55;
+  lbl.Left := 5;   lbl.Width := W;
   lbl.Alignment := taRightJustify;
 
 
@@ -211,7 +214,7 @@ begin
   lbl.Font.Style := [fsBold];
   lbl.Top := 80;
   lbl.Tag := 7;
-  lbl.Left := 5;   lbl.Width := 55;
+  lbl.Left := 5;   lbl.Width := W;
   lbl.Alignment := taRightJustify;
 
 
@@ -220,26 +223,26 @@ begin
   FPublisher := TLabel.Create(FInfo);
   FPublisher.Parent := FInfo;
   FPublisher.Width := 180;
-  FPublisher.Top := 0; FPublisher.Left := 60;
+  FPublisher.Top := 0; FPublisher.Left := W + 10;
 
   FCity := TLabel.Create(FInfo);
   FCity.Parent := FInfo;
-  FCity.Top := 15; FCity.Left := 60;
+  FCity.Top := 15; FCity.Left := W + 10;
 
   FYear := TLabel.Create(FInfo);
   FYear.Parent := FInfo;
-  FYear.Top := 30; FYear.Left := 60;
+  FYear.Top := 30; FYear.Left := W + 10;
 
   FISBN := TLabel.Create(FInfo);
   FISBN.Parent := FInfo;
-  FISBN.Top := 45; FISBN.Left := 60;
+  FISBN.Top := 45; FISBN.Left := W + 10;
   FISBN.Width := 180;
   FISBN.AutoSize := False;
 
   FDate := TLabel.Create(FInfo);
   FDate.Parent := FInfo;
   FDate.Width := 65;
-  FDate.Top := 65; FDate.Left := 65;
+  FDate.Top := 65; FDate.Left := W + 10;
 
   FVersion := TLabel.Create(FInfo);
   FVersion.Parent := FInfo;
@@ -248,7 +251,7 @@ begin
   FAuthor := TLabel.Create(FInfo);
   FAuthor.Parent := FInfo;
   FAuthor.Width := 180;
-  FAuthor.Top := 80; FAuthor.Left := 65;
+  FAuthor.Top := 80; FAuthor.Left := W + 10;
 
   //--------------------------------------------
 
