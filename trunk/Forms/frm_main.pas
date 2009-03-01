@@ -2744,17 +2744,12 @@ begin
       end;
     BySeriesView:
       begin
-        if (Sender as TToolButton).Tag > 90 then
         case (Sender as TToolButton).Tag of
+          90: DMMain.tblSeries.Filter := 'Title <>' + QuotedStr(NO_SERIES_TITLE);
           91: DMMain.tblSeries.Filter := 'Title > "à*"';
           92: DMMain.tblSeries.Filter := 'Title < "à*" and Title <>' + QuotedStr(NO_SERIES_TITLE);
-        end
-        else
-        begin
-          edLocateSeries.Text := (Sender as TToolButton).Caption;
-          DMMain.tblSeries.Filter := 'Title=' + QuotedStr((Sender as TToolButton).Caption + '*');
         end;
-        DMMain.tblSeries.Filtered := (Sender as TToolButton).Tag <> 90;
+        DMMain.tblSeries.Filtered := true;
         FillSeriesTree;
         tvSeries.Selected[tvSeries.GetFirst] := True;
         edLocateSeries.Perform(WM_KEYDOWN, VK_RIGHT, 0);
