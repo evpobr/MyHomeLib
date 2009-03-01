@@ -10,17 +10,35 @@ File_7=TSourceModule,'D:\My Docs\RAD Studio\Projects\MyHomeLib_1_2\Forms\frm_mai
 
 [Modules]
 Module0=D:\My Docs\RAD Studio\Projects\MyHomeLib\Forms\frm_main.pas
-Module1=D:\My Docs\RAD Studio\Projects\MyHomeLib\Components\unit_CoverPanel.pas
-Module2=default.htm
-Count=3
+Module1=D:\My Docs\RAD Studio\Projects\MyHomeLib\DataModules\dm_main.pas
+Module2=D:\My Docs\RAD Studio\Projects\MyHomeLib\Units\unit_Consts.pas
+Module3=D:\My Docs\RAD Studio\Projects\MyHomeLib\Components\unit_CoverPanel.pas
+Module4=D:\My Docs\RAD Studio\Projects\MyHomeLib\Units\unit_Settings.pas
+Module5=default.htm
+Count=6
 EditWindowCount=1
 
 [D:\My Docs\RAD Studio\Projects\MyHomeLib\Forms\frm_main.pas]
 ModuleType=TSourceModule
 FormState=1
+FormOnTop=0
+
+[D:\My Docs\RAD Studio\Projects\MyHomeLib\DataModules\dm_main.pas]
+ModuleType=TSourceModule
+FormState=1
 FormOnTop=1
 
+[D:\My Docs\RAD Studio\Projects\MyHomeLib\Units\unit_Consts.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
 [D:\My Docs\RAD Studio\Projects\MyHomeLib\Components\unit_CoverPanel.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[D:\My Docs\RAD Studio\Projects\MyHomeLib\Units\unit_Settings.pas]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
@@ -28,20 +46,19 @@ FormOnTop=0
 [default.htm]
 ModuleType=TURLModule
 
-[D:\My Docs\RAD Studio\Projects\MyHomeLib\DataModules\dm_main.pas]
-FormState=1
-FormOnTop=0
-
 [D:\My Docs\RAD Studio\Projects\MyHomeLib\DataModules\dm_user.pas]
 FormState=1
 FormOnTop=0
 
 [EditWindow0]
-ViewCount=3
+ViewCount=6
 CurrentEditView=D:\My Docs\RAD Studio\Projects\MyHomeLib\Forms\frm_main.pas
 View0=0
 View1=1
 View2=2
+View3=3
+View4=4
+View5=5
 PercentageSizes=1
 Create=1
 Visible=1
@@ -61,40 +78,73 @@ BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
 LeftPanelSize=1896
 LeftPanelClients=PropertyInspector,DockSite3
-LeftPanelData=00000800B8B800000000D9130000000000000168070000000000000100000000580E000009000000446F636B536974653301000000004C2300001100000050726F7065727479496E73706563746F72FFFFFFFF
+LeftPanelData=00000800C8C800000000A5110000000000000168070000000000000100000000530A000009000000446F636B53697465330100000000621F00001100000050726F7065727479496E73706563746F72FFFFFFFF
 RightPanelSize=1391
 RightPanelClients=DockSite2,ToolForm
-RightPanelData=00000800787800000000D913000000000000016F0500000000000001000000004212000009000000446F636B536974653201000000004C23000008000000546F6F6C466F726DFFFFFFFF
-BottomPanelSize=0
+RightPanelData=00000800484800000000A511000000000000016F0500000000000001000000004212000009000000446F636B53697465320100000000621F000008000000546F6F6C466F726DFFFFFFFF
+BottomPanelSize=964
 BottomPanelClients=MessageView@EditWindow0,DockSite1
-BottomPanelData=000008001818020000000B0000004D6573736167655669657709000000446F636B53697465317A4500000000000002E605000000000000FFFFFFFF
+BottomPanelData=00000800F8F80100000009000000446F636B53697465317A4500000000000002C40300000000000001000000007A4500000B0000004D65737361676556696577FFFFFFFF
 BottomMiddlePanelSize=0
 BottomMiddlePanelClients=DockSite0
-BottomMiddelPanelData=0000080058580100000009000000446F636B53697465302D1900000000000000771B000000000000FFFFFFFF
+BottomMiddelPanelData=0000080028280100000009000000446F636B5369746530562E000000000000023506000000000000FFFFFFFF
 
 [View0]
 CustomEditViewType=TEditView
 Module=D:\My Docs\RAD Studio\Projects\MyHomeLib\Forms\frm_main.pas
-CursorX=49
-CursorY=1495
-TopLine=1487
+CursorX=11
+CursorY=3003
+TopLine=2985
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=D:\My Docs\RAD Studio\Projects\MyHomeLib\Forms\frm_main.pas
+
+[View1]
+CustomEditViewType=TEditView
+Module=D:\My Docs\RAD Studio\Projects\MyHomeLib\DataModules\dm_main.pas
+CursorX=1
+CursorY=1
+TopLine=1
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=Borland.FormDesignerView
 
-[View1]
+[View2]
+CustomEditViewType=TEditView
+Module=D:\My Docs\RAD Studio\Projects\MyHomeLib\Units\unit_Consts.pas
+CursorX=30
+CursorY=127
+TopLine=112
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=D:\My Docs\RAD Studio\Projects\MyHomeLib\Units\unit_Consts.pas
+
+[View3]
 CustomEditViewType=TEditView
 Module=D:\My Docs\RAD Studio\Projects\MyHomeLib\Components\unit_CoverPanel.pas
-CursorX=1
-CursorY=1
-TopLine=109
+CursorX=8
+CursorY=90
+TopLine=100
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=D:\My Docs\RAD Studio\Projects\MyHomeLib\Components\unit_CoverPanel.pas
 
-[View2]
+[View4]
+CustomEditViewType=TEditView
+Module=D:\My Docs\RAD Studio\Projects\MyHomeLib\Units\unit_Settings.pas
+CursorX=27
+CursorY=589
+TopLine=568
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=D:\My Docs\RAD Studio\Projects\MyHomeLib\Units\unit_Settings.pas
+
+[View5]
 CustomEditViewType=TWelcomePageView
 WelcomePageURL=bds:/default.htm
 
@@ -113,11 +163,11 @@ State=0
 Left=0
 Top=0
 Width=3829
-Height=885
+Height=339
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=3829
-ClientHeight=885
+ClientHeight=339
 TBDockHeight=208
 LRDockWidth=13602
 Dockable=1
@@ -147,7 +197,7 @@ ClientWidth=10000
 ClientHeight=9740
 BottomPanelSize=9036
 BottomPanelClients=EditWindow0
-BottomPanelData=0000080008080000000000000000000000000000000000000000000100000000000000000C0000004564697457696E646F775F30FFFFFFFF
+BottomPanelData=0000080018180000000000000000000000000000000000000000000100000000000000000C0000004564697457696E646F775F30FFFFFFFF
 
 [ProjectManager]
 PercentageSizes=1
@@ -177,11 +227,11 @@ State=0
 Left=0
 Top=382
 Width=1391
-Height=4062
+Height=3060
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1391
-ClientHeight=4062
+ClientHeight=3060
 TBDockHeight=6784
 LRDockWidth=1391
 Dockable=1
@@ -218,11 +268,11 @@ State=0
 Left=0
 Top=0
 Width=3829
-Height=885
+Height=339
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=3829
-ClientHeight=885
+ClientHeight=339
 TBDockHeight=404
 LRDockWidth=4956
 Dockable=1
@@ -237,11 +287,11 @@ State=0
 Left=0
 Top=0
 Width=3829
-Height=885
+Height=339
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=3829
-ClientHeight=885
+ClientHeight=339
 TBDockHeight=208
 LRDockWidth=7408
 Dockable=1
@@ -261,11 +311,11 @@ State=0
 Left=0
 Top=0
 Width=3829
-Height=885
+Height=339
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=3829
-ClientHeight=885
+ClientHeight=339
 TBDockHeight=1549
 LRDockWidth=3485
 Dockable=1
@@ -280,11 +330,11 @@ State=0
 Left=0
 Top=0
 Width=3829
-Height=885
+Height=339
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=3829
-ClientHeight=885
+ClientHeight=339
 TBDockHeight=2070
 LRDockWidth=3485
 Dockable=1
@@ -318,11 +368,11 @@ State=0
 Left=0
 Top=0
 Width=2343
-Height=1146
+Height=964
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2343
-ClientHeight=1146
+ClientHeight=964
 TBDockHeight=2318
 LRDockWidth=2826
 Dockable=1
@@ -337,11 +387,11 @@ State=0
 Left=0
 Top=0
 Width=2335
-Height=1146
+Height=964
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2335
-ClientHeight=1146
+ClientHeight=964
 TBDockHeight=3216
 LRDockWidth=2826
 Dockable=1
@@ -356,11 +406,11 @@ State=0
 Left=0
 Top=0
 Width=2335
-Height=1146
+Height=964
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2335
-ClientHeight=1146
+ClientHeight=964
 TBDockHeight=1146
 LRDockWidth=3675
 Dockable=1
@@ -400,14 +450,14 @@ Visible=1
 Docked=1
 State=0
 Left=0
-Top=305
+Top=226
 Width=1896
-Height=5065
+Height=5091
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1896
-ClientHeight=5065
-TBDockHeight=5065
+ClientHeight=5091
+TBDockHeight=5091
 LRDockWidth=1896
 Dockable=1
 StayOnTop=0
@@ -415,8 +465,8 @@ SplitPos=111
 
 [PropInspDesignerSelection]
 ArrangeBy=Name
-SelectedItem=Margins.Right,Action
-ExpandedItems=Margins=1,DropdownMenu=0,Anchors=0,Constraints=0,BevelEdges=0,MenuAnimation=0,Images=0,BorderSides=0,Font=0,Padding=0,FrameControllerNotifications=0
+SelectedItem=Name,
+ExpandedItems=ProviderFlags=0
 
 [ModelViewTool]
 PercentageSizes=1
@@ -465,11 +515,11 @@ State=0
 Left=0
 Top=0
 Width=3829
-Height=885
+Height=339
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=3829
-ClientHeight=885
+ClientHeight=339
 TBDockHeight=1549
 LRDockWidth=8741
 Dockable=1
@@ -490,11 +540,11 @@ State=0
 Left=0
 Top=0
 Width=1896
-Height=3320
+Height=2292
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1896
-ClientHeight=3320
+ClientHeight=2292
 TBDockHeight=3672
 LRDockWidth=1896
 Dockable=1
@@ -503,18 +553,18 @@ StayOnTop=0
 [MessageView@EditWindow0]
 PercentageSizes=1
 Create=1
-Visible=0
+Visible=1
 Docked=1
 State=0
 Left=0
 Top=23
-Width=4327
-Height=1211
+Width=10000
+Height=664
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=4327
-ClientHeight=1211
-TBDockHeight=1211
+ClientWidth=10000
+ClientHeight=664
+TBDockHeight=664
 LRDockWidth=4327
 Dockable=1
 StayOnTop=0
@@ -552,12 +602,12 @@ State=0
 Left=0
 Top=0
 Width=2335
-Height=1471
+Height=1289
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2335
-ClientHeight=1471
-TBDockHeight=1471
+ClientHeight=1289
+TBDockHeight=1289
 LRDockWidth=2335
 Dockable=1
 StayOnTop=0
@@ -573,15 +623,15 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=0
+Left=683
 Top=23
 Width=3829
-Height=1211
+Height=664
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=3829
-ClientHeight=1211
-TBDockHeight=1211
+ClientHeight=664
+TBDockHeight=664
 LRDockWidth=3829
 Dockable=1
 StayOnTop=0
@@ -624,12 +674,12 @@ State=0
 Left=0
 Top=23
 Width=1896
-Height=3320
+Height=2292
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1896
-ClientHeight=3320
-TBDockHeight=3320
+ClientHeight=2292
+TBDockHeight=2292
 LRDockWidth=1896
 Dockable=1
 StayOnTop=0

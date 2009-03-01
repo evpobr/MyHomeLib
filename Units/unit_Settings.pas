@@ -576,9 +576,9 @@ begin
     slHelper.Delimiter := ';';
 
     // Сначала сплиттеры
-    S := iniFile.ReadString(INTERFACE_SECTION,'Splitters','250;250;250');
+    S := iniFile.ReadString(INTERFACE_SECTION,'Splitters','250;250;250;250');
     slHelper.DelimitedText := S;
-    SetLength(FSplitters,slHelper.Count);
+    SetLength(FSplitters,4);
     for I := 0 to slHelper.Count - 1 do
       FSplitters[i] := StrToInt(slHelper[i]);
 
@@ -586,7 +586,7 @@ begin
     slHelper.Clear;
     S := iniFile.ReadString(INTERFACE_SECTION,'TreeModes','0;1;0;1;0;1');
     slHelper.DelimitedText := S;
-    SetLength(FTreeModes,slHelper.Count);
+    SetLength(FTreeModes,6);
     for I := 0 to slHelper.Count - 1 do
       case StrToInt(slHelper[i]) of
         0: FTreeModes[i] := tmTree;

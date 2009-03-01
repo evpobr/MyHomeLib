@@ -98,6 +98,8 @@ const
                                               COL_COLLECTION,
                                               COL_STATE);
 
+
+
   //
   // названия секций колонок в файле настрок
   //
@@ -120,6 +122,9 @@ const
 
   SECTION_FL_FLAT = 'COLUMNS_FILTER_FLAT';
   SECTION_FL_TREE = 'COLUMNS_FILTER_TREE';
+
+type
+  TColumnSet = set of 0..255;
 
 implementation
 
