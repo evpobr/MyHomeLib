@@ -19,15 +19,15 @@ uses
   unit_WorkerThread,
   unit_globals,
   Dialogs,
-  ZipMstr,
   ABSMain,
-  IdHTTP;
+  IdHTTP,
+  ZipForge;
 
 type
 
   TExportToDeviceThread = class(TWorker)
   private
-    FZipper: TZipMaster;
+    FZipper: TZipForge;
 
     FFileOprecord: record
       SArch, FileName, Folder: String;
@@ -76,7 +76,7 @@ uses
 procedure TExportToDeviceThread.ShowZipErrorMessage(Sender: TObject; ErrCode: Integer; Message: string);
 begin
   if ErrCode <> 0 then
-    Teletype(Format('Ошибка распаковки архива %s, Код: %d', [FZipper.ZipFileName, FZipper.ErrCode]), tsError);
+    Teletype(Format('Ошибка распаковки архива %s, Код: %d', [FZipper.FileName,0]), tsError);
 end;
 
 //
@@ -179,12 +179,17 @@ begin
       Exit;
     end;
 
-    FZipper.ZipFileName := FFileOpRecord.SArch;
-    fs := FZipper.ExtractFileToStream(ZipDirEntry(FZipper.ZipContents[FFileOpRecord.SNo]^).FileName);
-//    FFileOprecord.SArch := Settings.TempPath + FFileopRecord.FileName;
-    FFileOprecord.SArch := Settings.TempPath + Format('%.6d.fb2',[Random(999999)]);
-    fs.SaveToFile(FFileopRecord.SArch);
-    FIsTmp := True;
+    fs := TMemoryStream.Create;
+    try
+      FZipper.FileName := FFileOpRecord.SArch;
+      FZipper.OpenArchive;
+      FZipper.ExtractToStream(GetFileNameZip(FZipper,FFileOpRecord.SNo),FS);
+      FFileOprecord.SArch := Settings.TempPath + Format('%.6d.fb2',[Random(999999)]);
+      fs.SaveToFile(FFileopRecord.SArch);
+      FIsTmp := True;
+    finally
+      fs.Free;
+    end;
   end;
   
   Result := True;
@@ -242,12 +247,9 @@ var
 begin
   FCollectionRoot := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
 
-  FZipper := TZipMaster.Create(nil);
+  FZipper := TZipForge.Create(nil);
   try
-    FZipper.Dll_Load := True;
-    FZipper.ExtrOptions := [ExtrTest];
-    FZipper.Unattended := True;
-    FZipper.OnMessage := ShowZipErrorMessage;
+//    FZipper.OnMessage := ShowZipErrorMessage;
 
     totalBooks := High(FBookIdList) + 1;
 

@@ -67,7 +67,7 @@ uses
   oxmldom,
   DBTables,
   Clipbrd,
-  RzCmboBx, RzBHints, unit_CoverPanel, unit_InfoPanel, unit_Columns;
+  RzCmboBx, RzBHints, unit_CoverPanel, unit_InfoPanel, unit_Columns, ZipForge;
 
 type
 
@@ -2486,6 +2486,8 @@ var
   NewSize: integer;
 begin
   NewSize := (Sender as TWinControl).Width;
+  if NewSize < 150 then NewSize := 150;
+  
   cpCoverA.Width := NewSize;
   cpCoverS.Width := NewSize;
   cpCoverG.Width := NewSize;
@@ -2654,7 +2656,7 @@ var
   Data: PBookData;
 
   fs: TMemoryStream;
-  Zip: TZipMaster;
+  Zip: TZipForge;
 
 begin
   GetActiveViewComponents(Tree,Panel,Cover);
@@ -2687,17 +2689,32 @@ begin
 
       DMMain.FieldByName(0,'InsideNo',No);
 
-      Zip := TZipMaster.Create(nil);
+      Zip := TZipForge.Create(nil);
+      FS := TMemoryStream.Create;
       try
-        Zip.ZipFileName := Panel.Folder;
-        Zip.ExtrBaseDir := Settings.TempPath;
-        FileName := ZipDirEntry(Zip.ZipContents[No]^).FileName;
-        WorkFile := Settings.TempPath + CheckSymbols(FileName);
-        fs := Zip.ExtractFileToStream(FileName);
+        Zip.FileName := Panel.Folder;
+        Zip.BaseDir := Settings.TempPath;
+        Zip.OpenArchive;
+        Zip.ExtractToStream(GetFileNameZip(Zip,No),FS);
+        WorkFile := Settings.TempPath + Panel.FileName;
         fs.SaveToFile(WorkFile);
       finally
+        FS.Free;
         Zip.Free;
       end;
+
+
+//      Zip := TZipMaster.Create(nil);
+//      try
+//        Zip.ZipFileName := Panel.Folder;
+//        Zip.ExtrBaseDir := Settings.TempPath;
+//        FileName := ZipDirEntry(Zip.ZipContents[No]^).FileName;
+//        WorkFile := Settings.TempPath + CheckSymbols(FileName);
+//        fs := Zip.ExtractFileToStream(FileName);
+//        fs.SaveToFile(WorkFile);
+//      finally
+//        Zip.Free;
+//      end;
     end
     else
       WorkFile := Panel.Folder + Panel.FileName;

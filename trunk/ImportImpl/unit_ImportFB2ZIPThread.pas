@@ -19,12 +19,12 @@ uses
   SysUtils,
   unit_WorkerThread,
   unit_ImportFB2ThreadBase,
-  ZipMstr;
+  ZipForge;
 
 type
   TImportFB2ZIPThread = class(TImportFB2ThreadBase)
   private
-    FZipper: TZipMaster;
+    FZipper: TZipForge;
 
     procedure ShowZipErrorMessage(Sender: TObject; ErrCode: Integer; Message: string);
 
@@ -50,7 +50,7 @@ uses
 procedure TImportFB2ZIPThread.ShowZipErrorMessage(Sender: TObject; ErrCode: Integer; Message: string);
 begin
   if ErrCode <> 0 then
-    Teletype(Format('Ошибка распаковки архива %s, Код: %d', [FZipper.ZipFileName, FZipper.ErrCode]), tsError);
+    Teletype(Format('Ошибка распаковки архива %s, Код: %d', [FZipper.FileName, 0]), tsError);
 end;
 
 procedure TImportFB2ZIPThread.AddFile2List(Sender: TObject; const F: TSearchRec);
@@ -78,11 +78,14 @@ var
   j: Integer;
   R: TBookRecord;
   AZipFileName: string;
-  AFileName: string;
+  AFileName:    string;
   book: IXMLFictionBook;
-  FS: TStream;
+  FS: TMemoryStream;
   AddCount:Integer;
   DefectCount:Integer;
+
+  ArchiveItem: TZFArchiveItem;
+
 begin
   AddCount := 0;
   DefectCount := 0;
@@ -90,12 +93,9 @@ begin
   SetProgress(0);
   Teletype(Format('Обнаружено новых архивов: %u', [FFiles.Count]));
 
-  FZipper := TZipMaster.Create(nil);
+  FZipper := TZipForge.Create(nil);
+//  FZipper.Options.OEMFileNames := False;
   try
-    FZipper.Dll_Load := True;
-    FZipper.ExtrOptions := [ExtrTest];
-    FZipper.Unattended := True;
-    FZipper.OnMessage := ShowZipErrorMessage;
 
     for i := 0 to FFiles.Count - 1 do
     begin
@@ -118,13 +118,14 @@ begin
       //
       // H:\eBooks\Л\Лаберж Стивен\Исследование мира осознанных сновидений.fb2.zip
       //
-      FZipper.ZipFileName := FRootPath + AZipFileName;
-      if FZipper.ErrCode <> 0 then
-        Continue;
+      FZipper.FileName := FRootPath + AZipFileName;
+      FZipper.OpenArchive(fmOpenRead);
 
-      for j := 0 to FZipper.Count - 1 do
-      begin
+      j := 0;
+      if (FZipper.FindFirst('*.*',ArchiveItem,faAnyFile-faDirectory)) then
+      repeat
         R.Clear;
+        FS := TMemoryStream.Create;
 
         R.Folder := AZipFileName;
 
@@ -132,7 +133,7 @@ begin
         // Исследование мира осознанных сновидений.fb2
         //
 
-        AFileName := FZipper.DirEntry[j]^.FileName;
+        AFileName := ArchiveItem.FileName;
 
         //
         // .fb2
@@ -146,7 +147,7 @@ begin
         //
         R.FileName := Copy(AFileName, 1, Length(AFileName) - Length(R.FileExt));
 
-        R.Size := FZipper.DirEntry[j]^.UncompressedSize;
+        R.Size := ArchiveItem.UncompressedSize;
 
         R.InsideNo := j;
 
@@ -157,8 +158,8 @@ begin
         //
         // FZipper.ExtractFileToStream в случае ошибки возврашает nil
         //
-        FS := FZipper.ExtractFileToStream(AFileName);
-        if not Assigned(FS) then        
+        FZipper.ExtractToStream(AFileName,FS);
+        if not Assigned(FS) then
           Continue;
 
         try
@@ -174,7 +175,10 @@ begin
             Inc(DefectCount);
           end;
         end;
-      end;
+        inc(j);
+      until (not FZipper.FindNext(ArchiveItem));
+      FS.Free;
+      FZipper.CloseArchive;
 
       if (i mod ProcessedItemThreshold) = 0 then
         SetComment(Format('Обработано архивов: %u из %u', [i + 1, FFiles.Count]));

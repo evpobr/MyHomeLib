@@ -54,7 +54,7 @@ uses
   unit_Settings,
   unit_Consts,
   unit_Helpers,
-  ZipMstr;
+  ZipForge;
 
 { TImportLibRusEcThread }
 
@@ -183,11 +183,11 @@ var
   j: Integer;
   R: TBookRecord;
   filesProcessed: Integer;
-  unZip:TZipMaster;
-  MS: TMemoryStream;
+  unZip:TZipForge;
   CurrentFile: string;
   F: text;
   S: string;
+  ArchItem: TZFArchiveItem;
 begin
   filesProcessed := 0;
 
@@ -198,21 +198,21 @@ begin
 
     FLibrary.BeginBulkOperation;
     try
-      unZip := TZipMaster.Create(Nil);
-      unZip.ExtrBaseDir := Settings.TempPath;
-      unZip.ZipFileName := FInpxFileName;
-      unZip.Extract;
+      unZip := TZipForge.Create(Nil);
+      unZip.BaseDir := Settings.TempPath;
+      unZip.FileName := FInpxFileName;
+      unZip.OpenArchive;
+      unZip.ExtractFiles('*.*');
       try
-        for i := 0 to unZip.ZipContents.Count - 1 do
-        begin
+        if (unZip.FindFirst('*.*',ArchItem,faAnyFile-faDirectory)) then
+        repeat
           //
           // Используем TStringListEx для чтения UTF8 файла
           //
-          CurrentFile:= ZipDirEntry(unZip.ZipContents[i]^).FileName;
+          CurrentFile:= ArchItem.FileName;
           BookList := TStringListEx.Create;
           try
             Teletype(Format('Обрабатываем файл %s', [CurrentFile]), tsInfo);
-
             BookList.LoadFromFile(Settings.TempPath + CurrentFile);
             for j := 0 to BookList.Count - 1 do
             begin
@@ -253,11 +253,11 @@ begin
           finally
             BookList.Free;
           end;
-          SetProgress((i + 1) * 100 div unZip.ZipContents.Count);
+          SetProgress((i + 1) * 100 div unZip.FileCount);
 
           if Canceled then
             Break;
-        end;
+        until (not unZip.FindNext(ArchItem));
 
         SetComment(Format('Импортированно %u файлов', [filesProcessed]));
       finally
