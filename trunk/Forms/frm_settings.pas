@@ -78,7 +78,7 @@ type
     Label6: TLabel;
     cbTranslit: TCheckBox;
     RzGroupBox4: TRzGroupBox;
-    btnDevice: TRzButtonEdit;
+    edDeviceDir: TRzButtonEdit;
     RzGroupBox8: TRzGroupBox;
     lvReaders: TRzListView;
     btnDeleteExt: TRzBitBtn;
@@ -126,7 +126,9 @@ type
     RzGroupBox10: TRzGroupBox;
     cbShowFb2Info: TCheckBox;
     RzToolButton3: TRzToolButton;
-    procedure btnDeviceButtonClick(Sender: TObject);
+    RzGroupBox11: TRzGroupBox;
+    edReadDir: TRzButtonEdit;
+    procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
     procedure pnlCAClick(Sender: TObject);
@@ -141,6 +143,7 @@ type
     procedure btnDeleteScriptClick(Sender: TObject);
     procedure RzBitBtn1Click(Sender: TObject);
     procedure tbtnInsert1Click(Sender: TObject);
+    procedure FormShow(Sender: TObject);
 
   private
     procedure EditReader(AItem: TListItem);
@@ -169,10 +172,11 @@ uses
 
 {$R *.dfm}
 
-procedure TfrmSettings.btnDeviceButtonClick(Sender: TObject);
+procedure TfrmSettings.edDeviceDirButtonClick(Sender: TObject);
 begin
+  dlgFolder.SelectedFolder.PathName := (Sender as TRzButtonEdit).Text;
   if dlgFolder.Execute then
-    btnDevice.Text := dlgFolder.SelectedPathName;
+    (Sender as TRzButtonEdit).Text := dlgFolder.SelectedPathName;
 end;
 
 procedure TfrmSettings.LoadSetting;
@@ -180,7 +184,13 @@ var
   i: integer;
 begin
   // Page 1 - Device settings
-  btnDevice.Text := Settings.DevicePath;
+  edDeviceDir.Text := Settings.DevicePath;
+
+  if Settings.ReadPath <> Settings.TempPath then
+    edReadDir.Text := Settings.ReadPath
+  else
+    edReadDir.Text := '';
+
   cbPromptPath.Checked := Settings.PromptDevicePath;
 
   case Settings.ExportMode of
@@ -259,7 +269,9 @@ end;
 procedure TfrmSettings.SaveSettings;
 begin
   // Page 1 - Device settings
-  Settings.DeviceDir := btnDevice.Text;
+  Settings.DeviceDir := edDeviceDir.Text;
+  Settings.ReadDir := edReadDir.Text;
+
   Settings.PromptDevicePath := cbPromptPath.Checked;
   case rgDeviceFormat.ItemIndex of
     0: Settings.ExportMode := emFB2;
@@ -457,6 +469,11 @@ begin
   finally
     frmEditScript.Free;
   end;
+end;
+
+procedure TfrmSettings.FormShow(Sender: TObject);
+begin
+  tvSections.Select(tvSections.Items[0],[ssLeft]);
 end;
 
 procedure TfrmSettings.btnAddScriptClick(Sender: TObject);

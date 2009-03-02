@@ -41,10 +41,8 @@ type
     Zip: TZipForge;
 
     FBook: IXMLFictionBook;
-    XML: TXMLDocument;
 
     //FS: TStream;
-    FIsTemp : boolean;
 
     FOnProgress: boolean;
     FFb2InfoVisible: boolean;
@@ -52,7 +50,6 @@ type
 
     FFolder: string;
     FFile  : string;
-    FWorkFile: string;
 
     FTmp : string;
     FNo: Integer;
@@ -304,13 +301,12 @@ end;
 
 function TMHLCoverPanel.UnPack(var FS: TMemoryStream): boolean;
 begin
-  FIsTemp := False;
+  Result := False;
   if ExtractFileExt(FFolder) = '.zip' then
   begin
     if not FileExists(FFolder) then
     begin
       FOnProgress := False;
-      Result := False;
       Exit;
     end;
 
@@ -319,17 +315,19 @@ begin
       Zip.FileName := FFolder;
       Zip.OpenArchive;
       Zip.ExtractToStream(GetFileNameZip(Zip,FNo),FS);
-      FWorkFile := FTmp + Format('%.6d.fb2',[Random(999999)]);
-      fs.SaveToFile(FWorkFile);
-      FIsTemp := True;
+      Result := True;
     finally
       FOnProgress := False;
       Zip.Free;
     end;
   end
   else
-    FWorkFile := FFolder + FFile;
-  Result :=  FileExists(FWorkFile);
+    try
+      FS.LoadFromFile(FFolder + FFile);
+      Result := True;
+    finally
+      FOnProgress := False;
+    end;
 end;
 
 function TMHLCoverPanel.DecodeBase64(const CinLine: Ansistring): Ansistring;
@@ -424,14 +422,6 @@ begin
   ImgVisible := False;
   try
     try
-//      XML := TXMLDocument.Create(nil);
-//
-//      {$IFDEF DEBUG}
-//      XML.DOMVendor := DOMVendors.Find ('Open XML');
-//      {$ENDIF}
-//
-//      XML.LoadFromFile(FWorkFile);
-//      Fbook := GetFictionbook(XML);
 
       FBook := LoadFictionBook(FS);
 
@@ -485,7 +475,6 @@ begin
     except
     end
     else ShowEmptyCover;
-    if FIsTemp then DeleteFile(PChar(FWorkFile));
     FText.Lines.Add(Short);
 
     Refresh;
@@ -494,8 +483,6 @@ begin
     FText.SelStart := 0;
     FText.SelLength := 1;
     FText.SelLength := 0;
-
-//    XML := nil;
   end;
 end;
 

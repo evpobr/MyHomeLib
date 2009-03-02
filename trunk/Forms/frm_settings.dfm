@@ -13,6 +13,7 @@ object frmSettings: TfrmSettings
   Font.Style = []
   OldCreateOrder = False
   Position = poMainFormCenter
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object RzPanel1: TRzPanel
@@ -60,7 +61,7 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 404
     Height = 401
-    ActivePage = tsInterface
+    ActivePage = tsDevices
     Align = alClient
     TabOrder = 1
     object tsDevices: TTabSheet
@@ -70,12 +71,13 @@ object frmSettings: TfrmSettings
       object RzGroupBox3: TRzGroupBox
         AlignWithMargins = True
         Left = 3
-        Top = 139
+        Top = 196
         Width = 390
         Height = 142
         Align = alTop
         Caption = #1060#1086#1088#1084#1072#1090' '#1080#1084#1077#1085#1080
         TabOrder = 0
+        ExplicitTop = 139
         object Label5: TLabel
           Left = 20
           Top = 29
@@ -232,7 +234,7 @@ object frmSettings: TfrmSettings
         Align = alTop
         Caption = #1055#1072#1087#1082#1072' '#1085#1072' '#1091#1089#1090#1088#1086#1081#1089#1090#1074#1077' '
         TabOrder = 1
-        object btnDevice: TRzButtonEdit
+        object edDeviceDir: TRzButtonEdit
           Left = 11
           Top = 18
           Width = 366
@@ -241,7 +243,7 @@ object frmSettings: TfrmSettings
           TabOrder = 0
           AltBtnWidth = 15
           ButtonWidth = 15
-          OnButtonClick = btnDeviceButtonClick
+          OnButtonClick = edDeviceDirButtonClick
         end
         object cbPromptPath: TCheckBox
           Left = 13
@@ -256,7 +258,7 @@ object frmSettings: TfrmSettings
       object rgDeviceFormat: TRadioGroup
         AlignWithMargins = True
         Left = 3
-        Top = 78
+        Top = 135
         Width = 390
         Height = 55
         Align = alTop
@@ -269,16 +271,19 @@ object frmSettings: TfrmSettings
           '.lrf (SONY)'
           '.txt')
         TabOrder = 2
+        ExplicitTop = 78
       end
       object RzGroupBox5: TRzGroupBox
         AlignWithMargins = True
         Left = 3
-        Top = 287
+        Top = 344
         Width = 390
-        Height = 101
+        Height = 44
         Align = alClient
         Caption = #1054#1087#1094#1080#1080
         TabOrder = 3
+        ExplicitTop = 287
+        ExplicitHeight = 101
         object cbSquareFilter: TCheckBox
           Left = 11
           Top = 18
@@ -287,6 +292,27 @@ object frmSettings: TfrmSettings
           Caption = #1042#1082#1083#1102#1095#1080#1090#1100' '#1092#1080#1083#1100#1090#1088' "[ ... ]"'
           TabOrder = 0
           WordWrap = True
+        end
+      end
+      object RzGroupBox11: TRzGroupBox
+        AlignWithMargins = True
+        Left = 3
+        Top = 78
+        Width = 390
+        Height = 51
+        Align = alTop
+        Caption = #1055#1072#1087#1082#1072' "'#1076#1083#1103' '#1095#1090#1077#1085#1080#1103'"'
+        TabOrder = 4
+        object edReadDir: TRzButtonEdit
+          Left = 11
+          Top = 18
+          Width = 366
+          Height = 21
+          HelpContext = 5001
+          TabOrder = 0
+          AltBtnWidth = 15
+          ButtonWidth = 15
+          OnButtonClick = edDeviceDirButtonClick
         end
       end
     end
@@ -366,7 +392,6 @@ object frmSettings: TfrmSettings
         Align = alTop
         Caption = #1057#1087#1080#1089#1082#1080
         TabOrder = 0
-        ExplicitTop = 66
         object Label9: TLabel
           Left = 19
           Top = 45
@@ -505,7 +530,6 @@ object frmSettings: TfrmSettings
         Align = alTop
         Caption = #1055#1086#1074#1077#1076#1077#1085#1080#1077
         TabOrder = 1
-        ExplicitTop = 235
         object cbShowSubGenreBooks: TCheckBox
           Left = 24
           Top = 26
@@ -532,8 +556,6 @@ object frmSettings: TfrmSettings
         Align = alClient
         Caption = #1056#1072#1079#1085#1086#1077
         TabOrder = 2
-        ExplicitTop = 319
-        ExplicitHeight = 69
         object cbShowFb2Info: TCheckBox
           Left = 24
           Top = 18

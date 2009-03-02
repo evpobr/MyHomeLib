@@ -52,6 +52,7 @@ type
     FDataDir: string;
     FTempDir: string;
     FWorkDir: string;
+    FReadDir: string;
 
     //
     // Settings
@@ -140,6 +141,10 @@ type
     function GetDevicePath: string;
     procedure SetDeviceDir(const Value: string);
 
+    function GetReadPath: string;
+    procedure SetReadDir(const Value: string);
+
+
     procedure LoadReaders(iniFile: TIniFile);
     procedure SaveReaders(iniFile: TIniFile);
 
@@ -182,6 +187,8 @@ type
 
     property DeviceDir: string read FDeviceDir write SetDeviceDir;
     property DevicePath: string read GetDevicePath;
+    property ReadDir: string read FReadDir write SetReadDir;
+    property ReadPath: string read GetReadPath;
 
     property TransliterateFileName: Boolean read FTransliterate write FTransliterate;
     property ActiveCollection: Integer read FActiveCollection write FActiveCollection;
@@ -356,6 +363,9 @@ begin
     // PATH_SECTION
     //
     FDeviceDir := ExcludeTrailingPathDelimiter(iniFile.ReadString(PATH_SECTION, 'Device', 'C:\'));
+    FReadDir := ExcludeTrailingPathDelimiter(iniFile.ReadString(PATH_SECTION, 'Read', ''));
+
+    if FReadDir = '' then  FReadDir := FTempDir;
 
     //
     // SYSTEM_SECTION
@@ -455,6 +465,7 @@ begin
     // INITIAL_DIRS_SECTION
     //
     LoadInitialDirs(iniFile);
+
   finally
     iniFile.Free;
   end;
@@ -471,6 +482,7 @@ begin
     // PATH_SECTION
     //
     iniFile.WriteString(PATH_SECTION, 'Device', FDeviceDir);
+    iniFile.WriteString(PATH_SECTION, 'Read', FReadDir);
 
     //
     // SYSTEM_SECTION
@@ -833,9 +845,19 @@ begin
   Result := FInitialDirs.Values[key];
 end;
 
+function TMHLSettings.GetReadPath: string;
+begin
+  Result := IncludeTrailingPathDelimiter(FReadDir);
+end;
+
 procedure TMHLSettings.SetInitialDir(const key, Value: string);
 begin
   FInitialDirs.Values[key] := Value;
+end;
+
+procedure TMHLSettings.SetReadDir(const Value: string);
+begin
+  FReadDir := ExcludeTrailingPathDelimiter(Value);
 end;
 
 initialization
