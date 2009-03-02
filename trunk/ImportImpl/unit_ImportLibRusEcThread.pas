@@ -190,7 +190,7 @@ var
   ArchItem: TZFArchiveItem;
 begin
   filesProcessed := 0;
-
+  i := 0;
   FLibrary := TMHLLibrary.Create(nil);
   try
     FLibrary.DatabaseFileName := DBFileName;
@@ -204,74 +204,65 @@ begin
       unZip.OpenArchive;
       unZip.ExtractFiles('*.*');
       try
+        BookList := TStringListEx.Create;
         if (unZip.FindFirst('*.*',ArchItem,faAnyFile-faDirectory)) then
         repeat
           //
           // Используем TStringListEx для чтения UTF8 файла
           //
           CurrentFile:= ArchItem.FileName;
-          BookList := TStringListEx.Create;
-          try
-            Teletype(Format('Обрабатываем файл %s', [CurrentFile]), tsInfo);
-            BookList.LoadFromFile(Settings.TempPath + CurrentFile);
-            for j := 0 to BookList.Count - 1 do
+          Teletype(Format('Обрабатываем файл %s', [CurrentFile]), tsInfo);
+          BookList.LoadFromFile(Settings.TempPath + CurrentFile);
+          for j := 0 to BookList.Count - 1 do
+          begin
+            if ParseData(UTF8Decode(BookList[j]), R) then
             begin
-              if ParseData(UTF8Decode(BookList[j]), R) then
+              if isOnlineCollection(CollectionType) then
               begin
-                if isOnlineCollection(CollectionType) then
-                begin
-                  //
-                  // И\Иванов Иван\1234 Просто книга.fb2.zip
-                  //
-                  R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;
+                //
+                // И\Иванов Иван\1234 Просто книга.fb2.zip
+                //
+                R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;
 
-                  //
-                  // Сохраним отметку о существовании файла
-                  //
-                  R.Local := FileExists(FCollectionRoot + R.Folder);
-                end
-                else
-                begin
-                  //
-                  // 98058-98693.inp -> 98058-98693.zip
-                  //
-                  R.Folder := ChangeFileExt(CurrentFile, ZIP_EXTENSION);
-
-                  //
-                  // номер файла внутри zip-а
-                  //
-                  R.InsideNo := j;
-                end;
-
-                FLibrary.InsertBook(R);
+                //
+                // Сохраним отметку о существовании файла
+                //
+                R.Local := FileExists(FCollectionRoot + R.Folder);
+              end
+              else
+              begin
+                //
+                // 98058-98693.inp -> 98058-98693.zip
+                //
+                R.Folder := ChangeFileExt(CurrentFile, ZIP_EXTENSION);
+                //
+                // номер файла внутри zip-а
+                //
+                R.InsideNo := j;
               end;
+            FLibrary.InsertBook(R);
+            end;   // if
 
-              Inc(filesProcessed);
-              if (filesProcessed mod ProcessedItemThreshold) = 0 then
+            Inc(filesProcessed);
+            if (filesProcessed mod ProcessedItemThreshold) = 0 then
                 SetComment(Format('Импортированно %u файлов', [filesProcessed]));
-            end;
-          finally
-            BookList.Free;
-          end;
+          end; // for
+          inc(i);
           SetProgress((i + 1) * 100 div unZip.FileCount);
-
           if Canceled then
             Break;
         until (not unZip.FindNext(ArchItem));
-
-        SetComment(Format('Импортированно %u файлов', [filesProcessed]));
       finally
-        unZip.Free;
+        BookList.Free;
       end;
+      SetComment(Format('Импортированно %u файлов', [filesProcessed]));
     finally
-      FLibrary.EndBulkOperation;
+      unZip.Free;
     end;
   finally
+    FLibrary.EndBulkOperation;
     FLibrary.Free;
   end;
-
-  // получаем версию коллекции
-
 end;
 
 procedure TImportLibRusEcThread.SetCollectionRoot(const Value: string);
