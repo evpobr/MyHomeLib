@@ -725,19 +725,19 @@ begin
       Result := FCollectionRoot;
 end;
 
-procedure RenameFileInArchive(ArchName,NewFileName:string);
-var
-  Zip: TZipMaster;
-
-begin
-  Zip := TZipMaster.Create(Nil);
-  try
-    Zip.ZipFileName := ArchName;
-    ZipDirEntry(Zip.ZipContents[0]^).FileName := NewFileName + '.fb2';
-  finally
-    Zip.Free;
-  end;
-end;
+//procedure RenameFileInArchive(ArchName,NewFileName:string);
+//var
+//  Zip: TZipMaster;
+//
+//begin
+//  Zip := TZipMaster.Create(Nil);
+//  try
+//    Zip.ZipFileName := ArchName;
+//    ZipDirEntry(Zip.ZipContents[0]^).FileName := NewFileName + '.fb2';
+//  finally
+//    Zip.Free;
+//  end;
+//end;
 
 
 function InclideUrlSlash(S: string):string;
