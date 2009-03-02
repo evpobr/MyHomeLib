@@ -39,7 +39,6 @@ type
     FPublisher, FCity, FYear, FISBN, FDate, FVersion, FAuthor: TLabel;
 
     Zip: TZipForge;
-    FS : TMemoryStream;
 
     FBook: IXMLFictionBook;
     XML: TXMLDocument;
@@ -61,8 +60,8 @@ type
     function CheckSymbols(Input: string): string;
   protected
     { Protected declarations }
-    function UnPack:boolean;
-    procedure GetFb2Info;
+    function UnPack(var FS: TMemoryStream):boolean;
+    procedure GetFb2Info(FS: TMemoryStream);
     procedure ShowEmptyCover;
     procedure Set_Fb2InfoVisible(Value: boolean);
     procedure Set_FontSize(Value: integer);
@@ -280,6 +279,8 @@ begin
 end;
 
 function TMHLCoverPanel.Show(Folder, FileName: string; No: integer): boolean;
+var
+  FS: TMemoryStream;
 begin
   if (Not Visible) or FOnProgress  then Exit;
 
@@ -290,15 +291,18 @@ begin
   FFile := FileName;
   FNo:= No;
 
-  if UnPack then
-    GetFb2Info
-  else
-    FOnProgress := False;
+  FS := TMemoryStream.Create;
+  try
+    if UnPack(FS) then
+      GetFb2Info(FS)
+    else
+      FOnProgress := False;
+  finally
+    FS.Free;
+  end;
 end;
 
-function TMHLCoverPanel.UnPack: boolean;
-var
-  fs: TMemoryStream;
+function TMHLCoverPanel.UnPack(var FS: TMemoryStream): boolean;
 begin
   FIsTemp := False;
   if ExtractFileExt(FFolder) = '.zip' then
@@ -311,7 +315,6 @@ begin
     end;
 
     Zip := TZipForge.Create(nil);
-    FS := TMemoryStream.Create;
     try
       Zip.FileName := FFolder;
       Zip.OpenArchive;
@@ -421,16 +424,16 @@ begin
   ImgVisible := False;
   try
     try
-      XML := TXMLDocument.Create(nil);
+//      XML := TXMLDocument.Create(nil);
+//
+//      {$IFDEF DEBUG}
+//      XML.DOMVendor := DOMVendors.Find ('Open XML');
+//      {$ENDIF}
+//
+//      XML.LoadFromFile(FWorkFile);
+//      Fbook := GetFictionbook(XML);
 
-      {$IFDEF DEBUG}
-      XML.DOMVendor := DOMVendors.Find ('Open XML');
-      {$ENDIF}
-
-      XML.LoadFromFile(FWorkFile);
-      Fbook := GetFictionbook(XML);
-
-//      FBook := LoadFictionBook(FS);
+      FBook := LoadFictionBook(FS);
 
       CoverID := FBook.Description.Titleinfo.Coverpage.XML;
       p := pos('"#', CoverID);
@@ -491,8 +494,6 @@ begin
     FText.SelStart := 0;
     FText.SelLength := 1;
     FText.SelLength := 0;
-
-    FS.Free;
 
 //    XML := nil;
   end;
