@@ -40,6 +40,8 @@ type
     procedure SetFileName(Value: string);
     function GetFileName:string;
 
+    procedure Set_FileInfoVisible(Value: boolean);
+
 
     { Private declarations }
   protected
@@ -55,6 +57,7 @@ type
     property Folder: string read GetFolder write SetFolder;
     property FileName: string read GetFileName write SetFileName;
     procedure Translate(Lang: integer);
+    property HideFileInfo: boolean write Set_FileInfoVisible;
   end;
 
 
@@ -209,6 +212,12 @@ procedure TMHLInfoPanel.SetTitle(Value: string);
 begin
   if FTitle.Caption <> Value then
     FTitle.Caption := Value;
+end;
+
+procedure TMHLInfoPanel.Set_FileInfoVisible(Value: boolean);
+begin
+  FFolder.Visible := Value;
+  FFile.Visible := Value;
 end;
 
 procedure TMHLInfoPanel.Translate(Lang: integer);

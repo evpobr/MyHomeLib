@@ -77,7 +77,6 @@ type
     property TmpFolder:string read FTmp write FTmp;
     property Fb2InfoVisible:boolean read FFb2InfoVisible write Set_Fb2InfoVisible;
     property FontSize:integer read FFontSize write Set_FontSize;
-
   end;
 
 

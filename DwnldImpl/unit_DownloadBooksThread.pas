@@ -293,12 +293,15 @@ begin
           end;
         except
           on E: EIdSocketError do
-            if E.LastError = 11001 then
-              ProcessError('Закачка не удалась! Сервер не найден.',
-                           'Ошибка ' + IntToStr(E.LastError) ,Folder)
-            else
+            case E.LastError of
+              11001:ProcessError('Закачка не удалась! Сервер не найден.',
+                           'Ошибка ' + IntToStr(E.LastError) ,Folder);
+              10060:ProcessError('Закачка не удалась! Превышено время ожидания.',
+                           'Ошибка ' + IntToStr(E.LastError) ,Folder);
+              else
               ProcessError('Закачка не удалась! Ошибка подключения.',
                             'Ошибка ' + IntToStr(E.LastError),Folder);
+            end;//case
            on E: Exception do
              ProcessError('Закачка не удалась! Сервер сообщает об ошибке '+
                                     IntToStr(FidHTTP.ResponseCode)+'.',

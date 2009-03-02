@@ -2201,24 +2201,24 @@ begin
 
   DMMain.GetBookFileName(Data.ID, FileName, Folder, No);
 
+
   InfoPanel.Title := Data.Title;
   InfoPanel.Author := Data.FullName;
   InfoPanel.Genre := Data.Genre;
+  InfoPanel.FileName := FileName;
+
+  InfoPanel.HideFileInfo := not (isOnlineCollection(DMUser.ActiveCollection.CollectionType) and not Data.Locale);
 
 
-  if not (isOnlineCollection(DMUser.ActiveCollection.CollectionType) and not Data.Locale) then
-  begin
-    InfoPanel.FileName := FileName;
-
-    if ActiveView <> FavoritesView then
-     if (Folder = '') then
+  if ActiveView <> FavoritesView then
+    if (Folder = '') then
        InfoPanel.Folder := FCollectionRoot
      else
        InfoPanel.Folder := FCollectionRoot + Folder
     else
       InfoPanel.Folder := Folder;
-    Cover.Show(InfoPanel.Folder,InfoPanel.FileName,No);
-  end;
+  Cover.Show(InfoPanel.Folder,InfoPanel.FileName,No);
+
 end;
 
 procedure TfrmMain.tvBooksTreeCompareNodes(Sender: TBaseVirtualTree; Node1,
@@ -2662,7 +2662,7 @@ begin
   GetActiveViewComponents(Tree,Panel,Cover);
 
   Data := Tree.GetNodeData(Tree.GetFirstSelected);
-  if not Assigned(Data) then
+  if (not Assigned(Data)) then
     Exit;
 
   if Data.nodeType <> ntBookInfo then
@@ -3029,7 +3029,7 @@ begin
               Data.ID := TableB.FieldByName('ID').AsInteger;
               Data.Title := TableB.FieldByName('Title').AsString;
 
-              if (COL_AUTHOR) in Columns then Data.FullName := TableB.FieldByName('FullName').AsString;
+              Data.FullName := TableB.FieldByName('FullName').AsString;
 
               if (COL_NO) in Columns then Data.No := TableB.FieldByName('SeqNumber').AsInteger;
 
@@ -3039,8 +3039,7 @@ begin
 
               if (COL_COLLECTION in Columns) then Data.ColName := CollectionName;
 
-              if (Col_Genre in Columns) then
-                if Tree.Tag <> 4 then
+              if Tree.Tag <> 4 then
                   Data.Genre := DMMain.GetBookGenres(TableB.FieldByName('ID').AsInteger,False)
                 else
                   Data.Genre := TableB.FieldByName('Genres').AsString;
@@ -3880,12 +3879,12 @@ var
   S : string;
   OldText:string;
 begin
-  if FIgnoreChange then Exit;
-  S := AnsiUpperCase(copy(edLocateSeries.Text,1,1));
-  if S <> FLastLetter.Caption then
+  if FIgnoreChange or (Length(edLocateSeries.Text)=0) then Exit;
+  S := AnsiUpperCase(edLocateSeries.Text);
+  if S[1] <> FLastLetter.Caption then
   begin
-    if FSimulateAlphabetClick then ChangeLetterButton(S);
     OldText := edLocateSeries.Text;
+    if FSimulateAlphabetClick then ChangeLetterButton(S[1]);
     edLocateSeries.Text := OldText;
     edLocateSeries.Perform(WM_KEYDOWN, VK_RIGHT, 0);
   end;
