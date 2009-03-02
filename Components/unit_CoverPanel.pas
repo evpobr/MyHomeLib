@@ -18,7 +18,7 @@ uses
   Controls,
   ExtCtrls,
   StdCtrls ,
-  ZipMstr,
+  ZipForge,
   fictionbook_21,
   XMLDoc,
   Graphics,
@@ -38,10 +38,13 @@ type
 
     FPublisher, FCity, FYear, FISBN, FDate, FVersion, FAuthor: TLabel;
 
-    Zip: TZipMaster;
+    Zip: TZipForge;
+    FS : TMemoryStream;
+
     FBook: IXMLFictionBook;
     XML: TXMLDocument;
 
+    //FS: TStream;
     FIsTemp : boolean;
 
     FOnProgress: boolean;
@@ -84,7 +87,8 @@ implementation
 uses
   Messages,
   Windows,
-  xmldom;
+  xmldom,
+  unit_globals;
 
 const
   W = 55;
@@ -296,7 +300,6 @@ end;
 function TMHLCoverPanel.UnPack: boolean;
 var
   fs: TMemoryStream;
-
 begin
   FIsTemp := False;
   if ExtractFileExt(FFolder) = '.zip' then
@@ -308,13 +311,13 @@ begin
       Exit;
     end;
 
-    Zip := TZipMaster.Create(nil);
+    Zip := TZipForge.Create(nil);
+    FS := TMemoryStream.Create;
     try
-      Zip.ZipFileName := FFolder;
-      Zip.ExtrBaseDir := FTmp;
-      FFile := ZipDirEntry(Zip.ZipContents[FNo]^).FileName;
+      Zip.FileName := FFolder;
+      Zip.OpenArchive;
+      Zip.ExtractToStream(GetFileNameZip(Zip,FNo),FS);
       FWorkFile := FTmp + Format('%.6d.fb2',[Random(999999)]);
-      fs := Zip.ExtractFileToStream(FFile);
       fs.SaveToFile(FWorkFile);
       FIsTemp := True;
     finally
@@ -428,6 +431,8 @@ begin
       XML.LoadFromFile(FWorkFile);
       Fbook := GetFictionbook(XML);
 
+//      FBook := LoadFictionBook(FS);
+
       CoverID := FBook.Description.Titleinfo.Coverpage.XML;
       p := pos('"#', CoverID);
       if p <> 0 then
@@ -488,7 +493,9 @@ begin
     FText.SelLength := 1;
     FText.SelLength := 0;
 
-    XML := nil;
+    FS.Free;
+
+//    XML := nil;
   end;
 end;
 

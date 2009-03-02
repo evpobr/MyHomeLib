@@ -21,7 +21,8 @@ uses
   StrUtils,
   Dialogs,
   VirtualTrees,
-  IdHTTP;
+  IdHTTP,
+  ZipForge;
 
 type
 
@@ -145,6 +146,8 @@ function c_GetTempPath: String;
 function GetSpecialPath(CSIDL: word): string;
 function GetLibUpdateVersion:integer;
 function ExecAndWait(const FileName,Params: String; const WinState: Word): boolean;
+
+function GetFileNameZip(Zip: TZipForge; No: integer): string;
 
 type
   TAppLanguage = (alEng, alRus);
@@ -401,13 +404,15 @@ end;
 
 procedure ZipFile(const FileName: string; const ZipFileName: string);
 var
-  ziper: TZipMaster;
+  ziper: TZipForge;
 begin
-  ziper := TZipMaster.Create(nil);
+  ziper := TZipForge.Create(nil);
   try
-    ziper.ZipFileName := ZipFileName;
-    ziper.FSpecArgs.Add(FileName);
-    ziper.Add;
+    ziper.FileName := ZipFileName;
+    ziper.OpenArchive(fmCreate);
+    ziper.BaseDir := ExtractFilePath(FileName);
+    ziper.AddFiles(ExtractFileName(FileName));
+    ziper.CloseArchive;
   finally
     ziper.Free;
   end;
@@ -890,6 +895,21 @@ begin
   begin
     Application.MessageBox(PChar(Format(' Не удалось запустить %s ! ',[FileName])),'',mb_IconExclamation)
   end;
+end;
+
+function GetFileNameZip(Zip: TZipForge; No: integer): string;
+var
+  i: integer;
+  ArchItem: TZFArchiveItem;
+begin
+  i := 0;
+  if (Zip.FindFirst('*.*',ArchItem,faAnyFile-faDirectory)) then
+  while i <> No do
+  begin
+    Zip.FindNext(ArchItem);
+    inc(i);
+  end;
+  Result := ArchItem.FileName;
 end;
 
 end.
