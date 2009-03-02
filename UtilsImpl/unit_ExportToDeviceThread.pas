@@ -91,6 +91,7 @@ var
   FS: TMemoryStream;
   p1,p2: integer;
   FullName: String;
+  InsideFileName: string;
 begin
   FIsTmp := False;
   FTable.Locate('ID', ID, []);
@@ -179,12 +180,15 @@ begin
       Exit;
     end;
 
+    InsideFileName := FullName + ' - ' + FTable.FieldByName('Title').AsString;
+    InsideFileName := Trim(CheckSymbols(InsideFileName)) + DMMain.tblBooks['Ext'];
+
     fs := TMemoryStream.Create;
     try
       FZipper.FileName := FFileOpRecord.SArch;
       FZipper.OpenArchive;
       FZipper.ExtractToStream(GetFileNameZip(FZipper,FFileOpRecord.SNo),FS);
-      FFileOprecord.SArch := Settings.TempPath + Format('%.6d.fb2',[Random(999999)]);
+      FFileOprecord.SArch := Settings.TempPath + InsideFileName;
       fs.SaveToFile(FFileopRecord.SArch);
       FIsTmp := True;
     finally

@@ -2696,7 +2696,7 @@ begin
         Zip.BaseDir := Settings.TempPath;
         Zip.OpenArchive;
         Zip.ExtractToStream(GetFileNameZip(Zip,No),FS);
-        WorkFile := Settings.TempPath + Panel.FileName;
+        WorkFile := Settings.TempPath + Format('%s - %s.fb2',[Panel.Author,Panel.Title]);
         fs.SaveToFile(WorkFile);
       finally
         FS.Free;

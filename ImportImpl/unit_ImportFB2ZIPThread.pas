@@ -152,12 +152,7 @@ begin
         R.InsideNo := j;
 
         R.Date := Now;
-        //
-        // ExtractFileToStream вовращает указатель на внутренний объект стрим (TZMWorker.ZipStream)
-        // поэтому освобождать FS _не надо_ !!!
-        //
-        // FZipper.ExtractFileToStream в случае ошибки возврашает nil
-        //
+
         FZipper.ExtractToStream(AFileName,FS);
         if not Assigned(FS) then
           Continue;
@@ -175,6 +170,7 @@ begin
             Inc(DefectCount);
           end;
         end;
+
         inc(j);
       until (not FZipper.FindNext(ArchiveItem));
       FS.Free;
