@@ -2696,25 +2696,12 @@ begin
         Zip.BaseDir := Settings.TempPath;
         Zip.OpenArchive;
         Zip.ExtractToStream(GetFileNameZip(Zip,No),FS);
-        WorkFile := Settings.TempPath + Format('%s - %s.fb2',[Panel.Author,Panel.Title]);
+        WorkFile := Settings.ReadPath + Format('%s - %s.fb2',[Panel.Author,Panel.Title]);
         fs.SaveToFile(WorkFile);
       finally
         FS.Free;
         Zip.Free;
       end;
-
-
-//      Zip := TZipMaster.Create(nil);
-//      try
-//        Zip.ZipFileName := Panel.Folder;
-//        Zip.ExtrBaseDir := Settings.TempPath;
-//        FileName := ZipDirEntry(Zip.ZipContents[No]^).FileName;
-//        WorkFile := Settings.TempPath + CheckSymbols(FileName);
-//        fs := Zip.ExtractFileToStream(FileName);
-//        fs.SaveToFile(WorkFile);
-//      finally
-//        Zip.Free;
-//      end;
     end
     else
       WorkFile := Panel.Folder + Panel.FileName;
