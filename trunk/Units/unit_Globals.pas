@@ -148,6 +148,7 @@ function GetLibUpdateVersion:integer;
 function ExecAndWait(const FileName,Params: String; const WinState: Word): boolean;
 
 function GetFileNameZip(Zip: TZipForge; No: integer): string;
+function CleanExtension(const Ext: string): string;
 
 type
   TAppLanguage = (alEng, alRus);
@@ -245,6 +246,7 @@ type
     FullPath, FileName, Folder, Ext, Title: String;
     Size: integer;
     DataType : (dtFolder,dtFile);
+    Date: TDateTime;
   end;
 
   TColumnData = record
@@ -912,6 +914,14 @@ begin
   end;
   Result := ArchItem.FileName;
 end;
+
+function CleanExtension(const Ext: string): string;
+begin
+  Result := Trim(Ext);
+  if (Result <> '') and (Result[1] = '.') then
+    Delete(Result, 1, 1);
+end;
+
 
 end.
 

@@ -16,7 +16,6 @@ object frmAddnonfb2: TfrmAddnonfb2
   OldCreateOrder = False
   PopupMenu = pmMain
   OnCloseQuery = FormCloseQuery
-  OnResize = FormResize
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -53,7 +52,6 @@ object frmAddnonfb2: TfrmAddnonfb2
       Colors.HotColor = clBlack
       Colors.UnfocusedSelectionColor = clNavy
       Colors.UnfocusedSelectionBorderColor = clBtnShadow
-      DefaultPasteMode = amAddChildFirst
       DragMode = dmAutomatic
       EditDelay = 100
       Font.Charset = DEFAULT_CHARSET
@@ -61,21 +59,20 @@ object frmAddnonfb2: TfrmAddnonfb2
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
-      Header.AutoSizeIndex = 0
+      Header.AutoSizeIndex = -1
       Header.Font.Charset = ANSI_CHARSET
       Header.Font.Color = clWindowText
       Header.Font.Height = -12
       Header.Font.Name = 'Arial'
       Header.Font.Style = [fsBold]
       Header.Height = 20
-      Header.Options = [hoColumnResize, hoDrag, hoHotTrack, hoOwnerDraw, hoRestrictDrag, hoShowHint, hoShowImages, hoShowSortGlyphs, hoVisible, hoAutoSpring]
+      Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoHotTrack, hoOwnerDraw, hoRestrictDrag, hoShowHint, hoShowImages, hoShowSortGlyphs, hoVisible, hoAutoSpring]
       Header.Style = hsFlatButtons
       HintMode = hmTooltip
       HotCursor = crHandPoint
       ParentFont = False
       ParentShowHint = False
       ScrollBarOptions.AlwaysVisible = True
-      ScrollBarOptions.ScrollBars = ssVertical
       SelectionBlendFactor = 0
       ShowHint = False
       TabOrder = 0
@@ -85,21 +82,33 @@ object frmAddnonfb2: TfrmAddnonfb2
       TreeOptions.PaintOptions = [toPopupMode, toShowBackground, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toFullVertGridLines]
       TreeOptions.SelectionOptions = [toFullRowSelect, toRightClickSelect, toSimpleDrawSelection]
       OnChange = TreeChange
+      OnCompareNodes = TreeCompareNodes
       OnDblClick = TreeDblClick
       OnGetText = TreeGetText
       OnPaintText = TreePaintText
-      ExplicitLeft = 0
       Columns = <
         item
-          MinWidth = 40
-          Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring, coSmartResize]
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring, coSmartResize, coAllowFocus]
           Position = 0
-          Spacing = 10
-          Width = 788
+          Width = 600
           WideText = #1060#1072#1081#1083
-          WideHint = 
-            'Text is initially centered and has a left-to-right directionalit' +
-            'y.'
+        end
+        item
+          Position = 1
+          WideText = #1058#1080#1087
+        end
+        item
+          Alignment = taRightJustify
+          MaxWidth = 150
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coFixed, coAllowFocus]
+          Position = 2
+          Width = 100
+          WideText = #1056#1072#1079#1084#1077#1088
+        end
+        item
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring, coSmartResize, coAllowFocus]
+          Position = 3
+          Width = 41
         end>
     end
     object RzPanel3: TRzPanel
@@ -632,6 +641,7 @@ object frmAddnonfb2: TfrmAddnonfb2
     end
   end
   object flFiles: TFilesList
+    OnDirectory = flFilesDirectory
     OnFile = flFilesFile
     Left = 480
     Top = 368

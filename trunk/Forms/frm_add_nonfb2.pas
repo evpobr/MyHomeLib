@@ -114,18 +114,19 @@ type
     procedure miClearAllClick(Sender: TObject);
     procedure miOpenExplorerClick(Sender: TObject);
     procedure miRenameFileClick(Sender: TObject);
-    procedure FormResize(Sender: TObject);
+    procedure flFilesDirectory(Sender: TObject; const Dir: string);
+    procedure TreeCompareNodes(Sender: TBaseVirtualTree; Node1,
+      Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
 
   private
     procedure ScanFolder;
     procedure FillLists;
-
+    procedure SortTree;
   public
 
   private
     FLibrary: TMHLLibrary;
     FRootPath: string;
-    FFiles: TStringList;
     function CheckEmptyFields(Data: PFileData): boolean;
   end;
 
@@ -199,23 +200,14 @@ begin
   FLibrary.Active := False;
   FreeAndNil(FLibrary);
 
-  FreeAndNil(FFiles);
-
   frmMain.DisableControls(True);
   frmMain.DisableMainMenu(True);
   CanClose := true;
 end;
 
-procedure TfrmAddnonfb2.FormResize(Sender: TObject);
-begin
-  Tree.Header.Columns[0].Width := Width - 30;
-end;
-
 procedure TfrmAddnonfb2.FormShow(Sender: TObject);
 begin
   frmMain.FillGenresTree(frmGenreTree.tvGenresTree);
-
-  FFiles := TStringList.Create;
 
   FLibrary := TMHLLibrary.Create(Self);
   FLibrary.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
@@ -409,12 +401,89 @@ begin
   lvAuthors.DeleteSelected;
 end;
 
+procedure TfrmAddnonfb2.flFilesDirectory(Sender: TObject; const Dir: string);
+var
+  Data: PFileData;
+  ParentNode: PVirtualNode;
+  CurrentNode: PVirtualNode;
+  ParentName: string;
+  Path: string;
+
+  procedure InsertNodeData(Node:PVirtualNode);
+  begin
+    Data := Tree.GetNodeData(Node);
+    Data.Title :=  ExtractFileName(ExcludeTrailingPathdelimiter(Path));
+    Data.Folder := Path;
+    Data.DataType := dtFolder;
+  end;
+
+begin
+  Path := ExtractRelativePath(FRootPath, Dir);
+  if Path = '' then Exit;
+
+  ParentName := ExtractFilePath(ExcludeTrailingPathdelimiter(Path));
+  ParentNode := FindParentInTree(Tree,ParentName);
+  if ParentNode <> nil then
+  begin
+    CurrentNode := Tree.AddChild(ParentNode);
+    InsertNodeData(CurrentNode);
+  end
+  else
+    if (FindParentInTree(Tree,Path) = nil) then
+    begin
+      CurrentNode := Tree.AddChild(Nil);
+      InsertNodeData(CurrentNode);
+    end;
+end;
+
 procedure TfrmAddnonfb2.flFilesFile(Sender: TObject; const F: TSearchRec);
 var
   FullName: string;
+  Data: PFileData;
+  Path: String;
+  ParentNode: PVirtualNode;
+  CurrentNode: PVirtualNode;
+  Ext: string;
 begin
+  if (F.Name = '.') or (F.Name = '..') then Exit;
+
+  Ext := ExtractFileExt(F.Name);
+  if Ext = '' then Exit;
+
+
+ //
+ // Пропустим fb2-документы
+ //
+ if CompareText(Ext, FB2_EXTENSION) = 0 then
+      Exit;
+
+  //
+  // Проверим, есть ли у нас ридер для этого документа
+  //
+
+  if Settings.Readers.Find(Ext) = nil then
+    Exit;
+
+  if FLibrary.CheckFileInCollection(flFiles.LastDir + F.Name, Ext) then
+    Exit;
+
+
   FullName := ExtractRelativePath(FRootPath, flFiles.LastDir + F.Name);
-  FFiles.Add(IntToStr(F.Size) + ' ' + FullName);
+  Path := ExtractRelativePath(FRootPath, flFiles.LastDir);
+  ParentNode := FindParentInTree(Tree,Path);
+
+  Data := Tree.GetNodeData(Tree.GetLastChild(ParentNode));
+
+  CurrentNode := Tree.AddChild(ParentNode);
+
+  Data := Tree.GetNodeData(CurrentNode);
+  Data.DataType := dtFile;
+  Data.FileName := ExtractFileName(F.Name);
+  Data.Size := F.Size;
+  Data.FullPath := FullName;
+  Data.Folder := Path;
+  Data.Ext := Ext;
+  Data.Date := F.Time;
 end;
 
 procedure TfrmAddnonfb2.ScanFolder;
@@ -435,60 +504,46 @@ begin
 
   flFiles.TargetPath := DMUser.ActiveCollection.RootFolder;
   flFiles.Process;
+  SortTree;
+end;
 
-  LastFolder := '';
-  for I := 0 to FFiles.Count - 1 do
+procedure TfrmAddnonfb2.SortTree;
+var
+  A,B: PVirtualNode;
+  Data,DataA,DataB: PFileData;
+  Parent: PVirtualNode;
+begin
+  Parent := Tree.GetFirst;
+  Data := Tree.GetNodeData(Parent);
+  while Parent <> nil do
   begin
-    p := Pos(' ', FFiles[i]);
-    Assert(p <> 0);
-    FullName := FFiles[i];
-    if p <> 0 then
+    if (Data.DataType = dtFolder) and
+       (Tree.HasChildren[Parent]) then
     begin
-      SS := Copy(FullName, 1, p - 1);
-      Delete(FullName, 1, p);
+      A := Tree.GetFirstChild(Parent);
+      while (A <> Parent.LastChild) do
+      begin
+        DataA := Tree.GetNodeData(A);
+        B := Tree.GetNext(A);
+        DataB := Tree.GetNodeData(B);
+        if (A.Parent = B.Parent) and
+           (DataA.DataType = dtFile) and
+           (DataB.DataType = dtFolder) then
+        begin
+          Tree.MoveTo(B, A, amInsertBefore, false);
+          A := Parent.FirstChild;
+        end
+        else
+          A := B;
+        B := Tree.GetNext(B);
+      end;
     end;
 
-    Ext := ExtractFileExt(FullName);
+    if (Data.DataType = dtFolder) and (Parent.ChildCount = 0) then
+                  Tree.DeleteNode(Parent, True);
 
-    //
-    // Пропустим fb2-документы
-    //
-    if AnsiCompareText(Ext, FB2_EXTENSION) = 0 then
-      Continue;
-
-    //
-    // Проверим, есть ли у нас ридер для этого документа
-    //
-    if Settings.Readers.Find(Ext) = nil then
-      Continue;
-
-    Folder := ExtractFilePath(FullName);
-    ParentName := ExtractFilePath(ExcludeTrailingPathdelimiter(Folder));
-    if FLibrary.CheckFileInCollection(FullName, Ext) then
-      Continue;
-
-    if Folder <> LastFolder then
-    begin
-      A := FindParentInTree(Tree,ParentName);
-      A := Tree.AddChild(A);
-      Data := Tree.GetNodeData(A);
-      Data.Title :=  ExtractFileName(ExcludeTrailingPathdelimiter(Folder));
-      Data.Folder := Folder;
-      Data.DataType := dtFolder;
-      LastFolder := Folder;
-    end;
-
-    FN := ExtractFileName(FullName);
-    FN := Copy(FN, 1, Length(FN) - Length(Ext));
-
-    B := Tree.AddChild(A);
-    Data := Tree.GetNodeData(B);
-    Data.DataType := dtFile;
-    Data.FileName := FN;
-    Data.Size := StrToInt(SS);
-    Data.FullPath := FullName;
-    Data.Folder := Folder;
-    Data.Ext := Ext;
+    Parent := Tree.GetNext(Parent);
+    Data := Tree.GetNodeData(Parent);
   end;
 end;
 
@@ -508,6 +563,16 @@ begin
   edFileName.Text := Data.FileName;
   if cbSelectFileName.Checked then
     edFileName.SelectAll;
+end;
+
+procedure TfrmAddnonfb2.TreeCompareNodes(Sender: TBaseVirtualTree; Node1,
+  Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
+var
+  Data1, Data2: PFileData;
+begin
+  Data1 := Sender.GetNodeData(Node1);
+  Data2 := Sender.GetNodeData(Node2);
+//  Result := CompareInt(Data1.DataType, Data1.DataType);
 end;
 
 procedure TfrmAddnonfb2.TreeDblClick(Sender: TObject);
@@ -531,10 +596,15 @@ var
 begin
   Data := Sender.GetNodeData(Node);
   case Data.DataType of
-    dtFolder: CellText := Data.Title;
-    dtFile: CellText := Data.FileName + Data.Ext;
+    dtFolder: if Column = 0 then CellText := Data.Title
+                else  CellText := '';
+    dtFile:  case Column of
+               0: CellText := Copy(Data.FileName,1,Length(Data.FileName)-Length(Data.Ext));
+               1: CellText := CleanExtension(Data.Ext);
+               2: CellText := IntToStr(Data.Size);
+               3: CellText := '';
+             end;
   end;
-
 end;
 
 procedure TfrmAddnonfb2.TreePaintText(Sender: TBaseVirtualTree;
