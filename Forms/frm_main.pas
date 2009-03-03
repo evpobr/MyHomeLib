@@ -1364,8 +1364,8 @@ end;
 
 procedure TfrmMain.CreateAlphabet;
 const
-  E = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  R = 'юабцде╗фгхийклмнопярстужвьыщчъ';
+  E : string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  R : string = 'юабцде╗фгхийклмнопярстужвьыщчъ';
 var
   i: integer;
   B: TToolButton;
