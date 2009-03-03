@@ -42,12 +42,12 @@ begin
   while Node <> nil do
   begin
     Data := Tree.GetNodeData(Node);
-    if (Data.Level = 1) and (Data.Folder = Folder) then
+    if (Data.DataType = dtFolder) and (Data.Folder = Folder) then
     begin
       Result := Node;
       Break;
     end;
-    Node := Tree.GetNextSibling(Node);
+    Node := Tree.GetNext(Node);
   end;
 end;
 

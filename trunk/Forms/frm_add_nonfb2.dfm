@@ -39,7 +39,6 @@ object frmAddnonfb2: TfrmAddnonfb2
       BevelOuter = bvNone
       BevelKind = bkFlat
       ButtonFillMode = fmShaded
-      ButtonStyle = bsTriangle
       CheckImageKind = ckXP
       ClipboardFormats.Strings = (
         'CSV'
@@ -83,12 +82,13 @@ object frmAddnonfb2: TfrmAddnonfb2
       TreeOptions.AnimationOptions = [toAnimatedToggle]
       TreeOptions.AutoOptions = [toAutoDropExpand, toAutoExpand, toAutoScrollOnExpand, toAutoTristateTracking, toAutoDeleteMovedNodes]
       TreeOptions.MiscOptions = [toCheckSupport, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning, toFullRowDrag]
-      TreeOptions.PaintOptions = [toPopupMode, toShowBackground, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowVertGridLines, toFullVertGridLines]
+      TreeOptions.PaintOptions = [toPopupMode, toShowBackground, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toFullVertGridLines]
       TreeOptions.SelectionOptions = [toFullRowSelect, toRightClickSelect, toSimpleDrawSelection]
       OnChange = TreeChange
       OnDblClick = TreeDblClick
       OnGetText = TreeGetText
       OnPaintText = TreePaintText
+      ExplicitLeft = 0
       Columns = <
         item
           MinWidth = 40
@@ -519,7 +519,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           Top = 20
           Width = 307
           Height = 21
-          ItemHeight = 0
+          ItemHeight = 13
           TabOrder = 1
         end
       end
