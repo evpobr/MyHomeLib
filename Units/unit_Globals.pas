@@ -242,8 +242,9 @@ type
 
   PFileData = ^TFileData;
   TFileData = record
-    FullPath, FileName, Folder, Ext: String;
-    Size, Level: integer;
+    FullPath, FileName, Folder, Ext, Title: String;
+    Size: integer;
+    DataType : (dtFolder,dtFile);
   end;
 
   TColumnData = record

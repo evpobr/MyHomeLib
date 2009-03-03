@@ -242,7 +242,7 @@ var
   Data: PFileData;
 begin
   Data := Tree.GetNodedata(Tree.GetFirstSelected);
-  if (Data = nil) or (Data.Level = 1) then
+  if (Data = nil) or (Data.DataType = dtFolder) then
     Exit;
   ShellExecute(Handle, 'explore', PChar(AnsiLowercase(ExtractFilePath(Data.FullPath))), '', nil, SW_SHOWNORMAL);
 end;
@@ -257,7 +257,7 @@ begin
       raise EInvalidOp.Create('Укажите минимум одного автора!');
     if edT.Text = '' then
       raise EInvalidOp.Create('Укажите название книги!');
-    if Data.Level = 1 then
+    if Data.DataType = dtFolder then
       Result := False
     else
       Result := True;
@@ -426,6 +426,7 @@ var
   FN, Ext: string;
   SS: string;
   FullName, LastFolder, Folder: string;
+  ParentName: string;
 begin
   Tree.Clear;
   Tree.NodeDataSize := sizeof(TFileData);
@@ -462,32 +463,27 @@ begin
       Continue;
 
     Folder := ExtractFilePath(FullName);
+    ParentName := ExtractFilePath(ExcludeTrailingPathdelimiter(Folder));
     if FLibrary.CheckFileInCollection(FullName, Ext) then
       Continue;
+
+    if Folder <> LastFolder then
+    begin
+      A := FindParentInTree(Tree,ParentName);
+      A := Tree.AddChild(A);
+      Data := Tree.GetNodeData(A);
+      Data.Title :=  ExtractFileName(ExcludeTrailingPathdelimiter(Folder));
+      Data.Folder := Folder;
+      Data.DataType := dtFolder;
+      LastFolder := Folder;
+    end;
 
     FN := ExtractFileName(FullName);
     FN := Copy(FN, 1, Length(FN) - Length(Ext));
 
-    // TODO 
-    if Folder = '' then
-      Folder := '\';
-
-    if Folder <> LastFolder then
-    begin
-      A := FindParentInTree(Tree, Folder);
-      if not Assigned(A) then
-      begin
-        A := Tree.AddChild(nil);
-        Data := Tree.GetNodeData(A);
-        Data.Folder := Folder;
-        Data.Level := 1;
-        LastFolder := Folder;
-      end;
-    end;
-
     B := Tree.AddChild(A);
     Data := Tree.GetNodeData(B);
-    Data.Level := 2;
+    Data.DataType := dtFile;
     Data.FileName := FN;
     Data.Size := StrToInt(SS);
     Data.FullPath := FullName;
@@ -507,7 +503,7 @@ var
   Data: PFiledata;
 begin
   Data := Tree.GetNodeData(Tree.GetFirstSelected);
-  if (Data = nil) or (Data.Level = 1) then
+  if (Data = nil) or (Data.DataType = dtFolder) then
     Exit;
   edFileName.Text := Data.FileName;
   if cbSelectFileName.Checked then
@@ -534,9 +530,9 @@ var
   Data: PFileData;
 begin
   Data := Sender.GetNodeData(Node);
-  case Data.Level of
-    1: CellText := Data.Folder;
-    2: CellText := Data.FileName + Data.Ext;
+  case Data.DataType of
+    dtFolder: CellText := Data.Title;
+    dtFile: CellText := Data.FileName + Data.Ext;
   end;
 
 end;
@@ -548,7 +544,7 @@ var
   Data: PFileData;
 begin
   Data := Tree.GetNodeData(Node);
-  if Data.level = 1 then
+  if Data.DataType = dtFolder then
     TargetCanvas.Font.Style := [fsBold]
 end;
 
