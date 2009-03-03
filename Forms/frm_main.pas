@@ -4033,7 +4033,8 @@ var
   Table: TAbsTable;
   frmBookDetails: TfrmBookDetails;
 
-  Zip: TZipMaster;
+  Zip: TZipForge;
+  FS : TMemoryStream;
 
 begin
   if not isLocalCollection(DMUser.ActiveCollection.CollectionType) then
@@ -4064,7 +4065,8 @@ begin
     if Table.IsEmpty then
       Exit;
 
-    begin
+    FS := TMemoryStream.Create;
+    try
       if ExtractFileExt(CR) = ZIP_EXTENSION then
       begin
         if not FileExists(CR) then
@@ -4073,32 +4075,32 @@ begin
           Exit;
         end;
 
-      Zip := TZipMaster.Create(Self);
+      Zip := TZipForge.Create(Self);
       try
-        Zip.ZipFileName := CR;
-        Zip.ExtrBaseDir := Settings.TempDir;
-        UA := ZipDirEntry(Zip.ZipContents[Table['InsideNo']]^).FileName;
-        US := Settings.TempPath + UA;
-        Zip.FSpecArgs.Add(UA);
-        Zip.Extract;
+        Zip.FileName := CR;
+        Zip.OpenArchive;
+        Zip.ExtractToStream(GetFileNameZip(Zip,Table['InsideNo']),FS);
+        Zip.CloseArchive;
       finally
         Zip.Free;
       end;
       end
       else
       begin
-        US := CR + Table['FileName'] + Table['Ext'];
+        FS.LoadFromFile(CR + Table['FileName'] + Table['Ext']);
       end;
 
       frmBookDetails := TfrmBookDetails.Create(Application);
       try
-        frmBookDetails.ShowBookInfo(US);
+        frmBookDetails.ShowBookInfo(FS);
         frmBookDetails.mmInfo.Lines.Add('Добавлено: ' + Table.FieldByName('Date').AsString);
         frmBookDetails.ShowModal;
       finally
         frmBookDetails.Free;
       end;
-    end
+    finally
+      FS.Free;
+    end;
   except
     FFormBusy := False;
   end;

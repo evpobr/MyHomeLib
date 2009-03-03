@@ -115,7 +115,7 @@ function CheckSymbols(Input: string): string;
 ///procedure GetFileList(InitDir, Ext: string; var OutList: TStringList);
 function EncodeStr(Input: string): string;
 function DecodeStr(Input: string): string;
-function DecodeBase64(const CinLine: string): string;
+function DecodeBase64(const CinLine: ansistring): ansistring;
 procedure StrReplace(s1, s2: String; var s3: String);
 
 function ClearDir(const DirectoryName: string): Boolean;
@@ -499,12 +499,12 @@ begin
   result := conv;
 end;
 
-function DecodeBase64(const CinLine: string): string;
+function DecodeBase64(const CinLine: ansistring): ansistring;
 const
   RESULT_ERROR = -2;
 var
   inLineIndex: Integer;
-  c: Char;
+  c: AnsiChar;
   x: SmallInt;
   c4: Word;
   StoredC4: array[0..3] of SmallInt;
@@ -541,13 +541,13 @@ begin
     if c4 = 4 then
     begin
       c4 := 0;
-      Result := Result + Char((StoredC4[0] shl 2) or (StoredC4[1] shr 4));
+      Result := Result + AnsiChar((StoredC4[0] shl 2) or (StoredC4[1] shr 4));
       if StoredC4[2] = -1 then
         Exit;
-      Result := Result + Char((StoredC4[1] shl 4) or (StoredC4[2] shr 2));
+      Result := Result + AnsiChar((StoredC4[1] shl 4) or (StoredC4[2] shr 2));
       if StoredC4[3] = -1 then
         Exit;
-      Result := Result + Char((StoredC4[2] shl 6) or (StoredC4[3]));
+      Result := Result + AnsiChar((StoredC4[2] shl 6) or (StoredC4[3]));
     end;
   end;
 end;

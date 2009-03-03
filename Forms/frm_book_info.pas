@@ -23,7 +23,6 @@ type
   TfrmBookDetails = class(TForm)
     RzPanel1: TRzPanel;
     Img: TImage;
-    XML: TXMLDocument;
     RzBitBtn1: TRzBitBtn;
     mmShort: TMemo;
     mmInfo: TMemo;
@@ -32,7 +31,7 @@ type
   private
     { Private declarations }
   public
-    procedure ShowBookInfo(FN: string);
+    procedure ShowBookInfo(FS: TMemoryStream);
     { Public declarations }
   end;
 
@@ -59,39 +58,40 @@ begin
   Close;
 end;
 
-procedure TfrmBookDetails.ShowBookInfo(FN:string);
+procedure TfrmBookDetails.ShowBookInfo(FS: TMemoryStream);
 var
   book:IXMLFictionBook;
   i,p:integer;
   S,outStr:string;
   F:TextFile;
   CoverID:String;
+  CoverFile: string;
 begin
   Img.Picture.Bitmap.Canvas.FrameRect(Img.ClientRect);
   mmInfo.Lines.Clear;
   mmShort.Lines.Clear;
   try
-    XML.LoadFromFile(FN);
-    book:=GetFictionbook(XML);
+
+    book:=LoadFictionbook(FS);
 
     CoverID:=book.Description.TitleInfo.Coverpage.XML;
     p:=pos('"#',CoverID);
     Delete(CoverId,1,p+1);
     p:=pos('"',CoverID);
     CoverID:=Copy(CoverID,1,p-1);
+    CoverFile := IntToStr(Random(99999)) + CoverID;
     for i:=0 to book.Binary.Count-1 do
     begin
       if Book.Binary.Items[i].Id=CoverID then
       begin
         S:=Book.Binary.Items[i].Text;
         outStr:=DecodeBase64(S);
-        AssignFile(F,Settings.TempPath + CoverID);
+        AssignFile(F,Settings.TempPath + CoverFile);
         Rewrite(F);
         Write(F,outStr);
         CloseFile(F);
       end;
     end;
-    Img.Picture.LoadFromFile(Settings.TempPath + CoverID);
 
     with Book.Description.Titleinfo do
     begin
@@ -124,6 +124,7 @@ begin
       mmInfo.Lines.Add('Version: '+Book.Description.Documentinfo.Version);
       mmInfo.Lines.Add('History: '+Book.Description.Documentinfo.History.P.OnlyText);
     end;
+    Img.Picture.LoadFromFile(Settings.TempPath + CoverFile);
   except
   end;
 end;

@@ -51,6 +51,7 @@ object frmBookDetails: TfrmBookDetails
       Width = 560
       Height = 154
       ReadOnly = True
+      ScrollBars = ssVertical
       TabOrder = 1
     end
     object mmInfo: TMemo
@@ -59,12 +60,8 @@ object frmBookDetails: TfrmBookDetails
       Width = 353
       Height = 281
       ReadOnly = True
+      ScrollBars = ssVertical
       TabOrder = 2
     end
-  end
-  object XML: TXMLDocument
-    Left = 488
-    Top = 272
-    DOMVendorDesc = 'MSXML'
   end
 end
