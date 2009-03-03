@@ -51,6 +51,7 @@ type
     property Items[Index: Integer]: TReaderDesc read GetReader write SetReader; default;
   end;
 
+
 implementation
 
 uses
@@ -58,16 +59,11 @@ uses
   ShellAPI,
   unit_Errors,
   unit_Settings,
-  unit_Consts;
+  unit_Consts,
+  unit_Globals;
 
 { TReaderC }
 
-function CleanExtension(const Ext: string): string;
-begin
-  Result := Trim(Ext);
-  if (Result <> '') and (Result[1] = '.') then
-    Delete(Result, 1, 1);
-end;
 
 procedure TReaderDesc.AssignTo(Dest: TPersistent);
 begin
@@ -129,7 +125,7 @@ begin
   Ext := CleanExtension(Extension);
 
   for i := 0 to Count - 1 do
-    if AnsiCompareText(Items[i].Extension, Ext) = 0 then
+    if CompareText(Items[i].Extension, Ext) = 0 then
     begin
       Result := Items[i];
       Break;
