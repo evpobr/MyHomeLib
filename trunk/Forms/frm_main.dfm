@@ -440,6 +440,10 @@ object frmMain: TfrmMain
     object TabSheet1: TRzTabSheet
       OnShow = TabSheet1Show
       Caption = #1040#1074#1090#1086#1088#1099
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object rzsSplitterA: TRzSplitter
         Left = 0
         Top = 0
@@ -614,7 +618,7 @@ object frmMain: TfrmMain
                 Left = 10
                 Top = 3
                 Width = 76
-                Height = 25
+                Height = 19
                 Margins.Left = 10
                 Align = alLeft
                 AutoSize = True
@@ -626,14 +630,13 @@ object frmMain: TfrmMain
                 ParentFont = False
                 DataField = 'FullName'
                 DataSource = DMMain.dsAuthors
-                ExplicitHeight = 19
               end
               object lblBooksTotalA: TRzLabel
                 AlignWithMargins = True
                 Left = 426
                 Top = 3
                 Width = 12
-                Height = 25
+                Height = 19
                 Align = alRight
                 Alignment = taRightJustify
                 Caption = '()'
@@ -644,7 +647,6 @@ object frmMain: TfrmMain
                 Font.Style = []
                 ParentFont = False
                 CenterPoint = cpLowerRight
-                ExplicitHeight = 19
               end
             end
             object RzPanel23: TRzPanel
@@ -1778,6 +1780,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -1994,6 +1997,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2128,7 +2132,7 @@ object frmMain: TfrmMain
               Top = 119
               Width = 138
               Height = 21
-              ItemHeight = 0
+              ItemHeight = 13
               ReadOnlyColor = clBtnHighlight
               TabOrder = 3
               Text = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1074#1089#1077
@@ -2143,7 +2147,7 @@ object frmMain: TfrmMain
               Top = 94
               Width = 201
               Height = 21
-              ItemHeight = 0
+              ItemHeight = 13
               TabOrder = 5
               OnKeyDown = edFFullNameKeyDown
               Items.Strings = (
@@ -2533,6 +2537,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
