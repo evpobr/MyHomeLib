@@ -507,23 +507,25 @@ end;
 
 procedure TMHLLibrary.LoadGenres(const GenresFileName: string);
 var
-  FS: TStringList;
-  i: Integer;
+  F: TextFile;
+
   p: Integer;
+  US: UTF8String;
+
   S: string;
+
   ParentCode: String;
   Code: String;
   Fb2Code: String;
 begin
   CheckActive;
-
-  FS := TStringList.Create;
   try
-    FS.LoadFromFile(GenresFileName);
-
-    for i := 0 to FS.Count - 1 do
+    AssignFile(F,GenresFileName);
+    Reset(F);
+    while not Eof(F) do
     begin
-      S := UTF8Decode(FS[i]);
+      readln(F,US);
+      S := UTF8Decode(US);
       //
       // Пропустим пустые строки
       //
@@ -593,7 +595,7 @@ begin
       FGenres.Post;
     end;
   finally
-    FS.Free;
+    CloseFile(F);
   end;
 end;
 

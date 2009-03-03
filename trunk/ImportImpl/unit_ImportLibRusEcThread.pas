@@ -178,15 +178,18 @@ end;
 function TImportLibRusEcThread.Import:integer;
 var
   FLibrary: TMHLLibrary;
-  BookList: TStringList;
+
   i: Integer;
   j: Integer;
   R: TBookRecord;
   filesProcessed: Integer;
   unZip:TZipForge;
   CurrentFile: string;
-  F: text;
-  S: string;
+
+  F: TextFile;
+
+  S: UTF8String;
+
   ArchItem: TZFArchiveItem;
 begin
   filesProcessed := 0;
@@ -204,7 +207,7 @@ begin
       unZip.OpenArchive;
       unZip.ExtractFiles('*.*');
       try
-        BookList := TStringListEx.Create;
+
         if (unZip.FindFirst('*.*',ArchItem,faAnyFile-faDirectory)) then
         repeat
           //
@@ -212,10 +215,15 @@ begin
           //
           CurrentFile:= ArchItem.FileName;
           Teletype(Format('Обрабатываем файл %s', [CurrentFile]), tsInfo);
-          BookList.LoadFromFile(Settings.TempPath + CurrentFile);
-          for j := 0 to BookList.Count - 1 do
+
+
+          AssignFile(F,Settings.TempPath + CurrentFile);
+          Reset(F);
+          j := 0;
+          while not Eof(F) do
           begin
-            if ParseData(UTF8Decode(BookList[j]), R) then
+            Readln(F,S);
+            if ParseData(UTF8Decode(S), R) then
             begin
               if isOnlineCollection(CollectionType) then
               begin
@@ -242,18 +250,19 @@ begin
               end;
             FLibrary.InsertBook(R);
             end;   // if
-
+            Inc(j);
             Inc(filesProcessed);
             if (filesProcessed mod ProcessedItemThreshold) = 0 then
                 SetComment(Format('Импортированно %u файлов', [filesProcessed]));
-          end; // for
+          end; // while
+          CloseFile(F);
           inc(i);
           SetProgress((i + 1) * 100 div unZip.FileCount);
           if Canceled then
             Break;
         until (not unZip.FindNext(ArchItem));
       finally
-        BookList.Free;
+
       end;
       SetComment(Format('Импортированно %u файлов', [filesProcessed]));
     finally
