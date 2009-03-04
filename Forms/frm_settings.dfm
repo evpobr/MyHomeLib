@@ -61,7 +61,7 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 404
     Height = 401
-    ActivePage = tsDevices
+    ActivePage = tsInterface
     Align = alClient
     TabOrder = 1
     object tsDevices: TTabSheet
@@ -77,7 +77,6 @@ object frmSettings: TfrmSettings
         Align = alTop
         Caption = #1060#1086#1088#1084#1072#1090' '#1080#1084#1077#1085#1080
         TabOrder = 0
-        ExplicitTop = 139
         object Label5: TLabel
           Left = 20
           Top = 29
@@ -271,7 +270,6 @@ object frmSettings: TfrmSettings
           '.lrf (SONY)'
           '.txt')
         TabOrder = 2
-        ExplicitTop = 78
       end
       object RzGroupBox5: TRzGroupBox
         AlignWithMargins = True
@@ -282,8 +280,6 @@ object frmSettings: TfrmSettings
         Align = alClient
         Caption = #1054#1087#1094#1080#1080
         TabOrder = 3
-        ExplicitTop = 287
-        ExplicitHeight = 101
         object cbSquareFilter: TCheckBox
           Left = 11
           Top = 18
@@ -526,7 +522,7 @@ object frmSettings: TfrmSettings
         Left = 3
         Top = 172
         Width = 390
-        Height = 78
+        Height = 77
         Align = alTop
         Caption = #1055#1086#1074#1077#1076#1077#1085#1080#1077
         TabOrder = 1
@@ -538,24 +534,26 @@ object frmSettings: TfrmSettings
           Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1082#1085#1080#1075#1080' '#1080#1079' '#1074#1083#1086#1078#1077#1085#1085#1099#1093' '#1078#1072#1085#1088#1086#1074' ('#1085#1077'-fb2)'
           TabOrder = 0
         end
-        object cbRefreshListAfterDownload: TCheckBox
+        object cbMinimizeToTray: TCheckBox
           Left = 24
-          Top = 49
-          Width = 281
+          Top = 48
+          Width = 177
           Height = 17
-          Caption = #1054#1073#1085#1086#1074#1083#1103#1090#1100' '#1089#1087#1080#1089#1086#1082' '#1087#1086#1089#1083#1077' '#1079#1072#1082#1072#1095#1082#1080
+          Caption = #1057#1074#1086#1088#1072#1095#1080#1074#1072#1090#1100' '#1074' '#1090#1088#1077#1081
           TabOrder = 1
         end
       end
       object RzGroupBox10: TRzGroupBox
         AlignWithMargins = True
         Left = 3
-        Top = 256
+        Top = 255
         Width = 390
-        Height = 132
+        Height = 133
         Align = alClient
         Caption = #1056#1072#1079#1085#1086#1077
         TabOrder = 2
+        ExplicitTop = 280
+        ExplicitHeight = 108
         object cbShowFb2Info: TCheckBox
           Left = 24
           Top = 18

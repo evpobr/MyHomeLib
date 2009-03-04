@@ -439,6 +439,7 @@ end;
 procedure TfrmAddnonfb2.flFilesFile(Sender: TObject; const F: TSearchRec);
 var
   FullName: string;
+  FileName: string;
   Data: PFileData;
   Path: String;
   ParentNode: PVirtualNode;
@@ -469,6 +470,8 @@ begin
 
 
   FullName := ExtractRelativePath(FRootPath, flFiles.LastDir + F.Name);
+  FileName := Copy(F.Name,1,Length(F.Name)-Length(Ext));
+
   Path := ExtractRelativePath(FRootPath, flFiles.LastDir);
   ParentNode := FindParentInTree(Tree,Path);
 
@@ -478,7 +481,7 @@ begin
 
   Data := Tree.GetNodeData(CurrentNode);
   Data.DataType := dtFile;
-  Data.FileName := ExtractFileName(F.Name);
+  Data.FileName := FileName;
   Data.Size := F.Size;
   Data.FullPath := FullName;
   Data.Folder := Path;
@@ -599,7 +602,7 @@ begin
     dtFolder: if Column = 0 then CellText := Data.Title
                 else  CellText := '';
     dtFile:  case Column of
-               0: CellText := Copy(Data.FileName,1,Length(Data.FileName)-Length(Data.Ext));
+               0: CellText := Data.FileName;
                1: CellText := CleanExtension(Data.Ext);
                2: CellText := IntToStr(Data.Size);
                3: CellText := '';

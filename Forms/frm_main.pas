@@ -321,6 +321,11 @@ type
     btnClearSerach: TRzBitBtn;
     ToolButton4: TToolButton;
     ToolButton6: TToolButton;
+    TrayIcon: TTrayIcon;
+    pmTray: TPopupMenu;
+    N29: TMenuItem;
+    N32: TMenuItem;
+    N33: TMenuItem;
 
     //
     // События формы
@@ -479,6 +484,8 @@ type
     procedure N27Click(Sender: TObject);
     procedure btnClearSerachClick(Sender: TObject);
     procedure CoverPanelResize(Sender: TObject);
+    procedure TrayIconDblClick(Sender: TObject);
+    procedure N33Click(Sender: TObject);
 
   private
 
@@ -525,7 +532,7 @@ type
     function IsLibRusecEdit(ID: integer): boolean;
 
     procedure ClearInfoPanel;
-
+    procedure WMGetSysCommand(var Message :TMessage); message WM_SYSCOMMAND;
   public
     procedure FillGenresTree(Tree: TVirtualStringTree);
     procedure DisableControls(State: boolean);
@@ -634,6 +641,16 @@ const
                                     );
 
 
+
+procedure TfrmMain.WMGetSysCommand(var Message : TMessage) ;
+begin
+  if (Message.wParam = SC_MINIMIZE) and Settings.MinimizeToTray then
+  begin
+    TrayIcon.Visible := True;
+    Hide;
+  end
+  else inherited;
+end;
 
 procedure TfrmMain.RestorePositions;
 begin
@@ -2784,6 +2801,12 @@ begin
   Screen.Cursor := crDefault;
 end;
 
+procedure TfrmMain.TrayIconDblClick(Sender: TObject);
+begin
+  Visible := not Visible;
+  TrayIcon.Visible := not Visible;
+end;
+
 procedure TfrmMain.tbtnShowLocalOnlyClick(Sender: TObject);
 begin
   Settings.ShowLocalOnly := not Settings.ShowLocalOnly;
@@ -4313,11 +4336,13 @@ end;
 procedure TfrmMain.N27Click(Sender: TObject);
 begin
   DeleteFile(Settings.WorkPath + 'columns.ini');
-
-
-
   SetColumns;
   SetHeaderPopUp;
+end;
+
+procedure TfrmMain.N33Click(Sender: TObject);
+begin
+  Close;
 end;
 
 procedure TfrmMain.HeaderPopupItemClick(Sender: TObject);

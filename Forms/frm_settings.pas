@@ -113,7 +113,6 @@ type
     RzGroupBox5343245: TRzGroupBox;
     cbDefaultAction: TComboBox;
     RzBitBtn1: TRzBitBtn;
-    cbRefreshListAfterDownload: TCheckBox;
     rgDeviceFormat: TRadioGroup;
     RzGroupBox5: TRzGroupBox;
     cbSquareFilter: TCheckBox;
@@ -128,6 +127,7 @@ type
     RzToolButton3: TRzToolButton;
     RzGroupBox11: TRzGroupBox;
     edReadDir: TRzButtonEdit;
+    cbMinimizeToTray: TCheckBox;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
@@ -233,7 +233,7 @@ begin
 
   cbShowFb2Info.Checked := Settings.ShowFb2Info;
   cbShowSubGenreBooks.Checked := Settings.ShowSubGenreBooks;
-  cbRefreshListAfterDownload.Checked := Settings.RefreshListAfterDownload;
+  cbMinimizeToTray.Checked := Settings.MinimizeToTray;
   // Page 4 - Internet
   edProxyServer.Text := Settings.ProxyServer;
   edProxyUsername.Text := Settings.ProxyUsername;
@@ -297,7 +297,7 @@ begin
   Settings.BGColor := pnlASG.Color;
   Settings.FontColor := pnlASG.Font.Color;
   Settings.ShowSubGenreBooks := cbShowSubGenreBooks.Checked;
-  Settings.RefreshListAfterDownload := cbRefreshListAfterDownload.Checked;
+  Settings.MinimizeToTray := cbMinimizeToTray.Checked;
   Settings.ShowFb2Info := cbShowFb2Info.Checked;
 
   // Page 4 - Internet

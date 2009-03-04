@@ -90,10 +90,10 @@ type
     FLastBookInSeries: integer;
     FLastBookInFavorites: integer;
     FShowSubGenreBooks: boolean;
-    FRefreshListAfterDownload : boolean;
     FShowFb2Info: boolean;
     FSplitters: TSplitters;
     FTreeModes: TTreeModes;
+    FMinimizeToTray: boolean;
 
     // NETWORK_SECTION
     FProxyServer: string;
@@ -209,7 +209,7 @@ type
     property ShowSubGenreBooks: boolean read FShowSubGenreBooks write FShowSubGenreBooks;
     property ShowFb2Info: boolean read FShowFb2Info write FShowFb2Info;
 
-    property RefreshListAfterDownload : boolean read FRefreshListAfterDownload  write FRefreshListAfterDownload;
+    property MinimizeToTray : boolean read FMinimizeToTray   write FMinimizeToTray;
     property RemoveSquarebrackets : boolean read FRemoveSquarebrackets write FRemoveSquarebrackets;
 
     property TableView: boolean read FTableView write FTableView;
@@ -386,7 +386,6 @@ begin
       2: FExportMode := emLrf;
       3: FExportMode := emTxt;
     end;
-
     //
     // INTERFACE_SECTION
     //
@@ -409,7 +408,7 @@ begin
     FShowSubGenreBooks := iniFile.ReadBool(INTERFACE_SECTION, 'ShowSubGenreBooks', False);
     FShowFb2Info := iniFile.ReadBool(INTERFACE_SECTION, 'ShowFb2Info', True);
 
-    FRefreshListAfterDownload := iniFile.ReadBool(INTERFACE_SECTION, 'RefreshListAfterDownload', False);
+    FMinimizeToTray  := iniFile.ReadBool(INTERFACE_SECTION, 'MinimizeToTray', True);
 
 
     if iniFile.ReadInteger(INTERFACE_SECTION, 'Lang', 0) = 0 then
@@ -520,7 +519,7 @@ begin
     iniFile.WriteInteger(INTERFACE_SECTION, 'LastBookInFavorites', FLastBookinFavorites);
 
     iniFile.WriteBool(INTERFACE_SECTION, 'ShowSubGenreBooks', FShowSubGenreBooks);
-    iniFile.WriteBool(INTERFACE_SECTION, 'RefreshListAfterDownload', RefreshListAfterDownload);
+    iniFile.WriteBool(INTERFACE_SECTION, 'MinimizeToTray', FMinimizeToTray );
     iniFile.WriteBool(INTERFACE_SECTION, 'ShowFb2Info', FShowFb2Info);
 
     SaveSplitters(iniFile);
