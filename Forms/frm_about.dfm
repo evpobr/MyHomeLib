@@ -64,12 +64,12 @@ object frmAbout: TfrmAbout
       TextStyle = tsRaised
     end
     object RzLabel2: TRzLabel
-      Left = 14
-      Top = 62
-      Width = 181
+      Left = 41
+      Top = 64
+      Width = 134
       Height = 13
       Alignment = taCenter
-      Caption = 'Copyright (c) '#1040#1083#1077#1082#1089#1077#1081' '#1055#1077#1085#1100#1082#1086#1074' 2008'
+      Caption = '(c) 2009 '#1040#1083#1077#1082#1089#1077#1081' '#1055#1077#1085#1100#1082#1086#1074' '
     end
     object RzLabel3: TRzLabel
       Left = 47
