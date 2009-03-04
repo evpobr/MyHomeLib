@@ -397,7 +397,9 @@ begin
 
       with FBook.Description do
       begin
-        Short := Titleinfo.Annotation.P.OnlyText;
+        if Titleinfo.Annotation.HasChildNodes then
+          for I := 0 to Titleinfo.Annotation.ChildNodes.Count - 1 do
+            Ftext.Lines.Add(Titleinfo.Annotation.ChildNodes[i].Text);
         if FFb2InfoVisible then
         begin
           FCity.Caption := Publishinfo.City.Text;

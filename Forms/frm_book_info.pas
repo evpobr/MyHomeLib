@@ -106,7 +106,9 @@ begin
         mmInfo.Lines.Add('Номер: '+IntToStr(Sequence[0].Number));
       end;
 
-      mmShort.Lines.Add(Annotation.P.OnlyText);
+     if Annotation.HasChildNodes then
+          for I := 0 to Annotation.ChildNodes.Count - 1 do
+            mmShort.Lines.Add(Annotation.ChildNodes[i].Text);
 
       mmInfo.Lines.Add('PublishInfo:');
       mmInfo.Lines.Add('Издатель: '+Book.Description.Publishinfo.Publisher.Text);
