@@ -640,8 +640,6 @@ const
                                     'Переключится в режим "Дерево"'
                                     );
 
-
-
 procedure TfrmMain.WMGetSysCommand(var Message : TMessage) ;
 begin
   if (Message.wParam = SC_MINIMIZE) and Settings.MinimizeToTray then

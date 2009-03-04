@@ -67,7 +67,7 @@ begin
       if lpBaseAddress <> nil then
       begin
         FirstAppHandle := lpBaseAddress^;
-        ShowWindow(FirstAppHandle, SW_restore);
+        ShowWindow(FirstAppHandle, SW_RESTORE);
         SetForegroundWindow(FirstAppHandle);
       end;
     end;

@@ -103,7 +103,10 @@ uses
 begin
   Application.Initialize;
 
-  if FirstHinstanceRunning(0) then Exit;
+  if FirstHinstanceRunning(1) then
+  begin
+    Exit;
+  end;
 
   Application.MainFormOnTaskbar := True;
   Application.Title := 'MyHomeLib';
