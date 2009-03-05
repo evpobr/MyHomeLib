@@ -305,7 +305,7 @@ begin
   try
     Synchronize(GetCurrentFile);
     repeat
-//      if FError then Sleep(30000);
+      if FError then Sleep(30000);
       Download;
       Synchronize(Finished);
       Synchronize(GetCurrentFile);
