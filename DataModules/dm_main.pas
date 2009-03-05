@@ -211,7 +211,7 @@ end;
 
 procedure TDMMain.FieldByName(AID: integer; AField: String; out Ares: boolean);
 begin
-  if AID<> 0 then FActiveTable.Locate('ID', AID, []);
+  if AID <> 0 then FActiveTable.Locate('ID', AID, []);
   ARes := FActiveTable.FieldByName(AField).AsBoolean;
 end;
 

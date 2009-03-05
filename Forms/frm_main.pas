@@ -67,7 +67,8 @@ uses
   oxmldom,
   DBTables,
   Clipbrd,
-  RzCmboBx, RzBHints, unit_CoverPanel, unit_InfoPanel, unit_Columns, ZipForge;
+  RzCmboBx, RzBHints, unit_CoverPanel, unit_InfoPanel, unit_Columns, ZipForge,
+  RzPrgres, unit_DownloadManagerThread;
 
 type
 
@@ -326,6 +327,17 @@ type
     N29: TMenuItem;
     N32: TMenuItem;
     N33: TMenuItem;
+    TabSheet7: TRzTabSheet;
+    tvDownloadList: TVirtualStringTree;
+    RzPanel2: TRzPanel;
+    pbDownloadProgress: TRzProgressBar;
+    lblDownloadState: TLabel;
+    lblDnldAuthor: TLabel;
+    lblDnldTitle: TLabel;
+    RzPanel6: TRzPanel;
+    RzBitBtn3: TRzBitBtn;
+    btnPauseDownload: TRzBitBtn;
+    btnStartDownload: TRzBitBtn;
 
     //
     // События формы
@@ -486,8 +498,16 @@ type
     procedure CoverPanelResize(Sender: TObject);
     procedure TrayIconDblClick(Sender: TObject);
     procedure N33Click(Sender: TObject);
+    procedure btnStartDownloadClick(Sender: TObject);
+    procedure btnPauseDownloadClick(Sender: TObject);
+    procedure tvDownloadListGetText(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
+      var CellText: string);
+    procedure RzBitBtn3Click(Sender: TObject);
 
   private
+
+    FDMThread: TDownloadManagerThread;
 
     // посик аторов, серий
 
@@ -507,6 +527,10 @@ type
       ShowAuth: Boolean;
       ShowSer: Boolean
       );
+
+
+
+
 
     //
     // TODO -oNickR -cRefactoring : вынести эти методы в соответствующие датамодули
@@ -689,6 +713,28 @@ begin
   edLocateAuthor.Text := '';
   edLocateSeries.Text := '';
   FIgnoreChange := False;
+end;
+
+procedure TfrmMain.btnStartDownloadClick(Sender: TObject);
+begin
+  if tvDownloadList.GetFirst = nil then Exit;
+
+  btnPauseDownload.Enabled := True;
+  btnStartDownload.Enabled := False;
+
+  FDMThread := TDownloadManagerThread.Create(False);
+end;
+
+procedure TfrmMain.btnPauseDownloadClick(Sender: TObject);
+begin
+  btnPauseDownload.Enabled := False;
+  btnStartDownload.Enabled := True;
+  if Assigned(FDMThread) then FDMThread.Stop;
+end;
+
+procedure TfrmMain.RzBitBtn3Click(Sender: TObject);
+begin
+  tvDownloadList.DeleteSelectedNodes;
 end;
 
 procedure TfrmMain.SetColumns;
@@ -1309,6 +1355,7 @@ begin
   miFb2Import.Visible := IsPrivate and IsFB2;
   miPdfdjvu.Visible := IsPrivate and IsNonFB2;
 
+  TabSheet7.TabVisible := IsOnline;
 
   tbtnShowCover.Visible := not IsNonFB2;
   miBookInfo.Visible := IsLocal and IsFB2;
@@ -1793,6 +1840,8 @@ begin
   tvBooksS.NodeDataSize := SizeOf(TBookData);
   tvBooksSR.NodeDataSize := SizeOf(TBookData);
   tvBooksFL.NodeDataSize := SizeOf(TBookData);
+
+  tvDownloadList.NodeDataSize := SizeOf(TDownloadData);
 
 //-----------------------------
 
@@ -2419,6 +2468,23 @@ begin
   Data := Sender.GetNodeData(Node);
   if Data.nodeType <> ntBookInfo then
     TargetCanvas.Font.Style := [fsBold];
+end;
+
+procedure TfrmMain.tvDownloadListGetText(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
+  var CellText: string);
+const
+  States : array [0..3] of string = ('Ожидание','Закачка','Готово','Ошибка');
+var
+  Data : PDownloadData;
+begin
+  Data := tvDownloadList.GetNodeData(Node);
+  case Column of
+    0: CellText := Data.Author;
+    1: CellText := Data.Title;
+    2: CellText := IntToStr(Data.Size);
+    3: CellText := States[ord(Data.State)];
+  end;
 end;
 
 //
@@ -3319,13 +3385,35 @@ procedure TfrmMain.miDownloadBooksClick(Sender: TObject);
 var
   BookIDList: TBookIdList;
   Tree: TVirtualStringTree;
+
+  i: integer;
+  Folder: string;
+
+  LibID : integer;
+
+  Node: PVirtualNode;
+  Data: PDownloadData;
+
 begin
   GetActiveTree(Tree);
 
   FillBookIdList(Tree, BookIDList);
-  unit_exporttodevice.DownloadBooks(DMMain.ActiveTable, BookIdList );
 
-  RefreshBooksState(Tree, BookIDList);
+  for I := 0 to High(BookIDList) do
+  begin
+    DMMain.GetBookFolder(BookIDList[i].ID,Folder);
+    Node := tvDownloadList.AddChild(nil);
+    Data := tvDownloadList.GetNodeData(Node);
+
+    DMMain.FieldByName(BookIDList[i].ID,'FullName',Data.Author);
+    DMMain.FieldByName(BookIDList[i].ID,'Title',Data.Title);
+    DMMain.FieldByName(BookIDList[i].ID,'Size',Data.Size);
+    DMMain.FieldByName(BookIDList[i].ID,'LibID',LibID);
+    Data.ID := BookIDList[i].ID;
+    Data.State := dsWait;
+    Data.FileName := Folder;
+    Data.URL := Format('http://lib.rus.ec/b/%d/download',[LibID]);
+  end;
 end;
 
 procedure TfrmMain.miEditAuthorClick(Sender: TObject);
@@ -4499,10 +4587,13 @@ begin
       COL_COLLECTION:  pmHeaders.Items[8].Checked := True;
     end;
   end;
+  pmHeaders.Items[8].Visible := (Tree.Tag = PAGE_FAVORITES);
 end;
 
 procedure TfrmMain.pgControlChange(Sender: TObject);
 begin
+  if pgControl.ActivePageIndex = 6 then Exit;
+
   SetHeaderPopUp;
 
   DMMain.SetActiveTable(pgControl.ActivePageIndex);
