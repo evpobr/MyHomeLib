@@ -283,10 +283,6 @@ uses
   ShlObj;
 
 const
-  RusL: set of char = ['à'..'ÿ'];
-const
-  RusU: set of char = ['À'..'ß'];
-const
   lat: set of char = ['A'..'Z', 'a'..'z', '\', '-', ':', '`', ',', '.', '0'..'9', '_', '(', ')', '[', ']', '{', '}'];
 const
   denied: set of char = ['<', '>', ':', '"', '/', '|', '*', '?'];
@@ -489,8 +485,9 @@ begin
       s := TransL[o - 1072]
     else if (o >= 1040 ) and (o <= 1071) then
       s := TransU[o - 1040]
-    else if Input[f] in lat then
-      s := Input[f]
+    else
+      if CharInSet(Input[f],lat) then
+        s := Input[f]
     else
       s := '_';
     Conv := Conv + s;
@@ -506,7 +503,7 @@ begin
   Conv := '';
   for f := 1 to length(input) do
   begin
-    if Input[f] in denied then
+    if CharInSet(Input[f],denied) then
       s := ' '
     else
       s := Input[f];
