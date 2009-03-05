@@ -112,7 +112,7 @@ begin
               or (Pos('overload', SL[0]) <> 0)
               or (Pos('not found', SL[0]) <> 0) then
           begin
-              Application.MessageBox('Загрузка файла заблокирована сервером!'
+             if not FIgnoreErrors then Application.MessageBox('Загрузка файла заблокирована сервером!'
                              + #13 +
                              ' Ответ сервера можно посмотреть в файле "server_error.html"'
                              ,'',MB_OK);
@@ -133,13 +133,13 @@ begin
         on E: EIdSocketError do
 
             if E.LastError = 11001 then
-              Application.MessageBox(PChar('Закачка не удалось! Сервер не найден.'+
+              if not FIgnoreErrors then Application.MessageBox(PChar('Закачка не удалось! Сервер не найден.'+
                            #13+'Код ошибки: '+IntToStr(E.LastError)),'',mb_IconExclamation)
             else
-              Application.MessageBox(PChar('Закачка не удалось! Ошибка подключения.'+
+              if not FIgnoreErrors then Application.MessageBox(PChar('Закачка не удалось! Ошибка подключения.'+
                            #13+'Код ошибки: '+IntToStr(E.LastError)),'',mb_IconExclamation);
         on E: Exception do
-             Application.MessageBox(PChar('Закачка не удалось! Сервер сообщает об ошибке '+
+             if not FIgnoreErrors then Application.MessageBox(PChar('Закачка не удалось! Сервер сообщает об ошибке '+
                           #13+'Код ошибки: '+IntToStr(FidHTTP.ResponseCode)),'',mb_IconExclamation);
 
       end;
@@ -182,7 +182,9 @@ begin
   FFinished := True;
   if FCanceled then Exit;
 
-  FCurrentNode := frmMain.tvDownloadList.GetFirst;
+  if FCurrentNode <> nil then
+    FCurrentNode := frmMain.tvDownloadList.GetNext(FCurrentNode);
+  if FCurrentNode = nil then FCurrentNode := frmMain.tvDownloadList.GetFirst;
 
   while FCurrentNode <> nil do
   begin
@@ -303,7 +305,7 @@ begin
   try
     Synchronize(GetCurrentFile);
     repeat
-      if FError then Sleep(30000);
+//      if FError then Sleep(30000);
       Download;
       Synchronize(Finished);
       Synchronize(GetCurrentFile);
