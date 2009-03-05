@@ -335,9 +335,13 @@ type
     lblDnldAuthor: TLabel;
     lblDnldTitle: TLabel;
     RzPanel6: TRzPanel;
-    RzBitBtn3: TRzBitBtn;
     btnPauseDownload: TRzBitBtn;
     btnStartDownload: TRzBitBtn;
+    pmDownloadList: TPopupMenu;
+    mi_dwnl_LocateAuthor: TMenuItem;
+    N35: TMenuItem;
+    mi_dwnl_Delete: TMenuItem;
+    btnClearDownload: TRzBitBtn;
 
     //
     // События формы
@@ -503,7 +507,9 @@ type
     procedure tvDownloadListGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
       var CellText: string);
-    procedure RzBitBtn3Click(Sender: TObject);
+    procedure btnDeleteDownloadClick(Sender: TObject);
+    procedure mi_dwnl_LocateAuthorClick(Sender: TObject);
+    procedure btnClearDownloadClick(Sender: TObject);
 
   private
 
@@ -732,7 +738,7 @@ begin
   if Assigned(FDMThread) then FDMThread.Stop;
 end;
 
-procedure TfrmMain.RzBitBtn3Click(Sender: TObject);
+procedure TfrmMain.btnDeleteDownloadClick(Sender: TObject);
 begin
   tvDownloadList.DeleteSelectedNodes;
 end;
@@ -1239,8 +1245,8 @@ const
     );
 
 begin
-  Assert((Low(views) <= pgControl.ActivePageIndex) and (pgControl.ActivePageIndex <= High(views)));
-
+  if pgControl.ActivePageIndex > 5 then
+    pgControl.ActivePageIndex := 0;
   Result := views[pgControl.ActivePageIndex];
 end;
 
@@ -2490,6 +2496,11 @@ end;
 //
 // Menu handlers
 //
+procedure TfrmMain.btnClearDownloadClick(Sender: TObject);
+begin
+  tvDownloadList.Clear;
+end;
+
 procedure TfrmMain.btnClearEdSeriesClick(Sender: TObject);
 begin
   edLocateSeries.Clear;
@@ -4417,6 +4428,18 @@ procedure TfrmMain.miUpdateClick(Sender: TObject);
 begin
   unit_utils.LibrusecUpdate;
   InitCollection(True);
+end;
+
+procedure TfrmMain.mi_dwnl_LocateAuthorClick(Sender: TObject);
+var
+  Data: PDownloadData;
+begin
+  Data := tvDownloadList.GetNodeData(tvDownloadList.GetFirstSelected);
+  if Data <> nil then
+  begin
+    pgControl.ActivePageIndex := 0;
+    edLocateAuthor.Text := Data.Author;
+  end;
 end;
 
 procedure TfrmMain.N27Click(Sender: TObject);

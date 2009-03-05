@@ -18,6 +18,7 @@ type
 
     FCanceled : boolean;
     FFinished : boolean;
+    FIgnoreErrors : boolean;
 
     FDownloadSize : integer;
     FProgress: integer;
@@ -36,9 +37,9 @@ type
   protected
     procedure UpdateProgress;
     procedure GetCurrentFile;
-    procedure Started;
     procedure Finished;
     procedure Download;
+    procedure Canceled;
     procedure Execute; override;
     procedure HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax:Int64);
     procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
@@ -60,9 +61,25 @@ uses
   Windows;
 
 
+procedure TDownloadManagerThread.Canceled;
+begin
+  FCurrentData.State := dsError;
+  frmMain.tvDownloadList.RepaintNode(FCurrentNode);
+
+  frmMain.pbDownloadProgress.Percent := 0;
+  frmMain.lblDownloadState.Caption := 'Готово';
+  frmMain.lblDnldAuthor.Caption := '';
+  frmMain.lblDnldTitle.Caption :=  '';
+
+  frmMain.btnPauseDownload.Enabled := False;
+  frmMain.btnStartDownload.Enabled := True;
+
+end;
+
 procedure TDownloadManagerThread.Download;
 var
   FS: TMemoryStream;
+  SL: TStringList;
 begin
   FError := True;
   FS := TMemoryStream.Create;
@@ -78,20 +95,51 @@ begin
 //    end;
     try
       FidHTTP.Get(FCurrentURL, FS);
+
+      if FCanceled then
+            Exit;
       CreateFolders('', ExtractFileDir(FCurrentFile));
-      FS.SaveToFile(FCurrentFile);
-      FError := False;
+
+      FS.Position := 0;
+
+      SL := TStringList.Create;
+      try
+        SL.LoadFromStream(FS);
+        if SL.Count > 0 then
+        begin
+          if
+              (Pos('DOCTYPE', SL[0]) <> 0)
+              or (Pos('overload', SL[0]) <> 0)
+              or (Pos('not found', SL[0]) <> 0) then
+          begin
+              Application.MessageBox('Загрузка файла заблокирована сервером!'
+                             + #13 +
+                             ' Ответ сервера можно посмотреть в файле "server_error.html"'
+                             ,'',MB_OK);
+            FError := True;
+          end
+          else
+          begin
+            FS.SaveToFile(FCurrentFile);
+            FError := False;
+          end;
+        end;
+      finally
+        SL.Free;
+      end;
+
+
       except
         on E: EIdSocketError do
 
             if E.LastError = 11001 then
-              Application.MessageBox(PChar('Проверка обновления не удалось! Сервер не найден.'+
+              Application.MessageBox(PChar('Закачка не удалось! Сервер не найден.'+
                            #13+'Код ошибки: '+IntToStr(E.LastError)),'',mb_IconExclamation)
             else
-              Application.MessageBox(PChar('Проверка обновления не удалось! Ошибка подключения.'+
+              Application.MessageBox(PChar('Закачка не удалось! Ошибка подключения.'+
                            #13+'Код ошибки: '+IntToStr(E.LastError)),'',mb_IconExclamation);
         on E: Exception do
-             Application.MessageBox(PChar('Проверка обновления не удалось! Сервер сообщает об ошибке '+
+             Application.MessageBox(PChar('Закачка не удалось! Сервер сообщает об ошибке '+
                           #13+'Код ошибки: '+IntToStr(FidHTTP.ResponseCode)),'',mb_IconExclamation);
 
       end;
@@ -110,12 +158,15 @@ begin
   if FCurrentData <> nil then
   begin
     if Not Ferror then
-      FCurrentData.State := dsOK
+    begin
+      FCurrentData.State := dsOK ;
+      DMMain.SetLocalStatus(FID,True);
+    end
     else
       FCurrentData.State := dsError;
     frmMain.tvDownloadList.RepaintNode(FCurrentNode);
   end;
-  DMMain.SetLocalStatus(FID,True);
+
   frmMain.pbDownloadProgress.Percent := 0;
   frmMain.lblDownloadState.Caption := 'Готово';
   frmMain.lblDnldAuthor.Caption := '';
@@ -128,6 +179,8 @@ end;
 procedure TDownloadManagerThread.GetCurrentFile;
 begin
   FFinished := True;
+  if FCanceled then Exit;
+
   FCurrentNode := frmMain.tvDownloadList.GetFirst;
 
   while FCurrentNode <> nil do
@@ -142,9 +195,21 @@ begin
       FCurrentData.State := dsRun;
       frmMain.tvDownloadList.RepaintNode(FCurrentNode);
 
-      frmMain.lblDownloadState.Caption := 'Подключение ...';
-      frmMain.lblDnldAuthor.Caption := FCurrentData.Author;
-      frmMain.lblDnldTitle.Caption := FCurrentData.Title;
+      if frmMain.Visible then
+      begin
+        frmMain.lblDownloadState.Caption := 'Подключение ...';
+        frmMain.lblDnldAuthor.Caption := FCurrentData.Author;
+        frmMain.lblDnldTitle.Caption := FCurrentData.Title;
+      end
+      else
+        frmMain.TrayIcon.Hint := Format('%s %s %s Подключение ...',
+                                            [FCurrentData.Author,
+                                             FCurrentData.Title,
+                                             #13]);
+      frmMain.btnPauseDownload.Enabled := True;
+      frmMain.btnStartDownload.Enabled := False;
+
+      frmMain.TrayIcon.Hint := 'MyHomeLib';
 
       FFinished := False;
       Break;
@@ -156,6 +221,13 @@ end;
 procedure TDownloadManagerThread.HTTPWork(ASender: TObject;
   AWorkMode: TWorkMode; AWorkCount: Int64);
 begin
+  if FCanceled then
+  begin
+    FidHTTP.Disconnect;
+    Exit;
+  end;
+
+
   if FDownloadSize <> 0 then
   begin
     FWorkCount := AWorkCount;
@@ -179,14 +251,11 @@ procedure TDownloadManagerThread.HTTPWorkEnd(ASender: TObject;
 begin
 end;
 
-procedure TDownloadManagerThread.Started;
-begin
-
-end;
 
 procedure TDownloadManagerThread.Stop;
 begin
-  FidHTTP.Disconnect;
+  FCanceled := True;
+  Synchronize(Canceled);
   Terminate;
 end;
 
@@ -199,13 +268,27 @@ begin
   if ElapsedTime>0 then
   begin
     Speed := FormatFloat('0.00', FWorkCount/1024/ElapsedTime);
-    frmMain.lblDownloadState.Caption := Format('Загрузка: %s Kb/s',[Speed]);
+    if frmMain.Visible then
+    begin
+      frmMain.lblDownloadState.Caption := Format('Загрузка: %s Kb/s',[Speed]);
+      frmMain.pbDownloadProgress.Percent := FProgress;
+    end
+    else
+     frmMain.TrayIcon.Hint := Format('%s. %s %s Загрузка: %s Kb/s    %d %%',
+                                    [FCurrentData.Author,
+                                     FCurrentData.Title,
+                                     #13,
+                                     Speed,FProgress])
   end;
-  frmMain.pbDownloadProgress.Percent := FProgress;
 end;
 
 procedure TDownloadManagerThread.WorkFunction;
+var
+  Res: integer;
 begin
+  FCanceled := False;
+  FIgnoreErrors := False;
+
   FidHTTP := TidHTTP.Create(nil);
   SetProxySettings(FidHTTP);
 
@@ -219,7 +302,14 @@ begin
       Download;
       Synchronize(Finished);
       Synchronize(GetCurrentFile);
-    until FFinished;
+      if FError and not FIgnoreErrors then
+      begin
+        Res := Application.MessageBox('Игнорировать ошибки загрузки ?','', MB_YESNOCANCEL);
+        FCanceled := (Res = IDCANCEL);
+        FIgnoreErrors := (Res = IDYES);
+      end;
+    until FFinished or FCanceled;
+    Synchronize(Finished);
   finally
     FidHTTP.Free;
   end;
