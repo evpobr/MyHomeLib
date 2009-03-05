@@ -510,6 +510,10 @@ type
     procedure btnDeleteDownloadClick(Sender: TObject);
     procedure mi_dwnl_LocateAuthorClick(Sender: TObject);
     procedure btnClearDownloadClick(Sender: TObject);
+    procedure tvDownloadListSaveNode(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Stream: TStream);
+    procedure tvDownloadListLoadNode(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Stream: TStream);
 
   private
 
@@ -611,6 +615,7 @@ type
     function GetText(Tag: integer; Data: PBookData): string;
     procedure SetHeaderPopUp;
     procedure RestorePositions;
+    procedure DownloadBooks;
     type
       TView = (ByAuthorView, BySeriesView, ByGenreView, SearchView, FavoritesView,FilterView);
 
@@ -1917,11 +1922,17 @@ begin
 
   if not DMUser.tblBases.IsEmpty then  RestorePositions;
 
+//  if FileExists(Settings.WorkPath + 'downloads.sav') then
+//      tvDownloadList.LoadFromfile(Settings.WorkPath + 'downloads.sav');
+
+
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
   SaveColumns;
+
+//  tvDownloadList.SaveToFile(Settings.WorkPath + 'downloads.sav');
 
   ClearDir(Settings.TempDir);
 
@@ -1938,6 +1949,7 @@ begin
 
   Settings.SaveSettings;
   FreeSettings;
+
 end;
 
 procedure TfrmMain.FormMouseUp(Sender: TObject; Button: TMouseButton;
@@ -2493,6 +2505,29 @@ begin
   end;
 end;
 
+procedure TfrmMain.tvDownloadListLoadNode(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Stream: TStream);
+var
+  Data: PDownloadData;
+  DataSize: Integer;
+begin
+  Stream.Read(DataSize, SizeOf(DataSize));
+  Data := Sender.GetNodeData(Node);
+  Stream.Read(Data^, DataSize);
+end;
+
+procedure TfrmMain.tvDownloadListSaveNode(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Stream: TStream);
+var
+  Data: PDownloadData;
+  DataSize: Integer;
+begin
+  Data := tvDownloadList.GetNodeData(Node);
+  DataSize := SizeOf(Data^);
+  Stream.Write(DataSize, SizeOf(DataSize));
+  Stream.WriteBuffer(Data^, DataSize);
+end;
+
 //
 // Menu handlers
 //
@@ -2736,6 +2771,18 @@ begin
   spProgress.Percent := 100;
 end;
 
+procedure TfrmMain.DownloadBooks;
+var
+  BookIDList: TBookIdList;
+  Tree: TVirtualStringTree;
+begin
+  GetActiveTree(Tree);
+
+  FillBookIdList(Tree, BookIDList);
+  unit_exporttodevice.DownloadBooks(DMMain.ActiveTable, BookIdList );
+
+  RefreshBooksState(Tree, BookIDList);
+end;
 
 procedure TfrmMain.tbtbnReadClick(Sender: TObject);
 var
@@ -2770,7 +2817,7 @@ begin
     begin
       if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
       begin
-        miDownloadBooksClick(Sender);
+        DownloadBooks;
         if not FileExists(Panel.Folder) then
           Exit; // если файла нет, значит закачка не удалась, и юзер об  этом уже знает
       end;
@@ -3405,6 +3452,26 @@ var
   Node: PVirtualNode;
   Data: PDownloadData;
 
+    function CheckID(ID: integer):boolean;
+    var
+      Node: PVirtualNode;
+      Data: PDownloadData;
+    begin
+      Result := False;
+      Node := tvDownloadList.GetFirst;
+      while Node <> nil do
+      begin
+        Data := tvDownloadList.GetNodeData(Node);
+        if Data.ID = ID then
+        begin
+          Result := True;
+          Break;
+        end;
+
+        Node := tvDownloadList.GetNext(Node);
+      end;
+    end;
+
 begin
   GetActiveTree(Tree);
 
@@ -3412,6 +3479,7 @@ begin
 
   for I := 0 to High(BookIDList) do
   begin
+    if CheckID(BookIDList[i].ID) then Continue;
     DMMain.GetBookFolder(BookIDList[i].ID,Folder);
     Node := tvDownloadList.AddChild(nil);
     Data := tvDownloadList.GetNodeData(Node);
