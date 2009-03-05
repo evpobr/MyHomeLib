@@ -96,7 +96,8 @@ uses
   unit_DownloadBooksThread in 'DwnldImpl\unit_DownloadBooksThread.pas',
   frm_DownloadProgressForm in 'DwnldImpl\frm_DownloadProgressForm.pas' {DownloadProgressForm},
   unit_Columns in 'Units\unit_Columns.pas',
-  StoHtmlHelp in 'UtilsImpl\StoHtmlHelp.pas';
+  StoHtmlHelp in 'UtilsImpl\StoHtmlHelp.pas',
+  unit_DownloadManagerThread in 'DwnldImpl\unit_DownloadManagerThread.pas';
 
 {$R *.res}
 

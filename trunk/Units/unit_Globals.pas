@@ -154,6 +154,19 @@ type
   TAppLanguage = (alEng, alRus);
   TExportMode = (emFB2, emFB2Zip, emLrf, emTxt);
 
+  TDownloadState = (dsWait, dsRun, dsOk, dsError);
+
+  PDownloadData = ^TDownloadData;
+  TDownloadData = record
+          ID: integer;
+      Author: string;
+       Title: string;
+        Size: integer;
+    FileName: string;
+         URL: string;
+       State: TDownloadState;
+  end;
+
   PAuthorData = ^TAuthorData;
   TAuthorData = record
     Text: String;
