@@ -97,7 +97,7 @@ begin
       FidHTTP.Get(FCurrentURL, FS);
 
       if FCanceled then
-            Exit;
+        Exit;
       CreateFolders('', ExtractFileDir(FCurrentFile));
 
       FS.Position := 0;
@@ -172,6 +172,7 @@ begin
   frmMain.lblDnldAuthor.Caption := '';
   frmMain.lblDnldTitle.Caption :=  '';
 
+  frmMain.pbDownloadProgress.Visible := False;
   frmMain.btnPauseDownload.Enabled := False;
   frmMain.btnStartDownload.Enabled := True;
 end;
@@ -200,6 +201,7 @@ begin
         frmMain.lblDownloadState.Caption := 'Подключение ...';
         frmMain.lblDnldAuthor.Caption := FCurrentData.Author;
         frmMain.lblDnldTitle.Caption := FCurrentData.Title;
+        frmMain.pbDownloadProgress.Visible := True;
       end
       else
         frmMain.TrayIcon.Hint := Format('%s %s %s Подключение ...',
@@ -288,6 +290,7 @@ var
 begin
   FCanceled := False;
   FIgnoreErrors := False;
+  FError := False;
 
   FidHTTP := TidHTTP.Create(nil);
   SetProxySettings(FidHTTP);
@@ -296,13 +299,15 @@ begin
   FidHTTP.OnWorkBegin := HTTPWorkBegin;
   FidHTTP.OnWorkEnd := HTTPWorkEnd;
   FidHTTP.HandleRedirects := True;
+
   try
     Synchronize(GetCurrentFile);
     repeat
+      if FError then Sleep(30000);
       Download;
       Synchronize(Finished);
       Synchronize(GetCurrentFile);
-      if FError and not FIgnoreErrors then
+      if FError and not FIgnoreErrors and not FCanceled then
       begin
         Res := Application.MessageBox('Игнорировать ошибки загрузки ?','', MB_YESNOCANCEL);
         FCanceled := (Res = IDCANCEL);
