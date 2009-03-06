@@ -140,7 +140,10 @@ begin
         //
         R.FileExt := ExtractFileExt(AFileName);
         if R.FileExt <> FB2_EXTENSION then
+        begin
+          inc(j);     // переходим к следующему файлу
           Continue;
+        end;
 
         //
         // Исследование мира осознанных сновидений

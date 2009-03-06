@@ -191,7 +191,7 @@ type
     btnSwitchTreeMode: TToolButton;
     tbtnWizard: TToolButton;
     tbtnShowLocalOnly: TToolButton;
-    tbtnDownloadBooks: TToolButton;
+    tbtnDownloadList_Add: TToolButton;
     N1: TMenuItem;
     miGoDonate: TMenuItem;
     miGoSite: TMenuItem;
@@ -514,14 +514,14 @@ type
       Node: PVirtualNode; Stream: TStream);
     procedure tvDownloadListLoadNode(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Stream: TStream);
+    procedure TabSheet7Show(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 
   private
 
     FDMThread: TDownloadManagerThread;
 
-    // посик аторов, серий
-
-    FSimulateAlphabetClick: Boolean;
+    // поиск аторов, серий
     FIgnoreChange : boolean;
 
     //
@@ -583,7 +583,9 @@ type
     FFileOpMode: (fmFb2Zip, fmFb2);
     FDoNotLocate: Boolean;
 
-    FLastLetter: TToolButton;
+    FLastLetterA: TToolButton;
+    FLastLetterS: TToolButton;
+
     ALetter: TToolButton;
     BookTreeStatus: (bsFree, bsBusy);
     Res: Integer;
@@ -616,8 +618,9 @@ type
     procedure SetHeaderPopUp;
     procedure RestorePositions;
     procedure DownloadBooks;
+    function CheckActiveDownloads:boolean;
     type
-      TView = (ByAuthorView, BySeriesView, ByGenreView, SearchView, FavoritesView,FilterView);
+      TView = (ByAuthorView, BySeriesView, ByGenreView, SearchView, FavoritesView, FilterView, DownloadView);
 
     function GetActiveView: TView;
     property ActiveView: TView read GetActiveView;
@@ -675,6 +678,27 @@ const
                                     'Переключится в режим "Дерево"'
                                     );
 
+
+function TfrmMain.CheckActiveDownloads:boolean;
+var
+  Data : PDownloadData;
+  Node : PVirtualNode;
+begin
+  Result := False;
+  Node := tvDownloadList.GetFirst;
+  while Node <> nil do
+  begin
+    Data := tvDownloadList.GetNodeData(Node);
+    if Data.State <> dsOk then
+    begin
+      Result := True;
+      Break;
+    end;
+    Node := tvDownloadList.GetNext(Node);
+  end;
+end;
+
+
 procedure TfrmMain.WMGetSysCommand(var Message : TMessage) ;
 begin
   if (Message.wParam = SC_MINIMIZE) and Settings.MinimizeToTray then
@@ -686,44 +710,31 @@ begin
 end;
 
 procedure TfrmMain.RestorePositions;
+var
+  APage: integer;
 begin
-  // восстанавливаем последнего автора, серию и отмеченные книги
-  // порядок зависит от авктивной вкладки.
+  APage := Settings.ActivePage;
+
+  pgControl.ActivePageIndex := PAGE_AUTHORS;
+  edLocateAuthor.Text := Settings.LastAuthor;
+  SelectBookById(tvBooksA,Settings.LastBookInAuthors);
+
+  pgControl.ActivePageIndex := PAGE_SERIES;
+  edLocateSeries.Text := Settings.LastSeries;
+  SelectBookById(tvBooksS,Settings.LastBookInSeries);
 
 
-  FSimulateAlphabetClick := False;
+  SelectBookById(tvBooksF,Settings.LastBookInFavorites);
 
-  case ActiveView of
-    ByAuthorView,
-    ByGenreView,
-    FavoritesView,
-    SearchView,
-    FilterView:begin
-                    edLocateSeries.Text := Settings.LastSeries;
-                    FSimulateAlphabetClick := True;
-
-                    SelectBookById(tvBooksF,Settings.LastBookInFavorites);
-                    SelectBookById(tvBooksS,Settings.LastBookInSeries);
-
-                    edLocateAuthor.Text := Settings.LastAuthor;
-                    SelectBookById(tvBooksA,Settings.LastBookInAuthors);
-                  end;
-    BySeriesView: begin
-                    edLocateAuthor.Text := Settings.LastAuthor;
-                    FSimulateAlphabetClick := True;
-
-                    SelectBookById(tvBooksA,Settings.LastBookInAuthors);
-                    SelectBookById(tvBooksF,Settings.LastBookInFavorites);
-
-                    edLocateSeries.Text := Settings.LastSeries;
-                    SelectBookById(tvBooksS,Settings.LastBookInSeries);
-                  end;
-    end; // Case
 
   FIgnoreChange := True;
   edLocateAuthor.Text := '';
   edLocateSeries.Text := '';
+
   FIgnoreChange := False;
+
+  pgControl.ActivePageIndex := APage;
+
 end;
 
 procedure TfrmMain.btnStartDownloadClick(Sender: TObject);
@@ -976,8 +987,6 @@ begin
     pmiSendToDevice.Tag := 0;
     miDevice.Tag := 0;
   end;
-
-  pgControl.ActivePageIndex := Settings.ActivePage;
 
   cpCoverA.TmpFolder := Settings.TempPath;
   cpCoverS.TmpFolder := Settings.TempPath;
@@ -1240,18 +1249,17 @@ const
   //
   // ВНИМАНИЕ!!! Порядок и количество элементов массива views должно совпадать с порядком и количеством закладок
   //
-  views: array[0..5] of TView = (
+  views: array[0..6] of TView = (
     ByAuthorView,
     BySeriesView,
     ByGenreView,
     SearchView,
     FavoritesView,
-    FilterView
+    FilterView,
+    DownloadView
     );
 
 begin
-  if pgControl.ActivePageIndex > 5 then
-    pgControl.ActivePageIndex := 0;
   Result := views[pgControl.ActivePageIndex];
 end;
 
@@ -1373,7 +1381,7 @@ begin
 
   tbtnShowLocalOnly.Visible := IsOnline;
   miDownloadBooks.Visible := IsOnline;
-  tbtnDownloadBooks.Visible := IsOnline;
+  tbtnDownloadList_Add.Visible := IsOnline;
   pmiDownloadBooks.Visible := IsOnline;
   miSyncOnline.Visible := IsOnline or IsNonFb2;
 
@@ -1386,8 +1394,8 @@ begin
   miBookEdit.Visible := IsPrivate;
   miDeleteBook.Visible := IsPrivate; // DMUser.ActiveCollection.AllowDelete;
 
-  if Assigned(FLastLetter) then
-    FLastLetter.Down := False;
+  if Assigned(FLastLetterA) then
+    FLastLetterA.Down := False;
 
   DMMain.tblAuthors.Filtered := False;
   if ApplyAuthorFilter then
@@ -1396,14 +1404,14 @@ begin
       DMMain.tblAuthors.Filter := 'Family="А*"';
       DMMain.tblAuthors.Filtered := True;
       ALetter.Down := True;
-      FLastLetter := ALetter;
+      FLastLetterA := ALetter;
       edLocateAuthor.Text := 'А';
     end
     else
     begin
       DMMain.tblAuthors.Filtered := False;
       tbtnStar.Down := True;
-      FLastLetter := tbtnStar;
+      FLastLetterA := tbtnStar;
       edLocateAuthor.Text := '';
     end;
 
@@ -1835,11 +1843,18 @@ begin
   end;
 end;
 
-
-
 //
 // События формы
 //
+
+procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  if CheckActiveDownloads then
+      CanClose :=( MessageDlg('В списке есть незавершенные закачки!' + #13 +
+                  'При выходе из программы они будут утеряны.' + #13 +
+                  'Вы все еще хотите выйти из программы?', mtWarning, mbYesNo, 0) = mrYes)
+  else CanClose := True;
+end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
@@ -1862,7 +1877,8 @@ begin
 
   FFileOpMode := fmFb2Zip;
   
-  FLastLetter := nil;
+  FLastLetterA := tbtnStar;
+  FLastLetterS := tbtnStar;
 
   CreateAlphabet;
 
@@ -1871,10 +1887,8 @@ begin
 
   ReadINIData;
 
-
   CreateDir(Settings.TempDir);
   CreateDir(Settings.DataDir);
-
 
   frmSplash.lblState.Caption := main_connecttodb;
 
@@ -1894,6 +1908,7 @@ begin
 
   frmSplash.lblState.Caption := main_loading_collection;
   InitCollection(False);
+  DMMain.SetActiveTable(pgControl.ActivePageIndex);
 
   SetColumns;
 
@@ -1912,8 +1927,7 @@ begin
         miUpdateClick(Sender);
 
   Application.HelpFile := Settings.SystemFileName[sfAppHelp];
-  pgControlChange(Self);
-  SetHeaderPopUp;
+
 
   rzsSplitterA.Position := Settings.Splitters[0];
   rzsSplitterS.Position := Settings.Splitters[1];
@@ -1921,10 +1935,10 @@ begin
   cpCoverA.Width := Settings.Splitters[3];
 
   if not DMUser.tblBases.IsEmpty then  RestorePositions;
+  SetHeaderPopUp;
 
 //  if FileExists(Settings.WorkPath + 'downloads.sav') then
 //      tvDownloadList.LoadFromfile(Settings.WorkPath + 'downloads.sav');
-
 
 end;
 
@@ -2630,6 +2644,8 @@ begin
   miAddFavorites.Visible := True;
   btnFav_add.Hint := 'Добавить в избранное';
   btnFav_add.ImageIndex := 15;
+  tbtnDownloadList_Add.ImageIndex := 2;
+  tbtnDownloadList_Add.Hint := 'Добавить в список'+#13+'закачек';
 end;
 
 procedure TfrmMain.TabSheet2Show(Sender: TObject);
@@ -2645,6 +2661,12 @@ begin
   miAddFavorites.Visible := False;
   btnFav_add.Hint := 'Удалить из избранного';
   btnFav_add.ImageIndex := 16;
+end;
+
+procedure TfrmMain.TabSheet7Show(Sender: TObject);
+begin
+  tbtnDownloadList_Add.ImageIndex := 23;
+  tbtnDownloadList_Add.Hint := 'Удалить из списка'+#13+'закачек';
 end;
 
 procedure TfrmMain.FillBookIdList(const Tree: TVirtualStringTree; var BookIDList: TBookIdList );
@@ -2879,16 +2901,22 @@ end;
 
 procedure TfrmMain.tbtnStarClick(Sender: TObject);
 begin
+
+  if (pgControl.ActivePageIndex <> PAGE_AUTHORS) and
+     (pgControl.ActivePageIndex <> PAGE_SERIES)
+  then Exit;
+
   Screen.Cursor := crHourGlass;
-  if Assigned(FLastLetter) then
-    FLastLetter.Down := False;
-  FLastLetter := (Sender as TToolButton);
-  (Sender as TToolButton).Down := True;
 //  ClearLabels;
   case ActiveView of
     ByAuthorView:
       begin
-        if (Sender as TToolButton).Tag > 90 then
+        if Assigned(FLastLetterA) then
+            FLastLetterA.Down := False;
+
+        FLastLetterA := (Sender as TToolButton);
+        (Sender as TToolButton).Down := True;
+        if (Sender as TToolButton).Tag >= 90 then
         case (Sender as TToolButton).Tag of
           91: DMMain.tblAuthors.Filter := 'Family > "а*"';
           92: DMMain.tblAuthors.Filter := 'Family < "а*"';
@@ -2905,7 +2933,12 @@ begin
       end;
     BySeriesView:
       begin
-        if (Sender as TToolButton).Tag > 90 then
+        if Assigned(FLastLetterS) then
+          FLastLetterS.Down := False;
+        FLastLetterS := (Sender as TToolButton);
+        (Sender as TToolButton).Down := True;
+
+        if (Sender as TToolButton).Tag >= 90 then
         case (Sender as TToolButton).Tag of
           90: DMMain.tblSeries.Filter := 'Title <>' + QuotedStr(NO_SERIES_TITLE);
           91: DMMain.tblSeries.Filter := 'Title > "а*"';
@@ -3475,6 +3508,12 @@ var
     end;
 
 begin
+  if ActiveView = DownloadView then
+  begin
+    btnDeleteDownloadClick(Sender);
+    Exit;
+  end;
+
   GetActiveTree(Tree);
 
   FillBookIdList(Tree, BookIDList);
@@ -4033,10 +4072,10 @@ var
 begin
   if FIgnoreChange then Exit;
   S := AnsiUpperCase(copy(edLocateAuthor.Text,1,1));
-  if S <> FLastLetter.Caption then
+  if S <> FLastLetterA.Caption then
   begin
     OldText := edLocateAuthor.Text;
-    if FSimulateAlphabetClick then ChangeLetterButton(S);
+    ChangeLetterButton(S);
     edLocateAuthor.Text := OldText;
     edLocateAuthor.Perform(WM_KEYDOWN, VK_RIGHT, 0);
   end;
@@ -4058,10 +4097,10 @@ var
 begin
   if FIgnoreChange or (Length(edLocateSeries.Text)=0) then Exit;
   S := AnsiUpperCase(edLocateSeries.Text);
-  if S[1] <> FLastLetter.Caption then
+  if S[1] <> FLastLetterS.Caption then
   begin
     OldText := edLocateSeries.Text;
-    if FSimulateAlphabetClick then ChangeLetterButton(S[1]);
+    ChangeLetterButton(S[1]);
     edLocateSeries.Text := OldText;
     edLocateSeries.Perform(WM_KEYDOWN, VK_RIGHT, 0);
   end;
@@ -4658,6 +4697,9 @@ var
   Tree: TVirtualStringTree;
   i: integer;
 begin
+  if ActiveView = DownloadView then Exit;
+
+
   GetActiveTree(Tree);
 
   for I := 0 to pmHeaders.Items.Count - 1 do
@@ -4685,16 +4727,34 @@ end;
 
 procedure TfrmMain.pgControlChange(Sender: TObject);
 begin
-  if pgControl.ActivePageIndex = 6 then Exit;
+
+  btnSwitchTreeMode.Enabled := not ((ActiveView = BySeriesView) or
+                                    (ActiveView = DownloadView));
+
+  if ActiveView = DownloadView then Exit;
+
+
+  case pgControl.ActivePageIndex of
+    PAGE_AUTHORS:begin
+                   FLastLetterA.Down := True;
+                   FLastLetterS.Down := False;
+                 end;
+    PAGE_SERIES :begin
+                   FLastLetterA.Down := False;
+                   FLastLetterS.Down := True;
+                 end;
+    else begin
+                   FLastLetterA.Down := False;
+                   FLastLetterS.Down := False;
+                 end;
+  end;
 
   SetHeaderPopUp;
 
-  DMMain.SetActiveTable(pgControl.ActivePageIndex);
   tvBooksTreeChange(Nil,Nil);
 
   btnSwitchTreeMode.ImageIndex := TreeIcons[ord(Settings.TreeModes[pgControl.ActivePageIndex])];
   btnSwitchTreeMode.Hint := TreeHints[ord(Settings.TreeModes[pgControl.ActivePageIndex])];
-  btnSwitchTreeMode.Enabled := pgControl.ActivePageIndex <> PAGE_SERIES;
 
   Settings.ActivePage := pgControl.ActivePageIndex;
 end;
@@ -4710,6 +4770,8 @@ begin
   DMUser.ActivateCollection(Settings.ActiveCollection);
   frmAddNonFb2.ShowModal;
 end;
+
+
 
 end.
 
