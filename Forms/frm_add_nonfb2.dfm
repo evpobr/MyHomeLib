@@ -15,6 +15,7 @@ object frmAddnonfb2: TfrmAddnonfb2
   Font.Style = []
   OldCreateOrder = False
   PopupMenu = pmMain
+  Position = poScreenCenter
   OnCloseQuery = FormCloseQuery
   OnShow = FormShow
   PixelsPerInch = 96
@@ -108,7 +109,7 @@ object frmAddnonfb2: TfrmAddnonfb2
         item
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring, coSmartResize, coAllowFocus]
           Position = 3
-          Width = 42
+          Width = 41
         end>
     end
     object RzPanel3: TRzPanel

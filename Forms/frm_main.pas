@@ -420,10 +420,6 @@ type
     procedure pmiDeselectAllClick(Sender: TObject);
     procedure miCopyClBrdClick(Sender: TObject);
 
-    procedure TabSheet1Show(Sender: TObject);
-    procedure TabSheet2Show(Sender: TObject);
-    procedure TabSheet5Show(Sender: TObject);
-
 
     procedure miDelFavoritesClick(Sender: TObject);
     procedure miSetRateClick(Sender: TObject);
@@ -619,6 +615,7 @@ type
     procedure RestorePositions;
     procedure DownloadBooks;
     function CheckActiveDownloads:boolean;
+    procedure SetLangBarSize;
     type
       TView = (ByAuthorView, BySeriesView, ByGenreView, SearchView, FavoritesView, FilterView, DownloadView);
 
@@ -1843,6 +1840,18 @@ begin
   end;
 end;
 
+procedure TfrmMain.SetLangBarSize;
+begin
+    // исправляем косяк с алфавитными панелями
+  rpLang.Visible := rusBar.Visible or engBar.Visible;
+  if (rusBar.Visible and not engBar.Visible) or
+     (not rusBar.Visible and engBar.Visible)
+  then
+    rpLang.Height := rusBar.Height + 5
+  else
+    rpLang.Height := 2 * rusBar.Height + 10;
+end;
+
 //
 // События формы
 //
@@ -1908,6 +1917,7 @@ begin
 
   frmSplash.lblState.Caption := main_loading_collection;
   InitCollection(False);
+
   DMMain.SetActiveTable(pgControl.ActivePageIndex);
 
   SetColumns;
@@ -1939,7 +1949,7 @@ begin
 
 //  if FileExists(Settings.WorkPath + 'downloads.sav') then
 //      tvDownloadList.LoadFromfile(Settings.WorkPath + 'downloads.sav');
-
+  SetLangBarSize;
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
@@ -2637,32 +2647,6 @@ begin
   cpCoverSR.Width := NewSize;
 end;
 
-procedure TfrmMain.TabSheet1Show(Sender: TObject);
-begin
-  miGotoAuthor.Visible := False;
-  miDelFavorites.Visible := False;
-  miAddFavorites.Visible := True;
-  btnFav_add.Hint := 'Добавить в избранное';
-  btnFav_add.ImageIndex := 15;
-  tbtnDownloadList_Add.ImageIndex := 2;
-  tbtnDownloadList_Add.Hint := 'Добавить в список'+#13+'закачек';
-end;
-
-procedure TfrmMain.TabSheet2Show(Sender: TObject);
-begin
-  TabSheet1Show(Sender);
-  miGotoAuthor.Visible := True;
-end;
-
-procedure TfrmMain.TabSheet5Show(Sender: TObject);
-begin
-  miGotoAuthor.Visible := True;
-  miDelFavorites.Visible := True;
-  miAddFavorites.Visible := False;
-  btnFav_add.Hint := 'Удалить из избранного';
-  btnFav_add.ImageIndex := 16;
-end;
-
 procedure TfrmMain.TabSheet7Show(Sender: TObject);
 begin
   tbtnDownloadList_Add.ImageIndex := 23;
@@ -2881,12 +2865,16 @@ procedure TfrmMain.tbtnEngClick(Sender: TObject);
 begin
   Settings.ShowEngBar := not Settings.ShowEngBar;
   EngBar.Visible := Settings.ShowEngBar;
+
+  SetLangBarSize;
 end;
 
 procedure TfrmMain.tbtnRusClick(Sender: TObject);
 begin
   Settings.ShowRusBar := not Settings.ShowRusBar;
   RusBar.Visible := Settings.ShowRusBar;
+
+  SetLangBarSize;
 end;
 
 
@@ -3534,6 +3522,8 @@ begin
     Data.FileName := Folder;
     Data.URL := Format('http://lib.rus.ec/b/%d/download',[LibID]);
   end;
+  if Settings.AutoStartDwnld then btnStartDownloadClick(Sender);
+
 end;
 
 procedure TfrmMain.miEditAuthorClick(Sender: TObject);
@@ -4726,20 +4716,27 @@ begin
 end;
 
 procedure TfrmMain.pgControlChange(Sender: TObject);
+var
+  ToolBuutonVisible: boolean;
 begin
 
-  btnSwitchTreeMode.Enabled := not ((ActiveView = BySeriesView) or
-                                    (ActiveView = DownloadView));
+  ToolBuutonVisible := (ActiveView <> DownloadView);
 
-  if ActiveView = DownloadView then Exit;
+  btnFav_add.Enabled := ToolBuutonVisible;
+  tbSelectAll.Enabled := ToolBuutonVisible;
+  tbCollapse.Enabled := ToolBuutonVisible;
+  tbtnShowCover.Enabled := ToolBuutonVisible;
+  tbtnRead.Enabled := ToolBuutonVisible;
+  tbSendToDevice.Enabled := ToolBuutonVisible;
+  btnSwitchTreeMode.Enabled :=  not ((ActiveView = BySeriesView) or
+                                     (ActiveView = DownloadView));
 
-
-  case pgControl.ActivePageIndex of
-    PAGE_AUTHORS:begin
+  case ActiveView  of
+    ByAuthorView:begin
                    FLastLetterA.Down := True;
                    FLastLetterS.Down := False;
                  end;
-    PAGE_SERIES :begin
+    BySeriesView :begin
                    FLastLetterA.Down := False;
                    FLastLetterS.Down := True;
                  end;
@@ -4748,6 +4745,37 @@ begin
                    FLastLetterS.Down := False;
                  end;
   end;
+
+  case ActiveView of
+    FavoritesView:begin
+                    miGotoAuthor.Visible := True;
+                    miDelFavorites.Visible := True;
+                    miAddFavorites.Visible := False;
+                    btnFav_add.Hint := 'Удалить из избранного';
+                    btnFav_add.ImageIndex := 16;
+                  end;
+    DownloadView: begin
+                    btnSwitchTreeMode.Enabled := False;
+                    Exit;
+                  end;
+    else
+                 begin
+                    miGotoAuthor.Visible := False;
+                    miDelFavorites.Visible := False;
+                    miAddFavorites.Visible := True;
+                    btnFav_add.Hint := 'Добавить в избранное';
+                    btnFav_add.ImageIndex := 15;
+                    tbtnDownloadList_Add.ImageIndex := 2;
+                    tbtnDownloadList_Add.Hint := 'Добавить в список'+#13+'закачек';
+                  end;
+
+  end;
+
+  DMMain.SetActiveTable(ord(ActiveView));
+
+
+  miGotoAuthor.Visible := (ActiveView <> ByAuthorView);
+
 
   SetHeaderPopUp;
 
