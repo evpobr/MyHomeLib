@@ -94,6 +94,7 @@ type
     FSplitters: TSplitters;
     FTreeModes: TTreeModes;
     FMinimizeToTray: boolean;
+    FAutoStartDwnld: boolean;
 
     // NETWORK_SECTION
     FProxyServer: string;
@@ -210,6 +211,8 @@ type
     property ShowFb2Info: boolean read FShowFb2Info write FShowFb2Info;
 
     property MinimizeToTray : boolean read FMinimizeToTray   write FMinimizeToTray;
+    property AutoStartDwnld : boolean read FAutoStartDwnld   write FAutoStartDwnld;
+
     property RemoveSquarebrackets : boolean read FRemoveSquarebrackets write FRemoveSquarebrackets;
 
     property TableView: boolean read FTableView write FTableView;
@@ -409,7 +412,7 @@ begin
     FShowFb2Info := iniFile.ReadBool(INTERFACE_SECTION, 'ShowFb2Info', True);
 
     FMinimizeToTray  := iniFile.ReadBool(INTERFACE_SECTION, 'MinimizeToTray', True);
-
+    FAutoStartDwnld  := iniFile.ReadBool(INTERFACE_SECTION, 'AutoStartDwnld', False);
 
     if iniFile.ReadInteger(INTERFACE_SECTION, 'Lang', 0) = 0 then
       FAppLanguage := alEng
@@ -521,6 +524,7 @@ begin
     iniFile.WriteBool(INTERFACE_SECTION, 'ShowSubGenreBooks', FShowSubGenreBooks);
     iniFile.WriteBool(INTERFACE_SECTION, 'MinimizeToTray', FMinimizeToTray );
     iniFile.WriteBool(INTERFACE_SECTION, 'ShowFb2Info', FShowFb2Info);
+    iniFile.WriteBool(INTERFACE_SECTION, 'AutoStartDwnld', FAutoStartDwnld );
 
     SaveSplitters(iniFile);
 

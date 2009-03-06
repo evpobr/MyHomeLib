@@ -522,7 +522,7 @@ object frmSettings: TfrmSettings
         Left = 3
         Top = 172
         Width = 390
-        Height = 77
+        Height = 95
         Align = alTop
         Caption = #1055#1086#1074#1077#1076#1077#1085#1080#1077
         TabOrder = 1
@@ -542,18 +542,26 @@ object frmSettings: TfrmSettings
           Caption = #1057#1074#1086#1088#1072#1095#1080#1074#1072#1090#1100' '#1074' '#1090#1088#1077#1081
           TabOrder = 1
         end
+        object cbAutoStartDwnld: TCheckBox
+          Left = 24
+          Top = 69
+          Width = 257
+          Height = 17
+          Caption = #1057#1090#1072#1088#1090#1086#1074#1072#1090#1100' '#1079#1072#1082#1072#1095#1082#1080' '#1072#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080
+          TabOrder = 2
+        end
       end
       object RzGroupBox10: TRzGroupBox
         AlignWithMargins = True
         Left = 3
-        Top = 255
+        Top = 273
         Width = 390
-        Height = 133
+        Height = 115
         Align = alClient
         Caption = #1056#1072#1079#1085#1086#1077
         TabOrder = 2
-        ExplicitTop = 280
-        ExplicitHeight = 108
+        ExplicitTop = 255
+        ExplicitHeight = 133
         object cbShowFb2Info: TCheckBox
           Left = 24
           Top = 18

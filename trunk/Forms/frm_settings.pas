@@ -128,6 +128,7 @@ type
     RzGroupBox11: TRzGroupBox;
     edReadDir: TRzButtonEdit;
     cbMinimizeToTray: TCheckBox;
+    cbAutoStartDwnld: TCheckBox;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
@@ -234,6 +235,8 @@ begin
   cbShowFb2Info.Checked := Settings.ShowFb2Info;
   cbShowSubGenreBooks.Checked := Settings.ShowSubGenreBooks;
   cbMinimizeToTray.Checked := Settings.MinimizeToTray;
+  cbAutoStartDwnld.Checked := Settings.AutoStartDwnld;
+
   // Page 4 - Internet
   edProxyServer.Text := Settings.ProxyServer;
   edProxyUsername.Text := Settings.ProxyUsername;
@@ -283,7 +286,7 @@ begin
   Settings.FileNameTemplate := edFileNameTemplate.Text;
   Settings.TransliterateFileName := cbTranslit.Checked;
   Settings.RemoveSquarebrackets := cbSquareFilter.Checked;
-
+  Settings.AutoStartDwnld := cbAutoStartDwnld.Checked;
 
   // Page 2 - Readers
   SaveReaders;
