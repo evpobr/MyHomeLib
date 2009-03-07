@@ -433,11 +433,13 @@ object frmMain: TfrmMain
     Width = 942
     Height = 561
     HelpContext = 135
-    ActivePage = TabSheet1
+    ActivePage = TabSheet5
     Align = alClient
-    TabIndex = 0
+    TabIndex = 4
     TabOrder = 3
     OnChange = pgControlChange
+    ExplicitLeft = 2
+    ExplicitTop = 147
     FixedDimension = 19
     object TabSheet1: TRzTabSheet
       Caption = #1040#1074#1090#1086#1088#1099
@@ -1768,7 +1770,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -1980,7 +1981,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2515,7 +2515,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2525,7 +2524,6 @@ object frmMain: TfrmMain
       end
     end
     object TabSheet7: TRzTabSheet
-      OnShow = TabSheet7Show
       Caption = #1057#1087#1080#1089#1086#1082' '#1079#1072#1082#1072#1095#1077#1082
       object tvDownloadList: TVirtualStringTree
         AlignWithMargins = True

@@ -3,7 +3,7 @@ object DMMain: TDMMain
   Height = 567
   Width = 565
   object DBMain: TABSDatabase
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     Exclusive = True
     MaxConnections = 5
@@ -24,7 +24,7 @@ object DMMain: TDMMain
     Top = 208
   end
   object tblBooksA: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -203,7 +203,7 @@ object DMMain: TDMMain
     end
   end
   object tblBooksG: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -397,7 +397,7 @@ object DMMain: TDMMain
     end
   end
   object tblGenres: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -482,7 +482,7 @@ object DMMain: TDMMain
     Top = 216
   end
   object tblAuthorsS: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -509,7 +509,7 @@ object DMMain: TDMMain
     end
   end
   object tblBooksS: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -699,7 +699,7 @@ object DMMain: TDMMain
     end
   end
   object tblSeries: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -784,7 +784,7 @@ object DMMain: TDMMain
     Top = 200
   end
   object tblAuthors: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -817,7 +817,7 @@ object DMMain: TDMMain
     end
   end
   object tblBooks_Genre_List: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -904,7 +904,7 @@ object DMMain: TDMMain
     Top = 424
   end
   object tblGenre_List: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -988,7 +988,7 @@ object DMMain: TDMMain
     Top = 152
   end
   object tblAuthor_List: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1061,7 +1061,7 @@ object DMMain: TDMMain
     Top = 152
   end
   object tblBooks: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1233,16 +1233,6 @@ object DMMain: TDMMain
     object tblBooksDeleted: TBooleanField
       FieldName = 'Deleted'
     end
-    object tblBooksSeries: TWideStringField
-      FieldKind = fkLookup
-      FieldName = 'Series'
-      LookupDataSet = tblSeries
-      LookupKeyFields = 'ID'
-      LookupResultField = 'Title'
-      KeyFields = 'SerID'
-      Size = 255
-      Lookup = True
-    end
     object tblBooksRate: TIntegerField
       FieldKind = fkLookup
       FieldName = 'Rate'
@@ -1252,9 +1242,18 @@ object DMMain: TDMMain
       KeyFields = 'ID'
       Lookup = True
     end
+    object tblBooksSeries: TWideStringField
+      FieldKind = fkLookup
+      FieldName = 'Series'
+      LookupDataSet = tblSeriesB
+      LookupKeyFields = 'ID'
+      LookupResultField = 'Title'
+      KeyFields = 'SerID'
+      Lookup = True
+    end
   end
   object tblSeriesA: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1329,7 +1328,7 @@ object DMMain: TDMMain
     Top = 352
   end
   object tblBooks_Genres: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1358,7 +1357,7 @@ object DMMain: TDMMain
     end
   end
   object tblAuthor_Detail: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1392,7 +1391,7 @@ object DMMain: TDMMain
     end
   end
   object tblAuthor_Master: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1466,5 +1465,75 @@ object DMMain: TDMMain
     DataSet = tblAuthor_Master
     Left = 392
     Top = 424
+  end
+  object tblSeriesB: TABSTable
+    CurrentVersion = '6.02 '
+    DatabaseName = 'MyLib'
+    InMemory = False
+    ReadOnly = False
+    Filter = 'Title<>"---"'
+    Filtered = True
+    StoreDefs = True
+    IndexDefs = <
+      item
+        Name = 'ID_Index'
+        Fields = 'ID'
+        Options = [ixPrimary, ixUnique]
+      end
+      item
+        Name = 'TiteIndex'
+        Fields = 'Title;AuthID'
+      end
+      item
+        Name = 'AuthorIndex'
+        Fields = 'AuthID;Title'
+      end
+      item
+        Name = 'SeqTitle'
+        Fields = 'Title'
+      end>
+    IndexName = 'TiteIndex'
+    FieldDefs = <
+      item
+        Name = 'ID'
+        DataType = ftAutoInc
+      end
+      item
+        Name = 'AuthID'
+        Attributes = [faRequired]
+        DataType = ftInteger
+      end
+      item
+        Name = 'GenreCode'
+        Attributes = [faRequired]
+        DataType = ftWideString
+        Size = 20
+      end
+      item
+        Name = 'Title'
+        Attributes = [faRequired]
+        DataType = ftWideString
+        Size = 80
+      end>
+    TableName = 'series'
+    Exclusive = False
+    Left = 480
+    Top = 360
+    object AutoIncField1: TAutoIncField
+      FieldName = 'ID'
+    end
+    object IntegerField1: TIntegerField
+      FieldName = 'AuthID'
+      Required = True
+    end
+    object WideStringField1: TWideStringField
+      FieldName = 'Title'
+      Required = True
+      Size = 80
+    end
+    object WideStringField2: TWideStringField
+      FieldName = 'GenreCode'
+      Required = True
+    end
   end
 end
