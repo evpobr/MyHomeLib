@@ -95,6 +95,7 @@ type
     FTreeModes: TTreeModes;
     FMinimizeToTray: boolean;
     FAutoStartDwnld: boolean;
+    FWindowState: TWindowState;
 
     // NETWORK_SECTION
     FProxyServer: string;
@@ -241,6 +242,7 @@ type
     property SeriesBookColor: TColor read FSeriesBookColor write FSeriesBookColor;
     property BGColor: TColor read FBGColor write FBGColor;
     property FontColor: TColor read FFontColor write FFontColor;
+    property WindowState: TWindowState read FWindowState write FWindowState;
 
     property FullTextSearch: Boolean read FFullTextSearch write FFullTextSearch;
 
@@ -389,6 +391,7 @@ begin
       2: FExportMode := emLrf;
       3: FExportMode := emTxt;
     end;
+
     //
     // INTERFACE_SECTION
     //
@@ -420,6 +423,13 @@ begin
       FAppLanguage := alRus;
 
     LoadSplitters(iniFile);
+
+    case iniFile.ReadInteger(INTERFACE_SECTION, 'WindowState', 2) of
+      0: FWindowState := wsNormal;
+      1: FWindowState := wsMinimized;
+      2: FWindowState := wsMaximized;
+    end;
+
 
     //
     // NETWORK_SECTION
@@ -525,7 +535,7 @@ begin
     iniFile.WriteBool(INTERFACE_SECTION, 'MinimizeToTray', FMinimizeToTray );
     iniFile.WriteBool(INTERFACE_SECTION, 'ShowFb2Info', FShowFb2Info);
     iniFile.WriteBool(INTERFACE_SECTION, 'AutoStartDwnld', FAutoStartDwnld );
-
+    iniFile.WriteInteger(INTERFACE_SECTION, 'WindowState', Ord(FWindowState));
     SaveSplitters(iniFile);
 
     //

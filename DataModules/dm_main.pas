@@ -158,12 +158,17 @@ type
     tblAuthorsName: TWideStringField;
     tblAuthorsMiddle: TWideStringField;
     tblAuthorsFullName: TWideStringField;
-    tblBooksSeries: TWideStringField;
     tblBooksRate: TIntegerField;
     tblSeriesAID: TAutoIncField;
     tblSeriesAAuthID: TIntegerField;
     tblSeriesAGenreCode: TWideStringField;
     tblSeriesATitle: TWideStringField;
+    tblSeriesB: TABSTable;
+    AutoIncField1: TAutoIncField;
+    IntegerField1: TIntegerField;
+    WideStringField1: TWideStringField;
+    WideStringField2: TWideStringField;
+    tblBooksSeries: TWideStringField;
   private
     FActiveTable: TAbsTable;
     { Private declarations }

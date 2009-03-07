@@ -510,7 +510,6 @@ type
       Node: PVirtualNode; Stream: TStream);
     procedure tvDownloadListLoadNode(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Stream: TStream);
-    procedure TabSheet7Show(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 
   private
@@ -961,7 +960,7 @@ procedure TfrmMain.ReadINIData;
 begin
   cbFullText.Checked := Settings.FullTextSearch;
 
-
+  WindowState := Settings.WindowState;
 
   SetColors;
 
@@ -998,6 +997,11 @@ begin
   cpCoverF.Fb2InfoVisible := Settings.ShowFb2Info;
   cpCoverSR.Fb2InfoVisible := Settings.ShowFb2Info;
   cpCoverFL.Fb2InfoVisible := Settings.ShowFb2Info;
+
+  rzsSplitterA.Position := Settings.Splitters[0];
+  rzsSplitterS.Position := Settings.Splitters[1];
+  rzsSplitterG.Position := Settings.Splitters[2];
+  cpCoverA.Width := Settings.Splitters[3];
 
 end;
 
@@ -1657,6 +1661,7 @@ begin
   DMMain.tblBooksG.Active := Status;
   DMMain.tblBooks.Active := Status;
   DMMain.tblSeriesA.Active := Status;
+  DMMain.tblSeriesB.Active := Status;
 end;
 
 procedure TfrmMain.SetUtilTableStatus(Status: boolean);
@@ -1915,12 +1920,14 @@ begin
   DMUser.ActivateCollection(Settings.ActiveCollection);
   SetUserTableStatus(True);
 
+
+  SetColumns;
+  SetHeaderPopUp;
+
   frmSplash.lblState.Caption := main_loading_collection;
   InitCollection(False);
 
   DMMain.SetActiveTable(pgControl.ActivePageIndex);
-
-  SetColumns;
 
   frmSplash.lblState.Caption := main_check_updates;
   if Settings.CheckUpdate then
@@ -1939,13 +1946,8 @@ begin
   Application.HelpFile := Settings.SystemFileName[sfAppHelp];
 
 
-  rzsSplitterA.Position := Settings.Splitters[0];
-  rzsSplitterS.Position := Settings.Splitters[1];
-  rzsSplitterG.Position := Settings.Splitters[2];
-  cpCoverA.Width := Settings.Splitters[3];
-
   if not DMUser.tblBases.IsEmpty then  RestorePositions;
-  SetHeaderPopUp;
+
 
 //  if FileExists(Settings.WorkPath + 'downloads.sav') then
 //      tvDownloadList.LoadFromfile(Settings.WorkPath + 'downloads.sav');
@@ -1970,6 +1972,8 @@ begin
   Settings.Splitters[1] := rzsSplitterS.Position;
   Settings.Splitters[2] := rzsSplitterG.Position;
   Settings.Splitters[3] := cpCoverA.Width;
+
+  Settings.WindowState := WindowState;
 
   Settings.SaveSettings;
   FreeSettings;
@@ -2647,12 +2651,6 @@ begin
   cpCoverSR.Width := NewSize;
 end;
 
-procedure TfrmMain.TabSheet7Show(Sender: TObject);
-begin
-  tbtnDownloadList_Add.ImageIndex := 23;
-  tbtnDownloadList_Add.Hint := 'Удалить из списка'+#13+'закачек';
-end;
-
 procedure TfrmMain.FillBookIdList(const Tree: TVirtualStringTree; var BookIDList: TBookIdList );
 var
   i: integer;
@@ -2802,6 +2800,7 @@ var
 
   fs: TMemoryStream;
   Zip: TZipForge;
+  I: integer;
 
 begin
   GetActiveViewComponents(Tree,Panel,Cover);
@@ -2821,12 +2820,25 @@ begin
   try
     if ExtractFileExt(Panel.Folder) = ZIP_EXTENSION then
     begin
-      if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
+      //
+      if ActiveView = FavoritesView then
       begin
-        DownloadBooks;
-        if not FileExists(Panel.Folder) then
-          Exit; // если файла нет, значит закачка не удалась, и юзер об  этом уже знает
-      end;
+        I := DMUser.tblFavoritesDatabaseID.Value;
+        DMUser.tblBases.Locate('ID',I,[]);
+        if isOnlineCollection(DMUser.tblBasesCode.Value) then
+        begin
+          DownloadBooks;
+          if not FileExists(Panel.Folder) then
+            Exit;
+        end;
+       end
+       else
+         if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
+         begin
+           DownloadBooks;
+           if not FileExists(Panel.Folder) then
+            Exit; // если файла нет, значит закачка не удалась, и юзер об  этом уже знает
+         end;
 
       if not FileExists(Panel.Folder) then
           raise EInvalidOp.Create('Архив ' + Panel.Folder + ' не найден!');
@@ -3508,7 +3520,18 @@ begin
 
   for I := 0 to High(BookIDList) do
   begin
+
+    if ActiveView = FavoritesView then
+    begin
+      DMUser.tblFavorites.Locate('ID',BookIDList[i].ID,[]);
+      if DMUser.tblFavoritesDataBaseId.Value <>
+         DMUser.ActiveCollection.ID
+       then
+         Continue;
+    end;
+
     if CheckID(BookIDList[i].ID) then Continue;
+
     DMMain.GetBookFolder(BookIDList[i].ID,Folder);
     Node := tvDownloadList.AddChild(nil);
     Data := tvDownloadList.GetNodeData(Node);
@@ -3821,30 +3844,36 @@ begin
         DMUser.tblFavorites.Insert;
         DMUser.tblFavoritesInnerID.Value := DMMain.tblBooksID.Value;
         DMUser.tblFavoritesDataBaseID.Value := Settings.ActiveCollection;
-        DMUser.tblFavoritesSerID.Value := DMMain.tblBooksSerID.Value;
         DMUser.tblFavoritesTitle.Value := DMMain.tblBooksTitle.Value;
+
+        DMUser.tblFavoritesSerID.Value := DMMain.tblBooksSerID.Value;
+        if DMMain.tblBooksSeries.IsNull then
+          DMUser.tblFavoritesSeries.Value := NO_SERIES_TITLE
+        else
+          DMUser.tblFavoritesSeries.Value := DMMain.tblBooksSeries.Value;
+
         if ActiveView = ByAuthorView then
           DMUser.tblFavoritesFullName.Value := DMMain.tblAuthorsFullName.Value
         else
           DMUser.tblFavoritesFullName.Value := DMMain.tblBooksFullName.Value;
+
         DMUser.tblFavoritesSeqNumber.Value := DMMain.tblBooksSeqNumber.Value;
         DMUser.tblFavoritesLibID.Value := DMMain.tblBooksLibID.Value;
         DMUser.tblFavoritesSize.Value := DMMain.tblBooksSize.Value;
         DMUser.tblFavoritesDeleted.Value := DMMain.tblBooksDeleted.Value;
+
         if not DMMain.tblBooksFolder.IsNull then
           DMUser.tblFavoritesFolder.Value := FCollectionRoot + CheckSymbols(DMMain.tblBooksFolder.Value)
         else
           DMUser.tblFavoritesFolder.Value := FCollectionRoot;
+
         DMUser.tblFavoritesFileName.Value := DMMain.tblBooksFileName.Value;
         DMUser.tblFavoritesExt.Value := DMMain.tblBooksExt.Value;
         DMUser.tblFavoritesInsideNo.Value := DMMain.tblBooksInsideNo.Value;
         DMUser.tblFavoritesGenres.Value := Data.Genre;
         DMUser.tblFavoritesRate.Value := DMMain.tblBooksRate.Value;
         DMUser.tblFavoritesDate.Value := DMMain.tblBooksDate.Value;
-        if DMMain.tblBooksSeries.IsNull then
-          DMUser.tblFavoritesSeries.Value := NO_SERIES_TITLE
-        else
-          DMUser.tblFavoritesSeries.Value := DMMain.tblBooksSeries.Value;
+
 
         DMUser.tblFavorites.Post;
       end;
@@ -4720,6 +4749,7 @@ var
   ToolBuutonVisible: boolean;
 begin
 
+ // tbtnDownloadList_Add.Enabled := (ActiveView <> FavoritesView);
   ToolBuutonVisible := (ActiveView <> DownloadView);
 
   btnFav_add.Enabled := ToolBuutonVisible;
@@ -4734,17 +4764,26 @@ begin
   case ActiveView  of
     ByAuthorView:begin
                    FLastLetterA.Down := True;
-                   FLastLetterS.Down := False;
+                   if FLastLetterA = FLastLetterS then
+                     FLastLetterS.Down := True
+                   else
+                     FLastLetterS.Down := False;
                  end;
     BySeriesView :begin
-                   FLastLetterA.Down := False;
                    FLastLetterS.Down := True;
+                   if FLastLetterA = FLastLetterS then
+                     FLastLetterA.Down := True
+                   else
+                     FLastLetterA.Down := False;
                  end;
     else begin
                    FLastLetterA.Down := False;
                    FLastLetterS.Down := False;
                  end;
   end;
+
+
+
 
   case ActiveView of
     FavoritesView:begin
@@ -4755,6 +4794,8 @@ begin
                     btnFav_add.ImageIndex := 16;
                   end;
     DownloadView: begin
+                    tbtnDownloadList_Add.ImageIndex := 23;
+                    tbtnDownloadList_Add.Hint := 'Удалить из списка'+#13+'закачек';
                     btnSwitchTreeMode.Enabled := False;
                     Exit;
                   end;
@@ -4765,11 +4806,13 @@ begin
                     miAddFavorites.Visible := True;
                     btnFav_add.Hint := 'Добавить в избранное';
                     btnFav_add.ImageIndex := 15;
-                    tbtnDownloadList_Add.ImageIndex := 2;
-                    tbtnDownloadList_Add.Hint := 'Добавить в список'+#13+'закачек';
+
                   end;
 
   end;
+
+  tbtnDownloadList_Add.ImageIndex := 2;
+  tbtnDownloadList_Add.Hint := 'Добавить в список'+#13+'закачек';
 
   DMMain.SetActiveTable(ord(ActiveView));
 
