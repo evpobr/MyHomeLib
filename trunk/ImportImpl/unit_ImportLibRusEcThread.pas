@@ -185,8 +185,6 @@ var
   filesProcessed: Integer;
   unZip:TZipForge;
   CurrentFile: string;
-  F: text;
-  S: string;
   ArchItem: TZFArchiveItem;
 begin
   filesProcessed := 0;
@@ -194,6 +192,7 @@ begin
   FLibrary := TMHLLibrary.Create(nil);
   try
     FLibrary.DatabaseFileName := DBFileName;
+
     FLibrary.Active := True;
 
     FLibrary.BeginBulkOperation;
