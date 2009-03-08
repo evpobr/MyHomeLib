@@ -473,7 +473,7 @@ end;
 
 procedure TMHLLibrary.CreateCollectionTables(const DBFile: string; const GenresFileName: string);
 begin
-  CheckInactive;
+//  CheckInactive;
 
   DatabaseFileName := DBFile;
   FDatabase.CreateDatabase;

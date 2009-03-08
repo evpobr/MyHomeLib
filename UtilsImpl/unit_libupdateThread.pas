@@ -70,7 +70,8 @@ resourcestring
 
 implementation
 
-uses DateUtils, dm_main, dm_user, unit_Consts, unit_Settings, unit_WorkerThread;
+uses DateUtils, dm_main, dm_user, unit_Consts, unit_Settings, unit_WorkerThread,
+  unit_Database;
 
 { TDownloadBooksThread }
 
@@ -209,6 +210,9 @@ var
   ActiveIndex: Integer;
   Version : integer;
   DelOld: boolean;
+
+  ALibrary: TMHLLibrary;
+
 begin
   ActiveIndex := DMUser.ActiveCollection.ID;
   SetComment(rstrCheckingUpdate);
@@ -230,10 +234,10 @@ begin
     SetComment(rstrDownloadingUpdates);
 
     i := 0;
+
     repeat
       if Canceled then
             Break;
-
       SetLength(CollList, i + 1);
       CollList[i].ID := DMUser.ActiveCollection.ID;
       CollList[i].Name := DMUser.ActiveCollection.Name;
@@ -251,16 +255,31 @@ begin
       if Canceled then
             Break;
 
-      Teletype(Format(rstrRemovingOldCollection, [CollList[i].Name]),tsInfo);
-      DMUser.ActivateCollection(CollList[i].ID);
-      Teletype(Format(rstrCreatingCollection, [CollList[i].Name]),tsInfo);
-
 
       DBFileName := CollList[i].DBFileName;
       CollectionRoot := IncludeTrailingPathDelimiter(CollList[i].Folder);
       CollectionType := CollList[i].Code;
 
+      Teletype(Format(rstrRemovingOldCollection, [CollList[i].Name]),tsInfo);
+      // удаляем старый файл коллекции
+      DMMain.DBMain.Close;
+      DMMain.DBMain.DatabaseFileName := DBFileName;
+      DMMain.DBMain.DeleteDatabase;
+
+      // создаем его заново
+      Teletype(Format(rstrCreatingCollection, [CollList[i].Name]),tsInfo);
+
+      ALibrary := TMHLLibrary.Create(nil);
+      try
+         ALibrary.CreateCollectionTables(DBFileName, GENRES_FB2_FILENAME);
+      finally
+        ALibrary.Free;
+      end;
+
+
+      //  импортирум данные
       Import;
+
       DMUser.ActiveCollection.Version := GetLibUpdateVersion;
 
       Teletype(rstrReady,tsInfo);

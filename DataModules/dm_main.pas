@@ -189,6 +189,10 @@ type
 
     procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
     property ActiveTable: TabsTable read FActiveTable;
+
+    procedure Clear;
+    procedure SetTableState(State: boolean);
+
   end;
 
 var
@@ -212,6 +216,27 @@ procedure TDMMain.FieldByName(AID: integer; AField: String; out ARes: integer);
 begin
   if AID<> 0 then FActiveTable.Locate('ID', AID, []);
   ARes := FActiveTable.FieldByName(AField).AsInteger;
+end;
+
+procedure TDMMain.Clear;
+begin
+  SetTableState(False);
+
+  tblAuthors.EmptyTable;
+  tblAuthor_List.EmptyTable;
+  tblSeries.EmptyTable;
+  tblBooksA.EmptyTable;
+  tblBooksS.EmptyTable;
+  tblGenres.EmptyTable;
+  tblBooks_Genre_List.EmptyTable;
+  tblBooks_Genres.EmptyTable;
+  tblGenre_List.EmptyTable;
+  tblBooksG.EmptyTable;
+  tblBooks.EmptyTable;
+  tblSeriesA.EmptyTable;
+  tblSeriesB.EmptyTable;
+
+  SetTableState(True);
 end;
 
 procedure TDMMain.FieldByName(AID: integer; AField: String; out Ares: boolean);
@@ -371,5 +396,21 @@ begin
   end;
 end;
 
+procedure TDMMain.SetTableState(State: boolean);
+begin
+  tblAuthors.Active := State;
+  tblAuthor_List.Active := State;
+  tblSeries.Active := State;
+  tblBooksA.Active := State;
+  tblBooksS.Active := State;
+  tblGenres.Active := State;
+  tblBooks_Genre_List.Active := State;
+  tblBooks_Genres.Active := State;
+  tblGenre_List.Active := State;
+  tblBooksG.Active := State;
+  tblBooks.Active := State;
+  tblSeriesA.Active := State;
+  tblSeriesB.Active := State;
+end;
 
 end.

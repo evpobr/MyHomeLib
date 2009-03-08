@@ -167,7 +167,7 @@ type
     tbtnRead: TToolButton;
     tbSendToDevice: TToolButton;
     tbtnRus: TToolButton;
-    tbtnEng1: TToolButton;
+    tbtnEng: TToolButton;
     tbSelectAll: TToolButton;
     tbCollapse: TToolButton;
     btnRefreshCollection: TToolButton;
@@ -342,6 +342,7 @@ type
     N35: TMenuItem;
     mi_dwnl_Delete: TMenuItem;
     btnClearDownload: TRzBitBtn;
+    ilToolBar_Disabled: TImageList;
 
     //
     // События формы
@@ -540,7 +541,6 @@ type
     //
     // TODO -oNickR -cRefactoring : вынести эти методы в соответствующие датамодули
     //
-    procedure SetTableStatus(Status: boolean);
     procedure SetUserTableStatus(Status: boolean);
     procedure SetUtilTableStatus(Status: boolean);
 
@@ -560,7 +560,6 @@ type
 
     function IsLibRusecEdit(ID: integer): boolean;
 
-    procedure ClearInfoPanel;
     procedure WMGetSysCommand(var Message :TMessage); message WM_SYSCOMMAND;
   public
     procedure FillGenresTree(Tree: TVirtualStringTree);
@@ -568,7 +567,6 @@ type
     procedure DisableMainMenu(State: boolean);
 
   private
-    FShowingInfo: Boolean;
     FSelectionState: boolean;
     FCollectionRoot: string;
 
@@ -583,8 +581,6 @@ type
 
     ALetter: TToolButton;
     BookTreeStatus: (bsFree, bsBusy);
-    Res: Integer;
-    FDownloadSize: Integer;
 
     FSortSettings: array [0..5] of record
                      Column: TColumnIndex;
@@ -595,7 +591,6 @@ type
       var BookIDList: TBookIdList);
     function GetActiveBookTable(tag: integer): TAbsTable;
     procedure ClearLabels(Tag: integer);
-    procedure CreateColumns(Tree: TVirtualStringTree; Properties: array of TColumnData);
     procedure SetBooksFilter;
     procedure FillAllBooksTree;
     procedure ChangeLetterButton(S: string);
@@ -888,25 +883,6 @@ begin
       end;
 end;
 
-procedure TfrmMain.CreateColumns(Tree: TVirtualStringTree; Properties: array of TColumnData);
-var
-  Column: TVirtualTreeColumn;
-  i: integer;
-begin
-  Tree.Header.Columns.Clear;
-  for I := 0 to High(Properties) do
-  begin
-    Column := TVirtualTreeColumn.Create(Tree.Header.Columns);
-    Column.Text  := Properties[i].Text;
-    Column.Position :=  Properties[i].Position;
-    Column.Width :=  Properties[i].Width;
-    Column.MaxWidth := Properties[i].MaxWidth;
-    Column.MinWidth := Properties[i].MinWidth;
-    Column.Alignment := Properties[i].Alignment;
-    Column.Options := Properties[i].Options;
-  end;
-  Tree.Header.MainColumn := 0;
-end;
 
 procedure TfrmMain.SetColors;
 var
@@ -1166,7 +1142,6 @@ end;
 
 procedure TfrmMain.btnInsertFilterTemplateClick(Sender: TObject);
 var
-   I: integer;
    OldText: string;
    p: integer;
    AddText: string;
@@ -1328,7 +1303,7 @@ begin
   Screen.Cursor := crHourGlass;
 
   ClearLabels(PAGE_ALL);
-  SetTableStatus(False);
+  DMMain.SetTableState(False);
   tvGenres.Clear;
   tvbooksG.Clear;
   DMMain.DBMain.Connected := False;
@@ -1357,7 +1332,7 @@ begin
 
 
   CreateCollectionMenu;
-  SetTableStatus(True);
+  DMMain.SetTableState(True);
 
   DisableControls(True);
 
@@ -1434,6 +1409,9 @@ begin
   FDoNotLocate := False;
   CreateScriptMenu;
   FIgnoreChange := False;
+
+  if not IsOnline and (ActiveView = DownloadView) then
+    pgControl.ActivePageIndex := PAGE_AUTHORS;
 
 end;
 
@@ -1647,22 +1625,6 @@ begin
   end
 end;
 
-procedure TfrmMain.SetTableStatus(Status: boolean);
-begin
-  DMMain.tblAuthors.Active := Status;
-  DMMain.tblAuthor_List.Active := Status;
-  DMMain.tblSeries.Active := Status;
-  DMMain.tblBooksA.Active := Status;
-  DMMain.tblBooksS.Active := Status;
-  DMMain.tblGenres.Active := Status;
-  DMMain.tblBooks_Genre_List.Active := Status;
-  DMMain.tblBooks_Genres.Active := Status;
-  DMMain.tblGenre_List.Active := Status;
-  DMMain.tblBooksG.Active := Status;
-  DMMain.tblBooks.Active := Status;
-  DMMain.tblSeriesA.Active := Status;
-  DMMain.tblSeriesB.Active := Status;
-end;
 
 procedure TfrmMain.SetUtilTableStatus(Status: boolean);
 begin
@@ -2791,7 +2753,6 @@ end;
 procedure TfrmMain.tbtbnReadClick(Sender: TObject);
 var
   WorkFile: String;
-  FileName: String;
   Tree: TVirtualStringTree;
   Cover: TMHLCoverPanel;
   Panel: TMHLInfoPanel;
@@ -3993,15 +3954,6 @@ begin
   BookTreeStatus := bsFree;
 end;
 
-procedure TfrmMain.ClearInfoPanel;
-begin
-//  Img.Visible := False;
-//  mmShort.Clear;
-//  pnlInfo.Refresh;
-end;
-
-
-
 procedure TfrmMain.btnSearchClick(Sender: TObject);
 var
   S: String;
@@ -4274,7 +4226,6 @@ end;
 
 procedure TfrmMain.miBookInfoClick(Sender: TObject);
 var
-  UA, US: AnsiString;
   Tree: TVirtualStringTree;
   CR: string;
   Data: PBookData;
@@ -4757,6 +4708,12 @@ begin
   tbCollapse.Enabled := ToolBuutonVisible;
   tbtnShowCover.Enabled := ToolBuutonVisible;
   tbtnRead.Enabled := ToolBuutonVisible;
+  tbtnRus.Enabled := ToolBuutonVisible;
+  tbtnEng.Enabled := ToolBuutonVisible;
+  btnRefreshCollection.Enabled := ToolBuutonVisible;
+  tbtnShowDeleted.Enabled := ToolBuutonVisible;
+  tbtnShowLocalOnly.Enabled := ToolBuutonVisible;
+
   tbSendToDevice.Enabled := ToolBuutonVisible;
   btnSwitchTreeMode.Enabled :=  not ((ActiveView = BySeriesView) or
                                      (ActiveView = DownloadView));
