@@ -54,6 +54,7 @@ type
     FTmp : string;
     FNo: Integer;
     function CheckSymbols(Input: string): string;
+
   protected
     { Protected declarations }
     function UnPack(var FS: TMemoryStream):boolean;
@@ -61,11 +62,16 @@ type
     procedure ShowEmptyCover;
     procedure Set_Fb2InfoVisible(Value: boolean);
     procedure Set_FontSize(Value: integer);
+
+
   public
     constructor Create(AOwner: TComponent); override;
     procedure Clear;
 
     function Show(Folder, FileName: string; No: integer):boolean;
+
+
+
 
   published
     { Published declarations }
@@ -80,9 +86,11 @@ implementation
 
 uses
   Messages,
-  Windows,
+//  Windows,
   xmldom,
-  unit_globals;
+  unit_globals,
+  jpeg,pngimage,
+  types;
 
 const
   W = 55;
@@ -359,18 +367,25 @@ end;
 procedure TMHLCoverPanel.GetFb2Info;
 var
   i, p: integer;
-  S, outStr: String;
+  S, outStr: AnsiString;
   F: TextFile;
-  CoverID, ImgPath, Short, CoverFile: string;
+  CoverID, Short : string;
   ImgVisible: boolean;
+
+  MS: TMemoryStream;
+  IMG: TGraphic;
+
+  EXT: string;
+  StrLen: integer;
+
+  BMP: TBitmap;
 
 begin
   ImgVisible := False;
   try
     try
-
+      MS := TMemoryStream.Create;
       FBook := LoadFictionBook(FS);
-
       CoverID := FBook.Description.Titleinfo.Coverpage.XML;
       p := pos('"#', CoverID);
       if p <> 0 then
@@ -378,23 +393,19 @@ begin
         Delete(CoverId, 1, p + 1);
         p := pos('"', CoverID);
         CoverID := Copy(CoverID, 1, p - 1);
-        CoverFile := IntToStr(Random(99999)) + CoverID;
         for i := 0 to FBook.Binary.Count - 1 do
         begin
           if FBook.Binary.Items[i].Id = CoverID then
           begin
             S := FBook.Binary.Items[i].Text;
             outStr := DecodeBase64(S);
-            AssignFile(F, FTmp + CoverFile);
-            Rewrite(F);
-            Write(F, outStr);
-            CloseFile(F);
+
+            StrLen := length(outStr);
+            MS.Write(PAnsiChar(outStr)^,StrLen);
             ImgVisible := True;
           end;
         end;
       end;
-        ImgPath := FTmp + CoverFile;
-
       with FBook.Description do
       begin
         if Titleinfo.Annotation.HasChildNodes then
@@ -416,22 +427,37 @@ begin
     except
     end;
   finally
-    if ImgVisible and FileExists(ImgPath) then
-    try
-      FCover.Picture.LoadFromFile(ImgPath);
-      DeleteFile(PChar(ImgPath));
-    except
+    if ImgVisible then
+    begin
+      Ext := LowerCase(ExtractFileExt(CoverID));
+      try
+        if Ext = '.png' then
+             IMG := TPngImage.Create
+        else
+          if (Ext = '.jpg') or (Ext = '.jpeg') then
+              IMG := TJPEGImage.Create;
+        if Assigned(IMG) then
+        begin
+          MS.Seek(0,soFromBeginning);
+          IMG.LoadFromStream(MS);
+          FCover.Picture.Assign(IMG);
+          FCover.Invalidate;
+        end;
+      finally
+        IMG.Free;
+      end;
     end
     else ShowEmptyCover;
     FText.Lines.Add(Short);
-
-    Refresh;
     FOnProgress := False;
-
     FText.SelStart := 0;
     FText.SelLength := 1;
     FText.SelLength := 0;
+    MS.Free;
   end;
 end;
+
+
+
 
 end.
