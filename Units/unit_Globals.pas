@@ -150,6 +150,8 @@ function ExecAndWait(const FileName,Params: String; const WinState: Word): boole
 function GetFileNameZip(Zip: TZipForge; No: integer): string;
 function CleanExtension(const Ext: string): string;
 
+procedure FlipBitmapV(Bitmap: Graphics.TBitmap);
+
 type
   TAppLanguage = (alEng, alRus);
   TExportMode = (emFB2, emFB2Zip, emLrf, emTxt);
@@ -932,6 +934,17 @@ begin
     Delete(Result, 1, 1);
 end;
 
+procedure FlipBitmapV(Bitmap: Graphics.TBitmap);
+var
+  X, Y: Integer;
+  SrcRect, DstRect: TRect;
+begin
+  X := Bitmap.Width;
+  Y := Bitmap.Height;
+  SrcRect := Rect(-1, -1, X, Y);
+  DstRect := Rect(-1, Y, X, -1);
+  Bitmap.Canvas.CopyRect(DstRect, Bitmap.Canvas, SrcRect);
+end;
 
 end.
 
