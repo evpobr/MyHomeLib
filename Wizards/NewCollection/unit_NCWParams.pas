@@ -18,7 +18,7 @@ uses unit_globals;
 
 type
   TNCWOperation = (otNew, otExisting);
-  TNCWCollectionType = (ltEmpty, ltLRELocal, ltLREOnline, ltGenesis);
+  TNCWCollectionType = (ltEmpty, ltLRELocal, ltLREOnline, ltGenesis, ltThirdParty);
   TNCWFileTypes = (ftFB2, ftAny);
 
   TNCWParams = record
@@ -35,7 +35,7 @@ type
     DoImport: Boolean;
     ImportFile: string;
     RelativePaths:boolean;
-
+    INPXFile: string;
     //
     // реальный тип коллекции
     //

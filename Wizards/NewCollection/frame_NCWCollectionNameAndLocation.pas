@@ -82,26 +82,30 @@ const
     '',
     rstrLocalLibRusEcDefName,
     rstrOnlineLibRusEcDefName,
-    rstrOnlineGenesisDefName
+    rstrOnlineGenesisDefName,
+    ''
   );
 
   DefaultLocations: array [TNCWCollectionType] of string = (
     '',
     rstrLocalLibRusEcDefLocation,
     rstrOnlineLibRusEcDefLocation,
-    rstrOnlineGenesisDefLocation
+    rstrOnlineGenesisDefLocation,
+    ''
   );
 begin
   if LoadData then
   begin
     if FPParams^.UseDefaultName then
       FPParams^.DisplayName := DefaultNames[FPParams^.CollectionType];
+
     edCollectionName.OnChange := nil;
     edCollectionName.Text := FPParams^.DisplayName;
     edCollectionName.OnChange := edCollectionNameChange;
 
     if FPParams^.UseDefaultLocation and (FPParams^.Operation = otNew) then
       FPParams^.CollectionFile := DefaultLocations[FPParams^.CollectionType];
+
     edCollectionFile.OnChange := nil;
     edCollectionFile.Text := FPParams^.CollectionFile;
     edCollectionFile.OnChange := edCollectionFileChange;

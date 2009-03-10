@@ -461,7 +461,7 @@ begin
   case FParams.CollectionType of
     ltEmpty: ; // ничего не трогаем, все должен задать пользователь
 
-    ltLRELocal, ltLREOnline:
+    ltLRELocal, ltLREOnline, ltThirdParty:
     begin
       FParams.DefaultGenres := True;
       FParams.FileTypes := ftFB2;
@@ -599,6 +599,19 @@ begin
         InpxFileName := Settings.SystemFileName[sfLibRusEcinpx];
       end;
     end;
+
+    ltThirdParty:
+    begin
+      FWorker := TImportLibRusEcThread.Create;
+      with FWorker as TImportLibRusEcThread do
+      begin
+        DBFileName := FParams.CollectionFile;
+        CollectionRoot := FParams.CollectionRoot;
+        CollectionType := CT_PRIVATE_FB;
+        InpxFileName := FParams.INPXFile;
+      end;
+    end;
+
 
     ltGenesis:
       {TODO -oNickR -cGenesis: указать специальный или существующий импортер для Genesis-а } ;

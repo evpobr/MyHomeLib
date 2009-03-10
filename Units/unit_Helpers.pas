@@ -52,7 +52,8 @@ type
     fnOpenImportFile,
     fnSaveCollection,
     fnSaveLog,
-    fnSaveImportFile
+    fnSaveImportFile,
+    fnOpenINPX
   );
 
 function GetFileName(key: TMHLFileName; out FileName: string): Boolean;
@@ -215,6 +216,12 @@ resourcestring
   rstrSaveLogDlgTitle = 'Сохранить лог работы';
   rstrSaveLogDlgFilter = 'Файл протокола (*.log)|*.log|Все типы|*.*';
   rstrSaveLogDlgDefaultExt = 'log';
+  //fnOpenINPX
+  rstrOpenINPXDlgTitle = 'Выбор файла списков';
+  rstrOpenINPXDlgFilter = 'Список книг MyHomeLib (*.inpx)|*.inpx|Все типы|*.*';
+  rstrOpenINPXDlgDefaultExt = 'inpx';
+
+
 
 function GetFileName(key: TMHLFileName; out FileName: string): Boolean;
 const
@@ -258,8 +265,12 @@ const
       Title:      rstrSaveImportFileDlgTitle;
       Filter:     rstrImportFileDlgFilter;     DefaultExt: rstrImportFileDlgDefaultExt;
       DialogKey:  'SaveImportFile';            OpenFile:   False
+    ),
+    ( // fnLoadINPX
+      Title:      rstrOpenINPXDlgTitle;
+      Filter:     rstrOpenINPXDlgFilter;     DefaultExt: rstrOpenINPXDlgDefaultExt;
+      DialogKey:  'OpenINPXFile';            OpenFile:   True
     )
-
     //(Title: ''; Filter: ''; DefaultExt: ''; ExtraOptions: ; DialogKey: ''; GetFileNameFunction:)
   );
 begin
