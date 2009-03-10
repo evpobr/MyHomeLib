@@ -61,7 +61,7 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 404
     Height = 401
-    ActivePage = tsInterface
+    ActivePage = tsDevices
     Align = alClient
     TabOrder = 1
     object tsDevices: TTabSheet
@@ -560,8 +560,6 @@ object frmSettings: TfrmSettings
         Align = alClient
         Caption = #1056#1072#1079#1085#1086#1077
         TabOrder = 2
-        ExplicitTop = 255
-        ExplicitHeight = 133
         object cbShowFb2Info: TCheckBox
           Left = 24
           Top = 18
@@ -855,12 +853,33 @@ object frmSettings: TfrmSettings
         0000000000010721043A04400438043F0442044B04}
     end
   end
-  object dlgFolder: TRzSelectFolderDialog
-    Left = 80
-    Top = 96
-  end
   object dlgColors: TColorDialog
     Left = 48
+    Top = 96
+  end
+  object dlgSelectDir: TRzSelDirDialog
+    CenterToParent = True
+    Position = poOwnerFormCenter
+    AllowCreate = True
+    ButtonGlyphs = True
+    ChangeCurrentDir = False
+    DriveTypes = [dtFloppy, dtFixed, dtNetwork, dtRAM]
+    OpenCurrentDir = True
+    AutoSelect = True
+    Prompt = #1048#1084#1103' '#1087#1072#1087#1082#1080
+    PromptFolders = #1055#1072#1087#1082#1080
+    PromptDrives = #1059#1089#1090#1088#1086#1081#1089#1090#1074#1072
+    Caption = #1059#1082#1072#1078#1080#1090#1077' '#1087#1072#1087#1082#1091
+    CaptionOK = 'OK'
+    CaptionCancel = #1054#1090#1084#1077#1085#1072
+    CaptionHelp = '&'#1057#1087#1088#1072#1074#1082#1072
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    FrameVisible = True
+    Left = 104
     Top = 96
   end
 end

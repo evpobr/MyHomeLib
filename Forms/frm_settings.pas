@@ -42,11 +42,10 @@ uses
   RzLabel,
   RzListVw,
   unit_Readers,
-  unit_Scripts;
+  unit_Scripts, RzSelDir;
 
 type
   TfrmSettings = class(TForm)
-    dlgFolder: TRzSelectFolderDialog;
     RzPanel1: TRzPanel;
     btnSave: TRzBitBtn;
     btnCancel: TRzBitBtn;
@@ -129,6 +128,7 @@ type
     edReadDir: TRzButtonEdit;
     cbMinimizeToTray: TCheckBox;
     cbAutoStartDwnld: TCheckBox;
+    dlgSelectDir: TRzSelDirDialog;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
@@ -175,9 +175,12 @@ uses
 
 procedure TfrmSettings.edDeviceDirButtonClick(Sender: TObject);
 begin
-  dlgFolder.SelectedFolder.PathName := (Sender as TRzButtonEdit).Text;
-  if dlgFolder.Execute then
-    (Sender as TRzButtonEdit).Text := dlgFolder.SelectedPathName;
+//  dlgFolder.SelectedFolder.PathName := (Sender as TRzButtonEdit).Text;
+//  if dlgFolder.Execute then
+//    (Sender as TRzButtonEdit).Text := dlgFolder.SelectedPathName;
+  dlgSelectDir.Directory := (Sender as TRzButtonEdit).Text;
+  if dlgSelectDir.Execute then
+     (Sender as TRzButtonEdit).Text := dlgSelectDir.Directory;
 end;
 
 procedure TfrmSettings.LoadSetting;

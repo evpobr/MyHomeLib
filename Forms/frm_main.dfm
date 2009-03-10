@@ -80,7 +80,8 @@ object frmMain: TfrmMain
       Width = 926
       Height = 33
       BorderWidth = 1
-      ButtonWidth = 37
+      ButtonHeight = 24
+      ButtonWidth = 39
       Caption = 'RusBar'
       DrawingStyle = dsGradient
       EdgeBorders = [ebLeft, ebTop, ebRight, ebBottom]
@@ -108,7 +109,7 @@ object frmMain: TfrmMain
       end
       object ToolButton4: TToolButton
         Tag = 91
-        Left = 26
+        Left = 28
         Top = 0
         Caption = #1040'-'#1071
         ImageIndex = 1
@@ -124,7 +125,8 @@ object frmMain: TfrmMain
       Height = 33
       Margins.Bottom = 5
       BorderWidth = 1
-      ButtonWidth = 35
+      ButtonHeight = 24
+      ButtonWidth = 37
       Caption = 'RusBar'
       DrawingStyle = dsGradient
       EdgeBorders = [ebLeft, ebTop, ebRight, ebBottom]
@@ -149,7 +151,7 @@ object frmMain: TfrmMain
       end
       object ToolButton6: TToolButton
         Tag = 92
-        Left = 24
+        Left = 26
         Top = 0
         Caption = 'A-Z'
         ImageIndex = 1
@@ -168,9 +170,6 @@ object frmMain: TfrmMain
     BorderSides = [sdLeft, sdTop, sdRight, sdBottom]
     BorderWidth = 0
     TabOrder = 1
-    DesignSize = (
-      942
-      19)
     object RzVersionInfoStatus1: TRzVersionInfoStatus
       Left = 0
       Top = 0
@@ -210,25 +209,6 @@ object frmMain: TfrmMain
       Height = 19
       Align = alLeft
       ExplicitLeft = 316
-    end
-    object RzURLLabel1: TRzURLLabel
-      Left = 884
-      Top = 3
-      Width = 39
-      Height = 13
-      Hint = #1055#1086#1076#1076#1077#1088#1078#1072#1090#1100#13#1088#1072#1079#1088#1072#1073#1086#1090#1095#1080#1082#1086#1074
-      Anchors = [akTop, akRight]
-      Caption = 'Donate!'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clHighlight
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsUnderline]
-      ParentFont = False
-      ParentShowHint = False
-      ShowHint = True
-      URL = 'http://home-lib.net/help_us'
-      VisitedColor = clHighlight
     end
   end
   object tlbrMain: TToolBar
@@ -278,7 +258,7 @@ object frmMain: TfrmMain
       OnClick = tbSendToDeviceClick
     end
     object ToolButton13: TToolButton
-      Left = 138
+      Left = 136
       Top = 0
       Width = 24
       Caption = 'ToolButton13'
@@ -286,7 +266,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnRus: TToolButton
-      Left = 162
+      Left = 160
       Top = 0
       Hint = #1056#1091#1089#1089#1082#1080#1081' '#1072#1083#1092#1072#1074#1080#1090
       Caption = 'tbtnRus'
@@ -294,7 +274,7 @@ object frmMain: TfrmMain
       OnClick = tbtnRusClick
     end
     object tbtnEng: TToolButton
-      Left = 203
+      Left = 201
       Top = 0
       Hint = #1040#1085#1075#1083#1080#1081#1089#1082#1080#1081' '#1072#1083#1092#1072#1074#1080#1090
       Caption = 'tbtnEng'
@@ -302,7 +282,7 @@ object frmMain: TfrmMain
       OnClick = tbtnEngClick
     end
     object ToolButton12: TToolButton
-      Left = 244
+      Left = 242
       Top = 0
       Width = 24
       Caption = 'ToolButton12'
@@ -310,7 +290,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnWizard: TToolButton
-      Left = 268
+      Left = 266
       Top = 0
       Hint = #1052#1072#1089#1090#1077#1088' '#1076#1086#1073#1072#1074#1083#1077#1085#1080#1103#13#1082#1086#1083#1083#1077#1082#1094#1080#1081
       Caption = 'tbtnWizard'
@@ -320,7 +300,7 @@ object frmMain: TfrmMain
       OnClick = ShowNewCollectionWizard
     end
     object tbtnSelect: TToolButton
-      Left = 309
+      Left = 307
       Top = 0
       Hint = #1042#1099#1073#1088#1072#1090#1100#13#1082#1086#1083#1083#1077#1082#1094#1080#1102
       Caption = #1042#1099#1073#1088#1072#1090#1100' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
@@ -332,7 +312,7 @@ object frmMain: TfrmMain
       ShowHint = True
     end
     object tbSelectAll: TToolButton
-      Left = 350
+      Left = 348
       Top = 0
       Hint = #1054#1090#1084#1077#1090#1080#1090#1100' '#1074#1089#1077
       Caption = 'tbSelectAll'
@@ -340,7 +320,7 @@ object frmMain: TfrmMain
       OnClick = tbSelectAllClick
     end
     object tbCollapse: TToolButton
-      Left = 391
+      Left = 389
       Top = 0
       Hint = #1056#1072#1079#1074#1077#1088#1085#1091#1090#1100'/'#1057#1074#1077#1088#1085#1091#1090#1100' '#1089#1087#1080#1089#1086#1082
       Caption = 'tbCollapse'
@@ -348,7 +328,7 @@ object frmMain: TfrmMain
       OnClick = tbCollapseClick
     end
     object btnRefreshCollection: TToolButton
-      Left = 432
+      Left = 430
       Top = 0
       Hint = #1054#1073#1085#1086#1074#1080#1090#1100' '#1089#1087#1080#1089#1086#1082
       Caption = 'btnRefreshCollection'
@@ -356,7 +336,7 @@ object frmMain: TfrmMain
       OnClick = miRefreshClick
     end
     object ToolButton1: TToolButton
-      Left = 473
+      Left = 471
       Top = 0
       Width = 24
       Caption = 'ToolButton1'
@@ -364,7 +344,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object btnSwitchTreeMode: TToolButton
-      Left = 497
+      Left = 495
       Top = 0
       Hint = #1055#1077#1088#1077#1082#1083#1102#1095#1080#1090#1100' '#1074' '#1088#1077#1078#1080#1084' "'#1058#1072#1073#1083#1080#1094#1072'"'
       Caption = 'btnSwitchTreeMode'
@@ -372,7 +352,7 @@ object frmMain: TfrmMain
       OnClick = btnSwitchTreeModeClick
     end
     object tbtnShowDeleted: TToolButton
-      Left = 538
+      Left = 536
       Top = 0
       Hint = #1057#1082#1088#1099#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077' '#1085#1072' lib.rus.ec'
       Caption = 'tbtnShowDeleted'
@@ -380,7 +360,7 @@ object frmMain: TfrmMain
       OnClick = tbtnShowDeletedClick
     end
     object tbtnShowLocalOnly: TToolButton
-      Left = 579
+      Left = 577
       Top = 0
       Hint = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1090#1086#1083#1100#1082#1086' '#1089#1082#1072#1095#1072#1085#1085#1099#1077' '#1082#1085#1080#1075#1080
       Caption = 'tbtnShowLocalOnly'
@@ -388,7 +368,7 @@ object frmMain: TfrmMain
       OnClick = tbtnShowLocalOnlyClick
     end
     object tbtnShowCover: TToolButton
-      Left = 620
+      Left = 618
       Top = 0
       Hint = #1055#1086#1082#1072#1079#1072#1090#1100'/'#1057#1082#1088#1099#1090#1100' '#1086#1073#1083#1086#1078#1082#1091
       Caption = 'tbtnShowCover'
@@ -396,7 +376,7 @@ object frmMain: TfrmMain
       OnClick = tbtnShowCoverClick
     end
     object ToolButton3: TToolButton
-      Left = 661
+      Left = 659
       Top = 0
       Width = 24
       Caption = 'ToolButton3'
@@ -404,7 +384,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object BtnFav_add: TToolButton
-      Left = 685
+      Left = 683
       Top = 0
       Hint = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1080#1079#1073#1088#1072#1085#1085#1086#1077
       Caption = 'BtnFav_add'
@@ -412,7 +392,7 @@ object frmMain: TfrmMain
       OnClick = BtnFav_addClick
     end
     object ToolButton5: TToolButton
-      Left = 726
+      Left = 724
       Top = 0
       Width = 24
       Caption = 'ToolButton5'
@@ -420,7 +400,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnSettings: TToolButton
-      Left = 750
+      Left = 748
       Top = 0
       Hint = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
       Caption = 'tbtnSettings'
@@ -434,9 +414,9 @@ object frmMain: TfrmMain
     Width = 942
     Height = 561
     HelpContext = 135
-    ActivePage = TabSheet1
+    ActivePage = TabSheet5
     Align = alClient
-    TabIndex = 0
+    TabIndex = 4
     TabOrder = 3
     OnChange = pgControlChange
     FixedDimension = 19
@@ -2717,8 +2697,8 @@ object frmMain: TfrmMain
   object MainMenu: TMainMenu
     Images = ilMainMenu
     OwnerDraw = True
-    Left = 64
-    Top = 448
+    Left = 96
+    Top = 376
     object miBook: TMenuItem
       Caption = #1050#1085#1080#1075#1072
       HelpContext = 105
@@ -2801,14 +2781,6 @@ object frmMain: TfrmMain
           OnClick = miPdfdjvuClick
         end
       end
-      object N28: TMenuItem
-        Caption = '-'
-      end
-      object miSettings: TMenuItem
-        Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
-        ImageIndex = 11
-        OnClick = miSettingsClick
-      end
       object N24: TMenuItem
         Caption = '-'
       end
@@ -2819,7 +2791,7 @@ object frmMain: TfrmMain
       end
     end
     object N2: TMenuItem
-      Caption = #1050#1086#1083#1083#1077#1082#1094#1080#1080
+      Caption = #1050#1086#1083#1083#1077#1082#1094#1080#1103
       HelpContext = 112
       object miNewCollection: TMenuItem
         Caption = '&'#1053#1086#1074#1072#1103' '#1082#1086#1083#1083#1077#1082#1094#1080#1103'...'
@@ -2840,74 +2812,86 @@ object frmMain: TfrmMain
       object N14: TMenuItem
         Caption = '-'
       end
+      object miCollectionExport: TMenuItem
+        Caption = #1069#1082#1089#1087#1086#1088#1090#1080#1088#1086#1074#1072#1090#1100' '#1074' xml'
+        Enabled = False
+        ImageIndex = 10
+        OnClick = miCollectionExportClick
+      end
+      object miCollectionImport: TMenuItem
+        Caption = #1048#1084#1087#1086#1088#1090#1080#1088#1086#1074#1072#1090#1100' '#1080#1079' xml'
+        Enabled = False
+        ImageIndex = 5
+        OnClick = miCollectionImportClick
+      end
+      object N18: TMenuItem
+        Caption = '-'
+      end
       object miDeleteCol: TMenuItem
         Caption = #1059#1076#1072#1083#1080#1090#1100
         Enabled = False
         ImageIndex = 2
         OnClick = miDeleteColClick
       end
-      object N18: TMenuItem
+    end
+    object miTools: TMenuItem
+      Caption = #1048#1085#1089#1090#1088#1091#1084#1077#1085#1090#1099
+      ImageIndex = 6
+      object miStat: TMenuItem
+        Caption = #1057#1090#1072#1090#1080#1089#1090#1080#1082#1072' '#1087#1086' '#1082#1086#1083#1083#1077#1082#1094#1080#1080
+        Enabled = False
+        ImageIndex = 28
+        OnClick = miStatClick
+      end
+      object N6: TMenuItem
+        Caption = #1044#1072#1085#1085#1099#1077' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1103
+        Enabled = False
+        Visible = False
+        object miSaveUser: TMenuItem
+          Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
+        end
+        object miLoadUser: TMenuItem
+          Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100
+        end
+        object N31: TMenuItem
+          Caption = '-'
+        end
+        object miRepairUser: TMenuItem
+          Caption = #1048#1089#1087#1088#1072#1074#1080#1090#1100' '#1086#1096#1080#1073#1082#1080
+        end
+      end
+      object N9: TMenuItem
         Caption = '-'
       end
-      object miTools: TMenuItem
-        Caption = #1048#1085#1089#1090#1088#1091#1084#1077#1085#1090#1099
-        ImageIndex = 6
-        object miStat: TMenuItem
-          Caption = #1057#1090#1072#1090#1080#1089#1090#1080#1082#1072' '#1087#1086' '#1082#1086#1083#1083#1077#1082#1094#1080#1080
-          Enabled = False
-          ImageIndex = 28
-          OnClick = miStatClick
-        end
-        object N6: TMenuItem
-          Caption = #1044#1072#1085#1085#1099#1077' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1103
-          Enabled = False
-          Visible = False
-          object miSaveUser: TMenuItem
-            Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
-          end
-          object miLoadUser: TMenuItem
-            Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100
-          end
-          object N31: TMenuItem
-            Caption = '-'
-          end
-          object miRepairUser: TMenuItem
-            Caption = #1048#1089#1087#1088#1072#1074#1080#1090#1100' '#1086#1096#1080#1073#1082#1080
-          end
-        end
-        object N9: TMenuItem
-          Caption = '-'
-        end
-        object miCollectionExport: TMenuItem
-          Caption = #1069#1082#1089#1087#1086#1088#1090#1080#1088#1086#1074#1072#1090#1100' '#1074' xml'
-          Enabled = False
-          ImageIndex = 10
-          OnClick = miCollectionExportClick
-        end
-        object miCollectionImport: TMenuItem
-          Caption = #1048#1084#1087#1086#1088#1090#1080#1088#1086#1074#1072#1090#1100' '#1080#1079' xml'
-          Enabled = False
-          ImageIndex = 5
-          OnClick = miCollectionImportClick
-        end
-        object N26: TMenuItem
-          Caption = '-'
-        end
-        object miRefreshGenres: TMenuItem
-          Caption = #1054#1073#1085#1086#1074#1080#1090#1100' '#1089#1087#1080#1089#1086#1082'  '#1078#1072#1085#1088#1086#1074
-          Enabled = False
-          ImageIndex = 25
-          OnClick = miRefreshGenresClick
-        end
-        object miUpdate: TMenuItem
-          Caption = #1054#1073#1085#1086#1074#1080#1090#1100' '#1082#1072#1090#1072#1083#1086#1075'  lib.rus.ec'
-          ImageIndex = 34
-          OnClick = miUpdateClick
-        end
-        object miSyncOnline: TMenuItem
-          Caption = #1057#1080#1085#1093#1088#1086#1085#1080#1079#1080#1088#1086#1074#1072#1090#1100' '#1092#1072#1081#1083#1099
-          OnClick = miSyncOnlineClick
-        end
+      object miRefreshGenres: TMenuItem
+        Caption = #1054#1073#1085#1086#1074#1080#1090#1100' '#1089#1087#1080#1089#1086#1082'  '#1078#1072#1085#1088#1086#1074
+        Enabled = False
+        ImageIndex = 25
+        OnClick = miRefreshGenresClick
+      end
+      object miUpdate: TMenuItem
+        Caption = #1054#1073#1085#1086#1074#1080#1090#1100' '#1082#1072#1090#1072#1083#1086#1075'  lib.rus.ec'
+        ImageIndex = 34
+        OnClick = miUpdateClick
+      end
+      object miSyncOnline: TMenuItem
+        Caption = #1057#1080#1085#1093#1088#1086#1085#1080#1079#1080#1088#1086#1074#1072#1090#1100' '#1092#1072#1081#1083#1099
+        OnClick = miSyncOnlineClick
+      end
+      object N26: TMenuItem
+        Caption = '-'
+      end
+      object N34: TMenuItem
+        Caption = #1054#1095#1080#1089#1090#1080#1090#1100' '#1087#1072#1087#1082#1091' "'#1044#1083#1103' '#1095#1090#1077#1085#1080#1103'"'
+        OnClick = N34Click
+      end
+      object N36: TMenuItem
+        Caption = '-'
+      end
+      object miSettings: TMenuItem
+        Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
+        ImageIndex = 11
+        OnClick = miSettingsClick
       end
     end
     object N5: TMenuItem
