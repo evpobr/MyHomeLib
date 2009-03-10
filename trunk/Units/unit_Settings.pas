@@ -349,8 +349,12 @@ begin
          UseLocalTemp := (LowerCase(paramstr(i)) = STR_USELOCALTEMP);
   end;
 
-  UseLocalData := UseLocalData or FileExists(FAppPath + STR_USELOCALDATA);
+  UseLocalData := UseLocalData or FileExists(FAppPath + STR_USELOCALDATA) or
+                  not DirectoryExists(AppDataPath);
   UseLocalTemp := UseLocalTemp or FileExists(FAppPath + STR_USELOCALTEMP);
+
+
+
 
   // Устанавливаем рабочую папку
 
