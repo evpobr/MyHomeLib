@@ -321,30 +321,58 @@ const
 { TMHLSettings }
 
 constructor TMHLSettings.Create;
+const
+  STR_USELOCALDATA = 'uselocaldata';
+  STR_USELOCALTEMP = 'uselocaltemp';
+
 var
   AppDataPath : string;
-  Param: string;
-begin
-  FAppPath := ExtractFilePath(Application.ExeName);
 
+  UseLocalData, UseLocalTemp: boolean;
+  I: Integer;
+
+begin
+  UseLocalData := False;
+  UseLocalTemp := False;
+
+  FAppPath := ExtractFilePath(Application.ExeName);
   AppDataPath := GetSpecialPath(CSIDL_APPDATA) + APPDATA_DIR_NAME;
 
+  // определяем рабочую и временную папку в зависимости от параметров
+  // командной строки или ключевых файлов
 
-  if ParamCount > 0  then  Param := paramstr(1)
-    else Param := '';
+  for I := 1 to ParamCount do
+  begin
+    if not UseLocalData then
+         UseLocalData := (LowerCase(paramstr(i)) = STR_USELOCALDATA);
+    if not UseLocalTemp then
+         UseLocalTemp := (LowerCase(paramstr(i)) = STR_USELOCALTEMP);
+  end;
 
-  if DirectoryExists(AppDataPath) and (Param <> '-isolated') then
+  UseLocalData := UseLocalData or FileExists(FAppPath + STR_USELOCALDATA);
+  UseLocalTemp := UseLocalTemp or FileExists(FAppPath + STR_USELOCALTEMP);
+
+  // Устанавливаем рабочую папку
+
+  if not UseLocalData then
   begin                                             // работаем с AppData
     FWorkDir := AppDataPath;
     FDataDir := WorkPath + DATA_DIR_NAME;
-    FTempDir := c_GetTempPath + '_myhomelib';
   end
   else
   begin
     FWorkDir := FAppPath;                           // работаем с AppPath
     FDataDir := FAppPath + DATA_DIR_NAME;
-    FTempDir := FAppPath + TEMP_DIR_NAME;
   end;
+
+  // устанавливаем временную папку
+
+  if not UseLocalTemp then
+     FTempDir := c_GetTempPath + '_myhomelib'
+  else
+     FTempDir := FAppPath + TEMP_DIR_NAME;
+
+  //-----------------------------------------------------
 
   FReaders := TReaders.Create;
   FScripts := TScripts.Create;
