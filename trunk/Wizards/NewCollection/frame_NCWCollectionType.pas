@@ -16,7 +16,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, frame_InteriorPageBase, StdCtrls, ExtCtrls, unit_StaticTip, unit_NCWParams;
+  Dialogs, frame_InteriorPageBase, StdCtrls, ExtCtrls, unit_StaticTip, unit_NCWParams,
+  Mask, RzEdit, RzBtnEdt;
 
 type
   TframeNCWCollectionType = class(TInteriorPageBase)
@@ -26,9 +27,14 @@ type
     rbGenesis: TRadioButton;
     pageHint: TMHLStaticTip;
     rbEmpty: TRadioButton;
+    rbThirdParty: TRadioButton;
+    edINPXPath: TRzButtonEdit;
     procedure OnSetCollectionType(Sender: TObject);
+    procedure edINPXPathButtonClick(Sender: TObject);
+    procedure GetCollectionDataFromINPX;
   private
-
+    FColTitle : string;
+    FColFile:   string;
   public
     function Activate(LoadData: Boolean): Boolean; override;
     function Deactivate(CheckData: Boolean): Boolean; override;
@@ -47,10 +53,11 @@ resourcestring
   FROMLIBRUSECARCH = 'Создавайте такую коллекцию если вы уже скачали архивы lib.rus.ec.';
   LIBRUSECDOWNLOAD = 'Книги будут скачиваться с сервера lib.rus.ec по мере необходимости.';
   SERVERDOWNLOAD = 'Книги будут скачиваться с сервера по мере необходимости.';
+  THIRDPARTY = 'Коллекция на основе файла *.inpx. Укажите путь к файлу.';
 
 implementation
 
-uses dm_user,unit_settings, unit_globals;
+uses dm_user,unit_settings, unit_globals, unit_Helpers, ZipForge;
 
 {$R *.dfm}
 
@@ -76,6 +83,7 @@ begin
       ltLRELocal: rb := rbLocal;
       ltLREOnline: rb := rbOnline;
       ltGenesis: rb := rbGenesis;
+      ltThirdParty: rb := rbThirdParty;
     else
       Assert(False);
       Result := False;
@@ -99,10 +107,55 @@ begin
     FPParams^.CollectionType := ltLRELocal
   else if rbOnline.Checked then
     FPParams^.CollectionType := ltLREOnline
-  else {if rbGenesis.Checked then}
-    FPParams^.CollectionType := ltGenesis;
-
+  else if rbGenesis.Checked then
+    FPParams^.CollectionType := ltGenesis
+  else if rbThirdParty.Checked then
+  begin
+    FPParams^.CollectionType := ltThirdParty;
+    FPParams^.DisplayName := FColTitle;
+    FPParams^.UseDefaultName := False;
+    FPParams^.CollectionFile := FColFile;
+    FPParams^.UseDefaultLocation := False;
+    FPParams^.INPXFile := edINPXPath.Text;
+  end;
   Result := True;
+end;
+
+procedure TframeNCWCollectionType.edINPXPathButtonClick(Sender: TObject);
+var
+  key: TMHLFileName;
+  AFileName: string;
+begin
+  key := fnOpenINPX;
+  if FPParams^.Operation = otExisting then
+    key := fnOpenCollection;
+
+  if GetFileName(key, AFileName) then
+  begin
+    edINPXPath.Text := AFileName;
+    GetCollectionDataFromINPX;
+  end;
+end;
+
+procedure TframeNCWCollectionType.GetCollectionDataFromINPX;
+var
+  Zip: TZipForge;
+  S  : ansistring;
+  p: integer;
+begin
+  Zip := TZipForge.Create(self);
+  try
+    Zip.FileName := edINPXPath.Text;
+    Zip.OpenArchive;
+    S := Zip.Comment;
+    Zip.CloseArchive;
+  finally
+    Zip.Free;
+  end;
+  p := pos(#13#10,S);
+  FColTitle := copy(S,1,p - 1);
+  delete(S,1,p + 1);
+  FColFile := S;
 end;
 
 procedure TframeNCWCollectionType.OnSetCollectionType(Sender: TObject);
@@ -114,7 +167,14 @@ begin
   else if Sender = rbOnline then
     pageHint.Caption := LIBRUSECDOWNLOAD
   else if Sender = rbGenesis then
-    pageHint.Caption := SERVERDOWNLOAD;
+    pageHint.Caption := SERVERDOWNLOAD
+  else if Sender = rbThirdParty then
+  begin
+    pageHint.Caption := THIRDPARTY;
+  end;
+
+  edINPXPath.Visible := (Sender = rbThirdParty );
+
 end;
 
 end.

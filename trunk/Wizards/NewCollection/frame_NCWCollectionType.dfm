@@ -1,12 +1,14 @@
 inherited frameNCWCollectionType: TframeNCWCollectionType
   Width = 330
+  Height = 313
   Constraints.MinHeight = 240
   Constraints.MinWidth = 330
   ExplicitWidth = 330
+  ExplicitHeight = 313
   object pageHint: TMHLStaticTip [0]
     AlignWithMargins = True
     Left = 14
-    Top = 172
+    Top = 228
     Width = 302
     Height = 58
     Margins.Left = 14
@@ -15,20 +17,18 @@ inherited frameNCWCollectionType: TframeNCWCollectionType
     Images = DMUser.SeverityImagesBig
     ImageIndex = 0
     Align = alTop
-    ExplicitLeft = 3
-    ExplicitTop = 159
-    ExplicitWidth = 467
+    ExplicitTop = 236
   end
   inherited pnTitle: TPanel
     Width = 330
     ExplicitWidth = 330
     inherited lblTitle: TLabel
-      Width = 133
+      Width = 302
       Caption = #1042#1099#1073#1086#1088' '#1090#1080#1087#1072' '#1082#1086#1083#1083#1077#1082#1094#1080#1080
       ExplicitWidth = 133
     end
     inherited lblSubTitle: TLabel
-      Width = 228
+      Width = 295
       Caption = #1057#1086#1079#1076#1072#1085#1080#1077' '#1082#1086#1083#1083#1077#1082#1094#1080#1080' '#1085#1072' '#1086#1089#1085#1086#1074#1077' '#1089#1087#1080#1089#1082#1086#1074' '#1082#1085#1080#1075
       ExplicitWidth = 228
     end
@@ -37,7 +37,7 @@ inherited frameNCWCollectionType: TframeNCWCollectionType
     Left = 0
     Top = 56
     Width = 330
-    Height = 113
+    Height = 169
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
@@ -99,6 +99,38 @@ inherited frameNCWCollectionType: TframeNCWCollectionType
       TabOrder = 3
       TabStop = True
       OnClick = OnSetCollectionType
+    end
+    object rbThirdParty: TRadioButton
+      AlignWithMargins = True
+      Left = 14
+      Top = 110
+      Width = 306
+      Height = 17
+      Margins.Left = 7
+      Margins.Top = 7
+      Margins.Right = 7
+      Margins.Bottom = 0
+      Caption = #1044#1088#1091#1075#1072#1103' '#1073#1080#1073#1083#1080#1086#1090#1077#1082#1072' FB2'
+      TabOrder = 4
+      OnClick = OnSetCollectionType
+    end
+    object edINPXPath: TRzButtonEdit
+      AlignWithMargins = True
+      Left = 18
+      Top = 138
+      Width = 294
+      Height = 21
+      Margins.Left = 18
+      Margins.Right = 18
+      Margins.Bottom = 10
+      Align = alBottom
+      TabOrder = 5
+      AltBtnWidth = 15
+      ButtonWidth = 15
+      OnButtonClick = edINPXPathButtonClick
+      ExplicitLeft = 14
+      ExplicitTop = 136
+      ExplicitWidth = 302
     end
   end
 end
