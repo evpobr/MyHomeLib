@@ -370,7 +370,7 @@ begin
     FDeviceDir := ExcludeTrailingPathDelimiter(iniFile.ReadString(PATH_SECTION, 'Device', 'C:\'));
     FReadDir := ExcludeTrailingPathDelimiter(iniFile.ReadString(PATH_SECTION, 'Read', ''));
 
-    if FReadDir = '' then  FReadDir := FTempDir;
+    if not DirectoryExists(FReadDir) then  FReadDir := FTempDir;
 
     //
     // SYSTEM_SECTION
@@ -860,7 +860,10 @@ end;
 
 function TMHLSettings.GetReadPath: string;
 begin
-  Result := IncludeTrailingPathDelimiter(FReadDir);
+  if FReadDir <> '' then
+    Result := IncludeTrailingPathDelimiter(FReadDir)
+  else
+    Result := '';
 end;
 
 procedure TMHLSettings.SetInitialDir(const key, Value: string);
@@ -870,7 +873,7 @@ end;
 
 procedure TMHLSettings.SetReadDir(const Value: string);
 begin
-  FReadDir := ExcludeTrailingPathDelimiter(Value);
+  FReadDir := ExcludeTrailingPathDelimiter(Value)
 end;
 
 initialization

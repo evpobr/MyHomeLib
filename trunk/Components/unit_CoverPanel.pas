@@ -363,7 +363,6 @@ begin
   FCover.Picture := nil;
 end;
 
-
 procedure TMHLCoverPanel.GetFb2Info;
 var
   i, p: integer;
@@ -456,8 +455,5 @@ begin
     MS.Free;
   end;
 end;
-
-
-
 
 end.

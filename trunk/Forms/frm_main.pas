@@ -40,7 +40,6 @@ uses
   ABSMain,
   DB,
   ShellAPI,
-  ZipMstr,
   inifiles,
   RzButton,
   unit_globals,
@@ -67,8 +66,14 @@ uses
   oxmldom,
   DBTables,
   Clipbrd,
-  RzCmboBx, RzBHints, unit_CoverPanel, unit_InfoPanel, unit_Columns, ZipForge,
-  RzPrgres, unit_DownloadManagerThread;
+  RzCmboBx,
+  RzBHints,
+  unit_CoverPanel,
+  unit_InfoPanel,
+  unit_Columns,
+  ZipForge,
+  RzPrgres,
+  unit_DownloadManagerThread;
 
 type
 
@@ -114,7 +119,6 @@ type
     miDeleteCol: TMenuItem;
     N18: TMenuItem;
     miStat: TMenuItem;
-    N28: TMenuItem;
     miRead: TMenuItem;
     miDevice: TMenuItem;
     dlgFolder: TRzSelDirDialog;
@@ -134,7 +138,6 @@ type
     miDeleteBook: TMenuItem;
     miImport: TMenuItem;
     miFb2ZipImport: TMenuItem;
-    N26: TMenuItem;
     miFb2Import: TMenuItem;
     miAbout: TMenuItem;
     miCheckUpdates: TMenuItem;
@@ -196,7 +199,6 @@ type
     miGoDonate: TMenuItem;
     miGoSite: TMenuItem;
     miGoForum: TMenuItem;
-    RzURLLabel1: TRzURLLabel;
     pgControl: TRzPageControl;
     TabSheet4: TRzTabSheet;
     RzPanel9: TRzPanel;
@@ -343,6 +345,9 @@ type
     mi_dwnl_Delete: TMenuItem;
     btnClearDownload: TRzBitBtn;
     ilToolBar_Disabled: TImageList;
+    N26: TMenuItem;
+    N34: TMenuItem;
+    N36: TMenuItem;
 
     //
     // События формы
@@ -512,6 +517,7 @@ type
     procedure tvDownloadListLoadNode(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Stream: TStream);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure N34Click(Sender: TObject);
 
   private
 
@@ -610,6 +616,7 @@ type
     procedure DownloadBooks;
     function CheckActiveDownloads:boolean;
     procedure SetLangBarSize;
+    procedure TheFirstRun;
     type
       TView = (ByAuthorView, BySeriesView, ByGenreView, SearchView, FavoritesView, FilterView, DownloadView);
 
@@ -934,6 +941,10 @@ end;
 
 procedure TfrmMain.ReadINIData;
 begin
+  CreateSettings;
+  Settings.LoadSettings;
+
+
   cbFullText.Checked := Settings.FullTextSearch;
 
   WindowState := Settings.WindowState;
@@ -1819,6 +1830,24 @@ begin
     rpLang.Height := 2 * rusBar.Height + 10;
 end;
 
+procedure TfrmMain.TheFirstRun;
+const CHECK_FILE = 'TheFirstRun.check';
+begin
+  if  DMUser.tblBases.IsEmpty then
+    DeleteFile(Settings.WorkPath + CHECK_FILE)
+  else
+  if FileExists(Settings.WorkPath + CHECK_FILE) and
+     (Application.MessageBox('Вы успешно обновили программу. Для нормальной работы необходимо' + #13 +
+                'обновить струткуру таблиц БД. Сделать это прямо сейчас?',
+                'MyHomeLib - первый запуск',mb_YesNo) = mrYes) then
+  begin
+    RenameFile(Settings.SystemFileName[sfLibRusEcinpx],Settings.SystemFileName[sfLibRusEcUpdate]);
+    unit_utils.LibrusecUpdate;
+    DeleteFile(Settings.WorkPath + CHECK_FILE);
+    InitCollection(True);
+  end;
+end;
+
 //
 // События формы
 //
@@ -1857,9 +1886,6 @@ begin
   FLastLetterS := tbtnStar;
 
   CreateAlphabet;
-
-  CreateSettings;
-  Settings.LoadSettings;
 
   ReadINIData;
 
@@ -1907,8 +1933,11 @@ begin
 
   Application.HelpFile := Settings.SystemFileName[sfAppHelp];
 
+  TheFirstRun;
 
-  if not DMUser.tblBases.IsEmpty then  RestorePositions;
+
+  if not DMUser.tblBases.IsEmpty then
+    RestorePositions;
 
 
 //  if FileExists(Settings.WorkPath + 'downloads.sav') then
@@ -1922,7 +1951,7 @@ begin
 
 //  tvDownloadList.SaveToFile(Settings.WorkPath + 'downloads.sav');
 
-  ClearDir(Settings.TempDir);
+  if DirectoryExists(Settings.TempDir) then ClearDir(Settings.TempDir);
 
   Settings.LastAuthor := lblAuthor.Caption;
   Settings.LastSeries := lblSeries.Caption;
@@ -4533,6 +4562,11 @@ begin
   Close;
 end;
 
+procedure TfrmMain.N34Click(Sender: TObject);
+begin
+  if DirectoryExists(Settings.ReadDir) then ClearDir(Settings.ReadDir);
+end;
+
 procedure TfrmMain.HeaderPopupItemClick(Sender: TObject);
 var
   i: integer;
@@ -4656,6 +4690,9 @@ begin
   try
     frmSettings.LoadSetting;
     frmSettings.ShowModal;
+
+    Settings.SaveSettings;
+    FreeSettings;
   finally
     frmSettings.Free;
   end;
