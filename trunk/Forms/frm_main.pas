@@ -1624,15 +1624,15 @@ begin
     mmiScripts.Insert(i, ItemM);
   end;
 
-  if pmScripts.Items.Count > 0 then
+  if pmiScripts.Count > 0 then
   begin
-    mmiScripts.Enabled := True;
-    pmiScripts.Enabled := True;
+    mmiScripts.Visible := True;
+    pmiScripts.Visible := True;
   end
   else
   begin
-    mmiScripts.Enabled := False;
-    pmiScripts.Enabled := False;
+    mmiScripts.Visible := False;
+    pmiScripts.Visible := False;
   end
 end;
 
@@ -2319,7 +2319,7 @@ begin
     else
       InfoPanel.Folder := Folder;
   Cover.Show(InfoPanel.Folder,InfoPanel.FileName,No);
-
+  Application.ProcessMessages;
 end;
 
 procedure TfrmMain.tvBooksTreeCompareNodes(Sender: TBaseVirtualTree; Node1,
@@ -2694,6 +2694,15 @@ begin
   else
     ExportMode := emFb2;
 
+  if (ScriptID = 0) and (Settings.PromptDevicePath) then
+    if not dlgFolder.Execute then
+      Exit
+    else
+      { TODO -oNickR -cRefactoring : это временное изменение в настройках и оно не должно сохраняться при закрытии программы
+                             Это изменение нужно только для работы функций ZipToDevice/FileToDevice и решается
+                             параметрами этих функций
+      }
+      Settings.DeviceDir := dlgFolder.Directory;
 
   Dec(ScriptID,901);
 
@@ -2722,15 +2731,6 @@ begin
     Settings.Scripts[ScriptID].TmpParams := TMPParams;   
   end;
 
-  if Settings.PromptDevicePath then
-    if not dlgFolder.Execute then
-      Exit
-    else
-      { TODO -oNickR -cRefactoring : это временное изменение в настройках и оно не должно сохраняться при закрытии программы
-                             Это изменение нужно только для работы функций ZipToDevice/FileToDevice и решается
-                             параметрами этих функций
-      }
-      Settings.DeviceDir := dlgFolder.Directory;
 
   GetActiveTree(Tree);
 

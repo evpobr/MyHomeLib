@@ -2,9 +2,10 @@ object frmSettings: TfrmSettings
   Left = 0
   Top = 0
   HelpContext = 144
+  BorderStyle = bsToolWindow
   Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
-  ClientHeight = 461
-  ClientWidth = 601
+  ClientHeight = 473
+  ClientWidth = 611
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,12 +20,14 @@ object frmSettings: TfrmSettings
   object RzPanel1: TRzPanel
     AlignWithMargins = True
     Left = 3
-    Top = 410
-    Width = 595
+    Top = 422
+    Width = 605
     Height = 48
     Align = alBottom
     BorderOuter = fsFlatRounded
     TabOrder = 0
+    ExplicitTop = 410
+    ExplicitWidth = 595
     object btnSave: TRzBitBtn
       Left = 316
       Top = 11
@@ -51,6 +54,7 @@ object frmSettings: TfrmSettings
       Height = 28
       Caption = #1057#1087#1088#1072#1074#1082#1072
       TabOrder = 2
+      Visible = False
       OnClick = RzBitBtn1Click
       Kind = bkHelp
     end
@@ -59,24 +63,29 @@ object frmSettings: TfrmSettings
     AlignWithMargins = True
     Left = 194
     Top = 3
-    Width = 404
-    Height = 401
+    Width = 414
+    Height = 413
     ActivePage = tsDevices
     Align = alClient
     TabOrder = 1
+    ExplicitWidth = 404
+    ExplicitHeight = 401
     object tsDevices: TTabSheet
       HelpContext = 143
       Caption = 'tsDevices'
       TabVisible = False
+      ExplicitWidth = 396
+      ExplicitHeight = 391
       object RzGroupBox3: TRzGroupBox
         AlignWithMargins = True
         Left = 3
         Top = 196
-        Width = 390
+        Width = 400
         Height = 142
         Align = alTop
         Caption = #1060#1086#1088#1084#1072#1090' '#1080#1084#1077#1085#1080
         TabOrder = 0
+        ExplicitWidth = 390
         object Label5: TLabel
           Left = 20
           Top = 29
@@ -228,11 +237,12 @@ object frmSettings: TfrmSettings
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 390
+        Width = 400
         Height = 69
         Align = alTop
         Caption = #1055#1072#1087#1082#1072' '#1085#1072' '#1091#1089#1090#1088#1086#1081#1089#1090#1074#1077' '
         TabOrder = 1
+        ExplicitWidth = 390
         object edDeviceDir: TRzButtonEdit
           Left = 11
           Top = 18
@@ -258,7 +268,7 @@ object frmSettings: TfrmSettings
         AlignWithMargins = True
         Left = 3
         Top = 135
-        Width = 390
+        Width = 400
         Height = 55
         Align = alTop
         Caption = #1060#1086#1088#1084#1072#1090' '#1079#1072#1087#1080#1089#1080' '#1085#1072' '#1091#1089#1090#1088#1086#1089#1090#1074#1086
@@ -270,16 +280,19 @@ object frmSettings: TfrmSettings
           '.lrf (SONY)'
           '.txt')
         TabOrder = 2
+        ExplicitWidth = 390
       end
       object RzGroupBox5: TRzGroupBox
         AlignWithMargins = True
         Left = 3
         Top = 344
-        Width = 390
-        Height = 44
+        Width = 400
+        Height = 56
         Align = alClient
         Caption = #1054#1087#1094#1080#1080
         TabOrder = 3
+        ExplicitWidth = 390
+        ExplicitHeight = 44
         object cbSquareFilter: TCheckBox
           Left = 11
           Top = 18
@@ -294,11 +307,12 @@ object frmSettings: TfrmSettings
         AlignWithMargins = True
         Left = 3
         Top = 78
-        Width = 390
+        Width = 400
         Height = 51
         Align = alTop
         Caption = #1055#1072#1087#1082#1072' "'#1076#1083#1103' '#1095#1090#1077#1085#1080#1103'"'
         TabOrder = 4
+        ExplicitWidth = 390
         object edReadDir: TRzButtonEdit
           Left = 11
           Top = 18
@@ -321,8 +335,8 @@ object frmSettings: TfrmSettings
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 390
-        Height = 385
+        Width = 400
+        Height = 397
         Align = alClient
         Caption = #1058#1080#1087#1099' '#1092#1072#1081#1083#1086#1074' '#1080' '#1087#1088#1086#1089#1084#1086#1090#1088#1097#1080#1082#1080
         TabOrder = 0
@@ -383,7 +397,7 @@ object frmSettings: TfrmSettings
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 390
+        Width = 400
         Height = 163
         Align = alTop
         Caption = #1057#1087#1080#1089#1082#1080
@@ -521,7 +535,7 @@ object frmSettings: TfrmSettings
         AlignWithMargins = True
         Left = 3
         Top = 172
-        Width = 390
+        Width = 400
         Height = 95
         Align = alTop
         Caption = #1055#1086#1074#1077#1076#1077#1085#1080#1077
@@ -555,8 +569,8 @@ object frmSettings: TfrmSettings
         AlignWithMargins = True
         Left = 3
         Top = 273
-        Width = 390
-        Height = 115
+        Width = 400
+        Height = 127
         Align = alClient
         Caption = #1056#1072#1079#1085#1086#1077
         TabOrder = 2
@@ -579,7 +593,7 @@ object frmSettings: TfrmSettings
         AlignWithMargins = True
         Left = 3
         Top = 93
-        Width = 390
+        Width = 400
         Height = 113
         Align = alTop
         Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1082#1089#1080
@@ -651,7 +665,7 @@ object frmSettings: TfrmSettings
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 390
+        Width = 400
         Height = 84
         Align = alTop
         Caption = #1057#1077#1088#1074#1077#1088' lib.rus.ec'
@@ -701,8 +715,8 @@ object frmSettings: TfrmSettings
         AlignWithMargins = True
         Left = 3
         Top = 212
-        Width = 390
-        Height = 176
+        Width = 400
+        Height = 188
         Align = alClient
         Caption = #1057#1077#1088#1074#1077#1088' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
         TabOrder = 2
@@ -741,8 +755,8 @@ object frmSettings: TfrmSettings
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 390
-        Height = 321
+        Width = 400
+        Height = 333
         Align = alClient
         Caption = #1057#1082#1088#1080#1087#1090#1099
         TabOrder = 0
@@ -750,7 +764,7 @@ object frmSettings: TfrmSettings
           AlignWithMargins = True
           Left = 4
           Top = 17
-          Width = 382
+          Width = 392
           Height = 261
           Align = alTop
           Columns = <
@@ -802,8 +816,8 @@ object frmSettings: TfrmSettings
       object RzGroupBox5343245: TRzGroupBox
         AlignWithMargins = True
         Left = 3
-        Top = 330
-        Width = 390
+        Top = 342
+        Width = 400
         Height = 58
         Align = alBottom
         Caption = #1044#1077#1081#1089#1090#1074#1080#1077' '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102
@@ -825,16 +839,17 @@ object frmSettings: TfrmSettings
     Left = 3
     Top = 3
     Width = 185
-    Height = 401
+    Height = 413
     Align = alLeft
     BorderOuter = fsFlatRounded
     TabOrder = 2
+    ExplicitHeight = 401
     object tvSections: TRzTreeView
       AlignWithMargins = True
       Left = 5
       Top = 5
       Width = 175
-      Height = 391
+      Height = 403
       SelectionPen.Color = clBtnShadow
       Align = alClient
       Indent = 19
@@ -851,6 +866,7 @@ object frmSettings: TfrmSettings
         FFFFFFFFFFFFFFFFFFFFFF0000000000000000010818043D044204350440043D
         04350442042C0000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF000000
         0000000000010721043A04400438043F0442044B04}
+      ExplicitHeight = 391
     end
   end
   object dlgColors: TColorDialog
