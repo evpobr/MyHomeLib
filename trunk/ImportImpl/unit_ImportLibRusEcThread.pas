@@ -244,7 +244,7 @@ begin
 
             Inc(filesProcessed);
             if (filesProcessed mod ProcessedItemThreshold) = 0 then
-                SetComment(Format('Импортированно %u файлов', [filesProcessed]));
+                SetComment(Format('Добавлено %u книг', [filesProcessed]));
           end; // for
           inc(i);
           SetProgress((i + 1) * 100 div unZip.FileCount);
@@ -254,7 +254,7 @@ begin
       finally
         BookList.Free;
       end;
-      SetComment(Format('Импортированно %u файлов', [filesProcessed]));
+      SetComment(Format('Добавлено %u книг', [filesProcessed]));
     finally
       unZip.Free;
     end;
