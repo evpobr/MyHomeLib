@@ -80,8 +80,7 @@ object frmMain: TfrmMain
       Width = 926
       Height = 33
       BorderWidth = 1
-      ButtonHeight = 24
-      ButtonWidth = 39
+      ButtonWidth = 37
       Caption = 'RusBar'
       DrawingStyle = dsGradient
       EdgeBorders = [ebLeft, ebTop, ebRight, ebBottom]
@@ -109,7 +108,7 @@ object frmMain: TfrmMain
       end
       object ToolButton4: TToolButton
         Tag = 91
-        Left = 28
+        Left = 26
         Top = 0
         Caption = #1040'-'#1071
         ImageIndex = 1
@@ -125,8 +124,7 @@ object frmMain: TfrmMain
       Height = 33
       Margins.Bottom = 5
       BorderWidth = 1
-      ButtonHeight = 24
-      ButtonWidth = 37
+      ButtonWidth = 35
       Caption = 'RusBar'
       DrawingStyle = dsGradient
       EdgeBorders = [ebLeft, ebTop, ebRight, ebBottom]
@@ -151,7 +149,7 @@ object frmMain: TfrmMain
       end
       object ToolButton6: TToolButton
         Tag = 92
-        Left = 26
+        Left = 24
         Top = 0
         Caption = 'A-Z'
         ImageIndex = 1
@@ -258,7 +256,7 @@ object frmMain: TfrmMain
       OnClick = tbSendToDeviceClick
     end
     object ToolButton13: TToolButton
-      Left = 136
+      Left = 138
       Top = 0
       Width = 24
       Caption = 'ToolButton13'
@@ -266,7 +264,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnRus: TToolButton
-      Left = 160
+      Left = 162
       Top = 0
       Hint = #1056#1091#1089#1089#1082#1080#1081' '#1072#1083#1092#1072#1074#1080#1090
       Caption = 'tbtnRus'
@@ -274,7 +272,7 @@ object frmMain: TfrmMain
       OnClick = tbtnRusClick
     end
     object tbtnEng: TToolButton
-      Left = 201
+      Left = 203
       Top = 0
       Hint = #1040#1085#1075#1083#1080#1081#1089#1082#1080#1081' '#1072#1083#1092#1072#1074#1080#1090
       Caption = 'tbtnEng'
@@ -282,7 +280,7 @@ object frmMain: TfrmMain
       OnClick = tbtnEngClick
     end
     object ToolButton12: TToolButton
-      Left = 242
+      Left = 244
       Top = 0
       Width = 24
       Caption = 'ToolButton12'
@@ -290,7 +288,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnWizard: TToolButton
-      Left = 266
+      Left = 268
       Top = 0
       Hint = #1052#1072#1089#1090#1077#1088' '#1076#1086#1073#1072#1074#1083#1077#1085#1080#1103#13#1082#1086#1083#1083#1077#1082#1094#1080#1081
       Caption = 'tbtnWizard'
@@ -300,7 +298,7 @@ object frmMain: TfrmMain
       OnClick = ShowNewCollectionWizard
     end
     object tbtnSelect: TToolButton
-      Left = 307
+      Left = 309
       Top = 0
       Hint = #1042#1099#1073#1088#1072#1090#1100#13#1082#1086#1083#1083#1077#1082#1094#1080#1102
       Caption = #1042#1099#1073#1088#1072#1090#1100' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
@@ -312,7 +310,7 @@ object frmMain: TfrmMain
       ShowHint = True
     end
     object tbSelectAll: TToolButton
-      Left = 348
+      Left = 350
       Top = 0
       Hint = #1054#1090#1084#1077#1090#1080#1090#1100' '#1074#1089#1077
       Caption = 'tbSelectAll'
@@ -320,7 +318,7 @@ object frmMain: TfrmMain
       OnClick = tbSelectAllClick
     end
     object tbCollapse: TToolButton
-      Left = 389
+      Left = 391
       Top = 0
       Hint = #1056#1072#1079#1074#1077#1088#1085#1091#1090#1100'/'#1057#1074#1077#1088#1085#1091#1090#1100' '#1089#1087#1080#1089#1086#1082
       Caption = 'tbCollapse'
@@ -328,7 +326,7 @@ object frmMain: TfrmMain
       OnClick = tbCollapseClick
     end
     object btnRefreshCollection: TToolButton
-      Left = 430
+      Left = 432
       Top = 0
       Hint = #1054#1073#1085#1086#1074#1080#1090#1100' '#1089#1087#1080#1089#1086#1082
       Caption = 'btnRefreshCollection'
@@ -336,7 +334,7 @@ object frmMain: TfrmMain
       OnClick = miRefreshClick
     end
     object ToolButton1: TToolButton
-      Left = 471
+      Left = 473
       Top = 0
       Width = 24
       Caption = 'ToolButton1'
@@ -344,7 +342,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object btnSwitchTreeMode: TToolButton
-      Left = 495
+      Left = 497
       Top = 0
       Hint = #1055#1077#1088#1077#1082#1083#1102#1095#1080#1090#1100' '#1074' '#1088#1077#1078#1080#1084' "'#1058#1072#1073#1083#1080#1094#1072'"'
       Caption = 'btnSwitchTreeMode'
@@ -352,7 +350,7 @@ object frmMain: TfrmMain
       OnClick = btnSwitchTreeModeClick
     end
     object tbtnShowDeleted: TToolButton
-      Left = 536
+      Left = 538
       Top = 0
       Hint = #1057#1082#1088#1099#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077' '#1085#1072' lib.rus.ec'
       Caption = 'tbtnShowDeleted'
@@ -360,7 +358,7 @@ object frmMain: TfrmMain
       OnClick = tbtnShowDeletedClick
     end
     object tbtnShowLocalOnly: TToolButton
-      Left = 577
+      Left = 579
       Top = 0
       Hint = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1090#1086#1083#1100#1082#1086' '#1089#1082#1072#1095#1072#1085#1085#1099#1077' '#1082#1085#1080#1075#1080
       Caption = 'tbtnShowLocalOnly'
@@ -368,7 +366,7 @@ object frmMain: TfrmMain
       OnClick = tbtnShowLocalOnlyClick
     end
     object tbtnShowCover: TToolButton
-      Left = 618
+      Left = 620
       Top = 0
       Hint = #1055#1086#1082#1072#1079#1072#1090#1100'/'#1057#1082#1088#1099#1090#1100' '#1086#1073#1083#1086#1078#1082#1091
       Caption = 'tbtnShowCover'
@@ -376,7 +374,7 @@ object frmMain: TfrmMain
       OnClick = tbtnShowCoverClick
     end
     object ToolButton3: TToolButton
-      Left = 659
+      Left = 661
       Top = 0
       Width = 24
       Caption = 'ToolButton3'
@@ -384,7 +382,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object BtnFav_add: TToolButton
-      Left = 683
+      Left = 685
       Top = 0
       Hint = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1080#1079#1073#1088#1072#1085#1085#1086#1077
       Caption = 'BtnFav_add'
@@ -392,7 +390,7 @@ object frmMain: TfrmMain
       OnClick = BtnFav_addClick
     end
     object ToolButton5: TToolButton
-      Left = 724
+      Left = 726
       Top = 0
       Width = 24
       Caption = 'ToolButton5'
@@ -400,7 +398,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnSettings: TToolButton
-      Left = 748
+      Left = 750
       Top = 0
       Hint = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
       Caption = 'tbtnSettings'
@@ -414,14 +412,18 @@ object frmMain: TfrmMain
     Width = 942
     Height = 561
     HelpContext = 135
-    ActivePage = TabSheet1
+    ActivePage = TabSheet5
     Align = alClient
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 3
     OnChange = pgControlChange
     FixedDimension = 19
     object TabSheet1: TRzTabSheet
       Caption = #1040#1074#1090#1086#1088#1099
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object rzsSplitterA: TRzSplitter
         Left = 0
         Top = 0
@@ -781,6 +783,10 @@ object frmMain: TfrmMain
     end
     object TabSheet2: TRzTabSheet
       Caption = #1057#1077#1088#1080#1080
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object rzsSplitterS: TRzSplitter
         Left = 0
         Top = 0
@@ -945,7 +951,7 @@ object frmMain: TfrmMain
                 Left = 10
                 Top = 3
                 Width = 70
-                Height = 19
+                Height = 25
                 Margins.Left = 10
                 Align = alLeft
                 AutoSize = True
@@ -957,13 +963,14 @@ object frmMain: TfrmMain
                 ParentFont = False
                 DataField = 'Title'
                 DataSource = DMCollection.dsSeries
+                ExplicitHeight = 19
               end
               object lblBooksTotalS: TRzLabel
                 AlignWithMargins = True
                 Left = 408
                 Top = 3
                 Width = 12
-                Height = 19
+                Height = 25
                 Align = alRight
                 Alignment = taRightJustify
                 Caption = '()'
@@ -974,6 +981,7 @@ object frmMain: TfrmMain
                 Font.Style = []
                 ParentFont = False
                 CenterPoint = cpLowerRight
+                ExplicitHeight = 19
               end
             end
             object tvBooksS: TVirtualStringTree
@@ -1143,6 +1151,10 @@ object frmMain: TfrmMain
     end
     object TabSheet3: TRzTabSheet
       Caption = #1046#1072#1085#1088#1099
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object rzsSplitterG: TRzSplitter
         Left = 0
         Top = 0
@@ -1393,7 +1405,7 @@ object frmMain: TfrmMain
               Left = 403
               Top = 3
               Width = 12
-              Height = 19
+              Height = 25
               Align = alRight
               Alignment = taRightJustify
               Caption = '()'
@@ -1404,13 +1416,14 @@ object frmMain: TfrmMain
               Font.Style = []
               ParentFont = False
               CenterPoint = cpLowerRight
+              ExplicitHeight = 19
             end
             object lblGenreTitle: TRzLabel
               AlignWithMargins = True
               Left = 3
               Top = 3
               Width = 15
-              Height = 19
+              Height = 25
               Align = alLeft
               Caption = '...'
               Font.Charset = DEFAULT_CHARSET
@@ -1420,6 +1433,7 @@ object frmMain: TfrmMain
               Font.Style = [fsBold]
               ParentFont = False
               CenterPoint = cpLowerRight
+              ExplicitHeight = 19
             end
           end
           object ipnlGenres: TMHLInfoPanel
@@ -1441,9 +1455,329 @@ object frmMain: TfrmMain
         end
       end
     end
+    object TabSheet5: TRzTabSheet
+      HelpContext = 125
+      Caption = #1043#1088#1091#1087#1087#1099
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
+      object cpCoverF: TMHLCoverPanel
+        AlignWithMargins = True
+        Left = 685
+        Top = 3
+        Width = 250
+        Height = 532
+        Margins.Left = 0
+        Align = alRight
+        BorderOuter = fsFlatRounded
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        SizeBarWidth = 5
+        TabOrder = 0
+        OnResize = CoverPanelResize
+        Fb2InfoVisible = False
+        FontSize = 0
+      end
+      object RzSplitter1: TRzSplitter
+        Left = 0
+        Top = 0
+        Width = 685
+        Height = 538
+        Position = 239
+        Percent = 35
+        Align = alClient
+        TabOrder = 1
+        BarSize = (
+          239
+          0
+          243
+          538)
+        UpperLeftControls = (
+          RzPanel7)
+        LowerRightControls = (
+          RzPanel20)
+        object RzPanel7: TRzPanel
+          AlignWithMargins = True
+          Left = 3
+          Top = 3
+          Width = 233
+          Height = 532
+          Align = alClient
+          BorderOuter = fsFlatRounded
+          TabOrder = 0
+          object VirtualStringTree1: TVirtualStringTree
+            AlignWithMargins = True
+            Left = 5
+            Top = 52
+            Width = 223
+            Height = 475
+            Align = alClient
+            CheckImageKind = ckXP
+            Colors.UnfocusedSelectionColor = clHighlight
+            Colors.UnfocusedSelectionBorderColor = clHighlight
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            Header.AutoSizeIndex = 0
+            Header.Font.Charset = DEFAULT_CHARSET
+            Header.Font.Color = clWindowText
+            Header.Font.Height = -11
+            Header.Font.Name = 'Tahoma'
+            Header.Font.Style = []
+            Header.MainColumn = -1
+            Header.Options = [hoColumnResize, hoDrag]
+            ParentFont = False
+            PopupMenu = pmAuthor
+            TabOrder = 0
+            TreeOptions.PaintOptions = [toPopupMode, toShowDropmark, toShowHorzGridLines, toThemeAware, toUseBlendedImages]
+            TreeOptions.SelectionOptions = [toFullRowSelect, toRightClickSelect]
+            OnChange = tvSeriesChange
+            OnGetText = tvAuthorsGetText
+            OnPaintText = tvAuthorsPaintText
+            Columns = <>
+          end
+          object RzPanel8: TRzPanel
+            AlignWithMargins = True
+            Left = 5
+            Top = 5
+            Width = 223
+            Height = 41
+            Align = alTop
+            BorderOuter = fsFlatRounded
+            TabOrder = 1
+            DesignSize = (
+              223
+              41)
+            object RzToolButton2: TRzToolButton
+              Left = 250
+              Top = 8
+              Hint = #1054#1095#1080#1089#1090#1080#1090#1100
+              ImageIndex = 36
+              Images = ilMainMenu
+              Anchors = [akTop, akRight]
+              ParentShowHint = False
+              ShowHint = True
+              OnClick = btnClearEdSeriesClick
+              ExplicitLeft = 201
+            end
+          end
+        end
+        object RzPanel20: TRzPanel
+          AlignWithMargins = True
+          Left = 3
+          Top = 3
+          Width = 439
+          Height = 532
+          Margins.Right = 0
+          Align = alClient
+          BorderOuter = fsFlatRounded
+          TabOrder = 0
+          object RzPanel21: TRzPanel
+            AlignWithMargins = True
+            Left = 5
+            Top = 5
+            Width = 429
+            Height = 416
+            Align = alClient
+            BorderOuter = fsNone
+            TabOrder = 0
+            object RzDBLabel1: TRzDBLabel
+              Left = 8
+              Top = 8
+              Width = 65
+              Height = 17
+              DataField = 'Name'
+              DataSource = DMUser.dsGroupList
+            end
+            object tvBooksF: TVirtualStringTree
+              Tag = 4
+              AlignWithMargins = True
+              Left = 3
+              Top = 45
+              Width = 423
+              Height = 368
+              Margins.Top = 45
+              Align = alClient
+              BevelInner = bvNone
+              BevelOuter = bvNone
+              BevelKind = bkFlat
+              ButtonFillMode = fmShaded
+              CheckImageKind = ckXP
+              ClipboardFormats.Strings = (
+                'CSV'
+                'HTML Format'
+                'Plain text'
+                'Rich Text Format'
+                'Rich Text Format Without Objects'
+                'Unicode text'
+                'Virtual Tree Data')
+              Color = 14024447
+              Colors.BorderColor = clBackground
+              Colors.HotColor = clBlack
+              Colors.UnfocusedSelectionBorderColor = clBtnShadow
+              DefaultPasteMode = amAddChildFirst
+              DragMode = dmAutomatic
+              EditDelay = 100
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -13
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Header.AutoSizeIndex = 0
+              Header.Font.Charset = ANSI_CHARSET
+              Header.Font.Color = clWindowText
+              Header.Font.Height = -12
+              Header.Font.Name = 'Arial'
+              Header.Font.Style = [fsBold]
+              Header.Height = 20
+              Header.Options = [hoColumnResize, hoDrag, hoHotTrack, hoOwnerDraw, hoRestrictDrag, hoShowHint, hoShowImages, hoShowSortGlyphs, hoVisible]
+              Header.PopupMenu = pmHeaders
+              Header.Style = hsFlatButtons
+              HintMode = hmTooltip
+              HotCursor = crHandPoint
+              ParentFont = False
+              ParentShowHint = False
+              PopupMenu = pmMain
+              ShowHint = False
+              TabOrder = 0
+              TreeOptions.AnimationOptions = [toAnimatedToggle]
+              TreeOptions.AutoOptions = [toAutoDropExpand, toAutoExpand, toAutoScroll, toAutoTristateTracking, toAutoDeleteMovedNodes]
+              TreeOptions.MiscOptions = [toCheckSupport, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
+              TreeOptions.PaintOptions = [toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toFullVertGridLines]
+              TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect, toRightClickSelect]
+              OnAfterCellPaint = tvBooksTreeAfterCellPaint
+              OnChange = tvBooksTreeChange
+              OnCompareNodes = tvBooksTreeCompareNodes
+              OnDblClick = tbtbnReadClick
+              OnGetText = tvBooksFGetText
+              OnPaintText = tvBooksTreePaintText
+              OnHeaderClick = tvBooksTreeHeaderClick
+              OnInitNode = tvBooksTreeInitNode
+              OnKeyDown = tvBooksTreeKeyDown
+              OnMouseUp = tvBooksTreeMouseUp
+              ExplicitLeft = 0
+              ExplicitTop = 0
+              ExplicitWidth = 429
+              ExplicitHeight = 416
+              Columns = <
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
+                  Position = 0
+                  Spacing = 10
+                  Width = 305
+                  WideText = #1053#1072#1079#1074#1072#1085#1080#1077
+                  WideHint = 
+                    'Text is initially centered and has a left-to-right directionalit' +
+                    'y.'
+                end
+                item
+                  Alignment = taCenter
+                  MaxWidth = 90
+                  MinWidth = 35
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring]
+                  Position = 1
+                  Spacing = 10
+                  Width = 38
+                  WideText = #8470
+                  WideHint = 
+                    'Text is initially left aligned and has a left-to-right direction' +
+                    'ality.'
+                end
+                item
+                  Alignment = taCenter
+                  BiDiMode = bdRightToLeft
+                  MinWidth = 65
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
+                  Position = 2
+                  Spacing = 10
+                  Width = 65
+                  WideText = #1056#1072#1079#1084#1077#1088
+                  WideHint = 
+                    'Text is initially left aligned and has a right-to-left direction' +
+                    'ality.'
+                end
+                item
+                  Alignment = taCenter
+                  MaxWidth = 60
+                  MinWidth = 60
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
+                  Position = 3
+                  Width = 60
+                  WideText = #1056#1077#1081#1090#1080#1085#1075
+                end
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
+                  Position = 4
+                  Width = 200
+                  WideText = #1050#1086#1083#1083#1077#1082#1094#1080#1103
+                end>
+            end
+          end
+          object ipnlFavorites: TMHLInfoPanel
+            AlignWithMargins = True
+            Left = 5
+            Top = 427
+            Width = 429
+            Height = 100
+            Align = alBottom
+            BevelOuter = bvNone
+            Caption = ' '
+            TabOrder = 1
+            Author = #1060#1048#1054'  '#1072#1074#1090#1086#1088#1072
+            Title = #1053#1072#1079#1074#1072#1085#1080#1077' '#1082#1085#1080#1075#1080
+            Genre = #1085#1077#1080#1079#1074#1077#1089#1090#1085#1099#1081
+            Folder = 'C:\Books\1-1009.zip'
+            FileName = '111 '#1048#1074#1072#1085#1086#1074' '#1050#1085#1080#1075#1072'.fb2'
+            DesignSize = (
+              429
+              100)
+            object lblTotalBooksF: TRzLabel
+              AlignWithMargins = True
+              Left = 1601
+              Top = 3
+              Width = 12
+              Height = 19
+              Alignment = taRightJustify
+              Anchors = []
+              Caption = '()'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clNavy
+              Font.Height = -16
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              ParentFont = False
+              CenterPoint = cpLowerRight
+              ExplicitLeft = 648
+            end
+            object btnClearFavorites: TRzBitBtn
+              Left = 795
+              Top = 66
+              Width = 118
+              Anchors = [akRight, akBottom]
+              Caption = #1054#1095#1080#1089#1090#1080#1090#1100
+              Enabled = False
+              TabOrder = 0
+              OnClick = btnClearFavoritesClick
+              Kind = bkRetry
+            end
+          end
+        end
+      end
+    end
     object TabSheet4: TRzTabSheet
       HelpContext = 142
       Caption = #1055#1086#1080#1089#1082
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object RzPanel9: TRzPanel
         AlignWithMargins = True
         Left = 3
@@ -1753,221 +2087,13 @@ object frmMain: TfrmMain
         FontSize = 0
       end
     end
-    object TabSheet5: TRzTabSheet
-      HelpContext = 125
-      Caption = #1048#1079#1073#1088#1072#1085#1085#1086#1077
-      object RzPanel20: TRzPanel
-        AlignWithMargins = True
-        Left = 3
-        Top = 3
-        Width = 682
-        Height = 532
-        Margins.Right = 0
-        Align = alClient
-        BorderOuter = fsFlatRounded
-        TabOrder = 0
-        object RzPanel21: TRzPanel
-          AlignWithMargins = True
-          Left = 5
-          Top = 5
-          Width = 672
-          Height = 416
-          Align = alClient
-          BorderOuter = fsNone
-          TabOrder = 0
-          object tvBooksF: TVirtualStringTree
-            Tag = 4
-            Left = 0
-            Top = 0
-            Width = 672
-            Height = 416
-            Align = alClient
-            BevelInner = bvNone
-            BevelOuter = bvNone
-            BevelKind = bkFlat
-            ButtonFillMode = fmShaded
-            CheckImageKind = ckXP
-            ClipboardFormats.Strings = (
-              'CSV'
-              'HTML Format'
-              'Plain text'
-              'Rich Text Format'
-              'Rich Text Format Without Objects'
-              'Unicode text'
-              'Virtual Tree Data')
-            Color = 14024447
-            Colors.BorderColor = clBackground
-            Colors.HotColor = clBlack
-            Colors.UnfocusedSelectionBorderColor = clBtnShadow
-            DefaultPasteMode = amAddChildFirst
-            DragMode = dmAutomatic
-            EditDelay = 100
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            Header.AutoSizeIndex = 0
-            Header.Font.Charset = ANSI_CHARSET
-            Header.Font.Color = clWindowText
-            Header.Font.Height = -12
-            Header.Font.Name = 'Arial'
-            Header.Font.Style = [fsBold]
-            Header.Height = 20
-            Header.Options = [hoColumnResize, hoDrag, hoHotTrack, hoOwnerDraw, hoRestrictDrag, hoShowHint, hoShowImages, hoShowSortGlyphs, hoVisible]
-            Header.PopupMenu = pmHeaders
-            Header.Style = hsFlatButtons
-            HintMode = hmTooltip
-            HotCursor = crHandPoint
-            ParentFont = False
-            ParentShowHint = False
-            PopupMenu = pmMain
-            ShowHint = False
-            TabOrder = 0
-            TreeOptions.AnimationOptions = [toAnimatedToggle]
-            TreeOptions.AutoOptions = [toAutoDropExpand, toAutoExpand, toAutoScroll, toAutoTristateTracking, toAutoDeleteMovedNodes]
-            TreeOptions.MiscOptions = [toCheckSupport, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
-            TreeOptions.PaintOptions = [toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toFullVertGridLines]
-            TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect, toRightClickSelect]
-            OnAfterCellPaint = tvBooksTreeAfterCellPaint
-            OnChange = tvBooksTreeChange
-            OnCompareNodes = tvBooksTreeCompareNodes
-            OnDblClick = tbtbnReadClick
-            OnGetText = tvBooksFGetText
-            OnPaintText = tvBooksTreePaintText
-            OnHeaderClick = tvBooksTreeHeaderClick
-            OnInitNode = tvBooksTreeInitNode
-            OnKeyDown = tvBooksTreeKeyDown
-            OnMouseUp = tvBooksTreeMouseUp
-            ExplicitLeft = 2
-            Columns = <
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
-                Position = 0
-                Spacing = 10
-                Width = 305
-                WideText = #1053#1072#1079#1074#1072#1085#1080#1077
-                WideHint = 
-                  'Text is initially centered and has a left-to-right directionalit' +
-                  'y.'
-              end
-              item
-                Alignment = taCenter
-                MaxWidth = 90
-                MinWidth = 35
-                Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring]
-                Position = 1
-                Spacing = 10
-                Width = 38
-                WideText = #8470
-                WideHint = 
-                  'Text is initially left aligned and has a left-to-right direction' +
-                  'ality.'
-              end
-              item
-                Alignment = taCenter
-                BiDiMode = bdRightToLeft
-                MinWidth = 65
-                Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
-                Position = 2
-                Spacing = 10
-                Width = 65
-                WideText = #1056#1072#1079#1084#1077#1088
-                WideHint = 
-                  'Text is initially left aligned and has a right-to-left direction' +
-                  'ality.'
-              end
-              item
-                Alignment = taCenter
-                MaxWidth = 60
-                MinWidth = 60
-                Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
-                Position = 3
-                Width = 60
-                WideText = #1056#1077#1081#1090#1080#1085#1075
-              end
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
-                Position = 4
-                Width = 200
-                WideText = #1050#1086#1083#1083#1077#1082#1094#1080#1103
-              end>
-          end
-        end
-        object ipnlFavorites: TMHLInfoPanel
-          AlignWithMargins = True
-          Left = 5
-          Top = 427
-          Width = 672
-          Height = 100
-          Align = alBottom
-          BevelOuter = bvNone
-          Caption = ' '
-          TabOrder = 1
-          Author = #1060#1048#1054'  '#1072#1074#1090#1086#1088#1072
-          Title = #1053#1072#1079#1074#1072#1085#1080#1077' '#1082#1085#1080#1075#1080
-          Genre = #1085#1077#1080#1079#1074#1077#1089#1090#1085#1099#1081
-          Folder = 'C:\Books\1-1009.zip'
-          FileName = '111 '#1048#1074#1072#1085#1086#1074' '#1050#1085#1080#1075#1072'.fb2'
-          DesignSize = (
-            672
-            100)
-          object lblTotalBooksF: TRzLabel
-            AlignWithMargins = True
-            Left = 657
-            Top = 3
-            Width = 12
-            Height = 19
-            Alignment = taRightJustify
-            Anchors = []
-            Caption = '()'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clNavy
-            Font.Height = -16
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            CenterPoint = cpLowerRight
-            ExplicitLeft = 648
-          end
-          object btnClearFavorites: TRzBitBtn
-            Left = 543
-            Top = 66
-            Width = 118
-            Anchors = [akRight, akBottom]
-            Caption = #1054#1095#1080#1089#1090#1080#1090#1100
-            Enabled = False
-            TabOrder = 0
-            OnClick = btnClearFavoritesClick
-            Kind = bkRetry
-          end
-        end
-      end
-      object cpCoverF: TMHLCoverPanel
-        AlignWithMargins = True
-        Left = 685
-        Top = 3
-        Width = 250
-        Height = 532
-        Margins.Left = 0
-        Align = alRight
-        BorderOuter = fsFlatRounded
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        SizeBarWidth = 5
-        TabOrder = 1
-        OnResize = CoverPanelResize
-        Fb2InfoVisible = False
-        FontSize = 0
-      end
-    end
     object TabSheet6: TRzTabSheet
       HelpContext = 126
       Caption = #1060#1080#1083#1100#1090#1088
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object RzPanel29: TRzPanel
         AlignWithMargins = True
         Left = 3

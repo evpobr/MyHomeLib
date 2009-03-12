@@ -199,7 +199,82 @@ type
     miGoDonate: TMenuItem;
     miGoSite: TMenuItem;
     miGoForum: TMenuItem;
+    ilFileTypes: TImageList;
+    pmHeaders: TPopupMenu;
+    N3: TMenuItem;
+    N4: TMenuItem;
+    N8: TMenuItem;
+    N10: TMenuItem;
+    N12: TMenuItem;
+    N13: TMenuItem;
+    N15: TMenuItem;
+    N21: TMenuItem;
+    N22: TMenuItem;
+    N25: TMenuItem;
+    N27: TMenuItem;
+    ToolButton4: TToolButton;
+    ToolButton6: TToolButton;
+    TrayIcon: TTrayIcon;
+    pmTray: TPopupMenu;
+    N29: TMenuItem;
+    N32: TMenuItem;
+    N33: TMenuItem;
+    pmDownloadList: TPopupMenu;
+    mi_dwnl_LocateAuthor: TMenuItem;
+    N35: TMenuItem;
+    mi_dwnl_Delete: TMenuItem;
+    ilToolBar_Disabled: TImageList;
+    N26: TMenuItem;
+    N34: TMenuItem;
+    N36: TMenuItem;
     pgControl: TRzPageControl;
+    TabSheet1: TRzTabSheet;
+    rzsSplitterA: TRzSplitter;
+    RzPanel13: TRzPanel;
+    tvAuthors: TVirtualStringTree;
+    RzPanel16: TRzPanel;
+    Label19: TLabel;
+    tbClearEdAuthor: TRzToolButton;
+    edLocateAuthor: TRzEdit;
+    cpCoverA: TMHLCoverPanel;
+    RzPanel15: TRzPanel;
+    RzPanel17: TRzPanel;
+    RzPanel18: TRzPanel;
+    lblAuthor: TRzDBLabel;
+    lblBooksTotalA: TRzLabel;
+    RzPanel23: TRzPanel;
+    tvBooksA: TVirtualStringTree;
+    ipnlAuthors: TMHLInfoPanel;
+    TabSheet2: TRzTabSheet;
+    rzsSplitterS: TRzSplitter;
+    RzPanel1: TRzPanel;
+    tvSeries: TVirtualStringTree;
+    RzPanel19: TRzPanel;
+    Label11: TLabel;
+    btnClearEdSeries: TRzToolButton;
+    edLocateSeries: TRzEdit;
+    cpCoverS: TMHLCoverPanel;
+    RzPanel3: TRzPanel;
+    RzPanel4: TRzPanel;
+    RzPanel5: TRzPanel;
+    lblSeries: TRzDBLabel;
+    lblBooksTotalS: TRzLabel;
+    tvBooksS: TVirtualStringTree;
+    RichEdit1: TRichEdit;
+    ipnlSeries: TMHLInfoPanel;
+    TabSheet3: TRzTabSheet;
+    rzsSplitterG: TRzSplitter;
+    RzPanel25: TRzPanel;
+    tvGenres: TVirtualStringTree;
+    cpCoverG: TMHLCoverPanel;
+    RzPanel27: TRzPanel;
+    RzPanel28: TRzPanel;
+    tvBooksG: TVirtualStringTree;
+    RichEdit4: TRichEdit;
+    RzPanel26: TRzPanel;
+    lblBooksTotalG: TRzLabel;
+    lblGenreTitle: TRzLabel;
+    ipnlGenres: TMHLInfoPanel;
     TabSheet4: TRzTabSheet;
     RzPanel9: TRzPanel;
     RzPanel10: TRzPanel;
@@ -213,16 +288,22 @@ type
     btnSearch: TRzBitBtn;
     cbFullText: TCheckBox;
     edAuth: TRzEdit;
+    btnClearSerach: TRzBitBtn;
     ipnlSearch: TMHLInfoPanel;
     cpCoverSR: TMHLCoverPanel;
     TabSheet5: TRzTabSheet;
+    cpCoverF: TMHLCoverPanel;
+    RzSplitter1: TRzSplitter;
+    RzPanel7: TRzPanel;
+    VirtualStringTree1: TVirtualStringTree;
+    RzPanel8: TRzPanel;
+    RzToolButton2: TRzToolButton;
     RzPanel20: TRzPanel;
     RzPanel21: TRzPanel;
     tvBooksF: TVirtualStringTree;
     ipnlFavorites: TMHLInfoPanel;
     lblTotalBooksF: TRzLabel;
     btnClearFavorites: TRzBitBtn;
-    cpCoverF: TMHLCoverPanel;
     TabSheet6: TRzTabSheet;
     RzPanel29: TRzPanel;
     RichEdit5: TRichEdit;
@@ -261,74 +342,6 @@ type
     tvBooksFL: TVirtualStringTree;
     ipnlFilter: TMHLInfoPanel;
     cpCoverFL: TMHLCoverPanel;
-    ilFileTypes: TImageList;
-    TabSheet1: TRzTabSheet;
-    rzsSplitterA: TRzSplitter;
-    RzPanel13: TRzPanel;
-    tvAuthors: TVirtualStringTree;
-    RzPanel16: TRzPanel;
-    Label19: TLabel;
-    tbClearEdAuthor: TRzToolButton;
-    edLocateAuthor: TRzEdit;
-    RzPanel15: TRzPanel;
-    RzPanel17: TRzPanel;
-    RzPanel18: TRzPanel;
-    lblAuthor: TRzDBLabel;
-    lblBooksTotalA: TRzLabel;
-    RzPanel23: TRzPanel;
-    tvBooksA: TVirtualStringTree;
-    ipnlAuthors: TMHLInfoPanel;
-    cpCoverA: TMHLCoverPanel;
-    pmHeaders: TPopupMenu;
-    N3: TMenuItem;
-    N4: TMenuItem;
-    N8: TMenuItem;
-    N10: TMenuItem;
-    N12: TMenuItem;
-    N13: TMenuItem;
-    N15: TMenuItem;
-    N21: TMenuItem;
-    N22: TMenuItem;
-    N25: TMenuItem;
-    N27: TMenuItem;
-    TabSheet2: TRzTabSheet;
-    rzsSplitterS: TRzSplitter;
-    RzPanel1: TRzPanel;
-    tvSeries: TVirtualStringTree;
-    RzPanel19: TRzPanel;
-    Label11: TLabel;
-    btnClearEdSeries: TRzToolButton;
-    edLocateSeries: TRzEdit;
-    RzPanel3: TRzPanel;
-    RzPanel4: TRzPanel;
-    RzPanel5: TRzPanel;
-    lblSeries: TRzDBLabel;
-    lblBooksTotalS: TRzLabel;
-    tvBooksS: TVirtualStringTree;
-    RichEdit1: TRichEdit;
-    ipnlSeries: TMHLInfoPanel;
-    cpCoverS: TMHLCoverPanel;
-    TabSheet3: TRzTabSheet;
-    rzsSplitterG: TRzSplitter;
-    RzPanel25: TRzPanel;
-    tvGenres: TVirtualStringTree;
-    RzPanel27: TRzPanel;
-    RzPanel28: TRzPanel;
-    tvBooksG: TVirtualStringTree;
-    RichEdit4: TRichEdit;
-    RzPanel26: TRzPanel;
-    lblBooksTotalG: TRzLabel;
-    lblGenreTitle: TRzLabel;
-    ipnlGenres: TMHLInfoPanel;
-    cpCoverG: TMHLCoverPanel;
-    btnClearSerach: TRzBitBtn;
-    ToolButton4: TToolButton;
-    ToolButton6: TToolButton;
-    TrayIcon: TTrayIcon;
-    pmTray: TPopupMenu;
-    N29: TMenuItem;
-    N32: TMenuItem;
-    N33: TMenuItem;
     TabSheet7: TRzTabSheet;
     tvDownloadList: TVirtualStringTree;
     RzPanel2: TRzPanel;
@@ -336,18 +349,11 @@ type
     lblDownloadState: TLabel;
     lblDnldAuthor: TLabel;
     lblDnldTitle: TLabel;
+    btnClearDownload: TRzBitBtn;
     RzPanel6: TRzPanel;
     btnPauseDownload: TRzBitBtn;
     btnStartDownload: TRzBitBtn;
-    pmDownloadList: TPopupMenu;
-    mi_dwnl_LocateAuthor: TMenuItem;
-    N35: TMenuItem;
-    mi_dwnl_Delete: TMenuItem;
-    btnClearDownload: TRzBitBtn;
-    ilToolBar_Disabled: TImageList;
-    N26: TMenuItem;
-    N34: TMenuItem;
-    N36: TMenuItem;
+    RzDBLabel1: TRzDBLabel;
 
     //
     // События формы
@@ -617,7 +623,7 @@ type
     procedure SetLangBarSize;
     procedure TheFirstRun;
     type
-      TView = (ByAuthorView, BySeriesView, ByGenreView, SearchView, FavoritesView, FilterView, DownloadView);
+      TView = (ByAuthorView, BySeriesView, ByGenreView, SearchView, GroupsView, FilterView, DownloadView);
 
     function GetActiveView: TView;
     property ActiveView: TView read GetActiveView;
@@ -1239,8 +1245,8 @@ const
     ByAuthorView,
     BySeriesView,
     ByGenreView,
+    GroupsView,
     SearchView,
-    FavoritesView,
     FilterView,
     DownloadView
     );
@@ -2254,7 +2260,7 @@ begin
                    Panel:= ipnlSearch;
                    Cover:= cpCoverSR;
                  end;
-    FavoritesView: begin
+    GroupsView: begin
                    Tree := tvBooksF;
                    Panel:= ipnlFavorites;
                    Cover:= cpCoverF;
@@ -2303,7 +2309,7 @@ begin
   InfoPanel.HideFileInfo := not (isOnlineCollection(DMUser.ActiveCollection.CollectionType) and not Data.Locale);
 
 
-  if ActiveView <> FavoritesView then
+  if ActiveView <> GroupsView then
     if (Folder = '') then
        InfoPanel.Folder := FCollectionRoot
      else
@@ -2566,7 +2572,7 @@ end;
 
 procedure TfrmMain.BtnFav_addClick(Sender: TObject);
 begin
-  if ActiveView = FavoritesView then
+  if ActiveView = GroupsView then
     miDelFavoritesClick(Sender)
   else
     miAddFavoritesClick(Sender);
@@ -2583,7 +2589,7 @@ var
 begin
   Screen.Cursor := crHourGlass;
 
-  if ActiveView = FavoritesView then
+  if ActiveView = GroupsView then
   begin
     MessageDlg(main_unable_to_copy, mtWarning, [mbOk], 0);
     Exit;
@@ -2803,7 +2809,7 @@ begin
     if ExtractFileExt(Panel.Folder) = ZIP_EXTENSION then
     begin
       //
-      if ActiveView = FavoritesView then
+      if ActiveView = GroupsView then
       begin
         I := DMUser.tblGrouppedBooksDatabaseID.Value;
         DMUser.tblBases.Locate('ID',I,[]);
@@ -3000,7 +3006,7 @@ begin
     BySeriesView: Tree := tvBooksS;
     ByGenreView: Tree := tvBooksG;
     SearchView: Tree := tvBooksSR;
-    FavoritesView: Tree := tvBooksF;
+    GroupsView: Tree := tvBooksF;
     FilterView: Tree := tvBooksFL;
   end;
 end;
@@ -3331,7 +3337,7 @@ var
 begin
   FUpdateFavorites := False;
 
-  if ActiveView = FavoritesView then
+  if ActiveView = GroupsView then
   begin
     MessageDlg('Для удаления книги перейдите ' + #13 + 'в соответствующую коллекцию', mtWarning, [mbOk], 0);
     Exit;
@@ -3503,7 +3509,7 @@ begin
   for I := 0 to High(BookIDList) do
   begin
 
-    if ActiveView = FavoritesView then
+    if ActiveView = GroupsView then
     begin
       DMUser.tblGrouppedBooks.Locate('ID',BookIDList[i].ID,[]);
       if DMUser.tblGrouppedBooksDataBaseId.Value <>
@@ -3538,7 +3544,7 @@ var
   Data: PBookData;
   Res: boolean;
 begin
-  if ActiveView = FavoritesView then
+  if ActiveView = GroupsView then
   begin
     MessageDlg('Редактирование книг из избранного невозможно.', mtWarning, [mbOk], 0);
     Exit;
@@ -3611,7 +3617,7 @@ var
   Author: TAuthorRecord;
   Genre: TGenreRecord;
 begin
-  if ActiveView = FavoritesView then
+  if ActiveView = GroupsView then
   begin
     MessageDlg('Редактирование книг из избранного невозможно.', mtWarning, [mbOk], 0);
     Exit;
@@ -3704,7 +3710,7 @@ var
   Tree: TVirtualStringTree;
   ALibrary: TMHLLibrary;
 begin
-  if ActiveView = FavoritesView then
+  if ActiveView = GroupsView then
   begin
     MessageDlg('Редактирование книг из избранного невозможно.', mtWarning, [mbOk], 0);
     Exit;
@@ -3762,7 +3768,7 @@ var
   Node: PVirtualNode;
   S: string;
 begin
-  if ActiveView = FavoritesView then
+  if ActiveView = GroupsView then
   begin
     MessageDlg('Редактирование книг из избранного невозможно.', mtWarning, [mbOk], 0);
     Exit;
@@ -3909,7 +3915,7 @@ begin
     exit;
   Data.Rate := (Sender as TMenuItem).Tag;
   BookTreeStatus := bsBusy;
-  if GetActiveView <> FavoritesView then
+  if GetActiveView <> GroupsView then
   begin
     if not DMUser.tblRates.Locate('ID', Data.ID, []) then
     begin
@@ -3929,7 +3935,7 @@ begin
     //
     //  Синхронизация с избранным
     //
-    if (GetActiveView <> FavoritesView ) and
+    if (GetActiveView <> GroupsView ) and
        (DMUser.tblGrouppedBooks.Locate('InnerId;DataBaseID',
                                   VarArrayOf([Data.ID,DMUser.ActiveCollection.ID]),[]))
     then
@@ -4340,7 +4346,7 @@ begin
     
   Data.Rate := 0;
   BookTreeStatus := bsBusy;
-  if GetActiveView <> FavoritesView then
+  if GetActiveView <> GroupsView then
   begin
     if DMUser.tblRates.Locate('ID;DataBaseID',
           VarArrayOf([Data.ID,DMUser.ActiveCollection.ID]), [])
@@ -4420,7 +4426,7 @@ begin
 
   Screen.Cursor := crHourGlass;
   try
-    if ActiveView = FavoritesView then
+    if ActiveView = GroupsView then
     begin
       I := DMUser.tblGrouppedBooksDatabaseID.Value;
       if I <> Settings.ActiveCollection then
@@ -4772,7 +4778,7 @@ begin
 
 
   case ActiveView of
-    FavoritesView:begin
+    GroupsView:begin
                     miGotoAuthor.Visible := True;
                     miDelFavorites.Visible := True;
                     miAddFavorites.Visible := False;
