@@ -56,7 +56,7 @@ uses
   frm_main,
   SysUtils,
   DateUtils,
-  dm_main,
+  dm_collection,
   IdStack,
   Windows;
 
@@ -163,7 +163,7 @@ begin
     if Not Ferror then
     begin
       FCurrentData.State := dsOK ;
-      DMMain.SetLocalStatus(FID,True);
+      DMCollection.SetLocalStatus(FID,True);
     end
     else
       FCurrentData.State := dsError;

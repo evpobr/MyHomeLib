@@ -1,9 +1,9 @@
-object DMMain: TDMMain
+object DMCollection: TDMCollection
   OldCreateOrder = False
   Height = 567
   Width = 565
-  object DBMain: TABSDatabase
-    CurrentVersion = '6.02 '
+  object DBCollection: TABSDatabase
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     Exclusive = True
     MaxConnections = 5
@@ -24,7 +24,7 @@ object DMMain: TDMMain
     Top = 208
   end
   object tblBooksA: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -203,7 +203,7 @@ object DMMain: TDMMain
     end
   end
   object tblBooksG: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -397,7 +397,7 @@ object DMMain: TDMMain
     end
   end
   object tblGenres: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -482,14 +482,14 @@ object DMMain: TDMMain
     Top = 216
   end
   object tblAuthorsS: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
     TableName = 'Authors'
     Exclusive = False
     Left = 208
-    Top = 200
+    Top = 264
     object tblAuthorsSID: TAutoIncField
       FieldName = 'ID'
     end
@@ -509,7 +509,7 @@ object DMMain: TDMMain
     end
   end
   object tblBooksS: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -620,7 +620,7 @@ object DMMain: TDMMain
     MasterFields = 'ID'
     MasterSource = dsSeries
     Left = 208
-    Top = 144
+    Top = 208
     object tblBooksSID: TAutoIncField
       FieldName = 'ID'
     end
@@ -699,7 +699,7 @@ object DMMain: TDMMain
     end
   end
   object tblSeries: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -776,15 +776,15 @@ object DMMain: TDMMain
   object dsAuthorsS: TDataSource
     DataSet = tblAuthorsS
     Left = 272
-    Top = 144
+    Top = 208
   end
   object dsBooksS: TDataSource
     DataSet = tblBooksS
     Left = 272
-    Top = 200
+    Top = 264
   end
   object tblAuthors: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -817,7 +817,7 @@ object DMMain: TDMMain
     end
   end
   object tblBooks_Genre_List: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -904,7 +904,7 @@ object DMMain: TDMMain
     Top = 424
   end
   object tblGenre_List: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -988,7 +988,7 @@ object DMMain: TDMMain
     Top = 152
   end
   object tblAuthor_List: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1061,7 +1061,7 @@ object DMMain: TDMMain
     Top = 152
   end
   object tblBooks: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1253,7 +1253,7 @@ object DMMain: TDMMain
     end
   end
   object tblSeriesA: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1328,7 +1328,7 @@ object DMMain: TDMMain
     Top = 352
   end
   object tblBooks_Genres: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1357,7 +1357,7 @@ object DMMain: TDMMain
     end
   end
   object tblAuthor_Detail: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1391,7 +1391,7 @@ object DMMain: TDMMain
     end
   end
   object tblAuthor_Master: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1467,7 +1467,7 @@ object DMMain: TDMMain
     Top = 424
   end
   object tblSeriesB: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1534,6 +1534,72 @@ object DMMain: TDMMain
     object WideStringField2: TWideStringField
       FieldName = 'GenreCode'
       Required = True
+    end
+  end
+  object dsSeries_List: TDataSource
+    DataSet = tblSeries_List
+    Left = 280
+    Top = 152
+  end
+  object tblSeries_List: TABSTable
+    CurrentVersion = '6.01 '
+    DatabaseName = 'MyLib'
+    InMemory = False
+    ReadOnly = False
+    StoreDefs = True
+    IndexDefs = <
+      item
+        Name = 'ID_Index'
+        Fields = 'ID'
+        Options = [ixPrimary, ixUnique]
+      end
+      item
+        Name = 'BookIndex'
+        Fields = 'BookID'
+      end
+      item
+        Name = 'SeriesIndex'
+        CaseInsFields = 'SerID;Title'
+        Fields = 'SerID;Title'
+        Options = [ixCaseInsensitive]
+      end>
+    IndexFieldNames = 'SerID'
+    FieldDefs = <
+      item
+        Name = 'ID'
+        DataType = ftAutoInc
+      end
+      item
+        Name = 'SerID'
+        DataType = ftInteger
+      end
+      item
+        Name = 'BookID'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Title'
+        DataType = ftWideString
+        Size = 10
+      end>
+    TableName = 'SeriesList'
+    Exclusive = False
+    MasterFields = 'ID'
+    MasterSource = dsSeries
+    Left = 208
+    Top = 152
+    object tblSeries_ListID: TAutoIncField
+      FieldName = 'ID'
+    end
+    object tblSeries_ListSerID: TIntegerField
+      FieldName = 'SerID'
+    end
+    object tblSeries_ListBookID: TIntegerField
+      FieldName = 'BookID'
+    end
+    object tblSeries_ListTitle: TWideStringField
+      FieldName = 'Title'
+      Size = 10
     end
   end
 end

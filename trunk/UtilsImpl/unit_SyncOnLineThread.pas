@@ -33,7 +33,7 @@ implementation
 
 uses
   dm_user,
-  dm_main,
+  dm_collection,
   unit_globals,
   unit_database,
   unit_Consts,
@@ -51,13 +51,13 @@ var
 
   local: boolean;
 begin
-  totalBooks := DMMain.tblBooks.RecordCount;
+  totalBooks := DMCollection.tblBooks.RecordCount;
   processedBooks := 0;
   Root := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
 
   try
-    DMMain.tblBooks.First;
-    while not DMMain.tblBooks.Eof do
+    DMCollection.tblBooks.First;
+    while not DMCollection.tblBooks.Eof do
     begin
       if Canceled then
           Exit;
@@ -67,35 +67,35 @@ begin
       //
       { TODO -oAlex : Через какое-то время переименовывание можно будет убрать }
     try
-      IDStr := DMMain.tblBooksLibID.AsString + ' ';
-      TmpFolder := DMMain.tblBooksFolder.Value;
+      IDStr := DMCollection.tblBooksLibID.AsString + ' ';
+      TmpFolder := DMCollection.tblBooksFolder.Value;
       StrReplace(IDStr, '', TmpFolder);              // удаляем Id из имени
       if FileExists(Root + TmpFolder)  then
       begin
           // если есть, переименовываем и результат заносим в базу
-        DMMain.tblBooks.Edit;
-        DMMain.tblBooksLocal.Value := RenameFile(Root + TmpFolder, Root + DMMain.tblBooksFolder.Value);
-        DMMain.tblBooks.Post;
+        DMCollection.tblBooks.Edit;
+        DMCollection.tblBooksLocal.Value := RenameFile(Root + TmpFolder, Root + DMCollection.tblBooksFolder.Value);
+        DMCollection.tblBooks.Post;
       end;
       //
       //  Проверяем был ли файл закачан ранее и ставим отметку в базу
       //
 
 
-      Local := FileExists(Root + DMMain.tblBooksFolder.Value);
+      Local := FileExists(Root + DMCollection.tblBooksFolder.Value);
 
-      if DMMain.tblBooksLocal.Value <> local then
+      if DMCollection.tblBooksLocal.Value <> local then
       begin
-        DMMain.tblBooks.Edit;
-        DMMain.tblBooksLocal.Value := Local;
-        DMMain.tblBooks.Post;
+        DMCollection.tblBooks.Edit;
+        DMCollection.tblBooksLocal.Value := Local;
+        DMCollection.tblBooks.Post;
       end;
     except
       on E:Exception do
         Application.MessageBox(PChar('Какие-то проблемы с книгой ' + TmpFolder),'',MB_OK);
     end;
 
-      DMMain.tblBooks.Next;
+      DMCollection.tblBooks.Next;
 
       Inc(processedBooks);
       if (processedBooks mod ProcessedItemThreshold) = 0 then

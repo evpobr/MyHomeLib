@@ -1,4 +1,4 @@
-unit dm_main;
+unit dm_collection;
 
 interface
 
@@ -6,8 +6,8 @@ uses
   SysUtils, Classes, ABSMain, DB, unit_globals;
 
 type
-  TDMMain = class(TDataModule)
-    DBMain: TABSDatabase;
+  TDMCollection = class(TDataModule)
+    DBCollection: TABSDatabase;
     dsAuthors: TDataSource;
     dsBooksA: TDataSource;
     tblBooksA: TABSTable;
@@ -169,6 +169,12 @@ type
     WideStringField1: TWideStringField;
     WideStringField2: TWideStringField;
     tblBooksSeries: TWideStringField;
+    dsSeries_List: TDataSource;
+    tblSeries_List: TABSTable;
+    tblSeries_ListID: TAutoIncField;
+    tblSeries_ListSerID: TIntegerField;
+    tblSeries_ListBookID: TIntegerField;
+    tblSeries_ListTitle: TWideStringField;
   private
     FActiveTable: TAbsTable;
     { Private declarations }
@@ -196,7 +202,7 @@ type
   end;
 
 var
-  DMMain: TDMMain;
+  DMCollection: TDMCollection;
 
 implementation
 
@@ -206,19 +212,19 @@ uses dm_user, frm_main, StrUtils, unit_Consts;
 
 { TDMMain }
 
-procedure TDMMain.FieldByName(AID: integer; AField: String; out ARes: String);
+procedure TDMCollection.FieldByName(AID: integer; AField: String; out ARes: String);
 begin
   if AID<> 0 then FActiveTable.Locate('ID', AID, []);
   ARes := FActiveTable.FieldByName(AField).AsString;
 end;
 
-procedure TDMMain.FieldByName(AID: integer; AField: String; out ARes: integer);
+procedure TDMCollection.FieldByName(AID: integer; AField: String; out ARes: integer);
 begin
   if AID<> 0 then FActiveTable.Locate('ID', AID, []);
   ARes := FActiveTable.FieldByName(AField).AsInteger;
 end;
 
-procedure TDMMain.Clear;
+procedure TDMCollection.Clear;
 begin
   SetTableState(False);
 
@@ -239,13 +245,13 @@ begin
   SetTableState(True);
 end;
 
-procedure TDMMain.FieldByName(AID: integer; AField: String; out Ares: boolean);
+procedure TDMCollection.FieldByName(AID: integer; AField: String; out Ares: boolean);
 begin
   if AID <> 0 then FActiveTable.Locate('ID', AID, []);
   ARes := FActiveTable.FieldByName(AField).AsBoolean;
 end;
 
-procedure TDMMain.GetBookFileName(ID: integer; out AFile:string; out AFolder: string; out ANo:integer);
+procedure TDMCollection.GetBookFileName(ID: integer; out AFile:string; out AFolder: string; out ANo:integer);
 begin
   FActiveTable.Locate('ID', ID, []);
   AFile := FActiveTable.FieldByName('FileName').AsString + FActiveTable.FieldByName('Ext').AsString;
@@ -255,7 +261,7 @@ end;
 
 
 
-function TDMMain.GetBookGenres(BookID: Integer; FirstOnly: boolean): String;
+function TDMCollection.GetBookGenres(BookID: Integer; FirstOnly: boolean): String;
 var
   s: String;
   i: integer;
@@ -274,7 +280,7 @@ begin
   Result := s;
 end;
 
-procedure TDMMain.GetCurrentBook(var R: TBookRecord);
+procedure TDMCollection.GetCurrentBook(var R: TBookRecord);
 var
   BookID: Integer;
 begin
@@ -283,8 +289,8 @@ begin
   R.Clear;
 
   R.Title := tblBooksTitle.Value;
-  R.Series := IfThen(tblBooksSerID.IsNull, NO_SERIES_TITLE, tblBooksSeries.Value);
-  R.SeqNumber := tblBooksSeqNumber.Value;
+//  R.Series := IfThen(tblBooksSerID.IsNull, NO_SERIES_TITLE, tblBooksSeries.Value);
+//  R.SeqNumber := tblBooksSeqNumber.Value;
   R.Folder := tblBooksFolder.Value;
   R.FileName := tblBooksFileName.Value;
   R.FileExt := tblBooksExt.Value;
@@ -328,7 +334,7 @@ begin
   end;
 end;
 
-procedure TDMMain.GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
+procedure TDMCollection.GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
 var
   FilterStateA: boolean;
   FilterStringA: string;
@@ -343,40 +349,40 @@ begin
    *
    ****************************************************************************)
 
-  BM1 := DMMain.tblAuthors.GetBookmark;
+  BM1 := DMCollection.tblAuthors.GetBookmark;
   try
-    FilterStateA := DMMain.tblAuthors.Filtered;
-    FilterStringA := DMMain.tblAuthors.Filter;
+    FilterStateA := DMCollection.tblAuthors.Filtered;
+    FilterStringA := DMCollection.tblAuthors.Filter;
 
-    FilterStateS := DMMain.tblSeries.Filtered;
+    FilterStateS := DMCollection.tblSeries.Filtered;
 
 
-    DMMain.tblAuthors.Filtered := False;
-    DMMain.tblSeries.Filtered  := False;
+    DMCollection.tblAuthors.Filtered := False;
+    DMCollection.tblSeries.Filtered  := False;
 
-    AuthorsCount := DMMain.tblAuthors.RecordCount;
-    BooksCount := DMMain.tblBooks.RecordCount;
-    SeriesCount := DMMain.tblSeries.RecordCount;
+    AuthorsCount := DMCollection.tblAuthors.RecordCount;
+    BooksCount := DMCollection.tblBooks.RecordCount;
+    SeriesCount := DMCollection.tblSeries.RecordCount;
 
-    DMMain.tblAuthors.Filter := FilterStringA;
-    DMMain.tblAuthors.Filtered := FilterStateA;
-    DMMain.tblSeries.Filtered  := FilterStateS;
+    DMCollection.tblAuthors.Filter := FilterStringA;
+    DMCollection.tblAuthors.Filtered := FilterStateA;
+    DMCollection.tblSeries.Filtered  := FilterStateS;
 
-    DMMain.tblAuthors.GotoBookmark(BM1);
+    DMCollection.tblAuthors.GotoBookmark(BM1);
   finally
-    DMMain.tblAuthors.FreeBookmark(BM1);
+    DMCollection.tblAuthors.FreeBookmark(BM1);
   end;
 end;
 
-procedure TDMMain.SetActiveTable(Tag: integer);
+procedure TDMCollection.SetActiveTable(Tag: integer);
 begin
   if Tag = PAGE_FAVORITES then
-    FActiveTable := DMUser.tblFavorites
+    FActiveTable := DMUser.tblGrouppedBooks
   else
     FActiveTable := tblBooks;
 end;
 
-procedure TDMMain.GetBookFolder(ID: integer; out AFolder: String);
+procedure TDMCollection.GetBookFolder(ID: integer; out AFolder: String);
 begin
   FActiveTable.Locate('ID', ID, []);
   if FActiveTable.Name = 'tblBooks' then
@@ -385,7 +391,7 @@ begin
     AFolder := FActiveTable.FieldByName('Folder').AsString;
 end;
 
-procedure TDMMain.SetLocalStatus(AId: integer; AState: boolean);
+procedure TDMCollection.SetLocalStatus(AId: integer; AState: boolean);
 begin
   if Aid <> 0 then
   if  FActiveTable.Locate('ID',AId,[]) then
@@ -396,7 +402,7 @@ begin
   end;
 end;
 
-procedure TDMMain.SetTableState(State: boolean);
+procedure TDMCollection.SetTableState(State: boolean);
 begin
   tblAuthors.Active := State;
   tblAuthor_List.Active := State;

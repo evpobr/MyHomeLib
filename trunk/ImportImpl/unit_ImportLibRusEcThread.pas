@@ -134,12 +134,12 @@ begin
       //
       // Серия
       //
-      R.Series := slParams[3];
+//      R.Series := slParams[3];
 
       //
       // Номер внутри серии
       //
-      R.SeqNumber := StrToIntDef(slParams[4], 0);
+//      R.SeqNumber := StrToIntDef(slParams[4], 0);
 
       //
       // Имя файла, размер, ????, признак удаленной книги

@@ -61,6 +61,7 @@
 						<Parameters Name="UseLauncher">False</Parameters>
 						<Parameters Name="LoadAllSymbols">True</Parameters>
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+						<Parameters Name="RunParams">uselocaldata</Parameters>
 					</Parameters>
 					<VersionInfo>
 						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
@@ -109,10 +110,6 @@
 			</DelphiCompile>
 			<DCCReference Include="Forms\frm_main.pas">
 				<Form>frmMain</Form>
-			</DCCReference>
-			<DCCReference Include="DataModules\dm_main.pas">
-				<Form>DMMain</Form>
-				<DesignClass>TDataModule</DesignClass>
 			</DCCReference>
 			<DCCReference Include="DataModules\dm_user.pas">
 				<Form>DMUser</Form>
@@ -266,6 +263,10 @@
 			<DCCReference Include="Units\unit_Columns.pas"/>
 			<DCCReference Include="UtilsImpl\StoHtmlHelp.pas"/>
 			<DCCReference Include="DwnldImpl\unit_DownloadManagerThread.pas"/>
+			<DCCReference Include="DataModules\dm_collection.pas">
+				<Form>DMCollection</Form>
+				<DesignClass>TDataModule</DesignClass>
+			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
