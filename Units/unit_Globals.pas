@@ -202,11 +202,6 @@ type
     Alias: String;
   end;
 
-  TSeriesRecord = record
-    Title: String;
-       No: Integer;
-  end;
-
   TAuthorRecord = record
     FFirstName: String;
     FMiddleName: String;
@@ -227,6 +222,7 @@ type
 
   TBookRecord = record
     Title: String;
+    Series: String;
 
     Folder: String;
     FileName: String;
@@ -234,11 +230,11 @@ type
 
     Authors: array of TAuthorRecord;
     Genres: array of TGenreRecord;
-    Series: array of TSeriesRecord;
 
     Code: Integer;
     Size: Integer;
     InsideNo: Integer;
+    SeqNumber: Integer;
     LibID: Integer;
 
     Deleted: Boolean;
@@ -258,11 +254,6 @@ type
     procedure AddGenre(const GenreCode: String; const GenreFb2Code: String; const Alias: String);
     function GetGenreCount: Integer;
     property GenreCount: Integer read GetGenreCount;
-
-    procedure ClearSeries;
-    function GetSeriesCount: Integer;
-    procedure AddSeries(const Title: string; const No: integer);
-    property SeriesCount: integer read GetSeriesCount;
   end;
 
   PFileData = ^TFileData;
@@ -640,6 +631,7 @@ end;
 procedure TBookRecord.Clear;
 begin
   Title := '';
+  Series := '';
 
   Folder := '';
   FileName := '';
@@ -647,12 +639,11 @@ begin
 
   ClearAuthors;
   ClearGenres;
-  ClearSeries;
 
   Code := 0;
   Size := 0;
   InsideNo := 0;
-
+  SeqNumber := 0;
   LibID := 0;
 
   Deleted := False;
@@ -669,12 +660,8 @@ var
 begin
   if Title = '' then
     Title := BOOK_NO_TITLE;
-
-  for i := 0 to SeriesCount - 1 do
-    if Series[i].Title = '' then
-      Series[i].Title := NO_SERIES_TITLE;
-  if SeriesCount = 0 then
-    AddSeries(NO_SERIES_TITLE,-1);
+  if Series = '' then
+    Series := NO_SERIES_TITLE;
 
   for i := 0 to AuthorCount - 1 do
     if Authors[i].LastName = '' then
@@ -726,11 +713,6 @@ begin
   SetLength(Genres, 0);
 end;
 
-procedure TBookRecord.ClearSeries;
-begin
-  SetLength(Series, 0);
-end;
-
 procedure TBookRecord.AddGenre(const GenreCode: String; const GenreFb2Code: String; const Alias: String);
 var
   i: Integer;
@@ -743,24 +725,9 @@ begin
   Genres[i].Alias := Alias;
 end;
 
-procedure TBookRecord.AddSeries(const Title: string; const No: integer);
-var
-  i: integer;
-begin
-  i := SeriesCount;
-  SetLength(Series, i + 1);
-  Series[i].Title := Title;
-  Series[i].No := No;
-end;
-
 function TBookRecord.GetGenreCount: Integer;
 begin
   Result := Length(Genres);
-end;
-
-function TBookRecord.GetSeriesCount: Integer;
-begin
-  Result := Length(Series);
 end;
 
 function GetFullBookPath(const Table:TAbsTable; const FCollectionRoot:string):string;

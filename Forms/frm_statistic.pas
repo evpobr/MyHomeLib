@@ -45,7 +45,7 @@ var
 
 implementation
 
-uses dm_user, unit_Settings, unit_Consts, dm_collection;
+uses dm_user, unit_Settings, unit_Consts, dm_main;
 
 {$R *.dfm}
 
@@ -63,7 +63,7 @@ begin
     lblVer.Caption := IntToStr(DMUser.ActiveCollection.Version);
   lblDate.Caption := DateToStr(DMUser.ActiveCollection.CreationDate);
 
-  DMCollection.GetStatistics(AuthorsCount, BooksCount, SeriesCount);
+  DMMain.GetStatistics(AuthorsCount, BooksCount, SeriesCount);
   lblAuthors.Caption := IntToStr(AuthorsCount);
   lblBooks.Caption := IntToStr(BooksCount);
   lblSeries.Caption := IntToStr(SeriesCount);

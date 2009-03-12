@@ -62,7 +62,7 @@ implementation
 
 uses
   Windows,
-  dm_collection,
+  dm_main,
   dm_user,
   unit_database,
   unit_Consts,
@@ -115,7 +115,7 @@ begin
 
     StrReplace('%id', Trim(FTable.FieldByName('LibID').AsString), FileName);
 
-    StrReplace('%g', Trim(DMCollection.GetBookGenres(FTable.FieldByName('ID').AsInteger,True)), FileName);
+    StrReplace('%g', Trim(DMMain.GetBookGenres(FTable.FieldByName('ID').AsInteger,True)), FileName);
 
     if FTable.FieldByName('Series').AsString <> NO_SERIES_TITLE then
       StrReplace('%s', Trim(FTable.FieldByName('Series').AsString), FileName)
@@ -146,7 +146,7 @@ begin
 
     StrReplace('%t', trim(FTable.FieldByName('Title').AsString), Folder);
 
-    StrReplace('%g', Trim(DMCollection.GetBookGenres(FTable.FieldByName('ID').AsInteger,True)), Folder);
+    StrReplace('%g', Trim(DMMain.GetBookGenres(FTable.FieldByName('ID').AsInteger,True)), Folder);
 
     if FTable.FieldByName('Series').AsString <> NO_SERIES_TITLE then
       StrReplace('%s', Trim(FTable.FieldByName('Series').AsString), Folder)
@@ -166,7 +166,7 @@ begin
       Folder := Transliterate(Folder);
       FileName := Transliterate(FileName);
     end;
-    FileName := FileName + DMCollection.tblBooks['Ext'];
+    FileName := FileName + DMMain.tblBooks['Ext'];
   end;
 
   //
@@ -181,7 +181,7 @@ begin
     end;
 
     InsideFileName := FullName + ' - ' + FTable.FieldByName('Title').AsString;
-    InsideFileName := Trim(CheckSymbols(InsideFileName)) + DMCollection.tblBooks['Ext'];
+    InsideFileName := Trim(CheckSymbols(InsideFileName)) + DMMain.tblBooks['Ext'];
 
     fs := TMemoryStream.Create;
     try

@@ -70,13 +70,7 @@ resourcestring
 
 implementation
 
-uses
-  DateUtils,
-  dm_collection,
-  dm_user,
-  unit_Consts,
-  unit_Settings,
-  unit_WorkerThread,
+uses DateUtils, dm_main, dm_user, unit_Consts, unit_Settings, unit_WorkerThread,
   unit_Database;
 
 { TDownloadBooksThread }
@@ -268,9 +262,9 @@ begin
 
       Teletype(Format(rstrRemovingOldCollection, [CollList[i].Name]),tsInfo);
       // удаляем старый файл коллекции
-      DMCollection.DBCollection.Close;
-      DMCollection.DBCollection.DatabaseFileName := DBFileName;
-      DMCollection.DBCollection.DeleteDatabase;
+      DMMain.DBMain.Close;
+      DMMain.DBMain.DatabaseFileName := DBFileName;
+      DMMain.DBMain.DeleteDatabase;
 
       // создаем его заново
       Teletype(Format(rstrCreatingCollection, [CollList[i].Name]),tsInfo);

@@ -109,7 +109,7 @@ object frmAddnonfb2: TfrmAddnonfb2
         item
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring, coSmartResize, coAllowFocus]
           Position = 3
-          Width = 62
+          Width = 41
         end>
     end
     object RzPanel3: TRzPanel
@@ -529,7 +529,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           Top = 20
           Width = 307
           Height = 21
-          ItemHeight = 0
+          ItemHeight = 13
           TabOrder = 1
         end
       end

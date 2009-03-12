@@ -88,7 +88,7 @@ implementation
 uses
   Windows,
   dm_user,
-  dm_collection,
+  dm_main,
   unit_database,
   unit_Consts,
   unit_Settings,
@@ -220,11 +220,11 @@ var
 begin
   Result := False;
 
-  DMCollection.GetBookFolder(ID,Folder);
+  DMMain.GetBookFolder(ID,Folder);
 
   if FileExists(Folder) then
   begin
-    DMCollection.SetLocalStatus(ID,True);
+    DMMain.SetLocalStatus(ID,True);
     Result := True;
     Exit;
   end
@@ -279,7 +279,7 @@ begin
             begin
               FS.SaveToFile(Folder);
 
-              DMCollection.SetLocalStatus(ID,True);
+              DMMain.SetLocalStatus(ID,True);
 
               Result := True;
             end;
@@ -335,7 +335,7 @@ begin
 
   Template := 'http://lib.rus.ec/b/%ID%/download'; { TODO -oAlex : Заглушка! }
 
-  DMCollection.FieldByName(0,'LibId',S);
+  DMMain.FieldByName(0,'LibId',S);
   StrReplace('%ID%',S,Template);
   Result := Template;
 end;

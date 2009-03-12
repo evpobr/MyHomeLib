@@ -24,6 +24,7 @@ program MyhomeLib;
 uses
   Forms,
   frm_main in 'Forms\frm_main.pas' {frmMain},
+  dm_main in 'DataModules\dm_main.pas' {DMMain: TDataModule},
   dm_user in 'DataModules\dm_user.pas' {DMUser: TDataModule},
   unit_Database in 'Units\unit_Database.pas',
   unit_Globals in 'Units\unit_Globals.pas',
@@ -96,8 +97,7 @@ uses
   frm_DownloadProgressForm in 'DwnldImpl\frm_DownloadProgressForm.pas' {DownloadProgressForm},
   unit_Columns in 'Units\unit_Columns.pas',
   StoHtmlHelp in 'UtilsImpl\StoHtmlHelp.pas',
-  unit_DownloadManagerThread in 'DwnldImpl\unit_DownloadManagerThread.pas',
-  dm_collection in 'DataModules\dm_collection.pas' {DMCollection: TDataModule};
+  unit_DownloadManagerThread in 'DwnldImpl\unit_DownloadManagerThread.pas';
 
 {$R *.res}
 
@@ -117,9 +117,8 @@ begin
     frmSplash.Show;   // Display the splash screen
     frmSplash.Update; // Update the splash screen to ensure it gets drawn
 
-  Application.CreateForm(TDMCollection, DMCollection);
+    Application.CreateForm(TDMMain, DMMain);
   Application.CreateForm(TDMUser, DMUser);
-
   Application.CreateForm(TfrmMain, frmMain);
   Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
   Application.CreateForm(TfrmEditBookInfo, frmEditBookInfo);
