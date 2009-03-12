@@ -94,6 +94,9 @@ begin
 //      FWorkCount := FS.Size;
 //    end;
     try
+
+      SetProxySettings(FidHTTP);
+
       FidHTTP.Get(FCurrentURL, FS);
 
       if FCanceled then

@@ -820,8 +820,9 @@ begin
     ProxyPort := Settings.ProxyPort;
     ProxyUsername := Settings.ProxyUsername;
     ProxyPassword := Settings.ProxyPassword;
-  end;
 
+    BasicAuthentication := True;
+  end;
 end;
 
 function CheckLibVersion(ALocalVersion: Integer; out ARemoteVersion: Integer): Boolean;
