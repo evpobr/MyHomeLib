@@ -3,7 +3,11 @@ object DMUser: TDMUser
   Height = 377
   Width = 463
   object DBUser: TABSDatabase
-    CurrentVersion = '6.01 '
+    Connected = True
+    CurrentVersion = '6.02 '
+    DatabaseFileName = 
+      'D:\My Docs\RAD Studio\Projects\MyHomeLib 1.5\Debug\Bin\Data\user' +
+      '.dbsx'
     DatabaseName = 'DBUser'
     Exclusive = False
     MaxConnections = 5
@@ -18,7 +22,7 @@ object DMUser: TDMUser
     Top = 256
   end
   object tblBases: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'DBUser'
     InMemory = False
     ReadOnly = False
@@ -70,7 +74,7 @@ object DMUser: TDMUser
     end
   end
   object tblRates: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'DBUser'
     InMemory = False
     ReadOnly = False
@@ -130,7 +134,7 @@ object DMUser: TDMUser
     Top = 192
   end
   object tblGrouppedBooks: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'DBUser'
     InMemory = False
     ReadOnly = False
@@ -1018,8 +1022,23 @@ object DMUser: TDMUser
       FFC003FFFFFFFFFFFFC003FF0000000000000000000000000000000000000000
       000000000000}
   end
+  object dsGroupList: TDataSource
+    DataSet = tblGroupList
+    Left = 216
+    Top = 184
+  end
+  object tblFinished: TABSTable
+    CurrentVersion = '6.02 '
+    DatabaseName = 'DBUser'
+    InMemory = False
+    ReadOnly = False
+    TableName = 'Finished'
+    Exclusive = False
+    Left = 320
+    Top = 120
+  end
   object tblGroupList: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'DBUser'
     InMemory = False
     ReadOnly = False
@@ -1044,20 +1063,5 @@ object DMUser: TDMUser
     object tblGroupListIcon: TBlobField
       FieldName = 'Icon'
     end
-  end
-  object dsGroupList: TDataSource
-    DataSet = tblGroupList
-    Left = 216
-    Top = 184
-  end
-  object tblFinished: TABSTable
-    CurrentVersion = '6.01 '
-    DatabaseName = 'DBUser'
-    InMemory = False
-    ReadOnly = False
-    TableName = 'Finished'
-    Exclusive = False
-    Left = 320
-    Top = 120
   end
 end

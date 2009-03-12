@@ -3,7 +3,7 @@ object DMCollection: TDMCollection
   Height = 567
   Width = 565
   object DBCollection: TABSDatabase
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     Exclusive = True
     MaxConnections = 5
@@ -14,7 +14,7 @@ object DMCollection: TDMCollection
     Top = 8
   end
   object dsAuthors: TDataSource
-    DataSet = tblAuthors
+    DataSet = DMUser.tblGroupList
     Left = 96
     Top = 88
   end
@@ -24,7 +24,7 @@ object DMCollection: TDMCollection
     Top = 208
   end
   object tblBooksA: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -203,7 +203,7 @@ object DMCollection: TDMCollection
     end
   end
   object tblBooksG: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -397,7 +397,7 @@ object DMCollection: TDMCollection
     end
   end
   object tblGenres: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -482,7 +482,7 @@ object DMCollection: TDMCollection
     Top = 216
   end
   object tblAuthorsS: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -509,7 +509,7 @@ object DMCollection: TDMCollection
     end
   end
   object tblBooksS: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -699,7 +699,7 @@ object DMCollection: TDMCollection
     end
   end
   object tblSeries: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -784,7 +784,7 @@ object DMCollection: TDMCollection
     Top = 264
   end
   object tblAuthors: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -817,7 +817,7 @@ object DMCollection: TDMCollection
     end
   end
   object tblBooks_Genre_List: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -904,7 +904,7 @@ object DMCollection: TDMCollection
     Top = 424
   end
   object tblGenre_List: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -988,7 +988,7 @@ object DMCollection: TDMCollection
     Top = 152
   end
   object tblAuthor_List: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1061,7 +1061,7 @@ object DMCollection: TDMCollection
     Top = 152
   end
   object tblBooks: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1253,7 +1253,7 @@ object DMCollection: TDMCollection
     end
   end
   object tblSeriesA: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1328,7 +1328,7 @@ object DMCollection: TDMCollection
     Top = 352
   end
   object tblBooks_Genres: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1357,7 +1357,7 @@ object DMCollection: TDMCollection
     end
   end
   object tblAuthor_Detail: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1391,7 +1391,7 @@ object DMCollection: TDMCollection
     end
   end
   object tblAuthor_Master: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1467,7 +1467,7 @@ object DMCollection: TDMCollection
     Top = 424
   end
   object tblSeriesB: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1542,7 +1542,7 @@ object DMCollection: TDMCollection
     Top = 152
   end
   object tblSeries_List: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False

@@ -49,14 +49,8 @@ type
     dsGroupedBooks: TDataSource;
     SeverityImages: TImageList;
     SeverityImagesBig: TImageList;
-    tblGroupList: TABSTable;
     dsGroupList: TDataSource;
     tblFinished: TABSTable;
-    tblGroupListID: TAutoIncField;
-    tblGroupListName: TWideStringField;
-    tblGroupListAllowDelete: TBooleanField;
-    tblGroupListNotes: TMemoField;
-    tblGroupListIcon: TBlobField;
     tblGrouppedBooksGroupID: TIntegerField;
     tblGrouppedBooksInnerID: TAutoIncField;
     tblGrouppedBooksID: TIntegerField;
@@ -79,6 +73,12 @@ type
     tblGrouppedBooksGenres: TWideStringField;
     tblGrouppedBooksSeries: TWideStringField;
     tblGrouppedBooksRate: TIntegerField;
+    tblGroupList: TABSTable;
+    tblGroupListID: TAutoIncField;
+    tblGroupListName: TWideStringField;
+    tblGroupListAllowDelete: TBooleanField;
+    tblGroupListNotes: TMemoField;
+    tblGroupListIcon: TBlobField;
 
   private
     FCollection: TMHLCollection;
