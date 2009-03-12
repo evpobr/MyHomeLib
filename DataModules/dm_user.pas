@@ -45,39 +45,43 @@ type
     tblRatesDataBaseID: TIntegerField;
     tblRatesRate: TIntegerField;
     tblRatesDate: TDateField;
-
-    tblFavorites: TABSTable;
-    tblFavoritesID: TAutoIncField;
-    tblFavoritesInnerID: TIntegerField;
-    tblFavoritesSerID: TIntegerField;
-    tblFavoritesSeqNumber: TSmallintField;
-    tblFavoritesDatabaseID: TIntegerField;
-    tblFavoritesLibID: TIntegerField;
-    tblFavoritesDate: TDateField;
-    tblFavoritesTitle: TWideStringField;
-    tblFavoritesFullName: TWideStringField;
-    tblFavoritesInsideNo: TIntegerField;
-    tblFavoritesFileName: TWideStringField;
-    tblFavoritesExt: TWideStringField;
-    tblFavoritesSize: TIntegerField;
-    tblFavoritesCode: TSmallintField;
-    tblFavoritesFolder: TWideStringField;
-    tblFavoritesDiscID: TIntegerField;
-    tblFavoritesLocal: TBooleanField;
-    tblFavoritesDeleted: TBooleanField;
-    tblFavoritesGenres: TWideStringField;
-    tblFavoritesSeries: TWideStringField;
-    tblFavoritesRate: TIntegerField;
-
-    dsFavorites: TDataSource;
-
-    qImport: TABSQuery;
+    tblGrouppedBooks: TABSTable;
+    dsGroupedBooks: TDataSource;
     SeverityImages: TImageList;
     SeverityImagesBig: TImageList;
+    tblGroupList: TABSTable;
+    dsGroupList: TDataSource;
+    tblFinished: TABSTable;
+    tblGroupListID: TAutoIncField;
+    tblGroupListName: TWideStringField;
+    tblGroupListAllowDelete: TBooleanField;
+    tblGroupListNotes: TMemoField;
+    tblGroupListIcon: TBlobField;
+    tblGrouppedBooksGroupID: TIntegerField;
+    tblGrouppedBooksInnerID: TAutoIncField;
+    tblGrouppedBooksID: TIntegerField;
+    tblGrouppedBooksSerID: TIntegerField;
+    tblGrouppedBooksSeqNumber: TSmallintField;
+    tblGrouppedBooksDatabaseID: TIntegerField;
+    tblGrouppedBooksLibID: TIntegerField;
+    tblGrouppedBooksDate: TDateField;
+    tblGrouppedBooksTitle: TWideStringField;
+    tblGrouppedBooksFullName: TWideStringField;
+    tblGrouppedBooksInsideNo: TIntegerField;
+    tblGrouppedBooksFileName: TWideStringField;
+    tblGrouppedBooksExt: TWideStringField;
+    tblGrouppedBooksSize: TIntegerField;
+    tblGrouppedBooksCode: TSmallintField;
+    tblGrouppedBooksFolder: TWideStringField;
+    tblGrouppedBooksDiscID: TIntegerField;
+    tblGrouppedBooksLocal: TBooleanField;
+    tblGrouppedBooksDeleted: TBooleanField;
+    tblGrouppedBooksGenres: TWideStringField;
+    tblGrouppedBooksSeries: TWideStringField;
+    tblGrouppedBooksRate: TIntegerField;
 
   private
     FCollection: TMHLCollection;
-
   public
     const
       INVALID_COLLECTION_ID = -1;
@@ -116,6 +120,7 @@ type
     // Active Collection
     //
     property ActiveCollection: TMHLCollection read FCollection;
+    procedure SetTableStatus(State: boolean);
 
     function FindFirstExternalCollection: Boolean;
     function FindNextExternalCollection: Boolean;
@@ -210,6 +215,7 @@ procedure TDMUser.RegisterCollection(
 begin
   tblBases.Insert;
 
+  tblBasesID.Value := Random($FFFF);
   tblBasesName.Value := DisplayName;
   tblBasesRootFolder.Value := RootFolder;
   tblBasesDBFileName.Value := DBFileName;
@@ -307,6 +313,17 @@ begin
 
   Result := False;
 end;
+
+procedure TDMUser.SetTableStatus(State: boolean);
+begin
+  tblGroupList.Active := State;
+  tblGrouppedBooks.Active := State;
+  tblRates.Active := State;
+  tblBases.Active := State;
+  tblFinished.Active := State;
+end;
+
+
 
 { TMHLCollection }
 
@@ -460,5 +477,8 @@ begin
   Assert(Assigned(FSysDataModule));
   FSysDataModule.tblBasesAllowDelete.Value := Value;
 end;
+
+
+
 
 end.

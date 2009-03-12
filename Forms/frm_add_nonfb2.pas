@@ -314,7 +314,9 @@ begin
 
   frmGenreTree.GetSelectedGenres(R);
   R.Title := edT.Text;
-  R.Series := cbSeries.Text;
+
+//  R.Series := cbSeries.Text;
+
   if Data.Folder <> '\' then
     R.Folder := Data.Folder
   else
@@ -323,7 +325,7 @@ begin
   R.FileExt := Data.Ext;
   R.Code := 0;
   R.InsideNo := 0;
-  R.SeqNumber := round(edSN.Value);
+//  R.SeqNumber := round(edSN.Value);
   R.LibID := DMUser.ActiveCollection.ID;
   R.Deleted := False;
   R.Size := Data.Size;

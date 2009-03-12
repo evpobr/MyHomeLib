@@ -40,7 +40,7 @@ implementation
 
 uses
   dm_user,
-  dm_main,
+  dm_collection,
   unit_globals,
   unit_database,
   unit_Consts;
@@ -70,7 +70,7 @@ var
   Folder: String;
   NewFolder: String;
 begin
-  totalBooks := DMMain.tblBooks.RecordCount;
+  totalBooks := DMCollection.tblBooks.RecordCount;
   processedBooks := 0;
   FRootPath := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
 
@@ -84,26 +84,26 @@ begin
     SetComment('Построение списка файлов ...');
     FFiles.Process;
 
-    DMMain.tblBooks.First;
-    while not DMMain.tblBooks.Eof do
+    DMCollection.tblBooks.First;
+    while not DMCollection.tblBooks.Eof do
     begin
       if Canceled then
           Exit;
 
-      Folder := DMMain.tblBooksFolder.Value;
-      FileName := DMMain.tblBooksFileName.Value + DMMain.tblBooksExt.Value;
+      Folder := DMCollection.tblBooksFolder.Value;
+      FileName := DMCollection.tblBooksFileName.Value + DMCollection.tblBooksExt.Value;
 
       if not FileExists(FRootPath + Folder + FileName)  then
       begin
-        NewFolder := FindNewFolder(FileName + ' ' + DMMain.tblBooksSize.AsString);
+        NewFolder := FindNewFolder(FileName + ' ' + DMCollection.tblBooksSize.AsString);
         if NewFolder <> '*' then
         begin
-          DMMain.tblBooks.Edit;
-          DMMain.tblBooksFolder.Value := NewFolder;
-          DMMain.tblBooks.Post;
+          DMCollection.tblBooks.Edit;
+          DMCollection.tblBooksFolder.Value := NewFolder;
+          DMCollection.tblBooks.Post;
         end;
       end;
-      DMMain.tblBooks.Next;
+      DMCollection.tblBooks.Next;
 
       Inc(processedBooks);
       if (processedBooks mod ProcessedItemThreshold) = 0 then

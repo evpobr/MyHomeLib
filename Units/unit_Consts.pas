@@ -15,7 +15,7 @@ unit unit_Consts;
 interface
 
 const
-  COLLECTION_EXTENSION_SHORT = 'hlc';
+  COLLECTION_EXTENSION_SHORT = 'hlcx';
   COLLECTION_EXTENSION = '.' + COLLECTION_EXTENSION_SHORT;
 
   FB2_EXTENSION_SHORT = 'fb2';
@@ -36,13 +36,12 @@ const
   //
   // Предефайненные имена файлов
   //
-  SYSTEM_DATABASE_FILENAME = 'user.dbs';
+  SYSTEM_DATABASE_FILENAME = 'user.dbsx';
   GENRES_FB2_FILENAME = 'genres_fb2.glst';
   GENRES_NONFB2_FILENAME = 'genres_nonfb2.glst';
   SERVER_ERRORLOG_FILENAME = 'server_error.html';
   IMPORT_ERRORLOG_FILENAME = 'import_errors.log';
   APP_HELP_FILENAME = 'MyHomeLib.chm';
-  FILELIST_FILENAME = 'FileList.lst';
   LIBRUSEC_UPDATE_FILENAME = 'librusec_update.zip';
   LIBRUSEC_UPDATEVERINFO_FILENAME = 'last_collection.info';
   LIBRUSEC_VERINFO_FILENAME = 'version.info';
