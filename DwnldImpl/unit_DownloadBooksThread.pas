@@ -174,14 +174,7 @@ begin
   FidHTTP.OnWorkEnd := HTTPWorkEnd;
   FidHTTP.HandleRedirects := True;
 
-  with FidHTTP.ProxyParams do
-  begin
-    ProxyServer := Settings.ProxyServer;
-    ProxyPort := Settings.ProxyPort;
-    ProxyUsername := Settings.ProxyUsername;
-    ProxyPassword := Settings.ProxyPassword;
-  end;
-
+  SetProxySettings(FidHTTP);
 
   FCollectionRoot := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
   try
