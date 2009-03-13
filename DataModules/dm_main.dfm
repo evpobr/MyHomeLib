@@ -1195,7 +1195,7 @@ object DMMain: TDMMain
     end
     object tblBooksTitle: TWideStringField
       FieldName = 'Title'
-      Size = 100
+      Size = 255
     end
     object tblBooksFullName: TWideStringField
       FieldName = 'FullName'
