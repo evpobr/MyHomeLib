@@ -348,6 +348,7 @@ type
     N26: TMenuItem;
     N34: TMenuItem;
     N36: TMenuItem;
+    ToolButton7: TToolButton;
 
     //
     // События формы
@@ -1942,13 +1943,18 @@ begin
 
   if FileExists(Settings.WorkPath + 'downloads.sav') then
       tvDownloadList.LoadFromfile(Settings.WorkPath + 'downloads.sav');
+
   SetLangBarSize;
+
+  if Settings.AutoStartDwnld then btnStartDownloadClick(Sender);
+
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
   SaveColumns;
 
+  if Assigned(FDMThread) then FDMThread.Stop;
   tvDownloadList.SaveToFile(Settings.WorkPath + 'downloads.sav');
 
   if DirectoryExists(Settings.TempDir) then ClearDir(Settings.TempDir);
@@ -2302,14 +2308,12 @@ begin
 
   DMMain.GetBookFileName(Data.ID, FileName, Folder, No);
 
-
   InfoPanel.Title := Data.Title;
   InfoPanel.Author := Data.FullName;
   InfoPanel.Genre := Data.Genre;
   InfoPanel.FileName := FileName;
 
   InfoPanel.HideFileInfo := not (isOnlineCollection(DMUser.ActiveCollection.CollectionType) and not Data.Locale);
-
 
   if ActiveView <> FavoritesView then
     if (Folder = '') then
@@ -2363,11 +2367,11 @@ begin
   case Data.nodeType of
     ntAuthorInfo: Color := Settings.AuthorColor;
     ntSeriesInfo: Color := Settings.SeriesColor;
-    ntBookInfo: Color := Settings.BookColor;
+    ntBookInfo  : if  (Data.No <> 0) then
+                    Color := Settings.SeriesBookColor
+                  else
+                    Color := Settings.BookColor;
   end;
-
-  if (Data.nodeType = ntBookInfo) and (Data.Series <> '') then
-    Color := Settings.SeriesBookColor;
 
   TargetCanvas.Brush.Color := Color;
   TargetCanvas.FillRect(CellRect);
@@ -2379,7 +2383,6 @@ begin
     else
       Result := (Sender as TVirtualStringTree).Header.Columns[Column].Tag;
 end;
-
 
 procedure TfrmMain.tvBooksTreeAfterCellPaint(Sender: TBaseVirtualTree;
   TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
@@ -4473,9 +4476,17 @@ begin
   Assert(Assigned(Node));
 
   Data := Tree.GetNodeData(Node);
-  Assert(Assigned(Data));
-  if not Assigned(Data) or (Data.nodeType <> ntBookInfo) then
-    Exit;
+
+  if not Assigned(Data) then Exit;
+
+  if (Data.nodeType <> ntBookInfo) then
+  begin
+    if not Tree.HasChildren[Node] then Exit;
+    repeat
+      Node := Tree.GetFirstChild(Node);
+      Data := Tree.GetNodeData(Node);
+    until (Data.nodeType = ntBookInfo);
+  end;
 
   Screen.Cursor := crHourGlass;
   try

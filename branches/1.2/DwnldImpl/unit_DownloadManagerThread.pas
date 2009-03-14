@@ -159,16 +159,17 @@ end;
 procedure TDownloadManagerThread.Finished;
 begin
   if FCurrentData <> nil then
-  begin
-    if Not Ferror then
+    if Not FError then
     begin
       FCurrentData.State := dsOK ;
       DMMain.SetLocalStatus(FID,True);
+      frmMain.tvDownloadList.DeleteNode(FCurrentNode);
     end
     else
+    begin
       FCurrentData.State := dsError;
-    frmMain.tvDownloadList.RepaintNode(FCurrentNode);
-  end;
+      frmMain.tvDownloadList.RepaintNode(FCurrentNode);
+    end;
 
   frmMain.pbDownloadProgress.Percent := 0;
   frmMain.lblDownloadState.Caption := 'Готово';
