@@ -2535,8 +2535,9 @@ var
     begin
       Stream.Read(Size, SizeOf(Size));
       StrBuffer := AllocMem(Size);
+//      FillChar(StrBuffer^,Size + 1,ord(' '));
       Stream.Read(StrBuffer^, Size);
-      Result := StrBuffer;
+      Result := (StrBuffer);
       FreeMem(StrBuffer);
     end;
 
@@ -2566,7 +2567,7 @@ var
 
   procedure WriteString(const S: string);
   begin
-    Size := ByteLength(S);
+    Size := ByteLength(S) + 1;
     Stream.Write(Size, SizeOf(Size));
     Stream.Write(PChar(S)^, Size);
   end;
