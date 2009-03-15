@@ -94,8 +94,6 @@ type
     Label7: TLabel;
     seFontSize: TRzSpinEdit;
     Button1: TButton;
-    RzGroupBox7: TRzGroupBox;
-    cbShowSubGenreBooks: TCheckBox;
     RzGroupBox9: TRzGroupBox;
     edUpdates: TEdit;
     cbCheckColUpdate: TCheckBox;
@@ -121,14 +119,17 @@ type
     tbtnInsert4: TRzToolButton;
     RzToolButton1: TRzToolButton;
     RzToolButton2: TRzToolButton;
-    RzGroupBox10: TRzGroupBox;
-    cbShowFb2Info: TCheckBox;
     RzToolButton3: TRzToolButton;
     RzGroupBox11: TRzGroupBox;
     edReadDir: TRzButtonEdit;
+    dlgSelectDir: TRzSelDirDialog;
+    tsBehavour: TTabSheet;
+    RzGroupBox7: TRzGroupBox;
+    cbShowSubGenreBooks: TCheckBox;
     cbMinimizeToTray: TCheckBox;
     cbAutoStartDwnld: TCheckBox;
-    dlgSelectDir: TRzSelDirDialog;
+    cbShowFb2Info: TCheckBox;
+    cbAllowMixedCollections: TCheckBox;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
@@ -235,10 +236,6 @@ begin
   pnlBS.Font.Color := Settings.FontColor;
   pnlASG.Font.Color := Settings.FontColor;
 
-  cbShowFb2Info.Checked := Settings.ShowFb2Info;
-  cbShowSubGenreBooks.Checked := Settings.ShowSubGenreBooks;
-  cbMinimizeToTray.Checked := Settings.MinimizeToTray;
-  cbAutoStartDwnld.Checked := Settings.AutoStartDwnld;
 
   // Page 4 - Internet
   edProxyServer.Text := Settings.ProxyServer;
@@ -269,6 +266,14 @@ begin
   end;
   cbDefaultAction.ItemIndex := Settings.DefaultScript;
 
+  // Page 6 - Behavior
+
+  cbShowFb2Info.Checked := Settings.ShowFb2Info;
+  cbShowSubGenreBooks.Checked := Settings.ShowSubGenreBooks;
+  cbMinimizeToTray.Checked := Settings.MinimizeToTray;
+  cbAutoStartDwnld.Checked := Settings.AutoStartDwnld;
+  cbAllowMixedCollections.Checked := Settings.AllowMixed;
+
   tvSections.Select(tvSections.Items[0]);
 end;
 
@@ -294,6 +299,8 @@ begin
   // Page 2 - Readers
   SaveReaders;
 
+  // Page 3 - Interface
+
   Settings.TreeFontSize := Trunc(seFontSize.Value);
   Settings.ShortFontSize := Trunc(seShortFontSize.Value);
   Settings.BookColor := pnlCT.Color;
@@ -302,9 +309,6 @@ begin
   Settings.SeriesBookColor := pnlBS.Color;
   Settings.BGColor := pnlASG.Color;
   Settings.FontColor := pnlASG.Font.Color;
-  Settings.ShowSubGenreBooks := cbShowSubGenreBooks.Checked;
-  Settings.MinimizeToTray := cbMinimizeToTray.Checked;
-  Settings.ShowFb2Info := cbShowFb2Info.Checked;
 
   // Page 4 - Internet
   Settings.ProxyServer := edProxyServer.Text;
@@ -319,6 +323,15 @@ begin
   // Page 5 - Scripts
   SaveScripts;
   Settings.DefaultScript := cbDefaultAction.ItemIndex;
+
+  // Page 6 - Behavior
+
+  Settings.ShowSubGenreBooks := cbShowSubGenreBooks.Checked;
+  Settings.MinimizeToTray := cbMinimizeToTray.Checked;
+  Settings.ShowFb2Info := cbShowFb2Info.Checked;
+  Settings.AutoStartDwnld := cbAutoStartDwnld .Checked;
+  Settings.AllowMixed := cbAllowMixedCollections.Checked;
+
 end;
 
 procedure TfrmSettings.SaveReaders;

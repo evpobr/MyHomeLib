@@ -2,7 +2,7 @@ object frmMain: TfrmMain
   Left = 0
   Top = 0
   Caption = 'MyHomeLib'
-  ClientHeight = 732
+  ClientHeight = 724
   ClientWidth = 942
   Color = clBtnFace
   Constraints.MinHeight = 700
@@ -162,7 +162,7 @@ object frmMain: TfrmMain
   end
   object StatusBar: TRzStatusBar
     Left = 0
-    Top = 713
+    Top = 705
     Width = 942
     Height = 19
     BorderInner = fsNone
@@ -421,7 +421,7 @@ object frmMain: TfrmMain
     Left = 0
     Top = 144
     Width = 942
-    Height = 569
+    Height = 561
     HelpContext = 135
     ActivePage = TabSheet1
     Align = alClient
@@ -432,12 +432,15 @@ object frmMain: TfrmMain
     FixedDimension = 19
     object TabSheet1: TRzTabSheet
       Caption = #1040#1074#1090#1086#1088#1099
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       ExplicitHeight = 526
       object rzsSplitterA: TRzSplitter
         Left = 0
         Top = 0
         Width = 938
-        Height = 546
+        Height = 538
         MarginMin = 150
         Position = 228
         Percent = 24
@@ -450,7 +453,7 @@ object frmMain: TfrmMain
           228
           0
           234
-          546)
+          538)
         UpperLeftControls = (
           RzPanel13)
         LowerRightControls = (
@@ -613,7 +616,7 @@ object frmMain: TfrmMain
                 Left = 10
                 Top = 3
                 Width = 76
-                Height = 25
+                Height = 19
                 Margins.Left = 10
                 Align = alLeft
                 AutoSize = True
@@ -625,14 +628,13 @@ object frmMain: TfrmMain
                 ParentFont = False
                 DataField = 'FullName'
                 DataSource = DMMain.dsAuthors
-                ExplicitHeight = 19
               end
               object lblBooksTotalA: TRzLabel
                 AlignWithMargins = True
                 Left = 426
                 Top = 3
                 Width = 12
-                Height = 25
+                Height = 19
                 Align = alRight
                 Alignment = taRightJustify
                 Caption = '()'
@@ -643,7 +645,6 @@ object frmMain: TfrmMain
                 Font.Style = []
                 ParentFont = False
                 CenterPoint = cpLowerRight
-                ExplicitHeight = 19
               end
             end
             object RzPanel23: TRzPanel
@@ -801,12 +802,15 @@ object frmMain: TfrmMain
     end
     object TabSheet2: TRzTabSheet
       Caption = #1057#1077#1088#1080#1080
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       ExplicitHeight = 526
       object rzsSplitterS: TRzSplitter
         Left = 0
         Top = 0
         Width = 938
-        Height = 546
+        Height = 538
         MarginMin = 150
         Position = 247
         Percent = 26
@@ -818,7 +822,7 @@ object frmMain: TfrmMain
           247
           0
           252
-          546)
+          538)
         UpperLeftControls = (
           RzPanel1)
         LowerRightControls = (
@@ -972,7 +976,7 @@ object frmMain: TfrmMain
                 Left = 10
                 Top = 3
                 Width = 70
-                Height = 25
+                Height = 19
                 Margins.Left = 10
                 Align = alLeft
                 AutoSize = True
@@ -984,14 +988,13 @@ object frmMain: TfrmMain
                 ParentFont = False
                 DataField = 'Title'
                 DataSource = DMMain.dsSeries
-                ExplicitHeight = 19
               end
               object lblBooksTotalS: TRzLabel
                 AlignWithMargins = True
                 Left = 408
                 Top = 3
                 Width = 12
-                Height = 25
+                Height = 19
                 Align = alRight
                 Alignment = taRightJustify
                 Caption = '()'
@@ -1002,7 +1005,6 @@ object frmMain: TfrmMain
                 Font.Style = []
                 ParentFont = False
                 CenterPoint = cpLowerRight
-                ExplicitHeight = 19
               end
             end
             object tvBooksS: TVirtualStringTree
@@ -1156,7 +1158,7 @@ object frmMain: TfrmMain
           object ipnlSeries: TMHLInfoPanel
             AlignWithMargins = True
             Left = 5
-            Top = 435
+            Top = 427
             Width = 423
             Height = 100
             Align = alBottom
@@ -1175,12 +1177,15 @@ object frmMain: TfrmMain
     end
     object TabSheet3: TRzTabSheet
       Caption = #1046#1072#1085#1088#1099
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       ExplicitHeight = 526
       object rzsSplitterG: TRzSplitter
         Left = 0
         Top = 0
         Width = 938
-        Height = 546
+        Height = 538
         MarginMin = 150
         Position = 258
         Percent = 28
@@ -1192,7 +1197,7 @@ object frmMain: TfrmMain
           258
           0
           260
-          546)
+          538)
         UpperLeftControls = (
           RzPanel25)
         LowerRightControls = (
@@ -1434,7 +1439,7 @@ object frmMain: TfrmMain
               Left = 403
               Top = 3
               Width = 12
-              Height = 25
+              Height = 19
               Align = alRight
               Alignment = taRightJustify
               Caption = '()'
@@ -1445,14 +1450,13 @@ object frmMain: TfrmMain
               Font.Style = []
               ParentFont = False
               CenterPoint = cpLowerRight
-              ExplicitHeight = 19
             end
             object lblGenreTitle: TRzLabel
               AlignWithMargins = True
               Left = 3
               Top = 3
               Width = 15
-              Height = 25
+              Height = 19
               Align = alLeft
               Caption = '...'
               Font.Charset = DEFAULT_CHARSET
@@ -1462,13 +1466,12 @@ object frmMain: TfrmMain
               Font.Style = [fsBold]
               ParentFont = False
               CenterPoint = cpLowerRight
-              ExplicitHeight = 19
             end
           end
           object ipnlGenres: TMHLInfoPanel
             AlignWithMargins = True
             Left = 5
-            Top = 435
+            Top = 427
             Width = 412
             Height = 100
             Align = alBottom
@@ -1488,13 +1491,16 @@ object frmMain: TfrmMain
     object TabSheet4: TRzTabSheet
       HelpContext = 142
       Caption = #1055#1086#1080#1089#1082
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       ExplicitHeight = 526
       object RzPanel9: TRzPanel
         AlignWithMargins = True
         Left = 3
         Top = 3
         Width = 682
-        Height = 540
+        Height = 532
         Margins.Right = 0
         Align = alClient
         BorderOuter = fsFlatRounded
@@ -1505,7 +1511,7 @@ object frmMain: TfrmMain
           Left = 5
           Top = 73
           Width = 672
-          Height = 356
+          Height = 348
           Align = alClient
           BorderOuter = fsNone
           TabOrder = 0
@@ -1766,7 +1772,7 @@ object frmMain: TfrmMain
         object ipnlSearch: TMHLInfoPanel
           AlignWithMargins = True
           Left = 5
-          Top = 435
+          Top = 427
           Width = 672
           Height = 100
           Align = alBottom
@@ -1786,7 +1792,7 @@ object frmMain: TfrmMain
         Left = 685
         Top = 3
         Width = 250
-        Height = 540
+        Height = 532
         Margins.Left = 0
         Align = alRight
         BorderOuter = fsFlatRounded
@@ -1795,6 +1801,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -1807,6 +1814,9 @@ object frmMain: TfrmMain
     object TabSheet5: TRzTabSheet
       HelpContext = 125
       Caption = #1048#1079#1073#1088#1072#1085#1085#1086#1077
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       ExplicitHeight = 526
       object RzPanel20: TRzPanel
         AlignWithMargins = True
@@ -2004,7 +2014,7 @@ object frmMain: TfrmMain
         Left = 685
         Top = 3
         Width = 250
-        Height = 540
+        Height = 532
         Margins.Left = 0
         Align = alRight
         BorderOuter = fsFlatRounded
@@ -2013,6 +2023,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2025,13 +2036,16 @@ object frmMain: TfrmMain
     object TabSheet6: TRzTabSheet
       HelpContext = 126
       Caption = #1060#1080#1083#1100#1090#1088
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       ExplicitHeight = 526
       object RzPanel29: TRzPanel
         AlignWithMargins = True
         Left = 3
         Top = 3
         Width = 682
-        Height = 540
+        Height = 532
         Margins.Right = 0
         Align = alClient
         BorderOuter = fsFlatRounded
@@ -2145,7 +2159,7 @@ object frmMain: TfrmMain
               Top = 119
               Width = 138
               Height = 21
-              ItemHeight = 13
+              ItemHeight = 0
               ReadOnlyColor = clBtnHighlight
               TabOrder = 3
               Text = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1074#1089#1077
@@ -2160,7 +2174,7 @@ object frmMain: TfrmMain
               Top = 94
               Width = 201
               Height = 21
-              ItemHeight = 13
+              ItemHeight = 0
               TabOrder = 5
               OnKeyDown = edFFullNameKeyDown
               Items.Strings = (
@@ -2390,7 +2404,7 @@ object frmMain: TfrmMain
           Left = 5
           Top = 159
           Width = 672
-          Height = 270
+          Height = 262
           Align = alClient
           BevelInner = bvNone
           BevelOuter = bvNone
@@ -2524,7 +2538,7 @@ object frmMain: TfrmMain
         object ipnlFilter: TMHLInfoPanel
           AlignWithMargins = True
           Left = 5
-          Top = 435
+          Top = 427
           Width = 672
           Height = 100
           Align = alBottom
@@ -2544,7 +2558,7 @@ object frmMain: TfrmMain
         Left = 685
         Top = 3
         Width = 250
-        Height = 540
+        Height = 532
         Margins.Left = 0
         Align = alRight
         BorderOuter = fsFlatRounded
@@ -2553,6 +2567,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2564,6 +2579,9 @@ object frmMain: TfrmMain
     end
     object TabSheet7: TRzTabSheet
       Caption = #1057#1087#1080#1089#1086#1082' '#1079#1072#1082#1072#1095#1077#1082
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       ExplicitHeight = 526
       object tvDownloadList: TVirtualStringTree
         AlignWithMargins = True

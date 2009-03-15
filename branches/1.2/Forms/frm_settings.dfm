@@ -26,8 +26,6 @@ object frmSettings: TfrmSettings
     Align = alBottom
     BorderOuter = fsFlatRounded
     TabOrder = 0
-    ExplicitTop = 410
-    ExplicitWidth = 595
     object btnSave: TRzBitBtn
       Left = 316
       Top = 11
@@ -65,17 +63,13 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 414
     Height = 413
-    ActivePage = tsDevices
+    ActivePage = tsBehavour
     Align = alClient
     TabOrder = 1
-    ExplicitWidth = 404
-    ExplicitHeight = 401
     object tsDevices: TTabSheet
       HelpContext = 143
       Caption = 'tsDevices'
       TabVisible = False
-      ExplicitWidth = 396
-      ExplicitHeight = 391
       object RzGroupBox3: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -85,7 +79,6 @@ object frmSettings: TfrmSettings
         Align = alTop
         Caption = #1060#1086#1088#1084#1072#1090' '#1080#1084#1077#1085#1080
         TabOrder = 0
-        ExplicitWidth = 390
         object Label5: TLabel
           Left = 20
           Top = 29
@@ -242,7 +235,6 @@ object frmSettings: TfrmSettings
         Align = alTop
         Caption = #1055#1072#1087#1082#1072' '#1085#1072' '#1091#1089#1090#1088#1086#1081#1089#1090#1074#1077' '
         TabOrder = 1
-        ExplicitWidth = 390
         object edDeviceDir: TRzButtonEdit
           Left = 11
           Top = 18
@@ -280,7 +272,6 @@ object frmSettings: TfrmSettings
           '.lrf (SONY)'
           '.txt')
         TabOrder = 2
-        ExplicitWidth = 390
       end
       object RzGroupBox5: TRzGroupBox
         AlignWithMargins = True
@@ -291,8 +282,6 @@ object frmSettings: TfrmSettings
         Align = alClient
         Caption = #1054#1087#1094#1080#1080
         TabOrder = 3
-        ExplicitWidth = 390
-        ExplicitHeight = 44
         object cbSquareFilter: TCheckBox
           Left = 11
           Top = 18
@@ -312,7 +301,6 @@ object frmSettings: TfrmSettings
         Align = alTop
         Caption = #1055#1072#1087#1082#1072' "'#1076#1083#1103' '#1095#1090#1077#1085#1080#1103'"'
         TabOrder = 4
-        ExplicitWidth = 390
         object edReadDir: TRzButtonEdit
           Left = 11
           Top = 18
@@ -398,10 +386,11 @@ object frmSettings: TfrmSettings
         Left = 3
         Top = 3
         Width = 400
-        Height = 163
-        Align = alTop
+        Height = 397
+        Align = alClient
         Caption = #1057#1087#1080#1089#1082#1080
         TabOrder = 0
+        ExplicitHeight = 163
         object Label9: TLabel
           Left = 19
           Top = 45
@@ -529,58 +518,6 @@ object frmSettings: TfrmSettings
           Caption = #1062#1074#1077#1090' '#1096#1088#1080#1092#1090#1072
           TabOrder = 7
           OnClick = Button1Click
-        end
-      end
-      object RzGroupBox7: TRzGroupBox
-        AlignWithMargins = True
-        Left = 3
-        Top = 172
-        Width = 400
-        Height = 95
-        Align = alTop
-        Caption = #1055#1086#1074#1077#1076#1077#1085#1080#1077
-        TabOrder = 1
-        object cbShowSubGenreBooks: TCheckBox
-          Left = 24
-          Top = 26
-          Width = 281
-          Height = 17
-          Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1082#1085#1080#1075#1080' '#1080#1079' '#1074#1083#1086#1078#1077#1085#1085#1099#1093' '#1078#1072#1085#1088#1086#1074' ('#1085#1077'-fb2)'
-          TabOrder = 0
-        end
-        object cbMinimizeToTray: TCheckBox
-          Left = 24
-          Top = 48
-          Width = 177
-          Height = 17
-          Caption = #1057#1074#1086#1088#1072#1095#1080#1074#1072#1090#1100' '#1074' '#1090#1088#1077#1081
-          TabOrder = 1
-        end
-        object cbAutoStartDwnld: TCheckBox
-          Left = 24
-          Top = 69
-          Width = 257
-          Height = 17
-          Caption = #1057#1090#1072#1088#1090#1086#1074#1072#1090#1100' '#1079#1072#1082#1072#1095#1082#1080' '#1072#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080
-          TabOrder = 2
-        end
-      end
-      object RzGroupBox10: TRzGroupBox
-        AlignWithMargins = True
-        Left = 3
-        Top = 273
-        Width = 400
-        Height = 127
-        Align = alClient
-        Caption = #1056#1072#1079#1085#1086#1077
-        TabOrder = 2
-        object cbShowFb2Info: TCheckBox
-          Left = 24
-          Top = 18
-          Width = 281
-          Height = 17
-          Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1080#1085#1092#1086#1088#1084#1072#1094#1080#1102' '#1080#1079' fb2 '
-          TabOrder = 0
         end
       end
     end
@@ -833,6 +770,64 @@ object frmSettings: TfrmSettings
         end
       end
     end
+    object tsBehavour: TTabSheet
+      Caption = 'tsBehavior'
+      ImageIndex = 5
+      TabVisible = False
+      ExplicitTop = 24
+      ExplicitHeight = 385
+      object RzGroupBox7: TRzGroupBox
+        AlignWithMargins = True
+        Left = 3
+        Top = 3
+        Width = 400
+        Height = 397
+        Align = alClient
+        Caption = #1055#1086#1074#1077#1076#1077#1085#1080#1077
+        TabOrder = 0
+        ExplicitHeight = 174
+        object cbShowSubGenreBooks: TCheckBox
+          Left = 24
+          Top = 26
+          Width = 281
+          Height = 17
+          Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1082#1085#1080#1075#1080' '#1080#1079' '#1074#1083#1086#1078#1077#1085#1085#1099#1093' '#1078#1072#1085#1088#1086#1074' ('#1085#1077'-fb2)'
+          TabOrder = 0
+        end
+        object cbMinimizeToTray: TCheckBox
+          Left = 24
+          Top = 48
+          Width = 177
+          Height = 17
+          Caption = #1057#1074#1086#1088#1072#1095#1080#1074#1072#1090#1100' '#1074' '#1090#1088#1077#1081
+          TabOrder = 1
+        end
+        object cbAutoStartDwnld: TCheckBox
+          Left = 24
+          Top = 69
+          Width = 257
+          Height = 17
+          Caption = #1057#1090#1072#1088#1090#1086#1074#1072#1090#1100' '#1079#1072#1082#1072#1095#1082#1080' '#1072#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080
+          TabOrder = 2
+        end
+        object cbShowFb2Info: TCheckBox
+          Left = 24
+          Top = 92
+          Width = 281
+          Height = 17
+          Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1080#1085#1092#1086#1088#1084#1072#1094#1080#1102' '#1080#1079' fb2 '
+          TabOrder = 3
+        end
+        object cbAllowMixedCollections: TCheckBox
+          Left = 24
+          Top = 115
+          Width = 281
+          Height = 17
+          Caption = #1056#1072#1079#1088#1077#1096#1080#1090#1100' '#1089#1084#1077#1096#1072#1085#1085#1099#1077' '#1082#1086#1083#1083#1077#1082#1094#1080#1080
+          TabOrder = 4
+        end
+      end
+    end
   end
   object RzPanel2: TRzPanel
     AlignWithMargins = True
@@ -843,7 +838,6 @@ object frmSettings: TfrmSettings
     Align = alLeft
     BorderOuter = fsFlatRounded
     TabOrder = 2
-    ExplicitHeight = 401
     object tvSections: TRzTreeView
       AlignWithMargins = True
       Left = 5
@@ -857,7 +851,7 @@ object frmSettings: TfrmSettings
       TabOrder = 0
       OnChange = tvSectionsChange
       Items.NodeData = {
-        03050000003E0000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF000000
+        03060000003E0000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF000000
         000000000001101F0430043F043A0438042F0023044104420440043E04390441
         04420432043004340000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF00
         00000000000000010B220438043F044B0420004404300439043B043E04320430
@@ -865,13 +859,14 @@ object frmSettings: TfrmSettings
         0918043D0442043504400444043504390441042E0000000000000000000000FF
         FFFFFFFFFFFFFFFFFFFFFF0000000000000000010818043D044204350440043D
         04350442042C0000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF000000
-        0000000000010721043A04400438043F0442044B04}
-      ExplicitHeight = 391
+        0000000000010721043A04400438043F0442044B042A00000000000000000000
+        00FFFFFFFFFFFFFFFF00000000000000000000000001062004300437043D043E
+        043504}
     end
   end
   object dlgColors: TColorDialog
     Left = 48
-    Top = 96
+    Top = 168
   end
   object dlgSelectDir: TRzSelDirDialog
     CenterToParent = True
@@ -895,7 +890,7 @@ object frmSettings: TfrmSettings
     Font.Name = 'Tahoma'
     Font.Style = []
     FrameVisible = True
-    Left = 104
-    Top = 96
+    Left = 96
+    Top = 176
   end
 end

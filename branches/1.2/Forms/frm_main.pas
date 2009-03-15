@@ -1358,13 +1358,14 @@ begin
   IsFB2 := isFB2Collection(CollectionType);
   IsNonFB2 := isNonFB2Collection(CollectionType);
 
-  miFb2ZipImport.Visible := IsPrivate and IsFB2;
-  miFb2Import.Visible := IsPrivate and IsFB2;
+  miFb2ZipImport.Visible := (IsPrivate and IsFB2) or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
+  miFb2Import.Visible := (IsPrivate and IsFB2) or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
   miPdfdjvu.Visible := IsPrivate and IsNonFB2;
 
   TabSheet7.TabVisible := IsOnline;
 
-  tbtnShowCover.Visible := not IsNonFB2;
+  tbtnShowCover.Visible := not IsNonFB2 or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
+
   miBookInfo.Visible := IsLocal and IsFB2;
 
   tbtnShowLocalOnly.Visible := IsOnline;
@@ -3028,7 +3029,11 @@ var
   Visible: boolean;
 begin
   Settings.ShowInfoPanel := not Settings.ShowInfoPanel;
-  Visible := Settings.ShowInfoPanel and not isNonFb2Collection(DMUser.ActiveCollection.CollectionType);
+
+  Visible := (Settings.ShowInfoPanel and not isNonFb2Collection(DMUser.ActiveCollection.CollectionType)
+             or (Settings.ShowInfoPanel and isNonFB2Collection(DMUser.ActiveCollection.CollectionType)
+                 and Settings.AllowMixed));
+
   SetCoversVisible(Visible);
   if Visible then
         tvBooksTreeChange(Nil,Nil);
