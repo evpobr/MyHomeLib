@@ -74,27 +74,17 @@ type
     FUseSystemTemp: boolean;
 
     // INTERFACE_SECTION
-    FShowRusBar: Boolean;
-    FShowEngBar: Boolean;
     FTreeFontSize: Integer;
     FShortFontSize: Integer;
-    FShowInfoPanel: Boolean;
     FAppLanguage: TAppLanguage;
-    FDoNotShowDeleted: Boolean;
-    FShowLocalOnly : boolean;
     FActivePage: integer;
-    FTableView: boolean;
     FLastAuthor: string;
     FLastSeries: string;
     FLastBookInAuthors: integer;
     FLastBookInSeries: integer;
     FLastBookInFavorites: integer;
-    FShowSubGenreBooks: boolean;
-    FShowFb2Info: boolean;
     FSplitters: TSplitters;
     FTreeModes: TTreeModes;
-    FMinimizeToTray: boolean;
-    FAutoStartDwnld: boolean;
     FWindowState: TWindowState;
 
     // NETWORK_SECTION
@@ -128,6 +118,20 @@ type
     FCheckExistsFiles: Boolean;
 
     FInitialDirs: TStringList;
+
+
+    // BEHAVIOR_SECTION
+    FMinimizeToTray: boolean;
+    FAutoStartDwnld: boolean;
+    FShowSubGenreBooks: boolean;
+    FShowFb2Info: boolean;
+    FAllowMixed: boolean;
+
+    FShowInfoPanel: Boolean;
+    FShowRusBar: Boolean;
+    FShowEngBar: Boolean;
+    FDoNotShowDeleted: Boolean;
+    FShowLocalOnly : boolean;
 
   private
     function GetSettingsFileName: string;
@@ -216,7 +220,6 @@ type
 
     property RemoveSquarebrackets : boolean read FRemoveSquarebrackets write FRemoveSquarebrackets;
 
-    property TableView: boolean read FTableView write FTableView;
     property ActivePage:integer read FActivePage write FActivePage;
     property LastAuthor:string read FLastAuthor write FLastAuthor;
     property LastSeries:string read FLastSeries write FLastSeries;
@@ -254,6 +257,9 @@ type
     property CheckExistsFiles: Boolean read FCheckExistsFiles write FCheckExistsFiles;
 
     property InitialDir[const key: string]: string read GetInitialDir write SetInitialDir;
+
+    property AllowMixed : boolean read FAllowMixed write FAllowMixed;
+
   end;
 
   procedure CreateSettings;
@@ -310,6 +316,7 @@ const
   READERS_SECTION = 'READERS';
   SCRIPTS_SECTION = 'SCRIPTS';
   IMPORT_SECTION = 'IMPORT';
+  BEHAVIOR_SECTION = 'BEHAVIOR';
 
   READER_KEY_PREFIX = 'Reader';
   SCRIPT_KEY_PREFIX = 'Script';
@@ -427,14 +434,8 @@ begin
     //
     // INTERFACE_SECTION
     //
-    FShowRusBar := iniFile.ReadBool(INTERFACE_SECTION, 'ShowRusABC', True);
-    FShowEngBar := iniFile.ReadBool(INTERFACE_SECTION, 'ShowEngABC', True);
     FTreeFontSize := iniFile.ReadInteger(INTERFACE_SECTION, 'FontSize', 8);
     FShortFontSize := iniFile.ReadInteger(INTERFACE_SECTION, 'ShortFontSize', 8);
-    FShowInfoPanel := iniFile.ReadBool(INTERFACE_SECTION, 'CoverPanel', True);
-    FDoNotShowDeleted := iniFile.ReadBool(INTERFACE_SECTION, 'DoNotShowDeleted', True);
-    FShowLocalOnly := iniFile.ReadBool(INTERFACE_SECTION, 'ShowLocalOnly', False);
-    FTableView := iniFile.ReadBool(INTERFACE_SECTION, 'TableView', False);
     FActivePage := iniFile.ReadInteger(INTERFACE_SECTION, 'ActivePage', 0);
     FLastAuthor := iniFile.ReadString(INTERFACE_SECTION, 'LastAuthor', 'À');
     FLastSeries := iniFile.ReadString(INTERFACE_SECTION, 'LastSeries', 'À');
@@ -443,11 +444,6 @@ begin
     FLastBookinSeries:= iniFile.ReadInteger(INTERFACE_SECTION, 'LastBookInSeries', 0);
     FLastBookinFavorites := iniFile.ReadInteger(INTERFACE_SECTION, 'LastBookInFavorites', 0);
 
-    FShowSubGenreBooks := iniFile.ReadBool(INTERFACE_SECTION, 'ShowSubGenreBooks', False);
-    FShowFb2Info := iniFile.ReadBool(INTERFACE_SECTION, 'ShowFb2Info', True);
-
-    FMinimizeToTray  := iniFile.ReadBool(INTERFACE_SECTION, 'MinimizeToTray', True);
-    FAutoStartDwnld  := iniFile.ReadBool(INTERFACE_SECTION, 'AutoStartDwnld', False);
 
     if iniFile.ReadInteger(INTERFACE_SECTION, 'Lang', 0) = 0 then
       FAppLanguage := alEng
@@ -506,6 +502,22 @@ begin
     FCheckExistsFiles := iniFile.ReadBool(IMPORT_SECTION, 'CheckFB2Exist', True);
 
     //
+    //   BEHAVIOR_SECTION
+    //
+
+    FShowRusBar := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowRusABC', True);
+    FShowEngBar := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowEngABC', True);
+    FShowInfoPanel := iniFile.ReadBool(BEHAVIOR_SECTION, 'CoverPanel', True);
+    FDoNotShowDeleted := iniFile.ReadBool(BEHAVIOR_SECTION, 'DoNotShowDeleted', True);
+    FShowLocalOnly := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowLocalOnly', False);
+
+    FShowSubGenreBooks := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowSubGenreBooks', False);
+    FShowFb2Info := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowFb2Info', True);
+    FMinimizeToTray  := iniFile.ReadBool(BEHAVIOR_SECTION, 'MinimizeToTray', True);
+    FAutoStartDwnld  := iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoStartDwnld', False);
+    FAllowMixed :=  iniFile.ReadBool(BEHAVIOR_SECTION, 'AllowMixed', False);
+
+    //
     // INITIAL_DIRS_SECTION
     //
     LoadInitialDirs(iniFile);
@@ -544,16 +556,9 @@ begin
     //
     // INTERFACE_SECTION
     //
-    iniFile.WriteBool(INTERFACE_SECTION, 'ShowRusABC', FShowRusBar);
-    iniFile.WriteBool(INTERFACE_SECTION, 'ShowEngABC', FShowEngBar);
-    // tlbrMain.ShowCaptions:=IFile.WriteBool(INTERFACE_SECTION,'ShowCaptions',false);
     iniFile.WriteInteger(INTERFACE_SECTION, 'FontSize', FTreeFontSize);
     iniFile.WriteInteger(INTERFACE_SECTION, 'ShortFontSize', FShortFontSize);
-    iniFile.WriteBool(INTERFACE_SECTION, 'CoverPanel', FShowInfoPanel);
     iniFile.WriteInteger(INTERFACE_SECTION, 'Lang', Ord(FAppLanguage));
-    iniFile.WriteBool(INTERFACE_SECTION, 'DoNotShowDeleted', FDoNotShowDeleted);
-    iniFile.WriteBool(INTERFACE_SECTION, 'ShowLocalOnly', FShowLocalOnly);
-    iniFile.WriteBool(INTERFACE_SECTION, 'TableView', FTableView);
     iniFile.WriteInteger(INTERFACE_SECTION, 'ActivePage', FActivePage);
 
     iniFile.WriteString(INTERFACE_SECTION, 'LastAuthor', FLastAuthor);
@@ -563,10 +568,6 @@ begin
     iniFile.WriteInteger(INTERFACE_SECTION, 'LastBookInSeries', FLastBookinSeries);
     iniFile.WriteInteger(INTERFACE_SECTION, 'LastBookInFavorites', FLastBookinFavorites);
 
-    iniFile.WriteBool(INTERFACE_SECTION, 'ShowSubGenreBooks', FShowSubGenreBooks);
-    iniFile.WriteBool(INTERFACE_SECTION, 'MinimizeToTray', FMinimizeToTray );
-    iniFile.WriteBool(INTERFACE_SECTION, 'ShowFb2Info', FShowFb2Info);
-    iniFile.WriteBool(INTERFACE_SECTION, 'AutoStartDwnld', FAutoStartDwnld );
     iniFile.WriteInteger(INTERFACE_SECTION, 'WindowState', Ord(FWindowState));
     SaveSplitters(iniFile);
 
@@ -611,6 +612,23 @@ begin
     // IMPORT_SECTION
     //
     iniFile.WriteBool(IMPORT_SECTION, 'CheckFB2Exist', FCheckExistsFiles);
+
+
+    //
+    //   BEHAVIOR_SECTION
+    //
+
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowRusABC', FShowRusBar);
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowEngABC', FShowEngBar);
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'DoNotShowDeleted', FDoNotShowDeleted);
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowLocalOnly', FShowLocalOnly);
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'CoverPanel', FShowInfoPanel);
+
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowSubGenreBooks', FShowSubGenreBooks);
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'MinimizeToTray', FMinimizeToTray );
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowFb2Info', FShowFb2Info);
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'AutoStartDwnld', FAutoStartDwnld );
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'AllowMixed', FAllowMixed );
 
     //
     // INITIAL_DIRS_SECTION
