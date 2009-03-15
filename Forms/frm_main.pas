@@ -2539,7 +2539,6 @@ var
     begin
       Stream.Read(Size, SizeOf(Size));
       StrBuffer := AllocMem(Size);
-//      FillChar(StrBuffer^,Size + 1,ord(' '));
       Stream.Read(StrBuffer^, Size);
       Result := (StrBuffer);
       FreeMem(StrBuffer);
@@ -2595,14 +2594,14 @@ begin
 
   // State
   Stream.Write(Data.State, SizeOf(Data.State));
-
- end;
+end;
 
 //
 // Menu handlers
 //
 procedure TfrmMain.btnClearDownloadClick(Sender: TObject);
 begin
+  if Assigned(FDMThread) then FDMThread.Stop;
   tvDownloadList.Clear;
 end;
 
@@ -2948,10 +2947,10 @@ begin
   then Exit;
 
   Screen.Cursor := crHourGlass;
-//  ClearLabels;
   case ActiveView of
     ByAuthorView:
       begin
+        ClearLabels(PAGE_AUTHORS);
         if Assigned(FLastLetterA) then
             FLastLetterA.Down := False;
 
@@ -2974,6 +2973,7 @@ begin
       end;
     BySeriesView:
       begin
+        ClearLabels(PAGE_SERIES);
         if Assigned(FLastLetterS) then
           FLastLetterS.Down := False;
         FLastLetterS := (Sender as TToolButton);
