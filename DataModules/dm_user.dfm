@@ -3,11 +3,7 @@ object DMUser: TDMUser
   Height = 377
   Width = 463
   object DBUser: TABSDatabase
-    Connected = True
     CurrentVersion = '6.02 '
-    DatabaseFileName = 
-      'D:\My Docs\RAD Studio\Projects\MyHomeLib 1.5\Debug\Bin\Data\user' +
-      '.dbsx'
     DatabaseName = 'DBUser'
     Exclusive = False
     MaxConnections = 5
@@ -1023,7 +1019,6 @@ object DMUser: TDMUser
       000000000000}
   end
   object dsGroupList: TDataSource
-    DataSet = tblGroupList
     Left = 216
     Top = 184
   end
@@ -1046,22 +1041,5 @@ object DMUser: TDMUser
     Exclusive = False
     Left = 144
     Top = 184
-    object tblGroupListID: TAutoIncField
-      FieldName = 'ID'
-    end
-    object tblGroupListName: TWideStringField
-      FieldName = 'Name'
-      Size = 255
-    end
-    object tblGroupListAllowDelete: TBooleanField
-      FieldName = 'AllowDelete'
-    end
-    object tblGroupListNotes: TMemoField
-      FieldName = 'Notes'
-      BlobType = ftMemo
-    end
-    object tblGroupListIcon: TBlobField
-      FieldName = 'Icon'
-    end
   end
 end
