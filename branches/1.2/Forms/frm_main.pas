@@ -348,7 +348,6 @@ type
     N26: TMenuItem;
     N34: TMenuItem;
     N36: TMenuItem;
-    ToolButton7: TToolButton;
 
     //
     // События формы
@@ -1358,14 +1357,13 @@ begin
   IsFB2 := isFB2Collection(CollectionType);
   IsNonFB2 := isNonFB2Collection(CollectionType);
 
-  miFb2ZipImport.Visible := (IsPrivate and IsFB2) or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
-  miFb2Import.Visible := (IsPrivate and IsFB2) or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
+  miFb2ZipImport.Visible := IsPrivate and IsFB2;
+  miFb2Import.Visible := IsPrivate and IsFB2;
   miPdfdjvu.Visible := IsPrivate and IsNonFB2;
 
   TabSheet7.TabVisible := IsOnline;
 
-  tbtnShowCover.Visible := not IsNonFB2 or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
-
+  tbtnShowCover.Visible := not IsNonFB2;
   miBookInfo.Visible := IsLocal and IsFB2;
 
   tbtnShowLocalOnly.Visible := IsOnline;
@@ -1942,21 +1940,16 @@ begin
     RestorePositions;
 
 
-  if FileExists(Settings.WorkPath + 'downloads.sav') then
-      tvDownloadList.LoadFromfile(Settings.WorkPath + 'downloads.sav');
-
+//  if FileExists(Settings.WorkPath + 'downloads.sav') then
+//      tvDownloadList.LoadFromfile(Settings.WorkPath + 'downloads.sav');
   SetLangBarSize;
-
-  if Settings.AutoStartDwnld then btnStartDownloadClick(Sender);
-
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
   SaveColumns;
 
-  if Assigned(FDMThread) then FDMThread.Stop;
-  tvDownloadList.SaveToFile(Settings.WorkPath + 'downloads.sav');
+//  tvDownloadList.SaveToFile(Settings.WorkPath + 'downloads.sav');
 
   if DirectoryExists(Settings.TempDir) then ClearDir(Settings.TempDir);
 
@@ -2309,12 +2302,14 @@ begin
 
   DMMain.GetBookFileName(Data.ID, FileName, Folder, No);
 
+
   InfoPanel.Title := Data.Title;
   InfoPanel.Author := Data.FullName;
   InfoPanel.Genre := Data.Genre;
   InfoPanel.FileName := FileName;
 
   InfoPanel.HideFileInfo := not (isOnlineCollection(DMUser.ActiveCollection.CollectionType) and not Data.Locale);
+
 
   if ActiveView <> FavoritesView then
     if (Folder = '') then
@@ -2368,11 +2363,11 @@ begin
   case Data.nodeType of
     ntAuthorInfo: Color := Settings.AuthorColor;
     ntSeriesInfo: Color := Settings.SeriesColor;
-    ntBookInfo  : if  (Data.No <> 0) then
-                    Color := Settings.SeriesBookColor
-                  else
-                    Color := Settings.BookColor;
+    ntBookInfo: Color := Settings.BookColor;
   end;
+
+  if (Data.nodeType = ntBookInfo) and (Data.Series <> '') then
+    Color := Settings.SeriesBookColor;
 
   TargetCanvas.Brush.Color := Color;
   TargetCanvas.FillRect(CellRect);
@@ -2384,6 +2379,7 @@ begin
     else
       Result := (Sender as TVirtualStringTree).Header.Columns[Column].Tag;
 end;
+
 
 procedure TfrmMain.tvBooksTreeAfterCellPaint(Sender: TBaseVirtualTree;
   TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
@@ -2532,68 +2528,23 @@ procedure TfrmMain.tvDownloadListLoadNode(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Stream: TStream);
 var
   Data: PDownloadData;
-  size: Integer;
-  StrBuffer: PChar;
-
-    function GetString:string;
-    begin
-      Stream.Read(Size, SizeOf(Size));
-      StrBuffer := AllocMem(Size);
-      Stream.Read(StrBuffer^, Size);
-      Result := (StrBuffer);
-      FreeMem(StrBuffer);
-    end;
-
+  DataSize: Integer;
 begin
+  Stream.Read(DataSize, SizeOf(DataSize));
   Data := Sender.GetNodeData(Node);
-  // ID
-  Stream.Read(Data.ID, SizeOf(Data.ID));
-
-  Data.Title := GetString;
-  Data.Author := GetString;
-
-  // Size
-  Stream.Read(Data.Size, SizeOf(Data.Size));
-
-  Data.FileName := GetString;
-  Data.URL := GetString;
-
-  // State
-  Stream.Read(Data.State, SizeOf(Data.State));
+  Stream.Read(Data^, DataSize);
 end;
 
 procedure TfrmMain.tvDownloadListSaveNode(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Stream: TStream);
 var
   Data: PDownloadData;
-  size: Integer;
-
-  procedure WriteString(const S: string);
-  begin
-    Size := ByteLength(S) + 1;
-    Stream.Write(Size, SizeOf(Size));
-    Stream.Write(PChar(S)^, Size);
-  end;
-
+  DataSize: Integer;
 begin
-  Data := Sender.GetNodeData(Node);
-
-  if Data = Nil then Exit;
-
-  //  ID
-  Stream.Write(Data.ID, SizeOf(Data.ID));
-
-  WriteString(Data.Title);
-  WriteString(Data.Author);
-
-  // Size
-  Stream.Write(Data.Size, SizeOf(Data.Size));
-
-  WriteString(Data.FileName);
-  WriteString(Data.URL);
-
-  // State
-  Stream.Write(Data.State, SizeOf(Data.State));
+  Data := tvDownloadList.GetNodeData(Node);
+  DataSize := SizeOf(Data^);
+  Stream.Write(DataSize, SizeOf(DataSize));
+  Stream.WriteBuffer(Data^, DataSize);
 end;
 
 //
@@ -2601,7 +2552,6 @@ end;
 //
 procedure TfrmMain.btnClearDownloadClick(Sender: TObject);
 begin
-  if Assigned(FDMThread) then FDMThread.Stop;
   tvDownloadList.Clear;
 end;
 
@@ -2947,10 +2897,10 @@ begin
   then Exit;
 
   Screen.Cursor := crHourGlass;
+//  ClearLabels;
   case ActiveView of
     ByAuthorView:
       begin
-        ClearLabels(PAGE_AUTHORS);
         if Assigned(FLastLetterA) then
             FLastLetterA.Down := False;
 
@@ -2973,7 +2923,6 @@ begin
       end;
     BySeriesView:
       begin
-        ClearLabels(PAGE_SERIES);
         if Assigned(FLastLetterS) then
           FLastLetterS.Down := False;
         FLastLetterS := (Sender as TToolButton);
@@ -3010,6 +2959,18 @@ begin
   Settings.ShowLocalOnly := not Settings.ShowLocalOnly;
   tbtnShowLocalOnly.Down := Settings.ShowLocalOnly ;
 
+  if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
+  begin
+    if Settings.ShowLocalOnly then
+      DMMain.tblAuthors.ParamByName('All').AsInteger := 1
+    else
+      DMMain.tblAuthors.ParamByName('All').AsInteger := 0;
+    DMMain.tblAuthors.Close;
+    Screen.Cursor := crHourGlass;
+    DMMain.tblAuthors.Open;
+    FillAuthorTree;
+    Screen.Cursor := crDefault;
+  end;
   SetBooksFilter;
   FillAllBooksTree;
 end;
@@ -3029,11 +2990,7 @@ var
   Visible: boolean;
 begin
   Settings.ShowInfoPanel := not Settings.ShowInfoPanel;
-
-  Visible := (Settings.ShowInfoPanel and not isNonFb2Collection(DMUser.ActiveCollection.CollectionType)
-             or (Settings.ShowInfoPanel and isNonFB2Collection(DMUser.ActiveCollection.CollectionType)
-                 and Settings.AllowMixed));
-
+  Visible := Settings.ShowInfoPanel and not isNonFb2Collection(DMUser.ActiveCollection.CollectionType);
   SetCoversVisible(Visible);
   if Visible then
         tvBooksTreeChange(Nil,Nil);
@@ -3527,7 +3484,6 @@ var
   i: integer;
   Folder: string;
 
-  Local : boolean;
   LibID : integer;
 
   Node: PVirtualNode;
@@ -3577,9 +3533,6 @@ begin
     end;
 
     if CheckID(BookIDList[i].ID) then Continue;
-
-    DMMain.FieldByName(BookIDList[i].ID,'Local',Local);
-    if Local then Continue;
 
     DMMain.GetBookFolder(BookIDList[i].ID,Folder);
     Node := tvDownloadList.AddChild(nil);
@@ -4481,17 +4434,9 @@ begin
   Assert(Assigned(Node));
 
   Data := Tree.GetNodeData(Node);
-
-  if not Assigned(Data) then Exit;
-
-  if (Data.nodeType <> ntBookInfo) then
-  begin
-    if not Tree.HasChildren[Node] then Exit;
-    repeat
-      Node := Tree.GetFirstChild(Node);
-      Data := Tree.GetNodeData(Node);
-    until (Data.nodeType = ntBookInfo);
-  end;
+  Assert(Assigned(Data));
+  if not Assigned(Data) or (Data.nodeType <> ntBookInfo) then
+    Exit;
 
   Screen.Cursor := crHourGlass;
   try

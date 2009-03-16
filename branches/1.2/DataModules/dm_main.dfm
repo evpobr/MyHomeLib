@@ -3,7 +3,11 @@ object DMMain: TDMMain
   Height = 567
   Width = 565
   object DBMain: TABSDatabase
+    Connected = True
     CurrentVersion = '6.02 '
+    DatabaseFileName = 
+      'E:\Projects\MyHomeLib\tags\1.2.0.400\Debug\Bin\Data\librusec_onl' +
+      'ine.hlc'
     DatabaseName = 'MyLib'
     Exclusive = True
     MaxConnections = 5
@@ -40,8 +44,20 @@ object DMMain: TDMMain
         Fields = 'SerID;SeqNumber'
       end
       item
+        Name = 'FullName_Index'
+        Fields = 'Fullname;Title'
+      end
+      item
+        Name = 'Title_Index'
+        Fields = 'Title'
+      end
+      item
         Name = 'File_Index'
         Fields = 'FileName'
+      end
+      item
+        Name = 'Folder_Index'
+        Fields = 'Folder'
       end>
     IndexName = 'ID_Index'
     FieldDefs = <
@@ -72,12 +88,12 @@ object DMMain: TDMMain
       item
         Name = 'Title'
         DataType = ftWideString
-        Size = 100
+        Size = 255
       end
       item
         Name = 'FullName'
         DataType = ftWideString
-        Size = 45
+        Size = 255
       end
       item
         Name = 'InsideNo'
@@ -106,7 +122,7 @@ object DMMain: TDMMain
       item
         Name = 'Folder'
         DataType = ftWideString
-        Size = 128
+        Size = 255
       end
       item
         Name = 'DiscID'
@@ -486,7 +502,6 @@ object DMMain: TDMMain
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
-    TableName = 'Authors'
     Exclusive = False
     Left = 208
     Top = 200
@@ -783,17 +798,37 @@ object DMMain: TDMMain
     Left = 272
     Top = 200
   end
-  object tblAuthors: TABSTable
+  object tblAuthors: TABSQuery
     CurrentVersion = '6.02 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
     Filter = 'Family="'#1040'*"'
-    IndexName = 'AlphabetIndex'
-    TableName = 'Authors'
-    Exclusive = False
+    SQL.Strings = (
+      'select a."*"'
+      'from "authors" a'
+      'where '
+      '('
+      '  :All = 0'
+      '  or'
+      '  a."id" in'
+      '  ('
+      '    select distinct l."authid"'
+      '    from "books" b, "author_list" l'
+      '    where l."bookid" = b."id"'
+      '    and b.local = true'
+      '  )'
+      ')'
+      'order by a.Family, a.Name, a.Middle;')
     Left = 24
     Top = 88
+    ParamData = <
+      item
+        DataType = ftInteger
+        Name = 'All'
+        ParamType = ptInput
+        Value = 0
+      end>
     object tblAuthorsID: TAutoIncField
       FieldName = 'ID'
     end
@@ -1195,7 +1230,7 @@ object DMMain: TDMMain
     end
     object tblBooksTitle: TWideStringField
       FieldName = 'Title'
-      Size = 255
+      Size = 100
     end
     object tblBooksFullName: TWideStringField
       FieldName = 'FullName'

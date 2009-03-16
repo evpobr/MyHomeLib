@@ -35,7 +35,7 @@ type
     tblBooksATitle: TWideStringField;
     tblBooksAFullName: TWideStringField;
     tblBooksASeries: TWideStringField;
-    tblAuthors: TABSTable;
+    tblAuthors: TABSQuery;
     tblBooksARate: TIntegerField;
     tblBooksALibID: TIntegerField;
     tblBooksAInsideNo: TIntegerField;
@@ -222,7 +222,7 @@ procedure TDMMain.Clear;
 begin
   SetTableState(False);
 
-  tblAuthors.EmptyTable;
+//  tblAuthors.EmptyTable;
   tblAuthor_List.EmptyTable;
   tblSeries.EmptyTable;
   tblBooksA.EmptyTable;
