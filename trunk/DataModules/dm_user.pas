@@ -74,11 +74,6 @@ type
     tblGrouppedBooksSeries: TWideStringField;
     tblGrouppedBooksRate: TIntegerField;
     tblGroupList: TABSTable;
-    tblGroupListID: TAutoIncField;
-    tblGroupListName: TWideStringField;
-    tblGroupListAllowDelete: TBooleanField;
-    tblGroupListNotes: TMemoField;
-    tblGroupListIcon: TBlobField;
 
   private
     FCollection: TMHLCollection;
