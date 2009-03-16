@@ -720,7 +720,7 @@ begin
   //
   // TODO -cRelease2.0 : Создавать отдельные серии для каждого автора, с возможностью их объединения
   //
-  if (not FSeries.Locate('Title', BookRecord.Series, [])) then
+  if (not FSeries.Locate('Title', BookRecord.Series, [loCaseInsensitive])) then
   begin
     FSeries.Insert;
     FSeries['Title'] := BookRecord.Series;
