@@ -164,6 +164,8 @@ begin
       FCurrentData.State := dsOK ;
       DMMain.SetLocalStatus(FID,True);
       frmMain.tvDownloadList.DeleteNode(FCurrentNode);
+      FCurrentNode := nil;
+      FCurrentData := nil;
     end
     else
     begin
@@ -175,6 +177,8 @@ begin
   frmMain.lblDownloadState.Caption := 'Готово';
   frmMain.lblDnldAuthor.Caption := '';
   frmMain.lblDnldTitle.Caption :=  '';
+
+  frmMain.lblDownloadCount.Caption := Format('(%d)',[frmMain.tvDownloadList.ChildCount[Nil]]);
 
   frmMain.pbDownloadProgress.Visible := False;
   frmMain.btnPauseDownload.Enabled := False;

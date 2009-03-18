@@ -348,6 +348,7 @@ type
     N26: TMenuItem;
     N34: TMenuItem;
     N36: TMenuItem;
+    lblDownloadCount: TRzLabel;
 
     //
     // События формы
@@ -1976,8 +1977,11 @@ begin
     RestorePositions;
 
 
-//  if FileExists(Settings.WorkPath + 'downloads.sav') then
-//      tvDownloadList.LoadFromfile(Settings.WorkPath + 'downloads.sav');
+  if FileExists(Settings.WorkPath + 'downloads.sav') then
+  begin
+    tvDownloadList.LoadFromfile(Settings.WorkPath + 'downloads.sav');
+    lblDownloadCount.Caption := Format('(%d)',[tvDownloadList.ChildCount[Nil]]);
+  end;
   SetLangBarSize;
 end;
 
@@ -1985,7 +1989,7 @@ procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
   SaveColumns;
 
-//  tvDownloadList.SaveToFile(Settings.WorkPath + 'downloads.sav');
+  tvDownloadList.SaveToFile(Settings.WorkPath + 'downloads.sav');
 
   if DirectoryExists(Settings.TempDir) then ClearDir(Settings.TempDir);
 
@@ -2564,23 +2568,68 @@ procedure TfrmMain.tvDownloadListLoadNode(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Stream: TStream);
 var
   Data: PDownloadData;
-  DataSize: Integer;
+  size: Integer;
+  StrBuffer: PChar;
+
+    function GetString:string;
+    begin
+      Stream.Read(Size, SizeOf(Size));
+      StrBuffer := AllocMem(Size);
+      Stream.Read(StrBuffer^, Size);
+      Result := (StrBuffer);
+      FreeMem(StrBuffer);
+    end;
+
 begin
-  Stream.Read(DataSize, SizeOf(DataSize));
   Data := Sender.GetNodeData(Node);
-  Stream.Read(Data^, DataSize);
+  // ID
+  Stream.Read(Data.ID, SizeOf(Data.ID));
+
+  Data.Title := GetString;
+  Data.Author := GetString;
+
+  // Size
+  Stream.Read(Data.Size, SizeOf(Data.Size));
+
+  Data.FileName := GetString;
+  Data.URL := GetString;
+
+  // State
+  Stream.Read(Data.State, SizeOf(Data.State));
 end;
 
 procedure TfrmMain.tvDownloadListSaveNode(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Stream: TStream);
 var
   Data: PDownloadData;
-  DataSize: Integer;
+  size: Integer;
+
+  procedure WriteString(const S: string);
+  begin
+    Size := ByteLength(S) + 1;
+    Stream.Write(Size, SizeOf(Size));
+    Stream.Write(PChar(S)^, Size);
+  end;
+
 begin
-  Data := tvDownloadList.GetNodeData(Node);
-  DataSize := SizeOf(Data^);
-  Stream.Write(DataSize, SizeOf(DataSize));
-  Stream.WriteBuffer(Data^, DataSize);
+  Data := Sender.GetNodeData(Node);
+
+  if Data = Nil then Exit;
+
+  //  ID
+  Stream.Write(Data.ID, SizeOf(Data.ID));
+
+  WriteString(Data.Title);
+  WriteString(Data.Author);
+
+  // Size
+  Stream.Write(Data.Size, SizeOf(Data.Size));
+
+  WriteString(Data.FileName);
+  WriteString(Data.URL);
+
+  // State
+  Stream.Write(Data.State, SizeOf(Data.State));
 end;
 
 //
@@ -3576,8 +3625,10 @@ begin
     Data.FileName := Folder;
     Data.URL := Format('http://lib.rus.ec/b/%d/download',[LibID]);
   end;
-  if Settings.AutoStartDwnld then btnStartDownloadClick(Sender);
 
+  lblDownloadCount.Caption := Format('(%d)',[tvDownloadList.ChildCount[Nil]]);
+
+  if Settings.AutoStartDwnld then btnStartDownloadClick(Sender);
 end;
 
 procedure TfrmMain.miEditAuthorClick(Sender: TObject);

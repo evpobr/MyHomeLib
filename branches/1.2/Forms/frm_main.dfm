@@ -80,7 +80,8 @@ object frmMain: TfrmMain
       Width = 926
       Height = 33
       BorderWidth = 1
-      ButtonWidth = 37
+      ButtonHeight = 24
+      ButtonWidth = 39
       Caption = 'RusBar'
       DrawingStyle = dsGradient
       EdgeBorders = [ebLeft, ebTop, ebRight, ebBottom]
@@ -108,7 +109,7 @@ object frmMain: TfrmMain
       end
       object ToolButton4: TToolButton
         Tag = 91
-        Left = 26
+        Left = 28
         Top = 0
         Caption = #1040'-'#1071
         ImageIndex = 1
@@ -124,7 +125,8 @@ object frmMain: TfrmMain
       Height = 33
       Margins.Bottom = 5
       BorderWidth = 1
-      ButtonWidth = 35
+      ButtonHeight = 24
+      ButtonWidth = 37
       Caption = 'RusBar'
       DrawingStyle = dsGradient
       EdgeBorders = [ebLeft, ebTop, ebRight, ebBottom]
@@ -149,7 +151,7 @@ object frmMain: TfrmMain
       end
       object ToolButton6: TToolButton
         Tag = 92
-        Left = 24
+        Left = 26
         Top = 0
         Caption = 'A-Z'
         ImageIndex = 1
@@ -412,9 +414,9 @@ object frmMain: TfrmMain
     Width = 942
     Height = 561
     HelpContext = 135
-    ActivePage = TabSheet1
+    ActivePage = TabSheet7
     Align = alClient
-    TabIndex = 0
+    TabIndex = 6
     TabOrder = 3
     OnChange = pgControlChange
     FixedDimension = 19
@@ -1747,7 +1749,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -1959,7 +1960,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2494,7 +2494,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2619,6 +2618,24 @@ object frmMain: TfrmMain
         Align = alTop
         BorderOuter = fsFlatRounded
         TabOrder = 2
+        object lblDownloadCount: TRzLabel
+          AlignWithMargins = True
+          Left = 915
+          Top = 5
+          Width = 12
+          Height = 28
+          Align = alRight
+          Alignment = taRightJustify
+          Caption = '()'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clNavy
+          Font.Height = -16
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          CenterPoint = cpLowerRight
+          ExplicitHeight = 19
+        end
         object btnPauseDownload: TRzBitBtn
           Left = 90
           Top = 6
