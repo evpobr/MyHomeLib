@@ -3,13 +3,9 @@ object DMMain: TDMMain
   Height = 567
   Width = 565
   object DBMain: TABSDatabase
-    Connected = True
-    CurrentVersion = '6.02 '
-    DatabaseFileName = 
-      'E:\Projects\MyHomeLib\tags\1.2.0.400\Debug\Bin\Data\librusec_onl' +
-      'ine.hlc'
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
-    Exclusive = True
+    Exclusive = False
     MaxConnections = 5
     MultiUser = False
     SessionName = 'Default'
@@ -28,7 +24,7 @@ object DMMain: TDMMain
     Top = 208
   end
   object tblBooksA: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -219,7 +215,7 @@ object DMMain: TDMMain
     end
   end
   object tblBooksG: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -413,7 +409,7 @@ object DMMain: TDMMain
     end
   end
   object tblGenres: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -498,7 +494,7 @@ object DMMain: TDMMain
     Top = 216
   end
   object tblAuthorsS: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -524,7 +520,7 @@ object DMMain: TDMMain
     end
   end
   object tblBooksS: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -713,76 +709,6 @@ object DMMain: TDMMain
       FieldName = 'Deleted'
     end
   end
-  object tblSeries: TABSTable
-    CurrentVersion = '6.02 '
-    DatabaseName = 'MyLib'
-    InMemory = False
-    ReadOnly = False
-    Filter = 'Title<>"---"'
-    Filtered = True
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'ID'
-        Options = [ixPrimary, ixUnique]
-      end
-      item
-        Name = 'TiteIndex'
-        Fields = 'Title;AuthID'
-      end
-      item
-        Name = 'AuthorIndex'
-        Fields = 'AuthID;Title'
-      end
-      item
-        Name = 'SeqTitle'
-        Fields = 'Title'
-      end>
-    IndexName = 'TiteIndex'
-    FieldDefs = <
-      item
-        Name = 'ID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'AuthID'
-        Attributes = [faRequired]
-        DataType = ftInteger
-      end
-      item
-        Name = 'GenreCode'
-        Attributes = [faRequired]
-        DataType = ftWideString
-        Size = 20
-      end
-      item
-        Name = 'Title'
-        Attributes = [faRequired]
-        DataType = ftWideString
-        Size = 80
-      end>
-    TableName = 'series'
-    Exclusive = False
-    Left = 208
-    Top = 88
-    object tblSeriesID: TAutoIncField
-      FieldName = 'ID'
-    end
-    object tblSeriesAuthID: TIntegerField
-      FieldName = 'AuthID'
-      Required = True
-    end
-    object tblSeriesTitle: TWideStringField
-      FieldName = 'Title'
-      Required = True
-      Size = 80
-    end
-    object tblSeriesGenreCode: TWideStringField
-      FieldName = 'GenreCode'
-      Required = True
-    end
-  end
   object dsSeries: TDataSource
     DataSet = tblSeries
     Left = 272
@@ -799,11 +725,12 @@ object DMMain: TDMMain
     Top = 200
   end
   object tblAuthors: TABSQuery
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
     Filter = 'Family="'#1040'*"'
+    RequestLive = True
     SQL.Strings = (
       'select a."*"'
       'from "authors" a'
@@ -852,7 +779,7 @@ object DMMain: TDMMain
     end
   end
   object tblBooks_Genre_List: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -939,7 +866,7 @@ object DMMain: TDMMain
     Top = 424
   end
   object tblGenre_List: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1023,7 +950,7 @@ object DMMain: TDMMain
     Top = 152
   end
   object tblAuthor_List: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1096,7 +1023,7 @@ object DMMain: TDMMain
     Top = 152
   end
   object tblBooks: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1278,17 +1205,19 @@ object DMMain: TDMMain
       Lookup = True
     end
     object tblBooksSeries: TWideStringField
+      DisplayWidth = 80
       FieldKind = fkLookup
       FieldName = 'Series'
       LookupDataSet = tblSeriesB
       LookupKeyFields = 'ID'
       LookupResultField = 'Title'
       KeyFields = 'SerID'
+      Size = 80
       Lookup = True
     end
   end
   object tblSeriesA: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1363,7 +1292,7 @@ object DMMain: TDMMain
     Top = 352
   end
   object tblBooks_Genres: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1392,7 +1321,7 @@ object DMMain: TDMMain
     end
   end
   object tblAuthor_Detail: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1426,7 +1355,7 @@ object DMMain: TDMMain
     end
   end
   object tblAuthor_Master: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1502,7 +1431,7 @@ object DMMain: TDMMain
     Top = 424
   end
   object tblSeriesB: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1567,6 +1496,58 @@ object DMMain: TDMMain
       Size = 80
     end
     object WideStringField2: TWideStringField
+      FieldName = 'GenreCode'
+      Required = True
+    end
+  end
+  object tblSeries: TABSQuery
+    CurrentVersion = '6.01 '
+    DatabaseName = 'MyLib'
+    InMemory = False
+    ReadOnly = False
+    Filtered = True
+    RequestLive = True
+    SQL.Strings = (
+      'select s."*"'
+      'from "Series" s'
+      'where  Title<>"---" and '
+      '('
+      '  :All = 0'
+      '  or'
+      '  s."id" in'
+      '  ('
+      '    select b."SerID"'
+      '    from "books" b'
+      '    where b.local = true'
+      '  )'
+      ')'
+      'order by s.Title, s.AuthID;')
+    Left = 208
+    Top = 88
+    ParamData = <
+      item
+        DataType = ftInteger
+        Name = 'All'
+        ParamType = ptInput
+        Value = 0
+      end>
+    object tblSeriesID: TAutoIncField
+      DisplayWidth = 10
+      FieldName = 'ID'
+    end
+    object tblSeriesAuthID: TIntegerField
+      DisplayWidth = 10
+      FieldName = 'AuthID'
+      Required = True
+    end
+    object tblSeriesTitle: TWideStringField
+      DisplayWidth = 80
+      FieldName = 'Title'
+      Required = True
+      Size = 80
+    end
+    object tblSeriesGenreCode: TWideStringField
+      DisplayWidth = 20
       FieldName = 'GenreCode'
       Required = True
     end
