@@ -597,6 +597,8 @@ type
       var BookIDList: TBookIdList);
     function GetActiveBookTable(tag: integer): TAbsTable;
     procedure ClearLabels(Tag: integer);
+    procedure  SetAuthorsShowLocalOnly;
+    procedure  SetSeriesShowLocalOnly;
     procedure SetBooksFilter;
     procedure FillAllBooksTree;
     procedure ChangeLetterButton(S: string);
@@ -1405,6 +1407,8 @@ begin
   SetCoversVisible(not IsNonFB2 and Settings.ShowInfoPanel);
     
 
+  SetAuthorsShowLocalOnly;
+  SetSeriesShowLocalOnly;
   SetBooksFilter;
 
   FillAuthorTree;
@@ -1746,6 +1750,38 @@ begin
       ClearLabels(PAGE_FILTER);
       ClearLabels(PAGE_SEARCH);
     end;
+  end;
+end;
+
+procedure  TfrmMain.SetAuthorsShowLocalOnly;
+begin
+  if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
+  begin
+    if Settings.ShowLocalOnly then
+      DMMain.tblAuthors.ParamByName('All').AsInteger := 1
+    else
+      DMMain.tblAuthors.ParamByName('All').AsInteger := 0;
+    DMMain.tblAuthors.Close;
+    Screen.Cursor := crHourGlass;
+    DMMain.tblAuthors.Open;
+//    FillAuthorTree;
+    Screen.Cursor := crDefault;
+  end;
+end;
+
+procedure  TfrmMain.SetSeriesShowLocalOnly;
+begin
+  if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
+  begin
+    if Settings.ShowLocalOnly then
+      DMMain.tblSeries.ParamByName('All').AsInteger := 1
+    else
+      DMMain.tblSeries.ParamByName('All').AsInteger := 0;
+    DMMain.tblSeries.Close;
+    Screen.Cursor := crHourGlass;
+    DMMain.tblSeries.Open;
+//    FillSeriesTree;
+    Screen.Cursor := crDefault;
   end;
 end;
 
@@ -2959,20 +2995,13 @@ begin
   Settings.ShowLocalOnly := not Settings.ShowLocalOnly;
   tbtnShowLocalOnly.Down := Settings.ShowLocalOnly ;
 
-  if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
-  begin
-    if Settings.ShowLocalOnly then
-      DMMain.tblAuthors.ParamByName('All').AsInteger := 1
-    else
-      DMMain.tblAuthors.ParamByName('All').AsInteger := 0;
-    DMMain.tblAuthors.Close;
-    Screen.Cursor := crHourGlass;
-    DMMain.tblAuthors.Open;
-    FillAuthorTree;
-    Screen.Cursor := crDefault;
-  end;
+  SetAuthorsShowLocalOnly;
+  SetSeriesShowLocalOnly;
   SetBooksFilter;
+
   FillAllBooksTree;
+  FillAuthorTree;
+  FillSeriesTree;
 end;
 
 procedure TfrmMain.SetCoversVisible(State: boolean);

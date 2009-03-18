@@ -17,13 +17,9 @@ type
     dsBooksG: TDataSource;
     tblAuthorsS: TABSTable;
     tblBooksS: TABSTable;
-    tblSeries: TABSTable;
     dsSeries: TDataSource;
     dsAuthorsS: TDataSource;
-    dsBooksS: TDataSource;
-    tblSeriesID: TAutoIncField;
-    tblSeriesAuthID: TIntegerField;
-    tblSeriesTitle: TWideStringField;        
+    dsBooksS: TDataSource;        
     tblAuthorsSID: TAutoIncField;
     tblAuthorsSFamily: TWideStringField;
     tblAuthorsSName: TWideStringField;
@@ -99,7 +95,6 @@ type
     tblSeriesA: TABSTable;
     dsBooks: TDataSource;
     tblBooks_Genres: TABSTable;
-    tblSeriesGenreCode: TWideStringField;
     tblAuthor_ListID: TAutoIncField;
     tblAuthor_ListAuthID: TIntegerField;
     tblAuthor_ListBookID: TIntegerField;
@@ -169,6 +164,11 @@ type
     WideStringField1: TWideStringField;
     WideStringField2: TWideStringField;
     tblBooksSeries: TWideStringField;
+    tblSeries: TABSQuery;
+    tblSeriesID: TAutoIncField;
+    tblSeriesAuthID: TIntegerField;
+    tblSeriesTitle: TWideStringField;
+    tblSeriesGenreCode: TWideStringField;
   private
     FActiveTable: TAbsTable;
     { Private declarations }
@@ -224,7 +224,7 @@ begin
 
 //  tblAuthors.EmptyTable;
   tblAuthor_List.EmptyTable;
-  tblSeries.EmptyTable;
+//  tblSeries.EmptyTable;
   tblBooksA.EmptyTable;
   tblBooksS.EmptyTable;
   tblGenres.EmptyTable;
