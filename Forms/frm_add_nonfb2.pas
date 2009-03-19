@@ -490,15 +490,6 @@ begin
 end;
 
 procedure TfrmAddnonfb2.ScanFolder;
-var
-  i: integer;
-  p: integer;
-  Data: PFileData;
-  A, B: PVirtualNode;
-  FN, Ext: string;
-  SS: string;
-  FullName, LastFolder, Folder: string;
-  ParentName: string;
 begin
   Tree.Clear;
   Tree.NodeDataSize := sizeof(TFileData);
