@@ -37,6 +37,8 @@ type
     FStartDate : TDateTime;
     FIgnoreErrors: boolean;
 
+    FUpdated: boolean;
+
     function DownloadUpdate:boolean;
     function ReplaceFiles:boolean;
     function CheckUpdate(ver: integer): boolean;
@@ -48,7 +50,7 @@ type
     procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
     procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
   public
-
+    property Updated: boolean read FUpdated;
   end;
 
 resourcestring
@@ -89,6 +91,7 @@ begin
   begin
     Teletype(rstrUpdatingFromLocalArchive,tsInfo);
     Result := True;
+    FUpdated := Result;
     Exit;
   end;
 
@@ -97,6 +100,7 @@ begin
   //
   try
     Result := CheckLibVersion(Ver, RemoteVersion);
+    FUpdated := Result;
     if Result then
       Teletype(Format(rstrListsUpdateIsAvailable, [RemoteVersion]),tsInfo)
     else

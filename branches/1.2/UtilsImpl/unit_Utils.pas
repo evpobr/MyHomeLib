@@ -22,7 +22,7 @@ uses
   
 procedure SyncOnLineFiles;
 procedure SyncFolders;
-procedure LibrusecUpdate;
+function LibrusecUpdate: boolean;
 
 implementation
 
@@ -72,7 +72,7 @@ begin
   end;
 end;
 
-procedure LibrusecUpdate;
+function LibrusecUpdate: boolean;
 var
   worker : TLibUpdateThread;
   ProgressForm : TImportProgressFormEx;
@@ -84,6 +84,7 @@ begin
     try
       ProgressForm.WorkerThread := worker;
       ProgressForm.ShowModal;
+      Result := worker.Updated;
     finally
       ProgressForm.Free;
     end;

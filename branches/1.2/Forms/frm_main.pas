@@ -1889,9 +1889,9 @@ begin
                 'MyHomeLib - первый запуск',mb_YesNo) = mrYes) then
   begin
     RenameFile(Settings.SystemFileName[sfLibRusEcinpx],Settings.SystemFileName[sfLibRusEcUpdate]);
-    unit_utils.LibrusecUpdate;
     DeleteFile(Settings.WorkPath + CHECK_FILE);
-    InitCollection(True);
+    if unit_utils.LibrusecUpdate then
+      InitCollection(True);
   end;
 end;
 
@@ -4678,8 +4678,8 @@ end;
 
 procedure TfrmMain.miUpdateClick(Sender: TObject);
 begin
-  unit_utils.LibrusecUpdate;
-  InitCollection(True);
+  if unit_utils.LibrusecUpdate then
+    InitCollection(True);
 end;
 
 procedure TfrmMain.mi_dwnl_LocateAuthorClick(Sender: TObject);
