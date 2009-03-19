@@ -104,6 +104,9 @@ type
     FBGColor: TColor;
     FFontColor: TColor;
 
+    FDeletedColor: TColor;
+    FLocalColor: TColor;
+
     // SEARCH_SECTION
     FFullTextSearch: Boolean;
 
@@ -245,6 +248,9 @@ type
     property SeriesBookColor: TColor read FSeriesBookColor write FSeriesBookColor;
     property BGColor: TColor read FBGColor write FBGColor;
     property FontColor: TColor read FFontColor write FFontColor;
+    property DeletedColor: TColor read FDeletedColor write FDeletedColor;
+    property LocalColor: TColor read FLocalColor write FLocalColor;
+
     property WindowState: TWindowState read FWindowState write FWindowState;
 
     property FullTextSearch: Boolean read FFullTextSearch write FFullTextSearch;
@@ -480,6 +486,9 @@ begin
     FBGColor := iniFile.ReadInteger(COLORS_SECTION, 'ASG Tree', clWhite);
     FFontColor := iniFile.ReadInteger(COLORS_SECTION, 'Font', clBlack);
 
+    FLocalColor := iniFile.ReadInteger(COLORS_SECTION, 'Downloaded', clBlack);
+    FDeletedColor := iniFile.ReadInteger(COLORS_SECTION, 'Deleted', clGray);
+
     //
     // SEARCH_SECTION
     //
@@ -591,6 +600,9 @@ begin
     iniFile.WriteInteger(COLORS_SECTION, 'SeriesBook', FSeriesBookColor);
     iniFile.WriteInteger(COLORS_SECTION, 'ASG Tree', FBGColor);
     iniFile.WriteInteger(COLORS_SECTION, 'Font', FFontColor);
+
+    iniFile.WriteInteger(COLORS_SECTION, 'Downloaded', FLocalColor);
+    iniFile.WriteInteger(COLORS_SECTION, 'Deleted', FDeletedColor);
 
     //
     // SEARCH_SECTION

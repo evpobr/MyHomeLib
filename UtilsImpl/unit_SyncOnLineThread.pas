@@ -73,9 +73,7 @@ begin
       if FileExists(Root + TmpFolder)  then
       begin
           // если есть, переименовываем и результат заносим в базу
-        DMMain.tblBooks.Edit;
-        DMMain.tblBooksLocal.Value := RenameFile(Root + TmpFolder, Root + DMMain.tblBooksFolder.Value);
-        DMMain.tblBooks.Post;
+        DMMain.SetLocalStatus(DMMain.tblBooksId.Value, RenameFile(Root + TmpFolder, Root + DMMain.tblBooksFolder.Value));
       end;
       //
       //  Проверяем был ли файл закачан ранее и ставим отметку в базу
@@ -85,11 +83,7 @@ begin
       Local := FileExists(Root + DMMain.tblBooksFolder.Value);
 
       if DMMain.tblBooksLocal.Value <> local then
-      begin
-        DMMain.tblBooks.Edit;
-        DMMain.tblBooksLocal.Value := Local;
-        DMMain.tblBooks.Post;
-      end;
+        DMMain.SetLocalStatus(DMMain.tblBooksId.Value,Local);
     except
       on E:Exception do
         Application.MessageBox(PChar('Какие-то проблемы с книгой ' + TmpFolder),'',MB_OK);
