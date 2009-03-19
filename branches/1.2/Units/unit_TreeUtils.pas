@@ -18,6 +18,12 @@ uses
   unit_Globals,
   SysUtils;
 
+
+type
+
+  TSelectionList = array of PVirtualNode;
+
+
 function FindParentInTree(Tree: TVirtualStringTree; Folder: string): PVirtualNode;
 function FindSeriesInTree(Tree: TVirtualStringTree; Parent: PvirtualNode; SerID: integer): PVirtualNode;
 procedure SortChild(Tree: TVirtualStringTree; Parent: PVirtualNode);
@@ -25,8 +31,25 @@ procedure SortChild(Tree: TVirtualStringTree; Parent: PVirtualNode);
 function GetSelectedBookData(Tree: TVirtualStringTree): PBookData;
 procedure SortSeries(Tree: TVirtualStringTree; Parent: PVirtualNode);
 procedure SelectBookById(Tree: TVirtualStringTree; ID: integer);
+procedure GetSeelections(Tree: TVirtualStringTree; out List: TSelectionList);
 
 implementation
+
+
+procedure GetSeelections(Tree: TVirtualStringTree; out List: TSelectionList);
+var
+  Node: PVirtualNode;
+  i: integer;
+begin
+  SetLength(List,Tree.SelectedCount);
+  Node := Tree.GetFirstSelected;
+  for I := 0 to Tree.SelectedCount - 1 do
+  begin
+    List[i] := Node;
+    Node := Tree.GetNextSelected(Node);
+  end;
+end;
+
 
 function FindParentInTree(Tree: TVirtualStringTree; Folder: string): PVirtualNode;
 var

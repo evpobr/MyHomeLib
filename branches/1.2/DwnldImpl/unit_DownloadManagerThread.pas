@@ -34,6 +34,8 @@ type
 
     FError : boolean;
 
+    FControlState: boolean;
+
   protected
     procedure UpdateProgress;
     procedure GetCurrentFile;
@@ -45,6 +47,9 @@ type
     procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
     procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
     procedure WorkFunction;
+
+    procedure SetControlsState;
+
   public
     procedure Stop;
 
@@ -264,6 +269,12 @@ begin
 end;
 
 
+procedure TDownloadManagerThread.SetControlsState;
+begin
+  frmMain.tlbrDownloadList.Enabled := FControlState;
+  frmMain.mi_dwnl_Delete.Enabled := FControlState;
+end;
+
 procedure TDownloadManagerThread.Stop;
 begin
   FCanceled := True;
@@ -298,6 +309,9 @@ procedure TDownloadManagerThread.WorkFunction;
 var
   Res: integer;
 begin
+  FControlState := False;
+  Synchronize(SetControlsState);
+
   FCanceled := False;
   FIgnoreErrors := False;
   FError := False;
@@ -327,6 +341,8 @@ begin
     Synchronize(Finished);
   finally
     FidHTTP.Free;
+    FControlState := True;
+    Synchronize(SetControlsState);
   end;
 
 end;

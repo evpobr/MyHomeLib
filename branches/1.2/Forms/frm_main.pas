@@ -349,6 +349,15 @@ type
     N34: TMenuItem;
     N36: TMenuItem;
     lblDownloadCount: TRzLabel;
+    tlbrDownloadList: TRzToolbar;
+    RzSpacer1: TRzSpacer;
+    ilDownloadToolBar: TImageList;
+    BtnDwnldUp: TRzToolButton;
+    BtnDwnldDown: TRzToolButton;
+    BtnDelete: TRzToolButton;
+    BtnFirstRecord: TRzToolButton;
+    BtnLastRecord: TRzToolButton;
+    RzSpacer2: TRzSpacer;
 
     //
     // События формы
@@ -465,7 +474,6 @@ type
     procedure miEditSeriesClick(Sender: TObject);
     procedure miEditGenresClick(Sender: TObject);
     procedure miUpdateClick(Sender: TObject);
-    procedure BtnFav_addClick(Sender: TObject);
     procedure miSyncOnlineClick(Sender: TObject);
     procedure btnSwitchTreeModeClick(Sender: TObject);
     //
@@ -519,6 +527,7 @@ type
       Node: PVirtualNode; Stream: TStream);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure N34Click(Sender: TObject);
+    procedure MoveDwnldListNodes(Sender: TObject);
 
   private
 
@@ -1233,6 +1242,7 @@ begin
     (frmMain.ActiveControl as TRzComboBox).SelLength := 0;
    end;
 end;
+
 
 function TfrmMain.GetActiveView: TView;
 const
@@ -2657,12 +2667,20 @@ begin
   FillBooksTree(0, tvBooksF, nil, DMUser.tblFavorites, True, True); // избранное
 end;
 
-procedure TfrmMain.BtnFav_addClick(Sender: TObject);
+procedure TfrmMain.MoveDwnldListNodes(Sender: TObject);
+var
+  Node: PVirtualNode;
+  i: integer;
+  List: TSelectionList;
 begin
-  if ActiveView = FavoritesView then
-    miDelFavoritesClick(Sender)
-  else
-    miAddFavoritesClick(Sender);
+  GetSeelections(tvDownloadList,List);
+  for I := 0 to tvDownloadList.SelectedCount - 1 do
+    case (Sender as TrzToolButton).Tag of
+      20: tvDownloadList.MoveTo(List[tvDownloadList.SelectedCount - i - 1],tvDownloadList.GetFirst,amInsertBefore,False);
+      21: tvDownloadList.MoveTo(List[i],tvDownloadList.GetPrevious(List[i]),amInsertBefore,False);
+      22: tvDownloadList.MoveTo(List[tvDownloadList.SelectedCount - i - 1],tvDownloadList.GetNext(List[tvDownloadList.SelectedCount - i - 1]),amInsertAfter,False);
+      23: tvDownloadList.MoveTo(List[i],tvDownloadList.GetLast,amInsertAfter,False);
+    end;
 end;
 
 procedure TfrmMain.CopyToCollectionClick(Sender: TObject);
@@ -2918,31 +2936,32 @@ begin
       if not FileExists(Panel.Folder) then
           raise EInvalidOp.Create('Архив ' + Panel.Folder + ' не найден!');
 
-
       DMMain.FieldByName(0,'InsideNo',No);
 
-      Zip := TZipForge.Create(nil);
-      FS := TMemoryStream.Create;
-      try
-        Zip.FileName := Panel.Folder;
-        Zip.BaseDir := Settings.TempPath;
-        Zip.OpenArchive;
-        Zip.ExtractToStream(GetFileNameZip(Zip,No),FS);
-        WorkFile := Settings.ReadPath + Format('%s - %s.fb2',
+      WorkFile := Settings.ReadPath + Format('%s - %s.fb2',
                                               [CheckSymbols(Panel.Author),
                                                CheckSymbols(Panel.Title)]);
-        fs.SaveToFile(WorkFile);
-      finally
-        FS.Free;
-        Zip.Free;
-      end;
+
+      if not FileExists(WorkFile) then
+      begin
+        Zip := TZipForge.Create(nil);
+        FS := TMemoryStream.Create;
+        try
+          Zip.FileName := Panel.Folder;
+          Zip.BaseDir := Settings.TempPath;
+          Zip.OpenArchive;
+          Zip.ExtractToStream(GetFileNameZip(Zip,No),FS);
+          fs.SaveToFile(WorkFile);
+        finally
+          FS.Free;
+          Zip.Free;
+        end;
+      end; // if Exists
     end
     else
       WorkFile := Panel.Folder + Panel.FileName;
     Settings.Readers.RunReader(WorkFile);
-
     Tree.RepaintNode(Tree.GetFirstSelected);
-
   finally
     Screen.Cursor := crDefault;
   end;
@@ -4514,9 +4533,17 @@ begin
   Assert(Assigned(Node));
 
   Data := Tree.GetNodeData(Node);
-  Assert(Assigned(Data));
-  if not Assigned(Data) or (Data.nodeType <> ntBookInfo) then
-    Exit;
+
+  if not Assigned(Data) then Exit;
+
+  if (Data.nodeType <> ntBookInfo) then
+  begin
+    if not Tree.HasChildren[Node] then Exit;
+    repeat
+      Node := Tree.GetFirstChild(Node);
+      Data := Tree.GetNodeData(Node);
+    until (Data.nodeType = ntBookInfo);
+  end;
 
   Screen.Cursor := crHourGlass;
   try
@@ -4544,8 +4571,7 @@ begin
     edLocateAuthor.Text := FN;
   finally
     Screen.Cursor := crDefault;
-  end;
-end;
+  end;end;
 
 procedure TfrmMain.miCheckUpdatesClick(Sender: TObject);
 var
