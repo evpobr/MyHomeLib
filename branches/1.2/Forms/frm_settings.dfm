@@ -63,7 +63,7 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 414
     Height = 413
-    ActivePage = tsBehavour
+    ActivePage = tsInterface
     Align = alClient
     TabOrder = 1
     object tsDevices: TTabSheet
@@ -390,7 +390,6 @@ object frmSettings: TfrmSettings
         Align = alClient
         Caption = #1057#1087#1080#1089#1082#1080
         TabOrder = 0
-        ExplicitHeight = 163
         object Label9: TLabel
           Left = 19
           Top = 45
@@ -518,6 +517,59 @@ object frmSettings: TfrmSettings
           Caption = #1062#1074#1077#1090' '#1096#1088#1080#1092#1090#1072
           TabOrder = 7
           OnClick = Button1Click
+        end
+        object pnlDwnld: TRzPanel
+          Left = 24
+          Top = 185
+          Width = 174
+          Height = 25
+          BorderOuter = fsFlatBold
+          Caption = #1057#1082#1072#1095#1072#1085#1085#1099#1077
+          Color = clWhite
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 8
+          OnClick = pnlDwnldClick
+        end
+        object pnlDeleted: TRzPanel
+          Left = 204
+          Top = 185
+          Width = 170
+          Height = 25
+          BorderOuter = fsFlatBold
+          Caption = #1059#1076#1072#1083#1077#1085#1085#1099#1077' '#1085#1072' lib.rus.ec'
+          Color = clWhite
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 9
+          OnClick = pnlDwnldClick
+        end
+        object RzPanel5: TRzPanel
+          Left = 24
+          Top = 216
+          Width = 174
+          Height = 25
+          BorderOuter = fsFlatBold
+          Caption = #1055#1088#1086#1095#1080#1090#1072#1085#1085#1099#1077
+          Color = clWhite
+          Enabled = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 10
+          Visible = False
+          OnClick = pnlDwnldClick
         end
       end
     end
@@ -774,8 +826,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsBehavior'
       ImageIndex = 5
       TabVisible = False
-      ExplicitTop = 24
-      ExplicitHeight = 385
       object RzGroupBox7: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -785,7 +835,6 @@ object frmSettings: TfrmSettings
         Align = alClient
         Caption = #1055#1086#1074#1077#1076#1077#1085#1080#1077
         TabOrder = 0
-        ExplicitHeight = 174
         object cbShowSubGenreBooks: TCheckBox
           Left = 24
           Top = 26
@@ -865,8 +914,8 @@ object frmSettings: TfrmSettings
     end
   end
   object dlgColors: TColorDialog
-    Left = 48
-    Top = 168
+    Left = 32
+    Top = 176
   end
   object dlgSelectDir: TRzSelDirDialog
     CenterToParent = True

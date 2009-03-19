@@ -185,6 +185,7 @@ type
     ID, SeriesID, Size, Rate, No, ImageIndex: Integer;
     RatePos: Integer;
     Locale: boolean;
+    Deleted: boolean;
     Date: TDateTime;
   end;
 

@@ -130,6 +130,9 @@ type
     cbAutoStartDwnld: TCheckBox;
     cbShowFb2Info: TCheckBox;
     cbAllowMixedCollections: TCheckBox;
+    pnlDwnld: TRzPanel;
+    pnlDeleted: TRzPanel;
+    RzPanel5: TRzPanel;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
@@ -146,6 +149,7 @@ type
     procedure RzBitBtn1Click(Sender: TObject);
     procedure tbtnInsert1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure pnlDwnldClick(Sender: TObject);
 
   private
     procedure EditReader(AItem: TListItem);
@@ -236,6 +240,8 @@ begin
   pnlBS.Font.Color := Settings.FontColor;
   pnlASG.Font.Color := Settings.FontColor;
 
+  pnlDwnld.Font.Color := Settings.LocalColor ;
+  pnlDeleted.Font.Color := Settings.DeletedColor;
 
   // Page 4 - Internet
   edProxyServer.Text := Settings.ProxyServer;
@@ -309,6 +315,9 @@ begin
   Settings.SeriesBookColor := pnlBS.Color;
   Settings.BGColor := pnlASG.Color;
   Settings.FontColor := pnlASG.Font.Color;
+
+  Settings.LocalColor := pnlDwnld.Font.Color;
+  Settings.DeletedColor := pnlDeleted.Font.Color;
 
   // Page 4 - Internet
   Settings.ProxyServer := edProxyServer.Text;
@@ -522,6 +531,13 @@ begin
   dlgColors.Color := (Sender as TrzPanel).Color;
   if dlgColors.Execute then
     (Sender as TrzPanel).Color := dlgColors.Color;
+end;
+
+procedure TfrmSettings.pnlDwnldClick(Sender: TObject);
+begin
+  dlgColors.Color := (Sender as TrzPanel).Font.Color;
+  if dlgColors.Execute then
+    (Sender as TrzPanel).Font.Color := dlgColors.Color;
 end;
 
 procedure TfrmSettings.tbtnInsert1Click(Sender: TObject);

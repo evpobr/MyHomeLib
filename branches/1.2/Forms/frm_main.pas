@@ -1392,7 +1392,7 @@ begin
   miEditGenres.Visible := IsPrivate;
   miEditSeries.Visible := IsPrivate;
   miBookEdit.Visible := IsPrivate;
-  miDeleteBook.Visible := IsPrivate; // DMUser.ActiveCollection.AllowDelete;
+  miDeleteBook.Visible := IsPrivate or IsOnline; // DMUser.ActiveCollection.AllowDelete;
 
   if Assigned(FLastLetterA) then
     FLastLetterA.Down := False;
@@ -2413,11 +2413,15 @@ begin
   case Data.nodeType of
     ntAuthorInfo: Color := Settings.AuthorColor;
     ntSeriesInfo: Color := Settings.SeriesColor;
-    ntBookInfo: Color := Settings.BookColor;
+    ntBookInfo:begin
+                 if Data.No <> 0 then
+                   Color := Settings.SeriesBookColor
+                 else
+                   Color := Settings.BookColor;
+               end;
   end;
 
-  if (Data.nodeType = ntBookInfo) and (Data.Series <> '') then
-    Color := Settings.SeriesBookColor;
+
 
   TargetCanvas.Brush.Color := Color;
   TargetCanvas.FillRect(CellRect);
@@ -2554,7 +2558,12 @@ var
 begin
   Data := Sender.GetNodeData(Node);
   if Data.nodeType <> ntBookInfo then
-    TargetCanvas.Font.Style := [fsBold];
+      TargetCanvas.Font.Style := [fsBold]
+    else
+    begin
+      if Data.Locale then TargetCanvas.Font.Color := Settings.LocalColor;
+      if Data.Deleted then TargetCanvas.Font.Color := Settings.DeletedColor;
+    end;
 end;
 
 procedure TfrmMain.tvDownloadListGetText(Sender: TBaseVirtualTree;
@@ -3319,6 +3328,8 @@ begin
               if (COL_RATE in Columns) and (not TableB.FieldByName('Rate').IsNull) then
                 Data.Rate := TableB.FieldByName('Rate').AsInteger;
 
+              Data.Deleted := TableB.FieldByName('Deleted').Value;
+
               Data.nodeType := ntBookInfo;
 
               Inc(i);
@@ -3445,6 +3456,11 @@ var
   Data: PBookData;
   ALibrary: TMHLLibrary;
   FUpdateFavorites: Boolean;
+
+  FileName,Folder: string;
+  No: integer;
+
+
 begin
   FUpdateFavorites := False;
 
@@ -3472,18 +3488,28 @@ begin
 
       if (Data.nodeType = ntBookInfo) and ((Tree.CheckState[Node] = csCheckedNormal) or (Tree.Selected[Node])) then
       begin
-        ALibrary.BeginBulkOperation;
-        try
-          ALibrary.DeleteBook(Data.ID);
-          ALibrary.EndBulkOperation(True);
-        except
-          ALibrary.EndBulkOperation(False);
-        end;
-
-        if DMUser.tblFavorites.Locate('DatabaseID;InnerID', VarArrayOf([Settings.ActiveCollection, Data.ID]), []) then
+        if isOnlineCollection(DMUser.ActiveCollection.CollectionType) and Data.Locale then
         begin
-          DMUser.tblFavorites.Delete;
-          FUpdateFavorites := True;
+          DMMain.GetBookFileName(Data.ID, FileName, Folder, No);
+          if DeleteFile(FCollectionRoot + Folder) then
+            DMMain.SetLocalStatus(Data.ID,False);
+        end
+        else
+        begin
+
+          ALibrary.BeginBulkOperation;
+          try
+            ALibrary.DeleteBook(Data.ID);
+            ALibrary.EndBulkOperation(True);
+          except
+            ALibrary.EndBulkOperation(False);
+          end;
+
+          if DMUser.tblFavorites.Locate('DatabaseID;InnerID', VarArrayOf([Settings.ActiveCollection, Data.ID]), []) then
+          begin
+            DMUser.tblFavorites.Delete;
+            FUpdateFavorites := True;
+          end;
         end;
       end;
 
