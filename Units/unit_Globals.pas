@@ -865,6 +865,7 @@ var
   S: String;
 
 begin
+  Result := 0;
   if FileExists(Settings.SystemFileName[sfLibRusEcVerInfo]) then
   begin
     AssignFile(F, Settings.SystemFileName[sfLibRusEcVerInfo]);
