@@ -358,6 +358,7 @@ type
     BtnFirstRecord: TRzToolButton;
     BtnLastRecord: TRzToolButton;
     RzSpacer2: TRzSpacer;
+    ToolButton7: TToolButton;
 
     //
     // События формы
@@ -528,6 +529,7 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure N34Click(Sender: TObject);
     procedure MoveDwnldListNodes(Sender: TObject);
+    procedure BtnFav_addClick(Sender: TObject);
 
   private
 
@@ -767,6 +769,14 @@ end;
 procedure TfrmMain.btnDeleteDownloadClick(Sender: TObject);
 begin
   tvDownloadList.DeleteSelectedNodes;
+end;
+
+procedure TfrmMain.BtnFav_addClick(Sender: TObject);
+begin
+ if ActiveView = FavoritesView then
+    miDelFavoritesClick(Sender)
+  else
+    miAddFavoritesClick(Sender);
 end;
 
 procedure TfrmMain.SetColumns;
@@ -1851,18 +1861,25 @@ function TfrmMain.DoCheckUpdatesOnStart: Boolean;
 var
   LocalVersion: Integer;
   RemoteVersion: Integer;
+  Active: Integer;
+
 begin
   Result := False;
 
-  if not DMUser.FindFirstExternalCollection then
-    Exit;
+  Active := DMUser.ActiveCollection.ID;
 
-  LocalVersion := DMUser.ActiveCollection.Version;
-  try
-    Result := CheckLibVersion(LocalVersion, RemoteVersion);
-  except
+  if DMUser.FindFirstExternalCollection then
+  begin
+    LocalVersion := DMUser.ActiveCollection.Version;
+    try
+      Result := CheckLibVersion(LocalVersion, RemoteVersion);
+    except
     // ignore all errors
+    end;
   end;
+
+  DMUser.ActivateCollection(Active);
+
 end;
 
 procedure TfrmMain.SetLangBarSize;
@@ -1903,7 +1920,6 @@ procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   if CheckActiveDownloads then
       CanClose :=( MessageDlg('В списке есть незавершенные закачки!' + #13 +
-                  'При выходе из программы они будут утеряны.' + #13 +
                   'Вы все еще хотите выйти из программы?', mtWarning, mbYesNo, 0) = mrYes)
   else CanClose := True;
 end;
@@ -1960,9 +1976,24 @@ begin
   SetHeaderPopUp;
 
   frmSplash.lblState.Caption := main_loading_collection;
-  InitCollection(False);
 
+  InitCollection(False);
   DMMain.SetActiveTable(pgControl.ActivePageIndex);
+
+  Application.HelpFile := Settings.SystemFileName[sfAppHelp];
+
+  TheFirstRun;
+
+  if not DMUser.tblBases.IsEmpty then
+    RestorePositions;
+
+  if FileExists(Settings.WorkPath + 'downloads.sav') then
+  begin
+    tvDownloadList.LoadFromfile(Settings.WorkPath + 'downloads.sav');
+    lblDownloadCount.Caption := Format('(%d)',[tvDownloadList.ChildCount[Nil]]);
+  end;
+
+  SetLangBarSize;
 
   frmSplash.lblState.Caption := main_check_updates;
   if Settings.CheckUpdate then
@@ -1978,21 +2009,8 @@ begin
       if MessageDlg('Доступно обновление для коллекций "lib.rus.ec".' + #13 + ' Начать обновление ?', mtWarning, [mbYes, mbNo], 0) = mrYes then
         miUpdateClick(Sender);
 
-  Application.HelpFile := Settings.SystemFileName[sfAppHelp];
+  frmSplash.lblState.Caption := 'Старт ...';
 
-  TheFirstRun;
-
-
-  if not DMUser.tblBases.IsEmpty then
-    RestorePositions;
-
-
-  if FileExists(Settings.WorkPath + 'downloads.sav') then
-  begin
-    tvDownloadList.LoadFromfile(Settings.WorkPath + 'downloads.sav');
-    lblDownloadCount.Caption := Format('(%d)',[tvDownloadList.ChildCount[Nil]]);
-  end;
-  SetLangBarSize;
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
@@ -2473,6 +2491,8 @@ begin
         RoundRect(X + i * 10 - 9, 4, X + i * 10, 13, 1, 1);
      end;
   end;
+
+
 end;
 
 procedure TfrmMain.tvBooksTreeKeyDown(Sender: TObject; var Key: Word;
@@ -2560,10 +2580,11 @@ begin
   if Data.nodeType <> ntBookInfo then
       TargetCanvas.Font.Style := [fsBold]
     else
-    begin
-      if Data.Locale then TargetCanvas.Font.Color := Settings.LocalColor;
-      if Data.Deleted then TargetCanvas.Font.Color := Settings.DeletedColor;
-    end;
+      if not Sender.Selected[Node] then
+      begin
+        if Data.Locale then TargetCanvas.Font.Color := Settings.LocalColor;
+        if Data.Deleted then TargetCanvas.Font.Color := Settings.DeletedColor;
+      end;
 end;
 
 procedure TfrmMain.tvDownloadListGetText(Sender: TBaseVirtualTree;
@@ -3076,9 +3097,9 @@ begin
   SetSeriesShowLocalOnly;
   SetBooksFilter;
 
-  FillAllBooksTree;
   FillAuthorTree;
   FillSeriesTree;
+  FillAllBooksTree;
 end;
 
 procedure TfrmMain.SetCoversVisible(State: boolean);
@@ -3988,6 +4009,7 @@ begin
         DMUser.tblFavoritesLibID.Value := DMMain.tblBooksLibID.Value;
         DMUser.tblFavoritesSize.Value := DMMain.tblBooksSize.Value;
         DMUser.tblFavoritesDeleted.Value := DMMain.tblBooksDeleted.Value;
+        DMUser.tblFavoritesLocal.Value := DMMain.tblBooksLocal.Value;
 
         if not DMMain.tblBooksFolder.IsNull then
           DMUser.tblFavoritesFolder.Value := FCollectionRoot + CheckSymbols(DMMain.tblBooksFolder.Value)
