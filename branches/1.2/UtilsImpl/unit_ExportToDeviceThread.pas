@@ -161,11 +161,16 @@ begin
 
     Folder := IncludeTrailingPathDelimiter(trim(CheckSymbols(Folder)));
     FileName := Trim(CheckSymbols(FileName));
+
+    InsideFileName := FullName + ' - ' + FTable.FieldByName('Title').AsString;
+
     if Settings.TransliterateFileName then
     begin
+      InsideFileName := Transliterate(InsideFileName);
       Folder := Transliterate(Folder);
       FileName := Transliterate(FileName);
     end;
+
     FileName := FileName + DMMain.tblBooks['Ext'];
   end;
 
@@ -180,7 +185,6 @@ begin
       Exit;
     end;
 
-    InsideFileName := FullName + ' - ' + FTable.FieldByName('Title').AsString;
     InsideFileName := Trim(CheckSymbols(InsideFileName)) + DMMain.tblBooks['Ext'];
 
     fs := TMemoryStream.Create;

@@ -701,7 +701,7 @@ begin
   while Node <> nil do
   begin
     Data := tvDownloadList.GetNodeData(Node);
-    if Data.State <> dsOk then
+    if Data.State = dsRun then
     begin
       Result := True;
       Break;
@@ -2816,6 +2816,7 @@ begin
   //  dlgFolder.Directory := Settings.DeviceDir;
   ScriptID := (Sender as TComponent).Tag;
 
+
   if isFB2Collection(DMUser.ActiveCollection.CollectionType) then
   case ScriptID of
     850: ExportMode := emFb2;
@@ -2827,7 +2828,10 @@ begin
   else
     ExportMode := emFb2;
 
-  if (ScriptID = 0) and (Settings.PromptDevicePath) then
+
+  Dec(ScriptID,901);
+
+  if (ScriptID < 1 ) and (Settings.PromptDevicePath) then
     if not dlgFolder.Execute then
       Exit
     else
@@ -2837,7 +2841,6 @@ begin
       }
       Settings.DeviceDir := dlgFolder.Directory;
 
-  Dec(ScriptID,901);
 
   if ScriptID >= 0 then
   begin
@@ -2978,7 +2981,7 @@ begin
         FS := TMemoryStream.Create;
         try
           Zip.FileName := Panel.Folder;
-          Zip.BaseDir := Settings.TempPath;
+          Zip.BaseDir := Settings.ReadPath;
           Zip.OpenArchive;
           Zip.ExtractToStream(GetFileNameZip(Zip,No),FS);
           fs.SaveToFile(WorkFile);
