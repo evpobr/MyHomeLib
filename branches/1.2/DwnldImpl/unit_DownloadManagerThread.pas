@@ -129,7 +129,7 @@ begin
           else
           begin
             FS.SaveToFile(FCurrentFile);
-            FError := False;
+            FError := not TestArchive(FCurrentFile);
           end;
         end;
       finally

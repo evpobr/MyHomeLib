@@ -151,6 +151,7 @@ function GetFileNameZip(Zip: TZipForge; No: integer): string;
 function CleanExtension(const Ext: string): string;
 
 procedure FlipBitmapV(Bitmap: Graphics.TBitmap);
+function TestArchive(FileName: string): boolean;
 
 type
   TAppLanguage = (alEng, alRus);
@@ -950,6 +951,29 @@ begin
   DstRect := Rect(-1, Y, X, -1);
   Bitmap.Canvas.CopyRect(DstRect, Bitmap.Canvas, SrcRect);
 end;
+
+function TestArchive(FileName: string): boolean;
+var
+  Zip: TZipForge;
+begin
+  Result := False;
+  Zip := TZipForge.Create(nil);
+  try
+    Zip.FileName := FileName;
+    Zip.TempDir := Settings.TempDir;
+    Zip.OpenArchive;
+    try
+      Zip.TestFiles('*.*');
+    except
+
+    end;
+    Zip.CloseArchive;
+    Result := True;
+  finally
+    Zip.Free;
+  end;
+end;
+
 
 end.
 

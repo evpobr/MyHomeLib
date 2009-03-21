@@ -273,7 +273,6 @@ type
     RzPanel15: TRzPanel;
     RzPanel17: TRzPanel;
     RzPanel18: TRzPanel;
-    lblAuthor: TRzDBLabel;
     lblBooksTotalA: TRzLabel;
     RzPanel23: TRzPanel;
     tvBooksA: TVirtualStringTree;
@@ -302,7 +301,6 @@ type
     RzPanel3: TRzPanel;
     RzPanel4: TRzPanel;
     RzPanel5: TRzPanel;
-    lblSeries: TRzDBLabel;
     lblBooksTotalS: TRzLabel;
     tvBooksS: TVirtualStringTree;
     RichEdit1: TRichEdit;
@@ -359,6 +357,8 @@ type
     BtnLastRecord: TRzToolButton;
     RzSpacer2: TRzSpacer;
     ToolButton7: TToolButton;
+    lblAuthor: TRzLabel;
+    lblSeries: TRzLabel;
 
     //
     // События формы
@@ -1730,12 +1730,14 @@ begin
     begin
       ipnlAuthors.Clear;
       cpCoverA.Clear;
+      lblAuthor.Caption := '';
     end;
 
     PAGE_SERIES:
     begin
       ipnlSeries.Clear;
       cpCoverS.Clear;
+      lblSeries.Caption := '';
     end;
 
     PAGE_GENRES:
@@ -2259,6 +2261,7 @@ begin
   ClearLabels(PAGE_AUTHORS);
   ID := Data^.ID;
   DMMain.tblAuthors.Locate('ID', ID, []);
+  lblAuthor.Caption := Data.Text;
   FillBooksTree(ID, tvBooksA, DMMain.tblAuthor_List, DMMain.tblBooksA, False, True); // авторы
 end;
 
@@ -2273,6 +2276,7 @@ begin
   ClearLabels(PAGE_SERIES);
   ID := Data^.ID;
   DMMain.tblSeries.Locate('ID', ID, []);
+  lblSeries.Caption := Data.Text;
   FillBooksTree(ID, tvBooksS, nil, DMMain.tblBooksS, False, False); // авторы
 end;
 

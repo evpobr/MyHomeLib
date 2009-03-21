@@ -70,9 +70,6 @@ type
 
     function Show(Folder, FileName: string; No: integer):boolean;
 
-
-
-
   published
     { Published declarations }
     property TmpFolder:string read FTmp write FTmp;
@@ -86,7 +83,6 @@ implementation
 
 uses
   Messages,
-//  Windows,
   xmldom,
   unit_globals,
   jpeg,pngimage,
