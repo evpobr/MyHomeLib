@@ -1380,13 +1380,14 @@ begin
   IsFB2 := isFB2Collection(CollectionType);
   IsNonFB2 := isNonFB2Collection(CollectionType);
 
-  miFb2ZipImport.Visible := IsPrivate and IsFB2;
-  miFb2Import.Visible := IsPrivate and IsFB2;
+  miFb2ZipImport.Visible := (IsPrivate and IsFB2) or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
+  miFb2Import.Visible := (IsPrivate and IsFB2) or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
   miPdfdjvu.Visible := IsPrivate and IsNonFB2;
 
   TabSheet7.TabVisible := IsOnline;
 
-  tbtnShowCover.Visible := not IsNonFB2;
+  tbtnShowCover.Visible := not IsNonFB2 or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
+
   miBookInfo.Visible := IsLocal and IsFB2;
 
   tbtnShowLocalOnly.Visible := IsOnline;
@@ -1425,7 +1426,8 @@ begin
       edLocateAuthor.Text := '';
     end;
 
-  SetCoversVisible(not IsNonFB2 and Settings.ShowInfoPanel);
+  SetCoversVisible((not IsNonFB2 and Settings.ShowInfoPanel)
+                   or (Settings.AllowMixed and Settings.ShowInfoPanel));
     
 
   SetAuthorsShowLocalOnly;
@@ -2436,7 +2438,7 @@ begin
     ntAuthorInfo: Color := Settings.AuthorColor;
     ntSeriesInfo: Color := Settings.SeriesColor;
     ntBookInfo:begin
-                 if Data.No <> 0 then
+                 if Data.Series <> '' then
                    Color := Settings.SeriesBookColor
                  else
                    Color := Settings.BookColor;
@@ -3038,10 +3040,10 @@ begin
   then Exit;
 
   Screen.Cursor := crHourGlass;
-//  ClearLabels;
   case ActiveView of
     ByAuthorView:
       begin
+        ClearLabels(PAGE_AUTHORS);
         if Assigned(FLastLetterA) then
             FLastLetterA.Down := False;
 
@@ -3064,6 +3066,7 @@ begin
       end;
     BySeriesView:
       begin
+        ClearLabels(PAGE_SERIES);
         if Assigned(FLastLetterS) then
           FLastLetterS.Down := False;
         FLastLetterS := (Sender as TToolButton);
@@ -3124,7 +3127,11 @@ var
   Visible: boolean;
 begin
   Settings.ShowInfoPanel := not Settings.ShowInfoPanel;
-  Visible := Settings.ShowInfoPanel and not isNonFb2Collection(DMUser.ActiveCollection.CollectionType);
+
+  Visible := (Settings.ShowInfoPanel and not isNonFb2Collection(DMUser.ActiveCollection.CollectionType)
+             or (Settings.ShowInfoPanel and isNonFB2Collection(DMUser.ActiveCollection.CollectionType)
+                 and Settings.AllowMixed));
+
   SetCoversVisible(Visible);
   if Visible then
         tvBooksTreeChange(Nil,Nil);
@@ -3331,6 +3338,7 @@ begin
               Data := Tree.GetNodeData(bookNode);
               Data.ID := TableB.FieldByName('ID').AsInteger;
               Data.Title := TableB.FieldByName('Title').AsString;
+              Data.Series := TableB.FieldByName('Series').AsString;
 
               Data.FullName := TableB.FieldByName('FullName').AsString;
 
@@ -3951,6 +3959,7 @@ begin
     Exit;
 
   S := Data.Series;
+
   if S = '' then
     Exit;
   if InputQuery('Редактирование серии', 'Название:', S) then
