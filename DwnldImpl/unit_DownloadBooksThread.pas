@@ -277,10 +277,8 @@ begin
             else
             begin
               FS.SaveToFile(Folder);
-
-              DMMain.SetLocalStatus(ID,True);
-
-              Result := True;
+              Result := TestArchive(Folder);
+              DMMain.SetLocalStatus(ID,Result);
             end;
           end;
         except
