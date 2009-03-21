@@ -271,7 +271,13 @@ end;
 
 procedure TDownloadManagerThread.SetControlsState;
 begin
-  frmMain.tlbrDownloadList.Enabled := FControlState;
+  frmMain.BtnFirstRecord.Enabled := FControlState;
+  frmMain.BtnDwnldUP.Enabled := FControlState;
+  frmMain.BtnDwnldDown.Enabled := FControlState;
+  frmMain.BtnLastRecord.Enabled := FControlState;
+
+  frmMain.BtnDelete.Enabled := FControlState;
+
   frmMain.mi_dwnl_Delete.Enabled := FControlState;
 end;
 

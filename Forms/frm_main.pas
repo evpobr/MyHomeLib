@@ -328,25 +328,14 @@ type
     N32: TMenuItem;
     N33: TMenuItem;
     TabSheet7: TRzTabSheet;
-    tvDownloadList: TVirtualStringTree;
-    RzPanel2: TRzPanel;
-    pbDownloadProgress: TRzProgressBar;
-    lblDownloadState: TLabel;
-    lblDnldAuthor: TLabel;
-    lblDnldTitle: TLabel;
-    RzPanel6: TRzPanel;
-    btnPauseDownload: TRzBitBtn;
-    btnStartDownload: TRzBitBtn;
     pmDownloadList: TPopupMenu;
     mi_dwnl_LocateAuthor: TMenuItem;
     N35: TMenuItem;
     mi_dwnl_Delete: TMenuItem;
-    btnClearDownload: TRzBitBtn;
     ilToolBar_Disabled: TImageList;
     N26: TMenuItem;
     N34: TMenuItem;
     N36: TMenuItem;
-    lblDownloadCount: TRzLabel;
     tlbrDownloadList: TRzToolbar;
     RzSpacer1: TRzSpacer;
     ilDownloadToolBar: TImageList;
@@ -359,6 +348,17 @@ type
     ToolButton7: TToolButton;
     lblAuthor: TRzLabel;
     lblSeries: TRzLabel;
+    btnStartDownload: TRzToolButton;
+    btnPauseDownload: TRzToolButton;
+    Panel1: TPanel;
+    RzPanel2: TRzPanel;
+    pbDownloadProgress: TRzProgressBar;
+    lblDownloadState: TLabel;
+    lblDnldAuthor: TLabel;
+    lblDnldTitle: TLabel;
+    lblDownloadCount: TRzLabel;
+    btnClearDownload: TRzBitBtn;
+    tvDownloadList: TVirtualStringTree;
 
     //
     // События формы
