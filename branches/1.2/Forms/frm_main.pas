@@ -1781,33 +1781,47 @@ end;
 procedure  TfrmMain.SetAuthorsShowLocalOnly;
 begin
   if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
-  begin
-    if Settings.ShowLocalOnly then
-      DMMain.tblAuthors.ParamByName('All').AsInteger := 1
-    else
+    begin
+      if Settings.ShowLocalOnly then
+        DMMain.tblAuthors.ParamByName('All').AsInteger := 1
+      else
+        DMMain.tblAuthors.ParamByName('All').AsInteger := 0;
+      DMMain.tblAuthors.Close;
+      Screen.Cursor := crHourGlass;
+      DMMain.tblAuthors.Open;
+      Screen.Cursor := crDefault;
+    end
+  else
+    begin
       DMMain.tblAuthors.ParamByName('All').AsInteger := 0;
-    DMMain.tblAuthors.Close;
-    Screen.Cursor := crHourGlass;
-    DMMain.tblAuthors.Open;
-//    FillAuthorTree;
-    Screen.Cursor := crDefault;
-  end;
+      DMMain.tblAuthors.Close;
+      Screen.Cursor := crHourGlass;
+      DMMain.tblAuthors.Open;
+      Screen.Cursor := crDefault;
+    end;
 end;
 
 procedure  TfrmMain.SetSeriesShowLocalOnly;
 begin
   if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
-  begin
-    if Settings.ShowLocalOnly then
-      DMMain.tblSeries.ParamByName('All').AsInteger := 1
-    else
+    begin
+      if Settings.ShowLocalOnly then
+        DMMain.tblSeries.ParamByName('All').AsInteger := 1
+      else
+        DMMain.tblSeries.ParamByName('All').AsInteger := 0;
+      DMMain.tblSeries.Close;
+      Screen.Cursor := crHourGlass;
+      DMMain.tblSeries.Open;
+      Screen.Cursor := crDefault;
+    end
+  else
+    begin
       DMMain.tblSeries.ParamByName('All').AsInteger := 0;
-    DMMain.tblSeries.Close;
-    Screen.Cursor := crHourGlass;
-    DMMain.tblSeries.Open;
-//    FillSeriesTree;
-    Screen.Cursor := crDefault;
-  end;
+      DMMain.tblSeries.Close;
+      Screen.Cursor := crHourGlass;
+      DMMain.tblSeries.Open;
+      Screen.Cursor := crDefault;
+    end;
 end;
 
 procedure  TfrmMain.SetBooksFilter;
