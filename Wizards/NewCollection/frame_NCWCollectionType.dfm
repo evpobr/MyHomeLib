@@ -110,7 +110,7 @@ inherited frameNCWCollectionType: TframeNCWCollectionType
       Margins.Top = 7
       Margins.Right = 7
       Margins.Bottom = 0
-      Caption = #1044#1088#1091#1075#1072#1103' '#1073#1080#1073#1083#1080#1086#1090#1077#1082#1072' FB2'
+      Caption = #1044#1088#1091#1075#1072#1103' '#1073#1080#1073#1083#1080#1086#1090#1077#1082#1072
       TabOrder = 4
       OnClick = OnSetCollectionType
     end
@@ -128,9 +128,6 @@ inherited frameNCWCollectionType: TframeNCWCollectionType
       AltBtnWidth = 15
       ButtonWidth = 15
       OnButtonClick = edINPXPathButtonClick
-      ExplicitLeft = 14
-      ExplicitTop = 136
-      ExplicitWidth = 302
     end
   end
 end
