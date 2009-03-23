@@ -173,7 +173,7 @@ type
     FActiveTable: TAbsTable;
     { Private declarations }
   public
-    procedure GetBookFileName(ID: integer; out AFile, AFolder: string;
+    procedure GetBookFileName(ID: integer; out AFile, AFolder, AExt: string;
       out ANo: integer);
 
     procedure SetActiveTable(Tag: integer);
@@ -245,11 +245,14 @@ begin
   ARes := FActiveTable.FieldByName(AField).AsBoolean;
 end;
 
-procedure TDMMain.GetBookFileName(ID: integer; out AFile:string; out AFolder: string; out ANo:integer);
+procedure TDMMain.GetBookFileName(ID: integer; out AFile:string;
+                                  out AFolder: string; out AExt: string;
+                                  out ANo:integer);
 begin
   FActiveTable.Locate('ID', ID, []);
   AFile := FActiveTable.FieldByName('FileName').AsString + FActiveTable.FieldByName('Ext').AsString;
   AFolder := FActiveTable.FieldByName('Folder').AsString;
+  AExt := FActiveTable.FieldByName('Ext').AsString;
   ANo := FActiveTable.FieldByName('InsideNo').AsInteger;
 end;
 

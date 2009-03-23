@@ -3,7 +3,7 @@ object DMMain: TDMMain
   Height = 567
   Width = 565
   object DBMain: TABSDatabase
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     Exclusive = False
     MaxConnections = 5
@@ -24,7 +24,7 @@ object DMMain: TDMMain
     Top = 208
   end
   object tblBooksA: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -215,7 +215,7 @@ object DMMain: TDMMain
     end
   end
   object tblBooksG: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -409,7 +409,7 @@ object DMMain: TDMMain
     end
   end
   object tblGenres: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -494,7 +494,7 @@ object DMMain: TDMMain
     Top = 216
   end
   object tblAuthorsS: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -520,7 +520,7 @@ object DMMain: TDMMain
     end
   end
   object tblBooksS: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -725,7 +725,7 @@ object DMMain: TDMMain
     Top = 200
   end
   object tblAuthors: TABSQuery
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -779,7 +779,7 @@ object DMMain: TDMMain
     end
   end
   object tblBooks_Genre_List: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -866,7 +866,7 @@ object DMMain: TDMMain
     Top = 424
   end
   object tblGenre_List: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -950,7 +950,7 @@ object DMMain: TDMMain
     Top = 152
   end
   object tblAuthor_List: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1023,7 +1023,7 @@ object DMMain: TDMMain
     Top = 152
   end
   object tblBooks: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1217,7 +1217,7 @@ object DMMain: TDMMain
     end
   end
   object tblSeriesA: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1292,7 +1292,7 @@ object DMMain: TDMMain
     Top = 352
   end
   object tblBooks_Genres: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1321,7 +1321,7 @@ object DMMain: TDMMain
     end
   end
   object tblAuthor_Detail: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1355,7 +1355,7 @@ object DMMain: TDMMain
     end
   end
   object tblAuthor_Master: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1431,7 +1431,7 @@ object DMMain: TDMMain
     Top = 424
   end
   object tblSeriesB: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
@@ -1501,7 +1501,7 @@ object DMMain: TDMMain
     end
   end
   object tblSeries: TABSQuery
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False

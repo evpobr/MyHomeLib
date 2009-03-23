@@ -149,10 +149,7 @@ begin
       R.LibID := StrToIntDef(slParams[7], 0);
       R.Deleted := (slParams[8] = '1');
 
-      //
-      // { TODO -oNickR -cpossible bug : params[9] содержит расширение файла, но мы используем хардкоденное значение }
-      //
-      R.FileExt := FB2_EXTENSION;
+      R.FileExt := '.' + slParams[9];
 
       //
       //

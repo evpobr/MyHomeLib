@@ -2393,6 +2393,8 @@ var
   Cover: TMHLCoverPanel;
   Folder: string;
   FileName: string;
+  Ext: string;
+
   No: integer;
 begin
   if BookTreeStatus = bsBusy then
@@ -2410,7 +2412,7 @@ begin
     Exit;
   end;
 
-  DMMain.GetBookFileName(Data.ID, FileName, Folder, No);
+  DMMain.GetBookFileName(Data.ID, FileName, Folder, Ext, No);
 
 
   InfoPanel.Title := Data.Title;
@@ -2984,6 +2986,8 @@ var
   Zip: TZipForge;
   I: integer;
 
+  FileName,Folder,Ext: string;
+
 begin
   GetActiveViewComponents(Tree,Panel,Cover);
 
@@ -3025,11 +3029,12 @@ begin
       if not FileExists(Panel.Folder) then
           raise EInvalidOp.Create('Архив ' + Panel.Folder + ' не найден!');
 
-      DMMain.FieldByName(0,'InsideNo',No);
 
-      WorkFile := Settings.ReadPath + Format('%s - %s.fb2',
+      DMMain.GetBookFileName(Data.ID, FileName, Folder, Ext, No);
+
+      WorkFile := Settings.ReadPath + Format('%s - %s.%s',
                                               [CheckSymbols(Panel.Author),
-                                               CheckSymbols(Panel.Title)]);
+                                               CheckSymbols(Panel.Title),Ext]);
 
       if not FileExists(WorkFile) then
       begin
@@ -3543,7 +3548,7 @@ var
   ALibrary: TMHLLibrary;
   FUpdateFavorites: Boolean;
 
-  FileName,Folder: string;
+  FileName,Folder, Ext: string;
   No: integer;
 
 
@@ -3576,7 +3581,7 @@ begin
       begin
         if isOnlineCollection(DMUser.ActiveCollection.CollectionType) and Data.Locale then
         begin
-          DMMain.GetBookFileName(Data.ID, FileName, Folder, No);
+          DMMain.GetBookFileName(Data.ID, FileName, Folder, Ext, No);
           if DeleteFile(FCollectionRoot + Folder) then
             DMMain.SetLocalStatus(Data.ID,False);
         end
