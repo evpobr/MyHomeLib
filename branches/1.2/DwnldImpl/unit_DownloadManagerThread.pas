@@ -191,13 +191,31 @@ begin
 end;
 
 procedure TDownloadManagerThread.GetCurrentFile;
+var
+  ErrorCount : integer;
 begin
   FFinished := True;
   if FCanceled then Exit;
 
   if FCurrentNode <> nil then
     FCurrentNode := frmMain.tvDownloadList.GetNext(FCurrentNode);
-  if FCurrentNode = nil then FCurrentNode := frmMain.tvDownloadList.GetFirst;
+  if FCurrentNode = nil then
+  begin
+    ErrorCount := 0;
+    FCurrentNode := frmMain.tvDownloadList.GetFirst;
+    FCurrentData := frmMain.tvDownloadList.GetNodeData(FCurrentNode);
+    while (FCurrentData <> nil) and
+          ((FCurrentData.State = dsError) and (FCurrentNode <> nil)) do
+    begin
+      FCurrentNode := frmMain.tvDownloadList.GetNext(FCurrentNode);
+      FCurrentData := frmMain.tvDownloadList.GetNodeData(FCurrentNode);
+      Inc(ErrorCount);
+    end;
+
+    if (ErrorCount > 0) and (FCurrentNode = Nil) then
+        FCurrentNode := frmMain.tvDownloadList.GetFirst;
+
+  end;
 
   while FCurrentNode <> nil do
   begin
@@ -276,7 +294,8 @@ begin
   frmMain.BtnDwnldDown.Enabled := FControlState;
   frmMain.BtnLastRecord.Enabled := FControlState;
 
-  frmMain.BtnDelete.Enabled := FControlState;
+//  frmMain.BtnDelete.Enabled := FControlState;
+  frmMain.BtnSave.Enabled := FControlState;
 
   frmMain.mi_dwnl_Delete.Enabled := FControlState;
 end;
@@ -285,6 +304,8 @@ procedure TDownloadManagerThread.Stop;
 begin
   FCanceled := True;
   Synchronize(Canceled);
+  FControlState := True;
+  Synchronize(SetControlsState);
   Terminate;
 end;
 
