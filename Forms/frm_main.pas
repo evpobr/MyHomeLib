@@ -359,6 +359,8 @@ type
     lblDownloadCount: TRzLabel;
     btnClearDownload: TRzBitBtn;
     tvDownloadList: TVirtualStringTree;
+    BtnSave: TRzToolButton;
+    RzSpacer3: TRzSpacer;
 
     //
     // События формы
@@ -530,6 +532,10 @@ type
     procedure N34Click(Sender: TObject);
     procedure MoveDwnldListNodes(Sender: TObject);
     procedure BtnFav_addClick(Sender: TObject);
+    procedure tvDownloadListPaintText(Sender: TBaseVirtualTree;
+      const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+      TextType: TVSTTextType);
+    procedure BtnSaveClick(Sender: TObject);
 
   private
 
@@ -766,9 +772,25 @@ begin
   if Assigned(FDMThread) then FDMThread.Stop;
 end;
 
-procedure TfrmMain.btnDeleteDownloadClick(Sender: TObject);
+procedure TfrmMain.BtnSaveClick(Sender: TObject);
 begin
-  tvDownloadList.DeleteSelectedNodes;
+  tvDownloadList.SaveToFile(Settings.WorkPath + 'downloads.sav');
+end;
+
+procedure TfrmMain.btnDeleteDownloadClick(Sender: TObject);
+var
+  Node: PVirtualNode;
+  Data: PDownloadData;
+  i: integer;
+  List: TSelectionList;
+begin
+  GetSeelections(tvDownloadList,List);
+  for I := 0 to tvDownloadList.SelectedCount - 1 do
+  begin
+    Data := tvDownloadList.GetNodeData(List[i]);
+    if Data.State <> dsRun then
+      tvDownloadList.DeleteNode(List[i],True);
+  end;
 end;
 
 procedure TfrmMain.BtnFav_addClick(Sender: TObject);
@@ -2656,6 +2678,20 @@ begin
 
   // State
   Stream.Read(Data.State, SizeOf(Data.State));
+end;
+
+procedure TfrmMain.tvDownloadListPaintText(Sender: TBaseVirtualTree;
+  const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+  TextType: TVSTTextType);
+var
+  Data : PDownloadData;
+begin
+  Data := Sender.GetNodeData(Node);
+  if (Data <> nil) and not Sender.Selected[Node] then
+    case Data.State of
+      dsRun  : TargetCanvas.Font.Color := clGreen;
+      dsError: TargetCanvas.Font.Color := clRed;
+    end;
 end;
 
 procedure TfrmMain.tvDownloadListSaveNode(Sender: TBaseVirtualTree;
