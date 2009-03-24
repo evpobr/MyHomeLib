@@ -238,8 +238,10 @@ begin
 
         try
 
-         URL := CalculateURL; // Locate по таблице был сделан при вызове GetBookFileName,
+          URL := CalculateURL; // Locate по таблице был сделан при вызове GetBookFileName,
                               // так что ID можно не передавать
+
+          SetProxySettings(FidHTTP);
 
           FidHTTP.Get(URL, FS);
 
