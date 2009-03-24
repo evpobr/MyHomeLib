@@ -283,7 +283,8 @@ uses
   idException,
   idStack,
   unit_fb2ToText,
-  ShlObj;
+  ShlObj,
+  frm_Main;
 
 const
   lat: set of char = ['A'..'Z', 'a'..'z', '\', '-', ':', '`', ',', '.', '0'..'9', '_', '(', ')', '[', ']', '{', '}'];
@@ -814,6 +815,9 @@ begin
 end;
 
 procedure SetProxySettings(var idHTTP:TidHTTP);
+var
+  F: Text;
+  S1,S2: String;
 begin
   with idHTTP.ProxyParams do
   begin
@@ -824,6 +828,31 @@ begin
 
     BasicAuthentication := True;
   end;
+
+  idHTTP.CookieManager := frmMain.IdCookieManager;
+  idHTTP.AllowCookies := True;
+
+   { TODO -oalex : Это нужно делать один раз при запуске проги! }
+
+  if FileExists(Settings.AppPath + 'admin@lib.rus[2].txt') then
+  begin
+    S2 := 'admin@lib.rus.ec/ = ';
+    try
+      AssignFile(F, Settings.AppPath + 'admin@lib.rus[2].txt');
+      Reset(F);
+
+      while not Eof(F) do
+      begin
+        Readln(F,S1);
+        S2 := S2 + S1 + chr(10);
+      end;
+    finally
+      CloseFile(F);
+    end;
+
+    frmMain.IdCookieManager.AddCookie(S2,'lib.rus.ec/');
+  end;
+
 end;
 
 function CheckLibVersion(ALocalVersion: Integer; out ARemoteVersion: Integer): Boolean;

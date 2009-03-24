@@ -361,6 +361,7 @@ type
     tvDownloadList: TVirtualStringTree;
     BtnSave: TRzToolButton;
     RzSpacer3: TRzSpacer;
+    IdCookieManager: TIdCookieManager;
 
     //
     // События формы
@@ -3513,7 +3514,7 @@ begin
         strText := DataG.Text;
       end;
   end;
-  Clipboard.AsText := strText;
+  Clipboard.AsText := trim(strText);
 end;
 
 procedure TfrmMain.miCopyClBrdClick(Sender: TObject);
@@ -3537,7 +3538,7 @@ begin
       else
         S := Data.FullName + '. Серия:' + Data.Series + '. ' + Data.Title;
   end;
-  Clipboard.AsText := S;
+  Clipboard.AsText := trim(S);
 end;
 
 procedure TfrmMain.miDeleteBookClick(Sender: TObject);
