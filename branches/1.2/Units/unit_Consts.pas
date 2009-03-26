@@ -85,10 +85,11 @@ const
   COL_RATE       = 16;
   COL_DATE       = 17;
   COL_COLLECTION = 18;
+  COL_TYPE       = 20;
 
   COL_STATE = 99;
 
-  ColumnTags : array [0 .. 9] of integer = (  COL_AUTHOR,
+  ColumnTags : array [0 .. 10] of integer = (  COL_AUTHOR,
                                               COL_TITLE,
                                               COL_SERIES,
                                               COL_NO,
@@ -97,6 +98,7 @@ const
                                               COL_RATE,
                                               COL_DATE,
                                               COL_COLLECTION,
+                                              COL_TYPE,
                                               COL_STATE);
 
 

@@ -181,7 +181,8 @@ type
   PBookData = ^TBookData;
   TBookData = record
     nodeType: TBookNodeType;
-    Title, Series, Genre, FullName, ColName: String;
+
+    Title, Series, Genre, FullName, ColName, FileType : String;
 
     ID, SeriesID, Size, Rate, No, ImageIndex: Integer;
     RatePos: Integer;
