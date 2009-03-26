@@ -362,6 +362,7 @@ type
     BtnSave: TRzToolButton;
     RzSpacer3: TRzSpacer;
     IdCookieManager: TIdCookieManager;
+    N28: TMenuItem;
 
     //
     // События формы
@@ -2100,6 +2101,7 @@ begin
       COL_SIZE   : Result := IntToStr(Data.Size);
       COL_DATE   : Result := DateToStr(Data.Date);
       COL_GENRE  : Result := Data.Genre;
+      COL_TYPE   : Result := Data.FileType;
       COL_COLLECTION: Result := Data.ColName;
     end;
 end;
@@ -3403,6 +3405,12 @@ begin
               if (COL_SIZE in Columns) then Data.Size := TableB.FieldByName('Size').AsInteger;
 
               if (COL_DATE in Columns) then Data.Date := TableB.FieldByName('Date').AsDateTime;
+
+              if (COL_TYPE in Columns) then
+              begin
+                Data.FileType := TableB.FieldByName('Ext').AsString;
+                Delete(Data.FileType,1,1);
+              end;
 
               if (COL_COLLECTION in Columns) then Data.ColName := CollectionName;
 
@@ -4964,7 +4972,8 @@ begin
       COL_SIZE :       pmHeaders.Items[5].Checked := True;
       COL_RATE :       pmHeaders.Items[6].Checked := True;
       COL_DATE :       pmHeaders.Items[7].Checked := True;
-      COL_COLLECTION:  pmHeaders.Items[8].Checked := True;
+      COL_TYPE :       pmHeaders.Items[8].Checked := True;
+      COL_COLLECTION:  pmHeaders.Items[9].Checked := True;
     end;
   end;
   pmHeaders.Items[8].Visible := (Tree.Tag = PAGE_FAVORITES);
