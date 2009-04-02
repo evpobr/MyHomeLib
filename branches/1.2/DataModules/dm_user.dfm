@@ -3,7 +3,7 @@ object DMUser: TDMUser
   Height = 190
   Width = 463
   object DBUser: TABSDatabase
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'DBUser'
     Exclusive = False
     MaxConnections = 5
@@ -17,7 +17,7 @@ object DMUser: TDMUser
     Top = 128
   end
   object tblBases: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'DBUser'
     InMemory = False
     ReadOnly = False
@@ -69,7 +69,7 @@ object DMUser: TDMUser
     end
   end
   object tblRates: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'DBUser'
     InMemory = False
     ReadOnly = False
@@ -124,7 +124,7 @@ object DMUser: TDMUser
     end
   end
   object qImport: TABSQuery
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'DBUser'
     InMemory = False
     ReadOnly = False
@@ -137,7 +137,7 @@ object DMUser: TDMUser
     Top = 128
   end
   object tblFavorites: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'DBUser'
     InMemory = False
     ReadOnly = False

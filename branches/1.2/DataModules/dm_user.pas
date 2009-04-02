@@ -426,9 +426,12 @@ end;
 procedure TMHLCollection.SetVersion(const Value: Integer);
 begin
   Assert(Assigned(FSysDataModule));
-  FSysDataModule.tblBases.Edit;
-  FSysDataModule.tblBasesVersion.Value := Value;
-  FSysDataModule.tblBases.Post;
+  if FSysDataModule.tblBasesVersion.Value <> Value then
+  begin
+    FSysDataModule.tblBases.Edit;
+    FSysDataModule.tblBasesVersion.Value := Value;
+    FSysDataModule.tblBases.Post;
+  end;
 end;
 
 function TMHLCollection.GetCollectionType: COLLECTION_TYPE;

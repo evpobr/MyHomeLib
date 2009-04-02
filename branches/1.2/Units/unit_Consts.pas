@@ -76,7 +76,7 @@ const
   //  Теги колонок
   //
 
-  COL_AUTHOR     = 19;
+  COL_AUTHOR     = 20;
   COL_TITLE      = 11;
   COL_SERIES     = 12;
   COL_NO         = 13;
@@ -84,8 +84,8 @@ const
   COL_SIZE       = 15;
   COL_RATE       = 16;
   COL_DATE       = 17;
-  COL_COLLECTION = 18;
-  COL_TYPE       = 20;
+  COL_TYPE       = 18;
+  COL_COLLECTION = 19;
 
   COL_STATE = 99;
 
@@ -97,8 +97,8 @@ const
                                               COL_SIZE,
                                               COL_RATE,
                                               COL_DATE,
-                                              COL_COLLECTION,
                                               COL_TYPE,
+                                              COL_COLLECTION,
                                               COL_STATE);
 
 

@@ -269,6 +269,8 @@ begin
       DMMain.DBMain.DatabaseFileName := DBFileName;
       DMMain.DBMain.DeleteDatabase;
 
+      while FileExists(CollList[i].DBFileName) do;
+
       // создаем его заново
       Teletype(Format(rstrCreatingCollection, [CollList[i].Name]),tsInfo);
 
