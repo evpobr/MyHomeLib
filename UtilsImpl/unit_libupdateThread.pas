@@ -285,6 +285,7 @@ begin
       //  импортирум данные
       Import;
 
+      DMUser.ActivateCollection(CollList[i].ID);
       DMUser.ActiveCollection.Version := GetLibUpdateVersion;
 
       Teletype(rstrReady,tsInfo);
