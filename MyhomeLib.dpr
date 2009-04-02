@@ -120,7 +120,7 @@ begin
     Application.CreateForm(TDMMain, DMMain);
   Application.CreateForm(TDMUser, DMUser);
   Application.CreateForm(TfrmMain, frmMain);
-  Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
+//  Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
   Application.CreateForm(TfrmEditBookInfo, frmEditBookInfo);
   Application.CreateForm(TfrmGenreTree, frmGenreTree);
   Application.CreateForm(TfrmEditAuthor, frmEditAuthor);

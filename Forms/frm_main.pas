@@ -962,12 +962,22 @@ begin
   FontColor := Settings.FontColor;
 
   cpCoverA.FontSize := Settings.ShortFontSize;
-  cpCoverS.FontSize := Settings.ShortFontSize;
-  cpCoverG.FontSize := Settings.ShortFontSize;
-  cpCoverF.FontSize := Settings.ShortFontSize;
-  cpCoverSR.FontSize := Settings.ShortFontSize;
-  cpCoverFL.FontSize := Settings.ShortFontSize;
+  cpCoverA.AnnotationColor := BGColor;
 
+  cpCoverS.FontSize := Settings.ShortFontSize;
+  cpCoverS.AnnotationColor := BGColor;
+
+  cpCoverG.FontSize := Settings.ShortFontSize;
+  cpCoverG.AnnotationColor := BGColor;
+
+  cpCoverF.FontSize := Settings.ShortFontSize;
+  cpCoverF.AnnotationColor := BGColor;
+
+  cpCoverSR.FontSize := Settings.ShortFontSize;
+  cpCoverSR.AnnotationColor := BGColor;
+
+  cpCoverFL.FontSize := Settings.ShortFontSize;
+  cpCoverFL.AnnotationColor := BGColor;
 
   SetTreeViewColor(tvAuthors);
   SetTreeViewColor(tvBooksA);
@@ -983,6 +993,17 @@ begin
   SetEditColor(edLocateSeries);
   SetEditColor(edAuth);
   SetEditColor(edTitle);
+
+  SetEditColor(edFFullName);
+  SetEditColor(edFTitle);
+  SetEditColor(edFSeries);
+  SetEditColor(edFFile);
+  SetEditColor(edFFolder);
+  SetEditColor(edFExt);
+
+  cbDate.Color := BGColor;
+  cbDownloaded.Color := BGColor;
+
 end;
 
 procedure TfrmMain.ReadINIData;
@@ -4976,7 +4997,7 @@ begin
       COL_COLLECTION:  pmHeaders.Items[9].Checked := True;
     end;
   end;
-  pmHeaders.Items[8].Visible := (Tree.Tag = PAGE_FAVORITES);
+  pmHeaders.Items[9].Visible := (Tree.Tag = PAGE_FAVORITES);
 end;
 
 procedure TfrmMain.pgControlChange(Sender: TObject);
@@ -5080,7 +5101,12 @@ end;
 procedure TfrmMain.miPdfdjvuClick(Sender: TObject);
 begin
   DMUser.ActivateCollection(Settings.ActiveCollection);
-  frmAddNonFb2.ShowModal;
+  try
+    frmAddNonFb2 := TfrmAddNonFb2.Create(Self);
+    frmAddNonFb2.ShowModal;
+  finally
+    frmAddNonFb2.Free;
+  end;
 end;
 
 

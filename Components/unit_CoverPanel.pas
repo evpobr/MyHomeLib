@@ -53,7 +53,11 @@ type
 
     FTmp : string;
     FNo: Integer;
+
+    FAColor : TColor;
+
     function CheckSymbols(Input: string): string;
+    procedure SetAColor(Value: TColor);
 
   protected
     { Protected declarations }
@@ -75,6 +79,7 @@ type
     property TmpFolder:string read FTmp write FTmp;
     property Fb2InfoVisible:boolean read FFb2InfoVisible write Set_Fb2InfoVisible;
     property FontSize:integer read FFontSize write Set_FontSize;
+    property AnnotationColor: TColor read FAColor write SetAColor;
   end;
 
 
@@ -264,6 +269,12 @@ begin
   bvl.Height := 36;
   bvl.AlignWithMargins := True;
 
+end;
+
+procedure TMHLCoverPanel.SetAColor(Value: TColor);
+begin
+  FAColor := Value;
+  FText.Color := FAColor;
 end;
 
 procedure TMHLCoverPanel.Set_Fb2InfoVisible(Value: boolean);
