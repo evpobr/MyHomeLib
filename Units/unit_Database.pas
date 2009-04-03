@@ -443,7 +443,7 @@ end;
 
 procedure TMHLLibrary.SetDatabaseFileName(const Value: string);
 begin
-  CheckInactive;
+//  CheckInactive;
   FDatabase.DatabaseFileName := Value;
 end;
 
@@ -476,6 +476,7 @@ begin
 //  CheckInactive;
 
   DatabaseFileName := DBFile;
+
   FDatabase.CreateDatabase;
 
   //

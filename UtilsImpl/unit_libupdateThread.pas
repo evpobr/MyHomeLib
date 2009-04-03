@@ -258,6 +258,7 @@ begin
       if Canceled then
             Break;
 
+      DMUser.ActivateCollection(CollList[i].ID);
 
       DBFileName := CollList[i].DBFileName;
       CollectionRoot := IncludeTrailingPathDelimiter(CollList[i].Folder);
@@ -269,8 +270,6 @@ begin
       DMMain.DBMain.DatabaseFileName := DBFileName;
       DMMain.DBMain.DeleteDatabase;
 
-      while FileExists(CollList[i].DBFileName) do;
-
       // создаем его заново
       Teletype(Format(rstrCreatingCollection, [CollList[i].Name]),tsInfo);
 
@@ -281,11 +280,11 @@ begin
         ALibrary.Free;
       end;
 
-
       //  импортирум данные
+      Teletype('Импорт ...',tsInfo);
+
       Import;
 
-      DMUser.ActivateCollection(CollList[i].ID);
       DMUser.ActiveCollection.Version := GetLibUpdateVersion;
 
       Teletype(rstrReady,tsInfo);
