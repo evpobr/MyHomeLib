@@ -52,8 +52,8 @@ type
 
   public
     procedure Stop;
-
-  end;
+    procedure TerminateNow;
+   end;
 
 implementation
 
@@ -63,8 +63,15 @@ uses
   DateUtils,
   dm_main,
   IdStack,
-  Windows;
+  Windows,
+  unit_Settings;
 
+
+procedure TDownloadManagerThread.TerminateNow;
+begin
+  FidHTTP.Disconnect;
+  Terminate;
+end;
 
 procedure TDownloadManagerThread.Canceled;
 begin
@@ -78,7 +85,6 @@ begin
 
   frmMain.btnPauseDownload.Enabled := False;
   frmMain.btnStartDownload.Enabled := True;
-
 end;
 
 procedure TDownloadManagerThread.Download;
@@ -124,6 +130,7 @@ begin
                              + #13 +
                              ' Ответ сервера можно посмотреть в файле "server_error.html"'
                              ,'',MB_OK);
+            SL.SaveToFile(Settings.SystemFileName[sfServerErrorLog]);
             FError := True;
           end
           else
