@@ -987,6 +987,7 @@ begin
   SetTreeViewColor(tvSeries);
   SetTreeViewColor(tvGenres);
   SetTreeViewColor(tvBooksFL);
+  SetTreeViewColor(tvDownloadList);
 
   SetEditColor(edLocateAuthor);
   SetEditColor(edLocateSeries);
@@ -1401,6 +1402,7 @@ begin
     tvBooksSR.Clear;
     tvBooksF.Clear;
     Screen.Cursor := crDefault;
+    ShowNewCollectionWizard(Nil);
     Exit;
   end;
 
@@ -1980,10 +1982,15 @@ end;
 
 procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
+  CanClose := True;
   if CheckActiveDownloads then
-      CanClose :=( MessageDlg('В списке есть незавершенные закачки!' + #13 +
-                  'Вы все еще хотите выйти из программы?', mtWarning, mbYesNo, 0) = mrYes)
-  else CanClose := True;
+    if MessageDlg('В списке есть незавершенные закачки!' + #13 +
+                  'Вы все еще хотите выйти из программы?', mtWarning, mbYesNo, 0) = mrYes then
+      begin
+        if Assigned(FDMThread) then FDMThread.TerminateNow;
+      end
+    else
+      CanClose := False;
 end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
@@ -2073,6 +2080,8 @@ begin
 
   frmSplash.lblState.Caption := 'Старт ...';
 
+  if Settings.AutoStartDwnld then
+    btnStartDownloadClick(Sender);
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
@@ -2759,6 +2768,7 @@ end;
 procedure TfrmMain.btnClearDownloadClick(Sender: TObject);
 begin
   tvDownloadList.Clear;
+  lblDownloadCount.Caption := '(0)';
 end;
 
 procedure TfrmMain.btnClearEdSeriesClick(Sender: TObject);

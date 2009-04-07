@@ -427,12 +427,18 @@ begin
   else
   begin
     if ExtractFilePath(FParams.CollectionFile) = '' then
+    begin
       FParams.CollectionFile := IncludeTrailingPathDelimiter(DATA_DIR_NAME) + FParams.CollectionFile;
+      CreateFolders(Settings.AppPath, DATA_DIR_NAME);
+    end;
 
     if '' = ExtractFileExt(FParams.CollectionFile) then
       FParams.CollectionFile := ChangeFileExt(FParams.CollectionFile, COLLECTION_EXTENSION);
 
     FParams.CollectionRoot := ExcludeTrailingPathDelimiter(FParams.CollectionRoot);
+
+    if not DirectoryExists(FParams.CollectionRoot) then
+      CreateDir(FParams.CollectionRoot);
   end;
 
   //

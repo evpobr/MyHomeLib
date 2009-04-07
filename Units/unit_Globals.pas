@@ -120,7 +120,7 @@ procedure StrReplace(s1, s2: String; var s3: String);
 
 function ClearDir(const DirectoryName: string): Boolean;
 function IsRelativePath(const FileName: string): Boolean;
-function CreateFolders(const Root: string; const Path: string): Boolean;
+function CreateFolders(Root: string; const Path: string): Boolean;
 procedure CopyFile(const SourceFileName: string; const DestFileName: string);
 procedure ConvertToTxt(const SourceFileName: string; DestFileName: string);
 procedure ZipFile(const FileName: string; const ZipFileName: string);
@@ -371,14 +371,17 @@ begin
     Result := False;
 end;
 
-function CreateFolders(const Root: string; const Path: string): Boolean;
+function CreateFolders(Root: string; const Path: string): Boolean;
 var
   fullPath: string;
 begin
   if Path <> '\' then
+  begin
+    if Root = '' then Root := Settings.AppPath;
     fullPath := ExcludeTrailingPathDelimiter(
       IfThen(IsRelativePath(Path), IncludeTrailingPathDelimiter(Root) + Path, Path)
       )
+  end
   else
     fullPath := ExcludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(Root));
   Result := SysUtils.ForceDirectories(fullPath);
