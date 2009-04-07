@@ -121,7 +121,6 @@ type
     miStat: TMenuItem;
     miRead: TMenuItem;
     miDevice: TMenuItem;
-    dlgFolder: TRzSelDirDialog;
     N31: TMenuItem;
     miRepairUser: TMenuItem;
     miEditBook: TMenuItem;
@@ -666,6 +665,7 @@ uses
   frm_add_nonfb2,
   frm_about,
   fictionbook_21,
+  unit_MHLHelpers,
   unit_TreeUtils,
   unit_MHL_xml,
   unit_MHL_strings,
@@ -781,7 +781,6 @@ end;
 
 procedure TfrmMain.btnDeleteDownloadClick(Sender: TObject);
 var
-  Node: PVirtualNode;
   Data: PDownloadData;
   i: integer;
   List: TSelectionList;
@@ -2781,7 +2780,6 @@ end;
 
 procedure TfrmMain.MoveDwnldListNodes(Sender: TObject);
 var
-  Node: PVirtualNode;
   i: integer;
   List: TSelectionList;
 begin
@@ -2882,6 +2880,7 @@ end;
 
 procedure TfrmMain.tbSendToDeviceClick(Sender: TObject);
 var
+  AFolder: string;
   SaveDeviceDir: string;
   SaveFolderTemplate: string;
   TMPParams: String;
@@ -2910,19 +2909,18 @@ begin
   else
     ExportMode := emFb2;
 
-
-  Dec(ScriptID,901);
+  Dec(ScriptID, 901);
 
   if (ScriptID < 1 ) and (Settings.PromptDevicePath) then
-    if not dlgFolder.Execute then
+    //if not dlgFolder.Execute then
+    if not GetFolderName(Handle, 'Укажите путь', AFolder) then
       Exit
     else
       { TODO -oNickR -cRefactoring : это временное изменение в настройках и оно не должно сохраняться при закрытии программы
                              Это изменение нужно только для работы функций ZipToDevice/FileToDevice и решается
                              параметрами этих функций
       }
-      Settings.DeviceDir := dlgFolder.Directory;
-
+      Settings.DeviceDir := AFolder;
 
   if ScriptID >= 0 then
   begin

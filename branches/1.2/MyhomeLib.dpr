@@ -21,6 +21,8 @@
 
 program MyhomeLib;
 
+{$R *.dres}
+
 uses
   Forms,
   frm_main in 'Forms\frm_main.pas' {frmMain},
@@ -33,7 +35,6 @@ uses
   frm_statistic in 'Forms\frm_statistic.pas' {frmStat},
   unit_PrevInst in 'Units\unit_PrevInst.pas',
   frm_bases in 'Forms\frm_bases.pas' {frmBases},
-  fictionbook_21 in 'Units\fictionbook_21.pas',
   frm_book_info in 'Forms\frm_book_info.pas' {frmBookDetails},
   frm_splash in 'Forms\frm_splash.pas' {frmSplash},
   frm_add_nonfb2 in 'Forms\frm_add_nonfb2.pas' {frmAddnonfb2},
@@ -120,7 +121,7 @@ begin
     Application.CreateForm(TDMMain, DMMain);
   Application.CreateForm(TDMUser, DMUser);
   Application.CreateForm(TfrmMain, frmMain);
-//  Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
+  //  Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
   Application.CreateForm(TfrmEditBookInfo, frmEditBookInfo);
   Application.CreateForm(TfrmGenreTree, frmGenreTree);
   Application.CreateForm(TfrmEditAuthor, frmEditAuthor);

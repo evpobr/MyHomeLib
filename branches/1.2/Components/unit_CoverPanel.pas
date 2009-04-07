@@ -56,7 +56,6 @@ type
 
     FAColor : TColor;
 
-    function CheckSymbols(Input: string): string;
     procedure SetAColor(Value: TColor);
 
   protected
@@ -89,9 +88,10 @@ implementation
 uses
   Messages,
   xmldom,
-  unit_globals,
-  jpeg,pngimage,
-  types;
+  //unit_globals,
+  jpeg,
+  pngimage,
+  types, unit_MHLHelpers;
 
 const
   W = 55;
@@ -293,7 +293,7 @@ function TMHLCoverPanel.Show(Folder, FileName: string; No: integer): boolean;
 var
   FS: TMemoryStream;
 begin
-  if (Not Visible) or FOnProgress  then Exit;
+  if (Not Visible) or FOnProgress then Exit;
 
   FOnProgress := true;
   Clear;
@@ -344,26 +344,6 @@ begin
     end;
 end;
 
-function TMHLCoverPanel.CheckSymbols(Input: string): string;
-const
-  denied: set of char = ['<', '>', ':', '"', '/', '|', '*', '?'];
-
-var
-  s, conv: string;
-  f: integer;
-begin
-  Conv := '';
-  for f := 1 to length(input) do
-  begin
-    if Input[f] in denied then
-      s := ' '
-    else
-      s := Input[f];
-    Conv := Conv + s;
-  end;
-  result := conv;
-end;
-
 procedure TMHLCoverPanel.ShowEmptyCover;
 begin
  { TODO : Временная заглушка; добавить отрисовку дефолтной обложки + название книги }
@@ -374,7 +354,6 @@ procedure TMHLCoverPanel.GetFb2Info;
 var
   i, p: integer;
   S, outStr: AnsiString;
-  F: TextFile;
   CoverID, Short : string;
   ImgVisible: boolean;
 
@@ -383,9 +362,6 @@ var
 
   EXT: string;
   StrLen: integer;
-
-  BMP: TBitmap;
-
 begin
   ImgVisible := False;
   try
@@ -406,8 +382,8 @@ begin
             S := FBook.Binary.Items[i].Text;
             outStr := DecodeBase64(S);
 
-            StrLen := length(outStr);
-            MS.Write(PAnsiChar(outStr)^,StrLen);
+            StrLen := Length(outStr);
+            MS.Write(PAnsiChar(outStr)^, StrLen);
             ImgVisible := True;
           end;
         end;
