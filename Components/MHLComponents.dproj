@@ -20,6 +20,8 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_DcuOutput>.\Units</DCC_DcuOutput>
+			<DesignOnlyPackage>false</DesignOnlyPackage>
 			<DCC_SymbolReferenceInfo>1</DCC_SymbolReferenceInfo>
 			<DCC_DependencyCheckOutputName>C:\Users\Public\Documents\RAD Studio\6.0\Bpl\MHLComponents.bpl</DCC_DependencyCheckOutputName>
 			<GenDll>true</GenDll>
@@ -28,12 +30,14 @@
 			<DCC_Platform>x86</DCC_Platform>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<DCC_DcuOutput>Units\</DCC_DcuOutput>
 			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
 			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
 			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
 			<DCC_DebugInformation>false</DCC_DebugInformation>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<DCC_DcuOutput>Units\Debug\</DCC_DcuOutput>
 			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
 		</PropertyGroup>
 		<ItemGroup>
@@ -59,6 +63,8 @@
 			<DCCReference Include="unit_AutoCompleteEdit.pas"/>
 			<DCCReference Include="unit_CoverPanel.pas"/>
 			<DCCReference Include="unit_InfoPanel.pas"/>
+			<DCCReference Include="unit_MHLHelpers.pas"/>
+			<DCCReference Include="fictionbook_21.pas"/>
 			<DCCReference Include="ZipmasterD12.dcp"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>

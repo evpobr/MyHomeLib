@@ -7,7 +7,7 @@
 			<DCC_DependencyCheckOutputName>Release\Bin\MyhomeLib.exe</DCC_DependencyCheckOutputName>
 			<MainSource>MyhomeLib.dpr</MainSource>
 			<ProjectVersion>12.0</ProjectVersion>
-			<Config Condition="'$(Config)'==''">Release</Config>
+			<Config Condition="'$(Config)'==''">Debug</Config>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
 			<Base>true</Base>
@@ -40,6 +40,7 @@
 			<DCC_DebugInformation>False</DCC_DebugInformation>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<DCC_DebugDCUs>true</DCC_DebugDCUs>
 			<DCC_DependencyCheckOutputName>Debug\Bin\MyhomeLib.exe</DCC_DependencyCheckOutputName>
 			<Version>7.0</Version>
 			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
@@ -52,67 +53,6 @@
 			<DCC_HppOutput>Debug\Units</DCC_HppOutput>
 			<DCC_ExeOutput>Debug\Bin</DCC_ExeOutput>
 		</PropertyGroup>
-		<ProjectExtensions>
-			<Borland.Personality>Delphi.Personality.12</Borland.Personality>
-			<Borland.ProjectType/>
-			<BorlandProject>
-				<Delphi.Personality>
-					<Parameters>
-						<Parameters Name="UseLauncher">False</Parameters>
-						<Parameters Name="LoadAllSymbols">True</Parameters>
-						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
-					</Parameters>
-					<VersionInfo>
-						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
-						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
-						<VersionInfo Name="MajorVer">1</VersionInfo>
-						<VersionInfo Name="MinorVer">3</VersionInfo>
-						<VersionInfo Name="Release">1</VersionInfo>
-						<VersionInfo Name="Build">419</VersionInfo>
-						<VersionInfo Name="Debug">False</VersionInfo>
-						<VersionInfo Name="PreRelease">True</VersionInfo>
-						<VersionInfo Name="Special">True</VersionInfo>
-						<VersionInfo Name="Private">True</VersionInfo>
-						<VersionInfo Name="DLL">False</VersionInfo>
-						<VersionInfo Name="Locale">1049</VersionInfo>
-						<VersionInfo Name="CodePage">1251</VersionInfo>
-					</VersionInfo>
-					<VersionInfoKeys>
-						<VersionInfoKeys Name="CompanyName"/>
-						<VersionInfoKeys Name="FileDescription"/>
-						<VersionInfoKeys Name="FileVersion">1.3.1.419</VersionInfoKeys>
-						<VersionInfoKeys Name="InternalName"/>
-						<VersionInfoKeys Name="LegalCopyright">Алексей Пеньков</VersionInfoKeys>
-						<VersionInfoKeys Name="LegalTrademarks"/>
-						<VersionInfoKeys Name="OriginalFilename"/>
-						<VersionInfoKeys Name="ProductName">MyHomeLib</VersionInfoKeys>
-						<VersionInfoKeys Name="ProductVersion">1.0</VersionInfoKeys>
-						<VersionInfoKeys Name="Comments"/>
-						<VersionInfoKeys Name="SpecialBuild"/>
-						<VersionInfoKeys Name="PrivateBuild"/>
-					</VersionInfoKeys>
-					<Source>
-						<Source Name="MainSource">MyhomeLib.dpr</Source>
-					</Source>
-					<Excluded_Packages>
-						<Excluded_Packages Name="$(BDS)\bin\dclmid120.bpl">CodeGear MyBase DataAccess Components</Excluded_Packages>
-						<Excluded_Packages Name="$(BDS)\RaveReports\Lib\dclRave.bpl">Rave Reports 7.6 BE Package</Excluded_Packages>
-						<Excluded_Packages Name="$(BDS)\bin\dcl31w120.bpl">Delphi 1.0 Compatibility Components</Excluded_Packages>
-						<Excluded_Packages Name="$(BDS)\bin\dclmcn120.bpl">CodeGear DataSnap Connection Components</Excluded_Packages>
-						<Excluded_Packages Name="$(BDS)\bin\dcltee8120.bpl">TeeChart Standard 8 Components</Excluded_Packages>
-						<Excluded_Packages Name="$(BDS)\bin\dclado120.bpl">CodeGear ADO DB Components</Excluded_Packages>
-						<Excluded_Packages Name="$(BDS)\bin\dclIntraweb_100_120.bpl">VCL for the Web 10.0  Design Package for CodeGear RAD Studio</Excluded_Packages>
-						<Excluded_Packages Name="$(BDS)\bin\dclwebsnap120.bpl">CodeGear WebSnap Components</Excluded_Packages>
-						<Excluded_Packages Name="$(BDS)\bin\dclDataSnapIndy10ServerTransport120.bpl">CodeGear DBExpress DataSnap Server Transport Components</Excluded_Packages>
-						<Excluded_Packages Name="$(BDS)\bin\dclDataSnapProviderClient120.bpl">CodeGear DBExpress DataSnap Provider Client Components</Excluded_Packages>
-						<Excluded_Packages Name="$(BDS)\bin\dclDataSnapServer120.bpl">CodeGear DBExpress DataSnap Server Components</Excluded_Packages>
-						<Excluded_Packages Name="$(BDS)\bin\dcldbxcds120.bpl">CodeGear SimpleDataset Component (DBX)</Excluded_Packages>
-					</Excluded_Packages>
-				</Delphi.Personality>
-				<ModelSupport>False</ModelSupport>
-			</BorlandProject>
-			<ProjectFileVersion>12</ProjectFileVersion>
-		</ProjectExtensions>
 		<ItemGroup>
 			<DelphiCompile Include="MyhomeLib.dpr">
 				<MainSource>MainSource</MainSource>
@@ -143,7 +83,6 @@
 			<DCCReference Include="Forms\frm_bases.pas">
 				<Form>frmBases</Form>
 			</DCCReference>
-			<DCCReference Include="Units\fictionbook_21.pas"/>
 			<DCCReference Include="Forms\frm_book_info.pas">
 				<Form>frmBookDetails</Form>
 			</DCCReference>
@@ -276,6 +215,14 @@
 			<DCCReference Include="Units\unit_Columns.pas"/>
 			<DCCReference Include="UtilsImpl\StoHtmlHelp.pas"/>
 			<DCCReference Include="DwnldImpl\unit_DownloadManagerThread.pas"/>
+			<RcItem Include="Resources\Images\16x16\star_small.png">
+				<ResourceType>RCData</ResourceType>
+				<ResourceId>PngImage_1</ResourceId>
+			</RcItem>
+			<RcItem Include="Resources\Images\16x16\star_small_empty.png">
+				<ResourceType>RCData</ResourceType>
+				<ResourceId>PngImage_2</ResourceId>
+			</RcItem>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -289,4 +236,65 @@
 			</BuildConfiguration>
 		</ItemGroup>
 		<Import Project="$(BDS)\Bin\CodeGear.Delphi.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')"/>
+		<ProjectExtensions>
+			<Borland.Personality>Delphi.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Delphi.Personality>
+					<Parameters>
+						<Parameters Name="UseLauncher">False</Parameters>
+						<Parameters Name="LoadAllSymbols">True</Parameters>
+						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+					</Parameters>
+					<VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
+						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
+						<VersionInfo Name="MajorVer">1</VersionInfo>
+						<VersionInfo Name="MinorVer">3</VersionInfo>
+						<VersionInfo Name="Release">1</VersionInfo>
+						<VersionInfo Name="Build">419</VersionInfo>
+						<VersionInfo Name="Debug">False</VersionInfo>
+						<VersionInfo Name="PreRelease">True</VersionInfo>
+						<VersionInfo Name="Special">True</VersionInfo>
+						<VersionInfo Name="Private">True</VersionInfo>
+						<VersionInfo Name="DLL">False</VersionInfo>
+						<VersionInfo Name="Locale">1049</VersionInfo>
+						<VersionInfo Name="CodePage">1251</VersionInfo>
+					</VersionInfo>
+					<VersionInfoKeys>
+						<VersionInfoKeys Name="CompanyName"/>
+						<VersionInfoKeys Name="FileDescription"/>
+						<VersionInfoKeys Name="FileVersion">1.3.1.419</VersionInfoKeys>
+						<VersionInfoKeys Name="InternalName"/>
+						<VersionInfoKeys Name="LegalCopyright">Алексей Пеньков</VersionInfoKeys>
+						<VersionInfoKeys Name="LegalTrademarks"/>
+						<VersionInfoKeys Name="OriginalFilename"/>
+						<VersionInfoKeys Name="ProductName">MyHomeLib</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion">1.0</VersionInfoKeys>
+						<VersionInfoKeys Name="Comments"/>
+						<VersionInfoKeys Name="SpecialBuild"/>
+						<VersionInfoKeys Name="PrivateBuild"/>
+					</VersionInfoKeys>
+					<Source>
+						<Source Name="MainSource">MyhomeLib.dpr</Source>
+					</Source>
+					<Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclmid120.bpl">CodeGear MyBase DataAccess Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\RaveReports\Lib\dclRave.bpl">Rave Reports 7.6 BE Package</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dcl31w120.bpl">Delphi 1.0 Compatibility Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclmcn120.bpl">CodeGear DataSnap Connection Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dcltee8120.bpl">TeeChart Standard 8 Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclado120.bpl">CodeGear ADO DB Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclIntraweb_100_120.bpl">VCL for the Web 10.0  Design Package for CodeGear RAD Studio</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclwebsnap120.bpl">CodeGear WebSnap Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclDataSnapIndy10ServerTransport120.bpl">CodeGear DBExpress DataSnap Server Transport Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclDataSnapProviderClient120.bpl">CodeGear DBExpress DataSnap Provider Client Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclDataSnapServer120.bpl">CodeGear DBExpress DataSnap Server Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dcldbxcds120.bpl">CodeGear SimpleDataset Component (DBX)</Excluded_Packages>
+					</Excluded_Packages>
+				</Delphi.Personality>
+				<ModelSupport>False</ModelSupport>
+			</BorlandProject>
+			<ProjectFileVersion>12</ProjectFileVersion>
+		</ProjectExtensions>
 	</Project>

@@ -45,6 +45,8 @@ contains
   MHLComponents_Register in 'MHLComponents_Register.pas',
   unit_AutoCompleteEdit in 'unit_AutoCompleteEdit.pas',
   unit_CoverPanel in 'unit_CoverPanel.pas',
-  unit_InfoPanel in 'unit_InfoPanel.pas';
+  unit_InfoPanel in 'unit_InfoPanel.pas',
+  unit_MHLHelpers in 'unit_MHLHelpers.pas',
+  fictionbook_21 in 'fictionbook_21.pas';
 
 end.

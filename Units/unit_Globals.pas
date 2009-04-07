@@ -115,7 +115,7 @@ function CheckSymbols(Input: string): string;
 ///procedure GetFileList(InitDir, Ext: string; var OutList: TStringList);
 function EncodeStr(Input: string): string;
 function DecodeStr(Input: string): string;
-function DecodeBase64(const CinLine: ansistring): ansistring;
+//function DecodeBase64(const CinLine: ansistring): ansistring;
 procedure StrReplace(s1, s2: String; var s3: String);
 
 function ClearDir(const DirectoryName: string): Boolean;
@@ -147,7 +147,7 @@ function GetSpecialPath(CSIDL: word): string;
 function GetLibUpdateVersion:integer;
 function ExecAndWait(const FileName,Params: String; const WinState: Word): boolean;
 
-function GetFileNameZip(Zip: TZipForge; No: integer): string;
+//function GetFileNameZip(Zip: TZipForge; No: integer): string;
 function CleanExtension(const Ext: string): string;
 
 procedure FlipBitmapV(Bitmap: Graphics.TBitmap);
@@ -284,8 +284,7 @@ uses
   idException,
   idStack,
   unit_fb2ToText,
-  ShlObj,
-  frm_Main;
+  ShlObj, frm_main;
 
 const
   lat: set of char = ['A'..'Z', 'a'..'z', '\', '-', ':', '`', ',', '.', '0'..'9', '_', '(', ')', '[', ']', '{', '}'];
@@ -833,7 +832,7 @@ begin
   idHTTP.CookieManager := frmMain.IdCookieManager;
   idHTTP.AllowCookies := True;
 
-   { TODO -oalex : Это нужно делать один раз при запуске проги! }
+  { TODO -oalex : Это нужно делать один раз при запуске проги! }
 
   if FileExists(Settings.AppPath + 'admin@lib.rus[2].txt') then
   begin

@@ -69,7 +69,8 @@ uses
   unit_Settings,
   frm_main,
   StrUtils,
-  ShellAPI;
+  ShellAPI,
+  unit_MHLHelpers;
 
 { TExportToDeviceThread }
 
