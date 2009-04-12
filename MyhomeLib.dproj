@@ -217,11 +217,11 @@
 			<DCCReference Include="DwnldImpl\unit_DownloadManagerThread.pas"/>
 			<RcItem Include="Resources\Images\16x16\star_small.png">
 				<ResourceType>RCData</ResourceType>
-				<ResourceId>PngImage_1</ResourceId>
+				<ResourceId>smallStar</ResourceId>
 			</RcItem>
 			<RcItem Include="Resources\Images\16x16\star_small_empty.png">
 				<ResourceType>RCData</ResourceType>
-				<ResourceId>PngImage_2</ResourceId>
+				<ResourceId>smallStarEmpty</ResourceId>
 			</RcItem>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>

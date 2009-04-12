@@ -15,7 +15,7 @@ unit unit_Helpers;
 interface
 
 uses
-  Classes, Dialogs;
+  Windows, Classes, Dialogs, Graphics;
 
 type
   TStringListEx = class(TStringList)
@@ -60,10 +60,12 @@ function GetFileName(key: TMHLFileName; out FileName: string): Boolean;
 
 function GetFolderName(Handle: Integer; Caption: string; var strFolder: string): Boolean;
 
+function CreateImageFromResource(GraphicClass: TGraphicClass; const ResName: string; ResType: PChar = RT_RCDATA): TGraphic;
+
 implementation
 
 uses
-  Windows, SysUtils, Forms, unit_Consts, unit_Settings, ShlObj, ActiveX;
+  SysUtils, Forms, unit_Consts, unit_Settings, ShlObj, ActiveX;
 
 { TStringListEx }
 
@@ -328,6 +330,19 @@ begin
       //
     end;
     CoTaskMemFree(lpItemID);
+  end;
+end;
+
+function CreateImageFromResource(GraphicClass: TGraphicClass; const ResName: string; ResType: PChar): TGraphic;
+var
+  s: TResourceStream;
+begin
+  s := TResourceStream.Create(HInstance, ResName, ResType);
+  try
+    Result := GraphicClass.Create;
+    Result.LoadFromStream(s);
+  finally
+    s.Free;
   end;
 end;
 

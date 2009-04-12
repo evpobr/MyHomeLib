@@ -559,10 +559,6 @@ type
       ShowSer: Boolean
       );
 
-
-
-
-
     //
     // TODO -oNickR -cRefactoring : вынести эти методы в соответствующие датамодули
     //
@@ -586,6 +582,7 @@ type
     function IsLibRusecEdit(ID: integer): boolean;
 
     procedure WMGetSysCommand(var Message :TMessage); message WM_SYSCOMMAND;
+
   public
     procedure FillGenresTree(Tree: TVirtualStringTree);
     procedure DisableControls(State: boolean);
@@ -612,25 +609,24 @@ type
                      Direction:TSortDirection;
                    end;  
 
-    procedure FillBookIdList(const Tree: TVirtualStringTree;
-      var BookIDList: TBookIdList);
+    FStarImage: TPngImage;
+    FEmptyStarImage: TPngImage;
+
+    procedure FillBookIdList(const Tree: TVirtualStringTree; var BookIDList: TBookIdList);
     function GetActiveBookTable(tag: integer): TAbsTable;
     procedure ClearLabels(Tag: integer);
-    procedure  SetAuthorsShowLocalOnly;
-    procedure  SetSeriesShowLocalOnly;
+    procedure SetAuthorsShowLocalOnly;
+    procedure SetSeriesShowLocalOnly;
     procedure SetBooksFilter;
     procedure FillAllBooksTree;
     procedure ChangeLetterButton(S: string);
     function DoCheckUpdatesOnStart: Boolean;
-    procedure GetActiveViewComponents(var Tree: TVirtualStringTree;
-      var Panel: TMHLInfoPanel; var Cover: TMHLCoverPanel);
+    procedure GetActiveViewComponents(var Tree: TVirtualStringTree; var Panel: TMHLInfoPanel; var Cover: TMHLCoverPanel);
     procedure SetCoversVisible(State: boolean);
-    procedure RefreshBooksState(Tree: TVirtualStringTree;
-      BookIDList: TBookIdList);
+    procedure RefreshBooksState(Tree: TVirtualStringTree; BookIDList: TBookIdList);
     procedure SetColumns;
     procedure SaveColumns;
-    function GetTreeTag(const Sender: TBaseVirtualTree;
-      const Column: integer): integer;
+    function GetTreeTag(const Sender: TBaseVirtualTree; const Column: integer): integer;
     function GetText(Tag: integer; Data: PBookData): string;
     procedure SetHeaderPopUp;
     procedure RestorePositions;
@@ -638,6 +634,7 @@ type
     function CheckActiveDownloads:boolean;
     procedure SetLangBarSize;
     procedure TheFirstRun;
+
     type
       TView = (ByAuthorView, BySeriesView, ByGenreView, SearchView, FavoritesView, FilterView, DownloadView);
 
@@ -2082,10 +2079,19 @@ begin
 
   if Settings.AutoStartDwnld then
     btnStartDownloadClick(Sender);
+
+  //
+  // Create & Load "star" images from resources
+  //
+  FStarImage := CreateImageFromResource(TPngImage, 'smallStar') as TPngImage;
+  FEmptyStarImage := CreateImageFromResource(TPngImage, 'smallStarEmpty') as TPngImage;
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
+  FreeAndNil(FStarImage);
+  FreeAndNil(FEmptyStarImage);
+
   SaveColumns;
 
   tvDownloadList.SaveToFile(Settings.WorkPath + 'downloads.sav');
@@ -2534,41 +2540,47 @@ procedure TfrmMain.tvBooksTreeAfterCellPaint(Sender: TBaseVirtualTree;
   CellRect: TRect);
 var
   Data: PBookData;
-  X, i: integer;
   Tag : integer;
+  i: integer;
+  x, y: integer;
+  w, h: integer;
 begin
-
   Data := Sender.GetNodeData(Node);
   Assert(Assigned(Data));
+
+  if Data.nodeType <> ntBookInfo then
+    Exit;
 
   Tag := GetTreeTag(Sender, Column);
 
   X := (Sender as TvirtualStringTree).Header.Columns.Items[Column].Left;
 
-  if (Tag = COL_STATE) and
-     isOnlineCollection(DMUser.ActiveCollection.CollectionType)
-     and (Data.nodeType = ntBookInfo) and (Data.Locale)
-     then
+  if (Tag = COL_STATE)
+    and isOnlineCollection(DMUser.ActiveCollection.CollectionType)
+    and (Data.Locale)
+  then
   begin
-    ilFileTypes.Draw(TargetCanvas,X,CellRect.Top + 2,5);
+    ilFileTypes.Draw(TargetCanvas, X, CellRect.Top + 2, 5);
   end;
 
-  { TODO -oAlex : «аменить на звездочки }
-  if (Data.nodeType = ntBookInfo) and (Tag= COL_RATE) then
+  { DONE -oNickR :«аменить на звездочки }
+  if (Tag = COL_RATE) then
   begin
-    inc(X,3);
-    with TargetCanvas do
+    w := FStarImage.Width;
+    h := FStarImage.Height;
+    x := CellRect.Left (*+ (CellRect.Right - CellRect.Left - 10 {w} * 5) div 2*);
+    y := CellRect.Top + (CellRect.Bottom - CellRect.Top - h) div 2;
+
+    for i := 0 to 4 do
     begin
-      Pen.Color := clTeal;
-      Brush.Style := bsSolid;
-      Brush.Color := $0046CBEC;
-      Refresh;
-      for I := 1 to Data.Rate do
-        RoundRect(X + i * 10 - 9, 4, X + i * 10, 13, 1, 1);
-     end;
+      if Data.Rate > i then
+        FStarImage.Draw(TargetCanvas, Rect(x, y, x + w, y + h))
+      else
+        FEmptyStarImage.Draw(TargetCanvas, Rect(x, y, x + w, y + h));
+
+      Inc(x, {w} 10);
+    end;
   end;
-
-
 end;
 
 procedure TfrmMain.tvBooksTreeKeyDown(Sender: TObject; var Key: Word;
