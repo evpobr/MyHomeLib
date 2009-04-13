@@ -475,6 +475,7 @@ object frmMain: TfrmMain
             Font.Name = 'Tahoma'
             Font.Style = []
             Header.AutoSizeIndex = 0
+            Header.DefaultHeight = 17
             Header.Font.Charset = DEFAULT_CHARSET
             Header.Font.Color = clWindowText
             Header.Font.Height = -11
@@ -602,7 +603,7 @@ object frmMain: TfrmMain
                 Left = 426
                 Top = 3
                 Width = 12
-                Height = 25
+                Height = 19
                 Align = alRight
                 Alignment = taRightJustify
                 Caption = '()'
@@ -613,14 +614,13 @@ object frmMain: TfrmMain
                 Font.Style = []
                 ParentFont = False
                 CenterPoint = cpLowerRight
-                ExplicitHeight = 19
               end
               object lblAuthor: TRzLabel
                 AlignWithMargins = True
                 Left = 3
                 Top = 3
                 Width = 15
-                Height = 25
+                Height = 19
                 Align = alLeft
                 Caption = '...'
                 Font.Charset = DEFAULT_CHARSET
@@ -630,7 +630,6 @@ object frmMain: TfrmMain
                 Font.Style = [fsBold]
                 ParentFont = False
                 CenterPoint = cpLowerRight
-                ExplicitHeight = 19
               end
             end
             object RzPanel23: TRzPanel
@@ -670,6 +669,7 @@ object frmMain: TfrmMain
                 Font.Name = 'Arial'
                 Font.Style = []
                 Header.AutoSizeIndex = 0
+                Header.DefaultHeight = 17
                 Header.Font.Charset = ANSI_CHARSET
                 Header.Font.Color = clWindowText
                 Header.Font.Height = -12
@@ -785,10 +785,6 @@ object frmMain: TfrmMain
     end
     object TabSheet2: TRzTabSheet
       Caption = #1057#1077#1088#1080#1080
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object rzsSplitterS: TRzSplitter
         Left = 0
         Top = 0
@@ -835,6 +831,7 @@ object frmMain: TfrmMain
             Font.Name = 'Tahoma'
             Font.Style = []
             Header.AutoSizeIndex = 0
+            Header.DefaultHeight = 17
             Header.Font.Charset = DEFAULT_CHARSET
             Header.Font.Color = clWindowText
             Header.Font.Height = -11
@@ -1015,6 +1012,7 @@ object frmMain: TfrmMain
               Font.Name = 'Tahoma'
               Font.Style = []
               Header.AutoSizeIndex = 0
+              Header.DefaultHeight = 17
               Header.Font.Charset = ANSI_CHARSET
               Header.Font.Color = clWindowText
               Header.Font.Height = -12
@@ -1150,10 +1148,6 @@ object frmMain: TfrmMain
     end
     object TabSheet3: TRzTabSheet
       Caption = #1046#1072#1085#1088#1099
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object rzsSplitterG: TRzSplitter
         Left = 0
         Top = 0
@@ -1197,6 +1191,7 @@ object frmMain: TfrmMain
             Font.Name = 'Tahoma'
             Font.Style = []
             Header.AutoSizeIndex = 0
+            Header.DefaultHeight = 17
             Header.Font.Charset = DEFAULT_CHARSET
             Header.Font.Color = clWindowText
             Header.Font.Height = -11
@@ -1288,6 +1283,7 @@ object frmMain: TfrmMain
               Font.Name = 'Tahoma'
               Font.Style = []
               Header.AutoSizeIndex = 0
+              Header.DefaultHeight = 17
               Header.Font.Charset = ANSI_CHARSET
               Header.Font.Color = clWindowText
               Header.Font.Height = -12
@@ -1455,10 +1451,6 @@ object frmMain: TfrmMain
     object TabSheet4: TRzTabSheet
       HelpContext = 142
       Caption = #1055#1086#1080#1089#1082
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object RzPanel9: TRzPanel
         AlignWithMargins = True
         Left = 3
@@ -1511,6 +1503,7 @@ object frmMain: TfrmMain
             Font.Name = 'Tahoma'
             Font.Style = []
             Header.AutoSizeIndex = 0
+            Header.DefaultHeight = 17
             Header.Font.Charset = ANSI_CHARSET
             Header.Font.Color = clWindowText
             Header.Font.Height = -12
@@ -1760,7 +1753,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -1772,10 +1764,6 @@ object frmMain: TfrmMain
     object TabSheet5: TRzTabSheet
       HelpContext = 125
       Caption = #1048#1079#1073#1088#1072#1085#1085#1086#1077
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object RzPanel20: TRzPanel
         AlignWithMargins = True
         Left = 3
@@ -1828,6 +1816,7 @@ object frmMain: TfrmMain
             Font.Name = 'Tahoma'
             Font.Style = []
             Header.AutoSizeIndex = 0
+            Header.DefaultHeight = 17
             Header.Font.Charset = ANSI_CHARSET
             Header.Font.Color = clWindowText
             Header.Font.Height = -12
@@ -1976,7 +1965,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -1988,10 +1976,6 @@ object frmMain: TfrmMain
     object TabSheet6: TRzTabSheet
       HelpContext = 126
       Caption = #1060#1080#1083#1100#1090#1088
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object RzPanel29: TRzPanel
         AlignWithMargins = True
         Left = 3
@@ -2110,7 +2094,7 @@ object frmMain: TfrmMain
               Top = 119
               Width = 138
               Height = 21
-              ItemHeight = 0
+              ItemHeight = 13
               ReadOnlyColor = clBtnHighlight
               TabOrder = 3
               Text = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1074#1089#1077
@@ -2125,7 +2109,7 @@ object frmMain: TfrmMain
               Top = 94
               Width = 201
               Height = 21
-              ItemHeight = 0
+              ItemHeight = 13
               TabOrder = 5
               OnKeyDown = edFFullNameKeyDown
               Items.Strings = (
@@ -2383,6 +2367,7 @@ object frmMain: TfrmMain
           Font.Name = 'Tahoma'
           Font.Style = []
           Header.AutoSizeIndex = 0
+          Header.DefaultHeight = 17
           Header.Font.Charset = ANSI_CHARSET
           Header.Font.Color = clWindowText
           Header.Font.Height = -12
@@ -2515,7 +2500,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2526,10 +2510,6 @@ object frmMain: TfrmMain
     end
     object TabSheet7: TRzTabSheet
       Caption = #1057#1087#1080#1089#1086#1082' '#1079#1072#1082#1072#1095#1077#1082
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object tlbrDownloadList: TRzToolbar
         AlignWithMargins = True
         Left = 3
@@ -2659,9 +2639,9 @@ object frmMain: TfrmMain
         end
       end
       object Panel1: TPanel
-        Left = 48
+        Left = 46
         Top = 0
-        Width = 890
+        Width = 892
         Height = 536
         Align = alClient
         BevelOuter = bvNone
@@ -2671,7 +2651,7 @@ object frmMain: TfrmMain
           AlignWithMargins = True
           Left = 3
           Top = 472
-          Width = 884
+          Width = 886
           Height = 61
           Align = alBottom
           BorderOuter = fsFlatRounded
@@ -2732,11 +2712,10 @@ object frmMain: TfrmMain
             Font.Style = []
             ParentFont = False
             CenterPoint = cpLowerRight
-            ExplicitLeft = 867
             ExplicitHeight = 19
           end
           object btnClearDownload: TRzBitBtn
-            Left = 769
+            Left = 771
             Top = 30
             Width = 118
             Anchors = [akRight, akBottom]
@@ -2755,6 +2734,7 @@ object frmMain: TfrmMain
           Height = 463
           Align = alClient
           Header.AutoSizeIndex = 0
+          Header.DefaultHeight = 17
           Header.Font.Charset = DEFAULT_CHARSET
           Header.Font.Color = clWindowText
           Header.Font.Height = -12

@@ -2085,6 +2085,13 @@ begin
   //
   FStarImage := CreateImageFromResource(TPngImage, 'smallStar') as TPngImage;
   FEmptyStarImage := CreateImageFromResource(TPngImage, 'smallStarEmpty') as TPngImage;
+
+  // костыль
+  frmMain.Visible := True;
+
+  if frmMain.WindowState = wsMinimized then
+     frmMain.WindowState := wsNormal;
+  // конец костыля
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
