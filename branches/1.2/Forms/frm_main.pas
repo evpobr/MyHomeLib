@@ -645,6 +645,8 @@ type
 var
   frmMain: TfrmMain;
 
+const CHECK_FILE = 'TheFirstRun.check';
+
 implementation
 
 uses
@@ -1400,6 +1402,7 @@ begin
     tvBooksF.Clear;
     Screen.Cursor := crDefault;
     ShowNewCollectionWizard(Nil);
+    DeleteFile(Settings.WorkPath + CHECK_FILE);
     Exit;
   end;
 
@@ -1956,7 +1959,6 @@ begin
 end;
 
 procedure TfrmMain.TheFirstRun;
-const CHECK_FILE = 'TheFirstRun.check';
 begin
   if  DMUser.tblBases.IsEmpty then
     DeleteFile(Settings.WorkPath + CHECK_FILE)
