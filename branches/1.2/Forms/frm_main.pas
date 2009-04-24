@@ -5130,12 +5130,7 @@ end;
 procedure TfrmMain.miPdfdjvuClick(Sender: TObject);
 begin
   DMUser.ActivateCollection(Settings.ActiveCollection);
-  try
-    frmAddNonFb2 := TfrmAddNonFb2.Create(Self);
-    frmAddNonFb2.ShowModal;
-  finally
-    frmAddNonFb2.Free;
-  end;
+  frmAddNonFb2.ShowModal;
 end;
 
 

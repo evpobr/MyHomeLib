@@ -47,7 +47,6 @@ type
   TfrmAddnonfb2 = class(TForm)
     RzPanel2: TRzPanel;
     dlgFolder: TRzSelDirDialog;
-    Tree: TVirtualStringTree;
     RzPanel3: TRzPanel;
     RzPanel1: TRzPanel;
     btnCopyToSeries: TButton;
@@ -91,6 +90,7 @@ type
     miRenameFile: TMenuItem;
     RzBitBtn1: TRzBitBtn;
     cbNoAuthorAllowed: TCheckBox;
+    Tree: TVirtualStringTree;
     procedure RzButton3Click(Sender: TObject);
     procedure TreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
