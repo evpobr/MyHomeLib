@@ -29,89 +29,6 @@ object frmAddnonfb2: TfrmAddnonfb2
     Align = alClient
     BorderOuter = fsFlatRounded
     TabOrder = 0
-    object Tree: TVirtualStringTree
-      Left = 2
-      Top = 308
-      Width = 812
-      Height = 342
-      Align = alClient
-      BevelInner = bvNone
-      BevelOuter = bvNone
-      BevelKind = bkFlat
-      ButtonFillMode = fmShaded
-      CheckImageKind = ckXP
-      ClipboardFormats.Strings = (
-        'CSV'
-        'HTML Format'
-        'Plain text'
-        'Rich Text Format'
-        'Rich Text Format Without Objects'
-        'Unicode text'
-        'Virtual Tree Data')
-      Color = clCream
-      Colors.BorderColor = clBackground
-      Colors.HotColor = clBlack
-      Colors.UnfocusedSelectionColor = clNavy
-      Colors.UnfocusedSelectionBorderColor = clBtnShadow
-      DragMode = dmAutomatic
-      EditDelay = 100
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlack
-      Font.Height = -13
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      Header.AutoSizeIndex = -1
-      Header.Font.Charset = ANSI_CHARSET
-      Header.Font.Color = clWindowText
-      Header.Font.Height = -12
-      Header.Font.Name = 'Arial'
-      Header.Font.Style = [fsBold]
-      Header.Height = 20
-      Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoHotTrack, hoOwnerDraw, hoRestrictDrag, hoShowHint, hoShowImages, hoShowSortGlyphs, hoVisible, hoAutoSpring]
-      Header.Style = hsFlatButtons
-      HintMode = hmTooltip
-      HotCursor = crHandPoint
-      ParentFont = False
-      ParentShowHint = False
-      ScrollBarOptions.AlwaysVisible = True
-      SelectionBlendFactor = 0
-      ShowHint = False
-      TabOrder = 0
-      TreeOptions.AnimationOptions = [toAnimatedToggle]
-      TreeOptions.AutoOptions = [toAutoDropExpand, toAutoExpand, toAutoScrollOnExpand, toAutoTristateTracking, toAutoDeleteMovedNodes]
-      TreeOptions.MiscOptions = [toCheckSupport, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning, toFullRowDrag]
-      TreeOptions.PaintOptions = [toPopupMode, toShowBackground, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toFullVertGridLines]
-      TreeOptions.SelectionOptions = [toFullRowSelect, toRightClickSelect, toSimpleDrawSelection]
-      OnChange = TreeChange
-      OnCompareNodes = TreeCompareNodes
-      OnDblClick = TreeDblClick
-      OnGetText = TreeGetText
-      OnPaintText = TreePaintText
-      Columns = <
-        item
-          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring, coSmartResize, coAllowFocus]
-          Position = 0
-          Width = 600
-          WideText = #1060#1072#1081#1083
-        end
-        item
-          Position = 1
-          WideText = #1058#1080#1087
-        end
-        item
-          Alignment = taRightJustify
-          MaxWidth = 150
-          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coFixed, coAllowFocus]
-          Position = 2
-          Width = 100
-          WideText = #1056#1072#1079#1084#1077#1088
-        end
-        item
-          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring, coSmartResize, coAllowFocus]
-          Position = 3
-          Width = 42
-        end>
-    end
     object RzPanel3: TRzPanel
       AlignWithMargins = True
       Left = 5
@@ -120,7 +37,7 @@ object frmAddnonfb2: TfrmAddnonfb2
       Height = 300
       Align = alTop
       BorderOuter = fsFlatRounded
-      TabOrder = 1
+      TabOrder = 0
       object RzPanel1: TRzPanel
         Left = 2
         Top = 2
@@ -240,6 +157,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           Top = 18
           Width = 497
           Height = 103
+          Color = clCream
           Columns = <
             item
               Caption = #1060#1072#1084#1080#1083#1080#1103
@@ -416,6 +334,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           Width = 599
           Height = 23
           Align = alClient
+          Color = clCream
           TabOrder = 0
           ExplicitHeight = 21
         end
@@ -521,6 +440,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           Top = 20
           Width = 49
           Height = 21
+          Color = clCream
           TabOrder = 0
           DisplayFormat = ',0;(,0)'
         end
@@ -529,6 +449,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           Top = 20
           Width = 307
           Height = 21
+          Color = clCream
           ItemHeight = 13
           TabOrder = 1
         end
@@ -579,6 +500,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           Height = 21
           Margins.Left = 5
           Margins.Right = 5
+          Color = clCream
           ItemHeight = 13
           TabOrder = 0
           Text = #1042#1089#1077
@@ -590,6 +512,50 @@ object frmAddnonfb2: TfrmAddnonfb2
           ItemIndex = 0
         end
       end
+    end
+    object Tree: TVirtualStringTree
+      Left = 2
+      Top = 308
+      Width = 812
+      Height = 342
+      Align = alClient
+      Color = clCream
+      Header.AutoSizeIndex = 0
+      Header.DefaultHeight = 17
+      Header.Font.Charset = DEFAULT_CHARSET
+      Header.Font.Color = clWindowText
+      Header.Font.Height = -11
+      Header.Font.Name = 'Tahoma'
+      Header.Font.Style = []
+      Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
+      PopupMenu = pmMain
+      TabOrder = 1
+      TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toFullVertGridLines]
+      TreeOptions.SelectionOptions = [toFullRowSelect]
+      OnChange = TreeChange
+      OnCompareNodes = TreeCompareNodes
+      OnDblClick = TreeDblClick
+      OnGetText = TreeGetText
+      OnPaintText = TreePaintText
+      ExplicitLeft = 5
+      Columns = <
+        item
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring, coAllowFocus]
+          Position = 0
+          Width = 500
+          WideText = #1060#1072#1081#1083
+        end
+        item
+          Position = 1
+          Width = 60
+          WideText = #1058#1080#1087
+        end
+        item
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring, coAllowFocus]
+          Position = 2
+          Width = 100
+          WideText = #1056#1072#1079#1084#1077#1088
+        end>
     end
   end
   object dlgFolder: TRzSelDirDialog
