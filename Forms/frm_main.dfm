@@ -2669,9 +2669,9 @@ object frmMain: TfrmMain
         end
       end
       object Panel1: TPanel
-        Left = 46
+        Left = 48
         Top = 0
-        Width = 892
+        Width = 890
         Height = 536
         Align = alClient
         BevelOuter = bvNone
@@ -2681,7 +2681,7 @@ object frmMain: TfrmMain
           AlignWithMargins = True
           Left = 3
           Top = 472
-          Width = 886
+          Width = 884
           Height = 61
           Align = alBottom
           BorderOuter = fsFlatRounded
@@ -2742,6 +2742,7 @@ object frmMain: TfrmMain
             Font.Style = []
             ParentFont = False
             CenterPoint = cpLowerRight
+            ExplicitLeft = 867
             ExplicitHeight = 19
           end
           object btnClearDownload: TRzBitBtn
@@ -2753,7 +2754,7 @@ object frmMain: TfrmMain
             TabOrder = 0
             OnClick = btnClearDownloadClick
             Kind = bkRetry
-            ExplicitLeft = 767
+            ExplicitLeft = 769
           end
         end
         object tvDownloadList: TVirtualStringTree

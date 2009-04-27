@@ -3141,6 +3141,8 @@ begin
 end;
 
 procedure TfrmMain.tbtnStarClick(Sender: TObject);
+var
+  S: string;
 begin
 
   if (pgControl.ActivePageIndex <> PAGE_AUTHORS) and
@@ -3165,7 +3167,8 @@ begin
         else
         begin
           edLocateAuthor.Text := (Sender as TToolButton).Caption;
-          DMMain.tblAuthors.Filter := 'Family=' + QuotedStr((Sender as TToolButton).Caption + '*');
+          DMMain.tblAuthors.Filter := '(Family=' + QuotedStr((Sender as TToolButton).Caption + '*') +
+               ') OR (Family=' + QuotedStr(AnsiLowercase((Sender as TToolButton).Caption) + '*') + ')';
         end;
         DMMain.tblAuthors.Filtered := (Sender as TToolButton).Tag <> 90;
         FillAuthorTree;
@@ -3189,7 +3192,8 @@ begin
         else
         begin
           edLocateSeries.Text := (Sender as TToolButton).Caption;
-          DMMain.tblSeries.Filter := 'Title =' + QuotedStr((Sender as TToolButton).Caption + '*');
+          DMMain.tblSeries.Filter := '(Title=' + QuotedStr((Sender as TToolButton).Caption + '*') +
+               ') OR (Title=' + QuotedStr(AnsiLowercase((Sender as TToolButton).Caption) + '*') + ')';
         end;
         DMMain.tblSeries.Filtered := true;
         FillSeriesTree;
@@ -5132,8 +5136,6 @@ begin
   DMUser.ActivateCollection(Settings.ActiveCollection);
   frmAddNonFb2.ShowModal;
 end;
-
-
 
 end.
 
