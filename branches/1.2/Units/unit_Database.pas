@@ -381,8 +381,8 @@ end;
 
 procedure TMHLLibrary.CheckInactive;
 begin
-  if Active then
-    DatabaseError(SDatabaseOpen, Self);
+//  if Active then
+//    DatabaseError(SDatabaseOpen, Self);
 end;
 
 constructor TMHLLibrary.Create(AOwner: TComponent);
@@ -473,7 +473,7 @@ end;
 
 procedure TMHLLibrary.CreateCollectionTables(const DBFile: string; const GenresFileName: string);
 begin
-//  CheckInactive;
+  CheckInactive;
 
   DatabaseFileName := DBFile;
 

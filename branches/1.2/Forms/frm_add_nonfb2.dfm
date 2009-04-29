@@ -537,7 +537,6 @@ object frmAddnonfb2: TfrmAddnonfb2
       OnDblClick = TreeDblClick
       OnGetText = TreeGetText
       OnPaintText = TreePaintText
-      ExplicitLeft = 5
       Columns = <
         item
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring, coAllowFocus]

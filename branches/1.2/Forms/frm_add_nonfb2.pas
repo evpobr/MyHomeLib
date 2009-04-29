@@ -208,6 +208,8 @@ end;
 procedure TfrmAddnonfb2.FormShow(Sender: TObject);
 begin
   frmMain.FillGenresTree(frmGenreTree.tvGenresTree);
+  miClearAllClick(Sender);
+  lblGenre.Caption := '';
 
   FLibrary := TMHLLibrary.Create(Self);
   FLibrary.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
@@ -221,12 +223,15 @@ end;
 procedure TfrmAddnonfb2.miClearAllClick(Sender: TObject);
 begin
   edT.Text := '';
+  edFileName.Text := '';
   lvAuthors.Items.Clear;
   cbSeries.Text := '';
   edSN.Value := 0;
+
   frmEditAuthor.edFamily.Text := '';
   frmEditAuthor.edName.Text := '';
   frmEditAuthor.edMiddle.Text := '';
+
 end;
 
 procedure TfrmAddnonfb2.miOpenExplorerClick(Sender: TObject);
