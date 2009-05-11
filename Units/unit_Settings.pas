@@ -135,6 +135,7 @@ type
     FShowEngBar: Boolean;
     FDoNotShowDeleted: Boolean;
     FShowLocalOnly : boolean;
+    FFullSearchMode: boolean;
 
   private
     function GetSettingsFileName: string;
@@ -217,6 +218,7 @@ type
     property ShowLocalOnly: Boolean read FShowLocalOnly write FShowLocalOnly;
     property ShowSubGenreBooks: boolean read FShowSubGenreBooks write FShowSubGenreBooks;
     property ShowFb2Info: boolean read FShowFb2Info write FShowFb2Info;
+    property FullSearchMode: boolean read FFullSearchMode write FFullSearchMode;
 
     property MinimizeToTray : boolean read FMinimizeToTray   write FMinimizeToTray;
     property AutoStartDwnld : boolean read FAutoStartDwnld   write FAutoStartDwnld;
@@ -450,7 +452,6 @@ begin
     FLastBookinSeries:= iniFile.ReadInteger(INTERFACE_SECTION, 'LastBookInSeries', 0);
     FLastBookinFavorites := iniFile.ReadInteger(INTERFACE_SECTION, 'LastBookInFavorites', 0);
 
-
     if iniFile.ReadInteger(INTERFACE_SECTION, 'Lang', 0) = 0 then
       FAppLanguage := alEng
     else
@@ -525,6 +526,8 @@ begin
     FMinimizeToTray  := iniFile.ReadBool(BEHAVIOR_SECTION, 'MinimizeToTray', True);
     FAutoStartDwnld  := iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoStartDwnld', False);
     FAllowMixed :=  iniFile.ReadBool(BEHAVIOR_SECTION, 'AllowMixed', False);
+
+    FFullSearchMode := iniFile.ReadBool(BEHAVIOR_SECTION, 'FullSearchMode', False);
 
     //
     // INITIAL_DIRS_SECTION
@@ -641,6 +644,8 @@ begin
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowFb2Info', FShowFb2Info);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'AutoStartDwnld', FAutoStartDwnld );
     iniFile.WriteBool(BEHAVIOR_SECTION, 'AllowMixed', FAllowMixed );
+
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'FullSearchMode', FFullSearchMode);
 
     //
     // INITIAL_DIRS_SECTION

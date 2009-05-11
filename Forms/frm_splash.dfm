@@ -622,7 +622,7 @@ object frmSplash: TfrmSplash
     Width = 40
     Height = 19
     Alignment = taRightJustify
-    Caption = '1.3.2'
+    Caption = '1.3.3'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 717800
     Font.Height = -16

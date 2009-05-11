@@ -204,12 +204,11 @@ type
     RzPanel10: TRzPanel;
     tvBooksSR: TVirtualStringTree;
     RichEdit2: TRichEdit;
-    RzPanel11: TRzPanel;
+    pnlSearch: TRzPanel;
     Label10: TLabel;
     Label12: TLabel;
     lblTotalBooksSR: TRzLabel;
     edTitle: TRzEdit;
-    btnSearch: TRzBitBtn;
     cbFullText: TCheckBox;
     edAuth: TRzEdit;
     ipnlSearch: TMHLInfoPanel;
@@ -222,44 +221,6 @@ type
     lblTotalBooksF: TRzLabel;
     btnClearFavorites: TRzBitBtn;
     cpCoverF: TMHLCoverPanel;
-    TabSheet6: TRzTabSheet;
-    RzPanel29: TRzPanel;
-    RichEdit5: TRichEdit;
-    pnlFilters: TRzPanel;
-    RzGroupBox1: TRzGroupBox;
-    Label27: TLabel;
-    Label28: TLabel;
-    Label29: TLabel;
-    Label30: TLabel;
-    edFExt: TRzEdit;
-    edFFolder: TRzEdit;
-    edFFile: TRzEdit;
-    cbDeleted: TCheckBox;
-    cbDownloaded: TRzComboBox;
-    cbDate: TRzComboBox;
-    RzGroupBox3: TRzGroupBox;
-    Label24: TLabel;
-    Label26: TLabel;
-    Label23: TLabel;
-    edFSeries: TRzEdit;
-    edFTitle: TRzEdit;
-    edFFullName: TRzEdit;
-    RzGroupBox4: TRzGroupBox;
-    btnInsertFilterTemplate: TRzToolButton;
-    RzToolButton3: TRzToolButton;
-    RzToolButton6: TRzToolButton;
-    RzToolButton5: TRzToolButton;
-    RzToolButton4: TRzToolButton;
-    RzToolButton7: TRzToolButton;
-    RzToolButton8: TRzToolButton;
-    RzToolButton9: TRzToolButton;
-    lblTotalBooksFL: TRzLabel;
-    RzToolButton1: TRzToolButton;
-    btnApplyFilter: TRzBitBtn;
-    btnClearFilterEdits: TRzBitBtn;
-    tvBooksFL: TVirtualStringTree;
-    ipnlFilter: TMHLInfoPanel;
-    cpCoverFL: TMHLCoverPanel;
     ilFileTypes: TImageList;
     TabSheet1: TRzTabSheet;
     rzsSplitterA: TRzSplitter;
@@ -362,6 +323,41 @@ type
     RzSpacer3: TRzSpacer;
     IdCookieManager: TIdCookieManager;
     N28: TMenuItem;
+    pnlFullSearch: TPanel;
+    RzGroupBox3: TRzGroupBox;
+    Label24: TLabel;
+    Label26: TLabel;
+    Label23: TLabel;
+    edFSeries: TRzEdit;
+    edFTitle: TRzEdit;
+    edFFullName: TRzEdit;
+    RzGroupBox1: TRzGroupBox;
+    Label27: TLabel;
+    Label28: TLabel;
+    Label29: TLabel;
+    Label30: TLabel;
+    edFExt: TRzEdit;
+    edFFolder: TRzEdit;
+    edFFile: TRzEdit;
+    cbDeleted: TCheckBox;
+    cbDownloaded: TRzComboBox;
+    cbDate: TRzComboBox;
+    RzGroupBox4: TRzGroupBox;
+    btnInsertFilterTemplate: TRzToolButton;
+    RzToolButton3: TRzToolButton;
+    RzToolButton6: TRzToolButton;
+    RzToolButton5: TRzToolButton;
+    RzToolButton4: TRzToolButton;
+    RzToolButton7: TRzToolButton;
+    RzToolButton8: TRzToolButton;
+    RzToolButton9: TRzToolButton;
+    lblTotalBooksFL: TRzLabel;
+    RzToolButton1: TRzToolButton;
+    btnApplyFilter: TRzBitBtn;
+    btnClearFilterEdits: TRzBitBtn;
+    RzBitBtn1: TRzBitBtn;
+    RzBitBtn2: TRzBitBtn;
+    btnSearch: TRzBitBtn;
 
     //
     // События формы
@@ -537,6 +533,8 @@ type
       const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType);
     procedure BtnSaveClick(Sender: TObject);
+    procedure RzBitBtn1Click(Sender: TObject);
+    procedure RzBitBtn2Click(Sender: TObject);
 
   private
 
@@ -636,7 +634,7 @@ type
     procedure TheFirstRun;
 
     type
-      TView = (ByAuthorView, BySeriesView, ByGenreView, SearchView, FavoritesView, FilterView, DownloadView);
+      TView = (ByAuthorView, BySeriesView, ByGenreView, SearchView, FavoritesView, DownloadView);
 
     function GetActiveView: TView;
     property ActiveView: TView read GetActiveView;
@@ -756,6 +754,18 @@ begin
 
 end;
 
+procedure TfrmMain.RzBitBtn1Click(Sender: TObject);
+begin
+  pnlFullSearch.Visible := True;
+  pnlSearch.Visible := False;
+end;
+
+procedure TfrmMain.RzBitBtn2Click(Sender: TObject);
+begin
+  pnlFullSearch.Visible := False;
+  pnlSearch.Visible := True;
+end;
+
 procedure TfrmMain.btnStartDownloadClick(Sender: TObject);
 begin
   if tvDownloadList.GetFirst = nil then Exit;
@@ -848,8 +858,6 @@ begin
       Columns.Load(SECTION_FL_TREE,tmTree)
     else
       Columns.Load(SECTION_FL_FLAT,tmFlat);
-    Columns.SetColumns(tvBooksFL.Header.Columns);
-
 
     //-------------------------------------------------------------------------
     tvBooksA.Header.MainColumn := 1;
@@ -857,7 +865,6 @@ begin
     tvBooksG.Header.MainColumn := 1;
     tvBooksF.Header.MainColumn := 1;
     tvBooksSR.Header.MainColumn := 1;
-    tvBooksFL.Header.MainColumn := 1;
 
   finally
     Columns.Free;
@@ -896,7 +903,6 @@ begin
     else
       Columns.Save(SECTION_F_FLAT);
 
-    Columns.GetColumns(tvBooksFL.Header.Columns);
     if Settings.TreeModes[PAGE_FILTER] = tmTree then
       Columns.Save(SECTION_FL_TREE)
     else
@@ -974,8 +980,6 @@ begin
   cpCoverSR.FontSize := Settings.ShortFontSize;
   cpCoverSR.AnnotationColor := BGColor;
 
-  cpCoverFL.FontSize := Settings.ShortFontSize;
-  cpCoverFL.AnnotationColor := BGColor;
 
   SetTreeViewColor(tvAuthors);
   SetTreeViewColor(tvBooksA);
@@ -985,7 +989,6 @@ begin
   SetTreeViewColor(tvBooksF);
   SetTreeViewColor(tvSeries);
   SetTreeViewColor(tvGenres);
-  SetTreeViewColor(tvBooksFL);
   SetTreeViewColor(tvDownloadList);
 
   SetEditColor(edLocateAuthor);
@@ -1042,19 +1045,23 @@ begin
   cpCoverG.TmpFolder := Settings.TempPath;
   cpCoverF.TmpFolder := Settings.TempPath;
   cpCoverSR.TmpFolder := Settings.TempPath;
-  cpCoverFL.TmpFolder := Settings.TempPath;
 
   cpCoverA.Fb2InfoVisible := Settings.ShowFb2Info;
   cpCoverS.Fb2InfoVisible := Settings.ShowFb2Info;
   cpCoverG.Fb2InfoVisible := Settings.ShowFb2Info;
   cpCoverF.Fb2InfoVisible := Settings.ShowFb2Info;
   cpCoverSR.Fb2InfoVisible := Settings.ShowFb2Info;
-  cpCoverFL.Fb2InfoVisible := Settings.ShowFb2Info;
 
   rzsSplitterA.Position := Settings.Splitters[0];
   rzsSplitterS.Position := Settings.Splitters[1];
   rzsSplitterG.Position := Settings.Splitters[2];
   cpCoverA.Width := Settings.Splitters[3];
+
+  if Settings.FullSearchMode then
+  begin
+    pnlFullSearch.Visible := True;
+    pnlSearch.Visible := False;
+  end;
 
 end;
 
@@ -1095,10 +1102,10 @@ var FilterString: String;
 begin
   Screen.Cursor := crSQLWAit;
   spStatus.Caption := 'Подготовка фильтра ...'; spStatus.Repaint;
-  tvBooksFL.Clear;
+  tvBooksSR.Clear;
   lblTotalBooksFL.Caption := '(0)';
   FilterString := '';
-  ClearLabels(tvBooksFL.Tag);
+  ClearLabels(tvBooksSR.Tag);
   try
     try
 
@@ -1179,7 +1186,7 @@ begin
       DMMain.tblBooks.Filter := FilterString;
 
       DMMain.tblBooks.Filtered := True;
-      FillBooksTree(0, tvBooksFL, nil, DMmain.tblBooks, True, True);
+      FillBooksTree(0, tvBooksSR, nil, DMmain.tblBooks, True, True);
     except
       on E: Exception do
         ShowMessage('Синтаксическая ошибка. Проверьте параметры фильтра');
@@ -1205,7 +1212,7 @@ begin
   edFExt.Text    := '';
   cbDate.Text   := '';
   cbDownloaded.ItemIndex := 0;
-  tvBooksFL.Clear;
+  tvBooksSR.Clear;
   ClearLabels(PAGE_FILTER);
 end;
 
@@ -1303,13 +1310,12 @@ const
   //
   // ВНИМАНИЕ!!! Порядок и количество элементов массива views должно совпадать с порядком и количеством закладок
   //
-  views: array[0..6] of TView = (
+  views: array[0..5] of TView = (
     ByAuthorView,
     BySeriesView,
     ByGenreView,
     SearchView,
     FavoritesView,
-    FilterView,
     DownloadView
     );
 
@@ -1806,12 +1812,6 @@ begin
       cpCoverSR.Clear;
     end;
 
-    PAGE_FILTER:
-    begin
-      ipnlFilter.Clear;
-      cpCoverFL.Clear;
-    end;
-
     PAGE_ALL:
     begin
       ClearLabels(PAGE_AUTHORS);
@@ -2001,7 +2001,6 @@ begin
   tvBooksF.NodeDataSize := SizeOf(TBookData);
   tvBooksS.NodeDataSize := SizeOf(TBookData);
   tvBooksSR.NodeDataSize := SizeOf(TBookData);
-  tvBooksFL.NodeDataSize := SizeOf(TBookData);
 
   tvDownloadList.NodeDataSize := SizeOf(TDownloadData);
 
@@ -2119,6 +2118,7 @@ begin
   Settings.Splitters[3] := cpCoverA.Width;
 
   Settings.WindowState := WindowState;
+  Settings.FullSearchMode := pnlFullSearch.Visible;
 
   Settings.SaveSettings;
   FreeSettings;
@@ -2423,11 +2423,6 @@ begin
                    Tree := tvBooksF;
                    Panel:= ipnlFavorites;
                    Cover:= cpCoverF;
-                 end;
-    FilterView: begin
-                   Tree := tvBooksFL;
-                   Panel:= ipnlFilter;
-                   Cover:= cpCoverFL;
                  end;
   end;
 end;
@@ -2882,7 +2877,6 @@ begin
   cpCoverS.Width := NewSize;
   cpCoverG.Width := NewSize;
   cpCoverF.Width := NewSize;
-  cpCoverFL.Width := NewSize;
   cpCoverSR.Width := NewSize;
 end;
 
@@ -3230,7 +3224,6 @@ begin
   cpCoverS.Visible := State;
   cpCoverG.Visible := State;
   cpCoverF.Visible := State;
-  cpCoverFL.Visible := State;
   cpCoverSR.Visible := State;
 end;
 
@@ -3274,7 +3267,6 @@ begin
     ByGenreView: Tree := tvBooksG;
     SearchView: Tree := tvBooksSR;
     FavoritesView: Tree := tvBooksF;
-    FilterView: Tree := tvBooksFL;
   end;
 end;
 
@@ -3514,9 +3506,11 @@ begin
               0: lblBooksTotalA.Caption := Format('(%d)', [i]);
               1: lblBooksTotalS.Caption := Format('(%d)', [i]);
               2: lblBooksTotalG.Caption := Format('(%d)', [i]);
-              3: lblTotalBooksSR.Caption := Format('(%d)', [i]);
               4: lblTotalBooksF.Caption := Format('(%d)', [i]);
-              5: lblTotalBooksFL.Caption := Format('(%d)', [i]);
+              3: begin
+                   lblTotalBooksSR.Caption := Format('(%d)', [i]);
+                   lblTotalBooksFL.Caption := Format('(%d)', [i]);
+                 end;
             end;
 
           finally
