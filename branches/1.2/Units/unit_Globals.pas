@@ -837,24 +837,24 @@ begin
 
   { TODO -oalex : Это нужно делать один раз при запуске проги! }
 
-  if FileExists(Settings.AppPath + 'admin@lib.rus[2].txt') then
-  begin
-    S2 := 'admin@lib.rus.ec/ = ';
-    try
-      AssignFile(F, Settings.AppPath + 'admin@lib.rus[2].txt');
-      Reset(F);
-
-      while not Eof(F) do
-      begin
-        Readln(F,S1);
-        S2 := S2 + S1 + chr(10);
-      end;
-    finally
-      CloseFile(F);
-    end;
-
-    frmMain.IdCookieManager.AddCookie(S2,'lib.rus.ec/');
-  end;
+//  if FileExists(Settings.AppPath + 'admin@lib.rus[2].txt') then
+//  begin
+//    S2 := 'admin@lib.rus.ec/ = ';
+//    try
+//      AssignFile(F, Settings.AppPath + 'admin@lib.rus[2].txt');
+//      Reset(F);
+//
+//      while not Eof(F) do
+//      begin
+//        Readln(F,S1);
+//        S2 := S2 + S1 + chr(10);
+//      end;
+//    finally
+//      CloseFile(F);
+//    end;
+//
+//    frmMain.IdCookieManager.AddCookie(S2,'lib.rus.ec/');
+//  end;
 
 end;
 
