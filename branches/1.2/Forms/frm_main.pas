@@ -355,8 +355,8 @@ type
     RzToolButton1: TRzToolButton;
     btnApplyFilter: TRzBitBtn;
     btnClearFilterEdits: TRzBitBtn;
-    RzBitBtn1: TRzBitBtn;
-    RzBitBtn2: TRzBitBtn;
+    btnSwitchToFilter: TRzBitBtn;
+    btnSwitchToSearch: TRzBitBtn;
     btnSearch: TRzBitBtn;
 
     //
@@ -533,8 +533,8 @@ type
       const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType);
     procedure BtnSaveClick(Sender: TObject);
-    procedure RzBitBtn1Click(Sender: TObject);
-    procedure RzBitBtn2Click(Sender: TObject);
+    procedure btnSwitchToFilterClick(Sender: TObject);
+    procedure btnSwitchToSearchClick(Sender: TObject);
 
   private
 
@@ -754,16 +754,18 @@ begin
 
 end;
 
-procedure TfrmMain.RzBitBtn1Click(Sender: TObject);
+procedure TfrmMain.btnSwitchToFilterClick(Sender: TObject);
 begin
   pnlFullSearch.Visible := True;
   pnlSearch.Visible := False;
+  TabSheet4.Caption := 'Фильтр';
 end;
 
-procedure TfrmMain.RzBitBtn2Click(Sender: TObject);
+procedure TfrmMain.btnSwitchToSearchClick(Sender: TObject);
 begin
   pnlFullSearch.Visible := False;
   pnlSearch.Visible := True;
+  TabSheet4.Caption := 'Поиск';
 end;
 
 procedure TfrmMain.btnStartDownloadClick(Sender: TObject);
@@ -1057,11 +1059,7 @@ begin
   rzsSplitterG.Position := Settings.Splitters[2];
   cpCoverA.Width := Settings.Splitters[3];
 
-  if Settings.FullSearchMode then
-  begin
-    pnlFullSearch.Visible := True;
-    pnlSearch.Visible := False;
-  end;
+  if Settings.FullSearchMode then btnSwitchToFilterClick(Nil);
 
 end;
 

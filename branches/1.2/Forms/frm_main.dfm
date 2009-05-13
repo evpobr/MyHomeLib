@@ -1478,8 +1478,6 @@ object frmMain: TfrmMain
           Align = alClient
           BorderOuter = fsNone
           TabOrder = 0
-          ExplicitTop = 229
-          ExplicitHeight = 190
           object tvBooksSR: TVirtualStringTree
             Tag = 3
             Left = 0
@@ -1545,7 +1543,6 @@ object frmMain: TfrmMain
             OnInitNode = tvBooksTreeInitNode
             OnKeyDown = tvBooksTreeKeyDown
             OnMouseUp = tvBooksTreeMouseUp
-            ExplicitHeight = 190
             Columns = <
               item
                 MaxWidth = 1000
@@ -1714,7 +1711,7 @@ object frmMain: TfrmMain
             OnClick = btnClearSerachClick
             Kind = bkRetry
           end
-          object RzBitBtn1: TRzBitBtn
+          object btnSwitchToFilter: TRzBitBtn
             Left = 8
             Top = 62
             Width = 30
@@ -1723,7 +1720,7 @@ object frmMain: TfrmMain
             ParentShowHint = False
             ShowHint = True
             TabOrder = 4
-            OnClick = RzBitBtn1Click
+            OnClick = btnSwitchToFilterClick
           end
           object btnSearch: TRzBitBtn
             Left = 153
@@ -1943,7 +1940,6 @@ object frmMain: TfrmMain
             Margins.Top = 0
             Align = alClient
             TabOrder = 2
-            ExplicitHeight = 147
             DesignSize = (
               115
               144)
@@ -2083,7 +2079,7 @@ object frmMain: TfrmMain
             OnClick = btnClearFilterEditsClick
             Kind = bkRetry
           end
-          object RzBitBtn2: TRzBitBtn
+          object btnSwitchToSearch: TRzBitBtn
             Left = 4
             Top = 115
             Width = 34
@@ -2092,7 +2088,7 @@ object frmMain: TfrmMain
             ParentShowHint = False
             ShowHint = True
             TabOrder = 5
-            OnClick = RzBitBtn2Click
+            OnClick = btnSwitchToSearchClick
           end
         end
       end
@@ -2110,7 +2106,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2323,7 +2318,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
