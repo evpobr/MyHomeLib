@@ -63,7 +63,7 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 414
     Height = 413
-    ActivePage = tsInterface
+    ActivePage = tsInternet
     Align = alClient
     TabOrder = 1
     object tsDevices: TTabSheet
@@ -705,8 +705,8 @@ object frmSettings: TfrmSettings
         Left = 3
         Top = 212
         Width = 400
-        Height = 188
-        Align = alClient
+        Height = 109
+        Align = alTop
         Caption = #1057#1077#1088#1074#1077#1088' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
         TabOrder = 2
         object edUpdates: TEdit
@@ -732,6 +732,54 @@ object frmSettings: TfrmSettings
           Height = 17
           Caption = #1055#1088#1086#1074#1077#1088#1103#1090#1100' '#1085#1072#1083#1080#1095#1080#1077' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081' '#1087#1088#1086#1075#1088#1072#1084#1084#1099' '#1087#1088#1080' '#1079#1072#1087#1091#1089#1082#1077
           TabOrder = 2
+        end
+      end
+      object RzGroupBox10: TRzGroupBox
+        AlignWithMargins = True
+        Left = 3
+        Top = 327
+        Width = 400
+        Height = 73
+        Align = alClient
+        Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1089#1086#1077#1076#1080#1085#1077#1085#1080#1103
+        TabOrder = 3
+        ExplicitLeft = 56
+        ExplicitTop = 352
+        ExplicitWidth = 185
+        ExplicitHeight = 105
+        object RzLabel7: TRzLabel
+          Left = 16
+          Top = 22
+          Width = 131
+          Height = 13
+          Alignment = taRightJustify
+          Caption = #1058#1072#1081#1084'-'#1072#1091#1090' '#1089#1086#1077#1076#1080#1085#1077#1085#1080#1103' ('#1084#1089')'
+        end
+        object RzLabel8: TRzLabel
+          Left = 40
+          Top = 46
+          Width = 107
+          Height = 13
+          Alignment = taRightJustify
+          Caption = #1058#1072#1081#1084'-'#1072#1091#1090' '#1095#1090#1077#1085#1080#1103' ('#1084#1089')'
+        end
+        object edTimeOut: TRzNumericEdit
+          Left = 153
+          Top = 19
+          Width = 65
+          Height = 21
+          TabOrder = 0
+          Value = 10000.000000000000000000
+          DisplayFormat = ',0;(,0)'
+        end
+        object edReadTimeOut: TRzNumericEdit
+          Left = 153
+          Top = 43
+          Width = 65
+          Height = 21
+          TabOrder = 1
+          Value = 10000.000000000000000000
+          DisplayFormat = ',0;(,0)'
         end
       end
     end

@@ -133,6 +133,11 @@ type
     pnlDwnld: TRzPanel;
     pnlDeleted: TRzPanel;
     RzPanel5: TRzPanel;
+    RzGroupBox10: TRzGroupBox;
+    edTimeOut: TRzNumericEdit;
+    RzLabel7: TRzLabel;
+    edReadTimeOut: TRzNumericEdit;
+    RzLabel8: TRzLabel;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
@@ -254,6 +259,9 @@ begin
   cbCheckColUpdate.Checked := Settings.CheckExternalLibUpdate;
   cbUpdates.Checked := Settings.CheckUpdate;
 
+  edTimeOut.Value := Settings.TimeOut;
+  edReadTimeOut.Value := Settings.ReadTimeOut;
+
   // Page 5 - Scripts
   lvScripts.Items.Clear;
   cbDefaultAction.Items.Clear;
@@ -328,6 +336,8 @@ begin
   Settings.CheckExternalLibUpdate := cbCheckColUpdate.Checked;
   Settings.CheckUpdate := cbUpdates.Checked;
   Settings.DownloadURL := edDownloadServer.Text;
+  Settings.TimeOut := Round(edTimeOut.Value);
+  Settings.ReadTimeOut := Round(edReadTimeOut.Value);
 
   // Page 5 - Scripts
   SaveScripts;
