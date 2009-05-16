@@ -279,7 +279,10 @@ begin
             begin
               FS.SaveToFile(Folder);
               Result := TestArchive(Folder);
-              DMMain.SetLocalStatus(ID,Result);
+              if Result then
+                DMMain.SetLocalStatus(ID,True)
+              else
+                DeleteFile(PChar(Folder));
             end;
           end;
         except
