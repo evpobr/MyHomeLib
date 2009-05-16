@@ -95,6 +95,8 @@ type
     FUpdateURL: string;
     FDownloadURL: string;
     FErrorLog: boolean;
+    FTimeOut: integer;
+    FReadTimeOut: integer;
 
     // COLORS_SECTION
     FBookColor: TColor;
@@ -243,6 +245,8 @@ type
     property UpdateURL: string read FUpdateURL write FUpdateURL;
     property DownloadURL: string read FDownloadURL write FDownloadURL;
     property ErrorLog:boolean read FerrorLog write FErrorLog;
+    property TimeOut: integer read FTimeOut write FTimeOut;
+    property ReadTimeOut: integer read FReadTimeOut write FReadTimeOut;
 
     property BookColor: TColor read FBookColor write FBookColor;
     property SeriesColor: TColor read FSeriesColor write FSeriesColor;
@@ -476,6 +480,8 @@ begin
     FUpdateURL := iniFile.ReadString(NETWORK_SECTION, 'update_server', 'http://home-lib.net/update/');
     FDownloadURL := iniFile.ReadString(NETWORK_SECTION, 'library_server', 'http://lib.rus.ec/');
     FErrorLog := iniFile.ReadBool(NETWORK_SECTION,'use_error_log',false);
+    FTimeOut := iniFile.ReadInteger(NETWORK_SECTION,'time-out',5000);
+    FReadTimeOut := iniFile.ReadInteger(NETWORK_SECTION,'read_time-out',50000);
 
     //
     // COLORS_SECTION
@@ -593,7 +599,8 @@ begin
     iniFile.WriteString(NETWORK_SECTION, 'update_server', FUpdateURL);
     iniFile.WriteString(NETWORK_SECTION, 'library_server', FDownloadURL);
     iniFile.WriteBool(NETWORK_SECTION,'use_error_log',FErrorLog);
-
+    iniFile.WriteInteger(NETWORK_SECTION,'time-out',FTimeOut);
+    iniFile.WriteInteger(NETWORK_SECTION,'read_time-out',FReadTimeOut);
     //
     // COLORS_SECTION
     //
