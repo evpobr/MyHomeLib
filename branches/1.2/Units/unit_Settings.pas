@@ -751,7 +751,7 @@ begin
       //
       // ƒобавим некоторые ридеры по умолчанию
       //
-      FReaders.Add('fb2',AppPath+'haalireader.exe');
+      FReaders.Add('fb2',AppPath+'AlReader\AlReader2.exe');
       FReaders.Add('pdf', '');
       FReaders.Add('djvu', '');
       FReaders.Add('mht', '');

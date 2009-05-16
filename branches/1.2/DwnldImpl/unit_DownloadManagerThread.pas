@@ -95,19 +95,9 @@ begin
   FError := True;
   FS := TMemoryStream.Create;
   try
-//    if FileExists(FN) then
-//    begin
-//      FS.LoadFromFile(FN);
-//      FS.Position := FS.Size;
-//      //FidHTTP.Request.Range := IntToStr(FS.Position);
-//      FidHTTP.Request.ContentRangeStart := FS.Size;
-//      FidHTTP.Request.ContentRangeEnd := 0;
-//      FWorkCount := FS.Size;
-//    end;
     try
 
       SetProxySettings(FidHTTP);
-
       FidHTTP.Get(FCurrentURL, FS);
 
       if FCanceled then
@@ -115,7 +105,6 @@ begin
       CreateFolders('', ExtractFileDir(FCurrentFile));
 
       FS.Position := 0;
-
       SL := TStringList.Create;
       try
         SL.LoadFromStream(FS);
@@ -137,6 +126,8 @@ begin
           begin
             FS.SaveToFile(FCurrentFile);
             FError := not TestArchive(FCurrentFile);
+            if FError then
+              DeleteFile(PChar(FCurrentFile));
           end;
         end;
       finally

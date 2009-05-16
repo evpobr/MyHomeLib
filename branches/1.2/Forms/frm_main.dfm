@@ -422,9 +422,9 @@ object frmMain: TfrmMain
     Width = 942
     Height = 559
     HelpContext = 135
-    ActivePage = TabSheet4
+    ActivePage = TabSheet1
     Align = alClient
-    TabIndex = 3
+    TabIndex = 0
     TabOrder = 3
     OnChange = pgControlChange
     FixedDimension = 19
@@ -2106,6 +2106,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2318,6 +2319,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2533,7 +2535,7 @@ object frmMain: TfrmMain
             ExplicitHeight = 19
           end
           object btnClearDownload: TRzBitBtn
-            Left = 771
+            Left = 761
             Top = 30
             Width = 118
             Anchors = [akRight, akBottom]
