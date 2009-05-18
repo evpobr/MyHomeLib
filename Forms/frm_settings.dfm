@@ -743,10 +743,6 @@ object frmSettings: TfrmSettings
         Align = alClient
         Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1089#1086#1077#1076#1080#1085#1077#1085#1080#1103
         TabOrder = 3
-        ExplicitLeft = 56
-        ExplicitTop = 352
-        ExplicitWidth = 185
-        ExplicitHeight = 105
         object RzLabel7: TRzLabel
           Left = 16
           Top = 22
@@ -769,6 +765,9 @@ object frmSettings: TfrmSettings
           Width = 65
           Height = 21
           TabOrder = 0
+          CheckRange = True
+          Max = 100000.000000000000000000
+          Min = 1000.000000000000000000
           Value = 10000.000000000000000000
           DisplayFormat = ',0;(,0)'
         end
@@ -778,6 +777,9 @@ object frmSettings: TfrmSettings
           Width = 65
           Height = 21
           TabOrder = 1
+          CheckRange = True
+          Max = 100000.000000000000000000
+          Min = 1000.000000000000000000
           Value = 10000.000000000000000000
           DisplayFormat = ',0;(,0)'
         end

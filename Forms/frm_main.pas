@@ -1133,7 +1133,9 @@ begin
       // Собираем фильтры в кучу
 
       if (SeriesFilter <> '') then
-        FilterString := '( ' + SeriesFilter + ')';
+          FilterString := '( ' + SeriesFilter + ')'
+        else
+          FilterString := '';
 
       // Добавляем фильтры по таблице Books
 
@@ -1453,7 +1455,7 @@ begin
   miEditGenres.Visible := IsPrivate;
   miEditSeries.Visible := IsPrivate;
   miBookEdit.Visible := IsPrivate;
-  miDeleteBook.Visible := IsPrivate or IsOnline; // DMUser.ActiveCollection.AllowDelete;
+  miDeleteBook.Visible := IsPrivate; // DMUser.ActiveCollection.AllowDelete;
 
   if Assigned(FLastLetterA) then
     FLastLetterA.Down := False;
@@ -3902,9 +3904,9 @@ var
   Author: TAuthorRecord;
   Genre: TGenreRecord;
 begin
-  if ActiveView = FavoritesView then
+  if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
   begin
-    MessageDlg('Редактирование книг из избранного невозможно.', mtWarning, [mbOk], 0);
+    MessageDlg('Редактирование книг из избранного или списка закачек невозможно.', mtWarning, [mbOk], 0);
     Exit;
   end;
 
