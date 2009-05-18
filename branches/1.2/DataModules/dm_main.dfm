@@ -1506,6 +1506,7 @@ object DMMain: TDMMain
     InMemory = False
     ReadOnly = False
     Filtered = True
+    FilterOptions = [foCaseInsensitive]
     RequestLive = True
     SQL.Strings = (
       'select s."*"'
