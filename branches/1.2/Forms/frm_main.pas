@@ -1011,10 +1011,18 @@ begin
 end;
 
 procedure TfrmMain.ReadINIData;
+const CHECK_FILE = 'TheFirstRun.check';
+     ROOT = 'HKEY_CURRENT_USER';
+     Key  = '\Software\Microsoft\Windows\CurrentVersion\Internet Settings';
+var
+ regini : TRzRegIniFile;
+ IETempStr, IEProxy, IEPort : String;
+ i, colonpos : integer;
+
 begin
+
   CreateSettings;
   Settings.LoadSettings;
-
 
   cbFullText.Checked := Settings.FullTextSearch;
 
@@ -1061,6 +1069,22 @@ begin
 
   if Settings.FullSearchMode then btnSwitchToFilterClick(Nil);
 
+   // Check IE Proxy settings   (by Goblin)
+  regini := TRzRegIniFile.Create(self);
+  regini.PathType := ptRegistry;
+  regini.Path := ROOT;
+  if regini.ReadInteger(Key, 'ProxyEnable', 0) = 1 then begin
+    IETempStr := regini.ReadString(Key, 'ProxyServer', '');
+    if IETempStr <> '' then
+      for i := 1 to Length(IETempStr) do
+       if IETempStr[i] = ':' then colonpos := i;
+    IEProxy := ANSILeftStr(IETempStr, colonpos-1);
+    IEPort := ANSIRightStr(IETempStr, Length(IETempStr)-colonpos);
+
+    Settings.IEProxyServer := IEProxy;
+    Settings.IEProxyPort := StrToInt(IEPort);
+  end;
+  // End check IE Proxy settings
 end;
 
 procedure TfrmMain.btnApplyFilterClick(Sender: TObject);
