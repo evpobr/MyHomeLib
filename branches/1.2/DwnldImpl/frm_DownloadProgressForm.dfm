@@ -1,11 +1,11 @@
 inherited DownloadProgressForm: TDownloadProgressForm
   BorderStyle = bsDialog
   Caption = #1047#1072#1082#1072#1095#1082#1072
-  ClientHeight = 131
+  ClientHeight = 135
   ClientWidth = 428
   Position = poMainFormCenter
   ExplicitWidth = 434
-  ExplicitHeight = 158
+  ExplicitHeight = 161
   PixelsPerInch = 96
   TextHeight = 13
   object lblCurrent: TLabel
@@ -67,14 +67,15 @@ inherited DownloadProgressForm: TDownloadProgressForm
     Align = alTop
     TabOrder = 1
   end
-  object btnCancel: TBitBtn
+  object btnCancel: TButton
     Left = 338
-    Top = 96
+    Top = 98
     Width = 75
     Height = 25
     Caption = #1054#1090#1084#1077#1085#1072
+    DoubleBuffered = True
+    ParentDoubleBuffered = False
     TabOrder = 2
     OnClick = btnCancelClick
-    Kind = bkCancel
   end
 end
