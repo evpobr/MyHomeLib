@@ -98,6 +98,11 @@ type
     FTimeOut: integer;
     FReadTimeOut: integer;
 
+    FUseIESettings: boolean;
+    FIEProxyServer: string;
+    FIEProxyPort: Integer;
+
+
     // COLORS_SECTION
     FBookColor: TColor;
     FSeriesColor: TColor;
@@ -247,6 +252,13 @@ type
     property ErrorLog:boolean read FerrorLog write FErrorLog;
     property TimeOut: integer read FTimeOut write FTimeOut;
     property ReadTimeOut: integer read FReadTimeOut write FReadTimeOut;
+
+    property UseIESettings: boolean read FUseIESettings write FUseIESettings;
+    property IEProxyServer: string read FIEProxyServer write FIEProxyServer;
+    property IEProxyPort: Integer read FIEProxyPort write FIEProxyPort;
+
+
+
 
     property BookColor: TColor read FBookColor write FBookColor;
     property SeriesColor: TColor read FSeriesColor write FSeriesColor;
@@ -483,6 +495,9 @@ begin
     FTimeOut := iniFile.ReadInteger(NETWORK_SECTION,'time-out',5000);
     FReadTimeOut := iniFile.ReadInteger(NETWORK_SECTION,'read_time-out',50000);
 
+    FUseIESettings := iniFile.ReadBool(NETWORK_SECTION,'use_ie_settings',false);
+
+
     //
     // COLORS_SECTION
     //
@@ -601,6 +616,8 @@ begin
     iniFile.WriteBool(NETWORK_SECTION,'use_error_log',FErrorLog);
     iniFile.WriteInteger(NETWORK_SECTION,'time-out',FTimeOut);
     iniFile.WriteInteger(NETWORK_SECTION,'read_time-out',FReadTimeOut);
+    iniFile.WriteBool(NETWORK_SECTION,'use_ie_settings',FUseIESettings);
+
     //
     // COLORS_SECTION
     //

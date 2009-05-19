@@ -589,7 +589,7 @@ object frmSettings: TfrmSettings
         TabOrder = 0
         object RzLabel1: TRzLabel
           Left = 16
-          Top = 38
+          Top = 50
           Width = 37
           Height = 13
           Alignment = taRightJustify
@@ -597,7 +597,7 @@ object frmSettings: TfrmSettings
         end
         object RzLabel2: TRzLabel
           Left = 289
-          Top = 38
+          Top = 50
           Width = 25
           Height = 13
           Alignment = taRightJustify
@@ -605,7 +605,7 @@ object frmSettings: TfrmSettings
         end
         object RzLabel3: TRzLabel
           Left = 16
-          Top = 78
+          Top = 81
           Width = 72
           Height = 13
           Alignment = taRightJustify
@@ -613,7 +613,7 @@ object frmSettings: TfrmSettings
         end
         object RzLabel4: TRzLabel
           Left = 237
-          Top = 78
+          Top = 81
           Width = 37
           Height = 13
           Alignment = taRightJustify
@@ -621,21 +621,21 @@ object frmSettings: TfrmSettings
         end
         object edProxyServer: TRzEdit
           Left = 59
-          Top = 35
+          Top = 47
           Width = 214
           Height = 21
           TabOrder = 0
         end
         object edProxyUsername: TRzEdit
           Left = 94
-          Top = 72
+          Top = 75
           Width = 115
           Height = 21
           TabOrder = 1
         end
         object edProxyPassword: TRzMaskEdit
           Left = 280
-          Top = 72
+          Top = 75
           Width = 89
           Height = 21
           PasswordChar = #7
@@ -643,11 +643,22 @@ object frmSettings: TfrmSettings
         end
         object edProxyPort: TRzNumericEdit
           Left = 320
-          Top = 35
+          Top = 47
           Width = 49
           Height = 21
           TabOrder = 3
+          CheckRange = True
+          Max = 65535.000000000000000000
           DisplayFormat = '0'
+        end
+        object cbUseIESettings: TCheckBox
+          Left = 16
+          Top = 21
+          Width = 337
+          Height = 17
+          Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1085#1072#1089#1090#1088#1086#1081#1082#1080' Internet Explorer'
+          TabOrder = 4
+          OnClick = cbUseIESettingsClick
         end
       end
       object RzGroupBox2: TRzGroupBox

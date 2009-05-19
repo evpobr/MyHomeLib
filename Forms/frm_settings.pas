@@ -138,6 +138,7 @@ type
     RzLabel7: TRzLabel;
     edReadTimeOut: TRzNumericEdit;
     RzLabel8: TRzLabel;
+    cbUseIESettings: TCheckBox;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
@@ -155,6 +156,7 @@ type
     procedure tbtnInsert1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure pnlDwnldClick(Sender: TObject);
+    procedure cbUseIESettingsClick(Sender: TObject);
 
   private
     procedure EditReader(AItem: TListItem);
@@ -262,6 +264,8 @@ begin
   edTimeOut.Value := Settings.TimeOut;
   edReadTimeOut.Value := Settings.ReadTimeOut;
 
+  cbUseIESettings.Checked := Settings.UseIESettings;
+
   // Page 5 - Scripts
   lvScripts.Items.Clear;
   cbDefaultAction.Items.Clear;
@@ -289,6 +293,8 @@ begin
   cbAllowMixedCollections.Checked := Settings.AllowMixed;
 
   tvSections.Select(tvSections.Items[0]);
+
+  cbUseIESettingsClick(Nil);
 end;
 
 procedure TfrmSettings.SaveSettings;
@@ -338,6 +344,7 @@ begin
   Settings.DownloadURL := edDownloadServer.Text;
   Settings.TimeOut := Round(edTimeOut.Value);
   Settings.ReadTimeOut := Round(edReadTimeOut.Value);
+  Settings.UseIESettings := cbUseIESettings.Checked;
 
   // Page 5 - Scripts
   SaveScripts;
@@ -585,6 +592,14 @@ begin
     pnlBS.Font.Color := dlgColors.Color;
     pnlASG.Font.Color := dlgColors.Color;
   end;
+end;
+
+procedure TfrmSettings.cbUseIESettingsClick(Sender: TObject);
+begin
+  edProxyServer.Enabled := not cbUseIESettings.Checked;
+  edProxyPort.Enabled := not cbUseIESettings.Checked;
+  edProxyUserName.Enabled := not cbUseIESettings.Checked;
+  edProxyPassword.Enabled := not cbUseIESettings.Checked;
 end;
 
 end.

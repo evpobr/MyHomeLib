@@ -824,10 +824,18 @@ var
 begin
   with idHTTP.ProxyParams do
   begin
-    ProxyServer := Settings.ProxyServer;
-    ProxyPort := Settings.ProxyPort;
-    ProxyUsername := Settings.ProxyUsername;
-    ProxyPassword := Settings.ProxyPassword;
+    if Settings.UseIESettings then
+    begin
+      ProxyServer := Settings.IEProxyServer;
+      ProxyPort := Settings.IEProxyPort;
+    end
+    else
+    begin
+      ProxyServer := Settings.ProxyServer;
+      ProxyPort := Settings.ProxyPort;
+      ProxyUsername := Settings.ProxyUsername;
+      ProxyPassword := Settings.ProxyPassword;
+    end;
 
     BasicAuthentication := True;
   end;
