@@ -86,19 +86,14 @@ uses
   unit_NCWParams in 'Wizards\NewCollection\unit_NCWParams.pas',
   frame_NCWCollectionFileTypes in 'Wizards\NewCollection\frame_NCWCollectionFileTypes.pas' {frameNCWCollectionFileTypes: TFrame},
   unit_fb2ToText in 'UtilsImpl\unit_fb2ToText.pas',
-  unit_StaticTip in 'Components\unit_StaticTip.pas',
-  files_list in 'Components\files_list.pas',
-  MHLComponents_Register in 'Components\MHLComponents_Register.pas',
-  unit_AutoCompleteEdit in 'Components\unit_AutoCompleteEdit.pas',
   unit_SyncFoldersThread in 'UtilsImpl\unit_SyncFoldersThread.pas',
   unit_libupdateThread in 'UtilsImpl\unit_libupdateThread.pas',
-  unit_CoverPanel in 'Components\unit_CoverPanel.pas',
-  unit_InfoPanel in 'Components\unit_InfoPanel.pas',
   unit_DownloadBooksThread in 'DwnldImpl\unit_DownloadBooksThread.pas',
   frm_DownloadProgressForm in 'DwnldImpl\frm_DownloadProgressForm.pas' {DownloadProgressForm},
   unit_Columns in 'Units\unit_Columns.pas',
   StoHtmlHelp in 'UtilsImpl\StoHtmlHelp.pas',
-  unit_DownloadManagerThread in 'DwnldImpl\unit_DownloadManagerThread.pas';
+  unit_DownloadManagerThread in 'DwnldImpl\unit_DownloadManagerThread.pas',
+  unit_Messages in 'Units\unit_Messages.pas';
 
 {$R *.res}
 

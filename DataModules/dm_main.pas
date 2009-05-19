@@ -200,7 +200,7 @@ var
 
 implementation
 
-uses dm_user, frm_main, StrUtils, unit_Consts;
+uses Windows, Forms, dm_user, frm_main, StrUtils, unit_Consts, unit_Messages;
 
 {$R *.dfm}
 
@@ -388,14 +388,26 @@ begin
     AFolder := FActiveTable.FieldByName('Folder').AsString;
 end;
 
-procedure TDMMain.SetLocalStatus(AId: integer; AState: boolean);
+procedure TDMMain.SetLocalStatus(AId: integer; AState: Boolean);
 begin
-  if Aid <> 0 then
-  if  FActiveTable.Locate('ID',AId,[]) then
+  if AId <> 0 then
   begin
-    FActiveTable.Edit;
-    FActiveTable.FieldByName('Local').AsBoolean := AState;
-    FActiveTable.Post;
+    if FActiveTable.Locate('ID', AId, []) then
+    begin
+      FActiveTable.Edit;
+      FActiveTable.FieldByName('Local').AsBoolean := AState;
+      FActiveTable.Post;
+    end;
+
+    //
+    // обновим информацию о книге в главном окне программы
+    //
+    PostMessage(
+      Application.MainFormHandle,
+      WM_MHL_DOWNLOAD_COMPLETE,
+      AId,
+      Integer(LongBool(AState))
+      );
   end;
 end;
 

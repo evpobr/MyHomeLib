@@ -73,7 +73,8 @@ uses
   unit_Columns,
   ZipForge,
   RzPrgres,
-  unit_DownloadManagerThread;
+  unit_DownloadManagerThread,
+  unit_Messages;
 
 type
 
@@ -536,8 +537,14 @@ type
     procedure btnSwitchToFilterClick(Sender: TObject);
     procedure btnSwitchToSearchClick(Sender: TObject);
 
-  private
+  protected
+    procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
 
+  private
+    type
+      TView = (ByAuthorView, BySeriesView, ByGenreView, SearchView, FavoritesView, DownloadView);
+
+  private
     FDMThread: TDownloadManagerThread;
 
     // поиск аторов, серий
@@ -565,6 +572,7 @@ type
 
     procedure ReadINIData;
 
+    function GetViewTree(view: TView): TVirtualStringTree;
     procedure GetActiveTree(var Tree: TVirtualStringTree);
     procedure Selection(SelState: boolean);
     procedure LocateBookList(const text: String; Tree: TVirtualStringTree);
@@ -603,12 +611,15 @@ type
     BookTreeStatus: (bsFree, bsBusy);
 
     FSortSettings: array [0..5] of record
-                     Column: TColumnIndex;
-                     Direction:TSortDirection;
-                   end;  
+      Column: TColumnIndex;
+      Direction: TSortDirection;
+    end;
 
     FStarImage: TPngImage;
     FEmptyStarImage: TPngImage;
+
+    //
+    function GetBookNode(const Tree: TVirtualStringTree; bookID: Integer): PVirtualNode;
 
     procedure FillBookIdList(const Tree: TVirtualStringTree; var BookIDList: TBookIdList);
     function GetActiveBookTable(tag: integer): TAbsTable;
@@ -632,9 +643,6 @@ type
     function CheckActiveDownloads:boolean;
     procedure SetLangBarSize;
     procedure TheFirstRun;
-
-    type
-      TView = (ByAuthorView, BySeriesView, ByGenreView, SearchView, FavoritesView, DownloadView);
 
     function GetActiveView: TView;
     property ActiveView: TView read GetActiveView;
@@ -2979,10 +2987,13 @@ begin
       Settings.FolderTemplate := '';
       StrReplace('%NFT%', '', TMPParams);
     end;
+
     if Pos('%TMP%', Settings.Scripts[ScriptID].Params) <> 0 then
       StrReplace('%TMP%',Settings.TempPath, TMPParams);
+
     if Pos('%DEST%', Settings.Scripts[ScriptID].Params) <> 0 then
       StrReplace('%DEST%',Settings.DeviceDir, TMPParams);
+
     if Pos('%FOLDER ', Settings.Scripts[ScriptID].Params) <> 0 then
     begin
       StrReplace('%FOLDER ','', TMPParams);
@@ -2991,8 +3002,10 @@ begin
       Settings.DeviceDir := S;
       Delete(TMPParams,1,p);
     end;
+
     if (Settings.Scripts[ScriptID].Path = '%COPY%') and
        (trim(TMPParams) <> '') then Settings.DeviceDir := trim(TMPParams);
+
     Settings.Scripts[ScriptID].TmpParams := TMPParams;   
   end;
 
@@ -3003,11 +3016,11 @@ begin
 
   if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
   begin
-    unit_exporttodevice.DownloadBooks(DMMain.ActiveTable,  BookIdList);
+    unit_ExportToDevice.DownloadBooks(DMMain.ActiveTable, BookIdList);
     RefreshBooksState(Tree, BookIDList);
   end;
 
-  unit_exporttodevice.ExportToDevice(DMMain.ActiveTable, BookIdList, ExportMode, Files);
+  unit_ExportToDevice.ExportToDevice(DMMain.ActiveTable, BookIdList, ExportMode, Files);
 
   if (ScriptID >= 0 ) and (Settings.Scripts[ScriptID].Path <> '%COPY%') then
   begin
@@ -3039,7 +3052,7 @@ begin
   GetActiveTree(Tree);
 
   FillBookIdList(Tree, BookIDList);
-  unit_exporttodevice.DownloadBooks(DMMain.ActiveTable, BookIdList );
+  unit_ExportToDevice.DownloadBooks(DMMain.ActiveTable, BookIdList );
 
   RefreshBooksState(Tree, BookIDList);
 end;
@@ -3283,15 +3296,25 @@ begin
     Tree.FullExpand(nil);
 end;
 
+function TfrmMain.GetViewTree(view: TView): TVirtualStringTree;
+begin
+  case view of
+    ByAuthorView: Result := tvBooksA;
+    BySeriesView: Result := tvBooksS;
+    ByGenreView: Result := tvBooksG;
+    SearchView: Result := tvBooksSR;
+    FavoritesView: Result := tvBooksF;
+  else
+    begin
+      Assert(False, 'Проверить использование, возможна ошибка');
+      Result := nil;
+    end;
+  end;
+end;
+
 procedure TfrmMain.GetActiveTree(var Tree: TVirtualStringTree);
 begin
-  case ActiveView of
-    ByAuthorView: Tree := tvBooksA;
-    BySeriesView: Tree := tvBooksS;
-    ByGenreView: Tree := tvBooksG;
-    SearchView: Tree := tvBooksSR;
-    FavoritesView: Tree := tvBooksF;
-  end;
+  Tree := GetViewTree(ActiveView);
 end;
 
 procedure TfrmMain.Selection(SelState: boolean);
@@ -3755,6 +3778,10 @@ var
   Node: PVirtualNode;
   Max : integer;
 begin
+  //
+  // NickR - надеюсь, больше не нужна
+  // { TODO -oNickR -cunused code : удалить }
+  //
   Node := Tree.GetFirst;
   i := 0; Max := High(BookIDList);
   while Assigned(Node) do
@@ -3817,35 +3844,34 @@ begin
 
   for I := 0 to High(BookIDList) do
   begin
-
     if ActiveView = FavoritesView then
     begin
-      DMUser.tblFavorites.Locate('ID',BookIDList[i].ID,[]);
-      if DMUser.tblFavoritesDataBaseId.Value <>
-         DMUser.ActiveCollection.ID
-       then
+      DMUser.tblFavorites.Locate('ID', BookIDList[i].ID, []);
+      if DMUser.tblFavoritesDataBaseId.Value <> DMUser.ActiveCollection.ID then
          Continue;
     end;
 
-    if CheckID(BookIDList[i].ID) then Continue;
+    if CheckID(BookIDList[i].ID) then
+      Continue;
 
     DMMain.GetBookFolder(BookIDList[i].ID,Folder);
     Node := tvDownloadList.AddChild(nil);
     Data := tvDownloadList.GetNodeData(Node);
 
-    DMMain.FieldByName(BookIDList[i].ID,'FullName',Data.Author);
-    DMMain.FieldByName(BookIDList[i].ID,'Title',Data.Title);
-    DMMain.FieldByName(BookIDList[i].ID,'Size',Data.Size);
-    DMMain.FieldByName(BookIDList[i].ID,'LibID',LibID);
+    DMMain.FieldByName(BookIDList[i].ID, 'FullName', Data.Author);
+    DMMain.FieldByName(BookIDList[i].ID, 'Title', Data.Title);
+    DMMain.FieldByName(BookIDList[i].ID, 'Size', Data.Size);
+    DMMain.FieldByName(BookIDList[i].ID, 'LibID', LibID);
     Data.ID := BookIDList[i].ID;
     Data.State := dsWait;
     Data.FileName := Folder;
-    Data.URL := Format('http://lib.rus.ec/b/%d/download',[LibID]);
+    Data.URL := Format('http://lib.rus.ec/b/%d/download', [LibID]);
   end;
 
   lblDownloadCount.Caption := Format('(%d)',[tvDownloadList.ChildCount[Nil]]);
 
-  if Settings.AutoStartDwnld then btnStartDownloadClick(Sender);
+  if Settings.AutoStartDwnld then
+    btnStartDownloadClick(Sender);
 end;
 
 procedure TfrmMain.miEditAuthorClick(Sender: TObject);
@@ -5132,7 +5158,6 @@ begin
 
   miGotoAuthor.Visible := (ActiveView <> ByAuthorView);
 
-
   SetHeaderPopUp;
 
   tvBooksTreeChange(Nil,Nil);
@@ -5153,6 +5178,58 @@ procedure TfrmMain.miPdfdjvuClick(Sender: TObject);
 begin
   DMUser.ActivateCollection(Settings.ActiveCollection);
   frmAddNonFb2.ShowModal;
+end;
+
+procedure TfrmMain.OnBookDownloadComplete(var Message: TDownloadCompleteMessage);
+var
+  Tree: TVirtualStringTree;
+  Node: PVirtualNode;
+  Data: PBookData;
+  i: TView;
+begin
+  if Message.Downloaded then
+  begin
+    for i := ByAuthorView to FavoritesView do
+    begin
+      Tree := GetViewTree(i);
+      Assert(Assigned(Tree));
+
+      Node := GetBookNode(Tree, Message.BookID);
+      if Assigned(Node) then
+      begin
+        Data := Tree.GetNodeData(Node);
+        Assert(Assigned(Data));
+        if Assigned(Data) then
+        begin
+          Data^.Locale := True;
+          Tree.RepaintNode(Node);
+        end;
+      end;
+    end;
+  end;
+end;
+
+function TfrmMain.GetBookNode(const Tree: TVirtualStringTree; bookID: Integer): PVirtualNode;
+var
+  Data: PBookData;
+  Node: PVirtualNode;
+begin
+  Assert(Assigned(Tree));
+
+  Result := nil;
+
+  Node := Tree.GetFirst;
+  while Assigned(Node) do
+  begin
+    Data := Tree.GetNodeData(Node);
+    Assert(Assigned(Data));
+    if (Data.nodeType = ntBookInfo) and (Data.ID = bookID) then
+    begin
+      Result := Node;
+      Exit;
+    end;
+    Node := Tree.GetNext(Node);
+  end;
 end;
 
 end.

@@ -7,7 +7,7 @@
 			<DCC_DependencyCheckOutputName>Release\Bin\MyhomeLib.exe</DCC_DependencyCheckOutputName>
 			<MainSource>MyhomeLib.dpr</MainSource>
 			<ProjectVersion>12.0</ProjectVersion>
-			<Config Condition="'$(Config)'==''">Release</Config>
+			<Config Condition="'$(Config)'==''">Debug</Config>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
 			<Base>true</Base>
@@ -200,14 +200,8 @@
 				<DesignClass>TFrame</DesignClass>
 			</DCCReference>
 			<DCCReference Include="UtilsImpl\unit_fb2ToText.pas"/>
-			<DCCReference Include="Components\unit_StaticTip.pas"/>
-			<DCCReference Include="Components\files_list.pas"/>
-			<DCCReference Include="Components\MHLComponents_Register.pas"/>
-			<DCCReference Include="Components\unit_AutoCompleteEdit.pas"/>
 			<DCCReference Include="UtilsImpl\unit_SyncFoldersThread.pas"/>
 			<DCCReference Include="UtilsImpl\unit_libupdateThread.pas"/>
-			<DCCReference Include="Components\unit_CoverPanel.pas"/>
-			<DCCReference Include="Components\unit_InfoPanel.pas"/>
 			<DCCReference Include="DwnldImpl\unit_DownloadBooksThread.pas"/>
 			<DCCReference Include="DwnldImpl\frm_DownloadProgressForm.pas">
 				<Form>DownloadProgressForm</Form>
@@ -215,6 +209,7 @@
 			<DCCReference Include="Units\unit_Columns.pas"/>
 			<DCCReference Include="UtilsImpl\StoHtmlHelp.pas"/>
 			<DCCReference Include="DwnldImpl\unit_DownloadManagerThread.pas"/>
+			<DCCReference Include="Units\unit_Messages.pas"/>
 			<RcItem Include="Resources\Images\16x16\star_small.png">
 				<ResourceType>RCData</ResourceType>
 				<ResourceId>smallStar</ResourceId>
