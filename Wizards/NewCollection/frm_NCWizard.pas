@@ -335,7 +335,10 @@ begin
   // ѕроинициализируем параметры по умолчанию
   //
   FParams.Operation := otNew;
-  FParams.CollectionType := ltEmpty;
+//  FParams.CollectionType := ltEmpty;
+
+  FParams.CollectionType := ltLRELocal;
+
   FParams.UseDefaultName := True;
   FParams.UseDefaultLocation := True;
   FParams.FileTypes := ftFB2;
