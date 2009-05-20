@@ -52,7 +52,9 @@ inherited frameNCWCollectionType: TframeNCWCollectionType
       Margins.Right = 7
       Margins.Bottom = 0
       Caption = #1051#1086#1082#1072#1083#1100#1085#1072#1103' '#1082#1086#1083#1083#1077#1082#1094#1080#1103' '#1089#1072#1081#1090#1072' lib.rus.ec'
+      Checked = True
       TabOrder = 0
+      TabStop = True
       OnClick = OnSetCollectionType
     end
     object rbOnline: TRadioButton
@@ -95,9 +97,7 @@ inherited frameNCWCollectionType: TframeNCWCollectionType
       Margins.Right = 7
       Margins.Bottom = 0
       Caption = #1055#1091#1089#1090#1072#1103' '#1082#1086#1083#1083#1077#1082#1094#1080#1103
-      Checked = True
       TabOrder = 3
-      TabStop = True
       OnClick = OnSetCollectionType
     end
     object rbThirdParty: TRadioButton
