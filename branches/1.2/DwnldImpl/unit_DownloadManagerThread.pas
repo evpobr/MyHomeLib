@@ -97,7 +97,6 @@ begin
   try
     try
 
-      SetProxySettings(FidHTTP);
       FidHTTP.Get(FCurrentURL, FS);
 
       if FCanceled then
@@ -342,17 +341,19 @@ begin
   FError := False;
 
   FidHTTP := TidHTTP.Create(nil);
-  SetProxySettings(FidHTTP);
 
   FidHTTP.OnWork := HTTPWork;
   FidHTTP.OnWorkBegin := HTTPWorkBegin;
   FidHTTP.OnWorkEnd := HTTPWorkEnd;
   FidHTTP.HandleRedirects := True;
 
+  SetProxySettings(FidHTTP);
+
   try
     Synchronize(GetCurrentFile);
     repeat
       if FError then Sleep(30000);
+      Sleep(Settings.DwnldInterval);
       Download;
       Synchronize(Finished);
       Synchronize(GetCurrentFile);

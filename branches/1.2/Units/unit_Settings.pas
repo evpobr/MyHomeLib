@@ -97,6 +97,7 @@ type
     FErrorLog: boolean;
     FTimeOut: integer;
     FReadTimeOut: integer;
+    FDwnldInterval : integer;
 
     FUseIESettings: boolean;
     FIEProxyServer: string;
@@ -252,6 +253,7 @@ type
     property ErrorLog:boolean read FerrorLog write FErrorLog;
     property TimeOut: integer read FTimeOut write FTimeOut;
     property ReadTimeOut: integer read FReadTimeOut write FReadTimeOut;
+    property DwnldInterval: integer read FDwnldInterval write FDwnldInterval;
 
     property UseIESettings: boolean read FUseIESettings write FUseIESettings;
     property IEProxyServer: string read FIEProxyServer write FIEProxyServer;
@@ -494,6 +496,7 @@ begin
     FErrorLog := iniFile.ReadBool(NETWORK_SECTION,'use_error_log',false);
     FTimeOut := iniFile.ReadInteger(NETWORK_SECTION,'time-out',5000);
     FReadTimeOut := iniFile.ReadInteger(NETWORK_SECTION,'read_time-out',50000);
+    FDwnldInterval := iniFile.ReadInteger(NETWORK_SECTION,'dwnld_interval',0);
 
     FUseIESettings := iniFile.ReadBool(NETWORK_SECTION,'use_ie_settings',false);
 
@@ -617,6 +620,7 @@ begin
     iniFile.WriteInteger(NETWORK_SECTION,'time-out',FTimeOut);
     iniFile.WriteInteger(NETWORK_SECTION,'read_time-out',FReadTimeOut);
     iniFile.WriteBool(NETWORK_SECTION,'use_ie_settings',FUseIESettings);
+    iniFile.WriteInteger(NETWORK_SECTION,'dwnld_interval',FDwnldInterval);
 
     //
     // COLORS_SECTION
