@@ -195,6 +195,7 @@ begin
         SetComment2(' ', 'Завершение операции ...');
         Break;
       end;
+      Sleep(Settings.DwnldInterval);
     end;
   finally
     FidHTTP.Free;
@@ -231,11 +232,6 @@ begin
       try
         URL := CalculateURL; // Locate по таблице был сделан при вызове GetBookFileName,
                              // так что ID можно не передавать
-
-        //
-        // NickR: хм... это было сделано при создании объекта, зачем повторять для каждой книги?
-        //
-        //SetProxySettings(FidHTTP);
 
         FidHTTP.Get(URL, FS);
 

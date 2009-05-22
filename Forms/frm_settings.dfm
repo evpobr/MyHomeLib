@@ -770,6 +770,14 @@ object frmSettings: TfrmSettings
           Alignment = taRightJustify
           Caption = #1058#1072#1081#1084'-'#1072#1091#1090' '#1095#1090#1077#1085#1080#1103' ('#1084#1089')'
         end
+        object RzLabel9: TRzLabel
+          Left = 252
+          Top = 22
+          Width = 71
+          Height = 13
+          Alignment = taRightJustify
+          Caption = #1048#1085#1090#1077#1088#1074#1072#1083' ('#1084#1089')'
+        end
         object edTimeOut: TRzNumericEdit
           Left = 153
           Top = 19
@@ -791,6 +799,17 @@ object frmSettings: TfrmSettings
           CheckRange = True
           Max = 100000.000000000000000000
           Min = 1000.000000000000000000
+          Value = 10000.000000000000000000
+          DisplayFormat = ',0;(,0)'
+        end
+        object edDwnldInterval: TRzNumericEdit
+          Left = 329
+          Top = 19
+          Width = 65
+          Height = 21
+          TabOrder = 2
+          CheckRange = True
+          Max = 900000.000000000000000000
           Value = 10000.000000000000000000
           DisplayFormat = ',0;(,0)'
         end

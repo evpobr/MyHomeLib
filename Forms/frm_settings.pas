@@ -139,6 +139,8 @@ type
     edReadTimeOut: TRzNumericEdit;
     RzLabel8: TRzLabel;
     cbUseIESettings: TCheckBox;
+    edDwnldInterval: TRzNumericEdit;
+    RzLabel9: TRzLabel;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
@@ -263,6 +265,7 @@ begin
 
   edTimeOut.Value := Settings.TimeOut;
   edReadTimeOut.Value := Settings.ReadTimeOut;
+  edDwnldInterval.Value := Settings.DwnldInterval;
 
   cbUseIESettings.Checked := Settings.UseIESettings;
 
@@ -344,6 +347,7 @@ begin
   Settings.DownloadURL := edDownloadServer.Text;
   Settings.TimeOut := Round(edTimeOut.Value);
   Settings.ReadTimeOut := Round(edReadTimeOut.Value);
+  Settings.DwnldInterval := Round(edDwnldInterval.Value);
   Settings.UseIESettings := cbUseIESettings.Checked;
 
   // Page 5 - Scripts
