@@ -536,6 +536,8 @@ type
     procedure BtnSaveClick(Sender: TObject);
     procedure btnSwitchToFilterClick(Sender: TObject);
     procedure btnSwitchToSearchClick(Sender: TObject);
+    procedure edLocateAuthorKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -4418,6 +4420,27 @@ begin
   end;
   if not FDoNotLocate and DMMain.tblAuthors.Locate('FullName', edLocateAuthor.Text, [loPartialKey, loCaseInsensitive]) then
     LocateBookList(DMMain.tblAuthorsFullName.Value, tvAuthors);
+end;
+
+procedure TfrmMain.edLocateAuthorKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+
+var
+  Param: Word;
+begin
+
+  if ActiveView = ByAuthorView then
+    if Key = VK_UP then
+      tvAuthors.Perform(WM_KEYDOWN, VK_UP, 0);
+    if Key = VK_DOWN  then
+      tvAuthors.Perform(WM_KEYDOWN, VK_DOWN, 0);
+
+  if ActiveView = BySeriesView then
+    if Key = VK_UP then
+      tvSeries.Perform(WM_KEYDOWN, VK_UP, 0);
+    if Key = VK_DOWN  then
+      tvSeries.Perform(WM_KEYDOWN, VK_DOWN, 0);
+
 end;
 
 procedure TfrmMain.edFFullNameKeyDown(Sender: TObject; var Key: Word;
