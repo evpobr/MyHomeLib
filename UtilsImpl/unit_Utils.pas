@@ -81,6 +81,7 @@ begin
   try
     ProgressForm := TImportProgressFormEx.Create(Application);
     ProgressForm.Caption := 'Обновление коллекций';
+    ProgressForm.CloseOnTimer := True;
     try
       ProgressForm.WorkerThread := worker;
       ProgressForm.ShowModal;
