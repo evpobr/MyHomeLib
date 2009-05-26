@@ -8,7 +8,7 @@ inherited ImportProgressFormEx: TImportProgressFormEx
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   ExplicitWidth = 450
-  ExplicitHeight = 400
+  ExplicitHeight = 402
   PixelsPerInch = 96
   TextHeight = 13
   inherited txtComment: TLabel
@@ -20,7 +20,7 @@ inherited ImportProgressFormEx: TImportProgressFormEx
     TabOrder = 1
     ExplicitLeft = 10
     ExplicitTop = 29
-    ExplicitWidth = 351
+    ExplicitWidth = 422
   end
   inherited btnCancel: TButton
     Left = 354
@@ -59,5 +59,12 @@ inherited ImportProgressFormEx: TImportProgressFormEx
     TabOrder = 3
     Visible = False
     OnClick = btnSaveLogClick
+  end
+  object Timer: TTimer
+    Enabled = False
+    Interval = 10000
+    OnTimer = TimerTimer
+    Left = 216
+    Top = 336
   end
 end
