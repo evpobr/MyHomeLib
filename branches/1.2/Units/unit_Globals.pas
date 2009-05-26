@@ -139,12 +139,12 @@ function GenerateFileName(const Title: string; libID: integer):string;
 procedure DebugOut(const DebugMessage: string); overload;
 procedure DebugOut(const DebugMessage: string; const Args: array of const); overload;
 
-function CheckLibVersion(ALocalVersion: Integer; out ARemoteVersion: Integer): Boolean;
+function CheckLibVersion(ALocalVersion: Integer; Full: boolean; out ARemoteVersion: Integer): Boolean;
 procedure SetProxySettings(var idHTTP:TidHTTP);
 
 function c_GetTempPath: String;
 function GetSpecialPath(CSIDL: word): string;
-function GetLibUpdateVersion:integer;
+function GetLibUpdateVersion(Full: boolean):integer;
 function ExecAndWait(const FileName,Params: String; const WinState: Word): boolean;
 
 //function GetFileNameZip(Zip: TZipForge; No: integer): string;
@@ -848,20 +848,26 @@ begin
 
 end;
 
-function CheckLibVersion(ALocalVersion: Integer; out ARemoteVersion: Integer): Boolean;
+function CheckLibVersion(ALocalVersion: Integer; Full: boolean; out ARemoteVersion: Integer): Boolean;
 var
   HTTP: TIdHTTP;
   LF: TMemoryStream;
   SL: TStringList;
+
+  URL: string;
 begin
   Result := False;
+
+  URL := IfThen(Full,
+                InclideUrlSlash(Settings.UpdateURL) + LIBRUSEC_UPDATEVERINFO_FILENAME,
+                InclideUrlSlash(Settings.UpdateURL) + EXTRA_UPDATEVERINFO_FILENAME);
 
   HTTP := TidHTTP.Create(nil);
   SetProxySettings(HTTP);
   try
     LF := TMemoryStream.Create;
     try
-      HTTP.Get(InclideUrlSlash(Settings.UpdateURL) + LIBRUSEC_UPDATEVERINFO_FILENAME, LF);
+      HTTP.Get(URL, LF);
       SL := TStringList.Create;
       try
         LF.Seek(0, soFromBeginning);
@@ -882,16 +888,20 @@ begin
   end;
 end;
 
-function GetLibUpdateVersion:integer;
+function GetLibUpdateVersion(Full: boolean):integer;
 var
   F: Text;
   S: String;
 
 begin
   Result := 0;
-  if FileExists(Settings.SystemFileName[sfLibRusEcVerInfo]) then
+  S := IFThen(FULL,
+              Settings.SystemFileName[sfLibRusEcVerInfo],
+              Settings.SystemFileName[sfExtraUpdateInfo]);
+
+  if FileExists(S) then
   begin
-    AssignFile(F, Settings.SystemFileName[sfLibRusEcVerInfo]);
+    AssignFile(F, S);
     try
       Reset(F);
       Readln(F, S);
@@ -903,8 +913,6 @@ begin
     end;
   end
   else Result := UNVERSIONED_COLLECTION;
-
-
 end;
 
 function ExecAndWait(const FileName,Params: String; const WinState: Word): boolean;

@@ -42,7 +42,7 @@ uses
   ShellAPI,
   inifiles,
   RzButton,
-  unit_globals,
+  unit_Globals,
   XPMan,
   RzCommon,
   RzSelDir,
@@ -1970,11 +1970,22 @@ begin
   begin
     LocalVersion := DMUser.ActiveCollection.Version;
     try
-      Result := CheckLibVersion(LocalVersion, RemoteVersion);
+      Result := CheckLibVersion(LocalVersion, True, RemoteVersion);
     except
     // ignore all errors
     end;
   end;
+
+  if DMUser.FindOnlineCollection then
+  begin
+    LocalVersion := DMUser.ActiveCollection.Version;
+    try
+      Result := CheckLibVersion(LocalVersion, False, RemoteVersion);
+    except
+    // ignore all errors
+    end;
+  end;
+
 
   DMUser.ActivateCollection(Active);
 

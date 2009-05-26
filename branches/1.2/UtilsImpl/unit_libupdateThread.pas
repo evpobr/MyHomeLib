@@ -5,7 +5,7 @@ uses
   Classes,
   SysUtils,
   unit_ImportLibRusEcThread,
-  unit_globals,
+  unit_Globals,
   Dialogs,
   ABSMain,
   IdHTTP,
@@ -39,9 +39,9 @@ type
 
     FUpdated: boolean;
 
-    function DownloadUpdate:boolean;
+    function DownloadUpdate(Full: boolean):boolean;
     function ReplaceFiles:boolean;
-    function CheckUpdate(ver: integer): boolean;
+    function CheckUpdate(ver: integer; Full: boolean): boolean;
 
 
   protected
@@ -55,7 +55,8 @@ type
 
 resourcestring
   rstrDownloadProgress = 'Загружено: %u%% из %u байт';
-  rstrCheckingUpdate = 'Проверяем наличие обновлений ...';
+  rstrCheckingUpdate = 'Проверяем наличие обновлений основной базы ...';
+  rstrCheckingExtraUpdate = 'Проверяем наличие обновлений для on-line ...';
   rstrErrorCheckingUpdate = 'ОШИБКА. Не удалось проверить обновление.';
   rstrErrorDownloadUpdate = 'ОШИБКА. Не удалось скачать обновление.';
   rstrReady = 'Готово';
@@ -63,6 +64,7 @@ resourcestring
   rstrYouHaveLatestListsVersion = 'У вас самая свежая версия списков.';
   rstrUpdatingFromLocalArchive = 'Обновление из локального архива';
   rstrListsUpdateIsAvailable = 'Доступно обновление списков до версии %d';
+  rstrListsExtraUpdateIsAvailable = 'Доступно обновление on-line списков до версии %d';
   rstrNothingToUpdate = 'Нечего обновлять!';
   rstrUpdateComplete = 'Обновление завершено.';
   rstrRemovingOldCollection = 'Удаление старой коллекции "%s"...';
@@ -72,17 +74,22 @@ resourcestring
 implementation
 
 uses DateUtils, dm_main, dm_user, unit_Consts, unit_Settings, unit_WorkerThread,
-  unit_Database;
+  unit_Database, StrUtils;
 
 { TDownloadBooksThread }
 
-function TLibUpdateThread.CheckUpdate(ver: integer): boolean;
+function TLibUpdateThread.CheckUpdate(ver: integer; Full:boolean): boolean;
 var
   RemoteVersion: Integer;
+  URL: string;
+
 begin
   Result := False;
 
-  Teletype(rstrCheckingUpdate,tsInfo);
+  if Full then
+      Teletype(rstrCheckingUpdate,tsInfo)
+    else
+      Teletype(rstrCheckingExtraUpdate,tsInfo);
 
   //
   // Проверим наличие файла ${ApplicationPath}\librusec_update.zip.
@@ -99,10 +106,13 @@ begin
   // предварительно скачанного апдейта нет, проверяем онлайн апдейт ${UpdateURL}/last_collection.info
   //
   try
-    Result := CheckLibVersion(Ver, RemoteVersion);
+    Result := CheckLibVersion(Ver, Full, RemoteVersion);
     FUpdated := Result;
     if Result then
-      Teletype(Format(rstrListsUpdateIsAvailable, [RemoteVersion]),tsInfo)
+      if Full then
+         Teletype(Format(rstrListsUpdateIsAvailable, [RemoteVersion]),tsInfo)
+      else
+         Teletype(Format(rstrListsExtraUpdateIsAvailable, [RemoteVersion]),tsInfo)
     else
       Teletype(rstrYouHaveLatestListsVersion,tsInfo);
   except
@@ -110,13 +120,24 @@ begin
   end;
 end;
 
-function TLibUpdateThread.DownloadUpdate: boolean;
+function TLibUpdateThread.DownloadUpdate(Full: boolean): boolean;
 var
   MS: TMemoryStream;
+
+  URL: string;
+  FileName: string;
 
 begin
   Canceled := False;
   FIgnoreErrors := False;
+
+  URL := IfThen(Full,
+                InclideUrlSlash(settings.UpdateURL) + LIBRUSEC_UPDATE_FILENAME,
+                InclideUrlSlash(settings.UpdateURL) + EXTRA_UPDATE_FILENAME);
+
+  FileName := IfThen(Full,
+                     Settings.SystemFileName[sfLibRusEcUpdate],
+                     Settings.SystemFileName[sfExtraUpdateInfo]);
 
   FidHTTP := TidHTTP.Create(nil);
   FidHTTP.OnWork := HTTPWork;
@@ -136,10 +157,10 @@ begin
         //
         // Возможно, файл уже был скачан. Если нет - скачать.
         //
-        if not FileExists(Settings.SystemFileName[sfLibRusEcUpdate]) then
+        if not FileExists(FileName) then
         begin
-          FIdHTTP.Get(InclideUrlSlash(settings.UpdateURL) + LIBRUSEC_UPDATE_FILENAME, MS);
-          MS.SaveToFile(Settings.SystemFileName[sfLibRusEcUpdate]);
+          FIdHTTP.Get(URL, MS);
+          MS.SaveToFile(FileName);
         end;
 
         Teletype(rstrReady,tsInfo);
@@ -216,21 +237,32 @@ var
 
   ALibrary: TMHLLibrary;
 
+  Full: boolean;
+
 begin
   ActiveIndex := DMUser.ActiveCollection.ID;
   SetComment(rstrCheckingUpdate);
+
+  Full := true;
+
   try
     if
       not DMUser.FindFirstExternalCollection or
       (DMUser.ActiveCollection.Version = UNVERSIONED_COLLECTION) or
-      not CheckUpdate(DMUser.ActiveCollection.Version) or
-      not DownloadUpdate
+      not CheckUpdate(DMUser.ActiveCollection.Version,True) or
+      not DownloadUpdate(True)
     then
-    begin
-      Teletype(rstrNothingToUpdate,tsInfo);
-      DelOld := False;
-      raise EInvalidOp.Create('');
-    end;
+      if not DMUser.FindOnLineCollection or
+         not CheckUpdate(DMUser.ActiveCollection.Version,False) or
+         not DownloadUpdate(False)
+      then
+      begin
+        Teletype(rstrNothingToUpdate,tsInfo);
+        DelOld := False;
+        raise EInvalidOp.Create('');
+      end
+      else
+        Full := False;
 
     DelOld := True;
 
@@ -250,7 +282,8 @@ begin
       Inc(i);
     until not DMUser.FindNextExternalCollection;
 
-    InpxFileName := Settings.SystemFileName[sfLibRusEcUpdate];
+    InpxFileName := IfThen(Full,Settings.SystemFileName[sfLibRusEcUpdate],
+                                Settings.SystemFileName[sfExtraUpdateInfo]);
 
     for i := 0 to High(CollList) do
     begin
@@ -265,38 +298,43 @@ begin
       CollectionType := CollList[i].Code;
 
       Teletype(Format(rstrRemovingOldCollection, [CollList[i].Name]),tsInfo);
-      // удаляем старый файл коллекции
-      DMMain.DBMain.Close;
-      DMMain.DBMain.DatabaseFileName := DBFileName;
-      DMMain.DBMain.DeleteDatabase;
 
-      // создаем его заново
-      Teletype(Format(rstrCreatingCollection, [CollList[i].Name]),tsInfo);
+      if Full then
+      begin
+        // удаляем старый файл коллекции
+        DMMain.DBMain.Close;
+        DMMain.DBMain.DatabaseFileName := DBFileName;
+        DMMain.DBMain.DeleteDatabase;
 
-      ALibrary := TMHLLibrary.Create(nil);
-      try
-         ALibrary.CreateCollectionTables(DBFileName, GENRES_FB2_FILENAME);
-      finally
-        ALibrary.Free;
+        // создаем его заново
+        Teletype(Format(rstrCreatingCollection, [CollList[i].Name]),tsInfo);
+
+        ALibrary := TMHLLibrary.Create(nil);
+        try
+           ALibrary.CreateCollectionTables(DBFileName, GENRES_FB2_FILENAME);
+        finally
+          ALibrary.Free;
+        end;
       end;
-
       //  импортирум данные
       Teletype('Импорт ...',tsInfo);
 
       Import;
 
-      DMUser.ActiveCollection.Version := GetLibUpdateVersion;
+      DMUser.ActiveCollection.Version := GetLibUpdateVersion(True);
 
       Teletype(rstrReady,tsInfo);
     end;
     Teletype(rstrUpdateComplete,tsInfo);
 
     finally
-      if DelOld then
+      if Full then
+      begin
         if not Canceled then
-          ReplaceFiles
-        else
-          DeleteFile(Settings.SystemFileName[sfLibRusEcUpdate]);
+          ReplaceFiles;
+      end
+      else
+        DeleteFile(Settings.SystemFileName[sfExtraUpdateInfo]);
       DMUser.ActivateCollection(ActiveIndex);
       Settings.ActiveCollection := ActiveIndex;
       SetComment(rstrReady);

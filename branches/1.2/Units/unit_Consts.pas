@@ -44,7 +44,9 @@ const
   APP_HELP_FILENAME = 'MyHomeLib.chm';
   FILELIST_FILENAME = 'FileList.lst';
   LIBRUSEC_UPDATE_FILENAME = 'librusec_update.zip';
+  EXTRA_UPDATE_FILENAME = 'extra_update.zip';
   LIBRUSEC_UPDATEVERINFO_FILENAME = 'last_collection.info';
+  EXTRA_UPDATEVERINFO_FILENAME = 'extra_collection.info';
   LIBRUSEC_VERINFO_FILENAME = 'version.info';
   PROGRAM_VERINFO_FILENAME = 'last_version.info';
 
