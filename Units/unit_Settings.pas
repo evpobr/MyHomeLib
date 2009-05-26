@@ -22,7 +22,7 @@ uses
   IniFiles,
   unit_Scripts,
   unit_Readers,
-  unit_globals;
+  unit_Globals;
 
 type
   TMHLSystemile = (
@@ -35,6 +35,7 @@ type
     sfLibRusEcUpdate,
     sfAppVerInfo,
     sfLibRusEcVerInfo,
+    sfExtraUpdateInfo,
     sfLibRusEcUpdateVerInfo,
     sfLibRusEcInpx
     );
@@ -910,6 +911,7 @@ begin
     sfImportErrorLog: Result := WorkPath + IMPORT_ERRORLOG_FILENAME;
     sfAppHelp: Result := AppPath + APP_HELP_FILENAME;
     sfLibRusEcUpdate: Result := WorkPath + LIBRUSEC_UPDATE_FILENAME;
+    sfExtraUpdateInfo: Result := WorkPath + EXTRA_UPDATE_FILENAME;
     sfLibRusEcVerInfo: Result := TempPath + LIBRUSEC_VERINFO_FILENAME;
     sfLibRusEcInpx: Result := WorkPath + LIBRUSEC_INPX_FILENAME;
     sfAppVerInfo: Result := WorkPath + PROGRAM_VERINFO_FILENAME;

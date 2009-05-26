@@ -15,7 +15,7 @@ unit dm_user;
 interface
 
 uses
-  SysUtils, Classes, DB, ABSMain, unit_globals, ImgList, Controls, unit_Consts;
+  SysUtils, Classes, DB, ABSMain, unit_Globals, ImgList, Controls, unit_Consts;
 
 type
   TCollectionProp = (cpDisplayName, cpFileName, cpRootFolder);
@@ -119,6 +119,8 @@ type
 
     function FindFirstExternalCollection: Boolean;
     function FindNextExternalCollection: Boolean;
+
+    function FindOnLineCollection: Boolean;
   end;
 
   TMHLCollection = class
@@ -289,6 +291,17 @@ begin
     tblBases.Next;
   end;
 end;
+
+function TDMUser.FindOnLineCollection: Boolean;
+begin
+  Result := False;
+  if tblBases.IsEmpty then
+    Exit;
+
+  Result := tblBases.Locate('Code',CT_LIBRUSEC_ONLINE_FB,[]);
+
+end;
+
 
 function TDMUser.FindNextExternalCollection: Boolean;
 begin

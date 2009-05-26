@@ -656,7 +656,7 @@ procedure TfrmNCWizard.RegisterCollection;
 begin
   FProgressPage.ShowTeletype(REGISTRATION, tsInfo);
 
-  FVersion := GetLibUpdateVersion;
+  FVersion := GetLibUpdateVersion(True);
 
   //
   // TODO -oNickR -cRO Mode Support: сохранять относительные пути
