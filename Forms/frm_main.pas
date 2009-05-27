@@ -2118,8 +2118,11 @@ begin
 
   if Settings.CheckExternalLibUpdate then
     if DoCheckUpdatesOnStart then
-      if MessageDlg('Доступно обновление для коллекций "lib.rus.ec".' + #13 + ' Начать обновление ?', mtWarning, [mbYes, mbNo], 0) = mrYes then
-        miUpdateClick(Sender);
+      if Settings.AutoRunUpdate then
+         miUpdateClick(Sender)
+      else
+        if MessageDlg('Доступно обновление для коллекций "lib.rus.ec".' + #13 + ' Начать обновление ?', mtWarning, [mbYes, mbNo], 0) = mrYes then
+           miUpdateClick(Sender);
 
   frmSplash.lblState.Caption := 'Старт ...';
 
