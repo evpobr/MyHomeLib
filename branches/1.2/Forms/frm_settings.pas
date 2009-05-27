@@ -141,6 +141,7 @@ type
     cbUseIESettings: TCheckBox;
     edDwnldInterval: TRzNumericEdit;
     RzLabel9: TRzLabel;
+    cbAutoRunUpdate: TCheckBox;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
@@ -268,6 +269,7 @@ begin
   edDwnldInterval.Value := Settings.DwnldInterval;
 
   cbUseIESettings.Checked := Settings.UseIESettings;
+  cbAutoRunUpdate.Checked := Settings.AutoRunUpdate;
 
   // Page 5 - Scripts
   lvScripts.Items.Clear;
@@ -349,6 +351,7 @@ begin
   Settings.ReadTimeOut := Round(edReadTimeOut.Value);
   Settings.DwnldInterval := Round(edDwnldInterval.Value);
   Settings.UseIESettings := cbUseIESettings.Checked;
+  Settings.AutoRunUpdate := cbAutoRunUpdate.Checked;
 
   // Page 5 - Scripts
   SaveScripts;

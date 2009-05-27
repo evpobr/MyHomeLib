@@ -139,6 +139,7 @@ type
     FShowFb2Info: boolean;
     FAllowMixed: boolean;
 
+    FAutoRunUpdate: boolean;
     FShowInfoPanel: Boolean;
     FShowRusBar: Boolean;
     FShowEngBar: Boolean;
@@ -228,6 +229,7 @@ type
     property ShowSubGenreBooks: boolean read FShowSubGenreBooks write FShowSubGenreBooks;
     property ShowFb2Info: boolean read FShowFb2Info write FShowFb2Info;
     property FullSearchMode: boolean read FFullSearchMode write FFullSearchMode;
+    property AutoRunUpdate: boolean read FAutoRunUpdate write FAutoRunUpdate;
 
     property MinimizeToTray : boolean read FMinimizeToTray   write FMinimizeToTray;
     property AutoStartDwnld : boolean read FAutoStartDwnld   write FAutoStartDwnld;
@@ -551,6 +553,7 @@ begin
     FMinimizeToTray  := iniFile.ReadBool(BEHAVIOR_SECTION, 'MinimizeToTray', True);
     FAutoStartDwnld  := iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoStartDwnld', False);
     FAllowMixed :=  iniFile.ReadBool(BEHAVIOR_SECTION, 'AllowMixed', False);
+    FAutoRunUpdate :=  iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoRunUpdate', False);
 
     FFullSearchMode := iniFile.ReadBool(BEHAVIOR_SECTION, 'FullSearchMode', False);
 
@@ -673,6 +676,8 @@ begin
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowFb2Info', FShowFb2Info);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'AutoStartDwnld', FAutoStartDwnld );
     iniFile.WriteBool(BEHAVIOR_SECTION, 'AllowMixed', FAllowMixed );
+
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'AutoRunUpdate', FAutoRunUpdate);
 
     iniFile.WriteBool(BEHAVIOR_SECTION, 'FullSearchMode', FFullSearchMode);
 
