@@ -631,7 +631,7 @@ type
     procedure SetBooksFilter;
     procedure FillAllBooksTree;
     procedure ChangeLetterButton(S: string);
-    function DoCheckUpdatesOnStart: Boolean;
+    function CheckLibUpdates: Boolean;
     procedure GetActiveViewComponents(var Tree: TVirtualStringTree; var Panel: TMHLInfoPanel; var Cover: TMHLCoverPanel);
     procedure SetCoversVisible(State: boolean);
     procedure RefreshBooksState(Tree: TVirtualStringTree; BookIDList: TBookIdList);
@@ -647,6 +647,7 @@ type
     procedure TheFirstRun;
 
     function GetActiveView: TView;
+    procedure StartLibUpdate;
     property ActiveView: TView read GetActiveView;
   end;
 
@@ -1597,6 +1598,7 @@ var
       CT_LIBRUSEC_ONLINE_FB: Result := 4;
       CT_GENESIS_LOCAL_NONFB: Result := 8;    { TODO -oNickR -cUsability : нарисовать иконку }
       CT_GENESIS_ONLINE_NONFB: Result := 8;   { TODO -oNickR -cUsability : нарисовать иконку }
+      CT_LIBRUSEC_USR: Result := 8;
     else
       Assert(False);
       Result := 8;                             { TODO -oNickR -cUsability : нарисовать иконку }
@@ -1955,37 +1957,31 @@ begin
   FillBooksTree(0, tvBooksF,                   nil, DMUser.tblFavorites, True,  True); // избранное
 end;
 
-function TfrmMain.DoCheckUpdatesOnStart: Boolean;
+function TfrmMain.CheckLibUpdates: Boolean;
 var
   LocalVersion: Integer;
   RemoteVersion: Integer;
   Active: Integer;
-
+  i: integer;
 begin
   Result := False;
 
   Active := DMUser.ActiveCollection.ID;
 
-  if DMUser.FindFirstExternalCollection then
-  begin
-    LocalVersion := DMUser.ActiveCollection.Version;
-    try
-      Result := CheckLibVersion(LocalVersion, True, RemoteVersion);
-    except
-    // ignore all errors
-    end;
-  end;
+  Settings.Updates.CheckVersions;
 
-  if DMUser.FindOnlineCollection then
-  begin
-    LocalVersion := DMUser.ActiveCollection.Version;
-    try
-      Result := CheckLibVersion(LocalVersion, False, RemoteVersion);
-    except
-    // ignore all errors
-    end;
-  end;
-
+  DMUser.FindFirstCollection;
+  repeat
+    for I := 0 to Settings.Updates.Count - 1 do
+      if Settings.Updates.Items[i].CheckCodes(DMUser.ActiveCollection.CollectionType,
+                                              DMUser.ActiveCollection.ID)
+      then
+        if Settings.Updates.Items[i].CheckVersion(DMUser.ActiveCollection.Version) then
+        begin
+          Result := True;
+          Break;
+        end;
+  until not DMUser.FindNextCollection;
 
   DMUser.ActivateCollection(Active);
 
@@ -2036,6 +2032,13 @@ begin
     else
       CanClose := False;
 end;
+
+procedure TfrmMain.StartLibUpdate;
+begin
+  if unit_utils.LibrusecUpdate then
+    InitCollection(True);
+end;
+
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
@@ -2117,12 +2120,13 @@ begin
     FAutoCheck := False;
 
   if Settings.CheckExternalLibUpdate then
-    if DoCheckUpdatesOnStart then
+    if CheckLibUpdates then
       if Settings.AutoRunUpdate then
-         miUpdateClick(Sender)
+          StartLibUpdate
       else
         if MessageDlg('Доступно обновление для коллекций "lib.rus.ec".' + #13 + ' Начать обновление ?', mtWarning, [mbYes, mbNo], 0) = mrYes then
-           miUpdateClick(Sender);
+           StartLibUpdate;
+
 
   frmSplash.lblState.Caption := 'Старт ...';
 
@@ -4915,8 +4919,8 @@ end;
 
 procedure TfrmMain.miUpdateClick(Sender: TObject);
 begin
-  if unit_utils.LibrusecUpdate then
-    InitCollection(True);
+  if CheckLibUpdates then
+    StartLibUpdate;
 end;
 
 procedure TfrmMain.mi_dwnl_LocateAuthorClick(Sender: TObject);

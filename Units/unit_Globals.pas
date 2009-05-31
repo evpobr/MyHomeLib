@@ -34,6 +34,8 @@ type
                   Res: boolean;
                 end;
 
+
+
 //
 // Global consts
 //
@@ -96,6 +98,7 @@ const
   CT_LIBRUSEC_ONLINE_FB   = LOCATION_ONLINE or LIBRARY_LIBRUSEC or CONTENT_FB;          // 0801 0000 - online lib.rus.ec
   CT_GENESIS_LOCAL_NONFB  = LOCATION_LOCAL or LIBRARY_GENESIS or CONTENT_NONFB;         // 0002 0001 - local Genesis
   CT_GENESIS_ONLINE_NONFB = LOCATION_ONLINE or LIBRARY_GENESIS or CONTENT_NONFB;        // 0802 0001 - online Genesis
+  CT_LIBRUSEC_USR         = LOCATION_LOCAL or LIBRARY_LIBRUSEC or CONTENT_NONFB;        // 0001 0001 - online Genesis
 
   CT_DEPRICATED_ONLINE_FB = 99;
 
@@ -139,7 +142,6 @@ function GenerateFileName(const Title: string; libID: integer):string;
 procedure DebugOut(const DebugMessage: string); overload;
 procedure DebugOut(const DebugMessage: string; const Args: array of const); overload;
 
-function CheckLibVersion(ALocalVersion: Integer; Full: boolean; out ARemoteVersion: Integer): Boolean;
 procedure SetProxySettings(var idHTTP:TidHTTP);
 
 function c_GetTempPath: String;

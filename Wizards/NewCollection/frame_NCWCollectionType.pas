@@ -34,7 +34,8 @@ type
     procedure GetCollectionDataFromINPX;
   private
     FColTitle : string;
-    FColFile:   string;
+    FColFile  : string;
+    FColCode  : integer;
   public
     function Activate(LoadData: Boolean): Boolean; override;
     function Deactivate(CheckData: Boolean): Boolean; override;
@@ -117,6 +118,8 @@ begin
     FPParams^.CollectionFile := FColFile;
     FPParams^.UseDefaultLocation := False;
     FPParams^.INPXFile := edINPXPath.Text;
+    FPParams^.CollectionCode := FColCode;
+
   end;
   Result := True;
 end;
@@ -155,7 +158,10 @@ begin
   p := pos(#13#10,S);
   FColTitle := copy(S,1,p - 1);
   delete(S,1,p + 1);
-  FColFile := S;
+  p := pos(#13#10,S);
+  FColFile := copy(S,1,p - 1);
+  delete(S,1,p + 1);
+  FColCode := StrToInt(S);
 end;
 
 procedure TframeNCWCollectionType.OnSetCollectionType(Sender: TObject);
