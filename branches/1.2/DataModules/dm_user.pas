@@ -77,6 +77,7 @@ type
 
   private
     FCollection: TMHLCollection;
+    function FindOnLineCollection: Boolean;
 
   public
     const
@@ -120,7 +121,14 @@ type
     function FindFirstExternalCollection: Boolean;
     function FindNextExternalCollection: Boolean;
 
-    function FindOnLineCollection: Boolean;
+    function FindFirstCollection: Boolean;
+    function FindNextCollection: Boolean;
+
+
+    function FindCollectionByType(Code: integer): boolean;
+
+    function CheckVersion(Version: integer): boolean;
+
   end;
 
   TMHLCollection = class
@@ -189,6 +197,11 @@ resourcestring
 
 { TDMUser }
 
+function TDMUser.CheckVersion(Version: integer): boolean;
+begin
+
+end;
+
 constructor TDMUser.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -228,6 +241,10 @@ end;
 
 function TDMUser.ActivateCollection(CollectionID: Integer): Boolean;
 begin
+  Result := False;
+  if tblBases.IsEmpty then
+    Exit;
+
   Result := tblBases.Locate('ID', CollectionID, []);
 end;
 
@@ -243,6 +260,11 @@ begin
 
     tblBases.Post;
   end;
+end;
+
+function TDMUser.FindCollectionByType(Code: integer): boolean;
+begin
+  Result := tblBases.Locate('Code',Code,[]);
 end;
 
 function TDMUser.FindCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer): Boolean;
@@ -273,6 +295,16 @@ begin
   end;
 end;
 
+function TDMUser.FindFirstCollection: Boolean;
+begin
+  Result := False;
+  if tblBases.IsEmpty then
+    Exit;
+
+  tblBases.First;
+
+end;
+
 function TDMUser.FindFirstExternalCollection: Boolean;
 begin
   Result := False;
@@ -294,14 +326,16 @@ end;
 
 function TDMUser.FindOnLineCollection: Boolean;
 begin
-  Result := False;
-  if tblBases.IsEmpty then
-    Exit;
 
-  Result := tblBases.Locate('Code',CT_LIBRUSEC_ONLINE_FB,[]);
 
 end;
 
+
+function TDMUser.FindNextCollection: Boolean;
+begin
+  tblBases.Next;
+  Result := not tblBases.Eof;
+end;
 
 function TDMUser.FindNextExternalCollection: Boolean;
 begin

@@ -2118,6 +2118,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2334,6 +2335,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2477,9 +2479,9 @@ object frmMain: TfrmMain
         end
       end
       object Panel1: TPanel
-        Left = 46
+        Left = 48
         Top = 0
-        Width = 892
+        Width = 890
         Height = 536
         Align = alClient
         BevelOuter = bvNone
@@ -2489,7 +2491,7 @@ object frmMain: TfrmMain
           AlignWithMargins = True
           Left = 3
           Top = 472
-          Width = 886
+          Width = 884
           Height = 61
           Align = alBottom
           BorderOuter = fsFlatRounded
@@ -2550,6 +2552,7 @@ object frmMain: TfrmMain
             Font.Style = []
             ParentFont = False
             CenterPoint = cpLowerRight
+            ExplicitLeft = 867
             ExplicitHeight = 19
           end
           object btnClearDownload: TRzBitBtn

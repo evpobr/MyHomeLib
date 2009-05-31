@@ -20,6 +20,7 @@ uses
   SysUtils;
 
 type
+
   TReaderDesc = class(TCollectionItem)
   private
     FExtension: string;

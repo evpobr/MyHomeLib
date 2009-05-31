@@ -22,10 +22,12 @@ uses
   IniFiles,
   unit_Scripts,
   unit_Readers,
-  unit_Globals;
+  unit_Globals,
+  unit_Lib_Updates;
 
 type
-  TMHLSystemile = (
+
+  TMHLSystemFile = (
     sfSystemDB,
     sfGenresFB2,
     sfGenresNonFB2,
@@ -122,6 +124,10 @@ type
     // READERS_SECTION
     FReaders: TReaders;
 
+    // UPDATES_SECTION
+    FUpdateList: TUpdateInfoList;
+
+
     // SCRIPTS_SECTION
     FScripts: TScripts;
     FDefaultScript: Integer;
@@ -150,7 +156,7 @@ type
   private
     function GetSettingsFileName: string;
 
-    function GetSystemFileName(fileType: TMHLSystemile): string;
+    function GetSystemFileName(fileType: TMHLSystemFile): string;
 
     function GetDataPath: string;
 
@@ -167,6 +173,8 @@ type
 
     procedure LoadReaders(iniFile: TIniFile);
     procedure SaveReaders(iniFile: TIniFile);
+
+    procedure LoadUpdates;
 
     procedure LoadScripts(iniFile: TIniFile);
     procedure SaveScripts(iniFile: TIniFile);
@@ -198,7 +206,7 @@ type
     //
     // Полные пути к некоторым файлам
     //
-    property SystemFileName[fileType: TMHLSystemile]: string read GetSystemFileName;
+    property SystemFileName[fileType: TMHLSystemFile]: string read GetSystemFileName;
 
     //
     // Собственно настройки программы
@@ -279,6 +287,8 @@ type
     property FullTextSearch: Boolean read FFullTextSearch write FFullTextSearch;
 
     property Readers: TReaders read FReaders;
+
+    property Updates: TUpdateInfoList read FUpdateList;
 
     property Scripts: TScripts read FScripts;
     property DefaultScript: Integer read FDefaultScript write FDefaultScript;
@@ -416,6 +426,7 @@ begin
 
   FReaders := TReaders.Create;
   FScripts := TScripts.Create;
+  FUpdateList := TUpdateInfoList.Create;
 
   FInitialDirs := TStringList.Create;
 end;
@@ -561,6 +572,8 @@ begin
     // INITIAL_DIRS_SECTION
     //
     LoadInitialDirs(iniFile);
+
+    LoadUpdates;
 
   finally
     iniFile.Free;
@@ -723,6 +736,66 @@ begin
   end;
 end;
 
+
+procedure TMHLSettings.LoadUpdates;
+var
+  i: Integer;
+  sl: TStringList;
+  slHelper: TStringList;
+  iniFile: TIniFile;
+
+begin
+
+  FUpdateList.URL := FUpdateURL;
+  FUpdateList.Path := WorkPath;
+
+  iniFile := TIniFile.Create(FAppPath + 'updates.ini');
+  try
+    sl := TStringList.Create;
+    iniFile.ReadSection('UPDATES', sl);
+    if sl.Count > 0 then
+    begin
+      slHelper := TStringList.Create;
+      try
+        slHelper.QuoteChar := '"';
+        slHelper.Delimiter := ';';
+        for i := 0 to sl.Count - 1 do
+        begin
+          if Pos(READER_KEY_PREFIX, sl[i]) = 1 then
+          begin
+            slHelper.DelimitedText := iniFile.ReadString(READERS_SECTION, sl[i], '');
+            if slHelper.Count = 5 then
+            begin
+              FUpdateList.Add(slHelper[0], slHelper[1],slHelper[2],StrToBool(slHelper[3]),StrToInt(slHelper[4]));
+            end;
+          end;
+        end;
+      finally
+        slHelper.Free;
+      end;
+    end
+    else
+    begin
+      //
+      // Добавим апдейты по умолчанию
+      //
+
+      FUpdateList.Add('Либрусек','last_librusec.info','librusec_update.zip',
+                       True,CT_LIBRUSEC_LOCAL_FB);
+
+      FUpdateList.Add('Либрусек on-line','last_librusec.info','librusec_update.zip',
+                       False,CT_LIBRUSEC_ONLINE_FB);
+
+      FUpdateList.Add('Либрусек on-line','last_extra.info','extra_update.zip',
+                       False,CT_LIBRUSEC_ONLINE_FB);
+
+      FUpdateList.Add('Либрусек usr','last_usr.info','usr_update.zip',
+                       True,CT_LIBRUSEC_USR);
+    end;
+  finally
+    sl.Free;
+  end;
+end;
 
 procedure TMHLSettings.SaveSplitters(iniFile: TIniFile);
 var
@@ -906,7 +979,7 @@ begin
   Result := IncludeTrailingPathDelimiter(FDeviceDir);
 end;
 
-function TMHLSettings.GetSystemFileName(fileType: TMHLSystemile): string;
+function TMHLSettings.GetSystemFileName(fileType: TMHLSystemFile): string;
 begin
   case fileType of
     sfSystemDB: Result := DataPath + SYSTEM_DATABASE_FILENAME;

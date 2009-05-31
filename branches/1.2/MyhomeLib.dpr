@@ -93,7 +93,8 @@ uses
   unit_Columns in 'Units\unit_Columns.pas',
   StoHtmlHelp in 'UtilsImpl\StoHtmlHelp.pas',
   unit_DownloadManagerThread in 'DwnldImpl\unit_DownloadManagerThread.pas',
-  unit_Messages in 'Units\unit_Messages.pas';
+  unit_Messages in 'Units\unit_Messages.pas',
+  unit_Lib_Updates in 'Units\unit_Lib_Updates.pas';
 
 {$R *.res}
 

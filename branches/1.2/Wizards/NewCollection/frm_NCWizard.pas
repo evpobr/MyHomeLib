@@ -447,22 +447,23 @@ begin
   //
   // определим реальный код коллекции
   //
-  if FParams.CollectionType = ltLREOnline then
-    FParams.CollectionCode := CT_LIBRUSEC_ONLINE_FB
-  else if FParams.CollectionType = ltLRELocal then
-    FParams.CollectionCode := CT_LIBRUSEC_LOCAL_FB
-  else if FParams.CollectionType = ltGenesis then
-  begin
-    Assert(False, 'Not implemented!');
-    FParams.CollectionCode := CT_GENESIS_ONLINE_NONFB;
-  end
-  else { if FParams.CollectionType = ltEmpty then}
-  begin
-    if FParams.FileTypes = ftFB2 then
-      FParams.CollectionCode := CT_PRIVATE_FB
-    else
-      FParams.CollectionCode := CT_PRIVATE_NONFB;
-  end;
+  if FParams.CollectionCode = 0 then
+    if FParams.CollectionType = ltLREOnline then
+      FParams.CollectionCode := CT_LIBRUSEC_ONLINE_FB
+    else if FParams.CollectionType = ltLRELocal then
+        FParams.CollectionCode := CT_LIBRUSEC_LOCAL_FB
+      else if FParams.CollectionType = ltGenesis then
+      begin
+        Assert(False, 'Not implemented!');
+        FParams.CollectionCode := CT_GENESIS_ONLINE_NONFB;
+      end
+    else { if FParams.CollectionType = ltEmpty then}
+    begin
+      if FParams.FileTypes = ftFB2 then
+        FParams.CollectionCode := CT_PRIVATE_FB
+      else
+        FParams.CollectionCode := CT_PRIVATE_NONFB;
+    end;
 
   //
   // для специальных коллекций установим некоторые параметры по умолчанию

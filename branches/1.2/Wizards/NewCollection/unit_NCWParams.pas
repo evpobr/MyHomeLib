@@ -36,6 +36,7 @@ type
     ImportFile: string;
     RelativePaths:boolean;
     INPXFile: string;
+    Code: integer;
     //
     // реальный тип коллекции
     //

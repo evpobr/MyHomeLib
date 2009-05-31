@@ -39,10 +39,7 @@ type
 
     FUpdated: boolean;
 
-    function DownloadUpdate(Full: boolean):boolean;
     function ReplaceFiles:boolean;
-    function CheckUpdate(ver: integer; Full: boolean): boolean;
-
 
   protected
     procedure WorkFunction; override;
@@ -78,101 +75,6 @@ uses DateUtils, dm_main, dm_user, unit_Consts, unit_Settings, unit_WorkerThread,
 
 { TDownloadBooksThread }
 
-function TLibUpdateThread.CheckUpdate(ver: integer; Full:boolean): boolean;
-var
-  RemoteVersion: Integer;
-  URL: string;
-
-begin
-  Result := False;
-
-  if Full then
-      Teletype(rstrCheckingUpdate,tsInfo)
-    else
-      Teletype(rstrCheckingExtraUpdate,tsInfo);
-
-  //
-  // Проверим наличие файла ${ApplicationPath}\librusec_update.zip.
-  //
-  if FileExists(Settings.SystemFileName[sfLibRusEcUpdate]) then
-  begin
-    Teletype(rstrUpdatingFromLocalArchive,tsInfo);
-    Result := True;
-    FUpdated := Result;
-    Exit;
-  end;
-
-  //
-  // предварительно скачанного апдейта нет, проверяем онлайн апдейт ${UpdateURL}/last_collection.info
-  //
-  try
-    Result := CheckLibVersion(Ver, Full, RemoteVersion);
-    FUpdated := Result;
-    if Result then
-      if Full then
-         Teletype(Format(rstrListsUpdateIsAvailable, [RemoteVersion]),tsInfo)
-      else
-         Teletype(Format(rstrListsExtraUpdateIsAvailable, [RemoteVersion]),tsInfo)
-    else
-      Teletype(rstrYouHaveLatestListsVersion,tsInfo);
-  except
-    Teletype(rstrErrorCheckingUpdate,tsInfo)
-  end;
-end;
-
-function TLibUpdateThread.DownloadUpdate(Full: boolean): boolean;
-var
-  MS: TMemoryStream;
-
-  URL: string;
-  FileName: string;
-
-begin
-  Canceled := False;
-  FIgnoreErrors := False;
-
-  URL := IfThen(Full,
-                InclideUrlSlash(settings.UpdateURL) + LIBRUSEC_UPDATE_FILENAME,
-                InclideUrlSlash(settings.UpdateURL) + EXTRA_UPDATE_FILENAME);
-
-  FileName := IfThen(Full,
-                     Settings.SystemFileName[sfLibRusEcUpdate],
-                     Settings.SystemFileName[sfExtraUpdateInfo]);
-
-  FidHTTP := TidHTTP.Create(nil);
-  FidHTTP.OnWork := HTTPWork;
-  FidHTTP.OnWorkBegin := HTTPWorkBegin;
-  FidHTTP.OnWorkEnd := HTTPWorkEnd;
-  FidHTTP.HandleRedirects := True;
-
-  SetProxySettings(FidHTTP);
-
-  Result := False;
-
-  Teletype(rstrDownloadingUpdates,tsInfo);
-
-  MS := TMemoryStream.Create;
-  try
-    try
-        //
-        // Возможно, файл уже был скачан. Если нет - скачать.
-        //
-        if not FileExists(FileName) then
-        begin
-          FIdHTTP.Get(URL, MS);
-          MS.SaveToFile(FileName);
-        end;
-
-        Teletype(rstrReady,tsInfo);
-
-        Result := True;
-      except
-        Teletype(rstrErrorDownloadUpdate,tsInfo)
-      end;
-  finally
-    MS.Free;
-  end;
-end;
 
 procedure TLibUpdateThread.HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
   AWorkCount: Int64);
@@ -223,122 +125,93 @@ end;
 
 procedure TLibUpdateThread.WorkFunction;
 var
-  i: integer;
-  CollList: array of record
-    ID: integer;
-    Name: string;
-    DBFileName: string;
-    Folder: string;
-    Code: COLLECTION_TYPE;
-  end;
+
   ActiveIndex: Integer;
   Version : integer;
   DelOld: boolean;
 
   ALibrary: TMHLLibrary;
 
-  Full: boolean;
+  i,j: integer;
 
 begin
+
+  FidHTTP := TidHTTP.Create(nil);
+  FidHTTP.OnWork := HTTPWork;
+  FidHTTP.OnWorkBegin := HTTPWorkBegin;
+  FidHTTP.OnWorkEnd := HTTPWorkEnd;
+  FidHTTP.HandleRedirects := True;
+
+  SetProxySettings(FidHTTP);
+
   ActiveIndex := DMUser.ActiveCollection.ID;
   SetComment(rstrCheckingUpdate);
 
-  Full := true;
 
-  try
-    if
-      not DMUser.FindFirstExternalCollection or
-      (DMUser.ActiveCollection.Version = UNVERSIONED_COLLECTION) or
-      not CheckUpdate(DMUser.ActiveCollection.Version,True) or
-      not DownloadUpdate(True)
-    then
-      if not DMUser.FindOnLineCollection or
-         not CheckUpdate(DMUser.ActiveCollection.Version,False) or
-         not DownloadUpdate(False)
-      then
-      begin
-        Teletype(rstrNothingToUpdate,tsInfo);
-        DelOld := False;
-        raise EInvalidOp.Create('');
-      end
-      else
-        Full := False;
+  for I := 0 to Settings.Updates.Count - 1 do
+  begin
 
-    DelOld := True;
+    if not Settings.Updates.Items[i].Available then Continue;
 
-    SetComment(rstrDownloadingUpdates);
 
-    i := 0;
+    DMUser.ActivateCollection(Settings.Updates.Items[i].CollectionID);
 
-    repeat
-      if Canceled then
-            Break;
-      SetLength(CollList, i + 1);
-      CollList[i].ID := DMUser.ActiveCollection.ID;
-      CollList[i].Name := DMUser.ActiveCollection.Name;
-      CollList[i].DBFileName := DMUser.ActiveCollection.DBFileName;
-      CollList[i].Folder := DMUser.ActiveCollection.RootFolder;
-      CollList[i].Code := DMUser.ActiveCollection.CollectionType;
-      Inc(i);
-    until not DMUser.FindNextExternalCollection;
+    Teletype(Format('Обновление коллекции %s до версии %d:',
+                    [Settings.Updates.Items[i].Name, Settings.Updates.Items[i].Version]),tsInfo);
 
-    InpxFileName := IfThen(Full,Settings.SystemFileName[sfLibRusEcUpdate],
-                                Settings.SystemFileName[sfExtraUpdateInfo]);
+    Teletype('Загрузка обновлений ...',tsInfo);
 
-    for i := 0 to High(CollList) do
+    if not Settings.Updates.DownloadUpdate(I, FidHTTP) then
     begin
+      Teletype('Загрузка обновлений не удалась.',tsInfo);
+      Continue;
+    end;
 
-      if Canceled then
-            Break;
+    InpxFileName := Settings.WorkPath + Settings.Updates.Items[i].FileName;
 
-      DMUser.ActivateCollection(CollList[i].ID);
+    if Settings.Updates.Items[i].Full then
+    begin
+      Teletype(Format(rstrRemovingOldCollection, [Settings.Updates.Items[i].Name]),tsInfo);
 
-      DBFileName := CollList[i].DBFileName;
-      CollectionRoot := IncludeTrailingPathDelimiter(CollList[i].Folder);
-      CollectionType := CollList[i].Code;
+      // удаляем старый файл коллекции
+      DMMain.DBMain.Close;
+      DMMain.DBMain.DatabaseFileName := DBFileName;
+      DMMain.DBMain.DeleteDatabase;
 
-      Teletype(Format(rstrRemovingOldCollection, [CollList[i].Name]),tsInfo);
+      // создаем его заново
 
-      if Full then
-      begin
-        // удаляем старый файл коллекции
-        DMMain.DBMain.Close;
-        DMMain.DBMain.DatabaseFileName := DBFileName;
-        DMMain.DBMain.DeleteDatabase;
-
-        // создаем его заново
-        Teletype(Format(rstrCreatingCollection, [CollList[i].Name]),tsInfo);
-
-        ALibrary := TMHLLibrary.Create(nil);
-        try
-           ALibrary.CreateCollectionTables(DBFileName, GENRES_FB2_FILENAME);
-        finally
-          ALibrary.Free;
-        end;
+      ALibrary := TMHLLibrary.Create(nil);
+      try
+        ALibrary.CreateCollectionTables(DBFileName, GENRES_FB2_FILENAME);
+      finally
+        ALibrary.Free;
       end;
+   end; //if
       //  импортирум данные
-      Teletype('Импорт ...',tsInfo);
+   Teletype('Импорт ...',tsInfo);
 
-      Import;
+   DBFileName := DMUser.ActiveCollection.DBFileName;
+   CollectionRoot :=  IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
+   CollectionType := DMUser.ActiveCollection.CollectionType;
 
-      DMUser.ActiveCollection.Version := GetLibUpdateVersion(True);
+   Import;
 
-      Teletype(rstrReady,tsInfo);
-    end;
-    Teletype(rstrUpdateComplete,tsInfo);
+   DMUser.ActiveCollection.Version := GetLibUpdateVersion(True);
 
-    finally
-      if Full then
-      begin
-        if not Canceled then
-          ReplaceFiles;
-      end
-      else
-        DeleteFile(Settings.SystemFileName[sfExtraUpdateInfo]);
-      DMUser.ActivateCollection(ActiveIndex);
-      Settings.ActiveCollection := ActiveIndex;
-      SetComment(rstrReady);
-    end;
+   Teletype(rstrReady,tsInfo);
+ end; //for
+ Teletype(rstrUpdateComplete,tsInfo);
+
+ for I := 0 to Settings.Updates.Count - 1 do
+   if ExtractFileName(Settings.Updates.Items[i].FileName) <> 'librusec_update.zip' then
+     DeleteFile(Settings.Updates.Items[i].FileName)
+   else
+     ReplaceFiles;
+
+ DMUser.ActivateCollection(ActiveIndex);
+ Settings.ActiveCollection := ActiveIndex;
+ SetComment(rstrReady);
+
 
 end;
 
