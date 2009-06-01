@@ -359,6 +359,8 @@ type
     btnSwitchToFilter: TRzBitBtn;
     btnSwitchToSearch: TRzBitBtn;
     btnSearch: TRzBitBtn;
+    btnOpenFilter: TRzBitBtn;
+    btnSaveFilter: TRzBitBtn;
 
     //
     // События формы
@@ -538,6 +540,8 @@ type
     procedure btnSwitchToSearchClick(Sender: TObject);
     procedure edLocateAuthorKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure btnSaveFilterClick(Sender: TObject);
+    procedure btnOpenFilterClick(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -1339,6 +1343,28 @@ begin
    end;
 end;
 
+
+procedure TfrmMain.btnOpenFilterClick(Sender: TObject);
+var
+  SL : TStringList;
+begin
+  SL := TStringList.Create;
+  try
+    SL.LoadFromFile(Settings.WorkPath + 'filter.txt');
+
+    edFFullName.Text := SL[0];
+    edFTitle.Text := SL[1];
+    edFSeries.Text := SL[2];
+    edFFile.Text := SL[3];
+    edFFolder.Text := SL[4];
+    edFExt.Text := SL[5];
+
+    cbDate.ItemIndex := StrToInt(SL[6]);
+    cbDownloaded.ItemIndex := StrToInt(SL[7]);
+  finally
+    SL.Free;
+  end;
+end;
 
 function TfrmMain.GetActiveView: TView;
 const
@@ -4338,6 +4364,28 @@ begin
 
   Tree.RepaintNode(Node);
   BookTreeStatus := bsFree;
+end;
+
+procedure TfrmMain.btnSaveFilterClick(Sender: TObject);
+var
+  SL : TStringList;
+begin
+  SL := TStringList.Create;
+  try
+    SL.Add(edFFullName.Text);
+    SL.Add(edFTitle.Text);
+    SL.Add(edFSeries.Text);
+    SL.Add(edFFile.Text);
+    SL.Add(edFFolder.Text);
+    SL.Add(edFExt.Text);
+
+    SL.Add(IntToStr(cbDate.ItemIndex));
+    SL.Add(IntToStr(cbDownloaded.ItemIndex));
+
+    SL.SaveToFile(Settings.WorkPath + 'filter.txt');
+  finally
+    SL.Free;
+  end;
 end;
 
 procedure TfrmMain.btnSearchClick(Sender: TObject);
