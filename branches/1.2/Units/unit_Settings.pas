@@ -22,7 +22,7 @@ uses
   IniFiles,
   unit_Scripts,
   unit_Readers,
-  unit_Globals,
+  unit_globals,
   unit_Lib_Updates;
 
 type
@@ -36,10 +36,8 @@ type
     sfAppHelp,
     sfLibRusEcUpdate,
     sfAppVerInfo,
-    sfLibRusEcVerInfo,
-    sfExtraUpdateInfo,
-    sfLibRusEcUpdateVerInfo,
-    sfLibRusEcInpx
+    sfLibRusEcInpx,
+    sfCollectionVerInfo
     );
 
 
@@ -363,6 +361,7 @@ const
   INITIAL_DIRS_SECTION = 'InitialDirs';
 
   LIBRUSEC_INPX_FILENAME = 'librusec.inpx';
+  COLLECTION_VERINFO_FILENAME = 'version.info';
 
 { TMHLSettings }
 
@@ -989,10 +988,9 @@ begin
     sfImportErrorLog: Result := WorkPath + IMPORT_ERRORLOG_FILENAME;
     sfAppHelp: Result := AppPath + APP_HELP_FILENAME;
     sfLibRusEcUpdate: Result := WorkPath + LIBRUSEC_UPDATE_FILENAME;
-    sfExtraUpdateInfo: Result := WorkPath + EXTRA_UPDATE_FILENAME;
-    sfLibRusEcVerInfo: Result := TempPath + LIBRUSEC_VERINFO_FILENAME;
     sfLibRusEcInpx: Result := WorkPath + LIBRUSEC_INPX_FILENAME;
     sfAppVerInfo: Result := WorkPath + PROGRAM_VERINFO_FILENAME;
+    sfCollectionVerInfo: Result := TempPath + COLLECTION_VERINFO_FILENAME;
   else
     Assert(False);
   end;

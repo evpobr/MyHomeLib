@@ -70,8 +70,15 @@ resourcestring
 
 implementation
 
-uses DateUtils, dm_main, dm_user, unit_Consts, unit_Settings, unit_WorkerThread,
-  unit_Database, StrUtils;
+uses
+  DateUtils,
+  dm_main,
+  dm_user,
+  unit_Consts,
+  unit_Settings,
+  unit_WorkerThread,
+  unit_Database,
+  StrUtils;
 
 { TDownloadBooksThread }
 
@@ -81,7 +88,6 @@ procedure TLibUpdateThread.HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
 var
   ElapsedTime : Cardinal;
   Speed: string;
-
 begin
 
   if Canceled then
@@ -89,7 +95,6 @@ begin
     FidHTTP.Disconnect;
     Exit;
   end;
-  
 
   if FDownloadSize <> 0 then
     SetProgress(AWorkCount * 100 div FDownloadSize);
@@ -125,15 +130,11 @@ end;
 
 procedure TLibUpdateThread.WorkFunction;
 var
-
   ActiveIndex: Integer;
   Version : integer;
   DelOld: boolean;
-
   ALibrary: TMHLLibrary;
-
   i,j: integer;
-
 begin
 
   FidHTTP := TidHTTP.Create(nil);
@@ -141,78 +142,70 @@ begin
   FidHTTP.OnWorkBegin := HTTPWorkBegin;
   FidHTTP.OnWorkEnd := HTTPWorkEnd;
   FidHTTP.HandleRedirects := True;
-
   SetProxySettings(FidHTTP);
 
   ActiveIndex := DMUser.ActiveCollection.ID;
   SetComment(rstrCheckingUpdate);
 
+  for I := 0 to Settings.Updates.Count - 1 do
+    with  Settings.Updates.Items[i] do
+    begin
+      if not Available then Continue;
+      DMUser.ActivateCollection(CollectionID);
+      Teletype(Format('Обновление коллекции %s до версии %d:',[Name,Version]),tsInfo);
+      Teletype('Загрузка обновлений ...',tsInfo);
+
+      if not Settings.Updates.DownloadUpdate(I, FidHTTP) then
+      begin
+        Teletype('Загрузка обновлений не удалась.',tsInfo);
+        Continue;
+      end;
+
+      InpxFileName := Settings.WorkPath + FileName;
+
+      if Full then
+      begin
+        Teletype(Format(rstrRemovingOldCollection, [Name]),tsInfo);
+
+        // удаляем старый файл коллекции
+        DMMain.DBMain.Close;
+        DMMain.DBMain.DatabaseFileName := DBFileName;
+        DMMain.DBMain.DeleteDatabase;
+
+        // создаем его заново
+
+        ALibrary := TMHLLibrary.Create(nil);
+        try
+          ALibrary.CreateCollectionTables(DBFileName, GENRES_FB2_FILENAME);
+        finally
+          ALibrary.Free;
+        end;
+      end; //if FULL
+
+      //  импортирум данные
+      Teletype('Импорт ...',tsInfo);
+
+      DBFileName := DMUser.ActiveCollection.DBFileName;
+      CollectionRoot :=  IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
+      CollectionType := DMUser.ActiveCollection.CollectionType;
+
+      Import;
+      DMUser.ActiveCollection.Version := GetLibUpdateVersion(True);
+     Teletype(rstrReady,tsInfo);
+    end; //for .. with
+
+  Teletype(rstrUpdateComplete,tsInfo);
 
   for I := 0 to Settings.Updates.Count - 1 do
-  begin
+    with Settings.Updates.Items[i] do
+      if ExtractFileName(FileName) <> Settings.SystemFileName[sfLibRusEcUpdate] then
+          DeleteFile(FileName)
+      else
+        ReplaceFiles;
 
-    if not Settings.Updates.Items[i].Available then Continue;
-
-
-    DMUser.ActivateCollection(Settings.Updates.Items[i].CollectionID);
-
-    Teletype(Format('Обновление коллекции %s до версии %d:',
-                    [Settings.Updates.Items[i].Name, Settings.Updates.Items[i].Version]),tsInfo);
-
-    Teletype('Загрузка обновлений ...',tsInfo);
-
-    if not Settings.Updates.DownloadUpdate(I, FidHTTP) then
-    begin
-      Teletype('Загрузка обновлений не удалась.',tsInfo);
-      Continue;
-    end;
-
-    InpxFileName := Settings.WorkPath + Settings.Updates.Items[i].FileName;
-
-    if Settings.Updates.Items[i].Full then
-    begin
-      Teletype(Format(rstrRemovingOldCollection, [Settings.Updates.Items[i].Name]),tsInfo);
-
-      // удаляем старый файл коллекции
-      DMMain.DBMain.Close;
-      DMMain.DBMain.DatabaseFileName := DBFileName;
-      DMMain.DBMain.DeleteDatabase;
-
-      // создаем его заново
-
-      ALibrary := TMHLLibrary.Create(nil);
-      try
-        ALibrary.CreateCollectionTables(DBFileName, GENRES_FB2_FILENAME);
-      finally
-        ALibrary.Free;
-      end;
-   end; //if
-      //  импортирум данные
-   Teletype('Импорт ...',tsInfo);
-
-   DBFileName := DMUser.ActiveCollection.DBFileName;
-   CollectionRoot :=  IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
-   CollectionType := DMUser.ActiveCollection.CollectionType;
-
-   Import;
-
-   DMUser.ActiveCollection.Version := GetLibUpdateVersion(True);
-
-   Teletype(rstrReady,tsInfo);
- end; //for
- Teletype(rstrUpdateComplete,tsInfo);
-
- for I := 0 to Settings.Updates.Count - 1 do
-   if ExtractFileName(Settings.Updates.Items[i].FileName) <> 'librusec_update.zip' then
-     DeleteFile(Settings.Updates.Items[i].FileName)
-   else
-     ReplaceFiles;
-
- DMUser.ActivateCollection(ActiveIndex);
- Settings.ActiveCollection := ActiveIndex;
- SetComment(rstrReady);
-
-
+  DMUser.ActivateCollection(ActiveIndex);
+  Settings.ActiveCollection := ActiveIndex;
+  SetComment(rstrReady);
 end;
 
 end.

@@ -897,9 +897,7 @@ var
 
 begin
   Result := 0;
-  S := IFThen(FULL,
-              Settings.SystemFileName[sfLibRusEcVerInfo],
-              Settings.SystemFileName[sfExtraUpdateInfo]);
+  S := Settings.SystemFileName[sfCollectionVerInfo];
 
   if FileExists(S) then
   begin
