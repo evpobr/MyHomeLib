@@ -1,0 +1,9 @@
+http://lib.rus.ec/sql/lib.libgenrelist.sql.gz
+http://lib.rus.ec/sql/lib.libbook.sql.gz
+http://lib.rus.ec/sql/lib.libavtoraliase.sql.gz
+http://lib.rus.ec/sql/lib.libavtorname.sql.gz
+http://lib.rus.ec/sql/lib.libavtor.sql.gz
+http://lib.rus.ec/sql/lib.libgenre.sql.gz
+http://lib.rus.ec/sql/lib.libseq.sql.gz
+http://lib.rus.ec/sql/lib.libseqname.sql.gz
+http://lib.rus.ec/sql/lib.libfilename.sql.gz
