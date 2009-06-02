@@ -205,13 +205,6 @@ type
     RzPanel10: TRzPanel;
     tvBooksSR: TVirtualStringTree;
     RichEdit2: TRichEdit;
-    pnlSearch: TRzPanel;
-    Label10: TLabel;
-    Label12: TLabel;
-    lblTotalBooksSR: TRzLabel;
-    edTitle: TRzEdit;
-    cbFullText: TCheckBox;
-    edAuth: TRzEdit;
     ipnlSearch: TMHLInfoPanel;
     cpCoverSR: TMHLCoverPanel;
     TabSheet5: TRzTabSheet;
@@ -280,7 +273,6 @@ type
     lblGenreTitle: TRzLabel;
     ipnlGenres: TMHLInfoPanel;
     cpCoverG: TMHLCoverPanel;
-    btnClearSerach: TRzBitBtn;
     ToolButton4: TToolButton;
     ToolButton6: TToolButton;
     TrayIcon: TTrayIcon;
@@ -329,38 +321,28 @@ type
     Label24: TLabel;
     Label26: TLabel;
     Label23: TLabel;
+    RzGroupBox4: TRzGroupBox;
+    lblTotalBooksFL: TRzLabel;
+    btnApplyFilter: TRzBitBtn;
+    btnClearFilterEdits: TRzBitBtn;
+    edFFullName: TRzButtonEdit;
+    edFTitle: TRzButtonEdit;
+    edFSeries: TRzButtonEdit;
+    Label30: TLabel;
+    cbDate: TRzComboBox;
+    cbDownloaded: TRzComboBox;
+    cbDeleted: TCheckBox;
     RzGroupBox1: TRzGroupBox;
     Label27: TLabel;
     Label28: TLabel;
     Label29: TLabel;
-    Label30: TLabel;
-    cbDeleted: TCheckBox;
-    cbDownloaded: TRzComboBox;
-    cbDate: TRzComboBox;
-    RzGroupBox4: TRzGroupBox;
-    btnInsertFilterTemplate: TRzToolButton;
-    RzToolButton3: TRzToolButton;
-    RzToolButton6: TRzToolButton;
-    RzToolButton5: TRzToolButton;
-    RzToolButton4: TRzToolButton;
-    RzToolButton7: TRzToolButton;
-    RzToolButton8: TRzToolButton;
-    RzToolButton9: TRzToolButton;
-    lblTotalBooksFL: TRzLabel;
-    RzToolButton1: TRzToolButton;
-    btnApplyFilter: TRzBitBtn;
-    btnClearFilterEdits: TRzBitBtn;
-    btnSwitchToFilter: TRzBitBtn;
-    btnSwitchToSearch: TRzBitBtn;
-    btnSearch: TRzBitBtn;
-    btnOpenFilter: TRzBitBtn;
-    btnSaveFilter: TRzBitBtn;
-    edFFullName: TRzButtonEdit;
-    edFTitle: TRzButtonEdit;
-    edFSeries: TRzButtonEdit;
     edFFile: TRzButtonEdit;
     edFFolder: TRzButtonEdit;
     edFExt: TRzButtonEdit;
+    btnOpenFilter: TRzBitBtn;
+    btnSaveFilter: TRzBitBtn;
+    btnDeletePreset: TRzBitBtn;
+    RzComboBox1: TRzComboBox;
 
     //
     // События формы
@@ -433,7 +415,6 @@ type
     procedure tbtnRusClick(Sender: TObject);
     procedure tbtnEngClick(Sender: TObject);
     procedure tbSelectAllClick(Sender: TObject);
-    procedure btnSearchClick(Sender: TObject);
     procedure tbSendToDeviceClick(Sender: TObject);
     procedure pmiSelectAllClick(Sender: TObject);
     procedure pmiDeselectAllClick(Sender: TObject);
@@ -494,14 +475,12 @@ type
     procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
     procedure btnApplyFilterClick(Sender: TObject);
     procedure btnClearFilterEditsClick(Sender: TObject);
-    procedure btnInsertFilterTemplateClick(Sender: TObject);
     procedure FormMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure tvBooksTreeMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure tvBooksTreeKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure edAuthKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure edFFullNameKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure miGoDonateClick(Sender: TObject);
@@ -512,7 +491,6 @@ type
       Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
     procedure HeaderPopupItemClick(Sender: TObject);
     procedure N27Click(Sender: TObject);
-    procedure btnClearSerachClick(Sender: TObject);
     procedure CoverPanelResize(Sender: TObject);
     procedure TrayIconDblClick(Sender: TObject);
     procedure N33Click(Sender: TObject);
@@ -536,8 +514,6 @@ type
       const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType);
     procedure BtnSaveClick(Sender: TObject);
-    procedure btnSwitchToFilterClick(Sender: TObject);
-    procedure btnSwitchToSearchClick(Sender: TObject);
     procedure edLocateAuthorKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure btnSaveFilterClick(Sender: TObject);
@@ -694,7 +670,7 @@ uses
   frm_NCWizard,
   DateUtils,
   idStack,
-  idException, frm_editor;
+  idException, frm_editor, unit_SearchUtils;
 
 resourcestring
   rstrFileNotFoundMsg = 'Файл %s не найден!'#13'Проверьте настройки коллекции!';
@@ -768,20 +744,6 @@ begin
 
   pgControl.ActivePageIndex := APage;
 
-end;
-
-procedure TfrmMain.btnSwitchToFilterClick(Sender: TObject);
-begin
-  pnlFullSearch.Visible := True;
-  pnlSearch.Visible := False;
-  TabSheet4.Caption := 'Фильтр';
-end;
-
-procedure TfrmMain.btnSwitchToSearchClick(Sender: TObject);
-begin
-  pnlFullSearch.Visible := False;
-  pnlSearch.Visible := True;
-  TabSheet4.Caption := 'Поиск';
 end;
 
 procedure TfrmMain.btnStartDownloadClick(Sender: TObject);
@@ -1011,8 +973,6 @@ begin
 
   SetEditColor(edLocateAuthor);
   SetEditColor(edLocateSeries);
-  SetEditColor(edAuth);
-  SetEditColor(edTitle);
 
   SetEditColor(edFFullName);
   SetEditColor(edFTitle);
@@ -1039,8 +999,6 @@ begin
 
   CreateSettings;
   Settings.LoadSettings;
-
-  cbFullText.Checked := Settings.FullTextSearch;
 
   WindowState := Settings.WindowState;
 
@@ -1083,8 +1041,6 @@ begin
   rzsSplitterG.Position := Settings.Splitters[2];
   cpCoverA.Width := Settings.Splitters[3];
 
-  if Settings.FullSearchMode then btnSwitchToFilterClick(Nil);
-
    // Check IE Proxy settings   (by Goblin)
   regini := TRzRegIniFile.Create(self);
   regini.PathType := ptRegistry;
@@ -1111,40 +1067,6 @@ var FilterString: String;
 
     S: string;
 
-    procedure AddToFilter(Field,Value:String);
-    begin
-      if Value = '' then Exit;
-      Value := trim(AnsiUpperCase(Value));
-
-      StrReplace('NOT LIKE', 'NOT#LIKE',Value);
-      StrReplace(' LIKE', ' ' + Field + '#LIKE',Value);
-      StrReplace(' =', ' ' + Field + '#=',Value);
-      StrReplace(' <>', ' ' + Field + '#<>',Value);
-      StrReplace(' <', ' ' + Field + '#<',Value);
-      StrReplace(' >', ' ' + Field + '#>',Value);
-
-      StrReplace('#',' ',Value);
-
-      if FilterString <> '' then
-        FilterString := FilterString + ' and (' + Field + ' ' + Value + ')'
-      else
-        FilterString := '(' + Field + ' ' + Value + ')';
-    end;
-
-    procedure AddSeriesToFilter(Value:string);
-    begin
-      if SeriesFilter <> '' then
-        SeriesFilter := SeriesFilter + ' or (`SerID` ="' + Value + '")'
-      else
-        SeriesFilter := '(`SerID` ="' +  Value + '")';
-    end;
-
-    function Clear(S: string):string;
-    begin
-      Result := S;
-      StrReplace(#13#10,' ', Result);
-      Trim(Result);
-    end;
 
 
 begin
@@ -1166,7 +1088,7 @@ begin
 
         FilterString := '';
 
-        AddToFilter('Title',edFSeries.Text);
+        AddToFilter('Title',Query(edFSeries.Text),FilterString);
         DMMain.tblSeries.Filter := FilterString;
         DMMain.tblSeries.Filtered := True;
 
@@ -1174,7 +1096,7 @@ begin
         DMMain.tblSeries.First;
         while not DMMain.tblSeries.Eof do
         begin
-          AddSeriesToFilter(DMMain.tblSeries.FieldByName('Id').AsString);
+          AddSeriesToFilter(DMMain.tblSeries.FieldByName('Id').AsString, FilterString);
           DMMain.tblSeries.Next;
         end;
         DMMain.tblSeries.Filter := OldFilter;
@@ -1194,21 +1116,21 @@ begin
       Filtered :=  DMMain.tblBooks.Filtered;
 
 
-      AddToFilter('`FullName`',Clear(edFFullName.Text));
-      AddToFilter('`Title`',edFTitle.Text);
-      AddToFilter('`FileName`',edFFile.Text);
-      AddToFilter('`Folder`',edFFolder.Text);
-      AddToFilter('`ext`',edFExt.Text);
+      AddToFilter('`FullName`',  Query(edFFullName.Text), FilterString);
+      AddToFilter('`Title`', Query(edFTitle.Text), FilterString);
+      AddToFilter('`FileName`', Query(edFFile.Text), FilterString);
+      AddToFilter('`Folder`', Query(edFFolder.Text), FilterString);
+      AddToFilter('`ext`', Query(edFExt.Text), FilterString);
 
       if cbDate.ItemIndex = -1 then
-        AddToFilter('`Date`',cbDate.Text)
+        AddToFilter('`Date`',Query(cbDate.Text), FilterString)
       else
         case cbDate.ItemIndex of
-          0:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 3))]));
-          1:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 7))]));
-          2:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 14))]));
-          3:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 30))]));
-          4:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 90))]));
+          0:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 3))]), FilterString);
+          1:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 7))]), FilterString);
+          2:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 14))]), FilterString);
+          3:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 30))]), FilterString);
+          4:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 90))]), FilterString);
         end;
 
       case cbDownloaded.ItemIndex of
@@ -1269,95 +1191,6 @@ begin
   ClearLabels(PAGE_SEARCH);
 
 end;
-
-procedure TfrmMain.btnClearSerachClick(Sender: TObject);
-begin
-  edAuth.Text    := '';
-  edTitle.Text   := '';
-  tvBooksSR.Clear;
-  ClearLabels(PAGE_SEARCH);
-end;
-
-procedure TfrmMain.btnInsertFilterTemplateClick(Sender: TObject);
-var
-   OldText: string;
-   p: integer;
-   AddText: string;
-   Offset : integer;
-begin
-  if not (frmMain.ActiveControl is TRzEdit)
-    and not (frmMain.ActiveControl is TRzComboBox)
-    then
-      Exit;
-   if frmMain.ActiveControl is TRzEdit then
-   begin
-     OldText := (frmMain.ActiveControl as TRzEdit).Text;
-     p := (frmMain.ActiveControl as TRzEdit).SelStart;
-   end
-   else
-   begin
-     OldText := (frmMain.ActiveControl as TRzComboBox).Text;
-     p := (frmMain.ActiveControl as TRzComboBox).SelStart;
-   end;
-
-    case (Sender as TrzToolButton).Tag of
-      50: begin
-            AddText := 'LIKE "%%"';
-            OffSet  := P + 7;
-          end;
-      51: begin
-            AddText := '=""';
-            OffSet  := P + 2;
-          end;
-      52: begin
-            AddText := '<> ""';
-            OffSet  := P + 4;
-          end;
-      53: begin
-            AddText := '<""';
-            OffSet  := P + 2;
-          end;
-      54: begin
-            AddText := '>""';
-            OffSet  := P + 2;
-          end;
-      55: begin
-            AddText := '("")';
-            OffSet  := P + 2;
-          end;
-      56: begin
-            AddText := ' AND ';
-            OffSet  := P + 5;
-          end;
-      57: begin
-            AddText := ' OR ';
-            OffSet  := P + 4;
-          end;
-       58: begin
-            AddText := ' NOT ';
-            OffSet  := P + 5;
-          end;
-       59: begin
-            AddText := '""';
-            OffSet  := P + 1;
-          end;
-    end;
-
-    Insert(AddText + ' ',OldText, P + 1);
-   if frmMain.ActiveControl is TRzEdit then
-   begin
-    (frmMain.ActiveControl as TRzEdit).Text := OldText;
-    (frmMain.ActiveControl as TRzEdit).SelStart := Offset;
-    (frmMain.ActiveControl as TRzEdit).SelLength := 0;
-   end
-   else
-   begin
-    (frmMain.ActiveControl as TRzComboBox).Text := OldText;
-    (frmMain.ActiveControl as TRzComboBox).SelStart := Offset;
-    (frmMain.ActiveControl as TRzComboBox).SelLength := 0;
-   end;
-end;
-
 
 procedure TfrmMain.btnOpenFilterClick(Sender: TObject);
 var
@@ -1424,10 +1257,7 @@ begin
   miStat.Enabled := State;
   miRead.Enabled := State;
   miDevice.Enabled := State;
-  btnSearch.Enabled := State;
   btnClearFavorites.Enabled := State;
-  edAuth.Enabled := State;
-  edTitle.Enabled := State;
   edLocateAuthor.Enabled := State;
   edLocateSeries.Enabled := State;
   pmMain.AutoPopup := State;
@@ -1853,7 +1683,7 @@ begin
     0: FillBooksTree(0, tvBooksA, DMMain.tblAuthor_List, DMMain.tblBooksA,    False, True); // авторы
     1: FillBooksTree(0, tvBooksS,                   nil, DMMain.tblBooksS,    False, False); // серии
     2: FillBooksTree(0, tvBooksG,  DMMain.tblGenre_List, DMMain.tblBooksG,    True,  True); // жанры
-    3: btnSearchClick(Self);
+    3: ;
     4: FillBooksTree(0, tvBooksF,                   nil, DMUser.tblFavorites, True,  True); // избранное
     5: btnApplyFilterClick(Self);
   end;
@@ -1895,7 +1725,6 @@ begin
     begin
       ipnlSearch.Clear;
       cpCoverSR.Clear;
-      lblTotalBooksSR.Caption := '()';
       lblTotalBooksFL.Caption := '()';
     end;
 
@@ -3624,7 +3453,6 @@ begin
               2: lblBooksTotalG.Caption := Format('(%d)', [i]);
               4: lblTotalBooksF.Caption := Format('(%d)', [i]);
               3: begin
-                   lblTotalBooksSR.Caption := Format('(%d)', [i]);
                    lblTotalBooksFL.Caption := Format('(%d)', [i]);
                  end;
             end;
@@ -4412,68 +4240,6 @@ begin
   finally
     SL.Free;
   end;
-end;
-
-procedure TfrmMain.btnSearchClick(Sender: TObject);
-var
-  S: String;
-  I1: String;
-  I2: String;
-  nIndex: Integer;
-const
-  Filters: array[Boolean, 1..3] of string = (
-    (
-      'Title="%1:s*"',                                          // I1 = ''  I2 <> ''
-      'FullName="%0:s*"',                                       // I1 <> '' I2 = ''
-      '(FullName="%0:s*") and (Title="%1:s*")'                  // I1 <> '' I2 <> ''
-    ),
-    (
-      'Title LIKE "%%%1:s%%"',                                  // I1 = ''  I2 <> ''
-      'FullName LIKE "%%%0:s%%"',                               // I1 <> '' I2 = ''
-      '(FullName LIKE "%%%0:s%%") and (Title LIKE "%%%1:s%%")'  // I1 <> '' I2 <> ''
-    )
-  );
-
-begin
-  I1 := Trim(edAuth.Text);
-  I2 := Trim(edTitle.Text);
-
-  nIndex := 0;
-  if I1 <> '' then nIndex := nIndex or $02;
-  if I2 <> '' then nIndex := nIndex or $01;
-
-  if nIndex = 0 then
-    Exit;
-
-  spStatus.Caption := 'Ищем ...';
-  StatusBar.Repaint;
-
-  S := Format(Filters[cbFulltext.Checked, nIndex], [I1, I2]);
-  Assert(S <> '');
-
-  Screen.Cursor := crHourGlass;
-  try
-    if Settings.DoNotShowDeleted then
-      DMMain.tblBooks.Filter := S + ' and Deleted<>1'
-    else
-      DMMain.tblBooks.Filter := S;
-    DMMain.tblBooks.Filtered := True;
-    FillBooksTree(0, tvBooksSR, nil, DMmain.tblBooks, True, True);
-  finally
-    Screen.Cursor := crDefault;
-  end;
-
-  spStatus.Caption := 'Готово';
-  DMMain.tblBooks.Filtered := False;
-
-  ClearLabels(PAGE_SEARCH);
-end;
-
-procedure TfrmMain.edAuthKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-begin
-  if Key = VK_RETURN then
-    btnSearchClick(Sender);
 end;
 
 procedure TfrmMain.LocateBookList(const text: String; Tree: TVirtualStringTree);
