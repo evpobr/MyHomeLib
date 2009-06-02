@@ -74,7 +74,7 @@ uses
   ZipForge,
   RzPrgres,
   unit_DownloadManagerThread,
-  unit_Messages;
+  unit_Messages, RzBtnEdt;
 
 type
 
@@ -329,17 +329,11 @@ type
     Label24: TLabel;
     Label26: TLabel;
     Label23: TLabel;
-    edFSeries: TRzEdit;
-    edFTitle: TRzEdit;
-    edFFullName: TRzEdit;
     RzGroupBox1: TRzGroupBox;
     Label27: TLabel;
     Label28: TLabel;
     Label29: TLabel;
     Label30: TLabel;
-    edFExt: TRzEdit;
-    edFFolder: TRzEdit;
-    edFFile: TRzEdit;
     cbDeleted: TCheckBox;
     cbDownloaded: TRzComboBox;
     cbDate: TRzComboBox;
@@ -361,6 +355,12 @@ type
     btnSearch: TRzBitBtn;
     btnOpenFilter: TRzBitBtn;
     btnSaveFilter: TRzBitBtn;
+    edFFullName: TRzButtonEdit;
+    edFTitle: TRzButtonEdit;
+    edFSeries: TRzButtonEdit;
+    edFFile: TRzButtonEdit;
+    edFFolder: TRzButtonEdit;
+    edFExt: TRzButtonEdit;
 
     //
     // События формы
@@ -542,6 +542,7 @@ type
       Shift: TShiftState);
     procedure btnSaveFilterClick(Sender: TObject);
     procedure btnOpenFilterClick(Sender: TObject);
+    procedure edFFullNameButtonClick(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -693,7 +694,7 @@ uses
   frm_NCWizard,
   DateUtils,
   idStack,
-  idException;
+  idException, frm_editor;
 
 resourcestring
   rstrFileNotFoundMsg = 'Файл %s не найден!'#13'Проверьте настройки коллекции!';
@@ -1108,6 +1109,8 @@ var FilterString: String;
     OldFilter: String;
     Filtered: boolean;
 
+    S: string;
+
     procedure AddToFilter(Field,Value:String);
     begin
       if Value = '' then Exit;
@@ -1136,6 +1139,14 @@ var FilterString: String;
         SeriesFilter := '(`SerID` ="' +  Value + '")';
     end;
 
+    function Clear(S: string):string;
+    begin
+      Result := S;
+      StrReplace(#13#10,' ', Result);
+      Trim(Result);
+    end;
+
+
 begin
   Screen.Cursor := crSQLWAit;
   spStatus.Caption := 'Подготовка фильтра ...'; spStatus.Repaint;
@@ -1143,6 +1154,7 @@ begin
   lblTotalBooksFL.Caption := '(0)';
   FilterString := '';
   ClearLabels(tvBooksSR.Tag);
+
   try
     try
 
@@ -1181,7 +1193,8 @@ begin
       OldFilter := DMMain.tblBooks.Filter;
       Filtered :=  DMMain.tblBooks.Filtered;
 
-      AddToFilter('`FullName`',edFFullName.Text);
+
+      AddToFilter('`FullName`',Clear(edFFullName.Text));
       AddToFilter('`Title`',edFTitle.Text);
       AddToFilter('`FileName`',edFFile.Text);
       AddToFilter('`Folder`',edFFolder.Text);
@@ -1191,10 +1204,11 @@ begin
         AddToFilter('`Date`',cbDate.Text)
       else
         case cbDate.ItemIndex of
-          0:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 7))]));
-          1:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 14))]));
-          2:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 30))]));
-          3:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 90))]));
+          0:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 3))]));
+          1:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 7))]));
+          2:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 14))]));
+          3:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 30))]));
+          4:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 90))]));
         end;
 
       case cbDownloaded.ItemIndex of
@@ -1252,7 +1266,8 @@ begin
   cbDate.Text   := '';
   cbDownloaded.ItemIndex := 0;
   tvBooksSR.Clear;
-  ClearLabels(PAGE_FILTER);
+  ClearLabels(PAGE_SEARCH);
+
 end;
 
 procedure TfrmMain.btnClearSerachClick(Sender: TObject);
@@ -1347,20 +1362,27 @@ end;
 procedure TfrmMain.btnOpenFilterClick(Sender: TObject);
 var
   SL : TStringList;
+  HL : TStringList;
+  S  : string;
 begin
   SL := TStringList.Create;
+  HL := TStringList.Create;
   try
+    HL.Delimiter := ';';
+    HL.QuoteChar := '~';
+
     SL.LoadFromFile(Settings.WorkPath + 'filter.txt');
+    HL.DelimitedText := SL.Text;
 
-    edFFullName.Text := SL[0];
-    edFTitle.Text := SL[1];
-    edFSeries.Text := SL[2];
-    edFFile.Text := SL[3];
-    edFFolder.Text := SL[4];
-    edFExt.Text := SL[5];
-
-    cbDate.ItemIndex := StrToInt(SL[6]);
-    cbDownloaded.ItemIndex := StrToInt(SL[7]);
+    edFFullName.Text := HL[0];
+    edFTitle.Text := HL[1];
+    edFSeries.Text := HL[2];
+    edFFile.Text := HL[3];
+    edFFolder.Text := HL[4];
+    edFExt.Text := HL[5];
+    cbDate.Text := HL[6];
+    cbDownloaded.Text := HL[7];
+    cbDeleted.Checked := StrToBool(HL[8]);
   finally
     SL.Free;
   end;
@@ -1872,6 +1894,8 @@ begin
     begin
       ipnlSearch.Clear;
       cpCoverSR.Clear;
+      lblTotalBooksSR.Caption := '()';
+      lblTotalBooksFL.Caption := '()';
     end;
 
     PAGE_ALL:
@@ -2008,9 +2032,7 @@ begin
           Break;
         end;
   until not DMUser.FindNextCollection;
-
   DMUser.ActivateCollection(Active);
-
 end;
 
 procedure TfrmMain.SetLangBarSize;
@@ -4367,22 +4389,26 @@ begin
 end;
 
 procedure TfrmMain.btnSaveFilterClick(Sender: TObject);
+const d='~;~';
 var
   SL : TStringList;
+  S  : String;
 begin
   SL := TStringList.Create;
   try
-    SL.Add(edFFullName.Text);
-    SL.Add(edFTitle.Text);
-    SL.Add(edFSeries.Text);
-    SL.Add(edFFile.Text);
-    SL.Add(edFFolder.Text);
-    SL.Add(edFExt.Text);
 
-    SL.Add(IntToStr(cbDate.ItemIndex));
-    SL.Add(IntToStr(cbDownloaded.ItemIndex));
+    S := '~' + edFFullName.Text + d +
+         edFTitle.Text + d +
+         edFSeries.Text + d +
+         edFFile.Text + d +
+         edFFolder.Text + d +
+         edFExt.Text + d +
+         cbDate.Text + d +
+         cbDownloaded.Text + d +
+         BoolToStr(cbDeleted.Checked) + '~';
 
-    SL.SaveToFile(Settings.WorkPath + 'filter.txt');
+    SL.Add(S);
+    SL.SaveToFile(Settings.WorkPath + 'filter.txt',TEncoding.UTF8);
   finally
     SL.Free;
   end;
@@ -4507,6 +4533,13 @@ begin
     if Key = VK_DOWN  then
       tvSeries.Perform(WM_KEYDOWN, VK_DOWN, 0);
 
+end;
+
+procedure TfrmMain.edFFullNameButtonClick(Sender: TObject);
+begin
+  frmEditor.Text := (Sender as TrzButtonEdit).Text;
+  frmEditor.ShowModal;
+  (Sender as TrzButtonEdit).Text := frmEditor.Text;
 end;
 
 procedure TfrmMain.edFFullNameKeyDown(Sender: TObject; var Key: Word;

@@ -94,7 +94,8 @@ uses
   StoHtmlHelp in 'UtilsImpl\StoHtmlHelp.pas',
   unit_DownloadManagerThread in 'DwnldImpl\unit_DownloadManagerThread.pas',
   unit_Messages in 'Units\unit_Messages.pas',
-  unit_Lib_Updates in 'Units\unit_Lib_Updates.pas';
+  unit_Lib_Updates in 'Units\unit_Lib_Updates.pas',
+  frm_editor in 'Forms\frm_editor.pas' {frmEditor};
 
 {$R *.res}
 
@@ -118,6 +119,7 @@ begin
   Application.CreateForm(TDMUser, DMUser);
   Application.CreateForm(TfrmMain, frmMain);
   Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
+  Application.CreateForm(TfrmEditor, frmEditor);
   //  Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
   Application.CreateForm(TfrmEditBookInfo, frmEditBookInfo);
   Application.CreateForm(TfrmGenreTree, frmGenreTree);
