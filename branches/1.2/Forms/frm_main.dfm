@@ -1792,36 +1792,38 @@ object frmMain: TfrmMain
               Alignment = taRightJustify
               Caption = #1040#1074#1090#1086#1088
             end
-            object edFSeries: TRzEdit
+            object edFFullName: TRzButtonEdit
               Left = 62
-              Top = 69
+              Top = 15
               Width = 179
               Height = 21
-              FocusColor = 15138790
-              FrameStyle = fsNone
-              TabOrder = 2
+              TabOrder = 0
               OnKeyDown = edFFullNameKeyDown
+              AltBtnWidth = 15
+              ButtonWidth = 15
+              OnButtonClick = edFFullNameButtonClick
             end
-            object edFTitle: TRzEdit
+            object edFTitle: TRzButtonEdit
               Left = 62
               Top = 42
               Width = 179
               Height = 21
-              FocusColor = 15138790
-              FrameStyle = fsNone
               TabOrder = 1
               OnKeyDown = edFFullNameKeyDown
+              AltBtnWidth = 15
+              ButtonWidth = 15
+              OnButtonClick = edFFullNameButtonClick
             end
-            object edFFullName: TRzEdit
+            object edFSeries: TRzButtonEdit
               Left = 62
-              Top = 16
+              Top = 69
               Width = 179
               Height = 21
-              FocusColor = 15138790
-              FrameStyle = fsNone
-              TabOnEnter = True
-              TabOrder = 0
+              TabOrder = 2
               OnKeyDown = edFFullNameKeyDown
+              AltBtnWidth = 15
+              ButtonWidth = 15
+              OnButtonClick = edFFullNameButtonClick
             end
           end
           object RzGroupBox1: TRzGroupBox
@@ -1834,7 +1836,7 @@ object frmMain: TfrmMain
             TabOrder = 1
             object Label27: TLabel
               Left = 59
-              Top = 24
+              Top = 23
               Width = 19
               Height = 13
               Alignment = taRightJustify
@@ -1864,43 +1866,13 @@ object frmMain: TfrmMain
               Alignment = taRightJustify
               Caption = #1044#1086#1073#1072#1074#1083#1077#1085#1086
             end
-            object edFExt: TRzEdit
-              Left = 83
-              Top = 67
-              Width = 94
-              Height = 21
-              FocusColor = 15138790
-              FrameStyle = fsNone
-              TabOrder = 2
-              OnKeyDown = edFFullNameKeyDown
-            end
-            object edFFolder: TRzEdit
-              Left = 84
-              Top = 41
-              Width = 201
-              Height = 21
-              FocusColor = 15138790
-              FrameStyle = fsNone
-              TabOrder = 1
-              OnKeyDown = edFFullNameKeyDown
-            end
-            object edFFile: TRzEdit
-              Left = 84
-              Top = 16
-              Width = 201
-              Height = 21
-              FocusColor = 15138790
-              FrameStyle = fsNone
-              TabOrder = 0
-              OnKeyDown = edFFullNameKeyDown
-            end
             object cbDeleted: TCheckBox
               Left = 156
               Top = 121
               Width = 125
               Height = 17
               Caption = ' '#1057#1082#1088#1099#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
-              TabOrder = 4
+              TabOrder = 1
             end
             object cbDownloaded: TRzComboBox
               Left = 12
@@ -1909,7 +1881,7 @@ object frmMain: TfrmMain
               Height = 21
               ItemHeight = 13
               ReadOnlyColor = clBtnHighlight
-              TabOrder = 3
+              TabOrder = 0
               Text = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1074#1089#1077
               Items.Strings = (
                 #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1074#1089#1077
@@ -1920,16 +1892,50 @@ object frmMain: TfrmMain
             object cbDate: TRzComboBox
               Left = 83
               Top = 94
-              Width = 201
+              Width = 198
               Height = 21
               ItemHeight = 13
-              TabOrder = 5
+              TabOrder = 2
               OnKeyDown = edFFullNameKeyDown
               Items.Strings = (
+                #1079#1072' 3 '#1076#1085#1103
                 #1079#1072' '#1085#1077#1076#1077#1083#1102
                 #1079#1072' 2 '#1085#1077#1076#1077#1083#1080
                 #1079#1072' '#1084#1077#1089#1103#1094
                 #1079#1072' 3 '#1084#1077#1089#1103#1094#1072)
+            end
+            object edFFile: TRzButtonEdit
+              Left = 84
+              Top = 15
+              Width = 197
+              Height = 21
+              TabOrder = 3
+              OnKeyDown = edFFullNameKeyDown
+              AltBtnWidth = 15
+              ButtonWidth = 15
+              OnButtonClick = edFFullNameButtonClick
+            end
+            object edFFolder: TRzButtonEdit
+              Left = 84
+              Top = 42
+              Width = 197
+              Height = 21
+              TabOrder = 4
+              OnKeyDown = edFFullNameKeyDown
+              AltBtnWidth = 15
+              ButtonWidth = 15
+              OnButtonClick = edFFullNameButtonClick
+            end
+            object edFExt: TRzButtonEdit
+              Left = 83
+              Top = 69
+              Width = 198
+              Height = 21
+              TabOrder = 5
+              OnKeyDown = edFFullNameKeyDown
+              AltBtnWidth = 15
+              ButtonWidth = 15
+              OnButtonClick = edFFullNameButtonClick
             end
           end
           object RzGroupBox4: TRzGroupBox
@@ -2093,11 +2099,14 @@ object frmMain: TfrmMain
             OnClick = btnSwitchToSearchClick
           end
           object btnOpenFilter: TRzBitBtn
-            Left = 574
+            Left = 564
             Top = 121
-            Width = 29
+            Width = 31
             Height = 23
+            Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100
             LightTextStyle = True
+            ParentShowHint = False
+            ShowHint = True
             TabOrder = 6
             OnClick = btnOpenFilterClick
             Glyph.Data = {
@@ -2129,11 +2138,14 @@ object frmMain: TfrmMain
               85180C8518FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF}
           end
           object btnSaveFilter: TRzBitBtn
-            Left = 609
+            Left = 601
             Top = 121
             Width = 31
             Height = 23
+            Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
             LightTextStyle = True
+            ParentShowHint = False
+            ShowHint = True
             TabOrder = 7
             OnClick = btnSaveFilterClick
             Glyph.Data = {
@@ -2604,7 +2616,6 @@ object frmMain: TfrmMain
             Font.Style = []
             ParentFont = False
             CenterPoint = cpLowerRight
-            ExplicitLeft = 869
             ExplicitHeight = 19
           end
           object btnClearDownload: TRzBitBtn
@@ -3056,8 +3067,8 @@ object frmMain: TfrmMain
     DrawingStyle = dsTransparent
     Height = 32
     Width = 32
-    Left = 352
-    Top = 344
+    Left = 456
+    Top = 496
     Bitmap = {
       494C010118001A002C0020002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
@@ -8510,8 +8521,8 @@ object frmMain: TfrmMain
     DrawingStyle = dsTransparent
     Height = 32
     Width = 32
-    Left = 424
-    Top = 344
+    Left = 536
+    Top = 464
     Bitmap = {
       494C010118001A002C0020002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0

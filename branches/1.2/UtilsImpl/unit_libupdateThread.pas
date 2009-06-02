@@ -198,10 +198,11 @@ begin
 
   for I := 0 to Settings.Updates.Count - 1 do
     with Settings.Updates.Items[i] do
-      if ExtractFileName(FileName) <> Settings.SystemFileName[sfLibRusEcUpdate] then
+      if FileExists(FileName) then
+        if ExtractFileName(FileName) <> Settings.SystemFileName[sfLibRusEcUpdate] then
           DeleteFile(FileName)
-      else
-        ReplaceFiles;
+        else
+          ReplaceFiles;
 
   DMUser.ActivateCollection(ActiveIndex);
   Settings.ActiveCollection := ActiveIndex;
