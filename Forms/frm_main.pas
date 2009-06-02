@@ -1384,6 +1384,7 @@ begin
     cbDownloaded.Text := HL[7];
     cbDeleted.Checked := StrToBool(HL[8]);
   finally
+    HL.Free;
     SL.Free;
   end;
 end;
@@ -4396,7 +4397,6 @@ var
 begin
   SL := TStringList.Create;
   try
-
     S := '~' + edFFullName.Text + d +
          edFTitle.Text + d +
          edFSeries.Text + d +
