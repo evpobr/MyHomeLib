@@ -323,8 +323,6 @@ type
     Label23: TLabel;
     RzGroupBox4: TRzGroupBox;
     lblTotalBooksFL: TRzLabel;
-    btnApplyFilter: TRzBitBtn;
-    btnClearFilterEdits: TRzBitBtn;
     edFFullName: TRzButtonEdit;
     edFTitle: TRzButtonEdit;
     edFSeries: TRzButtonEdit;
@@ -339,10 +337,15 @@ type
     edFFile: TRzButtonEdit;
     edFFolder: TRzButtonEdit;
     edFExt: TRzButtonEdit;
+    FilesList: TFilesList;
+    RzGroupBox2: TRzGroupBox;
+    cbPresetName: TRzComboBox;
     btnSavePreset: TRzBitBtn;
     btnDeletePreset: TRzBitBtn;
-    cbPresetName: TRzComboBox;
-    FilesList: TFilesList;
+    RzGroupBox5: TRzGroupBox;
+    btnClearFilterEdits: TRzBitBtn;
+    btnApplyFilter: TRzBitBtn;
+    Label1: TLabel;
 
     //
     // —обыти€ формы
@@ -807,11 +810,13 @@ begin
   begin
     if Text = Items[ItemIndex] then
     begin
-      DeleteFile(Settings.WorkPath + Text + '.mhlf');
+      DeleteFile(Settings.PresetPath + Text + '.mhlf');
       Delete(ItemIndex);
       Text := '';
     end;
   end;
+  btnDeletePreset.Enabled := cbPresetName.ItemIndex >= 0;
+  btnSavePreset.Enabled := cbPresetName.ItemIndex >= 0;
 end;
 
 procedure TfrmMain.BtnFav_addClick(Sender: TObject);
@@ -1235,7 +1240,7 @@ begin
     HL.Delimiter := ';';
     HL.QuoteChar := '~';
 
-    SL.LoadFromFile(Settings.WorkPath + FN + '.mhlf');
+    SL.LoadFromFile(Settings.PresetPath + FN + '.mhlf');
     HL.DelimitedText := SL.Text;
 
     edFFullName.Text := HL[0];
@@ -2069,7 +2074,8 @@ begin
 
 
   // загрузка списка пресетов дл€ поиска
-  FilesList.TargetPath := Settings.WorkPath;
+  CreateDir(Settings.PresetDir);
+  FilesList.TargetPath := Settings.PresetPath;
   FilesList.Process;
 
 end;
@@ -4274,6 +4280,8 @@ var
   FN: string;
 
 begin
+  if cbPresetName.Text = '' then Exit;
+
   FN := cbPresetName.Text + '.mhlf';
 
   if cbPresetName.ItemIndex = -1 then
@@ -4292,7 +4300,9 @@ begin
          BoolToStr(cbDeleted.Checked) + '~';
 
     SL.Add(S);
-    SL.SaveToFile(Settings.WorkPath + FN,TEncoding.UTF8);
+    SL.SaveToFile(Settings.PresetPath + FN,TEncoding.UTF8);
+
+    btnDeletePreset.Enabled := True;
   finally
     SL.Free;
   end;

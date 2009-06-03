@@ -54,6 +54,7 @@ type
     FTempDir: string;
     FWorkDir: string;
     FReadDir: string;
+    FPresetDir: string;
 
     //
     // Settings
@@ -185,6 +186,7 @@ type
 
     function GetInitialDir(const key: string): string;
     procedure SetInitialDir(const key, Value: string);
+    function GetPresetPath: string;
 
 
   public
@@ -201,6 +203,9 @@ type
     property TempPath: string read GetTempPath;
     property WorkDir: string read FWorkDir;
     property WorkPath: string read GetWorkPath;
+    property PresetDir: string read FPresetDir write FPresetDir;
+    property PresetPath: string read GetPresetPath;
+
     //
     // Полные пути к некоторым файлам
     //
@@ -421,6 +426,7 @@ begin
   else
      FTempDir := FAppPath + TEMP_DIR_NAME;
 
+  FPresetDir := WorkPath + PRESET_DIR_NAME;
   //-----------------------------------------------------
 
   FReaders := TReaders.Create;
@@ -1029,6 +1035,14 @@ end;
 function TMHLSettings.GetInitialDir(const key: string): string;
 begin
   Result := FInitialDirs.Values[key];
+end;
+
+function TMHLSettings.GetPresetPath: string;
+begin
+  if FPresetDir <> '' then
+    Result := IncludeTrailingPathDelimiter(FPresetDir)
+  else
+    Result := '';
 end;
 
 function TMHLSettings.GetReadPath: string;
