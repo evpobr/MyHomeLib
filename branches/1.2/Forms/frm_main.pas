@@ -1126,7 +1126,7 @@ begin
         DMMain.tblSeries.First;
         while not DMMain.tblSeries.Eof do
         begin
-          AddSeriesToFilter(DMMain.tblSeries.FieldByName('Id').AsString, FilterString);
+          AddSeriesToFilter(DMMain.tblSeries.FieldByName('Id').AsString, SeriesFilter);
           DMMain.tblSeries.Next;
         end;
         DMMain.tblSeries.Filter := OldFilter;
