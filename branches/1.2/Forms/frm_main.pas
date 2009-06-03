@@ -809,6 +809,7 @@ begin
     begin
       DeleteFile(Settings.WorkPath + Text + '.mhlf');
       Delete(ItemIndex);
+      Text := '';
     end;
   end;
 end;
