@@ -32,6 +32,7 @@ const
   // Некоторые пути
 
   DATA_DIR_NAME = 'Data';
+  PRESET_DIR_NAME = 'Presets';
 
   //
   // Предефайненные имена файлов
