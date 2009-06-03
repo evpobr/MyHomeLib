@@ -183,11 +183,11 @@ begin
         //
         // Возможно, файл уже был скачан. Если нет - скачать.
         //
-        if not FileExists(FileName) then
-        begin
+//        if not FileExists(FileName) then
+//        begin
           HTTP.Get(URL, MS);
           MS.SaveToFile(FileName);
-        end;
+//        end;
         Result := True;
       except
       end;

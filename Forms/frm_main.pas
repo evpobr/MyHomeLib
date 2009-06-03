@@ -74,7 +74,7 @@ uses
   ZipForge,
   RzPrgres,
   unit_DownloadManagerThread,
-  unit_Messages, RzBtnEdt;
+  unit_Messages, RzBtnEdt, files_list;
 
 type
 
@@ -339,10 +339,10 @@ type
     edFFile: TRzButtonEdit;
     edFFolder: TRzButtonEdit;
     edFExt: TRzButtonEdit;
-    btnOpenFilter: TRzBitBtn;
-    btnSaveFilter: TRzBitBtn;
+    btnSavePreset: TRzBitBtn;
     btnDeletePreset: TRzBitBtn;
-    RzComboBox1: TRzComboBox;
+    cbPresetName: TRzComboBox;
+    FilesList: TFilesList;
 
     //
     // События формы
@@ -516,9 +516,12 @@ type
     procedure BtnSaveClick(Sender: TObject);
     procedure edLocateAuthorKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure btnSaveFilterClick(Sender: TObject);
-    procedure btnOpenFilterClick(Sender: TObject);
+    procedure btnSavePresetClick(Sender: TObject);
     procedure edFFullNameButtonClick(Sender: TObject);
+    procedure cbPresetNameChange(Sender: TObject);
+    procedure cbPresetNameSelect(Sender: TObject);
+    procedure FilesListFile(Sender: TObject; const F: TSearchRec);
+    procedure btnDeletePresetClick(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -629,6 +632,7 @@ type
 
     function GetActiveView: TView;
     procedure StartLibUpdate;
+    procedure LoadSearchPreset(FN: string);
     property ActiveView: TView read GetActiveView;
   end;
 
@@ -746,6 +750,20 @@ begin
 
 end;
 
+procedure TfrmMain.cbPresetNameChange(Sender: TObject);
+var
+  State : boolean;
+begin
+  btnSavePreset.Enabled  := ( cbPresetName.Text <> '' );
+end;
+
+procedure TfrmMain.cbPresetNameSelect(Sender: TObject);
+begin
+  btnDeletePreset.Enabled := cbPresetName.ItemIndex >= 0;
+  btnSavePreset.Enabled := True;
+  LoadSearchPreset(cbPresetName.Text);
+end;
+
 procedure TfrmMain.btnStartDownloadClick(Sender: TObject);
 begin
   if tvDownloadList.GetFirst = nil then Exit;
@@ -780,6 +798,18 @@ begin
     Data := tvDownloadList.GetNodeData(List[i]);
     if Data.State <> dsRun then
       tvDownloadList.DeleteNode(List[i],True);
+  end;
+end;
+
+procedure TfrmMain.btnDeletePresetClick(Sender: TObject);
+begin
+  with cbPresetName do
+  begin
+    if Text = Items[ItemIndex] then
+    begin
+      DeleteFile(Settings.WorkPath + Text + '.mhlf');
+      Delete(ItemIndex);
+    end;
   end;
 end;
 
@@ -1189,10 +1219,10 @@ begin
   cbDownloaded.ItemIndex := 0;
   tvBooksSR.Clear;
   ClearLabels(PAGE_SEARCH);
-
+  cbPresetName.Text := '';
 end;
 
-procedure TfrmMain.btnOpenFilterClick(Sender: TObject);
+procedure TfrmMain.LoadSearchPreset(FN: string);
 var
   SL : TStringList;
   HL : TStringList;
@@ -1204,7 +1234,7 @@ begin
     HL.Delimiter := ';';
     HL.QuoteChar := '~';
 
-    SL.LoadFromFile(Settings.WorkPath + 'filter.txt');
+    SL.LoadFromFile(Settings.WorkPath + FN + '.mhlf');
     HL.DelimitedText := SL.Text;
 
     edFFullName.Text := HL[0];
@@ -1829,6 +1859,18 @@ begin
 end;
 
 
+procedure TfrmMain.FilesListFile(Sender: TObject; const F: TSearchRec);
+var
+  S: string;
+begin
+  if ExtractFileExt(F.Name) = '.mhlf' then
+  begin
+    S := ExtractFileName(F.Name);
+    Delete(S, Length(S) - 4 , 5);
+    cbPresetName.Items.Add(S);
+  end;
+end;
+
 procedure  TfrmMain.FillAllBooksTree;
 begin
   FillBooksTree(0, tvBooksA, DMMain.tblAuthor_List, DMMain.tblBooksA,    False, True); // авторы
@@ -2023,6 +2065,12 @@ begin
   if frmMain.WindowState = wsMinimized then
      frmMain.WindowState := wsNormal;
   // конец костыля
+
+
+  // загрузка списка пресетов для поиска
+  FilesList.TargetPath := Settings.WorkPath;
+  FilesList.Process;
+
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
@@ -4217,12 +4265,19 @@ begin
   BookTreeStatus := bsFree;
 end;
 
-procedure TfrmMain.btnSaveFilterClick(Sender: TObject);
+procedure TfrmMain.btnSavePresetClick(Sender: TObject);
 const d='~;~';
 var
   SL : TStringList;
   S  : String;
+  FN: string;
+
 begin
+  FN := cbPresetName.Text + '.mhlf';
+
+  if cbPresetName.ItemIndex = -1 then
+    cbPresetName.Items.Add(cbPresetName.Text);
+
   SL := TStringList.Create;
   try
     S := '~' + edFFullName.Text + d +
@@ -4236,7 +4291,7 @@ begin
          BoolToStr(cbDeleted.Checked) + '~';
 
     SL.Add(S);
-    SL.SaveToFile(Settings.WorkPath + 'filter.txt',TEncoding.UTF8);
+    SL.SaveToFile(Settings.WorkPath + FN,TEncoding.UTF8);
   finally
     SL.Free;
   end;
