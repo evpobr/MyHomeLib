@@ -1226,6 +1226,7 @@ begin
   tvBooksSR.Clear;
   ClearLabels(PAGE_SEARCH);
   cbPresetName.Text := '';
+  cbDeleted.Checked := False;
 end;
 
 procedure TfrmMain.LoadSearchPreset(FN: string);
@@ -2590,7 +2591,9 @@ begin
       if Data.nodeType = ntBookInfo then
         if Tree.CheckState[Node] = csCheckedNormal then
           Tree.CheckState[Node] := csUnCheckedNormal
-        else Tree.CheckState[Node] := csCheckedNormal;
+        else
+          Tree.CheckState[Node] := csCheckedNormal;
+
       Tree.Selected[Node] := False;
       Node := Tree.GetNext(Node);
       BookTreeStatus := bsFree ;
@@ -2635,7 +2638,10 @@ begin
         Data := Tree.GetNodeData(Node);
         if Data.nodeType = ntBookInfo  then
         begin
-          Tree.CheckState[Node] := csCheckedNormal;
+          if Tree.CheckState[Node] = csCheckedNormal then
+             Tree.CheckState[Node] := csUnCheckedNormal
+          else
+            Tree.CheckState[Node] := csCheckedNormal;
           Tree.Selected[Node] := False;
         end;
         Node := Tree.GetNextSelected(Node);
@@ -3137,6 +3143,7 @@ begin
   case ActiveView of
     ByAuthorView:
       begin
+
         ClearLabels(PAGE_AUTHORS);
         if Assigned(FLastLetterA) then
             FLastLetterA.Down := False;
@@ -3156,7 +3163,8 @@ begin
         end;
         DMMain.tblAuthors.Filtered := (Sender as TToolButton).Tag <> 90;
         FillAuthorTree;
-        tvAuthors.Selected[tvAuthors.GetFirst] := True;
+
+        //tvAuthors.Selected[tvAuthors.GetFirst] := True;
         edLocateAuthor.Perform(WM_KEYDOWN, VK_RIGHT, 0);
       end;
     BySeriesView:
@@ -3538,9 +3546,13 @@ end;
 procedure TfrmMain.miCopyAuthorClick(Sender: TObject);
 var
   treeView: TVirtualStringTree;
+
   Data: PAuthorData;
   DataG: PGenreData;
   strText: String;
+
+  Node: PVirtualNode;
+
 begin
   case ActiveView of
     ByAuthorView: treeView := tvAuthors;
@@ -3550,50 +3562,77 @@ begin
     Assert(False);
   end;
 
+  strText := '';
+
   case ActiveView of
     ByAuthorView, BySeriesView:
       begin
-        Data := treeView.GetNodeData(treeView.GetFirstSelected);
-        if not Assigned(Data) then
-          Exit;
-
-        strText := Data.Text;
+        Node := treeView.GetFirstSelected;
+        while Node <> nil do
+        begin
+          Data := treeView.GetNodeData(Node);
+          if strText = '' then
+            strText := Data.Text
+          else
+            strText := strText + #13#10+ Data.Text;
+          Node := treeView.GetNextSelected(Node);
+        end;
       end;
 
     ByGenreView:
       begin
-        DataG := tvGenres.GetNodeData(tvGenres.GetFirstSelected);
-        if not Assigned(DataG) then
-          Exit;
-
-        strText := DataG.Text;
+        Node := treeView.GetFirstSelected;
+        while Node <> nil do
+        begin
+          DataG := treeView.GetNodeData(Node);
+          if strText = '' then
+            strText := DataG.Text
+          else
+            strText := strText + #13#10+ DataG.Text;
+          Node := treeView.GetNextSelected(Node);
+        end;
       end;
   end;
+
+
   Clipboard.AsText := trim(strText);
 end;
 
 procedure TfrmMain.miCopyClBrdClick(Sender: TObject);
 var
   Tree: TVirtualStringTree;
-  S: String;
+  S,R: String;
   Data: PBookData;
+  Node: PVirtualNode;
+
 begin
   GetActiveTree(Tree);
-  Data := Tree.GetNodeData(Tree.GetFirstSelected);
-  if not Assigned(Data) then
-    Exit;
 
-  case Data.nodeType of
-    ntSeriesInfo:
-      S := Data.FullName + '. Серия: ' + Data.Series;
+  S := ''; R := '';
 
-    ntBookInfo:
-      if Data.Series = '' then
-        S := Data.FullName + '. ' + Data.Title
+  Node := Tree.GetFirstSelected;
+  while Node <> Nil do
+  begin
+    Data := Tree.GetNodeData(Node);
+
+    case Data.nodeType of
+      ntSeriesInfo:
+        S := Data.FullName + '. Серия: ' + Data.Series;
+
+      ntBookInfo:
+        if Data.Series = '' then
+          S := Data.FullName + '. ' + Data.Title
+        else
+          S := Data.FullName + '. Серия:' + Data.Series + '. ' + Data.Title;
+    end;
+    if S = '' then
+        R := S
       else
-        S := Data.FullName + '. Серия:' + Data.Series + '. ' + Data.Title;
+        R := R + #13#10 + S;
+
+    Node := Tree.GetNextSelected(Node);
   end;
-  Clipboard.AsText := trim(S);
+  Clipboard.AsText := trim(R);
 end;
 
 procedure TfrmMain.miDeleteBookClick(Sender: TObject);
@@ -4313,6 +4352,7 @@ var
   Node: PVirtualNode;
   Data: PAuthorData;
 begin
+  Tree.ClearSelection;
   Node := Tree.GetFirst;
   while Assigned(Node) do
   begin
