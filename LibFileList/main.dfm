@@ -88,11 +88,9 @@ object frmMain: TfrmMain
     Align = alClient
     TabIndex = 1
     TabOrder = 1
-    ExplicitHeight = 318
     FixedDimension = 19
     object TabSheet1: TRzTabSheet
       Caption = 'fb2'
-      ExplicitHeight = 301
       object RzGroupBox1: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -122,7 +120,6 @@ object frmMain: TfrmMain
     end
     object TabSheet2: TRzTabSheet
       Caption = 'Extra'
-      ExplicitHeight = 301
       object pbDownload: TRzProgressBar
         AlignWithMargins = True
         Left = 3
@@ -140,25 +137,24 @@ object frmMain: TfrmMain
       end
       object Label4: TLabel
         Left = 0
-        Top = 175
+        Top = 187
         Width = 340
-        Height = 25
+        Height = 13
         Align = alBottom
         Alignment = taCenter
         Anchors = [akLeft, akBottom]
         Caption = '----'
-        ExplicitTop = 187
+        ExplicitWidth = 16
       end
       object mmLog: TMemo
         AlignWithMargins = True
         Left = 3
         Top = 55
         Width = 334
-        Height = 120
+        Height = 132
         Margins.Bottom = 0
         Align = alClient
         TabOrder = 0
-        ExplicitHeight = 106
       end
       object RzGroupBox4: TRzGroupBox
         AlignWithMargins = True
@@ -168,28 +164,34 @@ object frmMain: TfrmMain
         Height = 46
         Align = alTop
         TabOrder = 1
-        ExplicitTop = 19
         object edExtraURL: TEdit
-          Left = 6
+          Left = 11
           Top = 16
-          Width = 236
+          Width = 213
           Height = 21
           TabOrder = 0
           Text = 'http://lib/get_extra.php'
         end
         object edExtra: TEdit
-          Left = 248
+          Left = 230
           Top = 16
-          Width = 79
+          Width = 52
           Height = 21
           TabOrder = 1
           Text = '148523'
+        end
+        object cbFTP: TCheckBox
+          Left = 288
+          Top = 16
+          Width = 81
+          Height = 17
+          Caption = 'FTP'
+          TabOrder = 2
         end
       end
     end
     object TabSheet3: TRzTabSheet
       Caption = 'USR'
-      ExplicitHeight = 260
       object edURLUSR: TEdit
         Left = 3
         Top = 12
@@ -247,5 +249,16 @@ object frmMain: TfrmMain
     ZipFileName = '0.sql.gz'
     Left = 168
     Top = 136
+  end
+  object IdFTP: TIdFTP
+    OnWorkBegin = IdFTPWorkBegin
+    OnWorkEnd = IdFTPWorkEnd
+    IPVersion = Id_IPv4
+    AutoLogin = True
+    TransferType = ftBinary
+    ProxySettings.ProxyType = fpcmNone
+    ProxySettings.Port = 0
+    Left = 288
+    Top = 120
   end
 end

@@ -6,7 +6,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, RzShellDialogs, IdComponent, IdTCPConnection, IdTCPClient,
   IdHTTP, IdBaseComponent, IdAntiFreezeBase, IdAntiFreeze, RzPrgres, StdCtrls,IdMultipartFormData,Inifiles,
-  ZipForge, ExtCtrls, RzPanel, RzTabs, ZipMstr;
+  ZipForge, ExtCtrls, RzPanel, RzTabs, ZipMstr, IdExplicitTLSClientServerBase,
+  IdFTP, IdIntercept, IdLogBase, IdLogFile;
 
 type
   TfrmMain = class(TForm)
@@ -35,6 +36,8 @@ type
     edURLUSR: TEdit;
     pbDownload: TRzProgressBar;
     Label4: TLabel;
+    IdFTP: TIdFTP;
+    cbFTP: TCheckBox;
     procedure btnStartClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
@@ -57,6 +60,10 @@ type
       AWorkCountMax: Int64);
     procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
     procedure FormDestroy(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure IdFTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode;
+      AWorkCountMax: Int64);
+    procedure IdFTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
 
   private
     FileList : TStringList;
@@ -64,6 +71,7 @@ type
     procedure CreateINP(URL: string; USR: boolean);
     function ExecAndWait(const FileName, Params: String;
       const WinState: Word): boolean;
+    procedure UploadToFtp;
     { Private declarations }
   public
     { Public declarations }
@@ -71,6 +79,7 @@ type
     FDoStop: boolean;
     FDownloadSize : integer;
     FStartDate: TDateTime;
+    FFTPDir: string;
   end;
 
 var
@@ -203,7 +212,7 @@ begin
         Response.SaveToFile(FileName);
 
         mmLog.Lines.Add('Распаковка  ...');
-        ExecAndWait(AppPath + '\7za.exe','e ' + FileName,1);
+        ExecAndWait(AppPath + '\7za.exe','e ' + FileName,0);
 
       end;
     finally
@@ -211,7 +220,7 @@ begin
     end;
 
     mmLog.Lines.Add('Импорт  ...');
-    ExecAndWait(AppPath + '\import.bat','',1);
+    ExecAndWait(AppPath + '\import.bat','',0);
     mmLog.Lines.Add('Готово');
 
     for i := 0 to List.Count - 1 do
@@ -234,6 +243,7 @@ begin
     1: begin
          Extra;
          Pack_Extra;
+         if  cbFTP.Checked then UPloadToFtp;
        end;
     2: begin
          CreateINP(edURLUSR.Text, True);
@@ -245,6 +255,19 @@ end;
 procedure TfrmMain.btnStopClick(Sender: TObject);
 begin
   FDoStop := True;
+end;
+
+procedure TfrmMain.UploadToFtp;
+begin
+  idFTP.Connect;
+  idFTP.ChangeDir(FFTPDir);
+  idFTP.Put(AppPath+'\ARCH\extra_update.zip');
+  idFTP.Put(AppPath+'\ARCH\last_extra.info');
+end;
+
+procedure TfrmMain.Button1Click(Sender: TObject);
+begin
+  UploadToFTP;
 end;
 
 procedure TfrmMain.Button2Click(Sender: TObject);
@@ -271,14 +294,21 @@ var
 begin
   AppPath:=ExtractFileDir(Application.ExeName);
   INF:=TIniFile.Create(AppPath+'\libfilelist.ini');
-  edURLFB2.Text := INF.ReadString('SYSTEM','URL_FB2','http://localhost');
-  edURLUSR.Text := INF.ReadString('SYSTEM','URL_USR','http://localhost');
-  edExtra.Text := INF.ReadString('SYSTEM','ID','0');
-  dlgOpen.InitialDir := INF.ReadString('SYSTEM','FOLDER','');
-  INF.Free;
+  try
+    edURLFB2.Text := INF.ReadString('SYSTEM','URL_FB2','http://localhost');
+    edURLUSR.Text := INF.ReadString('SYSTEM','URL_USR','http://localhost');
+    edExtra.Text := INF.ReadString('SYSTEM','ID','0');
+    dlgOpen.InitialDir := INF.ReadString('SYSTEM','FOLDER','');
 
+    idFTP.Host := INF.ReadString('FTP','HOST','');
+    idFTP.Username := INF.ReadString('FTP','USERNAME','');
+    idFTP.Password := INF.ReadString('FTP','PASSWORD','');
+    FFTPDir := INF.ReadString('FTP','DIR','home-lib.net/test/');
+
+  finally
+    INF.Free;
+  end;
   FileList := TStringList.Create;
-
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
@@ -361,6 +391,17 @@ procedure TfrmMain.HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
 begin
   pbDownload.Percent := 0;
   Label4.Caption := '';
+end;
+
+procedure TfrmMain.IdFTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode;
+  AWorkCountMax: Int64);
+begin
+  mmLog.Lines.Add('Подключение к FTP');
+end;
+
+procedure TfrmMain.IdFTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
+begin
+  mmLog.Lines.Add('Передача завершена');
 end;
 
 procedure TfrmMain.Pack(FN, Comment: string);
