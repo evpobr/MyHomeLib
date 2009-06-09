@@ -864,6 +864,10 @@ begin
       // ƒобавим некоторые ридеры по умолчанию
       //
       FReaders.Add('fb2',AppPath+'AlReader\AlReader2.exe');
+      FReaders.Add('doc',AppPath+'AlReader\AlReader2.exe');
+      FReaders.Add('txt',AppPath+'AlReader\AlReader2.exe');
+      FReaders.Add('htm',AppPath+'AlReader\AlReader2.exe');
+      FReaders.Add('html',AppPath+'AlReader\AlReader2.exe');
       FReaders.Add('pdf', '');
       FReaders.Add('djvu', '');
       FReaders.Add('mht', '');

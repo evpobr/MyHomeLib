@@ -8,7 +8,7 @@ inherited frameNCWCollectionType: TframeNCWCollectionType
   object pageHint: TMHLStaticTip [0]
     AlignWithMargins = True
     Left = 14
-    Top = 228
+    Top = 204
     Width = 302
     Height = 58
     Margins.Left = 14
@@ -37,7 +37,7 @@ inherited frameNCWCollectionType: TframeNCWCollectionType
     Left = 0
     Top = 56
     Width = 330
-    Height = 169
+    Height = 145
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
@@ -71,21 +71,6 @@ inherited frameNCWCollectionType: TframeNCWCollectionType
       TabOrder = 1
       OnClick = OnSetCollectionType
     end
-    object rbGenesis: TRadioButton
-      AlignWithMargins = True
-      Left = 14
-      Top = 86
-      Width = 306
-      Height = 17
-      Margins.Left = 7
-      Margins.Top = 7
-      Margins.Right = 7
-      Margins.Bottom = 0
-      Caption = #1041#1080#1073#1083#1080#1086#1090#1077#1082#1072' "'#1043#1077#1085#1077#1079#1080#1089'".'
-      Enabled = False
-      TabOrder = 2
-      OnClick = OnSetCollectionType
-    end
     object rbEmpty: TRadioButton
       AlignWithMargins = True
       Left = 14
@@ -97,13 +82,13 @@ inherited frameNCWCollectionType: TframeNCWCollectionType
       Margins.Right = 7
       Margins.Bottom = 0
       Caption = #1055#1091#1089#1090#1072#1103' '#1082#1086#1083#1083#1077#1082#1094#1080#1103
-      TabOrder = 3
+      TabOrder = 2
       OnClick = OnSetCollectionType
     end
     object rbThirdParty: TRadioButton
       AlignWithMargins = True
       Left = 14
-      Top = 110
+      Top = 86
       Width = 306
       Height = 17
       Margins.Left = 7
@@ -111,23 +96,25 @@ inherited frameNCWCollectionType: TframeNCWCollectionType
       Margins.Right = 7
       Margins.Bottom = 0
       Caption = #1044#1088#1091#1075#1072#1103' '#1073#1080#1073#1083#1080#1086#1090#1077#1082#1072
-      TabOrder = 4
+      TabOrder = 3
       OnClick = OnSetCollectionType
     end
     object edINPXPath: TRzButtonEdit
       AlignWithMargins = True
       Left = 18
-      Top = 138
+      Top = 114
       Width = 294
       Height = 21
       Margins.Left = 18
       Margins.Right = 18
       Margins.Bottom = 10
       Align = alBottom
-      TabOrder = 5
+      TabOrder = 4
       AltBtnWidth = 15
       ButtonWidth = 15
       OnButtonClick = edINPXPathButtonClick
+      ExplicitLeft = 14
+      ExplicitWidth = 298
     end
   end
 end

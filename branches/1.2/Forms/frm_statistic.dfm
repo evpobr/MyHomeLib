@@ -3,7 +3,7 @@ object frmStat: TfrmStat
   Top = 0
   BorderStyle = bsDialog
   Caption = #1057#1090#1072#1090#1080#1089#1090#1080#1082#1072
-  ClientHeight = 165
+  ClientHeight = 240
   ClientWidth = 308
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,7 +17,7 @@ object frmStat: TfrmStat
   TextHeight = 13
   object RzBitBtn1: TButton
     Left = 116
-    Top = 135
+    Top = 211
     Width = 75
     Height = 25
     Cancel = True
@@ -102,12 +102,13 @@ object frmStat: TfrmStat
   object RzPanel2: TRzPanel
     AlignWithMargins = True
     Left = 3
-    Top = 79
+    Top = 155
     Width = 302
-    Height = 50
+    Height = 53
     Align = alTop
     BorderOuter = fsFlatRounded
     TabOrder = 2
+    ExplicitTop = 128
     object RzLabel2: TRzLabel
       Left = 8
       Top = 20
@@ -170,6 +171,35 @@ object frmStat: TfrmStat
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
+    end
+  end
+  object RzGroupBox1: TRzGroupBox
+    AlignWithMargins = True
+    Left = 3
+    Top = 79
+    Width = 302
+    Height = 70
+    Align = alTop
+    Caption = #1054#1087#1080#1089#1072#1085#1080#1077
+    TabOrder = 3
+    ExplicitLeft = 0
+    ExplicitTop = 76
+    ExplicitWidth = 308
+    object lblNotes: TRzLabel
+      AlignWithMargins = True
+      Left = 4
+      Top = 17
+      Width = 294
+      Height = 49
+      Align = alClient
+      AutoSize = False
+      Caption = 'lblNotes'
+      WordWrap = True
+      TextMargin = 2
+      ExplicitLeft = 5
+      ExplicitTop = 81
+      ExplicitWidth = 292
+      ExplicitHeight = 40
     end
   end
 end

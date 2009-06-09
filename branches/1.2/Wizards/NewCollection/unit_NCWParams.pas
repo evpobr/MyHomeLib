@@ -37,6 +37,7 @@ type
     RelativePaths:boolean;
     INPXFile: string;
     Code: integer;
+    Notes: string;
     //
     // реальный тип коллекции
     //
