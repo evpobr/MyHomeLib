@@ -24,7 +24,6 @@ type
     Panel1: TPanel;
     rbLocal: TRadioButton;
     rbOnline: TRadioButton;
-    rbGenesis: TRadioButton;
     pageHint: TMHLStaticTip;
     rbEmpty: TRadioButton;
     rbThirdParty: TRadioButton;
@@ -35,6 +34,7 @@ type
   private
     FColTitle : string;
     FColFile  : string;
+    FColDescr : string;
     FColCode  : integer;
   public
     function Activate(LoadData: Boolean): Boolean; override;
@@ -83,7 +83,7 @@ begin
       ltEmpty: rb := rbEmpty;
       ltLRELocal: rb := rbLocal;
       ltLREOnline: rb := rbOnline;
-      ltGenesis: rb := rbGenesis;
+//      ltGenesis: rb := rbGenesis;
       ltThirdParty: rb := rbThirdParty;
     else
       Assert(False);
@@ -108,9 +108,9 @@ begin
     FPParams^.CollectionType := ltLRELocal
   else if rbOnline.Checked then
     FPParams^.CollectionType := ltLREOnline
-  else if rbGenesis.Checked then
+  else {if rbGenesis.Checked then
     FPParams^.CollectionType := ltGenesis
-  else if rbThirdParty.Checked then
+  else} if rbThirdParty.Checked then
   begin
     FPParams^.CollectionType := ltThirdParty;
     FPParams^.DisplayName := FColTitle;
@@ -119,7 +119,7 @@ begin
     FPParams^.UseDefaultLocation := False;
     FPParams^.INPXFile := edINPXPath.Text;
     FPParams^.CollectionCode := FColCode;
-
+    FPParams^.Notes := FColDescr;
   end;
   Result := True;
 end;
@@ -144,7 +144,21 @@ procedure TframeNCWCollectionType.GetCollectionDataFromINPX;
 var
   Zip: TZipForge;
   S  : ansistring;
-  p: integer;
+
+
+  SL : TStringList;
+
+
+  function GetParam(var S: ansistring): string;
+  var
+    p: integer;
+  begin
+    p := pos(#13#10,S);
+    Result := copy(S,1,p - 1);
+    delete(S,1,p + 1);
+  end;
+
+
 begin
   Zip := TZipForge.Create(self);
   try
@@ -155,13 +169,11 @@ begin
   finally
     Zip.Free;
   end;
-  p := pos(#13#10,S);
-  FColTitle := copy(S,1,p - 1);
-  delete(S,1,p + 1);
-  p := pos(#13#10,S);
-  FColFile := copy(S,1,p - 1);
-  delete(S,1,p + 1);
-  FColCode := StrToInt(S);
+    // файл коллекции по умолчанию
+    FColTitle := GetParam(S);
+    FColFile := GetParam(S);
+    FColCode := StrToInt(GetParam(S));
+    FColDescr := S;
 end;
 
 procedure TframeNCWCollectionType.OnSetCollectionType(Sender: TObject);
@@ -172,9 +184,9 @@ begin
     pageHint.Caption := FROMLIBRUSECARCH
   else if Sender = rbOnline then
     pageHint.Caption := LIBRUSECDOWNLOAD
-  else if Sender = rbGenesis then
+  else {if Sender = rbGenesis then
     pageHint.Caption := SERVERDOWNLOAD
-  else if Sender = rbThirdParty then
+  else} if Sender = rbThirdParty then
   begin
     pageHint.Caption := THIRDPARTY;
   end;

@@ -668,7 +668,8 @@ begin
     FParams.CollectionFile,
     FParams.CollectionCode,
     isPrivateCollection(FParams.CollectionCode),
-    FVersion
+    FVersion,
+    FParams.Notes
   );
 
   DoChangePage(btnForward);
