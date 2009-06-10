@@ -2,7 +2,7 @@ object frmMain: TfrmMain
   Left = 0
   Top = 0
   Caption = 'MyHomeLib'
-  ClientHeight = 726
+  ClientHeight = 786
   ClientWidth = 998
   Color = clBtnFace
   Constraints.MinHeight = 700
@@ -80,7 +80,8 @@ object frmMain: TfrmMain
       Width = 982
       Height = 33
       BorderWidth = 1
-      ButtonWidth = 37
+      ButtonHeight = 24
+      ButtonWidth = 39
       Caption = 'RusBar'
       DrawingStyle = dsGradient
       EdgeBorders = [ebLeft, ebTop, ebRight, ebBottom]
@@ -108,7 +109,7 @@ object frmMain: TfrmMain
       end
       object ToolButton4: TToolButton
         Tag = 91
-        Left = 26
+        Left = 28
         Top = 0
         Caption = #1040'-'#1071
         ImageIndex = 1
@@ -124,7 +125,8 @@ object frmMain: TfrmMain
       Height = 33
       Margins.Bottom = 5
       BorderWidth = 1
-      ButtonWidth = 35
+      ButtonHeight = 24
+      ButtonWidth = 37
       Caption = 'RusBar'
       DrawingStyle = dsGradient
       EdgeBorders = [ebLeft, ebTop, ebRight, ebBottom]
@@ -149,7 +151,7 @@ object frmMain: TfrmMain
       end
       object ToolButton6: TToolButton
         Tag = 92
-        Left = 24
+        Left = 26
         Top = 0
         Caption = 'A-Z'
         ImageIndex = 1
@@ -160,7 +162,7 @@ object frmMain: TfrmMain
   end
   object StatusBar: TRzStatusBar
     Left = 0
-    Top = 707
+    Top = 767
     Width = 998
     Height = 19
     BorderInner = fsNone
@@ -168,6 +170,7 @@ object frmMain: TfrmMain
     BorderSides = [sdLeft, sdTop, sdRight, sdBottom]
     BorderWidth = 0
     TabOrder = 1
+    ExplicitTop = 707
     object RzVersionInfoStatus1: TRzVersionInfoStatus
       Left = 0
       Top = 0
@@ -256,7 +259,7 @@ object frmMain: TfrmMain
       OnClick = tbSendToDeviceClick
     end
     object ToolButton13: TToolButton
-      Left = 138
+      Left = 136
       Top = 0
       Width = 20
       Caption = 'ToolButton13'
@@ -264,7 +267,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnRus: TToolButton
-      Left = 158
+      Left = 156
       Top = 0
       Hint = #1056#1091#1089#1089#1082#1080#1081' '#1072#1083#1092#1072#1074#1080#1090
       Caption = 'tbtnRus'
@@ -272,7 +275,7 @@ object frmMain: TfrmMain
       OnClick = tbtnRusClick
     end
     object tbtnEng: TToolButton
-      Left = 199
+      Left = 197
       Top = 0
       Hint = #1040#1085#1075#1083#1080#1081#1089#1082#1080#1081' '#1072#1083#1092#1072#1074#1080#1090
       Caption = 'tbtnEng'
@@ -280,7 +283,7 @@ object frmMain: TfrmMain
       OnClick = tbtnEngClick
     end
     object ToolButton12: TToolButton
-      Left = 240
+      Left = 238
       Top = 0
       Width = 20
       Caption = 'ToolButton12'
@@ -288,7 +291,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnWizard: TToolButton
-      Left = 260
+      Left = 258
       Top = 0
       Hint = #1052#1072#1089#1090#1077#1088' '#1076#1086#1073#1072#1074#1083#1077#1085#1080#1103' '#1082#1086#1083#1083#1077#1082#1094#1080#1081
       Caption = 'tbtnWizard'
@@ -298,7 +301,7 @@ object frmMain: TfrmMain
       OnClick = ShowNewCollectionWizard
     end
     object tbtnSelect: TToolButton
-      Left = 301
+      Left = 299
       Top = 0
       Hint = #1042#1099#1073#1088#1072#1090#1100' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
       Caption = #1042#1099#1073#1088#1072#1090#1100' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
@@ -310,7 +313,7 @@ object frmMain: TfrmMain
       ShowHint = True
     end
     object ToolButton3: TToolButton
-      Left = 342
+      Left = 340
       Top = 0
       Width = 20
       Caption = 'ToolButton3'
@@ -318,7 +321,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object BtnFav_add: TToolButton
-      Left = 362
+      Left = 360
       Top = 0
       Hint = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1080#1079#1073#1088#1072#1085#1085#1086#1077
       Caption = 'BtnFav_add'
@@ -326,7 +329,7 @@ object frmMain: TfrmMain
       OnClick = BtnFav_addClick
     end
     object ToolButton7: TToolButton
-      Left = 403
+      Left = 401
       Top = 0
       Width = 20
       Caption = 'ToolButton7'
@@ -334,7 +337,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbSelectAll: TToolButton
-      Left = 423
+      Left = 421
       Top = 0
       Hint = #1054#1090#1084#1077#1090#1080#1090#1100' '#1074#1089#1077
       Caption = 'tbSelectAll'
@@ -342,7 +345,7 @@ object frmMain: TfrmMain
       OnClick = tbSelectAllClick
     end
     object tbCollapse: TToolButton
-      Left = 464
+      Left = 462
       Top = 0
       Hint = #1056#1072#1079#1074#1077#1088#1085#1091#1090#1100'/'#1057#1074#1077#1088#1085#1091#1090#1100' '#1089#1087#1080#1089#1086#1082
       Caption = 'tbCollapse'
@@ -350,7 +353,7 @@ object frmMain: TfrmMain
       OnClick = tbCollapseClick
     end
     object btnRefreshCollection: TToolButton
-      Left = 505
+      Left = 503
       Top = 0
       Hint = #1054#1073#1085#1086#1074#1080#1090#1100' '#1089#1087#1080#1089#1086#1082
       Caption = 'btnRefreshCollection'
@@ -358,7 +361,7 @@ object frmMain: TfrmMain
       OnClick = miRefreshClick
     end
     object ToolButton1: TToolButton
-      Left = 546
+      Left = 544
       Top = 0
       Width = 20
       Caption = 'ToolButton1'
@@ -366,7 +369,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object btnSwitchTreeMode: TToolButton
-      Left = 566
+      Left = 564
       Top = 0
       Hint = #1055#1077#1088#1077#1082#1083#1102#1095#1080#1090#1100' '#1074' '#1088#1077#1078#1080#1084' "'#1058#1072#1073#1083#1080#1094#1072'"'
       Caption = 'btnSwitchTreeMode'
@@ -374,7 +377,7 @@ object frmMain: TfrmMain
       OnClick = btnSwitchTreeModeClick
     end
     object tbtnShowDeleted: TToolButton
-      Left = 607
+      Left = 605
       Top = 0
       Hint = #1057#1082#1088#1099#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077' '#1085#1072' lib.rus.ec'
       Caption = 'tbtnShowDeleted'
@@ -382,7 +385,7 @@ object frmMain: TfrmMain
       OnClick = tbtnShowDeletedClick
     end
     object tbtnShowLocalOnly: TToolButton
-      Left = 648
+      Left = 646
       Top = 0
       Hint = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1090#1086#1083#1100#1082#1086' '#1089#1082#1072#1095#1072#1085#1085#1099#1077' '#1082#1085#1080#1075#1080
       Caption = 'tbtnShowLocalOnly'
@@ -390,7 +393,7 @@ object frmMain: TfrmMain
       OnClick = tbtnShowLocalOnlyClick
     end
     object tbtnShowCover: TToolButton
-      Left = 689
+      Left = 687
       Top = 0
       Hint = #1055#1086#1082#1072#1079#1072#1090#1100'/'#1057#1082#1088#1099#1090#1100' '#1086#1073#1083#1086#1078#1082#1091
       Caption = 'tbtnShowCover'
@@ -398,7 +401,7 @@ object frmMain: TfrmMain
       OnClick = tbtnShowCoverClick
     end
     object ToolButton5: TToolButton
-      Left = 730
+      Left = 728
       Top = 0
       Width = 20
       Caption = 'ToolButton5'
@@ -406,7 +409,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnSettings: TToolButton
-      Left = 750
+      Left = 748
       Top = 0
       Hint = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
       Caption = 'tbtnSettings'
@@ -418,21 +421,23 @@ object frmMain: TfrmMain
     Left = 0
     Top = 144
     Width = 998
-    Height = 563
+    Height = 623
     HelpContext = 135
     ActivePage = TabSheet4
     Align = alClient
     TabIndex = 3
     TabOrder = 3
     OnChange = pgControlChange
+    ExplicitHeight = 563
     FixedDimension = 19
     object TabSheet1: TRzTabSheet
       Caption = #1040#1074#1090#1086#1088#1099
+      ExplicitHeight = 540
       object rzsSplitterA: TRzSplitter
         Left = 0
         Top = 0
         Width = 994
-        Height = 540
+        Height = 600
         MarginMin = 150
         Position = 228
         Percent = 23
@@ -440,11 +445,12 @@ object frmMain: TfrmMain
         SplitterWidth = 6
         Align = alClient
         TabOrder = 0
+        ExplicitHeight = 540
         BarSize = (
           228
           0
           234
-          540)
+          600)
         UpperLeftControls = (
           RzPanel13)
         LowerRightControls = (
@@ -455,17 +461,18 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 224
-          Height = 534
+          Height = 594
           Margins.Right = 1
           Align = alClient
           BorderOuter = fsFlatRounded
           TabOrder = 0
+          ExplicitHeight = 534
           object tvAuthors: TVirtualStringTree
             AlignWithMargins = True
             Left = 5
             Top = 52
             Width = 214
-            Height = 477
+            Height = 537
             Align = alClient
             CheckImageKind = ckXP
             Colors.UnfocusedSelectionColor = clHighlight
@@ -493,6 +500,7 @@ object frmMain: TfrmMain
             OnGetText = tvAuthorsGetText
             OnPaintText = tvAuthorsPaintText
             OnGetNodeDataSize = tvAuthorsGetNodeDataSize
+            ExplicitHeight = 477
             Columns = <>
           end
           object RzPanel16: TRzPanel
@@ -554,7 +562,7 @@ object frmMain: TfrmMain
           Left = 507
           Top = 3
           Width = 250
-          Height = 534
+          Height = 594
           Margins.Left = 0
           Align = alRight
           BorderOuter = fsFlatRounded
@@ -571,27 +579,30 @@ object frmMain: TfrmMain
           Fb2InfoVisible = False
           FontSize = 0
           AnnotationColor = clBlack
+          ExplicitHeight = 534
         end
         object RzPanel15: TRzPanel
           AlignWithMargins = True
           Left = 0
           Top = 3
           Width = 507
-          Height = 534
+          Height = 594
           Margins.Left = 0
           Margins.Right = 0
           Align = alClient
           BorderOuter = fsFlatRounded
           TabOrder = 1
+          ExplicitHeight = 534
           object RzPanel17: TRzPanel
             AlignWithMargins = True
             Left = 5
             Top = 5
             Width = 497
-            Height = 418
+            Height = 478
             Align = alClient
             BorderOuter = fsNone
             TabOrder = 0
+            ExplicitHeight = 418
             object RzPanel18: TRzPanel
               Left = 0
               Top = 0
@@ -640,15 +651,16 @@ object frmMain: TfrmMain
               Left = 0
               Top = 31
               Width = 497
-              Height = 387
+              Height = 447
               Align = alClient
               BorderOuter = fsNone
               TabOrder = 1
+              ExplicitHeight = 387
               object tvBooksA: TVirtualStringTree
                 Left = 0
                 Top = 0
                 Width = 497
-                Height = 387
+                Height = 447
                 Align = alClient
                 CheckImageKind = ckXP
                 ClipboardFormats.Strings = (
@@ -709,6 +721,7 @@ object frmMain: TfrmMain
                 OnInitNode = tvBooksTreeInitNode
                 OnKeyDown = tvBooksTreeKeyDown
                 OnMouseUp = tvBooksTreeMouseUp
+                ExplicitHeight = 387
                 Columns = <
                   item
                     MaxWidth = 1000
@@ -771,7 +784,7 @@ object frmMain: TfrmMain
           object ipnlAuthors: TMHLInfoPanel
             AlignWithMargins = True
             Left = 5
-            Top = 429
+            Top = 489
             Width = 497
             Height = 100
             Align = alBottom
@@ -783,28 +796,31 @@ object frmMain: TfrmMain
             Genre = #1085#1077#1080#1079#1074#1077#1089#1090#1085#1099#1081
             Folder = 'C:\Books\1-1009.zip'
             FileName = '111 '#1048#1074#1072#1085#1086#1074' '#1050#1085#1080#1075#1072'.fb2'
+            ExplicitTop = 429
           end
         end
       end
     end
     object TabSheet2: TRzTabSheet
       Caption = #1057#1077#1088#1080#1080
+      ExplicitHeight = 540
       object rzsSplitterS: TRzSplitter
         Left = 0
         Top = 0
         Width = 994
-        Height = 540
+        Height = 600
         MarginMin = 150
         Position = 247
         Percent = 25
         SplitterWidth = 5
         Align = alClient
         TabOrder = 0
+        ExplicitHeight = 540
         BarSize = (
           247
           0
           252
-          540)
+          600)
         UpperLeftControls = (
           RzPanel1)
         LowerRightControls = (
@@ -815,16 +831,17 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 241
-          Height = 534
+          Height = 594
           Align = alClient
           BorderOuter = fsFlatRounded
           TabOrder = 0
+          ExplicitHeight = 534
           object tvSeries: TVirtualStringTree
             AlignWithMargins = True
             Left = 5
             Top = 52
             Width = 231
-            Height = 477
+            Height = 537
             Align = alClient
             CheckImageKind = ckXP
             Colors.UnfocusedSelectionColor = clHighlight
@@ -851,6 +868,7 @@ object frmMain: TfrmMain
             OnChange = tvSeriesChange
             OnGetText = tvAuthorsGetText
             OnPaintText = tvAuthorsPaintText
+            ExplicitHeight = 477
             Columns = <>
           end
           object RzPanel19: TRzPanel
@@ -905,7 +923,7 @@ object frmMain: TfrmMain
           Left = 489
           Top = 3
           Width = 250
-          Height = 534
+          Height = 594
           Margins.Left = 0
           Align = alRight
           BorderOuter = fsFlatRounded
@@ -922,27 +940,30 @@ object frmMain: TfrmMain
           Fb2InfoVisible = False
           FontSize = 0
           AnnotationColor = clBlack
+          ExplicitHeight = 534
         end
         object RzPanel3: TRzPanel
           AlignWithMargins = True
           Left = 0
           Top = 3
           Width = 489
-          Height = 534
+          Height = 594
           Margins.Left = 0
           Margins.Right = 0
           Align = alClient
           BorderOuter = fsFlatRounded
           TabOrder = 1
+          ExplicitHeight = 534
           object RzPanel4: TRzPanel
             AlignWithMargins = True
             Left = 5
             Top = 5
             Width = 479
-            Height = 418
+            Height = 478
             Align = alClient
             BorderOuter = fsNone
             TabOrder = 0
+            ExplicitHeight = 418
             object RzPanel5: TRzPanel
               Left = 0
               Top = 0
@@ -992,7 +1013,7 @@ object frmMain: TfrmMain
               Left = 0
               Top = 31
               Width = 479
-              Height = 387
+              Height = 447
               Align = alClient
               BevelInner = bvNone
               BevelOuter = bvNone
@@ -1052,6 +1073,7 @@ object frmMain: TfrmMain
               OnInitNode = tvBooksTreeInitNode
               OnKeyDown = tvBooksTreeKeyDown
               OnMouseUp = tvBooksTreeMouseUp
+              ExplicitHeight = 387
               Columns = <
                 item
                   MinWidth = 30
@@ -1138,7 +1160,7 @@ object frmMain: TfrmMain
           object ipnlSeries: TMHLInfoPanel
             AlignWithMargins = True
             Left = 5
-            Top = 429
+            Top = 489
             Width = 479
             Height = 100
             Align = alBottom
@@ -1150,28 +1172,31 @@ object frmMain: TfrmMain
             Genre = #1085#1077#1080#1079#1074#1077#1089#1090#1085#1099#1081
             Folder = 'C:\Books\1-1009.zip'
             FileName = '111 '#1048#1074#1072#1085#1086#1074' '#1050#1085#1080#1075#1072'.fb2'
+            ExplicitTop = 429
           end
         end
       end
     end
     object TabSheet3: TRzTabSheet
       Caption = #1046#1072#1085#1088#1099
+      ExplicitHeight = 540
       object rzsSplitterG: TRzSplitter
         Left = 0
         Top = 0
         Width = 994
-        Height = 540
+        Height = 600
         MarginMin = 150
         Position = 258
         Percent = 26
         SplitterWidth = 2
         Align = alClient
         TabOrder = 0
+        ExplicitHeight = 540
         BarSize = (
           258
           0
           260
-          540)
+          600)
         UpperLeftControls = (
           RzPanel25)
         LowerRightControls = (
@@ -1182,16 +1207,17 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 252
-          Height = 534
+          Height = 594
           Align = alClient
           BorderOuter = fsFlatRounded
           TabOrder = 0
+          ExplicitHeight = 534
           object tvGenres: TVirtualStringTree
             AlignWithMargins = True
             Left = 5
             Top = 5
             Width = 242
-            Height = 524
+            Height = 584
             Align = alClient
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -1214,6 +1240,7 @@ object frmMain: TfrmMain
             TreeOptions.SelectionOptions = [toMultiSelect]
             OnChange = tvGenresChange
             OnGetText = tvGenresGetText
+            ExplicitHeight = 524
             Columns = <>
           end
         end
@@ -1222,7 +1249,7 @@ object frmMain: TfrmMain
           Left = 481
           Top = 3
           Width = 250
-          Height = 534
+          Height = 594
           Margins.Left = 0
           Align = alRight
           BorderOuter = fsFlatRounded
@@ -1239,32 +1266,35 @@ object frmMain: TfrmMain
           Fb2InfoVisible = False
           FontSize = 0
           AnnotationColor = clBlack
+          ExplicitHeight = 534
         end
         object RzPanel27: TRzPanel
           AlignWithMargins = True
           Left = 3
           Top = 3
           Width = 478
-          Height = 534
+          Height = 594
           Margins.Right = 0
           Align = alClient
           BorderOuter = fsFlatRounded
           TabOrder = 1
+          ExplicitHeight = 534
           object RzPanel28: TRzPanel
             AlignWithMargins = True
             Left = 5
             Top = 36
             Width = 468
-            Height = 387
+            Height = 447
             Align = alClient
             BorderOuter = fsNone
             TabOrder = 0
+            ExplicitHeight = 387
             object tvBooksG: TVirtualStringTree
               Tag = 2
               Left = 0
               Top = 0
               Width = 468
-              Height = 387
+              Height = 447
               Align = alClient
               Alignment = taRightJustify
               BevelInner = bvNone
@@ -1326,6 +1356,7 @@ object frmMain: TfrmMain
               OnInitNode = tvBooksTreeInitNode
               OnKeyDown = tvBooksTreeKeyDown
               OnMouseUp = tvBooksTreeMouseUp
+              ExplicitHeight = 387
               Columns = <
                 item
                   MinWidth = 30
@@ -1444,7 +1475,7 @@ object frmMain: TfrmMain
           object ipnlGenres: TMHLInfoPanel
             AlignWithMargins = True
             Left = 5
-            Top = 429
+            Top = 489
             Width = 468
             Height = 100
             Align = alBottom
@@ -1456,6 +1487,7 @@ object frmMain: TfrmMain
             Genre = #1085#1077#1080#1079#1074#1077#1089#1090#1085#1099#1081
             Folder = 'C:\Books\1-1009.zip'
             FileName = '111 '#1048#1074#1072#1085#1086#1074' '#1050#1085#1080#1075#1072'.fb2'
+            ExplicitTop = 429
           end
         end
       end
@@ -1463,31 +1495,34 @@ object frmMain: TfrmMain
     object TabSheet4: TRzTabSheet
       HelpContext = 142
       Caption = #1055#1086#1080#1089#1082
+      ExplicitHeight = 540
       object RzPanel9: TRzPanel
         AlignWithMargins = True
         Left = 3
         Top = 3
         Width = 738
-        Height = 534
+        Height = 594
         Margins.Right = 0
         Align = alClient
         BorderOuter = fsFlatRounded
         TabOrder = 0
+        ExplicitHeight = 534
         object RzPanel10: TRzPanel
           AlignWithMargins = True
           Left = 5
           Top = 141
           Width = 728
-          Height = 282
+          Height = 342
           Align = alClient
           BorderOuter = fsNone
           TabOrder = 0
+          ExplicitHeight = 282
           object tvBooksSR: TVirtualStringTree
             Tag = 3
             Left = 0
             Top = 0
             Width = 728
-            Height = 282
+            Height = 342
             Align = alClient
             BevelInner = bvNone
             BevelOuter = bvNone
@@ -1547,6 +1582,7 @@ object frmMain: TfrmMain
             OnInitNode = tvBooksTreeInitNode
             OnKeyDown = tvBooksTreeKeyDown
             OnMouseUp = tvBooksTreeMouseUp
+            ExplicitHeight = 282
             Columns = <
               item
                 MaxWidth = 1000
@@ -1637,7 +1673,7 @@ object frmMain: TfrmMain
         object ipnlSearch: TMHLInfoPanel
           AlignWithMargins = True
           Left = 5
-          Top = 429
+          Top = 489
           Width = 728
           Height = 100
           Align = alBottom
@@ -1649,6 +1685,7 @@ object frmMain: TfrmMain
           Genre = #1085#1077#1080#1079#1074#1077#1089#1090#1085#1099#1081
           Folder = 'C:\Books\1-1009.zip'
           FileName = '111 '#1048#1074#1072#1085#1086#1074' '#1050#1085#1080#1075#1072'.fb2'
+          ExplicitTop = 429
         end
         object pnlFullSearch: TPanel
           AlignWithMargins = True
@@ -2032,7 +2069,7 @@ object frmMain: TfrmMain
         Left = 741
         Top = 3
         Width = 250
-        Height = 534
+        Height = 594
         Margins.Left = 0
         Align = alRight
         BorderOuter = fsFlatRounded
@@ -2041,6 +2078,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2048,36 +2086,40 @@ object frmMain: TfrmMain
         Fb2InfoVisible = False
         FontSize = 0
         AnnotationColor = clBlack
+        ExplicitHeight = 534
       end
     end
     object TabSheet5: TRzTabSheet
       HelpContext = 125
       Caption = #1048#1079#1073#1088#1072#1085#1085#1086#1077
+      ExplicitHeight = 540
       object RzPanel20: TRzPanel
         AlignWithMargins = True
         Left = 3
         Top = 3
         Width = 738
-        Height = 534
+        Height = 594
         Margins.Right = 0
         Align = alClient
         BorderOuter = fsFlatRounded
         TabOrder = 0
+        ExplicitHeight = 534
         object RzPanel21: TRzPanel
           AlignWithMargins = True
           Left = 5
           Top = 5
           Width = 728
-          Height = 418
+          Height = 478
           Align = alClient
           BorderOuter = fsNone
           TabOrder = 0
+          ExplicitHeight = 418
           object tvBooksF: TVirtualStringTree
             Tag = 4
             Left = 0
             Top = 0
             Width = 728
-            Height = 418
+            Height = 478
             Align = alClient
             BevelInner = bvNone
             BevelOuter = bvNone
@@ -2137,6 +2179,7 @@ object frmMain: TfrmMain
             OnInitNode = tvBooksTreeInitNode
             OnKeyDown = tvBooksTreeKeyDown
             OnMouseUp = tvBooksTreeMouseUp
+            ExplicitHeight = 418
             Columns = <
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
@@ -2194,7 +2237,7 @@ object frmMain: TfrmMain
         object ipnlFavorites: TMHLInfoPanel
           AlignWithMargins = True
           Left = 5
-          Top = 429
+          Top = 489
           Width = 728
           Height = 100
           Align = alBottom
@@ -2206,6 +2249,7 @@ object frmMain: TfrmMain
           Genre = #1085#1077#1080#1079#1074#1077#1089#1090#1085#1099#1081
           Folder = 'C:\Books\1-1009.zip'
           FileName = '111 '#1048#1074#1072#1085#1086#1074' '#1050#1085#1080#1075#1072'.fb2'
+          ExplicitTop = 429
           DesignSize = (
             728
             100)
@@ -2245,7 +2289,7 @@ object frmMain: TfrmMain
         Left = 741
         Top = 3
         Width = 250
-        Height = 534
+        Height = 594
         Margins.Left = 0
         Align = alRight
         BorderOuter = fsFlatRounded
@@ -2254,6 +2298,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2261,16 +2306,18 @@ object frmMain: TfrmMain
         Fb2InfoVisible = False
         FontSize = 0
         AnnotationColor = clBlack
+        ExplicitHeight = 534
       end
     end
     object TabSheet7: TRzTabSheet
       Caption = #1057#1087#1080#1089#1086#1082' '#1079#1072#1082#1072#1095#1077#1082
+      ExplicitHeight = 540
       object tlbrDownloadList: TRzToolbar
         AlignWithMargins = True
         Left = 3
         Top = 3
         Width = 42
-        Height = 534
+        Height = 594
         Align = alLeft
         AutoStyle = False
         Images = ilDownloadToolBar
@@ -2397,20 +2444,22 @@ object frmMain: TfrmMain
         Left = 48
         Top = 0
         Width = 946
-        Height = 540
+        Height = 600
         Align = alClient
         BevelOuter = bvNone
         Caption = 'Panel1'
         TabOrder = 1
+        ExplicitHeight = 540
         object RzPanel2: TRzPanel
           AlignWithMargins = True
           Left = 3
-          Top = 476
+          Top = 536
           Width = 940
           Height = 61
           Align = alBottom
           BorderOuter = fsFlatRounded
           TabOrder = 0
+          ExplicitTop = 476
           DesignSize = (
             940
             61)
@@ -2485,7 +2534,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 940
-          Height = 467
+          Height = 527
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -2503,6 +2552,7 @@ object frmMain: TfrmMain
           OnPaintText = tvDownloadListPaintText
           OnLoadNode = tvDownloadListLoadNode
           OnSaveNode = tvDownloadListSaveNode
+          ExplicitHeight = 467
           Columns = <
             item
               Position = 0
@@ -2909,6 +2959,13 @@ object frmMain: TfrmMain
       Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1074' '#1073#1091#1092#1077#1088' '
       ShortCut = 16451
       OnClick = miCopyAuthorClick
+    end
+    object N37: TMenuItem
+      Caption = '-'
+    end
+    object miAddToSearch: TMenuItem
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' "'#1055#1086#1080#1089#1082'"'
+      OnClick = miAddToSearchClick
     end
   end
   object ilToolBar: TImageList

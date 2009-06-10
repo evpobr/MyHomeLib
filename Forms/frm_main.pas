@@ -346,6 +346,8 @@ type
     btnClearFilterEdits: TRzBitBtn;
     btnApplyFilter: TRzBitBtn;
     Label1: TLabel;
+    N37: TMenuItem;
+    miAddToSearch: TMenuItem;
 
     //
     // События формы
@@ -525,6 +527,7 @@ type
     procedure cbPresetNameSelect(Sender: TObject);
     procedure FilesListFile(Sender: TObject; const F: TSearchRec);
     procedure btnDeletePresetClick(Sender: TObject);
+    procedure miAddToSearchClick(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -4210,6 +4213,39 @@ begin
   DMUser.tblFavorites.EnableControls;
   Screen.Cursor := crDefault;
   FillBooksTree(0, tvBooksF, nil, DMUser.tblFavorites, True, True); // жанры
+end;
+
+procedure TfrmMain.miAddToSearchClick(Sender: TObject);
+var
+  Edit: TRzButtonEdit;
+  treeView: TVirtualStringTree;
+  Node: PVirtualNode;
+  Data: PAuthorData;
+begin
+  case ActiveView of
+    ByAuthorView: begin
+                    treeView := tvAuthors;
+                    Edit := edFFullName;
+                  end;
+    BySeriesView: begin
+                    treeView := tvSeries;
+                    Edit := edFSeries;
+                  end
+  else
+    Assert(False);
+  end;
+
+  Node := treeView.GetFirstSelected;
+  while Node <> nil do
+  begin
+    Data := treeView.GetNodeData(Node);
+    if Edit.Text = '' then
+         Edit.Text := Format('="%s"',[Data.Text])
+    else
+         Edit.Text := Format('%s OR ="%s"',[Edit.Text, Data.Text]);
+    Node := treeView.GetNextSelected(Node);
+  end;
+
 end;
 
 procedure TfrmMain.miFb2ImportClick(Sender: TObject);
