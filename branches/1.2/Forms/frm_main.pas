@@ -528,6 +528,7 @@ type
     procedure FilesListFile(Sender: TObject; const F: TSearchRec);
     procedure btnDeletePresetClick(Sender: TObject);
     procedure miAddToSearchClick(Sender: TObject);
+    procedure pmAuthorPopup(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -4242,7 +4243,7 @@ begin
     if Edit.Text = '' then
          Edit.Text := Format('="%s"',[Data.Text])
     else
-         Edit.Text := Format('%s OR ="%s"',[Edit.Text, Data.Text]);
+         Edit.Text := Format('%s OR%s="%s"',[Edit.Text,#13#10,Data.Text]);
     Node := treeView.GetNextSelected(Node);
   end;
 
@@ -4758,6 +4759,11 @@ end;
 procedure TfrmMain.pmiSelectAllClick(Sender: TObject);
 begin
   Selection(True);
+end;
+
+procedure TfrmMain.pmAuthorPopup(Sender: TObject);
+begin
+  miAddToSearch.Visible := (ActiveView <>  ByGenreView);
 end;
 
 procedure TfrmMain.pmiDeselectAllClick(Sender: TObject);
