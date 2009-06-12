@@ -96,7 +96,8 @@ uses
   unit_Messages in 'Units\unit_Messages.pas',
   unit_Lib_Updates in 'Units\unit_Lib_Updates.pas',
   frm_editor in 'Forms\frm_editor.pas' {frmEditor},
-  unit_SearchUtils in 'Units\unit_SearchUtils.pas';
+  unit_SearchUtils in 'Units\unit_SearchUtils.pas',
+  unit_ExportINPXThread in 'ImportImpl\unit_ExportINPXThread.pas';
 
 {$R *.res}
 
