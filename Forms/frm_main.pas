@@ -348,6 +348,8 @@ type
     Label1: TLabel;
     N37: TMenuItem;
     miAddToSearch: TMenuItem;
+    miINPXCollectionExport: TMenuItem;
+    N38: TMenuItem;
 
     //
     // События формы
@@ -528,6 +530,7 @@ type
     procedure FilesListFile(Sender: TObject; const F: TSearchRec);
     procedure btnDeletePresetClick(Sender: TObject);
     procedure miAddToSearchClick(Sender: TObject);
+    procedure miINPXCollectionExportClick(Sender: TObject);
     procedure pmAuthorPopup(Sender: TObject);
 
   protected
@@ -1308,6 +1311,7 @@ begin
   pgControl.Enabled := State;
   miCollectionExport.Enabled := State;
   miCollectionImport.Enabled := State;
+  miINPXCollectionExport.Enabled := State;
   miRefreshGenres.Enabled := State;
   miDeleteBook.Enabled := State;
   miEdit.Enabled := State;
@@ -5266,6 +5270,12 @@ begin
     end;
     Node := Tree.GetNext(Node);
   end;
+end;
+
+procedure TfrmMain.miINPXCollectionExportClick(Sender: TObject);
+begin
+  DMUser.ActivateCollection(Settings.ActiveCollection);
+  unit_Export.Export2INPX;
 end;
 
 end.

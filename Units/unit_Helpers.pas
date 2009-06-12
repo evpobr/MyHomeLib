@@ -53,7 +53,8 @@ type
     fnSaveCollection,
     fnSaveLog,
     fnSaveImportFile,
-    fnOpenINPX
+    fnOpenINPX,
+    fnSaveINPX
   );
 
 function GetFileName(key: TMHLFileName; out FileName: string): Boolean;
@@ -223,7 +224,10 @@ resourcestring
   rstrOpenINPXDlgFilter = 'Список книг MyHomeLib (*.inpx)|*.inpx|Все типы|*.*';
   rstrOpenINPXDlgDefaultExt = 'inpx';
 
-
+  //fnSaveINPX
+  rstrSaveINPXDlgTitle = 'Выбор файла списков';
+  rstrSaveINPXDlgFilter = 'Список книг MyHomeLib (*.inpx)|*.inpx|Все типы|*.*';
+  rstrSaveINPXDlgDefaultExt = 'inpx';
 
 function GetFileName(key: TMHLFileName; out FileName: string): Boolean;
 const
@@ -272,6 +276,11 @@ const
       Title:      rstrOpenINPXDlgTitle;
       Filter:     rstrOpenINPXDlgFilter;     DefaultExt: rstrOpenINPXDlgDefaultExt;
       DialogKey:  'OpenINPXFile';            OpenFile:   True
+    ),
+    ( // fnSaveINPX
+      Title:      rstrSaveINPXDlgTitle;
+      Filter:     rstrSaveINPXDlgFilter;     DefaultExt: rstrSaveINPXDlgDefaultExt;
+      DialogKey:  'SaveINPXFile';            OpenFile:   False
     )
     //(Title: ''; Filter: ''; DefaultExt: ''; ExtraOptions: ; DialogKey: ''; GetFileNameFunction:)
   );
