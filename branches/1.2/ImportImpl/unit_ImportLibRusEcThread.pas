@@ -282,7 +282,7 @@ begin
       unZip.ExtractFiles('*.*');
       try
         BookList := TStringListEx.Create;
-        if (unZip.FindFirst('*.*',ArchItem,faAnyFile-faDirectory)) then
+        if (unZip.FindFirst('*.inp',ArchItem,faAnyFile-faDirectory)) then
         repeat
           //
           // Используем TStringListEx для чтения UTF8 файла
