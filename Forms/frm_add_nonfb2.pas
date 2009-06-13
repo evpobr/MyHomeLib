@@ -88,7 +88,7 @@ type
     miAdd: TMenuItem;
     N7: TMenuItem;
     miRenameFile: TMenuItem;
-    RzBitBtn1: TRzBitBtn;
+    btnRenameFile: TRzBitBtn;
     cbNoAuthorAllowed: TCheckBox;
     Tree: TVirtualStringTree;
     procedure RzButton3Click(Sender: TObject);
@@ -268,23 +268,28 @@ var
    NewPath: String;
    Data: PFileData;
 begin
-  Data := Tree.GetNodeData(Tree.GetFirstSelected);
-  if CheckEmptyFields(Data) then
-  begin
-    NewName := lvAuthors.Items[0].Caption + ' ' +  lvAuthors.Items[0].SubItems[0] +
-             ' ' + edT.Text;
-    NewPath := Data.FullPath;
-    StrReplace(Data.FileName,NewName,NewPath);
-    if RenameFile(FRootPath + Data.FullPath,FRootPath + NewPath) then
+  btnRenameFile.Enabled := False;
+  try
+    Data := Tree.GetNodeData(Tree.GetFirstSelected);
+    if CheckEmptyFields(Data) then
     begin
-      Data.FileName := NewName;
-      Data.FullPath := NewPath;
-      edFileName.Text := NewName;
-      Tree.RepaintNode(Tree.GetFirstSelected);
-    end
-    else MessageDlg('Переименование не удалось!' + #13 +
+      NewName := lvAuthors.Items[0].Caption + ' ' +  lvAuthors.Items[0].SubItems[0] +
+             ' ' + edT.Text;
+      NewPath := Data.FullPath;
+      StrReplace(Data.FileName,NewName,NewPath);
+      if RenameFile(FRootPath + Data.FullPath,FRootPath + NewPath) then
+      begin
+        Data.FileName := NewName;
+        Data.FullPath := NewPath;
+        edFileName.Text := NewName;
+        Tree.RepaintNode(Tree.GetFirstSelected);
+      end
+      else MessageDlg('Переименование не удалось!' + #13 +
                     'Возможно, файл заблокирован другой программой.',
                     mtError,[mbOk],0);
+    end;
+  finally
+    btnRenameFile.Enabled := True;
   end;
 end;
 

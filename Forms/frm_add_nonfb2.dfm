@@ -103,7 +103,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           ReadOnly = True
           TabOrder = 4
         end
-        object RzBitBtn1: TRzBitBtn
+        object btnRenameFile: TRzBitBtn
           AlignWithMargins = True
           Left = 667
           Top = 29
