@@ -34,6 +34,8 @@ type
 
     FError : boolean;
 
+    FControlState: boolean;
+
   protected
     procedure UpdateProgress;
     procedure GetCurrentFile;
@@ -45,10 +47,13 @@ type
     procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
     procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
     procedure WorkFunction;
+
+    procedure SetControlsState;
+
   public
     procedure Stop;
-
-  end;
+    procedure TerminateNow;
+   end;
 
 implementation
 
@@ -56,10 +61,17 @@ uses
   frm_main,
   SysUtils,
   DateUtils,
-  dm_collection,
+  dm_main,
   IdStack,
-  Windows;
+  Windows,
+  unit_Settings;
 
+
+procedure TDownloadManagerThread.TerminateNow;
+begin
+  FidHTTP.Disconnect;
+  Terminate;
+end;
 
 procedure TDownloadManagerThread.Canceled;
 begin
@@ -73,7 +85,6 @@ begin
 
   frmMain.btnPauseDownload.Enabled := False;
   frmMain.btnStartDownload.Enabled := True;
-
 end;
 
 procedure TDownloadManagerThread.Download;
@@ -84,18 +95,7 @@ begin
   FError := True;
   FS := TMemoryStream.Create;
   try
-//    if FileExists(FN) then
-//    begin
-//      FS.LoadFromFile(FN);
-//      FS.Position := FS.Size;
-//      //FidHTTP.Request.Range := IntToStr(FS.Position);
-//      FidHTTP.Request.ContentRangeStart := FS.Size;
-//      FidHTTP.Request.ContentRangeEnd := 0;
-//      FWorkCount := FS.Size;
-//    end;
     try
-
-      SetProxySettings(FidHTTP);
 
       FidHTTP.Get(FCurrentURL, FS);
 
@@ -104,7 +104,6 @@ begin
       CreateFolders('', ExtractFileDir(FCurrentFile));
 
       FS.Position := 0;
-
       SL := TStringList.Create;
       try
         SL.LoadFromStream(FS);
@@ -119,12 +118,15 @@ begin
                              + #13 +
                              ' Ответ сервера можно посмотреть в файле "server_error.html"'
                              ,'',MB_OK);
+            SL.SaveToFile(Settings.SystemFileName[sfServerErrorLog]);
             FError := True;
           end
           else
           begin
             FS.SaveToFile(FCurrentFile);
-            FError := False;
+            FError := not TestArchive(FCurrentFile);
+            if FError then
+              DeleteFile(PChar(FCurrentFile));
           end;
         end;
       finally
@@ -159,21 +161,26 @@ end;
 procedure TDownloadManagerThread.Finished;
 begin
   if FCurrentData <> nil then
-  begin
-    if Not Ferror then
+    if Not FError then
     begin
       FCurrentData.State := dsOK ;
-      DMCollection.SetLocalStatus(FID,True);
+      DMMain.SetLocalStatus(FID,True);
+      frmMain.tvDownloadList.DeleteNode(FCurrentNode);
+      FCurrentNode := nil;
+      FCurrentData := nil;
     end
     else
+    begin
       FCurrentData.State := dsError;
-    frmMain.tvDownloadList.RepaintNode(FCurrentNode);
-  end;
+      frmMain.tvDownloadList.RepaintNode(FCurrentNode);
+    end;
 
   frmMain.pbDownloadProgress.Percent := 0;
   frmMain.lblDownloadState.Caption := 'Готово';
   frmMain.lblDnldAuthor.Caption := '';
   frmMain.lblDnldTitle.Caption :=  '';
+
+  frmMain.lblDownloadCount.Caption := Format('(%d)',[frmMain.tvDownloadList.ChildCount[Nil]]);
 
   frmMain.pbDownloadProgress.Visible := False;
   frmMain.btnPauseDownload.Enabled := False;
@@ -181,13 +188,31 @@ begin
 end;
 
 procedure TDownloadManagerThread.GetCurrentFile;
+var
+  ErrorCount : integer;
 begin
   FFinished := True;
   if FCanceled then Exit;
 
   if FCurrentNode <> nil then
     FCurrentNode := frmMain.tvDownloadList.GetNext(FCurrentNode);
-  if FCurrentNode = nil then FCurrentNode := frmMain.tvDownloadList.GetFirst;
+  if FCurrentNode = nil then
+  begin
+    ErrorCount := 0;
+    FCurrentNode := frmMain.tvDownloadList.GetFirst;
+    FCurrentData := frmMain.tvDownloadList.GetNodeData(FCurrentNode);
+    while (FCurrentData <> nil) and
+          ((FCurrentData.State = dsError) and (FCurrentNode <> nil)) do
+    begin
+      FCurrentNode := frmMain.tvDownloadList.GetNext(FCurrentNode);
+      FCurrentData := frmMain.tvDownloadList.GetNodeData(FCurrentNode);
+      Inc(ErrorCount);
+    end;
+
+    if (ErrorCount > 0) and (FCurrentNode = Nil) then
+        FCurrentNode := frmMain.tvDownloadList.GetFirst;
+
+  end;
 
   while FCurrentNode <> nil do
   begin
@@ -259,10 +284,25 @@ begin
 end;
 
 
+procedure TDownloadManagerThread.SetControlsState;
+begin
+  frmMain.BtnFirstRecord.Enabled := FControlState;
+  frmMain.BtnDwnldUP.Enabled := FControlState;
+  frmMain.BtnDwnldDown.Enabled := FControlState;
+  frmMain.BtnLastRecord.Enabled := FControlState;
+
+//  frmMain.BtnDelete.Enabled := FControlState;
+  frmMain.BtnSave.Enabled := FControlState;
+
+  frmMain.mi_dwnl_Delete.Enabled := FControlState;
+end;
+
 procedure TDownloadManagerThread.Stop;
 begin
   FCanceled := True;
   Synchronize(Canceled);
+  FControlState := True;
+  Synchronize(SetControlsState);
   Terminate;
 end;
 
@@ -293,22 +333,27 @@ procedure TDownloadManagerThread.WorkFunction;
 var
   Res: integer;
 begin
+  FControlState := False;
+  Synchronize(SetControlsState);
+
   FCanceled := False;
   FIgnoreErrors := False;
   FError := False;
 
   FidHTTP := TidHTTP.Create(nil);
-  SetProxySettings(FidHTTP);
 
   FidHTTP.OnWork := HTTPWork;
   FidHTTP.OnWorkBegin := HTTPWorkBegin;
   FidHTTP.OnWorkEnd := HTTPWorkEnd;
   FidHTTP.HandleRedirects := True;
 
+  SetProxySettings(FidHTTP);
+
   try
     Synchronize(GetCurrentFile);
     repeat
       if FError then Sleep(30000);
+      Sleep(Settings.DwnldInterval);
       Download;
       Synchronize(Finished);
       Synchronize(GetCurrentFile);
@@ -322,6 +367,8 @@ begin
     Synchronize(Finished);
   finally
     FidHTTP.Free;
+    FControlState := True;
+    Synchronize(SetControlsState);
   end;
 
 end;

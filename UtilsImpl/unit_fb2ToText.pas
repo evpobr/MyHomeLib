@@ -68,7 +68,8 @@ begin
     while  not Eof(FIn) do
     begin
       case FEncoding of
-        en1251: begin
+        en1251, enUnknown:
+                begin
                   Readln(FIn,SA);
                   S := AnsiToUTF8(SA);
                 end;

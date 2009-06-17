@@ -40,14 +40,16 @@ implementation
 
 uses
   unit_Helpers,
-  frm_ExportToDeviceProgressForm, frm_main, unit_DownloadBooksThread,
+  frm_ExportToDeviceProgressForm,
+  frm_main,
+  unit_DownloadBooksThread,
   frm_DownloadProgressForm;
 
 procedure ExportToDevice(
   ATable: TAbsTable;
   IdList: TBookIdList;
   Mode: TExportMode;
-  out ProcessedFiles:string
+  out ProcessedFiles: string
   );
 var
   worker: TExportToDeviceThread;
@@ -59,8 +61,8 @@ begin
     worker.Table := ATable;
     worker.ExportMode := Mode;
     frmProgress := TExportToDeviceProgressForm.Create(Application);
-    frmProgress.Caption := 'Отправка на устройство';
     try
+      frmProgress.Caption := 'Отправка на устройство';
       frmProgress.WorkerThread := worker;
       frmProgress.ShowModal;
       ProcessedFiles := Worker.ProcessedFiles;
@@ -73,7 +75,7 @@ begin
 end;
 
 procedure DownloadBooks(
- ATable: TAbsTable;
+  ATable: TAbsTable;
   var IdList: TBookIdList
   );
 var
@@ -84,8 +86,8 @@ begin
   try
     worker.BookIdList := IdList;
     frmProgress := TDownloadProgressForm.Create(Application);
-    frmProgress.Caption := 'Скачивание книг';
     try
+      frmProgress.Caption := 'Скачивание книг';
       frmProgress.WorkerThread := worker;
       frmProgress.ShowModal;
     finally

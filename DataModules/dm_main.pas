@@ -1,4 +1,4 @@
-unit dm_collection;
+unit dm_main;
 
 interface
 
@@ -6,8 +6,8 @@ uses
   SysUtils, Classes, ABSMain, DB, unit_globals;
 
 type
-  TDMCollection = class(TDataModule)
-    DBCollection: TABSDatabase;
+  TDMMain = class(TDataModule)
+    DBMain: TABSDatabase;
     dsAuthors: TDataSource;
     dsBooksA: TDataSource;
     tblBooksA: TABSTable;
@@ -17,13 +17,9 @@ type
     dsBooksG: TDataSource;
     tblAuthorsS: TABSTable;
     tblBooksS: TABSTable;
-    tblSeries: TABSTable;
     dsSeries: TDataSource;
     dsAuthorsS: TDataSource;
-    dsBooksS: TDataSource;
-    tblSeriesID: TAutoIncField;
-    tblSeriesAuthID: TIntegerField;
-    tblSeriesTitle: TWideStringField;        
+    dsBooksS: TDataSource;        
     tblAuthorsSID: TAutoIncField;
     tblAuthorsSFamily: TWideStringField;
     tblAuthorsSName: TWideStringField;
@@ -35,7 +31,7 @@ type
     tblBooksATitle: TWideStringField;
     tblBooksAFullName: TWideStringField;
     tblBooksASeries: TWideStringField;
-    tblAuthors: TABSTable;
+    tblAuthors: TABSQuery;
     tblBooksARate: TIntegerField;
     tblBooksALibID: TIntegerField;
     tblBooksAInsideNo: TIntegerField;
@@ -99,7 +95,6 @@ type
     tblSeriesA: TABSTable;
     dsBooks: TDataSource;
     tblBooks_Genres: TABSTable;
-    tblSeriesGenreCode: TWideStringField;
     tblAuthor_ListID: TAutoIncField;
     tblAuthor_ListAuthID: TIntegerField;
     tblAuthor_ListBookID: TIntegerField;
@@ -169,17 +164,16 @@ type
     WideStringField1: TWideStringField;
     WideStringField2: TWideStringField;
     tblBooksSeries: TWideStringField;
-    dsSeries_List: TDataSource;
-    tblSeries_List: TABSTable;
-    tblSeries_ListID: TAutoIncField;
-    tblSeries_ListSerID: TIntegerField;
-    tblSeries_ListBookID: TIntegerField;
-    tblSeries_ListTitle: TWideStringField;
+    tblSeries: TABSQuery;
+    tblSeriesID: TAutoIncField;
+    tblSeriesAuthID: TIntegerField;
+    tblSeriesTitle: TWideStringField;
+    tblSeriesGenreCode: TWideStringField;
   private
     FActiveTable: TAbsTable;
     { Private declarations }
   public
-    procedure GetBookFileName(ID: integer; out AFile, AFolder: string;
+    procedure GetBookFileName(ID: integer; out AFile, AFolder, AExt: string;
       out ANo: integer);
 
     procedure SetActiveTable(Tag: integer);
@@ -202,35 +196,35 @@ type
   end;
 
 var
-  DMCollection: TDMCollection;
+  DMMain: TDMMain;
 
 implementation
 
-uses dm_user, frm_main, StrUtils, unit_Consts;
+uses Windows, Forms, dm_user, frm_main, StrUtils, unit_Consts, unit_Messages;
 
 {$R *.dfm}
 
 { TDMMain }
 
-procedure TDMCollection.FieldByName(AID: integer; AField: String; out ARes: String);
+procedure TDMMain.FieldByName(AID: integer; AField: String; out ARes: String);
 begin
   if AID<> 0 then FActiveTable.Locate('ID', AID, []);
   ARes := FActiveTable.FieldByName(AField).AsString;
 end;
 
-procedure TDMCollection.FieldByName(AID: integer; AField: String; out ARes: integer);
+procedure TDMMain.FieldByName(AID: integer; AField: String; out ARes: integer);
 begin
   if AID<> 0 then FActiveTable.Locate('ID', AID, []);
   ARes := FActiveTable.FieldByName(AField).AsInteger;
 end;
 
-procedure TDMCollection.Clear;
+procedure TDMMain.Clear;
 begin
   SetTableState(False);
 
-  tblAuthors.EmptyTable;
+//  tblAuthors.EmptyTable;
   tblAuthor_List.EmptyTable;
-  tblSeries.EmptyTable;
+//  tblSeries.EmptyTable;
   tblBooksA.EmptyTable;
   tblBooksS.EmptyTable;
   tblGenres.EmptyTable;
@@ -245,23 +239,26 @@ begin
   SetTableState(True);
 end;
 
-procedure TDMCollection.FieldByName(AID: integer; AField: String; out Ares: boolean);
+procedure TDMMain.FieldByName(AID: integer; AField: String; out Ares: boolean);
 begin
   if AID <> 0 then FActiveTable.Locate('ID', AID, []);
   ARes := FActiveTable.FieldByName(AField).AsBoolean;
 end;
 
-procedure TDMCollection.GetBookFileName(ID: integer; out AFile:string; out AFolder: string; out ANo:integer);
+procedure TDMMain.GetBookFileName(ID: integer; out AFile:string;
+                                  out AFolder: string; out AExt: string;
+                                  out ANo:integer);
 begin
   FActiveTable.Locate('ID', ID, []);
   AFile := FActiveTable.FieldByName('FileName').AsString + FActiveTable.FieldByName('Ext').AsString;
   AFolder := FActiveTable.FieldByName('Folder').AsString;
+  AExt := FActiveTable.FieldByName('Ext').AsString;
   ANo := FActiveTable.FieldByName('InsideNo').AsInteger;
 end;
 
 
 
-function TDMCollection.GetBookGenres(BookID: Integer; FirstOnly: boolean): String;
+function TDMMain.GetBookGenres(BookID: Integer; FirstOnly: boolean): String;
 var
   s: String;
   i: integer;
@@ -280,7 +277,7 @@ begin
   Result := s;
 end;
 
-procedure TDMCollection.GetCurrentBook(var R: TBookRecord);
+procedure TDMMain.GetCurrentBook(var R: TBookRecord);
 var
   BookID: Integer;
 begin
@@ -289,8 +286,8 @@ begin
   R.Clear;
 
   R.Title := tblBooksTitle.Value;
-//  R.Series := IfThen(tblBooksSerID.IsNull, NO_SERIES_TITLE, tblBooksSeries.Value);
-//  R.SeqNumber := tblBooksSeqNumber.Value;
+  R.Series := IfThen(tblBooksSerID.IsNull, NO_SERIES_TITLE, tblBooksSeries.Value);
+  R.SeqNumber := tblBooksSeqNumber.Value;
   R.Folder := tblBooksFolder.Value;
   R.FileName := tblBooksFileName.Value;
   R.FileExt := tblBooksExt.Value;
@@ -334,7 +331,7 @@ begin
   end;
 end;
 
-procedure TDMCollection.GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
+procedure TDMMain.GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
 var
   FilterStateA: boolean;
   FilterStringA: string;
@@ -349,40 +346,40 @@ begin
    *
    ****************************************************************************)
 
-  BM1 := DMCollection.tblAuthors.GetBookmark;
+  BM1 := DMMain.tblAuthors.GetBookmark;
   try
-    FilterStateA := DMCollection.tblAuthors.Filtered;
-    FilterStringA := DMCollection.tblAuthors.Filter;
+    FilterStateA := DMMain.tblAuthors.Filtered;
+    FilterStringA := DMMain.tblAuthors.Filter;
 
-    FilterStateS := DMCollection.tblSeries.Filtered;
+    FilterStateS := DMMain.tblSeries.Filtered;
 
 
-    DMCollection.tblAuthors.Filtered := False;
-    DMCollection.tblSeries.Filtered  := False;
+    DMMain.tblAuthors.Filtered := False;
+    DMMain.tblSeries.Filtered  := False;
 
-    AuthorsCount := DMCollection.tblAuthors.RecordCount;
-    BooksCount := DMCollection.tblBooks.RecordCount;
-    SeriesCount := DMCollection.tblSeries.RecordCount;
+    AuthorsCount := DMMain.tblAuthors.RecordCount;
+    BooksCount := DMMain.tblBooks.RecordCount;
+    SeriesCount := DMMain.tblSeries.RecordCount;
 
-    DMCollection.tblAuthors.Filter := FilterStringA;
-    DMCollection.tblAuthors.Filtered := FilterStateA;
-    DMCollection.tblSeries.Filtered  := FilterStateS;
+    DMMain.tblAuthors.Filter := FilterStringA;
+    DMMain.tblAuthors.Filtered := FilterStateA;
+    DMMain.tblSeries.Filtered  := FilterStateS;
 
-    DMCollection.tblAuthors.GotoBookmark(BM1);
+    DMMain.tblAuthors.GotoBookmark(BM1);
   finally
-    DMCollection.tblAuthors.FreeBookmark(BM1);
+    DMMain.tblAuthors.FreeBookmark(BM1);
   end;
 end;
 
-procedure TDMCollection.SetActiveTable(Tag: integer);
+procedure TDMMain.SetActiveTable(Tag: integer);
 begin
   if Tag = PAGE_FAVORITES then
-    FActiveTable := DMUser.tblGrouppedBooks
+    FActiveTable := DMUser.tblFavorites
   else
     FActiveTable := tblBooks;
 end;
 
-procedure TDMCollection.GetBookFolder(ID: integer; out AFolder: String);
+procedure TDMMain.GetBookFolder(ID: integer; out AFolder: String);
 begin
   FActiveTable.Locate('ID', ID, []);
   if FActiveTable.Name = 'tblBooks' then
@@ -391,18 +388,30 @@ begin
     AFolder := FActiveTable.FieldByName('Folder').AsString;
 end;
 
-procedure TDMCollection.SetLocalStatus(AId: integer; AState: boolean);
+procedure TDMMain.SetLocalStatus(AId: integer; AState: Boolean);
 begin
-  if Aid <> 0 then
-  if  FActiveTable.Locate('ID',AId,[]) then
+  if AId <> 0 then
   begin
-    FActiveTable.Edit;
-    FActiveTable.FieldByName('Local').AsBoolean := AState;
-    FActiveTable.Post;
+    if FActiveTable.Locate('ID', AId, []) then
+    begin
+      FActiveTable.Edit;
+      FActiveTable.FieldByName('Local').AsBoolean := AState;
+      FActiveTable.Post;
+    end;
+
+    //
+    // обновим информацию о книге в главном окне программы
+    //
+    PostMessage(
+      Application.MainFormHandle,
+      WM_MHL_DOWNLOAD_COMPLETE,
+      AId,
+      Integer(LongBool(AState))
+      );
   end;
 end;
 
-procedure TDMCollection.SetTableState(State: boolean);
+procedure TDMMain.SetTableState(State: boolean);
 begin
   tblAuthors.Active := State;
   tblAuthor_List.Active := State;

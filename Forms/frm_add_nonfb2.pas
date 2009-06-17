@@ -47,7 +47,6 @@ type
   TfrmAddnonfb2 = class(TForm)
     RzPanel2: TRzPanel;
     dlgFolder: TRzSelDirDialog;
-    Tree: TVirtualStringTree;
     RzPanel3: TRzPanel;
     RzPanel1: TRzPanel;
     btnCopyToSeries: TButton;
@@ -89,8 +88,9 @@ type
     miAdd: TMenuItem;
     N7: TMenuItem;
     miRenameFile: TMenuItem;
-    RzBitBtn1: TRzBitBtn;
+    btnRenameFile: TRzBitBtn;
     cbNoAuthorAllowed: TCheckBox;
+    Tree: TVirtualStringTree;
     procedure RzButton3Click(Sender: TObject);
     procedure TreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
@@ -208,6 +208,8 @@ end;
 procedure TfrmAddnonfb2.FormShow(Sender: TObject);
 begin
   frmMain.FillGenresTree(frmGenreTree.tvGenresTree);
+  miClearAllClick(Sender);
+  lblGenre.Caption := '';
 
   FLibrary := TMHLLibrary.Create(Self);
   FLibrary.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
@@ -221,12 +223,15 @@ end;
 procedure TfrmAddnonfb2.miClearAllClick(Sender: TObject);
 begin
   edT.Text := '';
+  edFileName.Text := '';
   lvAuthors.Items.Clear;
   cbSeries.Text := '';
   edSN.Value := 0;
+
   frmEditAuthor.edFamily.Text := '';
   frmEditAuthor.edName.Text := '';
   frmEditAuthor.edMiddle.Text := '';
+
 end;
 
 procedure TfrmAddnonfb2.miOpenExplorerClick(Sender: TObject);
@@ -263,23 +268,28 @@ var
    NewPath: String;
    Data: PFileData;
 begin
-  Data := Tree.GetNodeData(Tree.GetFirstSelected);
-  if CheckEmptyFields(Data) then
-  begin
-    NewName := lvAuthors.Items[0].Caption + ' ' +  lvAuthors.Items[0].SubItems[0] +
-             ' ' + edT.Text;
-    NewPath := Data.FullPath;
-    StrReplace(Data.FileName,NewName,NewPath);
-    if RenameFile(FRootPath + Data.FullPath,FRootPath + NewPath) then
+  btnRenameFile.Enabled := False;
+  try
+    Data := Tree.GetNodeData(Tree.GetFirstSelected);
+    if CheckEmptyFields(Data) then
     begin
-      Data.FileName := NewName;
-      Data.FullPath := NewPath;
-      edFileName.Text := NewName;
-      Tree.RepaintNode(Tree.GetFirstSelected);
-    end
-    else MessageDlg('Переименование не удалось!' + #13 +
+      NewName := lvAuthors.Items[0].Caption + ' ' +  lvAuthors.Items[0].SubItems[0] +
+             ' ' + edT.Text;
+      NewPath := Data.FullPath;
+      StrReplace(Data.FileName,NewName,NewPath);
+      if RenameFile(FRootPath + Data.FullPath,FRootPath + NewPath) then
+      begin
+        Data.FileName := NewName;
+        Data.FullPath := NewPath;
+        edFileName.Text := NewName;
+        Tree.RepaintNode(Tree.GetFirstSelected);
+      end
+      else MessageDlg('Переименование не удалось!' + #13 +
                     'Возможно, файл заблокирован другой программой.',
                     mtError,[mbOk],0);
+    end;
+  finally
+    btnRenameFile.Enabled := True;
   end;
 end;
 
@@ -314,9 +324,7 @@ begin
 
   frmGenreTree.GetSelectedGenres(R);
   R.Title := edT.Text;
-
-//  R.Series := cbSeries.Text;
-
+  R.Series := cbSeries.Text;
   if Data.Folder <> '\' then
     R.Folder := Data.Folder
   else
@@ -325,7 +333,7 @@ begin
   R.FileExt := Data.Ext;
   R.Code := 0;
   R.InsideNo := 0;
-//  R.SeqNumber := round(edSN.Value);
+  R.SeqNumber := round(edSN.Value);
   R.LibID := DMUser.ActiveCollection.ID;
   R.Deleted := False;
   R.Size := Data.Size;
@@ -492,15 +500,6 @@ begin
 end;
 
 procedure TfrmAddnonfb2.ScanFolder;
-var
-  i: integer;
-  p: integer;
-  Data: PFileData;
-  A, B: PVirtualNode;
-  FN, Ext: string;
-  SS: string;
-  FullName, LastFolder, Folder: string;
-  ParentName: string;
 begin
   Tree.Clear;
   Tree.NodeDataSize := sizeof(TFileData);

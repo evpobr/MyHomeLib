@@ -62,14 +62,15 @@ implementation
 
 uses
   Windows,
-  dm_collection,
+  dm_main,
   dm_user,
   unit_database,
   unit_Consts,
   unit_Settings,
   frm_main,
   StrUtils,
-  ShellAPI;
+  ShellAPI,
+  unit_MHLHelpers;
 
 { TExportToDeviceThread }
 
@@ -106,16 +107,11 @@ begin
     FileName := Settings.FileNameTemplate;
     FullName := Trim(FTable.FieldByName('FullName').AsString);
 
-
     StrReplace('%fl', copy(FullName,1,1), Folder);
-
     StrReplace('%f', FullName , FileName);
-
     StrReplace('%t', Trim(FTable.FieldByName('Title').AsString), FileName);
-
     StrReplace('%id', Trim(FTable.FieldByName('LibID').AsString), FileName);
-
-    StrReplace('%g', Trim(DMCollection.GetBookGenres(FTable.FieldByName('ID').AsInteger,True)), FileName);
+    StrReplace('%g', Trim(DMMain.GetBookGenres(FTable.FieldByName('ID').AsInteger,True)), FileName);
 
     if FTable.FieldByName('Series').AsString <> NO_SERIES_TITLE then
       StrReplace('%s', Trim(FTable.FieldByName('Series').AsString), FileName)
@@ -141,12 +137,9 @@ begin
     //
     Folder := Settings.FolderTemplate;
     StrReplace('%fl', copy(FullName,1,1), Folder);
-
     StrReplace('%f', FullName , Folder);
-
     StrReplace('%t', trim(FTable.FieldByName('Title').AsString), Folder);
-
-    StrReplace('%g', Trim(DMCollection.GetBookGenres(FTable.FieldByName('ID').AsInteger,True)), Folder);
+    StrReplace('%g', Trim(DMMain.GetBookGenres(FTable.FieldByName('ID').AsInteger,True)), Folder);
 
     if FTable.FieldByName('Series').AsString <> NO_SERIES_TITLE then
       StrReplace('%s', Trim(FTable.FieldByName('Series').AsString), Folder)
@@ -161,12 +154,17 @@ begin
 
     Folder := IncludeTrailingPathDelimiter(trim(CheckSymbols(Folder)));
     FileName := Trim(CheckSymbols(FileName));
+
+    InsideFileName := FullName + ' - ' + FTable.FieldByName('Title').AsString;
+
     if Settings.TransliterateFileName then
     begin
+      InsideFileName := Transliterate(InsideFileName);
       Folder := Transliterate(Folder);
       FileName := Transliterate(FileName);
     end;
-    FileName := FileName + DMCollection.tblBooks['Ext'];
+
+    FileName := FileName + DMMain.tblBooks['Ext'];
   end;
 
   //
@@ -180,8 +178,7 @@ begin
       Exit;
     end;
 
-    InsideFileName := FullName + ' - ' + FTable.FieldByName('Title').AsString;
-    InsideFileName := Trim(CheckSymbols(InsideFileName)) + DMCollection.tblBooks['Ext'];
+    InsideFileName := Trim(CheckSymbols(InsideFileName)) + DMMain.tblBooks['Ext'];
 
     fs := TMemoryStream.Create;
     try
@@ -199,7 +196,7 @@ begin
   Result := True;
 end;
 
-function TExportToDeviceThread.SendFileToDevice:boolean;
+function TExportToDeviceThread.SendFileToDevice: Boolean;
 var
   DestFileName: string;
 begin
@@ -236,7 +233,6 @@ begin
   Result := ExecAndWait(Settings.AppPath + 'fb2lrf\fb2lrf_c.exe',params, SW_HIDE)
 end;
 
-
 procedure TExportToDeviceThread.SetTable(ATable: TAbsTable);
 begin
   if Assigned(ATable) then
@@ -253,7 +249,7 @@ begin
 
   FZipper := TZipForge.Create(nil);
   try
-//    FZipper.OnMessage := ShowZipErrorMessage;
+    // FZipper.OnMessage := ShowZipErrorMessage;
 
     totalBooks := High(FBookIdList) + 1;
 
@@ -267,8 +263,9 @@ begin
 
         Res := SendFileToDevice;
       end;
+
       if not Res and (i < totalBooks - 1) then
-        Canceled := (ShowMessage('Обрабатывать оставшиеся файлы ?', MB_YESNO) = IDNO);
+        Canceled := (ShowMessage('Обрабатывать оставшиеся файлы ?', MB_ICONQUESTION or MB_YESNO) = IDNO);
 
       SetComment(Format('Записано файлов: %u из %u', [i+1, totalBooks]));
       SetProgress(i * 100 div totalBooks);

@@ -335,7 +335,10 @@ begin
   // ѕроинициализируем параметры по умолчанию
   //
   FParams.Operation := otNew;
-  FParams.CollectionType := ltEmpty;
+//  FParams.CollectionType := ltEmpty;
+
+  FParams.CollectionType := ltLRELocal;
+
   FParams.UseDefaultName := True;
   FParams.UseDefaultLocation := True;
   FParams.FileTypes := ftFB2;
@@ -427,33 +430,40 @@ begin
   else
   begin
     if ExtractFilePath(FParams.CollectionFile) = '' then
+    begin
       FParams.CollectionFile := IncludeTrailingPathDelimiter(DATA_DIR_NAME) + FParams.CollectionFile;
+      CreateFolders(Settings.AppPath, DATA_DIR_NAME);
+    end;
 
     if '' = ExtractFileExt(FParams.CollectionFile) then
       FParams.CollectionFile := ChangeFileExt(FParams.CollectionFile, COLLECTION_EXTENSION);
 
     FParams.CollectionRoot := ExcludeTrailingPathDelimiter(FParams.CollectionRoot);
+
+    if not DirectoryExists(FParams.CollectionRoot) then
+      CreateDir(FParams.CollectionRoot);
   end;
 
   //
   // определим реальный код коллекции
   //
-  if FParams.CollectionType = ltLREOnline then
-    FParams.CollectionCode := CT_LIBRUSEC_ONLINE_FB
-  else if FParams.CollectionType = ltLRELocal then
-    FParams.CollectionCode := CT_LIBRUSEC_LOCAL_FB
-  else if FParams.CollectionType = ltGenesis then
-  begin
-    Assert(False, 'Not implemented!');
-    FParams.CollectionCode := CT_GENESIS_ONLINE_NONFB;
-  end
-  else { if FParams.CollectionType = ltEmpty then}
-  begin
-    if FParams.FileTypes = ftFB2 then
-      FParams.CollectionCode := CT_PRIVATE_FB
-    else
-      FParams.CollectionCode := CT_PRIVATE_NONFB;
-  end;
+  if FParams.CollectionCode = 0 then
+    if FParams.CollectionType = ltLREOnline then
+      FParams.CollectionCode := CT_LIBRUSEC_ONLINE_FB
+    else if FParams.CollectionType = ltLRELocal then
+        FParams.CollectionCode := CT_LIBRUSEC_LOCAL_FB
+      else if FParams.CollectionType = ltGenesis then
+      begin
+        Assert(False, 'Not implemented!');
+        FParams.CollectionCode := CT_GENESIS_ONLINE_NONFB;
+      end
+    else { if FParams.CollectionType = ltEmpty then}
+    begin
+      if FParams.FileTypes = ftFB2 then
+        FParams.CollectionCode := CT_PRIVATE_FB
+      else
+        FParams.CollectionCode := CT_PRIVATE_NONFB;
+    end;
 
   //
   // дл€ специальных коллекций установим некоторые параметры по умолчанию
@@ -647,7 +657,7 @@ procedure TfrmNCWizard.RegisterCollection;
 begin
   FProgressPage.ShowTeletype(REGISTRATION, tsInfo);
 
-  FVersion := GetLibUpdateVersion;
+  FVersion := GetLibUpdateVersion(True);
 
   //
   // TODO -oNickR -cRO Mode Support: сохран€ть относительные пути
@@ -658,7 +668,8 @@ begin
     FParams.CollectionFile,
     FParams.CollectionCode,
     isPrivateCollection(FParams.CollectionCode),
-    FVersion
+    FVersion,
+    FParams.Notes
   );
 
   DoChangePage(btnForward);

@@ -18,8 +18,7 @@ uses
   Classes,
   SysUtils,
   unit_WorkerThread,
-  unit_ImportFB2ThreadBase,
-  ZipMstr;
+  unit_ImportFB2ThreadBase;
 
 type
   TImportFB2Thread = class(TImportFB2ThreadBase)

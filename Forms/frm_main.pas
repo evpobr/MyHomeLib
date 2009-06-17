@@ -42,7 +42,7 @@ uses
   ShellAPI,
   inifiles,
   RzButton,
-  unit_globals,
+  unit_Globals,
   XPMan,
   RzCommon,
   RzSelDir,
@@ -73,7 +73,8 @@ uses
   unit_Columns,
   ZipForge,
   RzPrgres,
-  unit_DownloadManagerThread;
+  unit_DownloadManagerThread,
+  unit_Messages, RzBtnEdt, files_list;
 
 type
 
@@ -121,7 +122,6 @@ type
     miStat: TMenuItem;
     miRead: TMenuItem;
     miDevice: TMenuItem;
-    dlgFolder: TRzSelDirDialog;
     N31: TMenuItem;
     miRepairUser: TMenuItem;
     miEditBook: TMenuItem;
@@ -199,7 +199,39 @@ type
     miGoDonate: TMenuItem;
     miGoSite: TMenuItem;
     miGoForum: TMenuItem;
+    pgControl: TRzPageControl;
+    TabSheet4: TRzTabSheet;
+    RzPanel9: TRzPanel;
+    RzPanel10: TRzPanel;
+    tvBooksSR: TVirtualStringTree;
+    RichEdit2: TRichEdit;
+    ipnlSearch: TMHLInfoPanel;
+    cpCoverSR: TMHLCoverPanel;
+    TabSheet5: TRzTabSheet;
+    RzPanel20: TRzPanel;
+    RzPanel21: TRzPanel;
+    tvBooksF: TVirtualStringTree;
+    ipnlFavorites: TMHLInfoPanel;
+    lblTotalBooksF: TRzLabel;
+    btnClearFavorites: TRzBitBtn;
+    cpCoverF: TMHLCoverPanel;
     ilFileTypes: TImageList;
+    TabSheet1: TRzTabSheet;
+    rzsSplitterA: TRzSplitter;
+    RzPanel13: TRzPanel;
+    tvAuthors: TVirtualStringTree;
+    RzPanel16: TRzPanel;
+    Label19: TLabel;
+    tbClearEdAuthor: TRzToolButton;
+    edLocateAuthor: TRzEdit;
+    RzPanel15: TRzPanel;
+    RzPanel17: TRzPanel;
+    RzPanel18: TRzPanel;
+    lblBooksTotalA: TRzLabel;
+    RzPanel23: TRzPanel;
+    tvBooksA: TVirtualStringTree;
+    ipnlAuthors: TMHLInfoPanel;
+    cpCoverA: TMHLCoverPanel;
     pmHeaders: TPopupMenu;
     N3: TMenuItem;
     N4: TMenuItem;
@@ -212,39 +244,6 @@ type
     N22: TMenuItem;
     N25: TMenuItem;
     N27: TMenuItem;
-    ToolButton4: TToolButton;
-    ToolButton6: TToolButton;
-    TrayIcon: TTrayIcon;
-    pmTray: TPopupMenu;
-    N29: TMenuItem;
-    N32: TMenuItem;
-    N33: TMenuItem;
-    pmDownloadList: TPopupMenu;
-    mi_dwnl_LocateAuthor: TMenuItem;
-    N35: TMenuItem;
-    mi_dwnl_Delete: TMenuItem;
-    ilToolBar_Disabled: TImageList;
-    N26: TMenuItem;
-    N34: TMenuItem;
-    N36: TMenuItem;
-    pgControl: TRzPageControl;
-    TabSheet1: TRzTabSheet;
-    rzsSplitterA: TRzSplitter;
-    RzPanel13: TRzPanel;
-    tvAuthors: TVirtualStringTree;
-    RzPanel16: TRzPanel;
-    Label19: TLabel;
-    tbClearEdAuthor: TRzToolButton;
-    edLocateAuthor: TRzEdit;
-    cpCoverA: TMHLCoverPanel;
-    RzPanel15: TRzPanel;
-    RzPanel17: TRzPanel;
-    RzPanel18: TRzPanel;
-    lblAuthor: TRzDBLabel;
-    lblBooksTotalA: TRzLabel;
-    RzPanel23: TRzPanel;
-    tvBooksA: TVirtualStringTree;
-    ipnlAuthors: TMHLInfoPanel;
     TabSheet2: TRzTabSheet;
     rzsSplitterS: TRzSplitter;
     RzPanel1: TRzPanel;
@@ -253,20 +252,18 @@ type
     Label11: TLabel;
     btnClearEdSeries: TRzToolButton;
     edLocateSeries: TRzEdit;
-    cpCoverS: TMHLCoverPanel;
     RzPanel3: TRzPanel;
     RzPanel4: TRzPanel;
     RzPanel5: TRzPanel;
-    lblSeries: TRzDBLabel;
     lblBooksTotalS: TRzLabel;
     tvBooksS: TVirtualStringTree;
     RichEdit1: TRichEdit;
     ipnlSeries: TMHLInfoPanel;
+    cpCoverS: TMHLCoverPanel;
     TabSheet3: TRzTabSheet;
     rzsSplitterG: TRzSplitter;
     RzPanel25: TRzPanel;
     tvGenres: TVirtualStringTree;
-    cpCoverG: TMHLCoverPanel;
     RzPanel27: TRzPanel;
     RzPanel28: TRzPanel;
     tvBooksG: TVirtualStringTree;
@@ -275,85 +272,84 @@ type
     lblBooksTotalG: TRzLabel;
     lblGenreTitle: TRzLabel;
     ipnlGenres: TMHLInfoPanel;
-    TabSheet4: TRzTabSheet;
-    RzPanel9: TRzPanel;
-    RzPanel10: TRzPanel;
-    tvBooksSR: TVirtualStringTree;
-    RichEdit2: TRichEdit;
-    RzPanel11: TRzPanel;
-    Label10: TLabel;
-    Label12: TLabel;
-    lblTotalBooksSR: TRzLabel;
-    edTitle: TRzEdit;
-    btnSearch: TRzBitBtn;
-    cbFullText: TCheckBox;
-    edAuth: TRzEdit;
-    btnClearSerach: TRzBitBtn;
-    ipnlSearch: TMHLInfoPanel;
-    cpCoverSR: TMHLCoverPanel;
-    TabSheet5: TRzTabSheet;
-    cpCoverF: TMHLCoverPanel;
-    RzSplitter1: TRzSplitter;
-    RzPanel7: TRzPanel;
-    VirtualStringTree1: TVirtualStringTree;
-    RzPanel8: TRzPanel;
-    RzToolButton2: TRzToolButton;
-    RzPanel20: TRzPanel;
-    RzPanel21: TRzPanel;
-    tvBooksF: TVirtualStringTree;
-    ipnlFavorites: TMHLInfoPanel;
-    lblTotalBooksF: TRzLabel;
-    btnClearFavorites: TRzBitBtn;
-    TabSheet6: TRzTabSheet;
-    RzPanel29: TRzPanel;
-    RichEdit5: TRichEdit;
-    pnlFilters: TRzPanel;
-    RzGroupBox1: TRzGroupBox;
-    Label27: TLabel;
-    Label28: TLabel;
-    Label29: TLabel;
-    Label30: TLabel;
-    edFExt: TRzEdit;
-    edFFolder: TRzEdit;
-    edFFile: TRzEdit;
-    cbDeleted: TCheckBox;
-    cbDownloaded: TRzComboBox;
-    cbDate: TRzComboBox;
-    RzGroupBox3: TRzGroupBox;
-    Label24: TLabel;
-    Label26: TLabel;
-    Label23: TLabel;
-    edFSeries: TRzEdit;
-    edFTitle: TRzEdit;
-    edFFullName: TRzEdit;
-    RzGroupBox4: TRzGroupBox;
-    btnInsertFilterTemplate: TRzToolButton;
-    RzToolButton3: TRzToolButton;
-    RzToolButton6: TRzToolButton;
-    RzToolButton5: TRzToolButton;
-    RzToolButton4: TRzToolButton;
-    RzToolButton7: TRzToolButton;
-    RzToolButton8: TRzToolButton;
-    RzToolButton9: TRzToolButton;
-    lblTotalBooksFL: TRzLabel;
-    RzToolButton1: TRzToolButton;
-    btnApplyFilter: TRzBitBtn;
-    btnClearFilterEdits: TRzBitBtn;
-    tvBooksFL: TVirtualStringTree;
-    ipnlFilter: TMHLInfoPanel;
-    cpCoverFL: TMHLCoverPanel;
+    cpCoverG: TMHLCoverPanel;
+    ToolButton4: TToolButton;
+    ToolButton6: TToolButton;
+    TrayIcon: TTrayIcon;
+    pmTray: TPopupMenu;
+    N29: TMenuItem;
+    N32: TMenuItem;
+    N33: TMenuItem;
     TabSheet7: TRzTabSheet;
-    tvDownloadList: TVirtualStringTree;
+    pmDownloadList: TPopupMenu;
+    mi_dwnl_LocateAuthor: TMenuItem;
+    N35: TMenuItem;
+    mi_dwnl_Delete: TMenuItem;
+    ilToolBar_Disabled: TImageList;
+    N26: TMenuItem;
+    N34: TMenuItem;
+    N36: TMenuItem;
+    tlbrDownloadList: TRzToolbar;
+    RzSpacer1: TRzSpacer;
+    ilDownloadToolBar: TImageList;
+    BtnDwnldUp: TRzToolButton;
+    BtnDwnldDown: TRzToolButton;
+    BtnDelete: TRzToolButton;
+    BtnFirstRecord: TRzToolButton;
+    BtnLastRecord: TRzToolButton;
+    RzSpacer2: TRzSpacer;
+    ToolButton7: TToolButton;
+    lblAuthor: TRzLabel;
+    lblSeries: TRzLabel;
+    btnStartDownload: TRzToolButton;
+    btnPauseDownload: TRzToolButton;
+    Panel1: TPanel;
     RzPanel2: TRzPanel;
     pbDownloadProgress: TRzProgressBar;
     lblDownloadState: TLabel;
     lblDnldAuthor: TLabel;
     lblDnldTitle: TLabel;
+    lblDownloadCount: TRzLabel;
     btnClearDownload: TRzBitBtn;
-    RzPanel6: TRzPanel;
-    btnPauseDownload: TRzBitBtn;
-    btnStartDownload: TRzBitBtn;
-    RzDBLabel1: TRzDBLabel;
+    tvDownloadList: TVirtualStringTree;
+    BtnSave: TRzToolButton;
+    RzSpacer3: TRzSpacer;
+    IdCookieManager: TIdCookieManager;
+    N28: TMenuItem;
+    pnlFullSearch: TPanel;
+    RzGroupBox3: TRzGroupBox;
+    Label24: TLabel;
+    Label26: TLabel;
+    Label23: TLabel;
+    RzGroupBox4: TRzGroupBox;
+    lblTotalBooksFL: TRzLabel;
+    edFFullName: TRzButtonEdit;
+    edFTitle: TRzButtonEdit;
+    edFSeries: TRzButtonEdit;
+    Label30: TLabel;
+    cbDate: TRzComboBox;
+    cbDownloaded: TRzComboBox;
+    cbDeleted: TCheckBox;
+    RzGroupBox1: TRzGroupBox;
+    Label27: TLabel;
+    Label28: TLabel;
+    Label29: TLabel;
+    edFFile: TRzButtonEdit;
+    edFFolder: TRzButtonEdit;
+    edFExt: TRzButtonEdit;
+    FilesList: TFilesList;
+    RzGroupBox2: TRzGroupBox;
+    cbPresetName: TRzComboBox;
+    btnSavePreset: TRzBitBtn;
+    btnDeletePreset: TRzBitBtn;
+    RzGroupBox5: TRzGroupBox;
+    btnClearFilterEdits: TRzBitBtn;
+    btnApplyFilter: TRzBitBtn;
+    Label1: TLabel;
+    N37: TMenuItem;
+    miAddToSearch: TMenuItem;
+    miINPXCollectionExport: TMenuItem;
+    N38: TMenuItem;
 
     //
     // События формы
@@ -426,7 +422,6 @@ type
     procedure tbtnRusClick(Sender: TObject);
     procedure tbtnEngClick(Sender: TObject);
     procedure tbSelectAllClick(Sender: TObject);
-    procedure btnSearchClick(Sender: TObject);
     procedure tbSendToDeviceClick(Sender: TObject);
     procedure pmiSelectAllClick(Sender: TObject);
     procedure pmiDeselectAllClick(Sender: TObject);
@@ -470,7 +465,6 @@ type
     procedure miEditSeriesClick(Sender: TObject);
     procedure miEditGenresClick(Sender: TObject);
     procedure miUpdateClick(Sender: TObject);
-    procedure BtnFav_addClick(Sender: TObject);
     procedure miSyncOnlineClick(Sender: TObject);
     procedure btnSwitchTreeModeClick(Sender: TObject);
     //
@@ -488,14 +482,12 @@ type
     procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
     procedure btnApplyFilterClick(Sender: TObject);
     procedure btnClearFilterEditsClick(Sender: TObject);
-    procedure btnInsertFilterTemplateClick(Sender: TObject);
     procedure FormMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure tvBooksTreeMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure tvBooksTreeKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure edAuthKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure edFFullNameKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure miGoDonateClick(Sender: TObject);
@@ -506,7 +498,6 @@ type
       Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
     procedure HeaderPopupItemClick(Sender: TObject);
     procedure N27Click(Sender: TObject);
-    procedure btnClearSerachClick(Sender: TObject);
     procedure CoverPanelResize(Sender: TObject);
     procedure TrayIconDblClick(Sender: TObject);
     procedure N33Click(Sender: TObject);
@@ -524,9 +515,32 @@ type
       Node: PVirtualNode; Stream: TStream);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure N34Click(Sender: TObject);
+    procedure MoveDwnldListNodes(Sender: TObject);
+    procedure BtnFav_addClick(Sender: TObject);
+    procedure tvDownloadListPaintText(Sender: TBaseVirtualTree;
+      const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+      TextType: TVSTTextType);
+    procedure BtnSaveClick(Sender: TObject);
+    procedure edLocateAuthorKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure btnSavePresetClick(Sender: TObject);
+    procedure edFFullNameButtonClick(Sender: TObject);
+    procedure cbPresetNameChange(Sender: TObject);
+    procedure cbPresetNameSelect(Sender: TObject);
+    procedure FilesListFile(Sender: TObject; const F: TSearchRec);
+    procedure btnDeletePresetClick(Sender: TObject);
+    procedure miAddToSearchClick(Sender: TObject);
+    procedure miINPXCollectionExportClick(Sender: TObject);
+    procedure pmAuthorPopup(Sender: TObject);
+
+  protected
+    procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
 
   private
+    type
+      TView = (ByAuthorView, BySeriesView, ByGenreView, SearchView, FavoritesView, DownloadView);
 
+  private
     FDMThread: TDownloadManagerThread;
 
     // поиск аторов, серий
@@ -546,17 +560,15 @@ type
       ShowSer: Boolean
       );
 
-
-
-
-
     //
     // TODO -oNickR -cRefactoring : вынести эти методы в соответствующие датамодули
     //
+    procedure SetUserTableStatus(Status: boolean);
     procedure SetUtilTableStatus(Status: boolean);
 
     procedure ReadINIData;
 
+    function GetViewTree(view: TView): TVirtualStringTree;
     procedure GetActiveTree(var Tree: TVirtualStringTree);
     procedure Selection(SelState: boolean);
     procedure LocateBookList(const text: String; Tree: TVirtualStringTree);
@@ -572,6 +584,7 @@ type
     function IsLibRusecEdit(ID: integer): boolean;
 
     procedure WMGetSysCommand(var Message :TMessage); message WM_SYSCOMMAND;
+
   public
     procedure FillGenresTree(Tree: TVirtualStringTree);
     procedure DisableControls(State: boolean);
@@ -594,27 +607,31 @@ type
     BookTreeStatus: (bsFree, bsBusy);
 
     FSortSettings: array [0..5] of record
-                     Column: TColumnIndex;
-                     Direction:TSortDirection;
-                   end;  
+      Column: TColumnIndex;
+      Direction: TSortDirection;
+    end;
 
-    procedure FillBookIdList(const Tree: TVirtualStringTree;
-      var BookIDList: TBookIdList);
+    FStarImage: TPngImage;
+    FEmptyStarImage: TPngImage;
+
+    //
+    function GetBookNode(const Tree: TVirtualStringTree; bookID: Integer): PVirtualNode;
+
+    procedure FillBookIdList(const Tree: TVirtualStringTree; var BookIDList: TBookIdList);
     function GetActiveBookTable(tag: integer): TAbsTable;
     procedure ClearLabels(Tag: integer);
+    procedure SetAuthorsShowLocalOnly;
+    procedure SetSeriesShowLocalOnly;
     procedure SetBooksFilter;
     procedure FillAllBooksTree;
     procedure ChangeLetterButton(S: string);
-    function DoCheckUpdatesOnStart: Boolean;
-    procedure GetActiveViewComponents(var Tree: TVirtualStringTree;
-      var Panel: TMHLInfoPanel; var Cover: TMHLCoverPanel);
+    function CheckLibUpdates: Boolean;
+    procedure GetActiveViewComponents(var Tree: TVirtualStringTree; var Panel: TMHLInfoPanel; var Cover: TMHLCoverPanel);
     procedure SetCoversVisible(State: boolean);
-    procedure RefreshBooksState(Tree: TVirtualStringTree;
-      BookIDList: TBookIdList);
+    procedure RefreshBooksState(Tree: TVirtualStringTree; BookIDList: TBookIdList);
     procedure SetColumns;
     procedure SaveColumns;
-    function GetTreeTag(const Sender: TBaseVirtualTree;
-      const Column: integer): integer;
+    function GetTreeTag(const Sender: TBaseVirtualTree; const Column: integer): integer;
     function GetText(Tag: integer; Data: PBookData): string;
     procedure SetHeaderPopUp;
     procedure RestorePositions;
@@ -622,20 +639,22 @@ type
     function CheckActiveDownloads:boolean;
     procedure SetLangBarSize;
     procedure TheFirstRun;
-    type
-      TView = (ByAuthorView, BySeriesView, ByGenreView, SearchView, GroupsView, FilterView, DownloadView);
 
     function GetActiveView: TView;
+    procedure StartLibUpdate;
+    procedure LoadSearchPreset(FN: string);
     property ActiveView: TView read GetActiveView;
   end;
 
 var
   frmMain: TfrmMain;
 
+const CHECK_FILE = 'TheFirstRun.check';
+
 implementation
 
 uses
-  dm_collection,
+  dm_main,
   dm_user,
   frm_statistic,
   frm_splash,
@@ -649,6 +668,7 @@ uses
   frm_add_nonfb2,
   frm_about,
   fictionbook_21,
+  unit_MHLHelpers,
   unit_TreeUtils,
   unit_MHL_xml,
   unit_MHL_strings,
@@ -664,7 +684,7 @@ uses
   frm_NCWizard,
   DateUtils,
   idStack,
-  idException;
+  idException, frm_editor, unit_SearchUtils;
 
 resourcestring
   rstrFileNotFoundMsg = 'Файл %s не найден!'#13'Проверьте настройки коллекции!';
@@ -692,7 +712,7 @@ begin
   while Node <> nil do
   begin
     Data := tvDownloadList.GetNodeData(Node);
-    if Data.State <> dsOk then
+    if Data.State = dsRun then
     begin
       Result := True;
       Break;
@@ -740,6 +760,20 @@ begin
 
 end;
 
+procedure TfrmMain.cbPresetNameChange(Sender: TObject);
+var
+  State : boolean;
+begin
+  btnSavePreset.Enabled  := ( cbPresetName.Text <> '' );
+end;
+
+procedure TfrmMain.cbPresetNameSelect(Sender: TObject);
+begin
+  btnDeletePreset.Enabled := cbPresetName.ItemIndex >= 0;
+  btnSavePreset.Enabled := True;
+  LoadSearchPreset(cbPresetName.Text);
+end;
+
 procedure TfrmMain.btnStartDownloadClick(Sender: TObject);
 begin
   if tvDownloadList.GetFirst = nil then Exit;
@@ -757,9 +791,47 @@ begin
   if Assigned(FDMThread) then FDMThread.Stop;
 end;
 
-procedure TfrmMain.btnDeleteDownloadClick(Sender: TObject);
+procedure TfrmMain.BtnSaveClick(Sender: TObject);
 begin
-  tvDownloadList.DeleteSelectedNodes;
+  tvDownloadList.SaveToFile(Settings.WorkPath + 'downloads.sav');
+end;
+
+procedure TfrmMain.btnDeleteDownloadClick(Sender: TObject);
+var
+  Data: PDownloadData;
+  i: integer;
+  List: TSelectionList;
+begin
+  GetSeelections(tvDownloadList,List);
+  for I := 0 to tvDownloadList.SelectedCount - 1 do
+  begin
+    Data := tvDownloadList.GetNodeData(List[i]);
+    if Data.State <> dsRun then
+      tvDownloadList.DeleteNode(List[i],True);
+  end;
+end;
+
+procedure TfrmMain.btnDeletePresetClick(Sender: TObject);
+begin
+  with cbPresetName do
+  begin
+    if Text = Items[ItemIndex] then
+    begin
+      DeleteFile(Settings.PresetPath + Text + '.mhlf');
+      Delete(ItemIndex);
+      Text := '';
+    end;
+  end;
+  btnDeletePreset.Enabled := cbPresetName.ItemIndex >= 0;
+  btnSavePreset.Enabled := cbPresetName.ItemIndex >= 0;
+end;
+
+procedure TfrmMain.BtnFav_addClick(Sender: TObject);
+begin
+ if ActiveView = FavoritesView then
+    miDelFavoritesClick(Sender)
+  else
+    miAddFavoritesClick(Sender);
 end;
 
 procedure TfrmMain.SetColumns;
@@ -809,8 +881,6 @@ begin
       Columns.Load(SECTION_FL_TREE,tmTree)
     else
       Columns.Load(SECTION_FL_FLAT,tmFlat);
-    Columns.SetColumns(tvBooksFL.Header.Columns);
-
 
     //-------------------------------------------------------------------------
     tvBooksA.Header.MainColumn := 1;
@@ -818,7 +888,6 @@ begin
     tvBooksG.Header.MainColumn := 1;
     tvBooksF.Header.MainColumn := 1;
     tvBooksSR.Header.MainColumn := 1;
-    tvBooksFL.Header.MainColumn := 1;
 
   finally
     Columns.Free;
@@ -857,7 +926,6 @@ begin
     else
       Columns.Save(SECTION_F_FLAT);
 
-    Columns.GetColumns(tvBooksFL.Header.Columns);
     if Settings.TreeModes[PAGE_FILTER] = tmTree then
       Columns.Save(SECTION_FL_TREE)
     else
@@ -921,11 +989,19 @@ begin
   FontColor := Settings.FontColor;
 
   cpCoverA.FontSize := Settings.ShortFontSize;
+  cpCoverA.AnnotationColor := BGColor;
+
   cpCoverS.FontSize := Settings.ShortFontSize;
+  cpCoverS.AnnotationColor := BGColor;
+
   cpCoverG.FontSize := Settings.ShortFontSize;
+  cpCoverG.AnnotationColor := BGColor;
+
   cpCoverF.FontSize := Settings.ShortFontSize;
+  cpCoverF.AnnotationColor := BGColor;
+
   cpCoverSR.FontSize := Settings.ShortFontSize;
-  cpCoverFL.FontSize := Settings.ShortFontSize;
+  cpCoverSR.AnnotationColor := BGColor;
 
 
   SetTreeViewColor(tvAuthors);
@@ -936,21 +1012,36 @@ begin
   SetTreeViewColor(tvBooksF);
   SetTreeViewColor(tvSeries);
   SetTreeViewColor(tvGenres);
-  SetTreeViewColor(tvBooksFL);
+  SetTreeViewColor(tvDownloadList);
 
   SetEditColor(edLocateAuthor);
   SetEditColor(edLocateSeries);
-  SetEditColor(edAuth);
-  SetEditColor(edTitle);
+
+  SetEditColor(edFFullName);
+  SetEditColor(edFTitle);
+  SetEditColor(edFSeries);
+  SetEditColor(edFFile);
+  SetEditColor(edFFolder);
+  SetEditColor(edFExt);
+
+  cbDate.Color := BGColor;
+  cbDownloaded.Color := BGColor;
+
 end;
 
 procedure TfrmMain.ReadINIData;
+const CHECK_FILE = 'TheFirstRun.check';
+     ROOT = 'HKEY_CURRENT_USER';
+     Key  = '\Software\Microsoft\Windows\CurrentVersion\Internet Settings';
+var
+ regini : TRzRegIniFile;
+ IETempStr, IEProxy, IEPort : String;
+ i, colonpos : integer;
+
 begin
+
   CreateSettings;
   Settings.LoadSettings;
-
-
-  cbFullText.Checked := Settings.FullTextSearch;
 
   WindowState := Settings.WindowState;
 
@@ -981,20 +1072,34 @@ begin
   cpCoverG.TmpFolder := Settings.TempPath;
   cpCoverF.TmpFolder := Settings.TempPath;
   cpCoverSR.TmpFolder := Settings.TempPath;
-  cpCoverFL.TmpFolder := Settings.TempPath;
 
   cpCoverA.Fb2InfoVisible := Settings.ShowFb2Info;
   cpCoverS.Fb2InfoVisible := Settings.ShowFb2Info;
   cpCoverG.Fb2InfoVisible := Settings.ShowFb2Info;
   cpCoverF.Fb2InfoVisible := Settings.ShowFb2Info;
   cpCoverSR.Fb2InfoVisible := Settings.ShowFb2Info;
-  cpCoverFL.Fb2InfoVisible := Settings.ShowFb2Info;
 
   rzsSplitterA.Position := Settings.Splitters[0];
   rzsSplitterS.Position := Settings.Splitters[1];
   rzsSplitterG.Position := Settings.Splitters[2];
   cpCoverA.Width := Settings.Splitters[3];
 
+   // Check IE Proxy settings   (by Goblin)
+  regini := TRzRegIniFile.Create(self);
+  regini.PathType := ptRegistry;
+  regini.Path := ROOT;
+  if regini.ReadInteger(Key, 'ProxyEnable', 0) = 1 then begin
+    IETempStr := regini.ReadString(Key, 'ProxyServer', '');
+    if IETempStr <> '' then
+      for i := 1 to Length(IETempStr) do
+       if IETempStr[i] = ':' then colonpos := i;
+    IEProxy := ANSILeftStr(IETempStr, colonpos-1);
+    IEPort := ANSIRightStr(IETempStr, Length(IETempStr)-colonpos);
+
+    Settings.IEProxyServer := IEProxy;
+    Settings.IEProxyPort := StrToInt(IEPort);
+  end;
+  // End check IE Proxy settings
 end;
 
 procedure TfrmMain.btnApplyFilterClick(Sender: TObject);
@@ -1003,91 +1108,72 @@ var FilterString: String;
     OldFilter: String;
     Filtered: boolean;
 
-    procedure AddToFilter(Field,Value:String);
-    begin
-      if Value = '' then Exit;
-      Value := trim(AnsiUpperCase(Value));
+    S: string;
 
-      StrReplace('NOT LIKE', 'NOT#LIKE',Value);
-      StrReplace(' LIKE', ' ' + Field + '#LIKE',Value);
-      StrReplace(' =', ' ' + Field + '#=',Value);
-      StrReplace(' <>', ' ' + Field + '#<>',Value);
-      StrReplace(' <', ' ' + Field + '#<',Value);
-      StrReplace(' >', ' ' + Field + '#>',Value);
 
-      StrReplace('#',' ',Value);
-
-      if FilterString <> '' then
-        FilterString := FilterString + ' and (' + Field + ' ' + Value + ')'
-      else
-        FilterString := '(' + Field + ' ' + Value + ')';
-    end;
-
-    procedure AddSeriesToFilter(Value:string);
-    begin
-      if SeriesFilter <> '' then
-        SeriesFilter := SeriesFilter + ' or (`SerID` ="' + Value + '")'
-      else
-        SeriesFilter := '(`SerID` ="' +  Value + '")';
-    end;
 
 begin
   Screen.Cursor := crSQLWAit;
   spStatus.Caption := 'Подготовка фильтра ...'; spStatus.Repaint;
-  tvBooksFL.Clear;
+  tvBooksSR.Clear;
   lblTotalBooksFL.Caption := '(0)';
   FilterString := '';
-  ClearLabels(tvBooksFL.Tag);
+  ClearLabels(tvBooksSR.Tag);
+
   try
     try
 
       // Сначала создаем фильтр по сериям
       if edFSeries.Text <> '' then
       begin
-        OldFilter := DMCollection.tblSeries.Filter;
-        Filtered :=  DMCollection.tblSeries.Filtered;
+        OldFilter := DMMain.tblSeries.Filter;
+        Filtered :=  DMMain.tblSeries.Filtered;
 
         FilterString := '';
 
-        AddToFilter('Title',edFSeries.Text);
-        DMCollection.tblSeries.Filter := FilterString;
-        DMCollection.tblSeries.Filtered := True;
+        AddToFilter('Title',Query(edFSeries.Text),FilterString);
+        DMMain.tblSeries.Filter := FilterString;
+        DMMain.tblSeries.Filtered := True;
 
         SeriesFilter := '';
-        DMCollection.tblSeries.First;
-        while not DMCollection.tblSeries.Eof do
+        DMMain.tblSeries.First;
+        while not DMMain.tblSeries.Eof do
         begin
-          AddSeriesToFilter(DMCollection.tblSeries.FieldByName('Id').AsString);
-          DMCollection.tblSeries.Next;
+          AddSeriesToFilter(DMMain.tblSeries.FieldByName('Id').AsString, SeriesFilter);
+          DMMain.tblSeries.Next;
         end;
-        DMCollection.tblSeries.Filter := OldFilter;
-        DMCollection.tblSeries.Filtered := Filtered;
+        DMMain.tblSeries.Filter := OldFilter;
+        DMMain.tblSeries.Filtered := Filtered;
       end;
 
       // Собираем фильтры в кучу
 
       if (SeriesFilter <> '') then
-        FilterString := '( ' + SeriesFilter + ')';
+          FilterString := '( ' + SeriesFilter + ')'
+        else
+          FilterString := '';
 
       // Добавляем фильтры по таблице Books
 
-      OldFilter := DMCollection.tblBooks.Filter;
-      Filtered :=  DMCollection.tblBooks.Filtered;
+      OldFilter := DMMain.tblBooks.Filter;
+      Filtered :=  DMMain.tblBooks.Filtered;
 
-      AddToFilter('`FullName`',edFFullName.Text);
-      AddToFilter('`Title`',edFTitle.Text);
-      AddToFilter('`FileName`',edFFile.Text);
-      AddToFilter('`Folder`',edFFolder.Text);
-      AddToFilter('`ext`',edFExt.Text);
+
+      AddToFilter('`FullName`',  Query(edFFullName.Text), FilterString);
+      AddToFilter('`Title`', Query(edFTitle.Text), FilterString);
+      AddToFilter('`FileName`', Query(edFFile.Text), FilterString);
+      AddToFilter('`Folder`', Query(edFFolder.Text), FilterString);
+      AddToFilter('`ext`', Query(edFExt.Text), FilterString);
 
       if cbDate.ItemIndex = -1 then
-        AddToFilter('`Date`',cbDate.Text)
+        AddToFilter('`Date`',Query(cbDate.Text), FilterString)
       else
         case cbDate.ItemIndex of
-          0:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 7))]));
-          1:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 14))]));
-          2:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 30))]));
-          3:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 90))]));
+          0:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 3))]), FilterString);
+          1:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 7))]), FilterString);
+          2:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 14))]), FilterString);
+          3:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 30))]), FilterString);
+          4:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 90))]), FilterString);
         end;
 
       case cbDownloaded.ItemIndex of
@@ -1115,18 +1201,18 @@ begin
       if FilterString = '' then
         raise Exception.Create('Проверьте параметры фильтра');
       
-      DMCollection.tblBooks.Filter := FilterString;
+      DMMain.tblBooks.Filter := FilterString;
 
-      DMCollection.tblBooks.Filtered := True;
-      FillBooksTree(0, tvBooksFL, nil, DMCollection.tblBooks, True, True);
+      DMMain.tblBooks.Filtered := True;
+      FillBooksTree(0, tvBooksSR, nil, DMmain.tblBooks, True, True);
     except
       on E: Exception do
         ShowMessage('Синтаксическая ошибка. Проверьте параметры фильтра');
     end;
   finally
-    DMCollection.tblBooks.Filtered := False;
-    DMCollection.tblBooks.Filter := OldFilter;
-    DMCollection.tblBooks.Filtered := Filtered;
+    DMMain.tblBooks.Filtered := False;
+    DMMain.tblBooks.Filter := OldFilter;
+    DMMain.tblBooks.Filtered := Filtered;
 
     Screen.Cursor := crDefault;
     spStatus.Caption := 'Готово.';
@@ -1142,98 +1228,42 @@ begin
   edFFile.Text   := '';
   edFFolder.Text := '';
   edFExt.Text    := '';
-  cbDate.Text   := '';
+  cbDate.ItemIndex := -1;
   cbDownloaded.ItemIndex := 0;
-  tvBooksFL.Clear;
-  ClearLabels(PAGE_FILTER);
-end;
-
-procedure TfrmMain.btnClearSerachClick(Sender: TObject);
-begin
-  edAuth.Text    := '';
-  edTitle.Text   := '';
   tvBooksSR.Clear;
   ClearLabels(PAGE_SEARCH);
+  cbPresetName.Text := '';
+  cbDeleted.Checked := False;
 end;
 
-procedure TfrmMain.btnInsertFilterTemplateClick(Sender: TObject);
+procedure TfrmMain.LoadSearchPreset(FN: string);
 var
-   OldText: string;
-   p: integer;
-   AddText: string;
-   Offset : integer;
+  SL : TStringList;
+  HL : TStringList;
+  S  : string;
 begin
-  if not (frmMain.ActiveControl is TRzEdit)
-    and not (frmMain.ActiveControl is TRzComboBox)
-    then
-      Exit;
-   if frmMain.ActiveControl is TRzEdit then
-   begin
-     OldText := (frmMain.ActiveControl as TRzEdit).Text;
-     p := (frmMain.ActiveControl as TRzEdit).SelStart;
-   end
-   else
-   begin
-     OldText := (frmMain.ActiveControl as TRzComboBox).Text;
-     p := (frmMain.ActiveControl as TRzComboBox).SelStart;
-   end;
+  SL := TStringList.Create;
+  HL := TStringList.Create;
+  try
+    HL.Delimiter := ';';
+    HL.QuoteChar := '~';
 
-    case (Sender as TrzToolButton).Tag of
-      50: begin
-            AddText := 'LIKE "%%"';
-            OffSet  := P + 7;
-          end;
-      51: begin
-            AddText := '=""';
-            OffSet  := P + 2;
-          end;
-      52: begin
-            AddText := '<> ""';
-            OffSet  := P + 4;
-          end;
-      53: begin
-            AddText := '<""';
-            OffSet  := P + 2;
-          end;
-      54: begin
-            AddText := '>""';
-            OffSet  := P + 2;
-          end;
-      55: begin
-            AddText := '("")';
-            OffSet  := P + 2;
-          end;
-      56: begin
-            AddText := ' AND ';
-            OffSet  := P + 5;
-          end;
-      57: begin
-            AddText := ' OR ';
-            OffSet  := P + 4;
-          end;
-       58: begin
-            AddText := ' NOT ';
-            OffSet  := P + 5;
-          end;
-       59: begin
-            AddText := '""';
-            OffSet  := P + 1;
-          end;
-    end;
+    SL.LoadFromFile(Settings.PresetPath + FN + '.mhlf');
+    HL.DelimitedText := SL.Text;
 
-    Insert(AddText + ' ',OldText, P + 1);
-   if frmMain.ActiveControl is TRzEdit then
-   begin
-    (frmMain.ActiveControl as TRzEdit).Text := OldText;
-    (frmMain.ActiveControl as TRzEdit).SelStart := Offset;
-    (frmMain.ActiveControl as TRzEdit).SelLength := 0;
-   end
-   else
-   begin
-    (frmMain.ActiveControl as TRzComboBox).Text := OldText;
-    (frmMain.ActiveControl as TRzComboBox).SelStart := Offset;
-    (frmMain.ActiveControl as TRzComboBox).SelLength := 0;
-   end;
+    edFFullName.Text := HL[0];
+    edFTitle.Text := HL[1];
+    edFSeries.Text := HL[2];
+    edFFile.Text := HL[3];
+    edFFolder.Text := HL[4];
+    edFExt.Text := HL[5];
+    cbDate.Text := HL[6];
+    cbDownloaded.Text := HL[7];
+    cbDeleted.Checked := StrToBool(HL[8]);
+  finally
+    HL.Free;
+    SL.Free;
+  end;
 end;
 
 function TfrmMain.GetActiveView: TView;
@@ -1241,13 +1271,12 @@ const
   //
   // ВНИМАНИЕ!!! Порядок и количество элементов массива views должно совпадать с порядком и количеством закладок
   //
-  views: array[0..6] of TView = (
+  views: array[0..5] of TView = (
     ByAuthorView,
     BySeriesView,
     ByGenreView,
-    GroupsView,
     SearchView,
-    FilterView,
+    FavoritesView,
     DownloadView
     );
 
@@ -1272,10 +1301,7 @@ begin
   miStat.Enabled := State;
   miRead.Enabled := State;
   miDevice.Enabled := State;
-  btnSearch.Enabled := State;
   btnClearFavorites.Enabled := State;
-  edAuth.Enabled := State;
-  edTitle.Enabled := State;
   edLocateAuthor.Enabled := State;
   edLocateSeries.Enabled := State;
   pmMain.AutoPopup := State;
@@ -1285,6 +1311,7 @@ begin
   pgControl.Enabled := State;
   miCollectionExport.Enabled := State;
   miCollectionImport.Enabled := State;
+  miINPXCollectionExport.Enabled := State;
   miRefreshGenres.Enabled := State;
   miDeleteBook.Enabled := State;
   miEdit.Enabled := State;
@@ -1319,10 +1346,10 @@ begin
   Screen.Cursor := crHourGlass;
 
   ClearLabels(PAGE_ALL);
-  DMCollection.SetTableState(False);
+  DMMain.SetTableState(False);
   tvGenres.Clear;
   tvbooksG.Clear;
-  DMCollection.DBCollection.Connected := False;
+  DMMain.DBMain.Connected := False;
 
   edLocateAuthor.Text := '';
   edLocateSeries.Text := '';
@@ -1339,16 +1366,18 @@ begin
     tvBooksSR.Clear;
     tvBooksF.Clear;
     Screen.Cursor := crDefault;
+    ShowNewCollectionWizard(Nil);
+    DeleteFile(Settings.WorkPath + CHECK_FILE);
     Exit;
   end;
 
-  DMCollection.DBCollection.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
-  DMCollection.DBCollection.Connected := True;
+  DMMain.DBMain.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
+  DMMain.DBMain.Connected := True;
   frmMain.Caption := 'MyHomeLib - ' + DMUser.ActiveCollection.Name;
 
 
   CreateCollectionMenu;
-  DMCollection.SetTableState(True);
+  DMMain.SetTableState(True);
 
   DisableControls(True);
 
@@ -1362,13 +1391,14 @@ begin
   IsFB2 := isFB2Collection(CollectionType);
   IsNonFB2 := isNonFB2Collection(CollectionType);
 
-  miFb2ZipImport.Visible := IsPrivate and IsFB2;
-  miFb2Import.Visible := IsPrivate and IsFB2;
+  miFb2ZipImport.Visible := (IsPrivate and IsFB2) or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
+  miFb2Import.Visible := (IsPrivate and IsFB2) or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
   miPdfdjvu.Visible := IsPrivate and IsNonFB2;
 
   TabSheet7.TabVisible := IsOnline;
 
-  tbtnShowCover.Visible := not IsNonFB2;
+  tbtnShowCover.Visible := not IsNonFB2 or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
+
   miBookInfo.Visible := IsLocal and IsFB2;
 
   tbtnShowLocalOnly.Visible := IsOnline;
@@ -1389,27 +1419,30 @@ begin
   if Assigned(FLastLetterA) then
     FLastLetterA.Down := False;
 
-  DMCollection.tblAuthors.Filtered := False;
+  DMMain.tblAuthors.Filtered := False;
   if ApplyAuthorFilter then
-    if DMCollection.tblAuthors.RecordCount > 500 then
+    if DMMain.tblAuthors.RecordCount > 500 then
     begin
-      DMCollection.tblAuthors.Filter := 'Family="А*"';
-      DMCollection.tblAuthors.Filtered := True;
+      DMMain.tblAuthors.Filter := 'Family="А*"';
+      DMMain.tblAuthors.Filtered := True;
       ALetter.Down := True;
       FLastLetterA := ALetter;
       edLocateAuthor.Text := 'А';
     end
     else
     begin
-      DMCollection.tblAuthors.Filtered := False;
+      DMMain.tblAuthors.Filtered := False;
       tbtnStar.Down := True;
       FLastLetterA := tbtnStar;
       edLocateAuthor.Text := '';
     end;
 
-  SetCoversVisible(not IsNonFB2 and Settings.ShowInfoPanel);
+  SetCoversVisible((not IsNonFB2 and Settings.ShowInfoPanel)
+                   or (Settings.AllowMixed and Settings.ShowInfoPanel));
     
 
+  SetAuthorsShowLocalOnly;
+  SetSeriesShowLocalOnly;
   SetBooksFilter;
 
   FillAuthorTree;
@@ -1433,9 +1466,9 @@ end;
 
 procedure TfrmMain.GetBookRecord(const ID: integer; var R: TBookRecord);
 begin
-  DMCollection.tblBooks.Locate('ID', ID, []);
+  DMMain.tblBooks.Locate('ID', ID, []);
 
-  DMCollection.GetCurrentBook(R);
+  DMMain.GetCurrentBook(R);
 end;
 
 procedure TfrmMain.CreateAlphabet;
@@ -1489,6 +1522,7 @@ var
       CT_LIBRUSEC_ONLINE_FB: Result := 4;
       CT_GENESIS_LOCAL_NONFB: Result := 8;    { TODO -oNickR -cUsability : нарисовать иконку }
       CT_GENESIS_ONLINE_NONFB: Result := 8;   { TODO -oNickR -cUsability : нарисовать иконку }
+      CT_LIBRUSEC_USR: Result := 8;
     else
       Assert(False);
       Result := 8;                             { TODO -oNickR -cUsability : нарисовать иконку }
@@ -1644,8 +1678,8 @@ end;
 
 procedure TfrmMain.SetUtilTableStatus(Status: boolean);
 begin
-  DMCollection.tblAuthor_Master.Active := Status;
-  DMCollection.tblAuthor_Detail.Active := Status;
+  DMMain.tblAuthor_Master.Active := Status;
+  DMMain.tblAuthor_Detail.Active := Status;
 end;
 
 procedure TfrmMain.ShowNewCollectionWizard(Sender: TObject);
@@ -1663,6 +1697,13 @@ begin
   finally
     frmNCWizard.Free;
   end;
+end;
+
+procedure TfrmMain.SetUserTableStatus(Status: boolean);
+begin
+  DMUser.tblFavorites.Active := Status;
+  DMUser.tblRates.Active := Status;
+  DMUser.tblBases.Active := Status;
 end;
 
 procedure TfrmMain.btnSwitchTreeModeClick(Sender: TObject);
@@ -1684,11 +1725,11 @@ begin
   SetColumns;
 
   case Page of
-    0: FillBooksTree(0, tvBooksA, DMCollection.tblAuthor_List, DMCollection.tblBooksA,    False, True); // авторы
-    1: FillBooksTree(0, tvBooksS,                   nil, DMCollection.tblBooksS,    False, False); // серии
-    2: FillBooksTree(0, tvBooksG,  DMCollection.tblGenre_List, DMCollection.tblBooksG,    True,  True); // жанры
-    3: btnSearchClick(Self);
-    4: FillBooksTree(0, tvBooksF,                   nil, DMUser.tblGrouppedBooks, True,  True); // избранное
+    0: FillBooksTree(0, tvBooksA, DMMain.tblAuthor_List, DMMain.tblBooksA,    False, True); // авторы
+    1: FillBooksTree(0, tvBooksS,                   nil, DMMain.tblBooksS,    False, False); // серии
+    2: FillBooksTree(0, tvBooksG,  DMMain.tblGenre_List, DMMain.tblBooksG,    True,  True); // жанры
+    3: ;
+    4: FillBooksTree(0, tvBooksF,                   nil, DMUser.tblFavorites, True,  True); // избранное
     5: btnApplyFilterClick(Self);
   end;
 
@@ -1703,12 +1744,14 @@ begin
     begin
       ipnlAuthors.Clear;
       cpCoverA.Clear;
+      lblAuthor.Caption := '';
     end;
 
     PAGE_SERIES:
     begin
       ipnlSeries.Clear;
       cpCoverS.Clear;
+      lblSeries.Caption := '';
     end;
 
     PAGE_GENRES:
@@ -1727,12 +1770,7 @@ begin
     begin
       ipnlSearch.Clear;
       cpCoverSR.Clear;
-    end;
-
-    PAGE_FILTER:
-    begin
-      ipnlFilter.Clear;
-      cpCoverFL.Clear;
+      lblTotalBooksFL.Caption := '()';
     end;
 
     PAGE_ALL:
@@ -1747,6 +1785,52 @@ begin
   end;
 end;
 
+procedure  TfrmMain.SetAuthorsShowLocalOnly;
+begin
+  if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
+    begin
+      if Settings.ShowLocalOnly then
+        DMMain.tblAuthors.ParamByName('All').AsInteger := 1
+      else
+        DMMain.tblAuthors.ParamByName('All').AsInteger := 0;
+      DMMain.tblAuthors.Close;
+      Screen.Cursor := crHourGlass;
+      DMMain.tblAuthors.Open;
+      Screen.Cursor := crDefault;
+    end
+  else
+    begin
+      DMMain.tblAuthors.ParamByName('All').AsInteger := 0;
+      DMMain.tblAuthors.Close;
+      Screen.Cursor := crHourGlass;
+      DMMain.tblAuthors.Open;
+      Screen.Cursor := crDefault;
+    end;
+end;
+
+procedure  TfrmMain.SetSeriesShowLocalOnly;
+begin
+  if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
+    begin
+      if Settings.ShowLocalOnly then
+        DMMain.tblSeries.ParamByName('All').AsInteger := 1
+      else
+        DMMain.tblSeries.ParamByName('All').AsInteger := 0;
+      DMMain.tblSeries.Close;
+      Screen.Cursor := crHourGlass;
+      DMMain.tblSeries.Open;
+      Screen.Cursor := crDefault;
+    end
+  else
+    begin
+      DMMain.tblSeries.ParamByName('All').AsInteger := 0;
+      DMMain.tblSeries.Close;
+      Screen.Cursor := crHourGlass;
+      DMMain.tblSeries.Open;
+      Screen.Cursor := crDefault;
+    end;
+end;
+
 procedure  TfrmMain.SetBooksFilter;
 const
    flLocal = '`Local` = True';
@@ -1759,15 +1843,15 @@ const
       begin
         State := (Filter <> '');
 
-        DMCollection.tblBooksA.Filter := Filter;
-        DMCollection.tblBooksG.Filter := Filter;
-        DMCollection.tblBooksS.Filter := Filter;
-        DMUser.tblGrouppedBooks.Filter := Filter;
+        DMMain.tblBooksA.Filter := Filter;
+        DMMain.tblBooksG.Filter := Filter;
+        DMMain.tblBooksS.Filter := Filter;
+        DMUser.tblFavorites.Filter := Filter;
 
-        DMCollection.tblBooksA.Filtered := State;
-        DMCollection.tblBooksG.Filtered := State;
-        DMCollection.tblBooksS.Filtered := State;
-        DMUser.tblGrouppedBooks.Filtered := State;
+        DMMain.tblBooksA.Filtered := State;
+        DMMain.tblBooksG.Filtered := State;
+        DMMain.tblBooksS.Filtered := State;
+        DMUser.tblFavorites.Filtered := State;
       end;
 
 begin
@@ -1790,30 +1874,52 @@ begin
 end;
 
 
-procedure  TfrmMain.FillAllBooksTree;
+procedure TfrmMain.FilesListFile(Sender: TObject; const F: TSearchRec);
+var
+  S: string;
 begin
-  FillBooksTree(0, tvBooksA, DMCollection.tblAuthor_List, DMCollection.tblBooksA,    False, True); // авторы
-  FillBooksTree(0, tvBooksS,                   nil, DMCollection.tblBooksS,    False, False); // серии
-  FillBooksTree(0, tvBooksG,  DMCollection.tblGenre_List, DMCollection.tblBooksG,    True,  True); // жанры
-  FillBooksTree(0, tvBooksF,                   nil, DMUser.tblGrouppedBooks, True,  True); // избранное
+  if ExtractFileExt(F.Name) = '.mhlf' then
+  begin
+    S := ExtractFileName(F.Name);
+    Delete(S, Length(S) - 4 , 5);
+    cbPresetName.Items.Add(S);
+  end;
 end;
 
-function TfrmMain.DoCheckUpdatesOnStart: Boolean;
+procedure  TfrmMain.FillAllBooksTree;
+begin
+  FillBooksTree(0, tvBooksA, DMMain.tblAuthor_List, DMMain.tblBooksA,    False, True); // авторы
+  FillBooksTree(0, tvBooksS,                   nil, DMMain.tblBooksS,    False, False); // серии
+  FillBooksTree(0, tvBooksG,  DMMain.tblGenre_List, DMMain.tblBooksG,    True,  True); // жанры
+  FillBooksTree(0, tvBooksF,                   nil, DMUser.tblFavorites, True,  True); // избранное
+end;
+
+function TfrmMain.CheckLibUpdates: Boolean;
 var
   LocalVersion: Integer;
   RemoteVersion: Integer;
+  Active: Integer;
+  i: integer;
 begin
   Result := False;
 
-  if not DMUser.FindFirstExternalCollection then
-    Exit;
+  Active := DMUser.ActiveCollection.ID;
 
-  LocalVersion := DMUser.ActiveCollection.Version;
-  try
-    Result := CheckLibVersion(LocalVersion, RemoteVersion);
-  except
-    // ignore all errors
-  end;
+  Settings.Updates.CheckVersions;
+
+  DMUser.FindFirstCollection;
+  repeat
+    for I := 0 to Settings.Updates.Count - 1 do
+      if Settings.Updates.Items[i].CheckCodes(DMUser.ActiveCollection.CollectionType,
+                                              DMUser.ActiveCollection.ID)
+      then
+        if Settings.Updates.Items[i].CheckVersion(DMUser.ActiveCollection.Version) then
+        begin
+          Result := True;
+          Break;
+        end;
+  until not DMUser.FindNextCollection;
+  DMUser.ActivateCollection(Active);
 end;
 
 procedure TfrmMain.SetLangBarSize;
@@ -1829,7 +1935,6 @@ begin
 end;
 
 procedure TfrmMain.TheFirstRun;
-const CHECK_FILE = 'TheFirstRun.check';
 begin
   if  DMUser.tblBases.IsEmpty then
     DeleteFile(Settings.WorkPath + CHECK_FILE)
@@ -1840,9 +1945,9 @@ begin
                 'MyHomeLib - первый запуск',mb_YesNo) = mrYes) then
   begin
     RenameFile(Settings.SystemFileName[sfLibRusEcinpx],Settings.SystemFileName[sfLibRusEcUpdate]);
-    unit_utils.LibrusecUpdate;
     DeleteFile(Settings.WorkPath + CHECK_FILE);
-    InitCollection(True);
+    if unit_utils.LibrusecUpdate then
+      InitCollection(True);
   end;
 end;
 
@@ -1852,12 +1957,23 @@ end;
 
 procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
+  CanClose := True;
   if CheckActiveDownloads then
-      CanClose :=( MessageDlg('В списке есть незавершенные закачки!' + #13 +
-                  'При выходе из программы они будут утеряны.' + #13 +
-                  'Вы все еще хотите выйти из программы?', mtWarning, mbYesNo, 0) = mrYes)
-  else CanClose := True;
+    if MessageDlg('В списке есть незавершенные закачки!' + #13 +
+                  'Вы все еще хотите выйти из программы?', mtWarning, mbYesNo, 0) = mrYes then
+      begin
+        if Assigned(FDMThread) then FDMThread.TerminateNow;
+      end
+    else
+      CanClose := False;
 end;
+
+procedure TfrmMain.StartLibUpdate;
+begin
+  if unit_utils.LibrusecUpdate then
+    InitCollection(True);
+end;
+
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
@@ -1868,7 +1984,6 @@ begin
   tvBooksF.NodeDataSize := SizeOf(TBookData);
   tvBooksS.NodeDataSize := SizeOf(TBookData);
   tvBooksSR.NodeDataSize := SizeOf(TBookData);
-  tvBooksFL.NodeDataSize := SizeOf(TBookData);
 
   tvDownloadList.NodeDataSize := SizeOf(TDownloadData);
 
@@ -1903,17 +2018,10 @@ begin
     DMUser.tblBases.AddIndex('Name_Index','Name',[]);
   DMUser.tblBases.IndexName := 'Name_Index';
 
-  DMUser.ActivateCollection(Settings.ActiveCollection);
-  DMUser.SetTableStatus(True);
 
-
-  SetColumns;
-  SetHeaderPopUp;
-
-  frmSplash.lblState.Caption := main_loading_collection;
-  InitCollection(False);
-
-  DMCollection.SetActiveTable(pgControl.ActivePageIndex);
+//------------------------------------------------------------------------------
+//  Проверка обновлений
+//------------------------------------------------------------------------------
 
   frmSplash.lblState.Caption := main_check_updates;
   if Settings.CheckUpdate then
@@ -1925,29 +2033,77 @@ begin
     FAutoCheck := False;
 
   if Settings.CheckExternalLibUpdate then
-    if DoCheckUpdatesOnStart then
-      if MessageDlg('Доступно обновление для коллекций "lib.rus.ec".' + #13 + ' Начать обновление ?', mtWarning, [mbYes, mbNo], 0) = mrYes then
-        miUpdateClick(Sender);
+    if CheckLibUpdates then
+      if Settings.AutoRunUpdate then
+          StartLibUpdate
+      else
+        if MessageDlg('Доступно обновление для коллекций "lib.rus.ec".' + #13 + ' Начать обновление ?', mtWarning, [mbYes, mbNo], 0) = mrYes then
+           StartLibUpdate;
+
+//------------------------------------------------------------------------------
+
+  DMUser.ActivateCollection(Settings.ActiveCollection);
+  SetUserTableStatus(True);
+
+  SetColumns;
+  SetHeaderPopUp;
+
+  frmSplash.lblState.Caption := main_loading_collection;
+
+  InitCollection(False);
+  DMMain.SetActiveTable(pgControl.ActivePageIndex);
 
   Application.HelpFile := Settings.SystemFileName[sfAppHelp];
 
   TheFirstRun;
 
-
   if not DMUser.tblBases.IsEmpty then
     RestorePositions;
 
+  if FileExists(Settings.WorkPath + 'downloads.sav') then
+  begin
+    tvDownloadList.LoadFromfile(Settings.WorkPath + 'downloads.sav');
+    lblDownloadCount.Caption := Format('(%d)',[tvDownloadList.ChildCount[Nil]]);
+  end;
 
-//  if FileExists(Settings.WorkPath + 'downloads.sav') then
-//      tvDownloadList.LoadFromfile(Settings.WorkPath + 'downloads.sav');
+//------------------------------------------------------------------------------
+
   SetLangBarSize;
+
+  frmSplash.lblState.Caption := 'Старт ...';
+
+  if Settings.AutoStartDwnld then
+    btnStartDownloadClick(Sender);
+
+  //
+  // Create & Load "star" images from resources
+  //
+  FStarImage := CreateImageFromResource(TPngImage, 'smallStar') as TPngImage;
+  FEmptyStarImage := CreateImageFromResource(TPngImage, 'smallStarEmpty') as TPngImage;
+
+  // костыль
+  frmMain.Visible := True;
+
+  if frmMain.WindowState = wsMinimized then
+     frmMain.WindowState := wsNormal;
+  // конец костыля
+
+
+  // загрузка списка пресетов для поиска
+  CreateDir(Settings.PresetDir);
+  FilesList.TargetPath := Settings.PresetPath;
+  FilesList.Process;
+
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
+  FreeAndNil(FStarImage);
+  FreeAndNil(FEmptyStarImage);
+
   SaveColumns;
 
-//  tvDownloadList.SaveToFile(Settings.WorkPath + 'downloads.sav');
+  tvDownloadList.SaveToFile(Settings.WorkPath + 'downloads.sav');
 
   if DirectoryExists(Settings.TempDir) then ClearDir(Settings.TempDir);
 
@@ -1963,6 +2119,7 @@ begin
   Settings.Splitters[3] := cpCoverA.Width;
 
   Settings.WindowState := WindowState;
+  Settings.FullSearchMode := pnlFullSearch.Visible;
 
   Settings.SaveSettings;
   FreeSettings;
@@ -1989,6 +2146,7 @@ begin
       COL_SIZE   : Result := IntToStr(Data.Size);
       COL_DATE   : Result := DateToStr(Data.Date);
       COL_GENRE  : Result := Data.Genre;
+      COL_TYPE   : Result := Data.FileType;
       COL_COLLECTION: Result := Data.ColName;
     end;
 end;
@@ -2188,8 +2346,9 @@ begin
     Exit;
   ClearLabels(PAGE_AUTHORS);
   ID := Data^.ID;
-  DMCollection.tblAuthors.Locate('ID', ID, []);
-  FillBooksTree(ID, tvBooksA, DMCollection.tblAuthor_List, DMCollection.tblBooksA, False, True); // авторы
+  DMMain.tblAuthors.Locate('ID', ID, []);
+  lblAuthor.Caption := Data.Text;
+  FillBooksTree(ID, tvBooksA, DMMain.tblAuthor_List, DMMain.tblBooksA, False, True); // авторы
 end;
 
 procedure TfrmMain.tvSeriesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -2202,8 +2361,9 @@ begin
     Exit;
   ClearLabels(PAGE_SERIES);
   ID := Data^.ID;
-  DMCollection.tblSeries.Locate('ID', ID, []);
-  FillBooksTree(ID, tvBooksS, nil, DMCollection.tblBooksS, False, False); // авторы
+  DMMain.tblSeries.Locate('ID', ID, []);
+  lblSeries.Caption := Data.Text;
+  FillBooksTree(ID, tvBooksS, nil, DMMain.tblBooksS, False, False); // авторы
 end;
 
 procedure TfrmMain.tvGenresChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -2220,17 +2380,17 @@ begin
      not Settings.ShowSubGenreBooks
   then
   begin
-    DMCollection.tblGenres.Locate('Code', ID, []);
-    FillBooksTree(0, tvBooksG, DMCollection.tblGenre_List, DMCollection.tblBooksG, True, True); // жанры
+    DMMain.tblGenres.Locate('Code', ID, []);
+    FillBooksTree(0, tvBooksG, DMMain.tblGenre_List, DMMain.tblBooksG, True, True); // жанры
   end
   else 
   begin
-    DMCollection.tblGenre_List.MasterSource := nil;
-    DMCollection.tblGenre_List.Filter := '`GenreCode` Like ' + QuotedStr(ID + '%');
-    DMCollection.tblGenre_List.Filtered := True;
-    FillBooksTree(0, tvBooksG, DMCollection.tblGenre_List, DMCollection.tblBooksG, True, True); // жанры
-    DMCollection.tblGenre_List.Filtered := False;
-    DMCollection.tblGenre_List.MasterSource := DMCollection.dsGenres;
+    DMMain.tblGenre_List.MasterSource := nil;
+    DMMain.tblGenre_List.Filter := '`GenreCode` Like ' + QuotedStr(ID + '%');
+    DMMain.tblGenre_List.Filtered := True;
+    FillBooksTree(0, tvBooksG, DMMain.tblGenre_List, DMMain.tblBooksG, True, True); // жанры
+    DMMain.tblGenre_List.Filtered := False;
+    DMMain.tblGenre_List.MasterSource := DMMain.dsGenres;
   end;
   lblGenreTitle.Caption := Data.Text;
 end;
@@ -2260,15 +2420,10 @@ begin
                    Panel:= ipnlSearch;
                    Cover:= cpCoverSR;
                  end;
-    GroupsView: begin
+    FavoritesView: begin
                    Tree := tvBooksF;
                    Panel:= ipnlFavorites;
                    Cover:= cpCoverF;
-                 end;
-    FilterView: begin
-                   Tree := tvBooksFL;
-                   Panel:= ipnlFilter;
-                   Cover:= cpCoverFL;
                  end;
   end;
 end;
@@ -2281,6 +2436,8 @@ var
   Cover: TMHLCoverPanel;
   Folder: string;
   FileName: string;
+  Ext: string;
+
   No: integer;
 begin
   if BookTreeStatus = bsBusy then
@@ -2298,7 +2455,7 @@ begin
     Exit;
   end;
 
-  DMCollection.GetBookFileName(Data.ID, FileName, Folder, No);
+  DMMain.GetBookFileName(Data.ID, FileName, Folder, Ext, No);
 
 
   InfoPanel.Title := Data.Title;
@@ -2309,7 +2466,7 @@ begin
   InfoPanel.HideFileInfo := not (isOnlineCollection(DMUser.ActiveCollection.CollectionType) and not Data.Locale);
 
 
-  if ActiveView <> GroupsView then
+  if ActiveView <> FavoritesView then
     if (Folder = '') then
        InfoPanel.Folder := FCollectionRoot
      else
@@ -2361,11 +2518,15 @@ begin
   case Data.nodeType of
     ntAuthorInfo: Color := Settings.AuthorColor;
     ntSeriesInfo: Color := Settings.SeriesColor;
-    ntBookInfo: Color := Settings.BookColor;
+    ntBookInfo:begin
+                 if Data.Series <> '' then
+                   Color := Settings.SeriesBookColor
+                 else
+                   Color := Settings.BookColor;
+               end;
   end;
 
-  if (Data.nodeType = ntBookInfo) and (Data.Series <> '') then
-    Color := Settings.SeriesBookColor;
+
 
   TargetCanvas.Brush.Color := Color;
   TargetCanvas.FillRect(CellRect);
@@ -2384,38 +2545,46 @@ procedure TfrmMain.tvBooksTreeAfterCellPaint(Sender: TBaseVirtualTree;
   CellRect: TRect);
 var
   Data: PBookData;
-  X, i: integer;
   Tag : integer;
+  i: integer;
+  x, y: integer;
+  w, h: integer;
 begin
-
   Data := Sender.GetNodeData(Node);
   Assert(Assigned(Data));
+
+  if Data.nodeType <> ntBookInfo then
+    Exit;
 
   Tag := GetTreeTag(Sender, Column);
 
   X := (Sender as TvirtualStringTree).Header.Columns.Items[Column].Left;
 
-  if (Tag = COL_STATE) and
-     isOnlineCollection(DMUser.ActiveCollection.CollectionType)
-     and (Data.nodeType = ntBookInfo) and (Data.Locale)
-     then
+  if (Tag = COL_STATE)
+    and isOnlineCollection(DMUser.ActiveCollection.CollectionType)
+    and (Data.Locale)
+  then
   begin
-    ilFileTypes.Draw(TargetCanvas,X,CellRect.Top + 2,5);
+    ilFileTypes.Draw(TargetCanvas, X, CellRect.Top + 2, 5);
   end;
 
-  { TODO -oAlex : Заменить на звездочки }
-  if (Data.nodeType = ntBookInfo) and (Tag= COL_RATE) then
+  { DONE -oNickR :Заменить на звездочки }
+  if (Tag = COL_RATE) then
   begin
-    inc(X,3);
-    with TargetCanvas do
+    w := FStarImage.Width;
+    h := FStarImage.Height;
+    x := CellRect.Left (*+ (CellRect.Right - CellRect.Left - 10 {w} * 5) div 2*);
+    y := CellRect.Top + (CellRect.Bottom - CellRect.Top - h) div 2;
+
+    for i := 0 to 4 do
     begin
-      Pen.Color := clTeal;
-      Brush.Style := bsSolid;
-      Brush.Color := $0046CBEC;
-      Refresh;
-      for I := 1 to Data.Rate do
-        RoundRect(X + i * 10 - 9, 4, X + i * 10, 13, 1, 1);
-     end;
+      if Data.Rate > i then
+        FStarImage.Draw(TargetCanvas, Rect(x, y, x + w, y + h))
+      else
+        FEmptyStarImage.Draw(TargetCanvas, Rect(x, y, x + w, y + h));
+
+      Inc(x, {w} 10);
+    end;
   end;
 end;
 
@@ -2437,7 +2606,9 @@ begin
       if Data.nodeType = ntBookInfo then
         if Tree.CheckState[Node] = csCheckedNormal then
           Tree.CheckState[Node] := csUnCheckedNormal
-        else Tree.CheckState[Node] := csCheckedNormal;
+        else
+          Tree.CheckState[Node] := csCheckedNormal;
+
       Tree.Selected[Node] := False;
       Node := Tree.GetNext(Node);
       BookTreeStatus := bsFree ;
@@ -2482,7 +2653,10 @@ begin
         Data := Tree.GetNodeData(Node);
         if Data.nodeType = ntBookInfo  then
         begin
-          Tree.CheckState[Node] := csCheckedNormal;
+          if Tree.CheckState[Node] = csCheckedNormal then
+             Tree.CheckState[Node] := csUnCheckedNormal
+          else
+            Tree.CheckState[Node] := csCheckedNormal;
           Tree.Selected[Node] := False;
         end;
         Node := Tree.GetNextSelected(Node);
@@ -2502,7 +2676,13 @@ var
 begin
   Data := Sender.GetNodeData(Node);
   if Data.nodeType <> ntBookInfo then
-    TargetCanvas.Font.Style := [fsBold];
+      TargetCanvas.Font.Style := [fsBold]
+    else
+      if not Sender.Selected[Node] then
+      begin
+        if Data.Locale then TargetCanvas.Font.Color := Settings.LocalColor;
+        if Data.Deleted then TargetCanvas.Font.Color := Settings.DeletedColor;
+      end;
 end;
 
 procedure TfrmMain.tvDownloadListGetText(Sender: TBaseVirtualTree;
@@ -2526,23 +2706,82 @@ procedure TfrmMain.tvDownloadListLoadNode(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Stream: TStream);
 var
   Data: PDownloadData;
-  DataSize: Integer;
+  size: Integer;
+  StrBuffer: PChar;
+
+    function GetString:string;
+    begin
+      Stream.Read(Size, SizeOf(Size));
+      StrBuffer := AllocMem(Size);
+      Stream.Read(StrBuffer^, Size);
+      Result := (StrBuffer);
+      FreeMem(StrBuffer);
+    end;
+
 begin
-  Stream.Read(DataSize, SizeOf(DataSize));
   Data := Sender.GetNodeData(Node);
-  Stream.Read(Data^, DataSize);
+  // ID
+  Stream.Read(Data.ID, SizeOf(Data.ID));
+
+  Data.Title := GetString;
+  Data.Author := GetString;
+
+  // Size
+  Stream.Read(Data.Size, SizeOf(Data.Size));
+
+  Data.FileName := GetString;
+  Data.URL := GetString;
+
+  // State
+  Stream.Read(Data.State, SizeOf(Data.State));
+end;
+
+procedure TfrmMain.tvDownloadListPaintText(Sender: TBaseVirtualTree;
+  const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+  TextType: TVSTTextType);
+var
+  Data : PDownloadData;
+begin
+  Data := Sender.GetNodeData(Node);
+  if (Data <> nil) and not Sender.Selected[Node] then
+    case Data.State of
+      dsRun  : TargetCanvas.Font.Color := clGreen;
+      dsError: TargetCanvas.Font.Color := clRed;
+    end;
 end;
 
 procedure TfrmMain.tvDownloadListSaveNode(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Stream: TStream);
 var
   Data: PDownloadData;
-  DataSize: Integer;
+  size: Integer;
+
+  procedure WriteString(const S: string);
+  begin
+    Size := ByteLength(S) + 1;
+    Stream.Write(Size, SizeOf(Size));
+    Stream.Write(PChar(S)^, Size);
+  end;
+
 begin
-  Data := tvDownloadList.GetNodeData(Node);
-  DataSize := SizeOf(Data^);
-  Stream.Write(DataSize, SizeOf(DataSize));
-  Stream.WriteBuffer(Data^, DataSize);
+  Data := Sender.GetNodeData(Node);
+
+  if Data = Nil then Exit;
+
+  //  ID
+  Stream.Write(Data.ID, SizeOf(Data.ID));
+
+  WriteString(Data.Title);
+  WriteString(Data.Author);
+
+  // Size
+  Stream.Write(Data.Size, SizeOf(Data.Size));
+
+  WriteString(Data.FileName);
+  WriteString(Data.URL);
+
+  // State
+  Stream.Write(Data.State, SizeOf(Data.State));
 end;
 
 //
@@ -2551,6 +2790,7 @@ end;
 procedure TfrmMain.btnClearDownloadClick(Sender: TObject);
 begin
   tvDownloadList.Clear;
+  lblDownloadCount.Caption := '(0)';
 end;
 
 procedure TfrmMain.btnClearEdSeriesClick(Sender: TObject);
@@ -2563,19 +2803,26 @@ procedure TfrmMain.btnClearFavoritesClick(Sender: TObject);
 begin
   ClearLabels(PAGE_FAVORITES);
 
-  DMUser.tblGrouppedBooks.Active := False;
-  DMUser.tblGrouppedBooks.EmptyTable;
-  DMUser.tblGrouppedBooks.Active := True;
+  DMUser.tblFavorites.Active := False;
+  DMUser.tblFavorites.EmptyTable;
+  DMUser.tblFavorites.Active := True;
 
-  FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True); // избранное
+  FillBooksTree(0, tvBooksF, nil, DMUser.tblFavorites, True, True); // избранное
 end;
 
-procedure TfrmMain.BtnFav_addClick(Sender: TObject);
+procedure TfrmMain.MoveDwnldListNodes(Sender: TObject);
+var
+  i: integer;
+  List: TSelectionList;
 begin
-  if ActiveView = GroupsView then
-    miDelFavoritesClick(Sender)
-  else
-    miAddFavoritesClick(Sender);
+  GetSeelections(tvDownloadList,List);
+  for I := 0 to tvDownloadList.SelectedCount - 1 do
+    case (Sender as TrzToolButton).Tag of
+      20: tvDownloadList.MoveTo(List[tvDownloadList.SelectedCount - i - 1],tvDownloadList.GetFirst,amInsertBefore,False);
+      21: tvDownloadList.MoveTo(List[i],tvDownloadList.GetPrevious(List[i]),amInsertBefore,False);
+      22: tvDownloadList.MoveTo(List[tvDownloadList.SelectedCount - i - 1],tvDownloadList.GetNext(List[tvDownloadList.SelectedCount - i - 1]),amInsertAfter,False);
+      23: tvDownloadList.MoveTo(List[i],tvDownloadList.GetLast,amInsertAfter,False);
+    end;
 end;
 
 procedure TfrmMain.CopyToCollectionClick(Sender: TObject);
@@ -2589,7 +2836,7 @@ var
 begin
   Screen.Cursor := crHourGlass;
 
-  if ActiveView = GroupsView then
+  if ActiveView = FavoritesView then
   begin
     MessageDlg(main_unable_to_copy, mtWarning, [mbOk], 0);
     Exit;
@@ -2636,7 +2883,6 @@ begin
   cpCoverS.Width := NewSize;
   cpCoverG.Width := NewSize;
   cpCoverF.Width := NewSize;
-  cpCoverFL.Width := NewSize;
   cpCoverSR.Width := NewSize;
 end;
 
@@ -2665,6 +2911,7 @@ end;
 
 procedure TfrmMain.tbSendToDeviceClick(Sender: TObject);
 var
+  AFolder: string;
   SaveDeviceDir: string;
   SaveFolderTemplate: string;
   TMPParams: String;
@@ -2681,6 +2928,7 @@ begin
   //  dlgFolder.Directory := Settings.DeviceDir;
   ScriptID := (Sender as TComponent).Tag;
 
+
   if isFB2Collection(DMUser.ActiveCollection.CollectionType) then
   case ScriptID of
     850: ExportMode := emFb2;
@@ -2692,17 +2940,18 @@ begin
   else
     ExportMode := emFb2;
 
-  if (ScriptID = 0) and (Settings.PromptDevicePath) then
-    if not dlgFolder.Execute then
+  Dec(ScriptID, 901);
+
+  if (ScriptID < 1 ) and (Settings.PromptDevicePath) then
+    //if not dlgFolder.Execute then
+    if not GetFolderName(Handle, 'Укажите путь', AFolder) then
       Exit
     else
       { TODO -oNickR -cRefactoring : это временное изменение в настройках и оно не должно сохраняться при закрытии программы
                              Это изменение нужно только для работы функций ZipToDevice/FileToDevice и решается
                              параметрами этих функций
       }
-      Settings.DeviceDir := dlgFolder.Directory;
-
-  Dec(ScriptID,901);
+      Settings.DeviceDir := AFolder;
 
   if ScriptID >= 0 then
   begin
@@ -2712,10 +2961,13 @@ begin
       Settings.FolderTemplate := '';
       StrReplace('%NFT%', '', TMPParams);
     end;
+
     if Pos('%TMP%', Settings.Scripts[ScriptID].Params) <> 0 then
       StrReplace('%TMP%',Settings.TempPath, TMPParams);
+
     if Pos('%DEST%', Settings.Scripts[ScriptID].Params) <> 0 then
       StrReplace('%DEST%',Settings.DeviceDir, TMPParams);
+
     if Pos('%FOLDER ', Settings.Scripts[ScriptID].Params) <> 0 then
     begin
       StrReplace('%FOLDER ','', TMPParams);
@@ -2724,8 +2976,10 @@ begin
       Settings.DeviceDir := S;
       Delete(TMPParams,1,p);
     end;
+
     if (Settings.Scripts[ScriptID].Path = '%COPY%') and
        (trim(TMPParams) <> '') then Settings.DeviceDir := trim(TMPParams);
+
     Settings.Scripts[ScriptID].TmpParams := TMPParams;   
   end;
 
@@ -2736,11 +2990,11 @@ begin
 
   if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
   begin
-    unit_exporttodevice.DownloadBooks(DMCollection.ActiveTable,  BookIdList);
+    unit_ExportToDevice.DownloadBooks(DMMain.ActiveTable, BookIdList);
     RefreshBooksState(Tree, BookIDList);
   end;
 
-  unit_exporttodevice.ExportToDevice(DMCollection.ActiveTable, BookIdList, ExportMode, Files);
+  unit_ExportToDevice.ExportToDevice(DMMain.ActiveTable, BookIdList, ExportMode, Files);
 
   if (ScriptID >= 0 ) and (Settings.Scripts[ScriptID].Path <> '%COPY%') then
   begin
@@ -2772,7 +3026,7 @@ begin
   GetActiveTree(Tree);
 
   FillBookIdList(Tree, BookIDList);
-  unit_exporttodevice.DownloadBooks(DMCollection.ActiveTable, BookIdList );
+  unit_ExportToDevice.DownloadBooks(DMMain.ActiveTable, BookIdList );
 
   RefreshBooksState(Tree, BookIDList);
 end;
@@ -2789,6 +3043,8 @@ var
   fs: TMemoryStream;
   Zip: TZipForge;
   I: integer;
+
+  FileName,Folder,Ext: string;
 
 begin
   GetActiveViewComponents(Tree,Panel,Cover);
@@ -2809,9 +3065,9 @@ begin
     if ExtractFileExt(Panel.Folder) = ZIP_EXTENSION then
     begin
       //
-      if ActiveView = GroupsView then
+      if ActiveView = FavoritesView then
       begin
-        I := DMUser.tblGrouppedBooksDatabaseID.Value;
+        I := DMUser.tblFavoritesDatabaseID.Value;
         DMUser.tblBases.Locate('ID',I,[]);
         if isOnlineCollection(DMUser.tblBasesCode.Value) then
         begin
@@ -2832,30 +3088,32 @@ begin
           raise EInvalidOp.Create('Архив ' + Panel.Folder + ' не найден!');
 
 
-      DMCollection.FieldByName(0,'InsideNo',No);
+      DMMain.GetBookFileName(Data.ID, FileName, Folder, Ext, No);
 
-      Zip := TZipForge.Create(nil);
-      FS := TMemoryStream.Create;
-      try
-        Zip.FileName := Panel.Folder;
-        Zip.BaseDir := Settings.TempPath;
-        Zip.OpenArchive;
-        Zip.ExtractToStream(GetFileNameZip(Zip,No),FS);
-        WorkFile := Settings.ReadPath + Format('%s - %s.fb2',
+      WorkFile := Settings.ReadPath + Format('%s - %s.%s',
                                               [CheckSymbols(Panel.Author),
-                                               CheckSymbols(Panel.Title)]);
-        fs.SaveToFile(WorkFile);
-      finally
-        FS.Free;
-        Zip.Free;
-      end;
+                                               CheckSymbols(Panel.Title),Ext]);
+
+      if not FileExists(WorkFile) then
+      begin
+        Zip := TZipForge.Create(nil);
+        FS := TMemoryStream.Create;
+        try
+          Zip.FileName := Panel.Folder;
+          Zip.BaseDir := Settings.ReadPath;
+          Zip.OpenArchive;
+          Zip.ExtractToStream(GetFileNameZip(Zip,No),FS);
+          fs.SaveToFile(WorkFile);
+        finally
+          FS.Free;
+          Zip.Free;
+        end;
+      end; // if Exists
     end
     else
       WorkFile := Panel.Folder + Panel.FileName;
     Settings.Readers.RunReader(WorkFile);
-
     Tree.RepaintNode(Tree.GetFirstSelected);
-
   finally
     Screen.Cursor := crDefault;
   end;
@@ -2888,6 +3146,8 @@ begin
 end;
 
 procedure TfrmMain.tbtnStarClick(Sender: TObject);
+var
+  S: string;
 begin
 
   if (pgControl.ActivePageIndex <> PAGE_AUTHORS) and
@@ -2895,10 +3155,11 @@ begin
   then Exit;
 
   Screen.Cursor := crHourGlass;
-//  ClearLabels;
   case ActiveView of
     ByAuthorView:
       begin
+
+        ClearLabels(PAGE_AUTHORS);
         if Assigned(FLastLetterA) then
             FLastLetterA.Down := False;
 
@@ -2906,21 +3167,24 @@ begin
         (Sender as TToolButton).Down := True;
         if (Sender as TToolButton).Tag >= 90 then
         case (Sender as TToolButton).Tag of
-          91: DMCollection.tblAuthors.Filter := 'Family > "а*"';
-          92: DMCollection.tblAuthors.Filter := 'Family < "а*"';
+          91: DMMain.tblAuthors.Filter := 'Family > "а*"';
+          92: DMMain.tblAuthors.Filter := 'Family < "а*"';
         end
         else
         begin
           edLocateAuthor.Text := (Sender as TToolButton).Caption;
-          DMCollection.tblAuthors.Filter := 'Family=' + QuotedStr((Sender as TToolButton).Caption + '*');
+          DMMain.tblAuthors.Filter := '(Family=' + QuotedStr((Sender as TToolButton).Caption + '*') +
+               ') OR (Family=' + QuotedStr(AnsiLowercase((Sender as TToolButton).Caption) + '*') + ')';
         end;
-        DMCollection.tblAuthors.Filtered := (Sender as TToolButton).Tag <> 90;
+        DMMain.tblAuthors.Filtered := (Sender as TToolButton).Tag <> 90;
         FillAuthorTree;
-        tvAuthors.Selected[tvAuthors.GetFirst] := True;
+
+        //tvAuthors.Selected[tvAuthors.GetFirst] := True;
         edLocateAuthor.Perform(WM_KEYDOWN, VK_RIGHT, 0);
       end;
     BySeriesView:
       begin
+        ClearLabels(PAGE_SERIES);
         if Assigned(FLastLetterS) then
           FLastLetterS.Down := False;
         FLastLetterS := (Sender as TToolButton);
@@ -2928,16 +3192,17 @@ begin
 
         if (Sender as TToolButton).Tag >= 90 then
         case (Sender as TToolButton).Tag of
-          90: DMCollection.tblSeries.Filter := 'Title <>' + QuotedStr(NO_SERIES_TITLE);
-          91: DMCollection.tblSeries.Filter := 'Title > "а*"';
-          92: DMCollection.tblSeries.Filter := 'Title < "а*" and Title <>' + QuotedStr(NO_SERIES_TITLE);
+          90: DMMain.tblSeries.Filter := 'Title <>' + QuotedStr(NO_SERIES_TITLE);
+          91: DMMain.tblSeries.Filter := 'Title > "а*"';
+          92: DMMain.tblSeries.Filter := 'Title < "а*" and Title <>' + QuotedStr(NO_SERIES_TITLE);
         end
         else
         begin
           edLocateSeries.Text := (Sender as TToolButton).Caption;
-          DMCollection.tblSeries.Filter := 'Title =' + QuotedStr((Sender as TToolButton).Caption + '*');
+          DMMain.tblSeries.Filter := '(Title=' + QuotedStr((Sender as TToolButton).Caption + '*') +
+               ') OR (Title=' + QuotedStr(AnsiLowercase((Sender as TToolButton).Caption) + '*') + ')';
         end;
-        DMCollection.tblSeries.Filtered := true;
+        DMMain.tblSeries.Filtered := true;
         FillSeriesTree;
         tvSeries.Selected[tvSeries.GetFirst] := True;
         edLocateSeries.Perform(WM_KEYDOWN, VK_RIGHT, 0);
@@ -2957,7 +3222,12 @@ begin
   Settings.ShowLocalOnly := not Settings.ShowLocalOnly;
   tbtnShowLocalOnly.Down := Settings.ShowLocalOnly ;
 
+  SetAuthorsShowLocalOnly;
+  SetSeriesShowLocalOnly;
   SetBooksFilter;
+
+  FillAuthorTree;
+  FillSeriesTree;
   FillAllBooksTree;
 end;
 
@@ -2967,7 +3237,6 @@ begin
   cpCoverS.Visible := State;
   cpCoverG.Visible := State;
   cpCoverF.Visible := State;
-  cpCoverFL.Visible := State;
   cpCoverSR.Visible := State;
 end;
 
@@ -2976,7 +3245,11 @@ var
   Visible: boolean;
 begin
   Settings.ShowInfoPanel := not Settings.ShowInfoPanel;
-  Visible := Settings.ShowInfoPanel and not isNonFb2Collection(DMUser.ActiveCollection.CollectionType);
+
+  Visible := (Settings.ShowInfoPanel and not isNonFb2Collection(DMUser.ActiveCollection.CollectionType)
+             or (Settings.ShowInfoPanel and isNonFB2Collection(DMUser.ActiveCollection.CollectionType)
+                 and Settings.AllowMixed));
+
   SetCoversVisible(Visible);
   if Visible then
         tvBooksTreeChange(Nil,Nil);
@@ -2999,16 +3272,25 @@ begin
     Tree.FullExpand(nil);
 end;
 
+function TfrmMain.GetViewTree(view: TView): TVirtualStringTree;
+begin
+  case view of
+    ByAuthorView: Result := tvBooksA;
+    BySeriesView: Result := tvBooksS;
+    ByGenreView: Result := tvBooksG;
+    SearchView: Result := tvBooksSR;
+    FavoritesView: Result := tvBooksF;
+  else
+    begin
+      Assert(False, 'Проверить использование, возможна ошибка');
+      Result := nil;
+    end;
+  end;
+end;
+
 procedure TfrmMain.GetActiveTree(var Tree: TVirtualStringTree);
 begin
-  case ActiveView of
-    ByAuthorView: Tree := tvBooksA;
-    BySeriesView: Tree := tvBooksS;
-    ByGenreView: Tree := tvBooksG;
-    SearchView: Tree := tvBooksSR;
-    GroupsView: Tree := tvBooksF;
-    FilterView: Tree := tvBooksFL;
-  end;
+  Tree := GetViewTree(ActiveView);
 end;
 
 procedure TfrmMain.Selection(SelState: boolean);
@@ -3183,6 +3465,7 @@ begin
               Data := Tree.GetNodeData(bookNode);
               Data.ID := TableB.FieldByName('ID').AsInteger;
               Data.Title := TableB.FieldByName('Title').AsString;
+              Data.Series := TableB.FieldByName('Series').AsString;
 
               Data.FullName := TableB.FieldByName('FullName').AsString;
 
@@ -3192,10 +3475,16 @@ begin
 
               if (COL_DATE in Columns) then Data.Date := TableB.FieldByName('Date').AsDateTime;
 
+              if (COL_TYPE in Columns) then
+              begin
+                Data.FileType := TableB.FieldByName('Ext').AsString;
+                Delete(Data.FileType,1,1);
+              end;
+
               if (COL_COLLECTION in Columns) then Data.ColName := CollectionName;
 
               if Tree.Tag <> 4 then
-                  Data.Genre := DMCollection.GetBookGenres(TableB.FieldByName('ID').AsInteger,False)
+                  Data.Genre := DMMain.GetBookGenres(TableB.FieldByName('ID').AsInteger,False)
                 else
                   Data.Genre := TableB.FieldByName('Genres').AsString;
 
@@ -3207,6 +3496,8 @@ begin
 
               if (COL_RATE in Columns) and (not TableB.FieldByName('Rate').IsNull) then
                 Data.Rate := TableB.FieldByName('Rate').AsInteger;
+
+              Data.Deleted := TableB.FieldByName('Deleted').Value;
 
               Data.nodeType := ntBookInfo;
 
@@ -3238,9 +3529,10 @@ begin
               0: lblBooksTotalA.Caption := Format('(%d)', [i]);
               1: lblBooksTotalS.Caption := Format('(%d)', [i]);
               2: lblBooksTotalG.Caption := Format('(%d)', [i]);
-              3: lblTotalBooksSR.Caption := Format('(%d)', [i]);
               4: lblTotalBooksF.Caption := Format('(%d)', [i]);
-              5: lblTotalBooksFL.Caption := Format('(%d)', [i]);
+              3: begin
+                   lblTotalBooksFL.Caption := Format('(%d)', [i]);
+                 end;
             end;
 
           finally
@@ -3269,9 +3561,13 @@ end;
 procedure TfrmMain.miCopyAuthorClick(Sender: TObject);
 var
   treeView: TVirtualStringTree;
+
   Data: PAuthorData;
   DataG: PGenreData;
   strText: String;
+
+  Node: PVirtualNode;
+
 begin
   case ActiveView of
     ByAuthorView: treeView := tvAuthors;
@@ -3281,50 +3577,77 @@ begin
     Assert(False);
   end;
 
+  strText := '';
+
   case ActiveView of
     ByAuthorView, BySeriesView:
       begin
-        Data := treeView.GetNodeData(treeView.GetFirstSelected);
-        if not Assigned(Data) then
-          Exit;
-
-        strText := Data.Text;
+        Node := treeView.GetFirstSelected;
+        while Node <> nil do
+        begin
+          Data := treeView.GetNodeData(Node);
+          if strText = '' then
+            strText := Data.Text
+          else
+            strText := strText + #13#10+ Data.Text;
+          Node := treeView.GetNextSelected(Node);
+        end;
       end;
 
     ByGenreView:
       begin
-        DataG := tvGenres.GetNodeData(tvGenres.GetFirstSelected);
-        if not Assigned(DataG) then
-          Exit;
-
-        strText := DataG.Text;
+        Node := treeView.GetFirstSelected;
+        while Node <> nil do
+        begin
+          DataG := treeView.GetNodeData(Node);
+          if strText = '' then
+            strText := DataG.Text
+          else
+            strText := strText + #13#10+ DataG.Text;
+          Node := treeView.GetNextSelected(Node);
+        end;
       end;
   end;
-  Clipboard.AsText := strText;
+
+
+  Clipboard.AsText := trim(strText);
 end;
 
 procedure TfrmMain.miCopyClBrdClick(Sender: TObject);
 var
   Tree: TVirtualStringTree;
-  S: String;
+  S,R: String;
   Data: PBookData;
+  Node: PVirtualNode;
+
 begin
   GetActiveTree(Tree);
-  Data := Tree.GetNodeData(Tree.GetFirstSelected);
-  if not Assigned(Data) then
-    Exit;
 
-  case Data.nodeType of
-    ntSeriesInfo:
-      S := Data.FullName + '. Серия: ' + Data.Series;
+  S := ''; R := '';
 
-    ntBookInfo:
-      if Data.Series = '' then
-        S := Data.FullName + '. ' + Data.Title
+  Node := Tree.GetFirstSelected;
+  while Node <> Nil do
+  begin
+    Data := Tree.GetNodeData(Node);
+
+    case Data.nodeType of
+      ntSeriesInfo:
+        S := Data.FullName + '. Серия: ' + Data.Series;
+
+      ntBookInfo:
+        if Data.Series = '' then
+          S := Data.FullName + '. ' + Data.Title
+        else
+          S := Data.FullName + '. Серия:' + Data.Series + '. ' + Data.Title;
+    end;
+    if S = '' then
+        R := S
       else
-        S := Data.FullName + '. Серия:' + Data.Series + '. ' + Data.Title;
+        R := R + #13#10 + S;
+
+    Node := Tree.GetNextSelected(Node);
   end;
-  Clipboard.AsText := S;
+  Clipboard.AsText := trim(R);
 end;
 
 procedure TfrmMain.miDeleteBookClick(Sender: TObject);
@@ -3334,10 +3657,15 @@ var
   Data: PBookData;
   ALibrary: TMHLLibrary;
   FUpdateFavorites: Boolean;
+
+  FileName,Folder, Ext: string;
+  No: integer;
+
+
 begin
   FUpdateFavorites := False;
 
-  if ActiveView = GroupsView then
+  if ActiveView = FavoritesView then
   begin
     MessageDlg('Для удаления книги перейдите ' + #13 + 'в соответствующую коллекцию', mtWarning, [mbOk], 0);
     Exit;
@@ -3361,18 +3689,28 @@ begin
 
       if (Data.nodeType = ntBookInfo) and ((Tree.CheckState[Node] = csCheckedNormal) or (Tree.Selected[Node])) then
       begin
-        ALibrary.BeginBulkOperation;
-        try
-          ALibrary.DeleteBook(Data.ID);
-          ALibrary.EndBulkOperation(True);
-        except
-          ALibrary.EndBulkOperation(False);
-        end;
-
-        if DMUser.tblGrouppedBooks.Locate('DatabaseID;InnerID', VarArrayOf([Settings.ActiveCollection, Data.ID]), []) then
+        if isOnlineCollection(DMUser.ActiveCollection.CollectionType) and Data.Locale then
         begin
-          DMUser.tblGrouppedBooks.Delete;
-          FUpdateFavorites := True;
+          DMMain.GetBookFileName(Data.ID, FileName, Folder, Ext, No);
+          if DeleteFile(FCollectionRoot + Folder) then
+            DMMain.SetLocalStatus(Data.ID,False);
+        end
+        else
+        begin
+
+          ALibrary.BeginBulkOperation;
+          try
+            ALibrary.DeleteBook(Data.ID);
+            ALibrary.EndBulkOperation(True);
+          except
+            ALibrary.EndBulkOperation(False);
+          end;
+
+          if DMUser.tblFavorites.Locate('DatabaseID;InnerID', VarArrayOf([Settings.ActiveCollection, Data.ID]), []) then
+          begin
+            DMUser.tblFavorites.Delete;
+            FUpdateFavorites := True;
+          end;
         end;
       end;
 
@@ -3386,15 +3724,15 @@ begin
   // Перечитать дерево
   //
   case ActiveView of
-    ByAuthorView: FillBooksTree(0, tvBooksA, DMCollection.tblAuthor_List, DMCollection.tblBooksA, False, True);  // авторы
-    BySeriesView: FillBooksTree(0, tvBooksS, nil,                   DMCollection.tblBooksS, False, False); // серии
-    ByGenreView:  FillBooksTree(0, tvBooksG, DMCollection.tblGenre_List,  DMCollection.tblBooksG, True,  True);  // жанры
+    ByAuthorView: FillBooksTree(0, tvBooksA, DMMain.tblAuthor_List, DMMain.tblBooksA, False, True);  // авторы
+    BySeriesView: FillBooksTree(0, tvBooksS, nil,                   DMMain.tblBooksS, False, False); // серии
+    ByGenreView:  FillBooksTree(0, tvBooksG, DMMain.tblGenre_List,  DMMain.tblBooksG, True,  True);  // жанры
   else
     Assert(False);
   end;
 
   if FUpdateFavorites then
-    FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True);
+    FillBooksTree(0, tvBooksF, nil, DMUser.tblFavorites, True, True);
 end;
 
 procedure TfrmMain.miDeleteColClick(Sender: TObject);
@@ -3423,20 +3761,20 @@ begin
     Assert(Assigned(Data));
     if (Data.nodeType = ntBookInfo) and ((tvBooksF.CheckState[Node] = csCheckedNormal) or (tvBooksF.Selected[Node])) then
     begin
-      DMUser.tblGrouppedBooks.Locate('ID', Data.ID, []);
-      DMUser.tblGrouppedBooks.Delete;
+      DMUser.tblFavorites.Locate('ID', Data.ID, []);
+      DMUser.tblFavorites.Delete;
     end;
     Node := tvBooksF.GetNext(Node);
   end;
-  FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True);
+  FillBooksTree(0, tvBooksF, nil, DMUser.tblFavorites, True, True);
 end;
 
 function TfrmMain.GetActiveBookTable(tag:integer):TAbsTable;
 begin
   if Tag = 4 then
-    Result := DMUser.tblGrouppedBooks
+    Result := DMUser.tblFavorites
   else
-    Result := DMCollection.tblBooks;
+    Result := DMMain.tblBooks;
 end;
 
 procedure  TfrmMain.RefreshBooksState(Tree: TVirtualStringTree; BookIDList: TBookIdList );
@@ -3446,6 +3784,10 @@ var
   Node: PVirtualNode;
   Max : integer;
 begin
+  //
+  // NickR - надеюсь, больше не нужна
+  // { TODO -oNickR -cunused code : удалить }
+  //
   Node := Tree.GetFirst;
   i := 0; Max := High(BookIDList);
   while Assigned(Node) do
@@ -3508,33 +3850,34 @@ begin
 
   for I := 0 to High(BookIDList) do
   begin
-
-    if ActiveView = GroupsView then
+    if ActiveView = FavoritesView then
     begin
-      DMUser.tblGrouppedBooks.Locate('ID',BookIDList[i].ID,[]);
-      if DMUser.tblGrouppedBooksDataBaseId.Value <>
-         DMUser.ActiveCollection.ID
-       then
+      DMUser.tblFavorites.Locate('ID', BookIDList[i].ID, []);
+      if DMUser.tblFavoritesDataBaseId.Value <> DMUser.ActiveCollection.ID then
          Continue;
     end;
 
-    if CheckID(BookIDList[i].ID) then Continue;
+    if CheckID(BookIDList[i].ID) then
+      Continue;
 
-    DMCollection.GetBookFolder(BookIDList[i].ID,Folder);
+    DMMain.GetBookFolder(BookIDList[i].ID,Folder);
     Node := tvDownloadList.AddChild(nil);
     Data := tvDownloadList.GetNodeData(Node);
 
-    DMCollection.FieldByName(BookIDList[i].ID,'FullName',Data.Author);
-    DMCollection.FieldByName(BookIDList[i].ID,'Title',Data.Title);
-    DMCollection.FieldByName(BookIDList[i].ID,'Size',Data.Size);
-    DMCollection.FieldByName(BookIDList[i].ID,'LibID',LibID);
+    DMMain.FieldByName(BookIDList[i].ID, 'FullName', Data.Author);
+    DMMain.FieldByName(BookIDList[i].ID, 'Title', Data.Title);
+    DMMain.FieldByName(BookIDList[i].ID, 'Size', Data.Size);
+    DMMain.FieldByName(BookIDList[i].ID, 'LibID', LibID);
     Data.ID := BookIDList[i].ID;
     Data.State := dsWait;
     Data.FileName := Folder;
-    Data.URL := Format('http://lib.rus.ec/b/%d/download',[LibID]);
+    Data.URL := Format('http://lib.rus.ec/b/%d/download', [LibID]);
   end;
-  if Settings.AutoStartDwnld then btnStartDownloadClick(Sender);
 
+  lblDownloadCount.Caption := Format('(%d)',[tvDownloadList.ChildCount[Nil]]);
+
+  if Settings.AutoStartDwnld then
+    btnStartDownloadClick(Sender);
 end;
 
 procedure TfrmMain.miEditAuthorClick(Sender: TObject);
@@ -3544,7 +3887,7 @@ var
   Data: PBookData;
   Res: boolean;
 begin
-  if ActiveView = GroupsView then
+  if ActiveView = FavoritesView then
   begin
     MessageDlg('Редактирование книг из избранного невозможно.', mtWarning, [mbOk], 0);
     Exit;
@@ -3560,29 +3903,29 @@ begin
   if not Assigned(Data) then
     Exit;
 
-  DMCollection.tblAuthor_List.Locate('BookId', Data.ID, []);
-  DMCollection.tblAuthors.Locate('ID', DMCollection.tblAuthor_List['AuthID'], []);
-  frmEditAuthor.edFamily.Text := DMCollection.tblAuthors.FieldByName('Family').AsString;
-  frmEditAuthor.edName.Text := DMCollection.tblAuthors.FieldByName('Name').AsString;
-  frmEditAuthor.edMiddle.Text := DMCollection.tblAuthors.FieldByName('Middle').AsString;
+  DMMain.tblAuthor_List.Locate('BookId', Data.ID, []);
+  DMMain.tblAuthors.Locate('ID', DMMain.tblAuthor_List['AuthID'], []);
+  frmEditAuthor.edFamily.Text := DMMain.tblAuthors.FieldByName('Family').AsString;
+  frmEditAuthor.edName.Text := DMMain.tblAuthors.FieldByName('Name').AsString;
+  frmEditAuthor.edMiddle.Text := DMMain.tblAuthors.FieldByName('Middle').AsString;
   if frmEditAuthor.ShowModal = mrOk then
   begin
-    DMCollection.tblAuthors.Edit;
-    DMCollection.tblAuthors.FieldByName('Family').AsString := frmEditAuthor.edFamily.Text;
-    DMCollection.tblAuthors.FieldByName('Name').AsString := frmEditAuthor.edName.Text;
-    DMCollection.tblAuthors.FieldByName('Middle').AsString := frmEditAuthor.edMiddle.Text;
-    DMCollection.tblAuthors.FieldByName('FullName').AsString := frmEditAuthor.edFamily.Text + ' ' +
+    DMMain.tblAuthors.Edit;
+    DMMain.tblAuthors.FieldByName('Family').AsString := frmEditAuthor.edFamily.Text;
+    DMMain.tblAuthors.FieldByName('Name').AsString := frmEditAuthor.edName.Text;
+    DMMain.tblAuthors.FieldByName('Middle').AsString := frmEditAuthor.edMiddle.Text;
+    DMMain.tblAuthors.FieldByName('FullName').AsString := frmEditAuthor.edFamily.Text + ' ' +
       frmEditAuthor.edName.Text + ' ' + frmEditAuthor.edMiddle.Text;
-    DMCollection.tblAuthors.Post;
+    DMMain.tblAuthors.Post;
 
     repeat
       { TODO -oNickR -cRefactoring : можно заменить на один UPDATE }
-      Res := DMCollection.tblBooks.Locate('FullName', Data.FullName, []);
+      Res := DMMain.tblBooks.Locate('FullName', Data.FullName, []);
       if Res then
       begin
-        DMCollection.tblBooks.Edit;
-        DMCollection.tblBooks['FullName'] := DMCollection.tblAuthors['FullName'];
-        DMCollection.tblBooks.Post;
+        DMMain.tblBooks.Edit;
+        DMMain.tblBooks['FullName'] := DMMain.tblAuthors['FullName'];
+        DMMain.tblBooks.Post;
       end;
     until not Res;
   end;
@@ -3596,8 +3939,8 @@ begin
       'Перейти на сайт "Электронная библиотека lib.rus.ec"?',
       mtWarning, [mbYes, mbNo], 0) = mrYes then
     begin
-      DMCollection.tblBooks.Locate('ID', ID, []);
-      ShellExecute(handle, 'open', PChar('http://lib.rus.ec/b/' + IntToStr(DMCollection.tblBooks['LibID']) + '/edit'), nil, nil, SW_SHOW);
+      DMMain.tblBooks.Locate('ID', ID, []);
+      ShellExecute(handle, 'open', PChar('http://lib.rus.ec/b/' + IntToStr(DMMain.tblBooks['LibID']) + '/edit'), nil, nil, SW_SHOW);
     end;
     Result := True;
   end
@@ -3617,9 +3960,9 @@ var
   Author: TAuthorRecord;
   Genre: TGenreRecord;
 begin
-  if ActiveView = GroupsView then
+  if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
   begin
-    MessageDlg('Редактирование книг из избранного невозможно.', mtWarning, [mbOk], 0);
+    MessageDlg('Редактирование книг из избранного или списка закачек невозможно.', mtWarning, [mbOk], 0);
     Exit;
   end;
 
@@ -3653,12 +3996,12 @@ begin
   end;
   frmEditBookInfo.edT.Text := R.Title;
 
-//  if R.Series = NO_SERIES_TITLE then
-//    frmEditBookInfo.cbSeries.Text := ''
-//  else
-//    frmEditBookInfo.cbSeries.Text := R.Series;
+  if R.Series = NO_SERIES_TITLE then
+    frmEditBookInfo.cbSeries.Text := ''
+  else
+    frmEditBookInfo.cbSeries.Text := R.Series;
 
-//  frmEditBookInfo.edSN.Text := IntToStr(R.SeqNumber);
+  frmEditBookInfo.edSN.Text := IntToStr(R.SeqNumber);
 
   if frmEditBookInfo.ShowModal = mrOk then
   begin
@@ -3673,9 +4016,9 @@ begin
 
     frmGenreTree.GetSelectedGenres(R);
     R.Title := frmEditBookInfo.edT.Text;
-//    R.Series := frmEditBookInfo.cbSeries.Text;
+    R.Series := frmEditBookInfo.cbSeries.Text;
 
-//    R.SeqNumber := Round(frmEditBookInfo.edSN.Value);
+    R.SeqNumber := Round(frmEditBookInfo.edSN.Value);
 
     ALibrary := TMHLLibrary.Create(nil);
     try
@@ -3710,7 +4053,7 @@ var
   Tree: TVirtualStringTree;
   ALibrary: TMHLLibrary;
 begin
-  if ActiveView = GroupsView then
+  if ActiveView = FavoritesView then
   begin
     MessageDlg('Редактирование книг из избранного невозможно.', mtWarning, [mbOk], 0);
     Exit;
@@ -3768,7 +4111,7 @@ var
   Node: PVirtualNode;
   S: string;
 begin
-  if ActiveView = GroupsView then
+  if ActiveView = FavoritesView then
   begin
     MessageDlg('Редактирование книг из избранного невозможно.', mtWarning, [mbOk], 0);
     Exit;
@@ -3784,14 +4127,15 @@ begin
     Exit;
 
   S := Data.Series;
+
   if S = '' then
     Exit;
   if InputQuery('Редактирование серии', 'Название:', S) then
   begin
-    DMCollection.tblSeries.Locate('ID', Data.SeriesID, []);
-    DMCollection.tblSeries.Edit;
-    DMCollection.tblSeries['Title'] := S;
-    DMCollection.tblSeries.Post;
+    DMMain.tblSeries.Locate('ID', Data.SeriesID, []);
+    DMMain.tblSeries.Edit;
+    DMMain.tblSeries['Title'] := S;
+    DMMain.tblSeries.Post;
     Data.Series := S;
     Tree.RepaintNode(Node);
   end;
@@ -3814,8 +4158,8 @@ begin
   spProgress.Visible := True;
   spStatus.Caption := 'Добавляем в избранное...';
   Screen.Cursor := crHourglass;
-  DMCollection.tblBooks.DisableControls;
-  DMUser.tblGrouppedBooks.DisableControls;
+  DMMain.tblBooks.DisableControls;
+  DMUser.tblFavorites.DisableControls;
   Max := Tree.TotalCount;
   Node := Tree.GetFirst;
   i := 0;
@@ -3826,44 +4170,45 @@ begin
     if (Data.nodeType = ntBookInfo) and ((Tree.CheckState[Node] = csCheckedNormal) or (Tree.Selected[Node])) then
     begin
       ID := Data.ID;
-      DMCollection.tblBooks.Locate('ID', ID, []);
-      if not DMUser.tblGrouppedBooks.Locate('FileName', DMCollection.tblBooksFileName.Value, []) then
+      DMMain.tblBooks.Locate('ID', ID, []);
+      if not DMUser.tblFavorites.Locate('FileName', DMMain.tblBooksFileName.Value, []) then
       begin
-        DMUser.tblGrouppedBooks.Insert;
-        DMUser.tblGrouppedBooksInnerID.Value := DMCollection.tblBooksID.Value;
-        DMUser.tblGrouppedBooksDataBaseID.Value := Settings.ActiveCollection;
-        DMUser.tblGrouppedBooksTitle.Value := DMCollection.tblBooksTitle.Value;
+        DMUser.tblFavorites.Insert;
+        DMUser.tblFavoritesInnerID.Value := DMMain.tblBooksID.Value;
+        DMUser.tblFavoritesDataBaseID.Value := Settings.ActiveCollection;
+        DMUser.tblFavoritesTitle.Value := DMMain.tblBooksTitle.Value;
 
-        DMUser.tblGrouppedBooksSerID.Value := DMCollection.tblBooksSerID.Value;
-        if DMCollection.tblBooksSeries.IsNull then
-          DMUser.tblGrouppedBooksSeries.Value := NO_SERIES_TITLE
+        DMUser.tblFavoritesSerID.Value := DMMain.tblBooksSerID.Value;
+        if DMMain.tblBooksSeries.IsNull then
+          DMUser.tblFavoritesSeries.Value := NO_SERIES_TITLE
         else
-          DMUser.tblGrouppedBooksSeries.Value := DMCollection.tblBooksSeries.Value;
+          DMUser.tblFavoritesSeries.Value := DMMain.tblBooksSeries.Value;
 
         if ActiveView = ByAuthorView then
-          DMUser.tblGrouppedBooksFullName.Value := DMCollection.tblAuthorsFullName.Value
+          DMUser.tblFavoritesFullName.Value := DMMain.tblAuthorsFullName.Value
         else
-          DMUser.tblGrouppedBooksFullName.Value := DMCollection.tblBooksFullName.Value;
+          DMUser.tblFavoritesFullName.Value := DMMain.tblBooksFullName.Value;
 
-        DMUser.tblGrouppedBooksSeqNumber.Value := DMCollection.tblBooksSeqNumber.Value;
-        DMUser.tblGrouppedBooksLibID.Value := DMCollection.tblBooksLibID.Value;
-        DMUser.tblGrouppedBooksSize.Value := DMCollection.tblBooksSize.Value;
-        DMUser.tblGrouppedBooksDeleted.Value := DMCollection.tblBooksDeleted.Value;
+        DMUser.tblFavoritesSeqNumber.Value := DMMain.tblBooksSeqNumber.Value;
+        DMUser.tblFavoritesLibID.Value := DMMain.tblBooksLibID.Value;
+        DMUser.tblFavoritesSize.Value := DMMain.tblBooksSize.Value;
+        DMUser.tblFavoritesDeleted.Value := DMMain.tblBooksDeleted.Value;
+        DMUser.tblFavoritesLocal.Value := DMMain.tblBooksLocal.Value;
 
-        if not DMCollection.tblBooksFolder.IsNull then
-          DMUser.tblGrouppedBooksFolder.Value := FCollectionRoot + CheckSymbols(DMCollection.tblBooksFolder.Value)
+        if not DMMain.tblBooksFolder.IsNull then
+          DMUser.tblFavoritesFolder.Value := FCollectionRoot + CheckSymbols(DMMain.tblBooksFolder.Value)
         else
-          DMUser.tblGrouppedBooksFolder.Value := FCollectionRoot;
+          DMUser.tblFavoritesFolder.Value := FCollectionRoot;
 
-        DMUser.tblGrouppedBooksFileName.Value := DMCollection.tblBooksFileName.Value;
-        DMUser.tblGrouppedBooksExt.Value := DMCollection.tblBooksExt.Value;
-        DMUser.tblGrouppedBooksInsideNo.Value := DMCollection.tblBooksInsideNo.Value;
-        DMUser.tblGrouppedBooksGenres.Value := Data.Genre;
-        DMUser.tblGrouppedBooksRate.Value := DMCollection.tblBooksRate.Value;
-        DMUser.tblGrouppedBooksDate.Value := DMCollection.tblBooksDate.Value;
+        DMUser.tblFavoritesFileName.Value := DMMain.tblBooksFileName.Value;
+        DMUser.tblFavoritesExt.Value := DMMain.tblBooksExt.Value;
+        DMUser.tblFavoritesInsideNo.Value := DMMain.tblBooksInsideNo.Value;
+        DMUser.tblFavoritesGenres.Value := Data.Genre;
+        DMUser.tblFavoritesRate.Value := DMMain.tblBooksRate.Value;
+        DMUser.tblFavoritesDate.Value := DMMain.tblBooksDate.Value;
 
 
-        DMUser.tblGrouppedBooks.Post;
+        DMUser.tblFavorites.Post;
       end;
     end;
 
@@ -3876,16 +4221,49 @@ begin
   end;
   spProgress.Visible := False;
   Selection(False);
-  DMCollection.tblBooks.EnableControls;
-  DMUser.tblGrouppedBooks.EnableControls;
+  DMMain.tblBooks.EnableControls;
+  DMUser.tblFavorites.EnableControls;
   Screen.Cursor := crDefault;
-  FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True); // жанры
+  FillBooksTree(0, tvBooksF, nil, DMUser.tblFavorites, True, True); // жанры
+end;
+
+procedure TfrmMain.miAddToSearchClick(Sender: TObject);
+var
+  Edit: TRzButtonEdit;
+  treeView: TVirtualStringTree;
+  Node: PVirtualNode;
+  Data: PAuthorData;
+begin
+  case ActiveView of
+    ByAuthorView: begin
+                    treeView := tvAuthors;
+                    Edit := edFFullName;
+                  end;
+    BySeriesView: begin
+                    treeView := tvSeries;
+                    Edit := edFSeries;
+                  end
+  else
+    Assert(False);
+  end;
+
+  Node := treeView.GetFirstSelected;
+  while Node <> nil do
+  begin
+    Data := treeView.GetNodeData(Node);
+    if Edit.Text = '' then
+         Edit.Text := Format('="%s"',[Data.Text])
+    else
+         Edit.Text := Format('%s OR%s="%s"',[Edit.Text,#13#10,Data.Text]);
+    Node := treeView.GetNextSelected(Node);
+  end;
+
 end;
 
 procedure TfrmMain.miFb2ImportClick(Sender: TObject);
 begin
   DMUser.ActivateCollection(Settings.ActiveCollection);
-  DMCollection.DBCollection.Connected := False;
+  DMMain.DBMain.Connected := False;
 
   unit_Import.ImportFB2(DMUser.ActiveCollection);
 
@@ -3895,7 +4273,7 @@ end;
 procedure TfrmMain.miFb2ZipImportClick(Sender: TObject);
 begin
   DMUser.ActivateCollection(Settings.ActiveCollection);
-  DMCollection.DBCollection.Connected := False;
+  DMMain.DBMain.Connected := False;
 
   unit_Import.ImportFB2ZIP(DMUser.ActiveCollection);
 
@@ -3915,7 +4293,7 @@ begin
     exit;
   Data.Rate := (Sender as TMenuItem).Tag;
   BookTreeStatus := bsBusy;
-  if GetActiveView <> GroupsView then
+  if GetActiveView <> FavoritesView then
   begin
     if not DMUser.tblRates.Locate('ID', Data.ID, []) then
     begin
@@ -3935,30 +4313,30 @@ begin
     //
     //  Синхронизация с избранным
     //
-    if (GetActiveView <> GroupsView ) and
-       (DMUser.tblGrouppedBooks.Locate('InnerId;DataBaseID',
+    if (GetActiveView <> FavoritesView ) and
+       (DMUser.tblFavorites.Locate('InnerId;DataBaseID',
                                   VarArrayOf([Data.ID,DMUser.ActiveCollection.ID]),[]))
     then
     begin
-      DMUser.tblGrouppedBooks.Edit;
-      DMUser.tblGrouppedBooksRate.Value := Data.Rate;
-      DMUser.tblGrouppedBooks.Post;
-      FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True); // избранное
+      DMUser.tblFavorites.Edit;
+      DMUser.tblFavoritesRate.Value := Data.Rate;
+      DMUser.tblFavorites.Post;
+      FillBooksTree(0, tvBooksF, nil, DMUser.tblFavorites, True, True); // избранное
     end;
   end
   else // активная вкладка - избранное
   begin
-    DMUser.tblGrouppedBooks.Locate('ID',Data.ID,[]);
-    DMUser.tblGrouppedBooks.Edit;
-    DMUser.tblGrouppedBooksRate.Value := Data.Rate;
-    DMUser.tblGrouppedBooks.Post;
+    DMUser.tblFavorites.Locate('ID',Data.ID,[]);
+    DMUser.tblFavorites.Edit;
+    DMUser.tblFavoritesRate.Value := Data.Rate;
+    DMUser.tblFavorites.Post;
 
     //
     //  Синхронизация с таблицей рейтингов
     //
 
     if(DMUser.tblRates.Locate(
-        'ID;DataBaseID', VarArrayOf([DMUser.tblGrouppedBooksInnerID.Value,DMUser.tblGrouppedBooksDatabaseID.Value]),[]))
+        'ID;DataBaseID', VarArrayOf([DMUser.tblFavoritesInnerID.Value,DMUser.tblFavoritesDatabaseID.Value]),[]))
     then
     begin
       DMUser.tblRates.Edit;
@@ -3967,80 +4345,54 @@ begin
     end
     else begin
       DMUser.tblRates.Insert;
-      DMUser.tblRates['ID'] := DMUser.tblGrouppedBooksInnerID.Value;
+      DMUser.tblRates['ID'] := DMUser.tblFavoritesInnerID.Value;
       DMUser.tblRates['Rate'] := Data.Rate;
-      DMUser.tblRates['DataBaseID'] := DMUser.tblGrouppedBooksDatabaseID.Value;
+      DMUser.tblRates['DataBaseID'] := DMUser.tblFavoritesDatabaseID.Value;
       DMUser.tblRates['Date'] := Now;
       DMUser.tblRates.Post;
     end;
-    FillBooksTree(0, tvBooksA, DMCollection.tblAuthor_List, DMCollection.tblBooksA, False, True); // авторы
-    FillBooksTree(0, tvBooksS, nil, DMCollection.tblBooksS, False, False); // серии
+    FillBooksTree(0, tvBooksA, DMMain.tblAuthor_List, DMMain.tblBooksA, False, True); // авторы
+    FillBooksTree(0, tvBooksS, nil, DMMain.tblBooksS, False, False); // серии
   end;
 
   Tree.RepaintNode(Node);
   BookTreeStatus := bsFree;
 end;
 
-procedure TfrmMain.btnSearchClick(Sender: TObject);
+procedure TfrmMain.btnSavePresetClick(Sender: TObject);
+const d='~;~';
 var
-  S: String;
-  I1: String;
-  I2: String;
-  nIndex: Integer;
-const
-  Filters: array[Boolean, 1..3] of string = (
-    (
-      'Title="%1:s*"',                                          // I1 = ''  I2 <> ''
-      'FullName="%0:s*"',                                       // I1 <> '' I2 = ''
-      '(FullName="%0:s*") and (Title="%1:s*")'                  // I1 <> '' I2 <> ''
-    ),
-    (
-      'Title LIKE "%%%1:s%%"',                                  // I1 = ''  I2 <> ''
-      'FullName LIKE "%%%0:s%%"',                               // I1 <> '' I2 = ''
-      '(FullName LIKE "%%%0:s%%") and (Title LIKE "%%%1:s%%")'  // I1 <> '' I2 <> ''
-    )
-  );
+  SL : TStringList;
+  S  : String;
+  FN: string;
 
 begin
-  I1 := Trim(edAuth.Text);
-  I2 := Trim(edTitle.Text);
+  if cbPresetName.Text = '' then Exit;
 
-  nIndex := 0;
-  if I1 <> '' then nIndex := nIndex or $02;
-  if I2 <> '' then nIndex := nIndex or $01;
+  FN := cbPresetName.Text + '.mhlf';
 
-  if nIndex = 0 then
-    Exit;
+  if cbPresetName.ItemIndex = -1 then
+    cbPresetName.Items.Add(cbPresetName.Text);
 
-  spStatus.Caption := 'Ищем ...';
-  StatusBar.Repaint;
-
-  S := Format(Filters[cbFulltext.Checked, nIndex], [I1, I2]);
-  Assert(S <> '');
-
-  Screen.Cursor := crHourGlass;
+  SL := TStringList.Create;
   try
-    if Settings.DoNotShowDeleted then
-      DMCollection.tblBooks.Filter := S + ' and Deleted<>1'
-    else
-      DMCollection.tblBooks.Filter := S;
-    DMCollection.tblBooks.Filtered := True;
-    FillBooksTree(0, tvBooksSR, nil, DMCollection.tblBooks, True, True);
+    S := '~' + edFFullName.Text + d +
+         edFTitle.Text + d +
+         edFSeries.Text + d +
+         edFFile.Text + d +
+         edFFolder.Text + d +
+         edFExt.Text + d +
+         cbDate.Text + d +
+         cbDownloaded.Text + d +
+         BoolToStr(cbDeleted.Checked) + '~';
+
+    SL.Add(S);
+    SL.SaveToFile(Settings.PresetPath + FN,TEncoding.UTF8);
+
+    btnDeletePreset.Enabled := True;
   finally
-    Screen.Cursor := crDefault;
+    SL.Free;
   end;
-
-  spStatus.Caption := 'Готово';
-  DMCollection.tblBooks.Filtered := False;
-
-  ClearLabels(PAGE_SEARCH);
-end;
-
-procedure TfrmMain.edAuthKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-begin
-  if Key = VK_RETURN then
-    btnSearchClick(Sender);
 end;
 
 procedure TfrmMain.LocateBookList(const text: String; Tree: TVirtualStringTree);
@@ -4048,6 +4400,7 @@ var
   Node: PVirtualNode;
   Data: PAuthorData;
 begin
+  Tree.ClearSelection;
   Node := Tree.GetFirst;
   while Assigned(Node) do
   begin
@@ -4077,8 +4430,36 @@ begin
     edLocateAuthor.Text := OldText;
     edLocateAuthor.Perform(WM_KEYDOWN, VK_RIGHT, 0);
   end;
-  if not FDoNotLocate and DMCollection.tblAuthors.Locate('FullName', edLocateAuthor.Text, [loPartialKey, loCaseInsensitive]) then
-    LocateBookList(DMCollection.tblAuthorsFullName.Value, tvAuthors);
+  if not FDoNotLocate and DMMain.tblAuthors.Locate('FullName', edLocateAuthor.Text, [loPartialKey, loCaseInsensitive]) then
+    LocateBookList(DMMain.tblAuthorsFullName.Value, tvAuthors);
+end;
+
+procedure TfrmMain.edLocateAuthorKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+
+var
+  Param: Word;
+begin
+
+  if ActiveView = ByAuthorView then
+    if Key = VK_UP then
+      tvAuthors.Perform(WM_KEYDOWN, VK_UP, 0);
+    if Key = VK_DOWN  then
+      tvAuthors.Perform(WM_KEYDOWN, VK_DOWN, 0);
+
+  if ActiveView = BySeriesView then
+    if Key = VK_UP then
+      tvSeries.Perform(WM_KEYDOWN, VK_UP, 0);
+    if Key = VK_DOWN  then
+      tvSeries.Perform(WM_KEYDOWN, VK_DOWN, 0);
+
+end;
+
+procedure TfrmMain.edFFullNameButtonClick(Sender: TObject);
+begin
+  frmEditor.Text := (Sender as TrzButtonEdit).Text;
+  frmEditor.ShowModal;
+  (Sender as TrzButtonEdit).Text := frmEditor.Text;
 end;
 
 procedure TfrmMain.edFFullNameKeyDown(Sender: TObject; var Key: Word;
@@ -4102,8 +4483,8 @@ begin
     edLocateSeries.Text := OldText;
     edLocateSeries.Perform(WM_KEYDOWN, VK_RIGHT, 0);
   end;
-  if not FDoNotLocate and DMCollection.tblSeries.Locate('Title', edLocateSeries.Text, [loPartialKey, loCaseInsensitive]) then
-    LocateBookList(DMCollection.tblSeriesTitle.Value, tvSeries);
+  if not FDoNotLocate and DMMain.tblSeries.Locate('Title', edLocateSeries.Text, [loPartialKey, loCaseInsensitive]) then
+    LocateBookList(DMMain.tblSeriesTitle.Value, tvSeries);
 end;
 
 procedure TfrmMain.FillAuthorTree;
@@ -4117,24 +4498,24 @@ begin
   try
     tvAuthors.Clear;
 
-    DMCollection.tblAuthors.DisableControls;
+    DMMain.tblAuthors.DisableControls;
     try
-      DMCollection.tblAuthors.First;
+      DMMain.tblAuthors.First;
 
-      if DMCollection.tblAuthorsFullName.IsNull then
+      if DMMain.tblAuthorsFullName.IsNull then
         tvBooksA.Clear;
 
-      while not DMCollection.tblAuthors.Eof do
+      while not DMMain.tblAuthors.Eof do
       begin
         Node := tvAuthors.AddChild(nil);
         NodeData := tvAuthors.GetNodeData(Node);
-        NodeData.ID := DMCollection.tblAuthorsID.AsInteger;
-        NodeData.Text := DMCollection.tblAuthorsFullName.AsString;
+        NodeData.ID := DMMain.tblAuthorsID.AsInteger;
+        NodeData.Text := DMMain.tblAuthorsFullName.AsString;
 
-        DMCollection.tblAuthors.Next;
+        DMMain.tblAuthors.Next;
       end;
     finally
-      DMCollection.tblAuthors.EnableControls;
+      DMMain.tblAuthors.EnableControls;
     end;
     ///DMMain.tblAuthors.First;
 
@@ -4155,23 +4536,23 @@ begin
   try
     tvSeries.Clear;
 
-    DMCollection.tblSeries.DisableControls;
+    DMMain.tblSeries.DisableControls;
     try
-      DMCollection.tblSeries.First;
+      DMMain.tblSeries.First;
 
-      if DMCollection.tblSeriesTitle.IsNull then
+      if DMMain.tblSeriesTitle.IsNull then
         tvBooksS.Clear;
 
-      while not DMCollection.tblSeries.Eof do
+      while not DMMain.tblSeries.Eof do
       begin
         Node := tvSeries.AddChild(nil);
         NodeData := tvSeries.GetNodeData(Node);
-        NodeData.ID := DMCollection.tblSeriesID.AsInteger;
-        NodeData.Text := DMCollection.tblSeriesTitle.AsString;
-        DMCollection.tblSeries.Next;
+        NodeData.ID := DMMain.tblSeriesID.AsInteger;
+        NodeData.Text := DMMain.tblSeriesTitle.AsString;
+        DMMain.tblSeries.Next;
       end;
     finally
-      DMCollection.tblSeries.EnableControls;
+      DMMain.tblSeries.EnableControls;
     end;
     ///DMMain.tblSeries.First;
   finally
@@ -4197,10 +4578,10 @@ begin
     try
       Tree.Clear;
 
-      DMCollection.tblGenres.First;
-      while not DMCollection.tblGenres.Eof do
+      DMMain.tblGenres.First;
+      while not DMMain.tblGenres.Eof do
       begin
-        strParentCode := DMCollection.tblGenresParentCode.Value;
+        strParentCode := DMMain.tblGenresParentCode.Value;
 
         ParentNode := nil;
         if (strParentCode <> '0') and Nodes.Find(strParentCode, nParentIndex) then
@@ -4209,14 +4590,14 @@ begin
         genreNode := Tree.AddChild(ParentNode);
 
         genreData := Tree.GetNodeData(genreNode);
-        genreData.id := DMCollection.tblGenresID.Value;
-        genreData.Text := DMCollection.tblGenresAlias.Value;
-        genreData.Code := DMCollection.tblGenresCode.Value;
+        genreData.id := DMMain.tblGenresID.Value;
+        genreData.Text := DMMain.tblGenresAlias.Value;
+        genreData.Code := DMMain.tblGenresCode.Value;
         genreData.ParentCode := strParentCode;
 
         Nodes.AddObject(genreData.Code, TObject(genreNode));
 
-        DMCollection.tblGenres.Next;
+        DMMain.tblGenres.Next;
       end;
     finally
       Tree.EndUpdate;
@@ -4346,34 +4727,34 @@ begin
     
   Data.Rate := 0;
   BookTreeStatus := bsBusy;
-  if GetActiveView <> GroupsView then
+  if GetActiveView <> FavoritesView then
   begin
     if DMUser.tblRates.Locate('ID;DataBaseID',
           VarArrayOf([Data.ID,DMUser.ActiveCollection.ID]), [])
       then DMUser.tblRates.Delete;
-    if DMUser.tblGrouppedBooks.Locate('InnerID;DataBaseID',
+    if DMUser.tblFavorites.Locate('InnerID;DataBaseID',
        VarArrayOf([Data.ID,DMUser.ActiveCollection.ID]),[]) then
     begin
-      DMUser.tblGrouppedBooks.Edit;
-      DMUser.tblGrouppedBooksRate.Value := 0;
-      DMUser.tblGrouppedBooks.Post;
+      DMUser.tblFavorites.Edit;
+      DMUser.tblFavoritesRate.Value := 0;
+      DMUser.tblFavorites.Post;
 
-      FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True); // избранное
+      FillBooksTree(0, tvBooksF, nil, DMUser.tblFavorites, True, True); // избранное
     end;
   end
-  else if DMUser.tblGrouppedBooks.Locate('ID',Data.ID,[]) then
+  else if DMUser.tblFavorites.Locate('ID',Data.ID,[]) then
     begin
-      DMUser.tblGrouppedBooks.Edit;
-      DMUser.tblGrouppedBooksRate.Value := 0;
-      DMUser.tblGrouppedBooks.Post;
+      DMUser.tblFavorites.Edit;
+      DMUser.tblFavoritesRate.Value := 0;
+      DMUser.tblFavorites.Post;
 
       if DMUser.tblRates.Locate('ID;DataBaseID',
-          VarArrayOf([DMUser.tblGrouppedBooksInnerID.Value,DMUser.tblGrouppedBooksDatabaseID.Value]), [])
+          VarArrayOf([DMUser.tblFavoritesInnerID.Value,DMUser.tblFavoritesDatabaseID.Value]), [])
         then begin
           DMUser.tblRates.Delete;
 
-          FillBooksTree(0, tvBooksA, DMCollection.tblAuthor_List, DMCollection.tblBooksA, False, True); // авторы
-          FillBooksTree(0, tvBooksS, nil, DMCollection.tblBooksS, False, False); // серии
+          FillBooksTree(0, tvBooksA, DMMain.tblAuthor_List, DMMain.tblBooksA, False, True); // авторы
+          FillBooksTree(0, tvBooksS, nil, DMMain.tblBooksS, False, False); // серии
         end;
     end;
 
@@ -4389,6 +4770,11 @@ end;
 procedure TfrmMain.pmiSelectAllClick(Sender: TObject);
 begin
   Selection(True);
+end;
+
+procedure TfrmMain.pmAuthorPopup(Sender: TObject);
+begin
+  miAddToSearch.Visible := (ActiveView <>  ByGenreView);
 end;
 
 procedure TfrmMain.pmiDeselectAllClick(Sender: TObject);
@@ -4420,15 +4806,23 @@ begin
   Assert(Assigned(Node));
 
   Data := Tree.GetNodeData(Node);
-  Assert(Assigned(Data));
-  if not Assigned(Data) or (Data.nodeType <> ntBookInfo) then
-    Exit;
+
+  if not Assigned(Data) then Exit;
+
+  if (Data.nodeType <> ntBookInfo) then
+  begin
+    if not Tree.HasChildren[Node] then Exit;
+    repeat
+      Node := Tree.GetFirstChild(Node);
+      Data := Tree.GetNodeData(Node);
+    until (Data.nodeType = ntBookInfo);
+  end;
 
   Screen.Cursor := crHourGlass;
   try
-    if ActiveView = GroupsView then
+    if ActiveView = FavoritesView then
     begin
-      I := DMUser.tblGrouppedBooksDatabaseID.Value;
+      I := DMUser.tblFavoritesDatabaseID.Value;
       if I <> Settings.ActiveCollection then
       begin
         if DMUser.ActivateCollection(I) then
@@ -4438,20 +4832,19 @@ begin
           CreateCollectionMenu;
         end;
       end;
-      DMUser.tblGrouppedBooks.Locate('ID', Data.ID, []);
-      FN := DMUser.tblGrouppedBooksFullName.Value;
+      DMUser.tblFavorites.Locate('ID', Data.ID, []);
+      FN := DMUser.tblFavoritesFullName.Value;
     end
     else
     begin
-      DMCollection.tblBooks.Locate('ID', Data.ID, []);
-      FN := DMCollection.tblBooksFullName.Value;
+      DMMain.tblBooks.Locate('ID', Data.ID, []);
+      FN := DMMain.tblBooksFullName.Value;
     end;
     pgControl.ActivePageIndex := 0;
     edLocateAuthor.Text := FN;
   finally
     Screen.Cursor := crDefault;
-  end;
-end;
+  end;end;
 
 procedure TfrmMain.miCheckUpdatesClick(Sender: TObject);
 var
@@ -4531,9 +4924,17 @@ begin
 end;
 
 procedure TfrmMain.miUpdateClick(Sender: TObject);
+var
+  ActiveColIndex:  integer;
 begin
-  unit_utils.LibrusecUpdate;
-  InitCollection(True);
+  if CheckLibUpdates then
+  begin
+    ActiveColIndex := DMUser.ActiveCollection.ID;
+    StartLibUpdate;
+    Settings.ActiveCollection := ActiveColIndex;
+    DMUser.ActivateCollection(ActiveColIndex);
+    InitCollection(True);
+  end;
 end;
 
 procedure TfrmMain.mi_dwnl_LocateAuthorClick(Sender: TObject);
@@ -4628,7 +5029,7 @@ end;
 procedure TfrmMain.miCollectionImportClick(Sender: TObject);
 begin
   DMUser.ActivateCollection(Settings.ActiveCollection);
-  DMCollection.DBCollection.Connected := False;
+  DMMain.DBMain.Connected := False;
 
   unit_Import.ImportXML(DMUser.ActiveCollection);
 
@@ -4664,7 +5065,7 @@ var
   ALibrary: TMHLLibrary;
   AFileName: string;
 begin
-  DMCollection.DBCollection.Connected := False;
+  DMMain.DBMain.Connected := False;
   ALibrary := TMHLLibrary.Create(nil);
   try
     ALibrary.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
@@ -4724,10 +5125,11 @@ begin
       COL_SIZE :       pmHeaders.Items[5].Checked := True;
       COL_RATE :       pmHeaders.Items[6].Checked := True;
       COL_DATE :       pmHeaders.Items[7].Checked := True;
-      COL_COLLECTION:  pmHeaders.Items[8].Checked := True;
+      COL_TYPE :       pmHeaders.Items[8].Checked := True;
+      COL_COLLECTION:  pmHeaders.Items[9].Checked := True;
     end;
   end;
-  pmHeaders.Items[8].Visible := (Tree.Tag = PAGE_FAVORITES);
+  pmHeaders.Items[9].Visible := (Tree.Tag = PAGE_FAVORITES);
 end;
 
 procedure TfrmMain.pgControlChange(Sender: TObject);
@@ -4778,7 +5180,7 @@ begin
 
 
   case ActiveView of
-    GroupsView:begin
+    FavoritesView:begin
                     miGotoAuthor.Visible := True;
                     miDelFavorites.Visible := True;
                     miAddFavorites.Visible := False;
@@ -4806,11 +5208,10 @@ begin
   tbtnDownloadList_Add.ImageIndex := 2;
   tbtnDownloadList_Add.Hint := 'Добавить в список'+#13+'закачек';
 
-  DMCollection.SetActiveTable(ord(ActiveView));
+  DMMain.SetActiveTable(ord(ActiveView));
 
 
   miGotoAuthor.Visible := (ActiveView <> ByAuthorView);
-
 
   SetHeaderPopUp;
 
@@ -4834,7 +5235,63 @@ begin
   frmAddNonFb2.ShowModal;
 end;
 
+procedure TfrmMain.OnBookDownloadComplete(var Message: TDownloadCompleteMessage);
+var
+  Tree: TVirtualStringTree;
+  Node: PVirtualNode;
+  Data: PBookData;
+  i: TView;
+begin
+  if Message.Downloaded then
+  begin
+    for i := ByAuthorView to FavoritesView do
+    begin
+      Tree := GetViewTree(i);
+      Assert(Assigned(Tree));
 
+      Node := GetBookNode(Tree, Message.BookID);
+      if Assigned(Node) then
+      begin
+        Data := Tree.GetNodeData(Node);
+        Assert(Assigned(Data));
+        if Assigned(Data) then
+        begin
+          Data^.Locale := True;
+          Tree.RepaintNode(Node);
+        end;
+      end;
+    end;
+  end;
+end;
+
+function TfrmMain.GetBookNode(const Tree: TVirtualStringTree; bookID: Integer): PVirtualNode;
+var
+  Data: PBookData;
+  Node: PVirtualNode;
+begin
+  Assert(Assigned(Tree));
+
+  Result := nil;
+
+  Node := Tree.GetFirst;
+  while Assigned(Node) do
+  begin
+    Data := Tree.GetNodeData(Node);
+    Assert(Assigned(Data));
+    if (Data.nodeType = ntBookInfo) and (Data.ID = bookID) then
+    begin
+      Result := Node;
+      Exit;
+    end;
+    Node := Tree.GetNext(Node);
+  end;
+end;
+
+procedure TfrmMain.miINPXCollectionExportClick(Sender: TObject);
+begin
+  DMUser.ActivateCollection(Settings.ActiveCollection);
+  unit_Export.Export2INPX;
+end;
 
 end.
 

@@ -35,6 +35,8 @@ type
     lblSeries: TRzLabel;
     RzLabel6: TRzLabel;
     lblVer: TRzLabel;
+    RzGroupBox1: TRzGroupBox;
+    lblNotes: TRzLabel;
 
   public
     procedure ShowInfo;
@@ -45,7 +47,7 @@ var
 
 implementation
 
-uses dm_user, unit_Settings, unit_Consts, dm_collection;
+uses dm_user, unit_Settings, unit_Consts, dm_main;
 
 {$R *.dfm}
 
@@ -62,8 +64,9 @@ begin
   else
     lblVer.Caption := IntToStr(DMUser.ActiveCollection.Version);
   lblDate.Caption := DateToStr(DMUser.ActiveCollection.CreationDate);
+  lblNotes.Caption := DMUser.ActiveCollection.Notes;
 
-  DMCollection.GetStatistics(AuthorsCount, BooksCount, SeriesCount);
+  DMMain.GetStatistics(AuthorsCount, BooksCount, SeriesCount);
   lblAuthors.Caption := IntToStr(AuthorsCount);
   lblBooks.Caption := IntToStr(BooksCount);
   lblSeries.Caption := IntToStr(SeriesCount);

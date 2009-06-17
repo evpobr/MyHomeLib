@@ -53,7 +53,10 @@ type
 
     FTmp : string;
     FNo: Integer;
-    function CheckSymbols(Input: string): string;
+
+    FAColor : TColor;
+
+    procedure SetAColor(Value: TColor);
 
   protected
     { Protected declarations }
@@ -70,14 +73,12 @@ type
 
     function Show(Folder, FileName: string; No: integer):boolean;
 
-
-
-
   published
     { Published declarations }
     property TmpFolder:string read FTmp write FTmp;
     property Fb2InfoVisible:boolean read FFb2InfoVisible write Set_Fb2InfoVisible;
     property FontSize:integer read FFontSize write Set_FontSize;
+    property AnnotationColor: TColor read FAColor write SetAColor;
   end;
 
 
@@ -86,11 +87,11 @@ implementation
 
 uses
   Messages,
-//  Windows,
   xmldom,
-  unit_globals,
-  jpeg,pngimage,
-  types;
+  //unit_globals,
+  jpeg,
+  pngimage,
+  types, unit_MHLHelpers;
 
 const
   W = 55;
@@ -270,6 +271,12 @@ begin
 
 end;
 
+procedure TMHLCoverPanel.SetAColor(Value: TColor);
+begin
+  FAColor := Value;
+  FText.Color := FAColor;
+end;
+
 procedure TMHLCoverPanel.Set_Fb2InfoVisible(Value: boolean);
 begin
   FInfo.Visible := Value;
@@ -286,7 +293,7 @@ function TMHLCoverPanel.Show(Folder, FileName: string; No: integer): boolean;
 var
   FS: TMemoryStream;
 begin
-  if (Not Visible) or FOnProgress  then Exit;
+  if (Not Visible) or FOnProgress then Exit;
 
   FOnProgress := true;
   Clear;
@@ -337,26 +344,6 @@ begin
     end;
 end;
 
-function TMHLCoverPanel.CheckSymbols(Input: string): string;
-const
-  denied: set of char = ['<', '>', ':', '"', '/', '|', '*', '?'];
-
-var
-  s, conv: string;
-  f: integer;
-begin
-  Conv := '';
-  for f := 1 to length(input) do
-  begin
-    if Input[f] in denied then
-      s := ' '
-    else
-      s := Input[f];
-    Conv := Conv + s;
-  end;
-  result := conv;
-end;
-
 procedure TMHLCoverPanel.ShowEmptyCover;
 begin
  { TODO : Временная заглушка; добавить отрисовку дефолтной обложки + название книги }
@@ -367,7 +354,6 @@ procedure TMHLCoverPanel.GetFb2Info;
 var
   i, p: integer;
   S, outStr: AnsiString;
-  F: TextFile;
   CoverID, Short : string;
   ImgVisible: boolean;
 
@@ -376,9 +362,6 @@ var
 
   EXT: string;
   StrLen: integer;
-
-  BMP: TBitmap;
-
 begin
   ImgVisible := False;
   try
@@ -399,8 +382,8 @@ begin
             S := FBook.Binary.Items[i].Text;
             outStr := DecodeBase64(S);
 
-            StrLen := length(outStr);
-            MS.Write(PAnsiChar(outStr)^,StrLen);
+            StrLen := Length(outStr);
+            MS.Write(PAnsiChar(outStr)^, StrLen);
             ImgVisible := True;
           end;
         end;

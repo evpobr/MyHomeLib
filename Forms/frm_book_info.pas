@@ -43,7 +43,8 @@ implementation
 uses
   FictionBook_21,
   unit_globals,
-  unit_Settings;
+  unit_Settings,
+  unit_MHLHelpers;
 
 {$R *.dfm}
 
