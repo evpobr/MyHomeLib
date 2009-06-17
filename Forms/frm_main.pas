@@ -1228,7 +1228,7 @@ begin
   edFFile.Text   := '';
   edFFolder.Text := '';
   edFExt.Text    := '';
-  cbDate.Text   := '';
+  cbDate.ItemIndex := -1;
   cbDownloaded.ItemIndex := 0;
   tvBooksSR.Clear;
   ClearLabels(PAGE_SEARCH);
@@ -2018,9 +2018,32 @@ begin
     DMUser.tblBases.AddIndex('Name_Index','Name',[]);
   DMUser.tblBases.IndexName := 'Name_Index';
 
+
+//------------------------------------------------------------------------------
+//  Проверка обновлений
+//------------------------------------------------------------------------------
+
+  frmSplash.lblState.Caption := main_check_updates;
+  if Settings.CheckUpdate then
+  begin
+    FAutoCheck := True;
+    frmMain.miCheckUpdatesClick(nil);
+  end
+  else
+    FAutoCheck := False;
+
+  if Settings.CheckExternalLibUpdate then
+    if CheckLibUpdates then
+      if Settings.AutoRunUpdate then
+          StartLibUpdate
+      else
+        if MessageDlg('Доступно обновление для коллекций "lib.rus.ec".' + #13 + ' Начать обновление ?', mtWarning, [mbYes, mbNo], 0) = mrYes then
+           StartLibUpdate;
+
+//------------------------------------------------------------------------------
+
   DMUser.ActivateCollection(Settings.ActiveCollection);
   SetUserTableStatus(True);
-
 
   SetColumns;
   SetHeaderPopUp;
@@ -2043,25 +2066,9 @@ begin
     lblDownloadCount.Caption := Format('(%d)',[tvDownloadList.ChildCount[Nil]]);
   end;
 
+//------------------------------------------------------------------------------
+
   SetLangBarSize;
-
-  frmSplash.lblState.Caption := main_check_updates;
-  if Settings.CheckUpdate then
-  begin
-    FAutoCheck := True;
-    frmMain.miCheckUpdatesClick(nil);
-  end
-  else
-    FAutoCheck := False;
-
-  if Settings.CheckExternalLibUpdate then
-    if CheckLibUpdates then
-      if Settings.AutoRunUpdate then
-          StartLibUpdate
-      else
-        if MessageDlg('Доступно обновление для коллекций "lib.rus.ec".' + #13 + ' Начать обновление ?', mtWarning, [mbYes, mbNo], 0) = mrYes then
-           StartLibUpdate;
-
 
   frmSplash.lblState.Caption := 'Старт ...';
 
@@ -4917,9 +4924,17 @@ begin
 end;
 
 procedure TfrmMain.miUpdateClick(Sender: TObject);
+var
+  ActiveColIndex:  integer;
 begin
   if CheckLibUpdates then
+  begin
+    ActiveColIndex := DMUser.ActiveCollection.ID;
     StartLibUpdate;
+    Settings.ActiveCollection := ActiveColIndex;
+    DMUser.ActivateCollection(ActiveColIndex);
+    InitCollection(True);
+  end;
 end;
 
 procedure TfrmMain.mi_dwnl_LocateAuthorClick(Sender: TObject);

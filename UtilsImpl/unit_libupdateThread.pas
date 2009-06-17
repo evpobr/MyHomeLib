@@ -130,7 +130,6 @@ end;
 
 procedure TLibUpdateThread.WorkFunction;
 var
-  ActiveIndex: Integer;
   Version : integer;
   DelOld: boolean;
   ALibrary: TMHLLibrary;
@@ -144,15 +143,15 @@ begin
   FidHTTP.HandleRedirects := True;
   SetProxySettings(FidHTTP);
 
-  ActiveIndex := DMUser.ActiveCollection.ID;
   SetComment(rstrCheckingUpdate);
 
+  try
   for I := 0 to Settings.Updates.Count - 1 do
     with  Settings.Updates.Items[i] do
     begin
       if not Available then Continue;
       DMUser.ActivateCollection(CollectionID);
-      Teletype(Format('Обновление коллекции %s до версии %d:',[Name,Version]),tsInfo);
+      Teletype(Format('Обновление коллекции "%s" до версии %d:',[Name,Version]),tsInfo);
       Teletype('Загрузка обновлений ...',tsInfo);
 
       if not Settings.Updates.DownloadUpdate(I, FidHTTP) then
@@ -162,6 +161,10 @@ begin
       end;
 
       InpxFileName := Settings.WorkPath + FileName;
+
+      DBFileName := DMUser.ActiveCollection.DBFileName;
+      CollectionRoot :=  IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
+      CollectionType := DMUser.ActiveCollection.CollectionType;
 
       if Full then
       begin
@@ -173,7 +176,7 @@ begin
         DMMain.DBMain.DeleteDatabase;
 
         // создаем его заново
-
+        Teletype(Format(rstrCreatingCollection, [Name]),tsInfo);
         ALibrary := TMHLLibrary.Create(nil);
         try
           ALibrary.CreateCollectionTables(DBFileName, GENRES_FB2_FILENAME);
@@ -185,27 +188,23 @@ begin
       //  импортирум данные
       Teletype('Импорт ...',tsInfo);
 
-      DBFileName := DMUser.ActiveCollection.DBFileName;
-      CollectionRoot :=  IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
-      CollectionType := DMUser.ActiveCollection.CollectionType;
-
       Import;
       DMUser.ActiveCollection.Version := GetLibUpdateVersion(True);
-     Teletype(rstrReady,tsInfo);
+      Teletype(rstrReady,tsInfo);
     end; //for .. with
 
   Teletype(rstrUpdateComplete,tsInfo);
 
-  for I := 0 to Settings.Updates.Count - 1 do
+  finally
+    for I := 0 to Settings.Updates.Count - 1 do
     with Settings.Updates.Items[i] do
-      if FileExists(FileName) then
-        if ExtractFileName(FileName) <> Settings.SystemFileName[sfLibRusEcUpdate] then
-          DeleteFile(FileName)
+      if FileExists(Settings.WorkPath + FileName) then
+        if FileName <> 'librusec_update.zip' then
+          DeleteFile(Settings.WorkPath + FileName)
         else
           ReplaceFiles;
+  end;
 
-  DMUser.ActivateCollection(ActiveIndex);
-  Settings.ActiveCollection := ActiveIndex;
   SetComment(rstrReady);
 end;
 

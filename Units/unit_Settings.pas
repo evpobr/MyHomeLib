@@ -785,16 +785,16 @@ begin
       // Добавим апдейты по умолчанию
       //
 
-      FUpdateList.Add('Либрусек','last_librusec.info','librusec_update.zip',
+      FUpdateList.Add('Либрусек [FB2]','last_librusec.info','librusec_update.zip',
                        True,CT_LIBRUSEC_LOCAL_FB);
 
-      FUpdateList.Add('Либрусек on-line','last_librusec.info','librusec_update.zip',
+      FUpdateList.Add('Либрусек [on-line]','last_librusec.info','librusec_update.zip',
                        False,CT_LIBRUSEC_ONLINE_FB);
 
-      FUpdateList.Add('Либрусек on-line','last_extra.info','extra_update.zip',
+      FUpdateList.Add('Либрусек [on-line]','last_extra.info','extra_update.zip',
                        False,CT_LIBRUSEC_ONLINE_FB);
 
-      FUpdateList.Add('Либрусек usr','last_usr.info','usr_update.zip',
+      FUpdateList.Add('Либрусек [USR]','last_usr.info','usr_update.zip',
                        True,CT_LIBRUSEC_USR);
     end;
   finally
