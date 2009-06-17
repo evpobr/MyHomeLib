@@ -110,6 +110,7 @@ begin
       Update.FVersionFile := VerFile;
       Update.FUpdateFile := UpdateFile;
       Update.FCode := Code;
+      Update.FFull := Full;
     except
       Update.Free;
       raise;

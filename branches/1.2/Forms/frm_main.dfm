@@ -80,7 +80,8 @@ object frmMain: TfrmMain
       Width = 982
       Height = 33
       BorderWidth = 1
-      ButtonWidth = 37
+      ButtonHeight = 24
+      ButtonWidth = 39
       Caption = 'RusBar'
       DrawingStyle = dsGradient
       EdgeBorders = [ebLeft, ebTop, ebRight, ebBottom]
@@ -108,7 +109,7 @@ object frmMain: TfrmMain
       end
       object ToolButton4: TToolButton
         Tag = 91
-        Left = 26
+        Left = 28
         Top = 0
         Caption = #1040'-'#1071
         ImageIndex = 1
@@ -124,7 +125,8 @@ object frmMain: TfrmMain
       Height = 33
       Margins.Bottom = 5
       BorderWidth = 1
-      ButtonWidth = 35
+      ButtonHeight = 24
+      ButtonWidth = 37
       Caption = 'RusBar'
       DrawingStyle = dsGradient
       EdgeBorders = [ebLeft, ebTop, ebRight, ebBottom]
@@ -149,7 +151,7 @@ object frmMain: TfrmMain
       end
       object ToolButton6: TToolButton
         Tag = 92
-        Left = 24
+        Left = 26
         Top = 0
         Caption = 'A-Z'
         ImageIndex = 1
@@ -2404,8 +2406,6 @@ object frmMain: TfrmMain
         BevelOuter = bvNone
         Caption = 'Panel1'
         TabOrder = 1
-        ExplicitLeft = 46
-        ExplicitWidth = 948
         object RzPanel2: TRzPanel
           AlignWithMargins = True
           Left = 3
@@ -2415,7 +2415,6 @@ object frmMain: TfrmMain
           Align = alBottom
           BorderOuter = fsFlatRounded
           TabOrder = 0
-          ExplicitWidth = 942
           DesignSize = (
             940
             61)
@@ -2719,7 +2718,7 @@ object frmMain: TfrmMain
         OnClick = miRefreshGenresClick
       end
       object miUpdate: TMenuItem
-        Caption = #1054#1073#1085#1086#1074#1080#1090#1100' '#1082#1072#1090#1072#1083#1086#1075'  lib.rus.ec'
+        Caption = #1054#1073#1085#1086#1074#1080#1090#1100' '#1082#1072#1090#1072#1083#1086#1075#1080'  lib.rus.ec'
         ImageIndex = 34
         OnClick = miUpdateClick
       end
