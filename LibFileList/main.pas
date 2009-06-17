@@ -303,7 +303,7 @@ begin
     idFTP.Host := INF.ReadString('FTP','HOST','');
     idFTP.Username := INF.ReadString('FTP','USERNAME','');
     idFTP.Password := INF.ReadString('FTP','PASSWORD','');
-    FFTPDir := INF.ReadString('FTP','DIR','home-lib.net/test/');
+    FFTPDir := INF.ReadString('FTP','DIR','home-lib.net/update/');
 
   finally
     INF.Free;

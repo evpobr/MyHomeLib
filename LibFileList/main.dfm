@@ -186,6 +186,8 @@ object frmMain: TfrmMain
           Width = 81
           Height = 17
           Caption = 'FTP'
+          Checked = True
+          State = cbChecked
           TabOrder = 2
         end
       end
