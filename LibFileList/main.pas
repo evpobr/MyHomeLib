@@ -439,7 +439,8 @@ begin
   Pack('usr_update.zip','');
   Pack('librusec_usr.inpx', 'lib.rus.ec USR'+ #13#10 +
                             'librusec_usr' +  #13#10 +
-                            '65537');
+                            '65537' +  #13#10 +
+                            'Архивы библиотеки lib.rus.ec (не-FB2)');
 end;
 
 function TfrmMain.ExecAndWait(const FileName,Params: String; const WinState: Word): boolean;
