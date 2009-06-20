@@ -113,8 +113,6 @@ inherited frameNCWCollectionType: TframeNCWCollectionType
       AltBtnWidth = 15
       ButtonWidth = 15
       OnButtonClick = edINPXPathButtonClick
-      ExplicitLeft = 14
-      ExplicitWidth = 298
     end
   end
 end

@@ -848,6 +848,8 @@ begin
   idHTTP.CookieManager := frmMain.IdCookieManager;
   idHTTP.AllowCookies := True;
 
+  idHTTP.HandleRedirects := True;
+
 end;
 
 function CheckLibVersion(ALocalVersion: Integer; Full: boolean; out ARemoteVersion: Integer): Boolean;

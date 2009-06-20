@@ -333,7 +333,7 @@ var
 begin
   Result := '';
 
-  Template := 'http://lib.rus.ec/b/%ID%/download'; { TODO -oAlex : Заглушка! }
+  Template := Settings.DownloadURL + 'b/%ID%/download'; { TODO -oAlex : Заглушка! }
 
   DMMain.FieldByName(0, 'LibId', S);
   StrReplace('%ID%', S, Template);
