@@ -617,12 +617,12 @@ object frmSplash: TfrmSplash
     Transparent = True
   end
   object RzLabel1: TRzLabel
-    Left = 340
+    Left = 322
     Top = 94
-    Width = 30
+    Width = 48
     Height = 23
     Alignment = taRightJustify
-    Caption = '1.4'
+    Caption = '1.4.1'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 717800
     Font.Height = -19

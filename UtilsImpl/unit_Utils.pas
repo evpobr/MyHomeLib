@@ -23,6 +23,8 @@ uses
 procedure SyncOnLineFiles;
 procedure SyncFolders;
 function LibrusecUpdate: boolean;
+procedure ShowPopup(Msg: string);
+procedure HidePopup;
 
 implementation
 
@@ -32,7 +34,7 @@ uses
   frm_SyncOnLineProgressForm,
   unit_SyncFoldersThread,
   frm_ImportProgressFormEx,
-  unit_libupdateThread;
+  unit_libupdateThread, frm_info_popup;
 
 procedure SyncOnLineFiles;
 var
@@ -94,5 +96,21 @@ begin
   end;
 end;
 
+procedure ShowPopup(Msg: string);
+begin
+  frmInfoPopup := TfrmInfoPopup.Create(Nil);
+  frmInfoPopup.lblText.Caption := Msg;
+  frmInfoPopup.Refresh;
+  frmInfoPopup.Show;
+end;
+
+procedure HidePopup;
+begin
+  if frmInfoPopup <> Nil then
+  begin
+    frmInfoPopup.Hide;
+    frmInfoPopup.Free;
+  end;
+end;
 
 end.

@@ -625,7 +625,7 @@ type
     procedure SetBooksFilter;
     procedure FillAllBooksTree;
     procedure ChangeLetterButton(S: string);
-    function CheckLibUpdates: Boolean;
+    function CheckLibUpdates(Auto: boolean): Boolean;
     procedure GetActiveViewComponents(var Tree: TVirtualStringTree; var Panel: TMHLInfoPanel; var Cover: TMHLCoverPanel);
     procedure SetCoversVisible(State: boolean);
     procedure RefreshBooksState(Tree: TVirtualStringTree; BookIDList: TBookIdList);
@@ -1894,13 +1894,16 @@ begin
   FillBooksTree(0, tvBooksF,                   nil, DMUser.tblFavorites, True,  True); // избранное
 end;
 
-function TfrmMain.CheckLibUpdates: Boolean;
+function TfrmMain.CheckLibUpdates(Auto: boolean): Boolean;
 var
   LocalVersion: Integer;
   RemoteVersion: Integer;
   Active: Integer;
   i: integer;
 begin
+
+  if not Auto then ShowPopup('Проверка обновлений ...');
+
   Result := False;
 
   Active := DMUser.ActiveCollection.ID;
@@ -1920,6 +1923,12 @@ begin
         end;
   until not DMUser.FindNextCollection;
   DMUser.ActivateCollection(Active);
+
+  if not Auto then
+  begin
+    HidePopup;
+    if not Result then ShowMessage('Нет доступных обновлений');
+  end;
 end;
 
 procedure TfrmMain.SetLangBarSize;
@@ -2033,7 +2042,7 @@ begin
     FAutoCheck := False;
 
   if Settings.CheckExternalLibUpdate then
-    if CheckLibUpdates then
+    if CheckLibUpdates(True) then
       if Settings.AutoRunUpdate then
           StartLibUpdate
       else
@@ -3090,9 +3099,9 @@ begin
 
       DMMain.GetBookFileName(Data.ID, FileName, Folder, Ext, No);
 
-      WorkFile := Settings.ReadPath + Format('%s - %s.%s',
+      WorkFile := Settings.ReadPath + Format('%s - %s.%d%s',
                                               [CheckSymbols(Panel.Author),
-                                               CheckSymbols(Panel.Title),Ext]);
+                                               CheckSymbols(Panel.Title),No,Ext]);
 
       if not FileExists(WorkFile) then
       begin
@@ -3871,7 +3880,7 @@ begin
     Data.ID := BookIDList[i].ID;
     Data.State := dsWait;
     Data.FileName := Folder;
-    Data.URL := Format('http://lib.rus.ec/b/%d/download', [LibID]);
+    Data.URL := Format(Settings.DownloadURL + 'b/%d/download', [LibID]);
   end;
 
   lblDownloadCount.Caption := Format('(%d)',[tvDownloadList.ChildCount[Nil]]);
@@ -4927,7 +4936,7 @@ procedure TfrmMain.miUpdateClick(Sender: TObject);
 var
   ActiveColIndex:  integer;
 begin
-  if CheckLibUpdates then
+  if CheckLibUpdates(False) then
   begin
     ActiveColIndex := DMUser.ActiveCollection.ID;
     StartLibUpdate;

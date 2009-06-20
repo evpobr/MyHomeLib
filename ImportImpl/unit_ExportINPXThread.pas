@@ -46,7 +46,7 @@ uses
   ;
 
 const
-  BOOKS_INFO_FILE = 'books.info';
+  BOOKS_INFO_FILE = 'books.inp';
   VERSION_INFO_FILE = 'version.info';
 
 { TImportXMLThread }

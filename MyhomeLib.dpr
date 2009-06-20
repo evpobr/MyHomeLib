@@ -97,7 +97,8 @@ uses
   unit_Lib_Updates in 'Units\unit_Lib_Updates.pas',
   frm_editor in 'Forms\frm_editor.pas' {frmEditor},
   unit_SearchUtils in 'Units\unit_SearchUtils.pas',
-  unit_ExportINPXThread in 'ImportImpl\unit_ExportINPXThread.pas';
+  unit_ExportINPXThread in 'ImportImpl\unit_ExportINPXThread.pas',
+  frm_info_popup in 'Forms\frm_info_popup.pas' {frmInfoPopup};
 
 {$R *.res}
 

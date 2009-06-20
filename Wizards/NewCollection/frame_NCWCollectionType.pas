@@ -169,11 +169,15 @@ begin
   finally
     Zip.Free;
   end;
-    // файл коллекции по умолчанию
+
+  try
     FColTitle := GetParam(S);
     FColFile := GetParam(S);
     FColCode := StrToInt(GetParam(S));
     FColDescr := S;
+  except
+  end;
+
 end;
 
 procedure TframeNCWCollectionType.OnSetCollectionType(Sender: TObject);
