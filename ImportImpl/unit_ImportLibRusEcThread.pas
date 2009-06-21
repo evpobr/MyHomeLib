@@ -56,14 +56,60 @@ uses
   unit_Helpers,
   ZipForge;
 
+type
+  INPXType = (inpUnknown, inpFormat_10, inpFormat_11);
+
 { TImportLibRusEcThread }
 
-function ParseData(input: WideString; var R: TBookRecord): Boolean;
+function ParseString(const InputStr: String; const DelimiterChar: Char;
+  var slParams: TStringList): Boolean;
+//const
+//  DelimiterChar = Chr(4);
+var
+  nPos : integer;
+  cParam: String;
+  nParamsCount : Integer;
+begin
+  nParamsCount := 0;
+  slParams.Clear;
+  //
+  // Инициализируем выходной стринглист slParams
+  // В цикле обрабатываем строку, если символ равен разделителю - добавляем параметр в стринглист,
+  // иначе - прибавляем символ ко временной переменной
+  //
+  cParam := '';
+  for nPos := 1 to Length(InputStr) do begin
+    if InputStr[nPos] <> DelimiterChar  then
+      cParam := cParam + InputStr[nPos]
+    else begin
+      slParams.Add(cParam);
+      cParam := '';
+      inc(nParamsCount);
+    end;
+  end;
+  //
+  // Если временная переменная не пуста, добавляем её в стринглист.
+  //
+  if cParam <> '' then begin
+    slParams.Add(cParam);
+    Inc(nParamsCount);
+    cParam := '';
+  end;
+  //
+  // Проверяем соответствие количества параметров в стринглисте счётчику
+  // и выводим полученное значение как результат функции разбора
+  //
+  Result := slParams.Count = nParamsCount;
+end;
+
+
+function ParseData(input: WideString; var R: TBookRecord): INPXType;
 const
   DelimiterChar = Chr(4);
 var
   p: integer;
   slParams: TStringList;
+  nParamsCount : Integer;
   AuthorList: string;
   strLastName: string;
   strFirstName: string;
@@ -71,22 +117,38 @@ var
   GenreList: string;
   s: string;
   mm, dd, yy: word;
+  inpType : INPXType;
 begin
-  Result := False;
+  Result := inpUnknown;
 
   R.Clear;
 
   slParams := TStringList.Create;
   try
-    slParams.Delimiter := DelimiterChar;
-    slParams.StrictDelimiter := True;
-    slParams.DelimitedText := input;
+    nParamsCount := 0;
+    if ParseString(input, DelimiterChar, slParams) then
+      nParamsCount := slParams.Count
+    else
+      nParamsCount := -1;
 
+//    slParams.Delimiter := DelimiterChar;
+//    slParams.StrictDelimiter := True;
+//    slParams.DelimitedText := input;
+
+    //
+    // Инициализация формата инп-файла неизвестным значением
+    //
+    inpType := inpUnknown;
     //
     // Всего 11 полей, но (!!!) при разборе в список попадет еще одно (12-е) значение,
     // т к строка оканчивается разделителем
     //
-    if slParams.Count in [11, 12] then
+    if slParams.Count in [11,12] then
+      inpType := inpFormat_10;
+    if slParams.Count in [13,14] then
+      inpType := inpFormat_11;
+
+    if inpType <> inpUnknown then
     begin
       //
       // Список авторов
@@ -134,12 +196,12 @@ begin
       //
       // Серия
       //
-//      R.Series := slParams[3];
+      R.Series := slParams[3];
 
       //
       // Номер внутри серии
       //
-//      R.SeqNumber := StrToIntDef(slParams[4], 0);
+      R.SeqNumber := StrToIntDef(slParams[4], 0);
 
       //
       // Имя файла, размер, ????, признак удаленной книги
@@ -149,10 +211,7 @@ begin
       R.LibID := StrToIntDef(slParams[7], 0);
       R.Deleted := (slParams[8] = '1');
 
-      //
-      // { TODO -oNickR -cpossible bug : params[9] содержит расширение файла, но мы используем хардкоденное значение }
-      //
-      R.FileExt := FB2_EXTENSION;
+      R.FileExt := '.' + slParams[9];
 
       //
       //
@@ -166,9 +225,25 @@ begin
       end;
       // else R.Date:=now;
 
+      //
+      // Дополнительные два поля, введённых в формат
+      //
+      if inpType = inpFormat_11 then begin
+        //
+        // Внутренний индекс файла в архиве
+        //
+        R.InsideNo := StrToInt(slParams[11]);
+        //
+        // Имя папки/корневого архива файла книги
+        // Может быть опущено, в этом случае имя формируется по старому алгоритму
+        //
+        if slParams[12] <> '' then
+          R.Folder := slParams[12];
+      end;
+
       R.Normalize;
 
-      Result := True;
+      Result := inpType;
     end;
   finally
     slParams.Free;
@@ -186,6 +261,9 @@ var
   unZip:TZipForge;
   CurrentFile: string;
   ArchItem: TZFArchiveItem;
+
+  FileStream : TMemoryStream;
+
 begin
   filesProcessed := 0;
   i := 0;
@@ -204,43 +282,77 @@ begin
       unZip.ExtractFiles('*.*');
       try
         BookList := TStringListEx.Create;
-        if (unZip.FindFirst('*.*',ArchItem,faAnyFile-faDirectory)) then
+        if (unZip.FindFirst('*.inp',ArchItem,faAnyFile-faDirectory)) then
         repeat
           //
           // Используем TStringListEx для чтения UTF8 файла
           //
+
           CurrentFile:= ArchItem.FileName;
+
+          if not(isOnlineCollection(CollectionType)) and
+            ( CurrentFile = 'extra.inp')
+            then Continue;
+
           Teletype(Format('Обрабатываем файл %s', [CurrentFile]), tsInfo);
           BookList.LoadFromFile(Settings.TempPath + CurrentFile,TEncoding.UTF8);
           for j := 0 to BookList.Count - 1 do
           begin
-            if ParseData(BookList[j], R) then
-            begin
-              if isOnlineCollection(CollectionType) then
-              begin
-                //
-                // И\Иванов Иван\1234 Просто книга.fb2.zip
-                //
-                R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;
+            case ParseData(BookList[j], R) of
+              inpFormat_10: begin
+                if isOnlineCollection(CollectionType) then
+                begin
+                  //
+                  // И\Иванов Иван\1234 Просто книга.fb2.zip
+                  //
+                  R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;
+
+                  //
+                  // Сохраним отметку о существовании файла
+                  //
+                  R.Local := FileExists(FCollectionRoot + R.Folder);
+                end
+                else
+                begin
+                  //
+                  // 98058-98693.inp -> 98058-98693.zip
+                  //
+                  R.Folder := ChangeFileExt(CurrentFile, ZIP_EXTENSION);
+                  //
+                  // номер файла внутри zip-а
+                  //
+                  R.InsideNo := j;
+                end;
+
+                FLibrary.InsertBook(R);
+              end;
+              inpFormat_11: begin
+                if isOnlineCollection(CollectionType) then
+                begin
+                  //
+                  // И\Иванов Иван\1234 Просто книга.fb2.zip
+                  //
+                  R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;
+
+                  //
+                  // Сохраним отметку о существовании файла
+                  //
+                  R.Local := FileExists(FCollectionRoot + R.Folder);
+                end;
 
                 //
-                // Сохраним отметку о существовании файла
+                // Для локальной коллекции данные по имени архива и индексу файла в нём
+                // заполнены в функции ParseData.
+                // Если в INPX-файле опущено поле Folder, генерируем его по старому алгоритму
                 //
-                R.Local := FileExists(FCollectionRoot + R.Folder);
-              end
-              else
-              begin
-                //
-                // 98058-98693.inp -> 98058-98693.zip
-                //
-                R.Folder := ChangeFileExt(CurrentFile, ZIP_EXTENSION);
-                //
-                // номер файла внутри zip-а
-                //
-                R.InsideNo := j;
+                if R.Folder = '' then
+                  R.Folder := ChangeFileExt(CurrentFile, ZIP_EXTENSION);
+
+                FLibrary.InsertBook(R);
               end;
-            FLibrary.InsertBook(R);
-            end;   // if
+            else
+              ; // Если резузьтат разбора - inpUnknown, не делаем ничего
+            end;
 
             Inc(filesProcessed);
             if (filesProcessed mod ProcessedItemThreshold) = 0 then

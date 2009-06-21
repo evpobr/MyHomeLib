@@ -21,9 +21,12 @@
 
 program MyhomeLib;
 
+{$R *.dres}
+
 uses
   Forms,
   frm_main in 'Forms\frm_main.pas' {frmMain},
+  dm_main in 'DataModules\dm_main.pas' {DMMain: TDataModule},
   dm_user in 'DataModules\dm_user.pas' {DMUser: TDataModule},
   unit_Database in 'Units\unit_Database.pas',
   unit_Globals in 'Units\unit_Globals.pas',
@@ -32,7 +35,6 @@ uses
   frm_statistic in 'Forms\frm_statistic.pas' {frmStat},
   unit_PrevInst in 'Units\unit_PrevInst.pas',
   frm_bases in 'Forms\frm_bases.pas' {frmBases},
-  fictionbook_21 in 'Units\fictionbook_21.pas',
   frm_book_info in 'Forms\frm_book_info.pas' {frmBookDetails},
   frm_splash in 'Forms\frm_splash.pas' {frmSplash},
   frm_add_nonfb2 in 'Forms\frm_add_nonfb2.pas' {frmAddnonfb2},
@@ -84,20 +86,19 @@ uses
   unit_NCWParams in 'Wizards\NewCollection\unit_NCWParams.pas',
   frame_NCWCollectionFileTypes in 'Wizards\NewCollection\frame_NCWCollectionFileTypes.pas' {frameNCWCollectionFileTypes: TFrame},
   unit_fb2ToText in 'UtilsImpl\unit_fb2ToText.pas',
-  unit_StaticTip in 'Components\unit_StaticTip.pas',
-  files_list in 'Components\files_list.pas',
-  MHLComponents_Register in 'Components\MHLComponents_Register.pas',
-  unit_AutoCompleteEdit in 'Components\unit_AutoCompleteEdit.pas',
   unit_SyncFoldersThread in 'UtilsImpl\unit_SyncFoldersThread.pas',
   unit_libupdateThread in 'UtilsImpl\unit_libupdateThread.pas',
-  unit_CoverPanel in 'Components\unit_CoverPanel.pas',
-  unit_InfoPanel in 'Components\unit_InfoPanel.pas',
   unit_DownloadBooksThread in 'DwnldImpl\unit_DownloadBooksThread.pas',
   frm_DownloadProgressForm in 'DwnldImpl\frm_DownloadProgressForm.pas' {DownloadProgressForm},
   unit_Columns in 'Units\unit_Columns.pas',
   StoHtmlHelp in 'UtilsImpl\StoHtmlHelp.pas',
   unit_DownloadManagerThread in 'DwnldImpl\unit_DownloadManagerThread.pas',
-  dm_collection in 'DataModules\dm_collection.pas' {DMCollection: TDataModule};
+  unit_Messages in 'Units\unit_Messages.pas',
+  unit_Lib_Updates in 'Units\unit_Lib_Updates.pas',
+  frm_editor in 'Forms\frm_editor.pas' {frmEditor},
+  unit_SearchUtils in 'Units\unit_SearchUtils.pas',
+  unit_ExportINPXThread in 'ImportImpl\unit_ExportINPXThread.pas',
+  frm_info_popup in 'Forms\frm_info_popup.pas' {frmInfoPopup};
 
 {$R *.res}
 
@@ -117,14 +118,16 @@ begin
     frmSplash.Show;   // Display the splash screen
     frmSplash.Update; // Update the splash screen to ensure it gets drawn
 
-  Application.CreateForm(TDMCollection, DMCollection);
+    Application.CreateForm(TDMMain, DMMain);
   Application.CreateForm(TDMUser, DMUser);
-
   Application.CreateForm(TfrmMain, frmMain);
   Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
+  Application.CreateForm(TfrmEditor, frmEditor);
+  //  Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
   Application.CreateForm(TfrmEditBookInfo, frmEditBookInfo);
   Application.CreateForm(TfrmGenreTree, frmGenreTree);
   Application.CreateForm(TfrmEditAuthor, frmEditAuthor);
+
   frmSplash.Hide;  // Hide the splash screen
   finally
     frmSplash.Free;  // Free the splash screen

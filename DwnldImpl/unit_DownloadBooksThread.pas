@@ -26,60 +26,54 @@ uses
   IdHTTPHeaderInfo;
 
 type
-
   TURLParams = record
-                 Param: String;
-                 Field: String;
+    Param: string;
+    Field: string;
   end;
 
-  TDownloadProgressEvent = procedure (Current,Total: Integer) of object;
-  TDownloadSetCommentEvent = procedure (const Current, Total: string) of object;
+  TProgressEvent2 = procedure(Current, Total: Integer) of object;
+  TSetCommentEvent2 = procedure(const Current, Total: string) of object;
 
   TDownloadBooksThread = class(TWorker)
   private
-    FidHTTP:TidHTTP;
+    FidHTTP: TidHTTP;
 
     FBookIdList: TBookIdList;
     FCollectionRoot: string;
     FDownloadSize: integer;
 
-    FOnSetProgress: TDownloadProgressEvent;
-    FOnSetComment: TDownloadSetCommentEvent;
+    FOnSetProgress2: TProgressEvent2;
+    FOnSetComment2: TSetCommentEvent2;
 
     FCurrentComment: string;
     FTotalComment: string;
     FCurrentProgress: Integer;
     FTotalProgress: Integer;
 
-    FStartDate : TDateTime;
+    FStartDate: TDateTime;
     FIgnoreErrors: boolean;
 
-    function DownloadBook(ID:integer): Boolean;
-
-    procedure SetComment(const Current, Total: string);
-    procedure DoSetComment;
-    procedure DoSetProgress;
-    procedure SetProgress(Current, Total: integer);
-
     procedure ProcessError(const LongMsg, ShortMsg, AFileName: string);
-    function CalculateURL:String;
+    function CalculateURL: string;
+    function DownloadBook(ID: integer): Boolean;
 
-    function Get_HTTP:TidHTTP;
+    procedure DoSetComment2;
+    procedure SetComment2(const Current, Total: string);
+
+    procedure DoSetProgress2;
+    procedure SetProgress2(Current, Total: integer);
 
   protected
     procedure WorkFunction; override;
-    procedure HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax:Int64);
+    procedure HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
     procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
     procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
 
   public
     property BookIdList: TBookIdList read FBookIdList write FBookIdList;
 
-    property HTTP:TidHTTP read Get_HTTP;
-
-    property OnProgress: TDownloadProgressEvent read FOnSetProgress write FOnSetProgress;
-    property OnSetComment: TDownloadSetCommentEvent read FOnSetComment write FOnSetComment;
-
+    property OnProgress2: TProgressEvent2 read FOnSetProgress2 write FOnSetProgress2;
+    property OnSetComment2: TSetCommentEvent2 read FOnSetComment2 write FOnSetComment2;
   end;
 
 implementation
@@ -87,24 +81,22 @@ implementation
 uses
   Windows,
   dm_user,
-  dm_collection,
+  dm_main,
   unit_database,
   unit_Consts,
   unit_Settings,
   frm_main,
   StrUtils,
-  idStack,
-  idException,
+  IdStack,
+  IdStackConsts,
+  IdException,
   DateUtils;
 
-procedure TDownloadBooksThread.HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
-  AWorkCount: Int64);
+procedure TDownloadBooksThread.HTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
 var
-  ElapsedTime : Cardinal;
+  ElapsedTime: Cardinal;
   Speed: string;
-
 begin
-
   if Canceled then
   begin
     FidHTTP.Disconnect;
@@ -112,29 +104,27 @@ begin
   end;
 
   if FDownloadSize <> 0 then
-    SetProgress(AWorkCount * 100 div FDownloadSize, -1);
+    SetProgress2(AWorkCount * 100 div FDownloadSize, -1);
 
-  ElapsedTime := SecondsBetween(Now,FStartDate);
-  if ElapsedTime>0 then
+  ElapsedTime := SecondsBetween(Now, FStartDate);
+  if ElapsedTime > 0 then
   begin
-    Speed := FormatFloat('0.00',AWorkCount/1024/ElapsedTime);
-    SetComment(Format('Загрузка: %s Kb/s',[Speed]),'');
+    Speed := FormatFloat('0.00', AWorkCount / 1024 / ElapsedTime);
+    SetComment2(Format('Загрузка: %s Kb/s', [Speed]), '');
   end;
 end;
 
-procedure TDownloadBooksThread.HTTPWorkBegin(ASender: TObject;
-  AWorkMode: TWorkMode; AWorkCountMax: Int64);
+procedure TDownloadBooksThread.HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
 begin
   FDownloadSize := AWorkCountMax;
   FStartDate := Now;
-  SetProgress(1,-1);
+  SetProgress2(1, -1);
 end;
 
-procedure TDownloadBooksThread.HTTPWorkEnd(ASender: TObject;
-  AWorkMode: TWorkMode);
+procedure TDownloadBooksThread.HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
 begin
-  SetProgress(100,-1);
-  SetComment('Готово','');
+  SetProgress2(100, -1);
+  SetComment2('Готово', '');
 end;
 
 procedure TDownloadBooksThread.ProcessError(const LongMsg, ShortMsg, AFileName: string);
@@ -145,228 +135,237 @@ begin
   if Settings.ErrorLog then
   begin
     FileName := Settings.AppPath + 'download_errors.log';
-    Assign(F,FileName);
+    AssignFile(F, FileName);
     if FileExists(FileName) then
       Append(F)
     else
       Rewrite(F);
-    Writeln(F,Format('%s %s >> %s',[DateTimeToStr(Now), ShortMsg,AFileName]));
+    Writeln(F, Format('%s %s >> %s', [DateTimeToStr(Now), ShortMsg, AFileName]));
     CloseFile(F);
   end
-  else
-    if not FIgnoreErrors then ShowMessage(LongMsg,0);
+  else if not FIgnoreErrors then
+    ShowMessage(LongMsg, MB_ICONERROR or MB_OK);
 end;
 
 procedure TDownloadBooksThread.WorkFunction;
 var
   i: Integer;
   totalBooks: Integer;
-  Res : integer;
-
+  Res: integer;
 begin
   Canceled := False;
   FIgnoreErrors := False;
 
-  FidHTTP := TidHTTP.Create(nil);
-  FidHTTP.OnWork := HTTPWork;
-  FidHTTP.OnWorkBegin := HTTPWorkBegin;
-  FidHTTP.OnWorkEnd := HTTPWorkEnd;
-  FidHTTP.HandleRedirects := True;
-
-  SetProxySettings(FidHTTP);
-
   FCollectionRoot := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
+
+  FidHTTP := TidHTTP.Create(nil);
   try
+    FidHTTP.OnWork := HTTPWork;
+    FidHTTP.OnWorkBegin := HTTPWorkBegin;
+    FidHTTP.OnWorkEnd := HTTPWorkEnd;
+    FidHTTP.HandleRedirects := True;
+
+    SetProxySettings(FidHTTP);
 
     totalBooks := High(FBookIdList) + 1;
-    SetComment(' ',Format('Скачано файлов: %u из %u', [0, totalBooks]));
+    SetComment2(' ', Format('Скачано файлов: %u из %u', [0, totalBooks]));
+
     for i := 0 to totalBooks - 1 do
     begin
-      SetComment('Подключение ...','');
+      SetComment2('Подключение ...', '');
 
       FBookIdList[i].Res := DownloadBook(FBookIdList[i].ID);
-      if (not FBookIdList[i].Res) and (i < totalBooks - 1)
-        and (not Settings.ErrorLog) and not FIgnoreErrors then
+      if
+        (not Canceled) and                // это реальная ошибка, а не отмена операции пользователем
+        (not FBookIdList[i].Res) and      //
+        (i < totalBooks - 1) and          // для последней книги вопрос смысла не имеет
+        (not Settings.ErrorLog) and       //
+        (not FIgnoreErrors)               //
+      then
       begin
-        Res := ShowMessage('Игнорировать ошибки загрузки ?' , MB_YESNOCANCEL);
-        Canceled := (Res = IDCANCEL);
+        Res := ShowMessage('Игнорировать ошибки загрузки ?', MB_ICONQUESTION or MB_YESNO);
         FIgnoreErrors := (Res = IDYES);
       end;
 
-      SetComment('Готово',Format('Скачано файлов: %u из %u', [i + 1, totalBooks]));
-      SetProgress(100,(i + 1) * 100 div totalBooks);
+      SetComment2('Готово', Format('Скачано файлов: %u из %u', [i + 1, totalBooks]));
+      SetProgress2(100, (i + 1) * 100 div totalBooks);
 
       if Canceled then
       begin
-        SetComment(' ','Завершение операции ...');
+        SetComment2(' ', 'Завершение операции ...');
         Break;
       end;
+      Sleep(Settings.DwnldInterval);
     end;
   finally
     FidHTTP.Free;
   end;
 end;
 
-function TDownloadBooksThread.DownloadBook(ID:integer): Boolean;
+function TDownloadBooksThread.DownloadBook(ID: Integer): Boolean;
 var
-  LibID: Integer;
+  //LibID: Integer;
   FS: TMemoryStream;
   loginInfo: TStringList;
-  response: TStringStream;
-  Path: String;
-  Folder: String;
-  URL: String;
+  //response: TStringStream;
+  Path: string;
+  Folder: string;
+  URL: string;
 begin
   Result := False;
 
-  DMCollection.GetBookFolder(ID,Folder);
+  DMMain.GetBookFolder(ID, Folder);
 
   if FileExists(Folder) then
   begin
-    DMCollection.SetLocalStatus(ID,True);
+    DMMain.SetLocalStatus(ID, True);
     Result := True;
     Exit;
-  end
-  else Result := False;
+  end;
 
   loginInfo := TStringList.Create;
   try
-    response := TStringStream.Create('');
+    //response := TStringStream.Create('');
+    //try
+    FS := TMemoryStream.Create;
     try
-      FS := TMemoryStream.Create;
       try
+        URL := CalculateURL; // Locate по таблице был сделан при вызове GetBookFileName,
+                             // так что ID можно не передавать
 
-        try
+        FidHTTP.Get(URL, FS);
 
-         URL := CalculateURL; // Locate по таблице был сделан при вызове GetBookFileName,
-                              // так что ID можно не передавать
+        { TODO -oAlex : В зависимости от типа файла (zip или нет) имя должно формироваться по разному! }
 
-          FidHTTP.Get(URL, FS);
-
-
-          { TODO -oAlex : В зависимости от типа файла (zip или нет)
-                          имя должно формироваться по разному! }
-
-          if Canceled then
-          begin
-            Result := False;
-            Exit;
-          end;
-
-          Path := ExtractFileDir(Folder);
-          CreateFolders('', Path);
-
-          FS.Position := 0;
-          loginInfo.LoadFromStream(FS);
-
-          { TODO : можно попробовать проверять размер файла. проблема в том, что база содержит размер неархивированного файла }
-
-          if loginInfo.Count > 0 then
-          begin
-            if
-              (Pos('DOCTYPE', loginInfo[0]) <> 0)
-              or (Pos('overload', loginInfo[0]) <> 0)
-              or (Pos('not found', loginInfo[0]) <> 0) then
-            begin
-              ProcessError('Загрузка файла заблокирована сервером!'
-                             + #13 +
-                             ' Ответ сервера можно посмотреть в файле "server_error.html"',
-                             'Заблокировано сервером',Folder);
-              logininfo.SaveToFile(Settings.SystemFileName[sfServerErrorLog]);
-            end
-            else
-            begin
-              FS.SaveToFile(Folder);
-
-              DMCollection.SetLocalStatus(ID,True);
-
-              Result := True;
-            end;
-          end;
-        except
-          on E: EIdSocketError do
-            case E.LastError of
-              11001:ProcessError('Закачка не удалась! Сервер не найден.',
-                           'Ошибка ' + IntToStr(E.LastError) ,Folder);
-              10060:ProcessError('Закачка не удалась! Превышено время ожидания.',
-                           'Ошибка ' + IntToStr(E.LastError) ,Folder);
-              else
-              ProcessError('Закачка не удалась! Ошибка подключения.',
-                            'Ошибка ' + IntToStr(E.LastError),Folder);
-            end;//case
-           on E: Exception do
-             ProcessError('Закачка не удалась! Сервер сообщает об ошибке '+
-                                    IntToStr(FidHTTP.ResponseCode)+'.',
-                          'Ошибка ' + IntToStr(FidHTTP.ResponseCode), Folder);
+        if Canceled then
+        begin
+          Result := False;
+          Exit;
         end;
-      finally
-        FS.Free;
+
+        Path := ExtractFileDir(Folder);
+        CreateFolders('', Path);
+
+        FS.Position := 0;
+        loginInfo.LoadFromStream(FS);
+
+        { TODO : можно попробовать проверять размер файла. проблема в том, что база содержит размер неархивированного файла }
+
+        if loginInfo.Count > 0 then
+        begin
+          if
+            (Pos('DOCTYPE', loginInfo[0]) <> 0)
+            or (Pos('overload', loginInfo[0]) <> 0)
+            or (Pos('not found', loginInfo[0]) <> 0) then
+          begin
+            ProcessError(
+              'Загрузка файла заблокирована сервером!' + #13 + ' Ответ сервера можно посмотреть в файле "server_error.html"',
+              'Заблокировано сервером',
+              Folder
+              );
+            loginInfo.SaveToFile(Settings.SystemFileName[sfServerErrorLog]);
+          end
+          else
+          begin
+            FS.SaveToFile(Folder);
+            Result := TestArchive(Folder);
+            if Result then
+              DMMain.SetLocalStatus(ID, True)
+            else
+              DeleteFile(PChar(Folder));
+          end;
+        end;
+
+      except
+        on E: EIdSocketError do
+          case E.LastError of
+            11001:
+              ProcessError(
+                'Закачка не удалась! Сервер не найден.',
+                'Ошибка ' + IntToStr(E.LastError),
+                Folder
+                );
+
+            Id_WSAETIMEDOUT:
+              ProcessError(
+                'Закачка не удалась! Превышено время ожидания.',
+                'Ошибка ' + IntToStr(E.LastError),
+                Folder
+                );
+
+          else
+            ProcessError(
+              'Закачка не удалась! Ошибка подключения.',
+              'Ошибка ' + IntToStr(E.LastError),
+              Folder
+              );
+          end; //case
+        on E: Exception do
+          ProcessError(
+            'Закачка не удалась! Сервер сообщает об ошибке ' + IntToStr(FidHTTP.ResponseCode) + '.',
+            'Ошибка ' + IntToStr(FidHTTP.ResponseCode),
+            Folder
+            );
       end;
     finally
-      Response.Free;
+      FS.Free;
     end;
+    //finally
+    //  Response.Free;
+    //end;
   finally
     LoginInfo.Free;
   end;
 end;
 
-function TDownloadBooksThread.Get_HTTP: TidHTTP;
-begin
-  if Assigned(FidHTTP) then
-     Result := FidHTTP;
-end;
-
-function TDownloadBooksThread.CalculateURL: String;
+function TDownloadBooksThread.CalculateURL: string;
+(*
 const
-  Params: array [0..1] of TURLParams = (
-                  (Param: '%ID%'; Field: 'LibID'),
-                  (Param: '%FileName%'; Field: 'FileName')
-                  );
+  Params: array[0..1] of TURLParams = (
+    (Param: '%ID%'; Field: 'LibID'),
+    (Param: '%FileName%'; Field: 'FileName')
+    );
+*)
 var
-
-  S:String;
-  Template: String;
-  Current: TURLParams;
-
+  S: string;
+  Template: string;
+  //Current: TURLParams;
 begin
   Result := '';
 
+  Template := Settings.DownloadURL + 'b/%ID%/download'; { TODO -oAlex : Заглушка! }
 
-  Template := 'http://lib.rus.ec/b/%ID%/download'; { TODO -oAlex : Заглушка! }
-
-  DMCollection.FieldByName(0,'LibId',S);
-  StrReplace('%ID%',S,Template);
+  DMMain.FieldByName(0, 'LibId', S);
+  StrReplace('%ID%', S, Template);
   Result := Template;
 end;
 
 //------------------------------------------------------------------------------
 
-procedure TDownloadBooksThread.SetComment(const Current, Total: string);
+procedure TDownloadBooksThread.DoSetComment2;
+begin
+  if Assigned(FOnSetComment2) then
+    FOnSetComment2(FCurrentComment, FTotalComment);
+end;
+
+procedure TDownloadBooksThread.SetComment2(const Current, Total: string);
 begin
   FCurrentComment := Current;
   FTotalComment := Total;
-  Synchronize(DoSetComment);
+  Synchronize(DoSetComment2);
 end;
 
-procedure TDownloadBooksThread.SetProgress(Current,Total: integer);
+procedure TDownloadBooksThread.SetProgress2(Current, Total: integer);
 begin
   FCurrentProgress := Current;
   FTotalProgress := Total;
-  Synchronize(DoSetProgress);
+  Synchronize(DoSetProgress2);
 end;
 
-
-procedure TDownloadBooksThread.DoSetComment;
+procedure TDownloadBooksThread.DoSetProgress2;
 begin
-  if Assigned(FOnSetComment) then
-    FOnSetComment(FCurrentComment,FTotalComment);
-end;
-
-procedure TDownloadBooksThread.DoSetProgress;
-begin
-  if Assigned(FOnSetProgress) then
-    FOnSetProgress(FCurrentProgress,FTotalProgress);
+  if Assigned(FOnSetProgress2) then
+    FOnSetProgress2(FCurrentProgress, FTotalProgress);
 end;
 
 end.
-

@@ -58,7 +58,7 @@ resourcestring
   SELECTFOLDER = 'Выберите папку с книгами';
 implementation
 
-uses unit_Helpers, unit_NCWParams, dm_user, DB, unit_Errors, unit_mhl_strings;
+uses unit_Helpers, unit_NCWParams, dm_user, DB, unit_Errors, unit_mhl_strings, unit_settings;
 
 {$R *.dfm}
 
@@ -111,6 +111,17 @@ begin
     edCollectionFile.OnChange := edCollectionFileChange;
     
     edCollectionRoot.Text := FPParams^.CollectionRoot;
+
+    //-----------------------------------------------------
+    // некрасиво, зато просто
+    // специально для torrents.ru
+
+    if FileExists(Settings.AppPath + 'torrents_ru') then
+    begin
+      edCollectionRoot.Text := 'lib.rus.ec';
+      cbRelativePath.Checked := True;
+    end;
+    // ------------------------------------------------------
 
     IsDataValid;
   end;

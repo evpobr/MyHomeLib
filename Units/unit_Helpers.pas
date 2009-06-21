@@ -15,7 +15,7 @@ unit unit_Helpers;
 interface
 
 uses
-  Classes, Dialogs;
+  Windows, Classes, Dialogs, Graphics;
 
 type
   TStringListEx = class(TStringList)
@@ -53,17 +53,20 @@ type
     fnSaveCollection,
     fnSaveLog,
     fnSaveImportFile,
-    fnOpenINPX
+    fnOpenINPX,
+    fnSaveINPX
   );
 
 function GetFileName(key: TMHLFileName; out FileName: string): Boolean;
 
 function GetFolderName(Handle: Integer; Caption: string; var strFolder: string): Boolean;
 
+function CreateImageFromResource(GraphicClass: TGraphicClass; const ResName: string; ResType: PChar = RT_RCDATA): TGraphic;
+
 implementation
 
 uses
-  Windows, SysUtils, Forms, unit_Consts, unit_Settings, ShlObj, ActiveX;
+  SysUtils, Forms, unit_Consts, unit_Settings, ShlObj, ActiveX;
 
 { TStringListEx }
 
@@ -221,7 +224,10 @@ resourcestring
   rstrOpenINPXDlgFilter = 'Список книг MyHomeLib (*.inpx)|*.inpx|Все типы|*.*';
   rstrOpenINPXDlgDefaultExt = 'inpx';
 
-
+  //fnSaveINPX
+  rstrSaveINPXDlgTitle = 'Выбор файла списков';
+  rstrSaveINPXDlgFilter = 'Список книг MyHomeLib (*.inpx)|*.inpx|Все типы|*.*';
+  rstrSaveINPXDlgDefaultExt = 'inpx';
 
 function GetFileName(key: TMHLFileName; out FileName: string): Boolean;
 const
@@ -270,6 +276,11 @@ const
       Title:      rstrOpenINPXDlgTitle;
       Filter:     rstrOpenINPXDlgFilter;     DefaultExt: rstrOpenINPXDlgDefaultExt;
       DialogKey:  'OpenINPXFile';            OpenFile:   True
+    ),
+    ( // fnSaveINPX
+      Title:      rstrSaveINPXDlgTitle;
+      Filter:     rstrSaveINPXDlgFilter;     DefaultExt: rstrSaveINPXDlgDefaultExt;
+      DialogKey:  'SaveINPXFile';            OpenFile:   False
     )
     //(Title: ''; Filter: ''; DefaultExt: ''; ExtraOptions: ; DialogKey: ''; GetFileNameFunction:)
   );
@@ -328,6 +339,19 @@ begin
       //
     end;
     CoTaskMemFree(lpItemID);
+  end;
+end;
+
+function CreateImageFromResource(GraphicClass: TGraphicClass; const ResName: string; ResType: PChar): TGraphic;
+var
+  s: TResourceStream;
+begin
+  s := TResourceStream.Create(HInstance, ResName, ResType);
+  try
+    Result := GraphicClass.Create;
+    Result.LoadFromStream(s);
+  finally
+    s.Free;
   end;
 end;
 

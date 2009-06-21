@@ -2,8 +2,8 @@ object frmMain: TfrmMain
   Left = 0
   Top = 0
   Caption = 'MyHomeLib'
-  ClientHeight = 724
-  ClientWidth = 942
+  ClientHeight = 866
+  ClientWidth = 998
   Color = clBtnFace
   Constraints.MinHeight = 700
   Constraints.MinWidth = 950
@@ -64,7 +64,7 @@ object frmMain: TfrmMain
     AlignWithMargins = True
     Left = 3
     Top = 58
-    Width = 936
+    Width = 992
     Height = 80
     Margins.Bottom = 6
     Align = alTop
@@ -77,10 +77,11 @@ object frmMain: TfrmMain
       AlignWithMargins = True
       Left = 5
       Top = 3
-      Width = 926
+      Width = 982
       Height = 33
       BorderWidth = 1
-      ButtonWidth = 37
+      ButtonHeight = 24
+      ButtonWidth = 39
       Caption = 'RusBar'
       DrawingStyle = dsGradient
       EdgeBorders = [ebLeft, ebTop, ebRight, ebBottom]
@@ -108,7 +109,7 @@ object frmMain: TfrmMain
       end
       object ToolButton4: TToolButton
         Tag = 91
-        Left = 26
+        Left = 28
         Top = 0
         Caption = #1040'-'#1071
         ImageIndex = 1
@@ -120,11 +121,12 @@ object frmMain: TfrmMain
       AlignWithMargins = True
       Left = 5
       Top = 42
-      Width = 926
+      Width = 982
       Height = 33
       Margins.Bottom = 5
       BorderWidth = 1
-      ButtonWidth = 35
+      ButtonHeight = 24
+      ButtonWidth = 37
       Caption = 'RusBar'
       DrawingStyle = dsGradient
       EdgeBorders = [ebLeft, ebTop, ebRight, ebBottom]
@@ -149,7 +151,7 @@ object frmMain: TfrmMain
       end
       object ToolButton6: TToolButton
         Tag = 92
-        Left = 24
+        Left = 26
         Top = 0
         Caption = 'A-Z'
         ImageIndex = 1
@@ -160,8 +162,8 @@ object frmMain: TfrmMain
   end
   object StatusBar: TRzStatusBar
     Left = 0
-    Top = 705
-    Width = 942
+    Top = 847
+    Width = 998
     Height = 19
     BorderInner = fsNone
     BorderOuter = fsNone
@@ -213,7 +215,7 @@ object frmMain: TfrmMain
     AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 936
+    Width = 992
     Height = 49
     HelpContext = 146
     BorderWidth = 1
@@ -239,7 +241,7 @@ object frmMain: TfrmMain
     object tbtnDownloadList_Add: TToolButton
       Left = 41
       Top = 0
-      Hint = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074#13#10#1086#1095#1077#1088#1077#1076#1100' '#1079#1072#1075#1088#1091#1079#1082#1080
+      Hint = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1086#1095#1077#1088#1077#1076#1100' '#1079#1072#1075#1088#1091#1079#1082#1080
       Caption = 'tbtnDownloadList_Add'
       ImageIndex = 2
       OnClick = miDownloadBooksClick
@@ -256,15 +258,15 @@ object frmMain: TfrmMain
       OnClick = tbSendToDeviceClick
     end
     object ToolButton13: TToolButton
-      Left = 138
+      Left = 136
       Top = 0
-      Width = 24
+      Width = 20
       Caption = 'ToolButton13'
       ImageIndex = 11
       Style = tbsSeparator
     end
     object tbtnRus: TToolButton
-      Left = 162
+      Left = 156
       Top = 0
       Hint = #1056#1091#1089#1089#1082#1080#1081' '#1072#1083#1092#1072#1074#1080#1090
       Caption = 'tbtnRus'
@@ -272,7 +274,7 @@ object frmMain: TfrmMain
       OnClick = tbtnRusClick
     end
     object tbtnEng: TToolButton
-      Left = 203
+      Left = 197
       Top = 0
       Hint = #1040#1085#1075#1083#1080#1081#1089#1082#1080#1081' '#1072#1083#1092#1072#1074#1080#1090
       Caption = 'tbtnEng'
@@ -280,17 +282,17 @@ object frmMain: TfrmMain
       OnClick = tbtnEngClick
     end
     object ToolButton12: TToolButton
-      Left = 244
+      Left = 238
       Top = 0
-      Width = 24
+      Width = 20
       Caption = 'ToolButton12'
       ImageIndex = 10
       Style = tbsSeparator
     end
     object tbtnWizard: TToolButton
-      Left = 268
+      Left = 258
       Top = 0
-      Hint = #1052#1072#1089#1090#1077#1088' '#1076#1086#1073#1072#1074#1083#1077#1085#1080#1103#13#1082#1086#1083#1083#1077#1082#1094#1080#1081
+      Hint = #1052#1072#1089#1090#1077#1088' '#1076#1086#1073#1072#1074#1083#1077#1085#1080#1103' '#1082#1086#1083#1083#1077#1082#1094#1080#1081
       Caption = 'tbtnWizard'
       ImageIndex = 5
       ParentShowHint = False
@@ -298,9 +300,9 @@ object frmMain: TfrmMain
       OnClick = ShowNewCollectionWizard
     end
     object tbtnSelect: TToolButton
-      Left = 309
+      Left = 299
       Top = 0
-      Hint = #1042#1099#1073#1088#1072#1090#1100#13#1082#1086#1083#1083#1077#1082#1094#1080#1102
+      Hint = #1042#1099#1073#1088#1072#1090#1100' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
       Caption = #1042#1099#1073#1088#1072#1090#1100' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
       DropdownMenu = pmCollection
       EnableDropdown = True
@@ -309,8 +311,32 @@ object frmMain: TfrmMain
       ParentShowHint = False
       ShowHint = True
     end
+    object ToolButton3: TToolButton
+      Left = 340
+      Top = 0
+      Width = 20
+      Caption = 'ToolButton3'
+      ImageIndex = 4
+      Style = tbsSeparator
+    end
+    object BtnFav_add: TToolButton
+      Left = 360
+      Top = 0
+      Hint = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1080#1079#1073#1088#1072#1085#1085#1086#1077
+      Caption = 'BtnFav_add'
+      ImageIndex = 15
+      OnClick = BtnFav_addClick
+    end
+    object ToolButton7: TToolButton
+      Left = 401
+      Top = 0
+      Width = 20
+      Caption = 'ToolButton7'
+      ImageIndex = 18
+      Style = tbsSeparator
+    end
     object tbSelectAll: TToolButton
-      Left = 350
+      Left = 421
       Top = 0
       Hint = #1054#1090#1084#1077#1090#1080#1090#1100' '#1074#1089#1077
       Caption = 'tbSelectAll'
@@ -318,7 +344,7 @@ object frmMain: TfrmMain
       OnClick = tbSelectAllClick
     end
     object tbCollapse: TToolButton
-      Left = 391
+      Left = 462
       Top = 0
       Hint = #1056#1072#1079#1074#1077#1088#1085#1091#1090#1100'/'#1057#1074#1077#1088#1085#1091#1090#1100' '#1089#1087#1080#1089#1086#1082
       Caption = 'tbCollapse'
@@ -326,7 +352,7 @@ object frmMain: TfrmMain
       OnClick = tbCollapseClick
     end
     object btnRefreshCollection: TToolButton
-      Left = 432
+      Left = 503
       Top = 0
       Hint = #1054#1073#1085#1086#1074#1080#1090#1100' '#1089#1087#1080#1089#1086#1082
       Caption = 'btnRefreshCollection'
@@ -334,15 +360,15 @@ object frmMain: TfrmMain
       OnClick = miRefreshClick
     end
     object ToolButton1: TToolButton
-      Left = 473
+      Left = 544
       Top = 0
-      Width = 24
+      Width = 20
       Caption = 'ToolButton1'
       ImageIndex = 10
       Style = tbsSeparator
     end
     object btnSwitchTreeMode: TToolButton
-      Left = 497
+      Left = 564
       Top = 0
       Hint = #1055#1077#1088#1077#1082#1083#1102#1095#1080#1090#1100' '#1074' '#1088#1077#1078#1080#1084' "'#1058#1072#1073#1083#1080#1094#1072'"'
       Caption = 'btnSwitchTreeMode'
@@ -350,7 +376,7 @@ object frmMain: TfrmMain
       OnClick = btnSwitchTreeModeClick
     end
     object tbtnShowDeleted: TToolButton
-      Left = 538
+      Left = 605
       Top = 0
       Hint = #1057#1082#1088#1099#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077' '#1085#1072' lib.rus.ec'
       Caption = 'tbtnShowDeleted'
@@ -358,7 +384,7 @@ object frmMain: TfrmMain
       OnClick = tbtnShowDeletedClick
     end
     object tbtnShowLocalOnly: TToolButton
-      Left = 579
+      Left = 646
       Top = 0
       Hint = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1090#1086#1083#1100#1082#1086' '#1089#1082#1072#1095#1072#1085#1085#1099#1077' '#1082#1085#1080#1075#1080
       Caption = 'tbtnShowLocalOnly'
@@ -366,39 +392,23 @@ object frmMain: TfrmMain
       OnClick = tbtnShowLocalOnlyClick
     end
     object tbtnShowCover: TToolButton
-      Left = 620
+      Left = 687
       Top = 0
       Hint = #1055#1086#1082#1072#1079#1072#1090#1100'/'#1057#1082#1088#1099#1090#1100' '#1086#1073#1083#1086#1078#1082#1091
       Caption = 'tbtnShowCover'
       ImageIndex = 14
       OnClick = tbtnShowCoverClick
     end
-    object ToolButton3: TToolButton
-      Left = 661
-      Top = 0
-      Width = 24
-      Caption = 'ToolButton3'
-      ImageIndex = 4
-      Style = tbsSeparator
-    end
-    object BtnFav_add: TToolButton
-      Left = 685
-      Top = 0
-      Hint = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1080#1079#1073#1088#1072#1085#1085#1086#1077
-      Caption = 'BtnFav_add'
-      ImageIndex = 15
-      OnClick = BtnFav_addClick
-    end
     object ToolButton5: TToolButton
-      Left = 726
+      Left = 728
       Top = 0
-      Width = 24
+      Width = 20
       Caption = 'ToolButton5'
       ImageIndex = 5
       Style = tbsSeparator
     end
     object tbtnSettings: TToolButton
-      Left = 750
+      Left = 748
       Top = 0
       Hint = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
       Caption = 'tbtnSettings'
@@ -409,10 +419,10 @@ object frmMain: TfrmMain
   object pgControl: TRzPageControl
     Left = 0
     Top = 144
-    Width = 942
-    Height = 561
+    Width = 998
+    Height = 703
     HelpContext = 135
-    ActivePage = TabSheet5
+    ActivePage = TabSheet4
     Align = alClient
     TabIndex = 3
     TabOrder = 3
@@ -427,11 +437,11 @@ object frmMain: TfrmMain
       object rzsSplitterA: TRzSplitter
         Left = 0
         Top = 0
-        Width = 938
-        Height = 538
+        Width = 994
+        Height = 680
         MarginMin = 150
         Position = 228
-        Percent = 24
+        Percent = 23
         PercentMax = 0
         SplitterWidth = 6
         Align = alClient
@@ -440,7 +450,7 @@ object frmMain: TfrmMain
           228
           0
           234
-          538)
+          680)
         UpperLeftControls = (
           RzPanel13)
         LowerRightControls = (
@@ -451,7 +461,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 224
-          Height = 532
+          Height = 674
           Margins.Right = 1
           Align = alClient
           BorderOuter = fsFlatRounded
@@ -461,7 +471,7 @@ object frmMain: TfrmMain
             Left = 5
             Top = 52
             Width = 214
-            Height = 475
+            Height = 617
             Align = alClient
             CheckImageKind = ckXP
             Colors.UnfocusedSelectionColor = clHighlight
@@ -471,6 +481,7 @@ object frmMain: TfrmMain
             Font.Name = 'Tahoma'
             Font.Style = []
             Header.AutoSizeIndex = 0
+            Header.DefaultHeight = 17
             Header.Font.Charset = DEFAULT_CHARSET
             Header.Font.Color = clWindowText
             Header.Font.Height = -11
@@ -483,7 +494,7 @@ object frmMain: TfrmMain
             PopupMenu = pmAuthor
             TabOrder = 0
             TreeOptions.PaintOptions = [toPopupMode, toShowDropmark, toShowHorzGridLines, toThemeAware, toUseBlendedImages]
-            TreeOptions.SelectionOptions = [toFullRowSelect, toRightClickSelect]
+            TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect, toRightClickSelect]
             OnChange = tvAuthorsChange
             OnGetText = tvAuthorsGetText
             OnPaintText = tvAuthorsPaintText
@@ -540,15 +551,16 @@ object frmMain: TfrmMain
               ParentFont = False
               TabOrder = 0
               OnChange = edLocateAuthorChange
+              OnKeyDown = edLocateAuthorKeyDown
             end
           end
         end
         object cpCoverA: TMHLCoverPanel
           AlignWithMargins = True
-          Left = 451
+          Left = 507
           Top = 3
           Width = 250
-          Height = 532
+          Height = 674
           Margins.Left = 0
           Align = alRight
           BorderOuter = fsFlatRounded
@@ -564,13 +576,14 @@ object frmMain: TfrmMain
           OnResize = CoverPanelResize
           Fb2InfoVisible = False
           FontSize = 0
+          AnnotationColor = clBlack
         end
         object RzPanel15: TRzPanel
           AlignWithMargins = True
           Left = 0
           Top = 3
-          Width = 451
-          Height = 532
+          Width = 507
+          Height = 674
           Margins.Left = 0
           Margins.Right = 0
           Align = alClient
@@ -580,44 +593,25 @@ object frmMain: TfrmMain
             AlignWithMargins = True
             Left = 5
             Top = 5
-            Width = 441
-            Height = 416
+            Width = 497
+            Height = 558
             Align = alClient
             BorderOuter = fsNone
             TabOrder = 0
             object RzPanel18: TRzPanel
               Left = 0
               Top = 0
-              Width = 441
+              Width = 497
               Height = 31
               Align = alTop
               BorderOuter = fsNone
               TabOrder = 0
-              object lblAuthor: TRzDBLabel
-                AlignWithMargins = True
-                Left = 10
-                Top = 3
-                Width = 76
-                Height = 25
-                Margins.Left = 10
-                Align = alLeft
-                AutoSize = True
-                Font.Charset = DEFAULT_CHARSET
-                Font.Color = clNavy
-                Font.Height = -16
-                Font.Name = 'Tahoma'
-                Font.Style = [fsBold]
-                ParentFont = False
-                DataField = 'FullName'
-                DataSource = DMCollection.dsAuthors
-                ExplicitHeight = 19
-              end
               object lblBooksTotalA: TRzLabel
                 AlignWithMargins = True
-                Left = 426
+                Left = 482
                 Top = 3
                 Width = 12
-                Height = 25
+                Height = 19
                 Align = alRight
                 Alignment = taRightJustify
                 Caption = '()'
@@ -628,22 +622,37 @@ object frmMain: TfrmMain
                 Font.Style = []
                 ParentFont = False
                 CenterPoint = cpLowerRight
-                ExplicitHeight = 19
+              end
+              object lblAuthor: TRzLabel
+                AlignWithMargins = True
+                Left = 3
+                Top = 3
+                Width = 15
+                Height = 19
+                Align = alLeft
+                Caption = '...'
+                Font.Charset = DEFAULT_CHARSET
+                Font.Color = clNavy
+                Font.Height = -16
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentFont = False
+                CenterPoint = cpLowerRight
               end
             end
             object RzPanel23: TRzPanel
               Left = 0
               Top = 31
-              Width = 441
-              Height = 385
+              Width = 497
+              Height = 527
               Align = alClient
               BorderOuter = fsNone
               TabOrder = 1
               object tvBooksA: TVirtualStringTree
                 Left = 0
                 Top = 0
-                Width = 441
-                Height = 385
+                Width = 497
+                Height = 527
                 Align = alClient
                 CheckImageKind = ckXP
                 ClipboardFormats.Strings = (
@@ -668,6 +677,7 @@ object frmMain: TfrmMain
                 Font.Name = 'Arial'
                 Font.Style = []
                 Header.AutoSizeIndex = 0
+                Header.DefaultHeight = 17
                 Header.Font.Charset = ANSI_CHARSET
                 Header.Font.Color = clWindowText
                 Header.Font.Height = -12
@@ -765,8 +775,8 @@ object frmMain: TfrmMain
           object ipnlAuthors: TMHLInfoPanel
             AlignWithMargins = True
             Left = 5
-            Top = 427
-            Width = 441
+            Top = 569
+            Width = 497
             Height = 100
             Align = alBottom
             BevelOuter = bvNone
@@ -790,11 +800,11 @@ object frmMain: TfrmMain
       object rzsSplitterS: TRzSplitter
         Left = 0
         Top = 0
-        Width = 938
-        Height = 538
+        Width = 994
+        Height = 680
         MarginMin = 150
         Position = 247
-        Percent = 26
+        Percent = 25
         SplitterWidth = 5
         Align = alClient
         TabOrder = 0
@@ -802,7 +812,7 @@ object frmMain: TfrmMain
           247
           0
           252
-          538)
+          680)
         UpperLeftControls = (
           RzPanel1)
         LowerRightControls = (
@@ -813,7 +823,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 241
-          Height = 532
+          Height = 674
           Align = alClient
           BorderOuter = fsFlatRounded
           TabOrder = 0
@@ -822,7 +832,7 @@ object frmMain: TfrmMain
             Left = 5
             Top = 52
             Width = 231
-            Height = 475
+            Height = 617
             Align = alClient
             CheckImageKind = ckXP
             Colors.UnfocusedSelectionColor = clHighlight
@@ -833,6 +843,7 @@ object frmMain: TfrmMain
             Font.Name = 'Tahoma'
             Font.Style = []
             Header.AutoSizeIndex = 0
+            Header.DefaultHeight = 17
             Header.Font.Charset = DEFAULT_CHARSET
             Header.Font.Color = clWindowText
             Header.Font.Height = -11
@@ -844,7 +855,7 @@ object frmMain: TfrmMain
             PopupMenu = pmAuthor
             TabOrder = 0
             TreeOptions.PaintOptions = [toPopupMode, toShowDropmark, toShowHorzGridLines, toThemeAware, toUseBlendedImages]
-            TreeOptions.SelectionOptions = [toFullRowSelect, toRightClickSelect]
+            TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect, toRightClickSelect]
             OnChange = tvSeriesChange
             OnGetText = tvAuthorsGetText
             OnPaintText = tvAuthorsPaintText
@@ -893,15 +904,16 @@ object frmMain: TfrmMain
               Enabled = False
               TabOrder = 0
               OnChange = edLocateSeriesChange
+              OnKeyDown = edLocateAuthorKeyDown
             end
           end
         end
         object cpCoverS: TMHLCoverPanel
           AlignWithMargins = True
-          Left = 433
+          Left = 489
           Top = 3
           Width = 250
-          Height = 532
+          Height = 674
           Margins.Left = 0
           Align = alRight
           BorderOuter = fsFlatRounded
@@ -917,13 +929,14 @@ object frmMain: TfrmMain
           OnResize = CoverPanelResize
           Fb2InfoVisible = False
           FontSize = 0
+          AnnotationColor = clBlack
         end
         object RzPanel3: TRzPanel
           AlignWithMargins = True
           Left = 0
           Top = 3
-          Width = 433
-          Height = 532
+          Width = 489
+          Height = 674
           Margins.Left = 0
           Margins.Right = 0
           Align = alClient
@@ -933,44 +946,25 @@ object frmMain: TfrmMain
             AlignWithMargins = True
             Left = 5
             Top = 5
-            Width = 423
-            Height = 416
+            Width = 479
+            Height = 558
             Align = alClient
             BorderOuter = fsNone
             TabOrder = 0
             object RzPanel5: TRzPanel
               Left = 0
               Top = 0
-              Width = 423
+              Width = 479
               Height = 31
               Align = alTop
               BorderOuter = fsNone
               TabOrder = 0
-              object lblSeries: TRzDBLabel
-                AlignWithMargins = True
-                Left = 10
-                Top = 3
-                Width = 70
-                Height = 25
-                Margins.Left = 10
-                Align = alLeft
-                AutoSize = True
-                Font.Charset = DEFAULT_CHARSET
-                Font.Color = clNavy
-                Font.Height = -16
-                Font.Name = 'Tahoma'
-                Font.Style = [fsBold]
-                ParentFont = False
-                DataField = 'Title'
-                DataSource = DMCollection.dsSeries
-                ExplicitHeight = 19
-              end
               object lblBooksTotalS: TRzLabel
                 AlignWithMargins = True
-                Left = 408
+                Left = 464
                 Top = 3
                 Width = 12
-                Height = 25
+                Height = 19
                 Align = alRight
                 Alignment = taRightJustify
                 Caption = '()'
@@ -981,15 +975,30 @@ object frmMain: TfrmMain
                 Font.Style = []
                 ParentFont = False
                 CenterPoint = cpLowerRight
-                ExplicitHeight = 19
+              end
+              object lblSeries: TRzLabel
+                AlignWithMargins = True
+                Left = 3
+                Top = 3
+                Width = 15
+                Height = 19
+                Align = alLeft
+                Caption = '...'
+                Font.Charset = DEFAULT_CHARSET
+                Font.Color = clNavy
+                Font.Height = -16
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentFont = False
+                CenterPoint = cpLowerRight
               end
             end
             object tvBooksS: TVirtualStringTree
               Tag = 1
               Left = 0
               Top = 31
-              Width = 423
-              Height = 385
+              Width = 479
+              Height = 527
               Align = alClient
               BevelInner = bvNone
               BevelOuter = bvNone
@@ -1017,6 +1026,7 @@ object frmMain: TfrmMain
               Font.Name = 'Tahoma'
               Font.Style = []
               Header.AutoSizeIndex = 0
+              Header.DefaultHeight = 17
               Header.Font.Charset = ANSI_CHARSET
               Header.Font.Color = clWindowText
               Header.Font.Height = -12
@@ -1043,6 +1053,7 @@ object frmMain: TfrmMain
               OnCompareNodes = tvBooksTreeCompareNodes
               OnDblClick = tbtbnReadClick
               OnGetText = tvBooksSGetText
+              OnPaintText = tvBooksTreePaintText
               OnHeaderClick = tvBooksTreeHeaderClick
               OnInitNode = tvBooksTreeInitNode
               OnKeyDown = tvBooksTreeKeyDown
@@ -1133,8 +1144,8 @@ object frmMain: TfrmMain
           object ipnlSeries: TMHLInfoPanel
             AlignWithMargins = True
             Left = 5
-            Top = 427
-            Width = 423
+            Top = 569
+            Width = 479
             Height = 100
             Align = alBottom
             BevelOuter = bvNone
@@ -1158,11 +1169,11 @@ object frmMain: TfrmMain
       object rzsSplitterG: TRzSplitter
         Left = 0
         Top = 0
-        Width = 938
-        Height = 538
+        Width = 994
+        Height = 680
         MarginMin = 150
         Position = 258
-        Percent = 28
+        Percent = 26
         SplitterWidth = 2
         Align = alClient
         TabOrder = 0
@@ -1170,7 +1181,7 @@ object frmMain: TfrmMain
           258
           0
           260
-          538)
+          680)
         UpperLeftControls = (
           RzPanel25)
         LowerRightControls = (
@@ -1181,7 +1192,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 252
-          Height = 532
+          Height = 674
           Align = alClient
           BorderOuter = fsFlatRounded
           TabOrder = 0
@@ -1190,7 +1201,7 @@ object frmMain: TfrmMain
             Left = 5
             Top = 5
             Width = 242
-            Height = 522
+            Height = 664
             Align = alClient
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -1198,6 +1209,7 @@ object frmMain: TfrmMain
             Font.Name = 'Tahoma'
             Font.Style = []
             Header.AutoSizeIndex = 0
+            Header.DefaultHeight = 17
             Header.Font.Charset = DEFAULT_CHARSET
             Header.Font.Color = clWindowText
             Header.Font.Height = -11
@@ -1209,6 +1221,7 @@ object frmMain: TfrmMain
             PopupMenu = pmAuthor
             TabOrder = 0
             TreeOptions.PaintOptions = [toPopupMode, toShowButtons, toShowDropmark, toShowRoot, toShowTreeLines, toThemeAware, toUseBlendedImages]
+            TreeOptions.SelectionOptions = [toMultiSelect]
             OnChange = tvGenresChange
             OnGetText = tvGenresGetText
             Columns = <>
@@ -1216,10 +1229,10 @@ object frmMain: TfrmMain
         end
         object cpCoverG: TMHLCoverPanel
           AlignWithMargins = True
-          Left = 425
+          Left = 481
           Top = 3
           Width = 250
-          Height = 532
+          Height = 674
           Margins.Left = 0
           Align = alRight
           BorderOuter = fsFlatRounded
@@ -1235,13 +1248,14 @@ object frmMain: TfrmMain
           OnResize = CoverPanelResize
           Fb2InfoVisible = False
           FontSize = 0
+          AnnotationColor = clBlack
         end
         object RzPanel27: TRzPanel
           AlignWithMargins = True
           Left = 3
           Top = 3
-          Width = 422
-          Height = 532
+          Width = 478
+          Height = 674
           Margins.Right = 0
           Align = alClient
           BorderOuter = fsFlatRounded
@@ -1250,8 +1264,8 @@ object frmMain: TfrmMain
             AlignWithMargins = True
             Left = 5
             Top = 36
-            Width = 412
-            Height = 385
+            Width = 468
+            Height = 527
             Align = alClient
             BorderOuter = fsNone
             TabOrder = 0
@@ -1259,8 +1273,8 @@ object frmMain: TfrmMain
               Tag = 2
               Left = 0
               Top = 0
-              Width = 412
-              Height = 385
+              Width = 468
+              Height = 527
               Align = alClient
               Alignment = taRightJustify
               BevelInner = bvNone
@@ -1289,6 +1303,7 @@ object frmMain: TfrmMain
               Font.Name = 'Tahoma'
               Font.Style = []
               Header.AutoSizeIndex = 0
+              Header.DefaultHeight = 17
               Header.Font.Charset = ANSI_CHARSET
               Header.Font.Color = clWindowText
               Header.Font.Height = -12
@@ -1395,17 +1410,17 @@ object frmMain: TfrmMain
           object RzPanel26: TRzPanel
             Left = 2
             Top = 2
-            Width = 418
+            Width = 474
             Height = 31
             Align = alTop
             BorderOuter = fsNone
             TabOrder = 2
             object lblBooksTotalG: TRzLabel
               AlignWithMargins = True
-              Left = 403
+              Left = 459
               Top = 3
               Width = 12
-              Height = 25
+              Height = 19
               Align = alRight
               Alignment = taRightJustify
               Caption = '()'
@@ -1416,14 +1431,13 @@ object frmMain: TfrmMain
               Font.Style = []
               ParentFont = False
               CenterPoint = cpLowerRight
-              ExplicitHeight = 19
             end
             object lblGenreTitle: TRzLabel
               AlignWithMargins = True
               Left = 3
               Top = 3
               Width = 15
-              Height = 25
+              Height = 19
               Align = alLeft
               Caption = '...'
               Font.Charset = DEFAULT_CHARSET
@@ -1433,14 +1447,13 @@ object frmMain: TfrmMain
               Font.Style = [fsBold]
               ParentFont = False
               CenterPoint = cpLowerRight
-              ExplicitHeight = 19
             end
           end
           object ipnlGenres: TMHLInfoPanel
             AlignWithMargins = True
             Left = 5
-            Top = 427
-            Width = 412
+            Top = 569
+            Width = 468
             Height = 100
             Align = alBottom
             BevelOuter = bvNone
@@ -1451,322 +1464,6 @@ object frmMain: TfrmMain
             Genre = #1085#1077#1080#1079#1074#1077#1089#1090#1085#1099#1081
             Folder = 'C:\Books\1-1009.zip'
             FileName = '111 '#1048#1074#1072#1085#1086#1074' '#1050#1085#1080#1075#1072'.fb2'
-          end
-        end
-      end
-    end
-    object TabSheet5: TRzTabSheet
-      HelpContext = 125
-      Caption = #1043#1088#1091#1087#1087#1099
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object cpCoverF: TMHLCoverPanel
-        AlignWithMargins = True
-        Left = 685
-        Top = 3
-        Width = 250
-        Height = 532
-        Margins.Left = 0
-        Align = alRight
-        BorderOuter = fsFlatRounded
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        SizeBarWidth = 5
-        TabOrder = 0
-        OnResize = CoverPanelResize
-        Fb2InfoVisible = False
-        FontSize = 0
-      end
-      object RzSplitter1: TRzSplitter
-        Left = 0
-        Top = 0
-        Width = 685
-        Height = 538
-        Position = 239
-        Percent = 35
-        Align = alClient
-        TabOrder = 1
-        BarSize = (
-          239
-          0
-          243
-          538)
-        UpperLeftControls = (
-          RzPanel7)
-        LowerRightControls = (
-          RzPanel20)
-        object RzPanel7: TRzPanel
-          AlignWithMargins = True
-          Left = 3
-          Top = 3
-          Width = 233
-          Height = 532
-          Align = alClient
-          BorderOuter = fsFlatRounded
-          TabOrder = 0
-          object VirtualStringTree1: TVirtualStringTree
-            AlignWithMargins = True
-            Left = 5
-            Top = 52
-            Width = 223
-            Height = 475
-            Align = alClient
-            CheckImageKind = ckXP
-            Colors.UnfocusedSelectionColor = clHighlight
-            Colors.UnfocusedSelectionBorderColor = clHighlight
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            Header.AutoSizeIndex = 0
-            Header.Font.Charset = DEFAULT_CHARSET
-            Header.Font.Color = clWindowText
-            Header.Font.Height = -11
-            Header.Font.Name = 'Tahoma'
-            Header.Font.Style = []
-            Header.MainColumn = -1
-            Header.Options = [hoColumnResize, hoDrag]
-            ParentFont = False
-            PopupMenu = pmAuthor
-            TabOrder = 0
-            TreeOptions.PaintOptions = [toPopupMode, toShowDropmark, toShowHorzGridLines, toThemeAware, toUseBlendedImages]
-            TreeOptions.SelectionOptions = [toFullRowSelect, toRightClickSelect]
-            OnChange = tvSeriesChange
-            OnGetText = tvAuthorsGetText
-            OnPaintText = tvAuthorsPaintText
-            Columns = <>
-          end
-          object RzPanel8: TRzPanel
-            AlignWithMargins = True
-            Left = 5
-            Top = 5
-            Width = 223
-            Height = 41
-            Align = alTop
-            BorderOuter = fsFlatRounded
-            TabOrder = 1
-            DesignSize = (
-              223
-              41)
-            object RzToolButton2: TRzToolButton
-              Left = 250
-              Top = 8
-              Hint = #1054#1095#1080#1089#1090#1080#1090#1100
-              ImageIndex = 36
-              Images = ilMainMenu
-              Anchors = [akTop, akRight]
-              ParentShowHint = False
-              ShowHint = True
-              OnClick = btnClearEdSeriesClick
-              ExplicitLeft = 201
-            end
-          end
-        end
-        object RzPanel20: TRzPanel
-          AlignWithMargins = True
-          Left = 3
-          Top = 3
-          Width = 439
-          Height = 532
-          Margins.Right = 0
-          Align = alClient
-          BorderOuter = fsFlatRounded
-          TabOrder = 0
-          object RzPanel21: TRzPanel
-            AlignWithMargins = True
-            Left = 5
-            Top = 5
-            Width = 429
-            Height = 416
-            Align = alClient
-            BorderOuter = fsNone
-            TabOrder = 0
-            object RzDBLabel1: TRzDBLabel
-              Left = 8
-              Top = 8
-              Width = 65
-              Height = 17
-              DataField = 'Name'
-              DataSource = DMUser.dsGroupList
-            end
-            object tvBooksF: TVirtualStringTree
-              Tag = 4
-              AlignWithMargins = True
-              Left = 3
-              Top = 45
-              Width = 423
-              Height = 368
-              Margins.Top = 45
-              Align = alClient
-              BevelInner = bvNone
-              BevelOuter = bvNone
-              BevelKind = bkFlat
-              ButtonFillMode = fmShaded
-              CheckImageKind = ckXP
-              ClipboardFormats.Strings = (
-                'CSV'
-                'HTML Format'
-                'Plain text'
-                'Rich Text Format'
-                'Rich Text Format Without Objects'
-                'Unicode text'
-                'Virtual Tree Data')
-              Color = 14024447
-              Colors.BorderColor = clBackground
-              Colors.HotColor = clBlack
-              Colors.UnfocusedSelectionBorderColor = clBtnShadow
-              DefaultPasteMode = amAddChildFirst
-              DragMode = dmAutomatic
-              EditDelay = 100
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -13
-              Font.Name = 'Tahoma'
-              Font.Style = []
-              Header.AutoSizeIndex = 0
-              Header.Font.Charset = ANSI_CHARSET
-              Header.Font.Color = clWindowText
-              Header.Font.Height = -12
-              Header.Font.Name = 'Arial'
-              Header.Font.Style = [fsBold]
-              Header.Height = 20
-              Header.Options = [hoColumnResize, hoDrag, hoHotTrack, hoOwnerDraw, hoRestrictDrag, hoShowHint, hoShowImages, hoShowSortGlyphs, hoVisible]
-              Header.PopupMenu = pmHeaders
-              Header.Style = hsFlatButtons
-              HintMode = hmTooltip
-              HotCursor = crHandPoint
-              ParentFont = False
-              ParentShowHint = False
-              PopupMenu = pmMain
-              ShowHint = False
-              TabOrder = 0
-              TreeOptions.AnimationOptions = [toAnimatedToggle]
-              TreeOptions.AutoOptions = [toAutoDropExpand, toAutoExpand, toAutoScroll, toAutoTristateTracking, toAutoDeleteMovedNodes]
-              TreeOptions.MiscOptions = [toCheckSupport, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
-              TreeOptions.PaintOptions = [toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toFullVertGridLines]
-              TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect, toRightClickSelect]
-              OnAfterCellPaint = tvBooksTreeAfterCellPaint
-              OnChange = tvBooksTreeChange
-              OnCompareNodes = tvBooksTreeCompareNodes
-              OnDblClick = tbtbnReadClick
-              OnGetText = tvBooksFGetText
-              OnPaintText = tvBooksTreePaintText
-              OnHeaderClick = tvBooksTreeHeaderClick
-              OnInitNode = tvBooksTreeInitNode
-              OnKeyDown = tvBooksTreeKeyDown
-              OnMouseUp = tvBooksTreeMouseUp
-              ExplicitLeft = 0
-              ExplicitTop = 0
-              ExplicitWidth = 429
-              ExplicitHeight = 416
-              Columns = <
-                item
-                  Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
-                  Position = 0
-                  Spacing = 10
-                  Width = 305
-                  WideText = #1053#1072#1079#1074#1072#1085#1080#1077
-                  WideHint = 
-                    'Text is initially centered and has a left-to-right directionalit' +
-                    'y.'
-                end
-                item
-                  Alignment = taCenter
-                  MaxWidth = 90
-                  MinWidth = 35
-                  Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring]
-                  Position = 1
-                  Spacing = 10
-                  Width = 38
-                  WideText = #8470
-                  WideHint = 
-                    'Text is initially left aligned and has a left-to-right direction' +
-                    'ality.'
-                end
-                item
-                  Alignment = taCenter
-                  BiDiMode = bdRightToLeft
-                  MinWidth = 65
-                  Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
-                  Position = 2
-                  Spacing = 10
-                  Width = 65
-                  WideText = #1056#1072#1079#1084#1077#1088
-                  WideHint = 
-                    'Text is initially left aligned and has a right-to-left direction' +
-                    'ality.'
-                end
-                item
-                  Alignment = taCenter
-                  MaxWidth = 60
-                  MinWidth = 60
-                  Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
-                  Position = 3
-                  Width = 60
-                  WideText = #1056#1077#1081#1090#1080#1085#1075
-                end
-                item
-                  Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
-                  Position = 4
-                  Width = 200
-                  WideText = #1050#1086#1083#1083#1077#1082#1094#1080#1103
-                end>
-            end
-          end
-          object ipnlFavorites: TMHLInfoPanel
-            AlignWithMargins = True
-            Left = 5
-            Top = 427
-            Width = 429
-            Height = 100
-            Align = alBottom
-            BevelOuter = bvNone
-            Caption = ' '
-            TabOrder = 1
-            Author = #1060#1048#1054'  '#1072#1074#1090#1086#1088#1072
-            Title = #1053#1072#1079#1074#1072#1085#1080#1077' '#1082#1085#1080#1075#1080
-            Genre = #1085#1077#1080#1079#1074#1077#1089#1090#1085#1099#1081
-            Folder = 'C:\Books\1-1009.zip'
-            FileName = '111 '#1048#1074#1072#1085#1086#1074' '#1050#1085#1080#1075#1072'.fb2'
-            DesignSize = (
-              429
-              100)
-            object lblTotalBooksF: TRzLabel
-              AlignWithMargins = True
-              Left = 1601
-              Top = 3
-              Width = 12
-              Height = 19
-              Alignment = taRightJustify
-              Anchors = []
-              Caption = '()'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clNavy
-              Font.Height = -16
-              Font.Name = 'Tahoma'
-              Font.Style = []
-              ParentFont = False
-              CenterPoint = cpLowerRight
-              ExplicitLeft = 648
-            end
-            object btnClearFavorites: TRzBitBtn
-              Left = 795
-              Top = 66
-              Width = 118
-              Anchors = [akRight, akBottom]
-              Caption = #1054#1095#1080#1089#1090#1080#1090#1100
-              Enabled = False
-              TabOrder = 0
-              OnClick = btnClearFavoritesClick
-              Kind = bkRetry
-            end
           end
         end
       end
@@ -1782,8 +1479,8 @@ object frmMain: TfrmMain
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 682
-        Height = 532
+        Width = 738
+        Height = 674
         Margins.Right = 0
         Align = alClient
         BorderOuter = fsFlatRounded
@@ -1791,9 +1488,9 @@ object frmMain: TfrmMain
         object RzPanel10: TRzPanel
           AlignWithMargins = True
           Left = 5
-          Top = 73
-          Width = 672
-          Height = 348
+          Top = 141
+          Width = 728
+          Height = 422
           Align = alClient
           BorderOuter = fsNone
           TabOrder = 0
@@ -1801,8 +1498,8 @@ object frmMain: TfrmMain
             Tag = 3
             Left = 0
             Top = 0
-            Width = 672
-            Height = 348
+            Width = 728
+            Height = 422
             Align = alClient
             BevelInner = bvNone
             BevelOuter = bvNone
@@ -1830,6 +1527,7 @@ object frmMain: TfrmMain
             Font.Name = 'Tahoma'
             Font.Style = []
             Header.AutoSizeIndex = 0
+            Header.DefaultHeight = 17
             Header.Font.Charset = ANSI_CHARSET
             Header.Font.Color = clWindowText
             Header.Font.Height = -12
@@ -1948,306 +1646,44 @@ object frmMain: TfrmMain
           TabOrder = 1
           Visible = False
         end
-        object RzPanel11: TRzPanel
-          AlignWithMargins = True
-          Left = 5
-          Top = 5
-          Width = 672
-          Height = 62
-          Align = alTop
-          BorderOuter = fsFlatRounded
-          TabOrder = 2
-          DesignSize = (
-            672
-            62)
-          object Label10: TLabel
-            Left = 33
-            Top = 13
-            Width = 31
-            Height = 13
-            Alignment = taRightJustify
-            Caption = #1040#1074#1090#1086#1088
-          end
-          object Label12: TLabel
-            Left = 16
-            Top = 38
-            Width = 48
-            Height = 13
-            Alignment = taRightJustify
-            Caption = #1053#1072#1079#1074#1072#1085#1080#1077
-          end
-          object lblTotalBooksSR: TRzLabel
-            AlignWithMargins = True
-            Left = 655
-            Top = 5
-            Width = 12
-            Height = 19
-            Alignment = taRightJustify
-            Anchors = [akTop, akRight]
-            Caption = '()'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clNavy
-            Font.Height = -16
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            CenterPoint = cpLeftCenter
-            ExplicitLeft = 646
-          end
-          object edTitle: TRzEdit
-            Left = 70
-            Top = 35
-            Width = 266
-            Height = 21
-            Enabled = False
-            FrameStyle = fsNone
-            TabOrder = 0
-            OnKeyDown = edAuthKeyDown
-          end
-          object btnSearch: TRzBitBtn
-            AlignWithMargins = True
-            Left = 352
-            Top = 4
-            Width = 115
-            Height = 54
-            Caption = #1048#1089#1082#1072#1090#1100
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -16
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            TabOrder = 1
-            OnClick = btnSearchClick
-            ImageIndex = 22
-            Images = ilToolBar
-          end
-          object cbFullText: TCheckBox
-            Left = 489
-            Top = 8
-            Width = 160
-            Height = 17
-            Caption = #1055#1086#1083#1085#1086#1090#1077#1082#1089#1090#1086#1074#1086#1081' '#1087#1086#1080#1089#1082
-            TabOrder = 2
-          end
-          object edAuth: TRzEdit
-            Left = 70
-            Top = 8
-            Width = 266
-            Height = 21
-            TabOrder = 3
-            OnKeyDown = edAuthKeyDown
-          end
-          object btnClearSerach: TRzBitBtn
-            Left = 489
-            Top = 31
-            Width = 105
-            Caption = #1054#1095#1080#1089#1090#1080#1090#1100
-            TabOrder = 4
-            OnClick = btnClearSerachClick
-            Kind = bkRetry
-          end
-        end
         object ipnlSearch: TMHLInfoPanel
           AlignWithMargins = True
           Left = 5
-          Top = 427
-          Width = 672
+          Top = 569
+          Width = 728
           Height = 100
           Align = alBottom
           BevelOuter = bvNone
           Caption = ' '
-          TabOrder = 3
+          TabOrder = 2
           Author = #1060#1048#1054'  '#1072#1074#1090#1086#1088#1072
           Title = #1053#1072#1079#1074#1072#1085#1080#1077' '#1082#1085#1080#1075#1080
           Genre = #1085#1077#1080#1079#1074#1077#1089#1090#1085#1099#1081
           Folder = 'C:\Books\1-1009.zip'
           FileName = '111 '#1048#1074#1072#1085#1086#1074' '#1050#1085#1080#1075#1072'.fb2'
         end
-      end
-      object cpCoverSR: TMHLCoverPanel
-        AlignWithMargins = True
-        Left = 685
-        Top = 3
-        Width = 250
-        Height = 532
-        Margins.Left = 0
-        Align = alRight
-        BorderOuter = fsFlatRounded
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        SizeBarWidth = 5
-        TabOrder = 1
-        OnResize = CoverPanelResize
-        Fb2InfoVisible = False
-        FontSize = 0
-      end
-    end
-    object TabSheet6: TRzTabSheet
-      HelpContext = 126
-      Caption = #1060#1080#1083#1100#1090#1088
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object RzPanel29: TRzPanel
-        AlignWithMargins = True
-        Left = 3
-        Top = 3
-        Width = 682
-        Height = 532
-        Margins.Right = 0
-        Align = alClient
-        BorderOuter = fsFlatRounded
-        TabOrder = 0
-        object RichEdit5: TRichEdit
-          Left = 352
-          Top = 664
-          Width = 185
-          Height = 89
-          Font.Charset = RUSSIAN_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          Lines.Strings = (
-            'edClpBrd')
-          ParentFont = False
-          TabOrder = 0
-          Visible = False
-        end
-        object pnlFilters: TRzPanel
+        object pnlFullSearch: TPanel
           AlignWithMargins = True
           Left = 5
-          Top = 5
-          Width = 672
-          Height = 148
+          Top = 2
+          Width = 728
+          Height = 136
+          Margins.Top = 0
+          Margins.Bottom = 0
           Align = alTop
-          BorderOuter = fsNone
-          TabOrder = 1
-          object RzGroupBox1: TRzGroupBox
-            AlignWithMargins = True
-            Left = 258
-            Top = 0
-            Width = 292
-            Height = 144
-            Caption = #1060#1072#1081#1083
-            TabOrder = 1
-            object Label27: TLabel
-              Left = 59
-              Top = 24
-              Width = 19
-              Height = 13
-              Alignment = taRightJustify
-              Caption = #1048#1084#1103
-            end
-            object Label28: TLabel
-              Left = 12
-              Top = 46
-              Width = 66
-              Height = 13
-              Alignment = taRightJustify
-              Caption = #1055#1072#1087#1082#1072'/'#1040#1088#1093#1080#1074
-            end
-            object Label29: TLabel
-              Left = 16
-              Top = 73
-              Width = 61
-              Height = 13
-              Alignment = taRightJustify
-              Caption = #1056#1072#1089#1096#1080#1088#1077#1085#1080#1077
-            end
-            object Label30: TLabel
-              Left = 21
-              Top = 100
-              Width = 56
-              Height = 13
-              Alignment = taRightJustify
-              Caption = #1044#1086#1073#1072#1074#1083#1077#1085#1086
-            end
-            object edFExt: TRzEdit
-              Left = 83
-              Top = 67
-              Width = 94
-              Height = 21
-              FocusColor = 15138790
-              FrameStyle = fsNone
-              TabOrder = 2
-              OnKeyDown = edFFullNameKeyDown
-            end
-            object edFFolder: TRzEdit
-              Left = 84
-              Top = 41
-              Width = 201
-              Height = 21
-              FocusColor = 15138790
-              FrameStyle = fsNone
-              TabOrder = 1
-              OnKeyDown = edFFullNameKeyDown
-            end
-            object edFFile: TRzEdit
-              Left = 84
-              Top = 16
-              Width = 201
-              Height = 21
-              FocusColor = 15138790
-              FrameStyle = fsNone
-              TabOrder = 0
-              OnKeyDown = edFFullNameKeyDown
-            end
-            object cbDeleted: TCheckBox
-              Left = 156
-              Top = 121
-              Width = 125
-              Height = 17
-              Caption = ' '#1057#1082#1088#1099#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
-              TabOrder = 4
-            end
-            object cbDownloaded: TRzComboBox
-              Left = 12
-              Top = 119
-              Width = 138
-              Height = 21
-              ItemHeight = 13
-              ReadOnlyColor = clBtnHighlight
-              TabOrder = 3
-              Text = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1074#1089#1077
-              Items.Strings = (
-                #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1074#1089#1077
-                #1058#1086#1083#1100#1082#1086' '#1089#1082#1072#1095#1072#1085#1085#1099#1077
-                #1058#1086#1083#1100#1082#1086' '#1053#1045' '#1089#1082#1072#1095#1072#1085#1085#1099#1077)
-              ItemIndex = 0
-            end
-            object cbDate: TRzComboBox
-              Left = 83
-              Top = 94
-              Width = 201
-              Height = 21
-              ItemHeight = 13
-              TabOrder = 5
-              OnKeyDown = edFFullNameKeyDown
-              Items.Strings = (
-                #1079#1072' '#1085#1077#1076#1077#1083#1102
-                #1079#1072' 2 '#1085#1077#1076#1077#1083#1080
-                #1079#1072' '#1084#1077#1089#1103#1094
-                #1079#1072' 3 '#1084#1077#1089#1103#1094#1072)
-            end
-          end
+          BevelOuter = bvNone
+          TabOrder = 3
           object RzGroupBox3: TRzGroupBox
             AlignWithMargins = True
             Left = 0
             Top = 0
-            Width = 254
-            Height = 102
+            Width = 287
+            Height = 89
             Caption = #1050#1085#1080#1075#1072
             TabOrder = 0
             object Label24: TLabel
               Left = 8
-              Top = 48
+              Top = 43
               Width = 48
               Height = 13
               Alignment = taRightJustify
@@ -2255,7 +1691,7 @@ object frmMain: TfrmMain
             end
             object Label26: TLabel
               Left = 25
-              Top = 69
+              Top = 66
               Width = 31
               Height = 13
               Alignment = taRightJustify
@@ -2269,142 +1705,57 @@ object frmMain: TfrmMain
               Alignment = taRightJustify
               Caption = #1040#1074#1090#1086#1088
             end
-            object edFSeries: TRzEdit
-              Left = 62
-              Top = 69
-              Width = 179
-              Height = 21
-              FocusColor = 15138790
-              FrameStyle = fsNone
-              TabOrder = 2
-              OnKeyDown = edFFullNameKeyDown
-            end
-            object edFTitle: TRzEdit
-              Left = 62
-              Top = 42
-              Width = 179
-              Height = 21
-              FocusColor = 15138790
-              FrameStyle = fsNone
-              TabOrder = 1
-              OnKeyDown = edFFullNameKeyDown
-            end
-            object edFFullName: TRzEdit
+            object edFFullName: TRzButtonEdit
               Left = 62
               Top = 16
-              Width = 179
+              Width = 219
               Height = 21
-              FocusColor = 15138790
-              FrameStyle = fsNone
-              TabOnEnter = True
               TabOrder = 0
               OnKeyDown = edFFullNameKeyDown
+              AltBtnWidth = 15
+              ButtonWidth = 15
+              OnButtonClick = edFFullNameButtonClick
+            end
+            object edFTitle: TRzButtonEdit
+              Left = 62
+              Top = 39
+              Width = 219
+              Height = 21
+              TabOrder = 1
+              OnKeyDown = edFFullNameKeyDown
+              AltBtnWidth = 15
+              ButtonWidth = 15
+              OnButtonClick = edFFullNameButtonClick
+            end
+            object edFSeries: TRzButtonEdit
+              Left = 62
+              Top = 62
+              Width = 219
+              Height = 21
+              TabOrder = 2
+              OnKeyDown = edFFullNameKeyDown
+              AltBtnWidth = 15
+              ButtonWidth = 15
+              OnButtonClick = edFFullNameButtonClick
             end
           end
           object RzGroupBox4: TRzGroupBox
             AlignWithMargins = True
-            Left = 554
+            Left = 513
             Top = 0
-            Width = 115
-            Height = 145
-            Margins.Left = 554
+            Width = 212
+            Height = 89
+            Margins.Left = 513
             Margins.Top = 0
-            Align = alClient
-            TabOrder = 4
+            Margins.Bottom = 0
+            Align = alTop
+            TabOrder = 1
             DesignSize = (
-              115
-              145)
-            object btnInsertFilterTemplate: TRzToolButton
-              Tag = 50
-              Left = 10
-              Top = 11
-              Width = 31
-              Flat = False
-              ShowCaption = True
-              UseToolbarShowCaption = False
-              Caption = 'LIKE'
-              OnClick = btnInsertFilterTemplateClick
-            end
-            object RzToolButton3: TRzToolButton
-              Tag = 52
-              Left = 47
-              Top = 90
-              Width = 31
-              Flat = False
-              ShowCaption = True
-              UseToolbarShowCaption = False
-              Caption = '<>'
-              OnClick = btnInsertFilterTemplateClick
-            end
-            object RzToolButton6: TRzToolButton
-              Tag = 55
-              Left = 47
-              Top = 11
-              Width = 31
-              Flat = False
-              ShowCaption = True
-              UseToolbarShowCaption = False
-              Caption = '()'
-              OnClick = btnInsertFilterTemplateClick
-            end
-            object RzToolButton5: TRzToolButton
-              Tag = 54
-              Left = 47
-              Top = 37
-              Width = 31
-              Flat = False
-              ShowCaption = True
-              UseToolbarShowCaption = False
-              Caption = '>'
-              OnClick = btnInsertFilterTemplateClick
-            end
-            object RzToolButton4: TRzToolButton
-              Tag = 53
-              Left = 10
-              Top = 37
-              Width = 31
-              Flat = False
-              ShowCaption = True
-              UseToolbarShowCaption = False
-              Caption = '<'
-              OnClick = btnInsertFilterTemplateClick
-            end
-            object RzToolButton7: TRzToolButton
-              Tag = 56
-              Left = 10
-              Top = 63
-              Width = 31
-              Flat = False
-              ShowCaption = True
-              UseToolbarShowCaption = False
-              Caption = 'AND'
-              OnClick = btnInsertFilterTemplateClick
-            end
-            object RzToolButton8: TRzToolButton
-              Tag = 57
-              Left = 47
-              Top = 63
-              Width = 31
-              Flat = False
-              ShowCaption = True
-              UseToolbarShowCaption = False
-              Caption = 'OR'
-              OnClick = btnInsertFilterTemplateClick
-            end
-            object RzToolButton9: TRzToolButton
-              Tag = 58
-              Left = 10
-              Top = 117
-              Width = 31
-              Flat = False
-              ShowCaption = True
-              UseToolbarShowCaption = False
-              Caption = 'NOT'
-              OnClick = btnInsertFilterTemplateClick
-            end
+              212
+              89)
             object lblTotalBooksFL: TRzLabel
               AlignWithMargins = True
-              Left = 99
+              Left = 196
               Top = 14
               Width = 12
               Height = 19
@@ -2420,195 +1771,280 @@ object frmMain: TfrmMain
               CenterPoint = cpLeftCenter
               ExplicitLeft = 90
             end
-            object RzToolButton1: TRzToolButton
-              Tag = 59
-              Left = 10
-              Top = 90
-              Width = 31
-              Flat = False
-              ShowCaption = True
-              UseToolbarShowCaption = False
-              Caption = '" "'
-              OnClick = btnInsertFilterTemplateClick
+            object Label30: TLabel
+              Left = 8
+              Top = 20
+              Width = 26
+              Height = 13
+              Alignment = taRightJustify
+              Caption = #1044#1072#1090#1072
+            end
+            object cbDate: TRzComboBox
+              Left = 39
+              Top = 16
+              Width = 129
+              Height = 21
+              ItemHeight = 0
+              TabOrder = 0
+              OnKeyDown = edFFullNameKeyDown
+              Items.Strings = (
+                #1079#1072' 3 '#1076#1085#1103
+                #1079#1072' '#1085#1077#1076#1077#1083#1102
+                #1079#1072' 2 '#1085#1077#1076#1077#1083#1080
+                #1079#1072' '#1084#1077#1089#1103#1094
+                #1079#1072' 3 '#1084#1077#1089#1103#1094#1072)
+            end
+            object cbDownloaded: TRzComboBox
+              Left = 40
+              Top = 40
+              Width = 128
+              Height = 21
+              ItemHeight = 0
+              ReadOnlyColor = clBtnHighlight
+              TabOrder = 1
+              Text = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1074#1089#1077
+              Items.Strings = (
+                #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1074#1089#1077
+                #1058#1086#1083#1100#1082#1086' '#1089#1082#1072#1095#1072#1085#1085#1099#1077
+                #1058#1086#1083#1100#1082#1086' '#1053#1045' '#1089#1082#1072#1095#1072#1085#1085#1099#1077)
+              ItemIndex = 0
+            end
+            object cbDeleted: TCheckBox
+              Left = 40
+              Top = 66
+              Width = 125
+              Height = 17
+              Caption = ' '#1057#1082#1088#1099#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
+              TabOrder = 2
             end
           end
-          object btnApplyFilter: TRzBitBtn
-            Left = 144
-            Top = 115
-            Width = 105
-            Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100
-            TabOrder = 3
-            OnClick = btnApplyFilterClick
-            Kind = bkOK
-          end
-          object btnClearFilterEdits: TRzBitBtn
-            Left = 25
-            Top = 115
-            Width = 105
-            Caption = #1054#1095#1080#1089#1090#1080#1090#1100
+          object RzGroupBox1: TRzGroupBox
+            AlignWithMargins = True
+            Left = 293
+            Top = 0
+            Width = 215
+            Height = 89
+            Caption = #1060#1072#1081#1083
             TabOrder = 2
-            OnClick = btnClearFilterEditsClick
-            Kind = bkRetry
+            object Label27: TLabel
+              Left = 17
+              Top = 23
+              Width = 19
+              Height = 13
+              Alignment = taRightJustify
+              Caption = #1048#1084#1103
+            end
+            object Label28: TLabel
+              Left = 5
+              Top = 43
+              Width = 31
+              Height = 13
+              Alignment = taRightJustify
+              Caption = #1055#1072#1087#1082#1072
+            end
+            object Label29: TLabel
+              Left = 18
+              Top = 66
+              Width = 18
+              Height = 13
+              Alignment = taRightJustify
+              Caption = #1058#1080#1087
+            end
+            object edFFile: TRzButtonEdit
+              Left = 38
+              Top = 16
+              Width = 171
+              Height = 21
+              TabOrder = 0
+              OnKeyDown = edFFullNameKeyDown
+              AltBtnWidth = 15
+              ButtonWidth = 15
+              OnButtonClick = edFFullNameButtonClick
+            end
+            object edFFolder: TRzButtonEdit
+              Left = 38
+              Top = 39
+              Width = 171
+              Height = 21
+              TabOrder = 1
+              OnKeyDown = edFFullNameKeyDown
+              AltBtnWidth = 15
+              ButtonWidth = 15
+              OnButtonClick = edFFullNameButtonClick
+            end
+            object edFExt: TRzButtonEdit
+              Left = 38
+              Top = 62
+              Width = 171
+              Height = 21
+              TabOrder = 2
+              OnKeyDown = edFFullNameKeyDown
+              AltBtnWidth = 15
+              ButtonWidth = 15
+              OnButtonClick = edFFullNameButtonClick
+            end
           end
-        end
-        object tvBooksFL: TVirtualStringTree
-          Tag = 5
-          AlignWithMargins = True
-          Left = 5
-          Top = 159
-          Width = 672
-          Height = 262
-          Align = alClient
-          BevelInner = bvNone
-          BevelOuter = bvNone
-          BevelKind = bkFlat
-          ButtonFillMode = fmShaded
-          CheckImageKind = ckXP
-          ClipboardFormats.Strings = (
-            'CSV'
-            'HTML Format'
-            'Plain text'
-            'Rich Text Format'
-            'Rich Text Format Without Objects'
-            'Unicode text'
-            'Virtual Tree Data')
-          Color = 14024447
-          Colors.BorderColor = clBackground
-          Colors.HotColor = clBlack
-          Colors.UnfocusedSelectionBorderColor = clBtnShadow
-          DefaultPasteMode = amAddChildFirst
-          DragMode = dmAutomatic
-          EditDelay = 100
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -13
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          Header.AutoSizeIndex = 0
-          Header.Font.Charset = ANSI_CHARSET
-          Header.Font.Color = clWindowText
-          Header.Font.Height = -12
-          Header.Font.Name = 'Arial'
-          Header.Font.Style = [fsBold]
-          Header.Height = 20
-          Header.Options = [hoColumnResize, hoDrag, hoHotTrack, hoOwnerDraw, hoRestrictDrag, hoShowHint, hoShowImages, hoShowSortGlyphs, hoVisible]
-          Header.PopupMenu = pmHeaders
-          Header.Style = hsFlatButtons
-          HintMode = hmTooltip
-          HotCursor = crHandPoint
-          ParentFont = False
-          ParentShowHint = False
-          PopupMenu = pmMain
-          ShowHint = False
-          TabOrder = 2
-          TreeOptions.AnimationOptions = [toAnimatedToggle]
-          TreeOptions.AutoOptions = [toAutoDropExpand, toAutoExpand, toAutoScroll, toAutoTristateTracking, toAutoDeleteMovedNodes]
-          TreeOptions.MiscOptions = [toCheckSupport, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
-          TreeOptions.PaintOptions = [toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toFullVertGridLines]
-          TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect, toRightClickSelect]
-          OnAfterCellPaint = tvBooksTreeAfterCellPaint
-          OnChange = tvBooksTreeChange
-          OnCompareNodes = tvBooksTreeCompareNodes
-          OnDblClick = tbtbnReadClick
-          OnGetText = tvBooksFGetText
-          OnPaintText = tvBooksTreePaintText
-          OnHeaderClick = tvBooksTreeHeaderClick
-          OnInitNode = tvBooksTreeInitNode
-          OnKeyDown = tvBooksTreeKeyDown
-          OnMouseUp = tvBooksTreeMouseUp
-          Columns = <
-            item
-              MaxWidth = 1000
-              MinWidth = 30
-              Position = 0
-              Width = 200
-              WideText = #1040#1074#1090#1086#1088
+          object RzGroupBox2: TRzGroupBox
+            AlignWithMargins = True
+            Left = 293
+            Top = 89
+            Width = 432
+            Height = 45
+            Margins.Left = 293
+            Margins.Top = 0
+            Margins.Bottom = 0
+            Align = alTop
+            TabOrder = 3
+            object Label1: TLabel
+              Left = 20
+              Top = 19
+              Width = 36
+              Height = 13
+              Alignment = taRightJustify
+              Caption = #1055#1088#1077#1089#1077#1090
             end
-            item
-              MaxWidth = 1000
-              MinWidth = 30
-              Position = 1
-              Spacing = 10
-              Width = 200
-              WideText = #1053#1072#1079#1074#1072#1085#1080#1077
-              WideHint = 
-                'Text is initially centered and has a left-to-right directionalit' +
-                'y.'
+            object cbPresetName: TRzComboBox
+              Left = 62
+              Top = 16
+              Width = 204
+              Height = 21
+              ItemHeight = 0
+              TabOrder = 0
+              OnChange = cbPresetNameChange
+              OnSelect = cbPresetNameSelect
             end
-            item
-              MaxWidth = 1000
-              MinWidth = 30
-              Position = 2
-              Width = 200
-              WideText = #1057#1077#1088#1080#1103
+            object btnSavePreset: TRzBitBtn
+              Left = 272
+              Top = 16
+              Width = 31
+              Height = 21
+              Hint = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1087#1088#1077#1089#1077#1090
+              Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
+              Enabled = False
+              LightTextStyle = True
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 1
+              OnClick = btnSavePresetClick
+              Glyph.Data = {
+                36030000424D3603000000000000360000002800000010000000100000000100
+                18000000000000030000120B0000120B00000000000000000000FF00FFFF00FF
+                FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00
+                FFFF00FFFF00FFFF00FFFF00FFFF00FF7F2B287F2B28A18283A18283A18283A1
+                8283A18283A18283A182837A1C1C7F2B28FF00FFFF00FFFF00FFFF00FF7F2B28
+                CA4D4DB64545DDD4D5791617791617DCE0E0D7DADECED5D7BDBABD76100F9A2D
+                2D7F2B28FF00FFFF00FFFF00FF7F2B28C24A4BB14444E2D9D9791617791617D9
+                D8DAD9DEE1D3D9DCC1BDC1761111982D2D7F2B28FF00FFFF00FFFF00FF7F2B28
+                C24A4AB04242E6DCDC791617791617D5D3D5D8DEE1D7DDE0C6C2C5700F0F962C
+                2C7F2B28FF00FFFF00FFFF00FF7F2B28C24A4AB04141EADEDEE7DDDDDDD4D5D7
+                D3D5D5D7D9D7D8DACAC2C57E17179E31317F2B28FF00FFFF00FFFF00FF7F2B28
+                BF4748B84545BA4C4CBD5757BB5756B64E4EB44949BD5251BB4B4CB54242BF4A
+                4A7F2B28FF00FFFF00FFFF00FF7F2B28A33B39B1605DC68684CB918FCC9190CC
+                908FCB8988C98988CB9391CC9696BD4B4C7F2B28FF00FFFF00FFFF00FF7F2B28
+                BD4B4CF7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7BD4B
+                4C7F2B28FF00FFFF00FFFF00FF7F2B28BD4B4CF7F7F7F7F7F7F7F7F7F7F7F7F7
+                F7F7F7F7F7F7F7F7F7F7F7F7F7F7BD4B4C7F2B28FF00FFFF00FFFF00FF7F2B28
+                BD4B4CF7F7F7BFBFBFBFBFBFBFBFBFBFBFBFBFBFBFBFBFBFBFBFBFF7F7F7BD4B
+                4C7F2B28FF00FFFF00FFFF00FF7F2B28BD4B4CF7F7F7F7F7F7F7F7F7F7F7F7F7
+                F7F7F7F7F7F7F7F7F7F7F7F7F7F7BD4B4C7F2B28FF00FFFF00FFFF00FF7F2B28
+                BD4B4CF7F7F7BFBFBFBFBFBFBFBFBFBFBFBFBFBFBFBFBFBFBFBFBFF7F7F7BD4B
+                4C7F2B28FF00FFFF00FFFF00FF7F2B28BD4B4CF7F7F7F7F7F7F7F7F7F7F7F7F7
+                F7F7F7F7F7F7F7F7F7F7F7F7F7F7BD4B4C7F2B28FF00FFFF00FFFF00FFFF00FF
+                7F2B28F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F77F2B
+                28FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF
+                00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF}
             end
-            item
-              Alignment = taCenter
-              MaxWidth = 60
-              MinWidth = 30
-              Position = 3
-              Spacing = 10
-              Width = 45
-              WideText = #8470
-              WideHint = 
-                'Text is initially left aligned and has a left-to-right direction' +
-                'ality.'
+            object btnDeletePreset: TRzBitBtn
+              Left = 309
+              Top = 16
+              Width = 31
+              Height = 21
+              Hint = #1059#1076#1072#1083#1080#1090#1100' '#1087#1088#1077#1089#1077#1090
+              Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100
+              Enabled = False
+              LightTextStyle = True
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 2
+              OnClick = btnDeletePresetClick
+              Glyph.Data = {
+                36050000424D3605000000000000360400002800000010000000100000000100
+                0800000000000001000000000000000000000001000000000000000000000101
+                0100020202000303030004040400050505000606060007070700080808000909
+                09000A0A0A000B0B0B000C0C0C000D0D0D000E0E0E000F0F0F00101010001111
+                1100121212001313130014141400151515001616160017171700181818001919
+                19001A1A1A001B1B1B001C1C1C001D1D1D001E1E1E001F1F1F00202020001F25
+                1F001D2A1D001C2E1C001B331B001A371A00183D18001542150013471300114B
+                11000F500F000D540D000A570A00095A0900075D0700065E0600046004000461
+                040003620300046104000461040005600500065F0600085E08000A5D0A000C5B
+                0C000F5A0F0012581200155615001A541A001E521E0023502300284D28002F4B
+                2F00334A3300374937003B483B00404740004646460047474700484848004949
+                49004A4A4A004B4B4B004C4C4C004D4D4D004E4E4E004F4F4F00505050005151
+                5100525252005353530054545400555555005656560057575700585858005959
+                59005A5A5A005B5B5B005C5C5C005D5D5D005E5E5E005F5F5F00606060006161
+                6100626262006363630064646400656565006666660067676700686868006969
+                69006A6A6A006B6B6B006C6C6C006D6D6D006E6E6E006F6F6F00707070007171
+                7100727272007373730074747400757575007676760077777700787878007979
+                79007A7A7A007B7B7B007C7C7C007D7D7D007E7E7E007F7F7F00808080008181
+                8100828282008383830084848400858585008686860087878700888888008989
+                89008A8A8A008B8B8B008C8C8C008D8D8D008E8E8E008F8F8F00909090009191
+                9100929292009393930094949400959595009696960097979700989898009999
+                99009A9A9A009B9B9B009C9C9C009D9D9D009E9E9E009F9F9F00A0A0A000A1A1
+                A100A2A2A200A3A3A300A4A4A400A5A5A500A6A6A600A7A7A700A8A8A800A9A9
+                A900AAAAAA00ABABAB00B1B0B000BFBDBC00CECCCA00DEDCD900EBE9E600F5F2
+                EF00FAF7F400FDFAF600FDFBF800FEFBF800FEFCF900FEFCF900FEFCF900FEFB
+                F800FEFAF600FEF9F300FEF8F000FEF7EE00FEF6ED00FEF6EB00FEF5EA00FEF4
+                E800FEF3E600FEF2E400FEF1E100FEF0DF00FEEEDC00FEEDDA00FEECD800FEEC
+                D700FEECD600FEEBD400FEEAD300FDE9D100FDE8CF00FDE7CD00FCE6CB00FAE0
+                C300F7D8B600F1C99E00E7AF7500DE985100D5812D00D0761B00CE6E0F00CC69
+                0700CB670300CA660200C9640200C7630100C6610100C25D0000BD580000B852
+                0000B04A0000A8420000A23C00009F3900009D3700009B3500009A3400009B34
+                02009E330900A3301500AC2B2C00B9244E00C81C7400D9139F00E80BC600F803
+                ED00FE00FE00FE00FE00FE00FE00FE00FE00FE00FE00FE00FE00FE00FE00FE00
+                FE00FE00FE00FE00FE00FE00FE00FE00FE00FE00FE00FE00FE00F8F8F8F8F8F8
+                F8F8F8F8F8F8F8F8F8F8F8F8F8F8F8F8F8F8F8F8F8F8F8F8F8F8DADADADADADA
+                DADADAF8F8F8F8F8F8F8B7B9BCC1C4C7CCCFDAF8F8F8F8F8F8F8B7B6BBBEC3C6
+                CBCFDAF8F8F8F8F8F8F8B7B7BABDC2C5C9CDDAF8F8F8F8F8F8F8E8E8E8E8E8E8
+                E8E8E8E8E8DAF832F8F8B7B6BABCC0C3C5C8CCCFD0DAF83232F8B7B7BABBBEC2
+                C4C7CBCED0DAF8329A32B7B7B9BBBDC1C4C6CBCDCFDAF83232F8E8E8E8E8E8E8
+                E8E8E8E8E8DAF832F8F8B7B7BABDC3C6CBCFDAF8F8F8F8F8F8F8B7B7B9BCC1C5
+                C9CEDAF8F8F8F8F8F8F8B7B7B7BABEC3C7CBDAF8F8F8F8F8F8F8DADADADADADA
+                DADADAF8F8F8F8F8F8F8F8F8F8F8F8F8F8F8F8F8F8F8F8F8F8F8}
             end
-            item
-              Alignment = taCenter
-              MaxWidth = 100
-              MinWidth = 65
-              Position = 4
-              Spacing = 10
-              Width = 65
-              WideText = #1056#1072#1079#1084#1077#1088
-              WideHint = 
-                'Text is initially left aligned and has a right-to-left direction' +
-                'ality.'
+          end
+          object RzGroupBox5: TRzGroupBox
+            Left = 1
+            Top = 89
+            Width = 286
+            Height = 45
+            TabOrder = 4
+            object btnClearFilterEdits: TRzBitBtn
+              Left = 192
+              Top = 14
+              Width = 83
+              Caption = #1054#1095#1080#1089#1090#1080#1090#1100
+              TabOrder = 0
+              OnClick = btnClearFilterEditsClick
+              Kind = bkRetry
             end
-            item
-              Alignment = taCenter
-              MaxWidth = 60
-              MinWidth = 60
-              Position = 5
-              Width = 60
-              WideText = #1056#1077#1081#1090#1080#1085#1075
+            object btnApplyFilter: TRzBitBtn
+              Left = 7
+              Top = 14
+              Width = 149
+              Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100
+              TabOrder = 1
+              OnClick = btnApplyFilterClick
+              Kind = bkOK
             end
-            item
-              MinWidth = 30
-              Position = 6
-              Width = 205
-              WideText = #1046#1072#1085#1088
-            end
-            item
-              Position = 7
-              Width = 80
-              WideText = #1044#1086#1073#1072#1074#1083#1077#1085#1086
-            end>
-        end
-        object ipnlFilter: TMHLInfoPanel
-          AlignWithMargins = True
-          Left = 5
-          Top = 427
-          Width = 672
-          Height = 100
-          Align = alBottom
-          BevelOuter = bvNone
-          Caption = ' '
-          TabOrder = 3
-          Author = #1060#1048#1054'  '#1072#1074#1090#1086#1088#1072
-          Title = #1053#1072#1079#1074#1072#1085#1080#1077' '#1082#1085#1080#1075#1080
-          Genre = #1085#1077#1080#1079#1074#1077#1089#1090#1085#1099#1081
-          Folder = 'C:\Books\1-1009.zip'
-          FileName = '111 '#1048#1074#1072#1085#1086#1074' '#1050#1085#1080#1075#1072'.fb2'
+          end
         end
       end
-      object cpCoverFL: TMHLCoverPanel
+      object cpCoverSR: TMHLCoverPanel
         AlignWithMargins = True
-        Left = 685
+        Left = 741
         Top = 3
         Width = 250
-        Height = 532
+        Height = 674
         Margins.Left = 0
         Align = alRight
         BorderOuter = fsFlatRounded
@@ -2623,196 +2059,496 @@ object frmMain: TfrmMain
         OnResize = CoverPanelResize
         Fb2InfoVisible = False
         FontSize = 0
+        AnnotationColor = clBlack
+      end
+    end
+    object TabSheet5: TRzTabSheet
+      HelpContext = 125
+      Caption = #1048#1079#1073#1088#1072#1085#1085#1086#1077
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
+      object RzPanel20: TRzPanel
+        AlignWithMargins = True
+        Left = 3
+        Top = 3
+        Width = 738
+        Height = 674
+        Margins.Right = 0
+        Align = alClient
+        BorderOuter = fsFlatRounded
+        TabOrder = 0
+        object RzPanel21: TRzPanel
+          AlignWithMargins = True
+          Left = 5
+          Top = 5
+          Width = 728
+          Height = 558
+          Align = alClient
+          BorderOuter = fsNone
+          TabOrder = 0
+          object tvBooksF: TVirtualStringTree
+            Tag = 4
+            Left = 0
+            Top = 0
+            Width = 728
+            Height = 558
+            Align = alClient
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            BevelKind = bkFlat
+            ButtonFillMode = fmShaded
+            CheckImageKind = ckXP
+            ClipboardFormats.Strings = (
+              'CSV'
+              'HTML Format'
+              'Plain text'
+              'Rich Text Format'
+              'Rich Text Format Without Objects'
+              'Unicode text'
+              'Virtual Tree Data')
+            Color = 14024447
+            Colors.BorderColor = clBackground
+            Colors.HotColor = clBlack
+            Colors.UnfocusedSelectionBorderColor = clBtnShadow
+            DefaultPasteMode = amAddChildFirst
+            DragMode = dmAutomatic
+            EditDelay = 100
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            Header.AutoSizeIndex = 0
+            Header.DefaultHeight = 17
+            Header.Font.Charset = ANSI_CHARSET
+            Header.Font.Color = clWindowText
+            Header.Font.Height = -12
+            Header.Font.Name = 'Arial'
+            Header.Font.Style = [fsBold]
+            Header.Height = 20
+            Header.Options = [hoColumnResize, hoDrag, hoHotTrack, hoOwnerDraw, hoRestrictDrag, hoShowHint, hoShowImages, hoShowSortGlyphs, hoVisible]
+            Header.PopupMenu = pmHeaders
+            Header.Style = hsFlatButtons
+            HintMode = hmTooltip
+            HotCursor = crHandPoint
+            ParentFont = False
+            ParentShowHint = False
+            PopupMenu = pmMain
+            ShowHint = False
+            TabOrder = 0
+            TreeOptions.AnimationOptions = [toAnimatedToggle]
+            TreeOptions.AutoOptions = [toAutoDropExpand, toAutoExpand, toAutoScroll, toAutoTristateTracking, toAutoDeleteMovedNodes]
+            TreeOptions.MiscOptions = [toCheckSupport, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
+            TreeOptions.PaintOptions = [toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toFullVertGridLines]
+            TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect, toRightClickSelect]
+            OnAfterCellPaint = tvBooksTreeAfterCellPaint
+            OnChange = tvBooksTreeChange
+            OnCompareNodes = tvBooksTreeCompareNodes
+            OnDblClick = tbtbnReadClick
+            OnGetText = tvBooksFGetText
+            OnPaintText = tvBooksTreePaintText
+            OnHeaderClick = tvBooksTreeHeaderClick
+            OnInitNode = tvBooksTreeInitNode
+            OnKeyDown = tvBooksTreeKeyDown
+            OnMouseUp = tvBooksTreeMouseUp
+            Columns = <
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
+                Position = 0
+                Spacing = 10
+                Width = 305
+                WideText = #1053#1072#1079#1074#1072#1085#1080#1077
+                WideHint = 
+                  'Text is initially centered and has a left-to-right directionalit' +
+                  'y.'
+              end
+              item
+                Alignment = taCenter
+                MaxWidth = 90
+                MinWidth = 35
+                Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring]
+                Position = 1
+                Spacing = 10
+                Width = 38
+                WideText = #8470
+                WideHint = 
+                  'Text is initially left aligned and has a left-to-right direction' +
+                  'ality.'
+              end
+              item
+                Alignment = taCenter
+                BiDiMode = bdRightToLeft
+                MinWidth = 65
+                Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
+                Position = 2
+                Spacing = 10
+                Width = 65
+                WideText = #1056#1072#1079#1084#1077#1088
+                WideHint = 
+                  'Text is initially left aligned and has a right-to-left direction' +
+                  'ality.'
+              end
+              item
+                Alignment = taCenter
+                MaxWidth = 60
+                MinWidth = 60
+                Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
+                Position = 3
+                Width = 60
+                WideText = #1056#1077#1081#1090#1080#1085#1075
+              end
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
+                Position = 4
+                Width = 200
+                WideText = #1050#1086#1083#1083#1077#1082#1094#1080#1103
+              end>
+          end
+        end
+        object ipnlFavorites: TMHLInfoPanel
+          AlignWithMargins = True
+          Left = 5
+          Top = 569
+          Width = 728
+          Height = 100
+          Align = alBottom
+          BevelOuter = bvNone
+          Caption = ' '
+          TabOrder = 1
+          Author = #1060#1048#1054'  '#1072#1074#1090#1086#1088#1072
+          Title = #1053#1072#1079#1074#1072#1085#1080#1077' '#1082#1085#1080#1075#1080
+          Genre = #1085#1077#1080#1079#1074#1077#1089#1090#1085#1099#1081
+          Folder = 'C:\Books\1-1009.zip'
+          FileName = '111 '#1048#1074#1072#1085#1086#1074' '#1050#1085#1080#1075#1072'.fb2'
+          DesignSize = (
+            728
+            100)
+          object lblTotalBooksF: TRzLabel
+            AlignWithMargins = True
+            Left = 712
+            Top = 3
+            Width = 12
+            Height = 19
+            Alignment = taRightJustify
+            Anchors = []
+            Caption = '()'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clNavy
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            CenterPoint = cpLowerRight
+            ExplicitLeft = 648
+          end
+          object btnClearFavorites: TRzBitBtn
+            Left = 599
+            Top = 66
+            Width = 118
+            Anchors = [akRight, akBottom]
+            Caption = #1054#1095#1080#1089#1090#1080#1090#1100
+            Enabled = False
+            TabOrder = 0
+            OnClick = btnClearFavoritesClick
+            Kind = bkRetry
+          end
+        end
+      end
+      object cpCoverF: TMHLCoverPanel
+        AlignWithMargins = True
+        Left = 741
+        Top = 3
+        Width = 250
+        Height = 674
+        Margins.Left = 0
+        Align = alRight
+        BorderOuter = fsFlatRounded
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        SizeBarWidth = 5
+        TabOrder = 1
+        OnResize = CoverPanelResize
+        Fb2InfoVisible = False
+        FontSize = 0
+        AnnotationColor = clBlack
       end
     end
     object TabSheet7: TRzTabSheet
       Caption = #1057#1087#1080#1089#1086#1082' '#1079#1072#1082#1072#1095#1077#1082
-      object tvDownloadList: TVirtualStringTree
-        AlignWithMargins = True
-        Left = 3
-        Top = 47
-        Width = 932
-        Height = 430
-        Align = alClient
-        Header.AutoSizeIndex = 0
-        Header.Font.Charset = DEFAULT_CHARSET
-        Header.Font.Color = clWindowText
-        Header.Font.Height = -11
-        Header.Font.Name = 'Tahoma'
-        Header.Font.Style = []
-        Header.Options = [hoColumnResize, hoDrag, hoVisible]
-        PopupMenu = pmDownloadList
-        TabOrder = 0
-        TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toFullVertGridLines]
-        TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect]
-        OnGetText = tvDownloadListGetText
-        OnLoadNode = tvDownloadListLoadNode
-        OnSaveNode = tvDownloadListSaveNode
-        Columns = <
-          item
-            Position = 0
-            Width = 200
-            WideText = #1040#1074#1090#1086#1088
-          end
-          item
-            Position = 1
-            Width = 200
-            WideText = #1053#1072#1079#1074#1072#1085#1080#1077
-          end
-          item
-            Alignment = taRightJustify
-            Position = 2
-            Width = 100
-            WideText = #1056#1072#1079#1084#1077#1088
-          end
-          item
-            Alignment = taCenter
-            Position = 3
-            Width = 100
-            WideText = #1057#1090#1072#1090#1091#1089
-          end>
-      end
-      object RzPanel2: TRzPanel
-        AlignWithMargins = True
-        Left = 3
-        Top = 483
-        Width = 932
-        Height = 52
-        Align = alBottom
-        BorderOuter = fsFlatRounded
-        TabOrder = 1
-        DesignSize = (
-          932
-          52)
-        object pbDownloadProgress: TRzProgressBar
-          Left = 6
-          Top = 22
-          BorderWidth = 0
-          InteriorOffset = 0
-          PartsComplete = 0
-          Percent = 0
-          TotalParts = 0
-          Visible = False
-        end
-        object lblDownloadState: TLabel
-          Left = 6
-          Top = 3
-          Width = 53
-          Height = 13
-          Caption = #1054#1078#1080#1076#1072#1085#1080#1077
-        end
-        object lblDnldAuthor: TLabel
-          Left = 224
-          Top = 8
-          Width = 6
-          Height = 13
-          Caption = '  '
-        end
-        object lblDnldTitle: TLabel
-          Left = 224
-          Top = 27
-          Width = 8
-          Height = 16
-          Caption = '  '
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -13
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-        end
-        object btnClearDownload: TRzBitBtn
-          Left = 801
-          Top = 19
-          Width = 118
-          Anchors = [akRight, akBottom]
-          Caption = #1054#1095#1080#1089#1090#1080#1090#1100
-          TabOrder = 0
-          OnClick = btnClearDownloadClick
-          Kind = bkRetry
-        end
-      end
-      object RzPanel6: TRzPanel
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
+      object tlbrDownloadList: TRzToolbar
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 932
-        Height = 38
-        Align = alTop
+        Width = 40
+        Height = 674
+        Align = alLeft
+        AutoStyle = False
+        Images = ilDownloadToolBar
+        TopMargin = 20
+        ButtonWidth = 30
+        TextOptions = ttoCustom
+        AutoSize = True
+        BorderInner = fsNone
         BorderOuter = fsFlatRounded
-        TabOrder = 2
-        object btnPauseDownload: TRzBitBtn
-          Left = 90
-          Top = 6
-          Height = 26
-          Hint = #1054#1089#1090#1072#1085#1086#1074#1080#1090#1100
-          Caption = #1057#1090#1086#1087
-          Enabled = False
-          TabOrder = 0
-          OnClick = btnPauseDownloadClick
-          Glyph.Data = {
-            36030000424D3603000000000000360000002800000010000000100000000100
-            18000000000000030000120B0000120B00000000000000000000FF00FFFF00FF
-            FF00FFFF00FFFF00FF000288010893010B99010C99010893000389FF00FFFF00
-            FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF000186010D9D021CAF021FB402
-            1FB5021FB5021FB2021CB0010F9F000287FF00FFFF00FFFF00FFFF00FFFF00FF
-            00038A0118B2021FB7021EB1021DB1021DB1021DB1021DB1021EB2021FB40219
-            AC00048EFF00FFFF00FFFF00FF0001830118BB0220CC011CBF0015B4011AB002
-            1DB1021DB1011CB00015AD011BB0021FB4021AAC000287FF00FFFF00FF010CA7
-            0121E0011CD30726CC4966D70B28BC0018B00019AF0622B44A66CE0D2BB7011B
-            B0021FB5010F9FFF00FF000187011CDC0120ED0017DC3655E2FFFFFFA4B4ED05
-            20BB0119B28B9EE1FFFFFF4E6ACF0014AC021EB2021CB000038900069A0120F8
-            011FF6001DE9031FE1738BEEFFFFFFA0B1ED93A5E7FFFFFF91A4E20823B4011B
-            B0021DB1021FB4010895020CAA0A2EFE0323FB011FF6001CEB0018E1788FF0FF
-            FFFFFFFFFF96A7EA021BB50019AF021DB1021DB10220B5010C99040EAC294DFE
-            0D30FB011FFA001CF7011CEE8EA1F4FFFFFFFFFFFFA6B6EE0520C20018B6021D
-            B1021DB10220B5010B980208A04162FB2F51FC001EFA0725FA8AA0FEFFFFFF8E
-            A3F67991F2FFFFFFA3B4EE0C29C6011BB8021DB4021FB2000793000189314FEF
-            7690FF0F2DFA3354FBFFFFFF91A5FE021EF30017E7738BF3FFFFFF4765E00016
-            C2021FBD021CB2000288FF00FF0C1BBC819AFF728BFE1134FA3456FB0526FA00
-            1CFA001CF40220ED3353ED0625DA011DD00220CB010DA1FF00FFFF00FF000189
-            2943E6A5B7FF849AFC2341FB0323FA011FFA011FFA001EF7011BEE021FE50121
-            E20118BF000184FF00FFFF00FFFF00FF01038F2A45E693A9FFABBBFF758FFE49
-            69FC3658FB3153FC2346FC092CF70118CB00038BFF00FFFF00FFFF00FFFF00FF
-            FF00FF0001890F1DBF3E5BF36B87FE728CFF5E7BFE395BFB1231EB010FB50001
-            84FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF000189030AA306
-            11B2050FB10107A0000188FF00FFFF00FFFF00FFFF00FFFF00FF}
+        BorderSides = [sdLeft, sdTop, sdRight, sdBottom]
+        BorderWidth = 5
+        FullRepaint = True
+        GradientColorStyle = gcsCustom
+        GradientDirection = gdVerticalCenter
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 0
+        VisualStyle = vsClassic
+        ToolbarControls = (
+          btnStartDownload
+          btnPauseDownload
+          RzSpacer1
+          BtnFirstRecord
+          BtnDwnldUp
+          BtnDwnldDown
+          BtnLastRecord
+          RzSpacer2
+          BtnDelete
+          RzSpacer3
+          BtnSave)
+        object RzSpacer1: TRzSpacer
+          Left = 4
+          Top = 70
+          Width = 26
         end
-        object btnStartDownload: TRzBitBtn
-          Left = 9
-          Top = 6
-          Height = 26
-          Hint = #1053#1072#1095#1072#1090#1100' '#1079#1072#1075#1088#1091#1079#1082#1091
-          Caption = #1057#1090#1072#1088#1090
-          TabOrder = 1
+        object BtnDwnldUp: TRzToolButton
+          Tag = 21
+          Left = 4
+          Top = 120
+          Hint = #1042#1074#1077#1088#1093
+          DisabledIndex = 1
+          ImageIndex = 0
+          Caption = 'Up'
+          OnClick = MoveDwnldListNodes
+        end
+        object BtnDwnldDown: TRzToolButton
+          Tag = 22
+          Left = 4
+          Top = 145
+          Hint = #1042#1085#1080#1079
+          DisabledIndex = 3
+          ImageIndex = 2
+          Caption = 'Down'
+          OnClick = MoveDwnldListNodes
+        end
+        object BtnDelete: TRzToolButton
+          Left = 4
+          Top = 220
+          Hint = #1059#1076#1072#1083#1080#1090#1100
+          DisabledIndex = 5
+          ImageIndex = 4
+          Caption = 'Delete'
+          OnClick = btnDeleteDownloadClick
+        end
+        object BtnFirstRecord: TRzToolButton
+          Tag = 20
+          Left = 4
+          Top = 95
+          Hint = #1042' '#1085#1072#1095#1072#1083#1086
+          DisabledIndex = 7
+          ImageIndex = 6
+          Caption = 'First Record'
+          OnClick = MoveDwnldListNodes
+        end
+        object BtnLastRecord: TRzToolButton
+          Tag = 23
+          Left = 4
+          Top = 170
+          Hint = #1042' '#1082#1086#1085#1077#1094
+          DisabledIndex = 9
+          ImageIndex = 8
+          Caption = 'Last Record'
+          OnClick = MoveDwnldListNodes
+        end
+        object RzSpacer2: TRzSpacer
+          Left = 4
+          Top = 195
+          Width = 27
+        end
+        object btnStartDownload: TRzToolButton
+          Left = 4
+          Top = 20
+          Hint = #1057#1090#1072#1088#1090
+          DisabledIndex = 11
+          ImageIndex = 10
+          Caption = 'Play'
           OnClick = btnStartDownloadClick
-          Glyph.Data = {
-            36030000424D3603000000000000360000002800000010000000100000000100
-            18000000000000030000120B0000120B00000000000000000000FF00FFFF00FF
-            FF00FFFF00FFFF00FF521E156B25087D2C057E2D056D2607551F13FF00FFFF00
-            FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF552117552117BF5C15E19855EF
-            BD8AF0BF8CE29D5BC26218541F16541F16FF00FFFF00FFFF00FFFF00FFFF00FF
-            6C290EAF4704EBB179FFFEF8FCF8F3F2DAC4F2D9C2FCF6F0FFFFFCEEBA87B64E
-            07602311FF00FFFF00FFFF00FF732D0DB04602F4D0ABFFFEFED78E50C05208B7
-            4100BA4600C05307D48644FCF8F4F8DDBDB64D05541F16FF00FFFF00FF732D0D
-            E6AB72FFFFFFCF762BB63C00FFFFFFD17F37B74100BB4700B74100C9691EFCF8
-            F6EFBC88541F16FF00FF893406C05C11FFFCFAE1A36AC25001C25002FFFFFFFF
-            FFFFD89255BA4300BB4800B74100D58946FFFFFFC16016551F139A3B02DD9554
-            FFFFFFD37628CF6716CC600FFFFFFFFFFFFFFFFFFFE3B080BD4C03BA4400C053
-            05FCF8F3E29D5A551F13A94403EBBB8AFBF0E7D87A2BD9792AD5701FFFFFFFFF
-            FFFFFFFFFFFFFFFFEFD4B6C1550ABA4400F2DAC2EFC08E551F13B04A06EEBF90
-            FCF4EBE28A3EE2893CDE8131FFFFFFFFFFFFFFFFFFFFFFFFE5B283BF4F05BA46
-            00F3DEC7EFBD8A551F13B04905E9AA6EFFFFFFEDA562EB994EE99144FFFFFFFF
-            FFFFFFFFFFE09D5FC04E00BA4600C15607FEFBF8E09752551F13AD4502DD893F
-            FFFCF8FAD7B4F6A760F0A056FFFFFFFFFFFFE19652CC600EC55909B84100D995
-            56FFFFFEBD5A10551F13FF00FFB24701F8CEA5FFFFFFFED1A5F4A55CFFFFFFE5
-            9852D77421CF6816C25001D07931FFFFFFEAAF73501F18FF00FFFF00FFB24701
-            E0873BFEE5CBFFFFFFFAD5B2EDA15DE1883BD97B2DD4782AE1A46CFFFFFFF3CC
-            A4AC4402501F18FF00FFFF00FFFF00FFB64C04DE873BF8CEA3FFFAF3FFFFFFFE
-            F6EEFCF3EAFFFFFFFEF7EEE6A56AAC44035A2214FF00FFFF00FFFF00FFFF00FF
-            FF00FFAF4501AF4501DC8840E9A76CEEBB89EBB581DC914DBD590F5D23155D23
-            15FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFA34103A54507A6
-            46089E40068B3505752D0CFF00FFFF00FFFF00FFFF00FFFF00FF}
+        end
+        object btnPauseDownload: TRzToolButton
+          Left = 4
+          Top = 45
+          Hint = #1057#1090#1086#1087
+          DisabledIndex = 15
+          ImageIndex = 14
+          Caption = 'Stop'
+          OnClick = btnPauseDownloadClick
+        end
+        object BtnSave: TRzToolButton
+          Left = 4
+          Top = 270
+          Hint = 'Save'
+          DisabledIndex = 17
+          ImageIndex = 16
+          Caption = 'Save'
+          OnClick = BtnSaveClick
+        end
+        object RzSpacer3: TRzSpacer
+          Left = 4
+          Top = 245
+          Width = 32
+        end
+      end
+      object Panel1: TPanel
+        Left = 48
+        Top = 0
+        Width = 946
+        Height = 680
+        Align = alClient
+        BevelOuter = bvNone
+        Caption = 'Panel1'
+        TabOrder = 1
+        object RzPanel2: TRzPanel
+          AlignWithMargins = True
+          Left = 3
+          Top = 616
+          Width = 940
+          Height = 61
+          Align = alBottom
+          BorderOuter = fsFlatRounded
+          TabOrder = 0
+          DesignSize = (
+            942
+            61)
+          object pbDownloadProgress: TRzProgressBar
+            Left = 6
+            Top = 22
+            BorderWidth = 0
+            InteriorOffset = 0
+            PartsComplete = 0
+            Percent = 0
+            TotalParts = 0
+            Visible = False
+          end
+          object lblDownloadState: TLabel
+            Left = 6
+            Top = 3
+            Width = 53
+            Height = 13
+            Caption = #1054#1078#1080#1076#1072#1085#1080#1077
+          end
+          object lblDnldAuthor: TLabel
+            Left = 224
+            Top = 8
+            Width = 6
+            Height = 13
+            Caption = '  '
+          end
+          object lblDnldTitle: TLabel
+            Left = 224
+            Top = 27
+            Width = 8
+            Height = 16
+            Caption = '  '
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object lblDownloadCount: TRzLabel
+            AlignWithMargins = True
+            Left = 925
+            Top = 5
+            Width = 12
+            Height = 51
+            Align = alRight
+            Alignment = taRightJustify
+            Caption = '()'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clNavy
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            CenterPoint = cpLowerRight
+            ExplicitLeft = 923
+            ExplicitHeight = 19
+          end
+          object btnClearDownload: TRzBitBtn
+            Left = 823
+            Top = 30
+            Width = 118
+            Anchors = [akRight, akBottom]
+            Caption = #1054#1095#1080#1089#1090#1080#1090#1100
+            TabOrder = 0
+            OnClick = btnClearDownloadClick
+            Kind = bkRetry
+            ExplicitLeft = 821
+          end
+        end
+        object tvDownloadList: TVirtualStringTree
+          AlignWithMargins = True
+          Left = 3
+          Top = 3
+          Width = 942
+          Height = 607
+          Align = alClient
+          Header.AutoSizeIndex = 0
+          Header.DefaultHeight = 17
+          Header.Font.Charset = DEFAULT_CHARSET
+          Header.Font.Color = clWindowText
+          Header.Font.Height = -12
+          Header.Font.Name = 'Tahoma'
+          Header.Font.Style = [fsBold]
+          Header.Options = [hoColumnResize, hoDrag, hoVisible]
+          PopupMenu = pmDownloadList
+          TabOrder = 1
+          TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toFullVertGridLines]
+          TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect]
+          OnGetText = tvDownloadListGetText
+          OnPaintText = tvDownloadListPaintText
+          OnLoadNode = tvDownloadListLoadNode
+          OnSaveNode = tvDownloadListSaveNode
+          ExplicitWidth = 940
+          Columns = <
+            item
+              Position = 0
+              Width = 200
+              WideText = #1040#1074#1090#1086#1088
+            end
+            item
+              Position = 1
+              Width = 200
+              WideText = #1053#1072#1079#1074#1072#1085#1080#1077
+            end
+            item
+              Alignment = taRightJustify
+              Position = 2
+              Width = 100
+              WideText = #1056#1072#1079#1084#1077#1088
+            end
+            item
+              Alignment = taCenter
+              Position = 3
+              Width = 100
+              WideText = #1057#1090#1072#1090#1091#1089
+            end>
         end
       end
     end
@@ -2820,8 +2556,8 @@ object frmMain: TfrmMain
   object MainMenu: TMainMenu
     Images = ilMainMenu
     OwnerDraw = True
-    Left = 96
-    Top = 376
+    Left = 536
+    Top = 408
     object miBook: TMenuItem
       Caption = #1050#1085#1080#1075#1072
       HelpContext = 105
@@ -2932,6 +2668,14 @@ object frmMain: TfrmMain
         ImageIndex = 19
         OnClick = miCollsettingsClick
       end
+      object N38: TMenuItem
+        Caption = '-'
+      end
+      object miINPXCollectionExport: TMenuItem
+        Caption = #1069#1082#1089#1087#1086#1088#1090#1080#1088#1086#1074#1072#1090#1100' '#1074' inpx'
+        Enabled = False
+        OnClick = miINPXCollectionExportClick
+      end
       object N14: TMenuItem
         Caption = '-'
       end
@@ -2993,7 +2737,7 @@ object frmMain: TfrmMain
         OnClick = miRefreshGenresClick
       end
       object miUpdate: TMenuItem
-        Caption = #1054#1073#1085#1086#1074#1080#1090#1100' '#1082#1072#1090#1072#1083#1086#1075'  lib.rus.ec'
+        Caption = #1054#1073#1085#1086#1074#1080#1090#1100' '#1082#1072#1090#1072#1083#1086#1075#1080'  lib.rus.ec'
         ImageIndex = 34
         OnClick = miUpdateClick
       end
@@ -3057,7 +2801,7 @@ object frmMain: TfrmMain
     AutoPopup = False
     Images = ilMainMenu
     OwnerDraw = True
-    Left = 56
+    Left = 48
     Top = 496
     object pmiReadBook: TMenuItem
       Caption = #1063#1080#1090#1072#1090#1100
@@ -3179,43 +2923,31 @@ object frmMain: TfrmMain
       OnClick = miCopyClBrdClick
     end
   end
-  object dlgFolder: TRzSelDirDialog
-    CenterToParent = True
-    Position = poOwnerFormCenter
-    AllowCreate = True
-    DriveTypes = [dtFloppy, dtFixed, dtNetwork, dtCDROM, dtRAM]
-    Prompt = #1055#1072#1087#1082#1072
-    PromptFolders = 'Folders'
-    PromptDrives = 'Drives'
-    Caption = #1059#1082#1072#1078#1080#1090#1077' '#1087#1091#1090#1100
-    CaptionOK = 'OK'
-    CaptionCancel = 'Cancel'
-    CaptionHelp = '&Help'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    Left = 520
-    Top = 416
-  end
   object VersionInfo: TRzVersionInfo
     FilePath = 'MyHomeLib.exe'
-    Left = 520
-    Top = 360
+    Left = 784
+    Top = 336
   end
   object IdAntiFreeze1: TIdAntiFreeze
-    Left = 576
-    Top = 416
+    Left = 824
+    Top = 464
   end
   object pmAuthor: TPopupMenu
     OwnerDraw = True
+    OnPopup = pmAuthorPopup
     Left = 144
     Top = 496
     object miCopyAuthor: TMenuItem
       Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1074' '#1073#1091#1092#1077#1088' '
       ShortCut = 16451
       OnClick = miCopyAuthorClick
+    end
+    object N37: TMenuItem
+      Caption = '-'
+    end
+    object miAddToSearch: TMenuItem
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' "'#1055#1086#1080#1089#1082'"'
+      OnClick = miAddToSearchClick
     end
   end
   object ilToolBar: TImageList
@@ -3225,10 +2957,10 @@ object frmMain: TfrmMain
     DrawingStyle = dsTransparent
     Height = 32
     Width = 32
-    Left = 352
-    Top = 344
+    Left = 456
+    Top = 496
     Bitmap = {
-      494C010118001D00040020002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C010118001A00440020002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -6936,7 +6668,7 @@ object frmMain: TfrmMain
     Left = 296
     Top = 408
     Bitmap = {
-      494C010125002700040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010125002700440010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000040000000A0000000010020000000000000A0
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -8265,8 +7997,8 @@ object frmMain: TfrmMain
   end
   object MenuController: TRzMenuController
     GradientColorStyle = gcsCustom
-    Left = 592
-    Top = 352
+    Left = 784
+    Top = 384
   end
   object pmCollection: TPopupMenu
     Images = ilMainMenu
@@ -8294,7 +8026,7 @@ object frmMain: TfrmMain
     Left = 400
     Top = 408
     Bitmap = {
-      494C010106000900040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010106000800440010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002000000001002000000000000020
       00000000000000000000000000000000000000000000696969FF191919FF1919
       19FF191919FF191919FF191919FF191919FF191919FF191919FF191919FF1919
@@ -8568,10 +8300,10 @@ object frmMain: TfrmMain
   object pmHeaders: TPopupMenu
     Images = ilFileTypes
     OwnerDraw = True
-    Left = 152
+    Left = 168
     Top = 560
     object N3: TMenuItem
-      Tag = 10
+      Tag = 20
       Caption = #1040#1074#1090#1086#1088
       Checked = True
       OnClick = HeaderPopupItemClick
@@ -8607,12 +8339,17 @@ object frmMain: TfrmMain
       OnClick = HeaderPopupItemClick
     end
     object N15: TMenuItem
-      Tag = 16
+      Tag = 17
       Caption = #1044#1086#1073#1072#1074#1083#1077#1085#1086
       OnClick = HeaderPopupItemClick
     end
-    object N22: TMenuItem
+    object N28: TMenuItem
       Tag = 18
+      Caption = #1058#1080#1087
+      OnClick = HeaderPopupItemClick
+    end
+    object N22: TMenuItem
+      Tag = 19
       Caption = #1050#1086#1083#1083#1077#1082#1094#1080#1103
       OnClick = HeaderPopupItemClick
     end
@@ -8629,7 +8366,7 @@ object frmMain: TfrmMain
     BalloonHint = 'MyHomeLib'
     PopupMenu = pmTray
     OnDblClick = TrayIconDblClick
-    Left = 496
+    Left = 672
     Top = 504
   end
   object pmTray: TPopupMenu
@@ -8674,10 +8411,10 @@ object frmMain: TfrmMain
     DrawingStyle = dsTransparent
     Height = 32
     Width = 32
-    Left = 424
-    Top = 344
+    Left = 536
+    Top = 464
     Bitmap = {
-      494C010118001C00040020002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C010118001A00440020002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12379,5 +12116,685 @@ object frmMain: TfrmMain
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       000000000000}
+  end
+  object ilDownloadToolBar: TImageList
+    Left = 352
+    Top = 488
+    Bitmap = {
+      494C010112004800440010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      0000000000003600000028000000400000005000000001002000000000000050
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000993300009933
+      0000993300009933000099330000993300009933000099330000993300009933
+      0000993300009933000099330000000000000000000000000000999999009999
+      9900999999009999990099999900999999009999990099999900999999009999
+      9900999999009999990099999900000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000099330000CC660000CC66
+      000099330000E5E5E500CC66000099330000E5E5E500E5E5E500E5E5E5009933
+      0000CC660000CC66000099330000000000000000000099999900CCCCCC00CCCC
+      CC0099999900E5E5E500CCCCCC0099999900E5E5E500E5E5E500E5E5E5009999
+      9900CCCCCC00CCCCCC0099999900000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000099330000CC660000CC66
+      000099330000E5E5E500CC66000099330000E5E5E500E5E5E500E5E5E5009933
+      0000CC660000CC66000099330000000000000000000099999900CCCCCC00CCCC
+      CC0099999900E5E5E500CCCCCC0099999900E5E5E500E5E5E500E5E5E5009999
+      9900CCCCCC00CCCCCC0099999900000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000099330000CC660000CC66
+      000099330000E5E5E500CC66000099330000E5E5E500E5E5E500E5E5E5009933
+      0000CC660000CC66000099330000000000000000000099999900CCCCCC00CCCC
+      CC0099999900E5E5E500CCCCCC0099999900E5E5E500E5E5E500E5E5E5009999
+      9900CCCCCC00CCCCCC0099999900000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000099330000CC660000CC66
+      000099330000E5E5E500E5E5E500E5E5E500E5E5E500E5E5E500E5E5E5009933
+      0000CC660000CC66000099330000000000000000000099999900CCCCCC00CCCC
+      CC0099999900E5E5E500E5E5E500E5E5E500E5E5E500E5E5E500E5E5E5009999
+      9900CCCCCC00CCCCCC0099999900000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000099330000CC660000CC66
+      0000CC660000993300009933000099330000993300009933000099330000CC66
+      0000CC660000CC66000099330000000000000000000099999900CCCCCC00CCCC
+      CC00CCCCCC00999999009999990099999900999999009999990099999900CCCC
+      CC00CCCCCC00CCCCCC0099999900000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000099330000CC660000CC66
+      0000CC660000CC660000CC660000CC660000CC660000CC660000CC660000CC66
+      0000CC660000CC66000099330000000000000000000099999900CCCCCC00CCCC
+      CC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00CCCCCC00CCCCCC0099999900000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000099330000CC660000CC66
+      0000993300009933000099330000993300009933000099330000993300009933
+      0000CC660000CC66000099330000000000000000000099999900CCCCCC00CCCC
+      CC00999999009999990099999900999999009999990099999900999999009999
+      9900CCCCCC00CCCCCC0099999900000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000099330000CC6600009933
+      0000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF0099330000CC66000099330000000000000000000099999900CCCCCC009999
+      9900FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF0099999900CCCCCC0099999900000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000099330000CC6600009933
+      0000FFFFFF00993300009933000099330000993300009933000099330000FFFF
+      FF0099330000CC66000099330000000000000000000099999900CCCCCC009999
+      9900FFFFFF00999999009999990099999900999999009999990099999900FFFF
+      FF0099999900CCCCCC0099999900000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000099330000CC6600009933
+      0000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF0099330000CC66000099330000000000000000000099999900CCCCCC009999
+      9900FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF0099999900CCCCCC0099999900000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000099330000E5E5E5009933
+      0000FFFFFF00993300009933000099330000993300009933000099330000FFFF
+      FF00993300009933000099330000000000000000000099999900E5E5E5009999
+      9900FFFFFF00999999009999990099999900999999009999990099999900FFFF
+      FF00999999009999990099999900000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000099330000CC6600009933
+      0000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF0099330000CC66000099330000000000000000000099999900CCCCCC009999
+      9900FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF0099999900CCCCCC0099999900000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000099330000993300009933
+      0000993300009933000099330000993300009933000099330000993300009933
+      0000993300009933000099330000000000000000000099999900999999009999
+      9900999999009999990099999900999999009999990099999900999999009999
+      9900999999009999990099999900000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000009933000099330000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000009999990099999900000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000009933
+      0000993300009933000099330000993300009933000099330000993300009933
+      0000993300000000000000000000000000000000000000000000000000009999
+      9900999999009999990099999900999999009999990099999900999999009999
+      9900999999000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000993300000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00999999000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000009933
+      0000CC660000CC660000CC660000CC660000CC660000CC660000CC660000CC66
+      0000993300000000000000000000000000000000000000000000000000009999
+      9900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00999999000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC6600009933000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC009999990000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000009933
+      0000CC660000CC660000CC660000CC660000CC660000CC660000CC660000CC66
+      0000993300000000000000000000000000000000000000000000000000009999
+      9900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00999999000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC66000099330000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC0099999900000000000000
+      0000000000000000000000000000000000000000000000000000000000009933
+      0000CC660000CC660000CC660000CC660000CC660000CC660000CC660000CC66
+      0000993300000000000000000000000000000000000000000000000000009999
+      9900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00999999000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC660000CC660000993300000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC00CCCCCC00999999000000
+      0000000000000000000000000000000000000000000000000000000000009933
+      0000CC660000CC660000CC660000CC660000CC660000CC660000CC660000CC66
+      0000993300000000000000000000000000000000000000000000000000009999
+      9900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00999999000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC660000CC660000CC6600009933
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC009999
+      9900000000000000000000000000000000000000000000000000000000009933
+      0000CC660000CC660000CC660000CC660000CC660000CC660000CC660000CC66
+      0000993300000000000000000000000000000000000000000000000000009999
+      9900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00999999000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC660000CC660000993300000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC00CCCCCC00999999000000
+      0000000000000000000000000000000000000000000000000000000000009933
+      0000CC660000CC660000CC660000CC660000CC660000CC660000CC660000CC66
+      0000993300000000000000000000000000000000000000000000000000009999
+      9900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00999999000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC66000099330000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC0099999900000000000000
+      0000000000000000000000000000000000000000000000000000000000009933
+      0000CC660000CC660000CC660000CC660000CC660000CC660000CC660000CC66
+      0000993300000000000000000000000000000000000000000000000000009999
+      9900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00999999000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC6600009933000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC009999990000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000009933
+      0000CC660000CC660000CC660000CC660000CC660000CC660000CC660000CC66
+      0000993300000000000000000000000000000000000000000000000000009999
+      9900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00999999000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000993300000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00999999000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000009933
+      0000993300009933000099330000993300009933000099330000993300009933
+      0000993300000000000000000000000000000000000000000000000000009999
+      9900999999009999990099999900999999009999990099999900999999009999
+      9900999999000000000000000000000000000000000000000000000000000000
+      0000000000009933000099330000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000009999990099999900000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000009933000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000009999990000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000099330000CC66000099330000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000099999900CCCCCC0099999900000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000099330000CC660000CC660000CC660000993300000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000099999900CCCCCC00CCCCCC00CCCCCC00999999000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000009933000099330000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000009999990099999900000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC660000CC660000CC6600009933
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC009999
+      9900000000000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000993300000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00999999000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000099330000CC660000CC660000CC66000099330000CC660000CC660000CC66
+      0000993300000000000000000000000000000000000000000000000000000000
+      000099999900CCCCCC00CCCCCC00CCCCCC0099999900CCCCCC00CCCCCC00CCCC
+      CC00999999000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC6600009933000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC009999990000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000009933
+      0000CC660000CC660000CC66000099330000CC66000099330000CC660000CC66
+      0000CC6600009933000000000000000000000000000000000000000000009999
+      9900CCCCCC00CCCCCC00CCCCCC0099999900CCCCCC0099999900CCCCCC00CCCC
+      CC00CCCCCC009999990000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC66000099330000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC0099999900000000000000
+      000000000000000000000000000000000000000000000000000099330000CC66
+      0000CC660000CC66000099330000CC660000CC660000CC66000099330000CC66
+      0000CC660000CC6600009933000000000000000000000000000099999900CCCC
+      CC00CCCCCC00CCCCCC0099999900CCCCCC00CCCCCC00CCCCCC0099999900CCCC
+      CC00CCCCCC00CCCCCC0099999900000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC660000CC660000993300000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC00CCCCCC00999999000000
+      0000000000000000000000000000000000000000000000000000993300009933
+      00009933000099330000CC660000CC660000CC660000CC660000CC6600009933
+      0000993300009933000099330000000000000000000000000000999999009999
+      99009999990099999900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC009999
+      9900999999009999990099999900000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC660000CC660000CC6600009933
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC009999
+      9900000000000000000000000000000000000000000000000000000000000000
+      000099330000CC660000CC660000CC660000CC660000CC660000CC660000CC66
+      0000993300000000000000000000000000000000000000000000000000000000
+      000099999900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00999999000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC660000CC660000993300000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC00CCCCCC00999999000000
+      0000000000000000000000000000000000000000000000000000000000009933
+      0000CC660000CC660000CC660000CC660000CC660000CC660000CC660000CC66
+      0000CC6600009933000000000000000000000000000000000000000000009999
+      9900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00CCCCCC009999990000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC66000099330000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC0099999900000000000000
+      000000000000000000000000000000000000000000000000000099330000CC66
+      0000CC660000CC660000CC660000CC660000CC660000CC660000CC660000CC66
+      0000CC660000CC6600009933000000000000000000000000000099999900CCCC
+      CC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00CCCCCC00CCCCCC0099999900000000000000000000000000000000000000
+      00000000000099330000CC660000CC6600009933000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC009999990000000000000000000000
+      0000000000000000000000000000000000000000000000000000993300009933
+      00009933000099330000CC660000CC660000CC660000CC660000CC6600009933
+      0000993300009933000099330000000000000000000000000000999999009999
+      99009999990099999900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC009999
+      9900999999009999990099999900000000000000000000000000000000000000
+      00000000000099330000CC660000993300000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00999999000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC660000CC660000CC6600009933
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC009999
+      9900000000000000000000000000000000000000000000000000000000000000
+      0000000000009933000099330000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000009999990099999900000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000009933000099330000993300009933000099330000993300009933
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000009999990099999900999999009999990099999900999999009999
+      9900000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      9900000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000FF00000000000000000000000000000000009999
+      9900000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000CCCCCC00000000000000000000000000000000000000
+      0000000000009933000099330000993300009933000099330000993300009933
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000009999990099999900999999009999990099999900999999009999
+      99000000000000000000000000000000000000000000000000003333CC000000
+      FF00000099000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000000000000099999900CCCC
+      CC00999999000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC660000CC660000CC6600009933
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC009999
+      99000000000000000000000000000000000000000000000000003333CC003399
+      FF000000FF000000990000000000000000000000000000000000000000000000
+      0000000000000000FF000000000000000000000000000000000099999900E5E5
+      E500CCCCCC009999990000000000000000000000000000000000000000000000
+      000000000000CCCCCC0000000000000000000000000000000000993300009933
+      00009933000099330000CC660000CC660000CC660000CC660000CC6600009933
+      0000993300009933000099330000000000000000000000000000999999009999
+      99009999990099999900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC009999
+      9900999999009999990099999900000000000000000000000000000000003333
+      CC000066FF000000CC0000000000000000000000000000000000000000000000
+      00000000FF000000000000000000000000000000000000000000000000009999
+      9900E5E5E5009999990000000000000000000000000000000000000000000000
+      0000CCCCCC00000000000000000000000000000000000000000099330000CC66
+      0000CC660000CC660000CC660000CC660000CC660000CC660000CC660000CC66
+      0000CC660000CC6600009933000000000000000000000000000099999900CCCC
+      CC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00CCCCCC00CCCCCC0099999900000000000000000000000000000000000000
+      00000000CC000000FF0000009900000000000000000000000000000000000000
+      FF00000099000000000000000000000000000000000000000000000000000000
+      000099999900CCCCCC009999990000000000000000000000000000000000CCCC
+      CC00999999000000000000000000000000000000000000000000000000009933
+      0000CC660000CC660000CC660000CC660000CC660000CC660000CC660000CC66
+      0000CC6600009933000000000000000000000000000000000000000000009999
+      9900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00CCCCCC009999990000000000000000000000000000000000000000000000
+      0000000000000000CC000000FF000000990000000000000000000000FF000000
+      9900000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00999999000000000000000000CCCCCC009999
+      9900000000000000000000000000000000000000000000000000000000000000
+      000099330000CC660000CC660000CC660000CC660000CC660000CC660000CC66
+      0000993300000000000000000000000000000000000000000000000000000000
+      000099999900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00999999000000000000000000000000000000000000000000000000000000
+      000000000000000000000000CC000000FF00000099000000FF00000099000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000099999900CCCCCC0099999900CCCCCC00999999000000
+      0000000000000000000000000000000000000000000000000000993300009933
+      00009933000099330000CC660000CC660000CC660000CC660000CC6600009933
+      0000993300009933000099330000000000000000000000000000999999009999
+      99009999990099999900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC009999
+      9900999999009999990099999900000000000000000000000000000000000000
+      00000000000000000000000000000000CC000000FF0000009900000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000099999900CCCCCC0099999900000000000000
+      000000000000000000000000000000000000000000000000000099330000CC66
+      0000CC660000CC66000099330000CC660000CC660000CC66000099330000CC66
+      0000CC660000CC6600009933000000000000000000000000000099999900CCCC
+      CC00CCCCCC00CCCCCC0099999900CCCCCC00CCCCCC00CCCCCC0099999900CCCC
+      CC00CCCCCC00CCCCCC0099999900000000000000000000000000000000000000
+      000000000000000000000000CC000000FF00000099000000CC00000099000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000099999900CCCCCC009999990099999900999999000000
+      0000000000000000000000000000000000000000000000000000000000009933
+      0000CC660000CC660000CC66000099330000CC66000099330000CC660000CC66
+      0000CC6600009933000000000000000000000000000000000000000000009999
+      9900CCCCCC00CCCCCC00CCCCCC0099999900CCCCCC0099999900CCCCCC00CCCC
+      CC00CCCCCC009999990000000000000000000000000000000000000000000000
+      0000000000000000CC000000FF000000990000000000000000000000CC000000
+      9900000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00999999000000000000000000999999009999
+      9900000000000000000000000000000000000000000000000000000000000000
+      000099330000CC660000CC660000CC66000099330000CC660000CC660000CC66
+      0000993300000000000000000000000000000000000000000000000000000000
+      000099999900CCCCCC00CCCCCC00CCCCCC0099999900CCCCCC00CCCCCC00CCCC
+      CC00999999000000000000000000000000000000000000000000000000000000
+      CC000000FF000000FF0000009900000000000000000000000000000000000000
+      CC00000099000000000000000000000000000000000000000000000000009999
+      9900CCCCCC00CCCCCC0099999900000000000000000000000000000000009999
+      9900999999000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC660000CC660000CC6600009933
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC009999
+      99000000000000000000000000000000000000000000000000000000CC003399
+      FF000000FF000000990000000000000000000000000000000000000000000000
+      00000000CC00000099000000000000000000000000000000000099999900E5E5
+      E500CCCCCC009999990000000000000000000000000000000000000000000000
+      0000999999009999990000000000000000000000000000000000000000000000
+      0000000000000000000099330000CC660000CC660000CC660000993300000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000099999900CCCCCC00CCCCCC00CCCCCC00999999000000
+      0000000000000000000000000000000000000000000000000000666699000000
+      CC00666699000000000000000000000000000000000000000000000000000000
+      000000000000000000000000CC00000000000000000000000000CCCCCC009999
+      9900CCCCCC000000000000000000000000000000000000000000000000000000
+      0000000000000000000099999900000000000000000000000000000000000000
+      000000000000000000000000000099330000CC66000099330000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000099999900CCCCCC0099999900000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000009933000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000009999990000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000009933000099330000993300009933000099330000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000009999990099999900999999009999990099999900000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000993300000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000999999000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC66000099330000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC0099999900000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000099330000CC6600009933000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000099999900CCCCCC009999990000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC66000099330000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC0099999900000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC66000099330000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC0099999900000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC66000099330000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC0099999900000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000099330000CC660000CC660000CC660000CC660000CC660000993300000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000099999900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00999999000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC66000099330000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC0099999900000000000000
+      0000000000000000000000000000000000000000000000000000000000009933
+      0000CC660000CC660000CC660000CC660000CC660000CC660000CC6600009933
+      0000000000000000000000000000000000000000000000000000000000009999
+      9900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC009999
+      9900000000000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC66000099330000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC0099999900000000000000
+      000000000000000000000000000000000000000000000000000099330000CC66
+      0000CC660000CC660000CC660000CC660000CC660000CC660000CC660000CC66
+      000099330000000000000000000000000000000000000000000099999900CCCC
+      CC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00999999000000000000000000000000000000000000000000993300009933
+      00009933000099330000CC660000CC660000CC66000099330000993300009933
+      0000993300000000000000000000000000000000000000000000999999009999
+      99009999990099999900CCCCCC00CCCCCC00CCCCCC0099999900999999009999
+      990099999900000000000000000000000000000000000000000099330000CC66
+      0000CC660000CC660000CC660000CC660000CC660000CC660000CC660000CC66
+      000099330000000000000000000000000000000000000000000099999900CCCC
+      CC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC0099999900000000000000000000000000000000000000000099330000CC66
+      0000CC660000CC660000CC660000CC660000CC660000CC660000CC660000CC66
+      000099330000000000000000000000000000000000000000000099999900CCCC
+      CC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00999999000000000000000000000000000000000000000000993300009933
+      00009933000099330000CC660000CC660000CC66000099330000993300009933
+      0000993300000000000000000000000000000000000000000000999999009999
+      99009999990099999900CCCCCC00CCCCCC00CCCCCC0099999900999999009999
+      990099999900000000000000000000000000000000000000000099330000CC66
+      0000CC660000CC660000CC660000CC660000CC660000CC660000CC660000CC66
+      000099330000000000000000000000000000000000000000000099999900CCCC
+      CC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00999999000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC66000099330000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC0099999900000000000000
+      0000000000000000000000000000000000000000000000000000000000009933
+      0000CC660000CC660000CC660000CC660000CC660000CC660000CC6600009933
+      0000000000000000000000000000000000000000000000000000000000009999
+      9900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC009999
+      9900000000000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC66000099330000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC0099999900000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000099330000CC660000CC660000CC660000CC660000CC660000993300000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000099999900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00999999000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC66000099330000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC0099999900000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC66000099330000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC0099999900000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC66000099330000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC0099999900000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000099330000CC6600009933000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000099999900CCCCCC009999990000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099330000CC660000CC660000CC66000099330000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000099999900CCCCCC00CCCCCC00CCCCCC0099999900000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000993300000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000999999000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000009933000099330000993300009933000099330000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000009999990099999900999999009999990099999900000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000424D3E000000000000003E000000
+      2800000040000000500000000100010000000000800200000000000000000000
+      000000000000000000000000FFFFFF00FFFFFFFF00000000C001C00100000000
+      8001800100000000800180010000000080018001000000008001800100000000
+      8001800100000000800180010000000080018001000000008001800100000000
+      8001800100000000800180010000000080018001000000008001800100000000
+      8001800100000000FFFFFFFF00000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFF9FFF9FFE007E007F8FFF8FFE007E007F87FF87FE007E007
+      F83FF83FE007E007F81FF81FE007E007F80FF80FE007E007F81FF81FE007E007
+      F83FF83FE007E007F87FF87FE007E007F8FFF8FFE007E007F9FFF9FFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF7FFF7FFFFFFFFF
+      FE3FFE3FFFFFFFFFFC1FFC1FF9FFF9FFF80FF80FF8FFF8FFF007F007F87FF87F
+      E003E003F83FF83FC001C001F81FF81FC001C001F80FF80FF007F007F81FF81F
+      E003E003F83FF83FC001C001F87FF87FC001C001F8FFF8FFF80FF80FF9FFF9FF
+      F80FF80FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFDEFFDF80FF80F
+      C7FFC7FFF80FF80FC3FBC3FBC001C001E3F7E3F7C001C001F1E7F1E7E003E003
+      F8CFF8CFF007F007FC1FFC1FC001C001FE3FFE3FC001C001FC1FFC1FE003E003
+      F8CFF8CFF007F007E1E7E1E7F80FF80FC3F3C3F3FC1FFC1FC7FDC7FDFE3FFE3F
+      FFFFFFFFFF7FFF7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF83FF83FFEFFFEFF
+      F83FF83FFC7FFC7FF83FF83FF83FF83FF83FF83FF01FF01FF83FF83FE00FE00F
+      F83FF83FC007C007C007C007C007C007C007C007C007C007C007C007F83FF83F
+      E00FE00FF83FF83FF01FF01FF83FF83FF83FF83FF83FF83FFC7FFC7FF83FF83F
+      FEFFFEFFF83FF83FFFFFFFFFFFFFFFFF00000000000000000000000000000000
+      000000000000}
+  end
+  object IdCookieManager: TIdCookieManager
+    Left = 824
+    Top = 520
+  end
+  object FilesList: TFilesList
+    OnFile = FilesListFile
+    Left = 632
+    Top = 384
   end
 end
