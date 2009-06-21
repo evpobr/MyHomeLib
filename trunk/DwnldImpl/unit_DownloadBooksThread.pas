@@ -19,7 +19,6 @@ uses
   unit_WorkerThread,
   unit_globals,
   Dialogs,
-  ZipMstr,
   ABSMain,
   IdHTTP,
   Forms,

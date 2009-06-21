@@ -28,9 +28,16 @@ requires
   rtl,
   vcl,
   xmlrtl,
-  ZipmasterD12,
   vclx,
-  RaizeComponentsVcl;
+  RaizeComponentsVcl,
+  IndySystem,
+  IndyProtocols,
+  IndyCore,
+  vclAbsDBd12,
+  dbrtl,
+  VirtualTreesD12,
+  vclZipForged12,
+  vclimg;
 
 contains
   unit_StaticTip in 'unit_StaticTip.pas',

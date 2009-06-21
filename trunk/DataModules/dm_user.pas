@@ -318,8 +318,6 @@ begin
   tblFinished.Active := State;
 end;
 
-
-
 { TMHLCollection }
 
 function TMHLCollection.GetActive: Boolean;
