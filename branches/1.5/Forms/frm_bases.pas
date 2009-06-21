@@ -81,7 +81,7 @@ uses
   dm_user,
   unit_globals,
   unit_database,
-  dm_main,
+  dm_collection,
   StrUtils,
   unit_Settings,
   unit_Helpers,

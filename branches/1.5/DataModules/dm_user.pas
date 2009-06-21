@@ -15,7 +15,7 @@ unit dm_user;
 interface
 
 uses
-  SysUtils, Classes, DB, ABSMain, unit_Globals, ImgList, Controls, unit_Consts;
+  SysUtils, Classes, DB, ABSMain, unit_globals, ImgList, Controls, unit_Consts;
 
 type
   TCollectionProp = (cpDisplayName, cpFileName, cpRootFolder);
@@ -45,40 +45,43 @@ type
     tblRatesDataBaseID: TIntegerField;
     tblRatesRate: TIntegerField;
     tblRatesDate: TDateField;
-
-    tblFavorites: TABSTable;
-    tblFavoritesID: TAutoIncField;
-    tblFavoritesInnerID: TIntegerField;
-    tblFavoritesSerID: TIntegerField;
-    tblFavoritesSeqNumber: TSmallintField;
-    tblFavoritesDatabaseID: TIntegerField;
-    tblFavoritesLibID: TIntegerField;
-    tblFavoritesDate: TDateField;
-    tblFavoritesTitle: TWideStringField;
-    tblFavoritesFullName: TWideStringField;
-    tblFavoritesInsideNo: TIntegerField;
-    tblFavoritesFileName: TWideStringField;
-    tblFavoritesExt: TWideStringField;
-    tblFavoritesSize: TIntegerField;
-    tblFavoritesCode: TSmallintField;
-    tblFavoritesFolder: TWideStringField;
-    tblFavoritesDiscID: TIntegerField;
-    tblFavoritesLocal: TBooleanField;
-    tblFavoritesDeleted: TBooleanField;
-    tblFavoritesGenres: TWideStringField;
-    tblFavoritesSeries: TWideStringField;
-    tblFavoritesRate: TIntegerField;
-
-    dsFavorites: TDataSource;
-
-    qImport: TABSQuery;
+    tblGrouppedBooks: TABSTable;
+    dsGroupedBooks: TDataSource;
     SeverityImages: TImageList;
     SeverityImagesBig: TImageList;
+    dsGroupList: TDataSource;
+    tblFinished: TABSTable;
+    tblGrouppedBooksGroupID: TIntegerField;
+    tblGrouppedBooksInnerID: TAutoIncField;
+    tblGrouppedBooksID: TIntegerField;
+    tblGrouppedBooksSerID: TIntegerField;
+    tblGrouppedBooksSeqNumber: TSmallintField;
+    tblGrouppedBooksDatabaseID: TIntegerField;
+    tblGrouppedBooksLibID: TIntegerField;
+    tblGrouppedBooksDate: TDateField;
+    tblGrouppedBooksTitle: TWideStringField;
+    tblGrouppedBooksFullName: TWideStringField;
+    tblGrouppedBooksInsideNo: TIntegerField;
+    tblGrouppedBooksFileName: TWideStringField;
+    tblGrouppedBooksExt: TWideStringField;
+    tblGrouppedBooksSize: TIntegerField;
+    tblGrouppedBooksCode: TSmallintField;
+    tblGrouppedBooksFolder: TWideStringField;
+    tblGrouppedBooksDiscID: TIntegerField;
+    tblGrouppedBooksLocal: TBooleanField;
+    tblGrouppedBooksDeleted: TBooleanField;
+    tblGrouppedBooksGenres: TWideStringField;
+    tblGrouppedBooksSeries: TWideStringField;
+    tblGrouppedBooksRate: TIntegerField;
+    tblGroupList: TABSTable;
+    tblGroupListID: TAutoIncField;
+    tblGroupListName: TWideStringField;
+    tblGroupListAllowDelete: TBooleanField;
+    tblGroupListNotes: TMemoField;
+    tblGroupListIcon: TBlobField;
 
   private
     FCollection: TMHLCollection;
-    function FindOnLineCollection: Boolean;
-
   public
     const
       INVALID_COLLECTION_ID = -1;
@@ -117,17 +120,13 @@ type
     // Active Collection
     //
     property ActiveCollection: TMHLCollection read FCollection;
+    procedure SetTableStatus(State: boolean);
 
     function FindFirstExternalCollection: Boolean;
     function FindNextExternalCollection: Boolean;
 
     function FindFirstCollection: Boolean;
     function FindNextCollection: Boolean;
-
-
-    function FindCollectionByType(Code: integer): boolean;
-
-    function CheckVersion(Version: integer): boolean;
 
   end;
 
@@ -197,11 +196,6 @@ resourcestring
 
 { TDMUser }
 
-function TDMUser.CheckVersion(Version: integer): boolean;
-begin
-
-end;
-
 constructor TDMUser.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -225,6 +219,7 @@ procedure TDMUser.RegisterCollection(
 begin
   tblBases.Insert;
 
+  tblBasesID.Value := Random($FFFF);
   tblBasesName.Value := DisplayName;
   tblBasesRootFolder.Value := RootFolder;
   tblBasesDBFileName.Value := DBFileName;
@@ -241,10 +236,6 @@ end;
 
 function TDMUser.ActivateCollection(CollectionID: Integer): Boolean;
 begin
-  Result := False;
-  if tblBases.IsEmpty then
-    Exit;
-
   Result := tblBases.Locate('ID', CollectionID, []);
 end;
 
@@ -260,11 +251,6 @@ begin
 
     tblBases.Post;
   end;
-end;
-
-function TDMUser.FindCollectionByType(Code: integer): boolean;
-begin
-  Result := tblBases.Locate('Code',Code,[]);
 end;
 
 function TDMUser.FindCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer): Boolean;
@@ -302,7 +288,6 @@ begin
     Exit;
 
   tblBases.First;
-
 end;
 
 function TDMUser.FindFirstExternalCollection: Boolean;
@@ -323,13 +308,6 @@ begin
     tblBases.Next;
   end;
 end;
-
-function TDMUser.FindOnLineCollection: Boolean;
-begin
-
-
-end;
-
 
 function TDMUser.FindNextCollection: Boolean;
 begin
@@ -353,6 +331,15 @@ begin
   end;
 
   Result := False;
+end;
+
+procedure TDMUser.SetTableStatus(State: boolean);
+begin
+  tblGroupList.Active := State;
+  tblGrouppedBooks.Active := State;
+  tblRates.Active := State;
+  tblBases.Active := State;
+  tblFinished.Active := State;
 end;
 
 { TMHLCollection }
@@ -473,12 +460,9 @@ end;
 procedure TMHLCollection.SetVersion(const Value: Integer);
 begin
   Assert(Assigned(FSysDataModule));
-  if FSysDataModule.tblBasesVersion.Value <> Value then
-  begin
-    FSysDataModule.tblBases.Edit;
-    FSysDataModule.tblBasesVersion.Value := Value;
-    FSysDataModule.tblBases.Post;
-  end;
+  FSysDataModule.tblBases.Edit;
+  FSysDataModule.tblBasesVersion.Value := Value;
+  FSysDataModule.tblBases.Post;
 end;
 
 function TMHLCollection.GetCollectionType: COLLECTION_TYPE;
@@ -510,5 +494,8 @@ begin
   Assert(Assigned(FSysDataModule));
   FSysDataModule.tblBasesAllowDelete.Value := Value;
 end;
+
+
+
 
 end.

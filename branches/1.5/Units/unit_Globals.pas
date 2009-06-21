@@ -201,6 +201,12 @@ type
     ParentCode: String;
   end;
 
+  PGroupData = ^TGenreData;
+  TGroupData = record
+    ID: integer;
+    Text: String;
+  end;
+
   TGenreRecord = record
     GenreCode: String;
     GenreFb2Code: String;

@@ -34,7 +34,7 @@ type
 
 implementation
 
-uses dm_main, dm_user, unit_globals;
+uses dm_collection, dm_user, unit_globals;
 
 { TImportXMLThread }
 
@@ -67,20 +67,20 @@ begin
   FCollection.Info.Name := DMUser.ActiveCollection.Name;
   FCollection.Info.Code := Ord(DMUser.ActiveCollection.CollectionType);
 
-  totalBooks := DMMain.tblBooks.RecordCount;
+  totalBooks := dmCollection.tblBooks.RecordCount;
   processedBooks := 0;
 
-  DMMain.tblAuthor_Master.Active := True;
+  dmCollection.tblAuthor_Master.Active := True;
   try
-    DMMain.tblAuthor_Detail.Active := True;
+    dmCollection.tblAuthor_Detail.Active := True;
     try
-      DMMain.tblBooks.First;
-      while not DMMain.tblBooks.Eof do
+      dmCollection.tblBooks.First;
+      while not dmCollection.tblBooks.Eof do
       begin
         if Canceled then
           Exit;
 
-        DMMain.GetCurrentBook(R);
+        dmCollection.GetCurrentBook(R);
 
         FBook := FCollection.BookList.Add;
         FBook.Title := R.Title;
@@ -109,7 +109,7 @@ begin
           FGenre.Alias := GenreRecord.Alias;
         end;
 
-        DMMain.tblBooks.Next;
+        dmCollection.tblBooks.Next;
 
         Inc(processedBooks);
         if (processedBooks mod ProcessedItemThreshold) = 0 then
@@ -120,10 +120,10 @@ begin
       SetComment(Format('Обработано книг: %u из %u', [processedBooks, totalBooks]));
 
     finally
-      DMMain.tblAuthor_Detail.Active := False;
+      dmCollection.tblAuthor_Detail.Active := False;
     end;
   finally
-    DMMain.tblAuthor_Master.Active := False;
+    dmCollection.tblAuthor_Master.Active := False;
   end;
 
   SetComment('Сохраняем документ. Подождите, пожалуйста.');
