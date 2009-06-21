@@ -285,7 +285,6 @@ implementation
 uses
   Forms,
   Windows,
-  ZipMstr,
   unit_Settings,
   unit_Consts,
   idException,

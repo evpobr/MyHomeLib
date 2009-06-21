@@ -7,7 +7,6 @@ uses
   unit_ImportLibRusEcThread,
   unit_globals,
   Dialogs,
-  ZipMstr,
   ABSMain,
   IdHTTP,
   Forms,

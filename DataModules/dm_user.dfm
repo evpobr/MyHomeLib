@@ -3,7 +3,11 @@ object DMUser: TDMUser
   Height = 377
   Width = 463
   object DBUser: TABSDatabase
+<<<<<<< .mine
+    CurrentVersion = '6.01 '
+=======
     CurrentVersion = '6.02 '
+>>>>>>> .r125
     DatabaseName = 'DBUser'
     Exclusive = False
     MaxConnections = 5
@@ -18,7 +22,7 @@ object DMUser: TDMUser
     Top = 256
   end
   object tblBases: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'DBUser'
     InMemory = False
     ReadOnly = False
@@ -70,7 +74,7 @@ object DMUser: TDMUser
     end
   end
   object tblRates: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'DBUser'
     InMemory = False
     ReadOnly = False
@@ -130,7 +134,7 @@ object DMUser: TDMUser
     Top = 192
   end
   object tblGrouppedBooks: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'DBUser'
     InMemory = False
     ReadOnly = False
@@ -1023,7 +1027,7 @@ object DMUser: TDMUser
     Top = 184
   end
   object tblFinished: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'DBUser'
     InMemory = False
     ReadOnly = False
@@ -1033,7 +1037,7 @@ object DMUser: TDMUser
     Top = 120
   end
   object tblGroupList: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.01 '
     DatabaseName = 'DBUser'
     InMemory = False
     ReadOnly = False
