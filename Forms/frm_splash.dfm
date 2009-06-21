@@ -622,9 +622,9 @@ object frmSplash: TfrmSplash
     Width = 48
     Height = 23
     Alignment = taRightJustify
-    Caption = '1.4.1'
+    Caption = '1.5.0'
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 717800
+    Font.Color = 39423
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]

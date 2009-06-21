@@ -33,7 +33,7 @@ implementation
 
 uses
   dm_user,
-  dm_main,
+  dm_collection,
   unit_globals,
   unit_database,
   unit_Consts,
@@ -51,13 +51,13 @@ var
 
   local: boolean;
 begin
-  totalBooks := DMMain.tblBooks.RecordCount;
+  totalBooks := dmCollection.tblBooks.RecordCount;
   processedBooks := 0;
   Root := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
 
   try
-    DMMain.tblBooks.First;
-    while not DMMain.tblBooks.Eof do
+    dmCollection.tblBooks.First;
+    while not dmCollection.tblBooks.Eof do
     begin
       if Canceled then
           Exit;
@@ -67,29 +67,29 @@ begin
       //
       { TODO -oAlex : Через какое-то время переименовывание можно будет убрать }
     try
-      IDStr := DMMain.tblBooksLibID.AsString + ' ';
-      TmpFolder := DMMain.tblBooksFolder.Value;
+      IDStr := dmCollection.tblBooksLibID.AsString + ' ';
+      TmpFolder := dmCollection.tblBooksFolder.Value;
       StrReplace(IDStr, '', TmpFolder);              // удаляем Id из имени
       if FileExists(Root + TmpFolder)  then
       begin
           // если есть, переименовываем и результат заносим в базу
-        DMMain.SetLocalStatus(DMMain.tblBooksId.Value, RenameFile(Root + TmpFolder, Root + DMMain.tblBooksFolder.Value));
+        dmCollection.SetLocalStatus(dmCollection.tblBooksId.Value, RenameFile(Root + TmpFolder, Root + dmCollection.tblBooksFolder.Value));
       end;
       //
       //  Проверяем был ли файл закачан ранее и ставим отметку в базу
       //
 
 
-      Local := FileExists(Root + DMMain.tblBooksFolder.Value);
+      Local := FileExists(Root + dmCollection.tblBooksFolder.Value);
 
-      if DMMain.tblBooksLocal.Value <> local then
-        DMMain.SetLocalStatus(DMMain.tblBooksId.Value,Local);
+      if dmCollection.tblBooksLocal.Value <> local then
+        dmCollection.SetLocalStatus(dmCollection.tblBooksId.Value,Local);
     except
       on E:Exception do
         Application.MessageBox(PChar('Какие-то проблемы с книгой ' + TmpFolder),'',MB_OK);
     end;
 
-      DMMain.tblBooks.Next;
+      dmCollection.tblBooks.Next;
 
       Inc(processedBooks);
       if (processedBooks mod ProcessedItemThreshold) = 0 then

@@ -72,7 +72,7 @@ implementation
 
 uses
   DateUtils,
-  dm_main,
+  dm_collection,
   dm_user,
   unit_Consts,
   unit_Settings,
@@ -171,9 +171,9 @@ begin
         Teletype(Format(rstrRemovingOldCollection, [Name]),tsInfo);
 
         // удаляем старый файл коллекции
-        DMMain.DBMain.Close;
-        DMMain.DBMain.DatabaseFileName := DBFileName;
-        DMMain.DBMain.DeleteDatabase;
+        dmCollection.DBCollection.Close;
+        dmCollection.DBCollection.DatabaseFileName := DBFileName;
+        dmCollection.DBCollection.DeleteDatabase;
 
         // создаем его заново
         Teletype(Format(rstrCreatingCollection, [Name]),tsInfo);

@@ -1,20 +1,23 @@
 object DMUser: TDMUser
   OldCreateOrder = False
-  Height = 190
+  Height = 377
   Width = 463
   object DBUser: TABSDatabase
+    Connected = True
     CurrentVersion = '6.01 '
+    DatabaseFileName = 'D:\DelphiProjects\MyHomeLib\Debug\Bin\Data\user.dbs'
     DatabaseName = 'DBUser'
     Exclusive = False
     MaxConnections = 5
     MultiUser = False
     SessionName = 'Default'
-    Left = 16
+    Left = 24
     Top = 16
   end
-  object dsFavorites: TDataSource
-    Left = 88
-    Top = 128
+  object dsGroupedBooks: TDataSource
+    DataSet = tblGrouppedBooks
+    Left = 216
+    Top = 256
   end
   object tblBases: TABSTable
     CurrentVersion = '6.01 '
@@ -24,7 +27,7 @@ object DMUser: TDMUser
     TableName = 'Bases'
     Exclusive = False
     Left = 16
-    Top = 72
+    Top = 128
     object tblBasesID: TAutoIncField
       FieldName = 'ID'
     end
@@ -105,8 +108,8 @@ object DMUser: TDMUser
     ExportToSqlOptions.BlobSettings = True
     ExportToSqlOptions.Data = True
     ExportToSqlOptions.FieldNamesInInserts = True
-    Left = 232
-    Top = 72
+    Left = 320
+    Top = 56
     object tblRatesID: TIntegerField
       FieldName = 'ID'
       Required = True
@@ -123,20 +126,12 @@ object DMUser: TDMUser
       FieldName = 'Date'
     end
   end
-  object qImport: TABSQuery
-    CurrentVersion = '6.01 '
-    DatabaseName = 'DBUser'
-    InMemory = False
-    ReadOnly = False
-    Left = 160
-    Top = 72
-  end
   object dsBases: TDataSource
     DataSet = tblBases
     Left = 16
-    Top = 128
+    Top = 192
   end
-  object tblFavorites: TABSTable
+  object tblGrouppedBooks: TABSTable
     CurrentVersion = '6.01 '
     DatabaseName = 'DBUser'
     InMemory = False
@@ -145,25 +140,30 @@ object DMUser: TDMUser
     IndexDefs = <
       item
         Name = 'ID_Index'
-        Fields = 'ID'
-        Options = [ixPrimary, ixUnique]
+        Fields = 'InnerID'
+        Options = [ixPrimary]
       end
       item
         Name = 'FullName_Index'
-        Fields = 'FullName;Series;Title'
+        Fields = 'GroupID;FullName;Series;Title'
       end
       item
         Name = 'File_Index'
         Fields = 'FileName'
       end>
-    IndexName = 'FullName_Index'
+    IndexFieldNames = 'GroupID'
     FieldDefs = <
       item
-        Name = 'ID'
-        DataType = ftAutoInc
+        Name = 'GroupID'
+        Attributes = [faRequired]
+        DataType = ftInteger
       end
       item
         Name = 'InnerID'
+        DataType = ftAutoInc
+      end
+      item
+        Name = 'ID'
         Attributes = [faRequired]
         DataType = ftInteger
       end
@@ -195,7 +195,7 @@ object DMUser: TDMUser
       item
         Name = 'FullName'
         DataType = ftWideString
-        Size = 45
+        Size = 255
       end
       item
         Name = 'InsideNo'
@@ -252,90 +252,95 @@ object DMUser: TDMUser
         Name = 'Rate'
         DataType = ftInteger
       end>
-    TableName = 'favorites'
+    TableName = 'GroupedBooks'
     Exclusive = False
-    Left = 88
-    Top = 72
-    object tblFavoritesID: TAutoIncField
-      FieldName = 'ID'
-    end
-    object tblFavoritesInnerID: TIntegerField
-      FieldName = 'InnerID'
+    MasterFields = 'ID'
+    MasterSource = dsGroupList
+    Left = 144
+    Top = 256
+    object tblGrouppedBooksGroupID: TIntegerField
+      FieldName = 'GroupID'
       Required = True
     end
-    object tblFavoritesSerID: TIntegerField
+    object tblGrouppedBooksInnerID: TAutoIncField
+      FieldName = 'InnerID'
+    end
+    object tblGrouppedBooksID: TIntegerField
+      FieldName = 'ID'
+      Required = True
+    end
+    object tblGrouppedBooksSerID: TIntegerField
       FieldName = 'SerID'
     end
-    object tblFavoritesSeqNumber: TSmallintField
+    object tblGrouppedBooksSeqNumber: TSmallintField
       FieldName = 'SeqNumber'
     end
-    object tblFavoritesDatabaseID: TIntegerField
+    object tblGrouppedBooksDatabaseID: TIntegerField
       FieldName = 'DatabaseID'
     end
-    object tblFavoritesLibID: TIntegerField
+    object tblGrouppedBooksLibID: TIntegerField
       FieldName = 'LibID'
     end
-    object tblFavoritesDate: TDateField
+    object tblGrouppedBooksDate: TDateField
       FieldName = 'Date'
     end
-    object tblFavoritesTitle: TWideStringField
+    object tblGrouppedBooksTitle: TWideStringField
       FieldName = 'Title'
       Size = 100
     end
-    object tblFavoritesFullName: TWideStringField
+    object tblGrouppedBooksFullName: TWideStringField
       FieldName = 'FullName'
-      Size = 45
+      Size = 255
     end
-    object tblFavoritesInsideNo: TIntegerField
+    object tblGrouppedBooksInsideNo: TIntegerField
       FieldName = 'InsideNo'
       Required = True
     end
-    object tblFavoritesFileName: TWideStringField
+    object tblGrouppedBooksFileName: TWideStringField
       FieldName = 'FileName'
       Required = True
       Size = 255
     end
-    object tblFavoritesExt: TWideStringField
+    object tblGrouppedBooksExt: TWideStringField
       FieldName = 'Ext'
       Size = 10
     end
-    object tblFavoritesSize: TIntegerField
+    object tblGrouppedBooksSize: TIntegerField
       FieldName = 'Size'
     end
-    object tblFavoritesCode: TSmallintField
+    object tblGrouppedBooksCode: TSmallintField
       FieldName = 'Code'
     end
-    object tblFavoritesFolder: TWideStringField
+    object tblGrouppedBooksFolder: TWideStringField
       FieldName = 'Folder'
       Size = 128
     end
-    object tblFavoritesDiscID: TIntegerField
+    object tblGrouppedBooksDiscID: TIntegerField
       FieldName = 'DiscID'
     end
-    object tblFavoritesLocal: TBooleanField
+    object tblGrouppedBooksLocal: TBooleanField
       FieldName = 'Local'
     end
-    object tblFavoritesDeleted: TBooleanField
+    object tblGrouppedBooksDeleted: TBooleanField
       FieldName = 'Deleted'
     end
-    object tblFavoritesGenres: TWideStringField
+    object tblGrouppedBooksGenres: TWideStringField
       FieldName = 'Genres'
       Size = 128
     end
-    object tblFavoritesSeries: TWideStringField
+    object tblGrouppedBooksSeries: TWideStringField
       FieldName = 'Series'
       Size = 128
     end
-    object tblFavoritesRate: TIntegerField
+    object tblGrouppedBooksRate: TIntegerField
       FieldName = 'Rate'
-      MaxValue = 5
     end
   end
   object SeverityImages: TImageList
-    Left = 384
-    Top = 16
+    Left = 344
+    Top = 328
     Bitmap = {
-      494C0101030004000C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010103000400040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000009933000099330000000000000000
@@ -477,10 +482,10 @@ object DMUser: TDMUser
   object SeverityImagesBig: TImageList
     Height = 32
     Width = 32
-    Left = 384
-    Top = 80
+    Left = 296
+    Top = 328
     Bitmap = {
-      494C0101030004000C0020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010103000400040020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000002000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000000000000000000000000DF9030F52D9
@@ -1014,5 +1019,46 @@ object DMUser: TDMUser
       FC00003FFFF81FFFFC00003F00000000FF0000FFFFFC3FFFFF0000FF00000000
       FFC003FFFFFFFFFFFFC003FF0000000000000000000000000000000000000000
       000000000000}
+  end
+  object dsGroupList: TDataSource
+    Left = 216
+    Top = 184
+  end
+  object tblFinished: TABSTable
+    CurrentVersion = '6.01 '
+    DatabaseName = 'DBUser'
+    InMemory = False
+    ReadOnly = False
+    TableName = 'Finished'
+    Exclusive = False
+    Left = 320
+    Top = 120
+  end
+  object tblGroupList: TABSTable
+    CurrentVersion = '6.01 '
+    DatabaseName = 'DBUser'
+    InMemory = False
+    ReadOnly = False
+    TableName = 'GroupsList'
+    Exclusive = False
+    Left = 144
+    Top = 184
+    object tblGroupListID: TAutoIncField
+      FieldName = 'ID'
+    end
+    object tblGroupListName: TWideStringField
+      FieldName = 'Name'
+      Size = 255
+    end
+    object tblGroupListAllowDelete: TBooleanField
+      FieldName = 'AllowDelete'
+    end
+    object tblGroupListNotes: TMemoField
+      FieldName = 'Notes'
+      BlobType = ftMemo
+    end
+    object tblGroupListIcon: TBlobField
+      FieldName = 'Icon'
+    end
   end
 end

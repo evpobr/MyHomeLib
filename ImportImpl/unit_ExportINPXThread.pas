@@ -40,7 +40,7 @@ implementation
 uses
   Forms,
   StrUtils,
-  dm_main,
+  dm_collection,
   dm_user,
   ZipForge
   ;
@@ -78,12 +78,12 @@ var
 begin
   SetComment('Экспортируем коллекцию.');
 
-  totalBooks := DMMain.tblBooks.RecordCount;
+  totalBooks := dmCollection.tblBooks.RecordCount;
   processedBooks := 0;
 
-  DMMain.tblAuthor_Master.Active := True;
+  dmCollection.tblAuthor_Master.Active := True;
   try
-    DMMain.tblAuthor_Detail.Active := True;
+    dmCollection.tblAuthor_Detail.Active := True;
 
     slFileList := TStringList.Create;
     slFileList.Clear;
@@ -91,13 +91,13 @@ begin
       slBooksInfo := TStringList.Create;
       slBooksInfo.Clear;
 
-      DMMain.tblBooks.First;
-      while not DMMain.tblBooks.Eof do
+      dmCollection.tblBooks.First;
+      while not dmCollection.tblBooks.Eof do
       begin
         if Canceled then
           Exit;
 
-        DMMain.GetCurrentBook(R);
+        dmCollection.GetCurrentBook(R);
 
         bCorrect := INPRecordCreate(R, cINPRecord, True);
         if not bCorrect then
@@ -106,7 +106,7 @@ begin
         if cINPRecord <> '' then
           slBooksInfo.Add(cINPRecord);
 
-        DMMain.tblBooks.Next;
+        dmCollection.tblBooks.Next;
 
         Inc(processedBooks);
         if (processedBooks mod ProcessedItemThreshold) = 0 then
@@ -119,7 +119,7 @@ begin
 
       SetComment(Format('Обработано книг: %u из %u', [processedBooks, totalBooks]));
     finally
-      DMMain.tblAuthor_Detail.Active := False;
+      dmCollection.tblAuthor_Detail.Active := False;
       slBooksInfo.Free;         slBooksInfo := nil;
     end;
 
@@ -147,7 +147,7 @@ begin
 
   finally
     slFileList.Free;          slFileList := nil;
-    DMMain.tblAuthor_Master.Active := False;
+    dmCollection.tblAuthor_Master.Active := False;
   end;
 
   SetComment('Сохраняем документ. Подождите, пожалуйста.');

@@ -1,11 +1,11 @@
-object DMMain: TDMMain
+object DMCollection: TDMCollection
   OldCreateOrder = False
   Height = 567
   Width = 565
-  object DBMain: TABSDatabase
+  object DBCollection: TABSDatabase
     CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
-    Exclusive = False
+    Exclusive = True
     MaxConnections = 5
     MultiUser = False
     SessionName = 'Default'
@@ -40,20 +40,8 @@ object DMMain: TDMMain
         Fields = 'SerID;SeqNumber'
       end
       item
-        Name = 'FullName_Index'
-        Fields = 'Fullname;Title'
-      end
-      item
-        Name = 'Title_Index'
-        Fields = 'Title'
-      end
-      item
         Name = 'File_Index'
         Fields = 'FileName'
-      end
-      item
-        Name = 'Folder_Index'
-        Fields = 'Folder'
       end>
     IndexName = 'ID_Index'
     FieldDefs = <
@@ -84,12 +72,12 @@ object DMMain: TDMMain
       item
         Name = 'Title'
         DataType = ftWideString
-        Size = 255
+        Size = 100
       end
       item
         Name = 'FullName'
         DataType = ftWideString
-        Size = 255
+        Size = 45
       end
       item
         Name = 'InsideNo'
@@ -118,7 +106,7 @@ object DMMain: TDMMain
       item
         Name = 'Folder'
         DataType = ftWideString
-        Size = 255
+        Size = 128
       end
       item
         Name = 'DiscID'
@@ -498,9 +486,10 @@ object DMMain: TDMMain
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
+    TableName = 'Authors'
     Exclusive = False
     Left = 208
-    Top = 200
+    Top = 264
     object tblAuthorsSID: TAutoIncField
       FieldName = 'ID'
     end
@@ -631,7 +620,7 @@ object DMMain: TDMMain
     MasterFields = 'ID'
     MasterSource = dsSeries
     Left = 208
-    Top = 144
+    Top = 208
     object tblBooksSID: TAutoIncField
       FieldName = 'ID'
     end
@@ -709,6 +698,76 @@ object DMMain: TDMMain
       FieldName = 'Deleted'
     end
   end
+  object tblSeries: TABSTable
+    CurrentVersion = '6.01 '
+    DatabaseName = 'MyLib'
+    InMemory = False
+    ReadOnly = False
+    Filter = 'Title<>"---"'
+    Filtered = True
+    StoreDefs = True
+    IndexDefs = <
+      item
+        Name = 'ID_Index'
+        Fields = 'ID'
+        Options = [ixPrimary, ixUnique]
+      end
+      item
+        Name = 'TiteIndex'
+        Fields = 'Title;AuthID'
+      end
+      item
+        Name = 'AuthorIndex'
+        Fields = 'AuthID;Title'
+      end
+      item
+        Name = 'SeqTitle'
+        Fields = 'Title'
+      end>
+    IndexName = 'TiteIndex'
+    FieldDefs = <
+      item
+        Name = 'ID'
+        DataType = ftAutoInc
+      end
+      item
+        Name = 'AuthID'
+        Attributes = [faRequired]
+        DataType = ftInteger
+      end
+      item
+        Name = 'GenreCode'
+        Attributes = [faRequired]
+        DataType = ftWideString
+        Size = 20
+      end
+      item
+        Name = 'Title'
+        Attributes = [faRequired]
+        DataType = ftWideString
+        Size = 80
+      end>
+    TableName = 'series'
+    Exclusive = False
+    Left = 208
+    Top = 88
+    object tblSeriesID: TAutoIncField
+      FieldName = 'ID'
+    end
+    object tblSeriesAuthID: TIntegerField
+      FieldName = 'AuthID'
+      Required = True
+    end
+    object tblSeriesTitle: TWideStringField
+      FieldName = 'Title'
+      Required = True
+      Size = 80
+    end
+    object tblSeriesGenreCode: TWideStringField
+      FieldName = 'GenreCode'
+      Required = True
+    end
+  end
   object dsSeries: TDataSource
     DataSet = tblSeries
     Left = 272
@@ -717,45 +776,24 @@ object DMMain: TDMMain
   object dsAuthorsS: TDataSource
     DataSet = tblAuthorsS
     Left = 272
-    Top = 144
+    Top = 208
   end
   object dsBooksS: TDataSource
     DataSet = tblBooksS
     Left = 272
-    Top = 200
+    Top = 264
   end
-  object tblAuthors: TABSQuery
+  object tblAuthors: TABSTable
     CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
     Filter = 'Family="'#1040'*"'
-    RequestLive = True
-    SQL.Strings = (
-      'select a."*"'
-      'from "authors" a'
-      'where '
-      '('
-      '  :All = 0'
-      '  or'
-      '  a."id" in'
-      '  ('
-      '    select distinct l."authid"'
-      '    from "books" b, "author_list" l'
-      '    where l."bookid" = b."id"'
-      '    and b.local = true'
-      '  )'
-      ')'
-      'order by a.Family, a.Name, a.Middle;')
+    IndexName = 'AlphabetIndex'
+    TableName = 'Authors'
+    Exclusive = False
     Left = 24
     Top = 88
-    ParamData = <
-      item
-        DataType = ftInteger
-        Name = 'All'
-        ParamType = ptInput
-        Value = 0
-      end>
     object tblAuthorsID: TAutoIncField
       FieldName = 'ID'
     end
@@ -1205,14 +1243,12 @@ object DMMain: TDMMain
       Lookup = True
     end
     object tblBooksSeries: TWideStringField
-      DisplayWidth = 80
       FieldKind = fkLookup
       FieldName = 'Series'
       LookupDataSet = tblSeriesB
       LookupKeyFields = 'ID'
       LookupResultField = 'Title'
       KeyFields = 'SerID'
-      Size = 80
       Lookup = True
     end
   end
@@ -1500,57 +1536,70 @@ object DMMain: TDMMain
       Required = True
     end
   end
-  object tblSeries: TABSQuery
+  object dsSeries_List: TDataSource
+    DataSet = tblSeries_List
+    Left = 280
+    Top = 152
+  end
+  object tblSeries_List: TABSTable
     CurrentVersion = '6.01 '
     DatabaseName = 'MyLib'
     InMemory = False
     ReadOnly = False
-    Filtered = True
-    FilterOptions = [foCaseInsensitive]
-    RequestLive = True
-    SQL.Strings = (
-      'select s."*"'
-      'from "Series" s'
-      'where  Title<>"---" and '
-      '('
-      '  :All = 0'
-      '  or'
-      '  s."id" in'
-      '  ('
-      '    select b."SerID"'
-      '    from "books" b'
-      '    where b.local = true'
-      '  )'
-      ')'
-      'order by s.Title, s.AuthID;')
-    Left = 208
-    Top = 88
-    ParamData = <
+    StoreDefs = True
+    IndexDefs = <
       item
-        DataType = ftInteger
-        Name = 'All'
-        ParamType = ptInput
-        Value = 0
+        Name = 'ID_Index'
+        Fields = 'ID'
+        Options = [ixPrimary, ixUnique]
+      end
+      item
+        Name = 'BookIndex'
+        Fields = 'BookID'
+      end
+      item
+        Name = 'SeriesIndex'
+        CaseInsFields = 'SerID;Title'
+        Fields = 'SerID;Title'
+        Options = [ixCaseInsensitive]
       end>
-    object tblSeriesID: TAutoIncField
-      DisplayWidth = 10
+    IndexFieldNames = 'SerID'
+    FieldDefs = <
+      item
+        Name = 'ID'
+        DataType = ftAutoInc
+      end
+      item
+        Name = 'SerID'
+        DataType = ftInteger
+      end
+      item
+        Name = 'BookID'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Title'
+        DataType = ftWideString
+        Size = 10
+      end>
+    TableName = 'SeriesList'
+    Exclusive = False
+    MasterFields = 'ID'
+    MasterSource = dsSeries
+    Left = 208
+    Top = 152
+    object tblSeries_ListID: TAutoIncField
       FieldName = 'ID'
     end
-    object tblSeriesAuthID: TIntegerField
-      DisplayWidth = 10
-      FieldName = 'AuthID'
-      Required = True
+    object tblSeries_ListSerID: TIntegerField
+      FieldName = 'SerID'
     end
-    object tblSeriesTitle: TWideStringField
-      DisplayWidth = 80
+    object tblSeries_ListBookID: TIntegerField
+      FieldName = 'BookID'
+    end
+    object tblSeries_ListTitle: TWideStringField
       FieldName = 'Title'
-      Required = True
-      Size = 80
-    end
-    object tblSeriesGenreCode: TWideStringField
-      DisplayWidth = 20
-      FieldName = 'GenreCode'
-      Required = True
+      Size = 10
     end
   end
 end

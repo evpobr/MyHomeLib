@@ -59,7 +59,7 @@ var
 implementation
 
 uses
-  dm_main,
+  dm_collection,
   unit_database,
   dm_user,
   frm_genre_tree,
@@ -90,12 +90,12 @@ end;
 procedure TfrmEditBookInfo.FillLists;
 begin
   cbSeries.Items.Clear;
-  dmMain.tblSeries.First;
-  dmMain.tblSeries.Next;
-  while not dmMain.tblSeries.eof do
+  dmCollection.tblSeries.First;
+  dmCollection.tblSeries.Next;
+  while not dmCollection.tblSeries.eof do
   begin
-    cbSeries.Items.Add(dmMain.tblSeries['Title']);
-    dmMain.tblSeries.Next;
+    cbSeries.Items.Add(dmCollection.tblSeries['Title']);
+    dmCollection.tblSeries.Next;
   end;
 end;
 

@@ -61,7 +61,7 @@ uses
   frm_main,
   SysUtils,
   DateUtils,
-  dm_main,
+  dm_collection,
   IdStack,
   Windows,
   unit_Settings;
@@ -164,7 +164,7 @@ begin
     if Not FError then
     begin
       FCurrentData.State := dsOK ;
-      DMMain.SetLocalStatus(FID,True);
+      dmCollection.SetLocalStatus(FID,True);
       frmMain.tvDownloadList.DeleteNode(FCurrentNode);
       FCurrentNode := nil;
       FCurrentData := nil;
