@@ -196,12 +196,17 @@ begin
     CollectionName := DMUSer.ActiveCollection.Name;
     CollectionDBFileName := DMUser.ActiveCollection.DBFileName;
     CollectionType := DMUser.ActiveCollection.CollectionType;
-    CollectionNotes := DMUSer.ActiveCollection.Notes;
+
+    if DMUSer.ActiveCollection.Notes <> '' then
+        CollectionNotes := DMUSer.ActiveCollection.Notes
+      else
+        CollectionNotes := 'Версия от ' + DateToStr(Now);
 
     cComment := CollectionName + #13 + #10 +
       ExtractFileName(CollectionDBFileName) + #13 + #10 +
       IntToStr(CollectionType) + #13 + #10 +
       CollectionNotes;
+
     ZIP.Comment := cComment;
     ZIP.CloseArchive;
 

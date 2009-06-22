@@ -1913,10 +1913,11 @@ begin
   DMUser.FindFirstCollection;
   repeat
     for I := 0 to Settings.Updates.Count - 1 do
-      if Settings.Updates.Items[i].CheckCodes(DMUser.ActiveCollection.CollectionType,
+      if Settings.Updates.Items[i].CheckCodes(DMUser.ActiveCollection.Name,
+                                              DMUser.ActiveCollection.CollectionType,
                                               DMUser.ActiveCollection.ID)
       then
-        if Settings.Updates.Items[i].CheckVersion(DMUser.ActiveCollection.Version) then
+        if Settings.Updates.Items[i].CheckVersion(Settings.WorkPath, DMUser.ActiveCollection.Version) then
         begin
           Result := True;
           Break;

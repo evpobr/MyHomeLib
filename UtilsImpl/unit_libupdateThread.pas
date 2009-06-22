@@ -152,13 +152,18 @@ begin
       if not Available then Continue;
       DMUser.ActivateCollection(CollectionID);
       Teletype(Format('Обновление коллекции "%s" до версии %d:',[Name,Version]),tsInfo);
-      Teletype('Загрузка обновлений ...',tsInfo);
 
-      if not Settings.Updates.DownloadUpdate(I, FidHTTP) then
+      if not Local then
       begin
-        Teletype('Загрузка обновлений не удалась.',tsInfo);
-        Continue;
-      end;
+        Teletype('Загрузка обновлений ...',tsInfo);
+        if not Settings.Updates.DownloadUpdate(I, FidHTTP) then
+        begin
+            Teletype('Загрузка обновлений не удалась.',tsInfo);
+            Continue;
+        end;
+      end
+      else
+        Teletype('Обновление из локального архива',tsInfo);
 
       InpxFileName := Settings.WorkPath + FileName;
 
