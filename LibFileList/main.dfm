@@ -91,6 +91,10 @@ object frmMain: TfrmMain
     FixedDimension = 19
     object TabSheet1: TRzTabSheet
       Caption = 'fb2'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object RzGroupBox1: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -120,6 +124,10 @@ object frmMain: TfrmMain
     end
     object TabSheet2: TRzTabSheet
       Caption = 'Extra'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object pbDownload: TRzProgressBar
         AlignWithMargins = True
         Left = 3
@@ -138,13 +146,12 @@ object frmMain: TfrmMain
       object Label4: TLabel
         Left = 0
         Top = 187
-        Width = 340
+        Width = 16
         Height = 13
         Align = alBottom
         Alignment = taCenter
         Anchors = [akLeft, akBottom]
         Caption = '----'
-        ExplicitWidth = 16
       end
       object mmLog: TMemo
         AlignWithMargins = True
@@ -194,6 +201,10 @@ object frmMain: TfrmMain
     end
     object TabSheet3: TRzTabSheet
       Caption = 'USR'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object edURLUSR: TEdit
         Left = 3
         Top = 12

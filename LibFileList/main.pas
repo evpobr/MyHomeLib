@@ -68,7 +68,7 @@ type
   private
     FileList : TStringList;
 
-    procedure CreateINP(URL: string; USR: boolean);
+    procedure CreateINP(URL: string; USR: boolean; SaveResult: boolean);
     function ExecAndWait(const FileName, Params: String;
       const WinState: Word): boolean;
     procedure UploadToFtp;
@@ -92,99 +92,107 @@ uses DateUtils;
 
 {$R *.dfm}
 
-procedure TfrmMain.CreateINP(URL: string; USR: boolean);
+procedure TfrmMain.CreateINP(URL: string; USR: boolean; SaveResult: boolean);
+const
+  Window = 1000;
 var
   FN, S:string;
-  PostParams:TStringList;
-  i,j:integer;
+  ResultsList:TStringList;
+  i,j,k:integer;
   Response:TStringStream;
   mpfds: TIdMultiPartFormDataStream;
-
-
+  Max: integer;
 begin
   if not dlgOpen.Execute then  Exit;
-
   FOnProgress := True;
-
   FileList.Clear;
-
   btnStart.Enabled := False;
   btnStop.Enabled := True;
-
   FDoStop := False;
-
   pbProgress.Percent:=0;
   pbProgress.Repaint;
-
   try
     AppPath:=ExtractFileDir(Application.ExeName);
-    PostParams:=TStringList.Create;
-
+    ResultsList:=TStringList.Create;
     GetVersion;
-
-    //-----------------------------------------------------------
-    //             Подготовка запрос
-    //-----------------------------------------------------------
-
-    Label1.Caption:='Формирование запроса ...';
     for I:=0 to dlgOpen.Files.Count - 1 do
     begin
-      if FDoStop then Break;
+      //-----------------------------------------------------------
+      //             Подготовка запроса
+      //-----------------------------------------------------------
+      Label1.Caption:='Формирование запроса ...';
+      Zip.ZipFileName:=dlgOpen.Files[i];
+      FN:=ExtractFileName(dlgOpen.Files[i]);
+      Label2.Caption:=FN; Label2.Repaint;
+      k := 0;
+      ResultsList.Clear;
+      while k < Zip.Count - 1 do
+      begin
+        if FDoStop then Break;
+        mpfds:=TIdMultiPartFormDataStream.Create;
+        try
+          mpfds.AddFormField('Folder',copy(FN,1,Length(FN)-4));
 
-      mpfds:=TIdMultiPartFormDataStream.Create;
+          if (k + Window) < Zip.Count then
+            Max := k + Window
+          else
+            Max := Zip.Count - 1;
 
-      try
-        Zip.ZipFileName:=dlgOpen.Files[i];
-        FN:=ExtractFileName(dlgOpen.Files[i]);
-
-        Label2.Caption:=FN; Label2.Repaint;
-
-        mpfds.AddFormField('Folder',copy(FN,1,Length(FN)-4));
-        for j:=0 to Zip.Count-1 do
-        begin
-          with ZipDirEntry(Zip.ZipContents[j]^) do
+          for j:=0 to Max do
           begin
-            if not USR then
-              S := copy(FileName,1,Length(FileName)-4)
-            else
-              S := FileName;
-            if S <>'' then
-              mpfds.AddFormField('files['+IntToStr(j)+']',S);
+            with ZipDirEntry(Zip.ZipContents[j]^) do
+            begin
+              if not USR then
+                S := copy(FileName,1,Length(FileName)-4)
+              else
+                S := FileName;
+              if S <>'' then
+                mpfds.AddFormField('files['+IntToStr(j)+']',S);
+            end;
+          end; // for
+          k := Max;
+
+          //  отправка запроса
+          Label1.Caption:='Отправка запроса ...';
+          Label1.Repaint;
+          response:=TstringStream.Create('');
+          try
+            HTTP.Post(URL,mpfds,Response);
+            ResultsList.Clear;
+            ResultsList.Add(Response.DataString);
+          finally
+            response.Free;
           end;
+        finally
+          mpfds.Free;
         end;
 
-      //  отправка
+        pbProgress.Percent:=round((i + 1)/(dlgOpen.Files.Count)*(k/Zip.Count)*100);
+        pbProgress.Repaint;
 
-      Label1.Caption:='Отправка запроса ...';
-      Label1.Repaint;
-      response:=TstringStream.Create('');
-      HTTP.Post(URL,mpfds,Response);
-      PostParams.Clear;
-
+      end;  // while
       // обработка результата
 
-      PostParams.Add(Response.DataString);
-      PostParams.SaveToFile(AppPath+'\LIBRUSEC_INP\'+copy(FN,1,Length(FN)-4)+'.inp');
-      Label1.Caption:='Готово';Label1.Repaint;
+      if SaveResult then
+      begin
+        ResultsList.SaveToFile(AppPath+'\LIBRUSEC_INP\'+copy(FN,1,Length(FN)-4)+'.inp');
+      end;
 
+      Label1.Caption:='Готово';Label1.Repaint;
       FileList.Add(AppPath+'\LIBRUSEC_INP\'+copy(FN,1,Length(FN)-4)+'.inp');
 
-      finally
-        mpfds.Free;
-      end;
-      pbProgress.Percent:=round((i)/(dlgOpen.Files.Count)*100);
+      pbProgress.Percent:=round((i + 1)/(dlgOpen.Files.Count)*100);
       pbProgress.Repaint;
-    end;
+
+    end; // main for
   finally
     pbProgress.Percent:=100;
     FOnProgress := False;
     btnStop.Caption := 'Выйти';
     Label1.Caption:='Готово';
     FDoStop := False;
-
     btnStart.Enabled := True;
     btnStop.Enabled := False;
-
   end;
 end;
 
@@ -237,7 +245,7 @@ procedure TfrmMain.btnStartClick(Sender: TObject);
 begin
   case pcPages.ActivePageIndex of
     0: begin
-         CreateINP(edURLFb2.Text, False);
+         CreateINP(edURLFb2.Text, False, True);
          Pack_FB2;
        end;
     1: begin
@@ -246,7 +254,7 @@ begin
          if  cbFTP.Checked then UPloadToFtp;
        end;
     2: begin
-         CreateINP(edURLUSR.Text, True);
+         CreateINP(edURLUSR.Text, True, True);
          Pack_USR;
        end;
   end;
