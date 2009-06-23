@@ -3,10 +3,8 @@ object DMUser: TDMUser
   Height = 377
   Width = 463
   object DBUser: TABSDatabase
-    Connected = True
     CurrentVersion = '6.01 '
-    DatabaseFileName = 'D:\DelphiProjects\MyHomeLib 1.5\Debug\Bin\Data\user.dbs'
-    DatabaseName = 'DBUser'
+    DatabaseName = 'UserData'
     Exclusive = False
     MaxConnections = 5
     MultiUser = False
@@ -21,7 +19,7 @@ object DMUser: TDMUser
   end
   object tblBases: TABSTable
     CurrentVersion = '6.01 '
-    DatabaseName = 'DBUser'
+    DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
     TableName = 'Bases'
@@ -73,19 +71,29 @@ object DMUser: TDMUser
   end
   object tblRates: TABSTable
     CurrentVersion = '6.01 '
-    DatabaseName = 'DBUser'
+    DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
     StoreDefs = True
     IndexDefs = <
       item
-        Name = 'Book_Index'
+        Name = 'ID_Index'
         Fields = 'ID'
+        Options = [ixPrimary]
+      end
+      item
+        Name = 'Book_Index'
+        Fields = 'DatabaseID;BookID'
         Options = [ixPrimary]
       end>
     FieldDefs = <
       item
         Name = 'ID'
+        Attributes = [faRequired]
+        DataType = ftInteger
+      end
+      item
+        Name = 'BookID'
         Attributes = [faRequired]
         DataType = ftInteger
       end
@@ -133,7 +141,7 @@ object DMUser: TDMUser
   end
   object tblGrouppedBooks: TABSTable
     CurrentVersion = '6.01 '
-    DatabaseName = 'DBUser'
+    DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
     StoreDefs = True
@@ -1027,7 +1035,7 @@ object DMUser: TDMUser
   end
   object tblFinished: TABSTable
     CurrentVersion = '6.01 '
-    DatabaseName = 'DBUser'
+    DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
     TableName = 'Finished'
@@ -1037,7 +1045,7 @@ object DMUser: TDMUser
   end
   object tblGroupList: TABSTable
     CurrentVersion = '6.01 '
-    DatabaseName = 'DBUser'
+    DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
     StoreDefs = True

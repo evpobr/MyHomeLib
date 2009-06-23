@@ -82,6 +82,7 @@ type
     FSeries: TAbsTable;
     FGenres: TAbsTable;
     FGenreList: TAbsTable;
+    FExtra: TAbsTable;
   end;
 
 implementation
@@ -164,7 +165,7 @@ AuthorsTableIndexes: array [1..2] of TIndexDesc = (
 //
 // Books table
 //
-BooksTableFields: array [1 .. 18] of TFieldDesc = (
+BooksTableFields: array [1 .. 20] of TFieldDesc = (
   (Name: 'ID';         DataType: ftAutoInc;     Size: 0;   Required: true ),
   (Name: 'DatabaseID'; DataType: ftInteger;     Size: 0;   Required: false),
   (Name: 'LibID';      DataType: ftInteger;     Size: 0;   Required: false),
@@ -173,6 +174,8 @@ BooksTableFields: array [1 .. 18] of TFieldDesc = (
   (Name: 'SerID';      DataType: ftInteger;     Size: 0;   Required: false),
   (Name: 'SeqNumber';  DataType: ftSmallInt;    Size: 0;   Required: false),
   (Name: 'Date';       DataType: ftDate;        Size: 0;   Required: false),
+  (Name: 'LibRate';    DataType: ftInteger;     Size: 0;   Required: false),
+  (Name: 'Lang';       DataType: ftWideString;  Size: 2;   Required: false),
   //
   (Name: 'DiscID';     DataType: ftInteger;     Size: 0;   Required: false),
   (Name: 'Folder';     DataType: ftWideString;  Size: 255; Required: false),
@@ -269,19 +272,19 @@ GenreListTableIndexes: array [1..3] of TIndexDesc = (
 //
 // Extra
 //
-ExtraTableFields: array [1 .. 5] of TFieldDesc = (
+ExtraTableFields: array [1 .. 6] of TFieldDesc = (
   (Name: 'ID';        DataType: ftAutoInc;    Size: 0;   Required: true),
   (Name: 'BookID';    DataType: ftInteger;    Size: 0;   Required: false),
   (Name: 'KeyWords';  DataType: ftWideString; Size: 255; Required: false),
   (Name: 'Annotation';DataType: ftMemo;       Size: 0;   Required: false),
-  (Name: 'Cover';     DataType: ftBlob;       Size: 0;   Required: false)
+  (Name: 'Cover';     DataType: ftBlob;       Size: 0;   Required: false),
+  (Name: 'Data';      DataType: ftMemo;       Size: 0;   Required: false)
 );
 
-ExtraListTableIndexes: array [1..4] of TIndexDesc = (
+ExtraTableIndexes: array [1..3] of TIndexDesc = (
   (Name: 'ID_Index';   Fields: 'ID';                   Options: [ixPrimary, ixUnique]),
   (Name: 'BookIndex';  Fields: 'BookID';               Options: []),
-  (Name: 'KeyWordIndex'; Fields: 'KeyWords';           Options: [ixCaseInsensitive]),
-  (Name: 'AnnotationIndex'; Fields: 'Annotation';      Options: [ixCaseInsensitive])
+  (Name: 'KeyWordIndex'; Fields: 'KeyWords';           Options: [ixCaseInsensitive])
 );
 
 //-----------------------------------------------------------------------------
@@ -478,6 +481,10 @@ begin
 
   FGenreList := TAbsTable.Create(FDatabase);
   FGenreList.TableName := 'Genre_list';
+
+  FExtra := TAbsTable.Create(FDatabase);
+  FExtra.TableName := 'Extra';
+
 end;
 
 destructor TMHLLibrary.Destroy;
@@ -575,6 +582,7 @@ begin
   CreateTable(FDatabase, 'Genres',      GenresTableFields,     GenresTableIndexes);
   CreateTable(FDatabase, 'Genre_List',  GenreListTableFields,  GenreListTableIndexes);
   CreateTable(FDatabase, 'Author_List', AuthorListTableFields, AuthorListTableIndexes);
+  CreateTable(FDatabase, 'Extra',       ExtraTableFields,      ExtraTableIndexes);
 
   Active := True;
 
