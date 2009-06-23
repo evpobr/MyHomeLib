@@ -756,6 +756,22 @@ begin
 
   iniFile := TIniFile.Create(FAppPath + 'updates.ini');
   try
+
+    //
+    // Добавим апдейты по умолчанию
+    //
+
+    FUpdateList.Add('Локальная коллекция Либрусек','','last_librusec.info','librusec_update.zip',
+                       True,CT_LIBRUSEC_LOCAL_FB);
+    FUpdateList.Add('Онлайн коллекция Либрусек','','last_librusec.info','librusec_update.zip',
+                       False,CT_LIBRUSEC_ONLINE_FB);
+    FUpdateList.Add('Онлайн коллекция Либрусек','','last_extra.info','extra_update.zip',
+                       False,CT_LIBRUSEC_ONLINE_FB);
+    FUpdateList.Add('Локальная коллекция Либрусек [USR]','','last_usr.info','usr_update.zip',
+                       True,CT_LIBRUSEC_USR);
+
+    // обрабатываем файл
+
     sl := TStringList.Create;
     iniFile.ReadSection('UPDATES', sl);
     if sl.Count > 0 then
@@ -771,31 +787,18 @@ begin
             slHelper.DelimitedText := iniFile.ReadString(READERS_SECTION, sl[i], '');
             if slHelper.Count = 5 then
             begin
-              FUpdateList.Add(slHelper[0], slHelper[1],slHelper[2],StrToBool(slHelper[3]),StrToInt(slHelper[4]));
+              FUpdateList.Add(slHelper[0],
+                              slHelper[1],
+                              slHelper[2],
+                              slHelper[3],
+                              StrToBool(slHelper[4]),
+                              StrToInt(slHelper[5]));
             end;
           end;
         end;
       finally
         slHelper.Free;
       end;
-    end
-    else
-    begin
-      //
-      // Добавим апдейты по умолчанию
-      //
-
-      FUpdateList.Add('Либрусек [FB2]','last_librusec.info','librusec_update.zip',
-                       True,CT_LIBRUSEC_LOCAL_FB);
-
-      FUpdateList.Add('Либрусек [on-line]','last_librusec.info','librusec_update.zip',
-                       False,CT_LIBRUSEC_ONLINE_FB);
-
-      FUpdateList.Add('Либрусек [on-line]','last_extra.info','extra_update.zip',
-                       False,CT_LIBRUSEC_ONLINE_FB);
-
-      FUpdateList.Add('Либрусек [USR]','last_usr.info','usr_update.zip',
-                       True,CT_LIBRUSEC_USR);
     end;
   finally
     sl.Free;

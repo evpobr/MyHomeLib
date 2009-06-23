@@ -78,12 +78,12 @@ var
 begin
   SetComment('Экспортируем коллекцию.');
 
-  totalBooks := dmCollection.tblBooks.RecordCount;
+  totalBooks := DMCollection.tblBooks.RecordCount;
   processedBooks := 0;
 
-  dmCollection.tblAuthor_Master.Active := True;
+  DMCollection.tblAuthor_Master.Active := True;
   try
-    dmCollection.tblAuthor_Detail.Active := True;
+    DMCollection.tblAuthor_Detail.Active := True;
 
     slFileList := TStringList.Create;
     slFileList.Clear;
@@ -91,13 +91,13 @@ begin
       slBooksInfo := TStringList.Create;
       slBooksInfo.Clear;
 
-      dmCollection.tblBooks.First;
-      while not dmCollection.tblBooks.Eof do
+      DMCollection.tblBooks.First;
+      while not DMCollection.tblBooks.Eof do
       begin
         if Canceled then
           Exit;
 
-        dmCollection.GetCurrentBook(R);
+        DMCollection.GetCurrentBook(R);
 
         bCorrect := INPRecordCreate(R, cINPRecord, True);
         if not bCorrect then
@@ -106,7 +106,7 @@ begin
         if cINPRecord <> '' then
           slBooksInfo.Add(cINPRecord);
 
-        dmCollection.tblBooks.Next;
+        DMCollection.tblBooks.Next;
 
         Inc(processedBooks);
         if (processedBooks mod ProcessedItemThreshold) = 0 then
@@ -119,7 +119,7 @@ begin
 
       SetComment(Format('Обработано книг: %u из %u', [processedBooks, totalBooks]));
     finally
-      dmCollection.tblAuthor_Detail.Active := False;
+      DMCollection.tblAuthor_Detail.Active := False;
       slBooksInfo.Free;         slBooksInfo := nil;
     end;
 
@@ -147,7 +147,7 @@ begin
 
   finally
     slFileList.Free;          slFileList := nil;
-    dmCollection.tblAuthor_Master.Active := False;
+    DMCollection.tblAuthor_Master.Active := False;
   end;
 
   SetComment('Сохраняем документ. Подождите, пожалуйста.');
@@ -196,12 +196,17 @@ begin
     CollectionName := DMUSer.ActiveCollection.Name;
     CollectionDBFileName := DMUser.ActiveCollection.DBFileName;
     CollectionType := DMUser.ActiveCollection.CollectionType;
-    CollectionNotes := DMUSer.ActiveCollection.Notes;
+
+    if DMUSer.ActiveCollection.Notes <> '' then
+        CollectionNotes := DMUSer.ActiveCollection.Notes
+      else
+        CollectionNotes := 'Версия от ' + DateToStr(Now);
 
     cComment := CollectionName + #13 + #10 +
       ExtractFileName(CollectionDBFileName) + #13 + #10 +
       IntToStr(CollectionType) + #13 + #10 +
       CollectionNotes;
+
     ZIP.Comment := cComment;
     ZIP.CloseArchive;
 

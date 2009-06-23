@@ -25,6 +25,7 @@ type
   private
 
     FName: string;
+    FURL : string;
     FVersionFile: string;
     FUpdateFile:  string;
 
@@ -35,11 +36,12 @@ type
 
     FFull: boolean;
     FAvailable: boolean;
+    FLocal: boolean;
 
   public
 
-    function CheckCodes (t, id: integer): boolean;
-    function CheckVersion(Version: integer): boolean;
+    function CheckCodes (Name: string; t, id: integer): boolean;
+    function CheckVersion(Path: string; Version: integer): boolean;
 
     property Version: integer read FVersion write FVersion;
     property Code: Integer read FCode write FCode;
@@ -48,6 +50,8 @@ type
     property Name:string read FName;
     property CollectionID: integer read FCollectionID;
     property Available: boolean read FAvailable;
+    property Local: boolean read FLocal;
+    property URL: string read FURL;
 
   end;
 
@@ -68,6 +72,7 @@ type
     constructor Create;
 
     procedure Add(const Name: string;
+                  const URL : string;
                   const VerFile: string;
                   const UpdateFile: string;
                   const Full: boolean;
@@ -94,6 +99,7 @@ uses  unit_Globals;
 { TUpdateInfoList }
 
 procedure TUpdateInfoList.Add(const Name: string;
+                  const URL : string;
                   const VerFile: string;
                   const UpdateFile: string;
                   const Full: boolean;
@@ -107,6 +113,7 @@ begin
     UPdate := AddUpdate;
     try
       Update.FName := Name;
+      UPdate.FURL := FURL;
       Update.FVersionFile := VerFile;
       Update.FUpdateFile := UpdateFile;
       Update.FCode := Code;
@@ -139,7 +146,11 @@ begin
     SetProxySettings(HTTP);
     for I := 0 to Count - 1 do
     begin
-      URL := FURL + Items[i].FVersionFile;
+      if Items[i].URL = '' then
+          URL := FURL + Items[i].FVersionFile
+        else
+          URL := Items[i].URL + Items[i].FVersionFile;
+
       try
         LF.Clear;
         HTTP.Get(URL, LF);
@@ -174,24 +185,19 @@ var
 
 begin
   Result := False;
-
-  URL := FURL + Items[Index].FUpdateFile;
+  if Items[Index].URL = '' then
+      URL := FURL + Items[Index].FUpdateFile
+    else
+      URL := Items[Index].URL + Items[Index].FUpdateFile;
   FileName := FPath + Items[Index].FUpdateFile;
-
   MS := TMemoryStream.Create;
   try
     try
-        //
-        // Возможно, файл уже был скачан. Если нет - скачать.
-        //
-//        if not FileExists(FileName) then
-//        begin
-          HTTP.Get(URL, MS);
-          MS.SaveToFile(FileName);
-//        end;
-        Result := True;
-      except
-      end;
+      HTTP.Get(URL, MS);
+      MS.SaveToFile(FileName);
+      Result := True;
+    except
+    end;
   finally
     MS.Free;
   end;
@@ -214,16 +220,19 @@ end;
 
 { TUpdateInfo }
 
-function TUpdateInfo.CheckCodes(t, id: integer): boolean;
+function TUpdateInfo.CheckCodes(Name: string; t, id: integer): boolean;
 begin
-  Result := (t = FCode);
+  Result := (t = FCode) and (Name = FName);
   if Result then FCollectionID := Id;
 end;
 
-
-function TUpdateInfo.CheckVersion(Version: integer): boolean;
+function TUpdateInfo.CheckVersion(Path: string; Version: integer): boolean;
 begin
-  Result := (FVersion > Version);
+  FLocal := FileExists(Path + FileName);
+  if FLocal then
+    Result := True
+  else
+    Result := (FVersion > Version);
   FAvailable := Result;
 end;
 

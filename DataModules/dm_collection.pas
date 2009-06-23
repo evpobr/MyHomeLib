@@ -256,9 +256,11 @@ procedure TDMCollection.GetBookFileName(ID: integer; out AFile:string;
                                   out ANo:integer);
 begin
   FActiveTable.Locate('ID', ID, []);
-  AFile := FActiveTable.FieldByName('FileName').AsString + FActiveTable.FieldByName('Ext').AsString;
+  AExt := FActiveTable.FieldByName('Ext').AsString;
+  AFile := FActiveTable.FieldByName('FileName').AsString;
   AFolder := FActiveTable.FieldByName('Folder').AsString;
   ANo := FActiveTable.FieldByName('InsideNo').AsInteger;
+
 end;
 
 
