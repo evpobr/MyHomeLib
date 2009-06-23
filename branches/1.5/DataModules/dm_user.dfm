@@ -5,7 +5,7 @@ object DMUser: TDMUser
   object DBUser: TABSDatabase
     Connected = True
     CurrentVersion = '6.01 '
-    DatabaseFileName = 'D:\DelphiProjects\MyHomeLib\Debug\Bin\Data\user.dbs'
+    DatabaseFileName = 'D:\DelphiProjects\MyHomeLib 1.5\Debug\Bin\Data\user.dbs'
     DatabaseName = 'DBUser'
     Exclusive = False
     MaxConnections = 5
@@ -1021,6 +1021,7 @@ object DMUser: TDMUser
       000000000000}
   end
   object dsGroupList: TDataSource
+    DataSet = tblGroupList
     Left = 216
     Top = 184
   end
@@ -1039,6 +1040,39 @@ object DMUser: TDMUser
     DatabaseName = 'DBUser'
     InMemory = False
     ReadOnly = False
+    StoreDefs = True
+    IndexDefs = <
+      item
+        Name = 'ID_Index'
+        Fields = 'ID'
+        Options = [ixPrimary, ixUnique]
+      end
+      item
+        Name = 'NameIndex'
+        Fields = 'Name'
+      end>
+    FieldDefs = <
+      item
+        Name = 'ID'
+        DataType = ftAutoInc
+      end
+      item
+        Name = 'Name'
+        DataType = ftWideString
+        Size = 255
+      end
+      item
+        Name = 'AllowDelete'
+        DataType = ftBoolean
+      end
+      item
+        Name = 'Notes'
+        DataType = ftMemo
+      end
+      item
+        Name = 'Icon'
+        DataType = ftBlob
+      end>
     TableName = 'GroupsList'
     Exclusive = False
     Left = 144

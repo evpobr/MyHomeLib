@@ -356,6 +356,8 @@ type
     ipnlFavorites: TMHLInfoPanel;
     lblTotalBooksF: TRzLabel;
     btnClearFavorites: TRzBitBtn;
+    pmGroups: TPopupMenu;
+    GroupMenuItem: TMenuItem;
 
     //
     // События формы
@@ -542,6 +544,8 @@ type
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure tvGroupsGetNodeDataSize(Sender: TBaseVirtualTree;
       var NodeDataSize: Integer);
+    procedure tvGroupsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure GroupMenuItemClick(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -655,6 +659,7 @@ type
     function GetActiveView: TView;
     procedure StartLibUpdate;
     procedure LoadSearchPreset(FN: string);
+    procedure CreateGroupsMenu;
     property ActiveView: TView read GetActiveView;
   end;
 
@@ -843,7 +848,10 @@ begin
  if ActiveView = FavoritesView then
     miDelFavoritesClick(Sender)
   else
-    miAddFavoritesClick(Sender);
+    begin
+      DMUser.tblGrouppedBooks.Locate('Id',0,[]);
+      miAddFavoritesClick(Sender);
+    end;
 end;
 
 procedure TfrmMain.SetColumns;
@@ -1604,6 +1612,26 @@ begin
   DMUser.ActivateCollection(Active);
 end;
 
+procedure TfrmMain.CreateGroupsMenu;
+var
+  Item : TMenuItem;
+  i: integer;
+begin
+  pmGroups.Items.Clear;
+  i := 0;
+  DMUser.tblGroupList.First;
+  while not DMUser.tblGroupList.Eof do
+  begin
+    Item := TMenuItem.Create(pmGroups);
+    Item.Caption := DMUser.tblGroupListName.Value;
+    Item.Tag := DMUser.tblGroupListID.Value;
+    Item.OnClick := GroupMenuItemClick;
+    pmGroups.Items.Insert(i, Item);
+    inc(i);
+    DMUser.tblGroupList.Next;
+  end;
+end;
+
 procedure TfrmMain.CreateScriptMenu;
 const
     ExpTypes : array [0..3] of string = ('  fb2','  fb2.zip','  LRF','  txt');
@@ -1926,10 +1954,11 @@ begin
   DMUser.FindFirstCollection;
   repeat
     for I := 0 to Settings.Updates.Count - 1 do
-      if Settings.Updates.Items[i].CheckCodes(DMUser.ActiveCollection.CollectionType,
+      if Settings.Updates.Items[i].CheckCodes(DMUser.ActiveCollection.Name,
+                                              DMUser.ActiveCollection.CollectionType,
                                               DMUser.ActiveCollection.ID)
       then
-        if Settings.Updates.Items[i].CheckVersion(DMUser.ActiveCollection.Version) then
+        if Settings.Updates.Items[i].CheckVersion(Settings.WorkPath, DMUser.ActiveCollection.Version) then
         begin
           Result := True;
           Break;
@@ -2067,6 +2096,7 @@ begin
   DMUser.ActivateCollection(Settings.ActiveCollection);
   SetUserTableStatus(True);
   FillGroupsList;
+  CreateGroupsMenu;
 
   SetColumns;
   SetHeaderPopUp;
@@ -2357,6 +2387,20 @@ begin
   Assert(Assigned(Data));
 
   CellText := Data.Text;
+end;
+
+procedure TfrmMain.tvGroupsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+var
+  Data: PGroupData;
+
+begin
+  Data := tvGroups.GetNodeData(Node);
+  if Data = Nil then Exit;
+
+  DMUser.tblGroupList.Locate('Id',Data.ID,[]);
+
+  FillBooksTree(0,tvBooksF,Nil,DMUser.tblGrouppedBooks,true, true);
+
 end;
 
 procedure TfrmMain.tvGroupsGetNodeDataSize(Sender: TBaseVirtualTree;
@@ -3328,6 +3372,12 @@ begin
   end;
 end;
 
+procedure TfrmMain.GroupMenuItemClick(Sender: TObject);
+begin
+  DMUser.tblGrouppedBooks.Locate('Id', (Sender as TMenuItem).Tag,[]);
+  miAddFavoritesClick(Sender);
+end;
+
 procedure TfrmMain.GetActiveTree(var Tree: TVirtualStringTree);
 begin
   Tree := GetViewTree(ActiveView);
@@ -4214,6 +4264,7 @@ begin
       if not DMUser.tblGrouppedBooks.Locate('FileName', dmCollection.tblBooksFileName.Value, []) then
       begin
         DMUser.tblGrouppedBooks.Insert;
+        DMUser.tblGrouppedBooksID.Value := ID;
         DMUser.tblGrouppedBooksInnerID.Value := dmCollection.tblBooksID.Value;
         DMUser.tblGrouppedBooksDataBaseID.Value := Settings.ActiveCollection;
         DMUser.tblGrouppedBooksTitle.Value := dmCollection.tblBooksTitle.Value;
@@ -4246,6 +4297,7 @@ begin
         DMUser.tblGrouppedBooksGenres.Value := Data.Genre;
         DMUser.tblGrouppedBooksRate.Value := dmCollection.tblBooksRate.Value;
         DMUser.tblGrouppedBooksDate.Value := dmCollection.tblBooksDate.Value;
+
 
 
         DMUser.tblGrouppedBooks.Post;
@@ -5245,6 +5297,8 @@ begin
                     miDelFavorites.Visible := True;
                     miAddFavorites.Visible := False;
                     btnFav_add.Hint := 'Удалить из избранного';
+                    btnFav_add.DropdownMenu := Nil;
+                    btnFav_add.Style := ComCtrls.tbsButton;
                     btnFav_add.ImageIndex := 16;
                   end;
     DownloadView: begin
@@ -5259,6 +5313,8 @@ begin
                     miDelFavorites.Visible := False;
                     miAddFavorites.Visible := True;
                     btnFav_add.Hint := 'Добавить в избранное';
+                    btnFav_add.DropdownMenu := pmGroups;
+                    btnFav_add.Style := ComCtrls.tbsDropDown;
                     btnFav_add.ImageIndex := 15;
 
                   end;

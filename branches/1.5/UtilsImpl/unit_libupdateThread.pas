@@ -152,13 +152,18 @@ begin
       if not Available then Continue;
       DMUser.ActivateCollection(CollectionID);
       Teletype(Format('Обновление коллекции "%s" до версии %d:',[Name,Version]),tsInfo);
-      Teletype('Загрузка обновлений ...',tsInfo);
 
-      if not Settings.Updates.DownloadUpdate(I, FidHTTP) then
+      if not Local then
       begin
-        Teletype('Загрузка обновлений не удалась.',tsInfo);
-        Continue;
-      end;
+        Teletype('Загрузка обновлений ...',tsInfo);
+        if not Settings.Updates.DownloadUpdate(I, FidHTTP) then
+        begin
+            Teletype('Загрузка обновлений не удалась.',tsInfo);
+            Continue;
+        end;
+      end
+      else
+        Teletype('Обновление из локального архива',tsInfo);
 
       InpxFileName := Settings.WorkPath + FileName;
 
@@ -171,9 +176,9 @@ begin
         Teletype(Format(rstrRemovingOldCollection, [Name]),tsInfo);
 
         // удаляем старый файл коллекции
-        dmCollection.DBCollection.Close;
-        dmCollection.DBCollection.DatabaseFileName := DBFileName;
-        dmCollection.DBCollection.DeleteDatabase;
+        DMCollection.DBCollection.Close;
+        DMCollection.DBCollection.DatabaseFileName := DBFileName;
+        DMCollection.DBCollection.DeleteDatabase;
 
         // создаем его заново
         Teletype(Format(rstrCreatingCollection, [Name]),tsInfo);
