@@ -204,6 +204,7 @@ type
     RzPanel9: TRzPanel;
     RzPanel10: TRzPanel;
     tvBooksSR: TVirtualStringTree;
+    tvBooksF: TVirtualStringTree;
     RichEdit2: TRichEdit;
     ipnlSearch: TMHLInfoPanel;
     cpCoverSR: TMHLCoverPanel;
@@ -352,12 +353,14 @@ type
     RzPanel20: TRzPanel;
     RzPanel21: TRzPanel;
     RzDBLabel1: TRzDBLabel;
-    tvBooksF: TVirtualStringTree;
     ipnlFavorites: TMHLInfoPanel;
     lblTotalBooksF: TRzLabel;
     btnClearFavorites: TRzBitBtn;
     pmGroups: TPopupMenu;
     GroupMenuItem: TMenuItem;
+    RzBitBtn1: TRzBitBtn;
+    RzBitBtn2: TRzBitBtn;
+    btnClearGroup: TRzBitBtn;
 
     //
     // События формы
@@ -546,6 +549,8 @@ type
       var NodeDataSize: Integer);
     procedure tvGroupsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GroupMenuItemClick(Sender: TObject);
+    procedure RzBitBtn1Click(Sender: TObject);
+    procedure RzBitBtn2Click(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -777,6 +782,44 @@ begin
 
 end;
 
+procedure TfrmMain.RzBitBtn1Click(Sender: TObject);
+var
+  Name : string;
+begin
+  Name := InputBox('Добавление группы','Название группы','');
+  if Name <> '' then
+  begin
+    DMUser.tblGroupList.Insert;
+    DMUser.tblGroupListName.Value := Name;
+    DMUser.tblGroupListAllowDelete.Value := True;
+    DMUser.tblGroupList.Post;
+
+    FillGroupsList;
+    CreateGroupsMenu;
+    FillBooksTree(0,tvBooksF,Nil,DMUser.tblGrouppedBooks,true, true);
+  end;
+end;
+
+procedure TfrmMain.RzBitBtn2Click(Sender: TObject);
+var
+  Data: PGroupData;
+begin
+  Data := tvGroups.GetNodeData(tvGroups.GetFirstSelected);
+  if Data = Nil then Exit;
+  if DMUser.tblGroupList.Locate('ID',Data.ID,[]) and
+     DMUser.tblGroupListAllowDelete.Value then
+  begin
+    btnClearFavoritesClick(Sender);
+    DMUser.tblGroupList.Delete;
+
+    FillGroupsList;
+    CreateGroupsMenu;
+    FillBooksTree(0,tvBooksF,Nil,DMUser.tblGrouppedBooks,true, true);
+  end
+  else
+    ShowMessage('Нельзя удалить встроенную группу!');
+end;
+
 procedure TfrmMain.cbPresetNameChange(Sender: TObject);
 var
   State : boolean;
@@ -849,8 +892,8 @@ begin
     miDelFavoritesClick(Sender)
   else
     begin
-      DMUser.tblGrouppedBooks.Locate('Id',0,[]);
-      miAddFavoritesClick(Sender);
+      if DMUser.tblGroupList.Locate('ID',1,[]) then
+          miAddFavoritesClick(Sender);
     end;
 end;
 
@@ -1032,6 +1075,7 @@ begin
   SetTreeViewColor(tvBooksF);
   SetTreeViewColor(tvSeries);
   SetTreeViewColor(tvGenres);
+  SetTreeViewColor(tvGroups);
   SetTreeViewColor(tvDownloadList);
 
   SetEditColor(edLocateAuthor);
@@ -2065,11 +2109,6 @@ begin
   DMUser.DBUser.Connected := True;
   DMUser.tblBases.Active := True;
 
-  if DMUser.tblBases.IndexDefs.IndexOf('Name_Index') = -1 then
-    DMUser.tblBases.AddIndex('Name_Index','Name',[]);
-  DMUser.tblBases.IndexName := 'Name_Index';
-
-
 //------------------------------------------------------------------------------
 //  Проверка обновлений
 //------------------------------------------------------------------------------
@@ -2095,6 +2134,7 @@ begin
 
   DMUser.ActivateCollection(Settings.ActiveCollection);
   SetUserTableStatus(True);
+
   FillGroupsList;
   CreateGroupsMenu;
 
@@ -2887,9 +2927,9 @@ procedure TfrmMain.btnClearFavoritesClick(Sender: TObject);
 begin
   ClearLabels(PAGE_FAVORITES);
 
-  DMUser.tblGrouppedBooks.Active := False;
-  DMUser.tblGrouppedBooks.EmptyTable;
-  DMUser.tblGrouppedBooks.Active := True;
+  DMUser.tblGrouppedBooks.First;
+  while not DMUser.tblGrouppedBooks.Eof do
+    DMUser.tblGrouppedBooks.Delete;
 
   FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True); // избранное
 end;
@@ -3374,8 +3414,8 @@ end;
 
 procedure TfrmMain.GroupMenuItemClick(Sender: TObject);
 begin
-  DMUser.tblGrouppedBooks.Locate('Id', (Sender as TMenuItem).Tag,[]);
-  miAddFavoritesClick(Sender);
+  if DMUser.tblGroupList.Locate('ID', (Sender as TMenuItem).Tag,[]) then
+        miAddFavoritesClick(Sender);
 end;
 
 procedure TfrmMain.GetActiveTree(var Tree: TVirtualStringTree);
@@ -3849,7 +3889,7 @@ begin
   begin
     Data := tvBooksF.GetNodeData(Node);
     Assert(Assigned(Data));
-    if (Data.nodeType = ntBookInfo) and ((tvBooksF.CheckState[Node] = csCheckedNormal) or (tvBooksF.Selected[Node])) then
+    if (Data.nodeType = ntBookInfo) and ((tvBooksG.CheckState[Node] = csCheckedNormal) or (tvBooksG.Selected[Node])) then
     begin
       DMUser.tblGrouppedBooks.Locate('ID', Data.ID, []);
       DMUser.tblGrouppedBooks.Delete;
@@ -4264,8 +4304,7 @@ begin
       if not DMUser.tblGrouppedBooks.Locate('FileName', dmCollection.tblBooksFileName.Value, []) then
       begin
         DMUser.tblGrouppedBooks.Insert;
-        DMUser.tblGrouppedBooksID.Value := ID;
-        DMUser.tblGrouppedBooksInnerID.Value := dmCollection.tblBooksID.Value;
+        DMUser.tblGrouppedBooksID.Value := dmCollection.tblBooksID.Value;
         DMUser.tblGrouppedBooksDataBaseID.Value := Settings.ActiveCollection;
         DMUser.tblGrouppedBooksTitle.Value := dmCollection.tblBooksTitle.Value;
 

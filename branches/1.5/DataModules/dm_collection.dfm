@@ -4,7 +4,7 @@ object DMCollection: TDMCollection
   Width = 565
   object DBCollection: TABSDatabase
     CurrentVersion = '6.01 '
-    DatabaseName = 'MyLib'
+    DatabaseName = 'Collection'
     Exclusive = True
     MaxConnections = 5
     MultiUser = False
@@ -25,7 +25,7 @@ object DMCollection: TDMCollection
   end
   object tblBooksA: TABSTable
     CurrentVersion = '6.01 '
-    DatabaseName = 'MyLib'
+    DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     StoreDefs = True
@@ -204,7 +204,7 @@ object DMCollection: TDMCollection
   end
   object tblBooksG: TABSTable
     CurrentVersion = '6.01 '
-    DatabaseName = 'MyLib'
+    DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     StoreDefs = True
@@ -398,7 +398,7 @@ object DMCollection: TDMCollection
   end
   object tblGenres: TABSTable
     CurrentVersion = '6.01 '
-    DatabaseName = 'MyLib'
+    DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     StoreDefs = True
@@ -483,7 +483,7 @@ object DMCollection: TDMCollection
   end
   object tblAuthorsS: TABSTable
     CurrentVersion = '6.01 '
-    DatabaseName = 'MyLib'
+    DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     TableName = 'Authors'
@@ -510,7 +510,7 @@ object DMCollection: TDMCollection
   end
   object tblBooksS: TABSTable
     CurrentVersion = '6.01 '
-    DatabaseName = 'MyLib'
+    DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     StoreDefs = True
@@ -700,7 +700,7 @@ object DMCollection: TDMCollection
   end
   object tblSeries: TABSTable
     CurrentVersion = '6.01 '
-    DatabaseName = 'MyLib'
+    DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     Filter = 'Title<>"---"'
@@ -785,7 +785,7 @@ object DMCollection: TDMCollection
   end
   object tblAuthors: TABSTable
     CurrentVersion = '6.01 '
-    DatabaseName = 'MyLib'
+    DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     Filter = 'Family="'#1040'*"'
@@ -818,7 +818,7 @@ object DMCollection: TDMCollection
   end
   object tblBooks_Genre_List: TABSTable
     CurrentVersion = '6.01 '
-    DatabaseName = 'MyLib'
+    DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     StoreDefs = True
@@ -905,7 +905,7 @@ object DMCollection: TDMCollection
   end
   object tblGenre_List: TABSTable
     CurrentVersion = '6.01 '
-    DatabaseName = 'MyLib'
+    DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     StoreDefs = True
@@ -989,7 +989,7 @@ object DMCollection: TDMCollection
   end
   object tblAuthor_List: TABSTable
     CurrentVersion = '6.01 '
-    DatabaseName = 'MyLib'
+    DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     StoreDefs = True
@@ -1062,7 +1062,7 @@ object DMCollection: TDMCollection
   end
   object tblBooks: TABSTable
     CurrentVersion = '6.01 '
-    DatabaseName = 'MyLib'
+    DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     Filtered = True
@@ -1092,7 +1092,7 @@ object DMCollection: TDMCollection
       end
       item
         Name = 'Folder_Index'
-        Fields = 'Folder'
+        Fields = 'DiscID;Folder'
       end>
     IndexName = 'FullName_Index'
     FieldDefs = <
@@ -1101,24 +1101,12 @@ object DMCollection: TDMCollection
         DataType = ftAutoInc
       end
       item
-        Name = 'SerID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'SeqNumber'
-        DataType = ftSmallint
-      end
-      item
         Name = 'DatabaseID'
         DataType = ftInteger
       end
       item
         Name = 'LibID'
         DataType = ftInteger
-      end
-      item
-        Name = 'Date'
-        DataType = ftDate
       end
       item
         Name = 'Title'
@@ -1131,15 +1119,45 @@ object DMCollection: TDMCollection
         Size = 255
       end
       item
-        Name = 'InsideNo'
-        Attributes = [faRequired]
+        Name = 'SerID'
         DataType = ftInteger
+      end
+      item
+        Name = 'SeqNumber'
+        DataType = ftSmallint
+      end
+      item
+        Name = 'Date'
+        DataType = ftDate
+      end
+      item
+        Name = 'LibRate'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Lang'
+        DataType = ftWideString
+        Size = 2
+      end
+      item
+        Name = 'DiscID'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Folder'
+        DataType = ftWideString
+        Size = 255
       end
       item
         Name = 'FileName'
         Attributes = [faRequired]
         DataType = ftWideString
         Size = 255
+      end
+      item
+        Name = 'InsideNo'
+        Attributes = [faRequired]
+        DataType = ftInteger
       end
       item
         Name = 'Ext'
@@ -1151,17 +1169,13 @@ object DMCollection: TDMCollection
         DataType = ftInteger
       end
       item
-        Name = 'Code'
-        DataType = ftSmallint
-      end
-      item
-        Name = 'Folder'
+        Name = 'URI'
         DataType = ftWideString
         Size = 255
       end
       item
-        Name = 'DiscID'
-        DataType = ftInteger
+        Name = 'Code'
+        DataType = ftSmallint
       end
       item
         Name = 'Local'
@@ -1254,7 +1268,7 @@ object DMCollection: TDMCollection
   end
   object tblSeriesA: TABSTable
     CurrentVersion = '6.01 '
-    DatabaseName = 'MyLib'
+    DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     Filter = 'Title<>"---"'
@@ -1329,7 +1343,7 @@ object DMCollection: TDMCollection
   end
   object tblBooks_Genres: TABSTable
     CurrentVersion = '6.01 '
-    DatabaseName = 'MyLib'
+    DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     IndexName = 'ID_Index'
@@ -1358,7 +1372,7 @@ object DMCollection: TDMCollection
   end
   object tblAuthor_Detail: TABSTable
     CurrentVersion = '6.01 '
-    DatabaseName = 'MyLib'
+    DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     IndexName = 'ID_Index'
@@ -1392,7 +1406,7 @@ object DMCollection: TDMCollection
   end
   object tblAuthor_Master: TABSTable
     CurrentVersion = '6.01 '
-    DatabaseName = 'MyLib'
+    DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     StoreDefs = True
@@ -1468,7 +1482,7 @@ object DMCollection: TDMCollection
   end
   object tblSeriesB: TABSTable
     CurrentVersion = '6.01 '
-    DatabaseName = 'MyLib'
+    DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     Filter = 'Title<>"---"'
@@ -1543,7 +1557,7 @@ object DMCollection: TDMCollection
   end
   object tblSeries_List: TABSTable
     CurrentVersion = '6.01 '
-    DatabaseName = 'MyLib'
+    DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     StoreDefs = True
@@ -1600,6 +1614,83 @@ object DMCollection: TDMCollection
     object tblSeries_ListTitle: TWideStringField
       FieldName = 'Title'
       Size = 10
+    end
+  end
+  object tblExtra: TABSTable
+    CurrentVersion = '6.01 '
+    DatabaseName = 'Collection'
+    InMemory = False
+    ReadOnly = False
+    StoreDefs = True
+    IndexDefs = <
+      item
+        Name = 'ID_Index'
+        Fields = 'ID'
+        Options = [ixPrimary, ixUnique]
+      end
+      item
+        Name = 'BookIndex'
+        Fields = 'BookID'
+      end
+      item
+        Name = 'KeyWordIndex'
+        CaseInsFields = 'KeyWords'
+        Fields = 'KeyWords'
+        Options = [ixCaseInsensitive]
+      end>
+    IndexName = 'ID_Index'
+    FieldDefs = <
+      item
+        Name = 'ID'
+        DataType = ftAutoInc
+      end
+      item
+        Name = 'BookID'
+        DataType = ftInteger
+      end
+      item
+        Name = 'KeyWords'
+        DataType = ftWideString
+        Size = 255
+      end
+      item
+        Name = 'Annotation'
+        DataType = ftMemo
+      end
+      item
+        Name = 'Cover'
+        DataType = ftBlob
+      end
+      item
+        Name = 'Data'
+        DataType = ftMemo
+      end>
+    TableName = 'Extra'
+    Exclusive = False
+    MasterFields = 'ID'
+    MasterSource = dsBooks
+    Left = 496
+    Top = 464
+    object tblExtraID: TAutoIncField
+      FieldName = 'ID'
+    end
+    object tblExtraBookID: TIntegerField
+      FieldName = 'BookID'
+    end
+    object tblExtraKeyWords: TWideStringField
+      FieldName = 'KeyWords'
+      Size = 255
+    end
+    object tblExtraAnnotation: TMemoField
+      FieldName = 'Annotation'
+      BlobType = ftMemo
+    end
+    object tblExtraCover: TBlobField
+      FieldName = 'Cover'
+    end
+    object tblExtraData: TMemoField
+      FieldName = 'Data'
+      BlobType = ftMemo
     end
   end
 end

@@ -175,6 +175,13 @@ type
     tblSeries_ListSerID: TIntegerField;
     tblSeries_ListBookID: TIntegerField;
     tblSeries_ListTitle: TWideStringField;
+    tblExtra: TABSTable;
+    tblExtraID: TAutoIncField;
+    tblExtraBookID: TIntegerField;
+    tblExtraKeyWords: TWideStringField;
+    tblExtraAnnotation: TMemoField;
+    tblExtraCover: TBlobField;
+    tblExtraData: TMemoField;
   private
     FActiveTable: TAbsTable;
     { Private declarations }
@@ -421,6 +428,7 @@ begin
   tblBooks.Active := State;
   tblSeriesA.Active := State;
   tblSeriesB.Active := State;
+  tblExtra.Active := State;
 end;
 
 end.
