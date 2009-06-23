@@ -26,16 +26,7 @@ type
 
     FDownloadSize: integer;
 
-    FOnSetProgress: TDownloadProgressEvent;
-    FOnSetComment: TDownloadSetCommentEvent;
-
-    FCurrentComment: string;
-    FTotalComment: string;
-    FCurrentProgress: Integer;
-    FTotalProgress: Integer;
-
     FStartDate : TDateTime;
-    FIgnoreErrors: boolean;
 
     FUpdated: boolean;
 
@@ -130,10 +121,8 @@ end;
 
 procedure TLibUpdateThread.WorkFunction;
 var
-  Version : integer;
-  DelOld: boolean;
   ALibrary: TMHLLibrary;
-  i,j: integer;
+  i: integer;
 begin
 
   FidHTTP := TidHTTP.Create(nil);

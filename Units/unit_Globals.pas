@@ -826,9 +826,6 @@ begin
 end;
 
 procedure SetProxySettings(var idHTTP:TidHTTP);
-var
-  F: Text;
-  S1,S2: String;
 begin
   with idHTTP.ProxyParams do
   begin
