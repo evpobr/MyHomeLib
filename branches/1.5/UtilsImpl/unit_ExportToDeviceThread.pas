@@ -226,8 +226,6 @@ end;
 function TExportToDeviceThread.fb2Lrf(InpFile,OutFile:string):boolean;
 var
   params: string;
-  Res: integer;
-  msg: string;
 begin
   params := Format('-i "%s" -o "%s"',[InpFile,ChangeFileExt(OutFile, '.lrf')]);
   Result := ExecAndWait(Settings.AppPath + 'fb2lrf\fb2lrf_c.exe',params, SW_HIDE)

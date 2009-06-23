@@ -485,7 +485,6 @@ begin
   Path := ExtractRelativePath(FRootPath, flFiles.LastDir);
   ParentNode := FindParentInTree(Tree,Path);
 
-  Data := Tree.GetNodeData(Tree.GetLastChild(ParentNode));
 
   CurrentNode := Tree.AddChild(ParentNode);
 

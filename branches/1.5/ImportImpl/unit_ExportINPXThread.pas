@@ -73,8 +73,6 @@ var
   totalBooks: Integer;
   processedBooks: Integer;
   R: TBookRecord;
-  AuthorRecord: TAuthorRecord;
-  GenreRecord: TGenreRecord;
 begin
   SetComment('Ёкспортируем коллекцию.');
 
@@ -140,13 +138,13 @@ begin
     slBooksInfo.SaveToFile(Settings.TempPath + VERSION_INFO_FILE);
     slFileList.Add(Settings.TempPath + VERSION_INFO_FILE);
 
-    slBooksInfo.Free;         slBooksInfo := nil;
+    slBooksInfo.Free;
 
     //”паковываем файлы в zip-архив и устанавливаем комментарий
     INPXPack(INPXFileName, slFileList);
 
   finally
-    slFileList.Free;          slFileList := nil;
+    slFileList.Free;
     DMCollection.tblAuthor_Master.Active := False;
   end;
 
@@ -160,12 +158,7 @@ var
   CollectionType: Integer;
   CollectionNotes : String;
 
-  nCollectionVersion: Integer;
-  cVersion: String;
-
   cComment : String;
-
-  slVersion: TStringList;
 
   ZIP: TZipForge;
   nIndex : Integer;
@@ -177,7 +170,7 @@ begin
     // ”дал€ем INPX-файл, если он уже существует
     //
     if FileExists(INPXFileName) then
-      DeleteFile(INPXFileName);
+      SysUtils.DeleteFile(INPXFileName);
     //
     // —оздаем экземпл€р TZipForge, инициализируем и открываем его
     //
@@ -212,7 +205,7 @@ begin
 
     Result := True;
   finally
-    ZIP.Free;           ZIP := nil;
+    ZIP.Free;
   end;
 end;
 
@@ -319,7 +312,7 @@ begin
 
     Result := True;
   finally
-    slParams.Free;        slParams := nil;
+    slParams.Free;
   end;
 end;
 

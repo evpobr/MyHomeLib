@@ -17,13 +17,9 @@ type
     dsBooksG: TDataSource;
     tblAuthorsS: TABSTable;
     tblBooksS: TABSTable;
-    tblSeries: TABSTable;
     dsSeries: TDataSource;
     dsAuthorsS: TDataSource;
-    dsBooksS: TDataSource;
-    tblSeriesID: TAutoIncField;
-    tblSeriesAuthID: TIntegerField;
-    tblSeriesTitle: TWideStringField;        
+    dsBooksS: TDataSource;        
     tblAuthorsSID: TAutoIncField;
     tblAuthorsSFamily: TWideStringField;
     tblAuthorsSName: TWideStringField;
@@ -35,7 +31,6 @@ type
     tblBooksATitle: TWideStringField;
     tblBooksAFullName: TWideStringField;
     tblBooksASeries: TWideStringField;
-    tblAuthors: TABSTable;
     tblBooksARate: TIntegerField;
     tblBooksALibID: TIntegerField;
     tblBooksAInsideNo: TIntegerField;
@@ -99,7 +94,6 @@ type
     tblSeriesA: TABSTable;
     dsBooks: TDataSource;
     tblBooks_Genres: TABSTable;
-    tblSeriesGenreCode: TWideStringField;
     tblAuthor_ListID: TAutoIncField;
     tblAuthor_ListAuthID: TIntegerField;
     tblAuthor_ListBookID: TIntegerField;
@@ -153,11 +147,6 @@ type
     tblBooksDiscID: TIntegerField;
     tblBooksLocal: TBooleanField;
     tblBooksDeleted: TBooleanField;
-    tblAuthorsID: TAutoIncField;
-    tblAuthorsFamily: TWideStringField;
-    tblAuthorsName: TWideStringField;
-    tblAuthorsMiddle: TWideStringField;
-    tblAuthorsFullName: TWideStringField;
     tblBooksRate: TIntegerField;
     tblSeriesAID: TAutoIncField;
     tblSeriesAAuthID: TIntegerField;
@@ -182,6 +171,17 @@ type
     tblExtraAnnotation: TMemoField;
     tblExtraCover: TBlobField;
     tblExtraData: TMemoField;
+    tblAuthors: TABSQuery;
+    tblAuthorsID: TAutoIncField;
+    tblAuthorsFamily: TWideStringField;
+    tblAuthorsName: TWideStringField;
+    tblAuthorsMiddle: TWideStringField;
+    tblAuthorsFullName: TWideStringField;
+    tblSeries: TABSQuery;
+    tblSeriesID: TAutoIncField;
+    tblSeriesAuthID: TIntegerField;
+    tblSeriesTitle: TWideStringField;
+    tblSeriesGenreCode: TWideStringField;
   private
     FActiveTable: TAbsTable;
     { Private declarations }
@@ -213,7 +213,14 @@ var
 
 implementation
 
-uses dm_user, frm_main, StrUtils, unit_Consts;
+uses
+  Windows,
+  Forms,
+  dm_user,
+  frm_main,
+  StrUtils,
+  unit_Consts,
+  unit_Messages;
 
 {$R *.dfm}
 
@@ -235,9 +242,9 @@ procedure TDMCollection.Clear;
 begin
   SetTableState(False);
 
-  tblAuthors.EmptyTable;
+//  tblAuthors.EmptyTable;
   tblAuthor_List.EmptyTable;
-  tblSeries.EmptyTable;
+//  tblSeries.EmptyTable;
   tblBooksA.EmptyTable;
   tblBooksS.EmptyTable;
   tblGenres.EmptyTable;
@@ -410,6 +417,17 @@ begin
     FActiveTable.Edit;
     FActiveTable.FieldByName('Local').AsBoolean := AState;
     FActiveTable.Post;
+
+    //
+    // обновим информацию о книге в главном окне программы
+    //
+    PostMessage(
+      Application.MainFormHandle,
+      WM_MHL_DOWNLOAD_COMPLETE,
+      AId,
+      Integer(LongBool(AState))
+      );
+
   end;
 end;
 

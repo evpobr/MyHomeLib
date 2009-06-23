@@ -358,8 +358,8 @@ type
     btnClearFavorites: TRzBitBtn;
     pmGroups: TPopupMenu;
     GroupMenuItem: TMenuItem;
-    RzBitBtn1: TRzBitBtn;
-    RzBitBtn2: TRzBitBtn;
+    btnAddGroup: TRzBitBtn;
+    btnDeleteGroup: TRzBitBtn;
     btnClearGroup: TRzBitBtn;
 
     //
@@ -549,8 +549,8 @@ type
       var NodeDataSize: Integer);
     procedure tvGroupsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GroupMenuItemClick(Sender: TObject);
-    procedure RzBitBtn1Click(Sender: TObject);
-    procedure RzBitBtn2Click(Sender: TObject);
+    procedure btnAddGroupClick(Sender: TObject);
+    procedure btnDeleteGroupClick(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -782,7 +782,7 @@ begin
 
 end;
 
-procedure TfrmMain.RzBitBtn1Click(Sender: TObject);
+procedure TfrmMain.btnAddGroupClick(Sender: TObject);
 var
   Name : string;
 begin
@@ -800,7 +800,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.RzBitBtn2Click(Sender: TObject);
+procedure TfrmMain.btnDeleteGroupClick(Sender: TObject);
 var
   Data: PGroupData;
 begin
@@ -821,8 +821,6 @@ begin
 end;
 
 procedure TfrmMain.cbPresetNameChange(Sender: TObject);
-var
-  State : boolean;
 begin
   btnSavePreset.Enabled  := ( cbPresetName.Text <> '' );
 end;
@@ -1171,11 +1169,6 @@ var FilterString: String;
     SeriesFilter: String;
     OldFilter: String;
     Filtered: boolean;
-
-    S: string;
-
-
-
 begin
   Screen.Cursor := crSQLWAit;
   spStatus.Caption := 'Подготовка фильтра ...'; spStatus.Repaint;
@@ -1304,7 +1297,6 @@ procedure TfrmMain.LoadSearchPreset(FN: string);
 var
   SL : TStringList;
   HL : TStringList;
-  S  : string;
 begin
   SL := TStringList.Create;
   HL := TStringList.Create;
@@ -1872,48 +1864,48 @@ end;
 
 procedure  TfrmMain.SetAuthorsShowLocalOnly;
 begin
-//  if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
-//    begin
-//      if Settings.ShowLocalOnly then
-//        dmCollection.tblAuthors.ParamByName('All').AsInteger := 1
-//      else
-//        dmCollection.tblAuthors.ParamByName('All').AsInteger := 0;
-//      dmCollection.tblAuthors.Close;
-//      Screen.Cursor := crHourGlass;
-//      dmCollection.tblAuthors.Open;
-//      Screen.Cursor := crDefault;
-//    end
-//  else
-//    begin
-//      dmCollection.tblAuthors.ParamByName('All').AsInteger := 0;
-//      dmCollection.tblAuthors.Close;
-//      Screen.Cursor := crHourGlass;
-//      dmCollection.tblAuthors.Open;
-//      Screen.Cursor := crDefault;
-//    end;
+  if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
+    begin
+      if Settings.ShowLocalOnly then
+        dmCollection.tblAuthors.ParamByName('All').AsInteger := 1
+      else
+        dmCollection.tblAuthors.ParamByName('All').AsInteger := 0;
+      dmCollection.tblAuthors.Close;
+      Screen.Cursor := crHourGlass;
+      dmCollection.tblAuthors.Open;
+      Screen.Cursor := crDefault;
+    end
+  else
+    begin
+      dmCollection.tblAuthors.ParamByName('All').AsInteger := 0;
+      dmCollection.tblAuthors.Close;
+      Screen.Cursor := crHourGlass;
+      dmCollection.tblAuthors.Open;
+      Screen.Cursor := crDefault;
+    end;
 end;
 
 procedure  TfrmMain.SetSeriesShowLocalOnly;
 begin
-//  if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
-//    begin
-//      if Settings.ShowLocalOnly then
-//        dmCollection.tblSeries.ParamByName('All').AsInteger := 1
-//      else
-//        dmCollection.tblSeries.ParamByName('All').AsInteger := 0;
-//      dmCollection.tblSeries.Close;
-//      Screen.Cursor := crHourGlass;
-//      dmCollection.tblSeries.Open;
-//      Screen.Cursor := crDefault;
-//    end
-//  else
-//    begin
-//      dmCollection.tblSeries.ParamByName('All').AsInteger := 0;
-//      dmCollection.tblSeries.Close;
-//      Screen.Cursor := crHourGlass;
-//      dmCollection.tblSeries.Open;
-//      Screen.Cursor := crDefault;
-//    end;
+  if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
+    begin
+      if Settings.ShowLocalOnly then
+        dmCollection.tblSeries.ParamByName('All').AsInteger := 1
+      else
+        dmCollection.tblSeries.ParamByName('All').AsInteger := 0;
+      dmCollection.tblSeries.Close;
+      Screen.Cursor := crHourGlass;
+      dmCollection.tblSeries.Open;
+      Screen.Cursor := crDefault;
+    end
+  else
+    begin
+      dmCollection.tblSeries.ParamByName('All').AsInteger := 0;
+      dmCollection.tblSeries.Close;
+      Screen.Cursor := crHourGlass;
+      dmCollection.tblSeries.Open;
+      Screen.Cursor := crDefault;
+    end;
 end;
 
 procedure  TfrmMain.SetBooksFilter;
@@ -1981,8 +1973,6 @@ end;
 
 function TfrmMain.CheckLibUpdates(Auto: boolean): Boolean;
 var
-  LocalVersion: Integer;
-  RemoteVersion: Integer;
   Active: Integer;
   i: integer;
 begin
@@ -3270,8 +3260,7 @@ begin
 end;
 
 procedure TfrmMain.tbtnStarClick(Sender: TObject);
-var
-  S: string;
+
 begin
 
   if (pgControl.ActivePageIndex <> PAGE_AUTHORS) and
@@ -4568,10 +4557,7 @@ end;
 procedure TfrmMain.edLocateAuthorKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 
-var
-  Param: Word;
 begin
-
   if ActiveView = ByAuthorView then
     if Key = VK_UP then
       tvAuthors.Perform(WM_KEYDOWN, VK_UP, 0);
@@ -4583,7 +4569,6 @@ begin
       tvSeries.Perform(WM_KEYDOWN, VK_UP, 0);
     if Key = VK_DOWN  then
       tvSeries.Perform(WM_KEYDOWN, VK_DOWN, 0);
-
 end;
 
 procedure TfrmMain.edFFullNameButtonClick(Sender: TObject);

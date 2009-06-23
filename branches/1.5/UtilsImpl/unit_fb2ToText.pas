@@ -14,8 +14,9 @@ type
 
      FIn,FOut: Text;
 
-     procedure ProceedString(FS,TagStart,TagEnd:UTF8String);
-     procedure ClearString(var FS:UTF8String);
+
+     procedure ProceedString(FS,TagStart,TagEnd:String);
+     procedure ClearString(var FS:String);
      procedure GetEncoding( S: string);
   public
     procedure Convert(FileIn, FileOut: string);
@@ -28,7 +29,7 @@ implementation
 uses
   StrUtils;
 
-procedure TFb2ToText.ClearString(var FS:UTF8String);
+procedure TFb2ToText.ClearString(var FS:String);
 begin
   FS := ReplaceStr(FS,'<strong>','');
   FS := ReplaceStr(FS,'</strong>','');
@@ -40,10 +41,9 @@ end;
 
 procedure TFb2ToText.Convert(FileIn, FileOut: string);
 var
-  i: integer;
-
   SA: AnsiString;
-  S:  UTF8String;
+  US:  UTF8String;
+  S: string;
 begin
 
   AssignFile(FIn, FileIn);
@@ -55,15 +55,9 @@ begin
   try
     Readln(FIn,S);
     GetEncoding(S);
-    i := 1;
 
     while (pos('<body',S) = 0) and not Eof(FIn) do
-    begin
       Readln(FIn,S);
-      inc(i);
-    end;
-
-
 
     while  not Eof(FIn) do
     begin
@@ -71,10 +65,12 @@ begin
         en1251, enUnknown:
                 begin
                   Readln(FIn,SA);
-                  S := AnsiToUTF8(SA);
+                  US := AnsiToUTF8(SA);
                 end;
-        enUTF8: Readln(FIn,S);
+        enUTF8: Readln(FIn,US);
       end;
+
+      S := UTF8ToString(US);
 
       if (pos('</section>',S) <> 0)  or
          (pos('</title>',S)   <> 0)  or
@@ -101,12 +97,12 @@ begin
 
 end;
 
-procedure TFb2ToText.ProceedString(FS,TagStart, TagEnd: UTF8String);
+procedure TFb2ToText.ProceedString(FS,TagStart, TagEnd: String);
 var
  p1,p2: integer;
  L : integer;
- US: UTF8String;
- OS: UTF8String;
+ US: String;
+ OS: String;
 begin
   L := Length(TagStart);
   p1 := pos(TagStart, FS);
@@ -117,7 +113,7 @@ begin
   begin
     p2 := pos(TagEnd, US);
     OS := copy(US,p1 + L, p2 - p1 - L);
-    writeln(FOut,OS);
+    writeln(FOut,UTF8Encode(OS));
     Delete(US,1,p2 + 3);
     p1 := pos(TagStart,US);
   end;

@@ -145,10 +145,6 @@ var
   Zip: TZipForge;
   S  : ansistring;
 
-
-  SL : TStringList;
-
-
   function GetParam(var S: ansistring): string;
   var
     p: integer;
