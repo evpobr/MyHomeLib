@@ -271,13 +271,10 @@ procedure TDMCollection.GetBookFileName(ID: integer; out AFile:string;
 begin
   FActiveTable.Locate('ID', ID, []);
   AExt := FActiveTable.FieldByName('Ext').AsString;
-  AFile := FActiveTable.FieldByName('FileName').AsString;
+  AFile := FActiveTable.FieldByName('FileName').AsString + AExt;
   AFolder := FActiveTable.FieldByName('Folder').AsString;
   ANo := FActiveTable.FieldByName('InsideNo').AsInteger;
-
 end;
-
-
 
 function TDMCollection.GetBookGenres(BookID: Integer; FirstOnly: boolean): String;
 var
