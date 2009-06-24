@@ -74,7 +74,8 @@ uses
   ZipForge,
   RzPrgres,
   unit_DownloadManagerThread,
-  unit_Messages, RzBtnEdt, files_list;
+  unit_Messages,
+  RzBtnEdt, files_list, ActiveX;
 
 type
 
@@ -352,7 +353,6 @@ type
     RzToolButton2: TRzToolButton;
     RzPanel20: TRzPanel;
     RzPanel21: TRzPanel;
-    RzDBLabel1: TRzDBLabel;
     ipnlFavorites: TMHLInfoPanel;
     lblTotalBooksF: TRzLabel;
     btnClearFavorites: TRzBitBtn;
@@ -361,6 +361,10 @@ type
     btnAddGroup: TRzBitBtn;
     btnDeleteGroup: TRzBitBtn;
     btnClearGroup: TRzBitBtn;
+    pmiGroups: TMenuItem;
+    RzPanel6: TRzPanel;
+    lblBooksTotalF: TRzLabel;
+    lblGroups: TRzLabel;
 
     //
     // События формы
@@ -551,6 +555,12 @@ type
     procedure GroupMenuItemClick(Sender: TObject);
     procedure btnAddGroupClick(Sender: TObject);
     procedure btnDeleteGroupClick(Sender: TObject);
+    procedure tvGroupsDragOver(Sender: TBaseVirtualTree; Source: TObject;
+      Shift: TShiftState; State: TDragState; Pt: TPoint; Mode: TDropMode;
+      var Effect: Integer; var Accept: Boolean);
+    procedure tvGroupsDragDrop(Sender: TBaseVirtualTree; Source: TObject;
+      DataObject: IDataObject; Formats: TFormatArray; Shift: TShiftState;
+      Pt: TPoint; var Effect: Integer; Mode: TDropMode);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -804,7 +814,7 @@ procedure TfrmMain.btnDeleteGroupClick(Sender: TObject);
 var
   Data: PGroupData;
 begin
-  Data := tvGroups.GetNodeData(tvGroups.GetFirstSelected);
+  Data := tvGroups.GetNodeData(tvGroups.FocusedNode);
   if Data = Nil then Exit;
   if DMUser.tblGroupList.Locate('ID',Data.ID,[]) and
      DMUser.tblGroupListAllowDelete.Value then
@@ -1650,10 +1660,12 @@ end;
 
 procedure TfrmMain.CreateGroupsMenu;
 var
-  Item : TMenuItem;
+  Item, ItemP : TMenuItem;
   i: integer;
 begin
   pmGroups.Items.Clear;
+  pmiGroups.Clear;
+
   i := 0;
   DMUser.tblGroupList.First;
   while not DMUser.tblGroupList.Eof do
@@ -1663,6 +1675,15 @@ begin
     Item.Tag := DMUser.tblGroupListID.Value;
     Item.OnClick := GroupMenuItemClick;
     pmGroups.Items.Insert(i, Item);
+
+    if i <> 0 then
+    begin
+      ItemP := TMenuItem.Create(pmMain);
+      ItemP.Caption := DMUser.tblGroupListName.Value;
+      ItemP.Tag := DMUser.tblGroupListID.Value;
+      ItemP.OnClick := GroupMenuItemClick;
+      pmiGroups.Insert(i - 1, ItemP);
+    end;
     inc(i);
     DMUser.tblGroupList.Next;
   end;
@@ -1968,7 +1989,7 @@ begin
   FillBooksTree(0, tvBooksA, dmCollection.tblAuthor_List, dmCollection.tblBooksA,    False, True); // авторы
   FillBooksTree(0, tvBooksS,                   nil, dmCollection.tblBooksS,    False, False); // серии
   FillBooksTree(0, tvBooksG,  dmCollection.tblGenre_List, dmCollection.tblBooksG,    True,  True); // жанры
-  FillBooksTree(0, tvBooksF,                   nil, DMUser.tblGrouppedBooks, True,  True); // избранное
+//  FillBooksTree(0, tvBooksF,                   nil, DMUser.tblGrouppedBooks, True,  True); // избранное
 end;
 
 function TfrmMain.CheckLibUpdates(Auto: boolean): Boolean;
@@ -2429,8 +2450,73 @@ begin
 
   DMUser.tblGroupList.Locate('Id',Data.ID,[]);
 
+  lblGroups.Caption := DMUser.tblGroupListName.Value;
+
   FillBooksTree(0,tvBooksF,Nil,DMUser.tblGrouppedBooks,true, true);
 
+end;
+
+procedure TfrmMain.tvGroupsDragDrop(Sender: TBaseVirtualTree; Source: TObject;
+  DataObject: IDataObject; Formats: TFormatArray; Shift: TShiftState;
+  Pt: TPoint; var Effect: Integer; Mode: TDropMode);
+
+var
+  Nodes: TNodeArray;
+  i: Integer;
+
+  Data: PGenreData;
+  BookData: PBookData;
+
+  Node : PvirtualNode;
+begin
+  Nodes := nil;
+  Data := tvGroups.GetNodeData(tvGroups.DropTargetNode);
+  Nodes := tvBooksF.GetSortedSelection(False);
+
+  // сканируем выделенные ноды.
+  // если есть потомки, выделяем их тоже
+  for i := 0 to High(Nodes) do
+  begin
+    if Nodes[i].ChildCount >0 then
+    begin
+      Node := Nodes[i].FirstChild;
+      while Node <> Nodes[i].LastChild do
+      begin
+        tvBooksF.Selected[Node] := True;
+        Node := tvBooksF.GetNext(Node,True);
+      end;
+      tvBooksF.Selected[Node] := True;
+    end;
+  end;
+
+  // составляем новый список выделенных
+  Nodes := tvBooksF.GetSortedSelection(False);
+
+  // переносим данные
+  for i := 0 to High(Nodes) do
+  begin
+    BookData := tvBooksF.GetNodeData(Nodes[i]);
+    if (BookData.nodeType = ntBookInfo) and
+       (DMUser.tblGrouppedBooks.Locate('ID',BookData.ID,[])) then
+    begin
+      DMUser.tblGrouppedBooks.Edit;
+      DMUser.tblGrouppedBooksGroupID.Value := Data.ID;
+      DMUser.tblGrouppedBooks.Post;
+    end;
+  end;
+  FillBooksTree(0,tvBooksF,Nil,DMUser.tblGrouppedBooks,true, true);
+end;
+
+procedure TfrmMain.tvGroupsDragOver(Sender: TBaseVirtualTree; Source: TObject;
+  Shift: TShiftState; State: TDragState; Pt: TPoint; Mode: TDropMode;
+  var Effect: Integer; var Accept: Boolean);
+var
+  Data : PGroupData;
+begin
+  Data := tvGroups.GetNodeData(tvGroups.DropTargetNode);
+  if Data <> nil then
+    if Data.ID <> DMUser.tblGroupListID.Value then
+      Accept := True;
 end;
 
 procedure TfrmMain.tvGroupsGetNodeDataSize(Sender: TBaseVirtualTree;
@@ -2446,7 +2532,6 @@ var
 begin
   Data := Sender.GetNodeData(Node);
   Assert(Assigned(Data));
-
   CellText := Data.Text;
 end;
 
@@ -4265,6 +4350,8 @@ var
   Tree: TVirtualStringTree;
   i, ID, Max: integer;
   Data: PBookData;
+  GroupData: PGroupData;
+
   Node: PVirtualNode;
 begin
   GetActiveTree(Tree);
@@ -4344,7 +4431,14 @@ begin
   dmCollection.tblBooks.EnableControls;
   DMUser.tblGrouppedBooks.EnableControls;
   Screen.Cursor := crDefault;
-  FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True); // жанры
+
+  // если выделенная группа совпадает с той, куда добавляем книги, нужно перерисовать список
+  if (tvGroups.SelectedCount > 0) then
+  begin
+    GroupData := tvGroups.GetNodeData(tvGroups.FocusedNode);
+    if GroupData.ID = DMUser.tblGroupListID.Value then
+      FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True); // жанры
+  end;
 end;
 
 procedure TfrmMain.miAddToSearchClick(Sender: TObject);
@@ -4791,10 +4885,10 @@ begin
 
     Table := GetActiveBookTable(Tree.Tag);
 
-    if Tree.GetFirstSelected = nil then
+    if Tree.FocusedNode= nil then
       Exit;
 
-    Data := Tree.GetNodeData(Tree.GetFirstSelected);
+    Data := Tree.GetNodeData(Tree.FocusedNode);
     if not Assigned(Data) then
       Exit;
 
@@ -4856,7 +4950,7 @@ var
   Node: PVirtualNode;
 begin
   GetactiveTree(Tree);
-  Node := Tree.GetFirstSelected;
+  Node := Tree.FocusedNode;
   Data := Tree.GetNodeData(Node);
   if not Assigned(Data) or (Data.nodeType <> ntBookInfo) then
     Exit;
@@ -4938,7 +5032,7 @@ var
 begin
   GetActiveTree(Tree);
 
-  Node := Tree.GetFirstSelected;
+  Node := Tree.FocusedNode;
   Assert(Assigned(Node));
 
   Data := Tree.GetNodeData(Node);
@@ -5077,7 +5171,7 @@ procedure TfrmMain.mi_dwnl_LocateAuthorClick(Sender: TObject);
 var
   Data: PDownloadData;
 begin
-  Data := tvDownloadList.GetNodeData(tvDownloadList.GetFirstSelected);
+  Data := tvDownloadList.GetNodeData(tvDownloadList.FocusedNode);
   if Data <> nil then
   begin
     pgControl.ActivePageIndex := 0;
