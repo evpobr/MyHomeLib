@@ -10,7 +10,7 @@
 {                                                                              }
 {******************************************************************************}
 
-unit unit_ImportLibRusEcThread;
+unit unit_ImportInpxThread;
 
 interface
 

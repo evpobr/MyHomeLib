@@ -60,7 +60,7 @@ uses
   frm_ImportProgressFormEx in 'ImportImpl\frm_ImportProgressFormEx.pas' {ImportProgressFormEx},
   unit_ImportFB2ThreadBase in 'ImportImpl\unit_ImportFB2ThreadBase.pas',
   unit_ImportFB2ZIPThread in 'ImportImpl\unit_ImportFB2ZIPThread.pas',
-  unit_ImportLibRusEcThread in 'ImportImpl\unit_ImportLibRusEcThread.pas',
+  unit_ImportInpxThread in 'ImportImpl\unit_ImportInpxThread.pas',
   unit_ExportXMLThread in 'ImportImpl\unit_ExportXMLThread.pas',
   unit_Export in 'ImportImpl\unit_Export.pas',
   frm_ExportProgressForm in 'ImportImpl\frm_ExportProgressForm.pas' {ExportProgressForm},
