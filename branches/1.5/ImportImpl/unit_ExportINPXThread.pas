@@ -42,12 +42,12 @@ uses
   StrUtils,
   dm_collection,
   dm_user,
-  ZipForge
+  ZipForge,
+  unit_Consts
   ;
 
 const
   BOOKS_INFO_FILE = 'books.inp';
-  VERSION_INFO_FILE = 'version.info';
 
 { TImportXMLThread }
 
@@ -135,9 +135,14 @@ begin
     slBooksInfo.Clear;
 
     slBooksInfo.Add(cVersion);
-    slBooksInfo.SaveToFile(Settings.TempPath + VERSION_INFO_FILE);
-    slFileList.Add(Settings.TempPath + VERSION_INFO_FILE);
+    slBooksInfo.SaveToFile(Settings.TempPath + VERINFO_FILENAME);
+    slFileList.Add(Settings.TempPath + VERINFO_FILENAME);
 
+    //Записываем файл structure.info
+    slBooksInfo.Clear;
+    slBooksInfo.Add('AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;INSNO;FOLDER;');
+    slBooksInfo.SaveToFile(Settings.TempPath + STRUCTUREINFO_FILENAME );
+    slFileList.Add(Settings.TempPath + STRUCTUREINFO_FILENAME );
     slBooksInfo.Free;
 
     //Упаковываем файлы в zip-архив и устанавливаем комментарий

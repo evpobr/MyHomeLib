@@ -699,9 +699,9 @@ object DMCollection: TDMCollection
     end
   end
   object dsSeries: TDataSource
-    DataSet = tblAuthors
+    DataSet = tblSeries
     Left = 272
-    Top = 88
+    Top = 96
   end
   object dsAuthorsS: TDataSource
     DataSet = tblAuthorsS
@@ -1670,7 +1670,7 @@ object DMCollection: TDMCollection
       ')'
       'order by s.Title, s.AuthID;')
     Left = 208
-    Top = 88
+    Top = 96
     ParamData = <
       item
         DataType = ftInteger
