@@ -22,22 +22,38 @@ uses
   unit_MHL_xml,
   unit_globals;
 
+
+
 type
+
+  TFields = (flNone,flAuthor, flTitle, flSeries, flSerNo, flGenre, flLibID, flInsideNo, flFile,
+             flFolder, flExt, flSize, flLang, flDate, flCode, flDeleted, flRate, flURI);
+
+  TFieldDescr = record
+                   Code: string;
+                  FType: TFields;
+  end;
+
   TImportLibRusEcThread = class(TWorker)
   private
+
     FDBFileName: string;
     FCollectionRoot: string;
     FCollectionType: Integer;
     FInpxFileName: string;
 
+    FFields: array of TFields;
+
+    FPersonalFolder: boolean;
+
     FVersion: integer;
 
     procedure SetCollectionRoot(const Value: string);
-
+    procedure  ParseData(input: WideString; var R: TBookRecord);
 
   protected
     procedure WorkFunction; override;
-
+    procedure GetFields;
   public
     function Import:integer;
 
@@ -58,6 +74,28 @@ uses
 
 type
   INPXType = (inpUnknown, inpFormat_10, inpFormat_11);
+
+const
+
+  FieldsDescr: array [1..17] of  TFieldDescr= (
+    (Code:'AUTHOR'; FType: flAuthor),
+    (Code:'TITLE';  FType:  flTitle),
+    (Code:'SERIES'; FType:  flSeries),
+    (Code:'SERNO';  FType:  flSerNo),
+    (Code:'GENRE';  FType:  flGenre),
+    (Code:'LIBID';  FType:   flLibID),
+    (Code:'INSNO';  FType:  flInsideNo),
+    (Code:'FILE';   FType:  flFile),
+    (Code:'FOLDER'; FType: flFolder),
+    (Code:'EXT';    FType:   flExt),
+    (Code:'SIZE';   FType:   flSize),
+    (Code:'LANG';   FType:  flLang),
+    (Code:'DATE';   FType:  flDate),
+    (Code:'CODE';   FType:  flCode),
+    (Code:'DEL';    FType:  flDeleted),
+    (Code:'RATE';   FType: flRate),
+    (Code:'URI';    FType:  flURI)
+  );
 
 { TImportLibRusEcThread }
 
@@ -103,11 +141,11 @@ begin
 end;
 
 
-function ParseData(input: WideString; var R: TBookRecord): INPXType;
+procedure TImportLibRusEcThread.ParseData(input: WideString; var R: TBookRecord);
 const
   DelimiterChar = Chr(4);
 var
-  p: integer;
+  p,i: integer;
   slParams: TStringList;
   nParamsCount : Integer;
   AuthorList: string;
@@ -117,136 +155,140 @@ var
   GenreList: string;
   s: string;
   mm, dd, yy: word;
-  inpType : INPXType;
+
+  Max : integer;
+
 begin
-  Result := inpUnknown;
 
   R.Clear;
-
   slParams := TStringList.Create;
   try
-    nParamsCount := 0;
-    if ParseString(input, DelimiterChar, slParams) then
-      nParamsCount := slParams.Count
+    ParseString(input, DelimiterChar, slParams);
+
+    // -- костыль
+    if slParams.Count < High(FFields) then
+      Max := slParams.Count - 1
     else
-      nParamsCount := -1;
+      Max := High(FFields);
+    //--
 
-//    slParams.Delimiter := DelimiterChar;
-//    slParams.StrictDelimiter := True;
-//    slParams.DelimitedText := input;
+    for i := 0 to Max do
+      case FFields[i] of
+        flAuthor: begin                                       // Список авторов
+                    AuthorList := slParams[i];
+                    p := PosChr(':', AuthorList);
+                    while p <> 0 do
+                    begin
+                      s := Copy(AuthorList, 1, p - 1);
+                      Delete(AuthorList, 1, p);
 
-    //
-    // Инициализация формата инп-файла неизвестным значением
-    //
-    inpType := inpUnknown;
-    //
-    // Всего 11 полей, но (!!!) при разборе в список попадет еще одно (12-е) значение,
-    // т к строка оканчивается разделителем
-    //
-    if slParams.Count in [11,12] then
-      inpType := inpFormat_10;
-    if slParams.Count in [13,14] then
-      inpType := inpFormat_11;
+                      p := PosChr(',', s);
+                      strLastName := Copy(s, 1, p - 1);
+                      Delete(S, 1, p);
 
-    if inpType <> inpUnknown then
-    begin
-      //
-      // Список авторов
-      //
-      AuthorList := slParams[0];
-      p := PosChr(':', AuthorList);
-      while p <> 0 do
-      begin
-        s := Copy(AuthorList, 1, p - 1);
-        Delete(AuthorList, 1, p);
+                      p := PosChr(',', s);
+                      strFirstName := Copy(s, 1, p - 1);
+                      Delete(S, 1, p);
 
-        p := PosChr(',', s);
-        strLastName := Copy(s, 1, p - 1);
-        Delete(S, 1, p);
+                      strMidName := S;
 
-        p := PosChr(',', s);
-        strFirstName := Copy(s, 1, p - 1);
-        Delete(S, 1, p);
+                      R.AddAuthor(strLastName, strFirstName, strMidName);
 
-        strMidName := S;
+                      p := PosChr(':', AuthorList);
+                    end;
+                  end;
+        flGenre: begin                                         // Список жанров
+                   GenreList := slParams[i];
+                   p := PosChr(':', GenreList);
+                   while p <> 0 do
+                   begin
+                     R.AddGenre('', Copy(GenreList, 1, p - 1), '');
+                     Delete(GenreList, 1, p);
+                     p := PosChr(':', GenreList);
+                    end;
+                 end;
+        flTitle:  R.Title := slParams[i];                        // Название
+        flSeries: R.Series := slParams[i];                       // Серия
+        flSerNo:  R.SeqNumber := StrToIntDef(slParams[i], 0);    // Номер внутри серии
+        flFile:   R.FileName := CheckSymbols(Trim(slParams[i])); // Имя файла
+        flExt:    R.FileExt := '.' + slParams[i];                // Тип
+        flSize:   R.Size := StrToIntDef(slParams[i], 0);         // Размер
+        flLibID:  R.LibID := StrToIntDef(slParams[i], 0);        // внутр. номер
+        flDeleted:R.Deleted := (slParams[i] = '1');              // удалена
+        flDate:   begin                                          // дата
+                    if slParams[i] <> '' then
+                    begin
+                      yy := StrToInt(Copy(slParams[i], 1, 4));
+                      mm := StrToInt(Copy(slParams[i], 6, 2));
+                      dd := StrToInt(Copy(slParams[i], 9, 2));
+                      R.Date := EncodeDate(yy, mm, dd);
+                    end
+                    else R.Date:=now;
+                  end;
 
-        R.AddAuthor(strLastName, strFirstName, strMidName);
+        flInsideNo:  R.InsideNo := StrToInt(slParams[i]);        // номер в архиве
+        flFolder:    R.Folder := slParams[i];                    // папка
 
-        p := PosChr(':', AuthorList);
-      end;
-
-      //
-      // Список жанров
-      //
-      GenreList := slParams[1];
-      p := PosChr(':', GenreList);
-      while p <> 0 do
-      begin
-        R.AddGenre('', Copy(GenreList, 1, p - 1), '');
-        Delete(GenreList, 1, p);
-
-        p := PosChr(':', GenreList);
-      end;
-
-      //
-      // Название
-      //
-      R.Title := slParams[2];
-
-      //
-      // Серия
-      //
-      R.Series := slParams[3];
-
-      //
-      // Номер внутри серии
-      //
-      R.SeqNumber := StrToIntDef(slParams[4], 0);
-
-      //
-      // Имя файла, размер, ????, признак удаленной книги
-      //
-      R.FileName := CheckSymbols(Trim(slParams[5]));
-      R.Size := StrToIntDef(slParams[6], 0);
-      R.LibID := StrToIntDef(slParams[7], 0);
-      R.Deleted := (slParams[8] = '1');
-
-      R.FileExt := '.' + slParams[9];
-
-      //
-      //
-      //
-      if slParams[10] <> '' then
-      begin
-        yy := StrToInt(Copy(slParams[10], 1, 4));
-        mm := StrToInt(Copy(slParams[10], 6, 2));
-        dd := StrToInt(Copy(slParams[10], 9, 2));
-        R.Date := EncodeDate(yy, mm, dd);
-      end;
-      // else R.Date:=now;
-
-      //
-      // Дополнительные два поля, введённых в формат
-      //
-      if inpType = inpFormat_11 then begin
-        //
-        // Внутренний индекс файла в архиве
-        //
-        R.InsideNo := StrToInt(slParams[11]);
-        //
-        // Имя папки/корневого архива файла книги
-        // Может быть опущено, в этом случае имя формируется по старому алгоритму
-        //
-        if slParams[12] <> '' then
-          R.Folder := slParams[12];
-      end;
-
-      R.Normalize;
-
-      Result := inpType;
-    end;
+    end; // case, for
+    R.Normalize;
   finally
     slParams.Free;
+  end;
+end;
+
+procedure TImportLibRusEcThread.GetFields;
+const
+  del = ';';
+  Default = 'AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;';
+  FN = 'structure.info';
+
+var
+  S: string;
+  p, i: integer;
+  F: text;
+
+  function FindType(S:string): TFields;
+  var
+    F: TFieldDescr;
+  begin
+    for F in FieldsDescr do
+      if F.Code = S then
+      begin
+        Result := F.FType;
+        Break;
+      end;
+  end;
+
+
+begin
+
+  S := '';
+  if FileExists(Settings.TempPath + FN) then
+  begin
+    AssignFile(F,Settings.TempPath + FN);
+    Reset(F);
+    Read(F,S);
+    CloseFile(F);
+
+    DeleteFile(Settings.TempPath + FN);
+  end;
+
+  if S = '' then S := Default;
+
+  // код
+  SetLength(FFields,0);
+  i :=0;
+  p := pos(del,S);
+  while p <> 0 do
+  begin
+    SetLength(FFields,i + 1);
+    FFields[i] := FindType(copy(S,1,p - 1));
+    Delete(S,1,p);
+    p := pos(del,S);
+
+    FPersonalFolder := (FFields[i]=flFolder);
+
+    inc(i);
   end;
 end;
 
@@ -267,6 +309,7 @@ var
 begin
   filesProcessed := 0;
   i := 0;
+  SetProgress(0);
   FLibrary := TMHLLibrary.Create(nil);
   try
     FLibrary.DatabaseFileName := DBFileName;
@@ -280,16 +323,12 @@ begin
       unZip.FileName := FInpxFileName;
       unZip.OpenArchive;
       unZip.ExtractFiles('*.*');
+      GetFields;
       try
         BookList := TStringListEx.Create;
         if (unZip.FindFirst('*.inp',ArchItem,faAnyFile-faDirectory)) then
         repeat
-          //
-          // Используем TStringListEx для чтения UTF8 файла
-          //
-
           CurrentFile:= ArchItem.FileName;
-
           if not(isOnlineCollection(CollectionType)) and
             ( CurrentFile = 'extra.inp')
             then Continue;
@@ -298,68 +337,35 @@ begin
           BookList.LoadFromFile(Settings.TempPath + CurrentFile,TEncoding.UTF8);
           for j := 0 to BookList.Count - 1 do
           begin
-            case ParseData(BookList[j], R) of
-              inpFormat_10: begin
-                if isOnlineCollection(CollectionType) then
-                begin
-                  //
-                  // И\Иванов Иван\1234 Просто книга.fb2.zip
-                  //
-                  R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;
-
-                  //
-                  // Сохраним отметку о существовании файла
-                  //
-                  R.Local := FileExists(FCollectionRoot + R.Folder);
-                end
-                else
-                begin
-                  //
-                  // 98058-98693.inp -> 98058-98693.zip
-                  //
-                  R.Folder := ChangeFileExt(CurrentFile, ZIP_EXTENSION);
-                  //
-                  // номер файла внутри zip-а
-                  //
-                  R.InsideNo := j;
-                end;
-
-                FLibrary.InsertBook(R);
-              end;
-              inpFormat_11: begin
-                if isOnlineCollection(CollectionType) then
-                begin
-                  //
-                  // И\Иванов Иван\1234 Просто книга.fb2.zip
-                  //
-                  R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;
-
-                  //
-                  // Сохраним отметку о существовании файла
-                  //
-                  R.Local := FileExists(FCollectionRoot + R.Folder);
-                end;
-
-                //
-                // Для локальной коллекции данные по имени архива и индексу файла в нём
-                // заполнены в функции ParseData.
-                // Если в INPX-файле опущено поле Folder, генерируем его по старому алгоритму
-                //
-                if R.Folder = '' then
-                  R.Folder := ChangeFileExt(CurrentFile, ZIP_EXTENSION);
-
-                FLibrary.InsertBook(R);
-              end;
+            ParseData(BookList[j], R);
+            if isOnlineCollection(CollectionType) then
+            begin
+              // И\Иванов Иван\1234 Просто книга.fb2.zip
+              R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;
+              // Сохраним отметку о существовании файла
+              R.Local := FileExists(FCollectionRoot + R.Folder);
+            end
             else
-              ; // Если резузьтат разбора - inpUnknown, не делаем ничего
+            begin
+              if not FPersonalFolder then
+              begin
+                // 98058-98693.inp -> 98058-98693.zip
+                R.Folder := ChangeFileExt(CurrentFile, ZIP_EXTENSION);
+                //
+                R.InsideNo := j;
+              end
+              else
+                R.InsideNo := 0;
             end;
-
+            FLibrary.InsertBook(R);
             Inc(filesProcessed);
             if (filesProcessed mod ProcessedItemThreshold) = 0 then
-                SetComment(Format('Добавлено %u книг', [filesProcessed]));
-          end; // for
+            begin
+              SetProgress(round((i + j/BookList.Count) * 100 / unZip.FileCount));
+              SetComment(Format('Добавлено %u книг', [filesProcessed]));
+            end;
+          end;
           inc(i);
-          SetProgress((i + 1) * 100 div unZip.FileCount);
           if Canceled then
             Break;
         until (not unZip.FindNext(ArchItem));

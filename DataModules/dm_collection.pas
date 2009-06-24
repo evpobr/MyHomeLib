@@ -304,8 +304,8 @@ begin
   R.Clear;
 
   R.Title := tblBooksTitle.Value;
-//  R.Series := IfThen(tblBooksSerID.IsNull, NO_SERIES_TITLE, tblBooksSeries.Value);
-//  R.SeqNumber := tblBooksSeqNumber.Value;
+  R.Series := IfThen(tblBooksSerID.IsNull, NO_SERIES_TITLE, tblBooksSeries.Value);
+  R.SeqNumber := tblBooksSeqNumber.Value;
   R.Folder := tblBooksFolder.Value;
   R.FileName := tblBooksFileName.Value;
   R.FileExt := tblBooksExt.Value;

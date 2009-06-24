@@ -110,7 +110,7 @@ uses
   unit_Settings,
   unit_globals,
   unit_ImportXMLThread,
-  unit_ImportLibRusEcThread,
+  unit_ImportInpxThread,
   unit_Consts,
   unit_mhl_strings;
 
@@ -132,7 +132,6 @@ const
 destructor TfrmNCWizard.Destroy;
 begin
   CloseWorker;
-
   inherited;
 end;
 

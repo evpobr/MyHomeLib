@@ -4,7 +4,7 @@ interface
 uses
   Classes,
   SysUtils,
-  unit_ImportLibRusEcThread,
+  unit_ImportInpxThread,
   unit_Globals,
   Dialogs,
   ABSMain,

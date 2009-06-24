@@ -48,7 +48,8 @@ const
   EXTRA_UPDATE_FILENAME = 'extra_update.zip';
   LIBRUSEC_UPDATEVERINFO_FILENAME = 'last_collection.info';
   EXTRA_UPDATEVERINFO_FILENAME = 'extra_collection.info';
-  LIBRUSEC_VERINFO_FILENAME = 'version.info';
+  VERINFO_FILENAME = 'version.info';
+  STRUCTUREINFO_FILENAME = 'structure.info';
   PROGRAM_VERINFO_FILENAME = 'last_version.info';
 
   //
