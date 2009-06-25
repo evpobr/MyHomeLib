@@ -161,7 +161,7 @@ object DMCollection: TDMCollection
       FieldKind = fkLookup
       FieldName = 'Rate'
       LookupDataSet = DMUser.tblRates
-      LookupKeyFields = 'ID'
+      LookupKeyFields = 'BookID'
       LookupResultField = 'Rate'
       KeyFields = 'ID'
       Lookup = True
@@ -200,6 +200,15 @@ object DMCollection: TDMCollection
     end
     object tblBooksADeleted: TBooleanField
       FieldName = 'Deleted'
+    end
+    object tblBooksAProgress: TSmallintField
+      FieldKind = fkLookup
+      FieldName = 'Progress'
+      LookupDataSet = DMUser.tblFinished
+      LookupKeyFields = 'BookID'
+      LookupResultField = 'Progress'
+      KeyFields = 'ID'
+      Lookup = True
     end
   end
   object tblBooksG: TABSTable
@@ -355,7 +364,7 @@ object DMCollection: TDMCollection
       FieldKind = fkLookup
       FieldName = 'Rate'
       LookupDataSet = DMUser.tblRates
-      LookupKeyFields = 'ID'
+      LookupKeyFields = 'BookID'
       LookupResultField = 'Rate'
       KeyFields = 'ID'
       Lookup = True
@@ -391,6 +400,15 @@ object DMCollection: TDMCollection
     end
     object tblBooksGLocal: TBooleanField
       FieldName = 'Local'
+    end
+    object tblBooksGProgress: TSmallintField
+      FieldKind = fkLookup
+      FieldName = 'Progress'
+      LookupDataSet = DMUser.tblFinished
+      LookupKeyFields = 'BookID'
+      LookupResultField = 'Progress'
+      KeyFields = 'ID'
+      Lookup = True
     end
     object tblBooksGDeleted: TBooleanField
       FieldName = 'Deleted'
@@ -657,7 +675,7 @@ object DMCollection: TDMCollection
       FieldKind = fkLookup
       FieldName = 'Rate'
       LookupDataSet = DMUser.tblRates
-      LookupKeyFields = 'ID'
+      LookupKeyFields = 'BookID'
       LookupResultField = 'Rate'
       KeyFields = 'ID'
       Lookup = True
@@ -693,6 +711,15 @@ object DMCollection: TDMCollection
     end
     object tblBooksSLocal: TBooleanField
       FieldName = 'Local'
+    end
+    object tblBooksSProgress: TSmallintField
+      FieldKind = fkLookup
+      FieldName = 'Progress'
+      LookupDataSet = DMUser.tblFinished
+      LookupKeyFields = 'BookID'
+      LookupResultField = 'Progress'
+      KeyFields = 'ID'
+      Lookup = True
     end
     object tblBooksSDeleted: TBooleanField
       FieldName = 'Deleted'
@@ -1144,15 +1171,6 @@ object DMCollection: TDMCollection
     object tblBooksDeleted: TBooleanField
       FieldName = 'Deleted'
     end
-    object tblBooksRate: TIntegerField
-      FieldKind = fkLookup
-      FieldName = 'Rate'
-      LookupDataSet = DMUser.tblRates
-      LookupKeyFields = 'ID'
-      LookupResultField = 'Rate'
-      KeyFields = 'ID'
-      Lookup = True
-    end
     object tblBooksSeries: TWideStringField
       DisplayWidth = 255
       FieldKind = fkLookup
@@ -1162,6 +1180,24 @@ object DMCollection: TDMCollection
       LookupResultField = 'Title'
       KeyFields = 'SerID'
       Size = 255
+      Lookup = True
+    end
+    object tblBooksProgress: TSmallintField
+      FieldKind = fkLookup
+      FieldName = 'Progress'
+      LookupDataSet = DMUser.tblFinished
+      LookupKeyFields = 'BookID'
+      LookupResultField = 'Progress'
+      KeyFields = 'ID'
+      Lookup = True
+    end
+    object tblBooksRate: TIntegerField
+      FieldKind = fkLookup
+      FieldName = 'Rate'
+      LookupDataSet = DMUser.tblRates
+      LookupKeyFields = 'BookID'
+      LookupResultField = 'Rate'
+      KeyFields = 'ID'
       Lookup = True
     end
   end

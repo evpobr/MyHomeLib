@@ -3,7 +3,7 @@ object DMUser: TDMUser
   Height = 377
   Width = 463
   object DBUser: TABSDatabase
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'UserData'
     Exclusive = False
     MaxConnections = 5
@@ -18,7 +18,7 @@ object DMUser: TDMUser
     Top = 256
   end
   object tblBases: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
@@ -70,7 +70,7 @@ object DMUser: TDMUser
     end
   end
   object tblRates: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
@@ -89,8 +89,7 @@ object DMUser: TDMUser
     FieldDefs = <
       item
         Name = 'ID'
-        Attributes = [faRequired]
-        DataType = ftInteger
+        DataType = ftAutoInc
       end
       item
         Name = 'BookID'
@@ -118,8 +117,11 @@ object DMUser: TDMUser
     ExportToSqlOptions.FieldNamesInInserts = True
     Left = 320
     Top = 56
-    object tblRatesID: TIntegerField
+    object tblRatesID: TAutoIncField
       FieldName = 'ID'
+    end
+    object tblRatesBookID: TIntegerField
+      FieldName = 'BookID'
       Required = True
     end
     object tblRatesDataBaseID: TIntegerField
@@ -136,11 +138,11 @@ object DMUser: TDMUser
   end
   object dsBases: TDataSource
     DataSet = tblBases
-    Left = 16
-    Top = 192
+    Left = 72
+    Top = 128
   end
   object tblGrouppedBooks: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
@@ -159,20 +161,19 @@ object DMUser: TDMUser
         Name = 'File_Index'
         Fields = 'FileName'
       end>
-    IndexFieldNames = 'GroupID'
+    IndexName = 'FullName_Index'
     FieldDefs = <
+      item
+        Name = 'ID'
+        DataType = ftAutoInc
+      end
       item
         Name = 'GroupID'
         Attributes = [faRequired]
         DataType = ftInteger
       end
       item
-        Name = 'InnerID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'ID'
-        Attributes = [faRequired]
+        Name = 'OuterID'
         DataType = ftInteger
       end
       item
@@ -259,6 +260,10 @@ object DMUser: TDMUser
       item
         Name = 'Rate'
         DataType = ftInteger
+      end
+      item
+        Name = 'Progress'
+        DataType = ftSmallint
       end>
     TableName = 'GroupedBooks'
     Exclusive = False
@@ -266,16 +271,15 @@ object DMUser: TDMUser
     MasterSource = dsGroupList
     Left = 144
     Top = 256
+    object tblGrouppedBooksID: TAutoIncField
+      FieldName = 'ID'
+    end
     object tblGrouppedBooksGroupID: TIntegerField
       FieldName = 'GroupID'
       Required = True
     end
-    object tblGrouppedBooksInnerID: TAutoIncField
-      FieldName = 'InnerID'
-    end
-    object tblGrouppedBooksID: TIntegerField
-      FieldName = 'ID'
-      Required = True
+    object tblGrouppedBooksOuterID: TIntegerField
+      FieldName = 'OuterID'
     end
     object tblGrouppedBooksSerID: TIntegerField
       FieldName = 'SerID'
@@ -342,6 +346,9 @@ object DMUser: TDMUser
     end
     object tblGrouppedBooksRate: TIntegerField
       FieldName = 'Rate'
+    end
+    object tblGrouppedBooksProgress: TSmallintField
+      FieldName = 'Progress'
     end
   end
   object SeverityImages: TImageList
@@ -1034,7 +1041,7 @@ object DMUser: TDMUser
     Top = 184
   end
   object tblFinished: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
@@ -1042,9 +1049,26 @@ object DMUser: TDMUser
     Exclusive = False
     Left = 320
     Top = 120
+    object tblFinishedID: TAutoIncField
+      FieldName = 'ID'
+    end
+    object tblFinishedBookID: TIntegerField
+      FieldName = 'BookID'
+      Required = True
+    end
+    object tblFinishedDataBaseID: TIntegerField
+      FieldName = 'DataBaseID'
+      Required = True
+    end
+    object tblFinishedProgress: TIntegerField
+      FieldName = 'Progress'
+    end
+    object tblFinishedDate: TDateField
+      FieldName = 'Date'
+    end
   end
   object tblGroupList: TABSTable
-    CurrentVersion = '6.01 '
+    CurrentVersion = '6.02 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False

@@ -41,19 +41,31 @@ type
     dsBases: TDataSource;
 
     tblRates: TABSTable;
-    tblRatesID: TIntegerField;
-    tblRatesDataBaseID: TIntegerField;
-    tblRatesRate: TIntegerField;
-    tblRatesDate: TDateField;
     tblGrouppedBooks: TABSTable;
     dsGroupedBooks: TDataSource;
     SeverityImages: TImageList;
     SeverityImagesBig: TImageList;
     dsGroupList: TDataSource;
     tblFinished: TABSTable;
+    tblGroupList: TABSTable;
+    tblGroupListID: TAutoIncField;
+    tblGroupListName: TWideStringField;
+    tblGroupListAllowDelete: TBooleanField;
+    tblGroupListNotes: TMemoField;
+    tblGroupListIcon: TBlobField;
+    tblRatesID: TAutoIncField;
+    tblRatesBookID: TIntegerField;
+    tblRatesDataBaseID: TIntegerField;
+    tblRatesRate: TIntegerField;
+    tblRatesDate: TDateField;
+    tblFinishedID: TAutoIncField;
+    tblFinishedBookID: TIntegerField;
+    tblFinishedDataBaseID: TIntegerField;
+    tblFinishedProgress: TIntegerField;
+    tblFinishedDate: TDateField;
+    tblGrouppedBooksID: TAutoIncField;
     tblGrouppedBooksGroupID: TIntegerField;
-    tblGrouppedBooksInnerID: TAutoIncField;
-    tblGrouppedBooksID: TIntegerField;
+    tblGrouppedBooksOuterID: TIntegerField;
     tblGrouppedBooksSerID: TIntegerField;
     tblGrouppedBooksSeqNumber: TSmallintField;
     tblGrouppedBooksDatabaseID: TIntegerField;
@@ -73,12 +85,7 @@ type
     tblGrouppedBooksGenres: TWideStringField;
     tblGrouppedBooksSeries: TWideStringField;
     tblGrouppedBooksRate: TIntegerField;
-    tblGroupList: TABSTable;
-    tblGroupListID: TAutoIncField;
-    tblGroupListName: TWideStringField;
-    tblGroupListAllowDelete: TBooleanField;
-    tblGroupListNotes: TMemoField;
-    tblGroupListIcon: TBlobField;
+    tblGrouppedBooksProgress: TSmallintField;
 
   private
     FCollection: TMHLCollection;
@@ -127,6 +134,9 @@ type
 
     function FindFirstCollection: Boolean;
     function FindNextCollection: Boolean;
+
+    procedure SetRate(ID,Rate: integer);
+    procedure SetFinished(ID, Progress: integer);
 
   end;
 
@@ -188,6 +198,10 @@ var
   DMUser: TDMUser;
 
 implementation
+
+uses
+   Variants;
+
 
 resourcestring
   rstrNamelessColection = 'безымянная коллекция';
@@ -331,6 +345,46 @@ begin
   end;
 
   Result := False;
+end;
+
+procedure TDMUser.SetFinished(ID, Progress: integer);
+begin
+  if not tblRates.Locate('DataBaseID;BookID',
+           VarArrayOf([ActiveCollection.ID, ID]), []) then
+  begin
+    DMUser.tblFinished.Insert;
+    DMUser.tblFinishedBookId.Value := ID;
+    DMUser.tblFinishedProgress.Value := Progress;
+    DMUser.tblFinishedDataBaseID.Value := DMUser.ActiveCollection.ID;
+    DMUser.tblFinishedDate.Value := Now;
+    DMUser.tblFinished.Post;
+  end
+  else
+  begin
+    DMUser.tblFinished.Edit;
+    DMUser.tblFinishedProgress.Value := Progress;
+    DMUser.tblFinished.Post;
+  end;
+end;
+
+procedure TDMUser.SetRate(ID, Rate: integer);
+begin
+  if not tblRates.Locate('DataBaseID;BookID',
+           VarArrayOf([ActiveCollection.ID, ID]), []) then
+  begin
+    DMUser.tblRates.Insert;
+    DMUser.tblRatesBookId.Value := ID;
+    DMUser.tblRatesRate.Value := Rate;
+    DMUser.tblRatesDataBaseID.Value := DMUser.ActiveCollection.ID;
+    DMUser.tblRatesDate.Value := Now;
+    DMUser.tblRates.Post;
+  end
+  else
+  begin
+    DMUser.tblRates.Edit;
+    DMUser.tblRatesRate.Value := Rate;
+    DMUser.tblRates.Post;
+  end;
 end;
 
 procedure TDMUser.SetTableStatus(State: boolean);

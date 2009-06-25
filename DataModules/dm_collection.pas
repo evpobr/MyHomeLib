@@ -147,7 +147,6 @@ type
     tblBooksDiscID: TIntegerField;
     tblBooksLocal: TBooleanField;
     tblBooksDeleted: TBooleanField;
-    tblBooksRate: TIntegerField;
     tblSeriesAID: TAutoIncField;
     tblSeriesAAuthID: TIntegerField;
     tblSeriesAGenreCode: TWideStringField;
@@ -182,6 +181,11 @@ type
     tblSeriesAuthID: TIntegerField;
     tblSeriesTitle: TWideStringField;
     tblSeriesGenreCode: TWideStringField;
+    tblBooksRate: TIntegerField;
+    tblBooksAProgress: TSmallintField;
+    tblBooksSProgress: TSmallintField;
+    tblBooksGProgress: TSmallintField;
+    tblBooksProgress: TSmallintField;
   private
     FActiveTable: TAbsTable;
     { Private declarations }
@@ -192,6 +196,7 @@ type
     procedure SetActiveTable(Tag: integer);
     procedure GetCurrentBook(var R: TBookRecord);
     function GetBookGenres(BookID: Integer; FirstOnly: boolean): String;
+    function GetBookAuthor(BookID: Integer): string;
 
     procedure FieldByName(AID: integer; AField: String; out ARes: String); overload;
     procedure FieldByName(AID: integer; AField: String; out ARes: integer); overload;
@@ -263,6 +268,12 @@ procedure TDMCollection.FieldByName(AID: integer; AField: String; out Ares: bool
 begin
   if AID <> 0 then FActiveTable.Locate('ID', AID, []);
   ARes := FActiveTable.FieldByName(AField).AsBoolean;
+end;
+
+function TDMCollection.GetBookAuthor(BookID: Integer): string;
+begin
+  tblAuthor_Master.Locate('BookID', BookID, []);
+  Result := tblAuthor_DetailFullName.Value;
 end;
 
 procedure TDMCollection.GetBookFileName(ID: integer; out AFile:string;
