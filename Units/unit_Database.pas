@@ -73,6 +73,8 @@ type
     property DatabaseFileName: string read GetDatabaseFileName write SetDatabaseFileName;
     property Active: Boolean read GetActive write SetActive;
 
+    procedure RestructureCollection;
+
   private
     FDatabase: TAbsDataBase;
     FAuthors: TAbsTable;
@@ -612,7 +614,12 @@ begin
   LoadGenres(FileName);
 end;
 
-{ TODO 5 -oNickR -cRefactoring : 
+procedure TMHLLibrary.RestructureCollection;
+begin
+
+end;
+
+{ TODO 5 -oNickR -cRefactoring :
 Более верно (с идеалогической точки зрения) передавать в качестве параметров поле для проверки.
 При этом параметр FileName должен содержать точное значение для поиска
 

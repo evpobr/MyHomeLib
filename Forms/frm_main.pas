@@ -350,6 +350,9 @@ type
     miAddToSearch: TMenuItem;
     miINPXCollectionExport: TMenuItem;
     N38: TMenuItem;
+    N39: TMenuItem;
+    N40: TMenuItem;
+    miSavePersonalData: TMenuItem;
 
     //
     // События формы
@@ -532,6 +535,7 @@ type
     procedure miAddToSearchClick(Sender: TObject);
     procedure miINPXCollectionExportClick(Sender: TObject);
     procedure pmAuthorPopup(Sender: TObject);
+    procedure miSavePersonalDataClick(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -4288,6 +4292,48 @@ begin
   unit_Import.ImportFB2ZIP(DMUser.ActiveCollection);
 
   InitCollection(True);
+end;
+
+procedure TfrmMain.miSavePersonalDataClick(Sender: TObject);
+var
+  SL: TStringList;
+  FN: string;
+begin
+  SL := TStringList.Create;
+  try
+
+    //  Рейтинги
+
+    SL.Add('# Рейтинги');
+    DMUser.tblRates.Filter := 'DataBaseID =' + QuotedStr(IntToStr(DMUser.ActiveCollection.ID));
+    DMUser.tblRates.Filtered := True;
+    DMUser.tblRates.First;
+    while not DMUser.tblRates.Eof do
+    begin
+      SL.Add(Format('%d %d',[DMUser.tblRatesID.Value, DMUser.tblRatesRate.Value]));
+      DMUser.tblRates.Next;
+    end;
+    DMUser.tblRates.Filtered := False;
+
+    //  избранное
+
+    SL.Add('# Избранное');
+    DMUser.tblFavorites.Filter := 'DataBaseID =' + QuotedStr(IntToStr(DMUser.ActiveCollection.ID));
+    DMUser.tblFavorites.Filtered := True;
+    DMUser.tblFavorites.First;
+    while not DMUser.tblFavorites.Eof do
+    begin
+      SL.Add(Format('%d',[DMUser.tblFavoritesInnerID.Value]));
+      DMUser.tblFavorites.Next;
+    end;
+    DMUser.tblFavorites.Filtered := False;
+
+    if GetFileName(fnSaveUserData, FN) then
+          SL.SaveToFile(FN);
+
+  finally
+    SL.Free;
+  end;
 end;
 
 procedure TfrmMain.miSetRateClick(Sender: TObject);
