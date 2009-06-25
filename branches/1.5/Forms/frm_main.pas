@@ -2113,6 +2113,12 @@ begin
 
   frmSplash.lblState.Caption := main_connecttodb;
 
+ //----------------------------------------------------------------------------
+ //  Конвертация старого user.dbs при запуске
+ //----------------------------------------------------------------------------
+// TMHLLibrary.RestructureSystemTables(Settings.SystemFileName[sfSystemDB]);
+
+
   DMUser.DBUser.DatabaseFileName := Settings.SystemFileName[sfSystemDB];
   if not FileExists(DMUser.DBUser.DatabaseFileName) then
     TMHLLibrary.CreateSystemTables(DMUser.DBUser.DatabaseFileName);
@@ -2120,9 +2126,9 @@ begin
   DMUser.DBUser.Connected := True;
   DMUser.tblBases.Active := True;
 
-//------------------------------------------------------------------------------
-//  Проверка обновлений
-//------------------------------------------------------------------------------
+ //------------------------------------------------------------------------------
+ //  Проверка обновлений
+ //------------------------------------------------------------------------------
 
   frmSplash.lblState.Caption := main_check_updates;
   if Settings.CheckUpdate then

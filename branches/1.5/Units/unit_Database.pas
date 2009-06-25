@@ -47,6 +47,7 @@ type
     // Database creation & management
     //
     class procedure CreateSystemTables(const DBFile: string);
+    class procedure RestructureSystemTables(const DBFile: string);
     procedure CreateCollectionTables(const DBFile: string; const GenresFileName: string);
     procedure ReloadDefaultGenres(const FileName: string);
 
@@ -438,6 +439,55 @@ begin
   end;
 end;
 
+procedure RestructureTable(
+  ADatabase: TAbsDataBase;
+  const TableName: string;
+  FieldDesc: array of TFieldDesc;
+  IndexDesc: array of TIndexDesc
+  );
+var
+  TempTable: TAbsTable;
+  i: Integer;
+  S: string;
+begin
+  TempTable := TAbsTable.Create(ADatabase);
+  try
+    TempTable.TableName := TableName;
+
+    for i := 0 to High(FieldDesc) do
+      if TempTable.FieldDefs.IndexOf(FieldDesc[i].Name) = -1 then
+//        TempTable.RestructureFieldDefs.Add(FieldDesc[i].Name,
+//                                 FieldDesc[i].DataType,
+//                                 FieldDesc[i].Size,
+//                                 FieldDesc[i].Required
+//                               );
+
+//    for i := 0 to High(IndexDesc) do
+//      if TempTable.IndexDefs.IndexOf(IndexDesc[i].Name) = -1 then
+//        TempTable.RestructureIndexDefs.Add( IndexDesc[i].Name,
+//                            IndexDesc[i].Fields,
+//                            IndexDesc[i].Options
+//                           );
+    TempTable.RestructureTable(S);
+  finally
+    TempTable.Free;
+  end;
+end;
+
+procedure RenameTable(ADatabase: TAbsDataBase; Old,New: string);
+var
+  TempTable: TAbsTable;
+begin
+  TempTable := TAbsTable.Create(ADatabase);
+  try
+    TempTable.TableName := Old;
+    TempTable.RenameTable(New);
+  finally
+    TempTable.Free;
+  end;
+end;
+
+
 { TMHLLibrary }
 
 procedure TMHLLibrary.CheckActive;
@@ -709,6 +759,51 @@ begin
   LoadGenres(FileName);
 end;
 
+class procedure TMHLLibrary.RestructureSystemTables(const DBFile: string);
+var
+  ADataBase: TAbsDataBase;
+
+  Groups: TAbsTable;
+
+begin
+  ADataBase := TAbsDataBase.Create(nil);
+  try
+    ADataBase.DatabaseFileName := DBFile;
+    ADataBase.DatabaseName := USER_DATABASE;
+    ADataBase.MaxConnections := 5;
+    ADataBase.PageSize := 65535;
+
+    RestructureTable(ADataBase, 'Bases',        BasesTableFields,      BasesTableIndexes);
+    CreateTable(ADataBase,      'GroupsList',   GroupsListTableFields, GroupsListTableIndexes);
+
+    RenameTable(ADataBase,'Favorites','GroupedBooks');
+    RestructureTable(ADataBase, 'GroupedBooks', GroupsTableFields,     GroupsTableIndexes);
+
+    RestructureTable(ADataBase, 'Rates',        RatesTableFields,      RatesTableIndexes);
+    CreateTable(ADataBase, 'Finished',     FinishedTableFields,   FinishedTableIndexes);
+
+    Groups := TAbsTable.Create(ADataBase);
+    Groups.TableName := 'GroupsList';
+    Groups.Active := True;
+
+    Groups.Insert;
+    Groups['Name'] := 'Избранное';
+    Groups['AllowDelete'] := False;
+    Groups.Post;
+
+    Groups.Insert;
+    Groups['Name'] := 'К прочтению';
+    Groups['AllowDelete'] := False;
+    Groups.Post;
+
+
+    ADataBase.Connected := False;
+
+  finally
+    ADataBase.Free;
+  end;
+end;
+
 { TODO 5 -oNickR -cRefactoring :
 Более верно (с идеалогической точки зрения) передавать в качестве параметров поле для проверки.
 При этом параметр FileName должен содержать точное значение для поиска
@@ -818,7 +913,7 @@ begin
   //
   // TODO -cRelease2.0 : Создавать отдельные серии для каждого автора, с возможностью их объединения
   //
-  if (not FSeries.Locate('Title', BookRecord.Series, [])) then
+  if (not FSeries.Locate('Title', BookRecord.Series, [loCaseInsensitive])) then
   begin
     FSeries.Insert;
     FSeries['Title'] := BookRecord.Series;
@@ -832,6 +927,9 @@ begin
   //
   if not FBooks.Locate('FileName', BookRecord.FileName, []) then
   begin
+    ASeqNumber := BookRecord.SeqNumber;
+    if ASeqNumber > 1000 then
+      ASeqNumber := 0;
 
     AFullName := BookRecord.Authors[0].GetFullName;
 
@@ -932,6 +1030,8 @@ begin
     { TODO 5 -oNickR -cBug : Необходимо почистить таблицы Favorites и Rates }
   end;
 end;
+
+
 
 procedure TMHLLibrary.AddBookGenre(BookID: Integer; const GenreCode: string);
 begin
