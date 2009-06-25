@@ -764,7 +764,7 @@ begin
     FUpdateList.Add('Локальная коллекция Либрусек','','last_librusec.info','librusec_update.zip',
                        True,CT_LIBRUSEC_LOCAL_FB);
     FUpdateList.Add('Онлайн коллекция Либрусек','','last_librusec.info','librusec_update.zip',
-                       False,CT_LIBRUSEC_ONLINE_FB);
+                       True,CT_LIBRUSEC_ONLINE_FB);
     FUpdateList.Add('Онлайн коллекция Либрусек','','last_extra.info','extra_update.zip',
                        False,CT_LIBRUSEC_ONLINE_FB);
     FUpdateList.Add('Локальная коллекция Либрусек [USR]','','last_usr.info','usr_update.zip',
