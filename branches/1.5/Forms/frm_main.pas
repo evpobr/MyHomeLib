@@ -117,7 +117,6 @@ type
     miLoadUser: TMenuItem;
     N9: TMenuItem;
     miCollSelect: TMenuItem;
-    N14: TMenuItem;
     miDeleteCol: TMenuItem;
     N18: TMenuItem;
     miStat: TMenuItem;
@@ -365,6 +364,14 @@ type
     RzPanel6: TRzPanel;
     lblBooksTotalF: TRzLabel;
     lblGroups: TRzLabel;
+    N39: TMenuItem;
+    N40: TMenuItem;
+    N41: TMenuItem;
+    N14: TMenuItem;
+    miImportUserData: TMenuItem;
+    N43: TMenuItem;
+    miReaded: TMenuItem;
+    N44: TMenuItem;
 
     //
     // События формы
@@ -561,6 +568,8 @@ type
     procedure tvGroupsDragDrop(Sender: TBaseVirtualTree; Source: TObject;
       DataObject: IDataObject; Formats: TFormatArray; Shift: TShiftState;
       Pt: TPoint; var Effect: Integer; Mode: TDropMode);
+    procedure miImportUserDataClick(Sender: TObject);
+    procedure miReadedClick(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -675,6 +684,7 @@ type
     procedure StartLibUpdate;
     procedure LoadSearchPreset(FN: string);
     procedure CreateGroupsMenu;
+    procedure InsertToGroupTable(ID : integer; Genre: string);
     property ActiveView: TView read GetActiveView;
   end;
 
@@ -1802,6 +1812,7 @@ begin
   DMUser.tblGrouppedBooks.Active := Status;
   DMUser.tblRates.Active := Status;
   DMUser.tblBases.Active := Status;
+  DMUser.tblFinished.Active := Status;
 end;
 
 procedure TfrmMain.btnSwitchTreeModeClick(Sender: TObject);
@@ -2765,13 +2776,16 @@ begin
 
   X := (Sender as TvirtualStringTree).Header.Columns.Items[Column].Left;
 
-  if (Tag = COL_STATE)
-    and isOnlineCollection(DMUser.ActiveCollection.CollectionType)
-    and (Data.Locale)
-  then
+  if (Tag = COL_STATE) then
   begin
-    ilFileTypes.Draw(TargetCanvas, X, CellRect.Top + 2, 5);
+    if isOnlineCollection(DMUser.ActiveCollection.CollectionType)
+        and (Data.Locale)
+    then
+      ilFileTypes.Draw(TargetCanvas, X, CellRect.Top + 2, 5);
+    if Data.Progress = 100 then
+      ilFileTypes.Draw(TargetCanvas, X + 14, CellRect.Top + 1, 6);
   end;
+
 
   { DONE -oNickR :Заменить на звездочки }
   if (Tag = COL_RATE) then
@@ -3678,6 +3692,8 @@ begin
               Data.Series := TableB.FieldByName('Series').AsString;
 
               Data.FullName := TableB.FieldByName('FullName').AsString;
+              Data.Progress := TableB.FieldByName('Progress').AsInteger;
+
 
               if (COL_NO) in Columns then Data.No := TableB.FieldByName('SeqNumber').AsInteger;
 
@@ -4372,6 +4388,9 @@ begin
   Screen.Cursor := crHourglass;
   dmCollection.tblBooks.DisableControls;
   DMUser.tblGrouppedBooks.DisableControls;
+
+  SetUtilTableStatus(True);
+
   Max := Tree.TotalCount;
   Node := Tree.GetFirst;
   i := 0;
@@ -4380,50 +4399,7 @@ begin
   begin
     Data := Tree.GetNodeData(Node);
     if (Data.nodeType = ntBookInfo) and ((Tree.CheckState[Node] = csCheckedNormal) or (Tree.Selected[Node])) then
-    begin
-      ID := Data.ID;
-      dmCollection.tblBooks.Locate('ID', ID, []);
-      if not DMUser.tblGrouppedBooks.Locate('FileName', dmCollection.tblBooksFileName.Value, []) then
-      begin
-        DMUser.tblGrouppedBooks.Insert;
-        DMUser.tblGrouppedBooksID.Value := dmCollection.tblBooksID.Value;
-        DMUser.tblGrouppedBooksDataBaseID.Value := Settings.ActiveCollection;
-        DMUser.tblGrouppedBooksTitle.Value := dmCollection.tblBooksTitle.Value;
-
-        DMUser.tblGrouppedBooksSerID.Value := dmCollection.tblBooksSerID.Value;
-        if dmCollection.tblBooksSeries.IsNull then
-          DMUser.tblGrouppedBooksSeries.Value := NO_SERIES_TITLE
-        else
-          DMUser.tblGrouppedBooksSeries.Value := dmCollection.tblBooksSeries.Value;
-
-        if ActiveView = ByAuthorView then
-          DMUser.tblGrouppedBooksFullName.Value := dmCollection.tblAuthorsFullName.Value
-        else
-          DMUser.tblGrouppedBooksFullName.Value := dmCollection.tblBooksFullName.Value;
-
-        DMUser.tblGrouppedBooksSeqNumber.Value := dmCollection.tblBooksSeqNumber.Value;
-        DMUser.tblGrouppedBooksLibID.Value := dmCollection.tblBooksLibID.Value;
-        DMUser.tblGrouppedBooksSize.Value := dmCollection.tblBooksSize.Value;
-        DMUser.tblGrouppedBooksDeleted.Value := dmCollection.tblBooksDeleted.Value;
-        DMUser.tblGrouppedBooksLocal.Value := dmCollection.tblBooksLocal.Value;
-
-        if not dmCollection.tblBooksFolder.IsNull then
-          DMUser.tblGrouppedBooksFolder.Value := FCollectionRoot + CheckSymbols(dmCollection.tblBooksFolder.Value)
-        else
-          DMUser.tblGrouppedBooksFolder.Value := FCollectionRoot;
-
-        DMUser.tblGrouppedBooksFileName.Value := dmCollection.tblBooksFileName.Value;
-        DMUser.tblGrouppedBooksExt.Value := dmCollection.tblBooksExt.Value;
-        DMUser.tblGrouppedBooksInsideNo.Value := dmCollection.tblBooksInsideNo.Value;
-        DMUser.tblGrouppedBooksGenres.Value := Data.Genre;
-        DMUser.tblGrouppedBooksRate.Value := dmCollection.tblBooksRate.Value;
-        DMUser.tblGrouppedBooksDate.Value := dmCollection.tblBooksDate.Value;
-
-
-
-        DMUser.tblGrouppedBooks.Post;
-      end;
-    end;
+      InsertToGroupTable(Data.ID, Data.Genre);
 
     // Tree.CheckState[Node]:=csUnCheckedNormal;
     Inc(i);
@@ -4436,6 +4412,7 @@ begin
   Selection(False);
   dmCollection.tblBooks.EnableControls;
   DMUser.tblGrouppedBooks.EnableControls;
+  SetUtilTableStatus(False);
   Screen.Cursor := crDefault;
 
   // если выделенная группа совпадает с той, куда добавляем книги, нужно перерисовать список
@@ -4445,7 +4422,50 @@ begin
     if GroupData.ID = DMUser.tblGroupListID.Value then
       FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True); // жанры
   end;
+
+
 end;
+
+procedure TfrmMain.InsertToGroupTable(ID : integer; Genre: string);
+begin
+  dmCollection.tblBooks.Locate('ID', ID, []);
+  if not DMUser.tblGrouppedBooks.Locate('FileName', dmCollection.tblBooksFileName.Value, []) then
+  begin
+    DMUser.tblGrouppedBooks.Insert;
+    DMUser.tblGrouppedBooksOuterID.Value := ID;
+    DMUser.tblGrouppedBooksDataBaseID.Value := Settings.ActiveCollection;
+    DMUser.tblGrouppedBooksTitle.Value := dmCollection.tblBooksTitle.Value;
+
+    DMUser.tblGrouppedBooksSerID.Value := dmCollection.tblBooksSerID.Value;
+
+    if dmCollection.tblBooksSeries.IsNull then
+          DMUser.tblGrouppedBooksSeries.Value := NO_SERIES_TITLE
+        else
+          DMUser.tblGrouppedBooksSeries.Value := dmCollection.tblBooksSeries.Value;
+
+    DMUser.tblGrouppedBooksFullName.Value := dmCollection.GetBookAuthor(ID);
+
+    DMUser.tblGrouppedBooksSeqNumber.Value := dmCollection.tblBooksSeqNumber.Value;
+    DMUser.tblGrouppedBooksLibID.Value := dmCollection.tblBooksLibID.Value;
+    DMUser.tblGrouppedBooksSize.Value := dmCollection.tblBooksSize.Value;
+    DMUser.tblGrouppedBooksDeleted.Value := dmCollection.tblBooksDeleted.Value;
+    DMUser.tblGrouppedBooksLocal.Value := dmCollection.tblBooksLocal.Value;
+
+    if not dmCollection.tblBooksFolder.IsNull then
+          DMUser.tblGrouppedBooksFolder.Value := FCollectionRoot + CheckSymbols(dmCollection.tblBooksFolder.Value)
+        else
+          DMUser.tblGrouppedBooksFolder.Value := FCollectionRoot;
+
+    DMUser.tblGrouppedBooksFileName.Value := dmCollection.tblBooksFileName.Value;
+    DMUser.tblGrouppedBooksExt.Value := dmCollection.tblBooksExt.Value;
+    DMUser.tblGrouppedBooksInsideNo.Value := dmCollection.tblBooksInsideNo.Value;
+    DMUser.tblGrouppedBooksGenres.Value := Genre;
+    DMUser.tblGrouppedBooksRate.Value := dmCollection.tblBooksRate.Value;
+    DMUser.tblGrouppedBooksDate.Value := dmCollection.tblBooksDate.Value;
+    DMUser.tblGrouppedBooks.Post;
+  end;
+end;
+
 
 procedure TfrmMain.miAddToSearchClick(Sender: TObject);
 var
@@ -4515,27 +4535,14 @@ begin
   BookTreeStatus := bsBusy;
   if GetActiveView <> FavoritesView then
   begin
-    if not DMUser.tblRates.Locate('ID', Data.ID, []) then
-    begin
-      DMUser.tblRates.Insert;
-      DMUser.tblRates['ID'] := Data.ID;
-      DMUser.tblRates['Rate'] := Data.Rate;
-      DMUser.tblRates['DataBaseID'] := DMUser.ActiveCollection.ID;
-      DMUser.tblRates['Date'] := Now;
-      DMUser.tblRates.Post;
-    end
-    else
-    begin
-      DMUser.tblRates.Edit;
-      DMUser.tblRates['Rate'] := Data.Rate;
-      DMUser.tblRates.Post;
-    end;
+
+    DMUser.SetRate(Data.ID, Data.Rate);
+
     //
     //  Синхронизация с избранным
     //
-    if (GetActiveView <> FavoritesView ) and
-       (DMUser.tblGrouppedBooks.Locate('InnerId;DataBaseID',
-                                  VarArrayOf([Data.ID,DMUser.ActiveCollection.ID]),[]))
+    if (DMUser.tblGrouppedBooks.Locate('DataBaseID;OuterID',
+                                  VarArrayOf([DMUser.ActiveCollection.ID,Data.ID]),[]))
     then
     begin
       DMUser.tblGrouppedBooks.Edit;
@@ -4546,7 +4553,8 @@ begin
   end
   else // активная вкладка - избранное
   begin
-    DMUser.tblGrouppedBooks.Locate('ID',Data.ID,[]);
+    DMUser.tblGrouppedBooks.Locate('DataBaseID;OuterID;',
+                                    VarArrayOf([DMUser.ActiveCollection.ID,Data.ID]),[]);
     DMUser.tblGrouppedBooks.Edit;
     DMUser.tblGrouppedBooksRate.Value := Data.Rate;
     DMUser.tblGrouppedBooks.Post;
@@ -4555,22 +4563,8 @@ begin
     //  Синхронизация с таблицей рейтингов
     //
 
-    if(DMUser.tblRates.Locate(
-        'ID;DataBaseID', VarArrayOf([DMUser.tblGrouppedBooksInnerID.Value,DMUser.tblGrouppedBooksDatabaseID.Value]),[]))
-    then
-    begin
-      DMUser.tblRates.Edit;
-      DMUser.tblRates['Rate'] := Data.Rate;
-      DMUser.tblRates.Post;
-    end
-    else begin
-      DMUser.tblRates.Insert;
-      DMUser.tblRates['ID'] := DMUser.tblGrouppedBooksInnerID.Value;
-      DMUser.tblRates['Rate'] := Data.Rate;
-      DMUser.tblRates['DataBaseID'] := DMUser.tblGrouppedBooksDatabaseID.Value;
-      DMUser.tblRates['Date'] := Now;
-      DMUser.tblRates.Post;
-    end;
+    DMUser.SetRate(DMUser.tblGrouppedBooksOuterID.Value, DMUser.tblGrouppedBooksDatabaseID.Value);
+
     FillBooksTree(0, tvBooksA, dmCollection.tblAuthor_List, dmCollection.tblBooksA, False, True); // авторы
     FillBooksTree(0, tvBooksS, nil, dmCollection.tblBooksS, False, False); // серии
   end;
@@ -4968,7 +4962,7 @@ begin
     if DMUser.tblRates.Locate('ID;DataBaseID',
           VarArrayOf([Data.ID,DMUser.ActiveCollection.ID]), [])
       then DMUser.tblRates.Delete;
-    if DMUser.tblGrouppedBooks.Locate('InnerID;DataBaseID',
+    if DMUser.tblGrouppedBooks.Locate('OuterID;DataBaseID',
        VarArrayOf([Data.ID,DMUser.ActiveCollection.ID]),[]) then
     begin
       DMUser.tblGrouppedBooks.Edit;
@@ -4985,7 +4979,7 @@ begin
       DMUser.tblGrouppedBooks.Post;
 
       if DMUser.tblRates.Locate('ID;DataBaseID',
-          VarArrayOf([DMUser.tblGrouppedBooksInnerID.Value,DMUser.tblGrouppedBooksDatabaseID.Value]), [])
+          VarArrayOf([DMUser.tblGrouppedBooksOuterID.Value,DMUser.tblGrouppedBooksDatabaseID.Value]), [])
         then begin
           DMUser.tblRates.Delete;
 
@@ -5291,6 +5285,22 @@ begin
   end;
 end;
 
+procedure TfrmMain.miReadedClick(Sender: TObject);
+var
+  Tree: TVirtualStringTree;
+  Data: PBookData;
+  Node: PVirtualNode;
+begin
+  GetActiveTree(Tree);
+  Node := Tree.GetFirstSelected;
+  Data := Tree.GetNodeData(Node);
+  if not Assigned(Data) or (Data.nodeType <> ntBookInfo) then
+    exit;
+  Data.Progress := 100;
+  DMUser.SetFinished(Data.ID, 100);
+  Tree.RepaintNode(Node);
+end;
+
 procedure TfrmMain.miRefreshClick(Sender: TObject);
 begin
   InitCollection(True);
@@ -5524,6 +5534,64 @@ begin
       Exit;
     end;
     Node := Tree.GetNext(Node);
+  end;
+end;
+
+procedure TfrmMain.miImportUserDataClick(Sender: TObject);
+var
+  SL: TStringList;
+  FN: string;
+   I: integer;
+   p: integer;
+  DataBaseID, ID, Rate: integer;
+
+begin
+  if not GetFileName(fnOpenUserData, FN) then Exit;
+
+  try
+    SL := TStringList.Create;
+    SL.LoadFromFile(FN);
+
+    DataBaseID := DMUser.ActiveCollection.ID;
+
+    // Рейтинги
+
+    i := 1;
+    while pos('#',SL[i]) = 0 do
+    begin
+      p := pos(' ',SL[i]);
+      ID := StrToInt(copy(SL[i],1, p - 1));
+      Rate := StrToInt(copy(SL[i],p + 1));
+
+      if not DMUser.tblRates.Locate('DataBaseID;BookID', VarArrayOf([DataBaseID,ID]), []) then
+      begin
+        DMUser.tblRates.Insert;
+        DMUser.tblRatesBookID.Value := ID;
+        DMUser.tblRatesRate.Value := Rate;
+        DMUser.tblRatesDataBaseID.Value := DataBaseID;
+        DMUser.tblRatesDate.Value := Now;
+        DMUser.tblRates.Post;
+      end
+      else
+      begin
+        DMUser.tblRates.Edit;
+        DMUser.tblRatesRate.Value := Rate;
+        DMUser.tblRates.Post;
+      end;
+      inc(i);
+    end;
+
+    // Избранное
+    SetUtilTableStatus(True);
+    DMUser.tblGroupList.Locate('ID',1,[]);
+    for I := i + 1 to SL.Count - 1 do
+    begin
+      ID := StrToInt(SL[i]);
+      InsertToGroupTable(ID, dmCollection.GetBookGenres(ID,false));
+    end;
+     SetUtilTableStatus(False);
+  finally
+    SL.Free;
   end;
 end;
 

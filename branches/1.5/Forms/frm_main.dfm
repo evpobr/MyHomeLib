@@ -2,7 +2,7 @@ object frmMain: TfrmMain
   Left = 0
   Top = 0
   Caption = 'MyHomeLib'
-  ClientHeight = 881
+  ClientHeight = 1011
   ClientWidth = 998
   Color = clBtnFace
   Constraints.MinHeight = 700
@@ -162,7 +162,7 @@ object frmMain: TfrmMain
   end
   object StatusBar: TRzStatusBar
     Left = 0
-    Top = 862
+    Top = 992
     Width = 998
     Height = 19
     BorderInner = fsNone
@@ -170,6 +170,7 @@ object frmMain: TfrmMain
     BorderSides = [sdLeft, sdTop, sdRight, sdBottom]
     BorderWidth = 0
     TabOrder = 1
+    ExplicitTop = 982
     object RzVersionInfoStatus1: TRzVersionInfoStatus
       Left = 0
       Top = 0
@@ -422,21 +423,23 @@ object frmMain: TfrmMain
     Left = 0
     Top = 144
     Width = 998
-    Height = 718
+    Height = 848
     HelpContext = 135
     ActivePage = TabSheet5
     Align = alClient
     TabIndex = 4
     TabOrder = 3
     OnChange = pgControlChange
+    ExplicitHeight = 838
     FixedDimension = 19
     object TabSheet1: TRzTabSheet
       Caption = #1040#1074#1090#1086#1088#1099
+      ExplicitHeight = 815
       object rzsSplitterA: TRzSplitter
         Left = 0
         Top = 0
         Width = 994
-        Height = 695
+        Height = 825
         MarginMin = 150
         Position = 228
         Percent = 23
@@ -444,11 +447,12 @@ object frmMain: TfrmMain
         SplitterWidth = 6
         Align = alClient
         TabOrder = 0
+        ExplicitHeight = 815
         BarSize = (
           228
           0
           234
-          695)
+          825)
         UpperLeftControls = (
           RzPanel13)
         LowerRightControls = (
@@ -459,17 +463,18 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 224
-          Height = 689
+          Height = 819
           Margins.Right = 1
           Align = alClient
           BorderOuter = fsFlatRounded
           TabOrder = 0
+          ExplicitHeight = 809
           object tvAuthors: TVirtualStringTree
             AlignWithMargins = True
             Left = 5
             Top = 52
             Width = 214
-            Height = 632
+            Height = 762
             Align = alClient
             CheckImageKind = ckXP
             Colors.UnfocusedSelectionColor = clHighlight
@@ -497,7 +502,7 @@ object frmMain: TfrmMain
             OnGetText = tvAuthorsGetText
             OnPaintText = tvAuthorsPaintText
             OnGetNodeDataSize = tvAuthorsGetNodeDataSize
-            ExplicitHeight = 552
+            ExplicitHeight = 752
             Columns = <>
           end
           object RzPanel16: TRzPanel
@@ -559,7 +564,7 @@ object frmMain: TfrmMain
           Left = 507
           Top = 3
           Width = 250
-          Height = 689
+          Height = 819
           Margins.Left = 0
           Align = alRight
           BorderOuter = fsFlatRounded
@@ -576,30 +581,30 @@ object frmMain: TfrmMain
           Fb2InfoVisible = False
           FontSize = 0
           AnnotationColor = clBlack
-          ExplicitHeight = 609
+          ExplicitHeight = 809
         end
         object RzPanel15: TRzPanel
           AlignWithMargins = True
           Left = 0
           Top = 3
           Width = 507
-          Height = 689
+          Height = 819
           Margins.Left = 0
           Margins.Right = 0
           Align = alClient
           BorderOuter = fsFlatRounded
           TabOrder = 1
-          ExplicitHeight = 609
+          ExplicitHeight = 809
           object RzPanel17: TRzPanel
             AlignWithMargins = True
             Left = 5
             Top = 5
             Width = 497
-            Height = 573
+            Height = 703
             Align = alClient
             BorderOuter = fsNone
             TabOrder = 0
-            ExplicitHeight = 493
+            ExplicitHeight = 693
             object RzPanel18: TRzPanel
               Left = 0
               Top = 0
@@ -613,7 +618,7 @@ object frmMain: TfrmMain
                 Left = 482
                 Top = 3
                 Width = 12
-                Height = 19
+                Height = 25
                 Align = alRight
                 Alignment = taRightJustify
                 Caption = '()'
@@ -624,13 +629,14 @@ object frmMain: TfrmMain
                 Font.Style = []
                 ParentFont = False
                 CenterPoint = cpLowerRight
+                ExplicitHeight = 19
               end
               object lblAuthor: TRzLabel
                 AlignWithMargins = True
                 Left = 3
                 Top = 3
                 Width = 15
-                Height = 19
+                Height = 25
                 Align = alLeft
                 Caption = '...'
                 Font.Charset = DEFAULT_CHARSET
@@ -640,22 +646,23 @@ object frmMain: TfrmMain
                 Font.Style = [fsBold]
                 ParentFont = False
                 CenterPoint = cpLowerRight
+                ExplicitHeight = 19
               end
             end
             object RzPanel23: TRzPanel
               Left = 0
               Top = 31
               Width = 497
-              Height = 542
+              Height = 672
               Align = alClient
               BorderOuter = fsNone
               TabOrder = 1
-              ExplicitHeight = 462
+              ExplicitHeight = 662
               object tvBooksA: TVirtualStringTree
                 Left = 0
                 Top = 0
                 Width = 497
-                Height = 542
+                Height = 672
                 Align = alClient
                 CheckImageKind = ckXP
                 ClipboardFormats.Strings = (
@@ -716,7 +723,7 @@ object frmMain: TfrmMain
                 OnInitNode = tvBooksTreeInitNode
                 OnKeyDown = tvBooksTreeKeyDown
                 OnMouseUp = tvBooksTreeMouseUp
-                ExplicitHeight = 462
+                ExplicitHeight = 662
                 Columns = <
                   item
                     MaxWidth = 1000
@@ -779,7 +786,7 @@ object frmMain: TfrmMain
           object ipnlAuthors: TMHLInfoPanel
             AlignWithMargins = True
             Left = 5
-            Top = 584
+            Top = 714
             Width = 497
             Height = 100
             Align = alBottom
@@ -791,29 +798,31 @@ object frmMain: TfrmMain
             Genre = #1085#1077#1080#1079#1074#1077#1089#1090#1085#1099#1081
             Folder = 'C:\Books\1-1009.zip'
             FileName = '111 '#1048#1074#1072#1085#1086#1074' '#1050#1085#1080#1075#1072'.fb2'
-            ExplicitTop = 504
+            ExplicitTop = 704
           end
         end
       end
     end
     object TabSheet2: TRzTabSheet
       Caption = #1057#1077#1088#1080#1080
+      ExplicitHeight = 815
       object rzsSplitterS: TRzSplitter
         Left = 0
         Top = 0
         Width = 994
-        Height = 695
+        Height = 825
         MarginMin = 150
         Position = 247
         Percent = 25
         SplitterWidth = 5
         Align = alClient
         TabOrder = 0
+        ExplicitHeight = 815
         BarSize = (
           247
           0
           252
-          695)
+          825)
         UpperLeftControls = (
           RzPanel1)
         LowerRightControls = (
@@ -824,16 +833,17 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 241
-          Height = 689
+          Height = 819
           Align = alClient
           BorderOuter = fsFlatRounded
           TabOrder = 0
+          ExplicitHeight = 809
           object tvSeries: TVirtualStringTree
             AlignWithMargins = True
             Left = 5
             Top = 52
             Width = 231
-            Height = 632
+            Height = 762
             Align = alClient
             CheckImageKind = ckXP
             Colors.UnfocusedSelectionColor = clHighlight
@@ -860,7 +870,7 @@ object frmMain: TfrmMain
             OnChange = tvSeriesChange
             OnGetText = tvAuthorsGetText
             OnPaintText = tvAuthorsPaintText
-            ExplicitHeight = 552
+            ExplicitHeight = 752
             Columns = <>
           end
           object RzPanel19: TRzPanel
@@ -915,7 +925,7 @@ object frmMain: TfrmMain
           Left = 489
           Top = 3
           Width = 250
-          Height = 689
+          Height = 819
           Margins.Left = 0
           Align = alRight
           BorderOuter = fsFlatRounded
@@ -932,29 +942,30 @@ object frmMain: TfrmMain
           Fb2InfoVisible = False
           FontSize = 0
           AnnotationColor = clBlack
-          ExplicitHeight = 609
+          ExplicitHeight = 809
         end
         object RzPanel3: TRzPanel
           AlignWithMargins = True
           Left = 0
           Top = 3
           Width = 489
-          Height = 689
+          Height = 819
           Margins.Left = 0
           Margins.Right = 0
           Align = alClient
           BorderOuter = fsFlatRounded
           TabOrder = 1
+          ExplicitHeight = 809
           object RzPanel4: TRzPanel
             AlignWithMargins = True
             Left = 5
             Top = 5
             Width = 479
-            Height = 573
+            Height = 703
             Align = alClient
             BorderOuter = fsNone
             TabOrder = 0
-            ExplicitHeight = 493
+            ExplicitHeight = 693
             object RzPanel5: TRzPanel
               Left = 0
               Top = 0
@@ -968,7 +979,7 @@ object frmMain: TfrmMain
                 Left = 464
                 Top = 3
                 Width = 12
-                Height = 19
+                Height = 25
                 Align = alRight
                 Alignment = taRightJustify
                 Caption = '()'
@@ -979,13 +990,14 @@ object frmMain: TfrmMain
                 Font.Style = []
                 ParentFont = False
                 CenterPoint = cpLowerRight
+                ExplicitHeight = 19
               end
               object lblSeries: TRzLabel
                 AlignWithMargins = True
                 Left = 3
                 Top = 3
                 Width = 15
-                Height = 19
+                Height = 25
                 Align = alLeft
                 Caption = '...'
                 Font.Charset = DEFAULT_CHARSET
@@ -995,6 +1007,7 @@ object frmMain: TfrmMain
                 Font.Style = [fsBold]
                 ParentFont = False
                 CenterPoint = cpLowerRight
+                ExplicitHeight = 19
               end
             end
             object tvBooksS: TVirtualStringTree
@@ -1002,7 +1015,7 @@ object frmMain: TfrmMain
               Left = 0
               Top = 31
               Width = 479
-              Height = 542
+              Height = 672
               Align = alClient
               BevelInner = bvNone
               BevelOuter = bvNone
@@ -1062,7 +1075,7 @@ object frmMain: TfrmMain
               OnInitNode = tvBooksTreeInitNode
               OnKeyDown = tvBooksTreeKeyDown
               OnMouseUp = tvBooksTreeMouseUp
-              ExplicitHeight = 462
+              ExplicitHeight = 662
               Columns = <
                 item
                   MinWidth = 30
@@ -1149,7 +1162,7 @@ object frmMain: TfrmMain
           object ipnlSeries: TMHLInfoPanel
             AlignWithMargins = True
             Left = 5
-            Top = 584
+            Top = 714
             Width = 479
             Height = 100
             Align = alBottom
@@ -1161,29 +1174,31 @@ object frmMain: TfrmMain
             Genre = #1085#1077#1080#1079#1074#1077#1089#1090#1085#1099#1081
             Folder = 'C:\Books\1-1009.zip'
             FileName = '111 '#1048#1074#1072#1085#1086#1074' '#1050#1085#1080#1075#1072'.fb2'
-            ExplicitTop = 504
+            ExplicitTop = 704
           end
         end
       end
     end
     object TabSheet3: TRzTabSheet
       Caption = #1046#1072#1085#1088#1099
+      ExplicitHeight = 815
       object rzsSplitterG: TRzSplitter
         Left = 0
         Top = 0
         Width = 994
-        Height = 695
+        Height = 825
         MarginMin = 150
         Position = 258
         Percent = 26
         SplitterWidth = 2
         Align = alClient
         TabOrder = 0
+        ExplicitHeight = 815
         BarSize = (
           258
           0
           260
-          695)
+          825)
         UpperLeftControls = (
           RzPanel25)
         LowerRightControls = (
@@ -1194,17 +1209,17 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 252
-          Height = 689
+          Height = 819
           Align = alClient
           BorderOuter = fsFlatRounded
           TabOrder = 0
-          ExplicitHeight = 609
+          ExplicitHeight = 809
           object tvGenres: TVirtualStringTree
             AlignWithMargins = True
             Left = 5
             Top = 5
             Width = 242
-            Height = 679
+            Height = 809
             Align = alClient
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -1227,7 +1242,7 @@ object frmMain: TfrmMain
             TreeOptions.SelectionOptions = [toMultiSelect]
             OnChange = tvGenresChange
             OnGetText = tvGenresGetText
-            ExplicitHeight = 599
+            ExplicitHeight = 799
             Columns = <>
           end
         end
@@ -1236,7 +1251,7 @@ object frmMain: TfrmMain
           Left = 481
           Top = 3
           Width = 250
-          Height = 689
+          Height = 819
           Margins.Left = 0
           Align = alRight
           BorderOuter = fsFlatRounded
@@ -1253,34 +1268,35 @@ object frmMain: TfrmMain
           Fb2InfoVisible = False
           FontSize = 0
           AnnotationColor = clBlack
-          ExplicitHeight = 609
+          ExplicitHeight = 809
         end
         object RzPanel27: TRzPanel
           AlignWithMargins = True
           Left = 3
           Top = 3
           Width = 478
-          Height = 689
+          Height = 819
           Margins.Right = 0
           Align = alClient
           BorderOuter = fsFlatRounded
           TabOrder = 1
+          ExplicitHeight = 809
           object RzPanel28: TRzPanel
             AlignWithMargins = True
             Left = 5
             Top = 36
             Width = 468
-            Height = 542
+            Height = 672
             Align = alClient
             BorderOuter = fsNone
             TabOrder = 0
-            ExplicitHeight = 462
+            ExplicitHeight = 662
             object tvBooksG: TVirtualStringTree
               Tag = 2
               Left = 0
               Top = 0
               Width = 468
-              Height = 542
+              Height = 672
               Align = alClient
               Alignment = taRightJustify
               BevelInner = bvNone
@@ -1342,7 +1358,7 @@ object frmMain: TfrmMain
               OnInitNode = tvBooksTreeInitNode
               OnKeyDown = tvBooksTreeKeyDown
               OnMouseUp = tvBooksTreeMouseUp
-              ExplicitHeight = 462
+              ExplicitHeight = 662
               Columns = <
                 item
                   MinWidth = 30
@@ -1427,7 +1443,7 @@ object frmMain: TfrmMain
               Left = 459
               Top = 3
               Width = 12
-              Height = 19
+              Height = 25
               Align = alRight
               Alignment = taRightJustify
               Caption = '()'
@@ -1438,13 +1454,14 @@ object frmMain: TfrmMain
               Font.Style = []
               ParentFont = False
               CenterPoint = cpLowerRight
+              ExplicitHeight = 19
             end
             object lblGenreTitle: TRzLabel
               AlignWithMargins = True
               Left = 3
               Top = 3
               Width = 15
-              Height = 19
+              Height = 25
               Align = alLeft
               Caption = '...'
               Font.Charset = DEFAULT_CHARSET
@@ -1454,12 +1471,13 @@ object frmMain: TfrmMain
               Font.Style = [fsBold]
               ParentFont = False
               CenterPoint = cpLowerRight
+              ExplicitHeight = 19
             end
           end
           object ipnlGenres: TMHLInfoPanel
             AlignWithMargins = True
             Left = 5
-            Top = 584
+            Top = 714
             Width = 468
             Height = 100
             Align = alBottom
@@ -1471,7 +1489,7 @@ object frmMain: TfrmMain
             Genre = #1085#1077#1080#1079#1074#1077#1089#1090#1085#1099#1081
             Folder = 'C:\Books\1-1009.zip'
             FileName = '111 '#1048#1074#1072#1085#1086#1074' '#1050#1085#1080#1075#1072'.fb2'
-            ExplicitTop = 504
+            ExplicitTop = 704
           end
         end
       end
@@ -1479,32 +1497,34 @@ object frmMain: TfrmMain
     object TabSheet4: TRzTabSheet
       HelpContext = 142
       Caption = #1055#1086#1080#1089#1082
+      ExplicitHeight = 815
       object RzPanel9: TRzPanel
         AlignWithMargins = True
         Left = 3
         Top = 3
         Width = 738
-        Height = 689
+        Height = 819
         Margins.Right = 0
         Align = alClient
         BorderOuter = fsFlatRounded
         TabOrder = 0
+        ExplicitHeight = 809
         object RzPanel10: TRzPanel
           AlignWithMargins = True
           Left = 5
           Top = 141
           Width = 728
-          Height = 437
+          Height = 567
           Align = alClient
           BorderOuter = fsNone
           TabOrder = 0
-          ExplicitHeight = 357
+          ExplicitHeight = 557
           object tvBooksSR: TVirtualStringTree
             Tag = 3
             Left = 0
             Top = 0
             Width = 728
-            Height = 437
+            Height = 567
             Align = alClient
             BevelInner = bvNone
             BevelOuter = bvNone
@@ -1564,7 +1584,7 @@ object frmMain: TfrmMain
             OnInitNode = tvBooksTreeInitNode
             OnKeyDown = tvBooksTreeKeyDown
             OnMouseUp = tvBooksTreeMouseUp
-            ExplicitHeight = 357
+            ExplicitHeight = 557
             Columns = <
               item
                 MaxWidth = 1000
@@ -1655,7 +1675,7 @@ object frmMain: TfrmMain
         object ipnlSearch: TMHLInfoPanel
           AlignWithMargins = True
           Left = 5
-          Top = 584
+          Top = 714
           Width = 728
           Height = 100
           Align = alBottom
@@ -1667,7 +1687,7 @@ object frmMain: TfrmMain
           Genre = #1085#1077#1080#1079#1074#1077#1089#1090#1085#1099#1081
           Folder = 'C:\Books\1-1009.zip'
           FileName = '111 '#1048#1074#1072#1085#1086#1074' '#1050#1085#1080#1075#1072'.fb2'
-          ExplicitTop = 504
+          ExplicitTop = 704
         end
         object pnlFullSearch: TPanel
           AlignWithMargins = True
@@ -2051,7 +2071,7 @@ object frmMain: TfrmMain
         Left = 741
         Top = 3
         Width = 250
-        Height = 689
+        Height = 819
         Margins.Left = 0
         Align = alRight
         BorderOuter = fsFlatRounded
@@ -2060,7 +2080,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2068,18 +2087,19 @@ object frmMain: TfrmMain
         Fb2InfoVisible = False
         FontSize = 0
         AnnotationColor = clBlack
-        ExplicitHeight = 609
+        ExplicitHeight = 809
       end
     end
     object TabSheet5: TRzTabSheet
       HelpContext = 125
       Caption = #1043#1088#1091#1087#1087#1099
+      ExplicitHeight = 815
       object cpCoverF: TMHLCoverPanel
         AlignWithMargins = True
         Left = 741
         Top = 3
         Width = 250
-        Height = 689
+        Height = 819
         Margins.Left = 0
         Align = alRight
         BorderOuter = fsFlatRounded
@@ -2088,7 +2108,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 0
@@ -2096,21 +2115,23 @@ object frmMain: TfrmMain
         Fb2InfoVisible = False
         FontSize = 0
         AnnotationColor = clBlack
+        ExplicitHeight = 809
       end
       object RzSplitter1: TRzSplitter
         Left = 0
         Top = 0
         Width = 741
-        Height = 695
+        Height = 825
         Position = 239
         Percent = 32
         Align = alClient
         TabOrder = 1
+        ExplicitHeight = 815
         BarSize = (
           239
           0
           243
-          695)
+          825)
         UpperLeftControls = (
           RzPanel7)
         LowerRightControls = (
@@ -2120,16 +2141,17 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 233
-          Height = 689
+          Height = 819
           Align = alClient
           BorderOuter = fsFlatRounded
           TabOrder = 0
+          ExplicitHeight = 809
           object tvGroups: TVirtualStringTree
             AlignWithMargins = True
             Left = 5
             Top = 5
             Width = 223
-            Height = 644
+            Height = 774
             Align = alClient
             CheckImageKind = ckXP
             Colors.UnfocusedSelectionColor = clHighlight
@@ -2157,17 +2179,19 @@ object frmMain: TfrmMain
             OnDragDrop = tvGroupsDragDrop
             OnGetText = tvGroupsGetText
             OnGetNodeDataSize = tvGroupsGetNodeDataSize
+            ExplicitHeight = 764
             Columns = <>
           end
           object RzPanel8: TRzPanel
             AlignWithMargins = True
             Left = 5
-            Top = 655
+            Top = 785
             Width = 223
             Height = 29
             Align = alBottom
             BorderOuter = fsFlatRounded
             TabOrder = 1
+            ExplicitTop = 775
             DesignSize = (
               223
               29)
@@ -2296,27 +2320,29 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 495
-          Height = 689
+          Height = 819
           Margins.Right = 0
           Align = alClient
           BorderOuter = fsFlatRounded
           TabOrder = 0
+          ExplicitHeight = 809
           object RzPanel21: TRzPanel
             AlignWithMargins = True
             Left = 5
             Top = 5
             Width = 485
-            Height = 573
+            Height = 703
             Align = alClient
             BorderOuter = fsNone
             TabOrder = 0
+            ExplicitHeight = 693
             object tvBooksF: TVirtualStringTree
               Tag = 4
               AlignWithMargins = True
               Left = 3
               Top = 34
               Width = 479
-              Height = 536
+              Height = 666
               Align = alClient
               BevelInner = bvNone
               BevelOuter = bvNone
@@ -2376,6 +2402,7 @@ object frmMain: TfrmMain
               OnInitNode = tvBooksTreeInitNode
               OnKeyDown = tvBooksTreeKeyDown
               OnMouseUp = tvBooksTreeMouseUp
+              ExplicitHeight = 656
               Columns = <
                 item
                   Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
@@ -2477,7 +2504,7 @@ object frmMain: TfrmMain
           object ipnlFavorites: TMHLInfoPanel
             AlignWithMargins = True
             Left = 5
-            Top = 584
+            Top = 714
             Width = 485
             Height = 100
             Align = alBottom
@@ -2489,6 +2516,7 @@ object frmMain: TfrmMain
             Genre = #1085#1077#1080#1079#1074#1077#1089#1090#1085#1099#1081
             Folder = 'C:\Books\1-1009.zip'
             FileName = '111 '#1048#1074#1072#1085#1086#1074' '#1050#1085#1080#1075#1072'.fb2'
+            ExplicitTop = 704
             DesignSize = (
               485
               100)
@@ -2537,12 +2565,13 @@ object frmMain: TfrmMain
     end
     object TabSheet7: TRzTabSheet
       Caption = #1057#1087#1080#1089#1086#1082' '#1079#1072#1082#1072#1095#1077#1082
+      ExplicitHeight = 815
       object tlbrDownloadList: TRzToolbar
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 40
-        Height = 689
+        Width = 42
+        Height = 819
         Align = alLeft
         AutoStyle = False
         Images = ilDownloadToolBar
@@ -2574,13 +2603,13 @@ object frmMain: TfrmMain
           RzSpacer3
           BtnSave)
         object RzSpacer1: TRzSpacer
-          Left = 4
+          Left = 5
           Top = 70
           Width = 26
         end
         object BtnDwnldUp: TRzToolButton
           Tag = 21
-          Left = 4
+          Left = 5
           Top = 120
           Hint = #1042#1074#1077#1088#1093
           DisabledIndex = 1
@@ -2590,7 +2619,7 @@ object frmMain: TfrmMain
         end
         object BtnDwnldDown: TRzToolButton
           Tag = 22
-          Left = 4
+          Left = 5
           Top = 145
           Hint = #1042#1085#1080#1079
           DisabledIndex = 3
@@ -2599,7 +2628,7 @@ object frmMain: TfrmMain
           OnClick = MoveDwnldListNodes
         end
         object BtnDelete: TRzToolButton
-          Left = 4
+          Left = 5
           Top = 220
           Hint = #1059#1076#1072#1083#1080#1090#1100
           DisabledIndex = 5
@@ -2609,7 +2638,7 @@ object frmMain: TfrmMain
         end
         object BtnFirstRecord: TRzToolButton
           Tag = 20
-          Left = 4
+          Left = 5
           Top = 95
           Hint = #1042' '#1085#1072#1095#1072#1083#1086
           DisabledIndex = 7
@@ -2619,7 +2648,7 @@ object frmMain: TfrmMain
         end
         object BtnLastRecord: TRzToolButton
           Tag = 23
-          Left = 4
+          Left = 5
           Top = 170
           Hint = #1042' '#1082#1086#1085#1077#1094
           DisabledIndex = 9
@@ -2628,12 +2657,12 @@ object frmMain: TfrmMain
           OnClick = MoveDwnldListNodes
         end
         object RzSpacer2: TRzSpacer
-          Left = 4
+          Left = 5
           Top = 195
           Width = 27
         end
         object btnStartDownload: TRzToolButton
-          Left = 4
+          Left = 5
           Top = 20
           Hint = #1057#1090#1072#1088#1090
           DisabledIndex = 11
@@ -2642,7 +2671,7 @@ object frmMain: TfrmMain
           OnClick = btnStartDownloadClick
         end
         object btnPauseDownload: TRzToolButton
-          Left = 4
+          Left = 5
           Top = 45
           Hint = #1057#1090#1086#1087
           DisabledIndex = 15
@@ -2651,7 +2680,7 @@ object frmMain: TfrmMain
           OnClick = btnPauseDownloadClick
         end
         object BtnSave: TRzToolButton
-          Left = 4
+          Left = 5
           Top = 270
           Hint = 'Save'
           DisabledIndex = 17
@@ -2660,31 +2689,33 @@ object frmMain: TfrmMain
           OnClick = BtnSaveClick
         end
         object RzSpacer3: TRzSpacer
-          Left = 4
+          Left = 5
           Top = 245
           Width = 32
         end
       end
       object Panel1: TPanel
-        Left = 46
+        Left = 48
         Top = 0
-        Width = 948
-        Height = 695
+        Width = 946
+        Height = 825
         Align = alClient
         BevelOuter = bvNone
         Caption = 'Panel1'
         TabOrder = 1
+        ExplicitHeight = 815
         object RzPanel2: TRzPanel
           AlignWithMargins = True
           Left = 3
-          Top = 631
-          Width = 942
+          Top = 761
+          Width = 940
           Height = 61
           Align = alBottom
           BorderOuter = fsFlatRounded
           TabOrder = 0
+          ExplicitTop = 751
           DesignSize = (
-            942
+            940
             61)
           object pbDownloadProgress: TRzProgressBar
             Left = 6
@@ -2725,7 +2756,7 @@ object frmMain: TfrmMain
           end
           object lblDownloadCount: TRzLabel
             AlignWithMargins = True
-            Left = 925
+            Left = 923
             Top = 5
             Width = 12
             Height = 51
@@ -2739,11 +2770,10 @@ object frmMain: TfrmMain
             Font.Style = []
             ParentFont = False
             CenterPoint = cpLowerRight
-            ExplicitLeft = 923
             ExplicitHeight = 19
           end
           object btnClearDownload: TRzBitBtn
-            Left = 825
+            Left = 823
             Top = 30
             Width = 118
             Anchors = [akRight, akBottom]
@@ -2751,15 +2781,14 @@ object frmMain: TfrmMain
             TabOrder = 0
             OnClick = btnClearDownloadClick
             Kind = bkRetry
-            ExplicitLeft = 823
           end
         end
         object tvDownloadList: TVirtualStringTree
           AlignWithMargins = True
           Left = 3
           Top = 3
-          Width = 942
-          Height = 622
+          Width = 940
+          Height = 752
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -2777,8 +2806,7 @@ object frmMain: TfrmMain
           OnPaintText = tvDownloadListPaintText
           OnLoadNode = tvDownloadListLoadNode
           OnSaveNode = tvDownloadListSaveNode
-          ExplicitWidth = 940
-          ExplicitHeight = 542
+          ExplicitHeight = 742
           Columns = <
             item
               Position = 0
@@ -2924,25 +2952,42 @@ object frmMain: TfrmMain
       object N38: TMenuItem
         Caption = '-'
       end
-      object miINPXCollectionExport: TMenuItem
-        Caption = #1069#1082#1089#1087#1086#1088#1090#1080#1088#1086#1074#1072#1090#1100' '#1074' inpx'
-        Enabled = False
-        OnClick = miINPXCollectionExportClick
+      object N39: TMenuItem
+        Caption = #1048#1084#1087#1086#1088#1090
+        object miCollectionImport: TMenuItem
+          Caption = #1048#1084#1087#1086#1088#1090#1080#1088#1086#1074#1072#1090#1100' '#1080#1079' xml'
+          Enabled = False
+          ImageIndex = 5
+          OnClick = miCollectionImportClick
+        end
+        object N14: TMenuItem
+          Caption = '-'
+        end
+        object miImportUserData: TMenuItem
+          Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1100#1089#1082#1080#1077' '#1076#1072#1085#1085#1099#1077
+          OnClick = miImportUserDataClick
+        end
       end
-      object N14: TMenuItem
-        Caption = '-'
-      end
-      object miCollectionExport: TMenuItem
-        Caption = #1069#1082#1089#1087#1086#1088#1090#1080#1088#1086#1074#1072#1090#1100' '#1074' xml'
-        Enabled = False
-        ImageIndex = 10
-        OnClick = miCollectionExportClick
-      end
-      object miCollectionImport: TMenuItem
-        Caption = #1048#1084#1087#1086#1088#1090#1080#1088#1086#1074#1072#1090#1100' '#1080#1079' xml'
-        Enabled = False
-        ImageIndex = 5
-        OnClick = miCollectionImportClick
+      object N40: TMenuItem
+        Caption = #1069#1082#1089#1087#1086#1088#1090
+        object miCollectionExport: TMenuItem
+          Caption = #1069#1082#1089#1087#1086#1088#1090#1080#1088#1086#1074#1072#1090#1100' '#1074' xml'
+          Enabled = False
+          ImageIndex = 10
+          OnClick = miCollectionExportClick
+        end
+        object miINPXCollectionExport: TMenuItem
+          Caption = #1069#1082#1089#1087#1086#1088#1090#1080#1088#1086#1074#1072#1090#1100' '#1074' inpx'
+          Enabled = False
+          OnClick = miINPXCollectionExportClick
+        end
+        object N41: TMenuItem
+          Caption = '-'
+        end
+        object N43: TMenuItem
+          Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1100#1089#1082#1080#1077' '#1076#1072#1085#1085#1099#1077
+          Enabled = False
+        end
       end
       object N18: TMenuItem
         Caption = '-'
@@ -3072,6 +3117,14 @@ object frmMain: TfrmMain
       Caption = #1047#1072#1087#1091#1089#1090#1080#1090#1100' '#1089#1082#1088#1080#1087#1090
       ImageIndex = 29
     end
+    object N44: TMenuItem
+      Caption = '-'
+    end
+    object miReaded: TMenuItem
+      Caption = #1055#1088#1086#1095#1080#1090#1072#1085#1086
+      ShortCut = 16466
+      OnClick = miReadedClick
+    end
     object N17: TMenuItem
       Caption = '-'
     end
@@ -3108,8 +3161,6 @@ object frmMain: TfrmMain
     end
     object pmiGroups: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1075#1088#1091#1087#1087#1091
-      object TMenuItem
-      end
     end
     object miDelFavorites: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100' '#1080#1079' '#1080#1079#1073#1088#1072#1085#1085#1086#1075#1086
@@ -8280,231 +8331,232 @@ object frmMain: TfrmMain
     end
   end
   object ilFileTypes: TImageList
+    ColorDepth = cd32Bit
     DrawingStyle = dsTransparent
     Left = 400
     Top = 408
     Bitmap = {
-      494C010106000800440010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010107000A00040010001000FFFFFFFF2100FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002000000001002000000000000020
-      00000000000000000000000000000000000000000000696969FF191919FF1919
-      19FF191919FF191919FF191919FF191919FF191919FF191919FF191919FF1919
-      19FF191919FF191919FF191919FF000000000000000000000000000000000000
+      000000000000000000000000000000000000000000006B6B6BFF1B1B1BFF1B1B
+      1BFF1B1B1BFF1B1B1BFF1B1B1BFF1B1B1BFF1B1B1BFF1B1B1BFF1B1B1BFF1B1B
+      1BFF1B1B1BFF1B1B1BFF1B1B1BFF000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
-      00000000000000000000000000000000000000000000696969FFD3D3D4FFD0D0
+      000000000000000000000000000000000000000000006B6B6BFFD3D3D4FFD0D0
       D1FFCDCDCEFFCBCBCCFFC8C8C9FFC4C4C5FFC2C2C3FFBFBFC1FFBDBDBEFFBBBB
-      BCFFB9B9BBFFB8B8B9FF191919FF000000000000000000000000000000000000
+      BCFFB9B9BBFFB8B8B9FF1B1B1BFF000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
-      00000000000000000000000000000000000000000000696969FFD8D8D8FFD5D5
+      000000000000000000000000000000000000000000006B6B6BFFD8D8D8FFD5D5
       D5FFD2D2D2FFCFCFD0FFCCCCCDFFC9C9CAFFC5C5C7FFC3C3C4FFC0C0C1FFBEBE
-      BFFFBCBCBDFFBABABBFF191919FF000000000000000000000000000000000000
+      BFFFBCBCBDFFBABABBFF1B1B1BFF000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
-      00000000000000000000000000000000000000000000696969FFDCDCDDFFD9D9
-      DAFFD6D6D7FFD3D3D4FF006C00FFCDCDCEFFCACACBFFC7C7C8FFC4C4C5FFC1C1
-      C2FFBFBFC0FFBDBDBEFF191919FF000000000000000000000000000000000000
+      000000000000000000000000000000000000000000006B6B6BFFDCDCDDFFD9D9
+      DAFFD6D6D7FFD3D3D4FF026E02FFCDCDCEFFCACACBFFC7C7C8FFC4C4C5FFC1C1
+      C2FFBFBFC0FFBDBDBEFF1B1B1BFF000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000303F0173379601FF3C9501FF4F6801BF000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000006B6B6BFFE0E0E1FFE0E0
+      E1FFDADADBFFD7D7D8FF02A902FF026E02FFCECECFFFCBCBCCFFC8C8C9FFC5C5
+      C7FFC2C2C3FFC0C0C1FF1B1B1BFF000000000000000000000000000000000C0C
+      0C0B363636B54242428A4242428A4242428A4242428A1B1B1BE31B1B1BE33A3A
+      3AA9000000000000000000000000000000000000000000000000000000000000
+      0000000000002B3801665C8D01FF2AAD01FF0BAB01FF5C7901E11D2601440000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000006B6B6BFFE4E4E5FFE1E1
+      E2FFDEDEDFFFDBDBDCFF02A902FF75DA80FF026E02FFCFCFD0FFCCCCCDFFCACA
+      CBFFC7C7C8FFC3C3C4FF1B1B1BFF000000000000000000000000000000003C3C
+      3CA5292929CFBBADADFF353535FFB6A9A9FFBBADADFF444444FF5F5F5FFF2929
+      29CF000000000000000000000000000000000000000000000000000000000000
+      000004050108516901C31EAB01FF33D901FF31D601FF2E9C01FF5A7D01E5161C
+      0133000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000006B6B6BFFE8E8E9FFE5E6
+      E6FFE3E3E3FFE0E0E0FF02A902FF75DA80FF75DA80FF026E02FFD0D0D1FFCDCD
+      CEFFCBCBCCFFC8C8C9FF1B1B1BFF000000000000000000000000000000002E2E
+      2EC7535353FFBDB7B7FF242424FFB4AEAEFFBDB7B7FF3F3F3FFF5C5C5CFF2E2E
+      2EC7000000000000000000000000000000000000000000000000000000000000
+      00003545017F509001FF1EC101FF30D501FF34DA01FF2BD001FF379601FF3545
+      017F000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000006B6B6BFFECECEDFFEAEA
+      EAFFE7E7E7FFE4E4E4FF02A902FF75DA80FF75DA80FF75DA80FF026E02FFD2D2
+      D2FFCFCFD0FFCCCCCDFF1B1B1BFF000000000000000000000000000000003131
+      31C1555555FFC7C6C6FFC3C2C2FFC3C2C2FFC7C6C6FF3A3A3AFF5A5A5AFF3131
+      31C1000000000000000000000000000000000000000000000000000000001015
+      0126377701CC26BB01FF19BB01FF0E7F01B2149D01D933D901FF28B001FF5A8D
+      01FF000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000006B6B6BFFF0F0F0FFEDED
+      EEFFEBEBEBFFE8E8E8FF02A902FF75DA80FF75DA80FF02A902FFD9D9DAFFD6D6
+      D7FFD3D3D4FFD0D0D1FF1B1B1BFF000000000000000000000000000000003434
+      34BC585858FF353535FF353535FF353535FF353535FF363636FF595959FF3434
+      34BC000000000000000000000000000000000000000000000000000000005A7D
+      01E5309801FF0A9901E501170122010C01110111011916A601E51EC101FF4894
+      01FF485D01AE080A011100000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000006B6B6BFFF4F4F4FFF1F1
+      F1FFEFEFEFFFECECECFF02A902FF75DA80FF02A902FFE0E0E1FFDDDDDEFFDADA
+      DBFFD7D7D8FFD4D4D5FF1B1B1BFF000000000000000000000000000000003636
+      36B7797979FFD6D6CCFFF6F6E9FFF6F6E9FFF6F6E9FFD6D6CCFF797979FF3636
+      36B7000000000000000000000000000000000000000000000000000000003088
+      01E6036201990119012600000000000000000000000001190126139401CC1CBE
+      01FF4B9101FF3545017F00000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000006B6B6BFFF7F7F7FFF5F5
+      F5FFF2F2F2FFF0F0F0FF02A902FF02A902FFE7E7E8FFE4E4E5FFE1E1E2FFDEDE
+      DFFFDBDBDCFFD8D8D9FF1B1B1BFF000000000000000000000000000000003838
+      38B27E7E7EFFFAFAF3FFF5F5EEFFF5F5EEFFF5F5EEFFFAFAF3FF7E7E7EFF3838
+      38B200000000000000000000000000000000000000000000000000000000022A
+      0140000000000000000000000000000000000000000000000000021C012B1196
+      01D41E9C01FF567201D41218012A000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000006B6B6BFFFAFAFAFFF8F8
+      F8FFF5F5F6FFF3F3F3FF02A902FFEEEEEEFFEBEBECFFE8E8E9FFE5E6E6FFE3E3
+      E3FFE0E0E0FFDCDCDDFF1B1B1BFF000000000000000000000000000000003939
+      39AF848484FFFFFFFEFFFEFEFDFFFEFEFDFFFEFEFDFFFFFFFEFF848484FF3939
+      39AF000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000109
+      010D088901D9309801FF5E8401F2000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000006B6B6BFFFCFCFCFFFAFA
+      FBFFF8F8F9FFF6F6F7FFF4F4F4FFF2F2F2FFEFEFEFFFECECEDFFEAEAEAFF6B6B
+      6BFF1B1B1BFF1B1B1BFF1B1B1BFF000000000000000000000000000000004242
+      42813A3A3AAC59595366595953665959536659595366595953663A3A3AAC4242
+      4281000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000001170122037C01C3509001FF000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000006B6B6BFFFEFEFEFFFDFD
+      FDFFFBFBFBFFF9F9F9FFF7F7F7FFF5F5F5FFF3F3F3FFF0F0F0FFEDEDEEFF6B6B
+      6BFFE8E8E8FFC7C7C9FF6B6B6BFF000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000001170122198001D0000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000006B6B6BFFFFFFFFFFFFFF
+      FFFFFDFDFDFFFCFCFCFFFAFAFAFFF8F8F8FFF6F6F6FFF4F4F4FFF1F1F1FF6B6B
+      6BFFC7C7C9FF6B6B6BFF00000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
-      00000000000000000000000000000000000000000000696969FFE0E0E1FFE0E0
-      E1FFDADADBFFD7D7D8FF00A900FF006C00FFCECECFFFCBCBCCFFC8C8C9FFC5C5
-      C7FFC2C2C3FFC0C0C1FF191919FF000000000000000000000000000000000000
-      000B000000B50404048A0404048A0404048A0404048A000000E3000000E30000
-      00A9000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      00000000000000000000000000000000000000000000696969FFE4E4E5FFE1E1
-      E2FFDEDEDFFFDBDBDCFF00A900FF73DA7EFF006C00FFCFCFD0FFCCCCCDFFCACA
-      CBFFC7C7C8FFC3C3C4FF191919FF000000000000000000000000000000000101
-      01A5010101CFBBADADFF333333FFB6A9A9FFBBADADFF424242FF5D5D5DFF0101
-      01CF000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      00000000000000000000000000000000000000000000696969FFE8E8E9FFE5E6
-      E6FFE3E3E3FFE0E0E0FF00A900FF73DA7EFF73DA7EFF006C00FFD0D0D1FFCDCD
-      CEFFCBCBCCFFC8C8C9FF191919FF000000000000000000000000000000000101
-      01C7515151FFBDB7B7FF222222FFB4AEAEFFBDB7B7FF3D3D3DFF5A5A5AFF0101
-      01C7000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      00000000000000000000000000000000000000000000696969FFECECEDFFEAEA
-      EAFFE7E7E7FFE4E4E4FF00A900FF73DA7EFF73DA7EFF73DA7EFF006C00FFD2D2
-      D2FFCFCFD0FFCCCCCDFF191919FF000000000000000000000000000000000101
-      01C1535353FFC7C6C6FFC3C2C2FFC3C2C2FFC7C6C6FF383838FF585858FF0101
-      01C1000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      00000000000000000000000000000000000000000000696969FFF0F0F0FFEDED
-      EEFFEBEBEBFFE8E8E8FF00A900FF73DA7EFF73DA7EFF00A900FFD9D9DAFFD6D6
-      D7FFD3D3D4FFD0D0D1FF191919FF000000000000000000000000000000000101
-      01BC565656FF333333FF333333FF333333FF333333FF343434FF575757FF0101
-      01BC000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      00000000000000000000000000000000000000000000696969FFF4F4F4FFF1F1
-      F1FFEFEFEFFFECECECFF00A900FF73DA7EFF00A900FFE0E0E1FFDDDDDEFFDADA
-      DBFFD7D7D8FFD4D4D5FF191919FF000000000000000000000000000000000101
-      01B7777777FFD6D6CCFFF6F6E9FFF6F6E9FFF6F6E9FFD6D6CCFF777777FF0101
-      01B7000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      00000000000000000000000000000000000000000000696969FFF7F7F7FFF5F5
-      F5FFF2F2F2FFF0F0F0FF00A900FF00A900FFE7E7E8FFE4E4E5FFE1E1E2FFDEDE
-      DFFFDBDBDCFFD8D8D9FF191919FF000000000000000000000000000000000101
-      01B27C7C7CFFFAFAF3FFF5F5EEFFF5F5EEFFF5F5EEFFFAFAF3FF7C7C7CFF0101
-      01B2000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      00000000000000000000000000000000000000000000696969FFFAFAFAFFF8F8
-      F8FFF5F5F6FFF3F3F3FF00A900FFEEEEEEFFEBEBECFFE8E8E9FFE5E6E6FFE3E3
-      E3FFE0E0E0FFDCDCDDFF191919FF000000000000000000000000000000000101
-      01AF848484FFFFFFFEFFFEFEFDFFFEFEFDFFFEFEFDFFFFFFFEFF848484FF0101
-      01AF000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      00000000000000000000000000000000000000000000696969FFFCFCFCFFFAFA
-      FBFFF8F8F9FFF6F6F7FFF4F4F4FFF2F2F2FFEFEFEFFFECECEDFFEAEAEAFF6969
-      69FF191919FF191919FF191919FF000000000000000000000000000000000101
-      0181010101ACAAAA8066AAAA8066AAAA8066AAAA8066AAAA8066010101AC0101
-      0181000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      00000000000000000000000000000000000000000000696969FFFEFEFEFFFDFD
-      FDFFFBFBFBFFF9F9F9FFF7F7F7FFF5F5F5FFF3F3F3FFF0F0F0FFEDEDEEFF6969
-      69FFE8E8E8FFC7C7C9FF696969FF000000000000000000000000000000000000
+      000000000000000000000000000000000000000000006B6B6BFF6B6B6BFF6B6B
+      6BFF6B6B6BFF6B6B6BFF6B6B6BFF6B6B6BFF6B6B6BFF6B6B6BFF6B6B6BFF6B6B
+      6BFF6B6B6BFF0000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
-      00000000000000000000000000000000000000000000696969FFFFFFFFFFFFFF
-      FFFFFDFDFDFFFCFCFCFFFAFAFAFFF8F8F8FFF6F6F6FFF4F4F4FFF1F1F1FF6969
-      69FFC7C7C9FF696969FF00000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      00000000000000000000000000000000000000000000696969FF696969FF6969
-      69FF696969FF696969FF696969FF696969FF696969FF696969FF696969FF6969
-      69FF696969FF0000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      00000000000000000000000000000000000069C2FDFF3DAFFDFF60BDFDFF97D4
-      FCFFA0D6FDFF9CD5FDFF9CD5FDFF94D2FCFF74C5FDFF72C6FDFF6CC3FCFF69C1
+      0000000000000000000000000000000000006BC2FDFF3FAFFDFF62BDFDFF97D4
+      FCFFA0D6FDFF9CD5FDFF9CD5FDFF94D2FCFF76C5FDFF74C6FDFF6EC3FCFF6BC1
       FCFF91D1FCFFACDCFDFFA0D7FDFF83CBFDFF0000000000000000000000004040
       4000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
-      00000000000000000000000000000000000079C8FEFF7AC9FDFF99D5FCFF96D3
-      FDFFB8E1FCFFB7E0FDFFA6D9FDFF95D3FCFF82C4F0FF7EB6DCFF79C8FCFF71C5
-      FDFF68C1FDFF64BFFDFF6CC2FDFF99D5FDFF00000000000000002B2B2B00E0DB
+      0000000000000000000000000000000000007BC8FEFF7CC9FDFF99D5FCFF96D3
+      FDFFB8E1FCFFB7E0FDFFA6D9FDFF95D3FCFF82C4F0FF80B6DCFF7BC8FCFF73C5
+      FDFF6AC1FDFF66BFFDFF6EC2FDFF99D5FDFF00000000000000002B2B2B00E0DB
       D9004267000000808000004E1900004E1900004E1900004E1900004E1900004E
       1900004E1900004E1900004E1900003611000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000FEFEFC00FEFEFC00FDFDFA00FDFDFA00FCFC
       F800FEFEF90000000000000000000000000083CDFEFF8BCFFEFF91D2FDFF8DD0
-      FDFF96D5FDFFA3D9FCFF97D3F8FF8EBCDBFF89ADC5FF87B2D1FF82BCE2FF7BC9
-      FEFF72C6FEFF68C1FEFF5CBDFEFF9CD6FDFF000000002B2B2B00E0DBD9000000
+      FDFF96D5FDFFA3D9FCFF97D3F8FF8EBCDBFF89ADC5FF87B2D1FF82BCE2FF7DC9
+      FEFF74C6FEFF6AC1FEFF5EBDFEFF9CD6FDFF000000002B2B2B00E0DBD9000000
       00004870000000B9B9005A8A0000588800005888000058880000588800005888
       0000588800005787000053830100000000000000000000000000000000000000
       0000000000000000000000000000A49197009079810000000000000000000000
       0000000000000000000099898E00000000000000000000000000000000000000
       000000000000FEFEFC00FDFDFC00FDFDFA00FCFCF800FBFBF800FAFAF500F8F8
       F400FBFBF5000000000000000000000000008FD1FDFF98D5FDFF9DD8FDFFA3DA
-      FDFFA6DCFCFF93D1FAFF91AABCFF98BCD4FF8AA3B2FF818082FF84A3B8FF85CE
-      FDFF7CCAFEFF71C5FDFF66C1FDFF7AC9FDFF26262600D2CFCE00FFFDFC00CCC7
+      FDFFA6DCFCFF93D1FAFF91AABCFF98BCD4FF8AA3B2FF818182FF84A3B8FF85CE
+      FDFF7ECAFEFF73C5FDFF68C1FDFF7CC9FDFF26262600D2CFCE00FFFDFC00CCC7
       C5005383010000000000E1F5BB00CDEF8C00C2EB7200BAE95E00B8E85900AEE5
       4200A5E22C009BDF160092DC00000036110000000000C6899D008F2648008A28
       47007A2B440078314800842B4700952F4F009731510084274500773047007B2E
       480089294800952F4F008F5A6B00000000000000000000000000000000000000
       0000CCCCBB00CBCBBA00DCDCCB00D2D2C100FBFBF800FAFAF500F8F8F400F7F7
       F200FBFBF50000000000000000000000000099D6FEFFA3D9FEFFA9DDFCFFAADC
-      FDFF73C6FCFF78C7F9FF98B3C5FF82888CFF7F7F80FF7F8081FF7CB9E0FF2FAA
-      FCFF4AB5FDFF5FBEFDFF67C1FCFF62BDFDFFB1AEAD00FFFBF800D5CFCB002B2B
+      FDFF75C6FCFF7AC7F9FF98B3C5FF82888CFF818181FF818181FF7EB9E0FF31AA
+      FCFF4CB5FDFF61BEFDFF69C1FCFF64BDFDFFB1AEAD00FFFBF800D5CFCB002B2B
       2B00000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000000000000000C5879B00A4516B00B068
       7F00AE647A00AA607600A7586F00A1496300AA5A7100B5718500AE647A00A75A
       7100AA5A7100AE647A008B546500000000000000000000000000000000000000
       0000EDEDDC00EDEDDC00ECECDB00EBEBDA00FAFAF500F8F8F400F7F7F200F6F6
-      F000FAFAF200000000000000000000000000A3DAFEFFADDDFEFF90D2FBFF75C6
-      FBFF8FC2E3FF959EA5FFA5A5A5FF807F80FF807F7FFF889199FF4DB6FBFF3CAF
-      FCFF84CCFBFF0198FDFF139FFCFF63C0FDFF00000000CCC7C50000000000E0DB
+      F000FAFAF200000000000000000000000000A3DAFEFFADDDFEFF90D2FBFF77C6
+      FBFF8FC2E3FF959EA5FFA5A5A5FF818181FF818181FF889199FF4FB6FBFF3EAF
+      FCFF84CCFBFF0398FDFF159FFCFF65C0FDFF00000000CCC7C50000000000E0DB
       D900884D000000808000673C0000673C0000673C0000673C0000673C0000673C
       0000673C0000673C0000673C00005032000000000000C5879B00A4516B00C48E
       A000D7B0BC00DAB5C000C5879B00A1496300AA5A7100D7AFBB00DDBAC500CD9D
       AC00BD829500B0637C00844C5F0000000000000000000000000000000000FEFE
       FC00CBCBBA00DBDBCA00C9C9B800C7C7B600D7D7C600D6D6C500CCCCBB00D3D3
       C200FAFAF200000000000000000000000000ACDDFDFF95D4FCFF85C7F0FF93A6
-      B3FFA3A3A3FFE2E2E2FFF8F8F8FF999999FF7F7F7FFF97B6CBFF1FA4FDFFA2D9
-      FCFF95D3FCFF39AFFCFF35ADFDFF85CCFDFFA6A3A20000000000E0DBD9000000
+      B3FFA3A3A3FFE2E2E2FFF8F8F8FF999999FF818181FF97B6CBFF21A4FDFFA2D9
+      FCFF95D3FCFF3BAFFCFF37ADFDFF85CCFDFFA6A3A20000000000E0DBD9000000
       0000A75800001EC5C500A7580000A7580000A25700009F5600009F5600009C56
       00009654000096540000945400000000000000000000C6899D00A75A7100C689
       9D00D7B0BC00DAB5C000C1879800A34D6600AA607600D7AFBB00DDBAC500CD9D
       AC00BD829500AD6179007F45570000000000000000000000000000000000FEFE
       FC00ECECDB00EBEBDA00E9E9D800E8E8D700E7E7D600E5E5D400E4E4D300E3E3
       D200F9F9EF00000000000000000000000000B1DFFDFFBBE1F8FF8E9399FFD1D2
-      D1FFAAAAA9FFEFEFEFFFD4D4D4FFCFCFCFFF858889FF73C0F4FF0299FDFF31AB
-      FBFF8ACFFCFF48B4FCFF6FC4FCFFAFDEFDFF26262600D2CFCE00FFFDFC00CCC7
+      D1FFAAAAA9FFEFEFEFFFD4D4D4FFCFCFCFFF858889FF75C0F4FF0499FDFF33AB
+      FBFF8ACFFCFF4AB4FCFF71C4FCFFAFDEFDFF26262600D2CFCE00FFFDFC00CCC7
       C500B563060000000000FFE4B000FFDDA400FFD79800FFD18D00FFCB8100FFC5
       7600FFBF6A00FFB95F00FFB353005032000000000000C5879B00A6567000C48E
       A000D7B0BC00DAB5C000C5879B00A1496300AA5A7100D7AFBB00DAB5C000CD9D
       AC00BD829500AA5A71007B3F520000000000000000000000000000000000FDFD
       FA00C9C9B800C7C7B600C6C6B500D6D6C500C3C3B200D3D3C200D2D2C100C8C8
       B700F7F7EA00000000000000000000000000B5E1FDFFC4E6FDFFA2AFB7FFDBDB
-      DBFFB5B5B5FFE5E5E5FFC7C7C7FFF7F7F7FF9CA2A7FF9BC9E7FF5CBCF9FF31AB
-      FCFF19A2FDFF33ADFCFF83CBFCFFA1D8FDFFB1AEAD00FFFBF800D5CFCB002B2B
+      DBFFB5B5B5FFE5E5E5FFC7C7C7FFF7F7F7FF9CA2A7FF9BC9E7FF5EBCF9FF33AB
+      FCFF1BA2FDFF35ADFCFF83CBFCFFA1D8FDFFB1AEAD00FFFBF800D5CFCB002B2B
       2B00000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000000000000000C5879B00A6567000C689
       9D00D7B0BC00DAB5C000C6899D00A75A7100AE647A00D7B0BC00E0BFC900D0A3
       B200C6899D00AE647A0076394D0000000000000000000000000000000000FDFD
       FA00E9E9D800E8E8D700E7E7D600E5E5D400E4E4D300E3E3D200E2E2D100E0E0
       CF00F4F4E500000000000000000000000000B6E2FEFFC4E7FEFFC8DDECFFA4A6
-      A7FFE9E9EAFFB1B1B1FFE6E6E6FFDCDCDCFFC1C1C1FF817F81FF878E92FF91A7
-      B6FF84B8D9FF81C8F8FF7DCBFCFF7FCAFDFF00000000CCC7C50000000000E0DB
+      A7FFE9E9EAFFB1B1B1FFE6E6E6FFDCDCDCFFC1C1C1FF818181FF878E92FF91A7
+      B6FF84B8D9FF81C8F8FF7FCBFCFF81CAFDFF00000000CCC7C50000000000E0DB
       D9001B145D000080800000005000000050000000500000005000000050000000
       50000000500000005000000050000000500000000000C5879B00A75A7100C490
       A200DAB5C000DAB5C000C6899D00A7586F00B0687F00DAB5C000DDBAC500D0A3
       B200C48EA000AE647A007333490000000000000000000000000000000000FCFC
       F800C6C6B500D6D6C500C3C3B200C2C2B100C1C1B000C0C0AF00CFCFBE00C6C6
       B500F3F3E200000000000000000000000000B5E0FDFFC4E6FEFFD1EBFDFFA0A8
-      ADFFE6E5E5FFACACACFFEFEFEFFFDEDEDEFFE7E7E7FF808081FF807F7FFF7F7F
-      7FFF807F7FFF808E96FF7FC8FAFF6BC2FDFFA6A3A20000000000E0DBD9000000
+      ADFFE6E5E5FFACACACFFEFEFEFFFDEDEDEFFE7E7E7FF818181FF818181FF8181
+      81FF818181FF818E96FF81C8FAFF6DC2FDFFA6A3A20000000000E0DBD9000000
       0000201A6F001EC5C5005A0292005A0292005A0292005A0292005A0292005A02
       92005A0292005A02920053028D000000500000000000C5879B00A6567000C689
       9D00D7B0BC00DDBAC500C6899D00A7586F00AE647A00D7B0BC00E0BFC900D0A3
       B200C490A200AE647A00712E440000000000000000000000000000000000FCFC
       F600E7E7D600E5E5D400E4E4D300E3E3D200F1F1E700ECECDF00E8E8D900E6E6
       D500F2F2E100000000000000000000000000B2DFFDFFBDE3FDFFC9E9FDFFBFD4
-      E1FFB4B4B5FFE9E9E9FFCBCBCBFFEAEAEAFF949494FF7F7F7FFF7F7F7FFF8081
-      81FF8494A0FF84B5D5FF7DC8FCFF6EC4FCFF26262600D2CFCE00FFFDFC00CCC7
+      E1FFB4B4B5FFE9E9E9FFCBCBCBFFEAEAEAFF949494FF818181FF818181FF8181
+      81FF8494A0FF84B5D5FF7FC8FCFF70C4FCFF26262600D2CFCE00FFFDFC00CCC7
       C5005302860000000000F0BEFF00E5A3FF00DE95FF00D787FF00D27DFF00D079
       FF00CA6CFF00C063F400B55AE8001B145D0000000000C88EA100A75A7100C48E
       A000D7B0BC00DDBAC500C1879800A4516B00AE647A00D7B0BC00E0BFC900D0A3
@@ -8512,7 +8564,7 @@ object frmMain: TfrmMain
       F500C3C3B200C2C2B100D2D2C100C8C8B700ECECDF00E8E8D900E6E6D500E5E5
       D400F2F2E100000000000000000000000000B0DEFDFFB6E1FDFFC1E5FDFFC9E7
       FCFFB0B7BBFFF4F4F5FFBCBCBDFFF3F3F3FF8C8C8CFF818384FF8FA2B1FF97C6
-      E5FF91D3FCFF85CCFDFF77C8FDFF6BC2FDFFB1AEAD00FFFBF800D5CFCB001812
+      E5FF91D3FCFF85CCFDFF79C8FDFF6DC2FDFFB1AEAD00FFFBF800D5CFCB001812
       5400620A9A006810A000620A9A006810A000620A9A006810A000620A9A006810
       A000620A9A005F08950053028600191463000000000000000000D7AFBB00C490
       A200D7B0BC00DAB5C000C6899D00A75A7100B46E8200D7B0BC00DDBAC500D1A6
@@ -8520,7 +8572,7 @@ object frmMain: TfrmMain
       F500F5F5EE00F4F4EC00F1F1E700ECECDF00E8E8D900E6E6D500B5B5A400B5B5
       A400B5B5A40000000000000000000000000096D2FCFFB1DEFCFFB6E1FEFFBCE3
       FDFFAAC5D5FFAFAEAFFFBBBDBBFF8D9397FF9AB2C3FFA7D5F3FFA1D8FDFF97D4
-      FEFF8BCFFEFF7ECAFDFF72C6FEFF66C0FEFF00000000CCC7C500181254004B02
+      FEFF8BCFFEFF80CAFDFF74C6FEFF68C0FEFF00000000CCC7C500181254004B02
       7A000091910000D1D1000096960046057F004F0384004B027A004F0384004B02
       7A0050028100390A770018125400000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -8528,15 +8580,15 @@ object frmMain: TfrmMain
       F200F4F4EC00F1F1E700ECECDF00E8E8D900E6E6D500E5E5D400C7C7B6000000
       0000A3A3790000000000000000000000000095D2FDFFA0D7FCFFA7DCFDFFAFDE
       FDFFB1DEFAFF91A1ACFFA1BED3FFADDBF8FFA9DCFDFFA2D9FDFF98D5FDFF8ED1
-      FDFF83CCFEFF78C8FEFF6CC3FEFF61BEFEFFA6A3A20018125400201A6F000096
+      FDFF83CCFEFF7AC8FEFF6EC3FEFF63BEFEFFA6A3A20018125400201A6F000096
       960000D1D10000919100201A6F002C14740027106B002C14740027106B002C14
       740027106B001812540000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       000000000000000000000000000000000000000000000000000000000000FCFC
       F600F9F9EF00F6F6EA00F4F4E500F3F3E200F2F2E100F2F2E100D3D3C200A7A7
-      7D00A7A77D0000000000000000000000000093D2FDFF91D1FCFFB1DEFDFFAFDE
+      7D00A7A77D000000000000000000000000000000000091D1FCFFB1DEFDFFAFDE
       FDFFA5DAFDFFA5DBFCFFA6DAFDFFA2D9FDFF9DD7FEFF96D4FEFF8ED0FDFF85CD
-      FEFF7AC9FEFF71C5FDFF64C0FEFF5ABCFCFF210F54001B145D00191463001914
+      FEFF7CC9FEFF73C5FDFF66C0FEFF5CBCFCFF210F54001B145D00191463001914
       6300191463001914630019146300191463001914630019146300191463001B14
       5D00001D58000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -8552,8 +8604,7 @@ object frmMain: TfrmMain
       00009000FE7DF807000004008001F007000000018001F007000080008001E007
       000010008001E007000004008001E007000000018001E007000080008001E007
       000010008001E007000004008001E00700000000C003E00700008001FFFFE017
-      00000003FFFFE00700000007FFFFFFFF00000000000000000000000000000000
-      000000000000}
+      00000003FFFFE00700000007FFFFFFFF}
   end
   object pmHeaders: TPopupMenu
     Images = ilFileTypes

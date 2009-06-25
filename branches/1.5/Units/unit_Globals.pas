@@ -186,7 +186,9 @@ type
 
     Title, Series, Genre, FullName, ColName, FileType : String;
 
-    ID, SeriesID, Size, Rate, No, ImageIndex: Integer;
+    Lang: string[2];
+
+    ID, SeriesID, Size, Rate, No, ImageIndex, Progress: Integer;
     RatePos: Integer;
     Locale: boolean;
     Deleted: boolean;

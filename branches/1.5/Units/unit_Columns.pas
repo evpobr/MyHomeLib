@@ -204,8 +204,8 @@ begin
 
         COL_STATE:begin
                    Caption   := '';
-                   MaxWidth  := 15;
-                   MinWidth  := 15;
+                   MaxWidth  := 35;
+                   MinWidth  := 35;
                    Alignment := taCenter;
                    Options    := Fix - [coDraggable] + [coFixed];
                  end;

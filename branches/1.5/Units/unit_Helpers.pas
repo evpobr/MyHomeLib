@@ -54,7 +54,8 @@ type
     fnSaveLog,
     fnSaveImportFile,
     fnOpenINPX,
-    fnSaveINPX
+    fnSaveINPX,
+    fnOpenUserData
   );
 
 function GetFileName(key: TMHLFileName; out FileName: string): Boolean;
@@ -229,6 +230,12 @@ resourcestring
   rstrSaveINPXDlgFilter = 'Список книг MyHomeLib (*.inpx)|*.inpx|Все типы|*.*';
   rstrSaveINPXDlgDefaultExt = 'inpx';
 
+  //fnSaveINPX
+  rstrOpenUDDlgTitle = 'Выбор файла данных';
+  rstrOpenUDDlgFilter = 'Пользовательские данные MyHomeLib (*.mhlud)|*.mhlud|Все типы|*.*';
+  rstrOpenUDDlgDefaultExt = 'mhlud';
+
+
 function GetFileName(key: TMHLFileName; out FileName: string): Boolean;
 const
   DlgParams: array[TMHLFileName] of TDialogParams = (
@@ -281,6 +288,11 @@ const
       Title:      rstrSaveINPXDlgTitle;
       Filter:     rstrSaveINPXDlgFilter;     DefaultExt: rstrSaveINPXDlgDefaultExt;
       DialogKey:  'SaveINPXFile';            OpenFile:   False
+    ),
+    ( // fnOpenUserData
+      Title:      rstrOpenUDDlgTitle;
+      Filter:     rstrOpenUDDlgFilter;     DefaultExt: rstrOpenUDDlgDefaultExt;
+      DialogKey:  'OpenUserData';            OpenFile: True
     )
     //(Title: ''; Filter: ''; DefaultExt: ''; ExtraOptions: ; DialogKey: ''; GetFileNameFunction:)
   );

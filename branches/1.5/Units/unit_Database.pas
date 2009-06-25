@@ -47,7 +47,6 @@ type
     // Database creation & management
     //
     class procedure CreateSystemTables(const DBFile: string);
-    class procedure RestructureSystemTables(const DBFile: string);
     procedure CreateCollectionTables(const DBFile: string; const GenresFileName: string);
     procedure ReloadDefaultGenres(const FileName: string);
 
@@ -336,10 +335,10 @@ GroupsListTableIndexes: array [1..2] of TIndexDesc = (
 //
 //  Groups table
 //
-GroupsTableFields: array [1 .. 22] of TFieldDesc = (
-  (Name: 'GroupID';    DataType: ftInteger;    Size: 0;   Required: true),
-  (Name: 'InnerID';    DataType: ftAutoInc;    Size: 0;   Required: false),   // локальный ID в этой таблице
-  (Name: 'ID';         DataType: ftInteger;    Size: 0;   Required: true),    // глобальный ID книги в коллекции
+GroupsTableFields: array [1 .. 23] of TFieldDesc = (
+  (Name: 'ID';         DataType: ftAutoInc;    Size: 0;   Required: true),  // локальный уникальный ID в этой таблице
+  (Name: 'GroupID';    DataType: ftInteger;    Size: 0;   Required: true),  // id родительской группы
+  (Name: 'OuterID';    DataType: ftInteger;     Size: 0;   Required: false),// внешний ID книги в коллекции
   (Name: 'SerID';      DataType: ftInteger;    Size: 0;   Required: false),
   (Name: 'SeqNumber';  DataType: ftSmallInt;   Size: 0;   Required: false),
   (Name: 'DatabaseID'; DataType: ftInteger;    Size: 0;   Required: false),
@@ -358,11 +357,13 @@ GroupsTableFields: array [1 .. 22] of TFieldDesc = (
   (Name: 'Deleted';    DataType: ftBoolean;    Size: 0;   Required: false),
   (Name: 'Genres';     DataType: ftWideString; Size: 128; Required: false),
   (Name: 'Series';     DataType: ftWideString; Size: 128; Required: false),
-  (Name: 'Rate';       DataType: ftInteger;    Size: 0;   Required: false)
+  (Name: 'Rate';       DataType: ftInteger;    Size: 0;   Required: false),
+  (Name: 'Progress';   DataType: ftSmallInt;   Size: 0;   Required: false)
 );
 
-GroupsTableIndexes: array [1..3] of TIndexDesc = (
-  (Name: 'ID_Index';  Fields: 'InnerID';               Options: [ixPrimary]),
+GroupsTableIndexes: array [1..4] of TIndexDesc = (
+  (Name: 'ID_Index';       Fields: 'ID';               Options: [ixPrimary]),
+  (Name: 'OuterID_Index'; Fields: 'GroupID;OuterID';   Options: []),
   (Name: 'FullName_Index'; Fields: 'GroupID;FullName;Series;Title'; Options: []),
   (Name: 'File_Index';     Fields: 'FileName';              Options: [])
 );
@@ -371,7 +372,7 @@ GroupsTableIndexes: array [1..3] of TIndexDesc = (
 // Rates table
 //
 RatesTableFields: array [1 .. 5] of TFieldDesc = (
-  (Name: 'ID';         DataType: ftInteger; Size: 0; Required: true),
+  (Name: 'ID';         DataType: ftAutoInc; Size: 0; Required: true),
   (Name: 'BookID';     DataType: ftInteger; Size: 0; Required: true),
   (Name: 'DataBaseID'; DataType: ftInteger; Size: 0; Required: true),
   (Name: 'Rate';       DataType: ftInteger; Size: 0; Required: true),
@@ -380,24 +381,23 @@ RatesTableFields: array [1 .. 5] of TFieldDesc = (
 
 RatesTableIndexes: array [1..2] of TIndexDesc = (
   (Name: 'ID_Index';   Fields: 'ID';                Options: [ixPrimary]),
-  (Name: 'Book_Index'; Fields: 'DatabaseID,BookID'; Options: [ixPrimary])
+  (Name: 'Book_Index'; Fields: 'DatabaseID,BookID'; Options: [])
 );
 
 //
 // finished books table
 //
-FinishedTableFields: array [1 .. 6] of TFieldDesc = (
+FinishedTableFields: array [1 .. 5] of TFieldDesc = (
   (Name: 'ID';         DataType: ftAutoInc; Size: 0; Required: true),
   (Name: 'BookID';     DataType: ftInteger; Size: 0; Required: true),
   (Name: 'DataBaseID'; DataType: ftInteger; Size: 0; Required: true),
-  (Name: 'State';      DataType: ftBoolean; Size: 0; Required: true),
-  (Name: 'Progress';   DataType: ftInteger; Size: 0; Required: false),
+  (Name: 'Progress';   DataType: ftSmallInt; Size: 0; Required: false),
   (Name: 'Date';       DataType: ftDate;    Size: 0; Required: false)
 );
 
 FinishedTableIndexes: array [1..2] of TIndexDesc = (
   (Name: 'ID_Index';   Fields: 'ID';                Options: [ixPrimary]),
-  (Name: 'Book_Index'; Fields: 'DatabaseID,BookID'; Options: [])
+  (Name: 'Book_Index'; Fields: 'DatabaseID,BookID,Progress'; Options: [])
 );
 
 
@@ -438,55 +438,6 @@ begin
     TempTable.Free;
   end;
 end;
-
-procedure RestructureTable(
-  ADatabase: TAbsDataBase;
-  const TableName: string;
-  FieldDesc: array of TFieldDesc;
-  IndexDesc: array of TIndexDesc
-  );
-var
-  TempTable: TAbsTable;
-  i: Integer;
-  S: string;
-begin
-  TempTable := TAbsTable.Create(ADatabase);
-  try
-    TempTable.TableName := TableName;
-
-    for i := 0 to High(FieldDesc) do
-      if TempTable.FieldDefs.IndexOf(FieldDesc[i].Name) = -1 then
-//        TempTable.RestructureFieldDefs.Add(FieldDesc[i].Name,
-//                                 FieldDesc[i].DataType,
-//                                 FieldDesc[i].Size,
-//                                 FieldDesc[i].Required
-//                               );
-
-//    for i := 0 to High(IndexDesc) do
-//      if TempTable.IndexDefs.IndexOf(IndexDesc[i].Name) = -1 then
-//        TempTable.RestructureIndexDefs.Add( IndexDesc[i].Name,
-//                            IndexDesc[i].Fields,
-//                            IndexDesc[i].Options
-//                           );
-    TempTable.RestructureTable(S);
-  finally
-    TempTable.Free;
-  end;
-end;
-
-procedure RenameTable(ADatabase: TAbsDataBase; Old,New: string);
-var
-  TempTable: TAbsTable;
-begin
-  TempTable := TAbsTable.Create(ADatabase);
-  try
-    TempTable.TableName := Old;
-    TempTable.RenameTable(New);
-  finally
-    TempTable.Free;
-  end;
-end;
-
 
 { TMHLLibrary }
 
@@ -759,50 +710,6 @@ begin
   LoadGenres(FileName);
 end;
 
-class procedure TMHLLibrary.RestructureSystemTables(const DBFile: string);
-var
-  ADataBase: TAbsDataBase;
-
-  Groups: TAbsTable;
-
-begin
-  ADataBase := TAbsDataBase.Create(nil);
-  try
-    ADataBase.DatabaseFileName := DBFile;
-    ADataBase.DatabaseName := USER_DATABASE;
-    ADataBase.MaxConnections := 5;
-    ADataBase.PageSize := 65535;
-
-    RestructureTable(ADataBase, 'Bases',        BasesTableFields,      BasesTableIndexes);
-    CreateTable(ADataBase,      'GroupsList',   GroupsListTableFields, GroupsListTableIndexes);
-
-    RenameTable(ADataBase,'Favorites','GroupedBooks');
-    RestructureTable(ADataBase, 'GroupedBooks', GroupsTableFields,     GroupsTableIndexes);
-
-    RestructureTable(ADataBase, 'Rates',        RatesTableFields,      RatesTableIndexes);
-    CreateTable(ADataBase, 'Finished',     FinishedTableFields,   FinishedTableIndexes);
-
-    Groups := TAbsTable.Create(ADataBase);
-    Groups.TableName := 'GroupsList';
-    Groups.Active := True;
-
-    Groups.Insert;
-    Groups['Name'] := '»збранное';
-    Groups['AllowDelete'] := False;
-    Groups.Post;
-
-    Groups.Insert;
-    Groups['Name'] := '  прочтению';
-    Groups['AllowDelete'] := False;
-    Groups.Post;
-
-
-    ADataBase.Connected := False;
-
-  finally
-    ADataBase.Free;
-  end;
-end;
 
 { TODO 5 -oNickR -cRefactoring :
 Ѕолее верно (с идеалогической точки зрени€) передавать в качестве параметров поле дл€ проверки.
