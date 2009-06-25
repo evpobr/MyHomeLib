@@ -2043,7 +2043,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2257,7 +2256,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2471,7 +2469,6 @@ object frmMain: TfrmMain
             Font.Style = []
             ParentFont = False
             CenterPoint = cpLowerRight
-            ExplicitLeft = 925
             ExplicitHeight = 19
           end
           object btnClearDownload: TRzBitBtn
@@ -2653,19 +2650,29 @@ object frmMain: TfrmMain
       object N38: TMenuItem
         Caption = '-'
       end
-      object miINPXCollectionExport: TMenuItem
-        Caption = #1069#1082#1089#1087#1086#1088#1090#1080#1088#1086#1074#1072#1090#1100' '#1074' inpx'
-        Enabled = False
-        OnClick = miINPXCollectionExportClick
+      object N39: TMenuItem
+        Caption = #1069#1082#1089#1087#1086#1088#1090
+        object miCollectionExport: TMenuItem
+          Caption = #1069#1082#1089#1087#1086#1088#1090#1080#1088#1086#1074#1072#1090#1100' '#1074' xml'
+          Enabled = False
+          ImageIndex = 10
+          OnClick = miCollectionExportClick
+        end
+        object miINPXCollectionExport: TMenuItem
+          Caption = #1069#1082#1089#1087#1086#1088#1090#1080#1088#1086#1074#1072#1090#1100' '#1074' inpx'
+          Enabled = False
+          OnClick = miINPXCollectionExportClick
+        end
+        object N40: TMenuItem
+          Caption = '-'
+        end
+        object miSavePersonalData: TMenuItem
+          Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1083#1080#1095#1085#1099#1077' '#1076#1072#1085#1085#1099#1077
+          OnClick = miSavePersonalDataClick
+        end
       end
       object N14: TMenuItem
         Caption = '-'
-      end
-      object miCollectionExport: TMenuItem
-        Caption = #1069#1082#1089#1087#1086#1088#1090#1080#1088#1086#1074#1072#1090#1100' '#1074' xml'
-        Enabled = False
-        ImageIndex = 10
-        OnClick = miCollectionExportClick
       end
       object miCollectionImport: TMenuItem
         Caption = #1048#1084#1087#1086#1088#1090#1080#1088#1086#1074#1072#1090#1100' '#1080#1079' xml'
