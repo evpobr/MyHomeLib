@@ -2360,6 +2360,8 @@ object frmMain: TfrmMain
               OnInitNode = tvBooksTreeInitNode
               OnKeyDown = tvBooksTreeKeyDown
               OnMouseUp = tvBooksTreeMouseUp
+              ExplicitLeft = 8
+              ExplicitTop = 18
               Columns = <
                 item
                   Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]

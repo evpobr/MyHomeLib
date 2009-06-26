@@ -4462,6 +4462,7 @@ begin
     DMUser.tblGrouppedBooksGenres.Value := Genre;
     DMUser.tblGrouppedBooksRate.Value := dmCollection.tblBooksRate.Value;
     DMUser.tblGrouppedBooksDate.Value := dmCollection.tblBooksDate.Value;
+    DMUser.tblGrouppedBooksProgress.Value := dmCollection.tblBooksProgress.Value;
     DMUser.tblGrouppedBooks.Post;
   end;
 end;
@@ -4954,16 +4955,15 @@ begin
   Data := Tree.GetNodeData(Node);
   if not Assigned(Data) or (Data.nodeType <> ntBookInfo) then
     Exit;
-    
   Data.Rate := 0;
   BookTreeStatus := bsBusy;
   if GetActiveView <> FavoritesView then
   begin
-    if DMUser.tblRates.Locate('ID;DataBaseID',
+    if DMUser.tblRates.Locate('BookID;DataBaseID',
           VarArrayOf([Data.ID,DMUser.ActiveCollection.ID]), [])
       then DMUser.tblRates.Delete;
-    if DMUser.tblGrouppedBooks.Locate('OuterID;DataBaseID',
-       VarArrayOf([Data.ID,DMUser.ActiveCollection.ID]),[]) then
+    if DMUser.tblGrouppedBooks.Locate('DataBaseID;OuterID',
+                                  VarArrayOf([DMUser.ActiveCollection.ID,Data.ID]),[]) then
     begin
       DMUser.tblGrouppedBooks.Edit;
       DMUser.tblGrouppedBooksRate.Value := 0;
@@ -4978,7 +4978,7 @@ begin
       DMUser.tblGrouppedBooksRate.Value := 0;
       DMUser.tblGrouppedBooks.Post;
 
-      if DMUser.tblRates.Locate('ID;DataBaseID',
+      if DMUser.tblRates.Locate('BookID;DataBaseID',
           VarArrayOf([DMUser.tblGrouppedBooksOuterID.Value,DMUser.tblGrouppedBooksDatabaseID.Value]), [])
         then begin
           DMUser.tblRates.Delete;
