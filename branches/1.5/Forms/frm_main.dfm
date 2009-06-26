@@ -424,9 +424,9 @@ object frmMain: TfrmMain
     Width = 998
     Height = 848
     HelpContext = 135
-    ActivePage = TabSheet4
+    ActivePage = TabSheet1
     Align = alClient
-    TabIndex = 3
+    TabIndex = 0
     TabOrder = 3
     OnChange = pgControlChange
     FixedDimension = 19
@@ -713,6 +713,7 @@ object frmMain: TfrmMain
                 OnInitNode = tvBooksTreeInitNode
                 OnKeyDown = tvBooksTreeKeyDown
                 OnMouseUp = tvBooksTreeMouseUp
+                ExplicitLeft = 2
                 Columns = <
                   item
                     MaxWidth = 1000
