@@ -188,7 +188,7 @@ type
 
     Lang: string[2];
 
-    ID, SeriesID, Size, Rate, No, ImageIndex, Progress: Integer;
+    ID, SeriesID, Size, Rate, No, ImageIndex, Progress, LibRate: Integer;
     RatePos: Integer;
     Locale: boolean;
     Deleted: boolean;
@@ -253,6 +253,9 @@ type
     Deleted: Boolean;
     Local: Boolean;
     Date: TDateTime;
+
+    Lang: string[2];
+    LibRate: integer;
 
     procedure Normalize;
     procedure Clear;

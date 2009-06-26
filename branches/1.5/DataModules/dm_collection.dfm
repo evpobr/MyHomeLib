@@ -3,7 +3,11 @@ object DMCollection: TDMCollection
   Height = 567
   Width = 565
   object DBCollection: TABSDatabase
+    Connected = True
     CurrentVersion = '6.02 '
+    DatabaseFileName = 
+      'D:\DelphiProjects\MyHomeLib 1.5\Debug\Bin\Data\librusec_online.h' +
+      'lc'
     DatabaseName = 'Collection'
     Exclusive = True
     MaxConnections = 5
@@ -50,24 +54,12 @@ object DMCollection: TDMCollection
         DataType = ftAutoInc
       end
       item
-        Name = 'SerID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'SeqNumber'
-        DataType = ftSmallint
-      end
-      item
         Name = 'DatabaseID'
         DataType = ftInteger
       end
       item
         Name = 'LibID'
         DataType = ftInteger
-      end
-      item
-        Name = 'Date'
-        DataType = ftDate
       end
       item
         Name = 'Title'
@@ -77,18 +69,48 @@ object DMCollection: TDMCollection
       item
         Name = 'FullName'
         DataType = ftWideString
-        Size = 45
+        Size = 255
       end
       item
-        Name = 'InsideNo'
-        Attributes = [faRequired]
+        Name = 'SerID'
         DataType = ftInteger
+      end
+      item
+        Name = 'SeqNumber'
+        DataType = ftSmallint
+      end
+      item
+        Name = 'Date'
+        DataType = ftDate
+      end
+      item
+        Name = 'LibRate'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Lang'
+        DataType = ftWideString
+        Size = 2
+      end
+      item
+        Name = 'DiscID'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Folder'
+        DataType = ftWideString
+        Size = 255
       end
       item
         Name = 'FileName'
         Attributes = [faRequired]
         DataType = ftWideString
         Size = 255
+      end
+      item
+        Name = 'InsideNo'
+        Attributes = [faRequired]
+        DataType = ftInteger
       end
       item
         Name = 'Ext'
@@ -100,17 +122,13 @@ object DMCollection: TDMCollection
         DataType = ftInteger
       end
       item
+        Name = 'URI'
+        DataType = ftWideString
+        Size = 255
+      end
+      item
         Name = 'Code'
         DataType = ftSmallint
-      end
-      item
-        Name = 'Folder'
-        DataType = ftWideString
-        Size = 128
-      end
-      item
-        Name = 'DiscID'
-        DataType = ftInteger
       end
       item
         Name = 'Local'
@@ -210,6 +228,20 @@ object DMCollection: TDMCollection
       KeyFields = 'ID'
       Lookup = True
     end
+    object tblBooksADatabaseID: TIntegerField
+      FieldName = 'DatabaseID'
+    end
+    object tblBooksALibRate: TIntegerField
+      FieldName = 'LibRate'
+    end
+    object tblBooksALang: TWideStringField
+      FieldName = 'Lang'
+      Size = 2
+    end
+    object tblBooksAURI: TWideStringField
+      FieldName = 'URI'
+      Size = 255
+    end
   end
   object tblBooksG: TABSTable
     CurrentVersion = '6.02 '
@@ -248,28 +280,12 @@ object DMCollection: TDMCollection
         DataType = ftAutoInc
       end
       item
-        Name = 'SerID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'SeqNumber'
-        DataType = ftSmallint
-      end
-      item
-        Name = 'AuthID'
-        DataType = ftInteger
-      end
-      item
         Name = 'DatabaseID'
         DataType = ftInteger
       end
       item
         Name = 'LibID'
         DataType = ftInteger
-      end
-      item
-        Name = 'Date'
-        DataType = ftDate
       end
       item
         Name = 'Title'
@@ -279,18 +295,48 @@ object DMCollection: TDMCollection
       item
         Name = 'FullName'
         DataType = ftWideString
-        Size = 45
+        Size = 255
       end
       item
-        Name = 'InsideNo'
-        Attributes = [faRequired]
+        Name = 'SerID'
         DataType = ftInteger
+      end
+      item
+        Name = 'SeqNumber'
+        DataType = ftSmallint
+      end
+      item
+        Name = 'Date'
+        DataType = ftDate
+      end
+      item
+        Name = 'LibRate'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Lang'
+        DataType = ftWideString
+        Size = 2
+      end
+      item
+        Name = 'DiscID'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Folder'
+        DataType = ftWideString
+        Size = 255
       end
       item
         Name = 'FileName'
         Attributes = [faRequired]
         DataType = ftWideString
         Size = 255
+      end
+      item
+        Name = 'InsideNo'
+        Attributes = [faRequired]
+        DataType = ftInteger
       end
       item
         Name = 'Ext'
@@ -302,17 +348,13 @@ object DMCollection: TDMCollection
         DataType = ftInteger
       end
       item
+        Name = 'URI'
+        DataType = ftWideString
+        Size = 255
+      end
+      item
         Name = 'Code'
         DataType = ftSmallint
-      end
-      item
-        Name = 'Folder'
-        DataType = ftWideString
-        Size = 128
-      end
-      item
-        Name = 'DiscID'
-        DataType = ftInteger
       end
       item
         Name = 'Local'
@@ -412,6 +454,20 @@ object DMCollection: TDMCollection
     end
     object tblBooksGDeleted: TBooleanField
       FieldName = 'Deleted'
+    end
+    object tblBooksGDatabaseID: TIntegerField
+      FieldName = 'DatabaseID'
+    end
+    object tblBooksGLibRate: TIntegerField
+      FieldName = 'LibRate'
+    end
+    object tblBooksGLang: TWideStringField
+      FieldName = 'Lang'
+      Size = 2
+    end
+    object tblBooksGURI: TWideStringField
+      FieldName = 'URI'
+      Size = 255
     end
   end
   object tblGenres: TABSTable
@@ -555,32 +611,12 @@ object DMCollection: TDMCollection
         DataType = ftAutoInc
       end
       item
-        Name = 'SerID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'GenreID'
-        DataType = ftSmallint
-      end
-      item
-        Name = 'SeqNumber'
-        DataType = ftSmallint
-      end
-      item
-        Name = 'AuthID'
-        DataType = ftInteger
-      end
-      item
         Name = 'DatabaseID'
         DataType = ftInteger
       end
       item
         Name = 'LibID'
         DataType = ftInteger
-      end
-      item
-        Name = 'Date'
-        DataType = ftDate
       end
       item
         Name = 'Title'
@@ -590,18 +626,48 @@ object DMCollection: TDMCollection
       item
         Name = 'FullName'
         DataType = ftWideString
-        Size = 45
+        Size = 255
       end
       item
-        Name = 'InsideNo'
-        Attributes = [faRequired]
+        Name = 'SerID'
         DataType = ftInteger
+      end
+      item
+        Name = 'SeqNumber'
+        DataType = ftSmallint
+      end
+      item
+        Name = 'Date'
+        DataType = ftDate
+      end
+      item
+        Name = 'LibRate'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Lang'
+        DataType = ftWideString
+        Size = 2
+      end
+      item
+        Name = 'DiscID'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Folder'
+        DataType = ftWideString
+        Size = 255
       end
       item
         Name = 'FileName'
         Attributes = [faRequired]
         DataType = ftWideString
         Size = 255
+      end
+      item
+        Name = 'InsideNo'
+        Attributes = [faRequired]
+        DataType = ftInteger
       end
       item
         Name = 'Ext'
@@ -613,17 +679,13 @@ object DMCollection: TDMCollection
         DataType = ftInteger
       end
       item
+        Name = 'URI'
+        DataType = ftWideString
+        Size = 255
+      end
+      item
         Name = 'Code'
         DataType = ftSmallint
-      end
-      item
-        Name = 'Folder'
-        DataType = ftWideString
-        Size = 128
-      end
-      item
-        Name = 'DiscID'
-        DataType = ftInteger
       end
       item
         Name = 'Local'
@@ -723,6 +785,20 @@ object DMCollection: TDMCollection
     end
     object tblBooksSDeleted: TBooleanField
       FieldName = 'Deleted'
+    end
+    object tblBooksSDatabaseID: TIntegerField
+      FieldName = 'DatabaseID'
+    end
+    object tblBooksSLibRate: TIntegerField
+      FieldName = 'LibRate'
+    end
+    object tblBooksSLang: TWideStringField
+      FieldName = 'Lang'
+      Size = 2
+    end
+    object tblBooksSURI: TWideStringField
+      FieldName = 'URI'
+      Size = 255
     end
   end
   object dsSeries: TDataSource
@@ -1199,6 +1275,17 @@ object DMCollection: TDMCollection
       LookupResultField = 'Rate'
       KeyFields = 'ID'
       Lookup = True
+    end
+    object tblBooksLibRate: TIntegerField
+      FieldName = 'LibRate'
+    end
+    object tblBooksLang: TWideStringField
+      FieldName = 'Lang'
+      Size = 2
+    end
+    object tblBooksURI: TWideStringField
+      FieldName = 'URI'
+      Size = 255
     end
   end
   object tblSeriesA: TABSTable

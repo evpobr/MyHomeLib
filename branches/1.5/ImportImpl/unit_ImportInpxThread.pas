@@ -27,7 +27,7 @@ uses
 type
 
   TFields = (flNone,flAuthor, flTitle, flSeries, flSerNo, flGenre, flLibID, flInsideNo, flFile,
-             flFolder, flExt, flSize, flLang, flDate, flCode, flDeleted, flRate, flURI);
+             flFolder, flExt, flSize, flLang, flDate, flCode, flDeleted, flRate, flURI, flLibRate);
 
   TFieldDescr = record
                    Code: string;
@@ -77,7 +77,7 @@ type
 
 const
 
-  FieldsDescr: array [1..17] of  TFieldDescr= (
+  FieldsDescr: array [1..18] of  TFieldDescr= (
     (Code:'AUTHOR'; FType: flAuthor),
     (Code:'TITLE';  FType:  flTitle),
     (Code:'SERIES'; FType:  flSeries),
@@ -94,7 +94,8 @@ const
     (Code:'CODE';   FType:  flCode),
     (Code:'DEL';    FType:  flDeleted),
     (Code:'RATE';   FType: flRate),
-    (Code:'URI';    FType:  flURI)
+    (Code:'URI';    FType:  flURI),
+    (Code:'LIBRATE';FType:  flLibRate)
   );
 
 { TImportLibRusEcThread }
@@ -228,7 +229,8 @@ begin
 
         flInsideNo:  R.InsideNo := StrToInt(slParams[i]);        // номер в архиве
         flFolder:    R.Folder := slParams[i];                    // папка
-
+        flLibrate:   R.LibRate := StrToIntDef(slParams[i], 0);   // внешний рейтинг
+        flLang:      R.Lang := slParams[i];                      // язык
     end; // case, for
     R.Normalize;
   finally
