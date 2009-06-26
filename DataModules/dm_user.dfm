@@ -1060,7 +1060,7 @@ object DMUser: TDMUser
       FieldName = 'DataBaseID'
       Required = True
     end
-    object tblFinishedProgress: TIntegerField
+    object tblFinishedProgress: TSmallintField
       FieldName = 'Progress'
     end
     object tblFinishedDate: TDateField

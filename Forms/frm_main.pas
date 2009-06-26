@@ -4563,7 +4563,7 @@ begin
     //  Синхронизация с таблицей рейтингов
     //
 
-    DMUser.SetRate(DMUser.tblGrouppedBooksOuterID.Value, DMUser.tblGrouppedBooksDatabaseID.Value);
+    DMUser.SetRate(DMUser.tblGrouppedBooksOuterID.Value, Data.Rate);
 
     FillBooksTree(0, tvBooksA, dmCollection.tblAuthor_List, dmCollection.tblBooksA, False, True); // авторы
     FillBooksTree(0, tvBooksS, nil, dmCollection.tblBooksS, False, False); // серии
@@ -5296,9 +5296,48 @@ begin
   Data := Tree.GetNodeData(Node);
   if not Assigned(Data) or (Data.nodeType <> ntBookInfo) then
     exit;
+
+  //  заглушка
   Data.Progress := 100;
-  DMUser.SetFinished(Data.ID, 100);
+
+  BookTreeStatus := bsBusy;
+  if GetActiveView <> FavoritesView then
+  begin
+
+    DMUser.SetFinished(Data.ID, Data.Progress);
+
+    //
+    //  Синхронизация с избранным
+    //
+    if (DMUser.tblGrouppedBooks.Locate('DataBaseID;OuterID',
+                                  VarArrayOf([DMUser.ActiveCollection.ID,Data.ID]),[]))
+    then
+    begin
+      DMUser.tblGrouppedBooks.Edit;
+      DMUser.tblGrouppedBooksProgress.Value := Data.Progress;
+      DMUser.tblGrouppedBooks.Post;
+      FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True); // избранное
+    end;
+  end
+  else // активная вкладка - избранное
+  begin
+    DMUser.tblGrouppedBooks.Locate('DataBaseID;OuterID;',
+                                    VarArrayOf([DMUser.ActiveCollection.ID,Data.ID]),[]);
+    DMUser.tblGrouppedBooks.Edit;
+    DMUser.tblGrouppedBooksProgress.Value := Data.Progress;
+    DMUser.tblGrouppedBooks.Post;
+
+    //
+    //  Синхронизация с таблицей рейтингов
+    //
+
+    DMUser.SetFinished(DMUser.tblGrouppedBooksOuterID.Value, Data.Progress);
+
+    FillBooksTree(0, tvBooksA, dmCollection.tblAuthor_List, dmCollection.tblBooksA, False, True); // авторы
+    FillBooksTree(0, tvBooksS, nil, dmCollection.tblBooksS, False, False); // серии
+  end;
   Tree.RepaintNode(Node);
+  BookTreeStatus := bsFree;
 end;
 
 procedure TfrmMain.miRefreshClick(Sender: TObject);
