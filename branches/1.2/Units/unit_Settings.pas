@@ -767,7 +767,7 @@ begin
                        True,CT_LIBRUSEC_ONLINE_FB);
     FUpdateList.Add('Онлайн коллекция Либрусек','','last_extra.info','extra_update.zip',
                        False,CT_LIBRUSEC_ONLINE_FB);
-    FUpdateList.Add('Локальная коллекция Либрусек [USR]','','last_usr.info','usr_update.zip',
+    FUpdateList.Add('lib.rus.ec USR','','last_usr.info','usr_update.zip',
                        True,CT_LIBRUSEC_USR);
 
     // обрабатываем файл
