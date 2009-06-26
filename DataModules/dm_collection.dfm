@@ -3,11 +3,7 @@ object DMCollection: TDMCollection
   Height = 567
   Width = 565
   object DBCollection: TABSDatabase
-    Connected = True
     CurrentVersion = '6.02 '
-    DatabaseFileName = 
-      'D:\DelphiProjects\MyHomeLib 1.5\Debug\Bin\Data\librusec_online.h' +
-      'lc'
     DatabaseName = 'Collection'
     Exclusive = True
     MaxConnections = 5
