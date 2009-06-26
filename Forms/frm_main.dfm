@@ -424,9 +424,9 @@ object frmMain: TfrmMain
     Width = 998
     Height = 848
     HelpContext = 135
-    ActivePage = TabSheet5
+    ActivePage = TabSheet4
     Align = alClient
-    TabIndex = 4
+    TabIndex = 3
     TabOrder = 3
     OnChange = pgControlChange
     FixedDimension = 19
@@ -1551,6 +1551,7 @@ object frmMain: TfrmMain
             OnInitNode = tvBooksTreeInitNode
             OnKeyDown = tvBooksTreeKeyDown
             OnMouseUp = tvBooksTreeMouseUp
+            ExplicitLeft = 2
             Columns = <
               item
                 MaxWidth = 1000
@@ -1733,21 +1734,23 @@ object frmMain: TfrmMain
           end
           object RzGroupBox4: TRzGroupBox
             AlignWithMargins = True
-            Left = 513
+            Left = 490
             Top = 0
-            Width = 212
+            Width = 235
             Height = 89
-            Margins.Left = 513
+            Margins.Left = 490
             Margins.Top = 0
             Margins.Bottom = 0
             Align = alTop
             TabOrder = 1
+            ExplicitLeft = 513
+            ExplicitWidth = 212
             DesignSize = (
-              212
+              235
               89)
             object lblTotalBooksFL: TRzLabel
               AlignWithMargins = True
-              Left = 196
+              Left = 219
               Top = 14
               Width = 12
               Height = 19
@@ -1771,10 +1774,18 @@ object frmMain: TfrmMain
               Alignment = taRightJustify
               Caption = #1044#1072#1090#1072
             end
+            object Label2: TLabel
+              Left = 127
+              Top = 20
+              Width = 26
+              Height = 13
+              Alignment = taRightJustify
+              Caption = #1071#1079#1099#1082
+            end
             object cbDate: TRzComboBox
               Left = 39
               Top = 16
-              Width = 129
+              Width = 82
               Height = 21
               ItemHeight = 13
               TabOrder = 0
@@ -1788,8 +1799,8 @@ object frmMain: TfrmMain
             end
             object cbDownloaded: TRzComboBox
               Left = 40
-              Top = 40
-              Width = 128
+              Top = 39
+              Width = 173
               Height = 21
               ItemHeight = 13
               ReadOnlyColor = clBtnHighlight
@@ -1809,12 +1820,54 @@ object frmMain: TfrmMain
               Caption = ' '#1057#1082#1088#1099#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
               TabOrder = 2
             end
+            object cbLang: TRzComboBox
+              Left = 159
+              Top = 16
+              Width = 54
+              Height = 21
+              ItemHeight = 13
+              TabOrder = 3
+              OnKeyDown = edFFullNameKeyDown
+              Items.Strings = (
+                'be'
+                'bg'
+                'bo'
+                'br'
+                'cs '
+                'cz '
+                'da '
+                'de '
+                'en '
+                'eo '
+                'es'
+                'fr'
+                'is'
+                'it'
+                'ja'
+                'la'
+                'lt'
+                'lv'
+                'pl'
+                'pt'
+                'ro'
+                'ru'
+                'sp'
+                'sr'
+                'sv'
+                'th'
+                'tr'
+                'ua'
+                'uk'
+                'zh'
+                #1082
+                #1088#1091)
+            end
           end
           object RzGroupBox1: TRzGroupBox
             AlignWithMargins = True
             Left = 293
             Top = 0
-            Width = 215
+            Width = 192
             Height = 89
             Caption = #1060#1072#1081#1083
             TabOrder = 2
@@ -1845,7 +1898,7 @@ object frmMain: TfrmMain
             object edFFile: TRzButtonEdit
               Left = 38
               Top = 16
-              Width = 171
+              Width = 147
               Height = 21
               TabOrder = 0
               OnKeyDown = edFFullNameKeyDown
@@ -1856,7 +1909,7 @@ object frmMain: TfrmMain
             object edFFolder: TRzButtonEdit
               Left = 38
               Top = 39
-              Width = 171
+              Width = 147
               Height = 21
               TabOrder = 1
               OnKeyDown = edFFullNameKeyDown
@@ -1867,7 +1920,7 @@ object frmMain: TfrmMain
             object edFExt: TRzButtonEdit
               Left = 38
               Top = 62
-              Width = 171
+              Width = 147
               Height = 21
               TabOrder = 2
               OnKeyDown = edFFullNameKeyDown
@@ -2361,7 +2414,7 @@ object frmMain: TfrmMain
               OnKeyDown = tvBooksTreeKeyDown
               OnMouseUp = tvBooksTreeMouseUp
               ExplicitLeft = 8
-              ExplicitTop = 18
+              ExplicitTop = 170
               Columns = <
                 item
                   Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
@@ -8614,6 +8667,16 @@ object frmMain: TfrmMain
     object N22: TMenuItem
       Tag = 19
       Caption = #1050#1086#1083#1083#1077#1082#1094#1080#1103
+      OnClick = HeaderPopupItemClick
+    end
+    object N42: TMenuItem
+      Tag = 21
+      Caption = #1071#1079#1099#1082
+      OnClick = HeaderPopupItemClick
+    end
+    object N45: TMenuItem
+      Tag = 22
+      Caption = 'N'
       OnClick = HeaderPopupItemClick
     end
     object N25: TMenuItem

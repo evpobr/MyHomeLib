@@ -372,6 +372,10 @@ type
     N43: TMenuItem;
     miReaded: TMenuItem;
     N44: TMenuItem;
+    N42: TMenuItem;
+    N45: TMenuItem;
+    Label2: TLabel;
+    cbLang: TRzComboBox;
 
     //
     // События формы
@@ -1241,6 +1245,7 @@ begin
       AddToFilter('`FileName`', Query(edFFile.Text), FilterString);
       AddToFilter('`Folder`', Query(edFFolder.Text), FilterString);
       AddToFilter('`ext`', Query(edFExt.Text), FilterString);
+      AddToFilter('`Lang`', Query(cbLang.Text), FilterString);
 
       if cbDate.ItemIndex = -1 then
         AddToFilter('`Date`',Query(cbDate.Text), FilterString)
@@ -1311,6 +1316,7 @@ begin
   ClearLabels(PAGE_SEARCH);
   cbPresetName.Text := '';
   cbDeleted.Checked := False;
+  cbLang.Text := '';
 end;
 
 procedure TfrmMain.LoadSearchPreset(FN: string);
@@ -1336,6 +1342,7 @@ begin
     cbDate.Text := HL[6];
     cbDownloaded.Text := HL[7];
     cbDeleted.Checked := StrToBool(HL[8]);
+    cbLang.Text := HL[9];
   finally
     HL.Free;
     SL.Free;
@@ -2268,6 +2275,8 @@ begin
       COL_DATE   : Result := DateToStr(Data.Date);
       COL_GENRE  : Result := Data.Genre;
       COL_TYPE   : Result := Data.FileType;
+      COL_LANG   : Result := Data.Lang;
+      COL_LIBRATE   : Result := IntToStr(Data.LibRate);
       COL_COLLECTION: Result := Data.ColName;
     end;
 end;
@@ -2709,6 +2718,8 @@ begin
     COL_RATE   : Result := CompareInt(Data1.Rate, Data2.Rate);
     COL_GENRE  : Result := CompareStr(Data1.Genre, Data2.Genre);
     COL_DATE   : Result := CompareDate(Data1.Date, Data2.Date);
+    COL_LANG   : Result := CompareSTR(Data1.Lang, Data2.Lang);
+    COL_LibRate: Result := CompareInt(Data1.LibRate, Data2.LibRate);
   end;
 end;
 
@@ -3723,6 +3734,12 @@ begin
               if (COL_RATE in Columns) and (not TableB.FieldByName('Rate').IsNull) then
                 Data.Rate := TableB.FieldByName('Rate').AsInteger;
 
+              if (COL_LANG in Columns) and (not TableB.FieldByName('Lang').IsNull) then
+                Data.Lang := TableB.FieldByName('Lang').AsString;
+
+              if (COL_LIBRATE in Columns) and (not TableB.FieldByName('LibRate').IsNull) then
+                Data.LibRate := TableB.FieldByName('LibRate').AsInteger;
+
               Data.Deleted := TableB.FieldByName('Deleted').Value;
 
               Data.nodeType := ntBookInfo;
@@ -4599,7 +4616,8 @@ begin
          edFExt.Text + d +
          cbDate.Text + d +
          cbDownloaded.Text + d +
-         BoolToStr(cbDeleted.Checked) + '~';
+         BoolToStr(cbDeleted.Checked) + d +
+         cbLang.Text + '~';
 
     SL.Add(S);
     SL.SaveToFile(Settings.PresetPath + FN,TEncoding.UTF8);

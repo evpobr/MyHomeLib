@@ -202,6 +202,23 @@ begin
                    Options    := Fix;
                  end;
 
+        COL_LANG:begin
+                   Caption   := 'язык';
+                   MaxWidth  := 55;
+                   MinWidth  := 55;
+                   Alignment := taCenter;
+                   Options    := Fix;
+                end;
+
+        COL_LIBRATE:begin
+                   Caption   := 'N';
+                   MaxWidth  := 55;
+                   MinWidth  := 55;
+                   Alignment := taCenter;
+                   Options    := Fix;
+                end;
+
+
         COL_STATE:begin
                    Caption   := '';
                    MaxWidth  := 35;

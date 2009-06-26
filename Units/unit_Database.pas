@@ -335,7 +335,7 @@ GroupsListTableIndexes: array [1..2] of TIndexDesc = (
 //
 //  Groups table
 //
-GroupsTableFields: array [1 .. 23] of TFieldDesc = (
+GroupsTableFields: array [1 .. 25] of TFieldDesc = (
   (Name: 'ID';         DataType: ftAutoInc;    Size: 0;   Required: true),  // локальный уникальный ID в этой таблице
   (Name: 'GroupID';    DataType: ftInteger;    Size: 0;   Required: true),  // id родительской группы
   (Name: 'OuterID';    DataType: ftInteger;     Size: 0;   Required: false),// внешний ID книги в коллекции
@@ -358,7 +358,9 @@ GroupsTableFields: array [1 .. 23] of TFieldDesc = (
   (Name: 'Genres';     DataType: ftWideString; Size: 128; Required: false),
   (Name: 'Series';     DataType: ftWideString; Size: 128; Required: false),
   (Name: 'Rate';       DataType: ftInteger;    Size: 0;   Required: false),
-  (Name: 'Progress';   DataType: ftSmallInt;   Size: 0;   Required: false)
+  (Name: 'Progress';   DataType: ftSmallInt;   Size: 0;   Required: false),
+  (Name: 'LibRate';    DataType: ftInteger;     Size: 0;   Required: false),
+  (Name: 'Lang';       DataType: ftWideString;  Size: 2;   Required: false)
 );
 
 GroupsTableIndexes: array [1..4] of TIndexDesc = (
@@ -857,6 +859,9 @@ begin
     FBooks['LibID'] := BookRecord.LibID;
     FBooks['Date'] := BookRecord.Date;
     FBooks['Deleted'] := BookRecord.Deleted;
+    FBooks['Lang'] := BookRecord.Lang;
+    FBooks['LibRate'] := BookRecord.LibRate;
+
     FBooks.Post;
 
     for Genre in BookRecord.Genres do

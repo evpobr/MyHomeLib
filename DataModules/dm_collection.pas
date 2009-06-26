@@ -186,6 +186,21 @@ type
     tblBooksSProgress: TSmallintField;
     tblBooksGProgress: TSmallintField;
     tblBooksProgress: TSmallintField;
+    tblBooksADatabaseID: TIntegerField;
+    tblBooksALibRate: TIntegerField;
+    tblBooksALang: TWideStringField;
+    tblBooksAURI: TWideStringField;
+    tblBooksLibRate: TIntegerField;
+    tblBooksLang: TWideStringField;
+    tblBooksURI: TWideStringField;
+    tblBooksSDatabaseID: TIntegerField;
+    tblBooksSLibRate: TIntegerField;
+    tblBooksSLang: TWideStringField;
+    tblBooksSURI: TWideStringField;
+    tblBooksGDatabaseID: TIntegerField;
+    tblBooksGLibRate: TIntegerField;
+    tblBooksGLang: TWideStringField;
+    tblBooksGURI: TWideStringField;
   private
     FActiveTable: TAbsTable;
     { Private declarations }
