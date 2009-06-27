@@ -142,6 +142,9 @@ type
     edDwnldInterval: TRzNumericEdit;
     RzLabel9: TRzLabel;
     cbAutoRunUpdate: TCheckBox;
+    cbDeleteDeleted: TCheckBox;
+    cbTXTEncoding: TRzComboBox;
+    Label1: TLabel;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
@@ -218,6 +221,8 @@ begin
     emLrf: rgDeviceFormat.ItemIndex := 2;
     emTxt: rgDeviceFormat.ItemIndex := 3;
   end;
+
+  cbTXTEncoding.ItemIndex := Ord(Settings.TXTEncoding);
 
   edFolderTemplate.Text := Settings.FolderTemplate;
   edFileNameTemplate.Text := Settings.FileNameTemplate;
@@ -296,6 +301,7 @@ begin
   cbMinimizeToTray.Checked := Settings.MinimizeToTray;
   cbAutoStartDwnld.Checked := Settings.AutoStartDwnld;
   cbAllowMixedCollections.Checked := Settings.AllowMixed;
+  cbDeleteDeleted.Checked := Settings.DeleteDeleted;
 
   tvSections.Select(tvSections.Items[0]);
 
@@ -315,6 +321,13 @@ begin
     2: Settings.ExportMode := emLrf;
     3: Settings.ExportMode := emTxt;
   end;
+
+  case cbTXTEncoding.ItemIndex of
+      0: Settings.TXTEncoding := enUTF8;
+      1: Settings.TXTEncoding := en1251;
+      2: Settings.TXTEncoding := enUnicode;
+  end;
+
   Settings.FolderTemplate := edFolderTemplate.Text;
   Settings.FileNameTemplate := edFileNameTemplate.Text;
   Settings.TransliterateFileName := cbTranslit.Checked;
@@ -364,6 +377,8 @@ begin
   Settings.ShowFb2Info := cbShowFb2Info.Checked;
   Settings.AutoStartDwnld := cbAutoStartDwnld .Checked;
   Settings.AllowMixed := cbAllowMixedCollections.Checked;
+  Settings.DeleteDeleted := cbDeleteDeleted.Checked;
+
 
 end;
 

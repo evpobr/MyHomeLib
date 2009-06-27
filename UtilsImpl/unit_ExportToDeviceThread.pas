@@ -215,7 +215,7 @@ begin
   case FExportMode of
     emFB2:unit_globals.CopyFile(FFileOpRecord.SArch, DestFileName);
     emFb2Zip:ZipFile(FFileOpRecord.SArch, DestFileName + ZIP_EXTENSION);
-    emTxt:unit_globals.ConvertToTxt(FFileOpRecord.SArch, DestFileName);
+    emTxt:unit_globals.ConvertToTxt(FFileOpRecord.SArch, DestFileName, Settings.TXTEncoding);
     emLrf:Result := fb2Lrf(FFileOpRecord.SArch,DestFileName);
   end;
 

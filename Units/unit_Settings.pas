@@ -74,6 +74,7 @@ type
     FExportMode: TExportMode;
     FRemoveSquareBrackets: Boolean;
     FUseSystemTemp: boolean;
+    FTXTEncoding: TTXTEncoding;
 
     // INTERFACE_SECTION
     FTreeFontSize: Integer;
@@ -151,6 +152,7 @@ type
     FDoNotShowDeleted: Boolean;
     FShowLocalOnly : boolean;
     FFullSearchMode: boolean;
+    FDeleteDeleted: boolean;
 
   private
     function GetSettingsFileName: string;
@@ -229,6 +231,8 @@ type
     property FolderTemplate: string read FFolderTemplate write FFolderTemplate;
     property FileNameTemplate: string read FFileNameTemplate write FFileNameTemplate;
     property ExportMode: TExportMode read FExportMode write FExportMode;
+    property TXTEncoding: TTXTEncoding read FTXTEncoding write FTXTEncoding;
+
     property ShowRusBar: Boolean read FShowRusBar write FShowRusBar;
     property ShowEngBar: Boolean read FShowEngBar write FShowEngBar;
     property TreeFontSize: Integer read FTreeFontSize write FTreeFontSize;
@@ -301,6 +305,8 @@ type
     property InitialDir[const key: string]: string read GetInitialDir write SetInitialDir;
 
     property AllowMixed : boolean read FAllowMixed write FAllowMixed;
+
+    property DeleteDeleted:boolean read FDeleteDeleted write FDeleteDeleted;
 
   end;
 
@@ -476,6 +482,12 @@ begin
       3: FExportMode := emTxt;
     end;
 
+    case iniFile.ReadInteger(SYSTEM_SECTION, 'TXTEncoding', 0) of
+      0: FTXTEncoding := enUTF8;
+      1: FTXTEncoding := en1251;
+      2: FTXTEncoding := enUnicode;
+    end;
+
     //
     // INTERFACE_SECTION
     //
@@ -572,6 +584,7 @@ begin
     FAutoRunUpdate :=  iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoRunUpdate', False);
 
     FFullSearchMode := iniFile.ReadBool(BEHAVIOR_SECTION, 'FullSearchMode', False);
+    FDeleteDeleted := iniFile.ReadBool(BEHAVIOR_SECTION, ' DeleteDeleted',  False);
 
     //
     // INITIAL_DIRS_SECTION
@@ -610,7 +623,7 @@ begin
     iniFile.WriteString(SYSTEM_SECTION, 'FileNameTemplate', FFileNameTemplate);
     iniFile.WriteInteger(SYSTEM_SECTION, 'ExpFormat', Ord(FExportMode));
     iniFile.WriteBool(SYSTEM_SECTION, 'RemoveSquareBrackets', FRemoveSquareBrackets);
-
+    iniFile.WriteInteger(SYSTEM_SECTION, 'TXTEncoding', Ord(FTXTEncoding));
     //
     // INTERFACE_SECTION
     //
@@ -698,7 +711,7 @@ begin
     iniFile.WriteBool(BEHAVIOR_SECTION, 'AutoRunUpdate', FAutoRunUpdate);
 
     iniFile.WriteBool(BEHAVIOR_SECTION, 'FullSearchMode', FFullSearchMode);
-
+    iniFile.WriteBool(BEHAVIOR_SECTION, ' DeleteDeleted', FDeleteDeleted);
     //
     // INITIAL_DIRS_SECTION
     //

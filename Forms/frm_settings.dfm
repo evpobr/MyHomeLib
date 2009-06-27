@@ -63,7 +63,7 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 414
     Height = 413
-    ActivePage = tsInternet
+    ActivePage = tsDevices
     Align = alClient
     TabOrder = 1
     object tsDevices: TTabSheet
@@ -73,12 +73,13 @@ object frmSettings: TfrmSettings
       object RzGroupBox3: TRzGroupBox
         AlignWithMargins = True
         Left = 3
-        Top = 196
+        Top = 191
         Width = 400
         Height = 142
         Align = alTop
         Caption = #1060#1086#1088#1084#1072#1090' '#1080#1084#1077#1085#1080
         TabOrder = 0
+        ExplicitTop = 196
         object Label5: TLabel
           Left = 20
           Top = 29
@@ -261,7 +262,7 @@ object frmSettings: TfrmSettings
         Left = 3
         Top = 135
         Width = 400
-        Height = 55
+        Height = 50
         Align = alTop
         Caption = #1060#1086#1088#1084#1072#1090' '#1079#1072#1087#1080#1089#1080' '#1085#1072' '#1091#1089#1090#1088#1086#1089#1090#1074#1086
         Columns = 4
@@ -276,20 +277,42 @@ object frmSettings: TfrmSettings
       object RzGroupBox5: TRzGroupBox
         AlignWithMargins = True
         Left = 3
-        Top = 344
+        Top = 339
         Width = 400
-        Height = 56
+        Height = 61
         Align = alClient
         Caption = #1054#1087#1094#1080#1080
         TabOrder = 3
+        ExplicitTop = 344
+        ExplicitHeight = 56
+        object Label1: TLabel
+          Left = 181
+          Top = 26
+          Width = 77
+          Height = 13
+          Alignment = taRightJustify
+          Caption = #1050#1086#1076#1080#1088#1086#1074#1082#1072' TXT'
+        end
         object cbSquareFilter: TCheckBox
           Left = 11
-          Top = 18
+          Top = 20
           Width = 150
           Height = 27
           Caption = #1042#1082#1083#1102#1095#1080#1090#1100' '#1092#1080#1083#1100#1090#1088' "[ ... ]"'
           TabOrder = 0
           WordWrap = True
+        end
+        object cbTXTEncoding: TRzComboBox
+          Left = 264
+          Top = 23
+          Width = 121
+          Height = 21
+          ItemHeight = 13
+          TabOrder = 1
+          Text = 'UTF-8'
+          Items.Strings = (
+            'UTF-8'
+            'Windows-1251')
         end
       end
       object RzGroupBox11: TRzGroupBox
@@ -962,6 +985,14 @@ object frmSettings: TfrmSettings
           Height = 17
           Caption = #1056#1072#1079#1088#1077#1096#1080#1090#1100' '#1089#1084#1077#1096#1072#1085#1085#1099#1077' '#1082#1086#1083#1083#1077#1082#1094#1080#1080
           TabOrder = 4
+        end
+        object cbDeleteDeleted: TCheckBox
+          Left = 24
+          Top = 138
+          Width = 281
+          Height = 17
+          Caption = #1059#1076#1072#1083#1103#1090#1100' "'#1091#1076#1072#1083#1077#1085#1099#1077' '#1085#1072' '#1083#1080#1073#1088#1091#1089#1077#1082#1077'"'
+          TabOrder = 5
         end
       end
     end

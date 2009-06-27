@@ -713,7 +713,6 @@ object frmMain: TfrmMain
                 OnInitNode = tvBooksTreeInitNode
                 OnKeyDown = tvBooksTreeKeyDown
                 OnMouseUp = tvBooksTreeMouseUp
-                ExplicitLeft = 2
                 Columns = <
                   item
                     MaxWidth = 1000
@@ -1552,7 +1551,6 @@ object frmMain: TfrmMain
             OnInitNode = tvBooksTreeInitNode
             OnKeyDown = tvBooksTreeKeyDown
             OnMouseUp = tvBooksTreeMouseUp
-            ExplicitLeft = 2
             Columns = <
               item
                 MaxWidth = 1000
@@ -1744,8 +1742,6 @@ object frmMain: TfrmMain
             Margins.Bottom = 0
             Align = alTop
             TabOrder = 1
-            ExplicitLeft = 513
-            ExplicitWidth = 212
             DesignSize = (
               235
               89)
@@ -2099,7 +2095,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2126,7 +2121,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 0
@@ -2414,8 +2408,6 @@ object frmMain: TfrmMain
               OnInitNode = tvBooksTreeInitNode
               OnKeyDown = tvBooksTreeKeyDown
               OnMouseUp = tvBooksTreeMouseUp
-              ExplicitLeft = 8
-              ExplicitTop = 170
               Columns = <
                 item
                   Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]

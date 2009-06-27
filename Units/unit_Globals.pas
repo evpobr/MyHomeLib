@@ -26,6 +26,9 @@ uses
 
 type
 
+  TTXTEncoding = (enUTF8, en1251, enUnicode, enUnknown);
+
+
   TTreeMode = (tmTree,tmFlat);
 
 
@@ -125,7 +128,7 @@ function ClearDir(const DirectoryName: string): Boolean;
 function IsRelativePath(const FileName: string): Boolean;
 function CreateFolders(Root: string; const Path: string): Boolean;
 procedure CopyFile(const SourceFileName: string; const DestFileName: string);
-procedure ConvertToTxt(const SourceFileName: string; DestFileName: string);
+procedure ConvertToTxt(const SourceFileName: string; DestFileName: string; Enc: TTXTEncoding);
 procedure ZipFile(const FileName: string; const ZipFileName: string);
 
 function InclideUrlSlash(S: string):string;
@@ -296,8 +299,9 @@ uses
   unit_Consts,
   idException,
   idStack,
-  unit_fb2ToText,
-  ShlObj, frm_main;
+  ShlObj,
+  frm_main,
+  unit_fb2ToText;
 
 const
   lat: set of char = ['A'..'Z', 'a'..'z', '\', '-', ':', '`', ',', '.', '0'..'9', '_', '(', ')', '[', ']', '{', '}'];
@@ -421,14 +425,14 @@ begin
 end;
 {$WARNINGS ON}
 
-procedure ConvertToTxt(const SourceFileName: string; DestFileName: string);
+procedure ConvertToTxt(const SourceFileName: string; DestFileName: string; Enc: TTXTEncoding);
 var
   Converter: TFb2ToText;
 begin
   Converter := TFb2ToText.Create;
   try
     DestFileName := ChangeFileExt(DestFileName,'.txt');
-    Converter.Convert(SourceFileName,DestFileName);
+    Converter.Convert(SourceFileName,DestFileName, Enc);
   finally
     Converter.Free;
   end;

@@ -4010,6 +4010,7 @@ begin
     Node := tvBooksF.GetNext(Node);
   end;
   FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True);
+  ClearLabels(PAGE_FAVORITES);
 end;
 
 function TfrmMain.GetActiveBookTable(tag:integer):TAbsTable;
@@ -4406,6 +4407,7 @@ begin
   dmCollection.tblBooks.DisableControls;
   DMUser.tblGrouppedBooks.DisableControls;
 
+  DMUser.tblGroupList.Locate('ID',1,[]);
   SetUtilTableStatus(True);
 
   Max := Tree.TotalCount;

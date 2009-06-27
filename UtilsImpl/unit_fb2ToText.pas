@@ -4,13 +4,15 @@ interface
 uses
   Classes,
   Windows,
-  SysUtils;
+  SysUtils,
+  unit_globals;
 
 type
 
    TFb2ToText = class
    private
-     FEncoding : (enUnknown, en1251,enUTF8, enUnicode);
+     FSourceEncoding : TTXTEncoding;
+     FResEncoding : TTXTEncoding;
 
      FIn,FOut: Text;
 
@@ -19,7 +21,7 @@ type
      procedure ClearString(var FS:String);
      procedure GetEncoding( S: string);
   public
-    procedure Convert(FileIn, FileOut: string);
+    procedure Convert(FileIn, FileOut: string; ResEncoding: TTXTEncoding);
   end;
 
 implementation
@@ -39,12 +41,13 @@ begin
   FS := ReplaceStr(FS,'</emphasis>','');
 end;
 
-procedure TFb2ToText.Convert(FileIn, FileOut: string);
+procedure TFb2ToText.Convert(FileIn, FileOut: string; ResEncoding: TTXTEncoding);
 var
   SA: AnsiString;
   US:  UTF8String;
   S: string;
 begin
+  FResEncoding := ResEncoding;
 
   AssignFile(FIn, FileIn);
   Reset(FIn);
@@ -61,7 +64,7 @@ begin
 
     while  not Eof(FIn) do
     begin
-      case FEncoding of
+      case FSourceEncoding of
         en1251, enUnknown:
                 begin
                   Readln(FIn,SA);
@@ -90,10 +93,10 @@ end;
 
 procedure TFb2ToText.GetEncoding(S: string);
 begin
-  FEncoding := enUnknown;
-  if pos('windows-1251',AnsiLowerCase(s)) <> 0 then FEncoding := en1251;
-  if pos('utf-8',AnsiLowerCase(s)) <> 0 then FEncoding := enUTF8;
-  if pos('unicode',AnsiLowerCase(s)) <> 0 then FEncoding := enUnicode;
+  FSourceEncoding := enUnknown;
+  if pos('windows-1251',AnsiLowerCase(s)) <> 0 then FSourceEncoding := en1251;
+  if pos('utf-8',AnsiLowerCase(s)) <> 0 then FSourceEncoding := enUTF8;
+  if pos('unicode',AnsiLowerCase(s)) <> 0 then FSourceEncoding := enUnicode;
 
 end;
 
@@ -113,7 +116,11 @@ begin
   begin
     p2 := pos(TagEnd, US);
     OS := copy(US,p1 + L, p2 - p1 - L);
-    writeln(FOut,UTF8Encode(OS));
+    case FResEncoding of
+      en1251:    writeln(FOut,UTF8toAnsi(UTF8Encode(OS)));
+      enUTF8:    writeln(FOut,UTF8Encode(OS));
+      enUnicode: writeln(FOut,OS);
+    end;
     Delete(US,1,p2 + 3);
     p1 := pos(TagStart,US);
   end;
