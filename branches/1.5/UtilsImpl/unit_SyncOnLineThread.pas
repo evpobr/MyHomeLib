@@ -37,6 +37,7 @@ uses
   unit_globals,
   unit_database,
   unit_Consts,
+  unit_settings,
   Forms;
 
 { TImportXMLThread }
@@ -81,6 +82,12 @@ begin
 
 
       Local := FileExists(Root + dmCollection.tblBooksFolder.Value);
+
+      if Settings.DeleteDeleted and Local and dmCollection.tblBooksDeleted.Value then
+      begin
+        SysUtils.DeleteFile(Root + dmCollection.tblBooksFolder.Value);
+        Local := False;
+      end;
 
       if dmCollection.tblBooksLocal.Value <> local then
         dmCollection.SetLocalStatus(dmCollection.tblBooksId.Value,Local);
