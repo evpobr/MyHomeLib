@@ -40,6 +40,10 @@ type
     lblGenre: TLabel;
     btnGenres: TButton;
     cbSeries: TRzComboBox;
+    RzGroupBox3: TRzGroupBox;
+    edKeyWords: TEdit;
+    RzGroupBox6: TRzGroupBox;
+    cbLang: TRzComboBox;
     procedure btnGenresClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btnAddAuthorClick(Sender: TObject);

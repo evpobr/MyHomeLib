@@ -34,18 +34,22 @@ object frmAddnonfb2: TfrmAddnonfb2
       Left = 5
       Top = 5
       Width = 806
-      Height = 300
+      Height = 340
       Align = alTop
-      BorderOuter = fsFlatRounded
+      BorderOuter = fsNone
       TabOrder = 0
       object RzPanel1: TRzPanel
-        Left = 2
-        Top = 2
-        Width = 802
+        AlignWithMargins = True
+        Left = 3
+        Top = 3
+        Width = 800
         Height = 57
         Align = alTop
         BorderOuter = fsFlatRounded
         TabOrder = 0
+        ExplicitLeft = 2
+        ExplicitTop = 2
+        ExplicitWidth = 802
         object btnCopyToSeries: TButton
           Left = 110
           Top = 31
@@ -92,7 +96,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           AlignWithMargins = True
           Left = 7
           Top = 5
-          Width = 788
+          Width = 786
           Height = 21
           Margins.Left = 5
           Margins.Right = 5
@@ -102,10 +106,11 @@ object frmAddnonfb2: TfrmAddnonfb2
           PopupMenu = pmEdit
           ReadOnly = True
           TabOrder = 4
+          ExplicitWidth = 788
         end
         object btnRenameFile: TRzBitBtn
           AlignWithMargins = True
-          Left = 667
+          Left = 665
           Top = 29
           Width = 128
           Height = 26
@@ -143,12 +148,13 @@ object frmAddnonfb2: TfrmAddnonfb2
             FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFB88989B88989B88989B889
             89CD9999FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF
             00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF}
+          ExplicitLeft = 667
         end
       end
       object RzGroupBox1: TRzGroupBox
-        Left = 2
+        Left = 6
         Top = 65
-        Width = 607
+        Width = 603
         Height = 127
         Caption = #1040#1074#1090#1086#1088#1099
         TabOrder = 1
@@ -321,9 +327,9 @@ object frmAddnonfb2: TfrmAddnonfb2
         end
       end
       object RzGroupBox2: TRzGroupBox
-        Left = 2
+        Left = 5
         Top = 198
-        Width = 607
+        Width = 604
         Height = 44
         Caption = #1053#1072#1079#1074#1072#1085#1080#1077
         TabOrder = 2
@@ -331,11 +337,12 @@ object frmAddnonfb2: TfrmAddnonfb2
           AlignWithMargins = True
           Left = 4
           Top = 17
-          Width = 599
+          Width = 596
           Height = 23
           Align = alClient
           Color = clCream
           TabOrder = 0
+          ExplicitWidth = 599
           ExplicitHeight = 21
         end
       end
@@ -429,15 +436,15 @@ object frmAddnonfb2: TfrmAddnonfb2
         end
       end
       object RzGroupBox4: TRzGroupBox
-        Left = 2
+        Left = 5
         Top = 247
-        Width = 379
-        Height = 49
+        Width = 376
+        Height = 41
         Caption = #1057#1077#1088#1080#1103
         TabOrder = 3
         object edSN: TRzNumericEdit
           Left = 319
-          Top = 20
+          Top = 14
           Width = 49
           Height = 21
           Color = clCream
@@ -446,11 +453,11 @@ object frmAddnonfb2: TfrmAddnonfb2
         end
         object cbSeries: TRzComboBox
           Left = 6
-          Top = 20
+          Top = 14
           Width = 307
           Height = 21
           Color = clCream
-          ItemHeight = 0
+          ItemHeight = 13
           TabOrder = 1
         end
       end
@@ -458,12 +465,12 @@ object frmAddnonfb2: TfrmAddnonfb2
         Left = 387
         Top = 247
         Width = 412
-        Height = 50
+        Height = 41
         Caption = #1046#1072#1085#1088#1099
         TabOrder = 4
         object lblGenre: TLabel
           Left = 7
-          Top = 21
+          Top = 17
           Width = 336
           Height = 20
           AutoSize = False
@@ -476,7 +483,7 @@ object frmAddnonfb2: TfrmAddnonfb2
         end
         object btnShowGenres: TButton
           Left = 364
-          Top = 17
+          Top = 9
           Width = 41
           Height = 25
           Caption = '...'
@@ -512,12 +519,81 @@ object frmAddnonfb2: TfrmAddnonfb2
           ItemIndex = 0
         end
       end
+      object RzGroupBox7: TRzGroupBox
+        Left = 5
+        Top = 290
+        Width = 709
+        Height = 44
+        Caption = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
+        TabOrder = 7
+        object edKeyWords: TEdit
+          AlignWithMargins = True
+          Left = 4
+          Top = 17
+          Width = 701
+          Height = 23
+          Align = alClient
+          Color = clCream
+          TabOrder = 0
+          ExplicitWidth = 599
+          ExplicitHeight = 21
+        end
+      end
+      object RzGroupBox8: TRzGroupBox
+        Left = 720
+        Top = 290
+        Width = 79
+        Height = 44
+        Caption = #1071#1079#1099#1082
+        TabOrder = 8
+        object cbLang: TRzComboBox
+          Left = 8
+          Top = 18
+          Width = 66
+          Height = 21
+          ItemHeight = 13
+          TabOrder = 0
+          Items.Strings = (
+            'be'
+            'bg'
+            'bo'
+            'br'
+            'cs'
+            'cz'
+            'da'
+            'de'
+            'en'
+            'eo'
+            'es'
+            'fr'
+            'is'
+            'it'
+            'ja'
+            'la'
+            'lt'
+            'lv'
+            'pl'
+            'pt'
+            'ro'
+            'ru'
+            'sp'
+            'sr'
+            'sv'
+            'th'
+            'tr'
+            'ua'
+            'uk'
+            'zh'
+            #1082
+            #1088#1091)
+        end
+      end
     end
     object Tree: TVirtualStringTree
       Left = 2
-      Top = 308
+      Top = 348
       Width = 812
-      Height = 342
+      Height = 302
       Align = alClient
       Color = clCream
       Header.AutoSizeIndex = 0
@@ -537,6 +613,8 @@ object frmAddnonfb2: TfrmAddnonfb2
       OnDblClick = TreeDblClick
       OnGetText = TreeGetText
       OnPaintText = TreePaintText
+      ExplicitTop = 308
+      ExplicitHeight = 342
       Columns = <
         item
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring, coAllowFocus]

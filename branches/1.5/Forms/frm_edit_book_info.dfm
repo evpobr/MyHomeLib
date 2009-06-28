@@ -4,7 +4,7 @@ object frmEditBookInfo: TfrmEditBookInfo
   HelpContext = 118
   BorderStyle = bsNone
   Caption = 'frmEditBookInfo'
-  ClientHeight = 294
+  ClientHeight = 342
   ClientWidth = 625
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,10 +21,11 @@ object frmEditBookInfo: TfrmEditBookInfo
     Left = 0
     Top = 0
     Width = 625
-    Height = 294
+    Height = 342
     Align = alClient
     BorderOuter = fsGroove
     TabOrder = 0
+    ExplicitHeight = 294
     object RzPanel2: TRzPanel
       AlignWithMargins = True
       Left = 5
@@ -49,13 +50,14 @@ object frmEditBookInfo: TfrmEditBookInfo
       Left = 5
       Top = 35
       Width = 615
-      Height = 254
+      Height = 302
       Align = alClient
       BorderOuter = fsFlatRounded
       TabOrder = 1
+      ExplicitHeight = 254
       object btnSave: TRzBitBtn
-        Left = 323
-        Top = 222
+        Left = 333
+        Top = 270
         Width = 105
         Default = True
         Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
@@ -91,7 +93,7 @@ object frmEditBookInfo: TfrmEditBookInfo
       end
       object btnCancel: TRzBitBtn
         Left = 512
-        Top = 222
+        Top = 270
         Width = 97
         Cancel = True
         ModalResult = 2
@@ -126,9 +128,9 @@ object frmEditBookInfo: TfrmEditBookInfo
           611DB1601AB05B149C5019FF00FFFF00FFFF00FFFF00FFFF00FF}
       end
       object RzGroupBox4: TRzGroupBox
-        Left = 2
+        Left = 6
         Top = 157
-        Width = 311
+        Width = 307
         Height = 54
         Caption = #1057#1077#1088#1080#1103
         TabOrder = 2
@@ -145,7 +147,7 @@ object frmEditBookInfo: TfrmEditBookInfo
           Top = 21
           Width = 241
           Height = 21
-          ItemHeight = 0
+          ItemHeight = 13
           TabOrder = 1
         end
       end
@@ -168,9 +170,9 @@ object frmEditBookInfo: TfrmEditBookInfo
         end
       end
       object RzGroupBox1: TRzGroupBox
-        Left = 0
+        Left = 6
         Top = 0
-        Width = 607
+        Width = 603
         Caption = #1040#1074#1090#1086#1088#1099
         TabOrder = 0
         object lvAuthors: TRzListView
@@ -252,6 +254,74 @@ object frmEditBookInfo: TfrmEditBookInfo
           Caption = '...'
           TabOrder = 0
           OnClick = btnGenresClick
+        end
+      end
+      object RzGroupBox3: TRzGroupBox
+        Left = 6
+        Top = 217
+        Width = 518
+        Height = 44
+        Caption = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
+        TabOrder = 6
+        object edKeyWords: TEdit
+          AlignWithMargins = True
+          Left = 4
+          Top = 17
+          Width = 510
+          Height = 23
+          Align = alClient
+          TabOrder = 0
+          ExplicitWidth = 595
+          ExplicitHeight = 21
+        end
+      end
+      object RzGroupBox6: TRzGroupBox
+        Left = 530
+        Top = 217
+        Width = 79
+        Height = 44
+        Caption = #1071#1079#1099#1082
+        TabOrder = 7
+        object cbLang: TRzComboBox
+          Left = 8
+          Top = 18
+          Width = 66
+          Height = 21
+          ItemHeight = 13
+          TabOrder = 0
+          Items.Strings = (
+            'be'
+            'bg'
+            'bo'
+            'br'
+            'cs'
+            'cz'
+            'da'
+            'de'
+            'en'
+            'eo'
+            'es'
+            'fr'
+            'is'
+            'it'
+            'ja'
+            'la'
+            'lt'
+            'lv'
+            'pl'
+            'pt'
+            'ro'
+            'ru'
+            'sp'
+            'sr'
+            'sv'
+            'th'
+            'tr'
+            'ua'
+            'uk'
+            'zh'
+            #1082
+            #1088#1091)
         end
       end
     end

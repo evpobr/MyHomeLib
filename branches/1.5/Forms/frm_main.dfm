@@ -1803,9 +1803,9 @@ object frmMain: TfrmMain
                 #1079#1072' 3 '#1084#1077#1089#1103#1094#1072)
             end
             object cbDownloaded: TRzComboBox
-              Left = 108
+              Left = 112
               Top = 39
-              Width = 109
+              Width = 105
               Height = 21
               ItemHeight = 13
               ReadOnlyColor = clBtnHighlight
@@ -1838,12 +1838,12 @@ object frmMain: TfrmMain
                 'bg'
                 'bo'
                 'br'
-                'cs '
-                'cz '
-                'da '
-                'de '
-                'en '
-                'eo '
+                'cs'
+                'cz'
+                'da'
+                'de'
+                'en'
+                'eo'
                 'es'
                 'fr'
                 'is'
@@ -2117,7 +2117,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2144,7 +2143,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 0
