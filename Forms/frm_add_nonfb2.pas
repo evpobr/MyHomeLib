@@ -91,6 +91,10 @@ type
     btnRenameFile: TRzBitBtn;
     cbNoAuthorAllowed: TCheckBox;
     Tree: TVirtualStringTree;
+    RzGroupBox7: TRzGroupBox;
+    edKeyWords: TEdit;
+    RzGroupBox8: TRzGroupBox;
+    cbLang: TRzComboBox;
     procedure RzButton3Click(Sender: TObject);
     procedure TreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
@@ -227,10 +231,13 @@ begin
   lvAuthors.Items.Clear;
   cbSeries.Text := '';
   edSN.Value := 0;
+  edKeyWords.Text := '';
 
   frmEditAuthor.edFamily.Text := '';
   frmEditAuthor.edName.Text := '';
   frmEditAuthor.edMiddle.Text := '';
+
+
 
 end;
 
@@ -338,6 +345,9 @@ begin
   R.Deleted := False;
   R.Size := Data.Size;
   R.Date := Now;
+  R.KeyWords := edKeyWords.Text;
+  R.Lang := cbLang.Text;
+
   FLibrary.InsertBook(R);
 
   Next := Tree.GetNext(Tree.GetFirstSelected);

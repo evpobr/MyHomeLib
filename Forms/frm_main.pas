@@ -4129,6 +4129,8 @@ begin
     frmEditBookInfo.cbSeries.Text := R.Series;
 
   frmEditBookInfo.edSN.Text := IntToStr(R.SeqNumber);
+  frmEditBookInfo.edKeyWords.Text := R.KeyWords;
+  frmEditBookInfo.cbLang.Text := R.Lang;
 
   if frmEditBookInfo.ShowModal = mrOk then
   begin
@@ -4146,6 +4148,8 @@ begin
     R.Series := frmEditBookInfo.cbSeries.Text;
 
     R.SeqNumber := Round(frmEditBookInfo.edSN.Value);
+    R.KeyWords := frmEditBookInfo.edKeyWords.Text;
+    R.Lang := frmEditBookInfo.cbLang.Text;
 
     ALibrary := TMHLLibrary.Create(nil);
     try
@@ -4490,7 +4494,7 @@ begin
 
   FN := cbPresetName.Text + '.mhlf';
 
-  if cbPresetName.ItemIndex = -1 then
+  if not FileExists(Settings.PresetPath + FN) then
     cbPresetName.Items.Add(cbPresetName.Text);
 
   SL := TStringList.Create;

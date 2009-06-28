@@ -140,7 +140,7 @@ begin
 
     //Записываем файл structure.info
     slBooksInfo.Clear;
-    slBooksInfo.Add('AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;INSNO;FOLDER;');
+    slBooksInfo.Add('AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;INSNO;FOLDER;LANG;KEYWORDS;');
     slBooksInfo.SaveToFile(Settings.TempPath + STRUCTUREINFO_FILENAME );
     slFileList.Add(Settings.TempPath + STRUCTUREINFO_FILENAME );
     slBooksInfo.Free;
@@ -303,13 +303,17 @@ begin
     cParam := DateToStr(R.Date);
     slParams.Add(cParam);   //parameter index 10 - book data added
 
-    if NewINPFormat then begin // New parameters block
-      cParam := IntToStr(R.InsideNo);
-      slParams.Add(cParam); //parameter index 11 - File InsideNo in archive
+    cParam := IntToStr(R.InsideNo);
+    slParams.Add(cParam); //parameter index 11 - File InsideNo in archive
 
-      cParam := R.Folder;
-      slParams.Add(cParam); //parameter index 12 - Base folder/base archive name
-    end;
+    cParam := R.Folder;
+    slParams.Add(cParam); //parameter index 12 - Base folder/base archive name
+
+    cParam := R.Lang;
+    slParams.Add(cParam);  //parameter index 12 - language
+
+    cParam := R.KeyWords;
+    slParams.Add(cParam);  //parameter index 12 - keywords
 
     INPData := '';
     for nIndex := 0 to (slParams.Count - 1) do

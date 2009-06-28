@@ -338,6 +338,8 @@ begin
   R.Size := tblBooksSize.Value;
   R.InsideNo := tblBooksInsideNo.Value;
   R.Date := tblBooksDate.Value;
+  R.Lang := tblBooksLang.Value;
+  R.KeyWords := tblBooksKeyWords.Value;
 
   tblBooks_Genre_List.Locate('BookID', BookID, []);
   while (not tblBooks_Genre_List.Eof) and (tblBooks_Genre_ListBookID.Value = BookID) do
