@@ -31,6 +31,7 @@ type
 
   TTreeMode = (tmTree,tmFlat);
 
+  TGenresType = (gtFb2, gtAny);
 
   TBookIdList = array of record
                    ID: integer;
@@ -272,9 +273,11 @@ type
     property AuthorCount: Integer read GetAuthorCount;
 
     procedure ClearGenres;
-    procedure AddGenre(const GenreCode: String; const GenreFb2Code: String; const Alias: String);
+    procedure AddGenreFB2(const GenreCode: String; const GenreFb2Code: String; const Alias: String);
+    procedure AddGenreAny(const GenreCode: String; const Alias: String);
     function GetGenreCount: Integer;
     property GenreCount: Integer read GetGenreCount;
+
   end;
 
   PFileData = ^TFileData;
@@ -697,7 +700,7 @@ begin
     if Genres[i].GenreCode = '' then
       Genres[i].GenreCode := UNKNOWN_GENRE_CODE;
   if GenreCount = 0 then
-    AddGenre(UNKNOWN_GENRE_CODE, '', '');
+    AddGenreFB2(UNKNOWN_GENRE_CODE, '', '');
 end;
 
 //
@@ -737,7 +740,7 @@ begin
   SetLength(Genres, 0);
 end;
 
-procedure TBookRecord.AddGenre(const GenreCode: String; const GenreFb2Code: String; const Alias: String);
+procedure TBookRecord.AddGenreFB2(const GenreCode: String; const GenreFb2Code: String; const Alias: String);
 var
   i: Integer;
 begin
@@ -748,6 +751,20 @@ begin
   Genres[i].GenreFb2Code := GenreFb2Code;
   Genres[i].Alias := Alias;
 end;
+
+procedure TBookRecord.AddGenreAny(const GenreCode: String; const Alias: String);
+var
+  i: Integer;
+begin
+  i := GenreCount;
+  SetLength(Genres, i + 1);
+
+  Genres[i].GenreCode := GenreCode;
+  Genres[i].GenreFb2Code := '';
+  Genres[i].Alias := Alias;
+end;
+
+
 
 function TBookRecord.GetGenreCount: Integer;
 begin

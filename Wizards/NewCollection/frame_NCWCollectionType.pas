@@ -84,7 +84,7 @@ begin
       ltLRELocal: rb := rbLocal;
       ltLREOnline: rb := rbOnline;
 //      ltGenesis: rb := rbGenesis;
-      ltThirdParty: rb := rbThirdParty;
+      ltUserFB2: rb := rbThirdParty;
     else
       Assert(False);
       Result := False;
@@ -112,7 +112,12 @@ begin
     FPParams^.CollectionType := ltGenesis
   else} if rbThirdParty.Checked then
   begin
-    FPParams^.CollectionType := ltThirdParty;
+
+    if FColCode = 1 then
+        FPParams^.CollectionType := ltUserAny
+      else
+        FPParams^.CollectionType := ltUserFB2;
+
     FPParams^.DisplayName := FColTitle;
     FPParams^.UseDefaultName := False;
     FPParams^.CollectionFile := FColFile;
