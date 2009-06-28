@@ -344,7 +344,7 @@ begin
   tblBooks_Genre_List.Locate('BookID', BookID, []);
   while (not tblBooks_Genre_List.Eof) and (tblBooks_Genre_ListBookID.Value = BookID) do
   begin
-    R.AddGenre(
+    R.AddGenreFB2(
       tblBooks_GenresCode.Value,
       tblBooks_GenresFB2Code.Value,
       tblBooks_GenresAlias.Value

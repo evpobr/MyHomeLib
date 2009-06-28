@@ -48,6 +48,7 @@ type
     FPersonalFolder: boolean;
 
     FVersion: integer;
+    FGenresType: TGenresType;
 
     procedure SetCollectionRoot(const Value: string);
     procedure  ParseData(input: WideString; var R: TBookRecord);
@@ -62,6 +63,8 @@ type
     property CollectionRoot: string read FCollectionRoot write SetCollectionRoot;
     property CollectionType: COLLECTION_TYPE read FCollectionType write FCollectionType;
     property InpxFileName: string read FInpxFileName write FInpxFileName;
+    property GenresType: TGenresType write FGenresType;
+
   end;
 
 implementation
@@ -205,7 +208,11 @@ begin
                    p := PosChr(':', GenreList);
                    while p <> 0 do
                    begin
-                     R.AddGenre('', Copy(GenreList, 1, p - 1), '');
+                     if FGenresType = gtFb2 then
+                       R.AddGenreFB2('', Copy(GenreList, 1, p - 1), '')
+                     else
+                       R.AddGenreAny(Copy(GenreList, 1, p - 1), '');
+
                      Delete(GenreList, 1, p);
                      p := PosChr(':', GenreList);
                     end;

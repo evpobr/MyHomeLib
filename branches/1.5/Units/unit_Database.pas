@@ -943,8 +943,6 @@ begin
   end;
 end;
 
-
-
 procedure TMHLLibrary.AddBookGenre(BookID: Integer; const GenreCode: string);
 begin
   CheckActive;

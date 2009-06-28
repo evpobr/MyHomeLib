@@ -112,7 +112,7 @@ begin
             R.AddAuthor(Book.AuthorList.Items[j].Family, Book.AuthorList.Items[j].Name, Book.AuthorList.Items[j].Middle);
 
           for j := 0 to Book.GenreList.Count - 1 do
-            R.AddGenre(Book.GenreList.Items[j].MHL_Code, Book.GenreList.Items[j].Fb2_Code, '');
+            R.AddGenreFB2(Book.GenreList.Items[j].MHL_Code, Book.GenreList.Items[j].Fb2_Code, '');
 
           R.Title := Book.Title;
           R.Series := Book.Series;

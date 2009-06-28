@@ -26,6 +26,8 @@ type
   private
     FINPXFileName: string;
 
+    FGenresType: TGenresType;
+
   protected
     procedure WorkFunction; override;
     function INPRecordCreate(const R: TBookRecord; var INPData: String;
@@ -78,6 +80,11 @@ begin
 
   totalBooks := DMCollection.tblBooks.RecordCount;
   processedBooks := 0;
+
+  if isFB2Collection(DMUser.ActiveCollection.CollectionType) then
+      FGenresType := gtFb2
+    else
+      FGenresType := gtAny;
 
   DMCollection.tblAuthor_Master.Active := True;
   try
@@ -252,10 +259,12 @@ begin
     // Список жанров
     //
     cParam := '';
-    for nIndex := 0 to R.GenreCount - 1 do begin
-      cParam := cParam +
-        R.Genres[nIndex].GenreFb2Code +
-        ItemDelimiterChar;
+    for nIndex := 0 to R.GenreCount - 1 do
+    begin
+      if FGenresType = gtFB2 then
+         cParam := cParam + R.Genres[nIndex].GenreFb2Code + ItemDelimiterChar
+       else
+         cParam := cParam + R.Genres[nIndex].GenreCode + ItemDelimiterChar;
     end;
     if cParam = '' then
       cParam := ItemDelimiterChar;

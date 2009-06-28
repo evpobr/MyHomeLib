@@ -79,12 +79,12 @@ begin
   while Assigned(Node) do
   begin
     Data:=frmGenreTree.tvGenresTree.GetNodeData(Node);
-    R.AddGenre(Data.Code, '', '');
+    R.AddGenreFB2(Data.Code, '', '');
     Node:=tvGenresTree.GetNextSelected(Node);
   end;
 
   if R.GenreCount = 0 then
-    R.AddGenre(UNKNOWN_GENRE_CODE, '', '');
+    R.AddGenreFB2(UNKNOWN_GENRE_CODE, '', '');
 end;
 
 procedure TfrmGenreTree.tvGenresTreeGetNodeDataSize(Sender: TBaseVirtualTree;

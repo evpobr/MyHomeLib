@@ -186,7 +186,8 @@ begin
       Result := (FParams.CollectionType = ltEmpty);
 
     GENREFILE_PAGE_ID:
-      Result := (FParams.Operation = otNew) and (FParams.CollectionType = ltEmpty);
+      Result := ((FParams.Operation = otNew) and (FParams.CollectionType = ltEmpty)) or
+                ((FParams.Operation = otNew) and (FParams.CollectionType = ltUserAny));
 
     IMPORT_PAGE_ID:
       Result := (FParams.Operation = otNew) and (FParams.CollectionType = ltEmpty);
@@ -451,11 +452,6 @@ begin
       FParams.CollectionCode := CT_LIBRUSEC_ONLINE_FB
     else if FParams.CollectionType = ltLRELocal then
         FParams.CollectionCode := CT_LIBRUSEC_LOCAL_FB
-      else if FParams.CollectionType = ltGenesis then
-      begin
-        Assert(False, 'Not implemented!');
-        FParams.CollectionCode := CT_GENESIS_ONLINE_NONFB;
-      end
     else { if FParams.CollectionType = ltEmpty then}
     begin
       if FParams.FileTypes = ftFB2 then
@@ -470,15 +466,14 @@ begin
   case FParams.CollectionType of
     ltEmpty: ; // ничего не трогаем, все должен задать пользователь
 
-    ltLRELocal, ltLREOnline, ltThirdParty:
+    ltLRELocal, ltLREOnline, ltUserFB2:
     begin
       FParams.DefaultGenres := True;
       FParams.FileTypes := ftFB2;
     end;
 
-    ltGenesis:
+    ltUserAny:
     begin
-      FParams.DefaultGenres := True;
       FParams.FileTypes := ftAny;
     end;
   end;
@@ -609,7 +604,7 @@ begin
       end;
     end;
 
-    ltThirdParty:
+    ltUserFB2:
     begin
       FWorker := TImportLibRusEcThread.Create;
       with FWorker as TImportLibRusEcThread do
@@ -618,12 +613,24 @@ begin
         CollectionRoot := FParams.CollectionRoot;
         CollectionType := CT_PRIVATE_FB;
         InpxFileName := FParams.INPXFile;
+        GenresType := gtFb2;
+      end;
+    end;
+
+    ltUserAny:
+    begin
+      FWorker := TImportLibRusEcThread.Create;
+      with FWorker as TImportLibRusEcThread do
+      begin
+        DBFileName := FParams.CollectionFile;
+        CollectionRoot := FParams.CollectionRoot;
+        CollectionType := CT_PRIVATE_NONFB;
+        InpxFileName := FParams.INPXFile;
+        GenresType := gtAny;
       end;
     end;
 
 
-    ltGenesis:
-      {TODO -oNickR -cGenesis: указать специальный или существующий импортер для Genesis-а } ;
   end;
 
   if not Assigned(FWorker) then
@@ -646,8 +653,6 @@ begin
   FWorker.OnShowMessage := ShowMessage;
 
   FWorker.Resume;
-
-
 
   Result := True;
 end;
