@@ -424,9 +424,9 @@ object frmMain: TfrmMain
     Width = 998
     Height = 848
     HelpContext = 135
-    ActivePage = TabSheet1
+    ActivePage = TabSheet4
     Align = alClient
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 3
     OnChange = pgControlChange
     FixedDimension = 19
@@ -1779,6 +1779,14 @@ object frmMain: TfrmMain
               Alignment = taRightJustify
               Caption = #1071#1079#1099#1082
             end
+            object Label3: TLabel
+              Left = 8
+              Top = 66
+              Width = 23
+              Height = 13
+              Alignment = taRightJustify
+              Caption = #1058#1077#1075#1080
+            end
             object cbDate: TRzComboBox
               Left = 39
               Top = 16
@@ -1795,9 +1803,9 @@ object frmMain: TfrmMain
                 #1079#1072' 3 '#1084#1077#1089#1103#1094#1072)
             end
             object cbDownloaded: TRzComboBox
-              Left = 40
+              Left = 108
               Top = 39
-              Width = 173
+              Width = 109
               Height = 21
               ItemHeight = 13
               ReadOnlyColor = clBtnHighlight
@@ -1810,15 +1818,15 @@ object frmMain: TfrmMain
               ItemIndex = 0
             end
             object cbDeleted: TCheckBox
-              Left = 40
-              Top = 66
-              Width = 125
+              Left = 8
+              Top = 42
+              Width = 92
               Height = 17
-              Caption = ' '#1057#1082#1088#1099#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
+              Caption = #1041#1077#1079' '#1091#1076#1072#1083#1077#1085#1085#1099#1093
               TabOrder = 2
             end
             object cbLang: TRzComboBox
-              Left = 159
+              Left = 163
               Top = 16
               Width = 54
               Height = 21
@@ -1858,6 +1866,20 @@ object frmMain: TfrmMain
                 'zh'
                 #1082
                 #1088#1091)
+            end
+            object edFKeyWords: TRzButtonEdit
+              Left = 37
+              Top = 62
+              Width = 180
+              Height = 21
+              Hint = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 4
+              OnKeyDown = edFFullNameKeyDown
+              AltBtnWidth = 15
+              ButtonWidth = 15
+              OnButtonClick = edFFullNameButtonClick
             end
           end
           object RzGroupBox1: TRzGroupBox
@@ -2095,6 +2117,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2121,6 +2144,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 0
@@ -3154,6 +3178,7 @@ object frmMain: TfrmMain
       Caption = '-'
     end
     object miAddFavorites: TMenuItem
+      Tag = 1
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1080#1079#1073#1088#1072#1085#1085#1086#1077
       ImageIndex = 13
       ShortCut = 16454

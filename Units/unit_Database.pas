@@ -165,7 +165,7 @@ AuthorsTableIndexes: array [1..2] of TIndexDesc = (
 //
 // Books table
 //
-BooksTableFields: array [1 .. 20] of TFieldDesc = (
+BooksTableFields: array [1 .. 21] of TFieldDesc = (
   (Name: 'ID';         DataType: ftAutoInc;     Size: 0;   Required: true ),
   (Name: 'DatabaseID'; DataType: ftInteger;     Size: 0;   Required: false),
   (Name: 'LibID';      DataType: ftInteger;     Size: 0;   Required: false),
@@ -188,7 +188,8 @@ BooksTableFields: array [1 .. 20] of TFieldDesc = (
   //
   (Name: 'Code';       DataType: ftSmallInt;    Size: 0;   Required: false),
   (Name: 'Local';      DataType: ftBoolean;     Size: 0;   Required: false),
-  (Name: 'Deleted';    DataType: ftBoolean;     Size: 0;   Required: false)
+  (Name: 'Deleted';    DataType: ftBoolean;     Size: 0;   Required: false),
+  (Name: 'KeyWords';   DataType: ftWideString; Size: 255; Required: false)
 );
 
 BooksTableIndexes: array [1..6] of TIndexDesc = (
@@ -272,19 +273,17 @@ GenreListTableIndexes: array [1..3] of TIndexDesc = (
 //
 // Extra
 //
-ExtraTableFields: array [1 .. 6] of TFieldDesc = (
+ExtraTableFields: array [1 .. 5] of TFieldDesc = (
   (Name: 'ID';        DataType: ftAutoInc;    Size: 0;   Required: true),
   (Name: 'BookID';    DataType: ftInteger;    Size: 0;   Required: false),
-  (Name: 'KeyWords';  DataType: ftWideString; Size: 255; Required: false),
   (Name: 'Annotation';DataType: ftMemo;       Size: 0;   Required: false),
   (Name: 'Cover';     DataType: ftBlob;       Size: 0;   Required: false),
   (Name: 'Data';      DataType: ftMemo;       Size: 0;   Required: false)
 );
 
-ExtraTableIndexes: array [1..3] of TIndexDesc = (
+ExtraTableIndexes: array [1..2] of TIndexDesc = (
   (Name: 'ID_Index';   Fields: 'ID';                   Options: [ixPrimary, ixUnique]),
-  (Name: 'BookIndex';  Fields: 'BookID';               Options: []),
-  (Name: 'KeyWordIndex'; Fields: 'KeyWords';           Options: [ixCaseInsensitive])
+  (Name: 'BookIndex';  Fields: 'BookID';               Options: [])
 );
 
 //-----------------------------------------------------------------------------
@@ -861,6 +860,7 @@ begin
     FBooks['Deleted'] := BookRecord.Deleted;
     FBooks['Lang'] := BookRecord.Lang;
     FBooks['LibRate'] := BookRecord.LibRate;
+    FBooks['KeyWords'] := BookRecord.KeyWords;
 
     FBooks.Post;
 

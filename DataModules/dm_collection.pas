@@ -166,7 +166,6 @@ type
     tblExtra: TABSTable;
     tblExtraID: TAutoIncField;
     tblExtraBookID: TIntegerField;
-    tblExtraKeyWords: TWideStringField;
     tblExtraAnnotation: TMemoField;
     tblExtraCover: TBlobField;
     tblExtraData: TMemoField;
@@ -201,6 +200,7 @@ type
     tblBooksGLibRate: TIntegerField;
     tblBooksGLang: TWideStringField;
     tblBooksGURI: TWideStringField;
+    tblBooksKeyWords: TWideStringField;
   private
     FActiveTable: TAbsTable;
     { Private declarations }

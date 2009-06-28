@@ -376,6 +376,8 @@ type
     N45: TMenuItem;
     Label2: TLabel;
     cbLang: TRzComboBox;
+    edFKeyWords: TRzButtonEdit;
+    Label3: TLabel;
 
     //
     // События формы
@@ -806,118 +808,6 @@ begin
 
 end;
 
-procedure TfrmMain.btnAddGroupClick(Sender: TObject);
-var
-  Name : string;
-begin
-  Name := InputBox('Добавление группы','Название группы','');
-  if Name <> '' then
-  begin
-    DMUser.tblGroupList.Insert;
-    DMUser.tblGroupListName.Value := Name;
-    DMUser.tblGroupListAllowDelete.Value := True;
-    DMUser.tblGroupList.Post;
-
-    FillGroupsList;
-    CreateGroupsMenu;
-    FillBooksTree(0,tvBooksF,Nil,DMUser.tblGrouppedBooks,true, true);
-  end;
-end;
-
-procedure TfrmMain.btnDeleteGroupClick(Sender: TObject);
-var
-  Data: PGroupData;
-begin
-  Data := tvGroups.GetNodeData(tvGroups.FocusedNode);
-  if Data = Nil then Exit;
-  if DMUser.tblGroupList.Locate('ID',Data.ID,[]) and
-     DMUser.tblGroupListAllowDelete.Value then
-  begin
-    btnClearFavoritesClick(Sender);
-    DMUser.tblGroupList.Delete;
-
-    FillGroupsList;
-    CreateGroupsMenu;
-    FillBooksTree(0,tvBooksF,Nil,DMUser.tblGrouppedBooks,true, true);
-  end
-  else
-    ShowMessage('Нельзя удалить встроенную группу!');
-end;
-
-procedure TfrmMain.cbPresetNameChange(Sender: TObject);
-begin
-  btnSavePreset.Enabled  := ( cbPresetName.Text <> '' );
-end;
-
-procedure TfrmMain.cbPresetNameSelect(Sender: TObject);
-begin
-  btnDeletePreset.Enabled := cbPresetName.ItemIndex >= 0;
-  btnSavePreset.Enabled := True;
-  LoadSearchPreset(cbPresetName.Text);
-end;
-
-procedure TfrmMain.btnStartDownloadClick(Sender: TObject);
-begin
-  if tvDownloadList.GetFirst = nil then Exit;
-
-  btnPauseDownload.Enabled := True;
-  btnStartDownload.Enabled := False;
-
-  FDMThread := TDownloadManagerThread.Create(False);
-end;
-
-procedure TfrmMain.btnPauseDownloadClick(Sender: TObject);
-begin
-  btnPauseDownload.Enabled := False;
-  btnStartDownload.Enabled := True;
-  if Assigned(FDMThread) then FDMThread.Stop;
-end;
-
-procedure TfrmMain.BtnSaveClick(Sender: TObject);
-begin
-  tvDownloadList.SaveToFile(Settings.WorkPath + 'downloads.sav');
-end;
-
-procedure TfrmMain.btnDeleteDownloadClick(Sender: TObject);
-var
-  Data: PDownloadData;
-  i: integer;
-  List: TSelectionList;
-begin
-  GetSeelections(tvDownloadList,List);
-  for I := 0 to tvDownloadList.SelectedCount - 1 do
-  begin
-    Data := tvDownloadList.GetNodeData(List[i]);
-    if Data.State <> dsRun then
-      tvDownloadList.DeleteNode(List[i],True);
-  end;
-end;
-
-procedure TfrmMain.btnDeletePresetClick(Sender: TObject);
-begin
-  with cbPresetName do
-  begin
-    if Text = Items[ItemIndex] then
-    begin
-      DeleteFile(Settings.PresetPath + Text + '.mhlf');
-      Delete(ItemIndex);
-      Text := '';
-    end;
-  end;
-  btnDeletePreset.Enabled := cbPresetName.ItemIndex >= 0;
-  btnSavePreset.Enabled := cbPresetName.ItemIndex >= 0;
-end;
-
-procedure TfrmMain.BtnFav_addClick(Sender: TObject);
-begin
- if ActiveView = FavoritesView then
-    miDelFavoritesClick(Sender)
-  else
-    begin
-      if DMUser.tblGroupList.Locate('ID',1,[]) then
-          miAddFavoritesClick(Sender);
-    end;
-end;
 
 procedure TfrmMain.SetColumns;
 var
@@ -1027,7 +917,6 @@ begin
   end;
 end;
 
-
 procedure TfrmMain.ChangeLetterButton(S: string);
 var
   i: integer;
@@ -1047,7 +936,6 @@ begin
         Exit;
       end;
 end;
-
 
 procedure TfrmMain.SetColors;
 var
@@ -1112,7 +1000,6 @@ begin
 
   cbDate.Color := BGColor;
   cbDownloaded.Color := BGColor;
-
 end;
 
 procedure TfrmMain.ReadINIData;
@@ -1246,6 +1133,7 @@ begin
       AddToFilter('`Folder`', Query(edFFolder.Text), FilterString);
       AddToFilter('`ext`', Query(edFExt.Text), FilterString);
       AddToFilter('`Lang`', Query(cbLang.Text), FilterString);
+      AddToFilter('`KeyWords`', Query(edFKeyWords.Text), FilterString);
 
       if cbDate.ItemIndex = -1 then
         AddToFilter('`Date`',Query(cbDate.Text), FilterString)
@@ -1317,6 +1205,7 @@ begin
   cbPresetName.Text := '';
   cbDeleted.Checked := False;
   cbLang.Text := '';
+  edFKeyWords.Text := '';
 end;
 
 procedure TfrmMain.LoadSearchPreset(FN: string);
@@ -1343,6 +1232,7 @@ begin
     cbDownloaded.Text := HL[7];
     cbDeleted.Checked := StrToBool(HL[8]);
     cbLang.Text := HL[9];
+    edFKeyWords.Text := HL[10];
   finally
     HL.Free;
     SL.Free;
@@ -1685,22 +1575,22 @@ begin
 
   i := 0;
   DMUser.tblGroupList.First;
+  DMUser.tblGroupList.Next; // пропускаем "Избранное"
   while not DMUser.tblGroupList.Eof do
   begin
+    // меню для кнопки
     Item := TMenuItem.Create(pmGroups);
     Item.Caption := DMUser.tblGroupListName.Value;
     Item.Tag := DMUser.tblGroupListID.Value;
     Item.OnClick := GroupMenuItemClick;
     pmGroups.Items.Insert(i, Item);
 
-    if i <> 0 then
-    begin
-      ItemP := TMenuItem.Create(pmMain);
-      ItemP.Caption := DMUser.tblGroupListName.Value;
-      ItemP.Tag := DMUser.tblGroupListID.Value;
-      ItemP.OnClick := GroupMenuItemClick;
-      pmiGroups.Insert(i - 1, ItemP);
-    end;
+    // подменю для контекстного
+    ItemP := TMenuItem.Create(pmMain);
+    ItemP.Caption := DMUser.tblGroupListName.Value;
+    ItemP.Tag := DMUser.tblGroupListID.Value;
+    ItemP.OnClick := GroupMenuItemClick;
+    pmiGroups.Insert(i, ItemP);
     inc(i);
     DMUser.tblGroupList.Next;
   end;
@@ -2131,12 +2021,6 @@ begin
 
   frmSplash.lblState.Caption := main_connecttodb;
 
- //----------------------------------------------------------------------------
- //  Конвертация старого user.dbs при запуске
- //----------------------------------------------------------------------------
-// TMHLLibrary.RestructureSystemTables(Settings.SystemFileName[sfSystemDB]);
-
-
   DMUser.DBUser.DatabaseFileName := Settings.SystemFileName[sfSystemDB];
   if not FileExists(DMUser.DBUser.DatabaseFileName) then
     TMHLLibrary.CreateSystemTables(DMUser.DBUser.DatabaseFileName);
@@ -2181,7 +2065,6 @@ begin
   InitCollection(False);
   dmCollection.SetActiveTable(pgControl.ActivePageIndex);
 
-  Application.HelpFile := Settings.SystemFileName[sfAppHelp];
 
   TheFirstRun;
 
@@ -2199,9 +2082,6 @@ begin
   SetLangBarSize;
 
   frmSplash.lblState.Caption := 'Старт ...';
-
-  if Settings.AutoStartDwnld then
-    btnStartDownloadClick(Sender);
 
   //
   // Create & Load "star" images from resources
@@ -2221,6 +2101,9 @@ begin
   CreateDir(Settings.PresetDir);
   FilesList.TargetPath := Settings.PresetPath;
   FilesList.Process;
+
+  if Settings.AutoStartDwnld then
+    btnStartDownloadClick(Sender);
 
 end;
 
@@ -4395,19 +4278,21 @@ var
   Node: PVirtualNode;
 begin
   GetActiveTree(Tree);
-  if Tree = tvBooksF then
-    Exit;
 
   Max := Tree.TotalCount;
-  if Max = 0 then
+  if (Tree = tvBooksF) or (Max = 0) or
+     not DMUser.tblGroupList.Locate('ID',(Sender as TMenuItem).Tag,[])
+ then
     Exit;
+
+
   spProgress.Visible := True;
   spStatus.Caption := 'Добавляем в избранное...';
   Screen.Cursor := crHourglass;
   dmCollection.tblBooks.DisableControls;
   DMUser.tblGrouppedBooks.DisableControls;
 
-  DMUser.tblGroupList.Locate('ID',1,[]);
+
   SetUtilTableStatus(True);
 
   Max := Tree.TotalCount;
@@ -4619,7 +4504,8 @@ begin
          cbDate.Text + d +
          cbDownloaded.Text + d +
          BoolToStr(cbDeleted.Checked) + d +
-         cbLang.Text + '~';
+         cbLang.Text + d +
+         edFKeyWords.Text + '~';
 
     SL.Add(S);
     SL.SaveToFile(Settings.PresetPath + FN,TEncoding.UTF8);
@@ -5432,6 +5318,8 @@ begin
       COL_DATE :       pmHeaders.Items[7].Checked := True;
       COL_TYPE :       pmHeaders.Items[8].Checked := True;
       COL_COLLECTION:  pmHeaders.Items[9].Checked := True;
+      COL_LANG :       pmHeaders.Items[10].Checked := True;
+      COL_LIBRATE:     pmHeaders.Items[11].Checked := True;
     end;
   end;
   pmHeaders.Items[9].Visible := (Tree.Tag = PAGE_FAVORITES);
@@ -5659,6 +5547,121 @@ begin
   DMUser.ActivateCollection(Settings.ActiveCollection);
   unit_Export.Export2INPX;
 end;
+
+procedure TfrmMain.btnAddGroupClick(Sender: TObject);
+var
+  Name : string;
+begin
+  Name := InputBox('Добавление группы','Название группы','');
+  if Name <> '' then
+  begin
+    DMUser.tblGroupList.Insert;
+    DMUser.tblGroupListName.Value := Name;
+    DMUser.tblGroupListAllowDelete.Value := True;
+    DMUser.tblGroupList.Post;
+
+    FillGroupsList;
+    CreateGroupsMenu;
+    FillBooksTree(0,tvBooksF,Nil,DMUser.tblGrouppedBooks,true, true);
+  end;
+end;
+
+procedure TfrmMain.btnDeleteGroupClick(Sender: TObject);
+var
+  Data: PGroupData;
+begin
+  Data := tvGroups.GetNodeData(tvGroups.FocusedNode);
+  if Data = Nil then Exit;
+  if DMUser.tblGroupList.Locate('ID',Data.ID,[]) and
+     DMUser.tblGroupListAllowDelete.Value then
+  begin
+    btnClearFavoritesClick(Sender);
+    DMUser.tblGroupList.Delete;
+
+    FillGroupsList;
+    CreateGroupsMenu;
+    FillBooksTree(0,tvBooksF,Nil,DMUser.tblGrouppedBooks,true, true);
+  end
+  else
+    ShowMessage('Нельзя удалить встроенную группу!');
+end;
+
+procedure TfrmMain.cbPresetNameChange(Sender: TObject);
+begin
+  btnSavePreset.Enabled  := ( cbPresetName.Text <> '' );
+end;
+
+procedure TfrmMain.cbPresetNameSelect(Sender: TObject);
+begin
+  btnDeletePreset.Enabled := cbPresetName.ItemIndex >= 0;
+  btnSavePreset.Enabled := True;
+  LoadSearchPreset(cbPresetName.Text);
+end;
+
+procedure TfrmMain.btnStartDownloadClick(Sender: TObject);
+begin
+  if tvDownloadList.GetFirst = nil then Exit;
+
+  btnPauseDownload.Enabled := True;
+  btnStartDownload.Enabled := False;
+
+  FDMThread := TDownloadManagerThread.Create(False);
+end;
+
+procedure TfrmMain.btnPauseDownloadClick(Sender: TObject);
+begin
+  btnPauseDownload.Enabled := False;
+  btnStartDownload.Enabled := True;
+  if Assigned(FDMThread) then FDMThread.Stop;
+end;
+
+procedure TfrmMain.BtnSaveClick(Sender: TObject);
+begin
+  tvDownloadList.SaveToFile(Settings.WorkPath + 'downloads.sav');
+end;
+
+procedure TfrmMain.btnDeleteDownloadClick(Sender: TObject);
+var
+  Data: PDownloadData;
+  i: integer;
+  List: TSelectionList;
+begin
+  GetSeelections(tvDownloadList,List);
+  for I := 0 to tvDownloadList.SelectedCount - 1 do
+  begin
+    Data := tvDownloadList.GetNodeData(List[i]);
+    if Data.State <> dsRun then
+      tvDownloadList.DeleteNode(List[i],True);
+  end;
+end;
+
+procedure TfrmMain.btnDeletePresetClick(Sender: TObject);
+begin
+  with cbPresetName do
+  begin
+    if Text = Items[ItemIndex] then
+    begin
+      DeleteFile(Settings.PresetPath + Text + '.mhlf');
+      Delete(ItemIndex);
+      Text := '';
+    end;
+  end;
+  btnDeletePreset.Enabled := cbPresetName.ItemIndex >= 0;
+  btnSavePreset.Enabled := cbPresetName.ItemIndex >= 0;
+end;
+
+procedure TfrmMain.BtnFav_addClick(Sender: TObject);
+begin
+ if ActiveView = FavoritesView then
+    miDelFavoritesClick(Sender)
+  else
+    begin
+      if DMUser.tblGroupList.Locate('ID',1,[]) then
+          miAddFavoritesClick(Sender);
+    end;
+end;
+
+
 
 end.
 

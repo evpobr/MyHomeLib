@@ -1180,6 +1180,11 @@ object DMCollection: TDMCollection
       item
         Name = 'Deleted'
         DataType = ftBoolean
+      end
+      item
+        Name = 'KeyWords'
+        DataType = ftWideString
+        Size = 255
       end>
     TableName = 'books'
     Exclusive = False
@@ -1281,6 +1286,10 @@ object DMCollection: TDMCollection
     end
     object tblBooksURI: TWideStringField
       FieldName = 'URI'
+      Size = 255
+    end
+    object tblBooksKeyWords: TWideStringField
+      FieldName = 'KeyWords'
       Size = 255
     end
   end
@@ -1694,10 +1703,6 @@ object DMCollection: TDMCollection
     end
     object tblExtraBookID: TIntegerField
       FieldName = 'BookID'
-    end
-    object tblExtraKeyWords: TWideStringField
-      FieldName = 'KeyWords'
-      Size = 255
     end
     object tblExtraAnnotation: TMemoField
       FieldName = 'Annotation'
