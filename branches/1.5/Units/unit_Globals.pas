@@ -260,6 +260,8 @@ type
     Lang: string[2];
     LibRate: integer;
 
+    KeyWords: string;
+
     procedure Normalize;
     procedure Clear;
     function GenerateLocation: string;
