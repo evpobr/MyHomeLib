@@ -2117,6 +2117,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2143,6 +2144,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 0
@@ -2987,7 +2989,6 @@ object frmMain: TfrmMain
         end
         object miImportUserData: TMenuItem
           Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1100#1089#1082#1080#1077' '#1076#1072#1085#1085#1099#1077
-          Enabled = False
           OnClick = miImportUserDataClick
         end
       end
@@ -3009,6 +3010,7 @@ object frmMain: TfrmMain
         end
         object N43: TMenuItem
           Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1100#1089#1082#1080#1077' '#1076#1072#1085#1085#1099#1077
+          Enabled = False
           OnClick = N43Click
         end
       end
