@@ -114,7 +114,8 @@ type
       CollectionID: Integer;
       DisplayName: string;
       RootFolder: string;
-      DBFileName: string
+      DBFileName: string;
+      Description: string = ''
     );
 
     function FindCollectionWithProp(
@@ -136,8 +137,9 @@ type
     function FindNextCollection: Boolean;
 
     procedure SetRate(ID,Rate: integer);
-    procedure SetFinished(ID, Progress: integer);
-
+    procedure SetFinished(ID, Progress: integer; ADBID: integer = 0);
+    procedure DeleteRate(AID: integer; ADBID: integer = 0);
+    procedure DeleteFinished(AID: integer; ADBID: integer = 0);
   end;
 
   TMHLCollection = class
@@ -217,6 +219,34 @@ begin
   FCollection.FSysDataModule := Self;
 end;
 
+procedure TDMUser.DeleteFinished;
+var
+  DbId: integer;
+begin
+  if ADBID = 0 then
+    DBid := ActiveCollection.ID
+  else
+    DBid := ADbId;
+
+ if tblFinished.Locate('DataBaseID;BookID',
+           VarArrayOf([DbId, AID]), []) then
+  tblFinished.Delete;
+end;
+
+procedure TDMUser.DeleteRate;
+var
+  DBID: integer;
+begin
+  if ADBID = 0 then
+    DBid := ActiveCollection.ID
+  else
+    DBid := ADbId;
+
+ if tblRates.Locate('DataBaseID;BookID',
+           VarArrayOf([DbId, AID]), []) then
+  tblRates.Delete;
+end;
+
 destructor TDMUser.Destroy;
 begin
   FCollection.Free;
@@ -253,7 +283,7 @@ begin
   Result := tblBases.Locate('ID', CollectionID, []);
 end;
 
-procedure TDMUser.UpdateCollectionProps(CollectionID: Integer; DisplayName: string; RootFolder: string; DBFileName: string);
+procedure TDMUser.UpdateCollectionProps;
 begin
   if ActivateCollection(CollectionID) then
   begin
@@ -262,6 +292,7 @@ begin
     tblBasesName.Value := DisplayName;
     tblBasesRootFolder.Value := RootFolder;
     tblBasesDBFileName.Value := DBFileName;
+    tblBasesNotes.Value := Description;
 
     tblBases.Post;
   end;
@@ -347,15 +378,22 @@ begin
   Result := False;
 end;
 
-procedure TDMUser.SetFinished(ID, Progress: integer);
+procedure TDMUser.SetFinished;
+var
+  DBID: integer;
 begin
+  if ADBID = 0 then
+    DBid := ActiveCollection.ID
+  else
+    DBid := ADbId;
+
   if not tblRates.Locate('DataBaseID;BookID',
-           VarArrayOf([ActiveCollection.ID, ID]), []) then
+           VarArrayOf([DBID, ID]), []) then
   begin
     DMUser.tblFinished.Insert;
     DMUser.tblFinishedBookId.Value := ID;
     DMUser.tblFinishedProgress.Value := Progress;
-    DMUser.tblFinishedDataBaseID.Value := DMUser.ActiveCollection.ID;
+    DMUser.tblFinishedDataBaseID.Value := DBID;
     DMUser.tblFinishedDate.Value := Now;
     DMUser.tblFinished.Post;
   end

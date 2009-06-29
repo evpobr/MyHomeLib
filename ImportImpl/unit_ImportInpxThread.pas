@@ -298,7 +298,8 @@ begin
     Delete(S,1,p);
     p := pos(del,S);
 
-    FPersonalFolder := (FFields[i]=flFolder);
+    if not FPersonalFolder then
+        FPersonalFolder := (FFields[i]=flFolder);
 
     inc(i);
   end;

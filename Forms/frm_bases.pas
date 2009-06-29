@@ -48,6 +48,8 @@ type
     btnSelectRoot: TButton;
     edCollectionName: TEdit;
     cbRelativePath: TCheckBox;
+    Label1: TLabel;
+    edDescription: TRzEdit;
     procedure FormShow(Sender: TObject);
     procedure edDBFileButtonClick(Sender: TObject);
     procedure edDBFolderButtonClick(Sender: TObject);
@@ -62,10 +64,13 @@ type
     procedure SetDBFileName(const Value: string);
     function GetRootFolder: string;
     procedure SetRootFolder(const Value: string);
+    function GetDescription: string;
+    procedure SetDescription(const Value: string);
 
     property DisplayName: string read GetDisplayName write SetDisplayName;
     property DBFileName: string read GetDBFileName write SetDBFileName;
     property RootFolder: string read GetRootFolder write SetRootFolder;
+    property Description: string read GetDescription write SetDescription;
 
   public
 
@@ -97,6 +102,8 @@ begin
   DisplayName := DMUser.ActiveCollection.Name;
   DBFileName := DMUser.ActiveCollection.DBFileName;
   RootFolder := DMUser.ActiveCollection.RootFolder;
+  Description := DMUser.ActiveCollection.Notes;
+
 end;
 
 function TfrmBases.GetDisplayName: string;
@@ -114,9 +121,19 @@ begin
   Result := Trim(edCollectionFile.Text);
 end;
 
+function TfrmBases.GetDescription: string;
+begin
+  Result := Trim(edDescription.Text);
+end;
+
 procedure TfrmBases.SetDBFileName(const Value: string);
 begin
   edCollectionFile.Text := Value;
+end;
+
+procedure TfrmBases.SetDescription(const Value: string);
+begin
+  edDescription.Text := Value;
 end;
 
 function TfrmBases.GetRootFolder: string;
@@ -199,7 +216,7 @@ begin
     Exit;
   end;
 
-  DMUser.UpdateCollectionProps(CollectionID, DisplayName, ARootFolder, ADBFileName);
+  DMUser.UpdateCollectionProps(CollectionID, DisplayName, ARootFolder, ADBFileName, Description);
 
   ModalResult := mrOk;
 end;

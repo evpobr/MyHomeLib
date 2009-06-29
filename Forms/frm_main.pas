@@ -576,6 +576,7 @@ type
       Pt: TPoint; var Effect: Integer; Mode: TDropMode);
     procedure miImportUserDataClick(Sender: TObject);
     procedure miReadedClick(Sender: TObject);
+    procedure N43Click(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -3832,7 +3833,7 @@ begin
             ALibrary.EndBulkOperation(False);
           end;
 
-          if DMUser.tblGrouppedBooks.Locate('DatabaseID;InnerID', VarArrayOf([Settings.ActiveCollection, Data.ID]), []) then
+          if DMUser.tblGrouppedBooks.Locate('DatabaseID;OuterID', VarArrayOf([Settings.ActiveCollection, Data.ID]), []) then
           begin
             DMUser.tblGrouppedBooks.Delete;
             FUpdateFavorites := True;
@@ -4282,13 +4283,14 @@ var
   Node: PVirtualNode;
 begin
   GetActiveTree(Tree);
-
   Max := Tree.TotalCount;
-  if (Tree = tvBooksF) or (Max = 0) or
-     not DMUser.tblGroupList.Locate('ID',(Sender as TMenuItem).Tag,[])
- then
-    Exit;
 
+  if Max = 0 then Exit;
+
+  if Sender is TMenuItem then
+       DMUser.tblGroupList.Locate('ID',(Sender as TMenuItem).Tag,[])
+  else
+       DMUser.tblGroupList.Locate('ID',1,[]);
 
   spProgress.Visible := True;
   spStatus.Caption := 'Добавляем в избранное...';
@@ -4296,13 +4298,10 @@ begin
   dmCollection.tblBooks.DisableControls;
   DMUser.tblGrouppedBooks.DisableControls;
 
-
   SetUtilTableStatus(True);
 
-  Max := Tree.TotalCount;
   Node := Tree.GetFirst;
   i := 0;
-
   while Assigned(Node) do
   begin
     Data := Tree.GetNodeData(Node);
@@ -4869,9 +4868,9 @@ begin
   BookTreeStatus := bsBusy;
   if GetActiveView <> FavoritesView then
   begin
-    if DMUser.tblRates.Locate('BookID;DataBaseID',
-          VarArrayOf([Data.ID,DMUser.ActiveCollection.ID]), [])
-      then DMUser.tblRates.Delete;
+
+    DMUser.DeleteRate(Data.ID);
+
     if DMUser.tblGrouppedBooks.Locate('DataBaseID;OuterID',
                                   VarArrayOf([DMUser.ActiveCollection.ID,Data.ID]),[]) then
     begin
@@ -4888,14 +4887,10 @@ begin
       DMUser.tblGrouppedBooksRate.Value := 0;
       DMUser.tblGrouppedBooks.Post;
 
-      if DMUser.tblRates.Locate('BookID;DataBaseID',
-          VarArrayOf([DMUser.tblGrouppedBooksOuterID.Value,DMUser.tblGrouppedBooksDatabaseID.Value]), [])
-        then begin
-          DMUser.tblRates.Delete;
+      DMUser.DeleteRate(DMUser.tblGrouppedBooksOuterID.Value, DMUser.tblGrouppedBooksDatabaseID.Value);
 
-          FillBooksTree(0, tvBooksA, dmCollection.tblAuthor_List, dmCollection.tblBooksA, False, True); // авторы
-          FillBooksTree(0, tvBooksS, nil, dmCollection.tblBooksS, False, False); // серии
-        end;
+      FillBooksTree(0, tvBooksA, dmCollection.tblAuthor_List, dmCollection.tblBooksA, False, True); // авторы
+      FillBooksTree(0, tvBooksS, nil, dmCollection.tblBooksS, False, False); // серии
     end;
 
   Tree.RepaintNode(Node);
@@ -5106,6 +5101,48 @@ begin
   if DirectoryExists(Settings.ReadDir) then ClearDir(Settings.ReadDir);
 end;
 
+procedure TfrmMain.N43Click(Sender: TObject);
+var
+  SL: TStringList;
+  FN: string;
+begin
+  SL := TStringList.Create;
+  try
+
+    //  Рейтинги
+
+    SL.Add('# Рейтинги');
+    DMUser.tblRates.Filter := 'DataBaseID =' + QuotedStr(IntToStr(DMUser.ActiveCollection.ID));
+    DMUser.tblRates.Filtered := True;
+    DMUser.tblRates.First;
+    while not DMUser.tblRates.Eof do
+    begin
+      SL.Add(Format('%d %d',[DMUser.tblRatesID.Value, DMUser.tblRatesRate.Value]));
+      DMUser.tblRates.Next;
+    end;
+    DMUser.tblRates.Filtered := False;
+
+    //  избранное
+
+    SL.Add('# Избранное');
+    DMUser.tblGrouppedBooks.Filter := 'DataBaseID =' + QuotedStr(IntToStr(DMUser.ActiveCollection.ID));
+    DMUser.tblGrouppedBooks.Filtered := True;
+    DMUser.tblGrouppedBooks.First;
+    while not DMUser.tblGrouppedBooks.Eof do
+    begin
+      SL.Add(Format('%d',[DMUser.tblGrouppedBooksOuterID.Value]));
+      DMUser.tblGrouppedBooks.Next;
+    end;
+    DMUser.tblGrouppedBooks.Filtered := False;
+
+//    if GetFileName(fnSaveUserData, FN) then
+//          SL.SaveToFile(FN);
+
+  finally
+    SL.Free;
+  end;
+end;
+
 procedure TfrmMain.HeaderPopupItemClick(Sender: TObject);
 var
   i: integer;
@@ -5208,14 +5245,19 @@ begin
     exit;
 
   //  заглушка
-  Data.Progress := 100;
+  if Data.Progress = 100 then
+        Data.Progress := 0
+    else
+        Data.Progress := 100;
 
   BookTreeStatus := bsBusy;
   if GetActiveView <> FavoritesView then
   begin
 
-    DMUser.SetFinished(Data.ID, Data.Progress);
-
+    if Data.Progress <> 0 then
+          DMUser.SetFinished(Data.ID, Data.Progress)
+      else
+          DMUser.DeleteFinished(Data.ID);
     //
     //  Синхронизация с избранным
     //
@@ -5241,7 +5283,10 @@ begin
     //  Синхронизация с таблицей рейтингов
     //
 
-    DMUser.SetFinished(DMUser.tblGrouppedBooksOuterID.Value, Data.Progress);
+    if Data.Progress <> 0 then
+          DMUser.SetFinished(DMUser.tblGrouppedBooksOuterID.Value, Data.Progress, DMUser.tblGrouppedBooksDatabaseID.Value)
+      else
+          DMUser.DeleteFinished(DMUser.tblGrouppedBooksOuterID.Value, DMUser.tblGrouppedBooksDatabaseID.Value);
 
     FillBooksTree(0, tvBooksA, dmCollection.tblAuthor_List, dmCollection.tblBooksA, False, True); // авторы
     FillBooksTree(0, tvBooksS, nil, dmCollection.tblBooksS, False, False); // серии
