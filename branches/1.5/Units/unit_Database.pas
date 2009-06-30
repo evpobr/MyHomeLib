@@ -293,7 +293,7 @@ ExtraTableIndexes: array [1..2] of TIndexDesc = (
 //   Bases table
 //
 BasesTableFields: array [1 .. 14] of TFieldDesc = (
-  (Name: 'ID';           DataType: ftInteger;    Size: 0;   Required: true),
+  (Name: 'ID';           DataType: ftAutoInc;    Size: 0;   Required: true),
   (Name: 'Name';         DataType: ftWideString; Size: 64;  Required: true),
   (Name: 'RootFolder';   DataType: ftWideString; Size: 128; Required: true),
   (Name: 'DBFileName';   DataType: ftWideString; Size: 128; Required: true),
