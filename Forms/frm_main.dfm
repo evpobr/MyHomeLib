@@ -424,9 +424,9 @@ object frmMain: TfrmMain
     Width = 998
     Height = 848
     HelpContext = 135
-    ActivePage = TabSheet4
+    ActivePage = TabSheet5
     Align = alClient
-    TabIndex = 3
+    TabIndex = 4
     TabOrder = 3
     OnChange = pgControlChange
     FixedDimension = 19
@@ -2117,7 +2117,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2144,7 +2143,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 0
@@ -3008,10 +3006,9 @@ object frmMain: TfrmMain
         object N41: TMenuItem
           Caption = '-'
         end
-        object N43: TMenuItem
+        object miExportUserData: TMenuItem
           Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1100#1089#1082#1080#1077' '#1076#1072#1085#1085#1099#1077
-          Enabled = False
-          OnClick = N43Click
+          OnClick = miExportUserDataClick
         end
       end
       object N18: TMenuItem

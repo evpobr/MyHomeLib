@@ -140,6 +140,14 @@ type
     procedure SetFinished(ID, Progress: integer; ADBID: integer = 0);
     procedure DeleteRate(AID: integer; ADBID: integer = 0);
     procedure DeleteFinished(AID: integer; ADBID: integer = 0);
+    procedure InsertToGroupTable(ID : integer; Genre: string);
+    procedure AddGroup(Name: string);
+
+    procedure LoadRates(const SL: TStringList; var i: integer);
+    procedure LoadGroupedBooks(const SL: TStringList; var i: integer);
+    procedure LoadFinished(const SL: TStringList; var i: integer);
+    procedure LoadGroups(const SL: TStringList; var i: integer);
+
   end;
 
   TMHLCollection = class
@@ -202,7 +210,8 @@ var
 implementation
 
 uses
-   Variants;
+   Variants,
+   dm_Collection;
 
 
 resourcestring
@@ -211,6 +220,14 @@ resourcestring
 {$R *.dfm}
 
 { TDMUser }
+
+procedure TDMUser.AddGroup(Name: string);
+begin
+  DMUser.tblGroupList.Insert;
+  DMUser.tblGroupListName.Value := Name;
+  DMUser.tblGroupListAllowDelete.Value := True;
+  DMUser.tblGroupList.Post;
+end;
 
 constructor TDMUser.Create(AOwner: TComponent);
 begin
@@ -262,8 +279,6 @@ procedure TDMUser.RegisterCollection(
   );
 begin
   tblBases.Insert;
-
-  tblBasesID.Value := Random($FFFF);
   tblBasesName.Value := DisplayName;
   tblBasesRootFolder.Value := RootFolder;
   tblBasesDBFileName.Value := DBFileName;
@@ -274,7 +289,6 @@ begin
   tblBasesNotes.Value := Notes;
   tblBasesUser.Value := User;
   tblBasesPass.Value := Password;
-
   tblBases.Post;
 end;
 
@@ -376,6 +390,160 @@ begin
   end;
 
   Result := False;
+end;
+
+procedure TDMUser.InsertToGroupTable;
+begin
+  dmCollection.tblBooks.Locate('ID', ID, []);
+
+  if not DMUser.tblGrouppedBooks.Locate('FileName', dmCollection.tblBooksFileName.Value, []) then
+  begin
+    DMUser.tblGrouppedBooks.Insert;
+    DMUser.tblGrouppedBooksOuterID.Value := ID;
+    DMUser.tblGrouppedBooksDataBaseID.Value := ActiveCollection.ID;
+    DMUser.tblGrouppedBooksTitle.Value := dmCollection.tblBooksTitle.Value;
+
+    DMUser.tblGrouppedBooksSerID.Value := dmCollection.tblBooksSerID.Value;
+
+    if dmCollection.tblBooksSeries.IsNull then
+          DMUser.tblGrouppedBooksSeries.Value := NO_SERIES_TITLE
+        else
+          DMUser.tblGrouppedBooksSeries.Value := dmCollection.tblBooksSeries.Value;
+
+    DMUser.tblGrouppedBooksFullName.Value := dmCollection.GetBookAuthor(ID);
+
+    DMUser.tblGrouppedBooksSeqNumber.Value := dmCollection.tblBooksSeqNumber.Value;
+    DMUser.tblGrouppedBooksLibID.Value := dmCollection.tblBooksLibID.Value;
+    DMUser.tblGrouppedBooksSize.Value := dmCollection.tblBooksSize.Value;
+    DMUser.tblGrouppedBooksDeleted.Value := dmCollection.tblBooksDeleted.Value;
+    DMUser.tblGrouppedBooksLocal.Value := dmCollection.tblBooksLocal.Value;
+
+    if not dmCollection.tblBooksFolder.IsNull then
+          DMUser.tblGrouppedBooksFolder.Value := ActiveCollection.RootFolder + CheckSymbols(dmCollection.tblBooksFolder.Value)
+        else
+          DMUser.tblGrouppedBooksFolder.Value := ActiveCollection.RootFolder;
+
+    DMUser.tblGrouppedBooksFileName.Value := dmCollection.tblBooksFileName.Value;
+    DMUser.tblGrouppedBooksExt.Value := dmCollection.tblBooksExt.Value;
+    DMUser.tblGrouppedBooksInsideNo.Value := dmCollection.tblBooksInsideNo.Value;
+    DMUser.tblGrouppedBooksGenres.Value := Genre;
+    DMUser.tblGrouppedBooksRate.Value := dmCollection.tblBooksRate.Value;
+    DMUser.tblGrouppedBooksDate.Value := dmCollection.tblBooksDate.Value;
+    DMUser.tblGrouppedBooksProgress.Value := dmCollection.tblBooksProgress.Value;
+    DMUser.tblGrouppedBooks.Post;
+  end;
+
+end;
+
+procedure TDMUser.LoadFinished;
+var
+  p, ID, Progress: integer;
+begin
+  // Прочитаное
+  inc(i);
+  while (i < SL.Count) and (pos('#',SL[i]) = 0) do
+  begin
+    p := pos(' ',SL[i]);
+    ID := StrToInt(copy(SL[i],1, p - 1));
+    Progress := StrToInt(copy(SL[i],p + 1));
+
+    if not DMUser.tblFinished.Locate('DataBaseID;BookID',
+                                      VarArrayOf([DMUser.ActiveCollection.ID,ID]), [])
+    then
+    begin
+      DMUser.tblFinished.Insert;
+      DMUser.tblFinishedBookID.Value := ID;
+      DMUser.tblFinishedProgress.Value := Progress;
+      DMUser.tblFinishedDataBaseID.Value := DMUser.ActiveCollection.ID;
+      DMUser.tblFinishedDate.Value := Now;
+      DMUser.tblFinished.Post;
+    end
+    else
+    begin
+      DMUser.tblFinished.Edit;
+      DMUser.tblFinishedProgress.Value := Progress;
+      DMUser.tblFinished.Post;
+    end;
+    inc(i);
+  end;
+end;
+
+procedure TDMUser.LoadGroupedBooks;
+var
+  p, ID, GroupID, PrevGroupID: integer;
+begin
+  // Избранное
+  PrevGroupID := 0;
+  inc(i);
+  while (i < SL.Count) and (pos('#',SL[i]) = 0) do
+  begin
+    p := pos(' ',SL[i]);
+    if p <> 0 then
+    begin
+       ID := StrToInt(copy(SL[i],1, p - 1));
+       GroupID := StrToInt(copy(SL[i],p + 1));
+    end
+    else
+    begin
+      ID := StrToInt(SL[i]);
+      GroupID := 1;
+    end;
+
+    if GroupID <> PrevGroupID then
+    begin
+      tblGroupList.Locate('ID',GroupID,[]);
+      PrevGroupID := GroupID;
+    end;
+
+    InsertToGroupTable(ID, dmCollection.GetBookGenres(ID,false));
+    inc(i);
+  end;
+end;
+
+procedure TDMUser.LoadGroups(const SL: TStringList; var i: integer);
+var
+  k: integer;
+begin
+  inc(i);
+  k := 1;
+  while pos('#',SL[i]) = 0 do
+  begin
+    if k > 2 then
+      AddGroup(SL[i]);
+    inc(k);
+    inc(i);
+  end;
+end;
+
+procedure TDMUser.LoadRates;
+var
+  p, ID, Rate: integer;
+begin
+  // Рейтинги
+  inc(i);
+  while pos('#',SL[i]) = 0 do
+  begin
+    p := pos(' ',SL[i]);
+    ID := StrToInt(copy(SL[i],1, p - 1));
+    Rate := StrToInt(copy(SL[i],p + 1));
+
+    if not DMUser.tblRates.Locate('DataBaseID;BookID', VarArrayOf([DMUser.ActiveCollection.ID,ID]), []) then
+    begin
+      DMUser.tblRates.Insert;
+      DMUser.tblRatesBookID.Value := ID;
+      DMUser.tblRatesRate.Value := Rate;
+      DMUser.tblRatesDataBaseID.Value := DMUser.ActiveCollection.ID;
+      DMUser.tblRatesDate.Value := Now;
+      DMUser.tblRates.Post;
+    end
+    else
+    begin
+      DMUser.tblRates.Edit;
+      DMUser.tblRatesRate.Value := Rate;
+      DMUser.tblRates.Post;
+    end;
+    inc(i);
+  end;
 end;
 
 procedure TDMUser.SetFinished;
