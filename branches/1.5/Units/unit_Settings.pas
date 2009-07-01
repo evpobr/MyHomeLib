@@ -89,6 +89,8 @@ type
     FSplitters: TSplitters;
     FTreeModes: TTreeModes;
     FWindowState: TWindowState;
+    FFormWidth: integer;
+    FFormHeight: integer;
 
     // NETWORK_SECTION
     FProxyServer: string;
@@ -290,6 +292,11 @@ type
     property LocalColor: TColor read FLocalColor write FLocalColor;
 
     property WindowState: TWindowState read FWindowState write FWindowState;
+    property FormWidth: integer read FFormWidth write FFormWidth;
+    property FormHeight: integer read FFormHeight write FFormHeight;
+
+
+
 
     property FullTextSearch: Boolean read FFullTextSearch write FFullTextSearch;
 
@@ -501,6 +508,10 @@ begin
     FLastBookinSeries:= iniFile.ReadInteger(INTERFACE_SECTION, 'LastBookInSeries', 0);
     FLastBookinFavorites := iniFile.ReadInteger(INTERFACE_SECTION, 'LastBookInFavorites', 0);
 
+    FFormHeight := iniFile.ReadInteger(INTERFACE_SECTION, 'FormHeight ', 850);
+    FFormWidth := iniFile.ReadInteger(INTERFACE_SECTION, 'FormWidth ', 950);
+
+
     if iniFile.ReadInteger(INTERFACE_SECTION, 'Lang', 0) = 0 then
       FAppLanguage := alEng
     else
@@ -640,6 +651,11 @@ begin
     iniFile.WriteInteger(INTERFACE_SECTION, 'LastBookInFavorites', FLastBookinFavorites);
 
     iniFile.WriteInteger(INTERFACE_SECTION, 'WindowState', Ord(FWindowState));
+
+    iniFile.WriteInteger(INTERFACE_SECTION, 'FormHeight ', FFormHeight);
+    iniFile.WriteInteger(INTERFACE_SECTION, 'FormWidth ', FFormWidth);
+
+
     SaveSplitters(iniFile);
 
     //

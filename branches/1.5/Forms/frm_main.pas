@@ -1018,6 +1018,10 @@ begin
 
   WindowState := Settings.WindowState;
 
+  Width := Settings.FormWidth;
+  Height := Settings.FormHeight;
+
+
   SetColors;
 
   RusBar.Visible := Settings.ShowRusBar;
@@ -2132,6 +2136,10 @@ begin
   Settings.WindowState := WindowState;
   Settings.FullSearchMode := pnlFullSearch.Visible;
 
+  Settings.FormWidth := Width;
+  Settings.FormHeight := Height;
+
+
   Settings.SaveSettings;
   FreeSettings;
 
@@ -2357,7 +2365,7 @@ begin
   Data := tvGroups.GetNodeData(Node);
   if Data = Nil then Exit;
 
-  DMUser.tblGroupList.Locate('Id',Data.ID,[]);
+  DMUser.ActivateGroup(Data.ID);
 
   lblGroups.Caption := DMUser.tblGroupListName.Value;
 
@@ -3402,7 +3410,7 @@ end;
 
 procedure TfrmMain.GroupMenuItemClick(Sender: TObject);
 begin
-  if DMUser.tblGroupList.Locate('ID', (Sender as TMenuItem).Tag,[]) then
+  if DMUser.ActivateGroup((Sender as TMenuItem).Tag) then
         miAddFavoritesClick(Sender);
 end;
 
@@ -4285,9 +4293,9 @@ begin
   if Max = 0 then Exit;
 
   if Sender is TMenuItem then
-       DMUser.tblGroupList.Locate('ID',(Sender as TMenuItem).Tag,[])
+       DMUser.ActivateGroup((Sender as TMenuItem).Tag)
   else
-       DMUser.tblGroupList.Locate('ID',1,[]);
+       DMUser.ActivateGroup(1);
 
   spProgress.Visible := True;
   spStatus.Caption := 'Добавляем в избранное...';
@@ -5584,7 +5592,7 @@ var
 begin
   Data := tvGroups.GetNodeData(tvGroups.FocusedNode);
   if Data = Nil then Exit;
-  if DMUser.tblGroupList.Locate('ID',Data.ID,[]) and
+  if DMUser.ActivateGroup(Data.ID) and
      DMUser.tblGroupListAllowDelete.Value then
   begin
     btnClearFavoritesClick(Sender);
@@ -5668,7 +5676,7 @@ begin
     miDelFavoritesClick(Sender)
   else
     begin
-      if DMUser.tblGroupList.Locate('ID',1,[]) then
+      if DMUser.ActivateGroup(1) then
           miAddFavoritesClick(Sender);
     end;
 end;
