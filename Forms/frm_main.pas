@@ -312,35 +312,11 @@ type
     IdCookieManager: TIdCookieManager;
     N28: TMenuItem;
     pnlFullSearch: TPanel;
-    RzGroupBox3: TRzGroupBox;
-    Label24: TLabel;
-    Label26: TLabel;
-    Label23: TLabel;
-    RzGroupBox4: TRzGroupBox;
-    lblTotalBooksFL: TRzLabel;
-    edFFullName: TRzButtonEdit;
-    edFTitle: TRzButtonEdit;
-    edFSeries: TRzButtonEdit;
-    Label30: TLabel;
-    cbDate: TRzComboBox;
-    cbDownloaded: TRzComboBox;
-    cbDeleted: TCheckBox;
-    RzGroupBox1: TRzGroupBox;
-    Label27: TLabel;
-    Label28: TLabel;
-    Label29: TLabel;
-    edFFile: TRzButtonEdit;
-    edFFolder: TRzButtonEdit;
-    edFExt: TRzButtonEdit;
     FilesList: TFilesList;
     RzGroupBox2: TRzGroupBox;
-    cbPresetName: TRzComboBox;
-    btnSavePreset: TRzBitBtn;
-    btnDeletePreset: TRzBitBtn;
     RzGroupBox5: TRzGroupBox;
     btnClearFilterEdits: TRzBitBtn;
     btnApplyFilter: TRzBitBtn;
-    Label1: TLabel;
     N37: TMenuItem;
     miAddToSearch: TMenuItem;
     miINPXCollectionExport: TMenuItem;
@@ -374,10 +350,37 @@ type
     N44: TMenuItem;
     N42: TMenuItem;
     N45: TMenuItem;
+    BalloonHint1: TBalloonHint;
+    CategoryPanelGroup1: TCategoryPanelGroup;
+    CategoryPanel1: TCategoryPanel;
+    CategoryPanel2: TCategoryPanel;
+    CategoryPanel3: TCategoryPanel;
+    Label23: TLabel;
+    Label26: TLabel;
+    Label24: TLabel;
+    edFFullName: TRzButtonEdit;
+    edFTitle: TRzButtonEdit;
+    edFSeries: TRzButtonEdit;
+    Label27: TLabel;
+    edFFile: TRzButtonEdit;
+    edFFolder: TRzButtonEdit;
+    edFExt: TRzButtonEdit;
+    Label29: TLabel;
+    Label28: TLabel;
+    lblTotalBooksFL: TRzLabel;
+    cbPresetName: TRzComboBox;
+    btnDeletePreset: TRzBitBtn;
+    btnSavePreset: TRzBitBtn;
+    Label1: TLabel;
+    Label30: TLabel;
+    cbDate: TRzComboBox;
     Label2: TLabel;
     cbLang: TRzComboBox;
+    cbDownloaded: TRzComboBox;
     edFKeyWords: TRzButtonEdit;
+    cbDeleted: TCheckBox;
     Label3: TLabel;
+    Label4: TLabel;
 
     //
     // События формы
@@ -1995,6 +1998,8 @@ end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
+  UseLatestCommonDialogs := True;
+
   // событие OnGetNodeDataSize почему-то не обрабатывается, инициализируем вручную
 
   tvBooksA.NodeDataSize := SizeOf(TBookData);
