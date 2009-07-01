@@ -136,6 +136,8 @@ type
     function FindFirstCollection: Boolean;
     function FindNextCollection: Boolean;
 
+    function ActivateGroup(const ID: integer):boolean;
+
     procedure SetRate(ID,Rate: integer);
     procedure SetFinished(ID, Progress: integer; ADBID: integer = 0);
     procedure DeleteRate(AID: integer; ADBID: integer = 0);
@@ -221,12 +223,17 @@ resourcestring
 
 { TDMUser }
 
+function TDMUser.ActivateGroup(const ID: integer): boolean;
+begin
+  Result := tblGroupList.Locate('Id',ID,[]);
+end;
+
 procedure TDMUser.AddGroup(Name: string);
 begin
-  DMUser.tblGroupList.Insert;
-  DMUser.tblGroupListName.Value := Name;
-  DMUser.tblGroupListAllowDelete.Value := True;
-  DMUser.tblGroupList.Post;
+  tblGroupList.Insert;
+  tblGroupListName.Value := Name;
+  tblGroupListAllowDelete.Value := True;
+  tblGroupList.Post;
 end;
 
 constructor TDMUser.Create(AOwner: TComponent);
@@ -396,41 +403,41 @@ procedure TDMUser.InsertToGroupTable;
 begin
   dmCollection.tblBooks.Locate('ID', ID, []);
 
-  if not DMUser.tblGrouppedBooks.Locate('FileName', dmCollection.tblBooksFileName.Value, []) then
+  if not tblGrouppedBooks.Locate('FileName', dmCollection.tblBooksFileName.Value, []) then
   begin
-    DMUser.tblGrouppedBooks.Insert;
-    DMUser.tblGrouppedBooksOuterID.Value := ID;
-    DMUser.tblGrouppedBooksDataBaseID.Value := ActiveCollection.ID;
-    DMUser.tblGrouppedBooksTitle.Value := dmCollection.tblBooksTitle.Value;
+    tblGrouppedBooks.Insert;
+    tblGrouppedBooksOuterID.Value := ID;
+    tblGrouppedBooksDataBaseID.Value := ActiveCollection.ID;
+    tblGrouppedBooksTitle.Value := dmCollection.tblBooksTitle.Value;
 
-    DMUser.tblGrouppedBooksSerID.Value := dmCollection.tblBooksSerID.Value;
+    tblGrouppedBooksSerID.Value := dmCollection.tblBooksSerID.Value;
 
     if dmCollection.tblBooksSeries.IsNull then
-          DMUser.tblGrouppedBooksSeries.Value := NO_SERIES_TITLE
+          tblGrouppedBooksSeries.Value := NO_SERIES_TITLE
         else
-          DMUser.tblGrouppedBooksSeries.Value := dmCollection.tblBooksSeries.Value;
+          tblGrouppedBooksSeries.Value := dmCollection.tblBooksSeries.Value;
 
-    DMUser.tblGrouppedBooksFullName.Value := dmCollection.GetBookAuthor(ID);
+    tblGrouppedBooksFullName.Value := dmCollection.GetBookAuthor(ID);
 
-    DMUser.tblGrouppedBooksSeqNumber.Value := dmCollection.tblBooksSeqNumber.Value;
-    DMUser.tblGrouppedBooksLibID.Value := dmCollection.tblBooksLibID.Value;
-    DMUser.tblGrouppedBooksSize.Value := dmCollection.tblBooksSize.Value;
-    DMUser.tblGrouppedBooksDeleted.Value := dmCollection.tblBooksDeleted.Value;
-    DMUser.tblGrouppedBooksLocal.Value := dmCollection.tblBooksLocal.Value;
+    tblGrouppedBooksSeqNumber.Value := dmCollection.tblBooksSeqNumber.Value;
+    tblGrouppedBooksLibID.Value := dmCollection.tblBooksLibID.Value;
+    tblGrouppedBooksSize.Value := dmCollection.tblBooksSize.Value;
+    tblGrouppedBooksDeleted.Value := dmCollection.tblBooksDeleted.Value;
+    tblGrouppedBooksLocal.Value := dmCollection.tblBooksLocal.Value;
 
     if not dmCollection.tblBooksFolder.IsNull then
-          DMUser.tblGrouppedBooksFolder.Value := ActiveCollection.RootFolder + CheckSymbols(dmCollection.tblBooksFolder.Value)
+          tblGrouppedBooksFolder.Value := IncludeTrailingPathDelimiter(ActiveCollection.RootFolder) + CheckSymbols(dmCollection.tblBooksFolder.Value)
         else
-          DMUser.tblGrouppedBooksFolder.Value := ActiveCollection.RootFolder;
+          tblGrouppedBooksFolder.Value := IncludeTrailingPathDelimiter(ActiveCollection.RootFolder);
 
-    DMUser.tblGrouppedBooksFileName.Value := dmCollection.tblBooksFileName.Value;
-    DMUser.tblGrouppedBooksExt.Value := dmCollection.tblBooksExt.Value;
-    DMUser.tblGrouppedBooksInsideNo.Value := dmCollection.tblBooksInsideNo.Value;
-    DMUser.tblGrouppedBooksGenres.Value := Genre;
-    DMUser.tblGrouppedBooksRate.Value := dmCollection.tblBooksRate.Value;
-    DMUser.tblGrouppedBooksDate.Value := dmCollection.tblBooksDate.Value;
-    DMUser.tblGrouppedBooksProgress.Value := dmCollection.tblBooksProgress.Value;
-    DMUser.tblGrouppedBooks.Post;
+    tblGrouppedBooksFileName.Value := dmCollection.tblBooksFileName.Value;
+    tblGrouppedBooksExt.Value := dmCollection.tblBooksExt.Value;
+    tblGrouppedBooksInsideNo.Value := dmCollection.tblBooksInsideNo.Value;
+    tblGrouppedBooksGenres.Value := Genre;
+    tblGrouppedBooksRate.Value := dmCollection.tblBooksRate.Value;
+    tblGrouppedBooksDate.Value := dmCollection.tblBooksDate.Value;
+    tblGrouppedBooksProgress.Value := dmCollection.tblBooksProgress.Value;
+    tblGrouppedBooks.Post;
   end;
 
 end;
@@ -447,22 +454,22 @@ begin
     ID := StrToInt(copy(SL[i],1, p - 1));
     Progress := StrToInt(copy(SL[i],p + 1));
 
-    if not DMUser.tblFinished.Locate('DataBaseID;BookID',
-                                      VarArrayOf([DMUser.ActiveCollection.ID,ID]), [])
+    if not tblFinished.Locate('DataBaseID;BookID',
+                                      VarArrayOf([ActiveCollection.ID,ID]), [])
     then
     begin
-      DMUser.tblFinished.Insert;
-      DMUser.tblFinishedBookID.Value := ID;
-      DMUser.tblFinishedProgress.Value := Progress;
-      DMUser.tblFinishedDataBaseID.Value := DMUser.ActiveCollection.ID;
-      DMUser.tblFinishedDate.Value := Now;
-      DMUser.tblFinished.Post;
+      tblFinished.Insert;
+      tblFinishedBookID.Value := ID;
+      tblFinishedProgress.Value := Progress;
+      tblFinishedDataBaseID.Value := ActiveCollection.ID;
+      tblFinishedDate.Value := Now;
+      tblFinished.Post;
     end
     else
     begin
-      DMUser.tblFinished.Edit;
-      DMUser.tblFinishedProgress.Value := Progress;
-      DMUser.tblFinished.Post;
+      tblFinished.Edit;
+      tblFinishedProgress.Value := Progress;
+      tblFinished.Post;
     end;
     inc(i);
   end;
@@ -527,20 +534,20 @@ begin
     ID := StrToInt(copy(SL[i],1, p - 1));
     Rate := StrToInt(copy(SL[i],p + 1));
 
-    if not DMUser.tblRates.Locate('DataBaseID;BookID', VarArrayOf([DMUser.ActiveCollection.ID,ID]), []) then
+    if not tblRates.Locate('DataBaseID;BookID', VarArrayOf([ActiveCollection.ID,ID]), []) then
     begin
-      DMUser.tblRates.Insert;
-      DMUser.tblRatesBookID.Value := ID;
-      DMUser.tblRatesRate.Value := Rate;
-      DMUser.tblRatesDataBaseID.Value := DMUser.ActiveCollection.ID;
-      DMUser.tblRatesDate.Value := Now;
-      DMUser.tblRates.Post;
+      tblRates.Insert;
+      tblRatesBookID.Value := ID;
+      tblRatesRate.Value := Rate;
+      tblRatesDataBaseID.Value := ActiveCollection.ID;
+      tblRatesDate.Value := Now;
+      tblRates.Post;
     end
     else
     begin
-      DMUser.tblRates.Edit;
-      DMUser.tblRatesRate.Value := Rate;
-      DMUser.tblRates.Post;
+      tblRates.Edit;
+      tblRatesRate.Value := Rate;
+      tblRates.Post;
     end;
     inc(i);
   end;
@@ -558,18 +565,18 @@ begin
   if not tblRates.Locate('DataBaseID;BookID',
            VarArrayOf([DBID, ID]), []) then
   begin
-    DMUser.tblFinished.Insert;
-    DMUser.tblFinishedBookId.Value := ID;
-    DMUser.tblFinishedProgress.Value := Progress;
-    DMUser.tblFinishedDataBaseID.Value := DBID;
-    DMUser.tblFinishedDate.Value := Now;
-    DMUser.tblFinished.Post;
+    tblFinished.Insert;
+    tblFinishedBookId.Value := ID;
+    tblFinishedProgress.Value := Progress;
+    tblFinishedDataBaseID.Value := DBID;
+    tblFinishedDate.Value := Now;
+    tblFinished.Post;
   end
   else
   begin
-    DMUser.tblFinished.Edit;
-    DMUser.tblFinishedProgress.Value := Progress;
-    DMUser.tblFinished.Post;
+    tblFinished.Edit;
+    tblFinishedProgress.Value := Progress;
+    tblFinished.Post;
   end;
 end;
 
@@ -578,18 +585,18 @@ begin
   if not tblRates.Locate('DataBaseID;BookID',
            VarArrayOf([ActiveCollection.ID, ID]), []) then
   begin
-    DMUser.tblRates.Insert;
-    DMUser.tblRatesBookId.Value := ID;
-    DMUser.tblRatesRate.Value := Rate;
-    DMUser.tblRatesDataBaseID.Value := DMUser.ActiveCollection.ID;
-    DMUser.tblRatesDate.Value := Now;
-    DMUser.tblRates.Post;
+    tblRates.Insert;
+    tblRatesBookId.Value := ID;
+    tblRatesRate.Value := Rate;
+    tblRatesDataBaseID.Value := ActiveCollection.ID;
+    tblRatesDate.Value := Now;
+    tblRates.Post;
   end
   else
   begin
-    DMUser.tblRates.Edit;
-    DMUser.tblRatesRate.Value := Rate;
-    DMUser.tblRates.Post;
+    tblRates.Edit;
+    tblRatesRate.Value := Rate;
+    tblRates.Post;
   end;
 end;
 
