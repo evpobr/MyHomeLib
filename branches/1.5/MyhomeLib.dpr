@@ -24,7 +24,7 @@ program MyhomeLib;
 {$R *.dres}
 
 uses
-  Forms,
+  Forms, IMouse,
   frm_main in 'Forms\frm_main.pas' {frmMain},
   dm_user in 'DataModules\dm_user.pas' {DMUser: TDataModule},
   unit_Database in 'Units\unit_Database.pas',
