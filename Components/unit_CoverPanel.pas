@@ -395,6 +395,8 @@ begin
             Ftext.Lines.Add(Titleinfo.Annotation.ChildNodes[i].Text);
         if FFb2InfoVisible then
         begin
+          Hint := '';
+
           FCity.Caption := Publishinfo.City.Text;
           FPublisher.Caption := Publishinfo.Publisher.Text;
           FYear.Caption := Publishinfo.Year;
@@ -403,7 +405,13 @@ begin
           FDate.Caption := Documentinfo.Date.Text;
           FVersion.Caption := Documentinfo.Version;
           if Documentinfo.Author.Count > 0 then
-             FAuthor.Caption := Documentinfo.Author.Items[0].Nickname.Text
+             FAuthor.Caption := Documentinfo.Author.Items[0].Nickname.Text;
+        end
+        else
+        begin
+          Hint := 'Автор' + #13#10 +
+          'Издатель: ' + Publishinfo.City.Text  + #13#10 +
+          'Город :' + Publishinfo.City.Text;
         end;
       end;
     except

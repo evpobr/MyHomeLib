@@ -201,13 +201,7 @@ type
     miGoForum: TMenuItem;
     pgControl: TRzPageControl;
     TabSheet4: TRzTabSheet;
-    RzPanel9: TRzPanel;
-    RzPanel10: TRzPanel;
-    tvBooksSR: TVirtualStringTree;
     tvBooksF: TVirtualStringTree;
-    RichEdit2: TRichEdit;
-    ipnlSearch: TMHLInfoPanel;
-    cpCoverSR: TMHLCoverPanel;
     TabSheet5: TRzTabSheet;
     cpCoverF: TMHLCoverPanel;
     ilFileTypes: TImageList;
@@ -311,17 +305,12 @@ type
     RzSpacer3: TRzSpacer;
     IdCookieManager: TIdCookieManager;
     N28: TMenuItem;
-    pnlFullSearch: TPanel;
     FilesList: TFilesList;
-    RzGroupBox2: TRzGroupBox;
-    RzGroupBox5: TRzGroupBox;
-    btnClearFilterEdits: TRzBitBtn;
-    btnApplyFilter: TRzBitBtn;
     N37: TMenuItem;
     miAddToSearch: TMenuItem;
     miINPXCollectionExport: TMenuItem;
     N38: TMenuItem;
-    RzSplitter1: TRzSplitter;
+    rzsSplitterF: TRzSplitter;
     RzPanel7: TRzPanel;
     tvGroups: TVirtualStringTree;
     RzPanel8: TRzPanel;
@@ -350,37 +339,49 @@ type
     N44: TMenuItem;
     N42: TMenuItem;
     N45: TMenuItem;
-    BalloonHint1: TBalloonHint;
+    rzsSplitterSR: TRzSplitter;
     CategoryPanelGroup1: TCategoryPanelGroup;
-    CategoryPanel1: TCategoryPanel;
-    CategoryPanel2: TCategoryPanel;
-    CategoryPanel3: TCategoryPanel;
+    ctpOther: TCategoryPanel;
+    Label30: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    cbDate: TRzComboBox;
+    cbLang: TRzComboBox;
+    cbDownloaded: TRzComboBox;
+    edFKeyWords: TRzButtonEdit;
+    cbDeleted: TCheckBox;
+    ctpFile: TCategoryPanel;
+    Label27: TLabel;
+    Label29: TLabel;
+    Label28: TLabel;
+    edFFile: TRzButtonEdit;
+    edFFolder: TRzButtonEdit;
+    edFExt: TRzButtonEdit;
+    ctpBook: TCategoryPanel;
     Label23: TLabel;
     Label26: TLabel;
     Label24: TLabel;
     edFFullName: TRzButtonEdit;
     edFTitle: TRzButtonEdit;
     edFSeries: TRzButtonEdit;
-    Label27: TLabel;
-    edFFile: TRzButtonEdit;
-    edFFolder: TRzButtonEdit;
-    edFExt: TRzButtonEdit;
-    Label29: TLabel;
-    Label28: TLabel;
+    cpCoverSR: TMHLCoverPanel;
+    RzPanel9: TRzPanel;
+    RzPanel10: TRzPanel;
+    tvBooksSR: TVirtualStringTree;
+    RichEdit2: TRichEdit;
+    ipnlSearch: TMHLInfoPanel;
+    pnlFullSearch: TPanel;
+    RzGroupBox2: TRzGroupBox;
     lblTotalBooksFL: TRzLabel;
+    Label1: TLabel;
     cbPresetName: TRzComboBox;
     btnDeletePreset: TRzBitBtn;
     btnSavePreset: TRzBitBtn;
-    Label1: TLabel;
-    Label30: TLabel;
-    cbDate: TRzComboBox;
-    Label2: TLabel;
-    cbLang: TRzComboBox;
-    cbDownloaded: TRzComboBox;
-    edFKeyWords: TRzButtonEdit;
-    cbDeleted: TCheckBox;
-    Label3: TLabel;
-    Label4: TLabel;
+    RzGroupBox5: TRzGroupBox;
+    btnClearFilterEdits: TRzBitBtn;
+    btnApplyFilter: TRzBitBtn;
+    BalloonHint1: TBalloonHint;
 
     //
     // События формы
@@ -1021,8 +1022,11 @@ begin
 
   WindowState := Settings.WindowState;
 
-  Width := Settings.FormWidth;
-  Height := Settings.FormHeight;
+  if WindowState = wsNormal then
+  begin
+    Width := Settings.FormWidth;
+    Height := Settings.FormHeight;
+  end;
 
 
   SetColors;
@@ -1062,7 +1066,14 @@ begin
   rzsSplitterA.Position := Settings.Splitters[0];
   rzsSplitterS.Position := Settings.Splitters[1];
   rzsSplitterG.Position := Settings.Splitters[2];
-  cpCoverA.Width := Settings.Splitters[3];
+  rzsSplitterSR.Position := Settings.Splitters[3];
+
+  ctpBook.Collapsed := Settings.BookSRCollapsed;
+  ctpFile.Collapsed := Settings.FileSRCollapsed;
+  ctpOther.Collapsed := Settings.OtherSRCollapsed;
+
+  cpCoverA.Width := Settings.CoverWidth;
+
 
    // Check IE Proxy settings   (by Goblin)
   regini := TRzRegIniFile.Create(self);
@@ -2136,13 +2147,22 @@ begin
   Settings.Splitters[0] := rzsSplitterA.Position;
   Settings.Splitters[1] := rzsSplitterS.Position;
   Settings.Splitters[2] := rzsSplitterG.Position;
-  Settings.Splitters[3] := cpCoverA.Width;
+  Settings.Splitters[3] := rzsSplitterSR.Position;
+
+  Settings.BookSRCollapsed := ctpBook.Collapsed;
+  Settings.FileSRCollapsed := ctpFile.Collapsed;
+  Settings.OtherSRCollapsed := ctpOther.Collapsed;
+
+  Settings.CoverWidth := cpCoverA.Width;
 
   Settings.WindowState := WindowState;
   Settings.FullSearchMode := pnlFullSearch.Visible;
 
-  Settings.FormWidth := Width;
-  Settings.FormHeight := Height;
+  if WindowState = wsNormal then
+  begin
+    Settings.FormWidth := Width;
+    Settings.FormHeight := Height;
+  end;
 
 
   Settings.SaveSettings;

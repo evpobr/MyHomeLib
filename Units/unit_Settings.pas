@@ -91,6 +91,11 @@ type
     FWindowState: TWindowState;
     FFormWidth: integer;
     FFormHeight: integer;
+    FCoverWidth: integer;
+
+    FBookSRCollapsed: boolean;
+    FFileSRCollapsed: boolean;
+    FOtherSRCollapsed: boolean;
 
     // NETWORK_SECTION
     FProxyServer: string;
@@ -294,8 +299,11 @@ type
     property WindowState: TWindowState read FWindowState write FWindowState;
     property FormWidth: integer read FFormWidth write FFormWidth;
     property FormHeight: integer read FFormHeight write FFormHeight;
+    property CoverWidth: integer read FCoverWidth write FCoverWidth;
 
-
+    property BookSRCollapsed: boolean read FBookSRCollapsed write FBookSRCollapsed;
+    property FileSRCollapsed: boolean read FFileSRCollapsed write FFileSRCollapsed;
+    property OtherSRCollapsed: boolean read FOtherSRCollapsed write FOtherSRCollapsed;
 
 
     property FullTextSearch: Boolean read FFullTextSearch write FFullTextSearch;
@@ -511,6 +519,13 @@ begin
     FFormHeight := iniFile.ReadInteger(INTERFACE_SECTION, 'FormHeight ', 850);
     FFormWidth := iniFile.ReadInteger(INTERFACE_SECTION, 'FormWidth ', 1000);
 
+    FCoverWidth := iniFile.ReadInteger(INTERFACE_SECTION, 'CoverWidth ', 250);
+
+    FBookSRCollapsed := iniFile.ReadBool(INTERFACE_SECTION, 'BookSR', False);
+    FFileSRCollapsed := iniFile.ReadBool(INTERFACE_SECTION, 'FileSR', False);
+    FOtherSRCollapsed := iniFile.ReadBool(INTERFACE_SECTION,'OtherSR',False);
+
+
 
     if iniFile.ReadInteger(INTERFACE_SECTION, 'Lang', 0) = 0 then
       FAppLanguage := alEng
@@ -655,6 +670,11 @@ begin
     iniFile.WriteInteger(INTERFACE_SECTION, 'FormHeight ', FFormHeight);
     iniFile.WriteInteger(INTERFACE_SECTION, 'FormWidth ', FFormWidth);
 
+    iniFile.WriteInteger(INTERFACE_SECTION, 'CoverWidth ', FCoverWidth);
+
+    iniFile.WriteBool(INTERFACE_SECTION, 'BookSR', FBookSRCollapsed );
+    iniFile.WriteBool(INTERFACE_SECTION, 'FileSR', FFileSRCollapsed );
+    iniFile.WriteBool(INTERFACE_SECTION,'OtherSR', FOtherSRCollapsed );
 
     SaveSplitters(iniFile);
 
