@@ -2871,10 +2871,11 @@ object frmMain: TfrmMain
             Font.Style = []
             ParentFont = False
             CenterPoint = cpLowerRight
+            ExplicitLeft = 919
             ExplicitHeight = 19
           end
           object btnClearDownload: TRzBitBtn
-            Left = 817
+            Left = 819
             Top = 30
             Width = 118
             Anchors = [akRight, akBottom]

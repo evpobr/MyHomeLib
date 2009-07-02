@@ -2738,13 +2738,13 @@ procedure TfrmMain.tvBooksTreeKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 var
   Node : PVirtualNode;
-  Tree : TVirtualStringTree;
+  Tree, Left : TVirtualStringTree;
   Data : PBookData;
 begin
   if Key = vk_Insert then
   begin
     Tree := (Sender as TVirtualStringTree);
-    Node := Tree.GetFirstSelected;
+    Node := Tree.FocusedNode;
     if Node <> nil then
     begin
       BookTreeStatus := bsBusy ;
@@ -2761,6 +2761,37 @@ begin
       if Node <> nil then Tree.Selected[Node] := True;
     end;
   end;
+  if ((Key = vk_Right) or  (Key = vk_Left))and (ssCtrl in Shift) then
+  begin
+    Tree := (Sender as TVirtualStringTree);
+    case ActiveView of
+      ByAuthorView: Left := tvAuthors;
+      BySeriesView: Left := tvSeries;
+      ByGenreView: Left := tvGenres;
+      FavoritesView: Left := tvGroups;
+      SearchView: Exit;
+    end;
+
+    Node := Left.FocusedNode;
+    Left.Selected[Node] := False;
+
+    if (Key = vk_Right) then
+           Node := Left.GetNext(Node)
+     else
+           Node := Left.GetPrevious(Node);
+
+    if Node <> Nil then
+    begin
+      Left.Selected[Node] := True;
+      Left.FocusedNode := Node;
+    end;
+
+    Node := Tree.GetFirst;
+    if Node <> Nil then
+         Tree.Selected[Node] := True;
+  end;
+
+
 end;
 
 procedure TfrmMain.tvBooksAGetNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
