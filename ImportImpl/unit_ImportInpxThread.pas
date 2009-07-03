@@ -367,8 +367,6 @@ begin
                 //
                 R.InsideNo := j;
               end
-              else
-                R.InsideNo := 0;
             end;
             FLibrary.InsertBook(R);
             Inc(filesProcessed);
