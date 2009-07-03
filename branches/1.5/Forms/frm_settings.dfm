@@ -63,7 +63,7 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 414
     Height = 413
-    ActivePage = tsDevices
+    ActivePage = tsScripts
     Align = alClient
     TabOrder = 1
     object tsDevices: TTabSheet
@@ -79,7 +79,6 @@ object frmSettings: TfrmSettings
         Align = alTop
         Caption = #1060#1086#1088#1084#1072#1090' '#1080#1084#1077#1085#1080
         TabOrder = 0
-        ExplicitTop = 196
         object Label5: TLabel
           Left = 20
           Top = 29
@@ -283,8 +282,6 @@ object frmSettings: TfrmSettings
         Align = alClient
         Caption = #1054#1087#1094#1080#1080
         TabOrder = 3
-        ExplicitTop = 344
-        ExplicitHeight = 56
         object Label1: TLabel
           Left = 181
           Top = 26
@@ -617,6 +614,10 @@ object frmSettings: TfrmSettings
           Height = 13
           Alignment = taRightJustify
           Caption = #1057#1077#1088#1074#1077#1088
+          Color = clMenuBar
+          ParentColor = False
+          Transparent = True
+          ShadowColor = clMenuBar
         end
         object RzLabel2: TRzLabel
           Left = 289
@@ -625,6 +626,9 @@ object frmSettings: TfrmSettings
           Height = 13
           Alignment = taRightJustify
           Caption = #1055#1086#1088#1090
+          Color = clMenuBar
+          ParentColor = False
+          Transparent = True
         end
         object RzLabel3: TRzLabel
           Left = 16
@@ -633,6 +637,9 @@ object frmSettings: TfrmSettings
           Height = 13
           Alignment = taRightJustify
           Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1100
+          Color = clMenuBar
+          ParentColor = False
+          Transparent = True
         end
         object RzLabel4: TRzLabel
           Left = 237
@@ -641,6 +648,9 @@ object frmSettings: TfrmSettings
           Height = 13
           Alignment = taRightJustify
           Caption = #1055#1072#1088#1086#1083#1100
+          Color = clMenuBar
+          ParentColor = False
+          Transparent = True
         end
         object edProxyServer: TRzEdit
           Left = 59
@@ -693,14 +703,6 @@ object frmSettings: TfrmSettings
         Align = alTop
         Caption = #1057#1077#1088#1074#1077#1088' lib.rus.ec'
         TabOrder = 1
-        object RzLabel5: TRzLabel
-          Left = 16
-          Top = 54
-          Width = 72
-          Height = 13
-          Alignment = taRightJustify
-          Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1100
-        end
         object RzLabel6: TRzLabel
           Left = 237
           Top = 52
@@ -708,6 +710,17 @@ object frmSettings: TfrmSettings
           Height = 13
           Alignment = taRightJustify
           Caption = #1055#1072#1088#1086#1083#1100
+          Color = clMenuBar
+          ParentColor = False
+          Transparent = True
+        end
+        object RzLabel5: TRzLabel
+          Left = 16
+          Top = 51
+          Width = 93
+          Height = 13
+          Caption = #1048#1084#1103' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1103
+          Transparent = True
         end
         object edDownloadServer: TRzEdit
           Left = 16
@@ -718,7 +731,7 @@ object frmSettings: TfrmSettings
           TabOrder = 0
         end
         object RzEdit2: TRzEdit
-          Left = 94
+          Left = 112
           Top = 48
           Width = 115
           Height = 21
@@ -792,6 +805,9 @@ object frmSettings: TfrmSettings
           Height = 13
           Alignment = taRightJustify
           Caption = #1058#1072#1081#1084'-'#1072#1091#1090' '#1089#1086#1077#1076#1080#1085#1077#1085#1080#1103' ('#1084#1089')'
+          Color = clMenuBar
+          ParentColor = False
+          Transparent = True
         end
         object RzLabel8: TRzLabel
           Left = 40
@@ -800,6 +816,9 @@ object frmSettings: TfrmSettings
           Height = 13
           Alignment = taRightJustify
           Caption = #1058#1072#1081#1084'-'#1072#1091#1090' '#1095#1090#1077#1085#1080#1103' ('#1084#1089')'
+          Color = clMenuBar
+          ParentColor = False
+          Transparent = True
         end
         object RzLabel9: TRzLabel
           Left = 252
@@ -808,6 +827,9 @@ object frmSettings: TfrmSettings
           Height = 13
           Alignment = taRightJustify
           Caption = #1048#1085#1090#1077#1088#1074#1072#1083' ('#1084#1089')'
+          Color = clMenuBar
+          ParentColor = False
+          Transparent = True
         end
         object edTimeOut: TRzNumericEdit
           Left = 153
@@ -865,7 +887,7 @@ object frmSettings: TfrmSettings
           Left = 4
           Top = 17
           Width = 392
-          Height = 261
+          Height = 278
           Align = alTop
           Columns = <
             item
@@ -893,21 +915,21 @@ object frmSettings: TfrmSettings
         end
         object btnDeleteScript: TRzBitBtn
           Left = 312
-          Top = 284
+          Top = 300
           Caption = #1059#1076#1072#1083#1080#1090#1100
           TabOrder = 3
           OnClick = btnDeleteScriptClick
         end
         object btnEditScript: TRzBitBtn
           Left = 87
-          Top = 284
+          Top = 300
           Caption = #1048#1079#1084#1077#1085#1080#1090#1100
           TabOrder = 1
           OnClick = btnEditScriptClick
         end
         object btnAddScript: TRzBitBtn
           Left = 6
-          Top = 284
+          Top = 300
           Caption = #1044#1086#1073#1072#1074#1080#1090#1100
           TabOrder = 0
           OnClick = btnAddScriptClick

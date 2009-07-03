@@ -66,7 +66,6 @@ type
     RzLabel2: TRzLabel;
     RzLabel3: TRzLabel;
     RzLabel4: TRzLabel;
-    RzLabel5: TRzLabel;
     RzEdit2: TRzEdit;
     RzLabel6: TRzLabel;
     RzMaskEdit1: TRzMaskEdit;
@@ -145,6 +144,7 @@ type
     cbDeleteDeleted: TCheckBox;
     cbTXTEncoding: TRzComboBox;
     Label1: TLabel;
+    RzLabel5: TRzLabel;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);

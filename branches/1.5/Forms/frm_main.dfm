@@ -424,9 +424,9 @@ object frmMain: TfrmMain
     Width = 992
     Height = 636
     HelpContext = 135
-    ActivePage = TabSheet1
+    ActivePage = TabSheet4
     Align = alClient
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 3
     TabStop = False
     OnChange = pgControlChange
@@ -1641,13 +1641,18 @@ object frmMain: TfrmMain
               OnButtonClick = edFFullNameButtonClick
             end
             object cbDeleted: TCheckBox
-              Left = 0
-              Top = 92
-              Width = 186
+              AlignWithMargins = True
+              Left = 5
+              Top = 95
+              Width = 178
               Height = 17
+              Margins.Left = 5
               Align = alTop
               Caption = #1057#1082#1088#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
               TabOrder = 4
+              ExplicitLeft = 0
+              ExplicitTop = 92
+              ExplicitWidth = 186
             end
           end
           object ctpFile: TCategoryPanel
@@ -2221,6 +2226,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 0
@@ -2871,7 +2877,6 @@ object frmMain: TfrmMain
             Font.Style = []
             ParentFont = False
             CenterPoint = cpLowerRight
-            ExplicitLeft = 919
             ExplicitHeight = 19
           end
           object btnClearDownload: TRzBitBtn
