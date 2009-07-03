@@ -695,6 +695,7 @@ type
     procedure StartLibUpdate;
     procedure LoadSearchPreset(FN: string);
     procedure CreateGroupsMenu;
+    procedure SaveMainFormSettings;
     property ActiveView: TView read GetActiveView;
   end;
 
@@ -2127,16 +2128,9 @@ begin
 
 end;
 
-procedure TfrmMain.FormDestroy(Sender: TObject);
+procedure TfrmMain.SaveMainFormSettings;
 begin
-  FreeAndNil(FStarImage);
-  FreeAndNil(FEmptyStarImage);
-
   SaveColumns;
-
-  tvDownloadList.SaveToFile(Settings.WorkPath + 'downloads.sav');
-
-  if DirectoryExists(Settings.TempDir) then ClearDir(Settings.TempDir);
 
   Settings.LastAuthor := lblAuthor.Caption;
   Settings.LastSeries := lblSeries.Caption;
@@ -2163,6 +2157,19 @@ begin
     Settings.FormWidth := Width;
     Settings.FormHeight := Height;
   end;
+end;
+
+procedure TfrmMain.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(FStarImage);
+  FreeAndNil(FEmptyStarImage);
+
+
+  tvDownloadList.SaveToFile(Settings.WorkPath + 'downloads.sav');
+
+  if DirectoryExists(Settings.TempDir) then ClearDir(Settings.TempDir);
+
+  SaveMainFormSettings;
 
 
   Settings.SaveSettings;
@@ -5375,6 +5382,8 @@ procedure TfrmMain.miSettingsClick(Sender: TObject);
 var
   frmSettings: TfrmSettings;
 begin
+  SaveMainFormSettings;
+
   frmSettings := TfrmSettings.Create(Application);
   try
     frmSettings.LoadSetting;
@@ -5394,7 +5403,6 @@ var
   i: integer;
 begin
   if ActiveView = DownloadView then Exit;
-
 
   GetActiveTree(Tree);
 
