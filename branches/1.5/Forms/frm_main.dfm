@@ -1650,9 +1650,6 @@ object frmMain: TfrmMain
               Align = alTop
               Caption = #1057#1082#1088#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
               TabOrder = 4
-              ExplicitLeft = 0
-              ExplicitTop = 92
-              ExplicitWidth = 186
             end
           end
           object ctpFile: TCategoryPanel
@@ -2226,7 +2223,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 0
