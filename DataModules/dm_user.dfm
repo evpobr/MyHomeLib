@@ -264,6 +264,15 @@ object DMUser: TDMUser
       item
         Name = 'Progress'
         DataType = ftSmallint
+      end
+      item
+        Name = 'LibRate'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Lang'
+        DataType = ftWideString
+        Size = 2
       end>
     TableName = 'GroupedBooks'
     Exclusive = False
@@ -349,6 +358,13 @@ object DMUser: TDMUser
     end
     object tblGrouppedBooksProgress: TSmallintField
       FieldName = 'Progress'
+    end
+    object tblGrouppedBooksLibRate: TIntegerField
+      FieldName = 'LibRate'
+    end
+    object tblGrouppedBooksLang: TWideStringField
+      FieldName = 'Lang'
+      Size = 2
     end
   end
   object SeverityImages: TImageList
