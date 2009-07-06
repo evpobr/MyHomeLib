@@ -58,6 +58,11 @@ type
     tblRatesDataBaseID: TIntegerField;
     tblRatesRate: TIntegerField;
     tblRatesDate: TDateField;
+    tblFinishedID: TAutoIncField;
+    tblFinishedBookID: TIntegerField;
+    tblFinishedDataBaseID: TIntegerField;
+    tblFinishedProgress: TSmallintField;
+    tblFinishedDate: TDateField;
     tblGrouppedBooksID: TAutoIncField;
     tblGrouppedBooksGroupID: TIntegerField;
     tblGrouppedBooksOuterID: TIntegerField;
@@ -81,11 +86,8 @@ type
     tblGrouppedBooksSeries: TWideStringField;
     tblGrouppedBooksRate: TIntegerField;
     tblGrouppedBooksProgress: TSmallintField;
-    tblFinishedID: TAutoIncField;
-    tblFinishedBookID: TIntegerField;
-    tblFinishedDataBaseID: TIntegerField;
-    tblFinishedProgress: TSmallintField;
-    tblFinishedDate: TDateField;
+    tblGrouppedBooksLibRate: TIntegerField;
+    tblGrouppedBooksLang: TWideStringField;
 
   private
     FCollection: TMHLCollection;
