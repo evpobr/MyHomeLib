@@ -262,6 +262,7 @@ type
     LibRate: integer;
 
     KeyWords: string;
+    URI: string;
 
     procedure Normalize;
     procedure Clear;
