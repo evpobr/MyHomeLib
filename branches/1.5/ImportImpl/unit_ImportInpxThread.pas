@@ -81,7 +81,7 @@ type
 
 const
 
-  FieldsDescr: array [1..19] of  TFieldDescr= (
+  FieldsDescr: array [1..20] of  TFieldDescr= (
     (Code:'AUTHOR'; FType: flAuthor),
     (Code:'TITLE';  FType:  flTitle),
     (Code:'SERIES'; FType:  flSeries),
@@ -100,7 +100,8 @@ const
     (Code:'RATE';   FType: flRate),
     (Code:'URI';    FType:  flURI),
     (Code:'LIBRATE';FType:  flLibRate),
-    (Code:'KEYWORDS';FType:  flKeyWords)
+    (Code:'KEYWORDS';FType:  flKeyWords),
+    (Code:'URL';    FType:  flURI)
   );
 
 { TImportLibRusEcThread }
@@ -241,6 +242,7 @@ begin
         flLibrate:   R.LibRate := StrToIntDef(slParams[i], 0);   // внешний рейтинг
         flLang:      R.Lang := slParams[i];                      // язык
         flKeyWords:  R.KeyWords := slParams[i];                  // ключевые слова
+        flURI:       R.URI := slParams[i];                  // ключевые слова
     end; // case, for
     R.Normalize;
   finally

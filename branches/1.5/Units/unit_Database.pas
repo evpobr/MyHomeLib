@@ -861,6 +861,7 @@ begin
     FBooks['Lang'] := BookRecord.Lang;
     FBooks['LibRate'] := BookRecord.LibRate;
     FBooks['KeyWords'] := BookRecord.KeyWords;
+    FBooks['URI'] := BookRecord.URI;
 
     FBooks.Post;
 
