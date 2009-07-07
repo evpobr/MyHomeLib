@@ -536,6 +536,7 @@ begin
     ADataBase.DatabaseName := USER_DATABASE;
     ADataBase.MaxConnections := 5;
     ADataBase.PageSize := 65535;
+    ADataBase.PageCountInExtent := 16;
     ADataBase.CreateDatabase;
 
     CreateTable(ADataBase, 'Bases',        BasesTableFields,      BasesTableIndexes);
@@ -756,7 +757,6 @@ begin
     Exit;
 
   BookRecord.Normalize;
-
   //
   // Создадим отсутствующих авторов
   //

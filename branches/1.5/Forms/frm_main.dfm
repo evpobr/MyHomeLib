@@ -3091,6 +3091,17 @@ object frmMain: TfrmMain
           OnClick = miExportUserDataClick
         end
       end
+      object N6: TMenuItem
+        Caption = #1054#1073#1089#1083#1091#1078#1080#1074#1072#1085#1080#1077
+        object miRepairDataBase: TMenuItem
+          Caption = #1048#1089#1087#1088#1072#1074#1080#1090#1100' '#1086#1096#1080#1073#1082#1080
+          OnClick = miRepairDataBaseClick
+        end
+        object miCompactDataBase: TMenuItem
+          Caption = #1057#1078#1072#1090#1100
+          OnClick = miCompactDataBaseClick
+        end
+      end
       object N18: TMenuItem
         Caption = '-'
       end
@@ -3109,23 +3120,6 @@ object frmMain: TfrmMain
         Enabled = False
         ImageIndex = 28
         OnClick = miStatClick
-      end
-      object N6: TMenuItem
-        Caption = #1044#1072#1085#1085#1099#1077' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1103
-        Enabled = False
-        Visible = False
-        object miSaveUser: TMenuItem
-          Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
-        end
-        object miLoadUser: TMenuItem
-          Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100
-        end
-        object N31: TMenuItem
-          Caption = '-'
-        end
-        object miRepairUser: TMenuItem
-          Caption = #1048#1089#1087#1088#1072#1074#1080#1090#1100' '#1086#1096#1080#1073#1082#1080
-        end
       end
       object N9: TMenuItem
         Caption = '-'

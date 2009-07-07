@@ -112,9 +112,6 @@ type
     miTools: TMenuItem;
     miSettings: TMenuItem;
     N5: TMenuItem;
-    N6: TMenuItem;
-    miSaveUser: TMenuItem;
-    miLoadUser: TMenuItem;
     N9: TMenuItem;
     miCollSelect: TMenuItem;
     miDeleteCol: TMenuItem;
@@ -122,8 +119,6 @@ type
     miStat: TMenuItem;
     miRead: TMenuItem;
     miDevice: TMenuItem;
-    N31: TMenuItem;
-    miRepairUser: TMenuItem;
     miEditBook: TMenuItem;
     N7: TMenuItem;
     StatusBar: TRzStatusBar;
@@ -382,6 +377,9 @@ type
     btnClearFilterEdits: TRzBitBtn;
     btnApplyFilter: TRzBitBtn;
     BalloonHint1: TBalloonHint;
+    miRepairDataBase: TMenuItem;
+    N6: TMenuItem;
+    miCompactDataBase: TMenuItem;
 
     //
     // События формы
@@ -581,6 +579,8 @@ type
     procedure miImportUserDataClick(Sender: TObject);
     procedure miReadedClick(Sender: TObject);
     procedure miExportUserDataClick(Sender: TObject);
+    procedure miRepairDataBaseClick(Sender: TObject);
+    procedure miCompactDataBaseClick(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -3178,7 +3178,10 @@ begin
     RefreshBooksState(Tree, BookIDList);
   end;
 
-  unit_ExportToDevice.ExportToDevice(dmCollection.ActiveTable, BookIdList, ExportMode, Files);
+  if ActiveView <> FavoritesView then
+       unit_ExportToDevice.ExportToDevice(dmCollection.ActiveTable, BookIdList, ExportMode, Files)
+  else
+       unit_ExportToDevice.ExportToDevice(dmUser.tblGrouppedBooks, BookIdList, ExportMode, Files);
 
   if (ScriptID >= 0 ) and (Settings.Scripts[ScriptID].Path <> '%COPY%') then
   begin
@@ -5117,6 +5120,16 @@ begin
   SetHeaderPopUp;
 end;
 
+procedure TfrmMain.miCompactDataBaseClick(Sender: TObject);
+begin
+  dmCollection.DBCollection.Close;
+  dmCollection.DBCollection.CompactDatabase;
+  dmCollection.DBCollection.Open;
+
+  dmUser.SetTableState(True);
+  dmCollection.SetTableState(True);
+end;
+
 procedure TfrmMain.N33Click(Sender: TObject);
 begin
   Close;
@@ -5376,6 +5389,16 @@ begin
     ALibrary.Free;
   end;
   InitCollection(True);
+end;
+
+procedure TfrmMain.miRepairDataBaseClick(Sender: TObject);
+begin
+  dmCollection.DBCollection.Close;
+  dmCollection.DBCollection.RepairDatabase;
+  dmCollection.DBCollection.Open;
+
+  dmUser.SetTableState(True);
+  dmCollection.SetTableState(True);
 end;
 
 procedure TfrmMain.miSettingsClick(Sender: TObject);

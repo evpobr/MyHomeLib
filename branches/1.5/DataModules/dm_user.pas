@@ -130,7 +130,7 @@ type
     // Active Collection
     //
     property ActiveCollection: TMHLCollection read FCollection;
-    procedure SetTableStatus(State: boolean);
+    procedure SetTableState(State: boolean);
 
     function FindFirstExternalCollection: Boolean;
     function FindNextExternalCollection: Boolean;
@@ -602,7 +602,7 @@ begin
   end;
 end;
 
-procedure TDMUser.SetTableStatus(State: boolean);
+procedure TDMUser.SetTableState(State: boolean);
 begin
   tblGroupList.Active := State;
   tblGrouppedBooks.Active := State;
