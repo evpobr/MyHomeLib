@@ -243,7 +243,11 @@ var
   totalBooks: Integer;
   Res: boolean;
 begin
-  FCollectionRoot := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
+
+  if FTable <> DMUser.tblGrouppedBooks then     // хреново как-то получилось ...
+    FCollectionRoot := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder)
+  else
+    FCollectionRoot := '';
 
   FZipper := TZipForge.Create(nil);
   try

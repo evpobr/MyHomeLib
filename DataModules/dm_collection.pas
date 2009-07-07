@@ -240,7 +240,7 @@ uses
   frm_main,
   StrUtils,
   unit_Consts,
-  unit_Messages;
+  unit_Messages, frm_info_popup;
 
 {$R *.dfm}
 
