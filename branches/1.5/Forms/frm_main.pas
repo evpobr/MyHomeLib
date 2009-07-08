@@ -355,11 +355,7 @@ type
     edFExt: TRzButtonEdit;
     ctpBook: TCategoryPanel;
     Label23: TLabel;
-    Label26: TLabel;
-    Label24: TLabel;
-    edFFullName: TRzButtonEdit;
-    edFTitle: TRzButtonEdit;
-    edFSeries: TRzButtonEdit;
+    edFLast: TRzButtonEdit;
     cpCoverSR: TMHLCoverPanel;
     RzPanel9: TRzPanel;
     RzPanel10: TRzPanel;
@@ -380,6 +376,17 @@ type
     miRepairDataBase: TMenuItem;
     N6: TMenuItem;
     miCompactDataBase: TMenuItem;
+    CategoryPanel1: TCategoryPanel;
+    edFTitle: TRzButtonEdit;
+    Label24: TLabel;
+    edFSeries: TRzButtonEdit;
+    Label26: TLabel;
+    edFFirst: TRzButtonEdit;
+    Label5: TLabel;
+    edFMiddle: TRzButtonEdit;
+    Label6: TLabel;
+    edFGenre: TRzButtonEdit;
+    Label7: TLabel;
 
     //
     // События формы
@@ -518,7 +525,7 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure tvBooksTreeKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure edFFullNameKeyDown(Sender: TObject; var Key: Word;
+    procedure edFLastKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure miGoDonateClick(Sender: TObject);
     procedure tbClearEdAuthorClick(Sender: TObject);
@@ -554,7 +561,7 @@ type
     procedure edLocateAuthorKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure btnSavePresetClick(Sender: TObject);
-    procedure edFFullNameButtonClick(Sender: TObject);
+    procedure edFLastButtonClick(Sender: TObject);
     procedure cbPresetNameChange(Sender: TObject);
     procedure cbPresetNameSelect(Sender: TObject);
     procedure FilesListFile(Sender: TObject; const F: TSearchRec);
@@ -603,8 +610,8 @@ type
     procedure FillBooksTree(
       const ParentID: Integer;
       const Tree: TVirtualStringTree;
-      const Master: TAbsTable;
-      const Detail: TAbsTable;
+      const Master: TDataset;
+      const Detail: TDataSet;
       ShowAuth: Boolean;
       ShowSer: Boolean
       );
@@ -614,8 +621,6 @@ type
     //
     // TODO -oNickR -cRefactoring : вынести эти методы в соответствующие датамодули
     //
-    procedure SetUserTableStatus(Status: boolean);
-    procedure SetUtilTableStatus(Status: boolean);
 
     procedure ReadINIData;
 
@@ -996,7 +1001,7 @@ begin
   SetEditColor(edLocateAuthor);
   SetEditColor(edLocateSeries);
 
-  SetEditColor(edFFullName);
+  SetEditColor(edFLast);
   SetEditColor(edFTitle);
   SetEditColor(edFSeries);
   SetEditColor(edFFile);
@@ -1107,53 +1112,33 @@ begin
   FilterString := '';
   ClearLabels(tvBooksSR.Tag);
 
+  dmCollection.sqlBooks.SQL.Clear;
+
   try
     try
-
-      // Сначала создаем фильтр по сериям
-      if edFSeries.Text <> '' then
-      begin
-        OldFilter := dmCollection.tblSeries.Filter;
-        Filtered :=  dmCollection.tblSeries.Filtered;
-
-        FilterString := '';
-
-        AddToFilter('Title',Query(edFSeries.Text),FilterString);
-        dmCollection.tblSeries.Filter := FilterString;
-        dmCollection.tblSeries.Filtered := True;
-
-        SeriesFilter := '';
-        dmCollection.tblSeries.First;
-        while not dmCollection.tblSeries.Eof do
-        begin
-          AddSeriesToFilter(dmCollection.tblSeries.FieldByName('Id').AsString, SeriesFilter);
-          dmCollection.tblSeries.Next;
-        end;
-        dmCollection.tblSeries.Filter := OldFilter;
-        dmCollection.tblSeries.Filtered := Filtered;
-      end;
-
-      // Собираем фильтры в кучу
-
-      if (SeriesFilter <> '') then
-          FilterString := '( ' + SeriesFilter + ')'
-        else
-          FilterString := '';
-
-      // Добавляем фильтры по таблице Books
 
       OldFilter := dmCollection.tblBooks.Filter;
       Filtered :=  dmCollection.tblBooks.Filtered;
 
 
-      AddToFilter('`FullName`',  Query(edFFullName.Text), FilterString);
+      FilterString := Query(edFLast.Text);
+
+      if FilterString <> '' then
+           dmCollection.sqlBooks.SQL.Add(
+              'Select * FROM Books WHERE Id IN' +
+              '(Select BookID FROM Author_List WHERE AuthID IN ' +
+              '(SELECT ID FROM Authors WHERE Upper(Family)' +  FilterString + '))');
+
+
+      FilterString := '';                                          { }
+
       AddToFilter('`Title`', Query(edFTitle.Text), FilterString);
       AddToFilter('`FileName`', Query(edFFile.Text), FilterString);
       AddToFilter('`Folder`', Query(edFFolder.Text), FilterString);
       AddToFilter('`ext`', Query(edFExt.Text), FilterString);
       AddToFilter('`Lang`', Query(cbLang.Text), FilterString);
       AddToFilter('`KeyWords`', Query(edFKeyWords.Text), FilterString);
-
+//
       if cbDate.ItemIndex = -1 then
         AddToFilter('`Date`',Query(cbDate.Text), FilterString)
       else
@@ -1182,18 +1167,26 @@ begin
       else
           FilterString := FilterString + ' AND (`Deleted`= False)';
 
-      if FilterString = '' then Exit;
-
       // Ставим фильтр
       spStatus.Caption := 'Применяем фильтр ...'; spStatus.Repaint;
 
-      if FilterString = '' then
-        raise Exception.Create('Проверьте параметры фильтра');
-      
-      dmCollection.tblBooks.Filter := FilterString;
+      if (dmCollection.sqlBooks.SQL.Count > 0) and (FilterString <> '') then
+      begin
+        dmCollection.sqlBooks.SQL.Add('INTERSECT');
+        dmCollection.sqlBooks.SQL.Add('SELECT * FROM Books WHERE ' + FilterString);
+      end
+      else
+      if FilterString <> '' then
+           dmCollection.sqlBooks.SQL.Add('SELECT * FROM Books WHERE ' + FilterString);
 
-      dmCollection.tblBooks.Filtered := True;
-      FillBooksTree(0, tvBooksSR, nil, dmCollection.tblBooks, True, True);
+      if (dmCollection.sqlBooks.SQL.Count)=0 then
+            raise Exception.Create('Проверьте параметры фильтра');
+
+      dmCollection.sqlBooks.ExecSQL;
+
+      dmCollection.sqlBooks.Active := True;
+      FillBooksTree(0, tvBooksSR, nil, dmCollection.sqlBooks, True, True);
+      dmCollection.sqlBooks.Active := False;
     except
       on E: Exception do
         ShowMessage('Синтаксическая ошибка. Проверьте параметры фильтра');
@@ -1211,7 +1204,7 @@ end;
 
 procedure TfrmMain.btnClearFilterEditsClick(Sender: TObject);
 begin
-  edFFullName.Text :='';
+  edFLast.Text :='';
   edFSeries.Text :='';
   edFTitle.Text  := '';
   edFFile.Text   := '';
@@ -1241,7 +1234,7 @@ begin
     SL.LoadFromFile(Settings.PresetPath + FN + '.mhlf');
     HL.DelimitedText := SL.Text;
 
-    edFFullName.Text := HL[0];
+    edFLast.Text := HL[0];
     edFTitle.Text := HL[1];
     edFSeries.Text := HL[2];
     edFFile.Text := HL[3];
@@ -1699,11 +1692,6 @@ begin
 end;
 
 
-procedure TfrmMain.SetUtilTableStatus(Status: boolean);
-begin
-  dmCollection.tblAuthor_Master.Active := Status;
-  dmCollection.tblAuthor_Detail.Active := Status;
-end;
 
 procedure TfrmMain.ShowNewCollectionWizard(Sender: TObject);
 var
@@ -1722,14 +1710,6 @@ begin
   end;
 end;
 
-procedure TfrmMain.SetUserTableStatus(Status: boolean);
-begin
-  DMUser.tblGroupList.Active := Status;
-  DMUser.tblGrouppedBooks.Active := Status;
-  DMUser.tblRates.Active := Status;
-  DMUser.tblBases.Active := Status;
-  DMUser.tblFinished.Active := Status;
-end;
 
 procedure TfrmMain.btnSwitchTreeModeClick(Sender: TObject);
 var
@@ -2047,7 +2027,7 @@ begin
     TMHLLibrary.CreateSystemTables(DMUser.DBUser.DatabaseFileName);
 
   DMUser.DBUser.Connected := True;
-  DMUser.tblBases.Active := True;
+  DMUser.SetUserTableState(True);
 
  //------------------------------------------------------------------------------
  //  Проверка обновлений
@@ -2073,7 +2053,6 @@ begin
 //------------------------------------------------------------------------------
 
   DMUser.ActivateCollection(Settings.ActiveCollection);
-  SetUserTableStatus(True);
 
   FillGroupsList;
   CreateGroupsMenu;
@@ -3030,7 +3009,6 @@ begin
   ID := (Sender as TMenuItem).Tag;
   if not DMUser.ActivateCollection(ID) then
     Exit;
-  SetUtilTableStatus(True);
   ALibrary := TMHLLibrary.Create(nil);
   try
     ALibrary.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
@@ -3052,7 +3030,6 @@ begin
   finally
     ALibrary.Free;
   end;
-  SetUtilTableStatus(False);
   Screen.Cursor := crDefault;
 end;
 
@@ -3515,8 +3492,8 @@ end;
 procedure TfrmMain.FillBooksTree(
   const ParentID: Integer;
   const Tree: TVirtualStringTree;
-  const Master: TAbsTable;
-  const Detail: TAbsTable;
+  const Master: TDataset;
+  const Detail: TDataset;
   ShowAuth: Boolean;
   ShowSer: Boolean
   );
@@ -3528,9 +3505,9 @@ var
   LastSeries: PVirtualNode;
   Max, i: Integer;
   DBCode: COLLECTION_TYPE;
-  TableA: TAbsTable;
-  TableB: TAbsTable;
-  LastAuth: String;
+  TableA: TDataSet;
+  TableB: TDataSet;
+  Auth, LastAuth: String;
   CollectionName: String;
   Columns: TColumnSet;
 
@@ -3602,16 +3579,17 @@ begin
                 CollectionName := DMUser.ActiveCollection.Name;
               end;
 
+              Auth := dmCollection.FullName(TableB.FieldByName('Id').AsInteger);
 
               if ShowAuth then
               begin
-                if LastAuth <> TableB.FieldByName('FullName').AsString then
+                if LastAuth <> Auth then
                 begin
                   authorNode := Tree.AddChild(nil);
                   Data := Tree.GetNodeData(authorNode);
                   Data.nodeType := ntAuthorInfo;
-                  Data.FullName := TableB.FieldByName('FullName').AsString;
-                  LastAuth := TableB.FieldByName('FullName').AsString;
+                  Data.FullName := Auth;
+                  LastAuth := Auth;
                   LastSeries := nil;
                   if Tree.Tag = 4 then Data.ColName := CollectionName;
                  end;
@@ -3659,7 +3637,7 @@ begin
               Data.Title := TableB.FieldByName('Title').AsString;
               Data.Series := TableB.FieldByName('Series').AsString;
 
-              Data.FullName := TableB.FieldByName('FullName').AsString;
+              Data.FullName := Auth;
               Data.Progress := TableB.FieldByName('Progress').AsInteger;
 
 
@@ -4175,9 +4153,7 @@ begin
   if IsLibRusecEdit(Data.Id) then
     Exit;
 
-  SetUtilTableStatus(True);
   GetBookRecord(Data.ID, R);
-  SetUtilTableStatus(False);
   frmEditBookInfo.lvAuthors.Items.Clear;
   for Author in R.Authors do
   begin
@@ -4369,7 +4345,6 @@ begin
   dmCollection.tblBooks.DisableControls;
   DMUser.tblGrouppedBooks.DisableControls;
 
-  SetUtilTableStatus(True);
 
   Node := Tree.GetFirst;
   i := 0;
@@ -4390,7 +4365,6 @@ begin
   Selection(False);
   dmCollection.tblBooks.EnableControls;
   DMUser.tblGrouppedBooks.EnableControls;
-  SetUtilTableStatus(False);
   Screen.Cursor := crDefault;
 
   // если выделенная группа совпадает с той, куда добавляем книги, нужно перерисовать список
@@ -4414,7 +4388,7 @@ begin
   case ActiveView of
     ByAuthorView: begin
                     treeView := tvAuthors;
-                    Edit := edFFullName;
+                    Edit := edFLast;
                   end;
     BySeriesView: begin
                     treeView := tvSeries;
@@ -4527,7 +4501,7 @@ begin
 
   SL := TStringList.Create;
   try
-    S := '~' + edFFullName.Text + d +
+    S := '~' + edFLast.Text + d +
          edFTitle.Text + d +
          edFSeries.Text + d +
          edFFile.Text + d +
@@ -4559,7 +4533,7 @@ begin
   begin
     Data := Tree.GetNodeData(Node);
     Assert(Assigned(Data));
-    if Data.Text = text then
+    if pos(AnsiUpperCase(text),AnsiUpperCase(Data.Text)) <> 0 then
     begin
       Tree.Selected[Node] := True;
       Tree.FocusedNode := Node;
@@ -4583,8 +4557,10 @@ begin
     edLocateAuthor.Text := OldText;
     edLocateAuthor.Perform(WM_KEYDOWN, VK_RIGHT, 0);
   end;
-  if not FDoNotLocate and dmCollection.tblAuthors.Locate('FullName', edLocateAuthor.Text, [loPartialKey, loCaseInsensitive]) then
-    LocateBookList(dmCollection.tblAuthorsFullName.Value, tvAuthors);
+//  if not FDoNotLocate and dmCollection.tblAuthors.Locate('Family', edLocateAuthor.Text, [loPartialKey, loCaseInsensitive]) then
+//    LocateBookList(dmCollection.tblAuthorsFamily.Value, tvAuthors);
+  if not FDoNotLocate then
+    LocateBookList(edLocateAuthor.Text, tvAuthors);
 end;
 
 procedure TfrmMain.edLocateAuthorKeyDown(Sender: TObject; var Key: Word;
@@ -4604,14 +4580,14 @@ begin
       tvSeries.Perform(WM_KEYDOWN, VK_DOWN, 0);
 end;
 
-procedure TfrmMain.edFFullNameButtonClick(Sender: TObject);
+procedure TfrmMain.edFLastButtonClick(Sender: TObject);
 begin
   frmEditor.Text := (Sender as TrzButtonEdit).Text;
   frmEditor.ShowModal;
   (Sender as TrzButtonEdit).Text := frmEditor.Text;
 end;
 
-procedure TfrmMain.edFFullNameKeyDown(Sender: TObject; var Key: Word;
+procedure TfrmMain.edFLastKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if Key = VK_RETURN then
@@ -4651,15 +4627,17 @@ begin
     try
       dmCollection.tblAuthors.First;
 
-      if dmCollection.tblAuthorsFullName.IsNull then
+      if dmCollection.tblAuthorsFamily.IsNull then
         tvBooksA.Clear;
 
       while not dmCollection.tblAuthors.Eof do
       begin
         Node := tvAuthors.AddChild(nil);
         NodeData := tvAuthors.GetNodeData(Node);
-        NodeData.ID := dmCollection.tblAuthorsID.AsInteger;
-        NodeData.Text := dmCollection.tblAuthorsFullName.AsString;
+        NodeData.ID := dmCollection.tblAuthorsID.Value;
+        NodeData.Text := trim(dmCollection.tblAuthorsFamily.Value + ' ' +
+                              dmCollection.tblAuthorsName.Value +  ' ' +
+                              dmCollection.tblAuthorsMiddle.Value);
 
         dmCollection.tblAuthors.Next;
       end;
@@ -5000,10 +4978,7 @@ begin
       FN := DMUser.tblGrouppedBooksFullName.Value;
     end
     else
-    begin
-      dmCollection.tblBooks.Locate('ID', Data.ID, []);
-      FN := dmCollection.tblBooksFullName.Value;
-    end;
+      FN := dmCollection.FullName(Data.ID);
     pgControl.ActivePageIndex := 0;
     edLocateAuthor.Text := FN;
   finally
@@ -5628,7 +5603,6 @@ begin
   try
     SL := TStringList.Create;
     SL.LoadFromFile(FN);
-    SetUtilTableStatus(True);
     i:= 0;
     while (i < SL.Count) do
     begin
@@ -5645,7 +5619,6 @@ begin
                 inc(i);
       end;
     end;
-    SetUtilTableStatus(False);
     FillGroupsList;
   finally
     SL.Free;

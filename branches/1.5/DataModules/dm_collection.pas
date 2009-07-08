@@ -23,13 +23,11 @@ type
     tblAuthorsSID: TAutoIncField;
     tblAuthorsSFamily: TWideStringField;
     tblAuthorsSName: TWideStringField;
-    tblAuthorsSFullName: TWideStringField;
     tblBooksAID: TAutoIncField;
     tblBooksASerID: TIntegerField;
     tblBooksASeqNumber: TSmallintField;
     tblBooksADate: TDateField;
     tblBooksATitle: TWideStringField;
-    tblBooksAFullName: TWideStringField;
     tblBooksASeries: TWideStringField;
     tblBooksARate: TIntegerField;
     tblBooksALibID: TIntegerField;
@@ -58,7 +56,6 @@ type
     tblBooksSDate: TDateField;
     tblBooksSTitle: TWideStringField;
     tblBooksSSeries: TWideStringField;
-    tblBooksSFullName: TWideStringField;
     tblBooksSRate: TIntegerField;
     tblBooksSLibID: TIntegerField;
     tblBooksSInsideNo: TIntegerField;
@@ -76,7 +73,6 @@ type
     tblBooksGDate: TDateField;
     tblBooksGTitle: TWideStringField;
     tblBooksGSeries: TWideStringField;
-    tblBooksGFullName: TWideStringField;
     tblBooksGRate: TIntegerField;
     tblBooksGLibID: TIntegerField;
     tblBooksGInsideNo: TIntegerField;
@@ -124,7 +120,6 @@ type
     tblAuthor_DetailFamily: TWideStringField;
     tblAuthor_DetailName: TWideStringField;
     tblAuthor_DetailMiddle: TWideStringField;
-    tblAuthor_DetailFullName: TWideStringField;
     tblBooks_GenresID: TAutoIncField;
     tblBooks_GenresCode: TWideStringField;
     tblBooks_GenresParentCode: TWideStringField;
@@ -137,7 +132,6 @@ type
     tblBooksLibID: TIntegerField;
     tblBooksDate: TDateField;
     tblBooksTitle: TWideStringField;
-    tblBooksFullName: TWideStringField;
     tblBooksInsideNo: TIntegerField;
     tblBooksFileName: TWideStringField;
     tblBooksExt: TWideStringField;
@@ -168,7 +162,6 @@ type
     tblAuthorsFamily: TWideStringField;
     tblAuthorsName: TWideStringField;
     tblAuthorsMiddle: TWideStringField;
-    tblAuthorsFullName: TWideStringField;
     tblSeries: TABSQuery;
     tblSeriesID: TAutoIncField;
     tblSeriesAuthID: TIntegerField;
@@ -195,8 +188,33 @@ type
     tblBooksGLang: TWideStringField;
     tblBooksGURI: TWideStringField;
     tblBooksKeyWords: TWideStringField;
+    sqlBooks: TABSQuery;
+    sqlBooksID: TIntegerField;
+    sqlBooksDatabaseID: TIntegerField;
+    sqlBooksLibID: TIntegerField;
+    sqlBooksTitle: TWideStringField;
+    sqlBooksSerID: TIntegerField;
+    sqlBooksSeqNumber: TSmallintField;
+    sqlBooksDate: TDateField;
+    sqlBooksLibRate: TIntegerField;
+    sqlBooksLang: TWideStringField;
+    sqlBooksDiscID: TIntegerField;
+    sqlBooksFolder: TWideStringField;
+    sqlBooksFileName: TWideStringField;
+    sqlBooksInsideNo: TIntegerField;
+    sqlBooksExt: TWideStringField;
+    sqlBooksSize: TIntegerField;
+    sqlBooksURI: TWideStringField;
+    sqlBooksCode: TSmallintField;
+    sqlBooksLocal: TBooleanField;
+    sqlBooksDeleted: TBooleanField;
+    sqlBooksKeyWords: TWideStringField;
+    sqlBooksSeries: TWideStringField;
+    sqlBooksProgress: TSmallintField;
+    sqlBooksRate: TIntegerField;
   private
     FActiveTable: TAbsTable;
+
     { Private declarations }
   public
     procedure GetBookFileName(ID: integer; out AFile, AFolder, AExt: string;
@@ -205,7 +223,6 @@ type
     procedure SetActiveTable(Tag: integer);
     procedure GetCurrentBook(var R: TBookRecord);
     function GetBookGenres(BookID: Integer; FirstOnly: boolean): String;
-    function GetBookAuthor(BookID: Integer): string;
 
     procedure FieldByName(AID: integer; AField: String; out ARes: String); overload;
     procedure FieldByName(AID: integer; AField: String; out ARes: integer); overload;
@@ -219,6 +236,7 @@ type
 
     procedure Clear;
     procedure SetTableState(State: boolean);
+    function FullName(BookID: Integer): string;
 
   end;
 
@@ -239,6 +257,14 @@ uses
 {$R *.dfm}
 
 { TDMMain }
+
+function TDMCollection.FullName(BookID: Integer): string;
+begin
+  if BookID <> 0 then tblAuthor_Master.Locate('BookID', BookID, []);
+  Result := trim(tblAuthor_DetailFamily.Value + ' ' +
+                 tblAuthor_DetailName.Value +  ' ' +
+                 tblAuthor_DetailMiddle.Value);
+end;
 
 procedure TDMCollection.FieldByName(AID: integer; AField: String; out ARes: String);
 begin
@@ -277,12 +303,6 @@ procedure TDMCollection.FieldByName(AID: integer; AField: String; out Ares: bool
 begin
   if AID <> 0 then FActiveTable.Locate('ID', AID, []);
   ARes := FActiveTable.FieldByName(AField).AsBoolean;
-end;
-
-function TDMCollection.GetBookAuthor(BookID: Integer): string;
-begin
-  tblAuthor_Master.Locate('BookID', BookID, []);
-  Result := tblAuthor_DetailFullName.Value;
 end;
 
 procedure TDMCollection.GetBookFileName(ID: integer; out AFile:string;
@@ -466,6 +486,9 @@ begin
   tblSeriesA.Active := State;
   tblSeriesB.Active := State;
   tblExtra.Active := State;
+  tblAuthor_Master.Active := State;
+  tblAuthor_Detail.Active := State;
+
 end;
 
 end.

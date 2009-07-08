@@ -166,11 +166,6 @@ object DMCollection: TDMCollection
       Size = 100
       Lookup = True
     end
-    object tblBooksAFullName: TWideStringField
-      DisplayWidth = 255
-      FieldName = 'FullName'
-      Size = 255
-    end
     object tblBooksARate: TIntegerField
       FieldKind = fkLookup
       FieldName = 'Rate'
@@ -392,11 +387,6 @@ object DMCollection: TDMCollection
       KeyFields = 'SerID'
       Size = 100
       Lookup = True
-    end
-    object tblBooksGFullName: TWideStringField
-      DisplayWidth = 255
-      FieldName = 'FullName'
-      Size = 255
     end
     object tblBooksGRate: TIntegerField
       FieldKind = fkLookup
@@ -723,11 +713,6 @@ object DMCollection: TDMCollection
       KeyFields = 'SerID'
       Size = 100
       Lookup = True
-    end
-    object tblBooksSFullName: TWideStringField
-      DisplayWidth = 255
-      FieldName = 'FullName'
-      Size = 255
     end
     object tblBooksSRate: TIntegerField
       FieldKind = fkLookup
@@ -1090,7 +1075,7 @@ object DMCollection: TDMCollection
         Name = 'Folder_Index'
         Fields = 'DiscID;Folder'
       end>
-    IndexName = 'FullName_Index'
+    IndexName = 'Title_Index'
     FieldDefs = <
       item
         Name = 'ID'
@@ -1211,10 +1196,6 @@ object DMCollection: TDMCollection
     object tblBooksTitle: TWideStringField
       FieldName = 'Title'
       Size = 100
-    end
-    object tblBooksFullName: TWideStringField
-      FieldName = 'FullName'
-      Size = 255
     end
     object tblBooksInsideNo: TIntegerField
       FieldName = 'InsideNo'
@@ -1425,11 +1406,6 @@ object DMCollection: TDMCollection
       FieldName = 'Middle'
       Size = 128
     end
-    object tblAuthor_DetailFullName: TWideStringField
-      FieldName = 'FullName'
-      Required = True
-      Size = 255
-    end
   end
   object tblAuthor_Master: TABSTable
     CurrentVersion = '6.02 '
@@ -1558,8 +1534,8 @@ object DMCollection: TDMCollection
       end>
     TableName = 'series'
     Exclusive = False
-    Left = 480
-    Top = 360
+    Left = 496
+    Top = 320
     object AutoIncField1: TAutoIncField
       FieldName = 'ID'
     end
@@ -1631,7 +1607,7 @@ object DMCollection: TDMCollection
     MasterFields = 'ID'
     MasterSource = dsBooks
     Left = 496
-    Top = 464
+    Top = 384
     object tblExtraID: TAutoIncField
       FieldName = 'ID'
     end
@@ -1698,11 +1674,6 @@ object DMCollection: TDMCollection
       FieldName = 'Middle'
       Size = 128
     end
-    object tblAuthorsFullName: TWideStringField
-      FieldName = 'FullName'
-      Required = True
-      Size = 255
-    end
   end
   object tblSeries: TABSQuery
     CurrentVersion = '6.02 '
@@ -1755,6 +1726,113 @@ object DMCollection: TDMCollection
       DisplayWidth = 20
       FieldName = 'GenreCode'
       Required = True
+    end
+  end
+  object sqlBooks: TABSQuery
+    CurrentVersion = '6.02 '
+    DatabaseName = 'Collection'
+    InMemory = False
+    ReadOnly = True
+    FilterOptions = [foCaseInsensitive, foNoPartialCompare]
+    SQL.Strings = (
+      'Select * FROM Books WHERE Id = 1;')
+    Left = 504
+    Top = 464
+    object sqlBooksID: TIntegerField
+      FieldName = 'ID'
+    end
+    object sqlBooksDatabaseID: TIntegerField
+      FieldName = 'DatabaseID'
+    end
+    object sqlBooksLibID: TIntegerField
+      FieldName = 'LibID'
+    end
+    object sqlBooksTitle: TWideStringField
+      FieldName = 'Title'
+      Size = 100
+    end
+    object sqlBooksSerID: TIntegerField
+      FieldName = 'SerID'
+    end
+    object sqlBooksSeqNumber: TSmallintField
+      FieldName = 'SeqNumber'
+    end
+    object sqlBooksDate: TDateField
+      FieldName = 'Date'
+    end
+    object sqlBooksLibRate: TIntegerField
+      FieldName = 'LibRate'
+    end
+    object sqlBooksLang: TWideStringField
+      FieldName = 'Lang'
+      Size = 2
+    end
+    object sqlBooksDiscID: TIntegerField
+      FieldName = 'DiscID'
+    end
+    object sqlBooksFolder: TWideStringField
+      FieldName = 'Folder'
+      Size = 255
+    end
+    object sqlBooksFileName: TWideStringField
+      FieldName = 'FileName'
+      Size = 255
+    end
+    object sqlBooksInsideNo: TIntegerField
+      FieldName = 'InsideNo'
+    end
+    object sqlBooksExt: TWideStringField
+      FieldName = 'Ext'
+      Size = 10
+    end
+    object sqlBooksSize: TIntegerField
+      FieldName = 'Size'
+    end
+    object sqlBooksURI: TWideStringField
+      FieldName = 'URI'
+      Size = 255
+    end
+    object sqlBooksCode: TSmallintField
+      FieldName = 'Code'
+    end
+    object sqlBooksLocal: TBooleanField
+      FieldName = 'Local'
+    end
+    object sqlBooksDeleted: TBooleanField
+      FieldName = 'Deleted'
+    end
+    object sqlBooksSeries: TWideStringField
+      DisplayWidth = 255
+      FieldKind = fkLookup
+      FieldName = 'Series'
+      LookupDataSet = tblSeriesB
+      LookupKeyFields = 'ID'
+      LookupResultField = 'Title'
+      KeyFields = 'SerID'
+      Size = 255
+      Lookup = True
+    end
+    object sqlBooksProgress: TSmallintField
+      FieldKind = fkLookup
+      FieldName = 'Progress'
+      LookupDataSet = DMUser.tblFinished
+      LookupKeyFields = 'BookID'
+      LookupResultField = 'Progress'
+      KeyFields = 'ID'
+      Lookup = True
+    end
+    object sqlBooksRate: TIntegerField
+      FieldKind = fkLookup
+      FieldName = 'Rate'
+      LookupDataSet = DMUser.tblRates
+      LookupKeyFields = 'BookID'
+      LookupResultField = 'Rate'
+      KeyFields = 'ID'
+      Lookup = True
+    end
+    object sqlBooksKeyWords: TWideStringField
+      FieldName = 'KeyWords'
+      Size = 255
     end
   end
 end
