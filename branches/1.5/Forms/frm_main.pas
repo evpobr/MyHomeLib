@@ -1121,16 +1121,55 @@ begin
       Filtered :=  dmCollection.tblBooks.Filtered;
 
 
-      FilterString := Query(edFLast.Text);
+      //----------------------  автор   ----------------------------------------
+
+      AddToFilter('`Family`', Query(edFLast.Text), FilterString);
+      AddToFilter('`Name`', Query(edFFirst.Text), FilterString);
+      AddToFilter('`Middle`', Query(edFMiddle.Text), FilterString);
 
       if FilterString <> '' then
            dmCollection.sqlBooks.SQL.Add(
               'Select * FROM Books WHERE Id IN' +
               '(Select BookID FROM Author_List WHERE AuthID IN ' +
-              '(SELECT ID FROM Authors WHERE Upper(Family)' +  FilterString + '))');
+              '(SELECT ID FROM Authors WHERE ' +  FilterString + '))');
 
+      //------------------------ серия -----------------------------------------
 
-      FilterString := '';                                          { }
+      FilterString := Query(edFSeries.Text);
+
+      if FilterString <> '' then
+           FilterString := 'Select * FROM Books WHERE SerID IN ' +
+                           '(Select `ID` FROM `Series` WHERE Upper(`Title`) ' + FilterString + ')';
+
+      if (dmCollection.sqlBooks.SQL.Count > 0) and (FilterString <> '') then
+      begin
+        dmCollection.sqlBooks.SQL.Add('INTERSECT');
+        dmCollection.sqlBooks.SQL.Add(FilterString);
+      end
+      else
+      if FilterString <> '' then
+           dmCollection.sqlBooks.SQL.Add(FilterString);
+
+      FilterString := '';
+      //-------------------------- жанр ----------------------------------------
+      FilterString := Query(edFGenre.Text);
+
+      if FilterString <> '' then
+           FilterString := 'Select * FROM Books WHERE SerID IN ' +
+                           '(Select `ID` FROM `Series` WHERE Upper(`Title`) ' + FilterString + ')';
+
+      if (dmCollection.sqlBooks.SQL.Count > 0) and (FilterString <> '') then
+      begin
+        dmCollection.sqlBooks.SQL.Add('INTERSECT');
+        dmCollection.sqlBooks.SQL.Add(FilterString);
+      end
+      else
+      if FilterString <> '' then
+           dmCollection.sqlBooks.SQL.Add(FilterString);
+
+      FilterString := '';
+
+      //-------------------  все остальное   -----------------------------------
 
       AddToFilter('`Title`', Query(edFTitle.Text), FilterString);
       AddToFilter('`FileName`', Query(edFFile.Text), FilterString);

@@ -1509,15 +1509,11 @@ object frmMain: TfrmMain
           HeaderFont.Name = 'Tahoma'
           HeaderFont.Style = []
           TabOrder = 0
-          ExplicitLeft = 5
           object ctpOther: TCategoryPanel
             Top = 368
-            Height = 30
+            Height = 198
             Caption = #1056#1072#1079#1085#1086#1077
-            Collapsed = True
             TabOrder = 0
-            ExplicitTop = 507
-            ExpandedHeight = 262
             object Label30: TLabel
               Left = 3
               Top = 122
@@ -1538,7 +1534,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 49
-              Width = 177
+              Width = 180
               Height = 13
               Align = alTop
               Caption = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
@@ -1548,7 +1544,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 3
-              Width = 177
+              Width = 180
               Height = 13
               Align = alTop
               Caption = #1056#1072#1079#1084#1077#1097#1077#1085#1080#1077
@@ -1615,7 +1611,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 22
-              Width = 177
+              Width = 180
               Height = 21
               Align = alTop
               ItemHeight = 13
@@ -1632,7 +1628,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 68
-              Width = 177
+              Width = 180
               Height = 21
               Hint = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
               Align = alTop
@@ -1648,7 +1644,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 5
               Top = 95
-              Width = 175
+              Width = 178
               Height = 17
               Margins.Left = 5
               Align = alTop
@@ -1746,7 +1742,6 @@ object frmMain: TfrmMain
               Height = 13
               Align = alTop
               Caption = #1053#1072#1079#1074#1072#1085#1080#1077
-              ExplicitTop = 30
               ExplicitWidth = 48
             end
             object Label26: TLabel
@@ -1757,7 +1752,7 @@ object frmMain: TfrmMain
               Height = 13
               Align = alTop
               Caption = #1057#1077#1088#1080#1103
-              ExplicitLeft = 5
+              ExplicitWidth = 31
             end
             object Label7: TLabel
               AlignWithMargins = True
@@ -1802,6 +1797,7 @@ object frmMain: TfrmMain
               Width = 180
               Height = 21
               Align = alTop
+              Enabled = False
               TabOrder = 2
               OnKeyDown = edFLastKeyDown
               AltBtnWidth = 15
@@ -2305,7 +2301,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 0
