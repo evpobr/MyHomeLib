@@ -157,12 +157,6 @@ type
     WideStringField1: TWideStringField;
     WideStringField2: TWideStringField;
     tblBooksSeries: TWideStringField;
-    dsSeries_List: TDataSource;
-    tblSeries_List: TABSTable;
-    tblSeries_ListID: TAutoIncField;
-    tblSeries_ListSerID: TIntegerField;
-    tblSeries_ListBookID: TIntegerField;
-    tblSeries_ListTitle: TWideStringField;
     tblExtra: TABSTable;
     tblExtraID: TAutoIncField;
     tblExtraBookID: TIntegerField;
@@ -240,7 +234,7 @@ uses
   frm_main,
   StrUtils,
   unit_Consts,
-  unit_Messages, frm_info_popup;
+  unit_Messages;
 
 {$R *.dfm}
 
