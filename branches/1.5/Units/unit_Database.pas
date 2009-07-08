@@ -202,21 +202,21 @@ BooksTableIndexes: array [1..6] of TIndexDesc = (
 );
 
 //
-// Series List
+// Series List      - не используется
 //
-SeriesListTableFields: array [1 .. 5] of TFieldDesc = (
-  (Name: 'ID';     DataType: ftAutoInc;    Size: 0;  Required: true),
-  (Name: 'SerID';  DataType: ftInteger;    Size: 0;  Required: true),
-  (Name: 'BookID'; DataType: ftInteger;    Size: 0;  Required: true),
-  (Name: 'Number'; DataType: ftInteger;    Size: 0;  Required: true),
-  (Name: 'Title';  DataType: ftWideString; Size: 10; Required: true)
-);
-
-SeriesListTableIndexes: array [1..3] of TIndexDesc = (
-  (Name: 'ID_Index';    Fields: 'ID';                  Options: [ixPrimary, ixUnique]),
-  (Name: 'BookIndex';   Fields: 'BookID';              Options: []),
-  (Name: 'SeriesIndex'; Fields: 'SerID;Title;Number'; Options: [ixCaseInsensitive])
-);
+//SeriesListTableFields: array [1 .. 5] of TFieldDesc = (
+//  (Name: 'ID';     DataType: ftAutoInc;    Size: 0;  Required: true),
+//  (Name: 'SerID';  DataType: ftInteger;    Size: 0;  Required: true),
+//  (Name: 'BookID'; DataType: ftInteger;    Size: 0;  Required: true),
+//  (Name: 'Number'; DataType: ftInteger;    Size: 0;  Required: true),
+//  (Name: 'Title';  DataType: ftWideString; Size: 10; Required: true)
+//);
+//
+//SeriesListTableIndexes: array [1..3] of TIndexDesc = (
+//  (Name: 'ID_Index';    Fields: 'ID';                  Options: [ixPrimary, ixUnique]),
+//  (Name: 'BookIndex';   Fields: 'BookID';              Options: []),
+//  (Name: 'SeriesIndex'; Fields: 'SerID;Title;Number'; Options: [ixCaseInsensitive])
+//);
 
 //
 // Series
@@ -580,7 +580,7 @@ begin
   //
   CreateTable(FDatabase, 'Books',       BooksTableFields,      BooksTableIndexes);
   CreateTable(FDatabase, 'Authors',     AuthorsTableFields,    AuthorsTableIndexes);
-  CreateTable(FDatabase, 'SeriesList',  SeriesListTableFields, SeriesListTableIndexes);
+//  CreateTable(FDatabase, 'SeriesList',  SeriesListTableFields, SeriesListTableIndexes);
   CreateTable(FDatabase, 'Series',      SeriesTableFields,     SeriesTableIndexes);
   CreateTable(FDatabase, 'Genres',      GenresTableFields,     GenresTableIndexes);
   CreateTable(FDatabase, 'Genre_List',  GenreListTableFields,  GenreListTableIndexes);
@@ -956,7 +956,7 @@ begin
     FGenreList['Family'] := Copy(FBooks['FullName'], 1, 10);
     FGenreList['Title'] := Copy(FBooks['Title'], 1, 10);
     { TODO -oNickR -cBug : Для правильной сотрировки необходимо заполнить поле Series }
-    //FGenreList['Series'] := Copy(Series, 1, 10);
+    FGenreList['Series'] := Copy(FBooks['Series'], 1, 10);
     FGenreList.Post;
   end;
 end;

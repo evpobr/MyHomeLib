@@ -559,7 +559,7 @@ object DMCollection: TDMCollection
     TableName = 'Authors'
     Exclusive = False
     Left = 208
-    Top = 264
+    Top = 216
     object tblAuthorsSID: TAutoIncField
       FieldName = 'ID'
     end
@@ -696,7 +696,7 @@ object DMCollection: TDMCollection
     MasterFields = 'ID'
     MasterSource = dsSeries
     Left = 208
-    Top = 208
+    Top = 160
     object tblBooksSID: TAutoIncField
       FieldName = 'ID'
     end
@@ -805,12 +805,12 @@ object DMCollection: TDMCollection
   object dsAuthorsS: TDataSource
     DataSet = tblAuthorsS
     Left = 272
-    Top = 208
+    Top = 160
   end
   object dsBooksS: TDataSource
     DataSet = tblBooksS
     Left = 272
-    Top = 264
+    Top = 224
   end
   object tblBooks_Genre_List: TABSTable
     CurrentVersion = '6.02 '
@@ -1575,72 +1575,6 @@ object DMCollection: TDMCollection
     object WideStringField2: TWideStringField
       FieldName = 'GenreCode'
       Required = True
-    end
-  end
-  object dsSeries_List: TDataSource
-    DataSet = tblSeries_List
-    Left = 280
-    Top = 152
-  end
-  object tblSeries_List: TABSTable
-    CurrentVersion = '6.02 '
-    DatabaseName = 'Collection'
-    InMemory = False
-    ReadOnly = False
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'ID'
-        Options = [ixPrimary, ixUnique]
-      end
-      item
-        Name = 'BookIndex'
-        Fields = 'BookID'
-      end
-      item
-        Name = 'SeriesIndex'
-        CaseInsFields = 'SerID;Title'
-        Fields = 'SerID;Title'
-        Options = [ixCaseInsensitive]
-      end>
-    IndexFieldNames = 'SerID'
-    FieldDefs = <
-      item
-        Name = 'ID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'SerID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'BookID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'Title'
-        DataType = ftWideString
-        Size = 10
-      end>
-    TableName = 'SeriesList'
-    Exclusive = False
-    MasterFields = 'ID'
-    MasterSource = dsSeries
-    Left = 208
-    Top = 152
-    object tblSeries_ListID: TAutoIncField
-      FieldName = 'ID'
-    end
-    object tblSeries_ListSerID: TIntegerField
-      FieldName = 'SerID'
-    end
-    object tblSeries_ListBookID: TIntegerField
-      FieldName = 'BookID'
-    end
-    object tblSeries_ListTitle: TWideStringField
-      FieldName = 'Title'
-      Size = 10
     end
   end
   object tblExtra: TABSTable
