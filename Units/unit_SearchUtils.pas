@@ -21,21 +21,20 @@ uses
 procedure AddToFilter(Field,Value:String; var FilterString: string);
 begin
   if Value = '' then Exit;
-      Value := trim(AnsiUpperCase(Value));
 
-   StrReplace('NOT LIKE', 'NOT#LIKE',Value);
-   StrReplace(' LIKE', ' ' + Field + '#LIKE',Value);
-   StrReplace(' =', ' ' + Field + '#=',Value);
-   StrReplace(' <>', ' ' + Field + '#<>',Value);
-   StrReplace(' <', ' ' + Field + '#<',Value);
-   StrReplace(' >', ' ' + Field + '#>',Value);
+  StrReplace('NOT LIKE', 'NOT#LIKE',Value);
+  StrReplace(' LIKE', ' ' + Field + '#LIKE',Value);
+  StrReplace(' =', ' ' + Field + '#=',Value);
+  StrReplace(' <>', ' ' + Field + '#<>',Value);
+  StrReplace(' <', ' ' + Field + '#<',Value);
+  StrReplace(' >', ' ' + Field + '#>',Value);
 
-   StrReplace('#',' ',Value);
+  StrReplace('#',' ',Value);
 
   if FilterString <> '' then
-     FilterString := FilterString + ' and (' + Field + ' ' + Value + ')'
+     FilterString := FilterString + ' and (UPPER(' + Field + ') ' + Value + ')'
    else
-     FilterString := '(' + Field + ' ' + Value + ')';
+     FilterString := '(UPPER(' + Field + ') ' + Value + ')';
 end;
 
 procedure AddSeriesToFilter(Value:string; var SeriesFilter: string);
@@ -62,6 +61,8 @@ end;
 // проверяем запрос, если нативный - преобразовывам в SQL
 function PrepareQuery(S: string):string;
 begin
+  S := trim(AnsiUpperCase(S));
+
   if S = '' then
   begin
     Result := '';

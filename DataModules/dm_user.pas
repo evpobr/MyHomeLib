@@ -125,6 +125,9 @@ type
       const Value: string;
       IgnoreID: Integer = INVALID_COLLECTION_ID
     ): Boolean;
+    procedure SetUserTableState(Status: boolean);
+
+
   public
     //
     // Active Collection
@@ -419,7 +422,7 @@ begin
         else
           tblGrouppedBooksSeries.Value := dmCollection.tblBooksSeries.Value;
 
-    tblGrouppedBooksFullName.Value := dmCollection.GetBookAuthor(ID);
+    tblGrouppedBooksFullName.Value := dmCollection.FullName(ID);
 
     tblGrouppedBooksSeqNumber.Value := dmCollection.tblBooksSeqNumber.Value;
     tblGrouppedBooksLibID.Value := dmCollection.tblBooksLibID.Value;
@@ -609,6 +612,15 @@ begin
   tblRates.Active := State;
   tblBases.Active := State;
   tblFinished.Active := State;
+end;
+
+procedure TDMUser.SetUserTableState(Status: boolean);
+begin
+  tblGroupList.Active := Status;
+  tblGrouppedBooks.Active := Status;
+  tblRates.Active := Status;
+  tblBases.Active := Status;
+  tblFinished.Active := Status;
 end;
 
 { TMHLCollection }
