@@ -2,7 +2,7 @@ unit unit_SearchUtils;
 
 interface
 
-procedure AddToFilter(Field,Value:String; var FilterString: string);
+procedure AddToFilter(Field,Value:String;  UP: boolean ; var FilterString: string);
 procedure AddSeriesToFilter(Value:string; var SeriesFilter: string);
 
 function Query(S: string):string;
@@ -18,7 +18,7 @@ uses
   unit_Globals;
 
 
-procedure AddToFilter(Field,Value:String; var FilterString: string);
+procedure AddToFilter(Field,Value:String;  UP: boolean; var FilterString: string);
 begin
   if Value = '' then Exit;
 
@@ -31,10 +31,18 @@ begin
 
   StrReplace('#',' ',Value);
 
-  if FilterString <> '' then
-     FilterString := FilterString + ' and (UPPER(' + Field + ') ' + Value + ')'
-   else
-     FilterString := '(UPPER(' + Field + ') ' + Value + ')';
+  if UP then
+  begin
+    if FilterString <> '' then
+      FilterString := FilterString + ' and (UPPER(' + Field + ') ' + Value + ')'
+    else
+      FilterString := '(UPPER(' + Field + ') ' + Value + ')';
+  end
+  else
+    if FilterString <> '' then
+      FilterString := FilterString + ' and (' + Field + ' ' + Value + ')'
+    else
+      FilterString := '(' + Field + ' ' + Value + ')';
 end;
 
 procedure AddSeriesToFilter(Value:string; var SeriesFilter: string);
@@ -54,6 +62,7 @@ end;
 
 function Query(S: string):string;
 begin
+  S := trim(AnsiUpperCase(S));
   S := PrepareQuery(S);
   Result := Clear(S);
 end;
@@ -61,8 +70,6 @@ end;
 // проверяем запрос, если нативный - преобразовывам в SQL
 function PrepareQuery(S: string):string;
 begin
-  S := trim(AnsiUpperCase(S));
-
   if S = '' then
   begin
     Result := '';

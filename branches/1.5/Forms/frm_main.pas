@@ -1123,9 +1123,9 @@ begin
 
       //----------------------  автор   ----------------------------------------
 
-      AddToFilter('`Family`', Query(edFLast.Text), FilterString);
-      AddToFilter('`Name`', Query(edFFirst.Text), FilterString);
-      AddToFilter('`Middle`', Query(edFMiddle.Text), FilterString);
+      AddToFilter('`Family`', Query(edFLast.Text), True, FilterString);
+      AddToFilter('`Name`', Query(edFFirst.Text), True, FilterString);
+      AddToFilter('`Middle`', Query(edFMiddle.Text), True, FilterString);
 
       if FilterString <> '' then
            dmCollection.sqlBooks.SQL.Add(
@@ -1152,41 +1152,41 @@ begin
 
       FilterString := '';
       //-------------------------- жанр ----------------------------------------
-      FilterString := Query(edFGenre.Text);
-
-      if FilterString <> '' then
-           FilterString := 'Select * FROM Books WHERE SerID IN ' +
-                           '(Select `ID` FROM `Series` WHERE Upper(`Title`) ' + FilterString + ')';
-
-      if (dmCollection.sqlBooks.SQL.Count > 0) and (FilterString <> '') then
-      begin
-        dmCollection.sqlBooks.SQL.Add('INTERSECT');
-        dmCollection.sqlBooks.SQL.Add(FilterString);
-      end
-      else
-      if FilterString <> '' then
-           dmCollection.sqlBooks.SQL.Add(FilterString);
-
-      FilterString := '';
+//      FilterString := Query(edFGenre.Text);
+//
+//      if FilterString <> '' then
+//           FilterString := 'Select * FROM Books WHERE SerID IN ' +
+//                           '(Select `ID` FROM `Series` WHERE Upper(`Title`) ' + FilterString + ')';
+//
+//      if (dmCollection.sqlBooks.SQL.Count > 0) and (FilterString <> '') then
+//      begin
+//        dmCollection.sqlBooks.SQL.Add('INTERSECT');
+//        dmCollection.sqlBooks.SQL.Add(FilterString);
+//      end
+//      else
+//      if FilterString <> '' then
+//           dmCollection.sqlBooks.SQL.Add(FilterString);
+//
+//      FilterString := '';
 
       //-------------------  все остальное   -----------------------------------
 
-      AddToFilter('`Title`', Query(edFTitle.Text), FilterString);
-      AddToFilter('`FileName`', Query(edFFile.Text), FilterString);
-      AddToFilter('`Folder`', Query(edFFolder.Text), FilterString);
-      AddToFilter('`ext`', Query(edFExt.Text), FilterString);
-      AddToFilter('`Lang`', Query(cbLang.Text), FilterString);
-      AddToFilter('`KeyWords`', Query(edFKeyWords.Text), FilterString);
+      AddToFilter('`Title`', Query(edFTitle.Text), True, FilterString);
+      AddToFilter('`FileName`', Query(edFFile.Text),False, FilterString);
+      AddToFilter('`Folder`', Query(edFFolder.Text), False, FilterString);
+      AddToFilter('`ext`', Query(edFExt.Text), False,FilterString);
+      AddToFilter('`Lang`', Query(cbLang.Text), False, FilterString);
+      AddToFilter('`KeyWords`', Query(edFKeyWords.Text), False, FilterString);
 //
       if cbDate.ItemIndex = -1 then
-        AddToFilter('`Date`',Query(cbDate.Text), FilterString)
+        AddToFilter('`Date`',Query(cbDate.Text),False, FilterString)
       else
         case cbDate.ItemIndex of
-          0:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 3))]), FilterString);
-          1:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 7))]), FilterString);
-          2:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 14))]), FilterString);
-          3:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 30))]), FilterString);
-          4:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 90))]), FilterString);
+          0:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 3))]),False, FilterString);
+          1:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 7))]),False, FilterString);
+          2:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 14))]),False, FilterString);
+          3:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 30))]),False, FilterString);
+          4:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 90))]),False, FilterString);
         end;
 
       case cbDownloaded.ItemIndex of
@@ -3618,7 +3618,10 @@ begin
                 CollectionName := DMUser.ActiveCollection.Name;
               end;
 
-              Auth := dmCollection.FullName(TableB.FieldByName('Id').AsInteger);
+              if Tree.Tag <> 4 then
+                  Auth := dmCollection.FullName(TableB.FieldByName('Id').AsInteger)
+              else
+                  Auth := TableB.FieldByName('FullName').AsString;
 
               if ShowAuth then
               begin

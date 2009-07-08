@@ -335,11 +335,10 @@ GroupsListTableIndexes: array [1..2] of TIndexDesc = (
 //
 //  Groups table
 //
-GroupsTableFields: array [1 .. 26] of TFieldDesc = (
+GroupsTableFields: array [1 .. 25] of TFieldDesc = (
   (Name: 'ID';         DataType: ftAutoInc;    Size: 0;   Required: true),  // локальный уникальный ID в этой таблице
   (Name: 'GroupID';    DataType: ftInteger;    Size: 0;   Required: true),  // id родительской группы
   (Name: 'OuterID';    DataType: ftInteger;    Size: 0;   Required: false),// внешний ID книги в коллекции
-  (Name: 'AuthID';     DataType: ftInteger;    Size: 0;   Required: true),
   (Name: 'SerID';      DataType: ftInteger;    Size: 0;   Required: false),
   (Name: 'SeqNumber';  DataType: ftSmallInt;   Size: 0;   Required: false),
   (Name: 'DatabaseID'; DataType: ftInteger;    Size: 0;   Required: false),
