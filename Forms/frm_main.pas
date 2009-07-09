@@ -2411,11 +2411,31 @@ procedure TfrmMain.tvGroupsDragDrop(Sender: TBaseVirtualTree; Source: TObject;
 var
   Nodes: TNodeArray;
   i: Integer;
-
+  Node, LastNode : PvirtualNode;
   Data: PGenreData;
   BookData: PBookData;
 
-  Node : PvirtualNode;
+
+          procedure SelectChildNodes(ParentNode: PVirtualNode);
+          var
+            Node, LastNode: PVirtualNode;
+          begin
+            Node := ParentNode.FirstChild;
+            tvBooksF.Selected[Node] := True;
+            if Node.ChildCount > 0 then
+                          SelectChildNodes(Node);
+
+            LastNode := ParentNode.LastChild;
+            while Node <> LastNode do
+            begin
+              Node := tvBooksF.GetNext(Node,True);
+              if Node.ChildCount > 0 then
+                          SelectChildNodes(Node);
+              tvBooksF.Selected[Node] := True;
+            end;
+          end;
+
+
 begin
   Nodes := nil;
   Data := tvGroups.GetNodeData(tvGroups.DropTargetNode);
@@ -2424,18 +2444,9 @@ begin
   // сканируем выделенные ноды.
   // если есть потомки, выделяем их тоже
   for i := 0 to High(Nodes) do
-  begin
-    if Nodes[i].ChildCount >0 then
-    begin
-      Node := Nodes[i].FirstChild;
-      while Node <> Nodes[i].LastChild do
-      begin
-        tvBooksF.Selected[Node] := True;
-        Node := tvBooksF.GetNext(Node,True);
-      end;
-      tvBooksF.Selected[Node] := True;
-    end;
-  end;
+    if Nodes[i].ChildCount > 0 then
+          SelectChildNodes(Nodes[i]);
+
 
   // составляем новый список выделенных
   Nodes := tvBooksF.GetSortedSelection(False);
@@ -5505,10 +5516,11 @@ begin
                     miGotoAuthor.Visible := True;
                     miDelFavorites.Visible := True;
                     miAddFavorites.Visible := False;
-                    btnFav_add.Hint := 'Удалить из избранного';
+                    btnFav_add.Hint := 'Удалить из группы';
                     btnFav_add.DropdownMenu := Nil;
                     btnFav_add.Style := ComCtrls.tbsButton;
                     btnFav_add.ImageIndex := 16;
+                    pmiGroups.Visible := False;
                   end;
     DownloadView: begin
                     tbtnDownloadList_Add.ImageIndex := 23;
@@ -5525,7 +5537,7 @@ begin
                     btnFav_add.DropdownMenu := pmGroups;
                     btnFav_add.Style := ComCtrls.tbsDropDown;
                     btnFav_add.ImageIndex := 15;
-
+                    pmiGroups.Visible := True;
                   end;
 
   end;
