@@ -694,6 +694,7 @@ type
     procedure LoadSearchPreset(FN: string);
     procedure CreateGroupsMenu;
     procedure SaveMainFormSettings;
+    procedure SavePositions;
     property ActiveView: TView read GetActiveView;
   end;
 
@@ -2127,15 +2128,21 @@ begin
 
 end;
 
-procedure TfrmMain.SaveMainFormSettings;
+procedure TfrmMain.SavePositions;
 begin
-  SaveColumns;
-
   Settings.LastAuthor := lblAuthor.Caption;
   Settings.LastSeries := lblSeries.Caption;
   Settings.LastBookInAuthors := GetSelectedBookData(tvBooksA).ID;
   Settings.LastBookInSeries := GetSelectedBookData(tvBooksS).ID;
   Settings.LastBookInFavorites := GetSelectedBookData(tvBooksF).ID;
+end;
+
+
+procedure TfrmMain.SaveMainFormSettings;
+begin
+  SaveColumns;
+
+  SavePositions;
 
   Settings.Splitters[0] := rzsSplitterA.Position;
   Settings.Splitters[1] := rzsSplitterS.Position;
@@ -2202,8 +2209,6 @@ begin
       COL_COLLECTION: Result := Data.ColName;
     end;
 end;
-
-
 
 procedure TfrmMain.tvAuthorsGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
@@ -2281,7 +2286,6 @@ procedure TfrmMain.tvBooksGGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
   Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
 var
   Data: PBookData;
-
   Tag: integer;
 begin
   Data := Sender.GetNodeData(Node);
@@ -2354,7 +2358,6 @@ begin
     CellText := GetText(GetTreeTag(Sender, Column), Data);
 end;
 
-
 procedure TfrmMain.tvBooksSRGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
   var CellText: String);
@@ -2415,26 +2418,19 @@ var
   Data: PGenreData;
   BookData: PBookData;
 
-
           procedure SelectChildNodes(ParentNode: PVirtualNode);
           var
-            Node, LastNode: PVirtualNode;
+            Node: PVirtualNode;
           begin
+            if ParentNode.ChildCount = 0 then Exit;
             Node := ParentNode.FirstChild;
-            tvBooksF.Selected[Node] := True;
-            if Node.ChildCount > 0 then
-                          SelectChildNodes(Node);
-
-            LastNode := ParentNode.LastChild;
-            while Node <> LastNode do
+            while Node <> Nil do
             begin
-              Node := tvBooksF.GetNext(Node,True);
-              if Node.ChildCount > 0 then
-                          SelectChildNodes(Node);
+              SelectChildNodes(Node);
               tvBooksF.Selected[Node] := True;
+              Node := tvBooksF.GetNextSibling(Node);
             end;
           end;
-
 
 begin
   Nodes := nil;
@@ -2444,9 +2440,7 @@ begin
   // сканируем выделенные ноды.
   // если есть потомки, выделяем их тоже
   for i := 0 to High(Nodes) do
-    if Nodes[i].ChildCount > 0 then
-          SelectChildNodes(Nodes[i]);
-
+    SelectChildNodes(Nodes[i]);
 
   // составляем новый список выделенных
   Nodes := tvBooksF.GetSortedSelection(False);
@@ -3333,11 +3327,15 @@ end;
 
 procedure TfrmMain.tbtnShowDeletedClick(Sender: TObject);
 begin
+  SavePositions;
+
   Settings.DoNotShowDeleted := not Settings.DoNotShowDeleted;
   tbtnShowDeleted.Down := Settings.DoNotShowDeleted;
 
   SetBooksFilter;
   FillAllBooksTree;
+
+  RestorePositions;
 end;
 
 procedure TfrmMain.tbtnStarClick(Sender: TObject);
@@ -3413,6 +3411,9 @@ end;
 
 procedure TfrmMain.tbtnShowLocalOnlyClick(Sender: TObject);
 begin
+
+  SavePositions;
+
   Settings.ShowLocalOnly := not Settings.ShowLocalOnly;
   tbtnShowLocalOnly.Down := Settings.ShowLocalOnly ;
 
@@ -3423,6 +3424,8 @@ begin
   FillAuthorTree;
   FillSeriesTree;
   FillAllBooksTree;
+
+  RestorePositions;
 end;
 
 procedure TfrmMain.SetCoversVisible(State: boolean);
@@ -5017,7 +5020,8 @@ begin
     edLocateAuthor.Text := FN;
   finally
     Screen.Cursor := crDefault;
-  end;end;
+  end;
+end;
 
 procedure TfrmMain.miCheckUpdatesClick(Sender: TObject);
 var
@@ -5089,11 +5093,15 @@ end;
 
 procedure TfrmMain.miSyncOnlineClick(Sender: TObject);
 begin
+  SavePositions;
+
   if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
       unit_Utils.SyncOnLineFiles
     else
       unit_Utils.SyncFolders;
   InitCollection(True);
+
+  RestorePositions;
 end;
 
 procedure TfrmMain.miUpdateClick(Sender: TObject);
@@ -5102,11 +5110,15 @@ var
 begin
   if CheckLibUpdates(False) then
   begin
+    SavePositions;
+
     ActiveColIndex := DMUser.ActiveCollection.ID;
     StartLibUpdate;
     Settings.ActiveCollection := ActiveColIndex;
     DMUser.ActivateCollection(ActiveColIndex);
     InitCollection(True);
+
+    RestorePositions;
   end;
 end;
 
