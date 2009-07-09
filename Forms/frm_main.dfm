@@ -1509,11 +1509,93 @@ object frmMain: TfrmMain
           HeaderFont.Name = 'Tahoma'
           HeaderFont.Style = []
           TabOrder = 0
+          object ctpBook: TCategoryPanel
+            Top = 0
+            Height = 177
+            Caption = #1050#1085#1080#1075#1072
+            TabOrder = 0
+            object Label5: TLabel
+              AlignWithMargins = True
+              Left = 3
+              Top = 3
+              Width = 180
+              Height = 13
+              Align = alTop
+              Caption = #1040#1074#1090#1086#1088
+              ExplicitLeft = 5
+              ExplicitTop = -5
+              ExplicitWidth = 164
+            end
+            object Label24: TLabel
+              AlignWithMargins = True
+              Left = 3
+              Top = 49
+              Width = 180
+              Height = 13
+              Align = alTop
+              Caption = #1053#1072#1079#1074#1072#1085#1080#1077
+              ExplicitWidth = 48
+            end
+            object Label26: TLabel
+              AlignWithMargins = True
+              Left = 3
+              Top = 95
+              Width = 180
+              Height = 13
+              Align = alTop
+              Caption = #1057#1077#1088#1080#1103
+              ExplicitWidth = 31
+            end
+            object edFFullName: TRzButtonEdit
+              AlignWithMargins = True
+              Left = 3
+              Top = 22
+              Width = 180
+              Height = 21
+              Align = alTop
+              TabOrder = 0
+              OnKeyDown = edFFullNameKeyDown
+              AltBtnWidth = 15
+              ButtonWidth = 15
+              OnButtonClick = edFFullNameButtonClick
+              ExplicitWidth = 177
+            end
+            object edFTitle: TRzButtonEdit
+              AlignWithMargins = True
+              Left = 3
+              Top = 68
+              Width = 180
+              Height = 21
+              Align = alTop
+              TabOrder = 1
+              OnKeyDown = edFFullNameKeyDown
+              AltBtnWidth = 15
+              ButtonWidth = 15
+              OnButtonClick = edFFullNameButtonClick
+              ExplicitWidth = 177
+            end
+            object edFSeries: TRzButtonEdit
+              AlignWithMargins = True
+              Left = 3
+              Top = 114
+              Width = 180
+              Height = 21
+              Align = alTop
+              TabOrder = 2
+              OnKeyDown = edFFullNameKeyDown
+              AltBtnWidth = 15
+              ButtonWidth = 15
+              OnButtonClick = edFFullNameButtonClick
+              ExplicitWidth = 177
+            end
+          end
           object ctpOther: TCategoryPanel
-            Top = 368
+            Top = 207
             Height = 198
             Caption = #1056#1072#1079#1085#1086#1077
-            TabOrder = 0
+            TabOrder = 1
+            ExplicitTop = 30
+            ExplicitWidth = 172
             object Label30: TLabel
               Left = 3
               Top = 122
@@ -1557,7 +1639,7 @@ object frmMain: TfrmMain
               Height = 21
               ItemHeight = 13
               TabOrder = 0
-              OnKeyDown = edFLastKeyDown
+              OnKeyDown = edFFullNameKeyDown
               Items.Strings = (
                 #1079#1072' 3 '#1076#1085#1103
                 #1079#1072' '#1085#1077#1076#1077#1083#1102
@@ -1572,7 +1654,7 @@ object frmMain: TfrmMain
               Height = 21
               ItemHeight = 13
               TabOrder = 1
-              OnKeyDown = edFLastKeyDown
+              OnKeyDown = edFFullNameKeyDown
               Items.Strings = (
                 'be'
                 'bg'
@@ -1623,6 +1705,7 @@ object frmMain: TfrmMain
                 #1058#1086#1083#1100#1082#1086' '#1089#1082#1072#1095#1072#1085#1085#1099#1077
                 #1058#1086#1083#1100#1082#1086' '#1053#1045' '#1089#1082#1072#1095#1072#1085#1085#1099#1077)
               ItemIndex = 0
+              ExplicitWidth = 177
             end
             object edFKeyWords: TRzButtonEdit
               AlignWithMargins = True
@@ -1635,10 +1718,11 @@ object frmMain: TfrmMain
               ParentShowHint = False
               ShowHint = True
               TabOrder = 3
-              OnKeyDown = edFLastKeyDown
+              OnKeyDown = edFFullNameKeyDown
               AltBtnWidth = 15
               ButtonWidth = 15
-              OnButtonClick = edFLastButtonClick
+              OnButtonClick = edFFullNameButtonClick
+              ExplicitWidth = 177
             end
             object cbDeleted: TCheckBox
               AlignWithMargins = True
@@ -1650,14 +1734,17 @@ object frmMain: TfrmMain
               Align = alTop
               Caption = #1057#1082#1088#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
               TabOrder = 4
+              ExplicitWidth = 175
             end
           end
           object ctpFile: TCategoryPanel
-            Top = 338
+            Top = 177
             Height = 30
             Caption = #1060#1072#1081#1083
             Collapsed = True
-            TabOrder = 1
+            TabOrder = 2
+            ExplicitTop = 0
+            ExplicitWidth = 172
             ExpandedHeight = 169
             object Label27: TLabel
               AlignWithMargins = True
@@ -1697,10 +1784,11 @@ object frmMain: TfrmMain
               Height = 21
               Align = alTop
               TabOrder = 0
-              OnKeyDown = edFLastKeyDown
+              OnKeyDown = edFFullNameKeyDown
               AltBtnWidth = 15
               ButtonWidth = 15
-              OnButtonClick = edFLastButtonClick
+              OnButtonClick = edFFullNameButtonClick
+              ExplicitWidth = 177
             end
             object edFFolder: TRzButtonEdit
               AlignWithMargins = True
@@ -1710,10 +1798,11 @@ object frmMain: TfrmMain
               Height = 21
               Align = alTop
               TabOrder = 1
-              OnKeyDown = edFLastKeyDown
+              OnKeyDown = edFFullNameKeyDown
               AltBtnWidth = 15
               ButtonWidth = 15
-              OnButtonClick = edFLastButtonClick
+              OnButtonClick = edFFullNameButtonClick
+              ExplicitWidth = 177
             end
             object edFExt: TRzButtonEdit
               AlignWithMargins = True
@@ -1723,161 +1812,11 @@ object frmMain: TfrmMain
               Height = 21
               Align = alTop
               TabOrder = 2
-              OnKeyDown = edFLastKeyDown
+              OnKeyDown = edFFullNameKeyDown
               AltBtnWidth = 15
               ButtonWidth = 15
-              OnButtonClick = edFLastButtonClick
-            end
-          end
-          object CategoryPanel1: TCategoryPanel
-            Top = 170
-            Height = 168
-            Caption = #1050#1085#1080#1075#1072
-            TabOrder = 2
-            object Label24: TLabel
-              AlignWithMargins = True
-              Left = 3
-              Top = 3
-              Width = 180
-              Height = 13
-              Align = alTop
-              Caption = #1053#1072#1079#1074#1072#1085#1080#1077
-              ExplicitWidth = 48
-            end
-            object Label26: TLabel
-              AlignWithMargins = True
-              Left = 3
-              Top = 49
-              Width = 180
-              Height = 13
-              Align = alTop
-              Caption = #1057#1077#1088#1080#1103
-              ExplicitWidth = 31
-            end
-            object Label7: TLabel
-              AlignWithMargins = True
-              Left = 3
-              Top = 95
-              Width = 180
-              Height = 13
-              Align = alTop
-              Caption = #1046#1072#1085#1088
-              ExplicitWidth = 28
-            end
-            object edFTitle: TRzButtonEdit
-              AlignWithMargins = True
-              Left = 3
-              Top = 22
-              Width = 180
-              Height = 21
-              Align = alTop
-              TabOrder = 0
-              OnKeyDown = edFLastKeyDown
-              AltBtnWidth = 15
-              ButtonWidth = 15
-              OnButtonClick = edFLastButtonClick
-            end
-            object edFSeries: TRzButtonEdit
-              AlignWithMargins = True
-              Left = 3
-              Top = 68
-              Width = 180
-              Height = 21
-              Align = alTop
-              TabOrder = 1
-              OnKeyDown = edFLastKeyDown
-              AltBtnWidth = 15
-              ButtonWidth = 15
-              OnButtonClick = edFLastButtonClick
-            end
-            object edFGenre: TRzButtonEdit
-              AlignWithMargins = True
-              Left = 3
-              Top = 114
-              Width = 180
-              Height = 21
-              Align = alTop
-              Enabled = False
-              TabOrder = 2
-              OnKeyDown = edFLastKeyDown
-              AltBtnWidth = 15
-              ButtonWidth = 15
-              OnButtonClick = edFLastButtonClick
-            end
-          end
-          object ctpBook: TCategoryPanel
-            Top = 0
-            Height = 170
-            Caption = #1040#1074#1090#1086#1088
-            TabOrder = 3
-            object Label23: TLabel
-              AlignWithMargins = True
-              Left = 3
-              Top = 49
-              Width = 180
-              Height = 13
-              Align = alTop
-              Caption = #1048#1084#1103
-              ExplicitWidth = 19
-            end
-            object Label5: TLabel
-              AlignWithMargins = True
-              Left = 3
-              Top = 3
-              Width = 180
-              Height = 13
-              Align = alTop
-              Caption = #1060#1072#1084#1080#1083#1080#1103
-              ExplicitWidth = 44
-            end
-            object Label6: TLabel
-              AlignWithMargins = True
-              Left = 3
-              Top = 95
-              Width = 180
-              Height = 13
-              Align = alTop
-              Caption = #1054#1090#1095#1077#1089#1090#1074#1086
-              ExplicitWidth = 49
-            end
-            object edFLast: TRzButtonEdit
-              AlignWithMargins = True
-              Left = 3
-              Top = 22
-              Width = 180
-              Height = 21
-              Align = alTop
-              TabOrder = 0
-              OnKeyDown = edFLastKeyDown
-              AltBtnWidth = 15
-              ButtonWidth = 15
-              OnButtonClick = edFLastButtonClick
-            end
-            object edFFirst: TRzButtonEdit
-              AlignWithMargins = True
-              Left = 3
-              Top = 68
-              Width = 180
-              Height = 21
-              Align = alTop
-              TabOrder = 1
-              OnKeyDown = edFLastKeyDown
-              AltBtnWidth = 15
-              ButtonWidth = 15
-              OnButtonClick = edFLastButtonClick
-            end
-            object edFMiddle: TRzButtonEdit
-              AlignWithMargins = True
-              Left = 3
-              Top = 114
-              Width = 180
-              Height = 21
-              Align = alTop
-              TabOrder = 2
-              OnKeyDown = edFLastKeyDown
-              AltBtnWidth = 15
-              ButtonWidth = 15
-              OnButtonClick = edFLastButtonClick
+              OnButtonClick = edFFullNameButtonClick
+              ExplicitWidth = 177
             end
           end
         end
@@ -2886,8 +2825,6 @@ object frmMain: TfrmMain
         BevelOuter = bvNone
         Caption = 'Panel1'
         TabOrder = 1
-        ExplicitLeft = 46
-        ExplicitWidth = 942
         object RzPanel2: TRzPanel
           AlignWithMargins = True
           Left = 3
@@ -2897,7 +2834,6 @@ object frmMain: TfrmMain
           Align = alBottom
           BorderOuter = fsFlatRounded
           TabOrder = 0
-          ExplicitWidth = 936
           DesignSize = (
             934
             61)
@@ -2954,10 +2890,11 @@ object frmMain: TfrmMain
             Font.Style = []
             ParentFont = False
             CenterPoint = cpLowerRight
+            ExplicitLeft = 919
             ExplicitHeight = 19
           end
           object btnClearDownload: TRzBitBtn
-            Left = 819
+            Left = 821
             Top = 30
             Width = 118
             Anchors = [akRight, akBottom]
