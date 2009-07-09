@@ -166,12 +166,12 @@ AuthorsTableIndexes: array [1..2] of TIndexDesc = (
 //
 // Books table
 //
-BooksTableFields: array [1 .. 20] of TFieldDesc = (
+BooksTableFields: array [1 .. 21] of TFieldDesc = (
   (Name: 'ID';         DataType: ftAutoInc;     Size: 0;   Required: true ),
   (Name: 'DatabaseID'; DataType: ftInteger;     Size: 0;   Required: false),
   (Name: 'LibID';      DataType: ftInteger;     Size: 0;   Required: false),
   (Name: 'Title';      DataType: ftWideString;  Size: 100; Required: false),
-//  (Name: 'FullName';   DataType: ftWideString;  Size: IndexSize;  Required: false),
+  (Name: 'FullName';   DataType: ftWideString;  Size: 120; Required: True),
 //  (Name: 'AuthID';      DataType: ftInteger;    Size: 0;   Required: true),
   (Name: 'SerID';      DataType: ftInteger;     Size: 0;   Required: false),
   (Name: 'SeqNumber';  DataType: ftSmallInt;    Size: 0;   Required: false),
@@ -197,7 +197,7 @@ BooksTableFields: array [1 .. 20] of TFieldDesc = (
 BooksTableIndexes: array [1..5] of TIndexDesc = (
   (Name: 'ID_Index';       Fields: 'ID';                    Options: [ixPrimary, ixUnique]),
   (Name: 'Series_Index';   Fields: 'SerID;SeqNumber';       Options: []),
-  (Name: 'Title_Index';    Fields: 'Title';                 Options: [ixCaseInsensitive]),
+  (Name: 'Title_Index';    Fields: 'FullName;Title';        Options: [ixCaseInsensitive]),
   (Name: 'File_Index';     Fields: 'FileName';              Options: [ixCaseInsensitive]),
   (Name: 'Folder_Index';   Fields: 'DiscID;Folder';         Options: [])
 );
@@ -488,6 +488,7 @@ begin
   FExtra := TAbsTable.Create(FDatabase);
   FExtra.TableName := 'Extra';
 
+
 end;
 
 destructor TMHLLibrary.Destroy;
@@ -581,7 +582,8 @@ begin
   //
   CreateTable(FDatabase, 'Books',       BooksTableFields,      BooksTableIndexes);
   CreateTable(FDatabase, 'Authors',     AuthorsTableFields,    AuthorsTableIndexes);
-//  CreateTable(FDatabase, 'SeriesList',  SeriesListTableFields, SeriesListTableIndexes);
+
+  //  CreateTable(FDatabase, 'SeriesList',  SeriesListTableFields, SeriesListTableIndexes);
   CreateTable(FDatabase, 'Series',      SeriesTableFields,     SeriesTableIndexes);
   CreateTable(FDatabase, 'Genres',      GenresTableFields,     GenresTableIndexes);
   CreateTable(FDatabase, 'Genre_List',  GenreListTableFields,  GenreListTableIndexes);
@@ -844,6 +846,7 @@ begin
       ASeqNumber := 0;
 
     FBooks.Insert;
+    FBooks['FullName'] := AnsiUpperCase(BookRecord.Authors[0].GetFullName); // поле только для поиска!
     FBooks['FileName'] := BookRecord.FileName;
     FBooks['ext'] := BookRecord.FileExt;
     FBooks['Code'] := BookRecord.Code;
@@ -890,6 +893,7 @@ begin
       FAuthorList['Title'] := Copy(BookRecord.Title, 1, IndexSize);
       FAuthorList['Series'] := Copy(BookRecord.Series, 1, IndexSize);
       FAuthorList.Post;
+
     end;
   end;
 end;

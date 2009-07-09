@@ -353,9 +353,6 @@ type
     edFFile: TRzButtonEdit;
     edFFolder: TRzButtonEdit;
     edFExt: TRzButtonEdit;
-    ctpBook: TCategoryPanel;
-    Label23: TLabel;
-    edFLast: TRzButtonEdit;
     cpCoverSR: TMHLCoverPanel;
     RzPanel9: TRzPanel;
     RzPanel10: TRzPanel;
@@ -376,17 +373,13 @@ type
     miRepairDataBase: TMenuItem;
     N6: TMenuItem;
     miCompactDataBase: TMenuItem;
-    CategoryPanel1: TCategoryPanel;
-    edFTitle: TRzButtonEdit;
-    Label24: TLabel;
-    edFSeries: TRzButtonEdit;
-    Label26: TLabel;
-    edFFirst: TRzButtonEdit;
+    ctpBook: TCategoryPanel;
     Label5: TLabel;
-    edFMiddle: TRzButtonEdit;
-    Label6: TLabel;
-    edFGenre: TRzButtonEdit;
-    Label7: TLabel;
+    edFFullName: TRzButtonEdit;
+    Label24: TLabel;
+    edFTitle: TRzButtonEdit;
+    Label26: TLabel;
+    edFSeries: TRzButtonEdit;
 
     //
     // События формы
@@ -525,7 +518,7 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure tvBooksTreeKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure edFLastKeyDown(Sender: TObject; var Key: Word;
+    procedure edFFullNameKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure miGoDonateClick(Sender: TObject);
     procedure tbClearEdAuthorClick(Sender: TObject);
@@ -561,7 +554,7 @@ type
     procedure edLocateAuthorKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure btnSavePresetClick(Sender: TObject);
-    procedure edFLastButtonClick(Sender: TObject);
+    procedure edFFullNameButtonClick(Sender: TObject);
     procedure cbPresetNameChange(Sender: TObject);
     procedure cbPresetNameSelect(Sender: TObject);
     procedure FilesListFile(Sender: TObject; const F: TSearchRec);
@@ -1001,7 +994,7 @@ begin
   SetEditColor(edLocateAuthor);
   SetEditColor(edLocateSeries);
 
-  SetEditColor(edFLast);
+  SetEditColor(edFFullName);
   SetEditColor(edFTitle);
   SetEditColor(edFSeries);
   SetEditColor(edFFile);
@@ -1121,18 +1114,6 @@ begin
       Filtered :=  dmCollection.tblBooks.Filtered;
 
 
-      //----------------------  автор   ----------------------------------------
-
-      AddToFilter('`Family`', Query(edFLast.Text), True, FilterString);
-      AddToFilter('`Name`', Query(edFFirst.Text), True, FilterString);
-      AddToFilter('`Middle`', Query(edFMiddle.Text), True, FilterString);
-
-      if FilterString <> '' then
-           dmCollection.sqlBooks.SQL.Add(
-              'Select * FROM Books WHERE Id IN' +
-              '(Select BookID FROM Author_List WHERE AuthID IN ' +
-              '(SELECT ID FROM Authors WHERE ' +  FilterString + '))');
-
       //------------------------ серия -----------------------------------------
 
       FilterString := Query(edFSeries.Text);
@@ -1170,7 +1151,7 @@ begin
 //      FilterString := '';
 
       //-------------------  все остальное   -----------------------------------
-
+      AddToFilter('`FullName`', Query(edFFullName.Text), False, FilterString);
       AddToFilter('`Title`', Query(edFTitle.Text), True, FilterString);
       AddToFilter('`FileName`', Query(edFFile.Text),False, FilterString);
       AddToFilter('`Folder`', Query(edFFolder.Text), False, FilterString);
@@ -1243,7 +1224,7 @@ end;
 
 procedure TfrmMain.btnClearFilterEditsClick(Sender: TObject);
 begin
-  edFLast.Text :='';
+  edFFullName.Text :='';
   edFSeries.Text :='';
   edFTitle.Text  := '';
   edFFile.Text   := '';
@@ -1273,7 +1254,7 @@ begin
     SL.LoadFromFile(Settings.PresetPath + FN + '.mhlf');
     HL.DelimitedText := SL.Text;
 
-    edFLast.Text := HL[0];
+    edFFullName.Text := HL[0];
     edFTitle.Text := HL[1];
     edFSeries.Text := HL[2];
     edFFile.Text := HL[3];
@@ -4430,7 +4411,7 @@ begin
   case ActiveView of
     ByAuthorView: begin
                     treeView := tvAuthors;
-                    Edit := edFLast;
+                    Edit := edFFullName;
                   end;
     BySeriesView: begin
                     treeView := tvSeries;
@@ -4543,7 +4524,7 @@ begin
 
   SL := TStringList.Create;
   try
-    S := '~' + edFLast.Text + d +
+    S := '~' + edFFullName.Text + d +
          edFTitle.Text + d +
          edFSeries.Text + d +
          edFFile.Text + d +
@@ -4622,14 +4603,14 @@ begin
       tvSeries.Perform(WM_KEYDOWN, VK_DOWN, 0);
 end;
 
-procedure TfrmMain.edFLastButtonClick(Sender: TObject);
+procedure TfrmMain.edFFullNameButtonClick(Sender: TObject);
 begin
   frmEditor.Text := (Sender as TrzButtonEdit).Text;
   frmEditor.ShowModal;
   (Sender as TrzButtonEdit).Text := frmEditor.Text;
 end;
 
-procedure TfrmMain.edFLastKeyDown(Sender: TObject; var Key: Word;
+procedure TfrmMain.edFFullNameKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if Key = VK_RETURN then
