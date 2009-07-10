@@ -3,11 +3,7 @@ object DMCollection: TDMCollection
   Height = 567
   Width = 565
   object DBCollection: TABSDatabase
-    Connected = True
     CurrentVersion = '6.02 '
-    DatabaseFileName = 
-      'D:\DelphiProjects\MyHomeLib 1.5\Debug\Bin\Data\librusec_online.h' +
-      'lc'
     DatabaseName = 'Collection'
     Exclusive = True
     MaxConnections = 5
@@ -1770,12 +1766,9 @@ object DMCollection: TDMCollection
     ReadOnly = True
     FilterOptions = [foCaseInsensitive, foNoPartialCompare]
     SQL.Strings = (
-      'Select * FROM Books WHERE Id = 1;')
+      'select * from books where ID=1')
     Left = 504
     Top = 464
-    object sqlBooksID: TIntegerField
-      FieldName = 'ID'
-    end
     object sqlBooksDatabaseID: TIntegerField
       FieldName = 'DatabaseID'
     end
@@ -1872,6 +1865,9 @@ object DMCollection: TDMCollection
     object sqlBooksFullName: TWideStringField
       FieldName = 'FullName'
       Size = 120
+    end
+    object sqlBooksID: TIntegerField
+      FieldName = 'ID'
     end
   end
 end
