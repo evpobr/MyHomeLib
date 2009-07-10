@@ -189,7 +189,6 @@ type
     tblBooksGURI: TWideStringField;
     tblBooksKeyWords: TWideStringField;
     sqlBooks: TABSQuery;
-    sqlBooksID: TIntegerField;
     sqlBooksDatabaseID: TIntegerField;
     sqlBooksLibID: TIntegerField;
     sqlBooksTitle: TWideStringField;
@@ -216,6 +215,7 @@ type
     tblBooksSKeyWords: TWideStringField;
     tblBooksGKeyWords: TWideStringField;
     sqlBooksFullName: TWideStringField;
+    sqlBooksID: TIntegerField;
   private
     FActiveTable: TAbsTable;
 

@@ -508,7 +508,7 @@ object frmMain: TfrmMain
             Height = 41
             Align = alTop
             BorderOuter = fsFlatRounded
-            TabOrder = 1
+            TabOrder = 0
             DesignSize = (
               214
               41)
@@ -1511,7 +1511,7 @@ object frmMain: TfrmMain
           TabOrder = 0
           object ctpBook: TCategoryPanel
             Top = 0
-            Height = 177
+            Height = 221
             Caption = #1050#1085#1080#1075#1072
             TabOrder = 0
             object Label5: TLabel
@@ -1535,6 +1535,16 @@ object frmMain: TfrmMain
               ExplicitWidth = 48
             end
             object Label26: TLabel
+              AlignWithMargins = True
+              Left = 3
+              Top = 141
+              Width = 180
+              Height = 13
+              Align = alTop
+              Caption = #1046#1072#1085#1088
+              ExplicitWidth = 28
+            end
+            object Label6: TLabel
               AlignWithMargins = True
               Left = 3
               Top = 95
@@ -1583,9 +1593,22 @@ object frmMain: TfrmMain
               ButtonWidth = 15
               OnButtonClick = edFFullNameButtonClick
             end
+            object edFGenre: TRzButtonEdit
+              AlignWithMargins = True
+              Left = 3
+              Top = 160
+              Width = 180
+              Height = 21
+              Align = alTop
+              TabOrder = 3
+              OnKeyPress = edFGenreKeyPress
+              AltBtnWidth = 15
+              ButtonWidth = 15
+              OnButtonClick = edFGenreButtonClick
+            end
           end
           object ctpOther: TCategoryPanel
-            Top = 207
+            Top = 251
             Height = 198
             Caption = #1056#1072#1079#1085#1086#1077
             TabOrder = 1
@@ -1728,7 +1751,7 @@ object frmMain: TfrmMain
             end
           end
           object ctpFile: TCategoryPanel
-            Top = 177
+            Top = 221
             Height = 30
             Caption = #1060#1072#1081#1083
             Collapsed = True

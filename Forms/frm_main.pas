@@ -380,6 +380,8 @@ type
     edFTitle: TRzButtonEdit;
     Label26: TLabel;
     edFSeries: TRzButtonEdit;
+    edFGenre: TRzButtonEdit;
+    Label6: TLabel;
 
     //
     // События формы
@@ -581,6 +583,8 @@ type
     procedure miExportUserDataClick(Sender: TObject);
     procedure miRepairDataBaseClick(Sender: TObject);
     procedure miCompactDataBaseClick(Sender: TObject);
+    procedure edFGenreButtonClick(Sender: TObject);
+    procedure edFGenreKeyPress(Sender: TObject; var Key: Char);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -1098,6 +1102,14 @@ var FilterString: String;
     SeriesFilter: String;
     OldFilter: String;
     Filtered: boolean;
+
+const
+
+  SQLStartStr = 'select distinct ' +
+                'b.Id, b.Title, b.SerID, b.FullName, b.FileName, b.Folder, b.Ext, ' +
+                'b.DatabaseID, b.DiscID, b.LibID, b.InsideNo, b.URI, b.KeyWords, b.Code, ' +
+                'b.SeqNumber, b.Size, b.Date, b.Local, b.Lang, b.LibRate, b.Deleted ';
+
 begin
   Screen.Cursor := crSQLWAit;
   spStatus.Caption := 'Подготовка фильтра ...'; spStatus.Repaint;
@@ -1120,12 +1132,34 @@ begin
       FilterString := Query(edFSeries.Text);
 
       if FilterString <> '' then
-           FilterString := 'Select * FROM Books WHERE SerID IN ' +
-                           '(Select `ID` FROM `Series` WHERE Upper(`Title`) ' + FilterString + ')';
+           FilterString := SQLStartStr +
+                           'from Series s ' +
+                           'join books b on b.SerID = s.Id ' +
+                           'WHERE UPPER(s.Title) ' + FilterString;
+
+
+//           FilterString := 'Select * FROM Books WHERE SerID IN ' +
+//                           '(Select `ID` FROM `Series` WHERE Upper(`Title`) ' + FilterString + ')';
+
+      if FilterString <> '' then
+           dmCollection.sqlBooks.SQL.Add(FilterString);
+
+      FilterString := '';
+      //-------------------------- жанр ----------------------------------------
+
+
+      if (edFGenre.Hint <> '') and (dmCollection.sqlBooks.SQL.Count = 0) then
+//           FilterString := 'Select * FROM Books WHERE ID IN ' +
+//                           '(Select `BookID` FROM `Genre_List` WHERE GenreCode = "' + edFGenre.Hint + '")';
+
+           FilterString := SQLStartStr +
+                           'from Genre_List g ' +
+                           'join books b on b.id = g.bookid ' +
+                           'WHERE g.GenreCode = "' + edFGenre.Hint  + '"';
+
 
       if (dmCollection.sqlBooks.SQL.Count > 0) and (FilterString <> '') then
       begin
-        dmCollection.sqlBooks.SQL.Add('INTERSECT');
         dmCollection.sqlBooks.SQL.Add(FilterString);
       end
       else
@@ -1133,23 +1167,6 @@ begin
            dmCollection.sqlBooks.SQL.Add(FilterString);
 
       FilterString := '';
-      //-------------------------- жанр ----------------------------------------
-//      FilterString := Query(edFGenre.Text);
-//
-//      if FilterString <> '' then
-//           FilterString := 'Select * FROM Books WHERE SerID IN ' +
-//                           '(Select `ID` FROM `Series` WHERE Upper(`Title`) ' + FilterString + ')';
-//
-//      if (dmCollection.sqlBooks.SQL.Count > 0) and (FilterString <> '') then
-//      begin
-//        dmCollection.sqlBooks.SQL.Add('INTERSECT');
-//        dmCollection.sqlBooks.SQL.Add(FilterString);
-//      end
-//      else
-//      if FilterString <> '' then
-//           dmCollection.sqlBooks.SQL.Add(FilterString);
-//
-//      FilterString := '';
 
       //-------------------  все остальное   -----------------------------------
       AddToFilter('`FullName`', Query(edFFullName.Text), False, FilterString);
@@ -1192,16 +1209,18 @@ begin
       spStatus.Caption := 'Применяем фильтр ...'; spStatus.Repaint;
 
       if (dmCollection.sqlBooks.SQL.Count > 0) and (FilterString <> '') then
-      begin
-        dmCollection.sqlBooks.SQL.Add('INTERSECT');
-        dmCollection.sqlBooks.SQL.Add('SELECT * FROM Books WHERE ' + FilterString);
-      end
+        dmCollection.sqlBooks.SQL.Add('AND ' + FilterString)
       else
       if FilterString <> '' then
            dmCollection.sqlBooks.SQL.Add('SELECT * FROM Books WHERE ' + FilterString);
 
       if (dmCollection.sqlBooks.SQL.Count)=0 then
             raise Exception.Create('Проверьте параметры фильтра');
+
+
+      {$IFDEF DEBUG}
+      dmCollection.sqlBooks.SQL.SaveToFile(Settings.AppPath + 'Last.sql');
+      {$ENDIF}
 
       dmCollection.sqlBooks.ExecSQL;
 
@@ -1228,6 +1247,8 @@ begin
   edFFullName.Text :='';
   edFSeries.Text :='';
   edFTitle.Text  := '';
+  edFGenre.Text  := '';
+  edFGenre.Hint  := '';
   edFFile.Text   := '';
   edFFolder.Text := '';
   edFExt.Text    := '';
@@ -1258,14 +1279,16 @@ begin
     edFFullName.Text := HL[0];
     edFTitle.Text := HL[1];
     edFSeries.Text := HL[2];
-    edFFile.Text := HL[3];
-    edFFolder.Text := HL[4];
-    edFExt.Text := HL[5];
-    cbDate.Text := HL[6];
-    cbDownloaded.Text := HL[7];
-    cbDeleted.Checked := StrToBool(HL[8]);
-    cbLang.Text := HL[9];
-    edFKeyWords.Text := HL[10];
+    edFGenre.Text  := HL[3];
+    edFGenre.Hint  := HL[4];
+    edFFile.Text := HL[5];
+    edFFolder.Text := HL[6];
+    edFExt.Text := HL[7];
+    cbDate.Text := HL[8];
+    cbDownloaded.Text := HL[9];
+    cbDeleted.Checked := StrToBool(HL[10]);
+    cbLang.Text := HL[11];
+    edFKeyWords.Text := HL[12];
   finally
     HL.Free;
     SL.Free;
@@ -4541,6 +4564,8 @@ begin
     S := '~' + edFFullName.Text + d +
          edFTitle.Text + d +
          edFSeries.Text + d +
+         edFGenre.Text + d +
+         edFGenre.Hint + d +
          edFFile.Text + d +
          edFFolder.Text + d +
          edFExt.Text + d +
@@ -4629,6 +4654,36 @@ procedure TfrmMain.edFFullNameKeyDown(Sender: TObject; var Key: Word;
 begin
   if Key = VK_RETURN then
     btnApplyFilterClick(Sender);
+end;
+
+procedure TfrmMain.edFGenreButtonClick(Sender: TObject);
+var
+  Data : PGenreData;
+begin
+  FillGenresTree(frmGenreTree.tvGenresTree);
+  if frmGenreTree.ShowModal=mrOk then
+  begin
+    Data :=frmGenreTree.tvGenresTree.GetNodeData(frmGenreTree.tvGenresTree.FocusedNode);
+    if Data <> nil then
+    begin
+      edFGenre.Text := Data.Text;
+      edFGenre.Hint := Data.Code;
+    end
+    else begin
+      edFGenre.Text := '';
+      edFGenre.Hint:= '';
+    end;
+  end;
+end;
+
+procedure TfrmMain.edFGenreKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = chr(8) then
+  begin
+    edFGenre.Text := '';
+    edFGenre.Hint := '';
+  end;
+  Key := chr(0);
 end;
 
 procedure TfrmMain.edLocateSeriesChange(Sender: TObject);
