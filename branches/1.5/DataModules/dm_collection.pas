@@ -212,6 +212,10 @@ type
     sqlBooksSeries: TWideStringField;
     sqlBooksProgress: TSmallintField;
     sqlBooksRate: TIntegerField;
+    tblBooksAKeyWords: TWideStringField;
+    tblBooksSKeyWords: TWideStringField;
+    tblBooksGKeyWords: TWideStringField;
+    sqlBooksFullName: TWideStringField;
   private
     FActiveTable: TAbsTable;
 

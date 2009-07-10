@@ -4077,8 +4077,8 @@ begin
     dmCollection.GetBookFolder(BookIDList[i].ID,Folder);
     Node := tvDownloadList.AddChild(nil);
     Data := tvDownloadList.GetNodeData(Node);
+    Data.Author := dmCollection.FullName(BookIDList[i].ID);
 
-    dmCollection.FieldByName(BookIDList[i].ID, 'FullName', Data.Author);
     dmCollection.FieldByName(BookIDList[i].ID, 'Title', Data.Title);
     dmCollection.FieldByName(BookIDList[i].ID, 'Size', Data.Size);
     dmCollection.FieldByName(BookIDList[i].ID, 'LibID', LibID);
