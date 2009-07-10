@@ -3,7 +3,11 @@ object DMCollection: TDMCollection
   Height = 567
   Width = 565
   object DBCollection: TABSDatabase
+    Connected = True
     CurrentVersion = '6.02 '
+    DatabaseFileName = 
+      'D:\DelphiProjects\MyHomeLib 1.5\Debug\Bin\Data\librusec_online.h' +
+      'lc'
     DatabaseName = 'Collection'
     Exclusive = True
     MaxConnections = 5
@@ -64,8 +68,9 @@ object DMCollection: TDMCollection
       end
       item
         Name = 'FullName'
+        Attributes = [faRequired]
         DataType = ftWideString
-        Size = 255
+        Size = 120
       end
       item
         Name = 'SerID'
@@ -133,6 +138,11 @@ object DMCollection: TDMCollection
       item
         Name = 'Deleted'
         DataType = ftBoolean
+      end
+      item
+        Name = 'KeyWords'
+        DataType = ftWideString
+        Size = 255
       end>
     TableName = 'Books'
     Exclusive = False
@@ -233,6 +243,10 @@ object DMCollection: TDMCollection
       FieldName = 'URI'
       Size = 255
     end
+    object tblBooksAKeyWords: TWideStringField
+      FieldName = 'KeyWords'
+      Size = 255
+    end
   end
   object tblBooksG: TABSTable
     CurrentVersion = '6.02 '
@@ -285,8 +299,9 @@ object DMCollection: TDMCollection
       end
       item
         Name = 'FullName'
+        Attributes = [faRequired]
         DataType = ftWideString
-        Size = 255
+        Size = 120
       end
       item
         Name = 'SerID'
@@ -354,6 +369,11 @@ object DMCollection: TDMCollection
       item
         Name = 'Deleted'
         DataType = ftBoolean
+      end
+      item
+        Name = 'KeyWords'
+        DataType = ftWideString
+        Size = 255
       end>
     TableName = 'Books'
     Exclusive = False
@@ -453,6 +473,10 @@ object DMCollection: TDMCollection
     end
     object tblBooksGURI: TWideStringField
       FieldName = 'URI'
+      Size = 255
+    end
+    object tblBooksGKeyWords: TWideStringField
+      FieldName = 'KeyWords'
       Size = 255
     end
   end
@@ -611,8 +635,9 @@ object DMCollection: TDMCollection
       end
       item
         Name = 'FullName'
+        Attributes = [faRequired]
         DataType = ftWideString
-        Size = 255
+        Size = 120
       end
       item
         Name = 'SerID'
@@ -680,6 +705,11 @@ object DMCollection: TDMCollection
       item
         Name = 'Deleted'
         DataType = ftBoolean
+      end
+      item
+        Name = 'KeyWords'
+        DataType = ftWideString
+        Size = 255
       end>
     TableName = 'Books'
     Exclusive = False
@@ -779,6 +809,10 @@ object DMCollection: TDMCollection
     end
     object tblBooksSURI: TWideStringField
       FieldName = 'URI'
+      Size = 255
+    end
+    object tblBooksSKeyWords: TWideStringField
+      FieldName = 'KeyWords'
       Size = 255
     end
   end
@@ -1096,8 +1130,9 @@ object DMCollection: TDMCollection
       end
       item
         Name = 'FullName'
+        Attributes = [faRequired]
         DataType = ftWideString
-        Size = 255
+        Size = 120
       end
       item
         Name = 'SerID'
@@ -1174,7 +1209,7 @@ object DMCollection: TDMCollection
     TableName = 'books'
     Exclusive = False
     Left = 288
-    Top = 352
+    Top = 360
     object tblBooksID: TAutoIncField
       FieldName = 'ID'
     end
@@ -1833,6 +1868,10 @@ object DMCollection: TDMCollection
     object sqlBooksKeyWords: TWideStringField
       FieldName = 'KeyWords'
       Size = 255
+    end
+    object sqlBooksFullName: TWideStringField
+      FieldName = 'FullName'
+      Size = 120
     end
   end
 end

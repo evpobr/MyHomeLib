@@ -105,7 +105,8 @@ begin
     // —формируем им€ файла в соответствии с заданным темплейтом
     //
     FileName := Settings.FileNameTemplate;
-    FullName := Trim(FTable.FieldByName('FullName').AsString);
+
+    FullName := dmCollection.FullName(FTable.FieldByName('Id').AsInteger);
 
     StrReplace('%fl', copy(FullName,1,1), Folder);
     StrReplace('%f', FullName , FileName);
