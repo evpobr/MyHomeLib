@@ -33,6 +33,12 @@ begin
 
   if UP then
   begin
+    StrReplace(Field,'()',Value);
+    StrReplace('()','UPPER(' + Field + ')',Value);
+  end;
+
+  if UP then
+  begin
     if FilterString <> '' then
       FilterString := FilterString + ' and (UPPER(' + Field + ') ' + Value + ')'
     else
@@ -43,6 +49,7 @@ begin
       FilterString := FilterString + ' and (' + Field + ' ' + Value + ')'
     else
       FilterString := '(' + Field + ' ' + Value + ')';
+
 end;
 
 procedure AddSeriesToFilter(Value:string; var SeriesFilter: string);

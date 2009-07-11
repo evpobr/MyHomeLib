@@ -1105,11 +1105,11 @@ var FilterString: String;
 
 const
 
-  SQLStartStr = 'select distinct ' +
-                'b.Id, b.Title, b.SerID, b.FullName, b.FileName, b.Folder, b.Ext, ' +
-                'b.DatabaseID, b.DiscID, b.LibID, b.InsideNo, b.URI, b.KeyWords, b.Code, ' +
-                'b.SeqNumber, b.Size, b.Date, b.Local, b.Lang, b.LibRate, b.Deleted ';
-
+//  SQLStartStr = 'select distinct ' +
+//                'b.Id, b.Title, b.SerID, b.FullName, b.FileName, b.Folder, b.Ext, ' +
+//                'b.DatabaseID, b.DiscID, b.LibID, b.InsideNo, b.URI, b.KeyWords, b.Code, ' +
+//                'b.SeqNumber, b.Size, b.Date, b.Local, b.Lang, b.LibRate, b.Deleted ';
+  SQLStartStr = 'SELECT distinct b.*'  ;
 begin
   Screen.Cursor := crSQLWAit;
   spStatus.Caption := 'Подготовка фильтра ...'; spStatus.Repaint;
@@ -1129,42 +1129,37 @@ begin
 
       //------------------------ серия -----------------------------------------
 
-      FilterString := Query(edFSeries.Text);
+      FilterString := '';
+      AddToFilter('`S_Title`', Query(edFSeries.Text), True, FilterString);
 
       if FilterString <> '' then
-           FilterString := SQLStartStr +
-                           'from Series s ' +
-                           'join books b on b.SerID = s.Id ' +
-                           'WHERE UPPER(s.Title) ' + FilterString;
-
-
-//           FilterString := 'Select * FROM Books WHERE SerID IN ' +
-//                           '(Select `ID` FROM `Series` WHERE Upper(`Title`) ' + FilterString + ')';
+           FilterString := SQLStartStr + #13#10 +
+                           'FROM Series s ' + #13#10 +
+                           'JOIN books b on b.SerID = s.S_Id ' + #13#10 +
+                           'WHERE ' + FilterString + '';
 
       if FilterString <> '' then
            dmCollection.sqlBooks.SQL.Add(FilterString);
 
       FilterString := '';
+
       //-------------------------- жанр ----------------------------------------
 
-
-      if (edFGenre.Hint <> '') and (dmCollection.sqlBooks.SQL.Count = 0) then
-//           FilterString := 'Select * FROM Books WHERE ID IN ' +
-//                           '(Select `BookID` FROM `Genre_List` WHERE GenreCode = "' + edFGenre.Hint + '")';
-
+      if (edFGenre.Hint <> '') then
            FilterString := SQLStartStr + #13#10 +
-                           'from Genre_List g ' + #13#10 +
-                           'join books b on b.id = g.bookid ' + #13#10 +
+                           'FROM Genre_List g ' + #13#10 +
+                           'JOIN books b on b.id = g.gl_bookid ' + #13#10 +
                            'WHERE (' + edFGenre.Hint + ')';
 
 
-      if (dmCollection.sqlBooks.SQL.Count > 0) and (FilterString <> '') then
-      begin
-        dmCollection.sqlBooks.SQL.Add(FilterString);
-      end
+      if (dmCollection.sqlBooks.SQL.Count = 0) and (FilterString <> '') then
+        dmCollection.sqlBooks.SQL.Add(FilterString)
       else
-      if FilterString <> '' then
-           dmCollection.sqlBooks.SQL.Add(FilterString);
+        if FilterString <> '' then
+        begin
+          dmCollection.sqlBooks.SQL.Add('INTERSECT');
+          dmCollection.sqlBooks.SQL.Add(FilterString);
+        end;
 
       FilterString := '';
 
@@ -1452,7 +1447,7 @@ begin
   if ApplyAuthorFilter then
     if dmCollection.tblAuthors.RecordCount > 500 then
     begin
-      dmCollection.tblAuthors.Filter := 'Family="А*"';
+      dmCollection.tblAuthors.Filter := 'A_Family="А*"';
       dmCollection.tblAuthors.Filtered := True;
       ALetter.Down := True;
       FLastLetterA := ALetter;
@@ -2521,7 +2516,7 @@ begin
     Exit;
   ClearLabels(PAGE_AUTHORS);
   ID := Data^.ID;
-  dmCollection.tblAuthors.Locate('ID', ID, []);
+  dmCollection.tblAuthors.Locate('A_ID', ID, []);
   lblAuthor.Caption := Data.Text;
   FillBooksTree(ID, tvBooksA, dmCollection.tblAuthor_List, dmCollection.tblBooksA, False, True); // авторы
 end;
@@ -2536,7 +2531,7 @@ begin
     Exit;
   ClearLabels(PAGE_SERIES);
   ID := Data^.ID;
-  dmCollection.tblSeries.Locate('ID', ID, []);
+  dmCollection.tblSeries.Locate('S_ID', ID, []);
   lblSeries.Caption := Data.Text;
   FillBooksTree(ID, tvBooksS, nil, dmCollection.tblBooksS, False, False); // авторы
 end;
@@ -2555,13 +2550,13 @@ begin
      not Settings.ShowSubGenreBooks
   then
   begin
-    dmCollection.tblGenres.Locate('Code', ID, []);
+    dmCollection.tblGenres.Locate('G_Code', ID, []);
     FillBooksTree(0, tvBooksG, dmCollection.tblGenre_List, dmCollection.tblBooksG, True, True); // жанры
   end
-  else 
+  else
   begin
     dmCollection.tblGenre_List.MasterSource := nil;
-    dmCollection.tblGenre_List.Filter := '`GenreCode` Like ' + QuotedStr(ID + '%');
+    dmCollection.tblGenre_List.Filter := '`GL_Code` Like ' + QuotedStr(ID + '%');
     dmCollection.tblGenre_List.Filtered := True;
     FillBooksTree(0, tvBooksG, dmCollection.tblGenre_List, dmCollection.tblBooksG, True, True); // жанры
     dmCollection.tblGenre_List.Filtered := False;
@@ -3388,8 +3383,8 @@ begin
         else
         begin
           edLocateAuthor.Text := (Sender as TToolButton).Caption;
-          dmCollection.tblAuthors.Filter := '(Family=' + QuotedStr((Sender as TToolButton).Caption + '*') +
-               ') OR (Family=' + QuotedStr(AnsiLowercase((Sender as TToolButton).Caption) + '*') + ')';
+          dmCollection.tblAuthors.Filter := '(A_Family=' + QuotedStr((Sender as TToolButton).Caption + '*') +
+               ') OR (A_Family=' + QuotedStr(AnsiLowercase((Sender as TToolButton).Caption) + '*') + ')';
         end;
         dmCollection.tblAuthors.Filtered := (Sender as TToolButton).Tag <> 90;
         FillAuthorTree;
@@ -3407,15 +3402,15 @@ begin
 
         if (Sender as TToolButton).Tag >= 90 then
         case (Sender as TToolButton).Tag of
-          90: dmCollection.tblSeries.Filter := 'Title <>' + QuotedStr(NO_SERIES_TITLE);
-          91: dmCollection.tblSeries.Filter := 'Title > "а*"';
-          92: dmCollection.tblSeries.Filter := 'Title < "а*" and Title <>' + QuotedStr(NO_SERIES_TITLE);
+          90: dmCollection.tblSeries.Filter := 'S_Title <>' + QuotedStr(NO_SERIES_TITLE);
+          91: dmCollection.tblSeries.Filter := 'S_Title > "а*"';
+          92: dmCollection.tblSeries.Filter := 'S_Title < "а*" and S_Title <>' + QuotedStr(NO_SERIES_TITLE);
         end
         else
         begin
           edLocateSeries.Text := (Sender as TToolButton).Caption;
-          dmCollection.tblSeries.Filter := '(Title=' + QuotedStr((Sender as TToolButton).Caption + '*') +
-               ') OR (Title=' + QuotedStr(AnsiLowercase((Sender as TToolButton).Caption) + '*') + ')';
+          dmCollection.tblSeries.Filter := '(S_Title=' + QuotedStr((Sender as TToolButton).Caption + '*') +
+               ') OR (S_Title=' + QuotedStr(AnsiLowercase((Sender as TToolButton).Caption) + '*') + ')';
         end;
         dmCollection.tblSeries.Filtered := true;
         FillSeriesTree;
@@ -4140,19 +4135,17 @@ begin
   if not Assigned(Data) then
     Exit;
 
-  dmCollection.tblAuthor_List.Locate('BookId', Data.ID, []);
-  dmCollection.tblAuthors.Locate('ID', dmCollection.tblAuthor_List['AuthID'], []);
-  frmEditAuthor.edFamily.Text := dmCollection.tblAuthors.FieldByName('Family').AsString;
-  frmEditAuthor.edName.Text := dmCollection.tblAuthors.FieldByName('Name').AsString;
-  frmEditAuthor.edMiddle.Text := dmCollection.tblAuthors.FieldByName('Middle').AsString;
+  dmCollection.tblAuthor_List.Locate('AL_BookId', Data.ID, []);
+  dmCollection.tblAuthors.Locate('A_ID', dmCollection.tblAuthor_List['AL_AuthID'], []);
+  frmEditAuthor.edFamily.Text := dmCollection.tblAuthors.FieldByName('A_Family').AsString;
+  frmEditAuthor.edName.Text := dmCollection.tblAuthors.FieldByName('A_Name').AsString;
+  frmEditAuthor.edMiddle.Text := dmCollection.tblAuthors.FieldByName('A_Middle').AsString;
   if frmEditAuthor.ShowModal = mrOk then
   begin
     dmCollection.tblAuthors.Edit;
-    dmCollection.tblAuthors.FieldByName('Family').AsString := frmEditAuthor.edFamily.Text;
-    dmCollection.tblAuthors.FieldByName('Name').AsString := frmEditAuthor.edName.Text;
-    dmCollection.tblAuthors.FieldByName('Middle').AsString := frmEditAuthor.edMiddle.Text;
-    dmCollection.tblAuthors.FieldByName('FullName').AsString := frmEditAuthor.edFamily.Text + ' ' +
-      frmEditAuthor.edName.Text + ' ' + frmEditAuthor.edMiddle.Text;
+    dmCollection.tblAuthors.FieldByName('A_Family').AsString := frmEditAuthor.edFamily.Text;
+    dmCollection.tblAuthors.FieldByName('A_Name').AsString := frmEditAuthor.edName.Text;
+    dmCollection.tblAuthors.FieldByName('A_Middle').AsString := frmEditAuthor.edMiddle.Text;
     dmCollection.tblAuthors.Post;
 
     repeat
@@ -4161,7 +4154,7 @@ begin
       if Res then
       begin
         dmCollection.tblBooks.Edit;
-        dmCollection.tblBooks['FullName'] := dmCollection.tblAuthors['FullName'];
+        dmCollection.tblBooks['FullName'] := dmCollection.FullName(Data.ID);
         dmCollection.tblBooks.Post;
       end;
     until not Res;
@@ -4675,11 +4668,11 @@ begin
         if edFGenre.Text = '' then
         begin
           edFGenre.Text := Data.Text;
-          edFGenre.Hint := Format('(g.GenreCode = "%s")',[Data.Code]);
+          edFGenre.Hint := Format('(g.GL_Code = "%s")',[Data.Code]);
         end
         else begin
           edFGenre.Text := edFGenre.Text + '/' + Data.Text;
-          edFGenre.Hint := Format('%s OR (g.GenreCode = "%s")',[edFGenre.Hint, Data.Code]);
+          edFGenre.Hint := Format('%s OR (g.GL_Code = "%s")',[edFGenre.Hint, Data.Code]);
         end;
         Node := GetNextSelected(Node,False);
       end;
@@ -4711,7 +4704,7 @@ begin
     edLocateSeries.Text := OldText;
     edLocateSeries.Perform(WM_KEYDOWN, VK_RIGHT, 0);
   end;
-  if not FDoNotLocate and dmCollection.tblSeries.Locate('Title', edLocateSeries.Text, [loPartialKey, loCaseInsensitive]) then
+  if not FDoNotLocate and dmCollection.tblSeries.Locate('S_Title', edLocateSeries.Text, [loPartialKey, loCaseInsensitive]) then
     LocateBookList(dmCollection.tblSeriesTitle.Value, tvSeries);
 end;
 
@@ -4811,7 +4804,7 @@ begin
       dmCollection.tblGenres.First;
       while not dmCollection.tblGenres.Eof do
       begin
-        strParentCode := dmCollection.tblGenresParentCode.Value;
+        strParentCode := dmCollection.tblGenresG_ParentCode.Value;
 
         ParentNode := nil;
         if (strParentCode <> '0') and Nodes.Find(strParentCode, nParentIndex) then
@@ -4820,9 +4813,9 @@ begin
         genreNode := Tree.AddChild(ParentNode);
 
         genreData := Tree.GetNodeData(genreNode);
-        genreData.id := dmCollection.tblGenresID.Value;
-        genreData.Text := dmCollection.tblGenresAlias.Value;
-        genreData.Code := dmCollection.tblGenresCode.Value;
+        genreData.id := dmCollection.tblGenresG_ID.Value;
+        genreData.Text := dmCollection.tblGenresG_Alias.Value;
+        genreData.Code := dmCollection.tblGenresG_Code.Value;
         genreData.ParentCode := strParentCode;
 
         Nodes.AddObject(genreData.Code, TObject(genreNode));

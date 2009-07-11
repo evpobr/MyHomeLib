@@ -84,7 +84,6 @@ object DMUser: TDMUser
       item
         Name = 'Book_Index'
         Fields = 'DatabaseID;BookID'
-        Options = [ixPrimary]
       end>
     FieldDefs = <
       item
@@ -1061,6 +1060,40 @@ object DMUser: TDMUser
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
+    StoreDefs = True
+    IndexDefs = <
+      item
+        Name = 'ID_Index'
+        Fields = 'ID'
+        Options = [ixPrimary]
+      end
+      item
+        Name = 'Book_Index'
+        Fields = 'DatabaseID;BookID;Progress'
+      end>
+    FieldDefs = <
+      item
+        Name = 'ID'
+        DataType = ftAutoInc
+      end
+      item
+        Name = 'BookID'
+        Attributes = [faRequired]
+        DataType = ftInteger
+      end
+      item
+        Name = 'DataBaseID'
+        Attributes = [faRequired]
+        DataType = ftInteger
+      end
+      item
+        Name = 'Progress'
+        DataType = ftSmallint
+      end
+      item
+        Name = 'Date'
+        DataType = ftDate
+      end>
     TableName = 'Finished'
     Exclusive = False
     Left = 320
