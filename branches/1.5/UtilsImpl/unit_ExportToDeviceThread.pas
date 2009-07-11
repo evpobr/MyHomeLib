@@ -106,7 +106,10 @@ begin
     //
     FileName := Settings.FileNameTemplate;
 
-    FullName := dmCollection.FullName(FTable.FieldByName('Id').AsInteger);
+    if FTable.Name <> 'tblGrouppedBooks' then
+        FullName := dmCollection.FullName(FTable.FieldByName('Id').AsInteger)
+    else
+        FullName := FTable.FieldByName('FullName').AsString;
 
     StrReplace('%fl', copy(FullName,1,1), Folder);
     StrReplace('%f', FullName , FileName);
