@@ -424,9 +424,9 @@ object frmMain: TfrmMain
     Width = 992
     Height = 676
     HelpContext = 135
-    ActivePage = TabSheet1
+    ActivePage = TabSheet4
     Align = alClient
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 3
     TabStop = False
     OnChange = pgControlChange
@@ -491,7 +491,7 @@ object frmMain: TfrmMain
             IncrementalSearch = isAll
             ParentFont = False
             PopupMenu = pmAuthor
-            TabOrder = 0
+            TabOrder = 1
             TreeOptions.PaintOptions = [toPopupMode, toShowDropmark, toShowHorzGridLines, toThemeAware, toUseBlendedImages]
             TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect, toRightClickSelect]
             OnChange = tvAuthorsChange
@@ -2098,6 +2098,7 @@ object frmMain: TfrmMain
                 Top = 14
                 Width = 126
                 Height = 21
+                AutoComplete = False
                 ItemHeight = 13
                 TabOrder = 0
                 OnChange = cbPresetNameChange
@@ -2248,7 +2249,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 0

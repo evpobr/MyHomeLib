@@ -1152,10 +1152,10 @@ begin
 //           FilterString := 'Select * FROM Books WHERE ID IN ' +
 //                           '(Select `BookID` FROM `Genre_List` WHERE GenreCode = "' + edFGenre.Hint + '")';
 
-           FilterString := SQLStartStr +
-                           'from Genre_List g ' +
-                           'join books b on b.id = g.bookid ' +
-                           'WHERE g.GenreCode = "' + edFGenre.Hint  + '"';
+           FilterString := SQLStartStr + #13#10 +
+                           'from Genre_List g ' + #13#10 +
+                           'join books b on b.id = g.bookid ' + #13#10 +
+                           'WHERE (' + edFGenre.Hint + ')';
 
 
       if (dmCollection.sqlBooks.SQL.Count > 0) and (FilterString <> '') then
@@ -4659,19 +4659,30 @@ end;
 procedure TfrmMain.edFGenreButtonClick(Sender: TObject);
 var
   Data : PGenreData;
+  Node : PVirtualNode;
 begin
   FillGenresTree(frmGenreTree.tvGenresTree);
   if frmGenreTree.ShowModal=mrOk then
   begin
-    Data :=frmGenreTree.tvGenresTree.GetNodeData(frmGenreTree.tvGenresTree.FocusedNode);
-    if Data <> nil then
+    edFGenre.Text := '';
+    edFGenre.Hint:= '';
+    with frmGenreTree.tvGenresTree do
     begin
-      edFGenre.Text := Data.Text;
-      edFGenre.Hint := Data.Code;
-    end
-    else begin
-      edFGenre.Text := '';
-      edFGenre.Hint:= '';
+      Node := GetFirstSelected;
+      while Node <> Nil do
+      begin
+        Data :=GetNodeData(Node);
+        if edFGenre.Text = '' then
+        begin
+          edFGenre.Text := Data.Text;
+          edFGenre.Hint := Format('(g.GenreCode = "%s")',[Data.Code]);
+        end
+        else begin
+          edFGenre.Text := edFGenre.Text + '/' + Data.Text;
+          edFGenre.Hint := Format('%s OR (g.GenreCode = "%s")',[edFGenre.Hint, Data.Code]);
+        end;
+        Node := GetNextSelected(Node,False);
+      end;
     end;
   end;
 end;
