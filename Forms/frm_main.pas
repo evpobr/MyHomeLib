@@ -1222,11 +1222,11 @@ begin
       dmCollection.sqlBooks.SQL.SaveToFile(Settings.AppPath + 'Last.sql');
       {$ENDIF}
 
-      dmCollection.sqlBooks.ExecSQL;
-
-      dmCollection.sqlBooks.Active := True;
-      FillBooksTree(0, tvBooksSR, nil, dmCollection.sqlBooks, True, True);
       dmCollection.sqlBooks.Active := False;
+      dmCollection.sqlBooks.ExecSQL;
+      dmCollection.sqlBooks.Active := True;
+
+      FillBooksTree(0, tvBooksSR, nil, dmCollection.sqlBooks, True, True);
     except
       on E: Exception do
         ShowMessage('Синтаксическая ошибка. Проверьте параметры фильтра');
@@ -1777,7 +1777,7 @@ begin
     0: FillBooksTree(0, tvBooksA, dmCollection.tblAuthor_List, dmCollection.tblBooksA,    False, True); // авторы
     1: FillBooksTree(0, tvBooksS,                   nil, dmCollection.tblBooksS,    False, False); // серии
     2: FillBooksTree(0, tvBooksG,  dmCollection.tblGenre_List, dmCollection.tblBooksG,    True,  True); // жанры
-    3: ;
+    3: FillBooksTree(0, tvBooksSR, nil, dmCollection.sqlBooks, True, True);
     4: FillBooksTree(0, tvBooksF,                   nil, DMUser.tblGrouppedBooks, True,  True); // избранное
     5: btnApplyFilterClick(Self);
   end;
