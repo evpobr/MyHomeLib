@@ -13,7 +13,6 @@ type
     tblBooksA: TABSTable;
     tblBooksG: TABSTable;
     tblGenres: TABSTable;
-    dsGenres: TDataSource;
     dsBooksG: TDataSource;
     tblAuthorsS: TABSTable;
     tblBooksS: TABSTable;
@@ -27,8 +26,6 @@ type
     tblBooksASerID: TIntegerField;
     tblBooksASeqNumber: TSmallintField;
     tblBooksADate: TDateField;
-    tblBooksATitle: TWideStringField;
-    tblBooksASeries: TWideStringField;
     tblBooksARate: TIntegerField;
     tblBooksALibID: TIntegerField;
     tblBooksAInsideNo: TIntegerField;
@@ -40,11 +37,6 @@ type
     tblBooksADiscID: TIntegerField;
     tblBooksALocal: TBooleanField;
     tblBooksADeleted: TBooleanField;
-    tblGenresID: TAutoIncField;
-    tblGenresCode: TWideStringField;
-    tblGenresParentCode: TWideStringField;
-    tblGenresFB2Code: TWideStringField;
-    tblGenresAlias: TWideStringField;
     tblBooks_Genre_List: TABSTable;
     dsBook_Genre_List: TDataSource;
     dsBooks_Genres: TDataSource;
@@ -55,7 +47,6 @@ type
     tblBooksSSeqNumber: TSmallintField;
     tblBooksSDate: TDateField;
     tblBooksSTitle: TWideStringField;
-    tblBooksSSeries: TWideStringField;
     tblBooksSRate: TIntegerField;
     tblBooksSLibID: TIntegerField;
     tblBooksSInsideNo: TIntegerField;
@@ -72,7 +63,6 @@ type
     tblBooksGSeqNumber: TSmallintField;
     tblBooksGDate: TDateField;
     tblBooksGTitle: TWideStringField;
-    tblBooksGSeries: TWideStringField;
     tblBooksGRate: TIntegerField;
     tblBooksGLibID: TIntegerField;
     tblBooksGInsideNo: TIntegerField;
@@ -90,41 +80,10 @@ type
     tblSeriesA: TABSTable;
     dsBooks: TDataSource;
     tblBooks_Genres: TABSTable;
-    tblAuthor_ListID: TAutoIncField;
-    tblAuthor_ListAuthID: TIntegerField;
-    tblAuthor_ListBookID: TIntegerField;
-    tblAuthor_ListSeries: TWideStringField;
-    tblAuthor_ListTitle: TWideStringField;
-    tblBooks_Genre_ListID: TAutoIncField;
-    tblBooks_Genre_ListGenreCode: TWideStringField;
-    tblBooks_Genre_ListBookID: TIntegerField;
-    tblBooks_Genre_ListFamily: TWideStringField;
-    tblBooks_Genre_ListSeries: TWideStringField;
-    tblBooks_Genre_ListTitle: TWideStringField;
-    tblGenre_ListID: TAutoIncField;
-    tblGenre_ListGenreCode: TWideStringField;
-    tblGenre_ListBookID: TIntegerField;
-    tblGenre_ListFamily: TWideStringField;
-    tblGenre_ListSeries: TWideStringField;
-    tblGenre_ListTitle: TWideStringField;
     tblAuthor_Detail: TABSTable;
     tblAuthor_Master: TABSTable;
-    tblAuthor_MasterID: TAutoIncField;
-    tblAuthor_MasterAuthID: TIntegerField;
-    tblAuthor_MasterBookID: TIntegerField;
-    tblAuthor_MasterSeries: TWideStringField;
-    tblAuthor_MasterTitle: TWideStringField;
     dsAuthor_Detail: TDataSource;
     dsAuthor_Master: TDataSource;
-    tblAuthor_DetailID: TAutoIncField;
-    tblAuthor_DetailFamily: TWideStringField;
-    tblAuthor_DetailName: TWideStringField;
-    tblAuthor_DetailMiddle: TWideStringField;
-    tblBooks_GenresID: TAutoIncField;
-    tblBooks_GenresCode: TWideStringField;
-    tblBooks_GenresParentCode: TWideStringField;
-    tblBooks_GenresFB2Code: TWideStringField;
-    tblBooks_GenresAlias: TWideStringField;
     tblBooksID: TAutoIncField;
     tblBooksSerID: TIntegerField;
     tblBooksSeqNumber: TSmallintField;
@@ -141,16 +100,7 @@ type
     tblBooksDiscID: TIntegerField;
     tblBooksLocal: TBooleanField;
     tblBooksDeleted: TBooleanField;
-    tblSeriesAID: TAutoIncField;
-    tblSeriesAAuthID: TIntegerField;
-    tblSeriesAGenreCode: TWideStringField;
-    tblSeriesATitle: TWideStringField;
     tblSeriesB: TABSTable;
-    AutoIncField1: TAutoIncField;
-    IntegerField1: TIntegerField;
-    WideStringField1: TWideStringField;
-    WideStringField2: TWideStringField;
-    tblBooksSeries: TWideStringField;
     tblExtra: TABSTable;
     tblExtraID: TAutoIncField;
     tblExtraBookID: TIntegerField;
@@ -208,7 +158,6 @@ type
     sqlBooksLocal: TBooleanField;
     sqlBooksDeleted: TBooleanField;
     sqlBooksKeyWords: TWideStringField;
-    sqlBooksSeries: TWideStringField;
     sqlBooksProgress: TSmallintField;
     sqlBooksRate: TIntegerField;
     tblBooksAKeyWords: TWideStringField;
@@ -216,6 +165,58 @@ type
     tblBooksGKeyWords: TWideStringField;
     sqlBooksFullName: TWideStringField;
     sqlBooksID: TIntegerField;
+    tblGenresG_ID: TAutoIncField;
+    tblGenresG_Code: TWideStringField;
+    tblGenresG_ParentCode: TWideStringField;
+    tblGenresG_FB2Code: TWideStringField;
+    tblGenresG_Alias: TWideStringField;
+    tblGenre_ListGL_ID: TAutoIncField;
+    tblGenre_ListGL_Code: TWideStringField;
+    tblGenre_ListGL_BookID: TIntegerField;
+    tblGenre_ListGL_Family: TWideStringField;
+    tblGenre_ListGL_Series: TWideStringField;
+    tblGenre_ListGL_Title: TWideStringField;
+    tblAuthor_ListAL_ID: TAutoIncField;
+    tblAuthor_ListAL_AuthID: TIntegerField;
+    tblAuthor_ListAL_BookID: TIntegerField;
+    tblAuthor_ListAL_Series: TWideStringField;
+    tblAuthor_ListAL_Title: TWideStringField;
+    tblBooks_Genre_ListGL_ID: TAutoIncField;
+    tblBooks_Genre_ListGL_Code: TWideStringField;
+    tblBooks_Genre_ListGL_BookID: TIntegerField;
+    tblBooks_Genre_ListGL_Family: TWideStringField;
+    tblBooks_Genre_ListGL_Series: TWideStringField;
+    tblBooks_Genre_ListGL_Title: TWideStringField;
+    tblBooks_GenresG_ID: TAutoIncField;
+    tblBooks_GenresG_Code: TWideStringField;
+    tblBooks_GenresG_ParentCode: TWideStringField;
+    tblBooks_GenresG_FB2Code: TWideStringField;
+    tblBooks_GenresG_Alias: TWideStringField;
+    tblSeriesAS_ID: TAutoIncField;
+    tblSeriesAS_AuthID: TIntegerField;
+    tblSeriesAS_GenreCode: TWideStringField;
+    tblSeriesAS_Title: TWideStringField;
+    tblAuthor_MasterAL_ID: TAutoIncField;
+    tblAuthor_MasterAL_AuthID: TIntegerField;
+    tblAuthor_MasterAL_BookID: TIntegerField;
+    tblAuthor_MasterAL_Series: TWideStringField;
+    tblAuthor_MasterAL_Title: TWideStringField;
+    tblAuthor_DetailA_ID: TAutoIncField;
+    tblAuthor_DetailA_Family: TWideStringField;
+    tblAuthor_DetailA_Name: TWideStringField;
+    tblAuthor_DetailA_Middle: TWideStringField;
+    tblBooksATitle: TWideStringField;
+    tblBooksAFullName: TWideStringField;
+    tblBooksASeries: TStringField;
+    tblBooksSSeries: TStringField;
+    tblBooksGSeries: TStringField;
+    tblBooksSeries: TStringField;
+    sqlBooksSeries: TStringField;
+    dsGenres: TDataSource;
+    tblSeriesBS_ID: TAutoIncField;
+    tblSeriesBS_AuthID: TIntegerField;
+    tblSeriesBS_GenreCode: TWideStringField;
+    tblSeriesBS_Title: TWideStringField;
   private
     FActiveTable: TAbsTable;
 
@@ -264,10 +265,10 @@ uses
 
 function TDMCollection.FullName(BookID: Integer): string;
 begin
-  if BookID <> 0 then tblAuthor_Master.Locate('BookID', BookID, []);
-  Result := trim(tblAuthor_DetailFamily.Value + ' ' +
-                 tblAuthor_DetailName.Value +  ' ' +
-                 tblAuthor_DetailMiddle.Value);
+  if BookID <> 0 then tblAuthor_Master.Locate('AL_BookID', BookID, []);
+  Result := trim(tblAuthor_DetailA_Family.Value + ' ' +
+                 tblAuthor_DetailA_Name.Value +  ' ' +
+                 tblAuthor_DetailA_Middle.Value);
 end;
 
 procedure TDMCollection.FieldByName(AID: integer; AField: String; out ARes: String);
@@ -326,12 +327,12 @@ var
   i: integer;
 begin
   i := 0;
-  tblBooks_Genre_List.Locate('BookID', BookID, []);
-  while (not tblBooks_Genre_List.Eof) and (tblBooks_Genre_ListBookID.Value = BookID) do
+  tblBooks_Genre_List.Locate('GL_BookID', BookID, []);
+  while (not tblBooks_Genre_List.Eof) and (tblBooks_Genre_ListGL_BookID.Value = BookID) do
   begin
     if FirstOnly and (i > 0) then Break;
-    if not tblBooks_GenresAlias.IsNull then
-      s := s + tblBooks_GenresAlias.Value + ' / ';
+    if not tblBooks_GenresG_Alias.IsNull then
+      s := s + tblBooks_GenresG_Alias.Value + ' / ';
     tblBooks_Genre_List.Next;
     inc(i);
   end;
@@ -359,13 +360,13 @@ begin
   R.Lang := tblBooksLang.Value;
   R.KeyWords := tblBooksKeyWords.Value;
 
-  tblBooks_Genre_List.Locate('BookID', BookID, []);
-  while (not tblBooks_Genre_List.Eof) and (tblBooks_Genre_ListBookID.Value = BookID) do
+  tblBooks_Genre_List.Locate('GL_BookID', BookID, []);
+  while (not tblBooks_Genre_List.Eof) and (tblBooks_Genre_ListGL_BookID.Value = BookID) do
   begin
     R.AddGenreFB2(
-      tblBooks_GenresCode.Value,
-      tblBooks_GenresFB2Code.Value,
-      tblBooks_GenresAlias.Value
+      tblBooks_GenresG_Code.Value,
+      tblBooks_GenresG_FB2Code.Value,
+      tblBooks_GenresG_Alias.Value
       );
 
     tblBooks_Genre_List.Next;
@@ -382,13 +383,13 @@ begin
    *
    *)
 
-  tblAuthor_Master.Locate('BookID', BookID, []);
-  while (not tblAuthor_Master.Eof) and (tblAuthor_MasterBookID.Value = BookID) do
+  tblAuthor_Master.Locate('AL_BookID', BookID, []);
+  while (not tblAuthor_Master.Eof) and (tblAuthor_MasterAL_BookID.Value = BookID) do
   begin
     R.AddAuthor(
-      tblAuthor_DetailFamily.Value,
-      tblAuthor_DetailName.Value,
-      tblAuthor_DetailMiddle.Value
+      tblAuthor_DetailA_Family.Value,
+      tblAuthor_DetailA_Name.Value,
+      tblAuthor_DetailA_Middle.Value
       );
 
     tblAuthor_Master.Next;
@@ -482,8 +483,8 @@ begin
   tblBooksA.Active := State;
   tblBooksS.Active := State;
   tblGenres.Active := State;
-  tblBooks_Genre_List.Active := State;
   tblBooks_Genres.Active := State;
+  tblBooks_Genre_List.Active := State;
   tblGenre_List.Active := State;
   tblBooksG.Active := State;
   tblBooks.Active := State;

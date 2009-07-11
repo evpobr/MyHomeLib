@@ -98,7 +98,7 @@ begin
   dmCollection.tblSeries.Next;
   while not dmCollection.tblSeries.eof do
   begin
-    cbSeries.Items.Add(dmCollection.tblSeries['Title']);
+    cbSeries.Items.Add(dmCollection.tblSeries['S_Title']);
     dmCollection.tblSeries.Next;
   end;
 end;

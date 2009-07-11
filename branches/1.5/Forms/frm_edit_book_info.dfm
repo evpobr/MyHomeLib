@@ -25,7 +25,6 @@ object frmEditBookInfo: TfrmEditBookInfo
     Align = alClient
     BorderOuter = fsGroove
     TabOrder = 0
-    ExplicitHeight = 294
     object RzPanel2: TRzPanel
       AlignWithMargins = True
       Left = 5
@@ -54,7 +53,6 @@ object frmEditBookInfo: TfrmEditBookInfo
       Align = alClient
       BorderOuter = fsFlatRounded
       TabOrder = 1
-      ExplicitHeight = 254
       object btnSave: TRzBitBtn
         Left = 333
         Top = 270
@@ -271,7 +269,6 @@ object frmEditBookInfo: TfrmEditBookInfo
           Height = 23
           Align = alClient
           TabOrder = 0
-          ExplicitWidth = 595
           ExplicitHeight = 21
         end
       end
