@@ -1,9 +1,11 @@
 object DMUser: TDMUser
   OldCreateOrder = False
-  Height = 377
+  Height = 417
   Width = 463
   object DBUser: TABSDatabase
+    Connected = True
     CurrentVersion = '6.02 '
+    DatabaseFileName = 'D:\DelphiProjects\MyHomeLib 1.5\Debug\Bin\Data\user.dbs'
     DatabaseName = 'UserData'
     Exclusive = False
     MaxConnections = 5
@@ -149,8 +151,12 @@ object DMUser: TDMUser
     IndexDefs = <
       item
         Name = 'ID_Index'
-        Fields = 'InnerID'
+        Fields = 'ID'
         Options = [ixPrimary]
+      end
+      item
+        Name = 'OuterID_Index'
+        Fields = 'GroupID;OuterID'
       end
       item
         Name = 'FullName_Index'
@@ -1174,6 +1180,76 @@ object DMUser: TDMUser
     end
     object tblGroupListIcon: TBlobField
       FieldName = 'Icon'
+    end
+  end
+  object tblExtra: TABSTable
+    CurrentVersion = '6.02 '
+    DatabaseName = 'UserData'
+    InMemory = False
+    ReadOnly = False
+    StoreDefs = True
+    IndexDefs = <
+      item
+        Name = 'ID_Index'
+        Fields = 'ID'
+        Options = [ixPrimary, ixUnique]
+      end
+      item
+        Name = 'BookIndex'
+        Fields = 'BookID'
+      end>
+    IndexName = 'ID_Index'
+    FieldDefs = <
+      item
+        Name = 'ID'
+        DataType = ftAutoInc
+      end
+      item
+        Name = 'BookID'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Annotation'
+        DataType = ftWideMemo
+      end
+      item
+        Name = 'Review'
+        DataType = ftWideMemo
+      end
+      item
+        Name = 'Cover'
+        DataType = ftBlob
+      end
+      item
+        Name = 'Data'
+        DataType = ftWideMemo
+      end>
+    TableName = 'Extra'
+    Exclusive = False
+    MasterFields = 'ID'
+    MasterSource = dsGroupedBooks
+    Left = 144
+    Top = 320
+    object tblExtraID: TAutoIncField
+      FieldName = 'ID'
+    end
+    object tblExtraBookID: TIntegerField
+      FieldName = 'BookID'
+    end
+    object tblExtraAnnotation: TMemoField
+      FieldName = 'Annotation'
+      BlobType = ftMemo
+    end
+    object tblExtraReview: TMemoField
+      FieldName = 'Review'
+      BlobType = ftMemo
+    end
+    object tblExtraCover: TBlobField
+      FieldName = 'Cover'
+    end
+    object tblExtraData: TMemoField
+      FieldName = 'Data'
+      BlobType = ftMemo
     end
   end
 end

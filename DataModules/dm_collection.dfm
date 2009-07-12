@@ -250,14 +250,13 @@ object DMCollection: TDMCollection
       Required = True
       Size = 120
     end
-    object tblBooksASeries: TStringField
+    object tblBooksASeries: TWideStringField
       FieldKind = fkLookup
       FieldName = 'Series'
-      LookupDataSet = tblSeries
+      LookupDataSet = tblSeriesB
       LookupKeyFields = 'S_ID'
       LookupResultField = 'S_Title'
       KeyFields = 'SerID'
-      Size = 100
       Lookup = True
     end
   end
@@ -480,14 +479,13 @@ object DMCollection: TDMCollection
       FieldName = 'URI'
       Size = 255
     end
-    object tblBooksGSeries: TStringField
+    object tblBooksGSeries: TWideStringField
       FieldKind = fkLookup
       FieldName = 'Series'
-      LookupDataSet = tblSeries
+      LookupDataSet = tblSeriesB
       LookupKeyFields = 'S_ID'
       LookupResultField = 'S_Title'
       KeyFields = 'SerID'
-      Size = 100
       Lookup = True
     end
     object tblBooksGKeyWords: TWideStringField
@@ -739,16 +737,6 @@ object DMCollection: TDMCollection
       FieldName = 'Title'
       Size = 255
     end
-    object tblBooksSSeries: TStringField
-      FieldKind = fkLookup
-      FieldName = 'Series'
-      LookupDataSet = tblSeries
-      LookupKeyFields = 'S_ID'
-      LookupResultField = 'S_Title'
-      KeyFields = 'SerID'
-      Size = 100
-      Lookup = True
-    end
     object tblBooksSRate: TIntegerField
       FieldKind = fkLookup
       FieldName = 'Rate'
@@ -815,6 +803,15 @@ object DMCollection: TDMCollection
     object tblBooksSURI: TWideStringField
       FieldName = 'URI'
       Size = 255
+    end
+    object tblBooksSSeries: TWideStringField
+      FieldKind = fkLookup
+      FieldName = 'Series'
+      LookupDataSet = tblSeries
+      LookupKeyFields = 'S_ID'
+      LookupResultField = 'S_Title'
+      KeyFields = 'SerID'
+      Lookup = True
     end
     object tblBooksSKeyWords: TWideStringField
       FieldName = 'KeyWords'
@@ -1298,14 +1295,13 @@ object DMCollection: TDMCollection
       FieldName = 'URI'
       Size = 255
     end
-    object tblBooksSeries: TStringField
+    object tblBooksSeries: TWideStringField
       FieldKind = fkLookup
       FieldName = 'Series'
-      LookupDataSet = tblSeries
+      LookupDataSet = tblSeriesB
       LookupKeyFields = 'S_ID'
       LookupResultField = 'S_Title'
       KeyFields = 'SerID'
-      Size = 100
       Lookup = True
     end
     object tblBooksKeyWords: TWideStringField
@@ -1671,12 +1667,11 @@ object DMCollection: TDMCollection
         DataType = ftInteger
       end
       item
-        Name = 'KeyWords'
-        DataType = ftWideString
-        Size = 255
+        Name = 'Annotation'
+        DataType = ftMemo
       end
       item
-        Name = 'Annotation'
+        Name = 'Review'
         DataType = ftMemo
       end
       item
@@ -1692,7 +1687,7 @@ object DMCollection: TDMCollection
     MasterFields = 'ID'
     MasterSource = dsBooks
     Left = 496
-    Top = 384
+    Top = 376
     object tblExtraID: TAutoIncField
       FieldName = 'ID'
     end
@@ -1701,6 +1696,10 @@ object DMCollection: TDMCollection
     end
     object tblExtraAnnotation: TMemoField
       FieldName = 'Annotation'
+      BlobType = ftMemo
+    end
+    object tblExtraReview: TMemoField
+      FieldName = 'Review'
       BlobType = ftMemo
     end
     object tblExtraCover: TBlobField
@@ -1915,15 +1914,13 @@ object DMCollection: TDMCollection
       FieldName = 'FullName'
       Size = 120
     end
-    object sqlBooksSeries: TStringField
-      DisplayWidth = 100
+    object sqlBooksSeries: TWideStringField
       FieldKind = fkLookup
       FieldName = 'Series'
-      LookupDataSet = tblSeries
+      LookupDataSet = tblSeriesB
       LookupKeyFields = 'S_ID'
       LookupResultField = 'S_Title'
       KeyFields = 'SerID'
-      Size = 100
       Lookup = True
     end
     object sqlBooksID: TIntegerField

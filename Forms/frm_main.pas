@@ -585,6 +585,7 @@ type
     procedure miCompactDataBaseClick(Sender: TObject);
     procedure edFGenreButtonClick(Sender: TObject);
     procedure edFGenreKeyPress(Sender: TObject; var Key: Char);
+    procedure pmMainPopup(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -2737,9 +2738,13 @@ begin
     if isOnlineCollection(DMUser.ActiveCollection.CollectionType)
         and (Data.Locale)
     then
-      ilFileTypes.Draw(TargetCanvas, X, CellRect.Top + 2, 5);
+      ilFileTypes.Draw(TargetCanvas, X, CellRect.Top + 1, 5);
     if Data.Progress = 100 then
-      ilFileTypes.Draw(TargetCanvas, X + 14, CellRect.Top + 1, 6);
+      ilFileTypes.Draw(TargetCanvas, X + 10, CellRect.Top, 6);
+
+    if Data.Code = 1 then
+      ilFileTypes.Draw(TargetCanvas, X + 25, CellRect.Top + 1, 7);
+
   end;
 
 
@@ -3377,8 +3382,8 @@ begin
         (Sender as TToolButton).Down := True;
         if (Sender as TToolButton).Tag >= 90 then
         case (Sender as TToolButton).Tag of
-          91: dmCollection.tblAuthors.Filter := 'Family > "а*"';
-          92: dmCollection.tblAuthors.Filter := 'Family < "а*"';
+          91: dmCollection.tblAuthors.Filter := 'A_Family > "а*"';
+          92: dmCollection.tblAuthors.Filter := 'A_Family < "а*"';
         end
         else
         begin
@@ -3694,7 +3699,7 @@ begin
 
               Data.FullName := Auth;
               Data.Progress := TableB.FieldByName('Progress').AsInteger;
-
+              Data.Code := TableB.FieldByName('Code').AsInteger;
 
               if (COL_NO) in Columns then Data.No := TableB.FieldByName('SeqNumber').AsInteger;
 
@@ -4880,16 +4885,13 @@ var
   Tree: TVirtualStringTree;
   CR: string;
   Data: PBookData;
-  Table: TAbsTable;
+  Table, Extra: TAbsTable;
   frmBookDetails: TfrmBookDetails;
 
   Zip: TZipForge;
   FS : TMemoryStream;
 
 begin
-  if not isLocalCollection(DMUser.ActiveCollection.CollectionType) then
-    Exit;
-
   if not isFB2Collection(DMUser.ActiveCollection.CollectionType) then
     Exit;
 
@@ -4908,12 +4910,21 @@ begin
     if Data.nodeType <> ntBookInfo then
       Exit;
 
+    if Table.IsEmpty then
+      Exit;
+
     Table.Locate('ID', Data.ID, []);
     FFormBusy := True;
 
-    CR := GetFullBookPath(Table,FCollectionRoot);
-    if Table.IsEmpty then
-      Exit;
+    if ActiveView = FavoritesView then
+    begin
+      Extra := dmUser.tblExtra;
+      CR := GetFullBookPath(Table,'');
+    end
+    else  begin
+      Extra := dmCollection.tblExtra;
+      CR := GetFullBookPath(Table,FCollectionRoot);
+    end;
 
     FS := TMemoryStream.Create;
     try
@@ -4941,10 +4952,36 @@ begin
       end;
 
       frmBookDetails := TfrmBookDetails.Create(Application);
+
+      if Table['Code'] = 1 then
+        frmBookDetails.Review := Extra['Review'];
+
       try
         frmBookDetails.ShowBookInfo(FS);
         frmBookDetails.mmInfo.Lines.Add('Добавлено: ' + Table.FieldByName('Date').AsString);
         frmBookDetails.ShowModal;
+
+        if frmBookDetails.ReviewChanged then
+          if Table['Code'] = 0 then
+          begin
+            Table.Edit;
+            Table['Code'] := Table['Code'] or 1;
+            Table.Post;
+
+            Extra.Insert;
+            Extra['Review'] := frmBookDetails.Review;
+            Extra.Post;
+
+            Data.Code := 1;
+            Tree.RepaintNode(Tree.FocusedNode);
+          end
+          else begin
+            Extra.Edit;
+            Extra['Review'] := frmBookDetails.Review;
+            Extra.Post;
+          end;
+
+
       finally
         frmBookDetails.Free;
       end;
@@ -5008,6 +5045,19 @@ end;
 procedure TfrmMain.pmiSelectAllClick(Sender: TObject);
 begin
   Selection(True);
+end;
+
+procedure TfrmMain.pmMainPopup(Sender: TObject);
+var
+  Data: PBookData;
+  Tree: TVirtualStringTree;
+begin
+  GetActiveTree(Tree);
+  Data := Tree.GetNodeData(Tree.FocusedNode);
+  if Data = nil then Exit;
+
+  if isOnlineCollection(DMuser.ActiveCollection.CollectionType) then
+     miBookInfo.Visible := Data.Locale;
 end;
 
 procedure TfrmMain.pmAuthorPopup(Sender: TObject);

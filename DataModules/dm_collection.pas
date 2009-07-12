@@ -102,11 +102,6 @@ type
     tblBooksDeleted: TBooleanField;
     tblSeriesB: TABSTable;
     tblExtra: TABSTable;
-    tblExtraID: TAutoIncField;
-    tblExtraBookID: TIntegerField;
-    tblExtraAnnotation: TMemoField;
-    tblExtraCover: TBlobField;
-    tblExtraData: TMemoField;
     tblAuthors: TABSQuery;
     tblAuthorsID: TAutoIncField;
     tblAuthorsFamily: TWideStringField;
@@ -207,16 +202,22 @@ type
     tblAuthor_DetailA_Middle: TWideStringField;
     tblBooksATitle: TWideStringField;
     tblBooksAFullName: TWideStringField;
-    tblBooksASeries: TStringField;
-    tblBooksSSeries: TStringField;
-    tblBooksGSeries: TStringField;
-    tblBooksSeries: TStringField;
-    sqlBooksSeries: TStringField;
     dsGenres: TDataSource;
     tblSeriesBS_ID: TAutoIncField;
     tblSeriesBS_AuthID: TIntegerField;
     tblSeriesBS_GenreCode: TWideStringField;
     tblSeriesBS_Title: TWideStringField;
+    tblBooksASeries: TWideStringField;
+    tblBooksSSeries: TWideStringField;
+    tblBooksGSeries: TWideStringField;
+    tblBooksSeries: TWideStringField;
+    sqlBooksSeries: TWideStringField;
+    tblExtraID: TAutoIncField;
+    tblExtraBookID: TIntegerField;
+    tblExtraAnnotation: TMemoField;
+    tblExtraReview: TMemoField;
+    tblExtraCover: TBlobField;
+    tblExtraData: TMemoField;
   private
     FActiveTable: TAbsTable;
 
