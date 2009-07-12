@@ -88,6 +88,13 @@ type
     tblGrouppedBooksProgress: TSmallintField;
     tblGrouppedBooksLibRate: TIntegerField;
     tblGrouppedBooksLang: TWideStringField;
+    tblExtra: TABSTable;
+    tblExtraID: TAutoIncField;
+    tblExtraBookID: TIntegerField;
+    tblExtraAnnotation: TMemoField;
+    tblExtraReview: TMemoField;
+    tblExtraCover: TBlobField;
+    tblExtraData: TMemoField;
 
   private
     FCollection: TMHLCollection;
@@ -442,7 +449,16 @@ begin
     tblGrouppedBooksRate.Value := dmCollection.tblBooksRate.Value;
     tblGrouppedBooksDate.Value := dmCollection.tblBooksDate.Value;
     tblGrouppedBooksProgress.Value := dmCollection.tblBooksProgress.Value;
+    tblGrouppedBooksCode.Value := dmCollection.tblBooksCode.Value;
     tblGrouppedBooks.Post;
+
+    if tblGrouppedBooksCode.Value = 1 then
+    begin
+      tblExtra.Insert;
+      tblExtraReview.Value := dmCollection.tblExtraReview.Value;
+      tblExtra.Post;
+    end;
+
   end;
 
 end;
@@ -621,6 +637,7 @@ begin
   tblRates.Active := Status;
   tblBases.Active := Status;
   tblFinished.Active := Status;
+  tblExtra.Active := Status;
 end;
 
 { TMHLCollection }

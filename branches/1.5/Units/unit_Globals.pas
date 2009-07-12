@@ -192,7 +192,7 @@ type
 
     Lang: string[2];
 
-    ID, SeriesID, Size, Rate, No, ImageIndex, Progress, LibRate: Integer;
+    ID, SeriesID, Size, Rate, No, ImageIndex, Progress, LibRate, Code: Integer;
     RatePos: Integer;
     Locale: boolean;
     Deleted: boolean;

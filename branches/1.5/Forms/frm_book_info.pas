@@ -26,12 +26,23 @@ type
     RzBitBtn1: TRzBitBtn;
     mmShort: TMemo;
     mmInfo: TMemo;
+    mmReview: TMemo;
+    RzLabel1: TRzLabel;
+    RzLabel2: TRzLabel;
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure RzBitBtn1Click(Sender: TObject);
+    procedure mmReviewChange(Sender: TObject);
   private
     { Private declarations }
+
+    FReviewChanged : boolean;
+    function GetReview: string;
+    procedure Setreview(const Value: string);
+
   public
     procedure ShowBookInfo(FS: TMemoryStream);
+    property Review: string read GetReview write Setreview;
+    property ReviewChanged: boolean read FReviewChanged;
     { Public declarations }
   end;
 
@@ -54,9 +65,24 @@ begin
   if key=27 then Close;
 end;
 
+function TfrmBookDetails.GetReview: string;
+begin
+  Result := mmReview.Lines.Text;
+end;
+
+procedure TfrmBookDetails.mmReviewChange(Sender: TObject);
+begin
+  FReviewChanged := True;
+end;
+
 procedure TfrmBookDetails.RzBitBtn1Click(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TfrmBookDetails.Setreview(const Value: string);
+begin
+  mmReview.Lines.Text := Value;
 end;
 
 procedure TfrmBookDetails.ShowBookInfo(FS: TMemoryStream);
@@ -68,6 +94,8 @@ var
   CoverID:String;
   CoverFile: string;
 begin
+  FReviewChanged := False;
+
   Img.Picture.Bitmap.Canvas.FrameRect(Img.ClientRect);
   mmInfo.Lines.Clear;
   mmShort.Lines.Clear;

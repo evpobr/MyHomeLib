@@ -256,12 +256,13 @@ GenreListTableIndexes: array [1..3] of TIndexDesc = (
 //
 // Extra
 //
-ExtraTableFields: array [1 .. 5] of TFieldDesc = (
+ExtraTableFields: array [1 .. 6] of TFieldDesc = (
   (Name: 'ID';        DataType: ftAutoInc;    Size: 0;   Required: true),
   (Name: 'BookID';    DataType: ftInteger;    Size: 0;   Required: false),
-  (Name: 'Annotation';DataType: ftMemo;       Size: 0;   Required: false),
+  (Name: 'Annotation';DataType: ftWideMemo;       Size: 0;   Required: false),
+  (Name: 'Review';    DataType: ftWideMemo;       Size: 0;   Required: false),
   (Name: 'Cover';     DataType: ftBlob;       Size: 0;   Required: false),
-  (Name: 'Data';      DataType: ftMemo;       Size: 0;   Required: false)
+  (Name: 'Data';      DataType: ftWideMemo;       Size: 0;   Required: false)
 );
 
 ExtraTableIndexes: array [1..2] of TIndexDesc = (
@@ -528,6 +529,7 @@ begin
     CreateTable(ADataBase, 'GroupedBooks', GroupsTableFields,     GroupsTableIndexes);
     CreateTable(ADataBase, 'Rates',        RatesTableFields,      RatesTableIndexes);
     CreateTable(ADataBase, 'Finished',     FinishedTableFields,   FinishedTableIndexes);
+    CreateTable(ADataBase, 'Extra',       ExtraTableFields,       ExtraTableIndexes);
     ADataBase.Connected := False;
 
     //
