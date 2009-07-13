@@ -161,7 +161,7 @@ type
     procedure LoadGroupedBooks(const SL: TStringList; var i: integer);
     procedure LoadFinished(const SL: TStringList; var i: integer);
     procedure LoadGroups(const SL: TStringList; var i: integer);
-
+    procedure LoadReviews(const SL: TStringList; var i: integer);
   end;
 
   TMHLCollection = class
@@ -527,6 +527,37 @@ begin
     inc(i);
   end;
 end;
+
+procedure TDMUser.LoadReviews;
+var
+  ID, p: integer;
+   S: string;
+begin
+  //  Πεφενηθθ
+  inc(i);
+  while (i < SL.Count) and (pos('#',SL[i]) = 0) do
+  begin
+    p := pos(' ',SL[i]);
+    ID := StrToInt(copy(SL[i],1, p - 1));
+    S := copy(SL[i],p + 1);
+
+    StrReplace('~',#13#10,S);
+
+    if dmCollection.tblBooks.Locate('ID',ID,[]) then
+    begin
+      dmCollection.tblExtra.Insert;
+      dmCollection.tblExtraReview.Value := S;
+      dmCollection.tblExtra.Post;
+
+      dmCollection.tblBooks.Edit;
+      dmCollection.tblBooksCode.Value := 1;
+      dmCollection.tblBooks.Post;
+    end;
+
+    inc(i);
+  end;
+end;
+
 
 procedure TDMUser.LoadGroups(const SL: TStringList; var i: integer);
 var

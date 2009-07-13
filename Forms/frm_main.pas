@@ -4725,8 +4725,6 @@ begin
     edLocateAuthor.Text := OldText;
     edLocateAuthor.Perform(WM_KEYDOWN, VK_RIGHT, 0);
   end;
-//  if not FDoNotLocate and dmCollection.tblAuthors.Locate('Family', edLocateAuthor.Text, [loPartialKey, loCaseInsensitive]) then
-//    LocateBookList(dmCollection.tblAuthorsFamily.Value, tvAuthors);
   if not FDoNotLocate then
     LocateBookList(edLocateAuthor.Text, tvAuthors);
 end;
@@ -5381,6 +5379,8 @@ var
   SL: TStringList;
   FN: string;
 
+  S: String;
+
 begin
   SL := TStringList.Create;
   try
@@ -5441,8 +5441,23 @@ begin
 
     DMUser.tblGrouppedBooks.MasterSource := DMUser.dsGroupList;
 
-    if GetFileName(fnSaveUserData, FN) then
-          SL.SaveToFile(FN);
+    //  избранное
+
+    SL.Add('# Рецензии');
+
+    DMCollection.tblExtra.MasterSource := nil;
+    DMCollection.tblExtra.First;
+    while not DMCollection.tblExtra.Eof do
+    begin
+      S := DMCollection.tblExtraReview.Value;
+      StrReplace(#13#10,'~',S);
+      SL.Add(Format('%d %s',[DMCollection.tblExtraID.Value, S]));
+      DMCollection.tblExtra.Next;
+    end;
+    DMCollection.tblExtra.MasterSource := DMCollection.dsBooks;
+
+    if GetFileName(fnSaveUserData,FN) then
+          SL.SaveToFile(FN, TEncoding.UTF8);
 
   finally
     SL.Free;
@@ -5876,9 +5891,11 @@ begin
           else
             if SL[i] = '# Прочитанное' then DMUser.LoadFinished(SL,i)
             else
-              if SL[i] = '# Избранное' then DMUser.LoadGroupedBooks(SL,i)
+              if SL[i] = '# Рецензии' then DMUser.LoadReviews(SL,i)
               else
-                inc(i);
+                if SL[i] = '# Избранное' then DMUser.LoadGroupedBooks(SL,i)
+                else
+                  inc(i);
       end;
     end;
     FillGroupsList;
