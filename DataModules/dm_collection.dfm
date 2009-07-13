@@ -1304,6 +1304,11 @@ object DMCollection: TDMCollection
       KeyFields = 'SerID'
       Lookup = True
     end
+    object tblBooksFullName: TWideStringField
+      FieldName = 'FullName'
+      Required = True
+      Size = 120
+    end
     object tblBooksKeyWords: TWideStringField
       FieldName = 'KeyWords'
       Size = 255
@@ -1668,11 +1673,11 @@ object DMCollection: TDMCollection
       end
       item
         Name = 'Annotation'
-        DataType = ftMemo
+        DataType = ftWideMemo
       end
       item
         Name = 'Review'
-        DataType = ftMemo
+        DataType = ftWideMemo
       end
       item
         Name = 'Cover'
@@ -1680,7 +1685,7 @@ object DMCollection: TDMCollection
       end
       item
         Name = 'Data'
-        DataType = ftMemo
+        DataType = ftWideMemo
       end>
     TableName = 'Extra'
     Exclusive = False
@@ -1694,20 +1699,20 @@ object DMCollection: TDMCollection
     object tblExtraBookID: TIntegerField
       FieldName = 'BookID'
     end
-    object tblExtraAnnotation: TMemoField
+    object tblExtraAnnotation: TWideMemoField
       FieldName = 'Annotation'
-      BlobType = ftMemo
+      BlobType = ftWideMemo
     end
-    object tblExtraReview: TMemoField
+    object tblExtraReview: TWideMemoField
       FieldName = 'Review'
-      BlobType = ftMemo
+      BlobType = ftWideMemo
     end
     object tblExtraCover: TBlobField
       FieldName = 'Cover'
     end
-    object tblExtraData: TMemoField
+    object tblExtraData: TWideMemoField
       FieldName = 'Data'
-      BlobType = ftMemo
+      BlobType = ftWideMemo
     end
   end
   object tblAuthors: TABSQuery

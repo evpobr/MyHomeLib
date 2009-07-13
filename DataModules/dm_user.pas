@@ -91,10 +91,10 @@ type
     tblExtra: TABSTable;
     tblExtraID: TAutoIncField;
     tblExtraBookID: TIntegerField;
-    tblExtraAnnotation: TMemoField;
-    tblExtraReview: TMemoField;
+    tblExtraAnnotation: TWideMemoField;
+    tblExtraReview: TWideMemoField;
     tblExtraCover: TBlobField;
-    tblExtraData: TMemoField;
+    tblExtraData: TWideMemoField;
 
   private
     FCollection: TMHLCollection;

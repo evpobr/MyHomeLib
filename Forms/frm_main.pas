@@ -4123,6 +4123,8 @@ var
   Node: PVirtualNode;
   Data: PBookData;
   Res: boolean;
+  S: string;
+
 begin
   if ActiveView = FavoritesView then
   begin
@@ -4145,24 +4147,96 @@ begin
   frmEditAuthor.edFamily.Text := dmCollection.tblAuthors.FieldByName('A_Family').AsString;
   frmEditAuthor.edName.Text := dmCollection.tblAuthors.FieldByName('A_Name').AsString;
   frmEditAuthor.edMiddle.Text := dmCollection.tblAuthors.FieldByName('A_Middle').AsString;
+
+  frmEditAuthor.ShowCheckBoxes := True;
+
   if frmEditAuthor.ShowModal = mrOk then
   begin
-    dmCollection.tblAuthors.Edit;
-    dmCollection.tblAuthors.FieldByName('A_Family').AsString := frmEditAuthor.edFamily.Text;
-    dmCollection.tblAuthors.FieldByName('A_Name').AsString := frmEditAuthor.edName.Text;
-    dmCollection.tblAuthors.FieldByName('A_Middle').AsString := frmEditAuthor.edMiddle.Text;
-    dmCollection.tblAuthors.Post;
 
-    repeat
-      { TODO -oNickR -cRefactoring : можно заменить на один UPDATE }
-      Res := dmCollection.tblBooks.Locate('FullName', Data.FullName, []);
-      if Res then
+    S := trim(AnsiUpperCase(frmEditAuthor.edFamily.Text + ' ' +
+                                 frmEditAuthor.edName.Text + ' ' +
+                                 frmEditAuthor.edMiddle.Text));
+
+    if (not frmEditAuthor.AddNew) and (not frmEditAuthor.SaveLinks) then
+    begin    // мен€ем только данные об авторе, все ссылки остаютс€ на месте
+
+      dmCollection.tblAuthors.Edit;
+      dmCollection.tblAuthorsFamily.Value := frmEditAuthor.edFamily.Text;
+      dmCollection.tblAuthorsName.Value := frmEditAuthor.edName.Text;
+      dmCollection.tblAuthorsMiddle.Value := frmEditAuthor.edMiddle.Text;
+      dmCollection.tblAuthors.Post;
+
+      repeat
+        { TODO -oNickR -cRefactoring : можно заменить на один UPDATE }
+        Res := dmCollection.tblBooks.Locate('FullName', AnsiUpperCase(Data.FullName), [loCaseInsensitive]);
+        if Res then
+        begin
+          dmCollection.tblBooks.Edit;
+          dmCollection.tblBooksFullName.Value := S;
+          dmCollection.tblBooks.Post;
+        end;
+      until not Res;
+    end;
+
+    if (frmEditAuthor.AddNew) then
+    begin    // замен€ем автора на нового
+
+      // добавл€ем нового автора
+      if not dmCollection.tblAuthors.Locate('A_Family;A_Name;A_Middle',
+                            VarArrayOf([frmEditAuthor.edFamily.Text,
+                                        frmEditAuthor.edName.Text,
+                                        frmEditAuthor.edMiddle.Text]),
+                                        [loCaseInsensitive]) then
       begin
-        dmCollection.tblBooks.Edit;
-        dmCollection.tblBooks['FullName'] := dmCollection.FullName(Data.ID);
-        dmCollection.tblBooks.Post;
+        dmCollection.tblAuthors.Insert;
+        dmCollection.tblAuthorsFamily.Value := frmEditAuthor.edFamily.Text;
+        dmCollection.tblAuthorsName.Value := frmEditAuthor.edName.Text;
+        dmCollection.tblAuthorsMiddle.Value := frmEditAuthor.edMiddle.Text;
+        dmCollection.tblAuthors.Post;
       end;
-    until not Res;
+
+      // мен€ем ссылки
+      dmCollection.tblAuthor_List.MasterSource := nil;
+
+      Node := Tree.GetFirst;
+      while Node <> Nil do
+      begin
+        Data := Tree.GetNodeData(Node);
+        if (Data.nodeType = ntBookInfo) and
+            ((Tree.CheckState[Node] = csCheckedNormal) or
+            (Tree.Selected[Node])) then
+        begin
+          if not frmEditAuthor.SaveLinks then   // замен€ем ссылки
+          begin
+            if dmCollection.tblAuthor_List.Locate('AL_BookID',Data.ID,[]) then
+            begin
+              dmCollection.tblAuthor_List.Edit;
+              dmCollection.tblAuthor_ListAL_AuthID.Value := dmCollection.tblAuthorsID.Value;
+              dmCollection.tblAuthor_List.Post;
+            end
+          end
+          else
+          begin // добавл€ем второго автора
+            dmCollection.tblAuthor_List.Insert;
+            dmCollection.tblAuthor_ListAL_AuthID.Value := dmCollection.tblAuthorsID.Value;
+            dmCollection.tblAuthor_ListAL_BookID.Value := Data.ID;
+
+            dmCollection.tblAuthor_ListAL_Series.Value := Copy(Data.Series, 1, IndexSize);
+            dmCollection.tblAuthor_ListAL_Title.Value := Copy(Data.Title, 1, IndexSize);
+
+            dmCollection.tblAuthor_List.Post;
+          end;
+          dmCollection.tblBooks.Locate('ID', Data.ID, []);
+          dmCollection.tblBooks.Edit;
+          dmCollection.tblBooksFullName.Value:= S;
+          dmCollection.tblBooks.Post;
+        end;
+        Node := Tree.GetNext(Node,False);
+      end;
+      dmCollection.tblAuthor_List.MasterSource := dmCollection.dsAuthors;
+    end;
+
+
   end;
 end;
 
@@ -4346,6 +4420,7 @@ var
   Tree: TVirtualStringTree;
   Data: PBookData;
   Node: PVirtualNode;
+  AuthID: integer;
   S: string;
 begin
   if ActiveView = FavoritesView then
@@ -4365,17 +4440,50 @@ begin
 
   S := Data.Series;
 
-  if S = '' then
-    Exit;
-  if InputQuery('–едактирование серии', 'Ќазвание:', S) then
+  if Data.nodeType = ntBookInfo then // добавл€ем новую серию
   begin
-    dmCollection.tblSeries.Locate('ID', Data.SeriesID, []);
-    dmCollection.tblSeries.Edit;
-    dmCollection.tblSeries['Title'] := S;
-    dmCollection.tblSeries.Post;
-    Data.Series := S;
-    Tree.RepaintNode(Node);
-  end;
+    AuthID := dmCollection.AuthorID(Data.ID);
+
+    if InputQuery('—оздание серии/ ѕернос в серию', 'Ќазвание:', S) then
+    begin
+      if S = '' then Exit;
+
+      if not dmCollection.tblSeriesB.Locate('S_Title;S_AuthID', VarArrayOf([S,AuthID]), []) then
+      begin
+        dmCollection.tblSeriesB.Insert;
+        dmCollection.tblSeriesBS_Title.Value := S;
+        dmCollection.tblSeriesBS_AuthID.Value := AuthID;
+        dmCollection.tblSeriesBS_GenreCode.Value := dmCollection.GetGenreCode(Data.ID);
+        dmCollection.tblSeriesB.Post;
+      end;
+      Node := Tree.GetFirst;
+      while Node <> nil do
+      begin
+        Data := Tree.GetNodeData(Node);
+        if ((Tree.CheckState[Node] = csCheckedNormal) or
+           (Tree.Selected[Node])) then
+        begin
+          dmCollection.tblBooks.Locate('ID', Data.ID, []);
+          dmCollection.tblBooks.Edit;
+          dmCollection.tblBooksSerID.Value:= dmCollection.tblSeriesBS_ID.Value;
+          dmCollection.tblBooks.Post;
+        end;
+        Node := Tree.GetNext(Node);
+      end;
+      FillAllBooksTree;
+    end;
+  end
+  else     // редактирукм название существующей
+    if InputQuery('–едактирование серии', 'Ќазвание:', S) then
+    begin
+      dmCollection.tblSeriesB.Locate('S_ID', Data.SeriesID, []);
+      dmCollection.tblSeriesB.Edit;
+      dmCollection.tblSeriesBS_Title.Value := S;
+      dmCollection.tblSeriesB.Post;
+      Data.Series := S;
+      Tree.RepaintNode(Node);
+    end;
+
 end;
 
 procedure TfrmMain.miAddFavoritesClick(Sender: TObject);
@@ -4954,7 +5062,7 @@ begin
       frmBookDetails := TfrmBookDetails.Create(Application);
 
       if Table['Code'] = 1 then
-        frmBookDetails.Review := Extra['Review'];
+        frmBookDetails.Review := Extra.FieldByName('Review').AsWideString;
 
       try
         frmBookDetails.ShowBookInfo(FS);
@@ -4969,7 +5077,7 @@ begin
             Table.Post;
 
             Extra.Insert;
-            Extra['Review'] := frmBookDetails.Review;
+            Extra.FieldByName('Review').AsWideString := frmBookDetails.Review;
             Extra.Post;
 
             Data.Code := 1;
@@ -4977,11 +5085,9 @@ begin
           end
           else begin
             Extra.Edit;
-            Extra['Review'] := frmBookDetails.Review;
+            Extra.FieldByName('Review').AsWideString := frmBookDetails.Review;
             Extra.Post;
           end;
-
-
       finally
         frmBookDetails.Free;
       end;
