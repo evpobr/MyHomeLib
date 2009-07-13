@@ -21,6 +21,9 @@ uses
   ABSMain,
   unit_globals;
 
+const
+  IndexSize = 7;
+
 type
   TAbsTableHelper = class helper for TAbsTable
      constructor Create(AOwner: TComponent);
@@ -112,7 +115,7 @@ type
   TTableIndexes = array of TIndexDesc;
 
 const
-  IndexSize = 7;
+
 
 //-----------------------------------------------------------------------------
 //                                 Коллекция

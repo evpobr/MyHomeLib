@@ -214,10 +214,11 @@ type
     sqlBooksSeries: TWideStringField;
     tblExtraID: TAutoIncField;
     tblExtraBookID: TIntegerField;
-    tblExtraAnnotation: TMemoField;
-    tblExtraReview: TMemoField;
+    tblExtraAnnotation: TWideMemoField;
+    tblExtraReview: TWideMemoField;
     tblExtraCover: TBlobField;
-    tblExtraData: TMemoField;
+    tblExtraData: TWideMemoField;
+    tblBooksFullName: TWideStringField;
   private
     FActiveTable: TAbsTable;
 
@@ -229,6 +230,7 @@ type
     procedure SetActiveTable(Tag: integer);
     procedure GetCurrentBook(var R: TBookRecord);
     function GetBookGenres(BookID: Integer; FirstOnly: boolean): String;
+    function GetGenreCode(BookID: Integer): String;
 
     procedure FieldByName(AID: integer; AField: String; out ARes: String); overload;
     procedure FieldByName(AID: integer; AField: String; out ARes: integer); overload;
@@ -243,6 +245,7 @@ type
     procedure Clear;
     procedure SetTableState(State: boolean);
     function FullName(BookID: Integer): string;
+    function AuthorID(BookID: Integer): integer;
 
   end;
 
@@ -282,6 +285,12 @@ procedure TDMCollection.FieldByName(AID: integer; AField: String; out ARes: inte
 begin
   if AID<> 0 then FActiveTable.Locate('ID', AID, []);
   ARes := FActiveTable.FieldByName(AField).AsInteger;
+end;
+
+function TDMCollection.AuthorID(BookID: Integer): integer;
+begin
+  if BookID <> 0 then tblAuthor_Master.Locate('AL_BookID', BookID, []);
+  Result := tblAuthor_MasterAL_AuthID.Value;
 end;
 
 procedure TDMCollection.Clear;
@@ -395,6 +404,12 @@ begin
 
     tblAuthor_Master.Next;
   end;
+end;
+
+function TDMCollection.GetGenreCode(BookID: Integer): String;
+begin
+  tblBooks_Genre_List.Locate('GL_BookID', BookID, []);
+  Result := tblBooks_GenresG_Code.Value;
 end;
 
 procedure TDMCollection.GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);

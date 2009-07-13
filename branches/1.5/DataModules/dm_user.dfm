@@ -3,9 +3,7 @@ object DMUser: TDMUser
   Height = 417
   Width = 463
   object DBUser: TABSDatabase
-    Connected = True
     CurrentVersion = '6.02 '
-    DatabaseFileName = 'D:\DelphiProjects\MyHomeLib 1.5\Debug\Bin\Data\user.dbs'
     DatabaseName = 'UserData'
     Exclusive = False
     MaxConnections = 5
@@ -1236,20 +1234,20 @@ object DMUser: TDMUser
     object tblExtraBookID: TIntegerField
       FieldName = 'BookID'
     end
-    object tblExtraAnnotation: TMemoField
+    object tblExtraAnnotation: TWideMemoField
       FieldName = 'Annotation'
-      BlobType = ftMemo
+      BlobType = ftWideMemo
     end
-    object tblExtraReview: TMemoField
+    object tblExtraReview: TWideMemoField
       FieldName = 'Review'
-      BlobType = ftMemo
+      BlobType = ftWideMemo
     end
     object tblExtraCover: TBlobField
       FieldName = 'Cover'
     end
-    object tblExtraData: TMemoField
+    object tblExtraData: TWideMemoField
       FieldName = 'Data'
-      BlobType = ftMemo
+      BlobType = ftWideMemo
     end
   end
 end
