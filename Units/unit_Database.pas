@@ -22,7 +22,7 @@ uses
   unit_globals;
 
 const
-  IndexSize = 7;
+  IndexSize = 12;
 
 type
   TAbsTableHelper = class helper for TAbsTable
@@ -134,7 +134,7 @@ AuthorListTableFields: array [1 .. 5] of TFieldDesc = (
 AuthorListTableIndexes: array [1..3] of TIndexDesc = (
   (Name: 'ID_Index';  Fields: 'AL_ID';                  Options: [ixPrimary, ixUnique]),
   (Name: 'BookIndex'; Fields: 'AL_BookID';              Options: []),
-  (Name: 'AuthIndex'; Fields: 'AL_AuthID;AL_Series;AL_Title'; Options: [])
+  (Name: 'AuthIndex'; Fields: 'AL_AuthID;AL_Series;AL_Title'; Options: [ixCaseInsensitive])
 );
 
 //
@@ -173,7 +173,7 @@ BooksTableFields: array [1 .. 21] of TFieldDesc = (
   (Name: 'ID';         DataType: ftAutoInc;     Size: 0;   Required: true ),
   (Name: 'DatabaseID'; DataType: ftInteger;     Size: 0;   Required: false),
   (Name: 'LibID';      DataType: ftInteger;     Size: 0;   Required: false),
-  (Name: 'Title';      DataType: ftWideString;  Size: 100; Required: false),
+  (Name: 'Title';      DataType: ftWideString;  Size: 150; Required: false),
   (Name: 'FullName';   DataType: ftWideString;  Size: 120; Required: True),
   (Name: 'SerID';      DataType: ftInteger;     Size: 0;   Required: false),
   (Name: 'SeqNumber';  DataType: ftSmallInt;    Size: 0;   Required: false),
@@ -182,13 +182,13 @@ BooksTableFields: array [1 .. 21] of TFieldDesc = (
   (Name: 'Lang';       DataType: ftWideString;  Size: 2;   Required: false),
   //
   (Name: 'DiscID';     DataType: ftInteger;     Size: 0;   Required: false),
-  (Name: 'Folder';     DataType: ftWideString;  Size: 255; Required: false),
-  (Name: 'FileName';   DataType: ftWideString;  Size: 255; Required: true ),
+  (Name: 'Folder';     DataType: ftWideString;  Size: 128; Required: false),
+  (Name: 'FileName';   DataType: ftWideString;  Size: 170; Required: true ),
   (Name: 'InsideNo';   DataType: ftInteger;     Size: 0;   Required: true ),
   (Name: 'Ext';        DataType: ftWideString;  Size: 10;  Required: false),
   (Name: 'Size';       DataType: ftinteger;     Size: 0;   Required: false),
   //
-  (Name: 'URI';        DataType: ftWideString;  Size: 255; Required: false),
+  (Name: 'URI';        DataType: ftWideString;  Size: 60; Required: false),
   //
   (Name: 'Code';       DataType: ftSmallInt;    Size: 0;   Required: false),
   (Name: 'Local';      DataType: ftBoolean;     Size: 0;   Required: false),
@@ -201,7 +201,7 @@ BooksTableIndexes: array [1..5] of TIndexDesc = (
   (Name: 'Series_Index';   Fields: 'SerID;SeqNumber';       Options: []),
   (Name: 'Title_Index';    Fields: 'FullName;Title';        Options: [ixCaseInsensitive]),
   (Name: 'File_Index';     Fields: 'FileName';              Options: [ixCaseInsensitive]),
-  (Name: 'Folder_Index';   Fields: 'DiscID;Folder';         Options: [])
+  (Name: 'Folder_Index';   Fields: 'Folder';                Options: [ixCaseInsensitive])
 );
 
 //
@@ -215,10 +215,10 @@ SeriesTableFields: array [1 .. 4] of TFieldDesc = (
 );
 
 SeriesTableIndexes: array [1..4] of TIndexDesc = (
-  (Name: 'ID_Index';    Fields: 'S_ID';           Options: [ixPrimary, ixUnique]),
-  (Name: 'TiteIndex';   Fields: 'S_Title;S_AuthID'; Options: []),
-  (Name: 'AuthorIndex'; Fields: 'S_AuthID;S_Title'; Options: []),
-  (Name: 'SeqTitle';    Fields: 'S_Title';        Options: [ixCaseInsensitive])
+  (Name: 'ID_Index';    Fields: 'S_ID';             Options: [ixPrimary, ixUnique]),
+  (Name: 'TiteIndex';   Fields: 'S_Title;S_AuthID'; Options: [ixCaseInsensitive]),
+  (Name: 'AuthorIndex'; Fields: 'S_AuthID;S_Title'; Options: [ixCaseInsensitive]),
+  (Name: 'SeqTitle';    Fields: 'S_Title';          Options: [ixCaseInsensitive])
 );
 //
 // Genres
@@ -232,10 +232,10 @@ GenresTableFields: array [1 .. 5] of TFieldDesc = (
 );
 
 GenresTableIndexes: array [1..4] of TIndexDesc = (
-  (Name: 'ID_Index';     Fields: 'G_Code';            Options: [ixPrimary, ixUnique]),
-  (Name: 'CodeIndex';    Fields: 'G_ParentCode;G_Code'; Options: []),
-  (Name: 'FB2CodeIndex'; Fields: 'G_FB2Code';         Options: []),
-  (Name: 'AliasIndex';   Fields: 'G_Alias';           Options: [])
+  (Name: 'ID_Index';     Fields: 'G_Code';              Options: [ixPrimary, ixUnique]),
+  (Name: 'CodeIndex';    Fields: 'G_ParentCode;G_Code'; Options: [ixCaseInsensitive]),
+  (Name: 'FB2CodeIndex'; Fields: 'G_FB2Code';           Options: [ixCaseInsensitive]),
+  (Name: 'AliasIndex';   Fields: 'G_Alias';             Options: [])
 );
 
 //
@@ -251,9 +251,9 @@ GenreListTableFields: array [1 .. 6] of TFieldDesc = (
 );
 
 GenreListTableIndexes: array [1..3] of TIndexDesc = (
-  (Name: 'ID_Index';   Fields: 'GL_ID';                            Options: [ixPrimary, ixUnique]),
-  (Name: 'BookIndex';  Fields: 'GL_BookID';                        Options: []),
-  (Name: 'GenreIndex'; Fields: 'GL_Code;GL_Family;GL_Series;GL_Title'; Options: [])
+  (Name: 'ID_Index';   Fields: 'GL_ID';                                 Options: [ixPrimary, ixUnique]),
+  (Name: 'BookIndex';  Fields: 'GL_BookID';                             Options: []),
+  (Name: 'GenreIndex'; Fields: 'GL_Code;GL_Family;GL_Series;GL_Title';  Options: [ixCaseInsensitive])
 );
 
 //
@@ -262,10 +262,10 @@ GenreListTableIndexes: array [1..3] of TIndexDesc = (
 ExtraTableFields: array [1 .. 6] of TFieldDesc = (
   (Name: 'ID';        DataType: ftAutoInc;    Size: 0;   Required: true),
   (Name: 'BookID';    DataType: ftInteger;    Size: 0;   Required: false),
-  (Name: 'Annotation';DataType: ftWideMemo;       Size: 0;   Required: false),
-  (Name: 'Review';    DataType: ftWideMemo;       Size: 0;   Required: false),
+  (Name: 'Annotation';DataType: ftWideMemo;   Size: 0;   Required: false),
+  (Name: 'Review';    DataType: ftWideMemo;   Size: 0;   Required: false),
   (Name: 'Cover';     DataType: ftBlob;       Size: 0;   Required: false),
-  (Name: 'Data';      DataType: ftWideMemo;       Size: 0;   Required: false)
+  (Name: 'Data';      DataType: ftWideMemo;   Size: 0;   Required: false)
 );
 
 ExtraTableIndexes: array [1..2] of TIndexDesc = (
