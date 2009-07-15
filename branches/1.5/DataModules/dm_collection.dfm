@@ -189,7 +189,7 @@ object DMCollection: TDMCollection
     object tblBooksAFileName: TWideStringField
       FieldName = 'FileName'
       Required = True
-      Size = 255
+      Size = 170
     end
     object tblBooksAext: TWideStringField
       FieldName = 'ext'
@@ -235,7 +235,7 @@ object DMCollection: TDMCollection
     end
     object tblBooksAURI: TWideStringField
       FieldName = 'URI'
-      Size = 255
+      Size = 60
     end
     object tblBooksAKeyWords: TWideStringField
       FieldName = 'KeyWords'
@@ -243,7 +243,7 @@ object DMCollection: TDMCollection
     end
     object tblBooksATitle: TWideStringField
       FieldName = 'Title'
-      Size = 100
+      Size = 150
     end
     object tblBooksAFullName: TWideStringField
       FieldName = 'FullName'
@@ -257,6 +257,7 @@ object DMCollection: TDMCollection
       LookupKeyFields = 'S_ID'
       LookupResultField = 'S_Title'
       KeyFields = 'SerID'
+      Size = 100
       Lookup = True
     end
   end
@@ -408,9 +409,9 @@ object DMCollection: TDMCollection
       FieldName = 'Date'
     end
     object tblBooksGTitle: TWideStringField
-      DisplayWidth = 255
+      DisplayWidth = 150
       FieldName = 'Title'
-      Size = 100
+      Size = 150
     end
     object tblBooksGRate: TIntegerField
       FieldKind = fkLookup
@@ -431,7 +432,7 @@ object DMCollection: TDMCollection
     object tblBooksGFileName: TWideStringField
       FieldName = 'FileName'
       Required = True
-      Size = 255
+      Size = 170
     end
     object tblBooksGext: TWideStringField
       FieldName = 'ext'
@@ -477,7 +478,7 @@ object DMCollection: TDMCollection
     end
     object tblBooksGURI: TWideStringField
       FieldName = 'URI'
-      Size = 255
+      Size = 60
     end
     object tblBooksGSeries: TWideStringField
       FieldKind = fkLookup
@@ -486,6 +487,7 @@ object DMCollection: TDMCollection
       LookupKeyFields = 'S_ID'
       LookupResultField = 'S_Title'
       KeyFields = 'SerID'
+      Size = 100
       Lookup = True
     end
     object tblBooksGKeyWords: TWideStringField
@@ -733,9 +735,9 @@ object DMCollection: TDMCollection
       FieldName = 'Date'
     end
     object tblBooksSTitle: TWideStringField
-      DisplayWidth = 255
+      DisplayWidth = 150
       FieldName = 'Title'
-      Size = 255
+      Size = 150
     end
     object tblBooksSRate: TIntegerField
       FieldKind = fkLookup
@@ -756,7 +758,7 @@ object DMCollection: TDMCollection
     object tblBooksSFileName: TWideStringField
       FieldName = 'FileName'
       Required = True
-      Size = 255
+      Size = 170
     end
     object tblBooksSext: TWideStringField
       FieldName = 'ext'
@@ -802,7 +804,7 @@ object DMCollection: TDMCollection
     end
     object tblBooksSURI: TWideStringField
       FieldName = 'URI'
-      Size = 255
+      Size = 60
     end
     object tblBooksSSeries: TWideStringField
       FieldKind = fkLookup
@@ -811,6 +813,7 @@ object DMCollection: TDMCollection
       LookupKeyFields = 'S_ID'
       LookupResultField = 'S_Title'
       KeyFields = 'SerID'
+      Size = 100
       Lookup = True
     end
     object tblBooksSKeyWords: TWideStringField
@@ -1232,7 +1235,7 @@ object DMCollection: TDMCollection
     end
     object tblBooksTitle: TWideStringField
       FieldName = 'Title'
-      Size = 100
+      Size = 150
     end
     object tblBooksInsideNo: TIntegerField
       FieldName = 'InsideNo'
@@ -1241,7 +1244,7 @@ object DMCollection: TDMCollection
     object tblBooksFileName: TWideStringField
       FieldName = 'FileName'
       Required = True
-      Size = 255
+      Size = 170
     end
     object tblBooksExt: TWideStringField
       FieldName = 'Ext'
@@ -1293,7 +1296,7 @@ object DMCollection: TDMCollection
     end
     object tblBooksURI: TWideStringField
       FieldName = 'URI'
-      Size = 255
+      Size = 60
     end
     object tblBooksSeries: TWideStringField
       FieldKind = fkLookup
@@ -1302,6 +1305,7 @@ object DMCollection: TDMCollection
       LookupKeyFields = 'S_ID'
       LookupResultField = 'S_Title'
       KeyFields = 'SerID'
+      Size = 100
       Lookup = True
     end
     object tblBooksFullName: TWideStringField
@@ -1841,7 +1845,7 @@ object DMCollection: TDMCollection
     end
     object sqlBooksTitle: TWideStringField
       FieldName = 'Title'
-      Size = 100
+      Size = 150
     end
     object sqlBooksSerID: TIntegerField
       FieldName = 'SerID'
@@ -1864,11 +1868,11 @@ object DMCollection: TDMCollection
     end
     object sqlBooksFolder: TWideStringField
       FieldName = 'Folder'
-      Size = 255
+      Size = 128
     end
     object sqlBooksFileName: TWideStringField
       FieldName = 'FileName'
-      Size = 255
+      Size = 170
     end
     object sqlBooksInsideNo: TIntegerField
       FieldName = 'InsideNo'
@@ -1882,7 +1886,7 @@ object DMCollection: TDMCollection
     end
     object sqlBooksURI: TWideStringField
       FieldName = 'URI'
-      Size = 255
+      Size = 60
     end
     object sqlBooksCode: TSmallintField
       FieldName = 'Code'
@@ -1926,6 +1930,7 @@ object DMCollection: TDMCollection
       LookupKeyFields = 'S_ID'
       LookupResultField = 'S_Title'
       KeyFields = 'SerID'
+      Size = 80
       Lookup = True
     end
     object sqlBooksID: TIntegerField

@@ -5004,19 +5004,12 @@ begin
   try
     GetActiveTree(Tree);
 
-    Table := GetActiveBookTable(Tree.Tag);
-
     if Tree.FocusedNode= nil then
       Exit;
 
+    Table := GetActiveBookTable(Tree.Tag);
     Data := Tree.GetNodeData(Tree.FocusedNode);
-    if not Assigned(Data) then
-      Exit;
-
-    if Data.nodeType <> ntBookInfo then
-      Exit;
-
-    if Table.IsEmpty then
+    if not Assigned(Data) or (Data.nodeType <> ntBookInfo) or Table.IsEmpty then
       Exit;
 
     Table.Locate('ID', Data.ID, []);
@@ -5068,6 +5061,7 @@ begin
         frmBookDetails.ShowModal;
 
         if frmBookDetails.ReviewChanged then
+        begin
           if Table['Code'] = 0 then
           begin
             Table.Edit;
@@ -5081,11 +5075,23 @@ begin
             Data.Code := 1;
             Tree.RepaintNode(Tree.FocusedNode);
           end
-          else begin
-            Extra.Edit;
-            Extra.FieldByName('Review').AsWideString := frmBookDetails.Review;
-            Extra.Post;
-          end;
+          else
+            if frmBookDetails.Review <> '' then
+            begin
+              Extra.Edit;
+              Extra.FieldByName('Review').AsWideString := frmBookDetails.Review;
+              Extra.Post;
+            end
+            else
+            begin // рецензия была, а теперь ее нет
+              Table.Edit;
+              Table['Code'] := 0;
+              Table.Post;
+              Extra.Delete;
+           end;
+          Data.Code := Table['Code'];
+          Tree.RepaintNode(Tree.FocusedNode);
+        end;
       finally
         frmBookDetails.Free;
       end;
