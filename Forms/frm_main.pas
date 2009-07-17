@@ -1240,22 +1240,22 @@ end;
 
 procedure TfrmMain.btnClearFilterEditsClick(Sender: TObject);
 begin
-  edFFullName.Text :='';
-  edFSeries.Text :='';
-  edFTitle.Text  := '';
-  edFGenre.Text  := '';
-  edFGenre.Hint  := '';
-  edFFile.Text   := '';
-  edFFolder.Text := '';
-  edFExt.Text    := '';
-  cbDate.ItemIndex := -1;
+  edFFullName.Text  :='';
+  edFSeries.Text    :='';
+  edFTitle.Text     := '';
+  edFGenre.Text     := '';
+  edFGenre.Hint     := '';
+  edFFile.Text      := '';
+  edFFolder.Text    := '';
+  edFExt.Text       := '';
+  cbDate.Text       := '';
+  cbPresetName.Text := '';
+  cbDeleted.Checked := False;
+  cbLang.Text       := '';
+  edFKeyWords.Text  := '';
   cbDownloaded.ItemIndex := 0;
   tvBooksSR.Clear;
   ClearLabels(PAGE_SEARCH);
-  cbPresetName.Text := '';
-  cbDeleted.Checked := False;
-  cbLang.Text := '';
-  edFKeyWords.Text := '';
 end;
 
 procedure TfrmMain.LoadSearchPreset(FN: string);
@@ -2059,6 +2059,10 @@ begin
 
   CreateDir(Settings.TempDir);
   CreateDir(Settings.DataDir);
+
+  //------------------------ чистка папки дата если нужно ----------------------
+  if (ParamCount > 0) and (ParamStr(1) = '/clear') then
+    ClearDir(Settings.DataDir);
 
   frmSplash.lblState.Caption := main_connecttodb;
 
