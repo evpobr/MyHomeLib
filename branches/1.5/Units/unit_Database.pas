@@ -724,12 +724,12 @@ begin
   CheckActive;
 
   if Ext = ZIP_EXTENSION then
-    Result := FBooks.Locate('Folder', FileName, [])
+    Result := FBooks.Locate('Folder', FileName, [loCaseInsensitive])
   else
   begin
     s := ExtractFileName(FileName);
     s := Copy(s, 1, Length(s) - Length(Ext));
-    Result := FBooks.Locate('FileName', s, []);
+    Result := FBooks.Locate('FileName', s, [loCaseInsensitive]);
   end;
 end;
 
