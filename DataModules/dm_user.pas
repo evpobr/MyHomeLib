@@ -151,6 +151,7 @@ type
     function ActivateGroup(const ID: integer):boolean;
 
     procedure SetRate(ID,Rate: integer);
+     procedure SetLocal(ID: integer; Value: boolean);
     procedure SetFinished(ID, Progress: integer; ADBID: integer = 0);
     procedure DeleteRate(AID: integer; ADBID: integer = 0);
     procedure DeleteFinished(AID: integer; ADBID: integer = 0);
@@ -629,6 +630,17 @@ begin
     tblFinished.Edit;
     tblFinishedProgress.Value := Progress;
     tblFinished.Post;
+  end;
+end;
+
+procedure TDMUser.SetLocal(ID: integer; Value: boolean);
+begin
+  if tblGrouppedBooks.Locate('DataBaseID;OuterID',
+           VarArrayOf([ActiveCollection.ID, ID]), []) then
+  begin
+    tblGrouppedBooks.Edit;
+    tblGrouppedBooksLocal.Value := Value;
+    tblGrouppedBooks.Post;
   end;
 end;
 
