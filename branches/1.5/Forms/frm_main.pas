@@ -382,6 +382,8 @@ type
     edFSeries: TRzButtonEdit;
     edFGenre: TRzButtonEdit;
     Label6: TLabel;
+    N31: TMenuItem;
+    miDeleteFiles: TMenuItem;
 
     //
     // События формы
@@ -586,6 +588,7 @@ type
     procedure edFGenreButtonClick(Sender: TObject);
     procedure edFGenreKeyPress(Sender: TObject; var Key: Char);
     procedure pmMainPopup(Sender: TObject);
+    procedure miDeleteFilesClick(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -625,7 +628,7 @@ type
     function GetViewTree(view: TView): TVirtualStringTree;
     procedure GetActiveTree(var Tree: TVirtualStringTree);
     procedure Selection(SelState: boolean);
-    procedure LocateBookList(const text: String; Tree: TVirtualStringTree);
+    procedure LocateBookList(text: String; Tree: TVirtualStringTree);
     procedure InitCollection(ApplyAuthorFilter: Boolean);
 
     procedure CreateCollectionMenu;
@@ -1440,6 +1443,7 @@ begin
   miEditSeries.Visible := IsPrivate;
   miBookEdit.Visible := IsPrivate;
   miDeleteBook.Visible := IsPrivate; // DMUser.ActiveCollection.AllowDelete;
+  miDeleteFiles.Visible := isOnline and (ActiveView <> FavoritesView);
 
   if Assigned(FLastLetterA) then
     FLastLetterA.Down := False;
@@ -3386,8 +3390,8 @@ begin
         (Sender as TToolButton).Down := True;
         if (Sender as TToolButton).Tag >= 90 then
         case (Sender as TToolButton).Tag of
-          91: dmCollection.tblAuthors.Filter := 'A_Family > "а*"';
-          92: dmCollection.tblAuthors.Filter := 'A_Family < "а*"';
+          91: dmCollection.tblAuthors.Filter := 'UPPER(A_Family) >= "А*"';
+          92: dmCollection.tblAuthors.Filter := 'UPPER(A_Family) < "А*"';
         end
         else
         begin
@@ -3412,8 +3416,8 @@ begin
         if (Sender as TToolButton).Tag >= 90 then
         case (Sender as TToolButton).Tag of
           90: dmCollection.tblSeries.Filter := 'S_Title <>' + QuotedStr(NO_SERIES_TITLE);
-          91: dmCollection.tblSeries.Filter := 'S_Title > "а*"';
-          92: dmCollection.tblSeries.Filter := 'S_Title < "а*" and S_Title <>' + QuotedStr(NO_SERIES_TITLE);
+          91: dmCollection.tblSeries.Filter := 'UPPER(S_Title) >= "А*"';
+          92: dmCollection.tblSeries.Filter := 'UPPER(S_Title) < "A*" and S_Title <>' + QuotedStr(NO_SERIES_TITLE);
         end
         else
         begin
@@ -3987,6 +3991,45 @@ begin
   DMUser.tblBases.First;
   Settings.ActiveCollection := DMUser.ActiveCollection.ID;
   InitCollection(True);
+end;
+
+procedure TfrmMain.miDeleteFilesClick(Sender: TObject);
+var
+  Node: PvirtualNode;
+  Data: PBookData;
+  Tree: TVirtualStringTree;
+begin
+  GetActiveTree(Tree);
+  Node := Tree.GetFirst;
+  while Assigned(Node) do
+  begin
+    Data := Tree.GetNodeData(Node);
+
+    if (Data.nodeType = ntBookInfo) and
+       ((tvBooksG.CheckState[Node] = csCheckedNormal) or (tvBooksG.Selected[Node]))
+       and Data.Locale then
+    begin
+      if dmCollection.tblBooks.Locate('ID',Data.ID,[]) then
+      begin
+
+        // только для online-коллекции. поэтому получаем путь к файлу по кпрощенной схеме
+
+        DeleteFile(FCollectionRoot + dmCollection.tblBooksFolder.Value);
+
+        dmCollection.tblBooks.Edit;
+        dmCollection.tblBooksLocal.Value := False;
+        dmCollection.tblBooks.Post;
+
+        Data.Locale := False;
+        tvBooksG.CheckState[Node] := csUnCheckedNormal;
+        Tree.RepaintNode(Node);
+
+        // синхронизация с избранным
+        DMUser.SetLocal(Data.ID, False);
+      end;
+    end;
+    Node := Tree.GetNext(Node);
+  end;
 end;
 
 procedure TfrmMain.miDelFavoritesClick(Sender: TObject);
@@ -4694,18 +4737,23 @@ begin
   end;
 end;
 
-procedure TfrmMain.LocateBookList(const text: String; Tree: TVirtualStringTree);
+procedure TfrmMain.LocateBookList(text: String; Tree: TVirtualStringTree);
 var
   Node: PVirtualNode;
   Data: PAuthorData;
+  L : integer;
 begin
   Tree.ClearSelection;
   Node := Tree.GetFirst;
+
+  L := Length(text);
+  text := AnsiUpperCase(text);
+
   while Assigned(Node) do
   begin
     Data := Tree.GetNodeData(Node);
     Assert(Assigned(Data));
-    if pos(AnsiUpperCase(text),AnsiUpperCase(Data.Text)) <> 0 then
+    if text = Copy(AnsiUpperCase(Data.Text),1,L) then
     begin
       Tree.Selected[Node] := True;
       Tree.FocusedNode := Node;
@@ -4811,16 +4859,16 @@ var
   OldText:string;
 begin
   if FIgnoreChange or (Length(edLocateSeries.Text)=0) then Exit;
-  S := AnsiUpperCase(edLocateSeries.Text);
-  if S[1] <> FLastLetterS.Caption then
+  S := AnsiUpperCase(copy(edLocateSeries.Text,1,1));
+  if S <> FLastLetterS.Caption then
   begin
     OldText := edLocateSeries.Text;
-    ChangeLetterButton(S[1]);
+    ChangeLetterButton(S);
     edLocateSeries.Text := OldText;
     edLocateSeries.Perform(WM_KEYDOWN, VK_RIGHT, 0);
   end;
-  if not FDoNotLocate and dmCollection.tblSeries.Locate('S_Title', edLocateSeries.Text, [loPartialKey, loCaseInsensitive]) then
-    LocateBookList(dmCollection.tblSeriesTitle.Value, tvSeries);
+  if not FDoNotLocate then
+    LocateBookList(edLocateSeries.Text, tvSeries);
 end;
 
 procedure TfrmMain.FillAuthorTree;
@@ -5773,6 +5821,7 @@ begin
                     btnFav_add.Style := ComCtrls.tbsButton;
                     btnFav_add.ImageIndex := 16;
                     pmiGroups.Visible := False;
+                    miDeleteFiles.Visible := False;
                   end;
     DownloadView: begin
                     tbtnDownloadList_Add.ImageIndex := 23;
@@ -5790,6 +5839,7 @@ begin
                     btnFav_add.Style := ComCtrls.tbsDropDown;
                     btnFav_add.ImageIndex := 15;
                     pmiGroups.Visible := True;
+                    miDeleteFiles.Visible := isOnlineCollection(dmUser.ActiveCollection.CollectionType);
                   end;
 
   end;
