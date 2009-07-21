@@ -24,7 +24,8 @@ program MyhomeLib;
 {$R *.dres}
 
 uses
-  Forms, IMouse,
+  Forms,
+  IMouse,
   frm_main in 'Forms\frm_main.pas' {frmMain},
   dm_user in 'DataModules\dm_user.pas' {DMUser: TDataModule},
   unit_Database in 'Units\unit_Database.pas',
@@ -98,7 +99,8 @@ uses
   unit_SearchUtils in 'Units\unit_SearchUtils.pas',
   unit_ExportINPXThread in 'ImportImpl\unit_ExportINPXThread.pas',
   frm_info_popup in 'Forms\frm_info_popup.pas' {frmInfoPopup},
-  dm_collection in 'DataModules\dm_collection.pas' {DMCollection: TDataModule};
+  dm_collection in 'DataModules\dm_collection.pas' {DMCollection: TDataModule},
+  htmlhlp in 'Units\htmlhlp.pas';
 
 {$R *.res}
 

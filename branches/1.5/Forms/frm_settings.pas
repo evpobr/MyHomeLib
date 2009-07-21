@@ -108,7 +108,7 @@ type
     btnAddScript: TRzBitBtn;
     RzGroupBox5343245: TRzGroupBox;
     cbDefaultAction: TComboBox;
-    RzBitBtn1: TRzBitBtn;
+    btnHelp: TRzBitBtn;
     rgDeviceFormat: TRadioGroup;
     RzGroupBox5: TRzGroupBox;
     cbSquareFilter: TCheckBox;
@@ -158,7 +158,7 @@ type
     procedure btnAddScriptClick(Sender: TObject);
     procedure btnEditScriptClick(Sender: TObject);
     procedure btnDeleteScriptClick(Sender: TObject);
-    procedure RzBitBtn1Click(Sender: TObject);
+    procedure btnHelpClick(Sender: TObject);
     procedure tbtnInsert1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure pnlDwnldClick(Sender: TObject);
@@ -187,7 +187,8 @@ uses
   frm_edit_reader,
   frm_main,
   frm_edit_script,
-  unit_Settings;
+  unit_Settings,
+  htmlhlp;
 
 {$R *.dfm}
 
@@ -408,9 +409,11 @@ begin
   end;
 end;
 
-procedure TfrmSettings.RzBitBtn1Click(Sender: TObject);
+procedure TfrmSettings.btnHelpClick(Sender: TObject);
 begin
-  Application.HelpContext(pcSetPages.ActivePage.HelpContext);
+  HtmlHelp(Application.Handle,
+           PChar(Settings.SystemFileName[sfAppHelp]),
+           HH_HELP_CONTEXT, pcSetPages.ActivePage.HelpContext);
 end;
 
 procedure TfrmSettings.btnSaveClick(Sender: TObject);

@@ -75,7 +75,10 @@ uses
   RzPrgres,
   unit_DownloadManagerThread,
   unit_Messages,
-  RzBtnEdt, files_list, ActiveX;
+  RzBtnEdt,
+  files_list,
+  ActiveX,
+  htmlhlp;
 
 type
 
@@ -646,6 +649,8 @@ type
     procedure FillGenresTree(Tree: TVirtualStringTree);
     procedure DisableControls(State: boolean);
     procedure DisableMainMenu(State: boolean);
+
+    function HH(Command: Word; Data: Integer; var CallHelp: Boolean): Boolean;
 
   private
     FSelectionState: boolean;
@@ -2034,6 +2039,7 @@ end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
+  Application.OnHelp := HH;
   UseLatestCommonDialogs := True;
 
   // событие OnGetNodeDataSize почему-то не обрабатывается, инициализируем вручную
@@ -5571,6 +5577,21 @@ begin
   SaveColumns;
 end;
 
+function TfrmMain.HH(Command: Word; Data: Integer;
+  var CallHelp: Boolean): Boolean;
+begin
+  if (Command = 0) and (Data = 0) then
+      HtmlHelp(Application.Handle,
+        PChar(Settings.SystemFileName[sfAppHelp]),
+        HH_DISPLAY_TOC, 0)
+  else
+      HtmlHelp(Application.Handle,
+        PChar(Settings.SystemFileName[sfAppHelp]),
+        HH_HELP_CONTEXT, Data);
+
+  CallHelp := False;
+end;
+
 procedure TfrmMain.miGoDonateClick(Sender: TObject);
 begin
   ShellExecute(handle, 'open', '"http://home-lib.net/help_us"', nil, nil, SW_SHOW);
@@ -5863,9 +5884,10 @@ begin
 end;
 
 procedure TfrmMain.miShowHelpClick(Sender: TObject);
+var
+  dummy : boolean;
 begin
- // Application.HelpSystem.ShowTableOfContents;
-  ShellExecute(handle, 'open',PChar(Settings.SystemFileName[sfAppHelp]), nil, nil, SW_SHOW);
+  HH(0,0, dummy);
 end;
 
 procedure TfrmMain.miPdfdjvuClick(Sender: TObject);
