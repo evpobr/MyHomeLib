@@ -45,15 +45,14 @@ object frmSettings: TfrmSettings
       TabOrder = 1
       Kind = bkCancel
     end
-    object RzBitBtn1: TRzBitBtn
+    object btnHelp: TRzBitBtn
       Left = 5
       Top = 11
       Width = 120
       Height = 28
       Caption = #1057#1087#1088#1072#1074#1082#1072
       TabOrder = 2
-      Visible = False
-      OnClick = RzBitBtn1Click
+      OnClick = btnHelpClick
       Kind = bkHelp
     end
   end

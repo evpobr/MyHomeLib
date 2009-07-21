@@ -1,6 +1,7 @@
 object frmMain: TfrmMain
   Left = 0
   Top = 0
+  HelpContext = 2
   Caption = 'MyHomeLib'
   ClientHeight = 1011
   ClientWidth = 992
@@ -423,15 +424,16 @@ object frmMain: TfrmMain
     Top = 144
     Width = 992
     Height = 848
-    HelpContext = 135
-    ActivePage = TabSheet2
+    HelpContext = 1
+    ActivePage = TabSheet3
     Align = alClient
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 3
     TabStop = False
     OnChange = pgControlChange
     FixedDimension = 19
     object TabSheet1: TRzTabSheet
+      HelpContext = 135
       Caption = #1040#1074#1090#1086#1088#1099
       object rzsSplitterA: TRzSplitter
         Left = 0
@@ -796,6 +798,7 @@ object frmMain: TfrmMain
       end
     end
     object TabSheet2: TRzTabSheet
+      HelpContext = 135
       Caption = #1057#1077#1088#1080#1080
       object rzsSplitterS: TRzSplitter
         Left = 0
@@ -1060,8 +1063,6 @@ object frmMain: TfrmMain
               OnInitNode = tvBooksTreeInitNode
               OnKeyDown = tvBooksTreeKeyDown
               OnMouseUp = tvBooksTreeMouseUp
-              ExplicitLeft = -7
-              ExplicitTop = 142
               Columns = <
                 item
                   MinWidth = 30
@@ -1165,6 +1166,7 @@ object frmMain: TfrmMain
       end
     end
     object TabSheet3: TRzTabSheet
+      HelpContext = 135
       Caption = #1046#1072#1085#1088#1099
       object rzsSplitterG: TRzSplitter
         Left = 0
@@ -1471,7 +1473,7 @@ object frmMain: TfrmMain
       end
     end
     object TabSheet4: TRzTabSheet
-      HelpContext = 142
+      HelpContext = 126
       Caption = #1055#1086#1080#1089#1082
       object rzsSplitterSR: TRzSplitter
         Left = 0
@@ -2251,7 +2253,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 0
@@ -2699,6 +2700,7 @@ object frmMain: TfrmMain
       end
     end
     object TabSheet7: TRzTabSheet
+      HelpContext = 108
       Caption = #1057#1087#1080#1089#1086#1082' '#1079#1072#1082#1072#1095#1077#1082
       object tlbrDownloadList: TRzToolbar
         AlignWithMargins = True
@@ -2837,6 +2839,8 @@ object frmMain: TfrmMain
         BevelOuter = bvNone
         Caption = 'Panel1'
         TabOrder = 1
+        ExplicitLeft = 46
+        ExplicitWidth = 942
         object RzPanel2: TRzPanel
           AlignWithMargins = True
           Left = 3
@@ -2846,6 +2850,7 @@ object frmMain: TfrmMain
           Align = alBottom
           BorderOuter = fsFlatRounded
           TabOrder = 0
+          ExplicitWidth = 936
           DesignSize = (
             934
             61)
@@ -3195,7 +3200,6 @@ object frmMain: TfrmMain
       object miShowHelp: TMenuItem
         Caption = #1057#1087#1088#1072#1074#1082#1072
         ImageIndex = 17
-        ShortCut = 112
         OnClick = miShowHelpClick
       end
       object miCheckUpdates: TMenuItem
