@@ -4,21 +4,24 @@ interface
 uses
   Classes,
   Windows,
-  SysUtils;
+  SysUtils,
+  unit_globals;
 
 type
 
    TFb2ToText = class
    private
-     FEncoding : (enUnknown, en1251,enUTF8, enUnicode);
+     FSourceEncoding : TTXTEncoding;
+     FResEncoding : TTXTEncoding;
 
      FIn,FOut: Text;
 
-     procedure ProceedString(FS,TagStart,TagEnd:UTF8String);
-     procedure ClearString(var FS:UTF8String);
+
+     procedure ProceedString(FS,TagStart,TagEnd:String);
+     procedure ClearString(var FS:String);
      procedure GetEncoding( S: string);
   public
-    procedure Convert(FileIn, FileOut: string);
+    procedure Convert(FileIn, FileOut: string; ResEncoding: TTXTEncoding);
   end;
 
 implementation
@@ -28,7 +31,7 @@ implementation
 uses
   StrUtils;
 
-procedure TFb2ToText.ClearString(var FS:UTF8String);
+procedure TFb2ToText.ClearString(var FS:String);
 begin
   FS := ReplaceStr(FS,'<strong>','');
   FS := ReplaceStr(FS,'</strong>','');
@@ -38,13 +41,13 @@ begin
   FS := ReplaceStr(FS,'</emphasis>','');
 end;
 
-procedure TFb2ToText.Convert(FileIn, FileOut: string);
+procedure TFb2ToText.Convert(FileIn, FileOut: string; ResEncoding: TTXTEncoding);
 var
-  i: integer;
-
   SA: AnsiString;
-  S:  UTF8String;
+  US:  UTF8String;
+  S: string;
 begin
+  FResEncoding := ResEncoding;
 
   AssignFile(FIn, FileIn);
   Reset(FIn);
@@ -55,25 +58,22 @@ begin
   try
     Readln(FIn,S);
     GetEncoding(S);
-    i := 1;
 
     while (pos('<body',S) = 0) and not Eof(FIn) do
-    begin
       Readln(FIn,S);
-      inc(i);
-    end;
-
-
 
     while  not Eof(FIn) do
     begin
-      case FEncoding of
-        en1251: begin
+      case FSourceEncoding of
+        en1251, enUnknown:
+                begin
                   Readln(FIn,SA);
-                  S := AnsiToUTF8(SA);
+                  US := AnsiToUTF8(SA);
                 end;
-        enUTF8: Readln(FIn,S);
+        enUTF8: Readln(FIn,US);
       end;
+
+      S := UTF8ToString(US);
 
       if (pos('</section>',S) <> 0)  or
          (pos('</title>',S)   <> 0)  or
@@ -93,19 +93,19 @@ end;
 
 procedure TFb2ToText.GetEncoding(S: string);
 begin
-  FEncoding := enUnknown;
-  if pos('windows-1251',AnsiLowerCase(s)) <> 0 then FEncoding := en1251;
-  if pos('utf-8',AnsiLowerCase(s)) <> 0 then FEncoding := enUTF8;
-  if pos('unicode',AnsiLowerCase(s)) <> 0 then FEncoding := enUnicode;
+  FSourceEncoding := enUnknown;
+  if pos('windows-1251',AnsiLowerCase(s)) <> 0 then FSourceEncoding := en1251;
+  if pos('utf-8',AnsiLowerCase(s)) <> 0 then FSourceEncoding := enUTF8;
+  if pos('unicode',AnsiLowerCase(s)) <> 0 then FSourceEncoding := enUnicode;
 
 end;
 
-procedure TFb2ToText.ProceedString(FS,TagStart, TagEnd: UTF8String);
+procedure TFb2ToText.ProceedString(FS,TagStart, TagEnd: String);
 var
  p1,p2: integer;
  L : integer;
- US: UTF8String;
- OS: UTF8String;
+ US: String;
+ OS: String;
 begin
   L := Length(TagStart);
   p1 := pos(TagStart, FS);
@@ -116,7 +116,11 @@ begin
   begin
     p2 := pos(TagEnd, US);
     OS := copy(US,p1 + L, p2 - p1 - L);
-    writeln(FOut,OS);
+    case FResEncoding of
+      en1251:    writeln(FOut,UTF8toAnsi(UTF8Encode(OS)));
+      enUTF8:    writeln(FOut,UTF8Encode(OS));
+      enUnicode: writeln(FOut,OS);
+    end;
     Delete(US,1,p2 + 3);
     p1 := pos(TagStart,US);
   end;

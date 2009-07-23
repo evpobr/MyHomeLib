@@ -7,7 +7,7 @@
 			<DCC_DependencyCheckOutputName>Release\Bin\MyhomeLib.exe</DCC_DependencyCheckOutputName>
 			<MainSource>MyhomeLib.dpr</MainSource>
 			<ProjectVersion>12.0</ProjectVersion>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
 			<Base>true</Base>
@@ -23,7 +23,7 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
-			<DCC_UsePackage>vclx;vcl;dbrtl;Rave76VCL;bdertl;rtl;vclactnband;vcldb;vcldbx;dsnap;dsnapcon;TeeUI;TeeDB;Tee;adortl;vclib;ibxpress;IndyCore;IndySystem;IndyProtocols;xmlrtl;inet;intrawebdb_100_120;Intraweb_100_120;VclSmp;vclie;websnap;webdsnap;inetdbbde;inetdbxpress;soaprtl;vclribbon;DbxCommonDriver;DbxClientDriver;DBXInterBaseDriver;DBXMySQLDriver;dbexpress;dbxcds;ZipmasterD12;VirtualTreesD12;vclAbsDBd12;RaizeComponentsVcl;RaizeComponentsVclDb;lmdrtlx9rt_120;lmdrtl9rt_120;lmdcore9rt_120;lmdplugin1rt_120;MHLComponents;dclZipForged11;vclZipForged12</DCC_UsePackage>
+			<DCC_UsePackage>vclx;vcl;dbrtl;bdertl;rtl;vclactnband;vcldb;vcldbx;dsnap;vclib;ibxpress;IndyCore;IndySystem;IndyProtocols;xmlrtl;inet;VclSmp;vclie;webdsnap;inetdbbde;inetdbxpress;soaprtl;vclribbon;DbxCommonDriver;DbxClientDriver;DBXInterBaseDriver;DBXMySQLDriver;dbexpress;dbxcds;ZipmasterD12;VirtualTreesD12;vclAbsDBd12;RaizeComponentsVcl;RaizeComponentsVclDb;lmdrtlx9rt_120;lmdrtl9rt_120;lmdcore9rt_120;lmdplugin1rt_120;MHLComponents;dclZipForged11;vclZipForged12</DCC_UsePackage>
 			<DCC_DependencyCheckOutputName>MyhomeLib.exe</DCC_DependencyCheckOutputName>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
@@ -40,6 +40,7 @@
 			<DCC_DebugInformation>False</DCC_DebugInformation>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<DCC_DebugDCUs>true</DCC_DebugDCUs>
 			<DCC_DependencyCheckOutputName>Debug\Bin\MyhomeLib.exe</DCC_DependencyCheckOutputName>
 			<Version>7.0</Version>
 			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
@@ -52,58 +53,6 @@
 			<DCC_HppOutput>Debug\Units</DCC_HppOutput>
 			<DCC_ExeOutput>Debug\Bin</DCC_ExeOutput>
 		</PropertyGroup>
-		<ProjectExtensions>
-			<Borland.Personality>Delphi.Personality.12</Borland.Personality>
-			<Borland.ProjectType/>
-			<BorlandProject>
-				<Delphi.Personality>
-					<Parameters>
-						<Parameters Name="UseLauncher">False</Parameters>
-						<Parameters Name="LoadAllSymbols">True</Parameters>
-						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
-						<Parameters Name="RunParams">uselocaldata</Parameters>
-					</Parameters>
-					<VersionInfo>
-						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
-						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
-						<VersionInfo Name="MajorVer">1</VersionInfo>
-						<VersionInfo Name="MinorVer">5</VersionInfo>
-						<VersionInfo Name="Release">0</VersionInfo>
-						<VersionInfo Name="Build">450</VersionInfo>
-						<VersionInfo Name="Debug">False</VersionInfo>
-						<VersionInfo Name="PreRelease">True</VersionInfo>
-						<VersionInfo Name="Special">True</VersionInfo>
-						<VersionInfo Name="Private">True</VersionInfo>
-						<VersionInfo Name="DLL">False</VersionInfo>
-						<VersionInfo Name="Locale">1049</VersionInfo>
-						<VersionInfo Name="CodePage">1251</VersionInfo>
-					</VersionInfo>
-					<VersionInfoKeys>
-						<VersionInfoKeys Name="CompanyName"/>
-						<VersionInfoKeys Name="FileDescription"/>
-						<VersionInfoKeys Name="FileVersion">1.5.0.450</VersionInfoKeys>
-						<VersionInfoKeys Name="InternalName"/>
-						<VersionInfoKeys Name="LegalCopyright">Алексей Пеньков</VersionInfoKeys>
-						<VersionInfoKeys Name="LegalTrademarks"/>
-						<VersionInfoKeys Name="OriginalFilename"/>
-						<VersionInfoKeys Name="ProductName">MyHomeLib</VersionInfoKeys>
-						<VersionInfoKeys Name="ProductVersion">1.0</VersionInfoKeys>
-						<VersionInfoKeys Name="Comments"/>
-						<VersionInfoKeys Name="SpecialBuild"/>
-						<VersionInfoKeys Name="PrivateBuild"/>
-					</VersionInfoKeys>
-					<Source>
-						<Source Name="MainSource">MyhomeLib.dpr</Source>
-					</Source>
-					<Excluded_Packages>
-						<Excluded_Packages Name="$(BDS)\bin\dcloffice2k120.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
-						<Excluded_Packages Name="$(BDS)\bin\dclofficexp120.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
-					</Excluded_Packages>
-				</Delphi.Personality>
-				<ModelSupport>False</ModelSupport>
-			</BorlandProject>
-			<ProjectFileVersion>12</ProjectFileVersion>
-		</ProjectExtensions>
 		<ItemGroup>
 			<DelphiCompile Include="MyhomeLib.dpr">
 				<MainSource>MainSource</MainSource>
@@ -130,7 +79,6 @@
 			<DCCReference Include="Forms\frm_bases.pas">
 				<Form>frmBases</Form>
 			</DCCReference>
-			<DCCReference Include="Units\fictionbook_21.pas"/>
 			<DCCReference Include="Forms\frm_book_info.pas">
 				<Form>frmBookDetails</Form>
 			</DCCReference>
@@ -179,7 +127,7 @@
 			</DCCReference>
 			<DCCReference Include="ImportImpl\unit_ImportFB2ThreadBase.pas"/>
 			<DCCReference Include="ImportImpl\unit_ImportFB2ZIPThread.pas"/>
-			<DCCReference Include="ImportImpl\unit_ImportLibRusEcThread.pas"/>
+			<DCCReference Include="ImportImpl\unit_ImportInpxThread.pas"/>
 			<DCCReference Include="ImportImpl\unit_ExportXMLThread.pas"/>
 			<DCCReference Include="ImportImpl\unit_Export.pas"/>
 			<DCCReference Include="ImportImpl\frm_ExportProgressForm.pas">
@@ -248,14 +196,8 @@
 				<DesignClass>TFrame</DesignClass>
 			</DCCReference>
 			<DCCReference Include="UtilsImpl\unit_fb2ToText.pas"/>
-			<DCCReference Include="Components\unit_StaticTip.pas"/>
-			<DCCReference Include="Components\files_list.pas"/>
-			<DCCReference Include="Components\MHLComponents_Register.pas"/>
-			<DCCReference Include="Components\unit_AutoCompleteEdit.pas"/>
 			<DCCReference Include="UtilsImpl\unit_SyncFoldersThread.pas"/>
 			<DCCReference Include="UtilsImpl\unit_libupdateThread.pas"/>
-			<DCCReference Include="Components\unit_CoverPanel.pas"/>
-			<DCCReference Include="Components\unit_InfoPanel.pas"/>
 			<DCCReference Include="DwnldImpl\unit_DownloadBooksThread.pas"/>
 			<DCCReference Include="DwnldImpl\frm_DownloadProgressForm.pas">
 				<Form>DownloadProgressForm</Form>
@@ -263,10 +205,29 @@
 			<DCCReference Include="Units\unit_Columns.pas"/>
 			<DCCReference Include="UtilsImpl\StoHtmlHelp.pas"/>
 			<DCCReference Include="DwnldImpl\unit_DownloadManagerThread.pas"/>
+			<DCCReference Include="Units\unit_Messages.pas"/>
+			<DCCReference Include="Units\unit_Lib_Updates.pas"/>
+			<DCCReference Include="Forms\frm_editor.pas">
+				<Form>frmEditor</Form>
+			</DCCReference>
+			<DCCReference Include="Units\unit_SearchUtils.pas"/>
+			<DCCReference Include="ImportImpl\unit_ExportINPXThread.pas"/>
+			<DCCReference Include="Forms\frm_info_popup.pas">
+				<Form>frmInfoPopup</Form>
+			</DCCReference>
 			<DCCReference Include="DataModules\dm_collection.pas">
 				<Form>DMCollection</Form>
 				<DesignClass>TDataModule</DesignClass>
 			</DCCReference>
+			<DCCReference Include="Units\htmlhlp.pas"/>
+			<RcItem Include="Resources\Images\16x16\star_small.png">
+				<ResourceType>RCData</ResourceType>
+				<ResourceId>smallStar</ResourceId>
+			</RcItem>
+			<RcItem Include="Resources\Images\16x16\star_small_empty.png">
+				<ResourceType>RCData</ResourceType>
+				<ResourceId>smallStarEmpty</ResourceId>
+			</RcItem>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -280,4 +241,65 @@
 			</BuildConfiguration>
 		</ItemGroup>
 		<Import Project="$(BDS)\Bin\CodeGear.Delphi.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')"/>
+		<ProjectExtensions>
+			<Borland.Personality>Delphi.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Delphi.Personality>
+					<Parameters>
+						<Parameters Name="UseLauncher">False</Parameters>
+						<Parameters Name="LoadAllSymbols">True</Parameters>
+						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+					</Parameters>
+					<VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
+						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
+						<VersionInfo Name="MajorVer">1</VersionInfo>
+						<VersionInfo Name="MinorVer">5</VersionInfo>
+						<VersionInfo Name="Release">0</VersionInfo>
+						<VersionInfo Name="Build">535</VersionInfo>
+						<VersionInfo Name="Debug">False</VersionInfo>
+						<VersionInfo Name="PreRelease">True</VersionInfo>
+						<VersionInfo Name="Special">True</VersionInfo>
+						<VersionInfo Name="Private">True</VersionInfo>
+						<VersionInfo Name="DLL">False</VersionInfo>
+						<VersionInfo Name="Locale">1049</VersionInfo>
+						<VersionInfo Name="CodePage">1251</VersionInfo>
+					</VersionInfo>
+					<VersionInfoKeys>
+						<VersionInfoKeys Name="CompanyName">MyHomeLib</VersionInfoKeys>
+						<VersionInfoKeys Name="FileDescription">MyHomeLib</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">1.5.0.535</VersionInfoKeys>
+						<VersionInfoKeys Name="InternalName">MyHomeLib</VersionInfoKeys>
+						<VersionInfoKeys Name="LegalCopyright">Алексей Пеньков</VersionInfoKeys>
+						<VersionInfoKeys Name="LegalTrademarks">MyHomeLib</VersionInfoKeys>
+						<VersionInfoKeys Name="OriginalFilename">MyHomeLib.exe</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductName">MyHomeLib</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion">1.5</VersionInfoKeys>
+						<VersionInfoKeys Name="Comments"/>
+						<VersionInfoKeys Name="SpecialBuild"/>
+						<VersionInfoKeys Name="PrivateBuild"/>
+					</VersionInfoKeys>
+					<Source>
+						<Source Name="MainSource">MyhomeLib.dpr</Source>
+					</Source>
+					<Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclmid120.bpl">CodeGear MyBase DataAccess Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\RaveReports\Lib\dclRave.bpl">Rave Reports 7.6 BE Package</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dcl31w120.bpl">Delphi 1.0 Compatibility Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclmcn120.bpl">CodeGear DataSnap Connection Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dcltee8120.bpl">TeeChart Standard 8 Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclado120.bpl">CodeGear ADO DB Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclIntraweb_100_120.bpl">VCL for the Web 10.0  Design Package for CodeGear RAD Studio</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclwebsnap120.bpl">CodeGear WebSnap Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclDataSnapIndy10ServerTransport120.bpl">CodeGear DBExpress DataSnap Server Transport Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclDataSnapProviderClient120.bpl">CodeGear DBExpress DataSnap Provider Client Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclDataSnapServer120.bpl">CodeGear DBExpress DataSnap Server Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dcldbxcds120.bpl">CodeGear SimpleDataset Component (DBX)</Excluded_Packages>
+					</Excluded_Packages>
+				</Delphi.Personality>
+				<ModelSupport>False</ModelSupport>
+			</BorlandProject>
+			<ProjectFileVersion>12</ProjectFileVersion>
+		</ProjectExtensions>
 	</Project>

@@ -108,12 +108,12 @@ object frmAbout: TfrmAbout
       Caption = #1040#1083#1077#1082#1089#1077#1081' '#1055#1077#1085#1100#1082#1086#1074#13#1053#1080#1082#1086#1083#1072#1081' '#1056#1099#1084#1072#1085#1086#1074
     end
     object RzLabel6: TRzLabel
-      Left = 53
+      Left = 41
       Top = 201
-      Width = 97
+      Width = 137
       Height = 26
       Alignment = taCenter
-      Caption = 'eg, Evgeniy_V,'#13' AlbanSpy, 1_abram'
+      Caption = 'eg, Evgeniy_V, albert'#13' AlbanSpy, kaznelson, Olega'
     end
     object RzLabel7: TRzLabel
       Left = 76

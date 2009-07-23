@@ -66,7 +66,6 @@ type
     RzLabel2: TRzLabel;
     RzLabel3: TRzLabel;
     RzLabel4: TRzLabel;
-    RzLabel5: TRzLabel;
     RzEdit2: TRzEdit;
     RzLabel6: TRzLabel;
     RzMaskEdit1: TRzMaskEdit;
@@ -94,8 +93,6 @@ type
     Label7: TLabel;
     seFontSize: TRzSpinEdit;
     Button1: TButton;
-    RzGroupBox7: TRzGroupBox;
-    cbShowSubGenreBooks: TCheckBox;
     RzGroupBox9: TRzGroupBox;
     edUpdates: TEdit;
     cbCheckColUpdate: TCheckBox;
@@ -111,7 +108,7 @@ type
     btnAddScript: TRzBitBtn;
     RzGroupBox5343245: TRzGroupBox;
     cbDefaultAction: TComboBox;
-    RzBitBtn1: TRzBitBtn;
+    btnHelp: TRzBitBtn;
     rgDeviceFormat: TRadioGroup;
     RzGroupBox5: TRzGroupBox;
     cbSquareFilter: TCheckBox;
@@ -121,14 +118,33 @@ type
     tbtnInsert4: TRzToolButton;
     RzToolButton1: TRzToolButton;
     RzToolButton2: TRzToolButton;
-    RzGroupBox10: TRzGroupBox;
-    cbShowFb2Info: TCheckBox;
     RzToolButton3: TRzToolButton;
     RzGroupBox11: TRzGroupBox;
     edReadDir: TRzButtonEdit;
+    dlgSelectDir: TRzSelDirDialog;
+    tsBehavour: TTabSheet;
+    RzGroupBox7: TRzGroupBox;
+    cbShowSubGenreBooks: TCheckBox;
     cbMinimizeToTray: TCheckBox;
     cbAutoStartDwnld: TCheckBox;
-    dlgSelectDir: TRzSelDirDialog;
+    cbShowFb2Info: TCheckBox;
+    cbAllowMixedCollections: TCheckBox;
+    pnlDwnld: TRzPanel;
+    pnlDeleted: TRzPanel;
+    RzPanel5: TRzPanel;
+    RzGroupBox10: TRzGroupBox;
+    edTimeOut: TRzNumericEdit;
+    RzLabel7: TRzLabel;
+    edReadTimeOut: TRzNumericEdit;
+    RzLabel8: TRzLabel;
+    cbUseIESettings: TCheckBox;
+    edDwnldInterval: TRzNumericEdit;
+    RzLabel9: TRzLabel;
+    cbAutoRunUpdate: TCheckBox;
+    cbDeleteDeleted: TCheckBox;
+    cbTXTEncoding: TRzComboBox;
+    Label1: TLabel;
+    RzLabel5: TRzLabel;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
@@ -142,9 +158,11 @@ type
     procedure btnAddScriptClick(Sender: TObject);
     procedure btnEditScriptClick(Sender: TObject);
     procedure btnDeleteScriptClick(Sender: TObject);
-    procedure RzBitBtn1Click(Sender: TObject);
+    procedure btnHelpClick(Sender: TObject);
     procedure tbtnInsert1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure pnlDwnldClick(Sender: TObject);
+    procedure cbUseIESettingsClick(Sender: TObject);
 
   private
     procedure EditReader(AItem: TListItem);
@@ -169,7 +187,8 @@ uses
   frm_edit_reader,
   frm_main,
   frm_edit_script,
-  unit_Settings;
+  unit_Settings,
+  htmlhlp;
 
 {$R *.dfm}
 
@@ -204,6 +223,8 @@ begin
     emTxt: rgDeviceFormat.ItemIndex := 3;
   end;
 
+  cbTXTEncoding.ItemIndex := Ord(Settings.TXTEncoding);
+
   edFolderTemplate.Text := Settings.FolderTemplate;
   edFileNameTemplate.Text := Settings.FileNameTemplate;
   cbTranslit.Checked := Settings.TransliterateFileName;
@@ -235,10 +256,8 @@ begin
   pnlBS.Font.Color := Settings.FontColor;
   pnlASG.Font.Color := Settings.FontColor;
 
-  cbShowFb2Info.Checked := Settings.ShowFb2Info;
-  cbShowSubGenreBooks.Checked := Settings.ShowSubGenreBooks;
-  cbMinimizeToTray.Checked := Settings.MinimizeToTray;
-  cbAutoStartDwnld.Checked := Settings.AutoStartDwnld;
+  pnlDwnld.Font.Color := Settings.LocalColor ;
+  pnlDeleted.Font.Color := Settings.DeletedColor;
 
   // Page 4 - Internet
   edProxyServer.Text := Settings.ProxyServer;
@@ -250,6 +269,13 @@ begin
   edUpdates.Text := Settings.UpdateURL;
   cbCheckColUpdate.Checked := Settings.CheckExternalLibUpdate;
   cbUpdates.Checked := Settings.CheckUpdate;
+
+  edTimeOut.Value := Settings.TimeOut;
+  edReadTimeOut.Value := Settings.ReadTimeOut;
+  edDwnldInterval.Value := Settings.DwnldInterval;
+
+  cbUseIESettings.Checked := Settings.UseIESettings;
+  cbAutoRunUpdate.Checked := Settings.AutoRunUpdate;
 
   // Page 5 - Scripts
   lvScripts.Items.Clear;
@@ -269,7 +295,18 @@ begin
   end;
   cbDefaultAction.ItemIndex := Settings.DefaultScript;
 
+  // Page 6 - Behavior
+
+  cbShowFb2Info.Checked := Settings.ShowFb2Info;
+  cbShowSubGenreBooks.Checked := Settings.ShowSubGenreBooks;
+  cbMinimizeToTray.Checked := Settings.MinimizeToTray;
+  cbAutoStartDwnld.Checked := Settings.AutoStartDwnld;
+  cbAllowMixedCollections.Checked := Settings.AllowMixed;
+  cbDeleteDeleted.Checked := Settings.DeleteDeleted;
+
   tvSections.Select(tvSections.Items[0]);
+
+  cbUseIESettingsClick(Nil);
 end;
 
 procedure TfrmSettings.SaveSettings;
@@ -285,6 +322,13 @@ begin
     2: Settings.ExportMode := emLrf;
     3: Settings.ExportMode := emTxt;
   end;
+
+  case cbTXTEncoding.ItemIndex of
+      0: Settings.TXTEncoding := enUTF8;
+      1: Settings.TXTEncoding := en1251;
+      2: Settings.TXTEncoding := enUnicode;
+  end;
+
   Settings.FolderTemplate := edFolderTemplate.Text;
   Settings.FileNameTemplate := edFileNameTemplate.Text;
   Settings.TransliterateFileName := cbTranslit.Checked;
@@ -294,6 +338,8 @@ begin
   // Page 2 - Readers
   SaveReaders;
 
+  // Page 3 - Interface
+
   Settings.TreeFontSize := Trunc(seFontSize.Value);
   Settings.ShortFontSize := Trunc(seShortFontSize.Value);
   Settings.BookColor := pnlCT.Color;
@@ -302,9 +348,9 @@ begin
   Settings.SeriesBookColor := pnlBS.Color;
   Settings.BGColor := pnlASG.Color;
   Settings.FontColor := pnlASG.Font.Color;
-  Settings.ShowSubGenreBooks := cbShowSubGenreBooks.Checked;
-  Settings.MinimizeToTray := cbMinimizeToTray.Checked;
-  Settings.ShowFb2Info := cbShowFb2Info.Checked;
+
+  Settings.LocalColor := pnlDwnld.Font.Color;
+  Settings.DeletedColor := pnlDeleted.Font.Color;
 
   // Page 4 - Internet
   Settings.ProxyServer := edProxyServer.Text;
@@ -315,10 +361,26 @@ begin
   Settings.CheckExternalLibUpdate := cbCheckColUpdate.Checked;
   Settings.CheckUpdate := cbUpdates.Checked;
   Settings.DownloadURL := edDownloadServer.Text;
+  Settings.TimeOut := Round(edTimeOut.Value);
+  Settings.ReadTimeOut := Round(edReadTimeOut.Value);
+  Settings.DwnldInterval := Round(edDwnldInterval.Value);
+  Settings.UseIESettings := cbUseIESettings.Checked;
+  Settings.AutoRunUpdate := cbAutoRunUpdate.Checked;
 
   // Page 5 - Scripts
   SaveScripts;
   Settings.DefaultScript := cbDefaultAction.ItemIndex;
+
+  // Page 6 - Behavior
+
+  Settings.ShowSubGenreBooks := cbShowSubGenreBooks.Checked;
+  Settings.MinimizeToTray := cbMinimizeToTray.Checked;
+  Settings.ShowFb2Info := cbShowFb2Info.Checked;
+  Settings.AutoStartDwnld := cbAutoStartDwnld .Checked;
+  Settings.AllowMixed := cbAllowMixedCollections.Checked;
+  Settings.DeleteDeleted := cbDeleteDeleted.Checked;
+
+
 end;
 
 procedure TfrmSettings.SaveReaders;
@@ -347,9 +409,11 @@ begin
   end;
 end;
 
-procedure TfrmSettings.RzBitBtn1Click(Sender: TObject);
+procedure TfrmSettings.btnHelpClick(Sender: TObject);
 begin
-  Application.HelpContext(pcSetPages.ActivePage.HelpContext);
+  HtmlHelp(Application.Handle,
+           PChar(Settings.SystemFileName[sfAppHelp]),
+           HH_HELP_CONTEXT, pcSetPages.ActivePage.HelpContext);
 end;
 
 procedure TfrmSettings.btnSaveClick(Sender: TObject);
@@ -511,6 +575,13 @@ begin
     (Sender as TrzPanel).Color := dlgColors.Color;
 end;
 
+procedure TfrmSettings.pnlDwnldClick(Sender: TObject);
+begin
+  dlgColors.Color := (Sender as TrzPanel).Font.Color;
+  if dlgColors.Execute then
+    (Sender as TrzPanel).Font.Color := dlgColors.Color;
+end;
+
 procedure TfrmSettings.tbtnInsert1Click(Sender: TObject);
 const
   s: array [41..47] of string = ('%f','%t','%s','%n','%id','%g','%fl');
@@ -546,6 +617,14 @@ begin
     pnlBS.Font.Color := dlgColors.Color;
     pnlASG.Font.Color := dlgColors.Color;
   end;
+end;
+
+procedure TfrmSettings.cbUseIESettingsClick(Sender: TObject);
+begin
+  edProxyServer.Enabled := not cbUseIESettings.Checked;
+  edProxyPort.Enabled := not cbUseIESettings.Checked;
+  edProxyUserName.Enabled := not cbUseIESettings.Checked;
+  edProxyPassword.Enabled := not cbUseIESettings.Checked;
 end;
 
 end.

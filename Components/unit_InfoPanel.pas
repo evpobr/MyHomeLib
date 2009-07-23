@@ -2,7 +2,7 @@
 {                                                                              }
 {                            MyHomeLib 2.0                                     }
 {                                                                              }
-{               Copyright (c) 2008 Aleksey Penkov  alex.penkov@gmail.com       }
+{               Copyright (c) 2009 Aleksey Penkov  alex.penkov@gmail.com       }
 {                                                                              }
 {******************************************************************************}
 
@@ -11,7 +11,14 @@ unit unit_InfoPanel;
 interface
 
 uses
-  SysUtils, Classes, Controls, ExtCtrls, StdCtrls, Graphics, RzBorder, RzCommon;
+  SysUtils,
+  Classes,
+  Controls,
+  ExtCtrls,
+  StdCtrls,
+  Graphics,
+  RzBorder,
+  RzCommon;
 
 type
 

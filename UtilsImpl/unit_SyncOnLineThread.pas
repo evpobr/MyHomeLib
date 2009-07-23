@@ -37,6 +37,7 @@ uses
   unit_globals,
   unit_database,
   unit_Consts,
+  unit_settings,
   Forms;
 
 { TImportXMLThread }
@@ -51,13 +52,13 @@ var
 
   local: boolean;
 begin
-  totalBooks := DMCollection.tblBooks.RecordCount;
+  totalBooks := dmCollection.tblBooks.RecordCount;
   processedBooks := 0;
   Root := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
 
   try
-    DMCollection.tblBooks.First;
-    while not DMCollection.tblBooks.Eof do
+    dmCollection.tblBooks.First;
+    while not dmCollection.tblBooks.Eof do
     begin
       if Canceled then
           Exit;
@@ -67,35 +68,35 @@ begin
       //
       { TODO -oAlex : Через какое-то время переименовывание можно будет убрать }
     try
-      IDStr := DMCollection.tblBooksLibID.AsString + ' ';
-      TmpFolder := DMCollection.tblBooksFolder.Value;
+      IDStr := dmCollection.tblBooksLibID.AsString + ' ';
+      TmpFolder := dmCollection.tblBooksFolder.Value;
       StrReplace(IDStr, '', TmpFolder);              // удаляем Id из имени
       if FileExists(Root + TmpFolder)  then
       begin
           // если есть, переименовываем и результат заносим в базу
-        DMCollection.tblBooks.Edit;
-        DMCollection.tblBooksLocal.Value := RenameFile(Root + TmpFolder, Root + DMCollection.tblBooksFolder.Value);
-        DMCollection.tblBooks.Post;
+        dmCollection.SetLocalStatus(dmCollection.tblBooksId.Value, RenameFile(Root + TmpFolder, Root + dmCollection.tblBooksFolder.Value));
       end;
       //
       //  Проверяем был ли файл закачан ранее и ставим отметку в базу
       //
 
 
-      Local := FileExists(Root + DMCollection.tblBooksFolder.Value);
+      Local := FileExists(Root + dmCollection.tblBooksFolder.Value);
 
-      if DMCollection.tblBooksLocal.Value <> local then
+      if Settings.DeleteDeleted and Local and dmCollection.tblBooksDeleted.Value then
       begin
-        DMCollection.tblBooks.Edit;
-        DMCollection.tblBooksLocal.Value := Local;
-        DMCollection.tblBooks.Post;
+        SysUtils.DeleteFile(Root + dmCollection.tblBooksFolder.Value);
+        Local := False;
       end;
+
+      if dmCollection.tblBooksLocal.Value <> local then
+        dmCollection.SetLocalStatus(dmCollection.tblBooksId.Value,Local);
     except
       on E:Exception do
         Application.MessageBox(PChar('Какие-то проблемы с книгой ' + TmpFolder),'',MB_OK);
     end;
 
-      DMCollection.tblBooks.Next;
+      dmCollection.tblBooks.Next;
 
       Inc(processedBooks);
       if (processedBooks mod ProcessedItemThreshold) = 0 then

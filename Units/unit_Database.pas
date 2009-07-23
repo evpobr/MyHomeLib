@@ -21,6 +21,9 @@ uses
   ABSMain,
   unit_globals;
 
+const
+  IndexSize = 12;
+
 type
   TAbsTableHelper = class helper for TAbsTable
      constructor Create(AOwner: TComponent);
@@ -82,6 +85,7 @@ type
     FSeries: TAbsTable;
     FGenres: TAbsTable;
     FGenreList: TAbsTable;
+    FExtra: TAbsTable;
   end;
 
 implementation
@@ -111,6 +115,8 @@ type
   TTableIndexes = array of TIndexDesc;
 
 const
+
+
 //-----------------------------------------------------------------------------
 //                                 Коллекция
 //-----------------------------------------------------------------------------
@@ -118,33 +124,32 @@ const
 // Author List
 //
 AuthorListTableFields: array [1 .. 5] of TFieldDesc = (
-  (Name: 'ID';     DataType: ftAutoInc;    Size: 0;  Required: true),
-  (Name: 'AuthID'; DataType: ftInteger;    Size: 0;  Required: false),
-  (Name: 'BookID'; DataType: ftInteger;    Size: 0;  Required: false),
-  (Name: 'Series'; DataType: ftWideString; Size: 10; Required: false),
-  (Name: 'Title';  DataType: ftWideString; Size: 10; Required: false)
+  (Name: 'AL_ID';     DataType: ftAutoInc;    Size: 0;  Required: true),
+  (Name: 'AL_AuthID'; DataType: ftInteger;    Size: 0;  Required: false),
+  (Name: 'AL_BookID'; DataType: ftInteger;    Size: 0;  Required: false),
+  (Name: 'AL_Series'; DataType: ftWideString; Size: IndexSize; Required: false),
+  (Name: 'AL_Title';  DataType: ftWideString; Size: IndexSize; Required: false)
 );
 
 AuthorListTableIndexes: array [1..3] of TIndexDesc = (
-  (Name: 'ID_Index';  Fields: 'ID';                  Options: [ixPrimary, ixUnique]),
-  (Name: 'BookIndex'; Fields: 'BookID';              Options: []),
-  (Name: 'AuthIndex'; Fields: 'AuthID;Series;Title'; Options: [ixCaseInsensitive])
+  (Name: 'ID_Index';  Fields: 'AL_ID';                  Options: [ixPrimary, ixUnique]),
+  (Name: 'BookIndex'; Fields: 'AL_BookID';              Options: []),
+  (Name: 'AuthIndex'; Fields: 'AL_AuthID;AL_Series;AL_Title'; Options: [ixCaseInsensitive])
 );
 
 //
 //  Authors
 //
-AuthorsTableFields: array [1 .. 5] of TFieldDesc = (
-  (Name: 'ID';       DataType: ftAutoInc;    Size: 0;   Required: true),
-  (Name: 'Family';   DataType: ftWideString; Size: 128; Required: true),
-  (Name: 'Name';     DataType: ftWideString; Size: 128; Required: false),
-  (Name: 'Middle';   DataType: ftWideString; Size: 128; Required: false),
-  (Name: 'FullName'; DataType: ftWideString; Size: 255; Required: true)
+AuthorsTableFields: array [1 .. 4] of TFieldDesc = (
+  (Name: 'A_ID';       DataType: ftAutoInc;    Size: 0;   Required: true),
+  (Name: 'A_Family';   DataType: ftWideString; Size: 128; Required: true),
+  (Name: 'A_Name';     DataType: ftWideString; Size: 128; Required: false),
+  (Name: 'A_Middle';   DataType: ftWideString; Size: 128; Required: false)
 );
 
 AuthorsTableIndexes: array [1..2] of TIndexDesc = (
-  (Name: 'ID_Index';      Fields: 'ID';          Options: [ixPrimary, ixUnique]),
-  (Name: 'AlphabetIndex'; Fields: 'Family;Name;Middle'; Options: [])
+  (Name: 'ID_Index';      Fields: 'A_ID';          Options: [ixPrimary, ixUnique]),
+  (Name: 'AlphabetIndex'; Fields: 'A_Family;A_Name;A_Middle'; Options: [ixCaseInsensitive])
 );
 
 //
@@ -164,124 +169,108 @@ AuthorsTableIndexes: array [1..2] of TIndexDesc = (
 //
 // Books table
 //
-BooksTableFields: array [1 .. 18] of TFieldDesc = (
+BooksTableFields: array [1 .. 21] of TFieldDesc = (
   (Name: 'ID';         DataType: ftAutoInc;     Size: 0;   Required: true ),
   (Name: 'DatabaseID'; DataType: ftInteger;     Size: 0;   Required: false),
   (Name: 'LibID';      DataType: ftInteger;     Size: 0;   Required: false),
-  (Name: 'Title';      DataType: ftWideString;  Size: 100; Required: false),
-  (Name: 'FullName';   DataType: ftWideString;  Size: 255; Required: false),
+  (Name: 'Title';      DataType: ftWideString;  Size: 150; Required: false),
+  (Name: 'FullName';   DataType: ftWideString;  Size: 120; Required: True),
   (Name: 'SerID';      DataType: ftInteger;     Size: 0;   Required: false),
   (Name: 'SeqNumber';  DataType: ftSmallInt;    Size: 0;   Required: false),
   (Name: 'Date';       DataType: ftDate;        Size: 0;   Required: false),
+  (Name: 'LibRate';    DataType: ftInteger;     Size: 0;   Required: false),
+  (Name: 'Lang';       DataType: ftWideString;  Size: 2;   Required: false),
   //
   (Name: 'DiscID';     DataType: ftInteger;     Size: 0;   Required: false),
-  (Name: 'Folder';     DataType: ftWideString;  Size: 255; Required: false),
-  (Name: 'FileName';   DataType: ftWideString;  Size: 255; Required: true ),
+  (Name: 'Folder';     DataType: ftWideString;  Size: 128; Required: false),
+  (Name: 'FileName';   DataType: ftWideString;  Size: 170; Required: true ),
   (Name: 'InsideNo';   DataType: ftInteger;     Size: 0;   Required: true ),
   (Name: 'Ext';        DataType: ftWideString;  Size: 10;  Required: false),
   (Name: 'Size';       DataType: ftinteger;     Size: 0;   Required: false),
   //
-  (Name: 'URI';        DataType: ftWideString;  Size: 255; Required: false),
+  (Name: 'URI';        DataType: ftWideString;  Size: 60; Required: false),
   //
   (Name: 'Code';       DataType: ftSmallInt;    Size: 0;   Required: false),
   (Name: 'Local';      DataType: ftBoolean;     Size: 0;   Required: false),
-  (Name: 'Deleted';    DataType: ftBoolean;     Size: 0;   Required: false)
+  (Name: 'Deleted';    DataType: ftBoolean;     Size: 0;   Required: false),
+  (Name: 'KeyWords';   DataType: ftWideString; Size: 255; Required: false)
 );
 
-BooksTableIndexes: array [1..6] of TIndexDesc = (
+BooksTableIndexes: array [1..5] of TIndexDesc = (
   (Name: 'ID_Index';       Fields: 'ID';                    Options: [ixPrimary, ixUnique]),
   (Name: 'Series_Index';   Fields: 'SerID;SeqNumber';       Options: []),
-  (Name: 'FullName_Index'; Fields: 'Fullname;Title';        Options: []),
-  (Name: 'Title_Index';    Fields: 'Title';                 Options: []),
-  (Name: 'File_Index';     Fields: 'FileName';              Options: []),
-  (Name: 'Folder_Index';   Fields: 'DiscID;Folder';         Options: [])
-);
-
-//
-// Series List
-//
-SeriesListTableFields: array [1 .. 5] of TFieldDesc = (
-  (Name: 'ID';     DataType: ftAutoInc;    Size: 0;  Required: true),
-  (Name: 'SerID';  DataType: ftInteger;    Size: 0;  Required: true),
-  (Name: 'BookID'; DataType: ftInteger;    Size: 0;  Required: true),
-  (Name: 'Number'; DataType: ftInteger;    Size: 0;  Required: true),
-  (Name: 'Title';  DataType: ftWideString; Size: 10; Required: true)
-);
-
-SeriesListTableIndexes: array [1..3] of TIndexDesc = (
-  (Name: 'ID_Index';    Fields: 'ID';                  Options: [ixPrimary, ixUnique]),
-  (Name: 'BookIndex';   Fields: 'BookID';              Options: []),
-  (Name: 'SeriesIndex'; Fields: 'SerID;Title;Number'; Options: [ixCaseInsensitive])
+  (Name: 'Title_Index';    Fields: 'FullName;Title';        Options: [ixCaseInsensitive]),
+  (Name: 'File_Index';     Fields: 'FileName';              Options: [ixCaseInsensitive]),
+  (Name: 'Folder_Index';   Fields: 'Folder';                Options: [ixCaseInsensitive])
 );
 
 //
 // Series
 //
 SeriesTableFields: array [1 .. 4] of TFieldDesc = (
-  (Name: 'ID';        DataType: ftAutoInc;    Size: 0;  Required: true),
-  (Name: 'AuthID';    DataType: ftInteger;    Size: 0;  Required: true),
-  (Name: 'GenreCode'; DataType: ftWideString; Size: 20; Required: true),
-  (Name: 'Title';     DataType: ftWideString; Size: 80; Required: true)
+  (Name: 'S_ID';        DataType: ftAutoInc;    Size: 0;  Required: true),
+  (Name: 'S_AuthID';    DataType: ftInteger;    Size: 0;  Required: true),
+  (Name: 'S_GenreCode'; DataType: ftWideString; Size: 20; Required: true),
+  (Name: 'S_Title';     DataType: ftWideString; Size: 80; Required: true)
 );
 
 SeriesTableIndexes: array [1..4] of TIndexDesc = (
-  (Name: 'ID_Index';    Fields: 'ID';           Options: [ixPrimary, ixUnique]),
-  (Name: 'TiteIndex';   Fields: 'Title;AuthID'; Options: []),
-  (Name: 'AuthorIndex'; Fields: 'AuthID;Title'; Options: []),
-  (Name: 'SeqTitle';    Fields: 'Title';        Options: [])
+  (Name: 'ID_Index';    Fields: 'S_ID';             Options: [ixPrimary, ixUnique]),
+  (Name: 'TiteIndex';   Fields: 'S_Title;S_AuthID'; Options: [ixCaseInsensitive]),
+  (Name: 'AuthorIndex'; Fields: 'S_AuthID;S_Title'; Options: [ixCaseInsensitive]),
+  (Name: 'SeqTitle';    Fields: 'S_Title';          Options: [ixCaseInsensitive])
 );
 //
 // Genres
 //
 GenresTableFields: array [1 .. 5] of TFieldDesc = (
-  (Name: 'ID';         DataType: ftAutoInc;    Size: 0;  Required: true),
-  (Name: 'Code';       DataType: ftWideString; Size: 20; Required: false),
-  (Name: 'ParentCode'; DataType: ftWideString; Size: 20; Required: false),
-  (Name: 'FB2Code';    DataType: ftWideString; Size: 20; Required: false),
-  (Name: 'Alias';      DataType: ftWideString; Size: 50; Required: false)
+  (Name: 'G_ID';    DataType: ftAutoInc;    Size: 0;  Required: true),
+  (Name: 'G_Code';       DataType: ftWideString; Size: 20; Required: false),
+  (Name: 'G_ParentCode'; DataType: ftWideString; Size: 20; Required: false),
+  (Name: 'G_FB2Code';    DataType: ftWideString; Size: 20; Required: false),
+  (Name: 'G_Alias';      DataType: ftWideString; Size: 50; Required: false)
 );
 
 GenresTableIndexes: array [1..4] of TIndexDesc = (
-  (Name: 'ID_Index';     Fields: 'Code';            Options: [ixPrimary, ixUnique]),
-  (Name: 'CodeIndex';    Fields: 'ParentCode;Code'; Options: []),
-  (Name: 'FB2CodeIndex'; Fields: 'FB2Code';         Options: []),
-  (Name: 'AliasIndex';   Fields: 'Alias';           Options: [])
+  (Name: 'ID_Index';     Fields: 'G_Code';              Options: [ixPrimary, ixUnique]),
+  (Name: 'CodeIndex';    Fields: 'G_ParentCode;G_Code'; Options: [ixCaseInsensitive]),
+  (Name: 'FB2CodeIndex'; Fields: 'G_FB2Code';           Options: [ixCaseInsensitive]),
+  (Name: 'AliasIndex';   Fields: 'G_Alias';             Options: [])
 );
 
 //
 // Genre List
 //
 GenreListTableFields: array [1 .. 6] of TFieldDesc = (
-  (Name: 'ID';        DataType: ftAutoInc;    Size: 0;  Required: true),
-  (Name: 'GenreCode'; DataType: ftWideString; Size: 30; Required: false),
-  (Name: 'BookID';    DataType: ftInteger;    Size: 0;  Required: false),
-  (Name: 'Family';    DataType: ftWideString; Size: 10; Required: false),
-  (Name: 'Series';    DataType: ftWideString; Size: 10; Required: false),
-  (Name: 'Title';     DataType: ftWideString; Size: 10; Required: false)
+  (Name: 'GL_ID';     DataType: ftAutoInc;    Size: 0;  Required: true),
+  (Name: 'GL_Code';   DataType: ftWideString; Size: 30; Required: false),
+  (Name: 'GL_BookID'; DataType: ftInteger;    Size: 0;  Required: false),
+  (Name: 'GL_Family'; DataType: ftWideString; Size: IndexSize; Required: false),
+  (Name: 'GL_Series'; DataType: ftWideString; Size: IndexSize; Required: false),
+  (Name: 'GL_Title';  DataType: ftWideString; Size: IndexSize; Required: false)
 );
 
 GenreListTableIndexes: array [1..3] of TIndexDesc = (
-  (Name: 'ID_Index';   Fields: 'ID';                            Options: [ixPrimary, ixUnique]),
-  (Name: 'BookIndex';  Fields: 'BookID';                        Options: []),
-  (Name: 'GenreIndex'; Fields: 'GenreCode;Family;Series;Title'; Options: [ixCaseInsensitive])
+  (Name: 'ID_Index';   Fields: 'GL_ID';                                 Options: [ixPrimary, ixUnique]),
+  (Name: 'BookIndex';  Fields: 'GL_BookID';                             Options: []),
+  (Name: 'GenreIndex'; Fields: 'GL_Code;GL_Family;GL_Series;GL_Title';  Options: [ixCaseInsensitive])
 );
 
 //
 // Extra
 //
-ExtraTableFields: array [1 .. 5] of TFieldDesc = (
+ExtraTableFields: array [1 .. 6] of TFieldDesc = (
   (Name: 'ID';        DataType: ftAutoInc;    Size: 0;   Required: true),
   (Name: 'BookID';    DataType: ftInteger;    Size: 0;   Required: false),
-  (Name: 'KeyWords';  DataType: ftWideString; Size: 255; Required: false),
-  (Name: 'Annotation';DataType: ftMemo;       Size: 0;   Required: false),
-  (Name: 'Cover';     DataType: ftBlob;       Size: 0;   Required: false)
+  (Name: 'Annotation';DataType: ftWideMemo;   Size: 0;   Required: false),
+  (Name: 'Review';    DataType: ftWideMemo;   Size: 0;   Required: false),
+  (Name: 'Cover';     DataType: ftBlob;       Size: 0;   Required: false),
+  (Name: 'Data';      DataType: ftWideMemo;   Size: 0;   Required: false)
 );
 
-ExtraListTableIndexes: array [1..4] of TIndexDesc = (
+ExtraTableIndexes: array [1..2] of TIndexDesc = (
   (Name: 'ID_Index';   Fields: 'ID';                   Options: [ixPrimary, ixUnique]),
-  (Name: 'BookIndex';  Fields: 'BookID';               Options: []),
-  (Name: 'KeyWordIndex'; Fields: 'KeyWords';           Options: [ixCaseInsensitive]),
-  (Name: 'AnnotationIndex'; Fields: 'Annotation';      Options: [ixCaseInsensitive])
+  (Name: 'BookIndex';  Fields: 'BookID';               Options: [])
 );
 
 //-----------------------------------------------------------------------------
@@ -291,7 +280,7 @@ ExtraListTableIndexes: array [1..4] of TIndexDesc = (
 //   Bases table
 //
 BasesTableFields: array [1 .. 14] of TFieldDesc = (
-  (Name: 'ID';           DataType: ftInteger;    Size: 0;   Required: true),
+  (Name: 'ID';           DataType: ftAutoInc;    Size: 0;   Required: true),
   (Name: 'Name';         DataType: ftWideString; Size: 64;  Required: true),
   (Name: 'RootFolder';   DataType: ftWideString; Size: 128; Required: true),
   (Name: 'DBFileName';   DataType: ftWideString; Size: 128; Required: true),
@@ -332,10 +321,10 @@ GroupsListTableIndexes: array [1..2] of TIndexDesc = (
 //
 //  Groups table
 //
-GroupsTableFields: array [1 .. 22] of TFieldDesc = (
-  (Name: 'GroupID';    DataType: ftInteger;    Size: 0;   Required: true),
-  (Name: 'InnerID';    DataType: ftAutoInc;    Size: 0;   Required: false),   // локальный ID в этой таблице
-  (Name: 'ID';         DataType: ftInteger;    Size: 0;   Required: true),    // глобальный ID книги в коллекции
+GroupsTableFields: array [1 .. 25] of TFieldDesc = (
+  (Name: 'ID';         DataType: ftAutoInc;    Size: 0;   Required: true),  // локальный уникальный ID в этой таблице
+  (Name: 'GroupID';    DataType: ftInteger;    Size: 0;   Required: true),  // id родительской группы
+  (Name: 'OuterID';    DataType: ftInteger;    Size: 0;   Required: false),// внешний ID книги в коллекции
   (Name: 'SerID';      DataType: ftInteger;    Size: 0;   Required: false),
   (Name: 'SeqNumber';  DataType: ftSmallInt;   Size: 0;   Required: false),
   (Name: 'DatabaseID'; DataType: ftInteger;    Size: 0;   Required: false),
@@ -354,11 +343,15 @@ GroupsTableFields: array [1 .. 22] of TFieldDesc = (
   (Name: 'Deleted';    DataType: ftBoolean;    Size: 0;   Required: false),
   (Name: 'Genres';     DataType: ftWideString; Size: 128; Required: false),
   (Name: 'Series';     DataType: ftWideString; Size: 128; Required: false),
-  (Name: 'Rate';       DataType: ftInteger;    Size: 0;   Required: false)
+  (Name: 'Rate';       DataType: ftInteger;    Size: 0;   Required: false),
+  (Name: 'Progress';   DataType: ftSmallInt;   Size: 0;   Required: false),
+  (Name: 'LibRate';    DataType: ftInteger;     Size: 0;   Required: false),
+  (Name: 'Lang';       DataType: ftWideString;  Size: 2;   Required: false)
 );
 
-GroupsTableIndexes: array [1..3] of TIndexDesc = (
-  (Name: 'ID_Index';  Fields: 'InnerID';               Options: [ixPrimary]),
+GroupsTableIndexes: array [1..4] of TIndexDesc = (
+  (Name: 'ID_Index';       Fields: 'ID';               Options: [ixPrimary]),
+  (Name: 'OuterID_Index'; Fields: 'GroupID;OuterID';   Options: []),
   (Name: 'FullName_Index'; Fields: 'GroupID;FullName;Series;Title'; Options: []),
   (Name: 'File_Index';     Fields: 'FileName';              Options: [])
 );
@@ -367,7 +360,7 @@ GroupsTableIndexes: array [1..3] of TIndexDesc = (
 // Rates table
 //
 RatesTableFields: array [1 .. 5] of TFieldDesc = (
-  (Name: 'ID';         DataType: ftInteger; Size: 0; Required: true),
+  (Name: 'ID';         DataType: ftAutoInc; Size: 0; Required: true),
   (Name: 'BookID';     DataType: ftInteger; Size: 0; Required: true),
   (Name: 'DataBaseID'; DataType: ftInteger; Size: 0; Required: true),
   (Name: 'Rate';       DataType: ftInteger; Size: 0; Required: true),
@@ -376,24 +369,23 @@ RatesTableFields: array [1 .. 5] of TFieldDesc = (
 
 RatesTableIndexes: array [1..2] of TIndexDesc = (
   (Name: 'ID_Index';   Fields: 'ID';                Options: [ixPrimary]),
-  (Name: 'Book_Index'; Fields: 'DatabaseID,BookID'; Options: [ixPrimary])
+  (Name: 'Book_Index'; Fields: 'DatabaseID,BookID'; Options: [])
 );
 
 //
 // finished books table
 //
-FinishedTableFields: array [1 .. 6] of TFieldDesc = (
+FinishedTableFields: array [1 .. 5] of TFieldDesc = (
   (Name: 'ID';         DataType: ftAutoInc; Size: 0; Required: true),
   (Name: 'BookID';     DataType: ftInteger; Size: 0; Required: true),
   (Name: 'DataBaseID'; DataType: ftInteger; Size: 0; Required: true),
-  (Name: 'State';      DataType: ftBoolean; Size: 0; Required: true),
-  (Name: 'Progress';   DataType: ftInteger; Size: 0; Required: false),
+  (Name: 'Progress';   DataType: ftSmallInt; Size: 0; Required: false),
   (Name: 'Date';       DataType: ftDate;    Size: 0; Required: false)
 );
 
 FinishedTableIndexes: array [1..2] of TIndexDesc = (
   (Name: 'ID_Index';   Fields: 'ID';                Options: [ixPrimary]),
-  (Name: 'Book_Index'; Fields: 'DatabaseID,BookID'; Options: [])
+  (Name: 'Book_Index'; Fields: 'DatabaseID,BookID,Progress'; Options: [])
 );
 
 
@@ -478,6 +470,11 @@ begin
 
   FGenreList := TAbsTable.Create(FDatabase);
   FGenreList.TableName := 'Genre_list';
+
+  FExtra := TAbsTable.Create(FDatabase);
+  FExtra.TableName := 'Extra';
+
+
 end;
 
 destructor TMHLLibrary.Destroy;
@@ -527,6 +524,7 @@ begin
     ADataBase.DatabaseName := USER_DATABASE;
     ADataBase.MaxConnections := 5;
     ADataBase.PageSize := 65535;
+    ADataBase.PageCountInExtent := 16;
     ADataBase.CreateDatabase;
 
     CreateTable(ADataBase, 'Bases',        BasesTableFields,      BasesTableIndexes);
@@ -534,6 +532,7 @@ begin
     CreateTable(ADataBase, 'GroupedBooks', GroupsTableFields,     GroupsTableIndexes);
     CreateTable(ADataBase, 'Rates',        RatesTableFields,      RatesTableIndexes);
     CreateTable(ADataBase, 'Finished',     FinishedTableFields,   FinishedTableIndexes);
+    CreateTable(ADataBase, 'Extra',       ExtraTableFields,       ExtraTableIndexes);
     ADataBase.Connected := False;
 
     //
@@ -570,11 +569,13 @@ begin
   //
   CreateTable(FDatabase, 'Books',       BooksTableFields,      BooksTableIndexes);
   CreateTable(FDatabase, 'Authors',     AuthorsTableFields,    AuthorsTableIndexes);
-  CreateTable(FDatabase, 'SeriesList',  SeriesListTableFields, SeriesListTableIndexes);
+
+  //  CreateTable(FDatabase, 'SeriesList',  SeriesListTableFields, SeriesListTableIndexes);
   CreateTable(FDatabase, 'Series',      SeriesTableFields,     SeriesTableIndexes);
   CreateTable(FDatabase, 'Genres',      GenresTableFields,     GenresTableIndexes);
   CreateTable(FDatabase, 'Genre_List',  GenreListTableFields,  GenreListTableIndexes);
   CreateTable(FDatabase, 'Author_List', AuthorListTableFields, AuthorListTableIndexes);
+  CreateTable(FDatabase, 'Extra',       ExtraTableFields,      ExtraTableIndexes);
 
   Active := True;
 
@@ -587,9 +588,9 @@ begin
   // Создадим фиктивную серию
   //
   FSeries.Insert;
-  FSeries['Title'] := NO_SERIES_TITLE;
-  FSeries['GenreCode'] := '0';
-  FSeries['AuthID'] := 0;
+  FSeries['S_Title'] := NO_SERIES_TITLE;
+  FSeries['S_GenreCode'] := '0';
+  FSeries['S_AuthID'] := 0;
   FSeries.Post;
 
 
@@ -669,17 +670,17 @@ begin
       // Если такой жанр уже существует => пропустим его
       //
       { TODO -oNickR : может стоит проверить и остальные поля? }
-      if FGenres.Locate('Code', Code, []) then
+      if FGenres.Locate('G_Code', Code, []) then
         Continue;
 
       //
       // все хорошо => добавляем в базу
       //
       FGenres.Insert;
-      FGenres['Code'] := Code;
-      FGenres['ParentCode'] := ParentCode;
-      FGenres['FB2Code'] := FB2Code;
-      FGenres['Alias'] := S;
+      FGenres['G_Code'] := Code;
+      FGenres['G_ParentCode'] := ParentCode;
+      FGenres['G_FB2Code'] := FB2Code;
+      FGenres['G_Alias'] := S;
       FGenres.Post;
     end;
   finally
@@ -701,7 +702,8 @@ begin
   LoadGenres(FileName);
 end;
 
-{ TODO 5 -oNickR -cRefactoring : 
+
+{ TODO 5 -oNickR -cRefactoring :
 Более верно (с идеалогической точки зрения) передавать в качестве параметров поле для проверки.
 При этом параметр FileName должен содержать точное значение для поиска
 
@@ -722,12 +724,12 @@ begin
   CheckActive;
 
   if Ext = ZIP_EXTENSION then
-    Result := FBooks.Locate('Folder', FileName, [])
+    Result := FBooks.Locate('Folder', FileName, [loCaseInsensitive])
   else
   begin
     s := ExtractFileName(FileName);
     s := Copy(s, 1, Length(s) - Length(Ext));
-    Result := FBooks.Locate('FileName', s, []);
+    Result := FBooks.Locate('FileName', s, [loCaseInsensitive]);
   end;
 end;
 
@@ -735,7 +737,6 @@ procedure TMHLLibrary.InsertBook(BookRecord: TBookRecord);
 var
   i: integer;
   ASeqNumber: Integer;
-  AFullName: string;
   Genre: TGenreRecord;
   Author: TAuthorRecord;
 begin
@@ -745,27 +746,30 @@ begin
     Exit;
 
   BookRecord.Normalize;
-
   //
   // Создадим отсутствующих авторов
   //
   Assert(BookRecord.AuthorCount > 0);
   for i := 0 to BookRecord.AuthorCount - 1 do
   begin
-    if not FAuthors.Locate('Family;Name;Middle', VarArrayOf([BookRecord.Authors[i].LastName, BookRecord.Authors[i].FirstName, BookRecord.Authors[i].MiddleName]), []) then
+    if not FAuthors.Locate('A_Family;A_Name;A_Middle',
+                            VarArrayOf([BookRecord.Authors[i].LastName,
+                                        BookRecord.Authors[i].FirstName,
+                                        BookRecord.Authors[i].MiddleName]),
+                                        [loCaseInsensitive]) then
     begin
       FAuthors.Insert;
-      FAuthors['Name'] := BookRecord.Authors[i].FirstName;
-      FAuthors['Family'] := BookRecord.Authors[i].LastName;
-      FAuthors['Middle'] := BookRecord.Authors[i].MiddleName;
-      FAuthors['FullName'] := BookRecord.Authors[i].GetFullName;
+      FAuthors['A_Name'] := BookRecord.Authors[i].FirstName;
+      FAuthors['A_Family'] := BookRecord.Authors[i].LastName;
+      FAuthors['A_Middle'] := BookRecord.Authors[i].MiddleName;
+//      FAuthors['FullName'] := BookRecord.Authors[i].GetFullName;
       FAuthors.Post;
     end;
 
     //
     // и запомним ID-ки
     //
-    BookRecord.Authors[i].ID := FAuthors['ID'];
+    BookRecord.Authors[i].ID := FAuthors['A_ID'];
   end;
 
   //
@@ -782,8 +786,8 @@ begin
       //
       // Знаем fb2-код жанра => получаем внутренний код
       //
-      if FGenres.Locate('FB2Code', BookRecord.Genres[i].GenreFB2Code, []) then
-        BookRecord.Genres[i].GenreCode := FGenres['Code']
+      if FGenres.Locate('G_FB2Code', BookRecord.Genres[i].GenreFB2Code, [loCaseInsensitive]) then
+        BookRecord.Genres[i].GenreCode := FGenres['G_Code']
       else
         //
         // fb2-код неизвестный - так и запишем
@@ -797,7 +801,7 @@ begin
     //
     if
       (BookRecord.Genres[i].GenreCode = '') or                         // внутренний код не указан
-      (not FGenres.Locate('Code', BookRecord.Genres[i].GenreCode,[]))  // внутренний код неизвестен
+      (not FGenres.Locate('G_Code', BookRecord.Genres[i].GenreCode,[loCaseInsensitive]))  // внутренний код неизвестен
     then
       BookRecord.Genres[i].GenreCode := UNKNOWN_GENRE_CODE;
   end;
@@ -810,24 +814,26 @@ begin
   //
   // TODO -cRelease2.0 : Создавать отдельные серии для каждого автора, с возможностью их объединения
   //
-  if (not FSeries.Locate('Title', BookRecord.Series, [])) then
+  if (not FSeries.Locate('S_Title', BookRecord.Series, [loCaseInsensitive])) then
   begin
     FSeries.Insert;
-    FSeries['Title'] := BookRecord.Series;
-    FSeries['GenreCode'] := BookRecord.Genres[0].GenreCode;
-    FSeries['AuthID'] := BookRecord.Authors[0].ID;
+    FSeries['S_Title'] := BookRecord.Series;
+    FSeries['S_GenreCode'] := BookRecord.Genres[0].GenreCode;
+    FSeries['S_AuthID'] := BookRecord.Authors[0].ID;
     FSeries.Post;
   end;
 
   //
   // Собственно сохраним информацию о книге
   //
-  if not FBooks.Locate('FileName', BookRecord.FileName, []) then
+  if not FBooks.Locate('FileName', BookRecord.FileName, [loCaseInsensitive]) then
   begin
-
-    AFullName := BookRecord.Authors[0].GetFullName;
+    ASeqNumber := BookRecord.SeqNumber;
+    if ASeqNumber > 1000 then
+      ASeqNumber := 0;
 
     FBooks.Insert;
+    FBooks['FullName'] := AnsiUpperCase(BookRecord.Authors[0].GetFullName); // поле только для поиска!
     FBooks['FileName'] := BookRecord.FileName;
     FBooks['ext'] := BookRecord.FileExt;
     FBooks['Code'] := BookRecord.Code;
@@ -836,41 +842,45 @@ begin
     FBooks['Folder'] := BookRecord.Folder;
     FBooks['DiscID'] := 0;
     FBooks['Local'] := BookRecord.Local;
-    FBooks['SerID'] := FSeries['ID'];
+    FBooks['SerID'] := FSeries['S_ID'];
     FBooks['Title'] := BookRecord.Title;
     FBooks['Date'] := BookRecord.Date;
     FBooks['SeqNumber'] := ASeqNumber;
-    FBooks['FullName'] := AFullName;
     FBooks['LibID'] := BookRecord.LibID;
     FBooks['Date'] := BookRecord.Date;
     FBooks['Deleted'] := BookRecord.Deleted;
+    FBooks['Lang'] := BookRecord.Lang;
+    FBooks['LibRate'] := BookRecord.LibRate;
+    FBooks['KeyWords'] := BookRecord.KeyWords;
+    FBooks['URI'] := BookRecord.URI;
     FBooks.Post;
 
     for Genre in BookRecord.Genres do
     begin
       FGenreList.Insert;
-      FGenreList['BookID'] := FBooks['ID'];
-      FGenreList['GenreCode'] := Genre.GenreCode;
+      FGenreList['GL_BookID'] := FBooks['ID'];
+      FGenreList['GL_Code'] := Genre.GenreCode;
       //
       //  формирование индексных полей (индексирование по первым 10-ти символам)
       //
-      FGenreList['Family'] := Copy(BookRecord.Authors[0].LastName, 1, 10);
-      FGenreList['Title'] := Copy(BookRecord.Title, 1, 10);
-      FGenreList['Series'] := Copy(BookRecord.Series, 1, 10);
+      FGenreList['GL_Family'] := Copy(BookRecord.Authors[0].GetFullName, 1, IndexSize);
+      FGenreList['GL_Title'] := Copy(BookRecord.Title, 1, IndexSize);
+      FGenreList['GL_Series'] := Copy(BookRecord.Series, 1, IndexSize);
       FGenreList.Post;
     end;
 
     for Author in BookRecord.Authors do
     begin
       FAuthorList.Insert;
-      FAuthorList['BookID'] := FBooks['ID'];
-      FAuthorList['AuthID'] := Author.ID;
+      FAuthorList['AL_BookID'] := FBooks['ID'];
+      FAuthorList['AL_AuthID'] := Author.ID;
       //
       //  формирование индексных полей (индексирование по первым 10-ти символам)
       //
-      FAuthorList['Title'] := Copy(BookRecord.Title, 1, 10);
-      FAuthorList['Series'] := Copy(BookRecord.Series, 1, 10);
+      FAuthorList['AL_Title'] := Copy(BookRecord.Title, 1, IndexSize);
+      FAuthorList['AL_Series'] := Copy(BookRecord.Series, 1, IndexSize);
       FAuthorList.Post;
+
     end;
   end;
 end;
@@ -888,9 +898,9 @@ begin
 
     { TODO -oNickR : Заменить эти вызовы на DELETE FROM query }
 
-    while FGenreList.Locate('BookID', BookID, []) do
+    while FGenreList.Locate('GL_BookID', BookID, []) do
       FGenreList.Delete;
-    while FAuthorList.Locate('BookID', BookID, []) do
+    while FAuthorList.Locate('AL_BookID', BookID, []) do
       FAuthorList.Delete;
 
     //
@@ -903,7 +913,7 @@ begin
         //
         // Больше книг из этой серии нет => удалим серию
         //
-        FSeries.Locate('ID', SerID, []);
+        FSeries.Locate('S_ID', SerID, []);
         FSeries.Delete;
       end;
     end;
@@ -915,7 +925,7 @@ begin
     FAuthors.First;
     while not FAuthors.Eof do
     begin
-      if FAuthorList.Locate('AuthID', FAuthors['ID'], []) then
+      if FAuthorList.Locate('AL_AuthID', FAuthors['A_ID'], []) then
         FAuthors.Next
       else
         FAuthors.Delete;
@@ -932,12 +942,13 @@ begin
   if FBooks.Locate('ID', BookID, []) then
   begin
     FGenreList.Insert;
-    FGenreList['BookID'] := BookID;
-    FGenreList['GenreCode'] := GenreCode;
-    FGenreList['Family'] := Copy(FBooks['FullName'], 1, 10);
-    FGenreList['Title'] := Copy(FBooks['Title'], 1, 10);
-    { TODO -oNickR -cBug : Для правильной сотрировки необходимо заполнить поле Series }
-    //FGenreList['Series'] := Copy(Series, 1, 10);
+    FGenreList['GL_BookID'] := BookID;
+    FGenreList['GL_Code'] := GenreCode;
+    FGenreList['GL_Family'] := Copy(FBooks['FullName'], 1, IndexSize);
+    FGenreList['GL_Title'] := Copy(FBooks['Title'], 1, IndexSize);
+
+    if FSeries.Locate('S_ID',FBooks['SerID'],[]) then
+      FGenreList['GL_Series'] := Copy(FSeries['S_Title'], 1, IndexSize);
     FGenreList.Post;
   end;
 end;
@@ -946,7 +957,7 @@ procedure TMHLLibrary.CleanBookGenres(BookID: Integer);
 begin
   CheckActive;
 
-  while FGenreList.Locate('BookID', BookID, []) do
+  while FGenreList.Locate('GL_BookID', BookID, []) do
     FGenreList.Delete;
 end;
 
@@ -955,8 +966,8 @@ begin
   FSeries.First;
   while not FSeries.Eof do
   begin
-    if FSeries['ID'] <> 1 then
-      SeriesList.Add(FSeries['Title']);
+    if FSeries['S_ID'] <> 1 then
+      SeriesList.Add(FSeries['S_Title']);
     FSeries.Next;
   end;
 end;
@@ -995,4 +1006,5 @@ begin
 end;
 
 end.
+
 

@@ -16,24 +16,31 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, unit_WorkerThread, frm_ImportProgressForm, StdCtrls, ComCtrls;
+  Dialogs, unit_WorkerThread, frm_ImportProgressForm, StdCtrls, ComCtrls,
+  ExtCtrls;
 
 type
   TImportProgressFormEx = class(TImportProgressForm)
     errorLog: TListView;
     btnSaveLog: TButton;
+    Timer: TTimer;
+
+
+
     procedure FormCreate(Sender: TObject);
     procedure btnSaveLogClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure TimerTimer(Sender: TObject);
   private
     FErrors: TStringList;
+    FCloseOnTimer: boolean;
 
     procedure DoCloseForm(Sender: TObject);
   protected
     procedure ShowTeletype(const Msg: string; Severity: TTeletypeSeverity); override;
     procedure CloseProgress; override;
   public
-
+    property CloseOnTimer:boolean read FCloseOnTimer write FCloseOnTimer;
   end;
 
 var
@@ -79,6 +86,7 @@ begin
     btnSaveLog.Visible := True;
   btnCancel.OnClick := DoCloseForm;
   btnCancel.Caption := 'Закрыть';
+  Timer.Enabled := FCloseOnTimer;
 end;
 
 procedure TImportProgressFormEx.FormCreate(Sender: TObject);
@@ -87,6 +95,7 @@ begin
   FErrors := TStringList.Create;
   errorLog.ShowColumnHeaders := False;
   errorLog.Clear;
+  FCloseOnTimer := False;
 end;
 
 procedure TImportProgressFormEx.FormDestroy(Sender: TObject);
@@ -111,6 +120,11 @@ begin
   if Severity = tsError then
     FErrors.Add(Msg);
   errorLog.Perform(WM_KEYDOWN,VK_DOWN,0);
+end;
+
+procedure TImportProgressFormEx.TimerTimer(Sender: TObject);
+begin
+  Close;
 end;
 
 end.

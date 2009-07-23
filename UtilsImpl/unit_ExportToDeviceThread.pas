@@ -69,7 +69,8 @@ uses
   unit_Settings,
   frm_main,
   StrUtils,
-  ShellAPI;
+  ShellAPI,
+  unit_MHLHelpers;
 
 { TExportToDeviceThread }
 
@@ -104,18 +105,17 @@ begin
     // Сформируем имя файла в соответствии с заданным темплейтом
     //
     FileName := Settings.FileNameTemplate;
-    FullName := Trim(FTable.FieldByName('FullName').AsString);
 
+    if FTable.Name <> 'tblGrouppedBooks' then
+        FullName := dmCollection.FullName(FTable.FieldByName('Id').AsInteger)
+    else
+        FullName := FTable.FieldByName('FullName').AsString;
 
     StrReplace('%fl', copy(FullName,1,1), Folder);
-
     StrReplace('%f', FullName , FileName);
-
     StrReplace('%t', Trim(FTable.FieldByName('Title').AsString), FileName);
-
     StrReplace('%id', Trim(FTable.FieldByName('LibID').AsString), FileName);
-
-    StrReplace('%g', Trim(DMCollection.GetBookGenres(FTable.FieldByName('ID').AsInteger,True)), FileName);
+    StrReplace('%g', Trim(dmCollection.GetBookGenres(FTable.FieldByName('ID').AsInteger,True)), FileName);
 
     if FTable.FieldByName('Series').AsString <> NO_SERIES_TITLE then
       StrReplace('%s', Trim(FTable.FieldByName('Series').AsString), FileName)
@@ -141,12 +141,9 @@ begin
     //
     Folder := Settings.FolderTemplate;
     StrReplace('%fl', copy(FullName,1,1), Folder);
-
     StrReplace('%f', FullName , Folder);
-
     StrReplace('%t', trim(FTable.FieldByName('Title').AsString), Folder);
-
-    StrReplace('%g', Trim(DMCollection.GetBookGenres(FTable.FieldByName('ID').AsInteger,True)), Folder);
+    StrReplace('%g', Trim(dmCollection.GetBookGenres(FTable.FieldByName('ID').AsInteger,True)), Folder);
 
     if FTable.FieldByName('Series').AsString <> NO_SERIES_TITLE then
       StrReplace('%s', Trim(FTable.FieldByName('Series').AsString), Folder)
@@ -161,12 +158,17 @@ begin
 
     Folder := IncludeTrailingPathDelimiter(trim(CheckSymbols(Folder)));
     FileName := Trim(CheckSymbols(FileName));
+
+    InsideFileName := FullName + ' - ' + FTable.FieldByName('Title').AsString;
+
     if Settings.TransliterateFileName then
     begin
+      InsideFileName := Transliterate(InsideFileName);
       Folder := Transliterate(Folder);
       FileName := Transliterate(FileName);
     end;
-    FileName := FileName + DMCollection.tblBooks['Ext'];
+
+    FileName := FileName + dmCollection.tblBooks['Ext'];
   end;
 
   //
@@ -180,8 +182,7 @@ begin
       Exit;
     end;
 
-    InsideFileName := FullName + ' - ' + FTable.FieldByName('Title').AsString;
-    InsideFileName := Trim(CheckSymbols(InsideFileName)) + DMCollection.tblBooks['Ext'];
+    InsideFileName := Trim(CheckSymbols(InsideFileName)) + dmCollection.tblBooks['Ext'];
 
     fs := TMemoryStream.Create;
     try
@@ -199,7 +200,7 @@ begin
   Result := True;
 end;
 
-function TExportToDeviceThread.SendFileToDevice:boolean;
+function TExportToDeviceThread.SendFileToDevice: Boolean;
 var
   DestFileName: string;
 begin
@@ -218,7 +219,7 @@ begin
   case FExportMode of
     emFB2:unit_globals.CopyFile(FFileOpRecord.SArch, DestFileName);
     emFb2Zip:ZipFile(FFileOpRecord.SArch, DestFileName + ZIP_EXTENSION);
-    emTxt:unit_globals.ConvertToTxt(FFileOpRecord.SArch, DestFileName);
+    emTxt:unit_globals.ConvertToTxt(FFileOpRecord.SArch, DestFileName, Settings.TXTEncoding);
     emLrf:Result := fb2Lrf(FFileOpRecord.SArch,DestFileName);
   end;
 
@@ -229,13 +230,10 @@ end;
 function TExportToDeviceThread.fb2Lrf(InpFile,OutFile:string):boolean;
 var
   params: string;
-  Res: integer;
-  msg: string;
 begin
   params := Format('-i "%s" -o "%s"',[InpFile,ChangeFileExt(OutFile, '.lrf')]);
   Result := ExecAndWait(Settings.AppPath + 'fb2lrf\fb2lrf_c.exe',params, SW_HIDE)
 end;
-
 
 procedure TExportToDeviceThread.SetTable(ATable: TAbsTable);
 begin
@@ -249,11 +247,15 @@ var
   totalBooks: Integer;
   Res: boolean;
 begin
-  FCollectionRoot := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
+
+  if FTable <> DMUser.tblGrouppedBooks then     // хреново как-то получилось ...
+    FCollectionRoot := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder)
+  else
+    FCollectionRoot := '';
 
   FZipper := TZipForge.Create(nil);
   try
-//    FZipper.OnMessage := ShowZipErrorMessage;
+    // FZipper.OnMessage := ShowZipErrorMessage;
 
     totalBooks := High(FBookIdList) + 1;
 
@@ -267,8 +269,9 @@ begin
 
         Res := SendFileToDevice;
       end;
+
       if not Res and (i < totalBooks - 1) then
-        Canceled := (ShowMessage('Обрабатывать оставшиеся файлы ?', MB_YESNO) = IDNO);
+        Canceled := (ShowMessage('Обрабатывать оставшиеся файлы ?', MB_ICONQUESTION or MB_YESNO) = IDNO);
 
       SetComment(Format('Записано файлов: %u из %u', [i+1, totalBooks]));
       SetProgress(i * 100 div totalBooks);

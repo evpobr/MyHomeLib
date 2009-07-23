@@ -20,20 +20,24 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_DcuOutput>.\Units</DCC_DcuOutput>
+			<DesignOnlyPackage>false</DesignOnlyPackage>
 			<DCC_SymbolReferenceInfo>1</DCC_SymbolReferenceInfo>
-			<DCC_DependencyCheckOutputName>C:\Documents and Settings\All Users\Документы\RAD Studio\6.0\Bpl\MHLComponents.bpl</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>C:\Users\Public\Documents\RAD Studio\6.0\Bpl\MHLComponents.bpl</DCC_DependencyCheckOutputName>
 			<GenDll>true</GenDll>
 			<GenPackage>true</GenPackage>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DCC_Platform>x86</DCC_Platform>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<DCC_DcuOutput>Units\</DCC_DcuOutput>
 			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
 			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
 			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
 			<DCC_DebugInformation>false</DCC_DebugInformation>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<DCC_DcuOutput>Units\Debug\</DCC_DcuOutput>
 			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
 		</PropertyGroup>
 		<ItemGroup>
@@ -45,20 +49,22 @@
 			<DCCReference Include="xmlrtl.dcp"/>
 			<DCCReference Include="vclx.dcp"/>
 			<DCCReference Include="RaizeComponentsVcl.dcp"/>
+			<DCCReference Include="vclimg.dcp"/>
+			<DCCReference Include="dbrtl.dcp"/>
+			<DCCReference Include="IndyCore.dcp"/>
 			<DCCReference Include="IndySystem.dcp"/>
 			<DCCReference Include="IndyProtocols.dcp"/>
-			<DCCReference Include="IndyCore.dcp"/>
 			<DCCReference Include="vclAbsDBd12.dcp"/>
-			<DCCReference Include="dbrtl.dcp"/>
 			<DCCReference Include="VirtualTreesD12.dcp"/>
 			<DCCReference Include="vclZipForged12.dcp"/>
-			<DCCReference Include="vclimg.dcp"/>
 			<DCCReference Include="unit_StaticTip.pas"/>
 			<DCCReference Include="files_list.pas"/>
 			<DCCReference Include="MHLComponents_Register.pas"/>
 			<DCCReference Include="unit_AutoCompleteEdit.pas"/>
 			<DCCReference Include="unit_CoverPanel.pas"/>
 			<DCCReference Include="unit_InfoPanel.pas"/>
+			<DCCReference Include="unit_MHLHelpers.pas"/>
+			<DCCReference Include="fictionbook_21.pas"/>
 			<DCCReference Include="ZipmasterD12.dcp"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
@@ -113,9 +119,7 @@
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
 					</VersionInfoKeys>
-					<Excluded_Packages>
-						<Excluded_Packages Name="D:\My Docs\RAD Studio\Libraries\RC5\Bin\RaizeComponentsVclDB_Design120.bpl">Raize Components 5.0 (Data-Aware)</Excluded_Packages>
-					</Excluded_Packages>
+					<Excluded_Packages/>
 				</Delphi.Personality>
 			</BorlandProject>
 			<ProjectFileVersion>12</ProjectFileVersion>

@@ -15,7 +15,7 @@ unit unit_Consts;
 interface
 
 const
-  COLLECTION_EXTENSION_SHORT = 'hlcx';
+  COLLECTION_EXTENSION_SHORT = 'hlc';
   COLLECTION_EXTENSION = '.' + COLLECTION_EXTENSION_SHORT;
 
   FB2_EXTENSION_SHORT = 'fb2';
@@ -32,19 +32,24 @@ const
   // Некоторые пути
 
   DATA_DIR_NAME = 'Data';
+  PRESET_DIR_NAME = 'Presets';
 
   //
   // Предефайненные имена файлов
   //
-  SYSTEM_DATABASE_FILENAME = 'user.dbsx';
+  SYSTEM_DATABASE_FILENAME = 'user.dbs';
   GENRES_FB2_FILENAME = 'genres_fb2.glst';
   GENRES_NONFB2_FILENAME = 'genres_nonfb2.glst';
   SERVER_ERRORLOG_FILENAME = 'server_error.html';
   IMPORT_ERRORLOG_FILENAME = 'import_errors.log';
   APP_HELP_FILENAME = 'MyHomeLib.chm';
+  FILELIST_FILENAME = 'FileList.lst';
   LIBRUSEC_UPDATE_FILENAME = 'librusec_update.zip';
+  EXTRA_UPDATE_FILENAME = 'extra_update.zip';
   LIBRUSEC_UPDATEVERINFO_FILENAME = 'last_collection.info';
-  LIBRUSEC_VERINFO_FILENAME = 'version.info';
+  EXTRA_UPDATEVERINFO_FILENAME = 'extra_collection.info';
+  VERINFO_FILENAME = 'version.info';
+  STRUCTUREINFO_FILENAME = 'structure.info';
   PROGRAM_VERINFO_FILENAME = 'last_version.info';
 
   //
@@ -75,7 +80,7 @@ const
   //  Теги колонок
   //
 
-  COL_AUTHOR     = 19;
+  COL_AUTHOR     = 20;
   COL_TITLE      = 11;
   COL_SERIES     = 12;
   COL_NO         = 13;
@@ -83,11 +88,16 @@ const
   COL_SIZE       = 15;
   COL_RATE       = 16;
   COL_DATE       = 17;
-  COL_COLLECTION = 18;
+  COL_TYPE       = 18;
+  COL_COLLECTION = 19;
+  COL_LANG       = 21;
+  COL_LIBRATE    = 22;
+
+
 
   COL_STATE = 99;
 
-  ColumnTags : array [0 .. 9] of integer = (  COL_AUTHOR,
+  ColumnTags : array [0 .. 12] of integer = (  COL_AUTHOR,
                                               COL_TITLE,
                                               COL_SERIES,
                                               COL_NO,
@@ -95,7 +105,10 @@ const
                                               COL_SIZE,
                                               COL_RATE,
                                               COL_DATE,
+                                              COL_TYPE,
                                               COL_COLLECTION,
+                                              COL_LANG,
+                                              COL_LIBRATE,
                                               COL_STATE);
 
 
