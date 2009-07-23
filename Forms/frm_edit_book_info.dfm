@@ -1,7 +1,6 @@
 object frmEditBookInfo: TfrmEditBookInfo
   Left = 0
   Top = 0
-  HelpContext = 118
   BorderStyle = bsNone
   Caption = 'frmEditBookInfo'
   ClientHeight = 342
@@ -12,8 +11,10 @@ object frmEditBookInfo: TfrmEditBookInfo
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poMainFormCenter
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13

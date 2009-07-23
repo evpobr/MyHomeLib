@@ -5580,7 +5580,7 @@ end;
 function TfrmMain.HH(Command: Word; Data: Integer;
   var CallHelp: Boolean): Boolean;
 begin
-  if (Command = 0) and (Data = 0) then
+  if Data = 0 then
       HtmlHelp(Application.Handle,
         PChar(Settings.SystemFileName[sfAppHelp]),
         HH_DISPLAY_TOC, 0)
