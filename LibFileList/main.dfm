@@ -50,6 +50,14 @@ object frmMain: TfrmMain
       Height = 13
       Caption = '-----'
     end
+    object Label3: TLabel
+      Left = 290
+      Top = 16
+      Width = 28
+      Height = 13
+      Alignment = taCenter
+      Caption = #1050#1085#1080#1075':'
+    end
     object btnStart: TButton
       Left = 12
       Top = 92
@@ -84,9 +92,9 @@ object frmMain: TfrmMain
     Top = 0
     Width = 344
     Height = 253
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Align = alClient
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 1
     FixedDimension = 19
     object TabSheet1: TRzTabSheet
@@ -104,14 +112,6 @@ object frmMain: TfrmMain
         Align = alTop
         Caption = 'xxxx-xxxx.inp'
         TabOrder = 0
-        object Label3: TLabel
-          Left = 250
-          Top = 96
-          Width = 28
-          Height = 13
-          Alignment = taCenter
-          Caption = #1050#1085#1080#1075':'
-        end
         object edURLfb2: TEdit
           Left = 8
           Top = 20

@@ -19,7 +19,6 @@ type
     pcPages: TRzPageControl;
     TabSheet1: TRzTabSheet;
     RzGroupBox1: TRzGroupBox;
-    Label3: TLabel;
     edURLfb2: TEdit;
     TabSheet2: TRzTabSheet;
     mmLog: TMemo;
@@ -38,6 +37,7 @@ type
     Label4: TLabel;
     IdFTP: TIdFTP;
     cbFTP: TCheckBox;
+    Label3: TLabel;
     procedure btnStartClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
@@ -94,7 +94,7 @@ uses DateUtils;
 
 procedure TfrmMain.CreateINP(URL: string; USR: boolean; SaveResult: boolean);
 const
-  Window = 1000;
+  Window = 2000;
 var
   FN, S:string;
   ResultsList:TStringList;
@@ -167,8 +167,9 @@ begin
           mpfds.Free;
         end;
 
-        pbProgress.Percent:=round((i + 1)/(dlgOpen.Files.Count)*(k/Zip.Count)*100);
+        pbProgress.Percent:=round((i + k/Zip.Count)/(dlgOpen.Files.Count)*100);
         pbProgress.Repaint;
+        Label3.Caption:=IntToStr(k); Label3.Repaint;
 
       end;  // while
       // обработка результата
@@ -185,6 +186,10 @@ begin
       pbProgress.Repaint;
 
     end; // main for
+
+    if not USR then FileList.Add(AppPath+'\LIBRUSEC_INP\extra.inp');
+    FileList.Add(AppPath+'\LIBRUSEC_INP\structure.info');
+
   finally
     pbProgress.Percent:=100;
     FOnProgress := False;
@@ -430,6 +435,7 @@ begin
   FileList.Clear;
   FileList.Add(AppPath + '\LIBRUSEC_INP\extra.inp');
   FileList.Add(AppPath + '\LIBRUSEC_INP\version.info');
+  FileList.Add(AppPath+'\LIBRUSEC_INP\structure.info');
   Pack('extra_update.zip','');
 end;
 
