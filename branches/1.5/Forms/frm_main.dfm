@@ -51,6 +51,7 @@ object frmMain: TfrmMain
     9DFF8A919BFF888F99FF858C97FF838A94FF808791FF8F939AFF5452519F0000
     AC410000AC410000AC410000AC410000AC410000AC410000AC410000AC410000
     AC410000AC410000AC410000AC410000AC410000AC410000AC410000AC41}
+  KeyPreview = True
   Menu = MainMenu
   OldCreateOrder = False
   Position = poScreenCenter
@@ -425,9 +426,9 @@ object frmMain: TfrmMain
     Width = 992
     Height = 848
     HelpContext = 1
-    ActivePage = TabSheet3
+    ActivePage = TabSheet7
     Align = alClient
-    TabIndex = 2
+    TabIndex = 5
     TabOrder = 3
     TabStop = False
     OnChange = pgControlChange
@@ -2839,8 +2840,6 @@ object frmMain: TfrmMain
         BevelOuter = bvNone
         Caption = 'Panel1'
         TabOrder = 1
-        ExplicitLeft = 46
-        ExplicitWidth = 942
         object RzPanel2: TRzPanel
           AlignWithMargins = True
           Left = 3
@@ -2850,7 +2849,6 @@ object frmMain: TfrmMain
           Align = alBottom
           BorderOuter = fsFlatRounded
           TabOrder = 0
-          ExplicitWidth = 936
           DesignSize = (
             934
             61)
@@ -2907,11 +2905,12 @@ object frmMain: TfrmMain
             Font.Style = []
             ParentFont = False
             CenterPoint = cpLowerRight
+            ExplicitLeft = 919
             ExplicitHeight = 19
           end
           object btnClearDownload: TRzBitBtn
-            Left = 787
-            Top = 22
+            Left = 811
+            Top = 31
             Width = 118
             Anchors = [akRight, akBottom]
             Caption = #1054#1095#1080#1089#1090#1080#1090#1100

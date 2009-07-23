@@ -50,6 +50,7 @@ type
     procedure btnAChangeClick(Sender: TObject);
     procedure btnADeleteClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     procedure FillLists;
     { Private declarations }
@@ -103,6 +104,14 @@ begin
   end;
 end;
 
+procedure TfrmEditBookInfo.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var
+  Dummy : boolean;
+begin
+  if Key = VK_F1 then   frmMain.HH(0,0,Dummy);
+end;
+
 procedure TfrmEditBookInfo.FormShow(Sender: TObject);
 begin
   if frmGenreTree.tvGenresTree.GetFirstSelected=nil then frmMain.FillGenresTree(frmGenreTree.tvGenresTree);
@@ -117,7 +126,6 @@ end;
 procedure TfrmEditBookInfo.btnAddAuthorClick(Sender: TObject);
 var
   Family:TListItem;
-
 begin
   if frmEditAuthor.ShowModal=mrOk then
   begin
