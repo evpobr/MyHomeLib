@@ -62,7 +62,7 @@ var
 begin
   if GetFileName(fnSaveLog, AFileName) then
   try
-    FErrors.SaveToFile(AFileName);
+    FErrors.SaveToFile(AFileName, TEncoding.Unicode);
   except
     on e: EFileStreamError do
     begin

@@ -124,7 +124,7 @@ begin
           R.InsideNo := Book.File_.Inside_no;
           R.Date := StrToDate(Book.Date);
 
-          FLibrary.InsertBook(R);
+          FLibrary.InsertBook(R, True);
 
           if ((i + 1) mod ProcessedItemThreshold) = 0 then
             SetComment(Format('Импортированно %u книг', [(i + 1)]));

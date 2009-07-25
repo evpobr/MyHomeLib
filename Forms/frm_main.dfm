@@ -426,9 +426,9 @@ object frmMain: TfrmMain
     Width = 992
     Height = 848
     HelpContext = 1
-    ActivePage = TabSheet7
+    ActivePage = TabSheet4
     Align = alClient
-    TabIndex = 5
+    TabIndex = 3
     TabOrder = 3
     TabStop = False
     OnChange = pgControlChange
@@ -2909,7 +2909,7 @@ object frmMain: TfrmMain
             ExplicitHeight = 19
           end
           object btnClearDownload: TRzBitBtn
-            Left = 811
+            Left = 813
             Top = 31
             Width = 118
             Anchors = [akRight, akBottom]

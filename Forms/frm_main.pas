@@ -973,6 +973,13 @@ var
     AControl.Font.Color := FontColor;
   end;
 
+  procedure SetCBColor(AControl: TRzComboBox);
+  begin
+    AControl.Color := BGColor;
+    AControl.Font.Color := FontColor;
+  end;
+
+
 begin
   BGColor := Settings.BGColor;
   TreeFontSize := Settings.TreeFontSize;
@@ -1011,12 +1018,16 @@ begin
   SetEditColor(edFFullName);
   SetEditColor(edFTitle);
   SetEditColor(edFSeries);
+  SetEditColor(edFGenre);
   SetEditColor(edFFile);
   SetEditColor(edFFolder);
   SetEditColor(edFExt);
+  SetEditColor(edFKeyWords);
 
-  cbDate.Color := BGColor;
-  cbDownloaded.Color := BGColor;
+  SetCBColor(cbDownloaded);
+  SetCBColor(cbDate);
+  SetCBColor(cbLang);
+
 end;
 
 procedure TfrmMain.ReadINIData;
@@ -3084,7 +3095,7 @@ begin
       begin
         Data := Tree.GetNodeData(Node);
         GetBookRecord(Data.ID, R);
-        ALibrary.InsertBook(R);
+        ALibrary.InsertBook(R, True);
       end;
 
       Node := Tree.GetNext(Node);
@@ -4392,7 +4403,7 @@ begin
       ALibrary.BeginBulkOperation;
       try
         ALibrary.DeleteBook(Data.ID);
-        ALibrary.InsertBook(R);
+        ALibrary.InsertBook(R, True);
 
         ALibrary.EndBulkOperation(True);
       except

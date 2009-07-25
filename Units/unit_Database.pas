@@ -58,7 +58,7 @@ type
     //
     function CheckFileInCollection(const FileName: string; const Ext: string): Boolean;
 
-    procedure InsertBook(BookRecord: TBookRecord);
+    procedure InsertBook(BookRecord: TBookRecord; FullCheck: boolean);
     procedure DeleteBook(BookID: Integer);
 
     procedure AddBookGenre(BookID: Integer; const GenreCode: string);
@@ -182,7 +182,7 @@ BooksTableFields: array [1 .. 21] of TFieldDesc = (
   (Name: 'Lang';       DataType: ftWideString;  Size: 2;   Required: false),
   //
   (Name: 'DiscID';     DataType: ftInteger;     Size: 0;   Required: false),
-  (Name: 'Folder';     DataType: ftWideString;  Size: 128; Required: false),
+  (Name: 'Folder';     DataType: ftWideString;  Size: 200; Required: false),
   (Name: 'FileName';   DataType: ftWideString;  Size: 170; Required: true ),
   (Name: 'InsideNo';   DataType: ftInteger;     Size: 0;   Required: true ),
   (Name: 'Ext';        DataType: ftWideString;  Size: 10;  Required: false),
@@ -337,7 +337,7 @@ GroupsTableFields: array [1 .. 25] of TFieldDesc = (
   (Name: 'Ext';        DataType: ftWideString; Size: 10;  Required: false),
   (Name: 'Size';       DataType: ftinteger;    Size: 0;   Required: false),
   (Name: 'Code';       DataType: ftSmallInt;   Size: 0;   Required: false),
-  (Name: 'Folder';     DataType: ftWideString; Size: 128; Required: false),
+  (Name: 'Folder';     DataType: ftWideString; Size: 200; Required: false),
   (Name: 'DiscID';     DataType: ftInteger;    Size: 0;   Required: false),
   (Name: 'Local';      DataType: ftBoolean;    Size: 0;   Required: false),
   (Name: 'Deleted';    DataType: ftBoolean;    Size: 0;   Required: false),
@@ -733,12 +733,15 @@ begin
   end;
 end;
 
-procedure TMHLLibrary.InsertBook(BookRecord: TBookRecord);
+procedure TMHLLibrary.InsertBook(BookRecord: TBookRecord; FullCheck: boolean);
 var
   i: integer;
   ASeqNumber: Integer;
   Genre: TGenreRecord;
   Author: TAuthorRecord;
+
+  Res: boolean;
+
 begin
   CheckActive;
 
@@ -826,7 +829,12 @@ begin
   //
   // Собственно сохраним информацию о книге
   //
-  if not FBooks.Locate('FileName', BookRecord.FileName, [loCaseInsensitive]) then
+  if FullCheck  then
+     Res := FBooks.Locate('Folder;FileName', VarArrayOf([BookRecord.Folder, BookRecord.FileName]), [loCaseInsensitive])
+   else
+     Res := FBooks.Locate('FileName', BookRecord.FileName, [loCaseInsensitive]);
+
+  if not Res then
   begin
     ASeqNumber := BookRecord.SeqNumber;
     if ASeqNumber > 1000 then
