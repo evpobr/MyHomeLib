@@ -165,12 +165,12 @@ begin
             try
               book := LoadFictionBook(FS);
               GetBookInfo(Book, R);
-              FLibrary.InsertBook(R);
+              FLibrary.InsertBook(R, True);
               Inc(AddCount);
             except
               on e: Exception do
               begin
-                Teletype('Ошибка структуры fb2: ' + R.Folder + '.zip -> ' + R.FileName + FB2_EXTENSION, tsError);
+                Teletype('Ошибка структуры fb2: ' + AZipFileName + ' -> ' + R.FileName + FB2_EXTENSION, tsError);
                 //Teletype(e.Message, tsError);
                 Inc(DefectCount);
               end;
@@ -183,7 +183,7 @@ begin
         FZipper.CloseArchive;
       except
         on e: Exception do
-           Teletype('Ошибка распаковки архива: ' + R.Folder + '.zip ', tsError);
+           Teletype('Ошибка распаковки архива: ' + AZipFileName, tsError);
       end;
       if (i mod ProcessedItemThreshold) = 0 then
         SetComment(Format('Обработано архивов: %u из %u', [i + 1, FFiles.Count]));

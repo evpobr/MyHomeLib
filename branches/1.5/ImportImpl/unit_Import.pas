@@ -89,6 +89,7 @@ begin
     frmProgress := TImportProgressFormEx.Create(Application);
     try
       frmProgress.WorkerThread := worker;
+      frmProgress.btnSaveLog.Visible := True;
       frmProgress.ShowModal;
     finally
       frmProgress.Free;
@@ -111,6 +112,7 @@ begin
     frmProgress := TImportProgressFormEx.Create(Application);
     try
       frmProgress.WorkerThread := worker;
+      frmProgress.btnSaveLog.Visible := True;
       frmProgress.ShowModal;
     finally
       frmProgress.Free;

@@ -370,7 +370,7 @@ begin
                 R.InsideNo := j;
               end
             end;
-            FLibrary.InsertBook(R);
+            FLibrary.InsertBook(R, False);
             Inc(filesProcessed);
             if (filesProcessed mod ProcessedItemThreshold) = 0 then
             begin

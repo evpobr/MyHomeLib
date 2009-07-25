@@ -348,7 +348,7 @@ begin
   R.KeyWords := edKeyWords.Text;
   R.Lang := cbLang.Text;
 
-  FLibrary.InsertBook(R);
+  FLibrary.InsertBook(R, True);
 
   Next := Tree.GetNext(Tree.GetFirstSelected);
   Tree.DeleteNode(Tree.GetFirstSelected, True);
