@@ -478,6 +478,14 @@ begin
     FActiveTable.FieldByName('Local').AsBoolean := AState;
     FActiveTable.Post;
 
+    if FActiveTable.Name = 'tblGrouppedBooks' then
+      if dmCollection.tblBooks.Locate('ID', FActiveTable.FieldByName('OuterID').AsInteger,[]) then
+      begin
+        dmCollection.tblBooks.Edit;
+        dmCollection.tblBooksLocal.Value := AState;
+        dmCollection.tblBooks.Post;
+      end;
+
     //
     // обновим информацию о книге в главном окне программы
     //

@@ -3329,7 +3329,7 @@ begin
 
       WorkFile := Settings.ReadPath + Format('%s - %s.%d%s',
                                               [CheckSymbols(Panel.Author),
-                                               CheckSymbols(Panel.Title),No,Ext]);
+                                               CheckSymbols(Panel.Title),Data.ID,Ext]);
 
       if not FileExists(WorkFile) then
       begin
@@ -4153,7 +4153,7 @@ begin
   begin
     if ActiveView = FavoritesView then
     begin
-      DMUser.tblGrouppedBooks.Locate('ID', BookIDList[i].ID, []);
+      DMUser.tblGrouppedBooks.Locate('OuterID', BookIDList[i].ID, []);
       if DMUser.tblGrouppedBooksDataBaseId.Value <> DMUser.ActiveCollection.ID then
          Continue;
     end;
@@ -4162,9 +4162,14 @@ begin
       Continue;
 
     dmCollection.GetBookFolder(BookIDList[i].ID,Folder);
+
     Node := tvDownloadList.AddChild(nil);
     Data := tvDownloadList.GetNodeData(Node);
-    Data.Author := dmCollection.FullName(BookIDList[i].ID);
+
+    if ActiveView = FavoritesView  then
+      Data.Author := DMUser.tblGrouppedBooksFullName.Value
+    else
+      Data.Author := dmCollection.FullName(BookIDList[i].ID);
 
     dmCollection.FieldByName(BookIDList[i].ID, 'Title', Data.Title);
     dmCollection.FieldByName(BookIDList[i].ID, 'Size', Data.Size);
