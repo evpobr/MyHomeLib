@@ -870,7 +870,6 @@ begin
       ProxyUsername := Settings.ProxyUsername;
       ProxyPassword := Settings.ProxyPassword;
     end;
-
     BasicAuthentication := True;
   end;
 
@@ -881,7 +880,6 @@ begin
   idHTTP.AllowCookies := True;
 
   idHTTP.HandleRedirects := True;
-
 end;
 
 function CheckLibVersion(ALocalVersion: Integer; Full: boolean; out ARemoteVersion: Integer): Boolean;

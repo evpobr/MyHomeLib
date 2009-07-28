@@ -78,7 +78,7 @@ uses
   RzBtnEdt,
   files_list,
   ActiveX,
-  htmlhlp;
+  htmlhlp, IdCustomTransparentProxy, IdConnectThroughHttpProxy;
 
 type
 
@@ -387,6 +387,8 @@ type
     Label6: TLabel;
     N31: TMenuItem;
     miDeleteFiles: TMenuItem;
+    IdHTTP1: TIdHTTP;
+    IdConnectThroughHttpProxy1: TIdConnectThroughHttpProxy;
 
     //
     // События формы
@@ -1189,7 +1191,7 @@ begin
       AddToFilter('`FileName`', Query(edFFile.Text),False, FilterString);
       AddToFilter('`Folder`', Query(edFFolder.Text), False, FilterString);
       AddToFilter('`ext`', Query(edFExt.Text), False,FilterString);
-      AddToFilter('`Lang`', Query(cbLang.Text), False, FilterString);
+      AddToFilter('`Lang`', '="' + cbLang.Text + '"', False, FilterString);
       AddToFilter('`KeyWords`', Query(edFKeyWords.Text), False, FilterString);
 //
       if cbDate.ItemIndex = -1 then
@@ -1267,7 +1269,10 @@ begin
   edFFile.Text      := '';
   edFFolder.Text    := '';
   edFExt.Text       := '';
+
   cbDate.Text       := '';
+  cbDate.ItemIndex  := -1;
+
   cbPresetName.Text := '';
   cbDeleted.Checked := False;
   cbLang.Text       := '';
@@ -3157,6 +3162,16 @@ var
   Tree: TVirtualStringTree;
   ExportMode: TExportMode;
 begin
+
+  GetActiveTree(Tree);
+  FillBookIdList(Tree, BookIDList);
+
+  if Length(BookIDList) = 0 then
+  begin
+    ShowMessage('Ни одной книги не выбрано!');
+    Exit;
+  end;
+
   SaveDeviceDir := Settings.DeviceDir;
   SaveFolderTemplate := Settings.FolderTemplate;
   //  dlgFolder.Directory := Settings.DeviceDir;
@@ -3214,13 +3229,8 @@ begin
     if (Settings.Scripts[ScriptID].Path = '%COPY%') and
        (trim(TMPParams) <> '') then Settings.DeviceDir := trim(TMPParams);
 
-    Settings.Scripts[ScriptID].TmpParams := TMPParams;   
+    Settings.Scripts[ScriptID].TmpParams := TMPParams;
   end;
-
-
-  GetActiveTree(Tree);
-
-  FillBookIdList(Tree, BookIDList);
 
   if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
   begin
@@ -4418,6 +4428,7 @@ begin
       Data.Title := frmEditBookInfo.edT.Text;
       Data.Genre := frmEditBookInfo.lblGenre.Caption;
       Data.No := Round(frmEditBookInfo.edSN.Value);
+      Data.Lang := frmEditBookInfo.cbLang.Text;
       Tree.RepaintNode(Node);
     finally
       ALibrary.Free;

@@ -9,7 +9,6 @@ function Query(S: string):string;
 function Clear(S: string):string;
 function PrepareQuery(S: string):string;
 
-
 implementation
 
 uses
@@ -82,6 +81,13 @@ begin
     Result := '';
     Exit;
   end;
+
+  if (pos('%',S) = 0) and
+     (pos('=',S) = 0) and
+     (pos('"',S) = 0) and
+     (pos('LIKE',S) = 0)
+  then
+    S := Format('%%%s%%',[S]);
 
   if (pos('=',S) = 0) and
      (pos('LIKE',S) = 0) and
