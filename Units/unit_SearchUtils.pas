@@ -5,9 +5,8 @@ interface
 procedure AddToFilter(Field,Value:String;  UP: boolean ; var FilterString: string);
 procedure AddSeriesToFilter(Value:string; var SeriesFilter: string);
 
-function Query(S: string):string;
 function Clear(S: string):string;
-function PrepareQuery(S: string):string;
+function PrepareQuery(S: string; ConverToFull: boolean = true):string;
 
 implementation
 
@@ -59,30 +58,29 @@ begin
       SeriesFilter := '(`SerID` ="' +  Value + '")';
 end;
 
-function Clear(S: string):string;
+function Clear(S: string):string; inline;
 begin
   Result := S;
   StrReplace(#13#10,' ', Result);
   Trim(Result);
 end;
 
-function Query(S: string):string;
-begin
-  S := trim(AnsiUpperCase(S));
-  S := PrepareQuery(S);
-  Result := Clear(S);
-end;
 
 // проверяем запрос, если нативный - преобразовывам в SQL
-function PrepareQuery(S: string):string;
+function PrepareQuery(S: string; ConverToFull: boolean = true):string;
 begin
+
+  if ConverToFull then
+      S := trim(AnsiUpperCase(S));
+
   if S = '' then
   begin
     Result := '';
     Exit;
   end;
 
-  if (pos('%',S) = 0) and
+  if ConverToFull and
+     (pos('%',S) = 0) and
      (pos('=',S) = 0) and
      (pos('"',S) = 0) and
      (pos('LIKE',S) = 0)
@@ -95,12 +93,13 @@ begin
   then
   begin
     if pos('%',S)=0 then
-      Result := '="' + S + '"'
+      S := '="' + S + '"'
     else
-      Result := 'LIKE "' + S + '"';
-  end
-  else
-    Result := S;
+      S := 'LIKE "' + S + '"';
+  end;
+
+  Result := Clear(S);
+
 end;
 
 end.

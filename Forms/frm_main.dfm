@@ -436,10 +436,6 @@ object frmMain: TfrmMain
     object TabSheet1: TRzTabSheet
       HelpContext = 135
       Caption = #1040#1074#1090#1086#1088#1099
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object rzsSplitterA: TRzSplitter
         Left = 0
         Top = 0
@@ -803,10 +799,6 @@ object frmMain: TfrmMain
     object TabSheet2: TRzTabSheet
       HelpContext = 135
       Caption = #1057#1077#1088#1080#1080
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object rzsSplitterS: TRzSplitter
         Left = 0
         Top = 0
@@ -1173,10 +1165,6 @@ object frmMain: TfrmMain
     object TabSheet3: TRzTabSheet
       HelpContext = 135
       Caption = #1046#1072#1085#1088#1099
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object rzsSplitterG: TRzSplitter
         Left = 0
         Top = 0
@@ -1482,10 +1470,6 @@ object frmMain: TfrmMain
     object TabSheet4: TRzTabSheet
       HelpContext = 126
       Caption = #1055#1086#1080#1089#1082
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object rzsSplitterSR: TRzSplitter
         Left = 0
         Top = 0
@@ -1529,7 +1513,6 @@ object frmMain: TfrmMain
             Height = 221
             Caption = #1050#1085#1080#1075#1072
             TabOrder = 0
-            ExplicitWidth = 185
             object Label5: TLabel
               AlignWithMargins = True
               Left = 3
@@ -1628,7 +1611,6 @@ object frmMain: TfrmMain
             Height = 198
             Caption = #1056#1072#1079#1085#1086#1077
             TabOrder = 1
-            ExplicitWidth = 185
             object Label30: TLabel
               Left = 3
               Top = 122
@@ -1670,7 +1652,7 @@ object frmMain: TfrmMain
               Top = 118
               Width = 99
               Height = 21
-              ItemHeight = 0
+              ItemHeight = 13
               TabOrder = 0
               OnKeyDown = edFFullNameKeyDown
               Items.Strings = (
@@ -1685,7 +1667,7 @@ object frmMain: TfrmMain
               Top = 145
               Width = 54
               Height = 21
-              ItemHeight = 0
+              ItemHeight = 13
               TabOrder = 1
               OnKeyDown = edFFullNameKeyDown
               Items.Strings = (
@@ -1729,7 +1711,7 @@ object frmMain: TfrmMain
               Width = 180
               Height = 21
               Align = alTop
-              ItemHeight = 0
+              ItemHeight = 13
               ReadOnlyColor = clBtnHighlight
               TabOrder = 2
               Text = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1074#1089#1077
@@ -1773,7 +1755,6 @@ object frmMain: TfrmMain
             Caption = #1060#1072#1081#1083
             Collapsed = True
             TabOrder = 2
-            ExplicitWidth = 185
             ExpandedHeight = 169
             object Label27: TLabel
               AlignWithMargins = True
@@ -1848,7 +1829,7 @@ object frmMain: TfrmMain
         end
         object cpCoverSR: TMHLCoverPanel
           AlignWithMargins = True
-          Left = 589
+          Left = 561
           Top = 3
           Width = 222
           Height = 819
@@ -1872,7 +1853,6 @@ object frmMain: TfrmMain
           Fb2InfoVisible = False
           FontSize = 0
           AnnotationColor = clBlack
-          ExplicitLeft = 561
         end
         object RzPanel9: TRzPanel
           AlignWithMargins = True
@@ -2088,7 +2068,7 @@ object frmMain: TfrmMain
                 Left = 304
                 Top = 17
                 Width = 12
-                Height = 19
+                Height = 22
                 Align = alRight
                 Alignment = taRightJustify
                 Caption = '()'
@@ -2099,16 +2079,18 @@ object frmMain: TfrmMain
                 Font.Style = []
                 ParentFont = False
                 CenterPoint = cpLeftCenter
+                ExplicitHeight = 19
               end
               object Label1: TLabel
                 AlignWithMargins = True
                 Left = 4
                 Top = 17
                 Width = 36
-                Height = 13
+                Height = 22
                 Align = alLeft
                 Alignment = taRightJustify
                 Caption = #1055#1088#1077#1089#1077#1090
+                ExplicitHeight = 13
               end
               object cbPresetName: TRzComboBox
                 Left = 43
@@ -2116,7 +2098,7 @@ object frmMain: TfrmMain
                 Width = 126
                 Height = 21
                 AutoComplete = False
-                ItemHeight = 0
+                ItemHeight = 13
                 TabOrder = 0
                 OnChange = cbPresetNameChange
                 OnSelect = cbPresetNameSelect
@@ -2252,10 +2234,6 @@ object frmMain: TfrmMain
     object TabSheet5: TRzTabSheet
       HelpContext = 125
       Caption = #1043#1088#1091#1087#1087#1099
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object cpCoverF: TMHLCoverPanel
         AlignWithMargins = True
         Left = 735
@@ -2717,10 +2695,6 @@ object frmMain: TfrmMain
     object TabSheet7: TRzTabSheet
       HelpContext = 108
       Caption = #1057#1087#1080#1089#1086#1082' '#1079#1072#1082#1072#1095#1077#1082
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object tlbrDownloadList: TRzToolbar
         AlignWithMargins = True
         Left = 3
@@ -2850,21 +2824,19 @@ object frmMain: TfrmMain
         end
       end
       object Panel1: TPanel
-        Left = 48
+        Left = 46
         Top = 0
-        Width = 940
+        Width = 942
         Height = 825
         Align = alClient
         BevelOuter = bvNone
         Caption = 'Panel1'
         TabOrder = 1
-        ExplicitLeft = 46
-        ExplicitWidth = 942
         object RzPanel2: TRzPanel
           AlignWithMargins = True
           Left = 3
           Top = 761
-          Width = 934
+          Width = 936
           Height = 61
           Align = alBottom
           BorderOuter = fsFlatRounded
@@ -2925,11 +2897,10 @@ object frmMain: TfrmMain
             Font.Style = []
             ParentFont = False
             CenterPoint = cpLowerRight
-            ExplicitLeft = 917
             ExplicitHeight = 19
           end
           object btnClearDownload: TRzBitBtn
-            Left = 815
+            Left = 819
             Top = 31
             Width = 118
             Anchors = [akRight, akBottom]
