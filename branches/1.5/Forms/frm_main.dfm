@@ -1944,8 +1944,8 @@ object frmMain: TfrmMain
               OnInitNode = tvBooksTreeInitNode
               OnKeyDown = tvBooksTreeKeyDown
               OnMouseUp = tvBooksTreeMouseUp
-              ExplicitLeft = 50
-              ExplicitTop = 160
+              ExplicitLeft = -7
+              ExplicitTop = 144
               Columns = <
                 item
                   MaxWidth = 1000
@@ -2256,6 +2256,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 0
@@ -3021,6 +3022,11 @@ object frmMain: TfrmMain
           OnClick = miEditBookClick
         end
       end
+      object miFastBookSearch: TMenuItem
+        Caption = #1041#1099#1089#1090#1088#1099#1081' '#1087#1086#1080#1089#1082
+        ShortCut = 114
+        OnClick = miFastBookSearchClick
+      end
       object N31: TMenuItem
         Caption = '-'
       end
@@ -3361,11 +3367,6 @@ object frmMain: TfrmMain
     object N23: TMenuItem
       Caption = '-'
       Hint = '-'
-    end
-    object N43: TMenuItem
-      Caption = #1053#1072#1081#1090#1080
-      ShortCut = 114
-      OnClick = N43Click
     end
     object miCopyClBrd: TMenuItem
       Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1074' '#1073#1091#1092#1077#1088
