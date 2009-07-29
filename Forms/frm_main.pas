@@ -387,7 +387,6 @@ type
     Label6: TLabel;
     N31: TMenuItem;
     miDeleteFiles: TMenuItem;
-    IdHTTP1: TIdHTTP;
     IdConnectThroughHttpProxy1: TIdConnectThroughHttpProxy;
     miFastBookSearch: TMenuItem;
 

@@ -3,7 +3,7 @@ object frmMain: TfrmMain
   Top = 0
   HelpContext = 2
   Caption = 'MyHomeLib'
-  ClientHeight = 1011
+  ClientHeight = 726
   ClientWidth = 992
   Color = clBtnFace
   Constraints.MinHeight = 700
@@ -82,8 +82,7 @@ object frmMain: TfrmMain
       Width = 976
       Height = 33
       BorderWidth = 1
-      ButtonHeight = 24
-      ButtonWidth = 39
+      ButtonWidth = 37
       Caption = 'RusBar'
       DrawingStyle = dsGradient
       EdgeBorders = [ebLeft, ebTop, ebRight, ebBottom]
@@ -111,7 +110,7 @@ object frmMain: TfrmMain
       end
       object ToolButton4: TToolButton
         Tag = 91
-        Left = 28
+        Left = 26
         Top = 0
         Caption = #1040'-'#1071
         ImageIndex = 1
@@ -127,8 +126,7 @@ object frmMain: TfrmMain
       Height = 33
       Margins.Bottom = 5
       BorderWidth = 1
-      ButtonHeight = 24
-      ButtonWidth = 37
+      ButtonWidth = 35
       Caption = 'RusBar'
       DrawingStyle = dsGradient
       EdgeBorders = [ebLeft, ebTop, ebRight, ebBottom]
@@ -153,7 +151,7 @@ object frmMain: TfrmMain
       end
       object ToolButton6: TToolButton
         Tag = 92
-        Left = 26
+        Left = 24
         Top = 0
         Caption = 'A-Z'
         ImageIndex = 1
@@ -164,7 +162,7 @@ object frmMain: TfrmMain
   end
   object StatusBar: TRzStatusBar
     Left = 0
-    Top = 992
+    Top = 707
     Width = 992
     Height = 19
     BorderInner = fsNone
@@ -260,7 +258,7 @@ object frmMain: TfrmMain
       OnClick = tbSendToDeviceClick
     end
     object ToolButton13: TToolButton
-      Left = 136
+      Left = 138
       Top = 0
       Width = 20
       Caption = 'ToolButton13'
@@ -268,7 +266,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnRus: TToolButton
-      Left = 156
+      Left = 158
       Top = 0
       Hint = #1056#1091#1089#1089#1082#1080#1081' '#1072#1083#1092#1072#1074#1080#1090
       Caption = 'tbtnRus'
@@ -276,7 +274,7 @@ object frmMain: TfrmMain
       OnClick = tbtnRusClick
     end
     object tbtnEng: TToolButton
-      Left = 197
+      Left = 199
       Top = 0
       Hint = #1040#1085#1075#1083#1080#1081#1089#1082#1080#1081' '#1072#1083#1092#1072#1074#1080#1090
       Caption = 'tbtnEng'
@@ -284,7 +282,7 @@ object frmMain: TfrmMain
       OnClick = tbtnEngClick
     end
     object ToolButton12: TToolButton
-      Left = 238
+      Left = 240
       Top = 0
       Width = 20
       Caption = 'ToolButton12'
@@ -292,7 +290,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnWizard: TToolButton
-      Left = 258
+      Left = 260
       Top = 0
       Hint = #1052#1072#1089#1090#1077#1088' '#1076#1086#1073#1072#1074#1083#1077#1085#1080#1103' '#1082#1086#1083#1083#1077#1082#1094#1080#1081
       Caption = 'tbtnWizard'
@@ -302,7 +300,7 @@ object frmMain: TfrmMain
       OnClick = ShowNewCollectionWizard
     end
     object tbtnSelect: TToolButton
-      Left = 299
+      Left = 301
       Top = 0
       Hint = #1042#1099#1073#1088#1072#1090#1100' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
       Caption = #1042#1099#1073#1088#1072#1090#1100' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
@@ -314,7 +312,7 @@ object frmMain: TfrmMain
       ShowHint = True
     end
     object ToolButton3: TToolButton
-      Left = 340
+      Left = 342
       Top = 0
       Width = 20
       Caption = 'ToolButton3'
@@ -322,7 +320,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object BtnFav_add: TToolButton
-      Left = 360
+      Left = 362
       Top = 0
       Hint = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1080#1079#1073#1088#1072#1085#1085#1086#1077
       Caption = 'BtnFav_add'
@@ -332,7 +330,7 @@ object frmMain: TfrmMain
       OnClick = BtnFav_addClick
     end
     object ToolButton7: TToolButton
-      Left = 414
+      Left = 418
       Top = 0
       Width = 20
       Caption = 'ToolButton7'
@@ -340,7 +338,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbSelectAll: TToolButton
-      Left = 434
+      Left = 438
       Top = 0
       Hint = #1054#1090#1084#1077#1090#1080#1090#1100' '#1074#1089#1077
       Caption = 'tbSelectAll'
@@ -348,7 +346,7 @@ object frmMain: TfrmMain
       OnClick = tbSelectAllClick
     end
     object tbCollapse: TToolButton
-      Left = 475
+      Left = 479
       Top = 0
       Hint = #1056#1072#1079#1074#1077#1088#1085#1091#1090#1100'/'#1057#1074#1077#1088#1085#1091#1090#1100' '#1089#1087#1080#1089#1086#1082
       Caption = 'tbCollapse'
@@ -356,7 +354,7 @@ object frmMain: TfrmMain
       OnClick = tbCollapseClick
     end
     object btnRefreshCollection: TToolButton
-      Left = 516
+      Left = 520
       Top = 0
       Hint = #1054#1073#1085#1086#1074#1080#1090#1100' '#1089#1087#1080#1089#1086#1082
       Caption = 'btnRefreshCollection'
@@ -364,7 +362,7 @@ object frmMain: TfrmMain
       OnClick = miRefreshClick
     end
     object ToolButton1: TToolButton
-      Left = 557
+      Left = 561
       Top = 0
       Width = 20
       Caption = 'ToolButton1'
@@ -372,7 +370,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object btnSwitchTreeMode: TToolButton
-      Left = 577
+      Left = 581
       Top = 0
       Hint = #1055#1077#1088#1077#1082#1083#1102#1095#1080#1090#1100' '#1074' '#1088#1077#1078#1080#1084' "'#1058#1072#1073#1083#1080#1094#1072'"'
       Caption = 'btnSwitchTreeMode'
@@ -380,7 +378,7 @@ object frmMain: TfrmMain
       OnClick = btnSwitchTreeModeClick
     end
     object tbtnShowDeleted: TToolButton
-      Left = 618
+      Left = 622
       Top = 0
       Hint = #1057#1082#1088#1099#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077' '#1085#1072' lib.rus.ec'
       Caption = 'tbtnShowDeleted'
@@ -388,7 +386,7 @@ object frmMain: TfrmMain
       OnClick = tbtnShowDeletedClick
     end
     object tbtnShowLocalOnly: TToolButton
-      Left = 659
+      Left = 663
       Top = 0
       Hint = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1090#1086#1083#1100#1082#1086' '#1089#1082#1072#1095#1072#1085#1085#1099#1077' '#1082#1085#1080#1075#1080
       Caption = 'tbtnShowLocalOnly'
@@ -396,7 +394,7 @@ object frmMain: TfrmMain
       OnClick = tbtnShowLocalOnlyClick
     end
     object tbtnShowCover: TToolButton
-      Left = 700
+      Left = 704
       Top = 0
       Hint = #1055#1086#1082#1072#1079#1072#1090#1100'/'#1057#1082#1088#1099#1090#1100' '#1086#1073#1083#1086#1078#1082#1091
       Caption = 'tbtnShowCover'
@@ -404,7 +402,7 @@ object frmMain: TfrmMain
       OnClick = tbtnShowCoverClick
     end
     object ToolButton5: TToolButton
-      Left = 741
+      Left = 745
       Top = 0
       Width = 20
       Caption = 'ToolButton5'
@@ -412,7 +410,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnSettings: TToolButton
-      Left = 761
+      Left = 765
       Top = 0
       Hint = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
       Caption = 'tbtnSettings'
@@ -424,7 +422,7 @@ object frmMain: TfrmMain
     Left = 0
     Top = 144
     Width = 992
-    Height = 848
+    Height = 563
     HelpContext = 1
     ActivePage = TabSheet4
     Align = alClient
@@ -440,7 +438,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 988
-        Height = 825
+        Height = 540
         MarginMin = 150
         Position = 228
         Percent = 23
@@ -452,7 +450,7 @@ object frmMain: TfrmMain
           228
           0
           234
-          825)
+          540)
         UpperLeftControls = (
           RzPanel13)
         LowerRightControls = (
@@ -463,7 +461,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 224
-          Height = 819
+          Height = 534
           Margins.Right = 1
           Align = alClient
           BorderOuter = fsFlatRounded
@@ -473,7 +471,7 @@ object frmMain: TfrmMain
             Left = 5
             Top = 52
             Width = 214
-            Height = 762
+            Height = 477
             Align = alClient
             CheckImageKind = ckXP
             Colors.UnfocusedSelectionColor = clHighlight
@@ -562,7 +560,7 @@ object frmMain: TfrmMain
           Left = 501
           Top = 3
           Width = 250
-          Height = 819
+          Height = 534
           Margins.Left = 0
           ParentCustomHint = False
           Align = alRight
@@ -588,7 +586,7 @@ object frmMain: TfrmMain
           Left = 0
           Top = 3
           Width = 501
-          Height = 819
+          Height = 534
           Margins.Left = 0
           Margins.Right = 0
           Align = alClient
@@ -599,7 +597,7 @@ object frmMain: TfrmMain
             Left = 5
             Top = 5
             Width = 491
-            Height = 703
+            Height = 418
             Align = alClient
             BorderOuter = fsNone
             TabOrder = 0
@@ -651,7 +649,7 @@ object frmMain: TfrmMain
               Left = 0
               Top = 31
               Width = 491
-              Height = 672
+              Height = 387
               Align = alClient
               BorderOuter = fsNone
               TabOrder = 1
@@ -659,7 +657,7 @@ object frmMain: TfrmMain
                 Left = 0
                 Top = 0
                 Width = 491
-                Height = 672
+                Height = 387
                 Align = alClient
                 CheckImageKind = ckXP
                 ClipboardFormats.Strings = (
@@ -782,7 +780,7 @@ object frmMain: TfrmMain
           object ipnlAuthors: TMHLInfoPanel
             AlignWithMargins = True
             Left = 5
-            Top = 714
+            Top = 429
             Width = 491
             Height = 100
             Align = alBottom
@@ -805,7 +803,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 988
-        Height = 825
+        Height = 540
         MarginMin = 150
         Position = 247
         Percent = 25
@@ -816,7 +814,7 @@ object frmMain: TfrmMain
           247
           0
           252
-          825)
+          540)
         UpperLeftControls = (
           RzPanel1)
         LowerRightControls = (
@@ -827,7 +825,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 241
-          Height = 819
+          Height = 534
           Align = alClient
           BorderOuter = fsFlatRounded
           TabOrder = 0
@@ -836,7 +834,7 @@ object frmMain: TfrmMain
             Left = 5
             Top = 52
             Width = 231
-            Height = 762
+            Height = 477
             Align = alClient
             CheckImageKind = ckXP
             Colors.UnfocusedSelectionColor = clHighlight
@@ -917,7 +915,7 @@ object frmMain: TfrmMain
           Left = 483
           Top = 3
           Width = 250
-          Height = 819
+          Height = 534
           Margins.Left = 0
           Align = alRight
           BorderOuter = fsFlatRounded
@@ -940,7 +938,7 @@ object frmMain: TfrmMain
           Left = 0
           Top = 3
           Width = 483
-          Height = 819
+          Height = 534
           Margins.Left = 0
           Margins.Right = 0
           Align = alClient
@@ -951,7 +949,7 @@ object frmMain: TfrmMain
             Left = 5
             Top = 5
             Width = 473
-            Height = 703
+            Height = 418
             Align = alClient
             BorderOuter = fsNone
             TabOrder = 0
@@ -1004,7 +1002,7 @@ object frmMain: TfrmMain
               Left = 0
               Top = 31
               Width = 473
-              Height = 672
+              Height = 387
               Align = alClient
               BevelInner = bvNone
               BevelOuter = bvNone
@@ -1150,7 +1148,7 @@ object frmMain: TfrmMain
           object ipnlSeries: TMHLInfoPanel
             AlignWithMargins = True
             Left = 5
-            Top = 714
+            Top = 429
             Width = 473
             Height = 100
             Align = alBottom
@@ -1173,7 +1171,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 988
-        Height = 825
+        Height = 540
         MarginMin = 150
         Position = 258
         Percent = 26
@@ -1184,7 +1182,7 @@ object frmMain: TfrmMain
           258
           0
           260
-          825)
+          540)
         UpperLeftControls = (
           RzPanel25)
         LowerRightControls = (
@@ -1195,7 +1193,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 252
-          Height = 819
+          Height = 534
           Align = alClient
           BorderOuter = fsFlatRounded
           TabOrder = 0
@@ -1204,7 +1202,7 @@ object frmMain: TfrmMain
             Left = 5
             Top = 5
             Width = 242
-            Height = 809
+            Height = 524
             Align = alClient
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -1235,7 +1233,7 @@ object frmMain: TfrmMain
           Left = 475
           Top = 3
           Width = 250
-          Height = 819
+          Height = 534
           Margins.Left = 0
           Align = alRight
           BorderOuter = fsFlatRounded
@@ -1258,7 +1256,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 472
-          Height = 819
+          Height = 534
           Margins.Right = 0
           Align = alClient
           BorderOuter = fsFlatRounded
@@ -1268,7 +1266,7 @@ object frmMain: TfrmMain
             Left = 5
             Top = 36
             Width = 462
-            Height = 672
+            Height = 387
             Align = alClient
             BorderOuter = fsNone
             TabOrder = 0
@@ -1277,7 +1275,7 @@ object frmMain: TfrmMain
               Left = 0
               Top = 0
               Width = 462
-              Height = 672
+              Height = 387
               Align = alClient
               Alignment = taRightJustify
               BevelInner = bvNone
@@ -1457,7 +1455,7 @@ object frmMain: TfrmMain
           object ipnlGenres: TMHLInfoPanel
             AlignWithMargins = True
             Left = 5
-            Top = 714
+            Top = 429
             Width = 462
             Height = 100
             Align = alBottom
@@ -1480,7 +1478,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 988
-        Height = 825
+        Height = 540
         MarginMin = 100
         Position = 200
         Percent = 20
@@ -1492,7 +1490,7 @@ object frmMain: TfrmMain
           200
           0
           202
-          825)
+          540)
         UpperLeftControls = (
           CategoryPanelGroup1)
         LowerRightControls = (
@@ -1503,7 +1501,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 194
-          Height = 819
+          Height = 534
           VertScrollBar.Tracking = True
           Align = alClient
           BevelKind = bkTile
@@ -1838,7 +1836,7 @@ object frmMain: TfrmMain
           Left = 561
           Top = 3
           Width = 222
-          Height = 819
+          Height = 534
           Hint = '<b>'#1087#1088#1086#1074#1077#1088#1082#1072'</b>'#1093#1080#1085#1090#1086#1074
           Margins.Left = 0
           Align = alRight
@@ -1865,7 +1863,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 558
-          Height = 819
+          Height = 534
           Margins.Right = 0
           Align = alClient
           BorderOuter = fsFlatRounded
@@ -1875,7 +1873,7 @@ object frmMain: TfrmMain
             Left = 5
             Top = 49
             Width = 548
-            Height = 659
+            Height = 374
             Align = alClient
             BorderOuter = fsNone
             TabOrder = 0
@@ -1884,7 +1882,7 @@ object frmMain: TfrmMain
               Left = 0
               Top = 0
               Width = 548
-              Height = 659
+              Height = 374
               Align = alClient
               BevelInner = bvNone
               BevelOuter = bvNone
@@ -1944,8 +1942,6 @@ object frmMain: TfrmMain
               OnInitNode = tvBooksTreeInitNode
               OnKeyDown = tvBooksTreeKeyDown
               OnMouseUp = tvBooksTreeMouseUp
-              ExplicitLeft = -7
-              ExplicitTop = 144
               Columns = <
                 item
                   MaxWidth = 1000
@@ -2036,7 +2032,7 @@ object frmMain: TfrmMain
           object ipnlSearch: TMHLInfoPanel
             AlignWithMargins = True
             Left = 5
-            Top = 714
+            Top = 429
             Width = 548
             Height = 100
             Align = alBottom
@@ -2247,7 +2243,7 @@ object frmMain: TfrmMain
         Left = 735
         Top = 3
         Width = 250
-        Height = 819
+        Height = 534
         Margins.Left = 0
         Align = alRight
         BorderOuter = fsFlatRounded
@@ -2256,7 +2252,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 0
@@ -2269,7 +2264,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 735
-        Height = 825
+        Height = 540
         Position = 239
         Percent = 33
         Align = alClient
@@ -2278,7 +2273,7 @@ object frmMain: TfrmMain
           239
           0
           243
-          825)
+          540)
         UpperLeftControls = (
           RzPanel7)
         LowerRightControls = (
@@ -2288,7 +2283,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 233
-          Height = 819
+          Height = 534
           Align = alClient
           BorderOuter = fsFlatRounded
           TabOrder = 0
@@ -2297,7 +2292,7 @@ object frmMain: TfrmMain
             Left = 5
             Top = 5
             Width = 223
-            Height = 774
+            Height = 489
             Align = alClient
             CheckImageKind = ckXP
             Colors.UnfocusedSelectionColor = clHighlight
@@ -2330,7 +2325,7 @@ object frmMain: TfrmMain
           object RzPanel8: TRzPanel
             AlignWithMargins = True
             Left = 5
-            Top = 785
+            Top = 500
             Width = 223
             Height = 29
             Align = alBottom
@@ -2464,7 +2459,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 489
-          Height = 819
+          Height = 534
           Margins.Right = 0
           Align = alClient
           BorderOuter = fsFlatRounded
@@ -2474,7 +2469,7 @@ object frmMain: TfrmMain
             Left = 5
             Top = 5
             Width = 479
-            Height = 703
+            Height = 418
             Align = alClient
             BorderOuter = fsNone
             TabOrder = 0
@@ -2484,7 +2479,7 @@ object frmMain: TfrmMain
               Left = 3
               Top = 34
               Width = 473
-              Height = 666
+              Height = 381
               Align = alClient
               BevelInner = bvNone
               BevelOuter = bvNone
@@ -2645,7 +2640,7 @@ object frmMain: TfrmMain
           object ipnlFavorites: TMHLInfoPanel
             AlignWithMargins = True
             Left = 5
-            Top = 714
+            Top = 429
             Width = 479
             Height = 100
             Align = alBottom
@@ -2711,7 +2706,7 @@ object frmMain: TfrmMain
         Left = 3
         Top = 3
         Width = 42
-        Height = 819
+        Height = 534
         Align = alLeft
         AutoStyle = False
         Images = ilDownloadToolBar
@@ -2838,7 +2833,7 @@ object frmMain: TfrmMain
         Left = 48
         Top = 0
         Width = 940
-        Height = 825
+        Height = 540
         Align = alClient
         BevelOuter = bvNone
         Caption = 'Panel1'
@@ -2846,7 +2841,7 @@ object frmMain: TfrmMain
         object RzPanel2: TRzPanel
           AlignWithMargins = True
           Left = 3
-          Top = 761
+          Top = 476
           Width = 934
           Height = 61
           Align = alBottom
@@ -2926,7 +2921,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 934
-          Height = 752
+          Height = 467
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -3412,7 +3407,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 312
     Bitmap = {
-      494C010118001A00440020002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C010118001A00480020002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -7120,7 +7115,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 256
     Bitmap = {
-      494C010125002700440010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010125002700480010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000040000000A0000000010020000000000000A0
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -8479,7 +8474,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 368
     Bitmap = {
-      494C010108000A00040010001000FFFFFFFF2100FFFFFFFFFFFFFFFF424D3600
+      494C010108000A00080010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -8879,7 +8874,8 @@ object frmMain: TfrmMain
       00009000FE7DF807000004008001F007000000018001F007000080008001E007
       000010008001E007000004008001E007000000018001E007000080008001E007
       000010008001E007000004008001E00700000000C003E00700008001FFFFE017
-      00000003FFFFE00700000007FFFFFFFF}
+      00000003FFFFE00700000007FFFFFFFF00000000000000000000000000000000
+      000000000000}
   end
   object pmHeaders: TPopupMenu
     Images = ilFileTypes
@@ -9008,7 +9004,7 @@ object frmMain: TfrmMain
     Left = 288
     Top = 480
     Bitmap = {
-      494C010118001A00440020002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C010118001A00480020002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12715,7 +12711,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 424
     Bitmap = {
-      494C010112004800440010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010112004800480010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000005000000001002000000000000050
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -13403,18 +13399,6 @@ object frmMain: TfrmMain
   object BalloonHint1: TBalloonHint
     Left = 784
     Top = 320
-  end
-  object IdHTTP1: TIdHTTP
-    AllowCookies = True
-    ProxyParams.BasicAuthentication = True
-    ProxyParams.ProxyPort = 0
-    Request.ContentLength = -1
-    Request.Accept = 'text/html, */*'
-    Request.BasicAuthentication = False
-    Request.UserAgent = 'Mozilla/3.0 (compatible; Indy Library)'
-    HTTPOptions = [hoForceEncodeParams]
-    Left = 352
-    Top = 664
   end
   object IdConnectThroughHttpProxy1: TIdConnectThroughHttpProxy
     Enabled = False
