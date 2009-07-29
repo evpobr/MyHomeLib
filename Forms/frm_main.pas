@@ -389,7 +389,7 @@ type
     miDeleteFiles: TMenuItem;
     IdHTTP1: TIdHTTP;
     IdConnectThroughHttpProxy1: TIdConnectThroughHttpProxy;
-    N43: TMenuItem;
+    miFastBookSearch: TMenuItem;
 
     //
     // События формы
@@ -595,7 +595,7 @@ type
     procedure edFGenreKeyPress(Sender: TObject; var Key: Char);
     procedure pmMainPopup(Sender: TObject);
     procedure miDeleteFilesClick(Sender: TObject);
-    procedure N43Click(Sender: TObject);
+    procedure miFastBookSearchClick(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -4664,6 +4664,11 @@ begin
 
 end;
 
+procedure TfrmMain.miFastBookSearchClick(Sender: TObject);
+begin
+  unit_Utils.LocateBook;
+end;
+
 procedure TfrmMain.miFb2ImportClick(Sender: TObject);
 begin
   DMUser.ActivateCollection(Settings.ActiveCollection);
@@ -5500,11 +5505,6 @@ end;
 procedure TfrmMain.N34Click(Sender: TObject);
 begin
   if DirectoryExists(Settings.ReadDir) then ClearDir(Settings.ReadDir);
-end;
-
-procedure TfrmMain.N43Click(Sender: TObject);
-begin
-  unit_Utils.LocateBook;
 end;
 
 procedure TfrmMain.miExportUserDataClick(Sender: TObject);

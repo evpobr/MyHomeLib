@@ -1,0 +1,64 @@
+object frmBookSearch: TfrmBookSearch
+  Left = 0
+  Top = 0
+  BorderStyle = bsNone
+  Caption = 'frmBookSearch'
+  ClientHeight = 63
+  ClientWidth = 258
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  GlassFrame.Enabled = True
+  GlassFrame.Left = 5
+  GlassFrame.Top = 5
+  GlassFrame.Right = 5
+  GlassFrame.Bottom = 5
+  GlassFrame.SheetOfGlass = True
+  KeyPreview = True
+  OldCreateOrder = False
+  Position = poMainFormCenter
+  OnKeyDown = FormKeyDown
+  PixelsPerInch = 96
+  TextHeight = 13
+  object RzPanel1: TRzPanel
+    Left = 0
+    Top = 0
+    Width = 258
+    Height = 63
+    Align = alClient
+    BorderInner = fsFlatRounded
+    BorderOuter = fsPopup
+    BorderWidth = 3
+    TabOrder = 0
+    ExplicitHeight = 76
+    object Label1: TLabel
+      AlignWithMargins = True
+      Left = 9
+      Top = 9
+      Width = 240
+      Height = 13
+      Align = alTop
+      Caption = #1055#1086#1080#1089#1082' '#1087#1086' '#1085#1072#1079#1074#1072#1085#1080#1102
+      ExplicitLeft = 16
+      ExplicitTop = 16
+      ExplicitWidth = 98
+    end
+    object edText: TRzEdit
+      AlignWithMargins = True
+      Left = 9
+      Top = 28
+      Width = 240
+      Height = 21
+      Align = alTop
+      TabOrder = 0
+      OnChange = edTextChange
+      OnKeyPress = edTextKeyPress
+      ExplicitLeft = 16
+      ExplicitTop = 36
+      ExplicitWidth = 217
+    end
+  end
+end
