@@ -26,6 +26,8 @@ function LibrusecUpdate: boolean;
 procedure ShowPopup(Msg: string);
 procedure HidePopup;
 
+procedure LocateBook;
+
 implementation
 
 uses
@@ -34,7 +36,9 @@ uses
   frm_SyncOnLineProgressForm,
   unit_SyncFoldersThread,
   frm_ImportProgressFormEx,
-  unit_libupdateThread, frm_info_popup;
+  unit_libupdateThread,
+  frm_info_popup,
+  frm_search;
 
 procedure SyncOnLineFiles;
 var
@@ -96,6 +100,24 @@ begin
   end;
 end;
 
+procedure LocateBook;
+var
+  Worker : TSearchThread;
+begin
+  Worker := TSearchThread.Create(true);
+  try
+    Worker.SearchForm := TfrmBookSearch.Create(Application);
+    try
+      Worker.OnKeyPress := Worker.SearchForm.edText.OnChange;
+      Worker.SearchForm.ShowModal;
+    finally
+      Worker.SearchForm.Free;
+    end;
+  finally
+    Worker.Free;
+  end;
+end;
+
 procedure ShowPopup(Msg: string);
 begin
   frmInfoPopup := TfrmInfoPopup.Create(Nil);
@@ -112,5 +134,7 @@ begin
     frmInfoPopup.Free;
   end;
 end;
+
+
 
 end.
