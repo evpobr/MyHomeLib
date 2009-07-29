@@ -389,6 +389,7 @@ type
     miDeleteFiles: TMenuItem;
     IdHTTP1: TIdHTTP;
     IdConnectThroughHttpProxy1: TIdConnectThroughHttpProxy;
+    N43: TMenuItem;
 
     //
     // События формы
@@ -594,6 +595,7 @@ type
     procedure edFGenreKeyPress(Sender: TObject; var Key: Char);
     procedure pmMainPopup(Sender: TObject);
     procedure miDeleteFilesClick(Sender: TObject);
+    procedure N43Click(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -633,7 +635,7 @@ type
     function GetViewTree(view: TView): TVirtualStringTree;
     procedure GetActiveTree(var Tree: TVirtualStringTree);
     procedure Selection(SelState: boolean);
-    procedure LocateBookList(text: String; Tree: TVirtualStringTree);
+    procedure LocateAuthor(text: String; Tree: TVirtualStringTree);
     procedure InitCollection(ApplyAuthorFilter: Boolean);
 
     procedure CreateCollectionMenu;
@@ -653,6 +655,7 @@ type
     procedure DisableMainMenu(State: boolean);
 
     function HH(Command: Word; Data: Integer; var CallHelp: Boolean): Boolean;
+    procedure LocateBook(text: String);
 
   private
     FSelectionState: boolean;
@@ -751,7 +754,7 @@ uses
   frm_NCWizard,
   DateUtils,
   idStack,
-  idException, frm_editor, unit_SearchUtils;
+  idException, frm_editor, unit_SearchUtils, frm_search;
 
 resourcestring
   rstrFileNotFoundMsg = 'Файл %s не найден!'#13'Проверьте настройки коллекции!';
@@ -1062,6 +1065,8 @@ begin
 
   tbtnShowDeleted.Down := Settings.DoNotShowDeleted ;
   tbtnShowLocalOnly.Down := Settings.ShowLocalOnly ;
+
+  cbDeleted.Checked := Settings.DoNotShowDeleted;
 
   CreateScriptMenu;
   if Settings.DefaultScript <> 0 then
@@ -3390,6 +3395,8 @@ begin
   Settings.DoNotShowDeleted := not Settings.DoNotShowDeleted;
   tbtnShowDeleted.Down := Settings.DoNotShowDeleted;
 
+  cbDeleted.Checked := Settings.DoNotShowDeleted;
+
   SetBooksFilter;
   FillAllBooksTree;
 
@@ -4770,7 +4777,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.LocateBookList(text: String; Tree: TVirtualStringTree);
+procedure TfrmMain.LocateAuthor(text: String; Tree: TVirtualStringTree);
 var
   Node: PVirtualNode;
   Data: PAuthorData;
@@ -4796,6 +4803,35 @@ begin
   end;
 end;
 
+procedure TfrmMain.LocateBook(text: String );
+var
+  Node: PVirtualNode;
+  Data: PBookData;
+  L : integer;
+  Tree: TVirtualStringTree;
+begin
+  GetActiveTree(Tree);
+
+  Tree.ClearSelection;
+  Node := Tree.GetFirst;
+
+  L := Length(text);
+  text := AnsiUpperCase(text);
+
+  while Assigned(Node) do
+  begin
+    Data := Tree.GetNodeData(Node);
+    Assert(Assigned(Data));
+    if text = Copy(AnsiUpperCase(Data.Title),1,L) then
+    begin
+      Tree.Selected[Node] := True;
+      Tree.FocusedNode := Node;
+      Exit;
+    end;
+    Node := Tree.GetNext(Node);
+  end;
+end;
+
 procedure TfrmMain.edLocateAuthorChange(Sender: TObject);
 var
   S : string;
@@ -4811,7 +4847,7 @@ begin
     edLocateAuthor.Perform(WM_KEYDOWN, VK_RIGHT, 0);
   end;
   if not FDoNotLocate then
-    LocateBookList(edLocateAuthor.Text, tvAuthors);
+    LocateAuthor(edLocateAuthor.Text, tvAuthors);
 end;
 
 procedure TfrmMain.edLocateAuthorKeyDown(Sender: TObject; var Key: Word;
@@ -4901,7 +4937,7 @@ begin
     edLocateSeries.Perform(WM_KEYDOWN, VK_RIGHT, 0);
   end;
   if not FDoNotLocate then
-    LocateBookList(edLocateSeries.Text, tvSeries);
+    LocateAuthor(edLocateSeries.Text, tvSeries);
 end;
 
 procedure TfrmMain.FillAuthorTree;
@@ -5322,6 +5358,7 @@ begin
       FN := dmCollection.FullName(Data.ID);
     pgControl.ActivePageIndex := 0;
     edLocateAuthor.Text := FN;
+    LocateBook(Data.Title);
   finally
     Screen.Cursor := crDefault;
   end;
@@ -5463,6 +5500,11 @@ end;
 procedure TfrmMain.N34Click(Sender: TObject);
 begin
   if DirectoryExists(Settings.ReadDir) then ClearDir(Settings.ReadDir);
+end;
+
+procedure TfrmMain.N43Click(Sender: TObject);
+begin
+  unit_Utils.LocateBook;
 end;
 
 procedure TfrmMain.miExportUserDataClick(Sender: TObject);

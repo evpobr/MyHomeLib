@@ -100,7 +100,8 @@ uses
   unit_ExportINPXThread in 'ImportImpl\unit_ExportINPXThread.pas',
   frm_info_popup in 'Forms\frm_info_popup.pas' {frmInfoPopup},
   dm_collection in 'DataModules\dm_collection.pas' {DMCollection: TDataModule},
-  htmlhlp in 'Units\htmlhlp.pas';
+  htmlhlp in 'Units\htmlhlp.pas',
+  frm_search in 'Forms\frm_search.pas' {frmBookSearch};
 
 {$R *.res}
 
@@ -131,7 +132,6 @@ begin
   Application.CreateForm(TfrmEditBookInfo, frmEditBookInfo);
   Application.CreateForm(TfrmGenreTree, frmGenreTree);
   Application.CreateForm(TfrmEditAuthor, frmEditAuthor);
-
   frmSplash.Hide;  // Hide the splash screen
   finally
     frmSplash.Free;  // Free the splash screen
