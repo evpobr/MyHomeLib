@@ -6,7 +6,7 @@ procedure AddToFilter(Field,Value:String;  UP: boolean ; var FilterString: strin
 procedure AddSeriesToFilter(Value:string; var SeriesFilter: string);
 
 function Clear(S: string):string;
-function PrepareQuery(S: string; ConverToFull: boolean = true):string;
+function PrepareQuery(S: string; UP: boolean; ConverToFull: boolean = true):string;
 
 implementation
 
@@ -67,10 +67,10 @@ end;
 
 
 // проверяем запрос, если нативный - преобразовывам в SQL
-function PrepareQuery(S: string; ConverToFull: boolean = true):string;
+function PrepareQuery(S: string; UP: boolean; ConverToFull: boolean = true):string;
 begin
 
-  if ConverToFull then
+  if UP then
       S := trim(AnsiUpperCase(S));
 
   if S = '' then

@@ -1156,7 +1156,7 @@ begin
       //------------------------ серия -----------------------------------------
 
       FilterString := '';
-      AddToFilter('`S_Title`', PrepareQuery(edFSeries.Text), True, FilterString);
+      AddToFilter('`S_Title`', PrepareQuery(edFSeries.Text, True), True, FilterString);
 
       if FilterString <> '' then
            FilterString := SQLStartStr + #13#10 +
@@ -1190,13 +1190,13 @@ begin
       FilterString := '';
 
       //-------------------  все остальное   -----------------------------------
-      AddToFilter('`FullName`', PrepareQuery(edFFullName.Text), False, FilterString);
-      AddToFilter('`Title`', PrepareQuery(edFTitle.Text), True, FilterString);
-      AddToFilter('`FileName`', PrepareQuery(edFFile.Text),False, FilterString);
-      AddToFilter('`Folder`', PrepareQuery(edFFolder.Text), False, FilterString);
-      AddToFilter('`ext`', PrepareQuery(edFExt.Text), False,FilterString);
-      AddToFilter('`Lang`', PrepareQuery(cbLang.Text,False), False, FilterString);
-      AddToFilter('`KeyWords`', PrepareQuery(edFKeyWords.Text), False, FilterString);
+      AddToFilter('`FullName`', PrepareQuery(edFFullName.Text, True), True, FilterString);
+      AddToFilter('`Title`', PrepareQuery(edFTitle.Text, True), True, FilterString);
+      AddToFilter('`FileName`', PrepareQuery(edFFile.Text, False),False, FilterString);
+      AddToFilter('`Folder`', PrepareQuery(edFFolder.Text, False), False, FilterString);
+      AddToFilter('`ext`', PrepareQuery(edFExt.Text, False), False, FilterString);
+      AddToFilter('`Lang`', PrepareQuery(cbLang.Text, False, False), False, FilterString);
+      AddToFilter('`KeyWords`', PrepareQuery(edFKeyWords.Text, True), True, FilterString);
 //
       if cbDate.ItemIndex = -1 then
         AddToFilter('`Date`',PrepareQuery(cbDate.Text,False),False, FilterString)
