@@ -3104,7 +3104,7 @@ begin
       begin
         Data := Tree.GetNodeData(Node);
         GetBookRecord(Data.ID, R);
-        ALibrary.InsertBook(R, True);
+        ALibrary.InsertBook(R, True, True);
       end;
 
       Node := Tree.GetNext(Node);
@@ -4424,7 +4424,7 @@ begin
       ALibrary.BeginBulkOperation;
       try
         ALibrary.DeleteBook(Data.ID);
-        ALibrary.InsertBook(R, True);
+        ALibrary.InsertBook(R, True, True);
 
         ALibrary.EndBulkOperation(True);
       except
