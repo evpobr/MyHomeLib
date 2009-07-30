@@ -109,7 +109,7 @@ begin
   FDate.Caption := '';
   FVersion.Caption := '';
   FAuthor.Caption := '';
-
+  Hint := '';
   Refresh;
 end;
 
@@ -281,6 +281,7 @@ procedure TMHLCoverPanel.Set_Fb2InfoVisible(Value: boolean);
 begin
   FInfo.Visible := Value;
   FFb2InfoVisible := Value;
+  ShowHint := not Value;
 end;
 
 procedure TMHLCoverPanel.Set_FontSize(Value: integer);
@@ -403,7 +404,21 @@ begin
           FDate.Caption := Documentinfo.Date.Text;
           FVersion.Caption := Documentinfo.Version;
           if Documentinfo.Author.Count > 0 then
-             FAuthor.Caption := Documentinfo.Author.Items[0].Nickname.Text
+             FAuthor.Caption := Documentinfo.Author.Items[0].Nickname.Text;
+        end
+        else
+        begin
+          Hint := 'Город :' + Publishinfo.City.Text + #13#10 +
+          'Издатель: ' + Publishinfo.Publisher.Text  + #13#10 +
+          'Год: ' + Publishinfo.Year  + #13#10 +
+          'ISBN: ' + Publishinfo.Isbn.Text  + #13#10 + 'Автор: ';
+
+          if Documentinfo.Author.Count > 0 then
+             Hint := Hint + Documentinfo.Author.Items[0].Nickname.Text + ' ';
+
+          Hint := Hint + #13#10 +
+                  'Дата: ' + Documentinfo.Date.Text  + #13#10 +
+                  'Версия: ' + Documentinfo.Version;
         end;
       end;
     except
