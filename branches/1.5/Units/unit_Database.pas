@@ -58,7 +58,7 @@ type
     //
     function CheckFileInCollection(const FileName: string; const Ext: string): Boolean;
 
-    procedure InsertBook(BookRecord: TBookRecord; FullCheck: boolean);
+    procedure InsertBook(BookRecord: TBookRecord; CheckFileName, FullCheck: boolean);
     procedure DeleteBook(BookID: Integer);
 
     procedure AddBookGenre(BookID: Integer; const GenreCode: string);
@@ -733,7 +733,7 @@ begin
   end;
 end;
 
-procedure TMHLLibrary.InsertBook(BookRecord: TBookRecord; FullCheck: boolean);
+procedure TMHLLibrary.InsertBook(BookRecord: TBookRecord; CheckFileName, FullCheck: boolean);
 var
   i: integer;
   ASeqNumber: Integer;
@@ -829,10 +829,13 @@ begin
   //
   // Собственно сохраним информацию о книге
   //
-  if FullCheck  then
-     Res := FBooks.Locate('Folder;FileName', VarArrayOf([BookRecord.Folder, BookRecord.FileName]), [loCaseInsensitive])
-   else
-     Res := FBooks.Locate('FileName', BookRecord.FileName, [loCaseInsensitive]);
+  if CheckFileName then
+    if FullCheck  then
+        Res := FBooks.Locate('Folder;FileName', VarArrayOf([BookRecord.Folder, BookRecord.FileName]), [loCaseInsensitive])
+     else
+        Res := FBooks.Locate('FileName', BookRecord.FileName, [loCaseInsensitive])
+  else
+    Res := False;
 
   if not Res then
   begin
