@@ -140,6 +140,12 @@ begin
     slBooksInfo.SaveToFile(Settings.TempPath + VERSION_INFO_FILE);
     slFileList.Add(Settings.TempPath + VERSION_INFO_FILE);
 
+    slBooksInfo.Clear;
+
+    slBooksInfo.Add('AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;INSNO;FOLDER;');
+    slBooksInfo.SaveToFile(Settings.TempPath + 'structure.info');
+    slFileList.Add(Settings.TempPath + 'structure.info');
+
     slBooksInfo.Free;         slBooksInfo := nil;
 
     //”паковываем файлы в zip-архив и устанавливаем комментарий
