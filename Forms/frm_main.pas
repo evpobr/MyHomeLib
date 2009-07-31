@@ -681,6 +681,7 @@ type
     FEmptyStarImage: TPngImage;
 
     FLastFoundBook: PVirtualNode;
+    FFirstFoundBook: PvirtualNode;
 
     //
     function GetBookNode(const Tree: TVirtualStringTree; bookID: Integer): PVirtualNode;
@@ -4840,12 +4841,24 @@ begin
       Tree.Selected[Node] := True;
       Tree.FocusedNode := Node;
 
+      if not next then
+           FFirstFoundBook := Node;
+
       FLastFoundBook := Node;
 
       Exit;
     end;
     Node := Tree.GetNext(Node);
   end;
+
+  if FFirstFoundBook <> nil then
+  begin
+    FLastFoundBook := FFirstFoundBook;
+
+    Tree.FocusedNode := FLastFoundBook;
+    Tree.Selected[FLastFoundBook] := True;
+  end;
+
 end;
 
 procedure TfrmMain.edLocateAuthorChange(Sender: TObject);
