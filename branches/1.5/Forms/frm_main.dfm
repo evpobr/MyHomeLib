@@ -1854,7 +1854,7 @@ object frmMain: TfrmMain
         end
         object cpCoverSR: TMHLCoverPanel
           AlignWithMargins = True
-          Left = 589
+          Left = 617
           Top = 3
           Width = 222
           Height = 534
@@ -2258,6 +2258,10 @@ object frmMain: TfrmMain
     object TabSheet5: TRzTabSheet
       HelpContext = 125
       Caption = #1043#1088#1091#1087#1087#1099
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object cpCoverF: TMHLCoverPanel
         AlignWithMargins = True
         Left = 735
@@ -2272,7 +2276,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 0
@@ -2929,7 +2932,7 @@ object frmMain: TfrmMain
             ExplicitHeight = 19
           end
           object btnClearDownload: TRzBitBtn
-            Left = 823
+            Left = 825
             Top = 31
             Width = 118
             Anchors = [akRight, akBottom]
