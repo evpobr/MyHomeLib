@@ -20,6 +20,7 @@ object frmBookSearch: TfrmBookSearch
   KeyPreview = True
   OldCreateOrder = False
   Position = poMainFormCenter
+  OnCreate = FormCreate
   OnKeyDown = FormKeyDown
   PixelsPerInch = 96
   TextHeight = 13
@@ -41,8 +42,6 @@ object frmBookSearch: TfrmBookSearch
       Height = 13
       Align = alTop
       Caption = #1055#1086#1080#1089#1082' '#1087#1086' '#1085#1072#1079#1074#1072#1085#1080#1102
-      ExplicitLeft = 9
-      ExplicitTop = 9
       ExplicitWidth = 98
     end
     object edText: TRzEdit
@@ -54,10 +53,7 @@ object frmBookSearch: TfrmBookSearch
       Align = alTop
       TabOrder = 0
       OnChange = edTextChange
-      OnKeyPress = edTextKeyPress
-      ExplicitLeft = 9
-      ExplicitTop = 28
-      ExplicitWidth = 240
+      OnKeyDown = edTextKeyDown
     end
   end
 end

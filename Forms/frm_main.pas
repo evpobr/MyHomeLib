@@ -654,7 +654,7 @@ type
     procedure DisableMainMenu(State: boolean);
 
     function HH(Command: Word; Data: Integer; var CallHelp: Boolean): Boolean;
-    procedure LocateBook(text: String);
+    procedure LocateBook(text: String; Next : boolean);
 
   private
     FSelectionState: boolean;
@@ -679,6 +679,8 @@ type
 
     FStarImage: TPngImage;
     FEmptyStarImage: TPngImage;
+
+    FLastFoundBook: PVirtualNode;
 
     //
     function GetBookNode(const Tree: TVirtualStringTree; bookID: Integer): PVirtualNode;
@@ -4807,7 +4809,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.LocateBook(text: String );
+procedure TfrmMain.LocateBook(text: String; Next: boolean );
 var
   Node: PVirtualNode;
   Data: PBookData;
@@ -4817,7 +4819,14 @@ begin
   GetActiveTree(Tree);
 
   Tree.ClearSelection;
-  Node := Tree.GetFirst;
+
+  if not Next then FLastFoundBook := Nil;
+
+
+  if Next and (FLastFoundBook <> Nil) then
+    Node := Tree.GetNext(FLastFoundBook)
+  else
+    Node := Tree.GetFirst;
 
   L := Length(text);
   text := AnsiUpperCase(text);
@@ -4830,6 +4839,9 @@ begin
     begin
       Tree.Selected[Node] := True;
       Tree.FocusedNode := Node;
+
+      FLastFoundBook := Node;
+
       Exit;
     end;
     Node := Tree.GetNext(Node);
@@ -5362,7 +5374,7 @@ begin
       FN := dmCollection.FullName(Data.ID);
     pgControl.ActivePageIndex := 0;
     edLocateAuthor.Text := FN;
-    LocateBook(Data.Title);
+    LocateBook(Data.Title, False);
   finally
     Screen.Cursor := crDefault;
   end;

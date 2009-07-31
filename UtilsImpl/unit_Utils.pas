@@ -108,7 +108,8 @@ begin
   try
     Worker.SearchForm := TfrmBookSearch.Create(Application);
     try
-      Worker.OnKeyPress := Worker.SearchForm.edText.OnChange;
+      Worker.OnChange := Worker.SearchForm.edText.OnChange;
+      Worker.OnKeyDown := Worker.SearchForm.edText.OnKeyDown;
       Worker.SearchForm.ShowModal;
     finally
       Worker.SearchForm.Free;
