@@ -385,7 +385,7 @@ begin
       finally
         BookList.Free;
       end;
-      SetComment(Format('Добавлено %u книг', [filesProcessed]));
+      Teletype(Format('Добавлено %u книг', [filesProcessed]), tsInfo);
     finally
       unZip.Free;
     end;
