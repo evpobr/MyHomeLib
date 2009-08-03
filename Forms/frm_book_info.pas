@@ -17,29 +17,37 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, xmldom, XMLIntf, msxmldom, XMLDoc, ExtCtrls, RzPanel, RzButton,
-  StdCtrls, RzLabel, RzEdit, ComCtrls;
+  StdCtrls, RzLabel, RzEdit, ComCtrls, RzTabs;
 
 type
   TfrmBookDetails = class(TForm)
-    RzPanel1: TRzPanel;
-    Img: TImage;
-    RzBitBtn1: TRzBitBtn;
+    RzPageControl1: TRzPageControl;
+    TabSheet1: TRzTabSheet;
+    TabSheet2: TRzTabSheet;
     mmShort: TMemo;
+    Img: TImage;
     mmInfo: TMemo;
     mmReview: TMemo;
-    RzLabel1: TRzLabel;
-    RzLabel2: TRzLabel;
+    RzPanel1: TRzPanel;
+    RzBitBtn1: TRzBitBtn;
+    btnClearReview: TRzBitBtn;
+    btnLoadReview: TRzBitBtn;
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure RzBitBtn1Click(Sender: TObject);
     procedure mmReviewChange(Sender: TObject);
+    procedure btnLoadReviewClick(Sender: TObject);
+    procedure btnClearReviewClick(Sender: TObject);
   private
     { Private declarations }
+    FLibID : integer;
 
     FReviewChanged : boolean;
     function GetReview: string;
     procedure Setreview(const Value: string);
 
   public
+    procedure AllowOnlineReview(ID: integer);
+
     procedure ShowBookInfo(FS: TMemoryStream);
     property Review: string read GetReview write Setreview;
     property ReviewChanged: boolean read FReviewChanged;
@@ -55,9 +63,18 @@ uses
   FictionBook_21,
   unit_globals,
   unit_Settings,
-  unit_MHLHelpers;
+  unit_MHLHelpers,
+  unit_ReviewParser;
 
 {$R *.dfm}
+
+procedure TfrmBookDetails.AllowOnlineReview(ID: integer);
+begin
+  FLibID := ID;
+
+  btnLoadReview.Visible := True;
+  btnClearReview.Visible := True;
+end;
 
 procedure TfrmBookDetails.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
@@ -78,6 +95,32 @@ end;
 procedure TfrmBookDetails.RzBitBtn1Click(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TfrmBookDetails.btnClearReviewClick(Sender: TObject);
+begin
+  mmReview.Clear;
+  FReviewChanged := True;
+end;
+
+procedure TfrmBookDetails.btnLoadReviewClick(Sender: TObject);
+const
+  URL = 'http://lib.rus.ec/b/%d/';
+var
+  reviewParser : TReviewParser;
+  review : TStringList;
+begin
+  reviewParser := TReviewParser.Create;
+  review := TStringList.Create;
+  Screen.Cursor := crHourGlass;
+  try
+    reviewParser.Parse(Format(url,[FLibID]), review);
+    mmReview.Lines.AddStrings(review);
+  finally
+    review.Free;
+    reviewParser.Free;
+    Screen.Cursor := crDefault;
+  end;
 end;
 
 procedure TfrmBookDetails.Setreview(const Value: string);
@@ -132,7 +175,7 @@ begin
       if Sequence.Count>0 then
       begin
         mmInfo.Lines.Add('Серия: '+Sequence[0].Name);
-        mmInfo.Lines.Add('Номер: '+IntToStr(Sequence[0].Number));
+//        mmInfo.Lines.Add('Номер: '+IntToStr(Sequence[0].Number));
       end;
 
      if Annotation.HasChildNodes then
