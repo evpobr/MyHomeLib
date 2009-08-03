@@ -101,7 +101,8 @@ uses
   frm_info_popup in 'Forms\frm_info_popup.pas' {frmInfoPopup},
   dm_collection in 'DataModules\dm_collection.pas' {DMCollection: TDataModule},
   htmlhlp in 'Units\htmlhlp.pas',
-  frm_search in 'Forms\frm_search.pas' {frmBookSearch};
+  frm_search in 'Forms\frm_search.pas' {frmBookSearch},
+  unit_ReviewParser in 'Units\unit_ReviewParser.pas';
 
 {$R *.res}
 

@@ -721,6 +721,13 @@ type
 var
   frmMain: TfrmMain;
 
+  IsPrivate: Boolean;
+  IsOnline: Boolean;
+  IsLocal: Boolean;
+  IsFB2: Boolean;
+  IsNonFB2: Boolean;
+
+
 const CHECK_FILE = 'TheFirstRun.check';
 
 implementation
@@ -1392,11 +1399,6 @@ end;
 procedure TfrmMain.InitCollection(ApplyAuthorFilter: Boolean);
 var
   CollectionType: Integer;
-  IsPrivate: Boolean;
-  IsOnline: Boolean;
-  IsLocal: Boolean;
-  IsFB2: Boolean;
-  IsNonFB2: Boolean;
 begin
   FDoNotLocate := True;
   Screen.Cursor := crHourGlass;
@@ -1455,7 +1457,7 @@ begin
 
   tbtnShowCover.Visible := not IsNonFB2 or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
 
-  miBookInfo.Visible := IsLocal and IsFB2;
+  miBookInfo.Visible := IsFB2;
 
   tbtnShowLocalOnly.Visible := IsOnline;
   miDownloadBooks.Visible := IsOnline;
@@ -5147,108 +5149,131 @@ var
   Zip: TZipForge;
   FS : TMemoryStream;
 
+  NoFb2Info: boolean;
+
 begin
-  if not isFB2Collection(DMUser.ActiveCollection.CollectionType) then
+  if not isFb2 then Exit;
+
+  NoFb2Info := False;
+  GetActiveTree(Tree);
+
+  if Tree.FocusedNode= nil then
+      Exit;
+
+  Table := GetActiveBookTable(Tree.Tag);
+  Data := Tree.GetNodeData(Tree.FocusedNode);
+
+  if not Assigned(Data) or (Data.nodeType <> ntBookInfo) or Table.IsEmpty then
     Exit;
 
+  Table.Locate('ID', Data.ID, []);
+  FFormBusy := True;
+
+  if ActiveView = FavoritesView then
+  begin
+    Extra := dmUser.tblExtra;
+    CR := GetFullBookPath(Table,'');
+  end
+  else  begin
+    Extra := dmCollection.tblExtra;
+    CR := GetFullBookPath(Table,FCollectionRoot);
+  end;
+
+  frmBookDetails := TfrmBookDetails.Create(Application);
+
+  FS := TMemoryStream.Create;
   try
-    GetActiveTree(Tree);
-
-    if Tree.FocusedNode= nil then
-      Exit;
-
-    Table := GetActiveBookTable(Tree.Tag);
-    Data := Tree.GetNodeData(Tree.FocusedNode);
-    if not Assigned(Data) or (Data.nodeType <> ntBookInfo) or Table.IsEmpty then
-      Exit;
-
-    Table.Locate('ID', Data.ID, []);
-    FFormBusy := True;
-
-    if ActiveView = FavoritesView then
+    if ExtractFileExt(CR) = ZIP_EXTENSION then
     begin
-      Extra := dmUser.tblExtra;
-      CR := GetFullBookPath(Table,'');
-    end
-    else  begin
-      Extra := dmCollection.tblExtra;
-      CR := GetFullBookPath(Table,FCollectionRoot);
-    end;
-
-    FS := TMemoryStream.Create;
-    try
-      if ExtractFileExt(CR) = ZIP_EXTENSION then
+      if not FileExists(CR) then
+      if IsLocal then
       begin
-        if not FileExists(CR) then
-        begin
-          ShowMessage('Архив ' + CR + ' не найден!');
-          Exit;
-        end;
+         ShowMessage('Архив ' + CR + ' не найден!');
+         Exit;
+       end
+       else
+         NoFb2Info := True;
 
-      Zip := TZipForge.Create(Self);
-      try
-        Zip.FileName := CR;
-        Zip.OpenArchive;
-        Zip.ExtractToStream(GetFileNameZip(Zip,Table['InsideNo']),FS);
-        Zip.CloseArchive;
-      finally
-        Zip.Free;
+      if not NoFb2Info then
+      begin
+        Zip := TZipForge.Create(Self);
+        try
+          Zip.FileName := CR;
+          Zip.OpenArchive;
+          Zip.ExtractToStream(GetFileNameZip(Zip,Table['InsideNo']),FS);
+          Zip.CloseArchive;
+        finally
+          Zip.Free;
+        end;
+      end
+        else
+          if not NoFb2Info then
+            FS.LoadFromFile(CR + Table['FileName'] + Table['Ext']);
       end;
+
+      if not NoFb2Info then
+      begin
+        frmBookDetails.TabSheet1.TabVisible := True;
+        frmBookDetails.RzPageControl1.ActivePageIndex := 0;
       end
       else
       begin
-        FS.LoadFromFile(CR + Table['FileName'] + Table['Ext']);
+        frmBookDetails.TabSheet1.TabVisible := False;
+        frmBookDetails.RzPageControl1.ActivePageIndex := 1;
       end;
 
-      frmBookDetails := TfrmBookDetails.Create(Application);
-
       if Table['Code'] = 1 then
-        frmBookDetails.Review := Extra.FieldByName('Review').AsWideString;
+          frmBookDetails.Review := Extra.FieldByName('Review').AsWideString;
 
       try
         frmBookDetails.ShowBookInfo(FS);
         frmBookDetails.mmInfo.Lines.Add('Добавлено: ' + Table.FieldByName('Date').AsString);
+
+        if not isPrivate then
+            frmBookDetails.AllowOnlineReview(Table['LibID']);
+
         frmBookDetails.ShowModal;
+
+        // обрабатываем рецензию
 
         if frmBookDetails.ReviewChanged then
         begin
-          if Table['Code'] = 0 then
-          begin
-            Table.Edit;
-            Table['Code'] := Table['Code'] or 1;
-            Table.Post;
+          case Table['Code'] of
+            0:  if (frmBookDetails.Review <> '') then
+                begin
+                  Table.Edit;
+                  Table['Code'] := Table['Code'] or 1;
+                  Table.Post;
 
-            Extra.Insert;
-            Extra.FieldByName('Review').AsWideString := frmBookDetails.Review;
-            Extra.Post;
+                  Extra.Insert;
+                  Extra.FieldByName('Review').AsWideString := frmBookDetails.Review;
+                  Extra.Post;
 
-            Data.Code := 1;
-            Tree.RepaintNode(Tree.FocusedNode);
-          end
-          else
-            if frmBookDetails.Review <> '' then
-            begin
-              Extra.Edit;
-              Extra.FieldByName('Review').AsWideString := frmBookDetails.Review;
-              Extra.Post;
-            end
-            else
-            begin // рецензия была, а теперь ее нет
-              Table.Edit;
-              Table['Code'] := 0;
-              Table.Post;
-              Extra.Delete;
-           end;
+                  Data.Code := 1;
+                  Tree.RepaintNode(Tree.FocusedNode);
+                end;
+            1: if frmBookDetails.Review <> '' then
+               begin
+                  Extra.Edit;
+                  Extra.FieldByName('Review').AsWideString := frmBookDetails.Review;
+                  Extra.Post;
+                end
+                else
+                begin // рецензия была, а теперь ее нет
+                  Table.Edit;
+                  Table['Code'] := 0;
+                  Table.Post;
+                  Extra.Delete;
+                end;
+          end; // case
           Data.Code := Table['Code'];
           Tree.RepaintNode(Tree.FocusedNode);
         end;
       finally
         frmBookDetails.Free;
       end;
-    finally
-      FS.Free;
-    end;
-  except
+  finally
+    FS.Free;
     FFormBusy := False;
   end;
 end;
@@ -5312,12 +5337,12 @@ var
   Data: PBookData;
   Tree: TVirtualStringTree;
 begin
-  GetActiveTree(Tree);
-  Data := Tree.GetNodeData(Tree.FocusedNode);
-  if Data = nil then Exit;
-
-  if isOnlineCollection(DMuser.ActiveCollection.CollectionType) then
-     miBookInfo.Visible := Data.Locale;
+//  GetActiveTree(Tree);
+//  Data := Tree.GetNodeData(Tree.FocusedNode);
+//  if Data = nil then Exit;
+//
+//  if isOnlineCollection(DMuser.ActiveCollection.CollectionType) then
+//     miBookInfo.Visible := Data.Locale;
 end;
 
 procedure TfrmMain.pmAuthorPopup(Sender: TObject);
@@ -5882,6 +5907,9 @@ procedure TfrmMain.pgControlChange(Sender: TObject);
 var
   ToolBuutonVisible: boolean;
 begin
+  // сбрасываем закладки быстрого поиска
+  FLastFoundBook := Nil;
+  FFirstFoundBook := Nil;
 
  // tbtnDownloadList_Add.Enabled := (ActiveView <> FavoritesView);
   ToolBuutonVisible := (ActiveView <> DownloadView);
