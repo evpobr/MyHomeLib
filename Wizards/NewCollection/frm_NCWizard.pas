@@ -177,7 +177,7 @@ begin
       Result := True;
 
     COLLECTIONTYPE_PAGE_ID:
-      Result := True;
+      Result := (FParams.Operation = otNew);
 
     NAMEANDLOCATION_PAGE_ID:
       Result := True;
@@ -186,7 +186,8 @@ begin
       Result := (FParams.CollectionType = ltEmpty);
 
     GENREFILE_PAGE_ID:
-      Result := ((FParams.Operation = otNew) and (FParams.CollectionType = ltEmpty)) or
+      Result := ((FParams.Operation = otNew) and (FParams.CollectionType = ltEmpty) and
+                (FParams.FileTypes = ftAny)) or
                 ((FParams.Operation = otNew) and (FParams.CollectionType = ltUserAny));
 
     IMPORT_PAGE_ID:
