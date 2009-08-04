@@ -803,6 +803,12 @@ end;
 
 procedure TfrmMain.WMGetSysCommand(var Message : TMessage) ;
 begin
+  if Message.Msg = WM_Destroy then
+  begin
+    ShowMessage('отключаемся');
+    inherited;
+  end;
+
   if (Message.wParam = SC_MINIMIZE) and Settings.MinimizeToTray then
   begin
     TrayIcon.Visible := True;

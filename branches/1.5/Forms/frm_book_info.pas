@@ -64,7 +64,9 @@ uses
   unit_globals,
   unit_Settings,
   unit_MHLHelpers,
-  unit_ReviewParser;
+  unit_ReviewParser,
+  jpeg,
+  pngimage;
 
 {$R *.dfm}
 
@@ -115,7 +117,9 @@ begin
   Screen.Cursor := crHourGlass;
   try
     reviewParser.Parse(Format(url,[FLibID]), review);
+    mmReview.Clear;
     mmReview.Lines.AddStrings(review);
+    FReviewChanged := True;
   finally
     review.Free;
     reviewParser.Free;
@@ -132,10 +136,17 @@ procedure TfrmBookDetails.ShowBookInfo(FS: TMemoryStream);
 var
   book:IXMLFictionBook;
   i,p:integer;
-  S,outStr:string;
+  S, outStr: AnsiString;
   F:TextFile;
   CoverID:String;
-  CoverFile: string;
+  CoverFile, Ext: string;
+
+  ImgVisible : boolean;
+  MS : TMemoryStream;
+
+  TmpImg: TGraphic;
+
+  StrLen : integer;
 begin
   FReviewChanged := False;
 
@@ -146,23 +157,54 @@ begin
 
     book:=LoadFictionbook(FS);
 
-    CoverID:=book.Description.TitleInfo.Coverpage.XML;
-    p:=pos('"#',CoverID);
-    Delete(CoverId,1,p+1);
-    p:=pos('"',CoverID);
-    CoverID:=Copy(CoverID,1,p-1);
-    CoverFile := IntToStr(Random(99999)) + CoverID;
-    for i:=0 to book.Binary.Count-1 do
-    begin
-      if Book.Binary.Items[i].Id=CoverID then
+    try
+      MS := TMemoryStream.Create;
+      CoverID := Book.Description.Titleinfo.Coverpage.XML;
+      p := pos('"#', CoverID);
+      if p <> 0 then
       begin
-        S:=Book.Binary.Items[i].Text;
-        outStr:=DecodeBase64(S);
-        AssignFile(F,Settings.TempPath + CoverFile);
-        Rewrite(F);
-        Write(F,outStr);
-        CloseFile(F);
+        Delete(CoverId, 1, p + 1);
+        p := pos('"', CoverID);
+        CoverID := Copy(CoverID, 1, p - 1);
+        for i := 0 to Book.Binary.Count - 1 do
+        begin
+          if Book.Binary.Items[i].Id = CoverID then
+          begin
+            S := Book.Binary.Items[i].Text;
+            outStr := DecodeBase64(S);
+
+            StrLen := Length(outStr);
+            MS.Write(PAnsiChar(outStr)^, StrLen);
+            ImgVisible := True;
+          end;
+        end;
+        //MS.SaveToFile('E:\temp\' + CoverID);
       end;
+
+      if ImgVisible then
+      begin
+        Ext := LowerCase(ExtractFileExt(CoverID));
+        try
+          if Ext = '.png' then
+             TmpImg := TPngImage.Create
+          else
+            if (Ext = '.jpg') or (Ext = '.jpeg') then
+              TmpImg := TJPEGImage.Create;
+          if Assigned(TmpImg) then
+          begin
+            MS.Seek(0,soFromBeginning);
+            TmpImg.LoadFromStream(MS);
+            IMG.Picture.Assign(TmpImg);
+            IMG.Invalidate;
+          end;
+        finally
+          TmpImg.Free;
+        end;
+      end
+      else
+        IMG.Picture := nil;
+    finally
+      MS.Free;
     end;
 
     with Book.Description.Titleinfo do
@@ -198,10 +240,8 @@ begin
       mmInfo.Lines.Add('Version: '+Book.Description.Documentinfo.Version);
       mmInfo.Lines.Add('History: '+Book.Description.Documentinfo.History.P.OnlyText);
     end;
-    Img.Picture.LoadFromFile(Settings.TempPath + CoverFile);
   except
   end;
 end;
-
 
 end.
