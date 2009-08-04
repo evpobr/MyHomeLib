@@ -91,7 +91,8 @@ uses
   //unit_globals,
   jpeg,
   pngimage,
-  types, unit_MHLHelpers;
+  types,
+  unit_MHLHelpers;
 
 const
   W = 55;

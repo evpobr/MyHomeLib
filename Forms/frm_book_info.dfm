@@ -25,18 +25,10 @@ object frmBookDetails: TfrmBookDetails
     Align = alClient
     TabIndex = 0
     TabOrder = 0
-    ExplicitLeft = 8
-    ExplicitTop = 24
-    ExplicitWidth = 705
-    ExplicitHeight = 217
     FixedDimension = 19
     object TabSheet1: TRzTabSheet
       DisabledIndex = 0
       Caption = 'Fb2 '#1080#1085#1092#1086
-      ExplicitLeft = 4
-      ExplicitTop = 23
-      ExplicitWidth = 584
-      ExplicitHeight = 441
       object Img: TImage
         Left = 8
         Top = 13
@@ -70,9 +62,6 @@ object frmBookDetails: TfrmBookDetails
     end
     object TabSheet2: TRzTabSheet
       Caption = #1056#1077#1094#1077#1085#1079#1080#1103
-      ExplicitTop = 21
-      ExplicitWidth = 585
-      ExplicitHeight = 441
       object mmReview: TMemo
         AlignWithMargins = True
         Left = 3
@@ -84,9 +73,6 @@ object frmBookDetails: TfrmBookDetails
         ScrollBars = ssVertical
         TabOrder = 0
         OnChange = mmReviewChange
-        ExplicitTop = 9
-        ExplicitWidth = 573
-        ExplicitHeight = 390
       end
       object btnClearReview: TRzBitBtn
         Left = 118
@@ -152,8 +138,6 @@ object frmBookDetails: TfrmBookDetails
     Align = alBottom
     BorderOuter = fsFlatBold
     TabOrder = 1
-    ExplicitTop = 464
-    ExplicitWidth = 585
     DesignSize = (
       582
       37)
@@ -166,7 +150,6 @@ object frmBookDetails: TfrmBookDetails
       TabOrder = 0
       OnClick = RzBitBtn1Click
       Kind = bkClose
-      ExplicitLeft = 408
     end
   end
 end
