@@ -3,7 +3,7 @@ object DMUser: TDMUser
   Height = 417
   Width = 463
   object DBUser: TABSDatabase
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.04 '
     DatabaseName = 'UserData'
     Exclusive = False
     MaxConnections = 5
@@ -14,11 +14,11 @@ object DMUser: TDMUser
   end
   object dsGroupedBooks: TDataSource
     DataSet = tblGrouppedBooks
-    Left = 216
+    Left = 240
     Top = 256
   end
   object tblBases: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.04 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
@@ -70,7 +70,7 @@ object DMUser: TDMUser
     end
   end
   object tblRates: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.04 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
@@ -141,7 +141,7 @@ object DMUser: TDMUser
     Top = 128
   end
   object tblGrouppedBooks: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.04 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
@@ -1056,11 +1056,11 @@ object DMUser: TDMUser
   end
   object dsGroupList: TDataSource
     DataSet = tblGroupList
-    Left = 216
-    Top = 184
+    Left = 248
+    Top = 192
   end
   object tblFinished: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.04 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
@@ -1121,7 +1121,7 @@ object DMUser: TDMUser
     end
   end
   object tblGroupList: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.04 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
@@ -1181,7 +1181,7 @@ object DMUser: TDMUser
     end
   end
   object tblExtra: TABSTable
-    CurrentVersion = '6.02 '
+    CurrentVersion = '6.04 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
