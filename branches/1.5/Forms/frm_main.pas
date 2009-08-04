@@ -5175,17 +5175,20 @@ begin
   Table.Locate('ID', Data.ID, []);
   FFormBusy := True;
 
+  frmBookDetails := TfrmBookDetails.Create(Application);
+
   if ActiveView = FavoritesView then
   begin
     Extra := dmUser.tblExtra;
     CR := GetFullBookPath(Table,'');
+    frmBookDetails.mmReview.ReadOnly := True;
   end
   else  begin
     Extra := dmCollection.tblExtra;
     CR := GetFullBookPath(Table,FCollectionRoot);
   end;
 
-  frmBookDetails := TfrmBookDetails.Create(Application);
+
 
   FS := TMemoryStream.Create;
   try
@@ -5235,7 +5238,7 @@ begin
         frmBookDetails.ShowBookInfo(FS);
         frmBookDetails.mmInfo.Lines.Add('Добавлено: ' + Table.FieldByName('Date').AsString);
 
-        if not isPrivate then
+        if (not isPrivate) and (ActiveView <> FavoritesView) then
             frmBookDetails.AllowOnlineReview(Table['LibID']);
 
         frmBookDetails.ShowModal;
@@ -5272,6 +5275,35 @@ begin
                   Extra.Delete;
                 end;
           end; // case
+
+          if (ActiveView <> FavoritesView) and
+              DMUser.tblGrouppedBooks.Locate('DataBaseID;OuterID;',
+                            VarArrayOf([DMUser.ActiveCollection.ID,Data.ID]),[])
+          then
+          begin
+            DMUser.tblGrouppedBooks.Edit;
+            DMUser.tblGrouppedBooksCode.Value := Table['Code'];
+            DMUser.tblGrouppedBooks.Post;
+
+            if dmUser.tblExtra.Locate('BookID',DMUser.tblGrouppedBooksID.Value,[]) then
+            case Table['Code'] of
+              0: dmUser.tblExtra.Delete;
+              1: begin
+                   dmUser.tblExtra.Edit;
+                   dmUser.tblExtraReview.Value := frmBookDetails.Review;
+                   dmUser.tblExtra.Post;
+                 end;
+            end
+            else
+              if Table['Code'] = 1 then
+              begin
+                dmUser.tblExtra.Insert;
+                dmUser.tblExtraReview.Value := frmBookDetails.Review;
+                dmUser.tblExtra.Post;
+              end;
+
+          end;
+
           Data.Code := Table['Code'];
           Tree.RepaintNode(Tree.FocusedNode);
         end;
