@@ -125,6 +125,7 @@ object frmBookDetails: TfrmBookDetails
         Width = 91
         Caption = #1054#1095#1080#1089#1090#1080#1090#1100
         TabOrder = 2
+        Visible = False
         OnClick = btnClearReviewClick
         Glyph.Data = {
           36060000424D3606000000000000360400002800000020000000100000000100
