@@ -27,11 +27,11 @@ type
     mmShort: TMemo;
     Img: TImage;
     mmInfo: TMemo;
-    mmReview: TMemo;
     RzPanel1: TRzPanel;
     RzBitBtn1: TRzBitBtn;
-    btnClearReview: TRzBitBtn;
     btnLoadReview: TRzBitBtn;
+    mmReview: TRzMemo;
+    btnClearReview: TRzBitBtn;
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure RzBitBtn1Click(Sender: TObject);
     procedure mmReviewChange(Sender: TObject);
