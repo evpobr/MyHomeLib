@@ -710,7 +710,7 @@ end;
 function TBookRecord.GenerateLocation: string;
 begin
   Assert(AuthorCount > 0);
-  Result := GenerateBookLocation(Authors[0].GetFullName) + GenerateFileName(Title, LibID);
+  Result := copy(GenerateBookLocation(Authors[0].GetFullName) + GenerateFileName(Title, LibID),1, MaxFolderLength - 10);
 end;
 
 procedure TBookRecord.ClearAuthors;

@@ -136,6 +136,11 @@ const
   SECTION_FL_FLAT = 'COLUMNS_FILTER_FLAT';
   SECTION_FL_TREE = 'COLUMNS_FILTER_TREE';
 
+  // некоторые ограничени€  дл€ Ѕƒ
+
+  MaxFolderLength = 200; // максимальна€ длина пол€ folder/ все что больше - обрезаетс€
+  IndexSize = 12;     // размер индексных полей
+
 type
   TColumnSet = set of 0..255;
 

@@ -19,10 +19,9 @@ uses
   Variants,
   SysUtils,
   ABSMain,
-  unit_globals;
+  unit_globals,
+  unit_Consts;
 
-const
-  IndexSize = 12;
 
 type
   TAbsTableHelper = class helper for TAbsTable
@@ -91,7 +90,8 @@ type
 implementation
 
 uses
-  StrUtils, bdeconst, unit_Consts;
+  StrUtils,
+  bdeconst;
 
 const
   TEMP_DATABASE = 'TempDB';
@@ -182,7 +182,7 @@ BooksTableFields: array [1 .. 21] of TFieldDesc = (
   (Name: 'Lang';       DataType: ftWideString;  Size: 2;   Required: false),
   //
   (Name: 'DiscID';     DataType: ftInteger;     Size: 0;   Required: false),
-  (Name: 'Folder';     DataType: ftWideString;  Size: 200; Required: false),
+  (Name: 'Folder';     DataType: ftWideString;  Size: MaxFolderLength; Required: false),
   (Name: 'FileName';   DataType: ftWideString;  Size: 170; Required: true ),
   (Name: 'InsideNo';   DataType: ftInteger;     Size: 0;   Required: true ),
   (Name: 'Ext';        DataType: ftWideString;  Size: 10;  Required: false),
@@ -337,7 +337,7 @@ GroupsTableFields: array [1 .. 25] of TFieldDesc = (
   (Name: 'Ext';        DataType: ftWideString; Size: 10;  Required: false),
   (Name: 'Size';       DataType: ftinteger;    Size: 0;   Required: false),
   (Name: 'Code';       DataType: ftSmallInt;   Size: 0;   Required: false),
-  (Name: 'Folder';     DataType: ftWideString; Size: 200; Required: false),
+  (Name: 'Folder';     DataType: ftWideString; Size: MaxFolderLength; Required: false),
   (Name: 'DiscID';     DataType: ftInteger;    Size: 0;   Required: false),
   (Name: 'Local';      DataType: ftBoolean;    Size: 0;   Required: false),
   (Name: 'Deleted';    DataType: ftBoolean;    Size: 0;   Required: false),
@@ -829,6 +829,7 @@ begin
   //
   // Собственно сохраним информацию о книге
   //
+
   if CheckFileName then
     if FullCheck  then
         Res := FBooks.Locate('Folder;FileName', VarArrayOf([BookRecord.Folder, BookRecord.FileName]), [loCaseInsensitive])
