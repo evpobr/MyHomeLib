@@ -3063,7 +3063,11 @@ begin
 
   DMUser.tblGrouppedBooks.First;
   while not DMUser.tblGrouppedBooks.Eof do
+  begin
+    if DMUser.tblExtra.RecordCount <> 0 then
+       DMUser.tblExtra.Delete;
     DMUser.tblGrouppedBooks.Delete;
+  end;
 
   FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True); // избранное
 end;
@@ -5157,6 +5161,8 @@ var
   Zip: TZipForge;
   FS : TMemoryStream;
 
+  ReviewEditable: boolean;
+
   NoFb2Info: boolean;
 
 begin
@@ -5179,11 +5185,16 @@ begin
 
   frmBookDetails := TfrmBookDetails.Create(Application);
 
+  ReviewEditable := true;
+
   if ActiveView = FavoritesView then
   begin
     Extra := dmUser.tblExtra;
     CR := GetFullBookPath(Table,'');
-    frmBookDetails.mmReview.ReadOnly := True;
+
+    ReviewEditable := (Table['DatabaseID'] =  DMUser.ActiveCollection.ID);
+    frmBookDetails.mmReview.ReadOnly := not ReviewEditable;
+
   end
   else  begin
     Extra := dmCollection.tblExtra;
@@ -5240,7 +5251,7 @@ begin
         frmBookDetails.ShowBookInfo(FS);
         frmBookDetails.mmInfo.Lines.Add('Добавлено: ' + Table.FieldByName('Date').AsString);
 
-        if (not isPrivate) and (ActiveView <> FavoritesView) then
+        if not isPrivate and ReviewEditable  then
             frmBookDetails.AllowOnlineReview(Table['LibID']);
 
         frmBookDetails.ShowModal;
@@ -5249,7 +5260,7 @@ begin
 
         if frmBookDetails.ReviewChanged then
         begin
-          case Table['Code'] of
+          case Table['Code'] of     // сначала - основгая таблица
             0:  if (frmBookDetails.Review <> '') then
                 begin
                   Table.Edit;
@@ -5278,33 +5289,65 @@ begin
                 end;
           end; // case
 
-          if (ActiveView <> FavoritesView) and
-              DMUser.tblGrouppedBooks.Locate('DataBaseID;OuterID;',
-                            VarArrayOf([DMUser.ActiveCollection.ID,Data.ID]),[])
-          then
-          begin
-            DMUser.tblGrouppedBooks.Edit;
-            DMUser.tblGrouppedBooksCode.Value := Table['Code'];
-            DMUser.tblGrouppedBooks.Post;
+          // затем синхронизация
 
-            if dmUser.tblExtra.Locate('BookID',DMUser.tblGrouppedBooksID.Value,[]) then
-            case Table['Code'] of
-              0: dmUser.tblExtra.Delete;
-              1: begin
+          if ActiveView <> FavoritesView then
+          begin
+            if DMUser.tblGrouppedBooks.Locate('DataBaseID;OuterID;',
+                            VarArrayOf([DMUser.ActiveCollection.ID,Data.ID]),[])
+            then       // если книга есть в избранном - синхронизируем
+            begin
+              DMUser.tblGrouppedBooks.Edit;
+              DMUser.tblGrouppedBooksCode.Value := Table['Code'];
+              DMUser.tblGrouppedBooks.Post;
+
+              if dmUser.tblExtra.Locate('BookID',DMUser.tblGrouppedBooksID.Value,[]) then
+              case Table['Code'] of
+                0: if DMUser.tblExtra.RecordCount <> 0 then
+                      DMUser.tblExtra.Delete;
+                1: begin
                    dmUser.tblExtra.Edit;
                    dmUser.tblExtraReview.Value := frmBookDetails.Review;
                    dmUser.tblExtra.Post;
                  end;
+              end
+              else
+                if Table['Code'] = 1 then
+                begin
+                  dmUser.tblExtra.Insert;
+                  dmUser.tblExtraReview.Value := frmBookDetails.Review;
+                  dmUser.tblExtra.Post;
+                end;
+              FillBooksTree(0,tvBooksF,Nil,DMUser.tblGrouppedBooks,true, true);
+            end
+          end
+          else   // если активная вкладка - группы, вносим изменения в коллекцию
+          begin
+            DMCollection.tblBooks.Locate('Id', Table['OuterID'], []);
+            DMCollection.tblBooks.Edit;
+            DMCollection.tblBooksCode.Value := Table['Code'];
+            DMCollection.tblBooks.Post;
+
+            if DMCollection.tblExtraReview <> Nil then
+            case Table['Code'] of
+              0: if DMCollection.tblExtra.RecordCount <> 0 then
+                        DMCollection.tblExtra.Delete;
+              1: begin
+                   DMCollection.tblExtra.Edit;
+                   DMCollection.tblExtraReview.Value := frmBookDetails.Review;
+                   DMCollection.tblExtra.Post;
+               end;
             end
             else
               if Table['Code'] = 1 then
               begin
-                dmUser.tblExtra.Insert;
-                dmUser.tblExtraReview.Value := frmBookDetails.Review;
-                dmUser.tblExtra.Post;
+                DMCollection.tblExtra.Insert;
+                DMCollection.tblExtraReview.Value := frmBookDetails.Review;
+                DMCollection.tblExtra.Post;
               end;
-            FillBooksTree(0,tvBooksF,Nil,DMUser.tblGrouppedBooks,true, true);
+            FillAllBooksTree;
           end;
+
 
           Data.Code := Table['Code'];
           Tree.RepaintNode(Tree.FocusedNode);
