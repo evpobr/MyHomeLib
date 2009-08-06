@@ -106,7 +106,7 @@ type
     N11: TMenuItem;
     miClearRate: TMenuItem;
     N20: TMenuItem;
-    pmiSelectAll: TMenuItem;
+    pmiCheckAll: TMenuItem;
     pmiDeselectAll: TMenuItem;
     N23: TMenuItem;
     miCopyClBrd: TMenuItem;
@@ -389,6 +389,7 @@ type
     miDeleteFiles: TMenuItem;
     IdConnectThroughHttpProxy1: TIdConnectThroughHttpProxy;
     miFastBookSearch: TMenuItem;
+    pmiSelectAll: TMenuItem;
 
     //
     // События формы
@@ -462,7 +463,7 @@ type
     procedure tbtnEngClick(Sender: TObject);
     procedure tbSelectAllClick(Sender: TObject);
     procedure tbSendToDeviceClick(Sender: TObject);
-    procedure pmiSelectAllClick(Sender: TObject);
+    procedure pmiCheckAllClick(Sender: TObject);
     procedure pmiDeselectAllClick(Sender: TObject);
     procedure miCopyClBrdClick(Sender: TObject);
 
@@ -595,6 +596,7 @@ type
     procedure pmMainPopup(Sender: TObject);
     procedure miDeleteFilesClick(Sender: TObject);
     procedure miFastBookSearchClick(Sender: TObject);
+    procedure pmiSelectAllClick(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -3923,10 +3925,10 @@ begin
         S := Data.FullName + '. Серия: ' + Data.Series;
 
       ntBookInfo:
-        if Data.Series = '' then
+        if (Data.Series = '---') or (Data.Series = '') then
           S := Data.FullName + '. ' + Data.Title
         else
-          S := Data.FullName + '. Серия:' + Data.Series + '. ' + Data.Title;
+          S := Data.FullName + '. Серия: ' + Data.Series + '. ' + Data.Title;
     end;
     if S = '' then
         R := S
@@ -5301,7 +5303,7 @@ begin
                 dmUser.tblExtraReview.Value := frmBookDetails.Review;
                 dmUser.tblExtra.Post;
               end;
-
+            FillBooksTree(0,tvBooksF,Nil,DMUser.tblGrouppedBooks,true, true);
           end;
 
           Data.Code := Table['Code'];
@@ -5365,7 +5367,7 @@ begin
   Close;
 end;
 
-procedure TfrmMain.pmiSelectAllClick(Sender: TObject);
+procedure TfrmMain.pmiCheckAllClick(Sender: TObject);
 begin
   Selection(True);
 end;
@@ -5391,6 +5393,15 @@ end;
 procedure TfrmMain.pmiDeselectAllClick(Sender: TObject);
 begin
   Selection(False);
+end;
+
+procedure TfrmMain.pmiSelectAllClick(Sender: TObject);
+var
+  tree: TVirtualStringTree;
+begin
+  GetActiveTree(Tree);
+  Tree.SelectAll(False);
+
 end;
 
 procedure TfrmMain.miGoForumClick(Sender: TObject);

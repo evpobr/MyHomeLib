@@ -116,6 +116,7 @@ object frmBookDetails: TfrmBookDetails
         Align = alClient
         ScrollBars = ssVertical
         TabOrder = 1
+        OnChange = mmReviewChange
         ReadOnlyColor = 15794175
         ReadOnlyColorOnFocus = True
       end

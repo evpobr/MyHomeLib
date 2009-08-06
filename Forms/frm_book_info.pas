@@ -137,9 +137,8 @@ var
   book:IXMLFictionBook;
   i,p:integer;
   S, outStr: AnsiString;
-  F:TextFile;
   CoverID:String;
-  CoverFile, Ext: string;
+  Ext: string;
 
   ImgVisible : boolean;
   MS : TMemoryStream;
