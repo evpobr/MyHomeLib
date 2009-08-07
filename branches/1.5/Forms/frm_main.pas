@@ -5301,7 +5301,7 @@ begin
               DMUser.tblGrouppedBooksCode.Value := Table['Code'];
               DMUser.tblGrouppedBooks.Post;
 
-              if dmUser.tblExtra.Locate('BookID',DMUser.tblGrouppedBooksID.Value,[]) then
+              if dmUser.tblExtra.Locate('ID',DMUser.tblGrouppedBooksID.Value,[]) then
               case Table['Code'] of
                 0: if DMUser.tblExtra.RecordCount <> 0 then
                       DMUser.tblExtra.Delete;
