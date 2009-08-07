@@ -92,17 +92,13 @@ object frmMain: TfrmMain
     Top = 0
     Width = 344
     Height = 253
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Align = alClient
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 1
     FixedDimension = 19
     object TabSheet1: TRzTabSheet
       Caption = 'fb2'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object RzGroupBox1: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -124,10 +120,6 @@ object frmMain: TfrmMain
     end
     object TabSheet2: TRzTabSheet
       Caption = 'Extra'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object pbDownload: TRzProgressBar
         AlignWithMargins = True
         Left = 3
@@ -146,65 +138,72 @@ object frmMain: TfrmMain
       object Label4: TLabel
         Left = 0
         Top = 187
-        Width = 16
+        Width = 340
         Height = 13
         Align = alBottom
         Alignment = taCenter
         Anchors = [akLeft, akBottom]
         Caption = '----'
+        ExplicitWidth = 16
       end
       object mmLog: TMemo
         AlignWithMargins = True
         Left = 3
-        Top = 55
+        Top = 71
         Width = 334
-        Height = 132
+        Height = 116
         Margins.Bottom = 0
         Align = alClient
         TabOrder = 0
+        ExplicitTop = 55
+        ExplicitHeight = 132
       end
       object RzGroupBox4: TRzGroupBox
         AlignWithMargins = True
         Left = 3
         Top = 3
         Width = 334
-        Height = 46
+        Height = 62
         Align = alTop
         TabOrder = 1
         object edExtraURL: TEdit
           Left = 11
           Top = 16
-          Width = 213
+          Width = 240
           Height = 21
           TabOrder = 0
           Text = 'http://lib/get_extra.php'
         end
         object edExtra: TEdit
-          Left = 230
+          Left = 257
           Top = 16
-          Width = 52
+          Width = 73
           Height = 21
           TabOrder = 1
           Text = '148523'
         end
         object cbFTP: TCheckBox
-          Left = 288
-          Top = 16
-          Width = 81
+          Left = 11
+          Top = 43
+          Width = 38
           Height = 17
           Caption = 'FTP'
           Checked = True
           State = cbChecked
           TabOrder = 2
         end
+        object cbSkip: TCheckBox
+          Left = 67
+          Top = 43
+          Width = 134
+          Height = 17
+          Caption = #1055#1088#1086#1087#1091#1089#1090#1080#1090#1100' '#1080#1084#1087#1086#1088#1090' '
+          TabOrder = 3
+        end
       end
     end
     object TabSheet3: TRzTabSheet
       Caption = 'USR'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object edURLUSR: TEdit
         Left = 3
         Top = 12

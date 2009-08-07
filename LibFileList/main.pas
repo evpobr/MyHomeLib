@@ -38,6 +38,7 @@ type
     IdFTP: TIdFTP;
     cbFTP: TCheckBox;
     Label3: TLabel;
+    cbSkip: TCheckBox;
     procedure btnStartClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
@@ -489,7 +490,8 @@ end;
 procedure TfrmMain.Extra;
 begin
   mmLog.Clear;
-  DownloadSQL;
+  if not cbSkip.Checked then
+    DownloadSQL;
   mmLog.Lines.Add('Создание extra  ...');
   GetExtra;
   GetVersion;
