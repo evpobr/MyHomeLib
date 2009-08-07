@@ -10,5 +10,7 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TfrmMain, frmMain);
+  frmMain.Show;
+  frmMain.CommandLine;
   Application.Run;
 end.

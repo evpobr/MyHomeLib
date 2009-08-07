@@ -7,7 +7,7 @@ uses
   Dialogs, RzShellDialogs, IdComponent, IdTCPConnection, IdTCPClient,
   IdHTTP, IdBaseComponent, IdAntiFreezeBase, IdAntiFreeze, RzPrgres, StdCtrls,IdMultipartFormData,Inifiles,
   ZipForge, ExtCtrls, RzPanel, RzTabs, ZipMstr, IdExplicitTLSClientServerBase,
-  IdFTP, IdIntercept, IdLogBase, IdLogFile;
+  IdFTP, IdIntercept, IdLogBase, IdLogFile, RzEdit, RzButton, ImgList, RzLabel;
 
 type
   TfrmMain = class(TForm)
@@ -15,31 +15,22 @@ type
     HTTP: TIdHTTP;
     dlgOpen: TRzOpenDialog;
     Zip: TZipMaster;
-    Panel1: TPanel;
-    pcPages: TRzPageControl;
-    TabSheet1: TRzTabSheet;
-    RzGroupBox1: TRzGroupBox;
-    edURLfb2: TEdit;
-    TabSheet2: TRzTabSheet;
-    mmLog: TMemo;
-    RzGroupBox4: TRzGroupBox;
-    edExtraURL: TEdit;
-    edExtra: TEdit;
-    TabSheet3: TRzTabSheet;
-    pbProgress: TRzProgressBar;
-    Label1: TLabel;
-    Label2: TLabel;
-    btnStart: TButton;
-    btnStop: TButton;
-    Button2: TButton;
-    edURLUSR: TEdit;
-    pbDownload: TRzProgressBar;
-    Label4: TLabel;
     IdFTP: TIdFTP;
-    cbFTP: TCheckBox;
-    Label3: TLabel;
-    cbSkip: TCheckBox;
-    procedure btnStartClick(Sender: TObject);
+    RzPanel1: TRzPanel;
+    pbProgress: TRzProgressBar;
+    Button2: TButton;
+    btnStop: TButton;
+    RzPanel2: TRzPanel;
+    RzGroupBox1: TRzGroupBox;
+    RzGroupBox2: TRzGroupBox;
+    ImageList: TImageList;
+    btnExtra: TRzToolButton;
+    btnSettings: TRzToolButton;
+    btnFb2: TRzToolButton;
+    btnUsr: TRzToolButton;
+    btnDownload: TRzToolButton;
+    mmLog: TRzMemo;
+    lblStatus: TRzLabel;
     procedure Button2Click(Sender: TObject);
     procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
       AWorkCount: Int64);
@@ -50,7 +41,6 @@ type
     procedure DownloadSQL;
     procedure GetExtra;
     procedure GetVersion;
-    procedure Extra;
 
     procedure Pack_Extra;
     procedure Pack_FB2;
@@ -61,26 +51,43 @@ type
       AWorkCountMax: Int64);
     procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
     procedure FormDestroy(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
     procedure IdFTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode;
       AWorkCountMax: Int64);
     procedure IdFTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
+    procedure btnDownloadClick(Sender: TObject);
+    procedure btnFb2Click(Sender: TObject);
+    procedure btnExtraClick(Sender: TObject);
+    procedure btnUsrClick(Sender: TObject);
 
   private
     FileList : TStringList;
+    FStartExtraID: Integer;
 
     procedure CreateINP(URL: string; USR: boolean; SaveResult: boolean);
+    procedure Log(S: string);
+
     function ExecAndWait(const FileName, Params: String;
       const WinState: Word): boolean;
     procedure UploadToFtp;
     { Private declarations }
   public
     { Public declarations }
+
+
     FOnProgress: boolean;
     FDoStop: boolean;
     FDownloadSize : integer;
     FStartDate: TDateTime;
     FFTPDir: string;
+
+    FUsrScriptURL : string;
+    FFb2ScriptURL : string;
+    FExtraScriptURL : string;
+
+    FOnDownload : boolean;
+
+    procedure CommandLine;
+
   end;
 
 var
@@ -92,6 +99,19 @@ implementation
 uses DateUtils;
 
 {$R *.dfm}
+
+procedure TfrmMain.CommandLine;
+var
+  i: integer;
+begin
+  if ParamCount > 0 then
+    for I := 1 to ParamCount do
+    begin
+      if ParamStr(i) = '-dump' then btnDownloadClick(nil);
+      if ParamStr(i) = '-extra' then btnExtraClick(nil);
+      if ParamStr(i) = '-ftp' then UploadToFtp;
+    end;
+end;
 
 procedure TfrmMain.CreateINP(URL: string; USR: boolean; SaveResult: boolean);
 const
@@ -107,7 +127,6 @@ begin
   if not dlgOpen.Execute then  Exit;
   FOnProgress := True;
   FileList.Clear;
-  btnStart.Enabled := False;
   btnStop.Enabled := True;
   FDoStop := False;
   pbProgress.Percent:=0;
@@ -121,10 +140,10 @@ begin
       //-----------------------------------------------------------
       //             Подготовка запроса
       //-----------------------------------------------------------
-      Label1.Caption:='Формирование запроса ...';
+      lblStatus.Caption:='Формирование запроса ...';
       Zip.ZipFileName:=dlgOpen.Files[i];
       FN:=ExtractFileName(dlgOpen.Files[i]);
-      Label2.Caption:=FN; Label2.Repaint;
+      Log(FN);
       k := 0;
       ResultsList.Clear;
       while k < Zip.Count - 1 do
@@ -154,8 +173,8 @@ begin
           k := Max;
 
           //  отправка запроса
-          Label1.Caption:='Отправка запроса ...';
-          Label1.Repaint;
+          lblStatus.Caption:='Отправка запроса ...';
+          lblStatus.Repaint;
           response:=TstringStream.Create('');
           try
             HTTP.Post(URL,mpfds,Response);
@@ -170,7 +189,6 @@ begin
 
         pbProgress.Percent:=round((i + k/Zip.Count)/(dlgOpen.Files.Count)*100);
         pbProgress.Repaint;
-        Label3.Caption:=IntToStr(k); Label3.Repaint;
 
       end;  // while
       // обработка результата
@@ -180,7 +198,7 @@ begin
         ResultsList.SaveToFile(AppPath+'\LIBRUSEC_INP\'+copy(FN,1,Length(FN)-4)+'.inp');
       end;
 
-      Label1.Caption:='Готово';Label1.Repaint;
+      lblStatus.Caption:='Готово';lblStatus.Repaint;
       FileList.Add(AppPath+'\LIBRUSEC_INP\'+copy(FN,1,Length(FN)-4)+'.inp');
 
       pbProgress.Percent:=round((i + 1)/(dlgOpen.Files.Count)*100);
@@ -194,10 +212,8 @@ begin
   finally
     pbProgress.Percent:=100;
     FOnProgress := False;
-    btnStop.Caption := 'Выйти';
-    Label1.Caption:='Готово';
+    lblStatus.Caption:='Готово';
     FDoStop := False;
-    btnStart.Enabled := True;
     btnStop.Enabled := False;
   end;
 end;
@@ -212,20 +228,21 @@ var
 
 begin
   List := TStringList.Create;
-  mmLog.Lines.Add('Скачивание базы ...');
+  mmLog.Lines.Add('Скачивание базы.');
   try
     List.LoadFromFile(AppPath + '\lib.rus.ec.txt');
     Response := TMemoryStream.Create;
     try
       for I := 0 to List.Count - 1 do
       begin
-        mmLog.Lines.Add(List[i] + ' ...');
+        Log(Format('%s (%d из %d):',[List[i], i + 1, List.Count]));
         Response.Clear;
+        Log('Скачивание ...');
         HTTP.Get(List[i],Response);
         FileName := Format('%s\Bases\%d.sql.gz',[AppPath,i]);
         Response.SaveToFile(FileName);
 
-        mmLog.Lines.Add('Распаковка  ...');
+        Log('Распаковка  ...');
         ExecAndWait(AppPath + '\7za.exe','e ' + FileName,0);
 
       end;
@@ -233,7 +250,7 @@ begin
       Response.Free;
     end;
 
-    mmLog.Lines.Add('Импорт  ...');
+    mmLog.Lines.Add('Импорт дампа ...');
     ExecAndWait(AppPath + '\import.bat','',0);
     mmLog.Lines.Add('Готово');
 
@@ -243,27 +260,37 @@ begin
   finally
     List.Free;
   end;
-
-
 end;
 
-procedure TfrmMain.btnStartClick(Sender: TObject);
+procedure TfrmMain.btnDownloadClick(Sender: TObject);
 begin
-  case pcPages.ActivePageIndex of
-    0: begin
-         CreateINP(edURLFb2.Text, False, True);
-         Pack_FB2;
-       end;
-    1: begin
-         Extra;
-         Pack_Extra;
-         if  cbFTP.Checked then UPloadToFtp;
-       end;
-    2: begin
-         CreateINP(edURLUSR.Text, True, True);
-         Pack_USR;
-       end;
+  FOnDownload := True;
+  DownloadSQL;
+  FOnDownload := False;
+end;
+
+procedure TfrmMain.btnExtraClick(Sender: TObject);
+var
+  S: string;
+begin
+  if FStartExtraID = 0 then
+  begin
+    S := InputBox('Extra', 'Смещение', IntToStr(FStartExtraID));
+    if S = '' then Exit
+      else FStartExtraID := StrToInt(S);
   end;
+
+  Log('Создание extra  ...');
+  GetExtra;
+  GetVersion;
+  Log('Готово  ...');
+  Pack_Extra;
+end;
+
+procedure TfrmMain.btnFb2Click(Sender: TObject);
+begin
+  CreateINP(FFb2ScriptURL, False, True);
+  Pack_FB2;
 end;
 
 procedure TfrmMain.btnStopClick(Sender: TObject);
@@ -271,17 +298,24 @@ begin
   FDoStop := True;
 end;
 
+procedure TfrmMain.btnUsrClick(Sender: TObject);
+begin
+  Log('Создание Librusec_USR');
+  Log('Обработка архивов:');
+  CreateINP(FUsrScriptURL, True, True);
+  Log('Упаковка inpx ... ');
+  Pack_USR;
+  Log('Готово ');
+end;
+
 procedure TfrmMain.UploadToFtp;
 begin
   idFTP.Connect;
   idFTP.ChangeDir(FFTPDir);
+  Log('Загрузка extra_update ...');
   idFTP.Put(AppPath+'\ARCH\extra_update.zip');
+  Log('Загрузка last_extra.info ...');
   idFTP.Put(AppPath+'\ARCH\last_extra.info');
-end;
-
-procedure TfrmMain.Button1Click(Sender: TObject);
-begin
-  UploadToFTP;
 end;
 
 procedure TfrmMain.Button2Click(Sender: TObject);
@@ -289,9 +323,10 @@ var
   INF:TIniFile;
 begin
   INF:=TIniFile.Create(AppPath+'\libfilelist.ini');
-  INF.WriteString('SYSTEM','URL_FB2',edURLFB2.Text);
-  INF.WriteString('SYSTEM','URL_USR',edURLUSR.Text);
-  INF.WriteString('SYSTEM','ID',edExtra.Text);
+  INF.WriteString('SYSTEM','URL_FB2',FFb2ScriptURL);
+  INF.WriteString('SYSTEM','URL_USR',FUsrScriptURL);
+  INF.WriteString('SYSTEM','URL_EXTRA',FExtraScriptURL);
+  INF.WriteInteger('EXTRA','START_ID',FStartExtraID);
   INF.WriteString('SYSTEM','FOLDER',ExtractFilePath(dlgOpen.FileName));
   INF.Free;
   Close;
@@ -305,13 +340,15 @@ end;
 procedure TfrmMain.FormCreate(Sender: TObject);
 var
   INF:TIniFile;
+  i: integer;
 begin
   AppPath:=ExtractFileDir(Application.ExeName);
   INF:=TIniFile.Create(AppPath+'\libfilelist.ini');
   try
-    edURLFB2.Text := INF.ReadString('SYSTEM','URL_FB2','http://localhost');
-    edURLUSR.Text := INF.ReadString('SYSTEM','URL_USR','http://localhost');
-    edExtra.Text := INF.ReadString('SYSTEM','ID','0');
+    FFb2ScriptURL := INF.ReadString('SYSTEM','URL_FB2','http://localhost/get_inp_fb2.php');
+    FUSRScriptURL:= INF.ReadString('SYSTEM','URL_USR','http://localhost/get_inp_usr.php');
+    FExtraScriptURL:= INF.ReadString('SYSTEM','URL_EXTRA','http://localhost/get_extra.php');
+    FStartExtraID := INF.ReadInteger('EXTRA','START_ID',0);
     dlgOpen.InitialDir := INF.ReadString('SYSTEM','FOLDER','');
 
     idFTP.Host := INF.ReadString('FTP','HOST','');
@@ -323,6 +360,8 @@ begin
     INF.Free;
   end;
   FileList := TStringList.Create;
+  FOnDownload := False;
+
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
@@ -338,12 +377,12 @@ begin
   Response := TStringStream.Create;
   Result := TStringList.Create;
   try
-    Label1.Caption:='Отправка запроса ... ';Label1.Repaint;
-    HTTP.Get(edExtraURL.Text + '?Start=' + edExtra.Text,Response);
+    lblStatus.Caption:='Отправка запроса ... ';lblStatus.Repaint;
+    HTTP.Get(FExtraScriptURL + '?Start=' + IntToStr(FStartExtraID),Response);
     Result.Add(UTF8Decode(Response.DataString));
-    Label1.Caption:='Сохранение ... ';Label1.Repaint;
+    lblStatus.Caption:='Сохранение ... ';lblStatus.Repaint;
     Result.SaveToFile(AppPath+'\LIBRUSEC_INP\extra.inp',TEncoding.UTF8);
-    Label1.Caption:='Готово';Label1.Repaint;
+    lblStatus.Caption:='Готово';lblStatus.Repaint;
   finally
     Response.Free;
     Result.Free;
@@ -379,16 +418,18 @@ var
   ElapsedTime: Cardinal;
   Speed: string;
 begin
+  if not   FOnDownload  then exit;
+
   Application.ProcessMessages;
 
   if FDownloadSize <> 0 then
-    pbDownload.Percent := AWorkCount * 100 div FDownloadSize;
+    pbProgress.Percent := AWorkCount * 100 div FDownloadSize;
 
   ElapsedTime := SecondsBetween(Now, FStartDate);
   if ElapsedTime > 0 then
   begin
     Speed := FormatFloat('0.00', AWorkCount / 1024 / ElapsedTime);
-    Label4.Caption := Format('Загрузка: %s Kb/s', [Speed]);
+    lblStatus.Caption := Format('Загрузка: %s Kb/s', [Speed]);
   end;
 
 end;
@@ -396,26 +437,33 @@ end;
 procedure TfrmMain.HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode;
   AWorkCountMax: Int64);
 begin
-  pbDownload.Percent := 0;
+  if not FOnDownload then Exit;
+  pbProgress.Percent := 0;
   FDownloadSize := AWorkCountMax;
   FStartDate := Now;
 end;
 
 procedure TfrmMain.HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
 begin
-  pbDownload.Percent := 0;
-  Label4.Caption := '';
+  if not FOnDownload then Exit;
+  pbProgress.Percent := 0;
+  lblStatus.Caption := '';
 end;
 
 procedure TfrmMain.IdFTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode;
   AWorkCountMax: Int64);
 begin
-  mmLog.Lines.Add('Подключение к FTP');
+  Log('Подключение к FTP');
 end;
 
 procedure TfrmMain.IdFTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
 begin
-  mmLog.Lines.Add('Передача завершена');
+  Log('Передача завершена');
+end;
+
+procedure TfrmMain.Log(S: string);
+begin
+  mmLog.Lines.Add(S);
 end;
 
 procedure TfrmMain.Pack(FN, Comment: string);
@@ -443,7 +491,6 @@ end;
 procedure TfrmMain.Pack_FB2;
 begin
   Pack('librusec_update.zip','');
-
   Zip.AddCompLevel := 0;
   Pack('librusec.inpx','');
   Zip.AddCompLevel := 9;
@@ -486,16 +533,4 @@ begin
     Application.MessageBox(PChar(Format(' Не удалось запустить %s ! ',[FileName])),'',mb_IconExclamation)
 end;
 
-
-procedure TfrmMain.Extra;
-begin
-  mmLog.Clear;
-  if not cbSkip.Checked then
-    DownloadSQL;
-  mmLog.Lines.Add('Создание extra  ...');
-  GetExtra;
-  GetVersion;
-  mmLog.Lines.Add('Готово  ...');
-end;
-
-end.
+end.
