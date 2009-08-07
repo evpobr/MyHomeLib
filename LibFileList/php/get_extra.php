@@ -1,110 +1,13 @@
 <?php
-	$dblocation = "127.0.0.1";   
-	$dbname = "librusec";   
-	$dbuser = "root";   
-	$dbpasswd = "2def1234";   
-
-	$dbcnx = mysql_connect($dblocation, $dbuser, $dbpasswd);   
-	if (!$dbcnx)   
-	{   
-		echo "<p>не удалось подключиться к mySQL</p>";   
-		exit();   
-	}   
-	if (!mysql_select_db($dbname,$dbcnx) )   
-	{   
-		echo "<p>проблемы с БД</p>";   
-		exit();   
-	} 
+	include('connect_db.php');
+	
 	mysql_query("SET NAMES 'utf8';");	
 	$Start = @$_GET['Start'];
-	$sep=chr(4);
-	$query = 'SELECT `BookId`,`Title`,`FileSize`,`FileType`,`Deleted`,`Time` FROM libbook WHERE BookId>='.$Start.' AND FileType="fb2" ';
+	$query = 'SELECT `BookId`,`Title`,`FileSize`,`FileType`,`Deleted`,`Time`,`Lang`,`N`,`keywords` FROM libbook WHERE BookId>='.$Start.' AND FileType="fb2" ';
 	$q_book_list = mysql_query($query);
 	while ($book = mysql_fetch_array($q_book_list))
 	{
-//		$book = mysql_fetch_row($q_book_list);
-		$BookId = $book[0];
-		$query = 'SELECT `AvtorId` FROM `libavtor` WHERE  BookId='.$BookId.';';
-		$q_avtor_id_list = mysql_query($query);
-		if ($q_avtor_id_list)
-		{
-			$avt_out='';
-			while ($avtor_id=mysql_fetch_array($q_avtor_id_list))
-			{
-				$good_author_id=$avtor_id[0];
-				$query = 'SELECT `GoodId`,`BadId` FROM libavtoraliase WHERE BadId='.$good_author_id.';';
-				$q_bad_avtor = mysql_query($query);
-				if ($q_bad_avtor)
-				{
-					$good_author = mysql_fetch_row($q_bad_avtor);
-					if ($good_author[0]<>'')
-					{ 
-						$good_author_id=$good_author[0];
-							echo "Bad: ".$good_author[1]."    Good: ".$good_author[0]."<br>";
-						}
-				} 
-				$query = 'SELECT `FirstName`,`MiddleName`,`LastName` FROM libavtorname WHERE AvtorId='.$good_author_id.';';
-				$q_avtor = mysql_query($query);
-				if ($q_avtor)
-				{
-					$author = mysql_fetch_row($q_avtor);
-					$avt_out=$avt_out.$author[2].','.$author[0].','.$author[1].':';
-				}	
-			}
-			$avt_out=$avt_out.$sep;
-		}
-		//---------------------   Добываем список жанров  --------------------------------------------------------------
-		$query = 'SELECT GenreID FROM libgenre WHERE  BookId='.$BookId.';';
-		$genre_id_list=mysql_query($query);
-		if ($genre_id_list)
-		{
-			$genres_out='';
-			while ($genre_id=mysql_fetch_array($genre_id_list))
-			{
-				$query = 'SELECT GenreCode FROM libgenrelist WHERE GenreId='.$genre_id[0].';';
-				$q_gen = mysql_query($query);
-				if ($q_gen)
-				{
-					$genre=mysql_fetch_row($q_gen);
-					$genres_out=$genres_out.$genre[0].':';
-				}	
-			}
-		} 
-		else $genres_out='other:';	
-		//---------------------------   список серий   ------------------------------------------
-
-		$seq_out='';
-		$SeqNumber=0;		
-
-		$query = 'SELECT `SeqId`,`SeqNumb` FROM libseq WHERE BookId='.$BookId.';';
-		$q_seq = mysql_query($query);
-		if ($q_seq)
-		{
-			$seq = mysql_fetch_row($q_seq);
-			$SeqNumber=$seq[1];
-			
-			$query = 'SELECT SeqName FROM libseqname WHERE SeqId='.$seq[0].';';
-			$q_seq_name = mysql_query($query);
-			if ($q_seq_name)
-			{
-				$seq_name = mysql_fetch_row($q_seq_name);
-				$seq_out=$seq_name[0];
-			}	
-		}	
-		//---------------------------- все остальное -----------------------------------
-		$sdate=substr($book[5],0,strpos($book[5],' '));
-		
-		if (strlen($avt_out) < 4) $avt_out='неизвестный,автор,:'.$sep;
-		// SELECT BookId,Title,FileSize,FileType,Deleted,Time	
-			
-		//      авторы ;    жанры ;        название ;        серия ;         номер в серии
-		$out = $avt_out.$genres_out.$sep.$book[1].$sep.$seq_out.$sep.$SeqNumber;
-		//       имя файла;         размер файла;          LibId;               Deleted
-		$out.=$sep.$BookId.$sep.$book[2].$sep.$book[0].$sep.$book[4];
-		//          тип файла ;              дата;       язык
-		$out.=$sep.$book[3].$sep.$sdate.$sep;
-		str_replace(chr(13),' ',$out);
-		str_replace(chr(10),' ',$out);
-		echo $out.chr(13).chr(10);
+		$FileName = $book[0];
+		include('query.php');
 	}
 ?>
