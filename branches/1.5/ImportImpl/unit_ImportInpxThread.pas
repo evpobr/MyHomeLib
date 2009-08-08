@@ -57,7 +57,7 @@ type
     procedure WorkFunction; override;
     procedure GetFields;
   public
-    function Import:integer;
+    function Import(CheckFiles: boolean):integer;
 
     property DBFileName: string read FDBFileName write FDBFileName;
     property CollectionRoot: string read FCollectionRoot write SetCollectionRoot;
@@ -307,7 +307,7 @@ begin
   end;
 end;
 
-function TImportLibRusEcThread.Import:integer;
+function TImportLibRusEcThread.Import(CheckFiles: boolean):integer;
 var
   FLibrary: TMHLLibrary;
   BookList: TStringList;
@@ -370,7 +370,7 @@ begin
                 R.InsideNo := j;
               end
             end;
-            FLibrary.InsertBook(R, False, False);
+            FLibrary.InsertBook(R, CheckFiles, False);
             Inc(filesProcessed);
             if (filesProcessed mod ProcessedItemThreshold) = 0 then
             begin
@@ -402,7 +402,7 @@ end;
 
 procedure TImportLibRusEcThread.WorkFunction;
 begin
-  Import;
+  Import(False);
 end;
 
 end.

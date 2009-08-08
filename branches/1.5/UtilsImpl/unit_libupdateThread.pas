@@ -182,7 +182,7 @@ begin
       //  импортирум данные
       Teletype('Импорт ...',tsInfo);
 
-      Import;
+      Import(not Full);
       DMUser.ActiveCollection.Version := GetLibUpdateVersion(True);
       Teletype(rstrReady,tsInfo);
     end; //for .. with

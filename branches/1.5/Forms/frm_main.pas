@@ -5850,58 +5850,67 @@ var
 begin
   GetActiveTree(Tree);
   Node := Tree.GetFirstSelected;
-  Data := Tree.GetNodeData(Node);
-  if not Assigned(Data) or (Data.nodeType <> ntBookInfo) then
-    exit;
+  while Node <> nil do
+  begin
+    Data := Tree.GetNodeData(Node);
+    if not Assigned(Data) or (Data.nodeType <> ntBookInfo) then
+    begin
+      Node := Tree.GetNextSelected(Node);
+      Continue;
+    end;
 
-  //  заглушка
-  if Data.Progress = 100 then
+    //  заглушка
+    if Data.Progress = 100 then
         Data.Progress := 0
     else
         Data.Progress := 100;
 
-  BookTreeStatus := bsBusy;
-  if GetActiveView <> FavoritesView then
-  begin
-
-    if Data.Progress <> 0 then
-          DMUser.SetFinished(Data.ID, Data.Progress)
-      else
-          DMUser.DeleteFinished(Data.ID);
-    //
-    //  Синхронизация с избранным
-    //
-    if (DMUser.tblGrouppedBooks.Locate('DataBaseID;OuterID;',
-                                  VarArrayOf([DMUser.ActiveCollection.ID,Data.ID]),[]))
-    then
+    BookTreeStatus := bsBusy;
+    if GetActiveView <> FavoritesView then
     begin
+
+      if Data.Progress <> 0 then
+          DMUser.SetFinished(Data.ID, Data.Progress)
+        else
+          DMUser.DeleteFinished(Data.ID);
+      //
+      //  Синхронизация с избранным
+      //
+      if (DMUser.tblGrouppedBooks.Locate('DataBaseID;OuterID;',
+                                  VarArrayOf([DMUser.ActiveCollection.ID,Data.ID]),[]))
+      then
+      begin
+        DMUser.tblGrouppedBooks.Edit;
+        DMUser.tblGrouppedBooksProgress.Value := Data.Progress;
+        DMUser.tblGrouppedBooks.Post;
+        FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True); // избранное
+      end;
+    end
+    else // активная вкладка - избранное
+    begin
+      DMUser.tblGrouppedBooks.Locate('DataBaseID;OuterID;',
+                                    VarArrayOf([DMUser.ActiveCollection.ID,Data.ID]),[]);
       DMUser.tblGrouppedBooks.Edit;
       DMUser.tblGrouppedBooksProgress.Value := Data.Progress;
       DMUser.tblGrouppedBooks.Post;
-      FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True); // избранное
-    end;
-  end
-  else // активная вкладка - избранное
-  begin
-    DMUser.tblGrouppedBooks.Locate('DataBaseID;OuterID;',
-                                    VarArrayOf([DMUser.ActiveCollection.ID,Data.ID]),[]);
-    DMUser.tblGrouppedBooks.Edit;
-    DMUser.tblGrouppedBooksProgress.Value := Data.Progress;
-    DMUser.tblGrouppedBooks.Post;
 
-    //
-    //  Синхронизация с таблицей рейтингов
-    //
+      //
+      //  Синхронизация с таблицей рейтингов
+      //
 
-    if Data.Progress <> 0 then
+      if Data.Progress <> 0 then
           DMUser.SetFinished(DMUser.tblGrouppedBooksOuterID.Value, Data.Progress, DMUser.tblGrouppedBooksDatabaseID.Value)
-      else
+        else
           DMUser.DeleteFinished(DMUser.tblGrouppedBooksOuterID.Value, DMUser.tblGrouppedBooksDatabaseID.Value);
 
-    FillBooksTree(0, tvBooksA, dmCollection.tblAuthor_List, dmCollection.tblBooksA, False, True); // авторы
-    FillBooksTree(0, tvBooksS, nil, dmCollection.tblBooksS, False, False); // серии
+      FillBooksTree(0, tvBooksA, dmCollection.tblAuthor_List, dmCollection.tblBooksA, False, True); // авторы
+      FillBooksTree(0, tvBooksS, nil, dmCollection.tblBooksS, False, False); // серии
+    end;
+    Tree.RepaintNode(Node);
+
+    Node := Tree.GetNextSelected(Node);
   end;
-  Tree.RepaintNode(Node);
+
   BookTreeStatus := bsFree;
 end;
 
