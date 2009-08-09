@@ -236,7 +236,7 @@ object DMUser: TDMUser
       item
         Name = 'Folder'
         DataType = ftWideString
-        Size = 128
+        Size = 255
       end
       item
         Name = 'DiscID'
@@ -337,7 +337,7 @@ object DMUser: TDMUser
     end
     object tblGrouppedBooksFolder: TWideStringField
       FieldName = 'Folder'
-      Size = 128
+      Size = 255
     end
     object tblGrouppedBooksDiscID: TIntegerField
       FieldName = 'DiscID'

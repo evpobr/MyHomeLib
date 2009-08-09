@@ -337,7 +337,7 @@ GroupsTableFields: array [1 .. 25] of TFieldDesc = (
   (Name: 'Ext';        DataType: ftWideString; Size: 10;  Required: false),
   (Name: 'Size';       DataType: ftinteger;    Size: 0;   Required: false),
   (Name: 'Code';       DataType: ftSmallInt;   Size: 0;   Required: false),
-  (Name: 'Folder';     DataType: ftWideString; Size: MaxFolderLength; Required: false),
+  (Name: 'Folder';     DataType: ftWideString; Size: 255; Required: false),
   (Name: 'DiscID';     DataType: ftInteger;    Size: 0;   Required: false),
   (Name: 'Local';      DataType: ftBoolean;    Size: 0;   Required: false),
   (Name: 'Deleted';    DataType: ftBoolean;    Size: 0;   Required: false),
