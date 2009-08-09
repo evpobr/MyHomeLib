@@ -386,7 +386,6 @@ type
     Label6: TLabel;
     N31: TMenuItem;
     miDeleteFiles: TMenuItem;
-    IdConnectThroughHttpProxy1: TIdConnectThroughHttpProxy;
     miFastBookSearch: TMenuItem;
     pmiSelectAll: TMenuItem;
 
@@ -5248,8 +5247,6 @@ begin
         frmBookDetails.RzPageControl1.ActivePageIndex := 1;
       end;
 
-      if Table['Code'] = 1 then
-          frmBookDetails.Review := Extra.FieldByName('Review').AsWideString;
 
       try
         frmBookDetails.ShowBookInfo(FS);
@@ -5258,8 +5255,13 @@ begin
         if not isPrivate and ReviewEditable  then
             frmBookDetails.AllowOnlineReview(Table['LibID']);
 
-        frmBookDetails.ShowModal;
+        if Table['Code'] = 1 then
+          frmBookDetails.Review := Extra.FieldByName('Review').AsWideString;
+//        else
+//          if not isPrivate then
+//            DownloadReview(frmBookDetails);
 
+        frmBookDetails.ShowModal;
         // обрабатываем рецензию
 
         if frmBookDetails.ReviewChanged then

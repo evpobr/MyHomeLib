@@ -617,7 +617,7 @@ begin
   else
     DBid := ADbId;
 
-  if not tblRates.Locate('DataBaseID;BookID',
+  if not tblFinished.Locate('DataBaseID;BookID',
            VarArrayOf([DBID, ID]), []) then
   begin
     tblFinished.Insert;

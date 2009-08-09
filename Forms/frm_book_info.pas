@@ -47,12 +47,30 @@ type
 
   public
     procedure AllowOnlineReview(ID: integer);
+    procedure Download;
 
     procedure ShowBookInfo(FS: TMemoryStream);
     property Review: string read GetReview write Setreview;
-    property ReviewChanged: boolean read FReviewChanged;
+    property ReviewChanged: boolean read FReviewChanged write FReviewChanged;
+    property LibID: integer read FLibID;
     { Public declarations }
   end;
+
+  TReviewDownloadThread = class(TThread)
+  private
+    { Private declarations }
+    FId: integer;
+    FForm: TfrmBookDetails;
+    FReview : TStringList;
+
+    procedure StartDownload;
+    procedure Finish;
+  protected
+    procedure Execute; override;
+    property Form: TfrmBookDetails read FForm write FForm;
+  end;
+
+  procedure DownloadReview(Form: TfrmBookDetails);
 
 var
   frmBookDetails: TfrmBookDetails;
@@ -84,6 +102,31 @@ begin
   if key=27 then Close;
 end;
 
+procedure TfrmBookDetails.Download;
+const
+  URL = 'http://lib.rus.ec/b/%d/';
+var
+  reviewParser : TReviewParser;
+  review : TStringList;
+begin
+  btnLoadReview.Enabled := False;
+
+  reviewParser := TReviewParser.Create;
+  review := TStringList.Create;
+  Screen.Cursor := crHourGlass;
+  try
+    reviewParser.Parse(Format(url,[FLibID]), review);
+    mmReview.Clear;
+    mmReview.Lines.AddStrings(review);
+    FReviewChanged := True;
+  finally
+    review.Free;
+    reviewParser.Free;
+    Screen.Cursor := crDefault;
+    btnLoadReview.Enabled := True;
+  end;
+end;
+
 function TfrmBookDetails.GetReview: string;
 begin
   Result := mmReview.Lines.Text;
@@ -106,25 +149,8 @@ begin
 end;
 
 procedure TfrmBookDetails.btnLoadReviewClick(Sender: TObject);
-const
-  URL = 'http://lib.rus.ec/b/%d/';
-var
-  reviewParser : TReviewParser;
-  review : TStringList;
 begin
-  reviewParser := TReviewParser.Create;
-  review := TStringList.Create;
-  Screen.Cursor := crHourGlass;
-  try
-    reviewParser.Parse(Format(url,[FLibID]), review);
-    mmReview.Clear;
-    mmReview.Lines.AddStrings(review);
-    FReviewChanged := True;
-  finally
-    review.Free;
-    reviewParser.Free;
-    Screen.Cursor := crDefault;
-  end;
+  Download;
 end;
 
 procedure TfrmBookDetails.Setreview(const Value: string);
@@ -241,6 +267,57 @@ begin
     end;
   except
   end;
+end;
+
+{ TReviewDownloadThread }
+
+procedure TReviewDownloadThread.Execute;
+const
+  URL = 'http://lib.rus.ec/b/%d/';
+var
+  reviewParser : TReviewParser;
+begin
+  Synchronize(StartDownload);
+  Freview := TStringList.Create;
+  try
+    reviewParser := TReviewParser.Create;
+    try
+      reviewParser.Parse(Format(url,[FId]), Freview);
+      //FReviewChanged := True;
+    finally
+      reviewParser.Free;
+    end;
+  Synchronize(Finish);
+  finally
+    FreeAndNil(FReview);
+  end;
+end;
+
+procedure DownloadReview (Form: TfrmBookDetails) ;
+var
+  Worker : TReviewDownloadThread;
+begin
+  try
+    Worker := TReviewDownloadThread.Create(True);
+    Worker.Form := Form;
+    Worker.FId := Form.LibID;
+    Worker.Execute;
+  finally
+    FreeAndNil(Worker);
+  end;
+end;
+
+procedure TReviewDownloadThread.Finish;
+begin
+  FForm.mmReview.Clear;
+  FForm.mmReview.Lines.AddStrings(Freview);
+  FForm.btnLoadReview.Enabled := True;
+  FForm.ReviewChanged := True;
+end;
+
+procedure TReviewDownloadThread.StartDownload;
+begin
+  FForm.btnLoadReview.Enabled := False;
 end;
 
 end.
