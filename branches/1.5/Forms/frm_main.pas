@@ -194,7 +194,6 @@ type
     tbtnShowLocalOnly: TToolButton;
     tbtnDownloadList_Add: TToolButton;
     N1: TMenuItem;
-    miGoDonate: TMenuItem;
     miGoSite: TMenuItem;
     miGoForum: TMenuItem;
     pgControl: TRzPageControl;
@@ -530,7 +529,6 @@ type
       Shift: TShiftState);
     procedure edFFullNameKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure miGoDonateClick(Sender: TObject);
     procedure tbClearEdAuthorClick(Sender: TObject);
     procedure btnClearEdSeriesClick(Sender: TObject);
     procedure tvBooksTreeChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -1124,19 +1122,25 @@ begin
 
 
    // Check IE Proxy settings   (by Goblin)
-  regini := TRzRegIniFile.Create(self);
-  regini.PathType := ptRegistry;
-  regini.Path := ROOT;
-  if regini.ReadInteger(Key, 'ProxyEnable', 0) = 1 then begin
-    IETempStr := regini.ReadString(Key, 'ProxyServer', '');
-    if IETempStr <> '' then
-      for i := 1 to Length(IETempStr) do
-       if IETempStr[i] = ':' then colonpos := i;
-    IEProxy := ANSILeftStr(IETempStr, colonpos-1);
-    IEPort := ANSIRightStr(IETempStr, Length(IETempStr)-colonpos);
+  if Settings.UseIESettings then
+  try
+    regini := TRzRegIniFile.Create(self);
+    regini.PathType := ptRegistry;
+    regini.Path := ROOT;
+    if regini.ReadInteger(Key, 'ProxyEnable', 0) = 1 then
+    begin
+      IETempStr := regini.ReadString(Key, 'ProxyServer', '');
+      if IETempStr <> '' then
+        for i := 1 to Length(IETempStr) do
+          if IETempStr[i] = ':' then colonpos := i;
+      IEProxy := ANSILeftStr(IETempStr, colonpos-1);
+      IEPort := ANSIRightStr(IETempStr, Length(IETempStr)-colonpos);
 
-    Settings.IEProxyServer := IEProxy;
-    Settings.IEProxyPort := StrToInt(IEPort);
+      Settings.IEProxyServer := IEProxy;
+      Settings.IEProxyPort := StrToInt(IEPort);
+    end;
+  except
+    //  что-то пошло не так ...
   end;
   // End check IE Proxy settings
 end;
@@ -5800,11 +5804,6 @@ begin
         HH_HELP_CONTEXT, Data);
 
   CallHelp := False;
-end;
-
-procedure TfrmMain.miGoDonateClick(Sender: TObject);
-begin
-  ShellExecute(handle, 'open', '"http://home-lib.net/help_us"', nil, nil, SW_SHOW);
 end;
 
 procedure TfrmMain.miCollectionExportClick(Sender: TObject);
