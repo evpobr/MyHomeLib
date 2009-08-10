@@ -145,6 +145,7 @@ type
     cbTXTEncoding: TRzComboBox;
     Label1: TLabel;
     RzLabel5: TRzLabel;
+    cbAutoLoadReview: TCheckBox;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
@@ -303,6 +304,7 @@ begin
   cbAutoStartDwnld.Checked := Settings.AutoStartDwnld;
   cbAllowMixedCollections.Checked := Settings.AllowMixed;
   cbDeleteDeleted.Checked := Settings.DeleteDeleted;
+  cbAutoLoadReview.Checked := Settings.AutoLoadReview;
 
   tvSections.Select(tvSections.Items[0]);
 
@@ -379,7 +381,7 @@ begin
   Settings.AutoStartDwnld := cbAutoStartDwnld .Checked;
   Settings.AllowMixed := cbAllowMixedCollections.Checked;
   Settings.DeleteDeleted := cbDeleteDeleted.Checked;
-
+  Settings.AutoLoadReview := cbAutoLoadReview.Checked;
 
 end;
 

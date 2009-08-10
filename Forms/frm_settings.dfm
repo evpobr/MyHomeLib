@@ -62,7 +62,7 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 414
     Height = 413
-    ActivePage = tsScripts
+    ActivePage = tsBehavour
     Align = alClient
     TabOrder = 1
     object tsDevices: TTabSheet
@@ -1014,6 +1014,14 @@ object frmSettings: TfrmSettings
           Height = 17
           Caption = #1059#1076#1072#1083#1103#1090#1100' "'#1091#1076#1072#1083#1077#1085#1099#1077' '#1085#1072' '#1083#1080#1073#1088#1091#1089#1077#1082#1077'"'
           TabOrder = 5
+        end
+        object cbAutoLoadReview: TCheckBox
+          Left = 24
+          Top = 161
+          Width = 281
+          Height = 17
+          Caption = #1040#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080' '#1079#1072#1075#1088#1091#1078#1072#1090#1100' '#1088#1077#1094#1077#1085#1079#1080#1080
+          TabOrder = 6
         end
       end
     end

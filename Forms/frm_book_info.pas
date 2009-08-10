@@ -86,6 +86,9 @@ uses
   jpeg,
   pngimage;
 
+const
+  URL = 'http://lib.rus.ec/b/%d/';
+
 {$R *.dfm}
 
 procedure TfrmBookDetails.AllowOnlineReview(ID: integer);
@@ -103,8 +106,6 @@ begin
 end;
 
 procedure TfrmBookDetails.Download;
-const
-  URL = 'http://lib.rus.ec/b/%d/';
 var
   reviewParser : TReviewParser;
   review : TStringList;
@@ -179,9 +180,7 @@ begin
   mmInfo.Lines.Clear;
   mmShort.Lines.Clear;
   try
-
     book:=LoadFictionbook(FS);
-
     try
       MS := TMemoryStream.Create;
       CoverID := Book.Description.Titleinfo.Coverpage.XML;
@@ -269,11 +268,9 @@ begin
   end;
 end;
 
-{ TReviewDownloadThread }
+{-------------------- TReviewDownloadThread -----------------------------------}
 
 procedure TReviewDownloadThread.Execute;
-const
-  URL = 'http://lib.rus.ec/b/%d/';
 var
   reviewParser : TReviewParser;
 begin
@@ -283,27 +280,12 @@ begin
     reviewParser := TReviewParser.Create;
     try
       reviewParser.Parse(Format(url,[FId]), Freview);
-      //FReviewChanged := True;
     finally
       reviewParser.Free;
     end;
-  Synchronize(Finish);
   finally
+    Synchronize(Finish);
     FreeAndNil(FReview);
-  end;
-end;
-
-procedure DownloadReview (Form: TfrmBookDetails) ;
-var
-  Worker : TReviewDownloadThread;
-begin
-  try
-    Worker := TReviewDownloadThread.Create(True);
-    Worker.Form := Form;
-    Worker.FId := Form.LibID;
-    Worker.Execute;
-  finally
-    FreeAndNil(Worker);
   end;
 end;
 
@@ -313,11 +295,26 @@ begin
   FForm.mmReview.Lines.AddStrings(Freview);
   FForm.btnLoadReview.Enabled := True;
   FForm.ReviewChanged := True;
+  FForm.RzPageControl1.ActivePageIndex := 1;
 end;
 
 procedure TReviewDownloadThread.StartDownload;
 begin
   FForm.btnLoadReview.Enabled := False;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure DownloadReview (Form: TfrmBookDetails) ;
+var
+  Worker : TReviewDownloadThread;
+begin
+  Worker := TReviewDownloadThread.Create(True);
+  Worker.Form := Form;
+  Worker.FId := Form.LibID;
+  Worker.Priority := tpLower;
+  Worker.FreeOnTerminate := True;
+  Worker.Resume;
 end;
 
 end.
