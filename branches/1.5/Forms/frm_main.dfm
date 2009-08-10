@@ -1641,7 +1641,7 @@ object frmMain: TfrmMain
               Top = 118
               Width = 99
               Height = 21
-              ItemHeight = 13
+              ItemHeight = 0
               TabOrder = 0
               OnKeyDown = edFFullNameKeyDown
               Items.Strings = (
@@ -1656,7 +1656,7 @@ object frmMain: TfrmMain
               Top = 145
               Width = 54
               Height = 21
-              ItemHeight = 13
+              ItemHeight = 0
               TabOrder = 1
               OnKeyDown = edFFullNameKeyDown
               Items.Strings = (
@@ -1700,7 +1700,7 @@ object frmMain: TfrmMain
               Width = 180
               Height = 21
               Align = alTop
-              ItemHeight = 13
+              ItemHeight = 0
               ReadOnlyColor = clBtnHighlight
               TabOrder = 2
               Text = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1074#1089#1077
@@ -1813,7 +1813,7 @@ object frmMain: TfrmMain
         end
         object cpCoverSR: TMHLCoverPanel
           AlignWithMargins = True
-          Left = 511
+          Left = 539
           Top = 3
           Width = 222
           Height = 655
@@ -2052,7 +2052,7 @@ object frmMain: TfrmMain
                 Left = 254
                 Top = 17
                 Width = 12
-                Height = 22
+                Height = 19
                 Align = alRight
                 Alignment = taRightJustify
                 Caption = '()'
@@ -2069,7 +2069,7 @@ object frmMain: TfrmMain
                 Left = 4
                 Top = 17
                 Width = 36
-                Height = 22
+                Height = 13
                 Align = alLeft
                 Alignment = taRightJustify
                 Caption = #1055#1088#1077#1089#1077#1090
@@ -2080,7 +2080,7 @@ object frmMain: TfrmMain
                 Width = 126
                 Height = 21
                 AutoComplete = False
-                ItemHeight = 13
+                ItemHeight = 0
                 TabOrder = 0
                 OnChange = cbPresetNameChange
                 OnSelect = cbPresetNameSelect
@@ -2230,6 +2230,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 0

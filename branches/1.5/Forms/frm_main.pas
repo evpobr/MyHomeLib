@@ -5256,10 +5256,10 @@ begin
             frmBookDetails.AllowOnlineReview(Table['LibID']);
 
         if Table['Code'] = 1 then
-          frmBookDetails.Review := Extra.FieldByName('Review').AsWideString;
-//        else
-//          if not isPrivate then
-//            DownloadReview(frmBookDetails);
+          frmBookDetails.Review := Extra.FieldByName('Review').AsWideString
+        else
+          if not isPrivate and Settings.AutoLoadReview then
+            DownloadReview(frmBookDetails);
 
         frmBookDetails.ShowModal;
         // обрабатываем рецензию

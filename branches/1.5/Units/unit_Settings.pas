@@ -40,7 +40,6 @@ type
     sfCollectionVerInfo
     );
 
-
   TSplitters = array of integer;
   TTreeModes = array of TTreeMode;
 
@@ -160,6 +159,7 @@ type
     FShowLocalOnly : boolean;
     FFullSearchMode: boolean;
     FDeleteDeleted: boolean;
+    FAutoLoadReview: boolean;
 
   private
     function GetSettingsFileName: string;
@@ -320,6 +320,7 @@ type
     property InitialDir[const key: string]: string read GetInitialDir write SetInitialDir;
 
     property AllowMixed : boolean read FAllowMixed write FAllowMixed;
+    property AutoLoadReview: boolean read FAutoLoadReview write FAutoLoadReview;
 
     property DeleteDeleted:boolean read FDeleteDeleted write FDeleteDeleted;
 
@@ -610,7 +611,8 @@ begin
     FAutoRunUpdate :=  iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoRunUpdate', False);
 
     FFullSearchMode := iniFile.ReadBool(BEHAVIOR_SECTION, 'FullSearchMode', False);
-    FDeleteDeleted := iniFile.ReadBool(BEHAVIOR_SECTION, ' DeleteDeleted',  False);
+    FDeleteDeleted := iniFile.ReadBool(BEHAVIOR_SECTION, 'DeleteDeleted',  False);
+    FAutoLoadReview := iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoLoadReview',  True);
 
     //
     // INITIAL_DIRS_SECTION
@@ -747,7 +749,8 @@ begin
     iniFile.WriteBool(BEHAVIOR_SECTION, 'AutoRunUpdate', FAutoRunUpdate);
 
     iniFile.WriteBool(BEHAVIOR_SECTION, 'FullSearchMode', FFullSearchMode);
-    iniFile.WriteBool(BEHAVIOR_SECTION, ' DeleteDeleted', FDeleteDeleted);
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'DeleteDeleted', FDeleteDeleted);
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'AutoLoadReview', FAutoLoadReview);
     //
     // INITIAL_DIRS_SECTION
     //
