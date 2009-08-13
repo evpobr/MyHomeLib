@@ -5359,7 +5359,7 @@ begin
           Tree.RepaintNode(Tree.FocusedNode);
         end;
       finally
-        frmBookDetails.Free;
+        FreeAndNil(frmBookDetails);
       end;
   finally
     FS.Free;

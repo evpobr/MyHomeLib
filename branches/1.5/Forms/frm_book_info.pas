@@ -291,6 +291,9 @@ end;
 
 procedure TReviewDownloadThread.Finish;
 begin
+  if FForm.mmReview = Nil then Exit; // FForm почему-то не равно nil после уничтожени€.
+                                     // зато компоненты обнул€ютс€, поэтому провер€м по ним
+
   FForm.mmReview.Clear;
   FForm.mmReview.Lines.AddStrings(Freview);
   FForm.btnLoadReview.Enabled := True;
