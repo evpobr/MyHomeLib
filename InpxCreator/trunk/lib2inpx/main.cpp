@@ -227,11 +227,14 @@ void clean_directory( const char* path )
          string name( path );
          name += fd.name;
 
-         if( 0 == _unlink( name.c_str() ) )
+         if( 0 != _unlink( name.c_str() ) )
             throw runtime_error( tmp_str( "Unable to delete file \"%s\"", name.c_str() ) );
       }
    }
    while( 0 == _findnext( dir, &fd ) );
+
+   if( 0 != _rmdir( path ) )
+      throw runtime_error( tmp_str( "Unable to delete directory \"%s\"", path ) );
 }
 
 void prepare_mysql( const char* path )
@@ -259,7 +262,8 @@ void prepare_mysql( const char* path )
 
    if( 0 != _access( config.c_str(), 6 ) )
    {
-      _mkdir( config.c_str() );
+      if( 0 != _mkdir( config.c_str() ) )
+         throw runtime_error( tmp_str( "Unable to create directory \"%s\"", config.c_str() ) );
    }
 }
 
@@ -684,7 +688,7 @@ int main( int argc, char *argv[] )
       {
          cout << endl;
          cout << "Import file (INPX) preparation tool for MyHomeLib 1.5" << endl;
-         cout << "Version 1.8 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
+         cout << "Version 1.9 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
          cout << endl;
          cout << "Usage: " << file_name << " [options] <path to SQL dump files>" << endl << endl;
          cout << options << endl;
@@ -801,92 +805,94 @@ int main( int argc, char *argv[] )
          inpx += ".inpx";
       }
 
-      mysql_connection mysql( module_path );
-
-      if( ! g_no_import )
-         cout << endl << "Creating MYSQL database \"" << db_name << "\"" << endl << endl;
-
-      mysql.query( string( "CREATE DATABASE IF NOT EXISTS " + db_name + " CHARACTER SET=utf8;" ) );
-      mysql.query( string( "USE " ) + db_name + ";" );
-      mysql.query( string( "SET NAMES 'utf8';" ) );
-
-      for( vector< string >::const_iterator it = files.begin(); (it != files.end()) && (! g_no_import) ; ++it )
       {
-         string name = "\"" + *it  + "\"";
-         name.append( max( 0, (int)(25 - name.length()) ), ' ' );
+         mysql_connection mysql( module_path );
 
-         cout << "Importing - " << name ;
+         if( ! g_no_import )
+            cout << endl << "Creating MYSQL database \"" << db_name << "\"" << endl << endl;
 
-         timer    ftd;
+         mysql.query( string( "CREATE DATABASE IF NOT EXISTS " + db_name + " CHARACTER SET=utf8;" ) );
+         mysql.query( string( "USE " ) + db_name + ";" );
+         mysql.query( string( "SET NAMES 'utf8';" ) );
 
-         string   buf, line;
-         ifstream in( (path + *it).c_str() );
-         regex    sl_comment( "^(--|#).*" );
-
-         if( !in )
-            throw runtime_error( tmp_str( "Cannot open file \"%s\"", (*it).c_str() ) );
-
-         getline( in, buf );
-         while( in )
+         for( vector< string >::const_iterator it = files.begin(); (it != files.end()) && (! g_no_import) ; ++it )
          {
-            if( 0 != buf.size() )
+            string name = "\"" + *it  + "\"";
+            name.append( max( 0, (int)(25 - name.length()) ), ' ' );
+
+            cout << "Importing - " << name ;
+
+            timer    ftd;
+
+            string   buf, line;
+            ifstream in( (path + *it).c_str() );
+            regex    sl_comment( "^(--|#).*" );
+
+            if( !in )
+               throw runtime_error( tmp_str( "Cannot open file \"%s\"", (*it).c_str() ) );
+
+            getline( in, buf );
+            while( in )
             {
-               size_t pos = buf.find_first_not_of( " \t" );
-               if( pos != 0 )
-                  buf.erase( 0, pos );
-
-               if( ! regex_match( buf, sl_comment ) )
+               if( 0 != buf.size() )
                {
-                  pos = buf.rfind( ';' );
-                  if( pos == string::npos )
-                  {
-                     line += buf;
-                     buf.erase();
-                     goto C_o_n_t;
-                  }
-                  else
-                  {
-                     line += buf.substr( 0, pos + 1 );
-                     buf.erase( 0, pos + 1 );
-                  }
+                  size_t pos = buf.find_first_not_of( " \t" );
+                  if( pos != 0 )
+                     buf.erase( 0, pos );
 
-                  mysql.real_query( line.c_str(), (int)line.size() );
+                  if( ! regex_match( buf, sl_comment ) )
+                  {
+                     pos = buf.rfind( ';' );
+                     if( pos == string::npos )
+                     {
+                        line += buf;
+                        buf.erase();
+                        goto C_o_n_t;
+                     }
+                     else
+                     {
+                        line += buf.substr( 0, pos + 1 );
+                        buf.erase( 0, pos + 1 );
+                     }
 
-                  line = buf;
+                     mysql.real_query( line.c_str(), (int)line.size() );
+
+                     line = buf;
+                  }
                }
+      C_o_n_t: getline( in, buf );
             }
-   C_o_n_t: getline( in, buf );
+
+            cout << " - done in " << ftd.passed() << endl;
          }
 
-         cout << " - done in " << ftd.passed() << endl;
+         if( g_process == eFB2 )
+            comment = utf8_to_ANSI( tmp_str( "lib.rus.ec FB2 - %s\r\n%s\r\n0\r\nАрхивы библиотеки lib.rus.ec (FB2) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
+         else if( g_process == eUSR )
+            comment = utf8_to_ANSI( tmp_str( "lib.rus.ec USR - %s\r\n%s\r\n1\r\nАрхивы библиотеки lib.rus.ec (не-FB2) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
+         else if( g_process == eAll )
+            comment = utf8_to_ANSI( tmp_str( "lib.rus.ec ALL - %s\r\n%s\r\n1\r\nАрхивы библиотеки lib.rus.ec (все) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
+
+         zip zz( inpx, comment );
+
+         if( ! archives_path.empty() ) process_local_archives( mysql, zz, archives_path );
+         else                          process_database      ( mysql, zz                );
+
+         {
+            zip_writer zw( zz, "structure.info" );
+            zw( "AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;LANG;LIBRATE;KEYWORDS;" );
+            zw.close();
+         }
+         {
+            zip_writer zw( zz, "version.info" );
+            zw( dump_date + "\r\n" );
+            zw.close();
+         }
+
+         zz.close();
+
+         cout << endl << "Complete processing took " << td.passed() << endl;
       }
-
-      if( g_process == eFB2 )
-         comment = utf8_to_ANSI( tmp_str( "lib.rus.ec FB2 - %s\r\n%s\r\n0\r\nАрхивы библиотеки lib.rus.ec (FB2) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
-      else if( g_process == eUSR )
-         comment = utf8_to_ANSI( tmp_str( "lib.rus.ec USR - %s\r\n%s\r\n1\r\nАрхивы библиотеки lib.rus.ec (не-FB2) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
-      else if( g_process == eAll )
-         comment = utf8_to_ANSI( tmp_str( "lib.rus.ec ALL - %s\r\n%s\r\n1\r\nАрхивы библиотеки lib.rus.ec (все) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
-
-      zip zz( inpx, comment );
-
-      if( ! archives_path.empty() ) process_local_archives( mysql, zz, archives_path );
-      else                          process_database      ( mysql, zz                );
-
-      {
-         zip_writer zw( zz, "structure.info" );
-         zw( "AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;LANG;LIBRATE;KEYWORDS;" );
-         zw.close();
-      }
-      {
-         zip_writer zw( zz, "version.info" );
-         zw( dump_date + "\r\n" );
-         zw.close();
-      }
-
-      zz.close();
-
-      cout << endl << "Complete processing took " << td.passed() << endl;
 
       if( g_clean_when_done )
       {
