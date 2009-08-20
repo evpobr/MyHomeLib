@@ -598,7 +598,6 @@ object frmSplash: TfrmSplash
       A565FF00696A3FF3FF0075FF007F9BFC693733DE6E762CC641924E4F5AD30F19
       CAAF3CDF4B6D6FD59159C542C9753FFFD9}
     Proportional = True
-    ExplicitWidth = 400
   end
   object lblState: TRzLabel
     Left = 118
@@ -617,18 +616,19 @@ object frmSplash: TfrmSplash
     Transparent = True
   end
   object RzLabel1: TRzLabel
-    Left = 345
+    Left = 322
     Top = 94
-    Width = 25
-    Height = 19
+    Width = 48
+    Height = 23
     Alignment = taRightJustify
-    Caption = '1.2'
+    Caption = '1.5.2'
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 717800
-    Font.Height = -16
+    Font.Color = 259580
+    Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     ParentFont = False
     Transparent = True
+    LightTextStyle = True
   end
 end

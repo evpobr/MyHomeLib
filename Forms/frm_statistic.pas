@@ -35,6 +35,8 @@ type
     lblSeries: TRzLabel;
     RzLabel6: TRzLabel;
     lblVer: TRzLabel;
+    RzGroupBox1: TRzGroupBox;
+    lblNotes: TRzLabel;
 
   public
     procedure ShowInfo;
@@ -62,6 +64,7 @@ begin
   else
     lblVer.Caption := IntToStr(DMUser.ActiveCollection.Version);
   lblDate.Caption := DateToStr(DMUser.ActiveCollection.CreationDate);
+  lblNotes.Caption := DMUser.ActiveCollection.Notes;
 
   DMCollection.GetStatistics(AuthorsCount, BooksCount, SeriesCount);
   lblAuthors.Caption := IntToStr(AuthorsCount);

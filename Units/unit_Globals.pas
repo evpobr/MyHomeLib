@@ -26,13 +26,19 @@ uses
 
 type
 
+  TTXTEncoding = (enUTF8, en1251, enUnicode, enUnknown);
+
+
   TTreeMode = (tmTree,tmFlat);
 
+  TGenresType = (gtFb2, gtAny);
 
   TBookIdList = array of record
                    ID: integer;
                   Res: boolean;
                 end;
+
+
 
 //
 // Global consts
@@ -96,6 +102,7 @@ const
   CT_LIBRUSEC_ONLINE_FB   = LOCATION_ONLINE or LIBRARY_LIBRUSEC or CONTENT_FB;          // 0801 0000 - online lib.rus.ec
   CT_GENESIS_LOCAL_NONFB  = LOCATION_LOCAL or LIBRARY_GENESIS or CONTENT_NONFB;         // 0002 0001 - local Genesis
   CT_GENESIS_ONLINE_NONFB = LOCATION_ONLINE or LIBRARY_GENESIS or CONTENT_NONFB;        // 0802 0001 - online Genesis
+  CT_LIBRUSEC_USR         = LOCATION_LOCAL or LIBRARY_LIBRUSEC or CONTENT_NONFB;        // 0001 0001 - online Genesis
 
   CT_DEPRICATED_ONLINE_FB = 99;
 
@@ -115,14 +122,14 @@ function CheckSymbols(Input: string): string;
 ///procedure GetFileList(InitDir, Ext: string; var OutList: TStringList);
 function EncodeStr(Input: string): string;
 function DecodeStr(Input: string): string;
-function DecodeBase64(const CinLine: ansistring): ansistring;
+//function DecodeBase64(const CinLine: ansistring): ansistring;
 procedure StrReplace(s1, s2: String; var s3: String);
 
 function ClearDir(const DirectoryName: string): Boolean;
 function IsRelativePath(const FileName: string): Boolean;
-function CreateFolders(const Root: string; const Path: string): Boolean;
+function CreateFolders(Root: string; const Path: string): Boolean;
 procedure CopyFile(const SourceFileName: string; const DestFileName: string);
-procedure ConvertToTxt(const SourceFileName: string; DestFileName: string);
+procedure ConvertToTxt(const SourceFileName: string; DestFileName: string; Enc: TTXTEncoding);
 procedure ZipFile(const FileName: string; const ZipFileName: string);
 
 function InclideUrlSlash(S: string):string;
@@ -139,18 +146,18 @@ function GenerateFileName(const Title: string; libID: integer):string;
 procedure DebugOut(const DebugMessage: string); overload;
 procedure DebugOut(const DebugMessage: string; const Args: array of const); overload;
 
-function CheckLibVersion(ALocalVersion: Integer; out ARemoteVersion: Integer): Boolean;
 procedure SetProxySettings(var idHTTP:TidHTTP);
 
 function c_GetTempPath: String;
 function GetSpecialPath(CSIDL: word): string;
-function GetLibUpdateVersion:integer;
+function GetLibUpdateVersion(Full: boolean):integer;
 function ExecAndWait(const FileName,Params: String; const WinState: Word): boolean;
 
-function GetFileNameZip(Zip: TZipForge; No: integer): string;
+//function GetFileNameZip(Zip: TZipForge; No: integer): string;
 function CleanExtension(const Ext: string): string;
 
-procedure FlipBitmapV(Bitmap: Graphics.TBitmap);
+
+function TestArchive(FileName: string): boolean;
 
 type
   TAppLanguage = (alEng, alRus);
@@ -180,11 +187,15 @@ type
   PBookData = ^TBookData;
   TBookData = record
     nodeType: TBookNodeType;
-    Title, Series, Genre, FullName, ColName: String;
 
-    ID, SeriesID, Size, Rate, No, ImageIndex: Integer;
+    Title, Series, Genre, FullName, ColName, FileType : String;
+
+    Lang: string[2];
+
+    ID, SeriesID, Size, Rate, No, ImageIndex, Progress, LibRate, Code: Integer;
     RatePos: Integer;
     Locale: boolean;
+    Deleted: boolean;
     Date: TDateTime;
   end;
 
@@ -196,15 +207,16 @@ type
     ParentCode: String;
   end;
 
+  PGroupData = ^TGenreData;
+  TGroupData = record
+    ID: integer;
+    Text: String;
+  end;
+
   TGenreRecord = record
     GenreCode: String;
     GenreFb2Code: String;
     Alias: String;
-  end;
-
-  TSeriesRecord = record
-    Title: String;
-       No: Integer;
   end;
 
   TAuthorRecord = record
@@ -227,6 +239,7 @@ type
 
   TBookRecord = record
     Title: String;
+    Series: String;
 
     Folder: String;
     FileName: String;
@@ -234,16 +247,22 @@ type
 
     Authors: array of TAuthorRecord;
     Genres: array of TGenreRecord;
-    Series: array of TSeriesRecord;
 
     Code: Integer;
     Size: Integer;
     InsideNo: Integer;
+    SeqNumber: Integer;
     LibID: Integer;
 
     Deleted: Boolean;
     Local: Boolean;
     Date: TDateTime;
+
+    Lang: string[2];
+    LibRate: integer;
+
+    KeyWords: string;
+    URI: string;
 
     procedure Normalize;
     procedure Clear;
@@ -255,14 +274,11 @@ type
     property AuthorCount: Integer read GetAuthorCount;
 
     procedure ClearGenres;
-    procedure AddGenre(const GenreCode: String; const GenreFb2Code: String; const Alias: String);
+    procedure AddGenreFB2(const GenreCode: String; const GenreFb2Code: String; const Alias: String);
+    procedure AddGenreAny(const GenreCode: String; const Alias: String);
     function GetGenreCount: Integer;
     property GenreCount: Integer read GetGenreCount;
 
-    procedure ClearSeries;
-    function GetSeriesCount: Integer;
-    procedure AddSeries(const Title: string; const No: integer);
-    property SeriesCount: integer read GetSeriesCount;
   end;
 
   PFileData = ^TFileData;
@@ -289,8 +305,9 @@ uses
   unit_Consts,
   idException,
   idStack,
-  unit_fb2ToText,
-  ShlObj;
+  ShlObj,
+  frm_main,
+  unit_fb2ToText;
 
 const
   lat: set of char = ['A'..'Z', 'a'..'z', '\', '-', ':', '`', ',', '.', '0'..'9', '_', '(', ')', '[', ']', '{', '}'];
@@ -377,14 +394,17 @@ begin
     Result := False;
 end;
 
-function CreateFolders(const Root: string; const Path: string): Boolean;
+function CreateFolders(Root: string; const Path: string): Boolean;
 var
   fullPath: string;
 begin
   if Path <> '\' then
+  begin
+    if Root = '' then Root := Settings.AppPath;
     fullPath := ExcludeTrailingPathDelimiter(
       IfThen(IsRelativePath(Path), IncludeTrailingPathDelimiter(Root) + Path, Path)
       )
+  end
   else
     fullPath := ExcludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(Root));
   Result := SysUtils.ForceDirectories(fullPath);
@@ -411,14 +431,14 @@ begin
 end;
 {$WARNINGS ON}
 
-procedure ConvertToTxt(const SourceFileName: string; DestFileName: string);
+procedure ConvertToTxt(const SourceFileName: string; DestFileName: string; Enc: TTXTEncoding);
 var
   Converter: TFb2ToText;
 begin
   Converter := TFb2ToText.Create;
   try
     DestFileName := ChangeFileExt(DestFileName,'.txt');
-    Converter.Convert(SourceFileName,DestFileName);
+    Converter.Convert(SourceFileName,DestFileName, Enc);
   finally
     Converter.Free;
   end;
@@ -639,6 +659,7 @@ end;
 procedure TBookRecord.Clear;
 begin
   Title := '';
+  Series := '';
 
   Folder := '';
   FileName := '';
@@ -646,12 +667,11 @@ begin
 
   ClearAuthors;
   ClearGenres;
-  ClearSeries;
 
   Code := 0;
   Size := 0;
   InsideNo := 0;
-
+  SeqNumber := 0;
   LibID := 0;
 
   Deleted := False;
@@ -668,12 +688,8 @@ var
 begin
   if Title = '' then
     Title := BOOK_NO_TITLE;
-
-  for i := 0 to SeriesCount - 1 do
-    if Series[i].Title = '' then
-      Series[i].Title := NO_SERIES_TITLE;
-  if SeriesCount = 0 then
-    AddSeries(NO_SERIES_TITLE,-1);
+  if Series = '' then
+    Series := NO_SERIES_TITLE;
 
   for i := 0 to AuthorCount - 1 do
     if Authors[i].LastName = '' then
@@ -685,7 +701,7 @@ begin
     if Genres[i].GenreCode = '' then
       Genres[i].GenreCode := UNKNOWN_GENRE_CODE;
   if GenreCount = 0 then
-    AddGenre(UNKNOWN_GENRE_CODE, '', '');
+    AddGenreFB2(UNKNOWN_GENRE_CODE, '', '');
 end;
 
 //
@@ -694,7 +710,7 @@ end;
 function TBookRecord.GenerateLocation: string;
 begin
   Assert(AuthorCount > 0);
-  Result := GenerateBookLocation(Authors[0].GetFullName) + GenerateFileName(Title, LibID);
+  Result := copy(GenerateBookLocation(Authors[0].GetFullName) + GenerateFileName(Title, LibID),1, MaxFolderLength - 10);
 end;
 
 procedure TBookRecord.ClearAuthors;
@@ -725,12 +741,7 @@ begin
   SetLength(Genres, 0);
 end;
 
-procedure TBookRecord.ClearSeries;
-begin
-  SetLength(Series, 0);
-end;
-
-procedure TBookRecord.AddGenre(const GenreCode: String; const GenreFb2Code: String; const Alias: String);
+procedure TBookRecord.AddGenreFB2(const GenreCode: String; const GenreFb2Code: String; const Alias: String);
 var
   i: Integer;
 begin
@@ -742,24 +753,23 @@ begin
   Genres[i].Alias := Alias;
 end;
 
-procedure TBookRecord.AddSeries(const Title: string; const No: integer);
+procedure TBookRecord.AddGenreAny(const GenreCode: String; const Alias: String);
 var
-  i: integer;
+  i: Integer;
 begin
-  i := SeriesCount;
-  SetLength(Series, i + 1);
-  Series[i].Title := Title;
-  Series[i].No := No;
+  i := GenreCount;
+  SetLength(Genres, i + 1);
+
+  Genres[i].GenreCode := GenreCode;
+  Genres[i].GenreFb2Code := '';
+  Genres[i].Alias := Alias;
 end;
+
+
 
 function TBookRecord.GetGenreCount: Integer;
 begin
   Result := Length(Genres);
-end;
-
-function TBookRecord.GetSeriesCount: Integer;
-begin
-  Result := Length(Series);
 end;
 
 function GetFullBookPath(const Table:TAbsTable; const FCollectionRoot:string):string;
@@ -848,29 +858,50 @@ procedure SetProxySettings(var idHTTP:TidHTTP);
 begin
   with idHTTP.ProxyParams do
   begin
-    ProxyServer := Settings.ProxyServer;
-    ProxyPort := Settings.ProxyPort;
-    ProxyUsername := Settings.ProxyUsername;
-    ProxyPassword := Settings.ProxyPassword;
-
+    if Settings.UseIESettings then
+    begin
+      ProxyServer := Settings.IEProxyServer;
+      ProxyPort := Settings.IEProxyPort;
+    end
+    else
+    begin
+      ProxyServer := Settings.ProxyServer;
+      ProxyPort := Settings.ProxyPort;
+      ProxyUsername := Settings.ProxyUsername;
+      ProxyPassword := Settings.ProxyPassword;
+    end;
     BasicAuthentication := True;
   end;
+
+  idHTTP.ConnectTimeout := Settings.TimeOut;
+  idHTTP.ReadTimeout := Settings.ReadTimeOut;
+
+  idHTTP.CookieManager := frmMain.IdCookieManager;
+  idHTTP.AllowCookies := True;
+
+  idHTTP.HandleRedirects := True;
 end;
 
-function CheckLibVersion(ALocalVersion: Integer; out ARemoteVersion: Integer): Boolean;
+function CheckLibVersion(ALocalVersion: Integer; Full: boolean; out ARemoteVersion: Integer): Boolean;
 var
   HTTP: TIdHTTP;
   LF: TMemoryStream;
   SL: TStringList;
+
+  URL: string;
 begin
   Result := False;
+
+  URL := IfThen(Full,
+                InclideUrlSlash(Settings.UpdateURL) + LIBRUSEC_UPDATEVERINFO_FILENAME,
+                InclideUrlSlash(Settings.UpdateURL) + EXTRA_UPDATEVERINFO_FILENAME);
 
   HTTP := TidHTTP.Create(nil);
   SetProxySettings(HTTP);
   try
     LF := TMemoryStream.Create;
     try
-      HTTP.Get(InclideUrlSlash(Settings.UpdateURL) + LIBRUSEC_UPDATEVERINFO_FILENAME, LF);
+      HTTP.Get(URL, LF);
       SL := TStringList.Create;
       try
         LF.Seek(0, soFromBeginning);
@@ -891,15 +922,18 @@ begin
   end;
 end;
 
-function GetLibUpdateVersion:integer;
+function GetLibUpdateVersion(Full: boolean):integer;
 var
   F: Text;
   S: String;
 
 begin
-  if FileExists(Settings.SystemFileName[sfLibRusEcVerInfo]) then
+  Result := 0;
+  S := Settings.SystemFileName[sfCollectionVerInfo];
+
+  if FileExists(S) then
   begin
-    AssignFile(F, Settings.SystemFileName[sfLibRusEcVerInfo]);
+    AssignFile(F, S);
     try
       Reset(F);
       Readln(F, S);
@@ -911,8 +945,6 @@ begin
     end;
   end
   else Result := UNVERSIONED_COLLECTION;
-
-
 end;
 
 function ExecAndWait(const FileName,Params: String; const WinState: Word): boolean;
@@ -941,12 +973,12 @@ begin
   end
   else
   begin
+    //
+    // { TODO -oNickR -cRefactoring : не самая лучшая идея показывать диалоги прямо из этой функции. Она может быть вызвана из рабочего потока. }
+    //
     Application.MessageBox(PChar(Format(' Не удалось запустить %s ! ',[FileName])),'',mb_IconExclamation)
   end;
 end;
-
-
-
 
 function GetFileNameZip(Zip: TZipForge; No: integer): string;
 var
@@ -970,17 +1002,28 @@ begin
     Delete(Result, 1, 1);
 end;
 
-procedure FlipBitmapV(Bitmap: Graphics.TBitmap);
+function TestArchive(FileName: string): boolean;
 var
-  X, Y: Integer;
-  SrcRect, DstRect: TRect;
+  Zip: TZipForge;
 begin
-  X := Bitmap.Width;
-  Y := Bitmap.Height;
-  SrcRect := Rect(-1, -1, X, Y);
-  DstRect := Rect(-1, Y, X, -1);
-  Bitmap.Canvas.CopyRect(DstRect, Bitmap.Canvas, SrcRect);
+  Result := False;
+  Zip := TZipForge.Create(nil);
+  try
+    Zip.FileName := FileName;
+    Zip.TempDir := Settings.TempDir;
+    Zip.OpenArchive;
+    try
+      Zip.TestFiles('*.*');
+    except
+
+    end;
+    Zip.CloseArchive;
+    Result := True;
+  finally
+    Zip.Free;
+  end;
 end;
+
 
 end.
 

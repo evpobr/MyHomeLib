@@ -70,13 +70,13 @@ begin
       R.Title := Booktitle.Text;
 
     for i := 0 to Genre.Count - 1 do
-      R.AddGenre('', Genre[i], '');
+      R.AddGenreFB2('', Genre[i], '');
 
     if Sequence.Count > 0 then
     begin
       try
-//        R.Series := Sequence[0].Name;
-//        R.SeqNumber := Sequence[0].Number;
+        R.Series := Sequence[0].Name;
+        R.SeqNumber := Sequence[0].Number;
       except
       end;
     end;

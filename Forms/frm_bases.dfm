@@ -5,7 +5,7 @@ object frmBases: TfrmBases
   BorderIcons = [biSystemMenu, biMinimize, biMaximize, biHelp]
   BorderStyle = bsDialog
   Caption = #1057#1074#1086#1081#1089#1090#1074#1072' '#1082#1086#1083#1083#1077#1082#1094#1080#1080
-  ClientHeight = 241
+  ClientHeight = 256
   ClientWidth = 430
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,14 +21,13 @@ object frmBases: TfrmBases
   object MHLStaticTip1: TMHLStaticTip
     AlignWithMargins = True
     Left = 15
-    Top = 130
+    Top = 151
     Width = 410
     Height = 64
     Margins.Left = 10
     Margins.Top = 10
     Margins.Right = 10
     Margins.Bottom = 7
-    Images = DMUser.SeverityImagesBig
     ImageIndex = 1
     Caption = 
       #1042#1085#1080#1084#1072#1085#1080#1077'! '#1048#1079#1084#1077#1085#1077#1085#1080#1077' '#1089#1074#1086#1081#1089#1090#1074' '#1082#1086#1083#1083#1077#1082#1094#1080#1080' '#1084#1086#1078#1077#1090' '#1087#1088#1080#1074#1077#1089#1090#1080' '#1082' '#1077#1077' '#1085#1077#1088#1072#1073#1086 +
@@ -36,12 +35,13 @@ object frmBases: TfrmBases
   end
   object pnButtons: TPanel
     Left = 0
-    Top = 201
+    Top = 216
     Width = 430
     Height = 40
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
+    ExplicitTop = 201
     DesignSize = (
       430
       40)
@@ -73,7 +73,7 @@ object frmBases: TfrmBases
     Left = 7
     Top = 7
     Width = 416
-    Height = 90
+    Height = 134
     Margins.Left = 7
     Margins.Top = 7
     Margins.Right = 7
@@ -84,7 +84,7 @@ object frmBases: TfrmBases
     TabOrder = 1
     DesignSize = (
       416
-      90)
+      134)
     object Label9: TLabel
       Left = 10
       Top = 37
@@ -108,6 +108,14 @@ object frmBases: TfrmBases
       Height = 13
       Caption = '&'#1053#1072#1079#1074#1072#1085#1080#1077' '#1082#1086#1083#1083#1077#1082#1094#1080#1080':'
       FocusControl = edCollectionName
+    end
+    object Label1: TLabel
+      Left = 10
+      Top = 91
+      Width = 110
+      Height = 13
+      Caption = #1054#1087#1080#1089#1072#1085#1080#1077' '#1082#1086#1083#1083#1077#1082#1094#1080#1080':'
+      FocusControl = edCollectionRoot
     end
     object edCollectionFile: TMHLAutoCompleteEdit
       Left = 125
@@ -155,10 +163,17 @@ object frmBases: TfrmBases
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 0
     end
+    object edDescription: TRzEdit
+      Left = 126
+      Top = 88
+      Width = 283
+      Height = 21
+      TabOrder = 5
+    end
   end
   object cbRelativePath: TCheckBox
     Left = 132
-    Top = 100
+    Top = 124
     Width = 221
     Height = 17
     Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1086#1090#1085#1086#1089#1080#1090#1077#1083#1100#1085#1099#1077' '#1087#1091#1090#1080' '

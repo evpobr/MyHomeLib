@@ -185,6 +185,7 @@ begin
                    Alignment := taLeftJustify;
                    Options    := Rez;
                  end;
+
         COL_COLLECTION:begin
                    Caption   := 'Коллекция';
                    MaxWidth  := 900;
@@ -192,10 +193,36 @@ begin
                    Alignment := taLeftJustify;
                    Options   := Rez;
                  end;
+
+        COL_TYPE:begin
+                   Caption   := 'Тип';
+                   MaxWidth  := 55;
+                   MinWidth  := 55;
+                   Alignment := taCenter;
+                   Options    := Fix;
+                 end;
+
+        COL_LANG:begin
+                   Caption   := 'Язык';
+                   MaxWidth  := 55;
+                   MinWidth  := 55;
+                   Alignment := taCenter;
+                   Options    := Fix;
+                end;
+
+        COL_LIBRATE:begin
+                   Caption   := 'N';
+                   MaxWidth  := 55;
+                   MinWidth  := 55;
+                   Alignment := taCenter;
+                   Options    := Fix;
+                end;
+
+
         COL_STATE:begin
                    Caption   := '';
-                   MaxWidth  := 15;
-                   MinWidth  := 15;
+                   MaxWidth  := 35;
+                   MinWidth  := 35;
                    Alignment := taCenter;
                    Options    := Fix - [coDraggable] + [coFixed];
                  end;

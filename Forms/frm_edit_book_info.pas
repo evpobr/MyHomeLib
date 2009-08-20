@@ -40,12 +40,17 @@ type
     lblGenre: TLabel;
     btnGenres: TButton;
     cbSeries: TRzComboBox;
+    RzGroupBox3: TRzGroupBox;
+    edKeyWords: TEdit;
+    RzGroupBox6: TRzGroupBox;
+    cbLang: TRzComboBox;
     procedure btnGenresClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btnAddAuthorClick(Sender: TObject);
     procedure btnAChangeClick(Sender: TObject);
     procedure btnADeleteClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     procedure FillLists;
     { Private declarations }
@@ -94,9 +99,17 @@ begin
   dmCollection.tblSeries.Next;
   while not dmCollection.tblSeries.eof do
   begin
-    cbSeries.Items.Add(dmCollection.tblSeries['Title']);
+    cbSeries.Items.Add(dmCollection.tblSeries['S_Title']);
     dmCollection.tblSeries.Next;
   end;
+end;
+
+procedure TfrmEditBookInfo.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var
+  Dummy : boolean;
+begin
+  if Key = VK_F1 then   frmMain.HH(0,0,Dummy);
 end;
 
 procedure TfrmEditBookInfo.FormShow(Sender: TObject);
@@ -113,7 +126,6 @@ end;
 procedure TfrmEditBookInfo.btnAddAuthorClick(Sender: TObject);
 var
   Family:TListItem;
-
 begin
   if frmEditAuthor.ShowModal=mrOk then
   begin

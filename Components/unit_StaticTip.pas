@@ -18,7 +18,17 @@ unit unit_StaticTip;
 interface
 
 uses
-  SysUtils, Classes, Controls, StdCtrls, Graphics, Windows, Forms, ImgList, Themes, UxTheme, DwmApi;
+  SysUtils,
+  Classes,
+  Controls,
+  StdCtrls,
+  Graphics,
+  Windows,
+  Forms,
+  ImgList,
+  Themes,
+  UxTheme,
+  DwmApi;
 
 type
   TMHLStaticTip = class(TCustomLabel)

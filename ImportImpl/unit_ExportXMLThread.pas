@@ -67,26 +67,26 @@ begin
   FCollection.Info.Name := DMUser.ActiveCollection.Name;
   FCollection.Info.Code := Ord(DMUser.ActiveCollection.CollectionType);
 
-  totalBooks := DMCollection.tblBooks.RecordCount;
+  totalBooks := dmCollection.tblBooks.RecordCount;
   processedBooks := 0;
 
-  DMCollection.tblAuthor_Master.Active := True;
+  dmCollection.tblAuthor_Master.Active := True;
   try
-    DMCollection.tblAuthor_Detail.Active := True;
+    dmCollection.tblAuthor_Detail.Active := True;
     try
-      DMCollection.tblBooks.First;
-      while not DMCollection.tblBooks.Eof do
+      dmCollection.tblBooks.First;
+      while not dmCollection.tblBooks.Eof do
       begin
         if Canceled then
           Exit;
 
-        DMCollection.GetCurrentBook(R);
+        dmCollection.GetCurrentBook(R);
 
         FBook := FCollection.BookList.Add;
         FBook.Title := R.Title;
-//        FBook.Series := R.Series;
+        FBook.Series := R.Series;
         FBook.File_.Inside_no := R.InsideNo;
-//        FBook.No := R.SeqNumber;
+        FBook.No := R.SeqNumber;
         FBook.File_.Folder := R.Folder;
         FBook.File_.Ext := R.FileExt;
         FBook.File_.Size := R.Size;
@@ -109,7 +109,7 @@ begin
           FGenre.Alias := GenreRecord.Alias;
         end;
 
-        DMCollection.tblBooks.Next;
+        dmCollection.tblBooks.Next;
 
         Inc(processedBooks);
         if (processedBooks mod ProcessedItemThreshold) = 0 then
@@ -120,10 +120,10 @@ begin
       SetComment(Format('Обработано книг: %u из %u', [processedBooks, totalBooks]));
 
     finally
-      DMCollection.tblAuthor_Detail.Active := False;
+      dmCollection.tblAuthor_Detail.Active := False;
     end;
   finally
-    DMCollection.tblAuthor_Master.Active := False;
+    dmCollection.tblAuthor_Master.Active := False;
   end;
 
   SetComment('Сохраняем документ. Подождите, пожалуйста.');
