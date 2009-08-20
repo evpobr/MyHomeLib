@@ -352,30 +352,35 @@ begin
           BookList.LoadFromFile(Settings.TempPath + CurrentFile,TEncoding.UTF8);
           for j := 0 to BookList.Count - 1 do
           begin
-            ParseData(BookList[j], R);
-            if isOnlineCollection(CollectionType) then
-            begin
-              // И\Иванов Иван\1234 Просто книга.fb2.zip
-              R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;
-              // Сохраним отметку о существовании файла
-              R.Local := FileExists(FCollectionRoot + R.Folder);
-            end
-            else
-            begin
-              if not FPersonalFolder then
+            try
+              ParseData(BookList[j], R);
+              if isOnlineCollection(CollectionType) then
               begin
-                // 98058-98693.inp -> 98058-98693.zip
-                R.Folder := ChangeFileExt(CurrentFile, ZIP_EXTENSION);
-                //
-                R.InsideNo := j;
+                // И\Иванов Иван\1234 Просто книга.fb2.zip
+                R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;
+                // Сохраним отметку о существовании файла
+                R.Local := FileExists(FCollectionRoot + R.Folder);
               end
-            end;
-            FLibrary.InsertBook(R, CheckFiles, False);
-            Inc(filesProcessed);
-            if (filesProcessed mod ProcessedItemThreshold) = 0 then
-            begin
-              SetProgress(round((i + j/BookList.Count) * 100 / unZip.FileCount));
-              SetComment(Format('Добавлено %u книг', [filesProcessed]));
+              else
+              begin
+                if not FPersonalFolder then
+                begin
+                  // 98058-98693.inp -> 98058-98693.zip
+                  R.Folder := ChangeFileExt(CurrentFile, ZIP_EXTENSION);
+                  //
+                  R.InsideNo := j;
+                end
+              end;
+              FLibrary.InsertBook(R, CheckFiles, False);
+              Inc(filesProcessed);
+              if (filesProcessed mod ProcessedItemThreshold) = 0 then
+              begin
+                SetProgress(round((i + j/BookList.Count) * 100 / unZip.FileCount));
+                SetComment(Format('Добавлено %u книг', [filesProcessed]));
+              end;
+            except
+              on EConvertError do
+                    Teletype(Format('Ошибка структуры inp. Файл %s  Строка %u ', [CurrentFile,j]), tsError);
             end;
           end;
           inc(i);

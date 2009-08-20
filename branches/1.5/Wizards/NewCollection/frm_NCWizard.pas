@@ -691,11 +691,17 @@ end;
 procedure TfrmNCWizard.PMWorkerDone(var Message: TMessage);
 var
   ANoChangePage: Boolean;
+  IgnoreErrors : Boolean;
 begin
   //
   // Если во время работы небыло ошибок и поток небыл остановлен пользователем
   //
-  ANoChangePage := FProgressPage.HasErrors or FWorker.Canceled;
+
+  if FProgressPage.HasErrors then
+    IgnoreErrors := ( MessageDlg('Импорт закончен с ошибками. Продолджить регистрацию коллекции ?',
+                  mtWarning,[mbYes,mbNo],0) = mrYes);
+
+  ANoChangePage := (not IgnoreErrors) or FWorker.Canceled;
 
   //
   // Закрыть и уничтожить рабочий поток

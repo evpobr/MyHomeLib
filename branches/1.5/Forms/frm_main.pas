@@ -1594,7 +1594,7 @@ var
       CT_GENESIS_ONLINE_NONFB: Result := 8;   { TODO -oNickR -cUsability : нарисовать иконку }
       CT_LIBRUSEC_USR: Result := 8;
     else
-      Assert(False);
+//      Assert(False);
       Result := 8;                             { TODO -oNickR -cUsability : нарисовать иконку }
     end;
   end;
