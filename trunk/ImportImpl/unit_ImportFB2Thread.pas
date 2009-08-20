@@ -121,7 +121,7 @@ begin
     try
       book := LoadFictionBook(FRootPath + FFiles[i]);
       GetBookInfo(book, R);
-      FLibrary.InsertBook(R);
+      FLibrary.InsertBook(R, True, True);
     except
       on e: Exception do
       begin

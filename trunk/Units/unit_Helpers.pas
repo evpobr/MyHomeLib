@@ -15,7 +15,7 @@ unit unit_Helpers;
 interface
 
 uses
-  Classes, Dialogs;
+  Windows, Classes, Dialogs, Graphics;
 
 type
   TStringListEx = class(TStringList)
@@ -53,17 +53,22 @@ type
     fnSaveCollection,
     fnSaveLog,
     fnSaveImportFile,
-    fnOpenINPX
+    fnOpenINPX,
+    fnSaveINPX,
+    fnOpenUserData,
+    fnSaveUserData
   );
 
 function GetFileName(key: TMHLFileName; out FileName: string): Boolean;
 
 function GetFolderName(Handle: Integer; Caption: string; var strFolder: string): Boolean;
 
+function CreateImageFromResource(GraphicClass: TGraphicClass; const ResName: string; ResType: PChar = RT_RCDATA): TGraphic;
+
 implementation
 
 uses
-  Windows, SysUtils, Forms, unit_Consts, unit_Settings, ShlObj, ActiveX;
+  SysUtils, Forms, unit_Consts, unit_Settings, ShlObj, ActiveX;
 
 { TStringListEx }
 
@@ -221,6 +226,20 @@ resourcestring
   rstrOpenINPXDlgFilter = 'Список книг MyHomeLib (*.inpx)|*.inpx|Все типы|*.*';
   rstrOpenINPXDlgDefaultExt = 'inpx';
 
+  //fnSaveINPX
+  rstrSaveINPXDlgTitle = 'Выбор файла списков';
+  rstrSaveINPXDlgFilter = 'Список книг MyHomeLib (*.inpx)|*.inpx|Все типы|*.*';
+  rstrSaveINPXDlgDefaultExt = 'inpx';
+
+  //fnSaveUserData
+  rstrOpenUDDlgTitle = 'Импорт пользовательских данных';
+  rstrOpenUDDlgFilter = 'Пользовательские данные MyHomeLib (*.mhlud)|*.mhlud|Все типы|*.*';
+  rstrOpenUDDlgDefaultExt = 'mhlud';
+
+  //fnOpenUserData
+  rstrSaveUDDlgTitle = 'Экспорт пользовательских данных';
+  rstrSaveUDDlgFilter = 'Пользовательские данные MyHomeLib (*.mhlud)|*.mhlud|Все типы|*.*';
+  rstrSaveUDDlgDefaultExt = 'mhlud';
 
 
 function GetFileName(key: TMHLFileName; out FileName: string): Boolean;
@@ -270,7 +289,24 @@ const
       Title:      rstrOpenINPXDlgTitle;
       Filter:     rstrOpenINPXDlgFilter;     DefaultExt: rstrOpenINPXDlgDefaultExt;
       DialogKey:  'OpenINPXFile';            OpenFile:   True
+    ),
+    ( // fnSaveINPX
+      Title:      rstrSaveINPXDlgTitle;
+      Filter:     rstrSaveINPXDlgFilter;     DefaultExt: rstrSaveINPXDlgDefaultExt;
+      DialogKey:  'SaveINPXFile';            OpenFile:   False
+    ),
+    ( // fnOpenUserData
+      Title:      rstrOpenUDDlgTitle;
+      Filter:     rstrOpenUDDlgFilter;     DefaultExt: rstrOpenUDDlgDefaultExt;
+      DialogKey:  'OpenUserData';            OpenFile: True
+    ),
+    ( // fnSaveUserData
+      Title:      rstrSaveUDDlgTitle;
+      Filter:     rstrSaveUDDlgFilter;     DefaultExt: rstrSaveUDDlgDefaultExt;
+      DialogKey:  'SaveUserData';            OpenFile: False
     )
+
+
     //(Title: ''; Filter: ''; DefaultExt: ''; ExtraOptions: ; DialogKey: ''; GetFileNameFunction:)
   );
 begin
@@ -328,6 +364,19 @@ begin
       //
     end;
     CoTaskMemFree(lpItemID);
+  end;
+end;
+
+function CreateImageFromResource(GraphicClass: TGraphicClass; const ResName: string; ResType: PChar): TGraphic;
+var
+  s: TResourceStream;
+begin
+  s := TResourceStream.Create(HInstance, ResName, ResType);
+  try
+    Result := GraphicClass.Create;
+    Result.LoadFromStream(s);
+  finally
+    s.Free;
   end;
 end;
 

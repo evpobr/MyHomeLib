@@ -110,7 +110,7 @@ uses
   unit_Settings,
   unit_globals,
   unit_ImportXMLThread,
-  unit_ImportLibRusEcThread,
+  unit_ImportInpxThread,
   unit_Consts,
   unit_mhl_strings;
 
@@ -132,7 +132,6 @@ const
 destructor TfrmNCWizard.Destroy;
 begin
   CloseWorker;
-
   inherited;
 end;
 
@@ -178,7 +177,7 @@ begin
       Result := True;
 
     COLLECTIONTYPE_PAGE_ID:
-      Result := True;
+      Result := (FParams.Operation = otNew);
 
     NAMEANDLOCATION_PAGE_ID:
       Result := True;
@@ -187,7 +186,9 @@ begin
       Result := (FParams.CollectionType = ltEmpty);
 
     GENREFILE_PAGE_ID:
-      Result := (FParams.Operation = otNew) and (FParams.CollectionType = ltEmpty);
+      Result := ((FParams.Operation = otNew) and (FParams.CollectionType = ltEmpty) and
+                (FParams.FileTypes = ftAny)) or
+                ((FParams.Operation = otNew) and (FParams.CollectionType = ltUserAny));
 
     IMPORT_PAGE_ID:
       Result := (FParams.Operation = otNew) and (FParams.CollectionType = ltEmpty);
@@ -335,7 +336,10 @@ begin
   // Проинициализируем параметры по умолчанию
   //
   FParams.Operation := otNew;
-  FParams.CollectionType := ltEmpty;
+//  FParams.CollectionType := ltEmpty;
+
+  FParams.CollectionType := ltLRELocal;
+
   FParams.UseDefaultName := True;
   FParams.UseDefaultLocation := True;
   FParams.FileTypes := ftFB2;
@@ -427,33 +431,35 @@ begin
   else
   begin
     if ExtractFilePath(FParams.CollectionFile) = '' then
+    begin
       FParams.CollectionFile := IncludeTrailingPathDelimiter(DATA_DIR_NAME) + FParams.CollectionFile;
+      CreateFolders(Settings.AppPath, DATA_DIR_NAME);
+    end;
 
     if '' = ExtractFileExt(FParams.CollectionFile) then
       FParams.CollectionFile := ChangeFileExt(FParams.CollectionFile, COLLECTION_EXTENSION);
 
     FParams.CollectionRoot := ExcludeTrailingPathDelimiter(FParams.CollectionRoot);
+
+    if not DirectoryExists(FParams.CollectionRoot) then
+      CreateDir(FParams.CollectionRoot);
   end;
 
   //
   // определим реальный код коллекции
   //
-  if FParams.CollectionType = ltLREOnline then
-    FParams.CollectionCode := CT_LIBRUSEC_ONLINE_FB
-  else if FParams.CollectionType = ltLRELocal then
-    FParams.CollectionCode := CT_LIBRUSEC_LOCAL_FB
-  else if FParams.CollectionType = ltGenesis then
-  begin
-    Assert(False, 'Not implemented!');
-    FParams.CollectionCode := CT_GENESIS_ONLINE_NONFB;
-  end
-  else { if FParams.CollectionType = ltEmpty then}
-  begin
-    if FParams.FileTypes = ftFB2 then
-      FParams.CollectionCode := CT_PRIVATE_FB
-    else
-      FParams.CollectionCode := CT_PRIVATE_NONFB;
-  end;
+  if FParams.CollectionCode = 0 then
+    if FParams.CollectionType = ltLREOnline then
+      FParams.CollectionCode := CT_LIBRUSEC_ONLINE_FB
+    else if FParams.CollectionType = ltLRELocal then
+        FParams.CollectionCode := CT_LIBRUSEC_LOCAL_FB
+    else { if FParams.CollectionType = ltEmpty then}
+    begin
+      if FParams.FileTypes = ftFB2 then
+        FParams.CollectionCode := CT_PRIVATE_FB
+      else
+        FParams.CollectionCode := CT_PRIVATE_NONFB;
+    end;
 
   //
   // для специальных коллекций установим некоторые параметры по умолчанию
@@ -461,15 +467,14 @@ begin
   case FParams.CollectionType of
     ltEmpty: ; // ничего не трогаем, все должен задать пользователь
 
-    ltLRELocal, ltLREOnline, ltThirdParty:
+    ltLRELocal, ltLREOnline, ltUserFB2:
     begin
       FParams.DefaultGenres := True;
       FParams.FileTypes := ftFB2;
     end;
 
-    ltGenesis:
+    ltUserAny:
     begin
-      FParams.DefaultGenres := True;
       FParams.FileTypes := ftAny;
     end;
   end;
@@ -600,7 +605,7 @@ begin
       end;
     end;
 
-    ltThirdParty:
+    ltUserFB2:
     begin
       FWorker := TImportLibRusEcThread.Create;
       with FWorker as TImportLibRusEcThread do
@@ -609,12 +614,24 @@ begin
         CollectionRoot := FParams.CollectionRoot;
         CollectionType := CT_PRIVATE_FB;
         InpxFileName := FParams.INPXFile;
+        GenresType := gtFb2;
+      end;
+    end;
+
+    ltUserAny:
+    begin
+      FWorker := TImportLibRusEcThread.Create;
+      with FWorker as TImportLibRusEcThread do
+      begin
+        DBFileName := FParams.CollectionFile;
+        CollectionRoot := FParams.CollectionRoot;
+        CollectionType := CT_PRIVATE_NONFB;
+        InpxFileName := FParams.INPXFile;
+        GenresType := gtAny;
       end;
     end;
 
 
-    ltGenesis:
-      {TODO -oNickR -cGenesis: указать специальный или существующий импортер для Genesis-а } ;
   end;
 
   if not Assigned(FWorker) then
@@ -638,8 +655,6 @@ begin
 
   FWorker.Resume;
 
-
-
   Result := True;
 end;
 
@@ -647,7 +662,7 @@ procedure TfrmNCWizard.RegisterCollection;
 begin
   FProgressPage.ShowTeletype(REGISTRATION, tsInfo);
 
-  FVersion := GetLibUpdateVersion;
+  FVersion := GetLibUpdateVersion(True);
 
   //
   // TODO -oNickR -cRO Mode Support: сохранять относительные пути
@@ -658,7 +673,8 @@ begin
     FParams.CollectionFile,
     FParams.CollectionCode,
     isPrivateCollection(FParams.CollectionCode),
-    FVersion
+    FVersion,
+    FParams.Notes
   );
 
   DoChangePage(btnForward);
@@ -675,11 +691,17 @@ end;
 procedure TfrmNCWizard.PMWorkerDone(var Message: TMessage);
 var
   ANoChangePage: Boolean;
+  IgnoreErrors : Boolean;
 begin
   //
   // Если во время работы небыло ошибок и поток небыл остановлен пользователем
   //
-  ANoChangePage := FProgressPage.HasErrors or FWorker.Canceled;
+
+  if FProgressPage.HasErrors then
+    IgnoreErrors := ( MessageDlg('Импорт закончен с ошибками. Продолджить регистрацию коллекции ?',
+                  mtWarning,[mbYes,mbNo],0) = mrYes);
+
+  ANoChangePage := (not IgnoreErrors) or FWorker.Canceled;
 
   //
   // Закрыть и уничтожить рабочий поток

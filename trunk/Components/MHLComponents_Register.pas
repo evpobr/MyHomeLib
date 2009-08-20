@@ -2,13 +2,11 @@
 {                                                                              }
 {                       Package MyHomeLib Components                           }
 {                                                                              }
-{                                Version 1                                     }
+{                                Version 2                                     }
 {                                                                              }
 {         Copyright (c) 2008, 2009 Aleksey Penkov  alex.penkov@gmail.com       }
 {                                                                              }
 {******************************************************************************}
-
-
 
 unit MHLComponents_Register;
 

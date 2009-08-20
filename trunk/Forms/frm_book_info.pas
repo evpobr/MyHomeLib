@@ -17,23 +17,60 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, xmldom, XMLIntf, msxmldom, XMLDoc, ExtCtrls, RzPanel, RzButton,
-  StdCtrls, RzLabel, RzEdit, ComCtrls;
+  StdCtrls, RzLabel, RzEdit, ComCtrls, RzTabs;
 
 type
   TfrmBookDetails = class(TForm)
-    RzPanel1: TRzPanel;
-    Img: TImage;
-    RzBitBtn1: TRzBitBtn;
+    RzPageControl1: TRzPageControl;
+    TabSheet1: TRzTabSheet;
+    TabSheet2: TRzTabSheet;
     mmShort: TMemo;
+    Img: TImage;
     mmInfo: TMemo;
+    RzPanel1: TRzPanel;
+    RzBitBtn1: TRzBitBtn;
+    btnLoadReview: TRzBitBtn;
+    mmReview: TRzMemo;
+    btnClearReview: TRzBitBtn;
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure RzBitBtn1Click(Sender: TObject);
+    procedure mmReviewChange(Sender: TObject);
+    procedure btnLoadReviewClick(Sender: TObject);
+    procedure btnClearReviewClick(Sender: TObject);
   private
     { Private declarations }
+    FLibID : integer;
+
+    FReviewChanged : boolean;
+    function GetReview: string;
+    procedure Setreview(const Value: string);
+
   public
+    procedure AllowOnlineReview(ID: integer);
+    procedure Download;
+
     procedure ShowBookInfo(FS: TMemoryStream);
+    property Review: string read GetReview write Setreview;
+    property ReviewChanged: boolean read FReviewChanged write FReviewChanged;
+    property LibID: integer read FLibID;
     { Public declarations }
   end;
+
+  TReviewDownloadThread = class(TThread)
+  private
+    { Private declarations }
+    FId: integer;
+    FForm: TfrmBookDetails;
+    FReview : TStringList;
+
+    procedure StartDownload;
+    procedure Finish;
+  protected
+    procedure Execute; override;
+    property Form: TfrmBookDetails read FForm write FForm;
+  end;
+
+  procedure DownloadReview(Form: TfrmBookDetails);
 
 var
   frmBookDetails: TfrmBookDetails;
@@ -43,9 +80,24 @@ implementation
 uses
   FictionBook_21,
   unit_globals,
-  unit_Settings;
+  unit_Settings,
+  unit_MHLHelpers,
+  unit_ReviewParser,
+  jpeg,
+  pngimage;
+
+const
+  URL = 'http://lib.rus.ec/b/%d/';
 
 {$R *.dfm}
+
+procedure TfrmBookDetails.AllowOnlineReview(ID: integer);
+begin
+  FLibID := ID;
+
+  btnLoadReview.Visible := True;
+  btnClearReview.Visible := True;
+end;
 
 procedure TfrmBookDetails.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
@@ -53,44 +105,130 @@ begin
   if key=27 then Close;
 end;
 
+procedure TfrmBookDetails.Download;
+var
+  reviewParser : TReviewParser;
+  review : TStringList;
+begin
+  btnLoadReview.Enabled := False;
+
+  reviewParser := TReviewParser.Create;
+  review := TStringList.Create;
+  Screen.Cursor := crHourGlass;
+  try
+    reviewParser.Parse(Format(url,[FLibID]), review);
+    mmReview.Clear;
+    mmReview.Lines.AddStrings(review);
+    FReviewChanged := True;
+  finally
+    review.Free;
+    reviewParser.Free;
+    Screen.Cursor := crDefault;
+    btnLoadReview.Enabled := True;
+  end;
+end;
+
+function TfrmBookDetails.GetReview: string;
+begin
+  Result := mmReview.Lines.Text;
+end;
+
+procedure TfrmBookDetails.mmReviewChange(Sender: TObject);
+begin
+  FReviewChanged := True;
+end;
+
 procedure TfrmBookDetails.RzBitBtn1Click(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TfrmBookDetails.btnClearReviewClick(Sender: TObject);
+begin
+  mmReview.Clear;
+  FReviewChanged := True;
+end;
+
+procedure TfrmBookDetails.btnLoadReviewClick(Sender: TObject);
+begin
+  Download;
+end;
+
+procedure TfrmBookDetails.Setreview(const Value: string);
+begin
+  mmReview.Lines.Text := Value;
 end;
 
 procedure TfrmBookDetails.ShowBookInfo(FS: TMemoryStream);
 var
   book:IXMLFictionBook;
   i,p:integer;
-  S,outStr:string;
-  F:TextFile;
+  S, outStr: AnsiString;
   CoverID:String;
-  CoverFile: string;
+  Ext: string;
+
+  ImgVisible : boolean;
+  MS : TMemoryStream;
+
+  TmpImg: TGraphic;
+
+  StrLen : integer;
 begin
+  FReviewChanged := False;
+
   Img.Picture.Bitmap.Canvas.FrameRect(Img.ClientRect);
   mmInfo.Lines.Clear;
   mmShort.Lines.Clear;
   try
-
     book:=LoadFictionbook(FS);
-
-    CoverID:=book.Description.TitleInfo.Coverpage.XML;
-    p:=pos('"#',CoverID);
-    Delete(CoverId,1,p+1);
-    p:=pos('"',CoverID);
-    CoverID:=Copy(CoverID,1,p-1);
-    CoverFile := IntToStr(Random(99999)) + CoverID;
-    for i:=0 to book.Binary.Count-1 do
-    begin
-      if Book.Binary.Items[i].Id=CoverID then
+    try
+      MS := TMemoryStream.Create;
+      CoverID := Book.Description.Titleinfo.Coverpage.XML;
+      p := pos('"#', CoverID);
+      if p <> 0 then
       begin
-        S:=Book.Binary.Items[i].Text;
-        outStr:=DecodeBase64(S);
-        AssignFile(F,Settings.TempPath + CoverFile);
-        Rewrite(F);
-        Write(F,outStr);
-        CloseFile(F);
+        Delete(CoverId, 1, p + 1);
+        p := pos('"', CoverID);
+        CoverID := Copy(CoverID, 1, p - 1);
+        for i := 0 to Book.Binary.Count - 1 do
+        begin
+          if Book.Binary.Items[i].Id = CoverID then
+          begin
+            S := Book.Binary.Items[i].Text;
+            outStr := DecodeBase64(S);
+
+            StrLen := Length(outStr);
+            MS.Write(PAnsiChar(outStr)^, StrLen);
+            ImgVisible := True;
+          end;
+        end;
+        //MS.SaveToFile('E:\temp\' + CoverID);
       end;
+
+      if ImgVisible then
+      begin
+        Ext := LowerCase(ExtractFileExt(CoverID));
+        try
+          if Ext = '.png' then
+             TmpImg := TPngImage.Create
+          else
+            if (Ext = '.jpg') or (Ext = '.jpeg') then
+              TmpImg := TJPEGImage.Create;
+          if Assigned(TmpImg) then
+          begin
+            MS.Seek(0,soFromBeginning);
+            TmpImg.LoadFromStream(MS);
+            IMG.Picture.Assign(TmpImg);
+            IMG.Invalidate;
+          end;
+        finally
+          TmpImg.Free;
+        end;
+      end
+      else
+        IMG.Picture := nil;
+    finally
+      MS.Free;
     end;
 
     with Book.Description.Titleinfo do
@@ -103,7 +241,7 @@ begin
       if Sequence.Count>0 then
       begin
         mmInfo.Lines.Add('Серия: '+Sequence[0].Name);
-        mmInfo.Lines.Add('Номер: '+IntToStr(Sequence[0].Number));
+//        mmInfo.Lines.Add('Номер: '+IntToStr(Sequence[0].Number));
       end;
 
      if Annotation.HasChildNodes then
@@ -126,10 +264,60 @@ begin
       mmInfo.Lines.Add('Version: '+Book.Description.Documentinfo.Version);
       mmInfo.Lines.Add('History: '+Book.Description.Documentinfo.History.P.OnlyText);
     end;
-    Img.Picture.LoadFromFile(Settings.TempPath + CoverFile);
   except
   end;
 end;
 
+{-------------------- TReviewDownloadThread -----------------------------------}
+
+procedure TReviewDownloadThread.Execute;
+var
+  reviewParser : TReviewParser;
+begin
+  Synchronize(StartDownload);
+  Freview := TStringList.Create;
+  try
+    reviewParser := TReviewParser.Create;
+    try
+      reviewParser.Parse(Format(url,[FId]), Freview);
+    finally
+      reviewParser.Free;
+    end;
+  finally
+    Synchronize(Finish);
+    FreeAndNil(FReview);
+  end;
+end;
+
+procedure TReviewDownloadThread.Finish;
+begin
+  if FForm.mmReview = Nil then Exit; // FForm почему-то не равно nil после уничтожения.
+                                     // зато компоненты обнуляются, поэтому проверям по ним
+
+  FForm.mmReview.Clear;
+  FForm.mmReview.Lines.AddStrings(Freview);
+  FForm.btnLoadReview.Enabled := True;
+  FForm.ReviewChanged := True;
+  FForm.RzPageControl1.ActivePageIndex := 1;
+end;
+
+procedure TReviewDownloadThread.StartDownload;
+begin
+  FForm.btnLoadReview.Enabled := False;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure DownloadReview (Form: TfrmBookDetails) ;
+var
+  Worker : TReviewDownloadThread;
+begin
+  Worker := TReviewDownloadThread.Create(True);
+  Worker.Form := Form;
+  Worker.FId := Form.LibID;
+  Worker.Priority := tpLower;
+  Worker.FreeOnTerminate := True;
+  Worker.Resume;
+end;
 
 end.

@@ -1,14 +1,10 @@
 object DMUser: TDMUser
   OldCreateOrder = False
-  Height = 377
+  Height = 417
   Width = 463
   object DBUser: TABSDatabase
-<<<<<<< .mine
-    CurrentVersion = '6.01 '
-=======
-    CurrentVersion = '6.02 '
->>>>>>> .r125
-    DatabaseName = 'DBUser'
+    CurrentVersion = '6.04 '
+    DatabaseName = 'UserData'
     Exclusive = False
     MaxConnections = 5
     MultiUser = False
@@ -18,12 +14,12 @@ object DMUser: TDMUser
   end
   object dsGroupedBooks: TDataSource
     DataSet = tblGrouppedBooks
-    Left = 216
+    Left = 240
     Top = 256
   end
   object tblBases: TABSTable
-    CurrentVersion = '6.01 '
-    DatabaseName = 'DBUser'
+    CurrentVersion = '6.04 '
+    DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
     TableName = 'Bases'
@@ -74,20 +70,28 @@ object DMUser: TDMUser
     end
   end
   object tblRates: TABSTable
-    CurrentVersion = '6.01 '
-    DatabaseName = 'DBUser'
+    CurrentVersion = '6.04 '
+    DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
     StoreDefs = True
     IndexDefs = <
       item
-        Name = 'Book_Index'
+        Name = 'ID_Index'
         Fields = 'ID'
         Options = [ixPrimary]
+      end
+      item
+        Name = 'Book_Index'
+        Fields = 'DatabaseID;BookID'
       end>
     FieldDefs = <
       item
         Name = 'ID'
+        DataType = ftAutoInc
+      end
+      item
+        Name = 'BookID'
         Attributes = [faRequired]
         DataType = ftInteger
       end
@@ -112,8 +116,11 @@ object DMUser: TDMUser
     ExportToSqlOptions.FieldNamesInInserts = True
     Left = 320
     Top = 56
-    object tblRatesID: TIntegerField
+    object tblRatesID: TAutoIncField
       FieldName = 'ID'
+    end
+    object tblRatesBookID: TIntegerField
+      FieldName = 'BookID'
       Required = True
     end
     object tblRatesDataBaseID: TIntegerField
@@ -130,20 +137,24 @@ object DMUser: TDMUser
   end
   object dsBases: TDataSource
     DataSet = tblBases
-    Left = 16
-    Top = 192
+    Left = 72
+    Top = 128
   end
   object tblGrouppedBooks: TABSTable
-    CurrentVersion = '6.01 '
-    DatabaseName = 'DBUser'
+    CurrentVersion = '6.04 '
+    DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
     StoreDefs = True
     IndexDefs = <
       item
         Name = 'ID_Index'
-        Fields = 'InnerID'
+        Fields = 'ID'
         Options = [ixPrimary]
+      end
+      item
+        Name = 'OuterID_Index'
+        Fields = 'GroupID;OuterID'
       end
       item
         Name = 'FullName_Index'
@@ -153,20 +164,19 @@ object DMUser: TDMUser
         Name = 'File_Index'
         Fields = 'FileName'
       end>
-    IndexFieldNames = 'GroupID'
+    IndexName = 'FullName_Index'
     FieldDefs = <
+      item
+        Name = 'ID'
+        DataType = ftAutoInc
+      end
       item
         Name = 'GroupID'
         Attributes = [faRequired]
         DataType = ftInteger
       end
       item
-        Name = 'InnerID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'ID'
-        Attributes = [faRequired]
+        Name = 'OuterID'
         DataType = ftInteger
       end
       item
@@ -226,7 +236,7 @@ object DMUser: TDMUser
       item
         Name = 'Folder'
         DataType = ftWideString
-        Size = 128
+        Size = 255
       end
       item
         Name = 'DiscID'
@@ -253,6 +263,19 @@ object DMUser: TDMUser
       item
         Name = 'Rate'
         DataType = ftInteger
+      end
+      item
+        Name = 'Progress'
+        DataType = ftSmallint
+      end
+      item
+        Name = 'LibRate'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Lang'
+        DataType = ftWideString
+        Size = 2
       end>
     TableName = 'GroupedBooks'
     Exclusive = False
@@ -260,16 +283,15 @@ object DMUser: TDMUser
     MasterSource = dsGroupList
     Left = 144
     Top = 256
+    object tblGrouppedBooksID: TAutoIncField
+      FieldName = 'ID'
+    end
     object tblGrouppedBooksGroupID: TIntegerField
       FieldName = 'GroupID'
       Required = True
     end
-    object tblGrouppedBooksInnerID: TAutoIncField
-      FieldName = 'InnerID'
-    end
-    object tblGrouppedBooksID: TIntegerField
-      FieldName = 'ID'
-      Required = True
+    object tblGrouppedBooksOuterID: TIntegerField
+      FieldName = 'OuterID'
     end
     object tblGrouppedBooksSerID: TIntegerField
       FieldName = 'SerID'
@@ -315,7 +337,7 @@ object DMUser: TDMUser
     end
     object tblGrouppedBooksFolder: TWideStringField
       FieldName = 'Folder'
-      Size = 128
+      Size = 255
     end
     object tblGrouppedBooksDiscID: TIntegerField
       FieldName = 'DiscID'
@@ -336,6 +358,16 @@ object DMUser: TDMUser
     end
     object tblGrouppedBooksRate: TIntegerField
       FieldName = 'Rate'
+    end
+    object tblGrouppedBooksProgress: TSmallintField
+      FieldName = 'Progress'
+    end
+    object tblGrouppedBooksLibRate: TIntegerField
+      FieldName = 'LibRate'
+    end
+    object tblGrouppedBooksLang: TWideStringField
+      FieldName = 'Lang'
+      Size = 2
     end
   end
   object SeverityImages: TImageList
@@ -1023,27 +1055,199 @@ object DMUser: TDMUser
       000000000000}
   end
   object dsGroupList: TDataSource
-    Left = 216
-    Top = 184
+    DataSet = tblGroupList
+    Left = 248
+    Top = 192
   end
   object tblFinished: TABSTable
-    CurrentVersion = '6.01 '
-    DatabaseName = 'DBUser'
+    CurrentVersion = '6.04 '
+    DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
+    StoreDefs = True
+    IndexDefs = <
+      item
+        Name = 'ID_Index'
+        Fields = 'ID'
+        Options = [ixPrimary]
+      end
+      item
+        Name = 'Book_Index'
+        Fields = 'DatabaseID;BookID;Progress'
+      end>
+    FieldDefs = <
+      item
+        Name = 'ID'
+        DataType = ftAutoInc
+      end
+      item
+        Name = 'BookID'
+        Attributes = [faRequired]
+        DataType = ftInteger
+      end
+      item
+        Name = 'DataBaseID'
+        Attributes = [faRequired]
+        DataType = ftInteger
+      end
+      item
+        Name = 'Progress'
+        DataType = ftSmallint
+      end
+      item
+        Name = 'Date'
+        DataType = ftDate
+      end>
     TableName = 'Finished'
     Exclusive = False
     Left = 320
     Top = 120
+    object tblFinishedID: TAutoIncField
+      FieldName = 'ID'
+    end
+    object tblFinishedBookID: TIntegerField
+      FieldName = 'BookID'
+      Required = True
+    end
+    object tblFinishedDataBaseID: TIntegerField
+      FieldName = 'DataBaseID'
+      Required = True
+    end
+    object tblFinishedProgress: TSmallintField
+      FieldName = 'Progress'
+    end
+    object tblFinishedDate: TDateField
+      FieldName = 'Date'
+    end
   end
   object tblGroupList: TABSTable
-    CurrentVersion = '6.01 '
-    DatabaseName = 'DBUser'
+    CurrentVersion = '6.04 '
+    DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
+    StoreDefs = True
+    IndexDefs = <
+      item
+        Name = 'ID_Index'
+        Fields = 'ID'
+        Options = [ixPrimary, ixUnique]
+      end
+      item
+        Name = 'NameIndex'
+        Fields = 'Name'
+      end>
+    FieldDefs = <
+      item
+        Name = 'ID'
+        DataType = ftAutoInc
+      end
+      item
+        Name = 'Name'
+        DataType = ftWideString
+        Size = 255
+      end
+      item
+        Name = 'AllowDelete'
+        DataType = ftBoolean
+      end
+      item
+        Name = 'Notes'
+        DataType = ftMemo
+      end
+      item
+        Name = 'Icon'
+        DataType = ftBlob
+      end>
     TableName = 'GroupsList'
     Exclusive = False
     Left = 144
     Top = 184
+    object tblGroupListID: TAutoIncField
+      FieldName = 'ID'
+    end
+    object tblGroupListName: TWideStringField
+      FieldName = 'Name'
+      Size = 255
+    end
+    object tblGroupListAllowDelete: TBooleanField
+      FieldName = 'AllowDelete'
+    end
+    object tblGroupListNotes: TMemoField
+      FieldName = 'Notes'
+      BlobType = ftMemo
+    end
+    object tblGroupListIcon: TBlobField
+      FieldName = 'Icon'
+    end
+  end
+  object tblExtra: TABSTable
+    CurrentVersion = '6.04 '
+    DatabaseName = 'UserData'
+    InMemory = False
+    ReadOnly = False
+    StoreDefs = True
+    IndexDefs = <
+      item
+        Name = 'ID_Index'
+        Fields = 'ID'
+        Options = [ixPrimary, ixUnique]
+      end
+      item
+        Name = 'BookIndex'
+        Fields = 'BookID'
+      end>
+    IndexName = 'ID_Index'
+    FieldDefs = <
+      item
+        Name = 'ID'
+        DataType = ftAutoInc
+      end
+      item
+        Name = 'BookID'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Annotation'
+        DataType = ftWideMemo
+      end
+      item
+        Name = 'Review'
+        DataType = ftWideMemo
+      end
+      item
+        Name = 'Cover'
+        DataType = ftBlob
+      end
+      item
+        Name = 'Data'
+        DataType = ftWideMemo
+      end>
+    TableName = 'Extra'
+    Exclusive = False
+    MasterFields = 'ID'
+    MasterSource = dsGroupedBooks
+    Left = 144
+    Top = 320
+    object tblExtraID: TAutoIncField
+      FieldName = 'ID'
+    end
+    object tblExtraBookID: TIntegerField
+      FieldName = 'BookID'
+    end
+    object tblExtraAnnotation: TWideMemoField
+      FieldName = 'Annotation'
+      BlobType = ftWideMemo
+    end
+    object tblExtraReview: TWideMemoField
+      FieldName = 'Review'
+      BlobType = ftWideMemo
+    end
+    object tblExtraCover: TBlobField
+      FieldName = 'Cover'
+    end
+    object tblExtraData: TWideMemoField
+      FieldName = 'Data'
+      BlobType = ftWideMemo
+    end
   end
 end

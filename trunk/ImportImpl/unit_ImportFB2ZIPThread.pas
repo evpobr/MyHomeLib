@@ -119,66 +119,72 @@ begin
       // H:\eBooks\Л\Лаберж Стивен\Исследование мира осознанных сновидений.fb2.zip
       //
       FZipper.FileName := FRootPath + AZipFileName;
-      FZipper.OpenArchive(fmOpenRead);
+      try
+        FZipper.OpenArchive(fmOpenRead);
+        j := 0;
+        if (FZipper.FindFirst('*.*',ArchiveItem,faAnyFile-faDirectory)) then
+        repeat
+          R.Clear;
 
-      j := 0;
-      if (FZipper.FindFirst('*.*',ArchiveItem,faAnyFile-faDirectory)) then
-      repeat
-        R.Clear;
-        FS := TMemoryStream.Create;
+          try
+            FS := TMemoryStream.Create;
 
-        R.Folder := AZipFileName;
+            R.Folder := AZipFileName;
 
-        //
-        // Исследование мира осознанных сновидений.fb2
-        //
+            //
+            // Исследование мира осознанных сновидений.fb2
+            //
 
-        AFileName := ArchiveItem.FileName;
+            AFileName := ArchiveItem.FileName;
 
-        //
-        // .fb2
-        //
-        R.FileExt := ExtractFileExt(AFileName);
-        if R.FileExt <> FB2_EXTENSION then
-        begin
-          inc(j);     // переходим к следующему файлу
-          Continue;
-        end;
+            //
+            // .fb2
+            //
+            R.FileExt := ExtractFileExt(AFileName);
+            if R.FileExt <> FB2_EXTENSION then
+            begin
+              inc(j);     // переходим к следующему файлу
+              Continue;
+            end;
 
-        //
-        // Исследование мира осознанных сновидений
-        //
-        R.FileName := Copy(AFileName, 1, Length(AFileName) - Length(R.FileExt));
+            //
+            // Исследование мира осознанных сновидений
+            //
+            R.FileName := Copy(AFileName, 1, Length(AFileName) - Length(R.FileExt));
 
-        R.Size := ArchiveItem.UncompressedSize;
+            R.Size := ArchiveItem.UncompressedSize;
 
-        R.InsideNo := j;
+            R.InsideNo := j;
 
-        R.Date := Now;
+            R.Date := Now;
 
-        FZipper.ExtractToStream(AFileName,FS);
-        if not Assigned(FS) then
-          Continue;
+            FZipper.ExtractToStream(AFileName,FS);
+            if not Assigned(FS) then
+              Continue;
 
-        try
-          book := LoadFictionBook(FS);
-          GetBookInfo(Book, R);
-          FLibrary.InsertBook(R);
-          Inc(AddCount);
-        except
-          on e: Exception do
-          begin
-            Teletype('Ошибка структуры fb2: ' + R.Folder + '.zip -> ' + R.FileName + FB2_EXTENSION, tsError);
-            //Teletype(e.Message, tsError);
-            Inc(DefectCount);
+            try
+              book := LoadFictionBook(FS);
+              GetBookInfo(Book, R);
+              FLibrary.InsertBook(R, True, True);
+              Inc(AddCount);
+            except
+              on e: Exception do
+              begin
+                Teletype('Ошибка структуры fb2: ' + AZipFileName + ' -> ' + R.FileName + FB2_EXTENSION, tsError);
+                //Teletype(e.Message, tsError);
+                Inc(DefectCount);
+              end;
+            end;
+          finally
+            FS.Free;
           end;
-        end;
-
-        inc(j);
-      until (not FZipper.FindNext(ArchiveItem));
-      FS.Free;
-      FZipper.CloseArchive;
-
+          inc(j);
+        until (not FZipper.FindNext(ArchiveItem));
+        FZipper.CloseArchive;
+      except
+        on e: Exception do
+           Teletype('Ошибка распаковки архива: ' + AZipFileName, tsError);
+      end;
       if (i mod ProcessedItemThreshold) = 0 then
         SetComment(Format('Обработано архивов: %u из %u', [i + 1, FFiles.Count]));
       SetProgress((i + 1) * 100 div FFiles.Count);
