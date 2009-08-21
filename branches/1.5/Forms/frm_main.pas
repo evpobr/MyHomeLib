@@ -78,7 +78,8 @@ uses
   RzBtnEdt,
   files_list,
   ActiveX,
-  htmlhlp, IdCustomTransparentProxy, IdConnectThroughHttpProxy;
+  htmlhlp, IdCustomTransparentProxy, IdConnectThroughHttpProxy,
+  dwTaskbarComponents, dwProgressBar;
 
 type
 
@@ -291,7 +292,6 @@ type
     btnPauseDownload: TRzToolButton;
     Panel1: TPanel;
     RzPanel2: TRzPanel;
-    pbDownloadProgress: TRzProgressBar;
     lblDownloadState: TLabel;
     lblDnldAuthor: TLabel;
     lblDnldTitle: TLabel;
@@ -388,6 +388,8 @@ type
     miDeleteFiles: TMenuItem;
     miFastBookSearch: TMenuItem;
     pmiSelectAll: TMenuItem;
+    pbDownloadListProgress: TdwProgressBar;
+    pbDownloadProgress: TRzProgressBar;
 
     //
     // События формы
