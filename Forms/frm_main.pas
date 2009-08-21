@@ -3062,17 +3062,20 @@ end;
 
 procedure TfrmMain.btnClearFavoritesClick(Sender: TObject);
 begin
-  ClearLabels(PAGE_FAVORITES);
-
-  DMUser.tblGrouppedBooks.First;
-  while not DMUser.tblGrouppedBooks.Eof do
-  begin
-    if DMUser.tblExtra.RecordCount <> 0 then
+  Screen.Cursor := crHourGlass;
+  try
+    ClearLabels(PAGE_FAVORITES);
+    DMUser.tblGrouppedBooks.First;
+    while not DMUser.tblGrouppedBooks.Eof do
+    begin
+      if DMUser.tblExtra.RecordCount <> 0 then
        DMUser.tblExtra.Delete;
-    DMUser.tblGrouppedBooks.Delete;
+      DMUser.tblGrouppedBooks.Delete;
+    end;
+    FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True); // избранное
+  finally
+    Screen.Cursor := crDefault;
   end;
-
-  FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True); // избранное
 end;
 
 procedure TfrmMain.MoveDwnldListNodes(Sender: TObject);
