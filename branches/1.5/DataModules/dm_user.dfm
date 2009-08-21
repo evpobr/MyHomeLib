@@ -310,7 +310,7 @@ object DMUser: TDMUser
     end
     object tblGrouppedBooksTitle: TWideStringField
       FieldName = 'Title'
-      Size = 100
+      Size = 150
     end
     object tblGrouppedBooksFullName: TWideStringField
       FieldName = 'FullName'
