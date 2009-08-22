@@ -26,7 +26,7 @@ REM Create INPX file for FB2
 IF %ERRORLEVEL% GTR 0 GOTO fin
 
 REM Create INPX file for non-FB2
-%CDIR%\lib2inpx.exe --process=usr --archives=%1 --no-import %WDIR%
+%CDIR%\lib2inpx.exe --process=usr --archives=%1 --no-import --clean-when-done %WDIR%
 
 GOTO fin
 

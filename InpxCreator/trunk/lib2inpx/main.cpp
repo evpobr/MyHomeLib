@@ -208,6 +208,19 @@ bool is_fictionbook( const string& file )
    return ((0 == _stricmp( ext.c_str(), "fb2")) && is_numeric( name ) );
 }
 
+bool remove_crlf( string& str )
+{
+   bool   rc = false;
+   size_t pos;
+
+   while( string::npos != (pos = str.find( "\r\n" )) )
+   {
+      str.replace( pos, 2, string( " " ) );
+      rc = true;
+   }
+   return rc;
+}
+
 void clean_directory( const char* path )
 {
    _finddata_t fd;
@@ -334,6 +347,10 @@ void get_book_author( const mysql_connection& mysql, const string& book_id, stri
          }
       }
    }
+   if( author.size() < 4 )
+      author = "неизвестный,автор,:";
+   else
+      remove_crlf( author );
 }
 
 void get_book_genres( const mysql_connection& mysql, const string& book_id, string& genres )
@@ -360,6 +377,8 @@ void get_book_genres( const mysql_connection& mysql, const string& book_id, stri
          genres += ":";
       }
    }
+
+   remove_crlf( genres );
 
    if( genres.empty() )
       genres = "other:";
@@ -391,6 +410,8 @@ void get_book_squence( const mysql_connection& mysql, const string& book_id, str
          sequence += record[ 0 ];
       }
    }
+
+   remove_crlf( sequence );
 }
 
 void process_book( const mysql_connection& mysql, MYSQL_ROW record, const string& file_name, const string& ext, string& inp )
@@ -407,7 +428,8 @@ void process_book( const mysql_connection& mysql, MYSQL_ROW record, const string
           book_time    ( record[ 5 ] ),
           book_lang    ( record[ 6 ] ),
           book_rate    ( record[ 7 ] ),
-          book_kwds    ( record[ 8 ] );
+          book_kwds    ( record[ 8 ] ),
+          book_file    ( file_name   );
 
    string book_author,
           book_genres,
@@ -418,10 +440,13 @@ void process_book( const mysql_connection& mysql, MYSQL_ROW record, const string
    get_book_genres ( mysql, book_id, book_genres );
    get_book_squence( mysql, book_id, book_sequence, book_sequence_num );
 
-   book_time.erase( book_time.find( " " ) ); // Leave date only
+   if( remove_crlf( book_file ) )
+      book_file = "";
 
-   if( book_author.size() < 4 )
-      book_author = "неизвестный,автор,:";
+   remove_crlf( book_title );
+   remove_crlf( book_kwds );
+
+   book_time.erase( book_time.find( " " ) ); // Leave date only
 
    // AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;LANG;LIBRATE;KEYWORDS;
 
@@ -435,7 +460,7 @@ void process_book( const mysql_connection& mysql, MYSQL_ROW record, const string
    inp += sep;
    inp += book_sequence_num;
    inp += sep;
-   inp += ((g_strict && (0 == _stricmp( ext.c_str(), book_type.c_str() ))) || (! g_strict)) ? file_name : "";
+   inp += ((g_strict && (0 == _stricmp( ext.c_str(), book_type.c_str() ))) || (! g_strict)) ? book_file : "";
    inp += sep;
    inp += book_filesize;
    inp += sep;
@@ -869,7 +894,7 @@ int main( int argc, char *argv[] )
          if( g_process == eFB2 )
             comment = utf8_to_ANSI( tmp_str( "lib.rus.ec FB2 - %s\r\n%s\r\n0\r\nАрхивы библиотеки lib.rus.ec (FB2) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
          else if( g_process == eUSR )
-            comment = utf8_to_ANSI( tmp_str( "lib.rus.ec USR - %s\r\n%s\r\n1\r\nАрхивы библиотеки lib.rus.ec (не-FB2) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
+            comment = utf8_to_ANSI( tmp_str( "lib.rus.ec USR - %s\r\n%s\r\n65537\r\nАрхивы библиотеки lib.rus.ec (не-FB2) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
          else if( g_process == eAll )
             comment = utf8_to_ANSI( tmp_str( "lib.rus.ec ALL - %s\r\n%s\r\n1\r\nАрхивы библиотеки lib.rus.ec (все) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
 
