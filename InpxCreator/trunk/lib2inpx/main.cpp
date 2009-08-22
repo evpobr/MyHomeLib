@@ -218,6 +218,11 @@ bool remove_crlf( string& str )
       str.replace( pos, 2, string( " " ) );
       rc = true;
    }
+   while( string::npos != (pos = str.find( "\n" )) )
+   {
+      str.erase( pos, 1 );
+      rc = true;
+   }
    return rc;
 }
 
@@ -713,7 +718,7 @@ int main( int argc, char *argv[] )
       {
          cout << endl;
          cout << "Import file (INPX) preparation tool for MyHomeLib 1.5" << endl;
-         cout << "Version 1.9 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
+         cout << "Version 2.0 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
          cout << endl;
          cout << "Usage: " << file_name << " [options] <path to SQL dump files>" << endl << endl;
          cout << options << endl;
