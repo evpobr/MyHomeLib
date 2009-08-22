@@ -22,23 +22,19 @@ FOR %%t IN (libgenrelist libbook libavtoraliase libavtorname libavtor libgenre l
 
 :skip
 
-REM Create INPX file for FB2
-%CDIR%\lib2inpx.exe --process=fb2 --archives=%1 %WDIR%
+REM Create INPX file for USR
+%CDIR%\lib2inpx.exe --process=usr --archives=%1 %WDIR%
 IF %ERRORLEVEL% GTR 0 GOTO fin
 
-REM Create INPX file for FB2 (complete database, online usage)
-%CDIR%\lib2inpx.exe --process=fb2 --no-import --inpx=%WDIR%\librusec.inpx %WDIR%
-IF %ERRORLEVEL% GTR 0 GOTO fin
-
-REM Create INPX file for non-FB2
-%CDIR%\lib2inpx.exe --process=usr --archives=%1 --no-import --clean-when-done %WDIR%
+REM Create INPX file for USR (complete database, online usage)
+%CDIR%\lib2inpx.exe --process=usr --no-import --clean-when-done --inpx=%WDIR%\librusec_usr.inpx %WDIR%
 
 GOTO fin
 
 :usage
 echo Need path to local LIBRUSEQ archives, for example: "sync_script.cmd c:\librusec\local"
-echo If there is second parameter - daily archives would not be downloaded and cleaned from
-echo non-FB2 files, for example "sync_script.cmd c:\librusec\local skip"
+echo If there is second parameter - daily archives and dumps would not be downloaded,
+echo for example "sync_script.cmd c:\librusec\local skip"
 
 :fin
 ENDLOCAL
