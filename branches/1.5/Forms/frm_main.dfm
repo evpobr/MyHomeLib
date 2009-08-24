@@ -611,7 +611,7 @@ object frmMain: TfrmMain
                 Left = 426
                 Top = 3
                 Width = 12
-                Height = 25
+                Height = 19
                 Align = alRight
                 Alignment = taRightJustify
                 Caption = '()'
@@ -628,7 +628,7 @@ object frmMain: TfrmMain
                 Left = 3
                 Top = 3
                 Width = 15
-                Height = 25
+                Height = 19
                 Align = alLeft
                 Caption = '...'
                 Font.Charset = DEFAULT_CHARSET
@@ -961,7 +961,7 @@ object frmMain: TfrmMain
                 Left = 408
                 Top = 3
                 Width = 12
-                Height = 25
+                Height = 19
                 Align = alRight
                 Alignment = taRightJustify
                 Caption = '()'
@@ -978,7 +978,7 @@ object frmMain: TfrmMain
                 Left = 3
                 Top = 3
                 Width = 15
-                Height = 25
+                Height = 19
                 Align = alLeft
                 Caption = '...'
                 Font.Charset = DEFAULT_CHARSET
@@ -1414,7 +1414,7 @@ object frmMain: TfrmMain
               Left = 403
               Top = 3
               Width = 12
-              Height = 25
+              Height = 19
               Align = alRight
               Alignment = taRightJustify
               Caption = '()'
@@ -1431,7 +1431,7 @@ object frmMain: TfrmMain
               Left = 3
               Top = 3
               Width = 15
-              Height = 25
+              Height = 19
               Align = alLeft
               Caption = '...'
               Font.Charset = DEFAULT_CHARSET
@@ -1527,7 +1527,7 @@ object frmMain: TfrmMain
             object Label3: TLabel
               AlignWithMargins = True
               Left = 3
-              Top = 19
+              Top = 49
               Width = 180
               Height = 13
               Align = alTop
@@ -1547,7 +1547,7 @@ object frmMain: TfrmMain
               Top = 118
               Width = 99
               Height = 21
-              ItemHeight = 13
+              ItemHeight = 0
               TabOrder = 0
               OnKeyDown = edFFullNameKeyDown
               Items.Strings = (
@@ -1562,7 +1562,7 @@ object frmMain: TfrmMain
               Top = 145
               Width = 54
               Height = 21
-              ItemHeight = 13
+              ItemHeight = 0
               TabOrder = 1
               OnKeyDown = edFFullNameKeyDown
               Items.Strings = (
@@ -1602,11 +1602,11 @@ object frmMain: TfrmMain
             object cbDownloaded: TRzComboBox
               AlignWithMargins = True
               Left = 3
-              Top = 35
+              Top = 22
               Width = 180
               Height = 21
               Align = alTop
-              ItemHeight = 13
+              ItemHeight = 0
               ReadOnlyColor = clBtnHighlight
               TabOrder = 2
               Text = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1074#1089#1077
@@ -1619,7 +1619,7 @@ object frmMain: TfrmMain
             object edFKeyWords: TRzButtonEdit
               AlignWithMargins = True
               Left = 3
-              Top = 62
+              Top = 68
               Width = 180
               Height = 21
               Hint = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
@@ -1635,7 +1635,7 @@ object frmMain: TfrmMain
             object cbDeleted: TCheckBox
               AlignWithMargins = True
               Left = 5
-              Top = 89
+              Top = 95
               Width = 178
               Height = 17
               Margins.Left = 5
@@ -1661,7 +1661,7 @@ object frmMain: TfrmMain
             object Label29: TLabel
               AlignWithMargins = True
               Left = 3
-              Top = 62
+              Top = 95
               Width = 180
               Height = 13
               Align = alTop
@@ -1670,7 +1670,7 @@ object frmMain: TfrmMain
             object Label28: TLabel
               AlignWithMargins = True
               Left = 3
-              Top = 19
+              Top = 49
               Width = 180
               Height = 13
               Align = alTop
@@ -1679,7 +1679,7 @@ object frmMain: TfrmMain
             object edFFile: TRzButtonEdit
               AlignWithMargins = True
               Left = 3
-              Top = 35
+              Top = 22
               Width = 180
               Height = 21
               Align = alTop
@@ -1692,7 +1692,7 @@ object frmMain: TfrmMain
             object edFFolder: TRzButtonEdit
               AlignWithMargins = True
               Left = 3
-              Top = 78
+              Top = 68
               Width = 180
               Height = 21
               Align = alTop
@@ -1705,7 +1705,7 @@ object frmMain: TfrmMain
             object edFExt: TRzButtonEdit
               AlignWithMargins = True
               Left = 3
-              Top = 105
+              Top = 114
               Width = 180
               Height = 21
               Align = alTop
@@ -1733,7 +1733,7 @@ object frmMain: TfrmMain
             object Label24: TLabel
               AlignWithMargins = True
               Left = 3
-              Top = 19
+              Top = 49
               Width = 180
               Height = 13
               Align = alTop
@@ -1742,7 +1742,7 @@ object frmMain: TfrmMain
             object Label26: TLabel
               AlignWithMargins = True
               Left = 3
-              Top = 105
+              Top = 141
               Width = 180
               Height = 13
               Align = alTop
@@ -1751,7 +1751,7 @@ object frmMain: TfrmMain
             object Label6: TLabel
               AlignWithMargins = True
               Left = 3
-              Top = 62
+              Top = 95
               Width = 180
               Height = 13
               Align = alTop
@@ -1760,7 +1760,7 @@ object frmMain: TfrmMain
             object edFFullName: TRzButtonEdit
               AlignWithMargins = True
               Left = 3
-              Top = 35
+              Top = 22
               Width = 180
               Height = 21
               Align = alTop
@@ -1773,7 +1773,7 @@ object frmMain: TfrmMain
             object edFTitle: TRzButtonEdit
               AlignWithMargins = True
               Left = 3
-              Top = 78
+              Top = 68
               Width = 180
               Height = 21
               Align = alTop
@@ -1786,7 +1786,7 @@ object frmMain: TfrmMain
             object edFSeries: TRzButtonEdit
               AlignWithMargins = True
               Left = 3
-              Top = 121
+              Top = 114
               Width = 180
               Height = 21
               Align = alTop
@@ -1799,7 +1799,7 @@ object frmMain: TfrmMain
             object edFGenre: TRzButtonEdit
               AlignWithMargins = True
               Left = 3
-              Top = 148
+              Top = 160
               Width = 180
               Height = 21
               Align = alTop
@@ -1813,7 +1813,7 @@ object frmMain: TfrmMain
         end
         object cpCoverSR: TMHLCoverPanel
           AlignWithMargins = True
-          Left = 511
+          Left = 539
           Top = 3
           Width = 222
           Height = 655
@@ -2052,7 +2052,7 @@ object frmMain: TfrmMain
                 Left = 254
                 Top = 17
                 Width = 12
-                Height = 22
+                Height = 19
                 Align = alRight
                 Alignment = taRightJustify
                 Caption = '()'
@@ -2069,7 +2069,7 @@ object frmMain: TfrmMain
                 Left = 4
                 Top = 17
                 Width = 36
-                Height = 25
+                Height = 13
                 Align = alLeft
                 Alignment = taRightJustify
                 Caption = #1055#1088#1077#1089#1077#1090
@@ -2080,7 +2080,7 @@ object frmMain: TfrmMain
                 Width = 126
                 Height = 21
                 AutoComplete = False
-                ItemHeight = 13
+                ItemHeight = 0
                 TabOrder = 0
                 OnChange = cbPresetNameChange
                 OnSelect = cbPresetNameSelect
@@ -2824,6 +2824,16 @@ object frmMain: TfrmMain
           DesignSize = (
             884
             61)
+          object pbDownloadProgress: TRzProgressBar
+            Left = 6
+            Top = 22
+            BorderWidth = 0
+            InteriorOffset = 0
+            PartsComplete = 0
+            Percent = 0
+            TotalParts = 0
+            Visible = False
+          end
           object lblDownloadState: TLabel
             Left = 6
             Top = 3
@@ -2868,20 +2878,8 @@ object frmMain: TfrmMain
             ParentFont = False
             CenterPoint = cpLowerRight
           end
-          object pbDownloadProgress: TRzProgressBar
-            Left = 6
-            Top = 19
-            Width = 150
-            Height = 15
-            BorderWidth = 0
-            InteriorOffset = 0
-            PartsComplete = 0
-            Percent = 0
-            ShowPercent = False
-            TotalParts = 0
-          end
           object btnClearDownload: TRzBitBtn
-            Left = 761
+            Left = 763
             Top = 31
             Width = 118
             Margins.Right = 8
@@ -2891,19 +2889,6 @@ object frmMain: TfrmMain
             TabOrder = 0
             OnClick = btnClearDownloadClick
             Kind = bkRetry
-          end
-          object pbDownloadListProgress: TdwProgressBar
-            Left = 6
-            Top = 40
-            Width = 150
-            Height = 15
-            ParentShowHint = False
-            Step = 5
-            ShowHint = False
-            TabOrder = 1
-            MarqueeEnabled = True
-            MarqueeInterval = 50
-            ShowInTaskbar = True
           end
         end
         object tvDownloadList: TVirtualStringTree
