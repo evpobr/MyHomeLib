@@ -23,6 +23,8 @@ type
     FDownloadSize : integer;
     FProgress: integer;
     FWorkCount: integer;
+    FProcessed: integer;
+    FTotal: integer;
 
     FStartDate : TDateTime;
 
@@ -168,12 +170,15 @@ begin
       frmMain.tvDownloadList.DeleteNode(FCurrentNode);
       FCurrentNode := nil;
       FCurrentData := nil;
+      inc(FProcessed);
     end
     else
     begin
       FCurrentData.State := dsError;
       frmMain.tvDownloadList.RepaintNode(FCurrentNode);
     end;
+
+  frmMain.pbDownloadListProgress.Position := round(FProcessed/FTotal * 100);
 
   frmMain.pbDownloadProgress.Percent := 0;
   frmMain.lblDownloadState.Caption := 'Готово';
@@ -190,6 +195,7 @@ end;
 procedure TDownloadManagerThread.GetCurrentFile;
 var
   ErrorCount : integer;
+
 begin
   FFinished := True;
   if FCanceled then Exit;
@@ -340,6 +346,9 @@ begin
   FIgnoreErrors := False;
   FError := False;
 
+  FProcessed := 0;
+  FTotal := frmMain.tvDownloadList.AbsoluteIndex(frmMain.tvDownloadList.GetLast);
+
   FidHTTP := TidHTTP.Create(nil);
 
   FidHTTP.OnWork := HTTPWork;
@@ -348,6 +357,7 @@ begin
   FidHTTP.HandleRedirects := True;
 
   SetProxySettings(FidHTTP);
+
 
   try
     Synchronize(GetCurrentFile);
