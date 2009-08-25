@@ -56,6 +56,11 @@ enum processing_type
 
 static processing_type g_process = eFB2;
 
+static string sep  = "\x04";
+
+//                    AUTHOR     ;    GENRE     ;     TITLE           ; SERIES ; SERNO ; FILE ;    SIZE   ;  LIBID    ;    DEL   ;    EXT     ;       DATE        ;    LANG    ; LIBRATE  ; KEYWORDS ;
+static char* dummy = "dummy:" "\x04" "other:" "\x04" "dummy record" "\x04"   "\x04"  "\x04" "\x04" "1" "\x04" "%d" "\x04" "1" "\x04" "EXT" "\x04" "2000-01-01" "\x04" "en" "\x04" "0" "\x04"     "\x04" "\r\n";
+
 class mysql_connection : boost::noncopyable
 {
    enum { num_options = sizeof( options_pattern ) / sizeof( char * ) };
@@ -429,8 +434,6 @@ void get_book_squence( const mysql_connection& mysql, const string& book_id, str
 
 void process_book( const mysql_connection& mysql, MYSQL_ROW record, const string& file_name, const string& ext, string& inp )
 {
-   string sep( "\x04" );
-
    inp.erase();
 
    string book_id      ( record[ 0 ] ),
@@ -538,7 +541,7 @@ void process_local_archives( const mysql_connection& mysql, const zip& zz, const
       string out_inp_name( *it );
       out_inp_name.replace( out_inp_name.end() - 3, out_inp_name.end(), string("inp") );
 
-      long       records = 0;
+      long       records = 0, dummy_records = 0;
       zip_writer zw( zz, out_inp_name, false );
 
       cout << "Processing - " << name ;
@@ -549,6 +552,7 @@ void process_local_archives( const mysql_connection& mysql, const zip& zz, const
       for( unsigned int ni = 0; ni < uz.count(); ++ni )
       {
          string inp, book_id, ext, stmt;
+         bool fdummy = false;
 
          if( is_fictionbook( uz.current() ) )
          {
@@ -557,6 +561,8 @@ void process_local_archives( const mysql_connection& mysql, const zip& zz, const
                name_to_bookid( uz.current(), book_id, ext );
                stmt = "SELECT `BookId`,`Title`,`FileSize`,`FileType`,`Deleted`,`Time`,`Lang`,`N`,`keywords` FROM libbook WHERE BookId=" + book_id + ";";
             }
+            else
+               fdummy = true;
          }
          else
          {
@@ -565,6 +571,8 @@ void process_local_archives( const mysql_connection& mysql, const zip& zz, const
                name_to_bookid( uz.current(), book_id, ext );
                stmt = "SELECT B.BookId, B.Title, B.FileSize, B.FileType, B.Deleted, B.Time, B.Lang, B.N, B.KeyWords FROM libbook B, libfilename F WHERE B.BookId = F.BookID AND F.FileName = \"" + uz.current() + "\";";
             }
+            else
+               fdummy = true;
          }
 
          if( ! book_id.empty() )
@@ -581,12 +589,23 @@ void process_local_archives( const mysql_connection& mysql, const zip& zz, const
             }
          }
 
-         if( 0 != inp.size() )
+         if( 0 == inp.size() )
+         {
+            inp    = tmp_str( dummy, ni + 1 );
+            fdummy = true;
+         }
+
+         if( fdummy )
+            ++dummy_records;
+         else
          {
             ++records;
 
             if( ! zw.is_open() )
                zw.open();
+
+            for( ; dummy_records > 0; dummy_records-- )
+               zw( tmp_str( dummy, ni - dummy_records + 1 ) );
 
             zw( inp );
          }
@@ -731,7 +750,7 @@ int main( int argc, char *argv[] )
       {
          cout << endl;
          cout << "Import file (INPX) preparation tool for MyHomeLib 1.5" << endl;
-         cout << "Version 2.1 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
+         cout << "Version 2.2 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
          cout << endl;
          cout << "Usage: " << file_name << " [options] <path to SQL dump files>" << endl << endl;
          cout << options << endl;

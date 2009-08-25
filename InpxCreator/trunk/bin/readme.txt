@@ -26,7 +26,7 @@
 Для запуска наберите lib2inpx.exe в командном окне:
 
 Import file (INPX) preparation tool for MyHomeLib 1.5
-Version 2.1 (MYSQL 5.1.36)
+Version 2.2 (MYSQL 5.1.36)
 
 Usage: lib2inpx.exe [options] <path to SQL dump files>
 
