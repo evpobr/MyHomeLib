@@ -37,11 +37,19 @@ static char* options_pattern[] = {  MAIN_NAME,
 static bool g_no_import        = false;
 static bool g_ignore_dump_date = false;
 static bool g_clean_when_done  = false;
-static bool g_strict           = false;
+
+enum checking_type
+{
+   eFileExt = 0,
+   eFileType,
+   eIgnore
+};
+
+static checking_type g_strict  = eFileExt;
 
 enum processing_type
 {
-   eFB2   = 0,
+   eFB2 = 0,
    eUSR,
    eAll
 };
@@ -441,6 +449,9 @@ void process_book( const mysql_connection& mysql, MYSQL_ROW record, const string
           book_sequence,
           book_sequence_num;
 
+   if( eFileExt == g_strict )
+      book_type = ext;
+
    get_book_author ( mysql, book_id, book_author );
    get_book_genres ( mysql, book_id, book_genres );
    get_book_squence( mysql, book_id, book_sequence, book_sequence_num );
@@ -465,7 +476,7 @@ void process_book( const mysql_connection& mysql, MYSQL_ROW record, const string
    inp += sep;
    inp += book_sequence_num;
    inp += sep;
-   inp += ((g_strict && (0 == _stricmp( ext.c_str(), book_type.c_str() ))) || (! g_strict)) ? book_file : "";
+   inp += ((eIgnore == g_strict) && (0 != _stricmp( ext.c_str(), book_type.c_str() ))) ? "" : book_file;
    inp += sep;
    inp += book_filesize;
    inp += sep;
@@ -555,6 +566,7 @@ void process_local_archives( const mysql_connection& mysql, const zip& zz, const
                stmt = "SELECT B.BookId, B.Title, B.FileSize, B.FileType, B.Deleted, B.Time, B.Lang, B.N, B.KeyWords FROM libbook B, libfilename F WHERE B.BookId = F.BookID AND F.FileName = \"" + uz.current() + "\";";
             }
          }
+
          if( ! book_id.empty() )
          {
             MYSQL_ROW record;
@@ -597,6 +609,7 @@ void bookid_to_name( const mysql_connection& mysql, const string& book_id, strin
    MYSQL_ROW record;
 
    name.erase();
+   ext.erase();
 
    mysql.query( string( "SELECT `BookId`, `FileName` FROM libfilename WHERE BookId =" ) + book_id + ";" );
 
@@ -639,9 +652,9 @@ void process_database( const mysql_connection& mysql, const zip& zz )
       if( ++current % 3000 == 0 )
          cout << ".";
 
-      string inp, file_name, ext;
+      string inp, file_name, ext( "fb2" );
 
-      if( 0 == _stricmp( record[ 3 ], "fb2" ) )
+      if( (0 == _stricmp( record[ 3 ], ext.c_str() )) && is_numeric( record[ 0 ] ) )
          file_name = record[ 0 ];
       else
          bookid_to_name( mysql, record[ 0 ], file_name, ext );
@@ -693,7 +706,7 @@ int main( int argc, char *argv[] )
          ( "ignore-dump-date",                "Ignore date in the dump files, use current UTC date instead" )
          ( "clean-when-done",                 "Remove MYSQL database after processing" )
          ( "process",  po::value< string >(), "What to process - \"fb2\", \"usr\", \"all\" (default: fb2)" )
-         ( "strict",                          "Ignore files with file extension not equal to file type in database" )
+         ( "strict",   po::value< string >(), "What to put in INPX as file type - \"ext\", \"db\", \"ignore\" (default: ext). ext - use real file extension. db - use file type from database. ignore - ignore files with file extension not equal to file type" )
          ( "no-import",                       "Do not import dumps, just check dump time and use existing database" )
          ( "archives", po::value< string >(), "Path to off-line archives (if not present - entire database in converted for online LibRusEc usage)" )
          ( "inpx",     po::value< string >(), "Full name of output file (default: <dbname>.inpx)" )
@@ -718,7 +731,7 @@ int main( int argc, char *argv[] )
       {
          cout << endl;
          cout << "Import file (INPX) preparation tool for MyHomeLib 1.5" << endl;
-         cout << "Version 2.0 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
+         cout << "Version 2.1 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
          cout << endl;
          cout << "Usage: " << file_name << " [options] <path to SQL dump files>" << endl << endl;
          cout << options << endl;
@@ -741,11 +754,24 @@ int main( int argc, char *argv[] )
          }
       }
 
+      if( vm.count( "strict" ) )
+      {
+         string opt = vm[ "strict" ].as< string >();
+         if( 0 == _stricmp( opt.c_str(), "ext" ) )
+            g_strict = eFileExt;
+         else if( 0 == _stricmp( opt.c_str(), "db" ) )
+            g_strict = eFileType;
+         else if( 0 == _stricmp( opt.c_str(), "ignore" ) )
+            g_strict = eIgnore;
+         else
+         {
+            cout << endl << "Warning: unknown strictness, will use file extensions!" << endl;
+            g_strict = eFileExt;
+         }
+      }
+
       if( vm.count( "ignore-dump-date" ) )
          g_ignore_dump_date = true;
-
-      if( vm.count( "strict" ) )
-         g_strict = true;
 
       if( vm.count( "clean-when-done" ) )
          g_clean_when_done = true;
