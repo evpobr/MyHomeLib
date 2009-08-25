@@ -330,7 +330,7 @@ GroupsTableFields: array [1 .. 25] of TFieldDesc = (
   (Name: 'DatabaseID'; DataType: ftInteger;    Size: 0;   Required: false),
   (Name: 'LibID';      DataType: ftInteger;    Size: 0;   Required: false),
   (Name: 'Date';       DataType: ftDate;       Size: 0;   Required: false),
-  (Name: 'Title';      DataType: ftWideString; Size: 100; Required: false),
+  (Name: 'Title';      DataType: ftWideString; Size: 150; Required: false),
   (Name: 'FullName';   DataType: ftWideString; Size: 255; Required: false),
   (Name: 'InsideNo';   DataType: ftInteger;    Size: 0;   Required: true),
   (Name: 'FileName';   DataType: ftWideString; Size: 255; Required: true),

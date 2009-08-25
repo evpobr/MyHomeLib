@@ -78,7 +78,8 @@ uses
   RzBtnEdt,
   files_list,
   ActiveX,
-  htmlhlp, IdCustomTransparentProxy, IdConnectThroughHttpProxy;
+  htmlhlp, IdCustomTransparentProxy, IdConnectThroughHttpProxy,
+  dwTaskbarComponents, dwProgressBar;
 
 type
 
@@ -291,7 +292,6 @@ type
     btnPauseDownload: TRzToolButton;
     Panel1: TPanel;
     RzPanel2: TRzPanel;
-    pbDownloadProgress: TRzProgressBar;
     lblDownloadState: TLabel;
     lblDnldAuthor: TLabel;
     lblDnldTitle: TLabel;
@@ -388,6 +388,8 @@ type
     miDeleteFiles: TMenuItem;
     miFastBookSearch: TMenuItem;
     pmiSelectAll: TMenuItem;
+    pbDownloadListProgress: TdwProgressBar;
+    pbDownloadProgress: TRzProgressBar;
 
     //
     // События формы
@@ -3062,17 +3064,20 @@ end;
 
 procedure TfrmMain.btnClearFavoritesClick(Sender: TObject);
 begin
-  ClearLabels(PAGE_FAVORITES);
-
-  DMUser.tblGrouppedBooks.First;
-  while not DMUser.tblGrouppedBooks.Eof do
-  begin
-    if DMUser.tblExtra.RecordCount <> 0 then
+  Screen.Cursor := crHourGlass;
+  try
+    ClearLabels(PAGE_FAVORITES);
+    DMUser.tblGrouppedBooks.First;
+    while not DMUser.tblGrouppedBooks.Eof do
+    begin
+      if DMUser.tblExtra.RecordCount <> 0 then
        DMUser.tblExtra.Delete;
-    DMUser.tblGrouppedBooks.Delete;
+      DMUser.tblGrouppedBooks.Delete;
+    end;
+    FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True); // избранное
+  finally
+    Screen.Cursor := crDefault;
   end;
-
-  FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True); // избранное
 end;
 
 procedure TfrmMain.MoveDwnldListNodes(Sender: TObject);
