@@ -388,7 +388,6 @@ type
     miDeleteFiles: TMenuItem;
     miFastBookSearch: TMenuItem;
     pmiSelectAll: TMenuItem;
-    pbDownloadListProgress: TdwProgressBar;
     pbDownloadProgress: TRzProgressBar;
 
     //
@@ -1965,7 +1964,6 @@ begin
       SwitchFilter('');
 end;
 
-
 procedure TfrmMain.FilesListFile(Sender: TObject; const F: TSearchRec);
 var
   S: string;
@@ -1983,7 +1981,7 @@ begin
   FillBooksTree(0, tvBooksA, dmCollection.tblAuthor_List, dmCollection.tblBooksA,    False, True); // авторы
   FillBooksTree(0, tvBooksS,                   nil, dmCollection.tblBooksS,    False, False); // серии
   FillBooksTree(0, tvBooksG,  dmCollection.tblGenre_List, dmCollection.tblBooksG,    True,  True); // жанры
-//  FillBooksTree(0, tvBooksF,                   nil, DMUser.tblGrouppedBooks, True,  True); // избранное
+  FillBooksTree(0, tvBooksF,                   nil, DMUser.tblGrouppedBooks, True,  True); // избранное
 end;
 
 function TfrmMain.CheckLibUpdates(Auto: boolean): Boolean;
