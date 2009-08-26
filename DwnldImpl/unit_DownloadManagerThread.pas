@@ -178,8 +178,6 @@ begin
       frmMain.tvDownloadList.RepaintNode(FCurrentNode);
     end;
 
-  frmMain.pbDownloadListProgress.Position := round(FProcessed/FTotal * 100);
-
   frmMain.pbDownloadProgress.Percent := 0;
   frmMain.lblDownloadState.Caption := 'Готово';
   frmMain.lblDnldAuthor.Caption := '';
