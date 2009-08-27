@@ -2225,7 +2225,6 @@ begin
   Settings.CoverWidth := cpCoverA.Width;
 
   Settings.WindowState := WindowState;
-  Settings.FullSearchMode := pnlFullSearch.Visible;
 
   if WindowState = wsNormal then
   begin
@@ -5639,10 +5638,13 @@ end;
 
 procedure TfrmMain.miCompactDataBaseClick(Sender: TObject);
 begin
-  dmCollection.DBCollection.Close;
-  dmCollection.DBCollection.CompactDatabase;
-  dmCollection.DBCollection.Open;
+  try
+    dmCollection.DBCollection.Close;
+    dmCollection.DBCollection.CompactDatabase;
+  except
 
+  end;
+  dmCollection.DBCollection.Open;
   dmUser.SetTableState(True);
   dmCollection.SetTableState(True);
 end;

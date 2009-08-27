@@ -157,7 +157,6 @@ type
     FShowEngBar: Boolean;
     FDoNotShowDeleted: Boolean;
     FShowLocalOnly : boolean;
-    FFullSearchMode: boolean;
     FDeleteDeleted: boolean;
     FAutoLoadReview: boolean;
 
@@ -250,7 +249,6 @@ type
     property ShowLocalOnly: Boolean read FShowLocalOnly write FShowLocalOnly;
     property ShowSubGenreBooks: boolean read FShowSubGenreBooks write FShowSubGenreBooks;
     property ShowFb2Info: boolean read FShowFb2Info write FShowFb2Info;
-    property FullSearchMode: boolean read FFullSearchMode write FFullSearchMode;
     property AutoRunUpdate: boolean read FAutoRunUpdate write FAutoRunUpdate;
 
     property MinimizeToTray : boolean read FMinimizeToTray   write FMinimizeToTray;
@@ -551,7 +549,7 @@ begin
     FProxyPort := iniFile.ReadInteger(NETWORK_SECTION, 'proxy-port', 0);
     FUpdateURL := iniFile.ReadString(NETWORK_SECTION, 'update_server', 'http://home-lib.net/update/');
     FDownloadURL := iniFile.ReadString(NETWORK_SECTION, 'library_server', 'http://lib.rus.ec/');
-    FErrorLog := iniFile.ReadBool(NETWORK_SECTION,'use_error_log',false);
+    FErrorLog := iniFile.ReadBool(NETWORK_SECTION,'use_error_log', true);
     FTimeOut := iniFile.ReadInteger(NETWORK_SECTION,'time-out',5000);
     FReadTimeOut := iniFile.ReadInteger(NETWORK_SECTION,'read_time-out',50000);
     FDwnldInterval := iniFile.ReadInteger(NETWORK_SECTION,'dwnld_interval',0);
@@ -605,12 +603,11 @@ begin
 
     FShowSubGenreBooks := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowSubGenreBooks', False);
     FShowFb2Info := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowFb2Info', True);
-    FMinimizeToTray  := iniFile.ReadBool(BEHAVIOR_SECTION, 'MinimizeToTray', True);
+    FMinimizeToTray  := iniFile.ReadBool(BEHAVIOR_SECTION, 'MinimizeToTray', False);
     FAutoStartDwnld  := iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoStartDwnld', False);
     FAllowMixed :=  iniFile.ReadBool(BEHAVIOR_SECTION, 'AllowMixed', False);
     FAutoRunUpdate :=  iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoRunUpdate', False);
 
-    FFullSearchMode := iniFile.ReadBool(BEHAVIOR_SECTION, 'FullSearchMode', False);
     FDeleteDeleted := iniFile.ReadBool(BEHAVIOR_SECTION, 'DeleteDeleted',  False);
     FAutoLoadReview := iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoLoadReview',  True);
 
@@ -748,7 +745,6 @@ begin
 
     iniFile.WriteBool(BEHAVIOR_SECTION, 'AutoRunUpdate', FAutoRunUpdate);
 
-    iniFile.WriteBool(BEHAVIOR_SECTION, 'FullSearchMode', FFullSearchMode);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'DeleteDeleted', FDeleteDeleted);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'AutoLoadReview', FAutoLoadReview);
     //
