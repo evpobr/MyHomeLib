@@ -422,9 +422,9 @@ object frmMain: TfrmMain
     Width = 942
     Height = 684
     HelpContext = 1
-    ActivePage = TabSheet1
+    ActivePage = TabSheet4
     Align = alClient
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 3
     TabStop = False
     OnChange = pgControlChange
@@ -1527,7 +1527,7 @@ object frmMain: TfrmMain
             object Label3: TLabel
               AlignWithMargins = True
               Left = 3
-              Top = 22
+              Top = 49
               Width = 180
               Height = 13
               Align = alTop
@@ -1602,7 +1602,7 @@ object frmMain: TfrmMain
             object cbDownloaded: TRzComboBox
               AlignWithMargins = True
               Left = 3
-              Top = 41
+              Top = 22
               Width = 180
               Height = 21
               Align = alTop
@@ -1661,7 +1661,7 @@ object frmMain: TfrmMain
             object Label29: TLabel
               AlignWithMargins = True
               Left = 3
-              Top = 68
+              Top = 95
               Width = 180
               Height = 13
               Align = alTop
@@ -1670,7 +1670,7 @@ object frmMain: TfrmMain
             object Label28: TLabel
               AlignWithMargins = True
               Left = 3
-              Top = 22
+              Top = 49
               Width = 180
               Height = 13
               Align = alTop
@@ -1679,7 +1679,7 @@ object frmMain: TfrmMain
             object edFFile: TRzButtonEdit
               AlignWithMargins = True
               Left = 3
-              Top = 41
+              Top = 22
               Width = 180
               Height = 21
               Align = alTop
@@ -1692,7 +1692,7 @@ object frmMain: TfrmMain
             object edFFolder: TRzButtonEdit
               AlignWithMargins = True
               Left = 3
-              Top = 87
+              Top = 68
               Width = 180
               Height = 21
               Align = alTop
@@ -1733,7 +1733,7 @@ object frmMain: TfrmMain
             object Label24: TLabel
               AlignWithMargins = True
               Left = 3
-              Top = 22
+              Top = 49
               Width = 180
               Height = 13
               Align = alTop
@@ -1742,7 +1742,7 @@ object frmMain: TfrmMain
             object Label26: TLabel
               AlignWithMargins = True
               Left = 3
-              Top = 114
+              Top = 141
               Width = 180
               Height = 13
               Align = alTop
@@ -1751,7 +1751,7 @@ object frmMain: TfrmMain
             object Label6: TLabel
               AlignWithMargins = True
               Left = 3
-              Top = 68
+              Top = 95
               Width = 180
               Height = 13
               Align = alTop
@@ -1760,7 +1760,7 @@ object frmMain: TfrmMain
             object edFFullName: TRzButtonEdit
               AlignWithMargins = True
               Left = 3
-              Top = 41
+              Top = 22
               Width = 180
               Height = 21
               Align = alTop
@@ -1773,7 +1773,7 @@ object frmMain: TfrmMain
             object edFTitle: TRzButtonEdit
               AlignWithMargins = True
               Left = 3
-              Top = 87
+              Top = 68
               Width = 180
               Height = 21
               Align = alTop
@@ -1786,7 +1786,7 @@ object frmMain: TfrmMain
             object edFSeries: TRzButtonEdit
               AlignWithMargins = True
               Left = 3
-              Top = 133
+              Top = 114
               Width = 180
               Height = 21
               Align = alTop

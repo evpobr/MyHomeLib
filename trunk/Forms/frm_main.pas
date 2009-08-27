@@ -1982,6 +1982,10 @@ begin
   FillBooksTree(0, tvBooksS,                   nil, dmCollection.tblBooksS,    False, False); // серии
   FillBooksTree(0, tvBooksG,  dmCollection.tblGenre_List, dmCollection.tblBooksG,    True,  True); // жанры
   FillBooksTree(0, tvBooksF,                   nil, DMUser.tblGrouppedBooks, True,  True); // избранное
+
+//  if DMCollection.sqlBooks.Active then
+//    FillBooksTree(0, tvBooksSR, nil, dmCollection.sqlBooks, True, True);
+
 end;
 
 function TfrmMain.CheckLibUpdates(Auto: boolean): Boolean;
@@ -3952,7 +3956,7 @@ end;
 procedure TfrmMain.miDeleteBookClick(Sender: TObject);
 var
   Tree: TVirtualStringTree;
-  Node: PvirtualNode;
+  Node, OldNode: PvirtualNode;
   Data: PBookData;
   ALibrary: TMHLLibrary;
   FUpdateFavorites: Boolean;
@@ -4011,27 +4015,17 @@ begin
             FUpdateFavorites := True;
           end;
         end;
-      end;
-
-      Node := Tree.GetNext(Node);
+        OldNode := Node;
+        Node := Tree.GetNext(Node);
+        Tree.DeleteNode(OldNode);
+        ClearLabels(Tree.Tag, False);
+      end
+      else
+        Node := Tree.GetNext(Node);
     end;
   finally
     ALibrary.Free;
   end;
-
-  //
-  // Перечитать дерево
-  //
-  case ActiveView of
-    ByAuthorView: FillBooksTree(0, tvBooksA, dmCollection.tblAuthor_List, dmCollection.tblBooksA, False, True);  // авторы
-    BySeriesView: FillBooksTree(0, tvBooksS, nil,                   dmCollection.tblBooksS, False, False); // серии
-    ByGenreView:  FillBooksTree(0, tvBooksG, dmCollection.tblGenre_List,  dmCollection.tblBooksG, True,  True);  // жанры
-  else
-    Assert(False);
-  end;
-
-  if FUpdateFavorites then
-    FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True);
 end;
 
 procedure TfrmMain.miDeleteColClick(Sender: TObject);
@@ -6067,7 +6061,6 @@ begin
                     miAddFavorites.Visible := False;
                     btnFav_add.Hint := 'Удалить из группы';
                     btnFav_add.DropdownMenu := Nil;
-                    btnFav_add.Style := ComCtrls.tbsButton;
                     btnFav_add.ImageIndex := 16;
                     pmiGroups.Visible := False;
                     miDeleteFiles.Visible := False;
@@ -6085,7 +6078,6 @@ begin
                     miAddFavorites.Visible := True;
                     btnFav_add.Hint := 'Добавить в избранное';
                     btnFav_add.DropdownMenu := pmGroups;
-                    btnFav_add.Style := ComCtrls.tbsDropDown;
                     btnFav_add.ImageIndex := 15;
                     pmiGroups.Visible := True;
                     miDeleteFiles.Visible := isOnlineCollection(dmUser.ActiveCollection.CollectionType);
