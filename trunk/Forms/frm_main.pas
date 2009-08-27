@@ -688,7 +688,7 @@ type
 
     procedure FillBookIdList(const Tree: TVirtualStringTree; var BookIDList: TBookIdList);
     function GetActiveBookTable(tag: integer): TAbsTable;
-    procedure ClearLabels(Tag: integer);
+    procedure ClearLabels(Tag: integer; Full: boolean);
     procedure SetAuthorsShowLocalOnly;
     procedure SetSeriesShowLocalOnly;
     procedure SetBooksFilter;
@@ -1164,7 +1164,7 @@ begin
   tvBooksSR.Clear;
   lblTotalBooksFL.Caption := '(0)';
   FilterString := '';
-  ClearLabels(tvBooksSR.Tag);
+  ClearLabels(tvBooksSR.Tag, True);
 
   dmCollection.sqlBooks.SQL.Clear;
 
@@ -1281,7 +1281,7 @@ begin
 
     Screen.Cursor := crDefault;
     spStatus.Caption := 'Готово.';
-    ClearLabels(PAGE_FILTER);
+    ClearLabels(PAGE_FILTER, True);
   end;
 end;
 
@@ -1305,7 +1305,7 @@ begin
   edFKeyWords.Text  := '';
   cbDownloaded.ItemIndex := 0;
   tvBooksSR.Clear;
-  ClearLabels(PAGE_SEARCH);
+  ClearLabels(PAGE_SEARCH, True);
 end;
 
 procedure TfrmMain.LoadSearchPreset(FN: string);
@@ -1415,7 +1415,7 @@ begin
   FDoNotLocate := True;
   Screen.Cursor := crHourGlass;
 
-  ClearLabels(PAGE_ALL);
+  ClearLabels(PAGE_ALL, True);
   dmCollection.SetTableState(False);
   tvGenres.Clear;
   tvbooksG.Clear;
@@ -1828,14 +1828,14 @@ begin
 end;
 
 
-procedure TfrmMain.ClearLabels(Tag: integer);
+procedure TfrmMain.ClearLabels(Tag: integer; Full: boolean);
 begin
   case Tag of
     PAGE_AUTHORS:
     begin
       ipnlAuthors.Clear;
       cpCoverA.Clear;
-      lblAuthor.Caption := '';
+      if Full then lblAuthor.Caption := '';
     end;
 
     PAGE_SERIES:
@@ -1866,12 +1866,12 @@ begin
 
     PAGE_ALL:
     begin
-      ClearLabels(PAGE_AUTHORS);
-      ClearLabels(PAGE_SERIES);
-      ClearLabels(PAGE_GENRES);
-      ClearLabels(PAGE_FAVORITES);
-      ClearLabels(PAGE_FILTER);
-      ClearLabels(PAGE_SEARCH);
+      ClearLabels(PAGE_AUTHORS, True);
+      ClearLabels(PAGE_SERIES, True);
+      ClearLabels(PAGE_GENRES, True);
+      ClearLabels(PAGE_FAVORITES, True);
+      ClearLabels(PAGE_FILTER, True);
+      ClearLabels(PAGE_SEARCH, True);
     end;
   end;
 end;
@@ -2564,7 +2564,7 @@ begin
   Data := tvAuthors.GetNodeData(Node);
   if not Assigned(Data) then
     Exit;
-  ClearLabels(PAGE_AUTHORS);
+  ClearLabels(PAGE_AUTHORS, True);
   ID := Data^.ID;
   dmCollection.tblAuthors.Locate('A_ID', ID, []);
   lblAuthor.Caption := Data.Text;
@@ -2579,7 +2579,7 @@ begin
   Data := tvSeries.GetNodeData(Node);
   if not Assigned(Data) then
     Exit;
-  ClearLabels(PAGE_SERIES);
+  ClearLabels(PAGE_SERIES, True);
   ID := Data^.ID;
   dmCollection.tblSeries.Locate('S_ID', ID, []);
   lblSeries.Caption := Data.Text;
@@ -2594,7 +2594,7 @@ begin
   Data := tvGenres.GetNodeData(Node);
   if not Assigned(Data) then
     Exit;
-  ClearLabels(PAGE_GENRES);
+  ClearLabels(PAGE_GENRES, True);
   ID := Data^.Code;
   if IsFB2Collection(DMUser.ActiveCollection.CollectionType) or
      not Settings.ShowSubGenreBooks
@@ -2671,7 +2671,7 @@ begin
 
   if Data.nodeType <> ntBookInfo then
   begin
-    ClearLabels(Tree.Tag);
+    ClearLabels(Tree.Tag, False);
     Exit;
   end;
 
@@ -2905,7 +2905,7 @@ begin
     BookTreeStatus := bsBusy ;
     try
       Tree := Sender as TVirtualStringTree;
-      ClearLabels(Tree.Tag);
+      ClearLabels(Tree.Tag, True);
       Node := Tree.GetFirstSelected;
       Selected := Node;
       while Node <> nil do
@@ -3063,7 +3063,7 @@ procedure TfrmMain.btnClearFavoritesClick(Sender: TObject);
 begin
   Screen.Cursor := crHourGlass;
   try
-    ClearLabels(PAGE_FAVORITES);
+    ClearLabels(PAGE_FAVORITES, True);
     DMUser.tblGrouppedBooks.First;
     while not DMUser.tblGrouppedBooks.Eof do
     begin
@@ -3328,7 +3328,7 @@ begin
 
   if Data.nodeType <> ntBookInfo then
   begin
-    ClearLabels(Tree.Tag);
+    ClearLabels(Tree.Tag, True);
     Exit;
   end;
 
@@ -3437,7 +3437,7 @@ begin
     ByAuthorView:
       begin
 
-        ClearLabels(PAGE_AUTHORS);
+        ClearLabels(PAGE_AUTHORS, True);
         if Assigned(FLastLetterA) then
             FLastLetterA.Down := False;
 
@@ -3462,7 +3462,7 @@ begin
       end;
     BySeriesView:
       begin
-        ClearLabels(PAGE_SERIES);
+        ClearLabels(PAGE_SERIES, True);
         if Assigned(FLastLetterS) then
           FLastLetterS.Down := False;
         FLastLetterS := (Sender as TToolButton);
@@ -4105,7 +4105,7 @@ begin
     Node := tvBooksF.GetNext(Node);
   end;
   FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True);
-  ClearLabels(PAGE_FAVORITES);
+  ClearLabels(PAGE_FAVORITES, True);
 end;
 
 function TfrmMain.GetActiveBookTable(tag:integer):TAbsTable;
