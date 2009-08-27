@@ -3,7 +3,7 @@ object frmAddnonfb2: TfrmAddnonfb2
   Top = 0
   HelpContext = 129
   Caption = #1044#1086#1073#1072#1074#1083#1077#1085#1080#1077' '#1082#1085#1080#1075' '#1074' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
-  ClientHeight = 658
+  ClientHeight = 571
   ClientWidth = 822
   Color = clBtnFace
   Constraints.MinHeight = 600
@@ -25,7 +25,7 @@ object frmAddnonfb2: TfrmAddnonfb2
     Left = 3
     Top = 3
     Width = 816
-    Height = 652
+    Height = 565
     Align = alClient
     BorderOuter = fsFlatRounded
     TabOrder = 0
@@ -47,9 +47,6 @@ object frmAddnonfb2: TfrmAddnonfb2
         Align = alTop
         BorderOuter = fsFlatRounded
         TabOrder = 0
-        ExplicitLeft = 2
-        ExplicitTop = 2
-        ExplicitWidth = 802
         object btnCopyToSeries: TButton
           Left = 110
           Top = 31
@@ -106,7 +103,6 @@ object frmAddnonfb2: TfrmAddnonfb2
           PopupMenu = pmEdit
           ReadOnly = True
           TabOrder = 4
-          ExplicitWidth = 788
         end
         object btnRenameFile: TRzBitBtn
           AlignWithMargins = True
@@ -148,7 +144,6 @@ object frmAddnonfb2: TfrmAddnonfb2
             FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFB88989B88989B88989B889
             89CD9999FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF
             00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF}
-          ExplicitLeft = 667
         end
       end
       object RzGroupBox1: TRzGroupBox
@@ -342,8 +337,6 @@ object frmAddnonfb2: TfrmAddnonfb2
           Align = alClient
           Color = clCream
           TabOrder = 0
-          ExplicitWidth = 599
-          ExplicitHeight = 21
         end
       end
       object RzGroupBox3: TRzGroupBox
@@ -457,7 +450,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           Width = 307
           Height = 21
           Color = clCream
-          ItemHeight = 0
+          ItemHeight = 13
           TabOrder = 1
         end
       end
@@ -535,8 +528,6 @@ object frmAddnonfb2: TfrmAddnonfb2
           Align = alClient
           Color = clCream
           TabOrder = 0
-          ExplicitWidth = 599
-          ExplicitHeight = 21
         end
       end
       object RzGroupBox8: TRzGroupBox
@@ -593,7 +584,7 @@ object frmAddnonfb2: TfrmAddnonfb2
       Left = 2
       Top = 348
       Width = 812
-      Height = 302
+      Height = 215
       Align = alClient
       Color = clCream
       Header.AutoSizeIndex = 0
@@ -613,8 +604,6 @@ object frmAddnonfb2: TfrmAddnonfb2
       OnDblClick = TreeDblClick
       OnGetText = TreeGetText
       OnPaintText = TreePaintText
-      ExplicitTop = 308
-      ExplicitHeight = 342
       Columns = <
         item
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring, coAllowFocus]
