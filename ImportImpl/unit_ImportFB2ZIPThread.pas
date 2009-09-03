@@ -165,8 +165,7 @@ begin
             try
               book := LoadFictionBook(FS);
               GetBookInfo(Book, R);
-              FLibrary.InsertBook(R, True, True);
-              Inc(AddCount);
+              if FLibrary.InsertBook(R, True, True) Then Inc(AddCount);
             except
               on e: Exception do
               begin
