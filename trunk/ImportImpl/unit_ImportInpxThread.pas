@@ -371,8 +371,8 @@ begin
                   R.InsideNo := j;
                 end
               end;
-              FLibrary.InsertBook(R, CheckFiles, False);
-              Inc(filesProcessed);
+              if FLibrary.InsertBook(R, CheckFiles, False) then
+                    Inc(filesProcessed);
               if (filesProcessed mod ProcessedItemThreshold) = 0 then
               begin
                 SetProgress(round((i + j/BookList.Count) * 100 / unZip.FileCount));

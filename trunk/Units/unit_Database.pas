@@ -57,7 +57,7 @@ type
     //
     function CheckFileInCollection(const FileName: string; const Ext: string): Boolean;
 
-    procedure InsertBook(BookRecord: TBookRecord; CheckFileName, FullCheck: boolean);
+    function InsertBook(BookRecord: TBookRecord; CheckFileName, FullCheck: boolean): Boolean;
     procedure DeleteBook(BookID: Integer);
 
     procedure AddBookGenre(BookID: Integer; const GenreCode: string);
@@ -733,7 +733,7 @@ begin
   end;
 end;
 
-procedure TMHLLibrary.InsertBook(BookRecord: TBookRecord; CheckFileName, FullCheck: boolean);
+function TMHLLibrary.InsertBook(BookRecord: TBookRecord; CheckFileName, FullCheck: boolean):boolean;
 var
   i: integer;
   ASeqNumber: Integer;
@@ -743,6 +743,7 @@ var
   Res: boolean;
 
 begin
+  Result := False;
   CheckActive;
 
   if BookRecord.FileName = '' then
@@ -892,8 +893,8 @@ begin
       FAuthorList['AL_Title'] := Copy(BookRecord.Title, 1, IndexSize);
       FAuthorList['AL_Series'] := Copy(BookRecord.Series, 1, IndexSize);
       FAuthorList.Post;
-
     end;
+    Result := True;
   end;
 end;
 

@@ -4061,9 +4061,12 @@ begin
       if dmCollection.tblBooks.Locate('ID',Data.ID,[]) then
       begin
 
-        // только для online-коллекции. поэтому получаем путь к файлу по кпрощенной схеме
+        // только для online-коллекции. поэтому получаем путь к файлу по упрощенной схеме
+        try
+          DeleteFile(FCollectionRoot + dmCollection.tblBooksFolder.Value);
+        except
 
-        DeleteFile(FCollectionRoot + dmCollection.tblBooksFolder.Value);
+        end;
 
         dmCollection.tblBooks.Edit;
         dmCollection.tblBooksLocal.Value := False;
@@ -4073,7 +4076,7 @@ begin
         tvBooksG.CheckState[Node] := csUnCheckedNormal;
         Tree.RepaintNode(Node);
 
-        // синхронизация с избранным
+          // синхронизация с избранным
         DMUser.SetLocal(Data.ID, False);
       end;
     end;
