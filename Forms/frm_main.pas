@@ -1224,11 +1224,12 @@ begin
         AddToFilter('`Date`',PrepareQuery(cbDate.Text,False),False, FilterString)
       else
         case cbDate.ItemIndex of
-          0:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 3))]),False, FilterString);
-          1:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 7))]),False, FilterString);
-          2:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 14))]),False, FilterString);
-          3:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 30))]),False, FilterString);
-          4:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 90))]),False, FilterString);
+          0:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 1))]),False, FilterString);
+          1:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 3))]),False, FilterString);
+          2:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 7))]),False, FilterString);
+          3:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 14))]),False, FilterString);
+          4:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 30))]),False, FilterString);
+          5:AddToFilter('`Date`',Format('> "%s"',[DateToStr(IncDay(Now,- 90))]),False, FilterString);
         end;
 
       case cbDownloaded.ItemIndex of
