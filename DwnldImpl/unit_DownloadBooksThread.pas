@@ -62,6 +62,7 @@ type
 
     procedure DoSetProgress2;
     procedure SetProgress2(Current, Total: integer);
+    procedure SetCancelledOperation;
 
   protected
     procedure WorkFunction; override;
@@ -240,6 +241,7 @@ begin
         if Canceled then
         begin
           Result := False;
+          Synchronize(SetCancelledOperation);
           Exit;
         end;
 
@@ -346,6 +348,11 @@ procedure TDownloadBooksThread.DoSetComment2;
 begin
   if Assigned(FOnSetComment2) then
     FOnSetComment2(FCurrentComment, FTotalComment);
+end;
+
+procedure TDownloadBooksThread.SetCancelledOperation;
+begin
+  frmMain.FCancelled := True;
 end;
 
 procedure TDownloadBooksThread.SetComment2(const Current, Total: string);

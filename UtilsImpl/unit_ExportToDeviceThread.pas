@@ -93,6 +93,7 @@ var
   p1,p2: integer;
   FullName: String;
   InsideFileName: string;
+
 begin
   FIsTmp := False;
   FTable.Locate('ID', ID, []);
@@ -111,6 +112,21 @@ begin
     else
         FullName := FTable.FieldByName('FullName').AsString;
 
+    z := FTable.FieldbyName('SeqNumber').AsInteger;
+    if z > 0 then
+      StrReplace('%n',Format('%.2d',[z]), FileName)
+    else begin
+      p1 := pos('%n',FileName);
+      StrReplace('%n', '#n', FileName);
+      p2 := pos('%', FileName);
+      if p2 > 3 then
+        Delete(FileName, p1, p2 - p1 - 1)
+      else
+        StrReplace('#n', '', FileName);
+    end;
+
+
+
     StrReplace('%fl', copy(FullName,1,1), Folder);
     StrReplace('%f', FullName , FileName);
     StrReplace('%t', Trim(FTable.FieldByName('Title').AsString), FileName);
@@ -126,12 +142,6 @@ begin
     p2 := PosChr(']',FileName);
     if Settings.RemoveSquarebrackets and (p1 <> 0) and (p2 <> 0)  then
       Delete(FileName,p1,p2);
-
-    z := FTable.FieldbyName('SeqNumber').AsInteger;
-    if z > 0 then
-      StrReplace('%n',Format('%.2d - ',[FTable.FieldByName('SeqNumber').AsInteger]), FileName)
-    else
-      StrReplace('%n', '', FileName);
 
     if ExtractFileExt(CR) <> ZIP_EXTENSION then
       FFileOpMode := fmFb2;

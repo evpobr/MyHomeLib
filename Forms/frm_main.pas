@@ -625,6 +625,7 @@ type
 
     procedure FillGroupsList;
 
+
     //
     // TODO -oNickR -cRefactoring : вынести эти методы в соответствующие датамодули
     //
@@ -649,6 +650,8 @@ type
     procedure WMGetSysCommand(var Message :TMessage); message WM_SYSCOMMAND;
 
   public
+    FCancelled : boolean;
+
     procedure FillGenresTree(Tree: TVirtualStringTree);
     procedure DisableControls(State: boolean);
     procedure DisableMainMenu(State: boolean);
@@ -3193,7 +3196,7 @@ var
   Tree: TVirtualStringTree;
   ExportMode: TExportMode;
 begin
-
+  FCancelled := false;
   GetActiveTree(Tree);
   FillBookIdList(Tree, BookIDList);
 
@@ -3267,6 +3270,8 @@ begin
   begin
     unit_ExportToDevice.DownloadBooks(dmCollection.ActiveTable, BookIdList);
     RefreshBooksState(Tree, BookIDList);
+    if FCancelled then Exit;
+
   end;
 
   if ActiveView <> FavoritesView then
@@ -3325,6 +3330,8 @@ var
   FileName,Folder,Ext: string;
 
 begin
+
+
   GetActiveViewComponents(Tree,Panel,Cover);
 
   Data := Tree.GetNodeData(Tree.GetFirstSelected);
