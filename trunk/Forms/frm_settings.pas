@@ -57,7 +57,6 @@ type
     tsInternet: TTabSheet;
     RzGroupBox1: TRzGroupBox;
     RzGroupBox2: TRzGroupBox;
-    edDownloadServer: TRzEdit;
     edProxyServer: TRzEdit;
     edProxyUsername: TRzEdit;
     edProxyPassword: TRzMaskEdit;
@@ -146,6 +145,7 @@ type
     Label1: TLabel;
     RzLabel5: TRzLabel;
     cbAutoLoadReview: TCheckBox;
+    edDownloadServer: TRzComboBox;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
