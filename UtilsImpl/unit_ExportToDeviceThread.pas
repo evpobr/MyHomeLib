@@ -94,6 +94,16 @@ var
   FullName: String;
   InsideFileName: string;
 
+  function RemoveSquareBrackets(S: string):string;
+  begin
+    p1 := PosChr('[',S);
+    p2 := PosChr(']',S);
+    if Settings.RemoveSquarebrackets and (p1 <> 0) and (p2 <> 0)  then
+      Delete(S,p1,p2);
+    Result := Trim(S);
+  end;
+
+
 begin
   FIsTmp := False;
   FTable.Locate('ID', ID, []);
@@ -125,23 +135,18 @@ begin
         StrReplace('#n', '', FileName);
     end;
 
-
-
     StrReplace('%fl', copy(FullName,1,1), Folder);
     StrReplace('%f', FullName , FileName);
-    StrReplace('%t', Trim(FTable.FieldByName('Title').AsString), FileName);
+
+    StrReplace('%t', RemoveSquareBrackets(FTable.FieldByName('Title').AsString), FileName);
+
     StrReplace('%id', Trim(FTable.FieldByName('LibID').AsString), FileName);
     StrReplace('%g', Trim(dmCollection.GetBookGenres(FTable.FieldByName('ID').AsInteger,True)), FileName);
 
     if FTable.FieldByName('Series').AsString <> NO_SERIES_TITLE then
-      StrReplace('%s', Trim(FTable.FieldByName('Series').AsString), FileName)
+      StrReplace('%s', RemoveSquareBrackets(FTable.FieldByName('Series').AsString), FileName)
     else
       StrReplace('%s','',FileName);
-
-    p1 := PosChr('[',FileName);
-    p2 := PosChr(']',FileName);
-    if Settings.RemoveSquarebrackets and (p1 <> 0) and (p2 <> 0)  then
-      Delete(FileName,p1,p2);
 
     if ExtractFileExt(CR) <> ZIP_EXTENSION then
       FFileOpMode := fmFb2;
@@ -156,7 +161,7 @@ begin
     StrReplace('%g', Trim(dmCollection.GetBookGenres(FTable.FieldByName('ID').AsInteger,True)), Folder);
 
     if FTable.FieldByName('Series').AsString <> NO_SERIES_TITLE then
-      StrReplace('%s', Trim(FTable.FieldByName('Series').AsString), Folder)
+      StrReplace('%s', RemoveSquareBrackets(FTable.FieldByName('Series').AsString), Folder)
     else
       StrReplace('%s','',Folder);
 

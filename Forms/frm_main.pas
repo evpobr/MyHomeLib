@@ -4649,13 +4649,11 @@ begin
   // если выделенная группа совпадает с той, куда добавляем книги, нужно перерисовать список
   if (tvGroups.SelectedCount > 0) then
   begin
-    GroupData := tvGroups.GetNodeData(tvGroups.FocusedNode);
+    GroupData := tvGroups.GetNodeData(tvGroups.GetFirstSelected);
     if GroupData.ID = DMUser.tblGroupListID.Value then
       FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True); // жанры
   end;
-
-
-end;
+ end;
 
 procedure TfrmMain.miAddToSearchClick(Sender: TObject);
 var
@@ -5133,6 +5131,9 @@ begin
 
     DMUser.tblGroupList.Next;
   end;
+
+  // активируем последнюю группу в списке
+  tvGroups.Selected[tvGroups.GetLast] := True;
 end;
 
 procedure TfrmMain.miAboutClick(Sender: TObject);

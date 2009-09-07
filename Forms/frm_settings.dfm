@@ -62,7 +62,7 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 414
     Height = 413
-    ActivePage = tsBehavour
+    ActivePage = tsInternet
     Align = alClient
     TabOrder = 1
     object tsDevices: TTabSheet
@@ -237,7 +237,7 @@ object frmSettings: TfrmSettings
         object edDeviceDir: TRzButtonEdit
           Left = 11
           Top = 18
-          Width = 366
+          Width = 374
           Height = 21
           HelpContext = 5001
           TabOrder = 0
@@ -323,7 +323,7 @@ object frmSettings: TfrmSettings
         object edReadDir: TRzButtonEdit
           Left = 11
           Top = 18
-          Width = 366
+          Width = 374
           Height = 21
           HelpContext = 5001
           TabOrder = 0
@@ -668,7 +668,7 @@ object frmSettings: TfrmSettings
         object edProxyPassword: TRzMaskEdit
           Left = 280
           Top = 75
-          Width = 89
+          Width = 105
           Height = 21
           PasswordChar = #7
           TabOrder = 2
@@ -676,7 +676,7 @@ object frmSettings: TfrmSettings
         object edProxyPort: TRzNumericEdit
           Left = 320
           Top = 47
-          Width = 49
+          Width = 65
           Height = 21
           TabOrder = 3
           CheckRange = True
@@ -721,29 +721,33 @@ object frmSettings: TfrmSettings
           Caption = #1048#1084#1103' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1103
           Transparent = True
         end
-        object edDownloadServer: TRzEdit
-          Left = 16
-          Top = 21
-          Width = 353
-          Height = 21
-          Text = 'http://lib.rus.ec'
-          TabOrder = 0
-        end
         object RzEdit2: TRzEdit
           Left = 112
           Top = 48
           Width = 115
           Height = 21
           Enabled = False
-          TabOrder = 1
+          TabOrder = 0
         end
         object RzMaskEdit1: TRzMaskEdit
           Left = 280
           Top = 48
-          Width = 89
+          Width = 105
           Height = 21
           Enabled = False
+          TabOrder = 1
+        end
+        object edDownloadServer: TRzComboBox
+          Left = 16
+          Top = 21
+          Width = 369
+          Height = 21
+          ItemHeight = 13
           TabOrder = 2
+          Text = 'http://lib.rus.ec/'
+          Items.Strings = (
+            'http://lib.rus.ec/'
+            'http://lib.ololo.cc/')
         end
       end
       object RzGroupBox9: TRzGroupBox
@@ -758,7 +762,7 @@ object frmSettings: TfrmSettings
         object edUpdates: TEdit
           Left = 16
           Top = 23
-          Width = 353
+          Width = 369
           Height = 21
           TabOrder = 0
           Text = 'http://home-lib.net/update/'
