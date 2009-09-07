@@ -305,6 +305,13 @@ begin
   tblBasesRootFolder.Value := RootFolder;
   tblBasesDBFileName.Value := DBFileName;
   tblBasesCode.Value := CollectionType;
+
+  case CollectionType of
+        65536: tblBasesId.Value := 10001;
+        65537: tblBasesId.Value := 10002;
+    134283264: tblBasesId.Value := 10003;
+  end;
+
   tblBasesDate.Value := Now;
   tblBasesVersion.Value := Version;
   tblBasesAllowDelete.Value := AllowDelete;
