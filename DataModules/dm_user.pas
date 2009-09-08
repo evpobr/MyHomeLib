@@ -310,6 +310,8 @@ begin
         65536: tblBasesId.Value := 10001;
         65537: tblBasesId.Value := 10002;
     134283264: tblBasesId.Value := 10003;
+    else
+      tblBasesId.Value := random(10000);
   end;
 
   tblBasesDate.Value := Now;

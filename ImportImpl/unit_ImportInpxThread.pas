@@ -253,7 +253,7 @@ end;
 procedure TImportLibRusEcThread.GetFields;
 const
   del = ';';
-  Default = 'AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;';
+  Default = 'AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;LANG;LIBRATE;KEYWORDS';
   FN = 'structure.info';
 
 var
