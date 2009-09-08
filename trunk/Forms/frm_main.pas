@@ -78,8 +78,9 @@ uses
   RzBtnEdt,
   files_list,
   ActiveX,
-  htmlhlp, IdCustomTransparentProxy, IdConnectThroughHttpProxy,
-  dwTaskbarComponents, dwProgressBar;
+  htmlhlp,
+  IdCustomTransparentProxy,
+  IdConnectThroughHttpProxy;
 
 type
 
@@ -1220,7 +1221,7 @@ begin
       AddToFilter('`FileName`', PrepareQuery(edFFile.Text, False),False, FilterString);
       AddToFilter('`Folder`', PrepareQuery(edFFolder.Text, False), False, FilterString);
       AddToFilter('`ext`', PrepareQuery(edFExt.Text, False), False, FilterString);
-      AddToFilter('`Lang`', PrepareQuery(cbLang.Text, False, False), False, FilterString);
+      AddToFilter('`Lang`', PrepareQuery(AnsiUpperCase(cbLang.Text), True, False), True, FilterString);
       AddToFilter('`KeyWords`', PrepareQuery(edFKeyWords.Text, True), True, FilterString);
 //
       if cbDate.ItemIndex = -1 then
@@ -4161,6 +4162,8 @@ var
   Node: PVirtualNode;
   Data: PDownloadData;
 
+  Local: boolean;
+
     function CheckID(ID: integer):boolean;
     var
       Node: PVirtualNode;
@@ -4194,6 +4197,10 @@ begin
 
   for I := 0 to High(BookIDList) do
   begin
+
+    dmCollection.FieldByName(BookIDList[i].ID, 'Local', Local);
+    if Local then Continue;
+
     if ActiveView = FavoritesView then
     begin
       DMUser.tblGrouppedBooks.Locate('OuterID', BookIDList[i].ID, []);
@@ -4221,7 +4228,7 @@ begin
     Data.State := dsWait;
     Data.FileName := Folder;
     Data.URL := Format(Settings.DownloadURL + 'b/%d/download', [LibID]);
-  end;
+  end; // for
 
   lblDownloadCount.Caption := Format('(%d)',[tvDownloadList.ChildCount[Nil]]);
 
@@ -6222,6 +6229,7 @@ procedure TfrmMain.miINPXCollectionExportClick(Sender: TObject);
 begin
   DMUser.ActivateCollection(Settings.ActiveCollection);
   unit_Export.Export2INPX;
+  InitCollection(True);
 end;
 
 procedure TfrmMain.btnAddGroupClick(Sender: TObject);

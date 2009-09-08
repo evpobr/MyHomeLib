@@ -137,6 +137,5 @@ begin
   finally
     frmSplash.Free;  // Free the splash screen
   end;
-
   Application.Run;
 end.

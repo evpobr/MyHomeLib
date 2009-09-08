@@ -157,6 +157,7 @@ begin
 
   finally
     slFileList.Free;
+    DMCollection.tblAuthor_Detail.Active := False;
     DMCollection.tblAuthor_Master.Active := False;
   end;
 
