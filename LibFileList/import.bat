@@ -6,4 +6,4 @@ mysql.exe -h localhost -u lib librusec <4.sql
 mysql.exe -h localhost -u lib librusec <5.sql
 mysql.exe -h localhost -u lib librusec <6.sql
 mysql.exe -h localhost -u lib librusec <7.sql
-mysql.exe -h localhost -u lib librusec <8.sql
+REM mysql.exe -h localhost -u lib librusec <8.sql

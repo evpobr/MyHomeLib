@@ -1,8 +1,8 @@
 <?
 	$dblocation = "127.0.0.1";   
 	$dbname = "librusec";   
-	$dbuser = "root";   
-	$dbpasswd = "2def1234";   
+	$dbuser = "lib";   
+	$dbpasswd = "";   
 
 	$dbcnx = mysql_connect($dblocation, $dbuser, $dbpasswd);   
 	if (!$dbcnx)   

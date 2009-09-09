@@ -14,7 +14,6 @@ type
     IdAntiFreeze1: TIdAntiFreeze;
     HTTP: TIdHTTP;
     dlgOpen: TRzOpenDialog;
-    Zip: TZipMaster;
     IdFTP: TIdFTP;
     RzPanel1: TRzPanel;
     pbProgress: TRzProgressBar;
@@ -31,6 +30,7 @@ type
     btnDownload: TRzToolButton;
     mmLog: TRzMemo;
     lblStatus: TRzLabel;
+    Zip: TZipMaster;
     procedure Button2Click(Sender: TObject);
     procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
       AWorkCount: Int64);
@@ -117,12 +117,16 @@ procedure TfrmMain.CreateINP(URL: string; USR: boolean; SaveResult: boolean);
 const
   Window = 2000;
 var
-  FN, S:string;
+  FN:string;
+  S : UTF8String;
   ResultsList:TStringList;
   i,j,k:integer;
   Response:TStringStream;
   mpfds: TIdMultiPartFormDataStream;
   Max: integer;
+  Zip: TZipForge;
+  ArchItem: TZFArchiveItem;
+  Ext : String;
 begin
   if not dlgOpen.Execute then  Exit;
   FOnProgress := True;
@@ -141,69 +145,61 @@ begin
       //             Подготовка запроса
       //-----------------------------------------------------------
       lblStatus.Caption:='Формирование запроса ...';
-      Zip.ZipFileName:=dlgOpen.Files[i];
+
+      Zip := TZipForge.Create(self);
+
+      Zip.FileName:=dlgOpen.Files[i];
+      Zip.OpenArchive;
       FN:=ExtractFileName(dlgOpen.Files[i]);
       Log(FN);
-      k := 0;
+      k := 0; j := 0;
       ResultsList.Clear;
-      while k < Zip.Count - 1 do
-      begin
-        if FDoStop then Break;
-        mpfds:=TIdMultiPartFormDataStream.Create;
-        try
+
+      if FDoStop then Break;
+      mpfds:=TIdMultiPartFormDataStream.Create;
+      try
+
+       Zip.Options.OEMFileNames := False;
+
+        if (Zip.FindFirst('*.*',ArchItem,faAnyFile-faDirectory)) then
+        repeat
           mpfds.AddFormField('Folder',copy(FN,1,Length(FN)-4));
-
-          if (k + Window) < Zip.Count then
-            Max := k + Window
-          else
-            Max := Zip.Count - 1;
-
-          for j:=0 to Max do
+          Ext := ExtractFileExt(ArchItem.FileName);
+          S := UTF8Encode(copy(ArchItem.FileName,1,Length(ArchItem.FileName) - Length(Ext)));
+          if S <>'' then
+               mpfds.AddFormField('files['+IntToStr(j)+']',S);
+          if USR then
           begin
-            with ZipDirEntry(Zip.ZipContents[j]^) do
-            begin
-              if not USR then
-                S := copy(FileName,1,Length(FileName)-4)
-              else
-                S := FileName;
-              if S <>'' then
-                mpfds.AddFormField('files['+IntToStr(j)+']',S);
-            end;
-          end; // for
-          k := Max;
-
-          //  отправка запроса
-          lblStatus.Caption:='Отправка запроса ...';
-          lblStatus.Repaint;
-          response:=TstringStream.Create('');
-          try
-            HTTP.Post(URL,mpfds,Response);
-            ResultsList.Clear;
-            ResultsList.Add(Response.DataString);
-          finally
-            response.Free;
+            Delete(Ext,1,1); // удаляем точку в начале
+            mpfds.AddFormField('extentions['+IntToStr(j)+']',UTF8Encode(Ext));
           end;
+          inc(j);
+        until (not Zip.FindNext(ArchItem));
+          //  отправка запроса
+        lblStatus.Caption:='Отправка запроса ...';
+        lblStatus.Repaint;
+        response:=TstringStream.Create('');
+        try
+          HTTP.Post(URL,mpfds,Response);
+          ResultsList.Clear;
+          ResultsList.Add(Response.DataString);
         finally
-          mpfds.Free;
+          response.Free;
         end;
-
-        pbProgress.Percent:=round((i + k/Zip.Count)/(dlgOpen.Files.Count)*100);
-        pbProgress.Repaint;
-
-      end;  // while
-      // обработка результата
-
-      if SaveResult then
-      begin
-        ResultsList.SaveToFile(AppPath+'\LIBRUSEC_INP\'+copy(FN,1,Length(FN)-4)+'.inp');
+      finally
+        mpfds.Free;
       end;
+
+      pbProgress.Percent:=round(i/(dlgOpen.Files.Count)*100);
+      pbProgress.Repaint;
+      if SaveResult then
+        ResultsList.SaveToFile(AppPath+'\LIBRUSEC_INP\'+copy(FN,1,Length(FN)-4)+'.inp');
 
       lblStatus.Caption:='Готово';lblStatus.Repaint;
       FileList.Add(AppPath+'\LIBRUSEC_INP\'+copy(FN,1,Length(FN)-4)+'.inp');
 
       pbProgress.Percent:=round((i + 1)/(dlgOpen.Files.Count)*100);
       pbProgress.Repaint;
-
     end; // main for
 
     if not USR then FileList.Add(AppPath+'\LIBRUSEC_INP\extra.inp');
@@ -215,6 +211,7 @@ begin
     lblStatus.Caption:='Готово';
     FDoStop := False;
     btnStop.Enabled := False;
+    FreeAndNil(Zip);
   end;
 end;
 

@@ -71,10 +71,6 @@ object frmMain: TfrmMain
     Height = 285
     Align = alClient
     TabOrder = 1
-    ExplicitLeft = 32
-    ExplicitTop = 280
-    ExplicitWidth = 529
-    ExplicitHeight = 242
     object RzGroupBox1: TRzGroupBox
       AlignWithMargins = True
       Left = 120
@@ -175,7 +171,7 @@ object frmMain: TfrmMain
     Request.BasicAuthentication = False
     Request.UserAgent = 'Mozilla/3.0 (compatible; Indy Library)'
     HTTPOptions = [hoForceEncodeParams]
-    Left = 256
+    Left = 240
     Top = 208
   end
   object dlgOpen: TRzOpenDialog
@@ -184,28 +180,6 @@ object frmMain: TfrmMain
     DefaultExt = 'zip'
     Left = 112
     Top = 208
-  end
-  object Zip: TZipMaster
-    AddOptions = []
-    AddStoreSuffixes = [assGIF, assPNG, assZ, assZIP, assZOO, assARC, assLZH, assARJ, assTAZ, assTGZ, assLHA, assRAR, assACE, assCAB, assGZ, assGZIP, assJAR, assEXE, assJPG, assJPEG, ass7Zp, assMP3, assWMV, assWMA, assDVR, assAVI]
-    Dll_Load = False
-    ExtrOptions = []
-    KeepFreeOnAllDisks = 0
-    KeepFreeOnDisk1 = 0
-    MaxVolumeSize = 0
-    PasswordReqCount = 1
-    SFXOptions = []
-    SFXOverWriteMode = OvrConfirm
-    SFXPath = 'DZSFXUS.bin'
-    SpanOptions = []
-    Trace = False
-    Unattended = False
-    Verbose = False
-    Version = '1.79.10.18'
-    VersionInfo = '1.79.10.18'
-    ZipFileName = '0.sql.gz'
-    Left = 208
-    Top = 200
   end
   object IdFTP: TIdFTP
     OnWorkBegin = IdFTPWorkBegin
@@ -1286,5 +1260,26 @@ object frmMain: TfrmMain
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000}
+  end
+  object Zip: TZipMaster
+    AddOptions = []
+    AddStoreSuffixes = [assGIF, assPNG, assZ, assZIP, assZOO, assARC, assLZH, assARJ, assTAZ, assTGZ, assLHA, assRAR, assACE, assCAB, assGZ, assGZIP, assJAR, assEXE, assJPG, assJPEG, ass7Zp, assMP3, assWMV, assWMA, assDVR, assAVI]
+    Dll_Load = False
+    ExtrOptions = []
+    KeepFreeOnAllDisks = 0
+    KeepFreeOnDisk1 = 0
+    MaxVolumeSize = 0
+    PasswordReqCount = 1
+    SFXOptions = []
+    SFXOverWriteMode = OvrConfirm
+    SFXPath = 'DZSFXUS.bin'
+    SpanOptions = []
+    Trace = False
+    Unattended = False
+    Verbose = False
+    Version = '1.79.10.18'
+    VersionInfo = '1.79.10.18'
+    Left = 272
+    Top = 144
   end
 end

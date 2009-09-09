@@ -8,6 +8,7 @@
 	while ($book = mysql_fetch_array($q_book_list))
 	{
 		$FileName = $book[0];
+		$Ext = 'fb2';
 		include('query.php');
 	}
 ?>

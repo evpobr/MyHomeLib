@@ -9,10 +9,10 @@
 	$query = 'select an.LastName, an.FirstName, an.MiddleName from (libavtor ba left outer join libavtoraliase aa on aa.badid = ba.avtorid) join libavtorname an on an.avtorid = COALESCE(aa.goodid, ba.avtorid)
 WHERE  ba.bookid='.$BookId.';';
 
+	$avt_out='';
 	$q_avtor_id_list = mysql_query($query);
 	if ($q_avtor_id_list)
 	{
-		$avt_out='';
 		while ($avtor=mysql_fetch_array($q_avtor_id_list))
 			$avt_out=$avt_out.$avtor[0].','.$avtor[1].','.$avtor[2].':';
 		$avt_out=$avt_out.$sep;
@@ -49,7 +49,7 @@ WHERE  ba.bookid='.$BookId.';';
 	$sdate=substr($book[5],0,strpos($book[5],' '));
 		
 	if (strlen($avt_out) < 4) $avt_out='неизвестный,автор,:'.$sep;
-		
+	
 	// SELECT `BookId`,`Title`,`FileSize`,`FileType`,`Deleted`,`Time`,`Lang`,`N`,`keywords`	
 			
 	//      авторы ;    жанры ;        название ;        серия ;         номер в серии
@@ -57,7 +57,7 @@ WHERE  ba.bookid='.$BookId.';';
 	//       имя файла;         размер файла;          LibId;               Deleted
 	$out.=$sep.$FileName.$sep.$book[2].$sep.$book[0].$sep.$book[4];
 	//          тип файла ;              дата;       язык    N   keywords
-	$out.=$sep.$book[3].$sep.$sdate.$sep.$book[6].$sep.$book[7].$sep.$book[8].$sep;
+	$out.=$sep.$Ext.$sep.$sdate.$sep.$book[6].$sep.$book[7].$sep.$book[8].$sep;
 		
 	$out = str_replace(chr(13),'',$out);
 	$out = str_replace(chr(10),'',$out);
