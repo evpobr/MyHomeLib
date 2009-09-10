@@ -181,7 +181,7 @@
 			<Tool
 				Name="VCCustomBuildTool"
 				Description="Copying result"
-				CommandLine="copy $(TargetPath) ..\..\bin\$(TargetFileName)"
+				CommandLine="copy $(TargetPath) ..\..\bin\$(TargetFileName)&#x0D;&#x0A;"
 				Outputs="..\..\bin\$(TargetFileName)"
 			/>
 			<Tool
@@ -264,7 +264,7 @@
 			<Tool
 				Name="VCCustomBuildTool"
 				Description="Copying result"
-				CommandLine="copy $(TargetPath) ..\..\bin64\$(TargetFileName)"
+				CommandLine="copy $(TargetPath) ..\..\bin64\$(TargetFileName)&#x0D;&#x0A;"
 				Outputs="..\..\bin64\$(TargetFileName)"
 			/>
 			<Tool

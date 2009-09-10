@@ -524,7 +524,8 @@ void process_local_archives( const mysql_connection& mysql, const zip& zz, const
 
    do
    {
-      files.push_back( fd.name );
+      if( fd.size > 22 )
+        files.push_back( fd.name );
    }
    while( 0 == _findnext( archives, &fd ) );
 
@@ -750,7 +751,7 @@ int main( int argc, char *argv[] )
       {
          cout << endl;
          cout << "Import file (INPX) preparation tool for MyHomeLib 1.5" << endl;
-         cout << "Version 2.2 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
+         cout << "Version 2.3 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
          cout << endl;
          cout << "Usage: " << file_name << " [options] <path to SQL dump files>" << endl << endl;
          cout << options << endl;
