@@ -234,7 +234,7 @@ begin
                       dd := StrToInt(Copy(slParams[i], 9, 2));
                       R.Date := EncodeDate(yy, mm, dd);
                     end
-                    else R.Date:=now;
+                    else R.Date := EncodeDate(70,01,01);
                   end;
 
         flInsideNo:  R.InsideNo := StrToInt(slParams[i]);        // номер в архиве
