@@ -660,6 +660,8 @@ type
     function HH(Command: Word; Data: Integer; var CallHelp: Boolean): Boolean;
     procedure LocateBook(text: String; Next : boolean);
 
+    procedure SelectNextBook(Changed, Frwrd: boolean);
+
   private
     FSelectionState: boolean;
     FCollectionRoot: string;
@@ -686,6 +688,8 @@ type
 
     FLastFoundBook: PVirtualNode;
     FFirstFoundBook: PvirtualNode;
+
+    FLastBookRecord: TBookRecord;
 
     //
     function GetBookNode(const Tree: TVirtualStringTree; bookID: Integer): PVirtualNode;
@@ -719,6 +723,8 @@ type
     procedure CreateGroupsMenu;
     procedure SaveMainFormSettings;
     procedure SavePositions;
+    procedure PrepareFb2EditData(var R: TBookRecord);
+    procedure SaveFb2DataAfterEdit(R: TBookRecord);
     property ActiveView: TView read GetActiveView;
   end;
 
@@ -3617,6 +3623,33 @@ begin
   Tree.EndUpdate;
 end;
 
+procedure TfrmMain.SelectNextBook(Changed, Frwrd: boolean);
+var
+  Tree : TVirtualstringTree;
+  NewNode, OldNode : PVirtualNode;
+  Data : PBookData;
+begin
+  if Changed then SaveFb2DataAfterEdit(FLastBookRecord);
+  GetActiveTree(Tree);
+  repeat
+    OldNode := Tree.GetFirstSelected;
+    if Frwrd then
+    begin
+      NewNode := Tree.GetNext(OldNode);
+      if NewNode = Nil then NewNode := Tree.GetFirst;
+    end
+    else
+    begin
+      NewNode := Tree.GetPrevious(OldNode);
+      if NewNode = Nil then NewNode := Tree.GetLast;
+    end;
+    Tree.Selected[OldNode] := False;
+    Tree.Selected[NewNode] := True;
+    Data := Tree.GetNodeData(NewNode);
+  until Data.nodeType = ntBookInfo;
+  PrepareFb2EditData(FLastBookRecord);
+end;
+
 procedure TfrmMain.tbSelectAllClick(Sender: TObject);
 begin
   FSelectionState := not FSelectionState;
@@ -4379,24 +4412,18 @@ begin
     Result := False;
 end;
 
-procedure TfrmMain.miEditBookClick(Sender: TObject);
+procedure TfrmMain.PrepareFb2EditData(var R: TBookRecord);
 var
   Tree: TVirtualStringTree;
   Data: PBookData;
   Node: PVirtualNode;
   i: integer;
-  R: TBookRecord;
   Family: TListItem;
   ALibrary: TMHLLibrary;
   Author: TAuthorRecord;
   Genre: TGenreRecord;
-begin
-  if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
-  begin
-    MessageDlg('Редактирование книг из избранного или списка закачек невозможно.', mtWarning, [mbOk], 0);
-    Exit;
-  end;
 
+begin
   GetActiveTree(Tree);
   Node := Tree.GetFirstSelected;
 
@@ -4404,8 +4431,7 @@ begin
   if not Assigned(Data) or (Data.nodeType <> ntBookInfo) then
     Exit;
 
-  if IsLibRusecEdit(Data.Id) then
-    Exit;
+
 
   GetBookRecord(Data.ID, R);
   frmEditBookInfo.lvAuthors.Items.Clear;
@@ -4434,8 +4460,29 @@ begin
   frmEditBookInfo.edKeyWords.Text := R.KeyWords;
   frmEditBookInfo.cbLang.Text := R.Lang;
 
-  if frmEditBookInfo.ShowModal = mrOk then
-  begin
+end;
+
+procedure TfrmMain.SaveFb2DataAfterEdit(R: TBookRecord);
+var
+  Tree: TVirtualStringTree;
+  Data: PBookData;
+  Node: PVirtualNode;
+  i: integer;
+
+  Family: TListItem;
+  ALibrary: TMHLLibrary;
+  Author: TAuthorRecord;
+  Genre: TGenreRecord;
+
+begin
+
+  GetActiveTree(Tree);
+  Node := Tree.GetFirstSelected;
+
+  Data := Tree.GetNodeData(Node);
+  if not Assigned(Data) or (Data.nodeType <> ntBookInfo) then
+    Exit;
+
     R.ClearAuthors;
 
     for I := 0 to frmEditBookInfo.lvAuthors.Items.Count - 1 do
@@ -4461,7 +4508,7 @@ begin
       ALibrary.BeginBulkOperation;
       try
         ALibrary.DeleteBook(Data.ID);
-        ALibrary.InsertBook(R, True, True);
+        ALibrary.InsertBook(R, False, False);
 
         ALibrary.EndBulkOperation(True);
       except
@@ -4476,7 +4523,35 @@ begin
     finally
       ALibrary.Free;
     end;
+
+end;
+
+
+procedure TfrmMain.miEditBookClick(Sender: TObject);
+var
+  Tree: TVirtualStringTree;
+  Data: PBookData;
+  Node: PVirtualNode;
+  i: integer;
+  R: TBookRecord;
+  Family: TListItem;
+  ALibrary: TMHLLibrary;
+  Author: TAuthorRecord;
+  Genre: TGenreRecord;
+begin
+  if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
+  begin
+    MessageDlg('Редактирование книг из избранного или списка закачек невозможно.', mtWarning, [mbOk], 0);
+    Exit;
   end;
+
+  if IsLibRusecEdit(Data.Id) then
+    Exit;
+
+  PrepareFb2EditData(FLastBookRecord);
+
+  if frmEditBookInfo.ShowModal = mrOk then
+       SaveFb2DataAfterEdit(FLastBookRecord);
 end;
 
 procedure TfrmMain.miEditGenresClick(Sender: TObject);

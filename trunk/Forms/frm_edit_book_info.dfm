@@ -1,10 +1,10 @@
 object frmEditBookInfo: TfrmEditBookInfo
   Left = 0
   Top = 0
-  BorderStyle = bsNone
-  Caption = 'frmEditBookInfo'
-  ClientHeight = 342
-  ClientWidth = 625
+  BorderStyle = bsToolWindow
+  Caption = '  '#1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1085#1080#1077'  '#1080#1085#1092#1086#1088#1084#1072#1094#1080#1080' '#1086' '#1082#1085#1080#1075#1077
+  ClientHeight = 310
+  ClientWidth = 623
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,41 +21,22 @@ object frmEditBookInfo: TfrmEditBookInfo
   object RzPanel1: TRzPanel
     Left = 0
     Top = 0
-    Width = 625
-    Height = 342
+    Width = 623
+    Height = 310
     Align = alClient
     BorderOuter = fsGroove
     TabOrder = 0
-    object RzPanel2: TRzPanel
-      AlignWithMargins = True
-      Left = 5
-      Top = 5
-      Width = 615
-      Height = 24
-      Align = alTop
-      Alignment = taLeftJustify
-      BorderOuter = fsGroove
-      Caption = '  '#1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1085#1080#1077'  '#1080#1085#1092#1086#1088#1084#1072#1094#1080#1080' '#1086' '#1082#1085#1080#1075#1077
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -13
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
-      TabOrder = 0
-      VisualStyle = vsGradient
-    end
     object RzPanel3: TRzPanel
       AlignWithMargins = True
       Left = 5
-      Top = 35
-      Width = 615
-      Height = 302
+      Top = 5
+      Width = 613
+      Height = 300
       Align = alClient
-      BorderOuter = fsFlatRounded
-      TabOrder = 1
+      BorderOuter = fsNone
+      TabOrder = 0
       object btnSave: TRzBitBtn
-        Left = 333
+        Left = 365
         Top = 270
         Width = 105
         Default = True
@@ -127,10 +108,10 @@ object frmEditBookInfo: TfrmEditBookInfo
           611DB1601AB05B149C5019FF00FFFF00FFFF00FFFF00FFFF00FF}
       end
       object RzGroupBox4: TRzGroupBox
-        Left = 6
-        Top = 157
-        Width = 307
-        Height = 54
+        Left = 1
+        Top = 153
+        Width = 308
+        Height = 49
         Caption = #1057#1077#1088#1080#1103
         TabOrder = 2
         object edSN: TRzNumericEdit
@@ -139,6 +120,7 @@ object frmEditBookInfo: TfrmEditBookInfo
           Width = 49
           Height = 21
           TabOrder = 0
+          OnChange = edTChange
           DisplayFormat = ',0;(,0)'
         end
         object cbSeries: TRzComboBox
@@ -148,30 +130,33 @@ object frmEditBookInfo: TfrmEditBookInfo
           Height = 21
           ItemHeight = 13
           TabOrder = 1
+          OnChange = edTChange
         end
       end
       object RzGroupBox2: TRzGroupBox
-        Left = 6
-        Top = 111
-        Width = 603
+        Left = 0
+        Top = 105
+        Width = 613
         Height = 44
+        Align = alTop
         Caption = #1053#1072#1079#1074#1072#1085#1080#1077
         TabOrder = 1
         object edT: TEdit
           AlignWithMargins = True
           Left = 4
           Top = 17
-          Width = 595
+          Width = 605
           Height = 23
           Align = alClient
           TabOrder = 0
-          ExplicitHeight = 21
+          OnChange = edTChange
         end
       end
       object RzGroupBox1: TRzGroupBox
-        Left = 6
+        Left = 0
         Top = 0
-        Width = 603
+        Width = 613
+        Align = alTop
         Caption = #1040#1074#1090#1086#1088#1099
         TabOrder = 0
         object lvAuthors: TRzListView
@@ -226,9 +211,9 @@ object frmEditBookInfo: TfrmEditBookInfo
         end
       end
       object RzGroupBox5: TRzGroupBox
-        Left = 319
-        Top = 161
-        Width = 290
+        Left = 315
+        Top = 153
+        Width = 294
         Height = 50
         Caption = #1046#1072#1085#1088#1099
         TabOrder = 3
@@ -256,8 +241,8 @@ object frmEditBookInfo: TfrmEditBookInfo
         end
       end
       object RzGroupBox3: TRzGroupBox
-        Left = 6
-        Top = 217
+        Left = 1
+        Top = 208
         Width = 518
         Height = 44
         Caption = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
@@ -270,13 +255,13 @@ object frmEditBookInfo: TfrmEditBookInfo
           Height = 23
           Align = alClient
           TabOrder = 0
-          ExplicitHeight = 21
+          OnChange = edTChange
         end
       end
       object RzGroupBox6: TRzGroupBox
-        Left = 530
-        Top = 217
-        Width = 79
+        Left = 525
+        Top = 208
+        Width = 84
         Height = 44
         Caption = #1071#1079#1099#1082
         TabOrder = 7
@@ -287,6 +272,7 @@ object frmEditBookInfo: TfrmEditBookInfo
           Height = 21
           ItemHeight = 13
           TabOrder = 0
+          OnChange = edTChange
           Items.Strings = (
             'be'
             'bg'
@@ -321,6 +307,30 @@ object frmEditBookInfo: TfrmEditBookInfo
             #1082
             #1088#1091)
         end
+      end
+      object Button1: TButton
+        Left = 87
+        Top = 269
+        Width = 75
+        Height = 25
+        Hint = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1080' '#1087#1077#1088#1077#1081#1090#1080#13#1082' '#1089#1083#1077#1076#1091#1102#1097#1077#1081' '#1082#1085#1080#1075#1077
+        Caption = '>>>'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 8
+        OnClick = Button1Click
+      end
+      object Button2: TButton
+        Left = 6
+        Top = 269
+        Width = 75
+        Height = 25
+        Hint = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1080' '#1087#1077#1088#1077#1081#1090#1080#13#1082' '#1087#1088#1077#1076#1099#1076#1091#1097#1077#1081' '#1082#1085#1080#1075#1077
+        Caption = '<<<'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 9
+        OnClick = Button2Click
       end
     end
   end

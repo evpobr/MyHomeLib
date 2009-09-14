@@ -23,7 +23,6 @@ uses
 type
   TfrmEditBookInfo = class(TForm)
     RzPanel1: TRzPanel;
-    RzPanel2: TRzPanel;
     RzPanel3: TRzPanel;
     btnSave: TRzBitBtn;
     btnCancel: TRzBitBtn;
@@ -44,6 +43,8 @@ type
     edKeyWords: TEdit;
     RzGroupBox6: TRzGroupBox;
     cbLang: TRzComboBox;
+    Button1: TButton;
+    Button2: TButton;
     procedure btnGenresClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btnAddAuthorClick(Sender: TObject);
@@ -51,8 +52,14 @@ type
     procedure btnADeleteClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure Button1Click(Sender: TObject);
+    procedure edTChange(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
   private
+    FChanged : boolean;
+
     procedure FillLists;
+    function SaveData: boolean;
     { Private declarations }
   public
 //     procedure FillGenrelist;
@@ -89,6 +96,7 @@ begin
       lblGenre.Caption:=lblGenre.Caption+Data.Text+' ; ';
       Node:=frmGenreTree.tvGenresTree.GetNextSelected(Node);
     end;
+    FChanged := True;
   end;
 end;
 
@@ -114,8 +122,32 @@ end;
 
 procedure TfrmEditBookInfo.FormShow(Sender: TObject);
 begin
+  FChanged := False;
   if frmGenreTree.tvGenresTree.GetFirstSelected=nil then frmMain.FillGenresTree(frmGenreTree.tvGenresTree);
   FillLists;
+end;
+
+
+function TfrmEditBookInfo.SaveData: boolean;
+begin
+  Result := False;
+  if not FChanged then
+  begin
+    Result := True;
+    Exit;
+  end;
+
+  if lvAuthors.Items.Count=0 then
+  begin
+    MessageDlg('Укажите минимум одного автора!',mtError,[mbOk],0);
+    Exit;
+  end;
+  if edT.Text='' then
+  begin
+    MessageDlg('Укажите название книги!',mtError,[mbOk],0);
+    Exit;
+  end;
+  Result := True;
 end;
 
 procedure TfrmEditBookInfo.btnADeleteClick(Sender: TObject);
@@ -133,6 +165,7 @@ begin
     Family.Caption:=frmEditAuthor.edFamily.Text;
     Family.SubItems.Add(frmEditAuthor.edName.Text);
     Family.SubItems.Add(frmEditAuthor.edMiddle.Text);
+    FChanged := True;
   end;
 end;
 
@@ -153,22 +186,36 @@ begin
       else Family.SubItems.Add(frmEditAuthor.edName.Text);
     if Family.SubItems.Count>1 then Family.SubItems[1]:=frmEditAuthor.edMiddle.Text
        else Family.SubItems.Add(frmEditAuthor.edMiddle.Text);
+    FChanged := True;
   end;
 end;
 
 procedure TfrmEditBookInfo.btnSaveClick(Sender: TObject);
 begin
-  if lvAuthors.Items.Count=0 then
+  if SaveData then ModalResult := mrOk;
+end;
+
+procedure TfrmEditBookInfo.Button1Click(Sender: TObject);
+begin
+  if SaveData then
   begin
-    MessageDlg('Укажите минимум одного автора!',mtError,[mbOk],0);
-    Exit;
+    frmMain.SelectNextBook(FChanged,True);
+    FChanged := False;
   end;
-  if edT.Text='' then
+end;
+
+procedure TfrmEditBookInfo.Button2Click(Sender: TObject);
+begin
+  if SaveData then
   begin
-    MessageDlg('Укажите название книги!',mtError,[mbOk],0);
-    Exit;
+    frmMain.SelectNextBook(FChanged, False);
+    FChanged := False;
   end;
-  ModalResult:=mrOk;
+end;
+
+procedure TfrmEditBookInfo.edTChange(Sender: TObject);
+begin
+  FChanged := True;
 end;
 
 end.
