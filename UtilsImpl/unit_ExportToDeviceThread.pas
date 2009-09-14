@@ -70,7 +70,7 @@ uses
   frm_main,
   StrUtils,
   ShellAPI,
-  unit_MHLHelpers;
+  unit_MHLHelpers, unit_WriteFb2Info;
 
 { TExportToDeviceThread }
 
@@ -211,7 +211,8 @@ begin
       fs.Free;
     end;
   end;
-  
+  if dmCollection.tblBooks['Ext'] = '.fb2' then WriteFb2InfoToFile(FFileopRecord.SArch);
+
   Result := True;
 end;
 
