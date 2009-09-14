@@ -485,7 +485,7 @@ begin
   if Settings.Readers.Find(Ext) = nil then
     Exit;
 
-  if FLibrary.CheckFileInCollection(flFiles.LastDir + F.Name, Ext) then
+  if FLibrary.CheckFileInCollection(flFiles.LastDir + F.Name, Ext, True) then
     Exit;
 
 
