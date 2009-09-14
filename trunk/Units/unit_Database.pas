@@ -55,7 +55,7 @@ type
     //
     // Content management
     //
-    function CheckFileInCollection(const FileName: string; const Ext: string): Boolean;
+    function CheckFileInCollection(const FileName: string; const Ext: string; const IgnoreZip: boolean): Boolean;
 
     function InsertBook(BookRecord: TBookRecord; CheckFileName, FullCheck: boolean): Boolean;
     procedure DeleteBook(BookID: Integer);
@@ -449,6 +449,7 @@ begin
   FDatabase.DatabaseName := TEMP_DATABASE;
   FDatabase.MaxConnections := 5;
   FDatabase.PageSize := 65535;
+  FDatabase.PageCountInExtent := 16;
 
   FAuthors := TAbsTable.Create(FDatabase);
   FAuthors.TableName := 'Authors';
@@ -473,7 +474,6 @@ begin
 
   FExtra := TAbsTable.Create(FDatabase);
   FExtra.TableName := 'Extra';
-
 
 end;
 
@@ -514,17 +514,13 @@ end;
 class procedure TMHLLibrary.CreateSystemTables(const DBFile: string);
 var
   ADataBase: TAbsDataBase;
-
   Groups: TAbsTable;
-
 begin
   ADataBase := TAbsDataBase.Create(nil);
   try
     ADataBase.DatabaseFileName := DBFile;
     ADataBase.DatabaseName := USER_DATABASE;
     ADataBase.MaxConnections := 5;
-    ADataBase.PageSize := 65535;
-    ADataBase.PageCountInExtent := 16;
     ADataBase.CreateDatabase;
 
     CreateTable(ADataBase, 'Bases',        BasesTableFields,      BasesTableIndexes);
@@ -559,7 +555,7 @@ end;
 
 procedure TMHLLibrary.CreateCollectionTables(const DBFile: string; const GenresFileName: string);
 begin
-//  CheckInactive;
+  CheckInactive;
 
   DatabaseFileName := DBFile;
   FDatabase.CreateDatabase;
@@ -592,7 +588,6 @@ begin
   FSeries['S_GenreCode'] := '0';
   FSeries['S_AuthID'] := 0;
   FSeries.Post;
-
 
 end;
 
@@ -717,13 +712,13 @@ Warning!  В таком виде не работает при импорте не fb2!!!!
 //  Result := FBooks.Locate(IfThen(Ext = ZIP_EXTENSION, 'Folder', 'FileName'), FileName, [])
 //end;
 
-function TMHLLibrary.CheckFileInCollection(const FileName: string; const Ext: string): Boolean;
+function TMHLLibrary.CheckFileInCollection(const FileName: string; const Ext: string; const IgnoreZip: boolean): Boolean;
 var
   s: string;
 begin
   CheckActive;
 
-  if Ext = ZIP_EXTENSION then
+  if not IgnoreZip and (Ext = ZIP_EXTENSION) then
     Result := FBooks.Locate('Folder', FileName, [loCaseInsensitive])
   else
   begin

@@ -299,21 +299,28 @@ procedure TDMUser.RegisterCollection(
   Version: Integer;
   Notes, User, Password: string
   );
+var
+  ID : integer;
 begin
+  case CollectionType of
+        65536: ID := 10001;
+        65537: ID := 10002;
+    134283264: ID := 10003;
+    else
+      begin
+        Randomize;
+        ID := random(10000);
+        while tblBases.Locate('Id',ID,[]) do  // проверяем уникальность
+          ID := random(10000);
+      end;
+  end;
+
   tblBases.Insert;
+  tblBasesId.Value := ID;
   tblBasesName.Value := DisplayName;
   tblBasesRootFolder.Value := RootFolder;
   tblBasesDBFileName.Value := DBFileName;
   tblBasesCode.Value := CollectionType;
-
-  case CollectionType of
-        65536: tblBasesId.Value := 10001;
-        65537: tblBasesId.Value := 10002;
-    134283264: tblBasesId.Value := 10003;
-    else
-      tblBasesId.Value := random(10000);
-  end;
-
   tblBasesDate.Value := Now;
   tblBasesVersion.Value := Version;
   tblBasesAllowDelete.Value := AllowDelete;
@@ -321,6 +328,7 @@ begin
   tblBasesUser.Value := User;
   tblBasesPass.Value := Password;
   tblBases.Post;
+
 end;
 
 function TDMUser.ActivateCollection(CollectionID: Integer): Boolean;

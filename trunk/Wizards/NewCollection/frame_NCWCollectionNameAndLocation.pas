@@ -58,7 +58,8 @@ resourcestring
   SELECTFOLDER = 'Выберите папку с книгами';
 implementation
 
-uses unit_Helpers, unit_NCWParams, dm_user, DB, unit_Errors, unit_mhl_strings, unit_settings;
+uses unit_Helpers, unit_NCWParams, dm_user, DB, unit_Errors, unit_mhl_strings, unit_settings,
+  unit_Consts;
 
 {$R *.dfm}
 
@@ -149,7 +150,6 @@ end;
 procedure TframeNCWNameAndLocation.edCollectionFileChange(Sender: TObject);
 begin
   FPParams^.UseDefaultLocation := False;
-
   CheckControlData(Sender);
 end;
 
@@ -203,13 +203,14 @@ begin
       Exit;
     end;
 
-    if (FPParams^.Operation = otExisting) and not FileExists(strValue) then
+    if (FPParams^.Operation = otExisting) and not FileExists(strValue)  then
     begin
       ShowPageMessage(Format(rstrFileDoesntExists, [strValue]), 2);
       Exit;
     end;
 
-    if DMUser.FindCollectionWithProp(cpFileName, strValue) then
+    if DMUser.FindCollectionWithProp(cpFileName, strValue + COLLECTION_EXTENSION) or
+       DMUser.FindCollectionWithProp(cpFileName, Settings.DataPath + strValue + COLLECTION_EXTENSION) then
     begin
       ShowPageMessage(Format(rstrFileAlreadyExistsInDB, [strValue]), 2);
       Exit;
