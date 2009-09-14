@@ -302,10 +302,10 @@ procedure TDMUser.RegisterCollection(
 var
   ID : integer;
 begin
-  case CollectionType of
-        65536: ID := 10001;
-        65537: ID := 10002;
-    134283264: ID := 10003;
+  case CollectionType of    // предопределенные типы
+        65536: ID := 10001; // либрусек fb2
+        65537: ID := 10002; // либрусек не-fb2
+    134283264: ID := 10003; // либрусек on-line
     else
       begin
         Randomize;
@@ -314,6 +314,8 @@ begin
           ID := random(10000);
       end;
   end;
+
+  // регистрируем коллекцию
 
   tblBases.Insert;
   tblBasesId.Value := ID;

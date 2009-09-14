@@ -767,7 +767,7 @@ uses
   frm_NCWizard,
   DateUtils,
   idStack,
-  idException, frm_editor, unit_SearchUtils, frm_search;
+  idException, frm_editor, unit_SearchUtils, frm_search, unit_WriteFb2Info;
 
 resourcestring
   rstrFileNotFoundMsg = 'Файл %s не найден!'#13'Проверьте настройки коллекции!';
@@ -3398,6 +3398,9 @@ begin
     end
     else
       WorkFile := Panel.Folder + Panel.FileName;
+
+    if Ext = '.fb2' then WriteFb2InfoToFile(WorkFile);
+
     Settings.Readers.RunReader(WorkFile);
     Tree.RepaintNode(Tree.GetFirstSelected);
   finally
