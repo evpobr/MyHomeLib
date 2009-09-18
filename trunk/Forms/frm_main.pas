@@ -723,7 +723,7 @@ type
     procedure CreateGroupsMenu;
     procedure SaveMainFormSettings;
     procedure SavePositions;
-    procedure PrepareFb2EditData(var R: TBookRecord);
+    procedure PrepareFb2EditData(Data: PBookData; var R: TBookRecord);
     procedure SaveFb2DataAfterEdit(R: TBookRecord);
     property ActiveView: TView read GetActiveView;
   end;
@@ -3647,7 +3647,7 @@ begin
     Tree.Selected[NewNode] := True;
     Data := Tree.GetNodeData(NewNode);
   until Data.nodeType = ntBookInfo;
-  PrepareFb2EditData(FLastBookRecord);
+  PrepareFb2EditData(Data, FLastBookRecord);
 end;
 
 procedure TfrmMain.tbSelectAllClick(Sender: TObject);
@@ -4412,11 +4412,9 @@ begin
     Result := False;
 end;
 
-procedure TfrmMain.PrepareFb2EditData(var R: TBookRecord);
+procedure TfrmMain.PrepareFb2EditData(Data: PBookData; var R: TBookRecord);
 var
   Tree: TVirtualStringTree;
-  Data: PBookData;
-  Node: PVirtualNode;
   i: integer;
   Family: TListItem;
   ALibrary: TMHLLibrary;
@@ -4424,14 +4422,6 @@ var
   Genre: TGenreRecord;
 
 begin
-  GetActiveTree(Tree);
-  Node := Tree.GetFirstSelected;
-
-  Data := Tree.GetNodeData(Node);
-  if not Assigned(Data) or (Data.nodeType <> ntBookInfo) then
-    Exit;
-
-
 
   GetBookRecord(Data.ID, R);
   frmEditBookInfo.lvAuthors.Items.Clear;
@@ -4545,10 +4535,16 @@ begin
     Exit;
   end;
 
+  GetActiveTree(Tree);
+  Node := Tree.GetFirstSelected;
+  Data := Tree.GetNodeData(Node);
+  if not Assigned(Data) or (Data.nodeType <> ntBookInfo) then
+    Exit;
+
   if IsLibRusecEdit(Data.Id) then
     Exit;
 
-  PrepareFb2EditData(FLastBookRecord);
+  PrepareFb2EditData(Data, FLastBookRecord);
 
   if frmEditBookInfo.ShowModal = mrOk then
        SaveFb2DataAfterEdit(FLastBookRecord);

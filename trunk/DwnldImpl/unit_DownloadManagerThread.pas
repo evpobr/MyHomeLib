@@ -71,8 +71,12 @@ uses
 
 procedure TDownloadManagerThread.TerminateNow;
 begin
-  FidHTTP.Disconnect;
-  Terminate;
+  try
+    FidHTTP.Disconnect;
+    Terminate;
+  except
+    // подавляем ETreminate
+  end;
 end;
 
 procedure TDownloadManagerThread.Canceled;

@@ -7,27 +7,19 @@ inherited ImportProgressFormEx: TImportProgressFormEx
   Constraints.MinWidth = 300
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  ExplicitWidth = 450
-  ExplicitHeight = 402
   PixelsPerInch = 96
   TextHeight = 13
   inherited txtComment: TLabel
     Width = 416
-    ExplicitWidth = 345
   end
   inherited ProgressBar: TProgressBar
     Width = 422
     TabOrder = 1
-    ExplicitLeft = 10
-    ExplicitTop = 29
-    ExplicitWidth = 422
   end
   inherited btnCancel: TButton
     Left = 354
     Top = 333
     TabOrder = 0
-    ExplicitLeft = 354
-    ExplicitTop = 333
   end
   object errorLog: TListView
     Left = 10

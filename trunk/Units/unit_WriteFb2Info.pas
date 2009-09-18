@@ -38,10 +38,10 @@ var
 
   XML: TXmlDocument;
 begin
-  DMCollection.GetCurrentBook(R);
-
-  XML := TXmlDocument.Create(FileName);
   try
+    DMCollection.GetCurrentBook(R);
+
+    XML := TXmlDocument.Create(FileName);
     XML.Active := True;
     book := GetFictionBook(XML);
 
