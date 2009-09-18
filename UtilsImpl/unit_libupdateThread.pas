@@ -101,6 +101,7 @@ end;
 procedure TLibUpdateThread.HTTPWorkBegin(ASender: TObject;
   AWorkMode: TWorkMode; AWorkCountMax: Int64);
 begin
+  SetComment('Подключение к серверу ...');
   FDownloadSize := AWorkCountMax;
   FStartDate := Now;
   SetProgress(0);
@@ -154,6 +155,13 @@ begin
       else
         Teletype('Обновление из локального архива',tsInfo);
 
+      if Canceled then
+      begin
+        DeleteFile(Settings.WorkPath + Settings.Updates.Items[i].FileName);
+        Teletype('Операция отменена пользователем.',tsInfo);
+        Exit;
+      end;
+
       InpxFileName := Settings.WorkPath + FileName;
 
       DBFileName := DMUser.ActiveCollection.DBFileName;
@@ -180,16 +188,14 @@ begin
       end; //if FULL
 
       //  импортирум данные
-      Teletype('Импорт ...',tsInfo);
+      Teletype('Импорт данных в коллекцию:',tsInfo);
 
       Import(not Full);
       DMUser.ActiveCollection.Version := GetLibUpdateVersion(True);
       Teletype(rstrReady,tsInfo);
     end; //for .. with
 
-  Teletype(rstrUpdateComplete,tsInfo);
-
-  finally
+    Teletype(rstrUpdateComplete,tsInfo);
     for I := 0 to Settings.Updates.Count - 1 do
     with Settings.Updates.Items[i] do
       if FileExists(Settings.WorkPath + FileName) then
@@ -197,9 +203,9 @@ begin
           DeleteFile(Settings.WorkPath + FileName)
         else
           ReplaceFiles;
+     SetComment(rstrReady);
+  finally
   end;
-
-  SetComment(rstrReady);
 end;
 
 end.
