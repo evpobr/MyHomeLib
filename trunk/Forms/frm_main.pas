@@ -5319,11 +5319,11 @@ begin
         finally
           Zip.Free;
         end;
-      end
-        else
-          if not NoFb2Info then
-            FS.LoadFromFile(CR + Table['FileName'] + Table['Ext']);
       end;
+    end
+    else
+      if not NoFb2Info then
+            FS.LoadFromFile(CR + Table['FileName'] + Table['Ext']);
 
       if not NoFb2Info then
       begin
