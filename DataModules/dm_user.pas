@@ -310,10 +310,10 @@ begin
       begin
         Randomize;
         ID := random(10000);
-        while tblBases.Locate('Id',ID,[]) do  // проверяем уникальность
-          ID := random(10000);
       end;
   end;
+  while tblBases.Locate('Id',ID,[]) do  // проверяем уникальность
+          ID := random(10000);
 
   // регистрируем коллекцию
 
