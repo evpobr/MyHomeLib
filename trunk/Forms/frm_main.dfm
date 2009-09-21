@@ -3,7 +3,7 @@ object frmMain: TfrmMain
   Top = 0
   HelpContext = 2
   Caption = 'MyHomeLib'
-  ClientHeight = 867
+  ClientHeight = 887
   ClientWidth = 942
   Color = clBtnFace
   Constraints.MinHeight = 700
@@ -164,7 +164,7 @@ object frmMain: TfrmMain
   end
   object StatusBar: TRzStatusBar
     Left = 0
-    Top = 848
+    Top = 868
     Width = 942
     Height = 19
     BorderInner = fsNone
@@ -420,11 +420,11 @@ object frmMain: TfrmMain
     Left = 0
     Top = 144
     Width = 942
-    Height = 704
+    Height = 724
     HelpContext = 1
-    ActivePage = TabSheet7
+    ActivePage = TabSheet1
     Align = alClient
-    TabIndex = 5
+    TabIndex = 0
     TabOrder = 3
     TabStop = False
     OnChange = pgControlChange
@@ -436,7 +436,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 938
-        Height = 681
+        Height = 701
         MarginMin = 150
         Position = 228
         Percent = 24
@@ -448,7 +448,7 @@ object frmMain: TfrmMain
           228
           0
           234
-          681)
+          701)
         UpperLeftControls = (
           RzPanel13)
         LowerRightControls = (
@@ -459,7 +459,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 224
-          Height = 675
+          Height = 695
           Margins.Right = 1
           Align = alClient
           BorderOuter = fsFlatRounded
@@ -469,7 +469,7 @@ object frmMain: TfrmMain
             Left = 5
             Top = 52
             Width = 214
-            Height = 618
+            Height = 638
             Align = alClient
             CheckImageKind = ckXP
             Colors.UnfocusedSelectionColor = clHighlight
@@ -557,7 +557,7 @@ object frmMain: TfrmMain
           Left = 451
           Top = 3
           Width = 250
-          Height = 675
+          Height = 695
           Margins.Left = 0
           ParentCustomHint = False
           Align = alRight
@@ -583,7 +583,7 @@ object frmMain: TfrmMain
           Left = 0
           Top = 3
           Width = 451
-          Height = 675
+          Height = 695
           Margins.Left = 0
           Margins.Right = 0
           Align = alClient
@@ -594,7 +594,7 @@ object frmMain: TfrmMain
             Left = 5
             Top = 5
             Width = 441
-            Height = 559
+            Height = 579
             Align = alClient
             BorderOuter = fsNone
             TabOrder = 0
@@ -644,7 +644,7 @@ object frmMain: TfrmMain
               Left = 0
               Top = 31
               Width = 441
-              Height = 528
+              Height = 548
               Align = alClient
               BorderOuter = fsNone
               TabOrder = 1
@@ -652,7 +652,7 @@ object frmMain: TfrmMain
                 Left = 0
                 Top = 0
                 Width = 441
-                Height = 528
+                Height = 548
                 Align = alClient
                 CheckImageKind = ckXP
                 ClipboardFormats.Strings = (
@@ -775,7 +775,7 @@ object frmMain: TfrmMain
           object ipnlAuthors: TMHLInfoPanel
             AlignWithMargins = True
             Left = 5
-            Top = 570
+            Top = 590
             Width = 441
             Height = 100
             Align = alBottom
@@ -798,7 +798,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 938
-        Height = 681
+        Height = 701
         MarginMin = 150
         Position = 247
         Percent = 26
@@ -809,7 +809,7 @@ object frmMain: TfrmMain
           247
           0
           252
-          681)
+          701)
         UpperLeftControls = (
           RzPanel1)
         LowerRightControls = (
@@ -820,7 +820,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 241
-          Height = 675
+          Height = 695
           Align = alClient
           BorderOuter = fsFlatRounded
           TabOrder = 0
@@ -829,7 +829,7 @@ object frmMain: TfrmMain
             Left = 5
             Top = 52
             Width = 231
-            Height = 618
+            Height = 638
             Align = alClient
             CheckImageKind = ckXP
             Colors.UnfocusedSelectionColor = clHighlight
@@ -910,7 +910,7 @@ object frmMain: TfrmMain
           Left = 433
           Top = 3
           Width = 250
-          Height = 675
+          Height = 695
           Margins.Left = 0
           Align = alRight
           BorderOuter = fsFlatRounded
@@ -933,7 +933,7 @@ object frmMain: TfrmMain
           Left = 0
           Top = 3
           Width = 433
-          Height = 675
+          Height = 695
           Margins.Left = 0
           Margins.Right = 0
           Align = alClient
@@ -944,7 +944,7 @@ object frmMain: TfrmMain
             Left = 5
             Top = 5
             Width = 423
-            Height = 559
+            Height = 579
             Align = alClient
             BorderOuter = fsNone
             TabOrder = 0
@@ -995,7 +995,7 @@ object frmMain: TfrmMain
               Left = 0
               Top = 31
               Width = 423
-              Height = 528
+              Height = 548
               Align = alClient
               BevelInner = bvNone
               BevelOuter = bvNone
@@ -1141,7 +1141,7 @@ object frmMain: TfrmMain
           object ipnlSeries: TMHLInfoPanel
             AlignWithMargins = True
             Left = 5
-            Top = 570
+            Top = 590
             Width = 423
             Height = 100
             Align = alBottom
@@ -1164,7 +1164,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 938
-        Height = 681
+        Height = 701
         MarginMin = 150
         Position = 258
         Percent = 28
@@ -1175,7 +1175,7 @@ object frmMain: TfrmMain
           258
           0
           260
-          681)
+          701)
         UpperLeftControls = (
           RzPanel25)
         LowerRightControls = (
@@ -1186,7 +1186,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 252
-          Height = 675
+          Height = 695
           Align = alClient
           BorderOuter = fsFlatRounded
           TabOrder = 0
@@ -1195,7 +1195,7 @@ object frmMain: TfrmMain
             Left = 5
             Top = 5
             Width = 242
-            Height = 665
+            Height = 685
             Align = alClient
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -1226,7 +1226,7 @@ object frmMain: TfrmMain
           Left = 425
           Top = 3
           Width = 250
-          Height = 675
+          Height = 695
           Margins.Left = 0
           Align = alRight
           BorderOuter = fsFlatRounded
@@ -1249,7 +1249,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 422
-          Height = 675
+          Height = 695
           Margins.Right = 0
           Align = alClient
           BorderOuter = fsFlatRounded
@@ -1259,7 +1259,7 @@ object frmMain: TfrmMain
             Left = 5
             Top = 36
             Width = 412
-            Height = 528
+            Height = 548
             Align = alClient
             BorderOuter = fsNone
             TabOrder = 0
@@ -1268,7 +1268,7 @@ object frmMain: TfrmMain
               Left = 0
               Top = 0
               Width = 412
-              Height = 528
+              Height = 548
               Align = alClient
               Alignment = taRightJustify
               BevelInner = bvNone
@@ -1446,7 +1446,7 @@ object frmMain: TfrmMain
           object ipnlGenres: TMHLInfoPanel
             AlignWithMargins = True
             Left = 5
-            Top = 570
+            Top = 590
             Width = 412
             Height = 100
             Align = alBottom
@@ -1469,7 +1469,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 938
-        Height = 681
+        Height = 701
         MarginMin = 100
         Position = 200
         Percent = 21
@@ -1481,7 +1481,7 @@ object frmMain: TfrmMain
           200
           0
           202
-          681)
+          701)
         UpperLeftControls = (
           CategoryPanelGroup1)
         LowerRightControls = (
@@ -1492,7 +1492,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 194
-          Height = 675
+          Height = 695
           VertScrollBar.Tracking = True
           Align = alClient
           BevelKind = bkTile
@@ -1817,7 +1817,7 @@ object frmMain: TfrmMain
           Left = 511
           Top = 3
           Width = 222
-          Height = 675
+          Height = 695
           Hint = '<b>'#1087#1088#1086#1074#1077#1088#1082#1072'</b>'#1093#1080#1085#1090#1086#1074
           Margins.Left = 0
           Align = alRight
@@ -1844,7 +1844,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 508
-          Height = 675
+          Height = 695
           Margins.Right = 0
           Align = alClient
           BorderOuter = fsFlatRounded
@@ -1854,7 +1854,7 @@ object frmMain: TfrmMain
             Left = 5
             Top = 49
             Width = 498
-            Height = 515
+            Height = 535
             Align = alClient
             BorderOuter = fsNone
             TabOrder = 0
@@ -1863,7 +1863,7 @@ object frmMain: TfrmMain
               Left = 0
               Top = 0
               Width = 498
-              Height = 515
+              Height = 535
               Align = alClient
               BevelInner = bvNone
               BevelOuter = bvNone
@@ -2013,7 +2013,7 @@ object frmMain: TfrmMain
           object ipnlSearch: TMHLInfoPanel
             AlignWithMargins = True
             Left = 5
-            Top = 570
+            Top = 590
             Width = 498
             Height = 100
             Align = alBottom
@@ -2222,7 +2222,7 @@ object frmMain: TfrmMain
         Left = 685
         Top = 3
         Width = 250
-        Height = 675
+        Height = 695
         Margins.Left = 0
         Align = alRight
         BorderOuter = fsFlatRounded
@@ -2231,7 +2231,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 0
@@ -2244,7 +2243,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 685
-        Height = 681
+        Height = 701
         Position = 239
         Percent = 35
         Align = alClient
@@ -2253,7 +2252,7 @@ object frmMain: TfrmMain
           239
           0
           243
-          681)
+          701)
         UpperLeftControls = (
           RzPanel7)
         LowerRightControls = (
@@ -2263,7 +2262,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 233
-          Height = 675
+          Height = 695
           Align = alClient
           BorderOuter = fsFlatRounded
           TabOrder = 0
@@ -2272,7 +2271,7 @@ object frmMain: TfrmMain
             Left = 5
             Top = 5
             Width = 223
-            Height = 630
+            Height = 650
             Align = alClient
             CheckImageKind = ckXP
             Colors.UnfocusedSelectionColor = clHighlight
@@ -2305,7 +2304,7 @@ object frmMain: TfrmMain
           object RzPanel8: TRzPanel
             AlignWithMargins = True
             Left = 5
-            Top = 641
+            Top = 661
             Width = 223
             Height = 29
             Align = alBottom
@@ -2438,7 +2437,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 439
-          Height = 675
+          Height = 695
           Margins.Right = 0
           Align = alClient
           BorderOuter = fsFlatRounded
@@ -2448,7 +2447,7 @@ object frmMain: TfrmMain
             Left = 5
             Top = 5
             Width = 429
-            Height = 559
+            Height = 579
             Align = alClient
             BorderOuter = fsNone
             TabOrder = 0
@@ -2458,7 +2457,7 @@ object frmMain: TfrmMain
               Left = 3
               Top = 34
               Width = 423
-              Height = 522
+              Height = 542
               Align = alClient
               BevelInner = bvNone
               BevelOuter = bvNone
@@ -2617,7 +2616,7 @@ object frmMain: TfrmMain
           object ipnlFavorites: TMHLInfoPanel
             AlignWithMargins = True
             Left = 5
-            Top = 570
+            Top = 590
             Width = 429
             Height = 100
             Align = alBottom
@@ -2682,7 +2681,7 @@ object frmMain: TfrmMain
         Left = 3
         Top = 3
         Width = 42
-        Height = 675
+        Height = 695
         Align = alLeft
         AutoStyle = False
         Images = ilDownloadToolBar
@@ -2809,7 +2808,7 @@ object frmMain: TfrmMain
         Left = 48
         Top = 0
         Width = 890
-        Height = 681
+        Height = 701
         Align = alClient
         BevelOuter = bvNone
         Caption = 'Panel1'
@@ -2817,7 +2816,7 @@ object frmMain: TfrmMain
         object RzPanel2: TRzPanel
           AlignWithMargins = True
           Left = 3
-          Top = 617
+          Top = 637
           Width = 884
           Height = 61
           Align = alBottom
@@ -2898,7 +2897,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 884
-          Height = 608
+          Height = 628
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
