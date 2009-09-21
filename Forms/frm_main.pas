@@ -3744,8 +3744,10 @@ begin
               // это относится ко всем последующим проверкам
               if Tree.Tag = 4 then
               begin
-                DMUser.ActivateCollection(TableB.FieldByName('DatabaseId').AsInteger);
-                CollectionName := DMUser.ActiveCollection.Name;
+                if DMUser.ActivateCollection(TableB.FieldByName('DatabaseId').AsInteger) then
+                  CollectionName := DMUser.ActiveCollection.Name
+                else
+                  CollectionName := 'неизвестная коллекция';
               end;
 
               if Tree.Tag <> 4 then
@@ -5590,6 +5592,12 @@ begin
           Settings.ActiveCollection := I;
           InitCollection(True);
           CreateCollectionMenu;
+        end
+        else
+        begin
+          Screen.Cursor := crDefault;
+          ShowMessage('Коллекция не зарегистрирована !');
+          Exit;
         end;
       end;
       DMUser.tblGrouppedBooks.Locate('ID', Data.ID, []);
