@@ -742,6 +742,7 @@ object frmSettings: TfrmSettings
           Top = 21
           Width = 369
           Height = 21
+          AutoComplete = False
           ItemHeight = 13
           TabOrder = 2
           Text = 'http://lib.rus.ec/'

@@ -549,7 +549,7 @@ begin
     FProxyPort := iniFile.ReadInteger(NETWORK_SECTION, 'proxy-port', 0);
     FUpdateURL := iniFile.ReadString(NETWORK_SECTION, 'update_server', 'http://home-lib.net/update/');
     FDownloadURL := iniFile.ReadString(NETWORK_SECTION, 'library_server', 'http://lib.rus.ec/');
-    FErrorLog := iniFile.ReadBool(NETWORK_SECTION,'use_error_log', true);
+    FErrorLog := iniFile.ReadBool(NETWORK_SECTION,'use_error_log', false);
     FTimeOut := iniFile.ReadInteger(NETWORK_SECTION,'time-out',5000);
     FReadTimeOut := iniFile.ReadInteger(NETWORK_SECTION,'read_time-out',50000);
     FDwnldInterval := iniFile.ReadInteger(NETWORK_SECTION,'dwnld_interval',0);

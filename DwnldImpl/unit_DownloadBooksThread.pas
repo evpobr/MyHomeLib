@@ -135,7 +135,7 @@ var
 begin
   if Settings.ErrorLog then
   begin
-    FileName := Settings.AppPath + 'download_errors.log';
+    FileName := Settings.WorkPath + 'download_errors.log';
     AssignFile(F, FileName);
     if FileExists(FileName) then
       Append(F)
@@ -143,8 +143,8 @@ begin
       Rewrite(F);
     Writeln(F, Format('%s %s >> %s', [DateTimeToStr(Now), ShortMsg, AFileName]));
     CloseFile(F);
-  end
-  else if not FIgnoreErrors then
+  end;
+  if not FIgnoreErrors then
     ShowMessage(LongMsg, MB_ICONERROR or MB_OK);
 end;
 
