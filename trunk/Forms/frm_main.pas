@@ -3332,7 +3332,7 @@ var
 
   fs: TMemoryStream;
   Zip: TZipForge;
-  I: integer;
+  Id,I: integer;
 
   FileName,Folder,Ext: string;
 
@@ -3367,24 +3367,28 @@ begin
           if not FileExists(Panel.Folder) then
             Exit;
         end;
-       end
-       else
-         if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
-         begin
-           DownloadBooks;
-           if not FileExists(Panel.Folder) then
-            Exit; // если файла нет, значит закачка не удалась, и юзер об  этом уже знает
-         end;
+        Id := DMUser.tblGrouppedBooksOuterId.Value;
+      end   // if ActiveView
+      else
+      begin
+        if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
+        begin
+          DownloadBooks;
+          if not FileExists(Panel.Folder) then
+              Exit; // если файла нет, значит закачка не удалась, и юзер об  этом уже знает
+
+        end;
+        Id := Data.ID;
+      end;  // if .. else
 
       if not FileExists(Panel.Folder) then
           raise EInvalidOp.Create('Архив ' + Panel.Folder + ' не найден!');
-
 
       dmCollection.GetBookFileName(Data.ID, FileName, Folder, Ext, No);
 
       WorkFile := Settings.ReadPath + Format('%s - %s.%d%s',
                                               [CheckSymbols(Panel.Author),
-                                               CheckSymbols(Panel.Title),Data.ID,Ext]);
+                                               CheckSymbols(Panel.Title),Id,Ext]);
 
       if not FileExists(WorkFile) then
       begin
@@ -4475,47 +4479,45 @@ begin
   if not Assigned(Data) or (Data.nodeType <> ntBookInfo) then
     Exit;
 
-    R.ClearAuthors;
+  R.ClearAuthors;
 
-    for I := 0 to frmEditBookInfo.lvAuthors.Items.Count - 1 do
+  for I := 0 to frmEditBookInfo.lvAuthors.Items.Count - 1 do
       R.AddAuthor(
         frmEditBookInfo.lvAuthors.Items[i].Caption,
         frmEditBookInfo.lvAuthors.Items[i].SubItems[0],
         frmEditBookInfo.lvAuthors.Items[i].SubItems[1]
         );
 
-    frmGenreTree.GetSelectedGenres(R);
-    R.Title := frmEditBookInfo.edT.Text;
-    R.Series := frmEditBookInfo.cbSeries.Text;
+  frmGenreTree.GetSelectedGenres(R);
+  R.Title := frmEditBookInfo.edT.Text;
+  R.Series := frmEditBookInfo.cbSeries.Text;
 
-    R.SeqNumber := Round(frmEditBookInfo.edSN.Value);
-    R.KeyWords := frmEditBookInfo.edKeyWords.Text;
-    R.Lang := frmEditBookInfo.cbLang.Text;
+  R.SeqNumber := Round(frmEditBookInfo.edSN.Value);
+  R.KeyWords := frmEditBookInfo.edKeyWords.Text;
+  R.Lang := frmEditBookInfo.cbLang.Text;
 
-    ALibrary := TMHLLibrary.Create(nil);
+  ALibrary := TMHLLibrary.Create(nil);
+  try
+    ALibrary.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
+    ALibrary.Active := True;
+
+    ALibrary.BeginBulkOperation;
     try
-      ALibrary.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
-      ALibrary.Active := True;
-
-      ALibrary.BeginBulkOperation;
-      try
-        ALibrary.DeleteBook(Data.ID);
-        ALibrary.InsertBook(R, False, False);
-
-        ALibrary.EndBulkOperation(True);
-      except
-        ALibrary.EndBulkOperation(False);
-      end;
-
-      Data.Title := frmEditBookInfo.edT.Text;
-      Data.Genre := frmEditBookInfo.lblGenre.Caption;
-      Data.No := Round(frmEditBookInfo.edSN.Value);
-      Data.Lang := frmEditBookInfo.cbLang.Text;
-      Tree.RepaintNode(Node);
-    finally
-      ALibrary.Free;
+      ALibrary.DeleteBook(Data.ID);
+      Data.ID := ALibrary.InsertBook(R, False, False);
+      ALibrary.EndBulkOperation(True);
+    except
+      ALibrary.EndBulkOperation(False);
     end;
 
+    Data.Title := frmEditBookInfo.edT.Text;
+    Data.Genre := frmEditBookInfo.lblGenre.Caption;
+    Data.No := Round(frmEditBookInfo.edSN.Value);
+    Data.Lang := frmEditBookInfo.cbLang.Text;
+    Tree.RepaintNode(Node);
+  finally
+    ALibrary.Free;
+  end;
 end;
 
 

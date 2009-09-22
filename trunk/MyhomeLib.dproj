@@ -7,7 +7,7 @@
 			<DCC_DependencyCheckOutputName>Release\Bin\MyhomeLib.exe</DCC_DependencyCheckOutputName>
 			<MainSource>MyhomeLib.dpr</MainSource>
 			<ProjectVersion>12.0</ProjectVersion>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
 			<Base>true</Base>
@@ -262,7 +262,7 @@
 						<VersionInfo Name="MajorVer">1</VersionInfo>
 						<VersionInfo Name="MinorVer">5</VersionInfo>
 						<VersionInfo Name="Release">2</VersionInfo>
-						<VersionInfo Name="Build">567</VersionInfo>
+						<VersionInfo Name="Build">568</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">True</VersionInfo>
 						<VersionInfo Name="Special">True</VersionInfo>
@@ -274,7 +274,7 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">MyHomeLib</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription">MyHomeLib</VersionInfoKeys>
-						<VersionInfoKeys Name="FileVersion">1.5.2.567</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">1.5.2.568</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName">MyHomeLib</VersionInfoKeys>
 						<VersionInfoKeys Name="LegalCopyright">Алексей Пеньков</VersionInfoKeys>
 						<VersionInfoKeys Name="LegalTrademarks">MyHomeLib</VersionInfoKeys>
