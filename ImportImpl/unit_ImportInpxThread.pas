@@ -371,7 +371,7 @@ begin
                   R.InsideNo := j;
                 end
               end;
-              if FLibrary.InsertBook(R, CheckFiles, False) then
+              if FLibrary.InsertBook(R, CheckFiles, False)<>0 then
                     Inc(filesProcessed);
               if (filesProcessed mod ProcessedItemThreshold) = 0 then
               begin
