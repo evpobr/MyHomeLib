@@ -29,6 +29,7 @@ uses
 
 
 type
+
   TMHLCoverPanel = class(TRzSizePanel)
   private
     { Private declarations }
@@ -36,7 +37,7 @@ type
     FText : TMemo;
     FInfo : TPanel;
 
-    FPublisher, FCity, FYear, FISBN, FDate, FVersion, FAuthor: TLabel;
+    FPublisher, FCity, FYear, FISBN, FDate, FVersion, FAuthor, FVerTitle: TLabel;
 
     Zip: TZipForge;
 
@@ -66,10 +67,10 @@ type
     procedure Set_Fb2InfoVisible(Value: boolean);
     procedure Set_FontSize(Value: integer);
 
-
   public
     constructor Create(AOwner: TComponent); override;
     procedure Clear;
+    procedure Resize; override;
 
     function Show(Folder, FileName: string; No: integer):boolean;
 
@@ -209,12 +210,12 @@ begin
   lbl.Alignment := taRightJustify;
 
 
-  lbl := TLabel.Create(FInfo);
-  lbl.Parent := FInfo;
-  lbl.Caption := 'Версия:';
-  lbl.Font.Style := [fsBold];
-  lbl.Tag := 6;
-  lbl.Top := 65; lbl.Left := 150;
+  FVerTitle := TLabel.Create(FInfo);
+  FVerTitle.Parent := FInfo;
+  FVerTitle.Caption := 'v. ';
+  FVerTitle.Font.Style := [fsBold];
+  FVerTitle.Tag := 6;
+  FVerTitle.Top := 65; FVerTitle.Left := Width - 70;
 
   lbl := TLabel.Create(FInfo);
   lbl.Parent := FInfo;
@@ -232,6 +233,7 @@ begin
   FPublisher.Parent := FInfo;
   FPublisher.Width := 180;
   FPublisher.Top := 0; FPublisher.Left := W + 10;
+  FPublisher.AutoSize := False;
 
   FCity := TLabel.Create(FInfo);
   FCity.Parent := FInfo;
@@ -251,15 +253,19 @@ begin
   FDate.Parent := FInfo;
   FDate.Width := 65;
   FDate.Top := 65; FDate.Left := W + 10;
+  FDate.AutoSize := False;
+
 
   FVersion := TLabel.Create(FInfo);
   FVersion.Parent := FInfo;
-  FVersion.Top := 65; FVersion.Left := 200;
+  FVersion.Top := 65; FVersion.Left := Width - 55;
 
   FAuthor := TLabel.Create(FInfo);
   FAuthor.Parent := FInfo;
-  FAuthor.Width := 180;
+  FAuthor.AutoSize := False;
+  FAuthor.Width := Width - W - 30;
   FAuthor.Top := 80; FAuthor.Left := W + 10;
+
 
   //--------------------------------------------
 
@@ -446,6 +452,16 @@ begin
     FText.SelLength := 0;
     MS.Free;
   end;
+end;
+
+procedure TMHLCoverPanel.Resize;
+begin
+  inherited;
+  FVersion.Left := Width - 47;
+  FVerTitle.Left := Width - 60;
+
+  FDate.Width := FVerTitle.Left - FDate.Left - 5;
+  FAuthor.Width := FInfo.Width - W - 17;
 end;
 
 end.
