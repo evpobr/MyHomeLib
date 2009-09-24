@@ -219,7 +219,6 @@ type
     RzPanel23: TRzPanel;
     tvBooksA: TVirtualStringTree;
     ipnlAuthors: TMHLInfoPanel;
-    cpCoverA: TMHLCoverPanel;
     pmHeaders: TPopupMenu;
     N3: TMenuItem;
     N4: TMenuItem;
@@ -390,6 +389,7 @@ type
     miFastBookSearch: TMenuItem;
     pmiSelectAll: TMenuItem;
     pbDownloadProgress: TRzProgressBar;
+    cpCoverA: TMHLCoverPanel;
 
     //
     // События формы
@@ -5912,6 +5912,11 @@ end;
 
 procedure TfrmMain.miCollectionExportClick(Sender: TObject);
 begin
+  if MessageDlg('Экспорт в xml работает в режиме совместимости со старыми версиями.'+#10#13 +
+                'Не все данные будут сохранены. Рекомендуется использовать экспорт в inpx.'+#10#13 +
+                'Продолжить?'
+                ,mtWarning,[mbYes,mbNo],0)=mrNo then Exit;
+
   DMUser.ActivateCollection(Settings.ActiveCollection);
   unit_Export.Export2XML;
 end;
