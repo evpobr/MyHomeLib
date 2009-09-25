@@ -450,7 +450,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           Width = 307
           Height = 21
           Color = clCream
-          ItemHeight = 0
+          ItemHeight = 13
           TabOrder = 1
         end
       end

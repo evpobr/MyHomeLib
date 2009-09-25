@@ -35,6 +35,10 @@ procedure ImportFB2ZIP(
   ACollection: TMHLCollection
   );
 
+procedure ImportFBD(
+  ACollection: TMHLCollection
+  );
+
 implementation
 
 uses
@@ -42,6 +46,7 @@ uses
   unit_ImportXMLThread,
   frm_ImportProgressForm,
   unit_ImportFB2Thread,
+  unit_ImportFBDThread,
   frm_ImportProgressFormEx,
   unit_ImportFB2ZIPThread,
   unit_Helpers;
@@ -84,6 +89,29 @@ var
   frmProgress: TImportProgressFormEx;
 begin
   worker := TImportFB2Thread.Create;
+  try
+    worker.DBFileName := ACollection.DBFileName;
+    frmProgress := TImportProgressFormEx.Create(Application);
+    try
+      frmProgress.WorkerThread := worker;
+      frmProgress.btnSaveLog.Visible := True;
+      frmProgress.ShowModal;
+    finally
+      frmProgress.Free;
+    end;
+  finally
+    worker.Free;
+  end;
+end;
+
+procedure ImportFBD(
+  ACollection: TMHLCollection
+  );
+var
+  worker: TImportFBDThread;
+  frmProgress: TImportProgressFormEx;
+begin
+  worker := TImportFBDThread.Create;
   try
     worker.DBFileName := ACollection.DBFileName;
     frmProgress := TImportProgressFormEx.Create(Application);

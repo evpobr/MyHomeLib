@@ -390,6 +390,7 @@ type
     pmiSelectAll: TMenuItem;
     pbDownloadProgress: TRzProgressBar;
     cpCoverA: TMHLCoverPanel;
+    miFBDImport: TMenuItem;
 
     //
     // События формы
@@ -596,6 +597,7 @@ type
     procedure miDeleteFilesClick(Sender: TObject);
     procedure miFastBookSearchClick(Sender: TObject);
     procedure pmiSelectAllClick(Sender: TObject);
+    procedure miFBDImportClick(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -1271,7 +1273,6 @@ begin
       if (dmCollection.sqlBooks.SQL.Count)=0 then
             raise Exception.Create('Проверьте параметры фильтра');
 
-
       {$IFDEF DEBUG}
       dmCollection.sqlBooks.SQL.SaveToFile(Settings.AppPath + 'Last.sql');
       {$ENDIF}
@@ -1475,10 +1476,11 @@ begin
   miFb2ZipImport.Visible := (IsPrivate and IsFB2) or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
   miFb2Import.Visible := (IsPrivate and IsFB2) or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
   miPdfdjvu.Visible := IsPrivate and IsNonFB2;
+  miFBDImport.Visible := IsPrivate and IsNonFB2;
 
   TabSheet7.TabVisible := IsOnline;
 
-  tbtnShowCover.Visible := not IsNonFB2 or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
+//  tbtnShowCover.Visible := not IsNonFB2 or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
 
   miBookInfo.Visible := IsFB2;
 
@@ -1519,9 +1521,11 @@ begin
       edLocateAuthor.Text := '';
     end;
 
-  SetCoversVisible((not IsNonFB2 and Settings.ShowInfoPanel)
-                   or (Settings.AllowMixed and Settings.ShowInfoPanel));
-    
+//  SetCoversVisible((not IsNonFB2 and Settings.ShowInfoPanel)
+//                   or (Settings.AllowMixed and Settings.ShowInfoPanel));
+
+  if IsNonFB2 and not IsPrivate then SetCoversVisible(false)
+    else SetCoversVisible(Settings.ShowInfoPanel);
 
   SetAuthorsShowLocalOnly;
   SetSeriesShowLocalOnly;
@@ -3337,10 +3341,7 @@ var
   FileName,Folder,Ext: string;
 
 begin
-
-
   GetActiveViewComponents(Tree,Panel,Cover);
-
   Data := Tree.GetNodeData(Tree.GetFirstSelected);
   if (not Assigned(Data)) then
     Exit;
@@ -3352,7 +3353,6 @@ begin
   end;
 
   Screen.Cursor := crHourGlass;
-
   try
     if ExtractFileExt(Panel.Folder) = ZIP_EXTENSION then
     begin
@@ -3407,7 +3407,35 @@ begin
       end; // if Exists
     end
     else
-      WorkFile := Panel.Folder + Panel.FileName;
+      if ExtractFileExt(Panel.FileName) = ZIP_EXTENSION then
+      begin
+        dmCollection.GetBookFileName(Data.ID, FileName, Folder, Ext, No);
+
+        WorkFile := Settings.ReadPath + Format('%s - %s.%d%s',
+                                              [CheckSymbols(Panel.Author),
+                                               CheckSymbols(Panel.Title),Id,Ext]);
+
+        if not FileExists(WorkFile) then
+        begin
+          Zip := TZipForge.Create(nil);
+          FS := TMemoryStream.Create;
+          try
+            Zip.FileName := Panel.Folder + Panel.FileName;
+            Zip.BaseDir := Settings.ReadPath;
+            Zip.OpenArchive;
+            WorkFile := GetFileNameZip(Zip,No);
+            Zip.ExtractToStream(WorkFile,FS);
+            WorkFile := Settings.ReadPath + WorkFile;
+            fs.SaveToFile(WorkFile);
+          finally
+            FS.Free;
+            Zip.Free;
+          end;
+        end; // if Exists
+
+      end
+      else
+        WorkFile := Panel.Folder + Panel.FileName;
 
     if Ext = '.fb2' then WriteFb2InfoToFile(WorkFile);
 
@@ -3555,9 +3583,11 @@ var
 begin
   Settings.ShowInfoPanel := not Settings.ShowInfoPanel;
 
-  Visible := (Settings.ShowInfoPanel and not isNonFb2Collection(DMUser.ActiveCollection.CollectionType)
-             or (Settings.ShowInfoPanel and isNonFB2Collection(DMUser.ActiveCollection.CollectionType)
-                 and Settings.AllowMixed));
+//  Visible := (Settings.ShowInfoPanel and not isNonFb2Collection(DMUser.ActiveCollection.CollectionType)
+//             or (Settings.ShowInfoPanel and isNonFB2Collection(DMUser.ActiveCollection.CollectionType)
+//                 and Settings.AllowMixed));
+
+  Visible :=  Settings.ShowInfoPanel;
 
   SetCoversVisible(Visible);
   if Visible then
@@ -4794,6 +4824,16 @@ begin
   dmCollection.DBCollection.Connected := False;
 
   unit_Import.ImportFB2ZIP(DMUser.ActiveCollection);
+
+  InitCollection(True);
+end;
+
+procedure TfrmMain.miFBDImportClick(Sender: TObject);
+begin
+  DMUser.ActivateCollection(Settings.ActiveCollection);
+  dmCollection.DBCollection.Connected := False;
+
+  unit_Import.ImportFBD(DMUser.ActiveCollection);
 
   InitCollection(True);
 end;

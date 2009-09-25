@@ -23,6 +23,7 @@ type
     Image1: TImage;
     lblState: TRzLabel;
     RzLabel1: TRzLabel;
+    RzLabel2: TRzLabel;
   private
     { Private declarations }
   public
