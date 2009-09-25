@@ -120,7 +120,7 @@
 			<DCCReference Include="ImportImpl\frm_ImportProgressForm.pas">
 				<Form>ImportProgressForm</Form>
 			</DCCReference>
-			<DCCReference Include="ImportImpl\unit_ImportFB2Thread.pas"/>
+			<DCCReference Include="ImportImpl\unit_ImportFBDThread.pas"/>
 			<DCCReference Include="Units\unit_Helpers.pas"/>
 			<DCCReference Include="ImportImpl\frm_ImportProgressFormEx.pas">
 				<Form>ImportProgressFormEx</Form>
@@ -225,6 +225,7 @@
 			</DCCReference>
 			<DCCReference Include="Units\unit_ReviewParser.pas"/>
 			<DCCReference Include="Units\unit_WriteFb2Info.pas"/>
+			<DCCReference Include="ImportImpl\unit_ImportFB2Thread.pas"/>
 			<RcItem Include="Resources\Images\16x16\star_small.png">
 				<ResourceType>RCData</ResourceType>
 				<ResourceId>smallStar</ResourceId>
@@ -261,8 +262,8 @@
 						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
 						<VersionInfo Name="MajorVer">1</VersionInfo>
 						<VersionInfo Name="MinorVer">5</VersionInfo>
-						<VersionInfo Name="Release">2</VersionInfo>
-						<VersionInfo Name="Build">570</VersionInfo>
+						<VersionInfo Name="Release">3</VersionInfo>
+						<VersionInfo Name="Build">571</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">True</VersionInfo>
 						<VersionInfo Name="Special">True</VersionInfo>
@@ -274,7 +275,7 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">MyHomeLib</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription">MyHomeLib</VersionInfoKeys>
-						<VersionInfoKeys Name="FileVersion">1.5.2.570</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">1.5.3.571</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName">MyHomeLib</VersionInfoKeys>
 						<VersionInfoKeys Name="LegalCopyright">Алексей Пеньков</VersionInfoKeys>
 						<VersionInfoKeys Name="LegalTrademarks">MyHomeLib</VersionInfoKeys>

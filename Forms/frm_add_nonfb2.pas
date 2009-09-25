@@ -471,12 +471,17 @@ begin
   Ext := ExtractFileExt(F.Name);
   if Ext = '' then Exit;
 
-
  //
  // ѕропустим fb2-документы
  //
  if CompareText(Ext, FB2_EXTENSION) = 0 then
       Exit;
+
+  // провер€ем FBD: внешнее расширение zip и дл€ внутреннего есть ридер
+//  if (CompareText(Ext, ZIP_EXTENSION) = 0) and
+//     (Settings.Readers.Find(ExtractFileExt(ExtractFileName(F.Name)))<> nil)
+//    then
+//      Exit;
 
   //
   // ѕроверим, есть ли у нас ридер дл€ этого документа

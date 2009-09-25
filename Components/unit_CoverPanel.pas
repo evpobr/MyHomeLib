@@ -321,6 +321,8 @@ begin
 end;
 
 function TMHLCoverPanel.UnPack(var FS: TMemoryStream): boolean;
+var
+  S : string;
 begin
   Result := False;
   if ExtractFileExt(FFolder) = '.zip' then
@@ -335,20 +337,41 @@ begin
     try
       Zip.FileName := FFolder;
       Zip.OpenArchive;
-      Zip.ExtractToStream(GetFileNameZip(Zip,FNo),FS);
-      Result := True;
+      s := GetFileNameZip(Zip,FNo);
+      if ExtractFileExt(S) = '.fb2' then
+      begin
+        Zip.ExtractToStream(s,FS);
+        Result := True;
+      end;
     finally
       FOnProgress := False;
       Zip.Free;
     end;
   end
   else
-    try
-      FS.LoadFromFile(FFolder + FFile);
-      Result := True;
-    finally
-      FOnProgress := False;
-    end;
+    if ExtractFileExt(FFile) = '.zip' then
+    begin
+
+      Zip := TZipForge.Create(nil);
+      try
+        Zip.FileName := FFolder + FFile;
+        Zip.OpenArchive;
+        s := ChangeFileExt(GetFileNameZip(Zip,FNo),'.fbd');
+        Zip.ExtractToStream(S,FS);
+        Result := True;
+      finally
+        FOnProgress := False;
+        Zip.Free;
+      end;
+    end
+    else
+      if ExtractFileExt(FFile) = '.fb2' then
+      try
+        FS.LoadFromFile(FFolder + FFile);
+        Result := True;
+      finally
+        FOnProgress := False;
+      end;
 end;
 
 procedure TMHLCoverPanel.ShowEmptyCover;

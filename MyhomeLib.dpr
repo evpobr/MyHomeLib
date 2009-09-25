@@ -56,7 +56,7 @@ uses
   unit_Import in 'ImportImpl\unit_Import.pas',
   frm_BaseProgressForm in 'ImportImpl\frm_BaseProgressForm.pas' {ProgressFormBase},
   frm_ImportProgressForm in 'ImportImpl\frm_ImportProgressForm.pas' {ImportProgressForm},
-  unit_ImportFB2Thread in 'ImportImpl\unit_ImportFB2Thread.pas',
+  unit_ImportFBDThread in 'ImportImpl\unit_ImportFBDThread.pas',
   unit_Helpers in 'Units\unit_Helpers.pas',
   frm_ImportProgressFormEx in 'ImportImpl\frm_ImportProgressFormEx.pas' {ImportProgressFormEx},
   unit_ImportFB2ThreadBase in 'ImportImpl\unit_ImportFB2ThreadBase.pas',
@@ -103,7 +103,8 @@ uses
   htmlhlp in 'Units\htmlhlp.pas',
   frm_search in 'Forms\frm_search.pas' {frmBookSearch},
   unit_ReviewParser in 'Units\unit_ReviewParser.pas',
-  unit_WriteFb2Info in 'Units\unit_WriteFb2Info.pas';
+  unit_WriteFb2Info in 'Units\unit_WriteFb2Info.pas',
+  unit_ImportFB2Thread in 'ImportImpl\unit_ImportFB2Thread.pas';
 
 {$R *.res}
 
