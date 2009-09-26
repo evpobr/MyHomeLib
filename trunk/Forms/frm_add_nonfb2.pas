@@ -490,7 +490,7 @@ begin
 
 
   FullName := ExtractRelativePath(FRootPath, flFiles.LastDir + F.Name);
-  FileName := Copy(F.Name,1,Length(F.Name)-Length(Ext));
+  FileName := ExtractShortFileName(FileName);
 
   Path := ExtractRelativePath(FRootPath, flFiles.LastDir);
   ParentNode := FindParentInTree(Tree,Path);
