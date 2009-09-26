@@ -155,7 +155,7 @@ function ExecAndWait(const FileName,Params: String; const WinState: Word): boole
 
 //function GetFileNameZip(Zip: TZipForge; No: integer): string;
 function CleanExtension(const Ext: string): string;
-
+function ExtractShortFileName(FileName: string):string;
 
 function TestArchive(FileName: string): boolean;
 
@@ -1024,6 +1024,13 @@ begin
   end;
 end;
 
+function ExtractShortFileName(FileName: string):string;
+var
+  Ext: string;
+begin
+  Ext := ExtractFileExt(FileName);
+  Result := Copy(FileName,1,Length(FileName)-Length(Ext));
+end;
 
 end.
 

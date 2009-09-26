@@ -150,7 +150,7 @@ begin
             //
             // Исследование мира осознанных сновидений
             //
-            R.FileName := Copy(AFileName, 1, Length(AFileName) - Length(R.FileExt));
+            R.FileName := ExtractShortFilename(AFileName);
 
             R.Size := ArchiveItem.UncompressedSize;
 

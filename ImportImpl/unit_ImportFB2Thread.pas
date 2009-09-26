@@ -57,7 +57,7 @@ begin
       { TODO -oNickR -cRefactoring : Переписать. Для начала необходимо разобраться с использование поля Books.Folder }
       FileName := FullName;
 
-      FileName := Copy(F.Name, 1, Length(F.Name) - Length(FB2_EXTENSION));
+      FileName := ExtractShortFilename(F.Name);
       if FLibrary.CheckFileInCollection(FileName, False, False) then
         Exit;
     end;
@@ -115,7 +115,7 @@ begin
     // Исследование мира осознанных сновидений
     //
     AFileName := ExtractFileName(AFileName);
-    R.FileName := Copy(AFileName, 1, Length(AFileName) - Length(R.FileExt));
+    R.FileName := ExtractShortFilename(AFileName);
     R.Size := unit_Helpers.GetFileSize(FRootPath + FFiles[i]);
     R.Date := Now;
     try

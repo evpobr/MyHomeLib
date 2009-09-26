@@ -728,10 +728,7 @@ begin
     if  Full then
       s := FileName
     else
-    begin
-      s := ExtractFileName(FileName);
-      Delete(s, Length(s) - Length(Ext) + 1, Length(Ext));
-    end;
+      s := ExtractShortFileName(FileName);
     Result := FBooks.Locate('FileName',s, [loCaseInsensitive]);
   end;
 end;

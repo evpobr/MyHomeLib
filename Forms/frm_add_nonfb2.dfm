@@ -450,7 +450,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           Width = 307
           Height = 21
           Color = clCream
-          ItemHeight = 13
+          ItemHeight = 0
           TabOrder = 1
         end
       end
@@ -501,7 +501,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           Margins.Left = 5
           Margins.Right = 5
           Color = clCream
-          ItemHeight = 13
+          ItemHeight = 0
           TabOrder = 0
           Text = #1042#1089#1077
           Items.Strings = (
@@ -542,7 +542,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           Top = 18
           Width = 66
           Height = 21
-          ItemHeight = 13
+          ItemHeight = 0
           TabOrder = 0
           Items.Strings = (
             'be'
