@@ -55,7 +55,7 @@ type
     //
     // Content management
     //
-    function CheckFileInCollection(const FileName: string; const Ext: string; const IgnoreZip: boolean): Boolean;
+    function CheckFileInCollection(const FileName: string; const Full: boolean; const IgnoreZip: boolean): Boolean;
 
     function InsertBook(BookRecord: TBookRecord; CheckFileName, FullCheck: boolean): integer;
     procedure DeleteBook(BookID: Integer);
@@ -712,19 +712,27 @@ Warning!  В таком виде не работает при импорте не fb2!!!!
 //  Result := FBooks.Locate(IfThen(Ext = ZIP_EXTENSION, 'Folder', 'FileName'), FileName, [])
 //end;
 
-function TMHLLibrary.CheckFileInCollection(const FileName: string; const Ext: string; const IgnoreZip: boolean): Boolean;
+function TMHLLibrary.CheckFileInCollection(const FileName: string; const Full: boolean; const IgnoreZip: boolean): Boolean;
 var
   s: string;
+  ext : string;
 begin
   CheckActive;
+
+  ext := ExtractFileExt(FileName);
 
   if not IgnoreZip and (Ext = ZIP_EXTENSION) then
     Result := FBooks.Locate('Folder', FileName, [loCaseInsensitive])
   else
   begin
-    s := ExtractFileName(FileName);
-    s := Copy(s, 1, Length(s) - Length(Ext));
-    Result := FBooks.Locate('FileName', s, [loCaseInsensitive]);
+    if  Full then
+      s := FileName
+    else
+    begin
+      s := ExtractFileName(FileName);
+      Delete(s, Length(s) - Length(Ext) + 1, Length(Ext));
+    end;
+    Result := FBooks.Locate('FileName',s, [loCaseInsensitive]);
   end;
 end;
 

@@ -64,7 +64,7 @@ begin
     if FCheckExistsFiles then
     begin
       { TODO -oNickR -cRefactoring : Переписать. Для начала необходимо разобраться с использование поля Books.Folder }
-      if FLibrary.CheckFileInCollection(FullName, ZIP_EXTENSION, False) then
+      if FLibrary.CheckFileInCollection(FullName, False, False) then
         Exit;
     end;
 

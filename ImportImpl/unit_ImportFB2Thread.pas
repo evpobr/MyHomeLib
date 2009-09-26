@@ -58,7 +58,7 @@ begin
       FileName := FullName;
 
       FileName := Copy(F.Name, 1, Length(F.Name) - Length(FB2_EXTENSION));
-      if FLibrary.CheckFileInCollection(FileName, FB2_EXTENSION, False) then
+      if FLibrary.CheckFileInCollection(FileName, False, False) then
         Exit;
     end;
 

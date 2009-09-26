@@ -472,16 +472,11 @@ begin
   if Ext = '' then Exit;
 
  //
- // ѕропустим fb2-документы
+ // ѕропустим fb2-документы и зипы
  //
- if CompareText(Ext, FB2_EXTENSION) = 0 then
+ if (CompareText(Ext, FB2_EXTENSION) = 0) or (CompareText(Ext, ZIP_EXTENSION) = 0) then
       Exit;
 
-  // провер€ем FBD: внешнее расширение zip и дл€ внутреннего есть ридер
-//  if (CompareText(Ext, ZIP_EXTENSION) = 0) and
-//     (Settings.Readers.Find(ExtractFileExt(ExtractFileName(F.Name)))<> nil)
-//    then
-//      Exit;
 
   //
   // ѕроверим, есть ли у нас ридер дл€ этого документа
@@ -490,7 +485,7 @@ begin
   if Settings.Readers.Find(Ext) = nil then
     Exit;
 
-  if FLibrary.CheckFileInCollection(flFiles.LastDir + F.Name, Ext, True) then
+  if FLibrary.CheckFileInCollection(flFiles.LastDir + F.Name, False, True) then
     Exit;
 
 
