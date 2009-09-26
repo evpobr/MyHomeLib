@@ -326,12 +326,10 @@ procedure TDMCollection.GetBookFileName(ID: integer; out AFile:string;
 begin
   FActiveTable.Locate('ID', ID, []);
   AExt := FActiveTable.FieldByName('Ext').AsString;
-//  AFile := FActiveTable.FieldByName('FileName').AsString + AExt;
   AFile := FActiveTable.FieldByName('FileName').AsString;
-  if ExtractFileExt(AFile) <> AExt   then
-     AFile := AFile + AExt
-  else
-     AFile := AFile  + ZIP_EXTENSION;
+
+  if ExtractFileExt(AFile) <> ZIP_EXTENSION   then  // могут быть проблемы!
+     AFile := AFile + AExt;
 
   AFolder := FActiveTable.FieldByName('Folder').AsString;
   ANo := FActiveTable.FieldByName('InsideNo').AsInteger;
