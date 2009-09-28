@@ -303,6 +303,7 @@ begin
   if (Not Visible) or FOnProgress then Exit;
 
   FOnProgress := true;
+  Result := False;
   Clear;
 
   FFolder := Folder;
@@ -312,7 +313,10 @@ begin
   FS := TMemoryStream.Create;
   try
     if UnPack(FS) then
-      GetFb2Info(FS)
+    begin
+      GetFb2Info(FS);
+      Result := True;
+    end
     else
       FOnProgress := False;
   finally
@@ -398,13 +402,10 @@ begin
     try
       MS := TMemoryStream.Create;
       FBook := LoadFictionBook(FS);
-      CoverID := FBook.Description.Titleinfo.Coverpage.XML;
-      p := pos('"#', CoverID);
-      if p <> 0 then
+      if FBook.Description.Titleinfo.Coverpage.Count > 0 then
       begin
-        Delete(CoverId, 1, p + 1);
-        p := pos('"', CoverID);
-        CoverID := Copy(CoverID, 1, p - 1);
+        CoverID := FBook.Description.Titleinfo.Coverpage.ImageList[0].xlinkHref;
+        Delete(CoverID,1,1);
         for i := 0 to FBook.Binary.Count - 1 do
         begin
           if FBook.Binary.Items[i].Id = CoverID then
