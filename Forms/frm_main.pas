@@ -391,6 +391,7 @@ type
     pbDownloadProgress: TRzProgressBar;
     cpCoverA: TMHLCoverPanel;
     miFBDImport: TMenuItem;
+    miConverToFBD: TMenuItem;
 
     //
     // События формы
@@ -598,6 +599,7 @@ type
     procedure miFastBookSearchClick(Sender: TObject);
     procedure pmiSelectAllClick(Sender: TObject);
     procedure miFBDImportClick(Sender: TObject);
+    procedure miConverToFBDClick(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -775,7 +777,8 @@ uses
   frm_NCWizard,
   DateUtils,
   idStack,
-  idException, frm_editor, unit_SearchUtils, frm_search, unit_WriteFb2Info;
+  idException, frm_editor, unit_SearchUtils, frm_search, unit_WriteFb2Info,
+  frm_ConverToFBD;
 
 resourcestring
   rstrFileNotFoundMsg = 'Файл %s не найден!'#13'Проверьте настройки коллекции!';
@@ -2712,7 +2715,8 @@ begin
        InfoPanel.Folder := FCollectionRoot + Folder
     else
       InfoPanel.Folder := Folder;
-  Cover.Show(InfoPanel.Folder,InfoPanel.FileName,No);
+  miBookInfo.Visible := Cover.Show(InfoPanel.Folder,InfoPanel.FileName,No);
+  miConverToFBD.Visible := not miBookInfo.Visible;
   Application.ProcessMessages;
 end;
 
@@ -5289,7 +5293,7 @@ end;
 procedure TfrmMain.miBookInfoClick(Sender: TObject);
 var
   Tree: TVirtualStringTree;
-  CR: string;
+  CR, s: string;
   Data: PBookData;
   Table, Extra: TAbsTable;
   frmBookDetails: TfrmBookDetails;
@@ -5302,7 +5306,7 @@ var
   NoFb2Info: boolean;
 
 begin
-  if not isFb2 then Exit;
+//  if not isFb2 then Exit;
 
   NoFb2Info := False;
   GetActiveTree(Tree);
@@ -5365,8 +5369,25 @@ begin
         end;
       end;
     end
-    else
-      if not NoFb2Info then
+    else  // файл не внутри зипа
+      if ExtractFileExt(Table['FileName']) = ZIP_EXTENSION then  // fbd
+      begin
+        if not NoFb2Info then
+        begin
+          Zip := TZipForge.Create(Self);
+          try
+            Zip.FileName := CR + Table['FileName'];
+            Zip.OpenArchive;
+            s := GetFileNameZip(Zip,Table['InsideNo']);
+            Zip.ExtractToStream(ChangeFileExt(s,'.fbd'),FS);
+            Zip.CloseArchive;
+          finally
+            Zip.Free;
+          end;
+        end;
+      end
+      else
+        if not NoFb2Info then  // просто файл
             FS.LoadFromFile(CR + Table['FileName'] + Table['Ext']);
 
       if not NoFb2Info then
@@ -5784,6 +5805,11 @@ begin
   dmCollection.DBCollection.Open;
   dmUser.SetTableState(True);
   dmCollection.SetTableState(True);
+end;
+
+procedure TfrmMain.miConverToFBDClick(Sender: TObject);
+begin
+  frmConvertToFBD.ShowModal;
 end;
 
 procedure TfrmMain.N33Click(Sender: TObject);

@@ -104,7 +104,8 @@ uses
   frm_search in 'Forms\frm_search.pas' {frmBookSearch},
   unit_ReviewParser in 'Units\unit_ReviewParser.pas',
   unit_WriteFb2Info in 'Units\unit_WriteFb2Info.pas',
-  unit_ImportFB2Thread in 'ImportImpl\unit_ImportFB2Thread.pas';
+  unit_ImportFB2Thread in 'ImportImpl\unit_ImportFB2Thread.pas',
+  frm_ConverToFBD in 'Forms\frm_ConverToFBD.pas' {frmConvertToFBD};
 
 {$R *.res}
 
@@ -131,6 +132,7 @@ begin
   Application.CreateForm(TfrmMain, frmMain);
   Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
   Application.CreateForm(TfrmEditor, frmEditor);
+  Application.CreateForm(TfrmConvertToFBD, frmConvertToFBD);
   //  Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
   Application.CreateForm(TfrmEditBookInfo, frmEditBookInfo);
   Application.CreateForm(TfrmGenreTree, frmGenreTree);

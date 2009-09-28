@@ -56,7 +56,8 @@ type
     fnOpenINPX,
     fnSaveINPX,
     fnOpenUserData,
-    fnSaveUserData
+    fnSaveUserData,
+    fnOpenCoverImage
   );
 
 function GetFileName(key: TMHLFileName; out FileName: string): Boolean;
@@ -241,6 +242,11 @@ resourcestring
   rstrSaveUDDlgFilter = 'Пользовательские данные MyHomeLib (*.mhlud)|*.mhlud|Все типы|*.*';
   rstrSaveUDDlgDefaultExt = 'mhlud';
 
+  //fnOpenCoverImage
+  rstrOpenCIDlgTitle = 'Загрузка файла обложки';
+  rstrOpenCIDlgFilter = 'изображения (png jpg jpeg)|*.jpeg;*.jpg;*.png';
+  rstrOpenCIDlgDefaultExt = 'jpeg';
+
 
 function GetFileName(key: TMHLFileName; out FileName: string): Boolean;
 const
@@ -304,7 +310,13 @@ const
       Title:      rstrSaveUDDlgTitle;
       Filter:     rstrSaveUDDlgFilter;     DefaultExt: rstrSaveUDDlgDefaultExt;
       DialogKey:  'SaveUserData';            OpenFile: False
+    ),
+    ( // fnOpenCoverImage
+      Title:      rstrOpenCiDlgTitle;
+      Filter:     rstrOpenCiDlgFilter;     DefaultExt: rstrOpenCIDlgDefaultExt;
+      DialogKey:  'OpenCoverImage';        OpenFile: True
     )
+
 
 
     //(Title: ''; Filter: ''; DefaultExt: ''; ExtraOptions: ; DialogKey: ''; GetFileNameFunction:)

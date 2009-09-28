@@ -173,6 +173,7 @@ var
   TmpImg: TGraphic;
 
   StrLen : integer;
+
 begin
   FReviewChanged := False;
 
