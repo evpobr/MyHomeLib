@@ -192,7 +192,7 @@ object frmConvertToFBD: TfrmConvertToFBD
         Height = 21
         TabOrder = 2
       end
-      object edSity: TRzEdit
+      object edCity: TRzEdit
         Left = 229
         Top = 18
         Width = 100
