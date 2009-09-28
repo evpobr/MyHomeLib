@@ -23,6 +23,9 @@ uses
   unit_Globals;
 
 type
+
+   TImageType = (itPng,itJPG);
+
   TfrmConvertToFBD = class(TForm)
     RzPanel1: TRzPanel;
     RzPanel2: TRzPanel;
@@ -48,7 +51,7 @@ type
     RzLabel6: TRzLabel;
     RzLabel7: TRzLabel;
     edYear: TRzEdit;
-    edSity: TRzEdit;
+    edCity: TRzEdit;
     RzLabel5: TRzLabel;
     BitBtn2: TBitBtn;
     procedure btnPasteCoverClick(Sender: TObject);
@@ -70,10 +73,13 @@ type
     FileName : string;
     FFolder: string;
 
+    FImageType : TImageType;
+
     function MakeFBD:boolean;
     function CreateZip:boolean;
     procedure ChangeBookData;
     procedure ResizeImage;
+    procedure PrepareForm;
 
   public
     { Public declarations }
@@ -121,23 +127,30 @@ begin
    Ext := LowerCase(ExtractFileExt(Filename));
    try
      if Ext = '.png' then
-          IMG := TPngImage.Create
+     begin
+       IMG := TPngImage.Create;
+       FImageType := itPNG;
+     end
      else
        if (Ext = '.jpg') or (Ext = '.jpeg') then
-              IMG := TJPEGImage.Create;
+       begin
+         IMG := TJPEGImage.Create;
+         FImageType := itJPG;
+       end;
      if Assigned(IMG) then
      begin
        Input.Seek(0,soFromBeginning);
        IMG.LoadFromStream(Input);
        FCover.Picture.Assign(IMG);
        FCover.Invalidate;
+       //ResizeImage;
     end;
   finally
     IMG.Free;
     Output.Free;
     Input.Free;
   end;
-//  ResizeImage;
+
 end;
 
 procedure TfrmConvertToFBD.BitBtn2Click(Sender: TObject);
@@ -157,6 +170,7 @@ begin
 
  IMG := TJPEGImage.Create;
  try
+   FCover.Picture.RegisterClipboardFormat(cf_BitMap,TPNGImage);
    FCover.Picture.RegisterClipboardFormat(cf_BitMap,TJPEGImage);
    FCover.Picture.Bitmap.LoadFromClipBoardFormat(cf_BitMap,ClipBoard.GetAsHandle(cf_Bitmap),0);
 
@@ -170,6 +184,8 @@ begin
    FLines.Clear;
    Output.Seek(0,soFromBeginning);
    FLines.LoadFromStream(Output);
+
+   FImageType := itJPG;
  finally
    Output.Free;
    Input.Free;
@@ -188,7 +204,8 @@ end;
 procedure TfrmConvertToFBD.ChangeBookData;
 begin
   DMCollection.ActiveTable.Edit;
-  DMCollection.ActiveTable.FieldByName('Ext').Value := '.zip';
+  DMCollection.ActiveTable.FieldByName('Ext').Value := ExtractFileExt(FBookFilename);
+  DMCollection.ActiveTable.FieldByName('FileName').Value := DMCollection.ActiveTable.FieldByName('FileName').Value + '.zip';
   DMCollection.ActiveTable.Post;
 end;
 
@@ -225,12 +242,7 @@ end;
 
 procedure TfrmConvertToFBD.FormShow(Sender: TObject);
 begin
-  DMCollection.GetCurrentBook(FBookRecord);
-
-  FBookFileName := DMUser.ActiveCollection.RootFolder + FBookRecord.Folder + '\'
-                   + FBookrecord.FileName + FBookrecord.FileExt;
-
-  FFBDFilename := ChangeFileExt(FBookFileName,'.fbd');
+  PrepareForm;
 end;
 
 function TfrmConvertToFBD.MakeFBD:boolean;
@@ -244,6 +256,7 @@ var
   SL: TstringList;
   Str: string;
   i: integer;
+
 begin
   Result := False;
   MS := TMemoryStream.Create;
@@ -293,7 +306,7 @@ begin
     with FBD.Description do
     begin
       Publishinfo.Publisher.Text := edPublisher.Text;
-      Publishinfo.City.Text := edSity.Text;
+      Publishinfo.City.Text := edCity.Text;
       Publishinfo.Year := edYear.Text;
       Publishinfo.Isbn.Text := edISBN.Text;
     end;
@@ -315,8 +328,16 @@ begin
     if Length(FLines.Text) > 100 then
     begin
       Bin := FBD.Binary.Add;
-      Bin.Id := 'cover.jpg';
-      Bin.Contenttype := 'image/jpeg';
+      case FImageType of
+        itPng: begin
+                 Bin.Id := 'cover.png';
+                 Bin.Contenttype := 'image/png';
+               end ;
+        itJPG: begin
+                 Bin.Id := 'cover.jpg';
+                 Bin.Contenttype := 'image/jpeg';
+               end;
+      end;
       Bin.Text := FLines.Text;
       C := FBD.Description.Titleinfo.Coverpage.Add;
     end;
@@ -332,8 +353,13 @@ begin
              '<FictionBook xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.gribuser.ru/xml/fictionbook/2.0">',
              Str);
 
-    StrReplace('<coverpage><image/></coverpage>',
-                 '<coverpage><image xlink:href="#cover.jpg"/></coverpage>',Str);
+   case FImageType of
+     itPng: StrReplace('<coverpage><image/></coverpage>',
+                       '<coverpage><image xlink:href="#cover.png"/></coverpage>',Str);
+     itJPG: StrReplace('<coverpage><image/></coverpage>',
+                       '<coverpage><image xlink:href="#cover.jpg"/></coverpage>',Str);
+   end;
+
     SL.Text := Str;
     //----------------------------------------------------------------------------
     SL.SaveToFile(FFBDFileName);
@@ -342,6 +368,20 @@ begin
     SL.Free;
     MS.Free;
   end;
+end;
+
+procedure TfrmConvertToFBD.PrepareForm;
+begin
+  DMCollection.GetCurrentBook(FBookRecord);
+
+  FBookFileName := DMUser.ActiveCollection.RootFolder + FBookRecord.Folder + '\'
+                   + FBookrecord.FileName + FBookrecord.FileExt;
+
+  FFBDFilename := ChangeFileExt(FBookFileName,'.fbd');
+
+  FLines.Clear;
+  edPublisher.Clear; edCity.Clear; edISBN.Clear; edYear.Clear;
+  FCover.Picture := nil;
 end;
 
 procedure TfrmConvertToFBD.ResizeImage;
@@ -353,32 +393,32 @@ var
   thumbRect : TRect;
 begin
     // resize
-
    thumbnail := TBitmap.Create;
    thumbnail.Assign(FCover.Picture.Bitmap);
    try
-     thumbRect.Left := 0;
-     thumbRect.Top := 0;
+     if (thumbnail.Width > maxWidth) and (thumbnail.Height > maxHeight)    then
+     begin
+       thumbRect.Left := 0;
+       thumbRect.Top := 0;
 
-     //proportional resize
-     if thumbnail.Width > thumbnail.Height then
-     begin
-       thumbRect.Right := maxWidth;
-       thumbRect.Bottom := (maxWidth * thumbnail.Height) div thumbnail.Width;
-     end
-     else
-     begin
-       thumbRect.Bottom := maxHeight;
-       thumbRect.Right := (maxHeight * thumbnail.Width) div thumbnail.Height;
+        //proportional resize
+       if thumbnail.Width > thumbnail.Height then
+       begin
+         thumbRect.Right := maxWidth;
+         thumbRect.Bottom := (maxWidth * thumbnail.Height) div thumbnail.Width;
+       end
+       else
+       begin
+         thumbRect.Bottom := maxHeight;
+         thumbRect.Right := (maxHeight * thumbnail.Width) div thumbnail.Height;
+       end;
+       thumbnail.Canvas.StretchDraw(thumbRect, thumbnail) ;
+       //resize image
+       thumbnail.Width := thumbRect.Right;
+       thumbnail.Height := thumbRect.Bottom;
+
+       //display in a TImage control
      end;
-
-     thumbnail.Canvas.StretchDraw(thumbRect, thumbnail) ;
-
-     //resize image
-     thumbnail.Width := thumbRect.Right;
-     thumbnail.Height := thumbRect.Bottom;
-
-     //display in a TImage control
      FCover.Picture.Assign(thumbnail) ;
    finally
      thumbnail.Free;
