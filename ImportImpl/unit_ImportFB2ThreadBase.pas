@@ -64,13 +64,15 @@ begin
   with Book.Description.Titleinfo do
   begin
     for i := 0 to Author.Count - 1 do
-      R.AddAuthor(Author[i].Lastname.Text, Author[i].Firstname.Text, '');
+      R.AddAuthor(Author[i].Lastname.Text, Author[i].Firstname.Text, Author[i].MiddleName.Text);
 
     if Booktitle.IsTextElement then
       R.Title := Booktitle.Text;
 
     for i := 0 to Genre.Count - 1 do
       R.AddGenreFB2('', Genre[i], '');
+
+    R.Lang := Lang;
 
     if Sequence.Count > 0 then
     begin
