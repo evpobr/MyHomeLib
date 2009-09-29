@@ -44,21 +44,16 @@ uses
 { TImportFB2Thread }
 
 procedure TImportFBDThread.AddFile2List(Sender: TObject; const F: TSearchRec);
-var
-  FullName: string;
-
 begin
   if ExtractFileExt(F.Name) = ZIP_EXTENSION  then
   begin
-    FullName := ExtractRelativePath(FRootPath, FFilesList.LastDir + F.Name);
-
     if FCheckExistsFiles then
     begin
-      if FLibrary.CheckFileInCollection(FullName, true, true) then
+      if FLibrary.CheckFileInCollection(F.Name, true, true) then
         Exit;
     end;
 
-    FFiles.Add(FullName);
+    FFiles.Add(FFilesList.LastDir + F.Name);
   end;
 
   //
@@ -116,7 +111,7 @@ begin
       //
       // H:\eBooks\Л\Лаберж Стивен\Исследование мира осознанных сновидений.fb2.zip
       //
-      FZipper.FileName := FRootPath + AZipFileName;
+      FZipper.FileName := AZipFileName;
       try
         FZipper.OpenArchive(fmOpenRead);
         j := 0;
@@ -127,8 +122,8 @@ begin
           if  Ext = '.fbd' then
           try
             FS := TMemoryStream.Create;
-            R.Folder := ExtractFilePath(FFiles[i]);
-            R.FileName := FFiles[i];
+            R.Folder := ExtractRelativePath(FRootPath,ExtractFilePath(FFiles[i]));
+            R.FileName := ExtractFilename(FFiles[i]);
             R.Size := ArchiveItem.UncompressedSize;
 
             R.Date := Now;

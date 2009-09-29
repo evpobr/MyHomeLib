@@ -594,7 +594,6 @@ type
     procedure miCompactDataBaseClick(Sender: TObject);
     procedure edFGenreButtonClick(Sender: TObject);
     procedure edFGenreKeyPress(Sender: TObject; var Key: Char);
-    procedure pmMainPopup(Sender: TObject);
     procedure miDeleteFilesClick(Sender: TObject);
     procedure miFastBookSearchClick(Sender: TObject);
     procedure pmiSelectAllClick(Sender: TObject);
@@ -4430,8 +4429,7 @@ begin
       end;
       dmCollection.tblAuthor_List.MasterSource := dmCollection.dsAuthors;
     end;
-
-
+    InitCollection(True);
   end;
 end;
 
@@ -4560,12 +4558,6 @@ var
   Tree: TVirtualStringTree;
   Data: PBookData;
   Node: PVirtualNode;
-  i: integer;
-  R: TBookRecord;
-  Family: TListItem;
-  ALibrary: TMHLLibrary;
-  Author: TAuthorRecord;
-  Genre: TGenreRecord;
 begin
   if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
   begin
@@ -4721,7 +4713,7 @@ end;
 procedure TfrmMain.miAddFavoritesClick(Sender: TObject);
 var
   Tree: TVirtualStringTree;
-  i, ID, Max: integer;
+  i, Max: integer;
   Data: PBookData;
   GroupData: PGroupData;
 
@@ -5575,19 +5567,6 @@ begin
   Selection(True);
 end;
 
-procedure TfrmMain.pmMainPopup(Sender: TObject);
-var
-  Data: PBookData;
-  Tree: TVirtualStringTree;
-begin
-//  GetActiveTree(Tree);
-//  Data := Tree.GetNodeData(Tree.FocusedNode);
-//  if Data = nil then Exit;
-//
-//  if isOnlineCollection(DMuser.ActiveCollection.CollectionType) then
-//     miBookInfo.Visible := Data.Locale;
-end;
-
 procedure TfrmMain.pmAuthorPopup(Sender: TObject);
 begin
   miAddToSearch.Visible := (ActiveView <>  ByGenreView);
@@ -5604,12 +5583,11 @@ var
 begin
   GetActiveTree(Tree);
   Tree.SelectAll(False);
-
 end;
 
 procedure TfrmMain.miGoForumClick(Sender: TObject);
 begin
-  ShellExecute(handle, 'open', '"http://forum.home-lib.net/"', nil, nil, SW_SHOW);
+  ShellExecute(handle, 'open', '"http://myhomelib.org/"', nil, nil, SW_SHOW);
 end;
 
 procedure TfrmMain.miGoSiteClick(Sender: TObject);
@@ -6288,6 +6266,7 @@ procedure TfrmMain.miPdfdjvuClick(Sender: TObject);
 begin
   DMUser.ActivateCollection(Settings.ActiveCollection);
   frmAddNonFb2.ShowModal;
+  InitCollection(True);
 end;
 
 procedure TfrmMain.OnBookDownloadComplete(var Message: TDownloadCompleteMessage);

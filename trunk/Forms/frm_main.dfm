@@ -777,6 +777,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2226,6 +2227,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 0
@@ -2990,6 +2992,7 @@ object frmMain: TfrmMain
       end
       object miConverToFBD: TMenuItem
         Caption = #1055#1088#1077#1086#1073#1088#1072#1079#1086#1074#1072#1090#1100' '#1074' FBD'
+        Visible = False
         OnClick = miConverToFBDClick
       end
       object miFastBookSearch: TMenuItem
@@ -3211,7 +3214,6 @@ object frmMain: TfrmMain
     AutoPopup = False
     Images = ilMainMenu
     OwnerDraw = True
-    OnPopup = pmMainPopup
     Left = 368
     Top = 312
     object pmiReadBook: TMenuItem

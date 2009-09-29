@@ -386,7 +386,7 @@ end;
 
 procedure TMHLCoverPanel.GetFb2Info;
 var
-  i, p: integer;
+  i: integer;
   S, outStr: AnsiString;
   CoverID, Short : string;
   ImgVisible: boolean;

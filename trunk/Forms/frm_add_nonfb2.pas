@@ -272,7 +272,6 @@ end;
 procedure TfrmAddnonfb2.miRenameFileClick(Sender: TObject);
 var
    NewName: string;
-   NewPath: String;
    Data: PFileData;
 begin
   btnRenameFile.Enabled := False;
@@ -282,12 +281,9 @@ begin
     begin
       NewName := lvAuthors.Items[0].Caption + ' ' +  lvAuthors.Items[0].SubItems[0] +
              ' ' + edT.Text;
-      NewPath := Data.FullPath;
-      StrReplace(Data.FileName,NewName,NewPath);
-      if RenameFile(FRootPath + Data.FullPath,FRootPath + NewPath) then
+      if RenameFile(Data.FullPath + Data.FileName + Data.Ext, Data.FullPath + NewName + Data.Ext) then
       begin
         Data.FileName := NewName;
-        Data.FullPath := NewPath;
         edFileName.Text := NewName;
         Tree.RepaintNode(Tree.GetFirstSelected);
       end
@@ -477,7 +473,6 @@ begin
  if (CompareText(Ext, FB2_EXTENSION) = 0) or (CompareText(Ext, ZIP_EXTENSION) = 0) then
       Exit;
 
-
   //
   // ѕроверим, есть ли у нас ридер дл€ этого документа
   //
@@ -485,16 +480,14 @@ begin
   if Settings.Readers.Find(Ext) = nil then
     Exit;
 
-  if FLibrary.CheckFileInCollection(flFiles.LastDir + F.Name, False, True) then
+  if FLibrary.CheckFileInCollection(F.Name, False, True) then
     Exit;
-
 
   FullName := ExtractRelativePath(FRootPath, flFiles.LastDir + F.Name);
   FileName := ExtractShortFileName(F.Name);
-
   Path := ExtractRelativePath(FRootPath, flFiles.LastDir);
-  ParentNode := FindParentInTree(Tree,Path);
 
+  ParentNode := FindParentInTree(Tree,Path);
 
   CurrentNode := Tree.AddChild(ParentNode);
 
@@ -502,7 +495,7 @@ begin
   Data.DataType := dtFile;
   Data.FileName := FileName;
   Data.Size := F.Size;
-  Data.FullPath := FullName;
+  Data.FullPath := flFiles.LastDir;
   Data.Folder := Path;
   Data.Ext := Ext;
   Data.Date := F.Time;
@@ -596,7 +589,7 @@ begin
   Data := Tree.GetNodedata(Tree.GetFirstSelected);
   if Data <> nil then
   begin
-    S := FRootPath+AnsiLowercase(Data.FullPath);
+    S := AnsiLowercase(Data.FullPath + Data.FileName + Data.Ext);
     ShellExecute(Handle, 'open', PChar(s), '', nil, SW_SHOWNORMAL);
   end;
 end;

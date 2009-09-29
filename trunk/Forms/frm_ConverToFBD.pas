@@ -216,11 +216,11 @@ begin
   Result := False;
   Zip := TZipForge.Create(nil);
   try
-    zip.FileName := ChangeFileExt(FBookFileName,'.zip');
+    zip.FileName := FFolder + ChangeFileExt(FBookFileName,'.zip');
     zip.OpenArchive(fmCreate);
-    zip.BaseDir := ExtractFilePath(zip.FileName);
-    zip.AddFiles(FBookrecord.FileName + FBookrecord.FileExt);
-    zip.AddFiles(FBookrecord.FileName + '.fbd');
+    zip.BaseDir := FFolder;
+    zip.AddFiles(FBookFileName);
+    zip.AddFiles(FFBDFileName);
     zip.CloseArchive;
     Result := True;
     DeleteFile(FFBDFileName);
@@ -362,7 +362,7 @@ begin
 
     SL.Text := Str;
     //----------------------------------------------------------------------------
-    SL.SaveToFile(FFBDFileName);
+    SL.SaveToFile(FFolder + FFBDFileName);
     Result := True;
   finally
     SL.Free;
@@ -374,13 +374,13 @@ procedure TfrmConvertToFBD.PrepareForm;
 begin
   DMCollection.GetCurrentBook(FBookRecord);
 
-  FBookFileName := DMUser.ActiveCollection.RootFolder + FBookRecord.Folder + '\'
-                   + FBookrecord.FileName + FBookrecord.FileExt;
-
-  FFBDFilename := ChangeFileExt(FBookFileName,'.fbd');
+  FFolder := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder + FBookRecord.Folder);
+  FBookFileName := FBookrecord.FileName + FBookrecord.FileExt;
+  FFBDFilename := FBookrecord.FileName + '.fbd';
 
   FLines.Clear;
   edPublisher.Clear; edCity.Clear; edISBN.Clear; edYear.Clear;
+  mmAnnotation.Clear;
   FCover.Picture := nil;
 end;
 
