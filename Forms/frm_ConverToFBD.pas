@@ -288,9 +288,9 @@ begin
             FLines.Clear;
             FLines.Text := FBook.Binary.Items[i].Text;
 
-            FLines.SaveToStream(Input);
+            FLines.SaveToStream(Output);
             Input.Seek(0,soFromBeginning);
-            DecodeStream(Input,Output);
+            DecodeStream(Output,Input);
             ImgVisible := True;
 
         finally
@@ -324,8 +324,8 @@ begin
               IMG := TJPEGImage.Create;
         if Assigned(IMG) then
         begin
-          Output.Seek(0,soFromBeginning);
-          IMG.LoadFromStream(Output);
+          Input.Seek(0,soFromBeginning);
+          IMG.LoadFromStream(Input);
           FCover.Picture.Assign(IMG);
           FCover.Invalidate;
         end;
@@ -469,6 +469,11 @@ procedure TfrmConvertToFBD.PrepareForm;
 begin
   DMCollection.GetCurrentBook(FBookRecord);
 
+  FLines.Clear;
+  edPublisher.Clear; edCity.Clear; edISBN.Clear; edYear.Clear;
+  mmAnnotation.Clear;
+  FCover.Picture := nil;
+
   FXML := TXmlDocument.Create(Self);
   FXML.Active := True;
 
@@ -485,14 +490,6 @@ begin
     FBookFileName := FBookrecord.FileName + FBookrecord.FileExt;
     FFBDFilename := FBookrecord.FileName + '.fbd';
   end;
-
-  FLines.Clear;
-  edPublisher.Clear; edCity.Clear; edISBN.Clear; edYear.Clear;
-  mmAnnotation.Clear;
-  FCover.Picture := nil;
-
-
-
 end;
 
 procedure TfrmConvertToFBD.ResizeImage;
