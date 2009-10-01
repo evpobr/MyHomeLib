@@ -363,29 +363,29 @@ begin
 
   R.Clear;
 
-  R.Title := ActiveTable.FieldByname('Title').Value;
+  R.Title := ActiveTable.FieldByname('Title').AsWideString;
   R.Series := IfThen(ActiveTable.FieldByname('SerID').IsNull,
                      NO_SERIES_TITLE,
                      ActiveTable.FieldByname('Series').AsWideString);
-  R.SeqNumber := ActiveTable.FieldByname('SeqNumber').Value;
-  R.Folder := ActiveTable.FieldByname('Folder').Value;
-  R.FileName := ActiveTable.FieldByname('FileName').Value;
-  R.FileExt := ActiveTable.FieldByname('Ext').Value;
-  R.Size := ActiveTable.FieldByname('Size').Value;
-  R.InsideNo := ActiveTable.FieldByname('InsideNo').Value;
-  R.Date := ActiveTable.FieldByname('Date').Value;
+  R.SeqNumber := ActiveTable.FieldByname('SeqNumber').AsInteger;
+  R.Folder := ActiveTable.FieldByname('Folder').AsWideString;
+  R.FileName := ActiveTable.FieldByname('FileName').AsWideString;
+  R.FileExt := ActiveTable.FieldByname('Ext').AsWideString;
+  R.Size := ActiveTable.FieldByname('Size').AsInteger;
+  R.InsideNo := ActiveTable.FieldByname('InsideNo').AsInteger;
+  R.Date := ActiveTable.FieldByname('Date').AsDateTime;
   R.Lang := ActiveTable.FieldByname('Lang').AsWideString;
   R.KeyWords := ActiveTable.FieldByname('KeyWords').AsWideString;
 
   if not FIsFavorites  then
   begin
     tblBooks_Genre_List.Locate('GL_BookID', BookID, []);
-    while (not tblBooks_Genre_List.Eof) and (tblBooks_Genre_ListGL_BookID.Value = BookID) do
+    while (not tblBooks_Genre_List.Eof) and (tblBooks_Genre_ListGL_BookID.AsInteger = BookID) do
     begin
       R.AddGenreFB2(
-        tblBooks_GenresG_Code.Value,
-        tblBooks_GenresG_FB2Code.Value,
-        tblBooks_GenresG_Alias.Value
+        tblBooks_GenresG_Code.AsWideString,
+        tblBooks_GenresG_FB2Code.AsWideString,
+        tblBooks_GenresG_Alias.AsWideString
         );
 
       tblBooks_Genre_List.Next;
@@ -406,9 +406,9 @@ begin
     while (not tblAuthor_Master.Eof) and (tblAuthor_MasterAL_BookID.Value = BookID) do
     begin
       R.AddAuthor(
-        tblAuthor_DetailA_Family.Value,
-        tblAuthor_DetailA_Name.Value,
-        tblAuthor_DetailA_Middle.Value
+        tblAuthor_DetailA_Family.AsWideString,
+        tblAuthor_DetailA_Name.AsWideString,
+        tblAuthor_DetailA_Middle.AsWideString
         );
 
       tblAuthor_Master.Next;
@@ -416,8 +416,8 @@ begin
   end // not Favorites
   else
   begin
-    R.AddGenreFB2('','',ActiveTable.FieldByname('Genres').Value);
-    R.AddAuthor(ActiveTable.FieldByname('FullName').Value,'','');
+    R.AddGenreFB2('','',ActiveTable.FieldByname('Genres').AsWideString);
+    R.AddAuthor(ActiveTable.FieldByname('FullName').AsWideString,'','');
   end;
 end;
 

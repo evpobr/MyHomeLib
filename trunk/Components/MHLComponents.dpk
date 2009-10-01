@@ -35,9 +35,9 @@ requires
   IndyCore,
   IndySystem,
   IndyProtocols,
-  vclAbsDBd12,
-  VirtualTreesD12,
-  vclZipForged12;
+  vclAbsDBd13,
+  VirtualTreesD13,
+  vclZipForged13;
 
 contains
   unit_StaticTip in 'unit_StaticTip.pas',

@@ -63,7 +63,7 @@ uses
   jpeg,
   IdCookieManager,
   unit_database,
-  oxmldom,
+ // oxmldom,
   DBTables,
   Clipbrd,
   RzCmboBx,
@@ -392,14 +392,15 @@ type
     cpCoverA: TMHLCoverPanel;
     miFBDImport: TMenuItem;
     miConverToFBD: TMenuItem;
-    tlbrEdit: TRzToolbar;
-    BtnSendEMail: TRzToolButton;
-    BtnSendEMail1: TRzToolButton;
-    RzToolButton1: TRzToolButton;
-    RzToolButton3: TRzToolButton;
-    RzSpacer4: TRzSpacer;
-    RzToolButton4: TRzToolButton;
     miEditToolbarVisible: TMenuItem;
+    tlbrEdit: TToolBar;
+    ToolButton8: TToolButton;
+    ToolButton9: TToolButton;
+    ToolButton10: TToolButton;
+    ToolButton11: TToolButton;
+    ToolButton14: TToolButton;
+    ToolButton15: TToolButton;
+    N43: TMenuItem;
 
     //
     // События формы
@@ -520,8 +521,8 @@ type
     //
     //
     //
-    procedure tvBooksTreeHeaderClick(Sender: TVTHeader; Column: TColumnIndex;
-      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure tvBooksTreeHeaderClick(Sender: TVTHeader;
+  HitInfo: TVTHeaderHitInfo);
     procedure tvBooksTreeCompareNodes(Sender: TBaseVirtualTree; Node1,
       Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
     procedure tvBooksTreePaintText(Sender: TBaseVirtualTree;
@@ -2352,32 +2353,32 @@ begin
   Sender.CheckState[Node] := csUncheckedNormal;
 end;
 
-procedure TfrmMain.tvBooksTreeHeaderClick(Sender: TVTHeader; Column: TColumnIndex;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TfrmMain.tvBooksTreeHeaderClick(Sender: TVTHeader;
+  HitInfo: TVTHeaderHitInfo);
 var
   Tree:TVirtualStringTree;
 begin
-  if (Button = mbLeft) then
+  if (HitInfo.Button = mbLeft) then
   begin
     GetActiveTree(Tree);
     if (Settings.TreeModes[Tree.Tag] = tmTree) then Exit;
     // Меняем индекс сортирующей колонки на индекс колонки,
     // которая была нажата.
-    Tree.Header.SortColumn := Column;
+    Tree.Header.SortColumn := HitInfo.Column;
     // Сортируем всё дерево относительно этой колонки
     // и изменяем порядок сортировки на противополжный
     if Tree.Header.SortDirection = sdAscending then
     begin
       Tree.Header.SortDirection := sdDescending;
-      Tree.SortTree(Column, Tree.Header.SortDirection);
+      Tree.SortTree(HitInfo.Column, Tree.Header.SortDirection);
     end
     else begin
       Tree.Header.SortDirection := sdAscending;
-      Tree.SortTree(Column, Tree.Header.SortDirection);
+      Tree.SortTree(HitInfo.Column, Tree.Header.SortDirection);
     end;
 
     // запоминаем параметры для активного дерева
-    FSortSettings[Tree.Tag].Column := Column;
+    FSortSettings[Tree.Tag].Column := HitInfo.Column;
     FSortSettings[Tree.Tag].Direction := Tree.Header.SortDirection;
   end;
 end;
@@ -4523,10 +4524,8 @@ end;
 
 procedure TfrmMain.PrepareFb2EditData(Data: PBookData; var R: TBookRecord);
 var
-  Tree: TVirtualStringTree;
-  i: integer;
   Family: TListItem;
-  ALibrary: TMHLLibrary;
+
   Author: TAuthorRecord;
   Genre: TGenreRecord;
 
@@ -4567,12 +4566,7 @@ var
   Data: PBookData;
   Node: PVirtualNode;
   i: integer;
-
-  Family: TListItem;
-  ALibrary: TMHLLibrary;
-  Author: TAuthorRecord;
-  Genre: TGenreRecord;
-
+  ALibrary : TMHLLibrary;
 begin
 
   GetActiveTree(Tree);

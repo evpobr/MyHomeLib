@@ -47,7 +47,6 @@ type
 
     FPersonalFolder: boolean;
 
-    FVersion: integer;
     FGenresType: TGenresType;
 
     procedure SetCollectionRoot(const Value: string);
