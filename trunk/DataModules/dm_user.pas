@@ -164,7 +164,6 @@ type
     procedure LoadGroups(const SL: TStringList; var i: integer);
     procedure LoadReviews(const SL: TStringList; var i: integer);
 
-
   end;
 
   TMHLCollection = class

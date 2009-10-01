@@ -99,7 +99,7 @@ uses
   frm_Main,
   ZipForge,
   dm_user,
-  unit_Helpers;
+  unit_Helpers, ActiveX, ComObj;
 
 {$R *.dfm}
 
@@ -223,8 +223,8 @@ begin
     zip.AddFiles(FFBDFileName);
     zip.CloseArchive;
     Result := True;
-    DeleteFile(FFBDFileName);
-    DeleteFile(FBookFileName);
+    DeleteFile(FFolder + FFBDFileName);
+    DeleteFile(FFolder + FBookFileName);
   finally
     Zip.Free;
   end;
@@ -257,6 +257,7 @@ var
   Str: string;
   i: integer;
 
+  G: TGUID;
 begin
   Result := False;
   MS := TMemoryStream.Create;
@@ -323,6 +324,9 @@ begin
       DocumentInfo.Programused.Text := 'MyHomeLib 1.6';
       DocumentInfo.Date.Text := DateToStr(Now);
       DocumentInfo.Version := '1.0';
+
+      CoCreateGuid(G);
+      DocumentInfo.Id := GUIDToString(G);
     end;
 
     if Length(FLines.Text) > 100 then
@@ -374,7 +378,7 @@ procedure TfrmConvertToFBD.PrepareForm;
 begin
   DMCollection.GetCurrentBook(FBookRecord);
 
-  FFolder := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder + FBookRecord.Folder);
+  FFolder := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder) + FBookRecord.Folder;
   FBookFileName := FBookrecord.FileName + FBookrecord.FileExt;
   FFBDFilename := FBookrecord.FileName + '.fbd';
 

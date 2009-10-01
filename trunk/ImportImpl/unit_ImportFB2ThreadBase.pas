@@ -73,6 +73,7 @@ begin
       R.AddGenreFB2('', Genre[i], '');
 
     R.Lang := Lang;
+    R.KeyWords := KeyWords.Text;
 
     if Sequence.Count > 0 then
     begin
