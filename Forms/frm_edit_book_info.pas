@@ -159,6 +159,9 @@ procedure TfrmEditBookInfo.btnAddAuthorClick(Sender: TObject);
 var
   Family:TListItem;
 begin
+  frmEditAuthor.edFamily.Clear;
+  frmEditAuthor.edName.Clear;
+  frmEditAuthor.edMiddle.Clear;
   if frmEditAuthor.ShowModal=mrOk then
   begin
     Family:=lvAuthors.Items.Add;

@@ -392,6 +392,14 @@ type
     cpCoverA: TMHLCoverPanel;
     miFBDImport: TMenuItem;
     miConverToFBD: TMenuItem;
+    tlbrEdit: TRzToolbar;
+    BtnSendEMail: TRzToolButton;
+    BtnSendEMail1: TRzToolButton;
+    RzToolButton1: TRzToolButton;
+    RzToolButton3: TRzToolButton;
+    RzSpacer4: TRzSpacer;
+    RzToolButton4: TRzToolButton;
+    miEditToolbarVisible: TMenuItem;
 
     //
     // —обыти€ формы
@@ -599,6 +607,7 @@ type
     procedure pmiSelectAllClick(Sender: TObject);
     procedure miFBDImportClick(Sender: TObject);
     procedure miConverToFBDClick(Sender: TObject);
+    procedure miEditToolbarVisibleClick(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -1459,10 +1468,6 @@ begin
   dmCollection.DBCollection.Connected := True;
   frmMain.Caption := 'MyHomeLib - ' + DMUser.ActiveCollection.Name;
 
-
-  CreateCollectionMenu;
-  dmCollection.SetTableState(True);
-
   DisableControls(True);
 
   { TODO -oNickR -cRefactoring : проверить использование }
@@ -1479,8 +1484,12 @@ begin
   miFb2Import.Visible := (IsPrivate and IsFB2) or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
   miPdfdjvu.Visible := IsPrivate and IsNonFB2;
   miFBDImport.Visible := IsPrivate and IsNonFB2;
+  miConverToFBD.Visible := False;
 
   TabSheet7.TabVisible := IsOnline;
+
+  CreateCollectionMenu;
+  dmCollection.SetTableState(True);
 
 //  tbtnShowCover.Visible := not IsNonFB2 or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
 
@@ -1501,6 +1510,9 @@ begin
   miBookEdit.Visible := IsPrivate;
   miDeleteBook.Visible := IsPrivate; // DMUser.ActiveCollection.AllowDelete;
   miDeleteFiles.Visible := isOnline and (ActiveView <> FavoritesView);
+
+
+
 
   if Assigned(FLastLetterA) then
     FLastLetterA.Down := False;
@@ -1660,10 +1672,9 @@ begin
     ItemC.OnClick := CopyToCollectionClick;
     ItemC.ImageIndex := GetCollectionTypeImageIndex;
 
-    if
-      (ItemC.Tag <> Active) and
+    if (ItemC.Tag <> Active) and
       isPrivateCollection(DMUser.ActiveCollection.CollectionType) and
-      (DMUser.ActiveCollection.CollectionType = CollectionType)
+      (isFB2Collection(DMUser.ActiveCollection.CollectionType) and IsFB2 )
     then
     begin
       miCopyToCollection.Insert(j, ItemC);
@@ -2715,7 +2726,22 @@ begin
     else
       InfoPanel.Folder := Folder;
   miBookInfo.Visible := Cover.Show(InfoPanel.Folder,InfoPanel.FileName,No);
-  miConverToFBD.Visible := not miBookInfo.Visible;
+
+  if miBookInfo.Visible and IsPrivate and IsNonFB2 then
+  begin
+    miConverToFBD.Visible := true;
+    miConverToFBD.Enabled := False;
+    miConverToFBD.Caption := '–едактировать FBD';
+  end
+    else
+      if not miBookInfo.Visible and IsPrivate and IsNonFB2 then
+      begin
+        miConverToFBD.Visible := true;
+        miConverToFBD.Enabled := true;
+        miConverToFBD.Caption := 'ѕреобразовать FBD';
+      end;
+
+
   Application.ProcessMessages;
 end;
 
@@ -4319,6 +4345,9 @@ var
   Res: boolean;
   S: string;
 
+  old_AiD: integer;
+  new_AiD: integer;
+
 begin
   if ActiveView = FavoritesView then
   begin
@@ -4338,6 +4367,8 @@ begin
 
   dmCollection.tblAuthor_List.Locate('AL_BookId', Data.ID, []);
   dmCollection.tblAuthors.Locate('A_ID', dmCollection.tblAuthor_List['AL_AuthID'], []);
+  old_AiD := dmCollection.tblAuthor_List['AL_AuthID'];
+
   frmEditAuthor.edFamily.Text := dmCollection.tblAuthors.FieldByName('A_Family').AsString;
   frmEditAuthor.edName.Text := dmCollection.tblAuthors.FieldByName('A_Name').AsString;
   frmEditAuthor.edMiddle.Text := dmCollection.tblAuthors.FieldByName('A_Middle').AsString;
@@ -4354,11 +4385,51 @@ begin
     if (not frmEditAuthor.AddNew) and (not frmEditAuthor.SaveLinks) then
     begin    // мен€ем только данные об авторе, все ссылки остаютс€ на месте
 
-      dmCollection.tblAuthors.Edit;
-      dmCollection.tblAuthorsFamily.Value := frmEditAuthor.edFamily.Text;
-      dmCollection.tblAuthorsName.Value := frmEditAuthor.edName.Text;
-      dmCollection.tblAuthorsMiddle.Value := frmEditAuthor.edMiddle.Text;
-      dmCollection.tblAuthors.Post;
+      if dmCollection.tblAuthors.Locate('A_Family;A_Name;A_Middle',
+                            VarArrayOf([frmEditAuthor.edFamily.Text,
+                                        frmEditAuthor.edName.Text,
+                                        frmEditAuthor.edMiddle.Text]),
+                                        [loCaseInsensitive]) then
+      begin  // если новый автор уже есть, мен€ем сслыки на него  (объединение)
+        new_AiD := dmCollection.tblAuthorsID.Value;
+        repeat
+          // мен€ем старые Id на новые
+          { TODO -oNickR -cRefactoring : можно заменить на один UPDATE }
+          dmCollection.tblAuthor_List.MasterSource := nil;
+
+          Res := dmCollection.tblAuthor_List.Locate('AL_AuthID',old_Aid,[]);
+          if Res then
+          begin
+            dmCollection.tblAuthor_List.Edit;
+            dmCollection.tblAuthor_ListAL_AuthID.Value := new_AiD;
+            dmCollection.tblAuthor_List.Post;
+          end;
+        until not Res;
+
+        // обновл€ем индексное поле
+        { TODO -oNickR -cRefactoring : можно заменить на один UPDATE }
+        repeat
+          Res := dmCollection.tblBooks.Locate('FullName', AnsiUpperCase(Data.FullName), [loCaseInsensitive]);
+          if Res then
+          begin
+            dmCollection.tblBooks.Edit;
+            dmCollection.tblBooksFullName.Value := S;
+            dmCollection.tblBooks.Post;
+          end;
+        until not Res;
+
+        if dmCollection.tblAuthors.Locate('A_ID', old_Aid,[]) then
+           dmCollection.tblAuthors.Delete;   // старого автора удал€ем
+        dmCollection.tblAuthor_List.MasterSource := dmCollection.dsAuthors;
+      end // if Locate
+      else  // если нет - просто редактируем ‘»ќ
+      begin
+        dmCollection.tblAuthors.Edit;
+        dmCollection.tblAuthorsFamily.Value := frmEditAuthor.edFamily.Text;
+        dmCollection.tblAuthorsName.Value := frmEditAuthor.edName.Text;
+        dmCollection.tblAuthorsMiddle.Value := frmEditAuthor.edMiddle.Text;
+        dmCollection.tblAuthors.Post;
+      end;
 
       repeat
         { TODO -oNickR -cRefactoring : можно заменить на один UPDATE }
@@ -4577,7 +4648,12 @@ begin
   PrepareFb2EditData(Data, FLastBookRecord);
 
   if frmEditBookInfo.ShowModal = mrOk then
-       SaveFb2DataAfterEdit(FLastBookRecord);
+  begin
+    SaveFb2DataAfterEdit(FLastBookRecord);
+    SavePositions;
+    InitCollection(True);
+    RestorePositions;
+  end;
 end;
 
 procedure TfrmMain.miEditGenresClick(Sender: TObject);
@@ -5798,6 +5874,11 @@ end;
 procedure TfrmMain.N34Click(Sender: TObject);
 begin
   if DirectoryExists(Settings.ReadDir) then ClearDir(Settings.ReadDir);
+end;
+
+procedure TfrmMain.miEditToolbarVisibleClick(Sender: TObject);
+begin
+  tlbrEdit.Visible := miEditToolbarVisible.Checked;
 end;
 
 procedure TfrmMain.miExportUserDataClick(Sender: TObject);

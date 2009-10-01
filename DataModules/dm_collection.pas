@@ -220,6 +220,7 @@ type
     tblExtraData: TWideMemoField;
     tblBooksFullName: TWideStringField;
   private
+    FIsFavorites: boolean;
     FActiveTable: TAbsTable;
 
     { Private declarations }
@@ -358,33 +359,37 @@ procedure TDMCollection.GetCurrentBook(var R: TBookRecord);
 var
   BookID: Integer;
 begin
-  BookID := tblBooksID.Value;
+  BookID := ActiveTable.FieldByname('ID').Value;
 
   R.Clear;
 
-  R.Title := tblBooksTitle.Value;
-  R.Series := IfThen(tblBooksSerID.IsNull, NO_SERIES_TITLE, tblBooksSeries.Value);
-  R.SeqNumber := tblBooksSeqNumber.Value;
-  R.Folder := tblBooksFolder.Value;
-  R.FileName := tblBooksFileName.Value;
-  R.FileExt := tblBooksExt.Value;
-  R.Size := tblBooksSize.Value;
-  R.InsideNo := tblBooksInsideNo.Value;
-  R.Date := tblBooksDate.Value;
-  R.Lang := tblBooksLang.Value;
-  R.KeyWords := tblBooksKeyWords.Value;
+  R.Title := ActiveTable.FieldByname('Title').Value;
+  R.Series := IfThen(ActiveTable.FieldByname('SerID').IsNull,
+                     NO_SERIES_TITLE,
+                     ActiveTable.FieldByname('Series').AsWideString);
+  R.SeqNumber := ActiveTable.FieldByname('SeqNumber').Value;
+  R.Folder := ActiveTable.FieldByname('Folder').Value;
+  R.FileName := ActiveTable.FieldByname('FileName').Value;
+  R.FileExt := ActiveTable.FieldByname('Ext').Value;
+  R.Size := ActiveTable.FieldByname('Size').Value;
+  R.InsideNo := ActiveTable.FieldByname('InsideNo').Value;
+  R.Date := ActiveTable.FieldByname('Date').Value;
+  R.Lang := ActiveTable.FieldByname('Lang').AsWideString;
+  R.KeyWords := ActiveTable.FieldByname('KeyWords').AsWideString;
 
-  tblBooks_Genre_List.Locate('GL_BookID', BookID, []);
-  while (not tblBooks_Genre_List.Eof) and (tblBooks_Genre_ListGL_BookID.Value = BookID) do
+  if not FIsFavorites  then
   begin
-    R.AddGenreFB2(
-      tblBooks_GenresG_Code.Value,
-      tblBooks_GenresG_FB2Code.Value,
-      tblBooks_GenresG_Alias.Value
-      );
+    tblBooks_Genre_List.Locate('GL_BookID', BookID, []);
+    while (not tblBooks_Genre_List.Eof) and (tblBooks_Genre_ListGL_BookID.Value = BookID) do
+    begin
+      R.AddGenreFB2(
+        tblBooks_GenresG_Code.Value,
+        tblBooks_GenresG_FB2Code.Value,
+        tblBooks_GenresG_Alias.Value
+        );
 
-    tblBooks_Genre_List.Next;
-  end;
+      tblBooks_Genre_List.Next;
+    end;
 
   (****************************************************************************
    * Попробовал использовать Query для получения информации об авторах книги.
@@ -397,16 +402,22 @@ begin
    *
    *)
 
-  tblAuthor_Master.Locate('AL_BookID', BookID, []);
-  while (not tblAuthor_Master.Eof) and (tblAuthor_MasterAL_BookID.Value = BookID) do
-  begin
-    R.AddAuthor(
-      tblAuthor_DetailA_Family.Value,
-      tblAuthor_DetailA_Name.Value,
-      tblAuthor_DetailA_Middle.Value
-      );
+    tblAuthor_Master.Locate('AL_BookID', BookID, []);
+    while (not tblAuthor_Master.Eof) and (tblAuthor_MasterAL_BookID.Value = BookID) do
+    begin
+      R.AddAuthor(
+        tblAuthor_DetailA_Family.Value,
+        tblAuthor_DetailA_Name.Value,
+        tblAuthor_DetailA_Middle.Value
+        );
 
-    tblAuthor_Master.Next;
+      tblAuthor_Master.Next;
+    end
+  end // not Favorites
+  else
+  begin
+    R.AddGenreFB2('','',ActiveTable.FieldByname('Genres').Value);
+    R.AddAuthor(ActiveTable.FieldByname('FullName').Value,'','');
   end;
 end;
 
@@ -459,9 +470,15 @@ end;
 procedure TDMCollection.SetActiveTable(Tag: integer);
 begin
   if Tag = PAGE_FAVORITES then
-    FActiveTable := DMUser.tblGrouppedBooks
+  begin
+    FActiveTable := DMUser.tblGrouppedBooks;
+    FIsFavorites := True;
+  end
   else
+  begin
     FActiveTable := tblBooks;
+    FIsFavorites := False;
+  end;
 end;
 
 procedure TDMCollection.GetBookFolder(ID: integer; out AFolder: String);
