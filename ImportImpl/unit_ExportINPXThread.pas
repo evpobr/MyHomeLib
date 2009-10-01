@@ -230,7 +230,6 @@ const
   SubItemDelimiterChar = ',';
 var
   nIndex : integer;
-  nParamIndex: integer;
 
   slParams: TStringList;
   cParam: String;
@@ -241,7 +240,7 @@ begin
   slParams := TStringList.Create;
   try
     slParams.Clear;
-    nParamIndex := -1;
+
     //
     // Список авторов
     //
