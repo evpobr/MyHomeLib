@@ -2730,14 +2730,14 @@ begin
   if miBookInfo.Visible and IsPrivate and IsNonFB2 then
   begin
     miConverToFBD.Visible := true;
-    miConverToFBD.Enabled := False;
+    miConverToFBD.Tag := 999;
     miConverToFBD.Caption := 'Редактировать FBD';
   end
     else
       if not miBookInfo.Visible and IsPrivate and IsNonFB2 then
       begin
         miConverToFBD.Visible := true;
-        miConverToFBD.Enabled := true;
+        miConverToFBD.Tag := 0;
         miConverToFBD.Caption := 'Преобразовать FBD';
       end;
 
@@ -5863,6 +5863,7 @@ end;
 
 procedure TfrmMain.miConverToFBDClick(Sender: TObject);
 begin
+  frmConvertToFBD.EditorMode := miConverToFBD.Tag <> 0;
   frmConvertToFBD.ShowModal;
 end;
 
