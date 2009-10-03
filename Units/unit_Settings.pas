@@ -548,7 +548,7 @@ begin
     //
     FProxyServer := iniFile.ReadString(NETWORK_SECTION, 'proxy', '');
     FProxyUsername := iniFile.ReadString(NETWORK_SECTION, 'proxy-user', '');
-    FProxyPassword := DecodeStr(iniFile.ReadString(NETWORK_SECTION, 'proxy-pass', ''));
+    FProxyPassword := DecodePassString(iniFile.ReadString(NETWORK_SECTION, 'proxy-pass', ''));
     FProxyPort := iniFile.ReadInteger(NETWORK_SECTION, 'proxy-port', 0);
     FUpdateURL := iniFile.ReadString(NETWORK_SECTION, 'update_server', 'http://home-lib.net/update/');
     FDownloadURL := iniFile.ReadString(NETWORK_SECTION, 'library_server', 'http://lib.rus.ec/');
@@ -687,7 +687,7 @@ begin
     //
     iniFile.WriteString(NETWORK_SECTION, 'proxy', FProxyServer);
     iniFile.WriteString(NETWORK_SECTION, 'proxy-user', FProxyUsername);
-    iniFile.WriteString(NETWORK_SECTION, 'proxy-pass', EncodeStr(FProxyPassword));
+    iniFile.WriteString(NETWORK_SECTION, 'proxy-pass', EncodePassString(FProxyPassword));
     iniFile.WriteInteger(NETWORK_SECTION, 'proxy-port', FProxyPort);
     iniFile.WriteString(NETWORK_SECTION, 'update_server', FUpdateURL);
     iniFile.WriteString(NETWORK_SECTION, 'library_server', FDownloadURL);

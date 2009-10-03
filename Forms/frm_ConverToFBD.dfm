@@ -1,6 +1,7 @@
 object frmConvertToFBD: TfrmConvertToFBD
   Left = 0
   Top = 0
+  ActiveControl = edPublisher
   BorderStyle = bsToolWindow
   Caption = #1055#1088#1077#1086#1073#1088#1072#1079#1086#1074#1072#1085#1080#1077' '#1074' FBD'
   ClientHeight = 420
@@ -26,8 +27,6 @@ object frmConvertToFBD: TfrmConvertToFBD
     Align = alClient
     BorderOuter = fsFlatRounded
     TabOrder = 0
-    ExplicitLeft = -2
-    ExplicitHeight = 349
     object RzLabel1: TRzLabel
       Left = 207
       Top = 201
@@ -61,7 +60,7 @@ object frmConvertToFBD: TfrmConvertToFBD
       Width = 338
       Height = 141
       ScrollBars = ssVertical
-      TabOrder = 0
+      TabOrder = 4
     end
     object RzGroupBox1: TRzGroupBox
       Left = 207
@@ -69,7 +68,7 @@ object frmConvertToFBD: TfrmConvertToFBD
       Width = 338
       Height = 65
       Caption = #1040#1074#1090#1086#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072
-      TabOrder = 1
+      TabOrder = 3
       object RzLabel2: TRzLabel
         Left = 18
         Top = 18
@@ -167,28 +166,28 @@ object frmConvertToFBD: TfrmConvertToFBD
         Top = 43
         Width = 230
         Height = 21
-        TabOrder = 0
+        TabOrder = 2
       end
       object edPublisher: TRzEdit
         Left = 62
         Top = 18
         Width = 124
         Height = 21
-        TabOrder = 1
+        TabOrder = 0
       end
       object edYear: TRzEdit
         Left = 301
         Top = 45
         Width = 28
         Height = 21
-        TabOrder = 2
+        TabOrder = 3
       end
       object edCity: TRzEdit
         Left = 229
         Top = 18
         Width = 100
         Height = 21
-        TabOrder = 3
+        TabOrder = 1
       end
     end
     object btnOpenBook: TRzBitBtn
@@ -198,7 +197,7 @@ object frmConvertToFBD: TfrmConvertToFBD
       Hint = #1054#1090#1082#1088#1099#1090#1100' '#1082#1085#1080#1075#1091
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 3
+      TabOrder = 0
       OnClick = btnOpenBookClick
       ImageIndex = 2
       Images = ImageList1
@@ -209,7 +208,7 @@ object frmConvertToFBD: TfrmConvertToFBD
       Width = 198
       Height = 313
       Caption = #1054#1073#1083#1086#1078#1082#1072
-      TabOrder = 4
+      TabOrder = 1
       object FCover: TImage
         AlignWithMargins = True
         Left = 4
@@ -232,7 +231,7 @@ object frmConvertToFBD: TfrmConvertToFBD
         Caption = #1048#1079' '#1073#1091#1092#1077#1088#1072
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 0
+        TabOrder = 1
         OnClick = btnPasteCoverClick
         ImageIndex = 0
         Images = ImageList1
@@ -245,7 +244,7 @@ object frmConvertToFBD: TfrmConvertToFBD
         Caption = #1048#1079' '#1092#1072#1081#1083#1072
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 1
+        TabOrder = 0
         OnClick = btnLoadClick
         ImageIndex = 1
         Images = ImageList1
@@ -261,16 +260,15 @@ object frmConvertToFBD: TfrmConvertToFBD
     Align = alBottom
     BorderOuter = fsFlatRounded
     TabOrder = 1
-    ExplicitTop = 358
     object btnSave: TBitBtn
       Left = 464
-      Top = 6
+      Top = 10
       Width = 81
       Height = 25
       Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
       DoubleBuffered = True
       ParentDoubleBuffered = False
-      TabOrder = 0
+      TabOrder = 1
       OnClick = btnSaveClick
     end
     object Button1: TButton
@@ -282,7 +280,7 @@ object frmConvertToFBD: TfrmConvertToFBD
       Caption = '>>>'
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 1
+      TabOrder = 0
       OnClick = Button1Click
     end
     object Button2: TButton
@@ -303,7 +301,7 @@ object frmConvertToFBD: TfrmConvertToFBD
     Left = 392
     Top = 256
     Bitmap = {
-      494C010103000800380010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010103000800400010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000838383FF838383FF828282FF828282FF818181FF808080FF808080FF7E7E
