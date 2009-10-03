@@ -3,7 +3,7 @@ object frmConvertToFBD: TfrmConvertToFBD
   Top = 0
   BorderStyle = bsToolWindow
   Caption = #1055#1088#1077#1086#1073#1088#1072#1079#1086#1074#1072#1085#1080#1077' '#1074' FBD'
-  ClientHeight = 402
+  ClientHeight = 420
   ClientWidth = 559
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -22,40 +22,50 @@ object frmConvertToFBD: TfrmConvertToFBD
     Left = 3
     Top = 3
     Width = 553
-    Height = 349
+    Height = 367
     Align = alClient
     BorderOuter = fsFlatRounded
     TabOrder = 0
-    object FCover: TImage
-      Left = 8
-      Top = 8
-      Width = 193
-      Height = 289
-      Hint = #1054#1073#1083#1086#1078#1082#1072
-      Center = True
-      ParentShowHint = False
-      Proportional = True
-      ShowHint = True
-      Stretch = True
-    end
+    ExplicitLeft = -2
+    ExplicitHeight = 349
     object RzLabel1: TRzLabel
       Left = 207
-      Top = 189
+      Top = 201
       Width = 55
       Height = 13
       Caption = #1040#1085#1085#1086#1090#1072#1094#1080#1103
     end
+    object lblAuthor: TRzLabel
+      Left = 12
+      Top = 10
+      Width = 52
+      Height = 13
+      Caption = 'lblAuthor'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object lblTitle: TRzLabel
+      Left = 12
+      Top = 27
+      Width = 43
+      Height = 13
+      Caption = 'lblAuthor'
+    end
     object mmAnnotation: TMemo
       Left = 207
-      Top = 208
+      Top = 220
       Width = 338
-      Height = 129
+      Height = 141
       ScrollBars = ssVertical
       TabOrder = 0
     end
     object RzGroupBox1: TRzGroupBox
       Left = 207
-      Top = 113
+      Top = 125
       Width = 338
       Height = 65
       Caption = #1040#1074#1090#1086#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072
@@ -119,7 +129,7 @@ object frmConvertToFBD: TfrmConvertToFBD
     end
     object RzGroupBox2: TRzGroupBox
       Left = 207
-      Top = 36
+      Top = 48
       Width = 338
       Height = 71
       Caption = #1048#1079#1076#1072#1090#1077#1083#1100
@@ -181,32 +191,6 @@ object frmConvertToFBD: TfrmConvertToFBD
         TabOrder = 3
       end
     end
-    object btnLoad: TRzBitBtn
-      Left = 8
-      Top = 311
-      Width = 89
-      Hint = #1047#1072#1075#1088#1091#1079#1080#1090#1100' '#1080#1079' '#1092#1072#1081#1083#1072
-      Caption = #1048#1079' '#1092#1072#1081#1083#1072
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 3
-      OnClick = btnLoadClick
-      ImageIndex = 1
-      Images = ImageList1
-    end
-    object btnPasteCover: TRzBitBtn
-      Left = 112
-      Top = 311
-      Width = 89
-      Hint = #1042#1089#1090#1072#1074#1080#1090#1100' '#1080#1079' '#1073#1091#1092#1077#1088#1072
-      Caption = #1048#1079' '#1073#1091#1092#1077#1088#1072
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 4
-      OnClick = btnPasteCoverClick
-      ImageIndex = 0
-      Images = ImageList1
-    end
     object btnOpenBook: TRzBitBtn
       Left = 520
       Top = 5
@@ -214,22 +198,70 @@ object frmConvertToFBD: TfrmConvertToFBD
       Hint = #1054#1090#1082#1088#1099#1090#1100' '#1082#1085#1080#1075#1091
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 5
+      TabOrder = 3
       OnClick = btnOpenBookClick
       ImageIndex = 2
       Images = ImageList1
+    end
+    object RzGroupBox3: TRzGroupBox
+      Left = 4
+      Top = 48
+      Width = 198
+      Height = 313
+      Caption = #1054#1073#1083#1086#1078#1082#1072
+      TabOrder = 4
+      object FCover: TImage
+        AlignWithMargins = True
+        Left = 4
+        Top = 17
+        Width = 190
+        Height = 260
+        Hint = #1054#1073#1083#1086#1078#1082#1072
+        Align = alTop
+        Center = True
+        ParentShowHint = False
+        Proportional = True
+        ShowHint = True
+        Stretch = True
+      end
+      object btnPasteCover: TRzBitBtn
+        Left = 102
+        Top = 283
+        Width = 89
+        Hint = #1042#1089#1090#1072#1074#1080#1090#1100' '#1080#1079' '#1073#1091#1092#1077#1088#1072
+        Caption = #1048#1079' '#1073#1091#1092#1077#1088#1072
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 0
+        OnClick = btnPasteCoverClick
+        ImageIndex = 0
+        Images = ImageList1
+      end
+      object btnLoad: TRzBitBtn
+        Left = 5
+        Top = 283
+        Width = 89
+        Hint = #1047#1072#1075#1088#1091#1079#1080#1090#1100' '#1080#1079' '#1092#1072#1081#1083#1072
+        Caption = #1048#1079' '#1092#1072#1081#1083#1072
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 1
+        OnClick = btnLoadClick
+        ImageIndex = 1
+        Images = ImageList1
+      end
     end
   end
   object RzPanel2: TRzPanel
     AlignWithMargins = True
     Left = 3
-    Top = 358
+    Top = 376
     Width = 553
     Height = 41
     Align = alBottom
     BorderOuter = fsFlatRounded
     TabOrder = 1
-    ExplicitLeft = -2
+    ExplicitTop = 358
     object btnSave: TBitBtn
       Left = 464
       Top = 6
@@ -271,7 +303,7 @@ object frmConvertToFBD: TfrmConvertToFBD
     Left = 392
     Top = 256
     Bitmap = {
-      494C010103000800340010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010103000800380010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000838383FF838383FF828282FF828282FF818181FF808080FF808080FF7E7E

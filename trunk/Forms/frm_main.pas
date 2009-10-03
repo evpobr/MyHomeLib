@@ -1096,8 +1096,10 @@ begin
     Height := Settings.FormHeight;
   end;
 
-
   SetColors;
+
+  tlbrEdit.Visible := Settings.EditToolbarVisible;
+  miEditToolbarVisible.Checked := tlbrEdit.Visible;
 
   RusBar.Visible := Settings.ShowRusBar;
   EngBar.Visible := Settings.ShowEngBar;
@@ -2733,6 +2735,11 @@ begin
     miConverToFBD.Visible := true;
     miConverToFBD.Tag := 999;
     miConverToFBD.Caption := 'Редактировать FBD';
+    if frmConvertToFBD <> nil then
+    begin
+      frmConvertToFBD.EditorMode := true;
+      frmConvertToFBD.Caption := 'Редактирование FBD';
+    end;
   end
     else
       if not miBookInfo.Visible and IsPrivate and IsNonFB2 then
@@ -2740,6 +2747,11 @@ begin
         miConverToFBD.Visible := true;
         miConverToFBD.Tag := 0;
         miConverToFBD.Caption := 'Преобразовать FBD';
+        if frmConvertToFBD <> nil then
+        begin
+          frmConvertToFBD.EditorMode := false;
+          frmConvertToFBD.Caption := 'Преобразование в FBD';
+        end;
       end;
 
 
@@ -5874,6 +5886,7 @@ end;
 procedure TfrmMain.miEditToolbarVisibleClick(Sender: TObject);
 begin
   tlbrEdit.Visible := miEditToolbarVisible.Checked;
+  Settings.EditToolbarVisible := tlbrEdit.Visible;
 end;
 
 procedure TfrmMain.miExportUserDataClick(Sender: TObject);

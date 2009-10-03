@@ -31,7 +31,6 @@ type
     RzPanel1: TRzPanel;
     RzPanel2: TRzPanel;
     mmAnnotation: TMemo;
-    FCover: TImage;
     btnSave: TBitBtn;
     RzGroupBox1: TRzGroupBox;
     edFirstName: TRzEdit;
@@ -52,12 +51,16 @@ type
     edYear: TRzEdit;
     edCity: TRzEdit;
     RzLabel5: TRzLabel;
-    btnLoad: TRzBitBtn;
     ImageList1: TImageList;
-    btnPasteCover: TRzBitBtn;
     btnOpenBook: TRzBitBtn;
     Button1: TButton;
     Button2: TButton;
+    lblAuthor: TRzLabel;
+    lblTitle: TRzLabel;
+    RzGroupBox3: TRzGroupBox;
+    btnPasteCover: TRzBitBtn;
+    FCover: TImage;
+    btnLoad: TRzBitBtn;
     procedure btnPasteCoverClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -112,7 +115,8 @@ uses
   dm_user,
   unit_Helpers,
   ActiveX,
-  ComObj;
+  ComObj,
+  unit_Consts;
 
 {$R *.dfm}
 
@@ -120,10 +124,7 @@ procedure TfrmConvertToFBD.btnLoadClick(Sender: TObject);
 var
   Input, Output: TMemoryStream;
   IMG: TGraphic;
-
   FileName,Ext : string;
-
-
 begin
    if not GetFileName(fnOpenCoverImage,FileName) then Exit;
 
@@ -502,6 +503,11 @@ begin
   mmAnnotation.Clear;
   FCover.Picture := nil;
 
+  lblAuthor.Caption := FBookRecord.Authors[0].FLastName + ' ' +
+                       FBookRecord.Authors[0].FFirstName;
+
+  lblTitle.Caption := FBookRecord.Title;
+
   FXML := TXmlDocument.Create(Self);
   FXML.Active := True;
 
@@ -518,7 +524,7 @@ begin
   begin
     FBookFileName := FBookrecord.FileName + FBookrecord.FileExt;
     FFBDFilename := FBookrecord.FileName + '.fbd';
-    FZipFileName := FFolder + ChangeFileExt(FBookrecord.FileName,'.zip');
+    FZipFileName := FFolder + FBookrecord.FileName + ZIP_EXTENSION;
   end;
 end;
 
