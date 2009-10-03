@@ -21,11 +21,11 @@ uses
   fictionbook_21,
   dm_Collection,
   unit_Globals,
-  XMLDoc, ImgList, RzButton;
+  XMLDoc,
+  ImgList,
+  RzButton;
 
 type
-
-   TImageType = (itPng,itJPG);
 
   TfrmConvertToFBD = class(TForm)
     RzPanel1: TRzPanel;
@@ -84,7 +84,7 @@ type
 
     FXML : TXMLDocument;
 
-    FImageType : TImageType;
+    FImageType : TCoverImageType;
     FEditorMode: boolean;
 
     function MakeFBD:boolean;
@@ -124,7 +124,7 @@ procedure TfrmConvertToFBD.btnLoadClick(Sender: TObject);
 var
   Input, Output: TMemoryStream;
   IMG: TGraphic;
-  FileName,Ext : string;
+  FileName: string;
 begin
    if not GetFileName(fnOpenCoverImage,FileName) then Exit;
 
@@ -138,19 +138,8 @@ begin
    Output.Seek(0,soFromBeginning);
    FLines.LoadFromStream(Output);
 
-   Ext := LowerCase(ExtractFileExt(Filename));
    try
-     if Ext = '.png' then
-     begin
-       IMG := TPngImage.Create;
-       FImageType := itPNG;
-     end
-     else
-       if (Ext = '.jpg') or (Ext = '.jpeg') then
-       begin
-         IMG := TJPEGImage.Create;
-         FImageType := itJPG;
-       end;
+     CreateImage(ExtractFileExt(Filename),IMG, FImageType);
      if Assigned(IMG) then
      begin
        Input.Seek(0,soFromBeginning);
@@ -320,19 +309,7 @@ begin
           Output.Seek(0,soFromBeginning);
           DecodeStream(Output,Input);
 
-          Ext := LowerCase(ExtractFileExt(CoverID));
-
-          if Ext = '.png' then
-          begin
-            IMG := TPngImage.Create;
-            FImageType := itPNG;
-          end
-          else
-          if (Ext = '.jpg') or (Ext = '.jpeg') then
-          begin
-            IMG := TJPEGImage.Create;
-            FImageType := itJPG;
-          end;
+          CreateImage(ExtractFileExt(CoverID),IMG,FImageType);
           if Assigned(IMG) then
           begin
             Input.Seek(0,soFromBeginning);
