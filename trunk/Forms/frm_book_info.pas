@@ -26,12 +26,12 @@ type
     TabSheet2: TRzTabSheet;
     mmShort: TMemo;
     Img: TImage;
-    mmInfo: TMemo;
     RzPanel1: TRzPanel;
     RzBitBtn1: TRzBitBtn;
     btnLoadReview: TRzBitBtn;
     mmReview: TRzMemo;
     btnClearReview: TRzBitBtn;
+    mmInfo: TRzRichEdit;
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure RzBitBtn1Click(Sender: TObject);
     procedure mmReviewChange(Sender: TObject);
@@ -227,37 +227,61 @@ begin
 
     with Book.Description.Titleinfo do
     begin
+
+      mmInfo.SelAttributes.Size := 10;
+      mmInfo.SelAttributes.Style := [fsBold];
+
       if Author.Count>0 then
-        mmInfo.Lines.Add(Author[0].Lastname.Text+' '+Author[0].Firstname.Text);
-      mmInfo.Lines.Add(Booktitle.Text);
-      if Genre.Count>0 then mmInfo.Lines.Add('Жанр: '+Genre[0]);;
+        mmInfo.SetSelText(Author[0].Lastname.Text+' '+Author[0].Firstname.Text+#13#10);
+
+      mmInfo.SelAttributes.Size := 12;
+      mmInfo.SelAttributes.Color := clNavy;
+      mmInfo.SetSelText(Booktitle.Text+#13#10);
+
+      mmInfo.SelAttributes.Style := [fsBold];
+      mmInfo.SetSelText('Серия: ');
+      mmInfo.SelAttributes.Style := [];
+
       if Sequence.Count>0 then
       begin
-        mmInfo.Lines.Add('Серия: '+Sequence[0].Name);
-//        mmInfo.Lines.Add('Номер: '+IntToStr(Sequence[0].Number));
+        mmInfo.SetSelText(Sequence[0].Name);
+//        mmInfo.SetSelText('Номер: '+IntToStr(Sequence[0].Number));
       end;
+      mmInfo.SetSelText(#13#10);
+
+      mmInfo.SelAttributes.Style := [fsBold];
+      mmInfo.SetSelText('Жанр: ');
+      mmInfo.SelAttributes.Style := [];
+
+      if Genre.Count>0 then mmInfo.SetSelText(Genre[0]+#13#10);;
 
      if Annotation.HasChildNodes then
           for I := 0 to Annotation.ChildNodes.Count - 1 do
-            mmShort.Lines.Add(Annotation.ChildNodes[i].Text);
-      mmInfo.Lines.Add('');
-      mmInfo.Lines.Add('PublishInfo:');
-      mmInfo.Lines.Add('Издатель: '+Book.Description.Publishinfo.Publisher.Text);
-      mmInfo.Lines.Add('Город: '+Book.Description.Publishinfo.City.Text);
-      mmInfo.Lines.Add('Год: '+Book.Description.Publishinfo.Year);
-      mmInfo.Lines.Add('ISBN: '+Book.Description.Publishinfo.Isbn.Text);
-      mmInfo.Lines.Add('');
-      mmInfo.Lines.Add('DocumentInfo (OCR):');
-      mmInfo.Lines.Add('Авторы: ');
+            mmShort.SetSelText(Annotation.ChildNodes[i].Text);
+      mmInfo.SetSelText(#13#10);
+
+      mmInfo.SelAttributes.Style := [fsBold];
+      mmInfo.SetSelText('PublishInfo' + #13#10);
+      mmInfo.SelAttributes.Style := [];
+
+      mmInfo.SetSelText('Издатель: '+Book.Description.Publishinfo.Publisher.Text+#13#10);
+      mmInfo.SetSelText('Город: '+Book.Description.Publishinfo.City.Text+#13#10);
+      mmInfo.SetSelText('Год: '+Book.Description.Publishinfo.Year+#13#10);
+      mmInfo.SetSelText('ISBN: '+Book.Description.Publishinfo.Isbn.Text+#13#10);
+      mmInfo.SetSelText(#13#10);
+      mmInfo.SelAttributes.Style := [fsBold];
+      mmInfo.SetSelText('DocumentInfo (OCR)'+#13#10);
+      mmInfo.SelAttributes.Style := [];
+      mmInfo.SetSelText('Авторы: '+#13#10);
       for I := 0 to Book.Description.Documentinfo.Author.Count - 1 do
         with Book.Description.Documentinfo.Author.Items[i] do
-            mmInfo.Lines.Add(Firstname.Text + ' ' +Lastname.Text + '(' + NickName.Text + ')');
-      mmInfo.Lines.Add('');
-      mmInfo.Lines.Add('Программа: '+Book.Description.Documentinfo.Programused.Text);
-      mmInfo.Lines.Add('Дата: '+Book.Description.Documentinfo.Date.Text);
-      mmInfo.Lines.Add('ID: '+Book.Description.Documentinfo.ID);
-      mmInfo.Lines.Add('Version: '+Book.Description.Documentinfo.Version);
-      mmInfo.Lines.Add('History: '+Book.Description.Documentinfo.History.P.OnlyText);
+            mmInfo.SetSelText(Firstname.Text + ' ' +Lastname.Text + '(' + NickName.Text + ')' + #13#10);
+      mmInfo.SetSelText('');
+      mmInfo.SetSelText('Программа: '+Book.Description.Documentinfo.Programused.Text + #13#10);
+      mmInfo.SetSelText('Дата: '+Book.Description.Documentinfo.Date.Text + #13#10);
+      mmInfo.SetSelText('ID: '+Book.Description.Documentinfo.ID + #13#10);
+      mmInfo.SetSelText('Version: '+Book.Description.Documentinfo.Version + #13#10);
+      mmInfo.SetSelText('History: '+Book.Description.Documentinfo.History.P.OnlyText + #13#10);
     end;
   except
   end;

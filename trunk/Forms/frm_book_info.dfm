@@ -21,18 +21,14 @@ object frmBookDetails: TfrmBookDetails
     Top = 0
     Width = 582
     Height = 438
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Align = alClient
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     FixedDimension = 19
     object TabSheet1: TRzTabSheet
       DisabledIndex = 0
       Caption = 'Fb2 '#1080#1085#1092#1086
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Img: TImage
         Left = 8
         Top = 13
@@ -54,12 +50,17 @@ object frmBookDetails: TfrmBookDetails
         ScrollBars = ssVertical
         TabOrder = 0
       end
-      object mmInfo: TMemo
-        Left = 214
+      object mmInfo: TRzRichEdit
+        Left = 215
         Top = 13
         Width = 353
         Height = 281
-        ReadOnly = True
+        Font.Charset = RUSSIAN_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
         ScrollBars = ssVertical
         TabOrder = 1
       end
@@ -200,7 +201,7 @@ object frmBookDetails: TfrmBookDetails
       35)
     object RzBitBtn1: TRzBitBtn
       Left = 470
-      Top = 4
+      Top = 7
       Width = 104
       Anchors = [akRight, akBottom]
       Caption = #1047#1072#1082#1088#1099#1090#1100

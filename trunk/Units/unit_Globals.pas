@@ -121,8 +121,8 @@ function isNonFB2Collection(t: COLLECTION_TYPE): Boolean; //inline;
 function Transliterate(Input: string): string;
 function CheckSymbols(Input: string): string;
 ///procedure GetFileList(InitDir, Ext: string; var OutList: TStringList);
-function EncodeStr(Input: string): string;
-function DecodeStr(Input: string): string;
+function EncodePassString(Input: string): string;
+function DecodePassString(Input: string): string;
 //function DecodeBase64(const CinLine: ansistring): ansistring;
 procedure StrReplace(s1, s2: String; var s3: String);
 
@@ -468,7 +468,7 @@ begin
   end;
 end;
 
-function EncodeStr(Input: string): string;
+function EncodePassString(Input: string): string;
 var
   i: Integer;
 begin
@@ -477,7 +477,7 @@ begin
     Result[i] := Chr(Ord(Input[i]) + 5);
 end;
 
-function DecodeStr(Input: string): string;
+function DecodePassString(Input: string): string;
 var
   i: Integer;
 begin
