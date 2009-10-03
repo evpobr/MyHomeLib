@@ -173,6 +173,7 @@ var
   TmpImg: TGraphic;
 
   StrLen : integer;
+  ImageType: TCoverImageType;
 
 begin
   FReviewChanged := False;
@@ -208,21 +209,13 @@ begin
 
       if ImgVisible then
       begin
-        Ext := LowerCase(ExtractFileExt(CoverID));
-        try
-          if Ext = '.png' then
-             TmpImg := TPngImage.Create
-          else
-            if (Ext = '.jpg') or (Ext = '.jpeg') then
-              TmpImg := TJPEGImage.Create;
-          if Assigned(TmpImg) then
-          begin
-            MS.Seek(0,soFromBeginning);
-            TmpImg.LoadFromStream(MS);
-            IMG.Picture.Assign(TmpImg);
-            IMG.Invalidate;
-          end;
-        finally
+        CreateImage(ExtractFileExt(CoverID), TmpImg, ImageType);
+        if Assigned(TmpImg) then
+        begin
+          MS.Seek(0,soFromBeginning);
+          TmpImg.LoadFromStream(MS);
+          IMG.Picture.Assign(TmpImg);
+          IMG.Invalidate;
           TmpImg.Free;
         end;
       end
@@ -234,7 +227,6 @@ begin
 
     with Book.Description.Titleinfo do
     begin
-      mmInfo.Lines.Add('Description:');
       if Author.Count>0 then
         mmInfo.Lines.Add(Author[0].Lastname.Text+' '+Author[0].Firstname.Text);
       mmInfo.Lines.Add(Booktitle.Text);
@@ -248,17 +240,19 @@ begin
      if Annotation.HasChildNodes then
           for I := 0 to Annotation.ChildNodes.Count - 1 do
             mmShort.Lines.Add(Annotation.ChildNodes[i].Text);
-
+      mmInfo.Lines.Add('');
       mmInfo.Lines.Add('PublishInfo:');
       mmInfo.Lines.Add('Издатель: '+Book.Description.Publishinfo.Publisher.Text);
       mmInfo.Lines.Add('Город: '+Book.Description.Publishinfo.City.Text);
       mmInfo.Lines.Add('Год: '+Book.Description.Publishinfo.Year);
       mmInfo.Lines.Add('ISBN: '+Book.Description.Publishinfo.Isbn.Text);
+      mmInfo.Lines.Add('');
       mmInfo.Lines.Add('DocumentInfo (OCR):');
       mmInfo.Lines.Add('Авторы: ');
       for I := 0 to Book.Description.Documentinfo.Author.Count - 1 do
         with Book.Description.Documentinfo.Author.Items[i] do
             mmInfo.Lines.Add(Firstname.Text + ' ' +Lastname.Text + '(' + NickName.Text + ')');
+      mmInfo.Lines.Add('');
       mmInfo.Lines.Add('Программа: '+Book.Description.Documentinfo.Programused.Text);
       mmInfo.Lines.Add('Дата: '+Book.Description.Documentinfo.Date.Text);
       mmInfo.Lines.Add('ID: '+Book.Description.Documentinfo.ID);

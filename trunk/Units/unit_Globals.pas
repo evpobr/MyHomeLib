@@ -28,6 +28,7 @@ type
 
   TTXTEncoding = (enUTF8, en1251, enUnicode, enUnknown);
 
+  TCoverImageType = (itPng,itJPG);
 
   TTreeMode = (tmTree,tmFlat);
 
@@ -158,6 +159,11 @@ function CleanExtension(const Ext: string): string;
 function ExtractShortFileName(FileName: string):string;
 
 function TestArchive(FileName: string): boolean;
+
+procedure CreateImage(ext:string;
+                      var IMG: TGraphic;
+                      var ImageType:TCoverImageType);
+
 
 type
   TAppLanguage = (alEng, alRus);
@@ -307,7 +313,9 @@ uses
   idStack,
   ShlObj,
   frm_main,
-  unit_fb2ToText;
+  unit_fb2ToText,
+  jpeg,
+  pngimage;
 
 const
   lat: set of char = ['A'..'Z', 'a'..'z', '\', '-', ':', '`', ',', '.', '0'..'9', '_', '(', ')', '[', ']', '{', '}'];
@@ -1030,6 +1038,24 @@ var
 begin
   Ext := ExtractFileExt(FileName);
   Result := Copy(FileName,1,Length(FileName)-Length(Ext));
+end;
+
+procedure CreateImage(ext:string;
+                      var IMG: TGraphic;
+                      var ImageType: TCoverImageType);
+begin
+   Ext := LowerCase(Ext);
+  if Ext = '.png' then
+  begin
+    IMG := TPngImage.Create;
+    ImageType := itPNG;
+  end
+  else
+    if (Ext = '.jpg') or (Ext = '.jpeg') then
+    begin
+      IMG := TJPEGImage.Create;
+      ImageType := itJPG;
+    end;
 end;
 
 end.

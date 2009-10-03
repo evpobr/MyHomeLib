@@ -29,6 +29,10 @@ object frmBookDetails: TfrmBookDetails
     object TabSheet1: TRzTabSheet
       DisabledIndex = 0
       Caption = 'Fb2 '#1080#1085#1092#1086
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Img: TImage
         Left = 8
         Top = 13
@@ -192,11 +196,11 @@ object frmBookDetails: TfrmBookDetails
     BorderOuter = fsFlatBold
     TabOrder = 1
     DesignSize = (
-      582
-      37)
+      580
+      35)
     object RzBitBtn1: TRzBitBtn
-      Left = 472
-      Top = 6
+      Left = 470
+      Top = 4
       Width = 104
       Anchors = [akRight, akBottom]
       Caption = #1047#1072#1082#1088#1099#1090#1100
