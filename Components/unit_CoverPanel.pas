@@ -360,7 +360,7 @@ begin
       try
         Zip.FileName := FFolder + FFile;
         Zip.OpenArchive;
-        s := ChangeFileExt(GetFileNameZip(Zip,FNo),'.fbd');
+        s := ChangeFileExt(FFile,'.fbd');
         Zip.ExtractToStream(S,FS);
         Result := True;
       finally

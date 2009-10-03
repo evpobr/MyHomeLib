@@ -95,6 +95,7 @@ type
     FBookSRCollapsed: boolean;
     FFileSRCollapsed: boolean;
     FOtherSRCollapsed: boolean;
+    FEditToolBarVisible: boolean;
 
     // NETWORK_SECTION
     FProxyServer: string;
@@ -249,6 +250,8 @@ type
     property ShowLocalOnly: Boolean read FShowLocalOnly write FShowLocalOnly;
     property ShowSubGenreBooks: boolean read FShowSubGenreBooks write FShowSubGenreBooks;
     property ShowFb2Info: boolean read FShowFb2Info write FShowFb2Info;
+    property EditToolBarVisible: boolean read  FEditToolBarVisible write  FEditToolBarVisible;
+
     property AutoRunUpdate: boolean read FAutoRunUpdate write FAutoRunUpdate;
 
     property MinimizeToTray : boolean read FMinimizeToTray   write FMinimizeToTray;
@@ -523,7 +526,7 @@ begin
     FBookSRCollapsed := iniFile.ReadBool(INTERFACE_SECTION, 'BookSR', False);
     FFileSRCollapsed := iniFile.ReadBool(INTERFACE_SECTION, 'FileSR', False);
     FOtherSRCollapsed := iniFile.ReadBool(INTERFACE_SECTION,'OtherSR',False);
-
+    FEditToolBarVisible  := iniFile.ReadBool(INTERFACE_SECTION,'ShowEditToolBar',False);
 
 
     if iniFile.ReadInteger(INTERFACE_SECTION, 'Lang', 0) = 0 then
@@ -674,6 +677,8 @@ begin
     iniFile.WriteBool(INTERFACE_SECTION, 'BookSR', FBookSRCollapsed );
     iniFile.WriteBool(INTERFACE_SECTION, 'FileSR', FFileSRCollapsed );
     iniFile.WriteBool(INTERFACE_SECTION,'OtherSR', FOtherSRCollapsed );
+    iniFile.WriteBool(INTERFACE_SECTION,'ShowEditToolBar',FEditToolBarVisible);
+
 
     SaveSplitters(iniFile);
 
