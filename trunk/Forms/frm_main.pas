@@ -4752,7 +4752,7 @@ begin
 
     if InputQuery('Создание серии/ Пернос в серию', 'Название:', S) then
     begin
-      if S = '' then Exit;
+      if S = '' then S:= NO_SERIES_TITLE;
 
       if not dmCollection.tblSeriesB.Locate('S_Title;S_AuthID', VarArrayOf([S,AuthID]), []) then
       begin
@@ -4782,12 +4782,25 @@ begin
   else     // редактирукм название существующей
     if InputQuery('Редактирование серии', 'Название:', S) then
     begin
-      dmCollection.tblSeriesB.Locate('S_ID', Data.SeriesID, []);
-      dmCollection.tblSeriesB.Edit;
-      dmCollection.tblSeriesBS_Title.Value := S;
-      dmCollection.tblSeriesB.Post;
-      Data.Series := S;
-      Tree.RepaintNode(Node);
+      if S = '' then    { TODO : заменить на один update }
+      begin
+        while dmCollection.tblBooks.Locate('SerID', Data.SeriesID, []) do
+        begin
+          dmCollection.tblBooks.Edit;
+          dmCollection.tblBooksSerID.Value:= 1;
+          dmCollection.tblBooks.Post;
+        end;
+        FillAllBooksTree;
+      end
+      else
+      begin
+        dmCollection.tblSeriesB.Locate('S_ID', Data.SeriesID, []);
+        dmCollection.tblSeriesB.Edit;
+        dmCollection.tblSeriesBS_Title.Value := S;
+        dmCollection.tblSeriesB.Post;
+        Data.Series := S;
+        Tree.RepaintNode(Node);
+      end;
     end;
 
 end;
