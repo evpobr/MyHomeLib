@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, RzShellDialogs, IdComponent, IdTCPConnection, IdTCPClient,
   IdHTTP, IdBaseComponent, IdAntiFreezeBase, IdAntiFreeze, RzPrgres, StdCtrls,IdMultipartFormData,Inifiles,
-  ZipForge, ExtCtrls, RzPanel, RzTabs, ZipMstr, IdExplicitTLSClientServerBase,
+  ZipForge, ExtCtrls, RzPanel, RzTabs, IdExplicitTLSClientServerBase,
   IdFTP, IdIntercept, IdLogBase, IdLogFile, RzEdit, RzButton, ImgList, RzLabel;
 
 type
@@ -30,7 +30,7 @@ type
     btnDownload: TRzToolButton;
     mmLog: TRzMemo;
     lblStatus: TRzLabel;
-    Zip: TZipMaster;
+    Zip: TZipForge;
     procedure Button2Click(Sender: TObject);
     procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
       AWorkCount: Int64);
@@ -196,14 +196,14 @@ begin
         ResultsList.SaveToFile(AppPath+'\LIBRUSEC_INP\'+copy(FN,1,Length(FN)-4)+'.inp');
 
       lblStatus.Caption:='Готово';lblStatus.Repaint;
-      FileList.Add(AppPath+'\LIBRUSEC_INP\'+copy(FN,1,Length(FN)-4)+'.inp');
+      FileList.Add(copy(FN,1,Length(FN)-4)+'.inp');
 
       pbProgress.Percent:=round((i + 1)/(dlgOpen.Files.Count)*100);
       pbProgress.Repaint;
     end; // main for
 
-    if not USR then FileList.Add(AppPath+'\LIBRUSEC_INP\extra.inp');
-    FileList.Add(AppPath+'\LIBRUSEC_INP\structure.info');
+    if not USR then FileList.Add('extra.inp');
+    FileList.Add('structure.info');
 
   finally
     pbProgress.Percent:=100;
@@ -464,33 +464,38 @@ begin
 end;
 
 procedure TfrmMain.Pack(FN, Comment: string);
+var i: integer;
+
 begin
   if FileExists(AppPath + '\ARCH\' + FN) then
     DeleteFile(AppPath + '\ARCH\' + FN);
 
-  Zip.ZipFileName := AppPath + '\ARCH\' + FN;
-  Zip.FSpecArgs.Assign(FileList);
+  Zip.FileName := AppPath + '\ARCH\' + FN;
+  Zip.OpenArchive(fmCreate);
+  Zip.BaseDir := AppPath + '\LIBRUSEC_INP\';
+  for I := 0 to FileList.Count - 1 do
+    Zip.AddFiles( FileList[i]);
 
-  Zip.ZipComment := Comment;
+  Zip.Comment := Comment;
+  Zip.CloseArchive;
 
-  Zip.Add;
 end;
 
 procedure TfrmMain.Pack_Extra;
 begin
   FileList.Clear;
-  FileList.Add(AppPath + '\LIBRUSEC_INP\extra.inp');
-  FileList.Add(AppPath + '\LIBRUSEC_INP\version.info');
-  FileList.Add(AppPath+'\LIBRUSEC_INP\structure.info');
+  FileList.Add('extra.inp');
+  FileList.Add('version.info');
+  FileList.Add('structure.info');
   Pack('extra_update.zip','');
 end;
 
 procedure TfrmMain.Pack_FB2;
 begin
   Pack('librusec_update.zip','');
-  Zip.AddCompLevel := 0;
+  Zip.CompressionLevel := clNone;
   Pack('librusec.inpx','');
-  Zip.AddCompLevel := 9;
+  Zip.CompressionLevel := clMax;
 end;
 
 procedure TfrmMain.Pack_USR;

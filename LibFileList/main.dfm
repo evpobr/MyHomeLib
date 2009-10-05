@@ -1261,25 +1261,21 @@ object frmMain: TfrmMain
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000}
   end
-  object Zip: TZipMaster
-    AddOptions = []
-    AddStoreSuffixes = [assGIF, assPNG, assZ, assZIP, assZOO, assARC, assLZH, assARJ, assTAZ, assTGZ, assLHA, assRAR, assACE, assCAB, assGZ, assGZIP, assJAR, assEXE, assJPG, assJPEG, ass7Zp, assMP3, assWMV, assWMA, assDVR, assAVI]
-    Dll_Load = False
-    ExtrOptions = []
-    KeepFreeOnAllDisks = 0
-    KeepFreeOnDisk1 = 0
-    MaxVolumeSize = 0
-    PasswordReqCount = 1
-    SFXOptions = []
-    SFXOverWriteMode = OvrConfirm
-    SFXPath = 'DZSFXUS.bin'
-    SpanOptions = []
-    Trace = False
-    Unattended = False
-    Verbose = False
-    Version = '1.79.10.18'
-    VersionInfo = '1.79.10.18'
-    Left = 272
-    Top = 144
+  object Zip: TZipForge
+    ExtractCorruptedFiles = False
+    CompressionLevel = clMax
+    CompressionMode = 9
+    CurrentVersion = '5.02 '
+    SpanningMode = smNone
+    SpanningOptions.AdvancedNaming = False
+    SpanningOptions.VolumeSize = vsAutoDetect
+    Options.FlushBuffers = True
+    Options.OEMFileNames = True
+    InMemory = False
+    Zip64Mode = zmDisabled
+    UnicodeFilenames = True
+    EncryptionMethod = caPkzipClassic
+    Left = 64
+    Top = 176
   end
 end
