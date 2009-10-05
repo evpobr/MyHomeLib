@@ -89,7 +89,6 @@ implementation
 uses
   Messages,
   xmldom,
-  //unit_globals,
   jpeg,
   pngimage,
   types,
@@ -105,12 +104,12 @@ begin
   FCover.Picture := nil;
   FText.Clear;
   FPublisher.Caption := '';
-  FCity.Caption := '';
-  FYear.Caption := '';
-  FISBN.Caption := '';
-  FDate.Caption := '';
-  FVersion.Caption := '';
-  FAuthor.Caption := '';
+  FCity.Caption      := '';
+  FYear.Caption      := '';
+  FISBN.Caption      := '';
+  FDate.Caption      := '';
+  FVersion.Caption   := '';
+  FAuthor.Caption    := '';
 
   Refresh;
 end;
@@ -121,179 +120,185 @@ var
   bvl: TRzBorder;
 begin
   inherited;
-  Parent := AOwner as TWinControl;
-  Align := alRight;
+
+  Parent           := AOwner as TWinControl;
+  Align            := alRight;
   AlignWithMargins := True;
-  Caption := '';
-  Width := 250;
-  BorderInner := fsNone;
-  BorderOuter := fsFlatRounded;
-  ParentFont := False;
-  Font.Size := 8;
-  SizeBarWidth := 5;
-  Margins.Left := 0;
-  MarginMin := 150;
+  Caption          := '';
+  Width            := 250;
+  BorderInner      := fsNone;
+  BorderOuter      := fsFlatRounded;
+  ParentFont       := False;
+  Font.Size        := 8;
+  SizeBarWidth     := 5;
+  Margins.Left     := 0;
+  MarginMin        := 150;
 
-
-  FCover := TImage.Create(Self);
-  FCover.Align := alTop;
+  FCover                  := TImage.Create(Self);
+  FCover.Align            := alTop;
   FCover.AlignWithMargins := True;
-  FCover.Margins.Top := 5;
-  FCover.Parent := Self;
-  FCover.Height := 255;
-  FCover.Center := True;
-  FCover.Stretch:= True;
-  FCover.Proportional := True;
+  FCover.Margins.Top      := 5;
+  FCover.Parent           := Self;
+  FCover.Height           := 255;
+  FCover.Center           := True;
+  FCover.Stretch          := True;
+  FCover.Proportional     := True;
 
-  FText := TMemo.Create(Self);
-  FText.Parent := Self;
+  FText                  := TMemo.Create(Self);
+  FText.Parent           := Self;
   FText.AlignWithMargins := True;
-  FText.Align := alClient;
-  FText.ScrollBars := ssVertical;
-  FText.ReadOnly := True;
-  FText.TabStop := False;
+  FText.Align            := alClient;
+  FText.ScrollBars       := ssVertical;
+  FText.ReadOnly         := True;
+  FText.TabStop          := False;
   //-----------------------------
-
-  FInfo := TPanel.Create(Self);
-  FInfo.Parent := Self;
+  FInfo                  := TPanel.Create(Self);
+  FInfo.Parent           := Self;
   FInfo.AlignWithMargins := True;
-  FInfo.Align := alBottom;
-  FInfo.Height := 100;
-  FInfo.BevelOuter := bvNone;
+  FInfo.Align            := alBottom;
+  FInfo.Height           := 100;
+  FInfo.BevelOuter       := bvNone;
 
-  lbl := TLabel.Create(FInfo);
-  lbl.Parent := FInfo;
-  lbl.Caption := 'Изд-во:';
+  lbl            := TLabel.Create(FInfo);
+  lbl.Parent     := FInfo;
+  lbl.Caption    := 'Изд-во:';
   lbl.Font.Style := [fsBold];
-  lbl.Top := 0;
-  lbl.Tag := 1;
-  lbl.Left := 5;   lbl.Width := W;
-  lbl.Alignment := taRightJustify;
+  lbl.Top        := 0;
+  lbl.Tag        := 1;
+  lbl.Left       := 5;
+  lbl.Width      := W;
+  lbl.Alignment  := taRightJustify;
 
-  lbl := TLabel.Create(FInfo);
-  lbl.Parent := FInfo;
-  lbl.Caption := 'Город:';
+  lbl            := TLabel.Create(FInfo);
+  lbl.Parent     := FInfo;
+  lbl.Caption    := 'Город:';
   lbl.Font.Style := [fsBold];
-  lbl.Top := 15;
-  lbl.Tag := 2;
-  lbl.Left := 5;   lbl.Width := W;
-  lbl.Alignment := taRightJustify;
-  
+  lbl.Top        := 15;
+  lbl.Tag        := 2;
+  lbl.Left       := 5;
+  lbl.Width      := W;
+  lbl.Alignment  := taRightJustify;
 
-  lbl := TLabel.Create(FInfo);
-  lbl.Parent := FInfo;
-  lbl.Caption := 'Год:';
+  lbl            := TLabel.Create(FInfo);
+  lbl.Parent     := FInfo;
+  lbl.Caption    := 'Год:';
   lbl.Font.Style := [fsBold];
-  lbl.Top := 30;
-  lbl.Tag := 3;
-  lbl.Left := 5;   lbl.Width := W;
-  lbl.Alignment := taRightJustify;
+  lbl.Top        := 30;
+  lbl.Tag        := 3;
+  lbl.Left       := 5;
+  lbl.Width      := W;
+  lbl.Alignment  := taRightJustify;
 
-
-  lbl := TLabel.Create(FInfo);
-  lbl.Parent := FInfo;
-  lbl.Caption := 'ISBN:';
+  lbl            := TLabel.Create(FInfo);
+  lbl.Parent     := FInfo;
+  lbl.Caption    := 'ISBN:';
   lbl.Font.Style := [fsBold];
-  lbl.Top := 45;
-  lbl.Tag := 4;
-  lbl.Left := 5;   lbl.Width := W;
-  lbl.Alignment := taRightJustify;
+  lbl.Top        := 45;
+  lbl.Tag        := 4;
+  lbl.Left       := 5;
+  lbl.Width      := W;
+  lbl.Alignment  := taRightJustify;
 
-
-  lbl := TLabel.Create(FInfo);
-  lbl.Parent := FInfo;
-  lbl.Caption := 'Дата:';
+  lbl            := TLabel.Create(FInfo);
+  lbl.Parent     := FInfo;
+  lbl.Caption    := 'Дата:';
   lbl.Font.Style := [fsBold];
-  lbl.Top := 65;
-  lbl.Tag := 5;
-  lbl.Left := 5;   lbl.Width := W;
-  lbl.Alignment := taRightJustify;
+  lbl.Top        := 65;
+  lbl.Tag        := 5;
+  lbl.Left       := 5;
+  lbl.Width      := W;
+  lbl.Alignment  := taRightJustify;
 
-
-  FVerTitle := TLabel.Create(FInfo);
-  FVerTitle.Parent := FInfo;
-  FVerTitle.Caption := 'v. ';
+  FVerTitle            := TLabel.Create(FInfo);
+  FVerTitle.Parent     := FInfo;
+  FVerTitle.Caption    := 'v. ';
   FVerTitle.Font.Style := [fsBold];
-  FVerTitle.Tag := 6;
-  FVerTitle.Top := 65; FVerTitle.Left := Width - 70;
+  FVerTitle.Tag        := 6;
+  FVerTitle.Top        := 65;
+  FVerTitle.Left       := Width - 70;
 
-  lbl := TLabel.Create(FInfo);
-  lbl.Parent := FInfo;
-  lbl.Caption := 'Автор:';
+  lbl            := TLabel.Create(FInfo);
+  lbl.Parent     := FInfo;
+  lbl.Caption    := 'Автор:';
   lbl.Font.Style := [fsBold];
-  lbl.Top := 80;
-  lbl.Tag := 7;
-  lbl.Left := 5;   lbl.Width := W;
-  lbl.Alignment := taRightJustify;
-
+  lbl.Top        := 80;
+  lbl.Tag        := 7;
+  lbl.Left       := 5;
+  lbl.Width      := W;
+  lbl.Alignment  := taRightJustify;
 
   //------------------------------
 
-  FPublisher := TLabel.Create(FInfo);
-  FPublisher.Parent := FInfo;
-  FPublisher.Width := 180;
-  FPublisher.Top := 0; FPublisher.Left := W + 10;
+  FPublisher          := TLabel.Create(FInfo);
+  FPublisher.Parent   := FInfo;
+  FPublisher.Width    := 180;
+  FPublisher.Top      := 0;
+  FPublisher.Left     := W + 10;
   FPublisher.AutoSize := False;
 
-  FCity := TLabel.Create(FInfo);
+  FCity        := TLabel.Create(FInfo);
   FCity.Parent := FInfo;
-  FCity.Top := 15; FCity.Left := W + 10;
+  FCity.Top    := 15;
+  FCity.Left   := W + 10;
 
-  FYear := TLabel.Create(FInfo);
+  FYear        := TLabel.Create(FInfo);
   FYear.Parent := FInfo;
-  FYear.Top := 30; FYear.Left := W + 10;
+  FYear.Top    := 30;
+  FYear.Left   := W + 10;
 
-  FISBN := TLabel.Create(FInfo);
-  FISBN.Parent := FInfo;
-  FISBN.Top := 45; FISBN.Left := W + 10;
-  FISBN.Width := 180;
+  FISBN          := TLabel.Create(FInfo);
+  FISBN.Parent   := FInfo;
+  FISBN.Top      := 45;
+  FISBN.Left     := W + 10;
+  FISBN.Width    := 180;
   FISBN.AutoSize := False;
 
-  FDate := TLabel.Create(FInfo);
-  FDate.Parent := FInfo;
-  FDate.Width := 65;
-  FDate.Top := 65; FDate.Left := W + 10;
+  FDate          := TLabel.Create(FInfo);
+  FDate.Parent   := FInfo;
+  FDate.Width    := 65;
+  FDate.Top      := 65;
+  FDate.Left     := W + 10;
   FDate.AutoSize := False;
 
-
-  FVersion := TLabel.Create(FInfo);
+  FVersion        := TLabel.Create(FInfo);
   FVersion.Parent := FInfo;
-  FVersion.Top := 65; FVersion.Left := Width - 55;
+  FVersion.Top    := 65;
+  FVersion.Left   := Width - 55;
 
-  FAuthor := TLabel.Create(FInfo);
-  FAuthor.Parent := FInfo;
+  FAuthor          := TLabel.Create(FInfo);
+  FAuthor.Parent   := FInfo;
   FAuthor.AutoSize := False;
-  FAuthor.Width := Width - W - 30;
-  FAuthor.Top := 80; FAuthor.Left := W + 10;
-
+  FAuthor.Width    := Width - W - 30;
+  FAuthor.Top      := 80;
+  FAuthor.Left     := W + 10;
 
   //--------------------------------------------
 
-  bvl := TRzBorder.Create(FInfo);
-  bvl.Parent := FInfo;
-  bvl.BorderOuter := fsFlatRounded;
-  bvl.Align := alBottom;
-  bvl.Height := 36;
+  bvl                  := TRzBorder.Create(FInfo);
+  bvl.Parent           := FInfo;
+  bvl.BorderOuter      := fsFlatRounded;
+  bvl.Align            := alBottom;
+  bvl.Height           := 36;
   bvl.AlignWithMargins := True;
 
 end;
 
 procedure TMHLCoverPanel.SetAColor(Value: TColor);
 begin
-  FAColor := Value;
+  FAColor     := Value;
   FText.Color := FAColor;
 end;
 
 procedure TMHLCoverPanel.Set_Fb2InfoVisible(Value: boolean);
 begin
-  FInfo.Visible := Value;
+  FInfo.Visible   := Value;
   FFb2InfoVisible := Value;
 end;
 
 procedure TMHLCoverPanel.Set_FontSize(Value: integer);
 begin
   FText.Font.Size := Value;
-  FFontSize := Value;
+  FFontSize       := Value;
 end;
 
 function TMHLCoverPanel.Show(Folder, FileName: string; No: integer): boolean;
@@ -481,10 +486,10 @@ end;
 procedure TMHLCoverPanel.Resize;
 begin
   inherited;
-  FVersion.Left := Width - 47;
+  FVersion.Left  := Width - 47;
   FVerTitle.Left := Width - 60;
 
-  FDate.Width := FVerTitle.Left - FDate.Left - 5;
+  FDate.Width   := FVerTitle.Left - FDate.Left - 5;
   FAuthor.Width := FInfo.Width - W - 17;
 end;
 
