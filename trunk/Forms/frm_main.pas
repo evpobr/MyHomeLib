@@ -401,6 +401,8 @@ type
     ToolButton14: TToolButton;
     ToolButton15: TToolButton;
     N43: TMenuItem;
+    ToolButton16: TToolButton;
+    ToolButton17: TToolButton;
 
     //
     // События формы

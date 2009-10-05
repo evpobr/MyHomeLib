@@ -34,7 +34,7 @@ type
       SNo: integer;
     end;
 
-    FFileOpMode: (fmFb2Zip, fmFb2);
+    FFileOpMode: (fmFb2Zip, fmFb2, fmFBD);
     FBookIdList: TBookIdList;
     FTable: TAbsTable;
     FCollectionRoot: string;
@@ -105,9 +105,15 @@ var
 
 
 begin
+
+   { TODO -oalex :
+рефакторинг: разобрать на отдельные модули
+разобраться с логикой }
+
   FIsTmp := False;
   FTable.Locate('ID', ID, []);
   Result := False;
+
   CR := GetFullBookPath(FTable, FCollectionRoot);
 
   with FFileOpRecord do
@@ -148,8 +154,12 @@ begin
     else
       StrReplace('%s','',FileName);
 
-    if ExtractFileExt(CR) <> ZIP_EXTENSION then
-      FFileOpMode := fmFb2;
+   if (ExtractFileExt(FTable['FileName']) = ZIP_EXTENSION) and
+           (FTable['Ext'] <> ZIP_EXTENSION) then FFileOpMode := fmFBD
+      else
+        if ExtractFileExt(CR) <> ZIP_EXTENSION then
+            FFileOpMode := fmFb2;
+
 
     //
     // Сформируем имя каталога в соответствии с заданным темплейтом
@@ -168,6 +178,10 @@ begin
     case FFileOpMode of
       fmFB2Zip: SArch := CR;
       fmFB2: SArch := CR + FTable['FileName'] + FTable['Ext'];
+      fmFBD: begin
+               CR := CR + FTable['FileName'];
+               SArch := CR;
+             end;
     end;
     SNo := FTable['InsideNo'];
 
@@ -189,7 +203,8 @@ begin
   //
   // Если файл в архиве - распаковываем в $tmp
   //
-  if FFileOpMode = fmFb2Zip then
+  if (FFileOpMode = fmFb2Zip) OR (FFileOpMode = fmFBD)
+  then
   begin
     if not FileExists(CR) then
     begin
