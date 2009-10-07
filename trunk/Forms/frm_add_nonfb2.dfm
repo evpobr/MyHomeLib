@@ -337,6 +337,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           Align = alClient
           Color = clCream
           TabOrder = 0
+          ExplicitHeight = 21
         end
       end
       object RzGroupBox3: TRzGroupBox
@@ -526,6 +527,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           Align = alClient
           Color = clCream
           TabOrder = 0
+          ExplicitHeight = 21
         end
       end
       object RzGroupBox8: TRzGroupBox
