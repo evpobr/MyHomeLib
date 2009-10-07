@@ -88,6 +88,8 @@ type
     FImageType : TCoverImageType;
     FEditorMode: boolean;
 
+    FBusy : boolean;
+
     function MakeFBD:boolean;
     function CreateZip:boolean;
     procedure ChangeBookData;
@@ -201,6 +203,8 @@ end;
 
 procedure TfrmConvertToFBD.btnSaveClick(Sender: TObject);
 begin
+  if FBusy then Exit;
+
   SaveFBD;
   frmMain.Click;
   Modalresult := mrOk;
@@ -208,6 +212,7 @@ end;
 
 procedure TfrmConvertToFBD.btnNextClick(Sender: TObject);
 begin
+  if FBusy then Exit;
   SaveFBD;
   frmMain.SelectNextBook(False,True);
   PrepareForm;
@@ -215,6 +220,7 @@ end;
 
 procedure TfrmConvertToFBD.btnPreviousClick(Sender: TObject);
 begin
+  if FBusy then Exit;
   SaveFBD;
   frmMain.SelectNextBook(False, False);
   PrepareForm;
@@ -244,6 +250,7 @@ begin
       zip.DeleteFiles(FFBDFileName);
       zip.AddFiles(FFBDFileName);
       DeleteFile(FFolder + FFBDFileName);
+      Result := True;
     end
     else
     begin
@@ -565,12 +572,12 @@ begin
    finally
      thumbnail.Free;
    end;
-
 end;
 
 procedure TfrmConvertToFBD.SaveFBD;
 begin
   EnableButtons(False);
+  FBusy := True;
   Screen.Cursor := crHourGlass;
   try
     if MakeFBD then
@@ -580,6 +587,7 @@ begin
   finally
     EnableButtons(True);
     Screen.Cursor := crDefault;
+    FBusy := False;
   end;
 end;
 
