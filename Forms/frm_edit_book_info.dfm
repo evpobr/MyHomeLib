@@ -128,7 +128,6 @@ object frmEditBookInfo: TfrmEditBookInfo
           Top = 21
           Width = 241
           Height = 21
-          ItemHeight = 13
           TabOrder = 1
           OnChange = edTChange
         end
@@ -150,6 +149,7 @@ object frmEditBookInfo: TfrmEditBookInfo
           Align = alClient
           TabOrder = 0
           OnChange = edTChange
+          ExplicitHeight = 21
         end
       end
       object RzGroupBox1: TRzGroupBox
@@ -256,6 +256,7 @@ object frmEditBookInfo: TfrmEditBookInfo
           Align = alClient
           TabOrder = 0
           OnChange = edTChange
+          ExplicitHeight = 21
         end
       end
       object RzGroupBox6: TRzGroupBox
@@ -270,7 +271,6 @@ object frmEditBookInfo: TfrmEditBookInfo
           Top = 18
           Width = 66
           Height = 21
-          ItemHeight = 13
           TabOrder = 0
           OnChange = edTChange
           Items.Strings = (

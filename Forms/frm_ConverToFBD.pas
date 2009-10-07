@@ -53,14 +53,15 @@ type
     RzLabel5: TRzLabel;
     ImageList1: TImageList;
     btnOpenBook: TRzBitBtn;
-    Button1: TButton;
-    Button2: TButton;
     lblAuthor: TRzLabel;
     lblTitle: TRzLabel;
     RzGroupBox3: TRzGroupBox;
     btnPasteCover: TRzBitBtn;
     FCover: TImage;
     btnLoad: TRzBitBtn;
+    BitBtn1: TBitBtn;
+    btnPrevious: TBitBtn;
+    btnNext: TBitBtn;
     procedure btnPasteCoverClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -68,8 +69,8 @@ type
     procedure btnOpenBookClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btnLoadClick(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
+    procedure btnPreviousClick(Sender: TObject);
+    procedure btnNextClick(Sender: TObject);
   private
     { Private declarations }
     FLines: TStringList;
@@ -94,6 +95,7 @@ type
     procedure PrepareForm;
     procedure LoadFBD;
     procedure SaveFBD;
+    procedure EnableButtons(State: boolean);
 
   public
     { Public declarations }
@@ -199,17 +201,18 @@ end;
 procedure TfrmConvertToFBD.btnSaveClick(Sender: TObject);
 begin
   SaveFBD;
+  frmMain.Click;
   Modalresult := mrOk;
 end;
 
-procedure TfrmConvertToFBD.Button1Click(Sender: TObject);
+procedure TfrmConvertToFBD.btnNextClick(Sender: TObject);
 begin
   SaveFBD;
   frmMain.SelectNextBook(False,True);
   PrepareForm;
 end;
 
-procedure TfrmConvertToFBD.Button2Click(Sender: TObject);
+procedure TfrmConvertToFBD.btnPreviousClick(Sender: TObject);
 begin
   SaveFBD;
   frmMain.SelectNextBook(False, False);
@@ -253,6 +256,13 @@ begin
   finally
     Zip.Free;
   end;
+end;
+
+procedure TfrmConvertToFBD.EnableButtons(State: boolean);
+begin
+  btnPrevious.Enabled := State;
+  btnNext.Enabled     := State;
+  btnSave.Enabled     := State;
 end;
 
 procedure TfrmConvertToFBD.FormCreate(Sender: TObject);
@@ -549,10 +559,12 @@ end;
 
 procedure TfrmConvertToFBD.SaveFBD;
 begin
+  EnableButtons(False);
   if MakeFBD then
    if CreateZip then
      if not FEditorMode then
        ChangeBookData;
+  EnableButtons(True);
 
 end;
 

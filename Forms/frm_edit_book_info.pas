@@ -195,7 +195,11 @@ end;
 
 procedure TfrmEditBookInfo.btnSaveClick(Sender: TObject);
 begin
-  if SaveData then ModalResult := mrOk;
+  if SaveData then
+  begin
+    frmMain.Click;
+    ModalResult := mrOk;
+  end;
 end;
 
 procedure TfrmEditBookInfo.Button1Click(Sender: TObject);

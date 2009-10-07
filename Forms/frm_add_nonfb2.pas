@@ -279,8 +279,8 @@ begin
     Data := Tree.GetNodeData(Tree.GetFirstSelected);
     if CheckEmptyFields(Data) then
     begin
-      NewName := lvAuthors.Items[0].Caption + ' ' +  lvAuthors.Items[0].SubItems[0] +
-             ' ' + edT.Text;
+      NewName := CheckSymbols(lvAuthors.Items[0].Caption + ' ' +  lvAuthors.Items[0].SubItems[0] +
+             ' ' + edT.Text);
       if RenameFile(Data.FullPath + Data.FileName + Data.Ext, Data.FullPath + NewName + Data.Ext) then
       begin
         Data.FileName := NewName;
