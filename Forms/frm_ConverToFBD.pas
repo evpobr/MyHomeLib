@@ -118,7 +118,8 @@ uses
   unit_Helpers,
   ActiveX,
   ComObj,
-  unit_Consts;
+  unit_Consts,
+  Dialogs;
 
 {$R *.dfm}
 
@@ -230,6 +231,7 @@ end;
 function TfrmConvertToFBD.CreateZip:boolean;
 var
   Zip: TZipForge;
+    F: TZFArchiveItem;
 begin
   Result := False;
   Zip := TZipForge.Create(nil);
@@ -248,14 +250,23 @@ begin
       zip.OpenArchive(fmCreate);
       zip.AddFiles(FBookFileName);
       zip.AddFiles(FFBDFileName);
+
+      if zip.FindFirst(FBookFileName,F) and
+           zip.FindFirst(FFBDFileName,F)
+      then
+        try
+          zip.TestFiles('*.*');
+          Result := True;
+          DeleteFile(FFolder + FFBDFileName);
+          DeleteFile(FFolder + FBookFileName);
+        except
+        end; // if
       zip.CloseArchive;
-      DeleteFile(FFolder + FFBDFileName);
-      DeleteFile(FFolder + FBookFileName);
     end;
-    Result := True;
   finally
     Zip.Free;
   end;
+  if not Result then MessageDlg('Ошибка создания FBD! ', mtError, [mbOK], 0);
 end;
 
 procedure TfrmConvertToFBD.EnableButtons(State: boolean);
@@ -560,12 +571,16 @@ end;
 procedure TfrmConvertToFBD.SaveFBD;
 begin
   EnableButtons(False);
-  if MakeFBD then
-   if CreateZip then
-     if not FEditorMode then
-       ChangeBookData;
-  EnableButtons(True);
-
+  Screen.Cursor := crHourGlass;
+  try
+    if MakeFBD then
+     if CreateZip then
+       if not FEditorMode then
+         ChangeBookData;
+  finally
+    EnableButtons(True);
+    Screen.Cursor := crDefault;
+  end;
 end;
 
 end.
