@@ -542,6 +542,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           Top = 18
           Width = 66
           Height = 21
+          Color = clCream
           TabOrder = 0
           Items.Strings = (
             'be'

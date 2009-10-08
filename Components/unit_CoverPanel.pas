@@ -332,6 +332,7 @@ end;
 function TMHLCoverPanel.UnPack(var FS: TMemoryStream): boolean;
 var
   S : string;
+  F: TZFArchiveItem;
 begin
   Result := False;
   if ExtractFileExt(FFolder) = '.zip' then
@@ -365,8 +366,8 @@ begin
       try
         Zip.FileName := FFolder + FFile;
         Zip.OpenArchive;
-        s := ChangeFileExt(FFile,'.fbd');
-        Zip.ExtractToStream(S,FS);
+        zip.FindFirst('*.fbd',F);
+        Zip.ExtractToStream(F.FileName,FS);
         Result := True;
       finally
         FOnProgress := False;
