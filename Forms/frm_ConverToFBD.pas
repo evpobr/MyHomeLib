@@ -89,7 +89,6 @@ type
     FImageType : TCoverImageType;
     FEditorMode: boolean;
 
-    FAuto : boolean;
     FBusy : boolean;
     FTerminated: boolean;
 
@@ -134,8 +133,8 @@ var
   FirstID: integer;
 begin
   FTerminated := False;
-  Show;
   PrepareForm;
+  Show;
   btnNextClick(Self);
   FirstID := frmMain.LastActiveBookID;
   repeat

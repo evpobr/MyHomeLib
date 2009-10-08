@@ -38,11 +38,10 @@ object frmBookSearch: TfrmBookSearch
       AlignWithMargins = True
       Left = 11
       Top = 11
-      Width = 236
+      Width = 98
       Height = 13
       Align = alTop
       Caption = #1055#1086#1080#1089#1082' '#1087#1086' '#1085#1072#1079#1074#1072#1085#1080#1102
-      ExplicitWidth = 98
     end
     object edText: TRzEdit
       AlignWithMargins = True

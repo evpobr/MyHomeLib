@@ -28,15 +28,11 @@ type
 
   TSearchThread = class(TThread)
     FSearchForm :  TfrmBookSearch;
-
-    FKey : char;
-
-
   private
     { Private declarations }
     FOnChange: TChangeEvent;
     FOnKeyDown: TKeyDownEvent;
-
+    FKey : char;
 
   protected
     procedure Execute; override;
