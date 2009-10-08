@@ -71,6 +71,7 @@ type
     procedure btnLoadClick(Sender: TObject);
     procedure btnPreviousClick(Sender: TObject);
     procedure btnNextClick(Sender: TObject);
+    procedure BitBtn1Click(Sender: TObject);
   private
     { Private declarations }
     FLines: TStringList;
@@ -88,7 +89,9 @@ type
     FImageType : TCoverImageType;
     FEditorMode: boolean;
 
+    FAuto : boolean;
     FBusy : boolean;
+    FTerminated: boolean;
 
     function MakeFBD:boolean;
     function CreateZip:boolean;
@@ -101,6 +104,7 @@ type
 
   public
     { Public declarations }
+    procedure AutoMode;
     property EditorMode: boolean read FEditorMode write FEditorMode;
   end;
 
@@ -124,6 +128,26 @@ uses
   Dialogs;
 
 {$R *.dfm}
+
+procedure TfrmConvertToFBD.AutoMode;
+var
+  FirstID: integer;
+begin
+  FTerminated := False;
+  Show;
+  PrepareForm;
+  btnNextClick(Self);
+  FirstID := frmMain.LastActiveBookID;
+  repeat
+    btnNextClick(Self);
+  until (FirstID = frmMain.LastActiveBookID) or FTerminated;
+  Close;
+end;
+
+procedure TfrmConvertToFBD.BitBtn1Click(Sender: TObject);
+begin
+  FTerminated := True;
+end;
 
 procedure TfrmConvertToFBD.btnLoadClick(Sender: TObject);
 var

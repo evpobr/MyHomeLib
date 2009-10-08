@@ -403,6 +403,7 @@ type
     N43: TMenuItem;
     ToolButton16: TToolButton;
     ToolButton17: TToolButton;
+    ToolButton18: TToolButton;
 
     //
     // События формы
@@ -611,6 +612,7 @@ type
     procedure miFBDImportClick(Sender: TObject);
     procedure miConverToFBDClick(Sender: TObject);
     procedure miEditToolbarVisibleClick(Sender: TObject);
+    procedure ToolButton18Click(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -621,6 +623,8 @@ type
 
   private
     FDMThread: TDownloadManagerThread;
+
+    FLastActiveBookID: integer;
 
     // поиск аторов, серий
     FIgnoreChange : boolean;
@@ -668,6 +672,7 @@ type
   public
     FCancelled : boolean;
 
+
     procedure FillGenresTree(Tree: TVirtualStringTree);
     procedure DisableControls(State: boolean);
     procedure DisableMainMenu(State: boolean);
@@ -677,6 +682,8 @@ type
 
     procedure SelectNextBook(Changed, Frwrd: boolean);
     procedure Click;
+
+    property LastActiveBookID: integer read FLastActiveBookID;
 
   private
     FSelectionState: boolean;
@@ -2094,6 +2101,12 @@ begin
     if unit_utils.LibrusecUpdate then
       InitCollection(True);
   end;
+end;
+
+procedure TfrmMain.ToolButton18Click(Sender: TObject);
+begin
+  frmConvertToFBD.EditorMode := True;
+  frmConvertToFBD.AutoMode;
 end;
 
 //
@@ -3734,6 +3747,7 @@ begin
     Tree.Selected[OldNode] := False;
     Tree.Selected[NewNode] := True;
     Data := Tree.GetNodeData(NewNode);
+    FLastActiveBookID := Data.ID;
   until Data.nodeType = ntBookInfo;
   PrepareFb2EditData(Data, FLastBookRecord);
 end;
@@ -5403,7 +5417,7 @@ var
   ReviewEditable: boolean;
 
   NoFb2Info: boolean;
-
+  F: TZFArchiveItem;
 begin
 //  if not isFb2 then Exit;
 
@@ -5477,8 +5491,8 @@ begin
           try
             Zip.FileName := CR + Table['FileName'];
             Zip.OpenArchive;
-            s := GetFileNameZip(Zip,Table['InsideNo']);
-            Zip.ExtractToStream(ChangeFileExt(s,'.fbd'),FS);
+            zip.FindFirst('*.fbd',F);
+            Zip.ExtractToStream(F.FileName,FS);
             Zip.CloseArchive;
           finally
             Zip.Free;
