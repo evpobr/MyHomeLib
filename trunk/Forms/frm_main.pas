@@ -112,7 +112,7 @@ type
     pmiDeselectAll: TMenuItem;
     N23: TMenuItem;
     miCopyClBrd: TMenuItem;
-    miBookInfo: TMenuItem;
+    pmiBookInfo: TMenuItem;
     N2: TMenuItem;
     miTools: TMenuItem;
     miSettings: TMenuItem;
@@ -399,11 +399,11 @@ type
     ToolButton10: TToolButton;
     ToolButton11: TToolButton;
     ToolButton14: TToolButton;
-    ToolButton15: TToolButton;
+    tbtnFBD: TToolButton;
     N43: TMenuItem;
     ToolButton16: TToolButton;
     ToolButton17: TToolButton;
-    ToolButton18: TToolButton;
+    tbtnAutoFBD: TToolButton;
 
     //
     // События формы
@@ -502,7 +502,7 @@ type
     procedure miShowHelpClick(Sender: TObject);
     procedure miGoToAuthorClick(Sender: TObject);
     procedure miFb2ImportClick(Sender: TObject);
-    procedure miBookInfoClick(Sender: TObject);
+    procedure pmiBookInfoClick(Sender: TObject);
     procedure tbtnShowCoverClick(Sender: TObject);
     procedure miCopyAuthorClick(Sender: TObject);
     procedure tbtnShowDeletedClick(Sender: TObject);
@@ -612,7 +612,7 @@ type
     procedure miFBDImportClick(Sender: TObject);
     procedure miConverToFBDClick(Sender: TObject);
     procedure miEditToolbarVisibleClick(Sender: TObject);
-    procedure ToolButton18Click(Sender: TObject);
+    procedure tbtnAutoFBDClick(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -625,6 +625,7 @@ type
     FDMThread: TDownloadManagerThread;
 
     FLastActiveBookID: integer;
+
 
     // поиск аторов, серий
     FIgnoreChange : boolean;
@@ -675,7 +676,6 @@ type
 
     procedure FillGenresTree(Tree: TVirtualStringTree);
     procedure DisableControls(State: boolean);
-    procedure DisableMainMenu(State: boolean);
 
     function HH(Command: Word; Data: Integer; var CallHelp: Boolean): Boolean;
     procedure LocateBook(text: String; Next : boolean);
@@ -711,7 +711,7 @@ type
 
     FLastFoundBook: PVirtualNode;
     FFirstFoundBook: PvirtualNode;
-
+    FWizardCanceled: boolean;
     FLastBookRecord: TBookRecord;
 
     //
@@ -1395,53 +1395,9 @@ begin
   Result := views[pgControl.ActivePageIndex];
 end;
 
-procedure TfrmMain.DisableMainMenu(State: boolean);
-var
-  i: integer;
-begin
-  for I := 0 to MainMenu.Items.Count - 1 do
-    MainMenu.Items[i].Enabled := State;
-end;
-
 procedure TfrmMain.DisableControls(State: boolean);
-var
-  i: integer;
 begin
-  miCollsettings.Enabled := State;
-  miDeleteCol.Enabled := State;
-  miStat.Enabled := State;
-  miRead.Enabled := State;
-  miDevice.Enabled := State;
-  btnClearFavorites.Enabled := State;
-  edLocateAuthor.Enabled := State;
-  edLocateSeries.Enabled := State;
-  pmMain.AutoPopup := State;
-  miImport.Enabled := State;
-  miRead.Enabled := State;
-  miDevice.Enabled := State;
-  pgControl.Enabled := State;
-  miCollectionExport.Enabled := State;
-  miCollectionImport.Enabled := State;
-  miINPXCollectionExport.Enabled := State;
-  miRefreshGenres.Enabled := State;
-  miDeleteBook.Enabled := State;
-  miEdit.Enabled := State;
-  btnRefreshCollection.Enabled := State;
-  tbtnSelect.Enabled := State;
-  miTools.Enabled := State;
-  pmiScripts.Enabled := State;
-  miDownloadBooks.Enabled := State;
-
-  for I := 0 to RusBar.ControlCount - 1 do
-    RusBar.Controls[i].Enabled := State;
-  for I := 0 to EngBar.ControlCount - 1 do
-    EngBar.Controls[i].Enabled := State;
-  for I := 0 to tlbrMain.ControlCount - 1 do
-    tlbrMain.Controls[i].Enabled := State;
-
-  tbtnSettings.Enabled := True;  
-
-  tbtnWizard.Enabled := True;
+  frmMain.Enabled := State;
 end;
 
 procedure TfrmMain.InitCollection(ApplyAuthorFilter: Boolean);
@@ -1462,7 +1418,6 @@ begin
 
   if DMUser.tblBases.IsEmpty then
   begin
-    DisableControls(False);
     frmMain.Caption := 'MyHomeLib';
     tvAuthors.Clear;
     tvSeries.Clear;
@@ -1472,7 +1427,10 @@ begin
     tvBooksSR.Clear;
     tvBooksF.Clear;
     Screen.Cursor := crDefault;
+
     ShowNewCollectionWizard(Nil);
+    if FWizardCanceled then Application.Terminate;
+
     DeleteFile(Settings.WorkPath + CHECK_FILE);
     Exit;
   end;
@@ -1481,11 +1439,10 @@ begin
   dmCollection.DBCollection.Connected := True;
   frmMain.Caption := 'MyHomeLib - ' + DMUser.ActiveCollection.Name;
 
-  DisableControls(True);
-
   { TODO -oNickR -cRefactoring : проверить использование }
   FCollectionRoot := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
 
+  // определяем типы коллекции
   CollectionType := DMUser.ActiveCollection.CollectionType;
   IsPrivate := isPrivateCollection(CollectionType);
   IsOnline := isOnlineCollection(CollectionType);
@@ -1493,39 +1450,58 @@ begin
   IsFB2 := isFB2Collection(CollectionType);
   IsNonFB2 := isNonFB2Collection(CollectionType);
 
+  //----------------------------------------------------------------------------
+  // высталяем видимость пунктов меню в завичимости от типа коллекции
+  //----------------------------------------------------------------------------
+
+  //------    Главное меню   ---------------------------------------------------
+
+  // Книга
+
   miFb2ZipImport.Visible := (IsPrivate and IsFB2) or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
   miFb2Import.Visible := (IsPrivate and IsFB2) or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
   miPdfdjvu.Visible := IsPrivate and IsNonFB2;
   miFBDImport.Visible := IsPrivate and IsNonFB2;
   miConverToFBD.Visible := False;
 
-  TabSheet7.TabVisible := IsOnline;
-
-  CreateCollectionMenu;
-  dmCollection.SetTableState(True);
-
-//  tbtnShowCover.Visible := not IsNonFB2 or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
-
-  miBookInfo.Visible := IsFB2;
-
-  tbtnShowLocalOnly.Visible := IsOnline;
-  miDownloadBooks.Visible := IsOnline;
-  tbtnDownloadList_Add.Visible := IsOnline;
-  pmiDownloadBooks.Visible := IsOnline;
-  miSyncOnline.Visible := IsOnline or IsNonFb2;
-
-  tbtnShowDeleted.Visible := not IsPrivate;
-
   miImport.Visible := IsPrivate;
   miEditAuthor.Visible := IsPrivate;
   miEditGenres.Visible := IsPrivate;
   miEditSeries.Visible := IsPrivate;
   miBookEdit.Visible := IsPrivate;
+  miConverToFBD.Visible := IsPrivate;
   miDeleteBook.Visible := IsPrivate; // DMUser.ActiveCollection.AllowDelete;
   miDeleteFiles.Visible := isOnline and (ActiveView <> FavoritesView);
 
+  miDownloadBooks.Visible := IsOnline;
 
+  // Коллекция
 
+  // Инструменты
+
+  miSyncOnline.Visible := IsOnline or IsNonFb2;
+
+  //-------- Контекстное меню --------------------------------------------------
+
+  pmiBookInfo.Visible := IsFB2;
+  pmiDownloadBooks.Visible := IsOnline;
+
+  //--------- Панели онструментов ----------------------------------------------
+  tbtnShowLocalOnly.Visible := IsOnline;
+  tbtnDownloadList_Add.Visible := IsOnline;
+  tbtnShowDeleted.Visible := not IsPrivate;
+
+  tbtnFBD.Visible := IsPrivate;
+  tbtnAutoFBD.Visible := IsPrivate;
+
+  //--------- Вкладки, прочее  -------------------------------------------------
+
+  TabSheet7.TabVisible := IsOnline;
+
+  //----------------------------------------------------------------------------
+
+  CreateCollectionMenu;
+  dmCollection.SetTableState(True);
 
   if Assigned(FLastLetterA) then
     FLastLetterA.Down := False;
@@ -1824,6 +1800,7 @@ procedure TfrmMain.ShowNewCollectionWizard(Sender: TObject);
 var
   frmNCWizard: TfrmNCWizard;
 begin
+  FWizardCanceled := False;
   frmNCWizard := TfrmNCWizard.Create(Application);
   try
     if frmNCWizard.ShowModal = mrOk then
@@ -1831,7 +1808,9 @@ begin
       Settings.ActiveCollection := DMUser.ActiveCollection.ID;
       CreateCollectionMenu;
       InitCollection(True);
-    end;
+    end
+    else
+      FWizardCanceled := True;
   finally
     frmNCWizard.Free;
   end;
@@ -2103,10 +2082,14 @@ begin
   end;
 end;
 
-procedure TfrmMain.ToolButton18Click(Sender: TObject);
+procedure TfrmMain.tbtnAutoFBDClick(Sender: TObject);
 begin
-  frmConvertToFBD.EditorMode := True;
-  frmConvertToFBD.AutoMode;
+  DisableControls(False);
+  try
+    frmConvertToFBD.AutoMode;
+  finally
+    DisableControls(True);
+  end;
 end;
 
 //
@@ -2753,9 +2736,10 @@ begin
        InfoPanel.Folder := FCollectionRoot + Folder
     else
       InfoPanel.Folder := Folder;
-  miBookInfo.Visible := Cover.Show(InfoPanel.Folder,InfoPanel.FileName,No);
 
-  if miBookInfo.Visible and IsPrivate and IsNonFB2 then
+  pmiBookInfo.Visible := Cover.Show(InfoPanel.Folder,InfoPanel.FileName,No);
+
+  if pmiBookInfo.Visible and IsPrivate and IsNonFB2 then
   begin
     miConverToFBD.Visible := true;
     miConverToFBD.Tag := 999;
@@ -2767,7 +2751,7 @@ begin
     end;
   end
     else
-      if not miBookInfo.Visible and IsPrivate and IsNonFB2 then
+      if not pmiBookInfo.Visible and IsPrivate and IsNonFB2 then
       begin
         miConverToFBD.Visible := true;
         miConverToFBD.Tag := 0;
@@ -5403,7 +5387,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.miBookInfoClick(Sender: TObject);
+procedure TfrmMain.pmiBookInfoClick(Sender: TObject);
 var
   Tree: TVirtualStringTree;
   CR, s: string;

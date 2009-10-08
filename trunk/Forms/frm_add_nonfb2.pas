@@ -203,9 +203,7 @@ procedure TfrmAddnonfb2.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   FLibrary.Active := False;
   FreeAndNil(FLibrary);
-
   frmMain.DisableControls(True);
-  frmMain.DisableMainMenu(True);
   CanClose := true;
 end;
 
