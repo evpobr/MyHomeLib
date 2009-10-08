@@ -302,7 +302,6 @@ type
     RzSpacer3: TRzSpacer;
     IdCookieManager: TIdCookieManager;
     N28: TMenuItem;
-    FilesList: TFilesList;
     N37: TMenuItem;
     miAddToSearch: TMenuItem;
     miINPXCollectionExport: TMenuItem;
@@ -394,16 +393,17 @@ type
     miConverToFBD: TMenuItem;
     miEditToolbarVisible: TMenuItem;
     tlbrEdit: TToolBar;
-    ToolButton8: TToolButton;
-    ToolButton9: TToolButton;
-    ToolButton10: TToolButton;
-    ToolButton11: TToolButton;
+    tbtnEditAuthor: TToolButton;
+    tbtnEditSeries: TToolButton;
+    tbtnEditGenre: TToolButton;
+    tbtnEditBook: TToolButton;
     ToolButton14: TToolButton;
     tbtnFBD: TToolButton;
     N43: TMenuItem;
     ToolButton16: TToolButton;
-    ToolButton17: TToolButton;
+    tbtnDeleteBook: TToolButton;
     tbtnAutoFBD: TToolButton;
+    FilesList: TFilesList;
 
     //
     // События формы
@@ -711,7 +711,6 @@ type
 
     FLastFoundBook: PVirtualNode;
     FFirstFoundBook: PvirtualNode;
-    FWizardCanceled: boolean;
     FLastBookRecord: TBookRecord;
 
     //
@@ -748,6 +747,7 @@ type
     procedure SavePositions;
     procedure PrepareFb2EditData(Data: PBookData; var R: TBookRecord);
     procedure SaveFb2DataAfterEdit(R: TBookRecord);
+    function ShowNCWizard: boolean;
     property ActiveView: TView read GetActiveView;
   end;
 
@@ -1428,8 +1428,7 @@ begin
     tvBooksF.Clear;
     Screen.Cursor := crDefault;
 
-    ShowNewCollectionWizard(Nil);
-    if FWizardCanceled then Application.Terminate;
+    if not ShowNCWizard then Application.Terminate;
 
     DeleteFile(Settings.WorkPath + CHECK_FILE);
     Exit;
@@ -1469,7 +1468,7 @@ begin
   miEditGenres.Visible := IsPrivate;
   miEditSeries.Visible := IsPrivate;
   miBookEdit.Visible := IsPrivate;
-  miConverToFBD.Visible := IsPrivate;
+  miConverToFBD.Visible := IsPrivate  and not IsFB2;
   miDeleteBook.Visible := IsPrivate; // DMUser.ActiveCollection.AllowDelete;
   miDeleteFiles.Visible := isOnline and (ActiveView <> FavoritesView);
 
@@ -1491,8 +1490,13 @@ begin
   tbtnDownloadList_Add.Visible := IsOnline;
   tbtnShowDeleted.Visible := not IsPrivate;
 
-  tbtnFBD.Visible := IsPrivate;
-  tbtnAutoFBD.Visible := IsPrivate;
+  tbtnFBD.Visible := IsPrivate and not IsFB2;
+  tbtnAutoFBD.Visible := IsPrivate and not IsFB2;
+
+  tbtnDeleteBook.Visible := IsPrivate;
+  tbtnEditSeries.Visible := IsPrivate;
+  tbtnEditGenre.Visible := IsPrivate;
+  tbtnEditAuthor.Visible := IsPrivate;
 
   //--------- Вкладки, прочее  -------------------------------------------------
 
@@ -1794,13 +1798,10 @@ begin
   end
 end;
 
-
-
-procedure TfrmMain.ShowNewCollectionWizard(Sender: TObject);
+function TfrmMain.ShowNCWizard:boolean;
 var
   frmNCWizard: TfrmNCWizard;
 begin
-  FWizardCanceled := False;
   frmNCWizard := TfrmNCWizard.Create(Application);
   try
     if frmNCWizard.ShowModal = mrOk then
@@ -1808,12 +1809,18 @@ begin
       Settings.ActiveCollection := DMUser.ActiveCollection.ID;
       CreateCollectionMenu;
       InitCollection(True);
+      Result := True;
     end
     else
-      FWizardCanceled := True;
+      Result := False;
   finally
     frmNCWizard.Free;
   end;
+end;
+
+procedure TfrmMain.ShowNewCollectionWizard(Sender: TObject);
+begin
+  ShowNCWizard;
 end;
 
 
@@ -2084,6 +2091,12 @@ end;
 
 procedure TfrmMain.tbtnAutoFBDClick(Sender: TObject);
 begin
+  if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
+  begin
+    MessageDlg('Для конвертации книги перейдите ' + #13 + 'в соответствующую коллекцию', mtWarning, [mbOk], 0);
+    Exit;
+  end;
+
   DisableControls(False);
   try
     frmConvertToFBD.AutoMode;
@@ -5867,6 +5880,7 @@ begin
   begin
     pgControl.ActivePageIndex := 0;
     edLocateAuthor.Text := Data.Author;
+    LocateBook(Data.Title, False);
   end;
 end;
 
@@ -5892,6 +5906,12 @@ end;
 
 procedure TfrmMain.miConverToFBDClick(Sender: TObject);
 begin
+  if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
+  begin
+    MessageDlg('Для конвертации книги перейдите ' + #13 + 'в соответствующую коллекцию', mtWarning, [mbOk], 0);
+    Exit;
+  end;
+
   frmConvertToFBD.EditorMode := miConverToFBD.Tag <> 0;
   frmConvertToFBD.ShowModal;
 end;
@@ -5994,7 +6014,7 @@ begin
     end;
     DMCollection.tblExtra.MasterSource := DMCollection.dsBooks;
 
-    if GetFileName(fnSaveUserData,FN) then
+    if GetFileName(fnSaveUserData,FN) = true then   //шутка
           SL.SaveToFile(FN, TEncoding.UTF8);
 
   finally

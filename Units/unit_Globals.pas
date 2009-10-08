@@ -981,9 +981,7 @@ begin
   end
   else
   begin
-    //
     // { TODO -oNickR -cRefactoring : не самая лучшая идея показывать диалоги прямо из этой функции. Она может быть вызвана из рабочего потока. }
-    //
     Application.MessageBox(PChar(Format(' Не удалось запустить %s ! ',[FileName])),'',mb_IconExclamation)
   end;
 end;
