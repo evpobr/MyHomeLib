@@ -461,7 +461,6 @@ end;
 
 function TMHLSettings.GetSettingsFileName: string;
 begin
-  { TODO -oNickR -cVista : Под Вистой мы будем иметь проблемы }
   Result := WorkPAth + SETTINGS_FILE_NAME;
 end;
 

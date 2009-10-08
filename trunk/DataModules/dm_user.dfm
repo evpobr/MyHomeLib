@@ -3,7 +3,11 @@ object DMUser: TDMUser
   Height = 417
   Width = 463
   object DBUser: TABSDatabase
-    CurrentVersion = '6.04 '
+    Connected = True
+    CurrentVersion = '6.05 '
+    DatabaseFileName = 
+      'D:\My Docs\RAD Studio\Projects\MyHomeLib 1.5\Debug\Bin\Data\user' +
+      '.dbs'
     DatabaseName = 'UserData'
     Exclusive = False
     MaxConnections = 5
@@ -18,7 +22,7 @@ object DMUser: TDMUser
     Top = 256
   end
   object tblBases: TABSTable
-    CurrentVersion = '6.04 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
@@ -70,7 +74,7 @@ object DMUser: TDMUser
     end
   end
   object tblRates: TABSTable
-    CurrentVersion = '6.04 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
@@ -141,10 +145,11 @@ object DMUser: TDMUser
     Top = 128
   end
   object tblGrouppedBooks: TABSTable
-    CurrentVersion = '6.04 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
+    Active = True
     StoreDefs = True
     IndexDefs = <
       item
@@ -202,7 +207,7 @@ object DMUser: TDMUser
       item
         Name = 'Title'
         DataType = ftWideString
-        Size = 100
+        Size = 150
       end
       item
         Name = 'FullName'
@@ -276,6 +281,11 @@ object DMUser: TDMUser
         Name = 'Lang'
         DataType = ftWideString
         Size = 2
+      end
+      item
+        Name = 'KeyWords'
+        DataType = ftWideString
+        Size = 255
       end>
     TableName = 'GroupedBooks'
     Exclusive = False
@@ -369,12 +379,16 @@ object DMUser: TDMUser
       FieldName = 'Lang'
       Size = 2
     end
+    object tblGrouppedBooksKeyWords: TWideStringField
+      FieldName = 'KeyWords'
+      Size = 255
+    end
   end
   object SeverityImages: TImageList
     Left = 344
     Top = 328
     Bitmap = {
-      494C010103000400040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010103000400080010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000009933000099330000000000000000
@@ -519,7 +533,7 @@ object DMUser: TDMUser
     Left = 296
     Top = 328
     Bitmap = {
-      494C010103000400040020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010103000400080020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000002000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000000000000000000000000DF9030F52D9
@@ -1060,7 +1074,7 @@ object DMUser: TDMUser
     Top = 192
   end
   object tblFinished: TABSTable
-    CurrentVersion = '6.04 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
@@ -1121,7 +1135,7 @@ object DMUser: TDMUser
     end
   end
   object tblGroupList: TABSTable
-    CurrentVersion = '6.04 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
@@ -1181,7 +1195,7 @@ object DMUser: TDMUser
     end
   end
   object tblExtra: TABSTable
-    CurrentVersion = '6.04 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False

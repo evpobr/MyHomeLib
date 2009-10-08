@@ -95,6 +95,7 @@ type
     tblExtraReview: TWideMemoField;
     tblExtraCover: TBlobField;
     tblExtraData: TWideMemoField;
+    tblGrouppedBooksKeyWords: TWideStringField;
 
   private
     FCollection: TMHLCollection;
@@ -471,6 +472,7 @@ begin
     tblGrouppedBooksDate.Value := dmCollection.tblBooksDate.Value;
     tblGrouppedBooksProgress.Value := dmCollection.tblBooksProgress.Value;
     tblGrouppedBooksCode.Value := dmCollection.tblBooksCode.Value;
+    tblGrouppedBooksKeyWords.Value := dmCollection.tblBooksKeyWords.Value;
     tblGrouppedBooks.Post;
 
     if tblGrouppedBooksCode.Value = 1 then
