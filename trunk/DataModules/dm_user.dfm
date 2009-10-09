@@ -3,11 +3,7 @@ object DMUser: TDMUser
   Height = 417
   Width = 463
   object DBUser: TABSDatabase
-    Connected = True
     CurrentVersion = '6.05 '
-    DatabaseFileName = 
-      'D:\My Docs\RAD Studio\Projects\MyHomeLib 1.5\Debug\Bin\Data\user' +
-      '.dbs'
     DatabaseName = 'UserData'
     Exclusive = False
     MaxConnections = 5
@@ -149,7 +145,6 @@ object DMUser: TDMUser
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
-    Active = True
     StoreDefs = True
     IndexDefs = <
       item
@@ -379,16 +374,12 @@ object DMUser: TDMUser
       FieldName = 'Lang'
       Size = 2
     end
-    object tblGrouppedBooksKeyWords: TWideStringField
-      FieldName = 'KeyWords'
-      Size = 255
-    end
   end
   object SeverityImages: TImageList
     Left = 344
     Top = 328
     Bitmap = {
-      494C010103000400080010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101030004000C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000009933000099330000000000000000
@@ -533,7 +524,7 @@ object DMUser: TDMUser
     Left = 296
     Top = 328
     Bitmap = {
-      494C010103000400080020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101030004000C0020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000002000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000000000000000000000000DF9030F52D9
