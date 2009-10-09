@@ -232,7 +232,7 @@ begin
       mmInfo.SelAttributes.Style := [fsBold];
 
       if Author.Count>0 then
-        mmInfo.SetSelText(Author[0].Lastname.Text+' '+Author[0].Firstname.Text+#13#10);
+        mmInfo.SetSelText(Author[0].Lastname.Text+' '+Author[0].Firstname.Text+' '+Author[0].MiddleName.Text+#13#10);
 
       mmInfo.SelAttributes.Size := 12;
       mmInfo.SelAttributes.Color := clNavy;
