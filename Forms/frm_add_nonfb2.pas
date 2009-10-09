@@ -121,6 +121,7 @@ type
     procedure flFilesDirectory(Sender: TObject; const Dir: string);
     procedure TreeCompareNodes(Sender: TBaseVirtualTree; Node1,
       Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
+    procedure TreeClick(Sender: TObject);
 
   private
     procedure ScanFolder;
@@ -558,6 +559,12 @@ end;
 
 procedure TfrmAddnonfb2.TreeChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
+
+begin
+  TreeClick(Sender);
+end;
+
+procedure TfrmAddnonfb2.TreeClick(Sender: TObject);
 var
   Data: PFiledata;
 begin
@@ -567,6 +574,7 @@ begin
   edFileName.Text := Data.FileName;
   if cbSelectFileName.Checked then
     edFileName.SelectAll;
+
 end;
 
 procedure TfrmAddnonfb2.TreeCompareNodes(Sender: TBaseVirtualTree; Node1,

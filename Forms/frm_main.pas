@@ -2102,6 +2102,7 @@ begin
     frmConvertToFBD.AutoMode;
   finally
     DisableControls(True);
+    Show;
   end;
 end;
 
