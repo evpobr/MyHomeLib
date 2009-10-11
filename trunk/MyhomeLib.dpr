@@ -105,7 +105,9 @@ uses
   unit_ReviewParser in 'Units\unit_ReviewParser.pas',
   unit_WriteFb2Info in 'Units\unit_WriteFb2Info.pas',
   unit_ImportFB2Thread in 'ImportImpl\unit_ImportFB2Thread.pas',
-  frm_ConverToFBD in 'Forms\frm_ConverToFBD.pas' {frmConvertToFBD};
+  frm_ConverToFBD in 'Forms\frm_ConverToFBD.pas' {frmConvertToFBD},
+  unit_FBD_helpers in 'Units\unit_FBD_helpers.pas',
+  fictionbook_21 in 'Components\fictionbook_21.pas';
 
 {$R *.res}
 

@@ -124,7 +124,7 @@ uses
   ActiveX,
   ComObj,
   unit_Consts,
-  Dialogs;
+  Dialogs, unit_FBD_helpers;
 
 {$R *.dfm}
 
@@ -398,12 +398,15 @@ var
   S : IXMLSequenceType;
   Bin : IXMLBinary;
   C: IXMLImageType;
+  P: IXMLPType;
   MS: TMemoryStream;
   SL: TstringList;
   Str: string;
   i: integer;
 
   G: TGUID;
+
+  AText: string;
 begin
   Result := False;
   MS := TMemoryStream.Create;
@@ -428,7 +431,15 @@ begin
 
       Booktitle.Text := FBookRecord.Title;
 
-      Annotation.Text := mmAnnotation.Text;
+      Annotation.ChildNodes.Clear;
+
+      for I := 0 to mmAnnotation.Lines.Count - 1 do
+      begin
+        P := Annotation.P.Add;
+        P.Text := mmAnnotation.Lines[i];
+      end;
+
+
       Lang := FBookRecord.Lang;
       Keywords.Text := FBookRecord.KeyWords;
 
@@ -505,12 +516,12 @@ begin
              '<FictionBook xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.gribuser.ru/xml/fictionbook/2.0">',
              Str);
 
-   case FImageType of
-     itPng: StrReplace('<coverpage><image/></coverpage>',
-                       '<coverpage><image xlink:href="#cover.png"/></coverpage>',Str);
-     itJPG: StrReplace('<coverpage><image/></coverpage>',
-                       '<coverpage><image xlink:href="#cover.jpg"/></coverpage>',Str);
-   end;
+    case FImageType of
+       itPng: StrReplace('<coverpage><image/></coverpage>',
+                         '<coverpage><image xlink:href="#cover.png"/></coverpage>',Str);
+       itJPG: StrReplace('<coverpage><image/></coverpage>',
+                         '<coverpage><image xlink:href="#cover.jpg"/></coverpage>',Str);
+    end;
 
     SL.Text := Str;
     //----------------------------------------------------------------------------
@@ -544,8 +555,8 @@ begin
   if FEditorMode then
   begin
     FBookFileName := FBookrecord.FileName ;
-    FFBDFilename := ChangeFileExt(FBookrecord.FileName, '.fbd');
     FZipFileName := FFolder + FBookrecord.FileName;
+    getfbdfilenames(FZipFileName,FFBDFilename);
     LoadFBD;
   end
   else
