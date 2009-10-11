@@ -204,8 +204,8 @@ object frmBookDetails: TfrmBookDetails
       580
       35)
     object RzBitBtn1: TRzBitBtn
-      Left = 468
-      Top = 5
+      Left = 466
+      Top = 3
       Width = 104
       Anchors = [akRight, akBottom]
       Caption = #1047#1072#1082#1088#1099#1090#1100
