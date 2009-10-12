@@ -63,10 +63,10 @@ type
     miAdd: TMenuItem;
     N7: TMenuItem;
     miRenameFile: TMenuItem;
-    Tree: TVirtualStringTree;
-    RzPageControl1: TRzPageControl;
-    TabSheet1: TRzTabSheet;
-    TabSheet2: TRzTabSheet;
+    RzBitBtn1: TRzBitBtn;
+    pcPages: TRzPageControl;
+    tsBookInfo: TRzTabSheet;
+    RzLabel1: TRzLabel;
     RzPanel3: TRzPanel;
     RzPanel1: TRzPanel;
     btnCopyToSeries: TButton;
@@ -83,7 +83,6 @@ type
     RzGroupBox2: TRzGroupBox;
     edT: TEdit;
     RzGroupBox3: TRzGroupBox;
-    btnAdd: TRzBitBtn;
     cbAutoSeries: TCheckBox;
     cbSelectFileName: TCheckBox;
     cbNoAuthorAllowed: TCheckBox;
@@ -99,6 +98,7 @@ type
     edKeyWords: TEdit;
     RzGroupBox8: TRzGroupBox;
     cbLang: TRzComboBox;
+    btnAdd: TRzBitBtn;
     RzGroupBox9: TRzGroupBox;
     FCover: TImage;
     btnPasteCover: TRzBitBtn;
@@ -122,8 +122,11 @@ type
     edLastName: TRzEdit;
     edNickName: TRzEdit;
     mmAnnotation: TMemo;
-    RzLabel1: TRzLabel;
     dtnConvert: TRzBitBtn;
+    TabSheet3: TRzTabSheet;
+    Tree: TVirtualStringTree;
+    tsFiles: TRzTabSheet;
+    RzBitBtn2: TRzBitBtn;
     procedure RzButton3Click(Sender: TObject);
     procedure TreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
@@ -154,6 +157,7 @@ type
     procedure btnLoadClick(Sender: TObject);
     procedure btnPasteCoverClick(Sender: TObject);
     procedure dtnConvertClick(Sender: TObject);
+    procedure RzBitBtn2Click(Sender: TObject);
 
   private
     FBookRecord: TBookRecord;
@@ -298,7 +302,9 @@ begin
   edYear.Clear;
 
   mmAnnotation.Lines.Clear;
-  FCover.Picture := nil;  
+  FCover.Picture := nil;
+
+  FBookRecord.Clear;
 end;
 
 procedure TfrmAddnonfb2.miOpenExplorerClick(Sender: TObject);
@@ -334,7 +340,6 @@ var
   Next: PvirtualNode;
 begin
   FLibrary.InsertBook(FBookRecord, True, True);
-
   Next := Tree.GetNext(Tree.GetFirstSelected);
   Tree.DeleteNode(Tree.GetFirstSelected, True);
   if Next <> nil then
@@ -357,6 +362,7 @@ begin
   FillLists;
   if cbAutoSeries.Checked then
     edSN.Value := edSN.Value + 1;
+  TreeChange(Tree, Next);
 end;
 
 procedure TfrmAddnonfb2.dtnConvertClick(Sender: TObject);
@@ -660,6 +666,19 @@ begin
   end;
 end;
 
+procedure TfrmAddnonfb2.RzBitBtn2Click(Sender: TObject);
+var
+  Data: PFileData;
+  S: string;
+begin
+  Data := Tree.GetNodedata(Tree.GetFirstSelected);
+  if Data <> nil then
+  begin
+    S := AnsiLowercase(Data.FullPath + Data.FileName + Data.Ext);
+    ShellExecute(Handle, 'open', PChar(s), '', nil, SW_SHOWNORMAL);
+  end;
+end;
+
 procedure TfrmAddnonfb2.RzButton3Click(Sender: TObject);
 begin
   Close;
@@ -696,16 +715,17 @@ begin
 end;
 
 procedure TfrmAddnonfb2.TreeDblClick(Sender: TObject);
-var
-  Data: PFileData;
-  S: string;
+//var
+//  Data: PFileData;
+//  S: string;
 begin
-  Data := Tree.GetNodedata(Tree.GetFirstSelected);
-  if Data <> nil then
-  begin
-    S := AnsiLowercase(Data.FullPath + Data.FileName + Data.Ext);
-    ShellExecute(Handle, 'open', PChar(s), '', nil, SW_SHOWNORMAL);
-  end;
+//  Data := Tree.GetNodedata(Tree.GetFirstSelected);
+//  if Data <> nil then
+//  begin
+//    S := AnsiLowercase(Data.FullPath + Data.FileName + Data.Ext);
+//    ShellExecute(Handle, 'open', PChar(s), '', nil, SW_SHOWNORMAL);
+//  end;
+  pcPages.ActivePageIndex := 1;
 end;
 
 procedure TfrmAddnonfb2.TreeGetText(Sender: TBaseVirtualTree;
