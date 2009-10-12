@@ -23,7 +23,8 @@ uses
   unit_Globals,
   XMLDoc,
   ImgList,
-  RzButton;
+  RzButton,
+  xmldom;
 
 type
 
@@ -124,7 +125,8 @@ uses
   ActiveX,
   ComObj,
   unit_Consts,
-  Dialogs, unit_FBD_helpers;
+  Dialogs,
+  unit_FBD_helpers;
 
 {$R *.dfm}
 
@@ -375,9 +377,12 @@ begin
     end;
     with FBook.Description do
     begin
-      if Titleinfo.Annotation.HasChildNodes then
-          for I := 0 to Titleinfo.Annotation.ChildNodes.Count - 1 do
-              mmAnnotation.Lines.Add(Titleinfo.Annotation.ChildNodes[i].Text);
+      if Titleinfo.Annotation.P.Count <> 0 then
+        for I := 0 to Titleinfo.Annotation.P.Count - 1 do
+          mmAnnotation.Lines.Add(Titleinfo.Annotation.P.Items[i].Text)
+      else
+        for I := 0 to Titleinfo.Annotation.ChildNodes.Count - 1 do
+           mmAnnotation.Lines.Add(Titleinfo.Annotation.ChildNodes[i].Text);
 
       edCity.Text := Publishinfo.City.Text;
       edPublisher.Text := Publishinfo.Publisher.Text;
@@ -414,9 +419,9 @@ begin
 
   try
     FBD := GetFictionBook(FXML);
-
     FXML.Version := '1.0';
     FXML.Encoding := 'UTF-8';
+    FBD.Attributes['xmlns:xlink']:='http://www.w3.org/1999/xlink';
 
     with FBD.Description.Titleinfo do
     begin
@@ -432,13 +437,13 @@ begin
       Booktitle.Text := FBookRecord.Title;
 
       Annotation.ChildNodes.Clear;
-
       for I := 0 to mmAnnotation.Lines.Count - 1 do
       begin
+        Str := mmAnnotation.Lines[i];
+        StrReplace(#10,'',str);
         P := Annotation.P.Add;
-        P.Text := mmAnnotation.Lines[i];
+        P.Text := Str;
       end;
-
 
       Lang := FBookRecord.Lang;
       Keywords.Text := FBookRecord.KeyWords;
@@ -490,42 +495,26 @@ begin
     begin
       FBD.Binary.Clear;
       Bin := FBD.Binary.Add;
+
+      FBD.Description.Titleinfo.Coverpage.Clear;
+      C := FBD.Description.Titleinfo.Coverpage.Add;
+
       case FImageType of
         itPng: begin
                  Bin.Id := 'cover.png';
+                 C.xlinkHref := '#cover.png';
                  Bin.Contenttype := 'image/png';
                end ;
         itJPG: begin
                  Bin.Id := 'cover.jpg';
+                 C.xlinkHref := '#cover.jpg';
                  Bin.Contenttype := 'image/jpeg';
                end;
       end;
       Bin.Text := FLines.Text;
-      FBD.Description.Titleinfo.Coverpage.Clear;
-      C := FBD.Description.Titleinfo.Coverpage.Add;
     end;
 
-    FXML.SaveToStream(MS);
-
-  //----------------------------------------------------------------------------
-  //                              костыли для XML
-    MS.Seek(0,soFromBeginning);
-    SL.LoadFromStream(MS);
-    Str := SL.Text;
-    StrReplace('<FictionBook xmlns="http://www.gribuser.ru/xml/fictionbook/2.0">',
-             '<FictionBook xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.gribuser.ru/xml/fictionbook/2.0">',
-             Str);
-
-    case FImageType of
-       itPng: StrReplace('<coverpage><image/></coverpage>',
-                         '<coverpage><image xlink:href="#cover.png"/></coverpage>',Str);
-       itJPG: StrReplace('<coverpage><image/></coverpage>',
-                         '<coverpage><image xlink:href="#cover.jpg"/></coverpage>',Str);
-    end;
-
-    SL.Text := Str;
-    //----------------------------------------------------------------------------
-    SL.SaveToFile(FFolder + FFBDFileName);
+    FXML.SaveToFile(FFolder + FFBDFileName);
     Result := True;
   finally
     SL.Free;

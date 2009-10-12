@@ -255,9 +255,8 @@ begin
 
       if Genre.Count>0 then mmInfo.SetSelText(Genre[0]+#13#10);;
 
-      if Annotation.HasChildNodes then
-          for I := 0 to Annotation.ChildNodes.Count - 1 do
-            mmShort.SetSelText(Annotation.ChildNodes[i].Text);
+      for I := 0 to Annotation.P.Count - 1 do
+              mmShort.SetSelText(Annotation.P.Items[i].Text);
 
       mmInfo.SetSelText(#13#10);
 
@@ -282,7 +281,7 @@ begin
       mmInfo.SetSelText('Дата: '+Book.Description.Documentinfo.Date.Text + #13#10);
       mmInfo.SetSelText('ID: '+Book.Description.Documentinfo.ID + #13#10);
       mmInfo.SetSelText('Version: '+Book.Description.Documentinfo.Version + #13#10);
-//      mmInfo.SetSelText('History: '+Book.Description.Documentinfo.History.P.OnlyText + #13#10);
+      mmInfo.SetSelText('History: '+Book.Description.Documentinfo.History.P.Text + #13#10);
     end;
   except
   end;

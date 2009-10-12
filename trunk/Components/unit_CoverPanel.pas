@@ -427,9 +427,10 @@ begin
       end;
       with FBook.Description do
       begin
-        if Titleinfo.Annotation.HasChildNodes then
-          for I := 0 to Titleinfo.Annotation.ChildNodes.Count - 1 do
-            Ftext.Lines.Add(Titleinfo.Annotation.ChildNodes[i].Text);
+
+        for I := 0 to Titleinfo.Annotation.P.Count - 1 do
+          Ftext.Lines.Add(Titleinfo.Annotation.P.Items[i].Text);
+
         if FFb2InfoVisible then
         begin
           Hint := '';
