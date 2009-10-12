@@ -24,7 +24,8 @@ uses
   XMLDoc,
   ImgList,
   RzButton,
-  xmldom;
+  xmldom,
+  unit_FBD_helpers;
 
 type
 
@@ -64,8 +65,6 @@ type
     btnPrevious: TBitBtn;
     btnNext: TBitBtn;
     procedure btnPasteCoverClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure btnOpenBookClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -75,8 +74,6 @@ type
     procedure BitBtn1Click(Sender: TObject);
   private
     { Private declarations }
-    FLines: TStringList;
-    FBD: IXMLFictionBook;
 
     FBookFileName: string;
     FFBDFileName: string;
@@ -85,22 +82,18 @@ type
     FFolder: string;
     FZipFileName: string;
 
-    FXML : TXMLDocument;
-
-    FImageType : TCoverImageType;
     FEditorMode: boolean;
 
     FBusy : boolean;
     FTerminated: boolean;
 
-    function MakeFBD:boolean;
-    function CreateZip:boolean;
+    FFBD: TFBDRecord;
+
     procedure ChangeBookData;
-    procedure ResizeImage;
     procedure PrepareForm;
-    procedure LoadFBD;
     procedure SaveFBD;
     procedure EnableButtons(State: boolean);
+    function MakeFBD: boolean;
 
   public
     { Public declarations }
@@ -125,8 +118,7 @@ uses
   ActiveX,
   ComObj,
   unit_Consts,
-  Dialogs,
-  unit_FBD_helpers;
+  Dialogs;
 
 {$R *.dfm}
 
@@ -151,39 +143,8 @@ begin
 end;
 
 procedure TfrmConvertToFBD.btnLoadClick(Sender: TObject);
-var
-  Input, Output: TMemoryStream;
-  IMG: TGraphic;
-  FileName: string;
 begin
-   if not GetFileName(fnOpenCoverImage,FileName) then Exit;
-
-   Output := TMemoryStream.Create;
-   Input := TMemoryStream.Create;
-
-   Input.LoadFromFile(Filename);
-   EncodeStream(Input, Output);
-
-   FLines.Clear;
-   Output.Seek(0,soFromBeginning);
-   FLines.LoadFromStream(Output);
-
-   try
-     CreateImage(ExtractFileExt(Filename),IMG, FImageType);
-     if Assigned(IMG) then
-     begin
-       Input.Seek(0,soFromBeginning);
-       IMG.LoadFromStream(Input);
-       FCover.Picture.Assign(IMG);
-       FCover.Invalidate;
-       //ResizeImage;
-    end;
-  finally
-    IMG.Free;
-    Output.Free;
-    Input.Free;
-  end;
-
+  LoadCoverFromFile(FCover, FFBD.cover, FFBD.ImageType);
 end;
 
 procedure TfrmConvertToFBD.btnOpenBookClick(Sender: TObject);
@@ -192,44 +153,13 @@ begin
 end;
 
 procedure TfrmConvertToFBD.btnPasteCoverClick(Sender: TObject);
-var
-  s : string;
-  Icon: TJPEGImage;
-  Input, Output: TMemoryStream;
-  IMG: TGraphic;
 begin
- Output := TMemoryStream.Create;
- Input := TMemoryStream.Create;
-
- IMG := TJPEGImage.Create;
- try
-   FCover.Picture.RegisterClipboardFormat(cf_BitMap,TPNGImage);
-   FCover.Picture.RegisterClipboardFormat(cf_BitMap,TJPEGImage);
-   FCover.Picture.Bitmap.LoadFromClipBoardFormat(cf_BitMap,ClipBoard.GetAsHandle(cf_Bitmap),0);
-
-   ResizeImage;
-
-   IMG.Assign(FCover.Picture.Bitmap);
-   IMG.SaveToStream(Input);
-
-   Input.Seek(0,soFromBeginning);
-   EncodeStream(Input,Output);
-   FLines.Clear;
-   Output.Seek(0,soFromBeginning);
-   FLines.LoadFromStream(Output);
-
-   FImageType := itJPG;
- finally
-   Output.Free;
-   Input.Free;
-   IMG.Free;
- end;
+  CoverFromClpbrd(FCover, FFBD.Cover, FFBD.ImageType);
 end;
 
 procedure TfrmConvertToFBD.btnSaveClick(Sender: TObject);
 begin
   if FBusy then Exit;
-
   SaveFBD;
   frmMain.Click;
   Modalresult := mrOk;
@@ -259,48 +189,6 @@ begin
   DMCollection.ActiveTable.Post;
 end;
 
-function TfrmConvertToFBD.CreateZip:boolean;
-var
-  Zip: TZipForge;
-    F: TZFArchiveItem;
-begin
-  Result := False;
-  Zip := TZipForge.Create(nil);
-  try
-    zip.FileName := FZipFileName;
-    zip.BaseDir := FFolder;
-    if FEditorMode then
-    begin
-      zip.OpenArchive;
-      zip.DeleteFiles(FFBDFileName);
-      zip.AddFiles(FFBDFileName);
-      DeleteFile(FFolder + FFBDFileName);
-      Result := True;
-    end
-    else
-    begin
-      zip.OpenArchive(fmCreate);
-      zip.AddFiles(FBookFileName);
-      zip.AddFiles(FFBDFileName);
-
-      if zip.FindFirst(FBookFileName,F) and
-           zip.FindFirst(FFBDFileName,F)
-      then
-        try
-          zip.TestFiles('*.*');
-          Result := True;
-          DeleteFile(FFolder + FFBDFileName);
-          DeleteFile(FFolder + FBookFileName);
-        except
-        end; // if
-      zip.CloseArchive;
-    end;
-  finally
-    Zip.Free;
-  end;
-  if not Result then MessageDlg('Ошибка создания FBD! ', mtError, [mbOK], 0);
-end;
-
 procedure TfrmConvertToFBD.EnableButtons(State: boolean);
 begin
   btnPrevious.Enabled := State;
@@ -308,236 +196,36 @@ begin
   btnSave.Enabled     := State;
 end;
 
-procedure TfrmConvertToFBD.FormCreate(Sender: TObject);
-begin
-  FLines := TStringList.Create;
-end;
-
-procedure TfrmConvertToFBD.FormDestroy(Sender: TObject);
-begin
-  FLines.Free;
-end;
-
 procedure TfrmConvertToFBD.FormShow(Sender: TObject);
 begin
   PrepareForm;
 end;
 
-procedure TfrmConvertToFBD.LoadFBD;
-var
-  Zip: TZipForge;
-  Input, Output: TMemoryStream;
-  FBook: IXMLFictionBook;
-  outStr: AnsiString;
-  CoverID: string;
-  i: integer;
-  IMG: TGraphic;
-  Ext: string;
-begin
-  Input := TMemoryStream.Create;
-  try
-    Zip := TZipForge.Create(nil);
-    try
-      Zip.FileName :=  FZipFileName;
-      Zip.OpenArchive;
-      Zip.ExtractToStream(FFBDFileName,Input);
-    finally
-      Zip.Free;
-    end;
-    FXML.LoadFromStream(Input);
-
-    FBook := LoadFictionBook(Input);
-    if FBook.Description.Titleinfo.Coverpage.Count > 0 then
-    begin
-      CoverID := FBook.Description.Titleinfo.Coverpage.ImageList[0].xlinkHref;
-      Delete(CoverID,1,1);
-      for i := 0 to FBook.Binary.Count - 1 do
-        if FBook.Binary.Items[i].Id = CoverID then
-        try
-          Output := TMemoryStream.Create;
-          FLines.Clear;
-          Input.Clear;
-          FLines.Text := FBook.Binary.Items[i].Text;
-          FLines.SaveToStream(Output);
-          Output.Seek(0,soFromBeginning);
-          DecodeStream(Output,Input);
-
-          CreateImage(ExtractFileExt(CoverID),IMG,FImageType);
-          if Assigned(IMG) then
-          begin
-            Input.Seek(0,soFromBeginning);
-            IMG.LoadFromStream(Input);
-            FCover.Picture.Assign(IMG);
-            FCover.Invalidate;
-          end;
-        finally
-          IMG.Free;
-          Output.Free;
-        end; // for
-    end;
-    with FBook.Description do
-    begin
-      if Titleinfo.Annotation.P.Count <> 0 then
-        for I := 0 to Titleinfo.Annotation.P.Count - 1 do
-          mmAnnotation.Lines.Add(Titleinfo.Annotation.P.Items[i].Text)
-      else
-        for I := 0 to Titleinfo.Annotation.ChildNodes.Count - 1 do
-           mmAnnotation.Lines.Add(Titleinfo.Annotation.ChildNodes[i].Text);
-
-      edCity.Text := Publishinfo.City.Text;
-      edPublisher.Text := Publishinfo.Publisher.Text;
-      edYear.Text := Publishinfo.Year;
-      edISBN.Text := Publishinfo.Isbn.Text;
-
-      if Documentinfo.Author.Count > 0 then
-             edNickName.Text := Documentinfo.Author.Items[0].Nickname.Text;
-    end;
-  finally
-    Input.Free;
-  end;
-end;
-
 function TfrmConvertToFBD.MakeFBD:boolean;
-var
-  A: IXMLAuthorType;
-  S : IXMLSequenceType;
-  Bin : IXMLBinary;
-  C: IXMLImageType;
-  P: IXMLPType;
-  MS: TMemoryStream;
-  SL: TstringList;
-  Str: string;
-  i: integer;
-
-  G: TGUID;
-
-  AText: string;
 begin
-  Result := False;
-  MS := TMemoryStream.Create;
-  SL := TStringList.Create;
+  FFBD.First := edFirstName.Text;
+  FFBD.Last := edLastName.Text;
+  FFBD.Middle := edMiddleName.Text;
+  FFBD.Nick := edNickName.Text;
 
-  try
-    FBD := GetFictionBook(FXML);
-    FXML.Version := '1.0';
-    FXML.Encoding := 'UTF-8';
-    FBD.Attributes['xmlns:xlink']:='http://www.w3.org/1999/xlink';
+  FFBD.Publisher := edPublisher.Text;
+  FFBD.City := edCity.Text;
+  FFBD.ISBN := edISBN.Text;
+  FFBD.Year := edYear.Text;
 
-    with FBD.Description.Titleinfo do
-    begin
-      Author.Clear;
-      for i := 0 to High(FBookRecord.Authors) do
-      begin
-        A := Author.Add;
-        A.Lastname.Text := FBookRecord.Authors[i].LastName;
-        A.Firstname.Text :=FBookRecord.Authors[i].FirstName;
-        A.Middlename.Text :=FBookRecord.Authors[i].MiddleName;
-      end;
-
-      Booktitle.Text := FBookRecord.Title;
-
-      Annotation.ChildNodes.Clear;
-      for I := 0 to mmAnnotation.Lines.Count - 1 do
-      begin
-        Str := mmAnnotation.Lines[i];
-        StrReplace(#10,'',str);
-        P := Annotation.P.Add;
-        P.Text := Str;
-      end;
-
-      Lang := FBookRecord.Lang;
-      Keywords.Text := FBookRecord.KeyWords;
-
-      Genre.Clear;
-      for i := 0 to High(FBookRecord.Genres) do
-        Genre.Add(FBookRecord.Genres[i].GenreFb2Code);
-
-      if FBookRecord.Series <> '' then
-      begin
-        try
-          Sequence.Clear;
-          S := Sequence.Add;
-
-          S.Name := FBookRecord.Series;
-          S.Number := FBookRecord.SeqNumber
-        except
-        end;
-      end;
-    end; // with Description
-
-    with FBD.Description do
-    begin
-      Publishinfo.Publisher.Text := edPublisher.Text;
-      Publishinfo.City.Text := edCity.Text;
-      Publishinfo.Year := edYear.Text;
-      Publishinfo.Isbn.Text := edISBN.Text;
-    end;
-
-    with FBD.Description do
-    begin
-      Documentinfo.Author.Clear;
-      A := Documentinfo.Author.Add;
-
-      A.Firstname.Text := edFirstName.Text;
-      A.Middlename.Text := edMiddleName.Text;
-      A.LastName.Text := edLastName.Text;
-      A.Nickname.Text := edNickName.Text;
-
-      DocumentInfo.Programused.Text := 'MyHomeLib 1.6';
-      DocumentInfo.Date.Text := DateToStr(Now);
-      DocumentInfo.Version := '1.0';
-
-      CoCreateGuid(G);
-      DocumentInfo.Id := GUIDToString(G);
-    end;
-
-    if Length(FLines.Text) > 100 then
-    begin
-      FBD.Binary.Clear;
-      Bin := FBD.Binary.Add;
-
-      FBD.Description.Titleinfo.Coverpage.Clear;
-      C := FBD.Description.Titleinfo.Coverpage.Add;
-
-      case FImageType of
-        itPng: begin
-                 Bin.Id := 'cover.png';
-                 C.xlinkHref := '#cover.png';
-                 Bin.Contenttype := 'image/png';
-               end ;
-        itJPG: begin
-                 Bin.Id := 'cover.jpg';
-                 C.xlinkHref := '#cover.jpg';
-                 Bin.Contenttype := 'image/jpeg';
-               end;
-      end;
-      Bin.Text := FLines.Text;
-    end;
-
-    FXML.SaveToFile(FFolder + FFBDFileName);
-    Result := True;
-  finally
-    SL.Free;
-    MS.Free;
-  end;
+  Result := PrepareFBDFile(FBookRecord, FFBD, mmAnnotation, FFolder + FFBDFileName);
 end;
 
 procedure TfrmConvertToFBD.PrepareForm;
 begin
   DMCollection.GetCurrentBook(FBookRecord);
 
-  FLines.Clear;
-  edPublisher.Clear; edCity.Clear; edISBN.Clear; edYear.Clear;
-  mmAnnotation.Clear;
   FCover.Picture := nil;
 
   lblAuthor.Caption := FBookRecord.Authors[0].FLastName + ' ' +
                        FBookRecord.Authors[0].FFirstName;
 
   lblTitle.Caption := FBookRecord.Title;
-
-  FXML := TXmlDocument.Create(Self);
-  FXML.Active := True;
 
   FFolder := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder) + FBookRecord.Folder;
 
@@ -546,7 +234,19 @@ begin
     FBookFileName := FBookrecord.FileName ;
     FZipFileName := FFolder + FBookrecord.FileName;
     getfbdfilenames(FZipFileName,FFBDFilename);
-    LoadFBD;
+
+    LoadFBDFromFile(FZipFileName,FFBD,FCover, mmAnnotation);
+
+    edFirstName.Text := FFBD.First;
+    edLastName.Text := FFBD.Last;
+    edMiddleName.Text := FFBD.Middle;
+    edNickName.Text := FFBD.Nick;
+
+    edPublisher.Text := FFBD.Publisher;
+    edCity.Text := FFBD.City;
+    edISBN.Text := FFBD.ISBN;
+    edYear.Text := FFBD.Year;
+
   end
   else
   begin
@@ -556,46 +256,6 @@ begin
   end;
 end;
 
-procedure TfrmConvertToFBD.ResizeImage;
-const
-  maxWidth = 300;
-  maxHeight = 450;
-var
-  thumbnail : TBitmap;
-  thumbRect : TRect;
-begin
-    // resize
-   thumbnail := TBitmap.Create;
-   thumbnail.Assign(FCover.Picture.Bitmap);
-   try
-     if (thumbnail.Width > maxWidth) and (thumbnail.Height > maxHeight)    then
-     begin
-       thumbRect.Left := 0;
-       thumbRect.Top := 0;
-
-        //proportional resize
-       if thumbnail.Width > thumbnail.Height then
-       begin
-         thumbRect.Right := maxWidth;
-         thumbRect.Bottom := (maxWidth * thumbnail.Height) div thumbnail.Width;
-       end
-       else
-       begin
-         thumbRect.Bottom := maxHeight;
-         thumbRect.Right := (maxHeight * thumbnail.Width) div thumbnail.Height;
-       end;
-       thumbnail.Canvas.StretchDraw(thumbRect, thumbnail) ;
-       //resize image
-       thumbnail.Width := thumbRect.Right;
-       thumbnail.Height := thumbRect.Bottom;
-
-       //display in a TImage control
-     end;
-     FCover.Picture.Assign(thumbnail) ;
-   finally
-     thumbnail.Free;
-   end;
-end;
 
 procedure TfrmConvertToFBD.SaveFBD;
 begin
@@ -604,7 +264,7 @@ begin
   Screen.Cursor := crHourGlass;
   try
     if MakeFBD then
-     if CreateZip then
+     if CreateZip(FZipFilename, FFolder, FBookFileName, FFBDFilename, FeditorMode)  then
        if not FEditorMode then
          ChangeBookData;
   finally
