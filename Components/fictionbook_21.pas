@@ -3,9 +3,11 @@
 {                                                                              }
 {                               FictionBook 2.1                                }
 {                                                                              }
-{                                Version 0.96                                  }
-{                             03.05.2006 0:40:22                               }
-{                    Copyright (c) Alex Sedykh alexs@vsi.ru                    }   
+{                                Version 0.97                                  }
+{                                12.10.2009                                    }
+{                    Copyright (c) Alex Sedykh alexs@vsi.ru                    }
+{                                                                              }
+{   * multy-p in the annotation added (Alex Penkov)                            }
 {                                                                              }
 {******************************************************************************}
 
@@ -206,7 +208,7 @@ type
     { Property Accessors }
     function Get_Id: WideString;
     function Get_xmlLang: WideString;
-    function Get_P: IXMLPType;
+    function Get_P: IXMLPTypeList;
     function Get_Poem: IXMLPoemType;
     function Get_Cite: IXMLCiteType;
     function Get_Subtitle: IXMLPType;
@@ -217,7 +219,7 @@ type
     { Methods & Properties }
     property Id: WideString read Get_Id write Set_Id;
     property xmlLang: WideString read Get_xmlLang write Set_xmlLang;
-    property P: IXMLPType read Get_P;
+    property P: IXMLPTypeList read Get_P;
     property Poem: IXMLPoemType read Get_Poem;
     property Cite: IXMLCiteType read Get_Cite;
     property Subtitle: IXMLPType read Get_Subtitle;
@@ -1064,11 +1066,13 @@ type
 { TXMLAnnotationType }
 
   TXMLAnnotationType = class(TXMLNode, IXMLAnnotationType)
+  private
+    FP: IXMLPTypeList;
   protected
     { IXMLAnnotationType }
     function Get_Id: WideString;
     function Get_xmlLang: WideString;
-    function Get_P: IXMLPType;
+    function Get_P: IXMLPTypeList;
     function Get_Poem: IXMLPoemType;
     function Get_Cite: IXMLCiteType;
     function Get_Subtitle: IXMLPType;
@@ -1950,6 +1954,7 @@ begin
   RegisterChildNode('cite', TXMLCiteType);
   RegisterChildNode('subtitle', TXMLPType);
   RegisterChildNode('table', TXMLTableType);
+  FP := CreateCollection(TXMLPTypeList, IXMLPType, 'p') as IXMLPTypeList;
   inherited;
 end;
 
@@ -1973,14 +1978,14 @@ begin
   SetAttribute('xml:lang', Value);
 end;
 
-function TXMLAnnotationType.Get_P: IXMLPType;
-begin
-  Result := ChildNodes['p'] as IXMLPType;
-end;
-
 function TXMLAnnotationType.Get_Poem: IXMLPoemType;
 begin
   Result := ChildNodes['poem'] as IXMLPoemType;
+end;
+
+function TXMLAnnotationType.Get_P: IXMLPTypeList;
+begin
+  Result := FP;
 end;
 
 function TXMLAnnotationType.Get_Cite: IXMLCiteType;
