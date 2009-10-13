@@ -57,48 +57,11 @@ type
     N5: TMenuItem;
     miClearAll: TMenuItem;
     pmMain: TPopupMenu;
-    MenuItem6: TMenuItem;
     N6: TMenuItem;
     miOpenExplorer: TMenuItem;
-    miAdd: TMenuItem;
-    N7: TMenuItem;
-    miRenameFile: TMenuItem;
-    RzBitBtn1: TRzBitBtn;
+    btnClose: TRzBitBtn;
     pcPages: TRzPageControl;
     tsBookInfo: TRzTabSheet;
-    RzLabel1: TRzLabel;
-    RzPanel3: TRzPanel;
-    RzPanel1: TRzPanel;
-    btnCopyToSeries: TButton;
-    btnCopyToTitle: TButton;
-    btnCopyToName: TButton;
-    btnCopyToFamily: TButton;
-    edFileName: TEdit;
-    btnRenameFile: TRzBitBtn;
-    RzGroupBox1: TRzGroupBox;
-    lvAuthors: TRzListView;
-    btnDeleteAuthor: TRzBitBtn;
-    btnChangeAuthor: TRzBitBtn;
-    btnAddAuthor: TRzBitBtn;
-    RzGroupBox2: TRzGroupBox;
-    edT: TEdit;
-    RzGroupBox3: TRzGroupBox;
-    cbAutoSeries: TCheckBox;
-    cbSelectFileName: TCheckBox;
-    cbNoAuthorAllowed: TCheckBox;
-    RzGroupBox4: TRzGroupBox;
-    edSN: TRzNumericEdit;
-    cbSeries: TRzComboBox;
-    RzGroupBox5: TRzGroupBox;
-    lblGenre: TLabel;
-    btnShowGenres: TButton;
-    RzGroupBox6: TRzGroupBox;
-    cbClearOptions: TRzComboBox;
-    RzGroupBox7: TRzGroupBox;
-    edKeyWords: TEdit;
-    RzGroupBox8: TRzGroupBox;
-    cbLang: TRzComboBox;
-    btnAdd: TRzBitBtn;
     RzGroupBox9: TRzGroupBox;
     FCover: TImage;
     btnPasteCover: TRzBitBtn;
@@ -126,7 +89,39 @@ type
     TabSheet3: TRzTabSheet;
     Tree: TVirtualStringTree;
     tsFiles: TRzTabSheet;
-    RzBitBtn2: TRzBitBtn;
+    RzGroupBox12: TRzGroupBox;
+    edFileName: TEdit;
+    btnCopyToFamily: TButton;
+    btnCopyToName: TButton;
+    btnCopyToTitle: TButton;
+    btnCopyToSeries: TButton;
+    btnFileOpen: TRzBitBtn;
+    btnRenameFile: TRzBitBtn;
+    btnAdd: TRzBitBtn;
+    RzGroupBox5: TRzGroupBox;
+    lblGenre: TLabel;
+    btnShowGenres: TButton;
+    RzGroupBox8: TRzGroupBox;
+    cbLang: TRzComboBox;
+    RzGroupBox7: TRzGroupBox;
+    edKeyWords: TEdit;
+    RzGroupBox1: TRzGroupBox;
+    lvAuthors: TRzListView;
+    btnDeleteAuthor: TRzBitBtn;
+    btnChangeAuthor: TRzBitBtn;
+    btnAddAuthor: TRzBitBtn;
+    RzGroupBox4: TRzGroupBox;
+    edSN: TRzNumericEdit;
+    cbSeries: TRzComboBox;
+    RzGroupBox2: TRzGroupBox;
+    edT: TEdit;
+    RzGroupBox3: TRzGroupBox;
+    cbAutoSeries: TCheckBox;
+    cbSelectFileName: TCheckBox;
+    cbNoAuthorAllowed: TCheckBox;
+    RzGroupBox6: TRzGroupBox;
+    cbClearOptions: TRzComboBox;
+    miOpenFile: TMenuItem;
     procedure RzButton3Click(Sender: TObject);
     procedure TreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
@@ -157,7 +152,7 @@ type
     procedure btnLoadClick(Sender: TObject);
     procedure btnPasteCoverClick(Sender: TObject);
     procedure dtnConvertClick(Sender: TObject);
-    procedure RzBitBtn2Click(Sender: TObject);
+    procedure btnFileOpenClick(Sender: TObject);
 
   private
     FBookRecord: TBookRecord;
@@ -303,8 +298,6 @@ begin
 
   mmAnnotation.Lines.Clear;
   FCover.Picture := nil;
-
-  FBookRecord.Clear;
 end;
 
 procedure TfrmAddnonfb2.miOpenExplorerClick(Sender: TObject);
@@ -340,6 +333,11 @@ var
   Next: PvirtualNode;
 begin
   FLibrary.InsertBook(FBookRecord, True, True);
+
+  FBookRecord.Clear;
+  FFBD.cover := '';
+
+
   Next := Tree.GetNext(Tree.GetFirstSelected);
   Tree.DeleteNode(Tree.GetFirstSelected, True);
   if Next <> nil then
@@ -352,7 +350,7 @@ begin
         frmEditAuthor.edFamily.Text := '';
         frmEditAuthor.edName.Text := '';
         frmEditAuthor.edMiddle.Text := '';
-       
+
       end;
     2:
       begin
@@ -371,6 +369,7 @@ var
 
 begin
   Screen.Cursor := crHourGlass;
+  frmAddNonFB2.Enabled := False;
   try
     PrepareBookRecord;
     FFBDFilename := FBookrecord.FileName + FBD_EXTENSION;
@@ -385,9 +384,9 @@ begin
         CommitData;
       end;
   finally
+    frmAddNonFB2.Enabled := True;
     Screen.Cursor := crDefault;
   end;
-
 end;
 
 procedure TfrmAddnonfb2.miRenameFileClick(Sender: TObject);
@@ -666,7 +665,7 @@ begin
   end;
 end;
 
-procedure TfrmAddnonfb2.RzBitBtn2Click(Sender: TObject);
+procedure TfrmAddnonfb2.btnFileOpenClick(Sender: TObject);
 var
   Data: PFileData;
   S: string;
