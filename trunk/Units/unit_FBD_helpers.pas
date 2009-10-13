@@ -327,7 +327,10 @@ begin
           Lines.Clear;
           Input.Clear;
           Lines.Text := FBook.Binary.Items[i].Text;
+          FBD.cover :=  FBook.Binary.Items[i].Text;
+
           Lines.SaveToStream(Output);
+
           Output.Seek(0,soFromBeginning);
           DecodeStream(Output,Input);
 
