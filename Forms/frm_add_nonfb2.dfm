@@ -4,11 +4,11 @@ object frmAddnonfb2: TfrmAddnonfb2
   HelpContext = 129
   BorderStyle = bsToolWindow
   Caption = #1044#1086#1073#1072#1074#1083#1077#1085#1080#1077' '#1082#1085#1080#1075' '#1074' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
-  ClientHeight = 603
-  ClientWidth = 874
+  ClientHeight = 500
+  ClientWidth = 738
   Color = clBtnFace
-  Constraints.MinHeight = 600
-  Constraints.MinWidth = 830
+  Constraints.MinHeight = 524
+  Constraints.MinWidth = 706
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -20,18 +20,18 @@ object frmAddnonfb2: TfrmAddnonfb2
   OnCloseQuery = FormCloseQuery
   OnShow = FormShow
   DesignSize = (
-    874
-    603)
+    738
+    500)
   PixelsPerInch = 96
   TextHeight = 13
   object btnClose: TRzBitBtn
-    Left = 761
-    Top = 576
+    Left = 749
+    Top = 549
     Width = 105
     ModalResult = 1
     Anchors = [akRight, akBottom]
     Caption = #1047#1072#1082#1088#1099#1090#1100
-    TabOrder = 0
+    TabOrder = 1
     Glyph.Data = {
       36060000424D3606000000000000360400002800000020000000100000000100
       0800000000000002000000000000000000000001000000000000000000003300
@@ -84,30 +84,27 @@ object frmAddnonfb2: TfrmAddnonfb2
       57A2A2A2EEEEEEEEEEEEEEDE8181DED781818181EEEEEEEEEEEEEEEEEEAC8257
       57EEEEEEEEEEEEEEEEEEEEEEEEAC818181EEEEEEEEEEEEEEEEEE}
     NumGlyphs = 2
-    ExplicitTop = 557
   end
   object pcPages: TRzPageControl
     AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 868
-    Height = 570
+    Width = 732
+    Height = 467
     Margins.Bottom = 30
     ActivePage = tsFiles
     Align = alClient
     TabIndex = 0
-    TabOrder = 1
-    ExplicitHeight = 551
+    TabOrder = 0
     FixedDimension = 19
     object tsFiles: TRzTabSheet
       Caption = #1060#1072#1081#1083#1099
-      ExplicitHeight = 528
       object Tree: TVirtualStringTree
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 858
-        Height = 541
+        Width = 722
+        Height = 438
         Align = alClient
         Color = clCream
         Header.AutoSizeIndex = 0
@@ -127,7 +124,6 @@ object frmAddnonfb2: TfrmAddnonfb2
         OnDblClick = TreeDblClick
         OnGetText = TreeGetText
         OnPaintText = TreePaintText
-        ExplicitHeight = 522
         Columns = <
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring, coAllowFocus]
@@ -150,272 +146,21 @@ object frmAddnonfb2: TfrmAddnonfb2
     end
     object tsBookInfo: TRzTabSheet
       Caption = #1050#1085#1080#1075#1072
-      ExplicitHeight = 528
-      object RzGroupBox9: TRzGroupBox
-        Left = 3
-        Top = 225
-        Width = 206
-        Height = 318
-        Caption = #1054#1073#1083#1086#1078#1082#1072
-        TabOrder = 7
-        object FCover: TImage
-          AlignWithMargins = True
-          Left = 4
-          Top = 17
-          Width = 198
-          Height = 261
-          Hint = #1054#1073#1083#1086#1078#1082#1072
-          Align = alTop
-          Center = True
-          ParentShowHint = False
-          Proportional = True
-          ShowHint = True
-          Stretch = True
-        end
-        object btnPasteCover: TRzBitBtn
-          Left = 104
-          Top = 288
-          Width = 89
-          Hint = #1042#1089#1090#1072#1074#1080#1090#1100' '#1080#1079' '#1073#1091#1092#1077#1088#1072
-          Caption = #1048#1079' '#1073#1091#1092#1077#1088#1072
-          ParentShowHint = False
-          ShowHint = True
-          TabOrder = 1
-          OnClick = btnPasteCoverClick
-          ImageIndex = 0
-        end
-        object btnLoad: TRzBitBtn
-          Left = 9
-          Top = 288
-          Width = 89
-          Hint = #1047#1072#1075#1088#1091#1079#1080#1090#1100' '#1080#1079' '#1092#1072#1081#1083#1072
-          Caption = #1048#1079' '#1092#1072#1081#1083#1072
-          ParentShowHint = False
-          ShowHint = True
-          TabOrder = 0
-          OnClick = btnLoadClick
-          ImageIndex = 1
-        end
-      end
-      object RzGroupBox10: TRzGroupBox
-        Left = 215
-        Top = 225
-        Width = 338
-        Height = 71
-        Caption = #1048#1079#1076#1072#1090#1077#1083#1100
-        TabOrder = 8
-        object RzLabel4: TRzLabel
-          Left = 33
-          Top = 47
-          Width = 23
-          Height = 13
-          Caption = 'ISBN'
-        end
-        object RzLabel6: TRzLabel
-          Left = 192
-          Top = 21
-          Width = 31
-          Height = 13
-          Caption = #1043#1086#1088#1086#1076
-        end
-        object RzLabel7: TRzLabel
-          Left = 276
-          Top = 47
-          Width = 19
-          Height = 13
-          Caption = #1043#1086#1076
-        end
-        object RzLabel5: TRzLabel
-          Left = 11
-          Top = 21
-          Width = 48
-          Height = 13
-          Caption = #1053#1072#1079#1074#1072#1085#1080#1077
-        end
-        object edISBN: TRzEdit
-          Left = 62
-          Top = 43
-          Width = 208
-          Height = 21
-          Color = clCream
-          TabOrder = 2
-        end
-        object edPublisher: TRzEdit
-          Left = 62
-          Top = 16
-          Width = 124
-          Height = 21
-          Color = clCream
-          TabOrder = 0
-        end
-        object edYear: TRzEdit
-          Left = 301
-          Top = 45
-          Width = 28
-          Height = 21
-          Color = clCream
-          TabOrder = 3
-        end
-        object edCity: TRzEdit
-          Left = 229
-          Top = 18
-          Width = 100
-          Height = 21
-          Color = clCream
-          TabOrder = 1
-        end
-      end
-      object RzGroupBox11: TRzGroupBox
-        Left = 559
-        Top = 225
-        Width = 300
-        Height = 71
-        Caption = #1040#1074#1090#1086#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072
-        TabOrder = 9
-        object RzLabel2: TRzLabel
-          Left = 8
-          Top = 18
-          Width = 19
-          Height = 13
-          Caption = #1048#1084#1103
-        end
-        object RzLabel3: TRzLabel
-          Left = 84
-          Top = 17
-          Width = 49
-          Height = 13
-          Caption = #1054#1090#1095#1077#1089#1090#1074#1086
-        end
-        object RzLabel8: TRzLabel
-          Left = 160
-          Top = 17
-          Width = 44
-          Height = 13
-          Caption = #1060#1072#1084#1080#1083#1080#1103
-        end
-        object RzLabel9: TRzLabel
-          Left = 229
-          Top = 17
-          Width = 19
-          Height = 13
-          Caption = #1053#1080#1082
-        end
-        object edFirstName: TRzEdit
-          Left = 8
-          Top = 36
-          Width = 70
-          Height = 21
-          Color = clCream
-          TabOrder = 0
-        end
-        object edMiddleName: TRzEdit
-          Left = 84
-          Top = 36
-          Width = 70
-          Height = 21
-          Color = clCream
-          TabOrder = 1
-        end
-        object edLastName: TRzEdit
-          Left = 160
-          Top = 36
-          Width = 64
-          Height = 21
-          Color = clCream
-          TabOrder = 2
-        end
-        object edNickName: TRzEdit
-          Left = 229
-          Top = 36
-          Width = 60
-          Height = 21
-          Color = clCream
-          TabOrder = 3
-        end
-      end
-      object mmAnnotation: TMemo
-        Left = 215
-        Top = 300
-        Width = 644
-        Height = 146
-        Color = clCream
-        ScrollBars = ssBoth
-        TabOrder = 10
-        WordWrap = False
-      end
-      object dtnConvert: TRzBitBtn
-        AlignWithMargins = True
-        Left = 648
-        Top = 452
-        Width = 210
-        Height = 35
-        Margins.Left = 5
-        Margins.Top = 0
-        Margins.Right = 5
-        Margins.Bottom = 0
-        Caption = #1044#1086#1073#1072#1074#1080#1090#1100' FBD'
-        TabOrder = 13
-        OnClick = dtnConvertClick
-        Glyph.Data = {
-          36050000424D3605000000000000360400002800000010000000100000000100
-          0800000000000001000000000000000000000001000000000000FF00FF000875
-          0D0010A61D0013AA220016AD260017AF2A001AB12D001CB4310020B8360021B8
-          390025BD3E0026BE41002AC147002CC349002FC74F0030C9520035CE590038D1
-          5E003AD260003CD462003ED766003FD8680041DA6D0045DD710049E279004DE6
-          7F000E7FA9000E80AA001385AF000682B600078DBB002692BF000C92C000089C
-          CE00129FCB000DA2D40011A7D20020A1CA0035A7CD0030BCDD0044BADD0023D7
-          FE0036D8FD004AC5DD0049C1E30049D5EE0063DAF50059EAFE006CE0F8006FE6
-          FF006FF8FF0072F9FE007AFEFF0092CEE4008DE7FA0082F8FF008CFBFE0091FC
-          FE0097FEFF009BFBFC00BAEEF600A0FCFE00A8FFFF00ADFFFF00B6F6FF00B3FC
-          FE00B4FFFF00C6F5FF00C7FFFF00D3FFFF00E3FAFF00E4FFFF00E9F9FD00F1FB
-          FD00F4FFFF00FCFFFF0000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000101010100000000001B1B1B1B1B1B0001030201000000001E2D292A31
-          36281B010603010000001E382F292A31010101010A07010101011E382F292A31
-          0113100F0D0B0A0605011E382F292A3101161611100D0C0A08011E4140434648
-          010101011513010101011E3C27242225261F35011716010000001E2B2F292A31
-          362C1D011919010000001E382F292A31362C21010101010000001E382F292A31
-          362C211A0000000000001E382F292A31362C211B0000000000001E3937323439
-          3D2E231B0000000000001E4B4A4541413F3F321B00000000000000204A46443F
-          3D3B1C0000000000000000001E1E1E1E1E1E0000000000000000}
-      end
       object TabSheet3: TRzTabSheet
         Caption = #1060#1072#1081#1083#1099
-        ExplicitHeight = 528
       end
       object RzGroupBox12: TRzGroupBox
         Left = 3
         Top = 3
-        Width = 401
-        Height = 79
+        Width = 721
+        Height = 76
         Caption = #1060#1072#1081#1083
         TabOrder = 0
         object edFileName: TEdit
           AlignWithMargins = True
           Left = 6
           Top = 17
-          Width = 389
+          Width = 709
           Height = 21
           Margins.Left = 5
           Margins.Right = 5
@@ -425,9 +170,6 @@ object frmAddnonfb2: TfrmAddnonfb2
           PopupMenu = pmEdit
           ReadOnly = True
           TabOrder = 0
-          ExplicitLeft = 7
-          ExplicitTop = 5
-          ExplicitWidth = 386
         end
         object btnCopyToFamily: TButton
           Tag = 555
@@ -436,7 +178,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           Width = 23
           Height = 22
           Caption = #1060
-          TabOrder = 3
+          TabOrder = 1
           TabStop = False
           OnClick = btnCopyToFamilyClick
         end
@@ -447,7 +189,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           Width = 23
           Height = 22
           Caption = #1048
-          TabOrder = 4
+          TabOrder = 2
           TabStop = False
           OnClick = btnCopyToNameClick
         end
@@ -457,7 +199,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           Width = 23
           Height = 22
           Caption = #1053
-          TabOrder = 5
+          TabOrder = 3
           TabStop = False
           OnClick = btnCopyToTitleClick
         end
@@ -467,28 +209,28 @@ object frmAddnonfb2: TfrmAddnonfb2
           Width = 23
           Height = 22
           Caption = #1057
-          TabOrder = 6
+          TabOrder = 4
           TabStop = False
           OnClick = btnCopyToSeriesClick
         end
         object btnFileOpen: TRzBitBtn
-          Left = 201
-          Top = 44
+          Left = 521
+          Top = 46
           Caption = #1054#1090#1082#1088#1099#1090#1100
-          TabOrder = 2
+          TabOrder = 5
           OnClick = btnFileOpenClick
         end
         object btnRenameFile: TRzBitBtn
           AlignWithMargins = True
-          Left = 282
-          Top = 43
+          Left = 602
+          Top = 46
           Width = 113
           Height = 26
           Margins.Top = 0
           Margins.Right = 5
           Margins.Bottom = 0
           Caption = #1055#1077#1088#1077#1080#1084#1077#1085#1086#1074#1072#1090#1100
-          TabOrder = 1
+          TabOrder = 6
           OnClick = miRenameFileClick
           Glyph.Data = {
             36030000424D3603000000000000360000002800000010000000100000000100
@@ -519,74 +261,17 @@ object frmAddnonfb2: TfrmAddnonfb2
             00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF}
         end
       end
-      object btnAdd: TRzBitBtn
-        AlignWithMargins = True
-        Left = 648
-        Top = 508
-        Width = 210
-        Height = 35
-        Margins.Left = 5
-        Margins.Top = 0
-        Margins.Right = 5
-        Margins.Bottom = 0
-        Caption = #1044#1086#1073#1072#1074#1080#1090#1100
-        TabOrder = 14
-        OnClick = btnAddClick
-        Glyph.Data = {
-          36050000424D3605000000000000360400002800000010000000100000000100
-          0800000000000001000000000000000000000001000000000000FF00FF000875
-          0D0010A61D0013AA220016AD260017AF2A001AB12D001CB4310020B8360021B8
-          390025BD3E0026BE41002AC147002CC349002FC74F0030C9520035CE590038D1
-          5E003AD260003CD462003ED766003FD8680041DA6D0045DD710049E279004DE6
-          7F000E7FA9000E80AA001385AF000682B600078DBB002692BF000C92C000089C
-          CE00129FCB000DA2D40011A7D20020A1CA0035A7CD0030BCDD0044BADD0023D7
-          FE0036D8FD004AC5DD0049C1E30049D5EE0063DAF50059EAFE006CE0F8006FE6
-          FF006FF8FF0072F9FE007AFEFF0092CEE4008DE7FA0082F8FF008CFBFE0091FC
-          FE0097FEFF009BFBFC00BAEEF600A0FCFE00A8FFFF00ADFFFF00B6F6FF00B3FC
-          FE00B4FFFF00C6F5FF00C7FFFF00D3FFFF00E3FAFF00E4FFFF00E9F9FD00F1FB
-          FD00F4FFFF00FCFFFF0000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000101010100000000001B1B1B1B1B1B0001030201000000001E2D292A31
-          36281B010603010000001E382F292A31010101010A07010101011E382F292A31
-          0113100F0D0B0A0605011E382F292A3101161611100D0C0A08011E4140434648
-          010101011513010101011E3C27242225261F35011716010000001E2B2F292A31
-          362C1D011919010000001E382F292A31362C21010101010000001E382F292A31
-          362C211A0000000000001E382F292A31362C211B0000000000001E3937323439
-          3D2E231B0000000000001E4B4A4541413F3F321B00000000000000204A46443F
-          3D3B1C0000000000000000001E1E1E1E1E1E0000000000000000}
-      end
       object RzGroupBox5: TRzGroupBox
-        Left = 3
-        Top = 179
-        Width = 314
+        Left = 409
+        Top = 346
+        Width = 317
         Height = 44
         Caption = #1046#1072#1085#1088#1099
-        TabOrder = 4
+        TabOrder = 8
         object lblGenre: TLabel
-          Left = 11
-          Top = 19
-          Width = 246
+          Left = 16
+          Top = 16
+          Width = 230
           Height = 16
           AutoSize = False
           Font.Charset = DEFAULT_CHARSET
@@ -607,12 +292,12 @@ object frmAddnonfb2: TfrmAddnonfb2
         end
       end
       object RzGroupBox8: TRzGroupBox
-        Left = 325
-        Top = 179
+        Left = 324
+        Top = 346
         Width = 79
         Height = 44
         Caption = #1071#1079#1099#1082
-        TabOrder = 5
+        TabOrder = 7
         object cbLang: TRzComboBox
           Left = 6
           Top = 16
@@ -656,9 +341,9 @@ object frmAddnonfb2: TfrmAddnonfb2
         end
       end
       object RzGroupBox7: TRzGroupBox
-        Left = 410
-        Top = 179
-        Width = 448
+        Left = 3
+        Top = 346
+        Width = 315
         Height = 44
         Caption = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
         TabOrder = 6
@@ -666,7 +351,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           AlignWithMargins = True
           Left = 4
           Top = 17
-          Width = 440
+          Width = 307
           Height = 23
           Align = alClient
           Color = clCream
@@ -675,17 +360,20 @@ object frmAddnonfb2: TfrmAddnonfb2
         end
       end
       object RzGroupBox1: TRzGroupBox
-        Left = 411
-        Top = 3
-        Width = 447
-        Height = 178
+        Left = 3
+        Top = 85
+        Width = 462
+        Height = 209
         Caption = #1040#1074#1090#1086#1088#1099
         TabOrder = 1
+        DesignSize = (
+          462
+          209)
         object lvAuthors: TRzListView
           Left = 8
           Top = 18
-          Width = 435
-          Height = 124
+          Width = 441
+          Height = 155
           Color = clCream
           Columns = <
             item
@@ -712,9 +400,10 @@ object frmAddnonfb2: TfrmAddnonfb2
           OnDblClick = btnChangeAuthorClick
         end
         object btnDeleteAuthor: TRzBitBtn
-          Left = 349
-          Top = 148
+          Left = 366
+          Top = 179
           Width = 90
+          Anchors = [akRight, akBottom]
           Caption = #1059#1076#1072#1083#1080#1090#1100
           TabOrder = 3
           OnClick = btnDeleteAuthorClick
@@ -764,8 +453,9 @@ object frmAddnonfb2: TfrmAddnonfb2
         end
         object btnChangeAuthor: TRzBitBtn
           Left = 104
-          Top = 148
+          Top = 179
           Width = 90
+          Anchors = [akRight, akBottom]
           Caption = #1048#1079#1084#1077#1085#1080#1090#1100
           TabOrder = 2
           OnClick = btnChangeAuthorClick
@@ -799,8 +489,9 @@ object frmAddnonfb2: TfrmAddnonfb2
         end
         object btnAddAuthor: TRzBitBtn
           Left = 8
-          Top = 148
+          Top = 179
           Width = 90
+          Anchors = [akRight, akBottom]
           Caption = #1044#1086#1073#1072#1074#1080#1090#1100
           TabOrder = 1
           OnClick = btnAddAuthorClick
@@ -850,17 +541,21 @@ object frmAddnonfb2: TfrmAddnonfb2
         end
       end
       object RzGroupBox4: TRzGroupBox
-        Left = 3
-        Top = 134
-        Width = 400
+        Left = 409
+        Top = 300
+        Width = 317
         Height = 44
         Caption = #1057#1077#1088#1080#1103
-        TabOrder = 3
+        TabOrder = 5
+        DesignSize = (
+          317
+          44)
         object edSN: TRzNumericEdit
-          Left = 347
-          Top = 18
+          Left = 257
+          Top = 19
           Width = 49
           Height = 21
+          Anchors = [akRight, akBottom]
           Color = clCream
           TabOrder = 1
           DisplayFormat = ',0;(,0)'
@@ -868,19 +563,19 @@ object frmAddnonfb2: TfrmAddnonfb2
         object cbSeries: TRzComboBox
           Left = 6
           Top = 18
-          Width = 335
+          Width = 245
           Height = 21
           Color = clCream
           TabOrder = 0
         end
       end
       object RzGroupBox2: TRzGroupBox
-        Left = 4
-        Top = 88
+        Left = 3
+        Top = 300
         Width = 400
         Height = 44
         Caption = #1053#1072#1079#1074#1072#1085#1080#1077
-        TabOrder = 2
+        TabOrder = 4
         object edT: TEdit
           AlignWithMargins = True
           Left = 4
@@ -894,52 +589,54 @@ object frmAddnonfb2: TfrmAddnonfb2
         end
       end
       object RzGroupBox3: TRzGroupBox
-        Left = 215
-        Top = 447
-        Width = 191
-        Height = 96
-        TabOrder = 11
+        Left = 471
+        Top = 85
+        Width = 253
+        Height = 159
+        Caption = #1054#1087#1094#1080#1080
+        TabOrder = 2
         object cbAutoSeries: TCheckBox
-          Left = 7
-          Top = 15
+          Left = 6
+          Top = 67
           Width = 169
           Height = 17
           Caption = #1059#1074#1077#1083#1080#1095#1080#1074#1072#1090#1100' '#1085#1086#1084#1077#1088' '#1074' '#1089#1077#1088#1080#1080
-          TabOrder = 0
+          TabOrder = 2
         end
         object cbSelectFileName: TCheckBox
           Left = 7
-          Top = 38
+          Top = 21
           Width = 145
           Height = 17
           Caption = #1042#1099#1076#1077#1083#1103#1090#1100' '#1085#1072#1079#1074#1072#1085#1080#1077
-          TabOrder = 1
+          TabOrder = 0
         end
         object cbNoAuthorAllowed: TCheckBox
           Left = 7
-          Top = 61
+          Top = 44
           Width = 145
           Height = 17
           Caption = #1044#1086#1073#1072#1074#1083#1103#1090#1100' '#1073#1077#1079' '#1072#1074#1090#1086#1088#1072
-          TabOrder = 2
+          TabOrder = 1
         end
       end
       object RzGroupBox6: TRzGroupBox
         AlignWithMargins = True
-        Left = 412
-        Top = 452
-        Width = 184
+        Left = 471
+        Top = 250
+        Width = 253
         Height = 44
         Caption = #1054#1095#1080#1097#1072#1090#1100' '#1087#1086#1083#1103
-        TabOrder = 12
+        TabOrder = 3
         object cbClearOptions: TRzComboBox
           AlignWithMargins = True
-          Left = 8
-          Top = 16
-          Width = 169
+          Left = 6
+          Top = 17
+          Width = 241
           Height = 21
           Margins.Left = 5
           Margins.Right = 5
+          Align = alClient
           Color = clCream
           TabOrder = 0
           Text = #1042#1089#1077
@@ -950,6 +647,315 @@ object frmAddnonfb2: TfrmAddnonfb2
             #1053#1077#1090)
           ItemIndex = 0
         end
+      end
+      object btnNext: TRzBitBtn
+        AlignWithMargins = True
+        Left = 514
+        Top = 404
+        Width = 210
+        Height = 35
+        Margins.Left = 5
+        Margins.Top = 0
+        Margins.Right = 5
+        Margins.Bottom = 0
+        Caption = #1044#1072#1083#1100#1096#1077
+        TabOrder = 9
+        OnClick = btnNextClick
+        Glyph.Data = {
+          36050000424D3605000000000000360400002800000010000000100000000100
+          0800000000000001000000000000000000000001000000000000FF00FF000875
+          0D0010A61D0013AA220016AD260017AF2A001AB12D001CB4310020B8360021B8
+          390025BD3E0026BE41002AC147002CC349002FC74F0030C9520035CE590038D1
+          5E003AD260003CD462003ED766003FD8680041DA6D0045DD710049E279004DE6
+          7F000E7FA9000E80AA001385AF000682B600078DBB002692BF000C92C000089C
+          CE00129FCB000DA2D40011A7D20020A1CA0035A7CD0030BCDD0044BADD0023D7
+          FE0036D8FD004AC5DD0049C1E30049D5EE0063DAF50059EAFE006CE0F8006FE6
+          FF006FF8FF0072F9FE007AFEFF0092CEE4008DE7FA0082F8FF008CFBFE0091FC
+          FE0097FEFF009BFBFC00BAEEF600A0FCFE00A8FFFF00ADFFFF00B6F6FF00B3FC
+          FE00B4FFFF00C6F5FF00C7FFFF00D3FFFF00E3FAFF00E4FFFF00E9F9FD00F1FB
+          FD00F4FFFF00FCFFFF0000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000101010100000000001B1B1B1B1B1B0001030201000000001E2D292A31
+          36281B010603010000001E382F292A31010101010A07010101011E382F292A31
+          0113100F0D0B0A0605011E382F292A3101161611100D0C0A08011E4140434648
+          010101011513010101011E3C27242225261F35011716010000001E2B2F292A31
+          362C1D011919010000001E382F292A31362C21010101010000001E382F292A31
+          362C211A0000000000001E382F292A31362C211B0000000000001E3937323439
+          3D2E231B0000000000001E4B4A4541413F3F321B00000000000000204A46443F
+          3D3B1C0000000000000000001E1E1E1E1E1E0000000000000000}
+      end
+    end
+    object tsFBD: TRzTabSheet
+      Caption = 'FBD'
+      object RzGroupBox9: TRzGroupBox
+        Left = 3
+        Top = 1
+        Width = 239
+        Height = 384
+        Caption = #1054#1073#1083#1086#1078#1082#1072
+        TabOrder = 0
+        object FCover: TImage
+          AlignWithMargins = True
+          Left = 4
+          Top = 17
+          Width = 231
+          Height = 332
+          Hint = #1054#1073#1083#1086#1078#1082#1072
+          Align = alTop
+          Center = True
+          ParentShowHint = False
+          Proportional = True
+          ShowHint = True
+          Stretch = True
+        end
+        object btnPasteCover: TRzBitBtn
+          Left = 144
+          Top = 355
+          Width = 89
+          Hint = #1042#1089#1090#1072#1074#1080#1090#1100' '#1080#1079' '#1073#1091#1092#1077#1088#1072
+          Caption = #1048#1079' '#1073#1091#1092#1077#1088#1072
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 1
+          OnClick = btnPasteCoverClick
+          ImageIndex = 0
+        end
+        object btnLoad: TRzBitBtn
+          Left = 4
+          Top = 355
+          Width = 89
+          Hint = #1047#1072#1075#1088#1091#1079#1080#1090#1100' '#1080#1079' '#1092#1072#1081#1083#1072
+          Caption = #1048#1079' '#1092#1072#1081#1083#1072
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 0
+          OnClick = btnLoadClick
+          ImageIndex = 1
+        end
+      end
+      object RzGroupBox10: TRzGroupBox
+        Left = 248
+        Top = 3
+        Width = 477
+        Height = 71
+        Caption = #1048#1079#1076#1072#1090#1077#1083#1100
+        TabOrder = 1
+        object RzLabel4: TRzLabel
+          Left = 33
+          Top = 47
+          Width = 23
+          Height = 13
+          Caption = 'ISBN'
+        end
+        object RzLabel6: TRzLabel
+          Left = 296
+          Top = 19
+          Width = 31
+          Height = 13
+          Caption = #1043#1086#1088#1086#1076
+        end
+        object RzLabel7: TRzLabel
+          Left = 380
+          Top = 45
+          Width = 19
+          Height = 13
+          Caption = #1043#1086#1076
+        end
+        object RzLabel5: TRzLabel
+          Left = 11
+          Top = 21
+          Width = 48
+          Height = 13
+          Caption = #1053#1072#1079#1074#1072#1085#1080#1077
+        end
+        object edISBN: TRzEdit
+          Left = 62
+          Top = 43
+          Width = 312
+          Height = 21
+          Color = clCream
+          TabOrder = 2
+        end
+        object edPublisher: TRzEdit
+          Left = 62
+          Top = 16
+          Width = 228
+          Height = 21
+          Color = clCream
+          TabOrder = 0
+        end
+        object edYear: TRzEdit
+          Left = 405
+          Top = 43
+          Width = 60
+          Height = 21
+          Color = clCream
+          TabOrder = 3
+        end
+        object edCity: TRzEdit
+          Left = 333
+          Top = 16
+          Width = 132
+          Height = 21
+          Color = clCream
+          TabOrder = 1
+        end
+      end
+      object RzGroupBox11: TRzGroupBox
+        Left = 248
+        Top = 73
+        Width = 477
+        Height = 71
+        Caption = #1040#1074#1090#1086#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072
+        TabOrder = 2
+        object RzLabel2: TRzLabel
+          Left = 8
+          Top = 18
+          Width = 19
+          Height = 13
+          Caption = #1048#1084#1103
+        end
+        object RzLabel3: TRzLabel
+          Left = 100
+          Top = 17
+          Width = 49
+          Height = 13
+          Caption = #1054#1090#1095#1077#1089#1090#1074#1086
+        end
+        object RzLabel8: TRzLabel
+          Left = 226
+          Top = 17
+          Width = 44
+          Height = 13
+          Caption = #1060#1072#1084#1080#1083#1080#1103
+        end
+        object RzLabel9: TRzLabel
+          Left = 367
+          Top = 17
+          Width = 19
+          Height = 13
+          Caption = #1053#1080#1082
+        end
+        object edFirstName: TRzEdit
+          Left = 8
+          Top = 36
+          Width = 86
+          Height = 21
+          Color = clCream
+          TabOrder = 0
+        end
+        object edMiddleName: TRzEdit
+          Left = 100
+          Top = 36
+          Width = 120
+          Height = 21
+          Color = clCream
+          TabOrder = 1
+        end
+        object edLastName: TRzEdit
+          Left = 226
+          Top = 36
+          Width = 128
+          Height = 21
+          Color = clCream
+          TabOrder = 2
+        end
+        object edNickName: TRzEdit
+          Left = 360
+          Top = 36
+          Width = 65
+          Height = 21
+          Color = clCream
+          TabOrder = 3
+        end
+      end
+      object mmAnnotation: TMemo
+        Left = 248
+        Top = 150
+        Width = 477
+        Height = 235
+        Color = clCream
+        ScrollBars = ssBoth
+        TabOrder = 3
+        WordWrap = False
+      end
+      object dtnConvert: TRzBitBtn
+        AlignWithMargins = True
+        Left = 515
+        Top = 396
+        Width = 210
+        Height = 35
+        Margins.Left = 5
+        Margins.Top = 0
+        Margins.Right = 5
+        Margins.Bottom = 0
+        Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+        TabOrder = 4
+        OnClick = dtnConvertClick
+        Glyph.Data = {
+          36050000424D3605000000000000360400002800000010000000100000000100
+          0800000000000001000000000000000000000001000000000000FF00FF000875
+          0D0010A61D0013AA220016AD260017AF2A001AB12D001CB4310020B8360021B8
+          390025BD3E0026BE41002AC147002CC349002FC74F0030C9520035CE590038D1
+          5E003AD260003CD462003ED766003FD8680041DA6D0045DD710049E279004DE6
+          7F000E7FA9000E80AA001385AF000682B600078DBB002692BF000C92C000089C
+          CE00129FCB000DA2D40011A7D20020A1CA0035A7CD0030BCDD0044BADD0023D7
+          FE0036D8FD004AC5DD0049C1E30049D5EE0063DAF50059EAFE006CE0F8006FE6
+          FF006FF8FF0072F9FE007AFEFF0092CEE4008DE7FA0082F8FF008CFBFE0091FC
+          FE0097FEFF009BFBFC00BAEEF600A0FCFE00A8FFFF00ADFFFF00B6F6FF00B3FC
+          FE00B4FFFF00C6F5FF00C7FFFF00D3FFFF00E3FAFF00E4FFFF00E9F9FD00F1FB
+          FD00F4FFFF00FCFFFF0000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000101010100000000001B1B1B1B1B1B0001030201000000001E2D292A31
+          36281B010603010000001E382F292A31010101010A07010101011E382F292A31
+          0113100F0D0B0A0605011E382F292A3101161611100D0C0A08011E4140434648
+          010101011513010101011E3C27242225261F35011716010000001E2B2F292A31
+          362C1D011919010000001E382F292A31362C21010101010000001E382F292A31
+          362C211A0000000000001E382F292A31362C211B0000000000001E3937323439
+          3D2E231B0000000000001E4B4A4541413F3F321B00000000000000204A46443F
+          3D3B1C0000000000000000001E1E1E1E1E1E0000000000000000}
       end
     end
   end
@@ -967,12 +973,12 @@ object frmAddnonfb2: TfrmAddnonfb2
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    Left = 488
-    Top = 520
+    Left = 160
+    Top = 464
   end
   object pmEdit: TPopupMenu
-    Left = 376
-    Top = 368
+    Left = 200
+    Top = 464
     object N1: TMenuItem
       Caption = #1060#1072#1084#1080#1083#1080#1103
       ShortCut = 16465
@@ -1005,12 +1011,12 @@ object frmAddnonfb2: TfrmAddnonfb2
   object flFiles: TFilesList
     OnDirectory = flFilesDirectory
     OnFile = flFilesFile
-    Left = 480
-    Top = 368
+    Left = 120
+    Top = 464
   end
   object pmMain: TPopupMenu
-    Left = 432
-    Top = 368
+    Left = 80
+    Top = 464
     object miOpenFile: TMenuItem
       Caption = #1054#1090#1082#1088#1099#1090#1100
       ShortCut = 16397

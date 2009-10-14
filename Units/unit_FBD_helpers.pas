@@ -39,8 +39,8 @@ type
                           FileName: string):boolean;
 
   procedure LoadCoverFromFile(Cover: TImage;
-                              CoverStr: string;
-                              ImageType: TCoverImageType);
+                              out CoverStr: string;
+                              out ImageType: TCoverImageType);
 
   procedure LoadFBDFromFile(FileName : string;
                             out FBD: TFBDRecord;
@@ -197,7 +197,7 @@ begin
   end;
 end;
 
-procedure LoadCoverFromFile(Cover: TImage; CoverStr: string; ImageType: TCoverImageType);
+procedure LoadCoverFromFile(Cover: TImage; out CoverStr: string; out ImageType: TCoverImageType);
 var
   Input, Output: TMemoryStream;
   IMG: TGraphic;

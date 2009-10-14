@@ -59,9 +59,46 @@ type
     pmMain: TPopupMenu;
     N6: TMenuItem;
     miOpenExplorer: TMenuItem;
+    miOpenFile: TMenuItem;
     btnClose: TRzBitBtn;
     pcPages: TRzPageControl;
+    tsFiles: TRzTabSheet;
+    Tree: TVirtualStringTree;
     tsBookInfo: TRzTabSheet;
+    TabSheet3: TRzTabSheet;
+    RzGroupBox12: TRzGroupBox;
+    edFileName: TEdit;
+    btnCopyToFamily: TButton;
+    btnCopyToName: TButton;
+    btnCopyToTitle: TButton;
+    btnCopyToSeries: TButton;
+    btnFileOpen: TRzBitBtn;
+    btnRenameFile: TRzBitBtn;
+    RzGroupBox5: TRzGroupBox;
+    lblGenre: TLabel;
+    btnShowGenres: TButton;
+    RzGroupBox8: TRzGroupBox;
+    cbLang: TRzComboBox;
+    RzGroupBox7: TRzGroupBox;
+    edKeyWords: TEdit;
+    RzGroupBox1: TRzGroupBox;
+    lvAuthors: TRzListView;
+    btnDeleteAuthor: TRzBitBtn;
+    btnChangeAuthor: TRzBitBtn;
+    btnAddAuthor: TRzBitBtn;
+    RzGroupBox4: TRzGroupBox;
+    edSN: TRzNumericEdit;
+    cbSeries: TRzComboBox;
+    RzGroupBox2: TRzGroupBox;
+    edT: TEdit;
+    RzGroupBox3: TRzGroupBox;
+    cbAutoSeries: TCheckBox;
+    cbSelectFileName: TCheckBox;
+    cbNoAuthorAllowed: TCheckBox;
+    RzGroupBox6: TRzGroupBox;
+    cbClearOptions: TRzComboBox;
+    btnNext: TRzBitBtn;
+    tsFBD: TRzTabSheet;
     RzGroupBox9: TRzGroupBox;
     FCover: TImage;
     btnPasteCover: TRzBitBtn;
@@ -86,42 +123,6 @@ type
     edNickName: TRzEdit;
     mmAnnotation: TMemo;
     dtnConvert: TRzBitBtn;
-    TabSheet3: TRzTabSheet;
-    Tree: TVirtualStringTree;
-    tsFiles: TRzTabSheet;
-    RzGroupBox12: TRzGroupBox;
-    edFileName: TEdit;
-    btnCopyToFamily: TButton;
-    btnCopyToName: TButton;
-    btnCopyToTitle: TButton;
-    btnCopyToSeries: TButton;
-    btnFileOpen: TRzBitBtn;
-    btnRenameFile: TRzBitBtn;
-    btnAdd: TRzBitBtn;
-    RzGroupBox5: TRzGroupBox;
-    lblGenre: TLabel;
-    btnShowGenres: TButton;
-    RzGroupBox8: TRzGroupBox;
-    cbLang: TRzComboBox;
-    RzGroupBox7: TRzGroupBox;
-    edKeyWords: TEdit;
-    RzGroupBox1: TRzGroupBox;
-    lvAuthors: TRzListView;
-    btnDeleteAuthor: TRzBitBtn;
-    btnChangeAuthor: TRzBitBtn;
-    btnAddAuthor: TRzBitBtn;
-    RzGroupBox4: TRzGroupBox;
-    edSN: TRzNumericEdit;
-    cbSeries: TRzComboBox;
-    RzGroupBox2: TRzGroupBox;
-    edT: TEdit;
-    RzGroupBox3: TRzGroupBox;
-    cbAutoSeries: TCheckBox;
-    cbSelectFileName: TCheckBox;
-    cbNoAuthorAllowed: TCheckBox;
-    RzGroupBox6: TRzGroupBox;
-    cbClearOptions: TRzComboBox;
-    miOpenFile: TMenuItem;
     procedure RzButton3Click(Sender: TObject);
     procedure TreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
@@ -153,6 +154,7 @@ type
     procedure btnPasteCoverClick(Sender: TObject);
     procedure dtnConvertClick(Sender: TObject);
     procedure btnFileOpenClick(Sender: TObject);
+    procedure btnNextClick(Sender: TObject);
 
   private
     FBookRecord: TBookRecord;
@@ -331,12 +333,12 @@ end;
 procedure TfrmAddnonfb2.CommitData;
 var
   Next: PvirtualNode;
+  Data: PFileData;
 begin
   FLibrary.InsertBook(FBookRecord, True, True);
 
   FBookRecord.Clear;
   FFBD.cover := '';
-
 
   Next := Tree.GetNext(Tree.GetFirstSelected);
   Tree.DeleteNode(Tree.GetFirstSelected, True);
@@ -361,6 +363,13 @@ begin
   if cbAutoSeries.Checked then
     edSN.Value := edSN.Value + 1;
   TreeChange(Tree, Next);
+
+  Data := Tree.GetNodeData(Next);
+  if Data <> nil then
+    if Data.DataType = dtFile then
+      pcPages.ActivePage := tsBookInfo
+    else
+      pcPages.ActivePage := tsFiles;
 end;
 
 procedure TfrmAddnonfb2.dtnConvertClick(Sender: TObject);
@@ -522,6 +531,11 @@ end;
 procedure TfrmAddnonfb2.btnLoadClick(Sender: TObject);
 begin
   LoadCoverFromFile(FCover, FFBD.cover, FFBD.ImageType);
+end;
+
+procedure TfrmAddnonfb2.btnNextClick(Sender: TObject);
+begin
+  pcPages.ActivePage := tsFBD;
 end;
 
 procedure TfrmAddnonfb2.btnPasteCoverClick(Sender: TObject);
