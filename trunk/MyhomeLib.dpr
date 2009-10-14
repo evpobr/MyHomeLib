@@ -3,7 +3,7 @@
 {                                                                              }
 {                                 MyHomeLib                                    }
 {                                                                              }
-{              Copyright (c) 2008, Aleksey Penkov  alex.penkov@gmail.com       }
+{              Copyright (c) 2008,2009 Aleksey Penkov  alex.penkov@gmail.com   }
 {                                                                              }
 {                               http://home-lib.net                            }
 {                                                                              }
