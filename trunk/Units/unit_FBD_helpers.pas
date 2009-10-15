@@ -21,7 +21,7 @@ type
 
   TFBDRecord = record
                  First, Last, Middle, Nick: string;
-                 Publisher, City, Year, ISBN: string;
+                 Publisher, City, Year, ISBN, UDK,BBK, GRNTI: string;
                  cover: string;
                  ImageType:TCoverImageType;
               end;
@@ -119,6 +119,10 @@ begin
         P := Annotation.P.Add;
         P.Text := Str;
       end;
+
+      UDK := FBDRecord.UDK;
+      BBK := FBDRecord.BBK;
+      GRNTI := FBDRecord.GRNTI;
 
       Lang := BookRecord.Lang;
       Keywords.Text := BookRecord.KeyWords;

@@ -633,7 +633,6 @@ type
     //
     // Построение деревьев
     //
-    procedure FillAuthorTree;
     procedure FillSeriesTree;
     procedure FillBooksTree(
       const ParentID: Integer;
@@ -673,6 +672,7 @@ type
   public
     FCancelled : boolean;
 
+    procedure FillAuthorTree(Tree: TVirtualStringTree; FullMode: boolean = False);
 
     procedure FillGenresTree(Tree: TVirtualStringTree);
     procedure DisableControls(State: boolean);
@@ -1538,7 +1538,7 @@ begin
   SetSeriesShowLocalOnly;
   SetBooksFilter;
 
-  FillAuthorTree;
+  FillAuthorTree(tvAuthors);
   FillSeriesTree;
   FillGenresTree(tvGenres);
 
@@ -3575,7 +3575,7 @@ begin
                ') OR (A_Family=' + QuotedStr(AnsiLowercase((Sender as TToolButton).Caption) + '*') + ')';
         end;
         dmCollection.tblAuthors.Filtered := (Sender as TToolButton).Tag <> 90;
-        FillAuthorTree;
+        FillAuthorTree(tvAuthors);
 
         //tvAuthors.Selected[tvAuthors.GetFirst] := True;
         edLocateAuthor.Perform(WM_KEYDOWN, VK_RIGHT, 0);
@@ -3627,7 +3627,7 @@ begin
   SetSeriesShowLocalOnly;
   SetBooksFilter;
 
-  FillAuthorTree;
+  FillAuthorTree(tvAuthors);
   FillSeriesTree;
   FillAllBooksTree;
 
@@ -5232,18 +5232,20 @@ begin
     LocateAuthor(edLocateSeries.Text, tvSeries);
 end;
 
-procedure TfrmMain.FillAuthorTree;
+procedure TfrmMain.FillAuthorTree(Tree: TVirtualStringTree; FullMode: boolean);
 var
   Node: PVirtualNode;
   NodeData: PAuthorData;
 begin
-  tvAuthors.NodeDataSize := Sizeof(TAuthorData);
+  Tree.NodeDataSize := Sizeof(TAuthorData);
 
-  tvAuthors.BeginUpdate;
+  Tree.BeginUpdate;
   try
-    tvAuthors.Clear;
-
+    Tree.Clear;
     dmCollection.tblAuthors.DisableControls;
+
+    if FullMode then dmCollection.tblAuthors.Filtered := False;
+
     try
       dmCollection.tblAuthors.First;
 
@@ -5252,12 +5254,21 @@ begin
 
       while not dmCollection.tblAuthors.Eof do
       begin
-        Node := tvAuthors.AddChild(nil);
-        NodeData := tvAuthors.GetNodeData(Node);
+        Node := Tree.AddChild(nil);
+        NodeData := Tree.GetNodeData(Node);
         NodeData.ID := dmCollection.tblAuthorsID.Value;
-        NodeData.Text := trim(dmCollection.tblAuthorsFamily.Value + ' ' +
-                              dmCollection.tblAuthorsName.Value +  ' ' +
-                              dmCollection.tblAuthorsMiddle.Value);
+
+        if FullMode then
+        begin
+          NodeData.First := dmCollection.tblAuthorsName.Value;
+          NodeData.Last := dmCollection.tblAuthorsFamily.Value;
+          NodeData.Middle := dmCollection.tblAuthorsMiddle.Value;
+          NodeData.Text := NodeData.Last + ' ' + NodeData.First + ' ' + NodeData.Middle;
+        end
+        else
+          NodeData.Text := trim(dmCollection.tblAuthorsFamily.Value + ' ' +
+                                dmCollection.tblAuthorsName.Value +  ' ' +
+                                dmCollection.tblAuthorsMiddle.Value);
 
         dmCollection.tblAuthors.Next;
       end;
@@ -5266,9 +5277,10 @@ begin
     end;
     ///dmCollection.tblAuthors.First;
 
-    tvAuthors.Selected[tvAuthors.GetFirst] := True;
+    Tree.Selected[Tree.GetFirst] := True;
   finally
-    tvAuthors.EndUpdate;
+    Tree.EndUpdate;
+    if FullMode then dmCollection.tblAuthors.Filtered := True;
   end;
 end;
 

@@ -145,6 +145,12 @@ type
     function Get_Sequence: IXMLSequenceTypeList;
     procedure Set_Lang(Value: WideString);
     procedure Set_Srclang(Value: WideString);
+    function Get_Udk: WideString;
+    procedure Set_Udk (Value: WideString);
+    function Get_Bbk: WideString;
+    procedure Set_Bbk (Value: WideString);
+    function Get_Grnti: WideString;
+    procedure Set_Grnti (Value: WideString);
     { Methods & Properties }
     property Genre: IXMLGenreTypeList read Get_Genre;
     property Author: IXMLAuthorTypeList read Get_Author;
@@ -157,6 +163,9 @@ type
     property Srclang: WideString read Get_Srclang write Set_Srclang;
     property Translator: IXMLAuthorTypeList read Get_Translator;
     property Sequence: IXMLSequenceTypeList read Get_Sequence;
+    property Udk: WideString read Get_Udk write Set_Udk;
+    property Bbk: WideString read Get_Bbk write Set_Bbk;
+    property Grnti: WideString read Get_Grnti write Set_Grnti;
   end;
 
 { IXMLAuthorType }
@@ -1022,6 +1031,13 @@ type
     function Get_Sequence: IXMLSequenceTypeList;
     procedure Set_Lang(Value: WideString);
     procedure Set_Srclang(Value: WideString);
+
+    function Get_Udk: WideString;
+    procedure Set_Udk (Value: WideString);
+    function Get_Bbk: WideString;
+    procedure Set_Bbk (Value: WideString);
+    function Get_Grnti: WideString;
+    procedure Set_Grnti (Value: WideString);
   public
     procedure AfterConstruction; override;
   end;
@@ -1814,9 +1830,19 @@ begin
   Result := FGenre;
 end;
 
+function TXMLTitleinfoType.Get_Grnti: WideString;
+begin
+   Result := ChildNodes['grnti'].Text;
+end;
+
 function TXMLTitleinfoType.Get_Author: IXMLAuthorTypeList;
 begin
   Result := FAuthor;
+end;
+
+function TXMLTitleinfoType.Get_Bbk: WideString;
+begin
+   Result := ChildNodes['bbk'].Text;
 end;
 
 function TXMLTitleinfoType.Get_Booktitle: IXMLTextFieldType;
@@ -1849,6 +1875,16 @@ begin
   Result := ChildNodes['lang'].Text;
 end;
 
+procedure TXMLTitleinfoType.Set_Bbk(Value: WideString);
+begin
+  ChildNodes['bbk'].NodeValue := Value;
+end;
+
+procedure TXMLTitleinfoType.Set_Grnti(Value: WideString);
+begin
+  ChildNodes['grnti'].NodeValue := Value;
+end;
+
 procedure TXMLTitleinfoType.Set_Lang(Value: WideString);
 begin
   ChildNodes['lang'].NodeValue := Value;
@@ -1864,9 +1900,19 @@ begin
   ChildNodes['src-lang'].NodeValue := Value;
 end;
 
+procedure TXMLTitleinfoType.Set_Udk(Value: WideString);
+begin
+  ChildNodes['udk'].NodeValue := Value;
+end;
+
 function TXMLTitleinfoType.Get_Translator: IXMLAuthorTypeList;
 begin
   Result := FTranslator;
+end;
+
+function TXMLTitleinfoType.Get_Udk: WideString;
+begin
+   Result := ChildNodes['udk'].Text;
 end;
 
 function TXMLTitleinfoType.Get_Sequence: IXMLSequenceTypeList;

@@ -60,7 +60,6 @@ type
     N6: TMenuItem;
     miOpenExplorer: TMenuItem;
     miOpenFile: TMenuItem;
-    btnClose: TRzBitBtn;
     pcPages: TRzPageControl;
     tsFiles: TRzTabSheet;
     Tree: TVirtualStringTree;
@@ -86,6 +85,7 @@ type
     btnDeleteAuthor: TRzBitBtn;
     btnChangeAuthor: TRzBitBtn;
     btnAddAuthor: TRzBitBtn;
+    RzBitBtn1: TRzBitBtn;
     RzGroupBox4: TRzGroupBox;
     edSN: TRzNumericEdit;
     cbSeries: TRzComboBox;
@@ -123,6 +123,14 @@ type
     edNickName: TRzEdit;
     mmAnnotation: TMemo;
     dtnConvert: TRzBitBtn;
+    btnClose: TRzBitBtn;
+    RzGroupBox13: TRzGroupBox;
+    edUDK: TRzEdit;
+    RzLabel1: TRzLabel;
+    edBBK: TRzEdit;
+    RzLabel10: TRzLabel;
+    edGRNTI: TRzEdit;
+    RzLabel11: TRzLabel;
     procedure RzButton3Click(Sender: TObject);
     procedure TreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
@@ -155,6 +163,7 @@ type
     procedure dtnConvertClick(Sender: TObject);
     procedure btnFileOpenClick(Sender: TObject);
     procedure btnNextClick(Sender: TObject);
+    procedure RzBitBtn1Click(Sender: TObject);
 
   private
     FBookRecord: TBookRecord;
@@ -188,7 +197,8 @@ uses dm_user,
   frm_edit_author,
   unit_TreeUtils,
   unit_Consts,
-  unit_Settings;
+  unit_Settings,
+  frm_author_list;
 
 {$R *.dfm}
 
@@ -263,6 +273,8 @@ begin
   ScanFolder;
 
   FillLists;
+
+  pcPages.ActivePageIndex := 0;
 end;
 
 function TfrmAddnonfb2.MakeFBD;
@@ -276,6 +288,10 @@ begin
   FFBD.City := edCity.Text;
   FFBD.ISBN := edISBN.Text;
   FFBD.Year := edYear.Text;
+
+  FFBD.UDK := edUDK.text;
+  FFBD.BBK := edBBK.text;
+  FFBD.GRNTI := edGRNTI.text;
 
   Result := PrepareFBDFile(FBookRecord, FFBD, mmAnnotation, FFolder +  FFBDFileName);
 end;
@@ -689,6 +705,30 @@ begin
   begin
     S := AnsiLowercase(Data.FullPath + Data.FileName + Data.Ext);
     ShellExecute(Handle, 'open', PChar(s), '', nil, SW_SHOWNORMAL);
+  end;
+end;
+
+procedure TfrmAddnonfb2.RzBitBtn1Click(Sender: TObject);
+var
+  Family : TListItem;
+  Data : PAuthorData;
+  Node: PVirtualNode;
+begin
+  frmMain.FillAuthorTree(frmAuthorList.tvAuthorList, True);
+  if frmAuthorList.ShowModal = mrOK then
+  begin
+    Node := frmAuthorList.tvAuthorList.GetFirstSelected;
+    while node <> nil do
+    begin
+      Data := frmAuthorList.tvAuthorList.GetNodeData(Node);
+
+      Family := lvAuthors.Items.Add;
+      Family.Caption := Data.Last;
+      Family.SubItems.Add(Data.First);
+      Family.SubItems.Add(Data.Middle);
+
+      Node := frmAuthorList.tvAuthorList.GetNextSelected(Node);
+    end;
   end;
 end;
 

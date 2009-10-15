@@ -255,6 +255,21 @@ begin
 
       if Genre.Count>0 then mmInfo.SetSelText(Genre[0]+#13#10);;
 
+      mmInfo.SelAttributes.Style := [fsBold];
+      mmInfo.SetSelText('”ƒ : ');
+      mmInfo.SelAttributes.Style := [];
+      mmInfo.SetSelText(UDK + #13#10);
+
+      mmInfo.SelAttributes.Style := [fsBold];
+      mmInfo.SetSelText('¡¡ : ');
+      mmInfo.SelAttributes.Style := [];
+      mmInfo.SetSelText(BBK  + #13#10);
+
+      mmInfo.SelAttributes.Style := [fsBold];
+      mmInfo.SetSelText('√–Õ“»: ');
+      mmInfo.SelAttributes.Style := [];
+      mmInfo.SetSelText(GRNTI + #13#10);
+
       for I := 0 to Annotation.P.Count - 1 do
               mmShort.SetSelText(Annotation.P.Items[i].Text);
 
