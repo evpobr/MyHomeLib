@@ -107,7 +107,8 @@ uses
   unit_ImportFB2Thread in 'ImportImpl\unit_ImportFB2Thread.pas',
   frm_ConverToFBD in 'Forms\frm_ConverToFBD.pas' {frmConvertToFBD},
   unit_FBD_helpers in 'Units\unit_FBD_helpers.pas',
-  fictionbook_21 in 'Components\fictionbook_21.pas';
+  fictionbook_21 in 'Components\fictionbook_21.pas',
+  frm_author_list in 'Forms\frm_author_list.pas' {frmAuthorList};
 
 {$R *.res}
 
@@ -121,7 +122,6 @@ begin
 
   Application.MainFormOnTaskbar := True;
   Application.Title := 'MyHomeLib';
-  Application.HelpFile := '';
   frmSplash := TfrmSplash.Create(Application);
   try
     frmSplash.Show;   // Display the splash screen
@@ -135,6 +135,7 @@ begin
   Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
   Application.CreateForm(TfrmEditor, frmEditor);
   Application.CreateForm(TfrmConvertToFBD, frmConvertToFBD);
+  Application.CreateForm(TfrmAuthorList, frmAuthorList);
   //  Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
   Application.CreateForm(TfrmEditBookInfo, frmEditBookInfo);
   Application.CreateForm(TfrmGenreTree, frmGenreTree);

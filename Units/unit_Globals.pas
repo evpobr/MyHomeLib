@@ -185,6 +185,7 @@ type
   PAuthorData = ^TAuthorData;
   TAuthorData = record
     Text: String;
+    First,Last,Middle: string;
     ID, Level: Integer;
     Checked: Boolean;
   end;

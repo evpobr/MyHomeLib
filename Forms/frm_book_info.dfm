@@ -67,6 +67,10 @@ object frmBookDetails: TfrmBookDetails
     end
     object TabSheet2: TRzTabSheet
       Caption = #1056#1077#1094#1077#1085#1079#1080#1103
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object btnLoadReview: TRzBitBtn
         Left = 8
         Top = 384
@@ -200,8 +204,8 @@ object frmBookDetails: TfrmBookDetails
       580
       35)
     object RzBitBtn1: TRzBitBtn
-      Left = 468
-      Top = 6
+      Left = 466
+      Top = 4
       Width = 104
       Anchors = [akRight, akBottom]
       Caption = #1047#1072#1082#1088#1099#1090#1100
