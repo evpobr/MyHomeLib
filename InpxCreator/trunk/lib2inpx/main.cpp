@@ -703,7 +703,7 @@ int main( int argc, char *argv[] )
 {
    int               rc = 1;
 
-   string            spec, path, inpx, comment, inp_path, archives_path,
+   string            spec, path, inpx, comment, comment_fname, inp_path, archives_path,
                      inpx_name, dump_date, full_date, db_name( "librusec_" );
 
    _finddata_t       fd;
@@ -729,7 +729,8 @@ int main( int argc, char *argv[] )
          ( "strict",   po::value< string >(), "What to put in INPX as file type - \"ext\", \"db\", \"ignore\" (default: ext). ext - use real file extension. db - use file type from database. ignore - ignore files with file extension not equal to file type" )
          ( "no-import",                       "Do not import dumps, just check dump time and use existing database" )
          ( "archives", po::value< string >(), "Path to off-line archives (if not present - entire database in converted for online LibRusEc usage)" )
-         ( "inpx",     po::value< string >(), "Full name of output file (default: <dbname>.inpx)" )
+         ( "inpx",     po::value< string >(), "Full name of output file (default: librusec_<db_dump_date>.inpx)" )
+         ( "comment",  po::value< string >(), "File name of template (UTF-8) for INPX comment" )
          ;
 
       po::options_description hidden;
@@ -750,8 +751,8 @@ int main( int argc, char *argv[] )
       if( vm.count( "help" ) || ! vm.count( "dump-dir" ) )
       {
          cout << endl;
-         cout << "Import file (INPX) preparation tool for MyHomeLib 1.5" << endl;
-         cout << "Version 2.3 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
+         cout << "Import file (INPX) preparation tool for MyHomeLib" << endl;
+         cout << "Version 2.4 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
          cout << endl;
          cout << "Usage: " << file_name << " [options] <path to SQL dump files>" << endl << endl;
          cout << options << endl;
@@ -801,6 +802,27 @@ int main( int argc, char *argv[] )
 
       if( vm.count( "dump-dir" ) )
          path = vm[ "dump-dir" ].as< string >();
+
+      if( vm.count( "comment" ) )
+         comment_fname = vm[ "comment" ].as< string >();
+
+      if( 0 != _access( comment_fname.c_str(), 4 ) )
+         cerr << endl << endl << "***WARNING: Ignoring wrong comment file: " << comment_fname.c_str() << endl;
+      else
+      {
+         ifstream     in( comment_fname.c_str() );
+         stringstream ss;
+
+         if( !in )
+            throw runtime_error( tmp_str( "Cannot open comment file \"%s\"", comment_fname.c_str() ) );
+
+         ss << in.rdbuf();
+
+         if( !in && !in.eof() )
+            throw runtime_error( tmp_str( "Problem reading comment file \"%s\"", comment_fname.c_str() ) );
+
+         comment = ss.str();
+      }
 
       if( vm.count( "archives" ) )
          archives_path = vm[ "archives" ].as< string >();
@@ -942,12 +964,19 @@ int main( int argc, char *argv[] )
             cout << " - done in " << ftd.passed() << endl;
          }
 
-         if( g_process == eFB2 )
-            comment = utf8_to_ANSI( tmp_str( "lib.rus.ec FB2 - %s\r\n%s\r\n0\r\nАрхивы библиотеки lib.rus.ec (FB2) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
-         else if( g_process == eUSR )
-            comment = utf8_to_ANSI( tmp_str( "lib.rus.ec USR - %s\r\n%s\r\n65537\r\nАрхивы библиотеки lib.rus.ec (не-FB2) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
-         else if( g_process == eAll )
-            comment = utf8_to_ANSI( tmp_str( "lib.rus.ec ALL - %s\r\n%s\r\n1\r\nАрхивы библиотеки lib.rus.ec (все) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
+         if( comment.empty() )
+         {
+            if( g_process == eFB2 )
+               comment = utf8_to_ANSI( tmp_str( "lib.rus.ec FB2 - %s\r\n%s\r\n65536\r\nАрхивы библиотеки lib.rus.ec (FB2) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
+            else if( g_process == eUSR )
+               comment = utf8_to_ANSI( tmp_str( "lib.rus.ec USR - %s\r\n%s\r\n65537\r\nАрхивы библиотеки lib.rus.ec (не-FB2) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
+            else if( g_process == eAll )
+               comment = utf8_to_ANSI( tmp_str( "lib.rus.ec ALL - %s\r\n%s\r\n1\r\nАрхивы библиотеки lib.rus.ec (все) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
+         }
+         else
+         {
+            comment = utf8_to_ANSI( tmp_str( comment.c_str(), inpx_name.c_str() ) );
+         }
 
          zip zz( inpx, comment );
 
