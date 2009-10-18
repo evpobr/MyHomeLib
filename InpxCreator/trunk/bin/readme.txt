@@ -25,8 +25,8 @@
 
 Для запуска наберите lib2inpx.exe в командном окне:
 
-Import file (INPX) preparation tool for MyHomeLib 1.5
-Version 2.2 (MYSQL 5.1.36)
+Import file (INPX) preparation tool for MyHomeLib
+Version 2.4 (MYSQL 5.1.36)
 
 Usage: lib2inpx.exe [options] <path to SQL dump files>
 
@@ -44,7 +44,9 @@ options:
                         existing database
   --archives arg        Path to off-line archives (if not present - entire
                         database in converted for online LibRusEc usage)
-  --inpx arg            Full name of output file (default: <dbname>.inpx)
+  --inpx arg            Full name of output file (default: librusec_<db_dump_da
+                        te>.inpx)
+  --comment arg         File name of template (UTF-8) for INPX comment
 
 Предположим, что сегодняшние дампы Либрусека лежат в уже распакованном
 виде в директории d:\librusec\sql (программа подберет все файлы с расширением
@@ -148,11 +150,16 @@ Database processing
 132933 records done in 00:00:40
 
 Оставшиеся ключи программы не особенно важны: ”clean-when-done” удалит созданную
-при работе MYSQL  базу данных, “ignore-dump-date” проигнорирует дату в дамп
+при работе MYSQL базу данных, “ignore-dump-date” проигнорирует дату в дамп
 файлах и использует сегодняшнее число (UTC), а ”inpx” позволит указать имя и
 путь желаемого INPX файла. Если нужно запускать программу из batch файла много
 раз на одном и том же наборе MYSQL дампов можно воспользоваться ключом
---no-import и создавать базу данных один раз.
+"no-import" и создавать базу данных один раз. В ключе "comment" можно задать путь к
+файлу с шаблоном для INPX комментария (UTF-8, единственный "%s" будет заменен на
+имя генерируемого INPX файла - см. comment_fb2.utf8 и comment_usr.utf8 в директории
+программы). Если этого параметра нет, то комментарии будут генериться в формате,
+максимально приближенном к тем, что использует MyHomeLib для "стандартных" коллекций
+Либрусека.
 
 В предлагаемые архивы входит 2 коммандных файла sync_script_fb2.cmd и sync_script_usr.cmd,
 которыe принимают параметр – путь к локальным архивам librusec:
