@@ -124,8 +124,6 @@ begin
             FS := TMemoryStream.Create;
             R.Folder := ExtractRelativePath(FRootPath,ExtractFilePath(FFiles[i]));
             R.FileName := ExtractFilename(FFiles[i]);
-            R.Size := ArchiveItem.UncompressedSize;
-
             R.Date := Now;
             FZipper.ExtractToStream(ArchiveItem.FileName,FS);
             if not Assigned(FS) then
@@ -151,6 +149,7 @@ begin
               R.InsideNo := j;
               R.FileExt := Ext;
               BookFileName := ExtractShortFileName(ArchiveItem.FileName);
+              R.Size := ArchiveItem.UncompressedSize;
             end;
           inc(j);
         until (not FZipper.FindNext(ArchiveItem));

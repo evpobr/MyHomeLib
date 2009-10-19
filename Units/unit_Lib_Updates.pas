@@ -146,6 +146,8 @@ begin
     SetProxySettings(HTTP);
     for I := 0 to Count - 1 do
     begin
+      if Items[i].FVersionFile = '' then Continue;
+
       if Items[i].URL = '' then
           URL := FURL + Items[i].FVersionFile
         else

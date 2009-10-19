@@ -38,6 +38,10 @@ object frmAddnonfb2: TfrmAddnonfb2
     FixedDimension = 19
     object tsFiles: TRzTabSheet
       Caption = #1060#1072#1081#1083#1099
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Tree: TVirtualStringTree
         AlignWithMargins = True
         Left = 3
@@ -85,8 +89,14 @@ object frmAddnonfb2: TfrmAddnonfb2
     end
     object tsBookInfo: TRzTabSheet
       Caption = #1050#1085#1080#1075#1072
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object TabSheet3: TRzTabSheet
         Caption = #1060#1072#1081#1083#1099
+        ExplicitWidth = 0
+        ExplicitHeight = 0
       end
       object RzGroupBox12: TRzGroupBox
         Left = 3
@@ -938,7 +948,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           Top = 33
           Width = 153
           Height = 21
-          FocusColor = clCream
+          Color = clCream
           TabOrder = 0
         end
         object edBBK: TRzEdit
@@ -946,7 +956,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           Top = 33
           Width = 134
           Height = 21
-          FocusColor = clCream
+          Color = clCream
           TabOrder = 1
         end
         object edGRNTI: TRzEdit
@@ -954,7 +964,7 @@ object frmAddnonfb2: TfrmAddnonfb2
           Top = 33
           Width = 174
           Height = 21
-          FocusColor = clCream
+          Color = clCream
           TabOrder = 2
         end
       end

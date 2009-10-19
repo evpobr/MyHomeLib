@@ -314,6 +314,10 @@ begin
   edISBN.Clear;
   edYear.Clear;
 
+  edUDK.Clear;
+  edBBK.Clear;
+  edGRNTI.Clear;
+
   mmAnnotation.Lines.Clear;
   FCover.Picture := nil;
 end;
