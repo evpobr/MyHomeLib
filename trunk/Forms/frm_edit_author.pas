@@ -33,6 +33,7 @@ type
     gbAddNew: TRzGroupBox;
     cbAddNew: TRzCheckBox;
     cbSaveLinks: TRzCheckBox;
+    procedure FormShow(Sender: TObject);
   private
     function GetAddNewState: boolean;
     function GetSaveLinks: boolean;
@@ -54,6 +55,11 @@ implementation
 {$R *.dfm}
 
 { TfrmEditAuthor }
+
+procedure TfrmEditAuthor.FormShow(Sender: TObject);
+begin
+  ActiveControl := edFamily;
+end;
 
 function TfrmEditAuthor.GetAddNewState: boolean;
 begin

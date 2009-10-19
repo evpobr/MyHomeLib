@@ -14,6 +14,7 @@ object frmEditAuthor: TfrmEditAuthor
   Font.Style = []
   OldCreateOrder = False
   Position = poOwnerFormCenter
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object RzGroupBox1: TRzGroupBox
@@ -24,9 +25,6 @@ object frmEditAuthor: TfrmEditAuthor
     Height = 43
     Align = alBottom
     TabOrder = 0
-    ExplicitLeft = 0
-    ExplicitTop = 136
-    ExplicitWidth = 292
     object btnSave: TRzBitBtn
       Left = 9
       Top = 12
@@ -51,9 +49,6 @@ object frmEditAuthor: TfrmEditAuthor
     Width = 286
     Align = alClient
     TabOrder = 1
-    ExplicitLeft = 0
-    ExplicitTop = 0
-    ExplicitWidth = 292
     object Label1: TLabel
       Left = 9
       Top = 10
@@ -108,10 +103,6 @@ object frmEditAuthor: TfrmEditAuthor
     Align = alBottom
     TabOrder = 2
     Visible = False
-    ExplicitLeft = 48
-    ExplicitTop = 152
-    ExplicitWidth = 185
-    ExplicitHeight = 105
     object cbAddNew: TRzCheckBox
       Left = 9
       Top = 12

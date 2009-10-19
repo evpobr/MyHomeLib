@@ -4181,7 +4181,7 @@ begin
   DMUser.ActivateCollection(Settings.ActiveCollection);
 
   { TODO -oNickR -cUsability : Думаю, стоит сделать специальный диалог для этого случая. Тогда мы сможем спросить, удалять файл коллекции или нет. }
-  if MessageDlg('Удалить коллекцю "' + DMUser.ActiveCollection.Name + '"?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+  if MessageDlg('Удалить коллекцию "' + DMUser.ActiveCollection.Name + '"?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
     Exit;
 
   DMUser.tblBases.Delete;
@@ -4775,7 +4775,7 @@ begin
   begin
     AuthID := dmCollection.AuthorID(Data.ID);
 
-    if InputQuery('Создание серии/ Пернос в серию', 'Название:', S) then
+    if InputQuery('Создание серии/ Перенос в серию', 'Название:', S) then
     begin
       if S = '' then S:= NO_SERIES_TITLE;
 

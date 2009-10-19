@@ -182,7 +182,7 @@ type
     procedure LoadReaders(iniFile: TIniFile);
     procedure SaveReaders(iniFile: TIniFile);
 
-    procedure LoadUpdates;
+    procedure LoadUpdates(iniFile: TIniFile);
 
     procedure LoadScripts(iniFile: TIniFile);
     procedure SaveScripts(iniFile: TIniFile);
@@ -618,7 +618,7 @@ begin
     //
     LoadInitialDirs(iniFile);
 
-    LoadUpdates;
+    LoadUpdates(iniFile);
 
   finally
     iniFile.Free;
@@ -794,19 +794,17 @@ begin
 end;
 
 
-procedure TMHLSettings.LoadUpdates;
+procedure TMHLSettings.LoadUpdates(iniFile: TIniFile);
 var
   i: Integer;
   sl: TStringList;
   slHelper: TStringList;
-  iniFile: TIniFile;
 
 begin
 
   FUpdateList.URL := FUpdateURL;
   FUpdateList.Path := WorkPath;
 
-  iniFile := TIniFile.Create(FAppPath + 'updates.ini');
   try
 
     //
@@ -815,6 +813,8 @@ begin
 
     FUpdateList.Add('Локальная коллекция Либрусек','','last_librusec.info','librusec_update.zip',
                        True,CT_LIBRUSEC_LOCAL_FB);
+    FUpdateList.Add('Локальная коллекция Либрусек','','','daily_update.zip',
+                       False,CT_LIBRUSEC_LOCAL_FB);
     FUpdateList.Add('Онлайн коллекция Либрусек','','last_librusec.info','librusec_update.zip',
                        True,CT_LIBRUSEC_ONLINE_FB);
     FUpdateList.Add('Онлайн коллекция Либрусек','','last_extra.info','extra_update.zip',

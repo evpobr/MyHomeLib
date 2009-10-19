@@ -62,7 +62,7 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 414
     Height = 413
-    ActivePage = tsInternet
+    ActivePage = tsDevices
     Align = alClient
     TabOrder = 1
     object tsDevices: TTabSheet
@@ -262,7 +262,7 @@ object frmSettings: TfrmSettings
         Width = 400
         Height = 50
         Align = alTop
-        Caption = #1060#1086#1088#1084#1072#1090' '#1079#1072#1087#1080#1089#1080' '#1085#1072' '#1091#1089#1090#1088#1086#1089#1090#1074#1086
+        Caption = #1060#1086#1088#1084#1072#1090' '#1079#1072#1087#1080#1089#1080' '#1085#1072' '#1091#1089#1090#1088#1086#1081#1089#1090#1074#1086
         Columns = 4
         ItemIndex = 0
         Items.Strings = (
@@ -303,7 +303,6 @@ object frmSettings: TfrmSettings
           Top = 23
           Width = 121
           Height = 21
-          ItemHeight = 13
           TabOrder = 1
           Text = 'UTF-8'
           Items.Strings = (
@@ -743,7 +742,6 @@ object frmSettings: TfrmSettings
           Width = 369
           Height = 21
           AutoComplete = False
-          ItemHeight = 13
           TabOrder = 2
           Text = 'http://lib.rus.ec/'
           Items.Strings = (
@@ -953,7 +951,6 @@ object frmSettings: TfrmSettings
           Top = 24
           Width = 379
           Height = 21
-          ItemHeight = 13
           TabOrder = 0
           Text = #1057#1090#1072#1085#1076#1072#1088#1090#1085#1086#1077
         end
