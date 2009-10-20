@@ -361,6 +361,11 @@ begin
   else
     if ExtractFileExt(FFile) = '.zip' then
     begin
+      if not FileExists(FFolder + FFile) then
+      begin
+        FOnProgress := False;
+        Exit;
+      end;
 
       Zip := TZipForge.Create(nil);
       try
@@ -377,6 +382,11 @@ begin
     else
       if ExtractFileExt(FFile) = '.fb2' then
       try
+        if not FileExists(FFolder + FFile) then
+        begin
+          FOnProgress := False;
+          Exit;
+        end;
         FS.LoadFromFile(FFolder + FFile);
         Result := True;
       finally

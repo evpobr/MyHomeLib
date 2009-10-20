@@ -674,7 +674,7 @@ type
 
     procedure FillAuthorTree(Tree: TVirtualStringTree; FullMode: boolean = False);
 
-    procedure FillGenresTree(Tree: TVirtualStringTree);
+    procedure FillGenresTree(Tree: TVirtualStringTree; FillFB2: boolean = False);
     procedure DisableControls(State: boolean);
 
     function HH(Command: Word; Data: Integer; var CallHelp: Boolean): Boolean;
@@ -2653,7 +2653,7 @@ begin
   if not Assigned(Data) then
     Exit;
   ClearLabels(PAGE_GENRES, True);
-  ID := Data^.Code;
+  ID := Data.Code;
   if IsFB2Collection(DMUser.ActiveCollection.CollectionType) or
      not Settings.ShowSubGenreBooks
   then
@@ -2664,7 +2664,10 @@ begin
   else
   begin
     dmCollection.tblGenre_List.MasterSource := nil;
-    dmCollection.tblGenre_List.Filter := '`GL_Code` Like ' + QuotedStr(ID + '%');
+    if Node.ChildCount > 0 then
+        dmCollection.tblGenre_List.Filter := '`GL_Code` Like ' + QuotedStr(ID + '.%')
+      else
+        dmCollection.tblGenre_List.Filter := '`GL_Code` Like ' + QuotedStr(ID + '%');
     dmCollection.tblGenre_List.Filtered := True;
     FillBooksTree(0, tvBooksG, dmCollection.tblGenre_List, dmCollection.tblBooksG, True, True); // жанры
     dmCollection.tblGenre_List.Filtered := False;
@@ -5319,7 +5322,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.FillGenresTree(Tree: TVirtualStringTree);
+procedure TfrmMain.FillGenresTree(Tree: TVirtualStringTree; FillFB2: boolean);
 var
   genreNode: PVirtualNode;
   genreData: PGenreData;
@@ -5353,6 +5356,9 @@ begin
         genreData.Text := dmCollection.tblGenresG_Alias.Value;
         genreData.Code := dmCollection.tblGenresG_Code.Value;
         genreData.ParentCode := strParentCode;
+
+        if FillFB2 then
+          genredata.FB2Code := dmCollection.tblGenresG_FB2Code.Value;
 
         Nodes.AddObject(genreData.Code, TObject(genreNode));
 

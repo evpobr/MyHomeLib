@@ -161,6 +161,8 @@ type
     FDeleteDeleted: boolean;
     FAutoLoadReview: boolean;
 
+    FForceConvertToFBD: boolean;
+
   private
     function GetSettingsFileName: string;
 
@@ -305,7 +307,7 @@ type
     property BookSRCollapsed: boolean read FBookSRCollapsed write FBookSRCollapsed;
     property FileSRCollapsed: boolean read FFileSRCollapsed write FFileSRCollapsed;
     property OtherSRCollapsed: boolean read FOtherSRCollapsed write FOtherSRCollapsed;
-
+    property ForceConvertToFBD: boolean read FForceConvertToFBD write FForceConvertToFBD;
 
     property FullTextSearch: Boolean read FFullTextSearch write FFullTextSearch;
 
@@ -603,7 +605,7 @@ begin
     FDoNotShowDeleted := iniFile.ReadBool(BEHAVIOR_SECTION, 'DoNotShowDeleted', True);
     FShowLocalOnly := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowLocalOnly', False);
 
-    FShowSubGenreBooks := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowSubGenreBooks', False);
+    FShowSubGenreBooks := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowSubGenreBooks', True);
     FShowFb2Info := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowFb2Info', True);
     FMinimizeToTray  := iniFile.ReadBool(BEHAVIOR_SECTION, 'MinimizeToTray', False);
     FAutoStartDwnld  := iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoStartDwnld', False);
@@ -612,7 +614,7 @@ begin
 
     FDeleteDeleted := iniFile.ReadBool(BEHAVIOR_SECTION, 'DeleteDeleted',  False);
     FAutoLoadReview := iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoLoadReview',  True);
-
+    FForceConvertToFBD := iniFile.ReadBool(BEHAVIOR_SECTION, 'ForceConvertToFBD',  True);
     //
     // INITIAL_DIRS_SECTION
     //
@@ -751,6 +753,7 @@ begin
 
     iniFile.WriteBool(BEHAVIOR_SECTION, 'DeleteDeleted', FDeleteDeleted);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'AutoLoadReview', FAutoLoadReview);
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'ForceConvertToFBD',  FForceConvertToFBD);
     //
     // INITIAL_DIRS_SECTION
     //
