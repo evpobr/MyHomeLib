@@ -211,6 +211,7 @@ type
     ID: integer;
     Text: String;
     Code: String;
+    FB2Code: string;
     ParentCode: String;
   end;
 

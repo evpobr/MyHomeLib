@@ -43,7 +43,7 @@ uses
   unit_database,
   unit_globals,
   unit_FBD_helpers,
-  RzTabs, RzLabel;
+  RzTabs, RzLabel, RzRadChk;
 
 type
   TfrmAddnonfb2 = class(TForm)
@@ -71,7 +71,6 @@ type
     btnCopyToName: TButton;
     btnCopyToTitle: TButton;
     btnCopyToSeries: TButton;
-    btnFileOpen: TRzBitBtn;
     btnRenameFile: TRzBitBtn;
     RzGroupBox5: TRzGroupBox;
     lblGenre: TLabel;
@@ -131,6 +130,8 @@ type
     RzLabel10: TRzLabel;
     edGRNTI: TRzEdit;
     RzLabel11: TRzLabel;
+    cbForceConvertToFBD: TRzCheckBox;
+    btnOpenBook: TRzBitBtn;
     procedure RzButton3Click(Sender: TObject);
     procedure TreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
@@ -257,12 +258,14 @@ begin
   FLibrary.Active := False;
   FreeAndNil(FLibrary);
   frmMain.DisableControls(True);
+  Settings.ForceConvertToFBD := cbForceConvertToFBD.Checked;
   CanClose := true;
 end;
 
 procedure TfrmAddnonfb2.FormShow(Sender: TObject);
 begin
-  frmMain.FillGenresTree(frmGenreTree.tvGenresTree);
+  cbForceConvertToFBD.Checked := Settings.ForceConvertToFBD;
+
   miClearAllClick(Sender);
   lblGenre.Caption := '';
 
@@ -273,7 +276,7 @@ begin
   ScanFolder;
 
   FillLists;
-
+  frmMain.FillGenresTree(frmGenreTree.tvGenresTree, True);
   pcPages.ActivePageIndex := 0;
 end;
 
@@ -385,11 +388,10 @@ begin
   TreeChange(Tree, Next);
 
   Data := Tree.GetNodeData(Next);
-  if Data <> nil then
-    if Data.DataType = dtFile then
-      pcPages.ActivePage := tsBookInfo
-    else
-      pcPages.ActivePage := tsFiles;
+  if (Data <> nil) and (Data.DataType = dtFile)  then
+    pcPages.ActivePage := tsBookInfo
+  else
+    pcPages.ActivePage := tsFiles;
 end;
 
 procedure TfrmAddnonfb2.dtnConvertClick(Sender: TObject);
@@ -401,17 +403,21 @@ begin
   frmAddNonFB2.Enabled := False;
   try
     PrepareBookRecord;
-    FFBDFilename := FBookrecord.FileName + FBD_EXTENSION;
-    BookFileName := FBookrecord.FileName + FBookrecord.FileExt;
-    FFolder := FRootPath + FBookrecord.Folder;
-    ZipFilename := FFolder + FBookrecord.FileName + ZIP_EXTENSION;
-        
-    if MakeFBD then
-      if CreateZip(ZipFilename, FFolder, BookFileName, FFBDFilename, False) then
-      begin
-        FBookrecord.FileName := FBookrecord.FileName + ZIP_EXTENSION;
-        CommitData;
-      end;
+    if cbForceConvertToFBD.Checked then
+    begin
+      FFBDFilename := FBookrecord.FileName + FBD_EXTENSION;
+      BookFileName := FBookrecord.FileName + FBookrecord.FileExt;
+      FFolder := FRootPath + FBookrecord.Folder;
+      ZipFilename := FFolder + FBookrecord.FileName + ZIP_EXTENSION;
+
+      if MakeFBD then
+        if CreateZip(ZipFilename, FFolder, BookFileName, FFBDFilename, False) then
+        begin
+          FBookrecord.FileName := FBookrecord.FileName + ZIP_EXTENSION;
+          CommitData;
+        end;
+    end
+      else CommitData;
   finally
     frmAddNonFB2.Enabled := True;
     Screen.Cursor := crDefault;

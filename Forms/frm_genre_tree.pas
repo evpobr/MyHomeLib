@@ -79,7 +79,7 @@ begin
   while Assigned(Node) do
   begin
     Data:=frmGenreTree.tvGenresTree.GetNodeData(Node);
-    R.AddGenreFB2(Data.Code, '', '');
+    R.AddGenreFB2(Data.Code, Data.FB2Code, '');
     Node:=tvGenresTree.GetNextSelected(Node);
   end;
 
