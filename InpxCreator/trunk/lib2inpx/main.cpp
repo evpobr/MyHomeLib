@@ -535,11 +535,20 @@ void process_local_archives( const mysql_connection& mysql, const zip& zz, const
    {
       vector< string >::iterator it;
 
-      struct finder_t
+      struct finder_fb2_t
       {
          bool operator()( const string& arg )
             { return (0 == _strnicmp( arg.c_str(), "fb2-", 4 )); }
-      } finder;
+      } finder_fb2;
+
+      struct finder_usr_t
+      {
+         bool operator()( const string& arg )
+            { return (0 == _strnicmp( arg.c_str(), "usr-", 4 )); }
+      } finder_usr;
+
+      for( it = find_if( files.begin(), files.end(), finder_usr ); it != files.end(); )
+         files.erase( it, files.end() );
 
       sort( files.begin(), files.end() );
 
@@ -549,9 +558,9 @@ void process_local_archives( const mysql_connection& mysql, const zip& zz, const
          throw runtime_error( tmp_str( "Unable to locate daily archive \"%s.zip\"", g_update.c_str() ) );
 
       if( it != files.begin() )
-         files.erase( files.begin(), it - 1 );
+         files.erase( files.begin(), it );
 
-      it  = find_if( files.begin(), files.end(), finder );
+      it  = find_if( files.begin(), files.end(), finder_fb2 );
 
       if( it != files.end() )
          files.erase( it, files.end() );
@@ -781,7 +790,7 @@ int main( int argc, char *argv[] )
       {
          cout << endl;
          cout << "Import file (INPX) preparation tool for MyHomeLib" << endl;
-         cout << "Version 2.5 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
+         cout << "Version 2.6 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
          cout << endl;
          cout << "Usage: " << file_name << " [options] <path to SQL dump files>" << endl << endl;
          cout << options << endl;
