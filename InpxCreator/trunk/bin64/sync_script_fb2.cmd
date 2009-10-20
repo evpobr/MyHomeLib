@@ -15,10 +15,10 @@ IF EXIST %WDIR%     MOVE %WDIR% %WDIR%_old
 MD %WDIR%
 
 REM Download latest daily archives
-wget --user-agent=Mozilla/5.0 --append-output=%CDIR%\wget_archives.log --recursive --no-directories --no-parent --no-remove-listing --accept=*.zip --directory-prefix=%1 --no-clobber %SITE%/all/daily
+wget --progress=dot:mega --user-agent=Mozilla/5.0 --append-output=%CDIR%\wget_archives.log --recursive --no-directories --no-parent --no-remove-listing --accept=*.zip --directory-prefix=%1 --no-clobber %SITE%/all/daily
 
 REM Download latest database
-FOR %%t IN (libgenrelist libbook libavtoraliase libavtorname libavtor libgenre libseq libseqname libfilename) DO wget --user-agent=Mozilla/5.0 --append-output=%CDIR%\wget_sql.log --directory-prefix=%WDIR% %SITE%/sql/lib.%%t.sql.gz & gzip -d %WDIR%/lib.%%t.sql.gz
+FOR %%t IN (libgenrelist libbook libavtoraliase libavtorname libavtor libgenre libseq libseqname libfilename) DO (wget --progress=dot:mega --user-agent=Mozilla/5.0 --append-output=%CDIR%\wget_sql.log --directory-prefix=%WDIR% %SITE%/sql/lib.%%t.sql.gz & gzip -d %WDIR%/lib.%%t.sql.gz)
 
 :skip
 

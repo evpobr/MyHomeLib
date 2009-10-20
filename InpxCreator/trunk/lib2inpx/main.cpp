@@ -56,6 +56,8 @@ enum processing_type
 
 static processing_type g_process = eFB2;
 
+static string g_update;
+
 static string sep  = "\x04";
 
 //                    AUTHOR     ;    GENRE     ;     TITLE           ; SERIES ; SERNO ; FILE ;    SIZE   ;  LIBID    ;    DEL   ;    EXT     ;       DATE        ;    LANG    ; LIBRATE  ; KEYWORDS ;
@@ -529,6 +531,32 @@ void process_local_archives( const mysql_connection& mysql, const zip& zz, const
    }
    while( 0 == _findnext( archives, &fd ) );
 
+   if( ! g_update.empty() )
+   {
+      vector< string >::iterator it;
+
+      struct finder_t
+      {
+         bool operator()( const string& arg )
+            { return (0 == _strnicmp( arg.c_str(), "fb2-", 4 )); }
+      } finder;
+
+      sort( files.begin(), files.end() );
+
+      it = find( files.begin(), files.end(), g_update + ".zip" );
+
+      if( it == files.end() )
+         throw runtime_error( tmp_str( "Unable to locate daily archive \"%s.zip\"", g_update.c_str() ) );
+
+      if( it != files.begin() )
+         files.erase( files.begin(), it - 1 );
+
+      it  = find_if( files.begin(), files.end(), finder );
+
+      if( it != files.end() )
+         files.erase( it, files.end() );
+   }
+
    if( 0 == files.size() )
       throw runtime_error( tmp_str( "No archives are available for processing \"%s\"", archives_path.c_str() ) );
 
@@ -731,6 +759,7 @@ int main( int argc, char *argv[] )
          ( "archives", po::value< string >(), "Path to off-line archives (if not present - entire database in converted for online LibRusEc usage)" )
          ( "inpx",     po::value< string >(), "Full name of output file (default: librusec_<db_dump_date>.inpx)" )
          ( "comment",  po::value< string >(), "File name of template (UTF-8) for INPX comment" )
+         ( "update",   po::value< string >(), "Starting with \"<arg>.zip\" produce \"daily_update.zip\" (Works only for \"fb2\")" )
          ;
 
       po::options_description hidden;
@@ -752,7 +781,7 @@ int main( int argc, char *argv[] )
       {
          cout << endl;
          cout << "Import file (INPX) preparation tool for MyHomeLib" << endl;
-         cout << "Version 2.4 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
+         cout << "Version 2.5 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
          cout << endl;
          cout << "Usage: " << file_name << " [options] <path to SQL dump files>" << endl << endl;
          cout << options << endl;
@@ -804,24 +833,26 @@ int main( int argc, char *argv[] )
          path = vm[ "dump-dir" ].as< string >();
 
       if( vm.count( "comment" ) )
+      {
          comment_fname = vm[ "comment" ].as< string >();
 
-      if( 0 != _access( comment_fname.c_str(), 4 ) )
-         cerr << endl << endl << "***WARNING: Ignoring wrong comment file: " << comment_fname.c_str() << endl;
-      else
-      {
-         ifstream     in( comment_fname.c_str() );
-         stringstream ss;
+         if( 0 != _access( comment_fname.c_str(), 4 ) )
+            cout << endl << "Warning: Ignoring wrong comment file: " << comment_fname.c_str() << endl;
+         else
+         {
+            ifstream     in( comment_fname.c_str() );
+            stringstream ss;
 
-         if( !in )
-            throw runtime_error( tmp_str( "Cannot open comment file \"%s\"", comment_fname.c_str() ) );
+            if( !in )
+               throw runtime_error( tmp_str( "Cannot open comment file \"%s\"", comment_fname.c_str() ) );
 
-         ss << in.rdbuf();
+            ss << in.rdbuf();
 
-         if( !in && !in.eof() )
-            throw runtime_error( tmp_str( "Problem reading comment file \"%s\"", comment_fname.c_str() ) );
+            if( !in && !in.eof() )
+               throw runtime_error( tmp_str( "Problem reading comment file \"%s\"", comment_fname.c_str() ) );
 
-         comment = ss.str();
+            comment = ss.str();
+         }
       }
 
       if( vm.count( "archives" ) )
@@ -829,13 +860,21 @@ int main( int argc, char *argv[] )
 
       if( ! archives_path.empty() )
       {
-         if( 0 != _access( archives_path.c_str(), 6 ) )
+         if( 0 != _access( archives_path.c_str(), 4 ) )
             throw runtime_error( tmp_str( "Wrong path to archives \"%s\"", archives_path.c_str() ) );
 
          normalize_path( archives_path );
+
+         if( (eFB2 == g_process) && vm.count( "update" ) )
+         {
+            g_update = vm[ "update" ].as< string >();
+
+            if( 0 != _access( (archives_path + g_update + ".zip").c_str(), 4 ) )
+               throw runtime_error( tmp_str( "Unable to find daily archive \"%s.zip\"", g_update.c_str() ) );
+         }
       }
 
-      if( 0 != _access( path.c_str(), 6 ) )
+      if( 0 != _access( path.c_str(), 4 ) )
             throw runtime_error( tmp_str( "Wrong source path \"%s\"", path.c_str() ) );
 
       normalize_path( path );
@@ -890,6 +929,9 @@ int main( int argc, char *argv[] )
       else
          inpx_name += dump_date;
 
+      if( ! g_update.empty() )
+         inpx_name = "daily_update";
+
       normalize_path( module_path );
       prepare_mysql ( module_path );
 
@@ -900,7 +942,7 @@ int main( int argc, char *argv[] )
          inpx  = module_path;
          inpx += "/data/";
          inpx += inpx_name;
-         inpx += ".inpx";
+         inpx += g_update.empty() ? ".inpx" : ".zip";
       }
 
       {
