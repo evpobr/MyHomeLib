@@ -4,7 +4,7 @@ object frmConvertToFBD: TfrmConvertToFBD
   ActiveControl = edPublisher
   BorderStyle = bsToolWindow
   Caption = #1055#1088#1077#1086#1073#1088#1072#1079#1086#1074#1072#1085#1080#1077' '#1074' FBD'
-  ClientHeight = 420
+  ClientHeight = 467
   ClientWidth = 559
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object frmConvertToFBD: TfrmConvertToFBD
     Left = 3
     Top = 3
     Width = 553
-    Height = 367
+    Height = 414
     Align = alClient
     BorderOuter = fsFlatRounded
     TabOrder = 0
@@ -57,6 +57,7 @@ object frmConvertToFBD: TfrmConvertToFBD
       Top = 220
       Width = 338
       Height = 141
+      Color = clCream
       ScrollBars = ssBoth
       TabOrder = 4
       WordWrap = False
@@ -101,6 +102,7 @@ object frmConvertToFBD: TfrmConvertToFBD
         Top = 33
         Width = 74
         Height = 21
+        Color = clCream
         TabOrder = 0
       end
       object edMiddleName: TRzEdit
@@ -108,6 +110,7 @@ object frmConvertToFBD: TfrmConvertToFBD
         Top = 33
         Width = 82
         Height = 21
+        Color = clCream
         TabOrder = 1
       end
       object edLastName: TRzEdit
@@ -115,6 +118,7 @@ object frmConvertToFBD: TfrmConvertToFBD
         Top = 33
         Width = 68
         Height = 21
+        Color = clCream
         TabOrder = 2
       end
       object edNickName: TRzEdit
@@ -122,6 +126,7 @@ object frmConvertToFBD: TfrmConvertToFBD
         Top = 33
         Width = 82
         Height = 21
+        Color = clCream
         TabOrder = 3
       end
     end
@@ -165,6 +170,7 @@ object frmConvertToFBD: TfrmConvertToFBD
         Top = 43
         Width = 230
         Height = 21
+        Color = clCream
         TabOrder = 2
       end
       object edPublisher: TRzEdit
@@ -172,6 +178,7 @@ object frmConvertToFBD: TfrmConvertToFBD
         Top = 18
         Width = 124
         Height = 21
+        Color = clCream
         TabOrder = 0
       end
       object edYear: TRzEdit
@@ -179,6 +186,7 @@ object frmConvertToFBD: TfrmConvertToFBD
         Top = 45
         Width = 28
         Height = 21
+        Color = clCream
         TabOrder = 3
       end
       object edCity: TRzEdit
@@ -186,6 +194,7 @@ object frmConvertToFBD: TfrmConvertToFBD
         Top = 18
         Width = 100
         Height = 21
+        Color = clCream
         TabOrder = 1
       end
     end
@@ -249,16 +258,70 @@ object frmConvertToFBD: TfrmConvertToFBD
         Images = ImageList1
       end
     end
+    object RzGroupBox13: TRzGroupBox
+      Left = 7
+      Top = 360
+      Width = 538
+      Height = 49
+      Caption = #1050#1083#1072#1089#1089#1080#1092#1080#1082#1072#1090#1086#1088#1099
+      TabOrder = 5
+      object RzLabel10: TRzLabel
+        Left = 4
+        Top = 22
+        Width = 22
+        Height = 13
+        Caption = #1059#1044#1050
+      end
+      object RzLabel11: TRzLabel
+        Left = 169
+        Top = 22
+        Width = 19
+        Height = 13
+        Caption = #1041#1041#1050
+      end
+      object RzLabel12: TRzLabel
+        Left = 334
+        Top = 22
+        Width = 32
+        Height = 13
+        Caption = #1043#1056#1053#1058#1048
+      end
+      object edUDK: TRzEdit
+        Left = 32
+        Top = 17
+        Width = 132
+        Height = 21
+        Color = clCream
+        TabOrder = 0
+      end
+      object edBBK: TRzEdit
+        Left = 194
+        Top = 17
+        Width = 134
+        Height = 21
+        Color = clCream
+        TabOrder = 1
+      end
+      object edGRNTI: TRzEdit
+        Left = 372
+        Top = 17
+        Width = 157
+        Height = 21
+        Color = clCream
+        TabOrder = 2
+      end
+    end
   end
   object RzPanel2: TRzPanel
     AlignWithMargins = True
     Left = 3
-    Top = 376
+    Top = 423
     Width = 553
     Height = 41
     Align = alBottom
     BorderOuter = fsFlatRounded
     TabOrder = 1
+    ExplicitTop = 376
     object btnSave: TBitBtn
       Left = 360
       Top = 10
@@ -426,7 +489,7 @@ object frmConvertToFBD: TfrmConvertToFBD
     Left = 392
     Top = 256
     Bitmap = {
-      494C010103000800840010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010103000800880010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000838383FF838383FF828282FF828282FF818181FF808080FF808080FF7E7E

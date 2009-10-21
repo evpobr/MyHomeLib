@@ -31,9 +31,9 @@ object frmAddnonfb2: TfrmAddnonfb2
     Width = 741
     Height = 467
     Margins.Bottom = 30
-    ActivePage = tsBookInfo
+    ActivePage = tsFBD
     Align = alClient
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 0
     FixedDimension = 19
     object tsFiles: TRzTabSheet
@@ -1001,8 +1001,8 @@ object frmAddnonfb2: TfrmAddnonfb2
       object cbForceConvertToFBD: TRzCheckBox
         Left = 12
         Top = 406
-        Width = 149
-        Height = 19
+        Width = 135
+        Height = 15
         Caption = #1050#1086#1085#1074#1077#1088#1090#1080#1088#1086#1074#1072#1090#1100' '#1074' FBD'
         Checked = True
         State = cbChecked

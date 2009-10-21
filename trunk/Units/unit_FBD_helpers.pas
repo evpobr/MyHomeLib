@@ -11,7 +11,6 @@ uses
   Graphics,
   fictionbook_21,
   unit_Globals,
-  XMLDoc,
   ExtCtrls,
   pngimage,
   jpeg,
@@ -62,7 +61,9 @@ uses
   EncdDecd,
   ActiveX,
   unit_Helpers,
-  Dialogs;
+  Dialogs,
+  XMLDoc,
+  XMLIntf;
 
 function PrepareFBDFile(BookRecord: TBookRecord;
                          FBDRecord: TFBDRecord;
@@ -94,6 +95,8 @@ begin
     FBD := GetFictionBook(XML);
     XML.Version := '1.0';
     XML.Encoding := 'UTF-8';
+
+    XML.Options := XML.Options + [doNodeAutoIndent];
 
     if FBD.Attributes['xmlns:xlink'] = Null  then
         FBD.Attributes['xmlns:xlink']:='http://www.w3.org/1999/xlink';
@@ -316,7 +319,6 @@ begin
       Zip.Free;
     end;
 
-
     XML.LoadFromStream(Input);
 
     FBook := LoadFictionBook(Input);
@@ -351,6 +353,14 @@ begin
           Output.Free;
         end; // for
     end;
+
+    with FBook.Description.Titleinfo do
+    begin
+      FBD.UDK := UDK;
+      FBD.BBK := BBK;
+      FBD.GRNTI := GRNTI;
+    end;
+
     with FBook.Description do
     begin
       memo.Clear;

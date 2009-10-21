@@ -84,7 +84,8 @@ uses
   unit_MHLHelpers,
   unit_ReviewParser,
   jpeg,
-  pngimage;
+  pngimage,
+  strutils;
 
 const
   URL = 'http://lib.rus.ec/b/%d/';
@@ -175,6 +176,17 @@ var
   StrLen : integer;
   ImageType: TCoverImageType;
 
+
+  procedure WriteString(Title, Text: string);
+  begin
+    mmInfo.SelAttributes.Style := [fsBold];
+    mmInfo.SetSelText(Title + ': ' + #9);
+    mmInfo.SelAttributes.Style := [];
+    if Text <> '' then mmInfo.SetSelText(Text);
+    mmInfo.SetSelText(#13#10)
+  end;
+
+
 begin
   FReviewChanged := False;
 
@@ -182,7 +194,7 @@ begin
   mmInfo.Lines.Clear;
   mmShort.Lines.Clear;
   try
-    book:=LoadFictionbook(FS);
+    book := LoadFictionbook(FS);
     try
       MS := TMemoryStream.Create;
       CoverID := Book.Description.Titleinfo.Coverpage.XML;
@@ -238,65 +250,39 @@ begin
       mmInfo.SelAttributes.Color := clNavy;
       mmInfo.SetSelText(Booktitle.Text+#13#10);
 
-      mmInfo.SelAttributes.Style := [fsBold];
-      mmInfo.SetSelText('Серия: ');
-      mmInfo.SelAttributes.Style := [];
-
-      if Sequence.Count>0 then
-      begin
-        mmInfo.SetSelText(Sequence[0].Name);
-//        mmInfo.SetSelText('Номер: '+IntToStr(Sequence[0].Number));
-      end;
-      mmInfo.SetSelText(#13#10);
-
-      mmInfo.SelAttributes.Style := [fsBold];
-      mmInfo.SetSelText('Жанр: ');
-      mmInfo.SelAttributes.Style := [];
-
-      if Genre.Count>0 then mmInfo.SetSelText(Genre[0]+#13#10);;
-
-      mmInfo.SelAttributes.Style := [fsBold];
-      mmInfo.SetSelText('УДК: ');
-      mmInfo.SelAttributes.Style := [];
-      mmInfo.SetSelText(UDK + #13#10);
-
-      mmInfo.SelAttributes.Style := [fsBold];
-      mmInfo.SetSelText('ББК: ');
-      mmInfo.SelAttributes.Style := [];
-      mmInfo.SetSelText(BBK  + #13#10);
-
-      mmInfo.SelAttributes.Style := [fsBold];
-      mmInfo.SetSelText('ГРНТИ: ');
-      mmInfo.SelAttributes.Style := [];
-      mmInfo.SetSelText(GRNTI + #13#10);
-
-      for I := 0 to Annotation.P.Count - 1 do
-              mmShort.SetSelText(Annotation.P.Items[i].Text);
+      if Sequence.Count > 0 then
+        WriteString('Серия',Sequence[0].Name);
 
       mmInfo.SetSelText(#13#10);
-
-      mmInfo.SelAttributes.Style := [fsBold];
-      mmInfo.SetSelText('PublishInfo' + #13#10);
-      mmInfo.SelAttributes.Style := [];
-
-      mmInfo.SetSelText('Издатель: '+Book.Description.Publishinfo.Publisher.Text+#13#10);
-      mmInfo.SetSelText('Город: '+Book.Description.Publishinfo.City.Text+#13#10);
-      mmInfo.SetSelText('Год: '+Book.Description.Publishinfo.Year+#13#10);
-      mmInfo.SetSelText('ISBN: '+Book.Description.Publishinfo.Isbn.Text+#13#10);
+      WriteString('Жанр',IfThen(Genre.Count > 0, Genre[0], ''));
+      WriteString('УДК', UDK);
+      WriteString('ББК', BBK);
+      WriteString('ГРНТИ', GRNTI);
       mmInfo.SetSelText(#13#10);
-      mmInfo.SelAttributes.Style := [fsBold];
-      mmInfo.SetSelText('DocumentInfo (OCR)'+#13#10);
-      mmInfo.SelAttributes.Style := [];
+
+      WriteString('PublishInfo','');
+      mmInfo.SetSelText('Изд-во: '+ #9 + Book.Description.Publishinfo.Publisher.Text+#13#10);
+      mmInfo.SetSelText('Город: '+ #9 + Book.Description.Publishinfo.City.Text+#13#10);
+      mmInfo.SetSelText('Год: '+ #9 + Book.Description.Publishinfo.Year+#13#10);
+      mmInfo.SetSelText('ISBN: '+ #9 + Book.Description.Publishinfo.Isbn.Text+#13#10);
+      mmInfo.SetSelText(#13#10);
+
+
+      WriteString('DocumentInfo (OCR)','');
       mmInfo.SetSelText('Авторы: '+#13#10);
       for I := 0 to Book.Description.Documentinfo.Author.Count - 1 do
         with Book.Description.Documentinfo.Author.Items[i] do
             mmInfo.SetSelText(Firstname.Text + ' ' +Lastname.Text + '(' + NickName.Text + ')' + #13#10);
       mmInfo.SetSelText('');
-      mmInfo.SetSelText('Программа: '+Book.Description.Documentinfo.Programused.Text + #13#10);
-      mmInfo.SetSelText('Дата: '+Book.Description.Documentinfo.Date.Text + #13#10);
-      mmInfo.SetSelText('ID: '+Book.Description.Documentinfo.ID + #13#10);
-      mmInfo.SetSelText('Version: '+Book.Description.Documentinfo.Version + #13#10);
-      mmInfo.SetSelText('History: '+Book.Description.Documentinfo.History.P.Text + #13#10);
+      mmInfo.SetSelText('Программа: '+ Book.Description.Documentinfo.Programused.Text + #13#10);
+      mmInfo.SetSelText('Дата: '+ #9 + Book.Description.Documentinfo.Date.Text + #13#10);
+      mmInfo.SetSelText('ID: '+ #9 + Book.Description.Documentinfo.ID + #13#10);
+      mmInfo.SetSelText('Version: '+ #9 + Book.Description.Documentinfo.Version + #13#10);
+      mmInfo.SetSelText('History: '+ #9 + Book.Description.Documentinfo.History.P.Text + #13#10);
+
+      for I := 0 to Annotation.P.Count - 1 do
+              mmShort.SetSelText(Annotation.P.Items[i].Text);
+
     end;
   except
   end;
