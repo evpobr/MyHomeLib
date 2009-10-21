@@ -64,6 +64,13 @@ type
     BitBtn1: TBitBtn;
     btnPrevious: TBitBtn;
     btnNext: TBitBtn;
+    RzGroupBox13: TRzGroupBox;
+    RzLabel10: TRzLabel;
+    RzLabel11: TRzLabel;
+    RzLabel12: TRzLabel;
+    edUDK: TRzEdit;
+    edBBK: TRzEdit;
+    edGRNTI: TRzEdit;
     procedure btnPasteCoverClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure btnOpenBookClick(Sender: TObject);
@@ -213,6 +220,10 @@ begin
   FFBD.ISBN := edISBN.Text;
   FFBD.Year := edYear.Text;
 
+  FFBD.UDK := edUDK.text;
+  FFBD.BBK := edBBK.text;
+  FFBD.GRNTI := edGRNTI.text;
+
   Result := PrepareFBDFile(FBookRecord, FFBD, mmAnnotation, FFolder + FFBDFileName);
 end;
 
@@ -246,6 +257,10 @@ begin
     edCity.Text := FFBD.City;
     edISBN.Text := FFBD.ISBN;
     edYear.Text := FFBD.Year;
+
+    edUDK.text := FFBD.UDK;
+    edBBK.text := FFBD.BBK;
+    edGRNTI.text := FFBD.GRNTI;
 
   end
   else
