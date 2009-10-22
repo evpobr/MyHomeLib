@@ -168,7 +168,6 @@ procedure TfrmConvertToFBD.btnSaveClick(Sender: TObject);
 begin
   if FBusy then Exit;
   SaveFBD;
-//  frmMain.Click;
   Modalresult := mrOk;
 end;
 
