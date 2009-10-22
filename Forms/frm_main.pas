@@ -681,7 +681,6 @@ type
     procedure LocateBook(text: String; Next : boolean);
 
     procedure SelectNextBook(Changed, Frwrd: boolean);
-    procedure Click;
 
     property LastActiveBookID: integer read FLastActiveBookID;
 
@@ -1901,15 +1900,6 @@ begin
       ClearLabels(PAGE_SEARCH, True);
     end;
   end;
-end;
-
-procedure TfrmMain.Click;
-var
-  Tree: TVirtualStringTree;
-begin
-  GetActiveTree(Tree);
-  Tree.Perform(WM_LBUTTONDOWN, 0, 0);
-  Tree.Perform(WM_LBUTTONUP, 0, 0);
 end;
 
 procedure  TfrmMain.SetAuthorsShowLocalOnly;

@@ -217,25 +217,22 @@ begin
    Input := TMemoryStream.Create;
    Lines := TStringList.Create;
    try
-     Input.LoadFromFile(Filename);
-     EncodeStream(Input, Output);
-
-     Lines.Clear;
-     Output.Seek(0,soFromBeginning);
-     Lines.LoadFromStream(Output);
-
-     CoverStr := Lines.Text;
-
      try
        CreateImage(ExtractFileExt(Filename),IMG, ImageType);
        if Assigned(IMG) then
        begin
-         Input.Seek(0,soFromBeginning);
-         IMG.LoadFromStream(Input);
+         IMG.LoadFromFile(Filename);
          Cover.Picture.Assign(IMG);
          Cover.Invalidate;
-         //ResizeImage;
-      end;
+
+         Input.LoadFromFile(Filename);
+         Input.Seek(0,soFromBeginning);
+         EncodeStream(Input,Output);
+         Lines.Clear;
+         Output.Seek(0,soFromBeginning);
+         Lines.LoadFromStream(Output);
+         CoverStr := Lines.Text;
+       end;
      finally
        IMG.Free;
      end;
@@ -287,8 +284,6 @@ begin
   end;
   if not Result then MessageDlg('Ошибка создания FBD! ', mtError, [mbOK], 0);
 end;
-
-
 
 procedure LoadFBDFromFile(FileName : string; out FBD: TFBDRecord; out Cover: TImage; out memo: TMemo);
 var

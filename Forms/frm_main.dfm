@@ -420,9 +420,9 @@ object frmMain: TfrmMain
     Width = 942
     Height = 522
     HelpContext = 1
-    ActivePage = TabSheet3
+    ActivePage = TabSheet7
     Align = alClient
-    TabIndex = 2
+    TabIndex = 5
     TabOrder = 3
     TabStop = False
     OnChange = pgControlChange
@@ -516,7 +516,7 @@ object frmMain: TfrmMain
               Caption = #1055#1086#1080#1089#1082
             end
             object tbClearEdAuthor: TRzToolButton
-              Left = 150
+              Left = 148
               Top = 8
               Hint = #1054#1095#1080#1089#1090#1080#1090#1100
               ImageIndex = 36
@@ -531,7 +531,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 53
               Top = 12
-              Width = 84
+              Width = 82
               Height = 21
               Margins.Left = 10
               Margins.Top = 10
@@ -777,7 +777,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -874,7 +873,7 @@ object frmMain: TfrmMain
               Caption = #1055#1086#1080#1089#1082
             end
             object btnClearEdSeries: TRzToolButton
-              Left = 163
+              Left = 161
               Top = 9
               Hint = #1054#1095#1080#1089#1090#1080#1090#1100
               ImageIndex = 36
@@ -889,7 +888,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 53
               Top = 12
-              Width = 97
+              Width = 95
               Height = 21
               Margins.Left = 10
               Margins.Top = 10
@@ -1216,8 +1215,6 @@ object frmMain: TfrmMain
             TreeOptions.SelectionOptions = [toMultiSelect]
             OnChange = tvGenresChange
             OnGetText = tvGenresGetText
-            ExplicitLeft = 12
-            ExplicitTop = 10
             Columns = <>
           end
         end
@@ -2241,7 +2238,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 0
@@ -2325,7 +2321,7 @@ object frmMain: TfrmMain
               221
               27)
             object RzToolButton2: TRzToolButton
-              Left = 186
+              Left = 184
               Top = 8
               Hint = #1054#1095#1080#1089#1090#1080#1090#1100
               ImageIndex = 36
@@ -2836,9 +2832,6 @@ object frmMain: TfrmMain
           Align = alBottom
           BorderOuter = fsFlatRounded
           TabOrder = 0
-          DesignSize = (
-            878
-            59)
           object pbDownloadProgress: TRzProgressBar
             Left = 6
             Top = 22
@@ -2892,15 +2885,15 @@ object frmMain: TfrmMain
             Font.Style = []
             ParentFont = False
             CenterPoint = cpLowerRight
-            ExplicitLeft = 869
             ExplicitHeight = 19
           end
           object btnClearDownload: TRzBitBtn
-            Left = 745
-            Top = 13
+            Left = 759
+            Top = 31
             Width = 118
             Margins.Right = 8
             Margins.Bottom = 8
+            Align = alCustom
             Anchors = [akRight, akBottom]
             Caption = #1054#1095#1080#1089#1090#1080#1090#1100
             TabOrder = 0
@@ -3507,7 +3500,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 312
     Bitmap = {
-      494C010118001A00C00020002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C010118001A00C40020002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -7215,7 +7208,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 256
     Bitmap = {
-      494C010125002700C00010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010125002700C40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000040000000A0000000010020000000000000A0
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -8574,7 +8567,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 368
     Bitmap = {
-      494C010108000A00800010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010108000A00840010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -9104,7 +9097,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 480
     Bitmap = {
-      494C010118001A00C00020002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C010118001A00C40020002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12811,7 +12804,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 424
     Bitmap = {
-      494C010112004800C00010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010112004800C40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000005000000001002000000000000050
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
