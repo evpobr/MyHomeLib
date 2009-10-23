@@ -5843,7 +5843,7 @@ begin
 
   frmStat := TfrmStat.Create(Application);
   try
-    frmStat.ShowInfo;
+    frmStat.LoadCollectionInfo;
     frmStat.ShowModal;
   finally
     frmStat.Free;

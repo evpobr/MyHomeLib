@@ -2,9 +2,9 @@ object frmStat: TfrmStat
   Left = 0
   Top = 0
   BorderStyle = bsDialog
-  Caption = #1057#1090#1072#1090#1080#1089#1090#1080#1082#1072
-  ClientHeight = 240
-  ClientWidth = 308
+  Caption = #1057#1090#1072#1090#1080#1089#1090#1080#1082#1072' '#1087#1086' '#1082#1086#1083#1083#1077#1082#1094#1080#1080
+  ClientHeight = 244
+  ClientWidth = 473
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,193 +13,79 @@ object frmStat: TfrmStat
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  DesignSize = (
+    473
+    244)
   PixelsPerInch = 96
   TextHeight = 13
-  object RzBitBtn1: TButton
-    Left = 116
+  object btnClose: TButton
+    Left = 390
     Top = 211
     Width = 75
     Height = 25
+    Anchors = [akRight, akBottom]
     Cancel = True
     Caption = #1047#1072#1082#1088#1099#1090#1100
     Default = True
     ModalResult = 1
     TabOrder = 0
+    ExplicitTop = 341
   end
-  object RzPanel1: TRzPanel
-    AlignWithMargins = True
-    Left = 3
-    Top = 3
-    Width = 302
-    Height = 70
-    Align = alTop
-    BorderOuter = fsFlatRounded
+  object lvInfo: TListView
+    Left = 8
+    Top = 8
+    Width = 457
+    Height = 197
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Columns = <
+      item
+        Caption = 'Prop'
+        Width = 100
+      end
+      item
+        Caption = 'Value'
+        Width = 350
+      end>
+    ColumnClick = False
+    Groups = <
+      item
+        Header = #1054#1073#1097#1072#1103' '#1080#1085#1092#1086#1088#1084#1072#1094#1080#1103
+        GroupID = 0
+        State = [lgsNormal]
+        HeaderAlign = taLeftJustify
+        FooterAlign = taLeftJustify
+        TitleImage = -1
+        ExtendedImage = -1
+      end
+      item
+        Header = #1057#1090#1072#1090#1080#1089#1090#1080#1082#1072
+        GroupID = 2
+        State = [lgsNormal]
+        HeaderAlign = taLeftJustify
+        FooterAlign = taLeftJustify
+        TitleImage = -1
+        ExtendedImage = -1
+      end>
+    Items.ItemData = {
+      03A10100000700000000000000FFFFFFFFFFFFFFFF0100000000000000000000
+      00081D0430043704320430043D04380435040873007500620020006900740065
+      006D0000000000FFFFFFFFFFFFFFFF0100000000000000000000000D14043004
+      42043004200041043E043704340430043D0438044F0408730075006200200069
+      00740065006D0000000000FFFFFFFFFFFFFFFF01000000000000000000000006
+      120435044004410438044F040873007500620020006900740065006D00000000
+      00FFFFFFFFFFFFFFFF010000000000000000000000081E043F04380441043004
+      3D04380435040873007500620020006900740065006D0000000000FFFFFFFFFF
+      FFFFFF010000000200000000000000071004320442043E0440043E0432040873
+      007500620020006900740065006D0000000000FFFFFFFFFFFFFFFF0100000002
+      00000000000000041A043D04380433040873007500620020006900740065006D
+      0000000000FFFFFFFFFFFFFFFF01000000020000000000000005210435044004
+      380439040873007500620020006900740065006D00FFFFFFFFFFFFFFFFFFFFFF
+      FFFFFF}
+    GroupView = True
+    ReadOnly = True
+    RowSelect = True
+    ShowColumnHeaders = False
     TabOrder = 1
-    object lblName: TRzLabel
-      Left = 94
-      Top = 8
-      Width = 45
-      Height = 13
-      Caption = 'lblName'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
-    end
-    object lblDate: TRzLabel
-      Left = 94
-      Top = 27
-      Width = 45
-      Height = 13
-      Caption = 'lblName'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
-    end
-    object RzLabel5: TRzLabel
-      Left = 8
-      Top = 27
-      Width = 80
-      Height = 13
-      Alignment = taRightJustify
-      Caption = #1044#1072#1090#1072' '#1089#1086#1079#1076#1072#1085#1080#1103':'
-    end
-    object RzLabel1: TRzLabel
-      Left = 29
-      Top = 8
-      Width = 59
-      Height = 13
-      Alignment = taRightJustify
-      Caption = #1050#1086#1083#1083#1077#1082#1094#1080#1103':'
-    end
-    object RzLabel6: TRzLabel
-      Left = 49
-      Top = 46
-      Width = 39
-      Height = 13
-      Alignment = taRightJustify
-      Caption = #1042#1077#1088#1089#1080#1103':'
-    end
-    object lblVer: TRzLabel
-      Left = 94
-      Top = 46
-      Width = 45
-      Height = 13
-      Caption = 'lblName'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
-    end
-  end
-  object RzPanel2: TRzPanel
-    AlignWithMargins = True
-    Left = 3
-    Top = 155
-    Width = 302
-    Height = 53
-    Align = alTop
-    BorderOuter = fsFlatRounded
-    TabOrder = 2
-    ExplicitTop = 128
-    object RzLabel2: TRzLabel
-      Left = 8
-      Top = 20
-      Width = 47
-      Height = 13
-      Alignment = taRightJustify
-      Caption = #1040#1074#1090#1086#1088#1086#1074':'
-    end
-    object lblAuthors: TRzLabel
-      Left = 61
-      Top = 20
-      Width = 45
-      Height = 13
-      Caption = 'lblName'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
-    end
-    object RzLabel3: TRzLabel
-      Left = 124
-      Top = 20
-      Width = 28
-      Height = 13
-      Alignment = taRightJustify
-      Caption = #1050#1085#1080#1075':'
-    end
-    object lblBooks: TRzLabel
-      Left = 158
-      Top = 20
-      Width = 45
-      Height = 13
-      Caption = 'lblName'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
-    end
-    object RzLabel4: TRzLabel
-      Left = 209
-      Top = 20
-      Width = 35
-      Height = 13
-      Alignment = taRightJustify
-      Caption = #1057#1077#1088#1080#1081':'
-    end
-    object lblSeries: TRzLabel
-      Left = 248
-      Top = 20
-      Width = 45
-      Height = 13
-      Caption = 'lblName'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
-    end
-  end
-  object RzGroupBox1: TRzGroupBox
-    AlignWithMargins = True
-    Left = 3
-    Top = 79
-    Width = 302
-    Height = 70
-    Align = alTop
-    Caption = #1054#1087#1080#1089#1072#1085#1080#1077
-    TabOrder = 3
-    ExplicitLeft = 0
-    ExplicitTop = 76
-    ExplicitWidth = 308
-    object lblNotes: TRzLabel
-      AlignWithMargins = True
-      Left = 4
-      Top = 17
-      Width = 294
-      Height = 49
-      Align = alClient
-      AutoSize = False
-      Caption = 'lblNotes'
-      WordWrap = True
-      TextMargin = 2
-      ExplicitLeft = 5
-      ExplicitTop = 81
-      ExplicitWidth = 292
-      ExplicitHeight = 40
-    end
+    ViewStyle = vsReport
   end
 end
