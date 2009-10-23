@@ -16,30 +16,15 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, RzButton, StdCtrls, RzLabel, ExtCtrls, RzPanel;
+  Dialogs, ComCtrls, StdCtrls, ExtCtrls;
 
 type
   TfrmStat = class(TForm)
-    RzBitBtn1: TButton;
-    RzPanel1: TRzPanel;
-    RzPanel2: TRzPanel;
-    lblName: TRzLabel;
-    lblDate: TRzLabel;
-    RzLabel5: TRzLabel;
-    RzLabel1: TRzLabel;
-    RzLabel2: TRzLabel;
-    lblAuthors: TRzLabel;
-    RzLabel3: TRzLabel;
-    lblBooks: TRzLabel;
-    RzLabel4: TRzLabel;
-    lblSeries: TRzLabel;
-    RzLabel6: TRzLabel;
-    lblVer: TRzLabel;
-    RzGroupBox1: TRzGroupBox;
-    lblNotes: TRzLabel;
+    btnClose: TButton;
+    lvInfo: TListView;
 
   public
-    procedure ShowInfo;
+    procedure LoadCollectionInfo;
   end;
 
 var
@@ -51,25 +36,27 @@ uses dm_user, unit_Settings, unit_Consts, dm_collection;
 
 {$R *.dfm}
 
-procedure TfrmStat.ShowInfo;
+procedure TfrmStat.LoadCollectionInfo;
 var
+  Version: string;
   AuthorsCount: Integer;
   BooksCount: Integer;
   SeriesCount: Integer;
 begin
-  lblName.Caption := DMUser.ActiveCollection.Name;
-
   if DMUser.ActiveCollection.Version = UNVERSIONED_COLLECTION then
-    lblVer.Caption := 'unknown'
+    Version := 'unknown'
   else
-    lblVer.Caption := IntToStr(DMUser.ActiveCollection.Version);
-  lblDate.Caption := DateToStr(DMUser.ActiveCollection.CreationDate);
-  lblNotes.Caption := DMUser.ActiveCollection.Notes;
-
+    Version := IntToStr(DMUser.ActiveCollection.Version);
   DMCollection.GetStatistics(AuthorsCount, BooksCount, SeriesCount);
-  lblAuthors.Caption := IntToStr(AuthorsCount);
-  lblBooks.Caption := IntToStr(BooksCount);
-  lblSeries.Caption := IntToStr(SeriesCount);
+
+  lvInfo.Items[0].SubItems[0] := DMUser.ActiveCollection.Name;
+  lvInfo.Items[1].SubItems[0] := DateToStr(DMUser.ActiveCollection.CreationDate);
+  lvInfo.Items[2].SubItems[0] := Version;
+  lvInfo.Items[3].SubItems[0] := DMUser.ActiveCollection.Notes;
+
+  lvInfo.Items[4].SubItems[0] := IntToStr(AuthorsCount);
+  lvInfo.Items[5].SubItems[0] := IntToStr(BooksCount);
+  lvInfo.Items[6].SubItems[0] := IntToStr(SeriesCount);
 end;
 
 end.
