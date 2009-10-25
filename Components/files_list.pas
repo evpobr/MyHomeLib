@@ -30,18 +30,21 @@ type
 
     FOnDirectory: TOnDirectoryEvent;
     FOnFile: TOnFileEvent;
+    FTerminate: boolean;
 
     procedure SetTargetPath(const S: string);
 
     procedure Recurs(const S: string; Level: Integer);
   public
     procedure Process;
+    procedure Stop;
   published
     property TargetPath: string read FTargetPath write SetTargetPath;
     property LastDir: string read FLastDir;
 
     property OnDirectory: TOnDirectoryEvent read FOnDirectory write FOnDirectory;
     property OnFile: TOnFileEvent read FOnFile write FOnFile;
+    property Terminate: boolean read FTerminate;
   end;
 
 implementation
@@ -51,8 +54,14 @@ begin
   FTargetPath := IncludeTrailingPathDelimiter(S);
 end;
 
+procedure TFilesList.Stop;
+begin
+  FTerminate := True;
+end;
+
 procedure TFilesList.Process;
 begin
+  FTerminate := False;
   Recurs(FTargetPath, 0);
 end;
 
@@ -60,7 +69,7 @@ procedure TFilesList.Recurs(const S: string; Level: Integer);
 var
   F: TSearchRec;
 begin
-  if Level > 512 then
+  if (Level > 512) then
     Exit;
 
   if Assigned(FOnDirectory) then
@@ -69,6 +78,8 @@ begin
   if FindFirst(S + '*.*', faAnyFile, F) = 0 then
   begin
     repeat
+      if FTerminate then Break;
+
       FLastDir := S;
       if Assigned(FOnFile) then
         FOnFile(Self, F);
