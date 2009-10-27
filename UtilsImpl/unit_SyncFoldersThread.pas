@@ -53,7 +53,7 @@ var
 begin
   Result := '*';
   for I := 0 to FList.Count - 1 do
-    if pos(FileName,FList[i]) <> 0 then
+    if pos(FileName, FList[i]) <> 0 then
       Result := ExtractRelativePath(FRootPath,ExtractFilePath(FList[i]));
 end;
 
@@ -91,7 +91,10 @@ begin
           Exit;
 
       Folder := dmCollection.tblBooksFolder.Value;
-      FileName := dmCollection.tblBooksFileName.Value + dmCollection.tblBooksExt.Value;
+      if  ExtractFileExt(dmCollection.tblBooksFileName.Value) <> ZIP_EXTENSION then
+        FileName := dmCollection.tblBooksFileName.Value + dmCollection.tblBooksExt.Value
+      else
+        FileName := dmCollection.tblBooksFileName.Value;
 
       if not FileExists(FRootPath + Folder + FileName)  then
       begin

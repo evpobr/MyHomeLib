@@ -149,7 +149,7 @@ begin
               R.InsideNo := j;
               R.FileExt := Ext;
               BookFileName := ExtractShortFileName(ArchiveItem.FileName);
-              R.Size := ArchiveItem.UncompressedSize;
+              R.Size := FZipper.Size;
             end;
           inc(j);
         until (not FZipper.FindNext(ArchiveItem));

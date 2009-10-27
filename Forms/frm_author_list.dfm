@@ -2,7 +2,7 @@ object frmAuthorList: TfrmAuthorList
   Left = 0
   Top = 0
   BorderStyle = bsToolWindow
-  Caption = 'frmAuthorList'
+  Caption = #1057#1087#1080#1089#1086#1082' '#1072#1074#1090#1086#1088#1086#1074
   ClientHeight = 438
   ClientWidth = 307
   Color = clBtnFace

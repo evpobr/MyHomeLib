@@ -450,7 +450,7 @@ begin
         else
           tblGrouppedBooksSeries.Value := dmCollection.tblBooksSeries.Value;
 
-    tblGrouppedBooksFullName.Value := dmCollection.FullName(ID);
+    tblGrouppedBooksFullName.Value := dmCollection.FullAuthorsString(ID);
 
     tblGrouppedBooksSeqNumber.Value := dmCollection.tblBooksSeqNumber.Value;
     tblGrouppedBooksLibID.Value := dmCollection.tblBooksLibID.Value;

@@ -247,6 +247,7 @@ type
     procedure SetTableState(State: boolean);
     function FullName(BookID: Integer): string;
     function AuthorID(BookID: Integer): integer;
+    function FullAuthorsString(BookID: Integer): string;
 
   end;
 
@@ -267,6 +268,25 @@ uses
 {$R *.dfm}
 
 { TDMMain }
+
+function TDMCollection.FullAuthorsString(BookID: Integer): string;
+var
+  S: string;
+begin
+  Result := '';
+  tblAuthor_Master.Locate('AL_BookID', BookID, []);
+  while (not tblAuthor_Master.Eof) and (tblAuthor_MasterAL_BookID.Value = BookID) do
+  begin
+    S := trim(tblAuthor_DetailA_Family.Value + ' ' +
+                 tblAuthor_DetailA_Name.Value +  ' ' +
+                 tblAuthor_DetailA_Middle.Value);
+    if Result = '' then
+        Result := S
+      else
+        Result := Result + ', ' + S;
+    tblAuthor_Master.Next;
+  end
+end;
 
 function TDMCollection.FullName(BookID: Integer): string;
 begin
