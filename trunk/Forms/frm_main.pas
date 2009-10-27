@@ -2730,7 +2730,8 @@ begin
 
 
   InfoPanel.Title := Data.Title;
-  InfoPanel.Author := Data.FullName;
+//  InfoPanel.Author := Data.ID);
+
   InfoPanel.Genre := Data.Genre;
   InfoPanel.FileName := FileName;
 
@@ -2738,12 +2739,18 @@ begin
 
 
   if ActiveView <> FavoritesView then
+  begin
+    InfoPanel.Author := dmCollection.FullAuthorsString(Data.ID);
     if (Folder = '') then
        InfoPanel.Folder := FCollectionRoot
      else
        InfoPanel.Folder := FCollectionRoot + Folder
-    else
-      InfoPanel.Folder := Folder;
+  end
+  else
+  begin
+    InfoPanel.Folder := Folder;
+    InfoPanel.Author := Data.FullName;
+  end;
 
   pmiBookInfo.Visible := Cover.Show(InfoPanel.Folder,InfoPanel.FileName,No);
 
@@ -3845,7 +3852,8 @@ begin
               end;
 
               if Tree.Tag <> 4 then
-                  Auth := dmCollection.FullName(TableB.FieldByName('Id').AsInteger)
+                 // Auth := dmCollection.FullName(TableB.FieldByName('Id').AsInteger)
+                 Auth := dmCollection.FullAuthorsString(TableB.FieldByName('Id').AsInteger)
               else
                   Auth := TableB.FieldByName('FullName').AsString;
 
