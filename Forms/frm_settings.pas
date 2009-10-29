@@ -217,12 +217,7 @@ begin
 
   cbPromptPath.Checked := Settings.PromptDevicePath;
 
-  case Settings.ExportMode of
-    emFB2: rgDeviceFormat.ItemIndex := 0;
-    emFB2zip: rgDeviceFormat.ItemIndex := 1;
-    emLrf: rgDeviceFormat.ItemIndex := 2;
-    emTxt: rgDeviceFormat.ItemIndex := 3;
-  end;
+  rgDeviceFormat.ItemIndex := ord(Settings.ExportMode);
 
   cbTXTEncoding.ItemIndex := Ord(Settings.TXTEncoding);
 
@@ -323,6 +318,7 @@ begin
     1: Settings.ExportMode := emFB2zip;
     2: Settings.ExportMode := emLrf;
     3: Settings.ExportMode := emTxt;
+    4: Settings.ExportMode := emEpub;
   end;
 
   case cbTXTEncoding.ItemIndex of
