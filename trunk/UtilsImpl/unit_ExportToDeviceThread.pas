@@ -44,6 +44,7 @@ type
     procedure ShowZipErrorMessage(Sender: TObject; ErrCode: Integer; Message: string);
 
     function fb2Lrf(InpFile,OutFile:string):boolean;
+    function fb2EPUB(InpFile,OutFile:string):boolean;
 
     procedure SetTable(ATable: TAbsTable);
   protected
@@ -252,6 +253,8 @@ begin
     emFb2Zip:ZipFile(FFileOpRecord.SArch, DestFileName + ZIP_EXTENSION);
     emTxt:unit_globals.ConvertToTxt(FFileOpRecord.SArch, DestFileName, Settings.TXTEncoding);
     emLrf:Result := fb2Lrf(FFileOpRecord.SArch,DestFileName);
+    emEpub:Result := fb2EPUB(FFileOpRecord.SArch,DestFileName);
+
   end;
 
 //  if FIsTmp then
@@ -264,6 +267,14 @@ var
 begin
   params := Format('-i "%s" -o "%s"',[InpFile,ChangeFileExt(OutFile, '.lrf')]);
   Result := ExecAndWait(Settings.AppPath + 'fb2lrf\fb2lrf_c.exe',params, SW_HIDE)
+end;
+
+function TExportToDeviceThread.fb2EPUB(InpFile,OutFile:string):boolean;
+var
+  params: string;
+begin
+  params := Format('"%s" "%s"',[InpFile,ChangeFileExt(OutFile, '.epub')]);
+  Result := ExecAndWait(Settings.AppPath + 'fb2epub\fb2epub.exe',params, SW_HIDE)
 end;
 
 procedure TExportToDeviceThread.SetTable(ATable: TAbsTable);

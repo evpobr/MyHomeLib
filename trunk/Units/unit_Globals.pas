@@ -167,7 +167,7 @@ procedure CreateImage(ext:string;
 
 type
   TAppLanguage = (alEng, alRus);
-  TExportMode = (emFB2, emFB2Zip, emLrf, emTxt);
+  TExportMode = (emFB2, emFB2Zip, emLrf, emTxt, emEpub);
 
   TDownloadState = (dsWait, dsRun, dsOk, dsError);
 

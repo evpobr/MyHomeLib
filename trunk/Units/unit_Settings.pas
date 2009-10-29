@@ -498,6 +498,7 @@ begin
       1: FExportMode := emFB2zip;
       2: FExportMode := emLrf;
       3: FExportMode := emTxt;
+      4: FExportMode := emEpub;
     end;
 
     case iniFile.ReadInteger(SYSTEM_SECTION, 'TXTEncoding', 0) of

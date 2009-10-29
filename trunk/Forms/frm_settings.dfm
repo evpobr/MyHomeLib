@@ -263,13 +263,14 @@ object frmSettings: TfrmSettings
         Height = 50
         Align = alTop
         Caption = #1060#1086#1088#1084#1072#1090' '#1079#1072#1087#1080#1089#1080' '#1085#1072' '#1091#1089#1090#1088#1086#1081#1089#1090#1074#1086
-        Columns = 4
+        Columns = 5
         ItemIndex = 0
         Items.Strings = (
           '.fb2'
           '.fb2.zip'
           '.lrf (SONY)'
-          '.txt')
+          '.txt'
+          '.epub')
         TabOrder = 2
       end
       object RzGroupBox5: TRzGroupBox
@@ -337,6 +338,10 @@ object frmSettings: TfrmSettings
       Caption = 'tsReaders'
       ImageIndex = 1
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object RzGroupBox8: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -399,6 +404,10 @@ object frmSettings: TfrmSettings
       Caption = 'tsInterface'
       ImageIndex = 2
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object RzGroupBox6: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -596,6 +605,10 @@ object frmSettings: TfrmSettings
       Caption = 'tsInternet'
       ImageIndex = 4
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object RzGroupBox1: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -875,6 +888,10 @@ object frmSettings: TfrmSettings
       Caption = 'tsScripts'
       ImageIndex = 4
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object RzGroupBox523324: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -960,6 +977,10 @@ object frmSettings: TfrmSettings
       Caption = 'tsBehavior'
       ImageIndex = 5
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object RzGroupBox7: TRzGroupBox
         AlignWithMargins = True
         Left = 3

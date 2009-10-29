@@ -1716,8 +1716,8 @@ end;
 
 procedure TfrmMain.CreateScriptMenu;
 const
-    ExpTypes : array [0..3] of string = ('  fb2','  fb2.zip','  LRF','  txt');
-    Icons: array [0..3] of integer = (18,19,20,21);
+    ExpTypes : array [0..4] of string = ('  fb2','  fb2.zip','  LRF','  txt', ' epub');
+    Icons: array [0..4] of integer = (18,19,20,21,24);
 var
   Item, ItemP, ItemM: TMenuItem;
   F:integer;
@@ -1730,7 +1730,7 @@ begin
 
   if isFB2Collection(DMUser.ActiveCollection.CollectionType) then
   begin
-    for I := 0 to 3 do
+    for I := 0 to 4 do
     begin
       Item := TMenuItem.Create(pmScripts);
       Item.Caption := ExpTypes[i];
@@ -1745,12 +1745,12 @@ begin
       Item := TMenuItem.Create(pmScripts);
       Item.Caption := '-';
       Item.Tag := 0;
-      pmScripts.Items.Insert(4, Item);
+      pmScripts.Items.Insert(5, Item);
     end;
 
     tbSendToDevice.ImageIndex := Icons[ord(Settings.ExportMode)];
 //    pmScripts.Items[i].Caption := '>> ' + ExpTypes[i] + ' <<';
-    F := 5;
+    F := 6;
   end
   else
   begin
@@ -1767,7 +1767,7 @@ begin
     Item.Caption := Settings.Scripts[i].Title;
     Item.Tag := 901 + i;
     Item.OnClick := tbSendToDeviceClick;
-    Item.ImageIndex := 4;
+    Item.ImageIndex := 8;
     pmScripts.Items.Insert(i + F, Item);
 
     //------ context -----------------
