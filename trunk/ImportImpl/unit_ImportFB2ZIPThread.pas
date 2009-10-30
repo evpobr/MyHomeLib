@@ -19,7 +19,8 @@ uses
   SysUtils,
   unit_WorkerThread,
   unit_ImportFB2ThreadBase,
-  ZipForge;
+  ZipForge,
+  unit_globals;
 
 type
   TImportFB2ZIPThread = class(TImportFB2ThreadBase)
@@ -27,6 +28,7 @@ type
     FZipper: TZipForge;
 
     procedure ShowZipErrorMessage(Sender: TObject; ErrCode: Integer; Message: string);
+    procedure SortFiles(var R: TBookRecord); override;
 
   protected
     procedure AddFile2List(Sender: TObject; const F: TSearchRec); override;
@@ -42,10 +44,37 @@ uses
   unit_Helpers,
   unit_Consts,
   unit_Settings,
-  unit_globals,
   fictionbook_21;
 
 { TImportFB2ZIPThread }
+
+procedure TImportFB2ZIPThread.SortFiles(var R: TBookRecord);
+var
+  Filename, NewFilename, NewFolder: string;
+  Ext : string;
+begin
+  FileName := ExtractFileName(R.Folder);
+
+  NewFolder := GetNewFolder(Settings.FB2FolderTemplate, R);
+
+
+  CreateFolders(FRootPath,NewFolder);
+
+  CopyFile(Settings.InputFolder + R.Folder,
+           FRootPath +  NewFolder + FileName);
+
+  R.Folder := NewFolder + FileName;
+
+  NewFileName := GetNewFileName(Settings.FB2FileTemplate, R);
+  if NewFileName <> '' then
+  begin
+    NewFolder := R.Folder;
+    StrReplace(Filename, NewFileName + '.fb2.zip', NewFolder);
+    RenameFile(FRootPath +  R.Folder,
+               FRootPath +  NewFolder);
+    R.Folder :=  NewFolder;
+  end;
+end;
 
 procedure TImportFB2ZIPThread.ShowZipErrorMessage(Sender: TObject; ErrCode: Integer; Message: string);
 begin
@@ -86,6 +115,7 @@ var
 
   ArchiveItem: TZFArchiveItem;
 
+  NoErrors: boolean;
 begin
   AddCount := 0;
   DefectCount := 0;
@@ -119,6 +149,7 @@ begin
       // H:\eBooks\Л\Лаберж Стивен\Исследование мира осознанных сновидений.fb2.zip
       //
       FZipper.FileName := FRootPath + AZipFileName;
+      NoErrors := True;
       try
         FZipper.OpenArchive(fmOpenRead);
         j := 0;
@@ -165,10 +196,12 @@ begin
             try
               book := LoadFictionBook(FS);
               GetBookInfo(Book, R);
-              if FLibrary.InsertBook(R, True, True)<>0 Then Inc(AddCount);
+              if not Settings.EnableSort then
+                  if FLibrary.InsertBook(R, True, True)<>0 Then Inc(AddCount);
             except
               on e: Exception do
               begin
+                NoErrors := False;
                 Teletype('Ошибка структуры fb2: ' + AZipFileName + ' -> ' + R.FileName + FB2_EXTENSION, tsError);
                 //Teletype(e.Message, tsError);
                 Inc(DefectCount);
@@ -180,6 +213,11 @@ begin
           inc(j);
         until (not FZipper.FindNext(ArchiveItem));
         FZipper.CloseArchive;
+        if Settings.EnableSort and NoErrors and (j = 1) then
+        begin
+          SortFiles(R);
+          if FLibrary.InsertBook(R, True, True)<>0 Then Inc(AddCount);
+        end;
       except
         on e: Exception do
            Teletype('Ошибка распаковки архива: ' + AZipFileName, tsError);

@@ -146,6 +146,35 @@ type
     RzLabel5: TRzLabel;
     cbAutoLoadReview: TCheckBox;
     edDownloadServer: TRzComboBox;
+    tsFileSort: TTabSheet;
+    RzGroupBox12: TRzGroupBox;
+    Label2: TLabel;
+    Label3: TLabel;
+    RzToolButton4: TRzToolButton;
+    RzToolButton5: TRzToolButton;
+    RzToolButton6: TRzToolButton;
+    RzToolButton7: TRzToolButton;
+    RzToolButton8: TRzToolButton;
+    RzToolButton9: TRzToolButton;
+    RzToolButton10: TRzToolButton;
+    edFBDFolderTemplate: TRzEdit;
+    edFBDFileTemplate: TRzEdit;
+    RzGroupBox13: TRzGroupBox;
+    Label4: TLabel;
+    Label8: TLabel;
+    RzToolButton11: TRzToolButton;
+    RzToolButton12: TRzToolButton;
+    RzToolButton13: TRzToolButton;
+    RzToolButton14: TRzToolButton;
+    RzToolButton15: TRzToolButton;
+    RzToolButton16: TRzToolButton;
+    RzToolButton17: TRzToolButton;
+    edFB2FolderTemplate: TRzEdit;
+    edFB2FileTemplate: TRzEdit;
+    RzGroupBox14: TRzGroupBox;
+    cbEnableFileSort: TCheckBox;
+    RzGroupBox15: TRzGroupBox;
+    edInputFolder: TRzButtonEdit;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
@@ -301,6 +330,15 @@ begin
   cbDeleteDeleted.Checked := Settings.DeleteDeleted;
   cbAutoLoadReview.Checked := Settings.AutoLoadReview;
 
+  // Page 6 -  FileSort
+
+  cbEnableFileSort.Checked := Settings.EnableSort;
+  edInputFolder.Text       := Settings.InputFolder;
+  edFB2Foldertemplate.Text := Settings.FB2FolderTemplate;
+  edFB2FileTemplate.Text   := Settings.FB2FileTemplate;
+  edFBDFolderTemplate.Text := Settings.FBDFolderTemplate;
+  edFBDFileTemplate.Text   := Settings.FBDFileTemplate;
+
   tvSections.Select(tvSections.Items[0]);
 
   cbUseIESettingsClick(Nil);
@@ -338,32 +376,32 @@ begin
 
   // Page 3 - Interface
 
-  Settings.TreeFontSize := Trunc(seFontSize.Value);
-  Settings.ShortFontSize := Trunc(seShortFontSize.Value);
-  Settings.BookColor := pnlCT.Color;
-  Settings.SeriesColor := pnlCS.Color;
-  Settings.AuthorColor := pnlCA.Color;
+  Settings.TreeFontSize    := Trunc(seFontSize.Value);
+  Settings.ShortFontSize   := Trunc(seShortFontSize.Value);
+  Settings.BookColor       := pnlCT.Color;
+  Settings.SeriesColor     := pnlCS.Color;
+  Settings.AuthorColor     := pnlCA.Color;
   Settings.SeriesBookColor := pnlBS.Color;
-  Settings.BGColor := pnlASG.Color;
-  Settings.FontColor := pnlASG.Font.Color;
+  Settings.BGColor         := pnlASG.Color;
+  Settings.FontColor       := pnlASG.Font.Color;
 
-  Settings.LocalColor := pnlDwnld.Font.Color;
-  Settings.DeletedColor := pnlDeleted.Font.Color;
+  Settings.LocalColor      := pnlDwnld.Font.Color;
+  Settings.DeletedColor    := pnlDeleted.Font.Color;
 
   // Page 4 - Internet
-  Settings.ProxyServer := edProxyServer.Text;
-  Settings.ProxyUsername := edProxyUsername.Text;
-  Settings.ProxyPassword := edProxyPassword.Text;
-  Settings.ProxyPort := Round(edProxyPort.Value);
-  Settings.UpdateURL := edUpdates.Text;
+  Settings.ProxyServer            := edProxyServer.Text;
+  Settings.ProxyUsername          := edProxyUsername.Text;
+  Settings.ProxyPassword          := edProxyPassword.Text;
+  Settings.ProxyPort              := Round(edProxyPort.Value);
+  Settings.UpdateURL              := edUpdates.Text;
   Settings.CheckExternalLibUpdate := cbCheckColUpdate.Checked;
-  Settings.CheckUpdate := cbUpdates.Checked;
-  Settings.DownloadURL := edDownloadServer.Text;
-  Settings.TimeOut := Round(edTimeOut.Value);
-  Settings.ReadTimeOut := Round(edReadTimeOut.Value);
-  Settings.DwnldInterval := Round(edDwnldInterval.Value);
-  Settings.UseIESettings := cbUseIESettings.Checked;
-  Settings.AutoRunUpdate := cbAutoRunUpdate.Checked;
+  Settings.CheckUpdate            := cbUpdates.Checked;
+  Settings.DownloadURL            := edDownloadServer.Text;
+  Settings.TimeOut                := Round(edTimeOut.Value);
+  Settings.ReadTimeOut            := Round(edReadTimeOut.Value);
+  Settings.DwnldInterval          := Round(edDwnldInterval.Value);
+  Settings.UseIESettings          := cbUseIESettings.Checked;
+  Settings.AutoRunUpdate          := cbAutoRunUpdate.Checked;
 
   // Page 5 - Scripts
   SaveScripts;
@@ -372,12 +410,21 @@ begin
   // Page 6 - Behavior
 
   Settings.ShowSubGenreBooks := cbShowSubGenreBooks.Checked;
-  Settings.MinimizeToTray := cbMinimizeToTray.Checked;
-  Settings.ShowFb2Info := cbShowFb2Info.Checked;
-  Settings.AutoStartDwnld := cbAutoStartDwnld .Checked;
-  Settings.AllowMixed := cbAllowMixedCollections.Checked;
-  Settings.DeleteDeleted := cbDeleteDeleted.Checked;
-  Settings.AutoLoadReview := cbAutoLoadReview.Checked;
+  Settings.MinimizeToTray    := cbMinimizeToTray.Checked;
+  Settings.ShowFb2Info       := cbShowFb2Info.Checked;
+  Settings.AutoStartDwnld    := cbAutoStartDwnld .Checked;
+  Settings.AllowMixed        := cbAllowMixedCollections.Checked;
+  Settings.DeleteDeleted     := cbDeleteDeleted.Checked;
+  Settings.AutoLoadReview    := cbAutoLoadReview.Checked;
+
+  // Page 6 -  FileSort
+
+  Settings.EnableSort        := cbEnableFileSort.Checked;
+  Settings.InputFolder       := IncludeTrailingPathDelimiter(edInputFolder.Text);
+  Settings.FB2FolderTemplate := edFB2Foldertemplate.Text;
+  Settings.FB2FileTemplate   := edFB2FileTemplate.Text;
+  Settings.FBDFolderTemplate := edFBDFolderTemplate.Text;
+  Settings.FBDFileTemplate   := edFBDFileTemplate.Text;
 
 end;
 
@@ -582,14 +629,12 @@ end;
 
 procedure TfrmSettings.tbtnInsert1Click(Sender: TObject);
 const
-  s: array [41..47] of string = ('%f','%t','%s','%n','%id','%g','%fl');
+  s: array [41..48] of string = ('%f','%t','%s','%n','%id','%g','%fl', '%rg');
 var
   OldText: string;
   p: integer;
 begin
-  if (ActiveControl = edFolderTemplate) or
-      (ActiveControl = edFileNameTemplate)
-  then
+  if (ActiveControl as TRzEdit).Tag = 785 then
   begin
     OldText := (ActiveControl as TRzEdit).Text;
     p := (ActiveControl as TRzEdit).SelStart;

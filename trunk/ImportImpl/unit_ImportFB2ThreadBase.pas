@@ -39,11 +39,13 @@ type
     procedure ShowCurrentDir(Sender: TObject; const Dir: string);
     procedure AddFile2List(Sender: TObject; const F: TSearchRec); virtual; abstract;
 
+    function GetNewFolder(Folder: string; R: TBookRecord):string;
+    function GetNewFileName(FileName: string; R: TBookRecord):string;
   protected
     procedure WorkFunction; override;
     procedure ProcessFileList; virtual; abstract;
     procedure GetBookInfo(book: IXMLFictionBook; var R: TBookRecord);
-
+    procedure SortFiles(var R: TBookRecord); virtual;
   public
     property DBFileName: string read FDBFileName write FDBFileName;
   end;
@@ -91,6 +93,73 @@ begin
   SetComment(Format('Сканируем %s', [Dir]));
 end;
 
+procedure TImportFB2ThreadBase.SortFiles(var R: TBookRecord);
+var
+  NewFilename, NewFolder: string;
+begin
+  NewFolder := GetNewFolder(Settings.FB2FolderTemplate, R);
+
+  CreateFolders(FRootPath,NewFolder);
+  CopyFile(Settings.InputFolder + R.FileName + R.FileExt,
+           FRootPath + NewFolder + R.FileName + R.FileExt);
+  R.Folder := NewFolder;
+
+  NewFileName := GetNewFileName(Settings.FB2FileTemplate, R);
+  if NewFileName <> '' then
+  begin
+    RenameFile(NewFolder + R.FileName + R.FileExt,
+               NewFolder + NewFileName + R.FileExt);
+    R.FileName := NewFileName;
+  end;
+end;
+
+function TImportFB2ThreadBase.GetNewFileName(FileName: string; R: TBookRecord): string;
+var
+  z, p1, p2: integer;
+begin
+  z := R.SeqNumber;
+  if z > 0 then
+      StrReplace('%n',Format('%.2d',[z]), FileName)
+  else begin
+      p1 := pos('%n',FileName);
+      StrReplace('%n', '#n', FileName);
+      p2 := pos('%', FileName);
+      if p2 > 3 then
+        Delete(FileName, p1, p2 - p1 - 1)
+      else
+        StrReplace('#n', '', FileName);
+  end;
+
+  StrReplace('%fl', copy(R.Authors[0].FLastName,1,1), FileName);
+  StrReplace('%f', R.Authors[0].GetFullName, FileName);
+  StrReplace('%t', trim(R.Title), FileName);
+  StrReplace('%g', Trim(FLibrary.GetGenreAlias(R.Genres[0].GenreFb2Code)), FileName);
+  StrReplace('%rg', Trim(FLibrary.GetTopGenreAlias(R.Genres[0].GenreFb2Code)), FileName);
+  StrReplace('%s', R.Series, FileName);
+
+  FileName := CheckSymbols(FileName);
+  if FileName <> '' then
+    Result := FileName
+  else
+    Result := '';
+end;
+
+function TImportFB2ThreadBase.GetNewFolder(Folder: string; R: TBookRecord): string;
+begin
+  StrReplace('%fl', copy(R.Authors[0].FLastName,1,1), Folder);
+  StrReplace('%f', R.Authors[0].GetFullName, Folder);
+  StrReplace('%t', trim(R.Title), Folder);
+  StrReplace('%g', Trim(FLibrary.GetGenreAlias(R.Genres[0].GenreFb2Code)), Folder);
+  StrReplace('%rg', Trim(FLibrary.GetTopGenreAlias(R.Genres[0].GenreFb2Code)), Folder);
+  StrReplace('%s', R.Series, Folder);
+
+  Folder := CheckSymbols(Folder);
+  if Folder <> '' then
+    Result := IncludeTrailingPathDelimiter(Folder)
+  else
+    Result := '';
+end;
+
 procedure TImportFB2ThreadBase.ScanFolder;
 begin
   SetProgress(0);
@@ -101,7 +170,11 @@ begin
 
   FFilesList := TFilesList.Create(nil);
   try
-    FFilesList.TargetPath := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
+    if not Settings.EnableSort then
+        FFilesList.TargetPath := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder)
+      else
+        FFilesList.TargetPath := IncludeTrailingPathDelimiter(Settings.InputFolder);
+
     FFilesList.OnDirectory := ShowCurrentDir;
     FFilesList.OnFile := AddFile2List;
     try

@@ -121,6 +121,7 @@ begin
     try
       book := LoadFictionBook(FRootPath + FFiles[i]);
       GetBookInfo(book, R);
+      if Settings.EnableSort then SortFiles(R);
       FLibrary.InsertBook(R, True, True);
     except
       on e: Exception do

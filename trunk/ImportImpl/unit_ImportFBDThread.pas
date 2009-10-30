@@ -19,7 +19,8 @@ uses
   SysUtils,
   unit_WorkerThread,
   unit_ImportFB2ThreadBase,
-  ZipForge;
+  ZipForge,
+  unit_globals;
 
 type
   TImportFBDThread = class(TImportFB2ThreadBase)
@@ -28,14 +29,13 @@ type
   protected
     procedure AddFile2List(Sender: TObject; const F: TSearchRec); override;
     procedure ProcessFileList; override;
-
+    procedure SortFiles(var R: TBookRecord); override;
   public
 
   end;
 implementation
 
 uses
-  unit_globals,
   FictionBook_21,
   unit_Helpers,
   unit_Consts,
@@ -63,6 +63,26 @@ begin
 
   if Canceled then
     Abort;
+end;
+
+procedure TImportFBDThread.SortFiles(var R: TBookRecord);
+var
+  NewFilename, NewFolder: string;
+begin
+  NewFolder := GetNewFolder(Settings.FBDFolderTemplate, R);
+
+  CreateFolders(FRootPath,NewFolder);
+  CopyFile(Settings.InputFolder + R.FileName,
+           FRootPath + NewFolder + R.FileName);
+  R.Folder := NewFolder;
+
+  NewFileName := GetNewFileName(Settings.FBDFileTemplate, R);
+  if NewFileName <> '' then
+  begin
+    RenameFile(NewFolder + R.FileName,
+               NewFolder + NewFileName);
+    R.FileName := NewFileName;
+  end;
 end;
 
 procedure TImportFBDThread.ProcessFileList;
@@ -153,12 +173,17 @@ begin
             end;
           inc(j);
         until (not FZipper.FindNext(ArchiveItem));
+        FZipper.CloseArchive;
+
+        if Settings.EnableSort then SortFiles(R);
+
+
         if IsValid and (BookFileName = FBDFileName)
            and (FLibrary.InsertBook(R, True, True)<>0)
             Then Inc(AddCount)
             else Teletype('Ошибка FBD: ' + AZipFileName, tsError);
 
-        FZipper.CloseArchive;
+
       except
         on e: Exception do
            Teletype('Ошибка распаковки архива: ' + AZipFileName, tsError);
