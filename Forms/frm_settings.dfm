@@ -62,7 +62,7 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 414
     Height = 413
-    ActivePage = tsDevices
+    ActivePage = tsFileSort
     Align = alClient
     TabOrder = 1
     object tsDevices: TTabSheet
@@ -200,6 +200,7 @@ object frmSettings: TfrmSettings
           OnClick = tbtnInsert1Click
         end
         object edFolderTemplate: TRzEdit
+          Tag = 785
           Left = 64
           Top = 26
           Width = 313
@@ -208,6 +209,7 @@ object frmSettings: TfrmSettings
           TabOrder = 0
         end
         object edFileNameTemplate: TRzEdit
+          Tag = 785
           Left = 64
           Top = 61
           Width = 313
@@ -338,10 +340,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsReaders'
       ImageIndex = 1
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object RzGroupBox8: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -404,10 +402,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsInterface'
       ImageIndex = 2
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object RzGroupBox6: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -605,10 +599,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsInternet'
       ImageIndex = 4
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object RzGroupBox1: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -888,10 +878,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsScripts'
       ImageIndex = 4
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object RzGroupBox523324: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -977,10 +963,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsBehavior'
       ImageIndex = 5
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object RzGroupBox7: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -1048,6 +1030,346 @@ object frmSettings: TfrmSettings
         end
       end
     end
+    object tsFileSort: TTabSheet
+      Caption = 'tsFileSort'
+      ImageIndex = 6
+      TabVisible = False
+      object RzGroupBox12: TRzGroupBox
+        AlignWithMargins = True
+        Left = 3
+        Top = 244
+        Width = 400
+        Height = 126
+        Align = alTop
+        Caption = #1057#1086#1088#1090#1080#1088#1086#1074#1082#1072' FBD'
+        TabOrder = 0
+        object Label2: TLabel
+          Left = 20
+          Top = 29
+          Width = 38
+          Height = 13
+          Alignment = taRightJustify
+          Caption = #1055#1072#1087#1082#1072': '
+        end
+        object Label3: TLabel
+          Left = 25
+          Top = 64
+          Width = 33
+          Height = 13
+          Alignment = taRightJustify
+          Caption = #1060#1072#1081#1083': '
+        end
+        object RzToolButton4: TRzToolButton
+          Tag = 41
+          Left = 64
+          Top = 88
+          Width = 33
+          Hint = #1060#1072#1084#1080#1083#1080#1103' '#1080' '#1080#1084#1103' '#1072#1074#1090#1086#1088#1072
+          Flat = False
+          ShowCaption = True
+          UseToolbarButtonSize = False
+          UseToolbarShowCaption = False
+          Caption = '%f'
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = tbtnInsert1Click
+        end
+        object RzToolButton5: TRzToolButton
+          Tag = 42
+          Left = 103
+          Top = 88
+          Width = 33
+          Hint = #1053#1072#1079#1074#1072#1085#1080#1077
+          Flat = False
+          ShowCaption = True
+          UseToolbarButtonSize = False
+          UseToolbarShowCaption = False
+          Caption = '%t'
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = tbtnInsert1Click
+        end
+        object RzToolButton6: TRzToolButton
+          Tag = 43
+          Left = 142
+          Top = 88
+          Width = 33
+          Hint = #1057#1077#1088#1080#1103
+          Flat = False
+          ShowCaption = True
+          UseToolbarButtonSize = False
+          UseToolbarShowCaption = False
+          Caption = '%s '
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = tbtnInsert1Click
+        end
+        object RzToolButton7: TRzToolButton
+          Tag = 44
+          Left = 181
+          Top = 88
+          Width = 33
+          Hint = #1053#1086#1084#1077#1088' '#1074' '#1089#1077#1088#1080#1080
+          Flat = False
+          ShowCaption = True
+          UseToolbarButtonSize = False
+          UseToolbarShowCaption = False
+          Caption = '%n'
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = tbtnInsert1Click
+        end
+        object RzToolButton8: TRzToolButton
+          Tag = 48
+          Left = 220
+          Top = 88
+          Width = 33
+          Hint = #1050#1086#1088#1085#1077#1074#1086#1081' '#1078#1072#1085#1088
+          Flat = False
+          ShowCaption = True
+          UseToolbarButtonSize = False
+          UseToolbarShowCaption = False
+          Caption = '%rg'
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = tbtnInsert1Click
+        end
+        object RzToolButton9: TRzToolButton
+          Tag = 46
+          Left = 259
+          Top = 88
+          Width = 33
+          Hint = #1046#1072#1085#1088
+          Flat = False
+          ShowCaption = True
+          UseToolbarButtonSize = False
+          UseToolbarShowCaption = False
+          Caption = '%g'
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = tbtnInsert1Click
+        end
+        object RzToolButton10: TRzToolButton
+          Tag = 47
+          Left = 298
+          Top = 88
+          Width = 33
+          Hint = #1055#1077#1088#1074#1072#1103' '#1073#1091#1082#1074#1072#13#1092#1072#1084#1080#1083#1080#1080' '#1072#1074#1090#1086#1088#1072
+          Flat = False
+          ShowCaption = True
+          UseToolbarButtonSize = False
+          UseToolbarShowCaption = False
+          Caption = '%fl'
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = tbtnInsert1Click
+        end
+        object edFBDFolderTemplate: TRzEdit
+          Tag = 785
+          Left = 64
+          Top = 26
+          Width = 313
+          Height = 21
+          Text = '%g\%s'
+          TabOrder = 0
+        end
+        object edFBDFileTemplate: TRzEdit
+          Tag = 785
+          Left = 64
+          Top = 61
+          Width = 313
+          Height = 21
+          TabOrder = 1
+        end
+      end
+      object RzGroupBox13: TRzGroupBox
+        AlignWithMargins = True
+        Left = 3
+        Top = 112
+        Width = 400
+        Height = 126
+        Align = alTop
+        Caption = #1057#1086#1088#1090#1080#1088#1086#1074#1082#1072' FB2'
+        TabOrder = 1
+        object Label4: TLabel
+          Left = 20
+          Top = 29
+          Width = 38
+          Height = 13
+          Alignment = taRightJustify
+          Caption = #1055#1072#1087#1082#1072': '
+        end
+        object Label8: TLabel
+          Left = 25
+          Top = 64
+          Width = 33
+          Height = 13
+          Alignment = taRightJustify
+          Caption = #1060#1072#1081#1083': '
+        end
+        object RzToolButton11: TRzToolButton
+          Tag = 41
+          Left = 64
+          Top = 88
+          Width = 33
+          Hint = #1060#1072#1084#1080#1083#1080#1103' '#1080' '#1080#1084#1103' '#1072#1074#1090#1086#1088#1072
+          Flat = False
+          ShowCaption = True
+          UseToolbarButtonSize = False
+          UseToolbarShowCaption = False
+          Caption = '%f'
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = tbtnInsert1Click
+        end
+        object RzToolButton12: TRzToolButton
+          Tag = 42
+          Left = 103
+          Top = 88
+          Width = 33
+          Hint = #1053#1072#1079#1074#1072#1085#1080#1077
+          Flat = False
+          ShowCaption = True
+          UseToolbarButtonSize = False
+          UseToolbarShowCaption = False
+          Caption = '%t'
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = tbtnInsert1Click
+        end
+        object RzToolButton13: TRzToolButton
+          Tag = 43
+          Left = 142
+          Top = 88
+          Width = 33
+          Hint = #1057#1077#1088#1080#1103
+          Flat = False
+          ShowCaption = True
+          UseToolbarButtonSize = False
+          UseToolbarShowCaption = False
+          Caption = '%s '
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = tbtnInsert1Click
+        end
+        object RzToolButton14: TRzToolButton
+          Tag = 44
+          Left = 181
+          Top = 88
+          Width = 33
+          Hint = #1053#1086#1084#1077#1088' '#1074' '#1089#1077#1088#1080#1080
+          Flat = False
+          ShowCaption = True
+          UseToolbarButtonSize = False
+          UseToolbarShowCaption = False
+          Caption = '%n'
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = tbtnInsert1Click
+        end
+        object RzToolButton15: TRzToolButton
+          Tag = 48
+          Left = 220
+          Top = 88
+          Width = 33
+          Hint = #1050#1086#1088#1085#1077#1074#1086#1081' '#1078#1072#1085#1088
+          Flat = False
+          ShowCaption = True
+          UseToolbarButtonSize = False
+          UseToolbarShowCaption = False
+          Caption = '%rg'
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = tbtnInsert1Click
+        end
+        object RzToolButton16: TRzToolButton
+          Tag = 46
+          Left = 259
+          Top = 88
+          Width = 33
+          Hint = #1046#1072#1085#1088
+          Flat = False
+          ShowCaption = True
+          UseToolbarButtonSize = False
+          UseToolbarShowCaption = False
+          Caption = '%g'
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = tbtnInsert1Click
+        end
+        object RzToolButton17: TRzToolButton
+          Tag = 47
+          Left = 298
+          Top = 88
+          Width = 33
+          Hint = #1055#1077#1088#1074#1072#1103' '#1073#1091#1082#1074#1072#13#1092#1072#1084#1080#1083#1080#1080' '#1072#1074#1090#1086#1088#1072
+          Flat = False
+          ShowCaption = True
+          UseToolbarButtonSize = False
+          UseToolbarShowCaption = False
+          Caption = '%fl'
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = tbtnInsert1Click
+        end
+        object edFB2FolderTemplate: TRzEdit
+          Tag = 785
+          Left = 64
+          Top = 26
+          Width = 313
+          Height = 21
+          TabOrder = 0
+        end
+        object edFB2FileTemplate: TRzEdit
+          Tag = 785
+          Left = 64
+          Top = 61
+          Width = 313
+          Height = 21
+          TabOrder = 1
+        end
+      end
+      object RzGroupBox14: TRzGroupBox
+        AlignWithMargins = True
+        Left = 3
+        Top = 3
+        Width = 400
+        Height = 46
+        Align = alTop
+        Caption = #1054#1087#1094#1080#1080
+        TabOrder = 2
+        object cbEnableFileSort: TCheckBox
+          Left = 11
+          Top = 12
+          Width = 206
+          Height = 27
+          Caption = #1042#1082#1083#1102#1095#1080#1090#1100' '#1089#1086#1088#1090#1080#1088#1086#1074#1082#1091' '#1087#1088#1080' '#1080#1084#1087#1086#1088#1090#1077
+          TabOrder = 0
+          WordWrap = True
+        end
+      end
+      object RzGroupBox15: TRzGroupBox
+        AlignWithMargins = True
+        Left = 3
+        Top = 55
+        Width = 400
+        Height = 51
+        Align = alTop
+        Caption = #1055#1072#1087#1082#1072
+        TabOrder = 3
+        object edInputFolder: TRzButtonEdit
+          Left = 11
+          Top = 18
+          Width = 374
+          Height = 21
+          HelpContext = 5001
+          TabOrder = 0
+          AltBtnWidth = 15
+          ButtonWidth = 15
+          OnButtonClick = edDeviceDirButtonClick
+        end
+      end
+    end
   end
   object RzPanel2: TRzPanel
     AlignWithMargins = True
@@ -1071,7 +1393,7 @@ object frmSettings: TfrmSettings
       TabOrder = 0
       OnChange = tvSectionsChange
       Items.NodeData = {
-        03060000003E0000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF000000
+        03070000003E0000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF000000
         000000000001101F0430043F043A0438042F0023044104420440043E04390441
         04420432043004340000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF00
         00000000000000010B220438043F044B0420004404300439043B043E04320430
@@ -1081,7 +1403,9 @@ object frmSettings: TfrmSettings
         04350442042C0000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF000000
         0000000000010721043A04400438043F0442044B042A00000000000000000000
         00FFFFFFFFFFFFFFFF00000000000000000000000001062004300437043D043E
-        043504}
+        043504400000000000000000000000FFFFFFFFFFFFFFFF000000000000000000
+        000000011121043E0440044204380440043E0432043A04300420004404300439
+        043B043E043204}
     end
   end
   object dlgColors: TColorDialog

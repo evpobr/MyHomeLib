@@ -74,7 +74,8 @@ type
   public
     property DatabaseFileName: string read GetDatabaseFileName write SetDatabaseFileName;
     property Active: Boolean read GetActive write SetActive;
-
+    function GetGenreAlias(FB2Code: string): string;
+    function GetTopGenreAlias(FB2Code: string): string;
   private
     FDatabase: TAbsDataBase;
     FAuthors: TAbsTable;
@@ -698,6 +699,28 @@ begin
   LoadGenres(FileName);
 end;
 
+function TMHLLibrary.GetGenreAlias(FB2Code: string): string;
+begin
+  FGenres.Locate('G_FB2Code', FB2Code, []);
+  Result := FGenres.FieldByName('G_Alias').AsWideString;
+end;
+
+function TMHLLibrary.GetTopGenreAlias(FB2Code: string): string;
+var
+  Code: string;
+  p: integer;
+begin
+  FGenres.Locate('G_FB2Code', FB2Code, []);
+  Code := FGenres.FieldByName('G_Code').AsWideString;
+
+  Delete(Code, 1, 2); // "0."
+  p := pos('.',Code);
+  Code := '0.' + Copy(Code, 1, p - 1);
+
+  FGenres.Locate('G_Code', Code, []);
+  Result := FGenres.FieldByName('G_Alias').AsWideString;
+
+end;
 
 { TODO 5 -oNickR -cRefactoring :
 Ѕолее верно (с идеалогической точки зрени€) передавать в качестве параметров поле дл€ проверки.

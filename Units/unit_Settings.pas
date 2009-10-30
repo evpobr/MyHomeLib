@@ -163,6 +163,16 @@ type
 
     FForceConvertToFBD: boolean;
 
+    // SORT_SECTION
+    FEnableSort : boolean;
+    FInputFolder: string;
+
+    FFB2FolderTemplate: string;
+    FFB2FileTemplate: string;
+
+    FFBDFolderTemplate: string;
+    FFBDFileTemplate: string;
+
   private
     function GetSettingsFileName: string;
 
@@ -327,6 +337,15 @@ type
 
     property DeleteDeleted:boolean read FDeleteDeleted write FDeleteDeleted;
 
+    // SORT_SECTION
+    property EnableSort : boolean read FEnableSort write FEnableSort;
+    property InputFolder: string read FInputFolder write FInputFolder;
+
+    property FB2FolderTemplate: string read FFB2FolderTemplate write FFB2FolderTemplate;
+    property FB2FileTemplate: string read FFB2FileTemplate write FFB2FileTemplate;
+
+    property FBDFolderTemplate: string read FFBDFolderTemplate write FFBDFolderTemplate;
+    property FBDFileTemplate: string read FFBDFileTemplate write FFBDFileTemplate;
   end;
 
   procedure CreateSettings;
@@ -384,6 +403,7 @@ const
   SCRIPTS_SECTION = 'SCRIPTS';
   IMPORT_SECTION = 'IMPORT';
   BEHAVIOR_SECTION = 'BEHAVIOR';
+  FILE_SORT_SECTION = 'FILE_SORT';
 
   READER_KEY_PREFIX = 'Reader';
   SCRIPT_KEY_PREFIX = 'Script';
@@ -616,6 +636,20 @@ begin
     FDeleteDeleted := iniFile.ReadBool(BEHAVIOR_SECTION, 'DeleteDeleted',  False);
     FAutoLoadReview := iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoLoadReview',  True);
     FForceConvertToFBD := iniFile.ReadBool(BEHAVIOR_SECTION, 'ForceConvertToFBD',  True);
+
+    //
+    // FILE_SORT_SECTION
+    //
+
+    FEnableSort := iniFile.ReadBool(FILE_SORT_SECTION, 'EnableFileSort', False);
+    FInputFolder := iniFile.ReadString(FILE_SORT_SECTION, 'InputFolder', '');
+
+    FFB2FolderTemplate := iniFile.ReadString(FILE_SORT_SECTION, 'Fb2FolderTemplate', '');
+    FFB2FileTemplate := iniFile.ReadString(FILE_SORT_SECTION, 'Fb2FileTemplate', '');
+
+    FFBDFolderTemplate := iniFile.ReadString(FILE_SORT_SECTION, 'FBDFolderTemplate', '');
+    FFBDFileTemplate := iniFile.ReadString(FILE_SORT_SECTION, 'FBDFileTemplate', '');
+
     //
     // INITIAL_DIRS_SECTION
     //
@@ -755,6 +789,21 @@ begin
     iniFile.WriteBool(BEHAVIOR_SECTION, 'DeleteDeleted', FDeleteDeleted);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'AutoLoadReview', FAutoLoadReview);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ForceConvertToFBD',  FForceConvertToFBD);
+
+    //
+    // FILE_SORT_SECTION
+    //
+
+    iniFile.WriteBool(FILE_SORT_SECTION, 'EnableFileSort', FEnableSort);
+    iniFile.WriteString(FILE_SORT_SECTION, 'InputFolder', FInputFolder);
+
+    iniFile.WriteString(FILE_SORT_SECTION, 'Fb2FolderTemplate', FFB2FolderTemplate);
+    iniFile.WriteString(FILE_SORT_SECTION, 'Fb2FileTemplate', FFB2FileTemplate );
+
+    iniFile.WriteString(FILE_SORT_SECTION, 'FBDFolderTemplate', FFBDFolderTemplate);
+    iniFile.WriteString(FILE_SORT_SECTION, 'FBDFileTemplate', FFBDFileTemplate);
+
+
     //
     // INITIAL_DIRS_SECTION
     //
