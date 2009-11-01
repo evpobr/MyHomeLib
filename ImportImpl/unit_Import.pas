@@ -49,7 +49,8 @@ uses
   unit_ImportFBDThread,
   frm_ImportProgressFormEx,
   unit_ImportFB2ZIPThread,
-  unit_Helpers;
+  unit_Helpers,
+  unit_Consts;
 
 procedure ImportXML(
   ACollection: TMHLCollection
@@ -91,6 +92,7 @@ begin
   worker := TImportFB2Thread.Create;
   try
     worker.DBFileName := ACollection.DBFileName;
+    worker.TargetExt := FB2_EXTENSION;
     frmProgress := TImportProgressFormEx.Create(Application);
     try
       frmProgress.WorkerThread := worker;
@@ -114,6 +116,7 @@ begin
   worker := TImportFBDThread.Create;
   try
     worker.DBFileName := ACollection.DBFileName;
+    worker.TargetExt := ZIP_EXTENSION;
     frmProgress := TImportProgressFormEx.Create(Application);
     try
       frmProgress.WorkerThread := worker;
@@ -137,6 +140,7 @@ begin
   worker := TImportFB2ZIPThread.Create;
   try
     worker.DBFileName := ACollection.DBFileName;
+    worker.TargetExt := ZIP_EXTENSION;
     frmProgress := TImportProgressFormEx.Create(Application);
     try
       frmProgress.WorkerThread := worker;
