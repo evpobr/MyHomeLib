@@ -280,10 +280,8 @@ begin
     S := trim(tblAuthor_DetailA_Family.Value + ' ' +
                  tblAuthor_DetailA_Name.Value +  ' ' +
                  tblAuthor_DetailA_Middle.Value);
-    if Result = '' then
-        Result := S
-      else
-        Result := Result + ', ' + S;
+
+    Result := IfThen(Result = '', S, Result + ', ' + S);
     tblAuthor_Master.Next;
   end
 end;

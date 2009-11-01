@@ -27,7 +27,6 @@ type
   private
     FZipper: TZipForge;
   protected
-    procedure AddFile2List(Sender: TObject; const F: TSearchRec); override;
     procedure ProcessFileList; override;
     procedure SortFiles(var R: TBookRecord); override;
   public
@@ -42,28 +41,6 @@ uses
   unit_Settings;
 
 { TImportFB2Thread }
-
-procedure TImportFBDThread.AddFile2List(Sender: TObject; const F: TSearchRec);
-begin
-  if ExtractFileExt(F.Name) = ZIP_EXTENSION  then
-  begin
-    if FCheckExistsFiles then
-    begin
-      if FLibrary.CheckFileInCollection(F.Name, true, true) then
-        Exit;
-    end;
-
-    FFiles.Add(FFilesList.LastDir + F.Name);
-  end;
-
-  //
-  // сколько найдем файлов неизвестно => зациклим прогресс
-  //
-  SetProgress(FFiles.Count mod 100);
-
-  if Canceled then
-    Abort;
-end;
 
 procedure TImportFBDThread.SortFiles(var R: TBookRecord);
 var

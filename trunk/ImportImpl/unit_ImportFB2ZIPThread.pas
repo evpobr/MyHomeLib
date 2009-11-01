@@ -31,7 +31,6 @@ type
     procedure SortFiles(var R: TBookRecord); override;
 
   protected
-    procedure AddFile2List(Sender: TObject; const F: TSearchRec); override;
     procedure ProcessFileList; override;
   public
 
@@ -60,7 +59,7 @@ begin
 
   CreateFolders(FRootPath,NewFolder);
 
-  CopyFile(Settings.InputFolder + R.Folder,
+  CopyFile(R.Folder,
            FRootPath +  NewFolder + FileName);
 
   R.Folder := NewFolder + FileName;
@@ -70,8 +69,7 @@ begin
   begin
     NewFolder := R.Folder;
     StrReplace(Filename, NewFileName + '.fb2.zip', NewFolder);
-    RenameFile(FRootPath +  R.Folder,
-               FRootPath +  NewFolder);
+    RenameFile(FRootPath + R.Folder, FRootPath +  NewFolder);
     R.Folder :=  NewFolder;
   end;
 end;
@@ -80,25 +78,6 @@ procedure TImportFB2ZIPThread.ShowZipErrorMessage(Sender: TObject; ErrCode: Inte
 begin
   if ErrCode <> 0 then
     Teletype(Format('Ошибка распаковки архива %s, Код: %d', [FZipper.FileName, 0]), tsError);
-end;
-
-procedure TImportFB2ZIPThread.AddFile2List(Sender: TObject; const F: TSearchRec);
-var
-  FullName: string;
-begin
-  if ExtractFileExt(F.Name) = ZIP_EXTENSION then
-  begin
-    FullName := ExtractRelativePath(FRootPath, FFilesList.LastDir + F.Name);
-
-    if FCheckExistsFiles then
-    begin
-      { TODO -oNickR -cRefactoring : Переписать. Для начала необходимо разобраться с использование поля Books.Folder }
-      if FLibrary.CheckFileInCollection(FullName, False, False) then
-        Exit;
-    end;
-
-    FFiles.Add(FullName);
-  end;
 end;
 
 procedure TImportFB2ZIPThread.ProcessFileList;
@@ -132,25 +111,11 @@ begin
       if Canceled then
         Break;
 
-      //
-      // Обрабатываемый файл: H:\eBooks\Л\Лаберж Стивен\Исследование мира осознанных сновидений.fb2.zip
-      //
-
-      //
-      // Л\Лаберж Стивен\Исследование мира осознанных сновидений.fb2.zip
-      //
-
-
       AZipFileName := FFiles[i];
 
-      Assert(ExtractFileExt(AZipFileName) = ZIP_EXTENSION);
-
-      //
-      // H:\eBooks\Л\Лаберж Стивен\Исследование мира осознанных сновидений.fb2.zip
-      //
-      FZipper.FileName := FRootPath + AZipFileName;
       NoErrors := True;
       try
+        FZipper.FileName := FFiles[i];
         FZipper.OpenArchive(fmOpenRead);
         j := 0;
         if (FZipper.FindFirst('*.*',ArchiveItem,faAnyFile-faDirectory)) then
@@ -160,44 +125,28 @@ begin
           try
             FS := TMemoryStream.Create;
 
-            R.Folder := AZipFileName;
-
-            //
-            // Исследование мира осознанных сновидений.fb2
-            //
-
             AFileName := ArchiveItem.FileName;
-
-            //
-            // .fb2
-            //
             R.FileExt := ExtractFileExt(AFileName);
             if R.FileExt <> FB2_EXTENSION then
             begin
               inc(j);     // переходим к следующему файлу
               Continue;
             end;
-
-            //
-            // Исследование мира осознанных сновидений
-            //
             R.FileName := ExtractShortFilename(AFileName);
-
             R.Size := ArchiveItem.UncompressedSize;
-
             R.InsideNo := j;
-
             R.Date := Now;
-
             FZipper.ExtractToStream(AFileName,FS);
             if not Assigned(FS) then
               Continue;
-
             try
               book := LoadFictionBook(FS);
               GetBookInfo(Book, R);
               if not Settings.EnableSort then
-                  if FLibrary.InsertBook(R, True, True)<>0 Then Inc(AddCount);
+              begin
+                R.Folder := ExtractRelativePath(FRootPath, AZipFileName);
+                if FLibrary.InsertBook(R, True, True)<>0 Then Inc(AddCount);
+              end;
             except
               on e: Exception do
               begin
@@ -215,6 +164,7 @@ begin
         FZipper.CloseArchive;
         if Settings.EnableSort and NoErrors and (j = 1) then
         begin
+          R.Folder := AZipFileName;
           SortFiles(R);
           if FLibrary.InsertBook(R, True, True)<>0 Then Inc(AddCount);
         end;

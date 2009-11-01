@@ -3295,6 +3295,8 @@ begin
     851: ExportMode := emFb2Zip;
     852: ExportMode := emLrf;
     853: ExportMode := emTxt;
+    854: ExportMode := emEpub;
+    855: ExportMode := emPDF;
     else ExportMode := Settings.ExportMode;
   end
   else
@@ -3453,7 +3455,7 @@ begin
       dmCollection.GetBookFileName(Data.ID, FileName, Folder, Ext, No);
 
       WorkFile := Settings.ReadPath + Format('%s - %s.%d%s',
-                                              [CheckSymbols(Panel.Author),
+                                              [CheckSymbols(dmCollection.FullName(Data.ID)),
                                                CheckSymbols(Panel.Title),Id,Ext]);
 
       if not FileExists(WorkFile) then
@@ -6392,6 +6394,12 @@ begin
 
   dmCollection.SetActiveTable(ord(ActiveView));
 
+  miEditAuthor.Enabled := (ActiveView = ByAuthorView);
+  miEditSeries.Enabled := (ActiveView = ByAuthorView);
+
+  tbtnEditSeries.Enabled := (ActiveView = ByAuthorView);
+  tbtnEditAuthor.Enabled := (ActiveView = ByAuthorView);
+  tlbrEdit.Enabled := (ActiveView <> FavoritesView);
 
   miGotoAuthor.Visible := (ActiveView <> ByAuthorView);
 

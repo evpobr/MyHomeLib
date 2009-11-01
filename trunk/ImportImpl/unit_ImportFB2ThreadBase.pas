@@ -32,12 +32,15 @@ type
     FRootPath: string;
     FFilesList: TFilesList;
 
+    FTargetExt: string;
+
     FCheckExistsFiles: Boolean;
 
     procedure ScanFolder;
 
     procedure ShowCurrentDir(Sender: TObject; const Dir: string);
-    procedure AddFile2List(Sender: TObject; const F: TSearchRec); virtual; abstract;
+    procedure AddFile2List(Sender: TObject;
+                            const F: TSearchRec);
 
     function GetNewFolder(Folder: string; R: TBookRecord):string;
     function GetNewFileName(FileName: string; R: TBookRecord):string;
@@ -48,6 +51,7 @@ type
     procedure SortFiles(var R: TBookRecord); virtual;
   public
     property DBFileName: string read FDBFileName write FDBFileName;
+    property TargetExt: string write FTargetExt;
   end;
 
 implementation
@@ -58,6 +62,35 @@ uses
   unit_Consts;
 
 { TImportFB2Thread }
+
+procedure TImportFB2ThreadBase.AddFile2List(Sender: TObject; const F: TSearchRec);
+var
+  FileName: string;
+begin
+  if ExtractFileExt(F.Name) = FTargetExt then
+  begin
+    if FCheckExistsFiles then
+    begin
+      if Settings.EnableSort then
+         FileName := FFilesList.LastDir + F.Name
+      else
+         FileName := ExtractRelativePath(FRootPath,FFilesList.LastDir) + F.Name;
+      if FLibrary.CheckFileInCollection(FileName, False, (FTargetExt <> ZIP_EXTENSION) ) then
+        Exit;
+    end;
+
+    FFiles.Add(FFilesList.LastDir + F.Name);
+  end;
+
+  //
+  // сколько найдем файлов неизвестно => зациклим прогресс
+  //
+  SetProgress(FFiles.Count mod 100);
+
+  if Canceled then
+    Abort;
+
+end;
 
 procedure TImportFB2ThreadBase.GetBookInfo(book: IXMLFictionBook; var R: TBookRecord);
 var
@@ -107,8 +140,8 @@ begin
   NewFileName := GetNewFileName(Settings.FB2FileTemplate, R);
   if NewFileName <> '' then
   begin
-    RenameFile(NewFolder + R.FileName + R.FileExt,
-               NewFolder + NewFileName + R.FileExt);
+    RenameFile(FRootPath + NewFolder + R.FileName + R.FileExt,
+               FRootPath + NewFolder + NewFileName + R.FileExt);
     R.FileName := NewFileName;
   end;
 end;
@@ -169,6 +202,7 @@ begin
   FCheckExistsFiles := Settings.CheckExistsFiles;
 
   FFilesList := TFilesList.Create(nil);
+  FFilesList.OnFile := AddFile2List;
   try
     if not Settings.EnableSort then
         FFilesList.TargetPath := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder)
@@ -176,7 +210,6 @@ begin
         FFilesList.TargetPath := IncludeTrailingPathDelimiter(Settings.InputFolder);
 
     FFilesList.OnDirectory := ShowCurrentDir;
-    FFilesList.OnFile := AddFile2List;
     try
       FFilesList.Process;
     except
