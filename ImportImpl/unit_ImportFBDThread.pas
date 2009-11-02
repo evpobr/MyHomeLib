@@ -92,22 +92,9 @@ begin
       if Canceled then
         Break;
       IsValid := False;
-      //
-      // Обрабатываемый файл: H:\eBooks\Л\Лаберж Стивен\Исследование мира осознанных сновидений.fb2.zip
-      //
-
-      //
-      // Л\Лаберж Стивен\Исследование мира осознанных сновидений.fb2.zip
-      //
-
-
       AZipFileName := FFiles[i];
 
       Assert(ExtractFileExt(AZipFileName) = ZIP_EXTENSION);
-
-      //
-      // H:\eBooks\Л\Лаберж Стивен\Исследование мира осознанных сновидений.fb2.zip
-      //
       FZipper.FileName := AZipFileName;
       try
         FZipper.OpenArchive(fmOpenRead);
@@ -151,16 +138,15 @@ begin
           inc(j);
         until (not FZipper.FindNext(ArchiveItem));
         FZipper.CloseArchive;
-
         if Settings.EnableSort then SortFiles(R);
-
-
         if IsValid and (BookFileName = FBDFileName)
            and (FLibrary.InsertBook(R, True, True)<>0)
             Then Inc(AddCount)
-            else Teletype('Ошибка FBD: ' + AZipFileName, tsError);
-
-
+            else
+            begin
+              Teletype('Ошибка FBD: ' + AZipFileName, tsError);
+              Inc(DefectCount);
+            end;
       except
         on e: Exception do
            Teletype('Ошибка распаковки архива: ' + AZipFileName, tsError);
