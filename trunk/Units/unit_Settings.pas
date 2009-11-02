@@ -172,6 +172,8 @@ type
 
     FFBDFolderTemplate: string;
     FFBDFileTemplate: string;
+    FDbsFileName: string;
+    FIniFileName: string;
 
   private
     function GetSettingsFileName: string;
@@ -419,37 +421,45 @@ constructor TMHLSettings.Create;
 const
   STR_USELOCALDATA = 'uselocaldata';
   STR_USELOCALTEMP = 'uselocaltemp';
+  STR_USERDBS      = 'user';
 
 var
   AppDataPath : string;
 
-  UseLocalData, UseLocalTemp: boolean;
+  UseLocalData, UseLocalTemp, UserDatabase: boolean;
   I: Integer;
+
+  DBFileName: string;
 
 begin
   UseLocalData := False;
   UseLocalTemp := False;
+  UserDatabase := False;
 
   FAppPath := ExtractFilePath(Application.ExeName);
   AppDataPath := GetSpecialPath(CSIDL_APPDATA) + APPDATA_DIR_NAME;
 
   // определяем рабочую и временную папку в зависимости от параметров
   // командной строки или ключевых файлов
+  FDbsFileName := SYSTEM_DATABASE_FILENAME;
+  FIniFileName := SETTINGS_FILE_NAME;
 
   for I := 1 to ParamCount do
   begin
     if not UseLocalData then
-         UseLocalData := (LowerCase(paramstr(i)) = STR_USELOCALDATA);
+           UseLocalData := (LowerCase(paramstr(i)) = STR_USELOCALDATA);
     if not UseLocalTemp then
-         UseLocalTemp := (LowerCase(paramstr(i)) = STR_USELOCALTEMP);
+           UseLocalTemp := (LowerCase(paramstr(i)) = STR_USELOCALTEMP);
+    if (LowerCase(paramstr(i)) = STR_USERDBS) and (paramstr(i + 1) <> '') then
+    begin
+      DBFileName := paramstr(i + 1);
+      UserDatabase := True;
+    end;
   end;
 
   UseLocalData := UseLocalData or FileExists(FAppPath + STR_USELOCALDATA) or
                   not DirectoryExists(AppDataPath);
   UseLocalTemp := UseLocalTemp or FileExists(FAppPath + STR_USELOCALTEMP);
-
-
-
 
   // Устанавливаем рабочую папку
 
@@ -462,6 +472,17 @@ begin
   begin
     FWorkDir := FAppPath;                           // работаем с AppPath
     FDataDir := FAppPath + DATA_DIR_NAME;
+  end;
+
+  if UserDatabase then                              // пользовательский файл БД и настроек
+  begin
+    FDbsFileName := DBFileName + '.dbs';
+    FIniFileName := DBFileName + '.ini';
+    if FileExists(WorkPath + SETTINGS_FILE_NAME) and not
+       FileExists(WorkPath + FIniFileName)
+     then                                             // если такого файла еще нет, копируем стандартный
+        CopyFile(WorkPath + SETTINGS_FILE_NAME,
+                 WorkPath + FIniFileName);
   end;
 
   // устанавливаем временную папку
@@ -483,7 +504,7 @@ end;
 
 function TMHLSettings.GetSettingsFileName: string;
 begin
-  Result := WorkPAth + SETTINGS_FILE_NAME;
+  Result := WorkPAth + FIniFileName;
 end;
 
 procedure TMHLSettings.LoadSettings;
@@ -1100,7 +1121,7 @@ end;
 function TMHLSettings.GetSystemFileName(fileType: TMHLSystemFile): string;
 begin
   case fileType of
-    sfSystemDB: Result := DataPath + SYSTEM_DATABASE_FILENAME;
+    sfSystemDB: Result := DataPath + FDbsFileName;
     sfGenresFB2: Result := AppPath + GENRES_FB2_FILENAME;
     sfGenresNonFB2: Result := AppPath + GENRES_NONFB2_FILENAME;
     sfServerErrorLog: Result := WorkPath + SERVER_ERRORLOG_FILENAME;
