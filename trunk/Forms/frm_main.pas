@@ -1758,7 +1758,6 @@ begin
     F := 0;
     tbSendToDevice.ImageIndex := 1;
   end;
-  
 
   { TODO 1 -oNickR -cRefactoring :заменить этот код на создание TFileRun}
   for i := 0 to Settings.Scripts.Count - 1 do
@@ -1768,7 +1767,7 @@ begin
     Item.Caption := Settings.Scripts[i].Title;
     Item.Tag := 901 + i;
     Item.OnClick := tbSendToDeviceClick;
-    Item.ImageIndex := 8;
+    Item.ImageIndex := 6;
     pmScripts.Items.Insert(i + F, Item);
 
     //------ context -----------------
