@@ -45,6 +45,7 @@ type
 
     function fb2Lrf(InpFile,OutFile:string):boolean;
     function fb2EPUB(InpFile,OutFile:string):boolean;
+    function fb2PDF(InpFile,OutFile:string):boolean;
 
     procedure SetTable(ATable: TAbsTable);
   protected
@@ -254,7 +255,7 @@ begin
     emTxt:unit_globals.ConvertToTxt(FFileOpRecord.SArch, DestFileName, Settings.TXTEncoding);
     emLrf:Result := fb2Lrf(FFileOpRecord.SArch,DestFileName);
     emEpub:Result := fb2EPUB(FFileOpRecord.SArch,DestFileName);
-
+    emPDF:Result := fb2PDF(FFileOpRecord.SArch,DestFileName);
   end;
 
 //  if FIsTmp then
@@ -266,7 +267,7 @@ var
   params: string;
 begin
   params := Format('-i "%s" -o "%s"',[InpFile,ChangeFileExt(OutFile, '.lrf')]);
-  Result := ExecAndWait(Settings.AppPath + 'fb2lrf\fb2lrf_c.exe',params, SW_HIDE)
+  Result := ExecAndWait(Settings.AppPath + 'converters\fb2lrf\fb2lrf_c.exe',params, SW_HIDE)
 end;
 
 function TExportToDeviceThread.fb2EPUB(InpFile,OutFile:string):boolean;
@@ -274,7 +275,15 @@ var
   params: string;
 begin
   params := Format('"%s" "%s"',[InpFile,ChangeFileExt(OutFile, '.epub')]);
-  Result := ExecAndWait(Settings.AppPath + 'fb2epub\fb2epub.exe',params, SW_HIDE)
+  Result := ExecAndWait(Settings.AppPath + 'converters\fb2epub\fb2epub.exe',params, SW_HIDE)
+end;
+
+function TExportToDeviceThread.fb2PDF(InpFile,OutFile:string):boolean;
+var
+  params: string;
+begin
+  params := Format('"%s" "%s"',[InpFile,ChangeFileExt(OutFile, '.pdf')]);
+  Result := ExecAndWait(Settings.AppPath + 'converters\fb2pdf\fb2pdf',params, SW_HIDE)
 end;
 
 procedure TExportToDeviceThread.SetTable(ATable: TAbsTable);
