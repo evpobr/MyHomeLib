@@ -62,7 +62,7 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 414
     Height = 413
-    ActivePage = tsFileSort
+    ActivePage = tsDevices
     Align = alClient
     TabOrder = 1
     object tsDevices: TTabSheet
@@ -265,14 +265,15 @@ object frmSettings: TfrmSettings
         Height = 50
         Align = alTop
         Caption = #1060#1086#1088#1084#1072#1090' '#1079#1072#1087#1080#1089#1080' '#1085#1072' '#1091#1089#1090#1088#1086#1081#1089#1090#1074#1086
-        Columns = 5
+        Columns = 6
         ItemIndex = 0
         Items.Strings = (
           '.fb2'
           '.fb2.zip'
-          '.lrf (SONY)'
+          '.lrf '
           '.txt'
-          '.epub')
+          '.epub'
+          '.pdf')
         TabOrder = 2
       end
       object RzGroupBox5: TRzGroupBox

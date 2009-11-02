@@ -357,6 +357,7 @@ begin
     2: Settings.ExportMode := emLrf;
     3: Settings.ExportMode := emTxt;
     4: Settings.ExportMode := emEpub;
+    5: Settings.ExportMode := emPDF;
   end;
 
   case cbTXTEncoding.ItemIndex of

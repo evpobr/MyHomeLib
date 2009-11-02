@@ -404,6 +404,7 @@ type
     tbtnDeleteBook: TToolButton;
     tbtnAutoFBD: TToolButton;
     FilesList: TFilesList;
+    tbtnHelp: TToolButton;
 
     //
     // События формы
@@ -1716,8 +1717,8 @@ end;
 
 procedure TfrmMain.CreateScriptMenu;
 const
-    ExpTypes : array [0..4] of string = ('  fb2','  fb2.zip','  LRF','  txt', ' epub');
-    Icons: array [0..4] of integer = (18,19,20,21,24);
+    ExpTypes : array [0..5] of string = ('  fb2','  fb2.zip','  LRF','  txt', ' epub', '  pdf');
+    Icons: array [0..5] of integer = (18,19,20,21,24,25);
 var
   Item, ItemP, ItemM: TMenuItem;
   F:integer;
@@ -1730,7 +1731,7 @@ begin
 
   if isFB2Collection(DMUser.ActiveCollection.CollectionType) then
   begin
-    for I := 0 to 4 do
+    for I := 0 to 5 do
     begin
       Item := TMenuItem.Create(pmScripts);
       Item.Caption := ExpTypes[i];
@@ -1745,12 +1746,12 @@ begin
       Item := TMenuItem.Create(pmScripts);
       Item.Caption := '-';
       Item.Tag := 0;
-      pmScripts.Items.Insert(5, Item);
+      pmScripts.Items.Insert(6, Item);
     end;
 
     tbSendToDevice.ImageIndex := Icons[ord(Settings.ExportMode)];
 //    pmScripts.Items[i].Caption := '>> ' + ExpTypes[i] + ' <<';
-    F := 6;
+    F := 7;
   end
   else
   begin
@@ -2872,12 +2873,12 @@ begin
     if isOnlineCollection(DMUser.ActiveCollection.CollectionType)
         and (Data.Locale)
     then
-      ilFileTypes.Draw(TargetCanvas, X, CellRect.Top + 1, 5);
+      ilFileTypes.Draw(TargetCanvas, X, CellRect.Top + 1, 7);
     if Data.Progress = 100 then
-      ilFileTypes.Draw(TargetCanvas, X + 10, CellRect.Top, 6);
+      ilFileTypes.Draw(TargetCanvas, X + 10, CellRect.Top, 8);
 
     if Data.Code = 1 then
-      ilFileTypes.Draw(TargetCanvas, X + 25, CellRect.Top + 1, 7);
+      ilFileTypes.Draw(TargetCanvas, X + 25, CellRect.Top + 1, 9);
 
   end;
 
