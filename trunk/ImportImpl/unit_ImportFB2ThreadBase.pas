@@ -80,11 +80,9 @@ begin
          FileName := FFilesList.LastDir + F.Name
       else
          FileName := ExtractRelativePath(FRootPath,FFilesList.LastDir) + F.Name;
-      if FLibrary.CheckFileInCollection(FileName, FFullNameSearch, FZipFolder) then
-        Exit;
+      if not FLibrary.CheckFileInCollection(FileName, FFullNameSearch, FZipFolder) then
+           FFiles.Add(FFilesList.LastDir + F.Name);
     end;
-
-    FFiles.Add(FFilesList.LastDir + F.Name);
   end;
 
   //
