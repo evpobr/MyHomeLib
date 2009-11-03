@@ -93,6 +93,8 @@ begin
   try
     worker.DBFileName := ACollection.DBFileName;
     worker.TargetExt := FB2_EXTENSION;
+    worker.ZipFolder := False;
+    worker.FullNameSearch := False;
     frmProgress := TImportProgressFormEx.Create(Application);
     try
       frmProgress.WorkerThread := worker;
@@ -117,6 +119,8 @@ begin
   try
     worker.DBFileName := ACollection.DBFileName;
     worker.TargetExt := ZIP_EXTENSION;
+    worker.ZipFolder := False;
+    worker.FullNameSearch := True;
     frmProgress := TImportProgressFormEx.Create(Application);
     try
       frmProgress.WorkerThread := worker;
@@ -141,6 +145,7 @@ begin
   try
     worker.DBFileName := ACollection.DBFileName;
     worker.TargetExt := ZIP_EXTENSION;
+     worker.ZipFolder := True;
     frmProgress := TImportProgressFormEx.Create(Application);
     try
       frmProgress.WorkerThread := worker;
