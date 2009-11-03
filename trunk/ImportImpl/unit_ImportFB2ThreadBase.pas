@@ -25,6 +25,8 @@ uses
 
 type
   TImportFB2ThreadBase = class(TWorker)
+  private
+    FFullNameSearch: Boolean;
   protected
     FDBFileName: string;
     FLibrary: TMHLLibrary;
@@ -33,6 +35,7 @@ type
     FFilesList: TFilesList;
 
     FTargetExt: string;
+    FZipFolder: boolean;
 
     FCheckExistsFiles: Boolean;
 
@@ -40,7 +43,7 @@ type
 
     procedure ShowCurrentDir(Sender: TObject; const Dir: string);
     procedure AddFile2List(Sender: TObject;
-                            const F: TSearchRec);
+                           const F: TSearchRec);
 
     function GetNewFolder(Folder: string; R: TBookRecord):string;
     function GetNewFileName(FileName: string; R: TBookRecord):string;
@@ -52,6 +55,8 @@ type
   public
     property DBFileName: string read FDBFileName write FDBFileName;
     property TargetExt: string write FTargetExt;
+    property ZipFolder: boolean write FZipFolder;
+    property FullNameSearch: boolean write FFullNameSearch default False;
   end;
 
 implementation
@@ -75,7 +80,7 @@ begin
          FileName := FFilesList.LastDir + F.Name
       else
          FileName := ExtractRelativePath(FRootPath,FFilesList.LastDir) + F.Name;
-      if FLibrary.CheckFileInCollection(FileName, False, (FTargetExt <> ZIP_EXTENSION) ) then
+      if FLibrary.CheckFileInCollection(FileName, FFullNameSearch, FZipFolder) then
         Exit;
     end;
 

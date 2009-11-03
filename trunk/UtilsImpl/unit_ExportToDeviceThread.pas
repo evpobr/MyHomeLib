@@ -283,7 +283,7 @@ var
   params: string;
 begin
   params := Format('"%s" "%s"',[InpFile,ChangeFileExt(OutFile, '.pdf')]);
-  Result := ExecAndWait(Settings.AppPath + 'converters\fb2pdf\fb2pdf',params, SW_HIDE)
+  Result := ExecAndWait(Settings.AppPath + 'converters\fb2pdf\fb2pdf.cmd',params, SW_HIDE)
 end;
 
 procedure TExportToDeviceThread.SetTable(ATable: TAbsTable);

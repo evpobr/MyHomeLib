@@ -55,7 +55,9 @@ type
     //
     // Content management
     //
-    function CheckFileInCollection(const FileName: string; const Full: boolean; const IgnoreZip: boolean): Boolean;
+    function CheckFileInCollection(const FileName: string;
+                                   const FullNameSearch: boolean;
+                                   const ZipFolder: boolean): Boolean;
 
     function InsertBook(BookRecord: TBookRecord; CheckFileName, FullCheck: boolean): integer;
     procedure DeleteBook(BookID: Integer);
@@ -722,37 +724,22 @@ begin
 
 end;
 
-{ TODO 5 -oNickR -cRefactoring :
-Ѕолее верно (с идеалогической точки зрени€) передавать в качестве параметров поле дл€ проверки.
-ѕри этом параметр FileName должен содержать точное значение дл€ поиска
-
-Warning!  ¬ таком виде не работает при импорте не fb2!!!!
-}
-
-//function TMHLLibrary.CheckFileInCollection(const FileName: string; const Ext: string): Boolean;
-//begin
-//  CheckActive;
-//
-//  Result := FBooks.Locate(IfThen(Ext = ZIP_EXTENSION, 'Folder', 'FileName'), FileName, [])
-//end;
-
-function TMHLLibrary.CheckFileInCollection(const FileName: string; const Full: boolean; const IgnoreZip: boolean): Boolean;
+function TMHLLibrary.CheckFileInCollection(const FileName: string;
+                                           const FullNameSearch: boolean;
+                                           const ZipFolder: boolean): Boolean;
 var
   s: string;
-  ext : string;
 begin
   CheckActive;
 
-  ext := ExtractFileExt(FileName);
-
-  if not IgnoreZip and (Ext = ZIP_EXTENSION) then
+  if ZipFolder then
     Result := FBooks.Locate('Folder', FileName, [loCaseInsensitive])
   else
   begin
-    if  Full then
-      s := FileName
+    if  FullNameSearch then
+      s := ExtractFileName(FileName)
     else
-      s := ExtractShortFileName(FileName);
+      s := ExtractShortFileName(ExtractFileName(FileName));
     Result := FBooks.Locate('FileName',s, [loCaseInsensitive]);
   end;
 end;
