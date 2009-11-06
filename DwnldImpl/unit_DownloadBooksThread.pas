@@ -53,6 +53,8 @@ type
     FStartDate: TDateTime;
     FIgnoreErrors: boolean;
 
+    FNoPause: boolean;
+
     procedure ProcessError(const LongMsg, ShortMsg, AFileName: string);
     function CalculateURL: string;
     function DownloadBook(ID: integer): Boolean;
@@ -196,7 +198,7 @@ begin
         SetComment2(' ', 'Завершение операции ...');
         Break;
       end;
-      Sleep(Settings.DwnldInterval);
+      if FNoPause then Sleep(Settings.DwnldInterval);
     end;
   finally
     FidHTTP.Free;
@@ -214,6 +216,7 @@ var
   URL: string;
 begin
   Result := False;
+  FNoPause := False;
 
   dmCollection.GetBookFolder(ID, Folder);
 
@@ -242,6 +245,7 @@ begin
         begin
           Result := False;
           Synchronize(SetCancelledOperation);
+          FNoPause := True;
           Exit;
         end;
 
