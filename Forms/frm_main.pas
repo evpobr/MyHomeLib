@@ -405,6 +405,10 @@ type
     tbtnAutoFBD: TToolButton;
     FilesList: TFilesList;
     tbtnHelp: TToolButton;
+    N46: TMenuItem;
+    miExportToHTML: TMenuItem;
+    txt1: TMenuItem;
+    RTF1: TMenuItem;
 
     //
     // События формы
@@ -614,6 +618,7 @@ type
     procedure miConverToFBDClick(Sender: TObject);
     procedure miEditToolbarVisibleClick(Sender: TObject);
     procedure tbtnAutoFBDClick(Sender: TObject);
+    procedure miExportToHTMLClick(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -5950,6 +5955,46 @@ procedure TfrmMain.miEditToolbarVisibleClick(Sender: TObject);
 begin
   tlbrEdit.Visible := miEditToolbarVisible.Checked;
   Settings.EditToolbarVisible := tlbrEdit.Visible;
+end;
+
+procedure TfrmMain.miExportToHTMLClick(Sender: TObject);
+const
+  HTMLHead = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">'#13#10 +
+    '<html>'#13#10 +
+    '<head>'#13#10 +
+    '  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">'#13#10 +
+    '  <title>MyHomeLib HTML</title>'#13#10 +
+    '</head>'#13#10 +
+    '<body>'#13#10;
+  HTMLFoot = '</body>'#13#10 +
+    '</html>' + #13#10;
+
+  ext : array [351 .. 353 ] of string = ('html','txt','rtf');
+var
+  Tree : TVirtualStringTree;
+  Fs: TFileStream;
+  Str: AnsiString;
+  Data: Pointer;
+  FileName: string;
+begin
+  GetActiveTree(Tree);
+
+  FileName := (Settings.TempPath + 'book_list.' + ext[(Sender as TMenuItem).Tag]);
+
+
+  Fs := TFileStream.Create(FileName, fmCreate);
+  try
+    case (Sender as TMenuItem).Tag of
+      351:  Str := HTMLHead + Tree.ContentToHTML(tstAll) + HTMLFoot;
+      352:  Str := Tree.ContentToText(tstAll,chr(9));
+      353:  Str := Tree.ContentToRTF(tstAll);
+    end;
+    Data := PChar(Str);
+    Fs.WriteBuffer(Data^, Length(Str));
+  finally
+    FreeAndNil(fs);
+  end;
+  ShellExecute(Handle, 'open', PChar(FileName), nil, nil, SW_RESTORE);
 end;
 
 procedure TfrmMain.miExportUserDataClick(Sender: TObject);
