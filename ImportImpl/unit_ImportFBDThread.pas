@@ -44,7 +44,8 @@ uses
 
 procedure TImportFBDThread.SortFiles(var R: TBookRecord);
 var
-  NewFilename, NewFolder: string;
+  NewFilename, NewFolder, Ext: string;
+  F:  TZFArchiveItem;
 begin
   NewFolder := GetNewFolder(Settings.FBDFolderTemplate, R);
 
@@ -56,10 +57,24 @@ begin
   NewFileName := GetNewFileName(Settings.FBDFileTemplate, R);
   if NewFileName <> '' then
   begin
-    NewFileName := NewFileName + ZIP_EXTENSION;
+    NewFileName := NewFileName;
     RenameFile(FRootPath + NewFolder + R.FileName,
-               FRootPath + NewFolder + NewFileName);
-    R.FileName := NewFileName;
+               FRootPath + NewFolder + NewFileName + ZIP_EXTENSION);
+    R.FileName := NewFileName + ZIP_EXTENSION;
+
+    try
+      FZipper.FileName := FRootPath + NewFolder + NewFileName + ZIP_EXTENSION;
+      FZipper.OpenArchive(fmOpenReadWrite);
+
+      if (FZipper.FindFirst('*.*', F,faAnyFile-faDirectory)) then
+      repeat
+        Ext := ExtractFileExt(F.FileName);
+        FZipper.RenameFile(F.FileName, NewFileName + Ext);
+      until (not FZipper.FindNext(F));
+      FZipper.CloseArchive;
+    except
+      // ничего не делаем
+    end;
   end;
 end;
 
