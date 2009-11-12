@@ -5986,7 +5986,7 @@ begin
   try
     case (Sender as TMenuItem).Tag of
       351:  Str := HTMLHead + Tree.ContentToHTML(tstAll) + HTMLFoot;
-      352:  Str := Tree.ContentToText(tstAll,chr(9));
+      352:  Str := Tree.ContentToUnicode(tstAll,chr(9));
       353:  Str := Tree.ContentToRTF(tstAll);
     end;
     Data := PChar(Str);

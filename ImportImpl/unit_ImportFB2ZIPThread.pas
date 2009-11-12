@@ -51,6 +51,7 @@ procedure TImportFB2ZIPThread.SortFiles(var R: TBookRecord);
 var
   Filename, NewFilename, NewFolder: string;
   Ext : string;
+  F: TZfArchiveItem;
 begin
   FileName := ExtractFileName(R.Folder);
 
@@ -71,6 +72,17 @@ begin
     StrReplace(Filename, NewFileName + '.fb2.zip', NewFolder);
     RenameFile(FRootPath + R.Folder, FRootPath +  NewFolder);
     R.Folder :=  NewFolder;
+
+    try
+      FZipper.FileName := FRootPath + NewFolder;
+      FZipper.OpenArchive(fmOpenReadWrite);
+      FZipper.FindFirst('*.fb2', F);
+      FZipper.RenameFile(F.FileName, NewFileName + FB2_EXTENSION);
+      FZipper.CloseArchive;
+      R.FileName := NewFileName;
+    except
+      // ничего не делаем
+    end;
   end;
 end;
 

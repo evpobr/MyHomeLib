@@ -524,7 +524,7 @@ object frmMain: TfrmMain
               Caption = #1055#1086#1080#1089#1082
             end
             object tbClearEdAuthor: TRzToolButton
-              Left = 178
+              Left = 174
               Top = 9
               Hint = #1054#1095#1080#1089#1090#1080#1090#1100
               ImageIndex = 36
@@ -539,7 +539,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 53
               Top = 12
-              Width = 118
+              Width = 114
               Height = 21
               Margins.Left = 10
               Margins.Top = 10
@@ -554,7 +554,6 @@ object frmMain: TfrmMain
               TabOrder = 0
               OnChange = edLocateAuthorChange
               OnKeyDown = edLocateAuthorKeyDown
-              ExplicitWidth = 120
             end
           end
         end
@@ -591,7 +590,7 @@ object frmMain: TfrmMain
                 Left = 426
                 Top = 3
                 Width = 12
-                Height = 19
+                Height = 25
                 Align = alRight
                 Alignment = taRightJustify
                 Caption = '()'
@@ -602,13 +601,14 @@ object frmMain: TfrmMain
                 Font.Style = []
                 ParentFont = False
                 CenterPoint = cpLowerRight
+                ExplicitHeight = 19
               end
               object lblAuthor: TRzLabel
                 AlignWithMargins = True
                 Left = 3
                 Top = 3
                 Width = 15
-                Height = 19
+                Height = 25
                 Align = alLeft
                 Caption = '...'
                 Font.Charset = DEFAULT_CHARSET
@@ -618,6 +618,7 @@ object frmMain: TfrmMain
                 Font.Style = [fsBold]
                 ParentFont = False
                 CenterPoint = cpLowerRight
+                ExplicitHeight = 19
               end
             end
             object RzPanel23: TRzPanel
@@ -881,7 +882,7 @@ object frmMain: TfrmMain
               Caption = #1055#1086#1080#1089#1082
             end
             object btnClearEdSeries: TRzToolButton
-              Left = 194
+              Left = 190
               Top = 9
               Hint = #1054#1095#1080#1089#1090#1080#1090#1100
               ImageIndex = 36
@@ -896,7 +897,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 53
               Top = 12
-              Width = 134
+              Width = 130
               Height = 21
               Margins.Left = 10
               Margins.Top = 10
@@ -1165,10 +1166,6 @@ object frmMain: TfrmMain
     object TabSheet3: TRzTabSheet
       HelpContext = 135
       Caption = #1046#1072#1085#1088#1099
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object rzsSplitterG: TRzSplitter
         Left = 0
         Top = 0
@@ -1423,7 +1420,7 @@ object frmMain: TfrmMain
               Left = 403
               Top = 3
               Width = 12
-              Height = 19
+              Height = 25
               Align = alRight
               Alignment = taRightJustify
               Caption = '()'
@@ -1434,13 +1431,14 @@ object frmMain: TfrmMain
               Font.Style = []
               ParentFont = False
               CenterPoint = cpLowerRight
+              ExplicitHeight = 19
             end
             object lblGenreTitle: TRzLabel
               AlignWithMargins = True
               Left = 3
               Top = 3
               Width = 15
-              Height = 19
+              Height = 25
               Align = alLeft
               Caption = '...'
               Font.Charset = DEFAULT_CHARSET
@@ -1450,6 +1448,7 @@ object frmMain: TfrmMain
               Font.Style = [fsBold]
               ParentFont = False
               CenterPoint = cpLowerRight
+              ExplicitHeight = 19
             end
           end
           object ipnlGenres: TMHLInfoPanel
@@ -1474,10 +1473,6 @@ object frmMain: TfrmMain
     object TabSheet4: TRzTabSheet
       HelpContext = 126
       Caption = #1055#1086#1080#1089#1082
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object rzsSplitterSR: TRzSplitter
         Left = 0
         Top = 0
@@ -1521,7 +1516,6 @@ object frmMain: TfrmMain
             Height = 209
             Caption = #1056#1072#1079#1085#1086#1077
             TabOrder = 0
-            ExplicitWidth = 185
             object Label30: TLabel
               Left = 3
               Top = 122
@@ -1645,7 +1639,6 @@ object frmMain: TfrmMain
               AltBtnWidth = 15
               ButtonWidth = 15
               OnButtonClick = edFFullNameButtonClick
-              ExplicitWidth = 180
             end
             object cbDeleted: TCheckBox
               AlignWithMargins = True
@@ -1664,7 +1657,6 @@ object frmMain: TfrmMain
             Height = 177
             Caption = #1060#1072#1081#1083
             TabOrder = 1
-            ExplicitWidth = 185
             object Label27: TLabel
               AlignWithMargins = True
               Left = 3
@@ -1707,7 +1699,6 @@ object frmMain: TfrmMain
               AltBtnWidth = 15
               ButtonWidth = 15
               OnButtonClick = edFFullNameButtonClick
-              ExplicitWidth = 180
             end
             object edFFolder: TRzButtonEdit
               AlignWithMargins = True
@@ -1721,7 +1712,6 @@ object frmMain: TfrmMain
               AltBtnWidth = 15
               ButtonWidth = 15
               OnButtonClick = edFFullNameButtonClick
-              ExplicitWidth = 180
             end
             object edFExt: TRzButtonEdit
               AlignWithMargins = True
@@ -1735,7 +1725,6 @@ object frmMain: TfrmMain
               AltBtnWidth = 15
               ButtonWidth = 15
               OnButtonClick = edFFullNameButtonClick
-              ExplicitWidth = 180
             end
           end
           object ctpBook: TCategoryPanel
@@ -1743,7 +1732,6 @@ object frmMain: TfrmMain
             Height = 215
             Caption = #1050#1085#1080#1075#1072
             TabOrder = 2
-            ExplicitWidth = 185
             object Label5: TLabel
               AlignWithMargins = True
               Left = 3
@@ -1796,7 +1784,6 @@ object frmMain: TfrmMain
               AltBtnWidth = 15
               ButtonWidth = 15
               OnButtonClick = edFFullNameButtonClick
-              ExplicitWidth = 180
             end
             object edFTitle: TRzButtonEdit
               AlignWithMargins = True
@@ -1810,7 +1797,6 @@ object frmMain: TfrmMain
               AltBtnWidth = 15
               ButtonWidth = 15
               OnButtonClick = edFFullNameButtonClick
-              ExplicitWidth = 180
             end
             object edFSeries: TRzButtonEdit
               AlignWithMargins = True
@@ -1824,7 +1810,6 @@ object frmMain: TfrmMain
               AltBtnWidth = 15
               ButtonWidth = 15
               OnButtonClick = edFFullNameButtonClick
-              ExplicitWidth = 180
             end
             object edFGenre: TRzButtonEdit
               AlignWithMargins = True
@@ -1839,13 +1824,12 @@ object frmMain: TfrmMain
               AltBtnWidth = 15
               ButtonWidth = 15
               OnButtonClick = edFGenreButtonClick
-              ExplicitWidth = 180
             end
           end
         end
         object cpCoverSR: TMHLCoverPanel
           AlignWithMargins = True
-          Left = 539
+          Left = 511
           Top = 3
           Width = 222
           Height = 493
@@ -1869,7 +1853,6 @@ object frmMain: TfrmMain
           Fb2InfoVisible = False
           FontSize = 0
           AnnotationColor = clBlack
-          ExplicitLeft = 511
         end
         object RzPanel9: TRzPanel
           AlignWithMargins = True
@@ -2085,7 +2068,7 @@ object frmMain: TfrmMain
                 Left = 254
                 Top = 17
                 Width = 12
-                Height = 19
+                Height = 22
                 Align = alRight
                 Alignment = taRightJustify
                 Caption = '()'
@@ -2096,16 +2079,18 @@ object frmMain: TfrmMain
                 Font.Style = []
                 ParentFont = False
                 CenterPoint = cpLeftCenter
+                ExplicitHeight = 19
               end
               object Label1: TLabel
                 AlignWithMargins = True
                 Left = 4
                 Top = 17
                 Width = 36
-                Height = 13
+                Height = 22
                 Align = alLeft
                 Alignment = taRightJustify
                 Caption = #1055#1088#1077#1089#1077#1090
+                ExplicitHeight = 13
               end
               object cbPresetName: TRzComboBox
                 Left = 43
@@ -2346,7 +2331,7 @@ object frmMain: TfrmMain
               221
               27)
             object RzToolButton2: TRzToolButton
-              Left = 158
+              Left = 154
               Top = 8
               Hint = #1054#1095#1080#1089#1090#1080#1090#1100
               ImageIndex = 36
@@ -2616,7 +2601,7 @@ object frmMain: TfrmMain
                 Left = 414
                 Top = 3
                 Width = 12
-                Height = 19
+                Height = 25
                 Align = alRight
                 Alignment = taRightJustify
                 Caption = '()'
@@ -2627,13 +2612,14 @@ object frmMain: TfrmMain
                 Font.Style = []
                 ParentFont = False
                 CenterPoint = cpLowerRight
+                ExplicitHeight = 19
               end
               object lblGroups: TRzLabel
                 AlignWithMargins = True
                 Left = 3
                 Top = 3
                 Width = 15
-                Height = 19
+                Height = 25
                 Align = alLeft
                 Caption = '...'
                 Font.Charset = DEFAULT_CHARSET
@@ -2643,6 +2629,7 @@ object frmMain: TfrmMain
                 Font.Style = [fsBold]
                 ParentFont = False
                 CenterPoint = cpLowerRight
+                ExplicitHeight = 19
               end
             end
           end
@@ -2709,15 +2696,11 @@ object frmMain: TfrmMain
     object TabSheet7: TRzTabSheet
       HelpContext = 108
       Caption = #1057#1087#1080#1089#1086#1082' '#1079#1072#1082#1072#1095#1077#1082
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object tlbrDownloadList: TRzToolbar
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 40
+        Width = 46
         Height = 493
         Align = alLeft
         AutoStyle = False
@@ -2750,13 +2733,13 @@ object frmMain: TfrmMain
           RzSpacer3
           BtnSave)
         object RzSpacer1: TRzSpacer
-          Left = 4
+          Left = 7
           Top = 70
           Width = 26
         end
         object BtnDwnldUp: TRzToolButton
           Tag = 21
-          Left = 4
+          Left = 7
           Top = 120
           Hint = #1042#1074#1077#1088#1093
           DisabledIndex = 1
@@ -2766,7 +2749,7 @@ object frmMain: TfrmMain
         end
         object BtnDwnldDown: TRzToolButton
           Tag = 22
-          Left = 4
+          Left = 7
           Top = 145
           Hint = #1042#1085#1080#1079
           DisabledIndex = 3
@@ -2775,7 +2758,7 @@ object frmMain: TfrmMain
           OnClick = MoveDwnldListNodes
         end
         object BtnDelete: TRzToolButton
-          Left = 4
+          Left = 7
           Top = 220
           Hint = #1059#1076#1072#1083#1080#1090#1100
           DisabledIndex = 5
@@ -2785,7 +2768,7 @@ object frmMain: TfrmMain
         end
         object BtnFirstRecord: TRzToolButton
           Tag = 20
-          Left = 4
+          Left = 7
           Top = 95
           Hint = #1042' '#1085#1072#1095#1072#1083#1086
           DisabledIndex = 7
@@ -2795,7 +2778,7 @@ object frmMain: TfrmMain
         end
         object BtnLastRecord: TRzToolButton
           Tag = 23
-          Left = 4
+          Left = 7
           Top = 170
           Hint = #1042' '#1082#1086#1085#1077#1094
           DisabledIndex = 9
@@ -2804,12 +2787,12 @@ object frmMain: TfrmMain
           OnClick = MoveDwnldListNodes
         end
         object RzSpacer2: TRzSpacer
-          Left = 4
+          Left = 7
           Top = 195
           Width = 27
         end
         object btnStartDownload: TRzToolButton
-          Left = 4
+          Left = 7
           Top = 20
           Hint = #1057#1090#1072#1088#1090
           DisabledIndex = 11
@@ -2818,7 +2801,7 @@ object frmMain: TfrmMain
           OnClick = btnStartDownloadClick
         end
         object btnPauseDownload: TRzToolButton
-          Left = 4
+          Left = 7
           Top = 45
           Hint = #1057#1090#1086#1087
           DisabledIndex = 15
@@ -2827,7 +2810,7 @@ object frmMain: TfrmMain
           OnClick = btnPauseDownloadClick
         end
         object BtnSave: TRzToolButton
-          Left = 4
+          Left = 7
           Top = 270
           Hint = 'Save'
           DisabledIndex = 17
@@ -2836,7 +2819,7 @@ object frmMain: TfrmMain
           OnClick = BtnSaveClick
         end
         object RzSpacer3: TRzSpacer
-          Left = 4
+          Left = 7
           Top = 245
           Width = 32
         end
@@ -2860,7 +2843,7 @@ object frmMain: TfrmMain
           BorderOuter = fsFlatRounded
           TabOrder = 0
           DesignSize = (
-            884
+            878
             59)
           object pbDownloadProgress: TRzProgressBar
             Left = 6
@@ -2901,7 +2884,7 @@ object frmMain: TfrmMain
           end
           object lblDownloadCount: TRzLabel
             AlignWithMargins = True
-            Left = 869
+            Left = 863
             Top = 5
             Width = 12
             Height = 51
@@ -2915,12 +2898,12 @@ object frmMain: TfrmMain
             Font.Style = []
             ParentFont = False
             CenterPoint = cpLowerRight
-            ExplicitLeft = 863
+            ExplicitLeft = 869
             ExplicitHeight = 19
           end
           object btnClearDownload: TRzBitBtn
-            Left = 757
-            Top = 25
+            Left = 759
+            Top = 21
             Width = 118
             Margins.Right = 8
             Margins.Bottom = 8
@@ -2929,15 +2912,13 @@ object frmMain: TfrmMain
             TabOrder = 0
             OnClick = btnClearDownloadClick
             Kind = bkRetry
-            ExplicitLeft = 753
-            ExplicitTop = 27
           end
         end
         object tvDownloadList: TVirtualStringTree
           AlignWithMargins = True
           Left = 3
           Top = 3
-          Width = 886
+          Width = 880
           Height = 426
           Align = alClient
           Anchors = [akRight, akBottom]
@@ -2957,7 +2938,6 @@ object frmMain: TfrmMain
           OnPaintText = tvDownloadListPaintText
           OnLoadNode = tvDownloadListLoadNode
           OnSaveNode = tvDownloadListSaveNode
-          ExplicitWidth = 880
           Columns = <
             item
               Position = 0
@@ -3302,7 +3282,7 @@ object frmMain: TfrmMain
         OnClick = miSyncOnlineClick
       end
       object N46: TMenuItem
-        Caption = #1069#1082#1089#1087#1086#1088#1090
+        Caption = #1069#1082#1089#1087#1086#1088#1090' '#1072#1082#1090#1080#1074#1085#1086#1075#1086' '#1089#1087#1080#1089#1082#1072
         object miExportToHTML: TMenuItem
           Tag = 351
           Caption = 'html'
@@ -3551,7 +3531,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 312
     Bitmap = {
-      494C01011B000002340120002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C01011B0000023C0120002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -7259,7 +7239,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 256
     Bitmap = {
-      494C010125002700F80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010125002700000110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000040000000A0000000010020000000000000A0
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -8618,7 +8598,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 368
     Bitmap = {
-      494C01010A003801E00010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C01010A003801E80010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -9148,7 +9128,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 480
     Bitmap = {
-      494C010118001A00F80020002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C010118001A00000120002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12855,7 +12835,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 424
     Bitmap = {
-      494C010112004800F80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010112004800000110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000005000000001002000000000000050
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

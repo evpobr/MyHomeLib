@@ -173,7 +173,7 @@ begin
   StrReplace('%rg', Trim(FLibrary.GetTopGenreAlias(R.Genres[0].GenreFb2Code)), FileName);
   StrReplace('%s', R.Series, FileName);
 
-  FileName := CheckSymbols(FileName);
+  FileName := CheckSymbols(trim(FileName));
   if FileName <> '' then
     Result := FileName
   else
@@ -189,7 +189,7 @@ begin
   StrReplace('%rg', Trim(FLibrary.GetTopGenreAlias(R.Genres[0].GenreFb2Code)), Folder);
   StrReplace('%s', R.Series, Folder);
 
-  Folder := CheckSymbols(Folder);
+  Folder := CheckSymbols(trim(Folder));
   if Folder <> '' then
     Result := IncludeTrailingPathDelimiter(Folder)
   else

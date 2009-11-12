@@ -56,8 +56,9 @@ begin
   NewFileName := GetNewFileName(Settings.FBDFileTemplate, R);
   if NewFileName <> '' then
   begin
-    RenameFile(NewFolder + R.FileName,
-               NewFolder + NewFileName);
+    NewFileName := NewFileName + ZIP_EXTENSION;
+    RenameFile(FRootPath + NewFolder + R.FileName,
+               FRootPath + NewFolder + NewFileName);
     R.FileName := NewFileName;
   end;
 end;
