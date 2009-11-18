@@ -95,7 +95,6 @@ type
     FBookSRCollapsed: boolean;
     FFileSRCollapsed: boolean;
     FOtherSRCollapsed: boolean;
-    FEditToolBarVisible: boolean;
 
     // NETWORK_SECTION
     FProxyServer: string;
@@ -113,6 +112,8 @@ type
     FIEProxyServer: string;
     FIEProxyPort: Integer;
 
+    FLibUserName: string;
+    FLibPassword: string;
 
     // COLORS_SECTION
     FBookColor: TColor;
@@ -161,20 +162,6 @@ type
     FDeleteDeleted: boolean;
     FAutoLoadReview: boolean;
 
-    FForceConvertToFBD: boolean;
-
-    // SORT_SECTION
-    FEnableSort : boolean;
-    FInputFolder: string;
-
-    FFB2FolderTemplate: string;
-    FFB2FileTemplate: string;
-
-    FFBDFolderTemplate: string;
-    FFBDFileTemplate: string;
-    FDbsFileName: string;
-    FIniFileName: string;
-
   private
     function GetSettingsFileName: string;
 
@@ -196,7 +183,7 @@ type
     procedure LoadReaders(iniFile: TIniFile);
     procedure SaveReaders(iniFile: TIniFile);
 
-    procedure LoadUpdates(iniFile: TIniFile);
+    procedure LoadUpdates;
 
     procedure LoadScripts(iniFile: TIniFile);
     procedure SaveScripts(iniFile: TIniFile);
@@ -264,8 +251,6 @@ type
     property ShowLocalOnly: Boolean read FShowLocalOnly write FShowLocalOnly;
     property ShowSubGenreBooks: boolean read FShowSubGenreBooks write FShowSubGenreBooks;
     property ShowFb2Info: boolean read FShowFb2Info write FShowFb2Info;
-    property EditToolBarVisible: boolean read  FEditToolBarVisible write  FEditToolBarVisible;
-
     property AutoRunUpdate: boolean read FAutoRunUpdate write FAutoRunUpdate;
 
     property MinimizeToTray : boolean read FMinimizeToTray   write FMinimizeToTray;
@@ -295,6 +280,10 @@ type
     property ReadTimeOut: integer read FReadTimeOut write FReadTimeOut;
     property DwnldInterval: integer read FDwnldInterval write FDwnldInterval;
 
+    property LibUsername: string read FLibUsername write FLibUsername;
+    property LibPassword: string read FLibPassword write FLibPassword;
+
+
     property UseIESettings: boolean read FUseIESettings write FUseIESettings;
     property IEProxyServer: string read FIEProxyServer write FIEProxyServer;
     property IEProxyPort: Integer read FIEProxyPort write FIEProxyPort;
@@ -319,7 +308,7 @@ type
     property BookSRCollapsed: boolean read FBookSRCollapsed write FBookSRCollapsed;
     property FileSRCollapsed: boolean read FFileSRCollapsed write FFileSRCollapsed;
     property OtherSRCollapsed: boolean read FOtherSRCollapsed write FOtherSRCollapsed;
-    property ForceConvertToFBD: boolean read FForceConvertToFBD write FForceConvertToFBD;
+
 
     property FullTextSearch: Boolean read FFullTextSearch write FFullTextSearch;
 
@@ -339,15 +328,6 @@ type
 
     property DeleteDeleted:boolean read FDeleteDeleted write FDeleteDeleted;
 
-    // SORT_SECTION
-    property EnableSort : boolean read FEnableSort write FEnableSort;
-    property InputFolder: string read FInputFolder write FInputFolder;
-
-    property FB2FolderTemplate: string read FFB2FolderTemplate write FFB2FolderTemplate;
-    property FB2FileTemplate: string read FFB2FileTemplate write FFB2FileTemplate;
-
-    property FBDFolderTemplate: string read FFBDFolderTemplate write FFBDFolderTemplate;
-    property FBDFileTemplate: string read FFBDFileTemplate write FFBDFileTemplate;
   end;
 
   procedure CreateSettings;
@@ -405,7 +385,6 @@ const
   SCRIPTS_SECTION = 'SCRIPTS';
   IMPORT_SECTION = 'IMPORT';
   BEHAVIOR_SECTION = 'BEHAVIOR';
-  FILE_SORT_SECTION = 'FILE_SORT';
 
   READER_KEY_PREFIX = 'Reader';
   SCRIPT_KEY_PREFIX = 'Script';
@@ -421,45 +400,37 @@ constructor TMHLSettings.Create;
 const
   STR_USELOCALDATA = 'uselocaldata';
   STR_USELOCALTEMP = 'uselocaltemp';
-  STR_USERDBS      = 'user';
 
 var
   AppDataPath : string;
 
-  UseLocalData, UseLocalTemp, UserDatabase: boolean;
+  UseLocalData, UseLocalTemp: boolean;
   I: Integer;
-
-  DBFileName: string;
 
 begin
   UseLocalData := False;
   UseLocalTemp := False;
-  UserDatabase := False;
 
   FAppPath := ExtractFilePath(Application.ExeName);
   AppDataPath := GetSpecialPath(CSIDL_APPDATA) + APPDATA_DIR_NAME;
 
   // определяем рабочую и временную папку в зависимости от параметров
   // командной строки или ключевых файлов
-  FDbsFileName := SYSTEM_DATABASE_FILENAME;
-  FIniFileName := SETTINGS_FILE_NAME;
 
   for I := 1 to ParamCount do
   begin
     if not UseLocalData then
-           UseLocalData := (LowerCase(paramstr(i)) = STR_USELOCALDATA);
+         UseLocalData := (LowerCase(paramstr(i)) = STR_USELOCALDATA);
     if not UseLocalTemp then
-           UseLocalTemp := (LowerCase(paramstr(i)) = STR_USELOCALTEMP);
-    if (LowerCase(paramstr(i)) = STR_USERDBS) and (paramstr(i + 1) <> '') then
-    begin
-      DBFileName := paramstr(i + 1);
-      UserDatabase := True;
-    end;
+         UseLocalTemp := (LowerCase(paramstr(i)) = STR_USELOCALTEMP);
   end;
 
   UseLocalData := UseLocalData or FileExists(FAppPath + STR_USELOCALDATA) or
                   not DirectoryExists(AppDataPath);
   UseLocalTemp := UseLocalTemp or FileExists(FAppPath + STR_USELOCALTEMP);
+
+
+
 
   // Устанавливаем рабочую папку
 
@@ -472,17 +443,6 @@ begin
   begin
     FWorkDir := FAppPath;                           // работаем с AppPath
     FDataDir := FAppPath + DATA_DIR_NAME;
-  end;
-
-  if UserDatabase then                              // пользовательский файл БД и настроек
-  begin
-    FDbsFileName := DBFileName + '.dbs';
-    FIniFileName := DBFileName + '.ini';
-    if FileExists(WorkPath + SETTINGS_FILE_NAME) and not
-       FileExists(WorkPath + FIniFileName)
-     then                                             // если такого файла еще нет, копируем стандартный
-        CopyFile(WorkPath + SETTINGS_FILE_NAME,
-                 WorkPath + FIniFileName);
   end;
 
   // устанавливаем временную папку
@@ -504,7 +464,8 @@ end;
 
 function TMHLSettings.GetSettingsFileName: string;
 begin
-  Result := WorkPAth + FIniFileName;
+  { TODO -oNickR -cVista : Под Вистой мы будем иметь проблемы }
+  Result := WorkPAth + SETTINGS_FILE_NAME;
 end;
 
 procedure TMHLSettings.LoadSettings;
@@ -539,8 +500,6 @@ begin
       1: FExportMode := emFB2zip;
       2: FExportMode := emLrf;
       3: FExportMode := emTxt;
-      4: FExportMode := emEpub;
-      5: FExportMode := emPDF;
     end;
 
     case iniFile.ReadInteger(SYSTEM_SECTION, 'TXTEncoding', 0) of
@@ -570,7 +529,7 @@ begin
     FBookSRCollapsed := iniFile.ReadBool(INTERFACE_SECTION, 'BookSR', False);
     FFileSRCollapsed := iniFile.ReadBool(INTERFACE_SECTION, 'FileSR', False);
     FOtherSRCollapsed := iniFile.ReadBool(INTERFACE_SECTION,'OtherSR',False);
-    FEditToolBarVisible  := iniFile.ReadBool(INTERFACE_SECTION,'ShowEditToolBar',False);
+
 
 
     if iniFile.ReadInteger(INTERFACE_SECTION, 'Lang', 0) = 0 then
@@ -592,7 +551,7 @@ begin
     //
     FProxyServer := iniFile.ReadString(NETWORK_SECTION, 'proxy', '');
     FProxyUsername := iniFile.ReadString(NETWORK_SECTION, 'proxy-user', '');
-    FProxyPassword := DecodePassString(iniFile.ReadString(NETWORK_SECTION, 'proxy-pass', ''));
+    FProxyPassword := DecodeStr(iniFile.ReadString(NETWORK_SECTION, 'proxy-pass', ''));
     FProxyPort := iniFile.ReadInteger(NETWORK_SECTION, 'proxy-port', 0);
     FUpdateURL := iniFile.ReadString(NETWORK_SECTION, 'update_server', 'http://home-lib.net/update/');
     FDownloadURL := iniFile.ReadString(NETWORK_SECTION, 'library_server', 'http://lib.rus.ec/');
@@ -603,6 +562,8 @@ begin
 
     FUseIESettings := iniFile.ReadBool(NETWORK_SECTION,'use_ie_settings',false);
 
+    FLibUsername := iniFile.ReadString(NETWORK_SECTION, 'lib-user', '');
+    FLibPassword := DecodeStr(iniFile.ReadString(NETWORK_SECTION, 'lib-pass', ''));
 
     //
     // COLORS_SECTION
@@ -648,7 +609,7 @@ begin
     FDoNotShowDeleted := iniFile.ReadBool(BEHAVIOR_SECTION, 'DoNotShowDeleted', True);
     FShowLocalOnly := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowLocalOnly', False);
 
-    FShowSubGenreBooks := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowSubGenreBooks', True);
+    FShowSubGenreBooks := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowSubGenreBooks', False);
     FShowFb2Info := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowFb2Info', True);
     FMinimizeToTray  := iniFile.ReadBool(BEHAVIOR_SECTION, 'MinimizeToTray', False);
     FAutoStartDwnld  := iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoStartDwnld', False);
@@ -657,27 +618,13 @@ begin
 
     FDeleteDeleted := iniFile.ReadBool(BEHAVIOR_SECTION, 'DeleteDeleted',  False);
     FAutoLoadReview := iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoLoadReview',  True);
-    FForceConvertToFBD := iniFile.ReadBool(BEHAVIOR_SECTION, 'ForceConvertToFBD',  True);
-
-    //
-    // FILE_SORT_SECTION
-    //
-
-    FEnableSort := iniFile.ReadBool(FILE_SORT_SECTION, 'EnableFileSort', False);
-    FInputFolder := iniFile.ReadString(FILE_SORT_SECTION, 'InputFolder', '');
-
-    FFB2FolderTemplate := iniFile.ReadString(FILE_SORT_SECTION, 'Fb2FolderTemplate', '');
-    FFB2FileTemplate := iniFile.ReadString(FILE_SORT_SECTION, 'Fb2FileTemplate', '');
-
-    FFBDFolderTemplate := iniFile.ReadString(FILE_SORT_SECTION, 'FBDFolderTemplate', '');
-    FFBDFileTemplate := iniFile.ReadString(FILE_SORT_SECTION, 'FBDFileTemplate', '');
 
     //
     // INITIAL_DIRS_SECTION
     //
     LoadInitialDirs(iniFile);
 
-    LoadUpdates(iniFile);
+    LoadUpdates;
 
   finally
     iniFile.Free;
@@ -735,8 +682,6 @@ begin
     iniFile.WriteBool(INTERFACE_SECTION, 'BookSR', FBookSRCollapsed );
     iniFile.WriteBool(INTERFACE_SECTION, 'FileSR', FFileSRCollapsed );
     iniFile.WriteBool(INTERFACE_SECTION,'OtherSR', FOtherSRCollapsed );
-    iniFile.WriteBool(INTERFACE_SECTION,'ShowEditToolBar',FEditToolBarVisible);
-
 
     SaveSplitters(iniFile);
 
@@ -745,7 +690,7 @@ begin
     //
     iniFile.WriteString(NETWORK_SECTION, 'proxy', FProxyServer);
     iniFile.WriteString(NETWORK_SECTION, 'proxy-user', FProxyUsername);
-    iniFile.WriteString(NETWORK_SECTION, 'proxy-pass', EncodePassString(FProxyPassword));
+    iniFile.WriteString(NETWORK_SECTION, 'proxy-pass', EncodeStr(FProxyPassword));
     iniFile.WriteInteger(NETWORK_SECTION, 'proxy-port', FProxyPort);
     iniFile.WriteString(NETWORK_SECTION, 'update_server', FUpdateURL);
     iniFile.WriteString(NETWORK_SECTION, 'library_server', FDownloadURL);
@@ -754,6 +699,9 @@ begin
     iniFile.WriteInteger(NETWORK_SECTION,'read_time-out',FReadTimeOut);
     iniFile.WriteBool(NETWORK_SECTION,'use_ie_settings',FUseIESettings);
     iniFile.WriteInteger(NETWORK_SECTION,'dwnld_interval',FDwnldInterval);
+
+    iniFile.WriteString(NETWORK_SECTION, 'lib-user', FLibUsername);
+    iniFile.WriteString(NETWORK_SECTION, 'lib-pass', EncodeStr(FLibPassword));
 
     //
     // COLORS_SECTION
@@ -810,22 +758,6 @@ begin
 
     iniFile.WriteBool(BEHAVIOR_SECTION, 'DeleteDeleted', FDeleteDeleted);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'AutoLoadReview', FAutoLoadReview);
-    iniFile.WriteBool(BEHAVIOR_SECTION, 'ForceConvertToFBD',  FForceConvertToFBD);
-
-    //
-    // FILE_SORT_SECTION
-    //
-
-    iniFile.WriteBool(FILE_SORT_SECTION, 'EnableFileSort', FEnableSort);
-    iniFile.WriteString(FILE_SORT_SECTION, 'InputFolder', FInputFolder);
-
-    iniFile.WriteString(FILE_SORT_SECTION, 'Fb2FolderTemplate', FFB2FolderTemplate);
-    iniFile.WriteString(FILE_SORT_SECTION, 'Fb2FileTemplate', FFB2FileTemplate );
-
-    iniFile.WriteString(FILE_SORT_SECTION, 'FBDFolderTemplate', FFBDFolderTemplate);
-    iniFile.WriteString(FILE_SORT_SECTION, 'FBDFileTemplate', FFBDFileTemplate);
-
-
     //
     // INITIAL_DIRS_SECTION
     //
@@ -869,17 +801,19 @@ begin
 end;
 
 
-procedure TMHLSettings.LoadUpdates(iniFile: TIniFile);
+procedure TMHLSettings.LoadUpdates;
 var
   i: Integer;
   sl: TStringList;
   slHelper: TStringList;
+  iniFile: TIniFile;
 
 begin
 
   FUpdateList.URL := FUpdateURL;
   FUpdateList.Path := WorkPath;
 
+  iniFile := TIniFile.Create(FAppPath + 'updates.ini');
   try
 
     //
@@ -888,8 +822,6 @@ begin
 
     FUpdateList.Add('Локальная коллекция Либрусек','','last_librusec.info','librusec_update.zip',
                        True,CT_LIBRUSEC_LOCAL_FB);
-    FUpdateList.Add('Локальная коллекция Либрусек','','','daily_update.zip',
-                       False,CT_LIBRUSEC_LOCAL_FB);
     FUpdateList.Add('Онлайн коллекция Либрусек','','last_librusec.info','librusec_update.zip',
                        True,CT_LIBRUSEC_ONLINE_FB);
     FUpdateList.Add('Онлайн коллекция Либрусек','','last_extra.info','extra_update.zip',
@@ -1121,7 +1053,7 @@ end;
 function TMHLSettings.GetSystemFileName(fileType: TMHLSystemFile): string;
 begin
   case fileType of
-    sfSystemDB: Result := DataPath + FDbsFileName;
+    sfSystemDB: Result := DataPath + SYSTEM_DATABASE_FILENAME;
     sfGenresFB2: Result := AppPath + GENRES_FB2_FILENAME;
     sfGenresNonFB2: Result := AppPath + GENRES_NONFB2_FILENAME;
     sfServerErrorLog: Result := WorkPath + SERVER_ERRORLOG_FILENAME;

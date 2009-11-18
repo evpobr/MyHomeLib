@@ -26,12 +26,12 @@ type
     TabSheet2: TRzTabSheet;
     mmShort: TMemo;
     Img: TImage;
+    mmInfo: TMemo;
     RzPanel1: TRzPanel;
     RzBitBtn1: TRzBitBtn;
     btnLoadReview: TRzBitBtn;
     mmReview: TRzMemo;
     btnClearReview: TRzBitBtn;
-    mmInfo: TRzRichEdit;
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure RzBitBtn1Click(Sender: TObject);
     procedure mmReviewChange(Sender: TObject);
@@ -84,8 +84,7 @@ uses
   unit_MHLHelpers,
   unit_ReviewParser,
   jpeg,
-  pngimage,
-  strutils;
+  pngimage;
 
 const
   URL = 'http://lib.rus.ec/b/%d/';
@@ -174,19 +173,6 @@ var
   TmpImg: TGraphic;
 
   StrLen : integer;
-  ImageType: TCoverImageType;
-
-
-  procedure WriteString(Title, Text: string);
-  begin
-    mmInfo.SelAttributes.Style := [fsBold];
-    mmInfo.SetSelText(Title + ': ' + #9);
-    mmInfo.SelAttributes.Style := [];
-    if Text <> '' then mmInfo.SetSelText(Text);
-    mmInfo.SetSelText(#13#10)
-  end;
-
-
 begin
   FReviewChanged := False;
 
@@ -194,7 +180,7 @@ begin
   mmInfo.Lines.Clear;
   mmShort.Lines.Clear;
   try
-    book := LoadFictionbook(FS);
+    book:=LoadFictionbook(FS);
     try
       MS := TMemoryStream.Create;
       CoverID := Book.Description.Titleinfo.Coverpage.XML;
@@ -221,13 +207,21 @@ begin
 
       if ImgVisible then
       begin
-        CreateImage(ExtractFileExt(CoverID), TmpImg, ImageType);
-        if Assigned(TmpImg) then
-        begin
-          MS.Seek(0,soFromBeginning);
-          TmpImg.LoadFromStream(MS);
-          IMG.Picture.Assign(TmpImg);
-          IMG.Invalidate;
+        Ext := LowerCase(ExtractFileExt(CoverID));
+        try
+          if Ext = '.png' then
+             TmpImg := TPngImage.Create
+          else
+            if (Ext = '.jpg') or (Ext = '.jpeg') then
+              TmpImg := TJPEGImage.Create;
+          if Assigned(TmpImg) then
+          begin
+            MS.Seek(0,soFromBeginning);
+            TmpImg.LoadFromStream(MS);
+            IMG.Picture.Assign(TmpImg);
+            IMG.Invalidate;
+          end;
+        finally
           TmpImg.Free;
         end;
       end
@@ -239,50 +233,36 @@ begin
 
     with Book.Description.Titleinfo do
     begin
-
-      mmInfo.SelAttributes.Size := 10;
-      mmInfo.SelAttributes.Style := [fsBold];
-
+      mmInfo.Lines.Add('Description:');
       if Author.Count>0 then
-        mmInfo.SetSelText(Author[0].Lastname.Text+' '+Author[0].Firstname.Text+' '+Author[0].MiddleName.Text+#13#10);
+        mmInfo.Lines.Add(Author[0].Lastname.Text+' '+Author[0].Firstname.Text);
+      mmInfo.Lines.Add(Booktitle.Text);
+      if Genre.Count>0 then mmInfo.Lines.Add('Жанр: '+Genre[0]);;
+      if Sequence.Count>0 then
+      begin
+        mmInfo.Lines.Add('Серия: '+Sequence[0].Name);
+//        mmInfo.Lines.Add('Номер: '+IntToStr(Sequence[0].Number));
+      end;
 
-      mmInfo.SelAttributes.Size := 12;
-      mmInfo.SelAttributes.Color := clNavy;
-      mmInfo.SetSelText(Booktitle.Text+#13#10);
+     if Annotation.HasChildNodes then
+          for I := 0 to Annotation.ChildNodes.Count - 1 do
+            mmShort.Lines.Add(Annotation.ChildNodes[i].Text);
 
-      if Sequence.Count > 0 then
-        WriteString('Серия',Sequence[0].Name);
-
-      mmInfo.SetSelText(#13#10);
-      WriteString('Жанр',IfThen(Genre.Count > 0, Genre[0], ''));
-      WriteString('УДК', UDK);
-      WriteString('ББК', BBK);
-      WriteString('ГРНТИ', GRNTI);
-      mmInfo.SetSelText(#13#10);
-
-      WriteString('PublishInfo','');
-      mmInfo.SetSelText('Изд-во: '+ #9 + Book.Description.Publishinfo.Publisher.Text+#13#10);
-      mmInfo.SetSelText('Город: '+ #9 + Book.Description.Publishinfo.City.Text+#13#10);
-      mmInfo.SetSelText('Год: '+ #9 + Book.Description.Publishinfo.Year+#13#10);
-      mmInfo.SetSelText('ISBN: '+ #9 + Book.Description.Publishinfo.Isbn.Text+#13#10);
-      mmInfo.SetSelText(#13#10);
-
-
-      WriteString('DocumentInfo (OCR)','');
-      mmInfo.SetSelText('Авторы: '+#13#10);
+      mmInfo.Lines.Add('PublishInfo:');
+      mmInfo.Lines.Add('Издатель: '+Book.Description.Publishinfo.Publisher.Text);
+      mmInfo.Lines.Add('Город: '+Book.Description.Publishinfo.City.Text);
+      mmInfo.Lines.Add('Год: '+Book.Description.Publishinfo.Year);
+      mmInfo.Lines.Add('ISBN: '+Book.Description.Publishinfo.Isbn.Text);
+      mmInfo.Lines.Add('DocumentInfo (OCR):');
+      mmInfo.Lines.Add('Авторы: ');
       for I := 0 to Book.Description.Documentinfo.Author.Count - 1 do
         with Book.Description.Documentinfo.Author.Items[i] do
-            mmInfo.SetSelText(Firstname.Text + ' ' +Lastname.Text + '(' + NickName.Text + ')' + #13#10);
-      mmInfo.SetSelText('');
-      mmInfo.SetSelText('Программа: '+ Book.Description.Documentinfo.Programused.Text + #13#10);
-      mmInfo.SetSelText('Дата: '+ #9 + Book.Description.Documentinfo.Date.Text + #13#10);
-      mmInfo.SetSelText('ID: '+ #9 + Book.Description.Documentinfo.ID + #13#10);
-      mmInfo.SetSelText('Version: '+ #9 + Book.Description.Documentinfo.Version + #13#10);
-      mmInfo.SetSelText('History: '+ #9 + Book.Description.Documentinfo.History.P.Text + #13#10);
-
-      for I := 0 to Annotation.P.Count - 1 do
-              mmShort.SetSelText(Annotation.P.Items[i].Text);
-
+            mmInfo.Lines.Add(Firstname.Text + ' ' +Lastname.Text + '(' + NickName.Text + ')');
+      mmInfo.Lines.Add('Программа: '+Book.Description.Documentinfo.Programused.Text);
+      mmInfo.Lines.Add('Дата: '+Book.Description.Documentinfo.Date.Text);
+      mmInfo.Lines.Add('ID: '+Book.Description.Documentinfo.ID);
+      mmInfo.Lines.Add('Version: '+Book.Description.Documentinfo.Version);
+//      mmInfo.Lines.Add('History: '+Book.Description.Documentinfo.History.P.OnlyText);
     end;
   except
   end;
