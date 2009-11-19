@@ -428,9 +428,9 @@ object frmMain: TfrmMain
     Width = 942
     Height = 522
     HelpContext = 1
-    ActivePage = TabSheet2
+    ActivePage = TabSheet5
     Align = alClient
-    TabIndex = 1
+    TabIndex = 4
     TabOrder = 3
     TabStop = False
     OnChange = pgControlChange
@@ -524,7 +524,7 @@ object frmMain: TfrmMain
               Caption = #1055#1086#1080#1089#1082
             end
             object tbClearEdAuthor: TRzToolButton
-              Left = 174
+              Left = 156
               Top = 9
               Hint = #1054#1095#1080#1089#1090#1080#1090#1100
               ImageIndex = 36
@@ -539,7 +539,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 53
               Top = 12
-              Width = 114
+              Width = 96
               Height = 21
               Margins.Left = 10
               Margins.Top = 10
@@ -785,7 +785,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -882,7 +881,7 @@ object frmMain: TfrmMain
               Caption = #1055#1086#1080#1089#1082
             end
             object btnClearEdSeries: TRzToolButton
-              Left = 190
+              Left = 172
               Top = 9
               Hint = #1054#1095#1080#1089#1090#1080#1090#1100
               ImageIndex = 36
@@ -897,7 +896,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 53
               Top = 12
-              Width = 130
+              Width = 112
               Height = 21
               Margins.Left = 10
               Margins.Top = 10
@@ -2247,7 +2246,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 0
@@ -2327,21 +2325,6 @@ object frmMain: TfrmMain
             Align = alBottom
             BorderOuter = fsFlatRounded
             TabOrder = 1
-            DesignSize = (
-              221
-              27)
-            object RzToolButton2: TRzToolButton
-              Left = 154
-              Top = 8
-              Hint = #1054#1095#1080#1089#1090#1080#1090#1100
-              ImageIndex = 36
-              Images = ilMainMenu
-              Anchors = [akTop, akRight]
-              ParentShowHint = False
-              ShowHint = True
-              OnClick = btnClearEdSeriesClick
-              ExplicitLeft = 250
-            end
             object btnAddGroup: TRzBitBtn
               Left = 6
               Top = 2
@@ -2902,8 +2885,8 @@ object frmMain: TfrmMain
             ExplicitHeight = 19
           end
           object btnClearDownload: TRzBitBtn
-            Left = 759
-            Top = 21
+            Left = 747
+            Top = 3
             Width = 118
             Margins.Right = 8
             Margins.Bottom = 8
@@ -3531,7 +3514,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 312
     Bitmap = {
-      494C01011B0000023C0120002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C01011B000002600120002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -7239,7 +7222,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 256
     Bitmap = {
-      494C010125002700000110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010125002700240110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000040000000A0000000010020000000000000A0
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -8598,7 +8581,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 368
     Bitmap = {
-      494C01010A003801E80010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C01010A0038010C0110001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -9128,7 +9111,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 480
     Bitmap = {
-      494C010118001A00000120002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C010118001A00240120002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12835,7 +12818,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 424
     Bitmap = {
-      494C010112004800000110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010112004800240110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000005000000001002000000000000050
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

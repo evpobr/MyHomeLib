@@ -255,9 +255,6 @@ begin
 
       mmInfo.SetSelText(#13#10);
       WriteString('∆‡Ì',IfThen(Genre.Count > 0, Genre[0], ''));
-      WriteString('”ƒ ', UDK);
-      WriteString('¡¡ ', BBK);
-      WriteString('√–Õ“»', GRNTI);
       mmInfo.SetSelText(#13#10);
 
       WriteString('PublishInfo','');

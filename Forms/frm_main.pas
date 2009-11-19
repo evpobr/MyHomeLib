@@ -310,7 +310,6 @@ type
     RzPanel7: TRzPanel;
     tvGroups: TVirtualStringTree;
     RzPanel8: TRzPanel;
-    RzToolButton2: TRzToolButton;
     RzPanel20: TRzPanel;
     RzPanel21: TRzPanel;
     ipnlFavorites: TMHLInfoPanel;
@@ -4374,7 +4373,7 @@ begin
     Data.ID := BookIDList[i].ID;
     Data.State := dsWait;
     Data.FileName := Folder;
-    Data.URL := Format(Settings.DownloadURL + 'b/%d/download', [LibID]);
+    Data.URL := Format(Settings.DownloadURL + 'b/%d/get', [LibID]);
   end; // for
 
   lblDownloadCount.Caption := Format('(%d)',[tvDownloadList.ChildCount[Nil]]);
@@ -5978,10 +5977,7 @@ var
   FileName: string;
 begin
   GetActiveTree(Tree);
-
   FileName := (Settings.TempPath + 'book_list.' + ext[(Sender as TMenuItem).Tag]);
-
-
   Fs := TFileStream.Create(FileName, fmCreate);
   try
     case (Sender as TMenuItem).Tag of

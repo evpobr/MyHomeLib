@@ -55,6 +55,9 @@ type
 
     FNoPause: boolean;
 
+    FNewURL : string;
+    FOnPostReq: boolean;
+
     procedure ProcessError(const LongMsg, ShortMsg, AFileName: string);
     function CalculateURL: string;
     function DownloadBook(ID: integer): Boolean;
@@ -71,6 +74,8 @@ type
     procedure HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
     procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
     procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
+    procedure HTTPRedirect(Sender: TObject; var dest: string;
+                  var NumRedirect: Integer; var Handled: Boolean; var VMethod: string);
 
   public
     property BookIdList: TBookIdList read FBookIdList write FBookIdList;
@@ -93,13 +98,22 @@ uses
   IdStack,
   IdStackConsts,
   IdException,
-  DateUtils;
+  DateUtils,
+  IdMultipartFormData;
+
+procedure TDownloadBooksThread.HTTPRedirect(Sender: TObject; var dest: string;
+  var NumRedirect: Integer; var Handled: Boolean; var VMethod: string);
+begin
+  FNewURL := dest;
+end;
 
 procedure TDownloadBooksThread.HTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
 var
   ElapsedTime: Cardinal;
   Speed: string;
 begin
+  if FOnPostReq then Exit;
+
   if Canceled then
   begin
     FidHTTP.Disconnect;
@@ -126,6 +140,8 @@ end;
 
 procedure TDownloadBooksThread.HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
 begin
+  if FOnPostReq then Exit;
+
   SetProgress2(100, -1);
   SetComment2('Готово', '');
 end;
@@ -166,6 +182,7 @@ begin
     FidHTTP.OnWork := HTTPWork;
     FidHTTP.OnWorkBegin := HTTPWorkBegin;
     FidHTTP.OnWorkEnd := HTTPWorkEnd;
+    FidHTTP.OnRedirect := HTTPRedirect;
     FidHTTP.HandleRedirects := True;
 
     SetProxySettings(FidHTTP);
@@ -214,6 +231,7 @@ var
   Path: string;
   Folder: string;
   URL: string;
+  mpfds: TIdMultiPartFormDataStream;
 begin
   Result := False;
   FNoPause := False;
@@ -237,7 +255,23 @@ begin
         URL := CalculateURL; // Locate по таблице был сделан при вызове GetBookFileName,
                              // так что ID можно не передавать
 
-        FidHTTP.Get(URL, FS);
+        try
+          mpfds:=TIdMultiPartFormDataStream.Create;
+          mpfds.AddFormField('name', Settings.LibUsername);
+          mpfds.AddFormField('password', Settings.LibPassword);
+
+         FOnPostReq := True;
+          try
+            FidHTTP.Post(URL, mpfds);
+          except
+
+          end;
+        finally
+          mpfds.Free;
+        end;
+
+        FOnPostReq := False;
+        FidHTTP.Get(FNewURL, FS);
 
         { TODO -oAlex : В зависимости от типа файла (zip или нет) имя должно формироваться по разному! }
 
@@ -339,7 +373,7 @@ var
 begin
   Result := '';
 
-  Template := Settings.DownloadURL + 'b/%ID%/download'; { TODO -oAlex : Заглушка! }
+  Template := Settings.DownloadURL + 'b/%ID%/get';  { TODO -oAlex : Заглушка! }
 
   dmCollection.FieldByName(0, 'LibId', S);
   StrReplace('%ID%', S, Template);

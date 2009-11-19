@@ -106,7 +106,6 @@ uses
   unit_WriteFb2Info in 'Units\unit_WriteFb2Info.pas',
   unit_ImportFB2Thread in 'ImportImpl\unit_ImportFB2Thread.pas',
   frm_ConverToFBD in 'Forms\frm_ConverToFBD.pas' {frmConvertToFBD},
-  unit_FBD_helpers in 'Units\unit_FBD_helpers.pas',
   fictionbook_21 in 'Components\fictionbook_21.pas',
   frm_author_list in 'Forms\frm_author_list.pas' {frmAuthorList};
 
@@ -132,10 +131,7 @@ begin
   Application.CreateForm(TDMCollection, DMCollection);
   // а потом - формы!
   Application.CreateForm(TfrmMain, frmMain);
-  Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
   Application.CreateForm(TfrmEditor, frmEditor);
-  Application.CreateForm(TfrmConvertToFBD, frmConvertToFBD);
-  Application.CreateForm(TfrmAuthorList, frmAuthorList);
   //  Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
   Application.CreateForm(TfrmEditBookInfo, frmEditBookInfo);
   Application.CreateForm(TfrmGenreTree, frmGenreTree);

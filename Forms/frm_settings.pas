@@ -65,9 +65,8 @@ type
     RzLabel2: TRzLabel;
     RzLabel3: TRzLabel;
     RzLabel4: TRzLabel;
-    RzEdit2: TRzEdit;
+    edLibUserName: TRzEdit;
     RzLabel6: TRzLabel;
-    RzMaskEdit1: TRzMaskEdit;
     RzGroupBox3: TRzGroupBox;
     edFolderTemplate: TRzEdit;
     edFileNameTemplate: TRzEdit;
@@ -175,6 +174,7 @@ type
     cbEnableFileSort: TCheckBox;
     RzGroupBox15: TRzGroupBox;
     edInputFolder: TRzButtonEdit;
+    edLibPassword: TRzMaskEdit;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
@@ -302,6 +302,10 @@ begin
   cbUseIESettings.Checked := Settings.UseIESettings;
   cbAutoRunUpdate.Checked := Settings.AutoRunUpdate;
 
+  edLibUsername.Text :=  Settings.LibUsername;
+  edLibPassword.Text :=  Settings.LibPassword;
+
+
   // Page 5 - Scripts
   lvScripts.Items.Clear;
   cbDefaultAction.Items.Clear;
@@ -403,6 +407,8 @@ begin
   Settings.DwnldInterval          := Round(edDwnldInterval.Value);
   Settings.UseIESettings          := cbUseIESettings.Checked;
   Settings.AutoRunUpdate          := cbAutoRunUpdate.Checked;
+  Settings.LibUsername            := edLibUsername.Text;
+  Settings.LibPassword            := edLibPassword.Text;
 
   // Page 5 - Scripts
   SaveScripts;

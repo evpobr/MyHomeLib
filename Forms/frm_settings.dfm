@@ -62,7 +62,7 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 414
     Height = 413
-    ActivePage = tsDevices
+    ActivePage = tsInternet
     Align = alClient
     TabOrder = 1
     object tsDevices: TTabSheet
@@ -670,7 +670,7 @@ object frmSettings: TfrmSettings
         end
         object edProxyPassword: TRzMaskEdit
           Left = 280
-          Top = 75
+          Top = 74
           Width = 105
           Height = 21
           PasswordChar = #7
@@ -724,21 +724,12 @@ object frmSettings: TfrmSettings
           Caption = #1048#1084#1103' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1103
           Transparent = True
         end
-        object RzEdit2: TRzEdit
+        object edLibUserName: TRzEdit
           Left = 112
           Top = 48
           Width = 115
           Height = 21
-          Enabled = False
           TabOrder = 0
-        end
-        object RzMaskEdit1: TRzMaskEdit
-          Left = 280
-          Top = 48
-          Width = 105
-          Height = 21
-          Enabled = False
-          TabOrder = 1
         end
         object edDownloadServer: TRzComboBox
           Left = 16
@@ -746,11 +737,19 @@ object frmSettings: TfrmSettings
           Width = 369
           Height = 21
           AutoComplete = False
-          TabOrder = 2
+          TabOrder = 1
           Text = 'http://lib.rus.ec/'
           Items.Strings = (
             'http://lib.rus.ec/'
             'http://lib.ololo.cc/')
+        end
+        object edLibPassword: TRzMaskEdit
+          Left = 280
+          Top = 48
+          Width = 105
+          Height = 21
+          PasswordChar = #7
+          TabOrder = 2
         end
       end
       object RzGroupBox9: TRzGroupBox
