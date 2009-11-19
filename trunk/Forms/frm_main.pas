@@ -6464,8 +6464,13 @@ end;
 procedure TfrmMain.miPdfdjvuClick(Sender: TObject);
 begin
   DMUser.ActivateCollection(Settings.ActiveCollection);
-  frmAddNonFb2.ShowModal;
-  InitCollection(True);
+  try
+    frmAddNonFb2 := TfrmAddNonFb2.Create(self);
+    frmAddNonFb2.ShowModal;
+  finally
+    frmAddNonFb2.Free;
+    InitCollection(True);
+  end;
 end;
 
 procedure TfrmMain.OnBookDownloadComplete(var Message: TDownloadCompleteMessage);
