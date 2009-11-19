@@ -113,7 +113,6 @@ type
     btnOpenBook: TRzBitBtn;
     FBD: TFBDDocument;
     alBookAuthors: TFBDAuthorTable;
-    RzBitBtn1: TRzBitBtn;
     alFBDAuthor: TFBDAuthorTable;
     procedure RzButton3Click(Sender: TObject);
     procedure TreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
@@ -210,7 +209,7 @@ var
   Author : TAuthorRecord;
 begin
   Author.Last := trim(edFileName.SelText);
-  alBookAuthors.AddRow(Author);
+ // alBookAuthors.AddRow(Author);
 end;
 
 procedure TfrmAddnonfb2.btnCopyToNameClick(Sender: TObject);
@@ -275,8 +274,8 @@ procedure TfrmAddnonfb2.miClearAllClick(Sender: TObject);
 begin
   edT.Text := '';
   edFileName.Text := '';
-  alBookAuthors.Clear;
-  alFBDAuthor.Clear;
+//  alBookAuthors.Clear;
+//  alFBDAuthor.Clear;
   cbSeries.Text := '';
   edSN.Value := 0;
   edKeyWords.Text := '';
@@ -307,8 +306,8 @@ begin
   try
     if Data = nil then
       raise EInvalidOp.Create('‘айл не выбран!');
-    if (not cbNoAuthorAllowed.Checked) and (alBookAuthors.AuthorsCount = 0) then
-      raise EInvalidOp.Create('”кажите минимум одного автора!');
+//    if (not cbNoAuthorAllowed.Checked) and (alBookAuthors.AuthorsCount = 0) then
+//      raise EInvalidOp.Create('”кажите минимум одного автора!');
     if edT.Text = '' then
       raise EInvalidOp.Create('”кажите название книги!');
     if Data.DataType = dtFolder then
@@ -336,7 +335,7 @@ begin
     0: miClearAllClick(nil);
     1:
       begin
-        alBookAuthors.Clear;
+//        alBookAuthors.Clear;
         frmEditAuthor.edFamily.Text := '';
         frmEditAuthor.edName.Text := '';
         frmEditAuthor.edMiddle.Text := '';

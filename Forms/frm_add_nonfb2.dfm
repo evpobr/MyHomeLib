@@ -516,19 +516,11 @@ object frmAddnonfb2: TfrmAddnonfb2
         Top = 108
         Width = 731
         Height = 187
-        Caption = #1040#1074#1090#1086#1088#1099
+        Caption = #1040#1074#1090#1086#1088#1099' '#1082#1085#1080#1075#1080
         TabOrder = 9
-        VisibleRows = 0
         DesignSize = (
           731
           187)
-        object RzBitBtn1: TRzBitBtn
-          Left = 229
-          Top = 157
-          Width = 90
-          Caption = #1048#1079' '#1089#1087#1080#1089#1082#1072' ...'
-          TabOrder = 4
-        end
       end
     end
     object tsFBD: TRzTabSheet
@@ -727,15 +719,14 @@ object frmAddnonfb2: TfrmAddnonfb2
       object alFBDAuthor: TFBDAuthorTable
         AlignWithMargins = True
         Left = 248
-        Top = 73
+        Top = 80
         Width = 486
-        Height = 134
-        Caption = #1040#1074#1090#1086#1088#1099' '#1076#1086#1082#1091#1084#1077#1085#1090#1072
+        Height = 127
+        Caption = #1040#1074#1090#1086#1088' FBD-'#1076#1086#1082#1091#1084#1077#1085#1090#1072
         TabOrder = 5
-        VisibleRows = 2
         DesignSize = (
           486
-          134)
+          127)
       end
     end
   end
