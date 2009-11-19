@@ -42,8 +42,9 @@ uses
   files_list,
   unit_database,
   unit_globals,
-  unit_FBD_helpers,
-  RzTabs, RzLabel, RzRadChk;
+  RzTabs,
+  RzLabel,
+  RzRadChk, FBDAuthorTable, FBDDocument;
 
 type
   TfrmAddnonfb2 = class(TForm)
@@ -79,12 +80,6 @@ type
     cbLang: TRzComboBox;
     RzGroupBox7: TRzGroupBox;
     edKeyWords: TEdit;
-    RzGroupBox1: TRzGroupBox;
-    lvAuthors: TRzListView;
-    btnDeleteAuthor: TRzBitBtn;
-    btnChangeAuthor: TRzBitBtn;
-    btnAddAuthor: TRzBitBtn;
-    RzBitBtn1: TRzBitBtn;
     RzGroupBox4: TRzGroupBox;
     edSN: TRzNumericEdit;
     cbSeries: TRzComboBox;
@@ -111,27 +106,15 @@ type
     edPublisher: TRzEdit;
     edYear: TRzEdit;
     edCity: TRzEdit;
-    RzGroupBox11: TRzGroupBox;
-    RzLabel2: TRzLabel;
-    RzLabel3: TRzLabel;
-    RzLabel8: TRzLabel;
-    RzLabel9: TRzLabel;
-    edFirstName: TRzEdit;
-    edMiddleName: TRzEdit;
-    edLastName: TRzEdit;
-    edNickName: TRzEdit;
     mmAnnotation: TMemo;
     dtnConvert: TRzBitBtn;
     btnClose: TRzBitBtn;
-    RzGroupBox13: TRzGroupBox;
-    edUDK: TRzEdit;
-    RzLabel1: TRzLabel;
-    edBBK: TRzEdit;
-    RzLabel10: TRzLabel;
-    edGRNTI: TRzEdit;
-    RzLabel11: TRzLabel;
     cbForceConvertToFBD: TRzCheckBox;
     btnOpenBook: TRzBitBtn;
+    FBD: TFBDDocument;
+    alBookAuthors: TFBDAuthorTable;
+    RzBitBtn1: TRzBitBtn;
+    alFBDAuthor: TFBDAuthorTable;
     procedure RzButton3Click(Sender: TObject);
     procedure TreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
@@ -144,9 +127,6 @@ type
       TextType: TVSTTextType);
     procedure btnShowGenresClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure btnAddAuthorClick(Sender: TObject);
-    procedure btnChangeAuthorClick(Sender: TObject);
-    procedure btnDeleteAuthorClick(Sender: TObject);
     procedure btnCopyToTitleClick(Sender: TObject);
     procedure btnCopyToSeriesClick(Sender: TObject);
     procedure btnCopyToFamilyClick(Sender: TObject);
@@ -164,11 +144,9 @@ type
     procedure dtnConvertClick(Sender: TObject);
     procedure btnFileOpenClick(Sender: TObject);
     procedure btnNextClick(Sender: TObject);
-    procedure RzBitBtn1Click(Sender: TObject);
 
   private
     FBookRecord: TBookRecord;
-    FFBD: TFBDRecord;
     FFolder: string;
     
     procedure PrepareBookRecord;
@@ -183,7 +161,6 @@ type
   private
     FLibrary: TMHLLibrary;
     FRootPath: string;
-    FFBDFileName : string;
     function CheckEmptyFields(Data: PFileData): boolean;
   end;
 
@@ -199,7 +176,7 @@ uses dm_user,
   unit_TreeUtils,
   unit_Consts,
   unit_Settings,
-  frm_author_list;
+  unit_Helpers, frm_author_list;
 
 {$R *.dfm}
 
@@ -230,17 +207,16 @@ end;
 
 procedure TfrmAddnonfb2.btnCopyToFamilyClick(Sender: TObject);
 var
-  Family: TListItem;
+  Author : TAuthorRecord;
 begin
-  Family := lvAuthors.Items.Add;
-  Family.Caption := trim(edFileName.SelText);
-  lvAuthors.Selected := Family;
+  Author.Last := trim(edFileName.SelText);
+  alBookAuthors.AddRow(Author);
 end;
 
 procedure TfrmAddnonfb2.btnCopyToNameClick(Sender: TObject);
 begin
-  if lvAuthors.Selected <> nil then
-    lvAuthors.Selected.SubItems.Add(trim(edFileName.SelText));
+//  if lvAuthors.Selected <> nil then
+//    lvAuthors.Selected.SubItems.Add(trim(edFileName.SelText));
 end;
 
 procedure TfrmAddnonfb2.btnCopyToSeriesClick(Sender: TObject);
@@ -282,44 +258,34 @@ end;
 
 function TfrmAddnonfb2.MakeFBD;
 begin
-  FFBD.First := edFirstName.Text;
-  FFBD.Last := edLastName.Text;
-  FFBD.Middle := edMiddleName.Text;
-  FFBD.Nick := edNickName.Text;
-
-  FFBD.Publisher := edPublisher.Text;
-  FFBD.City := edCity.Text;
-  FFBD.ISBN := edISBN.Text;
-  FFBD.Year := edYear.Text;
-
-  FFBD.UDK := edUDK.text;
-  FFBD.BBK := edBBK.text;
-  FFBD.GRNTI := edGRNTI.text;
-
-  Result := PrepareFBDFile(FBookRecord, FFBD, mmAnnotation, FFolder +  FFBDFileName);
+//  FFBD.First := edFirstName.Text;
+//  FFBD.Last := edLastName.Text;
+//  FFBD.Middle := edMiddleName.Text;
+//  FFBD.Nick := edNickName.Text;
+//
+//  FFBD.Publisher := edPublisher.Text;
+//  FFBD.City := edCity.Text;
+//  FFBD.ISBN := edISBN.Text;
+//  FFBD.Year := edYear.Text;
+//
+//  Result := PrepareFBDFile(FBookRecord, FFBD, mmAnnotation, FFolder +  FFBDFileName);
 end;
 
 procedure TfrmAddnonfb2.miClearAllClick(Sender: TObject);
 begin
   edT.Text := '';
   edFileName.Text := '';
-  lvAuthors.Items.Clear;
+  alBookAuthors.Clear;
+  alFBDAuthor.Clear;
   cbSeries.Text := '';
   edSN.Value := 0;
   edKeyWords.Text := '';
 
-  frmEditAuthor.edFamily.Text := '';
-  frmEditAuthor.edName.Text := '';
-  frmEditAuthor.edMiddle.Text := '';
 
   edPublisher.Clear;
   edCity.Clear;
   edISBN.Clear;
   edYear.Clear;
-
-  edUDK.Clear;
-  edBBK.Clear;
-  edGRNTI.Clear;
 
   mmAnnotation.Lines.Clear;
   FCover.Picture := nil;
@@ -341,7 +307,7 @@ begin
   try
     if Data = nil then
       raise EInvalidOp.Create('Файл не выбран!');
-    if (not cbNoAuthorAllowed.Checked) and (lvAuthors.Items.Count = 0) then
+    if (not cbNoAuthorAllowed.Checked) and (alBookAuthors.AuthorsCount = 0) then
       raise EInvalidOp.Create('Укажите минимум одного автора!');
     if edT.Text = '' then
       raise EInvalidOp.Create('Укажите название книги!');
@@ -361,7 +327,6 @@ begin
   FLibrary.InsertBook(FBookRecord, True, True);
 
   FBookRecord.Clear;
-  FFBD.cover := '';
 
   Next := Tree.GetNext(Tree.GetFirstSelected);
   Tree.DeleteNode(Tree.GetFirstSelected, True);
@@ -371,7 +336,7 @@ begin
     0: miClearAllClick(nil);
     1:
       begin
-        lvAuthors.Items.Clear;
+        alBookAuthors.Clear;
         frmEditAuthor.edFamily.Text := '';
         frmEditAuthor.edName.Text := '';
         frmEditAuthor.edMiddle.Text := '';
@@ -405,17 +370,17 @@ begin
     PrepareBookRecord;
     if cbForceConvertToFBD.Checked then
     begin
-      FFBDFilename := FBookrecord.FileName + FBD_EXTENSION;
-      BookFileName := FBookrecord.FileName + FBookrecord.FileExt;
-      FFolder := FRootPath + FBookrecord.Folder;
-      ZipFilename := FFolder + FBookrecord.FileName + ZIP_EXTENSION;
-
-      if MakeFBD then
-        if CreateZip(ZipFilename, FFolder, BookFileName, FFBDFilename, False) then
-        begin
-          FBookrecord.FileName := FBookrecord.FileName + ZIP_EXTENSION;
-          CommitData;
-        end;
+//      FFBDFilename := FBookrecord.FileName + FBD_EXTENSION;
+//      BookFileName := FBookrecord.FileName + FBookrecord.FileExt;
+//      FFolder := FRootPath + FBookrecord.Folder;
+//      ZipFilename := FFolder + FBookrecord.FileName + ZIP_EXTENSION;
+//
+//      if MakeFBD then
+//        if CreateZip(ZipFilename, FFolder, BookFileName, FFBDFilename, False) then
+//        begin
+//          FBookrecord.FileName := FBookrecord.FileName + ZIP_EXTENSION;
+//          CommitData;
+//        end;
     end
       else CommitData;
   finally
@@ -434,17 +399,17 @@ begin
     Data := Tree.GetNodeData(Tree.GetFirstSelected);
     if CheckEmptyFields(Data) then
     begin
-      NewName := CheckSymbols(lvAuthors.Items[0].Caption + ' ' +  lvAuthors.Items[0].SubItems[0] +
-             ' ' + edT.Text);
-      if RenameFile(Data.FullPath + Data.FileName + Data.Ext, Data.FullPath + NewName + Data.Ext) then
-      begin
-        Data.FileName := NewName;
-        edFileName.Text := NewName;
-        Tree.RepaintNode(Tree.GetFirstSelected);
-      end
-      else MessageDlg('Переименование не удалось!' + #13 +
-                    'Возможно, файл заблокирован другой программой.',
-                    mtError,[mbOk],0);
+//      NewName := CheckSymbols(lvAuthors.Items[0].Caption + ' ' +  lvAuthors.Items[0].SubItems[0] +
+//             ' ' + edT.Text);
+//      if RenameFile(Data.FullPath + Data.FileName + Data.Ext, Data.FullPath + NewName + Data.Ext) then
+//      begin
+//        Data.FileName := NewName;
+//        edFileName.Text := NewName;
+//        Tree.RepaintNode(Tree.GetFirstSelected);
+//      end
+//      else MessageDlg('Переименование не удалось!' + #13 +
+//                    'Возможно, файл заблокирован другой программой.',
+//                    mtError,[mbOk],0);
     end;
   finally
     btnRenameFile.Enabled := True;
@@ -463,21 +428,21 @@ begin
   Data := Tree.GetNodeData(Tree.GetFirstSelected);
   if not CheckEmptyFields(Data) then Exit;
 
-  if lvAuthors.Items.Count > 0 then
-    for I := 0 to lvAuthors.Items.Count - 1 do
-    begin
-      strLastName:= lvAuthors.Items[i].Caption;
-      if lvAuthors.Items[i].SubItems.Count > 0 then
-        strFirstName:= lvAuthors.Items[i].SubItems[0];
-      if lvAuthors.Items[i].SubItems.Count > 1 then
-        strMidName:= lvAuthors.Items[i].SubItems[1];
-
-      FBookRecord.AddAuthor(strLastName, strFirstName, strMidName);
-    end
-  else
-  begin
-    FBookRecord.AddAuthor('Неизвестный','автор', '');
-  end;
+//  if lvAuthors.Items.Count > 0 then
+//    for I := 0 to lvAuthors.Items.Count - 1 do
+//    begin
+//      strLastName:= lvAuthors.Items[i].Caption;
+//      if lvAuthors.Items[i].SubItems.Count > 0 then
+//        strFirstName:= lvAuthors.Items[i].SubItems[0];
+//      if lvAuthors.Items[i].SubItems.Count > 1 then
+//        strMidName:= lvAuthors.Items[i].SubItems[1];
+//
+//      FBookRecord.AddAuthor(strLastName, strFirstName, strMidName);
+//    end
+//  else
+//  begin
+//    FBookRecord.AddAuthor('Неизвестный','автор', '');
+//  end;
 
   frmGenreTree.GetSelectedGenres(FBookRecord);
   FBookRecord.Title := edT.Text;
@@ -506,57 +471,11 @@ begin
   CommitData;
 end;
 
-procedure TfrmAddnonfb2.btnAddAuthorClick(Sender: TObject);
-var
-  Family: TListItem;
-
-begin
-  frmEditAuthor.edFamily.Text := '';
-  frmEditAuthor.edName.Text := '';
-  frmEditAuthor.edMiddle.Text := '';
-  if frmEditAuthor.ShowModal = mrOk then
-  begin
-    Family := lvAuthors.Items.Add;
-    Family.Caption := frmEditAuthor.edFamily.Text;
-    Family.SubItems.Add(frmEditAuthor.edName.Text);
-    Family.SubItems.Add(frmEditAuthor.edMiddle.Text);
-  end;
-end;
-
-procedure TfrmAddnonfb2.btnChangeAuthorClick(Sender: TObject);
-var
-  Family: TListItem;
-begin
-  Family := lvAuthors.Selected;
-  if Family = nil then
-    Exit;
-  frmEditAuthor.edFamily.Text := Family.Caption;
-  if Family.SubItems.Count > 0 then
-    frmEditAuthor.edName.Text := Family.SubItems[0];
-  if Family.SubItems.Count > 1 then
-    frmEditAuthor.edMiddle.Text := Family.SubItems[1];
-  if frmEditAuthor.ShowModal = mrOk then
-  begin
-    Family.Caption := frmEditAuthor.edFamily.Text;
-    if Family.SubItems.Count > 0 then
-      Family.SubItems[0] := frmEditAuthor.edName.Text
-    else
-      Family.SubItems.Add(frmEditAuthor.edName.Text);
-    if Family.SubItems.Count > 1 then
-      Family.SubItems[1] := frmEditAuthor.edMiddle.Text
-    else
-      Family.SubItems.Add(frmEditAuthor.edMiddle.Text);
-  end;
-end;
-
-procedure TfrmAddnonfb2.btnDeleteAuthorClick(Sender: TObject);
-begin
-  lvAuthors.DeleteSelected;
-end;
-
 procedure TfrmAddnonfb2.btnLoadClick(Sender: TObject);
+var
+  FileName: string;
 begin
-  LoadCoverFromFile(FCover, FFBD.cover, FFBD.ImageType);
+  if GetFileName(fnOpenCoverImage,FileName) then FBD.LoadCoverFromFile(FileName);
 end;
 
 procedure TfrmAddnonfb2.btnNextClick(Sender: TObject);
@@ -566,7 +485,7 @@ end;
 
 procedure TfrmAddnonfb2.btnPasteCoverClick(Sender: TObject);
 begin
-  CoverFromClpbrd(FCover, FFBD.Cover, FFBD.ImageType);
+  FBD.LoadCoverFronClpbrd;
 end;
 
 procedure TfrmAddnonfb2.flFilesDirectory(Sender: TObject; const Dir: string);
@@ -715,30 +634,6 @@ begin
   begin
     S := AnsiLowercase(Data.FullPath + Data.FileName + Data.Ext);
     ShellExecute(Handle, 'open', PChar(s), '', nil, SW_SHOWNORMAL);
-  end;
-end;
-
-procedure TfrmAddnonfb2.RzBitBtn1Click(Sender: TObject);
-var
-  Family : TListItem;
-  Data : PAuthorData;
-  Node: PVirtualNode;
-begin
-  frmMain.FillAuthorTree(frmAuthorList.tvAuthorList, True);
-  if frmAuthorList.ShowModal = mrOK then
-  begin
-    Node := frmAuthorList.tvAuthorList.GetFirstSelected;
-    while node <> nil do
-    begin
-      Data := frmAuthorList.tvAuthorList.GetNodeData(Node);
-
-      Family := lvAuthors.Items.Add;
-      Family.Caption := Data.Last;
-      Family.SubItems.Add(Data.First);
-      Family.SubItems.Add(Data.Middle);
-
-      Node := frmAuthorList.tvAuthorList.GetNextSelected(Node);
-    end;
   end;
 end;
 

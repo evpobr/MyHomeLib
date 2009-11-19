@@ -29,6 +29,10 @@ object frmBookDetails: TfrmBookDetails
     object TabSheet1: TRzTabSheet
       DisabledIndex = 0
       Caption = 'Fb2 '#1080#1085#1092#1086
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Img: TImage
         Left = 8
         Top = 13
@@ -67,6 +71,10 @@ object frmBookDetails: TfrmBookDetails
     end
     object TabSheet2: TRzTabSheet
       Caption = #1056#1077#1094#1077#1085#1079#1080#1103
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object btnLoadReview: TRzBitBtn
         Left = 8
         Top = 384
@@ -200,14 +208,16 @@ object frmBookDetails: TfrmBookDetails
       580
       35)
     object RzBitBtn1: TRzBitBtn
-      Left = 465
-      Top = 7
+      Left = 463
+      Top = 5
       Width = 104
       Anchors = [akRight, akBottom]
       Caption = #1047#1072#1082#1088#1099#1090#1100
       TabOrder = 0
       OnClick = RzBitBtn1Click
       Kind = bkClose
+      ExplicitLeft = 465
+      ExplicitTop = 7
     end
   end
 end

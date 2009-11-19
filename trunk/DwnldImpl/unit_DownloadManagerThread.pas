@@ -35,7 +35,8 @@ type
     FCurrentData : PDownloadData;
 
     FError : boolean;
-
+    FNewURL : string;
+    FOnPostReq: boolean;
     FControlState: boolean;
 
   protected
@@ -48,6 +49,10 @@ type
     procedure HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax:Int64);
     procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
     procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
+    procedure HTTPRedirect(Sender: TObject; var dest: string;
+                  var NumRedirect: Integer; var Handled: Boolean; var VMethod: string);
+
+
     procedure WorkFunction;
 
     procedure SetControlsState;
@@ -66,7 +71,8 @@ uses
   dm_collection,
   IdStack,
   Windows,
-  unit_Settings;
+  unit_Settings,
+  IdMultipartFormData;
 
 
 procedure TDownloadManagerThread.TerminateNow;
@@ -97,13 +103,31 @@ procedure TDownloadManagerThread.Download;
 var
   FS: TMemoryStream;
   SL: TStringList;
+  mpfds: TIdMultiPartFormDataStream;
 begin
   FError := True;
   FS := TMemoryStream.Create;
   try
     try
 
-      FidHTTP.Get(FCurrentURL, FS);
+      try
+        mpfds:=TIdMultiPartFormDataStream.Create;
+        mpfds.AddFormField('name', Settings.LibUsername);
+        mpfds.AddFormField('password', Settings.LibPassword);
+
+         FOnPostReq := True;
+          try
+            FidHTTP.Post(FCurrentURL, mpfds);
+          except
+
+          end;
+        finally
+          mpfds.Free;
+        end;
+
+      FOnPostReq := False;
+      FidHTTP.Get(FNewURL, FS);
+
 
       if FCanceled then
         Exit;
@@ -138,7 +162,6 @@ begin
       finally
         SL.Free;
       end;
-
 
       except
         on E: EIdSocketError do
@@ -258,15 +281,22 @@ begin
   end;
 end;
 
+procedure TDownloadManagerThread.HTTPRedirect(Sender: TObject; var dest: string;
+  var NumRedirect: Integer; var Handled: Boolean; var VMethod: string);
+begin
+  FNewURL := dest;
+end;
+
 procedure TDownloadManagerThread.HTTPWork(ASender: TObject;
   AWorkMode: TWorkMode; AWorkCount: Int64);
 begin
+  if FOnPostReq then Exit;
+
   if FCanceled then
   begin
     FidHTTP.Disconnect;
     Exit;
   end;
-
 
   if FDownloadSize <> 0 then
   begin
@@ -280,6 +310,8 @@ procedure TDownloadManagerThread.HTTPWorkBegin(ASender: TObject;
   AWorkMode: TWorkMode; AWorkCountMax: Int64);
 
 begin
+  if FOnPostReq then Exit;
+
   FDownloadSize := AWorkCountMax;
   FProgress := FWorkCount * 100 div FDownloadSize;
   FStartDate := Now;
@@ -356,6 +388,7 @@ begin
   FidHTTP.OnWork := HTTPWork;
   FidHTTP.OnWorkBegin := HTTPWorkBegin;
   FidHTTP.OnWorkEnd := HTTPWorkEnd;
+  FidHTTP.OnRedirect := HTTPRedirect;
   FidHTTP.HandleRedirects := True;
 
   SetProxySettings(FidHTTP);

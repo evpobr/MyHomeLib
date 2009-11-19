@@ -4,7 +4,7 @@ object frmConvertToFBD: TfrmConvertToFBD
   ActiveControl = edPublisher
   BorderStyle = bsToolWindow
   Caption = #1055#1088#1077#1086#1073#1088#1072#1079#1086#1074#1072#1085#1080#1077' '#1074' FBD'
-  ClientHeight = 467
+  ClientHeight = 421
   ClientWidth = 559
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object frmConvertToFBD: TfrmConvertToFBD
     Left = 3
     Top = 3
     Width = 553
-    Height = 414
+    Height = 368
     Align = alClient
     BorderOuter = fsFlatRounded
     TabOrder = 0
@@ -258,64 +258,11 @@ object frmConvertToFBD: TfrmConvertToFBD
         Images = ImageList1
       end
     end
-    object RzGroupBox13: TRzGroupBox
-      Left = 7
-      Top = 360
-      Width = 538
-      Height = 49
-      Caption = #1050#1083#1072#1089#1089#1080#1092#1080#1082#1072#1090#1086#1088#1099
-      TabOrder = 5
-      object RzLabel10: TRzLabel
-        Left = 4
-        Top = 22
-        Width = 22
-        Height = 13
-        Caption = #1059#1044#1050
-      end
-      object RzLabel11: TRzLabel
-        Left = 169
-        Top = 22
-        Width = 19
-        Height = 13
-        Caption = #1041#1041#1050
-      end
-      object RzLabel12: TRzLabel
-        Left = 334
-        Top = 22
-        Width = 32
-        Height = 13
-        Caption = #1043#1056#1053#1058#1048
-      end
-      object edUDK: TRzEdit
-        Left = 32
-        Top = 17
-        Width = 132
-        Height = 21
-        Color = clCream
-        TabOrder = 0
-      end
-      object edBBK: TRzEdit
-        Left = 194
-        Top = 17
-        Width = 134
-        Height = 21
-        Color = clCream
-        TabOrder = 1
-      end
-      object edGRNTI: TRzEdit
-        Left = 372
-        Top = 17
-        Width = 157
-        Height = 21
-        Color = clCream
-        TabOrder = 2
-      end
-    end
   end
   object RzPanel2: TRzPanel
     AlignWithMargins = True
     Left = 3
-    Top = 423
+    Top = 377
     Width = 553
     Height = 41
     Align = alBottom
@@ -488,7 +435,7 @@ object frmConvertToFBD: TfrmConvertToFBD
     Left = 392
     Top = 256
     Bitmap = {
-      494C0101030008008C0010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010103000800A40010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000838383FF838383FF828282FF828282FF818181FF808080FF808080FF7E7E
@@ -626,5 +573,11 @@ object frmConvertToFBD: TfrmConvertToFBD
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       000000000000}
+  end
+  object FBD: TFBDDocument
+    Memo = mmAnnotation
+    Image = FCover
+    Left = 288
+    Top = 256
   end
 end

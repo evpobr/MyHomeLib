@@ -109,6 +109,9 @@ type
     FReadTimeOut: integer;
     FDwnldInterval : integer;
 
+    FLibUsername: string;
+    FLibPassword: string;
+
     FUseIESettings: boolean;
     FIEProxyServer: string;
     FIEProxyPort: Integer;
@@ -295,12 +298,12 @@ type
     property ReadTimeOut: integer read FReadTimeOut write FReadTimeOut;
     property DwnldInterval: integer read FDwnldInterval write FDwnldInterval;
 
+    property LibUsername: string read FLibUsername write FLibUsername;
+    property LibPassword: string read FLibPassword write FLibPassword;
+
     property UseIESettings: boolean read FUseIESettings write FUseIESettings;
     property IEProxyServer: string read FIEProxyServer write FIEProxyServer;
     property IEProxyPort: Integer read FIEProxyPort write FIEProxyPort;
-
-
-
 
     property BookColor: TColor read FBookColor write FBookColor;
     property SeriesColor: TColor read FSeriesColor write FSeriesColor;
@@ -601,8 +604,10 @@ begin
     FReadTimeOut := iniFile.ReadInteger(NETWORK_SECTION,'read_time-out',50000);
     FDwnldInterval := iniFile.ReadInteger(NETWORK_SECTION,'dwnld_interval',0);
 
-    FUseIESettings := iniFile.ReadBool(NETWORK_SECTION,'use_ie_settings',false);
+    FLibUsername := iniFile.ReadString(NETWORK_SECTION, 'lib-user', '');
+    FLibPassword := DecodePassString(iniFile.ReadString(NETWORK_SECTION, 'lib-pass', ''));
 
+    FUseIESettings := iniFile.ReadBool(NETWORK_SECTION,'use_ie_settings',false);
 
     //
     // COLORS_SECTION
@@ -754,6 +759,9 @@ begin
     iniFile.WriteInteger(NETWORK_SECTION,'read_time-out',FReadTimeOut);
     iniFile.WriteBool(NETWORK_SECTION,'use_ie_settings',FUseIESettings);
     iniFile.WriteInteger(NETWORK_SECTION,'dwnld_interval',FDwnldInterval);
+
+    iniFile.WriteString(NETWORK_SECTION, 'lib-user', FLibUsername);
+    iniFile.WriteString(NETWORK_SECTION, 'lib-pass', EncodePassString(FLibPassword));
 
     //
     // COLORS_SECTION

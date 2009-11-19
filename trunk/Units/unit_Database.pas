@@ -853,7 +853,7 @@ begin
   if not Res then
   begin
     ASeqNumber := BookRecord.SeqNumber;
-    if ASeqNumber > 1000 then
+    if ASeqNumber > 5000 then
       ASeqNumber := 0;
 
     FBooks.Insert;
