@@ -1,4 +1,4 @@
-object frmEditAuthor: TfrmEditAuthor
+object frmEditAuthorData: TfrmEditAuthorData
   Left = 0
   Top = 0
   HelpContext = 117

@@ -7,7 +7,7 @@
 			<DCC_DependencyCheckOutputName>Release\Bin\MyhomeLib.exe</DCC_DependencyCheckOutputName>
 			<MainSource>MyhomeLib.dpr</MainSource>
 			<ProjectVersion>12.0</ProjectVersion>
-			<Config Condition="'$(Config)'==''">Release</Config>
+			<Config Condition="'$(Config)'==''">Debug</Config>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
 			<Base>true</Base>
@@ -101,9 +101,6 @@
 			</DCCReference>
 			<DCCReference Include="Units\unit_TreeUtils.pas"/>
 			<DCCReference Include="Units\unit_MHL_xml.pas"/>
-			<DCCReference Include="Forms\frm_edit_author.pas">
-				<Form>frmEditAuthor</Form>
-			</DCCReference>
 			<DCCReference Include="Forms\frm_edit_reader.pas">
 				<Form>frmEditReader</Form>
 			</DCCReference>
@@ -237,6 +234,9 @@
 			<DCCReference Include="Components\fictionbook_21.pas"/>
 			<DCCReference Include="Forms\frm_author_list.pas">
 				<Form>frmAuthorList</Form>
+			</DCCReference>
+			<DCCReference Include="Forms\frm_edit_author.pas">
+				<Form>frmEditAuthorData</Form>
 			</DCCReference>
 			<RcItem Include="Resources\Images\16x16\star_small.png">
 				<ResourceType>RCData</ResourceType>

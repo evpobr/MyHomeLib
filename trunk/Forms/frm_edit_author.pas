@@ -19,7 +19,7 @@ uses
   Dialogs, StdCtrls, Mask, RzEdit, RzButton, RzRadChk, ExtCtrls, RzPanel;
 
 type
-  TfrmEditAuthor = class(TForm)
+  TfrmEditAuthorData = class(TForm)
     RzGroupBox1: TRzGroupBox;
     btnSave: TRzBitBtn;
     RzBitBtn2: TRzBitBtn;
@@ -48,7 +48,7 @@ type
   end;
 
 var
-  frmEditAuthor: TfrmEditAuthor;
+  frmEditAuthorData: TfrmEditAuthorData;
 
 implementation
 
@@ -56,22 +56,22 @@ implementation
 
 { TfrmEditAuthor }
 
-procedure TfrmEditAuthor.FormShow(Sender: TObject);
+procedure TfrmEditAuthorData.FormShow(Sender: TObject);
 begin
   ActiveControl := edFamily;
 end;
 
-function TfrmEditAuthor.GetAddNewState: boolean;
+function TfrmEditAuthorData.GetAddNewState: boolean;
 begin
   Result := cbAddNew.Checked;
 end;
 
-function TfrmEditAuthor.GetSaveLinks: boolean;
+function TfrmEditAuthorData.GetSaveLinks: boolean;
 begin
   Result := cbSaveLinks.Checked;
 end;
 
-procedure TfrmEditAuthor.SetShowCheckBoxes(const Value: boolean);
+procedure TfrmEditAuthorData.SetShowCheckBoxes(const Value: boolean);
 begin
   gbAddNew.Visible := Value;
 end;

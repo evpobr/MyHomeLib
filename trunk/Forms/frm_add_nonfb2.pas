@@ -44,7 +44,9 @@ uses
   unit_globals,
   RzTabs,
   RzLabel,
-  RzRadChk, FBDAuthorTable, FBDDocument;
+  RzRadChk,
+  FBDDocument,
+  FBDAuthorTable;
 
 type
   TfrmAddnonfb2 = class(TForm)
@@ -113,7 +115,7 @@ type
     btnOpenBook: TRzBitBtn;
     FBD: TFBDDocument;
     alBookAuthors: TFBDAuthorTable;
-    alFBDAuthor: TFBDAuthorTable;
+    alFBDAuthors: TFBDAuthorTable;
     procedure RzButton3Click(Sender: TObject);
     procedure TreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
@@ -168,14 +170,15 @@ var
 
 implementation
 
-uses dm_user,
+uses
+  dm_user,
   frm_main,
   frm_genre_tree,
-  frm_edit_author,
   unit_TreeUtils,
   unit_Consts,
   unit_Settings,
-  unit_Helpers, frm_author_list;
+  unit_Helpers,
+  frm_author_list;
 
 {$R *.dfm}
 
@@ -208,7 +211,7 @@ procedure TfrmAddnonfb2.btnCopyToFamilyClick(Sender: TObject);
 var
   Author : TAuthorRecord;
 begin
-  Author.Last := trim(edFileName.SelText);
+//  Author.Last := trim(edFileName.SelText);
  // alBookAuthors.AddRow(Author);
 end;
 
@@ -336,10 +339,6 @@ begin
     1:
       begin
 //        alBookAuthors.Clear;
-        frmEditAuthor.edFamily.Text := '';
-        frmEditAuthor.edName.Text := '';
-        frmEditAuthor.edMiddle.Text := '';
-
       end;
     2:
       begin

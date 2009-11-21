@@ -159,15 +159,15 @@ procedure TfrmEditBookInfo.btnAddAuthorClick(Sender: TObject);
 var
   Family:TListItem;
 begin
-  frmEditAuthor.edFamily.Clear;
-  frmEditAuthor.edName.Clear;
-  frmEditAuthor.edMiddle.Clear;
-  if frmEditAuthor.ShowModal=mrOk then
+  frmEditAuthorData.edFamily.Clear;
+  frmEditAuthorData.edName.Clear;
+  frmEditAuthorData.edMiddle.Clear;
+  if frmEditAuthorData.ShowModal=mrOk then
   begin
     Family:=lvAuthors.Items.Add;
-    Family.Caption:=frmEditAuthor.edFamily.Text;
-    Family.SubItems.Add(frmEditAuthor.edName.Text);
-    Family.SubItems.Add(frmEditAuthor.edMiddle.Text);
+    Family.Caption:=frmEditAuthorData.edFamily.Text;
+    Family.SubItems.Add(frmEditAuthorData.edName.Text);
+    Family.SubItems.Add(frmEditAuthorData.edMiddle.Text);
     FChanged := True;
   end;
 end;
@@ -179,16 +179,16 @@ begin
   Family:=lvAuthors.Selected;
   if Family=nil then Exit;
 
-  frmEditAuthor.edFamily.Text:=Family.Caption;
-  if Family.SubItems.Count>0 then frmEditAuthor.edName.Text:=Family.SubItems[0];
-  if Family.SubItems.Count>1 then frmEditAuthor.edMiddle.Text:=Family.SubItems[1];
-  if frmEditAuthor.ShowModal=mrOk then
+  frmEditAuthorData.edFamily.Text:=Family.Caption;
+  if Family.SubItems.Count>0 then frmEditAuthorData.edName.Text:=Family.SubItems[0];
+  if Family.SubItems.Count>1 then frmEditAuthorData.edMiddle.Text:=Family.SubItems[1];
+  if frmEditAuthorData.ShowModal=mrOk then
   begin
-    Family.Caption:=frmEditAuthor.edFamily.Text;
-    if Family.SubItems.Count>0 then Family.SubItems[0]:=frmEditAuthor.edName.Text
-      else Family.SubItems.Add(frmEditAuthor.edName.Text);
-    if Family.SubItems.Count>1 then Family.SubItems[1]:=frmEditAuthor.edMiddle.Text
-       else Family.SubItems.Add(frmEditAuthor.edMiddle.Text);
+    Family.Caption:=frmEditAuthorData.edFamily.Text;
+    if Family.SubItems.Count>0 then Family.SubItems[0]:=frmEditAuthorData.edName.Text
+      else Family.SubItems.Add(frmEditAuthorData.edName.Text);
+    if Family.SubItems.Count>1 then Family.SubItems[1]:=frmEditAuthorData.edMiddle.Text
+       else Family.SubItems.Add(frmEditAuthorData.edMiddle.Text);
     FChanged := True;
   end;
 end;
