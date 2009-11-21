@@ -800,7 +800,11 @@ uses
   frm_NCWizard,
   DateUtils,
   idStack,
-  idException, frm_editor, unit_SearchUtils, frm_search, unit_WriteFb2Info,
+  idException,
+  frm_editor,
+  unit_SearchUtils,
+  frm_search,
+  unit_WriteFb2Info,
   frm_ConverToFBD;
 
 resourcestring
@@ -4414,26 +4418,26 @@ begin
   dmCollection.tblAuthors.Locate('A_ID', dmCollection.tblAuthor_List['AL_AuthID'], []);
   old_AiD := dmCollection.tblAuthor_List['AL_AuthID'];
 
-  frmEditAuthor.edFamily.Text := dmCollection.tblAuthors.FieldByName('A_Family').AsString;
-  frmEditAuthor.edName.Text := dmCollection.tblAuthors.FieldByName('A_Name').AsString;
-  frmEditAuthor.edMiddle.Text := dmCollection.tblAuthors.FieldByName('A_Middle').AsString;
+  frmEditAuthorData.edFamily.Text := dmCollection.tblAuthors.FieldByName('A_Family').AsString;
+  frmEditAuthorData.edName.Text := dmCollection.tblAuthors.FieldByName('A_Name').AsString;
+  frmEditAuthorData.edMiddle.Text := dmCollection.tblAuthors.FieldByName('A_Middle').AsString;
 
-  frmEditAuthor.ShowCheckBoxes := True;
+  frmEditAuthorData.ShowCheckBoxes := True;
 
-  if frmEditAuthor.ShowModal = mrOk then
+  if frmEditAuthorData.ShowModal = mrOk then
   begin
 
-    S := trim(AnsiUpperCase(frmEditAuthor.edFamily.Text + ' ' +
-                                 frmEditAuthor.edName.Text + ' ' +
-                                 frmEditAuthor.edMiddle.Text));
+    S := trim(AnsiUpperCase(frmEditAuthorData.edFamily.Text + ' ' +
+                                 frmEditAuthorData.edName.Text + ' ' +
+                                 frmEditAuthorData.edMiddle.Text));
 
-    if (not frmEditAuthor.AddNew) and (not frmEditAuthor.SaveLinks) then
+    if (not frmEditAuthorData.AddNew) and (not frmEditAuthorData.SaveLinks) then
     begin    // мен€ем только данные об авторе, все ссылки остаютс€ на месте
 
       if dmCollection.tblAuthors.Locate('A_Family;A_Name;A_Middle',
-                            VarArrayOf([frmEditAuthor.edFamily.Text,
-                                        frmEditAuthor.edName.Text,
-                                        frmEditAuthor.edMiddle.Text]),
+                            VarArrayOf([frmEditAuthorData.edFamily.Text,
+                                        frmEditAuthorData.edName.Text,
+                                        frmEditAuthorData.edMiddle.Text]),
                                         [loCaseInsensitive]) then
       begin  // если новый автор уже есть, мен€ем сслыки на него  (объединение)
         new_AiD := dmCollection.tblAuthorsID.Value;
@@ -4470,9 +4474,9 @@ begin
       else  // если нет - просто редактируем ‘»ќ
       begin
         dmCollection.tblAuthors.Edit;
-        dmCollection.tblAuthorsFamily.Value := frmEditAuthor.edFamily.Text;
-        dmCollection.tblAuthorsName.Value := frmEditAuthor.edName.Text;
-        dmCollection.tblAuthorsMiddle.Value := frmEditAuthor.edMiddle.Text;
+        dmCollection.tblAuthorsFamily.Value := frmEditAuthorData.edFamily.Text;
+        dmCollection.tblAuthorsName.Value := frmEditAuthorData.edName.Text;
+        dmCollection.tblAuthorsMiddle.Value := frmEditAuthorData.edMiddle.Text;
         dmCollection.tblAuthors.Post;
       end;
 
@@ -4488,20 +4492,20 @@ begin
       until not Res;
     end;
 
-    if (frmEditAuthor.AddNew) then
+    if (frmEditAuthorData.AddNew) then
     begin    // замен€ем автора на нового
 
       // добавл€ем нового автора
       if not dmCollection.tblAuthors.Locate('A_Family;A_Name;A_Middle',
-                            VarArrayOf([frmEditAuthor.edFamily.Text,
-                                        frmEditAuthor.edName.Text,
-                                        frmEditAuthor.edMiddle.Text]),
+                            VarArrayOf([frmEditAuthorData.edFamily.Text,
+                                        frmEditAuthorData.edName.Text,
+                                        frmEditAuthorData.edMiddle.Text]),
                                         [loCaseInsensitive]) then
       begin
         dmCollection.tblAuthors.Insert;
-        dmCollection.tblAuthorsFamily.Value := frmEditAuthor.edFamily.Text;
-        dmCollection.tblAuthorsName.Value := frmEditAuthor.edName.Text;
-        dmCollection.tblAuthorsMiddle.Value := frmEditAuthor.edMiddle.Text;
+        dmCollection.tblAuthorsFamily.Value := frmEditAuthorData.edFamily.Text;
+        dmCollection.tblAuthorsName.Value := frmEditAuthorData.edName.Text;
+        dmCollection.tblAuthorsMiddle.Value := frmEditAuthorData.edMiddle.Text;
         dmCollection.tblAuthors.Post;
       end;
 
@@ -4516,7 +4520,7 @@ begin
             ((Tree.CheckState[Node] = csCheckedNormal) or
             (Tree.Selected[Node])) then
         begin
-          if not frmEditAuthor.SaveLinks then   // замен€ем ссылки
+          if not frmEditAuthorData.SaveLinks then   // замен€ем ссылки
           begin
             if dmCollection.tblAuthor_List.Locate('AL_BookID',Data.ID,[]) then
             begin
@@ -6463,14 +6467,8 @@ end;
 
 procedure TfrmMain.miPdfdjvuClick(Sender: TObject);
 begin
-  DMUser.ActivateCollection(Settings.ActiveCollection);
-  try
-    frmAddNonFb2 := TfrmAddNonFb2.Create(self);
-    frmAddNonFb2.ShowModal;
-  finally
-    frmAddNonFb2.Free;
-    InitCollection(True);
-  end;
+  frmAddNonFb2.ShowModal;
+  InitCollection(True);
 end;
 
 procedure TfrmMain.OnBookDownloadComplete(var Message: TDownloadCompleteMessage);

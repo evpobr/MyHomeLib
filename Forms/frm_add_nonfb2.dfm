@@ -31,9 +31,9 @@ object frmAddnonfb2: TfrmAddnonfb2
     Width = 741
     Height = 467
     Margins.Bottom = 30
-    ActivePage = tsBookInfo
+    ActivePage = tsFBD
     Align = alClient
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 0
     FixedDimension = 19
     object tsFiles: TRzTabSheet
@@ -513,10 +513,10 @@ object frmAddnonfb2: TfrmAddnonfb2
       object alBookAuthors: TFBDAuthorTable
         AlignWithMargins = True
         Left = 3
-        Top = 108
+        Top = 111
         Width = 731
         Height = 187
-        Caption = #1040#1074#1090#1086#1088#1099' '#1082#1085#1080#1075#1080
+        Caption = #1040#1074#1090#1086#1088'('#1099') '#1082#1085#1080#1075#1080
         TabOrder = 9
         DesignSize = (
           731
@@ -716,17 +716,17 @@ object frmAddnonfb2: TfrmAddnonfb2
         State = cbChecked
         TabOrder = 4
       end
-      object alFBDAuthor: TFBDAuthorTable
+      object alFBDAuthors: TFBDAuthorTable
         AlignWithMargins = True
         Left = 248
-        Top = 80
+        Top = 73
         Width = 486
-        Height = 127
-        Caption = #1040#1074#1090#1086#1088' FBD-'#1076#1086#1082#1091#1084#1077#1085#1090#1072
+        Height = 134
+        Caption = #1040#1074#1090#1086#1088' FBD-'#1076#1086#1082#1091#1084#1077#1085#1090#1072' '
         TabOrder = 5
         DesignSize = (
           486
-          127)
+          134)
       end
     end
   end
