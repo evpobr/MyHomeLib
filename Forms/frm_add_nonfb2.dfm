@@ -31,9 +31,9 @@ object frmAddnonfb2: TfrmAddnonfb2
     Width = 741
     Height = 467
     Margins.Bottom = 30
-    ActivePage = tsFBD
+    ActivePage = tsBookInfo
     Align = alClient
-    TabIndex = 2
+    TabIndex = 1
     TabOrder = 0
     FixedDimension = 19
     object tsFiles: TRzTabSheet
@@ -513,7 +513,7 @@ object frmAddnonfb2: TfrmAddnonfb2
       object alBookAuthors: TFBDAuthorTable
         AlignWithMargins = True
         Left = 3
-        Top = 111
+        Top = 115
         Width = 731
         Height = 187
         Caption = #1040#1074#1090#1086#1088'('#1099') '#1082#1085#1080#1075#1080
@@ -521,6 +521,14 @@ object frmAddnonfb2: TfrmAddnonfb2
         DesignSize = (
           731
           187)
+        object btnAddAuthorFromList: TRzBitBtn
+          Left = 226
+          Top = 157
+          Width = 78
+          Caption = #1048#1079' '#1089#1087#1080#1089#1082#1072
+          TabOrder = 4
+          OnClick = btnAddAuthorFromListClick
+        end
       end
     end
     object tsFBD: TRzTabSheet
@@ -722,7 +730,7 @@ object frmAddnonfb2: TfrmAddnonfb2
         Top = 73
         Width = 486
         Height = 134
-        Caption = #1040#1074#1090#1086#1088' FBD-'#1076#1086#1082#1091#1084#1077#1085#1090#1072' '
+        Caption = #1040#1074#1090#1086#1088'('#1099') FBD'
         TabOrder = 5
         DesignSize = (
           486
@@ -868,5 +876,9 @@ object frmAddnonfb2: TfrmAddnonfb2
     Image = FCover
     Left = 168
     Top = 368
+  end
+  object XPManifest1: TXPManifest
+    Left = 488
+    Top = 72
   end
 end
