@@ -25,7 +25,7 @@ uses
   ImgList,
   RzButton,
   xmldom,
-  FBDDocument;
+  FBDDocument, FBDAuthorTable;
 
 type
 
@@ -34,15 +34,6 @@ type
     RzPanel2: TRzPanel;
     mmAnnotation: TMemo;
     btnSave: TBitBtn;
-    RzGroupBox1: TRzGroupBox;
-    edFirstName: TRzEdit;
-    RzLabel2: TRzLabel;
-    edMiddleName: TRzEdit;
-    RzLabel3: TRzLabel;
-    edLastName: TRzEdit;
-    RzLabel8: TRzLabel;
-    edNickName: TRzEdit;
-    RzLabel9: TRzLabel;
     RzLabel1: TRzLabel;
     RzGroupBox2: TRzGroupBox;
     RzLabel4: TRzLabel;
@@ -65,6 +56,7 @@ type
     btnPrevious: TBitBtn;
     btnNext: TBitBtn;
     FBD: TFBDDocument;
+    alFBDAuthors: TFBDAuthorTable;
     procedure btnPasteCoverClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure btnOpenBookClick(Sender: TObject);
@@ -85,7 +77,7 @@ type
     procedure ChangeBookData;
     procedure PrepareForm;
     procedure EnableButtons(State: boolean);
-    function MakeFBD: boolean;
+    function FillFBDData: boolean;
     procedure SaveFBD;
   public
     { Public declarations }
@@ -154,14 +146,14 @@ end;
 procedure TfrmConvertToFBD.btnSaveClick(Sender: TObject);
 begin
   if FBusy then Exit;
-  FBD.Save(FEditorMode);
+  SaveFBD;
   Modalresult := mrOk;
 end;
 
 procedure TfrmConvertToFBD.btnNextClick(Sender: TObject);
 begin
   if FBusy then Exit;
-  FBD.Save(FEditorMode);
+  SaveFBD;
   frmMain.SelectNextBook(False,True);
   PrepareForm;
 end;
@@ -169,7 +161,7 @@ end;
 procedure TfrmConvertToFBD.btnPreviousClick(Sender: TObject);
 begin
   if FBusy then Exit;
-  FBD.Save(FEditorMode);
+  SaveFBD;
   frmMain.SelectNextBook(False, False);
   PrepareForm;
 end;
@@ -194,73 +186,94 @@ begin
   PrepareForm;
 end;
 
-function TfrmConvertToFBD.MakeFBD:boolean;
+function TfrmConvertToFBD.FillFBDData:boolean;
+var
+  I: Integer;
+  AuthorsFBD: TAuthorDataList;
 begin
-//  FFBD.First := edFirstName.Text;
-//  FFBD.Last := edLastName.Text;
-//  FFBD.Middle := edMiddleName.Text;
-//  FFBD.Nick := edNickName.Text;
-//
-//  FFBD.Publisher := edPublisher.Text;
-//  FFBD.City := edCity.Text;
-//  FFBD.ISBN := edISBN.Text;
-//  FFBD.Year := edYear.Text;
+  Result := False;
+
+  SetLength(AuthorsFBD, FBookRecord.AuthorCount);
+  for i := 0 to FBookRecord.AuthorCount - 1 do
+  begin
+    AuthorsFBD[i].Last :=  FBookRecord.Authors[i].LastName;
+    AuthorsFBD[i].First :=  FBookRecord.Authors[i].FirstName;
+    AuthorsFBD[i].Middle :=  FBookRecord.Authors[i].MiddleName;
+    AuthorsFBD[i].Nick := '';
+    AuthorsFBD[i].Email := '';
+    AuthorsFBD[i].HomePage := '';
+  end;
+
+  FBD.SetAuthors(AuthorsFBD, atlBook);
+  FBD.SetAuthors(alFBDAuthors.Items, atlFBD);
+
+  with FBD.Title do
+  begin
+    Booktitle.Text := FBookRecord.Title;
+    Keywords.Text := FBookRecord.KeyWords;
+    Lang := FBookRecord.Lang;
+    FBD.AddSeries(sltBook, FBookRecord.Series, FBookRecord.SeqNumber);
+
+    Genre.Clear;
+    for I := 0 to High(FBookRecord.Genres) do
+      Genre.Add(FBookRecord.Genres[i].GenreFb2Code);
+  end;
+  with FBD.Publisher do
+  begin
+    Publisher.Text := edPublisher.Text;
+    City.Text := edCity.Text;
+    ISBN.Text := edISBN.Text;
+    Year := edYear.Text;
+  end;
+  FBD.AutoLoadCover;
+  Result := True;
 end;
 
 procedure TfrmConvertToFBD.PrepareForm;
+var
+  Folder: string;
 begin
-//  DMCollection.GetCurrentBook(FBookRecord);
-//
-//  FCover.Picture := nil;
-//
-//  lblAuthor.Caption := FBookRecord.Authors[0].FLastName + ' ' +
-//                       FBookRecord.Authors[0].FFirstName;
-//
-//  lblTitle.Caption := FBookRecord.Title;
-//
-//  FFolder := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder) + FBookRecord.Folder;
-//
-//  if FEditorMode then
-//  begin
-//    FBookFileName := FBookrecord.FileName ;
-//    FZipFileName := FFolder + FBookrecord.FileName;
-//    getfbdfilenames(FZipFileName,FFBDFilename);
-//
-//    LoadFBDFromFile(FZipFileName,FFBD,FCover, mmAnnotation);
-//
-//    edFirstName.Text := FFBD.First;
-//    edLastName.Text := FFBD.Last;
-//    edMiddleName.Text := FFBD.Middle;
-//    edNickName.Text := FFBD.Nick;
-//
-//    edPublisher.Text := FFBD.Publisher;
-//    edCity.Text := FFBD.City;
-//    edISBN.Text := FFBD.ISBN;
-//    edYear.Text := FFBD.Year;
-//  end
-//  else
-//  begin
-//    FBookFileName := FBookrecord.FileName + FBookrecord.FileExt;
-//    FFBDFilename := FBookrecord.FileName + '.fbd';
-//    FZipFileName := FFolder + FBookrecord.FileName + ZIP_EXTENSION;
-//  end;
+  DMCollection.GetCurrentBook(FBookRecord);
+
+  lblAuthor.Caption := FBookRecord.Authors[0].FLastName + ' ' +
+                       FBookRecord.Authors[0].FFirstName;
+
+  lblTitle.Caption := FBookRecord.Title;
+  Folder := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder) + FBookRecord.Folder;
+
+  if FEditorMode then
+  begin
+    FBD.Load(Folder, ExtractShortFileName(FBookrecord.FileName), FBookrecord.FileExt);
+    alFBDAuthors.Items := FBD.GetAuthors(atlFBD);
+    with FBD.Publisher do
+    begin
+      edPublisher.Text := Publisher.Text;
+      edCity.Text := City.Text;
+      edISBN.Text := ISBN.Text;
+      edYear.Text := Year;
+    end;
+
+  end
+  else
+    FBD.New(Folder, FBookrecord.FileName, FBookrecord.FileExt);
 end;
 
 procedure TfrmConvertToFBD.SaveFBD;
 begin
-//  EnableButtons(False);
-//  FBusy := True;
-//  Screen.Cursor := crHourGlass;
-//  try
-//    if MakeFBD then
-//     if CreateZip(FZipFilename, FFolder, FBookFileName, FFBDFilename, FeditorMode)  then
-//       if not FEditorMode then
-//         ChangeBookData;
-//  finally
-//    EnableButtons(True);
-//    Screen.Cursor := crDefault;
-//    FBusy := False;
-//  end;
+  EnableButtons(False);
+  FBusy := True;
+  Screen.Cursor := crHourGlass;
+  try
+    if FillFBDData then
+    begin
+      FBD.Save(FeditorMode);
+      if not FEditorMode then ChangeBookData;
+    end;
+  finally
+    EnableButtons(True);
+    Screen.Cursor := crDefault;
+    FBusy := False;
+  end;
 end;
 
 end.

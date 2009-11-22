@@ -12,6 +12,7 @@ object frmAuthorList: TfrmAuthorList
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poMainFormCenter
   PixelsPerInch = 96
   TextHeight = 13
   object RzPanel2: TRzPanel

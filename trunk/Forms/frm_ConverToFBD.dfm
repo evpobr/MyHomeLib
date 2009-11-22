@@ -26,8 +26,8 @@ object frmConvertToFBD: TfrmConvertToFBD
     BorderOuter = fsFlatRounded
     TabOrder = 0
     object RzLabel1: TRzLabel
-      Left = 207
-      Top = 201
+      Left = 208
+      Top = 231
       Width = 55
       Height = 13
       Caption = #1040#1085#1085#1086#1090#1072#1094#1080#1103
@@ -54,81 +54,13 @@ object frmConvertToFBD: TfrmConvertToFBD
     end
     object mmAnnotation: TMemo
       Left = 207
-      Top = 220
+      Top = 248
       Width = 338
-      Height = 141
+      Height = 113
       Color = clCream
       ScrollBars = ssBoth
-      TabOrder = 4
-      WordWrap = False
-    end
-    object RzGroupBox1: TRzGroupBox
-      Left = 207
-      Top = 125
-      Width = 338
-      Height = 65
-      Caption = #1040#1074#1090#1086#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072
       TabOrder = 3
-      object RzLabel2: TRzLabel
-        Left = 18
-        Top = 18
-        Width = 19
-        Height = 13
-        Caption = #1048#1084#1103
-      end
-      object RzLabel3: TRzLabel
-        Left = 93
-        Top = 18
-        Width = 49
-        Height = 13
-        Caption = #1054#1090#1095#1077#1089#1090#1074#1086
-      end
-      object RzLabel8: TRzLabel
-        Left = 179
-        Top = 17
-        Width = 44
-        Height = 13
-        Caption = #1060#1072#1084#1080#1083#1080#1103
-      end
-      object RzLabel9: TRzLabel
-        Left = 267
-        Top = 17
-        Width = 19
-        Height = 13
-        Caption = #1053#1080#1082
-      end
-      object edFirstName: TRzEdit
-        Left = 4
-        Top = 33
-        Width = 74
-        Height = 21
-        Color = clCream
-        TabOrder = 0
-      end
-      object edMiddleName: TRzEdit
-        Left = 84
-        Top = 33
-        Width = 82
-        Height = 21
-        Color = clCream
-        TabOrder = 1
-      end
-      object edLastName: TRzEdit
-        Left = 172
-        Top = 33
-        Width = 68
-        Height = 21
-        Color = clCream
-        TabOrder = 2
-      end
-      object edNickName: TRzEdit
-        Left = 246
-        Top = 33
-        Width = 82
-        Height = 21
-        Color = clCream
-        TabOrder = 3
-      end
+      WordWrap = False
     end
     object RzGroupBox2: TRzGroupBox
       Left = 207
@@ -257,6 +189,18 @@ object frmConvertToFBD: TfrmConvertToFBD
         ImageIndex = 1
         Images = ImageList1
       end
+    end
+    object alFBDAuthors: TFBDAuthorTable
+      AlignWithMargins = True
+      Left = 208
+      Top = 120
+      Width = 337
+      Height = 113
+      Caption = #1040#1074#1090#1086#1088'('#1099') FBD'
+      TabOrder = 4
+      DesignSize = (
+        337
+        113)
     end
   end
   object RzPanel2: TRzPanel
@@ -432,10 +376,10 @@ object frmConvertToFBD: TfrmConvertToFBD
   end
   object ImageList1: TImageList
     ColorDepth = cd32Bit
-    Left = 392
+    Left = 344
     Top = 256
     Bitmap = {
-      494C010103000800A40010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010103000800C80010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000838383FF838383FF828282FF828282FF818181FF808080FF808080FF7E7E

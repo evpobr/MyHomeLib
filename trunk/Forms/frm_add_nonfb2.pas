@@ -46,7 +46,7 @@ uses
   RzLabel,
   RzRadChk,
   FBDDocument,
-  FBDAuthorTable;
+  FBDAuthorTable, XPMan;
 
 type
   TfrmAddnonfb2 = class(TForm)
@@ -115,7 +115,9 @@ type
     btnOpenBook: TRzBitBtn;
     FBD: TFBDDocument;
     alBookAuthors: TFBDAuthorTable;
+    XPManifest1: TXPManifest;
     alFBDAuthors: TFBDAuthorTable;
+    btnAddAuthorFromList: TRzBitBtn;
     procedure RzButton3Click(Sender: TObject);
     procedure TreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
@@ -145,6 +147,7 @@ type
     procedure dtnConvertClick(Sender: TObject);
     procedure btnFileOpenClick(Sender: TObject);
     procedure btnNextClick(Sender: TObject);
+    procedure btnAddAuthorFromListClick(Sender: TObject);
 
   private
     FBookRecord: TBookRecord;
@@ -156,7 +159,7 @@ type
     procedure ScanFolder;
     procedure FillLists;
     procedure SortTree;
-    function MakeFBD:boolean;
+    function FillFBDData: boolean;
   public
 
   private
@@ -211,14 +214,20 @@ procedure TfrmAddnonfb2.btnCopyToFamilyClick(Sender: TObject);
 var
   Author : TAuthorRecord;
 begin
-//  Author.Last := trim(edFileName.SelText);
- // alBookAuthors.AddRow(Author);
+  Author.Last := trim(edFileName.SelText);
+  alBookAuthors.AddRow(Author);
 end;
 
 procedure TfrmAddnonfb2.btnCopyToNameClick(Sender: TObject);
+var
+  Author : TAuthorRecord;
 begin
-//  if lvAuthors.Selected <> nil then
-//    lvAuthors.Selected.SubItems.Add(trim(edFileName.SelText));
+  if alBookAuthors.Count > 0 then
+  begin
+    Author :=alBookAuthors.ActiveRecord;
+    Author.First := (trim(edFileName.SelText));
+    alBookAuthors.ActiveRecord:= Author;
+  end;
 end;
 
 procedure TfrmAddnonfb2.btnCopyToSeriesClick(Sender: TObject);
@@ -258,27 +267,44 @@ begin
   pcPages.ActivePageIndex := 0;
 end;
 
-function TfrmAddnonfb2.MakeFBD;
+function TfrmAddnonfb2.FillFBDData:boolean;
+var
+  I: Integer;
 begin
-//  FFBD.First := edFirstName.Text;
-//  FFBD.Last := edLastName.Text;
-//  FFBD.Middle := edMiddleName.Text;
-//  FFBD.Nick := edNickName.Text;
-//
-//  FFBD.Publisher := edPublisher.Text;
-//  FFBD.City := edCity.Text;
-//  FFBD.ISBN := edISBN.Text;
-//  FFBD.Year := edYear.Text;
-//
-//  Result := PrepareFBDFile(FBookRecord, FFBD, mmAnnotation, FFolder +  FFBDFileName);
+  Result := False;
+
+  FBD.SetAuthors(alBookAuthors.Items, atlBook);
+  with FBD.Title do
+  begin
+    Booktitle.Text := edT.Text;
+    Keywords.Text := edKeyWords.Text;
+    Lang := cbLang.Text;
+    FBD.AddSeries(sltBook, cbSeries.Text, Round(edSN.Value));
+    Genre.Clear;
+    for I := 0 to High(FBookRecord.Genres) do
+      Genre.Add(FBookRecord.Genres[i].GenreFb2Code);
+  end;
+
+  FBD.SetAuthors(alFBDAuthors.Items, atlFBD);
+
+  with FBD.Publisher do
+  begin
+    Publisher.Text := edPublisher.Text;
+    City.Text := edCity.Text;
+    ISBN.Text := edISBN.Text;
+    Year := edYear.Text;
+  end;
+  FBD.Custom.Clear;
+  FBD.AutoLoadCover;
+  Result := True;
 end;
 
 procedure TfrmAddnonfb2.miClearAllClick(Sender: TObject);
 begin
   edT.Text := '';
   edFileName.Text := '';
-//  alBookAuthors.Clear;
-//  alFBDAuthor.Clear;
+  alBookAuthors.Clear;
+  alFBDAuthors.Clear;
   cbSeries.Text := '';
   edSN.Value := 0;
   edKeyWords.Text := '';
@@ -309,8 +335,8 @@ begin
   try
     if Data = nil then
       raise EInvalidOp.Create('Файл не выбран!');
-//    if (not cbNoAuthorAllowed.Checked) and (alBookAuthors.AuthorsCount = 0) then
-//      raise EInvalidOp.Create('Укажите минимум одного автора!');
+    if (not cbNoAuthorAllowed.Checked) and (alBookAuthors.Count = 0) then
+      raise EInvalidOp.Create('Укажите минимум одного автора!');
     if edT.Text = '' then
       raise EInvalidOp.Create('Укажите название книги!');
     if Data.DataType = dtFolder then
@@ -336,10 +362,7 @@ begin
     Tree.Selected[Next] := True;
   case cbClearOptions.ItemIndex of
     0: miClearAllClick(nil);
-    1:
-      begin
-//        alBookAuthors.Clear;
-      end;
+    1: alBookAuthors.Clear;
     2:
       begin
         edT.Text := '';
@@ -368,17 +391,13 @@ begin
     PrepareBookRecord;
     if cbForceConvertToFBD.Checked then
     begin
-//      FFBDFilename := FBookrecord.FileName + FBD_EXTENSION;
-//      BookFileName := FBookrecord.FileName + FBookrecord.FileExt;
-//      FFolder := FRootPath + FBookrecord.Folder;
-//      ZipFilename := FFolder + FBookrecord.FileName + ZIP_EXTENSION;
-//
-//      if MakeFBD then
-//        if CreateZip(ZipFilename, FFolder, BookFileName, FFBDFilename, False) then
-//        begin
-//          FBookrecord.FileName := FBookrecord.FileName + ZIP_EXTENSION;
-//          CommitData;
-//        end;
+      FBD.New(FRootPath + FBookrecord.Folder, FBookrecord.FileName, FBookrecord.FileExt);
+      if FillFBDData then
+      begin
+        FBD.Save(False);
+        FBookrecord.FileName := FBookrecord.FileName + ZIP_EXTENSION;
+        CommitData;
+      end;
     end
       else CommitData;
   finally
@@ -397,17 +416,17 @@ begin
     Data := Tree.GetNodeData(Tree.GetFirstSelected);
     if CheckEmptyFields(Data) then
     begin
-//      NewName := CheckSymbols(lvAuthors.Items[0].Caption + ' ' +  lvAuthors.Items[0].SubItems[0] +
-//             ' ' + edT.Text);
-//      if RenameFile(Data.FullPath + Data.FileName + Data.Ext, Data.FullPath + NewName + Data.Ext) then
-//      begin
-//        Data.FileName := NewName;
-//        edFileName.Text := NewName;
-//        Tree.RepaintNode(Tree.GetFirstSelected);
-//      end
-//      else MessageDlg('Переименование не удалось!' + #13 +
-//                    'Возможно, файл заблокирован другой программой.',
-//                    mtError,[mbOk],0);
+      NewName := CheckSymbols(alBookAuthors.ActiveRecord.Last + ' ' +  alBookAuthors.ActiveRecord.First +
+             ' ' + edT.Text);
+      if RenameFile(Data.FullPath + Data.FileName + Data.Ext, Data.FullPath + NewName + Data.Ext) then
+      begin
+        Data.FileName := NewName;
+        edFileName.Text := NewName;
+        Tree.RepaintNode(Tree.GetFirstSelected);
+      end
+      else MessageDlg('Переименование не удалось!' + #13 +
+                    'Возможно, файл заблокирован другой программой.',
+                    mtError,[mbOk],0);
     end;
   finally
     btnRenameFile.Enabled := True;
@@ -422,25 +441,16 @@ var
   strLastName: string;
   strFirstName: string;
   strMidName: string;
+  Author: TAuthorRecord;
 begin
   Data := Tree.GetNodeData(Tree.GetFirstSelected);
   if not CheckEmptyFields(Data) then Exit;
 
-//  if lvAuthors.Items.Count > 0 then
-//    for I := 0 to lvAuthors.Items.Count - 1 do
-//    begin
-//      strLastName:= lvAuthors.Items[i].Caption;
-//      if lvAuthors.Items[i].SubItems.Count > 0 then
-//        strFirstName:= lvAuthors.Items[i].SubItems[0];
-//      if lvAuthors.Items[i].SubItems.Count > 1 then
-//        strMidName:= lvAuthors.Items[i].SubItems[1];
-//
-//      FBookRecord.AddAuthor(strLastName, strFirstName, strMidName);
-//    end
-//  else
-//  begin
-//    FBookRecord.AddAuthor('Неизвестный','автор', '');
-//  end;
+  if alBookAuthors.Count > 0 then
+    for Author in alBookAuthors.Items do
+      FBookRecord.AddAuthor(Author.Last, Author.First, Author.Middle)
+  else
+    FBookRecord.AddAuthor('Неизвестный','автор', '');
 
   frmGenreTree.GetSelectedGenres(FBookRecord);
   FBookRecord.Title := edT.Text;
@@ -460,7 +470,32 @@ begin
   FBookRecord.Date := Now;
   FBookRecord.KeyWords := edKeyWords.Text;
   FBookRecord.Lang := cbLang.Text;
+end;
 
+procedure TfrmAddnonfb2.btnAddAuthorFromListClick(Sender: TObject);
+var
+  Row : TAuthorRecord;
+  Data : PAuthorData;
+  Node: PVirtualNode;
+begin
+  frmMain.FillAuthorTree(frmAuthorList.tvAuthorList, True);
+  if frmAuthorList.ShowModal = mrOK then
+  begin
+    Node := frmAuthorList.tvAuthorList.GetFirstSelected;
+    while node <> nil do
+    begin
+      Data := frmAuthorList.tvAuthorList.GetNodeData(Node);
+
+
+      Row.Last := Data.Last;
+      Row.First := Data.First;
+      Row.Middle := Data.Middle;
+
+      alBookAuthors.AddRow(Row);
+
+      Node := frmAuthorList.tvAuthorList.GetNextSelected(Node);
+    end;
+  end;
 end;
 
 procedure TfrmAddnonfb2.btnAddClick(Sender: TObject);
