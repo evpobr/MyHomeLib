@@ -199,12 +199,18 @@ BooksTableFields: array [1 .. 21] of TFieldDesc = (
   (Name: 'KeyWords';   DataType: ftWideString; Size: 255; Required: false)
 );
 
-BooksTableIndexes: array [1..5] of TIndexDesc = (
+BooksTableIndexes: array [1..9] of TIndexDesc = (
   (Name: 'ID_Index';       Fields: 'ID';                    Options: [ixPrimary, ixUnique]),
   (Name: 'Series_Index';   Fields: 'SerID;SeqNumber';       Options: []),
-  (Name: 'Title_Index';    Fields: 'FullName;Title';        Options: [ixCaseInsensitive]),
+  (Name: 'Title_Index';
+   Fields: 'FullName;Title,Deleted,Lang,Date,Local,KeyWords';
+   Options: [ixCaseInsensitive]),
   (Name: 'File_Index';     Fields: 'FileName';              Options: [ixCaseInsensitive]),
-  (Name: 'Folder_Index';   Fields: 'Folder';                Options: [ixCaseInsensitive])
+  (Name: 'Folder_Index';   Fields: 'Folder';                Options: [ixCaseInsensitive]),
+  (Name: 'Deleted_Index';  Fields: 'Deleted';               Options: []),
+  (Name: 'Date_Index';     Fields: 'Date';                  Options: []),
+  (Name: 'Local_Index';    Fields: 'Local';                 Options: []),
+  (Name: 'KeyWords_Index'; Fields: 'KeyWords';              Options: [ixCaseInsensitive])
 );
 
 //

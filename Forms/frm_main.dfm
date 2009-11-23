@@ -206,6 +206,14 @@ object frmMain: TfrmMain
       Height = 19
       Align = alLeft
     end
+    object spExecTime: TRzStatusPane
+      Left = 703
+      Top = 0
+      Height = 19
+      Align = alLeft
+      ExplicitLeft = 942
+      ExplicitHeight = 20
+    end
   end
   object tlbrMain: TToolBar
     AlignWithMargins = True
@@ -428,7 +436,9 @@ object frmMain: TfrmMain
     Width = 942
     Height = 522
     HelpContext = 1
+    ActivePage = TabSheet4
     Align = alClient
+    TabIndex = 3
     TabOrder = 3
     TabStop = False
     OnChange = pgControlChange
@@ -522,7 +532,7 @@ object frmMain: TfrmMain
               Caption = #1055#1086#1080#1089#1082
             end
             object tbClearEdAuthor: TRzToolButton
-              Left = 142
+              Left = 134
               Top = 9
               Hint = #1054#1095#1080#1089#1090#1080#1090#1100
               ImageIndex = 36
@@ -537,7 +547,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 53
               Top = 12
-              Width = 82
+              Width = 74
               Height = 21
               Margins.Left = 10
               Margins.Top = 10
@@ -880,7 +890,7 @@ object frmMain: TfrmMain
               Caption = #1055#1086#1080#1089#1082
             end
             object btnClearEdSeries: TRzToolButton
-              Left = 158
+              Left = 150
               Top = 9
               Hint = #1054#1095#1080#1089#1090#1080#1090#1100
               ImageIndex = 36
@@ -895,7 +905,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 53
               Top = 12
-              Width = 98
+              Width = 90
               Height = 21
               Margins.Left = 10
               Margins.Top = 10
@@ -2885,8 +2895,8 @@ object frmMain: TfrmMain
             ExplicitHeight = 19
           end
           object btnClearDownload: TRzBitBtn
-            Left = 755
-            Top = 27
+            Left = 759
+            Top = 19
             Width = 118
             Margins.Right = 8
             Margins.Bottom = 8
@@ -3514,7 +3524,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 312
     Bitmap = {
-      494C01011B0000027C0120002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C01011B0000028C0120002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -7222,7 +7232,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 256
     Bitmap = {
-      494C010125002700400110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010125002700500110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000040000000A0000000010020000000000000A0
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -8581,7 +8591,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 368
     Bitmap = {
-      494C01010A003801280110001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C01010A003801380110001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -9111,7 +9121,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 480
     Bitmap = {
-      494C010118001A00400120002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C010118001A00500120002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12818,7 +12828,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 424
     Bitmap = {
-      494C010112004800400110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010112004800500110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000005000000001002000000000000050
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
