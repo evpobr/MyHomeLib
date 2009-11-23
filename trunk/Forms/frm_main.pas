@@ -408,6 +408,7 @@ type
     miExportToHTML: TMenuItem;
     txt1: TMenuItem;
     RTF1: TMenuItem;
+    spExecTime: TRzStatusPane;
 
     //
     // События формы
@@ -1190,11 +1191,13 @@ begin
 end;
 
 procedure TfrmMain.btnApplyFilterClick(Sender: TObject);
-var FilterString: String;
-    SeriesFilter: String;
-    OldFilter: String;
-    Filtered: boolean;
+var
+  FilterString: String;
+  SeriesFilter: String;
+  OldFilter: String;
+  Filtered: boolean;
 
+  Time: TTime;
 const
 
 //  SQLStartStr = 'select distinct ' +
@@ -1290,14 +1293,14 @@ begin
       if cbDeleted.Checked then
         if (FilterString = '') then
           FilterString := '(`Deleted` = False)'
-      else
+        else
           FilterString := FilterString + ' AND (`Deleted`= False)';
 
       // Ставим фильтр
       spStatus.Caption := 'Применяем фильтр ...'; spStatus.Repaint;
 
       if (dmCollection.sqlBooks.SQL.Count > 0) and (FilterString <> '') then
-        dmCollection.sqlBooks.SQL.Add('AND ' + FilterString)
+        dmCollection.sqlBooks.SQL.Add('AND' + FilterString)
       else
       if FilterString <> '' then
            dmCollection.sqlBooks.SQL.Add('SELECT * FROM Books WHERE ' + FilterString);
@@ -1309,9 +1312,11 @@ begin
       dmCollection.sqlBooks.SQL.SaveToFile(Settings.AppPath + 'Last.sql');
       {$ENDIF}
 
+      Time := Now;
       dmCollection.sqlBooks.Active := False;
       dmCollection.sqlBooks.ExecSQL;
       dmCollection.sqlBooks.Active := True;
+      spExecTime.Caption := FloatToStrF(MilliSecondsBetween(Now, Time)/1000, FFFixed, 3, 2) + ' сек.';
 
       FillBooksTree(0, tvBooksSR, nil, dmCollection.sqlBooks, True, True);
     except
