@@ -104,7 +104,10 @@ uses
 procedure TDownloadBooksThread.HTTPRedirect(Sender: TObject; var dest: string;
   var NumRedirect: Integer; var Handled: Boolean; var VMethod: string);
 begin
-  FNewURL := dest;
+  if pos('fb2.zip', dest) <> 0 then
+    FNewURL := dest
+  else
+    FNewURL := '';
 end;
 
 procedure TDownloadBooksThread.HTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
@@ -264,13 +267,15 @@ begin
           try
             FidHTTP.Post(URL, mpfds);
           except
-
+            // тут ничего
           end;
         finally
           mpfds.Free;
         end;
-
         FOnPostReq := False;
+
+        if FNewURL = '' then raise Exception.Create('Неправильный логин/пароль');
+
         FidHTTP.Get(FNewURL, FS);
 
         { TODO -oAlex : В зависимости от типа файла (zip или нет) имя должно формироваться по разному! }
@@ -294,7 +299,7 @@ begin
         if loginInfo.Count > 0 then
         begin
           if
-            (Pos('DOCTYPE', loginInfo[0]) <> 0)
+            (Pos('<!DOCTYPE', loginInfo[0]) <> 0)
             or (Pos('overload', loginInfo[0]) <> 0)
             or (Pos('not found', loginInfo[0]) <> 0) then
           begin
@@ -342,8 +347,8 @@ begin
           end; //case
         on E: Exception do
           ProcessError(
-            'Закачка не удалась! Сервер сообщает об ошибке ' + IntToStr(FidHTTP.ResponseCode) + '.',
-            'Ошибка ' + IntToStr(FidHTTP.ResponseCode),
+            'Закачка не удалась! Сервер сообщает об ошибке "' + E.Message + '".' + #10#13,
+            'Код Ошибки ' + IntToStr(FidHTTP.ResponseCode),
             Folder
             );
       end;

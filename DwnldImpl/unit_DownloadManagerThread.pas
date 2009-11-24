@@ -119,13 +119,14 @@ begin
           try
             FidHTTP.Post(FCurrentURL, mpfds);
           except
-
+            //
           end;
         finally
           mpfds.Free;
         end;
-
       FOnPostReq := False;
+      if FNewURL = '' then raise Exception.Create('Неправильный логин/пароль');
+
       FidHTTP.Get(FNewURL, FS);
 
 
@@ -173,8 +174,8 @@ begin
               if not FIgnoreErrors then Application.MessageBox(PChar('Закачка не удалось! Ошибка подключения.'+
                            #13+'Код ошибки: '+IntToStr(E.LastError)),'',mb_IconExclamation);
         on E: Exception do
-             if not FIgnoreErrors then Application.MessageBox(PChar('Закачка не удалось! Сервер сообщает об ошибке '+
-                          #13+'Код ошибки: '+IntToStr(FidHTTP.ResponseCode)),'',mb_IconExclamation);
+             if not FIgnoreErrors then Application.MessageBox(PChar('Закачка не удалось! Сервер сообщает об ошибке "'+
+                          E.Message + '".' + #13 + #13+'Код ошибки: '+IntToStr(FidHTTP.ResponseCode)),'',mb_IconExclamation);
 
       end;
   finally
@@ -284,7 +285,10 @@ end;
 procedure TDownloadManagerThread.HTTPRedirect(Sender: TObject; var dest: string;
   var NumRedirect: Integer; var Handled: Boolean; var VMethod: string);
 begin
-  FNewURL := dest;
+  if pos('fb2.zip', dest) <> 0 then
+    FNewURL := dest
+  else
+    FNewURL := '';
 end;
 
 procedure TDownloadManagerThread.HTTPWork(ASender: TObject;
