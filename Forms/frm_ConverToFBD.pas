@@ -140,7 +140,7 @@ end;
 
 procedure TfrmConvertToFBD.btnPasteCoverClick(Sender: TObject);
 begin
-  FBD.LoadCoverFronClpbrd;
+  FBD.LoadCoverFromClpbrd;
 end;
 
 procedure TfrmConvertToFBD.btnSaveClick(Sender: TObject);

@@ -753,6 +753,7 @@ type
     procedure PrepareFb2EditData(Data: PBookData; var R: TBookRecord);
     procedure SaveFb2DataAfterEdit(R: TBookRecord);
     function ShowNCWizard: boolean;
+    procedure LoadLastCollection;
     property ActiveView: TView read GetActiveView;
   end;
 
@@ -2132,6 +2133,18 @@ begin
     InitCollection(True);
 end;
 
+procedure TfrmMain.LoadLastCollection;
+begin
+  DMUser.ActivateCollection(Settings.ActiveCollection);
+  if not FileExists(DMUser.ActiveCollection.DBFileName) then
+  begin
+    MessageDlg('Файл коллекции "' + DMUser.ActiveCollection.DBFileName + '" не найден.' + #13 +
+               'Невозможно запустить программу.', mtError, [mbOK], 0);
+    Application.Terminate;
+  end;
+  frmSplash.lblState.Caption := main_loading_collection;
+  InitCollection(False);
+end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
@@ -2202,31 +2215,16 @@ begin
            StartLibUpdate;
 
 //------------------------------------------------------------------------------
-
-  DMUser.ActivateCollection(Settings.ActiveCollection);
+  LoadLastCollection;
 
   FillGroupsList;
   CreateGroupsMenu;
 
   SetColumns;
   SetHeaderPopUp;
-
-  frmSplash.lblState.Caption := main_loading_collection;
-
-  InitCollection(False);
   dmCollection.SetActiveTable(pgControl.ActivePageIndex);
 
-
   TheFirstRun;
-
-  if not DMUser.tblBases.IsEmpty then
-    RestorePositions;
-
-  if FileExists(Settings.WorkPath + 'downloads.sav') then
-  begin
-    tvDownloadList.LoadFromfile(Settings.WorkPath + 'downloads.sav');
-    lblDownloadCount.Caption := Format('(%d)',[tvDownloadList.ChildCount[Nil]]);
-  end;
 
 //------------------------------------------------------------------------------
 
@@ -2242,16 +2240,24 @@ begin
 
   // костыль
   frmMain.Visible := True;
-
   if frmMain.WindowState = wsMinimized then
      frmMain.WindowState := wsNormal;
   // конец костыля
-
 
   // загрузка списка пресетов для поиска
   CreateDir(Settings.PresetDir);
   FilesList.TargetPath := Settings.PresetPath;
   FilesList.Process;
+
+  if not DMUser.tblBases.IsEmpty then
+    RestorePositions;
+
+  // загрузка списка закачек
+  if FileExists(Settings.WorkPath + 'downloads.sav') then
+  begin
+    tvDownloadList.LoadFromfile(Settings.WorkPath + 'downloads.sav');
+    lblDownloadCount.Caption := Format('(%d)',[tvDownloadList.ChildCount[Nil]]);
+  end;
 
   if Settings.AutoStartDwnld then
     btnStartDownloadClick(Sender);
@@ -2266,7 +2272,6 @@ begin
   Settings.LastBookInSeries := GetSelectedBookData(tvBooksS).ID;
   Settings.LastBookInFavorites := GetSelectedBookData(tvBooksF).ID;
 end;
-
 
 procedure TfrmMain.SaveMainFormSettings;
 begin
@@ -2389,7 +2394,7 @@ begin
   if (HitInfo.Button = mbLeft) then
   begin
     GetActiveTree(Tree);
-    if (Settings.TreeModes[Tree.Tag] = tmTree) then Exit;
+    if (Settings.TreeModes[Tree.Tag] = tmTree) or (HitInfo.Column < 0) then Exit;
     // Меняем индекс сортирующей колонки на индекс колонки,
     // которая была нажата.
     Tree.Header.SortColumn := HitInfo.Column;
@@ -3147,6 +3152,7 @@ end;
 //
 procedure TfrmMain.btnClearDownloadClick(Sender: TObject);
 begin
+  btnPauseDownloadClick(Sender);
   tvDownloadList.Clear;
   lblDownloadCount.Caption := '(0)';
 end;
