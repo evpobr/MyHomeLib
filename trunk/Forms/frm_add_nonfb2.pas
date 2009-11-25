@@ -518,7 +518,7 @@ end;
 
 procedure TfrmAddnonfb2.btnPasteCoverClick(Sender: TObject);
 begin
-  FBD.LoadCoverFronClpbrd;
+  FBD.LoadCoverFromClpbrd;
 end;
 
 procedure TfrmAddnonfb2.flFilesDirectory(Sender: TObject; const Dir: string);

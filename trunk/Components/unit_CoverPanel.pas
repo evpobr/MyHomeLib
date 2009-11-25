@@ -346,12 +346,16 @@ begin
     Zip := TZipForge.Create(nil);
     try
       Zip.FileName := FFolder;
-      Zip.OpenArchive;
-      s := GetFileNameZip(Zip,FNo);
-      if ExtractFileExt(S) = '.fb2' then
-      begin
-        Zip.ExtractToStream(s,FS);
-        Result := True;
+      try
+        Zip.OpenArchive;
+        s := GetFileNameZip(Zip,FNo);
+        if ExtractFileExt(S) = '.fb2' then
+        begin
+          Zip.ExtractToStream(s,FS);
+          Result := True;
+        end;
+      except
+        //
       end;
     finally
       FOnProgress := False;
@@ -370,10 +374,14 @@ begin
       Zip := TZipForge.Create(nil);
       try
         Zip.FileName := FFolder + FFile;
-        Zip.OpenArchive;
-        zip.FindFirst('*.fbd',F);
-        Zip.ExtractToStream(F.FileName,FS);
-        Result := True;
+        try
+          Zip.OpenArchive;
+          zip.FindFirst('*.fbd',F);
+          Zip.ExtractToStream(F.FileName,FS);
+          Result := True;
+        except
+          //
+        end;
       finally
         FOnProgress := False;
         Zip.Free;
