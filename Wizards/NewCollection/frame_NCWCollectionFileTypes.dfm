@@ -55,7 +55,7 @@ inherited frameNCWCollectionFileTypes: TframeNCWCollectionFileTypes
       Margins.Right = 7
       Margins.Bottom = 0
       Align = alTop
-      Caption = #1050#1085#1080#1075#1080' '#1074' &'#1076#1088#1091#1075#1080#1093' '#1092#1086#1088#1084#1072#1090#1072#1093' (pdf, djvu)'
+      Caption = #1050#1085#1080#1075#1080' '#1074' &'#1076#1088#1091#1075#1080#1093' '#1092#1086#1088#1084#1072#1090#1072#1093' (fbd, pdf, djvu)'
       TabOrder = 0
       OnClick = OnSetFileType
     end

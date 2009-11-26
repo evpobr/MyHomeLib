@@ -407,6 +407,7 @@ type
     txt1: TMenuItem;
     RTF1: TMenuItem;
     spExecTime: TRzStatusPane;
+    ToolButton5: TToolButton;
 
     //
     // События формы
@@ -2133,14 +2134,17 @@ end;
 
 procedure TfrmMain.LoadLastCollection;
 begin
-  DMUser.ActivateCollection(Settings.ActiveCollection);
-  if not FileExists(DMUser.ActiveCollection.DBFileName) then
+  if not DMUser.tblBases.IsEmpty then
   begin
-    MessageDlg('Файл коллекции "' + DMUser.ActiveCollection.DBFileName + '" не найден.' + #13 +
-               'Невозможно запустить программу.', mtError, [mbOK], 0);
-    Application.Terminate;
+    DMUser.ActivateCollection(Settings.ActiveCollection);
+    if not FileExists(DMUser.ActiveCollection.DBFileName) then
+    begin
+      MessageDlg('Файл коллекции "' + DMUser.ActiveCollection.DBFileName + '" не найден.' + #13 +
+                 'Невозможно запустить программу.', mtError, [mbOK], 0);
+      Application.Terminate;
+    end;
+    frmSplash.lblState.Caption := main_loading_collection;
   end;
-  frmSplash.lblState.Caption := main_loading_collection;
   InitCollection(False);
 end;
 
