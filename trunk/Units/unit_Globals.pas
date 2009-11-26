@@ -39,7 +39,8 @@ type
                   Res: boolean;
                 end;
 
-
+type
+  EInvalidLogin = class (Exception);
 
 //
 // Global consts
@@ -886,7 +887,7 @@ begin
   idHTTP.ConnectTimeout := Settings.TimeOut;
   idHTTP.ReadTimeout := Settings.ReadTimeOut;
 
-  idHTTP.CookieManager := frmMain.IdCookieManager;
+//  idHTTP.CookieManager := frmMain.IdCookieManager;
   idHTTP.AllowCookies := True;
 
   idHTTP.HandleRedirects := True;

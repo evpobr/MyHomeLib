@@ -70,6 +70,8 @@ uses
   DateUtils,
   dm_collection,
   IdStack,
+  IdStackConsts,
+  IdException,
   Windows,
   unit_Settings,
   IdMultipartFormData;
@@ -110,25 +112,40 @@ begin
   try
     try
 
-      try
-        mpfds:=TIdMultiPartFormDataStream.Create;
-        mpfds.AddFormField('name', Settings.LibUsername);
-        mpfds.AddFormField('password', Settings.LibPassword);
-
-         FOnPostReq := True;
+        try
+          mpfds:=TIdMultiPartFormDataStream.Create;
+          mpfds.AddFormField('name', Settings.LibUsername);
+          mpfds.AddFormField('password', Settings.LibPassword);
+          FOnPostReq := True;
           try
-            FidHTTP.Post(FCurrentURL, mpfds);
+             FidHTTP.Post(FCurrentURL, mpfds);
           except
-            //
-          end;
+            on E: EIdSocketError do
+            begin
+              case E.LastError of
+                11001: Application.MessageBox(PChar('Закачка не удалась! Сервер не найден.' + #10#13 + 'Ошибка ' + IntToStr(E.LastError)),'Ошибка закачки');
+                Id_WSAETIMEDOUT: Application.MessageBox(PChar('Закачка не удалась! Превышено время ожидания. ' + #10#13 + 'Ошибка ' + IntToStr(E.LastError)),'Ошибка закачки');
+                else
+                  Application.MessageBox(PChar('Закачка не удалась! Ошибка подключения. ' + #10#13 + 'Ошибка ' + IntToStr(E.LastError)),'Ошибка закачки');
+              end; // case
+              Exit;
+            end;
+            on E: Exception do
+              if (FidHTTP.ResponseCode <> 405) and
+                 not ((FidHTTP.ResponseCode = 404) and (FNewURL <> ''))
+              then
+              begin
+                Application.MessageBox(PChar('Закачка не удалась! Сервер сообщает об ошибке "' + E.Message + '".' + #10#13 + 'Код Ошибки ' + IntToStr(FidHTTP.ResponseCode)),'Ошибка закачки');
+                Exit;
+              end;
+          end; // try ... except
         finally
           mpfds.Free;
         end;
       FOnPostReq := False;
-      if FNewURL = '' then raise Exception.Create('Неправильный логин/пароль');
+      if FNewURL = '' then raise EInvalidLogin.Create('Неправильный логин/пароль');
 
       FidHTTP.Get(FNewURL, FS);
-
 
       if FCanceled then
         Exit;
@@ -163,21 +180,19 @@ begin
       finally
         SL.Free;
       end;
-
-      except
-        on E: EIdSocketError do
-
-            if E.LastError = 11001 then
-              if not FIgnoreErrors then Application.MessageBox(PChar('Закачка не удалось! Сервер не найден.'+
+    except
+      on E: EIdSocketError do
+          if E.LastError = 11001 then
+            if not FIgnoreErrors then Application.MessageBox(PChar('Закачка не удалось! Сервер не найден.'+
                            #13+'Код ошибки: '+IntToStr(E.LastError)),'',mb_IconExclamation)
-            else
-              if not FIgnoreErrors then Application.MessageBox(PChar('Закачка не удалось! Ошибка подключения.'+
+          else
+            if not FIgnoreErrors then Application.MessageBox(PChar('Закачка не удалось! Ошибка подключения.'+
                            #13+'Код ошибки: '+IntToStr(E.LastError)),'',mb_IconExclamation);
-        on E: Exception do
-             if not FIgnoreErrors then Application.MessageBox(PChar('Закачка не удалось! Сервер сообщает об ошибке "'+
+      on E: EInvalidLogin do Application.MessageBox(PChar('Закачка не удалась! Сервер сообщает об ошибке "' + E.Message + '".'), '');
+      on E: Exception do
+           if not FIgnoreErrors then Application.MessageBox(PChar('Закачка не удалось! Сервер сообщает об ошибке "'+
                           E.Message + '".' + #13 + #13+'Код ошибки: '+IntToStr(FidHTTP.ResponseCode)),'',mb_IconExclamation);
-
-      end;
+    end;
   finally
     FS.Free;
   end;
@@ -289,6 +304,7 @@ begin
     FNewURL := dest
   else
     FNewURL := '';
+  StrReplace('lib2.rus.ec', 'lib.rus.ec', FNewURL);
 end;
 
 procedure TDownloadManagerThread.HTTPWork(ASender: TObject;
