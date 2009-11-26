@@ -108,6 +108,7 @@ begin
     FNewURL := dest
   else
     FNewURL := '';
+  StrReplace('lib2.rus.ec', 'lib.rus.ec', FNewURL);
 end;
 
 procedure TDownloadBooksThread.HTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
@@ -144,7 +145,6 @@ end;
 procedure TDownloadBooksThread.HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
 begin
   if FOnPostReq then Exit;
-
   SetProgress2(100, -1);
   SetComment2('Готово', '');
 end;
@@ -227,10 +227,8 @@ end;
 
 function TDownloadBooksThread.DownloadBook(ID: Integer): Boolean;
 var
-  //LibID: Integer;
   FS: TMemoryStream;
   loginInfo: TStringList;
-  //response: TStringStream;
   Path: string;
   Folder: string;
   URL: string;
@@ -250,8 +248,6 @@ begin
 
   loginInfo := TStringList.Create;
   try
-    //response := TStringStream.Create('');
-    //try
     FS := TMemoryStream.Create;
     try
       try
@@ -262,24 +258,35 @@ begin
           mpfds:=TIdMultiPartFormDataStream.Create;
           mpfds.AddFormField('name', Settings.LibUsername);
           mpfds.AddFormField('password', Settings.LibPassword);
-
-         FOnPostReq := True;
+          FOnPostReq := True;
           try
-            FidHTTP.Post(URL, mpfds);
+             FidHTTP.Post(URL, mpfds);
           except
-            // тут ничего
-          end;
+            on E: EIdSocketError do
+            begin
+              case E.LastError of
+                11001: ProcessError('Закачка не удалась! Сервер не найден.', 'Ошибка ' + IntToStr(E.LastError), Folder);
+                Id_WSAETIMEDOUT: ProcessError('Закачка не удалась! Превышено время ожидания.', 'Ошибка ' + IntToStr(E.LastError), Folder);
+                else
+                  ProcessError('Закачка не удалась! Ошибка подключения.', 'Ошибка ' + IntToStr(E.LastError), Folder);
+              end; // case
+              Exit;
+            end;
+            on E: Exception do
+              if (FidHTTP.ResponseCode <> 405) and
+                 not ((FidHTTP.ResponseCode = 404) and (FNewURL <> ''))
+              then
+              begin
+                ProcessError('Закачка не удалась! Сервер сообщает об ошибке "' + E.Message + '".' + #10#13, 'Код Ошибки ' + IntToStr(FidHTTP.ResponseCode), Folder);
+                Exit;
+              end;
+          end; // try ... except
         finally
           mpfds.Free;
         end;
         FOnPostReq := False;
-
-        if FNewURL = '' then raise Exception.Create('Неправильный логин/пароль');
-
+        if FNewURL = '' then raise EInvalidLogin.Create('Неправильный логин/пароль');
         FidHTTP.Get(FNewURL, FS);
-
-        { TODO -oAlex : В зависимости от типа файла (zip или нет) имя должно формироваться по разному! }
-
         if Canceled then
         begin
           Result := False;
@@ -287,15 +294,10 @@ begin
           FNoPause := True;
           Exit;
         end;
-
         Path := ExtractFileDir(Folder);
         CreateFolders('', Path);
-
         FS.Position := 0;
         loginInfo.LoadFromStream(FS);
-
-        { TODO : можно попробовать проверять размер файла. проблема в том, что база содержит размер неархивированного файла }
-
         if loginInfo.Count > 0 then
         begin
           if
@@ -320,44 +322,20 @@ begin
               DeleteFile(PChar(Folder));
           end;
         end;
-
       except
         on E: EIdSocketError do
           case E.LastError of
-            11001:
-              ProcessError(
-                'Закачка не удалась! Сервер не найден.',
-                'Ошибка ' + IntToStr(E.LastError),
-                Folder
-                );
-
-            Id_WSAETIMEDOUT:
-              ProcessError(
-                'Закачка не удалась! Превышено время ожидания.',
-                'Ошибка ' + IntToStr(E.LastError),
-                Folder
-                );
-
+            11001: ProcessError( 'Закачка не удалась! Сервер не найден.', 'Ошибка ' + IntToStr(E.LastError), Folder);
+            Id_WSAETIMEDOUT: ProcessError( 'Закачка не удалась! Превышено время ожидания.', 'Ошибка ' + IntToStr(E.LastError), Folder);
           else
-            ProcessError(
-              'Закачка не удалась! Ошибка подключения.',
-              'Ошибка ' + IntToStr(E.LastError),
-              Folder
-              );
+            ProcessError('Закачка не удалась! Ошибка подключения.', 'Ошибка ' + IntToStr(E.LastError), Folder);
           end; //case
-        on E: Exception do
-          ProcessError(
-            'Закачка не удалась! Сервер сообщает об ошибке "' + E.Message + '".' + #10#13,
-            'Код Ошибки ' + IntToStr(FidHTTP.ResponseCode),
-            Folder
-            );
+        on E: EInvalidLogin do ProcessError('Закачка не удалась! Сервер сообщает об ошибке "' + E.Message + '".', '',  Folder );
+        on E: Exception do ProcessError('Закачка не удалась! Сервер сообщает об ошибке "' + E.Message + '".' + #10#13, 'Код Ошибки ' + IntToStr(FidHTTP.ResponseCode), Folder);
       end;
     finally
       FS.Free;
     end;
-    //finally
-    //  Response.Free;
-    //end;
   finally
     LoginInfo.Free;
   end;

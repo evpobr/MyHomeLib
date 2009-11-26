@@ -181,7 +181,6 @@ type
     ToolButton1: TToolButton;
     ToolButton3: TToolButton;
     BtnFav_add: TToolButton;
-    ToolButton5: TToolButton;
     tbtnSettings: TToolButton;
     tbtnSelect: TToolButton;
     pmScripts: TPopupMenu;
@@ -300,7 +299,6 @@ type
     tvDownloadList: TVirtualStringTree;
     BtnSave: TRzToolButton;
     RzSpacer3: TRzSpacer;
-    IdCookieManager: TIdCookieManager;
     N28: TMenuItem;
     N37: TMenuItem;
     miAddToSearch: TMenuItem;
