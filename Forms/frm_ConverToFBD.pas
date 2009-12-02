@@ -65,6 +65,7 @@ type
     procedure btnPreviousClick(Sender: TObject);
     procedure btnNextClick(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
 
@@ -179,6 +180,11 @@ begin
   btnPrevious.Enabled := State;
   btnNext.Enabled     := State;
   btnSave.Enabled     := State;
+end;
+
+procedure TfrmConvertToFBD.FormCreate(Sender: TObject);
+begin
+  FBD.CoverSizeCode := 4;
 end;
 
 procedure TfrmConvertToFBD.FormShow(Sender: TObject);

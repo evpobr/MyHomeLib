@@ -228,7 +228,8 @@ begin
       fs.Free;
     end;
   end;
-  if dmCollection.tblBooks['Ext'] = '.fb2' then WriteFb2InfoToFile(FFileopRecord.SArch);
+  if (dmCollection.tblBooks['Ext'] = FB2_EXTENSION) and Settings.OverwriteFB2Info
+     then WriteFb2InfoToFile(FFileopRecord.SArch);
 
   Result := True;
 end;

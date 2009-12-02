@@ -550,6 +550,10 @@ begin
       s := Input[f];
     Conv := Conv + s;
   end;
+
+  // фильтруем точки в конце имени
+  while Conv[Length(Conv)] = '.' do
+    delete(Conv, Length(Conv), 1);
   result := conv;
 end;
 
