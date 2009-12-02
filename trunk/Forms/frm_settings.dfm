@@ -62,7 +62,7 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 414
     Height = 413
-    ActivePage = tsInternet
+    ActivePage = tsBehavour
     Align = alClient
     TabOrder = 1
     object tsDevices: TTabSheet
@@ -1027,6 +1027,14 @@ object frmSettings: TfrmSettings
           Height = 17
           Caption = #1040#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080' '#1079#1072#1075#1088#1091#1078#1072#1090#1100' '#1088#1077#1094#1077#1085#1079#1080#1080
           TabOrder = 6
+        end
+        object cbOverwriteFB2Info: TCheckBox
+          Left = 24
+          Top = 184
+          Width = 281
+          Height = 17
+          Caption = #1055#1077#1088#1077#1079#1072#1087#1080#1089#1099#1074#1072#1090#1100' '#1079#1072#1075#1086#1083#1086#1074#1086#1082' fb2'
+          TabOrder = 7
         end
       end
     end

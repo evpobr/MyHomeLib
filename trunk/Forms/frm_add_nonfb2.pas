@@ -265,6 +265,8 @@ begin
   FillLists;
   frmMain.FillGenresTree(frmGenreTree.tvGenresTree, True);
   pcPages.ActivePageIndex := 0;
+
+  FBD.CoverSizeCode := 4;
 end;
 
 function TfrmAddnonfb2.FillFBDData:boolean;

@@ -175,6 +175,7 @@ type
     RzGroupBox15: TRzGroupBox;
     edInputFolder: TRzButtonEdit;
     edLibPassword: TRzMaskEdit;
+    cbOverwriteFB2Info: TCheckBox;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
@@ -333,6 +334,7 @@ begin
   cbAllowMixedCollections.Checked := Settings.AllowMixed;
   cbDeleteDeleted.Checked := Settings.DeleteDeleted;
   cbAutoLoadReview.Checked := Settings.AutoLoadReview;
+  cbOverwriteFB2Info.Checked :=  Settings.OverwriteFB2Info;
 
   // Page 6 -  FileSort
 
@@ -423,6 +425,8 @@ begin
   Settings.AllowMixed        := cbAllowMixedCollections.Checked;
   Settings.DeleteDeleted     := cbDeleteDeleted.Checked;
   Settings.AutoLoadReview    := cbAutoLoadReview.Checked;
+  Settings.OverwriteFB2Info  := cbOverwriteFB2Info.Checked;
+
 
   // Page 6 -  FileSort
 

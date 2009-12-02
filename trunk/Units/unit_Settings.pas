@@ -165,6 +165,7 @@ type
     FAutoLoadReview: boolean;
 
     FForceConvertToFBD: boolean;
+    FOverwriteFB2Info: boolean;
 
     // SORT_SECTION
     FEnableSort : boolean;
@@ -323,6 +324,7 @@ type
     property FileSRCollapsed: boolean read FFileSRCollapsed write FFileSRCollapsed;
     property OtherSRCollapsed: boolean read FOtherSRCollapsed write FOtherSRCollapsed;
     property ForceConvertToFBD: boolean read FForceConvertToFBD write FForceConvertToFBD;
+    property OverwriteFB2Info: boolean read FOverwriteFB2Info write FOverwriteFB2Info;
 
     property FullTextSearch: Boolean read FFullTextSearch write FFullTextSearch;
 
@@ -663,7 +665,7 @@ begin
     FDeleteDeleted := iniFile.ReadBool(BEHAVIOR_SECTION, 'DeleteDeleted',  False);
     FAutoLoadReview := iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoLoadReview',  True);
     FForceConvertToFBD := iniFile.ReadBool(BEHAVIOR_SECTION, 'ForceConvertToFBD',  True);
-
+    FOverwriteFB2Info :=  iniFile.ReadBool(BEHAVIOR_SECTION, 'OverwriteFB2Info',  False);
     //
     // FILE_SORT_SECTION
     //
@@ -819,7 +821,7 @@ begin
     iniFile.WriteBool(BEHAVIOR_SECTION, 'DeleteDeleted', FDeleteDeleted);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'AutoLoadReview', FAutoLoadReview);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ForceConvertToFBD',  FForceConvertToFBD);
-
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'OverwriteFB2Info',  FOverwriteFB2Info);
     //
     // FILE_SORT_SECTION
     //
