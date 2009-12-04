@@ -379,7 +379,7 @@ object DMUser: TDMUser
     Left = 344
     Top = 328
     Bitmap = {
-      494C010103000400140010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101030004001C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000009933000099330000000000000000
@@ -524,7 +524,7 @@ object DMUser: TDMUser
     Left = 296
     Top = 328
     Bitmap = {
-      494C010103000400140020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101030004001C0020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000002000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000000000000000000000000DF9030F52D9
@@ -1190,68 +1190,29 @@ object DMUser: TDMUser
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'ID'
-        Options = [ixPrimary, ixUnique]
-      end
-      item
-        Name = 'BookIndex'
-        Fields = 'BookID'
-      end>
-    IndexName = 'ID_Index'
-    FieldDefs = <
-      item
-        Name = 'ID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'BookID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'Annotation'
-        DataType = ftWideMemo
-      end
-      item
-        Name = 'Review'
-        DataType = ftWideMemo
-      end
-      item
-        Name = 'Cover'
-        DataType = ftBlob
-      end
-      item
-        Name = 'Data'
-        DataType = ftWideMemo
-      end>
     TableName = 'Extra'
     Exclusive = False
-    MasterFields = 'ID'
-    MasterSource = dsGroupedBooks
-    Left = 144
-    Top = 320
-    object tblExtraID: TAutoIncField
-      FieldName = 'ID'
+    Left = 184
+    Top = 344
+    object tblExtraE_ID: TAutoIncField
+      FieldName = 'E_ID'
     end
-    object tblExtraBookID: TIntegerField
-      FieldName = 'BookID'
+    object tblExtraE_BookID: TIntegerField
+      FieldName = 'E_BookID'
     end
-    object tblExtraAnnotation: TWideMemoField
-      FieldName = 'Annotation'
+    object tblExtraE_Annotation: TWideMemoField
+      FieldName = 'E_Annotation'
       BlobType = ftWideMemo
     end
-    object tblExtraReview: TWideMemoField
-      FieldName = 'Review'
+    object tblExtraE_Review: TWideMemoField
+      FieldName = 'E_Review'
       BlobType = ftWideMemo
     end
-    object tblExtraCover: TBlobField
-      FieldName = 'Cover'
+    object tblExtraE_Cover: TBlobField
+      FieldName = 'E_Cover'
     end
-    object tblExtraData: TWideMemoField
-      FieldName = 'Data'
+    object tblExtraE_Data: TWideMemoField
+      FieldName = 'E_Data'
       BlobType = ftWideMemo
     end
   end

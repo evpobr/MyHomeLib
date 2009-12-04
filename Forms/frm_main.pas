@@ -1088,6 +1088,7 @@ begin
   SetEditColor(edFFolder);
   SetEditColor(edFExt);
   SetEditColor(edFKeyWords);
+  SetEditColor(edFAnnotation);
 
   SetCBColor(cbDownloaded);
   SetCBColor(cbDate);
@@ -1229,12 +1230,12 @@ begin
 
       //------------------------ аннотаци€ -----------------------------------------
       FilterString := '';
-      AddToFilter('`Annotation`', PrepareQuery(edFAnnotation.Text, True), True, FilterString);
+      AddToFilter('`E_Annotation`', PrepareQuery(edFAnnotation.Text, True), True, FilterString);
 
       if FilterString <> '' then
            FilterString := SQLStartStr + #13#10 +
                            'FROM Extra e ' + #13#10 +
-                           'JOIN books b on b.ID = e.BookID ' + #13#10 +
+                           'JOIN books b on b.id = e.E_BookID ' + #13#10 +
                            'WHERE ' + FilterString + '';
 
       if (dmCollection.sqlBooks.SQL.Count = 0) and (FilterString <> '') then
@@ -1352,6 +1353,7 @@ begin
   edFFile.Text      := '';
   edFFolder.Text    := '';
   edFExt.Text       := '';
+  edFAnnotation.Text:= '';
 
   cbDate.Text       := '';
   cbDate.ItemIndex  := -1;
@@ -1519,6 +1521,8 @@ begin
   tbtnEditSeries.Visible := IsPrivate;
   tbtnEditGenre.Visible := IsPrivate;
   tbtnEditAuthor.Visible := IsPrivate;
+
+  edFAnnotation.Enabled := IsPrivate;
 
   //--------- ¬кладки, прочее  -------------------------------------------------
 
@@ -3535,7 +3539,7 @@ begin
       else
         WorkFile := Panel.Folder + Panel.FileName;
 
-    if Ext = '.fb2' then WriteFb2InfoToFile(WorkFile);
+    if Settings.OverwriteFB2Info and (Ext = FB2_EXTENSION) then WriteFb2InfoToFile(WorkFile);
 
     Settings.Readers.RunReader(WorkFile);
     Tree.RepaintNode(Tree.GetFirstSelected);
@@ -5649,7 +5653,7 @@ begin
                       DMUser.tblExtra.Delete;
                 1: begin
                    dmUser.tblExtra.Edit;
-                   dmUser.tblExtraReview.Value := frmBookDetails.Review;
+//                   dmUser.tblExtraReview.Value := frmBookDetails.Review;
                    dmUser.tblExtra.Post;
                  end;
               end
@@ -5657,7 +5661,7 @@ begin
                 if Table['Code'] = 1 then
                 begin
                   dmUser.tblExtra.Insert;
-                  dmUser.tblExtraReview.Value := frmBookDetails.Review;
+//                  dmUser.tblExtraReview.Value := frmBookDetails.Review;
                   dmUser.tblExtra.Post;
                 end;
               FillBooksTree(0,tvBooksF,Nil,DMUser.tblGrouppedBooks,true, true);
@@ -5670,13 +5674,13 @@ begin
             DMCollection.tblBooksCode.Value := Table['Code'];
             DMCollection.tblBooks.Post;
 
-            if DMCollection.tblExtraReview <> Nil then
+            if DMCollection.tblExtraE_Review <> Nil then
             case Table['Code'] of
               0: if DMCollection.tblExtra.RecordCount <> 0 then
                         DMCollection.tblExtra.Delete;
               1: begin
                    DMCollection.tblExtra.Edit;
-                   DMCollection.tblExtraReview.Value := frmBookDetails.Review;
+                   DMCollection.tblExtraE_Review.Value := frmBookDetails.Review;
                    DMCollection.tblExtra.Post;
                end;
             end
@@ -5684,7 +5688,7 @@ begin
               if Table['Code'] = 1 then
               begin
                 DMCollection.tblExtra.Insert;
-                DMCollection.tblExtraReview.Value := frmBookDetails.Review;
+                DMCollection.tblExtraE_Review.Value := frmBookDetails.Review;
                 DMCollection.tblExtra.Post;
               end;
             FillAllBooksTree;
@@ -6115,9 +6119,9 @@ begin
     DMCollection.tblExtra.First;
     while not DMCollection.tblExtra.Eof do
     begin
-      S := DMCollection.tblExtraReview.Value;
+      S := DMCollection.tblExtraE_Review.Value;
       StrReplace(#13#10,'~',S);
-      SL.Add(Format('%d %s',[DMCollection.tblExtraID.Value, S]));
+      SL.Add(Format('%d %s',[DMCollection.tblExtraE_ID.Value, S]));
       DMCollection.tblExtra.Next;
     end;
     DMCollection.tblExtra.MasterSource := DMCollection.dsBooks;

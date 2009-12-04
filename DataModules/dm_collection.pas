@@ -211,14 +211,14 @@ type
     tblBooksGSeries: TWideStringField;
     tblBooksSeries: TWideStringField;
     sqlBooksSeries: TWideStringField;
-    tblExtraID: TAutoIncField;
-    tblExtraBookID: TIntegerField;
-    tblExtraAnnotation: TWideMemoField;
-    tblExtraReview: TWideMemoField;
-    tblExtraCover: TBlobField;
-    tblExtraData: TWideMemoField;
     tblBooksFullName: TWideStringField;
     sqlBooksID: TIntegerField;
+    tblExtraE_ID: TAutoIncField;
+    tblExtraE_BookID: TIntegerField;
+    tblExtraE_Annotation: TWideMemoField;
+    tblExtraE_Review: TWideMemoField;
+    tblExtraE_Cover: TBlobField;
+    tblExtraE_Data: TWideMemoField;
   private
     FIsFavorites: boolean;
     FActiveTable: TAbsTable;
@@ -379,9 +379,7 @@ var
   BookID: Integer;
 begin
   BookID := ActiveTable.FieldByname('ID').Value;
-
   R.Clear;
-
   R.Title := ActiveTable.FieldByname('Title').AsWideString;
   R.Series := IfThen(ActiveTable.FieldByname('SerID').IsNull,
                      NO_SERIES_TITLE,

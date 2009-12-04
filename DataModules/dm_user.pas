@@ -89,12 +89,12 @@ type
     tblGrouppedBooksLibRate: TIntegerField;
     tblGrouppedBooksLang: TWideStringField;
     tblExtra: TABSTable;
-    tblExtraID: TAutoIncField;
-    tblExtraBookID: TIntegerField;
-    tblExtraAnnotation: TWideMemoField;
-    tblExtraReview: TWideMemoField;
-    tblExtraCover: TBlobField;
-    tblExtraData: TWideMemoField;
+    tblExtraE_ID: TAutoIncField;
+    tblExtraE_BookID: TIntegerField;
+    tblExtraE_Annotation: TWideMemoField;
+    tblExtraE_Review: TWideMemoField;
+    tblExtraE_Cover: TBlobField;
+    tblExtraE_Data: TWideMemoField;
 
   private
     FCollection: TMHLCollection;
@@ -477,7 +477,7 @@ begin
     if tblGrouppedBooksCode.Value = 1 then
     begin
       tblExtra.Insert;
-      tblExtraReview.Value := dmCollection.tblExtraReview.Value;
+      tblExtraE_Review.Value := dmCollection.tblExtraE_Review.Value;
       tblExtra.Post;
     end;
 
@@ -568,7 +568,7 @@ begin
     if dmCollection.tblBooks.Locate('ID',ID,[]) then
     begin
       dmCollection.tblExtra.Insert;
-      dmCollection.tblExtraReview.Value := S;
+      dmCollection.tblExtraE_Review.Value := S;
       dmCollection.tblExtra.Post;
 
       dmCollection.tblBooks.Edit;

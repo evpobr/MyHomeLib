@@ -317,9 +317,7 @@ var
   unZip:TZipForge;
   CurrentFile: string;
   ArchItem: TZFArchiveItem;
-
   FileStream : TMemoryStream;
-
 begin
   filesProcessed := 0;
   i := 0;
@@ -327,9 +325,7 @@ begin
   FLibrary := TMHLLibrary.Create(nil);
   try
     FLibrary.DatabaseFileName := DBFileName;
-
     FLibrary.Active := True;
-
     FLibrary.BeginBulkOperation;
     try
       unZip := TZipForge.Create(Nil);

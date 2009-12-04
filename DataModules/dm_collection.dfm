@@ -1668,27 +1668,27 @@ object DMCollection: TDMCollection
     IndexName = 'ID_Index'
     FieldDefs = <
       item
-        Name = 'ID'
+        Name = 'E_ID'
         DataType = ftAutoInc
       end
       item
-        Name = 'BookID'
+        Name = 'E_BookID'
         DataType = ftInteger
       end
       item
-        Name = 'Annotation'
+        Name = 'E_Annotation'
         DataType = ftWideMemo
       end
       item
-        Name = 'Review'
+        Name = 'E_Review'
         DataType = ftWideMemo
       end
       item
-        Name = 'Cover'
+        Name = 'E_Cover'
         DataType = ftBlob
       end
       item
-        Name = 'Data'
+        Name = 'E_Data'
         DataType = ftWideMemo
       end>
     TableName = 'Extra'
@@ -1697,25 +1697,25 @@ object DMCollection: TDMCollection
     MasterSource = dsBooks
     Left = 496
     Top = 376
-    object tblExtraID: TAutoIncField
-      FieldName = 'ID'
+    object tblExtraE_ID: TAutoIncField
+      FieldName = 'E_ID'
     end
-    object tblExtraBookID: TIntegerField
-      FieldName = 'BookID'
+    object tblExtraE_BookID: TIntegerField
+      FieldName = 'E_BookID'
     end
-    object tblExtraAnnotation: TWideMemoField
-      FieldName = 'Annotation'
+    object tblExtraE_Annotation: TWideMemoField
+      FieldName = 'E_Annotation'
       BlobType = ftWideMemo
     end
-    object tblExtraReview: TWideMemoField
-      FieldName = 'Review'
+    object tblExtraE_Review: TWideMemoField
+      FieldName = 'E_Review'
       BlobType = ftWideMemo
     end
-    object tblExtraCover: TBlobField
-      FieldName = 'Cover'
+    object tblExtraE_Cover: TBlobField
+      FieldName = 'E_Cover'
     end
-    object tblExtraData: TWideMemoField
-      FieldName = 'Data'
+    object tblExtraE_Data: TWideMemoField
+      FieldName = 'E_Data'
       BlobType = ftWideMemo
     end
   end
