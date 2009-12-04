@@ -408,8 +408,6 @@ type
     RTF1: TMenuItem;
     spExecTime: TRzStatusPane;
     ToolButton5: TToolButton;
-    edFAnnotation: TRzButtonEdit;
-    Label7: TLabel;
 
     //
     // События формы
@@ -1227,24 +1225,6 @@ begin
       if FilterString <> '' then
            dmCollection.sqlBooks.SQL.Add(FilterString);
 
-      //------------------------ аннотация -----------------------------------------
-      FilterString := '';
-      AddToFilter('`Annotation`', PrepareQuery(edFAnnotation.Text, True), True, FilterString);
-
-      if FilterString <> '' then
-           FilterString := SQLStartStr + #13#10 +
-                           'FROM Extra e ' + #13#10 +
-                           'JOIN books b on b.ID = e.BookID ' + #13#10 +
-                           'WHERE ' + FilterString + '';
-
-      if (dmCollection.sqlBooks.SQL.Count = 0) and (FilterString <> '') then
-        dmCollection.sqlBooks.SQL.Add(FilterString)
-      else
-        if FilterString <> '' then
-        begin
-          dmCollection.sqlBooks.SQL.Add('INTERSECT');
-          dmCollection.sqlBooks.SQL.Add(FilterString);
-        end;
       //-------------------------- жанр ----------------------------------------
       FilterString := '';
       if (edFGenre.Hint <> '') then
@@ -1384,7 +1364,6 @@ begin
     edFSeries.Text := HL[2];
     edFGenre.Text  := HL[3];
     edFGenre.Hint  := HL[4];
-    edFAnnotation.Text := HL[5];
     edFFile.Text := HL[6];
     edFFolder.Text := HL[7];
     edFExt.Text := HL[8];
@@ -5083,7 +5062,6 @@ begin
          edFSeries.Text + d +
          edFGenre.Text + d +
          edFGenre.Hint + d +
-         edFAnnotation.Text + d +
          edFFile.Text + d +
          edFFolder.Text + d +
          edFExt.Text + d +
