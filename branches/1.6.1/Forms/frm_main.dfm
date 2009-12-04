@@ -798,7 +798,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -1533,7 +1532,6 @@ object frmMain: TfrmMain
             Height = 209
             Caption = #1056#1072#1079#1085#1086#1077
             TabOrder = 0
-            ExplicitTop = 436
             object Label30: TLabel
               Left = 3
               Top = 122
@@ -1675,7 +1673,6 @@ object frmMain: TfrmMain
             Height = 177
             Caption = #1060#1072#1081#1083
             TabOrder = 1
-            ExplicitTop = 259
             object Label27: TLabel
               AlignWithMargins = True
               Left = 3
@@ -1779,7 +1776,6 @@ object frmMain: TfrmMain
               Height = 13
               Align = alBottom
               Caption = #1046#1072#1085#1088
-              ExplicitTop = 141
               ExplicitWidth = 28
             end
             object Label6: TLabel
@@ -1844,7 +1840,6 @@ object frmMain: TfrmMain
               AltBtnWidth = 15
               ButtonWidth = 15
               OnButtonClick = edFGenreButtonClick
-              ExplicitTop = 160
             end
           end
         end
@@ -2268,7 +2263,6 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 0
@@ -2905,12 +2899,11 @@ object frmMain: TfrmMain
             Font.Style = []
             ParentFont = False
             CenterPoint = cpLowerRight
-            ExplicitLeft = 861
             ExplicitHeight = 19
           end
           object btnClearDownload: TRzBitBtn
-            Left = 749
-            Top = 22
+            Left = 747
+            Top = 20
             Width = 118
             Margins.Right = 8
             Margins.Bottom = 8
@@ -3538,7 +3531,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 312
     Bitmap = {
-      494C01011B000002BC0120002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C01011B000002C00120002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -7246,7 +7239,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 256
     Bitmap = {
-      494C010125002700800110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010125002700840110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000040000000A0000000010020000000000000A0
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -8605,7 +8598,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 368
     Bitmap = {
-      494C01010A003801680110001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C01010A0038016C0110001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -9135,7 +9128,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 480
     Bitmap = {
-      494C010118001A00800120002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C010118001A00840120002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12842,7 +12835,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 424
     Bitmap = {
-      494C010112004800800110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010112004800840110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000005000000001002000000000000050
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

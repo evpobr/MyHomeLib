@@ -3514,7 +3514,7 @@ begin
       else
         WorkFile := Panel.Folder + Panel.FileName;
 
-    if Ext = '.fb2' then WriteFb2InfoToFile(WorkFile);
+    if Settings.OverwriteFB2Info and (Ext = FB2_EXTENSION) then WriteFb2InfoToFile(WorkFile);
 
     Settings.Readers.RunReader(WorkFile);
     Tree.RepaintNode(Tree.GetFirstSelected);
