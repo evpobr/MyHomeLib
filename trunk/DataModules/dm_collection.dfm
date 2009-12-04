@@ -1835,8 +1835,8 @@ object DMCollection: TDMCollection
     FilterOptions = [foCaseInsensitive, foNoPartialCompare]
     SQL.Strings = (
       'select * from books where ID=1')
-    Left = 504
-    Top = 464
+    Left = 496
+    Top = 432
     object sqlBooksDatabaseID: TIntegerField
       FieldName = 'DatabaseID'
     end

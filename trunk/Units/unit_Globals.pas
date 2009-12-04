@@ -272,6 +272,7 @@ type
 
     KeyWords: string;
     URI: string;
+    Annotation: string;
 
     procedure Normalize;
     procedure Clear;
@@ -552,8 +553,9 @@ begin
   end;
 
   // фильтруем точки в конце имени
-  while Conv[Length(Conv)] = '.' do
-    delete(Conv, Length(Conv), 1);
+  if Length(Conv) > 0 then
+    while Conv[Length(Conv)] = '.' do
+      delete(Conv, Length(Conv), 1);
   result := conv;
 end;
 
@@ -692,6 +694,8 @@ begin
   Deleted := False;
   Local := False;
   Date := 0;
+
+  Annotation := '';
 end;
 
 //

@@ -150,7 +150,7 @@ begin
 
     StrReplace('%id', Trim(FTable.FieldByName('LibID').AsString), FileName);
     StrReplace('%g', Trim(dmCollection.GetBookGenres(FTable.FieldByName('ID').AsInteger,True)), FileName);
-
+    StrReplace('%rg', Trim(dmCollection.GetRootGenre(FTable.FieldByName('ID').AsInteger)), FileName);
     if FTable.FieldByName('Series').AsString <> NO_SERIES_TITLE then
       StrReplace('%s', RemoveSquareBrackets(FTable.FieldByName('Series').AsString), FileName)
     else
@@ -171,7 +171,7 @@ begin
     StrReplace('%f', FullName , Folder);
     StrReplace('%t', trim(FTable.FieldByName('Title').AsString), Folder);
     StrReplace('%g', Trim(dmCollection.GetBookGenres(FTable.FieldByName('ID').AsInteger,True)), Folder);
-
+    StrReplace('%rg', Trim(dmCollection.GetRootGenre(FTable.FieldByName('ID').AsInteger)), Folder);
     if FTable.FieldByName('Series').AsString <> NO_SERIES_TITLE then
       StrReplace('%s', RemoveSquareBrackets(FTable.FieldByName('Series').AsString), Folder)
     else

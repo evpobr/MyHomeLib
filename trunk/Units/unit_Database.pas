@@ -508,6 +508,7 @@ begin
   FSeries.Active := Value;
   FGenres.Active := Value;
   FGenreList.Active := Value;
+  FExtra.Active := Value;
 end;
 
 function TMHLLibrary.GetDatabaseFileName: string;
@@ -911,6 +912,15 @@ begin
       FAuthorList['AL_Series'] := Copy(BookRecord.Series, 1, IndexSize);
       FAuthorList.Post;
     end;
+
+    if BookRecord.Annotation <> '' then
+    begin
+      FExtra.Insert;
+      FExtra['BookID'] := FBooks['ID'];
+      FExtra['Annotation'] := BookRecord.Annotation;
+      FExtra.Post;
+    end;
+
     Result := FBooks['ID'];
   end;
 end;
