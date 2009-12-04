@@ -269,17 +269,17 @@ GenreListTableIndexes: array [1..3] of TIndexDesc = (
 // Extra
 //
 ExtraTableFields: array [1 .. 6] of TFieldDesc = (
-  (Name: 'ID';        DataType: ftAutoInc;    Size: 0;   Required: true),
-  (Name: 'BookID';    DataType: ftInteger;    Size: 0;   Required: false),
-  (Name: 'Annotation';DataType: ftWideMemo;   Size: 0;   Required: false),
-  (Name: 'Review';    DataType: ftWideMemo;   Size: 0;   Required: false),
-  (Name: 'Cover';     DataType: ftBlob;       Size: 0;   Required: false),
-  (Name: 'Data';      DataType: ftWideMemo;   Size: 0;   Required: false)
+  (Name: 'E_ID';        DataType: ftAutoInc;    Size: 0;   Required: true),
+  (Name: 'E_BookID';    DataType: ftInteger;    Size: 0;   Required: false),
+  (Name: 'E_Annotation';DataType: ftWideMemo;   Size: 0;   Required: false),
+  (Name: 'E_Review';    DataType: ftWideMemo;   Size: 0;   Required: false),
+  (Name: 'E_Cover';     DataType: ftBlob;       Size: 0;   Required: false),
+  (Name: 'E_Data';      DataType: ftWideMemo;   Size: 0;   Required: false)
 );
 
 ExtraTableIndexes: array [1..2] of TIndexDesc = (
-  (Name: 'ID_Index';   Fields: 'ID';                   Options: [ixPrimary, ixUnique]),
-  (Name: 'BookIndex';  Fields: 'BookID';               Options: [])
+  (Name: 'ID_Index';         Fields: 'E_ID';                   Options: [ixPrimary, ixUnique]),
+  (Name: 'BookIndex';        Fields: 'E_BookID';               Options: [])
 );
 
 //-----------------------------------------------------------------------------
@@ -300,9 +300,9 @@ BasesTableFields: array [1 .. 14] of TFieldDesc = (
   (Name: 'Version';      DataType: ftInteger;    Size: 0;   Required: false),
   (Name: 'Code';         DataType: ftInteger;    Size: 0;   Required: false),
   (Name: 'AllowDelete';  DataType: ftBoolean;    Size: 0;   Required: false),
-  (Name: 'Settings';     DataType: ftMemo;       Size: 0;  Required: false),
-  (Name: 'Icon';         DataType: ftBlob;       Size: 0;  Required: false),
-  (Name: 'URL';          DataType: ftWideString; Size: 255; Required: false)
+  (Name: 'Settings';     DataType: ftWideMemo;   Size: 0;   Required: false),
+  (Name: 'Icon';         DataType: ftBlob;       Size: 0;   Required: false),
+  (Name: 'Connection';   DataType: ftWideMemo;   Size: 0;   Required: false)
 
 );
 
@@ -333,7 +333,7 @@ GroupsListTableIndexes: array [1..2] of TIndexDesc = (
 GroupsTableFields: array [1 .. 25] of TFieldDesc = (
   (Name: 'ID';         DataType: ftAutoInc;    Size: 0;   Required: true),  // локальный уникальный ID в этой таблице
   (Name: 'GroupID';    DataType: ftInteger;    Size: 0;   Required: true),  // id родительской группы
-  (Name: 'OuterID';    DataType: ftInteger;    Size: 0;   Required: false),// внешний ID книги в коллекции
+  (Name: 'OuterID';    DataType: ftInteger;    Size: 0;   Required: false), // внешний ID книги в коллекции
   (Name: 'SerID';      DataType: ftInteger;    Size: 0;   Required: false),
   (Name: 'SeqNumber';  DataType: ftSmallInt;   Size: 0;   Required: false),
   (Name: 'DatabaseID'; DataType: ftInteger;    Size: 0;   Required: false),
@@ -539,7 +539,7 @@ begin
     CreateTable(ADataBase, 'GroupedBooks', GroupsTableFields,     GroupsTableIndexes);
     CreateTable(ADataBase, 'Rates',        RatesTableFields,      RatesTableIndexes);
     CreateTable(ADataBase, 'Finished',     FinishedTableFields,   FinishedTableIndexes);
-    CreateTable(ADataBase, 'Extra',       ExtraTableFields,       ExtraTableIndexes);
+    CreateTable(ADataBase, 'Extra',        ExtraTableFields,      ExtraTableIndexes);
     ADataBase.Connected := False;
 
     //
@@ -916,8 +916,8 @@ begin
     if BookRecord.Annotation <> '' then
     begin
       FExtra.Insert;
-      FExtra['BookID'] := FBooks['ID'];
-      FExtra['Annotation'] := BookRecord.Annotation;
+      FExtra['E_BookID'] := FBooks['ID'];
+      FExtra['E_Annotation'] := BookRecord.Annotation;
       FExtra.Post;
     end;
 
