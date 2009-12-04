@@ -913,14 +913,6 @@ begin
       FAuthorList.Post;
     end;
 
-    if BookRecord.Annotation <> '' then
-    begin
-      FExtra.Insert;
-      FExtra['BookID'] := FBooks['ID'];
-      FExtra['Annotation'] := BookRecord.Annotation;
-      FExtra.Post;
-    end;
-
     Result := FBooks['ID'];
   end;
 end;

@@ -1364,14 +1364,14 @@ begin
     edFSeries.Text := HL[2];
     edFGenre.Text  := HL[3];
     edFGenre.Hint  := HL[4];
-    edFFile.Text := HL[6];
-    edFFolder.Text := HL[7];
-    edFExt.Text := HL[8];
-    cbDate.Text := HL[9];
-    cbDownloaded.Text := HL[10];
-    cbDeleted.Checked := StrToBool(HL[11]);
-    cbLang.Text := HL[12];
-    edFKeyWords.Text := HL[13];
+    edFFile.Text := HL[5];
+    edFFolder.Text := HL[6];
+    edFExt.Text := HL[7];
+    cbDate.Text := HL[8];
+    cbDownloaded.Text := HL[9];
+    cbDeleted.Checked := StrToBool(HL[10]);
+    cbLang.Text := HL[11];
+    edFKeyWords.Text := HL[12];
   finally
     HL.Free;
     SL.Free;

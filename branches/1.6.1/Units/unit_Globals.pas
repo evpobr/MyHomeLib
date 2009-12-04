@@ -272,7 +272,6 @@ type
 
     KeyWords: string;
     URI: string;
-    Annotation: string;
 
     procedure Normalize;
     procedure Clear;
@@ -694,8 +693,6 @@ begin
   Deleted := False;
   Local := False;
   Date := 0;
-
-  Annotation := '';
 end;
 
 //
