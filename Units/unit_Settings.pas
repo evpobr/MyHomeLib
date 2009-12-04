@@ -180,6 +180,7 @@ type
     FIniFileName: string;
 
   private
+    FDeleteFiles: boolean;
     function GetSettingsFileName: string;
 
     function GetSystemFileName(fileType: TMHLSystemFile): string;
@@ -343,6 +344,7 @@ type
     property AutoLoadReview: boolean read FAutoLoadReview write FAutoLoadReview;
 
     property DeleteDeleted:boolean read FDeleteDeleted write FDeleteDeleted;
+    property DeleteFiles:boolean read FDeleteFiles write FDeleteFiles;
 
     // SORT_SECTION
     property EnableSort : boolean read FEnableSort write FEnableSort;
@@ -663,6 +665,7 @@ begin
     FAutoRunUpdate :=  iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoRunUpdate', False);
 
     FDeleteDeleted := iniFile.ReadBool(BEHAVIOR_SECTION, 'DeleteDeleted',  False);
+    FDeleteFiles := iniFile.ReadBool(BEHAVIOR_SECTION, 'DeleteFiles',  False);
     FAutoLoadReview := iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoLoadReview',  True);
     FForceConvertToFBD := iniFile.ReadBool(BEHAVIOR_SECTION, 'ForceConvertToFBD',  True);
     FOverwriteFB2Info :=  iniFile.ReadBool(BEHAVIOR_SECTION, 'OverwriteFB2Info',  False);
@@ -819,6 +822,7 @@ begin
     iniFile.WriteBool(BEHAVIOR_SECTION, 'AutoRunUpdate', FAutoRunUpdate);
 
     iniFile.WriteBool(BEHAVIOR_SECTION, 'DeleteDeleted', FDeleteDeleted);
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'DeleteFiles',  FDeleteFiles);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'AutoLoadReview', FAutoLoadReview);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ForceConvertToFBD',  FForceConvertToFBD);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'OverwriteFB2Info',  FOverwriteFB2Info);

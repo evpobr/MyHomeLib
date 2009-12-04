@@ -348,8 +348,7 @@ begin
             then Continue;
 
           Teletype(Format('Обрабатываем файл %s', [CurrentFile]), tsInfo);
-//          BookList.LoadFromFile(Settings.TempPath + CurrentFile,TEncoding.UTF8);
-          BookList.LoadFromFile(Settings.TempPath + CurrentFile);
+          BookList.LoadFromFile(Settings.TempPath + CurrentFile,TEncoding.UTF8);
           for j := 0 to BookList.Count - 1 do
           begin
             try

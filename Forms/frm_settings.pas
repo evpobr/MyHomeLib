@@ -176,6 +176,8 @@ type
     edInputFolder: TRzButtonEdit;
     edLibPassword: TRzMaskEdit;
     cbOverwriteFB2Info: TCheckBox;
+    cbDeleteFiles: TCheckBox;
+    RzToolButton18: TRzToolButton;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
@@ -327,14 +329,15 @@ begin
 
   // Page 6 - Behavior
 
-  cbShowFb2Info.Checked := Settings.ShowFb2Info;
-  cbShowSubGenreBooks.Checked := Settings.ShowSubGenreBooks;
-  cbMinimizeToTray.Checked := Settings.MinimizeToTray;
-  cbAutoStartDwnld.Checked := Settings.AutoStartDwnld;
+  cbShowFb2Info.Checked           := Settings.ShowFb2Info;
+  cbShowSubGenreBooks.Checked     := Settings.ShowSubGenreBooks;
+  cbMinimizeToTray.Checked        := Settings.MinimizeToTray;
+  cbAutoStartDwnld.Checked        := Settings.AutoStartDwnld;
   cbAllowMixedCollections.Checked := Settings.AllowMixed;
-  cbDeleteDeleted.Checked := Settings.DeleteDeleted;
-  cbAutoLoadReview.Checked := Settings.AutoLoadReview;
-  cbOverwriteFB2Info.Checked :=  Settings.OverwriteFB2Info;
+  cbDeleteDeleted.Checked         := Settings.DeleteDeleted;
+  cbAutoLoadReview.Checked        := Settings.AutoLoadReview;
+  cbOverwriteFB2Info.Checked      := Settings.OverwriteFB2Info;
+  cbDeleteFiles.Checked           := Settings.DeleteFiles;
 
   // Page 6 -  FileSort
 
@@ -426,7 +429,7 @@ begin
   Settings.DeleteDeleted     := cbDeleteDeleted.Checked;
   Settings.AutoLoadReview    := cbAutoLoadReview.Checked;
   Settings.OverwriteFB2Info  := cbOverwriteFB2Info.Checked;
-
+  Settings.DeleteFiles       := cbDeleteFiles.Checked;
 
   // Page 6 -  FileSort
 

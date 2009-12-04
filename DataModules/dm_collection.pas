@@ -159,7 +159,6 @@ type
     tblBooksSKeyWords: TWideStringField;
     tblBooksGKeyWords: TWideStringField;
     sqlBooksFullName: TWideStringField;
-    sqlBooksID: TIntegerField;
     tblGenresG_ID: TAutoIncField;
     tblGenresG_Code: TWideStringField;
     tblGenresG_ParentCode: TWideStringField;
@@ -219,6 +218,7 @@ type
     tblExtraCover: TBlobField;
     tblExtraData: TWideMemoField;
     tblBooksFullName: TWideStringField;
+    sqlBooksID: TIntegerField;
   private
     FIsFavorites: boolean;
     FActiveTable: TAbsTable;
@@ -231,6 +231,7 @@ type
     procedure SetActiveTable(Tag: integer);
     procedure GetCurrentBook(var R: TBookRecord);
     function GetBookGenres(BookID: Integer; FirstOnly: boolean): String;
+    function GetRootGenre(BookID: Integer): string;
     function GetGenreCode(BookID: Integer): String;
 
     procedure FieldByName(AID: integer; AField: String; out ARes: String); overload;
@@ -443,6 +444,15 @@ function TDMCollection.GetGenreCode(BookID: Integer): String;
 begin
   tblBooks_Genre_List.Locate('GL_BookID', BookID, []);
   Result := tblBooks_GenresG_Code.Value;
+end;
+
+function TDMCollection.GetRootGenre(BookID: Integer): string;
+var
+  Code: integer;
+begin
+  tblBooks_Genre_List.Locate('GL_BookID', BookID, []);
+  tblGenres.Locate('G_Code', tblBooks_GenresG_ParentCode.Value, []);
+  Result := tblGenresG_Alias.Value;
 end;
 
 procedure TDMCollection.GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);

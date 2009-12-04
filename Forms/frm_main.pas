@@ -408,6 +408,8 @@ type
     RTF1: TMenuItem;
     spExecTime: TRzStatusPane;
     ToolButton5: TToolButton;
+    edFAnnotation: TRzButtonEdit;
+    Label7: TLabel;
 
     //
     // События формы
@@ -1196,14 +1198,8 @@ var
   SeriesFilter: String;
   OldFilter: String;
   Filtered: boolean;
-
   Time: TTime;
 const
-
-//  SQLStartStr = 'select distinct ' +
-//                'b.Id, b.Title, b.SerID, b.FullName, b.FileName, b.Folder, b.Ext, ' +
-//                'b.DatabaseID, b.DiscID, b.LibID, b.InsideNo, b.URI, b.KeyWords, b.Code, ' +
-//                'b.SeqNumber, b.Size, b.Date, b.Local, b.Lang, b.LibRate, b.Deleted ';
   SQLStartStr = 'SELECT distinct b.*'  ;
 begin
   Screen.Cursor := crSQLWAit;
@@ -1212,18 +1208,13 @@ begin
   lblTotalBooksFL.Caption := '(0)';
   FilterString := '';
   ClearLabels(tvBooksSR.Tag, True);
-
   dmCollection.sqlBooks.SQL.Clear;
-
   try
     try
-
       OldFilter := dmCollection.tblBooks.Filter;
       Filtered :=  dmCollection.tblBooks.Filtered;
 
-
       //------------------------ серия -----------------------------------------
-
       FilterString := '';
       AddToFilter('`S_Title`', PrepareQuery(edFSeries.Text, True), True, FilterString);
 
@@ -1236,10 +1227,26 @@ begin
       if FilterString <> '' then
            dmCollection.sqlBooks.SQL.Add(FilterString);
 
+      //------------------------ аннотация -----------------------------------------
       FilterString := '';
+      AddToFilter('`Annotation`', PrepareQuery(edFAnnotation.Text, True), True, FilterString);
 
+      if FilterString <> '' then
+           FilterString := SQLStartStr + #13#10 +
+                           'FROM Extra e ' + #13#10 +
+                           'JOIN books b on b.ID = e.BookID ' + #13#10 +
+                           'WHERE ' + FilterString + '';
+
+      if (dmCollection.sqlBooks.SQL.Count = 0) and (FilterString <> '') then
+        dmCollection.sqlBooks.SQL.Add(FilterString)
+      else
+        if FilterString <> '' then
+        begin
+          dmCollection.sqlBooks.SQL.Add('INTERSECT');
+          dmCollection.sqlBooks.SQL.Add(FilterString);
+        end;
       //-------------------------- жанр ----------------------------------------
-
+      FilterString := '';
       if (edFGenre.Hint <> '') then
            FilterString := SQLStartStr + #13#10 +
                            'FROM Genre_List g ' + #13#10 +
@@ -1255,9 +1262,7 @@ begin
           dmCollection.sqlBooks.SQL.Add('INTERSECT');
           dmCollection.sqlBooks.SQL.Add(FilterString);
         end;
-
       FilterString := '';
-
       //-------------------  все остальное   -----------------------------------
       AddToFilter('`FullName`', PrepareQuery(edFFullName.Text, True), True, FilterString);
       AddToFilter('`Title`', PrepareQuery(edFTitle.Text, True), True, FilterString);
@@ -1289,6 +1294,9 @@ begin
           else
             FilterString := FilterString + ' AND (`Local` = False)';
       end;
+
+      if True then
+
 
       if cbDeleted.Checked then
         if (FilterString = '') then
@@ -1376,14 +1384,15 @@ begin
     edFSeries.Text := HL[2];
     edFGenre.Text  := HL[3];
     edFGenre.Hint  := HL[4];
-    edFFile.Text := HL[5];
-    edFFolder.Text := HL[6];
-    edFExt.Text := HL[7];
-    cbDate.Text := HL[8];
-    cbDownloaded.Text := HL[9];
-    cbDeleted.Checked := StrToBool(HL[10]);
-    cbLang.Text := HL[11];
-    edFKeyWords.Text := HL[12];
+    edFAnnotation.Text := HL[5];
+    edFFile.Text := HL[6];
+    edFFolder.Text := HL[7];
+    edFExt.Text := HL[8];
+    cbDate.Text := HL[9];
+    cbDownloaded.Text := HL[10];
+    cbDeleted.Checked := StrToBool(HL[11]);
+    cbLang.Text := HL[12];
+    edFKeyWords.Text := HL[13];
   finally
     HL.Free;
     SL.Free;
@@ -4164,15 +4173,35 @@ begin
 
       if (Data.nodeType = ntBookInfo) and ((Tree.CheckState[Node] = csCheckedNormal) or (Tree.Selected[Node])) then
       begin
-        if isOnlineCollection(DMUser.ActiveCollection.CollectionType) and Data.Locale then
+        if (isOnline and Data.Locale)
+           or Settings.DeleteFiles
+         then
         begin
           dmCollection.GetBookFileName(Data.ID, FileName, Folder, Ext, No);
-          if DeleteFile(FCollectionRoot + Folder) then
+
+          if not isFB2 then
+          begin
+            if (ExtractFileExt(FileName) = ZIP_EXTENSION) then
+              DeleteFile(FCollectionRoot + Folder + FileName)
+            else
+              DeleteFile(FCollectionRoot + Folder + FileName + Ext);
+          end;
+
+          if isFB2 and isPrivate
+          then
+          begin
+            if (ExtractFileExt(Folder) = ZIP_EXTENSION) then
+              DeleteFile(FCollectionRoot + Folder)
+            else
+              DeleteFile(FCollectionRoot + Folder + FileName + Ext);
+          end;
+
+          if DeleteFile(FCollectionRoot + Folder) and isOnline
+          then
             dmCollection.SetLocalStatus(Data.ID,False);
         end
         else
         begin
-
           ALibrary.BeginBulkOperation;
           try
             ALibrary.DeleteBook(Data.ID);
@@ -4191,6 +4220,7 @@ begin
         Node := Tree.GetNext(Node);
         Tree.DeleteNode(OldNode);
         ClearLabels(Tree.Tag, False);
+
       end
       else
         Node := Tree.GetNext(Node);
@@ -5053,6 +5083,7 @@ begin
          edFSeries.Text + d +
          edFGenre.Text + d +
          edFGenre.Hint + d +
+         edFAnnotation.Text + d +
          edFFile.Text + d +
          edFFolder.Text + d +
          edFExt.Text + d +
