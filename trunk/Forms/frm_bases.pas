@@ -30,26 +30,36 @@ uses
   RzEdit,
   RzBtnEdt,
   RzPanel,
-  RzRadGrp, unit_AutoCompleteEdit;
+  RzRadGrp, unit_AutoCompleteEdit, RzLabel, RzTabs;
 
 type
   TfrmBases = class(TForm)
-    pnButtons: TPanel;
-    btnSave: TButton;
+    RzPageControl1: TRzPageControl;
+    TabSheet1: TRzTabSheet;
+    TabSheet2: TRzTabSheet;
+    RzPanel1: TRzPanel;
     btnCancel: TButton;
-    MHLStaticTip1: TMHLStaticTip;
-    Panel2: TPanel;
-    Label9: TLabel;
-    Label5: TLabel;
-    Label8: TLabel;
-    edCollectionFile: TMHLAutoCompleteEdit;
-    btnNewFile: TButton;
-    edCollectionRoot: TMHLAutoCompleteEdit;
-    btnSelectRoot: TButton;
-    edCollectionName: TEdit;
+    btnSave: TButton;
     cbRelativePath: TCheckBox;
-    Label1: TLabel;
+    MHLStaticTip1: TMHLStaticTip;
     edDescription: TRzEdit;
+    Label1: TLabel;
+    Label5: TLabel;
+    edCollectionRoot: TMHLAutoCompleteEdit;
+    edCollectionFile: TMHLAutoCompleteEdit;
+    edCollectionName: TEdit;
+    Label9: TLabel;
+    Label8: TLabel;
+    btnNewFile: TButton;
+    btnSelectRoot: TButton;
+    RzLabel5: TRzLabel;
+    edUser: TRzEdit;
+    edPass: TRzMaskEdit;
+    RzLabel6: TRzLabel;
+    edURL: TRzEdit;
+    RzLabel1: TRzLabel;
+    RzLabel2: TRzLabel;
+    mmScript: TMemo;
     procedure FormShow(Sender: TObject);
     procedure edDBFileButtonClick(Sender: TObject);
     procedure edDBFolderButtonClick(Sender: TObject);
@@ -66,12 +76,23 @@ type
     procedure SetRootFolder(const Value: string);
     function GetDescription: string;
     procedure SetDescription(const Value: string);
+    function GetPass: string;
+    function GetScript: string;
+    function GetURL: string;
+    function GetUser: string;
+    procedure SetPass(const Value: string);
+    procedure SetScript(const Value: string);
+    procedure SetURL(const Value: string);
+    procedure SetUser(const Value: string);
 
     property DisplayName: string read GetDisplayName write SetDisplayName;
     property DBFileName: string read GetDBFileName write SetDBFileName;
     property RootFolder: string read GetRootFolder write SetRootFolder;
     property Description: string read GetDescription write SetDescription;
-
+    property URL: string read GetURL write SetURL;
+    property User: string read GetUser write SetUser;
+    property Pass: string read GetPass write SetPass;
+    property Script: string read GetScript write SetScript;
   public
 
   end;
@@ -103,6 +124,10 @@ begin
   DBFileName := DMUser.ActiveCollection.DBFileName;
   RootFolder := DMUser.ActiveCollection.RootFolder;
   Description := DMUser.ActiveCollection.Notes;
+  URL := DMUser.ActiveCollection.URL;
+  Pass := DMUser.ActiveCollection.Password;
+  User := DMUser.ActiveCollection.User;
+  Script := DMUser.ActiveCollection.Script;
 
 end;
 
@@ -111,9 +136,19 @@ begin
   Result := Trim(edCollectionName.Text);
 end;
 
+function TfrmBases.GetPass: string;
+begin
+  Result := edPass.Text;
+end;
+
 procedure TfrmBases.SetDisplayName(const Value: string);
 begin
   edCollectionName.Text := Value;
+end;
+
+procedure TfrmBases.SetPass(const Value: string);
+begin
+  edPass.Text := Value;
 end;
 
 function TfrmBases.GetDBFileName: string;
@@ -141,9 +176,40 @@ begin
   Result := Trim(edCollectionRoot.Text);
 end;
 
+function TfrmBases.GetScript: string;
+begin
+  Result := mmScript.Lines.Text;
+end;
+
+function TfrmBases.GetURL: string;
+begin
+  Result := edURL.Text;
+end;
+
+function TfrmBases.GetUser: string;
+begin
+  Result := edUser.Text;
+end;
+
 procedure TfrmBases.SetRootFolder(const Value: string);
 begin
   edCollectionRoot.Text := Value;
+end;
+
+procedure TfrmBases.SetScript(const Value: string);
+begin
+  mmScript.Lines.Clear;
+  mmscript.Lines.Text := Value;
+end;
+
+procedure TfrmBases.SetURL(const Value: string);
+begin
+  edURL.Text := Value;
+end;
+
+procedure TfrmBases.SetUser(const Value: string);
+begin
+  edUser.Text := Value;
 end;
 
 procedure TfrmBases.edDBFileButtonClick(Sender: TObject);
@@ -167,6 +233,7 @@ var
   ADBFileName: string;
   ARootFolder: string;
 begin
+
   if (DisplayName = '') or (DBFileName = '') or (RootFolder = '') then
   begin
     MessageDlg(rstrAllFieldsShouldBeFilled, mtError, [mbOk], 0);
@@ -216,7 +283,15 @@ begin
     Exit;
   end;
 
-  DMUser.UpdateCollectionProps(CollectionID, DisplayName, ARootFolder, ADBFileName, Description);
+  DMUser.UpdateCollectionProps(CollectionID,
+                               DisplayName,
+                               ARootFolder,
+                               ADBFileName,
+                               Description,
+                               URL,
+                               User,
+                               Pass,
+                               Script);
 
   ModalResult := mrOk;
 end;

@@ -26,17 +26,6 @@ type
     DBUser: TABSDatabase;
 
     tblBases: TABSTable;
-    tblBasesID: TAutoIncField;
-    tblBasesName: TWideStringField;
-    tblBasesRootFolder: TWideStringField;
-    tblBasesDBFileName: TWideStringField;
-    tblBasesNotes: TWideStringField;
-    tblBasesUser: TWideStringField;
-    tblBasesPass: TWideStringField;
-    tblBasesDate: TDateField;
-    tblBasesVersion: TIntegerField;
-    tblBasesCode: TIntegerField;
-    tblBasesAllowDelete: TBooleanField;
 
     dsBases: TDataSource;
 
@@ -95,6 +84,21 @@ type
     tblExtraE_Review: TWideMemoField;
     tblExtraE_Cover: TBlobField;
     tblExtraE_Data: TWideMemoField;
+    tblBasesID: TAutoIncField;
+    tblBasesName: TWideStringField;
+    tblBasesRootFolder: TWideStringField;
+    tblBasesDBFileName: TWideStringField;
+    tblBasesNotes: TWideStringField;
+    tblBasesDate: TDateField;
+    tblBasesVersion: TIntegerField;
+    tblBasesCode: TIntegerField;
+    tblBasesAllowDelete: TBooleanField;
+    tblBasesSettings: TWideMemoField;
+    tblBasesIcon: TBlobField;
+    tblBasesURL: TWideStringField;
+    tblBasesUser: TWideStringField;
+    tblBasesPass: TWideStringField;
+    tblBasesConnection: TWideMemoField;
 
   private
     FCollection: TMHLCollection;
@@ -124,7 +128,11 @@ type
       DisplayName: string;
       RootFolder: string;
       DBFileName: string;
-      Description: string = ''
+      Description: string = '';
+      URL: string = '';
+      User: string = '';
+      Pass: string = '';
+      Script: string = ''
     );
 
     function FindCollectionWithProp(
@@ -203,6 +211,10 @@ type
 
     function GetAllowDelete: Boolean;
     procedure SetAllowDelete(const Value: Boolean);
+    function GetURL: string;
+    procedure SetURL(const Value: string);
+    function GetScript: string;
+    procedure SetScript(const Value: string);
 
   public
     property Active: Boolean read GetActive;
@@ -212,12 +224,14 @@ type
     property RootFolder: string read GetRootFolder write SetRootFolder;
     property DBFileName: string read GetDBFileName write SetDBFileName;
     property Notes: string read GetNotes write SetNotes;
-    property User: string read GetUser write SetUser;
-    property Password: string read GetPassword write SetPassword;
     property CreationDate: TDateTime read GetCreationDate write SetCreationDate;
     property Version: Integer read GetVersion write SetVersion;
     property CollectionType: COLLECTION_TYPE read GetCollectionType write SetCollectionType;
     property AllowDelete: Boolean read GetAllowDelete write SetAllowDelete;
+    property User: string read GetUser write SetUser;
+    property Password: string read GetPassword write SetPassword;
+    property URL: string read GetURL write SetURL;
+    property Script: string read GetScript write SetScript;
   end;
 
 var
@@ -347,6 +361,10 @@ begin
     tblBasesRootFolder.Value := RootFolder;
     tblBasesDBFileName.Value := DBFileName;
     tblBasesNotes.Value := Description;
+    tblBasesURL.Value := URL;
+    tblBasesUser.Value := User;
+    tblBasesPass.Value := Pass;
+    tblBasesConnection.Value := Script;
 
     tblBases.Post;
   end;
@@ -744,10 +762,20 @@ begin
   Result := FSysDataModule.tblBasesRootFolder.Value;
 end;
 
+function TMHLCollection.GetScript: string;
+begin
+  Result := FSysDataModule.tblBasesConnection.Value;
+end;
+
 procedure TMHLCollection.SetRootFolder(const Value: string);
 begin
   Assert(Assigned(FSysDataModule));
   FSysDataModule.tblBasesRootFolder.Value := ExcludeTrailingPathDelimiter(Value);
+end;
+
+procedure TMHLCollection.SetScript(const Value: string);
+begin
+  FSysDataModule.tblBasesConnection.Value := Value;
 end;
 
 function TMHLCollection.GetDBFileName: string;
@@ -774,10 +802,20 @@ begin
   FSysDataModule.tblBasesNotes.Value := Value;
 end;
 
+function TMHLCollection.GetURL: string;
+begin
+  Result := FSysDataModule.tblBasesURL.Value;
+end;
+
 function TMHLCollection.GetUser: string;
 begin
   Assert(Assigned(FSysDataModule));
   Result := FSysDataModule.tblBasesUser.Value;
+end;
+
+procedure TMHLCollection.SetURL(const Value: string);
+begin
+  FSysDataModule.tblBasesURL.Value := Value;
 end;
 
 procedure TMHLCollection.SetUser(const Value: string);

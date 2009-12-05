@@ -56,7 +56,6 @@ type
     dlgColors: TColorDialog;
     tsInternet: TTabSheet;
     RzGroupBox1: TRzGroupBox;
-    RzGroupBox2: TRzGroupBox;
     edProxyServer: TRzEdit;
     edProxyUsername: TRzEdit;
     edProxyPassword: TRzMaskEdit;
@@ -65,8 +64,6 @@ type
     RzLabel2: TRzLabel;
     RzLabel3: TRzLabel;
     RzLabel4: TRzLabel;
-    edLibUserName: TRzEdit;
-    RzLabel6: TRzLabel;
     RzGroupBox3: TRzGroupBox;
     edFolderTemplate: TRzEdit;
     edFileNameTemplate: TRzEdit;
@@ -142,9 +139,7 @@ type
     cbDeleteDeleted: TCheckBox;
     cbTXTEncoding: TRzComboBox;
     Label1: TLabel;
-    RzLabel5: TRzLabel;
     cbAutoLoadReview: TCheckBox;
-    edDownloadServer: TRzComboBox;
     tsFileSort: TTabSheet;
     RzGroupBox12: TRzGroupBox;
     Label2: TLabel;
@@ -174,7 +169,6 @@ type
     cbEnableFileSort: TCheckBox;
     RzGroupBox15: TRzGroupBox;
     edInputFolder: TRzButtonEdit;
-    edLibPassword: TRzMaskEdit;
     cbOverwriteFB2Info: TCheckBox;
     cbDeleteFiles: TCheckBox;
     RzToolButton18: TRzToolButton;
@@ -292,7 +286,6 @@ begin
   edProxyUsername.Text := Settings.ProxyUsername;
   edProxyPassword.Text := Settings.ProxyPassword;
   edProxyPort.Value := Settings.ProxyPort;
-  edDownloadServer.Text := Settings.DownloadURL;
 
   edUpdates.Text := Settings.UpdateURL;
   cbCheckColUpdate.Checked := Settings.CheckExternalLibUpdate;
@@ -304,10 +297,6 @@ begin
 
   cbUseIESettings.Checked := Settings.UseIESettings;
   cbAutoRunUpdate.Checked := Settings.AutoRunUpdate;
-
-  edLibUsername.Text :=  Settings.LibUsername;
-  edLibPassword.Text :=  Settings.LibPassword;
-
 
   // Page 5 - Scripts
   lvScripts.Items.Clear;
@@ -406,14 +395,11 @@ begin
   Settings.UpdateURL              := edUpdates.Text;
   Settings.CheckExternalLibUpdate := cbCheckColUpdate.Checked;
   Settings.CheckUpdate            := cbUpdates.Checked;
-  Settings.DownloadURL            := edDownloadServer.Text;
   Settings.TimeOut                := Round(edTimeOut.Value);
   Settings.ReadTimeOut            := Round(edReadTimeOut.Value);
   Settings.DwnldInterval          := Round(edDwnldInterval.Value);
   Settings.UseIESettings          := cbUseIESettings.Checked;
   Settings.AutoRunUpdate          := cbAutoRunUpdate.Checked;
-  Settings.LibUsername            := edLibUsername.Text;
-  Settings.LibPassword            := edLibPassword.Text;
 
   // Page 5 - Scripts
   SaveScripts;

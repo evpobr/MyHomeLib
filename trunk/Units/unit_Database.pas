@@ -288,22 +288,22 @@ ExtraTableIndexes: array [1..2] of TIndexDesc = (
 //
 //   Bases table
 //
-BasesTableFields: array [1 .. 14] of TFieldDesc = (
+BasesTableFields: array [1 .. 15] of TFieldDesc = (
   (Name: 'ID';           DataType: ftAutoInc;    Size: 0;   Required: true),
   (Name: 'Name';         DataType: ftWideString; Size: 64;  Required: true),
   (Name: 'RootFolder';   DataType: ftWideString; Size: 128; Required: true),
   (Name: 'DBFileName';   DataType: ftWideString; Size: 128; Required: true),
   (Name: 'Notes';        DataType: ftWideString; Size: 255; Required: false),
-  (Name: 'User';         DataType: ftWideString; Size: 50;  Required: false),
-  (Name: 'Pass';         DataType: ftWideString; Size: 50;  Required: false),
   (Name: 'Date';         DataType: ftDate;       Size: 0;   Required: false),
   (Name: 'Version';      DataType: ftInteger;    Size: 0;   Required: false),
   (Name: 'Code';         DataType: ftInteger;    Size: 0;   Required: false),
   (Name: 'AllowDelete';  DataType: ftBoolean;    Size: 0;   Required: false),
   (Name: 'Settings';     DataType: ftWideMemo;   Size: 0;   Required: false),
   (Name: 'Icon';         DataType: ftBlob;       Size: 0;   Required: false),
+  (Name: 'URL';          DataType: ftWideString; Size: 255; Required: false),
+  (Name: 'User';         DataType: ftWideString; Size: 50;  Required: false),
+  (Name: 'Pass';         DataType: ftWideString; Size: 50;  Required: false),
   (Name: 'Connection';   DataType: ftWideMemo;   Size: 0;   Required: false)
-
 );
 
 BasesTableIndexes: array [1..2] of TIndexDesc = (
