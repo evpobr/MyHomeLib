@@ -48,14 +48,6 @@ object DMUser: TDMUser
       FieldName = 'Notes'
       Size = 255
     end
-    object tblBasesUser: TWideStringField
-      FieldName = 'User'
-      Size = 50
-    end
-    object tblBasesPass: TWideStringField
-      FieldName = 'Pass'
-      Size = 50
-    end
     object tblBasesDate: TDateField
       FieldName = 'Date'
     end
@@ -67,6 +59,29 @@ object DMUser: TDMUser
     end
     object tblBasesAllowDelete: TBooleanField
       FieldName = 'AllowDelete'
+    end
+    object tblBasesSettings: TWideMemoField
+      FieldName = 'Settings'
+      BlobType = ftWideMemo
+    end
+    object tblBasesIcon: TBlobField
+      FieldName = 'Icon'
+    end
+    object tblBasesURL: TWideStringField
+      FieldName = 'URL'
+      Size = 255
+    end
+    object tblBasesUser: TWideStringField
+      FieldName = 'User'
+      Size = 50
+    end
+    object tblBasesPass: TWideStringField
+      FieldName = 'Pass'
+      Size = 50
+    end
+    object tblBasesConnection: TWideMemoField
+      FieldName = 'Connection'
+      BlobType = ftWideMemo
     end
   end
   object tblRates: TABSTable
@@ -379,7 +394,7 @@ object DMUser: TDMUser
     Left = 344
     Top = 328
     Bitmap = {
-      494C0101030004001C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010103000400280010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000009933000099330000000000000000
@@ -524,7 +539,7 @@ object DMUser: TDMUser
     Left = 296
     Top = 328
     Bitmap = {
-      494C0101030004001C0020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010103000400280020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000002000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000000000000000000000000DF9030F52D9

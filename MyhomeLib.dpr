@@ -107,7 +107,8 @@ uses
   frm_ConverToFBD in 'Forms\frm_ConverToFBD.pas' {frmConvertToFBD},
   fictionbook_21 in 'Components\fictionbook_21.pas',
   frm_author_list in 'Forms\frm_author_list.pas' {frmAuthorList},
-  frm_edit_author in 'Forms\frm_edit_author.pas' {frmEditAuthorData};
+  frm_edit_author in 'Forms\frm_edit_author.pas' {frmEditAuthorData},
+  unit_Downloader in 'DwnldImpl\unit_Downloader.pas';
 
 {$R *.res}
 
