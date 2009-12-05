@@ -150,6 +150,7 @@ begin
   Synchronize(DoSetProgress2);
 end;
 
+
 procedure TDownloadBooksThread.DoSetProgress2;
 begin
   if Assigned(FOnSetProgress2) then

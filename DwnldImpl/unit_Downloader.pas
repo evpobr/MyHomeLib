@@ -20,6 +20,12 @@ type
   TQueryKind = (qkGet, qkPost);
   EInvalidLogin = class (Exception);
 
+
+  TCommand = record
+               Code: integer;
+               Params: array [1..5] of string;
+             end;
+
   TSetCommentEvent = procedure(const Current, Total: string) of object;
   TProgressEvent = procedure(Current, Total: Integer) of object;
 
@@ -59,6 +65,8 @@ type
     procedure Set_OnProgress(const Value: TProgressEvent);
 
     procedure ProcessError(const LongMsg, ShortMsg, AFileName: string);
+
+    procedure ParseCommand(S: string; out Command: TCommand);
   public
     constructor Create;
     destructor Free;
@@ -80,8 +88,8 @@ uses
   DM_User;
 
 const
-   Commands : array [0..5] of string = ('ADD','GET','POST','PAUSE','NP', 'CHECK');
-   Params :  array [0..2] of string = ('%USER%', '%PASS%', '%RESPURL%');
+   CommandList: array [0..5] of string = ('ADD','GET','POST','REDIR', 'CHECK', 'PAUSE');
+   Params :     array [0..2] of string = ('%USER%', '%PASS%', '%RESURL%');
 
 { TDownloader }
 
@@ -236,28 +244,81 @@ function TDownloader.Main: boolean;
 var
   URL: string;
   CL: TStringList;
-
+  Commands : array of TCommand;
+  Command: TCommand;
+  I: Integer;
 begin
+  CL := TStringList.Create;
+  try
+    CL.Text := DMUser.ActiveCollection.Script;
+    SetLength(Commands, CL.Count);
+    for I := 0 to CL.Count - 1 do
+    begin
+      if Canceled then Break;
 
-//  CL := TStringList.Create;
-//  try
-//
-//  finally
-//    CL.Free;
-//  end;
+      ParseCommand(CL[i], Commands[i]);
+      with Commands[i] do
+        case Code of
+          0: begin
+               AddParam(Params[1], Params[2]);
+               Result := True;
+             end;
+          1: Result := Query(qkGet, Params[1]);
+          2: Result := Query(qkPost, Params[1]);
+          3: Result := CheckRedirect;
+          4: Result := CheckResponce;
+        end;
+      if not Result then Break;
+    end;
+  finally
+    CL.Free;
+  end;
+end;
 
-  // -------          заглушка  ---------------------------------------------
+procedure TDownloader.ParseCommand;
+var
+  p, i: integer;
+  s1, s2: string;
 
-  URL := DMUser.ActiveCollection.URL + CalcURI('b/%LIBID%/get');
+  t: string;
+begin
+  Command.Code := -1;
 
-  FResponce.Clear;
-  AddParam('name', DMUser.ActiveCollection.User);
-  AddParam('password', DMUser.ActiveCollection.Password);
+  dmCollection.FieldByName(0, 'LibId', t);
+  StrReplace('%LIBID%', t, S);
 
-  if Query(qkPost, URL) then
-    if CheckRedirect then
-       if Query(qkGet, FNewURL) then
-         Result := CheckResponce;
+  StrReplace('%USER%', DMUser.ActiveCollection.User, S);
+  StrReplace('%PASS%', DMUser.ActiveCollection.Password, S);
+
+  StrReplace('%URL%',  DMUser.ActiveCollection.URL, S);
+  StrReplace('%RESURL%', FNewURL, S);
+
+  p := pos(' ', S);
+  if p <> 0 then
+  begin
+    s1 := copy(S,1, p - 1);
+    Delete(S, 1, p);
+  end
+  else
+    s1 := S;
+
+  for I := 0 to 5 do
+    if CommandList[i] = s1 then
+    begin
+      Command.Code := i;
+      Break;
+    end;
+
+  p := pos(' ', S); i := 1;
+  while p <> 0 do
+  begin
+    s1 := copy(S,1, p - 1);
+    Command.Params[i] := s1;
+    inc(i);
+    Delete(S, 1, p);
+    p := pos(' ', S);
+  end;
+  if S <> '' then Command.Params[i] := S
 end;
 
 procedure TDownloader.ProcessError(const LongMsg, ShortMsg, AFileName: string);
@@ -327,7 +388,11 @@ end;
 
 procedure TDownloader.Stop;
 begin
-  FidHTTP.Disconnect;
+  try
+    FidHTTP.Disconnect;
+  except
+    //
+  end;
 end;
 
 end.
