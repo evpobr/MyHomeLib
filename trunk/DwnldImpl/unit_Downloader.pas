@@ -159,10 +159,6 @@ begin
   FidHTTP.HandleRedirects := True;
 
   SetProxySettings(FidHTTP);
-
-  FParams := TIdMultiPartFormDataStream.Create;
-  FResponce := TMemoryStream.Create;
-
   FIgnoreErrors := False;
 end;
 
@@ -186,8 +182,6 @@ end;
 destructor TDownloader.Free;
 begin
   FidHTTP.Free;
-  FParams.Free;
-  FResponce.Free;
 end;
 
 procedure TDownloader.HTTPRedirect(Sender: TObject; var dest: string;
@@ -252,10 +246,11 @@ begin
   try
     CL.Text := DMUser.ActiveCollection.Script;
     SetLength(Commands, CL.Count);
+    FParams := TIdMultiPartFormDataStream.Create;
+    FResponce := TMemoryStream.Create;
     for I := 0 to CL.Count - 1 do
     begin
       if Canceled then Break;
-
       ParseCommand(CL[i], Commands[i]);
       with Commands[i] do
         case Code of
@@ -271,6 +266,8 @@ begin
       if not Result then Break;
     end;
   finally
+    FParams.Free;
+    FResponce.Free;
     CL.Free;
   end;
 end;

@@ -2742,6 +2742,8 @@ var
   FileName: string;
   Ext: string;
 
+  CoverOK: boolean;
+
   No: integer;
 begin
   if BookTreeStatus = bsBusy then
@@ -2785,9 +2787,9 @@ begin
     InfoPanel.Author := Data.FullName;
   end;
 
-  pmiBookInfo.Visible := Cover.Show(InfoPanel.Folder,InfoPanel.FileName,No);
+  CoverOK := Cover.Show(InfoPanel.Folder,InfoPanel.FileName,No);
 
-  if pmiBookInfo.Visible and IsPrivate and IsNonFB2 then
+  if CoverOK and IsPrivate and IsNonFB2 then
   begin
     miConverToFBD.Visible := true;
     miConverToFBD.Tag := 999;
@@ -2799,7 +2801,7 @@ begin
     end;
   end
     else
-      if not pmiBookInfo.Visible and IsPrivate and IsNonFB2 then
+      if not CoverOK and IsPrivate and IsNonFB2 then
       begin
         miConverToFBD.Visible := true;
         miConverToFBD.Tag := 0;
@@ -2810,8 +2812,6 @@ begin
           frmConvertToFBD.Caption := 'Преобразование в FBD';
         end;
       end;
-
-
   Application.ProcessMessages;
 end;
 
@@ -4162,6 +4162,8 @@ begin
   if MessageDlg('Удалить отмеченные книги?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
     Exit;
 
+
+  Screen.Cursor := crHourGlass;
   GetActiveTree(Tree);
 
   ALibrary := TMHLLibrary.Create(nil);
@@ -4231,6 +4233,7 @@ begin
     end;
   finally
     ALibrary.Free;
+    Screen.Cursor := crDefault;
   end;
 end;
 
@@ -5491,6 +5494,7 @@ var
 
   NoFb2Info: boolean;
   F: TZFArchiveItem;
+  URL: string;
 begin
 //  if not isFb2 then Exit;
 
@@ -5508,6 +5512,7 @@ begin
 
   Table.Locate('ID', Data.ID, []);
   FFormBusy := True;
+  URL :=  Format('%sb/%d/',[DMUser.ActiveCollection.URL, Table.FieldByName('LibID').AsInteger]);
 
   frmBookDetails := TfrmBookDetails.Create(Application);
 
@@ -5593,13 +5598,13 @@ begin
         frmBookDetails.mmInfo.Lines.Add('Добавлено: ' + Table.FieldByName('Date').AsString);
 
         if not isPrivate and ReviewEditable  then
-            frmBookDetails.AllowOnlineReview(Table['LibID']);
+            frmBookDetails.AllowOnlineReview(URL);
 
         if Table['Code'] = 1 then
-          frmBookDetails.Review := Extra.FieldByName('Review').AsWideString
+          frmBookDetails.Review := Extra.FieldByName('E_Review').AsWideString
         else
           if not isPrivate and Settings.AutoLoadReview then
-            DownloadReview(frmBookDetails);
+            DownloadReview(frmBookDetails, URL);
 
         frmBookDetails.ShowModal;
         // обрабатываем рецензию
@@ -5614,7 +5619,7 @@ begin
                   Table.Post;
 
                   Extra.Insert;
-                  Extra.FieldByName('Review').AsWideString := frmBookDetails.Review;
+                  Extra.FieldByName('E_Review').AsWideString := frmBookDetails.Review;
                   Extra.Post;
 
                   Data.Code := 1;
@@ -5623,7 +5628,7 @@ begin
             1: if frmBookDetails.Review <> '' then
                begin
                   Extra.Edit;
-                  Extra.FieldByName('Review').AsWideString := frmBookDetails.Review;
+                  Extra.FieldByName('E_Review').AsWideString := frmBookDetails.Review;
                   Extra.Post;
                 end
                 else
