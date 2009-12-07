@@ -113,10 +113,6 @@ begin
     R.Lang := Lang;
     R.KeyWords := KeyWords.Text;
 
-    for I := 0 to Annotation.P.Count - 1 do
-      R.Annotation := R.Annotation + #10#13 + Annotation.P.Items[i].Text;
-
-
     if Sequence.Count > 0 then
     begin
       try
@@ -125,6 +121,11 @@ begin
       except
       end;
     end;
+
+    for I := 0 to Annotation.P.Count - 1 do
+        if Annotation.P.Items[i].IsTextElement  then
+          R.Annotation := R.Annotation + #10#13 + Annotation.P.Items[i].OnlyText;
+
   end;
 end;
 

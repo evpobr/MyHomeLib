@@ -39,38 +39,40 @@ type
     procedure btnClearReviewClick(Sender: TObject);
   private
     { Private declarations }
-    FLibID : integer;
+    FUrl: string;
 
     FReviewChanged : boolean;
     function GetReview: string;
     procedure Setreview(const Value: string);
 
   public
-    procedure AllowOnlineReview(ID: integer);
+    procedure AllowOnlineReview(URL: string);
     procedure Download;
 
     procedure ShowBookInfo(FS: TMemoryStream);
     property Review: string read GetReview write Setreview;
     property ReviewChanged: boolean read FReviewChanged write FReviewChanged;
-    property LibID: integer read FLibID;
+    property URL: string write FURL;
     { Public declarations }
   end;
 
   TReviewDownloadThread = class(TThread)
   private
     { Private declarations }
-    FId: integer;
     FForm: TfrmBookDetails;
     FReview : TStringList;
+    FURL : string;
 
     procedure StartDownload;
     procedure Finish;
   protected
     procedure Execute; override;
     property Form: TfrmBookDetails read FForm write FForm;
+  public
+    property URL: string write FURL;
   end;
 
-  procedure DownloadReview(Form: TfrmBookDetails);
+  procedure DownloadReview(Form: TfrmBookDetails; URL: string);
 
 var
   frmBookDetails: TfrmBookDetails;
@@ -83,18 +85,17 @@ uses
   unit_Settings,
   unit_MHLHelpers,
   unit_ReviewParser,
+  dm_user,
   jpeg,
   pngimage,
   strutils;
 
-const
-  URL = 'http://lib.rus.ec/b/%d/';
 
 {$R *.dfm}
 
-procedure TfrmBookDetails.AllowOnlineReview(ID: integer);
+procedure TfrmBookDetails.AllowOnlineReview(URL: string);
 begin
-  FLibID := ID;
+  FUrl := URL;
 
   btnLoadReview.Visible := True;
   btnClearReview.Visible := True;
@@ -112,12 +113,11 @@ var
   review : TStringList;
 begin
   btnLoadReview.Enabled := False;
-
   reviewParser := TReviewParser.Create;
   review := TStringList.Create;
   Screen.Cursor := crHourGlass;
   try
-    reviewParser.Parse(Format(url,[FLibID]), review);
+    reviewParser.Parse(FURL, review);
     mmReview.Clear;
     mmReview.Lines.AddStrings(review);
     FReviewChanged := True;
@@ -278,7 +278,7 @@ begin
       mmInfo.SetSelText('History: '+ #9 + Book.Description.Documentinfo.History.P.Text + #13#10);
 
       for I := 0 to Annotation.P.Count - 1 do
-              mmShort.SetSelText(Annotation.P.Items[i].Text);
+              mmShort.SetSelText(Annotation.P.Items[i].OnlyText);
 
     end;
   except
@@ -296,7 +296,7 @@ begin
   try
     reviewParser := TReviewParser.Create;
     try
-      reviewParser.Parse(Format(url,[FId]), Freview);
+      reviewParser.Parse(FURL, Freview);
     finally
       reviewParser.Free;
     end;
@@ -325,13 +325,13 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure DownloadReview (Form: TfrmBookDetails) ;
+procedure DownloadReview (Form: TfrmBookDetails; URL: string) ;
 var
   Worker : TReviewDownloadThread;
 begin
   Worker := TReviewDownloadThread.Create(True);
   Worker.Form := Form;
-  Worker.FId := Form.LibID;
+  Worker.URL := URL;
   Worker.Priority := tpLower;
   Worker.FreeOnTerminate := True;
   Worker.Resume;
