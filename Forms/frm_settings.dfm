@@ -27,28 +27,28 @@ object frmSettings: TfrmSettings
     BorderOuter = fsFlatRounded
     TabOrder = 0
     object btnSave: TRzBitBtn
-      Left = 292
+      Left = 362
       Top = 11
-      Width = 133
-      Height = 31
+      Width = 110
+      Height = 28
       Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
       TabOrder = 0
       OnClick = btnSaveClick
       Kind = bkOK
     end
     object btnCancel: TRzBitBtn
-      Left = 466
+      Left = 482
       Top = 11
-      Width = 120
+      Width = 110
       Height = 28
       Caption = #1053#1077' '#1089#1086#1093#1088#1072#1085#1103#1090#1100
       TabOrder = 1
       Kind = bkCancel
     end
     object btnHelp: TRzBitBtn
-      Left = 5
+      Left = 9
       Top = 11
-      Width = 120
+      Width = 110
       Height = 28
       Caption = #1057#1087#1088#1072#1074#1082#1072
       TabOrder = 2
@@ -624,7 +624,6 @@ object frmSettings: TfrmSettings
         Align = alTop
         Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1082#1089#1080
         TabOrder = 0
-        ExplicitTop = 93
         object RzLabel1: TRzLabel
           Left = 16
           Top = 50
@@ -715,13 +714,13 @@ object frmSettings: TfrmSettings
       object RzGroupBox9: TRzGroupBox
         AlignWithMargins = True
         Left = 3
-        Top = 122
+        Top = 179
         Width = 400
         Height = 109
         Align = alTop
         Caption = #1057#1077#1088#1074#1077#1088' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
         TabOrder = 1
-        ExplicitTop = 212
+        ExplicitTop = 122
         object edUpdates: TEdit
           Left = 16
           Top = 23
@@ -758,14 +757,14 @@ object frmSettings: TfrmSettings
       object RzGroupBox10: TRzGroupBox
         AlignWithMargins = True
         Left = 3
-        Top = 237
+        Top = 294
         Width = 400
-        Height = 159
+        Height = 102
         Align = alClient
         Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1089#1086#1077#1076#1080#1085#1077#1085#1080#1103
         TabOrder = 2
-        ExplicitTop = 327
-        ExplicitHeight = 69
+        ExplicitTop = 237
+        ExplicitHeight = 67
         object RzLabel7: TRzLabel
           Left = 16
           Top = 22
@@ -833,6 +832,28 @@ object frmSettings: TfrmSettings
           Max = 900000.000000000000000000
           Value = 10000.000000000000000000
           DisplayFormat = ',0;(,0)'
+        end
+      end
+      object RzGroupBox2: TRzGroupBox
+        AlignWithMargins = True
+        Left = 3
+        Top = 122
+        Width = 400
+        Height = 51
+        Align = alTop
+        Caption = #1055#1072#1087#1082#1072' '#1089' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1103#1084#1080
+        TabOrder = 3
+        ExplicitTop = 78
+        object edUpdateDir: TRzButtonEdit
+          Left = 11
+          Top = 18
+          Width = 374
+          Height = 21
+          HelpContext = 5001
+          TabOrder = 0
+          AltBtnWidth = 15
+          ButtonWidth = 15
+          OnButtonClick = edDeviceDirButtonClick
         end
       end
     end

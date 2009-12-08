@@ -1,8 +1,10 @@
 inherited frameNCWNameAndLocation: TframeNCWNameAndLocation
   Width = 460
-  Height = 270
+  Height = 282
   Constraints.MinHeight = 270
   Constraints.MinWidth = 460
+  ExplicitWidth = 460
+  ExplicitHeight = 282
   object Label1: TLabel [0]
     AlignWithMargins = True
     Left = 14
@@ -18,11 +20,12 @@ inherited frameNCWNameAndLocation: TframeNCWNameAndLocation
       ' '#1087#1083#1072#1085#1080#1088#1091#1077#1090#1077' '#1093#1088#1072#1085#1080#1090#1100' '#1082#1085#1080#1075#1080'.'
     Transparent = True
     WordWrap = True
+    ExplicitWidth = 425
   end
   object pageHint: TMHLStaticTip [1]
     AlignWithMargins = True
     Left = 14
-    Top = 210
+    Top = 213
     Width = 432
     Height = 58
     Margins.Left = 14
@@ -30,22 +33,26 @@ inherited frameNCWNameAndLocation: TframeNCWNameAndLocation
     TextMargin = 15
     Images = DMUser.SeverityImagesBig
     Align = alTop
+    ExplicitTop = 210
   end
   inherited pnTitle: TPanel
     Width = 460
+    ExplicitWidth = 460
     inherited lblTitle: TLabel
       Width = 432
       Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1082#1086#1083#1083#1077#1082#1094#1080#1080
+      ExplicitWidth = 120
     end
     inherited lblSubTitle: TLabel
       Width = 425
       Caption = #1059#1082#1072#1078#1080#1090#1077' '#1085#1072#1079#1074#1072#1085#1080#1077' '#1080' '#1088#1072#1089#1087#1086#1083#1086#1078#1077#1085#1080#1077' '#1092#1072#1081#1083#1086#1074' '#1082#1086#1083#1083#1077#1082#1094#1080#1080
+      ExplicitWidth = 278
     end
   end
   object Panel2: TPanel
     AlignWithMargins = True
     Left = 7
-    Top = 97
+    Top = 100
     Width = 446
     Height = 110
     Margins.Left = 7

@@ -2061,7 +2061,7 @@ begin
                                               DMUser.ActiveCollection.CollectionType,
                                               DMUser.ActiveCollection.ID)
       then
-        if Settings.Updates.Items[i].CheckVersion(Settings.WorkPath, DMUser.ActiveCollection.Version) then
+        if Settings.Updates.Items[i].CheckVersion(Settings.UpdatePath, DMUser.ActiveCollection.Version) then
         begin
           Result := True;
           Break;
@@ -6232,6 +6232,7 @@ begin
 
   frmBases := TfrmBases.Create(Application);
   try
+    frmBases.TabSheet2.TabVisible := isOnline;
     if frmBases.ShowModal = mrOk then
     begin
       Assert(Settings.ActiveCollection = DMUser.ActiveCollection.ID);

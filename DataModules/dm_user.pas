@@ -111,6 +111,7 @@ type
     destructor Destroy; override;
 
     function ActivateCollection(CollectionID: Integer): Boolean;
+
     procedure RegisterCollection(
       DisplayName: string;
       RootFolder: string;
@@ -119,6 +120,8 @@ type
       AllowDelete: Boolean;
       Version: Integer = UNVERSIONED_COLLECTION;
       Notes: string = '';
+      URL: string = '';
+      Script: string = '';
       User: string = '';
       Password: string = ''
     );
@@ -310,7 +313,7 @@ procedure TDMUser.RegisterCollection(
   CollectionType: COLLECTION_TYPE;
   AllowDelete: Boolean;
   Version: Integer;
-  Notes, User, Password: string
+  Notes, URL, Script, User, Password: string
   );
 var
   ID : integer;
@@ -342,8 +345,9 @@ begin
   tblBasesNotes.Value := Notes;
   tblBasesUser.Value := User;
   tblBasesPass.Value := Password;
+  tblBasesURL.Value := URL;
+  tblBasesConnection.Value := Script;
   tblBases.Post;
-
 end;
 
 function TDMUser.ActivateCollection(CollectionID: Integer): Boolean;

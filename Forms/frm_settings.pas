@@ -172,6 +172,8 @@ type
     cbOverwriteFB2Info: TCheckBox;
     cbDeleteFiles: TCheckBox;
     RzToolButton18: TRzToolButton;
+    RzGroupBox2: TRzGroupBox;
+    edUpdateDir: TRzButtonEdit;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
@@ -298,6 +300,8 @@ begin
   cbUseIESettings.Checked := Settings.UseIESettings;
   cbAutoRunUpdate.Checked := Settings.AutoRunUpdate;
 
+  edUpdateDir.Text        := Settings.UpdateDir;
+
   // Page 5 - Scripts
   lvScripts.Items.Clear;
   cbDefaultAction.Items.Clear;
@@ -400,6 +404,8 @@ begin
   Settings.DwnldInterval          := Round(edDwnldInterval.Value);
   Settings.UseIESettings          := cbUseIESettings.Checked;
   Settings.AutoRunUpdate          := cbAutoRunUpdate.Checked;
+
+  Settings.UpdateDir              := edUpdateDir.Text;
 
   // Page 5 - Scripts
   SaveScripts;
