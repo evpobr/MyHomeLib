@@ -117,7 +117,8 @@ end;
 function TLibUpdateThread.ReplaceFiles: boolean;
 begin
   DeleteFile(Settings.SystemFileName[sfLibRusEcinpx]);
-  RenameFile(Settings.SystemFileName[sfLibRusEcUpdate],Settings.SystemFileName[sfLibRusEcinpx]);
+  CopyFile(Settings.SystemFileName[sfLibRusEcUpdate],Settings.SystemFileName[sfLibRusEcinpx]);
+  DeleteFile(Settings.SystemFileName[sfLibRusEcUpdate]);
 end;
 
 procedure TLibUpdateThread.WorkFunction;
@@ -162,7 +163,7 @@ begin
         Exit;
       end;
 
-      InpxFileName := Settings.WorkPath + FileName;
+      InpxFileName := Settings.UpdatePath + FileName;
 
       DBFileName := DMUser.ActiveCollection.DBFileName;
       CollectionRoot :=  IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
@@ -198,9 +199,9 @@ begin
     Teletype(rstrUpdateComplete,tsInfo);
     for I := 0 to Settings.Updates.Count - 1 do
     with Settings.Updates.Items[i] do
-      if FileExists(Settings.WorkPath + FileName) then
+      if FileExists(Settings.UpdatePath + FileName) then
         if FileName <> 'librusec_update.zip' then
-          DeleteFile(Settings.WorkPath + FileName)
+          DeleteFile(Settings.UpdatePath + FileName)
         else
           ReplaceFiles;
      SetComment(rstrReady);

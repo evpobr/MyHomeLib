@@ -38,6 +38,8 @@ type
     INPXFile: string;
     Code: integer;
     Notes: string;
+    URL: string;
+    Script: string;
     //
     // реальный тип коллекции
     //

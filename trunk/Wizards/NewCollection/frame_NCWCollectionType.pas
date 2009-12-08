@@ -36,6 +36,9 @@ type
     FColFile  : string;
     FColDescr : string;
     FColCode  : integer;
+    FURL      : string;
+    FScript   : string;
+    FINPXFileName : string;
   public
     function Activate(LoadData: Boolean): Boolean; override;
     function Deactivate(CheckData: Boolean): Boolean; override;
@@ -105,9 +108,13 @@ begin
   if rbEmpty.Checked then
     FPParams^.CollectionType := ltEmpty
   else if rbLocal.Checked then
-    FPParams^.CollectionType := ltLRELocal
+      FPParams^.CollectionType := ltLRELocal
   else if rbOnline.Checked then
-    FPParams^.CollectionType := ltLREOnline
+  begin
+    FPParams^.CollectionType := ltLREOnline;
+    FPParams^.URL := FURL;
+    FPParams^.Script := FScript;
+  end
   else {if rbGenesis.Checked then
     FPParams^.CollectionType := ltGenesis
   else} if rbThirdParty.Checked then
@@ -125,7 +132,12 @@ begin
     FPParams^.INPXFile := edINPXPath.Text;
     FPParams^.CollectionCode := FColCode;
     FPParams^.Notes := FColDescr;
+    FPParams^.URL := FURL;
+    FPParams^.Script := FScript;
   end;
+
+
+
   Result := True;
 end;
 
@@ -141,6 +153,7 @@ begin
   if GetFileName(key, AFileName) then
   begin
     edINPXPath.Text := AFileName;
+    FInpxFileName := AFileName;
     GetCollectionDataFromINPX;
   end;
 end;
@@ -155,15 +168,24 @@ var
     p: integer;
   begin
     p := pos(#13#10,S);
-    Result := copy(S,1,p - 1);
-    delete(S,1,p + 1);
+    if p <> 0 then
+    begin
+      Result := copy(S,1,p - 1);
+      delete(S,1,p + 1);
+    end
+    else begin
+      Result := S;
+      S := '';
+    end;
   end;
 
 
 begin
+  if FINPXFileName = '' then Exit;
+
   Zip := TZipForge.Create(self);
   try
-    Zip.FileName := edINPXPath.Text;
+    Zip.FileName := FINPXFileName;
     Zip.OpenArchive;
     S := Zip.Comment;
     Zip.CloseArchive;
@@ -175,7 +197,11 @@ begin
     FColTitle := GetParam(S);
     FColFile := GetParam(S);
     FColCode := StrToInt(GetParam(S));
-    FColDescr := S;
+    FColDescr := GetParam(S);
+    if S <> '' then FURL := GetParam(S);
+    FScript := '';
+    while S <> '' do
+      FScript := FScript + GetParam(S) + #13#10;
   except
   end;
 
@@ -183,18 +209,25 @@ end;
 
 procedure TframeNCWCollectionType.OnSetCollectionType(Sender: TObject);
 begin
+  FInpxFileName := '';
   if Sender = rbEmpty then
     pageHint.Caption := FROMDIFFERNTSOURCES
   else if Sender = rbLocal then
     pageHint.Caption := FROMLIBRUSECARCH
   else if Sender = rbOnline then
-    pageHint.Caption := LIBRUSECDOWNLOAD
+  begin
+    pageHint.Caption := LIBRUSECDOWNLOAD;
+    FINPXFileName := Settings.WorkPath + 'librusec.inpx';
+  end
   else {if Sender = rbGenesis then
     pageHint.Caption := SERVERDOWNLOAD
   else} if Sender = rbThirdParty then
   begin
     pageHint.Caption := THIRDPARTY;
+    FInpxFileName := edINPXPath.Text;
   end;
+
+  GetCollectionDataFromINPX;
 
   edINPXPath.Visible := (Sender = rbThirdParty );
 

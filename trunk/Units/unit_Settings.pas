@@ -54,6 +54,7 @@ type
     FWorkDir: string;
     FReadDir: string;
     FPresetDir: string;
+    FUpdateDir: string;
 
     //
     // Settings
@@ -215,6 +216,7 @@ type
     function GetInitialDir(const key: string): string;
     procedure SetInitialDir(const key, Value: string);
     function GetPresetPath: string;
+    function GetUpdatePath: string;
 
 
   public
@@ -233,7 +235,8 @@ type
     property WorkPath: string read GetWorkPath;
     property PresetDir: string read FPresetDir write FPresetDir;
     property PresetPath: string read GetPresetPath;
-
+    property UpdateDir: string read FUpdateDir write FUpdateDir;
+    property UpdatePath: string read GetUpdatePath;
     //
     // Полные пути к некоторым файлам
     //
@@ -413,9 +416,11 @@ const
   IMPORT_SECTION = 'IMPORT';
   BEHAVIOR_SECTION = 'BEHAVIOR';
   FILE_SORT_SECTION = 'FILE_SORT';
+  UPDATES_SECTION = 'UPDATES';
 
   READER_KEY_PREFIX = 'Reader';
   SCRIPT_KEY_PREFIX = 'Script';
+  UPDATE_KEY_PREFIX = 'Update';
 
   INITIAL_DIRS_SECTION = 'InitialDirs';
 
@@ -525,8 +530,11 @@ begin
     //
     FDeviceDir := ExcludeTrailingPathDelimiter(iniFile.ReadString(PATH_SECTION, 'Device', 'C:\'));
     FReadDir := ExcludeTrailingPathDelimiter(iniFile.ReadString(PATH_SECTION, 'Read', ''));
+    FUpdateDir := ExcludeTrailingPathDelimiter(iniFile.ReadString(PATH_SECTION, 'Update', ''));
 
     if not DirectoryExists(FReadDir) then  FReadDir := FTempDir;
+
+    if FUpdateDir = '' then FUpdateDir := FWorkDir;
 
     //
     // SYSTEM_SECTION
@@ -706,6 +714,7 @@ begin
     //
     iniFile.WriteString(PATH_SECTION, 'Device', FDeviceDir);
     iniFile.WriteString(PATH_SECTION, 'Read', FReadDir);
+    iniFile.WriteString(PATH_SECTION, 'Update', FUpdateDir);
 
     //
     // SYSTEM_SECTION
@@ -914,7 +923,7 @@ begin
     // обрабатываем файл
 
     sl := TStringList.Create;
-    iniFile.ReadSection('UPDATES', sl);
+    iniFile.ReadSection(UPDATES_SECTION, sl);
     if sl.Count > 0 then
     begin
       slHelper := TStringList.Create;
@@ -923,7 +932,7 @@ begin
         slHelper.Delimiter := ';';
         for i := 0 to sl.Count - 1 do
         begin
-          if Pos(READER_KEY_PREFIX, sl[i]) = 1 then
+          if Pos(UPDATE_KEY_PREFIX, sl[i]) = 1 then
           begin
             slHelper.DelimitedText := iniFile.ReadString(READERS_SECTION, sl[i], '');
             if slHelper.Count = 5 then
@@ -1007,11 +1016,12 @@ begin
       //
       // Добавим некоторые ридеры по умолчанию
       //
-      FReaders.Add('fb2',AppPath+'AlReader\AlReader2.exe');
-      FReaders.Add('doc',AppPath+'AlReader\AlReader2.exe');
-      FReaders.Add('txt',AppPath+'AlReader\AlReader2.exe');
-      FReaders.Add('htm',AppPath+'AlReader\AlReader2.exe');
-      FReaders.Add('html',AppPath+'AlReader\AlReader2.exe');
+      FReaders.Add('fb2', 'AlReader\AlReader2.exe');
+      FReaders.Add('doc', 'AlReader\AlReader2.exe');
+      FReaders.Add('txt', 'AlReader\AlReader2.exe');
+      FReaders.Add('htm', 'AlReader\AlReader2.exe');
+      FReaders.Add('html', 'AlReader\AlReader2.exe');
+
       FReaders.Add('pdf', '');
       FReaders.Add('djvu', '');
       FReaders.Add('mht', '');
@@ -1122,6 +1132,11 @@ begin
   Result := IncludeTrailingPathDelimiter(FTempDir);
 end;
 
+function TMHLSettings.GetUpdatePath: string;
+begin
+  Result := IncludeTrailingPathDelimiter(FUpdateDir);
+end;
+
 function TMHLSettings.GetWorkPath: string;
 begin
   Result := IncludeTrailingPathDelimiter(FWorkDir);
@@ -1141,7 +1156,7 @@ begin
     sfServerErrorLog: Result := WorkPath + SERVER_ERRORLOG_FILENAME;
     sfImportErrorLog: Result := WorkPath + IMPORT_ERRORLOG_FILENAME;
     sfAppHelp: Result := AppPath + APP_HELP_FILENAME;
-    sfLibRusEcUpdate: Result := WorkPath + LIBRUSEC_UPDATE_FILENAME;
+    sfLibRusEcUpdate: Result := UpdatePath + LIBRUSEC_UPDATE_FILENAME;
     sfLibRusEcInpx: Result := WorkPath + LIBRUSEC_INPX_FILENAME;
     sfAppVerInfo: Result := WorkPath + PROGRAM_VERINFO_FILENAME;
     sfCollectionVerInfo: Result := TempPath + COLLECTION_VERINFO_FILENAME;

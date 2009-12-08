@@ -15,8 +15,17 @@ unit frm_NCWizard;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  StdCtrls, ExtCtrls, Dialogs,
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  StdCtrls,
+  ExtCtrls,
+  Dialogs,
   dm_user,
   frame_WizardPageBase,
   frame_DecorativePageBase,
@@ -674,7 +683,9 @@ begin
     FParams.CollectionCode,
     isPrivateCollection(FParams.CollectionCode),
     FVersion,
-    FParams.Notes
+    FParams.Notes,
+    FParams.URL,
+    FParams.Script
   );
 
   DoChangePage(btnForward);
