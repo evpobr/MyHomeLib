@@ -2230,21 +2230,17 @@ begin
            StartLibUpdate;
 
 //------------------------------------------------------------------------------
-  LoadLastCollection;
-
+  SetColumns;
   FillGroupsList;
   CreateGroupsMenu;
-
-  SetColumns;
   SetHeaderPopUp;
+  LoadLastCollection;
   dmCollection.SetActiveTable(pgControl.ActivePageIndex);
-
   TheFirstRun;
 
 //------------------------------------------------------------------------------
 
   SetLangBarSize;
-
   frmSplash.lblState.Caption := 'Старт ...';
 
   //
@@ -4177,37 +4173,34 @@ begin
       Data := Tree.GetNodeData(Node);
       Assert(Assigned(Data));
 
-      if (Data.nodeType = ntBookInfo) and ((Tree.CheckState[Node] = csCheckedNormal) or (Tree.Selected[Node])) then
+      if (Data.nodeType = ntBookInfo) and ((Tree.CheckState[Node] = csCheckedNormal)
+         or (Tree.Selected[Node])) then
       begin
+        dmCollection.GetBookFileName(Data.ID, FileName, Folder, Ext, No);
         if (isOnline and Data.Locale)
-           or Settings.DeleteFiles
-         then
-        begin
-          dmCollection.GetBookFileName(Data.ID, FileName, Folder, Ext, No);
-
-          if not isFB2 then
-          begin
-            if (ExtractFileExt(FileName) = ZIP_EXTENSION) then
-              DeleteFile(FCollectionRoot + Folder + FileName)
-            else
-              DeleteFile(FCollectionRoot + Folder + FileName + Ext);
-          end;
-
-          if isFB2 and isPrivate
-          then
-          begin
-            if (ExtractFileExt(Folder) = ZIP_EXTENSION) then
-              DeleteFile(FCollectionRoot + Folder)
-            else
-              DeleteFile(FCollectionRoot + Folder + FileName + Ext);
-          end;
-
-          if DeleteFile(FCollectionRoot + Folder) and isOnline
-          then
-            dmCollection.SetLocalStatus(Data.ID,False);
-        end
+           and DeleteFile(FCollectionRoot + Folder) then dmCollection.SetLocalStatus(Data.ID,False)
         else
         begin
+          if Settings.DeleteFiles then
+          begin
+            if not isFB2 then
+            begin
+              if (ExtractFileExt(FileName) = ZIP_EXTENSION) then
+                DeleteFile(FCollectionRoot + Folder + FileName)
+              else
+                DeleteFile(FCollectionRoot + Folder + FileName + Ext);
+            end;
+
+            if isFB2 and isPrivate
+            then
+            begin
+              if (ExtractFileExt(Folder) = ZIP_EXTENSION) then
+                DeleteFile(FCollectionRoot + Folder)
+              else
+                DeleteFile(FCollectionRoot + Folder + FileName + Ext);
+            end;
+          end;
+
           ALibrary.BeginBulkOperation;
           try
             ALibrary.DeleteBook(Data.ID);

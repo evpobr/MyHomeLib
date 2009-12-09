@@ -15,19 +15,17 @@ uses
   SysUtils,
   unit_Globals;
 
-
 procedure AddToFilter(Field,Value:String;  UP: boolean; var FilterString: string);
 begin
   if Value = '' then Exit;
 
   StrReplace('NOT LIKE', 'NOT#LIKE',Value);
   StrReplace(' LIKE', ' ' + Field + '#LIKE',Value);
-  StrReplace(' =', ' ' + Field + '#=',Value);
-  StrReplace(' <>', ' ' + Field + '#<>',Value);
-  StrReplace(' <', ' ' + Field + '#<',Value);
-  StrReplace(' >', ' ' + Field + '#>',Value);
-
-  StrReplace('#',' ',Value);
+  StrReplace(' =', ' ' + Field + #7 +'=',Value);
+  StrReplace(' <>', ' ' + Field + #7 +'<>',Value);
+  StrReplace(' <', ' ' + Field + #7 +'<',Value);
+  StrReplace(' >', ' ' + Field + #7 +'>',Value);
+  StrReplace(#7,' ',Value);
 
   if UP then
   begin
@@ -65,20 +63,16 @@ begin
   Trim(Result);
 end;
 
-
 // проверяем запрос, если нативный - преобразовывам в SQL
 function PrepareQuery(S: string; UP: boolean; ConverToFull: boolean = true):string;
 begin
-
   if UP then
-      S := trim(AnsiUpperCase(S));
-
+      S := trim(UpperCase(S));
   if S = '' then
   begin
     Result := '';
     Exit;
   end;
-
   if ConverToFull and
      (pos('%',S) = 0) and
      (pos('=',S) = 0) and
@@ -86,7 +80,6 @@ begin
      (pos('LIKE',S) = 0)
   then
     S := Format('%%%s%%',[S]);
-
   if (pos('=',S) = 0) and
      (pos('LIKE',S) = 0) and
      (pos('"',S) = 0)
@@ -97,9 +90,7 @@ begin
     else
       S := 'LIKE "' + S + '"';
   end;
-
   Result := Clear(S);
-
 end;
 
 end.

@@ -238,11 +238,7 @@ procedure TColumns.Add(const Tag: integer;
                        const Position: integer);
 var
   Column: TColumnDesc;
-
-
 begin
-
-
   BeginUpdate;
   try
     Column := AddColumn;
