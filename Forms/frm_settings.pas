@@ -614,6 +614,8 @@ end;
 
 procedure TfrmSettings.btnDeleteScriptClick(Sender: TObject);
 begin
+  if lvScripts.Selected = nil then Exit;
+
   if cbDefaultAction.Items.Count > 1 then
     cbDefaultAction.Items.Delete(lvScripts.Selected.Index + 1);
   lvScripts.DeleteSelected;

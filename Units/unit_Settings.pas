@@ -868,7 +868,7 @@ begin
   try
     slHelper.QuoteChar := '"';
     slHelper.Delimiter := ';';
-
+    slHelper.StrictDelimiter := True;
     // Сначала сплиттеры
     S := iniFile.ReadString(INTERFACE_SECTION,'Splitters','250;250;250;250');
     slHelper.DelimitedText := S;
@@ -930,6 +930,7 @@ begin
       try
         slHelper.QuoteChar := '"';
         slHelper.Delimiter := ';';
+        slHelper.StrictDelimiter := True;
         for i := 0 to sl.Count - 1 do
         begin
           if Pos(UPDATE_KEY_PREFIX, sl[i]) = 1 then
@@ -965,7 +966,7 @@ begin
   try
     sl.QuoteChar := '"';
     sl.Delimiter := ';';
-
+    sl.StrictDelimiter := True;
     // сначала сплиттеры
     for i := 0 to High(FSplitters) do
       sl.Add(IntToStr(FSplitters[i]));
@@ -998,6 +999,7 @@ begin
       try
         slHelper.QuoteChar := '"';
         slHelper.Delimiter := ';';
+        slHelper.StrictDelimiter := True;
         for i := 0 to sl.Count - 1 do
         begin
           if Pos(READER_KEY_PREFIX, sl[i]) = 1 then
@@ -1045,7 +1047,7 @@ begin
     try
       sl.QuoteChar := '"';
       sl.Delimiter := ';';
-
+      sl.StrictDelimiter := True;
       for i := 0 to FReaders.Count - 1 do
       begin
         sl.Clear;
@@ -1065,6 +1067,7 @@ var
   i: Integer;
   sl: TStringList;
   slHelper: TStringList;
+  S: string;
 begin
   sl := TStringList.Create;
   try
@@ -1074,12 +1077,14 @@ begin
       slHelper := TStringList.Create;
       try
         slHelper.QuoteChar := '"';
+        slHelper.StrictDelimiter := True;
         slHelper.Delimiter := ';';
         for i := 0 to sl.Count - 1 do
         begin
           if Pos(SCRIPT_KEY_PREFIX, sl[i]) = 1 then
           begin
-            slHelper.DelimitedText := iniFile.ReadString(SCRIPTS_SECTION, sl[i], '');
+            S := iniFile.ReadString(SCRIPTS_SECTION, sl[i], '');
+            slHelper.DelimitedText := S;
             if slHelper.Count = 3 then
               FScripts.Add(slHelper[0], slHelper[1], slHelper[2]);
           end;
@@ -1106,7 +1111,7 @@ begin
     try
       sl.QuoteChar := '"';
       sl.Delimiter := ';';
-
+      sl.StrictDelimiter := True;
       for i := 0 to FScripts.Count - 1 do
       begin
         sl.Clear;
