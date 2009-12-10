@@ -859,7 +859,7 @@ begin
   try
     slHelper.QuoteChar := '"';
     slHelper.Delimiter := ';';
-
+    slHelper.StrictDelimiter := True;
     // Сначала сплиттеры
     S := iniFile.ReadString(INTERFACE_SECTION,'Splitters','250;250;250;250');
     slHelper.DelimitedText := S;
@@ -921,6 +921,7 @@ begin
       try
         slHelper.QuoteChar := '"';
         slHelper.Delimiter := ';';
+        slHelper.StrictDelimiter := True;
         for i := 0 to sl.Count - 1 do
         begin
           if Pos(READER_KEY_PREFIX, sl[i]) = 1 then
@@ -956,7 +957,7 @@ begin
   try
     sl.QuoteChar := '"';
     sl.Delimiter := ';';
-
+    sl.StrictDelimiter := True;
     // сначала сплиттеры
     for i := 0 to High(FSplitters) do
       sl.Add(IntToStr(FSplitters[i]));
@@ -989,6 +990,7 @@ begin
       try
         slHelper.QuoteChar := '"';
         slHelper.Delimiter := ';';
+        slHelper.StrictDelimiter := True;
         for i := 0 to sl.Count - 1 do
         begin
           if Pos(READER_KEY_PREFIX, sl[i]) = 1 then
@@ -1035,7 +1037,7 @@ begin
     try
       sl.QuoteChar := '"';
       sl.Delimiter := ';';
-
+      sl.StrictDelimiter := True;
       for i := 0 to FReaders.Count - 1 do
       begin
         sl.Clear;
@@ -1065,6 +1067,7 @@ begin
       try
         slHelper.QuoteChar := '"';
         slHelper.Delimiter := ';';
+        slHelper.StrictDelimiter := True;
         for i := 0 to sl.Count - 1 do
         begin
           if Pos(SCRIPT_KEY_PREFIX, sl[i]) = 1 then
@@ -1096,7 +1099,7 @@ begin
     try
       sl.QuoteChar := '"';
       sl.Delimiter := ';';
-
+      sl.StrictDelimiter := True;
       for i := 0 to FScripts.Count - 1 do
       begin
         sl.Clear;

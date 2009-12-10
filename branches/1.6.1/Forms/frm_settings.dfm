@@ -26,31 +26,30 @@ object frmSettings: TfrmSettings
     Align = alBottom
     BorderOuter = fsFlatRounded
     TabOrder = 0
-    ExplicitTop = 440
     object btnSave: TRzBitBtn
-      Left = 292
-      Top = 11
-      Width = 133
-      Height = 31
+      Left = 362
+      Top = 13
+      Width = 110
+      Height = 27
       Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
       TabOrder = 0
       OnClick = btnSaveClick
       Kind = bkOK
     end
     object btnCancel: TRzBitBtn
-      Left = 466
-      Top = 11
-      Width = 120
-      Height = 28
+      Left = 486
+      Top = 13
+      Width = 110
+      Height = 27
       Caption = #1053#1077' '#1089#1086#1093#1088#1072#1085#1103#1090#1100
       TabOrder = 1
       Kind = bkCancel
     end
     object btnHelp: TRzBitBtn
-      Left = 5
-      Top = 11
-      Width = 120
-      Height = 28
+      Left = 6
+      Top = 13
+      Width = 110
+      Height = 27
       Caption = #1057#1087#1088#1072#1074#1082#1072
       TabOrder = 2
       OnClick = btnHelpClick
@@ -63,15 +62,13 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 414
     Height = 409
-    ActivePage = tsDevices
+    ActivePage = tsScripts
     Align = alClient
     TabOrder = 1
-    ExplicitHeight = 413
     object tsDevices: TTabSheet
       HelpContext = 143
       Caption = 'tsDevices'
       TabVisible = False
-      ExplicitHeight = 403
       object RzGroupBox3: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -303,7 +300,6 @@ object frmSettings: TfrmSettings
         Align = alClient
         Caption = #1054#1087#1094#1080#1080
         TabOrder = 3
-        ExplicitHeight = 61
         object Label1: TLabel
           Left = 181
           Top = 26
@@ -360,7 +356,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsReaders'
       ImageIndex = 1
       TabVisible = False
-      ExplicitHeight = 403
       object RzGroupBox8: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -370,7 +365,6 @@ object frmSettings: TfrmSettings
         Align = alClient
         Caption = #1058#1080#1087#1099' '#1092#1072#1081#1083#1086#1074' '#1080' '#1087#1088#1086#1089#1084#1086#1090#1088#1097#1080#1082#1080
         TabOrder = 0
-        ExplicitHeight = 397
         object lvReaders: TRzListView
           Left = 6
           Top = 24
@@ -424,7 +418,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsInterface'
       ImageIndex = 2
       TabVisible = False
-      ExplicitHeight = 403
       object RzGroupBox6: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -434,7 +427,6 @@ object frmSettings: TfrmSettings
         Align = alClient
         Caption = #1057#1087#1080#1089#1082#1080
         TabOrder = 0
-        ExplicitHeight = 397
         object Label9: TLabel
           Left = 19
           Top = 45
@@ -623,7 +615,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsInternet'
       ImageIndex = 4
       TabVisible = False
-      ExplicitHeight = 403
       object RzGroupBox1: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -827,7 +818,6 @@ object frmSettings: TfrmSettings
         Align = alClient
         Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1089#1086#1077#1076#1080#1085#1077#1085#1080#1103
         TabOrder = 3
-        ExplicitHeight = 73
         object RzLabel7: TRzLabel
           Left = 16
           Top = 22
@@ -903,7 +893,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsScripts'
       ImageIndex = 4
       TabVisible = False
-      ExplicitHeight = 403
       object RzGroupBox523324: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -913,7 +902,6 @@ object frmSettings: TfrmSettings
         Align = alClient
         Caption = #1057#1082#1088#1080#1087#1090#1099
         TabOrder = 0
-        ExplicitHeight = 333
         object lvScripts: TRzListView
           AlignWithMargins = True
           Left = 4
@@ -976,7 +964,6 @@ object frmSettings: TfrmSettings
         Align = alBottom
         Caption = #1044#1077#1081#1089#1090#1074#1080#1077' '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102
         TabOrder = 1
-        ExplicitTop = 342
         object cbDefaultAction: TComboBox
           Left = 6
           Top = 24
@@ -991,7 +978,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsBehavior'
       ImageIndex = 5
       TabVisible = False
-      ExplicitHeight = 403
       object RzGroupBox7: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -1001,7 +987,6 @@ object frmSettings: TfrmSettings
         Align = alClient
         Caption = #1055#1086#1074#1077#1076#1077#1085#1080#1077
         TabOrder = 0
-        ExplicitHeight = 397
         object cbShowSubGenreBooks: TCheckBox
           Left = 24
           Top = 26
@@ -1096,7 +1081,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsFileSort'
       ImageIndex = 6
       TabVisible = False
-      ExplicitHeight = 403
       object RzGroupBox12: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -1443,7 +1427,6 @@ object frmSettings: TfrmSettings
     Align = alLeft
     BorderOuter = fsFlatRounded
     TabOrder = 2
-    ExplicitHeight = 413
     object tvSections: TRzTreeView
       AlignWithMargins = True
       Left = 5
@@ -1470,7 +1453,6 @@ object frmSettings: TfrmSettings
         043504400000000000000000000000FFFFFFFFFFFFFFFF000000000000000000
         000000011121043E0440044204380440043E0432043A04300420004404300439
         043B043E043204}
-      ExplicitHeight = 403
     end
   end
   object dlgColors: TColorDialog
