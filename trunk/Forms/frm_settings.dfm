@@ -62,7 +62,7 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 414
     Height = 409
-    ActivePage = tsInternet
+    ActivePage = tsScripts
     Align = alClient
     TabOrder = 1
     object tsDevices: TTabSheet
@@ -720,7 +720,6 @@ object frmSettings: TfrmSettings
         Align = alTop
         Caption = #1057#1077#1088#1074#1077#1088' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
         TabOrder = 1
-        ExplicitTop = 122
         object edUpdates: TEdit
           Left = 16
           Top = 23
@@ -763,8 +762,6 @@ object frmSettings: TfrmSettings
         Align = alClient
         Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1089#1086#1077#1076#1080#1085#1077#1085#1080#1103
         TabOrder = 2
-        ExplicitTop = 237
-        ExplicitHeight = 67
         object RzLabel7: TRzLabel
           Left = 16
           Top = 22
@@ -843,7 +840,6 @@ object frmSettings: TfrmSettings
         Align = alTop
         Caption = #1055#1072#1087#1082#1072' '#1089' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1103#1084#1080
         TabOrder = 3
-        ExplicitTop = 78
         object edUpdateDir: TRzButtonEdit
           Left = 11
           Top = 18
