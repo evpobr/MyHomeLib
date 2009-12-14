@@ -709,7 +709,7 @@ begin
   //
 
   if FProgressPage.HasErrors then
-    IgnoreErrors := ( MessageDlg('Импорт закончен с ошибками. Продолджить регистрацию коллекции ?',
+    IgnoreErrors := ( MessageDlg('Импорт закончен с ошибками. Продолжить регистрацию коллекции ?',
                   mtWarning,[mbYes,mbNo],0) = mrYes);
 
   ANoChangePage := (not IgnoreErrors) or FWorker.Canceled;

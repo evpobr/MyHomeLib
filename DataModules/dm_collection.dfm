@@ -1099,20 +1099,40 @@ object DMCollection: TDMCollection
         Fields = 'SerID;SeqNumber'
       end
       item
-        Name = 'FullName_Index'
-        Fields = 'Fullname;Title'
-      end
-      item
         Name = 'Title_Index'
-        Fields = 'Title'
+        CaseInsFields = 'FullName;Title;Deleted;Lang;Date;Local;KeyWords'
+        Fields = 'FullName;Title;Deleted;Lang;Date;Local;KeyWords'
+        Options = [ixCaseInsensitive]
       end
       item
         Name = 'File_Index'
+        CaseInsFields = 'FileName'
         Fields = 'FileName'
+        Options = [ixCaseInsensitive]
       end
       item
         Name = 'Folder_Index'
-        Fields = 'DiscID;Folder'
+        CaseInsFields = 'Folder'
+        Fields = 'Folder'
+        Options = [ixCaseInsensitive]
+      end
+      item
+        Name = 'Deleted_Index'
+        Fields = 'Deleted'
+      end
+      item
+        Name = 'Date_Index'
+        Fields = 'Date'
+      end
+      item
+        Name = 'Local_Index'
+        Fields = 'Local'
+      end
+      item
+        Name = 'KeyWords_Index'
+        CaseInsFields = 'KeyWords'
+        Fields = 'KeyWords'
+        Options = [ixCaseInsensitive]
       end>
     IndexName = 'Title_Index'
     FieldDefs = <
@@ -1131,7 +1151,7 @@ object DMCollection: TDMCollection
       item
         Name = 'Title'
         DataType = ftWideString
-        Size = 100
+        Size = 150
       end
       item
         Name = 'FullName'
@@ -1167,13 +1187,13 @@ object DMCollection: TDMCollection
       item
         Name = 'Folder'
         DataType = ftWideString
-        Size = 255
+        Size = 200
       end
       item
         Name = 'FileName'
         Attributes = [faRequired]
         DataType = ftWideString
-        Size = 255
+        Size = 170
       end
       item
         Name = 'InsideNo'
@@ -1192,7 +1212,7 @@ object DMCollection: TDMCollection
       item
         Name = 'URI'
         DataType = ftWideString
-        Size = 255
+        Size = 60
       end
       item
         Name = 'Code'
@@ -1652,20 +1672,14 @@ object DMCollection: TDMCollection
     IndexDefs = <
       item
         Name = 'ID_Index'
-        Fields = 'ID'
+        Fields = 'E_ID'
         Options = [ixPrimary, ixUnique]
       end
       item
         Name = 'BookIndex'
-        Fields = 'BookID'
-      end
-      item
-        Name = 'KeyWordIndex'
-        CaseInsFields = 'KeyWords'
-        Fields = 'KeyWords'
-        Options = [ixCaseInsensitive]
+        Fields = 'E_BookID'
       end>
-    IndexName = 'ID_Index'
+    IndexName = 'BookIndex'
     FieldDefs = <
       item
         Name = 'E_ID'

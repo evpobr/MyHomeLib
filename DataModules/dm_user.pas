@@ -174,7 +174,8 @@ type
     procedure LoadFinished(const SL: TStringList; var i: integer);
     procedure LoadGroups(const SL: TStringList; var i: integer);
     procedure LoadReviews(const SL: TStringList; var i: integer);
-
+    procedure CorrectExtra(OldID, NewID: integer);
+    procedure DeleteExtra(AID: integer);
   end;
 
   TMHLCollection = class
@@ -267,11 +268,42 @@ begin
   tblGroupList.Post;
 end;
 
+procedure TDMUser.CorrectExtra(OldID, NewID: integer);
+begin
+  if tblRates.Locate('BookID; DatabaseID', VarArrayOf([OldID, ActiveCollection.GetID]),[]) then
+  begin
+    tblRates.Edit;
+    tblratesBookID.Value := NewID;
+    tblRates.Post;
+  end;
+
+  if tblFinished.Locate('BookID; DatabaseID', VarArrayOf([OldID, ActiveCollection.GetID]),[]) then
+  begin
+    tblFinished.Edit;
+    tblFinishedBookID.Value := NewID;
+    tblFinished.Post;
+  end;
+
+  if tblGrouppedBooks.Locate('OuterID; DatabaseID', VarArrayOf([OldID, ActiveCollection.GetID]),[]) then
+  begin
+    tblGrouppedBooks.Edit;
+    tblGrouppedBooksOuterID.Value := NewID;
+    tblGrouppedBooks.Post;
+  end;
+
+end;
+
 constructor TDMUser.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FCollection := TMHLCollection.Create;
   FCollection.FSysDataModule := Self;
+end;
+
+procedure TDMUser.DeleteExtra(AID: integer);
+begin
+  DeleteFinished(AID);
+  DeleteRate(AID);
 end;
 
 procedure TDMUser.DeleteFinished;

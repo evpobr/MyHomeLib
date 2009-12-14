@@ -393,6 +393,11 @@ begin
   R.Date := ActiveTable.FieldByname('Date').AsDateTime;
   R.Lang := ActiveTable.FieldByname('Lang').AsWideString;
   R.KeyWords := ActiveTable.FieldByname('KeyWords').AsWideString;
+  R.Code := ActiveTable.FieldByname('Code').AsInteger;
+
+  if tblExtra.Locate('E_BookID', BookID, []) then
+    R.Annotation := tblExtraE_Annotation.Value;
+
 
   if not FIsFavorites  then
   begin

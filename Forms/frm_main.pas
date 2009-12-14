@@ -80,7 +80,7 @@ uses
   ActiveX,
   htmlhlp,
   IdCustomTransparentProxy,
-  IdConnectThroughHttpProxy;
+  IdConnectThroughHttpProxy, Grids, DBGrids;
 
 type
 
@@ -755,6 +755,7 @@ type
     procedure SaveFb2DataAfterEdit(R: TBookRecord);
     function ShowNCWizard: boolean;
     procedure LoadLastCollection;
+    function ExtractBookToStream(CR: string; var Table: TAbsTable; var FS: TMemoryStream):boolean;
     property ActiveView: TView read GetActiveView;
   end;
 
@@ -4214,7 +4215,9 @@ begin
             DMUser.tblGrouppedBooks.Delete;
             FUpdateFavorites := True;
           end;
+          DMUser.DeleteExtra(Data.ID);
         end;
+
         OldNode := Node;
         Node := Tree.GetNext(Node);
         Tree.DeleteNode(OldNode);
@@ -4299,6 +4302,7 @@ begin
     if (Data.nodeType = ntBookInfo) and ((tvBooksG.CheckState[Node] = csCheckedNormal) or (tvBooksG.Selected[Node])) then
     begin
       DMUser.tblGrouppedBooks.Locate('ID', Data.ID, []);
+      DMUser.tblExtra.Delete;
       DMUser.tblGrouppedBooks.Delete;
     end;
     Node := tvBooksF.GetNext(Node);
@@ -4658,6 +4662,8 @@ var
   Node: PVirtualNode;
   i: integer;
   ALibrary : TMHLLibrary;
+
+  OldID: integer;
 begin
 
   GetActiveTree(Tree);
@@ -4684,6 +4690,8 @@ begin
   R.KeyWords := frmEditBookInfo.edKeyWords.Text;
   R.Lang := frmEditBookInfo.cbLang.Text;
 
+  OldID := Data.ID;
+
   ALibrary := TMHLLibrary.Create(nil);
   try
     ALibrary.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
@@ -4691,12 +4699,15 @@ begin
 
     ALibrary.BeginBulkOperation;
     try
-      ALibrary.DeleteBook(Data.ID);
+      ALibrary.DeleteBook(Data.ID, False);
       Data.ID := ALibrary.InsertBook(R, False, False);
+      ALibrary.CorrectExtra(OldID, Data.ID);
       ALibrary.EndBulkOperation(True);
     except
       ALibrary.EndBulkOperation(False);
     end;
+
+    DMUser.CorrectExtra(OLdID, Data.ID);
 
     Data.Title := frmEditBookInfo.edT.Text;
     Data.Genre := frmEditBookInfo.lblGenre.Caption;
@@ -5472,66 +5483,17 @@ begin
   end;
 end;
 
-procedure TfrmMain.pmiBookInfoClick(Sender: TObject);
+function TfrmMain.ExtractBookToStream(CR: string; var Table: TAbsTable; var FS: TMemoryStream):boolean;
 var
-  Tree: TVirtualStringTree;
-  CR, s: string;
-  Data: PBookData;
-  Table, Extra: TAbsTable;
-  frmBookDetails: TfrmBookDetails;
-
   Zip: TZipForge;
-  FS : TMemoryStream;
-
-  ReviewEditable: boolean;
-
-  NoFb2Info: boolean;
   F: TZFArchiveItem;
-  URL: string;
+  NoFb2Info: boolean;
+
 begin
-//  if not isFb2 then Exit;
-
   NoFb2Info := False;
-  GetActiveTree(Tree);
-
-  if Tree.FocusedNode= nil then
-      Exit;
-
-  Table := GetActiveBookTable(Tree.Tag);
-  Data := Tree.GetNodeData(Tree.FocusedNode);
-
-  if not Assigned(Data) or (Data.nodeType <> ntBookInfo) or Table.IsEmpty then
-    Exit;
-
-  Table.Locate('ID', Data.ID, []);
-  FFormBusy := True;
-  URL :=  Format('%sb/%d/',[DMUser.ActiveCollection.URL, Table.FieldByName('LibID').AsInteger]);
-
-  frmBookDetails := TfrmBookDetails.Create(Application);
-
-  ReviewEditable := true;
-
-  if ActiveView = FavoritesView then
+  if ExtractFileExt(CR) = ZIP_EXTENSION then
   begin
-    Extra := dmUser.tblExtra;
-    CR := GetFullBookPath(Table,'');
-
-    ReviewEditable := (Table['DatabaseID'] =  DMUser.ActiveCollection.ID);
-    frmBookDetails.mmReview.ReadOnly := not ReviewEditable;
-
-  end
-  else  begin
-    Extra := dmCollection.tblExtra;
-    CR := GetFullBookPath(Table,FCollectionRoot);
-  end;
-
-
-
-  FS := TMemoryStream.Create;
-  try
-    if ExtractFileExt(CR) = ZIP_EXTENSION then
-    begin
-      if not FileExists(CR) then
+    if not FileExists(CR) then
       if IsLocal then
       begin
          ShowMessage('Архив ' + CR + ' не найден!');
@@ -5573,22 +5535,74 @@ begin
       else
         if not NoFb2Info then  // просто файл
             FS.LoadFromFile(CR + Table['FileName'] + Table['Ext']);
+  Result := NoFb2Info;
+end;
 
-      if not NoFb2Info then
-      begin
-        frmBookDetails.TabSheet1.TabVisible := True;
-        frmBookDetails.RzPageControl1.ActivePageIndex := 0;
-      end
-      else
-      begin
-        frmBookDetails.TabSheet1.TabVisible := False;
-        frmBookDetails.RzPageControl1.ActivePageIndex := 1;
-      end;
+procedure TfrmMain.pmiBookInfoClick(Sender: TObject);
+var
+  Tree: TVirtualStringTree;
+  CR, s: string;
+  Data: PBookData;
+  Table, Extra: TAbsTable;
+  frmBookDetails: TfrmBookDetails;
+
+  FS : TMemoryStream;
+  ReviewEditable: boolean;
+
+  URL: string;
+begin
+//  if not isFb2 then Exit;
 
 
-      try
-        frmBookDetails.ShowBookInfo(FS);
-        frmBookDetails.mmInfo.Lines.Add('Добавлено: ' + Table.FieldByName('Date').AsString);
+  GetActiveTree(Tree);
+
+  if Tree.FocusedNode= nil then
+      Exit;
+
+  Table := GetActiveBookTable(Tree.Tag);
+  Data := Tree.GetNodeData(Tree.FocusedNode);
+
+  if not Assigned(Data) or (Data.nodeType <> ntBookInfo) or Table.IsEmpty then
+    Exit;
+
+  Table.Locate('ID', Data.ID, []);
+  FFormBusy := True;
+  URL :=  Format('%sb/%d/',[DMUser.ActiveCollection.URL, Table.FieldByName('LibID').AsInteger]);
+
+  frmBookDetails := TfrmBookDetails.Create(Application);
+
+  ReviewEditable := true;
+
+  if ActiveView = FavoritesView then
+  begin
+    Extra := dmUser.tblExtra;
+    CR := GetFullBookPath(Table,'');
+
+    ReviewEditable := (Table['DatabaseID'] =  DMUser.ActiveCollection.ID);
+    frmBookDetails.mmReview.ReadOnly := not ReviewEditable;
+
+  end
+  else  begin
+    Extra := dmCollection.tblExtra;
+    CR := GetFullBookPath(Table,FCollectionRoot);
+  end;
+
+  FS := TMemoryStream.Create;
+  try
+    if not ExtractBookToStream(CR, Table, FS) then
+    begin
+      frmBookDetails.TabSheet1.TabVisible := True;
+      frmBookDetails.RzPageControl1.ActivePageIndex := 0;
+    end
+    else
+    begin
+      frmBookDetails.TabSheet1.TabVisible := False;
+      frmBookDetails.RzPageControl1.ActivePageIndex := 1;
+    end;
+
+    try
+      frmBookDetails.ShowBookInfo(FS);
+      frmBookDetails.mmInfo.Lines.Add('Добавлено: ' + Table.FieldByName('Date').AsString);
 
         if not isPrivate and ReviewEditable  then
             frmBookDetails.AllowOnlineReview(URL);
@@ -5600,20 +5614,29 @@ begin
             DownloadReview(frmBookDetails, URL);
 
         frmBookDetails.ShowModal;
-        // обрабатываем рецензию
 
+        // обрабатываем рецензию
         if frmBookDetails.ReviewChanged then
         begin
           case Table['Code'] of     // сначала - основгая таблица
             0:  if (frmBookDetails.Review <> '') then
                 begin
+                  if Extra.RecordCount = 0 then
+                  begin
+                    Extra.Insert;
+                    Extra.FieldByName('E_Review').AsWideString := frmBookDetails.Review;
+                    Extra.Post;
+                  end
+                  else
+                  begin
+                    Extra.Edit;
+                    Extra.FieldByName('E_Review').AsWideString := frmBookDetails.Review;
+                    Extra.Post;
+                  end;
+
                   Table.Edit;
                   Table['Code'] := Table['Code'] or 1;
                   Table.Post;
-
-                  Extra.Insert;
-                  Extra.FieldByName('E_Review').AsWideString := frmBookDetails.Review;
-                  Extra.Post;
 
                   Data.Code := 1;
                   Tree.RepaintNode(Tree.FocusedNode);
