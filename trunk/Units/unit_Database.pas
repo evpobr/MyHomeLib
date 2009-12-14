@@ -60,7 +60,8 @@ type
                                    const ZipFolder: boolean): Boolean;
 
     function InsertBook(BookRecord: TBookRecord; CheckFileName, FullCheck: boolean): integer;
-    procedure DeleteBook(BookID: Integer);
+    procedure DeleteBook(BookID: Integer; ClearExtra: boolean = True);
+    procedure CorrectExtra(OldID, NewID : integer);
 
     procedure AddBookGenre(BookID: Integer; const GenreCode: string);
     procedure CleanBookGenres(BookID: Integer);
@@ -884,6 +885,7 @@ begin
     FBooks['LibRate'] := BookRecord.LibRate;
     FBooks['KeyWords'] := BookRecord.KeyWords;
     FBooks['URI'] := BookRecord.URI;
+    FBooks['Code'] := Bookrecord.Code;
     FBooks.Post;
 
     for Genre in BookRecord.Genres do
@@ -925,7 +927,7 @@ begin
   end;
 end;
 
-procedure TMHLLibrary.DeleteBook(BookID: Integer);
+procedure TMHLLibrary.DeleteBook;
 var
   SerID: integer;
 begin
@@ -957,6 +959,9 @@ begin
         FSeries.Delete;
       end;
     end;
+
+    //удаляем из Extra
+    if ClearExtra and FExtra.Locate('E_BookID', BookID, []) then FExtra.Delete;
 
     //
     // У каждого автора должна быть хоть одна книга.
@@ -999,6 +1004,17 @@ begin
 
   while FGenreList.Locate('GL_BookID', BookID, []) do
     FGenreList.Delete;
+end;
+
+procedure TMHLLibrary.CorrectExtra(OldID, NewID: integer);
+begin
+  FExtra.MasterSource := nil;
+  if FExtra.Locate('E_BookID', OldID, []) then
+  begin
+    FExtra.Edit;
+    FExtra['E_BookID'] := NewID;
+    FExtra.Post;
+  end;
 end;
 
 procedure TMHLLibrary.GetSeries(SeriesList: TStrings);
