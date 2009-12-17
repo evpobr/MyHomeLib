@@ -2166,6 +2166,9 @@ begin
 
   ReadINIData;
 
+  SetColumns;
+  SetHeaderPopUp;
+
   CreateDir(Settings.TempDir);
   CreateDir(Settings.DataDir);
 
@@ -2210,8 +2213,6 @@ begin
   FillGroupsList;
   CreateGroupsMenu;
 
-  SetColumns;
-  SetHeaderPopUp;
   dmCollection.SetActiveTable(pgControl.ActivePageIndex);
 
   TheFirstRun;

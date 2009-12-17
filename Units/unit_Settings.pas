@@ -910,7 +910,10 @@ begin
                        False,CT_LIBRUSEC_ONLINE_FB);
     FUpdateList.Add('lib.rus.ec USR','','last_usr.info','usr_update.zip',
                        True,CT_LIBRUSEC_USR);
-
+    FUpdateList.Add('Коллекция Flibusta On-line','','last_flibusta.info','flubusta_update.zip',
+                       True,CT_LIBRUSEC_ONLINE_FB);
+    FUpdateList.Add('Коллекция Flibusta On-line','','last_flibusta_extra.info','flibusta_extra_update.zip',
+                       False,CT_LIBRUSEC_ONLINE_FB);
     // обрабатываем файл
 
     sl := TStringList.Create;
