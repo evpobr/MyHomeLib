@@ -3,6 +3,8 @@ inherited frameNCWCollectionType: TframeNCWCollectionType
   Height = 313
   Constraints.MinHeight = 240
   Constraints.MinWidth = 330
+  ExplicitWidth = 330
+  ExplicitHeight = 313
   object pageHint: TMHLStaticTip [0]
     AlignWithMargins = True
     Left = 14
@@ -18,13 +20,16 @@ inherited frameNCWCollectionType: TframeNCWCollectionType
   end
   inherited pnTitle: TPanel
     Width = 330
+    ExplicitWidth = 330
     inherited lblTitle: TLabel
       Width = 302
       Caption = #1042#1099#1073#1086#1088' '#1090#1080#1087#1072' '#1082#1086#1083#1083#1077#1082#1094#1080#1080
+      ExplicitWidth = 133
     end
     inherited lblSubTitle: TLabel
       Width = 295
       Caption = #1057#1086#1079#1076#1072#1085#1080#1077' '#1082#1086#1083#1083#1077#1082#1094#1080#1080' '#1085#1072' '#1086#1089#1085#1086#1074#1077' '#1089#1087#1080#1089#1082#1086#1074' '#1082#1085#1080#1075
+      ExplicitWidth = 228
     end
   end
   object Panel1: TPanel

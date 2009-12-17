@@ -112,11 +112,11 @@ begin
     FPParams^.CollectionType := ltGenesis
   else} if rbThirdParty.Checked then
   begin
-
-    if FColCode = 1 then
-        FPParams^.CollectionType := ltUserAny
-      else
-        FPParams^.CollectionType := ltUserFB2;
+    case FColCode of
+              0: FPParams^.CollectionType := ltUserFB2;
+              1: FPParams^.CollectionType := ltUserAny;
+      134283264: FPParams^.CollectionType := ltLREOnline;
+    end;
 
     FPParams^.DisplayName := FColTitle;
     FPParams^.UseDefaultName := False;
