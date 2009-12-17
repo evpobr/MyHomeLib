@@ -67,7 +67,7 @@ end;
 function PrepareQuery(S: string; UP: boolean; ConverToFull: boolean = true):string;
 begin
   if UP then
-      S := trim(UpperCase(S));
+      S := trim(AnsiUpperCase(S));
   if S = '' then
   begin
     Result := '';

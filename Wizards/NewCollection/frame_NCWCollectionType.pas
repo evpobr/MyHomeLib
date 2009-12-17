@@ -120,10 +120,11 @@ begin
   else} if rbThirdParty.Checked then
   begin
 
-    if FColCode = 1 then
-        FPParams^.CollectionType := ltUserAny
-      else
-        FPParams^.CollectionType := ltUserFB2;
+    case FColCode of
+              0: FPParams^.CollectionType := ltUserFB2;
+              1: FPParams^.CollectionType := ltUserAny;
+      134283264: FPParams^.CollectionType := ltLREOnline;
+    end;
 
     FPParams^.DisplayName := FColTitle;
     FPParams^.UseDefaultName := False;
@@ -209,26 +210,41 @@ end;
 
 procedure TframeNCWCollectionType.OnSetCollectionType(Sender: TObject);
 begin
-  FInpxFileName := '';
+//  FInpxFileName := '';
+//  if Sender = rbEmpty then
+//    pageHint.Caption := FROMDIFFERNTSOURCES
+//  else if Sender = rbLocal then
+//    pageHint.Caption := FROMLIBRUSECARCH
+//  else if Sender = rbOnline then
+//  begin
+//    pageHint.Caption := LIBRUSECDOWNLOAD;
+//    if edINPXPath.Text <> '' then
+//      FInpxFileName := edINPXPath.Text
+//    else
+//      FINPXFileName := Settings.WorkPath + 'librusec.inpx';
+//  end
+//  else {if Sender = rbGenesis then
+//    pageHint.Caption := SERVERDOWNLOAD
+//  else} if Sender = rbThirdParty then
+//  begin
+//    pageHint.Caption := THIRDPARTY;
+//    FInpxFileName := edINPXPath.Text;
+//  end;
+
   if Sender = rbEmpty then
     pageHint.Caption := FROMDIFFERNTSOURCES
   else if Sender = rbLocal then
     pageHint.Caption := FROMLIBRUSECARCH
   else if Sender = rbOnline then
-  begin
-    pageHint.Caption := LIBRUSECDOWNLOAD;
-    FINPXFileName := Settings.WorkPath + 'librusec.inpx';
-  end
+    pageHint.Caption := LIBRUSECDOWNLOAD
   else {if Sender = rbGenesis then
     pageHint.Caption := SERVERDOWNLOAD
   else} if Sender = rbThirdParty then
   begin
     pageHint.Caption := THIRDPARTY;
-    FInpxFileName := edINPXPath.Text;
   end;
 
   GetCollectionDataFromINPX;
-
   edINPXPath.Visible := (Sender = rbThirdParty );
 
 end;
