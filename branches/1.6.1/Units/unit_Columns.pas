@@ -211,9 +211,9 @@ begin
                 end;
 
         COL_LIBRATE:begin
-                   Caption   := 'N';
-                   MaxWidth  := 55;
-                   MinWidth  := 55;
+                   Caption   := 'ќценка';
+                   MaxWidth  := 60;
+                   MinWidth  := 60;
                    Alignment := taCenter;
                    Options    := Fix;
                 end;

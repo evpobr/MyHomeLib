@@ -601,7 +601,10 @@ begin
         DBFileName := FParams.CollectionFile;
         CollectionRoot := FParams.CollectionRoot;
         CollectionType := FParams.CollectionCode;
-        InpxFileName := Settings.SystemFileName[sfLibRusEcinpx];
+        if FParams.INPXFile = '' then
+          InpxFileName := Settings.SystemFileName[sfLibRusEcinpx]
+        else
+          InpxFileName := FParams.INPXFile;
       end;
     end;
 

@@ -2330,7 +2330,7 @@ begin
       COL_GENRE  : Result := Data.Genre;
       COL_TYPE   : Result := Data.FileType;
       COL_LANG   : Result := Data.Lang;
-      COL_LIBRATE   : Result := IntToStr(Data.LibRate);
+//      COL_LIBRATE   : Result := IntToStr(Data.LibRate);
       COL_COLLECTION: Result := Data.ColName;
     end;
 end;
@@ -2890,6 +2890,23 @@ begin
 
   end;
 
+  if (Tag = COL_LIBRATE)  then
+  begin
+    w := FStarImage.Width;
+    h := FStarImage.Height;
+    x := CellRect.Left (*+ (CellRect.Right - CellRect.Left - 10 {w} * 5) div 2*);
+    y := CellRect.Top + (CellRect.Bottom - CellRect.Top - h) div 2;
+
+    for i := 0 to 4 do
+    begin
+      if (Data.LibRate > i) and (Data.LibRate <= 5)  then
+        FStarImage.Draw(TargetCanvas, Rect(x, y, x + w, y + h))
+      else
+        FEmptyStarImage.Draw(TargetCanvas, Rect(x, y, x + w, y + h));
+
+      Inc(x, {w} 10);
+    end;
+  end;
 
   { DONE -oNickR :Заменить на звездочки }
   if (Tag = COL_RATE) then
