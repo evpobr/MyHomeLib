@@ -321,6 +321,7 @@ object frmMain: TfrmMain
           item
             Expanded = False
             FieldName = 'Time'
+            Width = 64
             Visible = True
           end
           item
@@ -331,6 +332,7 @@ object frmMain: TfrmMain
           item
             Expanded = False
             FieldName = 'FileType'
+            Width = 64
             Visible = True
           end
           item
@@ -351,11 +353,13 @@ object frmMain: TfrmMain
           item
             Expanded = False
             FieldName = 'N'
+            Width = 64
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'keywords'
+            Width = 64
             Visible = True
           end
           item
@@ -454,7 +458,7 @@ object frmMain: TfrmMain
         Caption = 'USR'
       end
       object Online1: TMenuItem
-        Caption = 'On-line'
+        Action = aopOnLine
       end
       object Extra1: TMenuItem
         Action = aopExtra
@@ -527,6 +531,11 @@ object frmMain: TfrmMain
       Category = 'Database'
       Caption = #1055#1086#1076#1082#1083#1102#1095#1080#1090#1100#1089#1103
       OnExecute = dbConnectExecute
+    end
+    object aopOnLine: TAction
+      Category = 'Operation'
+      Caption = 'On-Line'
+      OnExecute = aopOnLineExecute
     end
   end
   object Zip: TZipForge

@@ -32,15 +32,15 @@ type
     BookN: TLargeintField;
     Bookkeywords: TWideStringField;
     Query: TMyQuery;
-    QueryCount: TLargeintField;
     procedure BookAfterScroll(DataSet: TDataSet);
 
     procedure QueryAvtor(BookID: integer);
     procedure QueryGenre(BookID: integer);
     procedure QuerySeries(BookID: integer);
-    function GetBookRecord(BookID: integer): string; overload;
+    function  QueryRate(BookID: integer):string;
+
+    function GetBookRecord(BookID: integer; fb2only: boolean = false): string; overload;
     function GetNextBook: string;
-    procedure SetFb2Only(Enabled: boolean);
     function LastBookID: integer;
     function RecordToString: string;
   private
@@ -72,28 +72,21 @@ var
 begin
   Query.SQL.Text := 'Select Count(*) From libbook';
   Query.Execute;
-  Count := QueryCount.Value;
+  Count := Query.Fields[0].AsInteger;
   Book.SQL.Text := 'SELECT * FROM `libbook` LIMIT ' +  IntToStr(Count - 1) +  ', 1';
   Book.Execute;
   Result := BookBookID.Value;
 end;
 
-function TLib.GetBookRecord(BookID: integer): string;
+function TLib.GetBookRecord(BookID: integer; fb2only: boolean = false): string;
 var
   Query : string;
 begin
-//  if Book.LocateEx('BookID', BookID, [lxNext]) then
-//    Result := RecordToString
-//  else
-//    Result := '';
-//
-//
-//  if Book.Locate('BookID', BookID, []) then
-//    Result := RecordToString
-//  else
-//    Result := '';
+  if fb2only then
+       Query := 'SELECT `BookId`,`Title`,`FileSize`,`FileType`,`Deleted`,`Time`,`Lang`,`N`,`keywords` FROM libbook WHERE FileType = "fb2" and BookId= ' + IntToStr(BookID)
+     else
+       Query := 'SELECT `BookId`,`Title`,`FileSize`,`FileType`,`Deleted`,`Time`,`Lang`,`N`,`keywords` FROM libbook WHERE  BookId= ' + IntToStr(BookID);
 
-  Query := 'SELECT `BookId`,`Title`,`FileSize`,`FileType`,`Deleted`,`Time`,`Lang`,`N`,`keywords` FROM libbook WHERE  BookId= ' + IntToStr(BookID);
   Book.SQL.Text := Query;
   Book.Execute;
   if Book.RecordCount = 0 then
@@ -119,30 +112,37 @@ end;
 
 procedure TLib.QueryAvtor(BookID: integer);
 begin
-  Avtor.SQL.Clear;
-  Avtor.SQL.Add('select an.LastName, an.FirstName, an.MiddleName from' + #10 +
+  Avtor.SQL.Text := 'select an.LastName, an.FirstName, an.MiddleName from' + #10 +
                     '(libavtor ba left outer join libavtoraliase aa on aa.badid = ba.avtorid)' + #10 +
                     'join libavtorname an on an.avtorid = COALESCE(aa.goodid, ba.avtorid) ' + #10 +
-                    'WHERE  ba.bookid = ' + IntToStr(BookID));
+                    'WHERE  ba.bookid = ' + IntToStr(BookID);
 
   Avtor.Execute;
 end;
 
 procedure TLib.QueryGenre(BookID: integer);
 begin
-  Genre.SQL.Clear;
-  Genre.SQL.Add('SELECT G.GenreCode  FROM libgenrelist G, libgenre GL' + #10 +
+  Genre.SQL.Text := 'SELECT G.GenreCode  FROM libgenrelist G, libgenre GL' + #10 +
                     'WHERE GL.BookID = '+ IntToStr(BookID)  + #10 +
-                    'AND G.GenreID = GL.GenreId' );
+                    'AND G.GenreID = GL.GenreId' ;
   Genre.Execute;
+end;
+
+function TLib.QueryRate(BookID: integer): string;
+begin
+  Query.SQL.Text := 'SELECT AVG(Rate) FROM Librate WHERE BookID = ' + IntToStr(BookID);
+  Query.Execute;
+  if Query.Fields[0].AsInteger <> 0 then
+     Result := Query.Fields[0].AsWideString
+   else
+     Result := '';
 end;
 
 procedure TLib.QuerySeries(BookID: integer);
 begin
-  Series.SQL.Clear;
-  Series.SQL.Add('SELECT S.SeqName, SL.SeqNumb FROM libseqname S, libseq SL' + #10 +
+  Series.SQL.Text := 'SELECT S.SeqName, SL.SeqNumb FROM libseqname S, libseq SL' + #10 +
                     'Where SL.BookID = '+ IntToStr(BookID)  + #10 +
-                    'AND S.SeqID = SL.SeqId' );
+                    'AND S.SeqID = SL.SeqId';
   Series.Execute;
 end;
 
@@ -205,22 +205,10 @@ begin
             BookFileType.AsWideString + c +     // type
             Date + c +                          // Date
             BookLang.AsWideString + c +         // Lang
-            BookN.AsWideString + c +            // N
+            QueryRate(BookBookID.Value) + c +   // N
             Bookkeywords.AsWideString + c;      // Keywords
-end;
-
-procedure TLib.SetFb2Only;
-begin
-  if Enabled then
-  begin
-    Book.Filter := 'FileType="fb2"';
-    Book.Filtered := True;
-  end
-  else
-  begin
-    Book.Filtered := False;
-    Book.Filter := '';
-  end
+  Result := StringReplace(Result, #10, '', [rfReplaceAll]);
+  Result := StringReplace(Result, #13, '', [rfReplaceAll]);
 end;
 
 end.

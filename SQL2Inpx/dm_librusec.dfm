@@ -143,8 +143,5 @@ object Lib: TLib
       'Select Count(*) From libbook')
     Left = 272
     Top = 160
-    object QueryCount: TLargeintField
-      FieldName = 'Count(*)'
-    end
   end
 end

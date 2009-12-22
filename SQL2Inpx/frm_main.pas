@@ -72,6 +72,7 @@ type
     apLoad: TAction;
     dbConnect: TAction;
     N15: TMenuItem;
+    aopOnLine: TAction;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure aopFB2Execute(Sender: TObject);
@@ -87,6 +88,7 @@ type
     procedure apSaveExecute(Sender: TObject);
     procedure apLoadExecute(Sender: TObject);
     procedure dbConnectExecute(Sender: TObject);
+    procedure aopOnLineExecute(Sender: TObject);
   private
     { Private declarations }
     FAppPath : string;
@@ -155,10 +157,9 @@ begin
         Res.Add(S);
         inc(j);
       end;
-      if (i mod 100) = 0 then
+      if (j mod 100) = 0 then
       begin
-        lblS1.Caption := 'Обработано ' + IntToStr(i);
-        lblS2.Caption := 'Добавленно ' + IntToStr(j);
+        lblS1.Caption := 'Добавленно ' + IntToStr(j);
         Application.ProcessMessages;
       end;
     end;
@@ -206,7 +207,6 @@ begin
   Result := TStringList.Create;
   Screen.Cursor := crHourGlass;
   FFileList.Clear;
-//  Lib.SetFb2Only(True);
   Log('FB2');
   Log('---------------------------------');
   try
@@ -235,16 +235,68 @@ begin
       FFileList.Add(FN + '.inp');
       Bar.Position := round((i + 1) / dlgOpen.Files.Count * 100);
     end;
+    FFileList.Add('extra.inp');
     Log(TimeToStr(Now) + ' ' + 'Упаковка ...');
     Version;
     Pack(edInpxName.Text + '.inpx', 0);
     Pack(edUpdateName.Text + '.zip', 9);
     Log(TimeToStr(Now) + ' ' + 'Готово');
   finally
-    Lib.SetFb2Only(False);
     EnableControls;
     Screen.Cursor := crDefault;
     Result.Free;
+  end;
+end;
+
+procedure TfrmMain.aopOnLineExecute(Sender: TObject);
+var
+  i, j, Max: integer;
+  S: string;
+  Window: integer;
+  FN: string;
+  Res: TStringList;
+begin
+  i := 1; Window := 9999;
+  DisableControls;
+  Screen.Cursor := crHourGlass;
+  Pages.ActivePageIndex := 2;
+  Max := Lib.LastBookID;
+  FFileList.Clear;
+  try
+    Res := TStringList.Create;
+    Log('Extra');
+    Log('-------------------------');
+    while i < Max do
+    begin
+      if (i + Window) > Max then
+        Window := Max - i;
+      FN := Format('%.6d-%.6d.inp',[ i, i + Window]);
+      Log(FN);
+      Res.Clear;
+      for j := i to i + Window do
+      begin
+        S := Lib.GetBookRecord(j, True);
+        if S <> '' then Res.Add(S);
+        if ((j - 1) mod 100) = 0 then
+        begin
+          lblS1.Caption := 'Добавленно ' + IntToStr(j - i);
+          Application.ProcessMessages;
+        end;
+      end;
+      Res.SaveToFile(FInpPath + FN, TEncoding.UTF8);
+      FFileList.Add(FN);
+      inc(i, Window + 1);
+      Bar.Position := round((i + 1)/Max * 100);
+      Bar.Repaint;
+    end; // main for
+    Log(TimeToStr(Now) + ' ' + 'Упаковка ...');
+    Version;
+    Pack(edInpxName.Text + '.inpx', 9);
+    Log(TimeToStr(Now) + 'Готово');
+  finally
+    Screen.Cursor := crDefault;
+    EnableControls;
+    Res.Free;
   end;
 end;
 
@@ -312,7 +364,7 @@ begin
   try
     Responce := TMemoryStream.Create;
     CMD := TStringList.Create;
-    Log(TimeToStr(Now) + ' ' + 'Импорт ');
+    Log('Импорт ');
     Log('---------------------------------');
     for I := 0 to mmTables.Lines.Count - 1 do
     begin
@@ -437,6 +489,8 @@ begin
     edDescr.Text := F.ReadString('DATA','Descr', '');
     edTitle.Text := F.ReadString('DATA','Title', '');
     edShort.Text := F.ReadString('DATA','Short', '');
+
+    frmMain.Caption := 'SQL2Inpx: ' + edShort.Text;
   finally
     F.Free;
   end;
@@ -475,7 +529,7 @@ begin
              edInpxName.Text + #13#10 +
              edCode.Text + #13#10 +
              edDescr.Text +  #13#10 +
-             edURL.Text +  #13#10 + mmScript.ToString;
+             edURL.Text +  #13#10 + mmScript.Text;
 
   Zip.Comment := Comment;
   Zip.CloseArchive;
