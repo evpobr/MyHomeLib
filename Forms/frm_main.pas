@@ -2351,7 +2351,7 @@ begin
       COL_GENRE  : Result := Data.Genre;
       COL_TYPE   : Result := Data.FileType;
       COL_LANG   : Result := Data.Lang;
-      COL_LIBRATE   : Result := IntToStr(Data.LibRate);
+//      COL_LIBRATE   : Result := IntToStr(Data.LibRate);
       COL_COLLECTION: Result := Data.ColName;
     end;
 end;
@@ -2883,9 +2883,28 @@ procedure TfrmMain.tvBooksTreeAfterCellPaint(Sender: TBaseVirtualTree;
 var
   Data: PBookData;
   Tag : integer;
-  i: integer;
-  x, y: integer;
-  w, h: integer;
+  X : integer;
+
+  procedure Stars(Value: integer);
+  var
+    i: integer;
+    x, y: integer;
+    w, h: integer;
+  begin
+    w := FStarImage.Width;
+    h := FStarImage.Height;
+    x := CellRect.Left (*+ (CellRect.Right - CellRect.Left - 10 {w} * 5) div 2*);
+    y := CellRect.Top + (CellRect.Bottom - CellRect.Top - h) div 2;
+    for i := 0 to 4 do
+    begin
+      if Value > i then
+        FStarImage.Draw(TargetCanvas, Rect(x, y, x + w, y + h))
+      else
+        FEmptyStarImage.Draw(TargetCanvas, Rect(x, y, x + w, y + h));
+      Inc(x, {w} 10);
+    end;
+  end;
+
 begin
   Data := Sender.GetNodeData(Node);
   Assert(Assigned(Data));
@@ -2908,28 +2927,13 @@ begin
 
     if Data.Code = 1 then
       ilFileTypes.Draw(TargetCanvas, X + 25, CellRect.Top + 1, 9);
-
   end;
 
+  if (Tag = COL_RATE) then Stars(Data.Rate);
 
-  { DONE -oNickR :Заменить на звездочки }
-  if (Tag = COL_RATE) then
-  begin
-    w := FStarImage.Width;
-    h := FStarImage.Height;
-    x := CellRect.Left (*+ (CellRect.Right - CellRect.Left - 10 {w} * 5) div 2*);
-    y := CellRect.Top + (CellRect.Bottom - CellRect.Top - h) div 2;
-
-    for i := 0 to 4 do
-    begin
-      if Data.Rate > i then
-        FStarImage.Draw(TargetCanvas, Rect(x, y, x + w, y + h))
-      else
-        FEmptyStarImage.Draw(TargetCanvas, Rect(x, y, x + w, y + h));
-
-      Inc(x, {w} 10);
-    end;
-  end;
+  if (Tag = COL_LIBRATE) then
+    if Data.LibRate <= 5 then Stars(Data.LibRate)
+      else Stars(0);
 end;
 
 procedure TfrmMain.tvBooksTreeKeyDown(Sender: TObject; var Key: Word;

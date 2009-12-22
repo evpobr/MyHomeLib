@@ -86,9 +86,6 @@ type
                                  out Alignment: TAlignment;
                                  out Options : TVTColumnOptions);
 
-
-
-
 implementation
 
 uses
@@ -105,8 +102,6 @@ const
 
     FixedColumnOptions = [coDraggable,coEnabled,coParentColor,coShowDropMark,coVisible];
     FixedClickColumnOptions = [coAllowClick,coDraggable,coEnabled,coParentColor,coShowDropMark,coVisible];
-
-
 
 { TColumns }
 
@@ -211,9 +206,9 @@ begin
                 end;
 
         COL_LIBRATE:begin
-                   Caption   := 'N';
-                   MaxWidth  := 55;
-                   MinWidth  := 55;
+                   Caption   := 'ќценка';
+                   MaxWidth  := 60;
+                   MinWidth  := 60;
                    Alignment := taCenter;
                    Options    := Fix;
                 end;
@@ -226,12 +221,8 @@ begin
                    Alignment := taCenter;
                    Options    := Fix - [coDraggable] + [coFixed];
                  end;
-
       end;
-
 end;
-
-
 
 procedure TColumns.Add(const Tag: integer;
                        const Width: integer;
