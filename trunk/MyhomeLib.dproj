@@ -238,6 +238,9 @@
 			<DCCReference Include="Forms\frm_edit_author.pas">
 				<Form>frmEditAuthorData</Form>
 			</DCCReference>
+			<DCCReference Include="Forms\frm_create_mask.pas">
+				<Form>frmCreateMask</Form>
+			</DCCReference>
 			<DCCReference Include="DwnldImpl\unit_Downloader.pas"/>
 			<RcItem Include="Resources\Images\16x16\star_small.png">
 				<ResourceType>RCData</ResourceType>
