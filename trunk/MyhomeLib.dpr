@@ -108,6 +108,7 @@ uses
   fictionbook_21 in 'Components\fictionbook_21.pas',
   frm_author_list in 'Forms\frm_author_list.pas' {frmAuthorList},
   frm_edit_author in 'Forms\frm_edit_author.pas' {frmEditAuthorData},
+  frm_create_mask in 'Forms\frm_create_mask.pas' {frmCreateMask},
   unit_Downloader in 'DwnldImpl\unit_Downloader.pas';
 
 {$R *.res}
