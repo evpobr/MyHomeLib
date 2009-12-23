@@ -5585,7 +5585,10 @@ begin
 
   Table.Locate('ID', Data.ID, []);
   FFormBusy := True;
-  URL :=  Format('%sb/%d/',[DMUser.ActiveCollection.URL, Table.FieldByName('LibID').AsInteger]);
+  if DMUser.ActiveCollection.URL <> ''then
+    URL :=  Format('%sb/%d/',[DMUser.ActiveCollection.URL, Table.FieldByName('LibID').AsInteger])
+  else
+    URL :=  Format('%sb/%d/',[Settings.DownloadURL, Table.FieldByName('LibID').AsInteger]);
 
   frmBookDetails := TfrmBookDetails.Create(Application);
 
