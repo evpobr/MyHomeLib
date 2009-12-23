@@ -174,6 +174,10 @@ type
     RzToolButton18: TRzToolButton;
     RzGroupBox2: TRzGroupBox;
     edUpdateDir: TRzButtonEdit;
+    pnTemplate: TRzPanel;
+    TemplatePanel: TRzPanel;
+    Label10: TLabel;
+    beTemplate: TRzButtonEdit;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
@@ -192,6 +196,8 @@ type
     procedure FormShow(Sender: TObject);
     procedure pnlDwnldClick(Sender: TObject);
     procedure cbUseIESettingsClick(Sender: TObject);
+    procedure cbOverwriteFB2InfoClick(Sender: TObject);
+    procedure beTemplateButtonClick(Sender: TObject);
 
   private
     procedure EditReader(AItem: TListItem);
@@ -217,7 +223,8 @@ uses
   frm_main,
   frm_edit_script,
   unit_Settings,
-  htmlhlp;
+  htmlhlp,
+  frm_create_mask;
 
 {$R *.dfm}
 
@@ -330,6 +337,13 @@ begin
   cbDeleteDeleted.Checked         := Settings.DeleteDeleted;
   cbAutoLoadReview.Checked        := Settings.AutoLoadReview;
   cbOverwriteFB2Info.Checked      := Settings.OverwriteFB2Info;
+  { Установка начального состояния поля ввода шаблона }
+  if cbOverwriteFB2Info.Checked then
+    TemplatePanel.Enabled:= true
+  else TemplatePanel.Enabled:= false;
+
+  beTemplate.text                 := Settings.BookHeaderTemplate;
+
   cbDeleteFiles.Checked           := Settings.DeleteFiles;
 
   // Page 6 -  FileSort
@@ -422,6 +436,8 @@ begin
   Settings.AutoLoadReview    := cbAutoLoadReview.Checked;
   Settings.OverwriteFB2Info  := cbOverwriteFB2Info.Checked;
   Settings.DeleteFiles       := cbDeleteFiles.Checked;
+  { Сохранение свойства шаблона заголовка книги }
+  Settings.BookHeaderTemplate := beTemplate.text;
 
   // Page 6 -  FileSort
 
@@ -469,6 +485,13 @@ end;
 
 procedure TfrmSettings.btnSaveClick(Sender: TObject);
 begin
+  if cbOverwriteFB2Info.Checked and (beTemplate.text = '') then
+  begin
+    ShowMessage('Необходимо задать шаблон для заголовка книги в разделе "Разное"');
+    tvSections.Select(tvSections.Items[5]);
+    Exit;
+  end;
+
   SaveSettings;
 
   Close;
@@ -520,6 +543,20 @@ begin
   finally
     frmEditReader.Free;
   end;
+end;
+
+procedure TfrmSettings.beTemplateButtonClick(Sender: TObject);
+var frmCreateMask: TfrmCreateMask;
+begin
+  frmCreateMask:= TfrmCreateMask.Create(self);
+
+  frmCreateMask.edTemplate.Text:= beTemplate.Text;
+
+  frmCreateMask.ShowModal;
+  if frmCreateMask.ModalResult = mrOk then
+    beTemplate.text := frmCreateMask.edTemplate.Text;
+
+  frmCreateMask.Free
 end;
 
 procedure TfrmSettings.btnAddExtClick(Sender: TObject);
@@ -668,6 +705,14 @@ begin
     pnlBS.Font.Color := dlgColors.Color;
     pnlASG.Font.Color := dlgColors.Color;
   end;
+end;
+
+procedure TfrmSettings.cbOverwriteFB2InfoClick(Sender: TObject);
+begin  
+{ Включение и отключение поля ввода шаблона }
+  if cbOverwriteFB2Info.Checked then
+    TemplatePanel.Enabled:= true
+  else TemplatePanel.Enabled:= false;
 end;
 
 procedure TfrmSettings.cbUseIESettingsClick(Sender: TObject);

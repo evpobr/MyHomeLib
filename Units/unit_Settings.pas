@@ -180,6 +180,8 @@ type
     FDbsFileName: string;
     FIniFileName: string;
 
+    FFBDBookHeaderTemplate: string;
+
   private
     FDeleteFiles: boolean;
     function GetSettingsFileName: string;
@@ -259,6 +261,9 @@ type
     property PromptDevicePath: Boolean read FPromptDevicePath write FPromptDevicePath;
     property FolderTemplate: string read FFolderTemplate write FFolderTemplate;
     property FileNameTemplate: string read FFileNameTemplate write FFileNameTemplate;
+
+    property BookHeaderTemplate: string read FFBDBookHeaderTemplate write FFBDBookHeaderTemplate;
+
     property ExportMode: TExportMode read FExportMode write FExportMode;
     property TXTEncoding: TTXTEncoding read FTXTEncoding write FTXTEncoding;
 
@@ -677,6 +682,8 @@ begin
     FAutoLoadReview := iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoLoadReview',  True);
     FForceConvertToFBD := iniFile.ReadBool(BEHAVIOR_SECTION, 'ForceConvertToFBD',  True);
     FOverwriteFB2Info :=  iniFile.ReadBool(BEHAVIOR_SECTION, 'OverwriteFB2Info',  False);
+    FFBDBookHeaderTemplate := iniFile.ReadString(BEHAVIOR_SECTION, 'BookHeaderTemplate', '%t');
+
     //
     // FILE_SORT_SECTION
     //
@@ -835,6 +842,7 @@ begin
     iniFile.WriteBool(BEHAVIOR_SECTION, 'AutoLoadReview', FAutoLoadReview);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ForceConvertToFBD',  FForceConvertToFBD);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'OverwriteFB2Info',  FOverwriteFB2Info);
+    iniFile.WriteString(BEHAVIOR_SECTION, 'BookHeaderTemplate', FFBDBookHeaderTemplate);
     //
     // FILE_SORT_SECTION
     //
