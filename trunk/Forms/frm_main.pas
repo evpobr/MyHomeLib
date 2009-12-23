@@ -620,6 +620,7 @@ type
     procedure miEditToolbarVisibleClick(Sender: TObject);
     procedure tbtnAutoFBDClick(Sender: TObject);
     procedure miExportToHTMLClick(Sender: TObject);
+    procedure tvAuthorsClick(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -2647,6 +2648,17 @@ begin
   dmCollection.tblAuthors.Locate('A_ID', ID, []);
   lblAuthor.Caption := Data.Text;
   FillBooksTree(ID, tvBooksA, dmCollection.tblAuthor_List, dmCollection.tblBooksA, False, True); // авторы
+end;
+
+procedure TfrmMain.tvAuthorsClick(Sender: TObject);
+var
+  BNode: PVirtualNode;
+begin
+  BNode := tvBooksA.GetFirst;
+  if (BNode <> nil) and (BNode.FirstChild <> nil) then
+     BNode := tvBooksA.GetFirstChild(BNode);
+  if BNode <> nil then tvBooksA.Selected[BNode] := True;
+  frmMain.ActiveControl := tvBooksA;
 end;
 
 procedure TfrmMain.tvSeriesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -5221,6 +5233,8 @@ begin
       tvAuthors.Perform(WM_KEYDOWN, VK_UP, 0);
     if Key = VK_DOWN  then
       tvAuthors.Perform(WM_KEYDOWN, VK_DOWN, 0);
+    if Key = VK_RETURN then
+      tvAuthorsClick(Sender);
 
   if ActiveView = BySeriesView then
     if Key = VK_UP then
