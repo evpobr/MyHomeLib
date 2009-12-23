@@ -3,7 +3,7 @@ unit dm_librusec;
 interface
 
 uses
-  SysUtils, Classes, DB, DBAccess, MyAccess, MemDS;
+  SysUtils, Classes, DB, DBAccess, MyAccess, MemDS, MyEmbConnection;
 
 type
   TLib = class(TDataModule)
@@ -33,27 +33,24 @@ type
     Bookkeywords: TWideStringField;
     Query: TMyQuery;
     procedure BookAfterScroll(DataSet: TDataSet);
-
+  private
+    { Private declarations }
     procedure QueryAvtor(BookID: integer);
     procedure QueryGenre(BookID: integer);
     procedure QuerySeries(BookID: integer);
     function  QueryRate(BookID: integer):string;
-
-    function GetBookRecord(BookID: integer; fb2only: boolean = false): string; overload;
-    function GetNextBook: string;
-    function LastBookID: integer;
-    function RecordToString: string;
-  private
-    { Private declarations }
   public
     { Public declarations }
+    function GetBookRecord(BookID: integer; fb2only: boolean = false): string; overload;
+    function GetBookRecord(FN: string; fb2only: boolean = false): string; overload;
+    function RecordToString(FN: string = ''):string ;
+    function LastBookID: integer;
   end;
 
 var
   Lib: TLib;
 
 implementation
-
 uses
   MemData ;
 
@@ -64,6 +61,25 @@ begin
   QueryAvtor(Lib.BookBookId.Value);
   QueryGenre(Lib.BookBookId.Value);
   QuerySeries(Lib.BookBookId.Value);
+end;
+
+function TLib.GetBookRecord(FN: string; fb2only: boolean): string;
+var
+  Query : string;
+begin
+  Query := 'SELECT B.BookId, B.Title, B.FileSize, B.FileType, B.Deleted, B.Time, B.Lang, B.N, B.KeyWords, F.FileName FROM libbook B, libfilename F WHERE B.BookId = F.BookID AND F.FileName = "' + FN + '"';
+
+  Book.SQL.Text := Query;
+  Book.Execute;
+//  if Book.RecordCount = 0 then
+//  begin
+//    Result := '';
+//    Exit;
+//  end;
+  QueryAvtor(Lib.BookBookId.Value);
+  QueryGenre(Lib.BookBookId.Value);
+  QuerySeries(Lib.BookBookId.Value);
+  Result := RecordToString(FN);
 end;
 
 function TLib.LastBookID: integer;
@@ -98,16 +114,6 @@ begin
   QueryGenre(Lib.BookBookId.Value);
   QuerySeries(Lib.BookBookId.Value);
   Result := RecordToString;
-end;
-
-
-function TLib.GetNextBook: string;
-begin
-  Book.Next;
-  if not Book.Eof then
-    Result := RecordToString
-  else
-    Result := '';
 end;
 
 procedure TLib.QueryAvtor(BookID: integer);
@@ -146,7 +152,7 @@ begin
   Series.Execute;
 end;
 
-function TLib.RecordToString: string;
+function TLib.RecordToString(FN: string = ''): string;
 const
   c = #4;
 var
@@ -192,13 +198,18 @@ begin
 
   Del := Bookdeleted.Value;
 
+  if FN = '' then
+    FN := BookBookId.AsWideString
+  else
+    FN := copy(FN, 1, length(FN) - Length(BookFileType.AsWideString) -1);
+
   DecodeDate(BookTime.AsDateTime,Year,Month,Day);
   Date := Format('%d-%.2d-%.2d',[Year,Month,Day]);
   Result := A + c +                             // авторы
             G + c +                             // жанры
             BookTitle.AsWideString + c +        // название
             S + c + SN + c +                    // серия, номер
-            BookBookId.AsWideString + c +       // имя файла
+            FN + c +       // имя файла
             BookFileSize.AsWideString + c +     // размер
             BookBookId.AsWideString + c +       // LibID
             Del + c +                           // Deleted

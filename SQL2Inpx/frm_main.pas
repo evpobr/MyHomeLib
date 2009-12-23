@@ -23,7 +23,6 @@ type
     N8: TMenuItem;
     N9: TMenuItem;
     N10: TMenuItem;
-    USR1: TMenuItem;
     Online1: TMenuItem;
     Extra1: TMenuItem;
     ExtraFTP1: TMenuItem;
@@ -53,10 +52,9 @@ type
     edInpxName: TLabeledEdit;
     edUpdateName: TLabeledEdit;
     edExtraName: TLabeledEdit;
-    edShort: TLabeledEdit;
     edURL: TLabeledEdit;
     edSQLUrl: TLabeledEdit;
-    edBDName: TLabeledEdit;
+    edDBName: TLabeledEdit;
     mmTables: TMemo;
     mmScript: TMemo;
     N13: TMenuItem;
@@ -73,6 +71,10 @@ type
     dbConnect: TAction;
     N15: TMenuItem;
     aopOnLine: TAction;
+    dlgSave: TSaveDialog;
+    cbFb2Only: TCheckBox;
+    edInfoName: TLabeledEdit;
+    cbMaxCompress: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure aopFB2Execute(Sender: TObject);
@@ -199,15 +201,15 @@ var
   S: string;
   Result : TStringList;
 begin
-  if not dlgOpen.Execute then  Exit;
   dlgOpen.Filter := Filter;
+  if not dlgOpen.Execute then  Exit;
 
   DisableControls;
   Pages.ActivePageIndex := 2;
   Result := TStringList.Create;
   Screen.Cursor := crHourGlass;
   FFileList.Clear;
-  Log('FB2');
+  Log('Zip');
   Log('---------------------------------');
   try
     for I := 0 to dlgOpen.Files.Count - 1 do
@@ -220,9 +222,21 @@ begin
       j := 0;
       if (Zip.FindFirst('*.*',ArchItem,faAnyFile-faDirectory)) then
       repeat
-        BookID := StrToInt(copy(ArchItem.FileName,1,Length(ArchItem.FileName) - 4));
-        S := Lib.GetBookRecord(BookID);
-        if S <> '' then Result.Add(S);
+        if cbFb2Only.Checked or (ExtractFileExt(ArchItem.FileName) = '.fb2')  then
+        begin
+          try
+            BookID := StrToInt(copy(ArchItem.FileName,1,Length(ArchItem.FileName) - 4));
+            S := Lib.GetBookRecord(BookID);
+          except
+            on E:Exception do
+              S := Lib.GetBookRecord(ArchItem.FileName);
+          end;
+
+        end
+        else
+          S := Lib.GetBookRecord(ArchItem.FileName);
+
+        Result.Add(S);
         inc(j);
         if (j mod 100) = 0 then
         begin
@@ -238,7 +252,11 @@ begin
     FFileList.Add('extra.inp');
     Log(TimeToStr(Now) + ' ' + 'Упаковка ...');
     Version;
-    Pack(edInpxName.Text + '.inpx', 0);
+    if cbMaxCompress.Checked then
+      Pack(edInpxName.Text + '.inpx', 9)
+    else
+      Pack(edInpxName.Text + '.inpx', 0);
+
     Pack(edUpdateName.Text + '.zip', 9);
     Log(TimeToStr(Now) + ' ' + 'Готово');
   finally
@@ -260,7 +278,7 @@ begin
   DisableControls;
   Screen.Cursor := crHourGlass;
   Pages.ActivePageIndex := 2;
-  Max := Lib.LastBookID;
+  Max := StrToInt(edStartID.Text);
   FFileList.Clear;
   try
     Res := TStringList.Create;
@@ -304,15 +322,22 @@ procedure TfrmMain.apLoadExecute(Sender: TObject);
 const
   Filter = 'Profile|*.profile';
 begin
+  dlgOpen.InitialDir := FAppPath;
   dlgOpen.Filter := Filter;
   if not dlgOpen.Execute then Exit;
   LoadProfile(dlgOpen.FileName);
+  frmMain.Caption := 'SQL2Inpx: ' + edTitle.Text;
   Connect;
 end;
 
 procedure TfrmMain.apSaveExecute(Sender: TObject);
 begin
-  SaveProfile(edShort.text);
+  dlgSave.InitialDir := FAppPath;
+  if dlgSave.Execute then
+  begin
+    SaveProfile(dlgSave.FileName);
+    frmMain.Caption := 'SQL2Inpx: ' + edTitle.Text;
+  end;
 end;
 
 procedure TfrmMain.Commands;
@@ -330,6 +355,7 @@ begin
     begin
       LoadProfile(FAppPath + Paramstr(i + 1) + '.profile');
       Connect;
+      frmMain.Caption := 'SQL2Inpx: ' + edTitle.Text;
       inc(i);
     end;
     if ParamStr(i) = '-c' then Close;
@@ -340,7 +366,7 @@ end;
 procedure TfrmMain.Connect;
 begin
   Lib.Connection.Connected := False;
-  Lib.Connection.Database := edBDName.Text;
+  Lib.Connection.Database := edDBName.Text;
   Lib.Connection.Connect;
   SetTableState(True);
 end;
@@ -376,7 +402,7 @@ begin
       Responce.SaveToFile(ArchName);
       Log(TimeToStr(Now) + ' Распаковка ...');
       ExecAndWait(FAppPath + '7za.exe','e -y ' + ArchName + ' -o' + FBasesPath, 0);
-      CMD.Add('mysql.exe -h localhost -u lib ' + edShort.Text + ' < ' + DumpName + '');
+      CMD.Add('mysql.exe -h localhost -u ' + Lib.Connection.Username + ' ' + edDBName.Text + ' < ' + DumpName + '');
     end;
     CMD.SaveToFile(FAppPath + 'import.bat');
     Log(TimeToStr(Now) + ' Импорт ...');
@@ -419,6 +445,7 @@ procedure TfrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   SetTableState(False);
   FFileList.Free;
+  SaveINI;
 end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
@@ -427,7 +454,6 @@ begin
   FInpPath := FAppPath + 'LIBRUSEC_INP\';
   FBasesPath := FAppPath + 'BASES\';
   FOutPath := FAppPath + 'ARCH\';
-
   ReadINI;
   FFileList := TStringList.Create;
 end;
@@ -471,13 +497,14 @@ end;
 
 procedure TfrmMain.LoadProfile(FN: string);
 var
-  F : TIniFile;
+  F : TMemIniFile;
 begin
   try
-    F := TIniFile.Create(FN);
+    F := TMemIniFile.Create(FN);
+    F.Encoding := TEncoding.UTF8;
     mmScript.Text := StringReplace(F.ReadString('DATA','Script', ''), #4, #13#10, [rfReplaceAll]);
     mmTables.Text := StringReplace(F.ReadString('DATA','Tables', ''), #4, #13#10, [rfReplaceAll]);
-    edBDName.Text := F.ReadString('DATA','DBName', '');
+    edDBName.Text := F.ReadString('DATA','DBName', '');
     edSQLUrl.Text := F.ReadString('DATA','SQLUtrl', '');
     edURL.Text := F.ReadString('DATA','URL', '');
     edInpxName.Text := F.ReadString('DATA','INPxName', '');
@@ -488,9 +515,9 @@ begin
     edCode.Text := F.ReadString('DATA','Code','');
     edDescr.Text := F.ReadString('DATA','Descr', '');
     edTitle.Text := F.ReadString('DATA','Title', '');
-    edShort.Text := F.ReadString('DATA','Short', '');
-
-    frmMain.Caption := 'SQL2Inpx: ' + edShort.Text;
+    edInfoName.Text := F.ReadString('DATA','Info name', '');
+    cbFb2Only.Checked := F.ReadBool('DATA','Fb2Only', true);
+    cbMaxCompress.Checked := F.ReadBool('DATA','MaxCompress', false);
   finally
     F.Free;
   end;
@@ -546,24 +573,38 @@ begin
     idFTP.Username := INF.ReadString('FTP','USERNAME','');
     idFTP.Password := INF.ReadString('FTP','PASSWORD','');
     FFTPDir := INF.ReadString('FTP','DIR','/');
+
+    Lib.Connection.Username := INF.ReadString('MySQL', 'User', 'lib');
+    Lib.Connection.Password := INF.ReadString('MySQL', 'Pass', '');
   finally
     INF.Free;
   end;
 end;
 
 procedure TfrmMain.SaveINI;
+var
+  F:TIniFile;
 begin
+  F:=TIniFile.Create(FAppPath+'\sql2inpx.ini');
+  try
+    F.WriteString('SYSTEM','FOLDER',ExtractFilePath(dlgOpen.FileName));
+    F.WriteString('MySQL', 'User', Lib.Connection.Username);
+    F.WriteString('MySQL', 'Pass', Lib.Connection.Password);
+  finally
+    F.Free;
+  end;
 end;
 
 procedure TfrmMain.SaveProfile(FN: string);
 var
-  F : TIniFile;
+  F : TMemIniFile;
 begin
   try
-    F := TIniFile.Create(FAppPath + edShort.Text + '.profile');
+    F := TMemIniFile.Create(FN);
+    F.Encoding := TEncoding.UTF8;
     F.WriteString('DATA','Script', StringReplace(mmScript.Text, #13#10, #4, [rfReplaceAll]));
     F.WriteString('DATA','Tables', StringReplace(mmTables.Text, #13#10, #4, [rfReplaceAll]));
-    F.WriteString('DATA','DBName',edBDName.Text);
+    F.WriteString('DATA','DBName',edDBName.Text);
     F.WriteString('DATA','SQLUtrl',edSQLUrl.Text);
     F.WriteString('DATA','URL',edURL.Text);
     F.WriteString('DATA','INPxName',edInpxName.Text);
@@ -574,7 +615,10 @@ begin
     F.WriteString('DATA','Code',edCode.Text);
     F.WriteString('DATA','Descr',edDescr.Text);
     F.WriteString('DATA','Title',edTitle.Text);
-    F.WriteString('DATA','Short',edShort.Text);
+    F.WriteString('DATA','Info name',edInfoName.Text);
+    F.WriteBool('DATA','Fb2Only', cbFb2Only.Checked);
+    F.WriteBool('DATA','MaxCompress', cbMaxCompress.Checked);
+    F.UpdateFile;
   finally
     F.Free;
   end;
@@ -595,9 +639,9 @@ begin
   Log('--------------------------------------');
   idFTP.Connect;
   idFTP.ChangeDir(FFTPDir);
-  Log(TimeToStr(Now) + ' Загрузка extra_update ...');
+  Log(TimeToStr(Now) + ' Загрузка ' + edExtraName.Text + ' ...');
   idFTP.Put(FOutPath + edExtraName.Text + '.zip');
-  Log(TimeToStr(Now) + ' Загрузка last_extra.info ...');
+  Log(TimeToStr(Now) + ' Загрузка ' + edExtraInfo.Text + ' ...');
   idFTP.Put(FOutPath + edExtraInfo.Text);
   Log(TimeToStr(Now) + ' Готово');
 end;
@@ -612,9 +656,8 @@ begin
     DecodeDate(Now,Year,Month,Day);
     L.Add(Format('%d%.2d%.2d',[Year,Month,Day]));
     L.SaveToFile(FAppPath+'\LIBRUSEC_INP\version.info');
-    L.SaveToFile(FAppPath+'\ARCH\last_' + edShort.Text + '.info');
+    L.SaveToFile(FAppPath+'\ARCH\' + edInfoName.Text);
     L.SaveToFile(FAppPath+'\ARCH\' + edExtraInfo.Text);
-    L.SaveToFile(FAppPath+'\ARCH\last_usr.info');
   finally
     L.Free;
   end;

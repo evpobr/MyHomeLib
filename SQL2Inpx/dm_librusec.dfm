@@ -6,10 +6,7 @@ object Lib: TLib
     Database = 'librusec'
     Options.UseUnicode = True
     Options.Charset = 'utf8'
-    Username = 'root'
-    Password = '2def1234'
     Server = 'localhost'
-    Connected = True
     LoginPrompt = False
     Left = 56
     Top = 8

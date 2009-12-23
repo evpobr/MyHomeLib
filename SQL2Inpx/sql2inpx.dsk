@@ -1,19 +1,19 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'D:\DelphiProjects\Libraries\MyDac2010\Source\MySqlNet.pas',0,1,994,1,1020,0,0,,
-File_1=TSourceModule,'c:\program files\embarcadero\rad studio\7.0\source\Win32\db\DB.pas',0,1,2183,3,2208,0,0,,
-File_2=TSourceModule,'D:\DelphiProjects\Libraries\MyDac2010\Source\MemDS.pas',0,1,3600,46,3626,0,0,,
-File_3=TSourceModule,'c:\program files\embarcadero\rad studio\7.0\source\Indy\Indy10\Core\IdIOHandler.pas',0,1,1600,1,1626,0,0,,
-File_4=TSourceModule,'D:\DelphiProjects\MyHomeLib\LibFileList\main.pas',0,1,447,36,462,0,0,{{137,77}
-File_5=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\Forms\frm_settings.pas',0,1,1,1,1,0,0,,
-File_6=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\Forms\frm_main.pas',0,1,4179,49,4184,0,0,,
-File_7=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\Units\unit_FBD_helpers.pas',0,1,442,1,475,0,0,,
-File_8=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\ImportImpl\unit_ImportFBDThread.pas',0,1,121,1,153,0,0,,
-File_9=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\ImportImpl\unit_ImportFB2Thread.pas',0,1,85,1,1,0,0,,
-File_10=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\ImportImpl\unit_ImportFB2ThreadBase.pas',0,1,121,1,1,0,0,,
-File_11=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\Forms\frm_ConverToFBD.pas',0,1,185,20,216,0,0,,
-File_12=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\Forms\frm_add_nonfb2.pas',0,1,298,17,319,0,0,,
-File_13=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\UtilsImpl\unit_Utils.pas',0,1,70,10,25,0,0,,
-File_14=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\Units\unit_Settings.pas',0,1,785,1,805,0,0,,
+File_0=TSourceModule,'c:\program files\embarcadero\rad studio\7.0\source\Win32\rtl\common\IniFiles.pas',0,1,102,1,167,0,0,,
+File_1=TSourceModule,'c:\program files\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Dialogs.pas',0,1,2428,1,2454,0,0,,
+File_2=TSourceModule,'D:\DelphiProjects\Libraries\MyDac2010\Source\MyClasses.pas',0,1,1875,1,1901,0,0,,
+File_3=TSourceModule,'D:\DelphiProjects\Libraries\MyDac2010\Source\MySqlNet.pas',0,1,994,1,1020,0,0,,
+File_4=TSourceModule,'c:\program files\embarcadero\rad studio\7.0\source\Win32\db\DB.pas',0,1,2183,3,2208,0,0,,
+File_5=TSourceModule,'D:\DelphiProjects\Libraries\MyDac2010\Source\MemDS.pas',0,1,3600,46,3626,0,0,,
+File_6=TSourceModule,'c:\program files\embarcadero\rad studio\7.0\source\Indy\Indy10\Core\IdIOHandler.pas',0,1,1600,1,1626,0,0,,
+File_7=TSourceModule,'D:\DelphiProjects\MyHomeLib\LibFileList\main.pas',0,1,447,36,462,0,0,{{137,77}
+File_8=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\Forms\frm_settings.pas',0,1,1,1,1,0,0,,
+File_9=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\Forms\frm_main.pas',0,1,4179,49,4184,0,0,,
+File_10=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\Units\unit_FBD_helpers.pas',0,1,442,1,475,0,0,,
+File_11=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\ImportImpl\unit_ImportFBDThread.pas',0,1,121,1,153,0,0,,
+File_12=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\ImportImpl\unit_ImportFB2Thread.pas',0,1,85,1,1,0,0,,
+File_13=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\ImportImpl\unit_ImportFB2ThreadBase.pas',0,1,121,1,1,0,0,,
+File_14=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\Forms\frm_ConverToFBD.pas',0,1,185,20,216,0,0,,
 
 [Modules]
 Module0=D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas
@@ -31,7 +31,7 @@ FormOnTop=0
 [D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas]
 ModuleType=TSourceModule
 FormState=1
-FormOnTop=0
+FormOnTop=1
 
 [D:\DelphiProjects\MyHomeLib\SQL2INPX\sql2inpx.dproj]
 ModuleType=TBaseProject
@@ -82,11 +82,11 @@ WelcomePageURL=bds:/default.htm
 [View1]
 CustomEditViewType=TEditView
 Module=D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas
-CursorX=41
-CursorY=278
-TopLine=252
+CursorX=89
+CursorY=223
+TopLine=199
 LeftCol=1
-Elisions={{137,52},{183,3},{''}}{{185,55},{189,3},{''}}
+Elisions={{187,55},{191,3},{''}}
 Bookmarks=
 EditViewName=D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas
 
@@ -104,13 +104,13 @@ EditViewName=D:\DelphiProjects\MyHomeLib\SQL2INPX\sql2inpx.dpr
 [View3]
 CustomEditViewType=TEditView
 Module=D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas
-CursorX=171
-CursorY=86
-TopLine=49
+CursorX=1
+CursorY=79
+TopLine=41
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas
+EditViewName=Borland.FormDesignerView
 
 [Watches]
 Count=0
@@ -184,7 +184,7 @@ StayOnTop=0
 [MessageView]
 PercentageSizes=1
 Create=1
-Visible=1
+Visible=0
 Docked=0
 State=0
 Left=2472
@@ -268,12 +268,12 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=3826
-Height=1248
+Width=3702
+Height=924
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=3826
-ClientHeight=1248
+ClientWidth=3702
+ClientHeight=924
 TBDockHeight=210
 LRDockWidth=7404
 Dockable=1
@@ -445,11 +445,6 @@ Dockable=1
 StayOnTop=0
 SplitPos=111
 
-[PropInspDesignerSelection]
-ArrangeBy=Name
-SelectedItem=Align,
-ExpandedItems=Anchors=0,BevelEdges=0,Constraints=0,Font=0
-
 [ModelViewTool]
 PercentageSizes=1
 Create=1
@@ -496,12 +491,12 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=3826
-Height=1248
+Width=3702
+Height=924
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=3826
-ClientHeight=1248
+ClientWidth=3702
+ClientHeight=924
 TBDockHeight=1543
 LRDockWidth=8745
 Dockable=1

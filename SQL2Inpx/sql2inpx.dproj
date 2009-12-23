@@ -3,7 +3,7 @@
 			<ProjectGuid>{BEAAC1EC-8211-48CD-85EC-58853EE6C4A6}</ProjectGuid>
 			<ProjectVersion>12.0</ProjectVersion>
 			<MainSource>sql2inpx.dpr</MainSource>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -70,7 +70,7 @@
 						<Parameters Name="UseLauncher">False</Parameters>
 						<Parameters Name="LoadAllSymbols">True</Parameters>
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
-						<Parameters Name="RunParams">-p flibusta</Parameters>
+						<Parameters Name="RunParams">-p librusec_daily</Parameters>
 					</Parameters>
 					<VersionInfo>
 						<VersionInfo Name="IncludeVerInfo">False</VersionInfo>
