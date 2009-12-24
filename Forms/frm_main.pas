@@ -2166,11 +2166,11 @@ begin
 
   ReadINIData;
 
-  SetColumns;
-  SetHeaderPopUp;
-
   CreateDir(Settings.TempDir);
   CreateDir(Settings.DataDir);
+
+  SetColumns;
+  SetHeaderPopUp;
 
   //------------------------ чистка папки дата если нужно ----------------------
   if (ParamCount > 0) and (ParamStr(1) = '/clear') then

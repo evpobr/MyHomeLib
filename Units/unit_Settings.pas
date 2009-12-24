@@ -757,8 +757,8 @@ begin
     iniFile.WriteString(NETWORK_SECTION, 'proxy-user', FProxyUsername);
     iniFile.WriteString(NETWORK_SECTION, 'proxy-pass', EncodePassString(FProxyPassword));
     iniFile.WriteInteger(NETWORK_SECTION, 'proxy-port', FProxyPort);
-    iniFile.WriteString(NETWORK_SECTION, 'update_server', FUpdateURL);
-    iniFile.WriteString(NETWORK_SECTION, 'library_server', FDownloadURL);
+    iniFile.WriteString(NETWORK_SECTION, 'update_server', InclideUrlSlash(FUpdateURL));
+    iniFile.WriteString(NETWORK_SECTION, 'library_server', InclideUrlSlash(FDownloadURL));
     iniFile.WriteBool(NETWORK_SECTION,'use_error_log',FErrorLog);
     iniFile.WriteInteger(NETWORK_SECTION,'time-out',FTimeOut);
     iniFile.WriteInteger(NETWORK_SECTION,'read_time-out',FReadTimeOut);
