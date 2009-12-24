@@ -169,14 +169,13 @@ type
     cbEnableFileSort: TCheckBox;
     RzGroupBox15: TRzGroupBox;
     edInputFolder: TRzButtonEdit;
-    cbOverwriteFB2Info: TCheckBox;
     cbDeleteFiles: TCheckBox;
     RzToolButton18: TRzToolButton;
     RzGroupBox2: TRzGroupBox;
     edUpdateDir: TRzButtonEdit;
-    pnTemplate: TRzPanel;
-    TemplatePanel: TRzPanel;
+    RzGroupBox16: TRzGroupBox;
     Label10: TLabel;
+    cbOverwriteFB2Info: TCheckBox;
     beTemplate: TRzButtonEdit;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
@@ -337,14 +336,11 @@ begin
   cbDeleteDeleted.Checked         := Settings.DeleteDeleted;
   cbAutoLoadReview.Checked        := Settings.AutoLoadReview;
   cbOverwriteFB2Info.Checked      := Settings.OverwriteFB2Info;
-  { Установка начального состояния поля ввода шаблона }
-  if cbOverwriteFB2Info.Checked then
-    TemplatePanel.Enabled:= true
-  else TemplatePanel.Enabled:= false;
-
-  beTemplate.text                 := Settings.BookHeaderTemplate;
-
   cbDeleteFiles.Checked           := Settings.DeleteFiles;
+
+  { Установка начального состояния поля ввода шаблона }
+  beTemplate.Enabled := cbOverwriteFB2Info.Checked;
+  beTemplate.text                 := Settings.BookHeaderTemplate;
 
   // Page 6 -  FileSort
 
@@ -710,9 +706,7 @@ end;
 procedure TfrmSettings.cbOverwriteFB2InfoClick(Sender: TObject);
 begin  
 { Включение и отключение поля ввода шаблона }
-  if cbOverwriteFB2Info.Checked then
-    TemplatePanel.Enabled:= true
-  else TemplatePanel.Enabled:= false;
+  beTemplate.Enabled := cbOverwriteFB2Info.Checked;
 end;
 
 procedure TfrmSettings.cbUseIESettingsClick(Sender: TObject);

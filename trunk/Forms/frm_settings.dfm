@@ -69,10 +69,6 @@ object frmSettings: TfrmSettings
       HelpContext = 143
       Caption = 'tsDevices'
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object RzGroupBox3: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -360,10 +356,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsReaders'
       ImageIndex = 1
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object RzGroupBox8: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -426,10 +418,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsInterface'
       ImageIndex = 2
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object RzGroupBox6: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -627,10 +615,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsInternet'
       ImageIndex = 4
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object RzGroupBox1: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -874,10 +858,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsScripts'
       ImageIndex = 4
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object RzGroupBox523324: TRzGroupBox
         AlignWithMargins = True
         Left = 3
@@ -963,21 +943,18 @@ object frmSettings: TfrmSettings
       Caption = 'tsBehavior'
       ImageIndex = 5
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object RzGroupBox7: TRzGroupBox
         AlignWithMargins = True
         Left = 3
         Top = 3
         Width = 400
-        Height = 393
+        Height = 323
         Align = alClient
         Caption = #1055#1086#1074#1077#1076#1077#1085#1080#1077
         TabOrder = 0
+        ExplicitHeight = 264
         object cbShowSubGenreBooks: TCheckBox
-          Left = 24
+          Left = 10
           Top = 26
           Width = 280
           Height = 17
@@ -987,7 +964,7 @@ object frmSettings: TfrmSettings
           TabOrder = 0
         end
         object cbMinimizeToTray: TCheckBox
-          Left = 24
+          Left = 10
           Top = 48
           Width = 280
           Height = 17
@@ -997,7 +974,7 @@ object frmSettings: TfrmSettings
           TabOrder = 1
         end
         object cbAutoStartDwnld: TCheckBox
-          Left = 24
+          Left = 10
           Top = 69
           Width = 280
           Height = 17
@@ -1005,7 +982,7 @@ object frmSettings: TfrmSettings
           TabOrder = 2
         end
         object cbShowFb2Info: TCheckBox
-          Left = 24
+          Left = 10
           Top = 92
           Width = 280
           Height = 17
@@ -1015,7 +992,7 @@ object frmSettings: TfrmSettings
           TabOrder = 3
         end
         object cbAllowMixedCollections: TCheckBox
-          Left = 24
+          Left = 10
           Top = 115
           Width = 280
           Height = 17
@@ -1025,7 +1002,7 @@ object frmSettings: TfrmSettings
           TabOrder = 4
         end
         object cbDeleteDeleted: TCheckBox
-          Left = 24
+          Left = 10
           Top = 138
           Width = 280
           Height = 17
@@ -1035,7 +1012,7 @@ object frmSettings: TfrmSettings
           TabOrder = 5
         end
         object cbAutoLoadReview: TCheckBox
-          Left = 24
+          Left = 10
           Top = 161
           Width = 280
           Height = 17
@@ -1045,8 +1022,8 @@ object frmSettings: TfrmSettings
           TabOrder = 6
         end
         object cbDeleteFiles: TCheckBox
-          Left = 24
-          Top = 244
+          Left = 10
+          Top = 184
           Width = 280
           Height = 17
           Caption = #1059#1076#1072#1083#1103#1090#1100' '#1092#1072#1081#1083#1099' '#1087#1088#1080' '#1091#1076#1072#1083#1077#1085#1080#1080' '#1082#1085#1080#1075
@@ -1054,64 +1031,54 @@ object frmSettings: TfrmSettings
           ParentColor = False
           TabOrder = 7
         end
-        object pnTemplate: TRzPanel
-          Left = 24
-          Top = 184
-          Width = 282
-          Height = 54
-          BorderOuter = fsNone
-          TabOrder = 8
-          Transparent = True
-          object cbOverwriteFB2Info: TCheckBox
-            Left = 0
-            Top = 2
-            Width = 281
-            Height = 17
-            Caption = #1055#1077#1088#1077#1079#1072#1087#1080#1089#1099#1074#1072#1090#1100' '#1079#1072#1075#1086#1083#1086#1074#1086#1082' fb2'
-            Color = clBtnFace
-            ParentColor = False
-            TabOrder = 0
-            OnClick = cbOverwriteFB2InfoClick
-          end
-          object TemplatePanel: TRzPanel
-            Left = 1
-            Top = 20
-            Width = 280
-            Height = 31
-            BorderOuter = fsNone
-            ParentColor = True
-            TabOrder = 1
-            Transparent = True
-            object Label10: TLabel
-              Left = 16
-              Top = 5
-              Width = 95
-              Height = 26
-              Alignment = taRightJustify
-              Caption = #1064#1072#1073#1083#1086#1085' '#1079#1072#1075#1086#1083#1086#1074#1082#1072' '#1082#1085#1080#1075#1080':'
-              WordWrap = True
-            end
-            object beTemplate: TRzButtonEdit
-              Left = 117
-              Top = 7
-              Width = 161
-              Height = 24
-              Text = '[%s [(%n) ]- ]%t'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -13
-              Font.Name = 'Tahoma'
-              Font.Style = [fsBold]
-              ParentFont = False
-              ReadOnly = True
-              ReadOnlyColor = clWindow
-              TabOrder = 0
-              AltBtnWidth = 15
-              ButtonWidth = 15
-              HideButtonsOnReadOnly = False
-              OnButtonClick = beTemplateButtonClick
-            end
-          end
+      end
+      object RzGroupBox16: TRzGroupBox
+        AlignWithMargins = True
+        Left = 3
+        Top = 332
+        Width = 400
+        Height = 64
+        Align = alBottom
+        TabOrder = 1
+        object Label10: TLabel
+          Left = 16
+          Top = 32
+          Width = 95
+          Height = 26
+          Alignment = taRightJustify
+          Caption = #1064#1072#1073#1083#1086#1085' '#1079#1072#1075#1086#1083#1086#1074#1082#1072' '#1082#1085#1080#1075#1080':'
+          WordWrap = True
+        end
+        object cbOverwriteFB2Info: TCheckBox
+          Left = 10
+          Top = 8
+          Width = 281
+          Height = 17
+          Caption = #1055#1077#1088#1077#1079#1072#1087#1080#1089#1099#1074#1072#1090#1100' '#1079#1072#1075#1086#1083#1086#1074#1086#1082' fb2'
+          Color = clBtnFace
+          ParentColor = False
+          TabOrder = 0
+          OnClick = cbOverwriteFB2InfoClick
+        end
+        object beTemplate: TRzButtonEdit
+          Left = 117
+          Top = 34
+          Width = 268
+          Height = 24
+          Text = '[%s [(%n) ]- ]%t'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -13
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          ReadOnly = True
+          ReadOnlyColor = clWindow
+          TabOrder = 1
+          AltBtnWidth = 15
+          ButtonWidth = 15
+          HideButtonsOnReadOnly = False
+          OnButtonClick = beTemplateButtonClick
         end
       end
     end
@@ -1119,10 +1086,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsFileSort'
       ImageIndex = 6
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object RzGroupBox12: TRzGroupBox
         AlignWithMargins = True
         Left = 3

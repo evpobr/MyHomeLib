@@ -621,6 +621,17 @@ type
     procedure tbtnAutoFBDClick(Sender: TObject);
     procedure miExportToHTMLClick(Sender: TObject);
     procedure tvAuthorsClick(Sender: TObject);
+    procedure tvSeriesClick(Sender: TObject);
+    procedure tvGenresClick(Sender: TObject);
+    procedure tvGroupsClick(Sender: TObject);
+    procedure tvAuthorsKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure tvSeriesKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure tvGenresKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure tvGroupsKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -2196,6 +2207,9 @@ begin
   CreateDir(Settings.TempDir);
   CreateDir(Settings.DataDir);
 
+  SetColumns;
+  SetHeaderPopUp;
+
   //------------------------ чистка папки дата если нужно ----------------------
   if (ParamCount > 0) and (ParamStr(1) = '/clear') then
     ClearDir(Settings.DataDir);
@@ -2232,10 +2246,10 @@ begin
            StartLibUpdate;
 
 //------------------------------------------------------------------------------
-  SetColumns;
+
   FillGroupsList;
   CreateGroupsMenu;
-  SetHeaderPopUp;
+
   LoadLastCollection;
   dmCollection.SetActiveTable(pgControl.ActivePageIndex);
   TheFirstRun;
@@ -2367,6 +2381,16 @@ begin
   Assert(Assigned(Data));
 
   CellText := Data.Text;
+end;
+
+procedure TfrmMain.tvAuthorsKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+  begin
+    tvAuthorsClick(Sender);
+    frmMain.ActiveControl := tvBooksA;
+  end;
 end;
 
 procedure TfrmMain.tvBooksAGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
@@ -2538,6 +2562,16 @@ begin
   CellText := Data.Text;
 end;
 
+procedure TfrmMain.tvGenresKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+  begin
+    tvGenresClick(Sender);
+    frmMain.ActiveControl := tvBooksG;
+  end;
+end;
+
 procedure TfrmMain.tvGroupsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
   Data: PGroupData;
@@ -2552,6 +2586,16 @@ begin
 
   FillBooksTree(0,tvBooksF,Nil,DMUser.tblGrouppedBooks,true, true);
 
+end;
+
+procedure TfrmMain.tvGroupsClick(Sender: TObject);
+var
+  BNode: PVirtualNode;
+begin
+  BNode := tvBooksF.GetFirst;
+  if (BNode <> nil) and (BNode.FirstChild <> nil) then
+     BNode := tvBooksF.GetFirstChild(BNode);
+  if BNode <> nil then tvBooksF.Selected[BNode] := True;
 end;
 
 procedure TfrmMain.tvGroupsDragDrop(Sender: TBaseVirtualTree; Source: TObject;
@@ -2635,6 +2679,16 @@ begin
   CellText := Data.Text;
 end;
 
+procedure TfrmMain.tvGroupsKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+  begin
+    tvGroupsClick(Sender);
+    frmMain.ActiveControl := tvBooksF;
+  end;
+end;
+
 procedure TfrmMain.tvAuthorsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
   Data: PAuthorData;
@@ -2658,7 +2712,6 @@ begin
   if (BNode <> nil) and (BNode.FirstChild <> nil) then
      BNode := tvBooksA.GetFirstChild(BNode);
   if BNode <> nil then tvBooksA.Selected[BNode] := True;
-  frmMain.ActiveControl := tvBooksA;
 end;
 
 procedure TfrmMain.tvSeriesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -2674,6 +2727,24 @@ begin
   dmCollection.tblSeries.Locate('S_ID', ID, []);
   lblSeries.Caption := Data.Text;
   FillBooksTree(ID, tvBooksS, nil, dmCollection.tblBooksS, False, False); // авторы
+end;
+
+procedure TfrmMain.tvSeriesClick(Sender: TObject);
+var
+  BNode: PVirtualNode;
+begin
+  BNode := tvBooksS.GetFirst;
+  if BNode <> nil then tvBooksS.Selected[BNode] := True;
+end;
+
+procedure TfrmMain.tvSeriesKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+  begin
+    tvSeriesClick(Sender);
+    frmMain.ActiveControl := tvBooksS;
+  end;
 end;
 
 procedure TfrmMain.tvGenresChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -2706,6 +2777,16 @@ begin
     dmCollection.tblGenre_List.MasterSource := dmCollection.dsGenres;
   end;
   lblGenreTitle.Caption := Data.Text;
+end;
+
+procedure TfrmMain.tvGenresClick(Sender: TObject);
+var
+  BNode: PVirtualNode;
+begin
+  BNode := tvBooksG.GetFirst;
+  if (BNode <> nil) and (BNode.FirstChild <> nil) then
+     BNode := tvBooksG.GetFirstChild(BNode);
+  if BNode <> nil then tvBooksG.Selected[BNode] := True;
 end;
 
 procedure TfrmMain.GetActiveViewComponents(var Tree : TVirtualStringTree;
@@ -3501,8 +3582,13 @@ begin
 
       dmCollection.GetBookFileName(Data.ID, FileName, Folder, Ext, No);
 
-      WorkFile := Settings.ReadPath + Format('%s - %s.%d%s',
+      if ActiveView <> FavoritesView then
+        WorkFile := Settings.ReadPath + Format('%s - %s.%d%s',
                                               [CheckSymbols(dmCollection.FullName(Data.ID)),
+                                               CheckSymbols(Panel.Title),Id,Ext])
+      else
+         WorkFile := Settings.ReadPath + Format('%s - %s.%d%s',
+                                              [CheckSymbols(DMUser.tblGrouppedBooksFullName.Value),
                                                CheckSymbols(Panel.Title),Id,Ext]);
 
       if not FileExists(WorkFile) then
@@ -5229,18 +5315,31 @@ procedure TfrmMain.edLocateAuthorKeyDown(Sender: TObject; var Key: Word;
 
 begin
   if ActiveView = ByAuthorView then
+  begin
     if Key = VK_UP then
       tvAuthors.Perform(WM_KEYDOWN, VK_UP, 0);
     if Key = VK_DOWN  then
       tvAuthors.Perform(WM_KEYDOWN, VK_DOWN, 0);
     if Key = VK_RETURN then
+    begin
       tvAuthorsClick(Sender);
+      frmMain.ActiveControl := tvBooksA;
+    end;
+  end;
 
   if ActiveView = BySeriesView then
+  begin
     if Key = VK_UP then
       tvSeries.Perform(WM_KEYDOWN, VK_UP, 0);
     if Key = VK_DOWN  then
       tvSeries.Perform(WM_KEYDOWN, VK_DOWN, 0);
+        if Key = VK_RETURN then
+    if Key = VK_RETURN then
+    begin
+      tvSeriesClick(Sender);
+      frmMain.ActiveControl := tvBooksS;
+    end;
+  end;
 end;
 
 procedure TfrmMain.edFFullNameButtonClick(Sender: TObject);
