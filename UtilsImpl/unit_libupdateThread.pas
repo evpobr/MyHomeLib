@@ -204,7 +204,9 @@ begin
         else
           ReplaceFiles;
      SetComment(rstrReady);
-  finally
+  except
+    on E: Exception do         // если что-то не так, удаляем последний update
+      DeleteFile(Settings.WorkPath + Settings.Updates.Items[i].FileName);
   end;
 end;
 
