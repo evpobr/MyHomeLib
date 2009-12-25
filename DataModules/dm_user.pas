@@ -244,10 +244,13 @@ end;
 
 procedure TDMUser.AddGroup(Name: string);
 begin
-  tblGroupList.Insert;
-  tblGroupListName.Value := Name;
-  tblGroupListAllowDelete.Value := True;
-  tblGroupList.Post;
+  if not tblGroupList.Locate('Name', Name, []) then
+  begin
+    tblGroupList.Insert;
+    tblGroupListName.Value := Name;
+    tblGroupListAllowDelete.Value := True;
+    tblGroupList.Post;
+  end;
 end;
 
 constructor TDMUser.Create(AOwner: TComponent);
@@ -521,6 +524,7 @@ end;
 procedure TDMUser.LoadGroupedBooks;
 var
   p, ID, GroupID, PrevGroupID: integer;
+  Name: string;
 begin
   // Избранное
   PrevGroupID := 0;
@@ -531,19 +535,23 @@ begin
     if p <> 0 then
     begin
        ID := StrToInt(copy(SL[i],1, p - 1));
-       GroupID := StrToInt(copy(SL[i],p + 1));
+       Name := copy(SL[i], p + 1);
+       try
+         GroupID := StrToInt(Name);
+       except
+         on E: Exception do
+             GroupID := 1;
+       end;
     end
     else
     begin
       ID := StrToInt(SL[i]);
       GroupID := 1;
+      Name := '';
     end;
 
-    if GroupID <> PrevGroupID then
-    begin
-      tblGroupList.Locate('ID',GroupID,[]);
-      PrevGroupID := GroupID;
-    end;
+    if not tblGroupList.Locate('Name', Name,[]) then
+        tblGroupList.Locate('ID',GroupID,[]);
 
     InsertToGroupTable(ID, dmCollection.GetBookGenres(ID,false));
     inc(i);

@@ -6094,7 +6094,7 @@ begin
       DMUser.tblGrouppedBooks.First;
       while not DMUser.tblGrouppedBooks.Eof do
       begin
-        SL.Add(Format('%d %d',[DMUser.tblGrouppedBooksOuterID.Value, DMUser.tblGroupList.RecNo]));
+        SL.Add(Format('%d %s',[DMUser.tblGrouppedBooksOuterID.Value, DMUser.tblGroupListName.AsWideString]));
         DMUser.tblGrouppedBooks.Next;
       end;
       DMUser.tblGroupList.Next;
