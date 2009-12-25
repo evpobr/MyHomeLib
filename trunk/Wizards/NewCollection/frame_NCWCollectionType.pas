@@ -136,9 +136,6 @@ begin
     FPParams^.URL := FURL;
     FPParams^.Script := FScript;
   end;
-
-
-
   Result := True;
 end;
 
@@ -236,7 +233,10 @@ begin
   else if Sender = rbLocal then
     pageHint.Caption := FROMLIBRUSECARCH
   else if Sender = rbOnline then
-    pageHint.Caption := LIBRUSECDOWNLOAD
+  begin
+    pageHint.Caption := LIBRUSECDOWNLOAD;
+    FINPXFileName := Settings.SystemFileName[sfLibRusEcInpx];
+  end
   else {if Sender = rbGenesis then
     pageHint.Caption := SERVERDOWNLOAD
   else} if Sender = rbThirdParty then
