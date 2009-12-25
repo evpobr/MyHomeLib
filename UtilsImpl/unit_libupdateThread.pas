@@ -205,7 +205,9 @@ begin
         else
           ReplaceFiles;
      SetComment(rstrReady);
-  finally
+  except
+    on E: Exception do
+       DeleteFile(Settings.WorkPath + Settings.Updates.Items[i].FileName);
   end;
 end;
 

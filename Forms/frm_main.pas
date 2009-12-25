@@ -6244,7 +6244,8 @@ begin
       DMUser.tblGrouppedBooks.First;
       while not DMUser.tblGrouppedBooks.Eof do
       begin
-        SL.Add(Format('%d %d',[DMUser.tblGrouppedBooksOuterID.Value, DMUser.tblGroupList.RecNo]));
+        if DMCollection.tblBooks.Locate('ID', DMUser.tblGrouppedBooksOuterID.Value, []) then
+          SL.Add(Format('%d %s',[DMCollection.tblBooks.RecNo, DMUser.tblGroupListName.AsWideString]));
         DMUser.tblGrouppedBooks.Next;
       end;
       DMUser.tblGroupList.Next;
@@ -6745,6 +6746,7 @@ begin
       end;
     end;
     FillGroupsList;
+    CreateGroupsMenu;
   finally
     SL.Free;
   end;
