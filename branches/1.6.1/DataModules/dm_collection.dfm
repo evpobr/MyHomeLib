@@ -3,11 +3,7 @@ object DMCollection: TDMCollection
   Height = 567
   Width = 565
   object DBCollection: TABSDatabase
-    Connected = True
     CurrentVersion = '6.05 '
-    DatabaseFileName = 
-      'D:\DelphiProjects\MyHomeLib\MyHomeLib 1.6.1\Debug\Bin\Data\flibu' +
-      'sta.hlc'
     DatabaseName = 'Collection'
     Exclusive = True
     MaxConnections = 5

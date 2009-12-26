@@ -523,11 +523,10 @@ end;
 
 procedure TDMUser.LoadGroupedBooks;
 var
-  p, ID, GroupID, PrevGroupID: integer;
+  p, ID, GroupID: integer;
   Name: string;
 begin
   // Избранное
-  PrevGroupID := 0;
   inc(i);
   while (i < SL.Count) and (pos('#',SL[i]) = 0) do
   begin
@@ -537,9 +536,9 @@ begin
        ID := StrToInt(copy(SL[i],1, p - 1));
        Name := copy(SL[i], p + 1);
        try
-         GroupID := StrToInt(Name);
+//         GroupID := StrToInt(Name);
        except
-         on E: Exception do
+//         on E: Exception do
              GroupID := 1;
        end;
     end
@@ -553,7 +552,9 @@ begin
     if not tblGroupList.Locate('Name', Name,[]) then
         tblGroupList.Locate('ID',GroupID,[]);
 
-    InsertToGroupTable(ID, dmCollection.GetBookGenres(ID,false));
+    if DMCollection.tblBooks.Locate('LibID', ID, []) then
+       InsertToGroupTable(DMCollection.tblBooksID.Value,
+                          dmCollection.GetBookGenres(DMCollection.tblBooksID.Value, false));
     inc(i);
   end;
 end;
