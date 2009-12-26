@@ -554,7 +554,10 @@ begin
     ID := StrToInt(copy(SL[i],1, p - 1));
     Progress := StrToInt(copy(SL[i],p + 1));
 
-    if not tblFinished.Locate('DataBaseID;BookID',
+    DMCollection.tblBooks.Locate('LibID', ID, []);
+    ID := DMCollection.tblBooksID.Value;
+
+    if not tblFinished.Locate('DataBaseID; ID',
                                       VarArrayOf([ActiveCollection.ID,ID]), [])
     then
     begin
@@ -587,14 +590,8 @@ begin
     p := pos(' ',SL[i]);
     if p <> 0 then
     begin
-       ID := StrToInt(copy(SL[i],1, p - 1));
-       Name := copy(SL[i], p + 1);
-       try
-         GroupID := StrToInt(Name);
-       except
-         on E: Exception do
-           GroupID := 1;
-       end;
+      ID := StrToInt(copy(SL[i],1, p - 1));
+      Name := copy(SL[i], p + 1);
     end
     else
     begin
@@ -605,7 +602,10 @@ begin
 
     if not tblGroupList.Locate('Name', Name,[]) then
         tblGroupList.Locate('ID',GroupID,[]);
-    InsertToGroupTable(ID, dmCollection.GetBookGenres(ID,false));
+
+    if DMCollection.tblBooks.Locate('LibID', ID, []) then
+        InsertToGroupTable(DMCollection.tblBooksID.Value,
+                            dmCollection.GetBookGenres(DMCollection.tblBooksID.Value, false));
     inc(i);
   end;
 end;
@@ -624,6 +624,9 @@ begin
     S := copy(SL[i],p + 1);
 
     StrReplace('~',#13#10,S);
+
+    DMCollection.tblBooks.Locate('LibID', ID, []); //получаем реальный ID
+    ID := DMCollection.tblBooksID.Value;
 
     if dmCollection.tblBooks.Locate('ID',ID,[]) then
     begin
@@ -668,7 +671,10 @@ begin
     ID := StrToInt(copy(SL[i],1, p - 1));
     Rate := StrToInt(copy(SL[i],p + 1));
 
-    if not tblRates.Locate('DataBaseID;BookID', VarArrayOf([ActiveCollection.ID,ID]), []) then
+    DMCollection.tblBooks.Locate('LibID', ID, []); //получаем реальный ID
+    ID := DMCollection.tblBooksID.Value;
+
+    if not tblRates.Locate('DataBaseID; BookID', VarArrayOf([ActiveCollection.ID,ID]), []) then
     begin
       tblRates.Insert;
       tblRatesBookID.Value := ID;

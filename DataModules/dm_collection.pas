@@ -398,6 +398,10 @@ begin
   if tblExtra.Locate('E_BookID', BookID, []) then
     R.Annotation := tblExtraE_Annotation.Value;
 
+  if ActiveTable.FieldByname('LibID').AsInteger <> 0 then
+    R.LibID := ActiveTable.FieldByname('LibID').AsInteger
+  else
+    R.LibID := BookID;
 
   if not FIsFavorites  then
   begin
