@@ -500,6 +500,9 @@ begin
     ID := StrToInt(copy(SL[i],1, p - 1));
     Progress := StrToInt(copy(SL[i],p + 1));
 
+    DMCollection.tblBooks.Locate('LibID', ID, []); //получаем реальный ID
+    ID := DMCollection.tblBooksID.Value;
+
     if not tblFinished.Locate('DataBaseID;BookID',
                                       VarArrayOf([ActiveCollection.ID,ID]), [])
     then
@@ -616,6 +619,9 @@ begin
     p := pos(' ',SL[i]);
     ID := StrToInt(copy(SL[i],1, p - 1));
     Rate := StrToInt(copy(SL[i],p + 1));
+
+    DMCollection.tblBooks.Locate('LibID', ID, []); //получаем реальный ID
+    ID := DMCollection.tblBooksID.Value;
 
     if not tblRates.Locate('DataBaseID;BookID', VarArrayOf([ActiveCollection.ID,ID]), []) then
     begin
