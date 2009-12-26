@@ -396,6 +396,11 @@ begin
   R.Lang := ActiveTable.FieldByname('Lang').AsWideString;
   R.KeyWords := ActiveTable.FieldByname('KeyWords').AsWideString;
 
+  if ActiveTable.FieldByname('LibID').AsInteger <> 0 then
+      R.LibID := ActiveTable.FieldByname('LibID').AsInteger
+    else
+      R.LibID := BookID;
+
   if not FIsFavorites  then
   begin
     tblBooks_Genre_List.Locate('GL_BookID', BookID, []);

@@ -6039,10 +6039,15 @@ procedure TfrmMain.miExportUserDataClick(Sender: TObject);
 var
   SL: TStringList;
   FN: string;
-
+  ID: integer;
   S: String;
 
 begin
+
+
+//  Settings.DoNotShowDeleted := False;
+//  SetBooksFilter;
+
   SL := TStringList.Create;
   try
 
@@ -6094,7 +6099,11 @@ begin
       DMUser.tblGrouppedBooks.First;
       while not DMUser.tblGrouppedBooks.Eof do
       begin
-        SL.Add(Format('%d %s',[DMUser.tblGrouppedBooksOuterID.Value, DMUser.tblGroupListName.AsWideString]));
+        if DMUser.tblGrouppedBooksLibID.Value <> 0 then
+           ID := DMUser.tblGrouppedBooksLibID.Value
+         else
+           ID := DMUser.tblGrouppedBooksOuterID.Value;
+        SL.Add(Format('%d %s',[ID, DMUser.tblGroupListName.AsWideString]));
         DMUser.tblGrouppedBooks.Next;
       end;
       DMUser.tblGroupList.Next;
@@ -6594,6 +6603,7 @@ begin
       end;
     end;
     FillGroupsList;
+    CreateGroupsMenu;
   finally
     SL.Free;
   end;
