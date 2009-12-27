@@ -1,14 +1,12 @@
-inherited frameNCWCollectionType: TframeNCWCollectionType
+inherited frameNCWInpxSource: TframeNCWInpxSource
   Width = 330
-  Height = 313
   Constraints.MinHeight = 240
   Constraints.MinWidth = 330
   ExplicitWidth = 330
-  ExplicitHeight = 313
   object pageHint: TMHLStaticTip [0]
     AlignWithMargins = True
     Left = 14
-    Top = 204
+    Top = 156
     Width = 302
     Height = 58
     Margins.Left = 14
@@ -17,6 +15,7 @@ inherited frameNCWCollectionType: TframeNCWCollectionType
     Images = DMUser.SeverityImagesBig
     ImageIndex = 0
     Align = alTop
+    ExplicitTop = 204
   end
   inherited pnTitle: TPanel
     Width = 330
@@ -36,82 +35,53 @@ inherited frameNCWCollectionType: TframeNCWCollectionType
     Left = 0
     Top = 56
     Width = 330
-    Height = 145
+    Height = 97
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
-    object rbLocal: TRadioButton
-      AlignWithMargins = True
-      Left = 14
-      Top = 38
-      Width = 306
-      Height = 17
-      Margins.Left = 7
-      Margins.Top = 7
-      Margins.Right = 7
-      Margins.Bottom = 0
-      Caption = #1051#1086#1082#1072#1083#1100#1085#1072#1103' '#1082#1086#1083#1083#1077#1082#1094#1080#1103' '#1089#1072#1081#1090#1072' lib.rus.ec (fb2)'
-      Checked = True
-      TabOrder = 0
-      TabStop = True
-      OnClick = OnSetCollectionType
-    end
-    object rbOnline: TRadioButton
-      AlignWithMargins = True
-      Left = 14
-      Top = 62
-      Width = 306
-      Height = 17
-      Margins.Left = 7
-      Margins.Top = 7
-      Margins.Right = 7
-      Margins.Bottom = 0
-      Caption = #1054#1085#1083#1072#1081#1085' '#1082#1086#1083#1083#1077#1082#1094#1080#1103' '#1089#1072#1081#1090#1072' lib.rus.ec'
-      TabOrder = 1
-      OnClick = OnSetCollectionType
-    end
-    object rbEmpty: TRadioButton
-      AlignWithMargins = True
-      Left = 14
-      Top = 14
-      Width = 195
-      Height = 17
-      Margins.Left = 14
-      Margins.Top = 7
-      Margins.Right = 7
-      Margins.Bottom = 0
-      Caption = #1055#1091#1089#1090#1072#1103' '#1082#1086#1083#1083#1077#1082#1094#1080#1103
-      TabOrder = 2
-      OnClick = OnSetCollectionType
-    end
     object rbThirdParty: TRadioButton
       AlignWithMargins = True
-      Left = 14
-      Top = 86
+      Left = 17
+      Top = 10
       Width = 306
       Height = 17
       Margins.Left = 7
       Margins.Top = 7
       Margins.Right = 7
       Margins.Bottom = 0
-      Caption = #1044#1088#1091#1075#1072#1103' '#1073#1080#1073#1083#1080#1086#1090#1077#1082#1072
-      TabOrder = 3
+      Caption = #1051#1086#1082#1072#1083#1100#1085#1099#1081' '#1092#1072#1081#1083' INPX'
+      TabOrder = 0
       OnClick = OnSetCollectionType
     end
     object edINPXPath: TRzButtonEdit
       AlignWithMargins = True
       Left = 18
-      Top = 114
+      Top = 66
       Width = 294
       Height = 21
       Margins.Left = 18
       Margins.Right = 18
       Margins.Bottom = 10
       Align = alBottom
-      TabOrder = 4
+      TabOrder = 1
       AltBtnWidth = 15
       ButtonWidth = 15
       OnButtonClick = edINPXPathButtonClick
+      ExplicitTop = 114
+    end
+    object RadioButton1: TRadioButton
+      AlignWithMargins = True
+      Left = 17
+      Top = 34
+      Width = 306
+      Height = 17
+      Margins.Left = 7
+      Margins.Top = 7
+      Margins.Right = 7
+      Margins.Bottom = 0
+      Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100' '#1089' '#1089#1072#1081#1090#1072
+      TabOrder = 2
+      OnClick = OnSetCollectionType
     end
   end
 end

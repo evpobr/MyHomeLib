@@ -17,7 +17,7 @@ interface
 uses unit_globals;
 
 type
-  TNCWOperation = (otNew, otExisting);
+  TNCWOperation = (otNew, otExisting, otInpx, otDownload);
   TNCWCollectionType = (ltEmpty, ltLRELocal, ltLREOnline, ltUserFB2, ltUserAny);
   TNCWFileTypes = (ftFB2, ftAny);
 
@@ -28,9 +28,7 @@ type
     DefaultGenres: Boolean;
     GenreFile: string;
     DisplayName: string;
-    UseDefaultName: Boolean;
     CollectionFile: string;
-    UseDefaultLocation: Boolean;
     CollectionRoot: string;
     DoImport: Boolean;
     ImportFile: string;
@@ -40,6 +38,7 @@ type
     Notes: string;
     URL: string;
     Script: string;
+    INPXUrl: string;
     //
     // реальный тип коллекции
     //

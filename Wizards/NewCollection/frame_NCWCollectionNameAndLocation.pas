@@ -42,6 +42,7 @@ type
     procedure ShowPageMessage(const Message: string; AImageIndex: Integer);
     procedure HidePageMessage;
     function IsDataValid(Sender: TObject = nil): Boolean;
+    procedure GetCollectionDataFromINPX;
 
   public
     function Activate(LoadData: Boolean): Boolean; override;
@@ -58,12 +59,81 @@ resourcestring
   SELECTFOLDER = '¬ыберите папку с книгами';
 implementation
 
-uses unit_Helpers, unit_NCWParams, dm_user, DB, unit_Errors, unit_mhl_strings, unit_settings,
-  unit_Consts;
+uses
+  unit_Helpers,
+  unit_NCWParams,
+  dm_user, DB,
+  unit_Errors,
+  unit_mhl_strings,
+  unit_settings,
+  unit_Consts,
+  ZipForge;
 
 {$R *.dfm}
 
 { TframeNCWNameAndLocation }
+
+procedure TframeNCWNameAndLocation.GetCollectionDataFromINPX;
+var
+  Zip: TZipForge;
+  S  : ansistring;
+  Script: string;
+
+  function GetParam(var S: ansistring): string;
+  var
+    p: integer;
+  begin
+    p := pos(#13#10,S);
+    if p <> 0 then
+    begin
+      Result := copy(S,1,p - 1);
+      delete(S,1,p + 1);
+    end
+    else begin
+      Result := S;
+      S := '';
+    end;
+  end;
+
+
+begin
+  if FPParams^.INPXFile = '' then Exit;
+
+  try
+    Zip := TZipForge.Create(self);
+    try
+      Zip.FileName := FPParams^.INPXFile;
+      Zip.OpenArchive;
+      S := Zip.Comment;
+      Zip.CloseArchive;
+    except
+      on E: exception do
+        MessageDlg('јрхив поврежден или имеет неправильный формат!', mtError, [mbOK], 0);
+    end;
+  finally
+    Zip.Free;
+  end;
+
+  try
+    edCollectionName.Text := GetParam(S);
+    edCollectionFile.Text := GetParam(S);
+    FPParams^.CollectionCode  := StrToInt(GetParam(S));
+    FPParams^.Notes  := GetParam(S);
+    if S <> '' then FPParams^.URL := GetParam(S);
+    Script := '';
+    while S <> '' do
+      Script := Script + GetParam(S) + #13#10;
+    FPParams^.Script := Script;
+  except
+  end;
+
+  case FPParams^.CollectionCode of
+              0: FPParams^.CollectionType := ltUserFB2;
+              1: FPParams^.CollectionType := ltUserAny;
+      134283264: FPParams^.CollectionType := ltLREOnline;
+  end;
+end;
+
 
 procedure TframeNCWNameAndLocation.ShowPageMessage(const Message: string; AImageIndex: Integer);
 begin
@@ -78,52 +148,10 @@ begin
 end;
 
 function TframeNCWNameAndLocation.Activate(LoadData: Boolean): Boolean;
-const
-  DefaultNames: array [TNCWCollectionType] of string = (
-    '',
-    rstrLocalLibRusEcDefName,
-    rstrOnlineLibRusEcDefName,
-    rstrOnlineGenesisDefName,
-    ''
-  );
-
-  DefaultLocations: array [TNCWCollectionType] of string = (
-    '',
-    rstrLocalLibRusEcDefLocation,
-    rstrOnlineLibRusEcDefLocation,
-    rstrOnlineGenesisDefLocation,
-    ''
-  );
 begin
   if LoadData then
   begin
-    if FPParams^.UseDefaultName then
-      FPParams^.DisplayName := DefaultNames[FPParams^.CollectionType];
-
-    edCollectionName.OnChange := nil;
-    edCollectionName.Text := FPParams^.DisplayName;
-    edCollectionName.OnChange := edCollectionNameChange;
-
-    if FPParams^.UseDefaultLocation and (FPParams^.Operation = otNew) then
-      FPParams^.CollectionFile := DefaultLocations[FPParams^.CollectionType];
-
-    edCollectionFile.OnChange := nil;
-    edCollectionFile.Text := FPParams^.CollectionFile;
-    edCollectionFile.OnChange := edCollectionFileChange;
-    
-    edCollectionRoot.Text := FPParams^.CollectionRoot;
-
-    //-----------------------------------------------------
-    // некрасиво, зато просто
-    // специально дл€ torrents.ru
-
-    if FileExists(Settings.AppPath + 'torrents_ru') then
-    begin
-      edCollectionRoot.Text := 'lib.rus.ec';
-      cbRelativePath.Checked := True;
-    end;
-    // ------------------------------------------------------
-
+    GetCollectionDataFromINPX;
     IsDataValid;
   end;
 
@@ -149,14 +177,11 @@ end;
 
 procedure TframeNCWNameAndLocation.edCollectionFileChange(Sender: TObject);
 begin
-  FPParams^.UseDefaultLocation := False;
   CheckControlData(Sender);
 end;
 
 procedure TframeNCWNameAndLocation.edCollectionNameChange(Sender: TObject);
 begin
-  FPParams^.UseDefaultName := False;
-
   CheckControlData(Sender);
 end;
 

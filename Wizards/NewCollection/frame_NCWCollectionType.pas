@@ -20,14 +20,12 @@ uses
   Mask, RzEdit, RzBtnEdt;
 
 type
-  TframeNCWCollectionType = class(TInteriorPageBase)
+  TframeNCWInpxSource = class(TInteriorPageBase)
     Panel1: TPanel;
-    rbLocal: TRadioButton;
-    rbOnline: TRadioButton;
     pageHint: TMHLStaticTip;
-    rbEmpty: TRadioButton;
     rbThirdParty: TRadioButton;
     edINPXPath: TRzButtonEdit;
+    RadioButton1: TRadioButton;
     procedure OnSetCollectionType(Sender: TObject);
     procedure edINPXPathButtonClick(Sender: TObject);
     procedure GetCollectionDataFromINPX;
@@ -45,7 +43,7 @@ type
   end;
 
 var
-  frameNCWCollectionType: TframeNCWCollectionType;
+  frameNCWInpxSource: TframeNCWInpxSource;
 
 resourcestring
   EMPTYCOLLECTION = 'Пустая коллекция';
@@ -65,7 +63,7 @@ uses dm_user,unit_settings, unit_globals, unit_Helpers, ZipForge;
 
 {$R *.dfm}
 
-function TframeNCWCollectionType.Activate(LoadData: Boolean): Boolean;
+function TframeNCWInpxSource.Activate(LoadData: Boolean): Boolean;
 var
   rb: TRadioButton;
 begin
@@ -103,7 +101,7 @@ begin
   Result := True;
 end;
 
-function TframeNCWCollectionType.Deactivate(CheckData: Boolean): Boolean;
+function TframeNCWInpxSource.Deactivate(CheckData: Boolean): Boolean;
 begin
   if rbEmpty.Checked then
     FPParams^.CollectionType := ltEmpty
@@ -139,7 +137,7 @@ begin
   Result := True;
 end;
 
-procedure TframeNCWCollectionType.edINPXPathButtonClick(Sender: TObject);
+procedure TframeNCWInpxSource.edINPXPathButtonClick(Sender: TObject);
 var
   key: TMHLFileName;
   AFileName: string;
@@ -156,7 +154,7 @@ begin
   end;
 end;
 
-procedure TframeNCWCollectionType.GetCollectionDataFromINPX;
+procedure TframeNCWInpxSource.GetCollectionDataFromINPX;
 var
   Zip: TZipForge;
   S  : ansistring;
@@ -205,7 +203,7 @@ begin
 
 end;
 
-procedure TframeNCWCollectionType.OnSetCollectionType(Sender: TObject);
+procedure TframeNCWInpxSource.OnSetCollectionType(Sender: TObject);
 begin
 //  FInpxFileName := '';
 //  if Sender = rbEmpty then

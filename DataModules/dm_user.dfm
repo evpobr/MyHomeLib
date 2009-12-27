@@ -4,9 +4,6 @@ object DMUser: TDMUser
   Width = 463
   object DBUser: TABSDatabase
     CurrentVersion = '6.05 '
-    DatabaseFileName = 
-      'D:\DelphiProjects\MyHomeLib\MyHomeLib 1.6.1\Debug\Bin\Data\user.' +
-      'dbs'
     DatabaseName = 'UserData'
     Exclusive = False
     MaxConnections = 5
@@ -294,11 +291,6 @@ object DMUser: TDMUser
         Name = 'Lang'
         DataType = ftWideString
         Size = 2
-      end
-      item
-        Name = 'KeyWords'
-        DataType = ftWideString
-        Size = 255
       end>
     TableName = 'GroupedBooks'
     Exclusive = False
@@ -397,7 +389,7 @@ object DMUser: TDMUser
     Left = 344
     Top = 328
     Bitmap = {
-      494C010103000400400010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101030004004C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000009933000099330000000000000000
@@ -542,7 +534,7 @@ object DMUser: TDMUser
     Left = 296
     Top = 328
     Bitmap = {
-      494C010103000400400020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101030004004C0020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000002000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000000000000000000000000DF9030F52D9
@@ -1208,11 +1200,13 @@ object DMUser: TDMUser
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
+    IndexName = 'ID_Index'
     TableName = 'Extra'
     Exclusive = False
+    MasterFields = 'ID'
     MasterSource = dsGroupedBooks
-    Left = 168
-    Top = 336
+    Left = 192
+    Top = 328
     object tblExtraE_ID: TAutoIncField
       FieldName = 'E_ID'
     end

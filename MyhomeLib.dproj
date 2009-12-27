@@ -168,8 +168,8 @@
 				<Form>frameNCWFinish</Form>
 				<DesignClass>TFrame</DesignClass>
 			</DCCReference>
-			<DCCReference Include="Wizards\NewCollection\frame_NCWCollectionType.pas">
-				<Form>frameNCWCollectionType</Form>
+			<DCCReference Include="Wizards\NewCollection\frame_NCWInpxSource.pas">
+				<Form>frameNCWInpxSource</Form>
 				<DesignClass>TFrame</DesignClass>
 			</DCCReference>
 			<DCCReference Include="Wizards\NewCollection\frame_NCWCollectionNameAndLocation.pas">
@@ -242,6 +242,10 @@
 				<Form>frmCreateMask</Form>
 			</DCCReference>
 			<DCCReference Include="DwnldImpl\unit_Downloader.pas"/>
+			<DCCReference Include="Wizards\NewCollection\frame_NCWDownload.pas">
+				<Form>frameNCWDownload</Form>
+				<DesignClass>TFrame</DesignClass>
+			</DCCReference>
 			<RcItem Include="Resources\Images\16x16\star_small.png">
 				<ResourceType>RCData</ResourceType>
 				<ResourceId>smallStar</ResourceId>
@@ -279,7 +283,7 @@
 						<VersionInfo Name="MajorVer">1</VersionInfo>
 						<VersionInfo Name="MinorVer">7</VersionInfo>
 						<VersionInfo Name="Release">0</VersionInfo>
-						<VersionInfo Name="Build">663</VersionInfo>
+						<VersionInfo Name="Build">664</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">True</VersionInfo>
 						<VersionInfo Name="Special">True</VersionInfo>
@@ -291,7 +295,7 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">MyHomeLib</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription">MyHomeLib</VersionInfoKeys>
-						<VersionInfoKeys Name="FileVersion">1.7.0.663</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">1.7.0.664</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName">MyHomeLib</VersionInfoKeys>
 						<VersionInfoKeys Name="LegalCopyright">Алексей Пеньков</VersionInfoKeys>
 						<VersionInfoKeys Name="LegalTrademarks">MyHomeLib</VersionInfoKeys>
