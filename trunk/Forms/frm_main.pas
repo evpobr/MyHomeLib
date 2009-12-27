@@ -1519,7 +1519,7 @@ begin
 
   //-------- Контекстное меню --------------------------------------------------
 
-  pmiBookInfo.Visible := IsFB2;
+//  pmiBookInfo.Visible := IsFB2;
   pmiDownloadBooks.Visible := IsOnline;
 
   //--------- Панели онструментов ----------------------------------------------
@@ -4404,7 +4404,7 @@ begin
     if (Data.nodeType = ntBookInfo) and ((tvBooksG.CheckState[Node] = csCheckedNormal) or (tvBooksG.Selected[Node])) then
     begin
       DMUser.tblGrouppedBooks.Locate('ID', Data.ID, []);
-      DMUser.tblExtra.Delete;
+      if DMUser.tblExtra.RecordCount <> 0 then DMUser.tblExtra.Delete;
       DMUser.tblGrouppedBooks.Delete;
     end;
     Node := tvBooksF.GetNext(Node);

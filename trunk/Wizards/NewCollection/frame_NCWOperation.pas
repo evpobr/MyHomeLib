@@ -36,6 +36,7 @@ type
     rbNew: TRadioButton;
     rbExisting: TRadioButton;
     pageHint: TMHLStaticTip;
+    rbInpx: TRadioButton;
     procedure OnSetCollectionType(Sender: TObject);
   private
 
@@ -51,6 +52,7 @@ resourcestring
 
   CREATENEW = 'Выберите этот пункт для создания коллекций lib.rus.ec, коллекций на основе файлов inpx или пустых коллекций';
   ADDEXISTS = 'Подключить ранее созданную коллекцию. Необходим файл коллекции *.hlc';
+  INPXBASED = 'Создать коллекцию из имеющегося файла inpx (коллекции lib.rus.ec, flibusta, Traum)';
 
 implementation
 
@@ -64,6 +66,8 @@ begin
     pageHint.Caption := CREATENEW
   else if Sender = rbExisting then
     pageHint.Caption := ADDEXISTS
+  else if Sender = rbINPX then
+    pageHint.Caption := INPXBASED
 end;
 
 function TframeNCWOperation.Activate(LoadData: Boolean): Boolean;
@@ -75,6 +79,7 @@ begin
     case FPParams^.Operation of
       otNew: rb := rbNew;
       otExisting: rb := rbExisting;
+      otInpx: rb := rbInpx;
     else
       Assert(False);
       Result := False;
@@ -93,9 +98,13 @@ end;
 function TframeNCWOperation.Deactivate(CheckData: Boolean): Boolean;
 begin
   if rbNew.Checked then
-    FPParams^.Operation := otNew
-  else {if rbExisting.Checked then}
-    FPParams^.Operation := otExisting;
+  begin
+    FPParams^.Operation := otNew;
+    FPParams^.CollectionType := ltEmpty;
+  end
+  else if rbExisting.Checked then
+    FPParams^.Operation := otExisting
+      else FPParams^.Operation := otInpx;
 
   Result := True;
 end;

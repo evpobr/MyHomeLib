@@ -33,13 +33,14 @@ uses
   unit_NCWParams,
   frame_NCWWelcom,
   frame_NCWOperation,
-  frame_NCWCollectionType,
+  frame_NCWInpxSource,
   frame_NCWCollectionNameAndLocation,
   frame_NCWCollectionFileTypes,
   frame_NCWSelectGenreFile,
   frame_NCWImport,
   frame_NCWProgress,
   frame_NCWFinish,
+  frame_NCWDownload,
   unit_WorkerThread;
 
 type
@@ -61,7 +62,8 @@ type
 
     FWelcomPage: TframeNCWWelcom;
     FCollectionTypePage: TframeNCWOperation;
-    FLibRusEcTypePage: TframeNCWCollectionType;
+    FInpxSourcePage: TframeNCWInpxSource;
+    FDownloadPage: TframeNCWDownload;
     FNameAndLocationPage: TframeNCWNameAndLocation;
     FFileTypesPage: TframeNCWCollectionFileTypes;
     FSelectGenreFilePage: TframeNCWSelectGenreFile;
@@ -130,13 +132,14 @@ const
 
   WELCOM_PAGE_ID = 0;
   OPERATION_PAGE_ID = 1;
-  COLLECTIONTYPE_PAGE_ID = 2;
-  NAMEANDLOCATION_PAGE_ID = 3;
-  FILETYPES_PAGE_ID = 4;
-  GENREFILE_PAGE_ID = 5;
-  IMPORT_PAGE_ID = 6;
-  PROGRESS_PAGE_ID = 7;
-  FINISH_PAGE_ID = 8;
+  INPXSOURCE_PAGE_ID = 2;
+  DOWNLOAD_PAGE_ID = 3;
+  NAMEANDLOCATION_PAGE_ID = 4;
+  FILETYPES_PAGE_ID = 5;
+  GENREFILE_PAGE_ID = 6;
+  IMPORT_PAGE_ID = 7;
+  PROGRESS_PAGE_ID = 8;
+  FINISH_PAGE_ID = 9;
 
 destructor TfrmNCWizard.Destroy;
 begin
@@ -185,8 +188,11 @@ begin
     OPERATION_PAGE_ID:
       Result := True;
 
-    COLLECTIONTYPE_PAGE_ID:
-      Result := (FParams.Operation = otNew);
+    INPXSOURCE_PAGE_ID:
+      Result := (FParams.Operation = otInpx);
+
+    DOWNLOAD_PAGE_ID:
+      Result := (FParams.Operation = otDownload);
 
     NAMEANDLOCATION_PAGE_ID:
       Result := True;
@@ -320,6 +326,11 @@ begin
     Exit;
   end;
 
+  if DOWNLOAD_PAGE_ID = FCurrentPage then
+  begin
+    FDownloadPage.Stop;
+  end;
+
   ModalResult := FModalResult;
 end;
 
@@ -349,15 +360,14 @@ begin
 
   FParams.CollectionType := ltLRELocal;
 
-  FParams.UseDefaultName := True;
-  FParams.UseDefaultLocation := True;
   FParams.FileTypes := ftFB2;
   FParams.DefaultGenres := True;
   FParams.DoImport := False;
 
   FWelcomPage := AddPage(TframeNCWWelcom) as TframeNCWWelcom;
   FCollectionTypePage := AddPage(TframeNCWOperation) as TframeNCWOperation;
-  FLibRusEcTypePage := AddPage(TframeNCWCollectionType) as TframeNCWCollectionType;
+  FInpxSourcePage := AddPage(TframeNCWInpxSource) as TframeNCWInpxSource;
+  FDownloadPage := AddPage(TframeNCWDownload) as TframeNCWDownload;
   FNameAndLocationPage := AddPage(TframeNCWNameAndLocation) as TframeNCWNameAndLocation;
   FFileTypesPage := AddPage(TframeNCWCollectionFileTypes) as TframeNCWCollectionFileTypes;
   FSelectGenreFilePage := AddPage(TframeNCWSelectGenreFile) as TframeNCWSelectGenreFile;
@@ -417,6 +427,20 @@ begin
       // можно переходить на следующую страницу
       //
       RegisterCollection;
+    end;
+  end;
+  if DOWNLOAD_PAGE_ID = FCurrentPage then
+  begin
+    AdjustButtons([wbCancel],[wbCancel]);
+    try
+      FDownloadPage.Download;
+      DoChangePage(btnForward);
+    except
+      on E: Exception do
+      begin
+        MessageDlg('Закачка не удалась. Сервер сообщает об ошибке.', mtError, [mbOK], 0);
+        DoChangePage(btnBackward);
+      end;
     end;
   end;
 end;
@@ -532,7 +556,7 @@ begin
     //
     ALibrary := TMHLLibrary.Create(nil);
     try
-      if FParams.Operation = otNew then
+      if FParams.Operation <> otExisting then
       begin
         FProgressPage.ShowTeletype(CREATIONCOLLECTION, tsInfo);
         { TODO -oNickR -cUsability : проверять существование на соответствующей странице с выдачей предупреждения }

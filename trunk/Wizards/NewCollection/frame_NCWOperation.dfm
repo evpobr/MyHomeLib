@@ -1,14 +1,14 @@
 inherited frameNCWOperation: TframeNCWOperation
   Width = 330
-  Height = 190
+  Height = 214
   Constraints.MinHeight = 190
   Constraints.MinWidth = 330
   ExplicitWidth = 330
-  ExplicitHeight = 190
+  ExplicitHeight = 214
   object pageHint: TMHLStaticTip [0]
     AlignWithMargins = True
     Left = 14
-    Top = 125
+    Top = 140
     Width = 302
     Height = 58
     Margins.Left = 14
@@ -16,8 +16,7 @@ inherited frameNCWOperation: TframeNCWOperation
     Images = DMUser.SeverityImagesBig
     ImageIndex = 0
     Align = alTop
-    ExplicitTop = 183
-    ExplicitWidth = 467
+    ExplicitTop = 245
   end
   inherited pnTitle: TPanel
     Width = 330
@@ -37,7 +36,7 @@ inherited frameNCWOperation: TframeNCWOperation
     Left = 0
     Top = 56
     Width = 330
-    Height = 66
+    Height = 81
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
@@ -51,7 +50,7 @@ inherited frameNCWOperation: TframeNCWOperation
       Margins.Top = 7
       Margins.Right = 7
       Margins.Bottom = 0
-      Caption = '&'#1053#1086#1074#1072#1103'  '#1082#1086#1083#1083#1077#1082#1094#1080#1103
+      Caption = '&'#1053#1086#1074#1072#1103'   '#1087#1091#1089#1090#1072#1103' '#1082#1086#1083#1083#1077#1082#1094#1080#1103
       Checked = True
       TabOrder = 0
       TabStop = True
@@ -67,8 +66,22 @@ inherited frameNCWOperation: TframeNCWOperation
       Margins.Top = 7
       Margins.Right = 7
       Margins.Bottom = 0
-      Caption = '&'#1057#1091#1097#1077#1089#1090#1074#1091#1102#1097#1072#1103' '#1082#1086#1083#1083#1077#1082#1094#1080#1103
+      Caption = '&'#1057#1091#1097#1077#1089#1090#1074#1091#1102#1097#1072#1103' '#1082#1086#1083#1083#1077#1082#1094#1080#1103' (hlc)'
       TabOrder = 1
+      OnClick = OnSetCollectionType
+    end
+    object rbInpx: TRadioButton
+      AlignWithMargins = True
+      Left = 14
+      Top = 62
+      Width = 306
+      Height = 17
+      Margins.Left = 7
+      Margins.Top = 7
+      Margins.Right = 7
+      Margins.Bottom = 0
+      Caption = #1050#1086#1083#1083#1077#1082#1094#1080#1103' '#1080#1079' '#1092#1072#1081#1083#1072' inpx'
+      TabOrder = 2
       OnClick = OnSetCollectionType
     end
   end

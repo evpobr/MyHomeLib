@@ -76,7 +76,7 @@ uses
   frm_NCWizard in 'Wizards\NewCollection\frm_NCWizard.pas' {frmNCWizard},
   frame_NCWOperation in 'Wizards\NewCollection\frame_NCWOperation.pas' {frameNCWOperation: TFrame},
   frame_NCWFinish in 'Wizards\NewCollection\frame_NCWFinish.pas' {frameNCWFinish: TFrame},
-  frame_NCWCollectionType in 'Wizards\NewCollection\frame_NCWCollectionType.pas' {frameNCWCollectionType: TFrame},
+  frame_NCWInpxSource in 'Wizards\NewCollection\frame_NCWInpxSource.pas' {frameNCWInpxSource: TFrame},
   frame_NCWCollectionNameAndLocation in 'Wizards\NewCollection\frame_NCWCollectionNameAndLocation.pas' {frameNCWNameAndLocation: TFrame},
   frame_NCWSelectGenreFile in 'Wizards\NewCollection\frame_NCWSelectGenreFile.pas' {frameNCWSelectGenreFile: TFrame},
   frame_NCWProgress in 'Wizards\NewCollection\frame_NCWProgress.pas' {frameNCWProgress: TFrame},
@@ -109,7 +109,8 @@ uses
   frm_author_list in 'Forms\frm_author_list.pas' {frmAuthorList},
   frm_edit_author in 'Forms\frm_edit_author.pas' {frmEditAuthorData},
   frm_create_mask in 'Forms\frm_create_mask.pas' {frmCreateMask},
-  unit_Downloader in 'DwnldImpl\unit_Downloader.pas';
+  unit_Downloader in 'DwnldImpl\unit_Downloader.pas',
+  frame_NCWDownload in 'Wizards\NewCollection\frame_NCWDownload.pas' {frameNCWDownload: TFrame};
 
 {$R *.res}
 
