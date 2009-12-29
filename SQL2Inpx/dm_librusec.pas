@@ -42,7 +42,7 @@ type
   public
     { Public declarations }
     function GetBookRecord(BookID: integer; fb2only: boolean = false): string; overload;
-    function GetBookRecord(FN: string; fb2only: boolean = false): string; overload;
+    function GetBookRecord(FN: string; fb2only: boolean = false; oldFormat: boolean = false): string; overload;
     function RecordToString(FN: string = ''):string ;
     function LastBookID: integer;
   end;
@@ -63,11 +63,14 @@ begin
   QuerySeries(Lib.BookBookId.Value);
 end;
 
-function TLib.GetBookRecord(FN: string; fb2only: boolean): string;
+function TLib.GetBookRecord(FN: string; fb2only: boolean; oldFormat: boolean): string;
 var
   Query : string;
 begin
-  Query := 'SELECT B.BookId, B.Title, B.FileSize, B.FileType, B.Deleted, B.Time, B.Lang, B.N, B.KeyWords, F.FileName FROM libbook B, libfilename F WHERE B.BookId = F.BookID AND F.FileName = "' + FN + '"';
+  if oldFormat then
+    Query := 'SELECT B.BookId, B.Title, B.FileSize, B.FileType, B.Deleted, B.Time, B.Lang, B.N, B.KeyWords, F.FileName FROM libbook B, libfilenameold F WHERE B.BookId = F.BookID AND F.FileName = "' + FN + '"'
+  else
+    Query := 'SELECT B.BookId, B.Title, B.FileSize, B.FileType, B.Deleted, B.Time, B.Lang, B.N, B.KeyWords, F.FileName FROM libbook B, libfilename F WHERE B.BookId = F.BookID AND F.FileName = "' + FN + '"';
 
   Book.SQL.Text := Query;
   Book.Execute;

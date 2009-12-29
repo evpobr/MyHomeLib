@@ -16,4 +16,5 @@ DBName=librusec
 Info name=last_librusec.info
 Fb2Only=1
 MaxCompress=0
+oldFormat=0
 

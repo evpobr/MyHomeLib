@@ -144,8 +144,8 @@ object frmMain: TfrmMain
         TabOrder = 8
       end
       object edStartID: TLabeledEdit
-        Left = 575
-        Top = 72
+        Left = 571
+        Top = 112
         Width = 74
         Height = 21
         EditLabel.Width = 66
@@ -217,6 +217,16 @@ object frmMain: TfrmMain
         Checked = True
         State = cbChecked
         TabOrder = 15
+      end
+      object cbOldFormat: TCheckBox
+        Left = 583
+        Top = 72
+        Width = 97
+        Height = 17
+        Caption = 'Old format'
+        Checked = True
+        State = cbChecked
+        TabOrder = 16
       end
     end
     object TabSheet2: TTabSheet
@@ -342,6 +352,7 @@ object frmMain: TfrmMain
           item
             Expanded = False
             FieldName = 'Time'
+            Width = 64
             Visible = True
           end
           item
@@ -352,6 +363,7 @@ object frmMain: TfrmMain
           item
             Expanded = False
             FieldName = 'FileType'
+            Width = 64
             Visible = True
           end
           item
@@ -372,11 +384,13 @@ object frmMain: TfrmMain
           item
             Expanded = False
             FieldName = 'N'
+            Width = 64
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'keywords'
+            Width = 64
             Visible = True
           end
           item
@@ -448,16 +462,24 @@ object frmMain: TfrmMain
     Top = 312
     object N1: TMenuItem
       Caption = #1055#1088#1086#1092#1080#1083#1100
+      OnClick = apSaveExecute
       object N8: TMenuItem
         Caption = #1053#1086#1074#1099#1081
       end
       object N9: TMenuItem
         Action = apLoad
         Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100
+        ShortCut = 114
       end
-      object N10: TMenuItem
+      object N16: TMenuItem
         Action = apSave
         Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
+        ShortCut = 16467
+      end
+      object N10: TMenuItem
+        Action = apSaveAs
+        Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1082#1072#1082
+        ShortCut = 113
       end
       object N3: TMenuItem
         Caption = '-'
@@ -532,10 +554,10 @@ object frmMain: TfrmMain
       Caption = 'aopExtraFTP'
       OnExecute = aopExtraFTPExecute
     end
-    object apSave: TAction
+    object apSaveAs: TAction
       Category = 'Profile'
       Caption = 'apSave'
-      OnExecute = apSaveExecute
+      OnExecute = apSaveAsExecute
     end
     object apLoad: TAction
       Category = 'Profile'
@@ -551,6 +573,11 @@ object frmMain: TfrmMain
       Category = 'Operation'
       Caption = 'On-Line'
       OnExecute = aopOnLineExecute
+    end
+    object apSave: TAction
+      Category = 'Profile'
+      Caption = 'apSave'
+      OnExecute = apSaveExecute
     end
   end
   object Zip: TZipForge
@@ -579,6 +606,7 @@ object frmMain: TfrmMain
   object idFTP: TIdFTP
     IPVersion = Id_IPv4
     AutoLogin = True
+    TransferType = ftBinary
     ProxySettings.ProxyType = fpcmNone
     ProxySettings.Port = 0
     Left = 568
