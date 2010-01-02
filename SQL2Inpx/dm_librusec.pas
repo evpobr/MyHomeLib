@@ -52,7 +52,10 @@ var
 
 implementation
 uses
-  MemData ;
+  MemData;
+
+const
+  QS = 'SELECT B.BookId, B.Title, B.FileSize, B.FileType, B.Deleted, B.Time, B.Lang, B.N, B.KeyWords ';
 
 {$R *.dfm}
 
@@ -68,17 +71,12 @@ var
   Query : string;
 begin
   if oldFormat then
-    Query := 'SELECT B.BookId, B.Title, B.FileSize, B.FileType, B.Deleted, B.Time, B.Lang, B.N, B.KeyWords, F.FileName FROM libbook B, libfilenameold F WHERE B.BookId = F.BookID AND F.FileName = "' + FN + '"'
+    Query :=QS + 'F.FileName FROM libbook B, libfilenameold F WHERE B.BookId = F.BookID AND F.FileName = "' + FN + '"'
   else
-    Query := 'SELECT B.BookId, B.Title, B.FileSize, B.FileType, B.Deleted, B.Time, B.Lang, B.N, B.KeyWords, F.FileName FROM libbook B, libfilename F WHERE B.BookId = F.BookID AND F.FileName = "' + FN + '"';
+    Query := QS + 'F.FileName FROM libbook B, libfilename F WHERE B.BookId = F.BookID AND F.FileName = "' + FN + '"';
 
   Book.SQL.Text := Query;
   Book.Execute;
-//  if Book.RecordCount = 0 then
-//  begin
-//    Result := '';
-//    Exit;
-//  end;
   QueryAvtor(Lib.BookBookId.Value);
   QueryGenre(Lib.BookBookId.Value);
   QuerySeries(Lib.BookBookId.Value);
@@ -102,9 +100,9 @@ var
   Query : string;
 begin
   if fb2only then
-       Query := 'SELECT `BookId`,`Title`,`FileSize`,`FileType`,`Deleted`,`Time`,`Lang`,`N`,`keywords` FROM libbook WHERE FileType = "fb2" and BookId= ' + IntToStr(BookID)
+       Query := QS + 'FROM libbook B WHERE B.FileType = "fb2" and B.BookId = ' + IntToStr(BookID)
      else
-       Query := 'SELECT `BookId`,`Title`,`FileSize`,`FileType`,`Deleted`,`Time`,`Lang`,`N`,`keywords` FROM libbook WHERE  BookId= ' + IntToStr(BookID);
+       Query := QS + 'FROM libbook B WHERE B.BookId = ' + IntToStr(BookID);
 
   Book.SQL.Text := Query;
   Book.Execute;

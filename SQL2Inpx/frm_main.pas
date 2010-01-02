@@ -7,7 +7,7 @@ uses
   Dialogs, ExtCtrls, DBCtrls, Grids, DBGrids, StdCtrls, Mask, ComCtrls,
   ActnList, Menus, ZipForge, IdHTTP, IdBaseComponent, IdComponent,
   IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdFTP, DADump,
-  MyDump;
+  MyDump, RzShellDialogs, RzEdit, RzBtnEdt, RzStatus, RzPanel, files_list;
 
 type
   TfrmMain = class(TForm)
@@ -28,7 +28,6 @@ type
     ExtraFTP1: TMenuItem;
     N11: TMenuItem;
     N12: TMenuItem;
-    StatusBar1: TStatusBar;
     ActionList1: TActionList;
     Pages: TPageControl;
     TabSheet1: TTabSheet;
@@ -42,28 +41,14 @@ type
     mmLog: TMemo;
     Bar: TProgressBar;
     lblS1: TLabel;
-    lblS2: TLabel;
     aopFB2: TAction;
     Zip: TZipForge;
     dlgOpen: TOpenDialog;
     idFTP: TIdFTP;
     HTTP: TIdHTTP;
-    edTitle: TLabeledEdit;
-    edInpxName: TLabeledEdit;
-    edUpdateName: TLabeledEdit;
-    edExtraName: TLabeledEdit;
-    edURL: TLabeledEdit;
-    edSQLUrl: TLabeledEdit;
-    edDBName: TLabeledEdit;
-    mmTables: TMemo;
-    mmScript: TMemo;
     N13: TMenuItem;
     N14: TMenuItem;
     dbImport: TAction;
-    edStartID: TLabeledEdit;
-    edCode: TLabeledEdit;
-    edDescr: TLabeledEdit;
-    edExtraInfo: TLabeledEdit;
     aopExtra: TAction;
     aopExtraFTP: TAction;
     apSaveAs: TAction;
@@ -72,12 +57,39 @@ type
     N15: TMenuItem;
     aopOnLine: TAction;
     dlgSave: TSaveDialog;
-    cbFb2Only: TCheckBox;
-    edInfoName: TLabeledEdit;
-    cbMaxCompress: TCheckBox;
-    cbOldFormat: TCheckBox;
     N16: TMenuItem;
     apSave: TAction;
+    GroupBox1: TGroupBox;
+    edTitle: TLabeledEdit;
+    edDescr: TLabeledEdit;
+    edCode: TLabeledEdit;
+    GroupBox2: TGroupBox;
+    cbFb2Only: TCheckBox;
+    cbOldFormat: TCheckBox;
+    GroupBox3: TGroupBox;
+    edInpxName: TLabeledEdit;
+    edUpdateName: TLabeledEdit;
+    edInfoName: TLabeledEdit;
+    cbMaxCompress: TCheckBox;
+    GroupBox4: TGroupBox;
+    edExtraInfo: TLabeledEdit;
+    edExtraName: TLabeledEdit;
+    edStartID: TLabeledEdit;
+    edSQLUrl: TLabeledEdit;
+    edDBName: TLabeledEdit;
+    mmTables: TMemo;
+    Описание: TGroupBox;
+    edURL: TLabeledEdit;
+    mmScript: TMemo;
+    GroupBox5: TGroupBox;
+    edFolder: TRzButtonEdit;
+    dlgFolder: TRzSelectFolderDialog;
+    RzVersionInfo1: TRzVersionInfo;
+    RzStatusBar1: TRzStatusBar;
+    RzVersionInfoStatus1: TRzVersionInfoStatus;
+    FilesFinder: TFilesList;
+    Label1: TLabel;
+    edFileMask: TLabeledEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure aopFB2Execute(Sender: TObject);
@@ -95,6 +107,8 @@ type
     procedure dbConnectExecute(Sender: TObject);
     procedure aopOnLineExecute(Sender: TObject);
     procedure apSaveExecute(Sender: TObject);
+    procedure edFolderButtonClick(Sender: TObject);
+    procedure FilesFinderFile(Sender: TObject; const F: TSearchRec);
   private
     { Private declarations }
     FAppPath : string;
@@ -107,6 +121,8 @@ type
     FStartDate: Extended;
     FFTPDir: string;
     FProfileName: string;
+
+    FZipList: TStringList;
 
     procedure SetTableState(State: boolean);
     procedure EnableControls;
@@ -158,7 +174,7 @@ begin
     Log('-------------------------');
     for I := StrToInt(edStartID.Text) to Max do
     begin
-      S := Lib.GetBookRecord(i);
+      S := Lib.GetBookRecord(i, cbFb2Only.Checked);
       if S <> '' then
       begin
         Res.Add(S);
@@ -206,8 +222,20 @@ var
   S: string;
   Result : TStringList;
 begin
-  dlgOpen.Filter := Filter;
-  if not dlgOpen.Execute then  Exit;
+  FZipList.Clear;
+  if edFolder.Text = '' then
+  begin
+    dlgOpen.Filter := Filter;
+    if not dlgOpen.Execute then  Exit;
+    FZipList.AddStrings(dlgOpen.Files);
+  end
+  else
+    if FZipList.Count = 0 then
+    begin
+      FilesFinder.TargetPath := edFolder.Text;
+      FilesFinder.Mask := edFileMask.Text;
+      FilesFinder.Process;
+    end;
 
   DisableControls;
   Pages.ActivePageIndex := 2;
@@ -217,11 +245,11 @@ begin
   Log('Zip');
   Log('---------------------------------');
   try
-    for I := 0 to dlgOpen.Files.Count - 1 do
+    for I := 0 to FZipList.Count - 1 do
     begin
-      FN:=ExtractFileName(dlgOpen.Files[i]);
+      FN:=ExtractFileName(FZipList[i]);
       Log(TimeToStr(Now) + ' ' + FN);
-      Zip.FileName:=dlgOpen.Files[i];
+      Zip.FileName := FZipList[i];
       Zip.OpenArchive;
       Result.Clear;
       j := 0;
@@ -244,9 +272,14 @@ begin
         end
         else    // не фб2
         begin
-          if  not cbFb2Only.Checked then S := Lib.GetBookRecord(ArchItem.FileName);
-          if S = '' then S := 'неизвестный,автор,:other:0' + ShortName(ArchItem.FileName) + '' +
+          if  not cbFb2Only.Checked then
+          begin
+            S := Lib.GetBookRecord(ArchItem.FileName);
+            if S = '' then S := 'неизвестный,автор,:other:0' + ShortName(ArchItem.FileName) + '' +
                                ExtractFileExt(ArchItem.FileName) +'1899-12-30';
+          end
+          else   // если только fb2
+            S := 'неизвестный,автор,:other:01899-12-30';
         end;
         Result.Add(S);
         inc(j);
@@ -259,7 +292,7 @@ begin
       FN := ShortName(FN);
       Result.SaveToFile(FInpPath + FN + '.inp', TEncoding.UTF8);
       FFileList.Add(FN + '.inp');
-      Bar.Position := round((i + 1) / dlgOpen.Files.Count * 100);
+      Bar.Position := round((i + 1) / FZipList.Count * 100);
     end;
 //    FFileList.Add('extra.inp');
     Log(TimeToStr(Now) + ' ' + 'Упаковка ...');
@@ -307,7 +340,7 @@ begin
       Res.Clear;
       for j := i to i + Window do
       begin
-        S := Lib.GetBookRecord(j, True);
+        S := Lib.GetBookRecord(j, cbFb2Only.Checked);
         if S <> '' then Res.Add(S);
         if ((j - 1) mod 100) = 0 then
         begin
@@ -340,8 +373,8 @@ begin
   dlgOpen.Filter := Filter;
   if not dlgOpen.Execute then Exit;
   LoadProfile(dlgOpen.FileName);
-  FProfileName := dlgSave.FileName;
-  frmMain.Caption := 'SQL2Inpx: ' + ShortName(FProfileName);
+  FProfileName := dlgOpen.FileName;
+  frmMain.Caption := 'SQL2Inpx: ' + ShortName(ExtractFilename(FProfileName));
   Connect;
 end;
 
@@ -352,7 +385,7 @@ begin
   begin
     SaveProfile(dlgSave.FileName);
     FProfileName := dlgSave.FileName;
-    frmMain.Caption := 'SQL2Inpx: ' + ShortName(FProfileName);
+    frmMain.Caption := 'SQL2Inpx: ' + ShortName(ExtractFilename(FProfileName));
   end;
 end;
 
@@ -372,6 +405,12 @@ begin
     if ParamStr(i) = '-dump' then dbImportExecute(nil);
     if ParamStr(i) = '-extra' then aopExtraExecute(nil);
     if ParamStr(i) = '-ftp' then UploadToFtp;
+    if ParamStr(i) = '-arch' then aopFB2Execute(frmMain);
+    if ParamStr(i) = '-l' then
+    begin
+      FZipList.LoadFromFile(FAppPath + Paramstr(i + 1));
+      inc(i);
+    end;
     if Paramstr(i) = '-p' then
     begin
       FProfileName := FAppPath + Paramstr(i + 1) + '.profile';
@@ -458,10 +497,17 @@ begin
   Lib.Avtor.EnableControls;
 end;
 
+procedure TfrmMain.FilesFinderFile(Sender: TObject; const F: TSearchRec);
+begin
+  if ExtractFileExt(F.Name) = '.zip' then
+       FZipList.Add(IncludeTrailingPathdelimiter(edFolder.Text) + F.Name);
+end;
+
 procedure TfrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   SetTableState(False);
   FFileList.Free;
+  FZipList.Free;
   SaveINI;
 end;
 
@@ -473,6 +519,7 @@ begin
   FOutPath := FAppPath + 'ARCH\';
   ReadINI;
   FFileList := TStringList.Create;
+  FZipList := TStringList.Create;
 end;
 
 procedure TfrmMain.HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
@@ -532,6 +579,8 @@ begin
     edCode.Text := F.ReadString('DATA','Code','');
     edDescr.Text := F.ReadString('DATA','Descr', '');
     edTitle.Text := F.ReadString('DATA','Title', '');
+    edFolder.Text :=  F.ReadString('DATA','Folder', '');
+    edFileMask.Text :=  F.ReadString('DATA','FileMask', '*.zip');
     edInfoName.Text := F.ReadString('DATA','Info name', '');
     cbFb2Only.Checked := F.ReadBool('DATA','Fb2Only', true);
     cbMaxCompress.Checked := F.ReadBool('DATA','MaxCompress', false);
@@ -594,6 +643,11 @@ begin
   end;
 end;
 
+procedure TfrmMain.edFolderButtonClick(Sender: TObject);
+begin
+  if dlgFolder.Execute then edFolder.text := dlgFolder.SelectedPathName;
+end;
+
 procedure TfrmMain.SaveINI;
 var
   F:TIniFile;
@@ -629,6 +683,8 @@ begin
     F.WriteString('DATA','Descr',edDescr.Text);
     F.WriteString('DATA','Title',edTitle.Text);
     F.WriteString('DATA','Info name',edInfoName.Text);
+    F.WriteString('DATA','Folder',edFolder.Text);
+    F.WriteString('DATA','FileMask',edFileMask.Text);
     F.WriteBool('DATA','Fb2Only', cbFb2Only.Checked);
     F.WriteBool('DATA','MaxCompress', cbMaxCompress.Checked);
     F.WriteBool('DATA','oldFormat', cbOldFormat.Checked);
@@ -668,6 +724,7 @@ begin
   Log(TimeToStr(Now) + ' Загрузка ' + edExtraInfo.Text + ' ...');
   idFTP.Put(FOutPath + edExtraInfo.Text);
   Log(TimeToStr(Now) + ' Готово');
+  idFTP.Disconnect;
 end;
 
 procedure TfrmMain.Version;

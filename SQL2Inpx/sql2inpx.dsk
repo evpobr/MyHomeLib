@@ -16,19 +16,19 @@ File_13=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\ImportImpl\unit_ImportFB2
 File_14=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\Forms\frm_ConverToFBD.pas',0,1,185,20,216,0,0,,
 
 [Modules]
-Module0=D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas
-Module1=D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas
+Module0=D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas
+Module1=D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas
 Module2=D:\DelphiProjects\MyHomeLib\SQL2INPX\sql2inpx.dproj
 Module3=default.htm
 Count=4
 EditWindowCount=1
 
-[D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas]
+[D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas]
 ModuleType=TSourceModule
 FormState=1
 FormOnTop=0
 
-[D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas]
+[D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas]
 ModuleType=TSourceModule
 FormState=1
 FormOnTop=0
@@ -41,7 +41,7 @@ ModuleType=TURLModule
 
 [EditWindow0]
 ViewCount=4
-CurrentEditView=D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas
+CurrentEditView=D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas
 View0=0
 View1=1
 View2=2
@@ -82,9 +82,9 @@ WelcomePageURL=bds:/default.htm
 [View1]
 CustomEditViewType=TEditView
 Module=D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas
-CursorX=69
-CursorY=249
-TopLine=211
+CursorX=26
+CursorY=310
+TopLine=283
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -104,9 +104,9 @@ EditViewName=D:\DelphiProjects\MyHomeLib\SQL2INPX\sql2inpx.dpr
 [View3]
 CustomEditViewType=TEditView
 Module=D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas
-CursorX=1
-CursorY=76
-TopLine=189
+CursorX=3
+CursorY=104
+TopLine=78
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -184,18 +184,18 @@ StayOnTop=0
 [MessageView]
 PercentageSizes=1
 Create=1
-Visible=0
+Visible=1
 Docked=0
 State=0
-Left=402
-Top=3010
+Left=12855
+Top=1095
 Width=3028
 Height=5133
 MaxLeft=-6
 MaxTop=-10
 ClientWidth=2930
 ClientHeight=4810
-TBDockHeight=4419
+TBDockHeight=1352
 LRDockWidth=2769
 Dockable=1
 StayOnTop=0
@@ -445,6 +445,11 @@ Dockable=1
 StayOnTop=0
 SplitPos=111
 
+[PropInspDesignerSelection]
+ArrangeBy=Name
+SelectedItem=Name,
+ExpandedItems=
+
 [ModelViewTool]
 PercentageSizes=1
 Create=1
@@ -652,7 +657,7 @@ MaxLeft=-1
 MaxTop=-1
 ClientWidth=2077
 ClientHeight=4419
-TBDockHeight=4419
+TBDockHeight=9038
 LRDockWidth=2077
 Dockable=1
 StayOnTop=0
