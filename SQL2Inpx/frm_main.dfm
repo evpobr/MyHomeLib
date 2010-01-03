@@ -3,7 +3,7 @@
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'SQL 2 INPX: librusec'
-  ClientHeight = 510
+  ClientHeight = 513
   ClientWidth = 660
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,15 +21,15 @@
     Left = 0
     Top = 0
     Width = 660
-    Height = 491
+    Height = 494
     ActivePage = tsParams
     Align = alClient
     TabOrder = 0
-    ExplicitHeight = 487
+    ExplicitHeight = 491
     object tsParams: TTabSheet
       Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099
       ImageIndex = 2
-      ExplicitHeight = 459
+      ExplicitHeight = 463
       object GroupBox1: TGroupBox
         Left = 3
         Top = 3
@@ -440,8 +440,8 @@
         TabOrder = 5
         object edURL: TLabeledEdit
           Left = 6
-          Top = 39
-          Width = 297
+          Top = 34
+          Width = 294
           Height = 21
           EditLabel.Width = 19
           EditLabel.Height = 13
@@ -462,10 +462,11 @@
           Text = 'http://lib.rus.ec/'
         end
         object mmScript: TMemo
+          AlignWithMargins = True
           Left = 6
-          Top = 66
-          Width = 297
-          Height = 143
+          Top = 61
+          Width = 294
+          Height = 140
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -551,7 +552,14 @@
     object TabSheet2: TTabSheet
       Caption = #1058#1072#1073#1083#1080#1094#1099
       ImageIndex = 1
-      ExplicitHeight = 459
+      ExplicitHeight = 463
+      object Label2: TLabel
+        Left = 507
+        Top = 11
+        Width = 15
+        Height = 13
+        Caption = 'ID:'
+      end
       object DBGrid3: TDBGrid
         Left = 329
         Top = 391
@@ -581,7 +589,7 @@
           item
             Expanded = False
             FieldName = 'SeqName'
-            Width = 250
+            Width = 220
             Visible = True
           end
           item
@@ -626,7 +634,7 @@
         Left = 3
         Top = 34
         Width = 646
-        Height = 276
+        Height = 164
         DataSource = Lib.dsBook
         TabOrder = 3
         TitleFont.Charset = DEFAULT_CHARSET
@@ -672,7 +680,6 @@
           item
             Expanded = False
             FieldName = 'Time'
-            Width = 64
             Visible = True
           end
           item
@@ -683,7 +690,6 @@
           item
             Expanded = False
             FieldName = 'FileType'
-            Width = 64
             Visible = True
           end
           item
@@ -704,13 +710,11 @@
           item
             Expanded = False
             FieldName = 'N'
-            Width = 64
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'keywords'
-            Width = 64
             Visible = True
           end
           item
@@ -742,10 +746,188 @@
         DataSource = Lib.dsBook
         TabOrder = 4
       end
+      object edIDSearch: TEdit
+        Left = 528
+        Top = 7
+        Width = 121
+        Height = 21
+        NumbersOnly = True
+        TabOrder = 5
+        OnKeyDown = edIDSearchKeyDown
+      end
+      object GroupBox6: TGroupBox
+        Left = 3
+        Top = 204
+        Width = 646
+        Height = 106
+        TabOrder = 6
+        object Label3: TLabel
+          Left = 11
+          Top = 8
+          Width = 33
+          Height = 13
+          Caption = 'BookId'
+          FocusControl = DBEdit1
+        end
+        object Label4: TLabel
+          Left = 71
+          Top = 11
+          Width = 20
+          Height = 13
+          Caption = 'Title'
+          FocusControl = DBEdit2
+        end
+        object Label5: TLabel
+          Left = 11
+          Top = 56
+          Width = 35
+          Height = 13
+          Caption = 'FileSize'
+          FocusControl = DBEdit3
+        end
+        object Label6: TLabel
+          Left = 71
+          Top = 54
+          Width = 40
+          Height = 13
+          Caption = 'FileType'
+          FocusControl = DBEdit4
+        end
+        object Label7: TLabel
+          Left = 133
+          Top = 54
+          Width = 37
+          Height = 13
+          Caption = 'Deleted'
+          FocusControl = DBEdit5
+        end
+        object Label8: TLabel
+          Left = 176
+          Top = 54
+          Width = 22
+          Height = 13
+          Caption = 'Time'
+          FocusControl = DBEdit6
+        end
+        object Label9: TLabel
+          Left = 270
+          Top = 54
+          Width = 23
+          Height = 13
+          Caption = 'Lang'
+          FocusControl = DBEdit7
+        end
+        object Label10: TLabel
+          Left = 306
+          Top = 54
+          Width = 7
+          Height = 13
+          Caption = 'N'
+          FocusControl = DBEdit8
+        end
+        object Label11: TLabel
+          Left = 374
+          Top = 51
+          Width = 46
+          Height = 13
+          Caption = 'keywords'
+          FocusControl = DBEdit9
+        end
+        object DBEdit1: TDBEdit
+          Left = 11
+          Top = 27
+          Width = 54
+          Height = 21
+          DataField = 'BookId'
+          DataSource = Lib.dsBook
+          ReadOnly = True
+          TabOrder = 0
+        end
+        object DBEdit2: TDBEdit
+          Left = 71
+          Top = 27
+          Width = 562
+          Height = 21
+          DataField = 'Title'
+          DataSource = Lib.dsBook
+          ReadOnly = True
+          TabOrder = 1
+        end
+        object DBEdit3: TDBEdit
+          Left = 11
+          Top = 72
+          Width = 54
+          Height = 21
+          DataField = 'FileSize'
+          DataSource = Lib.dsBook
+          ReadOnly = True
+          TabOrder = 2
+        end
+        object DBEdit4: TDBEdit
+          Left = 71
+          Top = 70
+          Width = 56
+          Height = 21
+          DataField = 'FileType'
+          DataSource = Lib.dsBook
+          ReadOnly = True
+          TabOrder = 3
+        end
+        object DBEdit5: TDBEdit
+          Left = 133
+          Top = 70
+          Width = 37
+          Height = 21
+          DataField = 'Deleted'
+          DataSource = Lib.dsBook
+          ReadOnly = True
+          TabOrder = 4
+        end
+        object DBEdit6: TDBEdit
+          Left = 176
+          Top = 70
+          Width = 88
+          Height = 21
+          DataField = 'Time'
+          DataSource = Lib.dsBook
+          ReadOnly = True
+          TabOrder = 5
+        end
+        object DBEdit7: TDBEdit
+          Left = 270
+          Top = 70
+          Width = 30
+          Height = 21
+          DataField = 'Lang'
+          DataSource = Lib.dsBook
+          ReadOnly = True
+          TabOrder = 6
+        end
+        object DBEdit8: TDBEdit
+          Left = 306
+          Top = 70
+          Width = 54
+          Height = 21
+          DataField = 'N'
+          DataSource = Lib.dsBook
+          ReadOnly = True
+          TabOrder = 7
+        end
+        object DBEdit9: TDBEdit
+          Left = 366
+          Top = 70
+          Width = 267
+          Height = 21
+          DataField = 'keywords'
+          DataSource = Lib.dsBook
+          ReadOnly = True
+          TabOrder = 8
+        end
+      end
     end
     object TabSheet1: TTabSheet
       Caption = #1051#1086#1075
-      ExplicitHeight = 459
+      ExplicitHeight = 463
       object lblS1: TLabel
         Left = 304
         Top = 438
@@ -776,7 +958,7 @@
   end
   object RzStatusBar1: TRzStatusBar
     Left = 0
-    Top = 491
+    Top = 494
     Width = 660
     Height = 19
     BorderInner = fsNone
@@ -784,7 +966,7 @@
     BorderSides = [sdLeft, sdTop, sdRight, sdBottom]
     BorderWidth = 0
     TabOrder = 1
-    ExplicitTop = 487
+    ExplicitTop = 491
     object RzVersionInfoStatus1: TRzVersionInfoStatus
       Left = 0
       Top = 0
@@ -977,12 +1159,23 @@
   end
   object RzVersionInfo1: TRzVersionInfo
     FilePath = 'sql2inpx.exe'
-    Left = 464
-    Top = 240
+    Left = 112
+    Top = 376
   end
   object FilesFinder: TFilesList
     OnFile = FilesFinderFile
     Left = 592
     Top = 416
+  end
+  object Dump: TMyDump
+    SQL.Strings = (
+      'SET NAMES utf8;')
+    OnRestoreProgress = DumpRestoreProgress
+    Connection = Lib.Connection
+    Options.QuoteNames = True
+    Options.CompleteInsert = True
+    Options.UseDelayedIns = True
+    Left = 280
+    Top = 408
   end
 end

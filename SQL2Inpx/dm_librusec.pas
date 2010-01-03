@@ -3,7 +3,8 @@ unit dm_librusec;
 interface
 
 uses
-  SysUtils, Classes, DB, DBAccess, MyAccess, MemDS, MyEmbConnection;
+  SysUtils, Classes, DB, DBAccess, MyAccess, MemDS, MyEmbConnection, DADump,
+  MyDump;
 
 type
   TLib = class(TDataModule)
@@ -44,6 +45,7 @@ type
     function GetBookRecord(BookID: integer; fb2only: boolean = false): string; overload;
     function GetBookRecord(FN: string; fb2only: boolean = false; oldFormat: boolean = false): string; overload;
     function RecordToString(FN: string = ''):string ;
+    procedure ShowAll;
     function LastBookID: integer;
   end;
 
@@ -71,9 +73,9 @@ var
   Query : string;
 begin
   if oldFormat then
-    Query :=QS + 'F.FileName FROM libbook B, libfilenameold F WHERE B.BookId = F.BookID AND F.FileName = "' + FN + '"'
+    Query :=QS + ', F.FileName FROM libbook B, libfilenameold F WHERE B.BookId = F.BookID AND F.FileName = "' + FN + '"'
   else
-    Query := QS + 'F.FileName FROM libbook B, libfilename F WHERE B.BookId = F.BookID AND F.FileName = "' + FN + '"';
+    Query := QS + ', F.FileName FROM libbook B, libfilename F WHERE B.BookId = F.BookID AND F.FileName = "' + FN + '"';
 
   Book.SQL.Text := Query;
   Book.Execute;
@@ -221,6 +223,12 @@ begin
             Bookkeywords.AsWideString + c;      // Keywords
   Result := StringReplace(Result, #10, '', [rfReplaceAll]);
   Result := StringReplace(Result, #13, '', [rfReplaceAll]);
+end;
+
+procedure TLib.ShowAll;
+begin
+  Book.SQL.Text := QS + 'FROM libbook B';
+  Book.Execute;
 end;
 
 end.

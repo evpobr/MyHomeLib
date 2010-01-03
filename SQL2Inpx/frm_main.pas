@@ -7,7 +7,8 @@ uses
   Dialogs, ExtCtrls, DBCtrls, Grids, DBGrids, StdCtrls, Mask, ComCtrls,
   ActnList, Menus, ZipForge, IdHTTP, IdBaseComponent, IdComponent,
   IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdFTP, DADump,
-  MyDump, RzShellDialogs, RzEdit, RzBtnEdt, RzStatus, RzPanel, files_list;
+  MyDump, RzShellDialogs, RzEdit, RzBtnEdt, RzStatus, RzPanel, files_list,
+  JvComponentBase, JvZlibMultiple;
 
 type
   TfrmMain = class(TForm)
@@ -90,6 +91,28 @@ type
     FilesFinder: TFilesList;
     Label1: TLabel;
     edFileMask: TLabeledEdit;
+    Dump: TMyDump;
+    edIDSearch: TEdit;
+    Label2: TLabel;
+    GroupBox6: TGroupBox;
+    Label3: TLabel;
+    DBEdit1: TDBEdit;
+    Label4: TLabel;
+    DBEdit2: TDBEdit;
+    Label5: TLabel;
+    DBEdit3: TDBEdit;
+    Label6: TLabel;
+    DBEdit4: TDBEdit;
+    Label7: TLabel;
+    DBEdit5: TDBEdit;
+    Label8: TLabel;
+    DBEdit6: TDBEdit;
+    Label9: TLabel;
+    DBEdit7: TDBEdit;
+    Label10: TLabel;
+    DBEdit8: TDBEdit;
+    Label11: TLabel;
+    DBEdit9: TDBEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure aopFB2Execute(Sender: TObject);
@@ -109,6 +132,8 @@ type
     procedure apSaveExecute(Sender: TObject);
     procedure edFolderButtonClick(Sender: TObject);
     procedure FilesFinderFile(Sender: TObject; const F: TSearchRec);
+    procedure edIDSearchKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     { Private declarations }
     FAppPath : string;
@@ -140,6 +165,7 @@ type
     procedure Connect;
 
     function ShortName(const FN: string): string;
+    procedure OK;
   public
     { Public declarations }
     procedure Commands;
@@ -248,7 +274,7 @@ begin
     for I := 0 to FZipList.Count - 1 do
     begin
       FN:=ExtractFileName(FZipList[i]);
-      Log(TimeToStr(Now) + ' ' + FN);
+      Log(TimeToStr(Now) + ' ' + FN + '...');
       Zip.FileName := FZipList[i];
       Zip.OpenArchive;
       Result.Clear;
@@ -293,6 +319,7 @@ begin
       Result.SaveToFile(FInpPath + FN + '.inp', TEncoding.UTF8);
       FFileList.Add(FN + '.inp');
       Bar.Position := round((i + 1) / FZipList.Count * 100);
+      OK;
     end;
 //    FFileList.Add('extra.inp');
     Log(TimeToStr(Now) + ' ' + 'Упаковка ...');
@@ -305,6 +332,7 @@ begin
         Pack(edInpxName.Text + '.inpx', 0);
 
     if edUpdateName.Text <> '' then Pack(edUpdateName.Text + '.zip', 9);
+    OK;
     Log(TimeToStr(Now) + ' ' + 'Готово');
   finally
     EnableControls;
@@ -329,14 +357,14 @@ begin
   FFileList.Clear;
   try
     Res := TStringList.Create;
-    Log('Extra');
+    Log('OnLine');
     Log('-------------------------');
     while i < Max do
     begin
       if (i + Window) > Max then
         Window := Max - i;
       FN := Format('%.6d-%.6d.inp',[ i, i + Window]);
-      Log(FN);
+      Log(FN + '...');
       Res.Clear;
       for j := i to i + Window do
       begin
@@ -353,10 +381,12 @@ begin
       inc(i, Window + 1);
       Bar.Position := round((i + 1)/Max * 100);
       Bar.Repaint;
+      OK;
     end; // main for
     Log(TimeToStr(Now) + ' ' + 'Упаковка ...');
     Version;
     Pack(edInpxName.Text + '.inpx', 9);
+    OK;
     Log(TimeToStr(Now) + 'Готово');
   finally
     Screen.Cursor := crDefault;
@@ -451,27 +481,33 @@ begin
   try
     Responce := TMemoryStream.Create;
     CMD := TStringList.Create;
-    Log('Импорт ');
+    Log('Загрузка и импорт дампа БД ');
     Log('---------------------------------');
     for I := 0 to mmTables.Lines.Count - 1 do
     begin
       DumpName := FBasesPath + copy(mmTables.Lines[i],1,Length(mmTables.Lines[i]) - 3);
       ArchName := FBasesPath + mmTables.Lines[i];
-      Log(TimeToStr(Now) + ' ' + mmTables.Lines[i] + ' : Загрузка ...');
+      Log(' Архив ' + mmTables.Lines[i] + ':');
+      Log(TimeToStr(Now) + ' Загрузка ...');
       Responce.Clear;
       HTTP.Get(edSQLUrl.Text + mmTables.Lines[i], Responce);
       Responce.SaveToFile(ArchName);
+      OK;
       Log(TimeToStr(Now) + ' Распаковка ...');
       ExecAndWait(FAppPath + '7za.exe',Format('e -y "%s" -o"%s"',[ArchName, FBasesPath]), 0);
-      CMD.Add('mysql.exe -h localhost -u ' + Lib.Connection.Username + ' ' + edDBName.Text + ' < "' + DumpName + '"');
+      OK;
+      Log(TimeToStr(Now) + ' Импорт ...');
+      Responce.Clear;
+      CMD.LoadFromFile(DumpName, TEncoding.UTF8);
+      CMD.SaveToStream(Responce);
+      Responce.Seek(0, soFromBeginning);
+      Dump.RestoreFromStream(Responce);
+      OK;
     end;
-    CMD.SaveToFile(FAppPath + 'import.bat');
-    Log(TimeToStr(Now) + ' Импорт ...');
-    ExecAndWait(FAppPath + 'import.bat', '', 0);
+    Log(TimeToStr(Now) + ' ' + 'Готово');
   finally
     Responce.Free;
     CMD.Free;
-    Log(TimeToStr(Now) + ' ' + 'Готово');
     Screen.Cursor := crDefault;
   end;
 end;
@@ -487,6 +523,16 @@ end;
 procedure TfrmMain.DumpRestoreProgress(Sender: TObject; Percent: Integer);
 begin
   Bar.Position := Percent;
+end;
+
+procedure TfrmMain.edIDSearchKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+   if edIDSearch.Text <> '' then
+      Lib.GetBookRecord(StrToInt(edIDSearch.Text))
+   else
+      Lib.ShowAll;
 end;
 
 procedure TfrmMain.EnableControls;
@@ -528,8 +574,6 @@ var
   ElapsedTime: Cardinal;
   Speed: string;
 begin
-//  if not   FOnDownload  then exit;
-
   Application.ProcessMessages;
 
   if FDownloadSize <> 0 then
@@ -546,7 +590,6 @@ end;
 procedure TfrmMain.HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode;
   AWorkCountMax: Int64);
 begin
-//  if not FOnDownload then Exit;
   Bar.Position := 0;
   FDownloadSize := AWorkCountMax;
   FStartDate := Now;
@@ -554,7 +597,6 @@ end;
 
 procedure TfrmMain.HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
 begin
-//  if not FOnDownload then Exit;
   Bar.Position := 0;
   lblS1.Caption := '';
 end;
@@ -593,6 +635,11 @@ end;
 procedure TfrmMain.Log(S: string);
 begin
   mmLog.Lines.Add(S);
+end;
+
+procedure TfrmMain.OK;
+begin
+  mmLog.Lines[mmLog.Lines.Count - 1] := mmLog.Lines[mmLog.Lines.Count - 1] + 'OK';
 end;
 
 procedure TfrmMain.Pack(FN: string; Level: integer);
@@ -717,7 +764,6 @@ begin
   Log('Upload to FTP');
   Log('--------------------------------------');
   idFTP.Connect;
-//  FFTPDir := idFTP.RetrieveCurrentDir;
   idFTP.ChangeDir(FFTPDir);
   Log(TimeToStr(Now) + ' Загрузка ' + edExtraName.Text + ' ...');
   idFTP.Put(FOutPath + edExtraName.Text + '.zip');

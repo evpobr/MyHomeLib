@@ -96,6 +96,7 @@ object Lib: TLib
       
         'SELECT `BookId`,`Title`,`FileSize`,`FileType`,`Deleted`,`Time`,`' +
         'Lang`,`N`,`keywords` FROM libbook')
+    AfterScroll = BookAfterScroll
     Left = 56
     Top = 64
     object BookBookId: TLargeintField
