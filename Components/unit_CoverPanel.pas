@@ -25,7 +25,9 @@ uses
   RzBorder,
   RzCommon,
   RzPanel,
-  RzSplit;
+  RzSplit,
+  Menus,
+  Clipbrd;
 
 
 type
@@ -38,6 +40,8 @@ type
     FInfo : TPanel;
 
     FPublisher, FCity, FYear, FISBN, FDate, FVersion, FAuthor, FVerTitle: TLabel;
+
+    FMenu: TPopupMenu;
 
     Zip: TZipForge;
 
@@ -66,7 +70,7 @@ type
     procedure ShowEmptyCover;
     procedure Set_Fb2InfoVisible(Value: boolean);
     procedure Set_FontSize(Value: integer);
-
+    procedure MenuClick(Sender: TObject);
   public
     constructor Create(AOwner: TComponent); override;
     procedure Clear;
@@ -118,8 +122,16 @@ constructor TMHLCoverPanel.Create(AOwner: TComponent);
 var
   lbl: TLabel;
   bvl: TRzBorder;
+
+  Item: TMenuItem;
 begin
   inherited;
+
+  FMenu := TPopupMenu.Create(Self);
+  Item := TMenuItem.Create(FMenu);
+  Item.Caption := 'Копировать в буфер';
+  Item.OnClick := MenuClick;
+  FMenu.Items.Add(Item);
 
   Parent           := AOwner as TWinControl;
   Align            := alRight;
@@ -143,6 +155,7 @@ begin
   FCover.Center           := True;
   FCover.Stretch          := True;
   FCover.Proportional     := True;
+  FCover.PopupMenu        := FMenu;
 
   FText                  := TMemo.Create(Self);
   FText.Parent           := Self;
@@ -151,6 +164,7 @@ begin
   FText.ScrollBars       := ssVertical;
   FText.ReadOnly         := True;
   FText.TabStop          := False;
+  FText.PopupMenu        := FMenu;
   //-----------------------------
   FInfo                  := TPanel.Create(Self);
   FInfo.Parent           := Self;
@@ -235,16 +249,19 @@ begin
   FPublisher.Top      := 0;
   FPublisher.Left     := W + 10;
   FPublisher.AutoSize := False;
+  FPublisher.PopupMenu:= FMenu;
 
   FCity        := TLabel.Create(FInfo);
   FCity.Parent := FInfo;
   FCity.Top    := 15;
   FCity.Left   := W + 10;
+  FCity.PopupMenu := FMenu;
 
   FYear        := TLabel.Create(FInfo);
   FYear.Parent := FInfo;
   FYear.Top    := 30;
   FYear.Left   := W + 10;
+  FYear.PopupMenu := FMenu;
 
   FISBN          := TLabel.Create(FInfo);
   FISBN.Parent   := FInfo;
@@ -252,6 +269,7 @@ begin
   FISBN.Left     := W + 10;
   FISBN.Width    := 180;
   FISBN.AutoSize := False;
+  FISBN.PopupMenu := FMenu;
 
   FDate          := TLabel.Create(FInfo);
   FDate.Parent   := FInfo;
@@ -259,11 +277,13 @@ begin
   FDate.Top      := 65;
   FDate.Left     := W + 10;
   FDate.AutoSize := False;
+  FDate.PopupMenu := FMenu;
 
   FVersion        := TLabel.Create(FInfo);
   FVersion.Parent := FInfo;
   FVersion.Top    := 65;
   FVersion.Left   := Width - 55;
+  FVersion.PopupMenu := FMenu;
 
   FAuthor          := TLabel.Create(FInfo);
   FAuthor.Parent   := FInfo;
@@ -271,6 +291,7 @@ begin
   FAuthor.Width    := Width - W - 30;
   FAuthor.Top      := 80;
   FAuthor.Left     := W + 10;
+  FAuthor.PopupMenu := FMenu;
 
   //--------------------------------------------
 
@@ -501,6 +522,11 @@ begin
     FText.SelLength := 0;
     MS.Free;
   end;
+end;
+
+procedure TMHLCoverPanel.MenuClick(Sender: TObject);
+begin
+  if Sender is TLabel then Clipboard.AsText := (Sender as TLabel).Caption;
 end;
 
 procedure TMHLCoverPanel.Resize;

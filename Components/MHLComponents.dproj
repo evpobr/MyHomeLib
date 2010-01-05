@@ -22,7 +22,6 @@
 		<PropertyGroup Condition="'$(Base)'!=''">
 			<DCC_DcuOutput>.\Units</DCC_DcuOutput>
 			<DesignOnlyPackage>false</DesignOnlyPackage>
-			<DCC_SymbolReferenceInfo>1</DCC_SymbolReferenceInfo>
 			<DCC_DependencyCheckOutputName>C:\Users\Public\Documents\RAD Studio\7.0\Bpl\MHLComponents.bpl</DCC_DependencyCheckOutputName>
 			<GenDll>true</GenDll>
 			<GenPackage>true</GenPackage>
@@ -90,6 +89,7 @@
 						<Parameters Name="UseLauncher">False</Parameters>
 						<Parameters Name="LoadAllSymbols">True</Parameters>
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+						<Parameters Name="RunParams">-p flibusta -extra -ftp -c</Parameters>
 					</Parameters>
 					<VersionInfo>
 						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
