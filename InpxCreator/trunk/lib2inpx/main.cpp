@@ -790,7 +790,7 @@ int main( int argc, char *argv[] )
       {
          cout << endl;
          cout << "Import file (INPX) preparation tool for MyHomeLib" << endl;
-         cout << "Version 2.6 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
+         cout << "Version 2.7 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
          cout << endl;
          cout << "Usage: " << file_name << " [options] <path to SQL dump files>" << endl << endl;
          cout << options << endl;
@@ -1017,12 +1017,19 @@ int main( int argc, char *argv[] )
 
          if( comment.empty() )
          {
-            if( g_process == eFB2 )
-               comment = utf8_to_ANSI( tmp_str( "lib.rus.ec FB2 - %s\r\n%s\r\n65536\r\nАрхивы библиотеки lib.rus.ec (FB2) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
-            else if( g_process == eUSR )
-               comment = utf8_to_ANSI( tmp_str( "lib.rus.ec USR - %s\r\n%s\r\n65537\r\nАрхивы библиотеки lib.rus.ec (не-FB2) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
-            else if( g_process == eAll )
-               comment = utf8_to_ANSI( tmp_str( "lib.rus.ec ALL - %s\r\n%s\r\n1\r\nАрхивы библиотеки lib.rus.ec (все) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
+            if( ! archives_path.empty() )
+            {
+               if( g_process == eFB2 )
+                  comment = utf8_to_ANSI( tmp_str( "lib.rus.ec FB2 - %s\r\n%s\r\n65536\r\nЛокальные архивы библиотеки lib.rus.ec (FB2) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
+               else if( g_process == eUSR )
+                  comment = utf8_to_ANSI( tmp_str( "lib.rus.ec USR - %s\r\n%s\r\n65537\r\nЛокальные архивы библиотеки lib.rus.ec (не-FB2) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
+               else if( g_process == eAll )
+                  comment = utf8_to_ANSI( tmp_str( "lib.rus.ec ALL - %s\r\n%s\r\n65537\r\nЛокальные архивы библиотеки lib.rus.ec (все) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
+            }
+            else
+            {
+               comment = utf8_to_ANSI( tmp_str( "lib.rus.ec FB2 - %s\r\n%s\r\n134283264\r\nOnline коллекция lib.rus.ec %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
+            }
          }
          else
          {

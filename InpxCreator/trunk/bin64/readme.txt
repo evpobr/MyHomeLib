@@ -28,7 +28,7 @@
 Для запуска наберите lib2inpx.exe в командном окне:
 
 Import file (INPX) preparation tool for MyHomeLib
-Version 2.5 (MYSQL 5.1.36)
+Version 2.7 (MYSQL 5.1.36)
 
 Usage: lib2inpx.exe [options] <path to SQL dump files>
 
@@ -112,7 +112,7 @@ Complete processing took 00:00:59
 Если вы хотите создать файл "daily_update.zip", который позволяет добавить
 дневные архивы Либрусека к уже имеющейся коллекции без ее полной перестройки,
 используйте ключ "update". Выдача команды
-“lib2inpx.exe --process usr --update 167585-167678 --archives d:\librusec\local d:\librusec\sql”
+“lib2inpx.exe --process fb2 --update 167585-167678 --archives d:\librusec\local d:\librusec\sql”
 приведет к созданию daily_update.zip в котором будут содержаться INP для всех имеющихся
 в директории дневных архивов от "167585-167678.zip" до более поздних. Архивы с именами,
 начинающимися с "fb2-", "usr-", а так же более ранние дневные архивы будут игнорироваться.
