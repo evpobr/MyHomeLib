@@ -13,7 +13,8 @@ uses
   IdStackConsts,
   IdException,
   IdMultipartFormData,
-  DateUtils;
+  DateUtils,
+  unit_Consts;
 
 type
 
@@ -163,9 +164,22 @@ begin
 end;
 
 function TDownloader.Download(ID: integer): boolean;
+var
+  Ext: string;
+  FN: string;
+  Folder: string;
+  No: integer;
 begin
   Result := False;
-  dmCollection.GetBookFolder(ID, FFile);
+  dmCollection.GetBookFileName(ID, FN, Folder, Ext, No);
+  if Ext = FB2_EXTENSION then
+    dmCollection.GetBookFolder(ID, FFile)
+  else
+  begin
+    Folder := StringReplace(Folder, '.fb2.zip', Ext, []);
+    FFile := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder) + Folder;
+  end;
+
   if FileExists(FFile) then
   begin
     dmCollection.SetLocalStatus(ID, True);

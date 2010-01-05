@@ -67,6 +67,7 @@ uses
   unit_mhl_strings,
   unit_settings,
   unit_Consts,
+  unit_Globals,
   ZipForge;
 
 {$R *.dfm}
@@ -128,10 +129,13 @@ begin
   end;
 
   case FPParams^.CollectionCode of
-              0: FPParams^.CollectionType := ltUserFB2;
-              1: FPParams^.CollectionType := ltUserAny;
-      134283264: FPParams^.CollectionType := ltLREOnline;
+             CT_PRIVATE_FB: FPParams^.CollectionType := ltUserFB2;
+          CT_PRIVATE_NONFB: FPParams^.CollectionType := ltUserAny;
+      CT_LIBRUSEC_LOCAL_FB: FPParams^.CollectionType := ltLRELocal;
+           CT_LIBRUSEC_USR: FPParams^.CollectionType := ltLRELocal;
+     CT_LIBRUSEC_ONLINE_FB: FPParams^.CollectionType := ltLREOnline;
   end;
+
 end;
 
 
