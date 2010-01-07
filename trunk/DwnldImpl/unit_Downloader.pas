@@ -56,6 +56,7 @@ type
     procedure AddParam(Name, Value: string);
     function CheckResponce: boolean;
     function CheckRedirect: boolean;
+    function Pause(Time: integer):boolean;
 
     procedure HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
     procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
@@ -73,7 +74,7 @@ type
     destructor Free;
     function Download(ID: integer):boolean;
     procedure Stop;
-    property IgnoreErrors: boolean write FIgnoreErrors;
+    property IgnoreErrors: boolean read FIgnoreErrors write FIgnoreErrors;
 
     property OnSetComment:TSetCommentEvent write Set_OnSetComment;
     property OnProgress:TProgressEvent write Set_OnProgress;
@@ -276,6 +277,7 @@ begin
           2: Result := Query(qkPost, Params[1]);
           3: Result := CheckRedirect;
           4: Result := CheckResponce;
+          5: Result := Pause(StrToInt(Params[1]));
         end;
       if not Result then Break;
     end;
@@ -330,6 +332,12 @@ begin
     p := pos(' ', S);
   end;
   if S <> '' then Command.Params[i] := S
+end;
+
+function TDownloader.Pause(Time: integer): boolean;
+begin
+  Sleep(Time);
+  Result := True;
 end;
 
 procedure TDownloader.ProcessError(const LongMsg, ShortMsg, AFileName: string);
