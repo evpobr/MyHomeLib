@@ -17,6 +17,7 @@
 #define   __IMPORT_UTIL_H__
 
 #include <string>
+#include <vector>
 
 void normalize_path( std::string& path, bool trailing = true );
 void normalize_path( char* path );
@@ -24,6 +25,8 @@ void normalize_path( char* path );
 std::wstring utf8_to_ucs2( const char* ptr );
 std::string  utf8_to_ANSI( const char* ptr );
 std::string  utf8_to_OEM( const char* ptr );
+
+void split( std::vector< std::string >& result, const char *str, const char *delim, bool combine_delimiters = true );
 
 class tmp_str : public std::string
 {

@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libboost_date_time-sgd.lib libboost_program_options-sgd.lib ..\..\mysql-5.1.36-win32\Embedded\static\$(ConfigurationName)\mysqlserver.lib WS2_32.Lib oldnames.lib libcpmtd.lib libcmtd.lib"
+				AdditionalDependencies="libboost_date_time-sgd.lib libboost_program_options-sgd.lib ..\..\mysql-5.1.42-win32\Embedded\static\$(ConfigurationName)\mysqlserver.lib WS2_32.Lib oldnames.lib libcpmtd.lib libcmtd.lib"
 				LinkIncremental="1"
 				IgnoreAllDefaultLibraries="true"
 				IgnoreDefaultLibraryNames=""
@@ -138,7 +138,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libboost_date_time-sgd.lib libboost_program_options-sgd.lib ..\..\mysql-5.1.36-win64\Embedded\static\$(ConfigurationName)\mysqlserver.lib WS2_32.Lib oldnames.lib libcpmtd.lib libcmtd.lib"
+				AdditionalDependencies="libboost_date_time-sgd.lib libboost_program_options-sgd.lib ..\..\mysql-5.1.42-win64\Embedded\static\$(ConfigurationName)\mysqlserver.lib WS2_32.Lib oldnames.lib libcpmtd.lib libcmtd.lib"
 				LinkIncremental="1"
 				IgnoreAllDefaultLibraries="true"
 				IgnoreDefaultLibraryNames=""
@@ -219,7 +219,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libboost_date_time-s.lib libboost_program_options-s.lib ..\..\mysql-5.1.36-win32\Embedded\static\$(ConfigurationName)\mysqlserver.lib WS2_32.Lib oldnames.lib libcpmt.lib libcmt.lib"
+				AdditionalDependencies="libboost_date_time-s.lib libboost_program_options-s.lib ..\..\mysql-5.1.42-win32\Embedded\static\$(ConfigurationName)\mysqlserver.lib WS2_32.Lib oldnames.lib libcpmt.lib libcmt.lib"
 				LinkIncremental="1"
 				IgnoreAllDefaultLibraries="true"
 				IgnoreDefaultLibraryNames=""
@@ -303,11 +303,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libboost_date_time-s.lib libboost_program_options-s.lib ..\..\mysql-5.1.36-win64\Embedded\static\$(ConfigurationName)\mysqlserver.lib WS2_32.Lib oldnames.lib libcpmt.lib libcmt.lib"
+				AdditionalDependencies="libboost_date_time-s.lib libboost_program_options-s.lib ..\..\mysql-5.1.42-win64\Embedded\static\$(ConfigurationName)\mysqlserver.lib WS2_32.Lib oldnames.lib libcpmt.lib libcmt.lib"
 				LinkIncremental="1"
 				IgnoreAllDefaultLibraries="true"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
+				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				TargetMachine="17"

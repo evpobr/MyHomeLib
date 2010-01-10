@@ -100,6 +100,56 @@ string utf8_to_OEM( const char* ptr )
    return string( buf2.get() );
 }
 
+void split( vector< string >& result, const char *str, const char *delim, bool combine_delimiters )
+{
+   result.clear();
+
+   if( NULL == str  ||  '\0' == *str )
+   {
+      goto E_x_i_t;
+   }
+
+   if( NULL == delim  ||  '\0' == *delim )
+   {
+      result.push_back( str );
+      goto E_x_i_t;
+   }
+
+   if( combine_delimiters )
+   {
+      size_t size = strlen( str ) + 1;
+      boost::scoped_array< char > buffer( new char[ size ] );
+
+      strcpy_s( buffer.get(), size, str );
+
+      char *ctx;
+      char *ptr = strtok_s( buffer.get(), delim, &ctx );
+
+      while( NULL != ptr )
+      {
+         result.push_back( ptr );
+         ptr = strtok_s( NULL, delim, &ctx );
+      }
+   }
+   else
+   {
+      const char *ptr  = str,
+                 *ptr1 = strpbrk( ptr, delim );
+
+      while( NULL != ptr1 )
+      {
+         result.push_back( string( ptr, ptr1-ptr ) );
+         ptr = ptr1 + 1;
+         ptr1 = strpbrk( ptr, delim );
+      }
+
+      result.push_back( ptr );
+   }
+
+E_x_i_t:
+   ;
+}
+
 tmp_str::tmp_str( const char *format, ... )
 {
 int     ni   = -1;

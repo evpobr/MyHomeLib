@@ -24,16 +24,6 @@ using namespace boost::gregorian;
 
 namespace po = boost::program_options;
 
-#define MAIN_NAME "librusec"
-
-static char* options_pattern[] = {  MAIN_NAME,
-                                    "--defaults-file=%s/" MAIN_NAME ".ini",
-                                    "--datadir=%s/data",
-                                    "--language=%s/language",
-                                    "--skip-innodb",
-                                    "--key-buffer-size=64M",
-                                    NULL };
-
 static bool g_no_import        = false;
 static bool g_ignore_dump_date = false;
 static bool g_clean_when_done  = false;
@@ -55,13 +45,21 @@ enum processing_type
 };
 
 static processing_type g_process = eFB2;
-
-static string g_update;
+static string          g_update;
+static string          g_db_name = "librusec";
 
 static string sep  = "\x04";
 
 //                    AUTHOR     ;    GENRE     ;     TITLE           ; SERIES ; SERNO ; FILE ;    SIZE   ;  LIBID    ;    DEL   ;    EXT     ;       DATE        ;    LANG    ; LIBRATE  ; KEYWORDS ;
 static char* dummy = "dummy:" "\x04" "other:" "\x04" "dummy record" "\x04"   "\x04"  "\x04" "\x04" "1" "\x04" "%d" "\x04" "1" "\x04" "EXT" "\x04" "2000-01-01" "\x04" "en" "\x04" "0" "\x04"     "\x04" "\r\n";
+
+static char* options_pattern[] = { "%s",
+                                   "--defaults-file=%s/mysql.ini",
+                                   "--datadir=%s/data",
+                                   "--language=%s/language",
+                                   "--skip-innodb",
+                                   "--key-buffer-size=64M",
+                                   NULL };
 
 class mysql_connection : boost::noncopyable
 {
@@ -71,7 +69,7 @@ class mysql_connection : boost::noncopyable
 
    public:
 
-      mysql_connection( const char* module_path ) : m_mysql( NULL )
+      mysql_connection( const char* module_path, const char* name ) : m_mysql( NULL )
       {
          if( 0 == m_initialized )
          {
@@ -84,11 +82,15 @@ class mysql_connection : boost::noncopyable
                   break;
                }
                char* mem = new char[ MAX_PATH * 2 ] ;
-               sprintf( mem, pattern, module_path );
+
+               if( 0 == ni )
+                  sprintf( mem, pattern, name );
+               else
+                  sprintf( mem, pattern, module_path );
                m_options[ ni ] = mem;
             }
             if( mysql_library_init( num_options - 1, m_options, NULL ) )
-               throw runtime_error( "Could not initialize MySQL library" );
+               throw runtime_error( tmp_str( "Could not initialize MySQL library (%s)", mysql_error( m_mysql ) ) );
 
             if( NULL == (m_mysql = mysql_init( NULL )) )
                throw runtime_error( "Not enough memory to initialize MySQL library" );
@@ -99,7 +101,7 @@ class mysql_connection : boost::noncopyable
          ++m_initialized;
 
          if( NULL == mysql_real_connect( m_mysql, NULL, NULL, NULL, NULL, 0, NULL, 0 ) )
-            throw runtime_error( tmp_str( "Unable to connect (%d)", mysql_error( m_mysql ) ) );
+            throw runtime_error( tmp_str( "Unable to connect (%s)", mysql_error( m_mysql ) ) );
       }
 
       ~mysql_connection()
@@ -275,7 +277,7 @@ void prepare_mysql( const char* path )
    bool   rc = true;
    string config;
 
-   config = string( path ) + "/librusec.ini";
+   config = string( path ) + "/mysql.ini";
 
    if( 0 != _access( config.c_str(), 6 ) )
    {
@@ -526,7 +528,7 @@ void process_local_archives( const mysql_connection& mysql, const zip& zz, const
 
    do
    {
-      if( fd.size > 22 )
+      if( (0 == (fd.attrib & FILE_ATTRIBUTE_REPARSE_POINT)) && (fd.size > 22) )
         files.push_back( fd.name );
    }
    while( 0 == _findnext( archives, &fd ) );
@@ -569,7 +571,7 @@ void process_local_archives( const mysql_connection& mysql, const zip& zz, const
    if( 0 == files.size() )
       throw runtime_error( tmp_str( "No archives are available for processing \"%s\"", archives_path.c_str() ) );
 
-   cout << endl << "Beginning archives processing - " << files.size() << " file(s)" << endl << endl;
+   cout << endl << "Archives processing - " << files.size() << " file(s) [" << archives_path << "]" << endl << endl;
 
    for( vector< string >::const_iterator it = files.begin(); it != files.end(); ++it )
    {
@@ -740,8 +742,10 @@ int main( int argc, char *argv[] )
 {
    int               rc = 1;
 
-   string            spec, path, inpx, comment, comment_fname, inp_path, archives_path,
-                     inpx_name, dump_date, full_date, db_name( "librusec_" );
+   string            spec, path, inpx, comment, comment_fname, inp_path,
+                     inpx_name, dump_date, full_date, db_name;
+
+   vector< string >  archives_path;
 
    _finddata_t       fd;
 
@@ -765,8 +769,9 @@ int main( int argc, char *argv[] )
          ( "process",  po::value< string >(), "What to process - \"fb2\", \"usr\", \"all\" (default: fb2)" )
          ( "strict",   po::value< string >(), "What to put in INPX as file type - \"ext\", \"db\", \"ignore\" (default: ext). ext - use real file extension. db - use file type from database. ignore - ignore files with file extension not equal to file type" )
          ( "no-import",                       "Do not import dumps, just check dump time and use existing database" )
-         ( "archives", po::value< string >(), "Path to off-line archives (if not present - entire database in converted for online LibRusEc usage)" )
-         ( "inpx",     po::value< string >(), "Full name of output file (default: librusec_<db_dump_date>.inpx)" )
+         ( "db-name",  po::value< string >(), "Name of MYSQL database (default: librusec)" )
+         ( "archives", po::value< string >(), "Path(s) to off-line archives. Multiple entries should be separated by ';'. Each path must be valid and must point to some archives, or processing would be aborted. (If not present - entire database in converted for online usage)" )
+         ( "inpx",     po::value< string >(), "Full name of output file (default: <db_name>_<db_dump_date>.inpx)" )
          ( "comment",  po::value< string >(), "File name of template (UTF-8) for INPX comment" )
          ( "update",   po::value< string >(), "Starting with \"<arg>.zip\" produce \"daily_update.zip\" (Works only for \"fb2\")" )
          ;
@@ -790,7 +795,7 @@ int main( int argc, char *argv[] )
       {
          cout << endl;
          cout << "Import file (INPX) preparation tool for MyHomeLib" << endl;
-         cout << "Version 2.7 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
+         cout << "Version 3.0 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
          cout << endl;
          cout << "Usage: " << file_name << " [options] <path to SQL dump files>" << endl << endl;
          cout << options << endl;
@@ -841,6 +846,12 @@ int main( int argc, char *argv[] )
       if( vm.count( "dump-dir" ) )
          path = vm[ "dump-dir" ].as< string >();
 
+      if( vm.count( "db-name" ) )
+         g_db_name = vm[ "db-name" ].as< string >();
+
+      db_name  = g_db_name;
+      db_name += "_";
+
       if( vm.count( "comment" ) )
       {
          comment_fname = vm[ "comment" ].as< string >();
@@ -865,21 +876,33 @@ int main( int argc, char *argv[] )
       }
 
       if( vm.count( "archives" ) )
-         archives_path = vm[ "archives" ].as< string >();
+      {
+         string tmp = vm[ "archives" ].as< string >();
+
+         split( archives_path, tmp.c_str(), ";" );
+      }
 
       if( ! archives_path.empty() )
       {
-         if( 0 != _access( archives_path.c_str(), 4 ) )
-            throw runtime_error( tmp_str( "Wrong path to archives \"%s\"", archives_path.c_str() ) );
+         for( vector< string >::iterator it = archives_path.begin(); it != archives_path.end(); ++it )
+         {
+            if( 0 != _access( (*it).c_str(), 4 ) )
+               throw runtime_error( tmp_str( "Wrong path to archives \"%s\"", (*it).c_str() ) );
 
-         normalize_path( archives_path );
+            normalize_path( (*it) );
+         }
 
          if( (eFB2 == g_process) && vm.count( "update" ) )
          {
-            g_update = vm[ "update" ].as< string >();
+            if( 1 == archives_path.size() )
+            {
+               g_update = vm[ "update" ].as< string >();
 
-            if( 0 != _access( (archives_path + g_update + ".zip").c_str(), 4 ) )
-               throw runtime_error( tmp_str( "Unable to find daily archive \"%s.zip\"", g_update.c_str() ) );
+               if( 0 != _access( (archives_path[ 0 ] + g_update + ".zip").c_str(), 4 ) )
+                  throw runtime_error( tmp_str( "Unable to find daily archive \"%s.zip\"", g_update.c_str() ) );
+            }
+            else
+               throw runtime_error( "daily_update.zip could only be built from a single archive path" );
          }
       }
 
@@ -936,7 +959,12 @@ int main( int argc, char *argv[] )
       else if( g_process == eAll )
          inpx_name += "all_" + dump_date;
       else
-         inpx_name += dump_date;
+      {
+         if( ! archives_path.empty() )
+            inpx_name += dump_date;
+         else
+            inpx_name += "online_" + dump_date;
+      }
 
       if( ! g_update.empty() )
          inpx_name = "daily_update";
@@ -955,7 +983,7 @@ int main( int argc, char *argv[] )
       }
 
       {
-         mysql_connection mysql( module_path );
+         mysql_connection mysql( module_path, g_db_name.c_str() );
 
          if( ! g_no_import )
             cout << endl << "Creating MYSQL database \"" << db_name << "\"" << endl << endl;
@@ -1020,15 +1048,15 @@ int main( int argc, char *argv[] )
             if( ! archives_path.empty() )
             {
                if( g_process == eFB2 )
-                  comment = utf8_to_ANSI( tmp_str( "lib.rus.ec FB2 - %s\r\n%s\r\n65536\r\nЛокальные архивы библиотеки lib.rus.ec (FB2) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
+                  comment = utf8_to_ANSI( tmp_str( "%s FB2 - %s\r\n%s\r\n65536\r\nЛокальные архивы библиотеки %s (FB2) %s", g_db_name.c_str(), full_date.c_str(), inpx_name.c_str(), g_db_name.c_str(), full_date.c_str() ) );
                else if( g_process == eUSR )
-                  comment = utf8_to_ANSI( tmp_str( "lib.rus.ec USR - %s\r\n%s\r\n65537\r\nЛокальные архивы библиотеки lib.rus.ec (не-FB2) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
+                  comment = utf8_to_ANSI( tmp_str( "%s USR - %s\r\n%s\r\n65537\r\nЛокальные архивы библиотеки %s (не-FB2) %s", g_db_name.c_str(), full_date.c_str(), inpx_name.c_str(), g_db_name.c_str(), full_date.c_str() ) );
                else if( g_process == eAll )
-                  comment = utf8_to_ANSI( tmp_str( "lib.rus.ec ALL - %s\r\n%s\r\n65537\r\nЛокальные архивы библиотеки lib.rus.ec (все) %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
+                  comment = utf8_to_ANSI( tmp_str( "%s ALL - %s\r\n%s\r\n65537\r\nЛокальные архивы библиотеки %s (все) %s", g_db_name.c_str(), full_date.c_str(), inpx_name.c_str(), g_db_name.c_str(), full_date.c_str() ) );
             }
             else
             {
-               comment = utf8_to_ANSI( tmp_str( "lib.rus.ec FB2 - %s\r\n%s\r\n134283264\r\nOnline коллекция lib.rus.ec %s", full_date.c_str(), inpx_name.c_str(), full_date.c_str() ) );
+               comment = utf8_to_ANSI( tmp_str( "%s FB2 online - %s\r\n%s\r\n134283264\r\nOnline коллекция %s %s", g_db_name.c_str(), full_date.c_str(), inpx_name.c_str(), g_db_name.c_str(), full_date.c_str() ) );
             }
          }
          else
@@ -1038,8 +1066,13 @@ int main( int argc, char *argv[] )
 
          zip zz( inpx, comment );
 
-         if( ! archives_path.empty() ) process_local_archives( mysql, zz, archives_path );
-         else                          process_database      ( mysql, zz                );
+         if( archives_path.empty() )
+            process_database( mysql, zz );
+         else
+         {
+            for( vector< string >::const_iterator it = archives_path.begin(); it != archives_path.end(); ++it )
+               process_local_archives( mysql, zz, (*it) );
+         }
 
          {
             zip_writer zw( zz, "structure.info" );

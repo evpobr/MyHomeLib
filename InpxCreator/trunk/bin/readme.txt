@@ -1,4 +1,4 @@
-﻿Command line генератор списков для MyHomeLib версии 1.5.
+﻿﻿Command line генератор списков для MyHomeLib версии 1.5.
 
 Я пока старался повторить оригинальный алгоритм из LibFileList, без каких либо
 извращений с SQL.
@@ -28,7 +28,7 @@
 Для запуска наберите lib2inpx.exe в командном окне:
 
 Import file (INPX) preparation tool for MyHomeLib
-Version 2.7 (MYSQL 5.1.36)
+Version 3.0 (MYSQL 5.1.42)
 
 Usage: lib2inpx.exe [options] <path to SQL dump files>
 
@@ -44,10 +44,14 @@ options:
                         with file extension not equal to file type
   --no-import           Do not import dumps, just check dump time and use
                         existing database
-  --archives arg        Path to off-line archives (if not present - entire
-                        database in converted for online LibRusEc usage)
-  --inpx arg            Full name of output file (default: librusec_<db_dump_da
-                        te>.inpx)
+  --db-name arg         Name of MYSQL database (default: librusec)
+  --archives arg        Path(s) to off-line archives. Multiple entries should
+                        be separated by ';'. Each path must be valid and must
+                        point to some archives, or processing would be aborted.
+                        (If not present - entire database in converted for
+                        online usage)
+  --inpx arg            Full name of output file (default: <db_name>_<db_dump_d
+                        ate>.inpx)
   --comment arg         File name of template (UTF-8) for INPX comment
   --update arg          Starting with "<arg>.zip" produce "daily_update.zip"
                         (Works only for "fb2")
@@ -116,8 +120,17 @@ Complete processing took 00:00:59
 приведет к созданию daily_update.zip в котором будут содержаться INP для всех имеющихся
 в директории дневных архивов от "167585-167678.zip" до более поздних. Архивы с именами,
 начинающимися с "fb2-", "usr-", а так же более ранние дневные архивы будут игнорироваться.
-Этот режим работатет только для FB2 и MyHomeLib версии 1.6 и позже - созданный файл
+Этот режим работает только для FB2 и MyHomeLib версии 1.6 и позже - созданный файл
 нужно скопировать в директорию MyHomeLib и инициировать update.
+
+При анализе архивов программа намеренно игнорирует "soft links" (MyHomeLib этого
+не делает), что позволяет определенную гибкость при хранении архивов. Например
+можно расположить архивы, общие для flibusta и librusec в базовой директории и
+хранить дневные обновления, отличающиеся для библиотек отдельно друг от друга,
+воспользовавшись "soft links" для создания путей с полными библиотеками для MyHomeLib.
+При этом при создании INPX для таких коллекций опция --archives позволяет
+перечислить несколько путей к архивам, разделяя их ";". Например:
+"--archives=d:\library\local;d:\library\local\librusec"
 
 Выдача “lib2inpx.exe --process usr --archives d:\librusec\local d:\librusec\sql”
 произведет на свет librusec_usr_20090804.inpx, в котором соответственно будет
@@ -133,17 +146,17 @@ Complete processing took 00:00:59
 
 Обратите пожалуйста внимание на то, что некоторые архивы Либрусека в настоящий момент
 находятся в странном состоянии. Не FB2 книги внутри них могут находиться в
-архивированном состоянии (архивы в архивах). Причем использованны могут быть
+архивированном состоянии (архивы в архивах). Причем использованы могут быть
 разные архиваторы - я встретил RAR и ZIP. По умолчанию (или когда использована
 опция --strict=ext) программа положит в INPX реальное расширение имени файла и
 проигнорирует поле FileType из базы данных. Если задать --strict=db, то в INPX
-будет использваться поле FileType из базы данных. И, наконец, если использовано
+будет использоваться поле FileType из базы данных. И, наконец, если использовано
 --strict=ignore, тогда lib2inpx не будет включать в INP файлы, для которых
 file extension не совпадает с database file type.
 
 При выдаче следующей команды:
 ”lib2inpx.exe d:\librusec\sql” архивы процессироваться не будут и появившийся
-на свет librusec_20090804.inpx будет просто содержать все записи из базы
+на свет librusec_online_20090804.inpx будет просто содержать все записи из базы
 Либрусека (Такой вариант без архивов может быть использован для on-line
 работы с Либрусек):
 
@@ -163,6 +176,10 @@ Database processing
 ............................................
 132933 records done in 00:00:40
 
+Опция --db-name=flibusta везде заменит "librusec" на "flibusta", т.е. в имени
+базы данных, именах произведенных файлов и комментариях в них будет использоваться
+другое название.
+
 Оставшиеся ключи программы не особенно важны: ”clean-when-done” удалит созданную
 при работе MYSQL базу данных, “ignore-dump-date” проигнорирует дату в дамп
 файлах и использует сегодняшнее число (UTC), а ”inpx” позволит указать имя и
@@ -171,27 +188,24 @@ Database processing
 "no-import" и создавать базу данных один раз. В ключе "comment" можно задать путь к
 файлу с шаблоном для INPX комментария (UTF-8, единственный "%s" будет заменен на
 имя генерируемого INPX файла - см. comment_fb2.utf8 и comment_usr.utf8 в директории
-программы). Если этого параметра нет, то комментарии будут генериться в формате,
+программы). Если этого параметра нет, то комментарии будут генерироваться в формате,
 максимально приближенном к тем, что использует MyHomeLib для "стандартных" коллекций
 Либрусека.
 
-В предлагаемые архивы входит 2 коммандных файла sync_script_fb2.cmd и sync_script_usr.cmd,
-которыe принимают параметр – путь к локальным архивам librusec:
-“sync_script.cmd d:\librusec\local”.  При выполнении каждый скрипт для своего типа обработки
-(FB2 и USR соответственно)
+В предлагаемые архивы в качестве примера входят 2 командных файла: fb2_librusec.cmd
+и fb2_flibusta.cmd, которыe принимают параметр – путь к локальным архивам:
+“fb2_flibusta.cmd d:\library\local”.  При выполнении каждый скрипт
 
-1. Загрузит недостающие дневные обновления с Либрусека
-2. Загрузит сегодняшние дампы базы Либрусека (поддиректория librisec) и распакует их
+1. Загрузит недостающие дневные обновления (в d:\library\local\libruec или
+   d:\library\local\flibusta
+2. Загрузит сегодняшние дампы базы данных и распакует их
 3. Запустит lib2inpx с обработкой архивов – полученный INPX будет лежать в поддиректории data
-4. Запустит lib2inpx для всей базы – полученный INPX будет лежать там же, где и закачанные с
-   Либрусека MYSQL dumps
+4. Запустит lib2inpx для всей базы (онлине вариант) – полученный INPX будет лежать там же
 
-Если указать в командой строке еше один параметр:
-“sync_script.cmd d:\librusec\local skip” то шаги 1 и 2 будут пропущены.
+Если указать в командой строке еще один параметр, например:
+“fb2_librusec.cmd d:\librusec\local skip” то шаги 1 и 2 будут пропущены.
 
-Вы сможете посмотреть логи закачек в файлах wget_archives.log и wget_sql.log
-в директории, откуда запущен скрипт.
+Вы сможете посмотреть логи закачек в файлах *.log в директории, откуда запущен скрипт.
 
-Осталось создать новую коллекцию в MyHomeLib 1.5 – а можно подменить
-librusec.inpx в директории myhomelib и запустить "myhomelib.exe /clean",
+Осталось создать новую коллекцию в MyHomeLib или запустить "myhomelib.exe /clear",
 чтобы начать все заново :)

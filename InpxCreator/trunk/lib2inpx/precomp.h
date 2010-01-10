@@ -23,9 +23,9 @@
 #include <direct.h>
 
 #ifdef WIN64
-#  include <mysql-5.1.36-win64\include\mysql.h>
+#  include <mysql-5.1.42-win64\include\mysql.h>
 #else
-#  include <mysql-5.1.36-win32\include\mysql.h>
+#  include <mysql-5.1.42-win32\include\mysql.h>
 #endif
 
 #include <algorithm>
@@ -34,8 +34,10 @@
 #include <iostream>
 #include <sstream>
 #include <regex>
+#include <vector>
 
 #include <boost/utility.hpp>
+#include <boost/scoped_array.hpp>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
