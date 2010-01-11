@@ -17,7 +17,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, frame_WizardPageBase, frame_InteriorPageBase, StdCtrls, ExtCtrls, ComCtrls,
-  unit_WorkerThread, unit_NCWParams;
+  unit_WorkerThread, unit_NCWParams, RzPrgres;
 
 const
   PM_WORKERDONE = WM_USER + 0;
@@ -25,10 +25,10 @@ const
 type
   TframeNCWProgress = class(TInteriorPageBase)
     txtComment: TLabel;
-    ProgressBar: TProgressBar;
     errorLog: TListView;
     pnButtons: TPanel;
     btnSaveLog: TButton;
+    Bar: TRzProgressBar;
   private
     FErrors: TStringList;
 
@@ -87,7 +87,7 @@ end;
 
 procedure TframeNCWProgress.OpenProgress;
 begin
-  ProgressBar.Position := 0;
+  Bar.Percent := 0;
 end;
 
 procedure TframeNCWProgress.SetComment(const Comment: string);
@@ -97,7 +97,7 @@ end;
 
 procedure TframeNCWProgress.ShowProgress(Percent: Integer);
 begin
-  ProgressBar.Position := Percent;
+  Bar.Percent  := Percent;
 end;
 
 procedure TframeNCWProgress.ShowTeletype(const Msg: string; Severity: TTeletypeSeverity);

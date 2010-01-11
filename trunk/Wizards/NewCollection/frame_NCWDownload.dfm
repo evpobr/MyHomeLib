@@ -10,9 +10,27 @@ inherited frameNCWDownload: TframeNCWDownload
     Align = alTop
     Alignment = taCenter
     Caption = 'lblS1'
-    ExplicitLeft = 0
-    ExplicitTop = 56
     ExplicitWidth = 22
+  end
+  object Bar: TRzProgressBar [1]
+    AlignWithMargins = True
+    Left = 11
+    Top = 99
+    Width = 298
+    Margins.Left = 11
+    Margins.Top = 10
+    Margins.Right = 11
+    Align = alTop
+    BorderOuter = fsFlatRounded
+    BorderWidth = 0
+    InteriorOffset = 0
+    PartsComplete = 0
+    Percent = 0
+    ThemeAware = False
+    TotalParts = 0
+    ExplicitLeft = 14
+    ExplicitTop = 92
+    ExplicitWidth = 292
   end
   inherited pnTitle: TPanel
     inherited lblTitle: TLabel
@@ -26,23 +44,12 @@ inherited frameNCWDownload: TframeNCWDownload
       ExplicitWidth = 256
     end
   end
-  object Bar: TProgressBar
-    AlignWithMargins = True
-    Left = 15
-    Top = 94
-    Width = 290
-    Height = 17
-    Margins.Left = 15
-    Margins.Top = 5
-    Margins.Right = 15
-    Align = alTop
-    TabOrder = 1
-    ExplicitTop = 74
-  end
   object HTTP: TIdHTTP
     OnWork = HTTPWork
     OnWorkBegin = HTTPWorkBegin
+    OnWorkEnd = HTTPWorkEnd
     AllowCookies = True
+    HandleRedirects = True
     ProxyParams.BasicAuthentication = False
     ProxyParams.ProxyPort = 0
     Request.ContentLength = -1

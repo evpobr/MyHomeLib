@@ -4195,8 +4195,6 @@ begin
         end;
       end;
   end;
-
-
   Clipboard.AsText := trim(strText);
 end;
 
@@ -4526,7 +4524,7 @@ begin
     Data.ID := BookIDList[i].ID;
     Data.State := dsWait;
     Data.FileName := Folder;
-    Data.URL := Format(Settings.DownloadURL + 'b/%d/get', [LibID]);
+    Data.URL := Format(Settings.InpxURL + 'b/%d/get', [LibID]);
   end; // for
 
   lblDownloadCount.Caption := Format('(%d)',[tvDownloadList.ChildCount[Nil]]);
@@ -5687,7 +5685,7 @@ begin
   if DMUser.ActiveCollection.URL <> ''then
     URL :=  Format('%sb/%d/',[DMUser.ActiveCollection.URL, Table.FieldByName('LibID').AsInteger])
   else
-    URL :=  Format('%sb/%d/',[Settings.DownloadURL, Table.FieldByName('LibID').AsInteger]);
+    URL :=  Format('%sb/%d/',[Settings.InpxURL, Table.FieldByName('LibID').AsInteger]);
 
   frmBookDetails := TfrmBookDetails.Create(Application);
 

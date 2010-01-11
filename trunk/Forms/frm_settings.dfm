@@ -62,7 +62,7 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 414
     Height = 409
-    ActivePage = tsBehavour
+    ActivePage = tsInternet
     Align = alClient
     TabOrder = 1
     object tsDevices: TTabSheet
@@ -620,7 +620,7 @@ object frmSettings: TfrmSettings
         Left = 3
         Top = 3
         Width = 400
-        Height = 113
+        Height = 101
         Align = alTop
         Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1082#1089#1080
         TabOrder = 0
@@ -714,23 +714,24 @@ object frmSettings: TfrmSettings
       object RzGroupBox9: TRzGroupBox
         AlignWithMargins = True
         Left = 3
-        Top = 179
+        Top = 213
         Width = 400
         Height = 109
         Align = alTop
         Caption = #1057#1077#1088#1074#1077#1088' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
         TabOrder = 1
+        ExplicitTop = 179
         object edUpdates: TEdit
-          Left = 16
-          Top = 23
-          Width = 369
+          Left = 13
+          Top = 18
+          Width = 372
           Height = 21
           TabOrder = 0
           Text = 'http://home-lib.net/update/'
         end
         object cbCheckColUpdate: TCheckBox
           Left = 16
-          Top = 50
+          Top = 46
           Width = 337
           Height = 17
           Caption = #1055#1088#1086#1074#1077#1088#1103#1090#1100' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1103' '#1082#1072#1090#1072#1083#1086#1075#1072' lib.rus.ec '#1087#1088#1080' '#1079#1072#1087#1091#1089#1082#1077
@@ -738,7 +739,7 @@ object frmSettings: TfrmSettings
         end
         object cbUpdates: TCheckBox
           Left = 16
-          Top = 90
+          Top = 86
           Width = 353
           Height = 17
           Caption = #1055#1088#1086#1074#1077#1088#1103#1090#1100' '#1085#1072#1083#1080#1095#1080#1077' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081' '#1087#1088#1086#1075#1088#1072#1084#1084#1099' '#1087#1088#1080' '#1079#1072#1087#1091#1089#1082#1077
@@ -746,7 +747,7 @@ object frmSettings: TfrmSettings
         end
         object cbAutoRunUpdate: TCheckBox
           Left = 16
-          Top = 70
+          Top = 66
           Width = 337
           Height = 17
           Caption = #1047#1072#1087#1091#1089#1082#1072#1090#1100' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1077' '#1082#1072#1090#1072#1083#1086#1075#1072' lib.rus.ec '#1072#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080
@@ -756,12 +757,14 @@ object frmSettings: TfrmSettings
       object RzGroupBox10: TRzGroupBox
         AlignWithMargins = True
         Left = 3
-        Top = 294
+        Top = 328
         Width = 400
-        Height = 102
+        Height = 68
         Align = alClient
         Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1089#1086#1077#1076#1080#1085#1077#1085#1080#1103
         TabOrder = 2
+        ExplicitTop = 294
+        ExplicitHeight = 102
         object RzLabel7: TRzLabel
           Left = 16
           Top = 22
@@ -834,12 +837,13 @@ object frmSettings: TfrmSettings
       object RzGroupBox2: TRzGroupBox
         AlignWithMargins = True
         Left = 3
-        Top = 122
+        Top = 110
         Width = 400
-        Height = 51
+        Height = 43
         Align = alTop
         Caption = #1055#1072#1087#1082#1072' '#1089' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1103#1084#1080
         TabOrder = 3
+        ExplicitTop = 122
         object edUpdateDir: TRzButtonEdit
           Left = 11
           Top = 18
@@ -850,6 +854,24 @@ object frmSettings: TfrmSettings
           AltBtnWidth = 15
           ButtonWidth = 15
           OnButtonClick = edDeviceDirButtonClick
+        end
+      end
+      object RzGroupBox17: TRzGroupBox
+        AlignWithMargins = True
+        Left = 3
+        Top = 159
+        Width = 400
+        Height = 48
+        Align = alTop
+        Caption = #1057#1077#1088#1074#1077#1088' INPX'
+        TabOrder = 4
+        ExplicitTop = 171
+        object edINPXUrl: TEdit
+          Left = 12
+          Top = 19
+          Width = 373
+          Height = 21
+          TabOrder = 0
         end
       end
     end
@@ -952,7 +974,6 @@ object frmSettings: TfrmSettings
         Align = alClient
         Caption = #1055#1086#1074#1077#1076#1077#1085#1080#1077
         TabOrder = 0
-        ExplicitHeight = 264
         object cbShowSubGenreBooks: TCheckBox
           Left = 10
           Top = 26

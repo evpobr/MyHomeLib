@@ -5,21 +5,26 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, frame_InteriorPageBase, StdCtrls, ExtCtrls, ComCtrls,
-  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP;
+  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, RzPrgres;
 
 type
   TframeNCWDownload = class(TInteriorPageBase)
-    Bar: TProgressBar;
     HTTP: TIdHTTP;
     lblS1: TLabel;
+    Bar: TRzProgressBar;
+
+
+
     procedure HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode;
       AWorkCountMax: Int64);
     procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
       AWorkCount: Int64);
+    procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
   private
     { Private declarations }
-    FDownloadSize : Integer;
+    FDownloadSize : Extended;
     FStartDate : TDateTime;
+    FTerminated: Boolean;
   public
     function Activate(LoadData: Boolean): Boolean; override;
     function Deactivate(CheckData: Boolean): Boolean; override;
@@ -45,7 +50,7 @@ uses
 function TframeNCWDownload.Activate(LoadData: Boolean): Boolean;
 begin
   lblS1.Caption := 'Подключение ...';
-  Bar.Position := 0;
+  Bar.Percent := 0;
 end;
 
 function TframeNCWDownload.Deactivate(CheckData: Boolean): Boolean;
@@ -58,10 +63,15 @@ var
   Responce: TMemoryStream;
 begin
   try
+    FTerminated := False;
     Responce := TMemoryStream.Create;
     HTTP.Get(FPParams^.INPXUrl, Responce);
-    Responce.SaveToFile(FPParams^.INPXFile);
-    FPParams^.Operation := otInpx;
+    if not FTerminated then
+    begin
+      Responce.SaveToFile(FPParams^.INPXFile);
+      FPParams^.Operation := otInpx;
+      Sleep(2000);
+    end;
   finally
     Responce.Free;
   end;
@@ -71,16 +81,17 @@ procedure TframeNCWDownload.HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
   AWorkCount: Int64);
 var
   ElapsedTime: Cardinal;
-  Speed: string;
+  KB : extended;
 begin
+  KB := AWorkCount / 1024;
+
   if FDownloadSize <> 0 then
-    Bar.Position := AWorkCount * 100 div FDownloadSize;
+    Bar.Percent:= round(KB / FDownloadSize * 100);
 
   ElapsedTime := SecondsBetween(Now, FStartDate);
   if ElapsedTime > 0 then
   begin
-    Speed := FormatFloat('0.00', AWorkCount / 1024 / ElapsedTime);
-    lblS1.Caption := Format('Загрузка: %s Kb/s', [Speed]);
+    lblS1.Caption := Format('Загружено  %d  из  %d кб (%n кб/с)', [round(KB), round(FDownloadSize), KB / ElapsedTime]);
   end;
   Application.ProcessMessages;
 end;
@@ -88,14 +99,20 @@ end;
 procedure TframeNCWDownload.HTTPWorkBegin(ASender: TObject;
   AWorkMode: TWorkMode; AWorkCountMax: Int64);
 begin
-  Bar.Position := 0;
-  FDownloadSize := AWorkCountMax;
+  Bar.Percent := 0;
+  FDownloadSize := AWorkCountMax / 1024;
   FStartDate := Now;
+end;
+
+procedure TframeNCWDownload.HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
+begin
+  lblS1.Caption := 'Загрузка завершена'
 end;
 
 procedure TframeNCWDownload.Stop;
 begin
   try
+    FTerminated := True;
     HTTP.Disconnect;
   except
     //
