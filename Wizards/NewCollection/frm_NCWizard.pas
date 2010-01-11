@@ -396,6 +396,8 @@ begin
 
   FFinishPage.lblPageHint.Caption := '';
 
+  SetProxySettings(FDownloadPage.HTTP);
+
   FCurrentPage := NO_ACTIVE_PAGE;
   ShowPage(0);
 end;

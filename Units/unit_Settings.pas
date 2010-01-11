@@ -104,7 +104,7 @@ type
     FProxyPassword: string;
     FProxyPort: Integer;
     FUpdateURL: string;
-    FDownloadURL: string;
+    FInpxURL: string;
     FErrorLog: boolean;
     FTimeOut: integer;
     FReadTimeOut: integer;
@@ -302,7 +302,7 @@ type
     property ProxyPassword: string read FProxyPassword write FProxyPassword;
     property ProxyPort: Integer read FProxyPort write FProxyPort;
     property UpdateURL: string read FUpdateURL write FUpdateURL;
-    property DownloadURL: string read FDownloadURL write FDownloadURL;
+    property InpxURL: string read FInpxURL write FInpxURL;
     property ErrorLog:boolean read FerrorLog write FErrorLog;
     property TimeOut: integer read FTimeOut write FTimeOut;
     property ReadTimeOut: integer read FReadTimeOut write FReadTimeOut;
@@ -617,7 +617,7 @@ begin
     FProxyPassword := DecodePassString(iniFile.ReadString(NETWORK_SECTION, 'proxy-pass', ''));
     FProxyPort := iniFile.ReadInteger(NETWORK_SECTION, 'proxy-port', 0);
     FUpdateURL := iniFile.ReadString(NETWORK_SECTION, 'update_server', 'http://home-lib.net/update/');
-    FDownloadURL := iniFile.ReadString(NETWORK_SECTION, 'library_server', 'http://lib.rus.ec/');
+    FInpxURL := iniFile.ReadString(NETWORK_SECTION, 'inpx-url', 'http://home-lib.net/download/inpx/test/');
     FErrorLog := iniFile.ReadBool(NETWORK_SECTION,'use_error_log', false);
     FTimeOut := iniFile.ReadInteger(NETWORK_SECTION,'time-out',5000);
     FReadTimeOut := iniFile.ReadInteger(NETWORK_SECTION,'read_time-out',50000);
@@ -776,7 +776,8 @@ begin
     iniFile.WriteString(NETWORK_SECTION, 'proxy-pass', EncodePassString(FProxyPassword));
     iniFile.WriteInteger(NETWORK_SECTION, 'proxy-port', FProxyPort);
     iniFile.WriteString(NETWORK_SECTION, 'update_server', FUpdateURL);
-    iniFile.WriteString(NETWORK_SECTION, 'library_server', FDownloadURL);
+    iniFile.WriteString(NETWORK_SECTION, 'inpx-url', FInpxURL);
+
     iniFile.WriteBool(NETWORK_SECTION,'use_error_log',FErrorLog);
     iniFile.WriteInteger(NETWORK_SECTION,'time-out',FTimeOut);
     iniFile.WriteInteger(NETWORK_SECTION,'read_time-out',FReadTimeOut);

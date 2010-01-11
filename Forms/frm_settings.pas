@@ -177,6 +177,8 @@ type
     Label10: TLabel;
     cbOverwriteFB2Info: TCheckBox;
     beTemplate: TRzButtonEdit;
+    RzGroupBox17: TRzGroupBox;
+    edINPXUrl: TEdit;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
@@ -305,7 +307,7 @@ begin
 
   cbUseIESettings.Checked := Settings.UseIESettings;
   cbAutoRunUpdate.Checked := Settings.AutoRunUpdate;
-
+  edInpxUrl.Text          := Settings.InpxURL;
   edUpdateDir.Text        := Settings.UpdateDir;
 
   // Page 5 - Scripts
@@ -414,6 +416,7 @@ begin
   Settings.DwnldInterval          := Round(edDwnldInterval.Value);
   Settings.UseIESettings          := cbUseIESettings.Checked;
   Settings.AutoRunUpdate          := cbAutoRunUpdate.Checked;
+  Settings.InpxURL                := InclideUrlSlash(edInpxUrl.Text);
 
   Settings.UpdateDir              := edUpdateDir.Text;
 

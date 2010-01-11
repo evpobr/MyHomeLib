@@ -75,8 +75,6 @@ const
   INPX_KEY_PREFIX = 'Inpx';
   INPX_GROUP_KEY_PREFIX = 'Group';
 
-  URL = 'http://home-lib.net/download/inpx/test/';
-
   DefaultGroups : array [0..2] of string = ('Библиотека Lib.rus.ec','Библиотека flibusta.net','Библиотека Траума');
 
   DefaultCollections : array [0 .. 8] of TCollectionDesc = (
@@ -229,7 +227,7 @@ procedure TframeNCWInpxSource.lvCollectionsChange(Sender: TObject;
 begin
   pageHint.Caption := FCollections[Item.Index].Desc;
   FPParams^.INPXFile := Settings.WorkPath + FCollections[Item.Index].INPX;
-  FPPArams^.INPXUrl := URL + FCollections[Item.Index].INPX;
+  FPPArams^.INPXUrl := Settings.InpxURL + FCollections[Item.Index].INPX;
 end;
 
 procedure TframeNCWInpxSource.OnSetCollectionType(Sender: TObject);

@@ -96,9 +96,8 @@ var
     end;
   end;
 
-
 begin
-  if FPParams^.INPXFile = '' then Exit;
+  if (FPParams^.INPXFile = '') or not (FileExists(FPParams^.INPXFile)) then Exit;
 
   try
     Zip := TZipForge.Create(self);
