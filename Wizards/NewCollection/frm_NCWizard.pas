@@ -431,6 +431,7 @@ begin
       RegisterCollection;
     end;
   end;
+
   if DOWNLOAD_PAGE_ID = FCurrentPage then
   begin
     AdjustButtons([wbCancel],[wbCancel]);
@@ -580,7 +581,6 @@ begin
     on e: Exception do
     begin
       FProgressPage.ShowTeletype(e.Message, tsError);
-
       if FileExists(FParams.CollectionFile) then
         DeleteFile(FParams.CollectionFile);
     end;
