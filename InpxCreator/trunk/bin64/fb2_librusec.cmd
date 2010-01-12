@@ -22,7 +22,7 @@ wget --progress=dot:mega --user-agent=Mozilla/5.0 --append-output=%CDIR%\log_%NA
 DEL %CDIR%\log_%NAME%_sql.log
 
 REM Download latest database
-FOR %%t IN (libgenrelist libbook libavtoraliase libavtorname libavtor libgenre libseq libseqname libfilename) DO (wget --progress=dot:mega --user-agent=Mozilla/5.0 --append-output=%CDIR%\log_%NAME%_sql.log --directory-prefix=%WDIR% %SITE%/sql/lib.%%t.sql.gz & gzip -d %WDIR%/lib.%%t.sql.gz)
+FOR %%t IN (libgenrelist libbook libavtoraliase libavtorname libavtor libgenre librate libseq libseqname libfilename) DO (wget --progress=dot:mega --user-agent=Mozilla/5.0 --append-output=%CDIR%\log_%NAME%_sql.log --directory-prefix=%WDIR% %SITE%/sql/lib.%%t.sql.gz & gzip -d %WDIR%/lib.%%t.sql.gz)
 
 :skip
 

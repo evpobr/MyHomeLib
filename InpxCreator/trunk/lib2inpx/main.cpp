@@ -375,6 +375,23 @@ void get_book_author( const mysql_connection& mysql, const string& book_id, stri
       remove_crlf( author );
 }
 
+void get_book_rate( const mysql_connection& mysql, const string& book_id, string& rate )
+{
+   MYSQL_ROW record;
+
+   rate.erase();
+
+   mysql.query( string( "SELECT AVG(Rate) FROM librate WHERE BookId =" ) + book_id + ";" );
+
+   mysql_results res( mysql );
+
+   if( record = res.fetch_row() )
+   {
+      if( 0 != record[ 0 ] )
+         rate = record[ 0 ];
+   }
+}
+
 void get_book_genres( const mysql_connection& mysql, const string& book_id, string& genres )
 {
    MYSQL_ROW  record;
@@ -461,6 +478,7 @@ void process_book( const mysql_connection& mysql, MYSQL_ROW record, const string
 
    get_book_author ( mysql, book_id, book_author );
    get_book_genres ( mysql, book_id, book_genres );
+   get_book_rate   ( mysql, book_id, book_rate );
    get_book_squence( mysql, book_id, book_sequence, book_sequence_num );
 
    if( remove_crlf( book_file ) )
@@ -795,7 +813,7 @@ int main( int argc, char *argv[] )
       {
          cout << endl;
          cout << "Import file (INPX) preparation tool for MyHomeLib" << endl;
-         cout << "Version 3.0 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
+         cout << "Version 3.1 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
          cout << endl;
          cout << "Usage: " << file_name << " [options] <path to SQL dump files>" << endl << endl;
          cout << options << endl;
