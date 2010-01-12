@@ -70,7 +70,6 @@ begin
     begin
       Responce.SaveToFile(FPParams^.INPXFile);
       FPParams^.Operation := otInpx;
-      Sleep(2000);
     end;
   finally
     Responce.Free;
@@ -106,7 +105,8 @@ end;
 
 procedure TframeNCWDownload.HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
 begin
-  lblS1.Caption := 'Загрузка завершена'
+  lblS1.Caption := 'Загрузка завершена';
+  Application.ProcessMessages;
 end;
 
 procedure TframeNCWDownload.Stop;

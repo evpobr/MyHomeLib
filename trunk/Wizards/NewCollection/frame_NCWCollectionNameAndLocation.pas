@@ -257,9 +257,7 @@ begin
       Exit;
     end;
   end;
-
   HidePageMessage;
-
   Result := True;
 end;
 
