@@ -129,19 +129,19 @@ begin
     frmSplash.Show;   // Display the splash screen
     frmSplash.Update; // Update the splash screen to ensure it gets drawn
 
-  // Важно! сначала создаем датамодули и главную форму
-  Application.CreateForm(TDMUser, DMUser);
-  Application.CreateForm(TDMCollection, DMCollection);
-  Application.CreateForm(TfrmMain, frmMain);
+    // Важно! сначала создаем датамодули и главную форму
+    Application.CreateForm(TDMUser, DMUser);
+    Application.CreateForm(TDMCollection, DMCollection);
+    Application.CreateForm(TfrmMain, frmMain);
   // а потом - остальные формы!
-  Application.CreateForm(TfrmEditor, frmEditor);
-  Application.CreateForm(TfrmEditBookInfo, frmEditBookInfo);
-  Application.CreateForm(TfrmGenreTree, frmGenreTree);
-  Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
-  Application.CreateForm(TfrmEditAuthorData, frmEditAuthorData);
-  Application.CreateForm(TfrmConvertToFBD, frmConvertToFBD);
-  Application.CreateForm(TfrmAuthorList, frmAuthorList);
-  frmSplash.Hide;  // Hide the splash screen
+    Application.CreateForm(TfrmEditor, frmEditor);
+    Application.CreateForm(TfrmEditBookInfo, frmEditBookInfo);
+    Application.CreateForm(TfrmGenreTree, frmGenreTree);
+    Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
+    Application.CreateForm(TfrmEditAuthorData, frmEditAuthorData);
+    Application.CreateForm(TfrmConvertToFBD, frmConvertToFBD);
+    Application.CreateForm(TfrmAuthorList, frmAuthorList);
+    frmSplash.Hide;  // Hide the splash screen
   finally
     frmSplash.Free;  // Free the splash screen
   end;

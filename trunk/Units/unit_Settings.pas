@@ -88,7 +88,7 @@ type
     FLastBookInFavorites: integer;
     FSplitters: TSplitters;
     FTreeModes: TTreeModes;
-    FWindowState: TWindowState;
+    FWindowState: Integer;
     FFormWidth: integer;
     FFormHeight: integer;
     FCoverWidth: integer;
@@ -181,6 +181,8 @@ type
     FIniFileName: string;
 
     FFBDBookHeaderTemplate: string;
+    FFormTop: Integer;
+    FFormLeft: Integer;
 
   private
     FDeleteFiles: boolean;
@@ -324,9 +326,12 @@ type
     property DeletedColor: TColor read FDeletedColor write FDeletedColor;
     property LocalColor: TColor read FLocalColor write FLocalColor;
 
-    property WindowState: TWindowState read FWindowState write FWindowState;
+    property WindowState: Integer read FWindowState write FWindowState;
     property FormWidth: integer read FFormWidth write FFormWidth;
     property FormHeight: integer read FFormHeight write FFormHeight;
+    property FormTop: integer read FFormTop write FFormTop;
+    property FormLeft: integer read FFormLeft write FFormLeft;
+
     property CoverWidth: integer read FCoverWidth write FCoverWidth;
 
     property BookSRCollapsed: boolean read FBookSRCollapsed write FBookSRCollapsed;
@@ -586,6 +591,9 @@ begin
 
     FFormHeight := iniFile.ReadInteger(INTERFACE_SECTION, 'FormHeight ', 850);
     FFormWidth := iniFile.ReadInteger(INTERFACE_SECTION, 'FormWidth ', 1000);
+    FFormTop := iniFile.ReadInteger(INTERFACE_SECTION, 'FormTop ', 0);
+    FFormLeft := iniFile.ReadInteger(INTERFACE_SECTION, 'FormLeft ', 0);
+
 
     FCoverWidth := iniFile.ReadInteger(INTERFACE_SECTION, 'CoverWidth ', 250);
 
@@ -602,11 +610,8 @@ begin
 
     LoadSplitters(iniFile);
 
-    case iniFile.ReadInteger(INTERFACE_SECTION, 'WindowState', 2) of
-      0: FWindowState := wsNormal;
-      1: FWindowState := wsMinimized;
-      2: FWindowState := wsMaximized;
-    end;
+    FWindowState := iniFile.ReadInteger(INTERFACE_SECTION, 'WindowState', 2);
+
 
 
     //
@@ -753,10 +758,13 @@ begin
     iniFile.WriteInteger(INTERFACE_SECTION, 'LastBookInSeries', FLastBookinSeries);
     iniFile.WriteInteger(INTERFACE_SECTION, 'LastBookInFavorites', FLastBookinFavorites);
 
-    iniFile.WriteInteger(INTERFACE_SECTION, 'WindowState', Ord(FWindowState));
+    iniFile.WriteInteger(INTERFACE_SECTION, 'WindowState', WindowState);
 
     iniFile.WriteInteger(INTERFACE_SECTION, 'FormHeight ', FFormHeight);
     iniFile.WriteInteger(INTERFACE_SECTION, 'FormWidth ', FFormWidth);
+    iniFile.WriteInteger(INTERFACE_SECTION, 'FormTop ', FFormTop);
+    iniFile.WriteInteger(INTERFACE_SECTION, 'FormLeft ', FFormLeft);
+
 
     iniFile.WriteInteger(INTERFACE_SECTION, 'CoverWidth ', FCoverWidth);
 
