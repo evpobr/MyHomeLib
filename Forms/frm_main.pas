@@ -542,8 +542,6 @@ type
     procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
     procedure btnApplyFilterClick(Sender: TObject);
     procedure btnClearFilterEditsClick(Sender: TObject);
-    procedure FormMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
     procedure tvBooksTreeMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure tvBooksTreeKeyDown(Sender: TObject; var Key: Word;
@@ -632,6 +630,7 @@ type
       Shift: TShiftState);
     procedure tvGroupsKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure FormResize(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -703,6 +702,7 @@ type
 
     property LastActiveBookID: integer read FLastActiveBookID;
 
+    procedure SetFormState;
   private
     FSelectionState: boolean;
     FCollectionRoot: string;
@@ -1122,14 +1122,6 @@ begin
 
   CreateSettings;
   Settings.LoadSettings;
-
-  WindowState := Settings.WindowState;
-
-  if WindowState = wsNormal then
-  begin
-    Width := Settings.FormWidth;
-    Height := Settings.FormHeight;
-  end;
 
   SetColors;
 
@@ -1861,6 +1853,17 @@ begin
   ShowNCWizard;
 end;
 
+procedure TfrmMain.SetFormState;
+begin
+  frmMain.WindowState := TWindowState(Settings.WindowState);
+  if frmMain.WindowState = wsNormal then
+  begin
+    frmMain.Top    := Settings.FormTop;
+    frmMain.Left   := Settings.FormLeft;
+    frmMain.Width  := Settings.FormWidth;
+    frmMain.Height := Settings.FormHeight;
+  end;
+end;
 
 procedure TfrmMain.btnSwitchTreeModeClick(Sender: TObject);
 var
@@ -2289,6 +2292,7 @@ begin
   if Settings.AutoStartDwnld then
     btnStartDownloadClick(Sender);
 
+  SetFormState;
 end;
 
 procedure TfrmMain.SavePositions;
@@ -2317,12 +2321,14 @@ begin
 
   Settings.CoverWidth := cpCoverA.Width;
 
-  Settings.WindowState := WindowState;
-
+  Settings.WindowState := Ord(Self.WindowState);
   if WindowState = wsNormal then
   begin
     Settings.FormWidth := Width;
     Settings.FormHeight := Height;
+
+    Settings.FormTop := Top;
+    Settings.FormLeft := Left;
   end;
 end;
 
@@ -2344,10 +2350,9 @@ begin
 
 end;
 
-procedure TfrmMain.FormMouseUp(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+procedure TfrmMain.FormResize(Sender: TObject);
 begin
-  
+
 end;
 
 //
