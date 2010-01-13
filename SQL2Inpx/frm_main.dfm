@@ -25,11 +25,9 @@
     ActivePage = tsParams
     Align = alClient
     TabOrder = 0
-    ExplicitHeight = 491
     object tsParams: TTabSheet
       Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099
       ImageIndex = 2
-      ExplicitHeight = 463
       object GroupBox1: TGroupBox
         Left = 3
         Top = 3
@@ -552,7 +550,6 @@
     object TabSheet2: TTabSheet
       Caption = #1058#1072#1073#1083#1080#1094#1099
       ImageIndex = 1
-      ExplicitHeight = 463
       object Label2: TLabel
         Left = 507
         Top = 11
@@ -680,6 +677,7 @@
           item
             Expanded = False
             FieldName = 'Time'
+            Width = 64
             Visible = True
           end
           item
@@ -690,6 +688,7 @@
           item
             Expanded = False
             FieldName = 'FileType'
+            Width = 64
             Visible = True
           end
           item
@@ -710,11 +709,13 @@
           item
             Expanded = False
             FieldName = 'N'
+            Width = 64
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'keywords'
+            Width = 64
             Visible = True
           end
           item
@@ -927,7 +928,6 @@
     end
     object TabSheet1: TTabSheet
       Caption = #1051#1086#1075
-      ExplicitHeight = 463
       object lblS1: TLabel
         Left = 304
         Top = 438
@@ -942,8 +942,6 @@
         Width = 646
         Height = 424
         Align = alTop
-        Lines.Strings = (
-          '')
         ScrollBars = ssVertical
         TabOrder = 0
       end
@@ -966,7 +964,6 @@
     BorderSides = [sdLeft, sdTop, sdRight, sdBottom]
     BorderWidth = 0
     TabOrder = 1
-    ExplicitTop = 491
     object RzVersionInfoStatus1: TRzVersionInfoStatus
       Left = 0
       Top = 0

@@ -152,7 +152,7 @@ type
     procedure SetTableState(State: boolean);
     procedure EnableControls;
     procedure Disablecontrols;
-    procedure Log(S: string);
+    procedure Log(S: string; header: boolean = false);
     procedure Pack(FN: string;  Level: integer);
     procedure UploadToFTP;
 
@@ -196,8 +196,7 @@ begin
   Max := Lib.LastBookID;
   try
     Res := TStringList.Create;
-    Log('Extra');
-    Log('-------------------------');
+    Log('Extra', true);
     for I := StrToInt(edStartID.Text) to Max do
     begin
       S := Lib.GetBookRecord(i, cbFb2Only.Checked);
@@ -216,13 +215,13 @@ begin
     Version;
     Log(TimeToStr(Now) + ' Упаковка ... ');
     Zip.CompressionLevel := clMax;
-
     Zip.FileName := FOutPath + edExtraName.Text + '.zip';
     Zip.OpenArchive(fmCreate);
     Zip.BaseDir := FInpPath;
     Zip.AddFiles(FInpPath + 'extra.inp');
     Zip.AddFiles(FInpPath + 'version.info');
     Zip.CloseArchive;
+    OK;
     Log(TimeToStr(Now) + 'Готово');
   finally
     Screen.Cursor := crDefault;
@@ -268,8 +267,7 @@ begin
   Result := TStringList.Create;
   Screen.Cursor := crHourGlass;
   FFileList.Clear;
-  Log('Zip');
-  Log('---------------------------------');
+  Log('Zip', true);
   try
     for I := 0 to FZipList.Count - 1 do
     begin
@@ -357,8 +355,7 @@ begin
   FFileList.Clear;
   try
     Res := TStringList.Create;
-    Log('OnLine');
-    Log('-------------------------');
+    Log('OnLine', true);
     while i < Max do
     begin
       if (i + Window) > Max then
@@ -449,7 +446,11 @@ begin
       frmMain.Caption := 'SQL2Inpx: ' + Paramstr(i + 1);
       inc(i);
     end;
-    if ParamStr(i) = '-c' then Close;
+    if ParamStr(i) = '-c' then
+    begin
+      mmLog.Lines.SaveToFile(FProfileName + '.log');
+      Close;
+    end;
     inc(i);
   end;
 end;
@@ -481,8 +482,7 @@ begin
   try
     Responce := TMemoryStream.Create;
     CMD := TStringList.Create;
-    Log('Загрузка и импорт дампа БД ');
-    Log('---------------------------------');
+    Log('Загрузка и импорт дампа БД', true);
     for I := 0 to mmTables.Lines.Count - 1 do
     begin
       DumpName := FBasesPath + copy(mmTables.Lines[i],1,Length(mmTables.Lines[i]) - 3);
@@ -632,9 +632,18 @@ begin
   end;
 end;
 
-procedure TfrmMain.Log(S: string);
+procedure TfrmMain.Log(S: string; header: boolean);
+const
+  hr = '+-----------------------------------------------------------------------+';
 begin
-  mmLog.Lines.Add(S);
+  if header then
+  begin
+    mmLog.Lines.Add(hr);
+    S := '                                    ' + S;
+    mmLog.Lines.Add(S);
+    mmLog.Lines.Add(hr);
+  end
+  else mmLog.Lines.Add(S);
 end;
 
 procedure TfrmMain.OK;
@@ -761,14 +770,15 @@ end;
 
 procedure TfrmMain.UploadToFTP;
 begin
-  Log('Upload to FTP');
-  Log('--------------------------------------');
+  Log('Upload to FTP', true);
   idFTP.Connect;
   idFTP.ChangeDir(FFTPDir);
   Log(TimeToStr(Now) + ' Загрузка ' + edExtraName.Text + ' ...');
   idFTP.Put(FOutPath + edExtraName.Text + '.zip');
+  OK;
   Log(TimeToStr(Now) + ' Загрузка ' + edExtraInfo.Text + ' ...');
   idFTP.Put(FOutPath + edExtraInfo.Text);
+  OK;
   Log(TimeToStr(Now) + ' Готово');
   idFTP.Disconnect;
 end;
