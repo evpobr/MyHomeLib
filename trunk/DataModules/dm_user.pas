@@ -661,17 +661,17 @@ end;
 
 procedure TDMUser.LoadRates;
 var
-  p, ID, Rate: integer;
+  p, ID, LibID, Rate: integer;
 begin
   // Рейтинги
   inc(i);
   while pos('#',SL[i]) = 0 do
   begin
     p := pos(' ',SL[i]);
-    ID := StrToInt(copy(SL[i],1, p - 1));
+    LibID := StrToInt(copy(SL[i],1, p - 1));
     Rate := StrToInt(copy(SL[i],p + 1));
 
-    DMCollection.tblBooks.Locate('LibID', ID, []); //получаем реальный ID
+    DMCollection.tblBooks.Locate('LibID', LibID, []); //получаем реальный ID
     ID := DMCollection.tblBooksID.Value;
 
     if not tblRates.Locate('DataBaseID; BookID', VarArrayOf([ActiveCollection.ID,ID]), []) then
