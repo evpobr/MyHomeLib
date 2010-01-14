@@ -1863,6 +1863,14 @@ begin
     frmMain.Width  := Settings.FormWidth;
     frmMain.Height := Settings.FormHeight;
   end;
+
+  // костыль
+  frmMain.Visible := True;
+  if frmMain.WindowState = wsMinimized then
+     frmMain.WindowState := wsNormal;
+  // конец костыля
+
+
 end;
 
 procedure TfrmMain.btnSwitchTreeModeClick(Sender: TObject);
@@ -2267,12 +2275,6 @@ begin
   //
   FStarImage := CreateImageFromResource(TPngImage, 'smallStar') as TPngImage;
   FEmptyStarImage := CreateImageFromResource(TPngImage, 'smallStarEmpty') as TPngImage;
-
-  // костыль
-  frmMain.Visible := True;
-  if frmMain.WindowState = wsMinimized then
-     frmMain.WindowState := wsNormal;
-  // конец костыля
 
   // загрузка списка пресетов для поиска
   CreateDir(Settings.PresetDir);
@@ -6215,7 +6217,13 @@ begin
     DMUser.tblRates.First;
     while not DMUser.tblRates.Eof do
     begin
-      SL.Add(Format('%d %d',[DMUser.tblRatesBookID.Value, DMUser.tblRatesRate.Value]));
+      DMCollection.tblBooks.Locate('ID', DMUser.tblRatesBookID.Value, []);
+      if DMCollection.tblBooksLibID.Value <> 0 then
+        ID := DMCollection.tblBooksLibID.Value
+      else
+        ID := DMCollection.tblBooksID.Value;
+
+      SL.Add(Format('%d %d',[ID, DMUser.tblRatesRate.Value]));
       DMUser.tblRates.Next;
     end;
     DMUser.tblRates.Filtered := False;
@@ -6228,7 +6236,13 @@ begin
     DMUser.tblFinished.First;
     while not DMUser.tblFinished.Eof do
     begin
-      SL.Add(Format('%d %d',[DMUser.tblFinishedBookID.Value, DMUser.tblFinishedProgress.Value]));
+      DMCollection.tblBooks.Locate('ID', DMUser.tblFinishedBookID.Value, []);
+      if DMCollection.tblBooksLibID.Value <> 0 then
+        ID := DMCollection.tblBooksLibID.Value
+      else
+        ID := DMCollection.tblBooksID.Value;
+
+      SL.Add(Format('%d %d',[ID, DMUser.tblFinishedProgress.Value]));
       DMUser.tblFinished.Next;
     end;
     DMUser.tblFinished.Filtered := False;
@@ -6247,9 +6261,9 @@ begin
       while not DMUser.tblGrouppedBooks.Eof do
       begin
         if DMUser.tblGrouppedBooksLibID.Value <> 0 then
-          ID := DMUser.tblGrouppedBooksLibID.Value
-        else
-          ID := DMUser.tblGrouppedBooksOuterID.Value;
+           ID := DMUser.tblGrouppedBooksLibID.Value
+         else
+           ID := DMUser.tblGrouppedBooksOuterID.Value;
         SL.Add(Format('%d %s',[ID, DMUser.tblGroupListName.AsWideString]));
         DMUser.tblGrouppedBooks.Next;
       end;
@@ -6268,7 +6282,13 @@ begin
     begin
       S := DMCollection.tblExtraE_Review.Value;
       StrReplace(#13#10,'~',S);
-      SL.Add(Format('%d %s',[DMCollection.tblExtraE_ID.Value, S]));
+      DMCollection.tblBooks.Locate('ID', DMCollection.tblExtraE_BookID.Value, []);
+      if DMCollection.tblBooksLibID.Value <> 0 then
+        ID := DMCollection.tblBooksLibID.Value
+      else
+        ID := DMCollection.tblBooksID.Value;
+
+      SL.Add(Format('%d %s',[ID, S]));
       DMCollection.tblExtra.Next;
     end;
     DMCollection.tblExtra.MasterSource := DMCollection.dsBooks;
@@ -6728,7 +6748,7 @@ var
 
 begin
   if not GetFileName(fnOpenUserData, FN) then Exit;
-
+  Screen.Cursor := crHourGlass;
   try
     SL := TStringList.Create;
     SL.LoadFromFile(FN);
@@ -6754,6 +6774,7 @@ begin
     CreateGroupsMenu;
   finally
     SL.Free;
+     Screen.Cursor := crDefault;
   end;
 end;
 
