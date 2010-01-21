@@ -17,43 +17,51 @@
 7.  Умеет правильно работать как с "дневными архивами" Либрусека, так и со специально подготовленными
     "большими" архивами
 8.  Умеет правильно работать как с FB2 и USR так и со смешанными архивами
-9.  Умеет создавать специальный daily_update.zip чтобы избежать полной перестройки
+9.  Если книжка из архива не найдена в базе умеет прочесть информацию о книге
+    из FB2 (случай не регуларно обновляющегося Либрусека)
+10.  Умеет создавать специальный daily_update.zip чтобы избежать полной перестройки
     базы данных MyHomeLib для дневных архивов Либрусека
-10. Не лазит в интернет – в комплект входит командный файл, который умеет закачивать как
+11. Не лазит в интернет – в комплект входит командный файл, который умеет закачивать как
     дампы Либрусека, так и ежедневные архивы обновлений.
-11. Работает достаточно быстро – полная обработка всех локальных архивов Либрусека и
+12. Работает достаточно быстро – полная обработка всех локальных архивов Либрусека и
     дампа сегодняшней базы данных на моем компьютере занимает 1 минуту.
-12. Имеются 32 и 64 битные версии
+13. Имеются 32 и 64 битные версии
 
 Для запуска наберите lib2inpx.exe в командном окне:
 
+
 Import file (INPX) preparation tool for MyHomeLib
-Version 3.0 (MYSQL 5.1.42)
+Version 3.2 (MYSQL 5.1.42)
 
 Usage: lib2inpx.exe [options] <path to SQL dump files>
 
 options:
   --help                Print help message
-  --ignore-dump-date    Ignore date in the dump files, use current UTC date
+  --ignore-dump-date    Ignore date in the dump files, use current UTC date 
                         instead
   --clean-when-done     Remove MYSQL database after processing
   --process arg         What to process - "fb2", "usr", "all" (default: fb2)
-  --strict arg          What to put in INPX as file type - "ext", "db",
+  --strict arg          What to put in INPX as file type - "ext", "db", 
                         "ignore" (default: ext). ext - use real file extension.
                         db - use file type from database. ignore - ignore files
                         with file extension not equal to file type
-  --no-import           Do not import dumps, just check dump time and use
+  --no-import           Do not import dumps, just check dump time and use 
                         existing database
   --db-name arg         Name of MYSQL database (default: librusec)
-  --archives arg        Path(s) to off-line archives. Multiple entries should
-                        be separated by ';'. Each path must be valid and must
+  --archives arg        Path(s) to off-line archives. Multiple entries should 
+                        be separated by ';'. Each path must be valid and must 
                         point to some archives, or processing would be aborted.
-                        (If not present - entire database in converted for
+                        (If not present - entire database in converted for 
                         online usage)
+  --read-fb2 arg        When archived book is not present in the database - try
+                        to parse fb2 in archive to get information. "all" - do 
+                        it for all absent books, "last" - only process books 
+                        with ids larger than last database id (If not present -
+                        no fb2 parsing)
   --inpx arg            Full name of output file (default: <db_name>_<db_dump_d
                         ate>.inpx)
   --comment arg         File name of template (UTF-8) for INPX comment
-  --update arg          Starting with "<arg>.zip" produce "daily_update.zip"
+  --update arg          Starting with "<arg>.zip" produce "daily_update.zip" 
                         (Works only for "fb2")
 
 Предположим, что сегодняшние дампы Либрусека лежат в уже распакованном
@@ -77,39 +85,23 @@ Importing - "lib.libgenrelist.sql"    - done in 00:00:00
 Importing - "lib.libseq.sql"          - done in 00:00:01
 Importing - "lib.libseqname.sql"      - done in 00:00:00
 
-Beginning archives processing - 31 file(s)
+Archives processing - 15 file(s) [D:/Books_e/Library/local/]
 
-Processing - "158326-158457.zip"       - done in 00:00:00
-Processing - "158458-158561.zip"       - done in 00:00:00
-Processing - "158562-158636.zip"       - done in 00:00:00
-Processing - "158637-158693.zip"       - done in 00:00:00
-Processing - "158694-158827.zip"       - done in 00:00:00
-Processing - "158828-158968.zip"       - done in 00:00:00
-Processing - "158969-159071.zip"       - done in 00:00:00
-Processing - "159072-159199.zip"       - done in 00:00:00
-Processing - "159200-159345.zip"       - done in 00:00:00
-Processing - "159346-159470.zip"       - done in 00:00:00
-Processing - "159471-159604.zip"       - done in 00:00:00
-Processing - "159605-159706.zip"       - done in 00:00:00
-Processing - "159707-159834.zip"       - done in 00:00:00
-Processing - "159835-159925.zip"       - done in 00:00:01
-Processing - "159926-160034.zip"       - done in 00:00:00
-Processing - "160035-160256.zip"       - done in 00:00:00
-Processing - "160257-160336.zip"       - done in 00:00:00
-Processing - "160337-160442.zip"       - done in 00:00:00
-Processing - "160443-160588.zip"       - done in 00:00:00
-Processing - "fb2-000024-030559.zip"   - done in 00:00:09
-Processing - "fb2-030560-060423.zip"   - done in 00:00:10
-Processing - "fb2-060424-074391.zip"   - done in 00:00:04
-Processing - "fb2-074392-091839.zip"   - done in 00:00:03
-Processing - "fb2-091841-104214.zip"   - done in 00:00:03
-Processing - "fb2-104215-113436.zip"   - done in 00:00:03
-Processing - "fb2-113437-119690.zip"   - done in 00:00:02
-Processing - "fb2-119691-132107.zip"   - done in 00:00:03
-Processing - "fb2-132108-141328.zip"   - done in 00:00:03
-Processing - "fb2-141329-147517.zip"   - done in 00:00:02
-Processing - "fb2-147519-153549.zip"   - done in 00:00:02
-Processing - "fb2-153556-158325.zip"   - done in 00:00:01
+Processing - "fb2-000024-030559.zip"   - done in 00:00:14 (22807:0:0 records)
+Processing - "fb2-030560-060423.zip"   - done in 00:00:16 (24395:0:0 records)
+Processing - "fb2-060424-074391.zip"   - done in 00:00:05 (8131:0:0 records)
+Processing - "fb2-074392-091839.zip"   - done in 00:00:05 (7134:0:0 records)
+Processing - "fb2-091841-104214.zip"   - done in 00:00:05 (7772:0:0 records)
+Processing - "fb2-104215-113436.zip"   - done in 00:00:05 (6638:0:0 records)
+Processing - "fb2-113437-119690.zip"   - done in 00:00:03 (5508:0:0 records)
+Processing - "fb2-119691-132107.zip"   - done in 00:00:04 (6176:0:0 records)
+Processing - "fb2-132108-141328.zip"   - done in 00:00:04 (5889:0:0 records)
+Processing - "fb2-141329-149815.zip"   - done in 00:00:05 (6161:0:0 records)
+Processing - "fb2-149816-153661.zip"   - done in 00:00:02 (3386:0:0 records)
+Processing - "fb2-153662-161693.zip"   - done in 00:00:04 (6013:0:0 records)
+Processing - "fb2-161694-168102.zip"   - done in 00:00:04 (5441:0:2 records)
+Processing - "fb2-168103-173663.zip"   - done in 00:00:03 (4984:0:0 records)
+Processing - "fb2-173664-173908.zip"   - done in 00:00:00 (203:0:0 records)
 
 Complete processing took 00:00:59
 
@@ -143,6 +135,54 @@ Complete processing took 00:00:59
 значит ни одного файла из этого архива не было найдено в процессируемой базe
 Либрусека (база старше архивов) или внутри нет ни одного файла подходящего типа
 (например FB2 - или не FB2, если вы задавали --process=usr).
+
+Обычно это случается когда Либрусек перестает выкладывать обновленную базу, а дневные
+файлы с книгами продолжают появляться. Здесь может помочь ключ "--read-fb2=last". При
+этом программа вычислит id самой последней FB2 книги в базе и для всех книг из архивов
+с большим id информация для создания inp будет взята из FB2 файла в архиве. Вы увидите
+что-то вроде:
+
+Largest FB2 book id in database: 179509
+
+Archives processing - 15 file(s) [D:/Books_e/Library/local/]
+
+Processing - "fb2-000024-030559.zip"   - done in 00:00:14 (22807:0:0 records)
+Processing - "fb2-030560-060423.zip"   - done in 00:00:16 (24395:0:0 records)
+Processing - "fb2-060424-074391.zip"   - done in 00:00:05 (8131:0:0 records)
+Processing - "fb2-074392-091839.zip"   - done in 00:00:05 (7134:0:0 records)
+Processing - "fb2-091841-104214.zip"   - done in 00:00:05 (7772:0:0 records)
+Processing - "fb2-104215-113436.zip"   - done in 00:00:05 (6638:0:0 records)
+Processing - "fb2-113437-119690.zip"   - done in 00:00:03 (5508:0:0 records)
+Processing - "fb2-119691-132107.zip"   - done in 00:00:04 (6176:0:0 records)
+Processing - "fb2-132108-141328.zip"   - done in 00:00:04 (5889:0:0 records)
+Processing - "fb2-141329-149815.zip"   - done in 00:00:05 (6161:0:0 records)
+Processing - "fb2-149816-153661.zip"   - done in 00:00:02 (3386:0:0 records)
+Processing - "fb2-153662-161693.zip"   - done in 00:00:04 (6013:0:0 records)
+Processing - "fb2-161694-168102.zip"   - done in 00:00:04 (5441:0:2 records)
+Processing - "fb2-168103-173663.zip"   - done in 00:00:03 (4984:0:0 records)
+Processing - "fb2-173664-173908.zip"   - done in 00:00:00 (203:0:0 records)
+
+Archives processing - 12 file(s) [D:/Books_e/Library/local/librusec/]
+
+Processing - "180345-180529.zip"       - done in 00:00:00 (0:131:0 records)
+Processing - "180530-180701.zip"       - done in 00:00:00 (0:107:0 records)
+Processing - "180702-180996.zip"       - done in 00:00:00 (0:262:0 records)
+Processing - "180997-181172.zip"       - done in 00:00:00 (0:135:0 records)
+Processing - "181173-181360.zip"       - done in 00:00:00 (0:133:0 records)
+Processing - "181361-181497.zip"       - done in 00:00:00 (0:97:0 records)
+Processing - "181498-181687.zip"       - done in 00:00:00 (0:171:0 records)
+Processing - "181688-181793.zip"       - done in 00:00:00 (0:67:0 records)
+Processing - "181794-181963.zip"       - done in 00:00:00 (0:84:1 records)
+Processing - "181964-182094.zip"       - done in 00:00:00 (0:85:0 records)
+Processing - "182095-182284.zip"       - done in 00:00:00 (0:155:0 records)
+Processing - "fb2-173909-180344.zip"   - done in 00:00:03 (4049:561:1 records)
+
+Первый номер в скобках - количество записей, созданное из базы данных, второй - 
+количество записей, созданное путем разбора FB2 и третий - количество пропученных
+книг.
+
+Если указать "--read-fb2=all", то для всех FB2 книг, отсутствующих в базе будет 
+сделана попытка прочесть информацию из FB2.
 
 Обратите пожалуйста внимание на то, что некоторые архивы Либрусека в настоящий момент
 находятся в странном состоянии. Не FB2 книги внутри них могут находиться в
