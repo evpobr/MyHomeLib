@@ -34,8 +34,15 @@ enum checking_type
    eFileType,
    eIgnore
 };
-
 static checking_type g_strict  = eFileExt;
+
+enum fb2_parsing
+{
+   eReadNone = 0,
+   eReadLast,
+   eReadAll
+};
+static fb2_parsing   g_read_fb2 = eReadNone;
 
 enum processing_type
 {
@@ -43,10 +50,11 @@ enum processing_type
    eUSR,
    eAll
 };
-
 static processing_type g_process = eFB2;
-static string          g_update;
-static string          g_db_name = "librusec";
+
+static long   g_last_fb2 = 0;
+static string g_update;
+static string g_db_name  = "librusec";
 
 static string sep  = "\x04";
 
@@ -199,6 +207,11 @@ char *ptr = buf + strlen( buf );
       ptr--;
    }
    return ptr;
+}
+
+bool is_after_last( const string& book_id )
+{
+   return (g_last_fb2 < atol( book_id.c_str() ));
 }
 
 bool is_numeric( const string& str )
@@ -522,6 +535,83 @@ void process_book( const mysql_connection& mysql, MYSQL_ROW record, const string
    inp += "\r\n";
 }
 
+bool process_from_fb2( const unzip& uz, const string& book_id, string& inp, string& err )
+{
+   bool rc = false;
+
+   DOUT(  printf( "   Processing %s\n", book_id.c_str() ); );
+
+   const int buffer_size = 4096;
+   boost::scoped_array< char > buffer( new char[ buffer_size ] );
+
+   err.erase();
+   inp.erase();
+
+   try
+   {
+      unzip_reader  ur( uz );
+      fb2_parser    fb;
+      unz_file_info fi;
+
+      uz.current ( fi );
+
+      int  len                 = 0;
+      bool continue_processing = true;
+
+      while( continue_processing && (0 < (len = ur( buffer.get(), buffer_size ))) )
+         continue_processing = fb( buffer.get(), len );
+
+      if( continue_processing )
+         fb( buffer.get(), 0, true );
+
+      // AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;LANG;LIBRATE;KEYWORDS;
+
+      string authors, genres;
+      for( vector< string >::const_iterator it = fb.m_authors.begin(); it != fb.m_authors.end(); ++it )
+         authors += (*it) + ":";
+      for( vector< string >::const_iterator it = fb.m_genres.begin(); it != fb.m_genres.end(); ++it )
+         genres += (*it) + ":";
+
+      inp  = authors;
+      inp += sep;
+      inp += genres;
+      inp += sep;
+      inp += fb.m_title;
+      inp += sep;
+      inp += fb.m_seq_name;
+      inp += sep;
+      inp += fb.m_seq;
+      inp += sep;
+      inp += book_id;
+      inp += sep;
+      inp += tmp_str( "%d", fi.uncompressed_size );
+      inp += sep;
+      inp += book_id;
+      inp += sep;
+//      inp += book_deleted;
+      inp += sep;
+      inp += "fb2";
+      inp += sep;
+      inp += to_iso_extended_string( date( ((fi.dosDate >> 25) & 0x7F) + 1980, ((fi.dosDate >> 21) & 0x0F), ((fi.dosDate >> 16) & 0x1F) ) ) ;
+      inp += sep;
+      inp += fb.m_language;
+      inp += sep;
+//      inp += book_rate;
+      inp += sep;
+      inp += fb.m_keywords;
+      inp += sep;
+      inp += "\r\n";
+
+      rc = true;
+   }
+   catch( exception& e )
+   {
+      inp.erase();
+      err = e.what();
+   }
+   return rc;
+}
+
 void name_to_bookid( const string& file, string& book_id, string& ext )
 {
    book_id = file;
@@ -593,13 +683,14 @@ void process_local_archives( const mysql_connection& mysql, const zip& zz, const
 
    for( vector< string >::const_iterator it = files.begin(); it != files.end(); ++it )
    {
+      vector< string > errors;
       string name = "\"" + *it  + "\"";
       name.append( max( 0, (int)(25 - name.length()) ), ' ' );
 
       string out_inp_name( *it );
       out_inp_name.replace( out_inp_name.end() - 3, out_inp_name.end(), string("inp") );
 
-      long       records = 0, dummy_records = 0;
+      long       records = 0, dummy_records = 0, fb2_records = 0;
       zip_writer zw( zz, out_inp_name, false );
 
       cout << "Processing - " << name ;
@@ -611,8 +702,9 @@ void process_local_archives( const mysql_connection& mysql, const zip& zz, const
       {
          string inp, book_id, ext, stmt;
          bool fdummy = false;
+         bool fb2 = is_fictionbook( uz.current() );
 
-         if( is_fictionbook( uz.current() ) )
+         if( fb2 )
          {
             if( (g_process == eAll) || ((g_process == eFB2)) )
             {
@@ -645,6 +737,18 @@ void process_local_archives( const mysql_connection& mysql, const zip& zz, const
             {
                process_book( mysql, record, book_id, ext, inp );
             }
+            else
+            {
+               string err;
+
+               if( fb2 && ((eReadAll == g_read_fb2) || ((eReadLast == g_read_fb2) && is_after_last(book_id))))
+               {
+                  if( ! process_from_fb2( uz, book_id, inp, err ) )
+                     errors.push_back( "       Skipped " + book_id + ".fb2 in archive due to \"" + err + "\"" );
+                  else
+                     ++fb2_records;
+               }
+            }
          }
 
          if( 0 == inp.size() )
@@ -676,8 +780,12 @@ void process_local_archives( const mysql_connection& mysql, const zip& zz, const
 
       cout << " - done in " << ftd.passed() ;
       if( 0 == records )
-         cout << " ==> Not in database!";
-      cout << endl;
+         cout << " ==> Not in database!" << endl;
+      else
+         cout << " (" << records - fb2_records << ":" << fb2_records << ":" << dummy_records << " records)" << endl;
+
+      for( vector< string >::const_iterator it = errors.begin(); it != errors.end(); ++it )
+         cout << *it << endl;
    }
 }
 
@@ -789,6 +897,7 @@ int main( int argc, char *argv[] )
          ( "no-import",                       "Do not import dumps, just check dump time and use existing database" )
          ( "db-name",  po::value< string >(), "Name of MYSQL database (default: librusec)" )
          ( "archives", po::value< string >(), "Path(s) to off-line archives. Multiple entries should be separated by ';'. Each path must be valid and must point to some archives, or processing would be aborted. (If not present - entire database in converted for online usage)" )
+         ( "read-fb2", po::value< string >(), "When archived book is not present in the database - try to parse fb2 in archive to get information. \"all\" - do it for all absent books, \"last\" - only process books with ids larger than last database id (If not present - no fb2 parsing)" )
          ( "inpx",     po::value< string >(), "Full name of output file (default: <db_name>_<db_dump_date>.inpx)" )
          ( "comment",  po::value< string >(), "File name of template (UTF-8) for INPX comment" )
          ( "update",   po::value< string >(), "Starting with \"<arg>.zip\" produce \"daily_update.zip\" (Works only for \"fb2\")" )
@@ -813,7 +922,7 @@ int main( int argc, char *argv[] )
       {
          cout << endl;
          cout << "Import file (INPX) preparation tool for MyHomeLib" << endl;
-         cout << "Version 3.1 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
+         cout << "Version 3.2 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
          cout << endl;
          cout << "Usage: " << file_name << " [options] <path to SQL dump files>" << endl << endl;
          cout << options << endl;
@@ -833,6 +942,20 @@ int main( int argc, char *argv[] )
          {
             cout << endl << "Warning: unknown processing type, assuming FB2 only!" << endl;
             g_process = eFB2;
+         }
+      }
+
+      if( vm.count( "read-fb2" ) )
+      {
+         string opt = vm[ "read-fb2" ].as< string >();
+         if( 0 == _stricmp( opt.c_str(), "all" ) )
+            g_read_fb2 = eReadAll;
+         else if( 0 == _stricmp( opt.c_str(), "last" ) )
+            g_read_fb2 = eReadLast;
+         else
+         {
+            cout << endl << "Warning: unknown read-fb2 action, assuming none!" << endl;
+            g_read_fb2 = eReadNone;
          }
       }
 
@@ -1059,6 +1182,20 @@ int main( int argc, char *argv[] )
             }
 
             cout << " - done in " << ftd.passed() << endl;
+         }
+
+         if( eReadLast == g_read_fb2 )
+         {
+            MYSQL_ROW record;
+
+            mysql.query( string( "SELECT MAX(`BookId`) FROM libbook WHERE FileType = 'fb2';" ) );
+
+            mysql_results last( mysql );
+
+            if( record = last.fetch_row() )
+               g_last_fb2 = atol( record[ 0 ] );
+
+            cout << endl << "Largest FB2 book id in database: " << g_last_fb2 << endl;
          }
 
          if( comment.empty() )
