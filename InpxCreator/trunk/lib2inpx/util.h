@@ -28,6 +28,7 @@ void normalize_path( std::string& path, bool trailing = true );
 void normalize_path( char* path );
 
 std::wstring utf8_to_ucs2( const char* ptr );
+std::string  ucs2_to_utf8( const wchar_t* ptr );
 std::string  utf8_to_ANSI( const char* ptr );
 std::string  utf8_to_OEM( const char* ptr );
 

@@ -54,11 +54,24 @@ wstring utf8_to_ucs2( const char* ptr )
 
    boost::scoped_array< wchar_t > buf( new wchar_t[ len + 1 ] );
 
-   ::MultiByteToWideChar( CP_UTF8, 0, ptr, -1, buf.get(), (int)len );
+   MultiByteToWideChar( CP_UTF8, 0, ptr, -1, buf.get(), (int)len );
 
    buf.get()[ len ] = L'\0';
 
    return wstring( buf.get() );
+}
+
+string ucs2_to_utf8( const wchar_t* ptr )
+{
+   size_t len = WideCharToMultiByte( CP_UTF8, 0, ptr, -1, NULL, 0, NULL, NULL );
+
+   boost::scoped_array< char > buf( new char[ len + 1 ] );
+
+   WideCharToMultiByte( CP_UTF8, 0, ptr, -1, buf.get(), (int)len, NULL, NULL );
+
+   buf.get()[ len ] = L'\0';
+
+   return string( buf.get() );
 }
 
 string utf8_to_ANSI( const char* ptr )
@@ -67,7 +80,7 @@ string utf8_to_ANSI( const char* ptr )
 
    boost::scoped_array< wchar_t > buf( new wchar_t[ len + 1 ] );
 
-   ::MultiByteToWideChar( CP_UTF8, 0, ptr, -1, buf.get(), (int)len );
+   MultiByteToWideChar( CP_UTF8, 0, ptr, -1, buf.get(), (int)len );
 
    buf.get()[ len ] = L'\0';
 
@@ -75,7 +88,7 @@ string utf8_to_ANSI( const char* ptr )
 
    boost::scoped_array< char > buf2( new char[ len + 1 ] );
 
-   ::WideCharToMultiByte( CP_ACP, 0, buf.get(), -1, buf2.get(), (int)len, NULL, NULL );
+   WideCharToMultiByte( CP_ACP, 0, buf.get(), -1, buf2.get(), (int)len, NULL, NULL );
 
    buf2.get()[ len ] = L'\0';
 
@@ -88,15 +101,15 @@ string utf8_to_OEM( const char* ptr )
 
    boost::scoped_array< wchar_t > buf( new wchar_t[ len + 1 ] );
 
-   ::MultiByteToWideChar( CP_UTF8, 0, ptr, -1, buf.get(), (int)len );
+   MultiByteToWideChar( CP_UTF8, 0, ptr, -1, buf.get(), (int)len );
 
    buf.get()[ len ] = L'\0';
 
-   len = ::WideCharToMultiByte( CP_OEMCP, 0, buf.get(), -1, NULL, 0, NULL, NULL );
+   len = WideCharToMultiByte( CP_OEMCP, 0, buf.get(), -1, NULL, 0, NULL, NULL );
 
    boost::scoped_array< char > buf2( new char[ len + 1 ] );
 
-   ::WideCharToMultiByte( CP_OEMCP, 0, buf.get(), -1, buf2.get(), (int)len, NULL, NULL );
+   WideCharToMultiByte( CP_OEMCP, 0, buf.get(), -1, buf2.get(), (int)len, NULL, NULL );
 
    buf2.get()[ len ] = L'\0';
 

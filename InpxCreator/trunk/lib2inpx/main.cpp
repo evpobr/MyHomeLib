@@ -24,6 +24,7 @@ using namespace boost::gregorian;
 
 namespace po = boost::program_options;
 
+static bool g_fix              = false;
 static bool g_no_import        = false;
 static bool g_ignore_dump_date = false;
 static bool g_clean_when_done  = false;
@@ -256,6 +257,16 @@ bool remove_crlf( string& str )
    return rc;
 }
 
+void fix_data( string& str, size_t max_len )
+{
+   wstring wstr = utf8_to_ucs2( str.c_str() );
+
+   if( wstr.size() >= max_len )
+      wstr = wstr.substr( 0, max_len - 1 );
+
+   str = ucs2_to_utf8( wstr.c_str() );
+}
+
 void clean_directory( const char* path )
 {
    _finddata_t fd;
@@ -394,7 +405,7 @@ void get_book_rate( const mysql_connection& mysql, const string& book_id, string
 
    rate.erase();
 
-   mysql.query( string( "SELECT AVG(Rate) FROM librate WHERE BookId =" ) + book_id + ";" );
+   mysql.query( string( "SELECT ROUND(AVG(Rate),2) FROM librate WHERE BookId =" ) + book_id + ";" );
 
    mysql_results res( mysql );
 
@@ -462,8 +473,10 @@ void get_book_squence( const mysql_connection& mysql, const string& book_id, str
          sequence += record[ 0 ];
       }
    }
-
    remove_crlf( sequence );
+
+   if( g_fix ) // should be temporary
+      fix_data( sequence, 80 );
 }
 
 void process_book( const mysql_connection& mysql, MYSQL_ROW record, const string& file_name, const string& ext, string& inp )
@@ -901,6 +914,7 @@ int main( int argc, char *argv[] )
          ( "inpx",     po::value< string >(), "Full name of output file (default: <db_name>_<db_dump_date>.inpx)" )
          ( "comment",  po::value< string >(), "File name of template (UTF-8) for INPX comment" )
          ( "update",   po::value< string >(), "Starting with \"<arg>.zip\" produce \"daily_update.zip\" (Works only for \"fb2\")" )
+         ( "quick-fix",                        "Attept to fix possible data incompatibilities of MyHomeLib (very bad idea)" )
          ;
 
       po::options_description hidden;
@@ -922,7 +936,7 @@ int main( int argc, char *argv[] )
       {
          cout << endl;
          cout << "Import file (INPX) preparation tool for MyHomeLib" << endl;
-         cout << "Version 3.2 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
+         cout << "Version 3.3 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
          cout << endl;
          cout << "Usage: " << file_name << " [options] <path to SQL dump files>" << endl << endl;
          cout << options << endl;
@@ -974,6 +988,9 @@ int main( int argc, char *argv[] )
             g_strict = eFileExt;
          }
       }
+
+      if( vm.count( "quick-fix" ) )
+         g_fix = true;
 
       if( vm.count( "ignore-dump-date" ) )
          g_ignore_dump_date = true;
