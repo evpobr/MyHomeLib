@@ -24,6 +24,24 @@
 #	endif
 #endif
 
+struct db_limits
+{
+   size_t A_Name;    // Author
+   size_t A_Middle;
+   size_t A_Family;
+   size_t Title;     // Book title
+   size_t KeyWords;
+   size_t S_Title;   // Series title
+   size_t G_FB2Code; // Genre
+};
+
+extern db_limits g_limits;
+extern bool      g_fix;
+
+void initialize_limits( const std::string& config );
+std::string fix_data( const char* pstr, size_t max_len );
+bool remove_crlf( std::string& str );
+
 void normalize_path( std::string& path, bool trailing = true );
 void normalize_path( char* path );
 

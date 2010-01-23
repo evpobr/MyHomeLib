@@ -24,7 +24,6 @@ using namespace boost::gregorian;
 
 namespace po = boost::program_options;
 
-static bool g_fix              = false;
 static bool g_no_import        = false;
 static bool g_ignore_dump_date = false;
 static bool g_clean_when_done  = false;
@@ -239,34 +238,6 @@ bool is_fictionbook( const string& file )
    return ((0 == _stricmp( ext.c_str(), "fb2")) && is_numeric( name ) );
 }
 
-bool remove_crlf( string& str )
-{
-   bool   rc = false;
-   size_t pos;
-
-   while( string::npos != (pos = str.find( "\r\n" )) )
-   {
-      str.replace( pos, 2, string( " " ) );
-      rc = true;
-   }
-   while( string::npos != (pos = str.find( "\n" )) )
-   {
-      str.erase( pos, 1 );
-      rc = true;
-   }
-   return rc;
-}
-
-void fix_data( string& str, size_t max_len )
-{
-   wstring wstr = utf8_to_ucs2( str.c_str() );
-
-   if( wstr.size() >= max_len )
-      wstr = wstr.substr( 0, max_len - 1 );
-
-   str = ucs2_to_utf8( wstr.c_str() );
-}
-
 void clean_directory( const char* path )
 {
    _finddata_t fd;
@@ -383,13 +354,13 @@ void get_book_author( const mysql_connection& mysql, const string& book_id, stri
 
       mysql.query( string( "SELECT `FirstName`,`MiddleName`,`LastName` FROM libavtorname WHERE AvtorId=" ) + good_author_id + ";" );
       {
-         mysql_results avtor_name( mysql );
+         mysql_results author_name( mysql );
 
-         if( record = avtor_name.fetch_row() )
+         if( record = author_name.fetch_row() )
          {
-            author += record[ 2 ]; author += ",";
-            author += record[ 0 ]; author += ",";
-            author += record[ 1 ]; author += ":";
+            author += fix_data( record[ 2 ], g_limits.A_Family ); author += ",";
+            author += fix_data( record[ 0 ], g_limits.A_Name   ); author += ",";
+            author += fix_data( record[ 1 ], g_limits.A_Middle ); author += ":";
          }
       }
    }
@@ -470,13 +441,10 @@ void get_book_squence( const mysql_connection& mysql, const string& book_id, str
 
       if( record = seq_name.fetch_row() )
       {
-         sequence += record[ 0 ];
+         sequence += fix_data( record[ 0 ], g_limits.S_Title );
       }
    }
    remove_crlf( sequence );
-
-   if( g_fix ) // should be temporary
-      fix_data( sequence, 80 );
 }
 
 void process_book( const mysql_connection& mysql, MYSQL_ROW record, const string& file_name, const string& ext, string& inp )
@@ -510,8 +478,8 @@ void process_book( const mysql_connection& mysql, MYSQL_ROW record, const string
    if( remove_crlf( book_file ) )
       book_file = "";
 
-   remove_crlf( book_title );
-   remove_crlf( book_kwds );
+   remove_crlf( book_title ); book_title = fix_data( book_title.c_str(), g_limits.Title );
+   remove_crlf( book_kwds );  book_kwds  = fix_data( book_kwds.c_str(),  g_limits.KeyWords );
 
    book_time.erase( book_time.find( " " ) ); // Leave date only
 
@@ -902,19 +870,20 @@ int main( int argc, char *argv[] )
 
       po::options_description options( "options" );
       options.add_options()
-         ( "help",                            "Print help message"  )
-         ( "ignore-dump-date",                "Ignore date in the dump files, use current UTC date instead" )
-         ( "clean-when-done",                 "Remove MYSQL database after processing" )
-         ( "process",  po::value< string >(), "What to process - \"fb2\", \"usr\", \"all\" (default: fb2)" )
-         ( "strict",   po::value< string >(), "What to put in INPX as file type - \"ext\", \"db\", \"ignore\" (default: ext). ext - use real file extension. db - use file type from database. ignore - ignore files with file extension not equal to file type" )
-         ( "no-import",                       "Do not import dumps, just check dump time and use existing database" )
-         ( "db-name",  po::value< string >(), "Name of MYSQL database (default: librusec)" )
-         ( "archives", po::value< string >(), "Path(s) to off-line archives. Multiple entries should be separated by ';'. Each path must be valid and must point to some archives, or processing would be aborted. (If not present - entire database in converted for online usage)" )
-         ( "read-fb2", po::value< string >(), "When archived book is not present in the database - try to parse fb2 in archive to get information. \"all\" - do it for all absent books, \"last\" - only process books with ids larger than last database id (If not present - no fb2 parsing)" )
-         ( "inpx",     po::value< string >(), "Full name of output file (default: <db_name>_<db_dump_date>.inpx)" )
-         ( "comment",  po::value< string >(), "File name of template (UTF-8) for INPX comment" )
-         ( "update",   po::value< string >(), "Starting with \"<arg>.zip\" produce \"daily_update.zip\" (Works only for \"fb2\")" )
-         ( "quick-fix",                        "Attept to fix possible data incompatibilities of MyHomeLib (very bad idea)" )
+         ( "help",                             "Print help message"  )
+         ( "ignore-dump-date",                 "Ignore date in the dump files, use current UTC date instead" )
+         ( "clean-when-done",                  "Remove MYSQL database after processing" )
+         ( "process",    po::value< string >(), "What to process - \"fb2\", \"usr\", \"all\" (default: fb2)" )
+         ( "strict",     po::value< string >(), "What to put in INPX as file type - \"ext\", \"db\", \"ignore\" (default: ext). ext - use real file extension. db - use file type from database. ignore - ignore files with file extension not equal to file type" )
+         ( "no-import",                         "Do not import dumps, just check dump time and use existing database" )
+         ( "db-name",    po::value< string >(), "Name of MYSQL database (default: librusec)" )
+         ( "archives",   po::value< string >(), "Path(s) to off-line archives. Multiple entries should be separated by ';'. Each path must be valid and must point to some archives, or processing would be aborted. (If not present - entire database in converted for online usage)" )
+         ( "read-fb2",   po::value< string >(), "When archived book is not present in the database - try to parse fb2 in archive to get information. \"all\" - do it for all absent books, \"last\" - only process books with ids larger than last database id (If not present - no fb2 parsing)" )
+         ( "inpx",       po::value< string >(), "Full name of output file (default: <db_name>_<db_dump_date>.inpx)" )
+         ( "comment",    po::value< string >(), "File name of template (UTF-8) for INPX comment" )
+         ( "update",     po::value< string >(), "Starting with \"<arg>.zip\" produce \"daily_update.zip\" (Works only for \"fb2\")" )
+         ( "quick-fix",                         "Enforce MyHomeLib database size limits, works with fix-config parameter. (default: MyHomeLib 1.6.2 constrains)" )
+         ( "fix-config", po::value< string >(), "Allows to specify configuration file with MyHomeLib database size constrains" )
          ;
 
       po::options_description hidden;
@@ -936,7 +905,7 @@ int main( int argc, char *argv[] )
       {
          cout << endl;
          cout << "Import file (INPX) preparation tool for MyHomeLib" << endl;
-         cout << "Version 3.3 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
+         cout << "Version 3.4 (MYSQL " << MYSQL_SERVER_VERSION << ")" << endl;
          cout << endl;
          cout << "Usage: " << file_name << " [options] <path to SQL dump files>" << endl << endl;
          cout << options << endl;
@@ -990,7 +959,15 @@ int main( int argc, char *argv[] )
       }
 
       if( vm.count( "quick-fix" ) )
+      {
          g_fix = true;
+
+         string config;
+         if( vm.count( "fix-config" ) )
+            config = vm[ "fix-config" ].as< string >();
+
+         initialize_limits( config );
+      }
 
       if( vm.count( "ignore-dump-date" ) )
          g_ignore_dump_date = true;

@@ -25,6 +25,67 @@
 
 using namespace std;
 
+bool g_fix = false;
+db_limits g_limits;
+
+void initialize_limits( const string& config )
+{
+   g_limits.A_Name    =
+   g_limits.A_Middle  =
+   g_limits.A_Family  = 128;
+   g_limits.Title     = 150;
+   g_limits.KeyWords  = 255;
+   g_limits.S_Title   = 80;
+
+   if( ! config.empty() && (0 == _access( config.c_str(), 4 )) )
+   {
+      using boost::property_tree::ptree;
+      ptree pt;
+
+      read_info( config, pt );
+
+      g_limits.A_Name    = pt.get< size_t >( "Limits.A_Name",    g_limits.A_Name );
+      g_limits.A_Middle  = pt.get< size_t >( "Limits.A_Middle",  g_limits.A_Middle );
+      g_limits.A_Family  = pt.get< size_t >( "Limits.A_Family",  g_limits.A_Family );
+      g_limits.Title     = pt.get< size_t >( "Limits.Title",     g_limits.Title );
+      g_limits.KeyWords  = pt.get< size_t >( "Limits.KeyWords",  g_limits.KeyWords );
+      g_limits.S_Title   = pt.get< size_t >( "Limits.S_Title",   g_limits.S_Title );
+   }
+}
+
+string fix_data( const char* pstr, size_t max_len )
+{
+   if( g_fix )
+   {
+      wstring wstr = utf8_to_ucs2( pstr );
+
+      if( wstr.size() >= max_len )
+         wstr = wstr.substr( 0, max_len - 1 );
+
+      return ucs2_to_utf8( wstr.c_str() );
+   }
+   else
+      return string( pstr );
+}
+
+bool remove_crlf( string& str )
+{
+   bool   rc = false;
+   size_t pos;
+
+   while( string::npos != (pos = str.find( "\r\n" )) )
+   {
+      str.replace( pos, 2, string( " " ) );
+      rc = true;
+   }
+   while( string::npos != (pos = str.find( "\n" )) )
+   {
+      str.erase( pos, 1 );
+      rc = true;
+   }
+   return rc;
+}
+
 void normalize_path( string& path, bool trailing )
 {
    for( string::iterator it = path.begin(); it != path.end(); ++it )
@@ -465,22 +526,30 @@ void fb2_parser::prepare_xml_graph()
 
 void fb2_parser::on_genre( const std::string& str, const attributes_t& attrs )
 {
-   m_genres.push_back( str );
+   string temp = str;
+   remove_crlf( temp );
+   m_genres.push_back( fix_data( temp.c_str(), g_limits.G_FB2Code ) );
 }
 
 void fb2_parser::on_author_first_name( const std::string& str, const attributes_t& attrs )
 {
    m_f = str;
+   remove_crlf( m_f );
+   m_f = fix_data( m_f.c_str(), g_limits.A_Name );
 }
 
 void fb2_parser::on_author_middle_name( const std::string& str, const attributes_t& attrs )
 {
    m_m = str;
+   remove_crlf( m_m );
+   m_m = fix_data( m_m.c_str(), g_limits.A_Middle );
 }
 
 void fb2_parser::on_author_last_name( const std::string& str, const attributes_t& attrs )
 {
    m_l = str;
+   remove_crlf( m_l );
+   m_l = fix_data( m_l.c_str(), g_limits.A_Family );
 }
 
 void fb2_parser::on_author( const std::string& str, const attributes_t& attrs )
@@ -491,11 +560,15 @@ void fb2_parser::on_author( const std::string& str, const attributes_t& attrs )
 void fb2_parser::on_book_title( const std::string& str, const attributes_t& attrs )
 {
    m_title = str;
+   remove_crlf( m_title );
+   m_title = fix_data( m_title.c_str(), g_limits.Title );
 }
 
 void fb2_parser::on_keywords( const std::string& str, const attributes_t& attrs )
 {
    m_keywords = str;
+   remove_crlf( m_keywords );
+   m_keywords = fix_data( m_keywords.c_str(), g_limits.KeyWords );
 }
 
 void fb2_parser::on_lang( const std::string& str, const attributes_t& attrs )
@@ -508,7 +581,12 @@ void fb2_parser::on_sequence( const std::string& str, const attributes_t& attrs 
    attributes_t::const_iterator it;
 
    it = attrs.find( "name" );
-   if( attrs.end() != it ) m_seq_name = (*it).second;
+   if( attrs.end() != it )
+   {
+      m_seq_name = (*it).second;
+      remove_crlf( m_seq_name );
+      m_seq_name = fix_data( m_seq_name.c_str(), g_limits.S_Title );
+   }
 
    it = attrs.find( "number" );
    if( attrs.end() != it ) m_seq = (*it).second;
