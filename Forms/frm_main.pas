@@ -162,7 +162,6 @@ type
     miEditGenres: TMenuItem;
     ilToolBar: TImageList;
     ilMainMenu: TImageList;
-    MenuController: TRzMenuController;
     pmCollection: TPopupMenu;
     miUpdate: TMenuItem;
     miGoToAuthor: TMenuItem;
