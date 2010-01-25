@@ -526,7 +526,8 @@ begin
       if lvReaders.FindCaption(0, frmEditReader.Extension, False, True, False) <> nil then
       begin
         // Это расширение уже зарегистрировано
-        MessageDlg('Тип "' + frmEditReader.edExt.Text + '" уже есть в списке!', mtError, [mbOk], 0);
+        MessageDlg('Тип "' + frmEditReader.Extension + '" уже есть в списке!', mtError, [mbOk], 0);
+        Exit;
       end;
 
       if Assigned(AItem) then
@@ -545,17 +546,17 @@ begin
 end;
 
 procedure TfrmSettings.beTemplateButtonClick(Sender: TObject);
-var frmCreateMask: TfrmCreateMask;
+var
+  frmCreateMask: TfrmCreateMask;
 begin
   frmCreateMask:= TfrmCreateMask.Create(self);
-
-  frmCreateMask.edTemplate.Text:= beTemplate.Text;
-
-  frmCreateMask.ShowModal;
-  if frmCreateMask.ModalResult = mrOk then
-    beTemplate.text := frmCreateMask.edTemplate.Text;
-
-  frmCreateMask.Free
+  try
+    frmCreateMask.edTemplate.Text:= beTemplate.Text;
+    if frmCreateMask.ShowModal = mrOk then
+      beTemplate.text := frmCreateMask.edTemplate.Text;
+  finally
+    frmCreateMask.Free;
+  end;
 end;
 
 procedure TfrmSettings.btnAddExtClick(Sender: TObject);
