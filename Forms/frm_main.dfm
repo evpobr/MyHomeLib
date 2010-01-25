@@ -3291,6 +3291,7 @@ object frmMain: TfrmMain
     end
     object miTools: TMenuItem
       Caption = #1048#1085#1089#1090#1088#1091#1084#1077#1085#1090#1099
+      ImageIndex = 6
       object miStat: TMenuItem
         Caption = #1057#1090#1072#1090#1080#1089#1090#1080#1082#1072' '#1087#1086' '#1082#1086#1083#1083#1077#1082#1094#1080#1080
         ImageIndex = 28
@@ -8597,6 +8598,11 @@ object frmMain: TfrmMain
       F00FF803F803C003F00FF803F803C001F81FF803F803C001FFFFF80FF80FC001
       FFFFF80FF80FC003FFFFF80FF80FC00700000000000000000000000000000000
       000000000000}
+  end
+  object MenuController: TRzMenuController
+    GradientColorStyle = gcsCustom
+    Left = 576
+    Top = 576
   end
   object pmCollection: TPopupMenu
     Images = ilMainMenu
