@@ -17,9 +17,9 @@ File_14=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\Forms\frm_ConverToFBD.pas
 
 [Modules]
 Module0=D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas
-Module1=D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas
+Module1=default.htm
 Module2=D:\DelphiProjects\MyHomeLib\SQL2INPX\sql2inpx.dproj
-Module3=default.htm
+Module3=D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas
 Count=4
 EditWindowCount=1
 
@@ -28,16 +28,16 @@ ModuleType=TSourceModule
 FormState=1
 FormOnTop=0
 
-[D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas]
-ModuleType=TSourceModule
-FormState=1
-FormOnTop=0
+[default.htm]
+ModuleType=TURLModule
 
 [D:\DelphiProjects\MyHomeLib\SQL2INPX\sql2inpx.dproj]
 ModuleType=TBaseProject
 
-[default.htm]
-ModuleType=TURLModule
+[D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas]
+ModuleType=TSourceModule
+FormState=1
+FormOnTop=0
 
 [EditWindow0]
 ViewCount=4
@@ -104,9 +104,9 @@ EditViewName=D:\DelphiProjects\MyHomeLib\SQL2INPX\sql2inpx.dpr
 [View3]
 CustomEditViewType=TEditView
 Module=D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas
-CursorX=3
-CursorY=104
-TopLine=78
+CursorX=43
+CursorY=193
+TopLine=176
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -184,10 +184,10 @@ StayOnTop=0
 [MessageView]
 PercentageSizes=1
 Create=1
-Visible=1
+Visible=0
 Docked=0
 State=0
-Left=12855
+Left=2472
 Top=1095
 Width=3028
 Height=5133
@@ -444,11 +444,6 @@ LRDockWidth=1965
 Dockable=1
 StayOnTop=0
 SplitPos=111
-
-[PropInspDesignerSelection]
-ArrangeBy=Name
-SelectedItem=Name,
-ExpandedItems=
 
 [ModelViewTool]
 PercentageSizes=1

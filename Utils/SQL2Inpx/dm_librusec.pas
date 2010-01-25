@@ -142,7 +142,7 @@ begin
   Query.SQL.Text := 'SELECT AVG(Rate) FROM Librate WHERE BookID = ' + IntToStr(BookID);
   Query.Execute;
   if Query.Fields[0].AsInteger <> 0 then
-     Result := Query.Fields[0].AsWideString
+     Result := IntToStr(Query.Fields[0].AsInteger)
    else
      Result := '';
 end;
@@ -166,6 +166,7 @@ var
   Del: string;
   Date: string;
   Year,Month,Day: word;
+  Ext: string;
 begin
   A := '';
   Avtor.First;
@@ -190,7 +191,7 @@ begin
 
   if Series.RecordCount > 0 then
   begin
-    S  := SeriesSeqName.Value;
+    S  := copy(SeriesSeqName.Value, 1, 80);
     SN := SeriesSeqNumb.AsWideString;
   end
   else
@@ -199,24 +200,32 @@ begin
      S := '';
   end;
 
+
+
   Del := Bookdeleted.Value;
 
   if FN = '' then
-    FN := BookBookId.AsWideString
-  else
-    FN := copy(FN, 1, length(FN) - Length(BookFileType.AsWideString) -1);
+  begin
+    FN := BookBookId.AsWideString;
+    Ext:= BookFileType.AsWideString;
+  end
+  else begin
+    Ext := ExtractFileExt(FN);
+    FN := copy(FN, 1, length(FN) - Length(Ext) -1);
+    if Ext[1] = '.' then Delete(Ext,1,1);
+  end;
 
   DecodeDate(BookTime.AsDateTime,Year,Month,Day);
   Date := Format('%d-%.2d-%.2d',[Year,Month,Day]);
   Result := A + c +                             // авторы
             G + c +                             // жанры
-            BookTitle.AsWideString + c +        // название
+            trim(BookTitle.AsWideString) + c +  // название
             S + c + SN + c +                    // серия, номер
             FN + c +       // имя файла
             BookFileSize.AsWideString + c +     // размер
             BookBookId.AsWideString + c +       // LibID
             Del + c +                           // Deleted
-            BookFileType.AsWideString + c +     // type
+            Ext + c +     // type
             Date + c +                          // Date
             BookLang.AsWideString + c +         // Lang
             QueryRate(BookBookID.Value) + c +   // N
