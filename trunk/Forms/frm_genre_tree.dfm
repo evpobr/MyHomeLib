@@ -1,10 +1,10 @@
 object frmGenreTree: TfrmGenreTree
   Left = 0
   Top = 0
-  BorderStyle = bsNone
-  Caption = 'frmGenreTree'
-  ClientHeight = 394
-  ClientWidth = 319
+  BorderStyle = bsDialog
+  Caption = #1057#1087#1080#1089#1086#1082' '#1078#1072#1085#1088#1086#1074
+  ClientHeight = 482
+  ClientWidth = 313
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,61 +15,71 @@ object frmGenreTree: TfrmGenreTree
   Position = poMainFormCenter
   PixelsPerInch = 96
   TextHeight = 13
-  object RzPanel1: TRzPanel
+  object pnButtons: TPanel
     Left = 0
-    Top = 0
-    Width = 319
-    Height = 394
-    Align = alClient
-    BorderOuter = fsGroove
-    TabOrder = 0
-    object RzPanel2: TRzPanel
-      AlignWithMargins = True
-      Left = 5
-      Top = 339
-      Width = 309
-      Height = 50
-      Align = alBottom
-      BorderOuter = fsFlatBold
+    Top = 441
+    Width = 313
+    Height = 41
+    Align = alBottom
+    BevelOuter = bvNone
+    Caption = 'pnButtons'
+    ShowCaption = False
+    TabOrder = 1
+    ExplicitLeft = 34
+    ExplicitTop = 421
+    ExplicitWidth = 396
+    DesignSize = (
+      313
+      41)
+    object btnOk: TButton
+      Left = 149
+      Top = 10
+      Width = 75
+      Height = 25
+      Anchors = [akTop, akRight]
+      Caption = '&'#1057#1086#1093#1088#1072#1085#1080#1090#1100
+      Default = True
+      ModalResult = 1
       TabOrder = 0
-      object RzBitBtn1: TRzBitBtn
-        Left = 24
-        Top = 16
-        Default = True
-        ModalResult = 1
-        Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
-        TabOrder = 0
-      end
-      object RzButton1: TRzButton
-        Left = 216
-        Top = 16
-        Cancel = True
-        ModalResult = 2
-        Caption = #1054#1090#1084#1077#1085#1072
-        TabOrder = 1
-      end
+      ExplicitLeft = 232
     end
-    object tvGenresTree: TVirtualStringTree
-      AlignWithMargins = True
-      Left = 5
-      Top = 5
-      Width = 309
-      Height = 328
-      Align = alClient
-      Header.AutoSizeIndex = 0
-      Header.DefaultHeight = 17
-      Header.Font.Charset = DEFAULT_CHARSET
-      Header.Font.Color = clWindowText
-      Header.Font.Height = -11
-      Header.Font.Name = 'Tahoma'
-      Header.Font.Style = []
-      Header.MainColumn = -1
-      Header.Options = [hoColumnResize, hoDrag]
+    object btnCancel: TButton
+      Left = 230
+      Top = 10
+      Width = 75
+      Height = 25
+      Anchors = [akTop, akRight]
+      Cancel = True
+      Caption = '&'#1054#1090#1084#1077#1085#1072
+      ModalResult = 2
       TabOrder = 1
-      TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect, toRightClickSelect]
-      OnGetText = tvGenresTreeGetText
-      OnGetNodeDataSize = tvGenresTreeGetNodeDataSize
-      Columns = <>
+      ExplicitLeft = 313
     end
+  end
+  object tvGenresTree: TVirtualStringTree
+    AlignWithMargins = True
+    Left = 3
+    Top = 3
+    Width = 307
+    Height = 435
+    Align = alClient
+    Header.AutoSizeIndex = 0
+    Header.DefaultHeight = 17
+    Header.Font.Charset = DEFAULT_CHARSET
+    Header.Font.Color = clWindowText
+    Header.Font.Height = -11
+    Header.Font.Name = 'Tahoma'
+    Header.Font.Style = []
+    Header.MainColumn = -1
+    Header.Options = [hoColumnResize, hoDrag]
+    TabOrder = 0
+    TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect, toRightClickSelect]
+    OnGetText = tvGenresTreeGetText
+    OnGetNodeDataSize = tvGenresTreeGetNodeDataSize
+    ExplicitLeft = 5
+    ExplicitTop = 5
+    ExplicitWidth = 303
+    ExplicitHeight = 303
+    Columns = <>
   end
 end
