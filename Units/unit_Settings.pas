@@ -413,8 +413,10 @@ const
   IMPORT_SECTION = 'IMPORT';
   BEHAVIOR_SECTION = 'BEHAVIOR';
   FILE_SORT_SECTION = 'FILE_SORT';
+  UPDATES_SECTION = 'UPDATES';
 
   READER_KEY_PREFIX = 'Reader';
+  UPDATE_KEY_PREFIX = 'Update';
   SCRIPT_KEY_PREFIX = 'Script';
 
   INITIAL_DIRS_SECTION = 'InitialDirs';
@@ -888,14 +890,10 @@ var
   i: Integer;
   sl: TStringList;
   slHelper: TStringList;
-
 begin
-
   FUpdateList.URL := FUpdateURL;
   FUpdateList.Path := WorkPath;
-
   try
-
     //
     // Добавим апдейты по умолчанию
     //
@@ -910,14 +908,16 @@ begin
                        False,CT_LIBRUSEC_ONLINE_FB);
     FUpdateList.Add('lib.rus.ec USR','','last_usr.info','usr_update.zip',
                        True,CT_LIBRUSEC_USR);
-    FUpdateList.Add('Коллекция Flibusta On-line','','last_flibusta.info','flubusta_update.zip',
+    FUpdateList.Add('lib.rus.ec ALLBOOKS','','last_allbooks.info','allbooks_update.zip',
+                       True,CT_LIBRUSEC_USR);
+    FUpdateList.Add('Коллекция Flibusta On-line','','last_flibusta.info','flibusta_update.zip',
                        True,CT_LIBRUSEC_ONLINE_FB);
     FUpdateList.Add('Коллекция Flibusta On-line','','last_flibusta_extra.info','flibusta_extra_update.zip',
                        False,CT_LIBRUSEC_ONLINE_FB);
     // обрабатываем файл
 
     sl := TStringList.Create;
-    iniFile.ReadSection('UPDATES', sl);
+    iniFile.ReadSection(UPDATES_SECTION, sl);
     if sl.Count > 0 then
     begin
       slHelper := TStringList.Create;
@@ -927,9 +927,9 @@ begin
         slHelper.StrictDelimiter := True;
         for i := 0 to sl.Count - 1 do
         begin
-          if Pos(READER_KEY_PREFIX, sl[i]) = 1 then
+          if Pos(UPDATE_KEY_PREFIX, sl[i]) = 1 then
           begin
-            slHelper.DelimitedText := iniFile.ReadString(READERS_SECTION, sl[i], '');
+            slHelper.DelimitedText := iniFile.ReadString(UPDATES_SECTION, sl[i], '');
             if slHelper.Count = 5 then
             begin
               FUpdateList.Add(slHelper[0],
