@@ -200,8 +200,6 @@ begin
      S := '';
   end;
 
-
-
   Del := Bookdeleted.Value;
 
   if FN = '' then
