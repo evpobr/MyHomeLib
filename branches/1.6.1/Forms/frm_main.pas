@@ -294,8 +294,6 @@ type
     lblDownloadState: TLabel;
     lblDnldAuthor: TLabel;
     lblDnldTitle: TLabel;
-    lblDownloadCount: TRzLabel;
-    btnClearDownload: TRzBitBtn;
     tvDownloadList: TVirtualStringTree;
     BtnSave: TRzToolButton;
     RzSpacer3: TRzSpacer;
@@ -408,6 +406,9 @@ type
     RTF1: TMenuItem;
     spExecTime: TRzStatusPane;
     ToolButton5: TToolButton;
+    Panel2: TPanel;
+    btnClearDownload: TRzBitBtn;
+    lblDownloadCount: TRzLabel;
 
     //
     // События формы
@@ -2196,7 +2197,7 @@ begin
       if Settings.AutoRunUpdate then
           StartLibUpdate
       else
-        if MessageDlg('Доступно обновление для коллекций "lib.rus.ec".' + #13 + ' Начать обновление ?', mtWarning, [mbYes, mbNo], 0) = mrYes then
+        if MessageDlg('Доступно обновление для коллекций.' + #13 + ' Начать обновление ?', mtWarning, [mbYes, mbNo], 0) = mrYes then
            StartLibUpdate;
 
 //------------------------------------------------------------------------------
@@ -2239,21 +2240,19 @@ begin
   if Settings.AutoStartDwnld then
     btnStartDownloadClick(Sender);
 
-
-  WindowState := Settings.WindowState;
-
-  if WindowState = wsNormal then
-  begin
-    Width := Settings.FormWidth;
-    Height := Settings.FormHeight;
-  end;
-
   // костыль
   frmMain.Visible := True;
+  // конец костыля
+  frmMain.WindowState := TWindowState(Settings.WindowState);
+
   if frmMain.WindowState = wsMinimized then
      frmMain.WindowState := wsNormal;
-  // конец костыля
 
+  if frmMain.WindowState = wsNormal then
+  begin
+    frmMain.Width  := Settings.FormWidth;
+    frmMain.Height := Settings.FormHeight;
+  end;
 end;
 
 procedure TfrmMain.SavePositions;
