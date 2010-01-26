@@ -5,7 +5,7 @@
   * Version 0.9
   * 20.08.2008
   * Copyright (c) Aleksey Penkov  alex.penkov@gmail.com
-  *
+  *               Nick Rymanov    nrymanov@gmail.com
   ****************************************************************************** *)
 
 unit frm_genre_tree;
@@ -14,7 +14,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, VirtualTrees, RzButton, ExtCtrls, RzPanel, unit_globals, StdCtrls;
+  Dialogs, VirtualTrees, ExtCtrls, unit_globals, StdCtrls;
 
 type
   TfrmGenreTree = class(TForm)
