@@ -1,14 +1,12 @@
-
-{******************************************************************************}
-{                                                                              }
-{                                 MyHomeLib                                    }
-{                                                                              }
-{                                Version 0.9                                   }
-{                                20.08.2008                                    }
-{                    Copyright (c) Aleksey Penkov  alex.penkov@gmail.com       }
-{                                                                              }
-{******************************************************************************}
-
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Version 0.9
+  * 20.08.2008
+  * Copyright (c) Aleksey Penkov  alex.penkov@gmail.com
+  *               Nick Rymanov    nrymanov@gmail.com
+  ****************************************************************************** *)
 
 unit frm_edit_reader;
 
@@ -16,18 +14,18 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Mask, RzEdit, RzButton, RzBtnEdt, ExtCtrls,
-  RzPanel;
+  Dialogs, StdCtrls, Mask, ExtCtrls, unit_AutoCompleteEdit;
 
 type
   TfrmEditReader = class(TForm)
-    btnSave: TRzBitBtn;
-    btnCancel: TRzBitBtn;
-    RzGroupBox1: TRzGroupBox;
-    edExt: TRzEdit;
+    edExt: TEdit;
     Label1: TLabel;
-    edPath: TRzButtonEdit;
+    edPath: TMHLAutoCompleteEdit;
     Label2: TLabel;
+    pnButtons: TPanel;
+    btnOk: TButton;
+    btnCancel: TButton;
+    btnBrowse: TButton;
     procedure edPathButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
   private
@@ -45,7 +43,8 @@ var
 
 implementation
 
-uses unit_Helpers;
+uses
+  unit_Helpers;
 
 {$R *.dfm}
 

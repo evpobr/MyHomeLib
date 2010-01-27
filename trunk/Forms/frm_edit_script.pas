@@ -1,22 +1,33 @@
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Version 0.9
+  * 20.08.2008
+  * Copyright (c) Aleksey Penkov  alex.penkov@gmail.com
+  *               Nick Rymanov    nrymanov@gmail.com
+  ****************************************************************************** *)
+
 unit frm_edit_script;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, RzButton, RzBtnEdt, StdCtrls, Mask, RzEdit, ExtCtrls, RzPanel;
+  Dialogs, StdCtrls, Mask, ExtCtrls, unit_AutoCompleteEdit;
 
 type
   TfrmEditScript = class(TForm)
-    RzGroupBox1: TRzGroupBox;
     Label1: TLabel;
     Label2: TLabel;
-    edTitle: TRzEdit;
-    edPath: TRzButtonEdit;
-    btnSave: TRzBitBtn;
-    RzBitBtn2: TRzBitBtn;
-    edParams: TRzEdit;
+    edTitle: TEdit;
+    edPath: TMHLAutoCompleteEdit;
+    edParams: TEdit;
     Label3: TLabel;
+    pnButtons: TPanel;
+    btnOk: TButton;
+    btnCancel: TButton;
+    btnBrowse: TButton;
     procedure btnSaveClick(Sender: TObject);
     procedure edPathButtonClick(Sender: TObject);
   private
@@ -26,7 +37,6 @@ type
     function GetParams: string;
     function GetPath: string;
     function GetTitle: string;
-    { Private declarations }
   public
     property Title: string read GetTitle write SetTitle;
     property Path: string read GetPath write SetPath;
@@ -38,7 +48,8 @@ var
 
 implementation
 
-uses unit_Helpers;
+uses
+  unit_Helpers;
 
 {$R *.dfm}
 
