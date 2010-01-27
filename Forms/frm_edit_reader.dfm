@@ -3,8 +3,8 @@ object frmEditReader: TfrmEditReader
   Top = 0
   BorderStyle = bsDialog
   Caption = #1044#1086#1073#1072#1074#1083#1077#1085#1080#1077' '#1090#1080#1087#1072' '#1092#1072#1081#1083#1086#1074
-  ClientHeight = 98
-  ClientWidth = 351
+  ClientHeight = 101
+  ClientWidth = 415
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,60 +15,82 @@ object frmEditReader: TfrmEditReader
   Position = poMainFormCenter
   PixelsPerInch = 96
   TextHeight = 13
-  object btnSave: TRzBitBtn
-    Left = 187
-    Top = 66
-    Default = True
-    Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
-    TabOrder = 1
-    OnClick = btnSaveClick
+  object Label1: TLabel
+    Left = 8
+    Top = 11
+    Width = 22
+    Height = 13
+    Caption = '&'#1058#1080#1087':'
+    FocusControl = edExt
   end
-  object btnCancel: TRzBitBtn
-    Left = 268
-    Top = 66
-    Cancel = True
-    ModalResult = 2
-    Caption = #1054#1090#1084#1077#1085#1072
-    TabOrder = 2
+  object Label2: TLabel
+    Left = 8
+    Top = 38
+    Width = 29
+    Height = 13
+    Caption = '&'#1055#1091#1090#1100':'
+    FocusControl = edPath
   end
-  object RzGroupBox1: TRzGroupBox
-    AlignWithMargins = True
-    Left = 3
-    Top = 3
-    Width = 345
-    Height = 57
-    Align = alTop
-    TabOrder = 0
-    object Label1: TLabel
-      Left = 8
-      Top = 8
-      Width = 18
-      Height = 13
-      Caption = #1058#1080#1087
-    end
-    object Label2: TLabel
-      Left = 64
-      Top = 8
-      Width = 25
-      Height = 13
-      Caption = #1055#1091#1090#1100
-    end
-    object edExt: TRzEdit
-      Left = 8
-      Top = 27
-      Width = 41
-      Height = 21
+  object pnButtons: TPanel
+    Left = 0
+    Top = 60
+    Width = 415
+    Height = 41
+    Align = alBottom
+    BevelOuter = bvNone
+    Caption = 'pnButtons'
+    ShowCaption = False
+    TabOrder = 3
+    DesignSize = (
+      415
+      41)
+    object btnOk: TButton
+      Left = 251
+      Top = 10
+      Width = 75
+      Height = 25
+      Anchors = [akTop, akRight]
+      Caption = '&'#1057#1086#1093#1088#1072#1085#1080#1090#1100
+      Default = True
+      ModalResult = 1
       TabOrder = 0
+      OnClick = btnSaveClick
     end
-    object edPath: TRzButtonEdit
-      Left = 59
-      Top = 27
-      Width = 270
-      Height = 21
+    object btnCancel: TButton
+      Left = 332
+      Top = 10
+      Width = 75
+      Height = 25
+      Anchors = [akTop, akRight]
+      Cancel = True
+      Caption = '&'#1054#1090#1084#1077#1085#1072
+      ModalResult = 2
       TabOrder = 1
-      AltBtnWidth = 15
-      ButtonWidth = 15
-      OnButtonClick = edPathButtonClick
     end
+  end
+  object edExt: TEdit
+    Left = 56
+    Top = 8
+    Width = 121
+    Height = 21
+    TabOrder = 0
+    TextHint = #1056#1072#1089#1096#1080#1088#1077#1085#1080#1077' '#1092#1072#1081#1083#1072
+  end
+  object edPath: TMHLAutoCompleteEdit
+    Left = 56
+    Top = 35
+    Width = 270
+    Height = 21
+    TabOrder = 1
+    TextHint = #1055#1091#1090#1100' '#1082' '#1087#1088#1086#1075#1088#1072#1084#1084#1077' '#1087#1088#1086#1089#1084#1086#1090#1088#1072
+  end
+  object btnBrowse: TButton
+    Left = 332
+    Top = 33
+    Width = 75
+    Height = 25
+    Caption = #1054#1073'&'#1079#1086#1088'...'
+    TabOrder = 2
+    OnClick = edPathButtonClick
   end
 end
