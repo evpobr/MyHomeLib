@@ -4741,12 +4741,12 @@ begin
     Family.SubItems.Add(Author.FirstName);
     Family.SubItems.Add(Author.MiddleName);
   end;
-  frmEditBookInfo.lblGenre.Caption := '';
+  frmEditBookInfo.lblGenre.Text := '';
   FillGenresTree(frmGenreTree.tvGenresTree);
   for Genre in R.Genres do
   begin
     frmGenreTree.SelectGenres(Genre.GenreCode);
-    frmEditBookInfo.lblGenre.Caption := frmEditBookInfo.lblGenre.Caption + Genre.Alias + ';';
+    frmEditBookInfo.lblGenre.Text := frmEditBookInfo.lblGenre.Text + Genre.Alias + ';';
   end;
   frmEditBookInfo.edT.Text := R.Title;
 
@@ -4792,7 +4792,7 @@ begin
   R.Title := frmEditBookInfo.edT.Text;
   R.Series := frmEditBookInfo.cbSeries.Text;
 
-  R.SeqNumber := Round(frmEditBookInfo.edSN.Value);
+  R.SeqNumber := StrToIntDef(frmEditBookInfo.edSN.Text, 0);
   R.KeyWords := frmEditBookInfo.edKeyWords.Text;
   R.Lang := frmEditBookInfo.cbLang.Text;
 
@@ -4816,8 +4816,8 @@ begin
     DMUser.CorrectExtra(OLdID, Data.ID);
 
     Data.Title := frmEditBookInfo.edT.Text;
-    Data.Genre := frmEditBookInfo.lblGenre.Caption;
-    Data.No := Round(frmEditBookInfo.edSN.Value);
+    Data.Genre := frmEditBookInfo.lblGenre.Text;
+    Data.No := StrToIntDef(frmEditBookInfo.edSN.Text, 0);
     Data.Lang := frmEditBookInfo.cbLang.Text;
     Tree.RepaintNode(Node);
   finally
