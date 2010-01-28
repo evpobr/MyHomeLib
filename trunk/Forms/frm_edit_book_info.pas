@@ -1,14 +1,12 @@
-
-{******************************************************************************}
-{                                                                              }
-{                                 MyHomeLib                                    }
-{                                                                              }
-{                                Version 0.9                                   }
-{                                20.08.2008                                    }
-{                    Copyright (c) Aleksey Penkov  alex.penkov@gmail.com       }
-{                                                                              }
-{******************************************************************************}
-
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Version 0.9
+  * 20.08.2008
+  * Copyright (c) Aleksey Penkov  alex.penkov@gmail.com
+  *               Nick Rymanov    nrymanov@gmail.com
+  ****************************************************************************** *)
 
 unit frm_edit_book_info;
 
@@ -16,35 +14,34 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, RzShellDialogs, RzCommon, RzSelDir, RzPanel, RzRadGrp, StdCtrls,
-  Mask, RzEdit, RzDBEdit, RzDBBnEd, RzButton, ExtCtrls, ComCtrls, RzListVw, VirtualTrees,
-  RzCmboBx;
+  Dialogs, StdCtrls, Mask, ExtCtrls, ComCtrls, VirtualTrees;
 
 type
   TfrmEditBookInfo = class(TForm)
-    RzPanel1: TRzPanel;
-    RzPanel3: TRzPanel;
-    btnSave: TRzBitBtn;
-    btnCancel: TRzBitBtn;
-    RzGroupBox4: TRzGroupBox;
-    edSN: TRzNumericEdit;
-    RzGroupBox2: TRzGroupBox;
+    edSN: TEdit;
     edT: TEdit;
-    RzGroupBox1: TRzGroupBox;
-    lvAuthors: TRzListView;
-    btnADelete: TRzBitBtn;
-    btnAChange: TRzBitBtn;
-    btnAddAuthor: TRzBitBtn;
-    RzGroupBox5: TRzGroupBox;
-    lblGenre: TLabel;
+    lvAuthors: TListView;
+    btnADelete: TButton;
+    btnAChange: TButton;
+    btnAddAuthor: TButton;
+    lblGenre: TEdit;
     btnGenres: TButton;
-    cbSeries: TRzComboBox;
-    RzGroupBox3: TRzGroupBox;
+    cbSeries: TComboBox;
     edKeyWords: TEdit;
-    RzGroupBox6: TRzGroupBox;
-    cbLang: TRzComboBox;
-    Button1: TButton;
-    Button2: TButton;
+    cbLang: TComboBox;
+    btnNextBook: TButton;
+    btnPrevBook: TButton;
+    pnButtons: TPanel;
+    btnOk: TButton;
+    btnCancel: TButton;
+    Label1: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    gbAuthors: TGroupBox;
+    gbExtraInfo: TGroupBox;
     procedure btnGenresClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btnAddAuthorClick(Sender: TObject);
@@ -52,17 +49,17 @@ type
     procedure btnADeleteClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure Button1Click(Sender: TObject);
+    procedure btnNextBookClick(Sender: TObject);
     procedure edTChange(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
+    procedure btnPrevBookClick(Sender: TObject);
   private
-    FChanged : boolean;
+    FChanged: boolean;
 
     procedure FillLists;
     function SaveData: boolean;
     { Private declarations }
   public
-//     procedure FillGenrelist;
+    // procedure FillGenrelist;
   end;
 
 var
@@ -83,18 +80,18 @@ uses
 
 procedure TfrmEditBookInfo.btnGenresClick(Sender: TObject);
 var
-  Data:PGenreData;
-  Node:PVirtualNode;
+  Data: PGenreData;
+  Node: PVirtualNode;
 begin
-  if frmGenreTree.ShowModal=mrOk then
+  if frmGenreTree.ShowModal = mrOk then
   begin
-    lblGenre.Caption:='';
-    Node:=frmGenreTree.tvGenresTree.GetFirstSelected;
-    while Node<>nil do
+    lblGenre.Text := '';
+    Node := frmGenreTree.tvGenresTree.GetFirstSelected;
+    while Node <> nil do
     begin
-      Data:=frmGenreTree.tvGenresTree.GetNodeData(Node);
-      lblGenre.Caption:=lblGenre.Caption+Data.Text+' ; ';
-      Node:=frmGenreTree.tvGenresTree.GetNextSelected(Node);
+      Data := frmGenreTree.tvGenresTree.GetNodeData(Node);
+      lblGenre.Text := lblGenre.Text + Data.Text + ' ; ';
+      Node := frmGenreTree.tvGenresTree.GetNextSelected(Node);
     end;
     FChanged := True;
   end;
@@ -105,28 +102,28 @@ begin
   cbSeries.Items.Clear;
   dmCollection.tblSeries.First;
   dmCollection.tblSeries.Next;
-  while not dmCollection.tblSeries.eof do
+  while not dmCollection.tblSeries.Eof do
   begin
     cbSeries.Items.Add(dmCollection.tblSeries['S_Title']);
     dmCollection.tblSeries.Next;
   end;
 end;
 
-procedure TfrmEditBookInfo.FormKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TfrmEditBookInfo.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
-  Dummy : boolean;
+  Dummy: boolean;
 begin
-  if Key = VK_F1 then   frmMain.HH(0,0,Dummy);
+  if Key = VK_F1 then
+    frmMain.HH(0, 0, Dummy);
 end;
 
 procedure TfrmEditBookInfo.FormShow(Sender: TObject);
 begin
   FChanged := False;
-  if frmGenreTree.tvGenresTree.GetFirstSelected=nil then frmMain.FillGenresTree(frmGenreTree.tvGenresTree);
+  if frmGenreTree.tvGenresTree.GetFirstSelected = nil then
+    frmMain.FillGenresTree(frmGenreTree.tvGenresTree);
   FillLists;
 end;
-
 
 function TfrmEditBookInfo.SaveData: boolean;
 begin
@@ -137,14 +134,14 @@ begin
     Exit;
   end;
 
-  if lvAuthors.Items.Count=0 then
+  if lvAuthors.Items.Count = 0 then
   begin
-    MessageDlg('Укажите минимум одного автора!',mtError,[mbOk],0);
+    MessageDlg('Укажите минимум одного автора!', mtError, [mbOk], 0);
     Exit;
   end;
-  if edT.Text='' then
+  if edT.Text = '' then
   begin
-    MessageDlg('Укажите название книги!',mtError,[mbOk],0);
+    MessageDlg('Укажите название книги!', mtError, [mbOk], 0);
     Exit;
   end;
   Result := True;
@@ -157,15 +154,15 @@ end;
 
 procedure TfrmEditBookInfo.btnAddAuthorClick(Sender: TObject);
 var
-  Family:TListItem;
+  Family: TListItem;
 begin
   frmEditAuthorData.edFamily.Clear;
   frmEditAuthorData.edName.Clear;
   frmEditAuthorData.edMiddle.Clear;
-  if frmEditAuthorData.ShowModal=mrOk then
+  if frmEditAuthorData.ShowModal = mrOk then
   begin
-    Family:=lvAuthors.Items.Add;
-    Family.Caption:=frmEditAuthorData.edFamily.Text;
+    Family := lvAuthors.Items.Add;
+    Family.Caption := frmEditAuthorData.edFamily.Text;
     Family.SubItems.Add(frmEditAuthorData.edName.Text);
     Family.SubItems.Add(frmEditAuthorData.edMiddle.Text);
     FChanged := True;
@@ -174,21 +171,29 @@ end;
 
 procedure TfrmEditBookInfo.btnAChangeClick(Sender: TObject);
 var
-  Family:TListItem;
+  Family: TListItem;
 begin
-  Family:=lvAuthors.Selected;
-  if Family=nil then Exit;
+  Family := lvAuthors.Selected;
+  if Family = nil then
+    Exit;
 
-  frmEditAuthorData.edFamily.Text:=Family.Caption;
-  if Family.SubItems.Count>0 then frmEditAuthorData.edName.Text:=Family.SubItems[0];
-  if Family.SubItems.Count>1 then frmEditAuthorData.edMiddle.Text:=Family.SubItems[1];
-  if frmEditAuthorData.ShowModal=mrOk then
+  frmEditAuthorData.edFamily.Text := Family.Caption;
+  if Family.SubItems.Count > 0 then
+    frmEditAuthorData.edName.Text := Family.SubItems[0];
+  if Family.SubItems.Count > 1 then
+    frmEditAuthorData.edMiddle.Text := Family.SubItems[1];
+
+  if frmEditAuthorData.ShowModal = mrOk then
   begin
-    Family.Caption:=frmEditAuthorData.edFamily.Text;
-    if Family.SubItems.Count>0 then Family.SubItems[0]:=frmEditAuthorData.edName.Text
-      else Family.SubItems.Add(frmEditAuthorData.edName.Text);
-    if Family.SubItems.Count>1 then Family.SubItems[1]:=frmEditAuthorData.edMiddle.Text
-       else Family.SubItems.Add(frmEditAuthorData.edMiddle.Text);
+    Family.Caption := frmEditAuthorData.edFamily.Text;
+    if Family.SubItems.Count > 0 then
+      Family.SubItems[0] := frmEditAuthorData.edName.Text
+    else
+      Family.SubItems.Add(frmEditAuthorData.edName.Text);
+    if Family.SubItems.Count > 1 then
+      Family.SubItems[1] := frmEditAuthorData.edMiddle.Text
+    else
+      Family.SubItems.Add(frmEditAuthorData.edMiddle.Text);
     FChanged := True;
   end;
 end;
@@ -199,16 +204,16 @@ begin
     ModalResult := mrOk;
 end;
 
-procedure TfrmEditBookInfo.Button1Click(Sender: TObject);
+procedure TfrmEditBookInfo.btnNextBookClick(Sender: TObject);
 begin
   if SaveData then
   begin
-    frmMain.SelectNextBook(FChanged,True);
+    frmMain.SelectNextBook(FChanged, True);
     FChanged := False;
   end;
 end;
 
-procedure TfrmEditBookInfo.Button2Click(Sender: TObject);
+procedure TfrmEditBookInfo.btnPrevBookClick(Sender: TObject);
 begin
   if SaveData then
   begin
