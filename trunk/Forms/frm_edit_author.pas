@@ -1,14 +1,12 @@
-
-{******************************************************************************}
-{                                                                              }
-{                                 MyHomeLib                                    }
-{                                                                              }
-{                                Version 0.9                                   }
-{                                20.08.2008                                    }
-{                    Copyright (c) Aleksey Penkov  alex.penkov@gmail.com       }
-{                                                                              }
-{******************************************************************************}
-
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Version 0.9
+  * 20.08.2008
+  * Copyright (c) Aleksey Penkov  alex.penkov@gmail.com
+  *               Nick Rymanov    nrymanov@gmail.com
+  ****************************************************************************** *)
 
 unit frm_edit_author;
 
@@ -16,23 +14,23 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Mask, RzEdit, RzButton, RzRadChk, ExtCtrls, RzPanel;
+  Dialogs, StdCtrls, Mask, ExtCtrls;
 
 type
   TfrmEditAuthorData = class(TForm)
-    RzGroupBox1: TRzGroupBox;
-    btnSave: TRzBitBtn;
-    RzBitBtn2: TRzBitBtn;
-    RzGroupBox2: TRzGroupBox;
-    edFamily: TRzEdit;
+    gbInfo: TGroupBox;
+    edFamily: TEdit;
     Label1: TLabel;
-    edName: TRzEdit;
+    edName: TEdit;
     Label2: TLabel;
-    edMiddle: TRzEdit;
+    edMiddle: TEdit;
     Label3: TLabel;
-    gbAddNew: TRzGroupBox;
-    cbAddNew: TRzCheckBox;
-    cbSaveLinks: TRzCheckBox;
+    gbAddNew: TGroupBox;
+    cbAddNew: TCheckBox;
+    cbSaveLinks: TCheckBox;
+    pnButtons: TPanel;
+    btnOk: TButton;
+    btnCancel: TButton;
     procedure FormShow(Sender: TObject);
   private
     function GetAddNewState: boolean;
