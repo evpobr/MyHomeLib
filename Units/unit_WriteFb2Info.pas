@@ -5,6 +5,7 @@
 { Version 1                                                                    }
 { 14.09.2009                                                                   }
 { Copyright (c) Aleksey Penkov  alex.penkov@gmail.com                          }
+{               Matvienko Sergei  matv84@mail.ru                               }
 {                                                                              }
 {   Запись в fb2info информации из базы                                        }
 {******************************************************************************}
@@ -12,8 +13,10 @@
 unit unit_WriteFb2Info;
 
 interface
+uses dm_Collection;
 
   function WriteFb2InfoToFile(FileName: string):boolean;
+  function TemplateText(ACollection: TDMCollection; Template: string): string;
 
 implementation
 
@@ -23,12 +26,11 @@ uses
   unit_Helpers,
   unit_Consts,
   unit_Settings,
-  dm_Collection,
   XMLDoc,
   SysUtils;
 
-function TemplateText(R: TBookRecord; Template: string): string;
-const mask_elements = 4;
+function TemplateText(ACollection: TDMCollection; Template: string): string;
+const mask_elements = 8;
 type TElement = record
        name: string;
        BegBlock, EndBlock: integer;
@@ -42,7 +44,10 @@ var BookHeader, AuthorName, FirstName, MiddleName, LastName: string;
     MaskElements: array [1..mask_elements] of TMaskElement;
     i, j, StackPos, ElementPos: integer;
     TemplReady: boolean;
+    R: TBookRecord;
 begin
+  ACollection.GetCurrentBook(R);
+
   { Формирование заголовка книги }
   MaskElements[1].templ:= 's';
   if R.Series <> NO_SERIES_TITLE then
@@ -70,6 +75,19 @@ begin
     if i < high(R.Authors) then AuthorName:= AuthorName + ', ';
   end;
   MaskElements[4].value:= AuthorName;
+
+  MaskElements[5].templ:= 'id';
+  MaskElements[5].value:= IntToStr(R.LibID);
+
+  MaskElements[6].templ:= 'g';
+  for i := Low(R.Genres) to High(R.Genres) do
+    MaskElements[6].value:= R.Genres[i].Alias + ' ';
+
+  MaskElements[7].templ:= 'fl';
+  MaskElements[7].value:= R.Authors[low(R.Authors)].FLastName[1];
+
+  MaskElements[8].templ:= 'rg';
+  MaskElements[8].value:= ACollection.GetRootGenre(R.LibID);
 
   BookHeader := Template;
   TemplReady:= false;
@@ -175,6 +193,8 @@ var
   S : IXMLSequenceType;
 
   XML: TXmlDocument;
+
+  TitleBook: String;
 begin
   try
     DMCollection.GetCurrentBook(R);
@@ -183,6 +203,8 @@ begin
     XML.Active := True;
     book := GetFictionBook(XML);
 
+    TitleBook:= TemplateText(DMCollection, Settings.BookHeaderTemplate);
+
     with Book.Description.Titleinfo do
     begin
       Author.Clear;
@@ -190,11 +212,11 @@ begin
       begin
         A := Author.Add;
         A.Lastname.Text := R.Authors[i].LastName;
-        A.Firstname.Text :=R.Authors[i].FirstName;
-        A.Middlename.Text :=R.Authors[i].MiddleName;
+        A.Firstname.Text := R.Authors[i].FirstName;
+        A.Middlename.Text := R.Authors[i].MiddleName;
       end;
 
-      Booktitle.Text := TemplateText(R, Settings.BookHeaderTemplate);
+      Booktitle.Text := TitleBook;
 
       Genre.Clear;
       for i := 0 to High(R.Genres) do

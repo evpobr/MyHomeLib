@@ -62,7 +62,7 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 414
     Height = 409
-    ActivePage = tsInternet
+    ActivePage = tsDevices
     Align = alClient
     TabOrder = 1
     object tsDevices: TTabSheet
@@ -94,152 +94,43 @@ object frmSettings: TfrmSettings
           Alignment = taRightJustify
           Caption = #1060#1072#1081#1083': '
         end
-        object tbtnInsert1: TRzToolButton
-          Tag = 41
-          Left = 64
-          Top = 88
-          Width = 33
-          Hint = #1060#1072#1084#1080#1083#1080#1103' '#1080' '#1080#1084#1103' '#1072#1074#1090#1086#1088#1072
-          Flat = False
-          ShowCaption = True
-          UseToolbarButtonSize = False
-          UseToolbarShowCaption = False
-          Caption = '%f'
-          ParentShowHint = False
-          ShowHint = True
-          OnClick = tbtnInsert1Click
+        object cbTranslit: TCheckBox
+          Left = 20
+          Top = 96
+          Width = 294
+          Height = 27
+          Caption = #1058#1088#1072#1085#1089#1083#1080#1090#1077#1088#1072#1094#1080#1103' '#1080#1084#1077#1085' '#1087#1072#1087#1086#1082' '#1080' '#1092#1072#1081#1083#1086#1074
+          TabOrder = 1
+          WordWrap = True
         end
-        object tbtnInsert2: TRzToolButton
-          Tag = 42
-          Left = 103
-          Top = 88
-          Width = 33
-          Hint = #1053#1072#1079#1074#1072#1085#1080#1077
-          Flat = False
-          ShowCaption = True
-          UseToolbarButtonSize = False
-          UseToolbarShowCaption = False
-          Caption = '%t'
-          ParentShowHint = False
-          ShowHint = True
-          OnClick = tbtnInsert1Click
-        end
-        object tbtnInsert3: TRzToolButton
-          Tag = 43
-          Left = 142
-          Top = 88
-          Width = 33
-          Hint = #1057#1077#1088#1080#1103
-          Flat = False
-          ShowCaption = True
-          UseToolbarButtonSize = False
-          UseToolbarShowCaption = False
-          Caption = '%s '
-          ParentShowHint = False
-          ShowHint = True
-          OnClick = tbtnInsert1Click
-        end
-        object tbtnInsert4: TRzToolButton
-          Tag = 44
-          Left = 181
-          Top = 88
-          Width = 33
-          Hint = #1053#1086#1084#1077#1088' '#1074' '#1089#1077#1088#1080#1080
-          Flat = False
-          ShowCaption = True
-          UseToolbarButtonSize = False
-          UseToolbarShowCaption = False
-          Caption = '%n'
-          ParentShowHint = False
-          ShowHint = True
-          OnClick = tbtnInsert1Click
-        end
-        object RzToolButton1: TRzToolButton
-          Tag = 45
-          Left = 220
-          Top = 88
-          Width = 33
-          Hint = 'Id '#1082#1085#1080#1075#1080
-          Flat = False
-          ShowCaption = True
-          UseToolbarButtonSize = False
-          UseToolbarShowCaption = False
-          Caption = '%id'
-          ParentShowHint = False
-          ShowHint = True
-          OnClick = tbtnInsert1Click
-        end
-        object RzToolButton2: TRzToolButton
-          Tag = 46
-          Left = 259
-          Top = 88
-          Width = 33
-          Hint = #1046#1072#1085#1088
-          Flat = False
-          ShowCaption = True
-          UseToolbarButtonSize = False
-          UseToolbarShowCaption = False
-          Caption = '%g'
-          ParentShowHint = False
-          ShowHint = True
-          OnClick = tbtnInsert1Click
-        end
-        object RzToolButton3: TRzToolButton
-          Tag = 47
-          Left = 298
-          Top = 88
-          Width = 33
-          Hint = #1055#1077#1088#1074#1072#1103' '#1073#1091#1082#1074#1072#13#1092#1072#1084#1080#1083#1080#1080' '#1072#1074#1090#1086#1088#1072
-          Flat = False
-          ShowCaption = True
-          UseToolbarButtonSize = False
-          UseToolbarShowCaption = False
-          Caption = '%fl'
-          ParentShowHint = False
-          ShowHint = True
-          OnClick = tbtnInsert1Click
-        end
-        object RzToolButton18: TRzToolButton
-          Tag = 48
-          Left = 337
-          Top = 88
-          Width = 33
-          Hint = #1050#1086#1088#1085#1077#1074#1086#1081' '#1078#1072#1085#1088
-          Flat = False
-          ShowCaption = True
-          UseToolbarButtonSize = False
-          UseToolbarShowCaption = False
-          Caption = '%rg'
-          ParentShowHint = False
-          ShowHint = True
-          OnClick = tbtnInsert1Click
-        end
-        object edFolderTemplate: TRzEdit
-          Tag = 785
-          Left = 64
-          Top = 26
-          Width = 313
-          Height = 21
-          Text = '%f\%s'
-          TabOrder = 0
-        end
-        object edFileNameTemplate: TRzEdit
-          Tag = 785
+        object edFileNameTemplate: TRzButtonEdit
           Left = 64
           Top = 61
           Width = 313
           Height = 21
           Text = '%n%t'
-          TabOrder = 1
+          ReadOnly = True
+          ReadOnlyColor = clWindow
+          TabOrder = 0
+          AltBtnWidth = 15
+          ButtonWidth = 15
+          HideButtonsOnReadOnly = False
+          OnButtonClick = beTemplateButtonClick
         end
-        object cbTranslit: TCheckBox
-          Left = 20
-          Top = 115
-          Width = 294
-          Height = 27
-          Caption = #1058#1088#1072#1085#1089#1083#1080#1090#1077#1088#1072#1094#1080#1103' '#1080#1084#1077#1085' '#1087#1072#1087#1086#1082' '#1080' '#1092#1072#1081#1083#1086#1074
+        object edFolderTemplate: TRzButtonEdit
+          Tag = 785
+          Left = 64
+          Top = 25
+          Width = 313
+          Height = 21
+          Text = '%f\%s'
+          ReadOnly = True
+          ReadOnlyColor = clWindow
           TabOrder = 2
-          WordWrap = True
+          AltBtnWidth = 15
+          ButtonWidth = 15
+          HideButtonsOnReadOnly = False
+          OnButtonClick = beTemplateButtonClick
         end
       end
       object RzGroupBox4: TRzGroupBox
@@ -720,7 +611,6 @@ object frmSettings: TfrmSettings
         Align = alTop
         Caption = #1057#1077#1088#1074#1077#1088' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
         TabOrder = 1
-        ExplicitTop = 179
         object edUpdates: TEdit
           Left = 13
           Top = 18
@@ -763,8 +653,6 @@ object frmSettings: TfrmSettings
         Align = alClient
         Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1089#1086#1077#1076#1080#1085#1077#1085#1080#1103
         TabOrder = 2
-        ExplicitTop = 294
-        ExplicitHeight = 102
         object RzLabel7: TRzLabel
           Left = 16
           Top = 22
@@ -843,7 +731,6 @@ object frmSettings: TfrmSettings
         Align = alTop
         Caption = #1055#1072#1087#1082#1072' '#1089' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1103#1084#1080
         TabOrder = 3
-        ExplicitTop = 122
         object edUpdateDir: TRzButtonEdit
           Left = 11
           Top = 18
@@ -865,7 +752,6 @@ object frmSettings: TfrmSettings
         Align = alTop
         Caption = #1057#1077#1088#1074#1077#1088' INPX'
         TabOrder = 4
-        ExplicitTop = 171
         object edINPXUrl: TEdit
           Left = 12
           Top = 19
@@ -1145,7 +1031,6 @@ object frmSettings: TfrmSettings
           Caption = '%f'
           ParentShowHint = False
           ShowHint = True
-          OnClick = tbtnInsert1Click
         end
         object RzToolButton5: TRzToolButton
           Tag = 42
@@ -1160,7 +1045,6 @@ object frmSettings: TfrmSettings
           Caption = '%t'
           ParentShowHint = False
           ShowHint = True
-          OnClick = tbtnInsert1Click
         end
         object RzToolButton6: TRzToolButton
           Tag = 43
@@ -1175,7 +1059,6 @@ object frmSettings: TfrmSettings
           Caption = '%s '
           ParentShowHint = False
           ShowHint = True
-          OnClick = tbtnInsert1Click
         end
         object RzToolButton7: TRzToolButton
           Tag = 44
@@ -1190,7 +1073,6 @@ object frmSettings: TfrmSettings
           Caption = '%n'
           ParentShowHint = False
           ShowHint = True
-          OnClick = tbtnInsert1Click
         end
         object RzToolButton8: TRzToolButton
           Tag = 48
@@ -1205,7 +1087,6 @@ object frmSettings: TfrmSettings
           Caption = '%rg'
           ParentShowHint = False
           ShowHint = True
-          OnClick = tbtnInsert1Click
         end
         object RzToolButton9: TRzToolButton
           Tag = 46
@@ -1220,7 +1101,6 @@ object frmSettings: TfrmSettings
           Caption = '%g'
           ParentShowHint = False
           ShowHint = True
-          OnClick = tbtnInsert1Click
         end
         object RzToolButton10: TRzToolButton
           Tag = 47
@@ -1235,7 +1115,6 @@ object frmSettings: TfrmSettings
           Caption = '%fl'
           ParentShowHint = False
           ShowHint = True
-          OnClick = tbtnInsert1Click
         end
         object edFBDFolderTemplate: TRzEdit
           Tag = 785
@@ -1293,7 +1172,6 @@ object frmSettings: TfrmSettings
           Caption = '%f'
           ParentShowHint = False
           ShowHint = True
-          OnClick = tbtnInsert1Click
         end
         object RzToolButton12: TRzToolButton
           Tag = 42
@@ -1308,7 +1186,6 @@ object frmSettings: TfrmSettings
           Caption = '%t'
           ParentShowHint = False
           ShowHint = True
-          OnClick = tbtnInsert1Click
         end
         object RzToolButton13: TRzToolButton
           Tag = 43
@@ -1323,7 +1200,6 @@ object frmSettings: TfrmSettings
           Caption = '%s '
           ParentShowHint = False
           ShowHint = True
-          OnClick = tbtnInsert1Click
         end
         object RzToolButton14: TRzToolButton
           Tag = 44
@@ -1338,7 +1214,6 @@ object frmSettings: TfrmSettings
           Caption = '%n'
           ParentShowHint = False
           ShowHint = True
-          OnClick = tbtnInsert1Click
         end
         object RzToolButton15: TRzToolButton
           Tag = 48
@@ -1353,7 +1228,6 @@ object frmSettings: TfrmSettings
           Caption = '%rg'
           ParentShowHint = False
           ShowHint = True
-          OnClick = tbtnInsert1Click
         end
         object RzToolButton16: TRzToolButton
           Tag = 46
@@ -1368,7 +1242,6 @@ object frmSettings: TfrmSettings
           Caption = '%g'
           ParentShowHint = False
           ShowHint = True
-          OnClick = tbtnInsert1Click
         end
         object RzToolButton17: TRzToolButton
           Tag = 47
@@ -1383,7 +1256,6 @@ object frmSettings: TfrmSettings
           Caption = '%fl'
           ParentShowHint = False
           ShowHint = True
-          OnClick = tbtnInsert1Click
         end
         object edFB2FolderTemplate: TRzEdit
           Tag = 785

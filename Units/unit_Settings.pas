@@ -5,6 +5,7 @@
 { Version 0.9                                                                  }
 { 20.08.2008                                                                   }
 { Copyright (c) Aleksey Penkov  alex.penkov@gmail.com                          }
+{               Matvienko Sergei  matv84@mail.ru                               }
 {                                                                              }
 { @author Nick Rymanov nrymanov@gmail.com                                      }
 {                                                                              }

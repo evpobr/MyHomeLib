@@ -6,6 +6,7 @@
 {                                Version 0.9                                   }
 {                                20.08.2008                                    }
 {                    Copyright (c) Aleksey Penkov  alex.penkov@gmail.com       }
+{                                  Matvienko Sergei  matv84@mail.ru            }
 {                                                                              }
 {******************************************************************************}
 
@@ -42,7 +43,7 @@ uses
   RzLabel,
   RzListVw,
   unit_Readers,
-  unit_Scripts, RzSelDir;
+  unit_Scripts, RzSelDir, ImgList;
 
 type
   TfrmSettings = class(TForm)
@@ -65,8 +66,6 @@ type
     RzLabel3: TRzLabel;
     RzLabel4: TRzLabel;
     RzGroupBox3: TRzGroupBox;
-    edFolderTemplate: TRzEdit;
-    edFileNameTemplate: TRzEdit;
     Label5: TLabel;
     Label6: TLabel;
     cbTranslit: TCheckBox;
@@ -107,13 +106,6 @@ type
     rgDeviceFormat: TRadioGroup;
     RzGroupBox5: TRzGroupBox;
     cbSquareFilter: TCheckBox;
-    tbtnInsert1: TRzToolButton;
-    tbtnInsert2: TRzToolButton;
-    tbtnInsert3: TRzToolButton;
-    tbtnInsert4: TRzToolButton;
-    RzToolButton1: TRzToolButton;
-    RzToolButton2: TRzToolButton;
-    RzToolButton3: TRzToolButton;
     RzGroupBox11: TRzGroupBox;
     edReadDir: TRzButtonEdit;
     dlgSelectDir: TRzSelDirDialog;
@@ -170,7 +162,6 @@ type
     RzGroupBox15: TRzGroupBox;
     edInputFolder: TRzButtonEdit;
     cbDeleteFiles: TCheckBox;
-    RzToolButton18: TRzToolButton;
     RzGroupBox2: TRzGroupBox;
     edUpdateDir: TRzButtonEdit;
     RzGroupBox16: TRzGroupBox;
@@ -179,6 +170,8 @@ type
     beTemplate: TRzButtonEdit;
     RzGroupBox17: TRzGroupBox;
     edINPXUrl: TEdit;
+    edFileNameTemplate: TRzButtonEdit;
+    edFolderTemplate: TRzButtonEdit;
     procedure edDeviceDirButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
@@ -193,7 +186,6 @@ type
     procedure btnEditScriptClick(Sender: TObject);
     procedure btnDeleteScriptClick(Sender: TObject);
     procedure btnHelpClick(Sender: TObject);
-    procedure tbtnInsert1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure pnlDwnldClick(Sender: TObject);
     procedure cbUseIESettingsClick(Sender: TObject);
@@ -548,14 +540,23 @@ end;
 procedure TfrmSettings.beTemplateButtonClick(Sender: TObject);
 var
   frmCreateMask: TfrmCreateMask;
+  TypeMask: TFMask;
 begin
-  frmCreateMask:= TfrmCreateMask.Create(self);
   try
-    frmCreateMask.edTemplate.Text:= beTemplate.Text;
-    if frmCreateMask.ShowModal = mrOk then
-      beTemplate.text := frmCreateMask.edTemplate.Text;
+    frmCreateMask:= TfrmCreateMask.Create(self);
+
+    if (sender as TRzButtonEdit).Tag = 785 then
+      frmCreateMask.FoderMask:= MFolder
+    else
+      frmCreateMask.FoderMask:= MFile;
+
+    frmCreateMask.edTemplate.Text:= (Sender as TRzButtonEdit).Text;
+
+    frmCreateMask.ShowModal;
+    if frmCreateMask.ModalResult = mrOk then
+      (Sender as TRzButtonEdit).text := frmCreateMask.edTemplate.Text;
   finally
-    frmCreateMask.Free;
+    frmCreateMask.Free
   end;
 end;
 
@@ -670,24 +671,6 @@ begin
   dlgColors.Color := (Sender as TrzPanel).Font.Color;
   if dlgColors.Execute then
     (Sender as TrzPanel).Font.Color := dlgColors.Color;
-end;
-
-procedure TfrmSettings.tbtnInsert1Click(Sender: TObject);
-const
-  s: array [41..48] of string = ('%f','%t','%s','%n','%id','%g','%fl', '%rg');
-var
-  OldText: string;
-  p: integer;
-begin
-  if (ActiveControl as TRzEdit).Tag = 785 then
-  begin
-    OldText := (ActiveControl as TRzEdit).Text;
-    p := (ActiveControl as TRzEdit).SelStart;
-    Insert(s[(Sender as TRzToolButton).Tag],OldText, P + 1);
-    (ActiveControl as TRzEdit).Text := OldText;
-    (ActiveControl as TRzEdit).SelStart := P + 2;
-    (ActiveControl as TRzEdit).SelLength := 0;
-  end;
 end;
 
 procedure TfrmSettings.tvSectionsChange(Sender: TObject; Node: TTreeNode);

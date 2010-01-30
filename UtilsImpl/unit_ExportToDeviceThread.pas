@@ -4,7 +4,8 @@
 {                                                                              }
 { Version 0.9                                                                  }
 { 20.08.2008                                                                   }
-{ Copyright (c) Aleksey Penkov  alex.penkov@gmail.com                          }
+{ Copyright (c) Aleksey Penkov    alex.penkov@gmail.com                        }
+{               Matvienko Sergei  matv84@mail.ru                               }
 {                                                                              }
 {                                                                              }
 {******************************************************************************}
@@ -105,7 +106,6 @@ var
     Result := Trim(S);
   end;
 
-
 begin
 
    { TODO -oalex :
@@ -123,7 +123,11 @@ begin
     //
     // —формируем им€ файла в соответствии с заданным темплейтом
     //
-    FileName := Settings.FileNameTemplate;
+    FileName:= TemplateText(DMCollection, Settings.FileNameTemplate);
+
+{    FileName := Settings.FileNameTemplate;
+
+
 
     if FTable.Name <> 'tblGrouppedBooks' then
         FullName := dmCollection.FullName(FTable.FieldByName('Id').AsInteger)
@@ -155,7 +159,7 @@ begin
       StrReplace('%s', RemoveSquareBrackets(FTable.FieldByName('Series').AsString), FileName)
     else
       StrReplace('%s','',FileName);
-
+}
    if (ExtractFileExt(FTable['FileName']) = ZIP_EXTENSION) and
            (FTable['Ext'] <> ZIP_EXTENSION) then FFileOpMode := fmFBD
       else
@@ -166,7 +170,9 @@ begin
     //
     // —формируем им€ каталога в соответствии с заданным темплейтом
     //
-    Folder := Settings.FolderTemplate;
+    Folder:= TemplateText(DMCollection, Settings.FolderTemplate);
+
+{    Folder := Settings.FolderTemplate;
     StrReplace('%fl', copy(FullName,1,1), Folder);
     StrReplace('%f', FullName , Folder);
     StrReplace('%t', trim(FTable.FieldByName('Title').AsString), Folder);
@@ -176,7 +182,7 @@ begin
       StrReplace('%s', RemoveSquareBrackets(FTable.FieldByName('Series').AsString), Folder)
     else
       StrReplace('%s','',Folder);
-
+}
     case FFileOpMode of
       fmFB2Zip: SArch := CR;
       fmFB2: SArch := CR + FTable['FileName'] + FTable['Ext'];
