@@ -70,7 +70,6 @@ object frmCreateMask: TfrmCreateMask
     Caption = 'pnButtons'
     ShowCaption = False
     TabOrder = 1
-    ExplicitTop = 308
     DesignSize = (
       434
       41)

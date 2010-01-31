@@ -188,9 +188,9 @@ begin
     end;
     Templater.Free;
 
-{   Здесь та же ситуация
+    { Здесь та же ситуация
 
-    Folder := Settings.FolderTemplate;
+      Folder := Settings.FolderTemplate;
     StrReplace('%fl', copy(FullName,1,1), Folder);
     StrReplace('%f', FullName , Folder);
     StrReplace('%t', trim(FTable.FieldByName('Title').AsString), Folder);
@@ -366,4 +366,3 @@ begin
 end;
 
 end.
-
