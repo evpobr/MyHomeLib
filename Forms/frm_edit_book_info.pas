@@ -8,6 +8,10 @@
   *               Nick Rymanov    nrymanov@gmail.com
   ****************************************************************************** *)
 
+{
+Note: у этой формы слишком сильна€ зависимость от главной формы. Ѕыло бы неплохо от этого избавитс€.
+}
+
 unit frm_edit_book_info;
 
 interface
@@ -42,24 +46,23 @@ type
     Label7: TLabel;
     gbAuthors: TGroupBox;
     gbExtraInfo: TGroupBox;
-    procedure btnGenresClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure btnGenresClick(Sender: TObject);
     procedure btnAddAuthorClick(Sender: TObject);
     procedure btnAChangeClick(Sender: TObject);
     procedure btnADeleteClick(Sender: TObject);
-    procedure btnSaveClick(Sender: TObject);
-    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure btnNextBookClick(Sender: TObject);
     procedure edTChange(Sender: TObject);
+    procedure btnSaveClick(Sender: TObject);
+    procedure btnNextBookClick(Sender: TObject);
     procedure btnPrevBookClick(Sender: TObject);
   private
     FChanged: boolean;
 
     procedure FillLists;
     function SaveData: boolean;
-    { Private declarations }
   public
-    // procedure FillGenrelist;
+
   end;
 
 var
@@ -78,35 +81,12 @@ uses
 
 {$R *.dfm}
 
-procedure TfrmEditBookInfo.btnGenresClick(Sender: TObject);
-var
-  Data: PGenreData;
-  Node: PVirtualNode;
+procedure TfrmEditBookInfo.FormShow(Sender: TObject);
 begin
-  if frmGenreTree.ShowModal = mrOk then
-  begin
-    lblGenre.Text := '';
-    Node := frmGenreTree.tvGenresTree.GetFirstSelected;
-    while Node <> nil do
-    begin
-      Data := frmGenreTree.tvGenresTree.GetNodeData(Node);
-      lblGenre.Text := lblGenre.Text + Data.Text + ' ; ';
-      Node := frmGenreTree.tvGenresTree.GetNextSelected(Node);
-    end;
-    FChanged := True;
-  end;
-end;
-
-procedure TfrmEditBookInfo.FillLists;
-begin
-  cbSeries.Items.Clear;
-  dmCollection.tblSeries.First;
-  dmCollection.tblSeries.Next;
-  while not dmCollection.tblSeries.Eof do
-  begin
-    cbSeries.Items.Add(dmCollection.tblSeries['S_Title']);
-    dmCollection.tblSeries.Next;
-  end;
+  FChanged := False;
+  if frmGenreTree.tvGenresTree.GetFirstSelected = nil then
+    frmMain.FillGenresTree(frmGenreTree.tvGenresTree);
+  FillLists;
 end;
 
 procedure TfrmEditBookInfo.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -117,34 +97,72 @@ begin
     frmMain.HH(0, 0, Dummy);
 end;
 
-procedure TfrmEditBookInfo.FormShow(Sender: TObject);
+procedure TfrmEditBookInfo.btnGenresClick(Sender: TObject);
+var
+  Data: PGenreData;
+  Node: PVirtualNode;
 begin
-  FChanged := False;
-  if frmGenreTree.tvGenresTree.GetFirstSelected = nil then
-    frmMain.FillGenresTree(frmGenreTree.tvGenresTree);
-  FillLists;
+  if frmGenreTree.ShowModal = mrOk then
+  begin
+    lblGenre.Text := '';
+    Node := frmGenreTree.tvGenresTree.GetFirstSelected;
+    while Assigned(Node) do
+    begin
+      Data := frmGenreTree.tvGenresTree.GetNodeData(Node);
+      lblGenre.Text := lblGenre.Text + Data.Text + ' ; ';
+      Node := frmGenreTree.tvGenresTree.GetNextSelected(Node);
+    end;
+    FChanged := True;
+  end;
 end;
 
-function TfrmEditBookInfo.SaveData: boolean;
+procedure TfrmEditBookInfo.btnAddAuthorClick(Sender: TObject);
+var
+  Family: TListItem;
+  frmEditAuthor: TfrmEditAuthorData;
 begin
-  Result := False;
-  if not FChanged then
-  begin
-    Result := True;
-    Exit;
-  end;
+  frmEditAuthor := TfrmEditAuthorData.Create(Self);
+  try
+    if frmEditAuthor.ShowModal = mrOk then
+    begin
+      Family := lvAuthors.Items.Add;
+      Family.Caption := frmEditAuthor.edFamily.Text;
+      Family.SubItems.Add(frmEditAuthor.edName.Text);
+      Family.SubItems.Add(frmEditAuthor.edMiddle.Text);
 
-  if lvAuthors.Items.Count = 0 then
-  begin
-    MessageDlg('”кажите минимум одного автора!', mtError, [mbOk], 0);
-    Exit;
+      FChanged := True;
+    end;
+  finally
+    frmEditAuthor.Free;
   end;
-  if edT.Text = '' then
-  begin
-    MessageDlg('”кажите название книги!', mtError, [mbOk], 0);
+end;
+
+procedure TfrmEditBookInfo.btnAChangeClick(Sender: TObject);
+var
+  Family: TListItem;
+  frmEditAuthor: TfrmEditAuthorData;
+begin
+  Family := lvAuthors.Selected;
+  if not Assigned(Family) then
     Exit;
+
+  frmEditAuthor := TfrmEditAuthorData.Create(Self);
+  try
+    frmEditAuthor.edFamily.Text := Family.Caption;
+    frmEditAuthor.edName.Text := Family.SubItems[0];
+    frmEditAuthor.edMiddle.Text := Family.SubItems[1];
+
+    if frmEditAuthor.ShowModal = mrOk then
+    begin
+      Family.Caption := frmEditAuthor.edFamily.Text;
+      Family.SubItems[0] := frmEditAuthor.edName.Text;
+      Family.SubItems[1] := frmEditAuthor.edMiddle.Text;
+
+      FChanged := True;
+    end;
+  finally
+    frmEditAuthor.Free;
   end;
-  Result := True;
 end;
 
 procedure TfrmEditBookInfo.btnADeleteClick(Sender: TObject);
@@ -152,50 +170,9 @@ begin
   lvAuthors.DeleteSelected;
 end;
 
-procedure TfrmEditBookInfo.btnAddAuthorClick(Sender: TObject);
-var
-  Family: TListItem;
+procedure TfrmEditBookInfo.edTChange(Sender: TObject);
 begin
-  frmEditAuthorData.edFamily.Clear;
-  frmEditAuthorData.edName.Clear;
-  frmEditAuthorData.edMiddle.Clear;
-  if frmEditAuthorData.ShowModal = mrOk then
-  begin
-    Family := lvAuthors.Items.Add;
-    Family.Caption := frmEditAuthorData.edFamily.Text;
-    Family.SubItems.Add(frmEditAuthorData.edName.Text);
-    Family.SubItems.Add(frmEditAuthorData.edMiddle.Text);
-    FChanged := True;
-  end;
-end;
-
-procedure TfrmEditBookInfo.btnAChangeClick(Sender: TObject);
-var
-  Family: TListItem;
-begin
-  Family := lvAuthors.Selected;
-  if Family = nil then
-    Exit;
-
-  frmEditAuthorData.edFamily.Text := Family.Caption;
-  if Family.SubItems.Count > 0 then
-    frmEditAuthorData.edName.Text := Family.SubItems[0];
-  if Family.SubItems.Count > 1 then
-    frmEditAuthorData.edMiddle.Text := Family.SubItems[1];
-
-  if frmEditAuthorData.ShowModal = mrOk then
-  begin
-    Family.Caption := frmEditAuthorData.edFamily.Text;
-    if Family.SubItems.Count > 0 then
-      Family.SubItems[0] := frmEditAuthorData.edName.Text
-    else
-      Family.SubItems.Add(frmEditAuthorData.edName.Text);
-    if Family.SubItems.Count > 1 then
-      Family.SubItems[1] := frmEditAuthorData.edMiddle.Text
-    else
-      Family.SubItems.Add(frmEditAuthorData.edMiddle.Text);
-    FChanged := True;
-  end;
+  FChanged := True;
 end;
 
 procedure TfrmEditBookInfo.btnSaveClick(Sender: TObject);
@@ -222,9 +199,41 @@ begin
   end;
 end;
 
-procedure TfrmEditBookInfo.edTChange(Sender: TObject);
+procedure TfrmEditBookInfo.FillLists;
 begin
-  FChanged := True;
+  cbSeries.Items.Clear;
+  dmCollection.tblSeries.First;
+  dmCollection.tblSeries.Next;
+  while not dmCollection.tblSeries.Eof do
+  begin
+    cbSeries.Items.Add(dmCollection.tblSeries['S_Title']);
+    dmCollection.tblSeries.Next;
+  end;
+end;
+
+function TfrmEditBookInfo.SaveData: boolean;
+begin
+  Result := False;
+
+  if not FChanged then
+  begin
+    Result := True;
+    Exit;
+  end;
+
+  if lvAuthors.Items.Count = 0 then
+  begin
+    MessageDlg('”кажите минимум одного автора!', mtError, [mbOk], 0);
+    Exit;
+  end;
+
+  if edT.Text = '' then
+  begin
+    MessageDlg('”кажите название книги!', mtError, [mbOk], 0);
+    Exit;
+  end;
+
+  Result := True;
 end;
 
 end.
