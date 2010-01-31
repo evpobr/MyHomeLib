@@ -73,7 +73,8 @@ uses
   frm_main,
   StrUtils,
   ShellAPI,
-  unit_MHLHelpers, unit_WriteFb2Info;
+  unit_MHLHelpers, unit_WriteFb2Info,
+  unit_Templater;
 
 { TExportToDeviceThread }
 
@@ -96,6 +97,8 @@ var
   p1,p2: integer;
   FullName: String;
   InsideFileName: string;
+
+  Templater: TTemplater;
 
   function RemoveSquareBrackets(S: string):string;
   begin
@@ -122,10 +125,19 @@ begin
   begin
     //
     // Сформируем имя файла в соответствии с заданным темплейтом
-    //
-    FileName:= TemplateText(DMCollection, Settings.FileNameTemplate);
+    Templater:= TTemplater.Create;
+    if Templater.SetTemplate(Settings.FileNameTemplate) = ErFine then
+    begin
+      Templater.ParseTemplate(DMCollection);
+      FileName := Templater.GetParsedString;
+    end;
 
-{    FileName := Settings.FileNameTemplate;
+
+{    Эти строки мне немного непонятны, поэтому убирать я их не стал,
+     посмотрите логику работы моего шаблонизатора и может они уже не нужны.
+     Ещё мне не совсем понятен RemoveSquareBrackets, зачем он и куда его цеплять?
+
+   FileName := Settings.FileNameTemplate;
 
 
 
@@ -169,10 +181,16 @@ begin
 
     //
     // Сформируем имя каталога в соответствии с заданным темплейтом
-    //
-    Folder:= TemplateText(DMCollection, Settings.FolderTemplate);
+    if Templater.SetTemplate(Settings.FolderTemplate) = ErFine then
+    begin
+      Templater.ParseTemplate(DMCollection);
+      Folder := Templater.GetParsedString;
+    end;
+    Templater.Free;
 
-{    Folder := Settings.FolderTemplate;
+{   Здесь та же ситуация
+
+    Folder := Settings.FolderTemplate;
     StrReplace('%fl', copy(FullName,1,1), Folder);
     StrReplace('%f', FullName , Folder);
     StrReplace('%t', trim(FTable.FieldByName('Title').AsString), Folder);
