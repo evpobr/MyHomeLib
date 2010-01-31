@@ -15,7 +15,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Buttons, StdCtrls, ExtCtrls, unit_StaticTip, RzButton;
+  Dialogs, Buttons, StdCtrls, ExtCtrls, unit_StaticTip;
 
 type
   TFMask = (MFolder, MFile);

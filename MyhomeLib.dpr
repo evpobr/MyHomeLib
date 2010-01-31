@@ -110,7 +110,8 @@ uses
   frm_edit_author in 'Forms\frm_edit_author.pas' {frmEditAuthorData},
   frm_create_mask in 'Forms\frm_create_mask.pas' {frmCreateMask},
   unit_Downloader in 'DwnldImpl\unit_Downloader.pas',
-  frame_NCWDownload in 'Wizards\NewCollection\frame_NCWDownload.pas' {frameNCWDownload: TFrame};
+  frame_NCWDownload in 'Wizards\NewCollection\frame_NCWDownload.pas' {frameNCWDownload: TFrame},
+  unit_Templater in 'Units\unit_Templater.pas';
 
 {$R *.res}
 
@@ -131,8 +132,8 @@ begin
 
     // Важно! сначала создаем датамодули и главную форму
     Application.CreateForm(TDMUser, DMUser);
-    Application.CreateForm(TDMCollection, DMCollection);
-    Application.CreateForm(TfrmMain, frmMain);
+  Application.CreateForm(TDMCollection, DMCollection);
+  Application.CreateForm(TfrmMain, frmMain);
   // а потом - остальные формы!
     Application.CreateForm(TfrmEditor, frmEditor);
     Application.CreateForm(TfrmEditBookInfo, frmEditBookInfo);
