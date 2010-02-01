@@ -1,14 +1,12 @@
-
-{******************************************************************************}
-{                                                                              }
-{                                 MyHomeLib                                    }
-{                                                                              }
-{                                Version 0.9                                   }
-{                                20.08.2008                                    }
-{                    Copyright (c) Aleksey Penkov  alex.penkov@gmail.com       }
-{                                                                              }
-{******************************************************************************}
-
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Authors Aleksey Penkov  alex.penkov@gmail.com
+  *         Nick Rymanov    nrymanov@gmail.com
+  ****************************************************************************** *)
 
 unit frm_splash;
 
@@ -16,17 +14,15 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, StdCtrls, RzLabel, jpeg, RzStatus;
+  Dialogs, ExtCtrls, StdCtrls, jpeg;
 
 type
   TfrmSplash = class(TForm)
     Image1: TImage;
-    lblState: TRzLabel;
-    RzLabel1: TRzLabel;
+    lblState: TLabel;
+    RzLabel1: TLabel;
   private
-    { Private declarations }
   public
-    { Public declarations }
   end;
 
 var

@@ -600,11 +600,12 @@ object frmSplash: TfrmSplash
     Proportional = True
     ExplicitWidth = 400
   end
-  object lblState: TRzLabel
-    Left = 118
-    Top = 240
-    Width = 164
-    Height = 13
+  object lblState: TLabel
+    Left = 0
+    Top = 234
+    Width = 401
+    Height = 25
+    Align = alClient
     Alignment = taCenter
     AutoSize = False
     Caption = #1048#1085#1080#1094#1080#1072#1083#1080#1079#1072#1094#1080#1103' ...'
@@ -615,8 +616,13 @@ object frmSplash: TfrmSplash
     Font.Style = []
     ParentFont = False
     Transparent = True
+    Layout = tlCenter
+    ExplicitLeft = 118
+    ExplicitTop = 240
+    ExplicitWidth = 164
+    ExplicitHeight = 13
   end
-  object RzLabel1: TRzLabel
+  object RzLabel1: TLabel
     Left = 340
     Top = 94
     Width = 30
@@ -630,6 +636,5 @@ object frmSplash: TfrmSplash
     Font.Style = [fsBold]
     ParentFont = False
     Transparent = True
-    LightTextStyle = True
   end
 end
