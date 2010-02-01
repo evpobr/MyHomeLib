@@ -632,20 +632,4 @@ object frmSplash: TfrmSplash
     Transparent = True
     LightTextStyle = True
   end
-  object RzLabel2: TRzLabel
-    Left = 318
-    Top = 123
-    Width = 52
-    Height = 23
-    Alignment = taRightJustify
-    Caption = 'alpha'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clRed
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
-    ParentFont = False
-    Transparent = True
-    LightTextStyle = True
-  end
 end
