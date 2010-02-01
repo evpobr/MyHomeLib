@@ -820,7 +820,8 @@ uses
   unit_SearchUtils,
   frm_search,
   unit_WriteFb2Info,
-  frm_ConverToFBD;
+  frm_ConverToFBD,
+  frmEditAuthorEx;
 
 resourcestring
   rstrFileNotFoundMsg = 'Файл %s не найден!'#13'Проверьте настройки коллекции!';
@@ -4550,6 +4551,7 @@ var
   old_AiD: integer;
   new_AiD: integer;
 
+  frmEditAuthor: TfrmEditAuthorDataEx;
 begin
   if ActiveView = FavoritesView then
   begin
@@ -4571,46 +4573,73 @@ begin
   dmCollection.tblAuthors.Locate('A_ID', dmCollection.tblAuthor_List['AL_AuthID'], []);
   old_AiD := dmCollection.tblAuthor_List['AL_AuthID'];
 
-  frmEditAuthorData.edFamily.Text := dmCollection.tblAuthors.FieldByName('A_Family').AsString;
-  frmEditAuthorData.edName.Text := dmCollection.tblAuthors.FieldByName('A_Name').AsString;
-  frmEditAuthorData.edMiddle.Text := dmCollection.tblAuthors.FieldByName('A_Middle').AsString;
+  frmEditAuthor := TfrmEditAuthorDataEx.Create(Self);
+  try
+    frmEditAuthor.LastName := dmCollection.tblAuthors.FieldByName('A_Family').AsString;
+    frmEditAuthor.FirstName := dmCollection.tblAuthors.FieldByName('A_Name').AsString;
+    frmEditAuthor.MidName := dmCollection.tblAuthors.FieldByName('A_Middle').AsString;
 
-  frmEditAuthorData.ShowCheckBoxes := True;
+    if frmEditAuthor.ShowModal = mrOk then
+    begin
+      S := Trim(AnsiUpperCase(frmEditAuthor.LastName + ' ' +
+                                   frmEditAuthor.FirstName + ' ' +
+                                   frmEditAuthor.MidName));
 
-  if frmEditAuthorData.ShowModal = mrOk then
-  begin
+      if (not frmEditAuthor.AddNew) and (not frmEditAuthor.SaveLinks) then
+      begin
+        // меняем только данные об авторе, все ссылки остаются на месте
+        if dmCollection.tblAuthors.Locate(
+          'A_Family;A_Name;A_Middle',
+          VarArrayOf([frmEditAuthor.LastName, frmEditAuthor.FirstName, frmEditAuthor.MidName]),
+          [loCaseInsensitive]
+          )
+        then
+        begin
+          // если новый автор уже есть, меняем сслыки на него  (объединение)
+          new_AiD := dmCollection.tblAuthorsID.Value;
+          repeat
+            // меняем старые Id на новые
+            { TODO -oNickR -cRefactoring : можно заменить на один UPDATE }
+            dmCollection.tblAuthor_List.MasterSource := nil;
 
-    S := trim(AnsiUpperCase(frmEditAuthorData.edFamily.Text + ' ' +
-                                 frmEditAuthorData.edName.Text + ' ' +
-                                 frmEditAuthorData.edMiddle.Text));
+            Res := dmCollection.tblAuthor_List.Locate('AL_AuthID',old_Aid,[]);
+            if Res then
+            begin
+              dmCollection.tblAuthor_List.Edit;
+              dmCollection.tblAuthor_ListAL_AuthID.Value := new_AiD;
+              dmCollection.tblAuthor_List.Post;
+            end;
+          until not Res;
 
-    if (not frmEditAuthorData.AddNew) and (not frmEditAuthorData.SaveLinks) then
-    begin    // меняем только данные об авторе, все ссылки остаются на месте
-
-      if dmCollection.tblAuthors.Locate('A_Family;A_Name;A_Middle',
-                            VarArrayOf([frmEditAuthorData.edFamily.Text,
-                                        frmEditAuthorData.edName.Text,
-                                        frmEditAuthorData.edMiddle.Text]),
-                                        [loCaseInsensitive]) then
-      begin  // если новый автор уже есть, меняем сслыки на него  (объединение)
-        new_AiD := dmCollection.tblAuthorsID.Value;
-        repeat
-          // меняем старые Id на новые
+          // обновляем индексное поле
           { TODO -oNickR -cRefactoring : можно заменить на один UPDATE }
-          dmCollection.tblAuthor_List.MasterSource := nil;
+          repeat
+            Res := dmCollection.tblBooks.Locate('FullName', AnsiUpperCase(Data.FullName), [loCaseInsensitive]);
+            if Res then
+            begin
+              dmCollection.tblBooks.Edit;
+              dmCollection.tblBooksFullName.Value := S;
+              dmCollection.tblBooks.Post;
+            end;
+          until not Res;
 
-          Res := dmCollection.tblAuthor_List.Locate('AL_AuthID',old_Aid,[]);
-          if Res then
-          begin
-            dmCollection.tblAuthor_List.Edit;
-            dmCollection.tblAuthor_ListAL_AuthID.Value := new_AiD;
-            dmCollection.tblAuthor_List.Post;
-          end;
-        until not Res;
+          // старого автора удаляем
+          if dmCollection.tblAuthors.Locate('A_ID', old_Aid,[]) then
+             dmCollection.tblAuthors.Delete;
 
-        // обновляем индексное поле
-        { TODO -oNickR -cRefactoring : можно заменить на один UPDATE }
+          dmCollection.tblAuthor_List.MasterSource := dmCollection.dsAuthors;
+        end // if Locate
+        else  // если нет - просто редактируем ФИО
+        begin
+          dmCollection.tblAuthors.Edit;
+          dmCollection.tblAuthorsFamily.Value := frmEditAuthor.LastName;
+          dmCollection.tblAuthorsName.Value := frmEditAuthor.FirstName;
+          dmCollection.tblAuthorsMiddle.Value := frmEditAuthor.MidName;
+          dmCollection.tblAuthors.Post;
+        end;
+
         repeat
+          { TODO -oNickR -cRefactoring : можно заменить на один UPDATE }
           Res := dmCollection.tblBooks.Locate('FullName', AnsiUpperCase(Data.FullName), [loCaseInsensitive]);
           if Res then
           begin
@@ -4619,90 +4648,69 @@ begin
             dmCollection.tblBooks.Post;
           end;
         until not Res;
-
-        if dmCollection.tblAuthors.Locate('A_ID', old_Aid,[]) then
-           dmCollection.tblAuthors.Delete;   // старого автора удаляем
-        dmCollection.tblAuthor_List.MasterSource := dmCollection.dsAuthors;
-      end // if Locate
-      else  // если нет - просто редактируем ФИО
-      begin
-        dmCollection.tblAuthors.Edit;
-        dmCollection.tblAuthorsFamily.Value := frmEditAuthorData.edFamily.Text;
-        dmCollection.tblAuthorsName.Value := frmEditAuthorData.edName.Text;
-        dmCollection.tblAuthorsMiddle.Value := frmEditAuthorData.edMiddle.Text;
-        dmCollection.tblAuthors.Post;
       end;
 
-      repeat
-        { TODO -oNickR -cRefactoring : можно заменить на один UPDATE }
-        Res := dmCollection.tblBooks.Locate('FullName', AnsiUpperCase(Data.FullName), [loCaseInsensitive]);
-        if Res then
+      if (frmEditAuthor.AddNew) then
+      begin    // заменяем автора на нового
+        // добавляем нового автора
+        if not dmCollection.tblAuthors.Locate(
+          'A_Family;A_Name;A_Middle',
+          VarArrayOf([frmEditAuthor.LastName, frmEditAuthor.FirstName, frmEditAuthor.MidName]),
+          [loCaseInsensitive]
+          )
+        then
         begin
-          dmCollection.tblBooks.Edit;
-          dmCollection.tblBooksFullName.Value := S;
-          dmCollection.tblBooks.Post;
+          dmCollection.tblAuthors.Insert;
+          dmCollection.tblAuthorsFamily.Value := frmEditAuthor.LastName;
+          dmCollection.tblAuthorsName.Value := frmEditAuthor.FirstName;
+          dmCollection.tblAuthorsMiddle.Value := frmEditAuthor.MidName;
+          dmCollection.tblAuthors.Post;
         end;
-      until not Res;
-    end;
 
-    if (frmEditAuthorData.AddNew) then
-    begin    // заменяем автора на нового
+        // меняем ссылки
+        dmCollection.tblAuthor_List.MasterSource := nil;
 
-      // добавляем нового автора
-      if not dmCollection.tblAuthors.Locate('A_Family;A_Name;A_Middle',
-                            VarArrayOf([frmEditAuthorData.edFamily.Text,
-                                        frmEditAuthorData.edName.Text,
-                                        frmEditAuthorData.edMiddle.Text]),
-                                        [loCaseInsensitive]) then
-      begin
-        dmCollection.tblAuthors.Insert;
-        dmCollection.tblAuthorsFamily.Value := frmEditAuthorData.edFamily.Text;
-        dmCollection.tblAuthorsName.Value := frmEditAuthorData.edName.Text;
-        dmCollection.tblAuthorsMiddle.Value := frmEditAuthorData.edMiddle.Text;
-        dmCollection.tblAuthors.Post;
-      end;
-
-      // меняем ссылки
-      dmCollection.tblAuthor_List.MasterSource := nil;
-
-      Node := Tree.GetFirst;
-      while Node <> Nil do
-      begin
-        Data := Tree.GetNodeData(Node);
-        if (Data.nodeType = ntBookInfo) and
-            ((Tree.CheckState[Node] = csCheckedNormal) or
-            (Tree.Selected[Node])) then
+        Node := Tree.GetFirst;
+        while Node <> Nil do
         begin
-          if not frmEditAuthorData.SaveLinks then   // заменяем ссылки
+          Data := Tree.GetNodeData(Node);
+          if (Data.nodeType = ntBookInfo) and
+              ((Tree.CheckState[Node] = csCheckedNormal) or
+              (Tree.Selected[Node])) then
           begin
-            if dmCollection.tblAuthor_List.Locate('AL_BookID',Data.ID,[]) then
+            if not frmEditAuthor.SaveLinks then   // заменяем ссылки
             begin
-              dmCollection.tblAuthor_List.Edit;
-              dmCollection.tblAuthor_ListAL_AuthID.Value := dmCollection.tblAuthorsID.Value;
-              dmCollection.tblAuthor_List.Post;
+              if dmCollection.tblAuthor_List.Locate('AL_BookID',Data.ID,[]) then
+              begin
+                dmCollection.tblAuthor_List.Edit;
+                dmCollection.tblAuthor_ListAL_AuthID.Value := dmCollection.tblAuthorsID.Value;
+                dmCollection.tblAuthor_List.Post;
+              end
             end
-          end
-          else
-          begin // добавляем второго автора
-            dmCollection.tblAuthor_List.Insert;
-            dmCollection.tblAuthor_ListAL_AuthID.Value := dmCollection.tblAuthorsID.Value;
-            dmCollection.tblAuthor_ListAL_BookID.Value := Data.ID;
+            else
+            begin // добавляем второго автора
+              dmCollection.tblAuthor_List.Insert;
+              dmCollection.tblAuthor_ListAL_AuthID.Value := dmCollection.tblAuthorsID.Value;
+              dmCollection.tblAuthor_ListAL_BookID.Value := Data.ID;
 
-            dmCollection.tblAuthor_ListAL_Series.Value := Copy(Data.Series, 1, IndexSize);
-            dmCollection.tblAuthor_ListAL_Title.Value := Copy(Data.Title, 1, IndexSize);
+              dmCollection.tblAuthor_ListAL_Series.Value := Copy(Data.Series, 1, IndexSize);
+              dmCollection.tblAuthor_ListAL_Title.Value := Copy(Data.Title, 1, IndexSize);
 
-            dmCollection.tblAuthor_List.Post;
+              dmCollection.tblAuthor_List.Post;
+            end;
+            dmCollection.tblBooks.Locate('ID', Data.ID, []);
+            dmCollection.tblBooks.Edit;
+            dmCollection.tblBooksFullName.Value:= S;
+            dmCollection.tblBooks.Post;
           end;
-          dmCollection.tblBooks.Locate('ID', Data.ID, []);
-          dmCollection.tblBooks.Edit;
-          dmCollection.tblBooksFullName.Value:= S;
-          dmCollection.tblBooks.Post;
+          Node := Tree.GetNext(Node,False);
         end;
-        Node := Tree.GetNext(Node,False);
+        dmCollection.tblAuthor_List.MasterSource := dmCollection.dsAuthors;
       end;
-      dmCollection.tblAuthor_List.MasterSource := dmCollection.dsAuthors;
+      InitCollection(True);
     end;
-    InitCollection(True);
+  finally
+    frmEditAuthor.Free;
   end;
 end;
 

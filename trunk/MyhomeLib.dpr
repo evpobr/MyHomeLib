@@ -111,7 +111,8 @@ uses
   frm_create_mask in 'Forms\frm_create_mask.pas' {frmCreateMask},
   unit_Downloader in 'DwnldImpl\unit_Downloader.pas',
   frame_NCWDownload in 'Wizards\NewCollection\frame_NCWDownload.pas' {frameNCWDownload: TFrame},
-  unit_Templater in 'Units\unit_Templater.pas';
+  unit_Templater in 'Units\unit_Templater.pas',
+  frmEditAuthorEx in 'Forms\frmEditAuthorEx.pas' {frmEditAuthorDataEx};
 
 {$R *.res}
 
@@ -131,15 +132,14 @@ begin
     frmSplash.Update; // Update the splash screen to ensure it gets drawn
 
     // Важно! сначала создаем датамодули и главную форму
+    // а потом - остальные формы!
     Application.CreateForm(TDMUser, DMUser);
-  Application.CreateForm(TDMCollection, DMCollection);
-  Application.CreateForm(TfrmMain, frmMain);
-  // а потом - остальные формы!
+    Application.CreateForm(TDMCollection, DMCollection);
+    Application.CreateForm(TfrmMain, frmMain);
     Application.CreateForm(TfrmEditor, frmEditor);
     Application.CreateForm(TfrmEditBookInfo, frmEditBookInfo);
     Application.CreateForm(TfrmGenreTree, frmGenreTree);
     Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
-    Application.CreateForm(TfrmEditAuthorData, frmEditAuthorData);
     Application.CreateForm(TfrmConvertToFBD, frmConvertToFBD);
     Application.CreateForm(TfrmAuthorList, frmAuthorList);
     frmSplash.Hide;  // Hide the splash screen

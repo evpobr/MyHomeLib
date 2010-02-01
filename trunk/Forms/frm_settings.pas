@@ -542,19 +542,18 @@ var
   frmCreateMask: TfrmCreateMask;
   TypeMask: TFMask;
 begin
+  frmCreateMask:= TfrmCreateMask.Create(Self);
   try
-    frmCreateMask:= TfrmCreateMask.Create(self);
-
-    if (sender as TRzButtonEdit).Tag = 785 then
+    // TODO -oNickR -cCode quality : использование тега для распознования источника события - не лучшая идея. Теги легко теряются при редактировании формы
+    if (Sender as TRzButtonEdit).Tag = 785 then
       frmCreateMask.FoderMask:= MFolder
     else
       frmCreateMask.FoderMask:= MFile;
 
     frmCreateMask.edTemplate.Text:= (Sender as TRzButtonEdit).Text;
 
-    frmCreateMask.ShowModal;
-    if frmCreateMask.ModalResult = mrOk then
-      (Sender as TRzButtonEdit).text := frmCreateMask.edTemplate.Text;
+    if frmCreateMask.ShowModal = mrOk then
+      (Sender as TRzButtonEdit).Text := frmCreateMask.edTemplate.Text;
   finally
     frmCreateMask.Free
   end;
