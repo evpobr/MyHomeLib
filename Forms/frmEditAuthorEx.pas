@@ -1,0 +1,39 @@
+unit frmEditAuthorEx;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, frm_edit_author, StdCtrls, ExtCtrls;
+
+type
+  TfrmEditAuthorDataEx = class(TfrmEditAuthorData)
+    gbAddNew: TGroupBox;
+    cbAddNew: TCheckBox;
+    cbSaveLinks: TCheckBox;
+  private
+    function GetAddNewState: Boolean;
+    function GetSaveLinks: Boolean;
+  public
+    property AddNew: Boolean read GetAddNewState;
+    property SaveLinks: Boolean read GetSaveLinks;
+  end;
+
+var
+  frmEditAuthorDataEx: TfrmEditAuthorDataEx;
+
+implementation
+
+{$R *.dfm}
+
+function TfrmEditAuthorDataEx.GetAddNewState: boolean;
+begin
+  Result := cbAddNew.Checked;
+end;
+
+function TfrmEditAuthorDataEx.GetSaveLinks: boolean;
+begin
+  Result := cbSaveLinks.Checked;
+end;
+
+end.

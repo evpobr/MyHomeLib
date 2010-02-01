@@ -247,6 +247,9 @@
 				<DesignClass>TFrame</DesignClass>
 			</DCCReference>
 			<DCCReference Include="Units\unit_Templater.pas"/>
+			<DCCReference Include="Forms\frmEditAuthorEx.pas">
+				<Form>frmEditAuthorDataEx</Form>
+			</DCCReference>
 			<RcItem Include="Resources\Images\16x16\star_small.png">
 				<ResourceType>RCData</ResourceType>
 				<ResourceId>smallStar</ResourceId>

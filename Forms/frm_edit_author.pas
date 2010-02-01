@@ -6,6 +6,10 @@
   * 20.08.2008
   * Copyright (c) Aleksey Penkov  alex.penkov@gmail.com
   *               Nick Rymanov    nrymanov@gmail.com
+  *
+  * ВНИМАНИЕ!!! Эта форма является базовой для TfrmEditAuthorDataEx.
+  *             Любые изменения, сделанные в этой форме, будут влиять и на производную.
+  *
   ****************************************************************************** *)
 
 unit frm_edit_author;
@@ -18,31 +22,28 @@ uses
 
 type
   TfrmEditAuthorData = class(TForm)
-    gbInfo: TGroupBox;
-    edFamily: TEdit;
     Label1: TLabel;
-    edName: TEdit;
     Label2: TLabel;
-    edMiddle: TEdit;
     Label3: TLabel;
-    gbAddNew: TGroupBox;
-    cbAddNew: TCheckBox;
-    cbSaveLinks: TCheckBox;
+    edLastName: TEdit;
+    edFirstName: TEdit;
+    edMiddleName: TEdit;
     pnButtons: TPanel;
     btnOk: TButton;
     btnCancel: TButton;
-    procedure FormShow(Sender: TObject);
-  private
-    function GetAddNewState: boolean;
-    function GetSaveLinks: boolean;
-    procedure SetShowCheckBoxes(const Value: boolean);
-    { Private declarations }
-  public
-    { Public declarations }
-    property ShowCheckBoxes: boolean write SetShowCheckBoxes default False;
-    property AddNew: boolean read GetAddNewState;
-    property SaveLinks: boolean read GetSaveLinks;
 
+  private
+    function GetFirstName: string;
+    function GetLastName: string;
+    function GetMidName: string;
+    procedure SetFirstName(const Value: string);
+    procedure SetLastName(const Value: string);
+    procedure SetMidName(const Value: string);
+
+  public
+    property LastName: string read GetLastName write SetLastName;
+    property FirstName: string read GetFirstName write SetFirstName;
+    property MidName: string read GetMidName write SetMidName;
   end;
 
 var
@@ -52,26 +53,36 @@ implementation
 
 {$R *.dfm}
 
-{ TfrmEditAuthor }
+{ TfrmEditAuthorData }
 
-procedure TfrmEditAuthorData.FormShow(Sender: TObject);
+function TfrmEditAuthorData.GetFirstName: string;
 begin
-  ActiveControl := edFamily;
+  Result := Trim(edFirstName.Text);
 end;
 
-function TfrmEditAuthorData.GetAddNewState: boolean;
+function TfrmEditAuthorData.GetLastName: string;
 begin
-  Result := cbAddNew.Checked;
+  Result := Trim(edLastName.Text);
 end;
 
-function TfrmEditAuthorData.GetSaveLinks: boolean;
+function TfrmEditAuthorData.GetMidName: string;
 begin
-  Result := cbSaveLinks.Checked;
+  Result := Trim(edMiddleName.Text);
 end;
 
-procedure TfrmEditAuthorData.SetShowCheckBoxes(const Value: boolean);
+procedure TfrmEditAuthorData.SetFirstName(const Value: string);
 begin
-  gbAddNew.Visible := Value;
+  edFirstName.Text := Value;
+end;
+
+procedure TfrmEditAuthorData.SetLastName(const Value: string);
+begin
+  edLastName.Text := Value;
+end;
+
+procedure TfrmEditAuthorData.SetMidName(const Value: string);
+begin
+  edMiddleName.Text := Value;
 end;
 
 end.

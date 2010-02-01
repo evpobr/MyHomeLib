@@ -1,13 +1,15 @@
-{ ****************************************************************************** }
-{ }
-{ MyHomeLib }
-{ }
-{ Version 1 }
-{ 31.01.2010 }
-{ Copyright (c) Matvienko Sergei  matv84@mail.ru }
-{ }
-{ Класс работы с шаблонами }
-{ ****************************************************************************** }
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Класс работы с шаблонами
+  *
+  * Version 1.0
+  * 31.01.2010
+  * Copyright (c) Aleksey Penkov  alex.penkov@gmail.com
+  * Author        Matvienko Sergei  matv84@mail.ru
+  *
+  ****************************************************************************** *)
 
 unit unit_Templater;
 
@@ -25,55 +27,57 @@ type
 
   TTemplater = class
   private
-    Template: string;
-    ParsedString: string;
-    BlocksMap: array of TElement;
+    FTemplate: string;
+    FParsedString: string;
+    FBlocksMap: array of TElement;
   public
     constructor Create;
     function ValidateTemplate(Template: string): TErrorType;
-    function SetTemplate(Template: String): TErrorType;
+    function SetTemplate(Template: string): TErrorType;
     procedure ParseTemplate(ACollection: TDMCollection);
     function GetParsedString: string;
   end;
 
 implementation
 
-uses SysUtils, unit_Globals, unit_Consts;
+uses
+  SysUtils, unit_Globals, unit_Consts;
 
 constructor TTemplater.Create;
 begin
   inherited;
-  ParsedString := '';
-  Template := '';
+  FParsedString := '';
+  FTemplate := '';
 end;
 
 function TTemplater.ValidateTemplate(Template: string): TErrorType;
 const
-  mask_elements: array [1 .. 8] of string = ('f', 't', 's', 'n', 'id', 'g',
-    'fl', 'rg');
+  mask_elements: array [1 .. 8] of string = ('f', 't', 's', 'n', 'id', 'g', 'fl', 'rg');
 var
   stack: array of TElement;
-  h, k, i, j, StackPos, ElementPos, ColElements, last_char,
-    last_col_elements: integer;
+  h, k, i, j, StackPos, ElementPos, ColElements, last_char, last_col_elements: integer;
   bol, TemplEnd: boolean;
   TemplatePart: string;
 begin
   // Поправка на количество частей пути в карту элементов и блоков (используется при разборе путей)
   last_col_elements := 0;
   last_char := 0;
+
   // Определение количества элементов в шаблоне
   ColElements := 0;
   for i := 1 to Length(Template) do
     if Template[i] = '%' then
-      inc(ColElements);
+      Inc(ColElements);
+
   // Установка необходимой размерности и инициализация массивов
   SetLength(stack, ColElements);
-  SetLength(BlocksMap, ColElements);
+  SetLength(FBlocksMap, ColElements);
   for i := 0 to ColElements - 1 do
   begin
     stack[i].name := '';
-    BlocksMap[i].name := '';
+    FBlocksMap[i].name := '';
   end;
+
   TemplEnd := false;
   k := 1;
   while not(TemplEnd) do
@@ -85,9 +89,9 @@ begin
     while (not(Template[k] in ['/', '\'])) and (k <= Length(Template)) do
     begin
       TemplatePart := TemplatePart + Template[k];
-      inc(k);
+      Inc(k);
     end;
-    inc(k);
+    Inc(k);
     // Если больше нет элементов пути, то итеррация крайняя
     if k > Length(Template) then
       TemplEnd := true;
@@ -100,7 +104,7 @@ begin
       // Поиск открывающей скобки блока элемента
       if TemplatePart[i] = '[' then
       begin
-        inc(StackPos);
+        Inc(StackPos);
         stack[StackPos].BegBlock := i;
         stack[StackPos].name := '';
       end;
@@ -112,29 +116,27 @@ begin
         if (stack[StackPos].name <> '') and (StackPos > 0) then
         begin
           Result := ErTemplate; // В блоке не может быть более одного элемента
-          exit;
+          Exit;
         end;
 
         // Выделяем название элемента
-        inc(i);
+        Inc(i);
         stack[StackPos].name := '';
         while CharInSet(TemplatePart[i], ['a' .. 'z', 'A' .. 'Z']) do
         begin
           stack[StackPos].name := stack[StackPos].name + TemplatePart[i];
-          inc(i);
+          Inc(i);
         end;
-        dec(i);
+        Dec(i);
 
         // Добавляем элемент в общий список элементов
         if StackPos = 0 then
         begin
-          BlocksMap[ElementPos + last_col_elements].name := stack[StackPos]
-            .name;
-          BlocksMap[ElementPos + last_col_elements].BegBlock := 0;
-          BlocksMap[ElementPos + last_col_elements].EndBlock := 0;
-          inc(ElementPos);
+          FBlocksMap[ElementPos + last_col_elements].name := stack[StackPos].name;
+          FBlocksMap[ElementPos + last_col_elements].BegBlock := 0;
+          FBlocksMap[ElementPos + last_col_elements].EndBlock := 0;
+          Inc(ElementPos);
         end;
-
       end;
 
       // Поиск окончания блока элемента
@@ -145,61 +147,63 @@ begin
         if (stack[StackPos].name = '') or (StackPos <= 0) then
         begin
           Result := ErBlocks; // Проверьте соответствие открывающих и закрывающих скобок блоков элементов
-          exit;
+          Exit;
         end;
         stack[StackPos].EndBlock := i;
 
         // Добавляем элемент в общий список элементов
-        BlocksMap[ElementPos + last_col_elements].name := stack[StackPos].name;
-        BlocksMap[ElementPos + last_col_elements].BegBlock := stack[StackPos]
-          .BegBlock + last_char;
-        BlocksMap[ElementPos + last_col_elements].EndBlock := stack[StackPos]
-          .EndBlock + last_char;
-        inc(ElementPos);
+        FBlocksMap[ElementPos + last_col_elements].name := stack[StackPos].name;
+        FBlocksMap[ElementPos + last_col_elements].BegBlock := stack[StackPos].BegBlock + last_char;
+        FBlocksMap[ElementPos + last_col_elements].EndBlock := stack[StackPos].EndBlock + last_char;
+        Inc(ElementPos);
 
-        dec(StackPos);
+        Dec(StackPos);
       end;
 
       // Переход к очередному символу в шаблоне
-      inc(i);
-    end;
-
-    // Проверка всех элементов на правильность написания
-    for h := Low(BlocksMap) to High(BlocksMap) do
-    begin
-      if BlocksMap[h].name <> '' then
-      begin
-        bol := false;
-        for j := 1 to High(mask_elements) do
-          if BlocksMap[h].name = mask_elements[j] then
-            bol := true;
-
-        if not(bol) then
-          break;
-      end;
+      Inc(i);
     end;
 
     // Имеются незакрытые скобки блоков
     if StackPos > 0 then
     begin
       Result := ErBlocks; // Проверьте соответствие открывающих и закрывающих скобок блоков элементов
-      exit;
+      Exit;
     end;
+
+    // Проверка всех элементов на правильность написания
+    for h := Low(FBlocksMap) to High(FBlocksMap) do
+    begin
+      if FBlocksMap[h].name <> '' then
+      begin
+        bol := False;
+        for j := 1 to High(mask_elements) do
+          if FBlocksMap[h].name = mask_elements[j] then
+          begin
+            bol := True;
+            Break;
+          end;
+
+        if not(bol) then
+          Break;
+      end;
+    end;
+
     // Имеются неверние элементы шаблона
     if not(bol) then
     begin
       Result := ErElements; // Неверные элементы шаблона
-      exit;
+      Exit;
     end;
 
-    inc(last_col_elements, ElementPos);
+    Inc(last_col_elements, ElementPos);
 
     // Поправка на количество символов с начала строки шаблона в
     // карту элементов и блоков (используется при разборе путей)
     last_char := last_char + k - 1;
 
     // Переход к очередному символу в шаблоне с целью обработки следующей части пути к файлу
-    inc(i);
+    Inc(i);
   end;
 
   // Если замечаний нет, то шаблон валиден
@@ -210,7 +214,7 @@ function TTemplater.SetTemplate(Template: String): TErrorType;
 begin
   Result := ValidateTemplate(Template);
   if Result = ErFine then
-    Self.Template := Template;
+    FTemplate := Template;
 end;
 
 procedure TTemplater.ParseTemplate(ACollection: TDMCollection);
@@ -226,7 +230,7 @@ var
   i, j: integer;
   R: TBookRecord;
 begin
-  ParsedString := Self.Template;
+  FParsedString := FTemplate;
 
   // Получение текущей книги
   ACollection.GetCurrentBook(R);
@@ -249,7 +253,7 @@ begin
 
   MaskElements[4].templ := 'f';
   AuthorName := '';
-  for i := low(R.Authors) to high(R.Authors) do
+  for i := Low(R.Authors) to High(R.Authors) do
   begin
     LastName := R.Authors[i].FLastName;
     if R.Authors[i].FFirstName <> '' then
@@ -257,7 +261,7 @@ begin
     if R.Authors[i].FMiddleName <> '' then
       MiddleName := ' ' + R.Authors[i].FMiddleName[1] + '.';
     AuthorName := AuthorName + LastName + FirstName + MiddleName;
-    if i < high(R.Authors) then
+    if i < High(R.Authors) then
       AuthorName := AuthorName + ', ';
   end;
   MaskElements[4].value := AuthorName;
@@ -274,38 +278,35 @@ begin
   end;
 
   MaskElements[7].templ := 'fl';
-  MaskElements[7].value := R.Authors[ low(R.Authors)].FLastName[1];
+  MaskElements[7].value := R.Authors[Low(R.Authors)].FLastName[1];
 
   MaskElements[8].templ := 'rg';
   MaskElements[8].value := ACollection.GetRootGenre(R.LibID);
 
   // Цикл удаления "пустых" блоков
   for i := Low(MaskElements) to High(MaskElements) do
-    for j := Low(BlocksMap) to High(BlocksMap) do
-      if (MaskElements[i].templ = BlocksMap[j].name) and
-        (MaskElements[i].value = '') then
-        if (BlocksMap[j].BegBlock <> 0) and (BlocksMap[j].EndBlock <> 0) then
+    for j := Low(FBlocksMap) to High(FBlocksMap) do
+      if (MaskElements[i].templ = FBlocksMap[j].name) and (MaskElements[i].value = '') then
+        if (FBlocksMap[j].BegBlock <> 0) and (FBlocksMap[j].EndBlock <> 0) then
         begin
-          Delete(ParsedString, BlocksMap[j].BegBlock,
-            BlocksMap[j].EndBlock - BlocksMap[j].BegBlock + 1);
+          Delete(FParsedString, FBlocksMap[j].BegBlock, FBlocksMap[j].EndBlock - FBlocksMap[j].BegBlock + 1);
           // Здесь ещё продумаю вариант удаления записей о вложенных элементах без валидации
-          ValidateTemplate(ParsedString);
+          ValidateTemplate(FParsedString);
         end;
 
   // Цикл удаления квадратных скобок
-  for i := Length(ParsedString) downto 1 do
-    if CharInSet(ParsedString[i], ['[', ']']) then
-      Delete(ParsedString, i, 1);
+  for i := Length(FParsedString) downto 1 do
+    if CharInSet(FParsedString[i], ['[', ']']) then
+      Delete(FParsedString, i, 1);
 
   // Цикл замены элементов шаблона их значениями
   for i := 1 to mask_elements do
-    StrReplace('%' + MaskElements[i].templ, MaskElements[i].value,
-      ParsedString);
+    StrReplace('%' + MaskElements[i].templ, MaskElements[i].value, FParsedString);
 end;
 
 function TTemplater.GetParsedString: string;
 begin
-  Result := ParsedString;
+  Result := FParsedString;
 end;
 
 end.

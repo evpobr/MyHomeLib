@@ -126,9 +126,9 @@ begin
     if frmEditAuthor.ShowModal = mrOk then
     begin
       Family := lvAuthors.Items.Add;
-      Family.Caption := frmEditAuthor.edFamily.Text;
-      Family.SubItems.Add(frmEditAuthor.edName.Text);
-      Family.SubItems.Add(frmEditAuthor.edMiddle.Text);
+      Family.Caption := frmEditAuthor.LastName;
+      Family.SubItems.Add(frmEditAuthor.FirstName);
+      Family.SubItems.Add(frmEditAuthor.MidName);
 
       FChanged := True;
     end;
@@ -148,15 +148,15 @@ begin
 
   frmEditAuthor := TfrmEditAuthorData.Create(Self);
   try
-    frmEditAuthor.edFamily.Text := Family.Caption;
-    frmEditAuthor.edName.Text := Family.SubItems[0];
-    frmEditAuthor.edMiddle.Text := Family.SubItems[1];
+    frmEditAuthor.LastName := Family.Caption;
+    frmEditAuthor.FirstName := Family.SubItems[0];
+    frmEditAuthor.MidName := Family.SubItems[1];
 
     if frmEditAuthor.ShowModal = mrOk then
     begin
-      Family.Caption := frmEditAuthor.edFamily.Text;
-      Family.SubItems[0] := frmEditAuthor.edName.Text;
-      Family.SubItems[1] := frmEditAuthor.edMiddle.Text;
+      Family.Caption := frmEditAuthor.LastName;
+      Family.SubItems[0] := frmEditAuthor.FirstName;
+      Family.SubItems[1] := frmEditAuthor.MidName;
 
       FChanged := True;
     end;
