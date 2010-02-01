@@ -5355,10 +5355,17 @@ begin
 end;
 
 procedure TfrmMain.edFFullNameButtonClick(Sender: TObject);
+var
+  frmEditor: TfrmEditor;
 begin
-  frmEditor.Text := (Sender as TrzButtonEdit).Text;
-  frmEditor.ShowModal;
-  (Sender as TrzButtonEdit).Text := frmEditor.Text;
+  frmEditor := TfrmEditor.Create(Self);
+  try
+     frmEditor.Text := (Sender as TrzButtonEdit).Text;
+     if frmEditor.ShowModal = mrOk then
+       (Sender as TrzButtonEdit).Text := frmEditor.Text;
+  finally
+    frmEditor.Free;
+  end;
 end;
 
 procedure TfrmMain.edFFullNameKeyDown(Sender: TObject; var Key: Word;

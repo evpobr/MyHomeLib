@@ -1,151 +1,167 @@
 object frmEditor: TfrmEditor
   Left = 0
   Top = 0
-  BorderStyle = bsToolWindow
-  Caption = '   '#1042#1074#1077#1076#1080#1090#1077' '#1090#1077#1082#1089#1090
-  ClientHeight = 322
-  ClientWidth = 245
+  BorderIcons = [biSystemMenu]
+  Caption = #1042#1074#1077#1076#1080#1090#1077' '#1090#1077#1082#1089#1090' '#1074#1099#1088#1072#1078#1077#1085#1080#1103
+  ClientHeight = 200
+  ClientWidth = 350
   Color = clBtnFace
+  Constraints.MinHeight = 236
+  Constraints.MinWidth = 366
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poOwnerFormCenter
   PixelsPerInch = 96
   TextHeight = 13
   object mmMemo: TMemo
     AlignWithMargins = True
     Left = 3
-    Top = 82
-    Width = 239
-    Height = 210
-    Margins.Bottom = 30
+    Top = 3
+    Width = 344
+    Height = 105
     Align = alClient
     ScrollBars = ssVertical
     TabOrder = 0
-    ExplicitWidth = 200
-    ExplicitHeight = 223
   end
-  object RzBitBtn1: TRzBitBtn
-    Left = 65
-    Top = 296
-    Width = 127
-    TabOrder = 1
-    OnClick = RzBitBtn1Click
-    Kind = bkOK
-  end
-  object RzGroupBox4: TRzGroupBox
+  object RzGroupBox4: TPanel
     AlignWithMargins = True
     Left = 3
-    Top = 0
-    Width = 239
-    Height = 76
+    Top = 111
+    Width = 344
+    Height = 45
     Margins.Top = 0
-    Align = alTop
-    Alignment = taCenter
-    TabOrder = 2
-    ExplicitLeft = 58
-    ExplicitTop = -8
-    ExplicitWidth = 375
-    object btnInsertFilterTemplate: TRzToolButton
+    Align = alBottom
+    BevelOuter = bvNone
+    TabOrder = 1
+    object btnNotEq: TButton
+      Tag = 52
+      Left = 306
+      Top = 11
+      Width = 31
+      Height = 25
+      Caption = '<>'
+      TabOrder = 8
+      OnClick = btnLikeClick
+    end
+    object btnBraket: TButton
+      Tag = 55
+      Left = 158
+      Top = 11
+      Width = 31
+      Height = 25
+      Caption = '()'
+      TabOrder = 4
+      OnClick = btnLikeClick
+    end
+    object btnGreat: TButton
+      Tag = 54
+      Left = 232
+      Top = 11
+      Width = 31
+      Height = 25
+      Caption = '>'
+      TabOrder = 6
+      OnClick = btnLikeClick
+    end
+    object btnLess: TButton
+      Tag = 53
+      Left = 195
+      Top = 11
+      Width = 31
+      Height = 25
+      Caption = '<'
+      TabOrder = 5
+      OnClick = btnLikeClick
+    end
+    object btnAnd: TButton
+      Tag = 56
+      Left = 47
+      Top = 11
+      Width = 31
+      Height = 25
+      Caption = 'AND'
+      TabOrder = 1
+      OnClick = btnLikeClick
+    end
+    object btnOr: TButton
+      Tag = 57
+      Left = 84
+      Top = 11
+      Width = 31
+      Height = 25
+      Caption = 'OR'
+      TabOrder = 2
+      OnClick = btnLikeClick
+    end
+    object btnNot: TButton
+      Tag = 58
+      Left = 121
+      Top = 11
+      Width = 31
+      Height = 25
+      Caption = 'NOT'
+      TabOrder = 3
+      OnClick = btnLikeClick
+    end
+    object btnCommas: TButton
+      Tag = 59
+      Left = 269
+      Top = 11
+      Width = 31
+      Height = 25
+      Caption = '" "'
+      TabOrder = 7
+      OnClick = btnLikeClick
+    end
+    object btnLike: TButton
       Tag = 50
       Left = 10
       Top = 11
       Width = 31
-      Flat = False
-      ShowCaption = True
-      UseToolbarShowCaption = False
+      Height = 25
       Caption = 'LIKE'
-      OnClick = btnInsertFilterTemplateClick
+      TabOrder = 0
+      OnClick = btnLikeClick
     end
-    object RzToolButton3: TRzToolButton
-      Tag = 52
-      Left = 84
-      Top = 42
-      Width = 31
-      Flat = False
-      ShowCaption = True
-      UseToolbarShowCaption = False
-      Caption = '<>'
-      OnClick = btnInsertFilterTemplateClick
+  end
+  object pnButtons: TPanel
+    Left = 0
+    Top = 159
+    Width = 350
+    Height = 41
+    Align = alBottom
+    BevelOuter = bvNone
+    Caption = 'pnButtons'
+    ShowCaption = False
+    TabOrder = 2
+    DesignSize = (
+      350
+      41)
+    object btnOk: TButton
+      Left = 186
+      Top = 10
+      Width = 75
+      Height = 25
+      Anchors = [akTop, akRight]
+      Caption = '&'#1057#1086#1093#1088#1072#1085#1080#1090#1100
+      Default = True
+      ModalResult = 1
+      TabOrder = 0
     end
-    object RzToolButton6: TRzToolButton
-      Tag = 55
-      Left = 47
-      Top = 11
-      Width = 31
-      Flat = False
-      ShowCaption = True
-      UseToolbarShowCaption = False
-      Caption = '()'
-      OnClick = btnInsertFilterTemplateClick
-    end
-    object RzToolButton5: TRzToolButton
-      Tag = 54
-      Left = 121
-      Top = 11
-      Width = 31
-      Flat = False
-      ShowCaption = True
-      UseToolbarShowCaption = False
-      Caption = '>'
-      OnClick = btnInsertFilterTemplateClick
-    end
-    object RzToolButton4: TRzToolButton
-      Tag = 53
-      Left = 84
-      Top = 11
-      Width = 31
-      Flat = False
-      ShowCaption = True
-      UseToolbarShowCaption = False
-      Caption = '<'
-      OnClick = btnInsertFilterTemplateClick
-    end
-    object RzToolButton7: TRzToolButton
-      Tag = 56
-      Left = 10
-      Top = 42
-      Width = 31
-      Flat = False
-      ShowCaption = True
-      UseToolbarShowCaption = False
-      Caption = 'AND'
-      OnClick = btnInsertFilterTemplateClick
-    end
-    object RzToolButton8: TRzToolButton
-      Tag = 57
-      Left = 47
-      Top = 42
-      Width = 31
-      Flat = False
-      ShowCaption = True
-      UseToolbarShowCaption = False
-      Caption = 'OR'
-      OnClick = btnInsertFilterTemplateClick
-    end
-    object RzToolButton9: TRzToolButton
-      Tag = 58
-      Left = 158
-      Top = 42
-      Width = 31
-      Flat = False
-      ShowCaption = True
-      UseToolbarShowCaption = False
-      Caption = 'NOT'
-      OnClick = btnInsertFilterTemplateClick
-    end
-    object RzToolButton1: TRzToolButton
-      Tag = 59
-      Left = 121
-      Top = 42
-      Width = 31
-      Flat = False
-      ShowCaption = True
-      UseToolbarShowCaption = False
-      Caption = '" "'
-      OnClick = btnInsertFilterTemplateClick
+    object btnCancel: TButton
+      Left = 267
+      Top = 10
+      Width = 75
+      Height = 25
+      Anchors = [akTop, akRight]
+      Cancel = True
+      Caption = '&'#1054#1090#1084#1077#1085#1072
+      ModalResult = 2
+      TabOrder = 1
     end
   end
 end

@@ -1,36 +1,44 @@
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Authors Aleksey Penkov  alex.penkov@gmail.com
+  *         Nick Rymanov    nrymanov@gmail.com
+  ****************************************************************************** *)
+
 unit frm_editor;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, RzButton, StdCtrls, ExtCtrls, RzPanel;
+  Dialogs, StdCtrls, ExtCtrls;
 
 type
   TfrmEditor = class(TForm)
     mmMemo: TMemo;
-    RzBitBtn1: TRzBitBtn;
-    RzGroupBox4: TRzGroupBox;
-    btnInsertFilterTemplate: TRzToolButton;
-    RzToolButton3: TRzToolButton;
-    RzToolButton6: TRzToolButton;
-    RzToolButton5: TRzToolButton;
-    RzToolButton4: TRzToolButton;
-    RzToolButton7: TRzToolButton;
-    RzToolButton8: TRzToolButton;
-    RzToolButton9: TRzToolButton;
-    RzToolButton1: TRzToolButton;
-    procedure RzBitBtn1Click(Sender: TObject);
-    procedure btnInsertFilterTemplateClick(Sender: TObject);
+    RzGroupBox4: TPanel;
+    btnLike: TButton;
+    btnNotEq: TButton;
+    btnBraket: TButton;
+    btnGreat: TButton;
+    btnLess: TButton;
+    btnAnd: TButton;
+    btnOr: TButton;
+    btnNot: TButton;
+    btnCommas: TButton;
+    pnButtons: TPanel;
+    btnOk: TButton;
+    btnCancel: TButton;
+    procedure btnLikeClick(Sender: TObject);
   private
-    { Private declarations }
     procedure SetText(Value: string);
-    function GetText:string;
+    function GetText: string;
 
   public
-    { Public declarations }
-    property Text:string read GetText write SetText;
-
+    property Text: string read GetText write SetText;
   end;
 
 var
@@ -40,74 +48,75 @@ implementation
 
 {$R *.dfm}
 
-procedure TfrmEditor.btnInsertFilterTemplateClick(Sender: TObject);
+procedure TfrmEditor.btnLikeClick(Sender: TObject);
 var
-   OldText: string;
-   p: integer;
-   AddText: string;
-   Offset : integer;
+  p: integer;
+  AddText: string;
+  Offset: integer;
 begin
-  OldText := mmMemo.Lines.Text;
-
   p := mmMemo.SelStart;
 
-  case (Sender as TrzToolButton).Tag of
-      50: begin
-            AddText := 'LIKE "%%"';
-            OffSet  := P + 7;
-          end;
-      51: begin
-            AddText := '=""';
-            OffSet  := P + 2;
-          end;
-      52: begin
-            AddText := '<> ""';
-            OffSet  := P + 4;
-          end;
-      53: begin
-            AddText := '<""';
-            OffSet  := P + 2;
-          end;
-      54: begin
-            AddText := '>""';
-            OffSet  := P + 2;
-          end;
-      55: begin
-            AddText := '("")';
-            OffSet  := P + 2;
-          end;
-      56: begin
-            AddText := ' AND ';
-            OffSet  := P + 5;
-          end;
-      57: begin
-            AddText := ' OR ';
-            OffSet  := P + 4;
-          end;
-       58: begin
-            AddText := ' NOT ';
-            OffSet  := P + 5;
-          end;
-       59: begin
-            AddText := '""';
-            OffSet  := P + 1;
-          end;
-    end;
-  Insert(AddText + ' ',OldText, P + 1);
-
-  mmMemo.Lines.Text := OldText;
+  if Sender = btnLike then
+  begin
+    AddText := 'LIKE "%%"';
+    Offset := p + 7;
+  end
+  {
+  else if Sender = btnEq then
+  begin
+    AddText := '=""';
+    Offset := p + 2;
+  end
+  }
+  else if Sender = btnNotEq then
+  begin
+    AddText := '<> ""';
+    Offset := p + 4;
+  end
+  else if Sender = btnLess then
+  begin
+    AddText := '<""';
+    Offset := p + 2;
+  end
+  else if Sender = btnGreat then
+  begin
+    AddText := '>""';
+    Offset := p + 2;
+  end
+  else if Sender = btnBraket then
+  begin
+    AddText := '("")';
+    Offset := p + 2;
+  end
+  else if Sender = btnAnd then
+  begin
+    AddText := ' AND ';
+    Offset := p + 5;
+  end
+  else if Sender = btnOr then
+  begin
+    AddText := ' OR ';
+    Offset := p + 4;
+  end
+  else if Sender = btnNot then
+  begin
+    AddText := ' NOT ';
+    Offset := p + 5;
+  end
+  else if Sender = btnCommas then
+  begin
+    AddText := '""';
+    Offset := p + 1;
+  end;
+  mmMemo.SelText := AddText;
   mmMemo.SelStart := Offset;
   mmMemo.SelLength := 0;
+  mmMemo.SetFocus;
 end;
 
 function TfrmEditor.GetText: string;
 begin
   Result := mmMemo.Lines.Text;
-end;
-
-procedure TfrmEditor.RzBitBtn1Click(Sender: TObject);
-begin
-  Close;
 end;
 
 procedure TfrmEditor.SetText(Value: string);
