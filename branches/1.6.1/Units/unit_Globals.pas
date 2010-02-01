@@ -781,8 +781,6 @@ begin
   Genres[i].Alias := Alias;
 end;
 
-
-
 function TBookRecord.GetGenreCount: Integer;
 begin
   Result := Length(Genres);
@@ -888,13 +886,10 @@ begin
     end;
     BasicAuthentication := True;
   end;
-
+  idHTTP.Request.UserAgent := 'MyHomeLib/2.0 (compatible; Indy Library)';
   idHTTP.ConnectTimeout := Settings.TimeOut;
   idHTTP.ReadTimeout := Settings.ReadTimeOut;
-
-//  idHTTP.CookieManager := frmMain.IdCookieManager;
   idHTTP.AllowCookies := True;
-
   idHTTP.HandleRedirects := True;
 end;
 
