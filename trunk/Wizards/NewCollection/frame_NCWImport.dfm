@@ -1,15 +1,15 @@
 inherited frameNCWImport: TframeNCWImport
-  Width = 474
+  Width = 460
   Height = 220
   Constraints.MinHeight = 220
   Constraints.MinWidth = 460
-  ExplicitWidth = 474
+  ExplicitWidth = 460
   ExplicitHeight = 220
   object pageHint: TMHLStaticTip [0]
     AlignWithMargins = True
     Left = 14
     Top = 134
-    Width = 446
+    Width = 432
     Height = 58
     Margins.Left = 14
     Margins.Top = 14
@@ -25,15 +25,15 @@ inherited frameNCWImport: TframeNCWImport
     ExplicitWidth = 469
   end
   inherited pnTitle: TPanel
-    Width = 474
-    ExplicitWidth = 474
+    Width = 460
+    ExplicitWidth = 460
     inherited lblTitle: TLabel
-      Width = 446
+      Width = 432
       Caption = #1048#1084#1087#1086#1088#1090
       ExplicitWidth = 44
     end
     inherited lblSubTitle: TLabel
-      Width = 439
+      Width = 425
       Caption = #1048#1084#1087#1086#1088#1090#1080#1088#1086#1074#1072#1090#1100' '#1076#1072#1085#1085#1099#1077' '#1074' '#1085#1086#1074#1091#1102' '#1082#1086#1083#1083#1077#1082#1094#1080#1102' '#1089#1088#1072#1079#1091' '#1087#1086#1089#1083#1077' '#1089#1086#1079#1076#1072#1085#1080#1103
       ExplicitWidth = 339
     end
@@ -42,7 +42,7 @@ inherited frameNCWImport: TframeNCWImport
     AlignWithMargins = True
     Left = 14
     Top = 70
-    Width = 453
+    Width = 439
     Height = 17
     Margins.Left = 14
     Margins.Top = 14
@@ -57,7 +57,7 @@ inherited frameNCWImport: TframeNCWImport
     AlignWithMargins = True
     Left = 7
     Top = 94
-    Width = 460
+    Width = 446
     Height = 26
     Margins.Left = 7
     Margins.Top = 7
@@ -65,30 +65,29 @@ inherited frameNCWImport: TframeNCWImport
     Margins.Bottom = 0
     Align = alTop
     BevelOuter = bvNone
-    Constraints.MinWidth = 460
     TabOrder = 2
     DesignSize = (
-      460
+      446
       26)
     object Label4: TLabel
       Left = 21
-      Top = 3
+      Top = 5
       Width = 75
       Height = 13
       Caption = '&'#1060#1072#1081#1083' '#1080#1084#1087#1086#1088#1090#1072':'
       FocusControl = edXMLFile
     end
     object edXMLFile: TMHLAutoCompleteEdit
-      Left = 147
+      Left = 102
       Top = 2
-      Width = 225
+      Width = 256
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 0
       AutoCompleteOption = [acoFileSystem]
     end
     object btnSelectXML: TButton
-      Left = 378
+      Left = 364
       Top = 0
       Width = 75
       Height = 25

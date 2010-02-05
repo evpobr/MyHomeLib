@@ -1,10 +1,10 @@
 inherited frameNCWOperation: TframeNCWOperation
   Width = 330
-  Height = 214
-  Constraints.MinHeight = 190
+  Height = 210
+  Constraints.MinHeight = 210
   Constraints.MinWidth = 330
   ExplicitWidth = 330
-  ExplicitHeight = 214
+  ExplicitHeight = 210
   object pageHint: TMHLStaticTip [0]
     AlignWithMargins = True
     Left = 14
@@ -50,7 +50,7 @@ inherited frameNCWOperation: TframeNCWOperation
       Margins.Top = 7
       Margins.Right = 7
       Margins.Bottom = 0
-      Caption = '&'#1053#1086#1074#1072#1103'   '#1087#1091#1089#1090#1072#1103' '#1082#1086#1083#1083#1077#1082#1094#1080#1103
+      Caption = '&'#1053#1086#1074#1072#1103' '#1087#1091#1089#1090#1072#1103' '#1082#1086#1083#1083#1077#1082#1094#1080#1103
       Checked = True
       TabOrder = 0
       TabStop = True

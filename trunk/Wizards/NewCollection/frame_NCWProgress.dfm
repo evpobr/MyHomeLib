@@ -23,25 +23,18 @@ inherited frameNCWProgress: TframeNCWProgress
     ExplicitTop = 13
     ExplicitWidth = 345
   end
-  object Bar: TRzProgressBar [1]
+  object Bar: TProgressBar [1]
     AlignWithMargins = True
-    Left = 11
-    Top = 86
-    Width = 438
-    Margins.Left = 11
-    Margins.Top = 10
-    Margins.Right = 11
+    Left = 14
+    Top = 83
+    Width = 432
+    Height = 17
+    Margins.Left = 14
+    Margins.Top = 7
+    Margins.Right = 14
+    Margins.Bottom = 0
     Align = alTop
-    BorderOuter = fsFlatRounded
-    BorderWidth = 0
-    InteriorOffset = 0
-    PartsComplete = 0
-    Percent = 0
-    ThemeAware = False
-    TotalParts = 0
-    ExplicitLeft = 14
-    ExplicitTop = 92
-    ExplicitWidth = 292
+    TabOrder = 3
   end
   inherited pnTitle: TPanel
     Width = 460
@@ -60,9 +53,9 @@ inherited frameNCWProgress: TframeNCWProgress
   object errorLog: TListView
     AlignWithMargins = True
     Left = 14
-    Top = 120
+    Top = 107
     Width = 432
-    Height = 137
+    Height = 150
     Margins.Left = 14
     Margins.Top = 7
     Margins.Right = 14
@@ -89,8 +82,6 @@ inherited frameNCWProgress: TframeNCWProgress
     SmallImages = DMUser.SeverityImages
     TabOrder = 1
     ViewStyle = vsReport
-    ExplicitTop = 107
-    ExplicitHeight = 150
   end
   object pnButtons: TPanel
     Left = 0

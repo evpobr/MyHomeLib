@@ -1,10 +1,10 @@
 inherited frameNCWCollectionFileTypes: TframeNCWCollectionFileTypes
   Width = 460
-  Height = 268
+  Height = 200
   Constraints.MinHeight = 200
   Constraints.MinWidth = 460
   ExplicitWidth = 460
-  ExplicitHeight = 268
+  ExplicitHeight = 200
   object pageHint: TMHLStaticTip [0]
     AlignWithMargins = True
     Left = 14

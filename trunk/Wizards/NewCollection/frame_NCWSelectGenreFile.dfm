@@ -51,7 +51,7 @@ inherited frameNCWSelectGenreFile: TframeNCWSelectGenreFile
       460
       92)
     object Label10: TLabel
-      Left = 21
+      Left = 28
       Top = 65
       Width = 71
       Height = 13
@@ -91,9 +91,9 @@ inherited frameNCWSelectGenreFile: TframeNCWSelectGenreFile
       OnClick = OnSetFileType
     end
     object edGenreList: TMHLAutoCompleteEdit
-      Left = 147
+      Left = 105
       Top = 62
-      Width = 218
+      Width = 260
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       Enabled = False

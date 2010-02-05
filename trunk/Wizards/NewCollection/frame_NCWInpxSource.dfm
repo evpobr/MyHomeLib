@@ -1,10 +1,10 @@
 inherited frameNCWInpxSource: TframeNCWInpxSource
   Width = 330
-  Height = 342
-  Constraints.MinHeight = 240
+  Height = 350
+  Constraints.MinHeight = 350
   Constraints.MinWidth = 330
   ExplicitWidth = 330
-  ExplicitHeight = 342
+  ExplicitHeight = 350
   object pageHint: TMHLStaticTip [0]
     AlignWithMargins = True
     Left = 14
@@ -43,13 +43,13 @@ inherited frameNCWInpxSource: TframeNCWInpxSource
     TabOrder = 1
     object rbLocal: TRadioButton
       AlignWithMargins = True
-      Left = 18
+      Left = 14
       Top = 7
-      Width = 294
+      Width = 302
       Height = 17
-      Margins.Left = 18
+      Margins.Left = 14
       Margins.Top = 7
-      Margins.Right = 18
+      Margins.Right = 14
       Margins.Bottom = 0
       Align = alTop
       Caption = #1051#1086#1082#1072#1083#1100#1085#1099#1081' '#1092#1072#1081#1083' INPX '
@@ -58,12 +58,12 @@ inherited frameNCWInpxSource: TframeNCWInpxSource
     end
     object edINPXPath: TRzButtonEdit
       AlignWithMargins = True
-      Left = 18
+      Left = 14
       Top = 27
-      Width = 294
+      Width = 302
       Height = 21
-      Margins.Left = 18
-      Margins.Right = 18
+      Margins.Left = 14
+      Margins.Right = 14
       Margins.Bottom = 0
       Align = alTop
       TabOrder = 1
@@ -73,13 +73,13 @@ inherited frameNCWInpxSource: TframeNCWInpxSource
     end
     object rbDownload: TRadioButton
       AlignWithMargins = True
-      Left = 18
+      Left = 14
       Top = 55
-      Width = 294
+      Width = 302
       Height = 17
-      Margins.Left = 18
+      Margins.Left = 14
       Margins.Top = 7
-      Margins.Right = 18
+      Margins.Right = 14
       Margins.Bottom = 0
       Align = alTop
       Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100' '#1089' '#1089#1072#1081#1090#1072
@@ -88,12 +88,12 @@ inherited frameNCWInpxSource: TframeNCWInpxSource
     end
     object lvCollections: TListView
       AlignWithMargins = True
-      Left = 18
+      Left = 14
       Top = 75
-      Width = 294
+      Width = 302
       Height = 140
-      Margins.Left = 18
-      Margins.Right = 18
+      Margins.Left = 14
+      Margins.Right = 14
       Margins.Bottom = 10
       Align = alClient
       Columns = <

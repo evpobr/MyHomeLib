@@ -356,7 +356,7 @@ begin
   // ѕроинициализируем параметры по умолчанию
   //
   FParams.Operation := otNew;
-//  FParams.CollectionType := ltEmpty;
+  // FParams.CollectionType := ltEmpty;
 
   FParams.CollectionType := ltLRELocal;
 
@@ -389,7 +389,6 @@ begin
     frame.Enabled := False;
     frame.Visible := False;
     frame.Initialize(@FParams);
-
   end;
 
  { TODO -oAlex -cRefactoring :  остыль! может быть его пристроить в другое место? }
