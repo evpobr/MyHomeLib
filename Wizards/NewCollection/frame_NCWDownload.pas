@@ -1,3 +1,17 @@
+{******************************************************************************}
+{                                                                              }
+{ MyHomeLib                                                                    }
+{                                                                              }
+{ Version 0.9                                                                  }
+{ 20.08.2008                                                                   }
+{ Copyright (c) Aleksey Penkov  alex.penkov@gmail.com                          }
+{                                                                              }
+{ @author Nick Rymanov nrymanov@gmail.com                                      }
+{                                                                              }
+{******************************************************************************}
+
+{ TODO -oNickR -cBug : использовать настройки прокси при закачке файла. Сейчас они устанавливаются в коде самого визарда. }
+
 unit frame_NCWDownload;
 
 interface
@@ -5,26 +19,23 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, frame_InteriorPageBase, StdCtrls, ExtCtrls, ComCtrls,
-  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, RzPrgres;
+  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP;
 
 type
   TframeNCWDownload = class(TInteriorPageBase)
     HTTP: TIdHTTP;
-    lblS1: TLabel;
-    Bar: TRzProgressBar;
+    lblStatus: TLabel;
+    Bar: TProgressBar;
 
-
-
-    procedure HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode;
-      AWorkCountMax: Int64);
-    procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
-      AWorkCount: Int64);
+    procedure HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
+    procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
     procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
+
   private
-    { Private declarations }
-    FDownloadSize : Extended;
+    FDownloadSize : Int64;
     FStartDate : TDateTime;
     FTerminated: Boolean;
+
   public
     function Activate(LoadData: Boolean): Boolean; override;
     function Deactivate(CheckData: Boolean): Boolean; override;
@@ -43,28 +54,31 @@ uses
   unit_Settings,
   unit_NCWParams,
   frm_NCWizard;
+
 {$R *.dfm}
 
 { TframeNCWDownload }
 
 function TframeNCWDownload.Activate(LoadData: Boolean): Boolean;
 begin
-  lblS1.Caption := 'Подключение ...';
-  Bar.Percent := 0;
+  lblStatus.Caption := 'Подключение ...';
+  Bar.Position := 0;
+
+  Result := True;
 end;
 
 function TframeNCWDownload.Deactivate(CheckData: Boolean): Boolean;
 begin
-  //--------------------------------
+  Result := True;
 end;
 
 procedure TframeNCWDownload.Download;
 var
   Responce: TMemoryStream;
 begin
+  FTerminated := False;
+  Responce := TMemoryStream.Create;
   try
-    FTerminated := False;
-    Responce := TMemoryStream.Create;
     HTTP.Get(FPParams^.INPXUrl, Responce);
     if not FTerminated then
     begin
@@ -76,36 +90,38 @@ begin
   end;
 end;
 
-procedure TframeNCWDownload.HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
-  AWorkCount: Int64);
+procedure TframeNCWDownload.HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
+begin
+  Bar.Position := 0;
+  FDownloadSize := AWorkCountMax;
+  FStartDate := Now;
+end;
+
+procedure TframeNCWDownload.HTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
 var
   ElapsedTime: Cardinal;
-  KB : extended;
+  KB : Int64;
 begin
-  KB := AWorkCount / 1024;
+  KB := AWorkCount div 1024;
 
   if FDownloadSize <> 0 then
-    Bar.Percent:= round(KB / FDownloadSize * 100);
+    Bar.Position := AWorkCount * 100 div FDownloadSize;
 
   ElapsedTime := SecondsBetween(Now, FStartDate);
   if ElapsedTime > 0 then
   begin
-    lblS1.Caption := Format('Загружено  %d  из  %d кб (%n кб/с)', [round(KB), round(FDownloadSize), KB / ElapsedTime]);
+    { TODO -oNickR -cRefactoring : создать и использовать во всех подобных местах FormatSize функцию }
+    lblStatus.Caption := Format(
+      'Загружено %d из %d кб (%n кб/с)',
+      [KB, FDownloadSize div 1024, KB / ElapsedTime]
+    );
   end;
   Application.ProcessMessages;
 end;
 
-procedure TframeNCWDownload.HTTPWorkBegin(ASender: TObject;
-  AWorkMode: TWorkMode; AWorkCountMax: Int64);
-begin
-  Bar.Percent := 0;
-  FDownloadSize := AWorkCountMax / 1024;
-  FStartDate := Now;
-end;
-
 procedure TframeNCWDownload.HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
 begin
-  lblS1.Caption := 'Загрузка завершена';
+  lblStatus.Caption := 'Загрузка завершена';
   Application.ProcessMessages;
 end;
 

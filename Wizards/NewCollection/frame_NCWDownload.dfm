@@ -1,36 +1,34 @@
 inherited frameNCWDownload: TframeNCWDownload
-  object lblS1: TLabel [0]
+  Height = 160
+  Constraints.MinHeight = 160
+  Constraints.MinWidth = 320
+  ExplicitHeight = 160
+  object lblStatus: TLabel [0]
     AlignWithMargins = True
-    Left = 3
-    Top = 66
-    Width = 314
+    Left = 14
+    Top = 63
+    Width = 292
     Height = 13
-    Margins.Top = 10
-    Margins.Bottom = 10
+    Margins.Left = 14
+    Margins.Top = 7
+    Margins.Right = 14
+    Margins.Bottom = 0
     Align = alTop
-    Alignment = taCenter
-    Caption = 'lblS1'
-    ExplicitWidth = 22
+    Caption = #1055#1086#1076#1082#1083#1102#1095#1077#1085#1080#1077' ...'
+    ExplicitWidth = 86
   end
-  object Bar: TRzProgressBar [1]
+  object Bar: TProgressBar [1]
     AlignWithMargins = True
-    Left = 11
-    Top = 99
-    Width = 298
-    Margins.Left = 11
-    Margins.Top = 10
-    Margins.Right = 11
+    Left = 14
+    Top = 83
+    Width = 292
+    Height = 17
+    Margins.Left = 14
+    Margins.Top = 7
+    Margins.Right = 14
+    Margins.Bottom = 0
     Align = alTop
-    BorderOuter = fsFlatRounded
-    BorderWidth = 0
-    InteriorOffset = 0
-    PartsComplete = 0
-    Percent = 0
-    ThemeAware = False
-    TotalParts = 0
-    ExplicitLeft = 14
-    ExplicitTop = 92
-    ExplicitWidth = 292
+    TabOrder = 1
   end
   inherited pnTitle: TPanel
     inherited lblTitle: TLabel
@@ -57,7 +55,7 @@ inherited frameNCWDownload: TframeNCWDownload
     Request.BasicAuthentication = False
     Request.UserAgent = 'Mozilla/3.0 (compatible; Indy Library)'
     HTTPOptions = [hoForceEncodeParams]
-    Left = 240
-    Top = 168
+    Left = 16
+    Top = 112
   end
 end
