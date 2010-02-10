@@ -2,11 +2,12 @@
   *
   * MyHomeLib
   *
-  * Version 0.9
-  * 20.08.2008
-  * Copyright (c) Aleksey Penkov    alex.penkov@gmail.com
-  *               Nick Rymanov      nrymanov@gmail.com
-  *               Matvienko Sergei  matv84@mail.ru
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Authors Aleksey Penkov   alex.penkov@gmail.com
+  *         Nick Rymanov     nrymanov@gmail.com
+  *         Matvienko Sergei matv84@mail.ru
+  *
   ****************************************************************************** *)
 
 unit frm_create_mask;
@@ -14,8 +15,20 @@ unit frm_create_mask;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Buttons, StdCtrls, ExtCtrls, unit_StaticTip, unit_Templater;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  Buttons,
+  StdCtrls,
+  ExtCtrls,
+  unit_StaticTip,
+  unit_Templater;
 
 type
   TfrmCreateMask = class(TForm)
@@ -28,84 +41,103 @@ type
     stDescription: TMHLStaticTip;
     Label3: TLabel;
     procedure SaveMask(Sender: TObject);
-    procedure FormShow(Sender: TObject);
+
   private
-    { Private declarations }
+    FTemplater: TTemplater;
+
+    FTemplateType: TTemplateType;
+    procedure SetTemplateType(const Value: TTemplateType);
+
+    function GetTemplate: string;
+    procedure SetTemplate(const Value: string);
+
   public
-    { Public declarations }
-    TemplateType: TTemplateType;
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
+    property TemplateType: TTemplateType read FTemplateType write SetTemplateType;
+    property Template: string read GetTemplate write SetTemplate;
   end;
 
-function EditTemplate(Template: string; ATemplType: TTemplateType): string;
+function EditTemplate(ATemplateType: TTemplateType; var ATemplate: string): Boolean;
 
 var
   frmCreateMask: TfrmCreateMask;
 
 implementation
 
-uses frm_settings;
 {$R *.dfm}
 
-function EditTemplate(Template: string; ATemplType: TTemplateType): string;
+resourcestring
+  rstrFileTemplateCaption = 'Редактирование шаблона: Имя файла';
+  rstrPathTemplateCaption = 'Редактирование шаблона: Путь к файлу';
+  rstrTextTemplateCaption = 'Редактирование шаблона: Текст';
+
+const
+  DlgCaptions: array [TTemplateType] of string = (rstrFileTemplateCaption, rstrPathTemplateCaption, rstrTextTemplateCaption);
+
+function EditTemplate(ATemplateType: TTemplateType; var ATemplate: string): Boolean;
+var
+  frmCreateMask: TfrmCreateMask;
 begin
-  frmCreateMask := TfrmCreateMask.Create(nil);
-  with frmCreateMask do
-  begin
-    try
-      TemplateType := ATemplType;
-      edTemplate.Text := Template;
+  frmCreateMask := TfrmCreateMask.Create(Application);
+  try
+    frmCreateMask.TemplateType := ATemplateType;
+    frmCreateMask.Template := ATemplate;
+    Result := (mrOk = frmCreateMask.ShowModal);
 
-      ShowModal;
-
-      if frmCreateMask.ModalResult = mrOk then
-        Result := edTemplate.Text
-      else Result := Template;
-    except
-      Free;
-    end;
+    if Result then
+      ATemplate := frmCreateMask.Template;
+  finally
+    frmCreateMask.Free;
   end;
 end;
 
-procedure TfrmCreateMask.FormShow(Sender: TObject);
+constructor TfrmCreateMask.Create(AOwner: TComponent);
 begin
-  Caption := 'Редактирование шаблона: ';
-  case TemplateType of
-    TpFile:
-      Caption := Caption + 'Имя файла';
-    TpPath:
-      Caption := Caption + 'Путь к файлу';
-    TpText:
-      Caption := Caption + 'Текст';
-  end;
-  edTemplate.SetFocus;
+  inherited Create(AOwner);
+  FTemplater := TTemplater.Create;
+end;
+
+destructor TfrmCreateMask.Destroy;
+begin
+  FTemplater.Free;
+  inherited Destroy;
+end;
+
+function TfrmCreateMask.GetTemplate: string;
+begin
+  Result := edTemplate.Text;
+end;
+
+procedure TfrmCreateMask.SetTemplate(const Value: string);
+begin
+  edTemplate.Text := Value;
+end;
+
+procedure TfrmCreateMask.SetTemplateType(const Value: TTemplateType);
+begin
+  FTemplateType := Value;
+  Caption := DlgCaptions[FTemplateType];
 end;
 
 procedure TfrmCreateMask.SaveMask(Sender: TObject);
 var
-  Templater: TTemplater;
   Valid: TErrorType;
 begin
-  Templater := TTemplater.Create;
-  case TemplateType of
-    TpFile:
-      Valid := Templater.ValidateTemplate(edTemplate.Text, TpFile);
-    TpPath:
-      Valid := Templater.ValidateTemplate(edTemplate.Text, TpPath);
-  else
-    Valid := Templater.ValidateTemplate(edTemplate.Text, TpText);
-  end;
+  Valid := FTemplater.ValidateTemplate(Template, TemplateType);
+
+  { TODO -cUsability -oNickR : использовать стандартную функцию для показа сообщения об ошибке }
   case Valid of
     ErFine:
       ModalResult := mrOk;
     ErTemplate:
       ShowMessage('Проверьте правильность шаблона');
     ErBlocks:
-      ShowMessage(
-        'Проверьте соответствие открывающих и закрывающих скобок блоков элемнтов');
+      ShowMessage('Проверьте соответствие открывающих и закрывающих скобок блоков элемнтов');
     ErElements:
       ShowMessage('Неверные элементы шаблона');
   end;
-  Templater.Free;
 end;
 
 end.

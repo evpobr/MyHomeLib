@@ -119,28 +119,32 @@ begin
   begin
     //
     // —формируем им€ файла в соответствии с заданным темплейтом
+    { TODO -oNickR -cPerformance : необходимо создавать шаблонизатор только один раз при инициализации потока }
+    { TODO -oNickR -cBug : нет реакции на невалидный шаблон }
+    { TODO -oNickR -cBug : DMCollection.GetCurrentBook(R) вызываетс€ дважды }
     Templater := TTemplater.Create;
-    if Templater.SetTemplate(Settings.FileNameTemplate, TpFile) = ErFine then
-    begin
-      DMCollection.GetCurrentBook(R);
-      Templater.ParseString(R, TpFile);
-      FileName := Templater.GetParsedString;
-    end;
+    try
+      if Templater.SetTemplate(Settings.FileNameTemplate, TpFile) = ErFine then
+      begin
+        DMCollection.GetCurrentBook(R);
+        FileName := Templater.ParseString(R, TpFile);
+      end;
 
-    if (ExtractFileExt(FTable['FileName']) = ZIP_EXTENSION) and
-      (FTable['Ext'] <> ZIP_EXTENSION) then
-      FFileOpMode := fmFBD
-    else if ExtractFileExt(CR) <> ZIP_EXTENSION then
-      FFileOpMode := fmFb2;
+      if (ExtractFileExt(FTable['FileName']) = ZIP_EXTENSION) and
+        (FTable['Ext'] <> ZIP_EXTENSION) then
+        FFileOpMode := fmFBD
+      else if ExtractFileExt(CR) <> ZIP_EXTENSION then
+        FFileOpMode := fmFb2;
 
-    // —формируем им€ каталога в соответствии с заданным темплейтом
-    if Templater.SetTemplate(Settings.FolderTemplate, TpPath) = ErFine then
-    begin
-      DMCollection.GetCurrentBook(R);
-      Templater.ParseString(R, TpPath);
-      Folder := Templater.GetParsedString;
+      // —формируем им€ каталога в соответствии с заданным темплейтом
+      if Templater.SetTemplate(Settings.FolderTemplate, TpPath) = ErFine then
+      begin
+        DMCollection.GetCurrentBook(R);
+        Folder := Templater.ParseString(R, TpPath);
+      end;
+    finally
+      Templater.Free;
     end;
-    Templater.Free;
 
     case FFileOpMode of
       fmFb2Zip:

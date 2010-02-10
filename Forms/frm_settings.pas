@@ -1,13 +1,14 @@
-{ ****************************************************************************** }
-{ }
-{ MyHomeLib }
-{ }
-{ Version 0.9 }
-{ 20.08.2008 }
-{ Copyright (c) Aleksey Penkov  alex.penkov@gmail.com }
-{ Matvienko Sergei  matv84@mail.ru }
-{ }
-{ ****************************************************************************** }
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Authors Aleksey Penkov   alex.penkov@gmail.com
+  *         Nick Rymanov     nrymanov@gmail.com
+  *         Matvienko Sergei matv84@mail.ru
+  *
+  ****************************************************************************** *)
 
 unit frm_settings;
 
@@ -42,7 +43,9 @@ uses
   RzLabel,
   RzListVw,
   unit_Readers,
-  unit_Scripts, RzSelDir, ImgList;
+  unit_Scripts,
+  RzSelDir,
+  ImgList;
 
 type
   TfrmSettings = class(TForm)
@@ -220,26 +223,41 @@ uses
   htmlhlp,
   frm_create_mask,
   unit_Templater;
+
 {$R *.dfm}
 
 procedure TfrmSettings.edDeviceDirButtonClick(Sender: TObject);
 begin
-  // dlgFolder.SelectedFolder.PathName := (Sender as TRzButtonEdit).Text;
-  // if dlgFolder.Execute then
-  // (Sender as TRzButtonEdit).Text := dlgFolder.SelectedPathName;
   dlgSelectDir.Directory := (Sender as TRzButtonEdit).Text;
-  if dlgSelectDir.Execute then (Sender as TRzButtonEdit)
-    .Text := dlgSelectDir.Directory;
+  if dlgSelectDir.Execute then
+    (Sender as TRzButtonEdit).Text := dlgSelectDir.Directory;
 end;
 
 procedure TfrmSettings.edFileNameTemplateButtonClick(Sender: TObject);
+var
+  s: string;
 begin
-  edFileNameTemplate.Text := EditTemplate(edFileNameTemplate.Text, TpFile);
+  s := edFileNameTemplate.Text;
+  if EditTemplate(TpFile, s) then
+    edFileNameTemplate.Text := edFileNameTemplate.Text;
 end;
 
 procedure TfrmSettings.edFolderTemplateButtonClick(Sender: TObject);
+var
+  s: string;
 begin
-  edFolderTemplate.Text := EditTemplate(edFolderTemplate.Text, TpPath);
+  s := edFolderTemplate.Text;
+  if EditTemplate(TpPath, s) then
+    edFolderTemplate.Text := s;
+end;
+
+procedure TfrmSettings.beTemplateButtonClick(Sender: TObject);
+var
+  s: string;
+begin
+  s := beTemplate.Text;
+  if EditTemplate(TpText, s) then
+      beTemplate.Text := s;
 end;
 
 procedure TfrmSettings.LoadSetting;
@@ -559,11 +577,6 @@ begin
   finally
     frmEditReader.Free;
   end;
-end;
-
-procedure TfrmSettings.beTemplateButtonClick(Sender: TObject);
-begin
-  beTemplate.Text := EditTemplate(beTemplate.Text, TpText);
 end;
 
 procedure TfrmSettings.btnAddExtClick(Sender: TObject);

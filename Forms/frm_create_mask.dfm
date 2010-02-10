@@ -13,7 +13,6 @@ object frmCreateMask: TfrmCreateMask
   Font.Style = []
   OldCreateOrder = False
   Position = poOwnerFormCenter
-  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -28,6 +27,7 @@ object frmCreateMask: TfrmCreateMask
     Top = 40
     Width = 85
     Height = 13
+    AutoSize = False
     Caption = '[%s [(%n) ]- ]%t'
   end
   object stDescription: TMHLStaticTip

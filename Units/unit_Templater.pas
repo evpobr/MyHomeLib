@@ -15,7 +15,11 @@ unit unit_Templater;
 
 interface
 
-uses dm_Collection, FictionBook_21, unit_Database, unit_Globals;
+uses
+  dm_Collection,
+  FictionBook_21,
+  unit_Database,
+  unit_Globals;
 
 const
   mask_elements = 10;
@@ -32,34 +36,31 @@ type
   TTemplater = class
   private
     FTemplate: string;
-    FParsedString: string;
     FBlocksMap: array of TElement;
 
   public
     constructor Create;
-    function GetFB2BookInfo(book: IXMLFictionBook): TBookRecord;
-    procedure ParseString(R: TBookRecord; TemplType: TTemplateType;
-      ALibrary: TMHLLibrary = nil);
-    function ValidateTemplate(Template: string; TemplType: TTemplateType)
-      : TErrorType;
-    function SetTemplate(Template: string; TemplType: TTemplateType)
-      : TErrorType;
-    function GetParsedString: string;
+
+    function GetFB2BookInfo1(book: IXMLFictionBook): TBookRecord;
+    function ValidateTemplate(Template: string; TemplType: TTemplateType): TErrorType;
+    function SetTemplate(Template: string; TemplType: TTemplateType): TErrorType;
+    function ParseString(R: TBookRecord; TemplType: TTemplateType; ALibrary: TMHLLibrary = nil): string;
   end;
 
 implementation
 
 uses
-  SysUtils, unit_Consts, dm_user;
+  SysUtils,
+  unit_Consts,
+  dm_user;
 
 constructor TTemplater.Create;
 begin
   inherited;
-  FParsedString := '';
   FTemplate := '';
 end;
 
-function TTemplater.GetFB2BookInfo(book: IXMLFictionBook): TBookRecord;
+function TTemplater.GetFB2BookInfo1(book: IXMLFictionBook): TBookRecord;
 var
   i: integer;
   R: TBookRecord;
@@ -67,8 +68,7 @@ begin
   with book.Description.Titleinfo do
   begin
     for i := 0 to Author.Count - 1 do
-      R.AddAuthor(Author[i].Lastname.Text, Author[i].Firstname.Text,
-        Author[i].MiddleName.Text);
+      R.AddAuthor(Author[i].Lastname.Text, Author[i].Firstname.Text, Author[i].MiddleName.Text);
 
     if Booktitle.IsTextElement then
       R.Title := Booktitle.Text;
@@ -96,15 +96,12 @@ begin
   Result := R;
 end;
 
-function TTemplater.ValidateTemplate(Template: string; TemplType: TTemplateType)
-  : TErrorType;
+function TTemplater.ValidateTemplate(Template: string; TemplType: TTemplateType): TErrorType;
 const
-  mask_elements: array [1 .. 8] of string =
-    ('f', 't', 's', 'n', 'id', 'g', 'fl', 'rg');
+  mask_elements: array [1 .. 8] of string = ('f', 't', 's', 'n', 'id', 'g', 'fl', 'rg');
 var
   stack: array of TElement;
-  h, k, i, j, StackPos, ElementPos, ColElements, last_char,
-    last_col_elements: integer;
+  h, k, i, j, StackPos, ElementPos, ColElements, last_char, last_col_elements: integer;
   bol, TemplEnd: boolean;
   TemplatePart: string;
 begin
@@ -192,8 +189,7 @@ begin
         // Добавляем элемент в общий список элементов
         if StackPos = 0 then
         begin
-          FBlocksMap[ElementPos + last_col_elements].name := stack[StackPos]
-            .name;
+          FBlocksMap[ElementPos + last_col_elements].name := stack[StackPos].name;
           FBlocksMap[ElementPos + last_col_elements].BegBlock := 0;
           FBlocksMap[ElementPos + last_col_elements].EndBlock := 0;
           Inc(ElementPos);
@@ -214,10 +210,8 @@ begin
 
         // Добавляем элемент в общий список элементов
         FBlocksMap[ElementPos + last_col_elements].name := stack[StackPos].name;
-        FBlocksMap[ElementPos + last_col_elements].BegBlock := stack[StackPos]
-          .BegBlock + last_char;
-        FBlocksMap[ElementPos + last_col_elements].EndBlock := stack[StackPos]
-          .EndBlock + last_char;
+        FBlocksMap[ElementPos + last_col_elements].BegBlock := stack[StackPos].BegBlock + last_char;
+        FBlocksMap[ElementPos + last_col_elements].EndBlock := stack[StackPos].EndBlock + last_char;
         Inc(ElementPos);
 
         Dec(StackPos);
@@ -282,10 +276,7 @@ begin
   Result := ErFine;
 end;
 
-function TTemplater.SetTemplate(Template: String; TemplType: TTemplateType)
-  : TErrorType;
-var
-  i: integer;
+function TTemplater.SetTemplate(Template: String; TemplType: TTemplateType): TErrorType;
 begin
   Result := ValidateTemplate(Template, TemplType);
   // Спецсимволы чистим только для имени файла или пути к файлу
@@ -299,8 +290,7 @@ begin
   end;
 end;
 
-procedure TTemplater.ParseString(R: TBookRecord; TemplType: TTemplateType;
-  ALibrary: TMHLLibrary = nil);
+function TTemplater.ParseString(R: TBookRecord; TemplType: TTemplateType; ALibrary: TMHLLibrary = nil): string;
 type
   TMaskElement = record
     templ, value: string;
@@ -310,10 +300,10 @@ type
 var
   AuthorName, Firstname, MiddleName, Lastname: string;
   i, j: integer;
-  RootGenre, Folder: string;
+  //RootGenre, Folder: string;
   MaskElements: TMaskElements;
 begin
-  FParsedString := FTemplate;
+  Result := FTemplate;
 
   // Формирование массива значений элементов маски
   MaskElements[1].templ := 's';
@@ -350,7 +340,7 @@ begin
   MaskElements[5].value := IntToStr(R.LibID);
 
   MaskElements[6].templ := 'fl';
-  MaskElements[6].value := R.Authors[ Low(R.Authors)].FLastName[1];
+  MaskElements[6].value := R.Authors[Low(R.Authors)].FLastName[1];
 
   MaskElements[7].templ := 'f';
   MaskElements[7].value := Trim(R.Authors[0].GetFullName);
@@ -382,48 +372,36 @@ begin
     end;
 
     MaskElements[9].templ := 'g';
-    MaskElements[9].value := Trim(ALibrary.GetGenreAlias
-        (R.Genres[0].GenreFb2Code));
+    MaskElements[9].value := Trim(ALibrary.GetGenreAlias(R.Genres[0].GenreFb2Code));
 
     MaskElements[10].templ := 'rg';
-    MaskElements[10].value := Trim(ALibrary.GetTopGenreAlias
-        (R.Genres[0].GenreFb2Code));
+    MaskElements[10].value := Trim(ALibrary.GetTopGenreAlias(R.Genres[0].GenreFb2Code));
   end;
 
   // Цикл удаления "пустых" блоков
   for i := Low(MaskElements) to High(MaskElements) do
     for j := Low(FBlocksMap) to High(FBlocksMap) do
-      if (MaskElements[i].templ = FBlocksMap[j].name) and
-        (MaskElements[i].value = '') then
+      if (MaskElements[i].templ = FBlocksMap[j].name) and (MaskElements[i].value = '') then
         if (FBlocksMap[j].BegBlock <> 0) and (FBlocksMap[j].EndBlock <> 0) then
         begin
-          Delete(FParsedString, FBlocksMap[j].BegBlock,
-            FBlocksMap[j].EndBlock - FBlocksMap[j].BegBlock + 1);
+          Delete(Result, FBlocksMap[j].BegBlock, FBlocksMap[j].EndBlock - FBlocksMap[j].BegBlock + 1);
           // Здесь ещё продумаю вариант удаления записей о вложенных элементах без валидации
-          ValidateTemplate(FParsedString, TemplType);
+          ValidateTemplate(Result, TemplType);
         end;
 
   // Цикл удаления квадратных скобок
-  for i := Length(FParsedString) downto 1 do
-    if CharInSet(FParsedString[i], ['[', ']']) then
-      Delete(FParsedString, i, 1);
+  for i := Length(Result) downto 1 do
+    if CharInSet(Result[i], ['[', ']']) then
+      Delete(Result, i, 1);
 
   // Цикл замены элементов шаблона их значениями
   for i := 1 to mask_elements do
   begin
     if MaskElements[i].templ[1] = UpCase(MaskElements[i].templ[1]) then
-      StrReplace('%' + MaskElements[i].templ, Transliterate
-          (MaskElements[i].value), FParsedString)
+      StrReplace('%' + MaskElements[i].templ, Transliterate(MaskElements[i].value), Result)
     else
-      StrReplace('%' + MaskElements[i].templ, MaskElements[i].value,
-        FParsedString);
+      StrReplace('%' + MaskElements[i].templ, MaskElements[i].value, Result);
   end;
-
-end;
-
-function TTemplater.GetParsedString: string;
-begin
-  Result := FParsedString;
 end;
 
 end.
