@@ -52,12 +52,13 @@ begin
     book := GetFictionBook(XML);
 
     Templater:= TTemplater.Create;
-    if Templater.SetTemplate(Settings.BookHeaderTemplate, TpText) = ErFine then
-    begin
-      Templater.ParseString(R, TpText);
-      TitleBook := Templater.GetParsedString;
+    try
+      { TODO -oNickR -cBug : нет реакции на невалидный шаблон }
+      if Templater.SetTemplate(Settings.BookHeaderTemplate, TpText) = ErFine then
+        TitleBook := Templater.ParseString(R, TpText);
+    finally
+      Templater.Free;
     end;
-    Templater.Free;
 
     with Book.Description.Titleinfo do
     begin

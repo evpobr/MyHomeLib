@@ -1,22 +1,31 @@
-
-{******************************************************************************}
-{                                                                              }
-{                                 MyHomeLib                                    }
-{                                                                              }
-{                                Version 0.9                                   }
-{                                20.08.2008                                    }
-{                    Copyright (c) Aleksey Penkov  alex.penkov@gmail.com       }
-{                                                                              }
-{******************************************************************************}
-
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Authors Aleksey Penkov   alex.penkov@gmail.com
+  *         Nick Rymanov     nrymanov@gmail.com
+  *
+  ****************************************************************************** *)
 
 unit frm_statistic;
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ComCtrls, StdCtrls, ExtCtrls;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  ComCtrls,
+  StdCtrls,
+  ExtCtrls;
 
 type
   TfrmStat = class(TForm)
@@ -32,7 +41,12 @@ var
 
 implementation
 
-uses dm_user, unit_Settings, unit_Consts, dm_collection;
+uses
+  dm_user,
+  unit_Settings,
+  unit_Consts,
+  CommCtrl,
+  dm_collection;
 
 {$R *.dfm}
 
@@ -57,6 +71,10 @@ begin
   lvInfo.Items[4].SubItems[0] := IntToStr(AuthorsCount);
   lvInfo.Items[5].SubItems[0] := IntToStr(BooksCount);
   lvInfo.Items[6].SubItems[0] := IntToStr(SeriesCount);
+
+  { TODO -oNickR -cCore : создать функцию в helpers }
+  ListView_SetColumnWidth(lvInfo.Handle, 0, LVSCW_AUTOSIZE);
+  ListView_SetColumnWidth(lvInfo.Handle, 1, LVSCW_AUTOSIZE);
 end;
 
 end.

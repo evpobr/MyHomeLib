@@ -159,13 +159,15 @@ var
   z, p1, p2: integer;
   Templater: TTemplater;
 begin
+  { TODO -oNickR -cPerformance : необходимо создавать шаблонизатор только один раз при инициализации потока }
+  { TODO -oNickR -cBug : нет реакции на невалидный шаблон }
   Templater:= TTemplater.Create;
-  if Templater.SetTemplate(FileName, TpFile) = ErFine then
-  begin
-    Templater.ParseString(R, TpPath, FLibrary);
-    FileName := Templater.GetParsedString;
+  try
+    if Templater.SetTemplate(FileName, TpFile) = ErFine then
+      FileName := Templater.ParseString(R, TpPath, FLibrary);
+  finally
+    Templater.Free;
   end;
-  Templater.Free;
 
   FileName := CheckSymbols(trim(FileName));
   if FileName <> '' then
@@ -175,15 +177,18 @@ begin
 end;
 
 function TImportFB2ThreadBase.GetNewFolder(Folder: string; R: TBookRecord): string;
-var Templater: TTemplater;
+var
+  Templater: TTemplater;
 begin
+  { TODO -oNickR -cPerformance : необходимо создавать шаблонизатор только один раз при инициализации потока }
+  { TODO -oNickR -cBug : нет реакции на невалидный шаблон }
   Templater:= TTemplater.Create;
-  if Templater.SetTemplate(Folder, TpPath) = ErFine then
-  begin
-    Templater.ParseString(R, TpPath, FLibrary);
-    Folder := Templater.GetParsedString;
+  try
+    if Templater.SetTemplate(Folder, TpPath) = ErFine then
+      Folder := Templater.ParseString(R, TpPath, FLibrary);
+  finally
+    Templater.Free;
   end;
-  Templater.Free;
 
   Folder := CheckSymbols(trim(Folder));
   if Folder <> '' then
