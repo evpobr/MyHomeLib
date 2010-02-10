@@ -52,9 +52,9 @@ begin
     book := GetFictionBook(XML);
 
     Templater:= TTemplater.Create;
-    if Templater.SetTemplate(Settings.BookHeaderTemplate) = ErFine then
+    if Templater.SetTemplate(Settings.BookHeaderTemplate, TpText) = ErFine then
     begin
-      Templater.ParseTemplate(DMCollection);
+      Templater.ParseString(R, TpText);
       TitleBook := Templater.GetParsedString;
     end;
     Templater.Free;

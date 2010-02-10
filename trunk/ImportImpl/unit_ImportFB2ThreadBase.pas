@@ -64,8 +64,8 @@ implementation
 uses
   dm_user,
   unit_Settings,
-  unit_Consts;
-
+  unit_Consts,
+  unit_Templater;
 { TImportFB2Thread }
 
 procedure TImportFB2ThreadBase.AddFile2List(Sender: TObject; const F: TSearchRec);
@@ -157,26 +157,15 @@ end;
 function TImportFB2ThreadBase.GetNewFileName(FileName: string; R: TBookRecord): string;
 var
   z, p1, p2: integer;
+  Templater: TTemplater;
 begin
-  z := R.SeqNumber;
-  if z > 0 then
-      StrReplace('%n',Format('%.2d',[z]), FileName)
-  else begin
-      p1 := pos('%n',FileName);
-      StrReplace('%n', '#n', FileName);
-      p2 := pos('%', FileName);
-      if p2 > 3 then
-        Delete(FileName, p1, p2 - p1 - 1)
-      else
-        StrReplace('#n', '', FileName);
+  Templater:= TTemplater.Create;
+  if Templater.SetTemplate(FileName, TpFile) = ErFine then
+  begin
+    Templater.ParseString(R, TpPath, FLibrary);
+    FileName := Templater.GetParsedString;
   end;
-
-  StrReplace('%fl', copy(R.Authors[0].FLastName,1,1), FileName);
-  StrReplace('%f', R.Authors[0].GetFullName, FileName);
-  StrReplace('%t', trim(R.Title), FileName);
-  StrReplace('%g', Trim(FLibrary.GetGenreAlias(R.Genres[0].GenreFb2Code)), FileName);
-  StrReplace('%rg', Trim(FLibrary.GetTopGenreAlias(R.Genres[0].GenreFb2Code)), FileName);
-  StrReplace('%s', R.Series, FileName);
+  Templater.Free;
 
   FileName := CheckSymbols(trim(FileName));
   if FileName <> '' then
@@ -186,13 +175,15 @@ begin
 end;
 
 function TImportFB2ThreadBase.GetNewFolder(Folder: string; R: TBookRecord): string;
+var Templater: TTemplater;
 begin
-  StrReplace('%fl', copy(R.Authors[0].FLastName,1,1), Folder);
-  StrReplace('%f', R.Authors[0].GetFullName, Folder);
-  StrReplace('%t', trim(R.Title), Folder);
-  StrReplace('%g', Trim(FLibrary.GetGenreAlias(R.Genres[0].GenreFb2Code)), Folder);
-  StrReplace('%rg', Trim(FLibrary.GetTopGenreAlias(R.Genres[0].GenreFb2Code)), Folder);
-  StrReplace('%s', R.Series, Folder);
+  Templater:= TTemplater.Create;
+  if Templater.SetTemplate(Folder, TpPath) = ErFine then
+  begin
+    Templater.ParseString(R, TpPath, FLibrary);
+    Folder := Templater.GetParsedString;
+  end;
+  Templater.Free;
 
   Folder := CheckSymbols(trim(Folder));
   if Folder <> '' then

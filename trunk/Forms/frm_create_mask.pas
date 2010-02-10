@@ -15,11 +15,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Buttons, StdCtrls, ExtCtrls, unit_StaticTip;
+  Dialogs, Buttons, StdCtrls, ExtCtrls, unit_StaticTip, unit_Templater;
 
 type
-  TFMask = (MFolder, MFile);
-
   TfrmCreateMask = class(TForm)
     edTemplate: TEdit;
     Label1: TLabel;
@@ -33,31 +31,70 @@ type
     procedure FormShow(Sender: TObject);
   private
     { Private declarations }
-    FMask: TFMask;
   public
     { Public declarations }
-    property FoderMask: TFMask read FMask write FMask;
+    TemplateType: TTemplateType;
   end;
+
+function EditTemplate(Template: string; ATemplType: TTemplateType): string;
 
 var
   frmCreateMask: TfrmCreateMask;
 
 implementation
 
-uses frm_settings, unit_Templater;
+uses frm_settings;
 {$R *.dfm}
+
+function EditTemplate(Template: string; ATemplType: TTemplateType): string;
+begin
+  frmCreateMask := TfrmCreateMask.Create(nil);
+  with frmCreateMask do
+  begin
+    try
+      TemplateType := ATemplType;
+      edTemplate.Text := Template;
+
+      ShowModal;
+
+      if frmCreateMask.ModalResult = mrOk then
+        Result := edTemplate.Text
+      else Result := Template;
+    except
+      Free;
+    end;
+  end;
+end;
 
 procedure TfrmCreateMask.FormShow(Sender: TObject);
 begin
+  Caption := 'Редактирование шаблона: ';
+  case TemplateType of
+    TpFile:
+      Caption := Caption + 'Имя файла';
+    TpPath:
+      Caption := Caption + 'Путь к файлу';
+    TpText:
+      Caption := Caption + 'Текст';
+  end;
   edTemplate.SetFocus;
 end;
 
 procedure TfrmCreateMask.SaveMask(Sender: TObject);
 var
   Templater: TTemplater;
+  Valid: TErrorType;
 begin
   Templater := TTemplater.Create;
-  case Templater.ValidateTemplate(edTemplate.Text) of
+  case TemplateType of
+    TpFile:
+      Valid := Templater.ValidateTemplate(edTemplate.Text, TpFile);
+    TpPath:
+      Valid := Templater.ValidateTemplate(edTemplate.Text, TpPath);
+  else
+    Valid := Templater.ValidateTemplate(edTemplate.Text, TpText);
+  end;
+  case Valid of
     ErFine:
       ModalResult := mrOk;
     ErTemplate:
