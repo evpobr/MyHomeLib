@@ -62,7 +62,7 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 414
     Height = 409
-    ActivePage = tsDevices
+    ActivePage = tsBehavour
     Align = alClient
     TabOrder = 1
     object tsDevices: TTabSheet
@@ -115,7 +115,7 @@ object frmSettings: TfrmSettings
           AltBtnWidth = 15
           ButtonWidth = 15
           HideButtonsOnReadOnly = False
-          OnButtonClick = beTemplateButtonClick
+          OnButtonClick = edFileNameTemplateButtonClick
         end
         object edFolderTemplate: TRzButtonEdit
           Tag = 785
@@ -130,7 +130,7 @@ object frmSettings: TfrmSettings
           AltBtnWidth = 15
           ButtonWidth = 15
           HideButtonsOnReadOnly = False
-          OnButtonClick = beTemplateButtonClick
+          OnButtonClick = edFolderTemplateButtonClick
         end
       end
       object RzGroupBox4: TRzGroupBox
@@ -969,7 +969,7 @@ object frmSettings: TfrmSettings
         end
         object beTemplate: TRzButtonEdit
           Left = 117
-          Top = 34
+          Top = 31
           Width = 268
           Height = 24
           Text = '[%s [(%n) ]- ]%t'
