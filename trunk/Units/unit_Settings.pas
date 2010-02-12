@@ -33,12 +33,16 @@ type
     sfGenresFB2,
     sfGenresNonFB2,
     sfServerErrorLog,
-    sfImportErrorLog,
+    sfImportErrorLog,  // UNUSED
     sfAppHelp,
     sfLibRusEcUpdate,
     sfAppVerInfo,
     sfLibRusEcInpx,
-    sfCollectionVerInfo
+    sfCollectionVerInfo,
+    sfColumnsStore,
+    sfDownloadsStore,
+    sfDownloadErrorLog,
+    sfCollectionsStore
     );
 
   TSplitters = array of integer;
@@ -413,8 +417,6 @@ const
   TEMP_DIR_NAME = '$tmp';
   APPDATA_DIR_NAME = 'MyHomeLib';
 
-  SETTINGS_FILE_NAME = 'myhomelib.ini';
-
   PATH_SECTION = 'PATH';
   SYSTEM_SECTION = 'SYSTEM';
   INTERFACE_SECTION = 'INTERFACE';
@@ -436,9 +438,6 @@ const
   UPDATE_KEY_PREFIX = 'Update';
 
   INITIAL_DIRS_SECTION = 'InitialDirs';
-
-  LIBRUSEC_INPX_FILENAME = 'librusec.inpx';
-  COLLECTION_VERINFO_FILENAME = 'version.info';
 
 { TMHLSettings }
 
@@ -1177,6 +1176,10 @@ begin
     sfLibRusEcInpx: Result := WorkPath + LIBRUSEC_INPX_FILENAME;
     sfAppVerInfo: Result := WorkPath + PROGRAM_VERINFO_FILENAME;
     sfCollectionVerInfo: Result := TempPath + COLLECTION_VERINFO_FILENAME;
+    sfColumnsStore: Result := WorkPath + COLUMNS_STORE_FILENAME;
+    sfDownloadsStore: Result := WorkPath + DOWNLOADS_STORE_FILENAME;
+    sfDownloadErrorLog: Result := WorkPath + DOWNLOAD_ERRORLOG_FILENAME;
+    sfCollectionsStore: Result := WorkPath + COLLECTIONS_FILENAME;
   else
     Assert(False);
   end;
@@ -1247,3 +1250,4 @@ initialization
   g_objSettings := nil;
 
 end.
+
