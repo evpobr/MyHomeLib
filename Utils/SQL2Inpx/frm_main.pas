@@ -8,7 +8,7 @@ uses
   ActnList, Menus, ZipForge, IdHTTP, IdBaseComponent, IdComponent,
   IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdFTP, DADump,
   MyDump, RzShellDialogs, RzEdit, RzBtnEdt, RzStatus, RzPanel, files_list,
-  JvComponentBase, JvZlibMultiple;
+  JvComponentBase, JvZlibMultiple, DAScript;
 
 type
   TfrmMain = class(TForm)
@@ -76,9 +76,6 @@ type
     edExtraInfo: TLabeledEdit;
     edExtraName: TLabeledEdit;
     edStartID: TLabeledEdit;
-    edSQLUrl: TLabeledEdit;
-    edDBName: TLabeledEdit;
-    mmTables: TMemo;
     Описание: TGroupBox;
     edURL: TLabeledEdit;
     mmScript: TMemo;
@@ -113,6 +110,13 @@ type
     DBEdit8: TDBEdit;
     Label11: TLabel;
     DBEdit9: TDBEdit;
+    TabSheet3: TTabSheet;
+    edSQLUrl: TLabeledEdit;
+    edDBName: TLabeledEdit;
+    GroupBox7: TGroupBox;
+    mmTables: TMemo;
+    GroupBox8: TGroupBox;
+    mmQuery: TMemo;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure aopFB2Execute(Sender: TObject);
@@ -134,6 +138,8 @@ type
     procedure FilesFinderFile(Sender: TObject; const F: TSearchRec);
     procedure edIDSearchKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure DumpError(Sender: TObject; E: Exception; SQL: string;
+      var Action: TErrorAction);
   private
     { Private declarations }
     FAppPath : string;
@@ -192,7 +198,7 @@ begin
   j := 0;
   DisableControls;
   Screen.Cursor := crHourGlass;
-  Pages.ActivePageIndex := 2;
+  Pages.ActivePageIndex := 3;
   Max := Lib.LastBookID;
   try
     Res := TStringList.Create;
@@ -263,7 +269,7 @@ begin
     end;
 
   DisableControls;
-  Pages.ActivePageIndex := 2;
+  Pages.ActivePageIndex := 3;
   Result := TStringList.Create;
   Screen.Cursor := crHourGlass;
   FFileList.Clear;
@@ -350,7 +356,7 @@ begin
   i := 1; Window := 9999;
   DisableControls;
   Screen.Cursor := crHourGlass;
-  Pages.ActivePageIndex := 2;
+  Pages.ActivePageIndex := 3;
   Max := StrToInt(edStartID.Text);
   FFileList.Clear;
   try
@@ -477,7 +483,7 @@ var
 
   CMD: TStringList;
 begin
-  Pages.ActivePageIndex := 2;
+  Pages.ActivePageIndex := 3;
   Screen.Cursor := crHourGlass;
   try
     Responce := TMemoryStream.Create;
@@ -504,6 +510,10 @@ begin
       Dump.RestoreFromStream(Responce);
       OK;
     end;
+    Log(TimeToStr(Now) + ' ' + 'Постобработка ...');
+    Lib.Query.SQL.Clear;
+    Lib.Query.SQL.AddStrings(mmQuery.Lines);
+    Lib.Query.Execute;
     Log(TimeToStr(Now) + ' ' + 'Готово');
   finally
     Responce.Free;
@@ -518,6 +528,12 @@ begin
   Lib.Genre.DisableControls;
   Lib.Series.DisableControls;
   Lib.Avtor.DisableControls;
+end;
+
+procedure TfrmMain.DumpError(Sender: TObject; E: Exception; SQL: string;
+  var Action: TErrorAction);
+begin
+  Log(E.Message + ' In query string: ' + SQL);
 end;
 
 procedure TfrmMain.DumpRestoreProgress(Sender: TObject; Percent: Integer);
@@ -610,6 +626,7 @@ begin
     F.Encoding := TEncoding.UTF8;
     mmScript.Text := StringReplace(F.ReadString('DATA','Script', ''), #4, #13#10, [rfReplaceAll]);
     mmTables.Text := StringReplace(F.ReadString('DATA','Tables', ''), #4, #13#10, [rfReplaceAll]);
+    mmQuery.Text := StringReplace(F.ReadString('DATA','Post-Query', ''), #4, #13#10, [rfReplaceAll]);
     edDBName.Text := F.ReadString('DATA','DBName', '');
     edSQLUrl.Text := F.ReadString('DATA','SQLUtrl', '');
     edURL.Text := F.ReadString('DATA','URL', '');
@@ -727,6 +744,7 @@ begin
     F.Encoding := TEncoding.UTF8;
     F.WriteString('DATA','Script', StringReplace(mmScript.Text, #13#10, #4, [rfReplaceAll]));
     F.WriteString('DATA','Tables', StringReplace(mmTables.Text, #13#10, #4, [rfReplaceAll]));
+    F.WriteString('DATA','Post-Query', StringReplace(mmQuery.Text, #13#10, #4, [rfReplaceAll]));
     F.WriteString('DATA','DBName',edDBName.Text);
     F.WriteString('DATA','SQLUtrl',edSQLUrl.Text);
     F.WriteString('DATA','URL',edURL.Text);

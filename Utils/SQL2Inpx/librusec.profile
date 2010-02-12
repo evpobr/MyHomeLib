@@ -7,7 +7,7 @@ INPxName=librusec
 UpdateName=librusec_update
 ExtraName=extra_update
 ExtraInfo=last_extra.info
-StartID=175951
+StartID=182284
 Code=134283264
 Descr=Архивы сайта lib.rus.ec [fb2]
 Title=Локальная коллекция Lib.rus.ec
@@ -17,4 +17,6 @@ Info name=last_librusec.info
 Fb2Only=1
 MaxCompress=0
 oldFormat=0
+Folder=
+FileMask=*.zip
 

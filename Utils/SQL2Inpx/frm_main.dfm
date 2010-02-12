@@ -339,94 +339,10 @@
           Text = '175951'
         end
       end
-      object TGroupBox
+      object Описание: TGroupBox
         Left = 3
         Top = 249
-        Width = 334
-        Height = 213
-        Caption = #1041#1044
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = [fsBold]
-        ParentFont = False
-        TabOrder = 4
-        object edSQLUrl: TLabeledEdit
-          Left = 8
-          Top = 34
-          Width = 170
-          Height = 21
-          EditLabel.Width = 63
-          EditLabel.Height = 13
-          EditLabel.Caption = 'SQL dump url'
-          EditLabel.Font.Charset = DEFAULT_CHARSET
-          EditLabel.Font.Color = clWindowText
-          EditLabel.Font.Height = -11
-          EditLabel.Font.Name = 'Tahoma'
-          EditLabel.Font.Style = []
-          EditLabel.ParentFont = False
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-          TabOrder = 0
-          Text = 'http://lib.rus.ec/sql/'
-        end
-        object edDBName: TLabeledEdit
-          Left = 187
-          Top = 34
-          Width = 142
-          Height = 21
-          EditLabel.Width = 48
-          EditLabel.Height = 13
-          EditLabel.Caption = #1053#1072#1079#1074#1072#1085#1080#1077
-          EditLabel.Font.Charset = DEFAULT_CHARSET
-          EditLabel.Font.Color = clWindowText
-          EditLabel.Font.Height = -11
-          EditLabel.Font.Name = 'Tahoma'
-          EditLabel.Font.Style = []
-          EditLabel.ParentFont = False
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-          TabOrder = 1
-          Text = 'librusec'
-        end
-        object mmTables: TMemo
-          Left = 8
-          Top = 64
-          Width = 321
-          Height = 137
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          Lines.Strings = (
-            'lib.libgenrelist.sql.gz'
-            'lib.libbook.sql.gz'
-            'lib.libavtoraliase.sql.gz'
-            'lib.libavtorname.sql.gz'
-            'lib.libavtor.sql.gz'
-            'lib.libgenre.sql.gz'
-            'lib.libseq.sql.gz'
-            'lib.libseqname.sql.gz'
-            'lib.libfilename.sql.gz'
-            'lib.librate.sql.gz')
-          ParentFont = False
-          TabOrder = 2
-        end
-      end
-      object Описание: TGroupBox
-        Left = 343
-        Top = 249
-        Width = 306
+        Width = 646
         Height = 213
         Caption = #1057#1082#1088#1080#1087#1090
         Font.Charset = DEFAULT_CHARSET
@@ -435,11 +351,11 @@
         Font.Name = 'Tahoma'
         Font.Style = [fsBold]
         ParentFont = False
-        TabOrder = 5
+        TabOrder = 4
         object edURL: TLabeledEdit
           Left = 6
           Top = 34
-          Width = 294
+          Width = 622
           Height = 21
           EditLabel.Width = 19
           EditLabel.Height = 13
@@ -463,7 +379,7 @@
           AlignWithMargins = True
           Left = 6
           Top = 61
-          Width = 294
+          Width = 622
           Height = 140
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -492,7 +408,7 @@
         Font.Name = 'Tahoma'
         Font.Style = [fsBold]
         ParentFont = False
-        TabOrder = 6
+        TabOrder = 5
         object Label1: TLabel
           Left = 9
           Top = 16
@@ -677,7 +593,6 @@
           item
             Expanded = False
             FieldName = 'Time'
-            Width = 64
             Visible = True
           end
           item
@@ -688,7 +603,6 @@
           item
             Expanded = False
             FieldName = 'FileType'
-            Width = 64
             Visible = True
           end
           item
@@ -709,13 +623,11 @@
           item
             Expanded = False
             FieldName = 'N'
-            Width = 64
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'keywords'
-            Width = 64
             Visible = True
           end
           item
@@ -926,6 +838,164 @@
         end
       end
     end
+    object TabSheet3: TTabSheet
+      Caption = #1044#1072#1084#1087
+      ImageIndex = 3
+      object TGroupBox
+        Left = 0
+        Top = 0
+        Width = 652
+        Height = 65
+        Align = alTop
+        Caption = #1041#1044
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+        TabOrder = 0
+        object edSQLUrl: TLabeledEdit
+          Left = 8
+          Top = 34
+          Width = 389
+          Height = 21
+          EditLabel.Width = 63
+          EditLabel.Height = 13
+          EditLabel.Caption = 'SQL dump url'
+          EditLabel.Font.Charset = DEFAULT_CHARSET
+          EditLabel.Font.Color = clWindowText
+          EditLabel.Font.Height = -11
+          EditLabel.Font.Name = 'Tahoma'
+          EditLabel.Font.Style = []
+          EditLabel.ParentFont = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 0
+          Text = 'http://lib.rus.ec/sql/'
+        end
+        object edDBName: TLabeledEdit
+          Left = 403
+          Top = 34
+          Width = 230
+          Height = 21
+          EditLabel.Width = 48
+          EditLabel.Height = 13
+          EditLabel.Caption = #1053#1072#1079#1074#1072#1085#1080#1077
+          EditLabel.Font.Charset = DEFAULT_CHARSET
+          EditLabel.Font.Color = clWindowText
+          EditLabel.Font.Height = -11
+          EditLabel.Font.Name = 'Tahoma'
+          EditLabel.Font.Style = []
+          EditLabel.ParentFont = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 1
+          Text = 'librusec'
+        end
+      end
+      object GroupBox7: TGroupBox
+        Left = 0
+        Top = 65
+        Width = 652
+        Height = 154
+        Align = alTop
+        Caption = #1060#1072#1081#1083#1099
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+        TabOrder = 1
+        object mmTables: TMemo
+          AlignWithMargins = True
+          Left = 5
+          Top = 18
+          Width = 642
+          Height = 131
+          Align = alClient
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Lines.Strings = (
+            'lib.libgenrelist.sql.gz'
+            'lib.libbook.sql.gz'
+            'lib.libavtoraliase.sql.gz'
+            'lib.libavtorname.sql.gz'
+            'lib.libavtor.sql.gz'
+            'lib.libgenre.sql.gz'
+            'lib.libseq.sql.gz'
+            'lib.libseqname.sql.gz'
+            'lib.libfilename.sql.gz'
+            'lib.librate.sql.gz')
+          ParentFont = False
+          TabOrder = 0
+        end
+      end
+      object GroupBox8: TGroupBox
+        Left = 0
+        Top = 219
+        Width = 652
+        Height = 247
+        Align = alClient
+        Caption = #1055#1086#1089#1090#1079#1072#1087#1088#1086#1089
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+        TabOrder = 2
+        object mmQuery: TMemo
+          AlignWithMargins = True
+          Left = 5
+          Top = 18
+          Width = 642
+          Height = 224
+          Align = alClient
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Lines.Strings = (
+            'ALTER ignore TABLE `libbook` CHANGE `bid` `BookId` int(10);'
+            ''
+            'ALTER ignore TABLE `libavtor` CHANGE `bid` `BookId` int(10);'
+            'ALTER ignore TABLE `libavtor` CHANGE `aid` `AvtorId` int(10);'
+            
+              'ALTER ignore TABLE `libavtorname` CHANGE `aid` `AvtorId` int(10)' +
+              ';'
+            ''
+            'ALTER ignore TABLE `libfilename` CHANGE `bid` `BookId` int(10);'
+            ''
+            'ALTER ignore TABLE `libgenre` CHANGE `bid` `BookId` int(10);'
+            'ALTER ignore TABLE `libgenre` CHANGE `gid` `GenreId` int(10);'
+            
+              'ALTER ignore TABLE `libgenrelist` CHANGE `gid` `GenreId` int(10)' +
+              ';'
+            ''
+            'ALTER ignore TABLE `libseq` CHANGE `bid` `BookId` int(10);'
+            'ALTER ignore TABLE `libseq` CHANGE `sid` `SeqId` int(10);'
+            'ALTER ignore TABLE `libseqname` CHANGE `sid` `SeqId` int(10);'
+            ''
+            'ALTER ignore TABLE `librate` CHANGE `bid` `BookId` int(10);')
+          ParentFont = False
+          TabOrder = 0
+        end
+      end
+    end
     object TabSheet1: TTabSheet
       Caption = #1051#1086#1075
       object lblS1: TLabel
@@ -1049,8 +1119,8 @@
     end
   end
   object ActionList1: TActionList
-    Left = 512
-    Top = 352
+    Left = 472
+    Top = 344
     object aopFB2: TAction
       Category = 'Operation'
       Caption = 'Fb2'
@@ -1168,6 +1238,7 @@
     SQL.Strings = (
       'SET NAMES utf8;')
     OnRestoreProgress = DumpRestoreProgress
+    OnError = DumpError
     Connection = Lib.Connection
     Options.QuoteNames = True
     Options.CompleteInsert = True

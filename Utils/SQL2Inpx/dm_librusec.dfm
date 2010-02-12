@@ -6,7 +6,9 @@ object Lib: TLib
     Database = 'librusec'
     Options.UseUnicode = True
     Options.Charset = 'utf8'
+    Username = 'lib'
     Server = 'localhost'
+    Connected = True
     LoginPrompt = False
     Left = 56
     Top = 8
@@ -65,7 +67,7 @@ object Lib: TLib
     SQL.Strings = (
       
         'SELECT G.GenreCode  FROM libgenrelist G, libgenre GL Where GL.Bo' +
-        'okID = 25 AND G.GenreID = GL.GenreId')
+        'okId = 25 AND G.genreid = GL.genreid')
     Left = 56
     Top = 192
     object GenreGenreCode: TWideStringField
@@ -92,48 +94,15 @@ object Lib: TLib
   end
   object Book: TMyQuery
     Connection = Connection
+    ParamCheck = False
     SQL.Strings = (
       
         'SELECT `BookId`,`Title`,`FileSize`,`FileType`,`Deleted`,`Time`,`' +
         'Lang`,`N`,`keywords` FROM libbook')
     AfterScroll = BookAfterScroll
+    Active = True
     Left = 56
     Top = 64
-    object BookBookId: TLargeintField
-      FieldName = 'BookId'
-    end
-    object BookTitle: TWideStringField
-      FieldName = 'Title'
-      Size = 254
-    end
-    object BookFileSize: TLargeintField
-      FieldName = 'FileSize'
-    end
-    object BookFileType: TWideStringField
-      FieldName = 'FileType'
-      FixedChar = True
-      Size = 4
-    end
-    object BookDeleted: TWideStringField
-      FieldName = 'Deleted'
-      FixedChar = True
-      Size = 1
-    end
-    object BookTime: TDateTimeField
-      FieldName = 'Time'
-    end
-    object BookLang: TWideStringField
-      FieldName = 'Lang'
-      FixedChar = True
-      Size = 2
-    end
-    object BookN: TLargeintField
-      FieldName = 'N'
-    end
-    object Bookkeywords: TWideStringField
-      FieldName = 'keywords'
-      Size = 255
-    end
   end
   object Query: TMyQuery
     Connection = Connection

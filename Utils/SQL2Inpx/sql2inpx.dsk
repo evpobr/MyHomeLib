@@ -1,32 +1,37 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'c:\program files\embarcadero\rad studio\7.0\source\Win32\rtl\common\IniFiles.pas',0,1,102,1,167,0,0,,
-File_1=TSourceModule,'c:\program files\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Dialogs.pas',0,1,2428,1,2454,0,0,,
-File_2=TSourceModule,'D:\DelphiProjects\Libraries\MyDac2010\Source\MyClasses.pas',0,1,1875,1,1901,0,0,,
-File_3=TSourceModule,'D:\DelphiProjects\Libraries\MyDac2010\Source\MySqlNet.pas',0,1,994,1,1020,0,0,,
-File_4=TSourceModule,'c:\program files\embarcadero\rad studio\7.0\source\Win32\db\DB.pas',0,1,2183,3,2208,0,0,,
-File_5=TSourceModule,'D:\DelphiProjects\Libraries\MyDac2010\Source\MemDS.pas',0,1,3600,46,3626,0,0,,
-File_6=TSourceModule,'c:\program files\embarcadero\rad studio\7.0\source\Indy\Indy10\Core\IdIOHandler.pas',0,1,1600,1,1626,0,0,,
-File_7=TSourceModule,'D:\DelphiProjects\MyHomeLib\LibFileList\main.pas',0,1,447,36,462,0,0,{{137,77}
-File_8=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\Forms\frm_settings.pas',0,1,1,1,1,0,0,,
-File_9=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\Forms\frm_main.pas',0,1,4179,49,4184,0,0,,
-File_10=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\Units\unit_FBD_helpers.pas',0,1,442,1,475,0,0,,
-File_11=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\ImportImpl\unit_ImportFBDThread.pas',0,1,121,1,153,0,0,,
-File_12=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\ImportImpl\unit_ImportFB2Thread.pas',0,1,85,1,1,0,0,,
-File_13=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\ImportImpl\unit_ImportFB2ThreadBase.pas',0,1,121,1,1,0,0,,
-File_14=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\Forms\frm_ConverToFBD.pas',0,1,185,20,216,0,0,,
+File_0=TSourceModule,'D:\DelphiProjects\Libraries\MyDac2010\Demos\Win32\MyDacDemo\Dump\Dump.pas',0,1,70,51,136,0,0,,
+File_1=TSourceModule,'D:\DelphiProjects\Libraries\MyDac2010\Source\MySqlNet.pas',0,1,994,1,1020,0,0,,
+File_2=TSourceModule,'D:\DelphiProjects\Libraries\MyDac2010\Source\MySqlApiDirect.pas',0,1,337,1,363,0,0,,
+File_3=TSourceModule,'D:\DelphiProjects\Libraries\MyDac2010\Source\MySqlSession.pas',0,1,339,1,365,0,0,,
+File_4=TSourceModule,'c:\program files\embarcadero\rad studio\7.0\source\Win32\rtl\common\IniFiles.pas',0,1,102,1,167,0,0,,
+File_5=TSourceModule,'c:\program files\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Dialogs.pas',0,1,2428,1,2454,0,0,,
+File_6=TSourceModule,'D:\DelphiProjects\Libraries\MyDac2010\Source\MyClasses.pas',0,1,1875,1,1901,0,0,,
+File_7=TSourceModule,'c:\program files\embarcadero\rad studio\7.0\source\Win32\db\DB.pas',0,1,2183,3,2208,0,0,,
+File_8=TSourceModule,'D:\DelphiProjects\Libraries\MyDac2010\Source\MemDS.pas',0,1,3600,46,3626,0,0,,
+File_9=TSourceModule,'c:\program files\embarcadero\rad studio\7.0\source\Indy\Indy10\Core\IdIOHandler.pas',0,1,1600,1,1626,0,0,,
+File_10=TSourceModule,'D:\DelphiProjects\MyHomeLib\LibFileList\main.pas',0,1,447,36,462,0,0,{{137,77}
+File_11=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\Forms\frm_settings.pas',0,1,1,1,1,0,0,,
+File_12=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\Forms\frm_main.pas',0,1,4179,49,4184,0,0,,
+File_13=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\Units\unit_FBD_helpers.pas',0,1,442,1,475,0,0,,
+File_14=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\ImportImpl\unit_ImportFBDThread.pas',0,1,121,1,153,0,0,,
 
 [Modules]
-Module0=D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas
-Module1=default.htm
-Module2=D:\DelphiProjects\MyHomeLib\SQL2INPX\sql2inpx.dproj
-Module3=D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas
+Module0=D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas
+Module1=D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas
+Module2=default.htm
+Module3=D:\DelphiProjects\MyHomeLib\SQL2INPX\sql2inpx.dproj
 Count=4
 EditWindowCount=1
+
+[D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas]
+ModuleType=TSourceModule
+FormState=1
+FormOnTop=1
 
 [D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas]
 ModuleType=TSourceModule
 FormState=1
-FormOnTop=0
+FormOnTop=1
 
 [default.htm]
 ModuleType=TURLModule
@@ -34,14 +39,9 @@ ModuleType=TURLModule
 [D:\DelphiProjects\MyHomeLib\SQL2INPX\sql2inpx.dproj]
 ModuleType=TBaseProject
 
-[D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas]
-ModuleType=TSourceModule
-FormState=1
-FormOnTop=0
-
 [EditWindow0]
 ViewCount=4
-CurrentEditView=D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas
+CurrentEditView=D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas
 View0=0
 View1=1
 View2=2
@@ -65,9 +65,9 @@ TopPanelSize=0
 LeftPanelSize=1893
 LeftPanelClients=PropertyInspector,DockSite3
 LeftPanelData=00000800010100000000A61600000000000001650700000000000001000000005C0E000009000000446F636B536974653301000000003C2400001100000050726F7065727479496E73706563746F72FFFFFFFF
-RightPanelSize=2000
+RightPanelSize=2125
 RightPanelClients=DockSite2,DockSite4
-RightPanelData=00000800010100000000A61600000000000001D00700000000000001000000004412000009000000446F636B536974653201000000003C24000009000000446F636B5369746534FFFFFFFF
+RightPanelData=00000800010100000000A616000000000000014D0800000000000001000000004412000009000000446F636B536974653201000000003C24000009000000446F636B5369746534FFFFFFFF
 BottomPanelSize=0
 BottomPanelClients=DockSite1
 BottomPanelData=0000080001000100000009000000446F636B5369746531323C000000000000002306000000000000FFFFFFFF
@@ -82,13 +82,13 @@ WelcomePageURL=bds:/default.htm
 [View1]
 CustomEditViewType=TEditView
 Module=D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas
-CursorX=26
-CursorY=310
-TopLine=283
+CursorX=1
+CursorY=748
+TopLine=723
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas
+EditViewName=Borland.FormDesignerView
 
 [View2]
 CustomEditViewType=TEditView
@@ -104,13 +104,13 @@ EditViewName=D:\DelphiProjects\MyHomeLib\SQL2INPX\sql2inpx.dpr
 [View3]
 CustomEditViewType=TEditView
 Module=D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas
-CursorX=43
-CursorY=193
-TopLine=176
+CursorX=37
+CursorY=151
+TopLine=156
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas
+EditViewName=Borland.FormDesignerView
 
 [Watches]
 Count=0
@@ -137,7 +137,8 @@ Dockable=1
 StayOnTop=0
 
 [Breakpoints]
-Count=0
+Count=1
+Breakpoint0='D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas',71,'',0,1,'',1,0,0,'',1,'','','',0,''
 
 [EmbarcaderoWin32Debugger_AddressBreakpoints]
 Count=0
@@ -170,11 +171,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=2077
+Width=2206
 Height=4181
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2077
+ClientWidth=2206
 ClientHeight=4181
 TBDockHeight=5895
 LRDockWidth=2349
@@ -187,8 +188,8 @@ Create=1
 Visible=0
 Docked=0
 State=0
-Left=2472
-Top=1095
+Left=1459
+Top=2533
 Width=3028
 Height=5133
 MaxLeft=-6
@@ -208,11 +209,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=2077
+Width=2206
 Height=4381
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2077
+ClientWidth=2206
 ClientHeight=4381
 TBDockHeight=7152
 LRDockWidth=2002
@@ -225,7 +226,7 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-1450
+Left=-1439
 Top=273
 Width=272
 Height=362
@@ -328,7 +329,7 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-1183
+Left=-1162
 Top=-10
 Width=2843
 Height=6210
@@ -414,11 +415,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=2077
+Width=2206
 Height=8819
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2077
+ClientWidth=2206
 ClientHeight=8819
 TBDockHeight=4876
 LRDockWidth=7151
@@ -445,6 +446,11 @@ Dockable=1
 StayOnTop=0
 SplitPos=111
 
+[PropInspDesignerSelection]
+ArrangeBy=Name
+SelectedItem=Name,AfterCancel
+ExpandedItems=Options=1,PoolingOptions=0,SSLOptions=0,ProviderFlags=0,Connection=0,FilterOptions=0,RefreshOptions=0,Constraints=0,Font=0,Margins=0,Touch=0,Anchors=0,Padding=0,Font.Style=1,BevelEdges=0,Objects=0,HorzScrollBar=0,Menu=0,BorderIcons=0
+
 [ModelViewTool]
 PercentageSizes=1
 Create=1
@@ -453,11 +459,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=2077
+Width=2206
 Height=8819
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2077
+ClientWidth=2206
 ClientHeight=8819
 TBDockHeight=4876
 LRDockWidth=5309
@@ -646,14 +652,14 @@ Docked=1
 State=0
 Left=0
 Top=23
-Width=2077
+Width=2206
 Height=4419
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2077
+ClientWidth=2206
 ClientHeight=4419
 TBDockHeight=9038
-LRDockWidth=2077
+LRDockWidth=2206
 Dockable=1
 StayOnTop=0
 TabPosition=1
@@ -694,14 +700,14 @@ Docked=1
 State=0
 Left=0
 Top=514
-Width=2077
+Width=2206
 Height=4381
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2077
+ClientWidth=2206
 ClientHeight=4381
 TBDockHeight=9057
-LRDockWidth=2077
+LRDockWidth=2206
 Dockable=1
 StayOnTop=0
 TabPosition=1
