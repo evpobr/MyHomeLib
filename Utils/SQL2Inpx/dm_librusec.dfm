@@ -8,7 +8,6 @@ object Lib: TLib
     Options.Charset = 'utf8'
     Username = 'lib'
     Server = 'localhost'
-    Connected = True
     LoginPrompt = False
     Left = 56
     Top = 8
@@ -100,7 +99,6 @@ object Lib: TLib
         'SELECT `BookId`,`Title`,`FileSize`,`FileType`,`Deleted`,`Time`,`' +
         'Lang`,`N`,`keywords` FROM libbook')
     AfterScroll = BookAfterScroll
-    Active = True
     Left = 56
     Top = 64
   end

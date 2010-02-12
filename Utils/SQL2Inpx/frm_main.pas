@@ -45,7 +45,7 @@ type
     aopFB2: TAction;
     Zip: TZipForge;
     dlgOpen: TOpenDialog;
-    idFTP: TIdFTP;
+    IdFTP: TIdFTP;
     HTTP: TIdHTTP;
     N13: TMenuItem;
     N14: TMenuItem;
@@ -117,6 +117,7 @@ type
     mmTables: TMemo;
     GroupBox8: TGroupBox;
     mmQuery: TMemo;
+    edMySQL: TLabeledEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure aopFB2Execute(Sender: TObject);
@@ -142,7 +143,7 @@ type
       var Action: TErrorAction);
   private
     { Private declarations }
-    FAppPath : string;
+    FAppPath: string;
     FBasesPath: string;
     FInpPath: string;
     FOutPath: string;
@@ -152,21 +153,24 @@ type
     FStartDate: Extended;
     FFTPDir: string;
     FProfileName: string;
+    FMySQLPath: string;
 
     FZipList: TStringList;
+    FUseInternal: Boolean;
 
-    procedure SetTableState(State: boolean);
+    procedure SetTableState(State: Boolean);
     procedure EnableControls;
     procedure Disablecontrols;
-    procedure Log(S: string; header: boolean = false);
-    procedure Pack(FN: string;  Level: integer);
+    procedure Log(S: string; header: Boolean = false);
+    procedure Pack(FN: string; Level: Integer);
     procedure UploadToFTP;
 
     procedure ReadINI;
     procedure SaveINI;
     procedure LoadProfile(FN: string);
     procedure SaveProfile(FN: string);
-    function ExecAndWait(const FileName, Params: String; const WinState: Word): boolean;
+    function ExecAndWait(const FileName, Params: String;
+      const WinState: Word): Boolean;
     procedure Version;
     procedure Connect;
 
@@ -186,24 +190,23 @@ uses
   DateUtils,
   IniFiles,
   dm_librusec;
-
 {$R *.dfm}
 
 procedure TfrmMain.aopExtraExecute(Sender: TObject);
 var
-  i, j, Max: integer;
+  i, j, Max: Integer;
   S: string;
   Res: TStringList;
 begin
   j := 0;
-  DisableControls;
+  Disablecontrols;
   Screen.Cursor := crHourGlass;
   Pages.ActivePageIndex := 3;
   Max := Lib.LastBookID;
   try
     Res := TStringList.Create;
     Log('Extra', true);
-    for I := StrToInt(edStartID.Text) to Max do
+    for i := StrToInt(edStartID.Text) to Max do
     begin
       S := Lib.GetBookRecord(i, cbFb2Only.Checked);
       if S <> '' then
@@ -239,93 +242,98 @@ end;
 procedure TfrmMain.aopExtraFTPExecute(Sender: TObject);
 begin
   aopExtraExecute(Sender);
-  UploadToFtp;
+  UploadToFTP;
 end;
 
 procedure TfrmMain.aopFB2Execute(Sender: TObject);
 const
-   Filter = 'zip|*.zip';
+  Filter = 'zip|*.zip';
 var
-  i, j : integer;
+  i, j: Integer;
   ArchItem: TZFArchiveItem;
   FN: string;
-  BookID: integer;
+  BookID: Integer;
   S: string;
-  Result : TStringList;
+  Result: TStringList;
 begin
   FZipList.Clear;
   if edFolder.Text = '' then
   begin
     dlgOpen.Filter := Filter;
-    if not dlgOpen.Execute then  Exit;
+    if not dlgOpen.Execute then
+      Exit;
     FZipList.AddStrings(dlgOpen.Files);
   end
-  else
-    if FZipList.Count = 0 then
-    begin
-      FilesFinder.TargetPath := edFolder.Text;
-      FilesFinder.Mask := edFileMask.Text;
-      FilesFinder.Process;
-    end;
+  else if FZipList.Count = 0 then
+  begin
+    FilesFinder.TargetPath := edFolder.Text;
+    FilesFinder.Mask := edFileMask.Text;
+    FilesFinder.Process;
+  end;
 
-  DisableControls;
+  Disablecontrols;
   Pages.ActivePageIndex := 3;
   Result := TStringList.Create;
   Screen.Cursor := crHourGlass;
   FFileList.Clear;
   Log('Zip', true);
   try
-    for I := 0 to FZipList.Count - 1 do
+    for i := 0 to FZipList.Count - 1 do
     begin
-      FN:=ExtractFileName(FZipList[i]);
+      FN := ExtractFileName(FZipList[i]);
       Log(TimeToStr(Now) + ' ' + FN + '...');
       Zip.FileName := FZipList[i];
       Zip.OpenArchive;
       Result.Clear;
       j := 0;
-      if (Zip.FindFirst('*.*',ArchItem,faAnyFile-faDirectory)) then
-      repeat
-        S := '';
-        if (ExtractFileExt(ArchItem.FileName) = '.fb2')  then
-        begin
-          try
-            BookID := StrToInt(ShortName(ArchItem.FileName));
-            S := Lib.GetBookRecord(BookID);
-          except
-            on E:Exception do
-              if cbOldFormat.Checked then
-                S := Lib.GetBookRecord(ShortName(ArchItem.FileName), True, True)
-              else
-                S := Lib.GetBookRecord(ArchItem.FileName, True, False);
-          end;
-          if S = '' then S := 'неизвестный,автор,:other:0' + ShortName(ArchItem.FileName) + 'fb21899-12-30';
-        end
-        else    // не фб2
-        begin
-          if  not cbFb2Only.Checked then
+      if (Zip.FindFirst('*.*', ArchItem, faAnyFile - faDirectory)) then
+        repeat
+          S := '';
+          if (ExtractFileExt(ArchItem.FileName) = '.fb2') then
           begin
-            S := Lib.GetBookRecord(ArchItem.FileName);
-            if S = '' then S := 'неизвестный,автор,:other:0' + ShortName(ArchItem.FileName) + '' +
-                               ExtractFileExt(ArchItem.FileName) +'1899-12-30';
+            try
+              BookID := StrToInt(ShortName(ArchItem.FileName));
+              S := Lib.GetBookRecord(BookID);
+            except
+              on E: Exception do
+                if cbOldFormat.Checked then
+                  S := Lib.GetBookRecord(ShortName(ArchItem.FileName), true,
+                    true)
+                else
+                  S := Lib.GetBookRecord(ArchItem.FileName, true, false);
+            end;
+            if S = '' then
+              S := 'неизвестный,автор,:other:0' + ShortName
+                (ArchItem.FileName) + 'fb21899-12-30';
           end
-          else   // если только fb2
-            S := 'неизвестный,автор,:other:01899-12-30';
-        end;
-        Result.Add(S);
-        inc(j);
-        if (j mod 100) = 0 then
-        begin
-          lblS1.Caption := 'Обработано ' + IntToStr(j);
-          Application.ProcessMessages;
-        end;
-      until (not Zip.FindNext(ArchItem));
-      FN := ShortName(FN);
+          else // не фб2
+          begin
+            if not cbFb2Only.Checked then
+            begin
+              S := Lib.GetBookRecord(ArchItem.FileName);
+              if S = '' then
+                S := 'неизвестный,автор,:other:0' + ShortName
+                  (ArchItem.FileName) + '' + ExtractFileExt
+                  (ArchItem.FileName) + '1899-12-30';
+            end
+            else // если только fb2
+              S := 'неизвестный,автор,:other:01899-12-30';
+          end;
+          Result.Add(S);
+          inc(j);
+          if (j mod 100) = 0 then
+          begin
+            lblS1.Caption := 'Обработано ' + IntToStr(j);
+            Application.ProcessMessages;
+          end;
+        until (not Zip.FindNext(ArchItem));
+        FN := ShortName(FN);
       Result.SaveToFile(FInpPath + FN + '.inp', TEncoding.UTF8);
       FFileList.Add(FN + '.inp');
       Bar.Position := round((i + 1) / FZipList.Count * 100);
       OK;
     end;
-//    FFileList.Add('extra.inp');
+    // FFileList.Add('extra.inp');
     Log(TimeToStr(Now) + ' ' + 'Упаковка ...');
     Version;
 
@@ -335,7 +343,8 @@ begin
       else
         Pack(edInpxName.Text + '.inpx', 0);
 
-    if edUpdateName.Text <> '' then Pack(edUpdateName.Text + '.zip', 9);
+    if edUpdateName.Text <> '' then
+      Pack(edUpdateName.Text + '.zip', 9);
     OK;
     Log(TimeToStr(Now) + ' ' + 'Готово');
   finally
@@ -347,14 +356,15 @@ end;
 
 procedure TfrmMain.aopOnLineExecute(Sender: TObject);
 var
-  i, j, Max: integer;
+  i, j, Max: Integer;
   S: string;
-  Window: integer;
+  Window: Integer;
   FN: string;
   Res: TStringList;
 begin
-  i := 1; Window := 9999;
-  DisableControls;
+  i := 1;
+  Window := 9999;
+  Disablecontrols;
   Screen.Cursor := crHourGlass;
   Pages.ActivePageIndex := 3;
   Max := StrToInt(edStartID.Text);
@@ -366,13 +376,14 @@ begin
     begin
       if (i + Window) > Max then
         Window := Max - i;
-      FN := Format('%.6d-%.6d.inp',[ i, i + Window]);
+      FN := Format('%.6d-%.6d.inp', [i, i + Window]);
       Log(FN + '...');
       Res.Clear;
       for j := i to i + Window do
       begin
         S := Lib.GetBookRecord(j, cbFb2Only.Checked);
-        if S <> '' then Res.Add(S);
+        if S <> '' then
+          Res.Add(S);
         if ((j - 1) mod 100) = 0 then
         begin
           lblS1.Caption := 'Добавленно ' + IntToStr(j - i);
@@ -382,7 +393,7 @@ begin
       Res.SaveToFile(FInpPath + FN, TEncoding.UTF8);
       FFileList.Add(FN);
       inc(i, Window + 1);
-      Bar.Position := round((i + 1)/Max * 100);
+      Bar.Position := round((i + 1) / Max * 100);
       Bar.Repaint;
       OK;
     end; // main for
@@ -404,10 +415,11 @@ const
 begin
   dlgOpen.InitialDir := FAppPath;
   dlgOpen.Filter := Filter;
-  if not dlgOpen.Execute then Exit;
+  if not dlgOpen.Execute then
+    Exit;
   LoadProfile(dlgOpen.FileName);
   FProfileName := dlgOpen.FileName;
-  frmMain.Caption := 'SQL2Inpx: ' + ShortName(ExtractFilename(FProfileName));
+  frmMain.Caption := 'SQL2Inpx: ' + ShortName(ExtractFileName(FProfileName));
   Connect;
 end;
 
@@ -418,7 +430,7 @@ begin
   begin
     SaveProfile(dlgSave.FileName);
     FProfileName := dlgSave.FileName;
-    frmMain.Caption := 'SQL2Inpx: ' + ShortName(ExtractFilename(FProfileName));
+    frmMain.Caption := 'SQL2Inpx: ' + ShortName(ExtractFileName(FProfileName));
   end;
 end;
 
@@ -429,27 +441,35 @@ end;
 
 procedure TfrmMain.Commands;
 var
-  i : integer;
+  i: Integer;
 begin
-  if ParamCount = 0 then Exit;
+  FUseInternal := true;
+  if ParamCount = 0 then
+    Exit;
   i := 1;
-  while I <= ParamCount do
+  while i <= ParamCount do
   begin
-    if ParamStr(i) = '-dump' then dbImportExecute(nil);
-    if ParamStr(i) = '-extra' then aopExtraExecute(nil);
-    if ParamStr(i) = '-ftp' then UploadToFtp;
-    if ParamStr(i) = '-arch' then aopFB2Execute(frmMain);
+    if ParamStr(i) = '-mysql' then
+      FUseInternal := false;
+    if ParamStr(i) = '-dump' then
+      dbImportExecute(nil);
+    if ParamStr(i) = '-extra' then
+      aopExtraExecute(nil);
+    if ParamStr(i) = '-ftp' then
+      UploadToFTP;
+    if ParamStr(i) = '-arch' then
+      aopFB2Execute(frmMain);
     if ParamStr(i) = '-l' then
     begin
-      FZipList.LoadFromFile(FAppPath + Paramstr(i + 1));
+      FZipList.LoadFromFile(FAppPath + ParamStr(i + 1));
       inc(i);
     end;
-    if Paramstr(i) = '-p' then
+    if ParamStr(i) = '-p' then
     begin
-      FProfileName := FAppPath + Paramstr(i + 1) + '.profile';
+      FProfileName := FAppPath + ParamStr(i + 1) + '.profile';
       LoadProfile(FProfileName);
       Connect;
-      frmMain.Caption := 'SQL2Inpx: ' + Paramstr(i + 1);
+      frmMain.Caption := 'SQL2Inpx: ' + ParamStr(i + 1);
       inc(i);
     end;
     if ParamStr(i) = '-c' then
@@ -463,10 +483,10 @@ end;
 
 procedure TfrmMain.Connect;
 begin
-  Lib.Connection.Connected := False;
+  Lib.Connection.Connected := false;
   Lib.Connection.Database := edDBName.Text;
   Lib.Connection.Connect;
-  SetTableState(True);
+  SetTableState(true);
 end;
 
 procedure TfrmMain.dbConnectExecute(Sender: TObject);
@@ -476,7 +496,7 @@ end;
 
 procedure TfrmMain.dbImportExecute(Sender: TObject);
 var
-  i: integer;
+  i: Integer;
   ArchName, DumpName: string;
   Responce: TMemoryStream;
   Params: string;
@@ -489,9 +509,10 @@ begin
     Responce := TMemoryStream.Create;
     CMD := TStringList.Create;
     Log('Загрузка и импорт дампа БД', true);
-    for I := 0 to mmTables.Lines.Count - 1 do
+    for i := 0 to mmTables.Lines.Count - 1 do
     begin
-      DumpName := FBasesPath + copy(mmTables.Lines[i],1,Length(mmTables.Lines[i]) - 3);
+      DumpName := FBasesPath + copy(mmTables.Lines[i], 1,
+        Length(mmTables.Lines[i]) - 3);
       ArchName := FBasesPath + mmTables.Lines[i];
       Log(' Архив ' + mmTables.Lines[i] + ':');
       Log(TimeToStr(Now) + ' Загрузка ...');
@@ -500,20 +521,33 @@ begin
       Responce.SaveToFile(ArchName);
       OK;
       Log(TimeToStr(Now) + ' Распаковка ...');
-      ExecAndWait(FAppPath + '7za.exe',Format('e -y "%s" -o"%s"',[ArchName, FBasesPath]), 0);
+      ExecAndWait(FAppPath + '7za.exe', Format('e -y "%s" -o"%s"', [ArchName,
+          FBasesPath]), 0);
       OK;
       Log(TimeToStr(Now) + ' Импорт ...');
       Responce.Clear;
-      CMD.LoadFromFile(DumpName, TEncoding.UTF8);
-      CMD.SaveToStream(Responce);
-      Responce.Seek(0, soFromBeginning);
-      Dump.RestoreFromStream(Responce);
+      if FUseInternal then
+      begin
+        CMD.LoadFromFile(DumpName, TEncoding.UTF8);
+        CMD.SaveToStream(Responce);
+        Responce.Seek(0, soFromBeginning);
+        Dump.RestoreFromStream(Responce);
+      end
+      else
+        CMD.Clear;
+        CMD.Add(Format('"%s" -h localhost -u %s %s < "%s"',
+            [edMySQL.Text, Lib.Connection.Username, edDBName.Text, DumpName]));
+        CMD.SaveToFile(FAppPath + 'import.bat');
+        ExecAndWait(FAppPath + 'import.bat','',0);
       OK;
     end;
-    Log(TimeToStr(Now) + ' ' + 'Постобработка ...');
-    Lib.Query.SQL.Clear;
-    Lib.Query.SQL.AddStrings(mmQuery.Lines);
-    Lib.Query.Execute;
+    if mmQuery.Lines.Count > 0 then
+    begin
+      Log(TimeToStr(Now) + ' ' + 'Постобработка ...');
+      Lib.Query.SQL.Clear;
+      Lib.Query.SQL.AddStrings(mmQuery.Lines);
+      Lib.Query.Execute;
+    end;
     Log(TimeToStr(Now) + ' ' + 'Готово');
   finally
     Responce.Free;
@@ -524,10 +558,10 @@ end;
 
 procedure TfrmMain.Disablecontrols;
 begin
-  Lib.Book.DisableControls;
-  Lib.Genre.DisableControls;
-  Lib.Series.DisableControls;
-  Lib.Avtor.DisableControls;
+  Lib.Book.Disablecontrols;
+  Lib.Genre.Disablecontrols;
+  Lib.Series.Disablecontrols;
+  Lib.Avtor.Disablecontrols;
 end;
 
 procedure TfrmMain.DumpError(Sender: TObject; E: Exception; SQL: string;
@@ -545,9 +579,9 @@ procedure TfrmMain.edIDSearchKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if Key = VK_RETURN then
-   if edIDSearch.Text <> '' then
+    if edIDSearch.Text <> '' then
       Lib.GetBookRecord(StrToInt(edIDSearch.Text))
-   else
+    else
       Lib.ShowAll;
 end;
 
@@ -562,12 +596,12 @@ end;
 procedure TfrmMain.FilesFinderFile(Sender: TObject; const F: TSearchRec);
 begin
   if ExtractFileExt(F.Name) = '.zip' then
-       FZipList.Add(IncludeTrailingPathdelimiter(edFolder.Text) + F.Name);
+    FZipList.Add(IncludeTrailingPathdelimiter(edFolder.Text) + F.Name);
 end;
 
 procedure TfrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  SetTableState(False);
+  SetTableState(false);
   FFileList.Free;
   FZipList.Free;
   SaveINI;
@@ -575,7 +609,8 @@ end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
-  FAppPath := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName));
+  FAppPath := IncludeTrailingPathdelimiter
+    (ExtractFilePath(Application.ExeName));
   FInpPath := FAppPath + 'LIBRUSEC_INP\';
   FBasesPath := FAppPath + 'BASES\';
   FOutPath := FAppPath + 'ARCH\';
@@ -619,37 +654,40 @@ end;
 
 procedure TfrmMain.LoadProfile(FN: string);
 var
-  F : TMemIniFile;
+  F: TMemIniFile;
 begin
   try
     F := TMemIniFile.Create(FN);
     F.Encoding := TEncoding.UTF8;
-    mmScript.Text := StringReplace(F.ReadString('DATA','Script', ''), #4, #13#10, [rfReplaceAll]);
-    mmTables.Text := StringReplace(F.ReadString('DATA','Tables', ''), #4, #13#10, [rfReplaceAll]);
-    mmQuery.Text := StringReplace(F.ReadString('DATA','Post-Query', ''), #4, #13#10, [rfReplaceAll]);
-    edDBName.Text := F.ReadString('DATA','DBName', '');
-    edSQLUrl.Text := F.ReadString('DATA','SQLUtrl', '');
-    edURL.Text := F.ReadString('DATA','URL', '');
-    edInpxName.Text := F.ReadString('DATA','INPxName', '');
-    edUpdateName.Text := F.ReadString('DATA','UpdateName','');
-    edExtraName.Text := F.ReadString('DATA','ExtraName','');
-    edExtraInfo.Text := F.ReadString('DATA','ExtraInfo','');
-    edStartID.Text := F.ReadString('DATA','StartID','');
-    edCode.Text := F.ReadString('DATA','Code','');
-    edDescr.Text := F.ReadString('DATA','Descr', '');
-    edTitle.Text := F.ReadString('DATA','Title', '');
-    edFolder.Text :=  F.ReadString('DATA','Folder', '');
-    edFileMask.Text :=  F.ReadString('DATA','FileMask', '*.zip');
-    edInfoName.Text := F.ReadString('DATA','Info name', '');
-    cbFb2Only.Checked := F.ReadBool('DATA','Fb2Only', true);
-    cbMaxCompress.Checked := F.ReadBool('DATA','MaxCompress', false);
-    cbOldFormat.Checked := F.ReadBool('DATA','oldFormat', false);
+    mmScript.Text := StringReplace(F.ReadString('DATA', 'Script', ''), #4,
+      #13#10, [rfReplaceAll]);
+    mmTables.Text := StringReplace(F.ReadString('DATA', 'Tables', ''), #4,
+      #13#10, [rfReplaceAll]);
+    mmQuery.Text := StringReplace(F.ReadString('DATA', 'Post-Query', ''), #4,
+      #13#10, [rfReplaceAll]);
+    edDBName.Text := F.ReadString('DATA', 'DBName', '');
+    edSQLUrl.Text := F.ReadString('DATA', 'SQLUtrl', '');
+    edURL.Text := F.ReadString('DATA', 'URL', '');
+    edInpxName.Text := F.ReadString('DATA', 'INPxName', '');
+    edUpdateName.Text := F.ReadString('DATA', 'UpdateName', '');
+    edExtraName.Text := F.ReadString('DATA', 'ExtraName', '');
+    edExtraInfo.Text := F.ReadString('DATA', 'ExtraInfo', '');
+    edStartID.Text := F.ReadString('DATA', 'StartID', '');
+    edCode.Text := F.ReadString('DATA', 'Code', '');
+    edDescr.Text := F.ReadString('DATA', 'Descr', '');
+    edTitle.Text := F.ReadString('DATA', 'Title', '');
+    edFolder.Text := F.ReadString('DATA', 'Folder', '');
+    edFileMask.Text := F.ReadString('DATA', 'FileMask', '*.zip');
+    edInfoName.Text := F.ReadString('DATA', 'Info name', '');
+    cbFb2Only.Checked := F.ReadBool('DATA', 'Fb2Only', true);
+    cbMaxCompress.Checked := F.ReadBool('DATA', 'MaxCompress', false);
+    cbOldFormat.Checked := F.ReadBool('DATA', 'oldFormat', false);
   finally
     F.Free;
   end;
 end;
 
-procedure TfrmMain.Log(S: string; header: boolean);
+procedure TfrmMain.Log(S: string; header: Boolean);
 const
   hr = '+-----------------------------------------------------------------------+';
 begin
@@ -660,38 +698,37 @@ begin
     mmLog.Lines.Add(S);
     mmLog.Lines.Add(hr);
   end
-  else mmLog.Lines.Add(S);
+  else
+    mmLog.Lines.Add(S);
 end;
 
 procedure TfrmMain.OK;
 begin
-  mmLog.Lines[mmLog.Lines.Count - 1] := mmLog.Lines[mmLog.Lines.Count - 1] + 'OK';
+  mmLog.Lines[mmLog.Lines.Count - 1] := mmLog.Lines[mmLog.Lines.Count - 1]
+    + 'OK';
 end;
 
-procedure TfrmMain.Pack(FN: string; Level: integer);
+procedure TfrmMain.Pack(FN: string; Level: Integer);
 var
-  i: integer;
+  i: Integer;
   Comment: string;
 begin
   if FileExists(FOutPath + FN) then
     DeleteFile(FOutPath + FN);
 
   if Level = 0 then
-      Zip.CompressionLevel := clNone
-    else
-      Zip.CompressionLevel := clMax;
+    Zip.CompressionLevel := clNone
+  else
+    Zip.CompressionLevel := clMax;
 
   Zip.FileName := FOutPath + FN;
   Zip.OpenArchive(fmCreate);
   Zip.BaseDir := FInpPath;
-  for I := 0 to FFileList.Count - 1 do
-    Zip.AddFiles( FFileList[i]);
+  for i := 0 to FFileList.Count - 1 do
+    Zip.AddFiles(FFileList[i]);
 
-  Comment := edTitle.Text + #13#10 +
-             edInpxName.Text + #13#10 +
-             edCode.Text + #13#10 +
-             edDescr.Text +  #13#10 +
-             edURL.Text +  #13#10 + mmScript.Text;
+  Comment := edTitle.Text + #13#10 + edInpxName.Text + #13#10 + edCode.Text +
+    #13#10 + edDescr.Text + #13#10 + edURL.Text + #13#10 + mmScript.Text;
 
   Zip.Comment := String(Comment);
   Zip.CloseArchive;
@@ -699,15 +736,17 @@ end;
 
 procedure TfrmMain.ReadINI;
 var
-  INF:TIniFile;
+  INF: TIniFile;
 begin
-  INF:=TIniFile.Create(FAppPath+'sql2inpx.ini');
+  INF := TIniFile.Create(FAppPath + 'sql2inpx.ini');
   try
-    dlgOpen.InitialDir := INF.ReadString('SYSTEM','FOLDER','');
-    idFTP.Host := INF.ReadString('FTP','HOST','');
-    idFTP.Username := INF.ReadString('FTP','USERNAME','');
-    idFTP.Password := INF.ReadString('FTP','PASSWORD','');
-    FFTPDir := INF.ReadString('FTP','DIR','/');
+    dlgOpen.InitialDir := INF.ReadString('SYSTEM', 'FOLDER', '');
+    IdFTP.Host := INF.ReadString('FTP', 'HOST', '');
+    IdFTP.Username := INF.ReadString('FTP', 'USERNAME', '');
+    IdFTP.Password := INF.ReadString('FTP', 'PASSWORD', '');
+    FFTPDir := INF.ReadString('FTP', 'DIR', '/');
+
+    edMySQL.Text := INF.ReadString('SYSTEM', 'MYSQL', edMySQL.Text);
 
     Lib.Connection.Username := INF.ReadString('MySQL', 'User', 'lib');
     Lib.Connection.Password := INF.ReadString('MySQL', 'Pass', '');
@@ -718,16 +757,18 @@ end;
 
 procedure TfrmMain.edFolderButtonClick(Sender: TObject);
 begin
-  if dlgFolder.Execute then edFolder.text := dlgFolder.SelectedPathName;
+  if dlgFolder.Execute then
+    edFolder.Text := dlgFolder.SelectedPathName;
 end;
 
 procedure TfrmMain.SaveINI;
 var
-  F:TIniFile;
+  F: TIniFile;
 begin
-  F:=TIniFile.Create(FAppPath+'sql2inpx.ini');
+  F := TIniFile.Create(FAppPath + 'sql2inpx.ini');
   try
-    F.WriteString('SYSTEM','FOLDER',ExtractFilePath(dlgOpen.FileName));
+    F.WriteString('SYSTEM', 'FOLDER', ExtractFilePath(dlgOpen.FileName));
+    F.WriteString('SYSTEM', 'MYSQL', edMySQL.Text);
     F.WriteString('MySQL', 'User', Lib.Connection.Username);
     F.WriteString('MySQL', 'Pass', Lib.Connection.Password);
   finally
@@ -737,38 +778,41 @@ end;
 
 procedure TfrmMain.SaveProfile(FN: string);
 var
-  F : TMemIniFile;
+  F: TMemIniFile;
 begin
   try
     F := TMemIniFile.Create(FN);
     F.Encoding := TEncoding.UTF8;
-    F.WriteString('DATA','Script', StringReplace(mmScript.Text, #13#10, #4, [rfReplaceAll]));
-    F.WriteString('DATA','Tables', StringReplace(mmTables.Text, #13#10, #4, [rfReplaceAll]));
-    F.WriteString('DATA','Post-Query', StringReplace(mmQuery.Text, #13#10, #4, [rfReplaceAll]));
-    F.WriteString('DATA','DBName',edDBName.Text);
-    F.WriteString('DATA','SQLUtrl',edSQLUrl.Text);
-    F.WriteString('DATA','URL',edURL.Text);
-    F.WriteString('DATA','INPxName',edInpxName.Text);
-    F.WriteString('DATA','UpdateName',edUpdateName.Text);
-    F.WriteString('DATA','ExtraName',edExtraName.Text);
-    F.WriteString('DATA','ExtraInfo',edExtraInfo.Text);
-    F.WriteString('DATA','StartID',edStartID.Text);
-    F.WriteString('DATA','Code',edCode.Text);
-    F.WriteString('DATA','Descr',edDescr.Text);
-    F.WriteString('DATA','Title',edTitle.Text);
-    F.WriteString('DATA','Info name',edInfoName.Text);
-    F.WriteString('DATA','Folder',edFolder.Text);
-    F.WriteString('DATA','FileMask',edFileMask.Text);
-    F.WriteBool('DATA','Fb2Only', cbFb2Only.Checked);
-    F.WriteBool('DATA','MaxCompress', cbMaxCompress.Checked);
-    F.WriteBool('DATA','oldFormat', cbOldFormat.Checked);
+    F.WriteString('DATA', 'Script', StringReplace(mmScript.Text, #13#10, #4,
+        [rfReplaceAll]));
+    F.WriteString('DATA', 'Tables', StringReplace(mmTables.Text, #13#10, #4,
+        [rfReplaceAll]));
+    F.WriteString('DATA', 'Post-Query', StringReplace(mmQuery.Text, #13#10, #4,
+        [rfReplaceAll]));
+    F.WriteString('DATA', 'DBName', edDBName.Text);
+    F.WriteString('DATA', 'SQLUtrl', edSQLUrl.Text);
+    F.WriteString('DATA', 'URL', edURL.Text);
+    F.WriteString('DATA', 'INPxName', edInpxName.Text);
+    F.WriteString('DATA', 'UpdateName', edUpdateName.Text);
+    F.WriteString('DATA', 'ExtraName', edExtraName.Text);
+    F.WriteString('DATA', 'ExtraInfo', edExtraInfo.Text);
+    F.WriteString('DATA', 'StartID', edStartID.Text);
+    F.WriteString('DATA', 'Code', edCode.Text);
+    F.WriteString('DATA', 'Descr', edDescr.Text);
+    F.WriteString('DATA', 'Title', edTitle.Text);
+    F.WriteString('DATA', 'Info name', edInfoName.Text);
+    F.WriteString('DATA', 'Folder', edFolder.Text);
+    F.WriteString('DATA', 'FileMask', edFileMask.Text);
+    F.WriteBool('DATA', 'Fb2Only', cbFb2Only.Checked);
+    F.WriteBool('DATA', 'MaxCompress', cbMaxCompress.Checked);
+    F.WriteBool('DATA', 'oldFormat', cbOldFormat.Checked);
     F.UpdateFile;
   finally
     F.Free;
   end;
 end;
 
-procedure TfrmMain.SetTableState(State: boolean);
+procedure TfrmMain.SetTableState(State: Boolean);
 begin
   Lib.Connection.Connected := State;
   Lib.Book.Active := State;
@@ -779,7 +823,7 @@ end;
 
 function TfrmMain.ShortName(const FN: string): string;
 var
-  p: integer;
+  p: Integer;
   Ext: string;
 begin
   Ext := ExtractFileExt(FN);
@@ -789,43 +833,48 @@ end;
 procedure TfrmMain.UploadToFTP;
 begin
   Log('Upload to FTP', true);
-  idFTP.Connect;
-  idFTP.ChangeDir(FFTPDir);
+  IdFTP.Connect;
+  IdFTP.ChangeDir(FFTPDir);
   Log(TimeToStr(Now) + ' Загрузка ' + edExtraName.Text + ' ...');
-  idFTP.Put(FOutPath + edExtraName.Text + '.zip');
+  IdFTP.Put(FOutPath + edExtraName.Text + '.zip');
   OK;
   Log(TimeToStr(Now) + ' Загрузка ' + edExtraInfo.Text + ' ...');
-  idFTP.Put(FOutPath + edExtraInfo.Text);
+  IdFTP.Put(FOutPath + edExtraInfo.Text);
   OK;
   Log(TimeToStr(Now) + ' Готово');
-  idFTP.Disconnect;
+  IdFTP.Disconnect;
 end;
 
 procedure TfrmMain.Version;
 var
   L: TStringList;
-  Year,Month,Day: word;
+  Year, Month, Day: Word;
 begin
   L := TStringList.Create;
   try
-    DecodeDate(Now,Year,Month,Day);
-    L.Add(Format('%d%.2d%.2d',[Year,Month,Day]));
-    L.SaveToFile(FAppPath+'\LIBRUSEC_INP\version.info');
-    if edInfoName.Text<>'' then L.SaveToFile(FAppPath+'\ARCH\' + edInfoName.Text);
-    if edExtraInfo.Text<>'' then L.SaveToFile(FAppPath+'\ARCH\' + edExtraInfo.Text);
+    DecodeDate(Now, Year, Month, Day);
+    L.Add(Format('%d%.2d%.2d', [Year, Month, Day]));
+    L.SaveToFile(FAppPath + '\LIBRUSEC_INP\version.info');
+    if edInfoName.Text <> '' then
+      L.SaveToFile(FAppPath + '\ARCH\' + edInfoName.Text);
+    if edExtraInfo.Text <> '' then
+      L.SaveToFile(FAppPath + '\ARCH\' + edExtraInfo.Text);
   finally
     L.Free;
   end;
   FFileList.Add('version.info');
 end;
 
-function TfrmMain.ExecAndWait(const FileName,Params: String; const WinState: Word): boolean;
+function TfrmMain.ExecAndWait(const FileName, Params: String;
+  const WinState: Word): Boolean;
 var
   StartInfo: TStartupInfo;
   ProcInfo: TProcessInformation;
   CmdLine: String;
+
 begin
-  CmdLine := '' + Filename + ' ' + Params;
+  CmdLine := '"' + FileName + '" ' + Params;
+
   FillChar(StartInfo, SizeOf(StartInfo), #0);
   with StartInfo do
   begin
@@ -834,8 +883,8 @@ begin
     wShowWindow := WinState;
   end;
   Result := CreateProcess(nil, PChar(CmdLine), nil, nil, false,
-  CREATE_NEW_CONSOLE or NORMAL_PRIORITY_CLASS, nil,
-  PChar(ExtractFilePath(Filename)),StartInfo,ProcInfo);
+    CREATE_NEW_CONSOLE or NORMAL_PRIORITY_CLASS, nil,
+    PChar(ExtractFilePath(FileName)), StartInfo, ProcInfo);
   if Result then
   begin
     WaitForSingleObject(ProcInfo.hProcess, INFINITE);
@@ -844,9 +893,8 @@ begin
     CloseHandle(ProcInfo.hThread);
   end
   else
-    Application.MessageBox(PChar(Format(' Не удалось запустить %s ! ',[FileName])),'',mb_IconExclamation)
+    Application.MessageBox(PChar(Format(' Не удалось запустить %s ! ',
+          [FileName])), '', mb_IconExclamation)
 end;
-
-
 
 end.

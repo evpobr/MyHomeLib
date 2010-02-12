@@ -18,8 +18,8 @@ File_14=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\ImportImpl\unit_ImportFBD
 [Modules]
 Module0=D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas
 Module1=D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas
-Module2=default.htm
-Module3=D:\DelphiProjects\MyHomeLib\SQL2INPX\sql2inpx.dproj
+Module2=D:\DelphiProjects\MyHomeLib\SQL2INPX\sql2inpx.dproj
+Module3=default.htm
 Count=4
 EditWindowCount=1
 
@@ -31,13 +31,13 @@ FormOnTop=1
 [D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas]
 ModuleType=TSourceModule
 FormState=1
-FormOnTop=1
-
-[default.htm]
-ModuleType=TURLModule
+FormOnTop=0
 
 [D:\DelphiProjects\MyHomeLib\SQL2INPX\sql2inpx.dproj]
 ModuleType=TBaseProject
+
+[default.htm]
+ModuleType=TURLModule
 
 [EditWindow0]
 ViewCount=4
@@ -65,9 +65,9 @@ TopPanelSize=0
 LeftPanelSize=1893
 LeftPanelClients=PropertyInspector,DockSite3
 LeftPanelData=00000800010100000000A61600000000000001650700000000000001000000005C0E000009000000446F636B536974653301000000003C2400001100000050726F7065727479496E73706563746F72FFFFFFFF
-RightPanelSize=2125
+RightPanelSize=2000
 RightPanelClients=DockSite2,DockSite4
-RightPanelData=00000800010100000000A616000000000000014D0800000000000001000000004412000009000000446F636B536974653201000000003C24000009000000446F636B5369746534FFFFFFFF
+RightPanelData=00000800010100000000A61600000000000001D00700000000000001000000004412000009000000446F636B536974653201000000003C24000009000000446F636B5369746534FFFFFFFF
 BottomPanelSize=0
 BottomPanelClients=DockSite1
 BottomPanelData=0000080001000100000009000000446F636B5369746531323C000000000000002306000000000000FFFFFFFF
@@ -82,9 +82,9 @@ WelcomePageURL=bds:/default.htm
 [View1]
 CustomEditViewType=TEditView
 Module=D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas
-CursorX=1
-CursorY=748
-TopLine=723
+CursorX=56
+CursorY=552
+TopLine=496
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -104,13 +104,13 @@ EditViewName=D:\DelphiProjects\MyHomeLib\SQL2INPX\sql2inpx.dpr
 [View3]
 CustomEditViewType=TEditView
 Module=D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas
-CursorX=37
-CursorY=151
-TopLine=156
+CursorX=1
+CursorY=1
+TopLine=37
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=Borland.FormDesignerView
+EditViewName=D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas
 
 [Watches]
 Count=0
@@ -137,8 +137,7 @@ Dockable=1
 StayOnTop=0
 
 [Breakpoints]
-Count=1
-Breakpoint0='D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas',71,'',0,1,'',1,0,0,'',1,'','','',0,''
+Count=0
 
 [EmbarcaderoWin32Debugger_AddressBreakpoints]
 Count=0
@@ -171,11 +170,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=2206
+Width=2077
 Height=4181
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2206
+ClientWidth=2077
 ClientHeight=4181
 TBDockHeight=5895
 LRDockWidth=2349
@@ -188,8 +187,8 @@ Create=1
 Visible=0
 Docked=0
 State=0
-Left=1459
-Top=2533
+Left=12738
+Top=2048
 Width=3028
 Height=5133
 MaxLeft=-6
@@ -209,11 +208,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=2206
+Width=2077
 Height=4381
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2206
+ClientWidth=2077
 ClientHeight=4381
 TBDockHeight=7152
 LRDockWidth=2002
@@ -226,7 +225,7 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-1439
+Left=-1450
 Top=273
 Width=272
 Height=362
@@ -329,7 +328,7 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-1162
+Left=-1183
 Top=-10
 Width=2843
 Height=6210
@@ -415,11 +414,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=2206
+Width=2077
 Height=8819
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2206
+ClientWidth=2077
 ClientHeight=8819
 TBDockHeight=4876
 LRDockWidth=7151
@@ -448,8 +447,8 @@ SplitPos=111
 
 [PropInspDesignerSelection]
 ArrangeBy=Name
-SelectedItem=Name,AfterCancel
-ExpandedItems=Options=1,PoolingOptions=0,SSLOptions=0,ProviderFlags=0,Connection=0,FilterOptions=0,RefreshOptions=0,Constraints=0,Font=0,Margins=0,Touch=0,Anchors=0,Padding=0,Font.Style=1,BevelEdges=0,Objects=0,HorzScrollBar=0,Menu=0,BorderIcons=0
+SelectedItem=Name,AfterConnect
+ExpandedItems=Anchors=0,BorderIcons=0,Constraints=0,Menu=0,Options=0,PoolingOptions=0,SSLOptions=0,Font=0,Margins=0,Padding=0,BevelEdges=0,EditLabel=0,EditLabel.Font=0,EditLabel.Margins=0,Touch=0
 
 [ModelViewTool]
 PercentageSizes=1
@@ -459,11 +458,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=2206
+Width=2077
 Height=8819
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2206
+ClientWidth=2077
 ClientHeight=8819
 TBDockHeight=4876
 LRDockWidth=5309
@@ -652,14 +651,14 @@ Docked=1
 State=0
 Left=0
 Top=23
-Width=2206
+Width=2077
 Height=4419
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2206
+ClientWidth=2077
 ClientHeight=4419
 TBDockHeight=9038
-LRDockWidth=2206
+LRDockWidth=2077
 Dockable=1
 StayOnTop=0
 TabPosition=1
@@ -700,14 +699,14 @@ Docked=1
 State=0
 Left=0
 Top=514
-Width=2206
+Width=2077
 Height=4381
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2206
+ClientWidth=2077
 ClientHeight=4381
 TBDockHeight=9057
-LRDockWidth=2206
+LRDockWidth=2077
 Dockable=1
 StayOnTop=0
 TabPosition=1

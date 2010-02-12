@@ -845,7 +845,7 @@
         Left = 0
         Top = 0
         Width = 652
-        Height = 65
+        Height = 105
         Align = alTop
         Caption = #1041#1044
         Font.Charset = DEFAULT_CHARSET
@@ -901,10 +901,33 @@
           TabOrder = 1
           Text = 'librusec'
         end
+        object edMySQL: TLabeledEdit
+          Left = 8
+          Top = 78
+          Width = 625
+          Height = 21
+          EditLabel.Width = 82
+          EditLabel.Height = 13
+          EditLabel.Caption = #1055#1091#1090#1100' '#1082' mysqlexe'
+          EditLabel.Font.Charset = DEFAULT_CHARSET
+          EditLabel.Font.Color = clWindowText
+          EditLabel.Font.Height = -11
+          EditLabel.Font.Name = 'Tahoma'
+          EditLabel.Font.Style = []
+          EditLabel.ParentFont = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 2
+          Text = 'c:\Program Files\MySQL\MySQL Server 5.1\bin\mysql.exe'
+        end
       end
       object GroupBox7: TGroupBox
         Left = 0
-        Top = 65
+        Top = 105
         Width = 652
         Height = 154
         Align = alTop
@@ -916,6 +939,7 @@
         Font.Style = [fsBold]
         ParentFont = False
         TabOrder = 1
+        ExplicitTop = 65
         object mmTables: TMemo
           AlignWithMargins = True
           Left = 5
@@ -945,9 +969,9 @@
       end
       object GroupBox8: TGroupBox
         Left = 0
-        Top = 219
+        Top = 259
         Width = 652
-        Height = 247
+        Height = 207
         Align = alClient
         Caption = #1055#1086#1089#1090#1079#1072#1087#1088#1086#1089
         Font.Charset = DEFAULT_CHARSET
@@ -957,12 +981,14 @@
         Font.Style = [fsBold]
         ParentFont = False
         TabOrder = 2
+        ExplicitTop = 219
+        ExplicitHeight = 247
         object mmQuery: TMemo
           AlignWithMargins = True
           Left = 5
           Top = 18
           Width = 642
-          Height = 224
+          Height = 184
           Align = alClient
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -992,6 +1018,7 @@
             ''
             'ALTER ignore TABLE `librate` CHANGE `bid` `BookId` int(10);')
           ParentFont = False
+          ScrollBars = ssVertical
           TabOrder = 0
         end
       end
