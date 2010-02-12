@@ -31,22 +31,23 @@ const
 
   UNKNOWN_GENRE_CODE = '0.0';
 
-
+  //
   // Некоторые пути
-
+  //
   DATA_DIR_NAME = 'Data';
   PRESET_DIR_NAME = 'Presets';
 
   //
   // Предефайненные имена файлов
   //
+  SETTINGS_FILE_NAME = 'myhomelib.ini';
   SYSTEM_DATABASE_FILENAME = 'user.dbs';
   GENRES_FB2_FILENAME = 'genres_fb2.glst';
   GENRES_NONFB2_FILENAME = 'genres_nonfb2.glst';
   SERVER_ERRORLOG_FILENAME = 'server_error.html';
   IMPORT_ERRORLOG_FILENAME = 'import_errors.log';
   APP_HELP_FILENAME = 'MyHomeLib.chm';
-  FILELIST_FILENAME = 'FileList.lst';
+  //FILELIST_FILENAME = 'FileList.lst';
   LIBRUSEC_UPDATE_FILENAME = 'librusec_update.zip';
   EXTRA_UPDATE_FILENAME = 'extra_update.zip';
   LIBRUSEC_UPDATEVERINFO_FILENAME = 'last_collection.info';
@@ -54,6 +55,12 @@ const
   VERINFO_FILENAME = 'version.info';
   STRUCTUREINFO_FILENAME = 'structure.info';
   PROGRAM_VERINFO_FILENAME = 'last_version.info';
+  LIBRUSEC_INPX_FILENAME = 'librusec.inpx';
+  COLLECTION_VERINFO_FILENAME = 'version.info';
+  COLUMNS_STORE_FILENAME = 'columns.ini';
+  DOWNLOADS_STORE_FILENAME = 'downloads.sav';
+  DOWNLOAD_ERRORLOG_FILENAME = 'download_errors.log';
+  COLLECTIONS_FILENAME = 'collections.ini';
 
   //
   // Значения полей по умолчанию
@@ -82,7 +89,6 @@ const
   //
   //  Теги колонок
   //
-
   COL_AUTHOR     = 20;
   COL_TITLE      = 11;
   COL_SERIES     = 12;

@@ -347,7 +347,7 @@ var
 begin
   if Settings.ErrorLog then
   begin
-    FileName := Settings.WorkPath + 'download_errors.log';
+    FileName := Settings.SystemFileName[sfDownloadErrorLog];
     AssignFile(F, FileName);
     if FileExists(FileName) then
       Append(F)

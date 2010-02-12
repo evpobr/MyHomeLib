@@ -164,7 +164,7 @@ var
   slHelper: TStringList;
   INIFile: TMemIniFile;
 begin
-  INIFile := TMemIniFile.Create(Settings.WorkPath + 'collections.ini');
+  INIFile := TMemIniFile.Create(Settings.SystemFileName[sfCollectionsStore]);
   try
     INIFile.Encoding := TEncoding.UTF8;
 
