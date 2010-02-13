@@ -118,6 +118,9 @@ type
     GroupBox8: TGroupBox;
     mmQuery: TMemo;
     edMySQL: TLabeledEdit;
+    dbImportExt: TAction;
+    N17: TMenuItem;
+    N18: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure aopFB2Execute(Sender: TObject);
@@ -141,6 +144,7 @@ type
       Shift: TShiftState);
     procedure DumpError(Sender: TObject; E: Exception; SQL: string;
       var Action: TErrorAction);
+    procedure dbImportExtExecute(Sender: TObject);
   private
     { Private declarations }
     FAppPath: string;
@@ -556,6 +560,13 @@ begin
   end;
 end;
 
+procedure TfrmMain.dbImportExtExecute(Sender: TObject);
+begin
+  FUseInternal := False;
+  dbImportExecute(Sender);
+  FUseInternal := True;
+end;
+
 procedure TfrmMain.Disablecontrols;
 begin
   Lib.Book.Disablecontrols;
@@ -617,6 +628,7 @@ begin
   ReadINI;
   FFileList := TStringList.Create;
   FZipList := TStringList.Create;
+  FUseInternal := True;
 end;
 
 procedure TfrmMain.HTTPWork(ASender: TObject; AWorkMode: TWorkMode;

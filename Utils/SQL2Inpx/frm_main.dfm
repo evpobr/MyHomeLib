@@ -344,7 +344,7 @@
         Top = 249
         Width = 646
         Height = 213
-        Caption = #1057#1082#1088#1080#1087#1090
+        Caption = 'INPX-'#1057#1082#1088#1080#1087#1090
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -939,7 +939,6 @@
         Font.Style = [fsBold]
         ParentFont = False
         TabOrder = 1
-        ExplicitTop = 65
         object mmTables: TMemo
           AlignWithMargins = True
           Left = 5
@@ -981,8 +980,6 @@
         Font.Style = [fsBold]
         ParentFont = False
         TabOrder = 2
-        ExplicitTop = 219
-        ExplicitHeight = 247
         object mmQuery: TMemo
           AlignWithMargins = True
           Left = 5
@@ -1131,11 +1128,19 @@
     end
     object N13: TMenuItem
       Caption = #1041#1072#1079#1072
-      object N14: TMenuItem
-        Action = dbImport
-      end
       object N15: TMenuItem
         Action = dbConnect
+      end
+      object N17: TMenuItem
+        Caption = '-'
+      end
+      object N14: TMenuItem
+        Action = dbImport
+        Caption = #1047#1072#1075#1088#1091#1079#1082#1072' '#1076#1072#1084#1087#1072' ('#1042#1085#1091#1090#1088'.)'
+      end
+      object N18: TMenuItem
+        Action = dbImportExt
+        Caption = #1047#1072#1075#1088#1091#1079#1082#1072' '#1076#1072#1084#1087#1072' ('#1042#1085#1077#1096#1085'.)'
       end
     end
     object N2: TMenuItem
@@ -1192,6 +1197,11 @@
       Category = 'Profile'
       Caption = 'apSave'
       OnExecute = apSaveExecute
+    end
+    object dbImportExt: TAction
+      Category = 'Database'
+      Caption = 'dbImportExt'
+      OnExecute = dbImportExtExecute
     end
   end
   object Zip: TZipForge
