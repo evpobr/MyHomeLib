@@ -31,7 +31,8 @@ uses
   XMLDoc,
   SysUtils,
   unit_Templater,
-  dm_Collection;
+  dm_Collection,
+  Dialogs;
 
 function WriteFb2InfoToFile(FileName: string): Boolean;
 var
@@ -59,9 +60,14 @@ begin
 
     Templater := TTemplater.Create;
     try
-      { TODO -oNickR -cBug : нет реакции на невалидный шаблон }
+      { DONE -oNickR -cBug : нет реакции на невалидный шаблон }
       if Templater.SetTemplate(Settings.BookHeaderTemplate, TpText) = ErFine then
-        TitleBook := Templater.ParseString(R, TpText);
+        TitleBook := Templater.ParseString(R, TpText)
+      else
+      begin
+        ShowMessage('Проверьте правильность шаблона');
+        Exit;
+      end;
     finally
       Templater.Free;
     end;
