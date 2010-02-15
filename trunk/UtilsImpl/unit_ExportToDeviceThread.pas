@@ -22,43 +22,45 @@ uses
   Dialogs,
   ABSMain,
   IdHTTP,
-  ZipForge;
+  ZipForge,
+  KeyBoard;
 
 type
+  TFileOprecord = record
+    SArch, FileName, Folder: String;
+    SNo: integer;
+  end;
 
   TExportToDeviceThread = class(TWorker)
   private
     FZipper: TZipForge;
 
-    FFileOprecord: record SArch, FileName, Folder: String;
-    SNo: integer;
-  end;
+    FFileOprecord: TFileOprecord;
 
-FFileOpMode :(fmFb2Zip, fmFb2, fmFBD);
-FBookIdList : TBookIdList;
-FTable : TAbsTable;
-FCollectionRoot : string;
-FExportMode : TExportMode;
-FIsTmp : boolean;
-FProcessedFiles : string;
-procedure ShowZipErrorMessage(Sender: TObject; ErrCode: integer;
-  Message: string);
+    FFileOpMode: (fmFb2Zip, fmFb2, fmFBD);
+    FBookIdList: TBookIdList;
+    FTable: TAbsTable;
+    FCollectionRoot: string;
+    FExportMode: TExportMode;
+    FIsTmp: boolean;
+    FProcessedFiles: string;
+    procedure ShowZipErrorMessage(Sender: TObject; ErrCode: integer; Message: string);
 
-function fb2Lrf(InpFile, OutFile: string): boolean;
-function fb2EPUB(InpFile, OutFile: string): boolean;
-function fb2PDF(InpFile, OutFile: string): boolean;
+    function fb2Lrf(InpFile, OutFile: string): boolean;
+    function fb2EPUB(InpFile, OutFile: string): boolean;
+    function fb2PDF(InpFile, OutFile: string): boolean;
 
-procedure SetTable(ATable: TAbsTable);
-protected
-  procedure WorkFunction; override;
-  function PrepareFile(ID: integer): boolean;
-  function SendFileToDevice: boolean;
+    procedure SetTable(ATable: TAbsTable);
+  protected
+    procedure WorkFunction; override;
+    function PrepareFile(ID: integer): boolean;
+    function SendFileToDevice: boolean;
 
-public
-  property BookIdList: TBookIdList write FBookIdList;
-  property Table: TAbsTable write SetTable;
-  property ProcessedFiles: string read FProcessedFiles;
-  property ExportMode: TExportMode read FExportMode write FExportMode;
+  public
+    property BookIdList: TBookIdList write FBookIdList;
+    property Table: TAbsTable write SetTable;
+    property ProcessedFiles: string read FProcessedFiles;
+    property ExportMode: TExportMode read FExportMode write FExportMode;
   end;
 
 implementation
@@ -78,12 +80,10 @@ uses
 
 { TExportToDeviceThread }
 
-procedure TExportToDeviceThread.ShowZipErrorMessage
-  (Sender: TObject; ErrCode: integer; Message: string);
+procedure TExportToDeviceThread.ShowZipErrorMessage(Sender: TObject; ErrCode: integer; Message: string);
 begin
   if ErrCode <> 0 then
-    Teletype(Format('Ошибка распаковки архива %s, Код: %d',
-        [FZipper.FileName, 0]), tsError);
+    Teletype(Format('Ошибка распаковки архива %s, Код: %d', [FZipper.FileName, 0]), tsError);
 end;
 
 //
@@ -99,13 +99,12 @@ var
   p1, p2: integer;
   FullName: String;
   InsideFileName: string;
-
   Templater: TTemplater;
   R: TBookRecord;
 
 begin
 
-  { TODO -oalex :
+  { DONE -oalex :
     рефакторинг: разобрать на отдельные модули
     разобраться с логикой }
 
@@ -120,27 +119,31 @@ begin
     //
     // Сформируем имя файла в соответствии с заданным темплейтом
     { TODO -oNickR -cPerformance : необходимо создавать шаблонизатор только один раз при инициализации потока }
-    { TODO -oNickR -cBug : нет реакции на невалидный шаблон }
-    { TODO -oNickR -cBug : DMCollection.GetCurrentBook(R) вызывается дважды }
+    { DONE -oNickR -cBug : нет реакции на невалидный шаблон }
+    { DONE -oNickR -cBug : DMCollection.GetCurrentBook(R) вызывается дважды }
+    DMCollection.GetCurrentBook(R);
     Templater := TTemplater.Create;
     try
       if Templater.SetTemplate(Settings.FileNameTemplate, TpFile) = ErFine then
+        FileName := Templater.ParseString(R, TpFile)
+      else
       begin
-        DMCollection.GetCurrentBook(R);
-        FileName := Templater.ParseString(R, TpFile);
+        Dialogs.ShowMessage('Проверьте правильность шаблона');
+        Exit;
       end;
 
-      if (ExtractFileExt(FTable['FileName']) = ZIP_EXTENSION) and
-        (FTable['Ext'] <> ZIP_EXTENSION) then
+      if (ExtractFileExt(FTable['FileName']) = ZIP_EXTENSION) and (FTable['Ext'] <> ZIP_EXTENSION) then
         FFileOpMode := fmFBD
       else if ExtractFileExt(CR) <> ZIP_EXTENSION then
         FFileOpMode := fmFb2;
 
       // Сформируем имя каталога в соответствии с заданным темплейтом
       if Templater.SetTemplate(Settings.FolderTemplate, TpPath) = ErFine then
+        Folder := Templater.ParseString(R, TpPath)
+      else
       begin
-        DMCollection.GetCurrentBook(R);
-        Folder := Templater.ParseString(R, TpPath);
+        Dialogs.ShowMessage('Проверьте правильность шаблона');
+        Exit;
       end;
     finally
       Templater.Free;
@@ -185,8 +188,7 @@ begin
       Exit;
     end;
 
-    InsideFileName := Trim(CheckSymbols(InsideFileName)) + DMCollection.tblBooks
-      ['Ext'];
+    InsideFileName := Trim(CheckSymbols(InsideFileName)) + DMCollection.tblBooks['Ext'];
 
     FS := TMemoryStream.Create;
     try
@@ -200,8 +202,7 @@ begin
       FS.Free;
     end;
   end;
-  if (DMCollection.tblBooks['Ext'] = FB2_EXTENSION)
-    and Settings.OverwriteFB2Info then
+  if (DMCollection.tblBooks['Ext'] = FB2_EXTENSION) and Settings.OverwriteFB2Info then
     WriteFb2InfoToFile(FFileOprecord.SArch);
 
   Result := True;
@@ -213,15 +214,13 @@ var
 begin
   if not FileExists(FFileOprecord.SArch) then
   begin
-    ShowMessage(Format('File "%s" not found', [FFileOprecord.SArch]),
-      MB_ICONERROR or MB_OK);
+    ShowMessage(Format('File "%s" not found', [FFileOprecord.SArch]), MB_ICONERROR or MB_OK);
     Result := False;
     Exit;
   end;
 
   CreateFolders(Settings.DeviceDir, FFileOprecord.Folder);
-  DestFileName := Settings.DevicePath + FFileOprecord.Folder +
-    FFileOprecord.FileName;
+  DestFileName := Settings.DevicePath + FFileOprecord.Folder + FFileOprecord.FileName;
 
   Result := True;
 
@@ -231,8 +230,7 @@ begin
     emFb2Zip:
       ZipFile(FFileOprecord.SArch, DestFileName + ZIP_EXTENSION);
     emTxt:
-      unit_globals.ConvertToTxt(FFileOprecord.SArch, DestFileName,
-        Settings.TXTEncoding);
+      unit_globals.ConvertToTxt(FFileOprecord.SArch, DestFileName, Settings.TXTEncoding);
     emLrf:
       Result := fb2Lrf(FFileOprecord.SArch, DestFileName);
     emEpub:
@@ -249,10 +247,8 @@ function TExportToDeviceThread.fb2Lrf(InpFile, OutFile: string): boolean;
 var
   params: string;
 begin
-  params := Format('-i "%s" -o "%s"', [InpFile, ChangeFileExt(OutFile, '.lrf')]
-    );
-  Result := ExecAndWait(Settings.AppPath + 'converters\fb2lrf\fb2lrf_c.exe',
-    params, SW_HIDE)
+  params := Format('-i "%s" -o "%s"', [InpFile, ChangeFileExt(OutFile, '.lrf')]);
+  Result := ExecAndWait(Settings.AppPath + 'converters\fb2lrf\fb2lrf_c.exe', params, SW_HIDE)
 end;
 
 function TExportToDeviceThread.fb2EPUB(InpFile, OutFile: string): boolean;
@@ -260,8 +256,7 @@ var
   params: string;
 begin
   params := Format('"%s" "%s"', [InpFile, ChangeFileExt(OutFile, '.epub')]);
-  Result := ExecAndWait(Settings.AppPath + 'converters\fb2epub\fb2epub.exe',
-    params, SW_HIDE)
+  Result := ExecAndWait(Settings.AppPath + 'converters\fb2epub\fb2epub.exe', params, SW_HIDE)
 end;
 
 function TExportToDeviceThread.fb2PDF(InpFile, OutFile: string): boolean;
@@ -269,8 +264,7 @@ var
   params: string;
 begin
   params := Format('"%s" "%s"', [InpFile, ChangeFileExt(OutFile, '.pdf')]);
-  Result := ExecAndWait(Settings.AppPath + 'converters\fb2pdf\fb2pdf.cmd',
-    params, SW_HIDE)
+  Result := ExecAndWait(Settings.AppPath + 'converters\fb2pdf\fb2pdf.cmd', params, SW_HIDE)
 end;
 
 procedure TExportToDeviceThread.SetTable(ATable: TAbsTable);
@@ -287,8 +281,7 @@ var
 begin
 
   if FTable <> DMUser.tblGrouppedBooks then // хреново как-то получилось ...
-    FCollectionRoot := IncludeTrailingPathDelimiter
-      (DMUser.ActiveCollection.RootFolder)
+    FCollectionRoot := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder)
   else
     FCollectionRoot := '';
 
@@ -310,8 +303,7 @@ begin
       end;
 
       if not Res and (i < totalBooks - 1) then
-        Canceled := (ShowMessage('Обрабатывать оставшиеся файлы ?',
-            MB_ICONQUESTION or MB_YESNO) = IDNO);
+        Canceled := (ShowMessage('Обрабатывать оставшиеся файлы ?', MB_ICONQUESTION or MB_YESNO) = IDNO);
 
       SetComment(Format('Записано файлов: %u из %u', [i + 1, totalBooks]));
       SetProgress(i * 100 div totalBooks);
