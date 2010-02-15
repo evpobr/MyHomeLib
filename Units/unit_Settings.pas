@@ -1,15 +1,19 @@
-{******************************************************************************}
-{                                                                              }
-{ MyHomeLib                                                                    }
-{                                                                              }
-{ Version 0.9                                                                  }
-{ 20.08.2008                                                                   }
-{ Copyright (c) Aleksey Penkov  alex.penkov@gmail.com                          }
-{               Matvienko Sergei  matv84@mail.ru                               }
-{                                                                              }
-{ @author Nick Rymanov nrymanov@gmail.com                                      }
-{                                                                              }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Created             12.02.2010
+  * Description
+  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
+  *                     Aleksey Penkov  alex.penkov@gmail.com
+  *                     Matvienko Sergei  matv84@mail.ru
+  *
+  * History
+  * NickR 15.02.2010    Код переформатирован
+  *
+  ****************************************************************************** *)
 
 unit unit_Settings;
 
@@ -33,7 +37,7 @@ type
     sfGenresFB2,
     sfGenresNonFB2,
     sfServerErrorLog,
-    sfImportErrorLog,  // UNUSED
+    // sfImportErrorLog,  // UNUSED
     sfAppHelp,
     sfLibRusEcUpdate,
     sfAppVerInfo,
@@ -43,9 +47,9 @@ type
     sfDownloadsStore,
     sfDownloadErrorLog,
     sfCollectionsStore
-    );
+  );
 
-  TSplitters = array of integer;
+  TSplitters = array of Integer;
   TTreeModes = array of TTreeMode;
 
   TMHLSettings = class
@@ -78,30 +82,30 @@ type
     FFileNameTemplate: string;
     FExportMode: TExportMode;
     FRemoveSquareBrackets: Boolean;
-    FUseSystemTemp: boolean;
+    FUseSystemTemp: Boolean;
     FTXTEncoding: TTXTEncoding;
 
     // INTERFACE_SECTION
     FTreeFontSize: Integer;
     FShortFontSize: Integer;
     FAppLanguage: TAppLanguage;
-    FActivePage: integer;
+    FActivePage: Integer;
     FLastAuthor: string;
     FLastSeries: string;
-    FLastBookInAuthors: integer;
-    FLastBookInSeries: integer;
-    FLastBookInFavorites: integer;
+    FLastBookInAuthors: Integer;
+    FLastBookInSeries: Integer;
+    FLastBookInFavorites: Integer;
     FSplitters: TSplitters;
     FTreeModes: TTreeModes;
     FWindowState: Integer;
-    FFormWidth: integer;
-    FFormHeight: integer;
-    FCoverWidth: integer;
+    FFormWidth: Integer;
+    FFormHeight: Integer;
+    FCoverWidth: Integer;
 
-    FBookSRCollapsed: boolean;
-    FFileSRCollapsed: boolean;
-    FOtherSRCollapsed: boolean;
-    FEditToolBarVisible: boolean;
+    FBookSRCollapsed: Boolean;
+    FFileSRCollapsed: Boolean;
+    FOtherSRCollapsed: Boolean;
+    FEditToolBarVisible: Boolean;
 
     // NETWORK_SECTION
     FProxyServer: string;
@@ -110,18 +114,17 @@ type
     FProxyPort: Integer;
     FUpdateURL: string;
     FInpxURL: string;
-    FErrorLog: boolean;
-    FTimeOut: integer;
-    FReadTimeOut: integer;
-    FDwnldInterval : integer;
+    FErrorLog: Boolean;
+    FTimeOut: Integer;
+    FReadTimeOut: Integer;
+    FDwnldInterval: Integer;
 
     FLibUsername: string;
     FLibPassword: string;
 
-    FUseIESettings: boolean;
+    FUseIESettings: Boolean;
     FIEProxyServer: string;
     FIEProxyPort: Integer;
-
 
     // COLORS_SECTION
     FBookColor: TColor;
@@ -143,7 +146,6 @@ type
     // UPDATES_SECTION
     FUpdateList: TUpdateInfoList;
 
-
     // SCRIPTS_SECTION
     FScripts: TScripts;
     FDefaultScript: Integer;
@@ -153,28 +155,27 @@ type
 
     FInitialDirs: TStringList;
 
-
     // BEHAVIOR_SECTION
-    FMinimizeToTray: boolean;
-    FAutoStartDwnld: boolean;
-    FShowSubGenreBooks: boolean;
-    FShowFb2Info: boolean;
-    FAllowMixed: boolean;
+    FMinimizeToTray: Boolean;
+    FAutoStartDwnld: Boolean;
+    FShowSubGenreBooks: Boolean;
+    FShowFb2Info: Boolean;
+    FAllowMixed: Boolean;
 
-    FAutoRunUpdate: boolean;
+    FAutoRunUpdate: Boolean;
     FShowInfoPanel: Boolean;
     FShowRusBar: Boolean;
     FShowEngBar: Boolean;
     FDoNotShowDeleted: Boolean;
-    FShowLocalOnly : boolean;
-    FDeleteDeleted: boolean;
-    FAutoLoadReview: boolean;
+    FShowLocalOnly: Boolean;
+    FDeleteDeleted: Boolean;
+    FAutoLoadReview: Boolean;
 
-    FForceConvertToFBD: boolean;
-    FOverwriteFB2Info: boolean;
+    FForceConvertToFBD: Boolean;
+    FOverwriteFB2Info: Boolean;
 
     // SORT_SECTION
-    FEnableSort : boolean;
+    FEnableSort: Boolean;
     FInputFolder: string;
 
     FFB2FolderTemplate: string;
@@ -190,15 +191,13 @@ type
     FFormLeft: Integer;
 
   private
-    FDeleteFiles: boolean;
+    FDeleteFiles: Boolean;
     function GetSettingsFileName: string;
 
     function GetSystemFileName(fileType: TMHLSystemFile): string;
 
     function GetDataPath: string;
-
     function GetTempPath: string;
-
     function GetWorkPath: string;
 
     function GetDevicePath: string;
@@ -206,7 +205,6 @@ type
 
     function GetReadPath: string;
     procedure SetReadDir(const Value: string);
-
 
     procedure LoadReaders(iniFile: TIniFile);
     procedure SaveReaders(iniFile: TIniFile);
@@ -227,9 +225,9 @@ type
     function GetPresetPath: string;
     function GetUpdatePath: string;
 
-
   public
     constructor Create;
+    { TODO -oNickR -cBug : MEMLEAK написать dectructor и аккуратно вызвать его }
 
     procedure LoadSettings;
     procedure SaveSettings;
@@ -254,7 +252,7 @@ type
     //
     // Собственно настройки программы
     //
-    property UseSystemTemp:Boolean read FUseSystemTemp write FUseSystemTemp;
+    property UseSystemTemp: Boolean read FUseSystemTemp write FUseSystemTemp;
 
     property DeviceDir: string read FDeviceDir write SetDeviceDir;
     property DevicePath: string read GetDevicePath;
@@ -282,27 +280,26 @@ type
     property AppLanguage: TAppLanguage read FAppLanguage write FAppLanguage;
     property DoNotShowDeleted: Boolean read FDoNotShowDeleted write FDoNotShowDeleted;
     property ShowLocalOnly: Boolean read FShowLocalOnly write FShowLocalOnly;
-    property ShowSubGenreBooks: boolean read FShowSubGenreBooks write FShowSubGenreBooks;
-    property ShowFb2Info: boolean read FShowFb2Info write FShowFb2Info;
-    property EditToolBarVisible: boolean read  FEditToolBarVisible write  FEditToolBarVisible;
+    property ShowSubGenreBooks: Boolean read FShowSubGenreBooks write FShowSubGenreBooks;
+    property ShowFb2Info: Boolean read FShowFb2Info write FShowFb2Info;
+    property EditToolBarVisible: Boolean read FEditToolBarVisible write FEditToolBarVisible;
 
-    property AutoRunUpdate: boolean read FAutoRunUpdate write FAutoRunUpdate;
+    property AutoRunUpdate: Boolean read FAutoRunUpdate write FAutoRunUpdate;
 
-    property MinimizeToTray : boolean read FMinimizeToTray   write FMinimizeToTray;
-    property AutoStartDwnld : boolean read FAutoStartDwnld   write FAutoStartDwnld;
+    property MinimizeToTray: Boolean read FMinimizeToTray write FMinimizeToTray;
+    property AutoStartDwnld: Boolean read FAutoStartDwnld write FAutoStartDwnld;
 
-    property RemoveSquarebrackets : boolean read FRemoveSquarebrackets write FRemoveSquarebrackets;
+    property RemoveSquarebrackets: Boolean read FRemoveSquareBrackets write FRemoveSquareBrackets;
 
-    property ActivePage:integer read FActivePage write FActivePage;
-    property LastAuthor:string read FLastAuthor write FLastAuthor;
-    property LastSeries:string read FLastSeries write FLastSeries;
-    property LastBookInSeries:integer read FLastBookInSeries write FLastBookInSeries;
-    property LastBookInAuthors:integer read FLastBookInAuthors write FLastBookInAuthors;
-    property LastBookInFavorites:integer read FLastBookInFavorites write FLastBookInFavorites;
+    property ActivePage: Integer read FActivePage write FActivePage;
+    property LastAuthor: string read FLastAuthor write FLastAuthor;
+    property LastSeries: string read FLastSeries write FLastSeries;
+    property LastBookInSeries: Integer read FLastBookInSeries write FLastBookInSeries;
+    property LastBookInAuthors: Integer read FLastBookInAuthors write FLastBookInAuthors;
+    property LastBookInFavorites: Integer read FLastBookInFavorites write FLastBookInFavorites;
 
-    property Splitters:TSplitters read FSplitters write FSplitters;
-    property TreeModes:TTreeModes read FTreeModes write FTreeModes;
-
+    property Splitters: TSplitters read FSplitters write FSplitters;
+    property TreeModes: TTreeModes read FTreeModes write FTreeModes;
 
     property ProxyServer: string read FProxyServer write FProxyServer;
     property ProxyUsername: string read FProxyUsername write FProxyUsername;
@@ -310,15 +307,15 @@ type
     property ProxyPort: Integer read FProxyPort write FProxyPort;
     property UpdateURL: string read FUpdateURL write FUpdateURL;
     property InpxURL: string read FInpxURL write FInpxURL;
-    property ErrorLog:boolean read FerrorLog write FErrorLog;
-    property TimeOut: integer read FTimeOut write FTimeOut;
-    property ReadTimeOut: integer read FReadTimeOut write FReadTimeOut;
-    property DwnldInterval: integer read FDwnldInterval write FDwnldInterval;
+    property ErrorLog: Boolean read FErrorLog write FErrorLog;
+    property TimeOut: Integer read FTimeOut write FTimeOut;
+    property ReadTimeOut: Integer read FReadTimeOut write FReadTimeOut;
+    property DwnldInterval: Integer read FDwnldInterval write FDwnldInterval;
 
     property LibUsername: string read FLibUsername write FLibUsername;
     property LibPassword: string read FLibPassword write FLibPassword;
 
-    property UseIESettings: boolean read FUseIESettings write FUseIESettings;
+    property UseIESettings: Boolean read FUseIESettings write FUseIESettings;
     property IEProxyServer: string read FIEProxyServer write FIEProxyServer;
     property IEProxyPort: Integer read FIEProxyPort write FIEProxyPort;
 
@@ -332,18 +329,18 @@ type
     property LocalColor: TColor read FLocalColor write FLocalColor;
 
     property WindowState: Integer read FWindowState write FWindowState;
-    property FormWidth: integer read FFormWidth write FFormWidth;
-    property FormHeight: integer read FFormHeight write FFormHeight;
-    property FormTop: integer read FFormTop write FFormTop;
-    property FormLeft: integer read FFormLeft write FFormLeft;
+    property FormWidth: Integer read FFormWidth write FFormWidth;
+    property FormHeight: Integer read FFormHeight write FFormHeight;
+    property FormTop: Integer read FFormTop write FFormTop;
+    property FormLeft: Integer read FFormLeft write FFormLeft;
 
-    property CoverWidth: integer read FCoverWidth write FCoverWidth;
+    property CoverWidth: Integer read FCoverWidth write FCoverWidth;
 
-    property BookSRCollapsed: boolean read FBookSRCollapsed write FBookSRCollapsed;
-    property FileSRCollapsed: boolean read FFileSRCollapsed write FFileSRCollapsed;
-    property OtherSRCollapsed: boolean read FOtherSRCollapsed write FOtherSRCollapsed;
-    property ForceConvertToFBD: boolean read FForceConvertToFBD write FForceConvertToFBD;
-    property OverwriteFB2Info: boolean read FOverwriteFB2Info write FOverwriteFB2Info;
+    property BookSRCollapsed: Boolean read FBookSRCollapsed write FBookSRCollapsed;
+    property FileSRCollapsed: Boolean read FFileSRCollapsed write FFileSRCollapsed;
+    property OtherSRCollapsed: Boolean read FOtherSRCollapsed write FOtherSRCollapsed;
+    property ForceConvertToFBD: Boolean read FForceConvertToFBD write FForceConvertToFBD;
+    property OverwriteFB2Info: Boolean read FOverwriteFB2Info write FOverwriteFB2Info;
 
     property FullTextSearch: Boolean read FFullTextSearch write FFullTextSearch;
 
@@ -358,14 +355,14 @@ type
 
     property InitialDir[const key: string]: string read GetInitialDir write SetInitialDir;
 
-    property AllowMixed : boolean read FAllowMixed write FAllowMixed;
-    property AutoLoadReview: boolean read FAutoLoadReview write FAutoLoadReview;
+    property AllowMixed: Boolean read FAllowMixed write FAllowMixed;
+    property AutoLoadReview: Boolean read FAutoLoadReview write FAutoLoadReview;
 
-    property DeleteDeleted:boolean read FDeleteDeleted write FDeleteDeleted;
-    property DeleteFiles:boolean read FDeleteFiles write FDeleteFiles;
+    property DeleteDeleted: Boolean read FDeleteDeleted write FDeleteDeleted;
+    property DeleteFiles: Boolean read FDeleteFiles write FDeleteFiles;
 
     // SORT_SECTION
-    property EnableSort : boolean read FEnableSort write FEnableSort;
+    property EnableSort: Boolean read FEnableSort write FEnableSort;
     property InputFolder: string read FInputFolder write FInputFolder;
 
     property FB2FolderTemplate: string read FFB2FolderTemplate write FFB2FolderTemplate;
@@ -375,9 +372,9 @@ type
     property FBDFileTemplate: string read FFBDFileTemplate write FFBDFileTemplate;
   end;
 
-  procedure CreateSettings;
-  procedure FreeSettings;
-  function Settings: TMHLSettings;
+procedure CreateSettings;
+procedure FreeSettings;
+function Settings: TMHLSettings;
 
 implementation
 
@@ -432,7 +429,6 @@ const
 
   UPDATES_SECTION = 'UPDATES';
 
-
   READER_KEY_PREFIX = 'Reader';
   SCRIPT_KEY_PREFIX = 'Script';
   UPDATE_KEY_PREFIX = 'Update';
@@ -445,12 +441,12 @@ constructor TMHLSettings.Create;
 const
   STR_USELOCALDATA = 'uselocaldata';
   STR_USELOCALTEMP = 'uselocaltemp';
-  STR_USERDBS      = 'user';
+  STR_USERDBS = 'user';
 
 var
-  AppDataPath : string;
+  AppDataPath: string;
 
-  UseLocalData, UseLocalTemp, UserDatabase: boolean;
+  UseLocalData, UseLocalTemp, UserDatabase: Boolean;
   I: Integer;
 
   DBFileName: string;
@@ -471,53 +467,50 @@ begin
   for I := 1 to ParamCount do
   begin
     if not UseLocalData then
-           UseLocalData := (LowerCase(paramstr(i)) = STR_USELOCALDATA);
+      UseLocalData := (LowerCase(paramstr(I)) = STR_USELOCALDATA);
     if not UseLocalTemp then
-           UseLocalTemp := (LowerCase(paramstr(i)) = STR_USELOCALTEMP);
-    if (LowerCase(paramstr(i)) = STR_USERDBS) and (paramstr(i + 1) <> '') then
+      UseLocalTemp := (LowerCase(paramstr(I)) = STR_USELOCALTEMP);
+    if (LowerCase(paramstr(I)) = STR_USERDBS) and (paramstr(I + 1) <> '') then
     begin
-      DBFileName := paramstr(i + 1);
+      DBFileName := paramstr(I + 1);
       UserDatabase := True;
     end;
   end;
 
-  UseLocalData := UseLocalData or FileExists(FAppPath + STR_USELOCALDATA) or
-                  not DirectoryExists(AppDataPath);
+  UseLocalData := UseLocalData or FileExists(FAppPath + STR_USELOCALDATA) or not DirectoryExists(AppDataPath);
   UseLocalTemp := UseLocalTemp or FileExists(FAppPath + STR_USELOCALTEMP);
 
   // Устанавливаем рабочую папку
 
   if not UseLocalData then
-  begin                                             // работаем с AppData
+  begin // работаем с AppData
     FWorkDir := AppDataPath;
     FDataDir := WorkPath + DATA_DIR_NAME;
   end
   else
   begin
-    FWorkDir := FAppPath;                           // работаем с AppPath
+    FWorkDir := FAppPath; // работаем с AppPath
     FDataDir := FAppPath + DATA_DIR_NAME;
   end;
 
-  if UserDatabase then                              // пользовательский файл БД и настроек
+  if UserDatabase then // пользовательский файл БД и настроек
   begin
     FDbsFileName := DBFileName + '.dbs';
     FIniFileName := DBFileName + '.ini';
-    if FileExists(WorkPath + SETTINGS_FILE_NAME) and not
-       FileExists(WorkPath + FIniFileName)
-     then                                             // если такого файла еще нет, копируем стандартный
-        CopyFile(WorkPath + SETTINGS_FILE_NAME,
-                 WorkPath + FIniFileName);
+    if FileExists(WorkPath + SETTINGS_FILE_NAME) and not FileExists(WorkPath + FIniFileName) then
+    // если такого файла еще нет, копируем стандартный
+      CopyFile(WorkPath + SETTINGS_FILE_NAME, WorkPath + FIniFileName);
   end;
 
   // устанавливаем временную папку
 
   if not UseLocalTemp then
-     FTempDir := c_GetTempPath + '_myhomelib'
+    FTempDir := c_GetTempPath + '_myhomelib'
   else
-     FTempDir := FAppPath + TEMP_DIR_NAME;
+    FTempDir := FAppPath + TEMP_DIR_NAME;
 
   FPresetDir := WorkPath + PRESET_DIR_NAME;
-  //-----------------------------------------------------
+  // -----------------------------------------------------
 
   FReaders := TReaders.Create;
   FScripts := TScripts.Create;
@@ -528,7 +521,7 @@ end;
 
 function TMHLSettings.GetSettingsFileName: string;
 begin
-  Result := WorkPAth + FIniFileName;
+  Result := WorkPath + FIniFileName;
 end;
 
 procedure TMHLSettings.LoadSettings;
@@ -544,9 +537,11 @@ begin
     FReadDir := ExcludeTrailingPathDelimiter(iniFile.ReadString(PATH_SECTION, 'Read', ''));
     FUpdateDir := ExcludeTrailingPathDelimiter(iniFile.ReadString(PATH_SECTION, 'Update', ''));
 
-    if not DirectoryExists(FReadDir) then  FReadDir := FTempDir;
+    if not DirectoryExists(FReadDir) then
+      FReadDir := FTempDir;
 
-    if FUpdateDir = '' then FUpdateDir := FWorkDir;
+    if FUpdateDir = '' then
+      FUpdateDir := FWorkDir;
 
     //
     // SYSTEM_SECTION
@@ -585,23 +580,21 @@ begin
     FLastAuthor := iniFile.ReadString(INTERFACE_SECTION, 'LastAuthor', 'А');
     FLastSeries := iniFile.ReadString(INTERFACE_SECTION, 'LastSeries', 'А');
 
-    FLastBookinAuthors := iniFile.ReadInteger(INTERFACE_SECTION, 'LastBookInAuthors', 0);
-    FLastBookinSeries:= iniFile.ReadInteger(INTERFACE_SECTION, 'LastBookInSeries', 0);
-    FLastBookinFavorites := iniFile.ReadInteger(INTERFACE_SECTION, 'LastBookInFavorites', 0);
+    FLastBookInAuthors := iniFile.ReadInteger(INTERFACE_SECTION, 'LastBookInAuthors', 0);
+    FLastBookInSeries := iniFile.ReadInteger(INTERFACE_SECTION, 'LastBookInSeries', 0);
+    FLastBookInFavorites := iniFile.ReadInteger(INTERFACE_SECTION, 'LastBookInFavorites', 0);
 
     FFormHeight := iniFile.ReadInteger(INTERFACE_SECTION, 'FormHeight ', 850);
     FFormWidth := iniFile.ReadInteger(INTERFACE_SECTION, 'FormWidth ', 1000);
     FFormTop := iniFile.ReadInteger(INTERFACE_SECTION, 'FormTop ', 0);
     FFormLeft := iniFile.ReadInteger(INTERFACE_SECTION, 'FormLeft ', 0);
 
-
     FCoverWidth := iniFile.ReadInteger(INTERFACE_SECTION, 'CoverWidth ', 250);
 
     FBookSRCollapsed := iniFile.ReadBool(INTERFACE_SECTION, 'BookSR', False);
     FFileSRCollapsed := iniFile.ReadBool(INTERFACE_SECTION, 'FileSR', False);
-    FOtherSRCollapsed := iniFile.ReadBool(INTERFACE_SECTION,'OtherSR',False);
-    FEditToolBarVisible  := iniFile.ReadBool(INTERFACE_SECTION,'ShowEditToolBar',False);
-
+    FOtherSRCollapsed := iniFile.ReadBool(INTERFACE_SECTION, 'OtherSR', False);
+    FEditToolBarVisible := iniFile.ReadBool(INTERFACE_SECTION, 'ShowEditToolBar', False);
 
     if iniFile.ReadInteger(INTERFACE_SECTION, 'Lang', 0) = 0 then
       FAppLanguage := alEng
@@ -612,8 +605,6 @@ begin
 
     FWindowState := iniFile.ReadInteger(INTERFACE_SECTION, 'WindowState', 2);
 
-
-
     //
     // NETWORK_SECTION
     //
@@ -623,15 +614,15 @@ begin
     FProxyPort := iniFile.ReadInteger(NETWORK_SECTION, 'proxy-port', 0);
     FUpdateURL := iniFile.ReadString(NETWORK_SECTION, 'update_server', 'http://home-lib.net/update/');
     FInpxURL := iniFile.ReadString(NETWORK_SECTION, 'inpx-url', 'http://home-lib.net/download/inpx/test/');
-    FErrorLog := iniFile.ReadBool(NETWORK_SECTION,'use_error_log', false);
-    FTimeOut := iniFile.ReadInteger(NETWORK_SECTION,'time-out',5000);
-    FReadTimeOut := iniFile.ReadInteger(NETWORK_SECTION,'read_time-out',50000);
-    FDwnldInterval := iniFile.ReadInteger(NETWORK_SECTION,'dwnld_interval',0);
+    FErrorLog := iniFile.ReadBool(NETWORK_SECTION, 'use_error_log', False);
+    FTimeOut := iniFile.ReadInteger(NETWORK_SECTION, 'time-out', 5000);
+    FReadTimeOut := iniFile.ReadInteger(NETWORK_SECTION, 'read_time-out', 50000);
+    FDwnldInterval := iniFile.ReadInteger(NETWORK_SECTION, 'dwnld_interval', 0);
 
     FLibUsername := iniFile.ReadString(NETWORK_SECTION, 'lib-user', '');
     FLibPassword := DecodePassString(iniFile.ReadString(NETWORK_SECTION, 'lib-pass', ''));
 
-    FUseIESettings := iniFile.ReadBool(NETWORK_SECTION,'use_ie_settings',false);
+    FUseIESettings := iniFile.ReadBool(NETWORK_SECTION, 'use_ie_settings', False);
 
     //
     // COLORS_SECTION
@@ -668,7 +659,7 @@ begin
     FCheckExistsFiles := iniFile.ReadBool(IMPORT_SECTION, 'CheckFB2Exist', True);
 
     //
-    //   BEHAVIOR_SECTION
+    // BEHAVIOR_SECTION
     //
 
     FShowRusBar := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowRusABC', True);
@@ -679,16 +670,16 @@ begin
 
     FShowSubGenreBooks := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowSubGenreBooks', True);
     FShowFb2Info := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowFb2Info', True);
-    FMinimizeToTray  := iniFile.ReadBool(BEHAVIOR_SECTION, 'MinimizeToTray', False);
-    FAutoStartDwnld  := iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoStartDwnld', False);
-    FAllowMixed :=  iniFile.ReadBool(BEHAVIOR_SECTION, 'AllowMixed', False);
-    FAutoRunUpdate :=  iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoRunUpdate', False);
+    FMinimizeToTray := iniFile.ReadBool(BEHAVIOR_SECTION, 'MinimizeToTray', False);
+    FAutoStartDwnld := iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoStartDwnld', False);
+    FAllowMixed := iniFile.ReadBool(BEHAVIOR_SECTION, 'AllowMixed', False);
+    FAutoRunUpdate := iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoRunUpdate', False);
 
-    FDeleteDeleted := iniFile.ReadBool(BEHAVIOR_SECTION, 'DeleteDeleted',  False);
-    FDeleteFiles := iniFile.ReadBool(BEHAVIOR_SECTION, 'DeleteFiles',  False);
-    FAutoLoadReview := iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoLoadReview',  True);
-    FForceConvertToFBD := iniFile.ReadBool(BEHAVIOR_SECTION, 'ForceConvertToFBD',  True);
-    FOverwriteFB2Info :=  iniFile.ReadBool(BEHAVIOR_SECTION, 'OverwriteFB2Info',  False);
+    FDeleteDeleted := iniFile.ReadBool(BEHAVIOR_SECTION, 'DeleteDeleted', False);
+    FDeleteFiles := iniFile.ReadBool(BEHAVIOR_SECTION, 'DeleteFiles', False);
+    FAutoLoadReview := iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoLoadReview', True);
+    FForceConvertToFBD := iniFile.ReadBool(BEHAVIOR_SECTION, 'ForceConvertToFBD', True);
+    FOverwriteFB2Info := iniFile.ReadBool(BEHAVIOR_SECTION, 'OverwriteFB2Info', False);
     FFBDBookHeaderTemplate := iniFile.ReadString(BEHAVIOR_SECTION, 'BookHeaderTemplate', '%t');
 
     //
@@ -709,13 +700,12 @@ begin
     //
     LoadInitialDirs(iniFile);
 
-//    LoadUpdates(iniFile);
+    // LoadUpdates(iniFile);
     LoadUpdates;
   finally
     iniFile.Free;
   end;
 end;
-
 
 procedure TMHLSettings.SaveSettings;
 var
@@ -752,11 +742,11 @@ begin
     iniFile.WriteInteger(INTERFACE_SECTION, 'ActivePage', FActivePage);
 
     iniFile.WriteString(INTERFACE_SECTION, 'LastAuthor', FLastAuthor);
-    iniFile.WriteString(INTERFACE_SECTION, 'LastSeries', FLastSeries );
+    iniFile.WriteString(INTERFACE_SECTION, 'LastSeries', FLastSeries);
 
-    iniFile.WriteInteger(INTERFACE_SECTION, 'LastBookInAuthors', FLastBookinAuthors );
-    iniFile.WriteInteger(INTERFACE_SECTION, 'LastBookInSeries', FLastBookinSeries);
-    iniFile.WriteInteger(INTERFACE_SECTION, 'LastBookInFavorites', FLastBookinFavorites);
+    iniFile.WriteInteger(INTERFACE_SECTION, 'LastBookInAuthors', FLastBookInAuthors);
+    iniFile.WriteInteger(INTERFACE_SECTION, 'LastBookInSeries', FLastBookInSeries);
+    iniFile.WriteInteger(INTERFACE_SECTION, 'LastBookInFavorites', FLastBookInFavorites);
 
     iniFile.WriteInteger(INTERFACE_SECTION, 'WindowState', WindowState);
 
@@ -765,14 +755,12 @@ begin
     iniFile.WriteInteger(INTERFACE_SECTION, 'FormTop ', FFormTop);
     iniFile.WriteInteger(INTERFACE_SECTION, 'FormLeft ', FFormLeft);
 
-
     iniFile.WriteInteger(INTERFACE_SECTION, 'CoverWidth ', FCoverWidth);
 
-    iniFile.WriteBool(INTERFACE_SECTION, 'BookSR', FBookSRCollapsed );
-    iniFile.WriteBool(INTERFACE_SECTION, 'FileSR', FFileSRCollapsed );
-    iniFile.WriteBool(INTERFACE_SECTION,'OtherSR', FOtherSRCollapsed );
-    iniFile.WriteBool(INTERFACE_SECTION,'ShowEditToolBar',FEditToolBarVisible);
-
+    iniFile.WriteBool(INTERFACE_SECTION, 'BookSR', FBookSRCollapsed);
+    iniFile.WriteBool(INTERFACE_SECTION, 'FileSR', FFileSRCollapsed);
+    iniFile.WriteBool(INTERFACE_SECTION, 'OtherSR', FOtherSRCollapsed);
+    iniFile.WriteBool(INTERFACE_SECTION, 'ShowEditToolBar', FEditToolBarVisible);
 
     SaveSplitters(iniFile);
 
@@ -786,11 +774,11 @@ begin
     iniFile.WriteString(NETWORK_SECTION, 'update_server', FUpdateURL);
     iniFile.WriteString(NETWORK_SECTION, 'inpx-url', FInpxURL);
 
-    iniFile.WriteBool(NETWORK_SECTION,'use_error_log',FErrorLog);
-    iniFile.WriteInteger(NETWORK_SECTION,'time-out',FTimeOut);
-    iniFile.WriteInteger(NETWORK_SECTION,'read_time-out',FReadTimeOut);
-    iniFile.WriteBool(NETWORK_SECTION,'use_ie_settings',FUseIESettings);
-    iniFile.WriteInteger(NETWORK_SECTION,'dwnld_interval',FDwnldInterval);
+    iniFile.WriteBool(NETWORK_SECTION, 'use_error_log', FErrorLog);
+    iniFile.WriteInteger(NETWORK_SECTION, 'time-out', FTimeOut);
+    iniFile.WriteInteger(NETWORK_SECTION, 'read_time-out', FReadTimeOut);
+    iniFile.WriteBool(NETWORK_SECTION, 'use_ie_settings', FUseIESettings);
+    iniFile.WriteInteger(NETWORK_SECTION, 'dwnld_interval', FDwnldInterval);
 
     iniFile.WriteString(NETWORK_SECTION, 'lib-user', FLibUsername);
     iniFile.WriteString(NETWORK_SECTION, 'lib-pass', EncodePassString(FLibPassword));
@@ -831,7 +819,7 @@ begin
 
 
     //
-    //   BEHAVIOR_SECTION
+    // BEHAVIOR_SECTION
     //
 
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowRusABC', FShowRusBar);
@@ -841,18 +829,18 @@ begin
     iniFile.WriteBool(BEHAVIOR_SECTION, 'CoverPanel', FShowInfoPanel);
 
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowSubGenreBooks', FShowSubGenreBooks);
-    iniFile.WriteBool(BEHAVIOR_SECTION, 'MinimizeToTray', FMinimizeToTray );
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'MinimizeToTray', FMinimizeToTray);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowFb2Info', FShowFb2Info);
-    iniFile.WriteBool(BEHAVIOR_SECTION, 'AutoStartDwnld', FAutoStartDwnld );
-    iniFile.WriteBool(BEHAVIOR_SECTION, 'AllowMixed', FAllowMixed );
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'AutoStartDwnld', FAutoStartDwnld);
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'AllowMixed', FAllowMixed);
 
     iniFile.WriteBool(BEHAVIOR_SECTION, 'AutoRunUpdate', FAutoRunUpdate);
 
     iniFile.WriteBool(BEHAVIOR_SECTION, 'DeleteDeleted', FDeleteDeleted);
-    iniFile.WriteBool(BEHAVIOR_SECTION, 'DeleteFiles',  FDeleteFiles);
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'DeleteFiles', FDeleteFiles);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'AutoLoadReview', FAutoLoadReview);
-    iniFile.WriteBool(BEHAVIOR_SECTION, 'ForceConvertToFBD',  FForceConvertToFBD);
-    iniFile.WriteBool(BEHAVIOR_SECTION, 'OverwriteFB2Info',  FOverwriteFB2Info);
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'ForceConvertToFBD', FForceConvertToFBD);
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'OverwriteFB2Info', FOverwriteFB2Info);
     iniFile.WriteString(BEHAVIOR_SECTION, 'BookHeaderTemplate', FFBDBookHeaderTemplate);
     //
     // FILE_SORT_SECTION
@@ -862,11 +850,10 @@ begin
     iniFile.WriteString(FILE_SORT_SECTION, 'InputFolder', FInputFolder);
 
     iniFile.WriteString(FILE_SORT_SECTION, 'Fb2FolderTemplate', FFB2FolderTemplate);
-    iniFile.WriteString(FILE_SORT_SECTION, 'Fb2FileTemplate', FFB2FileTemplate );
+    iniFile.WriteString(FILE_SORT_SECTION, 'Fb2FileTemplate', FFB2FileTemplate);
 
     iniFile.WriteString(FILE_SORT_SECTION, 'FBDFolderTemplate', FFBDFolderTemplate);
     iniFile.WriteString(FILE_SORT_SECTION, 'FBDFileTemplate', FFBDFileTemplate);
-
 
     //
     // INITIAL_DIRS_SECTION
@@ -879,7 +866,7 @@ end;
 
 procedure TMHLSettings.LoadSplitters(iniFile: TIniFile);
 var
-  i: Integer;
+  I: Integer;
   slHelper: TStringList;
   S: string;
 begin
@@ -888,88 +875,91 @@ begin
     slHelper.QuoteChar := '"';
     slHelper.Delimiter := ';';
     slHelper.StrictDelimiter := True;
-    // Сначала сплиттеры
-    S := iniFile.ReadString(INTERFACE_SECTION,'Splitters','250;250;250;250');
-    slHelper.DelimitedText := S;
-    SetLength(FSplitters,4);
-    for I := 0 to slHelper.Count - 1 do
-      FSplitters[i] := StrToInt(slHelper[i]);
 
-    // режимы таблиц
-    slHelper.Clear;
-    S := iniFile.ReadString(INTERFACE_SECTION,'TreeModes','0;1;0;1;0;1');
+    //
+    // Сначала сплиттеры
+    //
+    S := iniFile.ReadString(INTERFACE_SECTION, 'Splitters', '250;250;250;250');
     slHelper.DelimitedText := S;
-    SetLength(FTreeModes,6);
+    SetLength(FSplitters, 4);
     for I := 0 to slHelper.Count - 1 do
-      case StrToInt(slHelper[i]) of
-        0: FTreeModes[i] := tmTree;
-        1: FTreeModes[i] := tmFlat;
+      FSplitters[I] := StrToInt(slHelper[I]);
+
+    //
+    // режимы таблиц
+    //
+    slHelper.Clear;
+    S := iniFile.ReadString(INTERFACE_SECTION, 'TreeModes', '0;1;0;1;0;1');
+    slHelper.DelimitedText := S;
+    SetLength(FTreeModes, 6);
+    for I := 0 to slHelper.Count - 1 do
+      case StrToInt(slHelper[I]) of
+        0: FTreeModes[I] := tmTree;
+        1: FTreeModes[I] := tmFlat;
       end;
   finally
     slHelper.Free;
   end;
 end;
 
-
 procedure TMHLSettings.LoadUpdates;
 var
-  i: Integer;
+  I: Integer;
   sl: TStringList;
   slHelper: TStringList;
   iniFile: TIniFile;
 begin
   FUpdateList.URL := FUpdateURL;
   FUpdateList.Path := UpdatePath;
+
+  iniFile := TIniFile.Create(SystemFileName[sfCollectionsStore]);
   try
-    IniFile := TIniFile.Create(WorkPath + 'collections.ini');
-//     обрабатываем файл
+    // обрабатываем файл
     sl := TStringList.Create;
-    iniFile.ReadSection(UPDATES_SECTION, sl);
-    if sl.Count > 0 then
-    begin
-      slHelper := TStringList.Create;
-      try
-        slHelper.QuoteChar := '"';
-        slHelper.Delimiter := ';';
-        slHelper.StrictDelimiter := True;
-        for i := 0 to sl.Count - 1 do
-        begin
-          if Pos(UPDATE_KEY_PREFIX, sl[i]) = 1 then
+    try
+      iniFile.ReadSection(UPDATES_SECTION, sl);
+      if sl.Count > 0 then
+      begin
+        slHelper := TStringList.Create;
+        try
+          slHelper.QuoteChar := '"';
+          slHelper.Delimiter := ';';
+          slHelper.StrictDelimiter := True;
+          for I := 0 to sl.Count - 1 do
           begin
-            slHelper.DelimitedText := iniFile.ReadString(UPDATES_SECTION, sl[i], '');
-            if slHelper.Count > 5 then
-              FUpdateList.Add(slHelper[0],
-                              slHelper[1],
-                              slHelper[2],
-                              slHelper[3],
-                              StrToBool(slHelper[4]),
-                              StrToInt(slHelper[5]));
+            if Pos(UPDATE_KEY_PREFIX, sl[I]) = 1 then
+            begin
+              slHelper.DelimitedText := iniFile.ReadString(UPDATES_SECTION, sl[I], '');
+              if slHelper.Count > 5 then
+                FUpdateList.Add(slHelper[0], slHelper[1], slHelper[2], slHelper[3], StrToBool(slHelper[4]), StrToInt(slHelper[5]));
+            end;
           end;
+        finally
+          slHelper.Free;
         end;
-      finally
-        slHelper.Free;
+      end // if
+      else
+      begin
+        // Добавим апдейты по умолчанию
+        FUpdateList.Add('Lib.rus.ec [FB2]', '', 'last_librusec.info', 'librusec_update.zip', True, CT_LIBRUSEC_LOCAL_FB);
+        FUpdateList.Add('Lib.rus.ec [FB2]', '', '', 'daily_update.zip', False, CT_LIBRUSEC_LOCAL_FB);
+        FUpdateList.Add('Lib.rus.ec OnLine [FB2]', '', 'last_librusec.info', 'librusec_update.zip', True, CT_LIBRUSEC_ONLINE_FB);
+        FUpdateList.Add('Lib.rus.ec OnLine [FB2]', '', 'last_extra.info', 'extra_update.zip', False, CT_LIBRUSEC_ONLINE_FB);
+        FUpdateList.Add('Lib.rus.ec [USR]', '', 'last_usr.info', 'usr_update.zip', True, CT_LIBRUSEC_USR);
+        FUpdateList.Add('Flibusta OnLine [FB2]', '', 'last_flibusta.info', 'flubusta_update.zip', True, CT_LIBRUSEC_ONLINE_FB);
+        FUpdateList.Add('Flibusta OnLine [FB2]', '', 'last_flibusta_extra.info', 'flibusta_extra_update.zip', False, CT_LIBRUSEC_ONLINE_FB);
       end;
-    end // if
-    else
-    begin
-      //     Добавим апдейты по умолчанию
-      FUpdateList.Add('Lib.rus.ec [FB2]','','last_librusec.info','librusec_update.zip', True,CT_LIBRUSEC_LOCAL_FB);
-      FUpdateList.Add('Lib.rus.ec [FB2]','','','daily_update.zip', False,CT_LIBRUSEC_LOCAL_FB);
-      FUpdateList.Add('Lib.rus.ec OnLine [FB2]','','last_librusec.info','librusec_update.zip', True,CT_LIBRUSEC_ONLINE_FB);
-      FUpdateList.Add('Lib.rus.ec OnLine [FB2]','','last_extra.info','extra_update.zip', False,CT_LIBRUSEC_ONLINE_FB);
-      FUpdateList.Add('Lib.rus.ec [USR]','','last_usr.info','usr_update.zip', True,CT_LIBRUSEC_USR);
-      FUpdateList.Add('Flibusta OnLine [FB2]','','last_flibusta.info','flubusta_update.zip', True,CT_LIBRUSEC_ONLINE_FB);
-      FUpdateList.Add('Flibusta OnLine [FB2]','','last_flibusta_extra.info','flibusta_extra_update.zip', False,CT_LIBRUSEC_ONLINE_FB);
+    finally
+      sl.Free;
     end;
   finally
-    sl.Free;
-    IniFile.Free;
+    iniFile.Free;
   end;
 end;
 
 procedure TMHLSettings.SaveSplitters(iniFile: TIniFile);
 var
-  i: Integer;
+  I: Integer;
   sl: TStringList;
 begin
 
@@ -979,17 +969,17 @@ begin
     sl.Delimiter := ';';
     sl.StrictDelimiter := True;
     // сначала сплиттеры
-    for i := 0 to High(FSplitters) do
-      sl.Add(IntToStr(FSplitters[i]));
+    for I := 0 to High(FSplitters) do
+      sl.Add(IntToStr(FSplitters[I]));
 
-    iniFile.WriteString(INTERFACE_SECTION,'Splitters', sl.DelimitedText);
+    iniFile.WriteString(INTERFACE_SECTION, 'Splitters', sl.DelimitedText);
 
-   // потом - режимы списков
+    // потом - режимы списков
     sl.Clear;
-    for i := 0 to High(FTreeModes) do
-      sl.Add(IntToStr(ord(FTreeModes[i])));
+    for I := 0 to High(FTreeModes) do
+      sl.Add(IntToStr(Ord(FTreeModes[I])));
 
-    iniFile.WriteString(INTERFACE_SECTION,'TreeModes', sl.DelimitedText);
+    iniFile.WriteString(INTERFACE_SECTION, 'TreeModes', sl.DelimitedText);
   finally
     sl.Free;
   end;
@@ -997,7 +987,7 @@ end;
 
 procedure TMHLSettings.LoadReaders(iniFile: TIniFile);
 var
-  i: Integer;
+  I: Integer;
   sl: TStringList;
   slHelper: TStringList;
 begin
@@ -1011,11 +1001,11 @@ begin
         slHelper.QuoteChar := '"';
         slHelper.Delimiter := ';';
         slHelper.StrictDelimiter := True;
-        for i := 0 to sl.Count - 1 do
+        for I := 0 to sl.Count - 1 do
         begin
-          if Pos(READER_KEY_PREFIX, sl[i]) = 1 then
+          if Pos(READER_KEY_PREFIX, sl[I]) = 1 then
           begin
-            slHelper.DelimitedText := iniFile.ReadString(READERS_SECTION, sl[i], '');
+            slHelper.DelimitedText := iniFile.ReadString(READERS_SECTION, sl[I], '');
             if slHelper.Count = 2 then
               FReaders.Add(slHelper[0], slHelper[1]);
           end;
@@ -1047,7 +1037,7 @@ end;
 
 procedure TMHLSettings.SaveReaders(iniFile: TIniFile);
 var
-  i: Integer;
+  I: Integer;
   sl: TStringList;
 begin
   iniFile.EraseSection(READERS_SECTION);
@@ -1059,13 +1049,13 @@ begin
       sl.QuoteChar := '"';
       sl.Delimiter := ';';
       sl.StrictDelimiter := True;
-      for i := 0 to FReaders.Count - 1 do
+      for I := 0 to FReaders.Count - 1 do
       begin
         sl.Clear;
-        sl.Add(FReaders[i].Extension);
-        sl.Add(FReaders[i].Path);
+        sl.Add(FReaders[I].Extension);
+        sl.Add(FReaders[I].Path);
 
-        iniFile.WriteString(READERS_SECTION, Format('%s%u', [READER_KEY_PREFIX, i]), sl.DelimitedText);
+        iniFile.WriteString(READERS_SECTION, Format('%s%u', [READER_KEY_PREFIX, I]), sl.DelimitedText);
       end;
     finally
       sl.Free;
@@ -1075,7 +1065,7 @@ end;
 
 procedure TMHLSettings.LoadScripts(iniFile: TIniFile);
 var
-  i: Integer;
+  I: Integer;
   sl: TStringList;
   slHelper: TStringList;
   S: string;
@@ -1090,11 +1080,11 @@ begin
         slHelper.QuoteChar := '"';
         slHelper.StrictDelimiter := True;
         slHelper.Delimiter := ';';
-        for i := 0 to sl.Count - 1 do
+        for I := 0 to sl.Count - 1 do
         begin
-          if Pos(SCRIPT_KEY_PREFIX, sl[i]) = 1 then
+          if Pos(SCRIPT_KEY_PREFIX, sl[I]) = 1 then
           begin
-            S := iniFile.ReadString(SCRIPTS_SECTION, sl[i], '');
+            S := iniFile.ReadString(SCRIPTS_SECTION, sl[I], '');
             slHelper.DelimitedText := S;
             if slHelper.Count = 3 then
               FScripts.Add(slHelper[0], slHelper[1], slHelper[2]);
@@ -1111,7 +1101,7 @@ end;
 
 procedure TMHLSettings.SaveScripts(iniFile: TIniFile);
 var
-  i: Integer;
+  I: Integer;
   sl: TStringList;
 begin
   iniFile.EraseSection(SCRIPTS_SECTION);
@@ -1123,14 +1113,14 @@ begin
       sl.QuoteChar := '"';
       sl.Delimiter := ';';
       sl.StrictDelimiter := True;
-      for i := 0 to FScripts.Count - 1 do
+      for I := 0 to FScripts.Count - 1 do
       begin
         sl.Clear;
-        sl.Add(FScripts[i].Title);
-        sl.Add(FScripts[i].Path);
-        sl.Add(FScripts[i].Params);
+        sl.Add(FScripts[I].Title);
+        sl.Add(FScripts[I].Path);
+        sl.Add(FScripts[I].Params);
 
-        iniFile.WriteString(SCRIPTS_SECTION, Format('%s%u', [SCRIPT_KEY_PREFIX, i]), sl.DelimitedText);
+        iniFile.WriteString(SCRIPTS_SECTION, Format('%s%u', [SCRIPT_KEY_PREFIX, I]), sl.DelimitedText);
       end;
     finally
       sl.Free;
@@ -1170,7 +1160,7 @@ begin
     sfGenresFB2: Result := AppPath + GENRES_FB2_FILENAME;
     sfGenresNonFB2: Result := AppPath + GENRES_NONFB2_FILENAME;
     sfServerErrorLog: Result := WorkPath + SERVER_ERRORLOG_FILENAME;
-    sfImportErrorLog: Result := WorkPath + IMPORT_ERRORLOG_FILENAME;
+    // sfImportErrorLog: Result := WorkPath + IMPORT_ERRORLOG_FILENAME;         // UNUSED
     sfAppHelp: Result := AppPath + APP_HELP_FILENAME;
     sfLibRusEcUpdate: Result := UpdatePath + LIBRUSEC_UPDATE_FILENAME;
     sfLibRusEcInpx: Result := WorkPath + LIBRUSEC_INPX_FILENAME;
@@ -1192,14 +1182,14 @@ end;
 
 procedure TMHLSettings.LoadInitialDirs(iniFile: TIniFile);
 var
-  i: Integer;
+  I: Integer;
   sl: TStringList;
 begin
   sl := TStringList.Create;
   try
     iniFile.ReadSection(INITIAL_DIRS_SECTION, sl);
-    for i := 0 to sl.Count - 1 do
-      FInitialDirs.Values[sl[i]] := iniFile.ReadString(INITIAL_DIRS_SECTION, sl[i], '');
+    for I := 0 to sl.Count - 1 do
+      FInitialDirs.Values[sl[I]] := iniFile.ReadString(INITIAL_DIRS_SECTION, sl[I], '');
   finally
     sl.Free;
   end;
@@ -1207,12 +1197,12 @@ end;
 
 procedure TMHLSettings.SaveInitialDirs(iniFile: TIniFile);
 var
-  i: Integer;
+  I: Integer;
 begin
   iniFile.EraseSection(INITIAL_DIRS_SECTION);
 
-  for i := 0 to FInitialDirs.Count - 1 do
-    iniFile.WriteString(INITIAL_DIRS_SECTION, FInitialDirs.Names[i], FInitialDirs.ValueFromIndex[i]);
+  for I := 0 to FInitialDirs.Count - 1 do
+    iniFile.WriteString(INITIAL_DIRS_SECTION, FInitialDirs.Names[I], FInitialDirs.ValueFromIndex[I]);
 end;
 
 function TMHLSettings.GetInitialDir(const key: string): string;
@@ -1250,4 +1240,3 @@ initialization
   g_objSettings := nil;
 
 end.
-

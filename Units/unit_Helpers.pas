@@ -1,14 +1,17 @@
-{******************************************************************************}
-{                                                                              }
-{ MyHomeLib                                                                    }
-{                                                                              }
-{ Version 0.9                                                                  }
-{ 20.08.2008                                                                   }
-{ Copyright (c) Aleksey Penkov  alex.penkov@gmail.com                          }
-{                                                                              }
-{ @author Nick Rymanov nrymanov@gmail.com                                      }
-{                                                                              }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Created             12.02.2010
+  * Description
+  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
+  *
+  * History
+  * NickR 15.02.2010    Код переформатирован
+  *
+  ****************************************************************************** *)
 
 unit unit_Helpers;
 
@@ -69,7 +72,12 @@ function CreateImageFromResource(GraphicClass: TGraphicClass; const ResName: str
 implementation
 
 uses
-  SysUtils, Forms, unit_Consts, unit_Settings, ShlObj, ActiveX;
+  SysUtils,
+  Forms,
+  unit_Consts,
+  unit_Settings,
+  ShlObj,
+  ActiveX;
 
 { TStringListEx }
 
@@ -131,8 +139,6 @@ begin
     dlg.DefaultExt := DefaultExt;
     dlg.Filter := Filter;
     dlg.Options := dlg.Options + ExtraOptions;
-
-    { DONE -oNickR -cUsability : восстановить InitialDir }
     dlg.InitialDir := Settings.InitialDir[dialogKey];
 
     Result := dlg.Execute;
@@ -140,7 +146,6 @@ begin
     begin
       strFileName := dlg.FileName;
 
-      { DONE -oNickR -cUsability : сохранить InitialDir }
       Settings.InitialDir[dialogKey] := ExtractFilePath(strFileName);
     end;
   finally
@@ -364,6 +369,8 @@ begin
   BrowseInfo.lpszTitle := PChar(Caption);
   BrowseInfo.ulFlags := BIF_RETURNONLYFSDIRS or BIF_USENEWUI;
   BrowseInfo.lpfn := @BrowseCallbackProc;
+  BrowseInfo.lParam := LPARAM(PChar(strFolder));
+
   lpItemID := SHBrowseForFolder(BrowseInfo);
   if Assigned(lpItemId) then
   begin

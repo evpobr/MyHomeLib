@@ -1,20 +1,24 @@
-{******************************************************************************}
-{                                                                              }
-{ MyHomeLib                                                                    }
-{                                                                              }
-{ Version 1                                                                    }
-{ 14.09.2009                                                                   }
-{ Copyright (c) Aleksey Penkov  alex.penkov@gmail.com                          }
-{               Matvienko Sergei  matv84@mail.ru                               }
-{                                                                              }
-{   Запись в fb2info информации из базы                                        }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Created             12.02.2010
+  * Description         Запись в fb2info информации из базы
+  * Author(s)           Matvienko Sergei  matv84@mail.ru
+  *                     Aleksey Penkov  alex.penkov@gmail.com
+  *
+  * History
+  * NickR 15.02.2010    Код переформатирован
+  *
+  ****************************************************************************** *)
 
 unit unit_WriteFb2Info;
 
 interface
 
-  function WriteFb2InfoToFile(FileName: string):boolean;
+function WriteFb2InfoToFile(FileName: string): Boolean;
 
 implementation
 
@@ -29,29 +33,31 @@ uses
   unit_Templater,
   dm_Collection;
 
-function WriteFb2InfoToFile(FileName: string):boolean;
+function WriteFb2InfoToFile(FileName: string): Boolean;
 var
   R: TBookRecord;
   book: IXMLFictionBook;
-  i: integer;
+  i: Integer;
 
-  A : IXMLAuthorType;
-  S : IXMLSequenceType;
+  A: IXMLAuthorType;
+  S: IXMLSequenceType;
 
   XML: TXmlDocument;
 
-  TitleBook: String;
+  TitleBook: string;
 
   Templater: TTemplater;
 begin
   try
     DMCollection.GetCurrentBook(R);
 
+    { TODO -oNickR -cBug : MEMLEAK проверить }
     XML := TXmlDocument.Create(FileName);
+
     XML.Active := True;
     book := GetFictionBook(XML);
 
-    Templater:= TTemplater.Create;
+    Templater := TTemplater.Create;
     try
       { TODO -oNickR -cBug : нет реакции на невалидный шаблон }
       if Templater.SetTemplate(Settings.BookHeaderTemplate, TpText) = ErFine then
@@ -60,24 +66,22 @@ begin
       Templater.Free;
     end;
 
-    with Book.Description.Titleinfo do
+    with book.Description.Titleinfo do
     begin
       Author.Clear;
       for i := 0 to High(R.Authors) do
       begin
         A := Author.Add;
-        A.Lastname.Text := R.Authors[i].LastName;
-        A.Firstname.Text := R.Authors[i].FirstName;
-        A.Middlename.Text := R.Authors[i].MiddleName;
+        A.Lastname.Text := R.Authors[i].Lastname;
+        A.Firstname.Text := R.Authors[i].Firstname;
+        A.Middlename.Text := R.Authors[i].Middlename;
       end;
 
       Booktitle.Text := TitleBook;
 
       Genre.Clear;
       for i := 0 to High(R.Genres) do
-      begin
-        Genre.Add(R.Genres[i].GenreFb2Code)
-      end;
+        Genre.Add(R.Genres[i].GenreFb2Code);
 
       if R.Series <> '' then
       begin
@@ -86,7 +90,7 @@ begin
           S := Sequence.Add;
 
           S.Name := R.Series;
-          S.Number := R.SeqNumber
+          S.Number := R.SeqNumber;
         except
         end;
       end;

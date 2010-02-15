@@ -1,14 +1,17 @@
-{******************************************************************************}
-{                                                                              }
-{ MyHomeLib                                                                    }
-{                                                                              }
-{ Version 0.9                                                                  }
-{ 20.08.2008                                                                   }
-{ Copyright (c) Aleksey Penkov  alex.penkov@gmail.com                          }
-{                                                                              }
-{ @author Nick Rymanov nrymanov@gmail.com                                      }
-{                                                                              }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Created             12.02.2010
+  * Description
+  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
+  *
+  * History
+  * NickR 15.02.2010    Код переформатирован
+  *
+  ****************************************************************************** *)
 
 unit unit_Readers;
 
@@ -51,7 +54,6 @@ type
 
     property Items[Index: Integer]: TReaderDesc read GetReader write SetReader; default;
   end;
-
 
 implementation
 
