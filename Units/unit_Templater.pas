@@ -24,7 +24,7 @@ uses
   unit_Globals;
 
 const
-  MASK_ELEMENTS = 10;
+  COL_MASK_ELEMENTS = 11;
 
 type
   TErrorType = (ErFine, ErTemplate, ErBlocks, ErElements);
@@ -63,8 +63,8 @@ end;
 
 function TTemplater.ValidateTemplate(Template: string; TemplType: TTemplateType): TErrorType;
 const
-  { TODO : совпадает с названием константы }
-  MASK_ELEMENTS: array [1 .. 8] of string = ('f', 't', 's', 'n', 'id', 'g', 'fl', 'rg');
+  { DONE : совпадает с названием константы }
+  MASK_ELEMENTS: array [1 .. COL_MASK_ELEMENTS] of string = ('f', 'fa', 't', 's', 'n', 'id', 'g', 'ga', 'ff', 'fl', 'rg');
 var
   stack: array of TElement;
   h, k, i, j, StackPos, ElementPos, ColElements, last_char, last_col_elements: Integer;
@@ -260,7 +260,7 @@ type
     templ, value: string;
   end;
 
-  TMaskElements = array [1 .. MASK_ELEMENTS] of TMaskElement;
+  TMaskElements = array [1 .. COL_MASK_ELEMENTS] of TMaskElement;
 var
   AuthorName, Firstname, MiddleName, Lastname: string;
   i, j: Integer;
@@ -270,22 +270,27 @@ begin
   Result := FTemplate;
 
   // Формирование массива значений элементов маски
-  MaskElements[1].templ := 's';
-  if R.Series <> NO_SERIES_TITLE then
-    MaskElements[1].value := Trim(R.Series)
+  MaskElements[1].templ := 'ga';
+  for i := Low(R.Genres) to High(R.Genres) do
+  begin
+    MaskElements[1].value := MaskElements[1].value + R.Genres[i].Alias;
+    if i < High(R.Genres) then
+      MaskElements[1].value := MaskElements[1].value + ', ';
+  end;
+
+  MaskElements[2].templ := 'rg';
+  MaskElements[2].value := Trim(R.RootGenre);
+
+  MaskElements[3].templ := 'g';
+  MaskElements[3].value := Trim(R.Genres[0].Alias);
+
+  MaskElements[4].templ := 'ff';
+  if R.AuthorCount > 0 then
+    MaskElements[4].value := R.Authors[ Low(R.Authors)].FLastName[1]
   else
-    MaskElements[1].value := '';
+    MaskElements[4].value := '';
 
-  MaskElements[2].templ := 'n';
-  if R.SeqNumber <> 0 then
-    MaskElements[2].value := IntToStr(R.SeqNumber)
-  else
-    MaskElements[2].value := '';
-
-  MaskElements[3].templ := 't';
-  MaskElements[3].value := Trim(R.Title);
-
-  MaskElements[4].templ := 'fa';
+  MaskElements[5].templ := 'fa';
   AuthorName := '';
   if R.AuthorCount > 0 then
     for i := Low(R.Authors) to High(R.Authors) do
@@ -299,16 +304,10 @@ begin
       if i < High(R.Authors) then
         AuthorName := AuthorName + ', ';
     end;
-  MaskElements[4].value := AuthorName;
-
-  MaskElements[5].templ := 'id';
-  MaskElements[5].value := IntToStr(R.LibID);
+  MaskElements[5].value := AuthorName;
 
   MaskElements[6].templ := 'fl';
-  if R.AuthorCount > 0 then
-    MaskElements[6].value := R.Authors[ Low(R.Authors)].FLastName[1]
-  else
-    MaskElements[6].value := '';
+  MaskElements[6].value := MaskElements[4].value;
 
   MaskElements[7].templ := 'f';
   if R.AuthorCount > 0 then
@@ -316,38 +315,25 @@ begin
   else
     MaskElements[7].value := '';
 
-  if ALibrary = nil then
-  begin
-    MaskElements[8].templ := 'ga';
-    for i := Low(R.Genres) to High(R.Genres) do
-    begin
-      MaskElements[8].value := MaskElements[8].value + R.Genres[i].Alias;
-      if i < High(R.Genres) then
-        MaskElements[8].value := MaskElements[8].value + ', ';
-    end;
-
-    MaskElements[9].templ := 'g';
-    MaskElements[9].value := Trim(R.Genres[0].Alias);
-
-    MaskElements[10].templ := 'rg';
-    MaskElements[10].value := Trim(DMCollection.GetRootGenre(R.LibID));
-  end
+  MaskElements[8].templ := 's';
+  if R.Series <> NO_SERIES_TITLE then
+    MaskElements[8].value := Trim(R.Series)
   else
-  begin
-    MaskElements[8].templ := 'ga';
-    for i := Low(R.Genres) to High(R.Genres) do
-    begin
-      MaskElements[8].value := MaskElements[8].value + R.Genres[i].Alias;
-      if i < High(R.Genres) then
-        MaskElements[8].value := MaskElements[8].value + ', ';
-    end;
+    MaskElements[8].value := '';
 
-    MaskElements[9].templ := 'g';
-    MaskElements[9].value := Trim(ALibrary.GetGenreAlias(R.Genres[0].GenreFb2Code));
+  MaskElements[9].templ := 'n';
+  if R.SeqNumber <> 0 then
+    MaskElements[9].value := IntToStr(R.SeqNumber)
+  else
+    MaskElements[9].value := '';
 
-    MaskElements[10].templ := 'rg';
-    MaskElements[10].value := Trim(ALibrary.GetTopGenreAlias(R.Genres[0].GenreFb2Code));
-  end;
+  MaskElements[10].templ := 't';
+  MaskElements[10].value := Trim(R.Title);
+
+
+  MaskElements[11].templ := 'id';
+  MaskElements[11].value := IntToStr(R.LibID);
+
 
   // Цикл удаления "пустых" блоков
   for i := Low(MaskElements) to High(MaskElements) do
@@ -366,12 +352,10 @@ begin
       Delete(Result, i, 1);
 
   // Цикл замены элементов шаблона их значениями
-  for i := 1 to MASK_ELEMENTS do
+  for i := 1 to COL_MASK_ELEMENTS do
   begin
-    if MaskElements[i].templ[1] = UpCase(MaskElements[i].templ[1]) then
-      StrReplace('%' + MaskElements[i].templ, Transliterate(MaskElements[i].value), Result)
-    else
-      StrReplace('%' + MaskElements[i].templ, MaskElements[i].value, Result);
+    StrReplace('%' + UpperCase(MaskElements[i].templ), Transliterate(MaskElements[i].value), Result);
+    StrReplace('%' + MaskElements[i].templ, MaskElements[i].value, Result);
   end;
 end;
 
