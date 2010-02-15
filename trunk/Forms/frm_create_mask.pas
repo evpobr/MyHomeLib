@@ -28,7 +28,9 @@ uses
   StdCtrls,
   ExtCtrls,
   unit_StaticTip,
-  unit_Templater;
+  unit_Templater,
+  ComCtrls,
+  unit_Globals;
 
 type
   TfrmCreateMask = class(TForm)
@@ -38,9 +40,43 @@ type
     pnButtons: TPanel;
     btnOk: TButton;
     btnCancel: TButton;
-    stDescription: TMHLStaticTip;
     Label3: TLabel;
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    stDescription: TMHLStaticTip;
+    CheckBox1: TCheckBox;
+    Edit1: TEdit;
+    Edit2: TEdit;
+    Edit3: TEdit;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Edit5: TEdit;
+    Edit4: TEdit;
+    Edit6: TEdit;
+    Label9: TLabel;
+    CheckBox2: TCheckBox;
+    Edit7: TEdit;
+    CheckBox3: TCheckBox;
+    Edit8: TEdit;
+    CheckBox4: TCheckBox;
+    Edit9: TEdit;
+    CheckBox5: TCheckBox;
+    Edit10: TEdit;
+    CheckBox6: TCheckBox;
+    Label4: TLabel;
+    Edit11: TEdit;
+    Edit12: TEdit;
+    Label10: TLabel;
+    CheckBox7: TCheckBox;
+    Edit13: TEdit;
     procedure SaveMask(Sender: TObject);
+    procedure ParseTestTemplate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure PageControl1Change(Sender: TObject);
+    procedure edTemplateChange(Sender: TObject);
 
   private
     FTemplater: TTemplater;
@@ -51,6 +87,7 @@ type
     function GetTemplate: string;
     procedure SetTemplate(const Value: string);
 
+    function GetTestData: TBookRecord;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -63,6 +100,7 @@ function EditTemplate(ATemplateType: TTemplateType; var ATemplate: string): Bool
 
 var
   frmCreateMask: TfrmCreateMask;
+  Templater: TTemplater;
 
 implementation
 
@@ -73,8 +111,38 @@ resourcestring
   rstrPathTemplateCaption = 'Редактирование шаблона: Путь к файлу';
   rstrTextTemplateCaption = 'Редактирование шаблона: Текст';
 
+  rstrSampleTemplate = '[%s [(%n) ]- ]%t';
+
 const
   DlgCaptions: array [TTemplateType] of string = (rstrFileTemplateCaption, rstrPathTemplateCaption, rstrTextTemplateCaption);
+
+function TfrmCreateMask.GetTestData: TBookRecord;
+var
+  R: TBookRecord;
+begin
+  if CheckBox2.Checked then
+    R.Title := Edit7.Text;
+  if CheckBox3.Checked then
+    R.Series := Edit8.Text;
+  if CheckBox5.Checked then
+    R.Code := StrToInt(Edit10.Text);
+  if CheckBox4.Checked then
+    R.SeqNumber := StrToInt(Edit9.Text);
+  if CheckBox1.Checked then
+  begin
+    R.AddAuthor(Edit1.Text, Edit2.Text, Edit3.Text);
+    R.AddAuthor(Edit4.Text, Edit5.Text, Edit6.Text);
+  end;
+  if CheckBox6.Checked then
+  begin
+    R.AddGenreAny('', Edit11.Text);
+    R.AddGenreAny('', Edit12.Text);
+  end;
+  if CheckBox7.Checked then
+    R.RootGenre := Edit12.Text;
+
+  Result := R;
+end;
 
 function EditTemplate(ATemplateType: TTemplateType; var ATemplate: string): Boolean;
 var
@@ -97,12 +165,55 @@ constructor TfrmCreateMask.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FTemplater := TTemplater.Create;
+  Templater := TTemplater.Create;
 end;
 
 destructor TfrmCreateMask.Destroy;
 begin
   FTemplater.Free;
+  Templater.Free;
   inherited Destroy;
+end;
+
+procedure TfrmCreateMask.edTemplateChange(Sender: TObject);
+begin
+  if PageControl1.ActivePageIndex = 1 then
+    ParseTestTemplate(Sender);
+end;
+
+procedure TfrmCreateMask.PageControl1Change(Sender: TObject);
+begin
+  if PageControl1.ActivePageIndex = 0 then
+  begin
+    Label2.Font.Color := clWindowText;
+    Label2.Caption := rstrSampleTemplate;
+  end;
+
+  if PageControl1.ActivePageIndex = 1 then
+    ParseTestTemplate(Sender);
+end;
+
+procedure TfrmCreateMask.ParseTestTemplate(Sender: TObject);
+var
+  R: TBookRecord;
+  Valid: TErrorType;
+begin
+  Valid := Templater.SetTemplate(edTemplate.Text, FTemplateType);
+  if Valid <> ErFine then
+  begin
+    Label2.Font.Color := clRed;
+    Label2.Caption := 'Шаблон неверен';
+    exit;
+  end;
+  R := GetTestData;
+  Label2.Font.Color := clWindowText;
+  Label2.Caption := Templater.ParseString(R, FTemplateType);
+end;
+
+procedure TfrmCreateMask.FormShow(Sender: TObject);
+begin
+  PageControl1.TabIndex := 0;
+  Label2.Caption := rstrSampleTemplate;
 end;
 
 function TfrmCreateMask.GetTemplate: string;

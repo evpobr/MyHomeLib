@@ -43,7 +43,6 @@ type
   public
     constructor Create;
 
-    function GetFB2BookInfo1(book: IXMLFictionBook): TBookRecord;
     function ValidateTemplate(Template: string; TemplType: TTemplateType): TErrorType;
     function SetTemplate(Template: string; TemplType: TTemplateType): TErrorType;
     function ParseString(R: TBookRecord; TemplType: TTemplateType; ALibrary: TMHLLibrary = nil): string;
@@ -60,42 +59,6 @@ constructor TTemplater.Create;
 begin
   inherited;
   FTemplate := '';
-end;
-
-function TTemplater.GetFB2BookInfo1(book: IXMLFictionBook): TBookRecord;
-var
-  i: Integer;
-  R: TBookRecord;
-begin
-  with book.Description.Titleinfo do
-  begin
-    for i := 0 to Author.Count - 1 do
-      R.AddAuthor(Author[i].Lastname.Text, Author[i].Firstname.Text, Author[i].MiddleName.Text);
-
-    if Booktitle.IsTextElement then
-      R.Title := Booktitle.Text;
-
-    for i := 0 to Genre.Count - 1 do
-      R.AddGenreFB2('', Genre[i], '');
-
-    R.Lang := Lang;
-    R.KeyWords := KeyWords.Text;
-
-    if Sequence.Count > 0 then
-    begin
-      try
-        R.Series := Sequence[0].Name;
-        R.SeqNumber := Sequence[0].Number;
-      except
-      end;
-    end;
-
-    for i := 0 to Annotation.P.Count - 1 do
-      if Annotation.P.Items[i].IsTextElement then
-        R.Annotation := R.Annotation + #10#13 + Annotation.P.Items[i].OnlyText;
-  end;
-
-  Result := R;
 end;
 
 function TTemplater.ValidateTemplate(Template: string; TemplType: TTemplateType): TErrorType;
@@ -324,27 +287,34 @@ begin
 
   MaskElements[4].templ := 'fa';
   AuthorName := '';
-  for i := Low(R.Authors) to High(R.Authors) do
-  begin
-    Lastname := R.Authors[i].FLastName;
-    if R.Authors[i].FFirstName <> '' then
-      Firstname := ' ' + R.Authors[i].FFirstName[1] + '.';
-    if R.Authors[i].FMiddleName <> '' then
-      MiddleName := ' ' + R.Authors[i].FMiddleName[1] + '.';
-    AuthorName := AuthorName + Lastname + Firstname + MiddleName;
-    if i < High(R.Authors) then
-      AuthorName := AuthorName + ', ';
-  end;
+  if R.AuthorCount > 0 then
+    for i := Low(R.Authors) to High(R.Authors) do
+    begin
+      Lastname := R.Authors[i].FLastName;
+      if R.Authors[i].FFirstName <> '' then
+        Firstname := ' ' + R.Authors[i].FFirstName[1] + '.';
+      if R.Authors[i].FMiddleName <> '' then
+        MiddleName := ' ' + R.Authors[i].FMiddleName[1] + '.';
+      AuthorName := AuthorName + Lastname + Firstname + MiddleName;
+      if i < High(R.Authors) then
+        AuthorName := AuthorName + ', ';
+    end;
   MaskElements[4].value := AuthorName;
 
   MaskElements[5].templ := 'id';
   MaskElements[5].value := IntToStr(R.LibID);
 
   MaskElements[6].templ := 'fl';
-  MaskElements[6].value := R.Authors[ Low(R.Authors)].FLastName[1];
+  if R.AuthorCount > 0 then
+    MaskElements[6].value := R.Authors[ Low(R.Authors)].FLastName[1]
+  else
+    MaskElements[6].value := '';
 
   MaskElements[7].templ := 'f';
-  MaskElements[7].value := Trim(R.Authors[0].GetFullName);
+  if R.AuthorCount > 0 then
+    MaskElements[7].value := Trim(R.Authors[0].GetFullName)
+  else
+    MaskElements[7].value := '';
 
   if ALibrary = nil then
   begin
