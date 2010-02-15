@@ -1,13 +1,18 @@
-
-{******************************************************************************}
-{                                                                              }
-{                                 MyHomeLib                                    }
-{                                                                              }
-{                                Version 0.9                                   }
-{                                20.08.2008                                    }
-{                    Copyright (c) Aleksey Penkov  alex.penkov@gmail.com       }
-{                                                                              }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Created             12.02.2010
+  * Description
+  * Author(s)           Aleksey Penkov  alex.penkov@gmail.com
+  *                     Nick Rymanov (nrymanov@gmail.com)
+  *
+  * History
+  * NickR 15.02.2010    Код переформатирован
+  *
+  ****************************************************************************** *)
 
 unit unit_Globals;
 
@@ -25,22 +30,23 @@ uses
   ZipForge;
 
 type
-
   TTXTEncoding = (enUTF8, en1251, enUnicode, enUnknown);
 
-  TCoverImageType = (itPng,itJPG);
+  TCoverImageType = (itPng, itJPG);
 
-  TTreeMode = (tmTree,tmFlat);
+  TTreeMode = (tmTree, tmFlat);
 
   TGenresType = (gtFb2, gtAny);
 
-  TBookIdList = array of record
-                   ID: integer;
-                  Res: boolean;
-                end;
+  TBookIdStruct = record
+    ID: Integer;
+    Res: Boolean;
+  end;
+
+  TBookIdList = array of TBookIdStruct;
 
 type
-  EInvalidLogin = class (Exception);
+  EInvalidLogin = class(Exception);
 
 //
 // Global consts
@@ -118,14 +124,14 @@ function isOnlineCollection(t: COLLECTION_TYPE): Boolean; //inline;
 function isFB2Collection(t: COLLECTION_TYPE): Boolean; //inline;
 function isNonFB2Collection(t: COLLECTION_TYPE): Boolean; //inline;
 
-// -----------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------
 function Transliterate(Input: string): string;
 function CheckSymbols(Input: string): string;
-///procedure GetFileList(InitDir, Ext: string; var OutList: TStringList);
+/// procedure GetFileList(InitDir, Ext: string; var OutList: TStringList);
 function EncodePassString(Input: string): string;
 function DecodePassString(Input: string): string;
-//function DecodeBase64(const CinLine: ansistring): ansistring;
-procedure StrReplace(s1, s2: String; var s3: String);
+// function DecodeBase64(const CinLine: ansistring): ansistring;
+procedure StrReplace(s1, s2: string; var s3: string);
 
 function ClearDir(const DirectoryName: string): Boolean;
 function IsRelativePath(const FileName: string): Boolean;
@@ -134,37 +140,34 @@ procedure CopyFile(const SourceFileName: string; const DestFileName: string);
 procedure ConvertToTxt(const SourceFileName: string; DestFileName: string; Enc: TTXTEncoding);
 procedure ZipFile(const FileName: string; const ZipFileName: string);
 
-function InclideUrlSlash(S: string):string;
+function InclideUrlSlash(S: string): string;
 
-function PosChr(aCh: Char; const S: string): integer;
+function PosChr(aCh: Char; const S: string): Integer;
 function CompareInt(i1, i2: Integer): Integer;
-function CompareDate(d1,d2: TDateTime):Integer;
+function CompareDate(d1, d2: TDateTime): Integer;
 
 function GetFullBookPath(const Table: TAbsTable; const FCollectionRoot: string): string;
 
-function GenerateBookLocation(const FullName: string):string;
-function GenerateFileName(const Title: string; libID: integer):string;
+function GenerateBookLocation(const FullName: string): string;
+function GenerateFileName(const Title: string; libID: Integer): string;
 
 procedure DebugOut(const DebugMessage: string); overload;
-procedure DebugOut(const DebugMessage: string; const Args: array of const); overload;
+procedure DebugOut(const DebugMessage: string; const Args: array of const ); overload;
 
-procedure SetProxySettings(var idHTTP:TidHTTP);
+procedure SetProxySettings(var IdHTTP: TidHTTP);
 
-function c_GetTempPath: String;
+function c_GetTempPath: string;
 function GetSpecialPath(CSIDL: word): string;
-function GetLibUpdateVersion(Full: boolean):integer;
-function ExecAndWait(const FileName,Params: String; const WinState: Word): boolean;
+function GetLibUpdateVersion(Full: Boolean): Integer;
+function ExecAndWait(const FileName, Params: string; const WinState: word): Boolean;
 
-//function GetFileNameZip(Zip: TZipForge; No: integer): string;
+// function GetFileNameZip(Zip: TZipForge; No: integer): string;
 function CleanExtension(const Ext: string): string;
-function ExtractShortFileName(FileName: string):string;
+function ExtractShortFileName(FileName: string): string;
 
-function TestArchive(FileName: string): boolean;
+function TestArchive(FileName: string): Boolean;
 
-procedure CreateImage(ext:string;
-                      var IMG: TGraphic;
-                      var ImageType:TCoverImageType);
-
+procedure CreateImage(Ext: string; var IMG: TGraphic; var ImageType: TCoverImageType);
 
 type
   TAppLanguage = (alEng, alRus);
@@ -174,19 +177,19 @@ type
 
   PDownloadData = ^TDownloadData;
   TDownloadData = record
-          ID: integer;
-      Author: string;
-       Title: string;
-        Size: integer;
+    ID: Integer;
+    Author: string;
+    Title: string;
+    Size: Integer;
     FileName: string;
-         URL: string;
-       State: TDownloadState;
+    URL: string;
+    State: TDownloadState;
   end;
 
   PAuthorData = ^TAuthorData;
   TAuthorData = record
-    Text: String;
-    First,Last,Middle: string;
+    Text: string;
+    First, Last, Middle: string;
     ID, Level: Integer;
     Checked: Boolean;
   end;
@@ -196,79 +199,80 @@ type
   TBookData = record
     nodeType: TBookNodeType;
 
-    Title, Series, Genre, FullName, ColName, FileType : String;
+    Title, Series, Genre, FullName, ColName, FileType: string;
 
     Lang: string[2];
 
     ID, SeriesID, Size, Rate, No, ImageIndex, Progress, LibRate, Code: Integer;
     RatePos: Integer;
-    Locale: boolean;
-    Deleted: boolean;
+    Locale: Boolean;
+    Deleted: Boolean;
     Date: TDateTime;
   end;
 
   PGenreData = ^TGenreData;
   TGenreData = record
-    ID: integer;
-    Text: String;
-    Code: String;
+    ID: Integer;
+    Text: string;
+    Code: string;
     FB2Code: string;
-    ParentCode: String;
+    ParentCode: string;
   end;
 
   PGroupData = ^TGenreData;
   TGroupData = record
-    ID: integer;
-    Text: String;
+    ID: Integer;
+    Text: string;
   end;
 
   TGenreRecord = record
-    GenreCode: String;
-    GenreFb2Code: String;
-    Alias: String;
+    GenreCode: string;
+    GenreFb2Code: string;
+    Alias: string;
   end;
 
   TAuthorRecord = record
-    FFirstName: String;
-    FMiddleName: String;
-    FLastName: String;
+    FFirstName: string;
+    FMiddleName: string;
+    FLastName: string;
 
     ID: Integer;
 
-    procedure SetFirstName(const Value: String); inline;
-    procedure SetLastName(const Value: String); inline;
-    procedure SetMiddleName(const Value: String); inline;
+    procedure SetFirstName(const Value: string); inline;
+    procedure SetLastName(const Value: string); inline;
+    procedure SetMiddleName(const Value: string); inline;
 
-    function GetFullName: String; inline;
+    function GetFullName: string; inline;
 
-    property FirstName: String read FFirstName write SetFirstName;
-    property MiddleName: String read FMiddleName write SetMiddleName;
-    property LastName: String read FLastName write SetLastName;
+    property FirstName: string read FFirstName write SetFirstName;
+    property MiddleName: string read FMiddleName write SetMiddleName;
+    property LastName: string read FLastName write SetLastName;
   end;
 
   TBookRecord = record
-    Title: String;
-    Series: String;
+    Title: string;
+    Series: string;
 
-    Folder: String;
-    FileName: String;
-    FileExt: String;
+    Folder: string;
+    FileName: string;
+    FileExt: string;
 
     Authors: array of TAuthorRecord;
     Genres: array of TGenreRecord;
+    RootGenre: string;
 
     Code: Integer;
     Size: Integer;
     InsideNo: Integer;
     SeqNumber: Integer;
-    LibID: Integer;
+    libID: Integer;
 
     Deleted: Boolean;
     Local: Boolean;
     Date: TDateTime;
 
     Lang: string[2];
-    LibRate: integer;
+    LibRate: Integer;
 
     KeyWords: string;
     URI: string;
@@ -279,28 +283,28 @@ type
     function GenerateLocation: string;
 
     procedure ClearAuthors;
-    procedure AddAuthor(const LastName: String; const FirstName: String; const MiddleName: String);
+    procedure AddAuthor(const LastName: string; const FirstName: string; const MiddleName: string);
     function GetAuthorCount: Integer;
     property AuthorCount: Integer read GetAuthorCount;
 
     procedure ClearGenres;
-    procedure AddGenreFB2(const GenreCode: String; const GenreFb2Code: String; const Alias: String);
-    procedure AddGenreAny(const GenreCode: String; const Alias: String);
+    procedure AddGenreFB2(const GenreCode: string; const GenreFb2Code: string; const Alias: string);
+    procedure AddGenreAny(const GenreCode: string; const Alias: string);
     function GetGenreCount: Integer;
     property GenreCount: Integer read GetGenreCount;
-
   end;
 
   PFileData = ^TFileData;
+
   TFileData = record
-    FullPath, FileName, Folder, Ext, Title: String;
-    Size: integer;
-    DataType : (dtFolder,dtFile);
+    FullPath, FileName, Folder, Ext, Title: string;
+    Size: Integer;
+    DataType: (dtFolder, dtFile);
     Date: TDateTime;
   end;
 
   TColumnData = record
-    Text: String;
+    Text: string;
     Position, Width, MaxWidth, MinWidth: Integer;
     Alignment: TAlignment;
     Options: TVTColumnOptions;
@@ -322,17 +326,20 @@ uses
   pngimage;
 
 const
-  lat: set of char = ['A'..'Z', 'a'..'z', '\', '-', ':', '`', ',', '.', '0'..'9', '_', ' ','(', ')', '[', ']', '{', '}'];
-const
-  denied: set of char = ['<', '>', ':', '"', '/', '|', '*', '?'];
-const
-  TransL: array[0..31] of string = ('a', 'b', 'v', 'g', 'd', 'e', 'zh', 'z', 'i', 'y', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'f', 'h', 'c', 'ch', 'sh', 'sch', '''', 'i', '''', 'e', 'yu', 'ya');
-const
-  TransU: array[0..31] of string = ('A', 'B', 'V', 'G', 'D', 'E', 'Zh', 'Z', 'I', 'Y', 'K', 'L', 'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'F', 'H', 'C', 'Ch', 'Sh', 'Sch', '''', 'I', '''', 'E', 'Yu', 'Ya');
+  lat: set of Char = ['A' .. 'Z', 'a' .. 'z', '\', '-', ':', '`', ',', '.', '0' .. '9', '_', ' ', '(', ')', '[', ']', '{', '}'];
 
-// -----------------------------------------------------------------------------
-// различная информация о коллекции
-// -----------------------------------------------------------------------------
+const
+  denied: set of Char = ['<', '>', ':', '"', '/', '|', '*', '?'];
+
+const
+  TransL: array [0 .. 31] of string = ('a', 'b', 'v', 'g', 'd', 'e', 'zh', 'z', 'i', 'y', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'f', 'h', 'c', 'ch', 'sh', 'sch', '''', 'i', '''', 'e', 'yu', 'ya');
+
+const
+  TransU: array [0 .. 31] of string = ('A', 'B', 'V', 'G', 'D', 'E', 'Zh', 'Z', 'I', 'Y', 'K', 'L', 'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'F', 'H', 'C', 'Ch', 'Sh', 'Sch', '''', 'I', '''', 'E', 'Yu', 'Ya');
+
+  // -----------------------------------------------------------------------------
+  // различная информация о коллекции
+  // -----------------------------------------------------------------------------
 function isPrivateCollection(t: COLLECTION_TYPE): Boolean;
 begin
   Result := (t and CT_TYPE_MASK) = LIBRARY_PRIVATE;
@@ -367,13 +374,13 @@ end;
 //
 // -----------------------------------------------------------------------------
 
-function PosChr(aCh: Char; const S: string): integer;
+function PosChr(aCh: Char; const S: string): Integer;
 var
-  i, max: integer;
+  i, max: Integer;
 begin
   Result := 0;
-  Max := Length(S);
-  for i := 1 to Max do
+  max := Length(S);
+  for i := 1 to max do
     if S[i] = aCh then
     begin
       Result := i;
@@ -381,9 +388,9 @@ begin
     end;
 end;
 
-procedure StrReplace(s1, s2: String; var s3: String);
+procedure StrReplace(s1, s2: string; var s3: string);
 var
-  p: integer;
+  p: Integer;
 begin
   p := Pos(s1, s3);
   while p > 0 do
@@ -401,28 +408,29 @@ begin
   L := Length(FileName);
   if
     ((L >= 1) and IsPathDelimiter(FileName, 1)) or // \dir\subdir or /dir/subdir
-    ((L >= 2) and (FileName[1] in ['A'..'Z', 'a'..'z']) and (FileName[2] = ':')) // C:, D:, etc.
+    ((L >= 2) and (FileName[1] in ['A' .. 'Z', 'a' .. 'z']) and (FileName[2] = ':')) // C:, D:, etc.
     then
     Result := False;
 end;
 
 function CreateFolders(Root: string; const Path: string): Boolean;
 var
-  fullPath: string;
+  FullPath: string;
 begin
   if Path <> '\' then
   begin
-    if Root = '' then Root := Settings.AppPath;
-    fullPath := ExcludeTrailingPathDelimiter(
+    if Root = '' then
+      Root := Settings.AppPath;
+    FullPath := ExcludeTrailingPathDelimiter(
       IfThen(IsRelativePath(Path), IncludeTrailingPathDelimiter(Root) + Path, Path)
-      )
+      );
   end
   else
-    fullPath := ExcludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(Root));
-  Result := SysUtils.ForceDirectories(fullPath);
+    FullPath := ExcludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(Root));
+  Result := SysUtils.ForceDirectories(FullPath);
 end;
-
 {$WARNINGS OFF}
+
 procedure CopyFile(const SourceFileName: string; const DestFileName: string);
 var
   SourceFile: TFileStream;
@@ -449,8 +457,8 @@ var
 begin
   Converter := TFb2ToText.Create;
   try
-    DestFileName := ChangeFileExt(DestFileName,'.txt');
-    Converter.Convert(SourceFileName,DestFileName, Enc);
+    DestFileName := ChangeFileExt(DestFileName, '.txt');
+    Converter.Convert(SourceFileName, DestFileName, Enc);
   finally
     Converter.Free;
   end;
@@ -489,8 +497,8 @@ begin
   for i := 1 to Length(Input) do
     Result[i] := Chr(Ord(Input[i]) - 5);
 end;
-
 {$WARNINGS OFF}
+
 function ClearDir(const DirectoryName: string): Boolean;
 var
   SearchRec: TSearchRec;
@@ -502,8 +510,8 @@ begin
     if FindFirst(ACurrentDir + '*.*', faAnyFile, SearchRec) = 0 then
     try
       repeat
-       if (SearchRec.Name <> '.') and (SearchRec.Name <> '..') then
-           SysUtils.DeleteFile(ACurrentDir + SearchRec.Name)
+        if (SearchRec.Name <> '.') and (SearchRec.Name <> '..') then
+          SysUtils.DeleteFile(ACurrentDir + SearchRec.Name);
       until FindNext(SearchRec) <> 0;
     finally
       SysUtils.FindClose(SearchRec);
@@ -516,50 +524,49 @@ end;
 
 function Transliterate(Input: string): string;
 var
-  s, conv: string;
-  f, o: integer;
+  S, conv: string;
+  f, o: Integer;
 begin
-  Conv := '';
-  for f := 1 to length(input) do
+  conv := '';
+  for f := 1 to Length(Input) do
   begin
-    o := ord(Input[f]);
+    o := Ord(Input[f]);
     if (o >= 1072) and (o <= 1104) then
-      s := TransL[o - 1072]
-    else if (o >= 1040 ) and (o <= 1071) then
-      s := TransU[o - 1040]
+      S := TransL[o - 1072]
+    else if (o >= 1040) and (o <= 1071) then
+      S := TransU[o - 1040]
+    else if CharInSet(Input[f], lat) then
+      S := Input[f]
     else
-      if CharInSet(Input[f],lat) then
-        s := Input[f]
-    else
-      s := '_';
-    Conv := Conv + s;
+      S := '_';
+    conv := conv + S;
   end;
-  result := conv;
+  Result := conv;
 end;
 
 function CheckSymbols(Input: string): string;
 var
-  s, conv: string;
-  f: integer;
+  S, conv: string;
+  f: Integer;
 begin
-  Conv := '';
-  for f := 1 to length(input) do
+  conv := '';
+  for f := 1 to Length(Input) do
   begin
-    if CharInSet(Input[f],denied) then
-      s := ' '
+    if CharInSet(Input[f], denied) then
+      S := ' '
     else
-      s := Input[f];
-    Conv := Conv + s;
+      S := Input[f];
+    conv := conv + S;
   end;
 
   // фильтруем точки в конце имени
-  if Length(Conv) > 0 then
-    while Conv[Length(Conv)] = '.' do
-      delete(Conv, Length(Conv), 1);
-  result := conv;
+  if Length(conv) > 0 then
+    while conv[Length(conv)] = '.' do
+      delete(conv, Length(conv), 1);
+  Result := conv;
 end;
 
-function GenerateBookLocation(const FullName: string):string;
+function GenerateBookLocation(const FullName: string): string;
 var
   Letter: string;
   AuthorName: string;
@@ -567,7 +574,7 @@ begin
   //
   // Не обрезаем пробелы здесь!!! От их наличия зависит расположение файла - на букве или в каталоге '_'
   //
-  AuthorName := CheckSymbols(FullName);  // Ф.И.О. - полностью!
+  AuthorName := CheckSymbols(FullName); // Ф.И.О. - полностью!
 
   Letter := Trim(AuthorName[1]);
   if Letter = '' then
@@ -580,19 +587,19 @@ begin
   Result := IncludeTrailingPathDelimiter(Letter) + IncludeTrailingPathDelimiter(AuthorName);
 end;
 
-function GenerateFileName(const Title: string; libID: integer):string;
+function GenerateFileName(const Title: string; libID: Integer): string;
 var
   BookTitle: string;
 begin
   BookTitle := Trim(CheckSymbols(Title));
   if BookTitle = '' then
     BookTitle := BOOK_NO_TITLE;
-  Result := IntToStr(LibID) + ' ' + BookTitle;
+  Result := IntToStr(libID) + ' ' + BookTitle;
 end;
 
 { TAuthorRecord }
 
-function TAuthorRecord.GetFullName: String;
+function TAuthorRecord.GetFullName: string;
 begin
   Assert(LastName <> '');
 
@@ -605,17 +612,17 @@ begin
     Result := Result + ' ' + MiddleName;
 end;
 
-procedure TAuthorRecord.SetFirstName(const Value: String);
+procedure TAuthorRecord.SetFirstName(const Value: string);
 begin
   FFirstName := Trim(Value);
 end;
 
-procedure TAuthorRecord.SetLastName(const Value: String);
+procedure TAuthorRecord.SetLastName(const Value: string);
 begin
   FLastName := Trim(Value);
 end;
 
-procedure TAuthorRecord.SetMiddleName(const Value: String);
+procedure TAuthorRecord.SetMiddleName(const Value: string);
 begin
   FMiddleName := Trim(Value);
 end;
@@ -636,7 +643,7 @@ begin
   Size := 0;
   InsideNo := 0;
   SeqNumber := 0;
-  LibID := 0;
+  libID := 0;
 
   Deleted := False;
   Local := False;
@@ -676,7 +683,7 @@ end;
 function TBookRecord.GenerateLocation: string;
 begin
   Assert(AuthorCount > 0);
-  Result := copy(GenerateBookLocation(Authors[0].GetFullName) + GenerateFileName(Title, LibID),1, MaxFolderLength - 10);
+  Result := Copy(GenerateBookLocation(Authors[0].GetFullName) + GenerateFileName(Title, libID), 1, MAXFOLDERLENGTH - 10);
 end;
 
 procedure TBookRecord.ClearAuthors;
@@ -684,7 +691,7 @@ begin
   SetLength(Authors, 0);
 end;
 
-procedure TBookRecord.AddAuthor(const LastName: String; const FirstName: String; const MiddleName: String);
+procedure TBookRecord.AddAuthor(const LastName: string; const FirstName: string; const MiddleName: string);
 var
   i: Integer;
 begin
@@ -707,7 +714,7 @@ begin
   SetLength(Genres, 0);
 end;
 
-procedure TBookRecord.AddGenreFB2(const GenreCode: String; const GenreFb2Code: String; const Alias: String);
+procedure TBookRecord.AddGenreFB2(const GenreCode: string; const GenreFb2Code: string; const Alias: string);
 var
   i: Integer;
 begin
@@ -719,7 +726,7 @@ begin
   Genres[i].Alias := Alias;
 end;
 
-procedure TBookRecord.AddGenreAny(const GenreCode: String; const Alias: String);
+procedure TBookRecord.AddGenreAny(const GenreCode: string; const Alias: string);
 var
   i: Integer;
 begin
@@ -731,46 +738,43 @@ begin
   Genres[i].Alias := Alias;
 end;
 
-
-
 function TBookRecord.GetGenreCount: Integer;
 begin
   Result := Length(Genres);
 end;
 
-function GetFullBookPath(const Table:TAbsTable; const FCollectionRoot:string):string;
+function GetFullBookPath(const Table: TAbsTable; const FCollectionRoot: string): string;
 begin
   if Table.Name = 'tblFavorites' then
-      Result := Table.FieldByName('Folder').AsString
-   else if not Table.FieldByName('Folder').IsNull then
-      Result := FCollectionRoot + Table.FieldByName('Folder').AsString
-   else
-      Result := FCollectionRoot;
+    Result := Table.FieldByName('Folder').AsString
+  else if not Table.FieldByName('Folder').IsNull then
+    Result := FCollectionRoot + Table.FieldByName('Folder').AsString
+  else
+    Result := FCollectionRoot;
 end;
 
-//procedure RenameFileInArchive(ArchName,NewFileName:string);
-//var
-//  Zip: TZipMaster;
+// procedure RenameFileInArchive(ArchName,NewFileName:string);
+// var
+// Zip: TZipMaster;
 //
-//begin
-//  Zip := TZipMaster.Create(Nil);
-//  try
-//    Zip.ZipFileName := ArchName;
-//    ZipDirEntry(Zip.ZipContents[0]^).FileName := NewFileName + '.fb2';
-//  finally
-//    Zip.Free;
-//  end;
-//end;
+// begin
+// Zip := TZipMaster.Create(Nil);
+// try
+// Zip.ZipFileName := ArchName;
+// ZipDirEntry(Zip.ZipContents[0]^).FileName := NewFileName + '.fb2';
+// finally
+// Zip.Free;
+// end;
+// end;
 
-
-function InclideUrlSlash(S: string):string;
+function InclideUrlSlash(S: string): string;
 begin
   Result := S;
-  if Result[ Length(Result) ] <> '/' then
+  if Result[Length(Result)] <> '/' then
     Result := Result + '/';
 end;
 
-function CompareDate(d1, d2: TDateTime): integer;
+function CompareDate(d1, d2: TDateTime): Integer;
 begin
   if d1 > d2 then
     Result := 1
@@ -804,25 +808,26 @@ begin
 {$ENDIF}
 end;
 
-function c_GetTempPath: String;
+function c_GetTempPath: string;
 var
-  Buffer: array[0..65536] of Char;
+  Buffer: array [0 .. 65536] of Char;
 begin
-  SetString(Result, Buffer, GetTempPath(Sizeof(Buffer)-1,Buffer));
+  SetString(Result, Buffer, GetTempPath(Sizeof(Buffer) - 1, Buffer));
 end;
 
 function GetSpecialPath(CSIDL: word): string;
-var s:  string;
+var
+  S: string;
 begin
-  SetLength(s, MAX_PATH);
-  if not SHGetSpecialFolderPath(0, PChar(s), CSIDL, true)
-  then s := '';
-  result := IncludeTrailingPathDelimiter(PChar(s));
+  SetLength(S, MAX_PATH);
+  if not SHGetSpecialFolderPath(0, PChar(S), CSIDL, True) then
+    S := '';
+  Result := IncludeTrailingPathDelimiter(PChar(S));
 end;
 
-procedure SetProxySettings(var idHTTP:TidHTTP);
+procedure SetProxySettings(var IdHTTP: TidHTTP);
 begin
-  with idHTTP.ProxyParams do
+  with IdHTTP.ProxyParams do
   begin
     if Settings.UseIESettings then
     begin
@@ -839,20 +844,20 @@ begin
     BasicAuthentication := True;
   end;
 
-  idHTTP.Request.UserAgent := 'MyHomeLib/2.0 (compatible; Indy Library)';
+  IdHTTP.Request.UserAgent := 'MyHomeLib/2.0 (compatible; Indy Library)';
 
-  idHTTP.ConnectTimeout := Settings.TimeOut;
-  idHTTP.ReadTimeout := Settings.ReadTimeOut;
+  IdHTTP.ConnectTimeout := Settings.TimeOut;
+  IdHTTP.ReadTimeout := Settings.ReadTimeout;
 
-//  idHTTP.CookieManager := frmMain.IdCookieManager;
-  idHTTP.AllowCookies := True;
+  // idHTTP.CookieManager := frmMain.IdCookieManager;
+  IdHTTP.AllowCookies := True;
 
-  idHTTP.HandleRedirects := True;
+  IdHTTP.HandleRedirects := True;
 end;
 
-function CheckLibVersion(ALocalVersion: Integer; Full: boolean; out ARemoteVersion: Integer): Boolean;
+function CheckLibVersion(ALocalVersion: Integer; Full: Boolean; out ARemoteVersion: Integer): Boolean;
 var
-  HTTP: TIdHTTP;
+  HTTP: TidHTTP;
   LF: TMemoryStream;
   SL: TStringList;
 
@@ -860,9 +865,9 @@ var
 begin
   Result := False;
 
-  URL := IfThen(Full,
-                InclideUrlSlash(Settings.UpdateURL) + LIBRUSEC_UPDATEVERINFO_FILENAME,
-                InclideUrlSlash(Settings.UpdateURL) + EXTRA_UPDATEVERINFO_FILENAME);
+  URL :=
+    InclideUrlSlash(Settings.UpdateURL) +
+    IfThen(Full, LIBRUSEC_UPDATEVERINFO_FILENAME, EXTRA_UPDATEVERINFO_FILENAME);
 
   HTTP := TidHTTP.Create(nil);
   SetProxySettings(HTTP);
@@ -890,48 +895,59 @@ begin
   end;
 end;
 
-function GetLibUpdateVersion(Full: boolean):integer;
+function GetLibUpdateVersion(Full: Boolean): Integer;
 var
-  F: Text;
-  S: String;
-
+  f: Text;
+  S: string;
 begin
   Result := 0;
   S := Settings.SystemFileName[sfCollectionVerInfo];
 
   if FileExists(S) then
   begin
-    AssignFile(F, S);
+    AssignFile(f, S);
     try
-      Reset(F);
-      Readln(F, S);
-      CloseFile(F);
+      Reset(f);
+      Readln(f, S);
+      CloseFile(f);
       Result := StrToIntDef(S, 0);
     except
       on EInOutError do
-            { не смогли открыть файл };
+        { не смогли открыть файл } ;
     end;
   end
-  else Result := UNVERSIONED_COLLECTION;
+  else
+    Result := UNVERSIONED_COLLECTION;
 end;
 
-function ExecAndWait(const FileName,Params: String; const WinState: Word): boolean;
+function ExecAndWait(const FileName, Params: string; const WinState: Word): Boolean;
 var
   StartInfo: TStartupInfo;
   ProcInfo: TProcessInformation;
-  CmdLine: String;
+  CmdLine: string;
 begin
-  CmdLine := '' + Filename + ' ' + Params;
-  FillChar(StartInfo, SizeOf(StartInfo), #0);
+  CmdLine := '' + FileName + ' ' + Params;
+  FillChar(StartInfo, Sizeof(StartInfo), #0);
   with StartInfo do
   begin
-    cb := SizeOf(StartInfo);
+    cb := Sizeof(StartInfo);
     dwFlags := STARTF_USESHOWWINDOW;
     wShowWindow := WinState;
   end;
-  Result := CreateProcess(nil, PChar(CmdLine), nil, nil, false,
-  CREATE_NEW_CONSOLE or NORMAL_PRIORITY_CLASS, nil,
-  PChar(ExtractFilePath(Filename)),StartInfo,ProcInfo);
+
+  Result := CreateProcess(
+    nil,
+    PChar(CmdLine),
+    nil,
+    nil,
+    False,
+    CREATE_NEW_CONSOLE or NORMAL_PRIORITY_CLASS,
+    nil,
+    PChar(ExtractFilePath(FileName)),
+    StartInfo,
+    ProcInfo
+  );
+
   if Result then
   begin
     WaitForSingleObject(ProcInfo.hProcess, INFINITE);
@@ -942,21 +958,21 @@ begin
   else
   begin
     // { TODO -oNickR -cRefactoring : не самая лучшая идея показывать диалоги прямо из этой функции. Она может быть вызвана из рабочего потока. }
-    Application.MessageBox(PChar(Format(' Не удалось запустить %s ! ',[FileName])),'',mb_IconExclamation)
+    Application.MessageBox(PChar(Format(' Не удалось запустить %s ! ', [FileName])), '', mb_IconExclamation)
   end;
 end;
 
-function GetFileNameZip(Zip: TZipForge; No: integer): string;
+function GetFileNameZip(Zip: TZipForge; No: Integer): string;
 var
-  i: integer;
+  i: Integer;
   ArchItem: TZFArchiveItem;
 begin
   i := 0;
-  if (Zip.FindFirst('*.*',ArchItem,faAnyFile-faDirectory)) then
+  if (Zip.FindFirst('*.*', ArchItem, faAnyFile - faDirectory)) then
   while i <> No do
   begin
     Zip.FindNext(ArchItem);
-    inc(i);
+    Inc(i);
   end;
   Result := ArchItem.FileName;
 end;
@@ -968,7 +984,7 @@ begin
     Delete(Result, 1, 1);
 end;
 
-function TestArchive(FileName: string): boolean;
+function TestArchive(FileName: string): Boolean;
 var
   Zip: TZipForge;
 begin
@@ -990,31 +1006,27 @@ begin
   end;
 end;
 
-function ExtractShortFileName(FileName: string):string;
+function ExtractShortFileName(FileName: string): string;
 var
   Ext: string;
 begin
   Ext := ExtractFileExt(FileName);
-  Result := Copy(FileName,1,Length(FileName)-Length(Ext));
+  Result := Copy(FileName, 1, Length(FileName) - Length(Ext));
 end;
 
-procedure CreateImage(ext:string;
-                      var IMG: TGraphic;
-                      var ImageType: TCoverImageType);
+procedure CreateImage(Ext: string; var IMG: TGraphic; var ImageType: TCoverImageType);
 begin
-   Ext := LowerCase(Ext);
+  Ext := LowerCase(Ext);
   if Ext = '.png' then
   begin
     IMG := TPngImage.Create;
-    ImageType := itPNG;
+    ImageType := itPng;
   end
-  else
-    if (Ext = '.jpg') or (Ext = '.jpeg') then
-    begin
-      IMG := TJPEGImage.Create;
-      ImageType := itJPG;
-    end;
+  else if (Ext = '.jpg') or (Ext = '.jpeg') then
+  begin
+    IMG := TJPEGImage.Create;
+    ImageType := itJPG;
+  end;
 end;
 
 end.
-

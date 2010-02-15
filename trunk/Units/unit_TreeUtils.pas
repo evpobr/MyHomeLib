@@ -1,13 +1,17 @@
-
-{******************************************************************************}
-{                                                                              }
-{                                 MyHomeLib                                    }
-{                                                                              }
-{                                Version 0.9                                   }
-{                                20.08.2008                                    }
-{                    Copyright (c) Aleksey Penkov  alex.penkov@gmail.com       }
-{                                                                              }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Created             12.02.2010
+  * Description
+  * Author(s)           Aleksey Penkov  alex.penkov@gmail.com
+  *
+  * History
+  * NickR 15.02.2010    Код переформатирован
+  *
+  ****************************************************************************** *)
 
 unit unit_TreeUtils;
 
@@ -18,38 +22,33 @@ uses
   unit_Globals,
   SysUtils;
 
-
 type
-
   TSelectionList = array of PVirtualNode;
 
-
 function FindParentInTree(Tree: TVirtualStringTree; Folder: string): PVirtualNode;
-function FindSeriesInTree(Tree: TVirtualStringTree; Parent: PvirtualNode; SerID: integer): PVirtualNode;
+function FindSeriesInTree(Tree: TVirtualStringTree; Parent: PVirtualNode; SerID: Integer): PVirtualNode;
 procedure SortChild(Tree: TVirtualStringTree; Parent: PVirtualNode);
-//     procedure SortAuthors(Tree:TVirtualStringTree);
+// procedure SortAuthors(Tree:TVirtualStringTree);
 function GetSelectedBookData(Tree: TVirtualStringTree): PBookData;
 procedure SortSeries(Tree: TVirtualStringTree; Parent: PVirtualNode);
-procedure SelectBookById(Tree: TVirtualStringTree; ID: integer);
+procedure SelectBookById(Tree: TVirtualStringTree; ID: Integer);
 procedure GetSeelections(Tree: TVirtualStringTree; out List: TSelectionList);
 
 implementation
 
-
 procedure GetSeelections(Tree: TVirtualStringTree; out List: TSelectionList);
 var
   Node: PVirtualNode;
-  i: integer;
+  i: Integer;
 begin
-  SetLength(List,Tree.SelectedCount);
+  SetLength(List, Tree.SelectedCount);
   Node := Tree.GetFirstSelected;
-  for I := 0 to Tree.SelectedCount - 1 do
+  for i := 0 to Tree.SelectedCount - 1 do
   begin
     List[i] := Node;
     Node := Tree.GetNextSelected(Node);
   end;
 end;
-
 
 function FindParentInTree(Tree: TVirtualStringTree; Folder: string): PVirtualNode;
 var
@@ -60,7 +59,7 @@ begin
   Node := Tree.GetFirst;
   Data := Tree.GetNodeData(Node);
   if Data = nil then
-    exit;
+    Exit;
 
   while Node <> nil do
   begin
@@ -100,7 +99,7 @@ end;
 
 procedure SortAuthors(Tree: TVirtualStringTree);
 
-  function FindNext(A: PvirtualNode): PVirtualNode;
+  function FindNext(A: PVirtualNode): PVirtualNode;
   var
     Data: PBookData;
   begin
@@ -122,6 +121,7 @@ begin
   A := Tree.GetFirst;
   if A = nil then
     Exit;
+
   B := FindNext(A);
   while (B <> nil) do
   begin
@@ -195,14 +195,14 @@ begin
   if Result = nil then
   begin
     New(Result);
-    Result.Id := -1;
+    Result.ID := -1;
   end;
 end;
 
-procedure SelectBookById(Tree: TVirtualStringTree; ID: integer);
+procedure SelectBookById(Tree: TVirtualStringTree; ID: Integer);
 var
-  Node : PVirtualNode;
-  Data : PBookData;
+  Node: PVirtualNode;
+  Data: PBookData;
 begin
   Node := Tree.GetFirst;
   while Node <> nil do
@@ -218,4 +218,3 @@ begin
 end;
 
 end.
-

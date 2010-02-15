@@ -1,14 +1,17 @@
-{******************************************************************************}
-{                                                                              }
-{ MyHomeLib                                                                    }
-{                                                                              }
-{ Version 0.9                                                                  }
-{ 20.08.2008                                                                   }
-{ Copyright (c) Aleksey Penkov  alex.penkov@gmail.com                          }
-{                                                                              }
-{ @author Nick Rymanov nrymanov@gmail.com                                      }
-{                                                                              }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Created             12.02.2010
+  * Description         Глобальные константы
+  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
+  *
+  * History
+  * NickR 15.02.2010    Код переформатирован
+  *
+  ****************************************************************************** *)
 
 unit unit_Consts;
 
@@ -47,9 +50,9 @@ const
   SERVER_ERRORLOG_FILENAME = 'server_error.html';
   IMPORT_ERRORLOG_FILENAME = 'import_errors.log';
   APP_HELP_FILENAME = 'MyHomeLib.chm';
-  //FILELIST_FILENAME = 'FileList.lst';
+  // FILELIST_FILENAME = 'FileList.lst';
   LIBRUSEC_UPDATE_FILENAME = 'librusec_update.zip';
-  EXTRA_UPDATE_FILENAME = 'extra_update.zip';
+  // EXTRA_UPDATE_FILENAME = 'extra_update.zip';
   LIBRUSEC_UPDATEVERINFO_FILENAME = 'last_collection.info';
   EXTRA_UPDATEVERINFO_FILENAME = 'extra_collection.info';
   VERINFO_FILENAME = 'version.info';
@@ -72,22 +75,21 @@ const
   BOOK_NO_TITLE = 'Без названия';
   UNKNOWN_AUTHOR_LASTNAME = 'Неизвестный';
 
-
   //
   // Номера вкладок в главном окне ( = tags)
   //
-  PAGE_AUTHORS = 0;  // авторы
-  PAGE_SERIES = 1;  // серии
-  PAGE_GENRES = 2;  // жанры
-  PAGE_SEARCH = 3; // поиск
-  PAGE_FAVORITES = 4; // группы
-  PAGE_FILTER = 5; // фильтр
-  PAGE_DOWNLOAD = 6; // фильтр
+  PAGE_AUTHORS = 0;     // авторы
+  PAGE_SERIES = 1;      // серии
+  PAGE_GENRES = 2;      // жанры
+  PAGE_SEARCH = 3;      // поиск
+  PAGE_FAVORITES = 4;   // группы
+  PAGE_FILTER = 5;      // фильтр
+  PAGE_DOWNLOAD = 6;    // фильтр
 
-  PAGE_ALL = 99; // все вкладки
+  PAGE_ALL = 99;        // все вкладки
 
   //
-  //  Теги колонок
+  // Теги колонок
   //
   COL_AUTHOR     = 20;
   COL_TITLE      = 11;
@@ -102,36 +104,32 @@ const
   COL_LANG       = 21;
   COL_LIBRATE    = 22;
 
-
-
   COL_STATE = 99;
 
-  ColumnTags : array [0 .. 12] of integer = (  COL_AUTHOR,
-                                              COL_TITLE,
-                                              COL_SERIES,
-                                              COL_NO,
-                                              COL_GENRE,
-                                              COL_SIZE,
-                                              COL_RATE,
-                                              COL_DATE,
-                                              COL_TYPE,
-                                              COL_COLLECTION,
-                                              COL_LANG,
-                                              COL_LIBRATE,
-                                              COL_STATE);
-
-
+  ColumnTags: array [0 .. 12] of Integer = (
+    COL_AUTHOR,
+    COL_TITLE,
+    COL_SERIES,
+    COL_NO,
+    COL_GENRE,
+    COL_SIZE,
+    COL_RATE,
+    COL_DATE,
+    COL_TYPE,
+    COL_COLLECTION,
+    COL_LANG,
+    COL_LIBRATE,
+    COL_STATE
+  );
 
   //
   // названия секций колонок в файле настрок
   //
-
   SECTION_A_TREE = 'COLUMNS_AUTHOR_TREE';
   SECTION_A_FLAT = 'COLUMNS_AUTHOR_FLAT';
 
   SECTION_S_FLAT = 'COLUMNS_SERIES_FLAT';
   SECTION_S_TREE = 'COLUMNS_SERIES_TREE';
-
 
   SECTION_G_FLAT = 'COLUMNS_GENRES_FLAT';
   SECTION_G_TREE = 'COLUMNS_GENRES_TREE';
@@ -145,15 +143,15 @@ const
   SECTION_FL_FLAT = 'COLUMNS_FILTER_FLAT';
   SECTION_FL_TREE = 'COLUMNS_FILTER_TREE';
 
+  //
   // некоторые ограничения  для БД
-
-  MaxFolderLength = 200; // максимальная длина поля folder/ все что больше - обрезается
-  IndexSize = 12;     // размер индексных полей
+  //
+  MAXFOLDERLENGTH = 200; // максимальная длина поля folder/ все что больше - обрезается
+  INDEXSIZE = 12;        // размер индексных полей
 
 type
-  TColumnSet = set of 0..255;
+  TColumnSet = set of 0 .. 255;
 
 implementation
 
 end.
-

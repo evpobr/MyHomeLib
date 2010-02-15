@@ -2,12 +2,14 @@
   *
   * MyHomeLib
   *
-  * Класс работы с шаблонами
+  * Copyright (C) 2008-2010 Aleksey Penkov
   *
-  * Version 1.0
-  * 31.01.2010
-  * Copyright (c) Aleksey Penkov  alex.penkov@gmail.com
-  * Author        Matvienko Sergei  matv84@mail.ru
+  * Created             12.02.2010
+  * Description         Класс работы с шаблонами
+  * Author(s)           Matvienko Sergei  matv84@mail.ru
+  *
+  * History
+  * NickR 15.02.2010    Код переформатирован
   *
   ****************************************************************************** *)
 
@@ -22,7 +24,7 @@ uses
   unit_Globals;
 
 const
-  mask_elements = 10;
+  MASK_ELEMENTS = 10;
 
 type
   TErrorType = (ErFine, ErTemplate, ErBlocks, ErElements);
@@ -30,7 +32,7 @@ type
 
   TElement = record
     name: string;
-    BegBlock, EndBlock: integer;
+    BegBlock, EndBlock: Integer;
   end;
 
   TTemplater = class
@@ -62,7 +64,7 @@ end;
 
 function TTemplater.GetFB2BookInfo1(book: IXMLFictionBook): TBookRecord;
 var
-  i: integer;
+  i: Integer;
   R: TBookRecord;
 begin
   with book.Description.Titleinfo do
@@ -91,24 +93,25 @@ begin
     for i := 0 to Annotation.P.Count - 1 do
       if Annotation.P.Items[i].IsTextElement then
         R.Annotation := R.Annotation + #10#13 + Annotation.P.Items[i].OnlyText;
-
   end;
+
   Result := R;
 end;
 
 function TTemplater.ValidateTemplate(Template: string; TemplType: TTemplateType): TErrorType;
 const
-  mask_elements: array [1 .. 8] of string = ('f', 't', 's', 'n', 'id', 'g', 'fl', 'rg');
+  { TODO : совпадает с названием константы }
+  MASK_ELEMENTS: array [1 .. 8] of string = ('f', 't', 's', 'n', 'id', 'g', 'fl', 'rg');
 var
   stack: array of TElement;
-  h, k, i, j, StackPos, ElementPos, ColElements, last_char, last_col_elements: integer;
+  h, k, i, j, StackPos, ElementPos, ColElements, last_char, last_col_elements: Integer;
   bol, TemplEnd: boolean;
   TemplatePart: string;
 begin
   if Template = '' then
   begin
     Result := ErTemplate;
-    exit;
+    Exit;
   end;
 
   // Поправка на количество частей пути в карту элементов и блоков (используется при разборе путей)
@@ -146,7 +149,7 @@ begin
     Inc(k);
     // Если больше нет элементов пути, то итеррация крайняя
     if k > Length(Template) then
-      TemplEnd := true;
+      TemplEnd := True;
 
     // Инициализация счётчика глубины стека и элементов шаблона
     StackPos := 0;
@@ -168,7 +171,7 @@ begin
         if (stack[StackPos].name <> '') and (StackPos > 0) then
         begin
           Result := ErTemplate; // В блоке не может быть более одного элемента
-          exit;
+          Exit;
         end;
 
         // Выделяем название элемента
@@ -182,7 +185,7 @@ begin
         if stack[StackPos].name = '' then
         begin
           Result := ErElements;
-          exit;
+          Exit;
         end;
         Dec(i);
 
@@ -204,7 +207,7 @@ begin
         if (stack[StackPos].name = '') or (StackPos <= 0) then
         begin
           Result := ErBlocks; // Проверьте соответствие открывающих и закрывающих скобок блоков элементов
-          exit;
+          Exit;
         end;
         stack[StackPos].EndBlock := i;
 
@@ -225,7 +228,7 @@ begin
     if StackPos > 0 then
     begin
       Result := ErBlocks; // Проверьте соответствие открывающих и закрывающих скобок блоков элементов
-      exit;
+      Exit;
     end;
 
     // Проверка всех элементов на правильность написания
@@ -234,10 +237,10 @@ begin
       if FBlocksMap[h].name <> '' then
       begin
         bol := false;
-        for j := 1 to High(mask_elements) do
-          if UpperCase(FBlocksMap[h].name) = UpperCase(mask_elements[j]) then
+        for j := 1 to High(MASK_ELEMENTS) do
+          if UpperCase(FBlocksMap[h].name) = UpperCase(MASK_ELEMENTS[j]) then
           begin
-            bol := true;
+            bol := True;
             Break;
           end;
 
@@ -250,7 +253,7 @@ begin
     if not(bol) then
     begin
       Result := ErElements; // Неверные элементы шаблона
-      exit;
+      Exit;
     end;
 
     Inc(last_col_elements, ElementPos);
@@ -269,7 +272,7 @@ begin
       if Template[i] = '\' then
       begin
         Result := ErTemplate;
-        exit;
+        Exit;
       end;
 
   // Если замечаний нет, то шаблон валиден
@@ -279,15 +282,13 @@ end;
 function TTemplater.SetTemplate(Template: String; TemplType: TTemplateType): TErrorType;
 begin
   Result := ValidateTemplate(Template, TemplType);
+
   // Спецсимволы чистим только для имени файла или пути к файлу
   if TemplType in [TpFile, TpPath] then
     Template := CheckSymbols(Template);
 
   if Result = ErFine then
-  begin
-
     FTemplate := Trim(Template);
-  end;
 end;
 
 function TTemplater.ParseString(R: TBookRecord; TemplType: TTemplateType; ALibrary: TMHLLibrary = nil): string;
@@ -296,11 +297,11 @@ type
     templ, value: string;
   end;
 
-  TMaskElements = array [1 .. mask_elements] of TMaskElement;
+  TMaskElements = array [1 .. MASK_ELEMENTS] of TMaskElement;
 var
   AuthorName, Firstname, MiddleName, Lastname: string;
-  i, j: integer;
-  //RootGenre, Folder: string;
+  i, j: Integer;
+  // RootGenre, Folder: string;
   MaskElements: TMaskElements;
 begin
   Result := FTemplate;
@@ -340,7 +341,7 @@ begin
   MaskElements[5].value := IntToStr(R.LibID);
 
   MaskElements[6].templ := 'fl';
-  MaskElements[6].value := R.Authors[Low(R.Authors)].FLastName[1];
+  MaskElements[6].value := R.Authors[ Low(R.Authors)].FLastName[1];
 
   MaskElements[7].templ := 'f';
   MaskElements[7].value := Trim(R.Authors[0].GetFullName);
@@ -395,7 +396,7 @@ begin
       Delete(Result, i, 1);
 
   // Цикл замены элементов шаблона их значениями
-  for i := 1 to mask_elements do
+  for i := 1 to MASK_ELEMENTS do
   begin
     if MaskElements[i].templ[1] = UpCase(MaskElements[i].templ[1]) then
       StrReplace('%' + MaskElements[i].templ, Transliterate(MaskElements[i].value), Result)

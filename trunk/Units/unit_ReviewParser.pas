@@ -1,37 +1,41 @@
-{******************************************************************************}
-{                                                                              }
-{                                 MyHomeLib                                    }
-{                                                                              }
-{                                Version 1.5                                   }
-{                                03.08.2009                                    }
-{                    Copyright (c) Aleksey Penkov  alex.penkov@gmail.com       }
-{                       author:  eg  (http://forum.home-lib.net)               }
-{                                                                              }
-{                     A parser for Lib.rus.ec book reviews                     }
-{                                                                              }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Created             12.02.2010
+  * Description         A parser for Lib.rus.ec book reviews
+  * Author(s)           eg (http://forum.home-lib.net)
+  *
+  * History
+  * NickR 15.02.2010    Код переформатирован
+  *
+  ****************************************************************************** *)
 
 unit unit_ReviewParser;
 
 interface
+
 uses
   Classes,
   StrUtils,
   IdHTTP;
 
 type
-  TReviewParser=class
-    FidHTTP : TIdHTTP;
+  TReviewParser = class
+    FidHTTP: TIdHTTP;
+
+  private
+    function GetPage(const url: string): string;
+    function Extract(const page: string; const idxReviewBlockStart: Integer; const before: string; const after: string): string;
+
   public
     constructor Create;
     destructor Destroy; override;
-    procedure Parse(const url : String; targetList : TStringList);
 
-  private
-    function GetPage(const url : String): String;
-    function Extract(const page : String; const idxReviewBlockStart : Integer;
-                     const before : String; const after : String) : String;
-   end;
+    procedure Parse(const url: string; targetList: TStringList);
+  end;
 
 implementation
 
@@ -40,34 +44,33 @@ uses
 
 constructor TReviewParser.Create;
 begin
-  inherited Create();
-  FidHTTP := TidHTTP.Create;
+  inherited Create;
 
+  FidHTTP := TIdHTTP.Create;
   SetProxySettings(FidHTTP);
-
 end;
 
-destructor TReviewParser.Destroy();
+destructor TReviewParser.Destroy;
 begin
   // do not close the idHTTP, as it was not created by the ctor
   FidHTTP.Free;
-  inherited Destroy();
+  inherited Destroy;
 end;
 
 // Get an HTML page and extract all available book reviews
-//  url - the book's URL
-//  targetList - an initialised list to be populated with reviews
-procedure TReviewParser.Parse(const url : String; targetList : TStringList);
+// url - the book's URL
+// targetList - an initialised list to be populated with reviews
+procedure TReviewParser.Parse(const url: string; targetList: TStringList);
 const
   BLOCK_PREFIX = '/polka/show/';
   END_ALL = '<div id=''newann''';
   NAME_REVIEW_DELIM = ':';
 var
-  page : String;
-  idxReviewBlockStart : Integer;
-  idxEndAllBookReviews : Integer;
-  name : String;
-  review : String;
+  page: string;
+  idxReviewBlockStart: Integer;
+  idxEndAllBookReviews: Integer;
+  name: string;
+  review: string;
 begin
   Assert(Assigned(targetList));
   page := GetPage(url);
@@ -83,47 +86,47 @@ begin
     targetList.Add('');
     idxReviewBlockStart := PosEx(BLOCK_PREFIX, page, idxReviewBlockStart + 1);
   end;
-
 end;
 
 // Do a GET request and return result as a String
-//  url - the URL of the page to GET
-function TReviewParser.GetPage(const url: String) : String;
+// url - the URL of the page to GET
+function TReviewParser.GetPage(const url: string): string;
 var
   outputStream: TMemoryStream;
   responseList: TStringList;
 begin
   Result := '';
 
-  responseList := TStringList.Create();
+  responseList := TStringList.Create;
   try
-    outputStream := TMemoryStream.Create();
-    FidHTTP.Get(url, outputStream);
+    outputStream := TMemoryStream.Create;
+    try
+      FidHTTP.Get(url, outputStream);
 
-    outputStream.Position := 0;
-    responseList.LoadFromStream(outputStream);
+      outputStream.Position := 0;
+      responseList.LoadFromStream(outputStream);
 
-    if responseList.Count > 0 then
-    begin
-      Result := UTF8ToString(responseList.GetText());
+      if responseList.Count > 0 then
+        { TODO -oNickR -cBug : MEMLEAK GetText распределяет новую строку }
+        Result := UTF8ToString(responseList.GetText());
+    finally
+      outputStream.Free();
     end;
   finally
     responseList.Free();
-    outputStream.Free();
   end;
 end;
 
 // Extract part of the text and clean it up
-//  page - html page to search in
-//  idxReviewBlockStart - index pointing to the start of the current review block
-//  before - the string located before the text we want to extract
-//  after - the string located after the text we want to extract
-function TReviewParser.Extract(const page : String; const idxReviewBlockStart : Integer;
-const before : String; const after : String) : String;
+// page - html page to search in
+// idxReviewBlockStart - index pointing to the start of the current review block
+// before - the string located before the text we want to extract
+// after - the string located after the text we want to extract
+function TReviewParser.Extract(const page: string; const idxReviewBlockStart: Integer; const before: string; const after: string): string;
 var
-  idxNameStart : Integer;
-  idxNameEnd : Integer;
-  lenName : Integer;
+  idxNameStart: Integer;
+  idxNameEnd: Integer;
+  lenName: Integer;
 begin
   Assert(idxReviewBlockStart > 0);
   Result := '';

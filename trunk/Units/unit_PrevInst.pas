@@ -1,14 +1,17 @@
-
-{******************************************************************************}
-{                                                                              }
-{                                 MyHomeLib                                    }
-{                                                                              }
-{                                Version 0.9                                   }
-{                                20.08.2008                                    }
-{                    Copyright (c) Aleksey Penkov  alex.penkov@gmail.com       }
-{                                                                              }
-{******************************************************************************}
-
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Created             12.02.2010
+  * Description
+  * Author(s)           Aleksey Penkov  alex.penkov@gmail.com
+  *
+  * History
+  * NickR 15.02.2010     од переформатирован
+  *
+  ****************************************************************************** *)
 
 unit unit_PrevInst;
 
@@ -38,16 +41,14 @@ begin
   Result := False;
   MemFileName := Application.ExeName;
   case RunMode of
-    0:
-      MemFileName := AnsiReplaceText(MemFileName, '\', '/');
-    1:
-      MemFileName := ExtractFileName(MemFileName);
+    0: MemFileName := AnsiReplaceText(MemFileName, '\', '/');
+    1: MemFileName := ExtractFileName(MemFileName);
   else
     Exit;
   end;
-  //если FileMapping есть - то происходит OpenFileMapping
-  MemHnd := CreateFileMapping(HWND($FFFFFFFF), nil,
-    PAGE_READWRITE, 0, MemFileSize, PChar(MemFileName));
+
+  // если FileMapping есть - то происходит OpenFileMapping
+  MemHnd := CreateFileMapping(HWND($FFFFFFFF), nil, PAGE_READWRITE, 0, MemFileSize, PChar(MemFileName));
   if GetLastError <> ERROR_ALREADY_EXISTS then
   begin
     if MemHnd <> 0 then
@@ -59,7 +60,7 @@ begin
   end
   else
   begin
-    //    MemFileHnd := OpenFileMapping(FILE_MAP_READ, False, PChar(MemFileName));
+    // MemFileHnd := OpenFileMapping(FILE_MAP_READ, False, PChar(MemFileName));
     Result := True;
     if MemHnd <> 0 then
     begin
@@ -72,6 +73,7 @@ begin
       end;
     end;
   end;
+
   if lpBaseAddress <> nil then
     UnMapViewOfFile(lpBaseAddress);
 end;
