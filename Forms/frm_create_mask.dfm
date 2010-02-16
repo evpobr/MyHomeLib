@@ -57,7 +57,6 @@ object frmCreateMask: TfrmCreateMask
     Caption = 'pnButtons'
     ShowCaption = False
     TabOrder = 1
-    ExplicitTop = 330
     DesignSize = (
       434
       41)
@@ -89,14 +88,13 @@ object frmCreateMask: TfrmCreateMask
     Top = 59
     Width = 434
     Height = 324
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Align = alBottom
     MultiLine = True
     TabOrder = 2
     OnChange = PageControl1Change
     object TabSheet1: TTabSheet
       Caption = #1055#1088#1072#1074#1080#1083#1072' '#1087#1086#1089#1090#1088#1086#1077#1085#1080#1103' '#1096#1072#1073#1083#1086#1085#1072
-      ExplicitHeight = 243
       object stDescription: TMHLStaticTip
         Left = 0
         Top = 0
@@ -124,7 +122,6 @@ object frmCreateMask: TfrmCreateMask
     object TabSheet2: TTabSheet
       Caption = #1054#1090#1083#1072#1076#1082#1072' '#1096#1072#1073#1083#1086#1085#1072
       ImageIndex = 1
-      ExplicitHeight = 243
       object Label5: TLabel
         Left = 104
         Top = 9
