@@ -262,9 +262,8 @@ type
 
   TMaskElements = array [1 .. COL_MASK_ELEMENTS] of TMaskElement;
 var
-  AuthorName, Firstname, MiddleName, Lastname: string;
+  AuthorName, Firstname, MiddleName, Lastname, s: string;
   i, j: Integer;
-  // RootGenre, Folder: string;
   MaskElements: TMaskElements;
 begin
   Result := FTemplate;
@@ -282,13 +281,22 @@ begin
   MaskElements[2].value := Trim(R.RootGenre);
 
   MaskElements[3].templ := 'g';
-  MaskElements[3].value := Trim(R.Genres[0].Alias);
+  if R.GenreCount > 0 then
+    MaskElements[3].value := Trim(R.Genres[0].Alias)
+  else
+    MaskElements[3].value := '';
 
   MaskElements[4].templ := 'ff';
   if R.AuthorCount > 0 then
-    MaskElements[4].value := R.Authors[ Low(R.Authors)].FLastName[1]
+  begin
+    s:= Trim(R.Authors[Low(R.Authors)].FLastName);
+    MaskElements[4].value := s[1];
+  end
   else
     MaskElements[4].value := '';
+
+  MaskElements[6].templ := 'fl';
+  MaskElements[6].value := MaskElements[4].value;
 
   MaskElements[5].templ := 'fa';
   AuthorName := '';
@@ -305,9 +313,6 @@ begin
         AuthorName := AuthorName + ', ';
     end;
   MaskElements[5].value := AuthorName;
-
-  MaskElements[6].templ := 'fl';
-  MaskElements[6].value := MaskElements[4].value;
 
   MaskElements[7].templ := 'f';
   if R.AuthorCount > 0 then
@@ -330,10 +335,8 @@ begin
   MaskElements[10].templ := 't';
   MaskElements[10].value := Trim(R.Title);
 
-
   MaskElements[11].templ := 'id';
   MaskElements[11].value := IntToStr(R.LibID);
-
 
   // Цикл удаления "пустых" блоков
   for i := Low(MaskElements) to High(MaskElements) do
