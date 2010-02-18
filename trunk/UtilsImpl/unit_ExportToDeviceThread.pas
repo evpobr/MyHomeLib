@@ -23,7 +23,8 @@ uses
   ABSMain,
   IdHTTP,
   ZipForge,
-  KeyBoard;
+  KeyBoard,
+  unit_Templater;
 
 type
   TFileOprecord = record
@@ -40,6 +41,7 @@ type
     FFileOpMode: (fmFb2Zip, fmFb2, fmFBD);
     FBookIdList: TBookIdList;
     FTable: TAbsTable;
+    FTemplater: TTemplater;
     FCollectionRoot: string;
     FExportMode: TExportMode;
     FIsTmp: boolean;
@@ -75,8 +77,8 @@ uses
   frm_main,
   StrUtils,
   ShellAPI,
-  unit_MHLHelpers, unit_WriteFb2Info,
-  unit_Templater;
+  unit_MHLHelpers,
+  unit_WriteFb2Info;
 
 { TExportToDeviceThread }
 
@@ -99,7 +101,6 @@ var
   p1, p2: integer;
   FullName: String;
   InsideFileName: string;
-  Templater: TTemplater;
   R: TBookRecord;
 
 begin
@@ -118,35 +119,30 @@ begin
   begin
     //
     // Сформируем имя файла в соответствии с заданным темплейтом
-    { TODO -oNickR -cPerformance : необходимо создавать шаблонизатор только один раз при инициализации потока }
+    { DONE -oNickR -cPerformance : необходимо создавать шаблонизатор только один раз при инициализации потока }
     { DONE -oNickR -cBug : нет реакции на невалидный шаблон }
     { DONE -oNickR -cBug : DMCollection.GetCurrentBook(R) вызывается дважды }
     DMCollection.GetCurrentBook(R);
-    Templater := TTemplater.Create;
-    try
-      if Templater.SetTemplate(Settings.FileNameTemplate, TpFile) = ErFine then
-        FileName := Templater.ParseString(R, TpFile)
-      else
-      begin
-        Dialogs.ShowMessage('Проверьте правильность шаблона');
-        Exit;
-      end;
+    if FTemplater.SetTemplate(Settings.FileNameTemplate, TpFile) = ErFine then
+      FileName := FTemplater.ParseString(R, TpFile)
+    else
+    begin
+      Dialogs.ShowMessage('Проверьте правильность шаблона');
+      Exit;
+    end;
 
-      if (ExtractFileExt(FTable['FileName']) = ZIP_EXTENSION) and (FTable['Ext'] <> ZIP_EXTENSION) then
-        FFileOpMode := fmFBD
-      else if ExtractFileExt(CR) <> ZIP_EXTENSION then
-        FFileOpMode := fmFb2;
+    if (ExtractFileExt(FTable['FileName']) = ZIP_EXTENSION) and (FTable['Ext'] <> ZIP_EXTENSION) then
+      FFileOpMode := fmFBD
+    else if ExtractFileExt(CR) <> ZIP_EXTENSION then
+      FFileOpMode := fmFb2;
 
-      // Сформируем имя каталога в соответствии с заданным темплейтом
-      if Templater.SetTemplate(Settings.FolderTemplate, TpPath) = ErFine then
-        Folder := Templater.ParseString(R, TpPath)
-      else
-      begin
-        Dialogs.ShowMessage('Проверьте правильность шаблона');
-        Exit;
-      end;
-    finally
-      Templater.Free;
+    // Сформируем имя каталога в соответствии с заданным темплейтом
+    if FTemplater.SetTemplate(Settings.FolderTemplate, TpPath) = ErFine then
+      Folder := FTemplater.ParseString(R, TpPath)
+    else
+    begin
+      Dialogs.ShowMessage('Проверьте правильность шаблона');
+      Exit;
     end;
 
     case FFileOpMode of
@@ -279,13 +275,13 @@ var
   totalBooks: integer;
   Res: boolean;
 begin
-
   if FTable <> DMUser.tblGrouppedBooks then // хреново как-то получилось ...
     FCollectionRoot := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder)
   else
     FCollectionRoot := '';
 
   FZipper := TZipForge.Create(nil);
+  FTemplater:= TTemplater.Create;
   try
     // FZipper.OnMessage := ShowZipErrorMessage;
 
@@ -318,6 +314,7 @@ begin
     SetComment(Format('Записано файлов: %u из %u', [i + 1, totalBooks]));
   finally
     FreeAndNil(FZipper);
+    FreeAndNil(FTemplater);
   end;
 end;
 

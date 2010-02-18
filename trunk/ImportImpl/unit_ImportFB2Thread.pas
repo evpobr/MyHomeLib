@@ -37,7 +37,8 @@ uses
   FictionBook_21,
   unit_Helpers,
   unit_Consts,
-  unit_Settings;
+  unit_Settings,
+  unit_Templater;
 
 { TImportFB2Thread }
 
@@ -52,6 +53,7 @@ begin
   SetProgress(0);
   Teletype(Format('Обнаружено файлов: %u', [FFiles.Count]));
   AddedBooks := 0;
+  FTemplater:= TTemplater.Create;
   for i := 0 to FFiles.Count - 1 do
   begin
     if Canceled then
@@ -89,7 +91,7 @@ begin
       SetComment(Format('Обработано файлов: %u из %u', [i + 1, FFiles.Count]));
     SetProgress((i + 1) * 100 div FFiles.Count);
   end;
-
+  FTemplater.Free;
   Teletype(Format('Добавлено файлов: %u из %u', [AddedBooks, FFiles.Count]),tsInfo);
 end;
 

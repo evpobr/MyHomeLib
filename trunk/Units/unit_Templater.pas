@@ -45,7 +45,7 @@ type
 
     function ValidateTemplate(Template: string; TemplType: TTemplateType): TErrorType;
     function SetTemplate(Template: string; TemplType: TTemplateType): TErrorType;
-    function ParseString(R: TBookRecord; TemplType: TTemplateType; ALibrary: TMHLLibrary = nil): string;
+    function ParseString(R: TBookRecord; TemplType: TTemplateType): string;
   end;
 
 implementation
@@ -254,7 +254,7 @@ begin
     FTemplate := Trim(Template);
 end;
 
-function TTemplater.ParseString(R: TBookRecord; TemplType: TTemplateType; ALibrary: TMHLLibrary = nil): string;
+function TTemplater.ParseString(R: TBookRecord; TemplType: TTemplateType): string;
 type
   TMaskElement = record
     templ, value: string;
