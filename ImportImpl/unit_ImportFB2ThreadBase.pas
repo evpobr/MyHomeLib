@@ -21,7 +21,8 @@ uses
   unit_globals,
   FictionBook_21,
   unit_database,
-  files_list;
+  files_list,
+  unit_Templater;
 
 type
   TImportFB2ThreadBase = class(TWorker)
@@ -30,6 +31,7 @@ type
   protected
     FDBFileName: string;
     FLibrary: TMHLLibrary;
+    FTemplater: TTemplater;
     FFiles: TStringList;
     FRootPath: string;
     FFilesList: TFilesList;
@@ -64,7 +66,6 @@ uses
   dm_user,
   unit_Settings,
   unit_Consts,
-  unit_Templater,
   Dialogs;
 { TImportFB2Thread }
 
@@ -130,6 +131,7 @@ begin
       if Annotation.P.Items[i].IsTextElement then
         R.Annotation := R.Annotation + #10#13 + Annotation.P.Items[i].OnlyText;
 
+    R.RootGenre:= Trim(FLibrary.GetTopGenreAlias(R.Genres[0].GenreFb2Code));
   end;
 end;
 
@@ -163,21 +165,15 @@ function TImportFB2ThreadBase.GetNewFileName(FileName: string; R: TBookRecord)
   : string;
 var
   z, p1, p2: integer;
-  Templater: TTemplater;
 begin
-  { TODO -oNickR -cPerformance : необходимо создавать шаблонизатор только один раз при инициализации потока }
+  { DONE -oNickR -cPerformance : необходимо создавать шаблонизатор только один раз при инициализации потока }
   { DONE -oNickR -cBug : нет реакции на невалидный шаблон }
-  Templater := TTemplater.Create;
-  try
-    if Templater.SetTemplate(FileName, TpFile) = ErFine then
-      FileName := Templater.ParseString(R, TpPath, FLibrary)
-    else
-    begin
-      Dialogs.ShowMessage('Проверьте правильность шаблона');
-      Exit;
-    end;
-  finally
-    Templater.Free;
+  if FTemplater.SetTemplate(FileName, TpFile) = ErFine then
+    FileName := FTemplater.ParseString(R, TpFile)
+  else
+  begin
+    Dialogs.ShowMessage('Проверьте правильность шаблона');
+    Exit;
   end;
 
   FileName := CheckSymbols(trim(FileName));
@@ -189,22 +185,15 @@ end;
 
 function TImportFB2ThreadBase.GetNewFolder(Folder: string; R: TBookRecord)
   : string;
-var
-  Templater: TTemplater;
 begin
-  { TODO -oNickR -cPerformance : необходимо создавать шаблонизатор только один раз при инициализации потока }
+  { DONE -oNickR -cPerformance : необходимо создавать шаблонизатор только один раз при инициализации потока }
   { DONE -oNickR -cBug : нет реакции на невалидный шаблон }
-  Templater := TTemplater.Create;
-  try
-    if Templater.SetTemplate(Folder, TpPath) = ErFine then
-      Folder := Templater.ParseString(R, TpPath, FLibrary)
-    else
-    begin
-      Dialogs.ShowMessage('Проверьте правильность шаблона');
-      Exit;
-    end;
-  finally
-    Templater.Free;
+  if FTemplater.SetTemplate(Folder, TpPath) = ErFine then
+    Folder := FTemplater.ParseString(R, TpPath)
+  else
+  begin
+    Dialogs.ShowMessage('Проверьте правильность шаблона');
+    Exit;
   end;
 
   Folder := CheckSymbols(trim(Folder));

@@ -56,7 +56,7 @@ object frmCreateMask: TfrmCreateMask
     BevelOuter = bvNone
     Caption = 'pnButtons'
     ShowCaption = False
-    TabOrder = 1
+    TabOrder = 2
     DesignSize = (
       434
       41)
@@ -91,7 +91,7 @@ object frmCreateMask: TfrmCreateMask
     ActivePage = TabSheet2
     Align = alBottom
     MultiLine = True
-    TabOrder = 2
+    TabOrder = 1
     OnChange = PageControl1Change
     object TabSheet1: TTabSheet
       Caption = #1055#1088#1072#1074#1080#1083#1072' '#1087#1086#1089#1090#1088#1086#1077#1085#1080#1103' '#1096#1072#1073#1083#1086#1085#1072
@@ -214,7 +214,7 @@ object frmCreateMask: TfrmCreateMask
         Top = 51
         Width = 103
         Height = 21
-        TabOrder = 4
+        TabOrder = 6
         Text = #1048#1074#1072#1085#1086#1074#1080#1095
         OnChange = ParseTestTemplate
       end
@@ -232,7 +232,7 @@ object frmCreateMask: TfrmCreateMask
         Top = 51
         Width = 110
         Height = 21
-        TabOrder = 6
+        TabOrder = 4
         Text = #1055#1072#1074#1083#1077#1085#1082#1086
         OnChange = ParseTestTemplate
       end
