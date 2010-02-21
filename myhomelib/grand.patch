@@ -1,0 +1,188 @@
+Index: branches/1.5.3/Components/MHLComponents.dpk
+===================================================================
+--- branches/1.5.3/Components/MHLComponents.dpk	(revision 342)
++++ branches/1.5.3/Components/MHLComponents.dpk	(working copy)
+@@ -35,9 +35,9 @@
+   IndyCore,
+   IndySystem,
+   IndyProtocols,
+-  vclAbsDBd13,
+-  VirtualTreesD13,
+-  vclZipForged13;
++  vclAbsDBd12,
++  VirtualTreesD12,
++  vclZipForged12;
+ 
+ contains
+   unit_StaticTip in 'unit_StaticTip.pas',
+Index: branches/1.5.3/Components/MHLComponents.dproj
+===================================================================
+--- branches/1.5.3/Components/MHLComponents.dproj	(revision 342)
++++ branches/1.5.3/Components/MHLComponents.dproj	(working copy)
+@@ -2,7 +2,7 @@
+ 		<PropertyGroup>
+ 			<ProjectGuid>{D86FD5A7-BE1F-417C-BEB7-6020DDD97B5F}</ProjectGuid>
+ 			<MainSource>MHLComponents.dpk</MainSource>
+-			<Config Condition="'$(Config)'==''">Debug</Config>
++			<Config Condition="'$(Config)'==''">Release</Config>
+ 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+ 			<ProjectVersion>12.0</ProjectVersion>
+ 		</PropertyGroup>
+@@ -20,10 +20,11 @@
+ 			<Base>true</Base>
+ 		</PropertyGroup>
+ 		<PropertyGroup Condition="'$(Base)'!=''">
++			<BRCC_IncludePath>..\;units\;..\Release\Units\;$(BRCC_IncludePath)</BRCC_IncludePath>
+ 			<DCC_DcuOutput>.\Units</DCC_DcuOutput>
+ 			<DesignOnlyPackage>false</DesignOnlyPackage>
+ 			<DCC_SymbolReferenceInfo>1</DCC_SymbolReferenceInfo>
+-			<DCC_DependencyCheckOutputName>C:\Users\Public\Documents\RAD Studio\7.0\Bpl\MHLComponents.bpl</DCC_DependencyCheckOutputName>
++			<DCC_DependencyCheckOutputName>C:\Users\Public\Documents\RAD Studio\6.0\Bpl\MHLComponents.bpl</DCC_DependencyCheckOutputName>
+ 			<GenDll>true</GenDll>
+ 			<GenPackage>true</GenPackage>
+ 			<DCC_ImageBase>00400000</DCC_ImageBase>
+@@ -54,9 +55,9 @@
+ 			<DCCReference Include="IndyCore.dcp"/>
+ 			<DCCReference Include="IndySystem.dcp"/>
+ 			<DCCReference Include="IndyProtocols.dcp"/>
+-			<DCCReference Include="vclAbsDBd13.dcp"/>
+-			<DCCReference Include="VirtualTreesD13.dcp"/>
+-			<DCCReference Include="vclZipForged13.dcp"/>
++			<DCCReference Include="vclAbsDBd12.dcp"/>
++			<DCCReference Include="VirtualTreesD12.dcp"/>
++			<DCCReference Include="vclZipForged12.dcp"/>
+ 			<DCCReference Include="unit_StaticTip.pas"/>
+ 			<DCCReference Include="files_list.pas"/>
+ 			<DCCReference Include="MHLComponents_Register.pas"/>
+@@ -65,6 +66,21 @@
+ 			<DCCReference Include="unit_InfoPanel.pas"/>
+ 			<DCCReference Include="unit_MHLHelpers.pas"/>
+ 			<DCCReference Include="fictionbook_21.pas"/>
++			<DCCReference Include="vclZipForged1.dcp"/>
++			<DCCReference Include="vclZipForged.dcp"/>
++			<DCCReference Include="vclZipForged3.dcp"/>
++			<DCCReference Include="vclZipForged13.dcp"/>
++			<DCCReference Include="VirtualTreesD1.dcp"/>
++			<DCCReference Include="VirtualTreesD.dcp"/>
++			<DCCReference Include="VirtualTreesD3.dcp"/>
++			<DCCReference Include="VirtualTreesD13.dcp"/>
++			<DCCReference Include="vclAbsDBd1.dcp"/>
++			<DCCReference Include="vclAbsDBd.dcp"/>
++			<DCCReference Include="vclAbsDBd3.dcp"/>
++			<DCCReference Include="vclAbsDBd13.dcp"/>
++			<None Include="ModelSupport_MHLComponents\default.txaPackage"/>
++			<None Include="ModelSupport_MHLComponents\default.txvpck"/>
++			<None Include="ModelSupport_MHLComponents\unit_CoverPanel\default.txvpck"/>
+ 			<BuildConfiguration Include="Base">
+ 				<Key>Base</Key>
+ 			</BuildConfiguration>
+@@ -118,8 +134,14 @@
+ 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
+ 						<VersionInfoKeys Name="Comments"/>
+ 					</VersionInfoKeys>
+-					<Excluded_Packages/>
++					<Excluded_Packages>
++						<Excluded_Packages Name="$(BDS)\bin\bcboffice2k120.bpl">CodeGear C++Builder Office 2000 Servers Package</Excluded_Packages>
++						<Excluded_Packages Name="$(BDS)\bin\bcbofficexp120.bpl">CodeGear C++Builder Office XP Servers Package</Excluded_Packages>
++						<Excluded_Packages Name="$(BDS)\bin\dcloffice2k120.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
++						<Excluded_Packages Name="$(BDS)\bin\dclofficexp120.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
++					</Excluded_Packages>
+ 				</Delphi.Personality>
++				<ModelSupport>True</ModelSupport>
+ 			</BorlandProject>
+ 			<ProjectFileVersion>12</ProjectFileVersion>
+ 		</ProjectExtensions>
+Index: branches/1.5.3/MyhomeLib.dproj
+===================================================================
+--- branches/1.5.3/MyhomeLib.dproj	(revision 342)
++++ branches/1.5.3/MyhomeLib.dproj	(working copy)
+@@ -23,10 +23,12 @@
+ 			<Base>true</Base>
+ 		</PropertyGroup>
+ 		<PropertyGroup Condition="'$(Base)'!=''">
++			<BRCC_IncludePath>Units;$(BRCC_IncludePath)</BRCC_IncludePath>
+ 			<DCC_UsePackage>vclx;vcl;dbrtl;bdertl;rtl;vclactnband;vcldb;vcldbx;dsnap;vclib;ibxpress;IndyCore;IndySystem;IndyProtocols;xmlrtl;inet;VclSmp;vclie;webdsnap;inetdbbde;inetdbxpress;soaprtl;vclribbon;DbxCommonDriver;DbxClientDriver;DBXInterBaseDriver;DBXMySQLDriver;dbexpress;dbxcds;ZipmasterD12;VirtualTreesD12;vclAbsDBd12;RaizeComponentsVcl;RaizeComponentsVclDb;lmdrtlx9rt_120;lmdrtl9rt_120;lmdcore9rt_120;lmdplugin1rt_120;MHLComponents;dclZipForged11;vclZipForged12</DCC_UsePackage>
+ 			<DCC_DependencyCheckOutputName>MyhomeLib.exe</DCC_DependencyCheckOutputName>
+ 		</PropertyGroup>
+ 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
++			<BRCC_IncludePath>Release\Units\;Components\Units\Debug\</BRCC_IncludePath>
+ 			<DCC_Warnings>false</DCC_Warnings>
+ 			<DCC_Hints>false</DCC_Hints>
+ 			<DCC_USE_BEFORE_DEF>false</DCC_USE_BEFORE_DEF>
+@@ -247,6 +249,10 @@
+ 				<ResourceType>RCData</ResourceType>
+ 				<ResourceId>smallStarEmpty</ResourceId>
+ 			</RcItem>
++			<None Include="ModelSupport_MyhomeLib\default.txaPackage"/>
++			<None Include="ModelSupport_MyhomeLib\default.txvpck"/>
++			<None Include="ModelSupport_MyhomeLib\unit_Columns\default.txvpck"/>
++			<None Include="ModelSupport_MyhomeLib\MyhomeLib\default.txvpck"/>
+ 			<BuildConfiguration Include="Base">
+ 				<Key>Base</Key>
+ 			</BuildConfiguration>
+@@ -303,11 +309,13 @@
+ 						<Source Name="MainSource">MyhomeLib.dpr</Source>
+ 					</Source>
+ 					<Excluded_Packages>
+-						<Excluded_Packages Name="$(BDS)\bin\dcloffice2k140.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+-						<Excluded_Packages Name="$(BDS)\bin\dclofficexp140.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
++						<Excluded_Packages Name="$(BDS)\bin\bcboffice2k120.bpl">CodeGear C++Builder Office 2000 Servers Package</Excluded_Packages>
++						<Excluded_Packages Name="$(BDS)\bin\bcbofficexp120.bpl">CodeGear C++Builder Office XP Servers Package</Excluded_Packages>
++						<Excluded_Packages Name="$(BDS)\bin\dcloffice2k120.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
++						<Excluded_Packages Name="$(BDS)\bin\dclofficexp120.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+ 					</Excluded_Packages>
+ 				</Delphi.Personality>
+-				<ModelSupport>False</ModelSupport>
++				<ModelSupport>True</ModelSupport>
+ 			</BorlandProject>
+ 			<ProjectFileVersion>12</ProjectFileVersion>
+ 		</ProjectExtensions>
+Index: branches/1.5.3/Units/unit_Settings.pas
+===================================================================
+--- branches/1.5.3/Units/unit_Settings.pas	(revision 342)
++++ branches/1.5.3/Units/unit_Settings.pas	(working copy)
+@@ -22,7 +22,7 @@
+   IniFiles,
+   unit_Scripts,
+   unit_Readers,
+-  unit_globals,
++  unit_Globals,
+   unit_Lib_Updates;
+ 
+ type
+@@ -551,7 +551,7 @@
+     //
+     FProxyServer := iniFile.ReadString(NETWORK_SECTION, 'proxy', '');
+     FProxyUsername := iniFile.ReadString(NETWORK_SECTION, 'proxy-user', '');
+-    FProxyPassword := DecodeStr(iniFile.ReadString(NETWORK_SECTION, 'proxy-pass', ''));
++    FProxyPassword := DecodePassString(iniFile.ReadString(NETWORK_SECTION, 'proxy-pass', ''));
+     FProxyPort := iniFile.ReadInteger(NETWORK_SECTION, 'proxy-port', 0);
+     FUpdateURL := iniFile.ReadString(NETWORK_SECTION, 'update_server', 'http://home-lib.net/update/');
+     FDownloadURL := iniFile.ReadString(NETWORK_SECTION, 'library_server', 'http://lib.rus.ec/');
+@@ -563,7 +563,7 @@
+     FUseIESettings := iniFile.ReadBool(NETWORK_SECTION,'use_ie_settings',false);
+ 
+     FLibUsername := iniFile.ReadString(NETWORK_SECTION, 'lib-user', '');
+-    FLibPassword := DecodeStr(iniFile.ReadString(NETWORK_SECTION, 'lib-pass', ''));
++    FLibPassword := DecodePassString(iniFile.ReadString(NETWORK_SECTION, 'lib-pass', ''));
+ 
+     //
+     // COLORS_SECTION
+@@ -690,7 +690,7 @@
+     //
+     iniFile.WriteString(NETWORK_SECTION, 'proxy', FProxyServer);
+     iniFile.WriteString(NETWORK_SECTION, 'proxy-user', FProxyUsername);
+-    iniFile.WriteString(NETWORK_SECTION, 'proxy-pass', EncodeStr(FProxyPassword));
++    iniFile.WriteString(NETWORK_SECTION, 'proxy-pass', EncodePassString(FProxyPassword));
+     iniFile.WriteInteger(NETWORK_SECTION, 'proxy-port', FProxyPort);
+     iniFile.WriteString(NETWORK_SECTION, 'update_server', FUpdateURL);
+     iniFile.WriteString(NETWORK_SECTION, 'library_server', FDownloadURL);
+@@ -701,7 +701,7 @@
+     iniFile.WriteInteger(NETWORK_SECTION,'dwnld_interval',FDwnldInterval);
+ 
+     iniFile.WriteString(NETWORK_SECTION, 'lib-user', FLibUsername);
+-    iniFile.WriteString(NETWORK_SECTION, 'lib-pass', EncodeStr(FLibPassword));
++    iniFile.WriteString(NETWORK_SECTION, 'lib-pass', EncodePassString(FLibPassword));
+ 
+     //
+     // COLORS_SECTION
