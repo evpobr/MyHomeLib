@@ -1,4 +1,0 @@
-<?xml version="1.0"?>
-<TgConfig Version="3" SubLevelDisabled="False">
-  <Option Name="namespaceFolder.unit_CoverPanel" Type="System.String" Value="unit_CoverPanel" Category="General" IsBrowsable="False" />
-</TgConfig>
