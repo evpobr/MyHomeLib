@@ -90,7 +90,8 @@ procedure GetDefaultColumnProperties(
 implementation
 
 uses
-  unit_Consts;
+  unit_Consts,
+  unit_Helpers;
 
 const
   //
@@ -340,10 +341,8 @@ begin
     FIniFile.ReadSection(Section, sl);
     if sl.Count > 0 then
     begin
-      slHelper := TStringList.Create;
+      slHelper := TIniStringList.Create;
       try
-        slHelper.QuoteChar := '"';
-        slHelper.Delimiter := ';';
         for I := 0 to sl.Count - 1 do
         begin
           if Pos('Column', sl[i]) = 1 then
@@ -508,11 +507,8 @@ begin
 
   if Count > 0 then
   begin
-    sl := TStringList.Create;
+    sl := TIniStringList.Create;
     try
-      sl.QuoteChar := '"';
-      sl.Delimiter := ';';
-
       for I := 0 to Count - 1 do
       begin
         sl.Clear;

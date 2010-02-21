@@ -26,6 +26,11 @@ type
     procedure LoadFromStream(Stream: TStream); override;
   end;
 
+  TIniStringList = class(TStringList)
+  public
+    constructor Create; overload;
+  end;
+
 function GetFileSize(const FileName: string): Integer;
 
 function GetOpenFileName(
@@ -79,8 +84,9 @@ uses
   ShlObj,
   ActiveX;
 
-{ TStringListEx }
-
+// ============================================================================
+// TStringListEx
+// ============================================================================
 procedure TStringListEx.LoadFromStream(Stream: TStream);
 const
   UTF8BOM: array [1..3] of Byte = ($EF, $BB, $BF); //the UTF-8 byte order mark (BOM).
@@ -101,6 +107,18 @@ begin
     Stream.Position := APosition;
 
   inherited;
+end;
+
+// ============================================================================
+// TIniStringList
+// ============================================================================
+constructor TIniStringList.Create;
+begin
+  inherited Create;
+
+  QuoteChar := '"';
+  Delimiter := ';';
+  StrictDelimiter := True;
 end;
 
 // ============================================================================
@@ -134,7 +152,7 @@ var
 begin
   dlg := DialogClass.Create(nil);
   try
-    if Title <> '' then    
+    if Title <> '' then
       dlg.Title := Title;
     dlg.DefaultExt := DefaultExt;
     dlg.Filter := Filter;

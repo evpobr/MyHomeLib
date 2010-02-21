@@ -227,7 +227,7 @@ type
 
   public
     constructor Create;
-    { TODO -oNickR -cBug : MEMLEAK написать dectructor и аккуратно вызвать его }
+    destructor Destroy; override;
 
     procedure LoadSettings;
     procedure SaveSettings;
@@ -382,7 +382,8 @@ uses
   StrUtils,
   unit_Consts,
   ShlObj,
-  ShellAPI;
+  ShellAPI,
+  unit_Helpers;
 
 var
   g_objSettings: TMHLSettings;
@@ -517,6 +518,16 @@ begin
   FUpdateList := TUpdateInfoList.Create;
 
   FInitialDirs := TStringList.Create;
+end;
+
+destructor TMHLSettings.Destroy;
+begin
+  FreeAndNil(FInitialDirs);
+  FreeAndNil(FUpdateList);
+  FreeAndNil(FScripts);
+  FreeAndNil(FReaders);
+
+  inherited Destroy;
 end;
 
 function TMHLSettings.GetSettingsFileName: string;
@@ -870,30 +881,23 @@ var
   slHelper: TStringList;
   S: string;
 begin
-  slHelper := TStringList.Create;
+  slHelper := TIniStringList.Create;
   try
-    slHelper.QuoteChar := '"';
-    slHelper.Delimiter := ';';
-    slHelper.StrictDelimiter := True;
-
     //
     // Сначала сплиттеры
     //
-    S := iniFile.ReadString(INTERFACE_SECTION, 'Splitters', '250;250;250;250');
-    slHelper.DelimitedText := S;
+    slHelper.DelimitedText := iniFile.ReadString(INTERFACE_SECTION, 'Splitters', '250;250;250;250');
     SetLength(FSplitters, 4);
     for I := 0 to slHelper.Count - 1 do
-      FSplitters[I] := StrToInt(slHelper[I]);
+      FSplitters[I] := StrToIntDef(slHelper[I], 250);
 
     //
     // режимы таблиц
     //
-    slHelper.Clear;
-    S := iniFile.ReadString(INTERFACE_SECTION, 'TreeModes', '0;1;0;1;0;1');
-    slHelper.DelimitedText := S;
+    slHelper.DelimitedText := iniFile.ReadString(INTERFACE_SECTION, 'TreeModes', '0;1;0;1;0;1');
     SetLength(FTreeModes, 6);
     for I := 0 to slHelper.Count - 1 do
-      case StrToInt(slHelper[I]) of
+      case StrToIntDef(slHelper[I], 0) of
         0: FTreeModes[I] := tmTree;
         1: FTreeModes[I] := tmFlat;
       end;
@@ -920,11 +924,8 @@ begin
       iniFile.ReadSection(UPDATES_SECTION, sl);
       if sl.Count > 0 then
       begin
-        slHelper := TStringList.Create;
+        slHelper := TIniStringList.Create;
         try
-          slHelper.QuoteChar := '"';
-          slHelper.Delimiter := ';';
-          slHelper.StrictDelimiter := True;
           for I := 0 to sl.Count - 1 do
           begin
             if Pos(UPDATE_KEY_PREFIX, sl[I]) = 1 then
@@ -962,12 +963,8 @@ var
   I: Integer;
   sl: TStringList;
 begin
-
-  sl := TStringList.Create;
+  sl := TIniStringList.Create;
   try
-    sl.QuoteChar := '"';
-    sl.Delimiter := ';';
-    sl.StrictDelimiter := True;
     // сначала сплиттеры
     for I := 0 to High(FSplitters) do
       sl.Add(IntToStr(FSplitters[I]));
@@ -996,11 +993,8 @@ begin
     iniFile.ReadSection(READERS_SECTION, sl);
     if sl.Count > 0 then
     begin
-      slHelper := TStringList.Create;
+      slHelper := TIniStringList.Create;
       try
-        slHelper.QuoteChar := '"';
-        slHelper.Delimiter := ';';
-        slHelper.StrictDelimiter := True;
         for I := 0 to sl.Count - 1 do
         begin
           if Pos(READER_KEY_PREFIX, sl[I]) = 1 then
@@ -1044,11 +1038,8 @@ begin
 
   if FReaders.Count > 0 then
   begin
-    sl := TStringList.Create;
+    sl := TIniStringList.Create;
     try
-      sl.QuoteChar := '"';
-      sl.Delimiter := ';';
-      sl.StrictDelimiter := True;
       for I := 0 to FReaders.Count - 1 do
       begin
         sl.Clear;
@@ -1075,11 +1066,8 @@ begin
     iniFile.ReadSection(SCRIPTS_SECTION, sl);
     if sl.Count > 0 then
     begin
-      slHelper := TStringList.Create;
+      slHelper := TIniStringList.Create;
       try
-        slHelper.QuoteChar := '"';
-        slHelper.StrictDelimiter := True;
-        slHelper.Delimiter := ';';
         for I := 0 to sl.Count - 1 do
         begin
           if Pos(SCRIPT_KEY_PREFIX, sl[I]) = 1 then
@@ -1108,11 +1096,8 @@ begin
 
   if FScripts.Count > 0 then
   begin
-    sl := TStringList.Create;
+    sl := TIniStringList.Create;
     try
-      sl.QuoteChar := '"';
-      sl.Delimiter := ';';
-      sl.StrictDelimiter := True;
       for I := 0 to FScripts.Count - 1 do
       begin
         sl.Clear;
