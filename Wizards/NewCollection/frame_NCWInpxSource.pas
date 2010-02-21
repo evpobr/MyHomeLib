@@ -189,11 +189,8 @@ begin
       if sl.Count > 0 then
       begin
         SetLength(FCollections, sl.Count);
-        slHelper := TStringList.Create;
+        slHelper := TIniStringList.Create;
         try
-          slHelper.QuoteChar := '"';
-          slHelper.Delimiter := ';';
-          slHelper.StrictDelimiter := True;
           for I := 0 to sl.Count - 1 do
           begin
             if Pos(INPX_KEY_PREFIX, sl[I]) = 1 then

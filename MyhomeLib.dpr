@@ -117,6 +117,10 @@ uses
 {$R *.res}
 
 begin
+{$IFOPT D+}
+  ReportMemoryLeaksOnShutdown := True;
+{$ENDIF}
+
   Application.Initialize;
 
   if FirstHinstanceRunning(1) then
@@ -134,14 +138,14 @@ begin
     // Важно! сначала создаем датамодули и главную форму
     // а потом - остальные формы!
     Application.CreateForm(TDMUser, DMUser);
-  Application.CreateForm(TDMCollection, DMCollection);
-  Application.CreateForm(TfrmMain, frmMain);
-  Application.CreateForm(TfrmEditBookInfo, frmEditBookInfo);
-  Application.CreateForm(TfrmGenreTree, frmGenreTree);
-  Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
-  Application.CreateForm(TfrmConvertToFBD, frmConvertToFBD);
-  Application.CreateForm(TfrmAuthorList, frmAuthorList);
-  frmSplash.Hide;  // Hide the splash screen
+    Application.CreateForm(TDMCollection, DMCollection);
+    Application.CreateForm(TfrmMain, frmMain);
+    Application.CreateForm(TfrmEditBookInfo, frmEditBookInfo);
+    Application.CreateForm(TfrmGenreTree, frmGenreTree);
+    Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
+    Application.CreateForm(TfrmConvertToFBD, frmConvertToFBD);
+    Application.CreateForm(TfrmAuthorList, frmAuthorList);
+    frmSplash.Hide;  // Hide the splash screen
   finally
     frmSplash.Free;  // Free the splash screen
   end;
