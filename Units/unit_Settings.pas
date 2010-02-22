@@ -383,6 +383,7 @@ uses
   unit_Consts,
   ShlObj,
   ShellAPI,
+  IOUtils,
   unit_Helpers;
 
 var
@@ -468,12 +469,12 @@ begin
   for I := 1 to ParamCount do
   begin
     if not UseLocalData then
-      UseLocalData := (LowerCase(paramstr(I)) = STR_USELOCALDATA);
+      UseLocalData := (LowerCase(ParamStr(I)) = STR_USELOCALDATA);
     if not UseLocalTemp then
       UseLocalTemp := (LowerCase(paramstr(I)) = STR_USELOCALTEMP);
-    if (LowerCase(paramstr(I)) = STR_USERDBS) and (paramstr(I + 1) <> '') then
+    if (LowerCase(ParamStr(I)) = STR_USERDBS) and (ParamStr(I + 1) <> '') then
     begin
-      DBFileName := paramstr(I + 1);
+      DBFileName := ParamStr(I + 1);
       UserDatabase := True;
     end;
   end;
@@ -506,7 +507,7 @@ begin
   // устанавливаем временную папку
 
   if not UseLocalTemp then
-    FTempDir := c_GetTempPath + '_myhomelib'
+    FTempDir := TPath.Combine(TPath.GetTempPath, '_myhomelib')
   else
     FTempDir := FAppPath + TEMP_DIR_NAME;
 
@@ -942,13 +943,13 @@ begin
       else
       begin
         // Добавим апдейты по умолчанию
-        FUpdateList.Add('Lib.rus.ec [FB2]', '', 'last_librusec.info', 'librusec_update.zip', True, CT_LIBRUSEC_LOCAL_FB);
-        FUpdateList.Add('Lib.rus.ec [FB2]', '', '', 'daily_update.zip', False, CT_LIBRUSEC_LOCAL_FB);
-        FUpdateList.Add('Lib.rus.ec OnLine [FB2]', '', 'last_librusec.info', 'librusec_update.zip', True, CT_LIBRUSEC_ONLINE_FB);
-        FUpdateList.Add('Lib.rus.ec OnLine [FB2]', '', 'last_extra.info', 'extra_update.zip', False, CT_LIBRUSEC_ONLINE_FB);
-        FUpdateList.Add('Lib.rus.ec [USR]', '', 'last_usr.info', 'usr_update.zip', True, CT_LIBRUSEC_USR);
-        FUpdateList.Add('Flibusta OnLine [FB2]', '', 'last_flibusta.info', 'flubusta_update.zip', True, CT_LIBRUSEC_ONLINE_FB);
-        FUpdateList.Add('Flibusta OnLine [FB2]', '', 'last_flibusta_extra.info', 'flibusta_extra_update.zip', False, CT_LIBRUSEC_ONLINE_FB);
+        FUpdateList.Add('Lib.rus.ec [FB2]',        '', 'last_librusec.info',       'librusec_update.zip',       True,  CT_LIBRUSEC_LOCAL_FB);
+        FUpdateList.Add('Lib.rus.ec [FB2]',        '', '',                         'daily_update.zip',          False, CT_LIBRUSEC_LOCAL_FB);
+        FUpdateList.Add('Lib.rus.ec OnLine [FB2]', '', 'last_librusec.info',       'librusec_update.zip',       True,  CT_LIBRUSEC_ONLINE_FB);
+        FUpdateList.Add('Lib.rus.ec OnLine [FB2]', '', 'last_extra.info',          'extra_update.zip',          False, CT_LIBRUSEC_ONLINE_FB);
+        FUpdateList.Add('Lib.rus.ec [USR]',        '', 'last_usr.info',            'usr_update.zip',            True,  CT_LIBRUSEC_USR);
+        FUpdateList.Add('Flibusta OnLine [FB2]',   '', 'last_flibusta.info',       'flubusta_update.zip',       True,  CT_LIBRUSEC_ONLINE_FB);
+        FUpdateList.Add('Flibusta OnLine [FB2]',   '', 'last_flibusta_extra.info', 'flibusta_extra_update.zip', False, CT_LIBRUSEC_ONLINE_FB);
       end;
     finally
       sl.Free;

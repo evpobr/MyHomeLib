@@ -6404,7 +6404,7 @@ begin
 
   frmBases := TfrmBases.Create(Application);
   try
-    frmBases.TabSheet2.TabVisible := isOnline;
+    frmBases.tsConnectionInfo.TabVisible := isOnline;
     if frmBases.ShowModal = mrOk then
     begin
       Assert(Settings.ActiveCollection = DMUser.ActiveCollection.ID);
