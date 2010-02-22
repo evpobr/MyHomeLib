@@ -156,7 +156,7 @@ procedure DebugOut(const DebugMessage: string; const Args: array of const ); ove
 
 procedure SetProxySettings(var IdHTTP: TidHTTP);
 
-function c_GetTempPath: string;
+//function c_GetTempPath: string;
 function GetSpecialPath(CSIDL: word): string;
 function GetLibUpdateVersion(Full: Boolean): Integer;
 function ExecAndWait(const FileName, Params: string; const WinState: word): Boolean;
@@ -808,12 +808,14 @@ begin
 {$ENDIF}
 end;
 
+{
 function c_GetTempPath: string;
 var
   Buffer: array [0 .. 65536] of Char;
 begin
   SetString(Result, Buffer, GetTempPath(Sizeof(Buffer) - 1, Buffer));
 end;
+}
 
 function GetSpecialPath(CSIDL: word): string;
 var

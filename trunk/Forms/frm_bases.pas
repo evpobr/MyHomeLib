@@ -1,13 +1,19 @@
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Created             22.02.2010
+  * Description         Форма редактирования свойств коллекции
+  * Author(s)           Aleksey Penkov  alex.penkov@gmail.com
+  *                     Nick Rymanov    nrymanov@gmail.com
+  *
+  ****************************************************************************** *)
 
-{******************************************************************************}
-{                                                                              }
-{                                 MyHomeLib                                    }
-{                                                                              }
-{                                Version 0.9                                   }
-{                                20.08.2008                                    }
-{                    Copyright (c) Aleksey Penkov  alex.penkov@gmail.com       }
-{                                                                              }
-{******************************************************************************}
+{
+TODO -oNickR : возможно, стоит здесь задавать свойства обновления. сервер, названия файлов обновлений и периодичность обновлений
+}
 
 unit frm_bases;
 
@@ -27,39 +33,38 @@ uses
   Mask,
   ExtCtrls,
   unit_StaticTip,
-  RzEdit,
-  RzBtnEdt,
-  RzPanel,
-  RzRadGrp, unit_AutoCompleteEdit, RzLabel, RzTabs;
+  unit_AutoCompleteEdit,
+  ComCtrls;
 
 type
   TfrmBases = class(TForm)
-    RzPageControl1: TRzPageControl;
-    TabSheet1: TRzTabSheet;
-    TabSheet2: TRzTabSheet;
-    RzPanel1: TRzPanel;
-    btnCancel: TButton;
-    btnSave: TButton;
+    pcCollectionInfo: TPageControl;
+    tsGeneralInfo: TTabSheet;
+    tsConnectionInfo: TTabSheet;
     cbRelativePath: TCheckBox;
     MHLStaticTip1: TMHLStaticTip;
-    edDescription: TRzEdit;
-    Label1: TLabel;
-    Label5: TLabel;
+    edDescription: TEdit;
+    lblCollectionDescription: TLabel;
+    lblCollectionRoot: TLabel;
     edCollectionRoot: TMHLAutoCompleteEdit;
     edCollectionFile: TMHLAutoCompleteEdit;
     edCollectionName: TEdit;
-    Label9: TLabel;
-    Label8: TLabel;
+    lblCollectionFile: TLabel;
+    lblCollectionName: TLabel;
     btnNewFile: TButton;
     btnSelectRoot: TButton;
-    RzLabel5: TRzLabel;
-    edUser: TRzEdit;
-    edPass: TRzMaskEdit;
-    RzLabel6: TRzLabel;
-    edURL: TRzEdit;
-    RzLabel1: TRzLabel;
-    RzLabel2: TRzLabel;
+    lblUser: TLabel;
+    edUser: TEdit;
+    edPass: TEdit;
+    lblPassword: TLabel;
+    edURL: TEdit;
+    lblURL: TLabel;
+    lblScript: TLabel;
     mmScript: TMemo;
+    pnButtons: TPanel;
+    btnOk: TButton;
+    btnCancel: TButton;
+
     procedure FormShow(Sender: TObject);
     procedure edDBFileButtonClick(Sender: TObject);
     procedure edDBFolderButtonClick(Sender: TObject);
@@ -112,7 +117,8 @@ uses
   unit_Settings,
   unit_Helpers,
   unit_Consts,
-  unit_Errors;
+  unit_Errors,
+  IOUtils;
 
 {$R *.dfm}
 
@@ -128,7 +134,6 @@ begin
   Pass := DMUser.ActiveCollection.Password;
   User := DMUser.ActiveCollection.User;
   Script := DMUser.ActiveCollection.Script;
-
 end;
 
 function TfrmBases.GetDisplayName: string;
@@ -136,14 +141,14 @@ begin
   Result := Trim(edCollectionName.Text);
 end;
 
-function TfrmBases.GetPass: string;
-begin
-  Result := edPass.Text;
-end;
-
 procedure TfrmBases.SetDisplayName(const Value: string);
 begin
   edCollectionName.Text := Value;
+end;
+
+function TfrmBases.GetPass: string;
+begin
+  Result := edPass.Text;
 end;
 
 procedure TfrmBases.SetPass(const Value: string);
@@ -161,14 +166,14 @@ begin
   Result := Trim(edDescription.Text);
 end;
 
-procedure TfrmBases.SetDBFileName(const Value: string);
-begin
-  edCollectionFile.Text := Value;
-end;
-
 procedure TfrmBases.SetDescription(const Value: string);
 begin
   edDescription.Text := Value;
+end;
+
+procedure TfrmBases.SetDBFileName(const Value: string);
+begin
+  edCollectionFile.Text := Value;
 end;
 
 function TfrmBases.GetRootFolder: string;
@@ -176,24 +181,14 @@ begin
   Result := Trim(edCollectionRoot.Text);
 end;
 
-function TfrmBases.GetScript: string;
-begin
-  Result := mmScript.Lines.Text;
-end;
-
-function TfrmBases.GetURL: string;
-begin
-  Result := edURL.Text;
-end;
-
-function TfrmBases.GetUser: string;
-begin
-  Result := edUser.Text;
-end;
-
 procedure TfrmBases.SetRootFolder(const Value: string);
 begin
   edCollectionRoot.Text := Value;
+end;
+
+function TfrmBases.GetScript: string;
+begin
+  Result := mmScript.Lines.Text;
 end;
 
 procedure TfrmBases.SetScript(const Value: string);
@@ -202,9 +197,19 @@ begin
   mmscript.Lines.Text := Value;
 end;
 
+function TfrmBases.GetURL: string;
+begin
+  Result := edURL.Text;
+end;
+
 procedure TfrmBases.SetURL(const Value: string);
 begin
   edURL.Text := Value;
+end;
+
+function TfrmBases.GetUser: string;
+begin
+  Result := edUser.Text;
 end;
 
 procedure TfrmBases.SetUser(const Value: string);
@@ -216,6 +221,7 @@ procedure TfrmBases.edDBFileButtonClick(Sender: TObject);
 var
   AFileName: string;
 begin
+  { TODO -oNickR -cBug : совершенно непонятно почему, после вызова этого метода форма теряет фокус }
   if GetFileName(fnOpenCollection, AFileName) then
     edCollectionFile.Text := AFileName;
 end;
@@ -233,7 +239,6 @@ var
   ADBFileName: string;
   ARootFolder: string;
 begin
-
   if (DisplayName = '') or (DBFileName = '') or (RootFolder = '') then
   begin
     MessageDlg(rstrAllFieldsShouldBeFilled, mtError, [mbOk], 0);
@@ -265,6 +270,7 @@ begin
     ADBFileName := DBFileName;
     if '' = ExtractFileExt(ADBFileName) then
       ADBFileName := ChangeFileExt(ADBFileName, COLLECTION_EXTENSION);
+
     ARootFolder := ExcludeTrailingPathDelimiter(RootFolder);
   end;
 
