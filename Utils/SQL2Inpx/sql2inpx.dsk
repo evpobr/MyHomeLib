@@ -16,22 +16,18 @@ File_13=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\Units\unit_FBD_helpers.pa
 File_14=TSourceModule,'D:\DelphiProjects\MyHomeLib 1.5\ImportImpl\unit_ImportFBDThread.pas',0,1,121,1,153,0,0,,
 
 [Modules]
-Module0=D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas
-Module1=D:\DelphiProjects\MyHomeLib\SQL2INPX\sql2inpx.dproj
-Module2=D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas
-Module3=default.htm
-Count=4
+Module0=D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas
+Module1=D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas
+Module2=default.htm
+Count=3
 EditWindowCount=1
 
-[D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas]
+[D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas]
 ModuleType=TSourceModule
 FormState=1
-FormOnTop=1
+FormOnTop=0
 
-[D:\DelphiProjects\MyHomeLib\SQL2INPX\sql2inpx.dproj]
-ModuleType=TBaseProject
-
-[D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas]
+[D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas]
 ModuleType=TSourceModule
 FormState=1
 FormOnTop=0
@@ -40,12 +36,11 @@ FormOnTop=0
 ModuleType=TURLModule
 
 [EditWindow0]
-ViewCount=4
-CurrentEditView=D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas
+ViewCount=3
+CurrentEditView=D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas
 View0=0
 View1=1
 View2=2
-View3=3
 PercentageSizes=1
 Create=1
 Visible=1
@@ -82,31 +77,20 @@ WelcomePageURL=bds:/default.htm
 [View1]
 CustomEditViewType=TEditView
 Module=D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas
-CursorX=23
-CursorY=567
-TopLine=563
+CursorX=1
+CursorY=326
+TopLine=265
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=Borland.FormDesignerView
+EditViewName=D:\DelphiProjects\MyHomeLib\SQL2INPX\frm_main.pas
 
 [View2]
 CustomEditViewType=TEditView
-Module=D:\DelphiProjects\MyHomeLib\SQL2INPX\sql2inpx.dpr
-CursorX=40
-CursorY=18
-TopLine=1
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=D:\DelphiProjects\MyHomeLib\SQL2INPX\sql2inpx.dpr
-
-[View3]
-CustomEditViewType=TEditView
 Module=D:\DelphiProjects\MyHomeLib\SQL2INPX\dm_librusec.pas
-CursorX=1
-CursorY=1
-TopLine=37
+CursorX=7
+CursorY=123
+TopLine=58
 LeftCol=1
 Elisions=
 Bookmarks=

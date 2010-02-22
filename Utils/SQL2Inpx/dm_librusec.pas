@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes, DB, DBAccess, MyAccess, MemDS, MyEmbConnection, DADump,
-  MyDump;
+  MyDump, Variants;
 
 type
   TLib = class(TDataModule)
@@ -79,11 +79,15 @@ begin
 
   Book.SQL.Text := Query;
   Book.Execute;
-  ID := Book.FieldByName('BookId').Value;
-  QueryAvtor(ID);
-  QueryGenre(ID);
-  QuerySeries(ID);
-  Result := RecordToString(FN);
+  if Book.FieldByName('BookId').Value <> Null then
+  begin
+    ID := Book.FieldByName('BookId').Value;
+    QueryAvtor(ID);
+    QueryGenre(ID);
+    QuerySeries(ID);
+    Result := RecordToString(FN);
+  end
+  else Result := '';
 end;
 
 function TLib.LastBookID: integer;
