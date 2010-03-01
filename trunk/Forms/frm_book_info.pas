@@ -1,67 +1,86 @@
-
-{******************************************************************************}
-{                                                                              }
-{                                 MyHomeLib                                    }
-{                                                                              }
-{                                Version 0.9                                   }
-{                                20.08.2008                                    }
-{                    Copyright (c) Aleksey Penkov  alex.penkov@gmail.com       }
-{                                                                              }
-{******************************************************************************}
-
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Authors Aleksey Penkov   alex.penkov@gmail.com
+  *         Nick Rymanov     nrymanov@gmail.com
+  *
+  ****************************************************************************** *)
 
 unit frm_book_info;
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, xmldom, XMLIntf, msxmldom, XMLDoc, ExtCtrls, RzPanel, RzButton,
-  StdCtrls, RzLabel, RzEdit, ComCtrls, RzTabs;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  xmldom,
+  XMLIntf,
+  msxmldom,
+  XMLDoc,
+  ExtCtrls,
+  StdCtrls,
+  ComCtrls,
+  unit_Globals;
 
 type
   TfrmBookDetails = class(TForm)
-    RzPageControl1: TRzPageControl;
-    TabSheet1: TRzTabSheet;
-    TabSheet2: TRzTabSheet;
+    RzPageControl1: TPageControl;
+    tsInfo: TTabSheet;
+    tsReview: TTabSheet;
     mmShort: TMemo;
-    Img: TImage;
-    RzPanel1: TRzPanel;
-    RzBitBtn1: TRzBitBtn;
-    btnLoadReview: TRzBitBtn;
-    mmReview: TRzMemo;
-    btnClearReview: TRzBitBtn;
-    mmInfo: TRzRichEdit;
-    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure RzBitBtn1Click(Sender: TObject);
+    imgCover: TImage;
+    pnButtons: TPanel;
+    btnClose: TButton;
+    btnLoadReview: TButton;
+    mmReview: TMemo;
+    btnClearReview: TButton;
+    pnTitle: TPanel;
+    lblAuthors: TLabel;
+    lvInfo: TListView;
+    lblTitle: TLabel;
+    pnReviewButtons: TPanel;
+    procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure mmReviewChange(Sender: TObject);
     procedure btnLoadReviewClick(Sender: TObject);
     procedure btnClearReviewClick(Sender: TObject);
+
   private
-    { Private declarations }
     FUrl: string;
 
-    FReviewChanged : boolean;
+    FReviewChanged: Boolean;
+    //FBookRecord: TBookRecord;
     function GetReview: string;
-    procedure Setreview(const Value: string);
+    procedure SetReview(const Value: string);
+    //procedure SetBookRecord(const Value: TBookRecord);
 
   public
     procedure AllowOnlineReview(URL: string);
     procedure Download;
 
-    procedure ShowBookInfo(FS: TMemoryStream);
-    property Review: string read GetReview write Setreview;
-    property ReviewChanged: boolean read FReviewChanged write FReviewChanged;
-    property URL: string write FURL;
-    { Public declarations }
+    procedure FillBookInfo(bookInfo: TBookRecord; bookStream: TMemoryStream);
+
+    property Review: string read GetReview write SetReview;
+    property ReviewChanged: Boolean read FReviewChanged write FReviewChanged;
+    property URL: string read FUrl write FUrl;
+    //property Book: TBookRecord read FBookRecord write SetBookRecord;
   end;
 
   TReviewDownloadThread = class(TThread)
   private
-    { Private declarations }
     FForm: TfrmBookDetails;
-    FReview : TStringList;
-    FURL : string;
+    FReview: TStringList;
+    FUrl: string;
 
     procedure StartDownload;
     procedure Finish;
@@ -69,10 +88,10 @@ type
     procedure Execute; override;
     property Form: TfrmBookDetails read FForm write FForm;
   public
-    property URL: string write FURL;
+    property URL: string write FUrl;
   end;
 
-  procedure DownloadReview(Form: TfrmBookDetails; URL: string);
+procedure DownloadReview(Form: TfrmBookDetails; URL: string);
 
 var
   frmBookDetails: TfrmBookDetails;
@@ -81,52 +100,62 @@ implementation
 
 uses
   FictionBook_21,
-  unit_globals,
   unit_Settings,
-  unit_MHLHelpers,
   unit_ReviewParser,
   dm_user,
-  jpeg,
-  pngimage,
-  strutils;
-
+  CommCtrl,
+  StrUtils,
+  unit_MHLHelpers,
+  unit_FB2Utils;
 
 {$R *.dfm}
+
+procedure TfrmBookDetails.FormCreate(Sender: TObject);
+begin
+  lvInfo.ShowColumnHeaders := False;
+  FReviewChanged := False;
+end;
 
 procedure TfrmBookDetails.AllowOnlineReview(URL: string);
 begin
   FUrl := URL;
 
-  btnLoadReview.Visible := True;
-  btnClearReview.Visible := True;
-end;
-
-procedure TfrmBookDetails.FormKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-begin
-  if key=27 then Close;
+  pnReviewButtons.Visible := True;
 end;
 
 procedure TfrmBookDetails.Download;
 var
-  reviewParser : TReviewParser;
-  review : TStringList;
+  reviewParser: TReviewParser;
+  Review: TStringList;
 begin
   btnLoadReview.Enabled := False;
-  reviewParser := TReviewParser.Create;
-  review := TStringList.Create;
   Screen.Cursor := crHourGlass;
   try
-    reviewParser.Parse(FURL, review);
-    mmReview.Clear;
-    mmReview.Lines.AddStrings(review);
-    FReviewChanged := True;
+    reviewParser := TReviewParser.Create;
+    try
+      Review := TStringList.Create;
+      try
+        reviewParser.Parse(FUrl, Review);
+        mmReview.Lines.Assign(Review);
+
+        FReviewChanged := True;
+      finally
+        Review.Free;
+      end;
+    finally
+      reviewParser.Free;
+    end;
   finally
-    review.Free;
-    reviewParser.Free;
     Screen.Cursor := crDefault;
     btnLoadReview.Enabled := True;
   end;
+end;
+
+procedure TfrmBookDetails.FormShow(Sender: TObject);
+begin
+  // TODO перенести под конец заполнения ?
+  ListView_SetColumnWidth(lvInfo.Handle, 0, LVSCW_AUTOSIZE);
+  ListView_SetColumnWidth(lvInfo.Handle, 1, LVSCW_AUTOSIZE);
 end;
 
 function TfrmBookDetails.GetReview: string;
@@ -137,11 +166,6 @@ end;
 procedure TfrmBookDetails.mmReviewChange(Sender: TObject);
 begin
   FReviewChanged := True;
-end;
-
-procedure TfrmBookDetails.RzBitBtn1Click(Sender: TObject);
-begin
-  Close;
 end;
 
 procedure TfrmBookDetails.btnClearReviewClick(Sender: TObject);
@@ -155,148 +179,159 @@ begin
   Download;
 end;
 
-procedure TfrmBookDetails.Setreview(const Value: string);
+//procedure TfrmBookDetails.SetBookRecord(const Value: TBookRecord);
+//begin
+//  FBookRecord := Value;
+//  lblTitle.Caption := FBookRecord.Title;
+  { TODO -oNickR -cUsability : может стоит показывать всех авторов? и формировать имя автора более сложным алгоритмом }
+//  lblAuthors.Caption := FBookRecord.Authors[0].GetFullName;
+//end;
+
+procedure TfrmBookDetails.SetReview(const Value: string);
 begin
   mmReview.Lines.Text := Value;
 end;
 
-procedure TfrmBookDetails.ShowBookInfo(FS: TMemoryStream);
+procedure TfrmBookDetails.FillBookInfo(bookInfo: TBookRecord; bookStream: TMemoryStream);
 var
-  book:IXMLFictionBook;
-  i,p:integer;
-  S, outStr: AnsiString;
-  CoverID:String;
-  Ext: string;
+  book: IXMLFictionBook;
+  i: integer;
+  imgBookCover: TGraphic;
+  tmpStr: string;
 
-  ImgVisible : boolean;
-  MS : TMemoryStream;
-
-  TmpImg: TGraphic;
-
-  StrLen : integer;
-  ImageType: TCoverImageType;
-
-
-  procedure WriteString(Title, Text: string);
+  procedure AddItem(const Field: string; const Value: string; GroupID: integer = -1);
+  var
+    item: TListItem;
   begin
-    mmInfo.SelAttributes.Style := [fsBold];
-    mmInfo.SetSelText(Title + ': ' + #9);
-    mmInfo.SelAttributes.Style := [];
-    if Text <> '' then mmInfo.SetSelText(Text);
-    mmInfo.SetSelText(#13#10)
+    item := lvInfo.Items.Add;
+    item.Caption := Field;
+    item.SubItems.Add(Value);
+    item.GroupID := GroupID;
   end;
 
-
 begin
-  FReviewChanged := False;
+  //
+  // Покажем информацию из TBookRecord
+  //
+  lblTitle.Caption := bookInfo.Title;
+  lblAuthors.Caption := bookInfo.Authors[0].GetFullName;
 
-  Img.Picture.Bitmap.Canvas.FrameRect(Img.ClientRect);
-  mmInfo.Lines.Clear;
-  mmShort.Lines.Clear;
+  with lvInfo.Groups.Add do
+  begin
+    Header := 'Информация о файле';
+    AddItem('Папка', bookInfo.Folder, GroupID);
+    AddItem('Файл', bookInfo.FileName, GroupID);
+    AddItem('Размер', GetFormattedSize(bookInfo.Size, True), GroupID);
+    AddItem('Добавлен', DateToStr(bookInfo.Date), GroupID);
+  end;
+  { TODO -oNickR -cUsability : для онлайн коллекций необходимо показывать следующие поля }
+  // libID: Integer;    ???
+  // LibRate: Integer;  ???
+  // URI: string;       ???
+
+  //
+  // Покажем информацию из файла
+  //
+  if not Assigned(bookStream) or (bookStream.Size = 0) then
+  begin
+    imgCover.Visible := False;
+    mmShort.Visible := False;
+    Exit;
+  end;
+
+  //FS.SaveToFile('C:\temp\book.xml');
   try
-    book := LoadFictionbook(FS);
-    try
-      MS := TMemoryStream.Create;
-      CoverID := Book.Description.Titleinfo.Coverpage.XML;
-      p := pos('"#', CoverID);
-      if p <> 0 then
-      begin
-        Delete(CoverId, 1, p + 1);
-        p := pos('"', CoverID);
-        CoverID := Copy(CoverID, 1, p - 1);
-        for i := 0 to Book.Binary.Count - 1 do
-        begin
-          if Book.Binary.Items[i].Id = CoverID then
-          begin
-            S := Book.Binary.Items[i].Text;
-            outStr := DecodeBase64(S);
+    book := LoadFictionbook(bookStream);
 
-            StrLen := Length(outStr);
-            MS.Write(PAnsiChar(outStr)^, StrLen);
-            ImgVisible := True;
-          end;
-        end;
-        //MS.SaveToFile('E:\temp\' + CoverID);
+    //
+    // покажем обложку (если есть)
+    //
+    imgBookCover := GetBookCover(book);
+    if Assigned(imgBookCover) then
+    begin
+      try
+        imgCover.Picture.Assign(imgBookCover);
+        imgCover.Visible := True;
+      finally
+        imgBookCover.Free;
+      end;
+    end
+    else
+      imgCover.Visible := False;
+
+    with book.Description.Titleinfo do
+    begin
+      // ---------------------------------------------
+      with lvInfo.Groups.Add do
+      begin
+        Header := 'Общая информация';
+
+        { TODO -oNickR -cUsability : может стоит показывать всех авторов? и формировать имя автора более сложным алгоритмом }
+        //if Author.Count > 0 then
+        //  lblAuthors.Caption := Author[0].Lastname.Text + ' ' + Author[0].Firstname.Text + ' ' + Author[0].MiddleName.Text;
+
+        { TODO -oNickR -cUsability : показывать все серии + номер в серии }
+        if Sequence.Count > 0 then
+          AddItem('Серия', Sequence[0].Name, GroupID);
+
+        { TODO -oNickR -cUsability : показывать все жанры + Алиасы вместо внутренних имен }
+        if Genre.Count > 0 then
+          AddItem('Жанр', Genre[0], GroupID);
       end;
 
-      if ImgVisible then
+      // ---------------------------------------------
+      with lvInfo.Groups.Add, book.Description.Publishinfo do
       begin
-        CreateImage(ExtractFileExt(CoverID), TmpImg, ImageType);
-        if Assigned(TmpImg) then
+        Header := 'Издательская информация';
+        AddItem('Издательство', Publisher.Text, GroupID);
+        AddItem('Город', City.Text, GroupID);
+        AddItem('Год', Year, GroupID);
+        AddItem('ISBN', Isbn.Text, GroupID);
+      end;
+
+      // ---------------------------------------------
+      with lvInfo.Groups.Add, book.Description.Documentinfo do
+      begin
+        Header := 'Информация о документе (OCR)';
+        for i := 0 to Author.Count - 1 do
         begin
-          MS.Seek(0,soFromBeginning);
-          TmpImg.LoadFromStream(MS);
-          IMG.Picture.Assign(TmpImg);
-          IMG.Invalidate;
-          TmpImg.Free;
+          { TODO -oNickR -cUsability : может стоит формировать имя автора более сложным алгоритмом }
+          tmpStr := Author[i].Firstname.Text + ' ' + Author[i].Lastname.Text + '(' + Author[i].NickName.Text + ')';
+          AddItem(IfThen(i = 0, 'Авторы'), tmpStr, GroupID);
         end;
-      end
-      else
-        IMG.Picture := nil;
-    finally
-      MS.Free;
-    end;
 
-    with Book.Description.Titleinfo do
-    begin
+        AddItem('Программа', Programused.Text, GroupID);
+        AddItem('Дата', Date.Text, GroupID);
+        AddItem('ID', Id, GroupID);
+        AddItem('Версия', Version, GroupID);
 
-      mmInfo.SelAttributes.Size := 10;
-      mmInfo.SelAttributes.Style := [fsBold];
+        for i := 0 to History.p.Count - 1 do
+          AddItem(IfThen(i = 0, 'История'), History.p[i].OnlyText, GroupID);
+      end;
 
-      if Author.Count>0 then
-        mmInfo.SetSelText(Author[0].Lastname.Text+' '+Author[0].Firstname.Text+' '+Author[0].MiddleName.Text+#13#10);
-
-      mmInfo.SelAttributes.Size := 12;
-      mmInfo.SelAttributes.Color := clNavy;
-      mmInfo.SetSelText(Booktitle.Text+#13#10);
-
-      if Sequence.Count > 0 then
-        WriteString('Серия',Sequence[0].Name);
-
-      mmInfo.SetSelText(#13#10);
-      WriteString('Жанр',IfThen(Genre.Count > 0, Genre[0], ''));
-      mmInfo.SetSelText(#13#10);
-
-      WriteString('PublishInfo','');
-      mmInfo.SetSelText('Изд-во: '+ #9 + Book.Description.Publishinfo.Publisher.Text+#13#10);
-      mmInfo.SetSelText('Город: '+ #9 + Book.Description.Publishinfo.City.Text+#13#10);
-      mmInfo.SetSelText('Год: '+ #9 + Book.Description.Publishinfo.Year+#13#10);
-      mmInfo.SetSelText('ISBN: '+ #9 + Book.Description.Publishinfo.Isbn.Text+#13#10);
-      mmInfo.SetSelText(#13#10);
-
-
-      WriteString('DocumentInfo (OCR)','');
-      mmInfo.SetSelText('Авторы: '+#13#10);
-      for I := 0 to Book.Description.Documentinfo.Author.Count - 1 do
-        with Book.Description.Documentinfo.Author.Items[i] do
-            mmInfo.SetSelText(Firstname.Text + ' ' +Lastname.Text + '(' + NickName.Text + ')' + #13#10);
-      mmInfo.SetSelText('');
-      mmInfo.SetSelText('Программа: '+ Book.Description.Documentinfo.Programused.Text + #13#10);
-      mmInfo.SetSelText('Дата: '+ #9 + Book.Description.Documentinfo.Date.Text + #13#10);
-      mmInfo.SetSelText('ID: '+ #9 + Book.Description.Documentinfo.ID + #13#10);
-      mmInfo.SetSelText('Version: '+ #9 + Book.Description.Documentinfo.Version + #13#10);
-      mmInfo.SetSelText('History: '+ #9 + Book.Description.Documentinfo.History.P.Text + #13#10);
-
-      for I := 0 to Annotation.P.Count - 1 do
-              mmShort.SetSelText(Annotation.P.Items[i].OnlyText);
-
+      // ---------------------------------------------
+      { TODO -oNickR -cUsability : может стоит добавлять параграфы как есть? }
+      for i := 0 to Annotation.p.Count - 1 do
+        mmShort.Lines.Add(Annotation.p[i].OnlyText);
     end;
   except
+    //
+    Assert(False);
   end;
 end;
 
-{-------------------- TReviewDownloadThread -----------------------------------}
+{-------------------- TReviewDownloadThread ----------------------------------- }
 
 procedure TReviewDownloadThread.Execute;
 var
-  reviewParser : TReviewParser;
+  reviewParser: TReviewParser;
 begin
   Synchronize(StartDownload);
-  Freview := TStringList.Create;
+  FReview := TStringList.Create;
   try
     reviewParser := TReviewParser.Create;
     try
-      reviewParser.Parse(FURL, Freview);
+      reviewParser.Parse(FUrl, FReview);
     finally
       reviewParser.Free;
     end;
@@ -306,28 +341,28 @@ begin
   end;
 end;
 
-procedure TReviewDownloadThread.Finish;
-begin
-  if FForm.mmReview = Nil then Exit; // FForm почему-то не равно nil после уничтожения.
-                                     // зато компоненты обнуляются, поэтому проверям по ним
-
-  FForm.mmReview.Clear;
-  FForm.mmReview.Lines.AddStrings(Freview);
-  FForm.btnLoadReview.Enabled := True;
-  FForm.ReviewChanged := True;
-  FForm.RzPageControl1.ActivePageIndex := 1;
-end;
-
 procedure TReviewDownloadThread.StartDownload;
 begin
   FForm.btnLoadReview.Enabled := False;
 end;
 
-//------------------------------------------------------------------------------
+procedure TReviewDownloadThread.Finish;
+begin
+  if FForm.mmReview = nil then
+    Exit; // FForm почему-то не равно nil после уничтожения.
+  // зато компоненты обнуляются, поэтому проверям по ним
 
-procedure DownloadReview (Form: TfrmBookDetails; URL: string) ;
+  FForm.mmReview.Lines := FReview;
+  FForm.btnLoadReview.Enabled := True;
+  FForm.ReviewChanged := True;
+  //FForm.RzPageControl1.ActivePageIndex := 1;
+end;
+
+// ------------------------------------------------------------------------------
+
+procedure DownloadReview(Form: TfrmBookDetails; URL: string);
 var
-  Worker : TReviewDownloadThread;
+  Worker: TReviewDownloadThread;
 begin
   Worker := TReviewDownloadThread.Create(True);
   Worker.Form := Form;

@@ -2,7 +2,7 @@
 		<PropertyGroup>
 			<ProjectGuid>{D86FD5A7-BE1F-417C-BEB7-6020DDD97B5F}</ProjectGuid>
 			<MainSource>MHLComponents.dpk</MainSource>
-			<Config Condition="'$(Config)'==''">Release</Config>
+			<Config Condition="'$(Config)'==''">Debug</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 			<ProjectVersion>12.0</ProjectVersion>
 		</PropertyGroup>
@@ -64,6 +64,7 @@
 			<DCCReference Include="unit_InfoPanel.pas"/>
 			<DCCReference Include="unit_MHLHelpers.pas"/>
 			<DCCReference Include="fictionbook_21.pas"/>
+			<DCCReference Include="unit_FB2Utils.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

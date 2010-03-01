@@ -105,7 +105,6 @@ uses
   unit_WriteFb2Info in 'Units\unit_WriteFb2Info.pas',
   unit_ImportFB2Thread in 'ImportImpl\unit_ImportFB2Thread.pas',
   frm_ConverToFBD in 'Forms\frm_ConverToFBD.pas' {frmConvertToFBD},
-  fictionbook_21 in 'Components\fictionbook_21.pas',
   frm_author_list in 'Forms\frm_author_list.pas' {frmAuthorList},
   frm_edit_author in 'Forms\frm_edit_author.pas' {frmEditAuthorData},
   frm_create_mask in 'Forms\frm_create_mask.pas' {frmCreateMask},
@@ -138,14 +137,14 @@ begin
     // Важно! сначала создаем датамодули и главную форму
     // а потом - остальные формы!
     Application.CreateForm(TDMUser, DMUser);
-    Application.CreateForm(TDMCollection, DMCollection);
-    Application.CreateForm(TfrmMain, frmMain);
-    Application.CreateForm(TfrmEditBookInfo, frmEditBookInfo);
-    Application.CreateForm(TfrmGenreTree, frmGenreTree);
-    Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
-    Application.CreateForm(TfrmConvertToFBD, frmConvertToFBD);
-    Application.CreateForm(TfrmAuthorList, frmAuthorList);
-    frmSplash.Hide;  // Hide the splash screen
+  Application.CreateForm(TDMCollection, DMCollection);
+  Application.CreateForm(TfrmMain, frmMain);
+  Application.CreateForm(TfrmEditBookInfo, frmEditBookInfo);
+  Application.CreateForm(TfrmGenreTree, frmGenreTree);
+  Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
+  Application.CreateForm(TfrmConvertToFBD, frmConvertToFBD);
+  Application.CreateForm(TfrmAuthorList, frmAuthorList);
+  frmSplash.Hide;  // Hide the splash screen
   finally
     frmSplash.Free;  // Free the splash screen
   end;
