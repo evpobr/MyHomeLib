@@ -877,8 +877,4 @@ object frmAddnonfb2: TfrmAddnonfb2
     Left = 168
     Top = 368
   end
-  object XPManifest1: TXPManifest
-    Left = 488
-    Top = 72
-  end
 end
