@@ -1,7 +1,7 @@
 object frmBookDetails: TfrmBookDetails
   Left = 0
   Top = 0
-  ActiveControl = RzPageControl1
+  ActiveControl = pcBookInfo
   Caption = #1048#1085#1092#1086#1088#1084#1072#1094#1080#1103' '#1086' '#1082#1085#1080#1075#1077
   ClientHeight = 481
   ClientWidth = 628
@@ -17,17 +17,45 @@ object frmBookDetails: TfrmBookDetails
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object RzPageControl1: TPageControl
+  object pcBookInfo: TPageControl
     AlignWithMargins = True
     Left = 3
     Top = 53
     Width = 622
     Height = 388
-    ActivePage = tsInfo
+    ActivePage = tsFileInfo
     Align = alClient
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 0
+    object tsFileInfo: TTabSheet
+      Caption = #1060#1072#1081#1083
+      ImageIndex = 2
+      object lvFileInfo: TListView
+        AlignWithMargins = True
+        Left = 3
+        Top = 3
+        Width = 608
+        Height = 354
+        Align = alClient
+        Columns = <
+          item
+            Caption = #1055#1086#1083#1077
+            Width = 175
+          end
+          item
+            Caption = #1047#1085#1072#1095#1077#1085#1080#1077
+            Width = 150
+          end>
+        ColumnClick = False
+        GroupView = True
+        ReadOnly = True
+        RowSelect = True
+        PopupMenu = pmBookInfo
+        TabOrder = 0
+        ViewStyle = vsReport
+      end
+    end
     object tsInfo: TTabSheet
       Caption = 'Fb2 '#1080#1085#1092#1086
       ExplicitLeft = 0
@@ -82,6 +110,7 @@ object frmBookDetails: TfrmBookDetails
         GroupView = True
         ReadOnly = True
         RowSelect = True
+        PopupMenu = pmBookInfo
         TabOrder = 1
         ViewStyle = vsReport
       end
@@ -184,18 +213,19 @@ object frmBookDetails: TfrmBookDetails
       AlignWithMargins = True
       Left = 9
       Top = 28
-      Width = 47
+      Width = 610
       Height = 13
       Align = alTop
       Caption = #1040#1074#1090#1086#1088'('#1099')'
       ShowAccelChar = False
       Transparent = True
+      ExplicitWidth = 47
     end
     object lblTitle: TLabel
       AlignWithMargins = True
       Left = 9
       Top = 9
-      Width = 55
+      Width = 610
       Height = 13
       Align = alTop
       Caption = #1053#1072#1079#1074#1072#1085#1080#1077
@@ -206,6 +236,25 @@ object frmBookDetails: TfrmBookDetails
       Font.Style = [fsBold]
       ParentFont = False
       ShowAccelChar = False
+      ExplicitWidth = 55
+    end
+  end
+  object pmBookInfo: TPopupMenu
+    Left = 64
+    Top = 120
+    object miCopyValue: TMenuItem
+      Action = acCopyValue
+    end
+  end
+  object alBookInfo: TActionList
+    Left = 136
+    Top = 120
+    object acCopyValue: TAction
+      Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
+      Hint = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1079#1085#1072#1095#1077#1085#1080#1077' '#1074' '#1073#1091#1092#1092#1077#1088' '#1086#1073#1084#1077#1085#1072
+      ShortCut = 16451
+      OnExecute = acCopyValueExecute
+      OnUpdate = acCopyValueUpdate
     end
   end
 end

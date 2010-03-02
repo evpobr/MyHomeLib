@@ -243,6 +243,13 @@ type
     property FirstName: string read FFirstName write SetFirstName;
     property MiddleName: string read FMiddleName write SetMiddleName;
     property LastName: string read FLastName write SetLastName;
+
+    class function FormatName(
+      const lastName: string;
+      const firstName: string;
+      const middleName: string;
+      const nickName: string = ''
+    ): string; static;
   end;
 
   TBookRecord = record
@@ -255,7 +262,7 @@ type
 
     Authors: array of TAuthorRecord;
     Genres: array of TGenreRecord;
-    RootGenre: string;
+    RootGenre: TGenreRecord;
 
     Code: Integer;
     Size: Integer;
@@ -593,17 +600,34 @@ end;
 
 { TAuthorRecord }
 
+class function TAuthorRecord.FormatName(
+  const lastName: string;
+  const firstName: string;
+  const middleName: string;
+  const nickName: string = ''): string;
+begin
+  Result := lastName;
+
+  if firstName <> '' then
+    Result := Result + ' ' + firstName;
+
+  if middleName <> '' then
+    Result := Result + ' ' + middleName;
+
+  if nickName <> '' then
+  begin
+    if Result = '' then
+      Result := nickName
+    else
+      Result := Result +  '(' + nickName + ')';
+  end;
+end;
+
 function TAuthorRecord.GetFullName: string;
 begin
   Assert(LastName <> '');
 
-  Result := LastName;
-
-  if FirstName <> '' then
-    Result := Result + ' ' + FirstName;
-
-  if MiddleName <> '' then
-    Result := Result + ' ' + MiddleName;
+  Result := FormatName(LastName, FirstName, MiddleName);
 end;
 
 procedure TAuthorRecord.SetFirstName(const Value: string);

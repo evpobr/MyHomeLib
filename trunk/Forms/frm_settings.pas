@@ -220,6 +220,7 @@ uses
   frm_main,
   frm_edit_script,
   unit_Settings,
+  unit_Helpers,
   htmlhlp,
   frm_create_mask,
   unit_Templater;
@@ -227,10 +228,15 @@ uses
 {$R *.dfm}
 
 procedure TfrmSettings.edDeviceDirButtonClick(Sender: TObject);
+var
+  AFolder: string;
 begin
-  dlgSelectDir.Directory := (Sender as TRzButtonEdit).Text;
-  if dlgSelectDir.Execute then
-    (Sender as TRzButtonEdit).Text := dlgSelectDir.Directory;
+//  dlgSelectDir.Directory := (Sender as TRzButtonEdit).Text;
+//  if dlgSelectDir.Execute then
+//    (Sender as TRzButtonEdit).Text := dlgSelectDir.Directory;
+  AFolder := (Sender as TRzButtonEdit).Text;
+  if GetFolderName(Handle, 'Укажите папку', AFolder) then
+    (Sender as TRzButtonEdit).Text := AFolder;
 end;
 
 procedure TfrmSettings.edFileNameTemplateButtonClick(Sender: TObject);

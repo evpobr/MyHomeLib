@@ -278,7 +278,7 @@ begin
   end;
 
   MaskElements[2].templ := 'rg';
-  MaskElements[2].value := Trim(R.RootGenre);
+  MaskElements[2].value := Trim(R.RootGenre.Alias);
 
   MaskElements[3].templ := 'g';
   if R.GenreCount > 0 then

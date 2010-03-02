@@ -1,14 +1,18 @@
-{ ****************************************************************************** }
-{ }
-{ MyHomeLib }
-{ }
-{ Version 0.9 }
-{ 20.08.2008 }
-{ Copyright (c) Aleksey Penkov  alex.penkov@gmail.com }
-{ }
-{ @author Nick Rymanov nrymanov@gmail.com }
-{ }
-{ ****************************************************************************** }
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Created             22.02.2010
+  * Description
+  * Author(s)           Nick Rymanov    nrymanov@gmail.com
+  *                     Aleksey Penkov  alex.penkov@gmail.com
+  *
+  * History
+  * NickR 02.03.2010    Код переформатирован
+  *
+  ****************************************************************************** *)
 
 unit unit_ImportFB2ThreadBase;
 
@@ -28,6 +32,7 @@ type
   TImportFB2ThreadBase = class(TWorker)
   private
     FFullNameSearch: Boolean;
+
   protected
     FDBFileName: string;
     FLibrary: TMHLLibrary;
@@ -48,11 +53,13 @@ type
 
     function GetNewFolder(Folder: string; R: TBookRecord): string;
     function GetNewFileName(FileName: string; R: TBookRecord): string;
+
   protected
     procedure WorkFunction; override;
     procedure ProcessFileList; virtual; abstract;
     procedure GetBookInfo(book: IXMLFictionBook; var R: TBookRecord);
     procedure SortFiles(var R: TBookRecord); virtual;
+
   public
     property DBFileName: string read FDBFileName write FDBFileName;
     property TargetExt: string write FTargetExt;
@@ -67,10 +74,10 @@ uses
   unit_Settings,
   unit_Consts,
   Dialogs;
+
 { TImportFB2Thread }
 
-procedure TImportFB2ThreadBase.AddFile2List
-  (Sender: TObject; const F: TSearchRec);
+procedure TImportFB2ThreadBase.AddFile2List(Sender: TObject; const F: TSearchRec);
 var
   FileName: string;
 begin
@@ -82,8 +89,7 @@ begin
         FileName := FFilesList.LastDir + F.Name
       else
         FileName := ExtractRelativePath(FRootPath, FFilesList.LastDir) + F.Name;
-      if not FLibrary.CheckFileInCollection(FileName, FFullNameSearch,
-        FZipFolder) then
+      if not FLibrary.CheckFileInCollection(FileName, FFullNameSearch, FZipFolder) then
         FFiles.Add(FFilesList.LastDir + F.Name);
     end;
   end;
@@ -95,19 +101,16 @@ begin
 
   if Canceled then
     Abort;
-
 end;
 
-procedure TImportFB2ThreadBase.GetBookInfo(book: IXMLFictionBook;
-  var R: TBookRecord);
+procedure TImportFB2ThreadBase.GetBookInfo(book: IXMLFictionBook; var R: TBookRecord);
 var
-  i: integer;
+  i: Integer;
 begin
   with book.Description.Titleinfo do
   begin
     for i := 0 to Author.Count - 1 do
-      R.AddAuthor(Author[i].Lastname.Text, Author[i].Firstname.Text,
-        Author[i].MiddleName.Text);
+      R.AddAuthor(Author[i].Lastname.Text, Author[i].Firstname.Text, Author[i].MiddleName.Text);
 
     if Booktitle.IsTextElement then
       R.Title := Booktitle.Text;
@@ -131,12 +134,11 @@ begin
       if Annotation.P.Items[i].IsTextElement then
         R.Annotation := R.Annotation + #10#13 + Annotation.P.Items[i].OnlyText;
 
-    R.RootGenre:= Trim(FLibrary.GetTopGenreAlias(R.Genres[0].GenreFb2Code));
+    R.RootGenre.Alias := Trim(FLibrary.GetTopGenreAlias(R.Genres[0].GenreFb2Code));
   end;
 end;
 
-procedure TImportFB2ThreadBase.ShowCurrentDir
-  (Sender: TObject; const Dir: string);
+procedure TImportFB2ThreadBase.ShowCurrentDir(Sender: TObject; const Dir: string);
 begin
   SetComment(Format('Сканируем %s', [Dir]));
 end;
@@ -148,23 +150,20 @@ begin
   NewFolder := GetNewFolder(Settings.FB2FolderTemplate, R);
 
   CreateFolders(FRootPath, NewFolder);
-  CopyFile(Settings.InputFolder + R.FileName + R.FileExt,
-    FRootPath + NewFolder + R.FileName + R.FileExt);
+  CopyFile(Settings.InputFolder + R.FileName + R.FileExt, FRootPath + NewFolder + R.FileName + R.FileExt);
   R.Folder := NewFolder;
 
   NewFilename := GetNewFileName(Settings.FB2FileTemplate, R);
   if NewFilename <> '' then
   begin
-    RenameFile(FRootPath + NewFolder + R.FileName + R.FileExt,
-      FRootPath + NewFolder + NewFilename + R.FileExt);
+    RenameFile(FRootPath + NewFolder + R.FileName + R.FileExt, FRootPath + NewFolder + NewFilename + R.FileExt);
     R.FileName := NewFilename;
   end;
 end;
 
-function TImportFB2ThreadBase.GetNewFileName(FileName: string; R: TBookRecord)
-  : string;
+function TImportFB2ThreadBase.GetNewFileName(FileName: string; R: TBookRecord): string;
 var
-  z, p1, p2: integer;
+  z, p1, p2: Integer;
 begin
   { DONE -oNickR -cPerformance : необходимо создавать шаблонизатор только один раз при инициализации потока }
   { DONE -oNickR -cBug : нет реакции на невалидный шаблон }
@@ -176,15 +175,14 @@ begin
     Exit;
   end;
 
-  FileName := CheckSymbols(trim(FileName));
+  FileName := CheckSymbols(Trim(FileName));
   if FileName <> '' then
     Result := FileName
   else
     Result := '';
 end;
 
-function TImportFB2ThreadBase.GetNewFolder(Folder: string; R: TBookRecord)
-  : string;
+function TImportFB2ThreadBase.GetNewFolder(Folder: string; R: TBookRecord): string;
 begin
   { DONE -oNickR -cPerformance : необходимо создавать шаблонизатор только один раз при инициализации потока }
   { DONE -oNickR -cBug : нет реакции на невалидный шаблон }
@@ -196,7 +194,7 @@ begin
     Exit;
   end;
 
-  Folder := CheckSymbols(trim(Folder));
+  Folder := CheckSymbols(Trim(Folder));
   if Folder <> '' then
     Result := IncludeTrailingPathDelimiter(Folder)
   else
@@ -215,11 +213,9 @@ begin
   FFilesList.OnFile := AddFile2List;
   try
     if not Settings.EnableSort then
-      FFilesList.TargetPath := IncludeTrailingPathDelimiter
-        (DMUser.ActiveCollection.RootFolder)
+      FFilesList.TargetPath := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder)
     else
-      FFilesList.TargetPath := IncludeTrailingPathDelimiter
-        (Settings.InputFolder);
+      FFilesList.TargetPath := IncludeTrailingPathDelimiter(Settings.InputFolder);
 
     FFilesList.OnDirectory := ShowCurrentDir;
     try

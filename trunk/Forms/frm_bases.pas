@@ -230,6 +230,7 @@ procedure TfrmBases.edDBFolderButtonClick(Sender: TObject);
 var
   AFolder: string;
 begin
+  AFolder := edCollectionRoot.Text;
   if GetFolderName(Handle, 'Выберите папку для сохранения данных', AFolder) then
     edCollectionRoot.Text := AFolder;
 end;
