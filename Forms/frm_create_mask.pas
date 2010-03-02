@@ -139,7 +139,7 @@ begin
     R.AddGenreAny('', Edit12.Text);
   end;
   if CheckBox7.Checked then
-    R.RootGenre := Edit13.Text;
+    R.RootGenre.Alias := Edit13.Text;
 
   Result := R;
 end;

@@ -7,6 +7,10 @@
   * Authors Aleksey Penkov   alex.penkov@gmail.com
   *         Nick Rymanov     nrymanov@gmail.com
   *
+  * History
+  * NickR 02.03.2010    Код переформатирован
+  *                     Отдельная закладка для свойств файла
+  *
   ****************************************************************************** *)
 
 unit frm_book_info;
@@ -30,11 +34,13 @@ uses
   ExtCtrls,
   StdCtrls,
   ComCtrls,
-  unit_Globals;
+  unit_Globals,
+  Menus,
+  ActnList;
 
 type
   TfrmBookDetails = class(TForm)
-    RzPageControl1: TPageControl;
+    pcBookInfo: TPageControl;
     tsInfo: TTabSheet;
     tsReview: TTabSheet;
     mmShort: TMemo;
@@ -49,20 +55,25 @@ type
     lvInfo: TListView;
     lblTitle: TLabel;
     pnReviewButtons: TPanel;
+    tsFileInfo: TTabSheet;
+    lvFileInfo: TListView;
+    pmBookInfo: TPopupMenu;
+    alBookInfo: TActionList;
+    acCopyValue: TAction;
+    miCopyValue: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure mmReviewChange(Sender: TObject);
     procedure btnLoadReviewClick(Sender: TObject);
     procedure btnClearReviewClick(Sender: TObject);
+    procedure acCopyValueExecute(Sender: TObject);
+    procedure acCopyValueUpdate(Sender: TObject);
 
   private
     FUrl: string;
-
     FReviewChanged: Boolean;
-    //FBookRecord: TBookRecord;
     function GetReview: string;
     procedure SetReview(const Value: string);
-    //procedure SetBookRecord(const Value: TBookRecord);
 
   public
     procedure AllowOnlineReview(URL: string);
@@ -73,7 +84,6 @@ type
     property Review: string read GetReview write SetReview;
     property ReviewChanged: Boolean read FReviewChanged write FReviewChanged;
     property URL: string read FUrl write FUrl;
-    //property Book: TBookRecord read FBookRecord write SetBookRecord;
   end;
 
   TReviewDownloadThread = class(TThread)
@@ -99,6 +109,7 @@ var
 implementation
 
 uses
+  Clipbrd,
   FictionBook_21,
   unit_Settings,
   unit_ReviewParser,
@@ -112,8 +123,37 @@ uses
 
 procedure TfrmBookDetails.FormCreate(Sender: TObject);
 begin
+  lvFileInfo.ShowColumnHeaders := False;
   lvInfo.ShowColumnHeaders := False;
   FReviewChanged := False;
+end;
+
+procedure TfrmBookDetails.acCopyValueExecute(Sender: TObject);
+begin
+  if pcBookInfo.ActivePage = tsFileInfo then
+  begin
+    Assert(Assigned(lvFileInfo.Selected));
+    Clipboard.AsText := lvFileInfo.Selected.SubItems[0];
+  end
+  else if pcBookInfo.ActivePage = tsInfo then
+  begin
+    Assert(Assigned(lvInfo.Selected));
+    Clipboard.AsText := lvInfo.Selected.SubItems[0];
+  end;
+end;
+
+procedure TfrmBookDetails.acCopyValueUpdate(Sender: TObject);
+begin
+  if pcBookInfo.ActivePage = tsFileInfo then
+  begin
+    acCopyValue.Enabled := Assigned(lvFileInfo.Selected);
+  end
+  else if pcBookInfo.ActivePage = tsInfo then
+  begin
+    acCopyValue.Enabled := Assigned(lvInfo.Selected);
+  end
+  else
+    acCopyValue.Enabled := False;
 end;
 
 procedure TfrmBookDetails.AllowOnlineReview(URL: string);
@@ -154,6 +194,8 @@ end;
 procedure TfrmBookDetails.FormShow(Sender: TObject);
 begin
   // TODO перенести под конец заполнения ?
+  ListView_SetColumnWidth(lvFileInfo.Handle, 0, LVSCW_AUTOSIZE);
+  ListView_SetColumnWidth(lvFileInfo.Handle, 1, LVSCW_AUTOSIZE);
   ListView_SetColumnWidth(lvInfo.Handle, 0, LVSCW_AUTOSIZE);
   ListView_SetColumnWidth(lvInfo.Handle, 1, LVSCW_AUTOSIZE);
 end;
@@ -179,14 +221,6 @@ begin
   Download;
 end;
 
-//procedure TfrmBookDetails.SetBookRecord(const Value: TBookRecord);
-//begin
-//  FBookRecord := Value;
-//  lblTitle.Caption := FBookRecord.Title;
-  { TODO -oNickR -cUsability : может стоит показывать всех авторов? и формировать имя автора более сложным алгоритмом }
-//  lblAuthors.Caption := FBookRecord.Authors[0].GetFullName;
-//end;
-
 procedure TfrmBookDetails.SetReview(const Value: string);
 begin
   mmReview.Lines.Text := Value;
@@ -199,14 +233,17 @@ var
   imgBookCover: TGraphic;
   tmpStr: string;
 
-  procedure AddItem(const Field: string; const Value: string; GroupID: integer = -1);
+  procedure AddItem(listView: TListView; const Field: string; const Value: string; GroupID: integer = -1);
   var
     item: TListItem;
   begin
-    item := lvInfo.Items.Add;
-    item.Caption := Field;
-    item.SubItems.Add(Value);
-    item.GroupID := GroupID;
+    if Trim(Value) <> '' then
+    begin
+      item := listView.Items.Add;
+      item.Caption := Field;
+      item.SubItems.Add(Value);
+      item.GroupID := GroupID;
+    end;
   end;
 
 begin
@@ -216,13 +253,13 @@ begin
   lblTitle.Caption := bookInfo.Title;
   lblAuthors.Caption := bookInfo.Authors[0].GetFullName;
 
-  with lvInfo.Groups.Add do
+  with lvFileInfo.Groups.Add do
   begin
     Header := 'Информация о файле';
-    AddItem('Папка', bookInfo.Folder, GroupID);
-    AddItem('Файл', bookInfo.FileName, GroupID);
-    AddItem('Размер', GetFormattedSize(bookInfo.Size, True), GroupID);
-    AddItem('Добавлен', DateToStr(bookInfo.Date), GroupID);
+    AddItem(lvFileInfo, 'Папка', bookInfo.Folder, GroupID);
+    AddItem(lvFileInfo, 'Файл', bookInfo.FileName, GroupID);
+    AddItem(lvFileInfo, 'Размер', GetFormattedSize(bookInfo.Size, True), GroupID);
+    AddItem(lvFileInfo, 'Добавлен', DateToStr(bookInfo.Date), GroupID);
   end;
   { TODO -oNickR -cUsability : для онлайн коллекций необходимо показывать следующие поля }
   // libID: Integer;    ???
@@ -230,16 +267,16 @@ begin
   // URI: string;       ???
 
   //
-  // Покажем информацию из файла
+  // Покажем информацию из книги
+  // TODO : здесь на самом деле нужно более общее решение. Может со временем мы научимся вытаскивать инфу из pdf и других форматов
   //
   if not Assigned(bookStream) or (bookStream.Size = 0) then
   begin
-    imgCover.Visible := False;
-    mmShort.Visible := False;
+    tsInfo.TabVisible := False;
     Exit;
   end;
 
-  //FS.SaveToFile('C:\temp\book.xml');
+  // FS.SaveToFile('C:\temp\book.xml');
   try
     book := LoadFictionbook(bookStream);
 
@@ -259,58 +296,94 @@ begin
     else
       imgCover.Visible := False;
 
+    // ---------------------------------------------
+    with book.Description.Titleinfo, lvInfo.Groups.Add do
+    begin
+      Header := 'Общая информация';
+
+      AddItem(lvInfo, 'Название', Booktitle.Text, GroupID);
+
+      for i := 0 to Author.Count - 1 do
+      begin
+        with Author[i] do
+          tmpStr := TAuthorRecord.FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
+        AddItem(lvInfo, IfThen(i = 0, 'Автор(ы)'), tmpStr, GroupID);
+      end;
+
+      { TODO -oNickR -cUsability : показывать номер в серии }
+      for i := 0 to Sequence.Count - 1 do
+      begin
+        AddItem(lvInfo, IfThen(i = 0, 'Серия'), Sequence[i].Name, GroupID);
+      end;
+
+      { TODO -oNickR -cUsability : показывать алиасы вместо внутренних имен }
+      for i := 0 to Genre.Count - 1 do
+      begin
+        AddItem(lvInfo, IfThen(i = 0, 'Жанр'), Genre[i], GroupID);
+      end;
+
+      AddItem(lvInfo, 'Ключевые слова', Keywords.Text, GroupID);
+      AddItem(lvInfo, 'Дата', Date.Text, GroupID);
+      AddItem(lvInfo, 'Язык книги', Lang, GroupID);
+      AddItem(lvInfo, 'Язык оригинала', Srclang, GroupID);
+
+      for i := 0 to Translator.Count - 1 do
+      begin
+        with Translator[i] do
+          tmpStr := TAuthorRecord.FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
+        AddItem(lvInfo, IfThen(i = 0, 'Переводчик(и)'), tmpStr, GroupID);
+      end;
+    end;
+
+    // ---------------------------------------------
+    with book.Description.Publishinfo, lvInfo.Groups.Add do
+    begin
+      Header := 'Издательская информация';
+
+      AddItem(lvInfo, 'Название', Bookname.Text, GroupID);
+
+      AddItem(lvInfo, 'Издательство', Publisher.Text, GroupID);
+      AddItem(lvInfo, 'Город', City.Text, GroupID);
+      AddItem(lvInfo, 'Год', Year, GroupID);
+      AddItem(lvInfo, 'ISBN', Isbn.Text, GroupID);
+
+      { TODO -oNickR -cUsability : показывать номер в серии }
+      for i := 0 to Sequence.Count - 1 do
+      begin
+        AddItem(lvInfo, IfThen(i = 0, 'Серия'), Sequence[i].Name, GroupID);
+      end;
+    end;
+
+    // ---------------------------------------------
+    with book.Description.Documentinfo, lvInfo.Groups.Add do
+    begin
+      Header := 'Информация о документе (OCR)';
+      for i := 0 to Author.Count - 1 do
+      begin
+        with Author[i] do
+          tmpStr := TAuthorRecord.FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
+        AddItem(lvInfo, IfThen(i = 0, 'Авторы'), tmpStr, GroupID);
+      end;
+
+      AddItem(lvInfo, 'Программа', Programused.Text, GroupID);
+      AddItem(lvInfo, 'Дата', Date.Text, GroupID);
+      AddItem(lvInfo, 'ID', book.Description.Documentinfo.Id, GroupID);
+      AddItem(lvInfo, 'Версия', Version, GroupID);
+
+      for i := 0 to Srcurl.Count - 1 do
+      begin
+        AddItem(lvInfo, IfThen(i = 0, 'Источник'), Srcurl[i], GroupID);
+      end;
+      AddItem(lvInfo, 'Автор источника', Srcocr.Text, GroupID);
+
+      for i := 0 to History.p.Count - 1 do
+        AddItem(lvInfo, IfThen(i = 0, 'История'), History.p[i].OnlyText, GroupID);
+    end;
+
+    // ---------------------------------------------
+    { TODO -oNickR -cUsability : может стоит добавлять параграфы как есть? }
     with book.Description.Titleinfo do
     begin
-      // ---------------------------------------------
-      with lvInfo.Groups.Add do
-      begin
-        Header := 'Общая информация';
-
-        { TODO -oNickR -cUsability : может стоит показывать всех авторов? и формировать имя автора более сложным алгоритмом }
-        //if Author.Count > 0 then
-        //  lblAuthors.Caption := Author[0].Lastname.Text + ' ' + Author[0].Firstname.Text + ' ' + Author[0].MiddleName.Text;
-
-        { TODO -oNickR -cUsability : показывать все серии + номер в серии }
-        if Sequence.Count > 0 then
-          AddItem('Серия', Sequence[0].Name, GroupID);
-
-        { TODO -oNickR -cUsability : показывать все жанры + Алиасы вместо внутренних имен }
-        if Genre.Count > 0 then
-          AddItem('Жанр', Genre[0], GroupID);
-      end;
-
-      // ---------------------------------------------
-      with lvInfo.Groups.Add, book.Description.Publishinfo do
-      begin
-        Header := 'Издательская информация';
-        AddItem('Издательство', Publisher.Text, GroupID);
-        AddItem('Город', City.Text, GroupID);
-        AddItem('Год', Year, GroupID);
-        AddItem('ISBN', Isbn.Text, GroupID);
-      end;
-
-      // ---------------------------------------------
-      with lvInfo.Groups.Add, book.Description.Documentinfo do
-      begin
-        Header := 'Информация о документе (OCR)';
-        for i := 0 to Author.Count - 1 do
-        begin
-          { TODO -oNickR -cUsability : может стоит формировать имя автора более сложным алгоритмом }
-          tmpStr := Author[i].Firstname.Text + ' ' + Author[i].Lastname.Text + '(' + Author[i].NickName.Text + ')';
-          AddItem(IfThen(i = 0, 'Авторы'), tmpStr, GroupID);
-        end;
-
-        AddItem('Программа', Programused.Text, GroupID);
-        AddItem('Дата', Date.Text, GroupID);
-        AddItem('ID', Id, GroupID);
-        AddItem('Версия', Version, GroupID);
-
-        for i := 0 to History.p.Count - 1 do
-          AddItem(IfThen(i = 0, 'История'), History.p[i].OnlyText, GroupID);
-      end;
-
-      // ---------------------------------------------
-      { TODO -oNickR -cUsability : может стоит добавлять параграфы как есть? }
       for i := 0 to Annotation.p.Count - 1 do
         mmShort.Lines.Add(Annotation.p[i].OnlyText);
     end;
@@ -320,7 +393,7 @@ begin
   end;
 end;
 
-{-------------------- TReviewDownloadThread ----------------------------------- }
+{ -------------------- TReviewDownloadThread ----------------------------------- }
 
 procedure TReviewDownloadThread.Execute;
 var
@@ -355,7 +428,7 @@ begin
   FForm.mmReview.Lines := FReview;
   FForm.btnLoadReview.Enabled := True;
   FForm.ReviewChanged := True;
-  //FForm.RzPageControl1.ActivePageIndex := 1;
+  // FForm.RzPageControl1.ActivePageIndex := 1;
 end;
 
 // ------------------------------------------------------------------------------

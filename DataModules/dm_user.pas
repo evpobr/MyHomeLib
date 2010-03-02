@@ -1,21 +1,30 @@
-
-{******************************************************************************}
-{                                                                              }
-{                                 MyHomeLib                                    }
-{                                                                              }
-{                                Version 0.9                                   }
-{                                20.08.2008                                    }
-{                    Copyright (c) Aleksey Penkov  alex.penkov@gmail.com       }
-{                                                                              }
-{******************************************************************************}
-
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Authors Aleksey Penkov   alex.penkov@gmail.com
+  *         Nick Rymanov     nrymanov@gmail.com
+  *
+  * History
+  * NickR 02.03.2010    Код переформатирован
+  *
+  ****************************************************************************** *)
 
 unit dm_user;
 
 interface
 
 uses
-  SysUtils, Classes, DB, ABSMain, unit_globals, ImgList, Controls, unit_Consts;
+  SysUtils,
+  Classes,
+  DB,
+  ABSMain,
+  unit_globals,
+  ImgList,
+  Controls,
+  unit_Consts;
 
 type
   TCollectionProp = (cpDisplayName, cpFileName, cpRootFolder);
@@ -102,9 +111,9 @@ type
 
   private
     FCollection: TMHLCollection;
-  public
-    const
-      INVALID_COLLECTION_ID = -1;
+
+  public const
+    INVALID_COLLECTION_ID = -1;
 
   public
     constructor Create(AOwner: TComponent); override;
@@ -143,15 +152,15 @@ type
       const Value: string;
       IgnoreID: Integer = INVALID_COLLECTION_ID
     ): Boolean;
-    procedure SetUserTableState(Status: boolean);
 
+    procedure SetUserTableState(Status: Boolean);
 
   public
     //
     // Active Collection
     //
     property ActiveCollection: TMHLCollection read FCollection;
-    procedure SetTableState(State: boolean);
+    procedure SetTableState(State: Boolean);
 
     function FindFirstExternalCollection: Boolean;
     function FindNextExternalCollection: Boolean;
@@ -159,23 +168,23 @@ type
     function FindFirstCollection: Boolean;
     function FindNextCollection: Boolean;
 
-    function ActivateGroup(const ID: integer):boolean;
+    function ActivateGroup(const ID: Integer): Boolean;
 
-    procedure SetRate(ID,Rate: integer);
-     procedure SetLocal(ID: integer; Value: boolean);
-    procedure SetFinished(ID, Progress: integer; ADBID: integer = 0);
-    procedure DeleteRate(AID: integer; ADBID: integer = 0);
-    procedure DeleteFinished(AID: integer; ADBID: integer = 0);
-    procedure InsertToGroupTable(ID : integer; Genre: string);
+    procedure SetRate(ID, Rate: Integer);
+    procedure SetLocal(ID: Integer; Value: Boolean);
+    procedure SetFinished(ID, Progress: Integer; ADBID: Integer = 0);
+    procedure DeleteRate(AID: Integer; ADBID: Integer = 0);
+    procedure DeleteFinished(AID: Integer; ADBID: Integer = 0);
+    procedure InsertToGroupTable(ID: Integer; Genre: string);
     procedure AddGroup(Name: string);
 
-    procedure LoadRates(const SL: TStringList; var i: integer);
-    procedure LoadGroupedBooks(const SL: TStringList; var i: integer);
-    procedure LoadFinished(const SL: TStringList; var i: integer);
-    procedure LoadGroups(const SL: TStringList; var i: integer);
-    procedure LoadReviews(const SL: TStringList; var i: integer);
-    procedure CorrectExtra(OldID, NewID: integer);
-    procedure DeleteExtra(AID: integer);
+    procedure LoadRates(const SL: TStringList; var i: Integer);
+    procedure LoadGroupedBooks(const SL: TStringList; var i: Integer);
+    procedure LoadFinished(const SL: TStringList; var i: Integer);
+    procedure LoadGroups(const SL: TStringList; var i: Integer);
+    procedure LoadReviews(const SL: TStringList; var i: Integer);
+    procedure CorrectExtra(OldID, NewID: Integer);
+    procedure DeleteExtra(AID: Integer);
   end;
 
   TMHLCollection = class
@@ -244,9 +253,8 @@ var
 implementation
 
 uses
-   Variants,
-   dm_Collection;
-
+  Variants,
+  dm_Collection;
 
 resourcestring
   rstrNamelessColection = 'безымянная коллекция';
@@ -255,9 +263,9 @@ resourcestring
 
 { TDMUser }
 
-function TDMUser.ActivateGroup(const ID: integer): boolean;
+function TDMUser.ActivateGroup(const ID: Integer): Boolean;
 begin
-  Result := tblGroupList.Locate('Id',ID,[]);
+  Result := tblGroupList.Locate('Id', ID, []);
 end;
 
 procedure TDMUser.AddGroup(Name: string);
@@ -271,29 +279,28 @@ begin
   end;
 end;
 
-procedure TDMUser.CorrectExtra(OldID, NewID: integer);
+procedure TDMUser.CorrectExtra(OldID, NewID: Integer);
 begin
-  if tblRates.Locate('BookID; DatabaseID', VarArrayOf([OldID, ActiveCollection.GetID]),[]) then
+  if tblRates.Locate('BookID; DatabaseID', VarArrayOf([OldID, ActiveCollection.GetID]), []) then
   begin
     tblRates.Edit;
-    tblratesBookID.Value := NewID;
+    tblRatesBookID.Value := NewID;
     tblRates.Post;
   end;
 
-  if tblFinished.Locate('BookID; DatabaseID', VarArrayOf([OldID, ActiveCollection.GetID]),[]) then
+  if tblFinished.Locate('BookID; DatabaseID', VarArrayOf([OldID, ActiveCollection.GetID]), []) then
   begin
     tblFinished.Edit;
     tblFinishedBookID.Value := NewID;
     tblFinished.Post;
   end;
 
-  if tblGrouppedBooks.Locate('OuterID; DatabaseID', VarArrayOf([OldID, ActiveCollection.GetID]),[]) then
+  if tblGrouppedBooks.Locate('OuterID; DatabaseID', VarArrayOf([OldID, ActiveCollection.GetID]), []) then
   begin
     tblGrouppedBooks.Edit;
     tblGrouppedBooksOuterID.Value := NewID;
     tblGrouppedBooks.Post;
   end;
-
 end;
 
 constructor TDMUser.Create(AOwner: TComponent);
@@ -303,7 +310,7 @@ begin
   FCollection.FSysDataModule := Self;
 end;
 
-procedure TDMUser.DeleteExtra(AID: integer);
+procedure TDMUser.DeleteExtra(AID: Integer);
 begin
   DeleteFinished(AID);
   DeleteRate(AID);
@@ -311,30 +318,28 @@ end;
 
 procedure TDMUser.DeleteFinished;
 var
-  DbId: integer;
+  DbId: Integer;
 begin
   if ADBID = 0 then
-    DBid := ActiveCollection.ID
+    DbId := ActiveCollection.ID
   else
-    DBid := ADbId;
+    DbId := ADBID;
 
- if tblFinished.Locate('DataBaseID;BookID',
-           VarArrayOf([DbId, AID]), []) then
-  tblFinished.Delete;
+  if tblFinished.Locate('DataBaseID;BookID', VarArrayOf([DbId, AID]), []) then
+    tblFinished.Delete;
 end;
 
 procedure TDMUser.DeleteRate;
 var
-  DBID: integer;
+  DbId: Integer;
 begin
   if ADBID = 0 then
-    DBid := ActiveCollection.ID
+    DbId := ActiveCollection.ID
   else
-    DBid := ADbId;
+    DbId := ADBID;
 
- if tblRates.Locate('DataBaseID;BookID',
-           VarArrayOf([DbId, AID]), []) then
-  tblRates.Delete;
+  if tblRates.Locate('DataBaseID;BookID', VarArrayOf([DbId, AID]), []) then
+    tblRates.Delete;
 end;
 
 destructor TDMUser.Destroy;
@@ -351,25 +356,28 @@ procedure TDMUser.RegisterCollection(
   Notes, URL, Script, User, Password: string
   );
 var
-  ID : integer;
+  ID: Integer;
 begin
-  case CollectionType of    // предопределенные типы
-        65536: ID := 10001; // либрусек fb2
-        65537: ID := 10002; // либрусек не-fb2
+  { TODO -oNickR -cRefactoring : магические числа!!! }
+  case CollectionType of // предопределенные типы
+    65536: ID := 10001; // либрусек fb2
+    65537: ID := 10002; // либрусек не-fb2
     134283264: ID := 10003; // либрусек on-line
-    else
-      begin
-        Randomize;
-        ID := random(10000);
-      end;
+  else
+    begin
+      Randomize;
+      ID := Random(10000);
+    end;
   end;
-  while tblBases.Locate('Id',ID,[]) do  // проверяем уникальность
-          ID := random(10000);
 
+  while tblBases.Locate('Id', ID, []) do // проверяем уникальность
+    ID := Random(10000);
+
+  //
   // регистрируем коллекцию
-
+  //
   tblBases.Insert;
-  tblBasesId.Value := ID;
+  tblBasesID.Value := ID;                           // хм... это автоинкрементное поле, зачем его заполнять?
   tblBasesName.Value := DisplayName;
   tblBasesRootFolder.Value := RootFolder;
   tblBasesDBFileName.Value := DBFileName;
@@ -411,11 +419,7 @@ end;
 
 function TDMUser.FindCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer): Boolean;
 const
-  Fields: array [TCollectionProp] of string = (
-    'Name',
-    'DBFileName',
-    'RootFolder'
-  );
+  Fields: array [TCollectionProp] of string = ('Name', 'DBFileName', 'RootFolder');
 begin
   Result := False;
   if tblBases.IsEmpty then
@@ -497,15 +501,15 @@ begin
   begin
     tblGrouppedBooks.Insert;
     tblGrouppedBooksOuterID.Value := ID;
-    tblGrouppedBooksDataBaseID.Value := ActiveCollection.ID;
+    tblGrouppedBooksDatabaseID.Value := ActiveCollection.ID;
     tblGrouppedBooksTitle.Value := dmCollection.tblBooksTitle.Value;
 
     tblGrouppedBooksSerID.Value := dmCollection.tblBooksSerID.Value;
 
     if dmCollection.tblBooksSeries.IsNull then
-          tblGrouppedBooksSeries.Value := NO_SERIES_TITLE
-        else
-          tblGrouppedBooksSeries.Value := dmCollection.tblBooksSeries.Value;
+      tblGrouppedBooksSeries.Value := NO_SERIES_TITLE
+    else
+      tblGrouppedBooksSeries.Value := dmCollection.tblBooksSeries.Value;
 
     tblGrouppedBooksFullName.Value := dmCollection.FullAuthorsString(ID);
 
@@ -516,9 +520,9 @@ begin
     tblGrouppedBooksLocal.Value := dmCollection.tblBooksLocal.Value;
 
     if not dmCollection.tblBooksFolder.IsNull then
-          tblGrouppedBooksFolder.Value := IncludeTrailingPathDelimiter(ActiveCollection.RootFolder) + CheckSymbols(dmCollection.tblBooksFolder.Value)
-        else
-          tblGrouppedBooksFolder.Value := IncludeTrailingPathDelimiter(ActiveCollection.RootFolder);
+      tblGrouppedBooksFolder.Value := IncludeTrailingPathDelimiter(ActiveCollection.RootFolder) + CheckSymbols(dmCollection.tblBooksFolder.Value)
+    else
+      tblGrouppedBooksFolder.Value := IncludeTrailingPathDelimiter(ActiveCollection.RootFolder);
 
     tblGrouppedBooksFileName.Value := dmCollection.tblBooksFileName.Value;
     tblGrouppedBooksExt.Value := dmCollection.tblBooksExt.Value;
@@ -528,7 +532,7 @@ begin
     tblGrouppedBooksDate.Value := dmCollection.tblBooksDate.Value;
     tblGrouppedBooksProgress.Value := dmCollection.tblBooksProgress.Value;
     tblGrouppedBooksCode.Value := dmCollection.tblBooksCode.Value;
-//    tblGrouppedBooksKeyWords.Value := dmCollection.tblBooksKeyWords.Value;
+    // tblGrouppedBooksKeyWords.Value := dmCollection.tblBooksKeyWords.Value;
     tblGrouppedBooks.Post;
 
     if tblGrouppedBooksCode.Value = 1 then
@@ -537,29 +541,25 @@ begin
       tblExtraE_Review.Value := dmCollection.tblExtraE_Review.Value;
       tblExtra.Post;
     end;
-
   end;
-
 end;
 
 procedure TDMUser.LoadFinished;
 var
-  p, ID, Progress: integer;
+  p, ID, Progress: Integer;
 begin
   // Прочитаное
-  inc(i);
-  while (i < SL.Count) and (pos('#',SL[i]) = 0) do
+  Inc(i);
+  while (i < SL.Count) and (Pos('#', SL[i]) = 0) do
   begin
-    p := pos(' ',SL[i]);
-    ID := StrToInt(copy(SL[i],1, p - 1));
-    Progress := StrToInt(copy(SL[i],p + 1));
+    p := Pos(' ', SL[i]);
+    ID := StrToInt(Copy(SL[i], 1, p - 1));
+    Progress := StrToInt(Copy(SL[i], p + 1));
 
-    DMCollection.tblBooks.Locate('LibID', ID, []);
-    ID := DMCollection.tblBooksID.Value;
+    dmCollection.tblBooks.Locate('LibID', ID, []);
+    ID := dmCollection.tblBooksID.Value;
 
-    if not tblFinished.Locate('DataBaseID; ID',
-                                      VarArrayOf([ActiveCollection.ID,ID]), [])
-    then
+    if not tblFinished.Locate('DataBaseID; ID', VarArrayOf([ActiveCollection.ID, ID]), []) then
     begin
       tblFinished.Insert;
       tblFinishedBookID.Value := ID;
@@ -574,24 +574,24 @@ begin
       tblFinishedProgress.Value := Progress;
       tblFinished.Post;
     end;
-    inc(i);
+    Inc(i);
   end;
 end;
 
 procedure TDMUser.LoadGroupedBooks;
 var
-  p, ID, GroupID: integer;
+  p, ID, GroupID: Integer;
   Name: string;
 begin
   // Избранное
-  inc(i);
-  while (i < SL.Count) and (pos('#',SL[i]) = 0) do
+  Inc(i);
+  while (i < SL.Count) and (Pos('#', SL[i]) = 0) do
   begin
-    p := pos(' ',SL[i]);
+    p := Pos(' ', SL[i]);
     if p <> 0 then
     begin
-      ID := StrToInt(copy(SL[i],1, p - 1));
-      Name := copy(SL[i], p + 1);
+      ID := StrToInt(Copy(SL[i], 1, p - 1));
+      Name := Copy(SL[i], p + 1);
     end
     else
     begin
@@ -600,35 +600,34 @@ begin
       Name := '';
     end;
 
-    if not tblGroupList.Locate('Name', Name,[]) then
-        tblGroupList.Locate('ID',GroupID,[]);
+    if not tblGroupList.Locate('Name', Name, []) then
+      tblGroupList.Locate('ID', GroupID, []);
 
-    if DMCollection.tblBooks.Locate('LibID', ID, []) then
-        InsertToGroupTable(DMCollection.tblBooksID.Value,
-                            dmCollection.GetBookGenres(DMCollection.tblBooksID.Value, false));
-    inc(i);
+    if dmCollection.tblBooks.Locate('LibID', ID, []) then
+      InsertToGroupTable(dmCollection.tblBooksID.Value, dmCollection.GetBookGenres(dmCollection.tblBooksID.Value, False));
+    Inc(i);
   end;
 end;
 
 procedure TDMUser.LoadReviews;
 var
-  ID, p: integer;
-   S: string;
+  ID, p: Integer;
+  S: string;
 begin
-  //  Рецензии
-  inc(i);
-  while (i < SL.Count) and (pos('#',SL[i]) = 0) do
+  // Рецензии
+  Inc(i);
+  while (i < SL.Count) and (Pos('#', SL[i]) = 0) do
   begin
-    p := pos(' ',SL[i]);
-    ID := StrToInt(copy(SL[i],1, p - 1));
-    S := copy(SL[i],p + 1);
+    p := Pos(' ', SL[i]);
+    ID := StrToInt(Copy(SL[i], 1, p - 1));
+    S := Copy(SL[i], p + 1);
 
-    StrReplace('~',#13#10,S);
+    StrReplace('~', #13#10, S);
 
-    DMCollection.tblBooks.Locate('LibID', ID, []); //получаем реальный ID
-    ID := DMCollection.tblBooksID.Value;
+    dmCollection.tblBooks.Locate('LibID', ID, []); // получаем реальный ID
+    ID := dmCollection.tblBooksID.Value;
 
-    if dmCollection.tblBooks.Locate('ID',ID,[]) then
+    if dmCollection.tblBooks.Locate('ID', ID, []) then
     begin
       dmCollection.tblExtra.Insert;
       dmCollection.tblExtraE_Review.Value := S;
@@ -639,42 +638,41 @@ begin
       dmCollection.tblBooks.Post;
     end;
 
-    inc(i);
+    Inc(i);
   end;
 end;
 
-
-procedure TDMUser.LoadGroups(const SL: TStringList; var i: integer);
+procedure TDMUser.LoadGroups(const SL: TStringList; var i: Integer);
 var
-  k: integer;
+  k: Integer;
 begin
-  inc(i);
+  Inc(i);
   k := 1;
-  while pos('#',SL[i]) = 0 do
+  while Pos('#', SL[i]) = 0 do
   begin
     if k > 2 then
       AddGroup(SL[i]);
-    inc(k);
-    inc(i);
+    Inc(k);
+    Inc(i);
   end;
 end;
 
 procedure TDMUser.LoadRates;
 var
-  p, ID, LibID, Rate: integer;
+  p, ID, LibID, Rate: Integer;
 begin
   // Рейтинги
-  inc(i);
-  while pos('#',SL[i]) = 0 do
+  Inc(i);
+  while Pos('#', SL[i]) = 0 do
   begin
-    p := pos(' ',SL[i]);
-    LibID := StrToInt(copy(SL[i],1, p - 1));
-    Rate := StrToInt(copy(SL[i],p + 1));
+    p := Pos(' ', SL[i]);
+    LibID := StrToInt(Copy(SL[i], 1, p - 1));
+    Rate := StrToInt(Copy(SL[i], p + 1));
 
-    DMCollection.tblBooks.Locate('LibID', LibID, []); //получаем реальный ID
-    ID := DMCollection.tblBooksID.Value;
+    dmCollection.tblBooks.Locate('LibID', LibID, []); // получаем реальный ID
+    ID := dmCollection.tblBooksID.Value;
 
-    if not tblRates.Locate('DataBaseID; BookID', VarArrayOf([ActiveCollection.ID,ID]), []) then
+    if not tblRates.Locate('DataBaseID; BookID', VarArrayOf([ActiveCollection.ID, ID]), []) then
     begin
       tblRates.Insert;
       tblRatesBookID.Value := ID;
@@ -689,26 +687,25 @@ begin
       tblRatesRate.Value := Rate;
       tblRates.Post;
     end;
-    inc(i);
+    Inc(i);
   end;
 end;
 
 procedure TDMUser.SetFinished;
 var
-  DBID: integer;
+  DbId: Integer;
 begin
   if ADBID = 0 then
-    DBid := ActiveCollection.ID
+    DbId := ActiveCollection.ID
   else
-    DBid := ADbId;
+    DbId := ADBID;
 
-  if not tblFinished.Locate('DataBaseID;BookID',
-           VarArrayOf([DBID, ID]), []) then
+  if not tblFinished.Locate('DataBaseID;BookID', VarArrayOf([DbId, ID]), []) then
   begin
     tblFinished.Insert;
-    tblFinishedBookId.Value := ID;
+    tblFinishedBookID.Value := ID;
     tblFinishedProgress.Value := Progress;
-    tblFinishedDataBaseID.Value := DBID;
+    tblFinishedDataBaseID.Value := DbId;
     tblFinishedDate.Value := Now;
     tblFinished.Post;
   end
@@ -720,10 +717,9 @@ begin
   end;
 end;
 
-procedure TDMUser.SetLocal(ID: integer; Value: boolean);
+procedure TDMUser.SetLocal(ID: Integer; Value: Boolean);
 begin
-  if tblGrouppedBooks.Locate('DataBaseID;OuterID',
-           VarArrayOf([ActiveCollection.ID, ID]), []) then
+  if tblGrouppedBooks.Locate('DataBaseID;OuterID', VarArrayOf([ActiveCollection.ID, ID]), []) then
   begin
     tblGrouppedBooks.Edit;
     tblGrouppedBooksLocal.Value := Value;
@@ -731,13 +727,12 @@ begin
   end;
 end;
 
-procedure TDMUser.SetRate(ID, Rate: integer);
+procedure TDMUser.SetRate(ID, Rate: Integer);
 begin
-  if not tblRates.Locate('DataBaseID;BookID',
-           VarArrayOf([ActiveCollection.ID, ID]), []) then
+  if not tblRates.Locate('DataBaseID;BookID', VarArrayOf([ActiveCollection.ID, ID]), []) then
   begin
     tblRates.Insert;
-    tblRatesBookId.Value := ID;
+    tblRatesBookID.Value := ID;
     tblRatesRate.Value := Rate;
     tblRatesDataBaseID.Value := ActiveCollection.ID;
     tblRatesDate.Value := Now;
@@ -751,7 +746,7 @@ begin
   end;
 end;
 
-procedure TDMUser.SetTableState(State: boolean);
+procedure TDMUser.SetTableState(State: Boolean);
 begin
   tblGroupList.Active := State;
   tblGrouppedBooks.Active := State;
@@ -760,7 +755,7 @@ begin
   tblFinished.Active := State;
 end;
 
-procedure TDMUser.SetUserTableState(Status: boolean);
+procedure TDMUser.SetUserTableState(Status: Boolean);
 begin
   tblGroupList.Active := Status;
   tblGrouppedBooks.Active := Status;
@@ -775,9 +770,7 @@ end;
 function TMHLCollection.GetActive: Boolean;
 begin
   Assert(Assigned(FSysDataModule));
-  Result :=
-    FSysDataModule.tblBases.Active and
-    not FSysDataModule.tblBasesID.IsNull;
+  Result := FSysDataModule.tblBases.Active and not FSysDataModule.tblBasesID.IsNull;
 end;
 
 function TMHLCollection.GetID: Integer;
@@ -942,8 +935,5 @@ begin
   Assert(Assigned(FSysDataModule));
   FSysDataModule.tblBasesAllowDelete.Value := Value;
 end;
-
-
-
 
 end.
