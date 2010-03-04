@@ -265,7 +265,7 @@ resourcestring
 
 function TDMUser.ActivateGroup(const ID: Integer): Boolean;
 begin
-  Result := tblGroupList.Locate('Id', ID, []);
+  Result := tblGroupList.Locate(ID_FIELD, ID, []);
 end;
 
 procedure TDMUser.AddGroup(const Name: string);
@@ -376,7 +376,7 @@ begin
     end;
   end;
 
-  while tblBases.Locate('Id', ID, []) do // проверяем уникальность
+  while tblBases.Locate(ID_FIELD, ID, []) do // проверяем уникальность
     ID := Random(10000);
 
   //
@@ -401,7 +401,7 @@ end;
 
 function TDMUser.ActivateCollection(CollectionID: Integer): Boolean;
 begin
-  Result := tblBases.Locate('ID', CollectionID, []);
+  Result := tblBases.Locate(ID_FIELD, CollectionID, []);
 end;
 
 procedure TDMUser.UpdateCollectionProps(
@@ -511,9 +511,9 @@ end;
 
 procedure TDMUser.InsertToGroupTable(ID: Integer; const Genre: string);
 begin
-  dmCollection.tblBooks.Locate('ID', ID, []);
+  dmCollection.tblBooks.Locate(ID_FIELD, ID, []);
 
-  if not tblGrouppedBooks.Locate('FileName', dmCollection.tblBooksFileName.Value, []) then
+  if not tblGrouppedBooks.Locate(FILENAME_FIELD, dmCollection.tblBooksFileName.Value, []) then
   begin
     tblGrouppedBooks.Insert;
     tblGrouppedBooksOuterID.Value := ID;
@@ -572,7 +572,7 @@ begin
     ID := StrToInt(Copy(SL[i], 1, p - 1));
     Progress := StrToInt(Copy(SL[i], p + 1));
 
-    dmCollection.tblBooks.Locate('LibID', ID, []);
+    dmCollection.tblBooks.Locate(LIB_ID_FIELD, ID, []);
     ID := dmCollection.tblBooksID.Value;
 
     if not tblFinished.Locate('DataBaseID; ID', VarArrayOf([ActiveCollection.ID, ID]), []) then
@@ -617,9 +617,9 @@ begin
     end;
 
     if not tblGroupList.Locate('Name', Name, []) then
-      tblGroupList.Locate('ID', GroupID, []);
+      tblGroupList.Locate(ID_FIELD, GroupID, []);
 
-    if dmCollection.tblBooks.Locate('LibID', ID, []) then
+    if dmCollection.tblBooks.Locate(LIB_ID_FIELD, ID, []) then
       InsertToGroupTable(dmCollection.tblBooksID.Value, dmCollection.GetBookGenres(dmCollection.tblBooksID.Value, False));
     Inc(i);
   end;
@@ -640,10 +640,10 @@ begin
 
     StrReplace('~', #13#10, S);
 
-    dmCollection.tblBooks.Locate('LibID', ID, []); // получаем реальный ID
+    dmCollection.tblBooks.Locate(LIB_ID_FIELD, ID, []); // получаем реальный ID
     ID := dmCollection.tblBooksID.Value;
 
-    if dmCollection.tblBooks.Locate('ID', ID, []) then
+    if dmCollection.tblBooks.Locate(ID_FIELD, ID, []) then
     begin
       dmCollection.tblExtra.Insert;
       dmCollection.tblExtraE_Review.Value := S;
@@ -685,7 +685,7 @@ begin
     LibID := StrToInt(Copy(SL[i], 1, p - 1));
     Rate := StrToInt(Copy(SL[i], p + 1));
 
-    dmCollection.tblBooks.Locate('LibID', LibID, []); // получаем реальный ID
+    dmCollection.tblBooks.Locate(LIB_ID_FIELD, LibID, []); // получаем реальный ID
     ID := dmCollection.tblBooksID.Value;
 
     if not tblRates.Locate('DataBaseID; BookID', VarArrayOf([ActiveCollection.ID, ID]), []) then

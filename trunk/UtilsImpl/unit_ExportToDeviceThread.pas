@@ -105,7 +105,7 @@ begin
     разобраться с логикой }
 
   FIsTmp := False;
-  FTable.Locate('ID', ID, []);
+  FTable.Locate(ID_FIELD, ID, []);
   Result := False;
 
   CR := GetFullBookPath(FTable, FCollectionRoot);
@@ -126,7 +126,7 @@ begin
       Exit;
     end;
 
-    if (ExtractFileExt(FTable['FileName']) = ZIP_EXTENSION) and (FTable['Ext'] <> ZIP_EXTENSION) then
+    if (ExtractFileExt(FTable[FILENAME_FIELD]) = ZIP_EXTENSION) and (FTable['Ext'] <> ZIP_EXTENSION) then
       FFileOpMode := fmFBD
     else if ExtractFileExt(CR) <> ZIP_EXTENSION then
       FFileOpMode := fmFb2;
@@ -144,10 +144,10 @@ begin
       fmFb2Zip:
         SArch := CR;
       fmFb2:
-        SArch := CR + FTable['FileName'] + FTable['Ext'];
+        SArch := CR + FTable[FILENAME_FIELD] + FTable['Ext'];
       fmFBD:
         begin
-          CR := CR + FTable['FileName'];
+          CR := CR + FTable[FILENAME_FIELD];
           SArch := CR;
         end;
     end;

@@ -34,7 +34,11 @@ type
 
 implementation
 
-uses dm_collection, dm_user, unit_globals;
+uses
+  dm_collection,
+  dm_user,
+  unit_Globals,
+  unit_MHL_strings;
 
 { TImportXMLThread }
 
@@ -113,11 +117,11 @@ begin
 
         Inc(processedBooks);
         if (processedBooks mod ProcessedItemThreshold) = 0 then
-          SetComment(Format('Обработано книг: %u из %u', [processedBooks, totalBooks]));
+          SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
         SetProgress(processedBooks * 100 div totalBooks);
       end;
 
-      SetComment(Format('Обработано книг: %u из %u', [processedBooks, totalBooks]));
+      SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
 
     finally
       dmCollection.tblAuthor_Detail.Active := False;

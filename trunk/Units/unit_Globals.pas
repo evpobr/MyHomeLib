@@ -757,9 +757,9 @@ end;
 function GetFullBookPath(const Table: TAbsTable; const FCollectionRoot: string): string;
 begin
   if Table.Name = 'tblFavorites' then
-    Result := Table.FieldByName('Folder').AsString
-  else if not Table.FieldByName('Folder').IsNull then
-    Result := FCollectionRoot + Table.FieldByName('Folder').AsString
+    Result := Table.FieldByName(FOLDER_FIELD).AsString
+  else if not Table.FieldByName(FOLDER_FIELD).IsNull then
+    Result := FCollectionRoot + Table.FieldByName(FOLDER_FIELD).AsString
   else
     Result := FCollectionRoot;
 end;

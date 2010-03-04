@@ -15,9 +15,10 @@ unit unit_ImportFB2ZIPThread;
 interface
 
 uses
-  unit_ImportFB2ThreadBase,
+  Windows,
   ZipForge,
-  unit_globals;
+  unit_ImportFB2ThreadBase,
+  unit_Globals;
 
 type
   TImportFB2ZIPThread = class(TImportFB2ThreadBase)
@@ -68,7 +69,7 @@ begin
   if NewFileName <> '' then
   begin
     NewFolder := R.Folder;
-    StrReplace(Filename, NewFileName + '.fb2.zip', NewFolder);
+    StrReplace(Filename, NewFileName + FB2ZIP_EXTENSION, NewFolder);
     RenameFile(FRootPath + R.Folder, FRootPath +  NewFolder);
     R.Folder :=  NewFolder;
 
@@ -116,7 +117,7 @@ begin
   Teletype(Format('Обнаружено новых архивов: %u', [FFiles.Count]));
 
   FZipper := TZipForge.Create(nil);
-//  FZipper.Options.OEMFileNames := False;
+  // FZipper.Options.OEMFileNames := False;
   try
 
     for i := 0 to FFiles.Count - 1 do
@@ -131,20 +132,20 @@ begin
         FZipper.FileName := FFiles[i];
         FZipper.OpenArchive(fmOpenRead);
         j := 0;
-        if (FZipper.FindFirst('*.*',ArchiveItem,faAnyFile-faDirectory)) then
+        if (FZipper.FindFirst('*.*', ArchiveItem, faAnyFile - faDirectory)) then
         repeat
           R.Clear;
 
+          FS := TMemoryStream.Create;
           try
-            FS := TMemoryStream.Create;
-
             AFileName := ArchiveItem.FileName;
             R.FileExt := ExtractFileExt(AFileName);
             if R.FileExt <> FB2_EXTENSION then
             begin
-              inc(j);     // переходим к следующему файлу
+              Inc(j);     // переходим к следующему файлу
               Continue;
             end;
+
             R.FileName := ExtractShortFilename(AFileName);
             R.Size := ArchiveItem.UncompressedSize;
             R.InsideNo := j;
@@ -159,7 +160,8 @@ begin
               if not Settings.EnableSort then
               begin
                 R.Folder := ExtractRelativePath(FRootPath, AZipFileName);
-                if FLibrary.InsertBook(R, True, True)<>0 Then Inc(AddCount);
+                if FLibrary.InsertBook(R, True, True) <> 0 then
+                  Inc(AddCount);
               end;
             except
               on e: Exception do
@@ -175,17 +177,21 @@ begin
           end;
           inc(j);
         until (not FZipper.FindNext(ArchiveItem));
+
         FZipper.CloseArchive;
+
         if Settings.EnableSort and NoErrors and (j = 1) then
         begin
           R.Folder := AZipFileName;
           SortFiles(R);
-          if FLibrary.InsertBook(R, True, True)<>0 Then Inc(AddCount);
+          if FLibrary.InsertBook(R, True, True) <> 0 then
+            Inc(AddCount);
         end;
       except
         on e: Exception do
            Teletype('Ошибка распаковки архива: ' + AZipFileName, tsError);
       end;
+
       if (i mod ProcessedItemThreshold) = 0 then
         SetComment(Format('Обработано архивов: %u из %u', [i + 1, FFiles.Count]));
       SetProgress((i + 1) * 100 div FFiles.Count);

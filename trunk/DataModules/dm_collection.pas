@@ -310,14 +310,14 @@ end;
 procedure TDMCollection.FieldByName(AID: Integer; const AField: String; out ARes: String);
 begin
   if AID <> 0 then
-    FActiveTable.Locate('ID', AID, []);
+    FActiveTable.Locate(ID_FIELD, AID, []);
   ARes := FActiveTable.FieldByName(AField).AsString;
 end;
 
 procedure TDMCollection.FieldByName(AID: Integer; const AField: String; out ARes: Integer);
 begin
   if AID <> 0 then
-    FActiveTable.Locate('ID', AID, []);
+    FActiveTable.Locate(ID_FIELD, AID, []);
   ARes := FActiveTable.FieldByName(AField).AsInteger;
 end;
 
@@ -352,20 +352,20 @@ end;
 procedure TDMCollection.FieldByName(AID: Integer; const AField: String; out ARes: Boolean);
 begin
   if AID <> 0 then
-    FActiveTable.Locate('ID', AID, []);
+    FActiveTable.Locate(ID_FIELD, AID, []);
   ARes := FActiveTable.FieldByName(AField).AsBoolean;
 end;
 
 procedure TDMCollection.GetBookFileName(ID: Integer; out AFile: string; out AFolder: string; out AExt: string; out ANo: Integer);
 begin
-  FActiveTable.Locate('ID', ID, []);
+  FActiveTable.Locate(ID_FIELD, ID, []);
   AExt := FActiveTable.FieldByName('Ext').AsString;
-  AFile := FActiveTable.FieldByName('FileName').AsString;
+  AFile := FActiveTable.FieldByName(FILENAME_FIELD).AsString;
 
   if ExtractFileExt(AFile) <> ZIP_EXTENSION then // могут быть проблемы!
     AFile := AFile + AExt;
 
-  AFolder := FActiveTable.FieldByName('Folder').AsString;
+  AFolder := FActiveTable.FieldByName(FOLDER_FIELD).AsString;
   ANo := FActiveTable.FieldByName('InsideNo').AsInteger;
 end;
 
@@ -393,14 +393,14 @@ procedure TDMCollection.GetCurrentBook(var R: TBookRecord);
 var
   BookID: Integer;
 begin
-  BookID := ActiveTable.FieldByName('ID').Value;
+  BookID := ActiveTable.FieldByName(ID_FIELD).Value;
 
   R.Clear;
   R.Title := ActiveTable.FieldByName('Title').AsWideString;
   R.Series := IfThen(ActiveTable.FieldByName('SerID').IsNull, NO_SERIES_TITLE, ActiveTable.FieldByName('Series').AsWideString);
   R.SeqNumber := ActiveTable.FieldByName('SeqNumber').AsInteger;
-  R.Folder := ActiveTable.FieldByName('Folder').AsWideString;
-  R.FileName := ActiveTable.FieldByName('FileName').AsWideString;
+  R.Folder := ActiveTable.FieldByName(FOLDER_FIELD).AsWideString;
+  R.FileName := ActiveTable.FieldByName(FILENAME_FIELD).AsWideString;
   R.FileExt := ActiveTable.FieldByName('Ext').AsWideString;
   R.Size := ActiveTable.FieldByName('Size').AsInteger;
   R.InsideNo := ActiveTable.FieldByName('InsideNo').AsInteger;
@@ -414,8 +414,8 @@ begin
   if tblExtra.Locate('E_BookID', BookID, []) then
     R.Annotation := tblExtraE_Annotation.Value;
 
-  if ActiveTable.FieldByName('LibID').AsInteger <> 0 then
-    R.LibID := ActiveTable.FieldByName('LibID').AsInteger
+  if ActiveTable.FieldByName(LIB_ID_FIELD).AsInteger <> 0 then
+    R.LibID := ActiveTable.FieldByName(LIB_ID_FIELD).AsInteger
   else
     R.LibID := BookID;
 
@@ -534,24 +534,24 @@ end;
 
 procedure TDMCollection.GetBookFolder(ID: Integer; out AFolder: String);
 begin
-  FActiveTable.Locate('ID', ID, []);
+  FActiveTable.Locate(ID_FIELD, ID, []);
   if FActiveTable.Name = 'tblBooks' then
-    AFolder := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder) + FActiveTable.FieldByName('Folder').AsString
+    AFolder := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder) + FActiveTable.FieldByName(FOLDER_FIELD).AsString
   else
-    AFolder := FActiveTable.FieldByName('Folder').AsString;
+    AFolder := FActiveTable.FieldByName(FOLDER_FIELD).AsString;
 end;
 
 procedure TDMCollection.SetLocalStatus(AID: Integer; AState: Boolean);
 begin
   if AID <> 0 then
-    if FActiveTable.Locate('ID', AID, []) then
+    if FActiveTable.Locate(ID_FIELD, AID, []) then
     begin
       FActiveTable.Edit;
       FActiveTable.FieldByName('Local').AsBoolean := AState;
       FActiveTable.Post;
 
       if FActiveTable.Name = 'tblGrouppedBooks' then
-        if DMCollection.tblBooks.Locate('ID', FActiveTable.FieldByName('OuterID').AsInteger, []) then
+        if DMCollection.tblBooks.Locate(ID_FIELD, FActiveTable.FieldByName('OuterID').AsInteger, []) then
         begin
           DMCollection.tblBooks.Edit;
           DMCollection.tblBooksLocal.Value := AState;

@@ -100,7 +100,8 @@ uses
   unit_Helpers,
   ActiveX,
   ComObj,
-  Dialogs;
+  Dialogs,
+  unit_Consts;
 
 {$R *.dfm}
 
@@ -168,7 +169,7 @@ procedure TfrmConvertToFBD.ChangeBookData;
 begin
   DMCollection.ActiveTable.Edit;
 //  DMCollection.ActiveTable.FieldByName('Ext').Value := ExtractFileExt(FBookFilename);
-  DMCollection.ActiveTable.FieldByName('FileName').Value := DMCollection.ActiveTable.FieldByName('FileName').Value + '.zip';
+  DMCollection.ActiveTable.FieldByName(FILENAME_FIELD).Value := DMCollection.ActiveTable.FieldByName(FILENAME_FIELD).Value + '.zip';
   DMCollection.ActiveTable.Post;
 end;
 
