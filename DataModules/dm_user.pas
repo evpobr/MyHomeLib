@@ -121,29 +121,29 @@ type
     function ActivateCollection(CollectionID: Integer): Boolean;
 
     procedure RegisterCollection(
-      DisplayName: string;
-      RootFolder: string;
-      DBFileName: string;
+      const DisplayName: string;
+      const RootFolder: string;
+      const DBFileName: string;
       CollectionType: COLLECTION_TYPE;
       AllowDelete: Boolean;
       Version: Integer = UNVERSIONED_COLLECTION;
-      Notes: string = '';
-      URL: string = '';
-      Script: string = '';
-      User: string = '';
-      Password: string = ''
+      const Notes: string = '';
+      const URL: string = '';
+      const Script: string = '';
+      const User: string = '';
+      const Password: string = ''
     );
 
     procedure UpdateCollectionProps(
       CollectionID: Integer;
-      DisplayName: string;
-      RootFolder: string;
-      DBFileName: string;
-      Description: string = '';
-      URL: string = '';
-      User: string = '';
-      Pass: string = '';
-      Script: string = ''
+      const DisplayName: string;
+      const RootFolder: string;
+      const DBFileName: string;
+      const Description: string = '';
+      const URL: string = '';
+      const User: string = '';
+      const Pass: string = '';
+      const Script: string = ''
     );
 
     function FindCollectionWithProp(
@@ -174,8 +174,8 @@ type
     procedure SetFinished(ID, Progress: Integer; ADBID: Integer = 0);
     procedure DeleteRate(AID: Integer; ADBID: Integer = 0);
     procedure DeleteFinished(AID: Integer; ADBID: Integer = 0);
-    procedure InsertToGroupTable(ID: Integer; Genre: string);
-    procedure AddGroup(Name: string);
+    procedure InsertToGroupTable(ID: Integer; const Genre: string);
+    procedure AddGroup(const Name: string);
 
     procedure LoadRates(const SL: TStringList; var i: Integer);
     procedure LoadGroupedBooks(const SL: TStringList; var i: Integer);
@@ -268,7 +268,7 @@ begin
   Result := tblGroupList.Locate('Id', ID, []);
 end;
 
-procedure TDMUser.AddGroup(Name: string);
+procedure TDMUser.AddGroup(const Name: string);
 begin
   if not tblGroupList.Locate('Name', Name, []) then
   begin
@@ -349,11 +349,17 @@ begin
 end;
 
 procedure TDMUser.RegisterCollection(
-  DisplayName, RootFolder, DBFileName: string;
+  const DisplayName: string;
+  const RootFolder: string;
+  const DBFileName: string;
   CollectionType: COLLECTION_TYPE;
   AllowDelete: Boolean;
   Version: Integer;
-  Notes, URL, Script, User, Password: string
+  const Notes: string;
+  const URL: string;
+  const Script: string;
+  const User: string;
+  const Password: string
   );
 var
   ID: Integer;
@@ -398,7 +404,17 @@ begin
   Result := tblBases.Locate('ID', CollectionID, []);
 end;
 
-procedure TDMUser.UpdateCollectionProps;
+procedure TDMUser.UpdateCollectionProps(
+  CollectionID: Integer;
+  const DisplayName: string;
+  const RootFolder: string;
+  const DBFileName: string;
+  const Description: string = '';
+  const URL: string = '';
+  const User: string = '';
+  const Pass: string = '';
+  const Script: string = ''
+);
 begin
   if ActivateCollection(CollectionID) then
   begin
@@ -493,7 +509,7 @@ begin
   Result := False;
 end;
 
-procedure TDMUser.InsertToGroupTable;
+procedure TDMUser.InsertToGroupTable(ID: Integer; const Genre: string);
 begin
   dmCollection.tblBooks.Locate('ID', ID, []);
 

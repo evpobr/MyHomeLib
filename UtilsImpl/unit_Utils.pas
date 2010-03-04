@@ -20,7 +20,7 @@ uses
 procedure SyncOnLineFiles;
 procedure SyncFolders;
 function LibrusecUpdate: boolean;
-procedure ShowPopup(Msg: string);
+procedure ShowPopup(const Msg: string);
 procedure HidePopup;
 
 procedure LocateBook;
@@ -117,7 +117,7 @@ begin
   end;
 end;
 
-procedure ShowPopup(Msg: string);
+procedure ShowPopup(const Msg: string);
 begin
   frmInfoPopup := TfrmInfoPopup.Create(Nil);
   frmInfoPopup.lblText.Caption := Msg;

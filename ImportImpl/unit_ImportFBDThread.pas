@@ -129,7 +129,7 @@ begin
               Continue;
             try
               book := LoadFictionBook(FS);
-              GetBookInfo(Book, R);
+              GetBookInfo(book, R);
               IsValid := True;
               FBDFileName := ExtractShortFileName(ArchiveItem.FileName);
             except

@@ -33,8 +33,9 @@ type
     btnOk: TButton;
     btnCancel: TButton;
     procedure btnLikeClick(Sender: TObject);
+
   private
-    procedure SetText(Value: string);
+    procedure SetText(const Value: string);
     function GetText: string;
 
   public
@@ -119,7 +120,7 @@ begin
   Result := mmMemo.Lines.Text;
 end;
 
-procedure TfrmEditor.SetText(Value: string);
+procedure TfrmEditor.SetText(const Value: string);
 begin
   mmMemo.Lines.Text := Value;
 end;

@@ -38,7 +38,7 @@ function GetOpenFileName(
   const DefaultExt: string;
   const Filter: string;
   out strFileName: string;
-  dialogKey: string = '';
+  const dialogKey: string = '';
   ExtraOptions: TOpenOptions = []
   ): Boolean;
 
@@ -47,7 +47,7 @@ function GetSaveFileName(
   const DefaultExt: string;
   const Filter: string;
   out strFileName: string;
-  dialogKey: string = '';
+  const dialogKey: string = '';
   ExtraOptions: TOpenOptions = []
   ): Boolean;
 
@@ -70,7 +70,7 @@ type
 
 function GetFileName(key: TMHLFileName; out FileName: string): Boolean;
 
-function GetFolderName(Handle: Integer; Caption: string; var strFolder: string): Boolean;
+function GetFolderName(Handle: Integer; const Caption: string; var strFolder: string): Boolean;
 
 function CreateImageFromResource(GraphicClass: TGraphicClass; const ResName: string; ResType: PChar = RT_RCDATA): TGraphic;
 
@@ -144,7 +144,7 @@ function InternalGetFileName(
   const Filter: string;
   out strFileName: string;
   ExtraOptions: TOpenOptions;
-  dialogKey: string = ''
+  const dialogKey: string = ''
   ): Boolean;
 var
   dlg: TOpenDialog;
@@ -175,7 +175,7 @@ function GetOpenFileName(
   const DefaultExt: string;
   const Filter: string;
   out strFileName: string;
-  dialogKey: string = '';
+  const dialogKey: string = '';
   ExtraOptions: TOpenOptions = []
   ): Boolean;
 begin
@@ -192,7 +192,7 @@ function GetSaveFileName(
   const DefaultExt: string;
   const Filter: string;
   out strFileName: string;
-  dialogKey: string = '';
+  const dialogKey: string = '';
   ExtraOptions: TOpenOptions = []
   ): Boolean;
 begin
@@ -361,7 +361,7 @@ begin
   BrowseCallbackProc := 0;
 end;
 
-function GetFolderName(Handle: Integer; Caption: string; var strFolder: string): Boolean;
+function GetFolderName(Handle: Integer; const Caption: string; var strFolder: string): Boolean;
 var
   BrowseInfo: TBrowseInfo;
   lpItemID: PItemIDList;

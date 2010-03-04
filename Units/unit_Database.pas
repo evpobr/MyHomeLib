@@ -75,10 +75,11 @@ type
     procedure EndBulkOperation(Commit: Boolean = True);
 
   public
+    function GetGenreAlias(const FB2Code: string): string;
+    function GetTopGenreAlias(const FB2Code: string): string;
+
     property DatabaseFileName: string read GetDatabaseFileName write SetDatabaseFileName;
     property Active: Boolean read GetActive write SetActive;
-    function GetGenreAlias(FB2Code: string): string;
-    function GetTopGenreAlias(FB2Code: string): string;
 
   private
     FDatabase: TABSDatabase;
@@ -412,7 +413,12 @@ FinishedTableIndexes: array [1..2] of TIndexDesc = (
 
 // ------------------------------------------------------------------------------
 
-procedure CreateTable(ADatabase: TABSDatabase; const TableName: string; FieldDesc: array of TFieldDesc; IndexDesc: array of TIndexDesc);
+procedure CreateTable(
+  ADatabase: TABSDatabase;
+  const TableName: string;
+  const FieldDesc: array of TFieldDesc;
+  const IndexDesc: array of TIndexDesc
+  );
 var
   TempTable: TABSTable;
   i: Integer;
@@ -701,13 +707,13 @@ begin
   LoadGenres(FileName);
 end;
 
-function TMHLLibrary.GetGenreAlias(FB2Code: string): string;
+function TMHLLibrary.GetGenreAlias(const FB2Code: string): string;
 begin
   FGenres.Locate('G_FB2Code', FB2Code, []);
   Result := FGenres.FieldByName('G_Alias').AsWideString;
 end;
 
-function TMHLLibrary.GetTopGenreAlias(FB2Code: string): string;
+function TMHLLibrary.GetTopGenreAlias(const FB2Code: string): string;
 var
   Code: string;
   p: Integer;

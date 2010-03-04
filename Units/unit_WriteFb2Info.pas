@@ -18,7 +18,7 @@ unit unit_WriteFb2Info;
 
 interface
 
-function WriteFb2InfoToFile(FileName: string): Boolean;
+function WriteFb2InfoToFile(const FileName: string): Boolean;
 
 implementation
 
@@ -34,7 +34,7 @@ uses
   dm_Collection,
   Dialogs;
 
-function WriteFb2InfoToFile(FileName: string): Boolean;
+function WriteFb2InfoToFile(const FileName: string): Boolean;
 var
   R: TBookRecord;
   book: IXMLFictionBook;

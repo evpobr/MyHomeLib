@@ -17,10 +17,10 @@ unit unit_SearchUtils;
 
 interface
 
-procedure AddToFilter(Field, Value: string; UP: Boolean; var FilterString: string);
-procedure AddSeriesToFilter(Value: string; var SeriesFilter: string);
+procedure AddToFilter(const Field: string; Value: string; UP: Boolean; var FilterString: string);
+procedure AddSeriesToFilter(const Value: string; var SeriesFilter: string);
 
-function Clear(S: string): string;
+function Clear(const S: string): string;
 function PrepareQuery(S: string; UP: Boolean; ConverToFull: Boolean = True): string;
 
 implementation
@@ -30,7 +30,7 @@ uses
   SysUtils,
   unit_Globals;
 
-procedure AddToFilter(Field, Value: String; UP: Boolean; var FilterString: string);
+procedure AddToFilter(const Field: string; Value: String; UP: Boolean; var FilterString: string);
 begin
   if Value = '' then
     Exit;
@@ -62,7 +62,7 @@ begin
     FilterString := '(' + Field + ' ' + Value + ')';
 end;
 
-procedure AddSeriesToFilter(Value: string; var SeriesFilter: string);
+procedure AddSeriesToFilter(const Value: string; var SeriesFilter: string);
 begin
   if SeriesFilter <> '' then
     SeriesFilter := SeriesFilter + ' or (`SerID` ="' + Value + '")'
@@ -70,7 +70,7 @@ begin
     SeriesFilter := '(`SerID` ="' + Value + '")';
 end;
 
-function Clear(S: string): string; inline;
+function Clear(const S: string): string; inline;
 begin
   Result := S;
   StrReplace(#13#10, ' ', Result);

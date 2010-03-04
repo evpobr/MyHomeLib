@@ -29,7 +29,7 @@ type
 
   public
     procedure GetSelectedGenres(var R: TBookRecord);
-    procedure SelectGenres(Code: String);
+    procedure SelectGenres(const Code: string);
   end;
 
 var
@@ -42,7 +42,7 @@ uses
 
 {$R *.dfm}
 
-procedure TfrmGenreTree.SelectGenres(Code: String);
+procedure TfrmGenreTree.SelectGenres(const Code: string);
 var
   Node: PVirtualNode;
   Data: PGenreData;

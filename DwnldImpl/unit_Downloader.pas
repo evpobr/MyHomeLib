@@ -3,6 +3,7 @@ unit unit_Downloader;
 interface
 
 uses
+  Windows,
   Classes,
   SysUtils,
   Dialogs,
@@ -14,15 +15,13 @@ uses
   DateUtils;
 
 type
-
   TQueryKind = (qkGet, qkPost);
   EInvalidLogin = class (Exception);
 
-
   TCommand = record
-               Code: integer;
-               Params: array [1..5] of string;
-             end;
+    Code: Integer;
+    Params: array [1..5] of string;
+  end;
 
   TSetCommentEvent = procedure(const Current, Total: string) of object;
   TProgressEvent = procedure(Current, Total: Integer) of object;
@@ -43,14 +42,13 @@ type
 
     FStartDate : TDateTime;
     FIgnoreErrors: boolean;
-    FCatchRedirect: boolean;
 
     FFile: string;
 
-    function CalcURI(Template: string):string;
+    //function CalcURI(Template: string):string;
     function Main: boolean;
-    function Query(Kind: TQueryKind; URL: string):boolean;
-    procedure AddParam(Name, Value: string);
+    function Query(Kind: TQueryKind; const URL: string):boolean;
+    procedure AddParam(const Name: string; const Value: string);
     function CheckResponce: boolean;
     function CheckRedirect: boolean;
     function Pause(Time: integer):boolean;
@@ -66,9 +64,11 @@ type
     procedure ProcessError(const LongMsg, ShortMsg, AFileName: string);
 
     procedure ParseCommand(S: string; out Command: TCommand);
+
   public
     constructor Create;
-    destructor Free;
+    destructor Destroy; override;
+
     function Download(ID: integer):boolean;
     procedure Stop;
     property IgnoreErrors: boolean read FIgnoreErrors write FIgnoreErrors;
@@ -81,8 +81,8 @@ implementation
 
 uses
   Forms,
-  unit_globals,
-  unit_settings,
+  unit_Globals,
+  unit_Settings,
   dm_collection,
   dm_user,
   unit_Consts;
@@ -93,11 +93,12 @@ const
 
 { TDownloader }
 
-procedure TDownloader.AddParam(Name, Value: string);
+procedure TDownloader.AddParam(const Name: string; const Value: string);
 begin
   FParams.AddFormField(Name, Value);
 end;
 
+{
 function TDownloader.CalcURI(Template: string):string;
 var
   S: string;
@@ -106,6 +107,7 @@ begin
   StrReplace('%LIBID%', S, Template);
   Result := Template;
 end;
+}
 
 function TDownloader.CheckRedirect: boolean;
 begin
@@ -141,7 +143,8 @@ begin
       begin
         FResponce.SaveToFile(FFile);
         Result := TestArchive(FFile);
-        if not Result then DeleteFile(PChar(FFile));
+        if not Result then
+          DeleteFile(PChar(FFile));
       end;
     end;
   finally
@@ -151,6 +154,8 @@ end;
 
 constructor TDownloader.Create;
 begin
+  inherited Create;
+
   FidHTTP := TIdHTTP.Create;
   FidHTTP.OnWork := HTTPWork;
   FidHTTP.OnWorkBegin := HTTPWorkBegin;
@@ -192,9 +197,10 @@ begin
     end;
 end;
 
-destructor TDownloader.Free;
+destructor TDownloader.Destroy;
 begin
   FidHTTP.Free;
+  inherited;
 end;
 
 procedure TDownloader.HTTPRedirect(Sender: TObject; var dest: string;
@@ -249,10 +255,8 @@ end;
 
 function TDownloader.Main: boolean;
 var
-  URL: string;
   CL: TStringList;
   Commands : array of TCommand;
-  Command: TCommand;
   I: Integer;
 begin
   CL := TStringList.Create;
@@ -289,7 +293,7 @@ end;
 procedure TDownloader.ParseCommand;
 var
   p, i: integer;
-  s1, s2: string;
+  s1: string;
 
   t: string;
 begin
@@ -358,7 +362,7 @@ begin
     Application.MessageBox(PChar(LongMsg), 'Ошибка закачки');
 end;
 
-function TDownloader.Query(Kind: TQueryKind; URL: string):boolean;
+function TDownloader.Query(Kind: TQueryKind; const URL: string):boolean;
 begin
   Result := False;
   try

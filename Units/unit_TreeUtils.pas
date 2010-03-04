@@ -25,7 +25,7 @@ uses
 type
   TSelectionList = array of PVirtualNode;
 
-function FindParentInTree(Tree: TVirtualStringTree; Folder: string): PVirtualNode;
+function FindParentInTree(Tree: TVirtualStringTree; const Folder: string): PVirtualNode;
 function FindSeriesInTree(Tree: TVirtualStringTree; Parent: PVirtualNode; SerID: Integer): PVirtualNode;
 procedure SortChild(Tree: TVirtualStringTree; Parent: PVirtualNode);
 // procedure SortAuthors(Tree:TVirtualStringTree);
@@ -50,7 +50,7 @@ begin
   end;
 end;
 
-function FindParentInTree(Tree: TVirtualStringTree; Folder: string): PVirtualNode;
+function FindParentInTree(Tree: TVirtualStringTree; const Folder: string): PVirtualNode;
 var
   Node: PVirtualNode;
   Data: PFileData;

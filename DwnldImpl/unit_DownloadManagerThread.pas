@@ -18,13 +18,8 @@ type
     FFinished : boolean;
     FIgnoreErrors : boolean;
 
-    FDownloadSize : integer;
-    FProgress: integer;
-    FWorkCount: integer;
     FProcessed: integer;
     FTotal: integer;
-
-    FStartDate : TDateTime;
 
     FID: integer;
     FCurrentNode : PVirtualNode;
@@ -205,16 +200,13 @@ begin
 end;
 
 procedure TDownloadManagerThread.SetProgress(Current, Total: Integer);
-var
-  ElapsedTime : Cardinal;
-  Speed: string;
 begin
   if frmMain.Visible then
   begin
-      frmMain.pbDownloadProgress.Percent := Current;
-    end
-    else
-     frmMain.TrayIcon.Hint := Format('%s. %s %s Загрузка: %s Kb/s    %d %%',
+    frmMain.pbDownloadProgress.Percent := Current;
+  end
+  else
+    frmMain.TrayIcon.Hint := Format('%s. %s %s Загрузка: %s Kb/s    %d %%',
                                     [FCurrentData.Author,
                                      FCurrentData.Title,
                                      #13,

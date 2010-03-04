@@ -43,13 +43,14 @@ type
     FExportMode: TExportMode;
     FIsTmp: boolean;
     FProcessedFiles: string;
-    procedure ShowZipErrorMessage(Sender: TObject; ErrCode: integer; Message: string);
 
-    function fb2Lrf(InpFile, OutFile: string): boolean;
-    function fb2EPUB(InpFile, OutFile: string): boolean;
-    function fb2PDF(InpFile, OutFile: string): boolean;
+    //procedure ShowZipErrorMessage(Sender: TObject; ErrCode: integer; Message: string);
+    function fb2Lrf(const InpFile: string; const OutFile: string): boolean;
+    function fb2EPUB(const InpFile: string; const OutFile: string): boolean;
+    function fb2PDF(const InpFile: string; const OutFile: string): boolean;
 
     procedure SetTable(ATable: TAbsTable);
+
   protected
     procedure WorkFunction; override;
     function PrepareFile(ID: integer): boolean;
@@ -76,11 +77,13 @@ uses
 
 { TExportToDeviceThread }
 
+{
 procedure TExportToDeviceThread.ShowZipErrorMessage(Sender: TObject; ErrCode: integer; Message: string);
 begin
   if ErrCode <> 0 then
     Teletype(Format('Ошибка распаковки архива %s, Код: %d', [FZipper.FileName, 0]), tsError);
 end;
+}
 
 //
 // Определяем имя файла, если нужно - предварительно распаковываем
@@ -215,7 +218,7 @@ begin
   case FExportMode of
     emFB2:
       unit_globals.CopyFile(FFileOprecord.SArch, DestFileName);
-    emFb2Zip:
+    emFB2Zip:
       ZipFile(FFileOprecord.SArch, DestFileName + ZIP_EXTENSION);
     emTxt:
       unit_globals.ConvertToTxt(FFileOprecord.SArch, DestFileName, Settings.TXTEncoding);
@@ -231,7 +234,7 @@ begin
   // SysUtils.DeleteFile(FFileOpRecord.SArch);
 end;
 
-function TExportToDeviceThread.fb2Lrf(InpFile, OutFile: string): boolean;
+function TExportToDeviceThread.fb2Lrf(const InpFile: string; const OutFile: string): boolean;
 var
   params: string;
 begin
@@ -239,7 +242,7 @@ begin
   Result := ExecAndWait(Settings.AppPath + 'converters\fb2lrf\fb2lrf_c.exe', params, SW_HIDE)
 end;
 
-function TExportToDeviceThread.fb2EPUB(InpFile, OutFile: string): boolean;
+function TExportToDeviceThread.fb2EPUB(const InpFile: string; const OutFile: string): boolean;
 var
   params: string;
 begin
@@ -247,7 +250,7 @@ begin
   Result := ExecAndWait(Settings.AppPath + 'converters\fb2epub\fb2epub.exe', params, SW_HIDE)
 end;
 
-function TExportToDeviceThread.fb2PDF(InpFile, OutFile: string): boolean;
+function TExportToDeviceThread.fb2PDF(const InpFile: string; const OutFile: string): boolean;
 var
   params: string;
 begin

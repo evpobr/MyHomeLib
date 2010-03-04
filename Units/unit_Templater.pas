@@ -43,7 +43,7 @@ type
   public
     constructor Create;
 
-    function ValidateTemplate(Template: string; TemplType: TTemplateType): TErrorType;
+    function ValidateTemplate(const Template: string; TemplType: TTemplateType): TErrorType;
     function SetTemplate(Template: string; TemplType: TTemplateType): TErrorType;
     function ParseString(R: TBookRecord; TemplType: TTemplateType): string;
   end;
@@ -61,7 +61,7 @@ begin
   FTemplate := '';
 end;
 
-function TTemplater.ValidateTemplate(Template: string; TemplType: TTemplateType): TErrorType;
+function TTemplater.ValidateTemplate(const Template: string; TemplType: TTemplateType): TErrorType;
 const
   { DONE : совпадает с названием константы }
   MASK_ELEMENTS: array [1 .. COL_MASK_ELEMENTS] of string = ('f', 'fa', 't', 's', 'n', 'id', 'g', 'ga', 'ff', 'fl', 'rg');
