@@ -388,27 +388,18 @@ begin
 
   Settings.PromptDevicePath := cbPromptPath.Checked;
   case rgDeviceFormat.ItemIndex of
-    0:
-      Settings.ExportMode := emFB2;
-    1:
-      Settings.ExportMode := emFB2zip;
-    2:
-      Settings.ExportMode := emLrf;
-    3:
-      Settings.ExportMode := emTxt;
-    4:
-      Settings.ExportMode := emEpub;
-    5:
-      Settings.ExportMode := emPDF;
+    0: Settings.ExportMode := emFB2;
+    1: Settings.ExportMode := emFB2Zip;
+    2: Settings.ExportMode := emLrf;
+    3: Settings.ExportMode := emTxt;
+    4: Settings.ExportMode := emEpub;
+    5: Settings.ExportMode := emPDF;
   end;
 
   case cbTXTEncoding.ItemIndex of
-    0:
-      Settings.TXTEncoding := enUTF8;
-    1:
-      Settings.TXTEncoding := en1251;
-    2:
-      Settings.TXTEncoding := enUnicode;
+    0: Settings.TXTEncoding := enUTF8;
+    1: Settings.TXTEncoding := en1251;
+    2: Settings.TXTEncoding := enUnicode;
   end;
 
   Settings.FolderTemplate := edFolderTemplate.Text;

@@ -24,13 +24,13 @@ uses
 
 procedure ExportToDevice(
   ATable: TAbsTable;
-  IdList: TBookIdList;
+  const IdList: TBookIdList;
   Mode: TExportMode;
   out ProcessedFiles:string
   );
 
 procedure DownloadBooks(
- ATable: TAbsTable;
+  ATable: TAbsTable;
   var IdList: TBookIdList
   );
 
@@ -44,7 +44,7 @@ uses
 
 procedure ExportToDevice(
   ATable: TAbsTable;
-  IdList: TBookIdList;
+  const IdList: TBookIdList;
   Mode: TExportMode;
   out ProcessedFiles: string
   );

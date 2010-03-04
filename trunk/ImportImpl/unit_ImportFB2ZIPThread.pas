@@ -24,11 +24,12 @@ type
   private
     FZipper: TZipForge;
 
-    procedure ShowZipErrorMessage(Sender: TObject; ErrCode: Integer; Message: string);
-    procedure SortFiles(var R: TBookRecord); override;
+    //procedure ShowZipErrorMessage(Sender: TObject; ErrCode: Integer; Message: string);
 
   protected
+    procedure SortFiles(var R: TBookRecord); override;
     procedure ProcessFileList; override;
+
   public
 
   end;
@@ -84,11 +85,13 @@ begin
   end;
 end;
 
+{
 procedure TImportFB2ZIPThread.ShowZipErrorMessage(Sender: TObject; ErrCode: Integer; Message: string);
 begin
   if ErrCode <> 0 then
     Teletype(Format('Ошибка распаковки архива %s, Код: %d', [FZipper.FileName, 0]), tsError);
 end;
+}
 
 procedure TImportFB2ZIPThread.ProcessFileList;
 var
@@ -149,9 +152,10 @@ begin
             FZipper.ExtractToStream(AFileName,FS);
             if not Assigned(FS) then
               Continue;
+
             try
               book := LoadFictionBook(FS);
-              GetBookInfo(Book, R);
+              GetBookInfo(book, R);
               if not Settings.EnableSort then
               begin
                 R.Folder := ExtractRelativePath(FRootPath, AZipFileName);

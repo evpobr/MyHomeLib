@@ -21,8 +21,9 @@ unit unit_ImportInpxThread;
 interface
 
 uses
+  Windows,
   unit_WorkerThread,
-  unit_globals;
+  unit_Globals;
 
 type
   TFields = (
@@ -67,7 +68,7 @@ type
     FGenresType: TGenresType;
 
     procedure SetCollectionRoot(const Value: string);
-    procedure ParseData(input: WideString; var R: TBookRecord);
+    procedure ParseData(const input: string; var R: TBookRecord);
 
   protected
     procedure WorkFunction; override;
@@ -167,9 +168,10 @@ begin
   Result := slParams.Count = nParamsCount;
 end;
 
-procedure TImportLibRusEcThread.ParseData(input: WideString; var R: TBookRecord);
+procedure TImportLibRusEcThread.ParseData(const input: string; var R: TBookRecord);
 const
   DelimiterChar = Chr(4);
+
 var
   p, i: Integer;
   slParams: TStringList;
@@ -316,7 +318,7 @@ var
   p, i: Integer;
   F: text;
 
-  function FindType(s: string): TFields;
+  function FindType(const s: string): TFields;
   var
     F: TFieldDescr;
   begin
@@ -324,8 +326,9 @@ var
       if F.Code = s then
       begin
         Result := F.FType;
-        Break;
+        Exit;
       end;
+    Result := flNone;
   end;
 
 begin

@@ -31,7 +31,7 @@ type
   protected
     procedure OnFile(Sender: TObject; const F: TSearchRec);
     procedure WorkFunction; override;
-    function FindNewFolder(FileName: String):String;
+    function FindNewFolder(const FileName: String):String;
   public
 
   end;
@@ -45,7 +45,7 @@ uses
 
 { TImportXMLThread }
 
-function TSyncFoldersThread.FindNewFolder(FileName: String): String;
+function TSyncFoldersThread.FindNewFolder(const FileName: String): String;
 var
   i: integer;
 begin

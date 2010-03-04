@@ -19,6 +19,7 @@ unit unit_ImportFB2ThreadBase;
 interface
 
 uses
+  Windows,
   Classes,
   SysUtils,
   unit_WorkerThread,
@@ -162,8 +163,6 @@ begin
 end;
 
 function TImportFB2ThreadBase.GetNewFileName(FileName: string; R: TBookRecord): string;
-var
-  z, p1, p2: Integer;
 begin
   { DONE -oNickR -cPerformance : необходимо создавать шаблонизатор только один раз при инициализации потока }
   { DONE -oNickR -cBug : нет реакции на невалидный шаблон }

@@ -1,4 +1,5 @@
 unit unit_fb2ToText;
+
 interface
 
 uses
@@ -14,14 +15,14 @@ type
      FSourceEncoding : TTXTEncoding;
      FResEncoding : TTXTEncoding;
 
-     FIn,FOut: Text;
+     FIn, FOut: Text;
 
-
-     procedure ProceedString(FS,TagStart,TagEnd:String);
+     procedure ProceedString(const FS: string; const TagStart: string; const TagEnd: string);
      procedure ClearString(var FS:String);
-     procedure GetEncoding( S: string);
+     procedure GetEncoding(const S: string);
+
   public
-    procedure Convert(FileIn, FileOut: string; ResEncoding: TTXTEncoding);
+    procedure Convert(const FileIn: string; const FileOut: string; ResEncoding: TTXTEncoding);
   end;
 
 implementation
@@ -41,7 +42,7 @@ begin
   FS := ReplaceStr(FS,'</emphasis>','');
 end;
 
-procedure TFb2ToText.Convert(FileIn, FileOut: string; ResEncoding: TTXTEncoding);
+procedure TFb2ToText.Convert(const FileIn: string; const FileOut: string; ResEncoding: TTXTEncoding);
 var
   SA: AnsiString;
   US:  UTF8String;
@@ -91,38 +92,41 @@ begin
   end;
 end;
 
-procedure TFb2ToText.GetEncoding(S: string);
+procedure TFb2ToText.GetEncoding(const S: string);
 begin
   FSourceEncoding := enUnknown;
-  if pos('windows-1251',AnsiLowerCase(s)) <> 0 then FSourceEncoding := en1251;
-  if pos('utf-8',AnsiLowerCase(s)) <> 0 then FSourceEncoding := enUTF8;
-  if pos('unicode',AnsiLowerCase(s)) <> 0 then FSourceEncoding := enUnicode;
 
+  if Pos('windows-1251', AnsiLowerCase(s)) <> 0 then
+    FSourceEncoding := en1251
+  else if Pos('utf-8', AnsiLowerCase(s)) <> 0 then
+    FSourceEncoding := enUTF8
+  else if Pos('unicode', AnsiLowerCase(s)) <> 0 then
+    FSourceEncoding := enUnicode;
 end;
 
-procedure TFb2ToText.ProceedString(FS,TagStart, TagEnd: String);
+procedure TFb2ToText.ProceedString(const FS: string; const TagStart: string; const TagEnd: string);
 var
- p1,p2: integer;
- L : integer;
- US: String;
- OS: String;
+ p1, p2: Integer;
+ L: Integer;
+ US: string;
+ OS: string;
 begin
   L := Length(TagStart);
-  p1 := pos(TagStart, FS);
+  p1 := Pos(TagStart, FS);
 
   US := FS;
 
   while p1 <> 0 do
   begin
-    p2 := pos(TagEnd, US);
-    OS := copy(US,p1 + L, p2 - p1 - L);
+    p2 := Pos(TagEnd, US);
+    OS := Copy(US,p1 + L, p2 - p1 - L);
     case FResEncoding of
-      en1251:    writeln(FOut,UTF8toAnsi(UTF8Encode(OS)));
-      enUTF8:    writeln(FOut,UTF8Encode(OS));
-      enUnicode: writeln(FOut,OS);
+      en1251:    Writeln(FOut, UTF8toAnsi(UTF8Encode(OS)));
+      enUTF8:    Writeln(FOut, UTF8Encode(OS));
+      enUnicode: Writeln(FOut, OS);
     end;
-    Delete(US,1,p2 + 3);
-    p1 := pos(TagStart,US);
+    Delete(US, 1, p2 + 3);
+    p1 := Pos(TagStart, US);
   end;
 end;
 

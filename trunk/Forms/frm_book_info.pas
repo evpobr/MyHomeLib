@@ -76,7 +76,7 @@ type
     procedure SetReview(const Value: string);
 
   public
-    procedure AllowOnlineReview(URL: string);
+    procedure AllowOnlineReview(const URL: string);
     procedure Download;
 
     procedure FillBookInfo(bookInfo: TBookRecord; bookStream: TMemoryStream);
@@ -94,14 +94,16 @@ type
 
     procedure StartDownload;
     procedure Finish;
+
   protected
     procedure Execute; override;
     property Form: TfrmBookDetails read FForm write FForm;
+
   public
     property URL: string write FUrl;
   end;
 
-procedure DownloadReview(Form: TfrmBookDetails; URL: string);
+procedure DownloadReview(Form: TfrmBookDetails; const URL: string);
 
 var
   frmBookDetails: TfrmBookDetails;
@@ -155,7 +157,7 @@ begin
     acCopyValue.Enabled := False;
 end;
 
-procedure TfrmBookDetails.AllowOnlineReview(URL: string);
+procedure TfrmBookDetails.AllowOnlineReview(const URL: string);
 begin
   FUrl := URL;
 
@@ -432,7 +434,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure DownloadReview(Form: TfrmBookDetails; URL: string);
+procedure DownloadReview(Form: TfrmBookDetails; const URL: string);
 var
   Worker: TReviewDownloadThread;
 begin

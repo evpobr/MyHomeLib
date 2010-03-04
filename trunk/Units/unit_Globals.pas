@@ -120,13 +120,11 @@ function isFB2Collection(t: COLLECTION_TYPE): Boolean; //inline;
 function isNonFB2Collection(t: COLLECTION_TYPE): Boolean; //inline;
 
   // -----------------------------------------------------------------------------
-function Transliterate(Input: string): string;
-function CheckSymbols(Input: string): string;
-/// procedure GetFileList(InitDir, Ext: string; var OutList: TStringList);
-function EncodePassString(Input: string): string;
-function DecodePassString(Input: string): string;
-// function DecodeBase64(const CinLine: ansistring): ansistring;
-procedure StrReplace(s1, s2: string; var s3: string);
+function Transliterate(const Input: string): string;
+function CheckSymbols(const Input: string): string;
+function EncodePassString(const Input: string): string;
+function DecodePassString(const Input: string): string;
+procedure StrReplace(const s1: string; const s2: string; var s3: string);
 
 function ClearDir(const DirectoryName: string): Boolean;
 function IsRelativePath(const FileName: string): Boolean;
@@ -135,7 +133,7 @@ procedure CopyFile(const SourceFileName: string; const DestFileName: string);
 procedure ConvertToTxt(const SourceFileName: string; DestFileName: string; Enc: TTXTEncoding);
 procedure ZipFile(const FileName: string; const ZipFileName: string);
 
-function InclideUrlSlash(S: string): string;
+function InclideUrlSlash(const S: string): string;
 
 function PosChr(aCh: Char; const S: string): Integer;
 function CompareInt(i1, i2: Integer): Integer;
@@ -158,9 +156,9 @@ function ExecAndWait(const FileName, Params: string; const WinState: word): Bool
 
 // function GetFileNameZip(Zip: TZipForge; No: integer): string;
 function CleanExtension(const Ext: string): string;
-function ExtractShortFileName(FileName: string): string;
+function ExtractShortFileName(const FileName: string): string;
 
-function TestArchive(FileName: string): Boolean;
+function TestArchive(const FileName: string): Boolean;
 
 type
   TAppLanguage = (alEng, alRus);
@@ -384,7 +382,7 @@ begin
     end;
 end;
 
-procedure StrReplace(s1, s2: string; var s3: string);
+procedure StrReplace(const s1: string; const s2: string; var s3: string);
 var
   p: Integer;
 begin
@@ -425,8 +423,8 @@ begin
     FullPath := ExcludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(Root));
   Result := SysUtils.ForceDirectories(FullPath);
 end;
-{$WARNINGS OFF}
 
+{$WARNINGS OFF}
 procedure CopyFile(const SourceFileName: string; const DestFileName: string);
 var
   SourceFile: TFileStream;
@@ -476,7 +474,7 @@ begin
   end;
 end;
 
-function EncodePassString(Input: string): string;
+function EncodePassString(const Input: string): string;
 var
   i: Integer;
 begin
@@ -485,7 +483,7 @@ begin
     Result[i] := Chr(Ord(Input[i]) + 5);
 end;
 
-function DecodePassString(Input: string): string;
+function DecodePassString(const Input: string): string;
 var
   i: Integer;
 begin
@@ -493,8 +491,8 @@ begin
   for i := 1 to Length(Input) do
     Result[i] := Chr(Ord(Input[i]) - 5);
 end;
-{$WARNINGS OFF}
 
+{$WARNINGS OFF}
 function ClearDir(const DirectoryName: string): Boolean;
 var
   SearchRec: TSearchRec;
@@ -518,7 +516,7 @@ begin
 end;
 {$WARNINGS ON}
 
-function Transliterate(Input: string): string;
+function Transliterate(const Input: string): string;
 var
   S, conv: string;
   f, o: Integer;
@@ -540,7 +538,7 @@ begin
   Result := conv;
 end;
 
-function CheckSymbols(Input: string): string;
+function CheckSymbols(const Input: string): string;
 var
   S, conv: string;
   f: Integer;
@@ -780,7 +778,7 @@ end;
 // end;
 // end;
 
-function InclideUrlSlash(S: string): string;
+function InclideUrlSlash(const S: string): string;
 begin
   Result := S;
   if Result[Length(Result)] <> '/' then
@@ -820,15 +818,6 @@ begin
   OutputDebugString(PChar(Format(DebugMessage, Args)));
 {$ENDIF}
 end;
-
-{
-function c_GetTempPath: string;
-var
-  Buffer: array [0 .. 65536] of Char;
-begin
-  SetString(Result, Buffer, GetTempPath(Sizeof(Buffer) - 1, Buffer));
-end;
-}
 
 function GetSpecialPath(CSIDL: word): string;
 var
@@ -999,29 +988,28 @@ begin
     Delete(Result, 1, 1);
 end;
 
-function TestArchive(FileName: string): Boolean;
+function TestArchive(const FileName: string): Boolean;
 var
   Zip: TZipForge;
 begin
-  Result := False;
   Zip := TZipForge.Create(nil);
   try
     Zip.FileName := FileName;
     Zip.TempDir := Settings.TempDir;
-    Zip.OpenArchive;
     try
+      Zip.OpenArchive;
       Zip.TestFiles('*.*');
+      Zip.CloseArchive;
+      Result := True;
     except
-
+      Result := False;
     end;
-    Zip.CloseArchive;
-    Result := True;
   finally
     Zip.Free;
   end;
 end;
 
-function ExtractShortFileName(FileName: string): string;
+function ExtractShortFileName(const FileName: string): string;
 var
   Ext: string;
 begin

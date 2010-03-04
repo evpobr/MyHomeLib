@@ -59,10 +59,10 @@ type
 
     function AddColumn: TColumnDesc;
 
-    procedure LoadDefault(Section: string);
+    procedure LoadDefault(const Section: string);
 
   public
-    constructor Create(FileName: string);
+    constructor Create(const FileName: string);
     destructor Destroy; override;
 
     procedure Add(const Tag: Integer; const Width: Integer; const Position: Integer);
@@ -251,7 +251,7 @@ end;
 
 { TColumns }
 
-constructor TColumns.Create(FileName: string);
+constructor TColumns.Create(const FileName: string);
 begin
   inherited Create(TColumnDesc);
   FIniFile := TIniFile.Create(FileName);
@@ -363,7 +363,7 @@ begin
   end;
 end;
 
-procedure TColumns.LoadDefault(Section: string);
+procedure TColumns.LoadDefault(const Section: string);
 begin
   if Section = SECTION_A_FLAT then
   begin

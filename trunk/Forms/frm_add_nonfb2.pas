@@ -150,7 +150,6 @@ type
 
   private
     FBookRecord: TBookRecord;
-    FFolder: string;
 
     procedure PrepareBookRecord;
     procedure CommitData;
@@ -383,9 +382,6 @@ begin
 end;
 
 procedure TfrmAddnonfb2.dtnConvertClick(Sender: TObject);
-var
-  ZipFilename, BookFileName: string;
-
 begin
   Screen.Cursor := crHourGlass;
   frmAddnonfb2.Enabled := False;
@@ -436,12 +432,7 @@ end;
 
 procedure TfrmAddnonfb2.PrepareBookRecord;
 var
-  R: TBookRecord;
   Data: PFileData;
-  I: Integer;
-  strLastName: string;
-  strFirstName: string;
-  strMidName: string;
   Author: TAuthorRecord;
 begin
   Data := Tree.GetNodeData(Tree.GetFirstSelected);

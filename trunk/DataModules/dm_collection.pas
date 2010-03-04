@@ -250,9 +250,9 @@ type
     function GetRootGenre(BookID: Integer): string;
     function GetGenreCode(BookID: Integer): string;
 
-    procedure FieldByName(AID: Integer; AField: string; out ARes: string); overload;
-    procedure FieldByName(AID: Integer; AField: string; out ARes: Integer); overload;
-    procedure FieldByName(AID: Integer; AField: string; out ARes: Boolean); overload;
+    procedure FieldByName(AID: Integer; const AField: string; out ARes: string); overload;
+    procedure FieldByName(AID: Integer; const AField: string; out ARes: Integer); overload;
+    procedure FieldByName(AID: Integer; const AField: string; out ARes: Boolean); overload;
 
     procedure GetBookFolder(ID: Integer; out AFolder: string);
     procedure SetLocalStatus(AID: Integer; AState: Boolean);
@@ -307,14 +307,14 @@ begin
   Result := Trim(TAuthorRecord.FormatName(tblAuthor_DetailA_Family.Value, tblAuthor_DetailA_Name.Value, tblAuthor_DetailA_Middle.Value));
 end;
 
-procedure TDMCollection.FieldByName(AID: Integer; AField: String; out ARes: String);
+procedure TDMCollection.FieldByName(AID: Integer; const AField: String; out ARes: String);
 begin
   if AID <> 0 then
     FActiveTable.Locate('ID', AID, []);
   ARes := FActiveTable.FieldByName(AField).AsString;
 end;
 
-procedure TDMCollection.FieldByName(AID: Integer; AField: String; out ARes: Integer);
+procedure TDMCollection.FieldByName(AID: Integer; const AField: String; out ARes: Integer);
 begin
   if AID <> 0 then
     FActiveTable.Locate('ID', AID, []);
@@ -349,7 +349,7 @@ begin
   SetTableState(True);
 end;
 
-procedure TDMCollection.FieldByName(AID: Integer; AField: String; out ARes: Boolean);
+procedure TDMCollection.FieldByName(AID: Integer; const AField: String; out ARes: Boolean);
 begin
   if AID <> 0 then
     FActiveTable.Locate('ID', AID, []);

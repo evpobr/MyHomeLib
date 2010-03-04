@@ -3,6 +3,7 @@ unit unit_libupdateThread;
 interface
 
 uses
+  Windows,
   Classes,
   SysUtils,
   unit_ImportInpxThread,
@@ -11,7 +12,6 @@ uses
   IdComponent;
 
 type
-
   TDownloadProgressEvent = procedure (Current,Total: Integer) of object;
   TDownloadSetCommentEvent = procedure (const Current, Total: string) of object;
 
@@ -19,7 +19,7 @@ type
   private
     FidHTTP:TidHTTP;
 
-    FDownloadSize: integer;
+    FDownloadSize: Integer;
 
     FStartDate : TDateTime;
 

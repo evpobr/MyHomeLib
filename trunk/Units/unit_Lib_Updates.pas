@@ -41,8 +41,8 @@ type
     FLocal: Boolean;
 
   public
-    function CheckCodes(Name: string; t, id: Integer): Boolean;
-    function CheckVersion(Path: string; Version: Integer): Boolean;
+    function CheckCodes(const Name: string; t, id: Integer): Boolean;
+    function CheckVersion(const Path: string; Version: Integer): Boolean;
 
     property Version: Integer read FVersion write FVersion;
     property Code: Integer read FCode write FCode;
@@ -63,7 +63,7 @@ type
     function GetUpdate(Index: Integer): TUpdateInfo;
     procedure SetUpdate(Index: Integer; const Value: TUpdateInfo);
 
-    procedure SetURL(Value: string);
+    procedure SetURL(const Value: string);
 
     function AddUpdate: TUpdateInfo;
 
@@ -218,21 +218,21 @@ begin
   inherited Items[Index] := Value;
 end;
 
-procedure TUpdateInfoList.SetURL(Value: string);
+procedure TUpdateInfoList.SetURL(const Value: string);
 begin
   FURL := InclideUrlSlash(Value);
 end;
 
 { TUpdateInfo }
 
-function TUpdateInfo.CheckCodes(Name: string; t, id: Integer): Boolean;
+function TUpdateInfo.CheckCodes(const Name: string; t, id: Integer): Boolean;
 begin
   Result := (t = FCode) and (Name = FName);
   if Result then
     FCollectionID := id;
 end;
 
-function TUpdateInfo.CheckVersion(Path: string; Version: Integer): Boolean;
+function TUpdateInfo.CheckVersion(const Path: string; Version: Integer): Boolean;
 begin
   FLocal := FileExists(Path + FileName);
   if FLocal then
