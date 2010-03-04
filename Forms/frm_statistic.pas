@@ -43,7 +43,6 @@ implementation
 
 uses
   dm_user,
-  unit_Settings,
   unit_Consts,
   CommCtrl,
   dm_collection;

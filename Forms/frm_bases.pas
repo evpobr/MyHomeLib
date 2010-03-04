@@ -22,7 +22,6 @@ interface
 uses
   Windows,
   Messages,
-  SysUtils,
   Variants,
   Classes,
   Graphics,
@@ -30,7 +29,6 @@ uses
   Forms,
   Dialogs,
   StdCtrls,
-  Mask,
   ExtCtrls,
   unit_StaticTip,
   unit_AutoCompleteEdit,
@@ -108,17 +106,11 @@ var
 implementation
 
 uses
-  DB,
+  SysUtils,
   dm_user,
-  unit_globals,
-  unit_database,
-  dm_collection,
-  StrUtils,
-  unit_Settings,
   unit_Helpers,
   unit_Consts,
-  unit_Errors,
-  IOUtils;
+  unit_Errors;
 
 {$R *.dfm}
 

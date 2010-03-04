@@ -42,7 +42,6 @@ procedure ImportFBD(
 implementation
 
 uses
-  unit_MHL_xml,
   unit_ImportXMLThread,
   frm_ImportProgressForm,
   unit_ImportFB2Thread,

@@ -14,12 +14,9 @@ unit unit_Utils;
 interface
 
 uses
-  Controls,
-  Forms,
-  Dialogs,
   Windows,
-  dm_user;
-  
+  Dialogs;
+
 procedure SyncOnLineFiles;
 procedure SyncFolders;
 function LibrusecUpdate: boolean;
@@ -31,7 +28,8 @@ procedure LocateBook;
 implementation
 
 uses
-  unit_Helpers,
+  Controls,
+  Forms,
   unit_SyncOnLineThread,
   frm_SyncOnLineProgressForm,
   unit_SyncFoldersThread,

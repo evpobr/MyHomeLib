@@ -111,7 +111,6 @@ implementation
 uses
   Clipbrd,
   FictionBook_21,
-  unit_Settings,
   unit_ReviewParser,
   dm_user,
   CommCtrl,

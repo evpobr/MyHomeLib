@@ -15,9 +15,6 @@ unit unit_ImportFBDThread;
 interface
 
 uses
-  Classes,
-  SysUtils,
-  unit_WorkerThread,
   unit_ImportFB2ThreadBase,
   ZipForge,
   unit_globals;
@@ -35,8 +32,10 @@ type
 implementation
 
 uses
+  Classes,
+  SysUtils,
+  unit_WorkerThread,
   FictionBook_21,
-  unit_Helpers,
   unit_Consts,
   unit_Settings;
 

@@ -14,10 +14,24 @@ unit frame_NCWInpxSource;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, frame_InteriorPageBase, StdCtrls, ExtCtrls, unit_StaticTip,
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  frame_InteriorPageBase,
+  StdCtrls,
+  ExtCtrls,
+  unit_StaticTip,
   unit_NCWParams,
-  Mask, RzEdit, RzBtnEdt, ComCtrls;
+  Mask,
+  RzEdit,
+  RzBtnEdt,
+  ComCtrls;
 
 type
 
@@ -61,11 +75,11 @@ implementation
 
 uses
   dm_user,
-  unit_settings,
-  unit_Globals,
+  unit_Settings,
   unit_Helpers,
   ZipForge,
   IniFiles;
+
 {$R *.dfm}
 
 const

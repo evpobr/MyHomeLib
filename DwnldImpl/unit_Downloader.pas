@@ -8,13 +8,10 @@ uses
   Dialogs,
   IdHTTP,
   IdComponent,
-  IdHTTPHeaderInfo,
   IdStack,
   IdStackConsts,
-  IdException,
   IdMultipartFormData,
-  DateUtils,
-  unit_Consts;
+  DateUtils;
 
 type
 
@@ -86,8 +83,9 @@ uses
   Forms,
   unit_globals,
   unit_settings,
-  DM_Collection,
-  DM_User;
+  dm_collection,
+  dm_user,
+  unit_Consts;
 
 const
    CommandList: array [0..5] of string = ('ADD','GET','POST','REDIR', 'CHECK', 'PAUSE');

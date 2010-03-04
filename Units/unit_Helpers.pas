@@ -79,7 +79,6 @@ implementation
 uses
   SysUtils,
   Forms,
-  unit_Consts,
   unit_Settings,
   ShlObj,
   ActiveX;

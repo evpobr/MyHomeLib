@@ -17,7 +17,6 @@ unit dm_user;
 interface
 
 uses
-  SysUtils,
   Classes,
   DB,
   ABSMain,
@@ -253,6 +252,7 @@ var
 implementation
 
 uses
+  SysUtils,
   Variants,
   dm_Collection;
 

@@ -17,7 +17,6 @@ unit dm_collection;
 interface
 
 uses
-  SysUtils,
   Classes,
   ABSMain,
   DB,
@@ -276,9 +275,9 @@ implementation
 uses
   Windows,
   Forms,
-  dm_user,
-  frm_main,
+  SysUtils,
   StrUtils,
+  dm_user,
   unit_Consts,
   unit_Messages;
 
@@ -294,8 +293,7 @@ begin
   tblAuthor_Master.Locate('AL_BookID', BookID, []);
   while (not tblAuthor_Master.Eof) and (tblAuthor_MasterAL_BookID.Value = BookID) do
   begin
-    { TODO -oNickR : использовать метод TAuthorRecord }
-    S := Trim(tblAuthor_DetailA_Family.Value + ' ' + tblAuthor_DetailA_Name.Value + ' ' + tblAuthor_DetailA_Middle.Value);
+    S := Trim(TAuthorRecord.FormatName(tblAuthor_DetailA_Family.Value, tblAuthor_DetailA_Name.Value, tblAuthor_DetailA_Middle.Value));
 
     Result := IfThen(Result = '', S, Result + ', ' + S);
     tblAuthor_Master.Next;
@@ -306,8 +304,7 @@ function TDMCollection.FullName(BookID: Integer): string;
 begin
   if BookID <> 0 then
     tblAuthor_Master.Locate('AL_BookID', BookID, []);
-  { TODO -oNickR : использовать метод TAuthorRecord }
-  Result := Trim(tblAuthor_DetailA_Family.Value + ' ' + tblAuthor_DetailA_Name.Value + ' ' + tblAuthor_DetailA_Middle.Value);
+  Result := Trim(TAuthorRecord.FormatName(tblAuthor_DetailA_Family.Value, tblAuthor_DetailA_Name.Value, tblAuthor_DetailA_Middle.Value));
 end;
 
 procedure TDMCollection.FieldByName(AID: Integer; AField: String; out ARes: String);

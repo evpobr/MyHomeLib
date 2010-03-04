@@ -15,9 +15,6 @@ unit unit_ImportFB2Thread;
 interface
 
 uses
-  Classes,
-  SysUtils,
-  unit_WorkerThread,
   unit_ImportFB2ThreadBase;
 
 type
@@ -33,6 +30,9 @@ type
 implementation
 
 uses
+  Classes,
+  SysUtils,
+  unit_WorkerThread,
   unit_globals,
   FictionBook_21,
   unit_Helpers,

@@ -16,14 +16,11 @@ interface
 
 uses
   Classes,
-  SysUtils,
   unit_WorkerThread,
   unit_globals,
   Dialogs,
   ABSMain,
-  IdHTTP,
   ZipForge,
-  KeyBoard,
   unit_Templater;
 
 type
@@ -69,14 +66,11 @@ implementation
 
 uses
   Windows,
+  SysUtils,
   dm_collection,
   dm_user,
-  unit_database,
   unit_Consts,
   unit_Settings,
-  frm_main,
-  StrUtils,
-  ShellAPI,
   unit_MHLHelpers,
   unit_WriteFb2Info;
 
@@ -95,10 +89,8 @@ end;
 
 function TExportToDeviceThread.PrepareFile(ID: integer): boolean;
 var
-  z: integer;
   CR: string;
   FS: TMemoryStream;
-  p1, p2: integer;
   FullName: String;
   InsideFileName: string;
   R: TBookRecord;

@@ -19,9 +19,8 @@ uses
   Dialogs,
   Windows,
   dm_user,
-  unit_ExportToDeviceThread,
   ABSMain,
-  unit_globals;
+  unit_Globals;
 
 procedure ExportToDevice(
   ATable: TAbsTable;
@@ -35,13 +34,11 @@ procedure DownloadBooks(
   var IdList: TBookIdList
   );
 
-
 implementation
 
 uses
-  unit_Helpers,
+  unit_ExportToDeviceThread,
   frm_ExportToDeviceProgressForm,
-  frm_main,
   unit_DownloadBooksThread,
   frm_DownloadProgressForm;
 
