@@ -25,6 +25,8 @@ resourcestring
 
   rstrCancelOperationWarningMsg = 'Вы действительно хотите прервать операцию?';
 
+  rstrReadyMessage = 'Готово';
+
   //
   // Названия коллекций по-умолчанию
   //
@@ -35,6 +37,11 @@ resourcestring
   rstrLocalLibRusEcDefLocation = 'librusec_local';
   rstrOnlineLibRusEcDefLocation = 'librusec_online';
   rstrOnlineGenesisDefLocation = 'genesis_online';
+
+  //
+  //
+  //
+  rstrBookProcessedMsg2 = 'Обработано книг: %u из %u';
 
 implementation
 

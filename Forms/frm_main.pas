@@ -729,7 +729,7 @@ uses
   dm_collection,
   dm_user,
   unit_Columns,
-  unit_database,
+  unit_Database,
   frm_statistic,
   frm_splash,
   frm_settings,
@@ -1245,7 +1245,7 @@ begin
     dmCollection.tblBooks.Filtered := Filtered;
 
     Screen.Cursor := crDefault;
-    spStatus.Caption := 'Готово.';
+    spStatus.Caption := rstrReadyMessage;
     ClearLabels(PAGE_FILTER, True);
   end;
 end;
@@ -1491,7 +1491,7 @@ end;
 
 procedure TfrmMain.GetBookRecord(const ID: Integer; var R: TBookRecord);
 begin
-  dmCollection.tblBooks.Locate('ID', ID, []);
+  dmCollection.tblBooks.Locate(ID_FIELD, ID, []);
 
   dmCollection.GetCurrentBook(R);
 end;
@@ -2542,7 +2542,7 @@ begin
   for i := 0 to high(Nodes) do
   begin
     BookData := tvBooksF.GetNodeData(Nodes[i]);
-    if (BookData.nodeType = ntBookInfo) and (DMUser.tblGrouppedBooks.Locate('ID', BookData.ID, [])) then
+    if (BookData.nodeType = ntBookInfo) and (DMUser.tblGrouppedBooks.Locate(ID_FIELD, BookData.ID, [])) then
     begin
       DMUser.tblGrouppedBooks.Edit;
       DMUser.tblGrouppedBooksGroupID.Value := Data.ID;
@@ -2595,7 +2595,7 @@ begin
     Exit;
   ClearLabels(PAGE_AUTHORS, True);
   ID := Data^.ID;
-  dmCollection.tblAuthors.Locate('A_ID', ID, []);
+  dmCollection.tblAuthors.Locate(AUTHOR_ID_FIELD, ID, []);
   lblAuthor.Caption := Data.text;
   FillBooksTree(ID, tvBooksA, dmCollection.tblAuthor_List, dmCollection.tblBooksA, False, True); // авторы
 end;
@@ -3060,7 +3060,7 @@ begin
     0: CellText := Data.Author;
     1: CellText := Data.Title;
     2: CellText := GetFormattedSize(Data.Size);
-    3: CellText := States[ord(Data.State)];
+    3: CellText := States[Ord(Data.State)];
   end;
 end;
 
@@ -3392,7 +3392,7 @@ end;
 
 procedure TfrmMain.HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
 begin
-  spStatus.Caption := 'Готово';
+  spStatus.Caption := rstrReadyMessage;
   spProgress.Percent := 100;
 end;
 
@@ -3444,7 +3444,7 @@ begin
       if ActiveView = FavoritesView then
       begin
         i := DMUser.tblGrouppedBooksDatabaseID.Value;
-        DMUser.tblBases.Locate('ID', i, []);
+        DMUser.tblBases.Locate(ID_FIELD, i, []);
         if isOnlineCollection(DMUser.tblBasesCode.Value) then
         begin
           DownloadBooks;
@@ -3862,8 +3862,8 @@ begin
               end;
 
               if Tree.tag <> 4 then
-                // Auth := dmCollection.FullName(TableB.FieldByName('Id').AsInteger)
-                Auth := dmCollection.FullAuthorsString(TableB.FieldByName('Id').AsInteger)
+                // Auth := dmCollection.FullName(TableB.FieldByName(ID_FIELD).AsInteger)
+                Auth := dmCollection.FullAuthorsString(TableB.FieldByName(ID_FIELD).AsInteger)
               else
                 Auth := TableB.FieldByName('FullName').AsString;
 
@@ -3920,7 +3920,7 @@ begin
 
               bookNode := Tree.AddChild(seriesNode);
               Data := Tree.GetNodeData(bookNode);
-              Data.ID := TableB.FieldByName('ID').AsInteger;
+              Data.ID := TableB.FieldByName(ID_FIELD).AsInteger;
               Data.Title := TableB.FieldByName('Title').AsString;
               Data.Series := TableB.FieldByName('Series').AsString;
 
@@ -3947,7 +3947,7 @@ begin
                 Data.ColName := CollectionName;
 
               if Tree.tag <> 4 then
-                Data.Genre := dmCollection.GetBookGenres(TableB.FieldByName('ID').AsInteger, False)
+                Data.Genre := dmCollection.GetBookGenres(TableB.FieldByName(ID_FIELD).AsInteger, False)
               else
                 Data.Genre := TableB.FieldByName('Genres').AsString;
 
@@ -4005,7 +4005,7 @@ begin
           finally
             spProgress.Percent := 100;
             spProgress.Visible := False;
-            spStatus.Caption := 'Готово';
+            spStatus.Caption := rstrReadyMessage;
             DMUser.ActivateCollection(Settings.ActiveCollection);
 
             if (Settings.TreeModes[Tree.tag] = tmFlat) then
@@ -4236,7 +4236,7 @@ begin
 
     if (Data.nodeType = ntBookInfo) and ((tvBooksG.CheckState[Node] = csCheckedNormal) or (tvBooksG.Selected[Node])) and Data.Locale then
     begin
-      if dmCollection.tblBooks.Locate('ID', Data.ID, []) then
+      if dmCollection.tblBooks.Locate(ID_FIELD, Data.ID, []) then
       begin
 
         // только для online-коллекции. поэтому получаем путь к файлу по упрощенной схеме
@@ -4274,7 +4274,7 @@ begin
     Assert(Assigned(Data));
     if (Data.nodeType = ntBookInfo) and ((tvBooksG.CheckState[Node] = csCheckedNormal) or (tvBooksG.Selected[Node])) then
     begin
-      DMUser.tblGrouppedBooks.Locate('ID', Data.ID, []);
+      DMUser.tblGrouppedBooks.Locate(ID_FIELD, Data.ID, []);
       if DMUser.tblExtra.RecordCount <> 0 then
         DMUser.tblExtra.Delete;
       DMUser.tblGrouppedBooks.Delete;
@@ -4397,7 +4397,7 @@ begin
 
     dmCollection.FieldByName(BookIDList[i].ID, 'Title', Data.Title);
     dmCollection.FieldByName(BookIDList[i].ID, 'Size', Data.Size);
-    dmCollection.FieldByName(BookIDList[i].ID, 'LibID', LibID);
+    dmCollection.FieldByName(BookIDList[i].ID, LIB_ID_FIELD, LibID);
     Data.ID := BookIDList[i].ID;
     Data.State := dsWait;
     Data.FileName := Folder;
@@ -4440,7 +4440,7 @@ begin
     Exit;
 
   dmCollection.tblAuthor_List.Locate('AL_BookId', Data.ID, []);
-  dmCollection.tblAuthors.Locate('A_ID', dmCollection.tblAuthor_List['AL_AuthID'], []);
+  dmCollection.tblAuthors.Locate(AUTHOR_ID_FIELD, dmCollection.tblAuthor_List['AL_AuthID'], []);
   old_AiD := dmCollection.tblAuthor_List['AL_AuthID'];
 
   frmEditAuthor := TfrmEditAuthorDataEx.Create(self);
@@ -4487,7 +4487,7 @@ begin
           until not Res;
 
           // старого автора удаляем
-          if dmCollection.tblAuthors.Locate('A_ID', old_AiD, []) then
+          if dmCollection.tblAuthors.Locate(AUTHOR_ID_FIELD, old_AiD, []) then
             dmCollection.tblAuthors.Delete;
 
           dmCollection.tblAuthor_List.MasterSource := dmCollection.dsAuthors;
@@ -4554,7 +4554,7 @@ begin
 
               dmCollection.tblAuthor_List.Post;
             end;
-            dmCollection.tblBooks.Locate('ID', Data.ID, []);
+            dmCollection.tblBooks.Locate(ID_FIELD, Data.ID, []);
             dmCollection.tblBooks.Edit;
             dmCollection.tblBooksFullName.Value := S;
             dmCollection.tblBooks.Post;
@@ -4576,8 +4576,8 @@ begin
   begin
     if MessageDlg('Изменения информации о книгах в коллекциях "lib.rus.ec" возможно только на сайте.' + #13 + 'Перейти на сайт "Электронная библиотека lib.rus.ec"?', mtWarning, [mbYes, mbNo], 0) = mrYes then
     begin
-      dmCollection.tblBooks.Locate('ID', ID, []);
-      ShellExecute(Handle, 'open', PChar('http://lib.rus.ec/b/' + IntToStr(dmCollection.tblBooks['LibID']) + '/edit'), nil, nil, SW_SHOW);
+      dmCollection.tblBooks.Locate(ID_FIELD, ID, []);
+      ShellExecute(Handle, 'open', PChar('http://lib.rus.ec/b/' + IntToStr(dmCollection.tblBooks[LIB_ID_FIELD]) + '/edit'), nil, nil, SW_SHOW);
     end;
     Result := True;
   end
@@ -4821,7 +4821,7 @@ begin
         Data := Tree.GetNodeData(Node);
         if ((Tree.CheckState[Node] = csCheckedNormal) or (Tree.Selected[Node])) then
         begin
-          dmCollection.tblBooks.Locate('ID', Data.ID, []);
+          dmCollection.tblBooks.Locate(ID_FIELD, Data.ID, []);
           dmCollection.tblBooks.Edit;
           dmCollection.tblBooksSerID.Value := dmCollection.tblSeriesBS_ID.Value;
           dmCollection.tblBooks.Post;
@@ -5483,11 +5483,11 @@ begin
       Zip.Free;
     end;
   end
-  else if ExtractFileExt(Table['FileName']) = ZIP_EXTENSION then // fbd
+  else if ExtractFileExt(Table[FILENAME_FIELD]) = ZIP_EXTENSION then // fbd
   begin
     Zip := TZipForge.Create(self);
     try
-      Zip.FileName := CR + Table['FileName'];
+      Zip.FileName := CR + Table[FILENAME_FIELD];
       Zip.OpenArchive;
       Zip.FindFirst('*.fbd', F);
       Zip.ExtractToStream(F.FileName, FS);
@@ -5503,7 +5503,7 @@ begin
     //
     // просто файл
     //
-    FS.LoadFromFile(CR + Table['FileName'] + Table['Ext']);
+    FS.LoadFromFile(CR + Table[FILENAME_FIELD] + Table['Ext']);
 
     Result := True;
   end;
@@ -5541,14 +5541,14 @@ begin
 
   FFormBusy := True;
   try
-    Table.Locate('ID', Data.ID, []);
+    Table.Locate(ID_FIELD, Data.ID, []);
     dmCollection.GetCurrentBook(R);
 
     { TODO -oNickR -cLibDesc : этот URL должен формироваться обвязкой библиотеки, т к его формат может меняться }
     if DMUser.ActiveCollection.URL <> '' then
-      URL := Format('%sb/%d/', [DMUser.ActiveCollection.URL, Table.FieldByName('LibID').AsInteger])
+      URL := Format('%sb/%d/', [DMUser.ActiveCollection.URL, Table.FieldByName(LIB_ID_FIELD).AsInteger])
     else
-      URL := Format('%sb/%d/', [Settings.InpxURL, Table.FieldByName('LibID').AsInteger]);
+      URL := Format('%sb/%d/', [Settings.InpxURL, Table.FieldByName(LIB_ID_FIELD).AsInteger]);
 
     ReviewEditable := True;
 
@@ -5661,7 +5661,7 @@ begin
         DMUser.tblGrouppedBooksCode.Value := Table['Code'];
         DMUser.tblGrouppedBooks.Post;
 
-        if DMUser.tblExtra.Locate('ID', DMUser.tblGrouppedBooksID.Value, []) then
+        if DMUser.tblExtra.Locate(ID_FIELD, DMUser.tblGrouppedBooksID.Value, []) then
         begin
           case Table['Code'] of
             0:
@@ -5687,7 +5687,7 @@ begin
     end
     else // если активная вкладка - группы, вносим изменения в коллекцию
     begin
-      dmCollection.tblBooks.Locate('Id', Table['OuterID'], []);
+      dmCollection.tblBooks.Locate(ID_FIELD, Table['OuterID'], []);
       dmCollection.tblBooks.Edit;
       dmCollection.tblBooksCode.Value := Table['Code'];
       dmCollection.tblBooks.Post;
@@ -5748,7 +5748,7 @@ begin
       FillBooksTree(0, tvBooksF, nil, DMUser.tblGrouppedBooks, True, True); // избранное
     end;
   end
-  else if DMUser.tblGrouppedBooks.Locate('ID', Data.ID, []) then
+  else if DMUser.tblGrouppedBooks.Locate(ID_FIELD, Data.ID, []) then
   begin
     DMUser.tblGrouppedBooks.Edit;
     DMUser.tblGrouppedBooksRate.Value := 0;
@@ -5850,7 +5850,7 @@ begin
           Exit;
         end;
       end;
-      DMUser.tblGrouppedBooks.Locate('ID', Data.ID, []);
+      DMUser.tblGrouppedBooks.Locate(ID_FIELD, Data.ID, []);
       FN := DMUser.tblGrouppedBooksFullName.Value;
     end
     else
@@ -6079,7 +6079,7 @@ begin
     DMUser.tblRates.First;
     while not DMUser.tblRates.Eof do
     begin
-      dmCollection.tblBooks.Locate('ID', DMUser.tblRatesBookID.Value, []);
+      dmCollection.tblBooks.Locate(ID_FIELD, DMUser.tblRatesBookID.Value, []);
       if dmCollection.tblBooksLibID.Value <> 0 then
         ID := dmCollection.tblBooksLibID.Value
       else
@@ -6098,7 +6098,7 @@ begin
     DMUser.tblFinished.First;
     while not DMUser.tblFinished.Eof do
     begin
-      dmCollection.tblBooks.Locate('ID', DMUser.tblFinishedBookID.Value, []);
+      dmCollection.tblBooks.Locate(ID_FIELD, DMUser.tblFinishedBookID.Value, []);
       if dmCollection.tblBooksLibID.Value <> 0 then
         ID := dmCollection.tblBooksLibID.Value
       else
@@ -6144,7 +6144,7 @@ begin
     begin
       S := dmCollection.tblExtraE_Review.Value;
       StrReplace(#13#10, '~', S);
-      dmCollection.tblBooks.Locate('ID', dmCollection.tblExtraE_BookID.Value, []);
+      dmCollection.tblBooks.Locate(ID_FIELD, dmCollection.tblExtraE_BookID.Value, []);
       if dmCollection.tblBooksLibID.Value <> 0 then
         ID := dmCollection.tblBooksLibID.Value
       else

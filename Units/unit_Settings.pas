@@ -15,6 +15,10 @@
   *
   ****************************************************************************** *)
 
+{
+TODO -oNickR -cBug: если поменять путь на устроство и указан относительный путь к читалке, то она перестает запускаться. после перезапуска проги все нормально
+}
+
 unit unit_Settings;
 
 interface
@@ -454,6 +458,8 @@ var
   DBFileName: string;
 
 begin
+  inherited Create;
+
   UseLocalData := False;
   UseLocalTemp := False;
   UserDatabase := False;
@@ -570,7 +576,7 @@ begin
 
     case iniFile.ReadInteger(SYSTEM_SECTION, 'ExpFormat', 0) of
       0: FExportMode := emFB2;
-      1: FExportMode := emFB2zip;
+      1: FExportMode := emFB2Zip;
       2: FExportMode := emLrf;
       3: FExportMode := emTxt;
       4: FExportMode := emEpub;
@@ -880,7 +886,6 @@ procedure TMHLSettings.LoadSplitters(iniFile: TIniFile);
 var
   I: Integer;
   slHelper: TStringList;
-  S: string;
 begin
   slHelper := TIniStringList.Create;
   try

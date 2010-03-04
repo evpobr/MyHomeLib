@@ -85,7 +85,8 @@ uses
   unit_Settings,
   dm_collection,
   dm_user,
-  unit_Consts;
+  unit_Consts,
+  unit_MHL_strings;
 
 const
    CommandList: array [0..5] of string = ('ADD','GET','POST','REDIR', 'CHECK', 'PAUSE');
@@ -103,7 +104,7 @@ function TDownloader.CalcURI(Template: string):string;
 var
   S: string;
 begin
-  dmCollection.FieldByName(0, 'LibId', S);
+  dmCollection.FieldByName(0, LIB_ID_FIELD, S);
   StrReplace('%LIBID%', S, Template);
   Result := Template;
 end;
@@ -180,7 +181,7 @@ begin
     dmCollection.GetBookFolder(ID, FFile)
   else
   begin
-    Folder := StringReplace(Folder, '.fb2.zip', Ext, []);
+    Folder := StringReplace(Folder, FB2ZIP_EXTENSION, Ext, []);
     FFile := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder) + Folder;
   end;
 
@@ -250,7 +251,7 @@ procedure TDownloader.HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
 begin
   if FNoProgress then Exit;
   FSetProgress(100, -1);
-  FSetComment('Готово', '');
+  FSetComment(rstrReadyMessage, '');
 end;
 
 function TDownloader.Main: boolean;
@@ -299,7 +300,7 @@ var
 begin
   Command.Code := -1;
 
-  dmCollection.FieldByName(0, 'LibId', t);
+  dmCollection.FieldByName(0, LIB_ID_FIELD, t);
   StrReplace('%LIBID%', t, S);
 
   StrReplace('%USER%', DMUser.ActiveCollection.User, S);

@@ -19,18 +19,18 @@ interface
 
 const
   COLLECTION_EXTENSION_SHORT = 'hlc';
-  COLLECTION_EXTENSION = '.' + COLLECTION_EXTENSION_SHORT;
+  COLLECTION_EXTENSION = '.' + COLLECTION_EXTENSION_SHORT;          // .hlc
 
   FB2_EXTENSION_SHORT = 'fb2';
-  FB2_EXTENSION = '.' + FB2_EXTENSION_SHORT;
+  FB2_EXTENSION = '.' + FB2_EXTENSION_SHORT;                        // .fb2
 
   ZIP_EXTENSION_SHORT = 'zip';
-  ZIP_EXTENSION = '.' + ZIP_EXTENSION_SHORT;
+  ZIP_EXTENSION = '.' + ZIP_EXTENSION_SHORT;                        // .zip
 
   FBD_EXTENSION_SHORT = 'fbd';
-  FBD_EXTENSION = '.' + FBD_EXTENSION_SHORT;
+  FBD_EXTENSION = '.' + FBD_EXTENSION_SHORT;                        // .fbd
 
-  FB2ZIP_EXTENSION = FB2_EXTENSION + ZIP_EXTENSION;
+  FB2ZIP_EXTENSION = FB2_EXTENSION + ZIP_EXTENSION;                 // .fb2.zip
 
   UNKNOWN_GENRE_CODE = '0.0';
 
@@ -148,6 +148,15 @@ const
   //
   MAXFOLDERLENGTH = 200; // максимальная длина поля folder/ все что больше - обрезается
   INDEXSIZE = 12;        // размер индексных полей
+
+  //
+  // Некоторые (чаще всего используемые) имена полей
+  //
+  ID_FIELD = 'ID';
+  AUTHOR_ID_FIELD = 'A_ID';
+  LIB_ID_FIELD = 'LibID';
+  FOLDER_FIELD = 'Folder';
+  FILENAME_FIELD = 'FileName';
 
 type
   TColumnSet = set of 0 .. 255;

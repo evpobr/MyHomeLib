@@ -23,15 +23,15 @@ uses
 type
   TSyncFoldersThread = class(TWorker)
   private
-    FFiles:   TFilesList;
-
-    FList:   TStringList;
-
+    FFiles: TFilesList;
+    FList: TStringList;
     FRootPath: string;
+
   protected
     procedure OnFile(Sender: TObject; const F: TSearchRec);
     procedure WorkFunction; override;
     function FindNewFolder(const FileName: String):String;
+
   public
 
   end;
@@ -41,7 +41,8 @@ implementation
 uses
   dm_user,
   dm_collection,
-  unit_Consts;
+  unit_Consts,
+  unit_MHL_strings;
 
 { TImportXMLThread }
 
@@ -73,48 +74,50 @@ begin
   FRootPath := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
 
   FFiles := TFilesList.Create(nil);
-  FFiles.OnFile := OnFile;
-  FFiles.TargetPath := DMUser.ActiveCollection.RootFolder;
-
-  FList := TStringList.Create;
-
   try
-    SetComment('Построение списка файлов ...');
-    FFiles.Process;
+    FFiles.OnFile := OnFile;
+    FFiles.TargetPath := DMUser.ActiveCollection.RootFolder;
 
-    dmCollection.tblBooks.First;
-    while not dmCollection.tblBooks.Eof do
-    begin
-      if Canceled then
-          Exit;
+    FList := TStringList.Create;
+    try
+      SetComment('Построение списка файлов ...');
+      FFiles.Process;
 
-      Folder := dmCollection.tblBooksFolder.Value;
-      if  ExtractFileExt(dmCollection.tblBooksFileName.Value) <> ZIP_EXTENSION then
-        FileName := dmCollection.tblBooksFileName.Value + dmCollection.tblBooksExt.Value
-      else
-        FileName := dmCollection.tblBooksFileName.Value;
-
-      if not FileExists(FRootPath + Folder + FileName)  then
+      dmCollection.tblBooks.First;
+      while not dmCollection.tblBooks.Eof do
       begin
-        NewFolder := FindNewFolder(FileName + ' ' + dmCollection.tblBooksSize.AsString);
-        if NewFolder <> '*' then
-        begin
-          dmCollection.tblBooks.Edit;
-          dmCollection.tblBooksFolder.Value := NewFolder;
-          dmCollection.tblBooks.Post;
-        end;
-      end;
-      dmCollection.tblBooks.Next;
+        if Canceled then
+            Exit;
 
-      Inc(processedBooks);
-      if (processedBooks mod ProcessedItemThreshold) = 0 then
-          SetComment(Format('Обработано книг: %u из %u', [processedBooks, totalBooks]));
-      SetProgress(processedBooks * 100 div totalBooks);
+        Folder := dmCollection.tblBooksFolder.Value;
+        if  ExtractFileExt(dmCollection.tblBooksFileName.Value) <> ZIP_EXTENSION then
+          FileName := dmCollection.tblBooksFileName.Value + dmCollection.tblBooksExt.Value
+        else
+          FileName := dmCollection.tblBooksFileName.Value;
+
+        if not FileExists(FRootPath + Folder + FileName)  then
+        begin
+          NewFolder := FindNewFolder(FileName + ' ' + dmCollection.tblBooksSize.AsString);
+          if NewFolder <> '*' then
+          begin
+            dmCollection.tblBooks.Edit;
+            dmCollection.tblBooksFolder.Value := NewFolder;
+            dmCollection.tblBooks.Post;
+          end;
+        end;
+        dmCollection.tblBooks.Next;
+
+        Inc(processedBooks);
+        if (processedBooks mod ProcessedItemThreshold) = 0 then
+            SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
+        SetProgress(processedBooks * 100 div totalBooks);
+      end;
+      SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
+    finally
+      FList.Free;
     end;
-    SetComment(Format('Обработано книг: %u из %u', [processedBooks, totalBooks]));
   finally
     FFiles.Free;
-    FList.Free;
   end;
 end;
 
