@@ -42,8 +42,6 @@ uses
   RzCommon,
   RzLabel,
   RzListVw,
-  unit_Readers,
-  unit_Scripts,
   RzSelDir,
   ImgList;
 
@@ -215,9 +213,10 @@ implementation
 
 uses
   StrUtils,
-  unit_globals,
+  unit_Globals,
+  unit_Readers,
+  unit_Scripts,
   frm_edit_reader,
-  frm_main,
   frm_edit_script,
   unit_Settings,
   unit_Helpers,
@@ -231,9 +230,6 @@ procedure TfrmSettings.edDeviceDirButtonClick(Sender: TObject);
 var
   AFolder: string;
 begin
-//  dlgSelectDir.Directory := (Sender as TRzButtonEdit).Text;
-//  if dlgSelectDir.Execute then
-//    (Sender as TRzButtonEdit).Text := dlgSelectDir.Directory;
   AFolder := (Sender as TRzButtonEdit).Text;
   if GetFolderName(Handle, 'Укажите папку', AFolder) then
     (Sender as TRzButtonEdit).Text := AFolder;

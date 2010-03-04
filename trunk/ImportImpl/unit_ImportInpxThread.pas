@@ -21,15 +21,10 @@ unit unit_ImportInpxThread;
 interface
 
 uses
-  Classes,
-  SysUtils,
-  StrUtils,
   unit_WorkerThread,
-  unit_MHL_xml,
   unit_globals;
 
 type
-
   TFields = (
     flNone,
     flAuthor,
@@ -91,6 +86,8 @@ type
 implementation
 
 uses
+  Classes,
+  SysUtils,
   unit_database,
   unit_Settings,
   unit_Consts,

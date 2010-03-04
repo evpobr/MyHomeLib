@@ -15,8 +15,19 @@ unit frame_NCWCollectionFileTypes;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, frame_InteriorPageBase, StdCtrls, ExtCtrls, unit_StaticTip, unit_NCWParams;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  frame_InteriorPageBase,
+  StdCtrls,
+  ExtCtrls,
+  unit_StaticTip;
 
 type
   TframeNCWCollectionFileTypes = class(TInteriorPageBase)
@@ -41,7 +52,10 @@ resourcestring
    COLLECTIONTYPEANY = 'Книги в любом формате. Вы будете сами заполнять информацию о книге при добавлении ее в коллекцию. Вы также можете указать файл с описанием жанров на следующей странице.';
 
 implementation
-uses unit_Helpers, dm_user;
+
+uses
+  dm_user,
+  unit_NCWParams;
 
 {$R *.dfm}
 

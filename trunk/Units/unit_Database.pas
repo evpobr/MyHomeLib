@@ -20,13 +20,10 @@ interface
 
 uses
   DB,
-  DBTables,
   Classes,
   Variants,
-  SysUtils,
   ABSMain,
-  unit_Globals,
-  unit_Consts;
+  unit_Globals;
 
 type
   TABSTableHelper = class helper for TABSTable
@@ -98,8 +95,9 @@ type
 implementation
 
 uses
-  StrUtils,
-  bdeconst;
+  SysUtils,
+  bdeconst,
+  unit_Consts;
 
 const
   TEMP_DATABASE = 'TempDB';

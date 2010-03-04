@@ -72,7 +72,6 @@ implementation
 
 uses
   dm_collection,
-  unit_database,
   dm_user,
   frm_genre_tree,
   unit_globals,

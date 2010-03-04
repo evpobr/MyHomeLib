@@ -17,9 +17,23 @@ unit frame_NCWDownload;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, frame_InteriorPageBase, StdCtrls, ExtCtrls, ComCtrls,
-  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP;
+  Windows,
+  Messages,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  frame_InteriorPageBase,
+  StdCtrls,
+  ExtCtrls,
+  ComCtrls,
+  IdBaseComponent,
+  IdComponent,
+  IdTCPConnection,
+  IdTCPClient,
+  IdHTTP;
 
 type
   TframeNCWDownload = class(TInteriorPageBase)
@@ -50,8 +64,8 @@ var
 implementation
 
 uses
+  SysUtils,
   DateUtils,
-  unit_Settings,
   unit_NCWParams,
   frm_NCWizard;
 

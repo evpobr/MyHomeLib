@@ -41,8 +41,6 @@ implementation
 uses
   dm_user,
   dm_collection,
-  unit_globals,
-  unit_database,
   unit_Consts;
 
 { TImportXMLThread }

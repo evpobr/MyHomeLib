@@ -107,30 +107,27 @@ const
 
   strSizes: array [0 .. 3] of string = ('GB', 'MB', 'KB', 'Bytes');
 var
-  c1: Integer;
+  c1: Extended;
   c2: Integer;
   nIndex: Integer;
   strSz: string;
+  eSize: Extended;
 begin
-  c1 := 0;
-  c2 := 0;
-  nIndex := -1;
-
   if (sizeInBytes div GIGABYTE) <> 0 then
   begin
-    c1 := sizeInBytes div GIGABYTE;
+    c1 := sizeInBytes / GIGABYTE;
     c2 := (sizeInBytes mod GIGABYTE * 10) div GIGABYTE;
     nIndex := 0;
   end
   else if (sizeInBytes div MEGABYTE) <> 0 then
   begin
-    c1 := sizeInBytes div MEGABYTE;
+    c1 := sizeInBytes / MEGABYTE;
     c2 := (sizeInBytes mod MEGABYTE * 10) div MEGABYTE;
     nIndex := 1;
   end
   else if (sizeInBytes div KILOBYTE) <> 0 then
   begin
-    c1 := sizeInBytes div KILOBYTE;
+    c1 := sizeInBytes / KILOBYTE;
     c2 := (sizeInBytes mod KILOBYTE * 10) div KILOBYTE;
     nIndex := 2;
   end
@@ -141,15 +138,18 @@ begin
     nIndex := 3;
   end;
 
-  // ASSERT(-1 != nIndex && (size_t)nIndex < NR_ELEMENTS(strSizes));
+  Assert((Low(strSizes) <= nIndex) and (nIndex <= High(strSizes)));
 
   if c2 = 0 then
-    strSz := Format('%u', [c1])
+    strSz := Format('%.0n', [c1])
   else
-    strSz := Format('%u.%u', [c1, c2]);
+    strSz := Format('%.1n', [c1]);
 
   if (nIndex < 3) and showBytes then
-    Result := Format('%s %s (%u Bytes)', [strSz, strSizes[nIndex], sizeInBytes])  { TODO : форматировать байты с разделением на группы }
+  begin
+    eSize := sizeInBytes;
+    Result := Format('%s %s (%.0n Bytes)', [strSz, strSizes[nIndex], eSize])
+  end
   else
     Result := Format('%s %s', [strSz, strSizes[nIndex]]);
 end;

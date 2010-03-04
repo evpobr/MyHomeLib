@@ -15,9 +15,6 @@ unit unit_ImportFB2ZIPThread;
 interface
 
 uses
-  Classes,
-  SysUtils,
-  unit_WorkerThread,
   unit_ImportFB2ThreadBase,
   ZipForge,
   unit_globals;
@@ -40,7 +37,9 @@ type
 implementation
 
 uses
-  unit_Helpers,
+  Classes,
+  SysUtils,
+  unit_WorkerThread,
   unit_Consts,
   unit_Settings,
   fictionbook_21;
@@ -50,7 +49,6 @@ uses
 procedure TImportFB2ZIPThread.SortFiles(var R: TBookRecord);
 var
   Filename, NewFilename, NewFolder: string;
-  Ext : string;
   F: TZfArchiveItem;
 begin
   FileName := ExtractFileName(R.Folder);

@@ -18,17 +18,15 @@ uses
   Buttons,
   ExtCtrls,
   RzPanel,
-  fictionbook_21,
   dm_Collection,
   unit_Globals,
-  XMLDoc,
   ImgList,
   RzButton,
   xmldom,
-  FBDDocument, FBDAuthorTable;
+  FBDDocument,
+  FBDAuthorTable;
 
 type
-
   TfrmConvertToFBD = class(TForm)
     RzPanel1: TRzPanel;
     RzPanel2: TRzPanel;
@@ -102,7 +100,6 @@ uses
   unit_Helpers,
   ActiveX,
   ComObj,
-  unit_Consts,
   Dialogs;
 
 {$R *.dfm}

@@ -20,11 +20,8 @@ interface
 
 uses
   Classes,
-  Graphics,
   SysUtils,
   ABSMain,
-  StrUtils,
-  Dialogs,
   VirtualTrees,
   IdHTTP,
   ZipForge;
@@ -318,12 +315,10 @@ implementation
 uses
   Forms,
   Windows,
+  StrUtils,
   unit_Settings,
   unit_Consts,
-  idException,
-  idStack,
   ShlObj,
-  frm_main,
   unit_fb2ToText;
 
 const

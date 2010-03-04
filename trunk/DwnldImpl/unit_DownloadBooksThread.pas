@@ -15,7 +15,6 @@ interface
 
 uses
   Classes,
-  SysUtils,
   unit_WorkerThread,
   unit_globals,
   Dialogs,
@@ -23,7 +22,6 @@ uses
   unit_Downloader;
 
 type
-
   TProgressEvent2 = procedure(Current, Total: Integer) of object;
   TSetCommentEvent2 = procedure(const Current, Total: string) of object;
 
@@ -66,10 +64,8 @@ implementation
 
 uses
   Windows,
+  SysUtils,
   dm_user,
-  dm_collection,
-  unit_database,
-  unit_Consts,
   unit_Settings,
   frm_main;
 

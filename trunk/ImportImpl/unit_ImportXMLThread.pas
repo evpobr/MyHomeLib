@@ -16,7 +16,6 @@ interface
 
 uses
   Classes,
-  SysUtils,
   unit_WorkerThread,
   unit_globals,
   unit_MHL_xml;
@@ -45,10 +44,9 @@ type
 implementation
 
 uses
+  SysUtils,
   Windows,
-  dm_user,
-  unit_database,
-  unit_Consts;
+  unit_database;
 
 resourcestring
   rstrOpeningXMLFileMsg = 'Читаем файл. Пожалуйста, подожите...';

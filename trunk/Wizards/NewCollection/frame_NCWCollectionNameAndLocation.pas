@@ -57,14 +57,14 @@ resourcestring
   SHOWCOLLECTIONFILE = 'Укажите файл коллекции.';
   SHOWCOLLECTIONFOLDER = 'Укажите расположение папки с книгами.';
   SELECTFOLDER = 'Выберите папку с книгами';
+
 implementation
 
 uses
   unit_Helpers,
   unit_NCWParams,
-  dm_user, DB,
+  dm_user,
   unit_Errors,
-  unit_mhl_strings,
   unit_settings,
   unit_Consts,
   unit_Globals,

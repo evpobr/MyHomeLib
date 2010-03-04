@@ -23,7 +23,6 @@ uses
   SysUtils;
 
 type
-
   TReaderDesc = class(TCollectionItem)
   private
     FExtension: string;
@@ -61,12 +60,9 @@ uses
   Forms,
   ShellAPI,
   unit_Errors,
-  unit_Settings,
-  unit_Consts,
   unit_Globals;
 
 { TReaderC }
-
 
 procedure TReaderDesc.AssignTo(Dest: TPersistent);
 begin

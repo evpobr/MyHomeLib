@@ -15,8 +15,17 @@ unit frame_NCWFinish;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, frame_WizardPageBase, frame_DecorativePageBase, StdCtrls, ExtCtrls;
+  Windows,
+  Messages,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  frame_WizardPageBase,
+  frame_DecorativePageBase,
+  StdCtrls, ExtCtrls;
 
 type
   TframeNCWFinish = class(TDecorativePageBase)

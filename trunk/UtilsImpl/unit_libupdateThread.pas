@@ -1,19 +1,14 @@
 unit unit_libupdateThread;
+
 interface
 
 uses
   Classes,
   SysUtils,
   unit_ImportInpxThread,
-  unit_Globals,
-  Dialogs,
   ABSMain,
   IdHTTP,
-  Forms,
-  IdComponent,
-  IdHTTPHeaderInfo;
-
-
+  IdComponent;
 
 type
 
@@ -63,13 +58,13 @@ implementation
 
 uses
   DateUtils,
+  unit_Globals,
   dm_collection,
   dm_user,
   unit_Consts,
   unit_Settings,
   unit_WorkerThread,
-  unit_Database,
-  StrUtils;
+  unit_Database;
 
 { TDownloadBooksThread }
 
