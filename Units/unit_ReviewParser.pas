@@ -40,6 +40,7 @@ type
 implementation
 
 uses
+  SysUtils,
   unit_Globals;
 
 constructor TReviewParser.Create;
@@ -104,16 +105,15 @@ begin
       FidHTTP.Get(url, outputStream);
 
       outputStream.Position := 0;
-      responseList.LoadFromStream(outputStream);
+      responseList.LoadFromStream(outputStream, TEncoding.UTF8);
 
       if responseList.Count > 0 then
-        { TODO -oNickR -cBug : MEMLEAK GetText распределяет новую строку }
-        Result := UTF8ToString(responseList.GetText());
+        Result := responseList.Text;
     finally
-      outputStream.Free();
+      outputStream.Free;
     end;
   finally
-    responseList.Free();
+    responseList.Free;
   end;
 end;
 
