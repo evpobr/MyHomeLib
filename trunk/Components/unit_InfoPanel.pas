@@ -17,14 +17,13 @@ uses
   ExtCtrls,
   StdCtrls,
   Graphics,
+  Messages,
   RzBorder,
   RzCommon;
 
 type
-
   TMHLInfoPanel = class(TPanel)
   private
-
     FAuthor : TLabel;
     FTitle  : TLabel;
     FGenre  : Tlabel;
@@ -49,24 +48,105 @@ type
 
     procedure Set_FileInfoVisible(Value: boolean);
 
-
-    { Private declarations }
   protected
-    { Protected declarations }
 
   public
     constructor Create(AOwner: TComponent); override;
     procedure Clear;
+
+    procedure Translate(Lang: Integer);
+
   published
-    property Author: string read GetAuthor write SetAuthor;
     property Title: string read GetTitle write SetTitle;
+    property Author: string read GetAuthor write SetAuthor;
     property Genre: string read GetGenre write SetGenre;
     property Folder: string read GetFolder write SetFolder;
     property FileName: string read GetFileName write SetFileName;
-    procedure Translate(Lang: integer);
-    property HideFileInfo: boolean write Set_FileInfoVisible;
+    property HideFileInfo: Boolean write Set_FileInfoVisible;
   end;
 
+  TMHLInfoPanel2 = class(TCustomPanel)
+  const
+    RowCount = 4;
+    DefPadding = 3;
+
+  type
+    TField = (ifTitle, ifAuthors, ifSeries, ifGenres);
+
+  strict private
+    FLabels: array [0 .. RowCount - 1] of TLabel;
+    FValues: array [0 .. RowCount - 1] of TLinkLabel;
+
+    procedure ArrangeControls;
+
+  private
+    FControlPadding: Integer;
+    procedure SetControlPadding(const Value: Integer);
+
+    procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
+    function GetField(const Index: Integer): string;
+    procedure SetField(const Index: Integer; const Value: string);
+    procedure SetOnLinkClick(const Index: Integer; const Value: TSysLinkEvent);
+    function GetOnLinkClick(const Index: Integer): TSysLinkEvent;
+
+  public
+    constructor Create(AOwner: TComponent); override;
+
+  published
+    property Align;
+    //property Alignment;
+    property Anchors;
+    property AutoSize;
+    property BevelEdges;
+    property BevelInner;
+    property BevelKind;
+    property BevelOuter default bvNone;
+    property BevelWidth;
+    property BiDiMode;
+    property BorderWidth;
+    property BorderStyle;
+    //property Caption;
+    property Color;
+    property Constraints;
+    property Ctl3D;
+    property UseDockManager default True;
+    property DockSite;
+    property DoubleBuffered;
+    property DragCursor;
+    property DragKind;
+    property DragMode;
+    property Enabled;
+    //property FullRepaint;
+    property Font;
+    property Locked;
+    //property Padding;
+    property ParentBiDiMode;
+    property ParentBackground;
+    property ParentColor;
+    property ParentCtl3D;
+    property ParentDoubleBuffered;
+    property ParentFont;
+    property ParentShowHint;
+    //property PopupMenu;
+    //property ShowCaption;
+    property ShowHint;
+    property TabOrder;
+    property TabStop;
+    property Touch;
+    //property VerticalAlignment;
+    property Visible;
+
+    property ControlPadding: Integer read FControlPadding write SetControlPadding default DefPadding;
+
+    property Title: string index ifTitle read GetField write SetField;
+    property Authors: string index ifAuthors read GetField write SetField;
+    property Series: string index ifSeries read GetField write SetField;
+    property Genres: string index ifGenres read GetField write SetField;
+
+    property OnAuthorsLinkClick: TSysLinkEvent index ifAuthors read GetOnLinkClick write SetOnLinkClick;
+    property OnSeriesLinkClick: TSysLinkEvent index ifSeries read GetOnLinkClick write SetOnLinkClick;
+    property OnGenresLinkClick: TSysLinkEvent index ifGenres read GetOnLinkClick write SetOnLinkClick;
+  end;
 
 implementation
 
@@ -240,6 +320,116 @@ begin
   case Lang of
     $409:(Components[i] as TLabel).Caption := ENG[Components[i].Tag];
     $419:(Components[i] as TLabel).Caption := RUS[Components[i].Tag];
+  end;
+end;
+
+{ TInfoPanel2 }
+
+resourcestring
+  rstrTitle = 'Название';
+  rstrAuthors = 'Автор(ы)';
+  rstrSeries = 'Серия';
+  rstrGenres = 'Жанр(ы)';
+
+const
+  DEF_Captions: array [0 .. TMHLInfoPanel2.RowCount - 1] of string = (
+    rstrTitle, rstrAuthors, rstrSeries, rstrGenres
+  );
+
+constructor TMHLInfoPanel2.Create(AOwner: TComponent);
+var
+  i: Integer;
+begin
+  inherited Create(AOwner);
+
+  BevelOuter := bvNone;
+  ShowCaption := False;
+  FullRepaint := False;
+
+  FControlPadding := DefPadding;
+
+  for i := 0 to RowCount - 1 do
+  begin
+    FLabels[i] := TLabel.Create(Self);
+    FLabels[i].Parent := Self;
+    FLabels[i].Caption := DEF_Captions[i];
+    FLabels[i].Font.Style := [fsBold];
+
+    FValues[i] := TLinkLabel.Create(Self);
+    FValues[i].Parent := Self;
+    FValues[i].Caption := DEF_Captions[i];
+    FValues[i].TabOrder := i;
+    FValues[i].UseVisualStyle := True;
+  end;
+
+  ArrangeControls;
+end;
+
+procedure TMHLInfoPanel2.ArrangeControls;
+var
+  i: Integer;
+  maxW, maxH: Integer;
+begin
+  maxW := 0;
+  maxH := 0;
+
+  for i := 0 to RowCount - 1 do
+  begin
+    if FLabels[i].Width > maxW then
+      maxW := FLabels[i].Width;
+    if FLabels[i].Height > maxH then
+      maxH := FLabels[i].Height;
+  end;
+
+  for i := 0 to RowCount - 1 do
+  begin
+    FLabels[i].Left := FControlPadding;
+    FLabels[i].Top := FControlPadding * (i + 1) + maxH * i;
+
+    FValues[i].Left := FControlPadding * 2 + maxW;
+    FValues[i].Top := FLabels[i].Top;
+  end;
+end;
+
+procedure TMHLInfoPanel2.CMFontChanged(var Message: TMessage);
+var
+  i: Integer;
+begin
+  inherited;
+  for i := 0 to RowCount - 1 do
+  begin
+    FLabels[i].Font := Font;
+    FLabels[i].Font.Style := [fsBold];
+  end;
+  ArrangeControls;
+end;
+
+function TMHLInfoPanel2.GetField(const Index: Integer): string;
+begin
+  Result := FValues[Index].Caption;
+end;
+
+procedure TMHLInfoPanel2.SetField(const Index: Integer; const Value: string);
+begin
+  FValues[Index].Caption := Value;
+end;
+
+function TMHLInfoPanel2.GetOnLinkClick(const Index: Integer): TSysLinkEvent;
+begin
+  Result := FValues[Index].OnLinkClick;
+end;
+
+procedure TMHLInfoPanel2.SetOnLinkClick(const Index: Integer; const Value: TSysLinkEvent);
+begin
+  FValues[Index].OnLinkClick := Value;
+end;
+
+procedure TMHLInfoPanel2.SetControlPadding(const Value: Integer);
+begin
+  if FControlPadding <> Value then
+  begin
+    FControlPadding := Value;
+    ArrangeControls;
   end;
 end;
 
