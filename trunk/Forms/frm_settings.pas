@@ -241,7 +241,7 @@ var
 begin
   s := edFileNameTemplate.Text;
   if EditTemplate(TpFile, s) then
-    edFileNameTemplate.Text := edFileNameTemplate.Text;
+    edFileNameTemplate.Text := s;
 end;
 
 procedure TfrmSettings.edFolderTemplateButtonClick(Sender: TObject);
@@ -259,7 +259,7 @@ var
 begin
   s := beTemplate.Text;
   if EditTemplate(TpText, s) then
-      beTemplate.Text := s;
+    beTemplate.Text := s;
 end;
 
 procedure TfrmSettings.LoadSetting;
