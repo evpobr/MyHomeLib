@@ -92,6 +92,8 @@ type
   public
     constructor Create(AOwner: TComponent); override;
 
+    procedure Clear;
+
   published
     property Align;
     //property Alignment;
@@ -357,7 +359,6 @@ begin
 
     FValues[i] := TLinkLabel.Create(Self);
     FValues[i].Parent := Self;
-    FValues[i].Caption := DEF_Captions[i];
     FValues[i].TabOrder := i;
     FValues[i].UseVisualStyle := True;
   end;
@@ -406,12 +407,21 @@ end;
 
 function TMHLInfoPanel2.GetField(const Index: Integer): string;
 begin
-  Result := FValues[Index].Caption;
+  if FValues[Index].Caption = ' ' then
+    Result := ''
+  else
+    Result := FValues[Index].Caption;
 end;
 
 procedure TMHLInfoPanel2.SetField(const Index: Integer; const Value: string);
+var
+  newValue: string;
 begin
-  FValues[Index].Caption := Value;
+  newValue := Trim(Value);
+  if newValue = '' then
+    FValues[Index].Caption := ' '
+  else
+    FValues[Index].Caption := newValue;
 end;
 
 function TMHLInfoPanel2.GetOnLinkClick(const Index: Integer): TSysLinkEvent;
@@ -431,6 +441,14 @@ begin
     FControlPadding := Value;
     ArrangeControls;
   end;
+end;
+
+procedure TMHLInfoPanel2.Clear;
+var
+  i: Integer;
+begin
+  for i := 0 to RowCount - 1 do
+    SetField(i, '');
 end;
 
 end.

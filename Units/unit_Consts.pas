@@ -153,8 +153,10 @@ const
   // Ќекоторые (чаще всего используемые) имена полей
   //
   ID_FIELD = 'ID';
+  BOOK_ID_FIELD = 'BookID';
   AUTHOR_ID_FIELD = 'A_ID';
   LIB_ID_FIELD = 'LibID';
+  DB_ID_FIELD = 'DatabaseID';
   FOLDER_FIELD = 'Folder';
   FILENAME_FIELD = 'FileName';
 

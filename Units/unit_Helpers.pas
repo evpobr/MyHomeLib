@@ -74,6 +74,20 @@ function GetFolderName(Handle: Integer; const Caption: string; var strFolder: st
 
 function CreateImageFromResource(GraphicClass: TGraphicClass; const ResName: string; ResType: PChar = RT_RCDATA): TGraphic;
 
+//
+// возможо, это не лучшее место для следующих функций.
+// TODO : вынести эти функции в отдельный модуль
+//
+
+type
+  TConversion<T> = reference to function(const items: T): string;
+
+  TArrayUtils = class
+  public
+    class function Join<T>(const Values: array of T; const itemDelimeter: string; const Converter: TConversion<T>): string;
+  end;
+
+
 implementation
 
 uses
@@ -413,6 +427,28 @@ begin
     Result.LoadFromStream(s);
   finally
     s.Free;
+  end;
+end;
+
+{ TArrayUtils }
+
+class function TArrayUtils.Join<T>(const Values: array of T; const itemDelimeter: string; const Converter: TConversion<T>): string;
+var
+  i, L, R: Integer;
+begin
+  if Length(Values) = 0 then
+    Exit;
+
+  L := Low(Values);
+  R := High(Values);
+
+  Result := Converter(Values[L]);
+  Inc(L);
+
+  while L <= R do
+  begin
+    Result := Result + itemDelimeter + Converter(Values[L]);
+    Inc(L);
   end;
 end;
 
