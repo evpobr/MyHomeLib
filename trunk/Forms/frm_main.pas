@@ -705,7 +705,7 @@ type
     procedure SaveFb2DataAfterEdit(R: TBookRecord);
     function ShowNCWizard: Boolean;
     procedure LoadLastCollection;
-    function ExtractBookToStream(const CR: string; var Table: TAbsTable; var FS: TMemoryStream): Boolean;
+    procedure ExtractBookToStream(const bookContainer: string; Table: TAbsTable; var FS: TMemoryStream);
     property ActiveView: TView read GetActiveView;
   end;
 
@@ -726,6 +726,7 @@ implementation
 uses
   StrUtils,
   DateUtils,
+  IOUtils,
   dm_collection,
   dm_user,
   unit_Columns,
@@ -1252,23 +1253,23 @@ end;
 
 procedure TfrmMain.btnClearFilterEditsClick(Sender: TObject);
 begin
-  edFFullName.text := '';
-  edFSeries.text := '';
-  edFTitle.text := '';
-  edFGenre.text := '';
+  edFFullName.Text := '';
+  edFSeries.Text := '';
+  edFTitle.Text := '';
+  edFGenre.Text := '';
   edFGenre.Hint := '';
-  edFFile.text := '';
-  edFFolder.text := '';
-  edFExt.text := '';
-  edFAnnotation.text := '';
+  edFFile.Text := '';
+  edFFolder.Text := '';
+  edFExt.Text := '';
+  edFAnnotation.Text := '';
 
-  cbDate.text := '';
+  cbDate.Text := '';
   cbDate.ItemIndex := -1;
 
-  cbPresetName.text := '';
+  cbPresetName.Text := '';
   cbDeleted.Checked := False;
-  cbLang.text := '';
-  edFKeyWords.text := '';
+  cbLang.Text := '';
+  edFKeyWords.Text := '';
   cbDownloaded.ItemIndex := 0;
   tvBooksSR.Clear;
   ClearLabels(PAGE_SEARCH, True);
@@ -2746,6 +2747,9 @@ begin
 
   if Data.nodeType <> ntBookInfo then
   begin
+    //
+    // TODO : Может стоит показывать какую-нибудь информацию и в этом случае?
+    //
     ClearLabels(Tree.tag, False);
     Exit;
   end;
@@ -2767,30 +2771,30 @@ begin
       InfoPanel.Folder := FCollectionRoot
     else
       InfoPanel.Folder := FCollectionRoot + Folder
-  end
-  else
-  begin
+      end
+    else
+    begin
     InfoPanel.Folder := Folder;
     InfoPanel.Author := Data.FullName;
-  end;
+    end;
 
   CoverOK := Cover.Show(InfoPanel.Folder, InfoPanel.FileName, No);
 
   if CoverOK and IsPrivate and IsNonFB2 then
-  begin
+      begin
     miConverToFBD.Visible := True;
     miConverToFBD.tag := 999;
     miConverToFBD.Caption := 'Редактировать FBD';
     if frmConvertToFBD <> nil then
-    begin
+  begin
       frmConvertToFBD.EditorMode := True;
       frmConvertToFBD.Caption := 'Редактирование FBD';
-    end;
+  end;
   end
   else if not CoverOK and IsPrivate and IsNonFB2 then
   begin
     miConverToFBD.Visible := True;
-    miConverToFBD.tag := 0;
+      miConverToFBD.Tag := 0;
     miConverToFBD.Caption := 'Преобразовать FBD';
     if frmConvertToFBD <> nil then
     begin
@@ -2798,6 +2802,7 @@ begin
       frmConvertToFBD.Caption := 'Преобразование в FBD';
     end;
   end;
+
   Application.ProcessMessages;
 end;
 
@@ -3426,13 +3431,14 @@ var
 
 begin
   GetActiveViewComponents(Tree, Panel, Cover);
+
   Data := Tree.GetNodeData(Tree.GetFirstSelected);
   if (not Assigned(Data)) then
     Exit;
 
   if Data.nodeType <> ntBookInfo then
   begin
-    ClearLabels(Tree.tag, True);
+    ClearLabels(Tree.Tag, True);
     Exit;
   end;
 
@@ -3460,7 +3466,6 @@ begin
           DownloadBooks;
           if not FileExists(Panel.Folder) then
             Exit; // если файла нет, значит закачка не удалась, и юзер об  этом уже знает
-
         end;
         ID := Data.ID;
       end; // if .. else
@@ -3855,7 +3860,7 @@ begin
               // это относится ко всем последующим проверкам
               if Tree.tag = 4 then
               begin
-                if DMUser.ActivateCollection(TableB.FieldByName('DatabaseId').AsInteger) then
+                if DMUser.ActivateCollection(TableB.FieldByName(DB_ID_FIELD).AsInteger) then
                   CollectionName := DMUser.ActiveCollection.name
                 else
                   CollectionName := 'неизвестная коллекция';
@@ -5446,78 +5451,114 @@ procedure TfrmMain.miActiveCollectionClick(Sender: TObject);
 var
   i: Integer;
 begin
-  i := (Sender as TMenuItem).tag;
+  i := (Sender as TMenuItem).Tag;
   if DMUser.ActivateCollection(i) then
-  begin (Sender as TMenuItem)
-    .Checked := True;
+  begin
+    (Sender as TMenuItem).Checked := True;
     Settings.ActiveCollection := i;
     InitCollection(True);
   end;
 end;
 
-function TfrmMain.ExtractBookToStream(const CR: string; var Table: TAbsTable; var FS: TMemoryStream): Boolean;
+procedure TfrmMain.ExtractBookToStream(const bookContainer: string; Table: TAbsTable; var FS: TMemoryStream);
 var
+  pathLen: Integer;
+  fileName: string;
   Zip: TZipForge;
   F: TZFArchiveItem;
 begin
-  Result := False;
+  pathLen := Length(bookContainer);
 
-  if not FileExists(CR) then
+  if
+    (pathLen = 0) or                                              // а вот эту строчку я вообще не понимаю :(
+    (bookContainer[pathLen] = TPath.DirectorySeparatorChar) or
+    (bookContainer[pathLen] = TPath.AltDirectorySeparatorChar) then
   begin
-    if IsLocal then
-      ShowMessage('Архив ' + CR + ' не найден!');
+    fileName := bookContainer + Table.FieldByName(FILENAME_FIELD).AsWideString;
+
+    if ExtractFileExt(fileName) = ZIP_EXTENSION then // fbd
+    begin
+      //
+      // ZIP-ы рассматриваются как контейнеры для fbd
+      //
+      if not FileExists(fileName) then
+      begin
+        if IsLocal then
+          raise Exception.CreateFmt('Архив "%s" не найден!', [fileName]);
+        Exit;
+      end;
+
+      Zip := TZipForge.Create(Self);
+      try
+        Zip.FileName := fileName;
+        Zip.OpenArchive;
+        if Zip.FindFirst('*.fbd', F) then
+        begin
+          Zip.ExtractToStream(F.FileName, FS);
+        end
+        else
+        begin
+          raise Exception.CreateFmt('В архиве "%s" не найдено описание книги!', [fileName]);
+        end;
+        Zip.CloseArchive;
+
+        Exit;
+      finally
+        Zip.Free;
+      end;
+    end;
+
+    //
+    // просто файл. в этом случае рассширение хранится отдельно
+    //
+    fileName := FileName + Table.FieldByName('Ext').AsWideString;
+    if not FileExists(fileName) then
+    begin
+      if IsLocal then
+        raise Exception.CreateFmt('Файл "%s" не найден!', [fileName]);
+      Exit;
+    end;
+
+    //
+    // В настоящее время мы не можем получать никакую информацию из "сырого" файла. Т ч и читать ничего не будем
+    //
+    ///FS.LoadFromFile(fileName);
     Exit;
   end;
 
-  if ExtractFileExt(CR) = ZIP_EXTENSION then
+  if ExtractFileExt(bookContainer) = ZIP_EXTENSION then
   begin
+    //
+    // Книга находится внутри архива. Предполагается, что это fb2
+    //
+    if not FileExists(bookContainer) then
+    begin
+      if IsLocal then
+        raise Exception.CreateFmt('Архив "%s" не найден!', [bookContainer]);
+      Exit;
+    end;
+
     Zip := TZipForge.Create(self);
     try
-      Zip.FileName := CR;
+      Zip.FileName := bookContainer;
       Zip.OpenArchive;
-      Zip.ExtractToStream(GetFileNameZip(Zip, Table['InsideNo']), FS);
+      Zip.ExtractToStream(GetFileNameZip(Zip, Table.FieldByName('InsideNo').AsInteger), FS);
       Zip.CloseArchive;
-
-      Result := True;
     finally
       Zip.Free;
     end;
-  end
-  else if ExtractFileExt(Table[FILENAME_FIELD]) = ZIP_EXTENSION then // fbd
-  begin
-    Zip := TZipForge.Create(self);
-    try
-      Zip.FileName := CR + Table[FILENAME_FIELD];
-      Zip.OpenArchive;
-      Zip.FindFirst('*.fbd', F);
-      Zip.ExtractToStream(F.FileName, FS);
-      Zip.CloseArchive;
-
-      Result := True;
-    finally
-      Zip.Free;
-    end;
-  end
-  else
-  begin
-    //
-    // просто файл
-    //
-    FS.LoadFromFile(CR + Table[FILENAME_FIELD] + Table['Ext']);
-
-    Result := True;
   end;
 end;
 
 procedure TfrmMain.pmiBookInfoClick(Sender: TObject);
 var
   Tree: TVirtualStringTree;
-  CR: string;
+  bookContainer: string;
   Data: PBookData;
   Table, Extra: TAbsTable;
   frmBookDetails: TfrmBookDetails;
 
-  FS: TMemoryStream;
+  bookStream: TMemoryStream;
   ReviewEditable: Boolean;
 
   URL: string;
@@ -5533,7 +5574,7 @@ begin
   if not Assigned(Tree.FocusedNode) then
     Exit;
 
-  Table := GetActiveBookTable(Tree.tag);
+  Table := GetActiveBookTable(Tree.Tag);
   Data := Tree.GetNodeData(Tree.FocusedNode);
 
   if not Assigned(Data) or (Data.nodeType <> ntBookInfo) or Table.IsEmpty then
@@ -5545,57 +5586,66 @@ begin
     dmCollection.GetCurrentBook(R);
 
     { TODO -oNickR -cLibDesc : этот URL должен формироваться обвязкой библиотеки, т к его формат может меняться }
+    { TODO : странно, URL формируется даже для локальных коллекций }
     if DMUser.ActiveCollection.URL <> '' then
       URL := Format('%sb/%d/', [DMUser.ActiveCollection.URL, Table.FieldByName(LIB_ID_FIELD).AsInteger])
     else
       URL := Format('%sb/%d/', [Settings.InpxURL, Table.FieldByName(LIB_ID_FIELD).AsInteger]);
 
-    ReviewEditable := True;
+    //
+    // ревью можно изменять только для книг из текущей коллекции
+    //
+    ReviewEditable :=
+      (ActiveView = FavoritesView) or
+      (Table.FieldByName(DB_ID_FIELD).AsInteger = DMUser.ActiveCollection.ID);
 
     if ActiveView = FavoritesView then
     begin
       Extra := DMUser.tblExtra;
-      CR := GetFullBookPath(Table, '');
-
-      ReviewEditable := (Table['DatabaseID'] = DMUser.ActiveCollection.ID);
+      bookContainer := GetFullBookPath(Table, '');
     end
     else
     begin
       Extra := dmCollection.tblExtra;
-      CR := GetFullBookPath(Table, FCollectionRoot);
+      bookContainer := GetFullBookPath(Table, FCollectionRoot);
     end;
 
     frmBookDetails := TfrmBookDetails.Create(Application);
     try
-      // frmBookDetails.Book := R;
-      frmBookDetails.mmReview.readonly := not ReviewEditable;
-
-      FS := TMemoryStream.Create;
+      //
+      // загрузим книгу в стрим и отдадим его форме для чтения из него информации
+      // сейчас мы грузим только fb2 или fbd, т к больше ничего разбирать не умеем
+      //
+      bookStream := TMemoryStream.Create;
       try
-        { TODO -oNickR -cRefactoring : не очень удачный прототип функции. Использование результата неочевидно }
-        if ExtractBookToStream(CR, Table, FS) then
-        begin
-          // frmBookDetails.tsInfo.TabVisible := True;
-          // frmBookDetails.RzPageControl1.ActivePageIndex := 0;
-          frmBookDetails.FillBookInfo(R, FS);
-          { TODO -oNickR : восстановить этот код }
-          // frmBookDetails.mmInfo.Lines.Add('Добавлено: ' + Table.FieldByName('Date').AsString);
-        end
-        else
-        begin
-          // frmBookDetails.tsInfo.TabVisible := False;
-          // frmBookDetails.tsReview.TabVisible := False;
-          // frmBookDetails.RzPageControl1.ActivePageIndex := 1;
-          frmBookDetails.FillBookInfo(R, nil);
+        try
+          ExtractBookToStream(bookContainer, Table, bookStream);
+          frmBookDetails.FillBookInfo(R, bookStream);
+        except
+          on e: Exception do
+          begin
+            //
+            // Скорее всего произошла ошибка при чтении файла (не найден, а должен был быть)
+            // или при парсинге книги (загрузили какую-то ерунду).
+            // Покажем сообщение об ощибке и загрузим только библиотечную информацию
+
+            //
+            // TODO : написать и использовать стандартную функцию для показа сообщений об ошибках
+            //
+            Application.ShowException(e);
+            frmBookDetails.FillBookInfo(R, nil);
+          end;
         end;
       finally
-        FS.Free;
+        bookStream.Free;
       end;
+
+      frmBookDetails.mmReview.ReadOnly := not ReviewEditable;
 
       if not IsPrivate and ReviewEditable then
         frmBookDetails.AllowOnlineReview(URL);
 
-      if Table['Code'] = 1 then
+      if Table.FieldByName('Code').AsInteger = 1 then
         frmBookDetails.Review := Extra.FieldByName('E_Review').AsWideString
       else if not IsPrivate and Settings.AutoLoadReview then
         DownloadReview(frmBookDetails, URL);
@@ -5614,7 +5664,7 @@ begin
     // обрабатываем рецензию
     //
     { TODO -oNickR -cRefactoring : хорошо бы вынести этот код куда-нибудь в более подходящее место }
-    case Table['Code'] of // сначала - основная таблица
+    case Table.FieldByName('Code').AsInteger of // сначала - основная таблица
       0:
         if (strReview <> '') then
         begin
@@ -5627,7 +5677,7 @@ begin
           Extra.Post;
 
           Table.Edit;
-          Table['Code'] := Table['Code'] or 1;
+          Table.FieldByName('Code').AsInteger := Table.FieldByName('Code').AsInteger or 1;
           Table.Post;
 
           Data.Code := 1;
@@ -5644,7 +5694,7 @@ begin
         else
         begin // рецензия была, а теперь ее нет
           Table.Edit;
-          Table['Code'] := 0;
+          Table.FieldByName('Code').AsInteger := 0;
           Table.Post;
           Extra.Delete;
         end;
@@ -5658,12 +5708,12 @@ begin
       if DMUser.tblGrouppedBooks.Locate('DataBaseID;OuterID;', VarArrayOf([DMUser.ActiveCollection.ID, Data.ID]), []) then
       begin
         DMUser.tblGrouppedBooks.Edit;
-        DMUser.tblGrouppedBooksCode.Value := Table['Code'];
+        DMUser.tblGrouppedBooksCode.Value := Table.FieldByName('Code').AsInteger;
         DMUser.tblGrouppedBooks.Post;
 
         if DMUser.tblExtra.Locate(ID_FIELD, DMUser.tblGrouppedBooksID.Value, []) then
         begin
-          case Table['Code'] of
+          case Table.FieldByName('Code').AsInteger of
             0:
               if DMUser.tblExtra.RecordCount <> 0 then
                 DMUser.tblExtra.Delete;
@@ -5676,7 +5726,7 @@ begin
               end;
           end
         end
-        else if Table['Code'] = 1 then
+        else if Table.FieldByName('Code').AsInteger = 1 then
         begin
           DMUser.tblExtra.Insert;
           // dmUser.tblExtraReview.Value := frmBookDetails.Review;
@@ -5687,14 +5737,14 @@ begin
     end
     else // если активная вкладка - группы, вносим изменения в коллекцию
     begin
-      dmCollection.tblBooks.Locate(ID_FIELD, Table['OuterID'], []);
+      dmCollection.tblBooks.Locate(ID_FIELD, Table.FieldByName('OuterID').AsInteger, []);
       dmCollection.tblBooks.Edit;
-      dmCollection.tblBooksCode.Value := Table['Code'];
+      dmCollection.tblBooksCode.Value := Table.FieldByName('Code').AsInteger;
       dmCollection.tblBooks.Post;
 
       if dmCollection.tblExtraE_Review <> nil then
       begin
-        case Table['Code'] of
+        case Table.FieldByName('Code').AsInteger of
           0:
             if dmCollection.tblExtra.RecordCount <> 0 then
               dmCollection.tblExtra.Delete;
@@ -5706,7 +5756,7 @@ begin
             end;
         end
       end
-      else if Table['Code'] = 1 then
+      else if Table.FieldByName('Code').AsInteger = 1 then
       begin
         dmCollection.tblExtra.Insert;
         dmCollection.tblExtraE_Review.Value := strReview;
@@ -5715,7 +5765,7 @@ begin
       FillAllBooksTree;
     end;
 
-    Data.Code := Table['Code'];
+    Data.Code := Table.FieldByName('Code').AsInteger;
     Tree.RepaintNode(Tree.FocusedNode);
   finally
     FFormBusy := False;
@@ -6061,7 +6111,6 @@ var
 begin
   SL := TStringList.Create;
   try
-
     // Группы
     SL.Add('# Группы');
     DMUser.tblGroupList.First;
@@ -6074,7 +6123,7 @@ begin
     // Рейтинги
 
     SL.Add('# Рейтинги');
-    DMUser.tblRates.Filter := 'DataBaseID =' + QuotedStr(IntToStr(DMUser.ActiveCollection.ID));
+    DMUser.tblRates.Filter := DB_ID_FIELD + '=' + QuotedStr(IntToStr(DMUser.ActiveCollection.ID));
     DMUser.tblRates.Filtered := True;
     DMUser.tblRates.First;
     while not DMUser.tblRates.Eof do
@@ -6093,7 +6142,7 @@ begin
     // Прочитанное
 
     SL.Add('# Прочитанное');
-    DMUser.tblFinished.Filter := 'DataBaseID =' + QuotedStr(IntToStr(DMUser.ActiveCollection.ID));
+    DMUser.tblFinished.Filter := DB_ID_FIELD + '=' + QuotedStr(IntToStr(DMUser.ActiveCollection.ID));
     DMUser.tblFinished.Filtered := True;
     DMUser.tblFinished.First;
     while not DMUser.tblFinished.Eof do
@@ -6117,7 +6166,7 @@ begin
     DMUser.tblGroupList.First;
     while not DMUser.tblGroupList.Eof do
     begin
-      DMUser.tblGrouppedBooks.Filter := 'DataBaseID =' + QuotedStr(IntToStr(DMUser.ActiveCollection.ID));
+      DMUser.tblGrouppedBooks.Filter := DB_ID_FIELD + '=' + QuotedStr(IntToStr(DMUser.ActiveCollection.ID));
       DMUser.tblGrouppedBooks.Filtered := True;
       DMUser.tblGrouppedBooks.First;
       while not DMUser.tblGrouppedBooks.Eof do

@@ -453,7 +453,8 @@ begin
       R.AddAuthor(
         tblAuthor_DetailA_Family.AsWideString,
         tblAuthor_DetailA_Name.AsWideString,
-        tblAuthor_DetailA_Middle.AsWideString
+        tblAuthor_DetailA_Middle.AsWideString,
+        tblAuthor_DetailA_ID.Value
       );
 
       tblAuthor_Master.Next;

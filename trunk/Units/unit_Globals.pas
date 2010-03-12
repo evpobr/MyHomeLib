@@ -149,12 +149,10 @@ procedure DebugOut(const DebugMessage: string; const Args: array of const ); ove
 
 procedure SetProxySettings(var IdHTTP: TidHTTP);
 
-//function c_GetTempPath: string;
 function GetSpecialPath(CSIDL: word): string;
 function GetLibUpdateVersion(Full: Boolean): Integer;
 function ExecAndWait(const FileName, Params: string; const WinState: word): Boolean;
 
-// function GetFileNameZip(Zip: TZipForge; No: integer): string;
 function CleanExtension(const Ext: string): string;
 function ExtractShortFileName(const FileName: string): string;
 
@@ -217,23 +215,23 @@ type
   end;
 
   TGenreRecord = record
+    // TODO : добавить ID: Integer;
     GenreCode: string;
     GenreFb2Code: string;
     Alias: string;
   end;
 
   TAuthorRecord = record
+    ID: Integer;
     FFirstName: string;
     FMiddleName: string;
     FLastName: string;
-
-    ID: Integer;
 
     procedure SetFirstName(const Value: string); inline;
     procedure SetLastName(const Value: string); inline;
     procedure SetMiddleName(const Value: string); inline;
 
-    function GetFullName: string; inline;
+    function GetFullName(onlyInitials: Boolean = False): string; inline;
 
     property FirstName: string read FFirstName write SetFirstName;
     property MiddleName: string read FMiddleName write SetMiddleName;
@@ -243,17 +241,24 @@ type
       const lastName: string;
       const firstName: string;
       const middleName: string;
-      const nickName: string = ''
+      const nickName: string = '';
+      onlyInitials: Boolean = False
     ): string; static;
   end;
 
   TBookRecord = record
+    //
+    // TODO : добавить отдельное поле для ID книги, SeriesID в эту структуру
+    //
     Title: string;
-    Series: string;
 
     Folder: string;
     FileName: string;
     FileExt: string;
+    InsideNo: Integer;
+
+    Series: string;
+    SeqNumber: Integer;
 
     Authors: array of TAuthorRecord;
     Genres: array of TGenreRecord;
@@ -261,17 +266,23 @@ type
 
     Code: Integer;
     Size: Integer;
-    InsideNo: Integer;
-    SeqNumber: Integer;
+
     libID: Integer;
 
+    //
+    // Преобразовать в множество (set)
+    //
     Deleted: Boolean;
     Local: Boolean;
+
     Date: TDateTime;
 
     Lang: string[2];
     LibRate: Integer;
 
+    //
+    // TODO : проверить использование этих полей
+    //
     KeyWords: string;
     URI: string;
     Annotation: string;
@@ -281,7 +292,7 @@ type
     function GenerateLocation: string;
 
     procedure ClearAuthors;
-    procedure AddAuthor(const LastName: string; const FirstName: string; const MiddleName: string);
+    procedure AddAuthor(const LastName: string; const FirstName: string; const MiddleName: string; id: Integer = 0);
     function GetAuthorCount: Integer;
     property AuthorCount: Integer read GetAuthorCount;
 
@@ -597,15 +608,17 @@ class function TAuthorRecord.FormatName(
   const lastName: string;
   const firstName: string;
   const middleName: string;
-  const nickName: string = ''): string;
+  const nickName: string = '';
+  onlyInitials: Boolean = False
+  ): string;
 begin
   Result := lastName;
 
   if firstName <> '' then
-    Result := Result + ' ' + firstName;
+    Result := Result + ' ' + IfThen(onlyInitials, firstName[1] + '.', firstName);
 
   if middleName <> '' then
-    Result := Result + ' ' + middleName;
+    Result := Result + ' ' + IfThen(onlyInitials, middleName[1] + '.', middleName);
 
   if nickName <> '' then
   begin
@@ -616,11 +629,11 @@ begin
   end;
 end;
 
-function TAuthorRecord.GetFullName: string;
+function TAuthorRecord.GetFullName(onlyInitials: Boolean = False): string;
 begin
   Assert(LastName <> '');
 
-  Result := FormatName(LastName, FirstName, MiddleName);
+  Result := FormatName(LastName, FirstName, MiddleName, '', onlyInitials);
 end;
 
 procedure TAuthorRecord.SetFirstName(const Value: string);
@@ -702,7 +715,7 @@ begin
   SetLength(Authors, 0);
 end;
 
-procedure TBookRecord.AddAuthor(const LastName: string; const FirstName: string; const MiddleName: string);
+procedure TBookRecord.AddAuthor(const LastName: string; const FirstName: string; const MiddleName: string; id: Integer = 0);
 var
   i: Integer;
 begin
@@ -712,7 +725,7 @@ begin
   Authors[i].LastName := LastName;
   Authors[i].FirstName := FirstName;
   Authors[i].MiddleName := MiddleName;
-  Authors[i].ID := 0;
+  Authors[i].ID := id;
 end;
 
 function TBookRecord.GetAuthorCount: Integer;
