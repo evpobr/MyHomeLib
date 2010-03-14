@@ -387,7 +387,9 @@ uses
   unit_Consts,
   ShlObj,
   ShellAPI,
+  Windows,
   IOUtils,
+  WinInet,
   unit_Helpers;
 
 var
@@ -506,8 +508,9 @@ begin
     FDbsFileName := DBFileName + '.dbs';
     FIniFileName := DBFileName + '.ini';
     if FileExists(WorkPath + SETTINGS_FILE_NAME) and not FileExists(WorkPath + FIniFileName) then
-    // если такого файла еще нет, копируем стандартный
-      CopyFile(WorkPath + SETTINGS_FILE_NAME, WorkPath + FIniFileName);
+      // если такого файла еще нет, копируем стандартный
+      unit_globals.CopyFile(WorkPath + SETTINGS_FILE_NAME, WorkPath + FIniFileName);
+      // может лучше использовать Windows.CopyFile(PChar(WorkPath + SETTINGS_FILE_NAME), PChar(WorkPath + FIniFileName), False);
   end;
 
   // устанавливаем временную папку
@@ -540,6 +543,89 @@ end;
 function TMHLSettings.GetSettingsFileName: string;
 begin
   Result := WorkPath + FIniFileName;
+end;
+
+function GetIEProxySettings(out ProxyServer: string; out ProxyPort: Integer): Boolean;
+var
+  proxyInfo: PInternetProxyInfo;
+  dwBufLen: Cardinal;
+  strProxy: string;
+  i: Integer;
+  slHelper: TStringList;
+begin
+  Result := False;
+
+  ProxyServer := '';
+  ProxyPort := INTERNET_DEFAULT_HTTP_PORT;
+
+  dwBufLen := 0;
+  proxyInfo := nil;
+
+  InternetQueryOption(nil, INTERNET_OPTION_PROXY, proxyInfo, dwBufLen);
+  if (dwBufLen = 0) or (GetLastError <> ERROR_INSUFFICIENT_BUFFER) then
+  begin
+    // InternetQueryOption failed to return buffer size
+    Exit;
+  end;
+
+  GetMem(proxyInfo, dwBufLen);
+
+  if InternetQueryOption(nil, INTERNET_OPTION_PROXY, proxyInfo, dwBufLen) then
+  begin
+    if proxyInfo^.dwAccessType = INTERNET_OPEN_TYPE_PROXY then
+    begin
+      strProxy := proxyInfo^.lpszProxy;
+      if strProxy <> '' then
+      begin
+        if Pos('=', strProxy) <> 0 then
+        begin
+          //
+          // ftp=proxy.domain.com:8082 gopher=proxy.domain.com:8083 http=proxy.domain.com:8080 https=proxy.domain.com:8081"
+          // разные прокси дл€ разных протоколов. ¬ыделим нужный
+          //
+          slHelper := TStringList.Create;
+          try
+            slHelper.Delimiter := ';';
+            slHelper.DelimitedText := strProxy;
+            strProxy := slHelper.Values['http'];
+          finally
+            slHelper.Free;
+          end;
+        end;
+
+        //
+        // здесь имеем настройки прокси в виде "proxy.domain.com[:8082]" или пустой строки
+        //
+        if strProxy <> '' then
+        begin
+          //
+          // теперь надо поделить строчку на сервер и порт
+          //
+          i := Pos(':', strProxy);
+          if i = 0 then
+          begin
+            //
+            // ѕорт не указан - используем порт по умолчанию
+            //
+            ProxyServer := strProxy;
+            ProxyPort := INTERNET_DEFAULT_HTTP_PORT;
+          end
+          else
+          begin
+            ProxyServer := Copy(strProxy, 1, i - 1);
+            ProxyPort := StrToIntDef(Copy(strProxy, i + 1, Length(strProxy) - i), INTERNET_DEFAULT_HTTP_PORT);
+          end;
+
+          //
+          // “олько в этом случае нужно использовать прокси-сервер
+          //
+          Result := True;
+        end;
+      end;
+    end;
+  end;
+
+  FreeMem(proxyInfo);
 end;
 
 procedure TMHLSettings.LoadSettings;
@@ -641,6 +727,8 @@ begin
     FLibPassword := DecodePassString(iniFile.ReadString(NETWORK_SECTION, 'lib-pass', ''));
 
     FUseIESettings := iniFile.ReadBool(NETWORK_SECTION, 'use_ie_settings', False);
+    if FUseIESettings then
+      GetIEProxySettings(FIEProxyServer, FIEProxyPort);
 
     //
     // COLORS_SECTION

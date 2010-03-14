@@ -1089,30 +1089,6 @@ begin
   ctpOther.Collapsed := Settings.OtherSRCollapsed;
 
   cpCoverA.Width := Settings.CoverWidth;
-
-  // Check IE Proxy settings   (by Goblin)
-  if Settings.UseIESettings then
-    try
-      regini := TRzRegIniFile.Create(self);
-      regini.PathType := ptRegistry;
-      regini.Path := ROOT;
-      if regini.ReadInteger(Key, 'ProxyEnable', 0) = 1 then
-      begin
-        IETempStr := regini.ReadString(Key, 'ProxyServer', '');
-        if IETempStr <> '' then
-          for i := 1 to Length(IETempStr) do
-            if IETempStr[i] = ':' then
-              colonpos := i;
-        IEProxy := AnsiLeftStr(IETempStr, colonpos - 1);
-        IEPort := AnsiRightStr(IETempStr, Length(IETempStr) - colonpos);
-
-        Settings.IEProxyServer := IEProxy;
-        Settings.IEProxyPort := StrToInt(IEPort);
-      end;
-    except
-      // что-то пошло не так ...
-    end;
-  // End check IE Proxy settings
 end;
 
 procedure TfrmMain.btnApplyFilterClick(Sender: TObject);
