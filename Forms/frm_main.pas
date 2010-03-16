@@ -5572,7 +5572,7 @@ begin
     // ревью можно изменять только для книг из текущей коллекции
     //
     ReviewEditable :=
-      (ActiveView = FavoritesView) or
+      (ActiveView <> FavoritesView) or
       (Table.FieldByName(DB_ID_FIELD).AsInteger = DMUser.ActiveCollection.ID);
 
     if ActiveView = FavoritesView then
