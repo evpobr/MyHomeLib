@@ -154,7 +154,6 @@ function GetLibUpdateVersion(Full: Boolean): Integer;
 function ExecAndWait(const FileName, Params: string; const WinState: word): Boolean;
 
 function CleanExtension(const Ext: string): string;
-function ExtractShortFileName(const FileName: string): string;
 
 function TestArchive(const FileName: string): Boolean;
 
@@ -325,6 +324,8 @@ uses
   Forms,
   Windows,
   StrUtils,
+  IOUtils,
+  Character,
   unit_Settings,
   unit_Consts,
   ShlObj,
@@ -414,7 +415,7 @@ begin
   if
     ((L >= 1) and IsPathDelimiter(FileName, 1)) or // \dir\subdir or /dir/subdir
     ((L >= 2) and (FileName[1] in ['A' .. 'Z', 'a' .. 'z']) and (FileName[2] = ':')) // C:, D:, etc.
-    then
+  then
     Result := False;
 end;
 
@@ -422,16 +423,21 @@ function CreateFolders(Root: string; const Path: string): Boolean;
 var
   FullPath: string;
 begin
-  if Path <> '\' then
+  if Path = '\' then
   begin
-    if Root = '' then
-      Root := Settings.AppPath;
-    FullPath := ExcludeTrailingPathDelimiter(
-      IfThen(IsRelativePath(Path), IncludeTrailingPathDelimiter(Root) + Path, Path)
-      );
+    Assert(False);
+    FullPath := Root;
   end
   else
-    FullPath := ExcludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(Root));
+  begin
+    if Root = '' then
+    begin
+      Assert(False);
+      Root := Settings.AppPath;
+    end;
+    FullPath := TPath.Combine(Root, Path);
+  end;
+
   Result := SysUtils.ForceDirectories(FullPath);
 end;
 
@@ -567,13 +573,13 @@ begin
   // фильтруем точки в конце имени
   if Length(conv) > 0 then
     while conv[Length(conv)] = '.' do
-      delete(conv, Length(conv), 1);
+      Delete(conv, Length(conv), 1);
   Result := conv;
 end;
 
 function GenerateBookLocation(const FullName: string): string;
 var
-  Letter: string;
+  Letter: Char;
   AuthorName: string;
 begin
   //
@@ -581,8 +587,8 @@ begin
   //
   AuthorName := CheckSymbols(FullName); // Ф.И.О. - полностью!
 
-  Letter := Trim(AuthorName[1]);
-  if Letter = '' then
+  Letter := AuthorName[1];
+  if not IsLetterOrDigit(Letter) then
     Letter := '_';
 
   AuthorName := Trim(AuthorName);
@@ -1020,14 +1026,6 @@ begin
   finally
     Zip.Free;
   end;
-end;
-
-function ExtractShortFileName(const FileName: string): string;
-var
-  Ext: string;
-begin
-  Ext := ExtractFileExt(FileName);
-  Result := Copy(FileName, 1, Length(FileName) - Length(Ext));
 end;
 
 end.

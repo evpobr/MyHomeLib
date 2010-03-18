@@ -172,6 +172,7 @@ var
 implementation
 
 uses
+  IOUtils,
   dm_user,
   frm_main,
   frm_genre_tree,
@@ -583,7 +584,7 @@ begin
     Exit;
 
   FullName := ExtractRelativePath(FRootPath, flFiles.LastDir + F.Name);
-  FileName := ExtractShortFileName(F.Name);
+  FileName := TPath.GetFileNameWithoutExtension(F.Name);
   Path := ExtractRelativePath(FRootPath, flFiles.LastDir);
 
   ParentNode := FindParentInTree(Tree, Path);

@@ -25,158 +25,172 @@ uses
   Forms,
   Dialogs,
   StdCtrls,
-  RzCmboBx,
-  RzShellCtrls,
   Mask,
-  RzEdit,
-  RzBtnEdt,
-  RzButton,
-  RzShellDialogs,
-  RzTabs,
   ExtCtrls,
-  RzPanel,
-  RzRadGrp,
   ComCtrls,
-  RzTreeVw,
-  RzSpnEdt,
-  RzCommon,
-  RzLabel,
-  RzListVw,
-  RzSelDir,
-  ImgList;
+  ImgList,
+  unit_AutoCompleteEdit;
 
 type
   TfrmSettings = class(TForm)
-    RzPanel1: TRzPanel;
-    btnSave: TRzBitBtn;
-    btnCancel: TRzBitBtn;
     pcSetPages: TPageControl;
     tsDevices: TTabSheet;
     tsReaders: TTabSheet;
     tsInterface: TTabSheet;
     dlgColors: TColorDialog;
     tsInternet: TTabSheet;
-    RzGroupBox1: TRzGroupBox;
-    edProxyServer: TRzEdit;
-    edProxyUsername: TRzEdit;
-    edProxyPassword: TRzMaskEdit;
-    edProxyPort: TRzNumericEdit;
-    RzLabel1: TRzLabel;
-    RzLabel2: TRzLabel;
-    RzLabel3: TRzLabel;
-    RzLabel4: TRzLabel;
-    RzGroupBox3: TRzGroupBox;
-    Label5: TLabel;
-    Label6: TLabel;
-    cbTranslit: TCheckBox;
-    RzGroupBox4: TRzGroupBox;
-    edDeviceDir: TRzButtonEdit;
-    RzGroupBox8: TRzGroupBox;
-    lvReaders: TRzListView;
-    btnDeleteExt: TRzBitBtn;
-    btnChangeExt: TRzBitBtn;
-    btnAddExt: TRzBitBtn;
-    RzGroupBox6: TRzGroupBox;
-    pnlASG: TRzPanel;
-    pnlCT: TRzPanel;
-    pnlBS: TRzPanel;
-    pnlCS: TRzPanel;
-    pnlCA: TRzPanel;
-    seShortFontSize: TRzSpinEdit;
+    edProxyServer: TEdit;
+    edProxyUsername: TEdit;
+    edProxyPassword: TEdit;
+    edProxyPort: TEdit;
+    lblProxyServer: TLabel;
+    lblProxyPort: TLabel;
+    lblProxyUser: TLabel;
+    lblProxyPassword: TLabel;
+    lvReaders: TListView;
+    btnDeleteExt: TButton;
+    btnChangeExt: TButton;
+    btnAddExt: TButton;
+    pnASG: TPanel;
+    pnCT: TPanel;
+    pnBS: TPanel;
+    pnCS: TPanel;
+    pnCA: TPanel;
+    edShortFontSize: TEdit;
     Label9: TLabel;
     Label7: TLabel;
-    seFontSize: TRzSpinEdit;
+    edFontSize: TEdit;
     Button1: TButton;
-    RzGroupBox9: TRzGroupBox;
-    edUpdates: TEdit;
     cbCheckColUpdate: TCheckBox;
     cbUpdates: TCheckBox;
-    cbPromptPath: TCheckBox;
-    RzPanel2: TRzPanel;
-    tvSections: TRzTreeView;
+    tvSections: TTreeView;
     tsScripts: TTabSheet;
-    RzGroupBox523324: TRzGroupBox;
-    lvScripts: TRzListView;
-    btnDeleteScript: TRzBitBtn;
-    btnEditScript: TRzBitBtn;
-    btnAddScript: TRzBitBtn;
-    RzGroupBox5343245: TRzGroupBox;
+    lvScripts: TListView;
     cbDefaultAction: TComboBox;
-    btnHelp: TRzBitBtn;
-    rgDeviceFormat: TRadioGroup;
-    RzGroupBox5: TRzGroupBox;
-    cbSquareFilter: TCheckBox;
-    RzGroupBox11: TRzGroupBox;
-    edReadDir: TRzButtonEdit;
-    dlgSelectDir: TRzSelDirDialog;
     tsBehavour: TTabSheet;
-    RzGroupBox7: TRzGroupBox;
     cbShowSubGenreBooks: TCheckBox;
     cbMinimizeToTray: TCheckBox;
     cbAutoStartDwnld: TCheckBox;
     cbShowFb2Info: TCheckBox;
     cbAllowMixedCollections: TCheckBox;
-    pnlDwnld: TRzPanel;
-    pnlDeleted: TRzPanel;
-    RzPanel5: TRzPanel;
-    RzGroupBox10: TRzGroupBox;
-    edTimeOut: TRzNumericEdit;
-    RzLabel7: TRzLabel;
-    edReadTimeOut: TRzNumericEdit;
-    RzLabel8: TRzLabel;
+    pnDownloadedFontColor: TPanel;
+    pnDeletedFontColor: TPanel;
+    edTimeOut: TEdit;
+    RzLabel7: TLabel;
+    edReadTimeOut: TEdit;
+    RzLabel8: TLabel;
     cbUseIESettings: TCheckBox;
-    edDwnldInterval: TRzNumericEdit;
-    RzLabel9: TRzLabel;
+    edDwnldInterval: TEdit;
+    RzLabel9: TLabel;
     cbAutoRunUpdate: TCheckBox;
     cbDeleteDeleted: TCheckBox;
-    cbTXTEncoding: TRzComboBox;
-    Label1: TLabel;
     cbAutoLoadReview: TCheckBox;
     tsFileSort: TTabSheet;
-    RzGroupBox12: TRzGroupBox;
     Label2: TLabel;
     Label3: TLabel;
-    RzToolButton4: TRzToolButton;
-    RzToolButton5: TRzToolButton;
-    RzToolButton6: TRzToolButton;
-    RzToolButton7: TRzToolButton;
-    RzToolButton8: TRzToolButton;
-    RzToolButton9: TRzToolButton;
-    RzToolButton10: TRzToolButton;
-    edFBDFolderTemplate: TRzEdit;
-    edFBDFileTemplate: TRzEdit;
-    RzGroupBox13: TRzGroupBox;
+    edFBDFolderTemplate: TEdit;
+    edFBDFileTemplate: TEdit;
     Label4: TLabel;
     Label8: TLabel;
-    RzToolButton11: TRzToolButton;
-    RzToolButton12: TRzToolButton;
-    RzToolButton13: TRzToolButton;
-    RzToolButton14: TRzToolButton;
-    RzToolButton15: TRzToolButton;
-    RzToolButton16: TRzToolButton;
-    RzToolButton17: TRzToolButton;
-    edFB2FolderTemplate: TRzEdit;
-    edFB2FileTemplate: TRzEdit;
-    RzGroupBox14: TRzGroupBox;
+    edFB2FolderTemplate: TEdit;
+    edFB2FileTemplate: TEdit;
     cbEnableFileSort: TCheckBox;
-    RzGroupBox15: TRzGroupBox;
-    edInputFolder: TRzButtonEdit;
+    edImportFolder: TMHLAutoCompleteEdit;
     cbDeleteFiles: TCheckBox;
-    RzGroupBox2: TRzGroupBox;
-    edUpdateDir: TRzButtonEdit;
-    RzGroupBox16: TRzGroupBox;
     Label10: TLabel;
     cbOverwriteFB2Info: TCheckBox;
-    beTemplate: TRzButtonEdit;
-    RzGroupBox17: TRzGroupBox;
-    edINPXUrl: TEdit;
-    edFileNameTemplate: TRzButtonEdit;
-    edFolderTemplate: TRzButtonEdit;
-    procedure edDeviceDirButtonClick(Sender: TObject);
-    procedure btnSaveClick(Sender: TObject);
+    edTitleTemplate: TEdit;
+    pnButtons: TPanel;
+    btnOk: TButton;
+    btnCancel: TButton;
+    btnHelp: TButton;
+    Panel1: TPanel;
+    Label11: TLabel;
+    Panel2: TPanel;
+    btnAddScript: TButton;
+    btnEditScript: TButton;
+    btnDeleteScript: TButton;
+    Label12: TLabel;
+    Label13: TLabel;
+    Label14: TLabel;
+    pnDeviceOptions: TPanel;
+    edDeviceDir: TMHLAutoCompleteEdit;
+    btnDeviceDir: TButton;
+    pnReadDir: TPanel;
+    Label15: TLabel;
+    edReadDir: TMHLAutoCompleteEdit;
+    btnSelectReadDir: TButton;
+    cbPromptPath: TCheckBox;
+    Label16: TLabel;
+    pnDeviceDir: TPanel;
+    pnFileFormat: TPanel;
+    Label17: TLabel;
+    rgDeviceFormat: TComboBox;
+    pnNameFormat: TPanel;
+    Label18: TLabel;
+    Label19: TLabel;
+    Label20: TLabel;
+    btnFolderTemplate: TButton;
+    btnFileNameTemplate: TButton;
+    edFolderTemplate: TEdit;
+    edFileNameTemplate: TEdit;
+    pnOtherOpt: TPanel;
+    Label5: TLabel;
+    cbSquareFilter: TCheckBox;
+    cbTXTEncoding: TComboBox;
+    Label1: TLabel;
+    Panel3: TPanel;
+    Label6: TLabel;
+    btnTitleTemplate: TButton;
+    Panel4: TPanel;
+    Label21: TLabel;
+    btnImportFolder: TButton;
+    Label22: TLabel;
+    Label23: TLabel;
+    Label24: TLabel;
+    btnFB2FolderTemplate: TButton;
+    btnFB2FileTemplate: TButton;
+    btnFBDFileTemplate: TButton;
+    btnFBDFolderTemplate: TButton;
+    Panel5: TPanel;
+    Label25: TLabel;
+    Panel7: TPanel;
+    Label27: TLabel;
+    Label26: TLabel;
+    edUpdateDir: TMHLAutoCompleteEdit;
+    btnUpdateDir: TButton;
+    Label28: TLabel;
+    edINPXUrl: TMHLAutoCompleteEdit;
+    Label29: TLabel;
+    edUpdates: TMHLAutoCompleteEdit;
+    Panel6: TPanel;
+    Label30: TLabel;
+    udTimeOut: TUpDown;
+    udReadTimeOut: TUpDown;
+    udDwnldInterval: TUpDown;
+    Panel8: TPanel;
+    Label31: TLabel;
+    udFontSize: TUpDown;
+    udShortFontSize: TUpDown;
+    pnDefaultFontColor: TPanel;
+    btnDownloadedFontColor: TButton;
+    btnDeletedFontColor: TButton;
+    Panel10: TPanel;
+    Label32: TLabel;
+    btnCA: TButton;
+    btnCS: TButton;
+    btnASG: TButton;
+    btnCT: TButton;
+    btnBS: TButton;
+
+    procedure SaveSettingsClick(Sender: TObject);
+    procedure ShowHelpClick(Sender: TObject);
+
     procedure tvSectionsChange(Sender: TObject; Node: TTreeNode);
-    procedure pnlCAClick(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
+
+    procedure SetBackgroundColor(Sender: TObject);
+    procedure SetDefaultFontColor(Sender: TObject);
+    procedure SetCustomFontColor(Sender: TObject);
 
     procedure btnAddExtClick(Sender: TObject);
     procedure btnChangeExtClick(Sender: TObject);
@@ -185,16 +199,22 @@ type
     procedure btnAddScriptClick(Sender: TObject);
     procedure btnEditScriptClick(Sender: TObject);
     procedure btnDeleteScriptClick(Sender: TObject);
-    procedure btnHelpClick(Sender: TObject);
+
     procedure FormShow(Sender: TObject);
-    procedure pnlDwnldClick(Sender: TObject);
     procedure cbUseIESettingsClick(Sender: TObject);
     procedure cbOverwriteFB2InfoClick(Sender: TObject);
-    procedure beTemplateButtonClick(Sender: TObject);
-    procedure edFolderTemplateButtonClick(Sender: TObject);
-    procedure edFileNameTemplateButtonClick(Sender: TObject);
+    procedure EditFolderTemplate(Sender: TObject);
+    procedure EditFileNameTemplate(Sender: TObject);
+    procedure SelectFolder(Sender: TObject);
+    procedure EditTextTemplate(Sender: TObject);
+    procedure cbEnableFileSortClick(Sender: TObject);
+    procedure cbPromptPathClick(Sender: TObject);
+    procedure edTimeOutChange(Sender: TObject);
+    procedure CheckNumValue(Sender: TObject);
 
   private
+    procedure SetPanelFontColor(Value: Graphics.TColor);
+
     procedure EditReader(AItem: TListItem);
     procedure EditScript(AItem: TListItem);
 
@@ -213,6 +233,7 @@ implementation
 
 uses
   StrUtils,
+  Character,
   unit_Globals,
   unit_Readers,
   unit_Scripts,
@@ -226,64 +247,24 @@ uses
 
 {$R *.dfm}
 
-procedure TfrmSettings.edDeviceDirButtonClick(Sender: TObject);
-var
-  AFolder: string;
-begin
-  AFolder := (Sender as TRzButtonEdit).Text;
-  if GetFolderName(Handle, 'Укажите папку', AFolder) then
-    (Sender as TRzButtonEdit).Text := AFolder;
-end;
-
-procedure TfrmSettings.edFileNameTemplateButtonClick(Sender: TObject);
-var
-  s: string;
-begin
-  s := edFileNameTemplate.Text;
-  if EditTemplate(TpFile, s) then
-    edFileNameTemplate.Text := s;
-end;
-
-procedure TfrmSettings.edFolderTemplateButtonClick(Sender: TObject);
-var
-  s: string;
-begin
-  s := edFolderTemplate.Text;
-  if EditTemplate(TpPath, s) then
-    edFolderTemplate.Text := s;
-end;
-
-procedure TfrmSettings.beTemplateButtonClick(Sender: TObject);
-var
-  s: string;
-begin
-  s := beTemplate.Text;
-  if EditTemplate(TpText, s) then
-    beTemplate.Text := s;
-end;
-
 procedure TfrmSettings.LoadSetting;
 var
   i: integer;
 begin
+  //
   // Page 1 - Device settings
-  edDeviceDir.Text := Settings.DevicePath;
-
-  if Settings.ReadPath <> Settings.TempPath then
-    edReadDir.Text := Settings.ReadPath
-  else
-    edReadDir.Text := '';
-
+  //
   cbPromptPath.Checked := Settings.PromptDevicePath;
+  edDeviceDir.Text := Settings.DeviceDir;
 
-  rgDeviceFormat.ItemIndex := ord(Settings.ExportMode);
+  edReadDir.Text := Settings.ReadDir;
 
-  cbTXTEncoding.ItemIndex := ord(Settings.TXTEncoding);
-
+  rgDeviceFormat.ItemIndex := Ord(Settings.ExportMode);
   edFolderTemplate.Text := Settings.FolderTemplate;
   edFileNameTemplate.Text := Settings.FileNameTemplate;
-  cbTranslit.Checked := Settings.TransliterateFileName;
+  // TODO : REMOVE cbTranslit.Checked := Settings.TransliterateFileName;
   cbSquareFilter.Checked := Settings.RemoveSquarebrackets;
+  cbTXTEncoding.ItemIndex := Ord(Settings.TXTEncoding);
 
   // Page 2 - Readers
   lvReaders.Items.Clear;
@@ -296,43 +277,45 @@ begin
     end;
   end;
 
-  seFontSize.Value := Settings.TreeFontSize;
-  seShortFontSize.Value := Settings.ShortFontSize;
+  //
+  // Интерфейс
+  //
+  udFontSize.Position := Settings.TreeFontSize;
+  udShortFontSize.Position := Settings.ShortFontSize;
+  SetPanelFontColor(Settings.FontColor);
+  pnDownloadedFontColor.Font.Color := Settings.LocalColor;
+  pnDeletedFontColor.Font.Color := Settings.DeletedColor;
 
-  pnlCT.Color := Settings.BookColor;
-  pnlCS.Color := Settings.SeriesColor;
-  pnlCA.Color := Settings.AuthorColor;
-  pnlBS.Color := Settings.SeriesBookColor;
-  pnlASG.Color := Settings.BGColor;
-  pnlASG.Font.Color := Settings.FontColor;
-  pnlCS.Font.Color := Settings.FontColor;
-  pnlCT.Font.Color := Settings.FontColor;
-  pnlBS.Font.Color := Settings.FontColor;
-  pnlASG.Font.Color := Settings.FontColor;
+  pnCA.Color := Settings.AuthorColor;
+  pnCS.Color := Settings.SeriesColor;
+  pnASG.Color := Settings.BGColor;
+  pnCT.Color := Settings.BookColor;
+  pnBS.Color := Settings.SeriesBookColor;
 
-  pnlDwnld.Font.Color := Settings.LocalColor;
-  pnlDeleted.Font.Color := Settings.DeletedColor;
-
+  //
   // Page 4 - Internet
+  //
+  cbUseIESettings.Checked := Settings.UseIESettings;
   edProxyServer.Text := Settings.ProxyServer;
+  edProxyPort.Text := IntToStr(Settings.ProxyPort);
   edProxyUsername.Text := Settings.ProxyUsername;
   edProxyPassword.Text := Settings.ProxyPassword;
-  edProxyPort.Value := Settings.ProxyPort;
 
+  edUpdateDir.Text := Settings.UpdateDir;
+  edINPXUrl.Text := Settings.InpxURL;
   edUpdates.Text := Settings.UpdateURL;
+
   cbCheckColUpdate.Checked := Settings.CheckExternalLibUpdate;
   cbUpdates.Checked := Settings.CheckUpdate;
-
-  edTimeOut.Value := Settings.TimeOut;
-  edReadTimeOut.Value := Settings.ReadTimeOut;
-  edDwnldInterval.Value := Settings.DwnldInterval;
-
-  cbUseIESettings.Checked := Settings.UseIESettings;
   cbAutoRunUpdate.Checked := Settings.AutoRunUpdate;
-  edINPXUrl.Text := Settings.InpxURL;
-  edUpdateDir.Text := Settings.UpdateDir;
 
+  udTimeOut.Position := Settings.TimeOut;
+  udReadTimeOut.Position := Settings.ReadTimeOut;
+  udDwnldInterval.Position := Settings.DwnldInterval;
+
+  //
   // Page 5 - Scripts
+  //
   lvScripts.Items.Clear;
   cbDefaultAction.Items.Clear;
   cbDefaultAction.Items.Add('Стандартное');
@@ -350,8 +333,9 @@ begin
   end;
   cbDefaultAction.ItemIndex := Settings.DefaultScript;
 
+  //
   // Page 6 - Behavior
-
+  //
   cbShowFb2Info.Checked := Settings.ShowFb2Info;
   cbShowSubGenreBooks.Checked := Settings.ShowSubGenreBooks;
   cbMinimizeToTray.Checked := Settings.MinimizeToTray;
@@ -359,34 +343,40 @@ begin
   cbAllowMixedCollections.Checked := Settings.AllowMixed;
   cbDeleteDeleted.Checked := Settings.DeleteDeleted;
   cbAutoLoadReview.Checked := Settings.AutoLoadReview;
-  cbOverwriteFB2Info.Checked := Settings.OverwriteFB2Info;
   cbDeleteFiles.Checked := Settings.DeleteFiles;
 
-  { Установка начального состояния поля ввода шаблона }
-  beTemplate.Enabled := cbOverwriteFB2Info.Checked;
-  beTemplate.Text := Settings.BookHeaderTemplate;
+  cbOverwriteFB2Info.Checked := Settings.OverwriteFB2Info;
+  edTitleTemplate.Text := Settings.BookHeaderTemplate;
 
+  //
   // Page 6 -  FileSort
-
+  //
   cbEnableFileSort.Checked := Settings.EnableSort;
-  edInputFolder.Text := Settings.InputFolder;
+  edImportFolder.Text := Settings.ImportDir;
   edFB2FolderTemplate.Text := Settings.FB2FolderTemplate;
   edFB2FileTemplate.Text := Settings.FB2FileTemplate;
   edFBDFolderTemplate.Text := Settings.FBDFolderTemplate;
   edFBDFileTemplate.Text := Settings.FBDFileTemplate;
 
-  tvSections.Select(tvSections.Items[0]);
+  //
+  // настроим GUI - запретим или разрешим контролы
+  //
+  cbPromptPathClick(nil);
+  cbUseIESettingsClick(nil);
+  cbOverwriteFB2InfoClick(nil);
+  cbEnableFileSortClick(nil);
 
-  cbUseIESettingsClick(Nil);
+  tvSections.Select(tvSections.Items[0]);
 end;
 
 procedure TfrmSettings.SaveSettings;
 begin
   // Page 1 - Device settings
+  Settings.PromptDevicePath := cbPromptPath.Checked;
   Settings.DeviceDir := edDeviceDir.Text;
+
   Settings.ReadDir := edReadDir.Text;
 
-  Settings.PromptDevicePath := cbPromptPath.Checked;
   case rgDeviceFormat.ItemIndex of
     0: Settings.ExportMode := emFB2;
     1: Settings.ExportMode := emFB2Zip;
@@ -396,47 +386,47 @@ begin
     5: Settings.ExportMode := emPDF;
   end;
 
+  Settings.FolderTemplate := edFolderTemplate.Text;
+  Settings.FileNameTemplate := edFileNameTemplate.Text;
+  // TODO : REMOVE Settings.TransliterateFileName := cbTranslit.Checked;
+
   case cbTXTEncoding.ItemIndex of
     0: Settings.TXTEncoding := enUTF8;
     1: Settings.TXTEncoding := en1251;
     2: Settings.TXTEncoding := enUnicode;
   end;
 
-  Settings.FolderTemplate := edFolderTemplate.Text;
-  Settings.FileNameTemplate := edFileNameTemplate.Text;
-  Settings.TransliterateFileName := cbTranslit.Checked;
   Settings.RemoveSquarebrackets := cbSquareFilter.Checked;
-  Settings.AutoStartDwnld := cbAutoStartDwnld.Checked;
 
   // Page 2 - Readers
   SaveReaders;
 
   // Page 3 - Interface
 
-  Settings.TreeFontSize := Trunc(seFontSize.Value);
-  Settings.ShortFontSize := Trunc(seShortFontSize.Value);
-  Settings.BookColor := pnlCT.Color;
-  Settings.SeriesColor := pnlCS.Color;
-  Settings.AuthorColor := pnlCA.Color;
-  Settings.SeriesBookColor := pnlBS.Color;
-  Settings.BGColor := pnlASG.Color;
-  Settings.FontColor := pnlASG.Font.Color;
+  Settings.TreeFontSize := udFontSize.Position;
+  Settings.ShortFontSize := udShortFontSize.Position;
+  Settings.FontColor := pnDefaultFontColor.Font.Color;
+  Settings.LocalColor := pnDownloadedFontColor.Font.Color;
+  Settings.DeletedColor := pnDeletedFontColor.Font.Color;
 
-  Settings.LocalColor := pnlDwnld.Font.Color;
-  Settings.DeletedColor := pnlDeleted.Font.Color;
+  Settings.AuthorColor := pnCA.Color;
+  Settings.SeriesColor := pnCS.Color;
+  Settings.BGColor := pnASG.Color;
+  Settings.BookColor := pnCT.Color;
+  Settings.SeriesBookColor := pnBS.Color;
 
   // Page 4 - Internet
+  Settings.UseIESettings := cbUseIESettings.Checked;
   Settings.ProxyServer := edProxyServer.Text;
+  Settings.ProxyPort := StrToIntDef(edProxyPort.Text, 0);
   Settings.ProxyUsername := edProxyUsername.Text;
   Settings.ProxyPassword := edProxyPassword.Text;
-  Settings.ProxyPort := Round(edProxyPort.Value);
   Settings.UpdateURL := edUpdates.Text;
   Settings.CheckExternalLibUpdate := cbCheckColUpdate.Checked;
   Settings.CheckUpdate := cbUpdates.Checked;
-  Settings.TimeOut := Round(edTimeOut.Value);
-  Settings.ReadTimeOut := Round(edReadTimeOut.Value);
-  Settings.DwnldInterval := Round(edDwnldInterval.Value);
-  Settings.UseIESettings := cbUseIESettings.Checked;
+  Settings.TimeOut := udTimeOut.Position;
+  Settings.ReadTimeOut := udReadTimeOut.Position;
+  Settings.DwnldInterval := udDwnldInterval.Position;
   Settings.AutoRunUpdate := cbAutoRunUpdate.Checked;
   Settings.InpxURL := InclideUrlSlash(edINPXUrl.Text);
 
@@ -455,20 +445,19 @@ begin
   Settings.AllowMixed := cbAllowMixedCollections.Checked;
   Settings.DeleteDeleted := cbDeleteDeleted.Checked;
   Settings.AutoLoadReview := cbAutoLoadReview.Checked;
-  Settings.OverwriteFB2Info := cbOverwriteFB2Info.Checked;
   Settings.DeleteFiles := cbDeleteFiles.Checked;
-  { Сохранение свойства шаблона заголовка книги }
-  Settings.BookHeaderTemplate := beTemplate.Text;
+  Settings.OverwriteFB2Info := cbOverwriteFB2Info.Checked;
+  Settings.BookHeaderTemplate := edTitleTemplate.Text;
+  Settings.AutoStartDwnld := cbAutoStartDwnld.Checked;
 
   // Page 6 -  FileSort
 
   Settings.EnableSort := cbEnableFileSort.Checked;
-  Settings.InputFolder := IncludeTrailingPathDelimiter(edInputFolder.Text);
+  Settings.ImportDir := edImportFolder.Text;
   Settings.FB2FolderTemplate := edFB2FolderTemplate.Text;
   Settings.FB2FileTemplate := edFB2FileTemplate.Text;
   Settings.FBDFolderTemplate := edFBDFolderTemplate.Text;
   Settings.FBDFileTemplate := edFBDFileTemplate.Text;
-
 end;
 
 procedure TfrmSettings.SaveReaders;
@@ -493,23 +482,20 @@ begin
   Scripts.Clear;
   for i := 0 to lvScripts.Items.Count - 1 do
   begin
-    Scripts.Add(lvScripts.Items[i].Caption, lvScripts.Items[i].SubItems[0],
-      lvScripts.Items[i].SubItems[1]);
+    Scripts.Add(lvScripts.Items[i].Caption, lvScripts.Items[i].SubItems[0], lvScripts.Items[i].SubItems[1]);
   end;
 end;
 
-procedure TfrmSettings.btnHelpClick(Sender: TObject);
+procedure TfrmSettings.ShowHelpClick(Sender: TObject);
 begin
-  HtmlHelp(Application.Handle, PChar(Settings.SystemFileName[sfAppHelp]),
-    HH_HELP_CONTEXT, pcSetPages.ActivePage.HelpContext);
+  HtmlHelp(Application.Handle, PChar(Settings.SystemFileName[sfAppHelp]), HH_HELP_CONTEXT, pcSetPages.ActivePage.HelpContext);
 end;
 
-procedure TfrmSettings.btnSaveClick(Sender: TObject);
+procedure TfrmSettings.SaveSettingsClick(Sender: TObject);
 begin
-  if cbOverwriteFB2Info.Checked and (beTemplate.Text = '') then
+  if cbOverwriteFB2Info.Checked and (edTitleTemplate.Text = '') then
   begin
-    ShowMessage(
-      'Необходимо задать шаблон для заголовка книги в разделе "Разное"');
+    ShowMessage('Необходимо задать шаблон для заголовка книги в разделе "Разное"');
     tvSections.Select(tvSections.Items[5]);
     Exit;
   end;
@@ -530,8 +516,7 @@ var
 begin
   frmEditReader := TfrmEditReader.Create(Self);
   try
-    frmEditReader.Caption := IfThen(Assigned(AItem), 'Изменение типа файлов',
-      'Добавление типа файлов');
+    frmEditReader.Caption := IfThen(Assigned(AItem), 'Изменение типа файлов', 'Добавление типа файлов');
     if Assigned(AItem) then
     begin
       frmEditReader.Extension := AItem.Caption;
@@ -548,12 +533,10 @@ begin
         Exit;
       end;
 
-      if lvReaders.FindCaption(0, frmEditReader.Extension, False, True, False)
-        <> nil then
+      if lvReaders.FindCaption(0, frmEditReader.Extension, False, True, False) <> nil then
       begin
         // Это расширение уже зарегистрировано
-        MessageDlg('Тип "' + frmEditReader.Extension + '" уже есть в списке!',
-          mtError, [mbOk], 0);
+        MessageDlg('Тип "' + frmEditReader.Extension + '" уже есть в списке!', mtError, [mbOk], 0);
         Exit;
       end;
 
@@ -600,11 +583,11 @@ end;
 procedure TfrmSettings.EditScript(AItem: TListItem);
 var
   frmEditScript: TfrmEditScript;
+  nIndex: Integer;
 begin
   frmEditScript := TfrmEditScript.Create(Self);
   try
-    frmEditReader.Caption := IfThen(Assigned(AItem),
-      'Изменение параметров скрипта', 'Добавление скрипта');
+    frmEditReader.Caption := IfThen(Assigned(AItem), 'Изменение параметров скрипта', 'Добавление скрипта');
     if Assigned(AItem) then
     begin
       frmEditScript.Title := AItem.Caption;
@@ -616,9 +599,9 @@ begin
     begin
       if Assigned(AItem) then
       begin
+        nIndex := cbDefaultAction.ItemIndex;
         cbDefaultAction.Items[AItem.Index + 1] := frmEditScript.Title;
-        { TODO -oNickR -cpossible bug : Странно, после редактирования скрипт становится скриптом по-умолчанию }
-        // cbDefaultAction.ItemIndex := AItem.Index + 1;
+        cbDefaultAction.ItemIndex := nIndex;
       end
       else
         cbDefaultAction.Items.Add(frmEditScript.Title);
@@ -669,45 +652,109 @@ begin
     Exit;
 
   if cbDefaultAction.Items.Count > 1 then
+  begin
     cbDefaultAction.Items.Delete(lvScripts.Selected.Index + 1);
+    cbDefaultAction.ItemIndex := 0;
+  end;
   lvScripts.DeleteSelected;
 end;
 
-procedure TfrmSettings.pnlCAClick(Sender: TObject);
+//
+// Настройки интерфейса
+//
+procedure TfrmSettings.SetBackgroundColor(Sender: TObject);
+var
+  PanelControl: TPanel;
 begin
-  dlgColors.Color := (Sender as TRzPanel).Color;
-  if dlgColors.Execute then (Sender as TRzPanel)
-    .Color := dlgColors.Color;
+  if Sender = btnCA then
+    PanelControl := pnCA
+  else if Sender = btnCS then
+    PanelControl := pnCS
+  else if Sender = btnASG then
+    PanelControl := pnASG
+  else if Sender = btnCT then
+    PanelControl := pnCT
+  else if Sender = btnBS then
+    PanelControl := pnBS
+  else
+  begin
+    Assert(False);
+    Exit;
+  end;
+
+  dlgColors.Color := PanelControl.Color;
+  if dlgColors.Execute then
+    PanelControl.Color := dlgColors.Color;
 end;
 
-procedure TfrmSettings.pnlDwnldClick(Sender: TObject);
+procedure TfrmSettings.SetPanelFontColor(Value: Graphics.TColor);
 begin
-  dlgColors.Color := (Sender as TRzPanel).Font.Color;
-  if dlgColors.Execute then (Sender as TRzPanel)
-    .Font.Color := dlgColors.Color;
+  pnDefaultFontColor.Font.Color := Value;
+  pnCA.Font.Color := Value;
+  pnCS.Font.Color := Value;
+  pnASG.Font.Color := Value;
+  pnCT.Font.Color := Value;
+  pnBS.Font.Color := Value;
 end;
 
+procedure TfrmSettings.SetDefaultFontColor(Sender: TObject);
+begin
+  dlgColors.Color := pnDefaultFontColor.Font.Color;
+  if dlgColors.Execute then
+    SetPanelFontColor(dlgColors.Color);
+end;
+
+procedure TfrmSettings.SetCustomFontColor(Sender: TObject);
+var
+  PanelControl: TPanel;
+begin
+  if Sender = btnDownloadedFontColor then
+    PanelControl := pnDownloadedFontColor
+  else if Sender = btnDeletedFontColor then
+    PanelControl := pnDeletedFontColor
+  else
+  begin
+    Assert(False);
+    Exit;
+  end;
+
+  dlgColors.Color := PanelControl.Font.Color;
+  if dlgColors.Execute then
+    PanelControl.Font.Color := dlgColors.Color;
+end;
+
+//
+//
+//
 procedure TfrmSettings.tvSectionsChange(Sender: TObject; Node: TTreeNode);
 begin
   pcSetPages.ActivePageIndex := tvSections.Selected.Index;
 end;
 
-procedure TfrmSettings.Button1Click(Sender: TObject);
+procedure TfrmSettings.cbEnableFileSortClick(Sender: TObject);
 begin
-  if dlgColors.Execute then
-  begin
-    pnlCA.Font.Color := dlgColors.Color;
-    pnlCS.Font.Color := dlgColors.Color;
-    pnlCT.Font.Color := dlgColors.Color;
-    pnlBS.Font.Color := dlgColors.Color;
-    pnlASG.Font.Color := dlgColors.Color;
-  end;
+  edImportFolder.Enabled := cbEnableFileSort.Checked;
+  edFB2FolderTemplate.Enabled := cbEnableFileSort.Checked;
+  edFB2FileTemplate.Enabled := cbEnableFileSort.Checked;
+  edFBDFolderTemplate.Enabled := cbEnableFileSort.Checked;
+  edFBDFileTemplate.Enabled := cbEnableFileSort.Checked;
+  btnImportFolder.Enabled := cbEnableFileSort.Checked;
+  btnFB2FolderTemplate.Enabled := cbEnableFileSort.Checked;
+  btnFB2FileTemplate.Enabled := cbEnableFileSort.Checked;
+  btnFBDFolderTemplate.Enabled := cbEnableFileSort.Checked;
+  btnFBDFileTemplate.Enabled := cbEnableFileSort.Checked;
 end;
 
 procedure TfrmSettings.cbOverwriteFB2InfoClick(Sender: TObject);
 begin
-  { Включение и отключение поля ввода шаблона }
-  beTemplate.Enabled := cbOverwriteFB2Info.Checked;
+  edTitleTemplate.Enabled := cbOverwriteFB2Info.Checked;
+  btnTitleTemplate.Enabled := cbOverwriteFB2Info.Checked;
+end;
+
+procedure TfrmSettings.cbPromptPathClick(Sender: TObject);
+begin
+  edDeviceDir.Enabled := not cbPromptPath.Checked;
+  btnDeviceDir.Enabled := not cbPromptPath.Checked;
 end;
 
 procedure TfrmSettings.cbUseIESettingsClick(Sender: TObject);
@@ -716,6 +763,151 @@ begin
   edProxyPort.Enabled := not cbUseIESettings.Checked;
   edProxyUsername.Enabled := not cbUseIESettings.Checked;
   edProxyPassword.Enabled := not cbUseIESettings.Checked;
+end;
+
+procedure TfrmSettings.CheckNumValue(Sender: TObject);
+var
+  EditControl: TEdit;
+  UpDownControl: TUpDown;
+  strValue: string;
+  ch: Char;
+  nValue: Integer;
+  nMinValue: Integer;
+  nMaxValue: Integer;
+begin
+  EditControl := Sender as TEdit;
+  if EditControl = edProxyPort then
+    UpDownControl := nil
+  else if EditControl = edTimeOut then
+    UpDownControl := udTimeOut
+  else if EditControl = edDwnldInterval then
+    UpDownControl := udDwnldInterval
+  else if EditControl = edReadTimeOut then
+    UpDownControl := udReadTimeOut
+  else if EditControl = edFontSize then
+    UpDownControl := udFontSize
+  else if EditControl = edShortFontSize then
+    UpDownControl := udShortFontSize
+  else
+  begin
+    Assert(False);
+    Exit;
+  end;
+
+  if EditControl = edProxyPort then
+  begin
+    nMinValue := 0;
+    nMaxValue := 65535;
+  end
+  else
+  begin
+    Assert(Assigned(UpDownControl));
+    nMinValue := UpDownControl.Min;
+    nMaxValue := UpDownControl.Max;
+  end;
+
+  for ch in EditControl.Text do
+  begin
+    if IsNumber(ch) then
+      strValue := strValue + ch;
+  end;
+  nValue := StrToIntDef(strValue, 0);
+
+  if (nMinValue <= nValue) and (nValue <= nMaxValue) then
+    Exit;
+
+  if nValue < nMinValue then
+    nValue := nMinValue
+  else if nValue > nMaxValue then
+    nValue := nMaxValue;
+
+  EditControl.Text := IntToStr(nValue);
+end;
+
+// ============================================================================
+
+procedure TfrmSettings.SelectFolder(Sender: TObject);
+var
+  EditControl: TEdit;
+  AFolder: string;
+begin
+  if Sender = btnImportFolder then
+    EditControl := edImportFolder
+  else if Sender = btnSelectReadDir then
+    EditControl := edReadDir
+  else if Sender = btnDeviceDir then
+    EditControl := edDeviceDir
+  else if Sender = btnUpdateDir then
+    EditControl := edUpdateDir
+  else
+  begin
+    Assert(False);
+    Exit;
+  end;
+
+  AFolder := EditControl.Text;
+  if GetFolderName(Handle, 'Укажите папку', AFolder) then
+    EditControl.Text := AFolder;
+end;
+
+procedure TfrmSettings.EditFolderTemplate(Sender: TObject);
+var
+  EditControl: TEdit;
+  s: string;
+begin
+  if Sender = btnFolderTemplate then
+    EditControl := edFolderTemplate
+  else if Sender = btnFB2FolderTemplate then
+    EditControl := edFB2FolderTemplate
+  else if Sender = btnFBDFolderTemplate then
+    EditControl := edFBDFolderTemplate
+  //else if Sender =  then
+  else
+  begin
+    Assert(False);
+    Exit;
+  end;
+
+  s := EditControl.Text;
+  if EditTemplate(TpPath, s) then
+    EditControl.Text := s;
+end;
+
+procedure TfrmSettings.EditFileNameTemplate(Sender: TObject);
+var
+  EditControl: TEdit;
+  s: string;
+begin
+  if Sender = btnFileNameTemplate then
+    EditControl := edFileNameTemplate
+  else if Sender = btnFB2FileTemplate then
+    EditControl := edFB2FileTemplate
+  else if Sender = btnFBDFileTemplate then
+    EditControl := edFBDFileTemplate
+  //else if Sender =  then
+  else
+  begin
+    Assert(False);
+    Exit;
+  end;
+
+  s := EditControl.Text;
+  if EditTemplate(TpFile, s) then
+    EditControl.Text := s;
+end;
+
+procedure TfrmSettings.EditTextTemplate(Sender: TObject);
+var
+  s: string;
+begin
+  s := edTitleTemplate.Text;
+  if EditTemplate(TpText, s) then
+    edTitleTemplate.Text := s;
+end;
+
+procedure TfrmSettings.edTimeOutChange(Sender: TObject);
+begin
+//
 end;
 
 end.

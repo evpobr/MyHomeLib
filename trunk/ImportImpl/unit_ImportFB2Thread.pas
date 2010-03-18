@@ -32,6 +32,7 @@ implementation
 uses
   Classes,
   SysUtils,
+  IOUtils,
   unit_WorkerThread,
   unit_globals,
   FictionBook_21,
@@ -62,7 +63,7 @@ begin
     R.Clear;
     FileName := ExtractFileName(FFiles[i]);
     R.FileExt := ExtractFileExt(FileName);
-    R.FileName := ExtractShortFilename(FileName);
+    R.FileName := TPath.GetFileNameWithoutExtension(FileName);
 
     R.Size := unit_Helpers.GetFileSize(FFiles[i]);
     R.Date := Now;

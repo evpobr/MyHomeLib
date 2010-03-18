@@ -156,14 +156,17 @@ begin
     Folder := IncludeTrailingPathDelimiter(Trim(CheckSymbols(Folder)));
     FileName := Trim(CheckSymbols(FileName));
 
+    { TODO -oNickR -cBug : FullName нечем не инициализирована }
     InsideFileName := FullName + ' - ' + FTable.FieldByName('Title').AsString;
 
+    {
     if Settings.TransliterateFileName then
     begin
       InsideFileName := Transliterate(InsideFileName);
       Folder := Transliterate(Folder);
       FileName := Transliterate(FileName);
     end;
+    }
 
     FileName := FileName + DMCollection.tblBooks['Ext'];
   end;
@@ -219,7 +222,7 @@ begin
     emFB2:
       unit_globals.CopyFile(FFileOprecord.SArch, DestFileName);
     emFB2Zip:
-      ZipFile(FFileOprecord.SArch, DestFileName + ZIP_EXTENSION);
+      unit_globals.ZipFile(FFileOprecord.SArch, DestFileName + ZIP_EXTENSION);
     emTxt:
       unit_globals.ConvertToTxt(FFileOprecord.SArch, DestFileName, Settings.TXTEncoding);
     emLrf:

@@ -2,10 +2,10 @@ object frmSettings: TfrmSettings
   Left = 0
   Top = 0
   HelpContext = 144
-  BorderStyle = bsToolWindow
+  BorderStyle = bsDialog
   Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
-  ClientHeight = 470
-  ClientWidth = 611
+  ClientHeight = 505
+  ClientWidth = 617
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,232 +17,360 @@ object frmSettings: TfrmSettings
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object RzPanel1: TRzPanel
-    AlignWithMargins = True
-    Left = 3
-    Top = 418
-    Width = 605
-    Height = 49
-    Align = alBottom
-    BorderOuter = fsFlatRounded
-    TabOrder = 0
-    object btnSave: TRzBitBtn
-      Left = 362
-      Top = 11
-      Width = 110
-      Height = 28
-      Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
-      TabOrder = 0
-      OnClick = btnSaveClick
-      Kind = bkOK
-    end
-    object btnCancel: TRzBitBtn
-      Left = 482
-      Top = 11
-      Width = 110
-      Height = 28
-      Caption = #1053#1077' '#1089#1086#1093#1088#1072#1085#1103#1090#1100
-      TabOrder = 1
-      Kind = bkCancel
-    end
-    object btnHelp: TRzBitBtn
-      Left = 9
-      Top = 11
-      Width = 110
-      Height = 28
-      Caption = #1057#1087#1088#1072#1074#1082#1072
-      TabOrder = 2
-      OnClick = btnHelpClick
-      Kind = bkHelp
-    end
-  end
   object pcSetPages: TPageControl
     AlignWithMargins = True
-    Left = 194
+    Left = 159
     Top = 3
-    Width = 414
-    Height = 409
-    ActivePage = tsBehavour
+    Width = 455
+    Height = 458
+    ActivePage = tsInternet
     Align = alClient
-    TabOrder = 1
+    TabOrder = 0
     object tsDevices: TTabSheet
       HelpContext = 143
       Caption = 'tsDevices'
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object RzGroupBox3: TRzGroupBox
+      object pnDeviceOptions: TPanel
         AlignWithMargins = True
         Left = 3
-        Top = 191
-        Width = 400
-        Height = 142
+        Top = 61
+        Width = 441
+        Height = 356
         Align = alTop
-        Caption = #1060#1086#1088#1084#1072#1090' '#1080#1084#1077#1085#1080
-        TabOrder = 0
-        object Label5: TLabel
-          Left = 20
-          Top = 29
-          Width = 38
+        BevelOuter = bvNone
+        ShowCaption = False
+        TabOrder = 1
+        object Label16: TLabel
+          AlignWithMargins = True
+          Left = 3
+          Top = 3
+          Width = 435
           Height = 13
-          Alignment = taRightJustify
-          Caption = #1055#1072#1087#1082#1072': '
+          Align = alTop
+          Caption = #1059#1089#1090#1088#1086#1081#1089#1090#1074#1086
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          ExplicitWidth = 68
         end
-        object Label6: TLabel
-          Left = 25
-          Top = 64
-          Width = 33
-          Height = 13
-          Alignment = taRightJustify
-          Caption = #1060#1072#1081#1083': '
-        end
-        object cbTranslit: TCheckBox
-          Left = 20
-          Top = 96
-          Width = 294
-          Height = 27
-          Caption = #1058#1088#1072#1085#1089#1083#1080#1090#1077#1088#1072#1094#1080#1103' '#1080#1084#1077#1085' '#1087#1072#1087#1086#1082' '#1080' '#1092#1072#1081#1083#1086#1074
-          TabOrder = 1
-          WordWrap = True
-        end
-        object edFileNameTemplate: TRzButtonEdit
-          Left = 64
-          Top = 61
-          Width = 313
-          Height = 21
-          Text = '%n%t'
-          ReadOnly = True
-          ReadOnlyColor = clWindow
+        object pnDeviceDir: TPanel
+          Left = 0
+          Top = 19
+          Width = 441
+          Height = 71
+          Align = alTop
+          AutoSize = True
+          BevelOuter = bvNone
+          ShowCaption = False
           TabOrder = 0
-          AltBtnWidth = 15
-          ButtonWidth = 15
-          HideButtonsOnReadOnly = False
-          OnButtonClick = edFileNameTemplateButtonClick
+          DesignSize = (
+            441
+            71)
+          object Label14: TLabel
+            AlignWithMargins = True
+            Left = 9
+            Top = 3
+            Width = 429
+            Height = 13
+            Margins.Left = 9
+            Align = alTop
+            Caption = #1055#1072#1087#1082#1072' '#1085#1072' '#1091#1089#1090#1088#1086#1081#1089#1090#1074#1077' '
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+            ExplicitWidth = 126
+          end
+          object btnDeviceDir: TButton
+            Left = 359
+            Top = 46
+            Width = 75
+            Height = 25
+            Anchors = [akTop, akRight]
+            Caption = #1042#1099#1073#1088#1072#1090#1100
+            TabOrder = 2
+            OnClick = SelectFolder
+          end
+          object cbPromptPath: TCheckBox
+            AlignWithMargins = True
+            Left = 15
+            Top = 22
+            Width = 423
+            Height = 20
+            Margins.Left = 15
+            Align = alTop
+            Caption = #1057#1087#1088#1072#1096#1080#1074#1072#1090#1100' '#1087#1091#1090#1100' '#1082#1072#1078#1076#1099#1081' '#1088#1072#1079
+            TabOrder = 0
+            WordWrap = True
+            OnClick = cbPromptPathClick
+          end
+          object edDeviceDir: TMHLAutoCompleteEdit
+            Left = 15
+            Top = 48
+            Width = 338
+            Height = 21
+            Anchors = [akLeft, akTop, akRight]
+            TabOrder = 1
+          end
         end
-        object edFolderTemplate: TRzButtonEdit
-          Tag = 785
-          Left = 64
-          Top = 25
-          Width = 313
-          Height = 21
-          Text = '%f\%s'
-          ReadOnly = True
-          ReadOnlyColor = clWindow
+        object pnFileFormat: TPanel
+          Left = 0
+          Top = 90
+          Width = 441
+          Height = 52
+          Align = alTop
+          AutoSize = True
+          BevelOuter = bvNone
+          ShowCaption = False
+          TabOrder = 1
+          object Label17: TLabel
+            AlignWithMargins = True
+            Left = 9
+            Top = 9
+            Width = 429
+            Height = 13
+            Margins.Left = 9
+            Margins.Top = 9
+            Align = alTop
+            Caption = #1060#1086#1088#1084#1072#1090' '#1079#1072#1087#1080#1089#1080' '#1085#1072' '#1091#1089#1090#1088#1086#1081#1089#1090#1074#1086
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+            ExplicitWidth = 173
+          end
+          object rgDeviceFormat: TComboBox
+            AlignWithMargins = True
+            Left = 15
+            Top = 28
+            Width = 419
+            Height = 21
+            Margins.Left = 15
+            Margins.Right = 7
+            Align = alTop
+            Style = csDropDownList
+            ItemIndex = 0
+            TabOrder = 0
+            Text = '.fb2'
+            Items.Strings = (
+              '.fb2'
+              '.fb2.zip'
+              '.lrf '
+              '.txt'
+              '.epub'
+              '.pdf')
+          end
+        end
+        object pnNameFormat: TPanel
+          Left = 0
+          Top = 142
+          Width = 441
+          Height = 78
+          Align = alTop
+          AutoSize = True
+          BevelOuter = bvNone
+          ShowCaption = False
           TabOrder = 2
-          AltBtnWidth = 15
-          ButtonWidth = 15
-          HideButtonsOnReadOnly = False
-          OnButtonClick = edFolderTemplateButtonClick
+          DesignSize = (
+            441
+            78)
+          object Label18: TLabel
+            AlignWithMargins = True
+            Left = 9
+            Top = 9
+            Width = 429
+            Height = 13
+            Margins.Left = 9
+            Margins.Top = 9
+            Align = alTop
+            Caption = #1060#1086#1088#1084#1072#1090' '#1080#1084#1077#1085#1080
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+            ExplicitWidth = 82
+          end
+          object Label19: TLabel
+            Left = 15
+            Top = 31
+            Width = 38
+            Height = 13
+            Alignment = taRightJustify
+            Caption = #1055#1072#1087#1082#1072': '
+          end
+          object Label20: TLabel
+            Left = 15
+            Top = 58
+            Width = 33
+            Height = 13
+            Alignment = taRightJustify
+            Caption = #1060#1072#1081#1083': '
+          end
+          object btnFolderTemplate: TButton
+            Left = 359
+            Top = 26
+            Width = 75
+            Height = 25
+            Anchors = [akTop, akRight]
+            Caption = #1048#1079#1084#1077#1085#1080#1090#1100
+            TabOrder = 1
+            OnClick = EditFolderTemplate
+          end
+          object btnFileNameTemplate: TButton
+            Left = 359
+            Top = 53
+            Width = 75
+            Height = 25
+            Anchors = [akTop, akRight]
+            Caption = #1048#1079#1084#1077#1085#1080#1090#1100
+            TabOrder = 3
+            OnClick = EditFileNameTemplate
+          end
+          object edFolderTemplate: TEdit
+            Left = 59
+            Top = 28
+            Width = 294
+            Height = 21
+            Anchors = [akLeft, akTop, akRight]
+            ReadOnly = True
+            TabOrder = 0
+            Text = '%f\%s'
+          end
+          object edFileNameTemplate: TEdit
+            Left = 59
+            Top = 55
+            Width = 294
+            Height = 21
+            Anchors = [akLeft, akTop, akRight]
+            ReadOnly = True
+            TabOrder = 2
+            Text = '%n%t'
+          end
+        end
+        object pnOtherOpt: TPanel
+          Left = 0
+          Top = 220
+          Width = 441
+          Height = 109
+          Align = alTop
+          BevelOuter = bvNone
+          ShowCaption = False
+          TabOrder = 3
+          DesignSize = (
+            441
+            109)
+          object Label5: TLabel
+            AlignWithMargins = True
+            Left = 9
+            Top = 9
+            Width = 429
+            Height = 13
+            Margins.Left = 9
+            Margins.Top = 9
+            Align = alTop
+            Caption = #1055#1088#1086#1095#1080#1077
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+            ExplicitWidth = 42
+          end
+          object Label1: TLabel
+            Left = 15
+            Top = 65
+            Width = 81
+            Height = 13
+            Alignment = taRightJustify
+            Caption = #1050#1086#1076#1080#1088#1086#1074#1082#1072' TXT:'
+          end
+          object cbSquareFilter: TCheckBox
+            AlignWithMargins = True
+            Left = 15
+            Top = 28
+            Width = 423
+            Height = 27
+            Margins.Left = 15
+            Align = alTop
+            Caption = #1042#1082#1083#1102#1095#1080#1090#1100' '#1092#1080#1083#1100#1090#1088' "[ ... ]"'
+            TabOrder = 0
+            WordWrap = True
+          end
+          object cbTXTEncoding: TComboBox
+            Left = 102
+            Top = 62
+            Width = 332
+            Height = 21
+            Style = csDropDownList
+            Anchors = [akLeft, akTop, akRight]
+            ItemIndex = 0
+            TabOrder = 1
+            Text = 'UTF-8'
+            Items.Strings = (
+              'UTF-8'
+              'Windows-1251')
+          end
         end
       end
-      object RzGroupBox4: TRzGroupBox
+      object pnReadDir: TPanel
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 400
-        Height = 69
+        Width = 441
+        Height = 46
+        Margins.Bottom = 9
         Align = alTop
-        Caption = #1055#1072#1087#1082#1072' '#1085#1072' '#1091#1089#1090#1088#1086#1081#1089#1090#1074#1077' '
-        TabOrder = 1
-        object edDeviceDir: TRzButtonEdit
-          Left = 11
-          Top = 18
-          Width = 374
-          Height = 21
-          HelpContext = 5001
-          TabOrder = 0
-          AltBtnWidth = 15
-          ButtonWidth = 15
-          OnButtonClick = edDeviceDirButtonClick
-        end
-        object cbPromptPath: TCheckBox
-          Left = 13
-          Top = 45
-          Width = 278
-          Height = 20
-          Caption = #1057#1087#1088#1072#1096#1080#1074#1072#1090#1100' '#1087#1091#1090#1100' '#1082#1072#1078#1076#1099#1081' '#1088#1072#1079
-          TabOrder = 1
-          WordWrap = True
-        end
-      end
-      object rgDeviceFormat: TRadioGroup
-        AlignWithMargins = True
-        Left = 3
-        Top = 135
-        Width = 400
-        Height = 50
-        Align = alTop
-        Caption = #1060#1086#1088#1084#1072#1090' '#1079#1072#1087#1080#1089#1080' '#1085#1072' '#1091#1089#1090#1088#1086#1081#1089#1090#1074#1086
-        Columns = 6
-        ItemIndex = 0
-        Items.Strings = (
-          '.fb2'
-          '.fb2.zip'
-          '.lrf '
-          '.txt'
-          '.epub'
-          '.pdf')
-        TabOrder = 2
-      end
-      object RzGroupBox5: TRzGroupBox
-        AlignWithMargins = True
-        Left = 3
-        Top = 339
-        Width = 400
-        Height = 57
-        Align = alClient
-        Caption = #1054#1087#1094#1080#1080
-        TabOrder = 3
-        object Label1: TLabel
-          Left = 181
-          Top = 26
-          Width = 77
+        AutoSize = True
+        BevelOuter = bvNone
+        ShowCaption = False
+        TabOrder = 0
+        DesignSize = (
+          441
+          46)
+        object Label15: TLabel
+          AlignWithMargins = True
+          Left = 3
+          Top = 3
+          Width = 435
           Height = 13
-          Alignment = taRightJustify
-          Caption = #1050#1086#1076#1080#1088#1086#1074#1082#1072' TXT'
+          Align = alTop
+          Caption = #1055#1072#1087#1082#1072' "'#1076#1083#1103' '#1095#1090#1077#1085#1080#1103'"'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          ExplicitWidth = 118
         end
-        object cbSquareFilter: TCheckBox
-          Left = 11
-          Top = 20
-          Width = 150
-          Height = 27
-          Caption = #1042#1082#1083#1102#1095#1080#1090#1100' '#1092#1080#1083#1100#1090#1088' "[ ... ]"'
-          TabOrder = 0
-          WordWrap = True
-        end
-        object cbTXTEncoding: TRzComboBox
-          Left = 264
+        object edReadDir: TMHLAutoCompleteEdit
+          Left = 9
           Top = 23
-          Width = 121
+          Width = 344
           Height = 21
-          TabOrder = 1
-          Text = 'UTF-8'
-          Items.Strings = (
-            'UTF-8'
-            'Windows-1251')
-        end
-      end
-      object RzGroupBox11: TRzGroupBox
-        AlignWithMargins = True
-        Left = 3
-        Top = 78
-        Width = 400
-        Height = 51
-        Align = alTop
-        Caption = #1055#1072#1087#1082#1072' "'#1076#1083#1103' '#1095#1090#1077#1085#1080#1103'"'
-        TabOrder = 4
-        object edReadDir: TRzButtonEdit
-          Left = 11
-          Top = 18
-          Width = 374
-          Height = 21
-          HelpContext = 5001
+          Anchors = [akLeft, akTop, akRight]
           TabOrder = 0
-          AltBtnWidth = 15
-          ButtonWidth = 15
-          OnButtonClick = edDeviceDirButtonClick
+          TextHint = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1087#1072#1087#1082#1091' '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102
+        end
+        object btnSelectReadDir: TButton
+          Left = 359
+          Top = 21
+          Width = 75
+          Height = 25
+          Anchors = [akTop, akRight]
+          Caption = #1042#1099#1073#1088#1072#1090#1100
+          TabOrder = 1
+          OnClick = SelectFolder
         end
       end
     end
@@ -251,65 +379,83 @@ object frmSettings: TfrmSettings
       Caption = 'tsReaders'
       ImageIndex = 1
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object RzGroupBox8: TRzGroupBox
+      object Label11: TLabel
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 400
-        Height = 393
-        Align = alClient
+        Width = 441
+        Height = 13
+        Align = alTop
         Caption = #1058#1080#1087#1099' '#1092#1072#1081#1083#1086#1074' '#1080' '#1087#1088#1086#1089#1084#1086#1090#1088#1097#1080#1082#1080
-        TabOrder = 0
-        object lvReaders: TRzListView
-          Left = 6
-          Top = 24
-          Width = 379
-          Height = 325
-          Columns = <
-            item
-              Caption = #1056#1072#1089#1096#1080#1088#1077#1085#1080#1077
-              Width = 80
-            end
-            item
-              Caption = #1055#1091#1090#1100
-              Width = 265
-            end>
-          EditOnRowClick = True
-          FillLastColumn = False
-          FlatScrollBars = True
-          GridLines = True
-          ReadOnly = True
-          RowSelect = True
-          ShowWorkAreas = True
-          TabOrder = 2
-          ViewStyle = vsReport
-          OnDblClick = btnChangeExtClick
-        end
-        object btnDeleteExt: TRzBitBtn
-          Left = 312
-          Top = 355
-          Caption = #1059#1076#1072#1083#1080#1090#1100
-          TabOrder = 3
-          OnClick = btnDeleteExtClick
-        end
-        object btnChangeExt: TRzBitBtn
-          Left = 87
-          Top = 355
-          Caption = #1048#1079#1084#1077#1085#1080#1090#1100
-          TabOrder = 1
-          OnClick = btnChangeExtClick
-        end
-        object btnAddExt: TRzBitBtn
-          Left = 6
-          Top = 355
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+        ExplicitWidth = 173
+      end
+      object Panel1: TPanel
+        Left = 0
+        Top = 415
+        Width = 447
+        Height = 33
+        Align = alBottom
+        BevelOuter = bvNone
+        ShowCaption = False
+        TabOrder = 1
+        object btnAddExt: TButton
+          Left = 3
+          Top = 3
+          Width = 75
+          Height = 25
           Caption = #1044#1086#1073#1072#1074#1080#1090#1100
           TabOrder = 0
           OnClick = btnAddExtClick
         end
+        object btnChangeExt: TButton
+          Left = 84
+          Top = 3
+          Width = 75
+          Height = 25
+          Caption = #1048#1079#1084#1077#1085#1080#1090#1100
+          TabOrder = 1
+          OnClick = btnChangeExtClick
+        end
+        object btnDeleteExt: TButton
+          Left = 165
+          Top = 3
+          Width = 75
+          Height = 25
+          Caption = #1059#1076#1072#1083#1080#1090#1100
+          TabOrder = 2
+          OnClick = btnDeleteExtClick
+        end
+      end
+      object lvReaders: TListView
+        AlignWithMargins = True
+        Left = 3
+        Top = 22
+        Width = 441
+        Height = 390
+        Align = alClient
+        Columns = <
+          item
+            Caption = #1056#1072#1089#1096#1080#1088#1077#1085#1080#1077
+            Width = 80
+          end
+          item
+            AutoSize = True
+            Caption = #1055#1091#1090#1100
+          end>
+        ColumnClick = False
+        GridLines = True
+        HideSelection = False
+        ReadOnly = True
+        RowSelect = True
+        TabOrder = 0
+        ViewStyle = vsReport
+        OnDblClick = btnChangeExtClick
       end
     end
     object tsInterface: TTabSheet
@@ -317,57 +463,66 @@ object frmSettings: TfrmSettings
       Caption = 'tsInterface'
       ImageIndex = 2
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object RzGroupBox6: TRzGroupBox
+      object Panel8: TPanel
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 400
-        Height = 393
-        Align = alClient
-        Caption = #1057#1087#1080#1089#1082#1080
+        Width = 441
+        Height = 163
+        Align = alTop
+        AutoSize = True
+        BevelOuter = bvNone
+        ShowCaption = False
         TabOrder = 0
-        object Label9: TLabel
-          Left = 19
-          Top = 45
-          Width = 138
+        object Label31: TLabel
+          AlignWithMargins = True
+          Left = 3
+          Top = 3
+          Width = 435
           Height = 13
-          Caption = #1056#1072#1079#1084#1077#1088' '#1096#1088#1080#1092#1090#1072' '#1072#1085#1085#1086#1090#1072#1094#1080#1080' '
-        end
-        object Label7: TLabel
-          Left = 24
-          Top = 15
-          Width = 133
-          Height = 13
-          Caption = #1056#1072#1079#1084#1077#1088' '#1096#1088#1080#1092#1090#1072' '#1074' '#1089#1087#1080#1089#1082#1072#1093' '
-        end
-        object pnlASG: TRzPanel
-          Left = 24
-          Top = 97
-          Width = 350
-          Height = 25
-          BorderOuter = fsFlatBold
-          Caption = #1057#1087#1080#1089#1086#1082' '#1072#1074#1090#1086#1088#1086#1074'/'#1057#1077#1088#1080#1081'/'#1046#1072#1085#1088#1086#1074
-          Color = clWhite
+          Align = alTop
+          Caption = #1064#1088#1080#1092#1090
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
           Font.Name = 'Tahoma'
-          Font.Style = []
+          Font.Style = [fsBold]
           ParentFont = False
-          TabOrder = 0
-          OnClick = pnlCAClick
+          ExplicitWidth = 40
         end
-        object pnlCT: TRzPanel
-          Left = 24
-          Top = 128
-          Width = 174
+        object Label7: TLabel
+          Left = 9
+          Top = 25
+          Width = 134
+          Height = 13
+          Caption = #1056#1072#1079#1084#1077#1088' '#1096#1088#1080#1092#1090#1072' '#1074' '#1089#1087#1080#1089#1082#1072#1093':'
+          FocusControl = edFontSize
+        end
+        object Label9: TLabel
+          Left = 9
+          Top = 52
+          Width = 139
+          Height = 13
+          Caption = #1056#1072#1079#1084#1077#1088' '#1096#1088#1080#1092#1090#1072' '#1072#1085#1085#1086#1090#1072#1094#1080#1080':'
+          FocusControl = edShortFontSize
+        end
+        object Button1: TButton
+          Left = 223
+          Top = 76
+          Width = 75
           Height = 25
-          BorderOuter = fsFlatBold
-          Caption = #1050#1085#1080#1075#1072' '#1073#1077#1079' '#1089#1077#1088#1080#1080
+          Caption = #1048#1079#1084#1077#1085#1080#1090#1100
+          TabOrder = 0
+          OnClick = SetDefaultFontColor
+        end
+        object pnDeletedFontColor: TPanel
+          Left = 9
+          Top = 138
+          Width = 208
+          Height = 25
+          BevelKind = bkFlat
+          BevelOuter = bvNone
+          Caption = #1059#1076#1072#1083#1077#1085#1085#1099#1077' '#1074' '#1086#1085#1083#1072#1081#1085' '#1073#1080#1073#1083#1080#1086#1090#1077#1082#1077
           Color = clWhite
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -376,15 +531,15 @@ object frmSettings: TfrmSettings
           Font.Style = []
           ParentFont = False
           TabOrder = 1
-          OnClick = pnlCAClick
         end
-        object pnlBS: TRzPanel
-          Left = 204
-          Top = 128
-          Width = 170
+        object pnDownloadedFontColor: TPanel
+          Left = 9
+          Top = 107
+          Width = 208
           Height = 25
-          BorderOuter = fsFlatBold
-          Caption = #1050#1085#1080#1075#1072' '#1074#1085#1091#1090#1088#1080' '#1089#1077#1088#1080#1080
+          BevelKind = bkFlat
+          BevelOuter = bvNone
+          Caption = #1057#1082#1072#1095#1072#1085#1085#1099#1077' '#1082#1085#1080#1075#1080
           Color = clWhite
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -393,123 +548,235 @@ object frmSettings: TfrmSettings
           Font.Style = []
           ParentFont = False
           TabOrder = 2
-          OnClick = pnlCAClick
         end
-        object pnlCS: TRzPanel
-          Left = 204
-          Top = 66
-          Width = 170
-          Height = 25
-          BorderOuter = fsFlatBold
-          Caption = #1057#1077#1088#1080#1103
-          Color = clWhite
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsBold]
-          ParentFont = False
-          TabOrder = 3
-          OnClick = pnlCAClick
-        end
-        object pnlCA: TRzPanel
-          Left = 24
-          Top = 66
-          Width = 174
-          Height = 25
-          BorderOuter = fsFlatBold
-          Caption = #1040#1074#1090#1086#1088
-          Color = clWhite
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsBold]
-          ParentFont = False
-          TabOrder = 4
-          OnClick = pnlCAClick
-        end
-        object seShortFontSize: TRzSpinEdit
-          Left = 163
-          Top = 39
+        object edFontSize: TEdit
+          Left = 154
+          Top = 22
           Width = 47
           Height = 21
-          Max = 20.000000000000000000
-          Min = 6.000000000000000000
-          Value = 10.000000000000000000
+          Alignment = taRightJustify
+          NumbersOnly = True
+          TabOrder = 3
+          Text = '10'
+          OnExit = CheckNumValue
+        end
+        object edShortFontSize: TEdit
+          Left = 154
+          Top = 49
+          Width = 47
+          Height = 21
+          Alignment = taRightJustify
+          NumbersOnly = True
+          TabOrder = 4
+          Text = '10'
+          OnExit = CheckNumValue
+        end
+        object udFontSize: TUpDown
+          Left = 201
+          Top = 22
+          Width = 16
+          Height = 21
+          Associate = edFontSize
+          Min = 6
+          Max = 20
+          Position = 10
           TabOrder = 5
         end
-        object seFontSize: TRzSpinEdit
-          Left = 163
-          Top = 12
-          Width = 47
+        object udShortFontSize: TUpDown
+          Left = 201
+          Top = 49
+          Width = 16
           Height = 21
-          Max = 20.000000000000000000
-          Min = 6.000000000000000000
-          Value = 10.000000000000000000
+          Associate = edShortFontSize
+          Min = 6
+          Max = 20
+          Position = 10
           TabOrder = 6
         end
-        object Button1: TButton
-          Left = 229
-          Top = 10
-          Width = 137
+        object pnDefaultFontColor: TPanel
+          Left = 9
+          Top = 76
+          Width = 208
           Height = 25
-          Caption = #1062#1074#1077#1090' '#1096#1088#1080#1092#1090#1072
+          BevelKind = bkFlat
+          BevelOuter = bvNone
+          Caption = #1062#1074#1077#1090' '#1096#1088#1080#1092#1090#1072' '#1089#1087#1080#1089#1082#1086#1074
+          Color = clWhite
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
           TabOrder = 7
-          OnClick = Button1Click
         end
-        object pnlDwnld: TRzPanel
-          Left = 24
-          Top = 185
-          Width = 174
+        object btnDownloadedFontColor: TButton
+          Left = 223
+          Top = 107
+          Width = 75
           Height = 25
-          BorderOuter = fsFlatBold
-          Caption = #1057#1082#1072#1095#1072#1085#1085#1099#1077
-          Color = clWhite
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
+          Caption = #1048#1079#1084#1077#1085#1080#1090#1100
           TabOrder = 8
-          OnClick = pnlDwnldClick
+          OnClick = SetCustomFontColor
         end
-        object pnlDeleted: TRzPanel
-          Left = 204
-          Top = 185
-          Width = 170
+        object btnDeletedFontColor: TButton
+          Left = 223
+          Top = 138
+          Width = 75
           Height = 25
-          BorderOuter = fsFlatBold
-          Caption = #1059#1076#1072#1083#1077#1085#1085#1099#1077' '#1085#1072' lib.rus.ec'
-          Color = clWhite
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
+          Caption = #1048#1079#1084#1077#1085#1080#1090#1100
           TabOrder = 9
-          OnClick = pnlDwnldClick
+          OnClick = SetCustomFontColor
         end
-        object RzPanel5: TRzPanel
-          Left = 24
-          Top = 216
-          Width = 174
+      end
+      object Panel10: TPanel
+        AlignWithMargins = True
+        Left = 3
+        Top = 172
+        Width = 441
+        Height = 189
+        Align = alTop
+        BevelOuter = bvNone
+        ShowCaption = False
+        TabOrder = 1
+        object Label32: TLabel
+          AlignWithMargins = True
+          Left = 3
+          Top = 3
+          Width = 435
+          Height = 13
+          Align = alTop
+          Caption = #1062#1074#1077#1090' '#1092#1086#1085#1072
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          ExplicitWidth = 63
+        end
+        object btnCA: TButton
+          Left = 223
+          Top = 22
+          Width = 75
           Height = 25
-          BorderOuter = fsFlatBold
-          Caption = #1055#1088#1086#1095#1080#1090#1072#1085#1085#1099#1077
+          Caption = #1048#1079#1084#1077#1085#1080#1090#1100
+          TabOrder = 0
+          OnClick = SetBackgroundColor
+        end
+        object btnCS: TButton
+          Left = 223
+          Top = 53
+          Width = 75
+          Height = 25
+          Caption = #1048#1079#1084#1077#1085#1080#1090#1100
+          TabOrder = 1
+          OnClick = SetBackgroundColor
+        end
+        object btnASG: TButton
+          Left = 223
+          Top = 84
+          Width = 75
+          Height = 25
+          Caption = #1048#1079#1084#1077#1085#1080#1090#1100
+          TabOrder = 2
+          OnClick = SetBackgroundColor
+        end
+        object pnASG: TPanel
+          Left = 9
+          Top = 84
+          Width = 208
+          Height = 25
+          BevelKind = bkFlat
+          BevelOuter = bvNone
+          Caption = #1057#1087#1080#1089#1086#1082' '#1072#1074#1090#1086#1088#1086#1074'/'#1057#1077#1088#1080#1081'/'#1046#1072#1085#1088#1086#1074
           Color = clWhite
-          Enabled = False
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
+          ParentBackground = False
           ParentFont = False
-          TabOrder = 10
-          Visible = False
-          OnClick = pnlDwnldClick
+          TabOrder = 3
+        end
+        object pnBS: TPanel
+          Left = 9
+          Top = 146
+          Width = 208
+          Height = 25
+          BevelKind = bkFlat
+          BevelOuter = bvNone
+          Caption = #1050#1085#1080#1075#1072' '#1074#1085#1091#1090#1088#1080' '#1089#1077#1088#1080#1080
+          Color = clWhite
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentBackground = False
+          ParentFont = False
+          TabOrder = 4
+        end
+        object pnCA: TPanel
+          Left = 9
+          Top = 22
+          Width = 208
+          Height = 25
+          BevelKind = bkFlat
+          BevelOuter = bvNone
+          Caption = #1040#1074#1090#1086#1088
+          Color = clWhite
+          ParentBackground = False
+          TabOrder = 5
+        end
+        object pnCS: TPanel
+          Left = 9
+          Top = 53
+          Width = 208
+          Height = 25
+          BevelKind = bkFlat
+          BevelOuter = bvNone
+          Caption = #1057#1077#1088#1080#1103
+          Color = clWhite
+          ParentBackground = False
+          TabOrder = 6
+        end
+        object pnCT: TPanel
+          Left = 9
+          Top = 115
+          Width = 208
+          Height = 25
+          BevelKind = bkFlat
+          BevelOuter = bvNone
+          Caption = #1050#1085#1080#1075#1072' '#1073#1077#1079' '#1089#1077#1088#1080#1080
+          Color = clWhite
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentBackground = False
+          ParentFont = False
+          TabOrder = 7
+        end
+        object btnCT: TButton
+          Left = 223
+          Top = 115
+          Width = 75
+          Height = 25
+          Caption = #1048#1079#1084#1077#1085#1080#1090#1100
+          TabOrder = 8
+          OnClick = SetBackgroundColor
+        end
+        object btnBS: TButton
+          Left = 223
+          Top = 146
+          Width = 75
+          Height = 25
+          Caption = #1048#1079#1084#1077#1085#1080#1090#1100
+          TabOrder = 9
+          OnClick = SetBackgroundColor
         end
       end
     end
@@ -518,262 +785,388 @@ object frmSettings: TfrmSettings
       Caption = 'tsInternet'
       ImageIndex = 4
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object RzGroupBox1: TRzGroupBox
+      object Panel5: TPanel
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 400
-        Height = 101
+        Width = 441
+        Height = 95
         Align = alTop
-        Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1082#1089#1080
+        AutoSize = True
+        BevelOuter = bvNone
+        ShowCaption = False
         TabOrder = 0
-        object RzLabel1: TRzLabel
-          Left = 16
+        DesignSize = (
+          441
+          95)
+        object Label25: TLabel
+          AlignWithMargins = True
+          Left = 3
+          Top = 3
+          Width = 435
+          Height = 13
+          Align = alTop
+          Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1082#1089#1080
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          ExplicitWidth = 104
+        end
+        object lblProxyPassword: TLabel
+          Left = 281
+          Top = 77
+          Width = 41
+          Height = 13
+          Anchors = [akTop, akRight]
+          Caption = #1055#1072#1088#1086#1083#1100':'
+          Color = clMenuBar
+          FocusControl = edProxyPassword
+          ParentColor = False
+          Transparent = True
+          ExplicitLeft = 256
+        end
+        object lblProxyPort: TLabel
+          Left = 330
           Top = 50
-          Width = 37
+          Width = 29
           Height = 13
-          Alignment = taRightJustify
-          Caption = #1057#1077#1088#1074#1077#1088
+          Anchors = [akTop, akRight]
+          Caption = #1055#1086#1088#1090':'
           Color = clMenuBar
+          FocusControl = edProxyPort
           ParentColor = False
           Transparent = True
-          ShadowColor = clMenuBar
+          ExplicitLeft = 305
         end
-        object RzLabel2: TRzLabel
-          Left = 289
+        object lblProxyServer: TLabel
+          Left = 15
           Top = 50
-          Width = 25
+          Width = 41
           Height = 13
-          Alignment = taRightJustify
-          Caption = #1055#1086#1088#1090
+          Caption = #1057#1077#1088#1074#1077#1088':'
           Color = clMenuBar
+          FocusControl = edProxyServer
           ParentColor = False
           Transparent = True
         end
-        object RzLabel3: TRzLabel
-          Left = 16
-          Top = 81
-          Width = 72
+        object lblProxyUser: TLabel
+          Left = 15
+          Top = 77
+          Width = 76
           Height = 13
-          Alignment = taRightJustify
-          Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1100
+          Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1100':'
           Color = clMenuBar
+          FocusControl = edProxyUsername
           ParentColor = False
           Transparent = True
         end
-        object RzLabel4: TRzLabel
-          Left = 237
-          Top = 81
-          Width = 37
-          Height = 13
-          Alignment = taRightJustify
-          Caption = #1055#1072#1088#1086#1083#1100
-          Color = clMenuBar
-          ParentColor = False
-          Transparent = True
-        end
-        object edProxyServer: TRzEdit
-          Left = 59
-          Top = 47
-          Width = 214
-          Height = 21
+        object cbUseIESettings: TCheckBox
+          AlignWithMargins = True
+          Left = 9
+          Top = 22
+          Width = 429
+          Height = 17
+          Margins.Left = 9
+          Align = alTop
+          Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1085#1072#1089#1090#1088#1086#1081#1082#1080' Internet Explorer'
           TabOrder = 0
+          OnClick = cbUseIESettingsClick
         end
-        object edProxyUsername: TRzEdit
-          Left = 94
-          Top = 75
-          Width = 115
-          Height = 21
-          TabOrder = 1
-        end
-        object edProxyPassword: TRzMaskEdit
-          Left = 280
+        object edProxyPassword: TEdit
+          Left = 328
           Top = 74
           Width = 105
           Height = 21
-          PasswordChar = #7
-          TabOrder = 2
-        end
-        object edProxyPort: TRzNumericEdit
-          Left = 320
-          Top = 47
-          Width = 65
-          Height = 21
-          TabOrder = 3
-          CheckRange = True
-          Max = 65535.000000000000000000
-          DisplayFormat = '0'
-        end
-        object cbUseIESettings: TCheckBox
-          Left = 16
-          Top = 21
-          Width = 337
-          Height = 17
-          Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1085#1072#1089#1090#1088#1086#1081#1082#1080' Internet Explorer'
+          Anchors = [akTop, akRight]
+          PasswordChar = '*'
           TabOrder = 4
-          OnClick = cbUseIESettingsClick
         end
-      end
-      object RzGroupBox9: TRzGroupBox
-        AlignWithMargins = True
-        Left = 3
-        Top = 213
-        Width = 400
-        Height = 109
-        Align = alTop
-        Caption = #1057#1077#1088#1074#1077#1088' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
-        TabOrder = 1
-        object edUpdates: TEdit
-          Left = 13
-          Top = 18
-          Width = 372
+        object edProxyPort: TEdit
+          Left = 365
+          Top = 47
+          Width = 68
           Height = 21
-          TabOrder = 0
-          Text = 'http://home-lib.net/update/'
+          Alignment = taRightJustify
+          Anchors = [akTop, akRight]
+          MaxLength = 5
+          NumbersOnly = True
+          TabOrder = 2
+          OnExit = CheckNumValue
         end
-        object cbCheckColUpdate: TCheckBox
-          Left = 16
-          Top = 46
-          Width = 337
-          Height = 17
-          Caption = #1055#1088#1086#1074#1077#1088#1103#1090#1100' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1103' '#1082#1072#1090#1072#1083#1086#1075#1072' lib.rus.ec '#1087#1088#1080' '#1079#1072#1087#1091#1089#1082#1077
+        object edProxyServer: TEdit
+          Left = 62
+          Top = 47
+          Width = 256
+          Height = 21
+          Anchors = [akLeft, akTop, akRight]
           TabOrder = 1
         end
-        object cbUpdates: TCheckBox
-          Left = 16
-          Top = 86
-          Width = 353
-          Height = 17
-          Caption = #1055#1088#1086#1074#1077#1088#1103#1090#1100' '#1085#1072#1083#1080#1095#1080#1077' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081' '#1087#1088#1086#1075#1088#1072#1084#1084#1099' '#1087#1088#1080' '#1079#1072#1087#1091#1089#1082#1077
-          TabOrder = 2
-        end
-        object cbAutoRunUpdate: TCheckBox
-          Left = 16
-          Top = 66
-          Width = 337
-          Height = 17
-          Caption = #1047#1072#1087#1091#1089#1082#1072#1090#1100' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1077' '#1082#1072#1090#1072#1083#1086#1075#1072' lib.rus.ec '#1072#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080
+        object edProxyUsername: TEdit
+          Left = 97
+          Top = 74
+          Width = 172
+          Height = 21
+          Anchors = [akLeft, akTop, akRight]
           TabOrder = 3
         end
       end
-      object RzGroupBox10: TRzGroupBox
-        AlignWithMargins = True
-        Left = 3
-        Top = 328
-        Width = 400
-        Height = 68
-        Align = alClient
-        Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1089#1086#1077#1076#1080#1085#1077#1085#1080#1103
-        TabOrder = 2
-        object RzLabel7: TRzLabel
-          Left = 16
-          Top = 22
-          Width = 131
-          Height = 13
-          Alignment = taRightJustify
-          Caption = #1058#1072#1081#1084'-'#1072#1091#1090' '#1089#1086#1077#1076#1080#1085#1077#1085#1080#1103' ('#1084#1089')'
-          Color = clMenuBar
-          ParentColor = False
-          Transparent = True
-        end
-        object RzLabel8: TRzLabel
-          Left = 40
-          Top = 46
-          Width = 107
-          Height = 13
-          Alignment = taRightJustify
-          Caption = #1058#1072#1081#1084'-'#1072#1091#1090' '#1095#1090#1077#1085#1080#1103' ('#1084#1089')'
-          Color = clMenuBar
-          ParentColor = False
-          Transparent = True
-        end
-        object RzLabel9: TRzLabel
-          Left = 252
-          Top = 22
-          Width = 71
-          Height = 13
-          Alignment = taRightJustify
-          Caption = #1048#1085#1090#1077#1088#1074#1072#1083' ('#1084#1089')'
-          Color = clMenuBar
-          ParentColor = False
-          Transparent = True
-        end
-        object edTimeOut: TRzNumericEdit
-          Left = 153
-          Top = 19
-          Width = 65
-          Height = 21
-          TabOrder = 0
-          CheckRange = True
-          Max = 100000.000000000000000000
-          Min = 1000.000000000000000000
-          Value = 10000.000000000000000000
-          DisplayFormat = ',0;(,0)'
-        end
-        object edReadTimeOut: TRzNumericEdit
-          Left = 153
-          Top = 43
-          Width = 65
-          Height = 21
-          TabOrder = 1
-          CheckRange = True
-          Max = 100000.000000000000000000
-          Min = 1000.000000000000000000
-          Value = 10000.000000000000000000
-          DisplayFormat = ',0;(,0)'
-        end
-        object edDwnldInterval: TRzNumericEdit
-          Left = 329
-          Top = 19
-          Width = 65
-          Height = 21
-          TabOrder = 2
-          CheckRange = True
-          Max = 900000.000000000000000000
-          Value = 10000.000000000000000000
-          DisplayFormat = ',0;(,0)'
-        end
-      end
-      object RzGroupBox2: TRzGroupBox
-        AlignWithMargins = True
-        Left = 3
-        Top = 110
-        Width = 400
-        Height = 43
+      object Panel7: TPanel
+        Left = 0
+        Top = 101
+        Width = 447
+        Height = 176
         Align = alTop
-        Caption = #1055#1072#1087#1082#1072' '#1089' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1103#1084#1080
-        TabOrder = 3
-        object edUpdateDir: TRzButtonEdit
-          Left = 11
-          Top = 18
-          Width = 374
+        AutoSize = True
+        BevelOuter = bvNone
+        ShowCaption = False
+        TabOrder = 1
+        DesignSize = (
+          447
+          176)
+        object Label27: TLabel
+          AlignWithMargins = True
+          Left = 3
+          Top = 9
+          Width = 441
+          Height = 13
+          Margins.Top = 9
+          Align = alTop
+          Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1103
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          ExplicitWidth = 140
+        end
+        object Label26: TLabel
+          Left = 12
+          Top = 31
+          Width = 118
+          Height = 13
+          Caption = #1055#1072#1087#1082#1072' '#1089' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1103#1084#1080':'
+          FocusControl = edUpdateDir
+        end
+        object Label28: TLabel
+          Left = 12
+          Top = 59
+          Width = 67
+          Height = 13
+          Caption = #1057#1077#1088#1074#1077#1088' INPX:'
+          FocusControl = edINPXUrl
+        end
+        object Label29: TLabel
+          Left = 12
+          Top = 86
+          Width = 104
+          Height = 13
+          Caption = #1057#1077#1088#1074#1077#1088' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081':'
+          FocusControl = edUpdates
+        end
+        object edUpdateDir: TMHLAutoCompleteEdit
+          Left = 136
+          Top = 28
+          Width = 219
           Height = 21
           HelpContext = 5001
+          Anchors = [akLeft, akTop, akRight]
           TabOrder = 0
-          AltBtnWidth = 15
-          ButtonWidth = 15
-          OnButtonClick = edDeviceDirButtonClick
+          TextHint = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1087#1072#1087#1082#1091' '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102
+        end
+        object btnUpdateDir: TButton
+          Left = 361
+          Top = 26
+          Width = 75
+          Height = 25
+          Anchors = [akTop, akRight]
+          Caption = #1042#1099#1073#1088#1072#1090#1100
+          TabOrder = 1
+          OnClick = SelectFolder
+        end
+        object edINPXUrl: TMHLAutoCompleteEdit
+          Left = 136
+          Top = 56
+          Width = 300
+          Height = 21
+          HelpContext = 5001
+          Anchors = [akLeft, akTop, akRight]
+          TabOrder = 2
+          AutoCompleteOption = [acoURLHistory, acoURLMRU]
+        end
+        object edUpdates: TMHLAutoCompleteEdit
+          Left = 136
+          Top = 83
+          Width = 300
+          Height = 21
+          HelpContext = 5001
+          Anchors = [akLeft, akTop, akRight]
+          TabOrder = 3
+          AutoCompleteOption = [acoURLHistory, acoURLMRU]
+        end
+        object cbAutoRunUpdate: TCheckBox
+          AlignWithMargins = True
+          Left = 12
+          Top = 133
+          Width = 425
+          Height = 17
+          Anchors = [akLeft, akTop, akRight]
+          Caption = #1047#1072#1087#1091#1089#1082#1072#1090#1100' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1077' '#1082#1072#1090#1072#1083#1086#1075#1072' '#1086#1085#1083#1072#1081#1085' '#1073#1080#1073#1083#1080#1086#1090#1077#1082' '#1072#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080
+          TabOrder = 5
+        end
+        object cbCheckColUpdate: TCheckBox
+          AlignWithMargins = True
+          Left = 12
+          Top = 110
+          Width = 425
+          Height = 17
+          Anchors = [akLeft, akTop, akRight]
+          Caption = #1055#1088#1086#1074#1077#1088#1103#1090#1100' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1103' '#1082#1072#1090#1072#1083#1086#1075#1072' '#1086#1085#1083#1072#1081#1085' '#1073#1080#1073#1083#1080#1086#1090#1077#1082' '#1087#1088#1080' '#1079#1072#1087#1091#1089#1082#1077
+          TabOrder = 4
+        end
+        object cbUpdates: TCheckBox
+          AlignWithMargins = True
+          Left = 12
+          Top = 156
+          Width = 425
+          Height = 17
+          Anchors = [akLeft, akTop, akRight]
+          Caption = #1055#1088#1086#1074#1077#1088#1103#1090#1100' '#1085#1072#1083#1080#1095#1080#1077' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081' '#1087#1088#1086#1075#1088#1072#1084#1084#1099' '#1087#1088#1080' '#1079#1072#1087#1091#1089#1082#1077
+          TabOrder = 6
         end
       end
-      object RzGroupBox17: TRzGroupBox
-        AlignWithMargins = True
-        Left = 3
-        Top = 159
-        Width = 400
-        Height = 48
+      object Panel6: TPanel
+        Left = 0
+        Top = 277
+        Width = 447
+        Height = 92
         Align = alTop
-        Caption = #1057#1077#1088#1074#1077#1088' INPX'
-        TabOrder = 4
-        object edINPXUrl: TEdit
-          Left = 12
-          Top = 19
-          Width = 373
+        BevelOuter = bvNone
+        ShowCaption = False
+        TabOrder = 2
+        object Label30: TLabel
+          AlignWithMargins = True
+          Left = 3
+          Top = 9
+          Width = 441
+          Height = 13
+          Margins.Top = 9
+          Align = alTop
+          Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1089#1086#1077#1076#1080#1085#1077#1085#1080#1103
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          ExplicitWidth = 140
+        end
+        object RzLabel7: TLabel
+          Left = 8
+          Top = 31
+          Width = 135
+          Height = 13
+          Alignment = taRightJustify
+          Caption = #1058#1072#1081#1084'-'#1072#1091#1090' '#1089#1086#1077#1076#1080#1085#1077#1085#1080#1103' ('#1084#1089'):'
+          Color = clMenuBar
+          FocusControl = edTimeOut
+          ParentColor = False
+          Transparent = True
+        end
+        object RzLabel8: TLabel
+          Left = 32
+          Top = 58
+          Width = 111
+          Height = 13
+          Alignment = taRightJustify
+          Caption = #1058#1072#1081#1084'-'#1072#1091#1090' '#1095#1090#1077#1085#1080#1103' ('#1084#1089'):'
+          Color = clMenuBar
+          FocusControl = edReadTimeOut
+          ParentColor = False
+          Transparent = True
+        end
+        object RzLabel9: TLabel
+          Left = 248
+          Top = 31
+          Width = 75
+          Height = 13
+          Alignment = taRightJustify
+          Caption = #1048#1085#1090#1077#1088#1074#1072#1083' ('#1084#1089'):'
+          Color = clMenuBar
+          FocusControl = edDwnldInterval
+          ParentColor = False
+          Transparent = True
+        end
+        object edDwnldInterval: TEdit
+          Left = 329
+          Top = 28
+          Width = 65
           Height = 21
+          Alignment = taRightJustify
+          NumbersOnly = True
+          TabOrder = 2
+          Text = '0'
+          OnExit = CheckNumValue
+        end
+        object edReadTimeOut: TEdit
+          Left = 149
+          Top = 55
+          Width = 65
+          Height = 21
+          Alignment = taRightJustify
+          NumbersOnly = True
+          TabOrder = 4
+          Text = '1'#160'000'
+          OnExit = CheckNumValue
+        end
+        object edTimeOut: TEdit
+          Left = 149
+          Top = 28
+          Width = 65
+          Height = 21
+          Alignment = taRightJustify
+          NumbersOnly = True
           TabOrder = 0
+          Text = '1'#160'000'
+          OnChange = edTimeOutChange
+          OnExit = CheckNumValue
+        end
+        object udTimeOut: TUpDown
+          Left = 214
+          Top = 28
+          Width = 16
+          Height = 21
+          Associate = edTimeOut
+          Min = 1000
+          Max = 100000
+          Increment = 1000
+          Position = 1000
+          TabOrder = 1
+        end
+        object udReadTimeOut: TUpDown
+          Left = 214
+          Top = 55
+          Width = 16
+          Height = 21
+          Associate = edReadTimeOut
+          Min = 1000
+          Max = 100000
+          Increment = 1000
+          Position = 1000
+          TabOrder = 5
+        end
+        object udDwnldInterval: TUpDown
+          Left = 394
+          Top = 28
+          Width = 16
+          Height = 21
+          Associate = edDwnldInterval
+          Max = 900000
+          Increment = 1000
+          TabOrder = 3
         end
       end
     end
@@ -782,234 +1175,287 @@ object frmSettings: TfrmSettings
       Caption = 'tsScripts'
       ImageIndex = 4
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object RzGroupBox523324: TRzGroupBox
+      object Label12: TLabel
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 400
-        Height = 329
-        Align = alClient
+        Width = 441
+        Height = 13
+        Align = alTop
         Caption = #1057#1082#1088#1080#1087#1090#1099
-        TabOrder = 0
-        object lvScripts: TRzListView
-          AlignWithMargins = True
-          Left = 4
-          Top = 17
-          Width = 392
-          Height = 278
-          Align = alTop
-          Columns = <
-            item
-              Caption = #1053#1072#1079#1074#1072#1085#1080#1077
-              Width = 80
-            end
-            item
-              Caption = #1055#1091#1090#1100
-              Width = 150
-            end
-            item
-              Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099
-              Width = 135
-            end>
-          EditOnRowClick = True
-          FillLastColumn = False
-          FlatScrollBars = True
-          GridLines = True
-          ReadOnly = True
-          RowSelect = True
-          ShowWorkAreas = True
-          TabOrder = 2
-          ViewStyle = vsReport
-          OnDblClick = btnEditScriptClick
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+        ExplicitWidth = 51
+      end
+      object Panel2: TPanel
+        Left = 0
+        Top = 379
+        Width = 447
+        Height = 69
+        Align = alBottom
+        BevelOuter = bvNone
+        ShowCaption = False
+        TabOrder = 1
+        DesignSize = (
+          447
+          69)
+        object Label13: TLabel
+          Left = 3
+          Top = 44
+          Width = 128
+          Height = 13
+          Caption = #1044#1077#1081#1089#1090#1074#1080#1077' '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102':'
+          FocusControl = cbDefaultAction
         end
-        object btnDeleteScript: TRzBitBtn
-          Left = 312
-          Top = 300
-          Caption = #1059#1076#1072#1083#1080#1090#1100
-          TabOrder = 3
-          OnClick = btnDeleteScriptClick
-        end
-        object btnEditScript: TRzBitBtn
-          Left = 87
-          Top = 300
-          Caption = #1048#1079#1084#1077#1085#1080#1090#1100
-          TabOrder = 1
-          OnClick = btnEditScriptClick
-        end
-        object btnAddScript: TRzBitBtn
-          Left = 6
-          Top = 300
+        object btnAddScript: TButton
+          Left = 3
+          Top = 3
+          Width = 75
+          Height = 25
           Caption = #1044#1086#1073#1072#1074#1080#1090#1100
           TabOrder = 0
           OnClick = btnAddScriptClick
         end
+        object btnEditScript: TButton
+          Left = 84
+          Top = 3
+          Width = 75
+          Height = 25
+          Caption = #1048#1079#1084#1077#1085#1080#1090#1100
+          TabOrder = 1
+          OnClick = btnEditScriptClick
+        end
+        object btnDeleteScript: TButton
+          Left = 165
+          Top = 3
+          Width = 75
+          Height = 25
+          Caption = #1059#1076#1072#1083#1080#1090#1100
+          TabOrder = 2
+          OnClick = btnDeleteScriptClick
+        end
+        object cbDefaultAction: TComboBox
+          Left = 137
+          Top = 41
+          Width = 307
+          Height = 21
+          Style = csDropDownList
+          Anchors = [akLeft, akTop, akRight]
+          TabOrder = 3
+        end
       end
-      object RzGroupBox5343245: TRzGroupBox
+      object lvScripts: TListView
         AlignWithMargins = True
         Left = 3
-        Top = 338
-        Width = 400
-        Height = 58
-        Align = alBottom
-        Caption = #1044#1077#1081#1089#1090#1074#1080#1077' '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102
-        TabOrder = 1
-        object cbDefaultAction: TComboBox
-          Left = 6
-          Top = 24
-          Width = 379
-          Height = 21
-          TabOrder = 0
-          Text = #1057#1090#1072#1085#1076#1072#1088#1090#1085#1086#1077
-        end
+        Top = 22
+        Width = 441
+        Height = 354
+        Align = alClient
+        Columns = <
+          item
+            Caption = #1053#1072#1079#1074#1072#1085#1080#1077
+            Width = 80
+          end
+          item
+            AutoSize = True
+            Caption = #1055#1091#1090#1100
+          end
+          item
+            Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099
+            Width = 135
+          end>
+        ColumnClick = False
+        GridLines = True
+        HideSelection = False
+        ReadOnly = True
+        RowSelect = True
+        TabOrder = 0
+        ViewStyle = vsReport
+        OnDblClick = btnEditScriptClick
       end
     end
     object tsBehavour: TTabSheet
       Caption = 'tsBehavior'
       ImageIndex = 5
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object RzGroupBox7: TRzGroupBox
+      object Panel3: TPanel
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 400
-        Height = 323
-        Align = alClient
-        Caption = #1055#1086#1074#1077#1076#1077#1085#1080#1077
+        Width = 441
+        Height = 318
+        Margins.Bottom = 9
+        Align = alTop
+        BevelOuter = bvNone
+        ShowCaption = False
         TabOrder = 0
+        DesignSize = (
+          441
+          318)
+        object Label6: TLabel
+          AlignWithMargins = True
+          Left = 3
+          Top = 3
+          Width = 435
+          Height = 13
+          Align = alTop
+          Caption = #1055#1086#1074#1077#1076#1077#1085#1080#1077
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          Transparent = True
+          ExplicitWidth = 65
+        end
+        object Label10: TLabel
+          Left = 15
+          Top = 238
+          Width = 131
+          Height = 13
+          Alignment = taRightJustify
+          Caption = #1064#1072#1073#1083#1086#1085' '#1079#1072#1075#1086#1083#1086#1074#1082#1072' '#1082#1085#1080#1075#1080':'
+          WordWrap = True
+        end
         object cbShowSubGenreBooks: TCheckBox
-          Left = 10
-          Top = 26
-          Width = 280
+          AlignWithMargins = True
+          Left = 9
+          Top = 22
+          Width = 429
           Height = 17
+          Margins.Left = 9
+          Align = alTop
           Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1082#1085#1080#1075#1080' '#1080#1079' '#1074#1083#1086#1078#1077#1085#1085#1099#1093' '#1078#1072#1085#1088#1086#1074' ('#1085#1077'-fb2)'
           Color = clBtnFace
           ParentColor = False
           TabOrder = 0
         end
         object cbMinimizeToTray: TCheckBox
-          Left = 10
-          Top = 48
-          Width = 280
+          AlignWithMargins = True
+          Left = 9
+          Top = 45
+          Width = 429
           Height = 17
+          Margins.Left = 9
+          Align = alTop
           Caption = #1057#1074#1086#1088#1072#1095#1080#1074#1072#1090#1100' '#1074' '#1090#1088#1077#1081
           Color = clBtnFace
           ParentColor = False
           TabOrder = 1
         end
         object cbAutoStartDwnld: TCheckBox
-          Left = 10
-          Top = 69
-          Width = 280
+          AlignWithMargins = True
+          Left = 9
+          Top = 68
+          Width = 429
           Height = 17
+          Margins.Left = 9
+          Align = alTop
           Caption = #1057#1090#1072#1088#1090#1086#1074#1072#1090#1100' '#1079#1072#1082#1072#1095#1082#1080' '#1072#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080
           TabOrder = 2
         end
         object cbShowFb2Info: TCheckBox
-          Left = 10
-          Top = 92
-          Width = 280
+          AlignWithMargins = True
+          Left = 9
+          Top = 91
+          Width = 429
           Height = 17
+          Margins.Left = 9
+          Align = alTop
           Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1080#1085#1092#1086#1088#1084#1072#1094#1080#1102' '#1080#1079' fb2 '
           Color = clBtnFace
           ParentColor = False
           TabOrder = 3
         end
         object cbAllowMixedCollections: TCheckBox
-          Left = 10
-          Top = 115
-          Width = 280
+          AlignWithMargins = True
+          Left = 9
+          Top = 114
+          Width = 429
           Height = 17
+          Margins.Left = 9
+          Align = alTop
           Caption = #1056#1072#1079#1088#1077#1096#1080#1090#1100' '#1089#1084#1077#1096#1072#1085#1085#1099#1077' '#1082#1086#1083#1083#1077#1082#1094#1080#1080
           Color = clBtnFace
           ParentColor = False
           TabOrder = 4
         end
         object cbDeleteDeleted: TCheckBox
-          Left = 10
-          Top = 138
-          Width = 280
+          AlignWithMargins = True
+          Left = 9
+          Top = 137
+          Width = 429
           Height = 17
-          Caption = #1059#1076#1072#1083#1103#1090#1100' "'#1091#1076#1072#1083#1077#1085#1099#1077' '#1085#1072' '#1083#1080#1073#1088#1091#1089#1077#1082#1077'"'
+          Margins.Left = 9
+          Align = alTop
+          Caption = #1059#1076#1072#1083#1103#1090#1100' "'#1091#1076#1072#1083#1077#1085#1099#1077' '#1074' '#1073#1080#1073#1083#1080#1086#1090#1077#1082#1077'"'
           Color = clBtnFace
           ParentColor = False
           TabOrder = 5
         end
         object cbAutoLoadReview: TCheckBox
-          Left = 10
-          Top = 161
-          Width = 280
+          AlignWithMargins = True
+          Left = 9
+          Top = 160
+          Width = 429
           Height = 17
+          Margins.Left = 9
+          Align = alTop
           Caption = #1040#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080' '#1079#1072#1075#1088#1091#1078#1072#1090#1100' '#1088#1077#1094#1077#1085#1079#1080#1080
           Color = clBtnFace
           ParentColor = False
           TabOrder = 6
         end
         object cbDeleteFiles: TCheckBox
-          Left = 10
-          Top = 184
-          Width = 280
+          AlignWithMargins = True
+          Left = 9
+          Top = 183
+          Width = 429
           Height = 17
+          Margins.Left = 9
+          Align = alTop
           Caption = #1059#1076#1072#1083#1103#1090#1100' '#1092#1072#1081#1083#1099' '#1087#1088#1080' '#1091#1076#1072#1083#1077#1085#1080#1080' '#1082#1085#1080#1075
           Color = clBtnFace
           ParentColor = False
           TabOrder = 7
         end
-      end
-      object RzGroupBox16: TRzGroupBox
-        AlignWithMargins = True
-        Left = 3
-        Top = 332
-        Width = 400
-        Height = 64
-        Align = alBottom
-        TabOrder = 1
-        object Label10: TLabel
-          Left = 16
-          Top = 32
-          Width = 95
-          Height = 26
-          Alignment = taRightJustify
-          Caption = #1064#1072#1073#1083#1086#1085' '#1079#1072#1075#1086#1083#1086#1074#1082#1072' '#1082#1085#1080#1075#1080':'
-          WordWrap = True
-        end
         object cbOverwriteFB2Info: TCheckBox
-          Left = 10
-          Top = 8
-          Width = 281
+          AlignWithMargins = True
+          Left = 9
+          Top = 212
+          Width = 429
           Height = 17
+          Margins.Left = 9
+          Margins.Top = 9
+          Align = alTop
           Caption = #1055#1077#1088#1077#1079#1072#1087#1080#1089#1099#1074#1072#1090#1100' '#1079#1072#1075#1086#1083#1086#1074#1086#1082' fb2'
-          Color = clBtnFace
-          ParentColor = False
-          TabOrder = 0
+          TabOrder = 8
           OnClick = cbOverwriteFB2InfoClick
         end
-        object beTemplate: TRzButtonEdit
-          Left = 117
-          Top = 31
-          Width = 268
-          Height = 24
-          Text = '[%s [(%n) ]- ]%t'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -13
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
+        object edTitleTemplate: TEdit
+          Left = 152
+          Top = 235
+          Width = 201
+          Height = 21
+          Anchors = [akLeft, akTop, akRight]
           ReadOnly = True
-          ReadOnlyColor = clWindow
-          TabOrder = 1
-          AltBtnWidth = 15
-          ButtonWidth = 15
-          HideButtonsOnReadOnly = False
-          OnButtonClick = beTemplateButtonClick
+          TabOrder = 9
+          Text = '[%s [(%n) ]- ]%t'
+        end
+        object btnTitleTemplate: TButton
+          Left = 359
+          Top = 233
+          Width = 75
+          Height = 25
+          Anchors = [akTop, akRight]
+          Caption = #1048#1079#1084#1077#1085#1080#1090#1100
+          TabOrder = 10
+          OnClick = EditTextTemplate
         end
       end
     end
@@ -1017,397 +1463,305 @@ object frmSettings: TfrmSettings
       Caption = 'tsFileSort'
       ImageIndex = 6
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object RzGroupBox12: TRzGroupBox
-        AlignWithMargins = True
-        Left = 3
-        Top = 244
-        Width = 400
-        Height = 126
-        Align = alTop
-        Caption = #1057#1086#1088#1090#1080#1088#1086#1074#1082#1072' FBD'
-        TabOrder = 0
-        object Label2: TLabel
-          Left = 20
-          Top = 29
-          Width = 38
-          Height = 13
-          Alignment = taRightJustify
-          Caption = #1055#1072#1087#1082#1072': '
-        end
-        object Label3: TLabel
-          Left = 25
-          Top = 64
-          Width = 33
-          Height = 13
-          Alignment = taRightJustify
-          Caption = #1060#1072#1081#1083': '
-        end
-        object RzToolButton4: TRzToolButton
-          Tag = 41
-          Left = 64
-          Top = 88
-          Width = 33
-          Hint = #1060#1072#1084#1080#1083#1080#1103' '#1080' '#1080#1084#1103' '#1072#1074#1090#1086#1088#1072
-          Flat = False
-          ShowCaption = True
-          UseToolbarButtonSize = False
-          UseToolbarShowCaption = False
-          Caption = '%f'
-          ParentShowHint = False
-          ShowHint = True
-        end
-        object RzToolButton5: TRzToolButton
-          Tag = 42
-          Left = 103
-          Top = 88
-          Width = 33
-          Hint = #1053#1072#1079#1074#1072#1085#1080#1077
-          Flat = False
-          ShowCaption = True
-          UseToolbarButtonSize = False
-          UseToolbarShowCaption = False
-          Caption = '%t'
-          ParentShowHint = False
-          ShowHint = True
-        end
-        object RzToolButton6: TRzToolButton
-          Tag = 43
-          Left = 142
-          Top = 88
-          Width = 33
-          Hint = #1057#1077#1088#1080#1103
-          Flat = False
-          ShowCaption = True
-          UseToolbarButtonSize = False
-          UseToolbarShowCaption = False
-          Caption = '%s '
-          ParentShowHint = False
-          ShowHint = True
-        end
-        object RzToolButton7: TRzToolButton
-          Tag = 44
-          Left = 181
-          Top = 88
-          Width = 33
-          Hint = #1053#1086#1084#1077#1088' '#1074' '#1089#1077#1088#1080#1080
-          Flat = False
-          ShowCaption = True
-          UseToolbarButtonSize = False
-          UseToolbarShowCaption = False
-          Caption = '%n'
-          ParentShowHint = False
-          ShowHint = True
-        end
-        object RzToolButton8: TRzToolButton
-          Tag = 48
-          Left = 220
-          Top = 88
-          Width = 33
-          Hint = #1050#1086#1088#1085#1077#1074#1086#1081' '#1078#1072#1085#1088
-          Flat = False
-          ShowCaption = True
-          UseToolbarButtonSize = False
-          UseToolbarShowCaption = False
-          Caption = '%rg'
-          ParentShowHint = False
-          ShowHint = True
-        end
-        object RzToolButton9: TRzToolButton
-          Tag = 46
-          Left = 259
-          Top = 88
-          Width = 33
-          Hint = #1046#1072#1085#1088
-          Flat = False
-          ShowCaption = True
-          UseToolbarButtonSize = False
-          UseToolbarShowCaption = False
-          Caption = '%g'
-          ParentShowHint = False
-          ShowHint = True
-        end
-        object RzToolButton10: TRzToolButton
-          Tag = 47
-          Left = 298
-          Top = 88
-          Width = 33
-          Hint = #1055#1077#1088#1074#1072#1103' '#1073#1091#1082#1074#1072#13#1092#1072#1084#1080#1083#1080#1080' '#1072#1074#1090#1086#1088#1072
-          Flat = False
-          ShowCaption = True
-          UseToolbarButtonSize = False
-          UseToolbarShowCaption = False
-          Caption = '%fl'
-          ParentShowHint = False
-          ShowHint = True
-        end
-        object edFBDFolderTemplate: TRzEdit
-          Tag = 785
-          Left = 64
-          Top = 26
-          Width = 313
-          Height = 21
-          Text = '%g\%s'
-          TabOrder = 0
-        end
-        object edFBDFileTemplate: TRzEdit
-          Tag = 785
-          Left = 64
-          Top = 61
-          Width = 313
-          Height = 21
-          TabOrder = 1
-        end
-      end
-      object RzGroupBox13: TRzGroupBox
-        AlignWithMargins = True
-        Left = 3
-        Top = 112
-        Width = 400
-        Height = 126
-        Align = alTop
-        Caption = #1057#1086#1088#1090#1080#1088#1086#1074#1082#1072' FB2'
-        TabOrder = 1
-        object Label4: TLabel
-          Left = 20
-          Top = 29
-          Width = 38
-          Height = 13
-          Alignment = taRightJustify
-          Caption = #1055#1072#1087#1082#1072': '
-        end
-        object Label8: TLabel
-          Left = 25
-          Top = 64
-          Width = 33
-          Height = 13
-          Alignment = taRightJustify
-          Caption = #1060#1072#1081#1083': '
-        end
-        object RzToolButton11: TRzToolButton
-          Tag = 41
-          Left = 64
-          Top = 88
-          Width = 33
-          Hint = #1060#1072#1084#1080#1083#1080#1103' '#1080' '#1080#1084#1103' '#1072#1074#1090#1086#1088#1072
-          Flat = False
-          ShowCaption = True
-          UseToolbarButtonSize = False
-          UseToolbarShowCaption = False
-          Caption = '%f'
-          ParentShowHint = False
-          ShowHint = True
-        end
-        object RzToolButton12: TRzToolButton
-          Tag = 42
-          Left = 103
-          Top = 88
-          Width = 33
-          Hint = #1053#1072#1079#1074#1072#1085#1080#1077
-          Flat = False
-          ShowCaption = True
-          UseToolbarButtonSize = False
-          UseToolbarShowCaption = False
-          Caption = '%t'
-          ParentShowHint = False
-          ShowHint = True
-        end
-        object RzToolButton13: TRzToolButton
-          Tag = 43
-          Left = 142
-          Top = 88
-          Width = 33
-          Hint = #1057#1077#1088#1080#1103
-          Flat = False
-          ShowCaption = True
-          UseToolbarButtonSize = False
-          UseToolbarShowCaption = False
-          Caption = '%s '
-          ParentShowHint = False
-          ShowHint = True
-        end
-        object RzToolButton14: TRzToolButton
-          Tag = 44
-          Left = 181
-          Top = 88
-          Width = 33
-          Hint = #1053#1086#1084#1077#1088' '#1074' '#1089#1077#1088#1080#1080
-          Flat = False
-          ShowCaption = True
-          UseToolbarButtonSize = False
-          UseToolbarShowCaption = False
-          Caption = '%n'
-          ParentShowHint = False
-          ShowHint = True
-        end
-        object RzToolButton15: TRzToolButton
-          Tag = 48
-          Left = 220
-          Top = 88
-          Width = 33
-          Hint = #1050#1086#1088#1085#1077#1074#1086#1081' '#1078#1072#1085#1088
-          Flat = False
-          ShowCaption = True
-          UseToolbarButtonSize = False
-          UseToolbarShowCaption = False
-          Caption = '%rg'
-          ParentShowHint = False
-          ShowHint = True
-        end
-        object RzToolButton16: TRzToolButton
-          Tag = 46
-          Left = 259
-          Top = 88
-          Width = 33
-          Hint = #1046#1072#1085#1088
-          Flat = False
-          ShowCaption = True
-          UseToolbarButtonSize = False
-          UseToolbarShowCaption = False
-          Caption = '%g'
-          ParentShowHint = False
-          ShowHint = True
-        end
-        object RzToolButton17: TRzToolButton
-          Tag = 47
-          Left = 298
-          Top = 88
-          Width = 33
-          Hint = #1055#1077#1088#1074#1072#1103' '#1073#1091#1082#1074#1072#13#1092#1072#1084#1080#1083#1080#1080' '#1072#1074#1090#1086#1088#1072
-          Flat = False
-          ShowCaption = True
-          UseToolbarButtonSize = False
-          UseToolbarShowCaption = False
-          Caption = '%fl'
-          ParentShowHint = False
-          ShowHint = True
-        end
-        object edFB2FolderTemplate: TRzEdit
-          Tag = 785
-          Left = 64
-          Top = 26
-          Width = 313
-          Height = 21
-          TabOrder = 0
-        end
-        object edFB2FileTemplate: TRzEdit
-          Tag = 785
-          Left = 64
-          Top = 61
-          Width = 313
-          Height = 21
-          TabOrder = 1
-        end
-      end
-      object RzGroupBox14: TRzGroupBox
+      object Panel4: TPanel
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 400
-        Height = 46
+        Width = 441
+        Height = 246
+        Margins.Bottom = 9
         Align = alTop
-        Caption = #1054#1087#1094#1080#1080
-        TabOrder = 2
+        BevelOuter = bvNone
+        ShowCaption = False
+        TabOrder = 0
+        DesignSize = (
+          441
+          246)
+        object Label21: TLabel
+          AlignWithMargins = True
+          Left = 3
+          Top = 3
+          Width = 435
+          Height = 13
+          Align = alTop
+          Caption = #1048#1084#1087#1086#1088#1090' '#1092#1072#1081#1083#1086#1074
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          ExplicitWidth = 90
+        end
+        object Label22: TLabel
+          Left = 15
+          Top = 58
+          Width = 35
+          Height = 13
+          Caption = #1055#1072#1087#1082#1072':'
+          FocusControl = edImportFolder
+        end
+        object Label23: TLabel
+          Left = 15
+          Top = 82
+          Width = 419
+          Height = 13
+          Anchors = [akLeft, akTop, akRight]
+          AutoSize = False
+          Caption = #1057#1086#1088#1090#1080#1088#1086#1074#1082#1072' FB2'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          ExplicitWidth = 394
+        end
+        object Label4: TLabel
+          Left = 21
+          Top = 104
+          Width = 38
+          Height = 13
+          Alignment = taRightJustify
+          Caption = #1055#1072#1087#1082#1072': '
+          FocusControl = edFB2FolderTemplate
+        end
+        object Label8: TLabel
+          Left = 21
+          Top = 131
+          Width = 33
+          Height = 13
+          Alignment = taRightJustify
+          Caption = #1060#1072#1081#1083': '
+          FocusControl = edFB2FileTemplate
+        end
+        object Label24: TLabel
+          Left = 15
+          Top = 155
+          Width = 419
+          Height = 13
+          Anchors = [akLeft, akTop, akRight]
+          AutoSize = False
+          Caption = #1057#1086#1088#1090#1080#1088#1086#1074#1082#1072' FB2'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          ExplicitWidth = 394
+        end
+        object Label2: TLabel
+          Left = 21
+          Top = 177
+          Width = 38
+          Height = 13
+          Alignment = taRightJustify
+          Caption = #1055#1072#1087#1082#1072': '
+          FocusControl = edFBDFolderTemplate
+        end
+        object Label3: TLabel
+          Left = 21
+          Top = 204
+          Width = 33
+          Height = 13
+          Alignment = taRightJustify
+          Caption = #1060#1072#1081#1083': '
+          FocusControl = edFBDFileTemplate
+        end
+        object btnImportFolder: TButton
+          Left = 359
+          Top = 53
+          Width = 75
+          Height = 25
+          Anchors = [akTop, akRight]
+          Caption = #1042#1099#1073#1088#1072#1090#1100
+          TabOrder = 2
+          OnClick = SelectFolder
+        end
         object cbEnableFileSort: TCheckBox
-          Left = 11
-          Top = 12
-          Width = 206
+          AlignWithMargins = True
+          Left = 9
+          Top = 22
+          Width = 429
           Height = 27
+          Margins.Left = 9
+          Align = alTop
           Caption = #1042#1082#1083#1102#1095#1080#1090#1100' '#1089#1086#1088#1090#1080#1088#1086#1074#1082#1091' '#1087#1088#1080' '#1080#1084#1087#1086#1088#1090#1077
           TabOrder = 0
           WordWrap = True
+          OnClick = cbEnableFileSortClick
         end
-      end
-      object RzGroupBox15: TRzGroupBox
-        AlignWithMargins = True
-        Left = 3
-        Top = 55
-        Width = 400
-        Height = 51
-        Align = alTop
-        Caption = #1055#1072#1087#1082#1072
-        TabOrder = 3
-        object edInputFolder: TRzButtonEdit
-          Left = 11
-          Top = 18
-          Width = 374
+        object edImportFolder: TMHLAutoCompleteEdit
+          Left = 56
+          Top = 55
+          Width = 297
           Height = 21
           HelpContext = 5001
-          TabOrder = 0
-          AltBtnWidth = 15
-          ButtonWidth = 15
-          OnButtonClick = edDeviceDirButtonClick
+          Anchors = [akLeft, akTop, akRight]
+          TabOrder = 1
+        end
+        object edFB2FileTemplate: TEdit
+          Tag = 785
+          Left = 65
+          Top = 128
+          Width = 288
+          Height = 21
+          Anchors = [akLeft, akTop, akRight]
+          ReadOnly = True
+          TabOrder = 5
+        end
+        object edFB2FolderTemplate: TEdit
+          Tag = 785
+          Left = 65
+          Top = 101
+          Width = 288
+          Height = 21
+          Anchors = [akLeft, akTop, akRight]
+          ReadOnly = True
+          TabOrder = 3
+        end
+        object edFBDFileTemplate: TEdit
+          Tag = 785
+          Left = 65
+          Top = 201
+          Width = 288
+          Height = 21
+          Anchors = [akLeft, akTop, akRight]
+          ReadOnly = True
+          TabOrder = 9
+        end
+        object edFBDFolderTemplate: TEdit
+          Tag = 785
+          Left = 65
+          Top = 174
+          Width = 288
+          Height = 21
+          Anchors = [akLeft, akTop, akRight]
+          ReadOnly = True
+          TabOrder = 7
+          Text = '%g\%s'
+        end
+        object btnFB2FolderTemplate: TButton
+          Left = 359
+          Top = 99
+          Width = 75
+          Height = 25
+          Anchors = [akTop, akRight]
+          Caption = #1048#1079#1084#1077#1085#1080#1090#1100
+          TabOrder = 4
+          OnClick = EditFolderTemplate
+        end
+        object btnFB2FileTemplate: TButton
+          Left = 359
+          Top = 126
+          Width = 75
+          Height = 25
+          Anchors = [akTop, akRight]
+          Caption = #1048#1079#1084#1077#1085#1080#1090#1100
+          TabOrder = 6
+          OnClick = EditFileNameTemplate
+        end
+        object btnFBDFileTemplate: TButton
+          Left = 359
+          Top = 199
+          Width = 75
+          Height = 25
+          Anchors = [akTop, akRight]
+          Caption = #1048#1079#1084#1077#1085#1080#1090#1100
+          TabOrder = 10
+          OnClick = EditFileNameTemplate
+        end
+        object btnFBDFolderTemplate: TButton
+          Left = 359
+          Top = 172
+          Width = 75
+          Height = 25
+          Anchors = [akTop, akRight]
+          Caption = #1048#1079#1084#1077#1085#1080#1090#1100
+          TabOrder = 8
+          OnClick = EditFolderTemplate
         end
       end
     end
   end
-  object RzPanel2: TRzPanel
+  object pnButtons: TPanel
+    Left = 0
+    Top = 464
+    Width = 617
+    Height = 41
+    Align = alBottom
+    BevelOuter = bvNone
+    Caption = 'pnButtons'
+    ShowCaption = False
+    TabOrder = 1
+    DesignSize = (
+      617
+      41)
+    object btnOk: TButton
+      Left = 453
+      Top = 10
+      Width = 75
+      Height = 25
+      Anchors = [akTop, akRight]
+      Caption = '&'#1057#1086#1093#1088#1072#1085#1080#1090#1100
+      Default = True
+      ModalResult = 1
+      TabOrder = 0
+      OnClick = SaveSettingsClick
+    end
+    object btnCancel: TButton
+      Left = 534
+      Top = 10
+      Width = 75
+      Height = 25
+      Anchors = [akTop, akRight]
+      Cancel = True
+      Caption = '&'#1054#1090#1084#1077#1085#1072
+      ModalResult = 2
+      TabOrder = 1
+    end
+    object btnHelp: TButton
+      Left = 12
+      Top = 10
+      Width = 75
+      Height = 25
+      Caption = #1057#1087#1088#1072#1074#1082#1072
+      TabOrder = 2
+      OnClick = ShowHelpClick
+    end
+  end
+  object tvSections: TTreeView
     AlignWithMargins = True
     Left = 3
-    Top = 3
-    Width = 185
-    Height = 409
+    Top = 5
+    Width = 150
+    Height = 455
+    Margins.Top = 5
+    Margins.Bottom = 4
     Align = alLeft
-    BorderOuter = fsFlatRounded
+    HideSelection = False
+    Indent = 19
+    RowSelect = True
     TabOrder = 2
-    object tvSections: TRzTreeView
-      AlignWithMargins = True
-      Left = 5
-      Top = 5
-      Width = 175
-      Height = 399
-      SelectionPen.Color = clBtnShadow
-      Align = alClient
-      Indent = 19
-      RowSelect = True
-      TabOrder = 0
-      OnChange = tvSectionsChange
-      Items.NodeData = {
-        03070000003E0000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF000000
-        000000000001101F0430043F043A0438042F0023044104420440043E04390441
-        04420432043004340000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF00
-        00000000000000010B220438043F044B0420004404300439043B043E04320430
-        0000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF000000000000000001
-        0918043D0442043504400444043504390441042E0000000000000000000000FF
-        FFFFFFFFFFFFFFFFFFFFFF0000000000000000010818043D044204350440043D
-        04350442042C0000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF000000
-        0000000000010721043A04400438043F0442044B042A00000000000000000000
-        00FFFFFFFFFFFFFFFF00000000000000000000000001062004300437043D043E
-        043504400000000000000000000000FFFFFFFFFFFFFFFF000000000000000000
-        000000011121043E0440044204380440043E0432043A04300420004404300439
-        043B043E043204}
-    end
+    OnChange = tvSectionsChange
+    Items.NodeData = {
+      03070000003E0000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF000000
+      000000000001101F0430043F043A0438042F0023044104420440043E04390441
+      04420432043004340000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF00
+      00000000000000010B220438043F044B0420004404300439043B043E04320430
+      0000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF000000000000000001
+      0918043D0442043504400444043504390441042E0000000000000000000000FF
+      FFFFFFFFFFFFFFFFFFFFFF0000000000000000010818043D044204350440043D
+      04350442042C0000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF000000
+      0000000000010721043A04400438043F0442044B042A00000000000000000000
+      00FFFFFFFFFFFFFFFF00000000000000000000000001062004300437043D043E
+      043504400000000000000000000000FFFFFFFFFFFFFFFF000000000000000000
+      000000011121043E0440044204380440043E0432043A04300420004404300439
+      043B043E043204}
   end
   object dlgColors: TColorDialog
     Left = 32
-    Top = 176
-  end
-  object dlgSelectDir: TRzSelDirDialog
-    CenterToParent = True
-    Position = poOwnerFormCenter
-    AllowCreate = True
-    ButtonGlyphs = True
-    ChangeCurrentDir = False
-    DriveTypes = [dtFloppy, dtFixed, dtNetwork, dtRAM]
-    OpenCurrentDir = True
-    AutoSelect = True
-    Prompt = #1048#1084#1103' '#1087#1072#1087#1082#1080
-    PromptFolders = #1055#1072#1087#1082#1080
-    PromptDrives = #1059#1089#1090#1088#1086#1081#1089#1090#1074#1072
-    Caption = #1059#1082#1072#1078#1080#1090#1077' '#1087#1072#1087#1082#1091
-    CaptionOK = 'OK'
-    CaptionCancel = #1054#1090#1084#1077#1085#1072
-    CaptionHelp = '&'#1057#1087#1088#1072#1074#1082#1072
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    FrameVisible = True
-    Left = 96
     Top = 176
   end
 end

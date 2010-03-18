@@ -34,6 +34,7 @@ implementation
 uses
   Classes,
   SysUtils,
+  IOUtils,
   unit_WorkerThread,
   FictionBook_21,
   unit_Consts,
@@ -48,17 +49,15 @@ var
 begin
   NewFolder := GetNewFolder(Settings.FBDFolderTemplate, R);
 
-  CreateFolders(FRootPath,NewFolder);
-  CopyFile(Settings.InputFolder + R.FileName,
-           FRootPath + NewFolder + R.FileName);
+  CreateFolders(FRootPath, NewFolder);
+  CopyFile(Settings.ImportPath + R.FileName, FRootPath + NewFolder + R.FileName);
   R.Folder := NewFolder;
 
   NewFileName := GetNewFileName(Settings.FBDFileTemplate, R);
   if NewFileName <> '' then
   begin
     NewFileName := NewFileName;
-    RenameFile(FRootPath + NewFolder + R.FileName,
-               FRootPath + NewFolder + NewFileName + ZIP_EXTENSION);
+    RenameFile(FRootPath + NewFolder + R.FileName, FRootPath + NewFolder + NewFileName + ZIP_EXTENSION);
     R.FileName := NewFileName + ZIP_EXTENSION;
 
     try
@@ -131,7 +130,7 @@ begin
               book := LoadFictionBook(FS);
               GetBookInfo(book, R);
               IsValid := True;
-              FBDFileName := ExtractShortFileName(ArchiveItem.FileName);
+              FBDFileName := TPath.GetFileNameWithoutExtension(ArchiveItem.FileName);
             except
               on e: Exception do
               begin
@@ -147,7 +146,7 @@ begin
             begin
               R.InsideNo := j;
               R.FileExt := Ext;
-              BookFileName := ExtractShortFileName(ArchiveItem.FileName);
+              BookFileName := TPath.GetFileNameWithoutExtension(ArchiveItem.FileName);
               R.Size := FZipper.Size;
             end;
           inc(j);
