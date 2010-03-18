@@ -97,6 +97,7 @@ implementation
 
 uses
   SysUtils,
+  IOUtils,
   bdeconst,
   unit_Consts;
 
@@ -721,7 +722,7 @@ begin
     if FullNameSearch then
       S := ExtractFileName(FileName)
     else
-      S := ExtractShortFileName(ExtractFileName(FileName));
+      S := TPath.GetFileNameWithoutExtension(FileName);
     Result := FBooks.Locate(FILENAME_FIELD, S, [loCaseInsensitive]);
   end;
 end;

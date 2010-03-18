@@ -422,12 +422,6 @@ type
     procedure tvGenresChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 
     //
-    // Код следующих 4-х методов совпадает с точностью до названия объектов
-    // НО! внутри обрабатываются разные наборы контролов
-    //
-    procedure tvAuthorsPaintText(Sender: TBaseVirtualTree; const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType);
-
-    //
     //
     //
     procedure tvBooksTreeBeforeCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
@@ -2077,8 +2071,8 @@ begin
 
   ReadINIData;
 
-  CreateDir(Settings.TempDir);
-  CreateDir(Settings.DataDir);
+  TDirectory.CreateDirectory(Settings.TempDir);
+  TDirectory.CreateDirectory(Settings.DataDir);
 
   SetColumns;
   SetHeaderPopUp;
@@ -2802,12 +2796,6 @@ begin
   end;
 end;
 
-procedure TfrmMain.tvAuthorsPaintText(Sender: TBaseVirtualTree; const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType);
-begin
-  if Sender.Selected[Node] then
-    TargetCanvas.Font.Color := clWhite;
-end;
-
 procedure TfrmMain.tvBooksTreeBeforeCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
 var
   Data: PBookData;
@@ -3283,7 +3271,7 @@ begin
   SaveDeviceDir := Settings.DeviceDir;
   SaveFolderTemplate := Settings.FolderTemplate;
   // dlgFolder.Directory := Settings.DeviceDir;
-  ScriptID := (Sender as TComponent).tag;
+  ScriptID := (Sender as TComponent).Tag;
 
   if isFB2Collection(DMUser.ActiveCollection.CollectionType) then
   begin
@@ -3304,7 +3292,7 @@ begin
   Dec(ScriptID, 901);
 
   if (ScriptID < 1) and (Settings.PromptDevicePath) then
-    // if not dlgFolder.Execute then
+  begin
     if not GetFolderName(Handle, 'Укажите путь', AFolder) then
       Exit
     else
@@ -3313,6 +3301,7 @@ begin
         параметрами этих функций
         }
       Settings.DeviceDir := AFolder;
+  end;
 
   if ScriptID >= 0 then
   begin
@@ -3333,12 +3322,12 @@ begin
     begin
       StrReplace('%FOLDER ', '', TMPParams);
       p := Pos('%', TMPParams);
-      S := copy(TMPParams, 1, p - 1);
+      S := Copy(TMPParams, 1, p - 1);
       Settings.DeviceDir := S;
       Delete(TMPParams, 1, p);
     end;
 
-    if (Settings.Scripts[ScriptID].Path = '%COPY%') and (trim(TMPParams) <> '') then
+    if (Settings.Scripts[ScriptID].Path = '%COPY%') and (Trim(TMPParams) <> '') then
       Settings.DeviceDir := Trim(TMPParams);
 
     Settings.Scripts[ScriptID].TMPParams := TMPParams;
@@ -3353,7 +3342,7 @@ begin
   end;
 
   if ActiveView <> FavoritesView then
-    unit_ExportToDevice.ExportToDevice(dmCollection.ActiveTable, BookIDList, ExportMode, Files)
+    unit_ExportToDevice.ExportToDevice(DMCollection.ActiveTable, BookIDList, ExportMode, Files)
   else
     unit_ExportToDevice.ExportToDevice(DMUser.tblGrouppedBooks, BookIDList, ExportMode, Files);
 
@@ -3635,7 +3624,7 @@ end;
 
 procedure TfrmMain.tbtnShowCoverClick(Sender: TObject);
 var
-  Visible: Boolean;
+  ShowCover: Boolean;
 begin
   Settings.ShowInfoPanel := not Settings.ShowInfoPanel;
 
@@ -3643,10 +3632,10 @@ begin
   // or (Settings.ShowInfoPanel and isNonFB2Collection(DMUser.ActiveCollection.CollectionType)
   // and Settings.AllowMixed));
 
-  Visible := Settings.ShowInfoPanel;
+  ShowCover := Settings.ShowInfoPanel;
 
-  SetCoversVisible(Visible);
-  if Visible then
+  SetCoversVisible(ShowCover);
+  if ShowCover then
     tvBooksTreeChange(nil, nil);
 end;
 
@@ -5680,13 +5669,16 @@ begin
 
     if ActiveView <> FavoritesView then
     begin
+      //
       // если книга есть в избранном - синхронизируем
+      //
       if DMUser.tblGrouppedBooks.Locate('DataBaseID;OuterID;', VarArrayOf([DMUser.ActiveCollection.ID, Data.ID]), []) then
       begin
         DMUser.tblGrouppedBooks.Edit;
         DMUser.tblGrouppedBooksCode.Value := Table.FieldByName('Code').AsInteger;
         DMUser.tblGrouppedBooks.Post;
 
+        { TODO -oNickR -cBug : #46 - в таблице User.Extra нет поля ID }
         if DMUser.tblExtra.Locate(ID_FIELD, DMUser.tblGrouppedBooksID.Value, []) then
         begin
           case Table.FieldByName('Code').AsInteger of
@@ -5724,6 +5716,7 @@ begin
           0:
             if dmCollection.tblExtra.RecordCount <> 0 then
               dmCollection.tblExtra.Delete;
+
           1:
             begin
               dmCollection.tblExtra.Edit;
@@ -6034,9 +6027,12 @@ begin
 end;
 
 procedure TfrmMain.N34Click(Sender: TObject);
+var
+  dirPath: string;
 begin
-  if DirectoryExists(Settings.ReadDir) then
-    ClearDir(Settings.ReadDir);
+  dirPath := ExcludeTrailingPathDelimiter(Settings.ReadPath);
+  if DirectoryExists(dirPath) then
+    ClearDir(dirPath);
 end;
 
 procedure TfrmMain.miEditToolbarVisibleClick(Sender: TObject);

@@ -77,7 +77,7 @@ type
     FDeviceDir: string;
 
     // SYSTEM_SECTION
-    FTransliterate: Boolean;
+    // TODO : REMOVE FTransliterate: Boolean;
     FActiveCollection: Integer;
     FDoCheckUpdate: Boolean;
     FCheckExternalLibUpdate: Boolean;
@@ -86,7 +86,6 @@ type
     FFileNameTemplate: string;
     FExportMode: TExportMode;
     FRemoveSquareBrackets: Boolean;
-    FUseSystemTemp: Boolean;
     FTXTEncoding: TTXTEncoding;
 
     // INTERFACE_SECTION
@@ -180,7 +179,7 @@ type
 
     // SORT_SECTION
     FEnableSort: Boolean;
-    FInputFolder: string;
+    FImportDir: string;
 
     FFB2FolderTemplate: string;
     FFB2FileTemplate: string;
@@ -226,8 +225,14 @@ type
 
     function GetInitialDir(const key: string): string;
     procedure SetInitialDir(const key, Value: string);
+
     function GetPresetPath: string;
+
+    procedure SetUpdateDir(const Value: string);
     function GetUpdatePath: string;
+
+    procedure SetImportDir(const Value: string);
+    function GetImportPath: string;
 
   public
     constructor Create;
@@ -238,15 +243,20 @@ type
 
   public
     property AppPath: string read FAppPath;
+
     property DataDir: string read FDataDir;
     property DataPath: string read GetDataPath;
+
     property TempDir: string read FTempDir write FTempDir;
     property TempPath: string read GetTempPath;
+
     property WorkDir: string read FWorkDir;
     property WorkPath: string read GetWorkPath;
-    property PresetDir: string read FPresetDir write FPresetDir;
+
+    property PresetDir: string read FPresetDir;
     property PresetPath: string read GetPresetPath;
-    property UpdateDir: string read FUpdateDir write FUpdateDir;
+
+    property UpdateDir: string read FUpdateDir write SetUpdateDir;
     property UpdatePath: string read GetUpdatePath;
     //
     // Полные пути к некоторым файлам
@@ -256,14 +266,13 @@ type
     //
     // Собственно настройки программы
     //
-    property UseSystemTemp: Boolean read FUseSystemTemp write FUseSystemTemp;
-
     property DeviceDir: string read FDeviceDir write SetDeviceDir;
     property DevicePath: string read GetDevicePath;
+
     property ReadDir: string read FReadDir write SetReadDir;
     property ReadPath: string read GetReadPath;
 
-    property TransliterateFileName: Boolean read FTransliterate write FTransliterate;
+    // TODO : REMOVE property TransliterateFileName: Boolean read FTransliterate write FTransliterate;
     property ActiveCollection: Integer read FActiveCollection write FActiveCollection;
     property CheckUpdate: Boolean read FDoCheckUpdate write FDoCheckUpdate;
     property CheckExternalLibUpdate: Boolean read FCheckExternalLibUpdate write FCheckExternalLibUpdate;
@@ -367,7 +376,8 @@ type
 
     // SORT_SECTION
     property EnableSort: Boolean read FEnableSort write FEnableSort;
-    property InputFolder: string read FInputFolder write FInputFolder;
+    property ImportDir: string read FImportDir write SetImportDir;
+    property ImportPath: string read GetImportPath;
 
     property FB2FolderTemplate: string read FFB2FolderTemplate write FFB2FolderTemplate;
     property FB2FileTemplate: string read FFB2FileTemplate write FFB2FileTemplate;
@@ -452,7 +462,7 @@ const
   STR_USERDBS = 'user';
 
 var
-  AppDataPath: string;
+  GlobalAppDataDir: string;
 
   UseLocalData, UseLocalTemp, UserDatabase: Boolean;
   I: Integer;
@@ -462,24 +472,26 @@ var
 begin
   inherited Create;
 
-  UseLocalData := False;
-  UseLocalTemp := False;
-  UserDatabase := False;
-
   FAppPath := ExtractFilePath(Application.ExeName);
-  AppDataPath := GetSpecialPath(CSIDL_APPDATA) + APPDATA_DIR_NAME;
+  GlobalAppDataDir := GetSpecialPath(CSIDL_APPDATA) + APPDATA_DIR_NAME;
 
   // определяем рабочую и временную папку в зависимости от параметров
   // командной строки или ключевых файлов
   FDbsFileName := SYSTEM_DATABASE_FILENAME;
   FIniFileName := SETTINGS_FILE_NAME;
 
+  UseLocalData := False;
+  UseLocalTemp := False;
+  UserDatabase := False;
+
   for I := 1 to ParamCount do
   begin
     if not UseLocalData then
       UseLocalData := (LowerCase(ParamStr(I)) = STR_USELOCALDATA);
+
     if not UseLocalTemp then
-      UseLocalTemp := (LowerCase(paramstr(I)) = STR_USELOCALTEMP);
+      UseLocalTemp := (LowerCase(ParamStr(I)) = STR_USELOCALTEMP);
+
     if (LowerCase(ParamStr(I)) = STR_USERDBS) and (ParamStr(I + 1) <> '') then
     begin
       DBFileName := ParamStr(I + 1);
@@ -487,42 +499,41 @@ begin
     end;
   end;
 
-  UseLocalData := UseLocalData or FileExists(FAppPath + STR_USELOCALDATA) or not DirectoryExists(AppDataPath);
+  UseLocalData := UseLocalData or FileExists(FAppPath + STR_USELOCALDATA) or not DirectoryExists(GlobalAppDataDir);
   UseLocalTemp := UseLocalTemp or FileExists(FAppPath + STR_USELOCALTEMP);
 
-  // Устанавливаем рабочую папку
-
-  if not UseLocalData then
-  begin // работаем с AppData
-    FWorkDir := AppDataPath;
-    FDataDir := WorkPath + DATA_DIR_NAME;
-  end
-  else
-  begin
-    FWorkDir := FAppPath; // работаем с AppPath
-    FDataDir := FAppPath + DATA_DIR_NAME;
-  end;
+  //
+  // Устанавливаем рабочую папку и папку с данными
+  //
+  FWorkDir := IfThen(UseLocalData, ExcludeTrailingPathDelimiter(FAppPath), GlobalAppDataDir);
+  FDataDir := WorkPath + DATA_DIR_NAME;
 
   if UserDatabase then // пользовательский файл БД и настроек
   begin
     FDbsFileName := DBFileName + '.dbs';
     FIniFileName := DBFileName + '.ini';
     if FileExists(WorkPath + SETTINGS_FILE_NAME) and not FileExists(WorkPath + FIniFileName) then
+    begin
       // если такого файла еще нет, копируем стандартный
       unit_globals.CopyFile(WorkPath + SETTINGS_FILE_NAME, WorkPath + FIniFileName);
       // может лучше использовать Windows.CopyFile(PChar(WorkPath + SETTINGS_FILE_NAME), PChar(WorkPath + FIniFileName), False);
+    end;
   end;
 
+  //
   // устанавливаем временную папку
-
-  if not UseLocalTemp then
-    FTempDir := TPath.Combine(TPath.GetTempPath, '_myhomelib')
+  //
+  if UseLocalTemp then
+    FTempDir := FAppPath + TEMP_DIR_NAME
   else
-    FTempDir := FAppPath + TEMP_DIR_NAME;
+    FTempDir := TPath.Combine(TPath.GetTempPath, '_myhomelib');
 
+  //
+  // устанавливаем путь для хранения пресетов
+  //
   FPresetDir := WorkPath + PRESET_DIR_NAME;
-  // -----------------------------------------------------
 
+  // -----------------------------------------------------
   FReaders := TReaders.Create;
   FScripts := TScripts.Create;
   FUpdateList := TUpdateInfoList.Create;
@@ -628,6 +639,22 @@ begin
   FreeMem(proxyInfo);
 end;
 
+function SafeGetDirName(const Value: string): string;
+begin
+  if (Value = '') or (TPath.GetPathRoot(Value) = Value) then
+    Result := Value
+  else
+    Result := ExcludeTrailingPathDelimiter(Value);
+end;
+
+function SafeGetPath(const Value: string): string;
+begin
+  if Value = '' then
+    Result := Value
+  else
+    Result := IncludeTrailingPathDelimiter(Value);
+end;
+
 procedure TMHLSettings.LoadSettings;
 var
   iniFile: TIniFile;
@@ -637,28 +664,21 @@ begin
     //
     // PATH_SECTION
     //
-    FDeviceDir := ExcludeTrailingPathDelimiter(iniFile.ReadString(PATH_SECTION, 'Device', 'C:\'));
-    FReadDir := ExcludeTrailingPathDelimiter(iniFile.ReadString(PATH_SECTION, 'Read', ''));
-    FUpdateDir := ExcludeTrailingPathDelimiter(iniFile.ReadString(PATH_SECTION, 'Update', ''));
-
-    if not DirectoryExists(FReadDir) then
-      FReadDir := FTempDir;
-
-    if FUpdateDir = '' then
-      FUpdateDir := FWorkDir;
+    DeviceDir := iniFile.ReadString(PATH_SECTION, 'Device', '');
+    ReadDir := iniFile.ReadString(PATH_SECTION, 'Read', '');
+    UpdateDir := iniFile.ReadString(PATH_SECTION, 'Update', '');
 
     //
     // SYSTEM_SECTION
     //
-    FTransliterate := iniFile.ReadBool(SYSTEM_SECTION, 'TransliterateFileName', True);
+    // TODO : REMOVE FTransliterate := iniFile.ReadBool(SYSTEM_SECTION, 'TransliterateFileName', True);
     FActiveCollection := iniFile.ReadInteger(SYSTEM_SECTION, 'ActiveCollection', 1);
     FDoCheckUpdate := iniFile.ReadBool(SYSTEM_SECTION, 'CheckUpdates', True);
     FCheckExternalLibUpdate := iniFile.ReadBool(SYSTEM_SECTION, 'CheckLibrusecUpdates', True);
-    FPromptDevicePath := iniFile.ReadBool(SYSTEM_SECTION, 'PromptDevicePath', False);
+    FPromptDevicePath := iniFile.ReadBool(SYSTEM_SECTION, 'PromptDevicePath', True);
     FFolderTemplate := iniFile.ReadString(SYSTEM_SECTION, 'FolderTemplate', '%f\%s');
     FFileNameTemplate := iniFile.ReadString(SYSTEM_SECTION, 'FileNameTemplate', '%n - %t');
     FRemoveSquareBrackets := iniFile.ReadBool(SYSTEM_SECTION, 'RemoveSquareBrackets', True);
-    FUseSystemTemp := iniFile.ReadBool(SYSTEM_SECTION, 'UseSystemTemp', False);
 
     case iniFile.ReadInteger(SYSTEM_SECTION, 'ExpFormat', 0) of
       0: FExportMode := emFB2;
@@ -726,7 +746,7 @@ begin
     FLibUsername := iniFile.ReadString(NETWORK_SECTION, 'lib-user', '');
     FLibPassword := DecodePassString(iniFile.ReadString(NETWORK_SECTION, 'lib-pass', ''));
 
-    FUseIESettings := iniFile.ReadBool(NETWORK_SECTION, 'use_ie_settings', False);
+    FUseIESettings := iniFile.ReadBool(NETWORK_SECTION, 'use_ie_settings', True);
     if FUseIESettings then
       GetIEProxySettings(FIEProxyServer, FIEProxyPort);
 
@@ -793,7 +813,7 @@ begin
     //
 
     FEnableSort := iniFile.ReadBool(FILE_SORT_SECTION, 'EnableFileSort', False);
-    FInputFolder := iniFile.ReadString(FILE_SORT_SECTION, 'InputFolder', '');
+    FImportDir := iniFile.ReadString(FILE_SORT_SECTION, 'InputFolder', '');
 
     FFB2FolderTemplate := iniFile.ReadString(FILE_SORT_SECTION, 'Fb2FolderTemplate', '');
     FFB2FileTemplate := iniFile.ReadString(FILE_SORT_SECTION, 'Fb2FileTemplate', '');
@@ -829,7 +849,7 @@ begin
     //
     // SYSTEM_SECTION
     //
-    iniFile.WriteBool(SYSTEM_SECTION, 'TransliterateFileName', FTransliterate);
+    // TODO : REMOVE iniFile.WriteBool(SYSTEM_SECTION, 'TransliterateFileName', FTransliterate);
     iniFile.WriteInteger(SYSTEM_SECTION, 'ActiveCollection', FActiveCollection);
     iniFile.WriteBool(SYSTEM_SECTION, 'CheckUpdates', FDoCheckUpdate);
     iniFile.WriteBool(SYSTEM_SECTION, 'CheckLibrusecUpdates', FCheckExternalLibUpdate);
@@ -923,11 +943,9 @@ begin
     //
     iniFile.WriteBool(IMPORT_SECTION, 'CheckFB2Exist', FCheckExistsFiles);
 
-
     //
     // BEHAVIOR_SECTION
     //
-
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowRusABC', FShowRusBar);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowEngABC', FShowEngBar);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'DoNotShowDeleted', FDoNotShowDeleted);
@@ -948,12 +966,12 @@ begin
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ForceConvertToFBD', FForceConvertToFBD);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'OverwriteFB2Info', FOverwriteFB2Info);
     iniFile.WriteString(BEHAVIOR_SECTION, 'BookHeaderTemplate', FFBDBookHeaderTemplate);
+
     //
     // FILE_SORT_SECTION
     //
-
     iniFile.WriteBool(FILE_SORT_SECTION, 'EnableFileSort', FEnableSort);
-    iniFile.WriteString(FILE_SORT_SECTION, 'InputFolder', FInputFolder);
+    iniFile.WriteString(FILE_SORT_SECTION, 'InputFolder', FImportDir);
 
     iniFile.WriteString(FILE_SORT_SECTION, 'Fb2FolderTemplate', FFB2FolderTemplate);
     iniFile.WriteString(FILE_SORT_SECTION, 'Fb2FileTemplate', FFB2FileTemplate);
@@ -1209,27 +1227,58 @@ end;
 
 function TMHLSettings.GetDataPath: string;
 begin
+  Assert(FDataDir <> '');
   Result := IncludeTrailingPathDelimiter(FDataDir);
 end;
 
 function TMHLSettings.GetTempPath: string;
 begin
+  Assert(FTempDir <> '');
   Result := IncludeTrailingPathDelimiter(FTempDir);
+end;
+
+procedure TMHLSettings.SetUpdateDir(const Value: string);
+begin
+  FUpdateDir := SafeGetDirName(Value);
 end;
 
 function TMHLSettings.GetUpdatePath: string;
 begin
-  Result := IncludeTrailingPathDelimiter(FUpdateDir);
+  //
+  // провериться на пустоту и существование. Вернуть папку по умолчанию в случае надобности
+  //
+  if (FUpdateDir = '') or not TDirectory.Exists(FUpdateDir) then
+    Result := WorkPath
+  else
+    Result := IncludeTrailingPathDelimiter(FUpdateDir);
+end;
+
+procedure TMHLSettings.SetImportDir(const Value: string);
+begin
+  FImportDir := SafeGetDirName(Value);
+end;
+
+function TMHLSettings.GetImportPath: string;
+begin
+  Assert(FImportDir <> '');
+  Result := SafeGetPath(FImportDir);
 end;
 
 function TMHLSettings.GetWorkPath: string;
 begin
+  Assert(FWorkDir <> '');
   Result := IncludeTrailingPathDelimiter(FWorkDir);
 end;
 
 function TMHLSettings.GetDevicePath: string;
 begin
+  Assert(FDeviceDir <> '');
   Result := IncludeTrailingPathDelimiter(FDeviceDir);
+end;
+
+procedure TMHLSettings.SetDeviceDir(const Value: string);
+begin
+  FDeviceDir := SafeGetDirName(Value);
 end;
 
 function TMHLSettings.GetSystemFileName(fileType: TMHLSystemFile): string;
@@ -1252,11 +1301,6 @@ begin
   else
     Assert(False);
   end;
-end;
-
-procedure TMHLSettings.SetDeviceDir(const Value: string);
-begin
-  FDeviceDir := ExcludeTrailingPathDelimiter(Value);
 end;
 
 procedure TMHLSettings.LoadInitialDirs(iniFile: TIniFile);
@@ -1289,30 +1333,28 @@ begin
   Result := FInitialDirs.Values[key];
 end;
 
-function TMHLSettings.GetPresetPath: string;
-begin
-  if FPresetDir <> '' then
-    Result := IncludeTrailingPathDelimiter(FPresetDir)
-  else
-    Result := '';
-end;
-
-function TMHLSettings.GetReadPath: string;
-begin
-  if FReadDir <> '' then
-    Result := IncludeTrailingPathDelimiter(FReadDir)
-  else
-    Result := '';
-end;
-
 procedure TMHLSettings.SetInitialDir(const key, Value: string);
 begin
   FInitialDirs.Values[key] := Value;
 end;
 
+function TMHLSettings.GetPresetPath: string;
+begin
+  Assert(FPresetDir <> '');
+  Result := SafeGetPath(FPresetDir);
+end;
+
+function TMHLSettings.GetReadPath: string;
+begin
+  if (FReadDir = '') or not TDirectory.Exists(FReadDir) then
+    Result := TempPath
+  else
+    Result := SafeGetPath(FReadDir);
+end;
+
 procedure TMHLSettings.SetReadDir(const Value: string);
 begin
-  FReadDir := ExcludeTrailingPathDelimiter(Value)
+  FReadDir := SafeGetDirName(Value);
 end;
 
 initialization

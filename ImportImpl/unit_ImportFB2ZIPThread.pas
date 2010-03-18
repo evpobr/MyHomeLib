@@ -41,6 +41,7 @@ implementation
 uses
   Classes,
   SysUtils,
+  IOUtils,
   unit_WorkerThread,
   unit_Consts,
   unit_Settings,
@@ -146,7 +147,7 @@ begin
               Continue;
             end;
 
-            R.FileName := ExtractShortFilename(AFileName);
+            R.FileName := TPath.GetFileNameWithoutExtension(AFileName);
             R.Size := ArchiveItem.UncompressedSize;
             R.InsideNo := j;
             R.Date := Now;

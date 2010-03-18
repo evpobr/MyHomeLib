@@ -90,6 +90,7 @@ var
 implementation
 
 uses
+  IOUtils,
   EncdDecd,
   jpeg,
   pngimage,
@@ -247,7 +248,7 @@ begin
 
   if FEditorMode then
   begin
-    FBD.Load(Folder, ExtractShortFileName(FBookrecord.FileName), FBookrecord.FileExt);
+    FBD.Load(Folder, TPath.GetFileNameWithoutExtension(FBookrecord.FileName), FBookrecord.FileExt);
     alFBDAuthors.Items := FBD.GetAuthors(atlFBD);
     with FBD.Publisher do
     begin

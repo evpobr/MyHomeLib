@@ -151,7 +151,7 @@ begin
   NewFolder := GetNewFolder(Settings.FB2FolderTemplate, R);
 
   CreateFolders(FRootPath, NewFolder);
-  CopyFile(Settings.InputFolder + R.FileName + R.FileExt, FRootPath + NewFolder + R.FileName + R.FileExt);
+  CopyFile(Settings.ImportPath + R.FileName + R.FileExt, FRootPath + NewFolder + R.FileName + R.FileExt);
   R.Folder := NewFolder;
 
   NewFilename := GetNewFileName(Settings.FB2FileTemplate, R);
@@ -214,7 +214,7 @@ begin
     if not Settings.EnableSort then
       FFilesList.TargetPath := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder)
     else
-      FFilesList.TargetPath := IncludeTrailingPathDelimiter(Settings.InputFolder);
+      FFilesList.TargetPath := Settings.ImportPath;
 
     FFilesList.OnDirectory := ShowCurrentDir;
     try
