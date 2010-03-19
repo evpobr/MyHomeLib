@@ -1,6 +1,6 @@
 object DMUser: TDMUser
   OldCreateOrder = False
-  Height = 417
+  Height = 623
   Width = 463
   object DBUser: TABSDatabase
     CurrentVersion = '6.05 '
@@ -9,13 +9,13 @@ object DMUser: TDMUser
     MaxConnections = 5
     MultiUser = False
     SessionName = 'Default'
-    Left = 24
-    Top = 16
+    Left = 40
+    Top = 32
   end
   object dsGroupedBooks: TDataSource
     DataSet = tblGrouppedBooks
-    Left = 240
-    Top = 256
+    Left = 128
+    Top = 248
   end
   object tblBases: TABSTable
     CurrentVersion = '6.05 '
@@ -24,8 +24,8 @@ object DMUser: TDMUser
     ReadOnly = False
     TableName = 'Bases'
     Exclusive = False
-    Left = 16
-    Top = 128
+    Left = 40
+    Top = 104
     object tblBasesID: TAutoIncField
       FieldName = 'ID'
     end
@@ -89,48 +89,13 @@ object DMUser: TDMUser
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'ID'
-        Options = [ixPrimary]
-      end
-      item
-        Name = 'Book_Index'
-        Fields = 'DatabaseID;BookID'
-      end>
-    FieldDefs = <
-      item
-        Name = 'ID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'BookID'
-        Attributes = [faRequired]
-        DataType = ftInteger
-      end
-      item
-        Name = 'DataBaseID'
-        Attributes = [faRequired]
-        DataType = ftInteger
-      end
-      item
-        Name = 'Rate'
-        Attributes = [faRequired]
-        DataType = ftInteger
-      end
-      item
-        Name = 'Date'
-        DataType = ftDate
-      end>
     TableName = 'rates'
     Exclusive = False
     ExportToSqlOptions.BlobSettings = True
     ExportToSqlOptions.Data = True
     ExportToSqlOptions.FieldNamesInInserts = True
-    Left = 320
-    Top = 56
+    Left = 40
+    Top = 376
     object tblRatesID: TAutoIncField
       FieldName = 'ID'
     end
@@ -152,152 +117,21 @@ object DMUser: TDMUser
   end
   object dsBases: TDataSource
     DataSet = tblBases
-    Left = 72
-    Top = 128
+    Left = 128
+    Top = 104
   end
   object tblGrouppedBooks: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'ID'
-        Options = [ixPrimary]
-      end
-      item
-        Name = 'OuterID_Index'
-        Fields = 'GroupID;OuterID'
-      end
-      item
-        Name = 'FullName_Index'
-        Fields = 'GroupID;FullName;Series;Title'
-      end
-      item
-        Name = 'File_Index'
-        Fields = 'FileName'
-      end>
     IndexName = 'FullName_Index'
-    FieldDefs = <
-      item
-        Name = 'ID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'GroupID'
-        Attributes = [faRequired]
-        DataType = ftInteger
-      end
-      item
-        Name = 'OuterID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'SerID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'SeqNumber'
-        DataType = ftSmallint
-      end
-      item
-        Name = 'DatabaseID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'LibID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'Date'
-        DataType = ftDate
-      end
-      item
-        Name = 'Title'
-        DataType = ftWideString
-        Size = 150
-      end
-      item
-        Name = 'FullName'
-        DataType = ftWideString
-        Size = 255
-      end
-      item
-        Name = 'InsideNo'
-        Attributes = [faRequired]
-        DataType = ftInteger
-      end
-      item
-        Name = 'FileName'
-        Attributes = [faRequired]
-        DataType = ftWideString
-        Size = 255
-      end
-      item
-        Name = 'Ext'
-        DataType = ftWideString
-        Size = 10
-      end
-      item
-        Name = 'Size'
-        DataType = ftInteger
-      end
-      item
-        Name = 'Code'
-        DataType = ftSmallint
-      end
-      item
-        Name = 'Folder'
-        DataType = ftWideString
-        Size = 255
-      end
-      item
-        Name = 'DiscID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'Local'
-        DataType = ftBoolean
-      end
-      item
-        Name = 'Deleted'
-        DataType = ftBoolean
-      end
-      item
-        Name = 'Genres'
-        DataType = ftWideString
-        Size = 128
-      end
-      item
-        Name = 'Series'
-        DataType = ftWideString
-        Size = 128
-      end
-      item
-        Name = 'Rate'
-        DataType = ftInteger
-      end
-      item
-        Name = 'Progress'
-        DataType = ftSmallint
-      end
-      item
-        Name = 'LibRate'
-        DataType = ftInteger
-      end
-      item
-        Name = 'Lang'
-        DataType = ftWideString
-        Size = 2
-      end>
     TableName = 'GroupedBooks'
     Exclusive = False
     MasterFields = 'ID'
     MasterSource = dsGroupList
-    Left = 144
-    Top = 256
+    Left = 40
+    Top = 248
     object tblGrouppedBooksID: TAutoIncField
       FieldName = 'ID'
     end
@@ -354,9 +188,6 @@ object DMUser: TDMUser
       FieldName = 'Folder'
       Size = 255
     end
-    object tblGrouppedBooksDiscID: TIntegerField
-      FieldName = 'DiscID'
-    end
     object tblGrouppedBooksLocal: TBooleanField
       FieldName = 'Local'
     end
@@ -386,8 +217,8 @@ object DMUser: TDMUser
     end
   end
   object SeverityImages: TImageList
-    Left = 344
-    Top = 328
+    Left = 376
+    Top = 304
     Bitmap = {
       494C0101030004004C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
@@ -531,8 +362,8 @@ object DMUser: TDMUser
   object SeverityImagesBig: TImageList
     Height = 32
     Width = 32
-    Left = 296
-    Top = 328
+    Left = 376
+    Top = 232
     Bitmap = {
       494C0101030004004C0020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000002000000001002000000000000040
@@ -1071,52 +902,18 @@ object DMUser: TDMUser
   end
   object dsGroupList: TDataSource
     DataSet = tblGroupList
-    Left = 248
-    Top = 192
+    Left = 128
+    Top = 176
   end
   object tblFinished: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'ID'
-        Options = [ixPrimary]
-      end
-      item
-        Name = 'Book_Index'
-        Fields = 'DatabaseID;BookID;Progress'
-      end>
-    FieldDefs = <
-      item
-        Name = 'ID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'BookID'
-        Attributes = [faRequired]
-        DataType = ftInteger
-      end
-      item
-        Name = 'DataBaseID'
-        Attributes = [faRequired]
-        DataType = ftInteger
-      end
-      item
-        Name = 'Progress'
-        DataType = ftSmallint
-      end
-      item
-        Name = 'Date'
-        DataType = ftDate
-      end>
     TableName = 'Finished'
     Exclusive = False
-    Left = 320
-    Top = 120
+    Left = 40
+    Top = 440
     object tblFinishedID: TAutoIncField
       FieldName = 'ID'
     end
@@ -1140,43 +937,10 @@ object DMUser: TDMUser
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'ID'
-        Options = [ixPrimary, ixUnique]
-      end
-      item
-        Name = 'NameIndex'
-        Fields = 'Name'
-      end>
-    FieldDefs = <
-      item
-        Name = 'ID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'Name'
-        DataType = ftWideString
-        Size = 255
-      end
-      item
-        Name = 'AllowDelete'
-        DataType = ftBoolean
-      end
-      item
-        Name = 'Notes'
-        DataType = ftMemo
-      end
-      item
-        Name = 'Icon'
-        DataType = ftBlob
-      end>
     TableName = 'GroupsList'
     Exclusive = False
-    Left = 144
-    Top = 184
+    Left = 40
+    Top = 176
     object tblGroupListID: TAutoIncField
       FieldName = 'ID'
     end
@@ -1203,15 +967,15 @@ object DMUser: TDMUser
     IndexName = 'ID_Index'
     TableName = 'Extra'
     Exclusive = False
-    MasterFields = 'ID'
+    MasterFields = 'OuterID;DatabaseID'
     MasterSource = dsGroupedBooks
-    Left = 192
-    Top = 328
-    object tblExtraE_ID: TAutoIncField
-      FieldName = 'E_ID'
+    Left = 40
+    Top = 312
+    object tblExtraBookID: TIntegerField
+      FieldName = 'BookID'
     end
-    object tblExtraE_BookID: TIntegerField
-      FieldName = 'E_BookID'
+    object tblExtraDatabaseID: TIntegerField
+      FieldName = 'DatabaseID'
     end
     object tblExtraE_Annotation: TWideMemoField
       FieldName = 'E_Annotation'

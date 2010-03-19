@@ -1122,7 +1122,7 @@ begin
       AddToFilter('`E_Annotation`', PrepareQuery(edFAnnotation.text, True), True, FilterString);
 
       if FilterString <> '' then
-        FilterString := SQLStartStr + #13#10 + 'FROM Extra e ' + #13#10 + 'JOIN books b on b.id = e.E_BookID ' + #13#10 + 'WHERE ' + FilterString + '';
+        FilterString := SQLStartStr + #13#10 + 'FROM Extra e ' + #13#10 + 'JOIN books b on b.id = e.BookID ' + #13#10 + 'WHERE ' + FilterString + '';
 
       if (dmCollection.sqlBooks.SQL.Count = 0) and (FilterString <> '') then
         dmCollection.sqlBooks.SQL.Add(FilterString)
@@ -6165,7 +6165,7 @@ begin
     begin
       S := dmCollection.tblExtraE_Review.Value;
       StrReplace(#13#10, '~', S);
-      dmCollection.tblBooks.Locate(ID_FIELD, dmCollection.tblExtraE_BookID.Value, []);
+      dmCollection.tblBooks.Locate(ID_FIELD, dmCollection.tblExtraBookID.Value, []);
       if dmCollection.tblBooksLibID.Value <> 0 then
         ID := dmCollection.tblBooksLibID.Value
       else
@@ -6176,7 +6176,7 @@ begin
     end;
     dmCollection.tblExtra.MasterSource := dmCollection.dsBooks;
 
-    if GetFileName(fnSaveUserData, FN) then
+    if unit_Helpers.GetFileName(fnSaveUserData, FN) then
       SL.SaveToFile(FN, TEncoding.UTF8);
 
   finally

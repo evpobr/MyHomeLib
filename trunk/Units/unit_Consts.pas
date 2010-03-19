@@ -154,12 +154,16 @@ const
   //
   ID_FIELD = 'ID';
   BOOK_ID_FIELD = 'BookID';
-  AUTHOR_ID_FIELD = 'A_ID';
+  AUTHOR_ID_FIELD = 'AuthorID';
   LIB_ID_FIELD = 'LibID';
   DB_ID_FIELD = 'DatabaseID';
+  SERIE_ID_FIELD = 'SerieID';
+  GENRE_CODE_FIELD = 'Code';
+  GROUP_ID_FIELD = 'GroupID';
   FOLDER_FIELD = 'Folder';
   FILENAME_FIELD = 'FileName';
 
+  PX_INDEX = 'PXIndex';
 type
   TColumnSet = set of 0 .. 255;
 
