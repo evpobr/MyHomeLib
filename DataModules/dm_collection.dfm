@@ -28,130 +28,7 @@ object DMCollection: TDMCollection
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'ID'
-        Options = [ixPrimary, ixUnique]
-      end
-      item
-        Name = 'Series_Index'
-        Fields = 'SerID;SeqNumber'
-      end
-      item
-        Name = 'Title_Index'
-        CaseInsFields = 'FullName;Title'
-        Fields = 'FullName;Title'
-        Options = [ixCaseInsensitive]
-      end
-      item
-        Name = 'File_Index'
-        CaseInsFields = 'FileName'
-        Fields = 'FileName'
-        Options = [ixCaseInsensitive]
-      end
-      item
-        Name = 'Folder_Index'
-        Fields = 'DiscID;Folder'
-      end>
     IndexName = 'ID_Index'
-    FieldDefs = <
-      item
-        Name = 'ID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'DatabaseID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'LibID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'Title'
-        DataType = ftWideString
-        Size = 100
-      end
-      item
-        Name = 'FullName'
-        Attributes = [faRequired]
-        DataType = ftWideString
-        Size = 120
-      end
-      item
-        Name = 'SerID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'SeqNumber'
-        DataType = ftSmallint
-      end
-      item
-        Name = 'Date'
-        DataType = ftDate
-      end
-      item
-        Name = 'LibRate'
-        DataType = ftInteger
-      end
-      item
-        Name = 'Lang'
-        DataType = ftWideString
-        Size = 2
-      end
-      item
-        Name = 'DiscID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'Folder'
-        DataType = ftWideString
-        Size = 255
-      end
-      item
-        Name = 'FileName'
-        Attributes = [faRequired]
-        DataType = ftWideString
-        Size = 255
-      end
-      item
-        Name = 'InsideNo'
-        Attributes = [faRequired]
-        DataType = ftInteger
-      end
-      item
-        Name = 'Ext'
-        DataType = ftWideString
-        Size = 10
-      end
-      item
-        Name = 'Size'
-        DataType = ftInteger
-      end
-      item
-        Name = 'URI'
-        DataType = ftWideString
-        Size = 255
-      end
-      item
-        Name = 'Code'
-        DataType = ftSmallint
-      end
-      item
-        Name = 'Local'
-        DataType = ftBoolean
-      end
-      item
-        Name = 'Deleted'
-        DataType = ftBoolean
-      end
-      item
-        Name = 'KeyWords'
-        DataType = ftWideString
-        Size = 255
-      end>
     TableName = 'Books'
     Exclusive = False
     MasterFields = 'AL_BookID'
@@ -204,9 +81,6 @@ object DMCollection: TDMCollection
     object tblBooksAFolder: TWideStringField
       FieldName = 'Folder'
       Size = 200
-    end
-    object tblBooksADiscID: TIntegerField
-      FieldName = 'DiscID'
     end
     object tblBooksALocal: TBooleanField
       FieldName = 'Local'
@@ -266,130 +140,7 @@ object DMCollection: TDMCollection
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'ID'
-        Options = [ixPrimary, ixUnique]
-      end
-      item
-        Name = 'Series_Index'
-        Fields = 'SerID;SeqNumber'
-      end
-      item
-        Name = 'Title_Index'
-        CaseInsFields = 'FullName;Title'
-        Fields = 'FullName;Title'
-        Options = [ixCaseInsensitive]
-      end
-      item
-        Name = 'File_Index'
-        CaseInsFields = 'FileName'
-        Fields = 'FileName'
-        Options = [ixCaseInsensitive]
-      end
-      item
-        Name = 'Folder_Index'
-        Fields = 'DiscID;Folder'
-      end>
     IndexName = 'ID_Index'
-    FieldDefs = <
-      item
-        Name = 'ID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'DatabaseID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'LibID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'Title'
-        DataType = ftWideString
-        Size = 100
-      end
-      item
-        Name = 'FullName'
-        Attributes = [faRequired]
-        DataType = ftWideString
-        Size = 120
-      end
-      item
-        Name = 'SerID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'SeqNumber'
-        DataType = ftSmallint
-      end
-      item
-        Name = 'Date'
-        DataType = ftDate
-      end
-      item
-        Name = 'LibRate'
-        DataType = ftInteger
-      end
-      item
-        Name = 'Lang'
-        DataType = ftWideString
-        Size = 2
-      end
-      item
-        Name = 'DiscID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'Folder'
-        DataType = ftWideString
-        Size = 255
-      end
-      item
-        Name = 'FileName'
-        Attributes = [faRequired]
-        DataType = ftWideString
-        Size = 255
-      end
-      item
-        Name = 'InsideNo'
-        Attributes = [faRequired]
-        DataType = ftInteger
-      end
-      item
-        Name = 'Ext'
-        DataType = ftWideString
-        Size = 10
-      end
-      item
-        Name = 'Size'
-        DataType = ftInteger
-      end
-      item
-        Name = 'URI'
-        DataType = ftWideString
-        Size = 255
-      end
-      item
-        Name = 'Code'
-        DataType = ftSmallint
-      end
-      item
-        Name = 'Local'
-        DataType = ftBoolean
-      end
-      item
-        Name = 'Deleted'
-        DataType = ftBoolean
-      end
-      item
-        Name = 'KeyWords'
-        DataType = ftWideString
-        Size = 255
-      end>
     TableName = 'Books'
     Exclusive = False
     MasterFields = 'GL_BookID'
@@ -448,9 +199,6 @@ object DMCollection: TDMCollection
       FieldName = 'Folder'
       Size = 200
     end
-    object tblBooksGDiscID: TIntegerField
-      FieldName = 'DiscID'
-    end
     object tblBooksGLocal: TBooleanField
       FieldName = 'Local'
     end
@@ -500,50 +248,6 @@ object DMCollection: TDMCollection
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'G_Code'
-        Options = [ixPrimary, ixUnique]
-      end
-      item
-        Name = 'CodeIndex'
-        Fields = 'G_ParentCode;G_Code'
-      end
-      item
-        Name = 'FB2CodeIndex'
-        Fields = 'G_FB2Code'
-      end
-      item
-        Name = 'AliasIndex'
-        Fields = 'G_Alias'
-      end>
-    FieldDefs = <
-      item
-        Name = 'G_ID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'G_Code'
-        DataType = ftWideString
-        Size = 20
-      end
-      item
-        Name = 'G_ParentCode'
-        DataType = ftWideString
-        Size = 20
-      end
-      item
-        Name = 'G_FB2Code'
-        DataType = ftWideString
-        Size = 20
-      end
-      item
-        Name = 'G_Alias'
-        DataType = ftWideString
-        Size = 50
-      end>
     TableName = 'Genres'
     Exclusive = False
     Left = 400
@@ -602,120 +306,7 @@ object DMCollection: TDMCollection
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'ID'
-        Options = [ixPrimary, ixUnique]
-      end
-      item
-        Name = 'AlphabetIndex'
-        Fields = 'FullName;SerID;SeqNumber;Title'
-      end
-      item
-        Name = 'FullNameIndex'
-        CaseInsFields = 'FullName;Title'
-        Fields = 'FullName;Title'
-        Options = [ixCaseInsensitive]
-      end>
     IndexFieldNames = 'SerID'
-    FieldDefs = <
-      item
-        Name = 'ID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'DatabaseID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'LibID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'Title'
-        DataType = ftWideString
-        Size = 100
-      end
-      item
-        Name = 'FullName'
-        Attributes = [faRequired]
-        DataType = ftWideString
-        Size = 120
-      end
-      item
-        Name = 'SerID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'SeqNumber'
-        DataType = ftSmallint
-      end
-      item
-        Name = 'Date'
-        DataType = ftDate
-      end
-      item
-        Name = 'LibRate'
-        DataType = ftInteger
-      end
-      item
-        Name = 'Lang'
-        DataType = ftWideString
-        Size = 2
-      end
-      item
-        Name = 'DiscID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'Folder'
-        DataType = ftWideString
-        Size = 255
-      end
-      item
-        Name = 'FileName'
-        Attributes = [faRequired]
-        DataType = ftWideString
-        Size = 255
-      end
-      item
-        Name = 'InsideNo'
-        Attributes = [faRequired]
-        DataType = ftInteger
-      end
-      item
-        Name = 'Ext'
-        DataType = ftWideString
-        Size = 10
-      end
-      item
-        Name = 'Size'
-        DataType = ftInteger
-      end
-      item
-        Name = 'URI'
-        DataType = ftWideString
-        Size = 255
-      end
-      item
-        Name = 'Code'
-        DataType = ftSmallint
-      end
-      item
-        Name = 'Local'
-        DataType = ftBoolean
-      end
-      item
-        Name = 'Deleted'
-        DataType = ftBoolean
-      end
-      item
-        Name = 'KeyWords'
-        DataType = ftWideString
-        Size = 255
-      end>
     TableName = 'Books'
     Exclusive = False
     MasterFields = 'S_ID'
@@ -773,9 +364,6 @@ object DMCollection: TDMCollection
     object tblBooksSFolder: TWideStringField
       FieldName = 'Folder'
       Size = 200
-    end
-    object tblBooksSDiscID: TIntegerField
-      FieldName = 'DiscID'
     end
     object tblBooksSLocal: TBooleanField
       FieldName = 'Local'
@@ -841,51 +429,7 @@ object DMCollection: TDMCollection
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'GL_ID'
-        Options = [ixPrimary, ixUnique]
-      end
-      item
-        Name = 'BookIndex'
-        Fields = 'GL_BookID'
-      end
-      item
-        Name = 'GenreIndex'
-        Fields = 'GL_Code;GL_Family;GL_Series;GL_Title'
-      end>
     IndexName = 'BookIndex'
-    FieldDefs = <
-      item
-        Name = 'GL_ID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'GL_Code'
-        DataType = ftWideString
-        Size = 30
-      end
-      item
-        Name = 'GL_BookID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'GL_Family'
-        DataType = ftWideString
-        Size = 7
-      end
-      item
-        Name = 'GL_Series'
-        DataType = ftWideString
-        Size = 7
-      end
-      item
-        Name = 'GL_Title'
-        DataType = ftWideString
-        Size = 7
-      end>
     TableName = 'Genre_List'
     Exclusive = False
     Left = 40
@@ -928,51 +472,7 @@ object DMCollection: TDMCollection
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'GL_ID'
-        Options = [ixPrimary, ixUnique]
-      end
-      item
-        Name = 'BookIndex'
-        Fields = 'GL_BookID'
-      end
-      item
-        Name = 'GenreIndex'
-        Fields = 'GL_Code;GL_Family;GL_Series;GL_Title'
-      end>
     IndexFieldNames = 'GL_Code'
-    FieldDefs = <
-      item
-        Name = 'GL_ID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'GL_Code'
-        DataType = ftWideString
-        Size = 30
-      end
-      item
-        Name = 'GL_BookID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'GL_Family'
-        DataType = ftWideString
-        Size = 7
-      end
-      item
-        Name = 'GL_Series'
-        DataType = ftWideString
-        Size = 7
-      end
-      item
-        Name = 'GL_Title'
-        DataType = ftWideString
-        Size = 7
-      end>
     TableName = 'Genre_List'
     Exclusive = False
     MasterFields = 'G_Code'
@@ -1012,54 +512,13 @@ object DMCollection: TDMCollection
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'ID;SerId;SerNo'
-        Options = [ixPrimary, ixUnique]
-      end
-      item
-        Name = 'BookIndex'
-        Fields = 'BookID'
-      end
-      item
-        Name = 'AuthIndex'
-        Fields = 'AuthID'
-      end>
     IndexName = 'AuthIndex'
-    FieldDefs = <
-      item
-        Name = 'AL_ID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'AL_AuthID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'AL_BookID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'AL_Series'
-        DataType = ftWideString
-        Size = 7
-      end
-      item
-        Name = 'AL_Title'
-        DataType = ftWideString
-        Size = 7
-      end>
     TableName = 'author_List'
     Exclusive = False
-    MasterFields = 'A_ID'
+    MasterFields = 'AuthorID'
     MasterSource = dsAuthors
     Left = 24
     Top = 152
-    object tblAuthor_ListAL_ID: TAutoIncField
-      FieldName = 'AL_ID'
-    end
     object tblAuthor_ListAL_AuthID: TIntegerField
       FieldName = 'AL_AuthID'
     end
@@ -1087,150 +546,7 @@ object DMCollection: TDMCollection
     ReadOnly = False
     Filtered = True
     FilterOptions = [foCaseInsensitive]
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'ID'
-        Options = [ixPrimary, ixUnique]
-      end
-      item
-        Name = 'Series_Index'
-        Fields = 'SerID;SeqNumber'
-      end
-      item
-        Name = 'Title_Index'
-        CaseInsFields = 'FullName;Title;Deleted;Lang;Date;Local;KeyWords'
-        Fields = 'FullName;Title;Deleted;Lang;Date;Local;KeyWords'
-        Options = [ixCaseInsensitive]
-      end
-      item
-        Name = 'File_Index'
-        CaseInsFields = 'FileName'
-        Fields = 'FileName'
-        Options = [ixCaseInsensitive]
-      end
-      item
-        Name = 'Folder_Index'
-        CaseInsFields = 'Folder'
-        Fields = 'Folder'
-        Options = [ixCaseInsensitive]
-      end
-      item
-        Name = 'Deleted_Index'
-        Fields = 'Deleted'
-      end
-      item
-        Name = 'Date_Index'
-        Fields = 'Date'
-      end
-      item
-        Name = 'Local_Index'
-        Fields = 'Local'
-      end
-      item
-        Name = 'KeyWords_Index'
-        CaseInsFields = 'KeyWords'
-        Fields = 'KeyWords'
-        Options = [ixCaseInsensitive]
-      end>
     IndexName = 'Title_Index'
-    FieldDefs = <
-      item
-        Name = 'ID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'DatabaseID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'LibID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'Title'
-        DataType = ftWideString
-        Size = 150
-      end
-      item
-        Name = 'FullName'
-        Attributes = [faRequired]
-        DataType = ftWideString
-        Size = 120
-      end
-      item
-        Name = 'SerID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'SeqNumber'
-        DataType = ftSmallint
-      end
-      item
-        Name = 'Date'
-        DataType = ftDate
-      end
-      item
-        Name = 'LibRate'
-        DataType = ftInteger
-      end
-      item
-        Name = 'Lang'
-        DataType = ftWideString
-        Size = 2
-      end
-      item
-        Name = 'DiscID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'Folder'
-        DataType = ftWideString
-        Size = 200
-      end
-      item
-        Name = 'FileName'
-        Attributes = [faRequired]
-        DataType = ftWideString
-        Size = 170
-      end
-      item
-        Name = 'InsideNo'
-        Attributes = [faRequired]
-        DataType = ftInteger
-      end
-      item
-        Name = 'Ext'
-        DataType = ftWideString
-        Size = 10
-      end
-      item
-        Name = 'Size'
-        DataType = ftInteger
-      end
-      item
-        Name = 'URI'
-        DataType = ftWideString
-        Size = 60
-      end
-      item
-        Name = 'Code'
-        DataType = ftSmallint
-      end
-      item
-        Name = 'Local'
-        DataType = ftBoolean
-      end
-      item
-        Name = 'Deleted'
-        DataType = ftBoolean
-      end
-      item
-        Name = 'KeyWords'
-        DataType = ftWideString
-        Size = 255
-      end>
     TableName = 'books'
     Exclusive = False
     Left = 288
@@ -1279,9 +595,6 @@ object DMCollection: TDMCollection
     object tblBooksFolder: TWideStringField
       FieldName = 'Folder'
       Size = 200
-    end
-    object tblBooksDiscID: TIntegerField
-      FieldName = 'DiscID'
     end
     object tblBooksLocal: TBooleanField
       FieldName = 'Local'
@@ -1345,50 +658,7 @@ object DMCollection: TDMCollection
     ReadOnly = False
     Filter = 'S_Title<>"---"'
     Filtered = True
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'S_ID'
-        Options = [ixPrimary, ixUnique]
-      end
-      item
-        Name = 'TiteIndex'
-        Fields = 'S_Title;S_AuthID'
-      end
-      item
-        Name = 'AuthorIndex'
-        Fields = 'S_AuthID;S_Title'
-      end
-      item
-        Name = 'SeqTitle'
-        CaseInsFields = 'S_Title'
-        Fields = 'S_Title'
-        Options = [ixCaseInsensitive]
-      end>
     IndexName = 'TiteIndex'
-    FieldDefs = <
-      item
-        Name = 'S_ID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'S_AuthID'
-        Attributes = [faRequired]
-        DataType = ftInteger
-      end
-      item
-        Name = 'S_GenreCode'
-        Attributes = [faRequired]
-        DataType = ftWideString
-        Size = 20
-      end
-      item
-        Name = 'S_Title'
-        Attributes = [faRequired]
-        DataType = ftWideString
-        Size = 80
-      end>
     TableName = 'Series'
     Exclusive = False
     Left = 40
@@ -1420,51 +690,7 @@ object DMCollection: TDMCollection
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'G_Code'
-        Options = [ixPrimary, ixUnique]
-      end
-      item
-        Name = 'CodeIndex'
-        Fields = 'G_ParentCode;G_Code'
-      end
-      item
-        Name = 'FB2CodeIndex'
-        Fields = 'G_FB2Code'
-      end
-      item
-        Name = 'AliasIndex'
-        Fields = 'G_Alias'
-      end>
     IndexName = 'ID_Index'
-    FieldDefs = <
-      item
-        Name = 'G_ID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'G_Code'
-        DataType = ftWideString
-        Size = 20
-      end
-      item
-        Name = 'G_ParentCode'
-        DataType = ftWideString
-        Size = 20
-      end
-      item
-        Name = 'G_FB2Code'
-        DataType = ftWideString
-        Size = 20
-      end
-      item
-        Name = 'G_Alias'
-        DataType = ftWideString
-        Size = 50
-      end>
     TableName = 'genres'
     Exclusive = False
     MasterFields = 'GL_Code'
@@ -1501,7 +727,7 @@ object DMCollection: TDMCollection
     Left = 288
     Top = 488
     object tblAuthor_DetailA_ID: TAutoIncField
-      FieldName = 'A_ID'
+      FieldName = 'AuthorID'
     end
     object tblAuthor_DetailA_Family: TWideStringField
       FieldName = 'A_Family'
@@ -1522,52 +748,11 @@ object DMCollection: TDMCollection
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'ID'
-        Options = [ixPrimary, ixUnique]
-      end
-      item
-        Name = 'BookIndex'
-        Fields = 'BookID'
-      end
-      item
-        Name = 'AuthIndex'
-        Fields = 'AuthID'
-      end>
     IndexName = 'BookIndex'
-    FieldDefs = <
-      item
-        Name = 'AL_ID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'AL_AuthID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'AL_BookID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'AL_Series'
-        DataType = ftWideString
-        Size = 7
-      end
-      item
-        Name = 'AL_Title'
-        DataType = ftWideString
-        Size = 7
-      end>
     TableName = 'Author_List'
     Exclusive = False
     Left = 288
     Top = 424
-    object tblAuthor_MasterAL_ID: TAutoIncField
-      FieldName = 'AL_ID'
-    end
     object tblAuthor_MasterAL_AuthID: TIntegerField
       FieldName = 'AL_AuthID'
     end
@@ -1600,48 +785,7 @@ object DMCollection: TDMCollection
     ReadOnly = False
     Filter = 'S_Title<>"---"'
     Filtered = True
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'ID'
-        Options = [ixPrimary, ixUnique]
-      end
-      item
-        Name = 'TiteIndex'
-        Fields = 'Title;AuthID'
-      end
-      item
-        Name = 'AuthorIndex'
-        Fields = 'AuthID;Title'
-      end
-      item
-        Name = 'SeqTitle'
-        Fields = 'Title'
-      end>
     IndexName = 'TiteIndex'
-    FieldDefs = <
-      item
-        Name = 'S_ID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'S_AuthID'
-        Attributes = [faRequired]
-        DataType = ftInteger
-      end
-      item
-        Name = 'S_GenreCode'
-        Attributes = [faRequired]
-        DataType = ftWideString
-        Size = 20
-      end
-      item
-        Name = 'S_Title'
-        Attributes = [faRequired]
-        DataType = ftWideString
-        Size = 80
-      end>
     TableName = 'series'
     Exclusive = False
     Left = 496
@@ -1668,54 +812,15 @@ object DMCollection: TDMCollection
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'E_ID'
-        Options = [ixPrimary, ixUnique]
-      end
-      item
-        Name = 'BookIndex'
-        Fields = 'E_BookID'
-      end>
-    IndexName = 'BookIndex'
-    FieldDefs = <
-      item
-        Name = 'E_ID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'E_BookID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'E_Annotation'
-        DataType = ftWideMemo
-      end
-      item
-        Name = 'E_Review'
-        DataType = ftWideMemo
-      end
-      item
-        Name = 'E_Cover'
-        DataType = ftBlob
-      end
-      item
-        Name = 'E_Data'
-        DataType = ftWideMemo
-      end>
+    IndexName = 'ID_Index'
     TableName = 'Extra'
     Exclusive = False
     MasterFields = 'ID'
     MasterSource = dsBooks
     Left = 496
     Top = 376
-    object tblExtraE_ID: TAutoIncField
-      FieldName = 'E_ID'
-    end
-    object tblExtraE_BookID: TIntegerField
-      FieldName = 'E_BookID'
+    object tblExtraBookID: TIntegerField
+      FieldName = 'BookID'
     end
     object tblExtraE_Annotation: TWideMemoField
       FieldName = 'E_Annotation'
@@ -1747,7 +852,7 @@ object DMCollection: TDMCollection
       '('
       '  :All = 0'
       '  or'
-      '  a."a_id" in'
+      '  a."AuthorID" in'
       '  ('
       '    select distinct l."al_authid"'
       '    from "books" b, "author_list" l'
@@ -1767,7 +872,7 @@ object DMCollection: TDMCollection
       end>
     object tblAuthorsID: TAutoIncField
       DisplayLabel = 'ID'
-      FieldName = 'A_ID'
+      FieldName = 'AuthorID'
     end
     object tblAuthorsFamily: TWideStringField
       DisplayLabel = 'Family'
@@ -1876,9 +981,6 @@ object DMCollection: TDMCollection
     object sqlBooksLang: TWideStringField
       FieldName = 'Lang'
       Size = 2
-    end
-    object sqlBooksDiscID: TIntegerField
-      FieldName = 'DiscID'
     end
     object sqlBooksFolder: TWideStringField
       FieldName = 'Folder'

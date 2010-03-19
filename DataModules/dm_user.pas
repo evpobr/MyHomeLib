@@ -20,7 +20,7 @@ uses
   Classes,
   DB,
   ABSMain,
-  unit_globals,
+  unit_Globals,
   ImgList,
   Controls,
   unit_Consts;
@@ -76,7 +76,6 @@ type
     tblGrouppedBooksSize: TIntegerField;
     tblGrouppedBooksCode: TSmallintField;
     tblGrouppedBooksFolder: TWideStringField;
-    tblGrouppedBooksDiscID: TIntegerField;
     tblGrouppedBooksLocal: TBooleanField;
     tblGrouppedBooksDeleted: TBooleanField;
     tblGrouppedBooksGenres: TWideStringField;
@@ -101,12 +100,12 @@ type
     tblBasesPass: TWideStringField;
     tblBasesConnection: TWideMemoField;
     tblExtra: TABSTable;
-    tblExtraE_ID: TAutoIncField;
-    tblExtraE_BookID: TIntegerField;
+    tblExtraBookID: TIntegerField;
     tblExtraE_Annotation: TWideMemoField;
     tblExtraE_Review: TWideMemoField;
     tblExtraE_Cover: TBlobField;
     tblExtraE_Data: TWideMemoField;
+    tblExtraDatabaseID: TIntegerField;
 
   private
     FCollection: TMHLCollection;
@@ -281,21 +280,21 @@ end;
 
 procedure TDMUser.CorrectExtra(OldID, NewID: Integer);
 begin
-  if tblRates.Locate('BookID; DatabaseID', VarArrayOf([OldID, ActiveCollection.GetID]), []) then
+  if tblRates.Locate(BOOK_ID_FIELD + ';' + DB_ID_FIELD, VarArrayOf([OldID, ActiveCollection.GetID]), []) then
   begin
     tblRates.Edit;
     tblRatesBookID.Value := NewID;
     tblRates.Post;
   end;
 
-  if tblFinished.Locate('BookID; DatabaseID', VarArrayOf([OldID, ActiveCollection.GetID]), []) then
+  if tblFinished.Locate(BOOK_ID_FIELD + ';' + DB_ID_FIELD, VarArrayOf([OldID, ActiveCollection.GetID]), []) then
   begin
     tblFinished.Edit;
     tblFinishedBookID.Value := NewID;
     tblFinished.Post;
   end;
 
-  if tblGrouppedBooks.Locate('OuterID; DatabaseID', VarArrayOf([OldID, ActiveCollection.GetID]), []) then
+  if tblGrouppedBooks.Locate('OuterID;' + DB_ID_FIELD, VarArrayOf([OldID, ActiveCollection.GetID]), []) then
   begin
     tblGrouppedBooks.Edit;
     tblGrouppedBooksOuterID.Value := NewID;
@@ -325,7 +324,7 @@ begin
   else
     DbId := ADBID;
 
-  if tblFinished.Locate('DataBaseID;BookID', VarArrayOf([DbId, AID]), []) then
+  if tblFinished.Locate(DB_ID_FIELD + ';' + BOOK_ID_FIELD, VarArrayOf([DbId, AID]), []) then
     tblFinished.Delete;
 end;
 
@@ -338,7 +337,7 @@ begin
   else
     DbId := ADBID;
 
-  if tblRates.Locate('DataBaseID;BookID', VarArrayOf([DbId, AID]), []) then
+  if tblRates.Locate(DB_ID_FIELD + ';' + BOOK_ID_FIELD, VarArrayOf([DbId, AID]), []) then
     tblRates.Delete;
 end;
 
@@ -575,13 +574,13 @@ begin
     dmCollection.tblBooks.Locate(LIB_ID_FIELD, ID, []);
     ID := dmCollection.tblBooksID.Value;
 
-    if not tblFinished.Locate('DataBaseID; ID', VarArrayOf([ActiveCollection.ID, ID]), []) then
+    if not tblFinished.Locate(DB_ID_FIELD + '; ID', VarArrayOf([ActiveCollection.ID, ID]), []) then
     begin
       tblFinished.Insert;
       tblFinishedBookID.Value := ID;
-      tblFinishedProgress.Value := Progress;
       tblFinishedDataBaseID.Value := ActiveCollection.ID;
       tblFinishedDate.Value := Now;
+      tblFinishedProgress.Value := Progress;
       tblFinished.Post;
     end
     else
@@ -688,7 +687,7 @@ begin
     dmCollection.tblBooks.Locate(LIB_ID_FIELD, LibID, []); // получаем реальный ID
     ID := dmCollection.tblBooksID.Value;
 
-    if not tblRates.Locate('DataBaseID; BookID', VarArrayOf([ActiveCollection.ID, ID]), []) then
+    if not tblRates.Locate(DB_ID_FIELD + ';' + BOOK_ID_FIELD, VarArrayOf([ActiveCollection.ID, ID]), []) then
     begin
       tblRates.Insert;
       tblRatesBookID.Value := ID;
@@ -716,7 +715,7 @@ begin
   else
     DbId := ADBID;
 
-  if not tblFinished.Locate('DataBaseID;BookID', VarArrayOf([DbId, ID]), []) then
+  if not tblFinished.Locate(DB_ID_FIELD + ';' + BOOK_ID_FIELD, VarArrayOf([DbId, ID]), []) then
   begin
     tblFinished.Insert;
     tblFinishedBookID.Value := ID;
@@ -745,7 +744,7 @@ end;
 
 procedure TDMUser.SetRate(ID, Rate: Integer);
 begin
-  if not tblRates.Locate('DataBaseID;BookID', VarArrayOf([ActiveCollection.ID, ID]), []) then
+  if not tblRates.Locate(DB_ID_FIELD + ';' + BOOK_ID_FIELD, VarArrayOf([ActiveCollection.ID, ID]), []) then
   begin
     tblRates.Insert;
     tblRatesBookID.Value := ID;

@@ -51,7 +51,6 @@ type
     tblBooksASize: TIntegerField;
     tblBooksACode: TSmallintField;
     tblBooksAFolder: TWideStringField;
-    tblBooksADiscID: TIntegerField;
     tblBooksALocal: TBooleanField;
     tblBooksADeleted: TBooleanField;
     tblBooks_Genre_List: TABSTable;
@@ -72,7 +71,6 @@ type
     tblBooksSSize: TIntegerField;
     tblBooksSCode: TSmallintField;
     tblBooksSFolder: TWideStringField;
-    tblBooksSDiscID: TIntegerField;
     tblBooksSLocal: TBooleanField;
     tblBooksSDeleted: TBooleanField;
     tblBooksGID: TAutoIncField;
@@ -88,7 +86,6 @@ type
     tblBooksGSize: TIntegerField;
     tblBooksGCode: TSmallintField;
     tblBooksGFolder: TWideStringField;
-    tblBooksGDiscID: TIntegerField;
     tblBooksGLocal: TBooleanField;
     tblBooksGDeleted: TBooleanField;
     tblAuthor_List: TABSTable;
@@ -114,7 +111,6 @@ type
     tblBooksSize: TIntegerField;
     tblBooksCode: TSmallintField;
     tblBooksFolder: TWideStringField;
-    tblBooksDiscID: TIntegerField;
     tblBooksLocal: TBooleanField;
     tblBooksDeleted: TBooleanField;
     tblSeriesB: TABSTable;
@@ -159,7 +155,6 @@ type
     sqlBooksDate: TDateField;
     sqlBooksLibRate: TIntegerField;
     sqlBooksLang: TWideStringField;
-    sqlBooksDiscID: TIntegerField;
     sqlBooksFolder: TWideStringField;
     sqlBooksFileName: TWideStringField;
     sqlBooksInsideNo: TIntegerField;
@@ -187,7 +182,6 @@ type
     tblGenre_ListGL_Family: TWideStringField;
     tblGenre_ListGL_Series: TWideStringField;
     tblGenre_ListGL_Title: TWideStringField;
-    tblAuthor_ListAL_ID: TAutoIncField;
     tblAuthor_ListAL_AuthID: TIntegerField;
     tblAuthor_ListAL_BookID: TIntegerField;
     tblAuthor_ListAL_Series: TWideStringField;
@@ -207,7 +201,6 @@ type
     tblSeriesAS_AuthID: TIntegerField;
     tblSeriesAS_GenreCode: TWideStringField;
     tblSeriesAS_Title: TWideStringField;
-    tblAuthor_MasterAL_ID: TAutoIncField;
     tblAuthor_MasterAL_AuthID: TIntegerField;
     tblAuthor_MasterAL_BookID: TIntegerField;
     tblAuthor_MasterAL_Series: TWideStringField;
@@ -230,8 +223,7 @@ type
     sqlBooksSeries: TWideStringField;
     tblBooksFullName: TWideStringField;
     sqlBooksID: TIntegerField;
-    tblExtraE_ID: TAutoIncField;
-    tblExtraE_BookID: TIntegerField;
+    tblExtraBookID: TIntegerField;
     tblExtraE_Annotation: TWideMemoField;
     tblExtraE_Review: TWideMemoField;
     tblExtraE_Cover: TBlobField;
@@ -411,7 +403,7 @@ begin
     R.KeyWords := ActiveTable.FieldByName('KeyWords').AsWideString;
   R.Code := ActiveTable.FieldByName('Code').AsInteger;
 
-  if tblExtra.Locate('E_BookID', BookID, []) then
+  if tblExtra.Locate(BOOK_ID_FIELD, BookID, []) then
     R.Annotation := tblExtraE_Annotation.Value;
 
   if ActiveTable.FieldByName(LIB_ID_FIELD).AsInteger <> 0 then
