@@ -65,9 +65,9 @@ end;
 procedure AddSeriesToFilter(const Value: string; var SeriesFilter: string);
 begin
   if SeriesFilter <> '' then
-    SeriesFilter := SeriesFilter + ' or (`SerID` ="' + Value + '")'
+    SeriesFilter := SeriesFilter + ' or (`SerieID` ="' + Value + '")'
   else
-    SeriesFilter := '(`SerID` ="' + Value + '")';
+    SeriesFilter := '(`SerieID` ="' + Value + '")';
 end;
 
 function Clear(const S: string): string; inline;

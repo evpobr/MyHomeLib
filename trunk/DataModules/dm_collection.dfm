@@ -1,7 +1,7 @@
 object DMCollection: TDMCollection
   OldCreateOrder = False
   Height = 567
-  Width = 565
+  Width = 724
   object DBCollection: TABSDatabase
     CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
@@ -31,30 +31,21 @@ object DMCollection: TDMCollection
     IndexName = 'ID_Index'
     TableName = 'Books'
     Exclusive = False
-    MasterFields = 'AL_BookID'
+    MasterFields = 'BookID'
     MasterSource = dsAuthor_List
     Left = 24
     Top = 208
     object tblBooksAID: TAutoIncField
-      FieldName = 'ID'
+      FieldName = 'BookID'
     end
-    object tblBooksASerID: TIntegerField
-      FieldName = 'SerID'
+    object tblBooksASerieID: TIntegerField
+      FieldName = 'SerieID'
     end
     object tblBooksASeqNumber: TSmallintField
       FieldName = 'SeqNumber'
     end
     object tblBooksADate: TDateField
       FieldName = 'Date'
-    end
-    object tblBooksARate: TIntegerField
-      FieldKind = fkLookup
-      FieldName = 'Rate'
-      LookupDataSet = DMUser.tblRates
-      LookupKeyFields = 'BookID'
-      LookupResultField = 'Rate'
-      KeyFields = 'ID'
-      Lookup = True
     end
     object tblBooksALibID: TIntegerField
       FieldName = 'LibID'
@@ -88,18 +79,6 @@ object DMCollection: TDMCollection
     object tblBooksADeleted: TBooleanField
       FieldName = 'Deleted'
     end
-    object tblBooksAProgress: TSmallintField
-      FieldKind = fkLookup
-      FieldName = 'Progress'
-      LookupDataSet = DMUser.tblFinished
-      LookupKeyFields = 'BookID'
-      LookupResultField = 'Progress'
-      KeyFields = 'ID'
-      Lookup = True
-    end
-    object tblBooksADatabaseID: TIntegerField
-      FieldName = 'DatabaseID'
-    end
     object tblBooksALibRate: TIntegerField
       FieldName = 'LibRate'
     end
@@ -128,9 +107,9 @@ object DMCollection: TDMCollection
       FieldKind = fkLookup
       FieldName = 'Series'
       LookupDataSet = tblSeriesB
-      LookupKeyFields = 'S_ID'
+      LookupKeyFields = 'SerieID'
       LookupResultField = 'S_Title'
-      KeyFields = 'SerID'
+      KeyFields = 'SerieID'
       Size = 100
       Lookup = True
     end
@@ -143,15 +122,15 @@ object DMCollection: TDMCollection
     IndexName = 'ID_Index'
     TableName = 'Books'
     Exclusive = False
-    MasterFields = 'GL_BookID'
+    MasterFields = 'BookID'
     MasterSource = dsGenre_List
     Left = 400
     Top = 216
     object tblBooksGID: TAutoIncField
-      FieldName = 'ID'
+      FieldName = 'BookID'
     end
-    object tblBooksGSerID: TIntegerField
-      FieldName = 'SerID'
+    object tblBooksGSerieID: TIntegerField
+      FieldName = 'SerieID'
     end
     object tblBooksGSeqNumber: TSmallintField
       FieldName = 'SeqNumber'
@@ -163,15 +142,6 @@ object DMCollection: TDMCollection
       DisplayWidth = 150
       FieldName = 'Title'
       Size = 150
-    end
-    object tblBooksGRate: TIntegerField
-      FieldKind = fkLookup
-      FieldName = 'Rate'
-      LookupDataSet = DMUser.tblRates
-      LookupKeyFields = 'BookID'
-      LookupResultField = 'Rate'
-      KeyFields = 'ID'
-      Lookup = True
     end
     object tblBooksGLibID: TIntegerField
       FieldName = 'LibID'
@@ -202,20 +172,8 @@ object DMCollection: TDMCollection
     object tblBooksGLocal: TBooleanField
       FieldName = 'Local'
     end
-    object tblBooksGProgress: TSmallintField
-      FieldKind = fkLookup
-      FieldName = 'Progress'
-      LookupDataSet = DMUser.tblFinished
-      LookupKeyFields = 'BookID'
-      LookupResultField = 'Progress'
-      KeyFields = 'ID'
-      Lookup = True
-    end
     object tblBooksGDeleted: TBooleanField
       FieldName = 'Deleted'
-    end
-    object tblBooksGDatabaseID: TIntegerField
-      FieldName = 'DatabaseID'
     end
     object tblBooksGLibRate: TIntegerField
       FieldName = 'LibRate'
@@ -232,9 +190,9 @@ object DMCollection: TDMCollection
       FieldKind = fkLookup
       FieldName = 'Series'
       LookupDataSet = tblSeriesB
-      LookupKeyFields = 'S_ID'
+      LookupKeyFields = 'SerieID'
       LookupResultField = 'S_Title'
-      KeyFields = 'SerID'
+      KeyFields = 'SerieID'
       Size = 100
       Lookup = True
     end
@@ -255,8 +213,8 @@ object DMCollection: TDMCollection
     object tblGenresG_ID: TAutoIncField
       FieldName = 'G_ID'
     end
-    object tblGenresG_Code: TWideStringField
-      FieldName = 'G_Code'
+    object tblGenresGenreCode: TWideStringField
+      FieldName = 'GenreCode'
     end
     object tblGenresG_ParentCode: TWideStringField
       FieldName = 'G_ParentCode'
@@ -282,7 +240,7 @@ object DMCollection: TDMCollection
     TableName = 'Authors'
     Exclusive = False
     Left = 208
-    Top = 216
+    Top = 160
     object tblAuthorsSID: TAutoIncField
       FieldName = 'ID'
     end
@@ -306,18 +264,18 @@ object DMCollection: TDMCollection
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
-    IndexFieldNames = 'SerID'
+    IndexFieldNames = 'SerieID'
     TableName = 'Books'
     Exclusive = False
-    MasterFields = 'S_ID'
+    MasterFields = 'SerieID'
     MasterSource = dsSeries
     Left = 208
-    Top = 160
+    Top = 224
     object tblBooksSID: TAutoIncField
-      FieldName = 'ID'
+      FieldName = 'BookID'
     end
-    object tblBooksSSerID: TIntegerField
-      FieldName = 'SerID'
+    object tblBooksSSerieID: TIntegerField
+      FieldName = 'SerieID'
     end
     object tblBooksSSeqNumber: TSmallintField
       FieldName = 'SeqNumber'
@@ -329,15 +287,6 @@ object DMCollection: TDMCollection
       DisplayWidth = 150
       FieldName = 'Title'
       Size = 150
-    end
-    object tblBooksSRate: TIntegerField
-      FieldKind = fkLookup
-      FieldName = 'Rate'
-      LookupDataSet = DMUser.tblRates
-      LookupKeyFields = 'BookID'
-      LookupResultField = 'Rate'
-      KeyFields = 'ID'
-      Lookup = True
     end
     object tblBooksSLibID: TIntegerField
       FieldName = 'LibID'
@@ -368,20 +317,8 @@ object DMCollection: TDMCollection
     object tblBooksSLocal: TBooleanField
       FieldName = 'Local'
     end
-    object tblBooksSProgress: TSmallintField
-      FieldKind = fkLookup
-      FieldName = 'Progress'
-      LookupDataSet = DMUser.tblFinished
-      LookupKeyFields = 'BookID'
-      LookupResultField = 'Progress'
-      KeyFields = 'ID'
-      Lookup = True
-    end
     object tblBooksSDeleted: TBooleanField
       FieldName = 'Deleted'
-    end
-    object tblBooksSDatabaseID: TIntegerField
-      FieldName = 'DatabaseID'
     end
     object tblBooksSLibRate: TIntegerField
       FieldName = 'LibRate'
@@ -398,9 +335,9 @@ object DMCollection: TDMCollection
       FieldKind = fkLookup
       FieldName = 'Series'
       LookupDataSet = tblSeries
-      LookupKeyFields = 'S_ID'
+      LookupKeyFields = 'SerieID'
       LookupResultField = 'S_Title'
-      KeyFields = 'SerID'
+      KeyFields = 'SerieID'
       Size = 100
       Lookup = True
     end
@@ -433,16 +370,16 @@ object DMCollection: TDMCollection
     TableName = 'Genre_List'
     Exclusive = False
     Left = 40
-    Top = 352
+    Top = 368
     object tblBooks_Genre_ListGL_ID: TAutoIncField
       FieldName = 'GL_ID'
     end
-    object tblBooks_Genre_ListGL_Code: TWideStringField
-      FieldName = 'GL_Code'
+    object tblBooks_Genre_ListGenreCode: TWideStringField
+      FieldName = 'GenreCode'
       Size = 30
     end
-    object tblBooks_Genre_ListGL_BookID: TIntegerField
-      FieldName = 'GL_BookID'
+    object tblBooks_Genre_ListBookID: TIntegerField
+      FieldName = 'BookID'
     end
     object tblBooks_Genre_ListGL_Family: TWideStringField
       FieldName = 'GL_Family'
@@ -460,34 +397,34 @@ object DMCollection: TDMCollection
   object dsBook_Genre_List: TDataSource
     DataSet = tblBooks_Genre_List
     Left = 144
-    Top = 352
+    Top = 368
   end
   object dsBooks_Genres: TDataSource
     DataSet = tblGenres
     Left = 144
-    Top = 424
+    Top = 312
   end
   object tblGenre_List: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
-    IndexFieldNames = 'GL_Code'
+    IndexFieldNames = 'GenreCode'
     TableName = 'Genre_List'
     Exclusive = False
-    MasterFields = 'G_Code'
+    MasterFields = 'GenreCode'
     MasterSource = dsGenres
     Left = 400
     Top = 152
     object tblGenre_ListGL_ID: TAutoIncField
       FieldName = 'GL_ID'
     end
-    object tblGenre_ListGL_Code: TWideStringField
-      FieldName = 'GL_Code'
+    object tblGenre_ListGenreCode: TWideStringField
+      FieldName = 'GenreCode'
       Size = 30
     end
-    object tblGenre_ListGL_BookID: TIntegerField
-      FieldName = 'GL_BookID'
+    object tblGenre_ListBookID: TIntegerField
+      FieldName = 'BookID'
     end
     object tblGenre_ListGL_Family: TWideStringField
       FieldName = 'GL_Family'
@@ -519,11 +456,11 @@ object DMCollection: TDMCollection
     MasterSource = dsAuthors
     Left = 24
     Top = 152
-    object tblAuthor_ListAL_AuthID: TIntegerField
-      FieldName = 'AL_AuthID'
+    object tblAuthor_ListAuthorID: TIntegerField
+      FieldName = 'AuthorID'
     end
-    object tblAuthor_ListAL_BookID: TIntegerField
-      FieldName = 'AL_BookID'
+    object tblAuthor_ListBookID: TIntegerField
+      FieldName = 'BookID'
     end
     object tblAuthor_ListAL_Series: TWideStringField
       FieldName = 'AL_Series'
@@ -552,26 +489,19 @@ object DMCollection: TDMCollection
     Left = 288
     Top = 360
     object tblBooksID: TAutoIncField
-      FieldName = 'ID'
+      FieldName = 'BookID'
     end
-    object tblBooksSerID: TIntegerField
-      FieldName = 'SerID'
+    object tblBooksSerieID: TIntegerField
+      FieldName = 'SerieID'
     end
     object tblBooksSeqNumber: TSmallintField
       FieldName = 'SeqNumber'
-    end
-    object tblBooksDatabaseID: TIntegerField
-      FieldName = 'DatabaseID'
     end
     object tblBooksLibID: TIntegerField
       FieldName = 'LibID'
     end
     object tblBooksDate: TDateField
       FieldName = 'Date'
-    end
-    object tblBooksTitle: TWideStringField
-      FieldName = 'Title'
-      Size = 150
     end
     object tblBooksInsideNo: TIntegerField
       FieldName = 'InsideNo'
@@ -581,6 +511,10 @@ object DMCollection: TDMCollection
       FieldName = 'FileName'
       Required = True
       Size = 170
+    end
+    object tblBooksTitle: TWideStringField
+      FieldName = 'Title'
+      Size = 150
     end
     object tblBooksExt: TWideStringField
       FieldName = 'Ext'
@@ -602,24 +536,6 @@ object DMCollection: TDMCollection
     object tblBooksDeleted: TBooleanField
       FieldName = 'Deleted'
     end
-    object tblBooksProgress: TSmallintField
-      FieldKind = fkLookup
-      FieldName = 'Progress'
-      LookupDataSet = DMUser.tblFinished
-      LookupKeyFields = 'BookID'
-      LookupResultField = 'Progress'
-      KeyFields = 'ID'
-      Lookup = True
-    end
-    object tblBooksRate: TIntegerField
-      FieldKind = fkLookup
-      FieldName = 'Rate'
-      LookupDataSet = DMUser.tblRates
-      LookupKeyFields = 'BookID'
-      LookupResultField = 'Rate'
-      KeyFields = 'ID'
-      Lookup = True
-    end
     object tblBooksLibRate: TIntegerField
       FieldName = 'LibRate'
     end
@@ -635,9 +551,9 @@ object DMCollection: TDMCollection
       FieldKind = fkLookup
       FieldName = 'Series'
       LookupDataSet = tblSeriesB
-      LookupKeyFields = 'S_ID'
+      LookupKeyFields = 'SerieID'
       LookupResultField = 'S_Title'
-      KeyFields = 'SerID'
+      KeyFields = 'SerieID'
       Size = 100
       Lookup = True
     end
@@ -662,16 +578,16 @@ object DMCollection: TDMCollection
     TableName = 'Series'
     Exclusive = False
     Left = 40
-    Top = 488
-    object tblSeriesAS_ID: TAutoIncField
-      FieldName = 'S_ID'
+    Top = 424
+    object tblSeriesASerieID: TAutoIncField
+      FieldName = 'SerieID'
     end
-    object tblSeriesAS_AuthID: TIntegerField
-      FieldName = 'S_AuthID'
+    object tblSeriesAAuthorID: TIntegerField
+      FieldName = 'AuthorID'
       Required = True
     end
-    object tblSeriesAS_GenreCode: TWideStringField
-      FieldName = 'S_GenreCode'
+    object tblSeriesAGenreCode: TWideStringField
+      FieldName = 'GenreCode'
       Required = True
     end
     object tblSeriesAS_Title: TWideStringField
@@ -693,15 +609,15 @@ object DMCollection: TDMCollection
     IndexName = 'ID_Index'
     TableName = 'genres'
     Exclusive = False
-    MasterFields = 'GL_Code'
+    MasterFields = 'GenreCode'
     MasterSource = dsBook_Genre_List
     Left = 40
-    Top = 424
+    Top = 312
     object tblBooks_GenresG_ID: TAutoIncField
       FieldName = 'G_ID'
     end
-    object tblBooks_GenresG_Code: TWideStringField
-      FieldName = 'G_Code'
+    object tblBooks_GenresGenreCode: TWideStringField
+      FieldName = 'GenreCode'
     end
     object tblBooks_GenresG_ParentCode: TWideStringField
       FieldName = 'G_ParentCode'
@@ -722,7 +638,7 @@ object DMCollection: TDMCollection
     IndexName = 'ID_Index'
     TableName = 'Authors'
     Exclusive = False
-    MasterFields = 'AL_AuthID'
+    MasterFields = 'AuthorID'
     MasterSource = dsAuthor_Master
     Left = 288
     Top = 488
@@ -753,11 +669,11 @@ object DMCollection: TDMCollection
     Exclusive = False
     Left = 288
     Top = 424
-    object tblAuthor_MasterAL_AuthID: TIntegerField
-      FieldName = 'AL_AuthID'
+    object tblAuthor_MasterAuthorID: TIntegerField
+      FieldName = 'AuthorID'
     end
-    object tblAuthor_MasterAL_BookID: TIntegerField
-      FieldName = 'AL_BookID'
+    object tblAuthor_MasterBookID: TIntegerField
+      FieldName = 'BookID'
     end
     object tblAuthor_MasterAL_Series: TWideStringField
       FieldName = 'AL_Series'
@@ -790,15 +706,15 @@ object DMCollection: TDMCollection
     Exclusive = False
     Left = 496
     Top = 320
-    object tblSeriesBS_ID: TAutoIncField
-      FieldName = 'S_ID'
+    object tblSeriesBSerieID: TAutoIncField
+      FieldName = 'SerieID'
     end
-    object tblSeriesBS_AuthID: TIntegerField
-      FieldName = 'S_AuthID'
+    object tblSeriesBAuthorID: TIntegerField
+      FieldName = 'AuthorID'
       Required = True
     end
-    object tblSeriesBS_GenreCode: TWideStringField
-      FieldName = 'S_GenreCode'
+    object tblSeriesBGenreCode: TWideStringField
+      FieldName = 'GenreCode'
       Required = True
     end
     object tblSeriesBS_Title: TWideStringField
@@ -815,26 +731,19 @@ object DMCollection: TDMCollection
     IndexName = 'ID_Index'
     TableName = 'Extra'
     Exclusive = False
-    MasterFields = 'ID'
+    MasterFields = 'BookID'
     MasterSource = dsBooks
     Left = 496
     Top = 376
     object tblExtraBookID: TIntegerField
       FieldName = 'BookID'
     end
-    object tblExtraE_Annotation: TWideMemoField
-      FieldName = 'E_Annotation'
+    object tblExtraAnnotation: TWideMemoField
+      FieldName = 'Annotation'
       BlobType = ftWideMemo
     end
-    object tblExtraE_Review: TWideMemoField
-      FieldName = 'E_Review'
-      BlobType = ftWideMemo
-    end
-    object tblExtraE_Cover: TBlobField
-      FieldName = 'E_Cover'
-    end
-    object tblExtraE_Data: TWideMemoField
-      FieldName = 'E_Data'
+    object tblExtraReview: TWideMemoField
+      FieldName = 'Review'
       BlobType = ftWideMemo
     end
   end
@@ -854,9 +763,9 @@ object DMCollection: TDMCollection
       '  or'
       '  a."AuthorID" in'
       '  ('
-      '    select distinct l."al_authid"'
+      '    select distinct l."AuthorID"'
       '    from "books" b, "author_list" l'
-      '    where l."al_bookid" = b."id"'
+      '    where l."BookID" = b."BookID"'
       '    and b.local = true'
       '  )'
       ')'
@@ -906,14 +815,14 @@ object DMCollection: TDMCollection
       '('
       '  :All = 0'
       '  or'
-      '  s."s_id" in'
+      '  s."SerieID" in'
       '  ('
-      '    select b."SerID"'
+      '    select b."SerieID"'
       '    from "books" b'
       '    where b.local = true'
       '  )'
       ')'
-      'order by s.s_Title, s.s_AuthID;')
+      'order by s.s_Title, s.AuthorID;')
     Left = 208
     Top = 96
     ParamData = <
@@ -923,13 +832,13 @@ object DMCollection: TDMCollection
         ParamType = ptInput
         Value = 0
       end>
-    object tblSeriesID: TAutoIncField
+    object tblSeriesSerieID: TAutoIncField
       DisplayWidth = 10
-      FieldName = 'S_ID'
+      FieldName = 'SerieID'
     end
     object tblSeriesAuthID: TIntegerField
       DisplayWidth = 10
-      FieldName = 'S_AuthID'
+      FieldName = 'AuthorID'
       Required = True
     end
     object tblSeriesTitle: TWideStringField
@@ -940,9 +849,8 @@ object DMCollection: TDMCollection
       Size = 80
     end
     object tblSeriesGenreCode: TWideStringField
-      DisplayLabel = 'GenreCode'
       DisplayWidth = 20
-      FieldName = 'S_GenreCode'
+      FieldName = 'GenreCode'
       Required = True
     end
   end
@@ -953,11 +861,11 @@ object DMCollection: TDMCollection
     ReadOnly = True
     FilterOptions = [foCaseInsensitive, foNoPartialCompare]
     SQL.Strings = (
-      'select * from books where ID=1')
+      'select * from books where BookID=1')
     Left = 496
     Top = 432
-    object sqlBooksDatabaseID: TIntegerField
-      FieldName = 'DatabaseID'
+    object sqlBooksID: TIntegerField
+      FieldName = 'BookID'
     end
     object sqlBooksLibID: TIntegerField
       FieldName = 'LibID'
@@ -966,8 +874,8 @@ object DMCollection: TDMCollection
       FieldName = 'Title'
       Size = 150
     end
-    object sqlBooksSerID: TIntegerField
-      FieldName = 'SerID'
+    object sqlBooksSerieID: TIntegerField
+      FieldName = 'SerieID'
     end
     object sqlBooksSeqNumber: TSmallintField
       FieldName = 'SeqNumber'
@@ -1013,22 +921,12 @@ object DMCollection: TDMCollection
     object sqlBooksDeleted: TBooleanField
       FieldName = 'Deleted'
     end
-    object sqlBooksProgress: TSmallintField
-      FieldKind = fkLookup
-      FieldName = 'Progress'
-      LookupDataSet = DMUser.tblFinished
-      LookupKeyFields = 'BookID'
-      LookupResultField = 'Progress'
-      KeyFields = 'ID'
-      Lookup = True
-    end
     object sqlBooksRate: TIntegerField
       FieldKind = fkLookup
       FieldName = 'Rate'
-      LookupDataSet = DMUser.tblRates
       LookupKeyFields = 'BookID'
       LookupResultField = 'Rate'
-      KeyFields = 'ID'
+      KeyFields = 'BookID'
       Lookup = True
     end
     object sqlBooksKeyWords: TWideStringField
@@ -1043,19 +941,143 @@ object DMCollection: TDMCollection
       FieldKind = fkLookup
       FieldName = 'Series'
       LookupDataSet = tblSeriesB
-      LookupKeyFields = 'S_ID'
+      LookupKeyFields = 'SerieID'
       LookupResultField = 'S_Title'
-      KeyFields = 'SerID'
+      KeyFields = 'SerieID'
       Size = 80
       Lookup = True
-    end
-    object sqlBooksID: TIntegerField
-      FieldName = 'ID'
     end
   end
   object dsGenres: TDataSource
     DataSet = tblGenres
     Left = 480
     Top = 88
+  end
+  object Books: TABSTable
+    CurrentVersion = '6.05 '
+    DatabaseName = 'Collection'
+    InMemory = False
+    ReadOnly = False
+    IndexName = 'ID_Index'
+    TableName = 'Books'
+    Exclusive = False
+    Left = 664
+    Top = 88
+    object BooksBookID: TAutoIncField
+      FieldName = 'BookID'
+    end
+    object BooksLibID: TIntegerField
+      FieldName = 'LibID'
+    end
+    object BooksTitle: TWideStringField
+      FieldName = 'Title'
+      Size = 150
+    end
+    object BooksFullName: TWideStringField
+      FieldName = 'FullName'
+      Required = True
+      Size = 120
+    end
+    object BooksSerieID: TIntegerField
+      FieldName = 'SerieID'
+    end
+    object BooksSeqNumber: TSmallintField
+      FieldName = 'SeqNumber'
+    end
+    object BooksDate: TDateField
+      FieldName = 'Date'
+    end
+    object BooksLibRate: TIntegerField
+      FieldName = 'LibRate'
+    end
+    object BooksLang: TWideStringField
+      FieldName = 'Lang'
+      Size = 2
+    end
+    object BooksFolder: TWideStringField
+      FieldName = 'Folder'
+      Size = 200
+    end
+    object BooksFileName: TWideStringField
+      FieldName = 'FileName'
+      Required = True
+      Size = 170
+    end
+    object BooksInsideNo: TIntegerField
+      FieldName = 'InsideNo'
+      Required = True
+    end
+    object BooksExt: TWideStringField
+      FieldName = 'Ext'
+      Size = 10
+    end
+    object BooksSize: TIntegerField
+      FieldName = 'Size'
+    end
+    object BooksURI: TWideStringField
+      FieldName = 'URI'
+      Size = 60
+    end
+    object BooksCode: TSmallintField
+      FieldName = 'Code'
+    end
+    object BooksLocal: TBooleanField
+      FieldName = 'Local'
+    end
+    object BooksDeleted: TBooleanField
+      FieldName = 'Deleted'
+    end
+    object BooksKeyWords: TWideStringField
+      FieldName = 'KeyWords'
+      Size = 255
+    end
+  end
+  object AllSeries: TABSTable
+    CurrentVersion = '6.05 '
+    DatabaseName = 'Collection'
+    InMemory = False
+    ReadOnly = False
+    IndexName = 'ID_Index'
+    TableName = 'Series'
+    Exclusive = False
+    Left = 664
+    Top = 152
+    object AllSeriesSerieID: TAutoIncField
+      FieldName = 'SerieID'
+    end
+    object AllSeriesS_Title: TWideStringField
+      FieldName = 'S_Title'
+      Required = True
+      Size = 80
+    end
+  end
+  object Extra: TABSTable
+    CurrentVersion = '6.05 '
+    DatabaseName = 'Collection'
+    InMemory = False
+    ReadOnly = False
+    IndexName = 'ID_Index'
+    TableName = 'Extra'
+    Exclusive = False
+    Left = 664
+    Top = 216
+    object ExtraBookID: TIntegerField
+      FieldName = 'BookID'
+      Required = True
+    end
+    object ExtraAnnotation: TWideMemoField
+      FieldName = 'Annotation'
+      BlobType = ftWideMemo
+    end
+    object ExtraReview: TWideMemoField
+      FieldName = 'Review'
+      BlobType = ftWideMemo
+    end
+    object ExtraRate: TIntegerField
+      FieldName = 'Rate'
+    end
+    object ExtraProgress: TIntegerField
+      FieldName = 'Progress'
+    end
   end
 end

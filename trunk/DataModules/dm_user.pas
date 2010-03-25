@@ -36,54 +36,11 @@ type
     tblBases: TABSTable;
 
     dsBases: TDataSource;
-
-    tblRates: TABSTable;
-    tblGrouppedBooks: TABSTable;
-    dsGroupedBooks: TDataSource;
+    GroupedBooks: TABSTable;
     SeverityImages: TImageList;
     SeverityImagesBig: TImageList;
-    dsGroupList: TDataSource;
-    tblFinished: TABSTable;
-    tblGroupList: TABSTable;
-    tblGroupListID: TAutoIncField;
-    tblGroupListName: TWideStringField;
-    tblGroupListAllowDelete: TBooleanField;
-    tblGroupListNotes: TMemoField;
-    tblGroupListIcon: TBlobField;
-    tblRatesID: TAutoIncField;
-    tblRatesBookID: TIntegerField;
-    tblRatesDataBaseID: TIntegerField;
-    tblRatesRate: TIntegerField;
-    tblRatesDate: TDateField;
-    tblFinishedID: TAutoIncField;
-    tblFinishedBookID: TIntegerField;
-    tblFinishedDataBaseID: TIntegerField;
-    tblFinishedProgress: TSmallintField;
-    tblFinishedDate: TDateField;
-    tblGrouppedBooksID: TAutoIncField;
-    tblGrouppedBooksGroupID: TIntegerField;
-    tblGrouppedBooksOuterID: TIntegerField;
-    tblGrouppedBooksSerID: TIntegerField;
-    tblGrouppedBooksSeqNumber: TSmallintField;
-    tblGrouppedBooksDatabaseID: TIntegerField;
-    tblGrouppedBooksLibID: TIntegerField;
-    tblGrouppedBooksDate: TDateField;
-    tblGrouppedBooksTitle: TWideStringField;
-    tblGrouppedBooksFullName: TWideStringField;
-    tblGrouppedBooksInsideNo: TIntegerField;
-    tblGrouppedBooksFileName: TWideStringField;
-    tblGrouppedBooksExt: TWideStringField;
-    tblGrouppedBooksSize: TIntegerField;
-    tblGrouppedBooksCode: TSmallintField;
-    tblGrouppedBooksFolder: TWideStringField;
-    tblGrouppedBooksLocal: TBooleanField;
-    tblGrouppedBooksDeleted: TBooleanField;
-    tblGrouppedBooksGenres: TWideStringField;
-    tblGrouppedBooksSeries: TWideStringField;
-    tblGrouppedBooksRate: TIntegerField;
-    tblGrouppedBooksProgress: TSmallintField;
-    tblGrouppedBooksLibRate: TIntegerField;
-    tblGrouppedBooksLang: TWideStringField;
+    dsGroups: TDataSource;
+    Groups: TABSTable;
     tblBasesID: TAutoIncField;
     tblBasesName: TWideStringField;
     tblBasesRootFolder: TWideStringField;
@@ -99,16 +56,74 @@ type
     tblBasesUser: TWideStringField;
     tblBasesPass: TWideStringField;
     tblBasesConnection: TWideMemoField;
-    tblExtra: TABSTable;
-    tblExtraBookID: TIntegerField;
-    tblExtraE_Annotation: TWideMemoField;
-    tblExtraE_Review: TWideMemoField;
-    tblExtraE_Cover: TBlobField;
-    tblExtraE_Data: TWideMemoField;
-    tblExtraDatabaseID: TIntegerField;
+    BookGroups: TABSTable;
+    dsBookGroups: TDataSource;
+    BookGroupsGroupID: TIntegerField;
+    BookGroupsBookID: TIntegerField;
+    BookGroupsDatabaseID: TIntegerField;
+    GroupsGroupID: TAutoIncField;
+    GroupsName: TWideStringField;
+    GroupsAllowDelete: TBooleanField;
+    GroupsNotes: TMemoField;
+    GroupsIcon: TBlobField;
+    GroupedBooksBookID: TIntegerField;
+    GroupedBooksDatabaseID: TIntegerField;
+    GroupedBooksLibID: TIntegerField;
+    GroupedBooksTitle: TWideStringField;
+    GroupedBooksFullName: TWideStringField;
+    GroupedBooksSerieID: TIntegerField;
+    GroupedBooksSeqNumber: TSmallintField;
+    GroupedBooksDate: TDateField;
+    GroupedBooksLibRate: TIntegerField;
+    GroupedBooksLang: TWideStringField;
+    GroupedBooksFolder: TWideStringField;
+    GroupedBooksFileName: TWideStringField;
+    GroupedBooksInsideNo: TIntegerField;
+    GroupedBooksExt: TWideStringField;
+    GroupedBooksSize: TIntegerField;
+    GroupedBooksURI: TWideStringField;
+    GroupedBooksCode: TSmallintField;
+    GroupedBooksLocal: TBooleanField;
+    GroupedBooksDeleted: TBooleanField;
+    GroupedBooksKeyWords: TWideStringField;
+    GroupedBooksReview: TWideMemoField;
+    GroupedBooksRate: TIntegerField;
+    GroupedBooksProgress: TSmallintField;
+    GroupedBooksGenres: TWideStringField;
+    GroupedBooksSeries: TWideStringField;
+    Books: TABSTable;
+    BooksBookID: TIntegerField;
+    BooksDatabaseID: TIntegerField;
+    BooksLibID: TIntegerField;
+    BooksTitle: TWideStringField;
+    BooksFullName: TWideStringField;
+    BooksSerieID: TIntegerField;
+    BooksSeqNumber: TSmallintField;
+    BooksDate: TDateField;
+    BooksLibRate: TIntegerField;
+    BooksLang: TWideStringField;
+    BooksFolder: TWideStringField;
+    BooksFileName: TWideStringField;
+    BooksInsideNo: TIntegerField;
+    BooksExt: TWideStringField;
+    BooksSize: TIntegerField;
+    BooksURI: TWideStringField;
+    BooksCode: TSmallintField;
+    BooksLocal: TBooleanField;
+    BooksDeleted: TBooleanField;
+    BooksKeyWords: TWideStringField;
+    BooksReview: TWideMemoField;
+    BooksRate: TIntegerField;
+    BooksProgress: TSmallintField;
+    BooksGenres: TWideStringField;
+    BooksSeries: TWideStringField;
+    ClearQuery: TABSQuery;
 
   private
     FCollection: TMHLCollection;
+
+  private
+    procedure InternalClearGroup(GroupID: Integer; RemoveGroup: Boolean);
 
   public const
     INVALID_COLLECTION_ID = -1;
@@ -151,14 +166,13 @@ type
       IgnoreID: Integer = INVALID_COLLECTION_ID
     ): Boolean;
 
-    procedure SetUserTableState(Status: Boolean);
+    procedure SetTableState(State: Boolean);
 
   public
     //
     // Active Collection
     //
     property ActiveCollection: TMHLCollection read FCollection;
-    procedure SetTableState(State: Boolean);
 
     function FindFirstExternalCollection: Boolean;
     function FindNextExternalCollection: Boolean;
@@ -168,13 +182,8 @@ type
 
     function ActivateGroup(const ID: Integer): Boolean;
 
-    procedure SetRate(ID, Rate: Integer);
     procedure SetLocal(ID: Integer; Value: Boolean);
-    procedure SetFinished(ID, Progress: Integer; ADBID: Integer = 0);
-    procedure DeleteRate(AID: Integer; ADBID: Integer = 0);
-    procedure DeleteFinished(AID: Integer; ADBID: Integer = 0);
-    procedure InsertToGroupTable(ID: Integer; const Genre: string);
-    procedure AddGroup(const Name: string);
+    ///procedure InsertToGroupTable(BookID: Integer; const Genre: string);
 
     procedure LoadRates(const SL: TStringList; var i: Integer);
     procedure LoadGroupedBooks(const SL: TStringList; var i: Integer);
@@ -182,7 +191,25 @@ type
     procedure LoadGroups(const SL: TStringList; var i: Integer);
     procedure LoadReviews(const SL: TStringList; var i: Integer);
     procedure CorrectExtra(OldID, NewID: Integer);
-    procedure DeleteExtra(AID: Integer);
+
+    //
+    //
+    //
+    procedure FillBookData(BookID: Integer; DatabaseID: Integer; Data: PBookData);
+    procedure SetRate(BookID: Integer; DatabaseID: Integer; Rate: Integer);
+    procedure SetProgress(BookID: Integer; DatabaseID: Integer; Progress: Integer);
+    function GetReview(BookID: Integer; DatabaseID: Integer): string;
+    function SetReview(BookID: Integer; DatabaseID: Integer; const Review: string): Integer;
+
+    //
+    // Работа с группами
+    //
+    function AddGroup(const Name: string): Boolean;
+    procedure DeleteGroup(GroupID: Integer);
+    procedure ClearGroup(GroupID: Integer);
+    procedure DeleteFromGroup(BookID: Integer; DatabaseID: Integer; GroupID: Integer);
+    procedure RemoveUnusedBooks;
+
   end;
 
   TMHLCollection = class
@@ -252,6 +279,7 @@ implementation
 
 uses
   SysUtils,
+  StrUtils,
   Variants,
   dm_Collection;
 
@@ -264,41 +292,16 @@ resourcestring
 
 function TDMUser.ActivateGroup(const ID: Integer): Boolean;
 begin
-  Result := tblGroupList.Locate(ID_FIELD, ID, []);
-end;
-
-procedure TDMUser.AddGroup(const Name: string);
-begin
-  if not tblGroupList.Locate('Name', Name, []) then
-  begin
-    tblGroupList.Insert;
-    tblGroupListName.Value := Name;
-    tblGroupListAllowDelete.Value := True;
-    tblGroupList.Post;
-  end;
+  Result := Groups.Locate(GROUP_ID_FIELD, ID, []);
 end;
 
 procedure TDMUser.CorrectExtra(OldID, NewID: Integer);
 begin
-  if tblRates.Locate(BOOK_ID_FIELD + ';' + DB_ID_FIELD, VarArrayOf([OldID, ActiveCollection.GetID]), []) then
+  if GroupedBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([OldID, ActiveCollection.GetID]), []) then
   begin
-    tblRates.Edit;
-    tblRatesBookID.Value := NewID;
-    tblRates.Post;
-  end;
-
-  if tblFinished.Locate(BOOK_ID_FIELD + ';' + DB_ID_FIELD, VarArrayOf([OldID, ActiveCollection.GetID]), []) then
-  begin
-    tblFinished.Edit;
-    tblFinishedBookID.Value := NewID;
-    tblFinished.Post;
-  end;
-
-  if tblGrouppedBooks.Locate('OuterID;' + DB_ID_FIELD, VarArrayOf([OldID, ActiveCollection.GetID]), []) then
-  begin
-    tblGrouppedBooks.Edit;
-    tblGrouppedBooksOuterID.Value := NewID;
-    tblGrouppedBooks.Post;
+    GroupedBooks.Edit;
+    GroupedBooksBookID.Value := NewID;
+    GroupedBooks.Post;
   end;
 end;
 
@@ -307,38 +310,6 @@ begin
   inherited Create(AOwner);
   FCollection := TMHLCollection.Create;
   FCollection.FSysDataModule := Self;
-end;
-
-procedure TDMUser.DeleteExtra(AID: Integer);
-begin
-  DeleteFinished(AID);
-  DeleteRate(AID);
-end;
-
-procedure TDMUser.DeleteFinished;
-var
-  DbId: Integer;
-begin
-  if ADBID = 0 then
-    DbId := ActiveCollection.ID
-  else
-    DbId := ADBID;
-
-  if tblFinished.Locate(DB_ID_FIELD + ';' + BOOK_ID_FIELD, VarArrayOf([DbId, AID]), []) then
-    tblFinished.Delete;
-end;
-
-procedure TDMUser.DeleteRate;
-var
-  DbId: Integer;
-begin
-  if ADBID = 0 then
-    DbId := ActiveCollection.ID
-  else
-    DbId := ADBID;
-
-  if tblRates.Locate(DB_ID_FIELD + ';' + BOOK_ID_FIELD, VarArrayOf([DbId, AID]), []) then
-    tblRates.Delete;
 end;
 
 destructor TDMUser.Destroy;
@@ -508,56 +479,53 @@ begin
   Result := False;
 end;
 
-procedure TDMUser.InsertToGroupTable(ID: Integer; const Genre: string);
+{***
+procedure TDMUser.InsertToGroupTable(BookID: Integer; const Genre: string);
 begin
-  dmCollection.tblBooks.Locate(ID_FIELD, ID, []);
+  dmCollection.tblBooks.Locate(BOOK_ID_FIELD, BookID, []);
 
-  if not tblGrouppedBooks.Locate(FILENAME_FIELD, dmCollection.tblBooksFileName.Value, []) then
+  if not tblBooks.Locate(FILENAME_FIELD, dmCollection.tblBooksFileName.Value, []) then
   begin
-    tblGrouppedBooks.Insert;
-    tblGrouppedBooksOuterID.Value := ID;
-    tblGrouppedBooksDatabaseID.Value := ActiveCollection.ID;
-    tblGrouppedBooksTitle.Value := dmCollection.tblBooksTitle.Value;
+    tblBooks.Insert;
+    tblBooksBookID.Value := BookID;
+    tblBooksDatabaseID.Value := ActiveCollection.ID;
+    tblBooksTitle.Value := dmCollection.tblBooksTitle.Value;
 
-    tblGrouppedBooksSerID.Value := dmCollection.tblBooksSerID.Value;
+    tblBooksSeries.Value := IfThen(dmCollection.tblBooksSeries.IsNull, NO_SERIES_TITLE, dmCollection.tblBooksSeries.Value);
 
-    if dmCollection.tblBooksSeries.IsNull then
-      tblGrouppedBooksSeries.Value := NO_SERIES_TITLE
+    tblBooksFullName.Value := dmCollection.FullAuthorsString(BookID);
+    tblBooksSerieID.Value := dmCollection.tblBooksSerieID.Value;
+    tblBooksSeqNumber.Value := dmCollection.tblBooksSeqNumber.Value;
+    tblBooksLibID.Value := dmCollection.tblBooksLibID.Value;
+    tblBooksSize.Value := dmCollection.tblBooksSize.Value;
+    tblBooksDeleted.Value := dmCollection.tblBooksDeleted.Value;
+    tblBooksLocal.Value := dmCollection.tblBooksLocal.Value;
+
+    if dmCollection.tblBooksFolder.IsNull then
+      tblBooksFolder.Value := IncludeTrailingPathDelimiter(ActiveCollection.RootFolder)
     else
-      tblGrouppedBooksSeries.Value := dmCollection.tblBooksSeries.Value;
+      tblBooksFolder.Value := IncludeTrailingPathDelimiter(ActiveCollection.RootFolder) + CheckSymbols(dmCollection.tblBooksFolder.Value);
 
-    tblGrouppedBooksFullName.Value := dmCollection.FullAuthorsString(ID);
+    tblBooksFileName.Value := dmCollection.tblBooksFileName.Value;
+    tblBooksExt.Value := dmCollection.tblBooksExt.Value;
+    tblBooksInsideNo.Value := dmCollection.tblBooksInsideNo.Value;
+    tblBooksGenres.Value := Genre;
+    ///tblBooksRate.Value := dmCollection.tblBooksRate.Value;
+    tblBooksDate.Value := dmCollection.tblBooksDate.Value;
+    ///tblBooksProgress.Value := dmCollection.tblBooksProgress.Value;
+    tblBooksCode.Value := dmCollection.tblBooksCode.Value;
+    tblBooksKeyWords.Value := dmCollection.tblBooksKeyWords.Value;
+    tblBooks.Post;
 
-    tblGrouppedBooksSeqNumber.Value := dmCollection.tblBooksSeqNumber.Value;
-    tblGrouppedBooksLibID.Value := dmCollection.tblBooksLibID.Value;
-    tblGrouppedBooksSize.Value := dmCollection.tblBooksSize.Value;
-    tblGrouppedBooksDeleted.Value := dmCollection.tblBooksDeleted.Value;
-    tblGrouppedBooksLocal.Value := dmCollection.tblBooksLocal.Value;
-
-    if not dmCollection.tblBooksFolder.IsNull then
-      tblGrouppedBooksFolder.Value := IncludeTrailingPathDelimiter(ActiveCollection.RootFolder) + CheckSymbols(dmCollection.tblBooksFolder.Value)
-    else
-      tblGrouppedBooksFolder.Value := IncludeTrailingPathDelimiter(ActiveCollection.RootFolder);
-
-    tblGrouppedBooksFileName.Value := dmCollection.tblBooksFileName.Value;
-    tblGrouppedBooksExt.Value := dmCollection.tblBooksExt.Value;
-    tblGrouppedBooksInsideNo.Value := dmCollection.tblBooksInsideNo.Value;
-    tblGrouppedBooksGenres.Value := Genre;
-    tblGrouppedBooksRate.Value := dmCollection.tblBooksRate.Value;
-    tblGrouppedBooksDate.Value := dmCollection.tblBooksDate.Value;
-    tblGrouppedBooksProgress.Value := dmCollection.tblBooksProgress.Value;
-    tblGrouppedBooksCode.Value := dmCollection.tblBooksCode.Value;
-    // tblGrouppedBooksKeyWords.Value := dmCollection.tblBooksKeyWords.Value;
-    tblGrouppedBooks.Post;
-
-    if tblGrouppedBooksCode.Value = 1 then
+    if tblBooksCode.Value = 1 then
     begin
-      tblExtra.Insert;
-      tblExtraE_Review.Value := dmCollection.tblExtraE_Review.Value;
-      tblExtra.Post;
+      ///tblExtra.Insert;
+      ///tblExtraReview.Value := dmCollection.tblExtraReview.Value;
+      ///tblExtra.Post;
     end;
   end;
 end;
+***}
 
 procedure TDMUser.LoadFinished;
 var
@@ -574,6 +542,7 @@ begin
     dmCollection.tblBooks.Locate(LIB_ID_FIELD, ID, []);
     ID := dmCollection.tblBooksID.Value;
 
+    {***
     if not tblFinished.Locate(DB_ID_FIELD + '; ID', VarArrayOf([ActiveCollection.ID, ID]), []) then
     begin
       tblFinished.Insert;
@@ -589,6 +558,8 @@ begin
       tblFinishedProgress.Value := Progress;
       tblFinished.Post;
     end;
+    ***}
+
     Inc(i);
   end;
 end;
@@ -615,11 +586,11 @@ begin
       Name := '';
     end;
 
-    if not tblGroupList.Locate('Name', Name, []) then
-      tblGroupList.Locate(ID_FIELD, GroupID, []);
+    if not Groups.Locate('Name', Name, []) then
+      Groups.Locate(GROUP_ID_FIELD, GroupID, []);
 
-    if dmCollection.tblBooks.Locate(LIB_ID_FIELD, ID, []) then
-      InsertToGroupTable(dmCollection.tblBooksID.Value, dmCollection.GetBookGenres(dmCollection.tblBooksID.Value, False));
+    ///if dmCollection.tblBooks.Locate(LIB_ID_FIELD, ID, []) then
+    ///  InsertToGroupTable(dmCollection.tblBooksID.Value, dmCollection.GetBookGenres(dmCollection.tblBooksID.Value, False));
     Inc(i);
   end;
 end;
@@ -642,10 +613,10 @@ begin
     dmCollection.tblBooks.Locate(LIB_ID_FIELD, ID, []); // получаем реальный ID
     ID := dmCollection.tblBooksID.Value;
 
-    if dmCollection.tblBooks.Locate(ID_FIELD, ID, []) then
+    if dmCollection.tblBooks.Locate(BOOK_ID_FIELD, ID, []) then
     begin
       dmCollection.tblExtra.Insert;
-      dmCollection.tblExtraE_Review.Value := S;
+      dmCollection.tblExtraReview.Value := S;
       dmCollection.tblExtra.Post;
 
       dmCollection.tblBooks.Edit;
@@ -687,7 +658,8 @@ begin
     dmCollection.tblBooks.Locate(LIB_ID_FIELD, LibID, []); // получаем реальный ID
     ID := dmCollection.tblBooksID.Value;
 
-    if not tblRates.Locate(DB_ID_FIELD + ';' + BOOK_ID_FIELD, VarArrayOf([ActiveCollection.ID, ID]), []) then
+    {***
+    if not tblRates.Locate(BOOK_DB_FIELDS, VarArrayOf([ID, ActiveCollection.ID]), []) then
     begin
       tblRates.Insert;
       tblRatesBookID.Value := ID;
@@ -702,82 +674,172 @@ begin
       tblRatesRate.Value := Rate;
       tblRates.Post;
     end;
+    ***}
     Inc(i);
-  end;
-end;
-
-procedure TDMUser.SetFinished;
-var
-  DbId: Integer;
-begin
-  if ADBID = 0 then
-    DbId := ActiveCollection.ID
-  else
-    DbId := ADBID;
-
-  if not tblFinished.Locate(DB_ID_FIELD + ';' + BOOK_ID_FIELD, VarArrayOf([DbId, ID]), []) then
-  begin
-    tblFinished.Insert;
-    tblFinishedBookID.Value := ID;
-    tblFinishedProgress.Value := Progress;
-    tblFinishedDataBaseID.Value := DbId;
-    tblFinishedDate.Value := Now;
-    tblFinished.Post;
-  end
-  else
-  begin
-    tblFinished.Edit;
-    tblFinishedProgress.Value := Progress;
-    tblFinished.Post;
   end;
 end;
 
 procedure TDMUser.SetLocal(ID: Integer; Value: Boolean);
 begin
-  if tblGrouppedBooks.Locate('DataBaseID;OuterID', VarArrayOf([ActiveCollection.ID, ID]), []) then
+  if GroupedBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([ID, ActiveCollection.ID]), []) then
   begin
-    tblGrouppedBooks.Edit;
-    tblGrouppedBooksLocal.Value := Value;
-    tblGrouppedBooks.Post;
-  end;
-end;
-
-procedure TDMUser.SetRate(ID, Rate: Integer);
-begin
-  if not tblRates.Locate(DB_ID_FIELD + ';' + BOOK_ID_FIELD, VarArrayOf([ActiveCollection.ID, ID]), []) then
-  begin
-    tblRates.Insert;
-    tblRatesBookID.Value := ID;
-    tblRatesRate.Value := Rate;
-    tblRatesDataBaseID.Value := ActiveCollection.ID;
-    tblRatesDate.Value := Now;
-    tblRates.Post;
-  end
-  else
-  begin
-    tblRates.Edit;
-    tblRatesRate.Value := Rate;
-    tblRates.Post;
+    GroupedBooks.Edit;
+    GroupedBooksLocal.Value := Value;
+    GroupedBooks.Post;
   end;
 end;
 
 procedure TDMUser.SetTableState(State: Boolean);
 begin
-  tblGroupList.Active := State;
-  tblGrouppedBooks.Active := State;
-  tblRates.Active := State;
   tblBases.Active := State;
-  tblFinished.Active := State;
+  Groups.Active := State;
+  BookGroups.Active := State;
+  GroupedBooks.Active := State;
+  Books.Active := State;
 end;
 
-procedure TDMUser.SetUserTableState(Status: Boolean);
+procedure TDMUser.FillBookData(BookID: Integer; DatabaseID: Integer; Data: PBookData);
 begin
-  tblGroupList.Active := Status;
-  tblGrouppedBooks.Active := Status;
-  tblRates.Active := Status;
-  tblBases.Active := Status;
-  tblFinished.Active := Status;
-  tblExtra.Active := Status;
+  Assert(False, 'Not implemented yet!');
+end;
+
+procedure TDMUser.SetRate(BookID: Integer; DatabaseID: Integer; Rate: Integer);
+begin
+  Assert(Books.Active);
+  if Books.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  begin
+    Books.Edit;
+    BooksRate.Value := Rate;
+    Books.Post;
+  end;
+end;
+
+procedure TDMUser.SetProgress(BookID: Integer; DatabaseID: Integer; Progress: Integer);
+begin
+  Assert(Books.Active);
+  if Books.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  begin
+    Books.Edit;
+    BooksProgress.Value := Progress;
+    Books.Post;
+  end;
+end;
+
+function TDMUser.GetReview(BookID: Integer; DatabaseID: Integer): string;
+begin
+  Assert(Books.Active);
+  if Books.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  begin
+    Result := BooksReview.Value;
+  end
+  else
+    Result := '';
+end;
+
+function TDMUser.SetReview(BookID: Integer; DatabaseID: Integer; const Review: string): Integer;
+begin
+  Assert(Books.Active);
+  Result := 0;
+  if Books.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  begin
+    Books.Edit;
+    if Review = '' then
+    begin
+      BooksReview.Clear;
+      BooksCode.Value := 0;
+    end
+    else
+    begin
+      BooksReview.Value := Review;
+      BooksCode.Value := 1;
+      Result := 1;
+    end;
+    Books.Post;
+  end;
+end;
+
+//
+// Создать группу
+//
+function TDMUser.AddGroup(const Name: string): Boolean;
+begin
+  if not Groups.Locate('Name', Name, []) then
+  begin
+    Groups.Append;
+    GroupsName.Value := Name;
+    GroupsAllowDelete.Value := True;
+    Groups.Post;
+
+    Result := True;
+  end
+  else
+    Result := False;
+end;
+
+//
+// Очищает текущую группу
+//
+procedure TDMUser.InternalClearGroup(GroupID: Integer; RemoveGroup: Boolean);
+begin
+  if Groups.Locate(GROUP_ID_FIELD, GroupID, []) then
+  begin
+    //
+    // Удалить книги из группы
+    //
+    BookGroups.First;
+    while not BookGroups.Eof do
+      BookGroups.Delete;
+    //
+    // Удалить неиспользуемые книги
+    //
+    RemoveUnusedBooks;
+
+    //
+    // Удалить группу
+    //
+    if RemoveGroup then
+    begin
+      Assert(GroupsAllowDelete.Value);
+      Groups.Delete;
+    end;
+  end;
+end;
+
+//
+// Удалить группу
+//
+procedure TDMUser.DeleteGroup(GroupID: Integer);
+begin
+  InternalClearGroup(GroupID, True);
+end;
+
+//
+// Очистить
+//
+procedure TDMUser.ClearGroup(GroupID: Integer);
+begin
+  InternalClearGroup(GroupID, False);
+end;
+
+//
+// Удалить указанную книгу из указанной группы.
+// NOTE: этот метод не удаляет неиспользуемые книги !!!
+//
+procedure TDMUser.DeleteFromGroup(BookID: Integer; DatabaseID: Integer; GroupID: Integer);
+begin
+  if Groups.Locate(GROUP_ID_FIELD, GroupID, []) then
+  begin
+    if BookGroups.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+      BookGroups.Delete;
+  end;
+end;
+
+//
+// Удалить книги, не входящие в группы
+//
+procedure TDMUser.RemoveUnusedBooks;
+begin
+  ClearQuery.ExecSQL;
 end;
 
 { TMHLCollection }

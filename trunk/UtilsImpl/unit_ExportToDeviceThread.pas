@@ -105,7 +105,7 @@ begin
     разобраться с логикой }
 
   FIsTmp := False;
-  FTable.Locate(ID_FIELD, ID, []);
+  FTable.Locate(BOOK_ID_FIELD, ID, []);
   Result := False;
 
   CR := GetFullBookPath(FTable, FCollectionRoot);
@@ -273,7 +273,7 @@ var
   totalBooks: integer;
   Res: boolean;
 begin
-  if FTable <> DMUser.tblGrouppedBooks then // хреново как-то получилось ...
+  if FTable <> DMUser.GroupedBooks then // хреново как-то получилось ...
     FCollectionRoot := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder)
   else
     FCollectionRoot := '';
