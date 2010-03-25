@@ -212,7 +212,7 @@ begin
   FFilesList.OnFile := AddFile2List;
   try
     if not Settings.EnableSort then
-      FFilesList.TargetPath := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder)
+      FFilesList.TargetPath := DMUser.ActiveCollection.RootPath
     else
       FFilesList.TargetPath := Settings.ImportPath;
 
@@ -230,7 +230,7 @@ end;
 
 procedure TImportFB2ThreadBase.WorkFunction;
 begin
-  FRootPath := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
+  FRootPath := DMUser.ActiveCollection.RootPath;
 
   FLibrary := TMHLLibrary.Create(nil);
   try

@@ -274,7 +274,7 @@ var
   Res: boolean;
 begin
   if FTable <> DMUser.GroupedBooks then // хреново как-то получилось ...
-    FCollectionRoot := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder)
+    FCollectionRoot := DMUser.ActiveCollection.RootPath
   else
     FCollectionRoot := '';
 

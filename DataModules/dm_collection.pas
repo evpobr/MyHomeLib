@@ -41,17 +41,6 @@ type
     tblAuthorsSName: TWideStringField;
     tblBooksAID: TAutoIncField;
     tblBooksASerieID: TIntegerField;
-    tblBooksASeqNumber: TSmallintField;
-    tblBooksADate: TDateField;
-    tblBooksALibID: TIntegerField;
-    tblBooksAInsideNo: TIntegerField;
-    tblBooksAFileName: TWideStringField;
-    tblBooksAext: TWideStringField;
-    tblBooksASize: TIntegerField;
-    tblBooksACode: TSmallintField;
-    tblBooksAFolder: TWideStringField;
-    tblBooksALocal: TBooleanField;
-    tblBooksADeleted: TBooleanField;
     tblBooks_Genre_List: TABSTable;
     dsBook_Genre_List: TDataSource;
     dsBooks_Genres: TDataSource;
@@ -59,32 +48,8 @@ type
     dsGenre_List: TDataSource;
     tblBooksSID: TAutoIncField;
     tblBooksSSerieID: TIntegerField;
-    tblBooksSSeqNumber: TSmallintField;
-    tblBooksSDate: TDateField;
-    tblBooksSTitle: TWideStringField;
-    tblBooksSLibID: TIntegerField;
-    tblBooksSInsideNo: TIntegerField;
-    tblBooksSFileName: TWideStringField;
-    tblBooksSext: TWideStringField;
-    tblBooksSSize: TIntegerField;
-    tblBooksSCode: TSmallintField;
-    tblBooksSFolder: TWideStringField;
-    tblBooksSLocal: TBooleanField;
-    tblBooksSDeleted: TBooleanField;
     tblBooksGID: TAutoIncField;
     tblBooksGSerieID: TIntegerField;
-    tblBooksGSeqNumber: TSmallintField;
-    tblBooksGDate: TDateField;
-    tblBooksGTitle: TWideStringField;
-    tblBooksGLibID: TIntegerField;
-    tblBooksGInsideNo: TIntegerField;
-    tblBooksGFileName: TWideStringField;
-    tblBooksGext: TWideStringField;
-    tblBooksGSize: TIntegerField;
-    tblBooksGCode: TSmallintField;
-    tblBooksGFolder: TWideStringField;
-    tblBooksGLocal: TBooleanField;
-    tblBooksGDeleted: TBooleanField;
     tblAuthor_List: TABSTable;
     dsAuthor_List: TDataSource;
     tblBooks: TABSTable;
@@ -121,42 +86,12 @@ type
     tblSeriesAuthID: TIntegerField;
     tblSeriesTitle: TWideStringField;
     tblSeriesGenreCode: TWideStringField;
-    tblBooksALibRate: TIntegerField;
-    tblBooksALang: TWideStringField;
-    tblBooksAURI: TWideStringField;
     tblBooksLibRate: TIntegerField;
     tblBooksLang: TWideStringField;
     tblBooksURI: TWideStringField;
-    tblBooksSLibRate: TIntegerField;
-    tblBooksSLang: TWideStringField;
-    tblBooksSURI: TWideStringField;
-    tblBooksGLibRate: TIntegerField;
-    tblBooksGLang: TWideStringField;
-    tblBooksGURI: TWideStringField;
     tblBooksKeyWords: TWideStringField;
     sqlBooks: TABSQuery;
-    sqlBooksLibID: TIntegerField;
-    sqlBooksTitle: TWideStringField;
     sqlBooksSerieID: TIntegerField;
-    sqlBooksSeqNumber: TSmallintField;
-    sqlBooksDate: TDateField;
-    sqlBooksLibRate: TIntegerField;
-    sqlBooksLang: TWideStringField;
-    sqlBooksFolder: TWideStringField;
-    sqlBooksFileName: TWideStringField;
-    sqlBooksInsideNo: TIntegerField;
-    sqlBooksExt: TWideStringField;
-    sqlBooksSize: TIntegerField;
-    sqlBooksURI: TWideStringField;
-    sqlBooksCode: TSmallintField;
-    sqlBooksLocal: TBooleanField;
-    sqlBooksDeleted: TBooleanField;
-    sqlBooksKeyWords: TWideStringField;
-    sqlBooksRate: TIntegerField;
-    tblBooksAKeyWords: TWideStringField;
-    tblBooksSKeyWords: TWideStringField;
-    tblBooksGKeyWords: TWideStringField;
-    sqlBooksFullName: TWideStringField;
     tblGenresG_ID: TAutoIncField;
     tblGenresGenreCode: TWideStringField;
     tblGenresG_ParentCode: TWideStringField;
@@ -195,52 +130,46 @@ type
     tblAuthor_DetailA_Family: TWideStringField;
     tblAuthor_DetailA_Name: TWideStringField;
     tblAuthor_DetailA_Middle: TWideStringField;
-    tblBooksATitle: TWideStringField;
-    tblBooksAFullName: TWideStringField;
     dsGenres: TDataSource;
     tblSeriesBSerieID: TAutoIncField;
     tblSeriesBAuthorID: TIntegerField;
     tblSeriesBGenreCode: TWideStringField;
     tblSeriesBS_Title: TWideStringField;
-    tblBooksASeries: TWideStringField;
-    tblBooksSSeries: TWideStringField;
-    tblBooksGSeries: TWideStringField;
     tblBooksSeries: TWideStringField;
-    sqlBooksSeries: TWideStringField;
     tblBooksFullName: TWideStringField;
     sqlBooksID: TIntegerField;
     tblExtraBookID: TIntegerField;
     tblExtraAnnotation: TWideMemoField;
     tblExtraReview: TWideMemoField;
-    Books: TABSTable;
-    BooksBookID: TAutoIncField;
-    BooksLibID: TIntegerField;
-    BooksTitle: TWideStringField;
-    BooksFullName: TWideStringField;
-    BooksSerieID: TIntegerField;
-    BooksSeqNumber: TSmallintField;
-    BooksDate: TDateField;
-    BooksLibRate: TIntegerField;
-    BooksLang: TWideStringField;
-    BooksFolder: TWideStringField;
-    BooksFileName: TWideStringField;
-    BooksInsideNo: TIntegerField;
-    BooksExt: TWideStringField;
-    BooksSize: TIntegerField;
-    BooksURI: TWideStringField;
-    BooksCode: TSmallintField;
-    BooksLocal: TBooleanField;
-    BooksDeleted: TBooleanField;
-    BooksKeyWords: TWideStringField;
+    AllBooks: TABSTable;
+    AllBooksBookID: TAutoIncField;
+    AllBooksLibID: TIntegerField;
+    AllBooksTitle: TWideStringField;
+    AllBooksFullName: TWideStringField;
+    AllBooksSerieID: TIntegerField;
+    AllBooksSeqNumber: TSmallintField;
+    AllBooksDate: TDateField;
+    AllBooksLibRate: TIntegerField;
+    AllBooksLang: TWideStringField;
+    AllBooksFolder: TWideStringField;
+    AllBooksFileName: TWideStringField;
+    AllBooksInsideNo: TIntegerField;
+    AllBooksExt: TWideStringField;
+    AllBooksSize: TIntegerField;
+    AllBooksURI: TWideStringField;
+    AllBooksCode: TSmallintField;
+    AllBooksLocal: TBooleanField;
+    AllBooksDeleted: TBooleanField;
+    AllBooksKeyWords: TWideStringField;
     AllSeries: TABSTable;
     AllSeriesSerieID: TAutoIncField;
     AllSeriesS_Title: TWideStringField;
-    Extra: TABSTable;
-    ExtraBookID: TIntegerField;
-    ExtraAnnotation: TWideMemoField;
-    ExtraReview: TWideMemoField;
-    ExtraRate: TIntegerField;
-    ExtraProgress: TIntegerField;
+    AllExtra: TABSTable;
+    AllExtraBookID: TIntegerField;
+    AllExtraAnnotation: TWideMemoField;
+    AllExtraReview: TWideMemoField;
+    AllExtraRate: TIntegerField;
+    AllExtraProgress: TIntegerField;
 
   private
     FIsFavorites: Boolean;
@@ -259,8 +188,8 @@ type
     procedure FieldByName(AID: Integer; const AField: string; out ARes: Integer); overload;
     procedure FieldByName(AID: Integer; const AField: string; out ARes: Boolean); overload;
 
-    procedure GetBookFolder(ID: Integer; out AFolder: string);
     procedure SetLocalStatus(AID: Integer; AState: Boolean);
+    procedure GetBookFolder(ID: Integer; out AFolder: string);
 
     procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
     property ActiveTable: TABSTable read FActiveTable;
@@ -274,8 +203,13 @@ type
     //
     //
     //
-    function SerieByID(SerieID: Integer): string;
+    function GetBookSerie(BookID: Integer; DatabaseID: Integer; SerieID: Integer): string;
     procedure FillBookData(BookID: Integer; DatabaseID: Integer; Data: PBookData);
+
+    //
+    // ќбновление полей
+    //
+    procedure SetLocal(BookID: Integer; DatabaseID: Integer; AState: Boolean);
 
     //
     // ќбновление полей из таблицы Extra
@@ -289,7 +223,7 @@ type
     //
     // –абота с группами
     //
-    procedure AddBookToGroup(BookID: Integer; DatabaseID: Integer; GropID: Integer);
+    procedure AddBookToGroup(BookID: Integer; DatabaseID: Integer; GroupID: Integer);
 
   private type
     TUpdateExtraProc = reference to procedure;
@@ -386,7 +320,7 @@ begin
   SetTableState(True);
 end;
 
-procedure TDMCollection.FieldByName(AID: Integer; const AField: String; out ARes: Boolean);
+procedure TDMCollection.FieldByName(AID: Integer; const AField: string; out ARes: Boolean);
 begin
   if AID <> 0 then
     FActiveTable.Locate(BOOK_ID_FIELD, AID, []);
@@ -406,7 +340,7 @@ begin
   ANo := FActiveTable.FieldByName('InsideNo').AsInteger;
 end;
 
-function TDMCollection.GetBookGenres(BookID: Integer; FirstOnly: Boolean): String;
+function TDMCollection.GetBookGenres(BookID: Integer; FirstOnly: Boolean): string;
 var
   S: String;
   i: Integer;
@@ -574,13 +508,20 @@ procedure TDMCollection.GetBookFolder(ID: Integer; out AFolder: String);
 begin
   FActiveTable.Locate(BOOK_ID_FIELD, ID, []);
   if FActiveTable = tblBooks then
-    AFolder := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder) + FActiveTable.FieldByName(FOLDER_FIELD).AsString
+    AFolder := TPath.Combine(DMUser.ActiveCollection.RootPath, FActiveTable.FieldByName(FOLDER_FIELD).AsString)
   else
     AFolder := FActiveTable.FieldByName(FOLDER_FIELD).AsString;
 end;
 
 procedure TDMCollection.SetLocalStatus(AID: Integer; AState: Boolean);
 begin
+
+  //
+  // Ёто совершенно неудачный вариант :(
+  // Ќа самом деле, поток должен посылать главному окну сообщение об окончании закачки книги,
+  // окно отлавливает это сообщение, модифицирует базу и обновл€ет деревь€
+  //
+
   if AID <> 0 then
     if FActiveTable.Locate(BOOK_ID_FIELD, AID, []) then
     begin
@@ -623,16 +564,21 @@ begin
   tblAuthor_Detail.Active := State;
 
   AllSeries.Active := State;
-  Books.Active := State;
-  Extra.Active := State;
+  AllBooks.Active := State;
+  AllExtra.Active := State;
 end;
 
-function TDMCollection.SerieByID(SerieID: Integer): string;
+function TDMCollection.GetBookSerie(BookID: Integer; DatabaseID: Integer; SerieID: Integer): string;
 begin
-  if AllSeries.Locate(SERIE_ID_FIELD, SerieID, []) then
-    Result := AllSeriesS_Title.Value
+  if DatabaseID = DMUser.ActiveCollection.ID then
+  begin
+    if AllSeries.Locate(SERIE_ID_FIELD, SerieID, []) then
+      Result := AllSeriesS_Title.Value
+    else
+      Result := '';
+    end
   else
-    Result := '';
+    Result := DMUser.GetBookSerie(BookID, DatabaseID, SerieID);
 end;
 
 procedure TDMCollection.FillBookData(BookID: Integer; DatabaseID: Integer; Data: PBookData);
@@ -641,7 +587,7 @@ begin
   Initialize(Data^);
   Data.nodeType := ntBookInfo;
 
-  if not Books.Active then
+  if not AllBooks.Active then
   begin
     //
     // временна€ заглушка
@@ -651,7 +597,7 @@ begin
 
   if DatabaseID = DMUser.ActiveCollection.ID then
   begin
-    if not Books.Locate(BOOK_ID_FIELD, BookID, []) then
+    if not AllBooks.Locate(BOOK_ID_FIELD, BookID, []) then
     begin
       Assert(False);
       Exit;
@@ -659,81 +605,95 @@ begin
 
     Data^.BookID := BookID;
     Data^.DatabaseID := DatabaseID;
-    Data^.SerieID := BooksSerieID.Value;
+    Data^.SerieID := AllBooksSerieID.Value;
 
-    Data^.Title := BooksTitle.Value;
+    Data^.Title := AllBooksTitle.Value;
     //if Data^.SerieID <> NO_SERIE_ID then
     //  Data^.Series := BooksSeries.Value;
-    Data^.Series := SerieByID(BooksSerieID.Value);
+    Data^.Series := GetBookSerie(BookID, DatabaseID, AllBooksSerieID.Value);
 
     Data^.Genre := GetBookGenres(BookID, False);
     Data^.FullName := FullAuthorsString(BookID);
     Data^.CollectionName := DMUser.ActiveCollection.Name;
-    Data^.FileType := BooksExt.Value;
+    Data^.FileType := AllBooksExt.Value;
     Delete(Data^.FileType, 1, 1);
-    Data^.Lang := BooksLang.Value;
-    Data^.Size := BooksSize.Value;
-    Data^.No := BooksSeqNumber.Value;
-    Data^.LibRate := BooksLibRate.Value;
-    Data^.Code := BooksCode.Value;
-    Data^.Locale := BooksLocal.Value;
-    Data^.Deleted := BooksDeleted.Value;
-    Data^.Date := BooksDate.Value;
+    Data^.Lang := AllBooksLang.Value;
+    Data^.Size := AllBooksSize.Value;
+    Data^.No := AllBooksSeqNumber.Value;
+    Data^.LibRate := AllBooksLibRate.Value;
+    Data^.Code := AllBooksCode.Value;
+    Data^.Locale := AllBooksLocal.Value;
+    Data^.Deleted := AllBooksDeleted.Value;
+    Data^.Date := AllBooksDate.Value;
 
     //
     // данные из таблицы Extra
     //
-    Assert(Extra.Active);
-
-    if Extra.Locate(BOOK_ID_FIELD, BookID, []) then
+    Assert(AllExtra.Active);
+    if AllExtra.Locate(BOOK_ID_FIELD, BookID, []) then
     begin
-      Data^.Rate := ExtraRate.Value;
-      Data^.Progress := ExtraProgress.Value;
+      Data^.Rate := AllExtraRate.Value;
+      Data^.Progress := AllExtraProgress.Value;
     end;
   end
   else
     DMUser.FillBookData(BookID, DatabaseID, Data);
 end;
 
+procedure TDMCollection.SetLocal(BookID: Integer; DatabaseID: Integer; AState: Boolean);
+begin
+  if DatabaseID = DMUser.ActiveCollection.ID then
+  begin
+    if AllBooks.Locate(BOOK_ID_FIELD, BookID, []) then
+    begin
+      AllBooks.Edit;
+      AllBooksLocal.Value := AState;
+      AllBooks.Post;
+    end;
+  end;
+
+  DMUser.SetLocal(BookID, DatabaseID, AState);
+end;
+
 procedure TDMCollection.UpdateExtra(BookID, DatabaseID: Integer; UpdateProc: TUpdateExtraProc);
 begin
-  Assert(Extra.Active);
+  Assert(AllExtra.Active);
 
   if DatabaseID = DMUser.ActiveCollection.ID then
   begin
-    if Extra.Locate(BOOK_ID_FIELD, BookID, []) then
-      Extra.Edit
+    if AllExtra.Locate(BOOK_ID_FIELD, BookID, []) then
+      AllExtra.Edit
     else
     begin
-      Extra.Append;
-      ExtraBookID.Value := BookID;
+      AllExtra.Append;
+      AllExtraBookID.Value := BookID;
     end;
 
     UpdateProc;
 
-    Extra.Post;
+    AllExtra.Post;
   end;
 end;
 
 procedure TDMCollection.ClearExtra(BookID: Integer; DatabaseID: Integer; UpdateProc: TUpdateExtraProc);
 begin
-  Assert(Extra.Active);
+  Assert(AllExtra.Active);
 
   if DatabaseID = DMUser.ActiveCollection.ID then
   begin
-    if Extra.Locate(BOOK_ID_FIELD, BookID, []) then
+    if AllExtra.Locate(BOOK_ID_FIELD, BookID, []) then
     begin
-      Extra.Edit;
+      AllExtra.Edit;
       UpdateProc;
-      Extra.Post;
+      AllExtra.Post;
     end;
   end;
 
   //
   // все значимые пол€ таблицы пусты - удалим запись
   //
-  if ExtraAnnotation.IsNull and ExtraReview.IsNull and ExtraRate.IsNull and ExtraProgress.IsNull then
-    Extra.Delete;
+  if AllExtraAnnotation.IsNull and AllExtraReview.IsNull and AllExtraRate.IsNull and AllExtraProgress.IsNull then
+    AllExtra.Delete;
 end;
 
 procedure TDMCollection.SetRate(BookID, DatabaseID, Rate: Integer);
@@ -743,7 +703,7 @@ begin
       BookID, DatabaseID,
       procedure
       begin
-        ExtraRate.Clear;
+        AllExtraRate.Clear;
       end
     )
   else
@@ -751,7 +711,7 @@ begin
       BookID, DatabaseID,
       procedure
       begin
-        ExtraRate.Value := Rate;
+        AllExtraRate.Value := Rate;
       end
     );
 
@@ -768,7 +728,7 @@ begin
       BookID, DatabaseID,
       procedure
       begin
-        ExtraProgress.Clear;
+        AllExtraProgress.Clear;
       end
     )
   else
@@ -776,7 +736,7 @@ begin
       BookID, DatabaseID,
       procedure
       begin
-        ExtraProgress.Value := Progress;
+        AllExtraProgress.Value := Progress;
       end
     );
 
@@ -788,13 +748,13 @@ end;
 
 function TDMCollection.GetReview(BookID: Integer; DatabaseID: Integer): string;
 begin
-  Assert(Extra.Active);
+  Assert(AllExtra.Active);
 
   if DatabaseID = DMUser.ActiveCollection.ID then
   begin
-    if Extra.Locate(BOOK_ID_FIELD, BookID, []) then
+    if AllExtra.Locate(BOOK_ID_FIELD, BookID, []) then
     begin
-      Result := ExtraReview.Value;
+      Result := AllExtraReview.Value;
     end;
   end
   else
@@ -808,9 +768,9 @@ begin
   Result := 0;
   NewReview := Trim(Review);
 
-  if (DatabaseID = DMUser.ActiveCollection.ID) and Books.Locate(BOOK_ID_FIELD, BookID, []) then
+  if (DatabaseID = DMUser.ActiveCollection.ID) and AllBooks.Locate(BOOK_ID_FIELD, BookID, []) then
   begin
-    Books.Edit;
+    AllBooks.Edit;
 
     if NewReview = '' then
     begin
@@ -818,10 +778,10 @@ begin
         BookID, DatabaseID,
         procedure
         begin
-          ExtraReview.Clear
+          AllExtraReview.Clear
         end
       );
-      BooksCode.Value := 0;
+      AllBooksCode.Value := 0;
     end
     else
     begin
@@ -829,14 +789,14 @@ begin
         BookID, DatabaseID,
         procedure
         begin
-          ExtraReview.Value := NewReview;
+          AllExtraReview.Value := NewReview;
         end
       );
-      BooksCode.Value := 1;
+      AllBooksCode.Value := 1;
       Result := 1;
     end;
 
-    Books.Post;
+    AllBooks.Post;
   end;
 
   //
@@ -845,16 +805,14 @@ begin
   Result := Result or DMUser.SetReview(BookID, DatabaseID, NewReview);
 end;
 
-procedure TDMCollection.AddBookToGroup(BookID: Integer; DatabaseID: Integer; GropID: Integer);
-var
-  MasterSource: TDataSource;
+procedure TDMCollection.AddBookToGroup(BookID: Integer; DatabaseID: Integer; GroupID: Integer);
 begin
   Assert(DatabaseID = DMUser.ActiveCollection.ID);
-  Assert(Books.Active);
-  Assert(Extra.Active);
-  Assert(DMUser.Books.Active);
+  Assert(AllBooks.Active);
+  Assert(AllExtra.Active);
+  Assert(DMUser.AllBooks.Active);
 
-  if not Books.Locate(BOOK_ID_FIELD, BookID, []) then
+  if not AllBooks.Locate(BOOK_ID_FIELD, BookID, []) then
   begin
     Assert(False);
     Exit;
@@ -863,61 +821,48 @@ begin
   //
   // ƒобавить книгу в таблицу Books
   //
-  if not DMUser.Books.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  if not DMUser.AllBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
   begin
-    DMUser.Books.Append;
+    DMUser.AllBooks.Append;
 
-    DMUser.BooksBookID.Value := BookID;
-    DMUser.BooksDatabaseID.Value := DatabaseID;
-    DMUser.BooksLibID.Value := BooksLibID.Value;
-    DMUser.BooksTitle.Value := BooksTitle.Value;
-    DMUser.BooksFullName.Value := FullAuthorsString(BookID);
-    DMUser.BooksSerieID.Value := BooksSerieID.Value;
-    DMUser.BooksSeqNumber.Value := BooksSeqNumber.Value;
-    DMUser.BooksDate.Value := BooksDate.Value;
-    DMUser.BooksLibRate.Value := BooksLibRate.Value;
-    DMUser.BooksLang.Value := BooksLang.Value;
-    DMUser.BooksFolder.Value := TPath.Combine(DMUser.ActiveCollection.RootFolder, BooksFolder.Value);
-    DMUser.BooksFileName.Value := BooksFileName.Value;
-    DMUser.BooksInsideNo.Value := BooksInsideNo.Value;
-    DMUser.BooksExt.Value := BooksExt.Value;
-    DMUser.BooksSize.Value := BooksSize.Value;
-    DMUser.BooksURI.Value := BooksURI.Value;
-    DMUser.BooksCode.Value := BooksCode.Value;
-    DMUser.BooksLocal.Value := BooksLocal.Value;
-    DMUser.BooksDeleted.Value := BooksDeleted.Value;
-    DMUser.BooksKeyWords.Value := BooksKeyWords.Value;
+    DMUser.AllBooksBookID.Value := BookID;
+    DMUser.AllBooksDatabaseID.Value := DatabaseID;
+    DMUser.AllBooksLibID.Value := AllBooksLibID.Value;
+    DMUser.AllBooksTitle.Value := AllBooksTitle.Value;
+    DMUser.AllBooksFullName.Value := FullAuthorsString(BookID);
+    DMUser.AllBooksSerieID.Value := AllBooksSerieID.Value;
+    DMUser.AllBooksSeqNumber.Value := AllBooksSeqNumber.Value;
+    DMUser.AllBooksDate.Value := AllBooksDate.Value;
+    DMUser.AllBooksLibRate.Value := AllBooksLibRate.Value;
+    DMUser.AllBooksLang.Value := AllBooksLang.Value;
+    DMUser.AllBooksFolder.Value := TPath.Combine(DMUser.ActiveCollection.RootFolder, AllBooksFolder.Value);
+    DMUser.AllBooksFileName.Value := AllBooksFileName.Value;
+    DMUser.AllBooksInsideNo.Value := AllBooksInsideNo.Value;
+    DMUser.AllBooksExt.Value := AllBooksExt.Value;
+    DMUser.AllBooksSize.Value := AllBooksSize.Value;
+    DMUser.AllBooksURI.Value := AllBooksURI.Value;
+    DMUser.AllBooksCode.Value := AllBooksCode.Value;
+    DMUser.AllBooksLocal.Value := AllBooksLocal.Value;
+    DMUser.AllBooksDeleted.Value := AllBooksDeleted.Value;
+    DMUser.AllBooksKeyWords.Value := AllBooksKeyWords.Value;
 
-    if Extra.Locate(BOOK_ID_FIELD, BookID, []) then
+    if AllExtra.Locate(BOOK_ID_FIELD, BookID, []) then
     begin
-      DMUser.BooksReview.Value := ExtraReview.Value;
-      DMUser.BooksRate.Value := ExtraRate.Value;
-      DMUser.BooksProgress.Value := ExtraProgress.Value;
+      DMUser.AllBooksReview.Value := AllExtraReview.Value;
+      DMUser.AllBooksRate.Value := AllExtraRate.Value;
+      DMUser.AllBooksProgress.Value := AllExtraProgress.Value;
     end;
 
-    DMUser.BooksGenres.Value := GetBookGenres(BookID, False);
-    DMUser.BooksSeries.Value := SerieByID(BooksSerieID.Value);
+    DMUser.AllBooksGenres.Value := GetBookGenres(BookID, False);
+    DMUser.AllBooksSeries.Value := DMCollection.GetBookSerie(BookID, DatabaseID, AllBooksSerieID.Value);
 
-    DMUser.Books.Post;
+    DMUser.AllBooks.Post;
   end;
 
   //
   // ѕоместить книгу в нужную группу
   //
-  MasterSource := DMUser.BookGroups.MasterSource;
-  DMUser.BookGroups.MasterSource := nil;
-  try
-    if not DMUser.BookGroups.Locate(GROUP_ID_FIELD + ';' + BOOK_DB_FIELDS, VarArrayOf([GropID, BookID, DatabaseID]), []) then
-    begin
-      DMUser.BookGroups.Append;
-      DMUser.BookGroupsGroupID.Value := GropID;
-      DMUser.BookGroupsBookID.Value := BookID;
-      DMUser.BookGroupsDatabaseID.Value := DatabaseID;
-      DMUser.BookGroups.Post;
-    end;
-  finally
-    DMUser.BookGroups.MasterSource := MasterSource;
-  end;
+  DMUser.CopyBookToGroup(BookID, DatabaseID, 0, GroupID, False);
 end;
 
 end.

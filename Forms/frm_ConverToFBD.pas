@@ -244,7 +244,7 @@ begin
                        FBookRecord.Authors[0].FFirstName;
 
   lblTitle.Caption := FBookRecord.Title;
-  Folder := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder) + FBookRecord.Folder;
+  Folder := DMUser.ActiveCollection.RootPath + FBookRecord.Folder;
 
   if FEditorMode then
   begin

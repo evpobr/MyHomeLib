@@ -71,7 +71,7 @@ var
 begin
   totalBooks := dmCollection.tblBooks.RecordCount;
   processedBooks := 0;
-  FRootPath := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
+  FRootPath := DMUser.ActiveCollection.RootPath;
 
   FFiles := TFilesList.Create(nil);
   try

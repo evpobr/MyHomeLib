@@ -1123,7 +1123,7 @@ object DMUser: TDMUser
     Left = 128
     Top = 248
   end
-  object Books: TABSTable
+  object AllBooks: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'UserData'
     InMemory = False
@@ -1131,95 +1131,95 @@ object DMUser: TDMUser
     IndexName = 'ID_Index'
     TableName = 'Books'
     Exclusive = False
-    Left = 224
-    Top = 104
-    object BooksBookID: TIntegerField
+    Left = 40
+    Top = 472
+    object AllBooksBookID: TIntegerField
       FieldName = 'BookID'
       Required = True
     end
-    object BooksDatabaseID: TIntegerField
+    object AllBooksDatabaseID: TIntegerField
       FieldName = 'DatabaseID'
       Required = True
     end
-    object BooksLibID: TIntegerField
+    object AllBooksLibID: TIntegerField
       FieldName = 'LibID'
     end
-    object BooksTitle: TWideStringField
+    object AllBooksTitle: TWideStringField
       FieldName = 'Title'
       Size = 150
     end
-    object BooksFullName: TWideStringField
+    object AllBooksFullName: TWideStringField
       FieldName = 'FullName'
       Size = 255
     end
-    object BooksSerieID: TIntegerField
+    object AllBooksSerieID: TIntegerField
       FieldName = 'SerieID'
     end
-    object BooksSeqNumber: TSmallintField
+    object AllBooksSeqNumber: TSmallintField
       FieldName = 'SeqNumber'
     end
-    object BooksDate: TDateField
+    object AllBooksDate: TDateField
       FieldName = 'Date'
     end
-    object BooksLibRate: TIntegerField
+    object AllBooksLibRate: TIntegerField
       FieldName = 'LibRate'
     end
-    object BooksLang: TWideStringField
+    object AllBooksLang: TWideStringField
       FieldName = 'Lang'
       Size = 2
     end
-    object BooksFolder: TWideStringField
+    object AllBooksFolder: TWideStringField
       FieldName = 'Folder'
       Size = 255
     end
-    object BooksFileName: TWideStringField
+    object AllBooksFileName: TWideStringField
       FieldName = 'FileName'
       Required = True
       Size = 255
     end
-    object BooksInsideNo: TIntegerField
+    object AllBooksInsideNo: TIntegerField
       FieldName = 'InsideNo'
       Required = True
     end
-    object BooksExt: TWideStringField
+    object AllBooksExt: TWideStringField
       FieldName = 'Ext'
       Size = 10
     end
-    object BooksSize: TIntegerField
+    object AllBooksSize: TIntegerField
       FieldName = 'Size'
     end
-    object BooksURI: TWideStringField
+    object AllBooksURI: TWideStringField
       FieldName = 'URI'
       Size = 60
     end
-    object BooksCode: TSmallintField
+    object AllBooksCode: TSmallintField
       FieldName = 'Code'
     end
-    object BooksLocal: TBooleanField
+    object AllBooksLocal: TBooleanField
       FieldName = 'Local'
     end
-    object BooksDeleted: TBooleanField
+    object AllBooksDeleted: TBooleanField
       FieldName = 'Deleted'
     end
-    object BooksKeyWords: TWideStringField
+    object AllBooksKeyWords: TWideStringField
       FieldName = 'KeyWords'
       Size = 255
     end
-    object BooksReview: TWideMemoField
+    object AllBooksReview: TWideMemoField
       FieldName = 'Review'
       BlobType = ftWideMemo
     end
-    object BooksRate: TIntegerField
+    object AllBooksRate: TIntegerField
       FieldName = 'Rate'
     end
-    object BooksProgress: TSmallintField
+    object AllBooksProgress: TSmallintField
       FieldName = 'Progress'
     end
-    object BooksGenres: TWideStringField
+    object AllBooksGenres: TWideStringField
       FieldName = 'Genres'
       Size = 128
     end
-    object BooksSeries: TWideStringField
+    object AllBooksSeries: TWideStringField
       FieldName = 'Series'
       Size = 128
     end
@@ -1236,7 +1236,30 @@ object DMUser: TDMUser
       '  select 1 from BookGroups g'
       '  where g.BookID = b.BookID and g.DatabaseID = b.DatabaseID'
       '  )')
-    Left = 224
-    Top = 176
+    Left = 192
+    Top = 472
+  end
+  object AllBookGroups: TABSTable
+    CurrentVersion = '6.05 '
+    DatabaseName = 'UserData'
+    InMemory = False
+    ReadOnly = False
+    IndexName = 'ID_Index'
+    TableName = 'BookGroups'
+    Exclusive = False
+    Left = 112
+    Top = 472
+    object AllBookGroupsBookID: TIntegerField
+      FieldName = 'BookID'
+      Required = True
+    end
+    object AllBookGroupsDatabaseID: TIntegerField
+      FieldName = 'DatabaseID'
+      Required = True
+    end
+    object AllBookGroupsGroupID: TIntegerField
+      FieldName = 'GroupID'
+      Required = True
+    end
   end
 end

@@ -24,19 +24,19 @@ uses
   dm_user;
   
 procedure ImportXML(
-  ACollection: TMHLCollection
+  ACollection: TMHLActiveCollection
   );
 
 procedure ImportFB2(
-  ACollection: TMHLCollection
+  ACollection: TMHLActiveCollection
   );
 
 procedure ImportFB2ZIP(
-  ACollection: TMHLCollection
+  ACollection: TMHLActiveCollection
   );
 
 procedure ImportFBD(
-  ACollection: TMHLCollection
+  ACollection: TMHLActiveCollection
   );
 
 implementation
@@ -52,7 +52,7 @@ uses
   unit_Consts;
 
 procedure ImportXML(
-  ACollection: TMHLCollection
+  ACollection: TMHLActiveCollection
   );
 var
   strFileName: string;
@@ -82,7 +82,7 @@ begin
 end;
 
 procedure ImportFB2(
-  ACollection: TMHLCollection
+  ACollection: TMHLActiveCollection
   );
 var
   worker: TImportFB2Thread;
@@ -108,7 +108,7 @@ begin
 end;
 
 procedure ImportFBD(
-  ACollection: TMHLCollection
+  ACollection: TMHLActiveCollection
   );
 var
   worker: TImportFBDThread;
@@ -134,7 +134,7 @@ begin
 end;
 
 procedure ImportFB2ZIP(
-  ACollection: TMHLCollection
+  ACollection: TMHLActiveCollection
   );
 var
   worker: TImportFB2ZIPThread;

@@ -54,7 +54,7 @@ var
 begin
   totalBooks := dmCollection.tblBooks.RecordCount;
   processedBooks := 0;
-  Root := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
+  Root := DMUser.ActiveCollection.RootPath;
 
   dmCollection.tblBooks.First;
   while not dmCollection.tblBooks.Eof do

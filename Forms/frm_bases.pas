@@ -282,15 +282,27 @@ begin
     Exit;
   end;
 
-  DMUser.UpdateCollectionProps(CollectionID,
-                               DisplayName,
-                               ARootFolder,
-                               ADBFileName,
-                               Description,
-                               URL,
-                               User,
-                               Pass,
-                               Script);
+  with DMUser do
+  begin
+    if SelectCollection(CollectionID) then
+    begin
+      CurrentCollection.Edit;
+      try
+        CurrentCollection.Name := DisplayName;
+        CurrentCollection.RootFolder := ARootFolder;
+        CurrentCollection.DBFileName := ADBFileName;
+        CurrentCollection.Notes := Description;
+        CurrentCollection.URL := URL;
+        CurrentCollection.User := User;
+        CurrentCollection.Password := Pass;
+        CurrentCollection.Script := Script;
+
+        CurrentCollection.Save;
+      except
+        CurrentCollection.Cancel;
+      end;
+    end;
+  end;
 
   ModalResult := mrOk;
 end;
