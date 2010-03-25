@@ -11,6 +11,7 @@ uses
   IdComponent,
   IdStack,
   IdStackConsts,
+  IdWinsock2,
   IdMultipartFormData,
   DateUtils;
 
@@ -46,12 +47,12 @@ type
     FFile: string;
 
     //function CalcURI(Template: string):string;
-    function Main: boolean;
-    function Query(Kind: TQueryKind; const URL: string):boolean;
+    function Main: Boolean;
+    function Query(Kind: TQueryKind; const URL: string): Boolean;
     procedure AddParam(const Name: string; const Value: string);
-    function CheckResponce: boolean;
-    function CheckRedirect: boolean;
-    function Pause(Time: integer):boolean;
+    function CheckResponce: Boolean;
+    function CheckRedirect: Boolean;
+    function Pause(Time: integer): Boolean;
 
     procedure HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
     procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
@@ -69,12 +70,12 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    function Download(ID: integer):boolean;
+    function Download(BookID: Integer):boolean;
     procedure Stop;
-    property IgnoreErrors: boolean read FIgnoreErrors write FIgnoreErrors;
 
-    property OnSetComment:TSetCommentEvent write Set_OnSetComment;
-    property OnProgress:TProgressEvent write Set_OnProgress;
+    property IgnoreErrors: Boolean read FIgnoreErrors write FIgnoreErrors;
+    property OnSetComment: TSetCommentEvent write Set_OnSetComment;
+    property OnProgress: TProgressEvent write Set_OnProgress;
   end;
 
 implementation
@@ -168,7 +169,7 @@ begin
   FIgnoreErrors := False;
 end;
 
-function TDownloader.Download(ID: integer): boolean;
+function TDownloader.Download(BookID: Integer): Boolean;
 var
   Ext: string;
   FN: string;
@@ -176,26 +177,25 @@ var
   No: integer;
 begin
   Result := False;
-  dmCollection.GetBookFileName(ID, FN, Folder, Ext, No);
+  dmCollection.GetBookFileName(BookID, FN, Folder, Ext, No);
   if Ext = FB2_EXTENSION then
-    dmCollection.GetBookFolder(ID, FFile)
+    dmCollection.GetBookFolder(BookID, FFile)
   else
   begin
     Folder := StringReplace(Folder, FB2ZIP_EXTENSION, Ext, []);
-    FFile := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder) + Folder;
+    FFile := DMUser.ActiveCollection.RootPath + Folder;
   end;
 
   if FileExists(FFile) then
   begin
-    dmCollection.SetLocalStatus(ID, True);
+    dmCollection.SetLocalStatus(BookID, True);
     Result := True;
   end
-  else
-    if Main then
-    begin
-      dmCollection.SetLocalStatus(ID, True);
-      Result := True;
-    end;
+  else if Main then
+  begin
+    dmCollection.SetLocalStatus(BookID, True);
+    Result := True;
+  end;
 end;
 
 destructor TDownloader.Destroy;
@@ -264,34 +264,45 @@ begin
   try
     CL.Text := DMUser.ActiveCollection.Script;
     SetLength(Commands, CL.Count);
+
     FParams := TIdMultiPartFormDataStream.Create;
-    FResponce := TMemoryStream.Create;
-    for I := 0 to CL.Count - 1 do
-    begin
-      if Canceled then Break;
-      ParseCommand(CL[i], Commands[i]);
-      with Commands[i] do
-        case Code of
-          0: begin
-               AddParam(Params[1], Params[2]);
-               Result := True;
-             end;
-          1: Result := Query(qkGet, Params[1]);
-          2: Result := Query(qkPost, Params[1]);
-          3: Result := CheckRedirect;
-          4: Result := CheckResponce;
-          5: Result := Pause(StrToInt(Params[1]));
+    try
+      FResponce := TMemoryStream.Create;
+      try
+        for I := 0 to CL.Count - 1 do
+        begin
+          if Canceled then
+            Break;
+
+          ParseCommand(CL[i], Commands[i]);
+          with Commands[i] do
+            case Code of
+              0: begin
+                   AddParam(Params[1], Params[2]);
+                   Result := True;
+                 end;
+              1: Result := Query(qkGet, Params[1]);
+              2: Result := Query(qkPost, Params[1]);
+              3: Result := CheckRedirect;
+              4: Result := CheckResponce;
+              5: Result := Pause(StrToInt(Params[1]));
+            end;
+
+          if not Result then
+            Break;
         end;
-      if not Result then Break;
+      finally
+        FResponce.Free;
+      end;
+    finally
+      FParams.Free;
     end;
   finally
-    FParams.Free;
-    FResponce.Free;
     CL.Free;
   end;
 end;
 
-procedure TDownloader.ParseCommand;
+procedure TDownloader.ParseCommand(S: string; out Command: TCommand);
 var
   p, i: integer;
   s1: string;
@@ -309,32 +320,35 @@ begin
   StrReplace('%URL%',  DMUser.ActiveCollection.URL, S);
   StrReplace('%RESURL%', FNewURL, S);
 
-  p := pos(' ', S);
+  p := Pos(' ', S);
   if p <> 0 then
   begin
-    s1 := copy(S,1, p - 1);
+    s1 := Copy(S, 1, p - 1);
     Delete(S, 1, p);
   end
   else
     s1 := S;
 
-  for I := 0 to 5 do
+  for i := 0 to 5 do
     if CommandList[i] = s1 then
     begin
       Command.Code := i;
       Break;
     end;
 
-  p := pos(' ', S); i := 1;
+  p := Pos(' ', S);
+  i := 1;
   while p <> 0 do
   begin
-    s1 := copy(S,1, p - 1);
+    s1 := Copy(S,1, p - 1);
     Command.Params[i] := s1;
-    inc(i);
+    Inc(i);
     Delete(S, 1, p);
-    p := pos(' ', S);
+    p := Pos(' ', S);
   end;
-  if S <> '' then Command.Params[i] := S
+
+  if S <> '' then
+    Command.Params[i] := S
 end;
 
 function TDownloader.Pause(Time: integer): boolean;
@@ -383,7 +397,7 @@ begin
     on E: EIdSocketError do
     begin
       case E.LastError of
-        11001: ProcessError('Закачка не удалась! Сервер не найден.', 'Ошибка ' + IntToStr(E.LastError), FFile);
+        WSAHOST_NOT_FOUND: ProcessError('Закачка не удалась! Сервер не найден.', 'Ошибка ' + IntToStr(E.LastError), FFile);
         Id_WSAETIMEDOUT: ProcessError('Закачка не удалась! Превышено время ожидания.', 'Ошибка ' + IntToStr(E.LastError), FFile);
         else
           ProcessError('Закачка не удалась! Ошибка подключения.', 'Ошибка ' + IntToStr(E.LastError), FFile);

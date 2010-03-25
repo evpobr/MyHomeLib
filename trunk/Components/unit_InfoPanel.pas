@@ -96,7 +96,6 @@ type
 
   published
     property Align;
-    //property Alignment;
     property Anchors;
     property AutoSize;
     property BevelEdges;
@@ -107,9 +106,8 @@ type
     property BiDiMode;
     property BorderWidth;
     property BorderStyle;
-    //property Caption;
     property Color;
-    property Constraints;
+    //property Constraints;
     property Ctl3D;
     property UseDockManager default True;
     property DockSite;
@@ -118,10 +116,9 @@ type
     property DragKind;
     property DragMode;
     property Enabled;
-    //property FullRepaint;
+    property FullRepaint;
     property Font;
     property Locked;
-    //property Padding;
     property ParentBiDiMode;
     property ParentBackground;
     property ParentColor;
@@ -129,13 +126,10 @@ type
     property ParentDoubleBuffered;
     property ParentFont;
     property ParentShowHint;
-    //property PopupMenu;
-    //property ShowCaption;
     property ShowHint;
     property TabOrder;
     property TabStop;
     property Touch;
-    //property VerticalAlignment;
     property Visible;
 
     property ControlPadding: Integer read FControlPadding write SetControlPadding default DefPadding;
@@ -346,7 +340,7 @@ begin
 
   BevelOuter := bvNone;
   ShowCaption := False;
-  FullRepaint := False;
+  //FullRepaint := False;
 
   FControlPadding := DefPadding;
 
@@ -359,6 +353,7 @@ begin
 
     FValues[i] := TLinkLabel.Create(Self);
     FValues[i].Parent := Self;
+    //FValues[i].Caption := DEF_Captions[i];
     FValues[i].TabOrder := i;
     FValues[i].UseVisualStyle := True;
   end;
@@ -390,6 +385,20 @@ begin
     FValues[i].Left := FControlPadding * 2 + maxW;
     FValues[i].Top := FLabels[i].Top;
   end;
+
+  Constraints.MaxHeight := 0;
+  Constraints.MinHeight := 0;
+  Height := FControlPadding * (RowCount + 1) + maxH * RowCount;
+  Constraints.MaxHeight := Height;
+  Constraints.MinHeight := Height;
+end;
+
+procedure TMHLInfoPanel2.Clear;
+var
+  i: Integer;
+begin
+  for i := 0 to RowCount - 1 do
+    FValues[i].Caption := ' ';
 end;
 
 procedure TMHLInfoPanel2.CMFontChanged(var Message: TMessage);
@@ -414,14 +423,11 @@ begin
 end;
 
 procedure TMHLInfoPanel2.SetField(const Index: Integer; const Value: string);
-var
-  newValue: string;
 begin
-  newValue := Trim(Value);
-  if newValue = '' then
+  if Value = '' then
     FValues[Index].Caption := ' '
   else
-    FValues[Index].Caption := newValue;
+    FValues[Index].Caption := Value;
 end;
 
 function TMHLInfoPanel2.GetOnLinkClick(const Index: Integer): TSysLinkEvent;
@@ -441,14 +447,6 @@ begin
     FControlPadding := Value;
     ArrangeControls;
   end;
-end;
-
-procedure TMHLInfoPanel2.Clear;
-var
-  i: Integer;
-begin
-  for i := 0 to RowCount - 1 do
-    SetField(i, '');
 end;
 
 end.

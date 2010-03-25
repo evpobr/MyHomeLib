@@ -78,7 +78,7 @@ begin
   Canceled := False;
   FIgnoreErrors := False;
 
-  FCollectionRoot := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
+  FCollectionRoot := DMUser.ActiveCollection.RootPath;
   FDownloader := TDownloader.Create;
   try
     FDownloader.OnSetComment := SetComment2;

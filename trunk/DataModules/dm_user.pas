@@ -28,6 +28,7 @@ uses
 type
   TCollectionProp = (cpDisplayName, cpFileName, cpRootFolder);
 
+  TMHLActiveCollection = class;
   TMHLCollection = class;
 
   TDMUser = class(TDataModule)
@@ -91,35 +92,40 @@ type
     GroupedBooksProgress: TSmallintField;
     GroupedBooksGenres: TWideStringField;
     GroupedBooksSeries: TWideStringField;
-    Books: TABSTable;
-    BooksBookID: TIntegerField;
-    BooksDatabaseID: TIntegerField;
-    BooksLibID: TIntegerField;
-    BooksTitle: TWideStringField;
-    BooksFullName: TWideStringField;
-    BooksSerieID: TIntegerField;
-    BooksSeqNumber: TSmallintField;
-    BooksDate: TDateField;
-    BooksLibRate: TIntegerField;
-    BooksLang: TWideStringField;
-    BooksFolder: TWideStringField;
-    BooksFileName: TWideStringField;
-    BooksInsideNo: TIntegerField;
-    BooksExt: TWideStringField;
-    BooksSize: TIntegerField;
-    BooksURI: TWideStringField;
-    BooksCode: TSmallintField;
-    BooksLocal: TBooleanField;
-    BooksDeleted: TBooleanField;
-    BooksKeyWords: TWideStringField;
-    BooksReview: TWideMemoField;
-    BooksRate: TIntegerField;
-    BooksProgress: TSmallintField;
-    BooksGenres: TWideStringField;
-    BooksSeries: TWideStringField;
+    AllBooks: TABSTable;
+    AllBooksBookID: TIntegerField;
+    AllBooksDatabaseID: TIntegerField;
+    AllBooksLibID: TIntegerField;
+    AllBooksTitle: TWideStringField;
+    AllBooksFullName: TWideStringField;
+    AllBooksSerieID: TIntegerField;
+    AllBooksSeqNumber: TSmallintField;
+    AllBooksDate: TDateField;
+    AllBooksLibRate: TIntegerField;
+    AllBooksLang: TWideStringField;
+    AllBooksFolder: TWideStringField;
+    AllBooksFileName: TWideStringField;
+    AllBooksInsideNo: TIntegerField;
+    AllBooksExt: TWideStringField;
+    AllBooksSize: TIntegerField;
+    AllBooksURI: TWideStringField;
+    AllBooksCode: TSmallintField;
+    AllBooksLocal: TBooleanField;
+    AllBooksDeleted: TBooleanField;
+    AllBooksKeyWords: TWideStringField;
+    AllBooksReview: TWideMemoField;
+    AllBooksRate: TIntegerField;
+    AllBooksProgress: TSmallintField;
+    AllBooksGenres: TWideStringField;
+    AllBooksSeries: TWideStringField;
     ClearQuery: TABSQuery;
+    AllBookGroups: TABSTable;
+    AllBookGroupsBookID: TIntegerField;
+    AllBookGroupsDatabaseID: TIntegerField;
+    AllBookGroupsGroupID: TIntegerField;
 
   private
+    FActiveCollection: TMHLActiveCollection;
     FCollection: TMHLCollection;
 
   private
@@ -132,6 +138,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
+    function SelectCollection(CollectionID: Integer): Boolean;
     function ActivateCollection(CollectionID: Integer): Boolean;
 
     procedure RegisterCollection(
@@ -148,18 +155,6 @@ type
       const Password: string = ''
     );
 
-    procedure UpdateCollectionProps(
-      CollectionID: Integer;
-      const DisplayName: string;
-      const RootFolder: string;
-      const DBFileName: string;
-      const Description: string = '';
-      const URL: string = '';
-      const User: string = '';
-      const Pass: string = '';
-      const Script: string = ''
-    );
-
     function FindCollectionWithProp(
       PropID: TCollectionProp;
       const Value: string;
@@ -172,7 +167,8 @@ type
     //
     // Active Collection
     //
-    property ActiveCollection: TMHLCollection read FCollection;
+    property ActiveCollection: TMHLActiveCollection read FActiveCollection;
+    property CurrentCollection: TMHLCollection read FCollection;
 
     function FindFirstExternalCollection: Boolean;
     function FindNextExternalCollection: Boolean;
@@ -182,7 +178,6 @@ type
 
     function ActivateGroup(const ID: Integer): Boolean;
 
-    procedure SetLocal(ID: Integer; Value: Boolean);
     ///procedure InsertToGroupTable(BookID: Integer; const Genre: string);
 
     procedure LoadRates(const SL: TStringList; var i: Integer);
@@ -195,11 +190,14 @@ type
     //
     //
     //
+    function GetBookSerie(BookID: Integer; DatabaseID: Integer; SerieID: Integer): string;
     procedure FillBookData(BookID: Integer; DatabaseID: Integer; Data: PBookData);
+
     procedure SetRate(BookID: Integer; DatabaseID: Integer; Rate: Integer);
     procedure SetProgress(BookID: Integer; DatabaseID: Integer; Progress: Integer);
     function GetReview(BookID: Integer; DatabaseID: Integer): string;
     function SetReview(BookID: Integer; DatabaseID: Integer; const Review: string): Integer;
+    procedure SetLocal(BookID: Integer; DatabaseID: Integer; Value: Boolean);
 
     //
     // Работа с группами
@@ -209,6 +207,12 @@ type
     procedure ClearGroup(GroupID: Integer);
     procedure DeleteFromGroup(BookID: Integer; DatabaseID: Integer; GroupID: Integer);
     procedure RemoveUnusedBooks;
+    procedure CopyBookToGroup(
+      BookID: Integer; DatabaseID: Integer;
+      SourceGroupID: Integer;
+      TargetGroupID: Integer;
+      MoveBook: Boolean
+    );
 
   end;
 
@@ -249,12 +253,18 @@ type
 
     function GetAllowDelete: Boolean;
     procedure SetAllowDelete(const Value: Boolean);
+
     function GetURL: string;
     procedure SetURL(const Value: string);
+
     function GetScript: string;
     procedure SetScript(const Value: string);
 
   public
+    procedure Edit;
+    procedure Save;
+    procedure Cancel;
+
     property Active: Boolean read GetActive;
 
     property ID: Integer read GetID;
@@ -262,14 +272,52 @@ type
     property RootFolder: string read GetRootFolder write SetRootFolder;
     property DBFileName: string read GetDBFileName write SetDBFileName;
     property Notes: string read GetNotes write SetNotes;
-    property CreationDate: TDateTime read GetCreationDate write SetCreationDate;
+    property CreationDate: TDateTime read GetCreationDate {write SetCreationDate};
     property Version: Integer read GetVersion write SetVersion;
-    property CollectionType: COLLECTION_TYPE read GetCollectionType write SetCollectionType;
-    property AllowDelete: Boolean read GetAllowDelete write SetAllowDelete;
+    property CollectionType: COLLECTION_TYPE read GetCollectionType {write SetCollectionType};
+    property AllowDelete: Boolean read GetAllowDelete {write SetAllowDelete};
     property User: string read GetUser write SetUser;
     property Password: string read GetPassword write SetPassword;
     property URL: string read GetURL write SetURL;
     property Script: string read GetScript write SetScript;
+  end;
+
+  TMHLActiveCollection = class(TObject)
+  private
+    FID: Integer;
+    FName: string;
+    FRootFolder: string;
+    FDBFileName: string;
+    FNotes: string;
+    FUser: string;
+    FPassword: string;
+    FCreationDate: TDateTime;
+    FVersion: Integer;
+    FCollectionType: COLLECTION_TYPE;
+    FAllowDelete: Boolean;
+    FURL: string;
+    FScript: string;
+    function GetRootPath: string;
+
+  public
+    constructor Create;
+
+    procedure Clear;
+
+    property ID: Integer read FID;
+    property Name: string read FName;
+    property RootFolder: string read FRootFolder;
+    property RootPath: string read GetRootPath;
+    property DBFileName: string read FDBFileName;
+    property Notes: string read FNotes;
+    property CreationDate: TDateTime read FCreationDate;
+    property Version: Integer read FVersion;
+    property CollectionType: COLLECTION_TYPE read FCollectionType;
+    property AllowDelete: Boolean read FAllowDelete;
+    property User: string read FUser;
+    property Password: string read FPassword;
+    property URL: string read FURL;
+    property Script: string read FScript;
   end;
 
 var
@@ -297,7 +345,7 @@ end;
 
 procedure TDMUser.CorrectExtra(OldID, NewID: Integer);
 begin
-  if GroupedBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([OldID, ActiveCollection.GetID]), []) then
+  if GroupedBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([OldID, CurrentCollection.GetID]), []) then
   begin
     GroupedBooks.Edit;
     GroupedBooksBookID.Value := NewID;
@@ -308,13 +356,17 @@ end;
 constructor TDMUser.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+
+  FActiveCollection := TMHLActiveCollection.Create;
+
   FCollection := TMHLCollection.Create;
   FCollection.FSysDataModule := Self;
 end;
 
 destructor TDMUser.Destroy;
 begin
-  FCollection.Free;
+  FreeAndNil(FCollection);
+  FreeAndNil(FActiveCollection);
   inherited Destroy;
 end;
 
@@ -369,38 +421,38 @@ begin
   tblBases.Post;
 end;
 
-function TDMUser.ActivateCollection(CollectionID: Integer): Boolean;
+function TDMUser.SelectCollection(CollectionID: Integer): Boolean;
 begin
   Result := tblBases.Locate(ID_FIELD, CollectionID, []);
 end;
 
-procedure TDMUser.UpdateCollectionProps(
-  CollectionID: Integer;
-  const DisplayName: string;
-  const RootFolder: string;
-  const DBFileName: string;
-  const Description: string = '';
-  const URL: string = '';
-  const User: string = '';
-  const Pass: string = '';
-  const Script: string = ''
-);
+function TDMUser.ActivateCollection(CollectionID: Integer): Boolean;
 begin
-  if ActivateCollection(CollectionID) then
+  Result := SelectCollection(CollectionID);
+  if Result then
   begin
-    tblBases.Edit;
-
-    tblBasesName.Value := DisplayName;
-    tblBasesRootFolder.Value := RootFolder;
-    tblBasesDBFileName.Value := DBFileName;
-    tblBasesNotes.Value := Description;
-    tblBasesURL.Value := URL;
-    tblBasesUser.Value := User;
-    tblBasesPass.Value := Pass;
-    tblBasesConnection.Value := Script;
-
-    tblBases.Post;
-  end;
+    FActiveCollection.FID := CollectionID;
+    FActiveCollection.FName := tblBasesName.Value;
+    FActiveCollection.FRootFolder := tblBasesRootFolder.Value;
+    FActiveCollection.FDBFileName := tblBasesDBFileName.Value;
+    FActiveCollection.FNotes := tblBasesNotes.Value;
+    FActiveCollection.FUser := tblBasesUser.Value;
+    FActiveCollection.FPassword := tblBasesPass.Value;
+    FActiveCollection.FCreationDate := tblBasesDate.Value;
+    if tblBasesVersion.IsNull then
+      FActiveCollection.FVersion := UNVERSIONED_COLLECTION
+    else
+      FActiveCollection.FVersion := tblBasesVersion.Value;
+    FActiveCollection.FCollectionType := tblBasesCode.Value;
+    if tblBasesAllowDelete.IsNull then
+      FActiveCollection.FAllowDelete := True
+    else
+      FActiveCollection.FAllowDelete := tblBasesAllowDelete.Value;
+    FActiveCollection.FURL := tblBasesURL.Value;
+    FActiveCollection.FScript := tblBasesConnection.Value;
+  end
+  else
+    FActiveCollection.Clear;
 end;
 
 function TDMUser.FindCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer): Boolean;
@@ -445,7 +497,7 @@ begin
   tblBases.First;
   while not tblBases.Eof do
   begin
-    if isExternalCollection(ActiveCollection.CollectionType) then
+    if isExternalCollection(CurrentCollection.CollectionType) then
     begin
       Result := True;
       Exit;
@@ -467,7 +519,7 @@ begin
 
   while not tblBases.Eof do
   begin
-    if isExternalCollection(ActiveCollection.CollectionType) then
+    if isExternalCollection(CurrentCollection.CollectionType) then
     begin
       Result := True;
       Exit;
@@ -478,54 +530,6 @@ begin
 
   Result := False;
 end;
-
-{***
-procedure TDMUser.InsertToGroupTable(BookID: Integer; const Genre: string);
-begin
-  dmCollection.tblBooks.Locate(BOOK_ID_FIELD, BookID, []);
-
-  if not tblBooks.Locate(FILENAME_FIELD, dmCollection.tblBooksFileName.Value, []) then
-  begin
-    tblBooks.Insert;
-    tblBooksBookID.Value := BookID;
-    tblBooksDatabaseID.Value := ActiveCollection.ID;
-    tblBooksTitle.Value := dmCollection.tblBooksTitle.Value;
-
-    tblBooksSeries.Value := IfThen(dmCollection.tblBooksSeries.IsNull, NO_SERIES_TITLE, dmCollection.tblBooksSeries.Value);
-
-    tblBooksFullName.Value := dmCollection.FullAuthorsString(BookID);
-    tblBooksSerieID.Value := dmCollection.tblBooksSerieID.Value;
-    tblBooksSeqNumber.Value := dmCollection.tblBooksSeqNumber.Value;
-    tblBooksLibID.Value := dmCollection.tblBooksLibID.Value;
-    tblBooksSize.Value := dmCollection.tblBooksSize.Value;
-    tblBooksDeleted.Value := dmCollection.tblBooksDeleted.Value;
-    tblBooksLocal.Value := dmCollection.tblBooksLocal.Value;
-
-    if dmCollection.tblBooksFolder.IsNull then
-      tblBooksFolder.Value := IncludeTrailingPathDelimiter(ActiveCollection.RootFolder)
-    else
-      tblBooksFolder.Value := IncludeTrailingPathDelimiter(ActiveCollection.RootFolder) + CheckSymbols(dmCollection.tblBooksFolder.Value);
-
-    tblBooksFileName.Value := dmCollection.tblBooksFileName.Value;
-    tblBooksExt.Value := dmCollection.tblBooksExt.Value;
-    tblBooksInsideNo.Value := dmCollection.tblBooksInsideNo.Value;
-    tblBooksGenres.Value := Genre;
-    ///tblBooksRate.Value := dmCollection.tblBooksRate.Value;
-    tblBooksDate.Value := dmCollection.tblBooksDate.Value;
-    ///tblBooksProgress.Value := dmCollection.tblBooksProgress.Value;
-    tblBooksCode.Value := dmCollection.tblBooksCode.Value;
-    tblBooksKeyWords.Value := dmCollection.tblBooksKeyWords.Value;
-    tblBooks.Post;
-
-    if tblBooksCode.Value = 1 then
-    begin
-      ///tblExtra.Insert;
-      ///tblExtraReview.Value := dmCollection.tblExtraReview.Value;
-      ///tblExtra.Post;
-    end;
-  end;
-end;
-***}
 
 procedure TDMUser.LoadFinished;
 var
@@ -679,23 +683,23 @@ begin
   end;
 end;
 
-procedure TDMUser.SetLocal(ID: Integer; Value: Boolean);
-begin
-  if GroupedBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([ID, ActiveCollection.ID]), []) then
-  begin
-    GroupedBooks.Edit;
-    GroupedBooksLocal.Value := Value;
-    GroupedBooks.Post;
-  end;
-end;
-
 procedure TDMUser.SetTableState(State: Boolean);
 begin
   tblBases.Active := State;
   Groups.Active := State;
   BookGroups.Active := State;
   GroupedBooks.Active := State;
-  Books.Active := State;
+  AllBooks.Active := State;
+  AllBookGroups.Active := State;
+end;
+
+function TDMUser.GetBookSerie(BookID: Integer; DatabaseID: Integer; SerieID: Integer): string;
+begin
+  Assert(AllBooks.Active);
+  if AllBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+    Result := AllBooksSeries.Value
+  else
+    Result := '';
 end;
 
 procedure TDMUser.FillBookData(BookID: Integer; DatabaseID: Integer; Data: PBookData);
@@ -705,56 +709,65 @@ end;
 
 procedure TDMUser.SetRate(BookID: Integer; DatabaseID: Integer; Rate: Integer);
 begin
-  Assert(Books.Active);
-  if Books.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  Assert(AllBooks.Active);
+  if AllBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
   begin
-    Books.Edit;
-    BooksRate.Value := Rate;
-    Books.Post;
+    AllBooks.Edit;
+    AllBooksRate.Value := Rate;
+    AllBooks.Post;
   end;
 end;
 
 procedure TDMUser.SetProgress(BookID: Integer; DatabaseID: Integer; Progress: Integer);
 begin
-  Assert(Books.Active);
-  if Books.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  Assert(AllBooks.Active);
+  if AllBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
   begin
-    Books.Edit;
-    BooksProgress.Value := Progress;
-    Books.Post;
+    AllBooks.Edit;
+    AllBooksProgress.Value := Progress;
+    AllBooks.Post;
   end;
 end;
 
 function TDMUser.GetReview(BookID: Integer; DatabaseID: Integer): string;
 begin
-  Assert(Books.Active);
-  if Books.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
-  begin
-    Result := BooksReview.Value;
-  end
+  Assert(AllBooks.Active);
+  if AllBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+    Result := AllBooksReview.Value
   else
     Result := '';
 end;
 
 function TDMUser.SetReview(BookID: Integer; DatabaseID: Integer; const Review: string): Integer;
 begin
-  Assert(Books.Active);
+  Assert(AllBooks.Active);
   Result := 0;
-  if Books.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  if AllBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
   begin
-    Books.Edit;
+    AllBooks.Edit;
     if Review = '' then
     begin
-      BooksReview.Clear;
-      BooksCode.Value := 0;
+      AllBooksReview.Clear;
+      AllBooksCode.Value := 0;
     end
     else
     begin
-      BooksReview.Value := Review;
-      BooksCode.Value := 1;
+      AllBooksReview.Value := Review;
+      AllBooksCode.Value := 1;
       Result := 1;
     end;
-    Books.Post;
+    AllBooks.Post;
+  end;
+end;
+
+procedure TDMUser.SetLocal(BookID: Integer; DatabaseID: Integer; Value: Boolean);
+begin
+  Assert(AllBooks.Active);
+  if AllBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  begin
+    AllBooks.Edit;
+    AllBooksLocal.Value := Value;
+    AllBooks.Post;
   end;
 end;
 
@@ -842,7 +855,56 @@ begin
   ClearQuery.ExecSQL;
 end;
 
+procedure TDMUser.CopyBookToGroup(
+  BookID: Integer; DatabaseID: Integer;
+  SourceGroupID: Integer;
+  TargetGroupID: Integer;
+  MoveBook: Boolean
+);
+begin
+  if MoveBook then
+  begin
+    if AllBookGroups.Locate(GROUP_ID_FIELD + ';' + BOOK_DB_FIELDS, VarArrayOf([SourceGroupID, BookID, DatabaseID]), []) then
+    begin
+      AllBookGroups.Edit;
+      try
+        AllBookGroupsGroupID.Value := TargetGroupID;
+        AllBookGroups.Post;
+      except
+        AllBookGroups.Cancel;
+      end;
+    end;
+  end
+  else
+  begin
+    AllBookGroups.Append;
+    try
+      AllBookGroupsGroupID.Value := TargetGroupID;
+      AllBookGroupsBookID.Value := BookID;
+      AllBookGroupsDatabaseID.Value := DatabaseID;
+      AllBookGroups.Post;
+    except
+      AllBookGroups.Cancel;
+    end;
+  end;
+end;
+
 { TMHLCollection }
+
+procedure TMHLCollection.Edit;
+begin
+  FSysDataModule.tblBases.Edit;
+end;
+
+procedure TMHLCollection.Save;
+begin
+  FSysDataModule.tblBases.Post;
+end;
+
+procedure TMHLCollection.Cancel;
+begin
+  FSysDataModule.tblBases.Cancel;
+end;
 
 function TMHLCollection.GetActive: Boolean;
 begin
@@ -978,9 +1040,7 @@ end;
 procedure TMHLCollection.SetVersion(const Value: Integer);
 begin
   Assert(Assigned(FSysDataModule));
-  FSysDataModule.tblBases.Edit;
   FSysDataModule.tblBasesVersion.Value := Value;
-  FSysDataModule.tblBases.Post;
 end;
 
 function TMHLCollection.GetCollectionType: COLLECTION_TYPE;
@@ -1011,6 +1071,36 @@ procedure TMHLCollection.SetAllowDelete(const Value: Boolean);
 begin
   Assert(Assigned(FSysDataModule));
   FSysDataModule.tblBasesAllowDelete.Value := Value;
+end;
+
+{ TMHLActiveCollection }
+
+constructor TMHLActiveCollection.Create;
+begin
+  inherited Create;
+  Clear;
+end;
+
+function TMHLActiveCollection.GetRootPath: string;
+begin
+  Result := IncludeTrailingPathDelimiter(FRootFolder);
+end;
+
+procedure TMHLActiveCollection.Clear;
+begin
+  FID := DMUser.INVALID_COLLECTION_ID;
+  FName := '';
+  FRootFolder := '';
+  FDBFileName := '';
+  FNotes := '';
+  FCreationDate := 0;
+  FVersion := UNVERSIONED_COLLECTION;
+  FCollectionType := CT_PRIVATE_FB;
+  FAllowDelete := False;
+  FUser := '';
+  FPassword := '';
+  FURL := '';
+  FScript := '';
 end;
 
 end.

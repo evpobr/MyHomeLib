@@ -606,7 +606,7 @@ begin
   Tree.Clear;
   Tree.NodeDataSize := sizeof(TFileData);
 
-  FRootPath := IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
+  FRootPath := DMUser.ActiveCollection.RootPath;
 
   flFiles.TargetPath := DMUser.ActiveCollection.RootFolder;
   flFiles.Process;

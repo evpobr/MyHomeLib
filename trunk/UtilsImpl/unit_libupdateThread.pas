@@ -121,7 +121,6 @@ var
   ALibrary: TMHLLibrary;
   i: integer;
 begin
-
   FidHTTP := TidHTTP.Create(nil);
   FidHTTP.OnWork := HTTPWork;
   FidHTTP.OnWorkBegin := HTTPWorkBegin;
@@ -133,36 +132,38 @@ begin
 
   try
   for I := 0 to Settings.Updates.Count - 1 do
-    with  Settings.Updates.Items[i] do
+    with Settings.Updates.Items[i] do
     begin
-      if not Available then Continue;
-      DMUser.ActivateCollection(CollectionID);
-      Teletype(Format('Обновление коллекции "%s" до версии %d:',[Name,Version]),tsInfo);
+      if not Available then
+        Continue;
 
-      if not Local then
+      DMUser.ActivateCollection(CollectionID);
+      Teletype(Format('Обновление коллекции "%s" до версии %d:', [Name, Version]), tsInfo);
+
+      if Local then
+        Teletype('Обновление из локального архива', tsInfo)
+      else
       begin
-        Teletype('Загрузка обновлений ...',tsInfo);
+        Teletype('Загрузка обновлений ...', tsInfo);
         if not Settings.Updates.DownloadUpdate(I, FidHTTP) then
         begin
-            Teletype('Загрузка обновлений не удалась.',tsInfo);
+            Teletype('Загрузка обновлений не удалась.', tsInfo);
             Continue;
         end;
-      end
-      else
-        Teletype('Обновление из локального архива',tsInfo);
+      end;
 
       if Canceled then
       begin
         DeleteFile(Settings.WorkPath + Settings.Updates.Items[i].FileName);
-        Teletype('Операция отменена пользователем.',tsInfo);
+        Teletype('Операция отменена пользователем.', tsInfo);
         Exit;
       end;
 
       InpxFileName := Settings.UpdatePath + FileName;
 
-      DBFileName := DMUser.ActiveCollection.DBFileName;
-      CollectionRoot :=  IncludeTrailingPathDelimiter(DMUser.ActiveCollection.RootFolder);
-      CollectionType := DMUser.ActiveCollection.CollectionType;
+      DBFileName := DMUser.CurrentCollection.DBFileName;
+      CollectionRoot :=  IncludeTrailingPathDelimiter(DMUser.CurrentCollection.RootFolder);
+      CollectionType := DMUser.CurrentCollection.CollectionType;
 
       if Full then
       begin
@@ -187,7 +188,11 @@ begin
       Teletype('Импорт данных в коллекцию:',tsInfo);
 
       Import(not Full);
-      DMUser.ActiveCollection.Version := GetLibUpdateVersion(True);
+
+      DMUser.CurrentCollection.Edit;
+      DMUser.CurrentCollection.Version := GetLibUpdateVersion(True);
+      DMUser.CurrentCollection.Save;
+
       Teletype(rstrReady,tsInfo);
     end; //for .. with
 
@@ -199,10 +204,11 @@ begin
           DeleteFile(Settings.UpdatePath + FileName)
         else
           ReplaceFiles;
+
      SetComment(rstrReady);
   except
     on E: Exception do
-       DeleteFile(Settings.WorkPath + Settings.Updates.Items[i].FileName);
+      DeleteFile(Settings.WorkPath + Settings.Updates.Items[i].FileName);
   end;
 end;
 
