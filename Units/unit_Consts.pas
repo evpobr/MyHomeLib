@@ -71,9 +71,12 @@ const
   NO_ACTIVECOLLECTION_ID = -1;
   UNVERSIONED_COLLECTION = -1;
 
+  NO_SERIE_ID = 1;
   NO_SERIES_TITLE = '---';
   BOOK_NO_TITLE = 'Без названия';
   UNKNOWN_AUTHOR_LASTNAME = 'Неизвестный';
+
+  FAVORITES_GROUP_ID = 1;
 
   //
   // Номера вкладок в главном окне ( = tags)
@@ -158,10 +161,15 @@ const
   LIB_ID_FIELD = 'LibID';
   DB_ID_FIELD = 'DatabaseID';
   SERIE_ID_FIELD = 'SerieID';
-  GENRE_CODE_FIELD = 'Code';
+  GENRE_CODE_FIELD = 'GenreCode';
   GROUP_ID_FIELD = 'GroupID';
   FOLDER_FIELD = 'Folder';
   FILENAME_FIELD = 'FileName';
+
+  //
+  //
+  //
+  BOOK_DB_FIELDS = BOOK_ID_FIELD + ';' + DB_ID_FIELD;
 
   PX_INDEX = 'PXIndex';
 type

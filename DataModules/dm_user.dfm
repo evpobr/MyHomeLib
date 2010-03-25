@@ -12,11 +12,6 @@ object DMUser: TDMUser
     Left = 40
     Top = 32
   end
-  object dsGroupedBooks: TDataSource
-    DataSet = tblGrouppedBooks
-    Left = 128
-    Top = 248
-  end
   object tblBases: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'UserData'
@@ -84,136 +79,242 @@ object DMUser: TDMUser
       BlobType = ftWideMemo
     end
   end
-  object tblRates: TABSTable
-    CurrentVersion = '6.05 '
-    DatabaseName = 'UserData'
-    InMemory = False
-    ReadOnly = False
-    TableName = 'rates'
-    Exclusive = False
-    ExportToSqlOptions.BlobSettings = True
-    ExportToSqlOptions.Data = True
-    ExportToSqlOptions.FieldNamesInInserts = True
-    Left = 40
-    Top = 376
-    object tblRatesID: TAutoIncField
-      FieldName = 'ID'
-    end
-    object tblRatesBookID: TIntegerField
-      FieldName = 'BookID'
-      Required = True
-    end
-    object tblRatesDataBaseID: TIntegerField
-      FieldName = 'DataBaseID'
-      Required = True
-    end
-    object tblRatesRate: TIntegerField
-      FieldName = 'Rate'
-      Required = True
-    end
-    object tblRatesDate: TDateField
-      FieldName = 'Date'
-    end
-  end
   object dsBases: TDataSource
     DataSet = tblBases
     Left = 128
     Top = 104
   end
-  object tblGrouppedBooks: TABSTable
+  object GroupedBooks: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
-    IndexName = 'FullName_Index'
-    TableName = 'GroupedBooks'
+    StoreDefs = True
+    IndexDefs = <
+      item
+        Name = 'ID_Index'
+        Fields = 'BookID;DatabaseID'
+        Options = [ixPrimary]
+      end
+      item
+        Name = 'FullName_Index'
+        Fields = 'FullName;Series;Title'
+      end
+      item
+        Name = 'File_Index'
+        Fields = 'FileName'
+      end>
+    IndexName = 'ID_Index'
+    FieldDefs = <
+      item
+        Name = 'BookID'
+        Attributes = [faRequired]
+        DataType = ftInteger
+      end
+      item
+        Name = 'DatabaseID'
+        Attributes = [faRequired]
+        DataType = ftInteger
+      end
+      item
+        Name = 'LibID'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Title'
+        DataType = ftWideString
+        Size = 150
+      end
+      item
+        Name = 'FullName'
+        DataType = ftWideString
+        Size = 255
+      end
+      item
+        Name = 'SerieID'
+        DataType = ftInteger
+      end
+      item
+        Name = 'SeqNumber'
+        DataType = ftSmallint
+      end
+      item
+        Name = 'Date'
+        DataType = ftDate
+      end
+      item
+        Name = 'LibRate'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Lang'
+        DataType = ftWideString
+        Size = 2
+      end
+      item
+        Name = 'Folder'
+        DataType = ftWideString
+        Size = 255
+      end
+      item
+        Name = 'FileName'
+        Attributes = [faRequired]
+        DataType = ftWideString
+        Size = 255
+      end
+      item
+        Name = 'InsideNo'
+        Attributes = [faRequired]
+        DataType = ftInteger
+      end
+      item
+        Name = 'Ext'
+        DataType = ftWideString
+        Size = 10
+      end
+      item
+        Name = 'Size'
+        DataType = ftInteger
+      end
+      item
+        Name = 'URI'
+        DataType = ftWideString
+        Size = 60
+      end
+      item
+        Name = 'Code'
+        DataType = ftSmallint
+      end
+      item
+        Name = 'Local'
+        DataType = ftBoolean
+      end
+      item
+        Name = 'Deleted'
+        DataType = ftBoolean
+      end
+      item
+        Name = 'KeyWords'
+        DataType = ftWideString
+        Size = 255
+      end
+      item
+        Name = 'Review'
+        DataType = ftWideMemo
+      end
+      item
+        Name = 'Rate'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Progress'
+        DataType = ftSmallint
+      end
+      item
+        Name = 'Genres'
+        DataType = ftWideString
+        Size = 128
+      end
+      item
+        Name = 'Series'
+        DataType = ftWideString
+        Size = 128
+      end>
+    TableName = 'Books'
     Exclusive = False
-    MasterFields = 'ID'
-    MasterSource = dsGroupList
+    MasterFields = 'BookID;DatabaseID'
+    MasterSource = dsBookGroups
     Left = 40
-    Top = 248
-    object tblGrouppedBooksID: TAutoIncField
-      FieldName = 'ID'
-    end
-    object tblGrouppedBooksGroupID: TIntegerField
-      FieldName = 'GroupID'
+    Top = 312
+    object GroupedBooksBookID: TIntegerField
+      FieldName = 'BookID'
       Required = True
     end
-    object tblGrouppedBooksOuterID: TIntegerField
-      FieldName = 'OuterID'
-    end
-    object tblGrouppedBooksSerID: TIntegerField
-      FieldName = 'SerID'
-    end
-    object tblGrouppedBooksSeqNumber: TSmallintField
-      FieldName = 'SeqNumber'
-    end
-    object tblGrouppedBooksDatabaseID: TIntegerField
+    object GroupedBooksDatabaseID: TIntegerField
       FieldName = 'DatabaseID'
+      Required = True
     end
-    object tblGrouppedBooksLibID: TIntegerField
+    object GroupedBooksLibID: TIntegerField
       FieldName = 'LibID'
     end
-    object tblGrouppedBooksDate: TDateField
-      FieldName = 'Date'
-    end
-    object tblGrouppedBooksTitle: TWideStringField
+    object GroupedBooksTitle: TWideStringField
       FieldName = 'Title'
       Size = 150
     end
-    object tblGrouppedBooksFullName: TWideStringField
+    object GroupedBooksFullName: TWideStringField
       FieldName = 'FullName'
       Size = 255
     end
-    object tblGrouppedBooksInsideNo: TIntegerField
-      FieldName = 'InsideNo'
-      Required = True
+    object GroupedBooksSerieID: TIntegerField
+      FieldName = 'SerieID'
     end
-    object tblGrouppedBooksFileName: TWideStringField
+    object GroupedBooksSeqNumber: TSmallintField
+      FieldName = 'SeqNumber'
+    end
+    object GroupedBooksDate: TDateField
+      FieldName = 'Date'
+    end
+    object GroupedBooksLibRate: TIntegerField
+      FieldName = 'LibRate'
+    end
+    object GroupedBooksLang: TWideStringField
+      FieldName = 'Lang'
+      Size = 2
+    end
+    object GroupedBooksFolder: TWideStringField
+      FieldName = 'Folder'
+      Size = 255
+    end
+    object GroupedBooksFileName: TWideStringField
       FieldName = 'FileName'
       Required = True
       Size = 255
     end
-    object tblGrouppedBooksExt: TWideStringField
+    object GroupedBooksInsideNo: TIntegerField
+      FieldName = 'InsideNo'
+      Required = True
+    end
+    object GroupedBooksExt: TWideStringField
       FieldName = 'Ext'
       Size = 10
     end
-    object tblGrouppedBooksSize: TIntegerField
+    object GroupedBooksSize: TIntegerField
       FieldName = 'Size'
     end
-    object tblGrouppedBooksCode: TSmallintField
+    object GroupedBooksURI: TWideStringField
+      FieldName = 'URI'
+      Size = 60
+    end
+    object GroupedBooksCode: TSmallintField
       FieldName = 'Code'
     end
-    object tblGrouppedBooksFolder: TWideStringField
-      FieldName = 'Folder'
-      Size = 255
-    end
-    object tblGrouppedBooksLocal: TBooleanField
+    object GroupedBooksLocal: TBooleanField
       FieldName = 'Local'
     end
-    object tblGrouppedBooksDeleted: TBooleanField
+    object GroupedBooksDeleted: TBooleanField
       FieldName = 'Deleted'
     end
-    object tblGrouppedBooksGenres: TWideStringField
+    object GroupedBooksKeyWords: TWideStringField
+      FieldName = 'KeyWords'
+      Size = 255
+    end
+    object GroupedBooksReview: TWideMemoField
+      FieldName = 'Review'
+      BlobType = ftWideMemo
+    end
+    object GroupedBooksRate: TIntegerField
+      FieldName = 'Rate'
+    end
+    object GroupedBooksProgress: TSmallintField
+      FieldName = 'Progress'
+    end
+    object GroupedBooksGenres: TWideStringField
       FieldName = 'Genres'
       Size = 128
     end
-    object tblGrouppedBooksSeries: TWideStringField
+    object GroupedBooksSeries: TWideStringField
       FieldName = 'Series'
       Size = 128
-    end
-    object tblGrouppedBooksRate: TIntegerField
-      FieldName = 'Rate'
-    end
-    object tblGrouppedBooksProgress: TSmallintField
-      FieldName = 'Progress'
-    end
-    object tblGrouppedBooksLibRate: TIntegerField
-      FieldName = 'LibRate'
-    end
-    object tblGrouppedBooksLang: TWideStringField
-      FieldName = 'Lang'
-      Size = 2
     end
   end
   object SeverityImages: TImageList
@@ -900,97 +1001,242 @@ object DMUser: TDMUser
       FFC003FFFFFFFFFFFFC003FF0000000000000000000000000000000000000000
       000000000000}
   end
-  object dsGroupList: TDataSource
-    DataSet = tblGroupList
+  object dsGroups: TDataSource
+    DataSet = Groups
     Left = 128
     Top = 176
   end
-  object tblFinished: TABSTable
+  object Groups: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
-    TableName = 'Finished'
-    Exclusive = False
-    Left = 40
-    Top = 440
-    object tblFinishedID: TAutoIncField
-      FieldName = 'ID'
-    end
-    object tblFinishedBookID: TIntegerField
-      FieldName = 'BookID'
-      Required = True
-    end
-    object tblFinishedDataBaseID: TIntegerField
-      FieldName = 'DataBaseID'
-      Required = True
-    end
-    object tblFinishedProgress: TSmallintField
-      FieldName = 'Progress'
-    end
-    object tblFinishedDate: TDateField
-      FieldName = 'Date'
-    end
-  end
-  object tblGroupList: TABSTable
-    CurrentVersion = '6.05 '
-    DatabaseName = 'UserData'
-    InMemory = False
-    ReadOnly = False
-    TableName = 'GroupsList'
+    StoreDefs = True
+    IndexDefs = <
+      item
+        Name = 'ID_Index'
+        Fields = 'GroupID'
+        Options = [ixPrimary]
+      end
+      item
+        Name = 'NameIndex'
+        Fields = 'Name'
+      end>
+    FieldDefs = <
+      item
+        Name = 'GroupID'
+        DataType = ftAutoInc
+      end
+      item
+        Name = 'Name'
+        DataType = ftWideString
+        Size = 255
+      end
+      item
+        Name = 'AllowDelete'
+        DataType = ftBoolean
+      end
+      item
+        Name = 'Notes'
+        DataType = ftMemo
+      end
+      item
+        Name = 'Icon'
+        DataType = ftBlob
+      end>
+    TableName = 'Groups'
     Exclusive = False
     Left = 40
     Top = 176
-    object tblGroupListID: TAutoIncField
-      FieldName = 'ID'
+    object GroupsGroupID: TAutoIncField
+      FieldName = 'GroupID'
     end
-    object tblGroupListName: TWideStringField
+    object GroupsName: TWideStringField
       FieldName = 'Name'
       Size = 255
     end
-    object tblGroupListAllowDelete: TBooleanField
+    object GroupsAllowDelete: TBooleanField
       FieldName = 'AllowDelete'
     end
-    object tblGroupListNotes: TMemoField
+    object GroupsNotes: TMemoField
       FieldName = 'Notes'
       BlobType = ftMemo
     end
-    object tblGroupListIcon: TBlobField
+    object GroupsIcon: TBlobField
       FieldName = 'Icon'
     end
   end
-  object tblExtra: TABSTable
+  object BookGroups: TABSTable
+    CurrentVersion = '6.05 '
+    DatabaseName = 'UserData'
+    InMemory = False
+    ReadOnly = False
+    StoreDefs = True
+    IndexDefs = <
+      item
+        Name = 'ID_Index'
+        Fields = 'GroupID;BookID;DatabaseID'
+        Options = [ixPrimary]
+      end
+      item
+        Name = 'BookDBIndex'
+        Fields = 'BookID;DatabaseID'
+      end>
+    IndexFieldNames = 'GroupID'
+    FieldDefs = <
+      item
+        Name = 'GroupID'
+        Attributes = [faRequired]
+        DataType = ftInteger
+      end
+      item
+        Name = 'BookID'
+        Attributes = [faRequired]
+        DataType = ftInteger
+      end
+      item
+        Name = 'DatabaseID'
+        Attributes = [faRequired]
+        DataType = ftInteger
+      end>
+    TableName = 'BookGroups'
+    Exclusive = False
+    MasterFields = 'GroupID'
+    MasterSource = dsGroups
+    Left = 40
+    Top = 248
+    object BookGroupsGroupID: TIntegerField
+      FieldName = 'GroupID'
+      Required = True
+    end
+    object BookGroupsBookID: TIntegerField
+      FieldName = 'BookID'
+      Required = True
+    end
+    object BookGroupsDatabaseID: TIntegerField
+      FieldName = 'DatabaseID'
+      Required = True
+    end
+  end
+  object dsBookGroups: TDataSource
+    DataSet = BookGroups
+    Left = 128
+    Top = 248
+  end
+  object Books: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
     IndexName = 'ID_Index'
-    TableName = 'Extra'
+    TableName = 'Books'
     Exclusive = False
-    MasterFields = 'OuterID;DatabaseID'
-    MasterSource = dsGroupedBooks
-    Left = 40
-    Top = 312
-    object tblExtraBookID: TIntegerField
+    Left = 224
+    Top = 104
+    object BooksBookID: TIntegerField
       FieldName = 'BookID'
+      Required = True
     end
-    object tblExtraDatabaseID: TIntegerField
+    object BooksDatabaseID: TIntegerField
       FieldName = 'DatabaseID'
+      Required = True
     end
-    object tblExtraE_Annotation: TWideMemoField
-      FieldName = 'E_Annotation'
+    object BooksLibID: TIntegerField
+      FieldName = 'LibID'
+    end
+    object BooksTitle: TWideStringField
+      FieldName = 'Title'
+      Size = 150
+    end
+    object BooksFullName: TWideStringField
+      FieldName = 'FullName'
+      Size = 255
+    end
+    object BooksSerieID: TIntegerField
+      FieldName = 'SerieID'
+    end
+    object BooksSeqNumber: TSmallintField
+      FieldName = 'SeqNumber'
+    end
+    object BooksDate: TDateField
+      FieldName = 'Date'
+    end
+    object BooksLibRate: TIntegerField
+      FieldName = 'LibRate'
+    end
+    object BooksLang: TWideStringField
+      FieldName = 'Lang'
+      Size = 2
+    end
+    object BooksFolder: TWideStringField
+      FieldName = 'Folder'
+      Size = 255
+    end
+    object BooksFileName: TWideStringField
+      FieldName = 'FileName'
+      Required = True
+      Size = 255
+    end
+    object BooksInsideNo: TIntegerField
+      FieldName = 'InsideNo'
+      Required = True
+    end
+    object BooksExt: TWideStringField
+      FieldName = 'Ext'
+      Size = 10
+    end
+    object BooksSize: TIntegerField
+      FieldName = 'Size'
+    end
+    object BooksURI: TWideStringField
+      FieldName = 'URI'
+      Size = 60
+    end
+    object BooksCode: TSmallintField
+      FieldName = 'Code'
+    end
+    object BooksLocal: TBooleanField
+      FieldName = 'Local'
+    end
+    object BooksDeleted: TBooleanField
+      FieldName = 'Deleted'
+    end
+    object BooksKeyWords: TWideStringField
+      FieldName = 'KeyWords'
+      Size = 255
+    end
+    object BooksReview: TWideMemoField
+      FieldName = 'Review'
       BlobType = ftWideMemo
     end
-    object tblExtraE_Review: TWideMemoField
-      FieldName = 'E_Review'
-      BlobType = ftWideMemo
+    object BooksRate: TIntegerField
+      FieldName = 'Rate'
     end
-    object tblExtraE_Cover: TBlobField
-      FieldName = 'E_Cover'
+    object BooksProgress: TSmallintField
+      FieldName = 'Progress'
     end
-    object tblExtraE_Data: TWideMemoField
-      FieldName = 'E_Data'
-      BlobType = ftWideMemo
+    object BooksGenres: TWideStringField
+      FieldName = 'Genres'
+      Size = 128
     end
+    object BooksSeries: TWideStringField
+      FieldName = 'Series'
+      Size = 128
+    end
+  end
+  object ClearQuery: TABSQuery
+    CurrentVersion = '6.05 '
+    DatabaseName = 'UserData'
+    InMemory = False
+    ReadOnly = False
+    SQL.Strings = (
+      'delete from Books b'
+      'where'
+      '  not exists('
+      '  select 1 from BookGroups g'
+      '  where g.BookID = b.BookID and g.DatabaseID = b.DatabaseID'
+      '  )')
+    Left = 224
+    Top = 176
   end
 end

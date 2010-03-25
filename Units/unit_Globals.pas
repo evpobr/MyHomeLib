@@ -163,6 +163,9 @@ type
 
   TDownloadState = (dsWait, dsRun, dsOk, dsError);
 
+  //
+  // TreeView data records
+  //
   PDownloadData = ^TDownloadData;
   TDownloadData = record
     ID: Integer;
@@ -176,10 +179,15 @@ type
 
   PAuthorData = ^TAuthorData;
   TAuthorData = record
+    AuthorID: Integer;
     Text: string;
     First, Last, Middle: string;
-    ID, Level: Integer;
-    Checked: Boolean;
+  end;
+
+  PSerieData = ^TSerieData;
+  TSerieData = record
+    SerieID: Integer;
+    Text: string;
   end;
 
   TBookNodeType = (ntAuthorInfo = 1, ntSeriesInfo, ntBookInfo);
@@ -187,12 +195,23 @@ type
   TBookData = record
     nodeType: TBookNodeType;
 
-    Title, Series, Genre, FullName, ColName, FileType: string;
+    BookID: Integer;
+    DatabaseID: Integer;
+    SerieID: Integer;
 
-    Lang: string[2];
-
-    ID, SeriesID, Size, Rate, No, ImageIndex, Progress, LibRate, Code: Integer;
-    RatePos: Integer;
+    Title: string;
+    Series: string;
+    Genre: string;
+    FullName: string;
+    CollectionName: string;
+    FileType: string;
+    Lang: string;
+    Size: Integer;
+    Rate: Integer;
+    No: Integer;
+    Progress: Integer;
+    LibRate: Integer;
+    Code: Integer;
     Locale: Boolean;
     Deleted: Boolean;
     Date: TDateTime;
@@ -207,14 +226,17 @@ type
     ParentCode: string;
   end;
 
-  PGroupData = ^TGenreData;
+  PGroupData = ^TGroupData;
   TGroupData = record
-    ID: Integer;
+    GroupID: Integer;
     Text: string;
+    CanDelete: Boolean;
   end;
 
+  //
+  //
+  //
   TGenreRecord = record
-    // TODO : добавить ID: Integer;
     GenreCode: string;
     GenreFb2Code: string;
     Alias: string;
@@ -266,7 +288,7 @@ type
     Code: Integer;
     Size: Integer;
 
-    libID: Integer;
+    LibID: Integer;
 
     //
     // ѕреобразовать в множество (set)

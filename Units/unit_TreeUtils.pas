@@ -26,7 +26,7 @@ type
   TSelectionList = array of PVirtualNode;
 
 function FindParentInTree(Tree: TVirtualStringTree; const Folder: string): PVirtualNode;
-function FindSeriesInTree(Tree: TVirtualStringTree; Parent: PVirtualNode; SerID: Integer): PVirtualNode;
+function FindSeriesInTree(Tree: TVirtualStringTree; Parent: PVirtualNode; SerieID: Integer): PVirtualNode;
 procedure SortChild(Tree: TVirtualStringTree; Parent: PVirtualNode);
 // procedure SortAuthors(Tree:TVirtualStringTree);
 function GetSelectedBookData(Tree: TVirtualStringTree): PBookData;
@@ -73,7 +73,7 @@ begin
   end;
 end;
 
-function FindSeriesInTree(Tree: TVirtualStringTree; Parent: PVirtualNode; SerID: Integer): PVirtualNode;
+function FindSeriesInTree(Tree: TVirtualStringTree; Parent: PVirtualNode; SerieID: Integer): PVirtualNode;
 var
   Node: PVirtualNode;
   Data: PBookData;
@@ -88,7 +88,7 @@ begin
   begin
     Data := Tree.GetNodeData(Node);
     Assert(Assigned(Data));
-    if (Data.nodeType = ntSeriesInfo) and (Data.SeriesID = SerID) then
+    if (Data.nodeType = ntSeriesInfo) and (Data.SerieID = SerieID) then
     begin
       Result := Node;
       Break;
@@ -195,7 +195,7 @@ begin
   if Result = nil then
   begin
     New(Result);
-    Result.ID := -1;
+    Result.BookID := -1;
   end;
 end;
 
@@ -208,7 +208,7 @@ begin
   while Node <> nil do
   begin
     Data := Tree.GetNodeData(Node);
-    if Data.ID = ID then
+    if Data.BookID = ID then
     begin
       Tree.Selected[Node] := True;
       Break;
