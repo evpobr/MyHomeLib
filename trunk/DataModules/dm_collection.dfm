@@ -1,6 +1,6 @@
 object DMCollection: TDMCollection
   OldCreateOrder = False
-  Height = 567
+  Height = 716
   Width = 724
   object DBCollection: TABSDatabase
     CurrentVersion = '6.05 '
@@ -18,12 +18,7 @@ object DMCollection: TDMCollection
     Left = 96
     Top = 88
   end
-  object dsBooksA: TDataSource
-    DataSet = tblBooksA
-    Left = 96
-    Top = 208
-  end
-  object tblBooksA: TABSTable
+  object BooksByAuthor: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
@@ -35,14 +30,14 @@ object DMCollection: TDMCollection
     MasterSource = dsAuthor_List
     Left = 24
     Top = 208
-    object tblBooksAID: TAutoIncField
+    object BooksByAuthorID: TAutoIncField
       FieldName = 'BookID'
     end
-    object tblBooksASerieID: TIntegerField
+    object BooksByAuthorSerieID: TIntegerField
       FieldName = 'SerieID'
     end
   end
-  object tblBooksG: TABSTable
+  object BooksByGenre: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
@@ -54,10 +49,10 @@ object DMCollection: TDMCollection
     MasterSource = dsGenre_List
     Left = 400
     Top = 216
-    object tblBooksGID: TAutoIncField
+    object BooksByGenreID: TAutoIncField
       FieldName = 'BookID'
     end
-    object tblBooksGSerieID: TIntegerField
+    object BooksByGenreSerieID: TIntegerField
       FieldName = 'SerieID'
     end
   end
@@ -87,11 +82,6 @@ object DMCollection: TDMCollection
       Size = 50
     end
   end
-  object dsBooksG: TDataSource
-    DataSet = tblBooksG
-    Left = 480
-    Top = 216
-  end
   object tblAuthorsS: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
@@ -99,8 +89,8 @@ object DMCollection: TDMCollection
     ReadOnly = False
     TableName = 'Authors'
     Exclusive = False
-    Left = 208
-    Top = 160
+    Left = 552
+    Top = 472
     object tblAuthorsSID: TAutoIncField
       FieldName = 'ID'
     end
@@ -119,7 +109,7 @@ object DMCollection: TDMCollection
       Size = 45
     end
   end
-  object tblBooksS: TABSTable
+  object BooksBySerie: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
@@ -130,11 +120,11 @@ object DMCollection: TDMCollection
     MasterFields = 'SerieID'
     MasterSource = dsSeries
     Left = 208
-    Top = 224
-    object tblBooksSID: TAutoIncField
+    Top = 152
+    object BooksBySerieID: TAutoIncField
       FieldName = 'BookID'
     end
-    object tblBooksSSerieID: TIntegerField
+    object BooksBySerieSerieID: TIntegerField
       FieldName = 'SerieID'
     end
   end
@@ -145,15 +135,10 @@ object DMCollection: TDMCollection
   end
   object dsAuthorsS: TDataSource
     DataSet = tblAuthorsS
-    Left = 272
-    Top = 160
+    Left = 616
+    Top = 472
   end
-  object dsBooksS: TDataSource
-    DataSet = tblBooksS
-    Left = 272
-    Top = 224
-  end
-  object tblBooks_Genre_List: TABSTable
+  object BookGenres_List: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
@@ -161,42 +146,37 @@ object DMCollection: TDMCollection
     IndexName = 'BookIndex'
     TableName = 'Genre_List'
     Exclusive = False
-    Left = 40
-    Top = 368
-    object tblBooks_Genre_ListGL_ID: TAutoIncField
+    Left = 56
+    Top = 352
+    object BookGenres_ListGL_ID: TAutoIncField
       FieldName = 'GL_ID'
     end
-    object tblBooks_Genre_ListGenreCode: TWideStringField
+    object BookGenres_ListGenreCode: TWideStringField
       FieldName = 'GenreCode'
       Size = 30
     end
-    object tblBooks_Genre_ListBookID: TIntegerField
+    object BookGenres_ListBookID: TIntegerField
       FieldName = 'BookID'
     end
-    object tblBooks_Genre_ListGL_Family: TWideStringField
+    object BookGenres_ListGL_Family: TWideStringField
       FieldName = 'GL_Family'
       Size = 7
     end
-    object tblBooks_Genre_ListGL_Series: TWideStringField
+    object BookGenres_ListGL_Series: TWideStringField
       FieldName = 'GL_Series'
       Size = 7
     end
-    object tblBooks_Genre_ListGL_Title: TWideStringField
+    object BookGenres_ListGL_Title: TWideStringField
       FieldName = 'GL_Title'
       Size = 7
     end
   end
   object dsBook_Genre_List: TDataSource
-    DataSet = tblBooks_Genre_List
-    Left = 144
-    Top = 368
+    DataSet = BookGenres_List
+    Left = 160
+    Top = 352
   end
-  object dsBooks_Genres: TDataSource
-    DataSet = tblGenres
-    Left = 144
-    Top = 312
-  end
-  object tblGenre_List: TABSTable
+  object GenreBooks: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
@@ -208,35 +188,35 @@ object DMCollection: TDMCollection
     MasterSource = dsGenres
     Left = 400
     Top = 152
-    object tblGenre_ListGL_ID: TAutoIncField
+    object GenreBooksGL_ID: TAutoIncField
       FieldName = 'GL_ID'
     end
-    object tblGenre_ListGenreCode: TWideStringField
+    object GenreBooksGenreCode: TWideStringField
       FieldName = 'GenreCode'
       Size = 30
     end
-    object tblGenre_ListBookID: TIntegerField
+    object GenreBooksBookID: TIntegerField
       FieldName = 'BookID'
     end
-    object tblGenre_ListGL_Family: TWideStringField
+    object GenreBooksGL_Family: TWideStringField
       FieldName = 'GL_Family'
       Size = 7
     end
-    object tblGenre_ListGL_Series: TWideStringField
+    object GenreBooksGL_Series: TWideStringField
       FieldName = 'GL_Series'
       Size = 7
     end
-    object tblGenre_ListGL_Title: TWideStringField
+    object GenreBooksGL_Title: TWideStringField
       FieldName = 'GL_Title'
       Size = 7
     end
   end
   object dsGenre_List: TDataSource
-    DataSet = tblGenre_List
+    DataSet = GenreBooks
     Left = 480
     Top = 152
   end
-  object tblAuthor_List: TABSTable
+  object AuthorBooks: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
@@ -248,23 +228,23 @@ object DMCollection: TDMCollection
     MasterSource = dsAuthors
     Left = 24
     Top = 152
-    object tblAuthor_ListAuthorID: TIntegerField
+    object AuthorBooksAuthorID: TIntegerField
       FieldName = 'AuthorID'
     end
-    object tblAuthor_ListBookID: TIntegerField
+    object AuthorBooksBookID: TIntegerField
       FieldName = 'BookID'
     end
-    object tblAuthor_ListAL_Series: TWideStringField
+    object AuthorBooksAL_Series: TWideStringField
       FieldName = 'AL_Series'
       Size = 7
     end
-    object tblAuthor_ListAL_Title: TWideStringField
+    object AuthorBooksAL_Title: TWideStringField
       FieldName = 'AL_Title'
       Size = 7
     end
   end
   object dsAuthor_List: TDataSource
-    DataSet = tblAuthor_List
+    DataSet = AuthorBooks
     Left = 96
     Top = 152
   end
@@ -278,8 +258,8 @@ object DMCollection: TDMCollection
     IndexName = 'Title_Index'
     TableName = 'books'
     Exclusive = False
-    Left = 288
-    Top = 360
+    Left = 320
+    Top = 336
     object tblBooksID: TAutoIncField
       FieldName = 'BookID'
     end
@@ -369,8 +349,8 @@ object DMCollection: TDMCollection
     IndexName = 'TiteIndex'
     TableName = 'Series'
     Exclusive = False
-    Left = 40
-    Top = 424
+    Left = 56
+    Top = 536
     object tblSeriesASerieID: TAutoIncField
       FieldName = 'SerieID'
     end
@@ -390,10 +370,10 @@ object DMCollection: TDMCollection
   end
   object dsBooks: TDataSource
     DataSet = tblBooks
-    Left = 392
-    Top = 352
+    Left = 400
+    Top = 336
   end
-  object tblBooks_Genres: TABSTable
+  object BookGenres: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
@@ -403,26 +383,26 @@ object DMCollection: TDMCollection
     Exclusive = False
     MasterFields = 'GenreCode'
     MasterSource = dsBook_Genre_List
-    Left = 40
-    Top = 312
-    object tblBooks_GenresG_ID: TAutoIncField
+    Left = 56
+    Top = 408
+    object BookGenresG_ID: TAutoIncField
       FieldName = 'G_ID'
     end
-    object tblBooks_GenresGenreCode: TWideStringField
+    object BookGenresGenreCode: TWideStringField
       FieldName = 'GenreCode'
     end
-    object tblBooks_GenresG_ParentCode: TWideStringField
+    object BookGenresG_ParentCode: TWideStringField
       FieldName = 'G_ParentCode'
     end
-    object tblBooks_GenresG_FB2Code: TWideStringField
+    object BookGenresG_FB2Code: TWideStringField
       FieldName = 'G_FB2Code'
     end
-    object tblBooks_GenresG_Alias: TWideStringField
+    object BookGenresG_Alias: TWideStringField
       FieldName = 'G_Alias'
       Size = 50
     end
   end
-  object tblAuthor_Detail: TABSTable
+  object BookAuthor: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
@@ -433,25 +413,25 @@ object DMCollection: TDMCollection
     MasterFields = 'AuthorID'
     MasterSource = dsAuthor_Master
     Left = 288
-    Top = 488
-    object tblAuthor_DetailA_ID: TAutoIncField
+    Top = 584
+    object BookAuthorA_ID: TAutoIncField
       FieldName = 'AuthorID'
     end
-    object tblAuthor_DetailA_Family: TWideStringField
-      FieldName = 'A_Family'
+    object BookAuthorLastName: TWideStringField
+      FieldName = 'LastName'
       Required = True
       Size = 128
     end
-    object tblAuthor_DetailA_Name: TWideStringField
-      FieldName = 'A_Name'
+    object BookAuthorFirstName: TWideStringField
+      FieldName = 'FirstName'
       Size = 128
     end
-    object tblAuthor_DetailA_Middle: TWideStringField
-      FieldName = 'A_Middle'
+    object BookAuthorMiddleName: TWideStringField
+      FieldName = 'MiddleName'
       Size = 128
     end
   end
-  object tblAuthor_Master: TABSTable
+  object BookAuthors_List: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
@@ -460,31 +440,26 @@ object DMCollection: TDMCollection
     TableName = 'Author_List'
     Exclusive = False
     Left = 288
-    Top = 424
-    object tblAuthor_MasterAuthorID: TIntegerField
+    Top = 520
+    object BookAuthors_ListAuthorID: TIntegerField
       FieldName = 'AuthorID'
     end
-    object tblAuthor_MasterBookID: TIntegerField
+    object BookAuthors_ListBookID: TIntegerField
       FieldName = 'BookID'
     end
-    object tblAuthor_MasterAL_Series: TWideStringField
+    object BookAuthors_ListAL_Series: TWideStringField
       FieldName = 'AL_Series'
       Size = 7
     end
-    object tblAuthor_MasterAL_Title: TWideStringField
+    object BookAuthors_ListAL_Title: TWideStringField
       FieldName = 'AL_Title'
       Size = 7
     end
   end
-  object dsAuthor_Detail: TDataSource
-    DataSet = tblAuthor_Detail
-    Left = 392
-    Top = 488
-  end
   object dsAuthor_Master: TDataSource
-    DataSet = tblAuthor_Master
+    DataSet = BookAuthors_List
     Left = 392
-    Top = 424
+    Top = 520
   end
   object tblSeriesB: TABSTable
     CurrentVersion = '6.05 '
@@ -496,8 +471,8 @@ object DMCollection: TDMCollection
     IndexName = 'TiteIndex'
     TableName = 'series'
     Exclusive = False
-    Left = 496
-    Top = 320
+    Left = 56
+    Top = 600
     object tblSeriesBSerieID: TAutoIncField
       FieldName = 'SerieID'
     end
@@ -525,8 +500,8 @@ object DMCollection: TDMCollection
     Exclusive = False
     MasterFields = 'BookID'
     MasterSource = dsBooks
-    Left = 496
-    Top = 376
+    Left = 320
+    Top = 392
     object tblExtraBookID: TIntegerField
       FieldName = 'BookID'
     end
@@ -544,7 +519,7 @@ object DMCollection: TDMCollection
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
-    Filter = 'A_Family="'#1040'*"'
+    Filter = 'LastName="'#1040'*"'
     RequestLive = True
     SQL.Strings = (
       'select a."*"'
@@ -561,7 +536,7 @@ object DMCollection: TDMCollection
       '    and b.local = true'
       '  )'
       ')'
-      'order by a.A_Family, a.A_Name, a.A_Middle;')
+      'order by a.LastName, a.FirstName, a.MiddleName;')
     Left = 24
     Top = 88
     ParamData = <
@@ -577,18 +552,18 @@ object DMCollection: TDMCollection
     end
     object tblAuthorsFamily: TWideStringField
       DisplayLabel = 'Family'
-      FieldName = 'A_Family'
+      FieldName = 'LastName'
       Required = True
       Size = 128
     end
     object tblAuthorsName: TWideStringField
       DisplayLabel = 'Name'
-      FieldName = 'A_Name'
+      FieldName = 'FirstName'
       Size = 128
     end
     object tblAuthorsMiddle: TWideStringField
       DisplayLabel = 'Middle'
-      FieldName = 'A_Middle'
+      FieldName = 'MiddleName'
       Size = 128
     end
   end
@@ -654,8 +629,8 @@ object DMCollection: TDMCollection
     FilterOptions = [foCaseInsensitive, foNoPartialCompare]
     SQL.Strings = (
       'select * from books where BookID=1')
-    Left = 496
-    Top = 432
+    Left = 656
+    Top = 344
     object sqlBooksID: TIntegerField
       FieldName = 'BookID'
     end

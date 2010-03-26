@@ -1,11 +1,31 @@
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Authors Aleksey Penkov   alex.penkov@gmail.com
+  *         Nick Rymanov     nrymanov@gmail.com
+  *
+  ****************************************************************************** *)
+
 unit frm_DownloadProgressForm;
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, frm_BaseProgressForm, StdCtrls, Buttons,ComCtrls,
-  unit_WorkerThread, unit_DownloadBooksThread;
+  Windows,
+  Messages,
+  Classes,
+  Controls,
+  StdCtrls,
+  ComCtrls,
+  SysUtils,
+  Forms,
+  Dialogs,
+  frm_BaseProgressForm,
+  unit_WorkerThread,
+  unit_DownloadBooksThread;
 
 type
   TDownloadProgressForm = class(TProgressFormBase)

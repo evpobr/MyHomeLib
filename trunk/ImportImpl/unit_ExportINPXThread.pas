@@ -91,9 +91,9 @@ begin
 
   slFileList := TStringList.Create;
   try
-    DMCollection.tblAuthor_Master.Active := True;
+    DMCollection.BookAuthors_List.Active := True;
     try
-      DMCollection.tblAuthor_Detail.Active := True;
+      DMCollection.BookAuthor.Active := True;
       try
         slHelper := TStringList.Create;
         try
@@ -156,10 +156,10 @@ begin
         //
         INPXPack(INPXFileName, slFileList);
       finally
-        DMCollection.tblAuthor_Detail.Active := False;
+        DMCollection.BookAuthor.Active := False;
       end;
     finally
-      DMCollection.tblAuthor_Master.Active := False;
+      DMCollection.BookAuthors_List.Active := False;
     end;
   finally
     slFileList.Free;

@@ -149,15 +149,15 @@ AuthorListTableIndexes: array [1..3] of TIndexDesc = (
 //  Authors
 //
 AuthorsTableFields: array [1 .. 4] of TFieldDesc = (
-  (Name: AUTHOR_ID_FIELD; DataType: ftAutoInc;    Size: 0;   Required: True),
-  (Name: 'A_Family';      DataType: ftWideString; Size: 128; Required: True),
-  (Name: 'A_Name';        DataType: ftWideString; Size: 128; Required: False),
-  (Name: 'A_Middle';      DataType: ftWideString; Size: 128; Required: False)
+  (Name: AUTHOR_ID_FIELD;         DataType: ftAutoInc;    Size: 0;   Required: True),
+  (Name: AUTHOR_LASTTNAME_FIELD;  DataType: ftWideString; Size: 128; Required: True),
+  (Name: AUTHOR_FIRSTNAME_FIELD;  DataType: ftWideString; Size: 128; Required: False),
+  (Name: AUTHOR_MIDDLENAME_FIELD; DataType: ftWideString; Size: 128; Required: False)
 );
 
 AuthorsTableIndexes: array [1..2] of TIndexDesc = (
-  (Name: 'ID_Index';      Fields: AUTHOR_ID_FIELD;            Options: [ixPrimary]),
-  (Name: 'AlphabetIndex'; Fields: 'A_Family;A_Name;A_Middle'; Options: [ixCaseInsensitive])
+  (Name: 'ID_Index';      Fields: AUTHOR_ID_FIELD;        Options: [ixPrimary]),
+  (Name: 'AlphabetIndex'; Fields: AUTHOR_FULLNAME_FIELDS; Options: [ixCaseInsensitive])
 );
 
 //
@@ -761,12 +761,12 @@ begin
   Assert(BookRecord.AuthorCount > 0);
   for i := 0 to BookRecord.AuthorCount - 1 do
   begin
-    if not FAuthors.Locate('A_Family;A_Name;A_Middle', VarArrayOf([BookRecord.Authors[i].LastName, BookRecord.Authors[i].FirstName, BookRecord.Authors[i].MiddleName]), [loCaseInsensitive]) then
+    if not FAuthors.Locate(AUTHOR_FULLNAME_FIELDS, VarArrayOf([BookRecord.Authors[i].LastName, BookRecord.Authors[i].FirstName, BookRecord.Authors[i].MiddleName]), [loCaseInsensitive]) then
     begin
       FAuthors.Insert;
-      FAuthors.FieldByName('A_Name').AsString := BookRecord.Authors[i].FirstName;
-      FAuthors.FieldByName('A_Family').AsString := BookRecord.Authors[i].LastName;
-      FAuthors.FieldByName('A_Middle').AsString := BookRecord.Authors[i].MiddleName;
+      FAuthors.FieldByName(AUTHOR_LASTTNAME_FIELD).AsString := BookRecord.Authors[i].LastName;
+      FAuthors.FieldByName(AUTHOR_FIRSTNAME_FIELD).AsString := BookRecord.Authors[i].FirstName;
+      FAuthors.FieldByName(AUTHOR_MIDDLENAME_FIELD).AsString := BookRecord.Authors[i].MiddleName;
       FAuthors.Post;
     end;
 
@@ -900,7 +900,7 @@ begin
 
     if BookRecord.Annotation <> '' then
     begin
-      FExtra.Insert;
+      FExtra.Append;
       FExtra.FieldByName(BOOK_ID_FIELD).AsInteger := FBooks.FieldByName(BOOK_ID_FIELD).AsInteger;
       FExtra.FieldByName('Annotation').AsString := BookRecord.Annotation;
       FExtra.Post;

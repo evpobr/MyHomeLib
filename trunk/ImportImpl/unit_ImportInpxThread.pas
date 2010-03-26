@@ -458,8 +458,10 @@ begin
       finally
         unZip.Free;
       end;
-    finally
-      FLibrary.EndBulkOperation;
+      FLibrary.EndBulkOperation(True);
+    except
+      FLibrary.EndBulkOperation(False);
+      raise;
     end;
   finally
     FLibrary.Free;

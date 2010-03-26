@@ -443,7 +443,7 @@ begin
   Worker.URL := URL;
   Worker.Priority := tpLower;
   Worker.FreeOnTerminate := True;
-  Worker.Resume;
+  Worker.Start;
 end;
 
 end.

@@ -74,9 +74,9 @@ begin
   totalBooks := dmCollection.tblBooks.RecordCount;
   processedBooks := 0;
 
-  dmCollection.tblAuthor_Master.Active := True;
+  dmCollection.BookAuthors_List.Active := True;
   try
-    dmCollection.tblAuthor_Detail.Active := True;
+    dmCollection.BookAuthor.Active := True;
     try
       dmCollection.tblBooks.First;
       while not dmCollection.tblBooks.Eof do
@@ -124,10 +124,10 @@ begin
       SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
 
     finally
-      dmCollection.tblAuthor_Detail.Active := False;
+      dmCollection.BookAuthor.Active := False;
     end;
   finally
-    dmCollection.tblAuthor_Master.Active := False;
+    dmCollection.BookAuthors_List.Active := False;
   end;
 
   SetComment('Сохраняем документ. Подождите, пожалуйста.');
