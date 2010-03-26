@@ -910,7 +910,7 @@ begin
   end;
 end;
 
-procedure TMHLLibrary.DeleteBook;
+procedure TMHLLibrary.DeleteBook(BookID: Integer; ClearExtra: Boolean = True);
 var
   SerieID: Integer;
 begin

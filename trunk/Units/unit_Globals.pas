@@ -797,6 +797,7 @@ end;
 
 function GetFullBookPath(const Table: TAbsTable; const FCollectionRoot: string): string;
 begin
+  // TODO 1 -oNickR -cBug: такой таблицы больше нет
   if Table.Name = 'tblFavorites' then
     Result := Table.FieldByName(FOLDER_FIELD).AsString
   else if not Table.FieldByName(FOLDER_FIELD).IsNull then

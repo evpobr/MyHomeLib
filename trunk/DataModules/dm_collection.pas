@@ -378,8 +378,7 @@ begin
   R.Local := ActiveTable.FieldByName('Local').AsBoolean;
   R.Date := ActiveTable.FieldByName('Date').AsDateTime;
   R.Lang := ActiveTable.FieldByName('Lang').AsWideString;
-  if not FIsFavorites then
-    R.KeyWords := ActiveTable.FieldByName('KeyWords').AsWideString;
+  R.KeyWords := ActiveTable.FieldByName('KeyWords').AsWideString;
   R.Code := ActiveTable.FieldByName('Code').AsInteger;
 
   if tblExtra.Locate(BOOK_ID_FIELD, BookID, []) then
