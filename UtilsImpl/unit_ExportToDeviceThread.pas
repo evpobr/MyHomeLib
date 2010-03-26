@@ -118,6 +118,7 @@ begin
     { DONE -oNickR -cBug : нет реакции на невалидный шаблон }
     { DONE -oNickR -cBug : DMCollection.GetCurrentBook(R) вызывается дважды }
     DMCollection.GetCurrentBook(R);
+
     if FTemplater.SetTemplate(Settings.FileNameTemplate, TpFile) = ErFine then
       FileName := FTemplater.ParseString(R, TpFile)
     else
@@ -126,7 +127,7 @@ begin
       Exit;
     end;
 
-    if (ExtractFileExt(FTable[FILENAME_FIELD]) = ZIP_EXTENSION) and (FTable['Ext'] <> ZIP_EXTENSION) then
+    if (ExtractFileExt(R.FileName) = ZIP_EXTENSION) and (R.FileExt <> ZIP_EXTENSION) then
       FFileOpMode := fmFBD
     else if ExtractFileExt(CR) <> ZIP_EXTENSION then
       FFileOpMode := fmFb2;
@@ -143,21 +144,23 @@ begin
     case FFileOpMode of
       fmFb2Zip:
         SArch := CR;
+
       fmFb2:
-        SArch := CR + FTable[FILENAME_FIELD] + FTable['Ext'];
+        SArch := CR + R.FileName + R.FileExt;
+
       fmFBD:
         begin
-          CR := CR + FTable[FILENAME_FIELD];
+          CR := CR + R.FileName;
           SArch := CR;
         end;
     end;
-    SNo := FTable['InsideNo'];
+    SNo := R.InsideNo;
 
     Folder := IncludeTrailingPathDelimiter(Trim(CheckSymbols(Folder)));
     FileName := Trim(CheckSymbols(FileName));
 
     { TODO -oNickR -cBug : FullName нечем не инициализирована }
-    InsideFileName := FullName + ' - ' + FTable.FieldByName('Title').AsString;
+    InsideFileName := FullName + ' - ' + R.Title;
 
     {
     if Settings.TransliterateFileName then
@@ -168,7 +171,7 @@ begin
     end;
     }
 
-    FileName := FileName + DMCollection.tblBooks['Ext'];
+    FileName := FileName + R.FileExt;
   end;
 
   //
@@ -182,7 +185,7 @@ begin
       Exit;
     end;
 
-    InsideFileName := Trim(CheckSymbols(InsideFileName)) + DMCollection.tblBooks['Ext'];
+    InsideFileName := Trim(CheckSymbols(InsideFileName)) + R.FileExt;
 
     FS := TMemoryStream.Create;
     try
@@ -196,7 +199,7 @@ begin
       FS.Free;
     end;
   end;
-  if (DMCollection.tblBooks['Ext'] = FB2_EXTENSION) and Settings.OverwriteFB2Info then
+  if (R.FileExt = FB2_EXTENSION) and Settings.OverwriteFB2Info then
     WriteFb2InfoToFile(FFileOprecord.SArch);
 
   Result := True;

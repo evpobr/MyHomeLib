@@ -12,47 +12,45 @@ uses
   Controls,
   Forms,
   StdCtrls,
-  RzLabel,
   Mask,
-  RzEdit,
   Buttons,
   ExtCtrls,
-  RzPanel,
   dm_Collection,
   unit_Globals,
   ImgList,
-  RzButton,
   xmldom,
   FBDDocument,
-  FBDAuthorTable;
+  FBDAuthorTable,
+  RzLabel,
+  RzPanel;
 
 type
   TfrmConvertToFBD = class(TForm)
-    RzPanel1: TRzPanel;
-    RzPanel2: TRzPanel;
+    RzPanel1: TPanel;
+    pnButtons: TPanel;
     mmAnnotation: TMemo;
-    btnSave: TBitBtn;
+    btnSave: TButton;
     RzLabel1: TRzLabel;
-    RzGroupBox2: TRzGroupBox;
-    RzLabel4: TRzLabel;
-    edISBN: TRzEdit;
-    edPublisher: TRzEdit;
-    RzLabel6: TRzLabel;
-    RzLabel7: TRzLabel;
-    edYear: TRzEdit;
-    edCity: TRzEdit;
-    RzLabel5: TRzLabel;
-    ImageList1: TImageList;
-    btnOpenBook: TRzBitBtn;
-    lblAuthor: TRzLabel;
-    lblTitle: TRzLabel;
-    RzGroupBox3: TRzGroupBox;
-    btnPasteCover: TRzBitBtn;
+    RzGroupBox2: TGroupBox;
+    RzLabel4: TLabel;
+    edISBN: TEdit;
+    edPublisher: TEdit;
+    RzLabel6: TLabel;
+    RzLabel7: TLabel;
+    edYear: TEdit;
+    edCity: TEdit;
+    RzLabel5: TLabel;
+    ilButtonImages: TImageList;
+    btnOpenBook: TButton;
+    lblAuthor: TLabel;
+    lblTitle: TLabel;
+    RzGroupBox3: TGroupBox;
+    btnPasteCover: TButton;
     FCover: TImage;
-    btnLoad: TRzBitBtn;
-    BitBtn1: TBitBtn;
-    btnPrevious: TBitBtn;
-    btnNext: TBitBtn;
+    btnLoad: TButton;
+    btnCancel: TButton;
+    btnPrevious: TButton;
+    btnNext: TButton;
     FBD: TFBDDocument;
     alFBDAuthors: TFBDAuthorTable;
     procedure btnPasteCoverClick(Sender: TObject);
@@ -62,26 +60,25 @@ type
     procedure btnLoadClick(Sender: TObject);
     procedure btnPreviousClick(Sender: TObject);
     procedure btnNextClick(Sender: TObject);
-    procedure BitBtn1Click(Sender: TObject);
+    procedure btnCancelClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+
   private
-    { Private declarations }
-
     FBookRecord: TBookRecord;
-    FEditorMode: boolean;
+    FEditorMode: Boolean;
 
-    FBusy : boolean;
-    FTerminated: boolean;
+    FBusy: Boolean;
+    FTerminated: Boolean;
 
     procedure ChangeBookData;
     procedure PrepareForm;
     procedure EnableButtons(State: boolean);
     function FillFBDData: boolean;
     procedure SaveFBD;
+
   public
-    { Public declarations }
     procedure AutoMode;
-    property EditorMode: boolean read FEditorMode write FEditorMode;
+    property EditorMode: Boolean read FEditorMode write FEditorMode;
   end;
 
 var
@@ -121,7 +118,7 @@ begin
   Close;
 end;
 
-procedure TfrmConvertToFBD.BitBtn1Click(Sender: TObject);
+procedure TfrmConvertToFBD.btnCancelClick(Sender: TObject);
 begin
   FTerminated := True;
 end;
@@ -130,7 +127,8 @@ procedure TfrmConvertToFBD.btnLoadClick(Sender: TObject);
 var
   FileName: string;
 begin
-  if GetFileName(fnOpenCoverImage,FileName) then FBD.LoadCoverFromFile(FileName);
+  if GetFileName(fnOpenCoverImage, FileName) then
+    FBD.LoadCoverFromFile(FileName);
 end;
 
 procedure TfrmConvertToFBD.btnOpenBookClick(Sender: TObject);
@@ -145,22 +143,28 @@ end;
 
 procedure TfrmConvertToFBD.btnSaveClick(Sender: TObject);
 begin
-  if FBusy then Exit;
+  if FBusy then
+    Exit;
+
   SaveFBD;
-  Modalresult := mrOk;
+  ModalResult := mrOk;
 end;
 
 procedure TfrmConvertToFBD.btnNextClick(Sender: TObject);
 begin
-  if FBusy then Exit;
+  if FBusy then
+    Exit;
+
   SaveFBD;
-  frmMain.SelectNextBook(False,True);
+  frmMain.SelectNextBook(False, True);
   PrepareForm;
 end;
 
 procedure TfrmConvertToFBD.btnPreviousClick(Sender: TObject);
 begin
-  if FBusy then Exit;
+  if FBusy then
+    Exit;
+
   SaveFBD;
   frmMain.SelectNextBook(False, False);
   PrepareForm;
@@ -168,10 +172,9 @@ end;
 
 procedure TfrmConvertToFBD.ChangeBookData;
 begin
-  DMCollection.ActiveTable.Edit;
-//  DMCollection.ActiveTable.FieldByName('Ext').Value := ExtractFileExt(FBookFilename);
-  DMCollection.ActiveTable.FieldByName(FILENAME_FIELD).Value := DMCollection.ActiveTable.FieldByName(FILENAME_FIELD).Value + '.zip';
-  DMCollection.ActiveTable.Post;
+  DMCollection.tblBooks.Edit;
+  DMCollection.tblBooksFileName.Value := DMCollection.tblBooksFileName.Value + '.zip';
+  DMCollection.tblBooks.Post;
 end;
 
 procedure TfrmConvertToFBD.EnableButtons(State: boolean);
@@ -191,7 +194,7 @@ begin
   PrepareForm;
 end;
 
-function TfrmConvertToFBD.FillFBDData:boolean;
+function TfrmConvertToFBD.FillFBDData: Boolean;
 var
   I: Integer;
   AuthorsFBD: TAuthorDataList;
@@ -201,9 +204,9 @@ begin
   SetLength(AuthorsFBD, FBookRecord.AuthorCount);
   for i := 0 to FBookRecord.AuthorCount - 1 do
   begin
-    AuthorsFBD[i].Last :=  FBookRecord.Authors[i].LastName;
-    AuthorsFBD[i].First :=  FBookRecord.Authors[i].FirstName;
-    AuthorsFBD[i].Middle :=  FBookRecord.Authors[i].MiddleName;
+    AuthorsFBD[i].Last := FBookRecord.Authors[i].LastName;
+    AuthorsFBD[i].First := FBookRecord.Authors[i].FirstName;
+    AuthorsFBD[i].Middle := FBookRecord.Authors[i].MiddleName;
     AuthorsFBD[i].Nick := '';
     AuthorsFBD[i].Email := '';
     AuthorsFBD[i].HomePage := '';
@@ -223,6 +226,7 @@ begin
     for I := 0 to High(FBookRecord.Genres) do
       Genre.Add(FBookRecord.Genres[i].GenreFb2Code);
   end;
+
   with FBD.Publisher do
   begin
     Publisher.Text := edPublisher.Text;
@@ -230,7 +234,9 @@ begin
     ISBN.Text := edISBN.Text;
     Year := edYear.Text;
   end;
+
   FBD.AutoLoadCover;
+
   Result := True;
 end;
 
@@ -240,15 +246,13 @@ var
 begin
   DMCollection.GetCurrentBook(FBookRecord);
 
-  lblAuthor.Caption := FBookRecord.Authors[0].FLastName + ' ' +
-                       FBookRecord.Authors[0].FFirstName;
-
+  lblAuthor.Caption := FBookRecord.Authors[0].GetFullName;
   lblTitle.Caption := FBookRecord.Title;
-  Folder := DMUser.ActiveCollection.RootPath + FBookRecord.Folder;
+  Folder := TPath.Combine(DMUser.ActiveCollection.RootPath, FBookRecord.Folder);
 
   if FEditorMode then
   begin
-    FBD.Load(Folder, TPath.GetFileNameWithoutExtension(FBookrecord.FileName), FBookrecord.FileExt);
+    FBD.Load(Folder, TPath.GetFileNameWithoutExtension(FBookRecord.FileName), FBookRecord.FileExt);
     alFBDAuthors.Items := FBD.GetAuthors(atlFBD);
     with FBD.Publisher do
     begin
@@ -257,10 +261,9 @@ begin
       edISBN.Text := ISBN.Text;
       edYear.Text := Year;
     end;
-
   end
   else
-    FBD.New(Folder, FBookrecord.FileName, FBookrecord.FileExt);
+    FBD.New(Folder, FBookRecord.FileName, FBookRecord.FileExt);
 end;
 
 procedure TfrmConvertToFBD.SaveFBD;
@@ -272,7 +275,8 @@ begin
     if FillFBDData then
     begin
       FBD.Save(FeditorMode);
-      if not FEditorMode then ChangeBookData;
+      if not FEditorMode then
+        ChangeBookData;
     end;
   finally
     EnableButtons(True);

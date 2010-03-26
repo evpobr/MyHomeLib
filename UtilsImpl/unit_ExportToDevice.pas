@@ -29,10 +29,7 @@ procedure ExportToDevice(
   out ProcessedFiles:string
   );
 
-procedure DownloadBooks(
-  ATable: TAbsTable;
-  var IdList: TBookIdList
-  );
+procedure DownloadBooks(var IdList: TBookIdList);
 
 implementation
 
@@ -72,7 +69,6 @@ begin
 end;
 
 procedure DownloadBooks(
-  ATable: TAbsTable;
   var IdList: TBookIdList
   );
 var
