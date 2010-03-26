@@ -151,7 +151,7 @@ begin
     FCurrentData := frmMain.tvDownloadList.GetNodeData(FCurrentNode);
     if FCurrentData.State <> dsOK then
     begin
-      FID := FCurrentData.ID;
+      FID := FCurrentData.BookID;
 
       FCurrentData.State := dsRun;
       frmMain.tvDownloadList.RepaintNode(FCurrentNode);

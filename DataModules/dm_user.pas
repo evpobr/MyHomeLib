@@ -161,6 +161,8 @@ type
       IgnoreID: Integer = INVALID_COLLECTION_ID
     ): Boolean;
 
+    procedure DeleteCollection(CollectionID: Integer);
+
     procedure SetTableState(State: Boolean);
 
   public
@@ -192,6 +194,7 @@ type
     //
     function GetBookSerie(BookID: Integer; DatabaseID: Integer; SerieID: Integer): string;
     procedure FillBookData(BookID: Integer; DatabaseID: Integer; Data: PBookData);
+    procedure GetCurrentBook(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord);
 
     procedure SetRate(BookID: Integer; DatabaseID: Integer; Rate: Integer);
     procedure SetProgress(BookID: Integer; DatabaseID: Integer; Progress: Integer);
@@ -531,6 +534,15 @@ begin
   Result := False;
 end;
 
+procedure TDMUser.DeleteCollection(CollectionID: Integer);
+begin
+  Assert(False, 'Not implemented yet!');
+  //
+  // 1. Удалить все книги этой коллекции из групп
+  // 2. Удалить коллекцию
+  //
+end;
+
 procedure TDMUser.LoadFinished;
 var
   p, ID, Progress: Integer;
@@ -704,7 +716,47 @@ end;
 
 procedure TDMUser.FillBookData(BookID: Integer; DatabaseID: Integer; Data: PBookData);
 begin
-  Assert(False, 'Not implemented yet!');
+  Assert(AllBooks.Active);
+  if AllBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  begin
+    Data^.BookID := BookID;
+    Data^.DatabaseID := DatabaseID;
+    Data^.SerieID := AllBooksSerieID.Value;
+    Data^.Title := AllBooksTitle.Value;
+    Data^.Series := AllBooksSeries.Value;
+    Data^.Genre := AllBooksGenres.Value;
+    Data^.FullName := AllBooksFullName.Value;
+    Data^.FileType := AllBooksExt.Value;
+    Delete(Data^.FileType, 1, 1);
+    Data^.Lang := AllBooksLang.Value;
+    Data^.Size := AllBooksSize.Value;
+    Data^.Rate := AllBooksRate.Value;
+    Data^.No := AllBooksSeqNumber.Value;
+    Data^.Progress := AllBooksProgress.Value;
+    Data^.LibRate := AllBooksLibRate.Value;
+    Data^.Code := AllBooksCode.Value;
+    Data^.Locale := AllBooksLocal.Value;
+    Data^.Deleted := AllBooksDeleted.Value;
+    Data^.Date := AllBooksDate.Value;
+
+    if SelectCollection(DatabaseID) then
+      Data^.CollectionName := CurrentCollection.Name
+    else
+      Data^.CollectionName := 'неизвестная коллекция';
+  end
+  else
+    Assert(False);
+end;
+
+procedure TDMUser.GetCurrentBook(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord);
+begin
+  Assert(AllBooks.Active);
+  if AllBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  begin
+    Assert(False, 'Not implemented yet!');
+  end
+  else
+    Assert(False);
 end;
 
 procedure TDMUser.SetRate(BookID: Integer; DatabaseID: Integer; Rate: Integer);
@@ -1104,3 +1156,4 @@ begin
 end;
 
 end.
+

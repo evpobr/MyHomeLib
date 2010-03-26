@@ -17,11 +17,12 @@ uses
 
 type
   TQueryKind = (qkGet, qkPost);
-  EInvalidLogin = class (Exception);
+
+  EInvalidLogin = class(Exception);
 
   TCommand = record
     Code: Integer;
-    Params: array [1..5] of string;
+    Params: array [1 .. 5] of string;
   end;
 
   TSetCommentEvent = procedure(const Current, Total: string) of object;
@@ -29,38 +30,35 @@ type
 
   TDownloader = class
   private
-    FidHTTP : TidHttp;
+    FidHTTP: TidHttp;
     FParams: TIdMultiPartFormDataStream;
     FResponce: TMemoryStream;
 
-    FSetProgress: TProgressEvent;
-    FSetComment: TSetCommentEvent;
+    FOnSetProgress: TProgressEvent;
+    FOnSetComment: TSetCommentEvent;
 
     FNewURL: string;
     FNoProgress: boolean;
     Canceled: boolean;
-    FDownloadSize: integer;
+    FDownloadSize: Integer;
 
-    FStartDate : TDateTime;
+    FStartDate: TDateTime;
     FIgnoreErrors: boolean;
 
     FFile: string;
 
-    //function CalcURI(Template: string):string;
-    function Main: Boolean;
-    function Query(Kind: TQueryKind; const URL: string): Boolean;
+    // function CalcURI(Template: string):string;
+    function DoDownload: boolean;
+    function Query(Kind: TQueryKind; const URL: string): boolean;
     procedure AddParam(const Name: string; const Value: string);
-    function CheckResponce: Boolean;
-    function CheckRedirect: Boolean;
-    function Pause(Time: integer): Boolean;
+    function CheckResponce: boolean;
+    function CheckRedirect: boolean;
+    function Pause(Time: Integer): boolean;
 
     procedure HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
     procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
     procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
-    procedure HTTPRedirect(Sender: TObject; var dest: string; var NumRedirect: Integer; var Handled: Boolean; var VMethod: string);
-
-    procedure Set_OnSetComment(const Value: TSetCommentEvent);
-    procedure Set_OnProgress(const Value: TProgressEvent);
+    procedure HTTPRedirect(Sender: TObject; var dest: string; var NumRedirect: Integer; var Handled: boolean; var VMethod: string);
 
     procedure ProcessError(const LongMsg, ShortMsg, AFileName: string);
 
@@ -70,12 +68,13 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    function Download(BookID: Integer):boolean;
+    function Download(BookID: Integer): boolean;
     procedure Stop;
 
-    property IgnoreErrors: Boolean read FIgnoreErrors write FIgnoreErrors;
-    property OnSetComment: TSetCommentEvent write Set_OnSetComment;
-    property OnProgress: TProgressEvent write Set_OnProgress;
+    property IgnoreErrors: boolean read FIgnoreErrors write FIgnoreErrors;
+
+    property OnProgress: TProgressEvent read FOnSetProgress write FOnSetProgress;
+    property OnSetComment: TSetCommentEvent read FOnSetComment write FOnSetComment;
   end;
 
 implementation
@@ -90,10 +89,10 @@ uses
   unit_MHL_strings;
 
 const
-   CommandList: array [0..5] of string = ('ADD','GET','POST','REDIR', 'CHECK', 'PAUSE');
-   Params :     array [0..2] of string = ('%USER%', '%PASS%', '%RESURL%');
+  CommandList: array [0 .. 5] of string = ('ADD', 'GET', 'POST', 'REDIR', 'CHECK', 'PAUSE');
+  Params: array [0 .. 2] of string = ('%USER%', '%PASS%', '%RESURL%');
 
-{ TDownloader }
+  { TDownloader }
 
 procedure TDownloader.AddParam(const Name: string; const Value: string);
 begin
@@ -101,20 +100,21 @@ begin
 end;
 
 {
-function TDownloader.CalcURI(Template: string):string;
-var
+  function TDownloader.CalcURI(Template: string):string;
+  var
   S: string;
-begin
+  begin
   dmCollection.FieldByName(0, LIB_ID_FIELD, S);
   StrReplace('%LIBID%', S, Template);
   Result := Template;
-end;
+  end;
 }
 
 function TDownloader.CheckRedirect: boolean;
 begin
   Result := (FNewURL <> '');
-  if not Result then raise EInvalidLogin.Create('Неправильный логин/пароль');
+  if not Result then
+    raise EInvalidLogin.Create('Неправильный логин/пароль');
 end;
 
 function TDownloader.CheckResponce: boolean;
@@ -125,20 +125,15 @@ begin
   Path := ExtractFileDir(FFile);
   CreateFolders('', Path);
   FResponce.Position := 0;
-  Str := TstringList.Create;
+
+  Str := TStringList.Create;
   try
     Str.LoadFromStream(FResponce);
     if Str.Count > 0 then
     begin
-      if (Pos('<!DOCTYPE', Str[0]) <> 0)
-         or (Pos('overload', Str[0]) <> 0)
-         or (Pos('not found', Str[0]) <> 0) then
+      if (Pos('<!DOCTYPE', Str[0]) <> 0) or (Pos('overload', Str[0]) <> 0) or (Pos('not found', Str[0]) <> 0) then
       begin
-        ProcessError(
-              'Загрузка файла заблокирована сервером!' + #13 + ' Ответ сервера можно посмотреть в файле "server_error.html"',
-              'Заблокировано сервером',
-              FFile
-              );
+        ProcessError('Загрузка файла заблокирована сервером!' + #13 + ' Ответ сервера можно посмотреть в файле "server_error.html"', 'Заблокировано сервером', FFile);
         Str.SaveToFile(Settings.SystemFileName[sfServerErrorLog]);
       end
       else
@@ -158,7 +153,7 @@ constructor TDownloader.Create;
 begin
   inherited Create;
 
-  FidHTTP := TIdHTTP.Create;
+  FidHTTP := TidHttp.Create;
   FidHTTP.OnWork := HTTPWork;
   FidHTTP.OnWorkBegin := HTTPWorkBegin;
   FidHTTP.OnWorkEnd := HTTPWorkEnd;
@@ -166,18 +161,28 @@ begin
   FidHTTP.HandleRedirects := True;
 
   SetProxySettings(FidHTTP);
+
   FIgnoreErrors := False;
 end;
 
-function TDownloader.Download(BookID: Integer): Boolean;
+destructor TDownloader.Destroy;
+begin
+  FreeAndNil(FidHTTP);
+
+  inherited Destroy;
+end;
+
+function TDownloader.Download(BookID: Integer): boolean;
 var
   Ext: string;
   FN: string;
   Folder: string;
-  No: integer;
+  No: Integer;
 begin
   Result := False;
+
   dmCollection.GetBookFileName(BookID, FN, Folder, Ext, No);
+
   if Ext = FB2_EXTENSION then
     dmCollection.GetBookFolder(BookID, FFile)
   else
@@ -191,35 +196,28 @@ begin
     dmCollection.SetLocalStatus(BookID, True);
     Result := True;
   end
-  else if Main then
+  else if DoDownload then
   begin
     dmCollection.SetLocalStatus(BookID, True);
     Result := True;
   end;
 end;
 
-destructor TDownloader.Destroy;
+procedure TDownloader.HTTPRedirect(Sender: TObject; var dest: string; var NumRedirect: Integer; var Handled: boolean; var VMethod: string);
 begin
-  FidHTTP.Free;
-  inherited;
-end;
-
-procedure TDownloader.HTTPRedirect(Sender: TObject; var dest: string;
-  var NumRedirect: Integer; var Handled: Boolean; var VMethod: string);
-begin
-  if pos('fb2.zip', dest) <> 0 then
+  if Pos('fb2.zip', dest) <> 0 then
     FNewURL := dest
   else
     FNewURL := '';
 end;
 
-procedure TDownloader.HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
-  AWorkCount: Int64);
+procedure TDownloader.HTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
 var
   ElapsedTime: Cardinal;
   Speed: string;
 begin
-  if FNoProgress then Exit;
+  if FNoProgress then
+    Exit;
 
   if Canceled then
   begin
@@ -228,36 +226,37 @@ begin
   end;
 
   if FDownloadSize <> 0 then
-    FSetProgress(AWorkCount * 100 div FDownloadSize, -1);
+    FOnSetProgress(AWorkCount * 100 div FDownloadSize, -1);
 
   ElapsedTime := SecondsBetween(Now, FStartDate);
   if ElapsedTime > 0 then
   begin
     Speed := FormatFloat('0.00', AWorkCount / 1024 / ElapsedTime);
-    FSetComment(Format('Загрузка: %s Kb/s', [Speed]), '');
+    FOnSetComment(Format('Загрузка: %s Kb/s', [Speed]), '');
   end;
 end;
 
-procedure TDownloader.HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode;
-  AWorkCountMax: Int64);
+procedure TDownloader.HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
 begin
-  if FNoProgress then Exit;
+  if FNoProgress then
+    Exit;
   FDownloadSize := AWorkCountMax;
   FStartDate := Now;
-  FSetProgress(1, -1);
+  FOnSetProgress(1, -1);
 end;
 
 procedure TDownloader.HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
 begin
-  if FNoProgress then Exit;
-  FSetProgress(100, -1);
-  FSetComment(rstrReadyMessage, '');
+  if FNoProgress then
+    Exit;
+  FOnSetProgress(100, -1);
+  FOnSetComment(rstrReadyMessage, '');
 end;
 
-function TDownloader.Main: boolean;
+function TDownloader.DoDownload: boolean;
 var
   CL: TStringList;
-  Commands : array of TCommand;
+  Commands: array of TCommand;
   I: Integer;
 begin
   CL := TStringList.Create;
@@ -274,18 +273,24 @@ begin
           if Canceled then
             Break;
 
-          ParseCommand(CL[i], Commands[i]);
-          with Commands[i] do
+          ParseCommand(CL[I], Commands[I]);
+          with Commands[I] do
             case Code of
-              0: begin
-                   AddParam(Params[1], Params[2]);
-                   Result := True;
-                 end;
-              1: Result := Query(qkGet, Params[1]);
-              2: Result := Query(qkPost, Params[1]);
-              3: Result := CheckRedirect;
-              4: Result := CheckResponce;
-              5: Result := Pause(StrToInt(Params[1]));
+              0:
+                begin
+                  AddParam(Params[1], Params[2]);
+                  Result := True;
+                end;
+              1:
+                Result := Query(qkGet, Params[1]);
+              2:
+                Result := Query(qkPost, Params[1]);
+              3:
+                Result := CheckRedirect;
+              4:
+                Result := CheckResponce;
+              5:
+                Result := Pause(StrToInt(Params[1]));
             end;
 
           if not Result then
@@ -304,7 +309,7 @@ end;
 
 procedure TDownloader.ParseCommand(S: string; out Command: TCommand);
 var
-  p, i: integer;
+  p, I: Integer;
   s1: string;
 
   t: string;
@@ -317,7 +322,7 @@ begin
   StrReplace('%USER%', DMUser.ActiveCollection.User, S);
   StrReplace('%PASS%', DMUser.ActiveCollection.Password, S);
 
-  StrReplace('%URL%',  DMUser.ActiveCollection.URL, S);
+  StrReplace('%URL%', DMUser.ActiveCollection.URL, S);
   StrReplace('%RESURL%', FNewURL, S);
 
   p := Pos(' ', S);
@@ -329,29 +334,29 @@ begin
   else
     s1 := S;
 
-  for i := 0 to 5 do
-    if CommandList[i] = s1 then
+  for I := 0 to 5 do
+    if CommandList[I] = s1 then
     begin
-      Command.Code := i;
+      Command.Code := I;
       Break;
     end;
 
   p := Pos(' ', S);
-  i := 1;
+  I := 1;
   while p <> 0 do
   begin
-    s1 := Copy(S,1, p - 1);
-    Command.Params[i] := s1;
-    Inc(i);
+    s1 := Copy(S, 1, p - 1);
+    Command.Params[I] := s1;
+    Inc(I);
     Delete(S, 1, p);
     p := Pos(' ', S);
   end;
 
   if S <> '' then
-    Command.Params[i] := S
+    Command.Params[I] := S
 end;
 
-function TDownloader.Pause(Time: integer): boolean;
+function TDownloader.Pause(Time: Integer): boolean;
 begin
   Sleep(Time);
   Result := True;
@@ -377,49 +382,44 @@ begin
     Application.MessageBox(PChar(LongMsg), 'Ошибка закачки');
 end;
 
-function TDownloader.Query(Kind: TQueryKind; const URL: string):boolean;
+function TDownloader.Query(Kind: TQueryKind; const URL: string): boolean;
 begin
   Result := False;
   try
     case Kind of
-      qkGet : begin
-                FNoProgress := False;
-                FidHTTP.Get(URL, FResponce);
-              end;
+      qkGet:
+        begin
+          FNoProgress := False;
+          FidHTTP.Get(URL, FResponce);
+        end;
 
-      qkPost: begin
-                FNoProgress := True;
-                FidHTTP.Post(URL, FParams,FResponce);
-              end;
+      qkPost:
+        begin
+          FNoProgress := True;
+          FidHTTP.Post(URL, FParams, FResponce);
+        end;
     end;
     Result := True;
   except
     on E: EIdSocketError do
     begin
       case E.LastError of
-        WSAHOST_NOT_FOUND: ProcessError('Закачка не удалась! Сервер не найден.', 'Ошибка ' + IntToStr(E.LastError), FFile);
-        Id_WSAETIMEDOUT: ProcessError('Закачка не удалась! Превышено время ожидания.', 'Ошибка ' + IntToStr(E.LastError), FFile);
-        else
-          ProcessError('Закачка не удалась! Ошибка подключения.', 'Ошибка ' + IntToStr(E.LastError), FFile);
+        WSAHOST_NOT_FOUND:
+          ProcessError('Закачка не удалась! Сервер не найден.', 'Ошибка ' + IntToStr(E.LastError), FFile);
+
+        Id_WSAETIMEDOUT:
+          ProcessError('Закачка не удалась! Превышено время ожидания.', 'Ошибка ' + IntToStr(E.LastError), FFile);
+      else
+        ProcessError('Закачка не удалась! Ошибка подключения.', 'Ошибка ' + IntToStr(E.LastError), FFile);
       end; // case
     end;
+
     on E: Exception do
-      if (FidHTTP.ResponseCode <> 405) and  not ((FidHTTP.ResponseCode = 404) and (FNewURL <> ''))
-      then
+      if (FidHTTP.ResponseCode <> 405) and not((FidHTTP.ResponseCode = 404) and (FNewURL <> '')) then
         ProcessError('Закачка не удалась! Сервер сообщает об ошибке "' + E.Message + '".' + #10#13, 'Код Ошибки ' + IntToStr(FidHTTP.ResponseCode), FFile)
       else
         Result := True;
   end; // try ... except
-end;
-
-procedure TDownloader.Set_OnProgress(const Value: TProgressEvent);
-begin
-  FSetProgress := Value;
-end;
-
-procedure TDownloader.Set_OnSetComment(const Value: TSetCommentEvent);
-begin
-  FSetComment := Value;
 end;
 
 procedure TDownloader.Stop;

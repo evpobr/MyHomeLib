@@ -1,13 +1,13 @@
-{******************************************************************************}
-{                                                                              }
-{ MyHomeLib                                                                    }
-{                                                                              }
-{ Version 0.9                                                                  }
-{ 20.08.2008                                                                   }
-{ Copyright (c) Aleksey Penkov  alex.penkov@gmail.com                          }
-{                                                                              }
-{                                                                              }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Authors Aleksey Penkov   alex.penkov@gmail.com
+  *         Nick Rymanov     nrymanov@gmail.com
+  *
+  ****************************************************************************** *)
 
 unit unit_ExportToDevice;
 
@@ -23,13 +23,14 @@ uses
   unit_Globals;
 
 procedure ExportToDevice(
+  const DeviceDir: string;
   ATable: TAbsTable;
   const IdList: TBookIdList;
   Mode: TExportMode;
   out ProcessedFiles:string
   );
 
-procedure DownloadBooks(var IdList: TBookIdList);
+procedure DownloadBooks(const IdList: TBookIdList);
 
 implementation
 
@@ -40,6 +41,7 @@ uses
   frm_DownloadProgressForm;
 
 procedure ExportToDevice(
+  const DeviceDir: string;
   ATable: TAbsTable;
   const IdList: TBookIdList;
   Mode: TExportMode;
@@ -51,6 +53,7 @@ var
 begin
   worker := TExportToDeviceThread.Create;
   try
+    worker.DeviceDir := DeviceDir;
     worker.BookIdList := IdList;
     worker.Table := ATable;
     worker.ExportMode := Mode;
@@ -68,9 +71,7 @@ begin
   end;
 end;
 
-procedure DownloadBooks(
-  var IdList: TBookIdList
-  );
+procedure DownloadBooks(const IdList: TBookIdList);
 var
   worker: TDownloadBooksThread;
   frmProgress: TDownloadProgressForm;

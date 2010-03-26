@@ -1,14 +1,13 @@
- {******************************************************************************}
-{                                                                              }
-{ MyHomeLib                                                                    }
-{                                                                              }
-{ Version 0.9                                                                  }
-{ 20.08.2008                                                                   }
-{ Copyright (c) Aleksey Penkov  alex.penkov@gmail.com                          }
-{                                                                              }
-{ @author Nick Rymanov nrymanov@gmail.com                                      }
-{                                                                              }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Authors Nick Rymanov     nrymanov@gmail.com
+  *         Aleksey Penkov   alex.penkov@gmail.com
+  *
+  ****************************************************************************** *)
 
 unit frm_BaseProgressForm;
 

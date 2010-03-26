@@ -30,7 +30,6 @@ type
     FDownloader : TDownloader;
 
     FBookIdList: TBookIdList;
-    FCollectionRoot: string;
 
     FOnSetProgress2: TProgressEvent2;
     FOnSetComment2: TSetCommentEvent2;
@@ -53,6 +52,7 @@ type
 
   protected
     procedure WorkFunction; override;
+
   public
     property BookIdList: TBookIdList read FBookIdList write FBookIdList;
 
@@ -78,7 +78,6 @@ begin
   Canceled := False;
   FIgnoreErrors := False;
 
-  FCollectionRoot := DMUser.ActiveCollection.RootPath;
   FDownloader := TDownloader.Create;
   try
     FDownloader.OnSetComment := SetComment2;
@@ -89,9 +88,9 @@ begin
 
     for i := 0 to totalBooks - 1 do
     begin
-      SetComment2('Подключение ...', '');
+      SetComment2('Подключение...', '');
 
-      FBookIdList[i].Res := FDownloader.Download(FBookIdList[i].ID);
+      FBookIdList[i].Res := FDownloader.Download(FBookIdList[i].BookID);
       if
         (not Canceled) and                // это реальная ошибка, а не отмена операции пользователем
         (not FBookIdList[i].Res) and      //
@@ -112,7 +111,9 @@ begin
         SetComment2(' ', 'Завершение операции ...');
         Break;
       end;
-      if FNoPause then Sleep(Settings.DwnldInterval);
+
+      if FNoPause then
+        Sleep(Settings.DwnldInterval);
     end;
   finally
     FDownloader.Free;

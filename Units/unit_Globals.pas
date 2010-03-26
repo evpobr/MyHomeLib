@@ -21,7 +21,6 @@ interface
 uses
   Classes,
   SysUtils,
-  ABSMain,
   VirtualTrees,
   IdHTTP,
   ZipForge;
@@ -34,7 +33,8 @@ type
   TGenresType = (gtFb2, gtAny);
 
   TBookIdStruct = record
-    ID: Integer;
+    BookID: Integer;
+    DatabaseID: Integer;
     Res: Boolean;
   end;
 
@@ -139,8 +139,6 @@ function PosChr(aCh: Char; const S: string): Integer;
 function CompareInt(i1, i2: Integer): Integer;
 function CompareDate(d1, d2: TDateTime): Integer;
 
-function GetFullBookPath(const Table: TAbsTable; const FCollectionRoot: string): string;
-
 function GenerateBookLocation(const FullName: string): string;
 function GenerateFileName(const Title: string; libID: Integer): string;
 
@@ -168,7 +166,8 @@ type
   //
   PDownloadData = ^TDownloadData;
   TDownloadData = record
-    ID: Integer;
+    BookID: Integer;
+    DataBaseID: Integer;
     Author: string;
     Title: string;
     Size: Integer;
@@ -794,31 +793,6 @@ function TBookRecord.GetGenreCount: Integer;
 begin
   Result := Length(Genres);
 end;
-
-function GetFullBookPath(const Table: TAbsTable; const FCollectionRoot: string): string;
-begin
-  // TODO 1 -oNickR -cBug: такой таблицы больше нет
-  if Table.Name = 'tblFavorites' then
-    Result := Table.FieldByName(FOLDER_FIELD).AsString
-  else if not Table.FieldByName(FOLDER_FIELD).IsNull then
-    Result := FCollectionRoot + Table.FieldByName(FOLDER_FIELD).AsString
-  else
-    Result := FCollectionRoot;
-end;
-
-// procedure RenameFileInArchive(ArchName,NewFileName:string);
-// var
-// Zip: TZipMaster;
-//
-// begin
-// Zip := TZipMaster.Create(Nil);
-// try
-// Zip.ZipFileName := ArchName;
-// ZipDirEntry(Zip.ZipContents[0]^).FileName := NewFileName + '.fb2';
-// finally
-// Zip.Free;
-// end;
-// end;
 
 function InclideUrlSlash(const S: string): string;
 begin

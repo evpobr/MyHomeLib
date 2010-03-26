@@ -1436,7 +1436,7 @@ begin
   if ApplyAuthorFilter then
     if dmCollection.tblAuthors.RecordCount > 500 then
     begin
-      dmCollection.tblAuthors.Filter := 'A_Family="А*"';
+      dmCollection.tblAuthors.Filter := 'LastName="А*"';
       dmCollection.tblAuthors.Filtered := True;
       ALetter.Down := True;
       FLastLetterA := ALetter;
@@ -1767,9 +1767,9 @@ begin
   SetColumns;
 
   case Page of
-    0: FillBooksTree(tvBooksA, dmCollection.tblAuthor_List, dmCollection.tblBooksA, False, True); // авторы
-    1: FillBooksTree(tvBooksS, nil, dmCollection.tblBooksS, False, False); // серии
-    2: FillBooksTree(tvBooksG, dmCollection.tblGenre_List, dmCollection.tblBooksG, True, True); // жанры
+    0: FillBooksTree(tvBooksA, dmCollection.AuthorBooks, dmCollection.BooksByAuthor, False, True); // авторы
+    1: FillBooksTree(tvBooksS, nil, dmCollection.BooksBySerie, False, False); // серии
+    2: FillBooksTree(tvBooksG, dmCollection.GenreBooks, dmCollection.BooksByGenre, True, True); // жанры
     3: FillBooksTree(tvBooksSR, nil, dmCollection.sqlBooks, True, True);
     4: FillBooksTree(tvBooksF, DMUser.BookGroups, DMUser.GroupedBooks, True, True); // избранное
     5: btnApplyFilterClick(self);
@@ -1884,14 +1884,14 @@ const
   begin
     State := (Filter <> '');
 
-    dmCollection.tblBooksA.Filter := Filter;
-    dmCollection.tblBooksG.Filter := Filter;
-    dmCollection.tblBooksS.Filter := Filter;
+    dmCollection.BooksByAuthor.Filter := Filter;
+    dmCollection.BooksByGenre.Filter := Filter;
+    dmCollection.BooksBySerie.Filter := Filter;
     DMUser.GroupedBooks.Filter := Filter;
 
-    dmCollection.tblBooksA.Filtered := State;
-    dmCollection.tblBooksG.Filtered := State;
-    dmCollection.tblBooksS.Filtered := State;
+    dmCollection.BooksByAuthor.Filtered := State;
+    dmCollection.BooksByGenre.Filtered := State;
+    dmCollection.BooksBySerie.Filtered := State;
     DMUser.GroupedBooks.Filtered := State;
   end;
 
@@ -1927,9 +1927,9 @@ end;
 
 procedure TfrmMain.FillAllBooksTree;
 begin
-  FillBooksTree(tvBooksA, dmCollection.tblAuthor_List, dmCollection.tblBooksA, False, True); // авторы
-  FillBooksTree(tvBooksS, nil, dmCollection.tblBooksS, False, False); // серии
-  FillBooksTree(tvBooksG, dmCollection.tblGenre_List, dmCollection.tblBooksG, True, True); // жанры
+  FillBooksTree(tvBooksA, dmCollection.AuthorBooks, dmCollection.BooksByAuthor, False, True); // авторы
+  FillBooksTree(tvBooksS, nil, dmCollection.BooksBySerie, False, False); // серии
+  FillBooksTree(tvBooksG, dmCollection.GenreBooks, dmCollection.BooksByGenre, True, True); // жанры
   FillBooksTree(tvBooksF, DMUser.BookGroups, DMUser.GroupedBooks, True, True); // избранное
 
   // if DMCollection.sqlBooks.Active then
@@ -2039,6 +2039,7 @@ begin
       MessageDlg('Файл коллекции "' + DMUser.ActiveCollection.DBFileName + '" не найден.' + #13 + 'Невозможно запустить программу.', mtError, [mbOk], 0);
       Application.Terminate;
     end;
+
     frmSplash.lblState.Caption := main_loading_collection;
   end;
   InitCollection(False);
@@ -2213,29 +2214,29 @@ end;
 //
 function TfrmMain.GetText(Tag: Integer; Data: PBookData): string;
 begin
+  Assert(Assigned(Data));
   case Tag of
     COL_AUTHOR:
-      Result := Data.FullName;
+      Result := Data^.FullName;
     COL_TITLE:
-      Result := Data.Title;
+      Result := Data^.Title;
     COL_SERIES:
-      Result := Data.Series;
+      Result := Data^.Series;
     COL_NO:
-      if Data.No <> 0 then
-        Result := IntToStr(Data.No);
+      Result := IfThen(Data^.No = 0, '', IntToStr(Data^.No));
     COL_SIZE:
-      Result := GetFormattedSize(Data.Size);
+      Result := GetFormattedSize(Data^.Size);
     COL_DATE:
-      Result := DateToStr(Data.Date);
+      Result := DateToStr(Data^.Date);
     COL_GENRE:
-      Result := Data.Genre;
+      Result := Data^.Genre;
     COL_TYPE:
-      Result := Data.FileType;
+      Result := Data^.FileType;
     COL_LANG:
-      Result := Data.Lang;
-    // COL_LIBRATE   : Result := IntToStr(Data.LibRate);
+      Result := Data^.Lang;
+    // COL_LIBRATE   : Result := IntToStr(Data^.LibRate);
     COL_COLLECTION:
-      Result := Data.CollectionName;
+      Result := Data^.CollectionName;
   end;
 end;
 
@@ -2246,7 +2247,7 @@ begin
   Data := Sender.GetNodeData(Node);
   Assert(Assigned(Data));
 
-  CellText := Data.Text;
+  CellText := Data^.Text;
 end;
 
 procedure TfrmMain.tvAuthorsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -2371,29 +2372,26 @@ begin
   Data := Sender.GetNodeData(Node);
   Assert(Assigned(Data));
 
-  CellText := ' ';
+  CellText := '';
   if Settings.TreeModes[Page] = tmTree then
     case Data.nodeType of
       ntAuthorInfo:
         begin
           case GetTreeTag(Sender, Column) of
             COL_TITLE:
-              CellText := Data.FullName;
-            COL_COLLECTION:
-              CellText := Data.CollectionName;
+              CellText := Data^.FullName;
           end;
         end;
 
       ntSeriesInfo:
         begin
           if GetTreeTag(Sender, Column) = COL_TITLE then
-            CellText := 'Серия: ' + Data.Series;
+            CellText := 'Серия: ' + Data^.Series;
         end;
 
       ntBookInfo:
         begin
-          if GetTreeTag(Sender, Column) <> COL_COLLECTION then
-            CellText := GetText(GetTreeTag(Sender, Column), Data);
+          CellText := GetText(GetTreeTag(Sender, Column), Data);
         end;
     end
   else
@@ -2580,7 +2578,7 @@ begin
   ID := Data^.AuthorID;
   dmCollection.tblAuthors.Locate(AUTHOR_ID_FIELD, ID, []);
   lblAuthor.Caption := Data.Text;
-  FillBooksTree(tvBooksA, dmCollection.tblAuthor_List, dmCollection.tblBooksA, False, True); // авторы
+  FillBooksTree(tvBooksA, dmCollection.AuthorBooks, dmCollection.BooksByAuthor, False, True); // авторы
 end;
 
 procedure TfrmMain.tvAuthorsClick(Sender: TObject);
@@ -2608,7 +2606,7 @@ begin
   ID := Data^.AuthorID;
   dmCollection.tblSeries.Locate(SERIE_ID_FIELD, ID, []);
   lblSeries.Caption := Data^.Text;
-  FillBooksTree(tvBooksS, nil, dmCollection.tblBooksS, False, False); // авторы
+  FillBooksTree(tvBooksS, nil, dmCollection.BooksBySerie, False, False); // авторы
 end;
 
 procedure TfrmMain.tvSeriesClick(Sender: TObject);
@@ -2642,19 +2640,19 @@ begin
   if isFB2Collection(DMUser.ActiveCollection.CollectionType) or not Settings.ShowSubGenreBooks then
   begin
     dmCollection.tblGenres.Locate(GENRE_CODE_FIELD, ID, []);
-    FillBooksTree(tvBooksG, dmCollection.tblGenre_List, dmCollection.tblBooksG, True, True); // жанры
+    FillBooksTree(tvBooksG, dmCollection.GenreBooks, dmCollection.BooksByGenre, True, True); // жанры
   end
   else
   begin
-    dmCollection.tblGenre_List.MasterSource := nil;
+    dmCollection.GenreBooks.MasterSource := nil;
     if Node.ChildCount > 0 then
-      dmCollection.tblGenre_List.Filter := '`GenreCode` Like ' + QuotedStr(ID + '.%')
+      dmCollection.GenreBooks.Filter := '`GenreCode` Like ' + QuotedStr(ID + '.%')
     else
-      dmCollection.tblGenre_List.Filter := '`GenreCode` Like ' + QuotedStr(ID + '%');
-    dmCollection.tblGenre_List.Filtered := True;
-    FillBooksTree(tvBooksG, dmCollection.tblGenre_List, dmCollection.tblBooksG, True, True); // жанры
-    dmCollection.tblGenre_List.Filtered := False;
-    dmCollection.tblGenre_List.MasterSource := dmCollection.dsGenres;
+      dmCollection.GenreBooks.Filter := '`GenreCode` Like ' + QuotedStr(ID + '%');
+    dmCollection.GenreBooks.Filtered := True;
+    FillBooksTree(tvBooksG, dmCollection.GenreBooks, dmCollection.BooksByGenre, True, True); // жанры
+    dmCollection.GenreBooks.Filtered := False;
+    dmCollection.GenreBooks.MasterSource := dmCollection.dsGenres;
   end;
   lblGenreTitle.Caption := Data.Text;
 end;
@@ -3121,7 +3119,7 @@ var
 begin
   Data := Sender.GetNodeData(Node);
   // ID
-  Stream.read(Data.ID, SizeOf(Data.ID));
+  Stream.read(Data^.BookID, SizeOf(Data^.BookID));
 
   Data.Title := GetString;
   Data.Author := GetString;
@@ -3167,7 +3165,7 @@ begin
     Exit;
 
   // ID
-  Stream.Write(Data.ID, SizeOf(Data.ID));
+  Stream.Write(Data^.BookID, SizeOf(Data^.BookID));
 
   WriteString(Data.Title);
   WriteString(Data.Author);
@@ -3288,7 +3286,8 @@ begin
     if IsSelectedBookNode(Node, Data) then
     begin
       SetLength(BookIDList, i + 1);
-      BookIDList[i].ID := Data.BookID;
+      BookIDList[i].BookID := Data^.BookID;
+      BookIDList[i].DatabaseID := Data^.DatabaseID;
       Inc(i);
       Tree.CheckState[Node] := csUncheckedNormal;
     end;
@@ -3322,7 +3321,6 @@ begin
 
   SaveDeviceDir := Settings.DeviceDir;
   SaveFolderTemplate := Settings.FolderTemplate;
-  // dlgFolder.Directory := Settings.DeviceDir;
   ScriptID := (Sender as TComponent).Tag;
 
   if isFB2Collection(DMUser.ActiveCollection.CollectionType) then
@@ -3351,7 +3349,7 @@ begin
       { TODO -oNickR -cRefactoring : это временное изменение в настройках и оно не должно сохраняться при закрытии программы
         Это изменение нужно только для работы функций ZipToDevice/FileToDevice и решается
         параметрами этих функций
-        }
+      }
       Settings.DeviceDir := AFolder;
   end;
 
@@ -3394,9 +3392,9 @@ begin
   end;
 
   if ActiveView = FavoritesView then
-    unit_ExportToDevice.ExportToDevice(DMUser.GroupedBooks, BookIDList, ExportMode, Files)
+    unit_ExportToDevice.ExportToDevice(Settings.DeviceDir, DMUser.GroupedBooks, BookIDList, ExportMode, Files)
   else
-    unit_ExportToDevice.ExportToDevice(DMCollection.ActiveTable, BookIDList, ExportMode, Files);
+    unit_ExportToDevice.ExportToDevice(Settings.DeviceDir, DMCollection.ActiveTable, BookIDList, ExportMode, Files);
 
   if (ScriptID >= 0) and (Settings.Scripts[ScriptID].Path <> '%COPY%') then
   begin
@@ -3599,13 +3597,13 @@ begin
         .Down := True;
         if (Sender as TToolButton).Tag >= 90 then
           case (Sender as TToolButton).Tag of
-            91: dmCollection.tblAuthors.Filter := 'UPPER(A_Family) >= "А*"';
-            92: dmCollection.tblAuthors.Filter := 'UPPER(A_Family) < "А*"';
+            91: dmCollection.tblAuthors.Filter := 'UPPER(LastName) >= "А*"';
+            92: dmCollection.tblAuthors.Filter := 'UPPER(LastName) < "А*"';
           end
         else
         begin
           edLocateAuthor.Text := (Sender as TToolButton).Caption;
-          dmCollection.tblAuthors.Filter := '(A_Family=' + QuotedStr((Sender as TToolButton).Caption + '*') + ') OR (A_Family=' + QuotedStr(AnsiLowercase((Sender as TToolButton).Caption) + '*') + ')';
+          dmCollection.tblAuthors.Filter := '(LastName=' + QuotedStr((Sender as TToolButton).Caption + '*') + ') OR (LastName=' + QuotedStr(AnsiLowercase((Sender as TToolButton).Caption) + '*') + ')';
         end;
         dmCollection.tblAuthors.Filtered := (Sender as TToolButton).Tag <> 90;
         FillAuthorTree(tvAuthors);
@@ -3819,7 +3817,6 @@ var
   DBCode: COLLECTION_TYPE;
   Author: string;
   LastAuthor: string;
-  CollectionName: string;
   Columns: TColumnSet;
 
   IsGroupView: Boolean;
@@ -3938,14 +3935,6 @@ begin
               // обрабатываемое дерево не обязательно находится на активной вкладке!
               // это относится ко всем последующим проверкам
               if IsGroupView then
-              begin
-                if DMUser.SelectCollection(DatabaseID) then
-                  CollectionName := DMUser.CurrentCollection.Name
-                else
-                  CollectionName := 'неизвестная коллекция';
-              end;
-
-              if IsGroupView then
                 Author := DetailTable.FieldByName('FullName').AsString
               else
                 Author := dmCollection.FullAuthorsString(BookID);
@@ -3957,10 +3946,8 @@ begin
                   authorNode := Tree.AddChild(nil);
                   Data := Tree.GetNodeData(authorNode);
 
-                  Data.nodeType := ntAuthorInfo;
-                  Data.FullName := Author;
-                  if IsGroupView then
-                    Data.CollectionName := CollectionName;
+                  Data^.nodeType := ntAuthorInfo;
+                  Data^.FullName := Author;
 
                   LastAuthor := Author;
                   LastSeries := nil;
@@ -4338,7 +4325,7 @@ begin
   while Assigned(Node) do
   begin
     Data := Tree.GetNodeData(Node);
-    if Data.BookID = BookIDList[i].ID then
+    if Data.BookID = BookIDList[i].BookID then
     begin
       Data.Locale := BookIDList[i].Res;
       Tree.RepaintNode(Node);
@@ -4375,7 +4362,7 @@ var
     while Assigned(Node) do
     begin
       Data := tvDownloadList.GetNodeData(Node);
-      if Data.ID = ID then
+      if Data^.BookID = ID then
       begin
         Result := True;
         Break;
@@ -4398,21 +4385,21 @@ begin
 
   for i := 0 to High(BookIDList) do
   begin
-    dmCollection.FieldByName(BookIDList[i].ID, 'Local', local);
+    dmCollection.FieldByName(BookIDList[i].BookID, 'Local', local);
     if local then
       Continue;
 
     if ActiveView = FavoritesView then
     begin
-      DMUser.GroupedBooks.Locate(BOOK_ID_FIELD, BookIDList[i].ID, []);
+      DMUser.GroupedBooks.Locate(BOOK_ID_FIELD, BookIDList[i].BookID, []);
       if DMUser.GroupedBooksDatabaseID.Value <> DMUser.ActiveCollection.ID then
         Continue;
     end;
 
-    if CheckID(BookIDList[i].ID) then
+    if CheckID(BookIDList[i].BookID) then
       Continue;
 
-    dmCollection.GetBookFolder(BookIDList[i].ID, Folder);
+    dmCollection.GetBookFolder(BookIDList[i].BookID, Folder);
 
     Node := tvDownloadList.AddChild(nil);
     Data := tvDownloadList.GetNodeData(Node);
@@ -4420,15 +4407,17 @@ begin
     if ActiveView = FavoritesView then
       Data.Author := DMUser.GroupedBooksFullName.Value
     else
-      Data.Author := dmCollection.FullName(BookIDList[i].ID);
+      Data.Author := dmCollection.FullName(BookIDList[i].BookID);
 
-    dmCollection.FieldByName(BookIDList[i].ID, 'Title', Data.Title);
-    dmCollection.FieldByName(BookIDList[i].ID, 'Size', Data.Size);
-    dmCollection.FieldByName(BookIDList[i].ID, LIB_ID_FIELD, LibID);
-    Data.ID := BookIDList[i].ID;
-    Data.State := dsWait;
-    Data.FileName := Folder;
-    Data.URL := Format(Settings.InpxURL + 'b/%d/get', [LibID]);
+    dmCollection.FieldByName(BookIDList[i].BookID, 'Title', Data.Title);
+    dmCollection.FieldByName(BookIDList[i].BookID, 'Size', Data.Size);
+    dmCollection.FieldByName(BookIDList[i].BookID, LIB_ID_FIELD, LibID);
+
+    Data^.BookID := BookIDList[i].BookID;
+    Data^.DataBaseID:= BookIDList[i].DatabaseID;
+    Data^.State := dsWait;
+    Data^.FileName := Folder;
+    Data^.URL := Format(Settings.InpxURL + 'b/%d/get', [LibID]);
   end; // for
 
   lblDownloadCount.Caption := Format('(%d)', [tvDownloadList.ChildCount[nil]]);
@@ -4466,15 +4455,15 @@ begin
   if not Assigned(Data) then
     Exit;
 
-  dmCollection.tblAuthor_List.Locate(BOOK_ID_FIELD, Data.BookID, []);
-  dmCollection.tblAuthors.Locate(AUTHOR_ID_FIELD, dmCollection.tblAuthor_List[AUTHOR_ID_FIELD], []);
-  old_AiD := dmCollection.tblAuthor_List[AUTHOR_ID_FIELD];
+  dmCollection.AuthorBooks.Locate(BOOK_ID_FIELD, Data.BookID, []);
+  dmCollection.tblAuthors.Locate(AUTHOR_ID_FIELD, dmCollection.AuthorBooks[AUTHOR_ID_FIELD], []);
+  old_AiD := dmCollection.AuthorBooks[AUTHOR_ID_FIELD];
 
   frmEditAuthor := TfrmEditAuthorDataEx.Create(self);
   try
-    frmEditAuthor.LastName := dmCollection.tblAuthors.FieldByName('A_Family').AsString;
-    frmEditAuthor.FirstName := dmCollection.tblAuthors.FieldByName('A_Name').AsString;
-    frmEditAuthor.MidName := dmCollection.tblAuthors.FieldByName('A_Middle').AsString;
+    frmEditAuthor.LastName := dmCollection.tblAuthors.FieldByName(AUTHOR_LASTTNAME_FIELD).AsString;
+    frmEditAuthor.FirstName := dmCollection.tblAuthors.FieldByName(AUTHOR_FIRSTNAME_FIELD).AsString;
+    frmEditAuthor.MidName := dmCollection.tblAuthors.FieldByName(AUTHOR_MIDDLENAME_FIELD).AsString;
 
     if frmEditAuthor.ShowModal = mrOk then
     begin
@@ -4483,21 +4472,21 @@ begin
       if (not frmEditAuthor.AddNew) and (not frmEditAuthor.SaveLinks) then
       begin
         // меняем только данные об авторе, все ссылки остаются на месте
-        if dmCollection.tblAuthors.Locate('A_Family;A_Name;A_Middle', VarArrayOf([frmEditAuthor.LastName, frmEditAuthor.FirstName, frmEditAuthor.MidName]), [loCaseInsensitive]) then
+        if dmCollection.tblAuthors.Locate(AUTHOR_FULLNAME_FIELDS, VarArrayOf([frmEditAuthor.LastName, frmEditAuthor.FirstName, frmEditAuthor.MidName]), [loCaseInsensitive]) then
         begin
           // если новый автор уже есть, меняем сслыки на него  (объединение)
           new_AiD := dmCollection.tblAuthorsID.Value;
           repeat
             // меняем старые Id на новые
             { TODO -oNickR -cRefactoring : можно заменить на один UPDATE }
-            dmCollection.tblAuthor_List.MasterSource := nil;
+            dmCollection.AuthorBooks.MasterSource := nil;
 
-            Res := dmCollection.tblAuthor_List.Locate(AUTHOR_ID_FIELD, old_AiD, []);
+            Res := dmCollection.AuthorBooks.Locate(AUTHOR_ID_FIELD, old_AiD, []);
             if Res then
             begin
-              dmCollection.tblAuthor_List.Edit;
-              dmCollection.tblAuthor_ListAuthorID.Value := new_AiD;
-              dmCollection.tblAuthor_List.Post;
+              dmCollection.AuthorBooks.Edit;
+              dmCollection.AuthorBooksAuthorID.Value := new_AiD;
+              dmCollection.AuthorBooks.Post;
             end;
           until not Res;
 
@@ -4517,7 +4506,7 @@ begin
           if dmCollection.tblAuthors.Locate(AUTHOR_ID_FIELD, old_AiD, []) then
             dmCollection.tblAuthors.Delete;
 
-          dmCollection.tblAuthor_List.MasterSource := dmCollection.dsAuthors;
+          dmCollection.AuthorBooks.MasterSource := dmCollection.dsAuthors;
         end // if Locate
         else // если нет - просто редактируем ФИО
         begin
@@ -4543,7 +4532,7 @@ begin
       if (frmEditAuthor.AddNew) then
       begin // заменяем автора на нового
         // добавляем нового автора
-        if not dmCollection.tblAuthors.Locate('A_Family;A_Name;A_Middle', VarArrayOf([frmEditAuthor.LastName, frmEditAuthor.FirstName, frmEditAuthor.MidName]), [loCaseInsensitive]) then
+        if not dmCollection.tblAuthors.Locate(AUTHOR_FULLNAME_FIELDS, VarArrayOf([frmEditAuthor.LastName, frmEditAuthor.FirstName, frmEditAuthor.MidName]), [loCaseInsensitive]) then
         begin
           dmCollection.tblAuthors.Insert;
           dmCollection.tblAuthorsFamily.Value := frmEditAuthor.LastName;
@@ -4553,7 +4542,7 @@ begin
         end;
 
         // меняем ссылки
-        dmCollection.tblAuthor_List.MasterSource := nil;
+        dmCollection.AuthorBooks.MasterSource := nil;
 
         Node := Tree.GetFirst;
         while Assigned(Node) do
@@ -4563,23 +4552,23 @@ begin
           begin
             if not frmEditAuthor.SaveLinks then // заменяем ссылки
             begin
-              if dmCollection.tblAuthor_List.Locate(BOOK_ID_FIELD, Data.BookID, []) then
+              if dmCollection.AuthorBooks.Locate(BOOK_ID_FIELD, Data.BookID, []) then
               begin
-                dmCollection.tblAuthor_List.Edit;
-                dmCollection.tblAuthor_ListAuthorID.Value := dmCollection.tblAuthorsID.Value;
-                dmCollection.tblAuthor_List.Post;
+                dmCollection.AuthorBooks.Edit;
+                dmCollection.AuthorBooksAuthorID.Value := dmCollection.tblAuthorsID.Value;
+                dmCollection.AuthorBooks.Post;
               end
             end
             else
             begin // добавляем второго автора
-              dmCollection.tblAuthor_List.Insert;
-              dmCollection.tblAuthor_ListAuthorID.Value := dmCollection.tblAuthorsID.Value;
-              dmCollection.tblAuthor_ListBookID.Value := Data.BookID;
+              dmCollection.AuthorBooks.Insert;
+              dmCollection.AuthorBooksAuthorID.Value := dmCollection.tblAuthorsID.Value;
+              dmCollection.AuthorBooksBookID.Value := Data.BookID;
 
-              dmCollection.tblAuthor_ListAL_Series.Value := Copy(Data.Series, 1, INDEXSIZE);
-              dmCollection.tblAuthor_ListAL_Title.Value := Copy(Data.Title, 1, INDEXSIZE);
+              dmCollection.AuthorBooksAL_Series.Value := Copy(Data.Series, 1, INDEXSIZE);
+              dmCollection.AuthorBooksAL_Title.Value := Copy(Data.Title, 1, INDEXSIZE);
 
-              dmCollection.tblAuthor_List.Post;
+              dmCollection.AuthorBooks.Post;
             end;
             dmCollection.tblBooks.Locate(BOOK_ID_FIELD, Data.BookID, []);
             dmCollection.tblBooks.Edit;
@@ -4588,7 +4577,7 @@ begin
           end;
           Node := Tree.GetNext(Node, False);
         end;
-        dmCollection.tblAuthor_List.MasterSource := dmCollection.dsAuthors;
+        dmCollection.AuthorBooks.MasterSource := dmCollection.dsAuthors;
       end;
       InitCollection(True);
     end;
@@ -4601,7 +4590,7 @@ function TfrmMain.IsLibRusecEdit(ID: Integer): Boolean;
 begin
   if isExternalCollection(DMUser.ActiveCollection.CollectionType) then
   begin
-    if MessageDlg('Изменения информации о книгах в коллекциях "lib.rus.ec" возможно только на сайте.' + #13 + 'Перейти на сайт "Электронная библиотека lib.rus.ec"?', mtWarning, [mbYes, mbNo], 0) = mrYes then
+    if MessageDlg('Изменения информации о книгах в онлайн-коллекциях возможно только на сайте.' + #13 + 'Перейти на сайт "Электронная библиотека lib.rus.ec"?', mtWarning, [mbYes, mbNo], 0) = mrYes then
     begin
       dmCollection.tblBooks.Locate(BOOK_ID_FIELD, ID, []);
       ShellExecute(Handle, 'open', PChar('http://lib.rus.ec/b/' + IntToStr(dmCollection.tblBooks[LIB_ID_FIELD]) + '/edit'), nil, nil, SW_SHOW);
@@ -5746,10 +5735,7 @@ begin
     //
     ReviewEditable := (Data^.DatabaseID = DMUser.ActiveCollection.ID);
 
-    if ActiveView = FavoritesView then
-      bookContainer := GetFullBookPath(Table, '')
-    else
-      bookContainer := GetFullBookPath(Table, FCollectionRoot);
+    bookContainer := TPath.Combine(FCollectionRoot, R.Folder);
 
     frmBookDetails := TfrmBookDetails.Create(Application);
     try
