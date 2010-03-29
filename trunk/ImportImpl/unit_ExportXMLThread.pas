@@ -74,61 +74,52 @@ begin
   totalBooks := dmCollection.tblBooks.RecordCount;
   processedBooks := 0;
 
-  dmCollection.BookAuthors_List.Active := True;
-  try
-    dmCollection.BookAuthor.Active := True;
-    try
-      dmCollection.tblBooks.First;
-      while not dmCollection.tblBooks.Eof do
-      begin
-        if Canceled then
-          Exit;
+  DMCollection.tblBooks.First;
+  while not DMCollection.tblBooks.Eof do
+  begin
+    if Canceled then
+      Exit;
 
-        dmCollection.GetCurrentBook(R);
+    //
+    // можно оставить
+    //
+    DMCollection.GetCurrentBook(R);
 
-        FBook := FCollection.BookList.Add;
-        FBook.Title := R.Title;
-        FBook.Series := R.Series;
-        FBook.File_.Inside_no := R.InsideNo;
-        FBook.No := R.SeqNumber;
-        FBook.File_.Folder := R.Folder;
-        FBook.File_.Ext := R.FileExt;
-        FBook.File_.Size := R.Size;
-        FBook.File_. Name := R.FileName;
-        FBook.Date := DateToStr(R.Date);
+    FBook := FCollection.BookList.Add;
+    FBook.Title := R.Title;
+    FBook.Series := R.Series;
+    FBook.File_.Inside_no := R.InsideNo;
+    FBook.No := R.SeqNumber;
+    FBook.File_.Folder := R.Folder;
+    FBook.File_.Ext := R.FileExt;
+    FBook.File_.Size := R.Size;
+    FBook.File_. Name := R.FileName;
+    FBook.Date := DateToStr(R.Date);
 
-        for AuthorRecord in R.Authors do
-        begin
-          FAuthor := FBook.AuthorList.Add;
-          FAuthor.Name := AuthorRecord.FirstName;
-          FAuthor.Family := AuthorRecord.LastName;
-          FAuthor.Middle := AuthorRecord.MiddleName;
-        end;
-
-        for GenreRecord in R.Genres do
-        begin
-          FGenre := FBook.GenreList.Add;
-          FGenre.MHL_Code := GenreRecord.GenreCode;
-          FGenre.Fb2_Code := GenreRecord.GenreFb2Code;
-          FGenre.Alias := GenreRecord.Alias;
-        end;
-
-        dmCollection.tblBooks.Next;
-
-        Inc(processedBooks);
-        if (processedBooks mod ProcessedItemThreshold) = 0 then
-          SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
-        SetProgress(processedBooks * 100 div totalBooks);
-      end;
-
-      SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
-
-    finally
-      dmCollection.BookAuthor.Active := False;
+    for AuthorRecord in R.Authors do
+    begin
+      FAuthor := FBook.AuthorList.Add;
+      FAuthor.Name := AuthorRecord.FirstName;
+      FAuthor.Family := AuthorRecord.LastName;
+      FAuthor.Middle := AuthorRecord.MiddleName;
     end;
-  finally
-    dmCollection.BookAuthors_List.Active := False;
+
+    for GenreRecord in R.Genres do
+    begin
+      FGenre := FBook.GenreList.Add;
+      FGenre.MHL_Code := GenreRecord.GenreCode;
+      FGenre.Fb2_Code := GenreRecord.GenreFb2Code;
+      FGenre.Alias := GenreRecord.Alias;
+    end;
+
+    DMCollection.tblBooks.Next;
+
+    Inc(processedBooks);
+    if (processedBooks mod ProcessedItemThreshold) = 0 then
+      SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
+    SetProgress(processedBooks * 100 div totalBooks);
   end;
+  SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
 
   SetComment('Сохраняем документ. Подождите, пожалуйста.');
   FCollection.OwnerDocument.SaveToFile(FXMLFileName);

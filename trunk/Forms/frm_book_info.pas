@@ -388,6 +388,7 @@ begin
       for i := 0 to Annotation.p.Count - 1 do
         mmShort.Lines.Add(Annotation.p[i].OnlyText);
     end;
+    mmShort.Visible := (mmShort.Lines.Text <> '');
   except
     //
     Assert(False);

@@ -201,12 +201,12 @@ end;
 procedure TfrmEditBookInfo.FillLists;
 begin
   cbSeries.Items.Clear;
-  dmCollection.tblSeries.First;
-  dmCollection.tblSeries.Next;
-  while not dmCollection.tblSeries.Eof do
+  dmCollection.Series.First;
+  dmCollection.Series.Next;
+  while not dmCollection.Series.Eof do
   begin
-    cbSeries.Items.Add(dmCollection.tblSeries['S_Title']);
-    dmCollection.tblSeries.Next;
+    cbSeries.Items.Add(dmCollection.Series['S_Title']);
+    dmCollection.Series.Next;
   end;
 end;
 

@@ -40,7 +40,6 @@ type
 
     FFileOpMode: (fmFb2Zip, fmFb2, fmFBD);
     FBookIdList: TBookIdList;
-    FTable: TAbsTable;
     FTemplater: TTemplater;
     FCollectionRoot: string;
     FExportMode: TExportMode;
@@ -53,7 +52,6 @@ type
     function fb2EPUB(const InpFile: string; const OutFile: string): Boolean;
     function fb2PDF(const InpFile: string; const OutFile: string): Boolean;
 
-    procedure SetTable(ATable: TAbsTable);
     procedure SetDeviceDir(const Value: string);
 
   strict private
@@ -66,7 +64,6 @@ type
   public
     property DeviceDir: string read FDeviceDir write SetDeviceDir;
     property BookIdList: TBookIdList read FBookIdList write FBookIdList;
-    property Table: TAbsTable read FTable write SetTable;
     property ProcessedFiles: string read FProcessedFiles;
     property ExportMode: TExportMode read FExportMode write FExportMode;
   end;
@@ -102,8 +99,8 @@ begin
   //
   // TODO : заменить вызов этих методов на потокобезопасные методы, принимающие BookID и DatabaseID
   //
-  FTable.Locate(BOOK_ID_FIELD, BookID, []);
-  DMCollection.GetCurrentBook(R);
+  DMCollection.GetBookRecord(BookID, DatabaseID, R);
+
   CR := TPath.Combine(FCollectionRoot, R.Folder);
 
   // —формируем им€ каталога в соответствии с заданным темплейтом
@@ -252,22 +249,13 @@ begin
   FDeviceDir := Value;
 end;
 
-procedure TExportToDeviceThread.SetTable(ATable: TAbsTable);
-begin
-  if Assigned(ATable) then
-    FTable := ATable;
-end;
-
 procedure TExportToDeviceThread.WorkFunction;
 var
   i: Integer;
   totalBooks: Integer;
   Res: Boolean;
 begin
-  if FTable = DMUser.GroupedBooks then
-    FCollectionRoot := ''
-  else
-    FCollectionRoot := DMUser.ActiveCollection.RootPath;
+  FCollectionRoot := DMUser.ActiveCollection.RootPath;
 
   FZipper := TZipForge.Create(nil);
   try

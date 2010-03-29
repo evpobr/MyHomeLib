@@ -28,7 +28,7 @@ type
     dsAuthors: TDataSource;
     BooksByAuthor: TABSTable;
     BooksByGenre: TABSTable;
-    tblGenres: TABSTable;
+    Genres: TABSTable;
     tblAuthorsS: TABSTable;
     BooksBySerie: TABSTable;
     dsSeries: TDataSource;
@@ -39,22 +39,21 @@ type
     BooksByAuthorID: TAutoIncField;
     BooksByAuthorSerieID: TIntegerField;
     BookGenres_List: TABSTable;
-    dsBook_Genre_List: TDataSource;
+    dsBookGenres_List: TDataSource;
     GenreBooks: TABSTable;
-    dsGenre_List: TDataSource;
+    dsGenreBooks: TDataSource;
     BooksBySerieID: TAutoIncField;
     BooksBySerieSerieID: TIntegerField;
     BooksByGenreID: TAutoIncField;
     BooksByGenreSerieID: TIntegerField;
     AuthorBooks: TABSTable;
-    dsAuthor_List: TDataSource;
+    dsAuthorBooks: TDataSource;
     tblBooks: TABSTable;
-    tblSeriesA: TABSTable;
     dsBooks: TDataSource;
     BookGenres: TABSTable;
     BookAuthor: TABSTable;
     BookAuthors_List: TABSTable;
-    dsAuthor_Master: TDataSource;
+    dsBookAuthors_List: TDataSource;
     tblBooksID: TAutoIncField;
     tblBooksSerieID: TIntegerField;
     tblBooksSeqNumber: TSmallintField;
@@ -69,29 +68,29 @@ type
     tblBooksFolder: TWideStringField;
     tblBooksLocal: TBooleanField;
     tblBooksDeleted: TBooleanField;
-    tblSeriesB: TABSTable;
+    tblSeriesB1: TABSTable;
     tblExtra: TABSTable;
-    tblAuthors: TABSQuery;
-    tblAuthorsID: TAutoIncField;
-    tblAuthorsFamily: TWideStringField;
-    tblAuthorsName: TWideStringField;
-    tblAuthorsMiddle: TWideStringField;
-    tblSeries: TABSQuery;
-    tblSeriesSerieID: TAutoIncField;
-    tblSeriesAuthID: TIntegerField;
-    tblSeriesTitle: TWideStringField;
-    tblSeriesGenreCode: TWideStringField;
+    Authors: TABSQuery;
+    AuthorsID: TAutoIncField;
+    AuthorsFamily: TWideStringField;
+    AuthorsName: TWideStringField;
+    AuthorsMiddle: TWideStringField;
+    Series: TABSQuery;
+    SeriesSerieID: TAutoIncField;
+    SeriesAuthID: TIntegerField;
+    SeriesTitle: TWideStringField;
+    SeriesGenreCode: TWideStringField;
     tblBooksLibRate: TIntegerField;
     tblBooksLang: TWideStringField;
     tblBooksURI: TWideStringField;
     tblBooksKeyWords: TWideStringField;
     sqlBooks: TABSQuery;
     sqlBooksSerieID: TIntegerField;
-    tblGenresG_ID: TAutoIncField;
-    tblGenresGenreCode: TWideStringField;
-    tblGenresG_ParentCode: TWideStringField;
-    tblGenresG_FB2Code: TWideStringField;
-    tblGenresG_Alias: TWideStringField;
+    GenresG_ID: TAutoIncField;
+    GenresGenreCode: TWideStringField;
+    GenresG_ParentCode: TWideStringField;
+    GenresG_FB2Code: TWideStringField;
+    GenresG_Alias: TWideStringField;
     GenreBooksGL_ID: TAutoIncField;
     GenreBooksGenreCode: TWideStringField;
     GenreBooksBookID: TIntegerField;
@@ -113,10 +112,6 @@ type
     BookGenresG_ParentCode: TWideStringField;
     BookGenresG_FB2Code: TWideStringField;
     BookGenresG_Alias: TWideStringField;
-    tblSeriesASerieID: TAutoIncField;
-    tblSeriesAAuthorID: TIntegerField;
-    tblSeriesAGenreCode: TWideStringField;
-    tblSeriesAS_Title: TWideStringField;
     BookAuthors_ListAuthorID: TIntegerField;
     BookAuthors_ListBookID: TIntegerField;
     BookAuthors_ListAL_Series: TWideStringField;
@@ -126,10 +121,10 @@ type
     BookAuthorFirstName: TWideStringField;
     BookAuthorMiddleName: TWideStringField;
     dsGenres: TDataSource;
-    tblSeriesBSerieID: TAutoIncField;
-    tblSeriesBAuthorID: TIntegerField;
-    tblSeriesBGenreCode: TWideStringField;
-    tblSeriesBS_Title: TWideStringField;
+    tblSeriesB1SerieID: TAutoIncField;
+    tblSeriesB1AuthorID: TIntegerField;
+    tblSeriesB1GenreCode: TWideStringField;
+    tblSeriesB1S_Title: TWideStringField;
     tblBooksSeries: TWideStringField;
     tblBooksFullName: TWideStringField;
     sqlBooksID: TIntegerField;
@@ -170,26 +165,24 @@ type
     FIsFavorites: Boolean;
     FActiveTable: TABSTable;
 
+  private
+    function GetBookGenres(BookID: Integer): string; deprecated;
+    function GetRootGenre(BookID: Integer): string; deprecated; {unused}
+
   public
+    procedure GetBookFolder(ID: Integer; out AFolder: string); deprecated;
     procedure GetBookFileName(ID: Integer; out AFile, AFolder, AExt: string; out ANo: Integer); deprecated;
 
     procedure SetActiveTable(Tag: Integer); deprecated;
-    procedure GetCurrentBook(var R: TBookRecord); overload; deprecated;
-    function GetBookGenres(BookID: Integer; FirstOnly: Boolean): string; deprecated;
-    function GetRootGenre(BookID: Integer): string; deprecated;
     function GetGenreCode(BookID: Integer): string; deprecated;
 
     procedure FieldByName(AID: Integer; const AField: string; out ARes: string); overload; deprecated;
-    procedure FieldByName(AID: Integer; const AField: string; out ARes: Integer); overload; deprecated;
-    procedure FieldByName(AID: Integer; const AField: string; out ARes: Boolean); overload; deprecated;
 
     procedure SetLocalStatus(AID: Integer; AState: Boolean); deprecated;
-    procedure GetBookFolder(ID: Integer; out AFolder: string); deprecated;
 
     procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
     property ActiveTable: TABSTable read FActiveTable;
 
-    procedure Clear;
     procedure SetTableState(State: Boolean);
     function FullName(BookID: Integer): string; deprecated;
     function AuthorID(BookID: Integer): Integer; deprecated;
@@ -200,7 +193,8 @@ type
     //
     function GetBookSerie(BookID: Integer; DatabaseID: Integer; SerieID: Integer): string;
     procedure FillBookData(BookID: Integer; DatabaseID: Integer; Data: PBookData);
-    procedure GetCurrentBook(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord); overload;
+    procedure GetCurrentBook(var R: TBookRecord); overload; deprecated;
+    procedure GetBookRecord(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord); overload;
 
     //
     // Обновление полей
@@ -281,48 +275,11 @@ begin
   ARes := FActiveTable.FieldByName(AField).AsString;
 end;
 
-procedure TDMCollection.FieldByName(AID: Integer; const AField: String; out ARes: Integer);
-begin
-  if AID <> 0 then
-    FActiveTable.Locate(BOOK_ID_FIELD, AID, []);
-  ARes := FActiveTable.FieldByName(AField).AsInteger;
-end;
-
 function TDMCollection.AuthorID(BookID: Integer): Integer;
 begin
   if BookID <> 0 then
     BookAuthors_List.Locate(BOOK_ID_FIELD, BookID, []);
   Result := BookAuthors_ListAuthorID.Value;
-end;
-
-procedure TDMCollection.Clear;
-begin
-  SetTableState(False);
-
-  // tblAuthors.EmptyTable;
-  AuthorBooks.EmptyTable;
-  // tblSeries.EmptyTable;
-  BooksByAuthor.EmptyTable;
-  BooksBySerie.EmptyTable;
-  tblGenres.EmptyTable;
-
-  BookGenres_List.EmptyTable;
-  BookGenres.EmptyTable;
-
-  GenreBooks.EmptyTable;
-  BooksByGenre.EmptyTable;
-  tblBooks.EmptyTable;
-  tblSeriesA.EmptyTable;
-  tblSeriesB.EmptyTable;
-
-  SetTableState(True);
-end;
-
-procedure TDMCollection.FieldByName(AID: Integer; const AField: string; out ARes: Boolean);
-begin
-  if AID <> 0 then
-    FActiveTable.Locate(BOOK_ID_FIELD, AID, []);
-  ARes := FActiveTable.FieldByName(AField).AsBoolean;
 end;
 
 procedure TDMCollection.GetBookFileName(ID: Integer; out AFile: string; out AFolder: string; out AExt: string; out ANo: Integer);
@@ -338,17 +295,15 @@ begin
   ANo := FActiveTable.FieldByName('InsideNo').AsInteger;
 end;
 
-function TDMCollection.GetBookGenres(BookID: Integer; FirstOnly: Boolean): string;
+function TDMCollection.GetBookGenres(BookID: Integer): string;
 var
-  S: String;
+  S: string;
   i: Integer;
 begin
   i := 0;
   BookGenres_List.Locate(BOOK_ID_FIELD, BookID, []);
   while (not BookGenres_List.Eof) and (BookGenres_ListBookID.Value = BookID) do
   begin
-    if FirstOnly and (i > 0) then
-      Break;
     if not BookGenresG_Alias.IsNull then
       S := S + BookGenresG_Alias.Value + ' / ';
     BookGenres_List.Next;
@@ -356,83 +311,6 @@ begin
   end;
   Delete(S, Length(S) - 2, 3);
   Result := S;
-end;
-
-procedure TDMCollection.GetCurrentBook(var R: TBookRecord);
-var
-  BookID: Integer;
-begin
-  BookID := ActiveTable.FieldByName(BOOK_ID_FIELD).Value;
-
-  R.Clear;
-  R.Title := ActiveTable.FieldByName('Title').AsWideString;
-  R.Series := IfThen(ActiveTable.FieldByName(SERIE_ID_FIELD).IsNull, NO_SERIES_TITLE, ActiveTable.FieldByName('Series').AsWideString);
-  R.SeqNumber := ActiveTable.FieldByName('SeqNumber').AsInteger;
-  R.Folder := ActiveTable.FieldByName(FOLDER_FIELD).AsWideString;
-  R.FileName := ActiveTable.FieldByName(FILENAME_FIELD).AsWideString;
-  R.FileExt := ActiveTable.FieldByName('Ext').AsWideString;
-  R.Size := ActiveTable.FieldByName('Size').AsInteger;
-  R.InsideNo := ActiveTable.FieldByName('InsideNo').AsInteger;
-  R.Local := ActiveTable.FieldByName('Local').AsBoolean;
-  R.Date := ActiveTable.FieldByName('Date').AsDateTime;
-  R.Lang := ActiveTable.FieldByName('Lang').AsWideString;
-  R.KeyWords := ActiveTable.FieldByName('KeyWords').AsWideString;
-  R.Code := ActiveTable.FieldByName('Code').AsInteger;
-
-  if tblExtra.Locate(BOOK_ID_FIELD, BookID, []) then
-    R.Annotation := tblExtraAnnotation.Value;
-
-  if ActiveTable.FieldByName(LIB_ID_FIELD).AsInteger <> 0 then
-    R.LibID := ActiveTable.FieldByName(LIB_ID_FIELD).AsInteger
-  else
-    R.LibID := BookID;
-
-  if not FIsFavorites then
-  begin
-    BookGenres_List.Locate(BOOK_ID_FIELD, BookID, []);
-    tblGenres.Locate(GENRE_CODE_FIELD, BookGenresG_ParentCode.Value, []);
-    R.RootGenre.Alias := tblGenresG_Alias.Value;
-
-    while (not BookGenres_List.Eof) and (BookGenres_ListBookID.AsInteger = BookID) do
-    begin
-      R.AddGenreFB2(
-        BookGenresGenreCode.AsWideString,
-        BookGenresG_FB2Code.AsWideString,
-        BookGenresG_Alias.AsWideString
-      );
-
-      BookGenres_List.Next;
-    end;
-
-    (* ***************************************************************************
-      * Попробовал использовать Query для получения информации об авторах книги.
-      * По совершенно необъяснимым для меня причинам это работало ОЧЕНЬ медленно.
-      * Возможно, стоит исследовать этот вопрос дополнительно.
-      *
-      * select A1."Family", A1."Name", A1."Middle"
-      * from "Author_List" A2 inner join "Authors" A1 on (A2."AuthID" = A1."ID")
-      * where (A2."BookID" = :BookID)
-      *
-      *)
-
-    BookAuthors_List.Locate(BOOK_ID_FIELD, BookID, []);
-    while (not BookAuthors_List.Eof) and (BookAuthors_ListBookID.Value = BookID) do
-    begin
-      R.AddAuthor(
-        BookAuthorLastName.AsWideString,
-        BookAuthorFirstName.AsWideString,
-        BookAuthorMiddleName.AsWideString,
-        BookAuthorA_ID.Value
-      );
-
-      BookAuthors_List.Next;
-    end
-  end // not Favorites
-  else
-  begin
-    R.AddGenreFB2('', '', ActiveTable.FieldByName('Genres').AsWideString);
-    R.AddAuthor(ActiveTable.FieldByName('FullName').AsWideString, '', '');
-  end;
 end;
 
 function TDMCollection.GetGenreCode(BookID: Integer): string;
@@ -444,8 +322,8 @@ end;
 function TDMCollection.GetRootGenre(BookID: Integer): string;
 begin
   BookGenres_List.Locate(BOOK_ID_FIELD, BookID, []);
-  tblGenres.Locate(GENRE_CODE_FIELD, BookGenresG_ParentCode.Value, []);
-  Result := tblGenresG_Alias.Value;
+  Genres.Locate(GENRE_CODE_FIELD, BookGenresG_ParentCode.Value, []);
+  Result := GenresG_Alias.Value;
 end;
 
 procedure TDMCollection.GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
@@ -463,27 +341,27 @@ begin
     *
     *************************************************************************** *)
 
-  BM1 := DMCollection.tblAuthors.GetBookmark;
+  BM1 := DMCollection.Authors.GetBookmark;
   try
-    FilterStateA := DMCollection.tblAuthors.Filtered;
-    FilterStringA := DMCollection.tblAuthors.Filter;
+    FilterStateA := DMCollection.Authors.Filtered;
+    FilterStringA := DMCollection.Authors.Filter;
 
-    FilterStateS := DMCollection.tblSeries.Filtered;
+    FilterStateS := DMCollection.Series.Filtered;
 
-    DMCollection.tblAuthors.Filtered := False;
-    DMCollection.tblSeries.Filtered := False;
+    DMCollection.Authors.Filtered := False;
+    DMCollection.Series.Filtered := False;
 
-    AuthorsCount := DMCollection.tblAuthors.RecordCount;
+    AuthorsCount := DMCollection.Authors.RecordCount;
     BooksCount := DMCollection.tblBooks.RecordCount;
-    SeriesCount := DMCollection.tblSeries.RecordCount;
+    SeriesCount := DMCollection.Series.RecordCount;
 
-    DMCollection.tblAuthors.Filter := FilterStringA;
-    DMCollection.tblAuthors.Filtered := FilterStateA;
-    DMCollection.tblSeries.Filtered := FilterStateS;
+    DMCollection.Authors.Filter := FilterStringA;
+    DMCollection.Authors.Filtered := FilterStateA;
+    DMCollection.Series.Filtered := FilterStateS;
 
-    DMCollection.tblAuthors.GotoBookmark(BM1);
+    DMCollection.Authors.GotoBookmark(BM1);
   finally
-    DMCollection.tblAuthors.FreeBookmark(BM1);
+    DMCollection.Authors.FreeBookmark(BM1);
   end;
 end;
 
@@ -543,29 +421,38 @@ end;
 
 procedure TDMCollection.SetTableState(State: Boolean);
 begin
-  tblAuthors.Active := State;
+  Authors.Active := State;
   AuthorBooks.Active := State;
-  tblSeries.Active := State;
   BooksByAuthor.Active := State;
+
+  Series.Active := State;
   BooksBySerie.Active := State;
-  tblGenres.Active := State;
 
-  BookGenres.Active := State;
-  BookGenres_List.Active := State;
-
+  Genres.Active := State;
   GenreBooks.Active := State;
   BooksByGenre.Active := State;
-  tblBooks.Active := State;
-  tblSeriesA.Active := State;
-  tblSeriesB.Active := State;
-  tblExtra.Active := State;
+
+  BookGenres_List.Active := State;
+  BookGenres.Active := State;
+
   BookAuthors_List.Active := State;
   BookAuthor.Active := State;
+
+  tblBooks.Active := State;
+  tblExtra.Active := State;
+
+  tblSeriesB1.Active := State;
 
   AllSeries.Active := State;
   AllBooks.Active := State;
   AllExtra.Active := State;
 end;
+
+// ============================================================================
+//
+// Новые методы
+//
+// ============================================================================
 
 function TDMCollection.GetBookSerie(BookID: Integer; DatabaseID: Integer; SerieID: Integer): string;
 begin
@@ -607,7 +494,7 @@ begin
     Data^.SerieID := AllBooksSerieID.Value;
     Data^.Title := AllBooksTitle.Value;
     Data^.Series := GetBookSerie(BookID, DatabaseID, AllBooksSerieID.Value);
-    Data^.Genre := GetBookGenres(BookID, False);
+    Data^.Genre := GetBookGenres(BookID);
     Data^.FullName := FullAuthorsString(BookID);
     Data^.CollectionName := DMUser.ActiveCollection.Name;
     Data^.FileType := AllBooksExt.Value;
@@ -635,10 +522,84 @@ begin
     DMUser.FillBookData(BookID, DatabaseID, Data);
 end;
 
-procedure TDMCollection.GetCurrentBook(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord);
+procedure TDMCollection.GetCurrentBook(var R: TBookRecord);
+var
+  BookID: Integer;
 begin
-  Assert(False, 'Not implemented yet!');
+  //
+  // TODO : необходимо объеденить этот метод со следующим
+  //
+  BookID := ActiveTable.FieldByName(BOOK_ID_FIELD).Value;
 
+  R.Clear;
+  R.Title := ActiveTable.FieldByName('Title').AsWideString;
+  R.Series := IfThen(ActiveTable.FieldByName(SERIE_ID_FIELD).IsNull, NO_SERIES_TITLE, ActiveTable.FieldByName('Series').AsWideString);
+  R.SeqNumber := ActiveTable.FieldByName('SeqNumber').AsInteger;
+  R.Folder := ActiveTable.FieldByName(FOLDER_FIELD).AsWideString;
+  R.FileName := ActiveTable.FieldByName(FILENAME_FIELD).AsWideString;
+  R.FileExt := ActiveTable.FieldByName('Ext').AsWideString;
+  R.Size := ActiveTable.FieldByName('Size').AsInteger;
+  R.InsideNo := ActiveTable.FieldByName('InsideNo').AsInteger;
+  R.Local := ActiveTable.FieldByName('Local').AsBoolean;
+  R.Date := ActiveTable.FieldByName('Date').AsDateTime;
+  R.Lang := ActiveTable.FieldByName('Lang').AsWideString;
+  R.KeyWords := ActiveTable.FieldByName('KeyWords').AsWideString;
+  R.Code := ActiveTable.FieldByName('Code').AsInteger;
+
+  if tblExtra.Locate(BOOK_ID_FIELD, BookID, []) then
+    R.Annotation := tblExtraAnnotation.Value;
+
+  if ActiveTable.FieldByName(LIB_ID_FIELD).AsInteger <> 0 then
+    R.LibID := ActiveTable.FieldByName(LIB_ID_FIELD).AsInteger
+  else
+    R.LibID := BookID;
+
+  if not FIsFavorites then
+  begin
+    BookGenres_List.SetRange([BookID], [BookID]);
+    try
+      BookGenres_List.First;
+
+      if not BookGenres_List.Eof then
+      begin
+        Genres.Locate(GENRE_CODE_FIELD, BookGenresG_ParentCode.Value, []);
+        R.RootGenre.Alias := GenresG_Alias.Value;
+      end;
+
+      while not BookGenres_List.Eof do
+      begin
+        R.AddGenreFB2(
+          BookGenresGenreCode.Value, BookGenresG_FB2Code.Value, BookGenresG_Alias.Value
+        );
+        BookGenres_List.Next;
+      end;
+    finally
+      BookGenres_List.CancelRange;
+    end;
+
+    BookAuthors_List.SetRange([BookID], [BookID]);
+    try
+      BookAuthors_List.First;
+      while not BookAuthors_List.Eof do
+      begin
+        R.AddAuthor(
+          BookAuthorLastName.Value, BookAuthorFirstName.Value, BookAuthorMiddleName.Value, BookAuthorA_ID.Value
+        );
+        BookAuthors_List.Next;
+      end;
+    finally
+      BookAuthors_List.CancelRange;
+    end;
+  end // not Favorites
+  else
+  begin
+    R.AddGenreFB2('', '', ActiveTable.FieldByName('Genres').AsWideString);
+    R.AddAuthor(ActiveTable.FieldByName('FullName').AsWideString, '', '');
+  end;
+end;
+
+procedure TDMCollection.GetBookRecord(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord);
+begin
   BookRecord.Clear;
 
   if DatabaseID = DMUser.ActiveCollection.ID then
@@ -676,62 +637,44 @@ begin
       BookRecord.Annotation := AllExtraAnnotation.Value;
     end;
 
-    //BookRecord.Authors
-    //BookRecord.Genres
-    //BookRecord.RootGenre
-  end
-  else
-    DMUser.GetCurrentBook(BookID, DatabaseID, BookRecord);
+    BookGenres_List.SetRange([BookID], [BookID]);
+    try
+      BookGenres_List.First;
 
-  {
-  if not FIsFavorites then
-  begin
-    tblBooks_Genre_List.Locate(BOOK_ID_FIELD, BookID, []);
-    tblGenres.Locate(GENRE_CODE_FIELD, tblBooks_GenresG_ParentCode.Value, []);
-    R.RootGenre.Alias := tblGenresG_Alias.Value;
+      if not BookGenres_List.Eof then
+      begin
+        Genres.Locate(GENRE_CODE_FIELD, BookGenresG_ParentCode.Value, []);
+        BookRecord.RootGenre.Alias := GenresG_Alias.Value;
+      end;
 
-    while (not tblBooks_Genre_List.Eof) and (tblBooks_Genre_ListBookID.AsInteger = BookID) do
-    begin
-      R.AddGenreFB2(
-        tblBooks_GenresGenreCode.AsWideString,
-        tblBooks_GenresG_FB2Code.AsWideString,
-        tblBooks_GenresG_Alias.AsWideString
-      );
-
-      tblBooks_Genre_List.Next;
+      while not BookGenres_List.Eof do
+      begin
+        BookRecord.AddGenreFB2(
+          BookGenresGenreCode.Value, BookGenresG_FB2Code.Value, BookGenresG_Alias.Value
+        );
+        BookGenres_List.Next;
+      end;
+    finally
+      BookGenres_List.CancelRange;
     end;
 
-    (* ***************************************************************************
-      * Попробовал использовать Query для получения информации об авторах книги.
-      * По совершенно необъяснимым для меня причинам это работало ОЧЕНЬ медленно.
-      * Возможно, стоит исследовать этот вопрос дополнительно.
-      *
-      * select A1."Family", A1."Name", A1."Middle"
-      * from "Author_List" A2 inner join "Authors" A1 on (A2."AuthID" = A1."ID")
-      * where (A2."BookID" = :BookID)
-      *
-      *)
-
-    tblAuthor_Master.Locate(BOOK_ID_FIELD, BookID, []);
-    while (not tblAuthor_Master.Eof) and (tblAuthor_MasterBookID.Value = BookID) do
-    begin
-      R.AddAuthor(
-        tblAuthor_DetailLastName.AsWideString,
-        tblAuthor_DetailFirstName.AsWideString,
-        tblAuthor_DetailMiddleName.AsWideString,
-        tblAuthor_DetailA_ID.Value
-      );
-
-      tblAuthor_Master.Next;
-    end
-  end // not Favorites
+    BookAuthors_List.SetRange([BookID], [BookID]);
+    try
+      BookAuthors_List.First;
+      while not BookAuthors_List.Eof do
+      begin
+        BookRecord.AddAuthor(
+          BookAuthorLastName.Value, BookAuthorFirstName.Value, BookAuthorMiddleName.Value,
+          BookAuthorA_ID.Value
+        );
+        BookAuthors_List.Next;
+      end;
+    finally
+      BookAuthors_List.CancelRange;
+    end;
+  end
   else
-  begin
-    R.AddGenreFB2('', '', ActiveTable.FieldByName('Genres').AsWideString);
-    R.AddAuthor(ActiveTable.FieldByName('FullName').AsWideString, '', '');
-  end;
-  }
-
+    DMUser.GetBookRecord(BookID, DatabaseID, BookRecord);
 end;
 
 procedure TDMCollection.SetLocal(BookID: Integer; DatabaseID: Integer; AState: Boolean);
@@ -947,8 +890,8 @@ begin
       DMUser.AllBooksProgress.Value := AllExtraProgress.Value;
     end;
 
-    DMUser.AllBooksGenres.Value := GetBookGenres(BookID, False);
-    DMUser.AllBooksSeries.Value := DMCollection.GetBookSerie(BookID, DatabaseID, AllBooksSerieID.Value);
+    DMUser.AllBooksGenres.Value := GetBookGenres(BookID);
+    DMUser.AllBooksSeries.Value := GetBookSerie(BookID, DatabaseID, AllBooksSerieID.Value);
 
     DMUser.AllBooks.Post;
   end;
