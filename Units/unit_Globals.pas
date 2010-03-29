@@ -450,14 +450,9 @@ begin
     FullPath := Root;
   end
   else
-  begin
-    if Root = '' then
-    begin
-      Assert(False);
-      Root := Settings.AppPath;
-    end;
     FullPath := TPath.Combine(Root, Path);
-  end;
+
+  Assert(TPath.IsPathRooted(FullPath));
 
   Result := SysUtils.ForceDirectories(FullPath);
 end;
