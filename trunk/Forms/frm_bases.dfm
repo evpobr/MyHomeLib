@@ -208,7 +208,7 @@ object frmBases: TfrmBases
         Top = 34
         Width = 139
         Height = 21
-        PasswordChar = #7
+        PasswordChar = '*'
         TabOrder = 2
       end
       object edURL: TEdit
@@ -230,9 +230,6 @@ object frmBases: TfrmBases
     Caption = 'pnButtons'
     ShowCaption = False
     TabOrder = 1
-    ExplicitLeft = 106
-    ExplicitTop = 271
-    ExplicitWidth = 313
     DesignSize = (
       438
       41)
@@ -247,7 +244,6 @@ object frmBases: TfrmBases
       ModalResult = 1
       TabOrder = 0
       OnClick = btnSaveClick
-      ExplicitLeft = 149
     end
     object btnCancel: TButton
       Left = 355
@@ -259,7 +255,6 @@ object frmBases: TfrmBases
       Caption = '&'#1054#1090#1084#1077#1085#1072
       ModalResult = 2
       TabOrder = 1
-      ExplicitLeft = 230
     end
   end
 end
