@@ -24,7 +24,6 @@ uses
 
 procedure ExportToDevice(
   const DeviceDir: string;
-  ATable: TAbsTable;
   const IdList: TBookIdList;
   Mode: TExportMode;
   out ProcessedFiles:string
@@ -42,7 +41,6 @@ uses
 
 procedure ExportToDevice(
   const DeviceDir: string;
-  ATable: TAbsTable;
   const IdList: TBookIdList;
   Mode: TExportMode;
   out ProcessedFiles: string
@@ -55,7 +53,6 @@ begin
   try
     worker.DeviceDir := DeviceDir;
     worker.BookIdList := IdList;
-    worker.Table := ATable;
     worker.ExportMode := Mode;
     frmProgress := TExportToDeviceProgressForm.Create(Application);
     try

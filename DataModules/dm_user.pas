@@ -194,7 +194,7 @@ type
     //
     function GetBookSerie(BookID: Integer; DatabaseID: Integer; SerieID: Integer): string;
     procedure FillBookData(BookID: Integer; DatabaseID: Integer; Data: PBookData);
-    procedure GetCurrentBook(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord);
+    procedure GetBookRecord(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord);
 
     procedure SetRate(BookID: Integer; DatabaseID: Integer; Rate: Integer);
     procedure SetProgress(BookID: Integer; DatabaseID: Integer; Progress: Integer);
@@ -748,12 +748,33 @@ begin
     Assert(False);
 end;
 
-procedure TDMUser.GetCurrentBook(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord);
+procedure TDMUser.GetBookRecord(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord);
 begin
   Assert(AllBooks.Active);
   if AllBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
   begin
-    Assert(False, 'Not implemented yet!');
+    BookRecord.Title := AllBooksTitle.Value;
+    BookRecord.Folder := AllBooksFolder.Value;
+    BookRecord.FileName := AllBooksFileName.Value;
+    BookRecord.FileExt := AllBooksExt.Value;
+    BookRecord.InsideNo := AllBooksInsideNo.Value;
+    BookRecord.Series := AllBooksSeries.Value;
+    BookRecord.SeqNumber := AllBooksSeqNumber.Value;
+    BookRecord.Code := AllBooksCode.Value;
+    BookRecord.Size := AllBooksSize.Value;
+    BookRecord.LibID := AllBooksLibID.Value;
+    BookRecord.Deleted := AllBooksDeleted.Value;
+    BookRecord.Local := AllBooksLocal.Value;
+    BookRecord.Date := AllBooksDate.Value;
+    BookRecord.Lang := AllBooksLang.Value;
+    BookRecord.LibRate := AllBooksLibRate.Value;
+    BookRecord.KeyWords := AllBooksKeyWords.Value;
+    BookRecord.URI := AllBooksURI.Value;
+
+    //BookRecord.Annotation := ???;
+
+    BookRecord.AddGenreFB2('', '', AllBooksGenres.Value);
+    BookRecord.AddAuthor(AllBooksFullName.Value, '', '');
   end
   else
     Assert(False);

@@ -244,6 +244,9 @@ procedure TfrmConvertToFBD.PrepareForm;
 var
   Folder: string;
 begin
+  //
+  // здесь использование этого метода не полностью оправдано
+  //
   DMCollection.GetCurrentBook(FBookRecord);
 
   lblAuthor.Caption := FBookRecord.Authors[0].GetFullName;

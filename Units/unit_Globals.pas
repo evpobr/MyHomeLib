@@ -112,12 +112,12 @@ const
 type
   COLLECTION_TYPE = Integer;
 
-function isPrivateCollection(t: COLLECTION_TYPE): Boolean; //inline;
-function isExternalCollection(t: COLLECTION_TYPE): Boolean; //inline;
-function isLocalCollection(t: COLLECTION_TYPE): Boolean; //inline;
-function isOnlineCollection(t: COLLECTION_TYPE): Boolean; //inline;
-function isFB2Collection(t: COLLECTION_TYPE): Boolean; //inline;
-function isNonFB2Collection(t: COLLECTION_TYPE): Boolean; //inline;
+function isPrivateCollection(t: COLLECTION_TYPE): Boolean; inline;
+function isExternalCollection(t: COLLECTION_TYPE): Boolean; inline;
+function isLocalCollection(t: COLLECTION_TYPE): Boolean; inline;
+function isOnlineCollection(t: COLLECTION_TYPE): Boolean; inline;
+function isFB2Collection(t: COLLECTION_TYPE): Boolean; inline;
+function isNonFB2Collection(t: COLLECTION_TYPE): Boolean; inline;
 
   // -----------------------------------------------------------------------------
 function Transliterate(const Input: string): string;
@@ -314,7 +314,9 @@ type
     procedure ClearAuthors;
     procedure AddAuthor(const LastName: string; const FirstName: string; const MiddleName: string; id: Integer = 0);
     function GetAuthorCount: Integer;
+    function GetAutorsList: string;
     property AuthorCount: Integer read GetAuthorCount;
+    property AutorsList: string read GetAutorsList;
 
     procedure ClearGenres;
     procedure AddGenreFB2(const GenreCode: string; const GenreFb2Code: string; const Alias: string);
@@ -350,7 +352,8 @@ uses
   unit_Settings,
   unit_Consts,
   ShlObj,
-  unit_fb2ToText;
+  unit_fb2ToText,
+  unit_Helpers;
 
 const
   lat: set of Char = ['A' .. 'Z', 'a' .. 'z', '\', '-', ':', '`', ',', '.', '0' .. '9', '_', ' ', '(', ')', '[', ']', '{', '}'];
@@ -753,6 +756,18 @@ end;
 function TBookRecord.GetAuthorCount: Integer;
 begin
   Result := Length(Authors);
+end;
+
+function TBookRecord.GetAutorsList: string;
+begin
+  Result := TArrayUtils.Join<TAuthorRecord>(
+    Authors,
+    ', ',
+    function(const author: TAuthorRecord): string
+    begin
+      Result := author.GetFullName;
+    end
+  );
 end;
 
 procedure TBookRecord.ClearGenres;

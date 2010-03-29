@@ -91,76 +91,69 @@ begin
 
   slFileList := TStringList.Create;
   try
-    DMCollection.BookAuthors_List.Active := True;
+    slHelper := TStringList.Create;
     try
-      DMCollection.BookAuthor.Active := True;
-      try
-        slHelper := TStringList.Create;
-        try
-          DMCollection.tblBooks.First;
-          while not DMCollection.tblBooks.Eof do
-          begin
-            if Canceled then
-              Exit;
-
-            DMCollection.GetCurrentBook(R);
-
-            cINPRecord := INPRecordCreate(R);
-            Assert(cINPRecord <> '');
-
-            slHelper.Add(cINPRecord);
-
-            DMCollection.tblBooks.Next;
-
-            Inc(processedBooks);
-            if (processedBooks mod ProcessedItemThreshold) = 0 then
-              SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
-            SetProgress(processedBooks * 100 div totalBooks);
-          end;
-
-          SetComment('Сохраняем документ. Подождите, пожалуйста.');
-
-          slHelper.SaveToFile(strTempPath + BOOKS_INFO_FILE, TEncoding.UTF8);
-          slFileList.Add(strTempPath + BOOKS_INFO_FILE);
-
-          //
-          // Создаём файл version.info
-          //
-          nCollectionVersion := DMUser.ActiveCollection.Version;
-          cVersion := IntToStr(nCollectionVersion); // Получаем дату в формате '20091231'
-          if Length(cVersion) <> 8 then
-          begin                            // Если длина строки не равна 8, то получаем текущую дату
-            cVersion := DateToStr(Date()); // Получаем дату в формате '2009-12-31'
-            Delete(cVersion, 5, 1);        // Получаем дату в формате '200912-31'
-            Delete(cVersion, 7, 1);        // Получаем дату в формате '20091231'
-          end;
-
-          slHelper.Clear;
-          slHelper.Add(cVersion);
-          slHelper.SaveToFile(strTempPath + VERINFO_FILENAME);
-          slFileList.Add(strTempPath + VERINFO_FILENAME);
-
-          //
-          // Записываем файл structure.info
-          //
-          slHelper.Clear;
-          slHelper.Add('AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;INSNO;FOLDER;LANG;KEYWORDS;');
-          slHelper.SaveToFile(strTempPath + STRUCTUREINFO_FILENAME);
-          slFileList.Add(strTempPath + STRUCTUREINFO_FILENAME);
-        finally
-          FreeAndNil(slHelper);
-        end;
+      DMCollection.tblBooks.First;
+      while not DMCollection.tblBooks.Eof do
+      begin
+        if Canceled then
+          Exit;
 
         //
-        // Упаковываем файлы в zip-архив и устанавливаем комментарий
+        // можно оставить
         //
-        INPXPack(INPXFileName, slFileList);
-      finally
-        DMCollection.BookAuthor.Active := False;
+        DMCollection.GetCurrentBook(R);
+
+        cINPRecord := INPRecordCreate(R);
+        Assert(cINPRecord <> '');
+
+        slHelper.Add(cINPRecord);
+
+        DMCollection.tblBooks.Next;
+
+        Inc(processedBooks);
+        if (processedBooks mod ProcessedItemThreshold) = 0 then
+          SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
+        SetProgress(processedBooks * 100 div totalBooks);
       end;
+
+      SetComment('Сохраняем документ. Подождите, пожалуйста.');
+
+      slHelper.SaveToFile(strTempPath + BOOKS_INFO_FILE, TEncoding.UTF8);
+      slFileList.Add(strTempPath + BOOKS_INFO_FILE);
+
+      //
+      // Создаём файл version.info
+      //
+      nCollectionVersion := DMUser.ActiveCollection.Version;
+      cVersion := IntToStr(nCollectionVersion); // Получаем дату в формате '20091231'
+      if Length(cVersion) <> 8 then
+      begin                            // Если длина строки не равна 8, то получаем текущую дату
+        cVersion := DateToStr(Date()); // Получаем дату в формате '2009-12-31'
+        Delete(cVersion, 5, 1);        // Получаем дату в формате '200912-31'
+        Delete(cVersion, 7, 1);        // Получаем дату в формате '20091231'
+      end;
+
+      slHelper.Clear;
+      slHelper.Add(cVersion);
+      slHelper.SaveToFile(strTempPath + VERINFO_FILENAME);
+      slFileList.Add(strTempPath + VERINFO_FILENAME);
+
+      //
+      // Записываем файл structure.info
+      //
+      slHelper.Clear;
+      slHelper.Add('AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;INSNO;FOLDER;LANG;KEYWORDS;');
+      slHelper.SaveToFile(strTempPath + STRUCTUREINFO_FILENAME);
+      slFileList.Add(strTempPath + STRUCTUREINFO_FILENAME);
     finally
-      DMCollection.BookAuthors_List.Active := False;
+      FreeAndNil(slHelper);
     end;
+
+    //
+    // Упаковываем файлы в zip-архив и устанавливаем комментарий
+    //
+    INPXPack(INPXFileName, slFileList);
   finally
     slFileList.Free;
   end;

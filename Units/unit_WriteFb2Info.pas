@@ -50,6 +50,9 @@ var
   Templater: TTemplater;
 begin
   try
+    //
+    // TODO : полностью переписать этот метод. Мне кажется, что здесь делается огромное количество ненужных действий.
+    //
     DMCollection.GetCurrentBook(R);
 
     { TODO -oNickR -cBug : MEMLEAK проверить }
@@ -78,9 +81,9 @@ begin
       for i := 0 to High(R.Authors) do
       begin
         A := Author.Add;
-        A.Lastname.Text := R.Authors[i].Lastname;
-        A.Firstname.Text := R.Authors[i].Firstname;
-        A.Middlename.Text := R.Authors[i].Middlename;
+        A.Lastname.Text := R.Authors[i].LastName;
+        A.Firstname.Text := R.Authors[i].FirstName;
+        A.Middlename.Text := R.Authors[i].MiddleName;
       end;
 
       Booktitle.Text := TitleBook;
