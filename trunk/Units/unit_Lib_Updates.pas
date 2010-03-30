@@ -24,35 +24,38 @@ uses
   IdHTTP;
 
 type
-
   TUpdateInfo = class(TCollectionItem)
   private
     FName: string;
     FURL: string;
     FVersionFile: string;
     FUpdateFile: string;
-
-    FVersion: Integer;
-    FCode: Integer;
-    FCollectionID: Integer;
-
     FFull: Boolean;
+    FCode: Integer;
+
+    //
+    // Временные поля
+    //
+    FExternalVersion: Integer;
+    FCollectionID: Integer;
     FAvailable: Boolean;
     FLocal: Boolean;
 
+    function GetURL: string;
+
   public
     function CheckCodes(const Name: string; t, id: Integer): Boolean;
-    function CheckVersion(const Path: string; Version: Integer): Boolean;
+    function CheckVersion(const Path: string; CurrentVersion: Integer): Boolean;
 
-    property Version: Integer read FVersion write FVersion;
-    property Code: Integer read FCode write FCode;
-    property FileName: string read FUpdateFile;
-    property Full: Boolean read FFull write FFull;
     property Name: string read FName;
+    property URL: string read GetURL;
+    property UpdateFile: string read FUpdateFile;
+    property Full: Boolean read FFull write FFull;
+    property Code: Integer read FCode write FCode;
+
     property CollectionID: Integer read FCollectionID;
     property Available: Boolean read FAvailable;
     property Local: Boolean read FLocal;
-    property URL: string read FURL;
   end;
 
   TUpdateInfoList = class(TCollection)
@@ -79,13 +82,13 @@ type
       const Code: Integer
     );
 
-    procedure CheckVersions;
+    procedure UpdateExternalVersions;
 
     function DownloadUpdate(Index: Integer; HTTP: TidHTTP): Boolean;
 
     property Items[Index: Integer]: TUpdateInfo read GetUpdate write SetUpdate; default;
-    property URL: string write SetURL;
-    property Path: string write FPath;
+    property URL: string read FURL write SetURL;
+    property Path: string read FPath write FPath;
   end;
 
 implementation
@@ -127,10 +130,10 @@ end;
 
 function TUpdateInfoList.AddUpdate: TUpdateInfo;
 begin
-  Result := TUpdateInfo( inherited Add);
+  Result := TUpdateInfo(inherited Add);
 end;
 
-procedure TUpdateInfoList.CheckVersions;
+procedure TUpdateInfoList.UpdateExternalVersions;
 var
   HTTP: TidHTTP;
   LF: TMemoryStream;
@@ -143,15 +146,13 @@ begin
     HTTP := TidHTTP.Create(nil);
     try
       SetProxySettings(HTTP);
+
       for i := 0 to Count - 1 do
       begin
         if Items[i].FVersionFile = '' then
           Continue;
 
-        if Items[i].URL = '' then
-          URL := FURL + Items[i].FVersionFile
-        else
-          URL := Items[i].URL + Items[i].FVersionFile;
+        URL := Items[i].URL + Items[i].FVersionFile;
 
         try
           LF.Clear;
@@ -161,7 +162,7 @@ begin
             LF.Seek(0, soFromBeginning);
             SL.LoadFromStream(LF);
             if SL.Count > 0 then
-              Items[i].FVersion := StrToInt(SL[0]);
+              Items[i].FExternalVersion := StrToInt(SL[0]);
           finally
             SL.Free;
           end;
@@ -232,14 +233,22 @@ begin
     FCollectionID := id;
 end;
 
-function TUpdateInfo.CheckVersion(const Path: string; Version: Integer): Boolean;
+function TUpdateInfo.CheckVersion(const Path: string; CurrentVersion: Integer): Boolean;
 begin
-  FLocal := FileExists(Path + FileName);
+  FLocal := FileExists(Path + UpdateFile);
   if FLocal then
     Result := True
   else
-    Result := (FVersion > Version);
+    Result := (FExternalVersion > CurrentVersion);
   FAvailable := Result;
+end;
+
+function TUpdateInfo.GetURL: string;
+begin
+  if FURL = '' then
+    Result := (Collection as TUpdateInfoList).FURL
+  else
+    Result := FURL;
 end;
 
 end.

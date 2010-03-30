@@ -93,7 +93,7 @@ begin
   FWorker.OnSetComment := SetComment;
   FWorker.OnShowMessage := ShowMessage;
 
-  FWorker.Resume;
+  FWorker.Start;
 end;
 
 procedure TProgressFormBase.CancelWorker;

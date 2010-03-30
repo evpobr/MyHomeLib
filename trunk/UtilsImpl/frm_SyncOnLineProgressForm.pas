@@ -9,9 +9,7 @@ uses
 type
   TSyncOnLineProgressForm = class(TImportProgressForm)
   private
-    { Private declarations }
   public
-    { Public declarations }
   end;
 
 var

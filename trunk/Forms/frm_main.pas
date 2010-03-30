@@ -634,14 +634,25 @@ type
     procedure SetColors;
     procedure CreateAlphabet;
 
-    function IsLibRusecEdit(ID: Integer): Boolean;
-
   private type
     TNodeUpdateProc = reference to procedure(Data: PBookData);
 
   strict private
+    //
+    // Проверяет возможность редактирования информации (о книге, если задано).
+    // В случае если книга из онлайн коллекции предлагает перейти на сайт для изменения информации там
+    //
+    function IsLibRusecEdit(BookID: Integer): Boolean;
+
+    //
+    // Обновить во всех деревьях ноду BookID:DatabaseID (если есть).
+    // Обновления не должны менять положение ноды в дереве.
+    //
     procedure UpdateNodes(BookID: Integer; DatabaseID: Integer; UpdateProc: TNodeUpdateProc);
 
+    //
+    // Обновить статус книги (присутствует локально)
+    //
     procedure SetBookLocalStatus(BookID: Integer; DatabaseID: Integer; IsLocal: Boolean);
 
   public
@@ -765,7 +776,8 @@ uses
   unit_SearchUtils,
   unit_WriteFb2Info,
   frm_ConverToFBD,
-  frmEditAuthorEx;
+  frmEditAuthorEx,
+  unit_Lib_Updates;
 
 resourcestring
   rstrFileNotFoundMsg = 'Файл %s не найден!'#13'Проверьте настройки коллекции!';
@@ -1928,19 +1940,22 @@ end;
 function TfrmMain.CheckLibUpdates(Auto: Boolean): Boolean;
 var
   i: Integer;
+  UpdatesInfo: TUpdateInfoList;
 begin
   if not Auto then
     ShowPopup('Проверка обновлений ...');
 
   Result := False;
 
-  Settings.Updates.CheckVersions;
+  UpdatesInfo := Settings.Updates;
+
+  UpdatesInfo.UpdateExternalVersions;
 
   DMUser.FindFirstCollection;
   repeat
-    for i := 0 to Settings.Updates.Count - 1 do
-      if Settings.Updates.Items[i].CheckCodes(DMUser.CurrentCollection.name, DMUser.CurrentCollection.CollectionType, DMUser.CurrentCollection.ID) then
-        if Settings.Updates.Items[i].CheckVersion(Settings.UpdatePath, DMUser.CurrentCollection.Version) then
+    for i := 0 to UpdatesInfo.Count - 1 do
+      if UpdatesInfo[i].CheckCodes(DMUser.CurrentCollection.Name, DMUser.CurrentCollection.CollectionType, DMUser.CurrentCollection.ID) then
+        if UpdatesInfo[i].CheckVersion(Settings.UpdatePath, DMUser.CurrentCollection.Version) then
         begin
           Result := True;
           Break;
@@ -4526,13 +4541,14 @@ begin
   end;
 end;
 
-function TfrmMain.IsLibRusecEdit(ID: Integer): Boolean;
+function TfrmMain.IsLibRusecEdit(BookID: Integer): Boolean;
 begin
   if isExternalCollection(DMUser.ActiveCollection.CollectionType) then
   begin
     if MessageDlg('Изменения информации о книгах в онлайн-коллекциях возможно только на сайте.' + #13 + 'Перейти на сайт "Электронная библиотека lib.rus.ec"?', mtWarning, [mbYes, mbNo], 0) = mrYes then
     begin
-      dmCollection.tblBooks.Locate(BOOK_ID_FIELD, ID, []);
+      dmCollection.tblBooks.Locate(BOOK_ID_FIELD, BookID, []);
+      { TODO -oNickR -cLibDesc : этот URL должен формироваться обвязкой библиотеки, т к его формат может меняться }
       ShellExecute(Handle, 'open', PChar('http://lib.rus.ec/b/' + IntToStr(dmCollection.tblBooks[LIB_ID_FIELD]) + '/edit'), nil, nil, SW_SHOW);
     end;
     Result := True;
@@ -4768,9 +4784,10 @@ begin
 
   if Data^.nodeType = ntBookInfo then // добавляем новую серию
   begin
-    AuthID := dmCollection.AuthorID(Data.BookID);
+    Assert(Length(Data^.Authors) > 0);
+    AuthID := Data^.Authors[0].ID;
 
-    if InputQuery('Создание серии/ Перенос в серию', 'Название:', S) then
+    if InputQuery('Создание серии / Перенос в серию', 'Название:', S) then
     begin
       if S = '' then
         S := NO_SERIES_TITLE;
@@ -4780,7 +4797,8 @@ begin
         dmCollection.tblSeriesB1.Insert;
         dmCollection.tblSeriesB1S_Title.Value := S;
         dmCollection.tblSeriesB1AuthorID.Value := AuthID;
-        dmCollection.tblSeriesB1GenreCode.Value := dmCollection.GetGenreCode(Data.BookID);
+        Assert(Length(Data^.Genres) > 0);
+        dmCollection.tblSeriesB1GenreCode.Value := Data^.Genres[0].GenreCode;
         dmCollection.tblSeriesB1.Post;
       end;
 
@@ -4809,7 +4827,7 @@ begin
       while dmCollection.tblBooks.Locate(SERIE_ID_FIELD, Data.SerieID, []) do
       begin
         dmCollection.tblBooks.Edit;
-        dmCollection.tblBooksSerieID.Value := 1;
+        dmCollection.tblBooksSerieID.Value := NO_SERIE_ID;
         dmCollection.tblBooks.Post;
       end;
       FillAllBooksTree;
@@ -5788,11 +5806,13 @@ end;
 
 procedure TfrmMain.miGoToAuthorClick(Sender: TObject);
 var
-  i: Integer;
-  Data: PBookData;
-  Node: PVirtualNode;
   Tree: TVirtualStringTree;
-  FN: string;
+  Node: PVirtualNode;
+  Data: PBookData;
+  BookID: Integer;
+  DatabaseID: Integer;
+  FullAuthorName: string;
+  BookRecord: TBookRecord;
 begin
   GetActiveTree(Tree);
 
@@ -5816,30 +5836,35 @@ begin
 
   Screen.Cursor := crHourGlass;
   try
-    if ActiveView = FavoritesView then
+    if Data^.DatabaseID <> DMUser.ActiveCollection.ID then
     begin
-      i := DMUser.GroupedBooksDatabaseID.Value;
-      if i <> Settings.ActiveCollection then
+      BookID := Data^.BookID;
+      DatabaseID := Data^.DatabaseID;
+      if DMUser.SelectCollection(DatabaseID) then
       begin
-        if DMUser.ActivateCollection(i) then
-        begin
-          Settings.ActiveCollection := i;
-          InitCollection(True);
-        end
-        else
-        begin
-          Screen.Cursor := crDefault;
-          ShowMessage('Коллекция не зарегистрирована !');
-          Exit;
-        end;
+        Settings.ActiveCollection := DatabaseID;
+        InitCollection(True);
+      end
+      else
+      begin
+        Screen.Cursor := crDefault;
+        ShowMessage('Коллекция не зарегистрирована !');
+        Exit;
       end;
-      DMUser.GroupedBooks.Locate(BOOK_ID_FIELD, Data.BookID, []);
-      FN := DMUser.GroupedBooksFullName.Value;
+
+      DMCollection.GetBookRecord(BookID, DatabaseID, BookRecord, False);
+
+      Assert(Length(BookRecord.Authors) > 0);
+      FullAuthorName := BookRecord.Authors[0].GetFullName;
     end
     else
-      FN := dmCollection.FullName(Data.BookID);
+    begin
+      Assert(Length(Data^.Authors) > 0);
+      FullAuthorName := Data^.Authors[0].GetFullName;
+    end;
+
     pgControl.ActivePageIndex := 0;
-    edLocateAuthor.Text := FN;
+    edLocateAuthor.Text := FullAuthorName;
     LocateBook(Data.Title, False);
   finally
     Screen.Cursor := crDefault;
