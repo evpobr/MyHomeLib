@@ -21,7 +21,9 @@ type
     FProcessed: integer;
     FTotal: integer;
 
-    FID: integer;
+    FBookID: Integer;
+    FDatabaseID: Integer;
+
     FCurrentNode : PVirtualNode;
     FCurrentData : PDownloadData;
 
@@ -94,7 +96,6 @@ begin
     if Not FError then
     begin
       FCurrentData.State := dsOK ;
-      dmCollection.SetLocalStatus(FID,True);
       frmMain.tvDownloadList.DeleteNode(FCurrentNode);
       FCurrentNode := nil;
       FCurrentData := nil;
@@ -151,7 +152,8 @@ begin
     FCurrentData := frmMain.tvDownloadList.GetNodeData(FCurrentNode);
     if FCurrentData.State <> dsOK then
     begin
-      FID := FCurrentData.BookID;
+      FBookID := FCurrentData^.BookID;
+      FDatabaseID := FCurrentData^.DataBaseID;
 
       FCurrentData.State := dsRun;
       frmMain.tvDownloadList.RepaintNode(FCurrentNode);
@@ -242,14 +244,15 @@ begin
   FDownloader.OnSetComment := SetComment;
   FDownloader.OnProgress := SetProgress;
 
-
   try
     Synchronize(GetCurrentFile);
     repeat
-      if FError then Sleep(30000);
+      if FError then
+        Sleep(30000);
       Sleep(Settings.DwnldInterval);
-      FError := not FDownloader.Download(FID);
+      FError := not FDownloader.Download(FBookID, FDatabaseID);
       Synchronize(Finished);
+
       Synchronize(GetCurrentFile);
       if FError and not FIgnoreErrors and not FCanceled then
       begin

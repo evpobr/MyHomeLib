@@ -68,7 +68,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    function Download(BookID: Integer): boolean;
+    function Download(BookID: Integer; DatabaseID: Integer): boolean;
     procedure Stop;
 
     property IgnoreErrors: boolean read FIgnoreErrors write FIgnoreErrors;
@@ -86,7 +86,8 @@ uses
   dm_collection,
   dm_user,
   unit_Consts,
-  unit_MHL_strings;
+  unit_MHL_strings,
+  unit_Messages;
 
 const
   CommandList: array [0 .. 5] of string = ('ADD', 'GET', 'POST', 'REDIR', 'CHECK', 'PAUSE');
@@ -172,7 +173,7 @@ begin
   inherited Destroy;
 end;
 
-function TDownloader.Download(BookID: Integer): boolean;
+function TDownloader.Download(BookID: Integer; DatabaseID: Integer): boolean;
 var
   Ext: string;
   FN: string;
@@ -191,14 +192,9 @@ begin
     FFile := DMUser.ActiveCollection.RootPath + Folder;
   end;
 
-  if FileExists(FFile) then
+  if FileExists(FFile) or DoDownload then
   begin
-    dmCollection.SetLocalStatus(BookID, True);
-    Result := True;
-  end
-  else if DoDownload then
-  begin
-    dmCollection.SetLocalStatus(BookID, True);
+    unit_Messages.BookLocalStatusChanged(BookID, DatabaseID, True);
     Result := True;
   end;
 end;

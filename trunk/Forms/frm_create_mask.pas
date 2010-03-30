@@ -123,7 +123,7 @@ begin
   if CheckBox2.Checked then
     R.Title := Edit7.Text;
   if CheckBox3.Checked then
-    R.Series := Edit8.Text;
+    R.Serie := Edit8.Text;
   if CheckBox5.Checked then
     R.Code := StrToInt(Edit10.Text);
   if CheckBox4.Checked then

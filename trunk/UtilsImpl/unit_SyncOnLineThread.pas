@@ -34,26 +34,30 @@ implementation
 
 uses
   Forms,
+  IOUtils,
   dm_user,
   dm_collection,
   unit_Globals,
   unit_Settings,
-  unit_MHL_strings;
+  unit_MHL_strings,
+  unit_Messages;
 
 { TImportXMLThread }
 
 procedure TSyncOnLineThread.WorkFunction;
 var
+  DatabaseID: Integer;
+  Root: string;
+  BookFile: string;
+
   totalBooks: Integer;
   processedBooks: Integer;
-  Root: string;
-  IDStr: string;
-  TmpFolder: String;
 
-  local: boolean;
+  IsLocal: Boolean;
 begin
   totalBooks := dmCollection.tblBooks.RecordCount;
   processedBooks := 0;
+  DatabaseID := DMUser.ActiveCollection.ID;
   Root := DMUser.ActiveCollection.RootPath;
 
   dmCollection.tblBooks.First;
@@ -62,36 +66,26 @@ begin
     if Canceled then
         Exit;
 
-    //  Переименовывание старых файлов
-    //  проверяем, есть ли файл в старом формате (без ID в имени файла)
-    //
-    { TODO -oAlex : Через какое-то время переименовывание можно будет убрать }
     try
-      IDStr := dmCollection.tblBooksLibID.AsString + ' ';
-      TmpFolder := dmCollection.tblBooksFolder.Value;
-      StrReplace(IDStr, '', TmpFolder);              // удаляем Id из имени
-      if FileExists(Root + TmpFolder)  then
-      begin
-        // если есть, переименовываем и результат заносим в базу
-        dmCollection.SetLocalStatus(dmCollection.tblBooksId.Value, RenameFile(Root + TmpFolder, Root + dmCollection.tblBooksFolder.Value));
-      end;
-
       //
       //  Проверяем был ли файл закачан ранее и ставим отметку в базу
       //
-      Local := FileExists(Root + dmCollection.tblBooksFolder.Value);
+      // TODO -cBug: это работает не всегда. См. схему хранения расположения книги
+      //
+      BookFile := TPath.Combine(Root, dmCollection.tblBooksFolder.Value);
+      IsLocal := FileExists(BookFile);
 
-      if Settings.DeleteDeleted and Local and dmCollection.tblBooksDeleted.Value then
+      if Settings.DeleteDeleted and IsLocal and dmCollection.tblBooksDeleted.Value then
       begin
-        SysUtils.DeleteFile(Root + dmCollection.tblBooksFolder.Value);
-        Local := False;
+        SysUtils.DeleteFile(BookFile);
+        IsLocal := False;
       end;
 
-      if dmCollection.tblBooksLocal.Value <> local then
-        dmCollection.SetLocalStatus(dmCollection.tblBooksId.Value,Local);
+      if dmCollection.tblBooksLocal.Value <> IsLocal then
+        unit_Messages.BookLocalStatusChanged(dmCollection.tblBooksId.Value, DatabaseID, IsLocal);
     except
       on E:Exception do
-        Application.MessageBox(PChar('Какие-то проблемы с книгой ' + TmpFolder), '', MB_OK);
+        Application.MessageBox(PChar('Какие-то проблемы с книгой ' + BookFile), '', MB_OK);
     end;
 
     dmCollection.tblBooks.Next;

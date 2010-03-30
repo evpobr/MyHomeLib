@@ -99,7 +99,7 @@ begin
   //
   // TODO : заменить вызов этих методов на потокобезопасные методы, принимающие BookID и DatabaseID
   //
-  DMCollection.GetBookRecord(BookID, DatabaseID, R);
+  DMCollection.GetBookRecord(BookID, DatabaseID, R, False);
 
   CR := TPath.Combine(FCollectionRoot, R.Folder);
 

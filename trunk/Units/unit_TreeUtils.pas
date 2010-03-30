@@ -88,7 +88,7 @@ begin
   begin
     Data := Tree.GetNodeData(Node);
     Assert(Assigned(Data));
-    if (Data.nodeType = ntSeriesInfo) and (Data.SerieID = SerieID) then
+    if (Data^.nodeType = ntSeriesInfo) and (Data.SerieID = SerieID) then
     begin
       Result := Node;
       Break;
@@ -107,7 +107,7 @@ procedure SortAuthors(Tree: TVirtualStringTree);
     while A <> nil do
     begin
       Data := Tree.GetNodeData(A);
-      if Data.nodeType = ntAuthorInfo then
+      if Data^.nodeType = ntAuthorInfo then
         Break;
       A := Tree.GetNextSibling(A);
     end;
@@ -127,7 +127,7 @@ begin
   begin
     DataA := Tree.GetNodeData(A);
     DataB := Tree.GetNodeData(B);
-    if CompareStr(DataB.FullName, DataA.FullName) < 0 then
+    if CompareStr(DataB.GetAuthors, DataA.GetAuthors) < 0 then
     begin
       Tree.MoveTo(B, A, amInsertBefore, false);
       A := Tree.GetFirst;
@@ -152,10 +152,10 @@ begin
     DataA := Tree.GetNodeData(A);
     B := Tree.GetNext(A);
     DataB := Tree.GetNodeData(B);
-    if DataB.nodeType = ntBookInfo then
+    if DataB^.nodeType = ntBookInfo then
       Break;
     if DataB <> nil then
-      if DataB.Series < DataA.Series then
+      if DataB.Serie < DataA.Serie then
       begin
         Tree.MoveTo(B, A, amInsertBefore, false);
         A := Parent.FirstChild;
@@ -177,8 +177,8 @@ begin
     DataA := Tree.GetNodeData(A);
     B := Tree.GetNext(A);
     DataB := Tree.GetNodeData(B);
-    if DataB <> nil then
-      if DataB.No < DataA.No then
+    if Assigned(DataB) then
+      if DataB.SeqNumber < DataA.SeqNumber then
       begin
         Tree.MoveTo(B, A, amInsertBefore, false);
         A := Parent.FirstChild;

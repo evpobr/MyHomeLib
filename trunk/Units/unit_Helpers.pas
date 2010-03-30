@@ -18,7 +18,11 @@ unit unit_Helpers;
 interface
 
 uses
-  Windows, Classes, Dialogs, Graphics;
+  Windows,
+  Classes,
+  Dialogs,
+  Graphics,
+  Generics.Collections;
 
 type
   TStringListEx = class(TStringList)
@@ -84,7 +88,17 @@ type
 
   TArrayUtils = class
   public
-    class function Join<T>(const Values: array of T; const itemDelimeter: string; const Converter: TConversion<T>): string;
+    class function Join<T>(
+      const Values: array of T;
+      const itemDelimeter: string;
+      const Converter: TConversion<T>
+    ): string;
+
+    class function Join2<T>(
+      const Values: TEnumerable<T>;
+      const itemDelimeter: string;
+      const Converter: TConversion<T>
+    ): string;
   end;
 
 
@@ -449,6 +463,27 @@ begin
   begin
     Result := Result + itemDelimeter + Converter(Values[L]);
     Inc(L);
+  end;
+end;
+
+class function TArrayUtils.Join2<T>(
+  const Values: TEnumerable<T>;
+  const itemDelimeter: string;
+  const Converter: TConversion<T>
+  ): string;
+var
+  Enum: TEnumerator<T>;
+begin
+  Enum := Values.GetEnumerator();
+  try
+    if Enum.MoveNext then
+    begin
+      Result := Converter(Enum.Current);
+      while Enum.MoveNext do
+        Result := Result + itemDelimeter + Converter(Enum.Current);
+    end;
+  finally
+    Enum.Free;
   end;
 end;
 

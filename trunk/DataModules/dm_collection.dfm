@@ -65,9 +65,6 @@ object DMCollection: TDMCollection
     Exclusive = False
     Left = 496
     Top = 96
-    object GenresG_ID: TAutoIncField
-      FieldName = 'G_ID'
-    end
     object GenresGenreCode: TWideStringField
       FieldName = 'GenreCode'
     end
@@ -148,9 +145,6 @@ object DMCollection: TDMCollection
     Exclusive = False
     Left = 56
     Top = 352
-    object BookGenres_ListGL_ID: TAutoIncField
-      FieldName = 'GL_ID'
-    end
     object BookGenres_ListGenreCode: TWideStringField
       FieldName = 'GenreCode'
       Size = 30
@@ -188,9 +182,6 @@ object DMCollection: TDMCollection
     MasterSource = dsGenres
     Left = 496
     Top = 152
-    object GenreBooksGL_ID: TAutoIncField
-      FieldName = 'GL_ID'
-    end
     object GenreBooksGenreCode: TWideStringField
       FieldName = 'GenreCode'
       Size = 30
@@ -356,9 +347,6 @@ object DMCollection: TDMCollection
     MasterSource = dsBookGenres_List
     Left = 56
     Top = 408
-    object BookGenresG_ID: TAutoIncField
-      FieldName = 'G_ID'
-    end
     object BookGenresGenreCode: TWideStringField
       FieldName = 'GenreCode'
     end
@@ -739,6 +727,31 @@ object DMCollection: TDMCollection
     end
     object AllExtraProgress: TIntegerField
       FieldName = 'Progress'
+    end
+  end
+  object AllGenres: TABSTable
+    CurrentVersion = '6.05 '
+    DatabaseName = 'Collection'
+    InMemory = False
+    ReadOnly = False
+    TableName = 'Genres'
+    Exclusive = False
+    Left = 688
+    Top = 264
+    object AllGenresGenreCode: TWideStringField
+      FieldName = 'GenreCode'
+      Required = True
+    end
+    object AllGenresParentCode: TWideStringField
+      FieldName = 'G_ParentCode'
+    end
+    object AllGenresFB2Code: TWideStringField
+      FieldName = 'G_FB2Code'
+    end
+    object AllGenresAlias: TWideStringField
+      FieldName = 'G_Alias'
+      Required = True
+      Size = 50
     end
   end
 end

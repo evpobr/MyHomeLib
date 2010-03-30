@@ -321,8 +321,8 @@ begin
     MaskElements[7].value := '';
 
   MaskElements[8].templ := 's';
-  if R.Series <> NO_SERIES_TITLE then
-    MaskElements[8].value := Trim(R.Series)
+  if R.Serie <> NO_SERIES_TITLE then
+    MaskElements[8].value := Trim(R.Serie)
   else
     MaskElements[8].value := '';
 

@@ -220,7 +220,7 @@ begin
     Booktitle.Text := FBookRecord.Title;
     Keywords.Text := FBookRecord.KeyWords;
     Lang := FBookRecord.Lang;
-    FBD.AddSeries(sltBook, FBookRecord.Series, FBookRecord.SeqNumber);
+    FBD.AddSeries(sltBook, FBookRecord.Serie, FBookRecord.SeqNumber);
 
     Genre.Clear;
     for I := 0 to High(FBookRecord.Genres) do

@@ -125,7 +125,7 @@ begin
     if Sequence.Count > 0 then
     begin
       try
-        R.Series := Sequence[0].Name;
+        R.Serie := Sequence[0].Name;
         R.SeqNumber := Sequence[0].Number;
       except
       end;

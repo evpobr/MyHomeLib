@@ -448,7 +448,7 @@ begin
 
   frmGenreTree.GetSelectedGenres(FBookRecord);
   FBookRecord.Title := edT.Text;
-  FBookRecord.Series := cbSeries.Text;
+  FBookRecord.Serie := cbSeries.Text;
   if Data.Folder <> '\' then
     FBookRecord.Folder := Data.Folder
   else

@@ -18,21 +18,59 @@ unit unit_Messages;
 interface
 
 uses
+  Windows,
   Messages;
 
 const
   WM_MHL_BASE = WM_APP + $0500;
 
-  WM_MHL_DOWNLOAD_COMPLETE = WM_MHL_BASE + 0;
+  WM_MHL_CHANGELOCALSTATUS = WM_MHL_BASE + 0;
 
 type
-  TDownloadCompleteMessage = packed record
-    Msg: Cardinal;
+  PBookLocalStatus = ^TBookLocalStatus;
+  TBookLocalStatus = record
     BookID: Integer;
-    Downloaded: Longbool;
+    DatabaseID: Integer;
+    LocalStatus: Boolean;
+  end;
+
+  TLocalStatusChangedMessage = packed record
+    Msg: Cardinal;
+    Unused: WPARAM;
+    Params: PBookLocalStatus;
     Result: Longint;
   end;
 
+procedure BookLocalStatusChanged(
+  BookID: Integer;
+  DatabaseID: Integer;
+  LocalStatus: Boolean
+);
+
 implementation
+
+uses
+  Forms;
+
+procedure BookLocalStatusChanged(
+  BookID: Integer;
+  DatabaseID: Integer;
+  LocalStatus: Boolean
+);
+var
+  Param: PBookLocalStatus;
+begin
+  New(Param);
+  Param^.BookID := BookID;
+  Param^.DatabaseID := DatabaseID;
+  Param^.LocalStatus := LocalStatus;
+
+  PostMessage(
+    Application.MainFormHandle,
+    WM_MHL_CHANGELOCALSTATUS,
+    0,
+    LPARAM(Param)
+  );
+end;
 
 end.
