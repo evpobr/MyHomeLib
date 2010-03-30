@@ -27,13 +27,11 @@ type
     FList: TStringList;
     FRootPath: string;
 
-  protected
     procedure OnFile(Sender: TObject; const F: TSearchRec);
+    function FindNewFolder(const FileName: string): string;
+
+  protected
     procedure WorkFunction; override;
-    function FindNewFolder(const FileName: String):String;
-
-  public
-
   end;
 
 implementation
@@ -46,14 +44,14 @@ uses
 
 { TImportXMLThread }
 
-function TSyncFoldersThread.FindNewFolder(const FileName: String): String;
+function TSyncFoldersThread.FindNewFolder(const FileName: string): string;
 var
-  i: integer;
+  i: Integer;
 begin
   Result := '*';
-  for I := 0 to FList.Count - 1 do
-    if pos(FileName, FList[i]) <> 0 then
-      Result := ExtractRelativePath(FRootPath,ExtractFilePath(FList[i]));
+  for i := 0 to FList.Count - 1 do
+    if Pos(FileName, FList[i]) <> 0 then
+      Result := ExtractRelativePath(FRootPath, ExtractFilePath(FList[i]));
 end;
 
 procedure TSyncFoldersThread.OnFile(Sender: TObject; const F: TSearchRec);
@@ -65,9 +63,9 @@ procedure TSyncFoldersThread.WorkFunction;
 var
   totalBooks: Integer;
   processedBooks: Integer;
-  FileName: String;
-  Folder: String;
-  NewFolder: String;
+  FileName: string;
+  Folder: string;
+  NewFolder: string;
 begin
   totalBooks := dmCollection.tblBooks.RecordCount;
   processedBooks := 0;
@@ -87,7 +85,7 @@ begin
       while not dmCollection.tblBooks.Eof do
       begin
         if Canceled then
-            Exit;
+          Exit;
 
         Folder := dmCollection.tblBooksFolder.Value;
         if  ExtractFileExt(dmCollection.tblBooksFileName.Value) <> ZIP_EXTENSION then
@@ -112,6 +110,7 @@ begin
             SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
         SetProgress(processedBooks * 100 div totalBooks);
       end;
+
       SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
     finally
       FList.Free;

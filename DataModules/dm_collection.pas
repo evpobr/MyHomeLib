@@ -162,13 +162,17 @@ type
     AllGenresFB2Code: TWideStringField;
     AllGenresAlias: TWideStringField;
 
-  private
+  strict private
     FIsFavorites: Boolean;
     FActiveTable: TABSTable;
 
-  strict private
+    // TDMCollection.AddBookToGroup
     function GetBookGenres(BookID: Integer): string; overload; deprecated;
+    // TDMCollection.AddBookToGroup
     function FullAuthorsString(BookID: Integer): string; deprecated;
+
+    // TDMCollection.GetCurrentBook
+    property ActiveTable: TABSTable read FActiveTable;
 
   private type
     TUpdateExtraProc = reference to procedure;
@@ -181,18 +185,26 @@ type
     procedure GetBookGenres(BookID: Integer; var BookGenres: TBookGenres; RootGenre: PGenreRecord = nil); overload;
 
   public
+    // TDownloader.Download
     procedure GetBookFolder(ID: Integer; out AFolder: string); deprecated;
+    // TfrmMain.tvBooksTreeChange
+    // TfrmMain.tbtbnReadClick
+    // TfrmMain.tbtbnReadClick
+    // TfrmMain.miDeleteBookClick
+    // TDownloader.Download
     procedure GetBookFileName(ID: Integer; out AFile, AFolder, AExt: string; out ANo: Integer); deprecated;
 
+    // TfrmMain.FormCreate
+    // TfrmMain.pgControlChange
     procedure SetActiveTable(Tag: Integer); deprecated;
-    property ActiveTable: TABSTable read FActiveTable;
-    function GetGenreCode(BookID: Integer): string; deprecated;
 
+    // TDownloader.ParseCommand
     procedure FieldByName(AID: Integer; const AField: string; out ARes: string); overload; deprecated;
 
-    function FullName(BookID: Integer): string; deprecated;
-    function AuthorID(BookID: Integer): Integer; deprecated;
-
+    // TExport2XMLThread.WorkFunction
+    // TExport2INPXThread.WorkFunction
+    // WriteFb2InfoToFile
+    // TfrmConvertToFBD.PrepareForm
     procedure GetCurrentBook(var R: TBookRecord); overload; deprecated;
 
     procedure SetTableState(State: Boolean);
@@ -273,29 +285,11 @@ begin
   end
 end;
 
-function TDMCollection.FullName(BookID: Integer): string;
-begin
-  if BookID <> 0 then
-    BookAuthors_List.Locate(BOOK_ID_FIELD, BookID, []);
-  Result := Trim(TAuthorRecord.FormatName(
-    BookAuthorLastName.Value,
-    BookAuthorFirstName.Value,
-    BookAuthorMiddleName.Value
-  ));
-end;
-
 procedure TDMCollection.FieldByName(AID: Integer; const AField: String; out ARes: String);
 begin
   if AID <> 0 then
     FActiveTable.Locate(BOOK_ID_FIELD, AID, []);
   ARes := FActiveTable.FieldByName(AField).AsString;
-end;
-
-function TDMCollection.AuthorID(BookID: Integer): Integer;
-begin
-  if BookID <> 0 then
-    BookAuthors_List.Locate(BOOK_ID_FIELD, BookID, []);
-  Result := BookAuthors_ListAuthorID.Value;
 end;
 
 procedure TDMCollection.GetBookFileName(ID: Integer; out AFile: string; out AFolder: string; out AExt: string; out ANo: Integer);
@@ -327,12 +321,6 @@ begin
   end;
   Delete(S, Length(S) - 2, 3);
   Result := S;
-end;
-
-function TDMCollection.GetGenreCode(BookID: Integer): string;
-begin
-  BookGenres_List.Locate(BOOK_ID_FIELD, BookID, []);
-  Result := BookGenresGenreCode.Value;
 end;
 
 procedure TDMCollection.GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
@@ -457,7 +445,6 @@ begin
   end
   else
   begin
-    Assert(False);
     Genre.GenreCode := UNKNOWN_GENRE_CODE;
     Genre.GenreFb2Code := '';
     Genre.Alias := '';

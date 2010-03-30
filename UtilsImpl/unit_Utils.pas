@@ -18,8 +18,11 @@ uses
   Dialogs;
 
 procedure SyncOnLineFiles;
+
 procedure SyncFolders;
-function LibrusecUpdate: boolean;
+
+function LibrusecUpdate: Boolean;
+
 procedure ShowPopup(const Msg: string);
 procedure HidePopup;
 
@@ -30,6 +33,7 @@ implementation
 uses
   Controls,
   Forms,
+  dm_user,
   unit_SyncOnLineThread,
   frm_SyncOnLineProgressForm,
   unit_SyncFoldersThread,
@@ -45,6 +49,9 @@ var
 begin
   worker := TSyncOnLineThread.Create;
   try
+    worker.CollectionID := DMUser.ActiveCollection.ID;
+    worker.CollectionRoot := DMUser.ActiveCollection.RootPath;
+
     frmProgress := TSyncOnLineProgressForm.Create(Application);
     try
       frmProgress.WorkerThread := worker;

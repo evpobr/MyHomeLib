@@ -154,12 +154,12 @@ begin
 
       if Canceled then
       begin
-        DeleteFile(Settings.WorkPath + Settings.Updates.Items[i].FileName);
+        DeleteFile(Settings.WorkPath + Settings.Updates.Items[i].UpdateFile);
         Teletype('Операция отменена пользователем.', tsInfo);
         Exit;
       end;
 
-      InpxFileName := Settings.UpdatePath + FileName;
+      InpxFileName := Settings.UpdatePath + UpdateFile;
 
       DBFileName := DMUser.CurrentCollection.DBFileName;
       CollectionRoot :=  IncludeTrailingPathDelimiter(DMUser.CurrentCollection.RootFolder);
@@ -199,16 +199,16 @@ begin
     Teletype(rstrUpdateComplete,tsInfo);
     for I := 0 to Settings.Updates.Count - 1 do
     with Settings.Updates.Items[i] do
-      if FileExists(Settings.UpdatePath + FileName) then
-        if FileName <> 'librusec_update.zip' then
-          DeleteFile(Settings.UpdatePath + FileName)
+      if FileExists(Settings.UpdatePath + UpdateFile) then
+        if UpdateFile <> 'librusec_update.zip' then
+          DeleteFile(Settings.UpdatePath + UpdateFile)
         else
           ReplaceFiles;
 
      SetComment(rstrReady);
   except
     on E: Exception do
-      DeleteFile(Settings.WorkPath + Settings.Updates.Items[i].FileName);
+      DeleteFile(Settings.WorkPath + Settings.Updates.Items[i].UpdateFile);
   end;
 end;
 

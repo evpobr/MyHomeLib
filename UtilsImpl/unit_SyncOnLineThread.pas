@@ -22,12 +22,17 @@ uses
 type
   TSyncOnLineThread = class(TWorker)
   private
+    FCollectionID: Integer;
+    FCollectionRoot: string;
+
+    procedure SetCollectionRoot(const Value: string);
 
   protected
     procedure WorkFunction; override;
 
   public
-
+    property CollectionID: Integer read FCollectionID write FCollectionID;
+    property CollectionRoot: string read FCollectionRoot write SetCollectionRoot;
   end;
 
 implementation
@@ -44,10 +49,13 @@ uses
 
 { TImportXMLThread }
 
+procedure TSyncOnLineThread.SetCollectionRoot(const Value: string);
+begin
+  FCollectionRoot := IncludeTrailingPathDelimiter(Value);
+end;
+
 procedure TSyncOnLineThread.WorkFunction;
 var
-  DatabaseID: Integer;
-  Root: string;
   BookFile: string;
 
   totalBooks: Integer;
@@ -57,14 +65,12 @@ var
 begin
   totalBooks := dmCollection.tblBooks.RecordCount;
   processedBooks := 0;
-  DatabaseID := DMUser.ActiveCollection.ID;
-  Root := DMUser.ActiveCollection.RootPath;
 
   dmCollection.tblBooks.First;
   while not dmCollection.tblBooks.Eof do
   begin
     if Canceled then
-        Exit;
+      Exit;
 
     try
       //
@@ -72,7 +78,7 @@ begin
       //
       // TODO -cBug: это работает не всегда. См. схему хранения расположения книги
       //
-      BookFile := TPath.Combine(Root, dmCollection.tblBooksFolder.Value);
+      BookFile := TPath.Combine(FCollectionRoot, dmCollection.tblBooksFolder.Value);
       IsLocal := FileExists(BookFile);
 
       if Settings.DeleteDeleted and IsLocal and dmCollection.tblBooksDeleted.Value then
@@ -82,9 +88,9 @@ begin
       end;
 
       if dmCollection.tblBooksLocal.Value <> IsLocal then
-        unit_Messages.BookLocalStatusChanged(dmCollection.tblBooksId.Value, DatabaseID, IsLocal);
+        unit_Messages.BookLocalStatusChanged(dmCollection.tblBooksId.Value, FCollectionID, IsLocal);
     except
-      on E:Exception do
+      on E: Exception do
         Application.MessageBox(PChar('Какие-то проблемы с книгой ' + BookFile), '', MB_OK);
     end;
 
