@@ -259,7 +259,7 @@ begin
     strAuthors                           + FieldDelimiterChar + // 0 - authors list
     strGenres                            + FieldDelimiterChar + // 1 - genres list
     Trim(R.Title)                        + FieldDelimiterChar + // 2 - book title
-    Trim(R.Series)                       + FieldDelimiterChar + // 3 - book serie title
+    Trim(R.Serie)                        + FieldDelimiterChar + // 3 - book serie title
     IntToStr(R.SeqNumber)                + FieldDelimiterChar + // 4 - book serie no
     CheckSymbols(Trim(R.FileName))       + FieldDelimiterChar + // 5 - book filename
     IntToStr(R.Size)                     + FieldDelimiterChar + // 6 - unpacked book filesize

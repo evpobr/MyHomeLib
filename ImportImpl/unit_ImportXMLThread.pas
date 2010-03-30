@@ -113,7 +113,7 @@ begin
             R.AddGenreFB2(Book.GenreList.Items[j].MHL_Code, Book.GenreList.Items[j].Fb2_Code, '');
 
           R.Title := Book.Title;
-          R.Series := Book.Series;
+          R.Serie := Book.Series;
           R.SeqNumber := Book.No;
           R.Folder := Book.File_.Folder;
           R.FileName := Book.File_.Name;

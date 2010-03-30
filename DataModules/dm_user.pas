@@ -193,7 +193,6 @@ type
     //
     //
     function GetBookSerie(BookID: Integer; DatabaseID: Integer; SerieID: Integer): string;
-    procedure FillBookData(BookID: Integer; DatabaseID: Integer; Data: PBookData);
     procedure GetBookRecord(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord);
 
     procedure SetRate(BookID: Integer; DatabaseID: Integer; Rate: Integer);
@@ -714,40 +713,6 @@ begin
     Result := '';
 end;
 
-procedure TDMUser.FillBookData(BookID: Integer; DatabaseID: Integer; Data: PBookData);
-begin
-  Assert(AllBooks.Active);
-  if AllBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
-  begin
-    Data^.BookID := BookID;
-    Data^.DatabaseID := DatabaseID;
-    Data^.SerieID := AllBooksSerieID.Value;
-    Data^.Title := AllBooksTitle.Value;
-    Data^.Series := AllBooksSeries.Value;
-    Data^.Genre := AllBooksGenres.Value;
-    Data^.FullName := AllBooksFullName.Value;
-    Data^.FileType := AllBooksExt.Value;
-    Delete(Data^.FileType, 1, 1);
-    Data^.Lang := AllBooksLang.Value;
-    Data^.Size := AllBooksSize.Value;
-    Data^.Rate := AllBooksRate.Value;
-    Data^.No := AllBooksSeqNumber.Value;
-    Data^.Progress := AllBooksProgress.Value;
-    Data^.LibRate := AllBooksLibRate.Value;
-    Data^.Code := AllBooksCode.Value;
-    Data^.Locale := AllBooksLocal.Value;
-    Data^.Deleted := AllBooksDeleted.Value;
-    Data^.Date := AllBooksDate.Value;
-
-    if SelectCollection(DatabaseID) then
-      Data^.CollectionName := CurrentCollection.Name
-    else
-      Data^.CollectionName := 'неизвестная коллекция';
-  end
-  else
-    Assert(False);
-end;
-
 procedure TDMUser.GetBookRecord(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord);
 begin
   Assert(AllBooks.Active);
@@ -758,7 +723,7 @@ begin
     BookRecord.FileName := AllBooksFileName.Value;
     BookRecord.FileExt := AllBooksExt.Value;
     BookRecord.InsideNo := AllBooksInsideNo.Value;
-    BookRecord.Series := AllBooksSeries.Value;
+    BookRecord.Serie := AllBooksSeries.Value;
     BookRecord.SeqNumber := AllBooksSeqNumber.Value;
     BookRecord.Code := AllBooksCode.Value;
     BookRecord.Size := AllBooksSize.Value;
@@ -772,9 +737,16 @@ begin
     BookRecord.URI := AllBooksURI.Value;
 
     //BookRecord.Annotation := ???;
+    BookRecord.Rate := AllBooksRate.Value;
+    BookRecord.Progress := AllBooksProgress.Value;
 
     BookRecord.AddGenreFB2('', '', AllBooksGenres.Value);
     BookRecord.AddAuthor(AllBooksFullName.Value, '', '');
+
+    if SelectCollection(DatabaseID) then
+      BookRecord.CollectionName := CurrentCollection.Name
+    else
+      BookRecord.CollectionName := 'неизвестная коллекция';
   end
   else
     Assert(False);

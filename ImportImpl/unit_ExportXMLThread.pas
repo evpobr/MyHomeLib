@@ -87,7 +87,7 @@ begin
 
     FBook := FCollection.BookList.Add;
     FBook.Title := R.Title;
-    FBook.Series := R.Series;
+    FBook.Series := R.Serie;
     FBook.File_.Inside_no := R.InsideNo;
     FBook.No := R.SeqNumber;
     FBook.File_.Folder := R.Folder;

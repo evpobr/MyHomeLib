@@ -90,7 +90,7 @@ begin
     begin
       SetComment2('Подключение...', '');
 
-      FBookIdList[i].Res := FDownloader.Download(FBookIdList[i].BookID);
+      FBookIdList[i].Res := FDownloader.Download(FBookIdList[i].BookID, FBookIdList[i].DatabaseID);
       if
         (not Canceled) and                // это реальная ошибка, а не отмена операции пользователем
         (not FBookIdList[i].Res) and      //

@@ -62,7 +62,7 @@ type
     property Genre: string read GetGenre write SetGenre;
     property Folder: string read GetFolder write SetFolder;
     property FileName: string read GetFileName write SetFileName;
-    property HideFileInfo: Boolean write Set_FileInfoVisible;
+    property ShowFileInfo: Boolean write Set_FileInfoVisible;
   end;
 
   TMHLInfoPanel2 = class(TCustomPanel)

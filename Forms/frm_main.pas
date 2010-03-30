@@ -581,7 +581,8 @@ type
     procedure FreeDownloadNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
 
   protected
-    procedure OnBookDownloadComplete(var message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
+    procedure WMGetSysCommand(var Message: TMessage); message WM_SYSCOMMAND;
+    procedure OnChangeLocalStatus(var Message: TLocalStatusChangedMessage); message WM_MHL_CHANGELOCALSTATUS;
 
   private type
     TView = (ByAuthorView, BySeriesView, ByGenreView, SearchView, FavoritesView, DownloadView);
@@ -605,6 +606,7 @@ type
     // ѕостроение деревьев
     //
     procedure FillSeriesTree;
+
     procedure FillBooksTree(
       const Tree: TVirtualStringTree;
       const Master: TDataset;
@@ -634,20 +636,18 @@ type
 
     function IsLibRusecEdit(ID: Integer): Boolean;
 
-    procedure WMGetSysCommand(var message: TMessage); message WM_SYSCOMMAND;
-
   private type
     TNodeUpdateProc = reference to procedure(Data: PBookData);
 
-  private
+  strict private
     procedure UpdateNodes(BookID: Integer; DatabaseID: Integer; UpdateProc: TNodeUpdateProc);
 
+    procedure SetBookLocalStatus(BookID: Integer; DatabaseID: Integer; IsLocal: Boolean);
+
   public
-    FCancelled: Boolean;
-
     procedure FillAuthorTree(Tree: TVirtualStringTree; FullMode: Boolean = False);
-
     procedure FillGenresTree(Tree: TVirtualStringTree; FillFB2: Boolean = False);
+
     procedure DisableControls(State: Boolean);
 
     function HH(Command: Word; Data: Integer; var CallHelp: Boolean): Boolean;
@@ -685,7 +685,6 @@ type
     FLastBookRecord: TBookRecord;
 
     //
-    function GetBookNode(const Tree: TVirtualStringTree; BookID: Integer): PVirtualNode; overload;
     function GetBookNode(const Tree: TVirtualStringTree; BookID: Integer; DatabaseID: Integer): PVirtualNode; overload;
 
     procedure FillBookIdList(const Tree: TVirtualStringTree; var BookIDList: TBookIdList);
@@ -699,7 +698,6 @@ type
     function CheckLibUpdates(Auto: Boolean): Boolean;
     procedure GetActiveViewComponents(var Tree: TVirtualStringTree; var Panel: TMHLInfoPanel; var Cover: TMHLCoverPanel);
     procedure SetCoversVisible(State: Boolean);
-    procedure RefreshBooksState(Tree: TVirtualStringTree; const BookIDList: TBookIdList);
     procedure SetColumns;
     procedure SaveColumns;
     function GetTreeTag(const Sender: TBaseVirtualTree; const Column: Integer): Integer;
@@ -2208,19 +2206,19 @@ begin
   Assert(Assigned(Data));
   case Tag of
     COL_AUTHOR:
-      Result := Data^.FullName;
+      Result := Data^.GetAuthors;
     COL_TITLE:
       Result := Data^.Title;
     COL_SERIES:
-      Result := Data^.Series;
+      Result := Data^.Serie;
     COL_NO:
-      Result := IfThen(Data^.No = 0, '', IntToStr(Data^.No));
+      Result := IfThen(Data^.SeqNumber = 0, '', IntToStr(Data^.SeqNumber));
     COL_SIZE:
       Result := GetFormattedSize(Data^.Size);
     COL_DATE:
       Result := DateToStr(Data^.Date);
     COL_GENRE:
-      Result := Data^.Genre;
+      Result := Data^.GetGenres;
     COL_TYPE:
       Result := Data^.FileType;
     COL_LANG:
@@ -2264,7 +2262,7 @@ begin
     if Node.ChildCount > 0 then
       case GetTreeTag(Sender, Column) of
         COL_TITLE:
-          CellText := Data.Series;
+          CellText := Data^.Serie;
       end
     else
       CellText := GetText(GetTreeTag(Sender, Column), Data);
@@ -2318,24 +2316,24 @@ begin
   CellText := ' ';
   Tag := GetTreeTag(Sender, Column);
   if Settings.TreeModes[PAGE_GENRES] = tmTree then
-    case Data.nodeType of
+    case Data^.nodeType of
       ntAuthorInfo:
         if Tag = COL_TITLE then
-          CellText := Data.FullName;
+          CellText := Data^.GetAuthors;
       ntSeriesInfo:
         if Tag = COL_TITLE then
-          CellText := '—ери€: ' + Data.Series;
+          CellText := '—ери€: ' + Data^.Serie;
       ntBookInfo:
         case Tag of
           COL_TITLE:
-            CellText := Data.Title;
+            CellText := Data^.Title;
           COL_NO:
-            if Data.No <> 0 then
-              CellText := IntToStr(Data.No);
+            if Data^.SeqNumber <> 0 then
+              CellText := IntToStr(Data^.SeqNumber);
           COL_SIZE:
-            CellText := GetFormattedSize(Data.Size);
+            CellText := GetFormattedSize(Data^.Size);
           COL_GENRE:
-            CellText := Data.Genre;
+            CellText := Data^.GetGenres;
         end;
     end
   else
@@ -2365,19 +2363,19 @@ begin
 
   CellText := '';
   if Settings.TreeModes[Page] = tmTree then
-    case Data.nodeType of
+    case Data^.nodeType of
       ntAuthorInfo:
         begin
           case GetTreeTag(Sender, Column) of
             COL_TITLE:
-              CellText := Data^.FullName;
+              CellText := Data^.GetAuthors;
           end;
         end;
 
       ntSeriesInfo:
         begin
           if GetTreeTag(Sender, Column) = COL_TITLE then
-            CellText := '—ери€: ' + Data^.Series;
+            CellText := '—ери€: ' + Data^.Serie;
         end;
 
       ntBookInfo:
@@ -2399,18 +2397,18 @@ begin
   CellText := ' ';
   case Column of
     0:
-      CellText := Data.FullName;
+      CellText := Data^.GetAuthors;
     1:
       CellText := Data.Title;
     2:
-      CellText := Data.Series;
+      CellText := Data.Serie;
     3:
-      if Data.No <> 0 then
-        CellText := IntToStr(Data.No);
+      if Data.SeqNumber <> 0 then
+        CellText := IntToStr(Data^.SeqNumber);
     4:
       CellText := GetFormattedSize(Data.Size);
     6:
-      CellText := Data.Genre;
+      CellText := Data^.GetGenres;
     7:
       CellText := DateToStr(Data.Date);
   end;
@@ -2729,26 +2727,21 @@ begin
 
   dmCollection.GetBookFileName(Data^.BookID, FileName, Folder, Ext, No);
 
+  Folder := TPath.Combine(FCollectionRoot, Folder);
+
+  InfoPanel.Author := Data^.GetAuthors;
   InfoPanel.Title := Data^.Title;
-  // InfoPanel.Author := Data.ID);
-
-  InfoPanel.Genre := Data^.Genre;
-  InfoPanel.FileName := FileName;
-
-  InfoPanel.HideFileInfo := Data^.Locale or not isOnlineCollection(DMUser.ActiveCollection.CollectionType);
-
-  if ActiveView = FavoritesView then
+  InfoPanel.Genre := Data^.GetGenres;
+  if Data^.Local or not isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
   begin
+    InfoPanel.FileName := FileName;
     InfoPanel.Folder := Folder;
-    InfoPanel.Author := Data^.FullName;
+    InfoPanel.ShowFileInfo := True;
   end
   else
-  begin
-    InfoPanel.Folder := TPath.Combine(FCollectionRoot, Folder);
-    InfoPanel.Author := dmCollection.FullAuthorsString(Data^.BookID);
-  end;
+    InfoPanel.ShowFileInfo := False;
 
-  CoverOK := Cover.Show(InfoPanel.Folder, InfoPanel.FileName, No);
+  CoverOK := Cover.Show(Folder, FileName, No);
 
   if IsPrivate and IsNonFB2 then
   begin
@@ -2773,13 +2766,13 @@ begin
   Data1 := Sender.GetNodeData(Node1);
   Data2 := Sender.GetNodeData(Node2);
   case (Sender as TVirtualStringTree).Header.Columns[Column].Tag of
-    COL_AUTHOR:  Result := CompareStr(Data1.FullName, Data2.FullName);
+    COL_AUTHOR:  Result := CompareStr(Data1^.GetAuthors, Data2^.GetAuthors);
     COL_TITLE:   Result := CompareStr(Data1.Title, Data2.Title);
-    COL_SERIES:  Result := CompareStr(Data1.Series, Data2.Series);
-    COL_NO:      Result := CompareInt(Data1.No, Data2.No);
+    COL_SERIES:  Result := CompareStr(Data1.Serie, Data2.Serie);
+    COL_NO:      Result := CompareInt(Data1^.SeqNumber, Data2^.SeqNumber);
     COL_SIZE:    Result := CompareInt(Data1.Size, Data2.Size);
     COL_RATE:    Result := CompareInt(Data1.Rate, Data2.Rate);
-    COL_GENRE:   Result := CompareStr(Data1.Genre, Data2.Genre);
+    COL_GENRE:   Result := CompareStr(Data1^.GetGenres, Data2^.GetGenres);
     COL_DATE:    Result := CompareDate(Data1.Date, Data2.Date);
     COL_LANG:    Result := CompareStr(Data1.Lang, Data2.Lang);
     COL_LIBRATE: Result := CompareInt(Data1.LibRate, Data2.LibRate);
@@ -2795,14 +2788,14 @@ begin
   Assert(Assigned(Data));
 
   Color := Settings.BGColor;
-  case Data.nodeType of
+  case Data^.nodeType of
     ntAuthorInfo:
       Color := Settings.AuthorColor;
     ntSeriesInfo:
       Color := Settings.SeriesColor;
     ntBookInfo:
       begin
-        if Data.Series = '' then
+        if Data^.Serie = '' then
           Color := Settings.BookColor
         else
           Color := Settings.SeriesBookColor;
@@ -2860,7 +2853,7 @@ begin
 
   if (Tag = COL_STATE) then
   begin
-    if isOnlineCollection(DMUser.ActiveCollection.CollectionType) and (Data.Locale) then
+    if isOnlineCollection(DMUser.ActiveCollection.CollectionType) and (Data^.Local) then
       ilFileTypes.Draw(TargetCanvas, X, CellRect.Top + 1, 7);
     if Data.Progress = 100 then
       ilFileTypes.Draw(TargetCanvas, X + 10, CellRect.Top, 8);
@@ -2893,7 +2886,7 @@ begin
     begin
       BookTreeStatus := bsBusy;
       Data := Tree.GetNodeData(Node);
-      if Data.nodeType = ntBookInfo then
+      if Data^.nodeType = ntBookInfo then
         if Tree.CheckState[Node] = csCheckedNormal then
           Tree.CheckState[Node] := csUncheckedNormal
         else
@@ -3044,7 +3037,7 @@ begin
       while Assigned(Node) do
       begin
         Data := Tree.GetNodeData(Node);
-        if Data.nodeType = ntBookInfo then
+        if Data^.nodeType = ntBookInfo then
         begin
           if Tree.CheckState[Node] = csCheckedNormal then
             Tree.CheckState[Node] := csUncheckedNormal
@@ -3070,7 +3063,7 @@ begin
     TargetCanvas.Font.Style := [fsBold]
   else if not Sender.Selected[Node] then
   begin
-    if Data.Locale then
+    if Data^.Local then
       TargetCanvas.Font.Color := Settings.LocalColor;
     if Data.Deleted then
       TargetCanvas.Font.Color := Settings.DeletedColor;
@@ -3235,7 +3228,7 @@ begin
       Data := Tree.GetNodeData(Node);
       if IsSelectedBookNode(Node, Data) then
       begin
-        DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, R);
+        DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, R, True);
         ALibrary.InsertBook(R, True, True);
       end;
 
@@ -3300,7 +3293,6 @@ var
   Tree: TVirtualStringTree;
   ExportMode: TExportMode;
 begin
-  FCancelled := False;
   GetActiveTree(Tree);
   FillBookIdList(Tree, BookIDList);
 
@@ -3375,13 +3367,7 @@ begin
   end;
 
   if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
-  begin
     unit_ExportToDevice.DownloadBooks(BookIDList);
-    RefreshBooksState(Tree, BookIDList);
-    if FCancelled then
-      Exit;
-  end;
-
   unit_ExportToDevice.ExportToDevice(Settings.DeviceDir, BookIDList, ExportMode, Files);
 
   if (ScriptID >= 0) and (Settings.Scripts[ScriptID].Path <> '%COPY%') then
@@ -3413,8 +3399,6 @@ begin
 
   FillBookIdList(Tree, BookIDList);
   unit_ExportToDevice.DownloadBooks(BookIDList);
-
-  RefreshBooksState(Tree, BookIDList);
 end;
 
 procedure TfrmMain.tbtbnReadClick(Sender: TObject);
@@ -3470,18 +3454,18 @@ begin
           if not FileExists(Panel.Folder) then
             Exit; // если файла нет, значит закачка не удалась, и юзер об  этом уже знает
         end;
-        ID := Data.BookID;
+        ID := Data^.BookID;
       end; // if .. else
 
       if not FileExists(Panel.Folder) then
         raise EInvalidOp.Create('јрхив ' + Panel.Folder + ' не найден!');
 
-      dmCollection.GetBookFileName(Data.BookID, FileName, Folder, Ext, No);
+      dmCollection.GetBookFileName(Data^.BookID, FileName, Folder, Ext, No);
 
-      if ActiveView = FavoritesView then
-        WorkFile := Settings.ReadPath + Format('%s - %s.%d%s', [CheckSymbols(DMUser.GroupedBooksFullName.Value), CheckSymbols(Panel.Title), ID, Ext])
-      else
-        WorkFile := Settings.ReadPath + Format('%s - %s.%d%s', [CheckSymbols(dmCollection.FullName(Data.BookID)), CheckSymbols(Panel.Title), ID, Ext]);
+      Assert(Length(Data^.Authors) > 0);
+      WorkFile :=
+        Settings.ReadPath +
+        Format('%s - %s.%d%s', [CheckSymbols(Data^.Authors[0].GetFullName), CheckSymbols(Data^.Title), ID, Ext]);
 
       if not FileExists(WorkFile) then
       begin
@@ -3772,7 +3756,7 @@ begin
     Tree.Selected[NewNode] := True;
     Data := Tree.GetNodeData(NewNode);
     FLastActiveBookID := Data^.BookID;
-  until Data.nodeType = ntBookInfo;
+  until Data^.nodeType = ntBookInfo;
 
   PrepareFb2EditData(Data, FLastBookRecord);
 end;
@@ -3816,6 +3800,7 @@ var
   BookID: Integer;
   SerieID: Integer;
   DatabaseID: Integer;
+  BookRecord: TBookRecord;
 
   function GetColumns: TColumnSet;
   var
@@ -3920,22 +3905,22 @@ begin
               if IsGroupView then
                 DatabaseID := DatabaseIDField.AsInteger;
 
+              DMCollection.GetBookRecord(BookID, DatabaseID, BookRecord, True);
+
               // обрабатываемое дерево не об€зательно находитс€ на активной вкладке!
               // это относитс€ ко всем последующим проверкам
-              if IsGroupView then
-                Author := DetailTable.FieldByName('FullName').AsString
-              else
-                Author := dmCollection.FullAuthorsString(BookID);
-
               if ShowAuth then
               begin
+                Author := BookRecord.GetAutorsList;
+
                 if LastAuthor <> Author then
                 begin
                   authorNode := Tree.AddChild(nil);
                   Data := Tree.GetNodeData(authorNode);
 
                   Data^.nodeType := ntAuthorInfo;
-                  Data^.FullName := Author;
+
+                  Data^.Authors := BookRecord.Authors;
 
                   LastAuthor := Author;
                   LastSeries := nil;
@@ -3975,9 +3960,9 @@ begin
                     // заполним данные о серии
                     //
                     Data := Tree.GetNodeData(seriesNode);
-                    Data.nodeType := ntSeriesInfo;
-                    Data.SerieID := SerieID;
-                    Data.Series := DMCollection.GetBookSerie(BookID, DatabaseID, SerieID);
+                    Data^.nodeType := ntSeriesInfo;
+                    Data^.SerieID := SerieID;
+                    Data^.Serie := BookRecord.Serie;
 
                     LastSeries := seriesNode;
                   end;
@@ -3991,7 +3976,10 @@ begin
               //
               bookNode := Tree.AddChild(seriesNode);
               Data := Tree.GetNodeData(bookNode);
-              DMCollection.FillBookData(BookID, DatabaseID, Data);
+              BookRecord.FillBookData(Data);
+              Data^.BookID := BookID;
+              Data^.DatabaseID := DatabaseID;
+              Data^.SerieID := SerieID;
 
               Inc(i);
               spProgress.Percent := i * 100 div Max;
@@ -4007,10 +3995,10 @@ begin
               while Assigned(authorNode) do
               begin
                 Data := Tree.GetNodeData(authorNode);
-                if Data.nodeType = ntSeriesInfo then
+                if Data^.nodeType = ntSeriesInfo then
                   SortChild(Tree, authorNode);
 
-                if (Data.nodeType = ntAuthorInfo) and (authorNode.ChildCount = 0) then
+                if (Data^.nodeType = ntAuthorInfo) and (authorNode.ChildCount = 0) then
                   Tree.DeleteNode(authorNode, True); { TODO -oNickR -cBug : при удалении ноды поведение GetNext неочевидно }
 
                 authorNode := Tree.GetNext(authorNode);
@@ -4122,15 +4110,15 @@ begin
   begin
     Data := Tree.GetNodeData(Node);
 
-    case Data.nodeType of
+    case Data^.nodeType of
       ntSeriesInfo:
-        S := Data.FullName + '. —ери€: ' + Data.Series;
+        S := Data.GetAuthors + '. —ери€: ' + Data^.Serie;
 
       ntBookInfo:
-        if (Data.Series = NO_SERIES_TITLE) or (Data.Series = '') then
-          S := Data.FullName + '. ' + Data.Title
+        if (Data^.Serie = NO_SERIES_TITLE) or (Data^.Serie = '') then
+          S := Data.GetAuthors + '. ' + Data.Title
         else
-          S := Data.FullName + '. —ери€: ' + Data.Series + '. ' + Data.Title;
+          S := Data.GetAuthors + '. —ери€: ' + Data^.Serie + '. ' + Data.Title;
     end;
     if S = '' then
       R := S
@@ -4178,8 +4166,8 @@ begin
       if IsSelectedBookNode(Node, Data) then
       begin
         dmCollection.GetBookFileName(Data.BookID, FileName, Folder, Ext, No);
-        if (IsOnline and Data.Locale) and DeleteFile(FCollectionRoot + Folder) then
-          dmCollection.SetLocalStatus(Data.BookID, False)
+        if (IsOnline and Data^.Local) and DeleteFile(FCollectionRoot + Folder) then
+          SetBookLocalStatus(Data^.BookID, Data^.DatabaseID, False)
         else
         begin
           if Settings.DeleteFiles then
@@ -4260,11 +4248,10 @@ begin
   begin
     Data := Tree.GetNodeData(Node);
 
-    if (Data.nodeType = ntBookInfo) and ((tvBooksG.CheckState[Node] = csCheckedNormal) or (tvBooksG.Selected[Node])) and Data.Locale then
+    if (Data^.nodeType = ntBookInfo) and ((tvBooksG.CheckState[Node] = csCheckedNormal) or (tvBooksG.Selected[Node])) and Data^.Local then
     begin
       if dmCollection.tblBooks.Locate(BOOK_ID_FIELD, Data.BookID, []) then
       begin
-
         // только дл€ online-коллекции. поэтому получаем путь к файлу по упрощенной схеме
         try
           DeleteFile(FCollectionRoot + dmCollection.tblBooksFolder.Value);
@@ -4276,7 +4263,7 @@ begin
         dmCollection.tblBooksLocal.Value := False;
         dmCollection.tblBooks.Post;
 
-        Data.Locale := False;
+        Data^.Local := False;
         tvBooksG.CheckState[Node] := csUncheckedNormal;
         Tree.RepaintNode(Node);
 
@@ -4294,35 +4281,6 @@ begin
     Result := DMUser.GroupedBooks
   else
     Result := dmCollection.tblBooks;
-end;
-
-procedure TfrmMain.RefreshBooksState(Tree: TVirtualStringTree; const BookIDList: TBookIdList);
-var
-  i: Integer;
-  Data: PBookData;
-  Node: PVirtualNode;
-  Max: Integer;
-begin
-  //
-  // NickR - надеюсь, больше не нужна
-  // { TODO -oNickR -cunused code : удалить }
-  //
-  Node := Tree.GetFirst;
-  i := 0;
-  Max := High(BookIDList);
-  while Assigned(Node) do
-  begin
-    Data := Tree.GetNodeData(Node);
-    if Data.BookID = BookIDList[i].BookID then
-    begin
-      Data.Locale := BookIDList[i].Res;
-      Tree.RepaintNode(Node);
-      Inc(i);
-      if i > Max then
-        Break;
-    end;
-    Node := Tree.GetNext(Node);
-  end;
 end;
 
 procedure TfrmMain.miDownloadBooksClick(Sender: TObject);
@@ -4373,20 +4331,23 @@ begin
     Assert(Assigned(BookData));
     if IsSelectedBookNode(BookNode, BookData) then
     begin
-      if not BookData^.Locale and (BookData^.DatabaseID = DMUser.ActiveCollection.ID) then
+      if not BookData^.Local and (BookData^.DatabaseID = DMUser.ActiveCollection.ID) then
       begin
         if not BookInDownloadList(BookData^.BookID, BookData^.DatabaseID) then
         begin
-          DMCollection.GetBookRecord(BookData^.BookID, BookData^.DatabaseID, BookRecord);
+          //
+          // TODO : избавитьс€ от необходимости получать BookRecord
+          //
+          DMCollection.GetBookRecord(BookData^.BookID, BookData^.DatabaseID, BookRecord, False);
 
           DownloadNode := tvDownloadList.AddChild(nil);
           DownloadData := tvDownloadList.GetNodeData(DownloadNode);
 
           DownloadData^.BookID := BookData^.BookID;
           DownloadData^.DataBaseID := BookData^.DatabaseID;
-          DownloadData^.Author := BookRecord.AutorsList;
-          DownloadData^.Title := BookRecord.Title;
-          DownloadData^.Size := BookRecord.Size;
+          DownloadData^.Author := BookRecord.GetAutorsList;
+          DownloadData^.Title := BookData^.Title;
+          DownloadData^.Size := BookData^.Size;
           DownloadData^.FileName := TPath.Combine(DMUser.ActiveCollection.RootPath, BookRecord.Folder);
           DownloadData^.URL := Format(Settings.InpxURL + 'b/%d/get', [BookRecord.LibID]);
           DownloadData^.State := dsWait;
@@ -4471,7 +4432,8 @@ begin
           // обновл€ем индексное поле
           { TODO -oNickR -cRefactoring : можно заменить на один UPDATE }
           repeat
-            Res := dmCollection.tblBooks.Locate('FullName', AnsiUpperCase(Data.FullName), [loCaseInsensitive]);
+            // TODO -cBug: в поле FullName должен записыватьс€ только первый автор
+            Res := dmCollection.tblBooks.Locate('FullName', AnsiUpperCase(Data^.GetAuthors), [loCaseInsensitive]);
             if Res then
             begin
               dmCollection.tblBooks.Edit;
@@ -4497,7 +4459,7 @@ begin
 
         repeat
           { TODO -oNickR -cRefactoring : можно заменить на один UPDATE }
-          Res := dmCollection.tblBooks.Locate('FullName', AnsiUpperCase(Data.FullName), [loCaseInsensitive]);
+          Res := dmCollection.tblBooks.Locate('FullName', AnsiUpperCase(Data^.GetAuthors), [loCaseInsensitive]);
           if Res then
           begin
             dmCollection.tblBooks.Edit;
@@ -4543,7 +4505,7 @@ begin
               dmCollection.AuthorBooksAuthorID.Value := dmCollection.AuthorsID.Value;
               dmCollection.AuthorBooksBookID.Value := Data.BookID;
 
-              dmCollection.AuthorBooksAL_Series.Value := Copy(Data.Series, 1, INDEXSIZE);
+              dmCollection.AuthorBooksAL_Series.Value := Copy(Data^.Serie, 1, INDEXSIZE);
               dmCollection.AuthorBooksAL_Title.Value := Copy(Data.Title, 1, INDEXSIZE);
 
               dmCollection.AuthorBooks.Post;
@@ -4585,10 +4547,13 @@ var
   Author: TAuthorRecord;
   Genre: TGenreRecord;
 begin
-  DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, R);
+  //
+  // TODO : избавитьс€ от необходимости получать BookRecord
+  //
+  DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, R, False);
 
   frmEditBookInfo.lvAuthors.Items.Clear;
-  for Author in R.Authors do
+  for Author in Data^.Authors do
   begin
     Family := frmEditBookInfo.lvAuthors.Items.Add;
     Family.Caption := Author.LastName;
@@ -4598,22 +4563,22 @@ begin
 
   frmEditBookInfo.lblGenre.Text := '';
   FillGenresTree(frmGenreTree.tvGenresTree);
-  for Genre in R.Genres do
+  for Genre in Data^.Genres do
   begin
     frmGenreTree.SelectGenres(Genre.GenreCode);
     frmEditBookInfo.lblGenre.Text := frmEditBookInfo.lblGenre.Text + Genre.Alias + ';';
   end;
 
-  frmEditBookInfo.edT.Text := R.Title;
+  frmEditBookInfo.edT.Text := Data^.Title;
 
-  if R.Series = NO_SERIES_TITLE then
+  if R.Serie = NO_SERIES_TITLE then
     frmEditBookInfo.cbSeries.Text := ''
   else
-    frmEditBookInfo.cbSeries.Text := R.Series;
+    frmEditBookInfo.cbSeries.Text := Data^.Serie;
 
-  frmEditBookInfo.edSN.Text := IntToStr(R.SeqNumber);
+  frmEditBookInfo.edSN.Text := IntToStr(Data^.SeqNumber);
   frmEditBookInfo.edKeyWords.Text := R.KeyWords;
-  frmEditBookInfo.cbLang.Text := R.Lang;
+  frmEditBookInfo.cbLang.Text := Data^.Lang;
 end;
 
 procedure TfrmMain.SaveFb2DataAfterEdit(R: TBookRecord);
@@ -4630,7 +4595,7 @@ begin
   Node := Tree.GetFirstSelected;
 
   Data := Tree.GetNodeData(Node);
-  if not Assigned(Data) or (Data.nodeType <> ntBookInfo) then
+  if not Assigned(Data) or (Data^.nodeType <> ntBookInfo) then
     Exit;
 
   R.ClearAuthors;
@@ -4640,7 +4605,7 @@ begin
 
   frmGenreTree.GetSelectedGenres(R);
   R.Title := frmEditBookInfo.edT.Text;
-  R.Series := frmEditBookInfo.cbSeries.Text;
+  R.Serie := frmEditBookInfo.cbSeries.Text;
 
   R.SeqNumber := StrToIntDef(frmEditBookInfo.edSN.Text, 0);
   R.KeyWords := frmEditBookInfo.edKeyWords.Text;
@@ -4666,8 +4631,12 @@ begin
     DMUser.CorrectExtra(OldID, Data^.BookID);
 
     Data^.Title := frmEditBookInfo.edT.Text;
-    Data^.Genre := frmEditBookInfo.lblGenre.Text;
-    Data^.No := StrToIntDef(frmEditBookInfo.edSN.Text, 0);
+    //
+    // TODO : restore this code
+    //
+    // Data^.Genre := frmEditBookInfo.lblGenre.Text;
+    Assert(False, 'Not implemented yet!');
+    Data^.SeqNumber := StrToIntDef(frmEditBookInfo.edSN.Text, 0);
     Data^.Lang := frmEditBookInfo.cbLang.Text;
     Tree.RepaintNode(Node);
   finally
@@ -4690,7 +4659,7 @@ begin
   GetActiveTree(Tree);
   Node := Tree.GetFirstSelected;
   Data := Tree.GetNodeData(Node);
-  if not Assigned(Data) or (Data.nodeType <> ntBookInfo) then
+  if not Assigned(Data) or (Data^.nodeType <> ntBookInfo) then
     Exit;
 
   if IsLibRusecEdit(Data.BookID) then
@@ -4739,10 +4708,15 @@ begin
       while Assigned(NodeB) do
       begin
         DataB := Tree.GetNodeData(NodeB);
-        if (DataB.nodeType = ntBookInfo) and ((Tree.CheckState[NodeB] = csCheckedNormal) or (Tree.Selected[NodeB])) then
+        if (DataB^.nodeType = ntBookInfo) and ((Tree.CheckState[NodeB] = csCheckedNormal) or (Tree.Selected[NodeB])) then
         begin
           ALibrary.CleanBookGenres(DataB.BookID);
 
+          Assert(False, 'Not implemented yet!');
+          //
+          // TODO : restore this code
+          //
+          {
           DataB.Genre := '';
           NodeG := frmGenreTree.tvGenresTree.GetFirstSelected;
           while Assigned(NodeG) do
@@ -4756,6 +4730,7 @@ begin
           end;
 
           Delete(DataB.Genre, Length(DataB.Genre) - 2, 3);
+          }
         end;
         Tree.RepaintNode(NodeB);
         NodeB := Tree.GetNext(NodeB);
@@ -4789,9 +4764,9 @@ begin
   if IsLibRusecEdit(Data.BookID) then
     Exit;
 
-  S := Data.Series;
+  S := Data^.Serie;
 
-  if Data.nodeType = ntBookInfo then // добавл€ем новую серию
+  if Data^.nodeType = ntBookInfo then // добавл€ем новую серию
   begin
     AuthID := dmCollection.AuthorID(Data.BookID);
 
@@ -4845,7 +4820,7 @@ begin
       dmCollection.tblSeriesB1.Edit;
       dmCollection.tblSeriesB1S_Title.Value := S;
       dmCollection.tblSeriesB1.Post;
-      Data.Series := S;
+      Data^.Serie := S;
       Tree.RepaintNode(Node);
     end;
   end;
@@ -5101,7 +5076,7 @@ begin
   while Assigned(Node) do
   begin
     Data := Tree.GetNodeData(Node);
-    if Assigned(Data) and (Data.nodeType = ntBookInfo) then
+    if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
     begin
       DMCollection.SetRate(Data^.BookID, Data^.DatabaseID, NewRate);
       UpdateNodes(
@@ -5433,7 +5408,6 @@ begin
     finally
       dmCollection.Authors.EnableControls;
     end;
-    /// dmCollection.tblAuthors.First;
 
     Tree.Selected[Tree.GetFirst] := True;
   finally
@@ -5474,7 +5448,6 @@ begin
     finally
       dmCollection.Series.EnableControls;
     end;
-    /// dmCollection.tblSeries.First;
   finally
     tvSeries.EndUpdate;
   end;
@@ -5512,7 +5485,6 @@ begin
         Data := Tree.GetNodeData(genreNode);
         Initialize(Data^);
 
-        Data^.ID := dmCollection.GenresG_ID.Value;
         Data^.Text := dmCollection.GenresG_Alias.Value;
         Data^.Code := dmCollection.GenresGenreCode.Value;
         Data^.ParentCode := strParentCode;
@@ -5694,7 +5666,7 @@ begin
 
   FFormBusy := True;
   try
-    DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, R);
+    DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, R, False);
 
     //
     // ревью можно измен€ть только дл€ книг из текущей коллекции
@@ -5832,14 +5804,14 @@ begin
   if not Assigned(Data) then
     Exit;
 
-  if (Data.nodeType <> ntBookInfo) then
+  if (Data^.nodeType <> ntBookInfo) then
   begin
     if not Tree.HasChildren[Node] then
       Exit;
     repeat
       Node := Tree.GetFirstChild(Node);
       Data := Tree.GetNodeData(Node);
-    until (Data.nodeType = ntBookInfo);
+    until (Data^.nodeType = ntBookInfo);
   end;
 
   Screen.Cursor := crHourGlass;
@@ -6290,7 +6262,7 @@ begin
   while Assigned(Node) do
   begin
     Data := Tree.GetNodeData(Node);
-    if Assigned(Data) and (Data.nodeType = ntBookInfo) then
+    if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
     begin
       // заглушка
       NewProgress := IfThen(Data^.Progress = 0, 100, 0);
@@ -6532,56 +6504,27 @@ begin
   InitCollection(True);
 end;
 
-procedure TfrmMain.OnBookDownloadComplete(var message: TDownloadCompleteMessage);
-var
-  Tree: TVirtualStringTree;
-  Node: PVirtualNode;
-  Data: PBookData;
-  i: TView;
+procedure TfrmMain.OnChangeLocalStatus(var Message: TLocalStatusChangedMessage);
 begin
-  if message.Downloaded then
-  begin
-    for i := ByAuthorView to FavoritesView do
-    begin
-      Tree := GetViewTree(i);
-      Assert(Assigned(Tree));
+  Assert(Assigned(Message.Params));
 
-      Node := GetBookNode(Tree, message.BookID);
-      if Assigned(Node) then
-      begin
-        Data := Tree.GetNodeData(Node);
-        Assert(Assigned(Data));
-        if Assigned(Data) then
-        begin
-          Data^.Locale := True;
-          Tree.RepaintNode(Node);
-        end;
-      end;
-    end;
-  end;
+  SetBookLocalStatus(Message.Params^.BookID, Message.Params^.DatabaseID, Message.Params^.LocalStatus);
+
+  Dispose(Message.Params);
 end;
 
-function TfrmMain.GetBookNode(const Tree: TVirtualStringTree; bookID: Integer): PVirtualNode;
-var
-  Data: PBookData;
-  Node: PVirtualNode;
+procedure TfrmMain.SetBookLocalStatus(BookID: Integer; DatabaseID: Integer; IsLocal: Boolean);
 begin
-  Assert(Assigned(Tree));
+  DMCollection.SetLocal(BookID, DatabaseID, IsLocal);
 
-  Result := nil;
-
-  Node := Tree.GetFirst;
-  while Assigned(Node) do
-  begin
-    Data := Tree.GetNodeData(Node);
-    Assert(Assigned(Data));
-    if (Data.nodeType = ntBookInfo) and (Data.BookID = bookID) then
+  UpdateNodes(
+    BookID, DatabaseID,
+    procedure(BookData: PBookData)
     begin
-      Result := Node;
-      Exit;
-    end;
-    Node := Tree.GetNext(Node);
-  end;
+      Assert(Assigned(BookData));
+      BookData^.Local := IsLocal;
+    end
+  );
 end;
 
 procedure TfrmMain.miImportUserDataClick(Sender: TObject);
