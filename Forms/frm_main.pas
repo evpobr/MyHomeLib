@@ -3946,9 +3946,10 @@ begin
                   authorNode := Tree.AddChild(nil);
                   Data := Tree.GetNodeData(authorNode);
 
+                  Initialize(Data^);
                   Data^.nodeType := ntAuthorInfo;
-
                   Data^.Authors := BookRecord.Authors;
+                  Include(authorNode.States, vsInitialUserData);
 
                   LastAuthor := Author;
                   LastSeries := nil;
@@ -4005,9 +4006,11 @@ begin
               bookNode := Tree.AddChild(seriesNode);
               Data := Tree.GetNodeData(bookNode);
 
+              Initialize(Data^);
               BookRecord.FillBookData(Data);
               Data^.BookID := BookID;
               Data^.DatabaseID := DatabaseID;
+              Include(bookNode.States, vsInitialUserData);
 
               Inc(i);
               spProgress.Percent := i * 100 div Max;
@@ -4374,6 +4377,7 @@ begin
           DownloadNode := tvDownloadList.AddChild(nil);
           DownloadData := tvDownloadList.GetNodeData(DownloadNode);
 
+          Initialize(DownloadData^);
           DownloadData^.BookID := BookData^.BookID;
           DownloadData^.DataBaseID := BookData^.DatabaseID;
           DownloadData^.Author := BookRecord.GetAutorsList;
@@ -4382,6 +4386,7 @@ begin
           DownloadData^.FileName := TPath.Combine(DMUser.ActiveCollection.RootPath, BookRecord.Folder);
           DownloadData^.URL := Format(Settings.InpxURL + 'b/%d/get', [BookRecord.LibID]);
           DownloadData^.State := dsWait;
+          Include(DownloadNode.States, vsInitialUserData);
         end;
       end;
 
@@ -5423,18 +5428,17 @@ begin
     try
       dmCollection.Authors.First;
 
-      if dmCollection.AuthorsFamily.IsNull then
-        tvBooksA.Clear;
-
       while not dmCollection.Authors.Eof do
       begin
         Node := Tree.AddChild(nil);
         Data := Tree.GetNodeData(Node);
+
         Initialize(Data^);
         Data^.AuthorID := dmCollection.AuthorsID.Value;
         Data^.FirstName := dmCollection.AuthorsName.Value;
         Data^.LastName := dmCollection.AuthorsFamily.Value;
         Data^.MiddleName := dmCollection.AuthorsMiddle.Value;
+        Include(Node.States, vsInitialUserData);
 
         dmCollection.Authors.Next;
       end;
@@ -5472,9 +5476,11 @@ begin
       begin
         Node := tvSeries.AddChild(nil);
         Data := tvSeries.GetNodeData(Node);
+
         Initialize(Data^);
         Data^.SerieID := dmCollection.SeriesSerieID.AsInteger;
         Data^.SerieTitle := dmCollection.SeriesTitle.AsString;
+        Include(Node.States, vsInitialUserData);
 
         dmCollection.Series.Next;
       end;
@@ -5516,14 +5522,14 @@ begin
 
         genreNode := Tree.AddChild(ParentNode);
         Data := Tree.GetNodeData(genreNode);
-        Initialize(Data^);
 
+        Initialize(Data^);
         Data^.GenreAlias := dmCollection.GenresGenreAlias.Value;
         Data^.GenreCode := dmCollection.GenresGenreCode.Value;
         Data^.ParentCode := strParentCode;
-
         if FillFB2 then
           Data^.FB2GenreCode := dmCollection.GenresFB2Code.Value;
+        Include(genreNode.States, vsInitialUserData);
 
         Nodes.AddObject(Data^.GenreCode, TObject(genreNode));
 
@@ -5549,11 +5555,12 @@ begin
   begin
     Node := tvGroups.AddChild(nil);
     Data := tvGroups.GetNodeData(Node);
-    Initialize(Data^);
 
+    Initialize(Data^);
     Data^.Text := DMUser.GroupsName.Value;
     Data^.GroupID := DMUser.GroupsGroupID.Value;
     Data^.CanDelete := DMUser.GroupsAllowDelete.Value;
+    Include(Node.States, vsInitialUserData);
 
     DMUser.Groups.Next;
   end;
