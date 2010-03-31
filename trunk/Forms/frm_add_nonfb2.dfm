@@ -31,9 +31,9 @@ object frmAddnonfb2: TfrmAddnonfb2
     Width = 741
     Height = 467
     Margins.Bottom = 30
-    ActivePage = tsBookInfo
+    ActivePage = tsFiles
     Align = alClient
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     FixedDimension = 19
     object tsFiles: TRzTabSheet
@@ -61,6 +61,7 @@ object frmAddnonfb2: TfrmAddnonfb2
         OnChange = TreeChange
         OnCompareNodes = TreeCompareNodes
         OnDblClick = TreeDblClick
+        OnFreeNode = TreeFreeNode
         OnGetText = TreeGetText
         OnPaintText = TreePaintText
         Columns = <

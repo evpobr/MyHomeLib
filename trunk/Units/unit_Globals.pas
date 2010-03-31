@@ -349,6 +349,7 @@ type
     procedure FillBookData(Data: PBookData);
   end;
 
+  // --------------------------------------------------------------------------
   PFileData = ^TFileData;
   TFileData = record
     FullPath, FileName, Folder, Ext, Title: string;
@@ -357,6 +358,7 @@ type
     Date: TDateTime;
   end;
 
+  // --------------------------------------------------------------------------
   TColumnData = record
     Text: string;
     Position, Width, MaxWidth, MinWidth: Integer;

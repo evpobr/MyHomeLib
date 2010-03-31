@@ -147,6 +147,7 @@ type
     procedure btnFileOpenClick(Sender: TObject);
     procedure btnNextClick(Sender: TObject);
     procedure btnAddAuthorFromListClick(Sender: TObject);
+    procedure TreeFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
 
   private
     FBookRecord: TBookRecord;
@@ -528,9 +529,12 @@ var
   procedure InsertNodeData(Node: PVirtualNode);
   begin
     Data := Tree.GetNodeData(Node);
+
+    Initialize(Data^);
     Data.Title := ExtractFileName(ExcludeTrailingPathdelimiter(Path));
     Data.Folder := Path;
     Data.DataType := dtFolder;
+    Include(Node.States, vsInitialUserData);
   end;
 
 begin
@@ -592,8 +596,9 @@ begin
   ParentNode := FindParentInTree(Tree, Path);
 
   CurrentNode := Tree.AddChild(ParentNode);
-
   Data := Tree.GetNodeData(CurrentNode);
+
+  Initialize(Data^);
   Data.DataType := dtFile;
   Data.FileName := FileName;
   Data.Size := F.Size;
@@ -601,12 +606,13 @@ begin
   Data.Folder := Path;
   Data.Ext := Ext;
   Data.Date := F.Time;
+  Include(CurrentNode.States, vsInitialUserData);
 end;
 
 procedure TfrmAddnonfb2.ScanFolder;
 begin
   Tree.Clear;
-  Tree.NodeDataSize := sizeof(TFileData);
+  Tree.NodeDataSize := SizeOf(TFileData);
 
   FRootPath := DMUser.ActiveCollection.RootPath;
 
@@ -710,6 +716,15 @@ begin
   // ShellExecute(Handle, 'open', PChar(s), '', nil, SW_SHOWNORMAL);
   // end;
   pcPages.ActivePageIndex := 1;
+end;
+
+procedure TfrmAddnonfb2.TreeFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+var
+  Data: PFileData;
+begin
+  Data := Tree.GetNodeData(Node);
+  if Assigned(Data) then
+    Finalize(Data^);
 end;
 
 procedure TfrmAddnonfb2.TreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
