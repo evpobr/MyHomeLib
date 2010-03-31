@@ -24,9 +24,9 @@ uses
 
 type
   TReviewParser = class
+  strict private
     FidHTTP: TIdHTTP;
 
-  private
     function GetPage(const url: string): string;
     function Extract(const page: string; const idxReviewBlockStart: Integer; const before: string; const after: string): string;
 

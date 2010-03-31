@@ -90,7 +90,7 @@ begin
 
       Genre.Clear;
       for i := 0 to High(R.Genres) do
-        Genre.Add(R.Genres[i].GenreFb2Code);
+        Genre.Add(R.Genres[i].FB2GenreCode);
 
       if R.Serie <> '' then
       begin

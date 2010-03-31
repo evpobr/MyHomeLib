@@ -60,7 +60,7 @@ var
   processedBooks: Integer;
   R: TBookRecord;
   AuthorRecord: TAuthorRecord;
-  GenreRecord: TGenreRecord;
+  GenreRecord: TGenreData;
 begin
   SetComment('Ёкспортируем коллекцию.');
 
@@ -108,8 +108,8 @@ begin
     begin
       FGenre := FBook.GenreList.Add;
       FGenre.MHL_Code := GenreRecord.GenreCode;
-      FGenre.Fb2_Code := GenreRecord.GenreFb2Code;
-      FGenre.Alias := GenreRecord.Alias;
+      FGenre.Fb2_Code := GenreRecord.FB2GenreCode;
+      FGenre.Alias := GenreRecord.GenreAlias;
     end;
 
     DMCollection.tblBooks.Next;

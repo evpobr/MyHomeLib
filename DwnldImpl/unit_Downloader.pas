@@ -249,11 +249,11 @@ begin
   FOnSetComment(rstrReadyMessage, '');
 end;
 
-function TDownloader.DoDownload: boolean;
+function TDownloader.DoDownload: Boolean;
 var
   CL: TStringList;
   Commands: array of TCommand;
-  I: Integer;
+  i: Integer;
 begin
   CL := TStringList.Create;
   try
@@ -264,30 +264,34 @@ begin
     try
       FResponce := TMemoryStream.Create;
       try
-        for I := 0 to CL.Count - 1 do
+        for i := 0 to CL.Count - 1 do
         begin
           if Canceled then
             Break;
 
-          ParseCommand(CL[I], Commands[I]);
-          with Commands[I] do
-            case Code of
-              0:
-                begin
-                  AddParam(Params[1], Params[2]);
-                  Result := True;
-                end;
-              1:
-                Result := Query(qkGet, Params[1]);
-              2:
-                Result := Query(qkPost, Params[1]);
-              3:
-                Result := CheckRedirect;
-              4:
-                Result := CheckResponce;
-              5:
-                Result := Pause(StrToInt(Params[1]));
-            end;
+          ParseCommand(CL[i], Commands[i]);
+          case Commands[i].Code of
+            0:
+              begin
+                AddParam(Commands[i].Params[1], Commands[i].Params[2]);
+                Result := True;
+              end;
+
+            1:
+              Result := Query(qkGet, Commands[i].Params[1]);
+
+            2:
+              Result := Query(qkPost, Commands[i].Params[1]);
+
+            3:
+              Result := CheckRedirect;
+
+            4:
+              Result := CheckResponce;
+
+            5:
+              Result := Pause(StrToInt(Commands[i].Params[1]));
+          end;
 
           if not Result then
             Break;
@@ -312,7 +316,7 @@ var
 begin
   Command.Code := -1;
 
-  dmCollection.FieldByName(0, LIB_ID_FIELD, t);
+  dmCollection.CurrentLibID(t);
   StrReplace('%LIBID%', t, S);
 
   StrReplace('%USER%', DMUser.ActiveCollection.User, S);

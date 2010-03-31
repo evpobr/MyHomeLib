@@ -84,235 +84,105 @@ object DMUser: TDMUser
     Left = 128
     Top = 104
   end
-  object GroupedBooks: TABSTable
+  object BooksByGroup: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'BookID;DatabaseID'
-        Options = [ixPrimary]
-      end
-      item
-        Name = 'FullName_Index'
-        Fields = 'FullName;Series;Title'
-      end
-      item
-        Name = 'File_Index'
-        Fields = 'FileName'
-      end>
     IndexName = 'ID_Index'
-    FieldDefs = <
-      item
-        Name = 'BookID'
-        Attributes = [faRequired]
-        DataType = ftInteger
-      end
-      item
-        Name = 'DatabaseID'
-        Attributes = [faRequired]
-        DataType = ftInteger
-      end
-      item
-        Name = 'LibID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'Title'
-        DataType = ftWideString
-        Size = 150
-      end
-      item
-        Name = 'FullName'
-        DataType = ftWideString
-        Size = 255
-      end
-      item
-        Name = 'SerieID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'SeqNumber'
-        DataType = ftSmallint
-      end
-      item
-        Name = 'Date'
-        DataType = ftDate
-      end
-      item
-        Name = 'LibRate'
-        DataType = ftInteger
-      end
-      item
-        Name = 'Lang'
-        DataType = ftWideString
-        Size = 2
-      end
-      item
-        Name = 'Folder'
-        DataType = ftWideString
-        Size = 255
-      end
-      item
-        Name = 'FileName'
-        Attributes = [faRequired]
-        DataType = ftWideString
-        Size = 255
-      end
-      item
-        Name = 'InsideNo'
-        Attributes = [faRequired]
-        DataType = ftInteger
-      end
-      item
-        Name = 'Ext'
-        DataType = ftWideString
-        Size = 10
-      end
-      item
-        Name = 'Size'
-        DataType = ftInteger
-      end
-      item
-        Name = 'URI'
-        DataType = ftWideString
-        Size = 60
-      end
-      item
-        Name = 'Code'
-        DataType = ftSmallint
-      end
-      item
-        Name = 'Local'
-        DataType = ftBoolean
-      end
-      item
-        Name = 'Deleted'
-        DataType = ftBoolean
-      end
-      item
-        Name = 'KeyWords'
-        DataType = ftWideString
-        Size = 255
-      end
-      item
-        Name = 'Review'
-        DataType = ftWideMemo
-      end
-      item
-        Name = 'Rate'
-        DataType = ftInteger
-      end
-      item
-        Name = 'Progress'
-        DataType = ftSmallint
-      end
-      item
-        Name = 'Genres'
-        DataType = ftWideString
-        Size = 128
-      end
-      item
-        Name = 'Series'
-        DataType = ftWideString
-        Size = 128
-      end>
     TableName = 'Books'
     Exclusive = False
     MasterFields = 'BookID;DatabaseID'
     MasterSource = dsBookGroups
     Left = 40
     Top = 312
-    object GroupedBooksBookID: TIntegerField
+    object BooksByGroupBookID: TIntegerField
       FieldName = 'BookID'
       Required = True
     end
-    object GroupedBooksDatabaseID: TIntegerField
+    object BooksByGroupDatabaseID: TIntegerField
       FieldName = 'DatabaseID'
       Required = True
     end
-    object GroupedBooksLibID: TIntegerField
+    object BooksByGroupLibID: TIntegerField
       FieldName = 'LibID'
     end
-    object GroupedBooksTitle: TWideStringField
+    object BooksByGroupTitle: TWideStringField
       FieldName = 'Title'
       Size = 150
     end
-    object GroupedBooksFullName: TWideStringField
+    object BooksByGroupFullName: TWideStringField
       FieldName = 'FullName'
       Size = 255
     end
-    object GroupedBooksSerieID: TIntegerField
+    object BooksByGroupSerieID: TIntegerField
       FieldName = 'SerieID'
     end
-    object GroupedBooksSeqNumber: TSmallintField
+    object BooksByGroupSeqNumber: TSmallintField
       FieldName = 'SeqNumber'
     end
-    object GroupedBooksDate: TDateField
+    object BooksByGroupDate: TDateField
       FieldName = 'Date'
     end
-    object GroupedBooksLibRate: TIntegerField
+    object BooksByGroupLibRate: TIntegerField
       FieldName = 'LibRate'
     end
-    object GroupedBooksLang: TWideStringField
+    object BooksByGroupLang: TWideStringField
       FieldName = 'Lang'
       Size = 2
     end
-    object GroupedBooksFolder: TWideStringField
+    object BooksByGroupFolder: TWideStringField
       FieldName = 'Folder'
       Size = 255
     end
-    object GroupedBooksFileName: TWideStringField
+    object BooksByGroupFileName: TWideStringField
       FieldName = 'FileName'
       Required = True
       Size = 255
     end
-    object GroupedBooksInsideNo: TIntegerField
+    object BooksByGroupInsideNo: TIntegerField
       FieldName = 'InsideNo'
       Required = True
     end
-    object GroupedBooksExt: TWideStringField
+    object BooksByGroupExt: TWideStringField
       FieldName = 'Ext'
       Size = 10
     end
-    object GroupedBooksSize: TIntegerField
+    object BooksByGroupSize: TIntegerField
       FieldName = 'Size'
     end
-    object GroupedBooksURI: TWideStringField
+    object BooksByGroupURI: TWideStringField
       FieldName = 'URI'
       Size = 60
     end
-    object GroupedBooksCode: TSmallintField
+    object BooksByGroupCode: TSmallintField
       FieldName = 'Code'
     end
-    object GroupedBooksLocal: TBooleanField
+    object BooksByGroupLocal: TBooleanField
       FieldName = 'Local'
     end
-    object GroupedBooksDeleted: TBooleanField
+    object BooksByGroupDeleted: TBooleanField
       FieldName = 'Deleted'
     end
-    object GroupedBooksKeyWords: TWideStringField
+    object BooksByGroupKeyWords: TWideStringField
       FieldName = 'KeyWords'
       Size = 255
     end
-    object GroupedBooksReview: TWideMemoField
+    object BooksByGroupReview: TWideMemoField
       FieldName = 'Review'
       BlobType = ftWideMemo
     end
-    object GroupedBooksRate: TIntegerField
+    object BooksByGroupRate: TIntegerField
       FieldName = 'Rate'
     end
-    object GroupedBooksProgress: TSmallintField
+    object BooksByGroupProgress: TSmallintField
       FieldName = 'Progress'
     end
-    object GroupedBooksGenres: TWideStringField
+    object BooksByGroupGenres: TWideStringField
       FieldName = 'Genres'
       Size = 128
     end
-    object GroupedBooksSeries: TWideStringField
+    object BooksByGroupSeries: TWideStringField
       FieldName = 'Series'
       Size = 128
     end
@@ -1011,39 +881,6 @@ object DMUser: TDMUser
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'GroupID'
-        Options = [ixPrimary]
-      end
-      item
-        Name = 'NameIndex'
-        Fields = 'Name'
-      end>
-    FieldDefs = <
-      item
-        Name = 'GroupID'
-        DataType = ftAutoInc
-      end
-      item
-        Name = 'Name'
-        DataType = ftWideString
-        Size = 255
-      end
-      item
-        Name = 'AllowDelete'
-        DataType = ftBoolean
-      end
-      item
-        Name = 'Notes'
-        DataType = ftMemo
-      end
-      item
-        Name = 'Icon'
-        DataType = ftBlob
-      end>
     TableName = 'Groups'
     Exclusive = False
     Left = 40
@@ -1066,60 +903,33 @@ object DMUser: TDMUser
       FieldName = 'Icon'
     end
   end
-  object BookGroups: TABSTable
+  object GroupBooks: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
-    StoreDefs = True
-    IndexDefs = <
-      item
-        Name = 'ID_Index'
-        Fields = 'GroupID;BookID;DatabaseID'
-        Options = [ixPrimary]
-      end
-      item
-        Name = 'BookDBIndex'
-        Fields = 'BookID;DatabaseID'
-      end>
     IndexFieldNames = 'GroupID'
-    FieldDefs = <
-      item
-        Name = 'GroupID'
-        Attributes = [faRequired]
-        DataType = ftInteger
-      end
-      item
-        Name = 'BookID'
-        Attributes = [faRequired]
-        DataType = ftInteger
-      end
-      item
-        Name = 'DatabaseID'
-        Attributes = [faRequired]
-        DataType = ftInteger
-      end>
     TableName = 'BookGroups'
     Exclusive = False
     MasterFields = 'GroupID'
     MasterSource = dsGroups
     Left = 40
     Top = 248
-    object BookGroupsGroupID: TIntegerField
+    object GroupBooksGroupID: TIntegerField
       FieldName = 'GroupID'
       Required = True
     end
-    object BookGroupsBookID: TIntegerField
+    object GroupBooksBookID: TIntegerField
       FieldName = 'BookID'
       Required = True
     end
-    object BookGroupsDatabaseID: TIntegerField
+    object GroupBooksDatabaseID: TIntegerField
       FieldName = 'DatabaseID'
       Required = True
     end
   end
   object dsBookGroups: TDataSource
-    DataSet = BookGroups
+    DataSet = GroupBooks
     Left = 128
     Top = 248
   end

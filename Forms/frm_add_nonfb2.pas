@@ -203,7 +203,7 @@ begin
     while Node <> nil do
     begin
       Data := frmGenreTree.tvGenresTree.GetNodeData(Node);
-      lblGenre.Caption := lblGenre.Caption + Data.Text + ' ; ';
+      lblGenre.Caption := lblGenre.Caption + Data.GenreAlias + ' ; ';
       Node := frmGenreTree.tvGenresTree.GetNextSelected(Node);
     end;
   end;
@@ -283,7 +283,7 @@ begin
     FBD.AddSeries(sltBook, cbSeries.Text, Round(edSN.Value));
     Genre.Clear;
     for I := 0 to High(FBookRecord.Genres) do
-      Genre.Add(FBookRecord.Genres[I].GenreFb2Code);
+      Genre.Add(FBookRecord.Genres[I].FB2GenreCode);
   end;
 
   FBD.SetAuthors(alFBDAuthors.Items, atlFBD);
@@ -441,10 +441,12 @@ begin
     Exit;
 
   if alBookAuthors.Count > 0 then
+  begin
     for Author in alBookAuthors.Items do
-      FBookRecord.AddAuthor(Author.Last, Author.First, Author.Middle)
-    else
-      FBookRecord.AddAuthor('Неизвестный', 'автор', '');
+      FBookRecord.AddAuthor(Author.Last, Author.First, Author.Middle);
+  end
+  else
+    FBookRecord.AddAuthor(UNKNOWN_AUTHOR_LASTNAME, '', '');
 
   frmGenreTree.GetSelectedGenres(FBookRecord);
   FBookRecord.Title := edT.Text;
@@ -476,7 +478,7 @@ begin
   if frmAuthorList.ShowModal = mrOk then
   begin
     Node := frmAuthorList.tvAuthorList.GetFirstSelected;
-    while Node <> nil do
+    while Assigned(Node) do
     begin
       Data := frmAuthorList.tvAuthorList.GetNodeData(Node);
 

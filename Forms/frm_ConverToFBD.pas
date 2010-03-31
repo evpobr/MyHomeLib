@@ -224,7 +224,7 @@ begin
 
     Genre.Clear;
     for I := 0 to High(FBookRecord.Genres) do
-      Genre.Add(FBookRecord.Genres[i].GenreFb2Code);
+      Genre.Add(FBookRecord.Genres[i].FB2GenreCode);
   end;
 
   with FBD.Publisher do

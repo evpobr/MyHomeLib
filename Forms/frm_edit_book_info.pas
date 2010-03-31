@@ -108,7 +108,7 @@ begin
     while Assigned(Node) do
     begin
       Data := frmGenreTree.tvGenresTree.GetNodeData(Node);
-      lblGenre.Text := lblGenre.Text + Data.Text + ' ; ';
+      lblGenre.Text := lblGenre.Text + Data.GenreAlias + ' ; ';
       Node := frmGenreTree.tvGenresTree.GetNextSelected(Node);
     end;
     FChanged := True;

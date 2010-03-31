@@ -21,7 +21,7 @@ uses Classes;
 
 type
   TScriptDesc = class(TCollectionItem)
-  private
+  strict private
     FTitle: string;
     FPath: string;
     FParams: string;
@@ -40,14 +40,16 @@ type
   end;
 
   TScripts = class(TCollection)
-  private
+  strict private
     function GetScript(Index: Integer): TScriptDesc;
     procedure SetScript(Index: Integer; const Value: TScriptDesc);
 
+    function AddScript: TScriptDesc;
+
   public
     constructor Create;
-    function AddScript: TScriptDesc;
-    procedure Add(const Title: String; const Path: String; const Params: String);
+    procedure Add(const Title: string; const Path: string; const Params: string);
+
     property Items[Index: Integer]: TScriptDesc read GetScript write SetScript; default;
   end;
 
@@ -64,14 +66,16 @@ uses
 { TScriptC }
 
 procedure TScriptDesc.AssignTo(Dest: TPersistent);
+var
+  Other: TScriptDesc;
 begin
   if Dest is TScriptDesc then
-    with TScriptDesc(Dest) do
-    begin
-      Title := Self.Title;
-      Path := Self.Path;
-      Params := Self.Params;
-    end
+  begin
+    Other := TScriptDesc(Dest);
+    Other.Title := Title;
+    Other.Path := Path;
+    Other.Params := Params;
+  end
   else
     inherited AssignTo(Dest);
 end;

@@ -625,8 +625,8 @@ type
     function GetViewTree(view: TView): TVirtualStringTree;
     procedure GetActiveTree(var Tree: TVirtualStringTree);
     procedure Selection(SelState: Boolean);
-    procedure LocateAuthor(Text: string; Tree: TVirtualStringTree);
-    procedure LocateSerie(Text: string);
+    procedure LocateAuthor(const Text: string);
+    procedure LocateSerie(const Text: string);
     procedure InitCollection(ApplyAuthorFilter: Boolean);
 
     procedure CreateCollectionMenu;
@@ -1772,7 +1772,7 @@ begin
     1: FillBooksTree(tvBooksS, nil, dmCollection.BooksBySerie, False, False); // серии
     2: FillBooksTree(tvBooksG, dmCollection.GenreBooks, dmCollection.BooksByGenre, True, True); // жанры
     3: FillBooksTree(tvBooksSR, nil, dmCollection.sqlBooks, True, True);
-    4: FillBooksTree(tvBooksF, DMUser.BookGroups, DMUser.GroupedBooks, True, True); // избранное
+    4: FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True); // избранное
     5: btnApplyFilterClick(self);
   end;
 
@@ -1888,12 +1888,12 @@ const
     dmCollection.BooksByAuthor.Filter := Filter;
     dmCollection.BooksByGenre.Filter := Filter;
     dmCollection.BooksBySerie.Filter := Filter;
-    DMUser.GroupedBooks.Filter := Filter;
+    DMUser.BooksByGroup.Filter := Filter;
 
     dmCollection.BooksByAuthor.Filtered := State;
     dmCollection.BooksByGenre.Filtered := State;
     dmCollection.BooksBySerie.Filtered := State;
-    DMUser.GroupedBooks.Filtered := State;
+    DMUser.BooksByGroup.Filtered := State;
   end;
 
 begin
@@ -1931,7 +1931,7 @@ begin
   FillBooksTree(tvBooksA, dmCollection.AuthorBooks, dmCollection.BooksByAuthor, False, True); // авторы
   FillBooksTree(tvBooksS, nil, dmCollection.BooksBySerie, False, False); // серии
   FillBooksTree(tvBooksG, dmCollection.GenreBooks, dmCollection.BooksByGenre, True, True); // жанры
-  FillBooksTree(tvBooksF, DMUser.BookGroups, DMUser.GroupedBooks, True, True); // избранное
+  FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True); // избранное
 
   // if DMCollection.sqlBooks.Active then
   // FillBooksTree(0, tvBooksSR, nil, dmCollection.sqlBooks, True, True);
@@ -2436,7 +2436,7 @@ begin
   Data := Sender.GetNodeData(Node);
   Assert(Assigned(Data));
 
-  CellText := Data.Text;
+  CellText := Data.GenreAlias;
 end;
 
 procedure TfrmMain.tvGenresKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -2460,7 +2460,7 @@ begin
 
   lblGroups.Caption := DMUser.GroupsName.Value;
 
-  FillBooksTree(tvBooksF, DMUser.BookGroups, DMUser.GroupedBooks, True, True);
+  FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True);
 end;
 
 procedure TfrmMain.tvGroupsClick(Sender: TObject);
@@ -2537,7 +2537,7 @@ begin
         );
     end;
   end;
-  FillBooksTree(tvBooksF, DMUser.BookGroups, DMUser.GroupedBooks, True, True);
+  FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True);
 end;
 
 procedure TfrmMain.tvGroupsDragOver(Sender: TBaseVirtualTree; Source: TObject; Shift: TShiftState; State: TDragState; Pt: TPoint; Mode: TDropMode; var Effect: Integer; var Accept: Boolean);
@@ -2598,7 +2598,7 @@ end;
 
 procedure TfrmMain.tvSeriesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
-  Data: PAuthorData;
+  Data: PSerieData;
   ID: Integer;
 begin
   Data := tvSeries.GetNodeData(Node);
@@ -2640,7 +2640,7 @@ begin
   if not Assigned(Data) then
     Exit;
   ClearLabels(PAGE_GENRES, True);
-  ID := Data.Code;
+  ID := Data^.GenreCode;
   if isFB2Collection(DMUser.ActiveCollection.CollectionType) or not Settings.ShowSubGenreBooks then
   begin
     dmCollection.Genres.Locate(GENRE_CODE_FIELD, ID, []);
@@ -2658,7 +2658,7 @@ begin
     dmCollection.GenreBooks.Filtered := False;
     dmCollection.GenreBooks.MasterSource := dmCollection.dsGenres;
   end;
-  lblGenreTitle.Caption := Data.Text;
+  lblGenreTitle.Caption := Data.GenreAlias;
 end;
 
 procedure TfrmMain.tvGenresClick(Sender: TObject);
@@ -2970,7 +2970,7 @@ end;
 
 procedure TfrmMain.FreeSerieNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
-  Data: PAuthorData;
+  Data: PSerieData;
 begin
   Data := Sender.GetNodeData(Node);
   if Assigned(Data) then
@@ -3016,7 +3016,7 @@ end;
 
 procedure TfrmMain.GetSerieNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
 begin
-  NodeDataSize := SizeOf(TAuthorData);
+  NodeDataSize := SizeOf(TAuthorData); // TODO : отдельный тип данных для серии
 end;
 
 procedure TfrmMain.GetGenreNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
@@ -3451,7 +3451,7 @@ begin
       //
       if ActiveView = FavoritesView then
       begin
-        i := DMUser.GroupedBooksDatabaseID.Value;
+        i := DMUser.BooksByGroupDatabaseID.Value;
         DMUser.tblBases.Locate(ID_FIELD, i, []);
         if isOnlineCollection(DMUser.tblBasesCode.Value) then
         begin
@@ -3459,7 +3459,7 @@ begin
           if not FileExists(Panel.Folder) then
             Exit;
         end;
-        ID := DMUser.GroupedBooksBookID.Value;
+        ID := DMUser.BooksByGroupBookID.Value;
       end // if ActiveView
       else
       begin
@@ -3850,7 +3850,6 @@ begin
   //  2. SERIE_ID_FIELD
   // дополнительно, для просмотра книг в группе нужны поля
   //  3. DB_ID_FIELD
-  //  4. "FullName"
   //
 
   //
@@ -4053,57 +4052,60 @@ end;
 
 procedure TfrmMain.miCopyAuthorClick(Sender: TObject);
 var
-  treeView: TVirtualStringTree;
-
-  Data: PAuthorData;
-  DataG: PGenreData;
+  AuthorData: PAuthorData;
+  SerieData: PSerieData;
+  GenreData: PGenreData;
   strText: string;
 
   Node: PVirtualNode;
 
 begin
-  case ActiveView of
-    ByAuthorView:
-      treeView := tvAuthors;
-    BySeriesView:
-      treeView := tvSeries;
-    ByGenreView:
-      treeView := tvGenres;
-  else
-    Assert(False);
-  end;
-
   strText := '';
 
   case ActiveView of
-    ByAuthorView, BySeriesView:
+    ByAuthorView:
       begin
-        Node := treeView.GetFirstSelected;
+        Node := tvAuthors.GetFirstSelected;
         while Assigned(Node) do
         begin
-          Data := treeView.GetNodeData(Node);
+          AuthorData := tvAuthors.GetNodeData(Node);
           if strText = '' then
-            strText := Data.Text
+            strText := AuthorData.Text
           else
-            strText := strText + #13#10 + Data.Text;
-          Node := treeView.GetNextSelected(Node);
+            strText := strText + #13#10 + AuthorData.Text;
+          Node := tvAuthors.GetNextSelected(Node);
+        end;
+      end;
+
+    BySeriesView:
+      begin
+        Node := tvSeries.GetFirstSelected;
+        while Assigned(Node) do
+        begin
+          SerieData := tvSeries.GetNodeData(Node);
+          if strText = '' then
+            strText := SerieData.Text
+          else
+            strText := strText + #13#10 + SerieData.Text;
+          Node := tvSeries.GetNextSelected(Node);
         end;
       end;
 
     ByGenreView:
       begin
-        Node := treeView.GetFirstSelected;
+        Node := tvGenres.GetFirstSelected;
         while Assigned(Node) do
         begin
-          DataG := treeView.GetNodeData(Node);
+          GenreData := tvGenres.GetNodeData(Node);
           if strText = '' then
-            strText := DataG.Text
+            strText := GenreData.GenreAlias
           else
-            strText := strText + #13#10 + DataG.Text;
-          Node := treeView.GetNextSelected(Node);
+            strText := strText + #13#10 + GenreData.GenreAlias;
+          Node := tvGenres.GetNextSelected(Node);
         end;
       end;
   end;
+
   Clipboard.AsText := Trim(strText);
 end;
 
@@ -4212,9 +4214,9 @@ begin
             ALibrary.EndBulkOperation(False);
           end;
 
-          if DMUser.GroupedBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([Data.BookID, Settings.ActiveCollection]), []) then
+          if DMUser.BooksByGroup.Locate(BOOK_DB_FIELDS, VarArrayOf([Data.BookID, Settings.ActiveCollection]), []) then
           begin
-            DMUser.GroupedBooks.Delete;
+            DMUser.BooksByGroup.Delete;
           end;
           ///DMUser.DeleteExtra(Data.BookID);
         end;
@@ -4293,7 +4295,7 @@ end;
 function TfrmMain.GetActiveBookTable(Tag: Integer): TAbsTable;
 begin
   if Tag = 4 then
-    Result := DMUser.GroupedBooks
+    Result := DMUser.BooksByGroup
   else
     Result := dmCollection.tblBooks;
 end;
@@ -4561,7 +4563,7 @@ procedure TfrmMain.PrepareFb2EditData(Data: PBookData; var R: TBookRecord);
 var
   Family: TListItem;
   Author: TAuthorRecord;
-  Genre: TGenreRecord;
+  Genre: TGenreData;
 begin
   //
   // TODO : избавиться от необходимости получать BookRecord
@@ -4582,7 +4584,7 @@ begin
   for Genre in Data^.Genres do
   begin
     frmGenreTree.SelectGenres(Genre.GenreCode);
-    frmEditBookInfo.lblGenre.Text := frmEditBookInfo.lblGenre.Text + Genre.Alias + ';';
+    frmEditBookInfo.lblGenre.Text := frmEditBookInfo.lblGenre.Text + Genre.GenreAlias + ';';
   end;
 
   frmEditBookInfo.edT.Text := Data^.Title;
@@ -4785,7 +4787,7 @@ begin
   if Data^.nodeType = ntBookInfo then // добавляем новую серию
   begin
     Assert(Length(Data^.Authors) > 0);
-    AuthID := Data^.Authors[0].ID;
+    AuthID := Data^.Authors[0].AuthorID;
 
     if InputQuery('Создание серии / Перенос в серию', 'Название:', S) then
     begin
@@ -4856,7 +4858,7 @@ begin
     begin
       FillGroupsList;
       CreateGroupsMenu;
-      FillBooksTree(tvBooksF, DMUser.BookGroups, DMUser.GroupedBooks, True, True);
+      FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True);
     end
     else
       ShowMessage('Группа с таким именем уже существует!');
@@ -4877,7 +4879,7 @@ begin
 
     FillGroupsList;
     CreateGroupsMenu;
-    FillBooksTree(tvBooksF, DMUser.BookGroups, DMUser.GroupedBooks, True, True);
+    FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True);
   end
   else
     ShowMessage('Нельзя удалить встроенную группу!');
@@ -4943,7 +4945,7 @@ begin
   begin
     GroupData := tvGroups.GetNodeData(tvGroups.GetFirstSelected);
     if GroupData.GroupID = GroupID then
-      FillBooksTree(tvBooksF, DMUser.BookGroups, DMUser.GroupedBooks, True, True); // Группы
+      FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True); // Группы
   end;
 end;
 
@@ -4973,7 +4975,7 @@ begin
     DMUser.RemoveUnusedBooks;
 
     ClearLabels(PAGE_FAVORITES, True);
-    FillBooksTree(tvBooksF, DMUser.BookGroups, DMUser.GroupedBooks, True, True);
+    FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True);
   finally
     Screen.Cursor := crDefault;
   end;
@@ -4995,7 +4997,7 @@ begin
     DMUser.ClearGroup(GroupData^.GroupID);
 
     ClearLabels(PAGE_FAVORITES, True);
-    FillBooksTree(tvBooksF, DMUser.BookGroups, DMUser.GroupedBooks, True, True); // избранное
+    FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True); // избранное
   finally
     Screen.Cursor := crDefault;
   end;
@@ -5007,6 +5009,7 @@ var
   treeView: TVirtualStringTree;
   Node: PVirtualNode;
   Data: PAuthorData;
+  // TODO : отдельный тип данных для серии
 begin
   case ActiveView of
     ByAuthorView:
@@ -5033,7 +5036,6 @@ begin
       Edit.Text := Format('%s OR%s="%s"', [Edit.Text, #13#10, Data.Text]);
     Node := treeView.GetNextSelected(Node);
   end;
-
 end;
 
 procedure TfrmMain.miFastBookSearchClick(Sender: TObject);
@@ -5155,36 +5157,32 @@ begin
   end;
 end;
 
-procedure TfrmMain.LocateAuthor(Text: string; Tree: TVirtualStringTree);
+procedure TfrmMain.LocateAuthor(const Text: string);
 var
   Node: PVirtualNode;
   Data: PAuthorData;
-  L: Integer;
 begin
-  Tree.ClearSelection;
-  Node := Tree.GetFirst;
-
-  L := Length(Text);
-  Text := AnsiUpperCase(Text);
+  tvAuthors.ClearSelection;
+  Node := tvAuthors.GetFirst;
 
   while Assigned(Node) do
   begin
-    Data := Tree.GetNodeData(Node);
+    Data := tvAuthors.GetNodeData(Node);
     Assert(Assigned(Data));
-    if Text = Copy(AnsiUpperCase(Data.Text), 1, L) then
+    if StartsText(Text, Data^.Text) then
     begin
-      Tree.Selected[Node] := True;
-      Tree.FocusedNode := Node;
+      tvAuthors.Selected[Node] := True;
+      tvAuthors.FocusedNode := Node;
       Exit;
     end;
-    Node := Tree.GetNext(Node);
+    Node := tvAuthors.GetNext(Node);
   end;
 end;
 
-procedure TfrmMain.LocateSerie(Text: string);
+procedure TfrmMain.LocateSerie(const Text: string);
 var
   Node: PVirtualNode;
-  Data: PAuthorData;
+  Data: PSerieData;
 begin
   tvSeries.ClearSelection;
   Node := tvSeries.GetFirst;
@@ -5270,7 +5268,7 @@ begin
     edLocateAuthor.Perform(WM_KEYDOWN, vk_Right, 0);
   end;
   if not FDoNotLocate then
-    LocateAuthor(edLocateAuthor.Text, tvAuthors);
+    LocateAuthor(edLocateAuthor.Text);
 end;
 
 procedure TfrmMain.edLocateAuthorKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -5342,13 +5340,13 @@ begin
         Data := GetNodeData(Node);
         if edFGenre.Text = '' then
         begin
-          edFGenre.Text := Data.Text;
-          edFGenre.Hint := Format('(g.GenreCode = "%s")', [Data.Code]);
+          edFGenre.Text := Data.GenreAlias;
+          edFGenre.Hint := Format('(g.GenreCode = "%s")', [Data^.GenreCode]);
         end
         else
         begin
-          edFGenre.Text := edFGenre.Text + '/' + Data.Text;
-          edFGenre.Hint := Format('%s OR (g.GenreCode = "%s")', [edFGenre.Hint, Data.Code]);
+          edFGenre.Text := edFGenre.Text + '/' + Data.GenreAlias;
+          edFGenre.Hint := Format('%s OR (g.GenreCode = "%s")', [edFGenre.Hint, Data^.GenreCode]);
         end;
         Node := GetNextSelected(Node, False);
       end;
@@ -5438,9 +5436,9 @@ end;
 procedure TfrmMain.FillSeriesTree;
 var
   Node: PVirtualNode;
-  Data: PAuthorData;
+  Data: PSerieData;
 begin
-  tvSeries.NodeDataSize := SizeOf(TAuthorData);
+  tvSeries.NodeDataSize := SizeOf(TAuthorData); // TODO : отдельный тип данных для серии
 
   tvSeries.BeginUpdate;
   try
@@ -5493,7 +5491,7 @@ begin
       dmCollection.Genres.First;
       while not dmCollection.Genres.Eof do
       begin
-        strParentCode := dmCollection.GenresG_ParentCode.Value;
+        strParentCode := dmCollection.GenresParentCode.Value;
 
         ParentNode := nil;
         if (strParentCode <> '0') and Nodes.Find(strParentCode, nParentIndex) then
@@ -5503,14 +5501,14 @@ begin
         Data := Tree.GetNodeData(genreNode);
         Initialize(Data^);
 
-        Data^.Text := dmCollection.GenresG_Alias.Value;
-        Data^.Code := dmCollection.GenresGenreCode.Value;
+        Data^.GenreAlias := dmCollection.GenresGenreAlias.Value;
+        Data^.GenreCode := dmCollection.GenresGenreCode.Value;
         Data^.ParentCode := strParentCode;
 
         if FillFB2 then
-          Data^.FB2Code := dmCollection.GenresG_FB2Code.Value;
+          Data^.FB2GenreCode := dmCollection.GenresFB2Code.Value;
 
-        Nodes.AddObject(Data^.Code, TObject(genreNode));
+        Nodes.AddObject(Data^.GenreCode, TObject(genreNode));
 
         dmCollection.Genres.Next;
       end;
@@ -6136,22 +6134,22 @@ begin
     DMUser.Groups.First;
     while not DMUser.Groups.Eof do
     begin
-      DMUser.GroupedBooks.Filter := DB_ID_FIELD + '=' + QuotedStr(IntToStr(DMUser.ActiveCollection.ID));
-      DMUser.GroupedBooks.Filtered := True;
-      DMUser.GroupedBooks.First;
-      while not DMUser.GroupedBooks.Eof do
+      DMUser.BooksByGroup.Filter := DB_ID_FIELD + '=' + QuotedStr(IntToStr(DMUser.ActiveCollection.ID));
+      DMUser.BooksByGroup.Filtered := True;
+      DMUser.BooksByGroup.First;
+      while not DMUser.BooksByGroup.Eof do
       begin
-        if DMUser.GroupedBooksLibID.Value <> 0 then
-          ID := DMUser.GroupedBooksLibID.Value
+        if DMUser.BooksByGroupLibID.Value <> 0 then
+          ID := DMUser.BooksByGroupLibID.Value
         else
-          ID := DMUser.GroupedBooksBookID.Value;
+          ID := DMUser.BooksByGroupBookID.Value;
         SL.Add(Format('%d %s', [ID, DMUser.GroupsName.AsWideString]));
-        DMUser.GroupedBooks.Next;
+        DMUser.BooksByGroup.Next;
       end;
       DMUser.Groups.Next;
     end;
 
-    DMUser.GroupedBooks.MasterSource := DMUser.dsGroups;
+    DMUser.BooksByGroup.MasterSource := DMUser.dsGroups;
 
     //
     // избранное

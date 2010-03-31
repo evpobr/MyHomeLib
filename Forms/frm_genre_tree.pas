@@ -51,7 +51,7 @@ begin
   while Node <> nil do
   begin
     Data := tvGenresTree.GetNodeData(Node);
-    if Data.Code = Code then
+    if Data^.GenreCode = Code then
     begin
       tvGenresTree.Selected[Node] := True;
       tvGenresTree.Expanded[Node.Parent] := True;
@@ -71,7 +71,7 @@ begin
   while Assigned(Node) do
   begin
     Data := frmGenreTree.tvGenresTree.GetNodeData(Node);
-    R.AddGenreFB2(Data.Code, Data.FB2Code, '');
+    R.AddGenreFB2(Data^.GenreCode, Data^.FB2GenreCode, '');
     Node := tvGenresTree.GetNextSelected(Node);
   end;
 
@@ -90,7 +90,7 @@ var
   Data: PGenreData;
 begin
   Data := tvGenresTree.GetNodeData(Node);
-  CellText := Data.Text;
+  CellText := Data^.GenreAlias;
 end;
 
 end.

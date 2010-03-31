@@ -129,7 +129,7 @@ type
 
   function ClearDir(const DirectoryName: string): Boolean;
   function IsRelativePath(const FileName: string): Boolean;
-  function CreateFolders(Root: string; const Path: string): Boolean;
+  function CreateFolders(const Root: string; const Path: string): Boolean;
   procedure CopyFile(const SourceFileName: string; const DestFileName: string);
   procedure ConvertToTxt(const SourceFileName: string; DestFileName: string; Enc: TTXTEncoding);
   procedure ZipFile(const FileName: string; const ZipFileName: string);
@@ -160,50 +160,25 @@ type
   TAppLanguage = (alEng, alRus);
   TExportMode = (emFB2, emFB2Zip, emLrf, emTxt, emEpub, emPDF);
 
-  TDownloadState = (dsWait, dsRun, dsOk, dsError);
-
   TBookFlag = (bfLocalBook, bfDeletedBook);
   TBookFlags = set of TBookFlag;
 
   //
   // TreeView data records
   //
-  PDownloadData = ^TDownloadData;
-  TDownloadData = record
-    BookID: Integer;
-    DatabaseID: Integer;
-    Author: string;
-    Title: string;
-    Size: Integer;
-    FileName: string;
-    URL: string;
-    State: TDownloadState;
-  end;
-
+  // --------------------------------------------------------------------------
   PAuthorData = ^TAuthorData;
   TAuthorData = record
     AuthorID: Integer;
-    Text: string;
-    First, Last, Middle: string;
-  end;
-
-  PSerieData = ^TSerieData;
-  TSerieData = record
-    SerieID: Integer;
+    First: string;
+    Last: string;
+    Middle: string;
     Text: string;
   end;
-
-  PGenreRecord = ^TGenreRecord;
-  TGenreRecord = record
-    GenreCode: string;
-    GenreFb2Code: string;
-    Alias: string;
-  end;
-  TBookGenres = array of TGenreRecord;
 
   PAuthorRecord = ^TAuthorRecord;
   TAuthorRecord = record
-    ID: Integer;
+    AuthorID: Integer;
     FFirstName: string;
     FMiddleName: string;
     FLastName: string;
@@ -218,13 +193,60 @@ type
     property MiddleName: string read FMiddleName write SetMiddleName;
     property LastName: string read FLastName write SetLastName;
 
+    procedure Clear;
+
     class function FormatName(const LastName: string; const FirstName: string; const MiddleName: string; const nickName: string = ''; onlyInitials: Boolean = False): string; static;
   end;
   TBookAuthors = array of TAuthorRecord;
 
-  TBookNodeType = (ntAuthorInfo = 1, ntSeriesInfo, ntBookInfo);
-  PBookData = ^TBookData;
+  // --------------------------------------------------------------------------
+  {
+  PSerieData = ^TSerieData;
+  TSerieData = record
+    SerieID: Integer;
+    Text: string;
+  end;
+  }
+  PSerieData = PAuthorData;
 
+  // --------------------------------------------------------------------------
+  PGenreData = ^TGenreData;
+  TGenreData = record
+    GenreCode: string;
+    ParentCode: string;
+    FB2GenreCode: string;
+    GenreAlias: string;
+
+    procedure Clear;
+  end;
+  TBookGenres = array of TGenreData;
+
+  // --------------------------------------------------------------------------
+  PGroupData = ^TGroupData;
+  TGroupData = record
+    GroupID: Integer;
+    Text: string;
+    CanDelete: Boolean;
+  end;
+
+  // --------------------------------------------------------------------------
+  TDownloadState = (dsWait, dsRun, dsOk, dsError);
+  PDownloadData = ^TDownloadData;
+  TDownloadData = record
+    BookID: Integer;
+    DatabaseID: Integer;
+    Author: string;
+    Title: string;
+    Size: Integer;
+    FileName: string;
+    URL: string;
+    State: TDownloadState;
+  end;
+
+  // --------------------------------------------------------------------------
+  TBookNodeType = (ntAuthorInfo = 1, ntSeriesInfo, ntBookInfo);
+
+  PBookData = ^TBookData;
   TBookData = record
     nodeType: TBookNodeType;
 
@@ -263,26 +285,6 @@ type
     property Deleted: Boolean read GetDeleted write SetDeleted;
   end;
 
-  PGenreData = ^TGenreData;
-
-  TGenreData = record
-    Text: string;
-    Code: string;
-    FB2Code: string;
-    ParentCode: string;
-  end;
-
-  PGroupData = ^TGroupData;
-
-  TGroupData = record
-    GroupID: Integer;
-    Text: string;
-    CanDelete: Boolean;
-  end;
-
-  //
-  //
-  //
   TBookRecord = record
     //
     // TODO : добавить отдельное поле для ID книги, SeriesID в эту структуру
@@ -299,7 +301,7 @@ type
 
     Authors: TBookAuthors;
     Genres: TBookGenres;
-    RootGenre: TGenreRecord;
+    RootGenre: TGenreData;
 
     Code: Integer;
     Size: Integer;
@@ -357,7 +359,6 @@ type
   end;
 
   PFileData = ^TFileData;
-
   TFileData = record
     FullPath, FileName, Folder, Ext, Title: string;
     Size: Integer;
@@ -473,7 +474,7 @@ begin
     Result := False;
 end;
 
-function CreateFolders(Root: string; const Path: string): Boolean;
+function CreateFolders(const Root: string; const Path: string): Boolean;
 var
   FullPath: string;
 begin
@@ -659,6 +660,14 @@ end;
 
 { TAuthorRecord }
 
+procedure TAuthorRecord.Clear;
+begin
+  AuthorID := 0;
+  FFirstName := '';
+  FMiddleName := '';
+  FLastName := UNKNOWN_AUTHOR_LASTNAME;
+end;
+
 class function TAuthorRecord.FormatName(const LastName: string; const FirstName: string; const MiddleName: string; const nickName: string = ''; onlyInitials: Boolean = False): string;
 begin
   Result := LastName;
@@ -699,6 +708,17 @@ procedure TAuthorRecord.SetMiddleName(const Value: string);
 begin
   FMiddleName := Trim(Value);
 end;
+
+{ TGenreData }
+
+procedure TGenreData.Clear;
+begin
+  GenreCode := UNKNOWN_GENRE_CODE;
+  ParentCode := '';
+  FB2GenreCode := '';
+  GenreAlias := '';
+end;
+
 
 procedure TBookRecord.Clear;
 begin
@@ -804,7 +824,7 @@ begin
   Authors[i].LastName := LastName;
   Authors[i].FirstName := FirstName;
   Authors[i].MiddleName := MiddleName;
-  Authors[i].ID := AuthorID;
+  Authors[i].AuthorID := AuthorID;
 end;
 
 function TBookRecord.AuthorCount: Integer;
@@ -837,8 +857,9 @@ begin
   SetLength(Genres, i + 1);
 
   Genres[i].GenreCode := GenreCode;
-  Genres[i].GenreFb2Code := GenreFb2Code;
-  Genres[i].Alias := Alias;
+  Genres[i].ParentCode := '';
+  Genres[i].FB2GenreCode := GenreFb2Code;
+  Genres[i].GenreAlias := Alias;
 end;
 
 procedure TBookRecord.AddGenreAny(const GenreCode: string; const Alias: string);
@@ -849,8 +870,9 @@ begin
   SetLength(Genres, i + 1);
 
   Genres[i].GenreCode := GenreCode;
-  Genres[i].GenreFb2Code := '';
-  Genres[i].Alias := Alias;
+  Genres[i].ParentCode := '';
+  Genres[i].FB2GenreCode := '';
+  Genres[i].GenreAlias := Alias;
 end;
 
 function TBookRecord.GenreCount: Integer;
@@ -1136,12 +1158,12 @@ end;
 
 function TBookData.GetGenres: string;
 begin
-  Result := TArrayUtils.Join<TGenreRecord>(
+  Result := TArrayUtils.Join<TGenreData>(
     Genres,
     ' / ',
-    function(const genre: TGenreRecord): string
+    function(const genre: TGenreData): string
     begin
-      Result := genre.Alias;
+      Result := genre.GenreAlias;
     end
   );
 end;
