@@ -184,12 +184,12 @@ type
     miGoSite: TMenuItem;
     miGoForum: TMenuItem;
     pgControl: TRzPageControl;
-    TabSheet4: TRzTabSheet;
+    tsSearch: TRzTabSheet;
     tvBooksF: TVirtualStringTree;
-    TabSheet5: TRzTabSheet;
+    tsByGroup: TRzTabSheet;
     cpCoverF: TMHLCoverPanel;
     ilFileTypes: TImageList;
-    TabSheet1: TRzTabSheet;
+    tsByAuthor: TRzTabSheet;
     rzsSplitterA: TRzSplitter;
     RzPanel13: TRzPanel;
     tvAuthors: TVirtualStringTree;
@@ -216,7 +216,7 @@ type
     N22: TMenuItem;
     N25: TMenuItem;
     N27: TMenuItem;
-    TabSheet2: TRzTabSheet;
+    tsBySerie: TRzTabSheet;
     rzsSplitterS: TRzSplitter;
     RzPanel1: TRzPanel;
     tvSeries: TVirtualStringTree;
@@ -232,7 +232,7 @@ type
     RichEdit1: TRichEdit;
     ipnlSeries: TMHLInfoPanel;
     cpCoverS: TMHLCoverPanel;
-    TabSheet3: TRzTabSheet;
+    tsByGenre: TRzTabSheet;
     rzsSplitterG: TRzSplitter;
     RzPanel25: TRzPanel;
     tvGenres: TVirtualStringTree;
@@ -252,7 +252,7 @@ type
     N29: TMenuItem;
     N32: TMenuItem;
     N33: TMenuItem;
-    TabSheet7: TRzTabSheet;
+    tsDownload: TRzTabSheet;
     pmDownloadList: TPopupMenu;
     mi_dwnl_LocateAuthor: TMenuItem;
     N35: TMenuItem;
@@ -579,6 +579,8 @@ type
     procedure GetGenreNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
     procedure GetDownloadNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
     procedure FreeDownloadNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure tvSeriesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
+      TextType: TVSTTextType; var CellText: string);
 
   protected
     procedure WMGetSysCommand(var Message: TMessage); message WM_SYSCOMMAND;
@@ -1431,7 +1433,7 @@ begin
 
   // --------- Вкладки, прочее  -------------------------------------------------
 
-  TabSheet7.TabVisible := IsOnline;
+  tsDownload.TabVisible := IsOnline;
 
   // ----------------------------------------------------------------------------
 
@@ -1829,48 +1831,52 @@ begin
 end;
 
 procedure TfrmMain.SetAuthorsShowLocalOnly;
+var
+  SaveCursor: TCursor;
 begin
-  if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
-  begin
-    if Settings.ShowLocalOnly then
-      dmCollection.Authors.ParamByName('All').AsInteger := 1
+  SaveCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    dmCollection.Authors.Close;
+    if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
+    begin
+      if Settings.ShowLocalOnly then
+        dmCollection.Authors.ParamByName('All').AsInteger := 1
+      else
+        dmCollection.Authors.ParamByName('All').AsInteger := 0;
+    end
     else
+    begin
       dmCollection.Authors.ParamByName('All').AsInteger := 0;
-    dmCollection.Authors.Close;
-    Screen.Cursor := crHourGlass;
+    end;
     dmCollection.Authors.Open;
-    Screen.Cursor := crDefault;
-  end
-  else
-  begin
-    dmCollection.Authors.ParamByName('All').AsInteger := 0;
-    dmCollection.Authors.Close;
-    Screen.Cursor := crHourGlass;
-    dmCollection.Authors.Open;
-    Screen.Cursor := crDefault;
+  finally
+    Screen.Cursor := SaveCursor;
   end;
 end;
 
 procedure TfrmMain.SetSeriesShowLocalOnly;
+var
+  SaveCursor: TCursor;
 begin
-  if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
-  begin
-    if Settings.ShowLocalOnly then
-      dmCollection.Series.ParamByName('All').AsInteger := 1
+  SaveCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    dmCollection.Series.Close;
+    if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
+    begin
+      if Settings.ShowLocalOnly then
+        dmCollection.Series.ParamByName('All').AsInteger := 1
+      else
+        dmCollection.Series.ParamByName('All').AsInteger := 0;
+    end
     else
+    begin
       dmCollection.Series.ParamByName('All').AsInteger := 0;
-    dmCollection.Series.Close;
-    Screen.Cursor := crHourGlass;
+    end;
     dmCollection.Series.Open;
-    Screen.Cursor := crDefault;
-  end
-  else
-  begin
-    dmCollection.Series.ParamByName('All').AsInteger := 0;
-    dmCollection.Series.Close;
-    Screen.Cursor := crHourGlass;
-    dmCollection.Series.Open;
-    Screen.Cursor := crDefault;
+  finally
+    Screen.Cursor := SaveCursor;
   end;
 end;
 
@@ -2251,7 +2257,7 @@ begin
   Data := Sender.GetNodeData(Node);
   Assert(Assigned(Data));
 
-  CellText := Data^.Text;
+  CellText := Data^.GetFullName;
 end;
 
 procedure TfrmMain.tvAuthorsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -2571,7 +2577,6 @@ end;
 procedure TfrmMain.tvAuthorsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
   Data: PAuthorData;
-  ID: Integer;
 begin
   Data := tvAuthors.GetNodeData(Node);
   if not Assigned(Data) then
@@ -2579,9 +2584,8 @@ begin
 
   ClearLabels(PAGE_AUTHORS, True);
 
-  ID := Data^.AuthorID;
-  dmCollection.Authors.Locate(AUTHOR_ID_FIELD, ID, []);
-  lblAuthor.Caption := Data.Text;
+  dmCollection.Authors.Locate(AUTHOR_ID_FIELD, Data^.AuthorID, []);
+  lblAuthor.Caption := Data^.GetFullName;
   FillBooksTree(tvBooksA, dmCollection.AuthorBooks, dmCollection.BooksByAuthor, False, True); // авторы
 end;
 
@@ -2599,7 +2603,6 @@ end;
 procedure TfrmMain.tvSeriesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
   Data: PSerieData;
-  ID: Integer;
 begin
   Data := tvSeries.GetNodeData(Node);
   if not Assigned(Data) then
@@ -2607,9 +2610,8 @@ begin
 
   ClearLabels(PAGE_SERIES, True);
 
-  ID := Data^.AuthorID;
-  dmCollection.Series.Locate(SERIE_ID_FIELD, ID, []);
-  lblSeries.Caption := Data^.Text;
+  dmCollection.Series.Locate(SERIE_ID_FIELD, Data^.SerieID, []);
+  lblSeries.Caption := Data^.SerieTitle;
   FillBooksTree(tvBooksS, nil, dmCollection.BooksBySerie, False, False); // авторы
 end;
 
@@ -2620,6 +2622,16 @@ begin
   Node := tvBooksS.GetFirst;
   if Assigned(Node) then
     tvBooksS.Selected[Node] := True;
+end;
+
+procedure TfrmMain.tvSeriesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+var
+  Data: PSerieData;
+begin
+  Data := Sender.GetNodeData(Node);
+  Assert(Assigned(Data));
+
+  CellText := Data^.SerieTitle;
 end;
 
 procedure TfrmMain.tvSeriesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -3016,7 +3028,7 @@ end;
 
 procedure TfrmMain.GetSerieNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
 begin
-  NodeDataSize := SizeOf(TAuthorData); // TODO : отдельный тип данных для серии
+  NodeDataSize := SizeOf(TSerieData);
 end;
 
 procedure TfrmMain.GetGenreNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
@@ -3561,7 +3573,12 @@ begin
 
   cbDeleted.Checked := Settings.DoNotShowDeleted;
 
+  SetAuthorsShowLocalOnly;
+  SetSeriesShowLocalOnly;
   SetBooksFilter;
+
+  FillAuthorTree(tvAuthors);
+  FillSeriesTree;
   FillAllBooksTree;
 
   RestorePositions;
@@ -3580,8 +3597,8 @@ begin
         if Assigned(FLastLetterA) then
           FLastLetterA.Down := False;
 
-        FLastLetterA := (Sender as TToolButton); (Sender as TToolButton)
-        .Down := True;
+        FLastLetterA := (Sender as TToolButton);
+        (Sender as TToolButton).Down := True;
         if (Sender as TToolButton).Tag >= 90 then
           case (Sender as TToolButton).Tag of
             91: dmCollection.Authors.Filter := 'UPPER(LastName) >= "А*"';
@@ -3598,13 +3615,14 @@ begin
         // tvAuthors.Selected[tvAuthors.GetFirst] := True;
         edLocateAuthor.Perform(WM_KEYDOWN, vk_Right, 0);
       end;
+
     BySeriesView:
       begin
         ClearLabels(PAGE_SERIES, True);
         if Assigned(FLastLetterS) then
           FLastLetterS.Down := False;
-        FLastLetterS := (Sender as TToolButton); (Sender as TToolButton)
-        .Down := True;
+        FLastLetterS := (Sender as TToolButton);
+        (Sender as TToolButton).Down := True;
 
         if (Sender as TToolButton).Tag >= 90 then
           case (Sender as TToolButton).Tag of
@@ -3801,7 +3819,7 @@ var
   bookNode: PVirtualNode;
   LastSeries: PVirtualNode;
   Max, i: Integer;
-  DBCode: COLLECTION_TYPE;
+  //DBCode: COLLECTION_TYPE;
   Author: string;
   LastAuthor: string;
   Columns: TColumnSet;
@@ -3809,7 +3827,6 @@ var
   IsGroupView: Boolean;
 
   BookIDField: TField;
-  SerieIDField: TField;
   DatabaseIDField: TField;
 
   BookID: Integer;
@@ -3838,18 +3855,26 @@ begin
 
   Columns := GetColumns;
 
-  DBCode := DMUser.ActiveCollection.CollectionType;
+  //DBCode := DMUser.ActiveCollection.CollectionType;
   LastAuthor := '';
   LastSeries := nil;
 
   IsGroupView := (Tree.Tag = 4);
 
   //
+  // Если включен "плоский" режим отображения, принудительно сбрасываем ключи блокировки
+  //
+  if Settings.TreeModes[Tree.Tag] = tmFlat then
+  begin
+    ShowAuth := False;
+    ShowSer := False;
+  end;
+
+  //
   // Мастер таблица должна содержать следующие поля
   //  1. BOOK_ID_FIELD
-  //  2. SERIE_ID_FIELD
-  // дополнительно, для просмотра книг в группе нужны поля
-  //  3. DB_ID_FIELD
+  // для просмотра книг в группе нужны поля
+  //  2. DB_ID_FIELD
   //
 
   //
@@ -3857,9 +3882,6 @@ begin
   //
   BookIDField := DetailTable.FieldByName(BOOK_ID_FIELD);
   Assert(Assigned(BookIDField) and (BookIDField is TIntegerField));
-
-  SerieIDField := DetailTable.FieldByName(SERIE_ID_FIELD);
-  Assert(Assigned(SerieIDField) and (SerieIDField is TIntegerField));
 
   if IsGroupView then
   begin
@@ -3872,15 +3894,6 @@ begin
   DatabaseID := DMUser.ActiveCollection.ID;
 
   spProgress.Visible := True;
-
-  //
-  // Если включен "плоский" режим отображения, принудительно сбрасываем ключи блокировки
-  //
-  if Settings.TreeModes[Tree.Tag] = tmFlat then
-  begin
-    ShowAuth := False;
-    ShowSer := False;
-  end;
 
   BookTreeStatus := bsBusy;
   try
@@ -3915,11 +3928,12 @@ begin
               //
               //
               BookID := BookIDField.AsInteger;
-              SerieID := SerieIDField.AsInteger;
               if IsGroupView then
                 DatabaseID := DatabaseIDField.AsInteger;
 
               DMCollection.GetBookRecord(BookID, DatabaseID, BookRecord, True);
+
+              SerieID := BookRecord.SerieID;
 
               // обрабатываемое дерево не обязательно находится на активной вкладке!
               // это относится ко всем последующим проверкам
@@ -3990,10 +4004,10 @@ begin
               //
               bookNode := Tree.AddChild(seriesNode);
               Data := Tree.GetNodeData(bookNode);
+
               BookRecord.FillBookData(Data);
               Data^.BookID := BookID;
               Data^.DatabaseID := DatabaseID;
-              Data^.SerieID := SerieID;
 
               Inc(i);
               spProgress.Percent := i * 100 div Max;
@@ -4001,7 +4015,7 @@ begin
               MasterTable.Next;
             end; // while
 
-            Tree.FullExpand();
+            Tree.FullExpand;
 
             if ShowSer then
             begin
@@ -4070,9 +4084,9 @@ begin
         begin
           AuthorData := tvAuthors.GetNodeData(Node);
           if strText = '' then
-            strText := AuthorData.Text
+            strText := AuthorData^.GetFullName
           else
-            strText := strText + #13#10 + AuthorData.Text;
+            strText := strText + #13#10 + AuthorData^.GetFullName;
           Node := tvAuthors.GetNextSelected(Node);
         end;
       end;
@@ -4084,9 +4098,9 @@ begin
         begin
           SerieData := tvSeries.GetNodeData(Node);
           if strText = '' then
-            strText := SerieData.Text
+            strText := SerieData^.SerieTitle
           else
-            strText := strText + #13#10 + SerieData.Text;
+            strText := strText + #13#10 + SerieData^.SerieTitle;
           Node := tvSeries.GetNextSelected(Node);
         end;
       end;
@@ -4383,6 +4397,7 @@ begin
 end;
 
 procedure TfrmMain.miEditAuthorClick(Sender: TObject);
+(*
 var
   Tree: TVirtualStringTree;
   Node: PVirtualNode;
@@ -4394,7 +4409,11 @@ var
   new_AiD: Integer;
 
   frmEditAuthor: TfrmEditAuthorDataEx;
+*)
 begin
+  Assert(False, 'Not implementd yet!');
+
+  (*
   if ActiveView = FavoritesView then
   begin
     MessageDlg('Редактирование книг из избранного невозможно.', mtWarning, [mbOk], 0);
@@ -4541,6 +4560,7 @@ begin
   finally
     frmEditAuthor.Free;
   end;
+  *)
 end;
 
 function TfrmMain.IsLibRusecEdit(BookID: Integer): Boolean;
@@ -4562,7 +4582,7 @@ end;
 procedure TfrmMain.PrepareFb2EditData(Data: PBookData; var R: TBookRecord);
 var
   Family: TListItem;
-  Author: TAuthorRecord;
+  Author: TAuthorData;
   Genre: TGenreData;
 begin
   //
@@ -5019,6 +5039,8 @@ begin
       end;
     BySeriesView:
       begin
+        Assert(False, 'Необходимо использовать отдельный тип данных для серии');
+        Exit;
         treeView := tvSeries;
         Edit := edFSeries;
       end
@@ -5031,9 +5053,9 @@ begin
   begin
     Data := treeView.GetNodeData(Node);
     if Edit.Text = '' then
-      Edit.Text := Format('="%s"', [Data.Text])
+      Edit.Text := Format('="%s"', [Data^.GetFullName])
     else
-      Edit.Text := Format('%s OR%s="%s"', [Edit.Text, #13#10, Data.Text]);
+      Edit.Text := Format('%s OR%s="%s"', [Edit.Text, #13#10, Data^.GetFullName]);
     Node := treeView.GetNextSelected(Node);
   end;
 end;
@@ -5169,7 +5191,7 @@ begin
   begin
     Data := tvAuthors.GetNodeData(Node);
     Assert(Assigned(Data));
-    if StartsText(Text, Data^.Text) then
+    if StartsText(Text, Data^.GetFullName) then
     begin
       tvAuthors.Selected[Node] := True;
       tvAuthors.FocusedNode := Node;
@@ -5191,7 +5213,7 @@ begin
   begin
     Data := tvSeries.GetNodeData(Node);
     Assert(Assigned(Data));
-    if StartsText(Text, Data^.Text) then
+    if StartsText(Text, Data^.SerieTitle) then
     begin
       tvSeries.Selected[Node] := True;
       tvSeries.FocusedNode := Node;
@@ -5410,14 +5432,9 @@ begin
         Data := Tree.GetNodeData(Node);
         Initialize(Data^);
         Data^.AuthorID := dmCollection.AuthorsID.Value;
-
-        if FullMode then
-        begin
-          Data^.First := dmCollection.AuthorsName.Value;
-          Data^.Last := dmCollection.AuthorsFamily.Value;
-          Data^.Middle := dmCollection.AuthorsMiddle.Value;
-        end;
-        Data^.Text := Trim(TAuthorRecord.FormatName(dmCollection.AuthorsFamily.Value, dmCollection.AuthorsName.Value, dmCollection.AuthorsMiddle.Value));
+        Data^.FirstName := dmCollection.AuthorsName.Value;
+        Data^.LastName := dmCollection.AuthorsFamily.Value;
+        Data^.MiddleName := dmCollection.AuthorsMiddle.Value;
 
         dmCollection.Authors.Next;
       end;
@@ -5438,7 +5455,7 @@ var
   Node: PVirtualNode;
   Data: PSerieData;
 begin
-  tvSeries.NodeDataSize := SizeOf(TAuthorData); // TODO : отдельный тип данных для серии
+  tvSeries.NodeDataSize := SizeOf(TSerieData);
 
   tvSeries.BeginUpdate;
   try
@@ -5456,8 +5473,8 @@ begin
         Node := tvSeries.AddChild(nil);
         Data := tvSeries.GetNodeData(Node);
         Initialize(Data^);
-        Data^.AuthorID := dmCollection.SeriesSerieID.AsInteger;
-        Data^.Text := dmCollection.SeriesTitle.AsString;
+        Data^.SerieID := dmCollection.SeriesSerieID.AsInteger;
+        Data^.SerieTitle := dmCollection.SeriesTitle.AsString;
 
         dmCollection.Series.Next;
       end;
@@ -6155,7 +6172,7 @@ begin
     // избранное
     //
     SL.Add('# Рецензии');
-
+    {
     dmCollection.tblExtra.MasterSource := nil;
     dmCollection.tblExtra.First;
     while not dmCollection.tblExtra.Eof do
@@ -6172,10 +6189,10 @@ begin
       dmCollection.tblExtra.Next;
     end;
     dmCollection.tblExtra.MasterSource := dmCollection.dsBooks;
+    }
 
     if unit_Helpers.GetFileName(fnSaveUserData, FN) then
       SL.SaveToFile(FN, TEncoding.UTF8);
-
   finally
     SL.Free;
   end;

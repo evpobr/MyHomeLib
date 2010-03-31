@@ -435,14 +435,14 @@ object frmMain: TfrmMain
     Width = 942
     Height = 794
     HelpContext = 1
-    ActivePage = TabSheet5
+    ActivePage = tsDownload
     Align = alClient
-    TabIndex = 4
+    TabIndex = 5
     TabOrder = 3
     TabStop = False
     OnChange = pgControlChange
     FixedDimension = 19
-    object TabSheet1: TRzTabSheet
+    object tsByAuthor: TRzTabSheet
       HelpContext = 135
       Caption = #1040#1074#1090#1086#1088#1099
       ExplicitLeft = 0
@@ -811,7 +811,7 @@ object frmMain: TfrmMain
         AnnotationColor = clBlack
       end
     end
-    object TabSheet2: TRzTabSheet
+    object tsBySerie: TRzTabSheet
       HelpContext = 135
       Caption = #1057#1077#1088#1080#1080
       ExplicitLeft = 0
@@ -880,7 +880,7 @@ object frmMain: TfrmMain
             OnChange = tvSeriesChange
             OnClick = tvSeriesClick
             OnFreeNode = FreeSerieNodeData
-            OnGetText = tvAuthorsGetText
+            OnGetText = tvSeriesGetText
             OnGetNodeDataSize = GetSerieNodeDataSize
             OnKeyDown = tvSeriesKeyDown
             Columns = <>
@@ -1190,7 +1190,7 @@ object frmMain: TfrmMain
         end
       end
     end
-    object TabSheet3: TRzTabSheet
+    object tsByGenre: TRzTabSheet
       HelpContext = 135
       Caption = #1046#1072#1085#1088#1099
       ExplicitLeft = 0
@@ -1504,7 +1504,7 @@ object frmMain: TfrmMain
         end
       end
     end
-    object TabSheet4: TRzTabSheet
+    object tsSearch: TRzTabSheet
       HelpContext = 126
       Caption = #1055#1086#1080#1089#1082
       ExplicitLeft = 0
@@ -2296,7 +2296,7 @@ object frmMain: TfrmMain
         end
       end
     end
-    object TabSheet5: TRzTabSheet
+    object tsByGroup: TRzTabSheet
       HelpContext = 125
       Caption = #1043#1088#1091#1087#1087#1099
       ExplicitLeft = 0
@@ -2750,7 +2750,7 @@ object frmMain: TfrmMain
         end
       end
     end
-    object TabSheet7: TRzTabSheet
+    object tsDownload: TRzTabSheet
       HelpContext = 108
       Caption = #1057#1087#1080#1089#1086#1082' '#1079#1072#1082#1072#1095#1077#1082
       ExplicitLeft = 0

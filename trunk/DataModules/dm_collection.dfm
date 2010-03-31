@@ -1,6 +1,6 @@
 object DMCollection: TDMCollection
   OldCreateOrder = False
-  Height = 716
+  Height = 580
   Width = 779
   object DBCollection: TABSDatabase
     CurrentVersion = '6.05 '
@@ -79,33 +79,6 @@ object DMCollection: TDMCollection
       Size = 50
     end
   end
-  object tblAuthorsS: TABSTable
-    CurrentVersion = '6.05 '
-    DatabaseName = 'Collection'
-    InMemory = False
-    ReadOnly = False
-    TableName = 'Authors'
-    Exclusive = False
-    Left = 496
-    Top = 352
-    object tblAuthorsSID: TAutoIncField
-      FieldName = 'ID'
-    end
-    object tblAuthorsSFamily: TWideStringField
-      FieldName = 'Family'
-      Required = True
-      Size = 30
-    end
-    object tblAuthorsSName: TWideStringField
-      FieldName = 'Name'
-      Size = 15
-    end
-    object tblAuthorsSFullName: TWideStringField
-      FieldName = 'FullName'
-      Required = True
-      Size = 45
-    end
-  end
   object BooksBySerie: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
@@ -129,11 +102,6 @@ object DMCollection: TDMCollection
     DataSet = Series
     Left = 392
     Top = 96
-  end
-  object dsAuthorsS: TDataSource
-    DataSet = tblAuthorsS
-    Left = 576
-    Top = 352
   end
   object BookGenres: TABSTable
     CurrentVersion = '6.05 '
@@ -245,7 +213,7 @@ object DMCollection: TDMCollection
     TableName = 'books'
     Exclusive = False
     Left = 56
-    Top = 552
+    Top = 488
     object tblBooksID: TAutoIncField
       FieldName = 'BookID'
     end
@@ -325,11 +293,6 @@ object DMCollection: TDMCollection
       Size = 255
     end
   end
-  object dsBooks: TDataSource
-    DataSet = tblBooks
-    Left = 160
-    Top = 552
-  end
   object AllAuthors: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
@@ -392,8 +355,8 @@ object DMCollection: TDMCollection
     IndexName = 'TiteIndex'
     TableName = 'series'
     Exclusive = False
-    Left = 496
-    Top = 616
+    Left = 128
+    Top = 488
     object tblSeriesB1SerieID: TAutoIncField
       FieldName = 'SerieID'
     end
@@ -409,30 +372,6 @@ object DMCollection: TDMCollection
       FieldName = 'S_Title'
       Required = True
       Size = 80
-    end
-  end
-  object tblExtra: TABSTable
-    CurrentVersion = '6.05 '
-    DatabaseName = 'Collection'
-    InMemory = False
-    ReadOnly = False
-    IndexName = 'ID_Index'
-    TableName = 'Extra'
-    Exclusive = False
-    MasterFields = 'BookID'
-    MasterSource = dsBooks
-    Left = 56
-    Top = 608
-    object tblExtraBookID: TIntegerField
-      FieldName = 'BookID'
-    end
-    object tblExtraAnnotation: TWideMemoField
-      FieldName = 'Annotation'
-      BlobType = ftWideMemo
-    end
-    object tblExtraReview: TWideMemoField
-      FieldName = 'Review'
-      BlobType = ftWideMemo
     end
   end
   object Authors: TABSQuery
