@@ -68,14 +68,14 @@ object DMCollection: TDMCollection
     object GenresGenreCode: TWideStringField
       FieldName = 'GenreCode'
     end
-    object GenresG_ParentCode: TWideStringField
-      FieldName = 'G_ParentCode'
+    object GenresParentCode: TWideStringField
+      FieldName = 'ParentCode'
     end
-    object GenresG_FB2Code: TWideStringField
-      FieldName = 'G_FB2Code'
+    object GenresFB2Code: TWideStringField
+      FieldName = 'FB2Code'
     end
-    object GenresG_Alias: TWideStringField
-      FieldName = 'G_Alias'
+    object GenresGenreAlias: TWideStringField
+      FieldName = 'GenreAlias'
       Size = 50
     end
   end
@@ -135,7 +135,7 @@ object DMCollection: TDMCollection
     Left = 576
     Top = 352
   end
-  object BookGenres_List: TABSTable
+  object BookGenres: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
@@ -143,32 +143,27 @@ object DMCollection: TDMCollection
     IndexName = 'BookIndex'
     TableName = 'Genre_List'
     Exclusive = False
-    Left = 56
-    Top = 352
-    object BookGenres_ListGenreCode: TWideStringField
+    Left = 288
+    Top = 320
+    object BookGenresGenreCode: TWideStringField
       FieldName = 'GenreCode'
       Size = 30
     end
-    object BookGenres_ListBookID: TIntegerField
+    object BookGenresBookID: TIntegerField
       FieldName = 'BookID'
     end
-    object BookGenres_ListGL_Family: TWideStringField
+    object BookGenresGL_Family: TWideStringField
       FieldName = 'GL_Family'
       Size = 7
     end
-    object BookGenres_ListGL_Series: TWideStringField
+    object BookGenresGL_Series: TWideStringField
       FieldName = 'GL_Series'
       Size = 7
     end
-    object BookGenres_ListGL_Title: TWideStringField
+    object BookGenresGL_Title: TWideStringField
       FieldName = 'GL_Title'
       Size = 7
     end
-  end
-  object dsBookGenres_List: TDataSource
-    DataSet = BookGenres_List
-    Left = 160
-    Top = 352
   end
   object GenreBooks: TABSTable
     CurrentVersion = '6.05 '
@@ -335,33 +330,7 @@ object DMCollection: TDMCollection
     Left = 160
     Top = 552
   end
-  object BookGenres: TABSTable
-    CurrentVersion = '6.05 '
-    DatabaseName = 'Collection'
-    InMemory = False
-    ReadOnly = False
-    IndexName = 'ID_Index'
-    TableName = 'genres'
-    Exclusive = False
-    MasterFields = 'GenreCode'
-    MasterSource = dsBookGenres_List
-    Left = 56
-    Top = 408
-    object BookGenresGenreCode: TWideStringField
-      FieldName = 'GenreCode'
-    end
-    object BookGenresG_ParentCode: TWideStringField
-      FieldName = 'G_ParentCode'
-    end
-    object BookGenresG_FB2Code: TWideStringField
-      FieldName = 'G_FB2Code'
-    end
-    object BookGenresG_Alias: TWideStringField
-      FieldName = 'G_Alias'
-      Size = 50
-    end
-  end
-  object BookAuthor: TABSTable
+  object AllAuthors: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
@@ -369,28 +338,26 @@ object DMCollection: TDMCollection
     IndexName = 'ID_Index'
     TableName = 'Authors'
     Exclusive = False
-    MasterFields = 'AuthorID'
-    MasterSource = dsBookAuthors_List
-    Left = 288
-    Top = 416
-    object BookAuthorA_ID: TAutoIncField
+    Left = 688
+    Top = 160
+    object AllAuthorsAuthorID: TAutoIncField
       FieldName = 'AuthorID'
     end
-    object BookAuthorLastName: TWideStringField
+    object AllAuthorsLastName: TWideStringField
       FieldName = 'LastName'
       Required = True
       Size = 128
     end
-    object BookAuthorFirstName: TWideStringField
+    object AllAuthorsFirstName: TWideStringField
       FieldName = 'FirstName'
       Size = 128
     end
-    object BookAuthorMiddleName: TWideStringField
+    object AllAuthorsMiddleName: TWideStringField
       FieldName = 'MiddleName'
       Size = 128
     end
   end
-  object BookAuthors_List: TABSTable
+  object BookAuthors: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
@@ -398,27 +365,22 @@ object DMCollection: TDMCollection
     IndexName = 'BookIndex'
     TableName = 'Author_List'
     Exclusive = False
-    Left = 288
-    Top = 352
-    object BookAuthors_ListAuthorID: TIntegerField
+    Left = 56
+    Top = 320
+    object BookAuthorsAuthorID: TIntegerField
       FieldName = 'AuthorID'
     end
-    object BookAuthors_ListBookID: TIntegerField
+    object BookAuthorsBookID: TIntegerField
       FieldName = 'BookID'
     end
-    object BookAuthors_ListAL_Series: TWideStringField
+    object BookAuthorsAL_Series: TWideStringField
       FieldName = 'AL_Series'
       Size = 7
     end
-    object BookAuthors_ListAL_Title: TWideStringField
+    object BookAuthorsAL_Title: TWideStringField
       FieldName = 'AL_Title'
       Size = 7
     end
-  end
-  object dsBookAuthors_List: TDataSource
-    DataSet = BookAuthors_List
-    Left = 392
-    Top = 352
   end
   object tblSeriesB1: TABSTable
     CurrentVersion = '6.05 '
@@ -589,7 +551,7 @@ object DMCollection: TDMCollection
     SQL.Strings = (
       'select * from books where BookID=1')
     Left = 688
-    Top = 352
+    Top = 408
     object sqlBooksID: TIntegerField
       FieldName = 'BookID'
     end
@@ -690,7 +652,7 @@ object DMCollection: TDMCollection
     TableName = 'Series'
     Exclusive = False
     Left = 688
-    Top = 152
+    Top = 216
     object AllSeriesSerieID: TAutoIncField
       FieldName = 'SerieID'
     end
@@ -709,7 +671,7 @@ object DMCollection: TDMCollection
     TableName = 'Extra'
     Exclusive = False
     Left = 688
-    Top = 208
+    Top = 272
     object AllExtraBookID: TIntegerField
       FieldName = 'BookID'
       Required = True
@@ -734,22 +696,23 @@ object DMCollection: TDMCollection
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
+    IndexName = 'ID_Index'
     TableName = 'Genres'
     Exclusive = False
     Left = 688
-    Top = 264
+    Top = 328
     object AllGenresGenreCode: TWideStringField
       FieldName = 'GenreCode'
       Required = True
     end
     object AllGenresParentCode: TWideStringField
-      FieldName = 'G_ParentCode'
+      FieldName = 'ParentCode'
     end
     object AllGenresFB2Code: TWideStringField
-      FieldName = 'G_FB2Code'
+      FieldName = 'FB2Code'
     end
     object AllGenresAlias: TWideStringField
-      FieldName = 'G_Alias'
+      FieldName = 'GenreAlias'
       Required = True
       Size = 50
     end

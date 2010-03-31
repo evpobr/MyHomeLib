@@ -135,7 +135,7 @@ begin
       if Annotation.P.Items[i].IsTextElement then
         R.Annotation := R.Annotation + #10#13 + Annotation.P.Items[i].OnlyText;
 
-    R.RootGenre.Alias := Trim(FLibrary.GetTopGenreAlias(R.Genres[0].GenreFb2Code));
+    R.RootGenre.GenreAlias := Trim(FLibrary.GetTopGenreAlias(R.Genres[0].FB2GenreCode));
   end;
 end;
 

@@ -24,7 +24,7 @@ uses
 
 type
   TReaderDesc = class(TCollectionItem)
-  private
+  strict private
     FExtension: string;
     FPath: string;
     procedure SetExtension(const Value: string);
@@ -38,11 +38,12 @@ type
   end;
 
   TReaders = class(TCollection)
-  private
+  strict private
     function GetReader(Index: Integer): TReaderDesc;
     procedure SetReader(Index: Integer; const Value: TReaderDesc);
 
     function AddReader: TReaderDesc;
+
   public
     constructor Create;
 
@@ -65,18 +66,20 @@ uses
 { TReaderC }
 
 procedure TReaderDesc.AssignTo(Dest: TPersistent);
+var
+  Other: TReaderDesc;
 begin
   if Dest is TReaderDesc then
-    with TReaderDesc(Dest) do
-    begin
-      Extension := Self.Extension;
-      Path := Self.Path;
-    end
+  begin
+    Other := TReaderDesc(Dest);
+    Other.Extension := Extension;
+    Other.Path := Path;
+  end
   else
     inherited AssignTo(Dest);
 end;
 
-procedure TReaderDesc.SetExtension(const Value: String);
+procedure TReaderDesc.SetExtension(const Value: string);
 begin
   FExtension := CleanExtension(Value);
 end;

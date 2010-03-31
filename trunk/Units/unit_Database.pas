@@ -256,16 +256,16 @@ SeriesTableIndexes: array [1..4] of TIndexDesc = (
 //
 GenresTableFields: array [1 .. 4] of TFieldDesc = (
   (Name: GENRE_CODE_FIELD; DataType: ftWideString; Size: 20; Required: True),
-  (Name: 'G_ParentCode';   DataType: ftWideString; Size: 20; Required: False),
-  (Name: 'G_FB2Code';      DataType: ftWideString; Size: 20; Required: False),
-  (Name: 'G_Alias';        DataType: ftWideString; Size: 50; Required: True)
+  (Name: 'ParentCode';     DataType: ftWideString; Size: 20; Required: False),
+  (Name: 'FB2Code';        DataType: ftWideString; Size: 20; Required: False),
+  (Name: 'GenreAlias';     DataType: ftWideString; Size: 50; Required: True)
 );
 
 GenresTableIndexes: array [1..4] of TIndexDesc = (
-  (Name: 'ID_Index';     Fields: GENRE_CODE_FIELD;                   Options: [ixPrimary]),
-  (Name: 'CodeIndex';    Fields: 'G_ParentCode;' + GENRE_CODE_FIELD; Options: [ixCaseInsensitive]),
-  (Name: 'FB2CodeIndex'; Fields: 'G_FB2Code';                        Options: [ixCaseInsensitive]),
-  (Name: 'AliasIndex';   Fields: 'G_Alias';                          Options: [])
+  (Name: 'ID_Index';     Fields: GENRE_CODE_FIELD;                 Options: [ixPrimary]),
+  (Name: 'CodeIndex';    Fields: 'ParentCode;' + GENRE_CODE_FIELD; Options: [ixCaseInsensitive, ixUnique]),
+  (Name: 'FB2CodeIndex'; Fields: 'FB2Code';                        Options: [ixCaseInsensitive]),
+  (Name: 'AliasIndex';   Fields: 'GenreAlias';                     Options: [])
 );
 
 //
@@ -770,9 +770,9 @@ begin
       //
       FGenres.Insert;
       FGenres.FieldByName(GENRE_CODE_FIELD).AsString := Code;
-      FGenres['G_ParentCode'] := ParentCode;
-      FGenres['G_FB2Code'] := FB2Code;
-      FGenres['G_Alias'] := S;
+      FGenres['ParentCode'] := ParentCode;
+      FGenres['FB2Code'] := FB2Code;
+      FGenres['GenreAlias'] := S;
       FGenres.Post;
     end;
   finally
@@ -796,8 +796,8 @@ end;
 
 function TMHLLibrary.GetGenreAlias(const FB2Code: string): string;
 begin
-  FGenres.Locate('G_FB2Code', FB2Code, []);
-  Result := FGenres.FieldByName('G_Alias').AsWideString;
+  FGenres.Locate('FB2Code', FB2Code, []);
+  Result := FGenres.FieldByName('GenreAlias').AsWideString;
 end;
 
 function TMHLLibrary.GetTopGenreAlias(const FB2Code: string): string;
@@ -805,7 +805,7 @@ var
   Code: string;
   p: Integer;
 begin
-  FGenres.Locate('G_FB2Code', FB2Code, []);
+  FGenres.Locate('FB2Code', FB2Code, []);
   Code := FGenres.FieldByName(GENRE_CODE_FIELD).AsWideString;
 
   Delete(Code, 1, 2); // "0."
@@ -813,7 +813,7 @@ begin
   Code := '0.' + Copy(Code, 1, p - 1);
 
   FGenres.Locate(GENRE_CODE_FIELD, Code, []);
-  Result := FGenres.FieldByName('G_Alias').AsWideString;
+  Result := FGenres.FieldByName('GenreAlias').AsWideString;
 end;
 
 function TMHLLibrary.CheckFileInCollection(const FileName: string; const FullNameSearch: Boolean; const ZipFolder: Boolean): Boolean;
@@ -838,7 +838,7 @@ function TMHLLibrary.InsertBook(BookRecord: TBookRecord; CheckFileName, FullChec
 var
   i: Integer;
   ASeqNumber: Integer;
-  Genre: TGenreRecord;
+  Genre: TGenreData;
   Author: TAuthorRecord;
 
   Res: Boolean;
@@ -870,7 +870,7 @@ begin
     //
     // и запомним ID-ки
     //
-    BookRecord.Authors[i].ID := FAuthorID.Value;
+    BookRecord.Authors[i].AuthorID := FAuthorID.Value;
   end;
 
   //
@@ -882,12 +882,12 @@ begin
     //
     // ≈сли fb2 код указан, переводим его в универсальный код
     //
-    if BookRecord.Genres[i].GenreFb2Code <> '' then
+    if BookRecord.Genres[i].FB2GenreCode <> '' then
     begin
       //
       // «наем fb2-код жанра => получаем внутренний код
       //
-      if FGenres.Locate('G_FB2Code', BookRecord.Genres[i].GenreFb2Code, [loCaseInsensitive]) then
+      if FGenres.Locate('FB2Code', BookRecord.Genres[i].FB2GenreCode, [loCaseInsensitive]) then
         BookRecord.Genres[i].GenreCode := FGenres.FieldByName(GENRE_CODE_FIELD).AsString
       else
         //
@@ -918,9 +918,9 @@ begin
   if not FSeries.Locate('S_Title', BookRecord.Serie, [loCaseInsensitive]) then
   begin
     FSeries.Append;
-    FSeries.FieldByName('S_Title').AsString := BookRecord.Serie;
     FSeries.FieldByName(GENRE_CODE_FIELD).AsString := BookRecord.Genres[0].GenreCode;
-    FSeries.FieldByName(AUTHOR_ID_FIELD).AsInteger := BookRecord.Authors[0].ID;
+    FSeries.FieldByName(AUTHOR_ID_FIELD).AsInteger := BookRecord.Authors[0].AuthorID;
+    FSeries.FieldByName('S_Title').AsString := BookRecord.Serie;
     FSeries.Post;
   end;
 
@@ -984,7 +984,7 @@ begin
     begin
       FAuthorList.Append;
       try
-        FAuthorListAuthorID.Value := Author.ID;
+        FAuthorListAuthorID.Value := Author.AuthorID;
         FAuthorListBookID.Value := FBookBookID.Value;
         //
         // формирование индексных полей (индексирование по первым 10-ти символам)

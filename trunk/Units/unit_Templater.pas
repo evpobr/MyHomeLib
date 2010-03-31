@@ -262,7 +262,7 @@ type
 
   TMaskElements = array [1 .. COL_MASK_ELEMENTS] of TMaskElement;
 var
-  AuthorName, Firstname, MiddleName, Lastname, s: string;
+  AuthorName, s: string;
   i, j: Integer;
   MaskElements: TMaskElements;
 begin
@@ -272,17 +272,17 @@ begin
   MaskElements[1].templ := 'ga';
   for i := Low(R.Genres) to High(R.Genres) do
   begin
-    MaskElements[1].value := MaskElements[1].value + R.Genres[i].Alias;
+    MaskElements[1].value := MaskElements[1].value + R.Genres[i].GenreAlias;
     if i < High(R.Genres) then
       MaskElements[1].value := MaskElements[1].value + ', ';
   end;
 
   MaskElements[2].templ := 'rg';
-  MaskElements[2].value := Trim(R.RootGenre.Alias);
+  MaskElements[2].value := Trim(R.RootGenre.GenreAlias);
 
   MaskElements[3].templ := 'g';
   if R.GenreCount > 0 then
-    MaskElements[3].value := Trim(R.Genres[0].Alias)
+    MaskElements[3].value := Trim(R.Genres[0].GenreAlias)
   else
     MaskElements[3].value := '';
 
@@ -303,12 +303,7 @@ begin
   if R.AuthorCount > 0 then
     for i := Low(R.Authors) to High(R.Authors) do
     begin
-      Lastname := R.Authors[i].FLastName;
-      if R.Authors[i].FFirstName <> '' then
-        Firstname := ' ' + R.Authors[i].FFirstName[1] + '.';
-      if R.Authors[i].FMiddleName <> '' then
-        MiddleName := ' ' + R.Authors[i].FMiddleName[1] + '.';
-      AuthorName := AuthorName + Lastname + Firstname + MiddleName;
+      AuthorName := R.Authors[i].GetFullName(True);
       if i < High(R.Authors) then
         AuthorName := AuthorName + ', ';
     end;

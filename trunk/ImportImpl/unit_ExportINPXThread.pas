@@ -223,7 +223,7 @@ const
 var
   author: TAuthorRecord;
   strAuthors: string;
-  genre: TGenreRecord;
+  genre: TGenreData;
   strGenres: string;
   strFileExt: string;
 begin
@@ -247,7 +247,7 @@ begin
   for genre in R.Genres do
   begin
     strGenres := strGenres +
-      IfThen(FGenresType = gtFb2, genre.GenreFb2Code, genre.GenreCode) + ItemDelimiterChar;
+      IfThen(FGenresType = gtFb2, genre.FB2GenreCode, genre.GenreCode) + ItemDelimiterChar;
   end;
   if strGenres = '' then
     strGenres := ItemDelimiterChar;
