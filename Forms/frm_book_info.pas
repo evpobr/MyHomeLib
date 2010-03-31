@@ -307,7 +307,7 @@ begin
       for i := 0 to Author.Count - 1 do
       begin
         with Author[i] do
-          tmpStr := TAuthorRecord.FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
+          tmpStr := TAuthorData.FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
         AddItem(lvInfo, IfThen(i = 0, 'Автор(ы)'), tmpStr, GroupID);
       end;
 
@@ -331,7 +331,7 @@ begin
       for i := 0 to Translator.Count - 1 do
       begin
         with Translator[i] do
-          tmpStr := TAuthorRecord.FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
+          tmpStr := TAuthorData.FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
         AddItem(lvInfo, IfThen(i = 0, 'Переводчик(и)'), tmpStr, GroupID);
       end;
     end;
@@ -362,7 +362,7 @@ begin
       for i := 0 to Author.Count - 1 do
       begin
         with Author[i] do
-          tmpStr := TAuthorRecord.FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
+          tmpStr := TAuthorData.FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
         AddItem(lvInfo, IfThen(i = 0, 'Авторы'), tmpStr, GroupID);
       end;
 

@@ -206,6 +206,8 @@ type
     function AddGroup(const Name: string): Boolean;
     procedure DeleteGroup(GroupID: Integer);
     procedure ClearGroup(GroupID: Integer);
+
+    procedure AddBookToGroup(BookID: Integer; DatabaseID: Integer; GroupID: Integer; const BookRecord: TBookRecord);
     procedure DeleteFromGroup(BookID: Integer; DatabaseID: Integer; GroupID: Integer);
     procedure RemoveUnusedBooks;
     procedure CopyBookToGroup(
@@ -329,6 +331,7 @@ implementation
 uses
   SysUtils,
   StrUtils,
+  IOUtils,
   Variants,
   dm_Collection;
 
@@ -629,6 +632,7 @@ begin
 
     if dmCollection.tblBooks.Locate(BOOK_ID_FIELD, ID, []) then
     begin
+      {
       dmCollection.tblExtra.Insert;
       dmCollection.tblExtraReview.Value := S;
       dmCollection.tblExtra.Post;
@@ -636,6 +640,7 @@ begin
       dmCollection.tblBooks.Edit;
       dmCollection.tblBooksCode.Value := 1;
       dmCollection.tblBooks.Post;
+      }
     end;
 
     Inc(i);
@@ -713,6 +718,7 @@ begin
     BookRecord.FileName := AllBooksFileName.Value;
     BookRecord.FileExt := AllBooksExt.Value;
     BookRecord.InsideNo := AllBooksInsideNo.Value;
+    BookRecord.SerieID := AllBooksSerieID.Value;
     BookRecord.Serie := AllBooksSeries.Value;
     BookRecord.SeqNumber := AllBooksSeqNumber.Value;
     BookRecord.Code := AllBooksCode.Value;
@@ -726,6 +732,7 @@ begin
     BookRecord.KeyWords := AllBooksKeyWords.Value;
     BookRecord.URI := AllBooksURI.Value;
 
+    BookRecord.Review := AllBooksReview.Value;
     //BookRecord.Annotation := ???;
     BookRecord.Rate := AllBooksRate.Value;
     BookRecord.Progress := AllBooksProgress.Value;
@@ -869,9 +876,59 @@ begin
   InternalClearGroup(GroupID, False);
 end;
 
+procedure TDMUser.AddBookToGroup(
+  BookID: Integer;
+  DatabaseID: Integer;
+  GroupID: Integer;
+  const BookRecord: TBookRecord
+  );
+begin
+  Assert(AllBooks.Active);
+  if not AllBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  begin
+    AllBooks.Append;
+
+    AllBooksBookID.Value := BookID;
+    AllBooksDatabaseID.Value := DatabaseID;
+
+    AllBooksLibID.Value := BookRecord.LibID;
+    AllBooksTitle.Value := BookRecord.Title;
+    AllBooksFullName.Value := BookRecord.GetAutorsList;
+    AllBooksSerieID.Value := BookRecord.SerieID;
+    AllBooksSeqNumber.Value := BookRecord.SeqNumber;
+    AllBooksDate.Value := BookRecord.Date;
+    AllBooksLibRate.Value := BookRecord.LibRate;
+    AllBooksLang.Value := BookRecord.Lang;
+    AllBooksFolder.Value := TPath.Combine(DMUser.ActiveCollection.RootFolder, BookRecord.Folder);
+    AllBooksFileName.Value := BookRecord.FileName;
+    AllBooksInsideNo.Value := BookRecord.InsideNo;
+    AllBooksExt.Value := BookRecord.FileExt;
+    AllBooksSize.Value := BookRecord.Size;
+    AllBooksURI.Value := BookRecord.URI;
+    AllBooksCode.Value := BookRecord.Code;
+    AllBooksLocal.Value := BookRecord.Local;
+    AllBooksDeleted.Value := BookRecord.Deleted;
+    AllBooksKeyWords.Value := BookRecord.KeyWords;
+
+    AllBooksReview.Value := BookRecord.Review;
+    AllBooksRate.Value := BookRecord.Rate;
+    AllBooksProgress.Value := BookRecord.Progress;
+
+    AllBooksGenres.Value := BookRecord.GetGenresList;
+    AllBooksSeries.Value := BookRecord.Serie;
+
+    AllBooks.Post;
+  end;
+
+  //
+  // Поместить книгу в нужную группу
+  //
+  CopyBookToGroup(BookID, DatabaseID, 0, GroupID, False);
+end;
+
 //
 // Удалить указанную книгу из указанной группы.
-// NOTE: этот метод не удаляет неиспользуемые книги !!!
+// NOTE: этот метод не удаляет неиспользуемые книги !!! После его вызова обязательно нужно вызвать RemoveUnusedBooks
 //
 procedure TDMUser.DeleteFromGroup(BookID: Integer; DatabaseID: Integer; GroupID: Integer);
 begin
@@ -897,6 +954,8 @@ procedure TDMUser.CopyBookToGroup(
   MoveBook: Boolean
 );
 begin
+  Assert(AllBookGroups.Active);
+
   if MoveBook then
   begin
     if AllBookGroups.Locate(GROUP_ID_FIELD + ';' + BOOK_DB_FIELDS, VarArrayOf([SourceGroupID, BookID, DatabaseID]), []) then

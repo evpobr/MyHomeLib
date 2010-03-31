@@ -221,7 +221,7 @@ const
   ItemDelimiterChar = ':';
   SubItemDelimiterChar = ',';
 var
-  author: TAuthorRecord;
+  author: TAuthorData;
   strAuthors: string;
   genre: TGenreData;
   strGenres: string;

@@ -33,10 +33,9 @@ object frmAuthorList: TfrmAuthorList
     Header.Options = [hoColumnResize, hoDrag]
     TabOrder = 0
     TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect, toRightClickSelect]
+    OnFreeNode = tvAuthorListFreeNode
     OnGetText = tvAuthorListGetText
     OnGetNodeDataSize = tvAuthorListGetNodeDataSize
-    ExplicitWidth = 301
-    ExplicitHeight = 376
     Columns = <>
   end
   object pnButtons: TPanel
@@ -49,9 +48,6 @@ object frmAuthorList: TfrmAuthorList
     Caption = 'pnButtons'
     ShowCaption = False
     TabOrder = 1
-    ExplicitLeft = -89
-    ExplicitTop = 394
-    ExplicitWidth = 396
     DesignSize = (
       327
       41)
@@ -65,7 +61,6 @@ object frmAuthorList: TfrmAuthorList
       Default = True
       ModalResult = 1
       TabOrder = 0
-      ExplicitLeft = 232
     end
     object btnCancel: TButton
       Left = 244
@@ -77,7 +72,6 @@ object frmAuthorList: TfrmAuthorList
       Caption = '&'#1054#1090#1084#1077#1085#1072
       ModalResult = 2
       TabOrder = 1
-      ExplicitLeft = 313
     end
   end
 end

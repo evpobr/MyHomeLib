@@ -482,9 +482,9 @@ begin
     begin
       Data := frmAuthorList.tvAuthorList.GetNodeData(Node);
 
-      Row.Last := Data.Last;
-      Row.First := Data.First;
-      Row.Middle := Data.Middle;
+      Row.Last := Data^.LastName;
+      Row.First := Data^.FirstName;
+      Row.Middle := Data^.MiddleName;
 
       alBookAuthors.AddRow(Row);
 

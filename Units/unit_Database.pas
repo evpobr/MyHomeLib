@@ -839,7 +839,7 @@ var
   i: Integer;
   ASeqNumber: Integer;
   Genre: TGenreData;
-  Author: TAuthorRecord;
+  Author: TAuthorData;
 
   Res: Boolean;
 

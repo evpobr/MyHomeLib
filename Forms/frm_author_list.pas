@@ -25,6 +25,7 @@ type
     procedure tvAuthorListGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType; var CellText: string);
     procedure tvAuthorListGetNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
+    procedure tvAuthorListFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
   private
 
   public
@@ -41,18 +42,26 @@ uses
 
   {$R *.dfm}
 
-procedure TfrmAuthorList.tvAuthorListGetNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
+procedure TfrmAuthorList.tvAuthorListFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+var
+  Data: PAuthorData;
 begin
-  NodeDataSize := Sizeof(TAuthorData);
+  Data := Sender.GetNodeData(Node);
+  if Assigned(Data) then
+    Finalize(Data^);
 end;
 
-procedure TfrmAuthorList.tvAuthorListGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
-  TextType: TVSTTextType; var CellText: string);
+procedure TfrmAuthorList.tvAuthorListGetNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
+begin
+  NodeDataSize := SizeOf(TAuthorData);
+end;
+
+procedure TfrmAuthorList.tvAuthorListGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
 var
   Data: PAuthorData;
 begin
   Data := tvAuthorList.GetNodeData(Node);
-  CellText := Data.Text;
+  CellText := Data^.GetFullName;
 end;
 
 end.

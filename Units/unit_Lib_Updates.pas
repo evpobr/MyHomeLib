@@ -54,6 +54,7 @@ type
     property Code: Integer read FCode write FCode;
 
     property CollectionID: Integer read FCollectionID;
+    property ExternalVersion: Integer read FExternalVersion;
     property Available: Boolean read FAvailable;
     property Local: Boolean read FLocal;
   end;

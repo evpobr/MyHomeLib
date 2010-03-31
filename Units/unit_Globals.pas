@@ -170,15 +170,6 @@ type
   PAuthorData = ^TAuthorData;
   TAuthorData = record
     AuthorID: Integer;
-    First: string;
-    Last: string;
-    Middle: string;
-    Text: string;
-  end;
-
-  PAuthorRecord = ^TAuthorRecord;
-  TAuthorRecord = record
-    AuthorID: Integer;
     FFirstName: string;
     FMiddleName: string;
     FLastName: string;
@@ -197,17 +188,14 @@ type
 
     class function FormatName(const LastName: string; const FirstName: string; const MiddleName: string; const nickName: string = ''; onlyInitials: Boolean = False): string; static;
   end;
-  TBookAuthors = array of TAuthorRecord;
+  TBookAuthors = array of TAuthorData;
 
   // --------------------------------------------------------------------------
-  {
   PSerieData = ^TSerieData;
   TSerieData = record
     SerieID: Integer;
-    Text: string;
+    SerieTitle: string;
   end;
-  }
-  PSerieData = PAuthorData;
 
   // --------------------------------------------------------------------------
   PGenreData = ^TGenreData;
@@ -296,6 +284,7 @@ type
     FileExt: string;
     InsideNo: Integer;
 
+    SerieID: Integer;
     Serie: string;
     SeqNumber: Integer;
 
@@ -305,7 +294,7 @@ type
 
     Code: Integer;
     Size: Integer;
-    libID: Integer;
+    LibID: Integer;
     Flags: TBookFlags;
     Date: TDateTime;
     Lang: string;
@@ -320,6 +309,7 @@ type
     //
     // Следующие поля зачитываются из таблицы Extra
     //
+    Review: string;
     Annotation: string;
     Rate: Integer;
     Progress: Integer;
@@ -344,6 +334,7 @@ type
     procedure AddGenreFB2(const GenreCode: string; const GenreFb2Code: string; const Alias: string);
     procedure AddGenreAny(const GenreCode: string; const Alias: string);
     function GenreCount: Integer; inline;
+    function GetGenresList: string;
 
     function GetLocal: Boolean; inline;
     procedure SetLocal(const Value: Boolean); inline;
@@ -660,7 +651,7 @@ end;
 
 { TAuthorRecord }
 
-procedure TAuthorRecord.Clear;
+procedure TAuthorData.Clear;
 begin
   AuthorID := 0;
   FFirstName := '';
@@ -668,7 +659,7 @@ begin
   FLastName := UNKNOWN_AUTHOR_LASTNAME;
 end;
 
-class function TAuthorRecord.FormatName(const LastName: string; const FirstName: string; const MiddleName: string; const nickName: string = ''; onlyInitials: Boolean = False): string;
+class function TAuthorData.FormatName(const LastName: string; const FirstName: string; const MiddleName: string; const nickName: string = ''; onlyInitials: Boolean = False): string;
 begin
   Result := LastName;
 
@@ -687,24 +678,24 @@ begin
   end;
 end;
 
-function TAuthorRecord.GetFullName(onlyInitials: Boolean = False): string;
+function TAuthorData.GetFullName(onlyInitials: Boolean = False): string;
 begin
   Assert(LastName <> '');
 
   Result := FormatName(LastName, FirstName, MiddleName, '', onlyInitials);
 end;
 
-procedure TAuthorRecord.SetFirstName(const Value: string);
+procedure TAuthorData.SetFirstName(const Value: string);
 begin
   FFirstName := Trim(Value);
 end;
 
-procedure TAuthorRecord.SetLastName(const Value: string);
+procedure TAuthorData.SetLastName(const Value: string);
 begin
   FLastName := Trim(Value);
 end;
 
-procedure TAuthorRecord.SetMiddleName(const Value: string);
+procedure TAuthorData.SetMiddleName(const Value: string);
 begin
   FMiddleName := Trim(Value);
 end;
@@ -723,6 +714,8 @@ end;
 procedure TBookRecord.Clear;
 begin
   Title := '';
+
+  SerieID := 0;
   Serie := '';
 
   Folder := '';
@@ -742,6 +735,7 @@ begin
   Local := False;
   Date := 0;
 
+  Review := '';
   Annotation := '';
   Rate := 0;
   Progress := 0;
@@ -834,10 +828,10 @@ end;
 
 function TBookRecord.GetAutorsList: string;
 begin
-  Result := TArrayUtils.Join<TAuthorRecord>(
+  Result := TArrayUtils.Join<TAuthorData>(
     Authors,
     ', ',
-    function(const Author: TAuthorRecord): string
+    function(const Author: TAuthorData): string
     begin
       Result := Author.GetFullName;
     end
@@ -880,6 +874,18 @@ begin
   Result := Length(Genres);
 end;
 
+function TBookRecord.GetGenresList: string;
+begin
+  Result := TArrayUtils.Join<TGenreData>(
+    Genres,
+    ' / ',
+    function(const genre: TGenreData): string
+    begin
+      Result := genre.GenreAlias;
+    end
+  );
+end;
+
 procedure TBookRecord.FillBookData(Data: PBookData);
 begin
   Assert(Assigned(Data));
@@ -888,6 +894,8 @@ begin
   Data^.nodeType := ntBookInfo;
 
   Data^.Title := Title;
+
+  Data^.SerieID := SerieID;
   Data^.Serie := Serie;
 
   Data^.Genres := Genres;
@@ -1146,10 +1154,10 @@ end;
 
 function TBookData.GetAuthors: string;
 begin
-  Result := TArrayUtils.Join<TAuthorRecord>(
+  Result := TArrayUtils.Join<TAuthorData>(
     Authors,
     ', ',
-    function(const Author: TAuthorRecord): string
+    function(const Author: TAuthorData): string
     begin
       Result := Author.GetFullName;
     end

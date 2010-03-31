@@ -29,13 +29,8 @@ type
     BooksByAuthor: TABSTable;
     BooksByGenre: TABSTable;
     Genres: TABSTable;
-    tblAuthorsS: TABSTable;
     BooksBySerie: TABSTable;
     dsSeries: TDataSource;
-    dsAuthorsS: TDataSource;
-    tblAuthorsSID: TAutoIncField;
-    tblAuthorsSFamily: TWideStringField;
-    tblAuthorsSName: TWideStringField;
     BooksByAuthorID: TAutoIncField;
     BooksByAuthorSerieID: TIntegerField;
     BookGenres: TABSTable;
@@ -48,7 +43,6 @@ type
     AuthorBooks: TABSTable;
     dsAuthorBooks: TDataSource;
     tblBooks: TABSTable;
-    dsBooks: TDataSource;
     AllAuthors: TABSTable;
     BookAuthors: TABSTable;
     tblBooksID: TAutoIncField;
@@ -66,7 +60,6 @@ type
     tblBooksLocal: TBooleanField;
     tblBooksDeleted: TBooleanField;
     tblSeriesB1: TABSTable;
-    tblExtra: TABSTable;
     Authors: TABSQuery;
     AuthorsID: TAutoIncField;
     AuthorsFamily: TWideStringField;
@@ -113,9 +106,6 @@ type
     tblBooksSeries: TWideStringField;
     tblBooksFullName: TWideStringField;
     sqlBooksID: TIntegerField;
-    tblExtraBookID: TIntegerField;
-    tblExtraAnnotation: TWideMemoField;
-    tblExtraReview: TWideMemoField;
     AllBooks: TABSTable;
     AllBooksBookID: TAutoIncField;
     AllBooksLibID: TIntegerField;
@@ -156,17 +146,12 @@ type
     AllAuthorsMiddleName: TWideStringField;
 
   strict private
-    // GetCurrentBook
     // CurrentLibID
     // GetBookFolder
     // GetBookFileName
     // SetActiveTable
     FIsFavorites: Boolean;
     FActiveTable: TABSTable;
-
-    // TDMCollection.AddBookToGroup
-    function GetBookGenres(BookID: Integer): string; overload; deprecated;
-    function FullAuthorsString(BookID: Integer): string; deprecated;
 
   private type
     TUpdateExtraProc = reference to procedure;
@@ -175,7 +160,7 @@ type
     procedure UpdateExtra(BookID: Integer; DatabaseID: Integer; UpdateProc: TUpdateExtraProc);
     procedure ClearExtra(BookID: Integer; DatabaseID: Integer; UpdateProc: TUpdateExtraProc);
 
-    procedure GetAuthor(AuthorID: Integer; var Author: TAuthorRecord);
+    procedure GetAuthor(AuthorID: Integer; var Author: TAuthorData);
     procedure GetBookAuthors(BookID: Integer; var BookAuthors: TBookAuthors);
 
     function GetBookSerie(SerieID: Integer): string;
@@ -362,8 +347,6 @@ begin
   BookAuthors.Active := State;
 
   tblBooks.Active := State;
-  tblExtra.Active := State;
-
   tblSeriesB1.Active := State;
 
   AllAuthors.Active := State;
@@ -401,7 +384,7 @@ begin
     Genre.Clear;
 end;
 
-procedure TDMCollection.GetAuthor(AuthorID: Integer; var Author: TAuthorRecord);
+procedure TDMCollection.GetAuthor(AuthorID: Integer; var Author: TAuthorData);
 begin
   Assert(AllAuthors.Active);
   if AllAuthors.Locate(AUTHOR_ID_FIELD, AuthorID, []) then
@@ -437,21 +420,6 @@ begin
   end;
 end;
 
-function TDMCollection.FullAuthorsString(BookID: Integer): string;
-var
-  BookAuthors: TBookAuthors;
-begin
-  GetBookAuthors(BookID, BookAuthors);
-  Result := TArrayUtils.Join<TAuthorRecord>(
-    BookAuthors,
-    ', ',
-    function(const Author: TAuthorRecord): string
-    begin
-      Result := Author.GetFullName;
-    end
-  );
-end;
-
 procedure TDMCollection.GetBookGenres(BookID: Integer; var BookGenres: TBookGenres; RootGenre: PGenreData = nil);
 var
   i: Integer;
@@ -484,70 +452,18 @@ begin
   end;
 end;
 
-function TDMCollection.GetBookGenres(BookID: Integer): string;
-var
-  S: string;
-  i: Integer;
-  BookGenres: TBookGenres;
-begin
-  GetBookGenres(BookID, BookGenres);
-
-  Result := TArrayUtils.Join<TGenreData>(
-    BookGenres,
-    ' / ',
-    function(const genre: TGenreData): string
-    begin
-      Result := genre.GenreAlias;
-    end
-  );
-end;
-
 procedure TDMCollection.GetCurrentBook(var R: TBookRecord);
 var
   BookID: Integer;
+  DatabaseID: Integer;
 begin
-  //
-  // TODO : необходимо объеденить этот метод со следующим
-  //
   BookID := FActiveTable.FieldByName(BOOK_ID_FIELD).Value;
-
-  R.Clear;
-  R.Title := FActiveTable.FieldByName('Title').AsWideString;
-  R.Serie := IfThen(FActiveTable.FieldByName(SERIE_ID_FIELD).IsNull, NO_SERIES_TITLE, FActiveTable.FieldByName('Series').AsWideString);
-  R.SeqNumber := FActiveTable.FieldByName('SeqNumber').AsInteger;
-  R.Folder := FActiveTable.FieldByName(FOLDER_FIELD).AsWideString;
-  R.FileName := FActiveTable.FieldByName(FILENAME_FIELD).AsWideString;
-  R.FileExt := FActiveTable.FieldByName('Ext').AsWideString;
-  R.Size := FActiveTable.FieldByName('Size').AsInteger;
-  R.InsideNo := FActiveTable.FieldByName('InsideNo').AsInteger;
-  R.Local := FActiveTable.FieldByName('Local').AsBoolean;
-  R.Date := FActiveTable.FieldByName('Date').AsDateTime;
-  R.Lang := FActiveTable.FieldByName('Lang').AsWideString;
-  R.KeyWords := FActiveTable.FieldByName('KeyWords').AsWideString;
-  R.Code := FActiveTable.FieldByName('Code').AsInteger;
-
-  if tblExtra.Locate(BOOK_ID_FIELD, BookID, []) then
-  begin
-    R.Annotation := tblExtraAnnotation.Value;
-    // R.Rate := tblExtraRate.Value;
-    // R.Progress := tblExtraProgress.Value;
-  end;
-
-  if FActiveTable.FieldByName(LIB_ID_FIELD).AsInteger <> 0 then
-    R.LibID := FActiveTable.FieldByName(LIB_ID_FIELD).AsInteger
+  if FActiveTable = tblBooks then
+    DatabaseID := DMUser.ActiveCollection.ID
   else
-    R.LibID := BookID;
+    DatabaseID := FActiveTable.FieldByName(DB_ID_FIELD).AsInteger;
 
-  if FIsFavorites then
-  begin
-    R.AddGenreFB2('', '', FActiveTable.FieldByName('Genres').AsWideString);
-    R.AddAuthor(FActiveTable.FieldByName('FullName').AsWideString, '', '');
-  end // not Favorites
-  else
-  begin
-    GetBookGenres(BookID, R.Genres, @(R.RootGenre));
-    GetBookAuthors(BookID, R.Authors);
-  end;
+  GetBookRecord(BookID, DatabaseID, R, True);
 end;
 
 procedure TDMCollection.GetBookRecord(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord; LoadExtra: Boolean);
@@ -567,6 +483,7 @@ begin
     BookRecord.FileName := AllBooksFileName.Value;
     BookRecord.FileExt := AllBooksExt.Value;
     BookRecord.InsideNo := AllBooksInsideNo.Value;
+    BookRecord.SerieID := AllBooksSerieID.Value;
     BookRecord.Serie := GetBookSerie(AllBooksSerieID.Value);
     BookRecord.SeqNumber := AllBooksSeqNumber.Value;
     BookRecord.Code := AllBooksCode.Value;
@@ -590,6 +507,7 @@ begin
       // Это поле нужно зачитывать только при копировании книги в другую коллекцию.
       // Во всех остальных случаях оно не используется.
       //
+      BookRecord.Review := AllExtraReview.Value;
       BookRecord.Annotation := AllExtraAnnotation.Value;
       BookRecord.Rate := AllExtraRate.Value;
       BookRecord.Progress := AllExtraProgress.Value;
@@ -735,70 +653,16 @@ begin
 end;
 
 procedure TDMCollection.AddBookToGroup(BookID: Integer; DatabaseID: Integer; GroupID: Integer);
+var
+  BookRecord: TBookRecord;
 begin
   Assert(DatabaseID = DMUser.ActiveCollection.ID);
   Assert(AllBooks.Active);
   Assert(AllExtra.Active);
-  Assert(DMUser.AllBooks.Active);
 
-  if not AllBooks.Locate(BOOK_ID_FIELD, BookID, []) then
-  begin
-    Assert(False);
-    Exit;
-  end;
+  GetBookRecord(BookID, DatabaseID, BookRecord, True);
 
-  //
-  // TODO : переписать этот метод.
-  // 1. Получить BookRecord
-  // 2. Добавить этот BookRecord в DMUser.AllBooks (создать специальный метод в DMUser для этого)
-  // 3. Поместить книгу в соответствующую группу
-  //
-
-  //
-  // Добавить книгу в таблицу Books
-  //
-  if not DMUser.AllBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
-  begin
-    DMUser.AllBooks.Append;
-
-    DMUser.AllBooksBookID.Value := BookID; //
-    DMUser.AllBooksDatabaseID.Value := DatabaseID; //
-    DMUser.AllBooksLibID.Value := AllBooksLibID.Value; // нет
-    DMUser.AllBooksTitle.Value := AllBooksTitle.Value; //
-    DMUser.AllBooksFullName.Value := FullAuthorsString(BookID); // частично
-    DMUser.AllBooksSerieID.Value := AllBooksSerieID.Value; // нет
-    DMUser.AllBooksSeqNumber.Value := AllBooksSeqNumber.Value; //
-    DMUser.AllBooksDate.Value := AllBooksDate.Value; //
-    DMUser.AllBooksLibRate.Value := AllBooksLibRate.Value; //
-    DMUser.AllBooksLang.Value := AllBooksLang.Value; //
-    DMUser.AllBooksFolder.Value := TPath.Combine(DMUser.ActiveCollection.RootFolder, AllBooksFolder.Value); //
-    DMUser.AllBooksFileName.Value := AllBooksFileName.Value; //
-    DMUser.AllBooksInsideNo.Value := AllBooksInsideNo.Value; //
-    DMUser.AllBooksExt.Value := AllBooksExt.Value; //
-    DMUser.AllBooksSize.Value := AllBooksSize.Value; //
-    DMUser.AllBooksURI.Value := AllBooksURI.Value; //
-    DMUser.AllBooksCode.Value := AllBooksCode.Value; //
-    DMUser.AllBooksLocal.Value := AllBooksLocal.Value; //
-    DMUser.AllBooksDeleted.Value := AllBooksDeleted.Value; //
-    DMUser.AllBooksKeyWords.Value := AllBooksKeyWords.Value; //
-
-    if AllExtra.Locate(BOOK_ID_FIELD, BookID, []) then
-    begin
-      DMUser.AllBooksReview.Value := AllExtraReview.Value; // нет
-      DMUser.AllBooksRate.Value := AllExtraRate.Value; // нет
-      DMUser.AllBooksProgress.Value := AllExtraProgress.Value; // нет
-    end;
-
-    DMUser.AllBooksGenres.Value := GetBookGenres(BookID); // частично
-    DMUser.AllBooksSeries.Value := GetBookSerie(AllBooksSerieID.Value); //
-
-    DMUser.AllBooks.Post;
-  end;
-
-  //
-  // Поместить книгу в нужную группу
-  //
-  DMUser.CopyBookToGroup(BookID, DatabaseID, 0, GroupID, False);
+  DMUser.AddBookToGroup(BookID, DatabaseID, GroupID, BookRecord);
 end;
 
 end.

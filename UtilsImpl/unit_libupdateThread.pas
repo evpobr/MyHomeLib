@@ -12,26 +12,24 @@ uses
   IdComponent;
 
 type
-  TDownloadProgressEvent = procedure (Current,Total: Integer) of object;
+  TDownloadProgressEvent = procedure (Current, Total: Integer) of object;
   TDownloadSetCommentEvent = procedure (const Current, Total: string) of object;
 
   TLibUpdateThread = class(TImportLibRusEcThread)
   private
-    FidHTTP:TidHTTP;
-
+    FidHTTP: TidHTTP;
     FDownloadSize: Integer;
-
     FStartDate : TDateTime;
+    FUpdated: Boolean;
 
-    FUpdated: boolean;
-
-    function ReplaceFiles:boolean;
+    function ReplaceFiles: Boolean;
 
   protected
     procedure WorkFunction; override;
     procedure HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: int64);
     procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
     procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
+
   public
     property Updated: boolean read FUpdated;
   end;
@@ -131,16 +129,15 @@ begin
   SetComment(rstrCheckingUpdate);
 
   try
-  for I := 0 to Settings.Updates.Count - 1 do
-    with Settings.Updates.Items[i] do
+    for I := 0 to Settings.Updates.Count - 1 do
     begin
-      if not Available then
+      if not Settings.Updates[i].Available then
         Continue;
 
-      DMUser.ActivateCollection(CollectionID);
-      Teletype(Format('Обновление коллекции "%s" до версии %d:', [Name, Version]), tsInfo);
+      DMUser.ActivateCollection(Settings.Updates[i].CollectionID);
+      Teletype(Format('Обновление коллекции "%s" до версии %d:', [Settings.Updates[i].Name, Settings.Updates[i].ExternalVersion]), tsInfo);
 
-      if Local then
+      if Settings.Updates[i].Local then
         Teletype('Обновление из локального архива', tsInfo)
       else
       begin
@@ -159,15 +156,19 @@ begin
         Exit;
       end;
 
-      InpxFileName := Settings.UpdatePath + UpdateFile;
+      InpxFileName := Settings.UpdatePath + Settings.Updates[i].UpdateFile;
 
       DBFileName := DMUser.CurrentCollection.DBFileName;
       CollectionRoot :=  IncludeTrailingPathDelimiter(DMUser.CurrentCollection.RootFolder);
       CollectionType := DMUser.CurrentCollection.CollectionType;
 
-      if Full then
+      if Settings.Updates[i].Full then
       begin
-        Teletype(Format(rstrRemovingOldCollection, [Name]),tsInfo);
+        //
+        // TODO : по хорошему, это полная фигня.
+        // Жанры зачитываем неправильные, группы не чистим...
+        //
+        Teletype(Format(rstrRemovingOldCollection, [Settings.Updates[i].Name]),tsInfo);
 
         // удаляем старый файл коллекции
         DMCollection.DBCollection.Close;
@@ -175,7 +176,7 @@ begin
         DMCollection.DBCollection.DeleteDatabase;
 
         // создаем его заново
-        Teletype(Format(rstrCreatingCollection, [Name]),tsInfo);
+        Teletype(Format(rstrCreatingCollection, [Settings.Updates[i].Name]),tsInfo);
         ALibrary := TMHLLibrary.Create(nil);
         try
           ALibrary.CreateCollectionTables(DBFileName, GENRES_FB2_FILENAME);
@@ -185,9 +186,9 @@ begin
       end; //if FULL
 
       //  импортирум данные
-      Teletype('Импорт данных в коллекцию:',tsInfo);
+      Teletype('Импорт данных в коллекцию:', tsInfo);
 
-      Import(not Full);
+      Import(not Settings.Updates[i].Full);
 
       DMUser.CurrentCollection.Edit;
       DMUser.CurrentCollection.Version := GetLibUpdateVersion(True);
@@ -197,13 +198,14 @@ begin
     end; //for .. with
 
     Teletype(rstrUpdateComplete,tsInfo);
-    for I := 0 to Settings.Updates.Count - 1 do
-    with Settings.Updates.Items[i] do
-      if FileExists(Settings.UpdatePath + UpdateFile) then
-        if UpdateFile <> 'librusec_update.zip' then
-          DeleteFile(Settings.UpdatePath + UpdateFile)
+    for i := 0 to Settings.Updates.Count - 1 do
+    begin
+      if FileExists(Settings.UpdatePath + Settings.Updates[i].UpdateFile) then
+        if Settings.Updates[i].UpdateFile <> 'librusec_update.zip' then
+          DeleteFile(Settings.UpdatePath + Settings.Updates[i].UpdateFile)
         else
           ReplaceFiles;
+     end;
 
      SetComment(rstrReady);
   except

@@ -59,7 +59,7 @@ var
   totalBooks: Integer;
   processedBooks: Integer;
   R: TBookRecord;
-  AuthorRecord: TAuthorRecord;
+  AuthorRecord: TAuthorData;
   GenreRecord: TGenreData;
 begin
   SetComment('Ёкспортируем коллекцию.');
