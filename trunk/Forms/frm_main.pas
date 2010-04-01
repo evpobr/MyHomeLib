@@ -401,25 +401,55 @@ type
     // События формы
     //
     procedure FormCreate(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormDestroy(Sender: TObject);
+
+    //
+    // Список авторов
+    //
+    procedure tvAuthorsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure FreeAuthorNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure GetAuthorNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
+    procedure tvAuthorsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+    procedure tvAuthorsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+
+    //
+    // Список серий
+    //
+    procedure tvSeriesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure FreeSerieNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure GetSerieNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
+    procedure tvSeriesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+    procedure tvSeriesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+
+    //
+    // Список жанров
+    //
+    procedure tvGenresChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure FreeGenreNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure GetGenreNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
+    procedure tvGenresGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+    procedure tvGenresKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+
+    //
+    // Список групп
+    //
+    procedure tvGroupsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure tvGroupsDragDrop(Sender: TBaseVirtualTree; Source: TObject; DataObject: IDataObject; Formats: TFormatArray; Shift: TShiftState; Pt: TPoint; var Effect: Integer; Mode: TDropMode);
+    procedure tvGroupsDragOver(Sender: TBaseVirtualTree; Source: TObject; Shift: TShiftState; State: TDragState; Pt: TPoint; Mode: TDropMode; var Effect: Integer; var Accept: Boolean);
+    procedure FreeGroupNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure GetGroupNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
+    procedure tvGroupsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+    procedure tvGroupsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
     //
     //
     //
-    procedure tvAuthorsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure tvBooksAGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure tvBooksGGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure tvBooksSGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure tvBooksFGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure tvBooksSRGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
-    procedure tvGenresGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
-
-    //
-    //
-    //
-    procedure tvAuthorsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
-    procedure tvSeriesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
-    procedure tvGenresChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 
     //
     //
@@ -431,7 +461,6 @@ type
     //
     //
     procedure GetBookNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
-    procedure GetAuthorNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
 
     //
     //
@@ -525,7 +554,6 @@ type
     procedure btnClearDownloadClick(Sender: TObject);
     procedure tvDownloadListSaveNode(Sender: TBaseVirtualTree; Node: PVirtualNode; Stream: TStream);
     procedure tvDownloadListLoadNode(Sender: TBaseVirtualTree; Node: PVirtualNode; Stream: TStream);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure N34Click(Sender: TObject);
     procedure MoveDwnldListNodes(Sender: TObject);
     procedure BtnFav_addClick(Sender: TObject);
@@ -541,12 +569,7 @@ type
     procedure miAddToSearchClick(Sender: TObject);
     procedure miINPXCollectionExportClick(Sender: TObject);
     procedure pmAuthorPopup(Sender: TObject);
-    procedure tvGroupsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
-    procedure GetGroupNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
-    procedure tvGroupsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GroupMenuItemClick(Sender: TObject);
-    procedure tvGroupsDragOver(Sender: TBaseVirtualTree; Source: TObject; Shift: TShiftState; State: TDragState; Pt: TPoint; Mode: TDropMode; var Effect: Integer; var Accept: Boolean);
-    procedure tvGroupsDragDrop(Sender: TBaseVirtualTree; Source: TObject; DataObject: IDataObject; Formats: TFormatArray; Shift: TShiftState; Pt: TPoint; var Effect: Integer; Mode: TDropMode);
     procedure miImportUserDataClick(Sender: TObject);
     procedure miReadedClick(Sender: TObject);
     procedure miExportUserDataClick(Sender: TObject);
@@ -562,25 +585,9 @@ type
     procedure miEditToolbarVisibleClick(Sender: TObject);
     procedure tbtnAutoFBDClick(Sender: TObject);
     procedure miExportToHTMLClick(Sender: TObject);
-    procedure tvAuthorsClick(Sender: TObject);
-    procedure tvSeriesClick(Sender: TObject);
-    procedure tvGenresClick(Sender: TObject);
-    procedure tvGroupsClick(Sender: TObject);
-    procedure tvAuthorsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure tvSeriesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure tvGenresKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure tvGroupsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FreeBookNodeDate(Sender: TBaseVirtualTree; Node: PVirtualNode);
-    procedure FreeAuthorNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
-    procedure FreeSerieNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
-    procedure GetSerieNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
-    procedure FreeGenreNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
-    procedure FreeGroupNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
-    procedure GetGenreNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
     procedure GetDownloadNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
     procedure FreeDownloadNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
-    procedure tvSeriesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
-      TextType: TVSTTextType; var CellText: string);
 
   protected
     procedure WMGetSysCommand(var Message: TMessage); message WM_SYSCOMMAND;
@@ -611,8 +618,8 @@ type
 
     procedure FillBooksTree(
       const Tree: TVirtualStringTree;
-      const Master: TDataset;
-      const Detail: TDataset;
+      Master: TDataSet;
+      Detail: TDataSet;
       ShowAuth: Boolean;
       ShowSer: Boolean
     );
@@ -701,7 +708,6 @@ type
     function GetBookNode(const Tree: TVirtualStringTree; BookID: Integer; DatabaseID: Integer): PVirtualNode; overload;
 
     procedure FillBookIdList(const Tree: TVirtualStringTree; var BookIDList: TBookIdList);
-    function GetActiveBookTable(Tag: Integer): TAbsTable;
     procedure ClearLabels(Tag: Integer; Full: Boolean);
     procedure SetAuthorsShowLocalOnly;
     procedure SetSeriesShowLocalOnly;
@@ -748,6 +754,7 @@ uses
   StrUtils,
   DateUtils,
   IOUtils,
+  Generics.Collections,
   Math,
   dm_collection,
   dm_user,
@@ -2020,19 +2027,6 @@ end;
 // События формы
 //
 
-procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-begin
-  CanClose := True;
-  if CheckActiveDownloads then
-    if MessageDlg('В списке есть незавершенные закачки!' + #13 + 'Вы все еще хотите выйти из программы?', mtWarning, mbYesNo, 0) = mrYes then
-    begin
-      if Assigned(FDMThread) then
-        FDMThread.TerminateNow;
-    end
-    else
-      CanClose := False;
-end;
-
 procedure TfrmMain.StartLibUpdate;
 begin
   if unit_Utils.LibrusecUpdate then
@@ -2055,6 +2049,11 @@ begin
   InitCollection(False);
 end;
 
+// ----------------------------------------------------------------------------
+//
+// События формы
+//
+// ----------------------------------------------------------------------------
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
   Application.OnHelp := HH;
@@ -2166,6 +2165,35 @@ begin
   SetFormState;
 end;
 
+procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  CanClose := True;
+  if CheckActiveDownloads then
+    if MessageDlg('В списке есть незавершенные закачки!' + #13 + 'Вы все еще хотите выйти из программы?', mtWarning, mbYesNo, 0) = mrYes then
+    begin
+      if Assigned(FDMThread) then
+        FDMThread.TerminateNow;
+    end
+    else
+      CanClose := False;
+end;
+
+procedure TfrmMain.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(FStarImage);
+  FreeAndNil(FEmptyStarImage);
+
+  tvDownloadList.SaveToFile(Settings.SystemFileName[sfDownloadsStore]);
+
+  if DirectoryExists(Settings.TempDir) then
+    ClearDir(Settings.TempDir);
+
+  SaveMainFormSettings;
+
+  Settings.SaveSettings;
+  FreeSettings;
+end;
+
 procedure TfrmMain.SavePositions;
 begin
   Settings.LastAuthor := lblAuthor.Caption;
@@ -2203,22 +2231,6 @@ begin
   end;
 end;
 
-procedure TfrmMain.FormDestroy(Sender: TObject);
-begin
-  FreeAndNil(FStarImage);
-  FreeAndNil(FEmptyStarImage);
-
-  tvDownloadList.SaveToFile(Settings.SystemFileName[sfDownloadsStore]);
-
-  if DirectoryExists(Settings.TempDir) then
-    ClearDir(Settings.TempDir);
-
-  SaveMainFormSettings;
-
-  Settings.SaveSettings;
-  FreeSettings;
-end;
-
 //
 // Список книг
 //
@@ -2250,25 +2262,6 @@ begin
   end;
 end;
 
-procedure TfrmMain.tvAuthorsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
-var
-  Data: PAuthorData;
-begin
-  Data := Sender.GetNodeData(Node);
-  Assert(Assigned(Data));
-
-  CellText := Data^.GetFullName;
-end;
-
-procedure TfrmMain.tvAuthorsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if Key = VK_RETURN then
-  begin
-    tvAuthorsClick(Sender);
-    frmMain.ActiveControl := tvBooksA;
-  end;
-end;
-
 procedure TfrmMain.tvBooksAGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
 var
   Data: PBookData;
@@ -2277,7 +2270,7 @@ begin
   if not Assigned(Data) then
     Exit;
 
-  CellText := ' ';
+  CellText := '';
   if Settings.TreeModes[PAGE_AUTHORS] = tmTree then
   begin
     if Node.ChildCount > 0 then
@@ -2435,6 +2428,159 @@ begin
   end;
 end;
 
+// ----------------------------------------------------------------------------
+//
+// Список авторов
+//
+// ----------------------------------------------------------------------------
+procedure TfrmMain.tvAuthorsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+var
+  Data: PAuthorData;
+begin
+  Data := tvAuthors.GetNodeData(Node);
+  if not Assigned(Data) then
+    Exit;
+
+  ClearLabels(PAGE_AUTHORS, True);
+
+  dmCollection.Authors.Locate(AUTHOR_ID_FIELD, Data^.AuthorID, []);
+  lblAuthor.Caption := Data^.GetFullName;
+  FillBooksTree(tvBooksA, dmCollection.AuthorBooks, dmCollection.BooksByAuthor, False, True); // авторы
+end;
+
+procedure TfrmMain.FreeAuthorNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
+var
+  Data: PAuthorData;
+begin
+  Data := Sender.GetNodeData(Node);
+  if Assigned(Data) then
+    Finalize(Data^);
+end;
+
+procedure TfrmMain.GetAuthorNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
+begin
+  NodeDataSize := SizeOf(TAuthorData);
+end;
+
+procedure TfrmMain.tvAuthorsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+var
+  Data: PAuthorData;
+begin
+  Data := Sender.GetNodeData(Node);
+  Assert(Assigned(Data));
+
+  CellText := Data^.GetFullName;
+end;
+
+procedure TfrmMain.tvAuthorsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+  begin
+    frmMain.ActiveControl := tvBooksA;
+  end;
+end;
+
+// ----------------------------------------------------------------------------
+//
+// Список серий
+//
+// ----------------------------------------------------------------------------
+procedure TfrmMain.tvSeriesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+var
+  Data: PSerieData;
+begin
+  Data := tvSeries.GetNodeData(Node);
+  if not Assigned(Data) then
+    Exit;
+
+  ClearLabels(PAGE_SERIES, True);
+
+  dmCollection.Series.Locate(SERIE_ID_FIELD, Data^.SerieID, []);
+  lblSeries.Caption := Data^.SerieTitle;
+  FillBooksTree(tvBooksS, nil, dmCollection.BooksBySerie, False, False); // авторы
+end;
+
+procedure TfrmMain.FreeSerieNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
+var
+  Data: PSerieData;
+begin
+  Data := Sender.GetNodeData(Node);
+  if Assigned(Data) then
+    Finalize(Data^);
+end;
+
+procedure TfrmMain.GetSerieNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
+begin
+  NodeDataSize := SizeOf(TSerieData);
+end;
+
+procedure TfrmMain.tvSeriesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+var
+  Data: PSerieData;
+begin
+  Data := Sender.GetNodeData(Node);
+  Assert(Assigned(Data));
+
+  CellText := Data^.SerieTitle;
+end;
+
+procedure TfrmMain.tvSeriesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+  begin
+    frmMain.ActiveControl := tvBooksS;
+  end;
+end;
+
+// ----------------------------------------------------------------------------
+//
+// Список жанров
+//
+// ----------------------------------------------------------------------------
+procedure TfrmMain.tvGenresChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+var
+  Data: PGenreData;
+  ID: string;
+begin
+  Data := tvGenres.GetNodeData(Node);
+  if not Assigned(Data) then
+    Exit;
+  ClearLabels(PAGE_GENRES, True);
+  ID := Data^.GenreCode;
+  if isFB2Collection(DMUser.ActiveCollection.CollectionType) or not Settings.ShowSubGenreBooks then
+  begin
+    dmCollection.Genres.Locate(GENRE_CODE_FIELD, ID, []);
+    FillBooksTree(tvBooksG, dmCollection.GenreBooks, dmCollection.BooksByGenre, True, True); // жанры
+  end
+  else
+  begin
+    dmCollection.GenreBooks.MasterSource := nil;
+    if Node.ChildCount > 0 then
+      dmCollection.GenreBooks.Filter := '`GenreCode` Like ' + QuotedStr(ID + '.%')
+    else
+      dmCollection.GenreBooks.Filter := '`GenreCode` Like ' + QuotedStr(ID + '%');
+    dmCollection.GenreBooks.Filtered := True;
+    FillBooksTree(tvBooksG, dmCollection.GenreBooks, dmCollection.BooksByGenre, True, True); // жанры
+    dmCollection.GenreBooks.Filtered := False;
+    dmCollection.GenreBooks.MasterSource := dmCollection.dsGenres;
+  end;
+  lblGenreTitle.Caption := Data.GenreAlias;
+end;
+
+procedure TfrmMain.FreeGenreNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
+var
+  Data: PGenreData;
+begin
+  Data := Sender.GetNodeData(Node);
+  if Assigned(Data) then
+    Finalize(Data^);
+end;
+
+procedure TfrmMain.GetGenreNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
+begin
+  NodeDataSize := SizeOf(TGenreData);
+end;
+
 procedure TfrmMain.tvGenresGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
 var
   Data: PGenreData;
@@ -2449,10 +2595,15 @@ procedure TfrmMain.tvGenresKeyDown(Sender: TObject; var Key: Word; Shift: TShift
 begin
   if Key = VK_RETURN then
   begin
-    tvGenresClick(Sender);
     frmMain.ActiveControl := tvBooksG;
   end;
 end;
+
+// ----------------------------------------------------------------------------
+//
+// Список групп
+//
+// ----------------------------------------------------------------------------
 
 procedure TfrmMain.tvGroupsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
@@ -2467,17 +2618,6 @@ begin
   lblGroups.Caption := DMUser.GroupsName.Value;
 
   FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True);
-end;
-
-procedure TfrmMain.tvGroupsClick(Sender: TObject);
-var
-  BNode: PVirtualNode;
-begin
-  BNode := tvBooksF.GetFirst;
-  if Assigned(BNode) and Assigned(BNode.FirstChild) then
-    BNode := tvBooksF.GetFirstChild(BNode);
-  if Assigned(BNode) then
-    tvBooksF.Selected[BNode] := True;
 end;
 
 procedure TfrmMain.tvGroupsDragDrop(
@@ -2556,6 +2696,20 @@ begin
       Accept := True;
 end;
 
+procedure TfrmMain.FreeGroupNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
+var
+  Data: PGroupData;
+begin
+  Data := Sender.GetNodeData(Node);
+  if Assigned(Data) then
+    Finalize(Data^);
+end;
+
+procedure TfrmMain.GetGroupNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
+begin
+  NodeDataSize := SizeOf(TGroupData);
+end;
+
 procedure TfrmMain.tvGroupsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
 var
   Data: PGroupData;
@@ -2569,119 +2723,8 @@ procedure TfrmMain.tvGroupsKeyDown(Sender: TObject; var Key: Word; Shift: TShift
 begin
   if Key = VK_RETURN then
   begin
-    tvGroupsClick(Sender);
     frmMain.ActiveControl := tvBooksF;
   end;
-end;
-
-procedure TfrmMain.tvAuthorsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
-var
-  Data: PAuthorData;
-begin
-  Data := tvAuthors.GetNodeData(Node);
-  if not Assigned(Data) then
-    Exit;
-
-  ClearLabels(PAGE_AUTHORS, True);
-
-  dmCollection.Authors.Locate(AUTHOR_ID_FIELD, Data^.AuthorID, []);
-  lblAuthor.Caption := Data^.GetFullName;
-  FillBooksTree(tvBooksA, dmCollection.AuthorBooks, dmCollection.BooksByAuthor, False, True); // авторы
-end;
-
-procedure TfrmMain.tvAuthorsClick(Sender: TObject);
-var
-  Node: PVirtualNode;
-begin
-  Node := tvBooksA.GetFirst;
-  if Assigned(Node) and Assigned(Node.FirstChild) then
-    Node := tvBooksA.GetFirstChild(Node);
-  if Assigned(Node) then
-    tvBooksA.Selected[Node] := True;
-end;
-
-procedure TfrmMain.tvSeriesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
-var
-  Data: PSerieData;
-begin
-  Data := tvSeries.GetNodeData(Node);
-  if not Assigned(Data) then
-    Exit;
-
-  ClearLabels(PAGE_SERIES, True);
-
-  dmCollection.Series.Locate(SERIE_ID_FIELD, Data^.SerieID, []);
-  lblSeries.Caption := Data^.SerieTitle;
-  FillBooksTree(tvBooksS, nil, dmCollection.BooksBySerie, False, False); // авторы
-end;
-
-procedure TfrmMain.tvSeriesClick(Sender: TObject);
-var
-  Node: PVirtualNode;
-begin
-  Node := tvBooksS.GetFirst;
-  if Assigned(Node) then
-    tvBooksS.Selected[Node] := True;
-end;
-
-procedure TfrmMain.tvSeriesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
-var
-  Data: PSerieData;
-begin
-  Data := Sender.GetNodeData(Node);
-  Assert(Assigned(Data));
-
-  CellText := Data^.SerieTitle;
-end;
-
-procedure TfrmMain.tvSeriesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if Key = VK_RETURN then
-  begin
-    tvSeriesClick(Sender);
-    frmMain.ActiveControl := tvBooksS;
-  end;
-end;
-
-procedure TfrmMain.tvGenresChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
-var
-  Data: PGenreData;
-  ID: string;
-begin
-  Data := tvGenres.GetNodeData(Node);
-  if not Assigned(Data) then
-    Exit;
-  ClearLabels(PAGE_GENRES, True);
-  ID := Data^.GenreCode;
-  if isFB2Collection(DMUser.ActiveCollection.CollectionType) or not Settings.ShowSubGenreBooks then
-  begin
-    dmCollection.Genres.Locate(GENRE_CODE_FIELD, ID, []);
-    FillBooksTree(tvBooksG, dmCollection.GenreBooks, dmCollection.BooksByGenre, True, True); // жанры
-  end
-  else
-  begin
-    dmCollection.GenreBooks.MasterSource := nil;
-    if Node.ChildCount > 0 then
-      dmCollection.GenreBooks.Filter := '`GenreCode` Like ' + QuotedStr(ID + '.%')
-    else
-      dmCollection.GenreBooks.Filter := '`GenreCode` Like ' + QuotedStr(ID + '%');
-    dmCollection.GenreBooks.Filtered := True;
-    FillBooksTree(tvBooksG, dmCollection.GenreBooks, dmCollection.BooksByGenre, True, True); // жанры
-    dmCollection.GenreBooks.Filtered := False;
-    dmCollection.GenreBooks.MasterSource := dmCollection.dsGenres;
-  end;
-  lblGenreTitle.Caption := Data.GenreAlias;
-end;
-
-procedure TfrmMain.tvGenresClick(Sender: TObject);
-var
-  BNode: PVirtualNode;
-begin
-  BNode := tvBooksG.GetFirst;
-  if Assigned(BNode) and Assigned(BNode.FirstChild) then
-    BNode := tvBooksG.GetFirstChild(BNode);
-  if Assigned(BNode) then
-    tvBooksG.Selected[BNode] := True;
 end;
 
 procedure TfrmMain.GetActiveViewComponents(var Tree: TVirtualStringTree; var Panel: TMHLInfoPanel; var Cover: TMHLCoverPanel);
@@ -2792,17 +2835,40 @@ var
 begin
   Data1 := Sender.GetNodeData(Node1);
   Data2 := Sender.GetNodeData(Node2);
-  case (Sender as TVirtualStringTree).Header.Columns[Column].Tag of
-    COL_AUTHOR:  Result := CompareStr(Data1^.GetAuthors, Data2^.GetAuthors);
-    COL_TITLE:   Result := CompareStr(Data1.Title, Data2.Title);
-    COL_SERIES:  Result := CompareStr(Data1.Serie, Data2.Serie);
-    COL_NO:      Result := CompareInt(Data1^.SeqNumber, Data2^.SeqNumber);
-    COL_SIZE:    Result := CompareInt(Data1.Size, Data2.Size);
-    COL_RATE:    Result := CompareInt(Data1.Rate, Data2.Rate);
-    COL_GENRE:   Result := CompareStr(Data1^.GetGenres, Data2^.GetGenres);
-    COL_DATE:    Result := CompareDate(Data1.Date, Data2.Date);
-    COL_LANG:    Result := CompareStr(Data1.Lang, Data2.Lang);
-    COL_LIBRATE: Result := CompareInt(Data1.LibRate, Data2.LibRate);
+
+  if NoColumn = Column then
+  begin
+    if Data1^.nodeType = Data2^.nodeType then
+    begin
+      Result := 0;
+      if Data1^.nodeType = ntAuthorInfo then
+        Result := CompareStr(Data1^.GetAuthors, Data2^.GetAuthors)
+      else if Data1^.nodeType = ntSeriesInfo then
+        Result := CompareStr(Data1^.Serie, Data2^.Serie)
+      else
+      begin
+        Result := CompareStr(Data1^.Title, Data2^.Title);
+        if Result = 0 then
+          Result := CompareInt(Data1^.SeqNumber, Data2^.SeqNumber);
+      end;
+    end
+    else
+      Result := Sign(Ord(Data1^.nodeType) - Ord(Data2^.nodeType));
+  end
+  else
+  begin
+    case (Sender as TVirtualStringTree).Header.Columns[Column].Tag of
+      COL_AUTHOR:  Result := CompareStr(Data1^.GetAuthors, Data2^.GetAuthors);
+      COL_TITLE:   Result := CompareStr(Data1^.Title, Data2^.Title);
+      COL_SERIES:  Result := CompareStr(Data1^.Serie, Data2^.Serie);
+      COL_NO:      Result := CompareInt(Data1^.SeqNumber, Data2^.SeqNumber);
+      COL_SIZE:    Result := CompareInt(Data1^.Size, Data2^.Size);
+      COL_RATE:    Result := CompareInt(Data1^.Rate, Data2^.Rate);
+      COL_GENRE:   Result := CompareStr(Data1^.GetGenres, Data2^.GetGenres);
+      COL_DATE:    Result := CompareDate(Data1^.Date, Data2^.Date);
+      COL_LANG:    Result := CompareStr(Data1^.Lang, Data2^.Lang);
+      COL_LIBRATE: Result := CompareInt(Data1^.LibRate, Data2^.LibRate);
+    end;
   end;
 end;
 
@@ -2971,42 +3037,6 @@ begin
     Finalize(Data^);
 end;
 
-procedure TfrmMain.FreeAuthorNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
-var
-  Data: PAuthorData;
-begin
-  Data := Sender.GetNodeData(Node);
-  if Assigned(Data) then
-    Finalize(Data^);
-end;
-
-procedure TfrmMain.FreeSerieNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
-var
-  Data: PSerieData;
-begin
-  Data := Sender.GetNodeData(Node);
-  if Assigned(Data) then
-    Finalize(Data^);
-end;
-
-procedure TfrmMain.FreeGenreNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
-var
-  Data: PGenreData;
-begin
-  Data := Sender.GetNodeData(Node);
-  if Assigned(Data) then
-    Finalize(Data^);
-end;
-
-procedure TfrmMain.FreeGroupNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
-var
-  Data: PGroupData;
-begin
-  Data := Sender.GetNodeData(Node);
-  if Assigned(Data) then
-    Finalize(Data^);
-end;
-
 procedure TfrmMain.FreeDownloadNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
   Data: PDownloadData;
@@ -3019,26 +3049,6 @@ end;
 procedure TfrmMain.GetBookNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
 begin
   NodeDataSize := SizeOf(TBookData);
-end;
-
-procedure TfrmMain.GetAuthorNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
-begin
-  NodeDataSize := SizeOf(TAuthorData);
-end;
-
-procedure TfrmMain.GetSerieNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
-begin
-  NodeDataSize := SizeOf(TSerieData);
-end;
-
-procedure TfrmMain.GetGenreNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
-begin
-  NodeDataSize := SizeOf(TGenreData);
-end;
-
-procedure TfrmMain.GetGroupNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
-begin
-  NodeDataSize := SizeOf(TGroupData);
 end;
 
 procedure TfrmMain.GetDownloadNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
@@ -3212,7 +3222,7 @@ var
   i: Integer;
   List: TSelectionList;
 begin
-  GetSeelections(tvDownloadList, List);
+  GetSelections(tvDownloadList, List);
   for i := 0 to tvDownloadList.SelectedCount - 1 do
     case (Sender as TRzToolButton).Tag of
       20: tvDownloadList.MoveTo(List[tvDownloadList.SelectedCount - i - 1], tvDownloadList.GetFirst, amInsertBefore, False);
@@ -3749,16 +3759,19 @@ var
 begin
   GetActiveTree(Tree);
   Tree.BeginUpdate;
-  Node := Tree.GetFirst;
-  while Assigned(Node) do
-  begin
-    if SelState then
-      Node.CheckState := csCheckedNormal
-    else
-      Node.CheckState := csUncheckedNormal;
-    Node := Tree.GetNext(Node);
+  try
+    Node := Tree.GetFirst;
+    while Assigned(Node) do
+    begin
+      if SelState then
+        Node.CheckState := csCheckedNormal
+      else
+        Node.CheckState := csUncheckedNormal;
+      Node := Tree.GetNext(Node);
+    end;
+  finally
+    Tree.EndUpdate;
   end;
-  Tree.EndUpdate;
 end;
 
 procedure TfrmMain.SelectNextBook(Changed, Frwrd: Boolean);
@@ -3804,60 +3817,39 @@ end;
 
 procedure TfrmMain.FillBooksTree(
   const Tree: TVirtualStringTree;
-  const Master: TDataset;
-  const Detail: TDataset;
+  Master: TDataSet;
+  Detail: TDataSet;
   ShowAuth: Boolean;
   ShowSer: Boolean
 );
 var
-  MasterTable: TDataset;
-  DetailTable: TDataset;
+  authorNode: PVirtualNode;
+  serieNode: PVirtualNode;
+  bookNode: PVirtualNode;
 
   Data: PBookData;
-  authorNode: PVirtualNode;
-  seriesNode: PVirtualNode;
-  bookNode: PVirtualNode;
-  LastSeries: PVirtualNode;
   Max, i: Integer;
-  //DBCode: COLLECTION_TYPE;
   Author: string;
-  LastAuthor: string;
-  Columns: TColumnSet;
 
   IsGroupView: Boolean;
 
   BookIDField: TField;
   DatabaseIDField: TField;
 
+  AuthorNodes: TDictionary<string, PVirtualNode>;
+
   BookID: Integer;
   SerieID: Integer;
   DatabaseID: Integer;
-  BookRecord: TBookRecord;
 
-  function GetColumns: TColumnSet;
-  var
-    i: Integer;
-  begin
-    Result := [];
-    for i := 0 to Tree.Header.Columns.Count - 1 do
-      Include(Result, Tree.Header.Columns[i].Tag);
-  end;
+  BookRecord: TBookRecord;
 
 begin
   Assert(Assigned(Tree));
   Assert(Assigned(Detail));
 
-  if Assigned(Master) then
-    MasterTable := Master
-  else
-    MasterTable := Detail;
-  DetailTable := Detail;
-
-  Columns := GetColumns;
-
-  //DBCode := DMUser.ActiveCollection.CollectionType;
-  LastAuthor := '';
-  LastSeries := nil;
+  if not Assigned(Master) then
+    Master := Detail;
 
   IsGroupView := (Tree.Tag = 4);
 
@@ -3880,12 +3872,12 @@ begin
   //
   // найдем и запомним наиболее часто используемые поля
   //
-  BookIDField := DetailTable.FieldByName(BOOK_ID_FIELD);
+  BookIDField := Detail.FieldByName(BOOK_ID_FIELD);
   Assert(Assigned(BookIDField) and (BookIDField is TIntegerField));
 
   if IsGroupView then
   begin
-    DatabaseIDField := DetailTable.FieldByName(DB_ID_FIELD);
+    DatabaseIDField := Detail.FieldByName(DB_ID_FIELD);
     Assert(Assigned(DatabaseIDField) and (DatabaseIDField is TIntegerField));
   end
   else
@@ -3908,153 +3900,156 @@ begin
 
         i := 0;
         try
-          DetailTable.DisableControls;
+          AuthorNodes := TDictionary<string, PVirtualNode>.Create;
           try
-            Max := MasterTable.RecordCount;
+            Detail.DisableControls;
+            try
+              Max := Master.RecordCount;
 
-            MasterTable.First;
-            while not MasterTable.Eof do
-            begin
-              //
-              // для этой записи в мастере нет книг, переходим к следующей записе
-              //
-              if DetailTable.IsEmpty then
+              Master.First;
+              while not Master.Eof do
               begin
-                MasterTable.Next;
-                Continue;
-              end;
-
-              //
-              //
-              //
-              BookID := BookIDField.AsInteger;
-              if IsGroupView then
-                DatabaseID := DatabaseIDField.AsInteger;
-
-              DMCollection.GetBookRecord(BookID, DatabaseID, BookRecord, True);
-
-              SerieID := BookRecord.SerieID;
-
-              // обрабатываемое дерево не обязательно находится на активной вкладке!
-              // это относится ко всем последующим проверкам
-              if ShowAuth then
-              begin
-                Author := BookRecord.GetAutorsList;
-
-                if LastAuthor <> Author then
+                //
+                // для этой записи в мастере нет книг, переходим к следующей записе
+                //
+                if Detail.IsEmpty then
                 begin
-                  authorNode := Tree.AddChild(nil);
-                  Data := Tree.GetNodeData(authorNode);
-
-                  Initialize(Data^);
-                  Data^.nodeType := ntAuthorInfo;
-                  Data^.Authors := BookRecord.Authors;
-                  Include(authorNode.States, vsInitialUserData);
-
-                  LastAuthor := Author;
-                  LastSeries := nil;
+                  Master.Next;
+                  Continue;
                 end;
-              end
-              else
-                authorNode := nil;
 
-              if ShowSer then
-              begin
-                if SerieID = NO_SERIE_ID then
+                //
+                // Получим ключевые поля и зачитаем данные о книге
+                //
+                BookID := BookIDField.AsInteger;
+                if IsGroupView then
+                  DatabaseID := DatabaseIDField.AsInteger;
+
+                DMCollection.GetBookRecord(BookID, DatabaseID, BookRecord, True);
+
+                SerieID := BookRecord.SerieID;
+
+                authorNode := nil;
+                if ShowAuth then
                 begin
-                  //
-                  // книга без серии
-                  //
-                  seriesNode := authorNode;
+                  Author := BookRecord.GetAutorsList;
+                  if not AuthorNodes.TryGetValue(Author, authorNode) then
+                  begin
+                    authorNode := Tree.AddChild(nil);
+                    Data := Tree.GetNodeData(authorNode);
+
+                    Initialize(Data^);
+                    Data^.nodeType := ntAuthorInfo;
+                    Data^.Authors := BookRecord.Authors;
+                    Include(authorNode.States, vsInitialUserData);
+
+                    AuthorNodes.Add(Author, authorNode);
+                  end;
                 end
                 else
+                  authorNode := nil;
+
+                Assert(ShowAuth = Assigned(authorNode));
+
+                if ShowSer then
                 begin
-                  seriesNode := FindSeriesInTree(Tree, authorNode, SerieID);
-
-                  if not Assigned(seriesNode) then
+                  if SerieID = NO_SERIE_ID then
                   begin
-                    if ShowAuth then
+                    //
+                    // книга без серии
+                    //
+                    serieNode := authorNode;
+                  end
+                  else
+                  begin
+                    serieNode := FindSeriesInTree(Tree, authorNode, SerieID);
+                    if not Assigned(serieNode) then
                     begin
-                      if Assigned(LastSeries) then
-                        seriesNode := Tree.InsertNode(LastSeries, amInsertAfter)
-                      else
-                        seriesNode := Tree.InsertNode(authorNode, amAddChildFirst);
-                    end
-                    else if not Assigned(LastSeries) then
-                      seriesNode := Tree.InsertNode(Tree.GetFirst, amInsertBefore)
-                    else
-                      seriesNode := Tree.InsertNode(LastSeries, amInsertAfter);
+                      //
+                      // Серия не найдена
+                      //
+                      //
+                      Assert(not Assigned(serieNode));
 
-                    //
-                    // заполним данные о серии
-                    //
-                    Data := Tree.GetNodeData(seriesNode);
-                    Data^.nodeType := ntSeriesInfo;
-                    Data^.SerieID := SerieID;
-                    Data^.Serie := BookRecord.Serie;
+                      serieNode := Tree.AddChild(authorNode);
 
-                    LastSeries := seriesNode;
+                      //
+                      // заполним данные о серии
+                      //
+                      Data := Tree.GetNodeData(serieNode);
+
+                      Initialize(Data^);
+                      Data^.nodeType := ntSeriesInfo;
+                      Data^.SerieID := SerieID;
+                      Data^.Serie := BookRecord.Serie;
+                      Include(serieNode.States, vsInitialUserData);
+                    end;
                   end;
-                end;
-              end
-              else
-                seriesNode := authorNode;
+                end
+                else
+                  serieNode := authorNode;
 
-              //
-              // заполним данные о книге
-              //
-              bookNode := Tree.AddChild(seriesNode);
-              Data := Tree.GetNodeData(bookNode);
+                //
+                // заполним данные о книге
+                //
+                bookNode := Tree.AddChild(serieNode);
+                Data := Tree.GetNodeData(bookNode);
 
-              Initialize(Data^);
-              BookRecord.FillBookData(Data);
-              Data^.BookID := BookID;
-              Data^.DatabaseID := DatabaseID;
-              Include(bookNode.States, vsInitialUserData);
+                Initialize(Data^);
+                BookRecord.FillBookData(Data);
+                Data^.BookID := BookID;
+                Data^.DatabaseID := DatabaseID;
+                Include(bookNode.States, vsInitialUserData);
 
-              Inc(i);
-              spProgress.Percent := i * 100 div Max;
+                Inc(i);
+                spProgress.Percent := i * 100 div Max;
 
-              MasterTable.Next;
-            end; // while
-
-            Tree.FullExpand;
-
-            if ShowSer then
-            begin
-              authorNode := Tree.GetFirst;
-              while Assigned(authorNode) do
-              begin
-                Data := Tree.GetNodeData(authorNode);
-                if Data^.nodeType = ntSeriesInfo then
-                  SortChild(Tree, authorNode);
-
-                if (Data^.nodeType = ntAuthorInfo) and (authorNode.ChildCount = 0) then
-                  Tree.DeleteNode(authorNode, True); { TODO -oNickR -cBug : при удалении ноды поведение GetNext неочевидно }
-
-                authorNode := Tree.GetNext(authorNode);
-              end;
+                Master.Next;
+              end; // while
+            finally
+              Detail.EnableControls;
             end;
 
-            case Tree.Tag of
-              0: lblBooksTotalA.Caption := Format('(%d)', [i]);
-              1: lblBooksTotalS.Caption := Format('(%d)', [i]);
-              2: lblBooksTotalG.Caption := Format('(%d)', [i]);
-              3: lblTotalBooksFL.Caption := Format('(%d)', [i]);
-              4: lblBooksTotalF.Caption := Format('(%d)', [i]);
-            end;
-
-          finally
-            spProgress.Percent := 100;
-            spProgress.Visible := False;
-            spStatus.Caption := rstrReadyMessage;
-            DMUser.ActivateCollection(Settings.ActiveCollection);
-
+            //
+            // Отсортировать дерево
+            //
             if (Settings.TreeModes[Tree.Tag] = tmFlat) then
-              Tree.SortTree(FSortSettings[Tree.Tag].Column, FSortSettings[Tree.Tag].Direction);
+              Tree.SortTree(FSortSettings[Tree.Tag].Column, FSortSettings[Tree.Tag].Direction)
+            else
+              Tree.SortTree(NoColumn, sdAscending);
+
+            //
+            // Выбрать первую книгу
+            //
+            bookNode := Tree.GetFirst;
+            while Assigned(bookNode) do
+            begin
+              Data := Tree.GetNodeData(bookNode);
+              if Data^.nodeType = ntBookInfo then
+              begin
+                Tree.FullyVisible[bookNode] := True;
+                Tree.Selected[bookNode] := True;
+                Tree.FocusedNode := bookNode;
+                Break;
+              end;
+              bookNode := Tree.GetNext(bookNode);
+            end;
+          finally
+            FreeAndNil(AuthorNodes);
           end;
+
+          case Tree.Tag of
+            0: lblBooksTotalA.Caption := Format('(%d)', [i]);
+            1: lblBooksTotalS.Caption := Format('(%d)', [i]);
+            2: lblBooksTotalG.Caption := Format('(%d)', [i]);
+            3: lblTotalBooksFL.Caption := Format('(%d)', [i]);
+            4: lblBooksTotalF.Caption := Format('(%d)', [i]);
+          end;
+
         finally
-          DetailTable.EnableControls;
+          spProgress.Percent := 100;
+          spProgress.Visible := False;
+          spStatus.Caption := rstrReadyMessage;
         end;
       finally
         Screen.Cursor := crDefault;
@@ -4307,14 +4302,6 @@ begin
     end;
     Node := Tree.GetNext(Node);
   end;
-end;
-
-function TfrmMain.GetActiveBookTable(Tag: Integer): TAbsTable;
-begin
-  if Tag = 4 then
-    Result := DMUser.BooksByGroup
-  else
-    Result := dmCollection.tblBooks;
 end;
 
 procedure TfrmMain.miDownloadBooksClick(Sender: TObject);
@@ -4936,8 +4923,6 @@ begin
     spProgress.Visible := True;
     spStatus.Caption := 'Добавляем в избранное...';
     spProgress.Percent := 0;
-    ///dmCollection.tblBooks.DisableControls;
-    ///DMUser.GroupedBooks.DisableControls;
 
     Node := Tree.GetFirst;
     i := 0;
@@ -4957,8 +4942,6 @@ begin
 
     spProgress.Visible := False;
     Selection(False);
-    ///dmCollection.tblBooks.EnableControls;
-    ///DMUser.GroupedBooks.EnableControls;
   finally
     Screen.Cursor := crDefault;
   end;
@@ -5299,33 +5282,24 @@ begin
 end;
 
 procedure TfrmMain.edLocateAuthorKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-
 begin
   if ActiveView = ByAuthorView then
   begin
     if Key = VK_UP then
-      tvAuthors.Perform(WM_KEYDOWN, VK_UP, 0);
-    if Key = VK_DOWN then
-      tvAuthors.Perform(WM_KEYDOWN, VK_DOWN, 0);
-    if Key = VK_RETURN then
-    begin
-      tvAuthorsClick(Sender);
+      tvAuthors.Perform(WM_KEYDOWN, VK_UP, 0)
+    else if Key = VK_DOWN then
+      tvAuthors.Perform(WM_KEYDOWN, VK_DOWN, 0)
+    else if Key = VK_RETURN then
       frmMain.ActiveControl := tvBooksA;
-    end;
-  end;
-
-  if ActiveView = BySeriesView then
+  end
+  else if ActiveView = BySeriesView then
   begin
     if Key = VK_UP then
-      tvSeries.Perform(WM_KEYDOWN, VK_UP, 0);
-    if Key = VK_DOWN then
-      tvSeries.Perform(WM_KEYDOWN, VK_DOWN, 0);
-    if Key = VK_RETURN then
-      if Key = VK_RETURN then
-      begin
-        tvSeriesClick(Sender);
-        frmMain.ActiveControl := tvBooksS;
-      end;
+      tvSeries.Perform(WM_KEYDOWN, VK_UP, 0)
+    else if Key = VK_DOWN then
+      tvSeries.Perform(WM_KEYDOWN, VK_DOWN, 0)
+    else if Key = VK_RETURN then
+      frmMain.ActiveControl := tvBooksS;
   end;
 end;
 
@@ -6666,7 +6640,7 @@ var
   i: Integer;
   List: TSelectionList;
 begin
-  GetSeelections(tvDownloadList, List);
+  GetSelections(tvDownloadList, List);
   for i := 0 to tvDownloadList.SelectedCount - 1 do
   begin
     Data := tvDownloadList.GetNodeData(List[i]);
