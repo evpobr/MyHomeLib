@@ -27,16 +27,17 @@ type
 
 function FindParentInTree(Tree: TVirtualStringTree; const Folder: string): PVirtualNode;
 function FindSeriesInTree(Tree: TVirtualStringTree; Parent: PVirtualNode; SerieID: Integer): PVirtualNode;
-procedure SortChild(Tree: TVirtualStringTree; Parent: PVirtualNode);
-// procedure SortAuthors(Tree:TVirtualStringTree);
 function GetSelectedBookData(Tree: TVirtualStringTree): PBookData;
-procedure SortSeries(Tree: TVirtualStringTree; Parent: PVirtualNode);
 procedure SelectBookById(Tree: TVirtualStringTree; ID: Integer);
-procedure GetSeelections(Tree: TVirtualStringTree; out List: TSelectionList);
+procedure GetSelections(Tree: TVirtualStringTree; out List: TSelectionList);
+
+//procedure SortChild(Tree: TVirtualStringTree; Parent: PVirtualNode);
+// procedure SortAuthors(Tree:TVirtualStringTree);
+//procedure SortSeries(Tree: TVirtualStringTree; Parent: PVirtualNode);
 
 implementation
 
-procedure GetSeelections(Tree: TVirtualStringTree; out List: TSelectionList);
+procedure GetSelections(Tree: TVirtualStringTree; out List: TSelectionList);
 var
   Node: PVirtualNode;
   i: Integer;
@@ -93,7 +94,7 @@ begin
       Result := Node;
       Break;
     end;
-    Node := Tree.GetNext(Node);
+    Node := Tree.GetNextSibling(Node);
   end;
 end;
 
