@@ -76,7 +76,8 @@ uses
   frm_genre_tree,
   unit_globals,
   frm_main,
-  frm_edit_author;
+  frm_edit_author,
+  unit_Consts;
 
 {$R *.dfm}
 
@@ -205,7 +206,7 @@ begin
   dmCollection.Series.Next;
   while not dmCollection.Series.Eof do
   begin
-    cbSeries.Items.Add(dmCollection.Series['S_Title']);
+    cbSeries.Items.Add(dmCollection.Series[SERIE_TITLE_FIELD]);
     dmCollection.Series.Next;
   end;
 end;
