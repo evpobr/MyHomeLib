@@ -1120,6 +1120,32 @@ begin
   cpCoverA.Width := Settings.CoverWidth;
 end;
 
+(*
+
+SELECT DISTINCT B1."BookID", B1."SerieID"
+FROM "Books" B1
+ INNER JOIN "Genre_List"  G5 ON (B1."BookID" = G5."BookID")
+ INNER JOIN "Genres"      G6 ON (G5."GenreCode" = G6."GenreCode")
+WHERE
+  (G6.GenreCode = "0.3.4")
+
+intersect
+
+SELECT DISTINCT B1."BookID", B1."SerieID"
+FROM "Books" B1
+ INNER JOIN "Series"      S7 ON (B1."SerieID" = S7."SerieID")
+WHERE
+  (UPPER(S7.SerieTitle) LIKE "ИЗ%")
+
+intersect
+
+SELECT DISTINCT B1."BookID", B1."SerieID"
+FROM "Books" B1
+WHERE
+  (UPPER(b1.Title) LIKE "Д%")
+
+*)
+
 procedure TfrmMain.btnApplyFilterClick(Sender: TObject);
 var
   FilterString: string;
@@ -1127,15 +1153,15 @@ var
   Filtered: Boolean;
   Time: TTime;
 const
-  SQLStartStr = 'SELECT distinct b.*';
+  SQLStartStr = 'SELECT DISTINCT b.' + BOOK_ID_FIELD + ', b.' + SERIE_ID_FIELD;
 begin
-  Screen.Cursor := crSQLWAit;
+  Screen.Cursor := crSQLWait;
   spStatus.Caption := 'Подготовка фильтра ...';
   spStatus.Repaint;
   tvBooksSR.Clear;
   lblTotalBooksFL.Caption := '(0)';
-  FilterString := '';
   ClearLabels(tvBooksSR.Tag, True);
+  dmCollection.sqlBooks.Active := False;
   dmCollection.sqlBooks.SQL.Clear;
   try
     try
@@ -1144,100 +1170,103 @@ begin
 
       // ------------------------ серия -----------------------------------------
       FilterString := '';
-      AddToFilter('`S_Title`', PrepareQuery(edFSeries.Text, True), True, FilterString);
+      if edFSeries.Text <> '' then
+      begin
+        AddToFilter('s.' + SERIE_TITLE_FIELD, PrepareQuery(edFSeries.Text, True), True, FilterString);
 
-      if FilterString <> '' then
-        FilterString := SQLStartStr + #13#10 + 'FROM Series s ' + #13#10 + 'JOIN books b on b.SerieID = s.SerieID ' + #13#10 + 'WHERE ' + FilterString + '';
+        if FilterString <> '' then
+        begin
+          FilterString :=
+            SQLStartStr +
+            ' FROM Series s JOIN Books b ON b.SerieID = s.SerieID WHERE ' + FilterString;
 
-      if FilterString <> '' then
-        dmCollection.sqlBooks.SQL.Add(FilterString);
+          dmCollection.sqlBooks.SQL.Add(FilterString);
+        end;
+      end;
 
       // ------------------------ аннотация -----------------------------------------
       FilterString := '';
-      AddToFilter('`Annotation`', PrepareQuery(edFAnnotation.Text, True), True, FilterString);
-
-      if FilterString <> '' then
-        FilterString := SQLStartStr + #13#10 + 'FROM Extra e ' + #13#10 + 'JOIN books b on b.id = e.BookID ' + #13#10 + 'WHERE ' + FilterString + '';
-
-      if (dmCollection.sqlBooks.SQL.Count = 0) and (FilterString <> '') then
-        dmCollection.sqlBooks.SQL.Add(FilterString)
-      else if FilterString <> '' then
+      if edFAnnotation.Text <> '' then
       begin
-        dmCollection.sqlBooks.SQL.Add('INTERSECT');
-        dmCollection.sqlBooks.SQL.Add(FilterString);
+        AddToFilter('e.Annotation', PrepareQuery(edFAnnotation.Text, True), True, FilterString);
+
+        if FilterString <> '' then
+        begin
+          FilterString :=
+            SQLStartStr +
+            ' FROM Extra e JOIN Books b ON b.BookID = e.BookID WHERE ' + FilterString;
+
+          if dmCollection.sqlBooks.SQL.Count <> 0 then
+            dmCollection.sqlBooks.SQL.Add('INTERSECT');
+
+          dmCollection.sqlBooks.SQL.Add(FilterString);
+        end;
       end;
+
       // -------------------------- жанр ----------------------------------------
       FilterString := '';
       if (edFGenre.Hint <> '') then
-        FilterString := SQLStartStr + #13#10 + 'FROM Genre_List g ' + #13#10 + 'JOIN books b on b.id = g.BookID ' + #13#10 + 'WHERE (' + edFGenre.Hint + ')';
-
-      if (dmCollection.sqlBooks.SQL.Count = 0) and (FilterString <> '') then
-        dmCollection.sqlBooks.SQL.Add(FilterString)
-      else if FilterString <> '' then
       begin
-        dmCollection.sqlBooks.SQL.Add('INTERSECT');
+        FilterString :=
+          SQLStartStr +
+          ' FROM Genre_List g JOIN Books b ON b.BookID = g.BookID WHERE (' + edFGenre.Hint + ')';
+
+        if dmCollection.sqlBooks.SQL.Count <> 0 then
+          dmCollection.sqlBooks.SQL.Add('INTERSECT');
+
         dmCollection.sqlBooks.SQL.Add(FilterString);
       end;
-      FilterString := '';
+
       // -------------------  все остальное   -----------------------------------
-      AddToFilter('`FullName`', PrepareQuery(edFFullName.Text, True), True, FilterString);
-      AddToFilter('`Title`', PrepareQuery(edFTitle.Text, True), True, FilterString);
-      AddToFilter('`FileName`', PrepareQuery(edFFile.Text, False), False, FilterString);
-      AddToFilter('`Folder`', PrepareQuery(edFFolder.Text, False), False, FilterString);
-      AddToFilter('`ext`', PrepareQuery(edFExt.Text, False), False, FilterString);
-      AddToFilter('`Lang`', PrepareQuery(AnsiUpperCase(cbLang.Text), True, False), True, FilterString);
-      AddToFilter('`KeyWords`', PrepareQuery(edFKeyWords.Text, True), True, FilterString);
+      FilterString := '';
+      AddToFilter('b.FullName',            PrepareQuery(edFFullName.Text, True),        True,  FilterString);
+      AddToFilter('b.' + BOOK_TITLE_FIELD, PrepareQuery(edFTitle.Text,    True),        True,  FilterString);
+      AddToFilter('b.' + FILENAME_FIELD,   PrepareQuery(edFFile.Text,     False),       False, FilterString);
+      AddToFilter('b.' + FOLDER_FIELD,     PrepareQuery(edFFolder.Text,   False),       False, FilterString);
+      AddToFilter('b.Ext',                 PrepareQuery(edFExt.Text,      False),       False, FilterString);
+      AddToFilter('b.Lang',                PrepareQuery(cbLang.Text,      True, False), True,  FilterString);
+      AddToFilter('b.KeyWords',            PrepareQuery(edFKeyWords.Text, True),        True,  FilterString);
       //
       if cbDate.ItemIndex = -1 then
-        AddToFilter('`Date`', PrepareQuery(cbDate.Text, False), False, FilterString)
+        AddToFilter('b.Date', PrepareQuery(cbDate.Text, False), False, FilterString)
       else
         case cbDate.ItemIndex of
-          0: AddToFilter('`Date`', Format('> "%s"', [DateToStr(IncDay(Now, -1))]), False, FilterString);
-          1: AddToFilter('`Date`', Format('> "%s"', [DateToStr(IncDay(Now, -3))]), False, FilterString);
-          2: AddToFilter('`Date`', Format('> "%s"', [DateToStr(IncDay(Now, -7))]), False, FilterString);
-          3: AddToFilter('`Date`', Format('> "%s"', [DateToStr(IncDay(Now, -14))]), False, FilterString);
-          4: AddToFilter('`Date`', Format('> "%s"', [DateToStr(IncDay(Now, -30))]), False, FilterString);
-          5: AddToFilter('`Date`', Format('> "%s"', [DateToStr(IncDay(Now, -90))]), False, FilterString);
+          0: AddToFilter('b.Date', Format('> "%s"', [DateToStr(IncDay(Now, -1))]),  False, FilterString);
+          1: AddToFilter('b.Date', Format('> "%s"', [DateToStr(IncDay(Now, -3))]),  False, FilterString);
+          2: AddToFilter('b.Date', Format('> "%s"', [DateToStr(IncDay(Now, -7))]),  False, FilterString);
+          3: AddToFilter('b.Date', Format('> "%s"', [DateToStr(IncDay(Now, -14))]), False, FilterString);
+          4: AddToFilter('b.Date', Format('> "%s"', [DateToStr(IncDay(Now, -30))]), False, FilterString);
+          5: AddToFilter('b.Date', Format('> "%s"', [DateToStr(IncDay(Now, -90))]), False, FilterString);
         end;
 
       case cbDownloaded.ItemIndex of
         1:
-          if (FilterString = '') then
-            FilterString := '(`Local` = True)'
-          else
-            FilterString := FilterString + ' AND (`Local` = True)';
+          AddToFilter('b.Local', '= True', False, FilterString);
         2:
-          if (FilterString = '') then
-            FilterString := '(`Local` = False)'
-          else
-            FilterString := FilterString + ' AND (`Local` = False)';
+          AddToFilter('b.Local', '= False', False, FilterString);
       end;
 
-      if True then
-        if cbDeleted.Checked then
-          if (FilterString = '') then
-            FilterString := '(`Deleted` = False)'
-          else
-            FilterString := FilterString + ' AND (`Deleted`= False)';
+      if cbDeleted.Checked then
+        AddToFilter('b.Deleted', '= False', False, FilterString);
+
+      if (dmCollection.sqlBooks.SQL.Count > 0) and (FilterString <> '') then
+        dmCollection.sqlBooks.SQL.Add(' AND ' + FilterString)
+      else if FilterString <> '' then
+        dmCollection.sqlBooks.SQL.Add(SQLStartStr + ' FROM Books b WHERE ' + FilterString);
+
+      if (dmCollection.sqlBooks.SQL.Count) = 0 then
+        raise Exception.Create('Проверьте параметры фильтра');
+
+{$IFDEF DEBUG}
+      dmCollection.sqlBooks.SQL.SaveToFile(Settings.AppPath + 'Last.sql');
+{$ENDIF}
 
       // Ставим фильтр
       spStatus.Caption := 'Применяем фильтр ...';
       spStatus.Repaint;
 
-      if (dmCollection.sqlBooks.SQL.Count > 0) and (FilterString <> '') then
-        dmCollection.sqlBooks.SQL.Add('AND' + FilterString)
-      else if FilterString <> '' then
-        dmCollection.sqlBooks.SQL.Add('SELECT ' + BOOK_ID_FIELD + ',' + SERIE_ID_FIELD + ' FROM Books WHERE ' + FilterString);
-
-      if (dmCollection.sqlBooks.SQL.Count) = 0 then
-        raise Exception.Create('Проверьте параметры фильтра');
-{$IFDEF DEBUG}
-      dmCollection.sqlBooks.SQL.SaveToFile(Settings.AppPath + 'Last.sql');
-{$ENDIF}
       Time := Now;
 
-      dmCollection.sqlBooks.Active := False;
-      dmCollection.sqlBooks.ExecSQL;
       dmCollection.sqlBooks.Active := True;
       spExecTime.Caption := FloatToStrF(MilliSecondsBetween(Now, Time) / 1000, FFFixed, 3, 2) + ' сек.';
 
@@ -3636,14 +3665,14 @@ begin
 
         if (Sender as TToolButton).Tag >= 90 then
           case (Sender as TToolButton).Tag of
-            90: dmCollection.Series.Filter := 'S_Title <>' + QuotedStr(NO_SERIES_TITLE);
-            91: dmCollection.Series.Filter := 'UPPER(S_Title) >= "А*"';
-            92: dmCollection.Series.Filter := 'UPPER(S_Title) < "A*" and S_Title <>' + QuotedStr(NO_SERIES_TITLE);
+            90: dmCollection.Series.Filter := SERIE_TITLE_FIELD + ' <>' + QuotedStr(NO_SERIES_TITLE);
+            91: dmCollection.Series.Filter := 'UPPER(' + SERIE_TITLE_FIELD + ') >= "А*"';
+            92: dmCollection.Series.Filter := 'UPPER(' + SERIE_TITLE_FIELD + ') < "A*" and ' + SERIE_TITLE_FIELD + ' <>' + QuotedStr(NO_SERIES_TITLE);
           end
         else
         begin
           edLocateSeries.Text := (Sender as TToolButton).Caption;
-          dmCollection.Series.Filter := '(S_Title=' + QuotedStr((Sender as TToolButton).Caption + '*') + ') OR (S_Title=' + QuotedStr(AnsiLowercase((Sender as TToolButton).Caption) + '*') + ')';
+          dmCollection.Series.Filter := '(' + SERIE_TITLE_FIELD + '=' + QuotedStr((Sender as TToolButton).Caption + '*') + ') OR (' + SERIE_TITLE_FIELD + '=' + QuotedStr(AnsiLowercase((Sender as TToolButton).Caption) + '*') + ')';
         end;
         dmCollection.Series.Filtered := True;
         FillSeriesTree;
@@ -4533,9 +4562,6 @@ begin
               dmCollection.AuthorBooksAuthorID.Value := dmCollection.AuthorsID.Value;
               dmCollection.AuthorBooksBookID.Value := Data.BookID;
 
-              dmCollection.AuthorBooksAL_Series.Value := Copy(Data^.Serie, 1, INDEXSIZE);
-              dmCollection.AuthorBooksAL_Title.Value := Copy(Data.Title, 1, INDEXSIZE);
-
               dmCollection.AuthorBooks.Post;
             end;
             dmCollection.tblBooks.Locate(BOOK_ID_FIELD, Data.BookID, []);
@@ -4806,10 +4832,10 @@ begin
       if S = '' then
         S := NO_SERIES_TITLE;
 
-      if not dmCollection.tblSeriesB1.Locate('S_Title;AuthorID', VarArrayOf([S, AuthID]), []) then
+      if not dmCollection.tblSeriesB1.Locate(SERIE_TITLE_FIELD + ';AuthorID', VarArrayOf([S, AuthID]), []) then
       begin
         dmCollection.tblSeriesB1.Insert;
-        dmCollection.tblSeriesB1S_Title.Value := S;
+        dmCollection.tblSeriesB1SerieTitle.Value := S;
         dmCollection.tblSeriesB1AuthorID.Value := AuthID;
         Assert(Length(Data^.Genres) > 0);
         dmCollection.tblSeriesB1GenreCode.Value := Data^.Genres[0].GenreCode;
@@ -4850,7 +4876,7 @@ begin
     begin
       dmCollection.tblSeriesB1.Locate(SERIE_ID_FIELD, Data.SerieID, []);
       dmCollection.tblSeriesB1.Edit;
-      dmCollection.tblSeriesB1S_Title.Value := S;
+      dmCollection.tblSeriesB1SerieTitle.Value := S;
       dmCollection.tblSeriesB1.Post;
       Data^.Serie := S;
       Tree.RepaintNode(Node);

@@ -161,6 +161,7 @@ const
   LIB_ID_FIELD = 'LibID';
   DB_ID_FIELD = 'DatabaseID';
   SERIE_ID_FIELD = 'SerieID';
+  SERIE_TITLE_FIELD = 'SerieTitle';
   GENRE_CODE_FIELD = 'GenreCode';
   GROUP_ID_FIELD = 'GroupID';
   FOLDER_FIELD = 'Folder';
@@ -170,6 +171,8 @@ const
   AUTHOR_FIRSTNAME_FIELD = 'FirstName';
   AUTHOR_MIDDLENAME_FIELD = 'MiddleName';
   AUTHOR_FULLNAME_FIELDS = AUTHOR_LASTTNAME_FIELD + ';' + AUTHOR_FIRSTNAME_FIELD + ';' + AUTHOR_MIDDLENAME_FIELD;
+
+  BOOK_TITLE_FIELD = 'Title';
 
   //
   //

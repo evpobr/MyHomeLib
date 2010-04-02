@@ -18,9 +18,6 @@ unit unit_SearchUtils;
 interface
 
 procedure AddToFilter(const Field: string; Value: string; UP: Boolean; var FilterString: string);
-procedure AddSeriesToFilter(const Value: string; var SeriesFilter: string);
-
-function Clear(const S: string): string;
 function PrepareQuery(S: string; UP: Boolean; ConverToFull: Boolean = True): string;
 
 implementation
@@ -30,7 +27,7 @@ uses
   SysUtils,
   unit_Globals;
 
-procedure AddToFilter(const Field: string; Value: String; UP: Boolean; var FilterString: string);
+procedure AddToFilter(const Field: string; Value: string; UP: Boolean; var FilterString: string);
 begin
   if Value = '' then
     Exit;
@@ -52,22 +49,14 @@ begin
   if UP then
   begin
     if FilterString <> '' then
-      FilterString := FilterString + ' and (UPPER(' + Field + ') ' + Value + ')'
+      FilterString := FilterString + ' AND (UPPER(' + Field + ') ' + Value + ')'
     else
       FilterString := '(UPPER(' + Field + ') ' + Value + ')';
   end
   else if FilterString <> '' then
-    FilterString := FilterString + ' and (' + Field + ' ' + Value + ')'
+    FilterString := FilterString + ' AND (' + Field + ' ' + Value + ')'
   else
     FilterString := '(' + Field + ' ' + Value + ')';
-end;
-
-procedure AddSeriesToFilter(const Value: string; var SeriesFilter: string);
-begin
-  if SeriesFilter <> '' then
-    SeriesFilter := SeriesFilter + ' or (`SerieID` ="' + Value + '")'
-  else
-    SeriesFilter := '(`SerieID` ="' + Value + '")';
 end;
 
 function Clear(const S: string): string; inline;

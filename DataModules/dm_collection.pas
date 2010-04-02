@@ -32,14 +32,12 @@ type
     BooksBySerie: TABSTable;
     dsSeries: TDataSource;
     BooksByAuthorID: TAutoIncField;
-    BooksByAuthorSerieID: TIntegerField;
     BookGenres: TABSTable;
     GenreBooks: TABSTable;
     dsGenreBooks: TDataSource;
     BooksBySerieID: TAutoIncField;
     BooksBySerieSerieID: TIntegerField;
     BooksByGenreID: TAutoIncField;
-    BooksByGenreSerieID: TIntegerField;
     AuthorBooks: TABSTable;
     dsAuthorBooks: TDataSource;
     tblBooks: TABSTable;
@@ -75,34 +73,23 @@ type
     tblBooksURI: TWideStringField;
     tblBooksKeyWords: TWideStringField;
     sqlBooks: TABSQuery;
-    sqlBooksSerieID: TIntegerField;
     GenresGenreCode: TWideStringField;
     GenresParentCode: TWideStringField;
     GenresFB2Code: TWideStringField;
     GenresGenreAlias: TWideStringField;
     GenreBooksGenreCode: TWideStringField;
     GenreBooksBookID: TIntegerField;
-    GenreBooksGL_Family: TWideStringField;
-    GenreBooksGL_Series: TWideStringField;
-    GenreBooksGL_Title: TWideStringField;
     AuthorBooksAuthorID: TIntegerField;
     AuthorBooksBookID: TIntegerField;
-    AuthorBooksAL_Series: TWideStringField;
-    AuthorBooksAL_Title: TWideStringField;
     BookGenresGenreCode: TWideStringField;
     BookGenresBookID: TIntegerField;
-    BookGenresGL_Family: TWideStringField;
-    BookGenresGL_Series: TWideStringField;
-    BookGenresGL_Title: TWideStringField;
     BookAuthorsAuthorID: TIntegerField;
     BookAuthorsBookID: TIntegerField;
-    BookAuthorsAL_Series: TWideStringField;
-    BookAuthorsAL_Title: TWideStringField;
     dsGenres: TDataSource;
     tblSeriesB1SerieID: TAutoIncField;
     tblSeriesB1AuthorID: TIntegerField;
     tblSeriesB1GenreCode: TWideStringField;
-    tblSeriesB1S_Title: TWideStringField;
+    tblSeriesB1SerieTitle: TWideStringField;
     tblBooksSeries: TWideStringField;
     tblBooksFullName: TWideStringField;
     sqlBooksID: TIntegerField;
@@ -128,7 +115,7 @@ type
     AllBooksKeyWords: TWideStringField;
     AllSeries: TABSTable;
     AllSeriesSerieID: TAutoIncField;
-    AllSeriesS_Title: TWideStringField;
+    AllSeriesSerieTitle: TWideStringField;
     AllExtra: TABSTable;
     AllExtraBookID: TIntegerField;
     AllExtraAnnotation: TWideMemoField;
@@ -365,7 +352,7 @@ end;
 function TDMCollection.GetBookSerie(SerieID: Integer): string;
 begin
   if AllSeries.Locate(SERIE_ID_FIELD, SerieID, []) then
-    Result := AllSeriesS_Title.Value
+    Result := AllSeriesSerieTitle.Value
   else
     Result := '';
 end;
@@ -578,9 +565,21 @@ begin
   Assert(DatabaseID = DMUser.ActiveCollection.ID);
 
   if Rate = 0 then
-    ClearExtra(BookID, DatabaseID, procedure begin AllExtraRate.Clear; end)
+    ClearExtra(
+      BookID, DatabaseID,
+      procedure
+      begin
+        AllExtraRate.Clear;
+      end
+    )
   else
-    UpdateExtra(BookID, DatabaseID, procedure begin AllExtraRate.Value := Rate; end);
+    UpdateExtra(
+      BookID, DatabaseID,
+      procedure
+      begin
+        AllExtraRate.Value := Rate;
+      end
+    );
 
   //
   // Обновим информацию в группах
@@ -593,9 +592,21 @@ begin
   Assert(DatabaseID = DMUser.ActiveCollection.ID);
 
   if Progress = 0 then
-    ClearExtra(BookID, DatabaseID, procedure begin AllExtraProgress.Clear; end)
+    ClearExtra(
+      BookID, DatabaseID,
+      procedure
+      begin
+        AllExtraProgress.Clear;
+      end
+    )
   else
-    UpdateExtra(BookID, DatabaseID, procedure begin AllExtraProgress.Value := Progress; end);
+    UpdateExtra(
+      BookID, DatabaseID,
+      procedure
+      begin
+        AllExtraProgress.Value := Progress;
+      end
+    );
 
   //
   // Обновим информацию в группах
@@ -633,12 +644,24 @@ begin
 
     if NewReview = '' then
     begin
-      ClearExtra(BookID, DatabaseID, procedure begin AllExtraReview.Clear end);
+      ClearExtra(
+        BookID, DatabaseID,
+        procedure
+        begin
+          AllExtraReview.Clear;
+        end
+      );
       AllBooksCode.Value := 0;
     end
     else
     begin
-      UpdateExtra(BookID, DatabaseID, procedure begin AllExtraReview.Value := NewReview; end);
+      UpdateExtra(
+        BookID, DatabaseID,
+        procedure
+        begin
+          AllExtraReview.Value := NewReview;
+        end
+      );
       AllBooksCode.Value := 1;
       Result := 1;
     end;
