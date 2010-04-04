@@ -23,13 +23,12 @@ type
     btnOk: TButton;
     btnCancel: TButton;
     procedure tvGenresTreeGetNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
-    procedure tvGenresTreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
-      TextType: TVSTTextType; var CellText: String);
-  private
+    procedure tvGenresTreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
+    procedure tvGenresTreeFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
 
   public
+    procedure SelectGenres(const Genres: TBookGenres);
     procedure GetSelectedGenres(var R: TBookRecord);
-    procedure SelectGenres(const Code: string);
   end;
 
 var
@@ -42,41 +41,54 @@ uses
 
 {$R *.dfm}
 
-procedure TfrmGenreTree.SelectGenres(const Code: string);
+procedure TfrmGenreTree.SelectGenres(const Genres: TBookGenres);
 var
+  Genre: TGenreData;
   Node: PVirtualNode;
   Data: PGenreData;
 begin
-  Node := tvGenresTree.GetFirst;
-  while Node <> nil do
+  for Genre in Genres do
   begin
-    Data := tvGenresTree.GetNodeData(Node);
-    if Data^.GenreCode = Code then
+    Node := tvGenresTree.GetFirst;
+    while Assigned(Node) do
     begin
-      tvGenresTree.Selected[Node] := True;
-      tvGenresTree.Expanded[Node.Parent] := True;
+      Data := tvGenresTree.GetNodeData(Node);
+      if Data^.GenreCode = Genre.GenreCode then
+      begin
+        tvGenresTree.Selected[Node] := True;
+        tvGenresTree.Expanded[Node.Parent] := True;
+      end;
+      Node := tvGenresTree.GetNext(Node);
     end;
-    Node := tvGenresTree.GetNext(Node);
   end;
 end;
 
 procedure TfrmGenreTree.GetSelectedGenres(var R: TBookRecord);
 var
-  Data: PGenreData;
   Node: PVirtualNode;
+  Data: PGenreData;
 begin
-  Node := tvGenresTree.GetFirstSelected;
-
   R.ClearGenres;
+
+  Node := tvGenresTree.GetFirstSelected;
   while Assigned(Node) do
   begin
     Data := frmGenreTree.tvGenresTree.GetNodeData(Node);
-    R.AddGenreFB2(Data^.GenreCode, Data^.FB2GenreCode, '');
+    R.AddGenreFB2(Data^.GenreCode, Data^.FB2GenreCode, Data^.GenreAlias);
     Node := tvGenresTree.GetNextSelected(Node);
   end;
 
   if R.GenreCount = 0 then
     R.AddGenreFB2(UNKNOWN_GENRE_CODE, '', '');
+end;
+
+procedure TfrmGenreTree.tvGenresTreeFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+var
+  Data: PGenreData;
+begin
+  Data := tvGenresTree.GetNodeData(Node);
+  if Assigned(Data) then
+    Finalize(Data^);
 end;
 
 procedure TfrmGenreTree.tvGenresTreeGetNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);

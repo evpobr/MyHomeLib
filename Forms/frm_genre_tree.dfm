@@ -25,9 +25,6 @@ object frmGenreTree: TfrmGenreTree
     Caption = 'pnButtons'
     ShowCaption = False
     TabOrder = 1
-    ExplicitLeft = 34
-    ExplicitTop = 421
-    ExplicitWidth = 396
     DesignSize = (
       313
       41)
@@ -41,7 +38,6 @@ object frmGenreTree: TfrmGenreTree
       Default = True
       ModalResult = 1
       TabOrder = 0
-      ExplicitLeft = 232
     end
     object btnCancel: TButton
       Left = 230
@@ -53,7 +49,6 @@ object frmGenreTree: TfrmGenreTree
       Caption = '&'#1054#1090#1084#1077#1085#1072
       ModalResult = 2
       TabOrder = 1
-      ExplicitLeft = 313
     end
   end
   object tvGenresTree: TVirtualStringTree
@@ -74,12 +69,9 @@ object frmGenreTree: TfrmGenreTree
     Header.Options = [hoColumnResize, hoDrag]
     TabOrder = 0
     TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect, toRightClickSelect]
+    OnFreeNode = tvGenresTreeFreeNode
     OnGetText = tvGenresTreeGetText
     OnGetNodeDataSize = tvGenresTreeGetNodeDataSize
-    ExplicitLeft = 5
-    ExplicitTop = 5
-    ExplicitWidth = 303
-    ExplicitHeight = 303
     Columns = <>
   end
 end

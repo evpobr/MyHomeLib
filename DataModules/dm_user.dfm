@@ -24,8 +24,8 @@ object DMUser: TDMUser
     object tblBasesID: TAutoIncField
       FieldName = 'ID'
     end
-    object tblBasesName: TWideStringField
-      FieldName = 'Name'
+    object tblBasesBaseName: TWideStringField
+      FieldName = 'BaseName'
       Required = True
       Size = 64
     end
@@ -888,8 +888,8 @@ object DMUser: TDMUser
     object GroupsGroupID: TAutoIncField
       FieldName = 'GroupID'
     end
-    object GroupsName: TWideStringField
-      FieldName = 'Name'
+    object GroupsGroupName: TWideStringField
+      FieldName = 'GroupName'
       Size = 255
     end
     object GroupsAllowDelete: TBooleanField
