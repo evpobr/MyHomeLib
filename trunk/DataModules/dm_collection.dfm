@@ -303,23 +303,15 @@ object DMCollection: TDMCollection
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
-    Filter = 'SerieTitle<>"---"'
+    Filter = 'SerieTitle <> "---"'
     Filtered = True
-    IndexName = 'TiteIndex'
+    IndexName = 'SerieTitleIndex'
     TableName = 'series'
     Exclusive = False
     Left = 128
     Top = 488
     object tblSeriesB1SerieID: TAutoIncField
       FieldName = 'SerieID'
-    end
-    object tblSeriesB1AuthorID: TIntegerField
-      FieldName = 'AuthorID'
-      Required = True
-    end
-    object tblSeriesB1GenreCode: TWideStringField
-      FieldName = 'GenreCode'
-      Required = True
     end
     object tblSeriesB1SerieTitle: TWideStringField
       FieldName = 'SerieTitle'
@@ -389,9 +381,9 @@ object DMCollection: TDMCollection
     FilterOptions = [foCaseInsensitive]
     RequestLive = True
     SQL.Strings = (
-      'select s."*"'
+      'select s.SerieID, s.SerieTitle'
       'from "Series" s'
-      'where SerieTitle<>"---" and '
+      'where s.SerieTitle <> "---" and'
       '('
       '  :All = 0'
       '  or'
@@ -402,7 +394,7 @@ object DMCollection: TDMCollection
       '    where b.local = true'
       '  )'
       ')'
-      'order by s.SerieTitle, s.AuthorID;')
+      'order by s.SerieTitle')
     Left = 288
     Top = 96
     ParamData = <
@@ -416,22 +408,12 @@ object DMCollection: TDMCollection
       DisplayWidth = 10
       FieldName = 'SerieID'
     end
-    object SeriesAuthID: TIntegerField
-      DisplayWidth = 10
-      FieldName = 'AuthorID'
-      Required = True
-    end
     object SeriesTitle: TWideStringField
       DisplayLabel = 'Title'
       DisplayWidth = 80
       FieldName = 'SerieTitle'
       Required = True
       Size = 80
-    end
-    object SeriesGenreCode: TWideStringField
-      DisplayWidth = 20
-      FieldName = 'GenreCode'
-      Required = True
     end
   end
   object sqlBooks: TABSQuery

@@ -43,7 +43,7 @@ type
     dsGroups: TDataSource;
     Groups: TABSTable;
     tblBasesID: TAutoIncField;
-    tblBasesName: TWideStringField;
+    tblBasesBaseName: TWideStringField;
     tblBasesRootFolder: TWideStringField;
     tblBasesDBFileName: TWideStringField;
     tblBasesNotes: TWideStringField;
@@ -63,7 +63,7 @@ type
     GroupBooksBookID: TIntegerField;
     GroupBooksDatabaseID: TIntegerField;
     GroupsGroupID: TAutoIncField;
-    GroupsName: TWideStringField;
+    GroupsGroupName: TWideStringField;
     GroupsAllowDelete: TBooleanField;
     GroupsNotes: TMemoField;
     GroupsIcon: TBlobField;
@@ -349,7 +349,7 @@ end;
 
 procedure TDMUser.CorrectExtra(OldID, NewID: Integer);
 begin
-  if BooksByGroup.Locate(BOOK_DB_FIELDS, VarArrayOf([OldID, CurrentCollection.GetID]), []) then
+  if BooksByGroup.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([OldID, CurrentCollection.GetID]), []) then
   begin
     BooksByGroup.Edit;
     BooksByGroupBookID.Value := NewID;
@@ -410,7 +410,7 @@ begin
   //
   tblBases.Insert;
   tblBasesID.Value := ID;                           // хм... это автоинкрементное поле, зачем его заполнять?
-  tblBasesName.Value := DisplayName;
+  tblBasesBaseName.Value := DisplayName;
   tblBasesRootFolder.Value := RootFolder;
   tblBasesDBFileName.Value := DBFileName;
   tblBasesCode.Value := CollectionType;
@@ -436,7 +436,7 @@ begin
   if Result then
   begin
     FActiveCollection.FID := CollectionID;
-    FActiveCollection.FName := tblBasesName.Value;
+    FActiveCollection.FName := tblBasesBaseName.Value;
     FActiveCollection.FRootFolder := tblBasesRootFolder.Value;
     FActiveCollection.FDBFileName := tblBasesDBFileName.Value;
     FActiveCollection.FNotes := tblBasesNotes.Value;
@@ -461,7 +461,7 @@ end;
 
 function TDMUser.FindCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer): Boolean;
 const
-  Fields: array [TCollectionProp] of string = ('Name', 'DBFileName', 'RootFolder');
+  Fields: array [TCollectionProp] of string = (BASE_NAME_FIELD, 'DBFileName', 'RootFolder');
 begin
   Result := False;
   if tblBases.IsEmpty then
@@ -556,7 +556,7 @@ begin
     ID := StrToInt(Copy(SL[i], 1, p - 1));
     Progress := StrToInt(Copy(SL[i], p + 1));
 
-    dmCollection.tblBooks.Locate(LIB_ID_FIELD, ID, []);
+    dmCollection.tblBooks.Locate(BOOK_LIBID_FIELD, ID, []);
     ID := dmCollection.tblBooksID.Value;
 
     {***
@@ -603,7 +603,7 @@ begin
       Name := '';
     end;
 
-    if not Groups.Locate('Name', Name, []) then
+    if not Groups.Locate(GROUP_NAME_FIELD, Name, []) then
       Groups.Locate(GROUP_ID_FIELD, GroupID, []);
 
     ///if dmCollection.tblBooks.Locate(LIB_ID_FIELD, ID, []) then
@@ -627,7 +627,7 @@ begin
 
     StrReplace('~', #13#10, S);
 
-    dmCollection.tblBooks.Locate(LIB_ID_FIELD, ID, []); // получаем реальный ID
+    dmCollection.tblBooks.Locate(BOOK_LIBID_FIELD, ID, []); // получаем реальный ID
     ID := dmCollection.tblBooksID.Value;
 
     if dmCollection.tblBooks.Locate(BOOK_ID_FIELD, ID, []) then
@@ -674,7 +674,7 @@ begin
     LibID := StrToInt(Copy(SL[i], 1, p - 1));
     Rate := StrToInt(Copy(SL[i], p + 1));
 
-    dmCollection.tblBooks.Locate(LIB_ID_FIELD, LibID, []); // получаем реальный ID
+    dmCollection.tblBooks.Locate(BOOK_LIBID_FIELD, LibID, []); // получаем реальный ID
     ID := dmCollection.tblBooksID.Value;
 
     {***
@@ -711,7 +711,7 @@ end;
 procedure TDMUser.GetBookRecord(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord);
 begin
   Assert(AllBooks.Active);
-  if AllBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
   begin
     BookRecord.Title := AllBooksTitle.Value;
     BookRecord.Folder := AllBooksFolder.Value;
@@ -752,7 +752,7 @@ end;
 procedure TDMUser.SetRate(BookID: Integer; DatabaseID: Integer; Rate: Integer);
 begin
   Assert(AllBooks.Active);
-  if AllBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
   begin
     AllBooks.Edit;
     AllBooksRate.Value := Rate;
@@ -763,7 +763,7 @@ end;
 procedure TDMUser.SetProgress(BookID: Integer; DatabaseID: Integer; Progress: Integer);
 begin
   Assert(AllBooks.Active);
-  if AllBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
   begin
     AllBooks.Edit;
     AllBooksProgress.Value := Progress;
@@ -774,7 +774,7 @@ end;
 function TDMUser.GetReview(BookID: Integer; DatabaseID: Integer): string;
 begin
   Assert(AllBooks.Active);
-  if AllBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
     Result := AllBooksReview.Value
   else
     Result := '';
@@ -784,7 +784,7 @@ function TDMUser.SetReview(BookID: Integer; DatabaseID: Integer; const Review: s
 begin
   Assert(AllBooks.Active);
   Result := 0;
-  if AllBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
   begin
     AllBooks.Edit;
     if Review = '' then
@@ -805,7 +805,7 @@ end;
 procedure TDMUser.SetLocal(BookID: Integer; DatabaseID: Integer; Value: Boolean);
 begin
   Assert(AllBooks.Active);
-  if AllBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
   begin
     AllBooks.Edit;
     AllBooksLocal.Value := Value;
@@ -818,10 +818,10 @@ end;
 //
 function TDMUser.AddGroup(const Name: string): Boolean;
 begin
-  if not Groups.Locate('Name', Name, []) then
+  if not Groups.Locate(GROUP_NAME_FIELD, Name, []) then
   begin
     Groups.Append;
-    GroupsName.Value := Name;
+    GroupsGroupName.Value := Name;
     GroupsAllowDelete.Value := True;
     Groups.Post;
 
@@ -884,7 +884,7 @@ procedure TDMUser.AddBookToGroup(
   );
 begin
   Assert(AllBooks.Active);
-  if not AllBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  if not AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
   begin
     AllBooks.Append;
 
@@ -934,7 +934,7 @@ procedure TDMUser.DeleteFromGroup(BookID: Integer; DatabaseID: Integer; GroupID:
 begin
   if Groups.Locate(GROUP_ID_FIELD, GroupID, []) then
   begin
-    if GroupBooks.Locate(BOOK_DB_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+    if GroupBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
       GroupBooks.Delete;
   end;
 end;
@@ -958,7 +958,7 @@ begin
 
   if MoveBook then
   begin
-    if AllBookGroups.Locate(GROUP_ID_FIELD + ';' + BOOK_DB_FIELDS, VarArrayOf([SourceGroupID, BookID, DatabaseID]), []) then
+    if AllBookGroups.Locate(GROUP_ID_BOOK_ID_DB_ID_FIELDS, VarArrayOf([SourceGroupID, BookID, DatabaseID]), []) then
     begin
       AllBookGroups.Edit;
       try
@@ -1018,16 +1018,16 @@ end;
 function TMHLCollection.GetName: string;
 begin
   Assert(Assigned(FSysDataModule));
-  if FSysDataModule.tblBasesName.IsNull then
+  if FSysDataModule.tblBasesBaseName.IsNull then
     Result := rstrNamelessColection
   else
-    Result := FSysDataModule.tblBasesName.Value;
+    Result := FSysDataModule.tblBasesBaseName.Value;
 end;
 
 procedure TMHLCollection.SetName(const Value: string);
 begin
   Assert(Assigned(FSysDataModule));
-  FSysDataModule.tblBasesName.Value := Value;
+  FSysDataModule.tblBasesBaseName.Value := Value;
 end;
 
 function TMHLCollection.GetRootFolder: string;

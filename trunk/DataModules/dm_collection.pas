@@ -65,9 +65,7 @@ type
     AuthorsMiddle: TWideStringField;
     Series: TABSQuery;
     SeriesSerieID: TAutoIncField;
-    SeriesAuthID: TIntegerField;
     SeriesTitle: TWideStringField;
-    SeriesGenreCode: TWideStringField;
     tblBooksLibRate: TIntegerField;
     tblBooksLang: TWideStringField;
     tblBooksURI: TWideStringField;
@@ -87,8 +85,6 @@ type
     BookAuthorsBookID: TIntegerField;
     dsGenres: TDataSource;
     tblSeriesB1SerieID: TAutoIncField;
-    tblSeriesB1AuthorID: TIntegerField;
-    tblSeriesB1GenreCode: TWideStringField;
     tblSeriesB1SerieTitle: TWideStringField;
     tblBooksSeries: TWideStringField;
     tblBooksFullName: TWideStringField;
@@ -239,7 +235,7 @@ uses
 
 procedure TDMCollection.CurrentLibID(out ARes: String);
 begin
-  ARes := FActiveTable.FieldByName(LIB_ID_FIELD).AsString;
+  ARes := FActiveTable.FieldByName(BOOK_LIBID_FIELD).AsString;
 end;
 
 procedure TDMCollection.GetBookFileName(
@@ -251,14 +247,14 @@ procedure TDMCollection.GetBookFileName(
   );
 begin
   FActiveTable.Locate(BOOK_ID_FIELD, ID, []);
-  AExt := FActiveTable.FieldByName('Ext').AsString;
-  AFile := FActiveTable.FieldByName(FILENAME_FIELD).AsString;
+  AExt := FActiveTable.FieldByName(BOOK_EXT_FIELD).AsString;
+  AFile := FActiveTable.FieldByName(BOOK_FILENAME_FIELD).AsString;
 
   if ExtractFileExt(AFile) <> ZIP_EXTENSION then // могут быть проблемы!
     AFile := AFile + AExt;
 
-  AFolder := FActiveTable.FieldByName(FOLDER_FIELD).AsString;
-  ANo := FActiveTable.FieldByName('InsideNo').AsInteger;
+  AFolder := FActiveTable.FieldByName(BOOK_FOLDER_FIELD).AsString;
+  ANo := FActiveTable.FieldByName(BOOK_INSIDENO_FIELD).AsInteger;
 end;
 
 procedure TDMCollection.GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
@@ -314,7 +310,7 @@ begin
   if FActiveTable = tblBooks then
     AFolder := TPath.Combine(DMUser.ActiveCollection.RootPath, tblBooksFolder.Value)
   else
-    AFolder := FActiveTable.FieldByName(FOLDER_FIELD).AsString;
+    AFolder := FActiveTable.FieldByName(BOOK_FOLDER_FIELD).AsString;
 end;
 
 procedure TDMCollection.SetTableState(State: Boolean);

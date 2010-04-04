@@ -43,6 +43,9 @@ type
 
     procedure LoadGenres(const GenresFileName: string);
 
+    procedure AddBookGenre(BookID: Integer; const GenreCode: string);
+    function GetGenreAlias(const FB2Code: string): string;
+
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -63,7 +66,7 @@ type
     procedure DeleteBook(BookID: Integer; ClearExtra: Boolean = True);
     procedure CorrectExtra(OldID, NewID: Integer);
 
-    procedure AddBookGenre(BookID: Integer; const GenreCode: string);
+    function GetTopGenreAlias(const FB2Code: string): string;
     procedure CleanBookGenres(BookID: Integer);
 
     procedure GetSeries(SeriesList: TStrings);
@@ -75,9 +78,6 @@ type
     procedure EndBulkOperation(Commit: Boolean = True);
 
   public
-    function GetGenreAlias(const FB2Code: string): string;
-    function GetTopGenreAlias(const FB2Code: string): string;
-
     property DatabaseFileName: string read GetDatabaseFileName write SetDatabaseFileName;
     property Active: Boolean read GetActive write SetActive;
 
@@ -116,12 +116,25 @@ type
     FBookKeyWords: TWideStringField;
 
     FSeries: TABSTable;
+    FSeriesSerieID: TIntegerField;
+    FSeriesSerieTitle: TWideStringField;
 
     FGenres: TABSTable;
+    FGenresGenreCode: TWideStringField;
+    FGenresParentCode: TWideStringField;
+    FGenresFB2Code: TWideStringField;
+    FGenresAlias: TWideStringField;
 
     FGenreList: TABSTable;
+    FGenreListGenreCode: TWideStringField;
+    FGenreListBookID: TIntegerField;
 
     FExtra: TABSTable;
+    FExtraBookID: TIntegerField;
+    FExtraAnnotation: TWideMemoField;
+    //FExtraReview: TWideMemoField;
+    FExtraRate: TIntegerField;
+    FExtraProgress: TIntegerField;
   end;
 
 implementation
@@ -170,8 +183,8 @@ AuthorListTableFields: array [1 .. 2] of TFieldDesc = (
 );
 
 AuthorListTableIndexes: array [1 .. 2] of TIndexDesc = (
-  (Name: 'ID_Index';  Fields: AUTHOR_ID_FIELD + ';' + BOOK_ID_FIELD;   Options: [ixPrimary]),
-  (Name: 'BookIndex'; Fields: BOOK_ID_FIELD;                           Options: [])
+  (Name: 'ID_Index';  Fields: AUTHOR_ID_BOOK_ID_FIELDS; Options: [ixPrimary]),
+  (Name: 'BookIndex'; Fields: BOOK_ID_FIELD;            Options: [])
 );
 
 //
@@ -193,74 +206,70 @@ AuthorsTableIndexes: array [1 .. 2] of TIndexDesc = (
 // Books table
 //
 BooksTableFields: array [1 .. 19] of TFieldDesc = (
-  (Name: BOOK_ID_FIELD;  DataType: ftAutoInc;     Size: 0;   Required: True),
-  (Name: LIB_ID_FIELD;   DataType: ftInteger;     Size: 0;   Required: False),
-  (Name: BOOK_TITLE_FIELD; DataType: ftWideString;  Size: 150; Required: False),
-  (Name: 'FullName';     DataType: ftWideString;  Size: 120; Required: True),
-  (Name: SERIE_ID_FIELD; DataType: ftInteger;     Size: 0;   Required: False),
-  (Name: 'SeqNumber';    DataType: ftSmallInt;    Size: 0;   Required: False),
-  (Name: 'Date';         DataType: ftDate;        Size: 0;   Required: False),
-  (Name: 'LibRate';      DataType: ftInteger;     Size: 0;   Required: False),
-  (Name: 'Lang';         DataType: ftWideString;  Size: 2;   Required: False),
-  (Name: FOLDER_FIELD;   DataType: ftWideString;  Size: MAXFOLDERLENGTH; Required: False),
-  (Name: FILENAME_FIELD; DataType: ftWideString;  Size: 170; Required: True),
-  (Name: 'InsideNo';     DataType: ftInteger;     Size: 0;   Required: True),
-  (Name: 'Ext';          DataType: ftWideString;  Size: 10;  Required: False),
-  (Name: 'Size';         DataType: ftInteger;     Size: 0;   Required: False),
+  (Name: BOOK_ID_FIELD;        DataType: ftAutoInc;     Size: 0;   Required: True),
+  (Name: BOOK_LIBID_FIELD;     DataType: ftInteger;     Size: 0;   Required: False),
+  (Name: BOOK_TITLE_FIELD;     DataType: ftWideString;  Size: 150; Required: False),
+  (Name: BOOK_FULLNAME_FIELD;  DataType: ftWideString;  Size: 120; Required: True),
+  (Name: SERIE_ID_FIELD;       DataType: ftInteger;     Size: 0;   Required: False),
+  (Name: BOOK_SEQNUMBER_FIELD; DataType: ftSmallInt;    Size: 0;   Required: False),
+  (Name: BOOK_DATE_FIELD;      DataType: ftDate;        Size: 0;   Required: False),
+  (Name: BOOK_LIBRATE_FIELD;   DataType: ftInteger;     Size: 0;   Required: False),
+  (Name: BOOK_LANG_FIELD;      DataType: ftWideString;  Size: 2;   Required: False),
+  (Name: BOOK_FOLDER_FIELD;    DataType: ftWideString;  Size: MAXFOLDERLENGTH; Required: False),
+  (Name: BOOK_FILENAME_FIELD;  DataType: ftWideString;  Size: 170; Required: True),
+  (Name: BOOK_INSIDENO_FIELD;  DataType: ftInteger;     Size: 0;   Required: True),
+  (Name: BOOK_EXT_FIELD;       DataType: ftWideString;  Size: 10;  Required: False),
+  (Name: BOOK_SIZE_FIELD;      DataType: ftInteger;     Size: 0;   Required: False),
   //
-  (Name: 'URI';          DataType: ftWideString;  Size: 60;  Required: False),         // TODO -oNickR -cDB opt : remove
+  (Name: BOOK_URI_FIELD;       DataType: ftWideString;  Size: 60;  Required: False),         // TODO -oNickR -cDB opt : remove
   //
-  (Name: 'Code';         DataType: ftSmallInt;    Size: 0;   Required: False),
-  (Name: 'Local';        DataType: ftBoolean;     Size: 0;   Required: False),
-  (Name: 'Deleted';      DataType: ftBoolean;     Size: 0;   Required: False),
-  (Name: 'KeyWords';     DataType: ftWideString;  Size: 255; Required: False)
+  (Name: BOOK_CODE_FIELD;      DataType: ftSmallInt;    Size: 0;   Required: False),
+  (Name: BOOK_LOCAL_FIELD;     DataType: ftBoolean;     Size: 0;   Required: False),
+  (Name: BOOK_DELETED_FIELD;   DataType: ftBoolean;     Size: 0;   Required: False),
+  (Name: BOOK_KEYWORDS_FIELD;  DataType: ftWideString;  Size: 255; Required: False)
 );
 
-BooksTableIndexes: array [1..10] of TIndexDesc = (
-  (Name: 'ID_Index';       Fields: BOOK_ID_FIELD;           Options: [ixPrimary]),
-  (Name: 'Series_Index';   Fields: SERIE_ID_FIELD + ';SeqNumber';       Options: []),
-  (Name: 'Title_Index';    Fields: 'FullName;Title;Deleted;Lang;Date;Local;KeyWords'; Options: [ixCaseInsensitive]),
-  (Name: 'File_Index';     Fields: FILENAME_FIELD;          Options: [ixCaseInsensitive]),
-  (Name: 'Folder_Index';   Fields: FOLDER_FIELD;            Options: [ixCaseInsensitive]),
-  (Name: 'Deleted_Index';  Fields: 'Deleted';               Options: []),
-  (Name: 'Date_Index';     Fields: 'Date';                  Options: []),
-  (Name: 'Local_Index';    Fields: 'Local';                 Options: []),
-  (Name: 'LibID_Index';    Fields: LIB_ID_FIELD;            Options: []),
-  (Name: 'KeyWords_Index'; Fields: 'KeyWords';              Options: [ixCaseInsensitive])
+BooksTableIndexes: array [1 .. 10] of TIndexDesc = (
+  (Name: 'ID_Index';       Fields: BOOK_ID_FIELD;       Options: [ixPrimary]),
+  (Name: 'Series_Index';   Fields: SERIE_ID_SEQNUMBER_FIELDS; Options: []),
+  (Name: 'Title_Index';    Fields: BOOK_FULLNAME_FIELD; Options: [ixCaseInsensitive]),
+  (Name: 'File_Index';     Fields: BOOK_FILENAME_FIELD; Options: [ixCaseInsensitive]),
+  (Name: 'Folder_Index';   Fields: BOOK_FOLDER_FIELD;   Options: [ixCaseInsensitive]),
+  (Name: 'Deleted_Index';  Fields: BOOK_DELETED_FIELD;  Options: []),
+  (Name: 'Date_Index';     Fields: BOOK_DATE_FIELD;     Options: []),
+  (Name: 'Local_Index';    Fields: BOOK_LOCAL_FIELD;    Options: []),
+  (Name: 'LibID_Index';    Fields: BOOK_LIBID_FIELD;    Options: []),
+  (Name: 'KeyWords_Index'; Fields: BOOK_KEYWORDS_FIELD; Options: [ixCaseInsensitive])
 );
 
 //
 // Series
 //
-SeriesTableFields: array [1 .. 4] of TFieldDesc = (
-  (Name: SERIE_ID_FIELD;   DataType: ftAutoInc;    Size: 0;  Required: True),
-  (Name: AUTHOR_ID_FIELD;  DataType: ftInteger;    Size: 0;  Required: True),
-  (Name: GENRE_CODE_FIELD; DataType: ftWideString; Size: 20; Required: True),
+SeriesTableFields: array [1 .. 2] of TFieldDesc = (
+  (Name: SERIE_ID_FIELD;    DataType: ftAutoInc;    Size: 0;  Required: True),
   (Name: SERIE_TITLE_FIELD; DataType: ftWideString; Size: 80; Required: True)
 );
 
-SeriesTableIndexes: array [1..4] of TIndexDesc = (
-  (Name: 'ID_Index';    Fields: SERIE_ID_FIELD;                            Options: [ixPrimary]),
-  (Name: 'TiteIndex';   Fields: SERIE_TITLE_FIELD + ';' + AUTHOR_ID_FIELD; Options: [ixCaseInsensitive]),
-  (Name: 'AuthorIndex'; Fields: AUTHOR_ID_FIELD + ';' + SERIE_TITLE_FIELD; Options: [ixCaseInsensitive]),
-  (Name: 'SeqTitle';    Fields: SERIE_TITLE_FIELD;                         Options: [ixCaseInsensitive])
+SeriesTableIndexes: array [1 .. 2] of TIndexDesc = (
+  (Name: 'ID_Index';        Fields: SERIE_ID_FIELD;    Options: [ixPrimary]),
+  (Name: 'SerieTitleIndex'; Fields: SERIE_TITLE_FIELD; Options: [ixCaseInsensitive])
 );
 
 //
 // Genres
 //
 GenresTableFields: array [1 .. 4] of TFieldDesc = (
-  (Name: GENRE_CODE_FIELD; DataType: ftWideString; Size: 20; Required: True),
-  (Name: 'ParentCode';     DataType: ftWideString; Size: 20; Required: False),
-  (Name: 'FB2Code';        DataType: ftWideString; Size: 20; Required: False),
-  (Name: 'GenreAlias';     DataType: ftWideString; Size: 50; Required: True)
+  (Name: GENRE_CODE_FIELD;       DataType: ftWideString; Size: 20; Required: True),
+  (Name: GENRE_PARENTCODE_FIELD; DataType: ftWideString; Size: 20; Required: False),
+  (Name: GENRE_FB2CODE_FIELD;    DataType: ftWideString; Size: 20; Required: False),
+  (Name: GENRE_ALIAS_FIELD;      DataType: ftWideString; Size: 50; Required: True)
 );
 
-GenresTableIndexes: array [1..4] of TIndexDesc = (
-  (Name: 'ID_Index';     Fields: GENRE_CODE_FIELD;                 Options: [ixPrimary]),
-  (Name: 'CodeIndex';    Fields: 'ParentCode;' + GENRE_CODE_FIELD; Options: [ixCaseInsensitive, ixUnique]),
-  (Name: 'FB2CodeIndex'; Fields: 'FB2Code';                        Options: [ixCaseInsensitive]),
-  (Name: 'AliasIndex';   Fields: 'GenreAlias';                     Options: [])
+GenresTableIndexes: array [1 .. 4] of TIndexDesc = (
+  (Name: 'ID_Index';     Fields: GENRE_CODE_FIELD;             Options: [ixPrimary]),
+  (Name: 'CodeIndex';    Fields: GENRE_PARENTCODE_CODE_FIELDS; Options: [ixCaseInsensitive, ixUnique]),
+  (Name: 'FB2CodeIndex'; Fields: GENRE_FB2CODE_FIELD;          Options: [ixCaseInsensitive]),
+  (Name: 'AliasIndex';   Fields: GENRE_ALIAS_FIELD;            Options: [])
 );
 
 //
@@ -272,19 +281,19 @@ GenreListTableFields: array [1 .. 2] of TFieldDesc = (
 );
 
 GenreListTableIndexes: array [1 .. 2] of TIndexDesc = (
-  (Name: 'ID_Index';   Fields: GENRE_CODE_FIELD + ';' + BOOK_ID_FIELD;   Options: [ixPrimary]),
-  (Name: 'BookIndex';  Fields: BOOK_ID_FIELD;                            Options: [])
+  (Name: 'ID_Index';   Fields: GENRE_CODE_BOOK_ID_FIELDS; Options: [ixPrimary]),
+  (Name: 'BookIndex';  Fields: BOOK_ID_FIELD;             Options: [])
 );
 
 //
 // Extra
 //
 ExtraTableFields: array [1 .. 5] of TFieldDesc = (
-  (Name: BOOK_ID_FIELD;  DataType: ftInteger;    Size: 0;   Required: True),
-  (Name: 'Annotation';   DataType: ftWideMemo;   Size: 0;   Required: False),
-  (Name: 'Review';       DataType: ftWideMemo;   Size: 0;   Required: False),
-  (Name: 'Rate';         DataType: ftInteger;    Size: 0;   Required: False),
-  (Name: 'Progress';     DataType: ftInteger;    Size: 0;   Required: False)
+  (Name: BOOK_ID_FIELD;         DataType: ftInteger;    Size: 0;   Required: True),
+  (Name: BOOK_ANNOTATION_FIELD; DataType: ftWideMemo;   Size: 0;   Required: False),
+  (Name: BOOK_REVIEW_FIELD;     DataType: ftWideMemo;   Size: 0;   Required: False),
+  (Name: BOOK_RATE_FIELD;       DataType: ftInteger;    Size: 0;   Required: False),
+  (Name: BOOK_PROGRESS_FIELD;   DataType: ftInteger;    Size: 0;   Required: False)
 );
 
 ExtraTableIndexes: array [1 .. 1] of TIndexDesc = (
@@ -292,8 +301,8 @@ ExtraTableIndexes: array [1 .. 1] of TIndexDesc = (
 );
 
 ExtraTableBlobs: array [1 .. 2] of TBLOBFieldDesc = (
-  (Name: 'Annotation';   BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5),
-  (Name: 'Review';       BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5)
+  (Name: BOOK_ANNOTATION_FIELD; BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5),
+  (Name: BOOK_REVIEW_FIELD;     BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5)
 );
 
 // -----------------------------------------------------------------------------
@@ -303,26 +312,26 @@ ExtraTableBlobs: array [1 .. 2] of TBLOBFieldDesc = (
 // Bases table
 //
 BasesTableFields: array [1 .. 15] of TFieldDesc = (
-  (Name: ID_FIELD;       DataType: ftAutoInc;    Size: 0;   Required: True),
-  (Name: 'Name';         DataType: ftWideString; Size: 64;  Required: True),
-  (Name: 'RootFolder';   DataType: ftWideString; Size: 128; Required: True),
-  (Name: 'DBFileName';   DataType: ftWideString; Size: 128; Required: True),
-  (Name: 'Notes';        DataType: ftWideString; Size: 255; Required: False),
-  (Name: 'Date';         DataType: ftDate;       Size: 0;   Required: False),
-  (Name: 'Version';      DataType: ftInteger;    Size: 0;   Required: False),
-  (Name: 'Code';         DataType: ftInteger;    Size: 0;   Required: False),
-  (Name: 'AllowDelete';  DataType: ftBoolean;    Size: 0;   Required: False),
-  (Name: 'Settings';     DataType: ftWideMemo;   Size: 0;   Required: False),
-  (Name: 'Icon';         DataType: ftBlob;       Size: 0;   Required: False),
-  (Name: 'URL';          DataType: ftWideString; Size: 255; Required: False),
-  (Name: 'User';         DataType: ftWideString; Size: 50;  Required: False),
-  (Name: 'Pass';         DataType: ftWideString; Size: 50;  Required: False),
-  (Name: 'Connection';   DataType: ftWideMemo;   Size: 0;   Required: False)
+  (Name: ID_FIELD;        DataType: ftAutoInc;    Size: 0;   Required: True),
+  (Name: BASE_NAME_FIELD; DataType: ftWideString; Size: 64;  Required: True),
+  (Name: 'RootFolder';    DataType: ftWideString; Size: 128; Required: True),
+  (Name: 'DBFileName';    DataType: ftWideString; Size: 128; Required: True),
+  (Name: 'Notes';         DataType: ftWideString; Size: 255; Required: False),
+  (Name: 'Date';          DataType: ftDate;       Size: 0;   Required: False),
+  (Name: 'Version';       DataType: ftInteger;    Size: 0;   Required: False),
+  (Name: 'Code';          DataType: ftInteger;    Size: 0;   Required: False),
+  (Name: 'AllowDelete';   DataType: ftBoolean;    Size: 0;   Required: False),
+  (Name: 'Settings';      DataType: ftWideMemo;   Size: 0;   Required: False),
+  (Name: 'Icon';          DataType: ftBlob;       Size: 0;   Required: False),
+  (Name: 'URL';           DataType: ftWideString; Size: 255; Required: False),
+  (Name: 'User';          DataType: ftWideString; Size: 50;  Required: False),
+  (Name: 'Pass';          DataType: ftWideString; Size: 50;  Required: False),
+  (Name: 'Connection';    DataType: ftWideMemo;   Size: 0;   Required: False)
 );
 
 BasesTableIndexes: array [1..2] of TIndexDesc = (
-  (Name: 'ID_Index';   Fields: ID_FIELD; Options: [ixPrimary]),
-  (Name: 'Name_Index'; Fields: 'Name';   Options: [])
+  (Name: 'ID_Index';   Fields: ID_FIELD;        Options: [ixPrimary]),
+  (Name: 'Name_Index'; Fields: BASE_NAME_FIELD; Options: [])
 );
 
 BasesTableBlobs: array [1 .. 2] of TBLOBFieldDesc = (
@@ -334,16 +343,16 @@ BasesTableBlobs: array [1 .. 2] of TBLOBFieldDesc = (
 // Groups List (группы: избранное, прочитанное, к прочтению и т.п.)
 //
 GroupsListTableFields: array [1..5] of TFieldDesc = (
-  (Name: GROUP_ID_FIELD; DataType: ftAutoInc;    Size: 0;   Required: True),
-  (Name: 'Name';         DataType: ftWideString; Size: 255; Required: False),
-  (Name: 'AllowDelete';  DataType: ftBoolean;    Size: 0;   Required: False),
-  (Name: 'Notes';        DataType: ftMemo;       Size: 0;   Required: False),
-  (Name: 'Icon';         DataType: ftBlob;       Size: 0;   Required: False)
+  (Name: GROUP_ID_FIELD;   DataType: ftAutoInc;    Size: 0;   Required: True),
+  (Name: GROUP_NAME_FIELD; DataType: ftWideString; Size: 255; Required: False),
+  (Name: 'AllowDelete';    DataType: ftBoolean;    Size: 0;   Required: False),
+  (Name: 'Notes';          DataType: ftMemo;       Size: 0;   Required: False),
+  (Name: 'Icon';           DataType: ftBlob;       Size: 0;   Required: False)
 );
 
 GroupsListTableIndexes: array [1..2] of TIndexDesc = (
-  (Name: 'ID_Index';   Fields: GROUP_ID_FIELD;  Options: [ixPrimary]),
-  (Name: 'NameIndex';  Fields: 'Name';    Options: [])
+  (Name: 'ID_Index';   Fields: GROUP_ID_FIELD;   Options: [ixPrimary]),
+  (Name: 'NameIndex';  Fields: GROUP_NAME_FIELD; Options: [])
 );
 
 //
@@ -356,8 +365,8 @@ BookGroupsTableFields: array [1 .. 3] of TFieldDesc = (
 );
 
 BookGroupsTableIndexes: array [1 .. 2] of TIndexDesc = (
-  (Name: 'ID_Index';    Fields: GROUP_ID_FIELD + ';' + BOOK_DB_FIELDS;   Options: [ixPrimary]),
-  (Name: 'BookDBIndex'; Fields: BOOK_DB_FIELDS;                          Options: [])
+  (Name: 'ID_Index';    Fields: GROUP_ID_BOOK_ID_DB_ID_FIELDS; Options: [ixPrimary]),
+  (Name: 'BookDBIndex'; Fields: BOOK_ID_DB_ID_FIELDS;          Options: [])
 );
 
 
@@ -366,33 +375,33 @@ BookGroupsTableIndexes: array [1 .. 2] of TIndexDesc = (
 //
 // TODO -oNickR -cDB opt : инхронизировать с таблицей Books
 GroupsTableFields: array [1 .. 25] of TFieldDesc = (
-  (Name: BOOK_ID_FIELD;  DataType: ftInteger;    Size: 0;   Required: True),
-  (Name: DB_ID_FIELD;    DataType: ftInteger;    Size: 0;   Required: True),
-  (Name: LIB_ID_FIELD;   DataType: ftInteger;    Size: 0;   Required: False),
-  (Name: BOOK_TITLE_FIELD; DataType: ftWideString; Size: 150; Required: False),
-  (Name: 'FullName';     DataType: ftWideString; Size: 255; Required: False),
-  (Name: SERIE_ID_FIELD; DataType: ftInteger;     Size: 0;   Required: False),
-  (Name: 'SeqNumber';    DataType: ftSmallInt;   Size: 0;   Required: False),
-  (Name: 'Date';         DataType: ftDate;       Size: 0;   Required: False),
-  (Name: 'LibRate';      DataType: ftInteger;    Size: 0;   Required: False),
-  (Name: 'Lang';         DataType: ftWideString; Size: 2;   Required: False),
-  (Name: FOLDER_FIELD;   DataType: ftWideString; Size: 255; Required: False),
-  (Name: FILENAME_FIELD; DataType: ftWideString; Size: 255; Required: True),
-  (Name: 'InsideNo';     DataType: ftInteger;    Size: 0;   Required: True),
-  (Name: 'Ext';          DataType: ftWideString; Size: 10;  Required: False),
-  (Name: 'Size';         DataType: ftInteger;    Size: 0;   Required: False),
-  (Name: 'URI';          DataType: ftWideString; Size: 60;  Required: False),         // TODO -oNickR -cDB opt : remove
-  (Name: 'Code';         DataType: ftSmallInt;   Size: 0;   Required: False),
-  (Name: 'Local';        DataType: ftBoolean;    Size: 0;   Required: False),
-  (Name: 'Deleted';      DataType: ftBoolean;    Size: 0;   Required: False),
-  (Name: 'KeyWords';     DataType: ftWideString; Size: 255; Required: False),
+  (Name: BOOK_ID_FIELD;        DataType: ftInteger;    Size: 0;   Required: True),
+  (Name: DB_ID_FIELD;          DataType: ftInteger;    Size: 0;   Required: True),
+  (Name: BOOK_LIBID_FIELD;     DataType: ftInteger;    Size: 0;   Required: False),
+  (Name: BOOK_TITLE_FIELD;     DataType: ftWideString; Size: 150; Required: False),
+  (Name: BOOK_FULLNAME_FIELD;  DataType: ftWideString; Size: 255; Required: False),
+  (Name: SERIE_ID_FIELD;       DataType: ftInteger;    Size: 0;   Required: False),
+  (Name: BOOK_SEQNUMBER_FIELD; DataType: ftSmallInt;   Size: 0;   Required: False),
+  (Name: BOOK_DATE_FIELD;      DataType: ftDate;       Size: 0;   Required: False),
+  (Name: BOOK_LIBRATE_FIELD;   DataType: ftInteger;    Size: 0;   Required: False),
+  (Name: BOOK_LANG_FIELD;      DataType: ftWideString; Size: 2;   Required: False),
+  (Name: BOOK_FOLDER_FIELD;    DataType: ftWideString; Size: 255; Required: False),
+  (Name: BOOK_FILENAME_FIELD;  DataType: ftWideString; Size: 255; Required: True),
+  (Name: BOOK_INSIDENO_FIELD;  DataType: ftInteger;    Size: 0;   Required: True),
+  (Name: BOOK_EXT_FIELD;       DataType: ftWideString; Size: 10;  Required: False),
+  (Name: BOOK_SIZE_FIELD;      DataType: ftInteger;    Size: 0;   Required: False),
+  (Name: BOOK_URI_FIELD;       DataType: ftWideString; Size: 60;  Required: False),         // TODO -oNickR -cDB opt : remove
+  (Name: BOOK_CODE_FIELD;      DataType: ftSmallInt;   Size: 0;   Required: False),
+  (Name: BOOK_LOCAL_FIELD;     DataType: ftBoolean;    Size: 0;   Required: False),
+  (Name: BOOK_DELETED_FIELD;   DataType: ftBoolean;    Size: 0;   Required: False),
+  (Name: BOOK_KEYWORDS_FIELD;  DataType: ftWideString; Size: 255; Required: False),
 
   //
   // Данные из таблицы Extra
   //
-  (Name: 'Review';       DataType: ftWideMemo;   Size: 0;   Required: False),
-  (Name: 'Rate';         DataType: ftInteger;    Size: 0;   Required: False),
-  (Name: 'Progress';     DataType: ftSmallInt;   Size: 0;   Required: False),
+  (Name: BOOK_REVIEW_FIELD;   DataType: ftWideMemo;   Size: 0;   Required: False),
+  (Name: BOOK_RATE_FIELD;     DataType: ftInteger;    Size: 0;   Required: False),
+  (Name: BOOK_PROGRESS_FIELD; DataType: ftSmallInt;   Size: 0;   Required: False),
 
   //
   // Данные из других таблиц
@@ -401,14 +410,13 @@ GroupsTableFields: array [1 .. 25] of TFieldDesc = (
   (Name: 'Series';       DataType: ftWideString; Size: 128; Required: False)
 );
 
-GroupsTableIndexes: array [1 .. 3] of TIndexDesc = (
-  (Name: 'ID_Index';       Fields: BOOK_DB_FIELDS;          Options: [ixPrimary]),
-  (Name: 'FullName_Index'; Fields: 'FullName;Series;Title'; Options: []),
-  (Name: 'File_Index';     Fields: FILENAME_FIELD;          Options: [])
+GroupsTableIndexes: array [1 .. 2] of TIndexDesc = (
+  (Name: 'ID_Index';       Fields: BOOK_ID_DB_ID_FIELDS; Options: [ixPrimary]),
+  (Name: 'File_Index';     Fields: BOOK_FILENAME_FIELD;  Options: [])
 );
 
 GroupBooksTableBlobs: array [1 .. 1] of TBLOBFieldDesc = (
-  (Name: 'Review';     BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5)
+  (Name: BOOK_REVIEW_FIELD; BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5)
 );
 
 // ------------------------------------------------------------------------------
@@ -530,33 +538,50 @@ begin
 
   if Value then
   begin
-    FAuthorID := FAuthors.FindField(AUTHOR_ID_FIELD) as TIntegerField;
-    FAuthorLastName := FAuthors.FindField(AUTHOR_LASTTNAME_FIELD) as TWideStringField;
-    FAuthorFirstName := FAuthors.FindField(AUTHOR_FIRSTNAME_FIELD) as TWideStringField;
-    FAuthorMiddleName := FAuthors.FindField(AUTHOR_MIDDLENAME_FIELD) as TWideStringField;
+    FAuthorID := FAuthors.FieldByName(AUTHOR_ID_FIELD) as TIntegerField;
+    FAuthorLastName := FAuthors.FieldByName(AUTHOR_LASTTNAME_FIELD) as TWideStringField;
+    FAuthorFirstName := FAuthors.FieldByName(AUTHOR_FIRSTNAME_FIELD) as TWideStringField;
+    FAuthorMiddleName := FAuthors.FieldByName(AUTHOR_MIDDLENAME_FIELD) as TWideStringField;
 
-    FAuthorListAuthorID := FAuthorList.FindField(AUTHOR_ID_FIELD) as TIntegerField;
-    FAuthorListBookID := FAuthorList.FindField(BOOK_ID_FIELD) as TIntegerField;
+    FAuthorListAuthorID := FAuthorList.FieldByName(AUTHOR_ID_FIELD) as TIntegerField;
+    FAuthorListBookID := FAuthorList.FieldByName(BOOK_ID_FIELD) as TIntegerField;
 
-    FBookBookID := FBooks.FindField(BOOK_ID_FIELD) as TIntegerField;
-    FBookLibID := FBooks.FindField(LIB_ID_FIELD) as TIntegerField;
-    FBookTitle := FBooks.FindField(BOOK_TITLE_FIELD) as TWideStringField;
-    FBookFullName := FBooks.FindField('FullName') as TWideStringField;
-    FBookSerieID := FBooks.FindField(SERIE_ID_FIELD) as TIntegerField;
-    FBookSeqNumber := FBooks.FindField('SeqNumber') as TSmallintField;
-    FBookDate := FBooks.FindField('Date') as TDateField;
-    FBookLibRate := FBooks.FindField('LibRate') as TIntegerField;
-    FBookLang := FBooks.FindField('Lang') as TWideStringField;
-    FBookFolder := FBooks.FindField(FOLDER_FIELD) as TWideStringField;
-    FBookFileName := FBooks.FindField(FILENAME_FIELD) as TWideStringField;
-    FBookInsideNo := FBooks.FindField('InsideNo') as TIntegerField;
-    FBookExt := FBooks.FindField('Ext') as TWideStringField;
-    FBookSize := FBooks.FindField('Size') as TIntegerField;
-    FBookURI := FBooks.FindField('URI') as TWideStringField;
-    FBookCode := FBooks.FindField('Code') as TSmallintField;
-    FBookLocal := FBooks.FindField('Local') as TBooleanField;
-    FBookDeleted := FBooks.FindField('Deleted') as TBooleanField;
-    FBookKeyWords := FBooks.FindField('KeyWords') as TWideStringField;
+    FBookBookID := FBooks.FieldByName(BOOK_ID_FIELD) as TIntegerField;
+    FBookLibID := FBooks.FieldByName(BOOK_LIBID_FIELD) as TIntegerField;
+    FBookTitle := FBooks.FieldByName(BOOK_TITLE_FIELD) as TWideStringField;
+    FBookFullName := FBooks.FieldByName(BOOK_FULLNAME_FIELD) as TWideStringField;
+    FBookSerieID := FBooks.FieldByName(SERIE_ID_FIELD) as TIntegerField;
+    FBookSeqNumber := FBooks.FieldByName(BOOK_SEQNUMBER_FIELD) as TSmallintField;
+    FBookDate := FBooks.FieldByName(BOOK_DATE_FIELD) as TDateField;
+    FBookLibRate := FBooks.FieldByName(BOOK_LIBRATE_FIELD) as TIntegerField;
+    FBookLang := FBooks.FieldByName(BOOK_LANG_FIELD) as TWideStringField;
+    FBookFolder := FBooks.FieldByName(BOOK_FOLDER_FIELD) as TWideStringField;
+    FBookFileName := FBooks.FieldByName(BOOK_FILENAME_FIELD) as TWideStringField;
+    FBookInsideNo := FBooks.FieldByName(BOOK_INSIDENO_FIELD) as TIntegerField;
+    FBookExt := FBooks.FieldByName(BOOK_EXT_FIELD) as TWideStringField;
+    FBookSize := FBooks.FieldByName(BOOK_SIZE_FIELD) as TIntegerField;
+    FBookURI := FBooks.FieldByName(BOOK_URI_FIELD) as TWideStringField;
+    FBookCode := FBooks.FieldByName(BOOK_CODE_FIELD) as TSmallintField;
+    FBookLocal := FBooks.FieldByName(BOOK_LOCAL_FIELD) as TBooleanField;
+    FBookDeleted := FBooks.FieldByName(BOOK_DELETED_FIELD) as TBooleanField;
+    FBookKeyWords := FBooks.FieldByName(BOOK_KEYWORDS_FIELD) as TWideStringField;
+
+    FExtraBookID := FExtra.FieldByName(BOOK_ID_FIELD) as TIntegerField;
+    FExtraAnnotation := FExtra.FieldByName(BOOK_ANNOTATION_FIELD) as TWideMemoField;
+    //FExtraReview := FExtra.FieldByName(BOOK_REVIEW_FIELD) as TWideMemoField;
+    FExtraRate := FExtra.FieldByName(BOOK_RATE_FIELD) as TIntegerField;
+    FExtraProgress := FExtra.FieldByName(BOOK_PROGRESS_FIELD) as TIntegerField;
+
+    FSeriesSerieID := FSeries.FieldByName(SERIE_ID_FIELD) as TIntegerField;
+    FSeriesSerieTitle := FSeries.FieldByName(SERIE_TITLE_FIELD) as TWideStringField;
+
+    FGenresGenreCode := FGenres.FieldByName(GENRE_CODE_FIELD) as TWideStringField;
+    FGenresParentCode := FGenres.FieldByName(GENRE_PARENTCODE_FIELD) as TWideStringField;
+    FGenresFB2Code := FGenres.FieldByName(GENRE_FB2CODE_FIELD) as TWideStringField;
+    FGenresAlias := FGenres.FieldByName(GENRE_ALIAS_FIELD) as TWideStringField;
+
+    FGenreListGenreCode := FGenreList.FieldByName(GENRE_CODE_FIELD) as TWideStringField;
+    FGenreListBookID := FGenreList.FieldByName(BOOK_ID_FIELD) as TIntegerField;
   end
   else
   begin
@@ -587,6 +612,23 @@ begin
     FBookLocal := nil;
     FBookDeleted := nil;
     FBookKeyWords := nil;
+
+    FExtraBookID := nil;
+    FExtraAnnotation := nil;
+    //FExtraReview := nil;
+    FExtraRate := nil;
+    FExtraProgress := nil;
+
+    FSeriesSerieID := nil;
+    FSeriesSerieTitle := nil;
+
+    FGenresGenreCode := nil;
+    FGenresParentCode := nil;
+    FGenresFB2Code := nil;
+    FGenresAlias := nil;
+
+    FGenreListGenreCode := nil;
+    FGenreListBookID := nil;
   end;
 end;
 
@@ -627,12 +669,12 @@ begin
     Groups.Active := True;
 
     Groups.Append;
-    Groups.FieldByName('Name').AsWideString := 'Избранное';
+    Groups.FieldByName(GROUP_NAME_FIELD).AsWideString := 'Избранное';
     Groups.FieldByName('AllowDelete').AsBoolean := False;
     Groups.Post;
 
     Groups.Append;
-    Groups.FieldByName('Name').AsWideString := 'К прочтению';
+    Groups.FieldByName(GROUP_NAME_FIELD).AsWideString := 'К прочтению';
     Groups.FieldByName('AllowDelete').AsBoolean := False;
     Groups.Post;
   finally
@@ -669,9 +711,7 @@ begin
   // Создадим фиктивную серию
   //
   FSeries.Append;
-  FSeries.FieldByName(SERIE_TITLE_FIELD).AsWideString := NO_SERIES_TITLE;
-  FSeries.FieldByName(GENRE_CODE_FIELD).AsWideString := '0';
-  FSeries.FieldByName(AUTHOR_ID_FIELD).AsInteger := 0;
+  FSeriesSerieTitle.Value := NO_SERIES_TITLE;
   FSeries.Post;
 end;
 
@@ -756,10 +796,10 @@ begin
       // все хорошо => добавляем в базу
       //
       FGenres.Insert;
-      FGenres.FieldByName(GENRE_CODE_FIELD).AsWideString := Code;
-      FGenres.FieldByName('ParentCode').AsWideString := ParentCode;
-      FGenres.FieldByName('FB2Code').AsWideString := FB2Code;
-      FGenres.FieldByName('GenreAlias').AsWideString := S;
+      FGenresGenreCode.Value := Code;
+      FGenresParentCode.Value := ParentCode;
+      FGenresFB2Code.Value := FB2Code;
+      FGenresAlias.Value := S;
       FGenres.Post;
     end;
   finally
@@ -783,8 +823,8 @@ end;
 
 function TMHLLibrary.GetGenreAlias(const FB2Code: string): string;
 begin
-  FGenres.Locate('FB2Code', FB2Code, []);
-  Result := FGenres.FieldByName('GenreAlias').AsWideString;
+  FGenres.Locate(GENRE_FB2CODE_FIELD, FB2Code, []);
+  Result := FGenresAlias.Value;
 end;
 
 function TMHLLibrary.GetTopGenreAlias(const FB2Code: string): string;
@@ -792,15 +832,15 @@ var
   Code: string;
   p: Integer;
 begin
-  FGenres.Locate('FB2Code', FB2Code, []);
-  Code := FGenres.FieldByName(GENRE_CODE_FIELD).AsWideString;
+  FGenres.Locate(GENRE_FB2CODE_FIELD, FB2Code, []);
+  Code := FGenresGenreCode.Value;
 
   Delete(Code, 1, 2); // "0."
   p := Pos('.', Code);
   Code := '0.' + Copy(Code, 1, p - 1);
 
   FGenres.Locate(GENRE_CODE_FIELD, Code, []);
-  Result := FGenres.FieldByName('GenreAlias').AsWideString;
+  Result := FGenresAlias.Value;
 end;
 
 function TMHLLibrary.CheckFileInCollection(const FileName: string; const FullNameSearch: Boolean; const ZipFolder: Boolean): Boolean;
@@ -810,14 +850,14 @@ begin
   CheckActive;
 
   if ZipFolder then
-    Result := FBooks.Locate(FOLDER_FIELD, FileName, [loCaseInsensitive])
+    Result := FBooks.Locate(BOOK_FOLDER_FIELD, FileName, [loCaseInsensitive])
   else
   begin
     if FullNameSearch then
       S := ExtractFileName(FileName)
     else
       S := TPath.GetFileNameWithoutExtension(FileName);
-    Result := FBooks.Locate(FILENAME_FIELD, S, [loCaseInsensitive]);
+    Result := FBooks.Locate(BOOK_FILENAME_FIELD, S, [loCaseInsensitive]);
   end;
 end;
 
@@ -874,8 +914,8 @@ begin
       //
       // Знаем fb2-код жанра => получаем внутренний код
       //
-      if FGenres.Locate('FB2Code', BookRecord.Genres[i].FB2GenreCode, [loCaseInsensitive]) then
-        BookRecord.Genres[i].GenreCode := FGenres.FieldByName(GENRE_CODE_FIELD).AsWideString
+      if FGenres.Locate(GENRE_FB2CODE_FIELD, BookRecord.Genres[i].FB2GenreCode, [loCaseInsensitive]) then
+        BookRecord.Genres[i].GenreCode := FGenresGenreCode.Value
       else
         //
         // fb2-код неизвестный - так и запишем
@@ -896,18 +936,11 @@ begin
 
   //
   // создадим отсутствующую серию
-  // DONE -oNickR : может стоит проверять не только Title, но и AuthID?
-  // т к в одной серии могут буть книги разных авторов, то _пока_ оставим как есть
-  // возможно, во второй версии вернемся к этому вопросу.
-  //
-  // TODO -cRelease2.0 : Создавать отдельные серии для каждого автора, с возможностью их объединения
   //
   if not FSeries.Locate(SERIE_TITLE_FIELD, BookRecord.Serie, [loCaseInsensitive]) then
   begin
     FSeries.Append;
-    FSeries.FieldByName(GENRE_CODE_FIELD).AsWideString := BookRecord.Genres[0].GenreCode;
-    FSeries.FieldByName(AUTHOR_ID_FIELD).AsInteger := BookRecord.Authors[0].AuthorID;
-    FSeries.FieldByName(SERIE_TITLE_FIELD).AsWideString := BookRecord.Serie;
+    FSeriesSerieTitle.Value := BookRecord.Serie;
     FSeries.Post;
   end;
 
@@ -918,7 +951,7 @@ begin
     if FullCheck then
       Res := FBooks.Locate('Folder;FileName', VarArrayOf([BookRecord.Folder, BookRecord.FileName]), [loCaseInsensitive])
     else
-      Res := FBooks.Locate(FILENAME_FIELD, BookRecord.FileName, [loCaseInsensitive])
+      Res := FBooks.Locate(BOOK_FILENAME_FIELD, BookRecord.FileName, [loCaseInsensitive])
     else
       Res := False;
 
@@ -928,11 +961,11 @@ begin
     if ASeqNumber > 5000 then
       ASeqNumber := 0;
 
-    FBooks.Insert;
+    FBooks.Append;
     FBookLibID.Value := BookRecord.LibID;
     FBookTitle.Value := BookRecord.Title;
     FBookFullName.Value := AnsiUpperCase(BookRecord.Authors[0].GetFullName); // поле только для поиска!
-    FBookSerieID.Value := FSeries.FieldByName(SERIE_ID_FIELD).AsInteger;
+    FBookSerieID.Value := FSeriesSerieID.AsInteger;
     FBookSeqNumber.Value := ASeqNumber;
     FBookDate.Value := BookRecord.Date;
     FBookLibRate.Value := BookRecord.LibRate;
@@ -953,8 +986,8 @@ begin
     begin
       FGenreList.Append;
       try
-        FGenreList.FieldByName(BOOK_ID_FIELD).AsInteger := FBookBookID.Value;
-        FGenreList.FieldByName(GENRE_CODE_FIELD).AsWideString := Genre.GenreCode;
+        FGenreListBookID.Value := FBookBookID.Value;
+        FGenreListGenreCode.Value := Genre.GenreCode;
 
         FGenreList.Post;
       except
@@ -978,10 +1011,10 @@ begin
     if (BookRecord.Annotation <> '') or (BookRecord.Rate <> 0) or (BookRecord.Progress <> 0) then
     begin
       FExtra.Append;
-      FExtra.FieldByName(BOOK_ID_FIELD).AsInteger := FBookBookID.Value;
-      FExtra.FieldByName('Annotation').AsWideString := BookRecord.Annotation;
-      FExtra.FieldByName('Rate').AsInteger := BookRecord.Rate;
-      FExtra.FieldByName('Progress').AsInteger := BookRecord.Progress;
+      FExtraBookID.Value := FBookBookID.Value;
+      FExtraAnnotation.Value := BookRecord.Annotation;
+      FExtraRate.Value := BookRecord.Rate;
+      FExtraProgress.Value := BookRecord.Progress;
       FExtra.Post;
     end;
 
@@ -997,7 +1030,7 @@ begin
 
   if FBooks.Locate(BOOK_ID_FIELD, BookID, []) then
   begin
-    SerieID := FBooks.FieldByName(SERIE_ID_FIELD).AsInteger;
+    SerieID := FBookSerieID.Value;
     FBooks.Delete;
 
     { TODO -oNickR : Заменить эти вызовы на DELETE FROM query }
@@ -1050,8 +1083,8 @@ begin
   if FBooks.Locate(BOOK_ID_FIELD, BookID, []) then
   begin
     FGenreList.Append;
-    FGenreList.FieldByName(BOOK_ID_FIELD).AsInteger := BookID;
-    FGenreList.FieldByName(GENRE_CODE_FIELD).AsWideString := GenreCode;
+    FGenreListBookID.Value := BookID;
+    FGenreListGenreCode.Value := GenreCode;
 
     FGenreList.Post;
   end;
@@ -1067,11 +1100,10 @@ end;
 
 procedure TMHLLibrary.CorrectExtra(OldID, NewID: Integer);
 begin
-  ///FExtra.MasterSource := nil;
   if FExtra.Locate(BOOK_ID_FIELD, OldID, []) then
   begin
     FExtra.Edit;
-    FExtra.FieldByName(BOOK_ID_FIELD).AsInteger := NewID;
+    FExtraBookID.AsInteger := NewID;
     FExtra.Post;
   end;
 end;
@@ -1081,8 +1113,8 @@ begin
   FSeries.First;
   while not FSeries.Eof do
   begin
-    if FSeries.FieldByName(SERIE_ID_FIELD).AsInteger <> NO_SERIE_ID then
-      SeriesList.Add(FSeries.FieldByName(SERIE_TITLE_FIELD).AsWideString);
+    if FSeriesSerieID.Value <> NO_SERIE_ID then
+      SeriesList.Add(FSeriesSerieTitle.Value);
     FSeries.Next;
   end;
 end;

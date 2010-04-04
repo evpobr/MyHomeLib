@@ -892,7 +892,6 @@ procedure TBookRecord.FillBookData(Data: PBookData);
 begin
   Assert(Assigned(Data));
 
-  Initialize(Data^);
   Data^.nodeType := ntBookInfo;
 
   Data^.Title := Title;
