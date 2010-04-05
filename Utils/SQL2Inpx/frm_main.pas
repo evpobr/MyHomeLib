@@ -121,6 +121,7 @@ type
     dbImportExt: TAction;
     N17: TMenuItem;
     N18: TMenuItem;
+    cbUseRole: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure aopFB2Execute(Sender: TObject);
@@ -145,6 +146,7 @@ type
     procedure DumpError(Sender: TObject; E: Exception; SQL: string;
       var Action: TErrorAction);
     procedure dbImportExtExecute(Sender: TObject);
+    procedure cbUseRoleClick(Sender: TObject);
   private
     { Private declarations }
     FAppPath: string;
@@ -443,6 +445,11 @@ begin
   SaveProfile(FProfileName);
 end;
 
+procedure TfrmMain.cbUseRoleClick(Sender: TObject);
+begin
+  Lib.UseAuthorRole := cbUseRole.Checked;
+end;
+
 procedure TfrmMain.Commands;
 var
   i: Integer;
@@ -471,9 +478,13 @@ begin
     if ParamStr(i) = '-p' then
     begin
       FProfileName := FAppPath + ParamStr(i + 1) + '.profile';
-      LoadProfile(FProfileName);
-      Connect;
-      frmMain.Caption := 'SQL2Inpx: ' + ParamStr(i + 1);
+      try
+        LoadProfile(FProfileName);
+        Connect;
+        frmMain.Caption := 'SQL2Inpx: ' + ParamStr(i + 1);
+      except
+        Log('Ошибка загрузки профиля ' + FProfileName);
+      end;
       inc(i);
     end;
     if ParamStr(i) = '-c' then
@@ -546,11 +557,13 @@ begin
       OK;
     end;
     if mmQuery.Lines.Count > 0 then
-    begin
+    try
       Log(TimeToStr(Now) + ' ' + 'Постобработка ...');
       Lib.Query.SQL.Clear;
       Lib.Query.SQL.AddStrings(mmQuery.Lines);
       Lib.Query.Execute;
+    except
+      Log('Ошибка постобработки');
     end;
     Log(TimeToStr(Now) + ' ' + 'Готово');
   finally
@@ -694,6 +707,9 @@ begin
     cbFb2Only.Checked := F.ReadBool('DATA', 'Fb2Only', true);
     cbMaxCompress.Checked := F.ReadBool('DATA', 'MaxCompress', false);
     cbOldFormat.Checked := F.ReadBool('DATA', 'oldFormat', false);
+    cbUseRole.Checked := F.ReadBool('DATA', 'UseRole', false);
+
+    Lib.UseAuthorRole := cbUseRole.Checked;
   finally
     F.Free;
   end;
@@ -818,7 +834,10 @@ begin
     F.WriteBool('DATA', 'Fb2Only', cbFb2Only.Checked);
     F.WriteBool('DATA', 'MaxCompress', cbMaxCompress.Checked);
     F.WriteBool('DATA', 'oldFormat', cbOldFormat.Checked);
+    F.WriteBool('DATA', 'UseRole', cbUseRole.Checked);
     F.UpdateFile;
+
+
   finally
     F.Free;
   end;

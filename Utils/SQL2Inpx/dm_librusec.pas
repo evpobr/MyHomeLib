@@ -26,6 +26,7 @@ type
     Query: TMyQuery;
     procedure BookAfterScroll(DataSet: TDataSet);
   private
+    FUseAuthorRole: boolean;
     { Private declarations }
     procedure QueryAvtor(BookID: integer);
     procedure QueryGenre(BookID: integer);
@@ -33,6 +34,8 @@ type
     function QueryRate(BookID: integer): string;
   public
     { Public declarations }
+    property UseAuthorRole: boolean write FUseAuthorRole;
+
     function GetBookRecord(BookID: integer; fb2only: boolean = false): string;
       overload;
     function GetBookRecord(FN: string; fb2only: boolean = false;
@@ -129,13 +132,18 @@ begin
 end;
 
 procedure TLib.QueryAvtor(BookID: integer);
+var
+  RoleStr : string;
 begin
+  if FUseAuthorRole then RoleStr := ' and ba.role = "a";'
+    else RoleStr := ';';
+
   Avtor.SQL.Text :=
     'select an.LastName, an.FirstName, an.MiddleName from' + #10 +
     '(libavtor ba left outer join libavtoraliase aa on aa.badid = ba.avtorid)'
     + #10 +
     'join libavtorname an on an.avtorid = COALESCE(aa.goodid, ba.avtorid) ' +
-    #10 + 'WHERE  ba.bookid = ' + IntToStr(BookID);
+    #10 + 'WHERE  ba.bookid = ' + IntToStr(BookID) + RoleStr;
 
   Avtor.Execute;
 end;

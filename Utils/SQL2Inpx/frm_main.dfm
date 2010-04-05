@@ -156,6 +156,21 @@
           State = cbChecked
           TabOrder = 1
         end
+        object cbUseRole: TCheckBox
+          Left = 16
+          Top = 64
+          Width = 97
+          Height = 17
+          Caption = #1059#1095#1080#1090#1099#1074#1072#1090#1100' '#1088#1086#1083#1100
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 2
+          OnClick = cbUseRoleClick
+        end
       end
       object GroupBox3: TGroupBox
         Left = 3
