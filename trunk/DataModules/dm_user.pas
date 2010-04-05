@@ -35,13 +35,6 @@ type
     DBUser: TABSDatabase;
 
     tblBases: TABSTable;
-
-    dsBases: TDataSource;
-    BooksByGroup: TABSTable;
-    SeverityImages: TImageList;
-    SeverityImagesBig: TImageList;
-    dsGroups: TDataSource;
-    Groups: TABSTable;
     tblBasesID: TAutoIncField;
     tblBasesBaseName: TWideStringField;
     tblBasesRootFolder: TWideStringField;
@@ -57,47 +50,35 @@ type
     tblBasesUser: TWideStringField;
     tblBasesPass: TWideStringField;
     tblBasesConnection: TWideMemoField;
-    GroupBooks: TABSTable;
-    dsBookGroups: TDataSource;
-    GroupBooksGroupID: TIntegerField;
-    GroupBooksBookID: TIntegerField;
-    GroupBooksDatabaseID: TIntegerField;
+
+    Groups: TABSTable;
     GroupsGroupID: TAutoIncField;
     GroupsGroupName: TWideStringField;
     GroupsAllowDelete: TBooleanField;
     GroupsNotes: TMemoField;
     GroupsIcon: TBlobField;
+    dsGroups: TDataSource;
+
+    GroupBooks: TABSTable;
+    GroupBooksGroupID: TIntegerField;
+    GroupBooksBookID: TIntegerField;
+    GroupBooksDatabaseID: TIntegerField;
+    dsBookGroups: TDataSource;
+
+    BooksByGroup: TABSTable;
     BooksByGroupBookID: TIntegerField;
     BooksByGroupDatabaseID: TIntegerField;
-    BooksByGroupLibID: TIntegerField;
-    BooksByGroupTitle: TWideStringField;
-    BooksByGroupFullName: TWideStringField;
-    BooksByGroupSerieID: TIntegerField;
-    BooksByGroupSeqNumber: TSmallintField;
-    BooksByGroupDate: TDateField;
-    BooksByGroupLibRate: TIntegerField;
-    BooksByGroupLang: TWideStringField;
     BooksByGroupFolder: TWideStringField;
     BooksByGroupFileName: TWideStringField;
     BooksByGroupInsideNo: TIntegerField;
     BooksByGroupExt: TWideStringField;
-    BooksByGroupSize: TIntegerField;
-    BooksByGroupURI: TWideStringField;
-    BooksByGroupCode: TSmallintField;
-    BooksByGroupLocal: TBooleanField;
-    BooksByGroupDeleted: TBooleanField;
-    BooksByGroupKeyWords: TWideStringField;
-    BooksByGroupReview: TWideMemoField;
-    BooksByGroupRate: TIntegerField;
-    BooksByGroupProgress: TSmallintField;
-    BooksByGroupGenres: TWideStringField;
-    BooksByGroupSeries: TWideStringField;
+    BooksByGroupLibID: TIntegerField;
+
     AllBooks: TABSTable;
     AllBooksBookID: TIntegerField;
     AllBooksDatabaseID: TIntegerField;
     AllBooksLibID: TIntegerField;
     AllBooksTitle: TWideStringField;
-    AllBooksFullName: TWideStringField;
     AllBooksSerieID: TIntegerField;
     AllBooksSeqNumber: TSmallintField;
     AllBooksDate: TDateField;
@@ -108,7 +89,6 @@ type
     AllBooksInsideNo: TIntegerField;
     AllBooksExt: TWideStringField;
     AllBooksSize: TIntegerField;
-    AllBooksURI: TWideStringField;
     AllBooksCode: TSmallintField;
     AllBooksLocal: TBooleanField;
     AllBooksDeleted: TBooleanField;
@@ -116,13 +96,17 @@ type
     AllBooksReview: TWideMemoField;
     AllBooksRate: TIntegerField;
     AllBooksProgress: TSmallintField;
-    AllBooksGenres: TWideStringField;
-    AllBooksSeries: TWideStringField;
+
     ClearQuery: TABSQuery;
+
     AllBookGroups: TABSTable;
     AllBookGroupsBookID: TIntegerField;
     AllBookGroupsDatabaseID: TIntegerField;
     AllBookGroupsGroupID: TIntegerField;
+    AllBooksExtraInfo: TBlobField;
+
+    SeverityImages: TImageList;
+    SeverityImagesBig: TImageList;
 
   private
     FActiveCollection: TMHLActiveCollection;
@@ -709,6 +693,11 @@ begin
 end;
 
 procedure TDMUser.GetBookRecord(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord);
+var
+  Stream: TABSBlobStream;
+  Reader: TReader;
+  Author: TAuthorData;
+  Genre: TGenreData;
 begin
   Assert(AllBooks.Active);
   if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
@@ -719,7 +708,6 @@ begin
     BookRecord.FileExt := AllBooksExt.Value;
     BookRecord.InsideNo := AllBooksInsideNo.Value;
     BookRecord.SerieID := AllBooksSerieID.Value;
-    BookRecord.Serie := AllBooksSeries.Value;
     BookRecord.SeqNumber := AllBooksSeqNumber.Value;
     BookRecord.Code := AllBooksCode.Value;
     BookRecord.Size := AllBooksSize.Value;
@@ -730,15 +718,55 @@ begin
     BookRecord.Lang := AllBooksLang.Value;
     BookRecord.LibRate := AllBooksLibRate.Value;
     BookRecord.KeyWords := AllBooksKeyWords.Value;
-    BookRecord.URI := AllBooksURI.Value;
 
     BookRecord.Review := AllBooksReview.Value;
     //BookRecord.Annotation := ???;
     BookRecord.Rate := AllBooksRate.Value;
     BookRecord.Progress := AllBooksProgress.Value;
 
-    BookRecord.AddGenreFB2('', '', AllBooksGenres.Value);
-    BookRecord.AddAuthor(AllBooksFullName.Value, '', '');
+    Stream := TABSBlobStream.Create(AllBooksExtraInfo, bmRead);
+    try
+      Reader := TReader.Create(Stream, 4096);
+      try
+        BookRecord.Serie := Reader.ReadString;
+
+        Reader.ReadListBegin;
+        while not Reader.EndOfList do
+        begin
+          Author.LastName := Reader.ReadString;
+          Author.FirstName := Reader.ReadString;
+          Author.MiddleName := Reader.ReadString;
+          Author.AuthorID := Reader.ReadInteger;
+
+          BookRecord.AddAuthor(
+            Author.LastName,
+            Author.FirstName,
+            Author.MiddleName,
+            Author.AuthorID
+          );
+        end;
+        Reader.ReadListEnd;
+
+        Reader.ReadListBegin;
+        while not Reader.EndOfList do
+        begin
+          Genre.GenreCode := Reader.ReadString;
+          Genre.FB2GenreCode := Reader.ReadString;
+          Genre.GenreAlias := Reader.ReadString;
+
+          BookRecord.AddGenreFB2(
+            Genre.GenreCode,
+            Genre.FB2GenreCode,
+            Genre.GenreAlias
+          );
+        end;
+        Reader.ReadListEnd;
+      finally
+        Reader.Free;
+      end;
+    finally
+      Stream.Free;
+    end;
 
     if SelectCollection(DatabaseID) then
       BookRecord.CollectionName := CurrentCollection.Name
@@ -882,6 +910,11 @@ procedure TDMUser.AddBookToGroup(
   GroupID: Integer;
   const BookRecord: TBookRecord
   );
+var
+  Stream: TABSBlobStream;
+  Writer: TWriter;
+  Author: TAuthorData;
+  Genre: TGenreData;
 begin
   Assert(AllBooks.Active);
   if not AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
@@ -893,7 +926,6 @@ begin
 
     AllBooksLibID.Value := BookRecord.LibID;
     AllBooksTitle.Value := BookRecord.Title;
-    AllBooksFullName.Value := BookRecord.GetAutorsList;
     AllBooksSerieID.Value := BookRecord.SerieID;
     AllBooksSeqNumber.Value := BookRecord.SeqNumber;
     AllBooksDate.Value := BookRecord.Date;
@@ -904,7 +936,6 @@ begin
     AllBooksInsideNo.Value := BookRecord.InsideNo;
     AllBooksExt.Value := BookRecord.FileExt;
     AllBooksSize.Value := BookRecord.Size;
-    AllBooksURI.Value := BookRecord.URI;
     AllBooksCode.Value := BookRecord.Code;
     AllBooksLocal.Value := BookRecord.Local;
     AllBooksDeleted.Value := BookRecord.Deleted;
@@ -914,8 +945,36 @@ begin
     AllBooksRate.Value := BookRecord.Rate;
     AllBooksProgress.Value := BookRecord.Progress;
 
-    AllBooksGenres.Value := BookRecord.GetGenresList;
-    AllBooksSeries.Value := BookRecord.Serie;
+    Stream := TABSBlobStream.Create(AllBooksExtraInfo, bmWrite);
+    try
+      Writer := TWriter.Create(Stream, 4096);
+      try
+        Writer.WriteString(BookRecord.Serie);
+
+        Writer.WriteListBegin;
+        for Author in BookRecord.Authors do
+        begin
+          Writer.WriteString(Author.LastName);
+          Writer.WriteString(Author.FirstName);
+          Writer.WriteString(Author.MiddleName);
+          Writer.WriteInteger(Author.AuthorID);
+        end;
+        Writer.WriteListEnd;
+
+        Writer.WriteListBegin;
+        for Genre in BookRecord.Genres do
+        begin
+          Writer.WriteString(Genre.GenreCode);
+          Writer.WriteString(Genre.FB2GenreCode);
+          Writer.WriteString(Genre.GenreAlias);
+        end;
+        Writer.WriteListEnd;
+      finally
+        Writer.Free;
+      end;
+    finally
+      Stream.Free;
+    end;
 
     AllBooks.Post;
   end;

@@ -1163,6 +1163,13 @@ begin
       OldFilter := dmCollection.tblBooks.Filter;
       Filtered := dmCollection.tblBooks.Filtered;
 
+      (*
+      SELECT DISTINCT Author_List.BookID
+      FROM Authors INNER JOIN Author_List ON Authors.AuthorID = Author_List.AuthorID
+      WHERE UPPER(LastName) LIKE 'ААРХ%'
+      AddToFilter('b.' + BOOK_FULLNAME_FIELD, PrepareQuery(edFFullName.Text, True),        True,  FilterString);
+      *)
+
       // ------------------------ серия -----------------------------------------
       FilterString := '';
       if edFSeries.Text <> '' then
@@ -1214,7 +1221,6 @@ begin
 
       // -------------------  все остальное   -----------------------------------
       FilterString := '';
-      AddToFilter('b.' + BOOK_FULLNAME_FIELD, PrepareQuery(edFFullName.Text, True),        True,  FilterString);
       AddToFilter('b.' + BOOK_TITLE_FIELD,    PrepareQuery(edFTitle.Text,    True),        True,  FilterString);
       AddToFilter('b.' + BOOK_FILENAME_FIELD, PrepareQuery(edFFile.Text,     False),       False, FilterString);
       AddToFilter('b.' + BOOK_FOLDER_FIELD,   PrepareQuery(edFFolder.Text,   False),       False, FilterString);
@@ -1261,9 +1267,8 @@ begin
       spStatus.Repaint;
 
       Time := Now;
-
       dmCollection.sqlBooks.Active := True;
-      spExecTime.Caption := FloatToStrF(MilliSecondsBetween(Now, Time) / 1000, FFFixed, 3, 2) + ' сек.';
+      spExecTime.Caption := FloatToStrF(MilliSecondsBetween(Now, Time) / 1000, ffFixed, 3, 2) + ' сек.';
 
       FillBooksTree(tvBooksSR, nil, dmCollection.sqlBooks, True, True);
     except
@@ -1952,15 +1957,9 @@ begin
 end;
 
 procedure TfrmMain.FilesListFile(Sender: TObject; const F: TSearchRec);
-var
-  S: string;
 begin
-  if ExtractFileExt(F.name) = '.mhlf' then
-  begin
-    S := ExtractFileName(F.name);
-    Delete(S, Length(S) - 4, 5);
-    cbPresetName.Items.Add(S);
-  end;
+  if ExtractFileExt(F.Name) = '.mhlf' then
+    cbPresetName.Items.Add(TPath.GetFileNameWithoutExtension(F.Name));
 end;
 
 procedure TfrmMain.FillAllBooksTree;
@@ -3064,7 +3063,7 @@ var
 
   function GetString: string;
   begin
-    Stream.read(Size, SizeOf(Size));
+    Stream.Read(Size, SizeOf(Size));
     StrBuffer := AllocMem(Size);
     Stream.read(StrBuffer^, Size);
     Result := (StrBuffer);
@@ -3074,19 +3073,19 @@ var
 begin
   Data := Sender.GetNodeData(Node);
   // ID
-  Stream.read(Data^.BookID, SizeOf(Data^.BookID));
+  Stream.Read(Data^.BookID, SizeOf(Data^.BookID));
 
-  Data.Title := GetString;
-  Data.Author := GetString;
+  Data^.Title := GetString;
+  Data^.Author := GetString;
 
   // Size
-  Stream.read(Data.Size, SizeOf(Data.Size));
+  Stream.Read(Data^.Size, SizeOf(Data^.Size));
 
-  Data.FileName := GetString;
-  Data.URL := GetString;
+  Data^.FileName := GetString;
+  Data^.URL := GetString;
 
   // State
-  Stream.read(Data.State, SizeOf(Data.State));
+  Stream.Read(Data^.State, SizeOf(Data^.State));
 end;
 
 procedure TfrmMain.tvDownloadListPaintText(Sender: TBaseVirtualTree; const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType);
@@ -3109,8 +3108,8 @@ var
   procedure WriteString(const S: string);
   begin
     Size := ByteLength(S) + 1;
-    Stream.write(Size, SizeOf(Size));
-    Stream.write(PChar(S)^, Size);
+    Stream.Write(Size, SizeOf(Size));
+    Stream.Write(PChar(S)^, Size);
   end;
 
 begin
@@ -3122,17 +3121,17 @@ begin
   // ID
   Stream.Write(Data^.BookID, SizeOf(Data^.BookID));
 
-  WriteString(Data.Title);
-  WriteString(Data.Author);
+  WriteString(Data^.Title);
+  WriteString(Data^.Author);
 
   // Size
-  Stream.Write(Data.Size, SizeOf(Data.Size));
+  Stream.Write(Data^.Size, SizeOf(Data^.Size));
 
-  WriteString(Data.FileName);
-  WriteString(Data.URL);
+  WriteString(Data^.FileName);
+  WriteString(Data^.URL);
 
   // State
-  Stream.Write(Data.State, SizeOf(Data.State));
+  Stream.Write(Data^.State, SizeOf(Data^.State));
 end;
 
 //
@@ -6059,7 +6058,7 @@ begin
     // Избранное
     //
     SL.Add('# Избранное');
-
+    {
     DMUser.Groups.First;
     while not DMUser.Groups.Eof do
     begin
@@ -6077,7 +6076,7 @@ begin
       end;
       DMUser.Groups.Next;
     end;
-
+    }
     DMUser.BooksByGroup.MasterSource := DMUser.dsGroups;
 
     //

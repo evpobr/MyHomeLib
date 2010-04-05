@@ -297,7 +297,8 @@ begin
           R.KeyWords := slParams[i]; // ключевые слова
 
         flURI:
-          R.URI := slParams[i]; // ключевые слова
+          Assert(False, 'Not supported anymore');
+          ///R.URI := slParams[i]; // ключевые слова
       end; // case, for
     end;
 

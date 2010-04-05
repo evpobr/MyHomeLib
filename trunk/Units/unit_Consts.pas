@@ -168,7 +168,6 @@ const
   BOOK_RATE_FIELD = 'Rate';
   BOOK_PROGRESS_FIELD = 'Progress';
 
-  BOOK_FULLNAME_FIELD = 'FullName';
   BOOK_SEQNUMBER_FIELD = 'SeqNumber';
   BOOK_DATE_FIELD = 'Date';
   BOOK_LIBRATE_FIELD = 'LibRate';
@@ -176,11 +175,11 @@ const
   BOOK_INSIDENO_FIELD = 'InsideNo';
   BOOK_EXT_FIELD = 'Ext';
   BOOK_SIZE_FIELD = 'Size';
-  BOOK_URI_FIELD = 'URI';
   BOOK_CODE_FIELD = 'Code';
   BOOK_LOCAL_FIELD = 'Local';
   BOOK_DELETED_FIELD = 'Deleted';
   BOOK_KEYWORDS_FIELD = 'KeyWords';
+  BOOK_EXTRAINFO_FIELD = 'ExtraInfo';
 
   DB_ID_FIELD = 'DatabaseID';
 
