@@ -98,7 +98,6 @@ type
     FBookBookID: TIntegerField;
     FBookLibID: TIntegerField;
     FBookTitle: TWideStringField;
-    FBookFullName: TWideStringField;
     FBookSerieID: TIntegerField;
     FBookSeqNumber: TSmallintField;
     FBookDate: TDateField;
@@ -109,7 +108,6 @@ type
     FBookInsideNo: TIntegerField;
     FBookExt: TWideStringField;
     FBookSize: TIntegerField;
-    FBookURI: TWideStringField;
     FBookCode: TSmallintField;
     FBookLocal: TBooleanField;
     FBookDeleted: TBooleanField;
@@ -205,11 +203,10 @@ AuthorsTableIndexes: array [1 .. 2] of TIndexDesc = (
 //
 // Books table
 //
-BooksTableFields: array [1 .. 19] of TFieldDesc = (
+BooksTableFields: array [1 .. 17] of TFieldDesc = (
   (Name: BOOK_ID_FIELD;        DataType: ftAutoInc;     Size: 0;   Required: True),
   (Name: BOOK_LIBID_FIELD;     DataType: ftInteger;     Size: 0;   Required: False),
   (Name: BOOK_TITLE_FIELD;     DataType: ftWideString;  Size: 150; Required: False),
-  (Name: BOOK_FULLNAME_FIELD;  DataType: ftWideString;  Size: 120; Required: True),
   (Name: SERIE_ID_FIELD;       DataType: ftInteger;     Size: 0;   Required: False),
   (Name: BOOK_SEQNUMBER_FIELD; DataType: ftSmallInt;    Size: 0;   Required: False),
   (Name: BOOK_DATE_FIELD;      DataType: ftDate;        Size: 0;   Required: False),
@@ -220,9 +217,6 @@ BooksTableFields: array [1 .. 19] of TFieldDesc = (
   (Name: BOOK_INSIDENO_FIELD;  DataType: ftInteger;     Size: 0;   Required: True),
   (Name: BOOK_EXT_FIELD;       DataType: ftWideString;  Size: 10;  Required: False),
   (Name: BOOK_SIZE_FIELD;      DataType: ftInteger;     Size: 0;   Required: False),
-  //
-  (Name: BOOK_URI_FIELD;       DataType: ftWideString;  Size: 60;  Required: False),         // TODO -oNickR -cDB opt : remove
-  //
   (Name: BOOK_CODE_FIELD;      DataType: ftSmallInt;    Size: 0;   Required: False),
   (Name: BOOK_LOCAL_FIELD;     DataType: ftBoolean;     Size: 0;   Required: False),
   (Name: BOOK_DELETED_FIELD;   DataType: ftBoolean;     Size: 0;   Required: False),
@@ -230,16 +224,16 @@ BooksTableFields: array [1 .. 19] of TFieldDesc = (
 );
 
 BooksTableIndexes: array [1 .. 10] of TIndexDesc = (
-  (Name: 'ID_Index';       Fields: BOOK_ID_FIELD;       Options: [ixPrimary]),
+  (Name: 'ID_Index';       Fields: BOOK_ID_FIELD;             Options: [ixPrimary]),
   (Name: 'Series_Index';   Fields: SERIE_ID_SEQNUMBER_FIELDS; Options: []),
-  (Name: 'Title_Index';    Fields: BOOK_FULLNAME_FIELD; Options: [ixCaseInsensitive]),
-  (Name: 'File_Index';     Fields: BOOK_FILENAME_FIELD; Options: [ixCaseInsensitive]),
-  (Name: 'Folder_Index';   Fields: BOOK_FOLDER_FIELD;   Options: [ixCaseInsensitive]),
-  (Name: 'Deleted_Index';  Fields: BOOK_DELETED_FIELD;  Options: []),
-  (Name: 'Date_Index';     Fields: BOOK_DATE_FIELD;     Options: []),
-  (Name: 'Local_Index';    Fields: BOOK_LOCAL_FIELD;    Options: []),
-  (Name: 'LibID_Index';    Fields: BOOK_LIBID_FIELD;    Options: []),
-  (Name: 'KeyWords_Index'; Fields: BOOK_KEYWORDS_FIELD; Options: [ixCaseInsensitive])
+  (Name: 'Title_Index';    Fields: BOOK_TITLE_FIELD;          Options: [ixCaseInsensitive]),
+  (Name: 'File_Index';     Fields: BOOK_FILENAME_FIELD;       Options: [ixCaseInsensitive]),
+  (Name: 'Folder_Index';   Fields: BOOK_FOLDER_FIELD;         Options: [ixCaseInsensitive]),
+  (Name: 'Deleted_Index';  Fields: BOOK_DELETED_FIELD;        Options: []),
+  (Name: 'Date_Index';     Fields: BOOK_DATE_FIELD;           Options: []),
+  (Name: 'Local_Index';    Fields: BOOK_LOCAL_FIELD;          Options: []),
+  (Name: 'LibID_Index';    Fields: BOOK_LIBID_FIELD;          Options: []),
+  (Name: 'KeyWords_Index'; Fields: BOOK_KEYWORDS_FIELD;       Options: [ixCaseInsensitive])
 );
 
 //
@@ -374,12 +368,11 @@ BookGroupsTableIndexes: array [1 .. 2] of TIndexDesc = (
 // Groups table
 //
 // TODO -oNickR -cDB opt : инхронизировать с таблицей Books
-GroupsTableFields: array [1 .. 25] of TFieldDesc = (
+GroupsTableFields: array [1 .. 22] of TFieldDesc = (
   (Name: BOOK_ID_FIELD;        DataType: ftInteger;    Size: 0;   Required: True),
   (Name: DB_ID_FIELD;          DataType: ftInteger;    Size: 0;   Required: True),
   (Name: BOOK_LIBID_FIELD;     DataType: ftInteger;    Size: 0;   Required: False),
   (Name: BOOK_TITLE_FIELD;     DataType: ftWideString; Size: 150; Required: False),
-  (Name: BOOK_FULLNAME_FIELD;  DataType: ftWideString; Size: 255; Required: False),
   (Name: SERIE_ID_FIELD;       DataType: ftInteger;    Size: 0;   Required: False),
   (Name: BOOK_SEQNUMBER_FIELD; DataType: ftSmallInt;   Size: 0;   Required: False),
   (Name: BOOK_DATE_FIELD;      DataType: ftDate;       Size: 0;   Required: False),
@@ -390,7 +383,6 @@ GroupsTableFields: array [1 .. 25] of TFieldDesc = (
   (Name: BOOK_INSIDENO_FIELD;  DataType: ftInteger;    Size: 0;   Required: True),
   (Name: BOOK_EXT_FIELD;       DataType: ftWideString; Size: 10;  Required: False),
   (Name: BOOK_SIZE_FIELD;      DataType: ftInteger;    Size: 0;   Required: False),
-  (Name: BOOK_URI_FIELD;       DataType: ftWideString; Size: 60;  Required: False),         // TODO -oNickR -cDB opt : remove
   (Name: BOOK_CODE_FIELD;      DataType: ftSmallInt;   Size: 0;   Required: False),
   (Name: BOOK_LOCAL_FIELD;     DataType: ftBoolean;    Size: 0;   Required: False),
   (Name: BOOK_DELETED_FIELD;   DataType: ftBoolean;    Size: 0;   Required: False),
@@ -399,15 +391,15 @@ GroupsTableFields: array [1 .. 25] of TFieldDesc = (
   //
   // Данные из таблицы Extra
   //
-  (Name: BOOK_REVIEW_FIELD;   DataType: ftWideMemo;   Size: 0;   Required: False),
-  (Name: BOOK_RATE_FIELD;     DataType: ftInteger;    Size: 0;   Required: False),
-  (Name: BOOK_PROGRESS_FIELD; DataType: ftSmallInt;   Size: 0;   Required: False),
+  (Name: BOOK_REVIEW_FIELD;    DataType: ftWideMemo;   Size: 0;   Required: False),
+  (Name: BOOK_RATE_FIELD;      DataType: ftInteger;    Size: 0;   Required: False),
+  (Name: BOOK_PROGRESS_FIELD;  DataType: ftSmallInt;   Size: 0;   Required: False),
 
   //
-  // Данные из других таблиц
+  // Данные из других таблиц. Название серии, авторы, жанры.
+  // TODO : Необходимо сделать обновление этой информации.
   //
-  (Name: 'Genres';       DataType: ftWideString; Size: 128; Required: False),
-  (Name: 'Series';       DataType: ftWideString; Size: 128; Required: False)
+  (Name: BOOK_EXTRAINFO_FIELD; DataType: ftBlob;       Size: 0;   Required: False)
 );
 
 GroupsTableIndexes: array [1 .. 2] of TIndexDesc = (
@@ -415,8 +407,9 @@ GroupsTableIndexes: array [1 .. 2] of TIndexDesc = (
   (Name: 'File_Index';     Fields: BOOK_FILENAME_FIELD;  Options: [])
 );
 
-GroupBooksTableBlobs: array [1 .. 1] of TBLOBFieldDesc = (
-  (Name: BOOK_REVIEW_FIELD; BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5)
+GroupBooksTableBlobs: array [1 .. 2] of TBLOBFieldDesc = (
+  (Name: BOOK_REVIEW_FIELD;    BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5),
+  (Name: BOOK_EXTRAINFO_FIELD; BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5)
 );
 
 // ------------------------------------------------------------------------------
@@ -549,7 +542,6 @@ begin
     FBookBookID := FBooks.FieldByName(BOOK_ID_FIELD) as TIntegerField;
     FBookLibID := FBooks.FieldByName(BOOK_LIBID_FIELD) as TIntegerField;
     FBookTitle := FBooks.FieldByName(BOOK_TITLE_FIELD) as TWideStringField;
-    FBookFullName := FBooks.FieldByName(BOOK_FULLNAME_FIELD) as TWideStringField;
     FBookSerieID := FBooks.FieldByName(SERIE_ID_FIELD) as TIntegerField;
     FBookSeqNumber := FBooks.FieldByName(BOOK_SEQNUMBER_FIELD) as TSmallintField;
     FBookDate := FBooks.FieldByName(BOOK_DATE_FIELD) as TDateField;
@@ -560,7 +552,6 @@ begin
     FBookInsideNo := FBooks.FieldByName(BOOK_INSIDENO_FIELD) as TIntegerField;
     FBookExt := FBooks.FieldByName(BOOK_EXT_FIELD) as TWideStringField;
     FBookSize := FBooks.FieldByName(BOOK_SIZE_FIELD) as TIntegerField;
-    FBookURI := FBooks.FieldByName(BOOK_URI_FIELD) as TWideStringField;
     FBookCode := FBooks.FieldByName(BOOK_CODE_FIELD) as TSmallintField;
     FBookLocal := FBooks.FieldByName(BOOK_LOCAL_FIELD) as TBooleanField;
     FBookDeleted := FBooks.FieldByName(BOOK_DELETED_FIELD) as TBooleanField;
@@ -596,7 +587,6 @@ begin
     FBookBookID := nil;
     FBookLibID := nil;
     FBookTitle := nil;
-    FBookFullName := nil;
     FBookSerieID := nil;
     FBookSeqNumber := nil;
     FBookDate := nil;
@@ -607,7 +597,6 @@ begin
     FBookInsideNo := nil;
     FBookExt := nil;
     FBookSize := nil;
-    FBookURI := nil;
     FBookCode := nil;
     FBookLocal := nil;
     FBookDeleted := nil;
@@ -964,7 +953,6 @@ begin
     FBooks.Append;
     FBookLibID.Value := BookRecord.LibID;
     FBookTitle.Value := BookRecord.Title;
-    FBookFullName.Value := AnsiUpperCase(BookRecord.Authors[0].GetFullName); // поле только для поиска!
     FBookSerieID.Value := FSeriesSerieID.AsInteger;
     FBookSeqNumber.Value := ASeqNumber;
     FBookDate.Value := BookRecord.Date;
@@ -975,7 +963,6 @@ begin
     FBookInsideNo.Value := BookRecord.InsideNo;
     FBookExt.Value := BookRecord.FileExt;
     FBookSize.Value := BookRecord.Size;
-    FBookURI.Value := BookRecord.URI;
     FBookCode.Value := BookRecord.Code;
     FBookLocal.Value := BookRecord.Local;
     FBookDeleted.Value := BookRecord.Deleted;

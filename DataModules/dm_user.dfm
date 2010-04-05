@@ -3,7 +3,9 @@ object DMUser: TDMUser
   Height = 623
   Width = 463
   object DBUser: TABSDatabase
+    Connected = True
     CurrentVersion = '6.05 '
+    DatabaseFileName = 'H:\Projects\myHomeLib.trunk\Debug\Bin\Data\user.dbs'
     DatabaseName = 'UserData'
     Exclusive = False
     MaxConnections = 5
@@ -79,11 +81,6 @@ object DMUser: TDMUser
       BlobType = ftWideMemo
     end
   end
-  object dsBases: TDataSource
-    DataSet = tblBases
-    Left = 128
-    Top = 104
-  end
   object BooksByGroup: TABSTable
     CurrentVersion = '6.05 '
     DatabaseName = 'UserData'
@@ -104,33 +101,6 @@ object DMUser: TDMUser
       FieldName = 'DatabaseID'
       Required = True
     end
-    object BooksByGroupLibID: TIntegerField
-      FieldName = 'LibID'
-    end
-    object BooksByGroupTitle: TWideStringField
-      FieldName = 'Title'
-      Size = 150
-    end
-    object BooksByGroupFullName: TWideStringField
-      FieldName = 'FullName'
-      Size = 255
-    end
-    object BooksByGroupSerieID: TIntegerField
-      FieldName = 'SerieID'
-    end
-    object BooksByGroupSeqNumber: TSmallintField
-      FieldName = 'SeqNumber'
-    end
-    object BooksByGroupDate: TDateField
-      FieldName = 'Date'
-    end
-    object BooksByGroupLibRate: TIntegerField
-      FieldName = 'LibRate'
-    end
-    object BooksByGroupLang: TWideStringField
-      FieldName = 'Lang'
-      Size = 2
-    end
     object BooksByGroupFolder: TWideStringField
       FieldName = 'Folder'
       Size = 255
@@ -148,43 +118,8 @@ object DMUser: TDMUser
       FieldName = 'Ext'
       Size = 10
     end
-    object BooksByGroupSize: TIntegerField
-      FieldName = 'Size'
-    end
-    object BooksByGroupURI: TWideStringField
-      FieldName = 'URI'
-      Size = 60
-    end
-    object BooksByGroupCode: TSmallintField
-      FieldName = 'Code'
-    end
-    object BooksByGroupLocal: TBooleanField
-      FieldName = 'Local'
-    end
-    object BooksByGroupDeleted: TBooleanField
-      FieldName = 'Deleted'
-    end
-    object BooksByGroupKeyWords: TWideStringField
-      FieldName = 'KeyWords'
-      Size = 255
-    end
-    object BooksByGroupReview: TWideMemoField
-      FieldName = 'Review'
-      BlobType = ftWideMemo
-    end
-    object BooksByGroupRate: TIntegerField
-      FieldName = 'Rate'
-    end
-    object BooksByGroupProgress: TSmallintField
-      FieldName = 'Progress'
-    end
-    object BooksByGroupGenres: TWideStringField
-      FieldName = 'Genres'
-      Size = 128
-    end
-    object BooksByGroupSeries: TWideStringField
-      FieldName = 'Series'
-      Size = 128
+    object BooksByGroupLibID: TIntegerField
+      FieldName = 'LibID'
     end
   end
   object SeverityImages: TImageList
@@ -958,10 +893,6 @@ object DMUser: TDMUser
       FieldName = 'Title'
       Size = 150
     end
-    object AllBooksFullName: TWideStringField
-      FieldName = 'FullName'
-      Size = 255
-    end
     object AllBooksSerieID: TIntegerField
       FieldName = 'SerieID'
     end
@@ -998,10 +929,6 @@ object DMUser: TDMUser
     object AllBooksSize: TIntegerField
       FieldName = 'Size'
     end
-    object AllBooksURI: TWideStringField
-      FieldName = 'URI'
-      Size = 60
-    end
     object AllBooksCode: TSmallintField
       FieldName = 'Code'
     end
@@ -1025,13 +952,8 @@ object DMUser: TDMUser
     object AllBooksProgress: TSmallintField
       FieldName = 'Progress'
     end
-    object AllBooksGenres: TWideStringField
-      FieldName = 'Genres'
-      Size = 128
-    end
-    object AllBooksSeries: TWideStringField
-      FieldName = 'Series'
-      Size = 128
+    object AllBooksExtraInfo: TBlobField
+      FieldName = 'ExtraInfo'
     end
   end
   object ClearQuery: TABSQuery

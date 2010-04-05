@@ -230,10 +230,6 @@ object DMCollection: TDMCollection
       FieldName = 'Lang'
       Size = 2
     end
-    object tblBooksURI: TWideStringField
-      FieldName = 'URI'
-      Size = 60
-    end
     object tblBooksSeries: TWideStringField
       FieldKind = fkLookup
       FieldName = 'Series'
@@ -243,11 +239,6 @@ object DMCollection: TDMCollection
       KeyFields = 'SerieID'
       Size = 100
       Lookup = True
-    end
-    object tblBooksFullName: TWideStringField
-      FieldName = 'FullName'
-      Required = True
-      Size = 120
     end
     object tblBooksKeyWords: TWideStringField
       FieldName = 'KeyWords'
@@ -455,11 +446,6 @@ object DMCollection: TDMCollection
       FieldName = 'Title'
       Size = 150
     end
-    object AllBooksFullName: TWideStringField
-      FieldName = 'FullName'
-      Required = True
-      Size = 120
-    end
     object AllBooksSerieID: TIntegerField
       FieldName = 'SerieID'
     end
@@ -495,10 +481,6 @@ object DMCollection: TDMCollection
     end
     object AllBooksSize: TIntegerField
       FieldName = 'Size'
-    end
-    object AllBooksURI: TWideStringField
-      FieldName = 'URI'
-      Size = 60
     end
     object AllBooksCode: TSmallintField
       FieldName = 'Code'

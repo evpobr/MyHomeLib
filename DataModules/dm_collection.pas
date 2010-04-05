@@ -68,7 +68,6 @@ type
     SeriesTitle: TWideStringField;
     tblBooksLibRate: TIntegerField;
     tblBooksLang: TWideStringField;
-    tblBooksURI: TWideStringField;
     tblBooksKeyWords: TWideStringField;
     sqlBooks: TABSQuery;
     GenresGenreCode: TWideStringField;
@@ -87,13 +86,11 @@ type
     tblSeriesB1SerieID: TAutoIncField;
     tblSeriesB1SerieTitle: TWideStringField;
     tblBooksSeries: TWideStringField;
-    tblBooksFullName: TWideStringField;
     sqlBooksID: TIntegerField;
     AllBooks: TABSTable;
     AllBooksBookID: TAutoIncField;
     AllBooksLibID: TIntegerField;
     AllBooksTitle: TWideStringField;
-    AllBooksFullName: TWideStringField;
     AllBooksSerieID: TIntegerField;
     AllBooksSeqNumber: TSmallintField;
     AllBooksDate: TDateField;
@@ -104,7 +101,6 @@ type
     AllBooksInsideNo: TIntegerField;
     AllBooksExt: TWideStringField;
     AllBooksSize: TIntegerField;
-    AllBooksURI: TWideStringField;
     AllBooksCode: TSmallintField;
     AllBooksLocal: TBooleanField;
     AllBooksDeleted: TBooleanField;
@@ -478,7 +474,6 @@ begin
     BookRecord.Lang := AllBooksLang.Value;
     BookRecord.LibRate := AllBooksLibRate.Value;
     BookRecord.KeyWords := AllBooksKeyWords.Value;
-    BookRecord.URI := AllBooksURI.Value;
 
     //
     // данные из таблицы Extra

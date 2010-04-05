@@ -128,7 +128,7 @@ type
   procedure StrReplace(const s1: string; const s2: string; var s3: string);
 
   function ClearDir(const DirectoryName: string): Boolean;
-  function IsRelativePath(const FileName: string): Boolean;
+  //function IsRelativePath(const FileName: string): Boolean;
   function CreateFolders(const Root: string; const Path: string): Boolean;
   procedure CopyFile(const SourceFileName: string; const DestFileName: string);
   procedure ConvertToTxt(const SourceFileName: string; DestFileName: string; Enc: TTXTEncoding);
@@ -305,7 +305,6 @@ type
     // TODO : проверить использование этих полей
     //
     KeyWords: string;
-    URI: string;
 
     //
     // Следующие поля зачитываются из таблицы Extra
@@ -383,10 +382,10 @@ uses
   unit_Helpers;
 
 const
-  lat: set of Char = ['A' .. 'Z', 'a' .. 'z', '\', '-', ':', '`', ',', '.', '0' .. '9', '_', ' ', '(', ')', '[', ']', '{', '}'];
+  lat: set of AnsiChar = ['A' .. 'Z', 'a' .. 'z', '\', '-', ':', '`', ',', '.', '0' .. '9', '_', ' ', '(', ')', '[', ']', '{', '}'];
 
 const
-  denied: set of Char = ['<', '>', ':', '"', '/', '|', '*', '?'];
+  denied: set of AnsiChar = ['<', '>', ':', '"', '/', '|', '*', '?'];
 
 const
   TransL: array [0 .. 31] of string = ('a', 'b', 'v', 'g', 'd', 'e', 'zh', 'z', 'i', 'y', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'f', 'h', 'c', 'ch', 'sh', 'sch', '''', 'i', '''', 'e', 'yu', 'ya');
@@ -457,17 +456,22 @@ begin
   end;
 end;
 
+(*
 function IsRelativePath(const FileName: string): Boolean;
-var
-  L: Integer;
+//var
+//  L: Integer;
 begin
+  Result := TPath.IsPathRooted(FileName);
+  {
   Result := True;
   L := Length(FileName);
   if ((L >= 1) and IsPathDelimiter(FileName, 1)) or // \dir\subdir or /dir/subdir
-    ((L >= 2) and (FileName[1] in ['A' .. 'Z', 'a' .. 'z']) and (FileName[2] = ':')) // C:, D:, etc.
-    then
+    ((L >= 2) and CharInSet(FileName[1], ['A' .. 'Z', 'a' .. 'z']) and (FileName[2] = ':')) // C:, D:, etc.
+  then
     Result := False;
+  }
 end;
+*)
 
 function CreateFolders(const Root: string; const Path: string): Boolean;
 var
