@@ -137,8 +137,9 @@ type
   function InclideUrlSlash(const S: string): string;
 
   function PosChr(aCh: Char; const S: string): Integer;
-  function CompareInt(i1, i2: Integer): Integer;
-  function CompareDate(d1, d2: TDateTime): Integer;
+  function CompareInt(i1, i2: Integer): Integer; inline;
+  function CompareSeqNumber(i1, i2: Integer): Integer; inline;
+  function CompareDate(d1, d2: TDateTime): Integer; inline;
 
   function GenerateBookLocation(const FullName: string): string;
   function GenerateFileName(const Title: string; libID: Integer): string;
@@ -372,6 +373,7 @@ uses
   Forms,
   Windows,
   StrUtils,
+  Math,
   IOUtils,
   Character,
   unit_Settings,
@@ -941,12 +943,17 @@ end;
 
 function CompareInt(i1, i2: Integer): Integer;
 begin
-  if i1 > i2 then
-    Result := 1
-  else if i1 < i2 then
+  Result := Sign(i1 - i2);
+end;
+
+function CompareSeqNumber(i1, i2: Integer): Integer;
+begin
+  if (i1 > 0) and (i2 = 0) then
     Result := -1
-  else // if i1 = i2 then
-    Result := 0;
+  else if (i1 = 0) and (i2 > 0) then
+    Result := 1
+  else
+    Result := Sign(i1 - i2);
 end;
 
 procedure DebugOut(const DebugMessage: string);
