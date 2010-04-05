@@ -2792,11 +2792,11 @@ begin
         Result := CompareStr(Data1^.Serie, Data2^.Serie)
       else
       begin
-        Result := CompareStr(Data1^.Title, Data2^.Title);
+        Result := CompareSeqNumber(Data1^.SeqNumber, Data2^.SeqNumber);
+        if Result = 0 then
+          Result := CompareStr(Data1^.Title, Data2^.Title);
         if Result = 0 then
           Result := CompareStr(Data1^.Serie, Data2^.Serie);
-        if Result = 0 then
-          Result := CompareInt(Data1^.SeqNumber, Data2^.SeqNumber);
       end;
     end
     else
@@ -2808,7 +2808,7 @@ begin
       COL_AUTHOR:  Result := CompareStr(Data1^.GetAuthors, Data2^.GetAuthors);
       COL_TITLE:   Result := CompareStr(Data1^.Title, Data2^.Title);
       COL_SERIES:  Result := CompareStr(Data1^.Serie, Data2^.Serie);
-      COL_NO:      Result := CompareInt(Data1^.SeqNumber, Data2^.SeqNumber);
+      COL_NO:      Result := CompareSeqNumber(Data1^.SeqNumber, Data2^.SeqNumber);
       COL_SIZE:    Result := CompareInt(Data1^.Size, Data2^.Size);
       COL_RATE:    Result := CompareInt(Data1^.Rate, Data2^.Rate);
       COL_GENRE:   Result := CompareStr(Data1^.GetGenres, Data2^.GetGenres);
