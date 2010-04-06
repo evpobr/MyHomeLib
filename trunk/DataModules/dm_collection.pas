@@ -242,6 +242,7 @@ procedure TDMCollection.GetBookFileName(
   out ANo: Integer
   );
 begin
+  Assert(Assigned(FActiveTable));
   FActiveTable.Locate(BOOK_ID_FIELD, BookID, []);
 
   AFolder := FActiveTable.FieldByName(BOOK_FOLDER_FIELD).AsString;
@@ -302,6 +303,7 @@ end;
 
 procedure TDMCollection.GetBookFolder(ID: Integer; out AFolder: string);
 begin
+  Assert(Assigned(FActiveTable));
   FActiveTable.Locate(BOOK_ID_FIELD, ID, []);
   if FActiveTable = tblBooks then
     AFolder := TPath.Combine(DMUser.ActiveCollection.RootPath, tblBooksFolder.Value)
