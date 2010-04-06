@@ -156,7 +156,7 @@ type
     // TfrmMain.tbtbnReadClick
     // TfrmMain.miDeleteBookClick
     // TDownloader.Download
-    procedure GetBookFileName(ID: Integer; out AFile, AFolder, AExt: string; out ANo: Integer); deprecated;
+    procedure GetBookFileName(BookID: Integer; out AFile, AFolder, AExt: string; out ANo: Integer); deprecated;
 
     // TfrmMain.FormCreate
     // TfrmMain.pgControlChange
@@ -235,22 +235,22 @@ begin
 end;
 
 procedure TDMCollection.GetBookFileName(
-  ID: Integer;
+  BookID: Integer;
   out AFile: string;
   out AFolder: string;
   out AExt: string;
   out ANo: Integer
   );
 begin
-  FActiveTable.Locate(BOOK_ID_FIELD, ID, []);
-  AExt := FActiveTable.FieldByName(BOOK_EXT_FIELD).AsString;
+  FActiveTable.Locate(BOOK_ID_FIELD, BookID, []);
+
+  AFolder := FActiveTable.FieldByName(BOOK_FOLDER_FIELD).AsString;
   AFile := FActiveTable.FieldByName(BOOK_FILENAME_FIELD).AsString;
+  AExt := FActiveTable.FieldByName(BOOK_EXT_FIELD).AsString;
+  ANo := FActiveTable.FieldByName(BOOK_INSIDENO_FIELD).AsInteger;
 
   if ExtractFileExt(AFile) <> ZIP_EXTENSION then // могут быть проблемы!
     AFile := AFile + AExt;
-
-  AFolder := FActiveTable.FieldByName(BOOK_FOLDER_FIELD).AsString;
-  ANo := FActiveTable.FieldByName(BOOK_INSIDENO_FIELD).AsInteger;
 end;
 
 procedure TDMCollection.GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
