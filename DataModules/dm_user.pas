@@ -150,6 +150,9 @@ type
     procedure SetTableState(State: Boolean);
 
   public
+    procedure GetBookFileName(BookID: Integer; DatabaseID: Integer; out AFolder, AFile, AExt: string; out ANo: Integer); deprecated;
+    procedure GetBookLibID(BookID: Integer; DatabaseID: Integer; out ARes: string); deprecated;
+
     //
     // Active Collection
     //
@@ -325,6 +328,45 @@ resourcestring
 {$R *.dfm}
 
 { TDMUser }
+
+procedure TDMUser.GetBookFileName(
+  BookID: Integer;
+  DatabaseID: Integer;
+  out AFolder: string;
+  out AFile: string;
+  out AExt: string;
+  out ANo: Integer
+  );
+begin
+  Assert(AllBooks.Active);
+
+  if not AllBooks.Locate(BOOK_ID_FIELD, BookID, []) then
+  begin
+    // TODO : RESTORE Assert(False);
+    Exit;
+  end;
+
+  AFolder := AllBooksFolder.Value;
+  AFile := AllBooksFileName.Value;
+  AExt := AllBooksExt.Value;
+  ANo := AllBooksInsideNo.Value;
+
+  if ExtractFileExt(AFile) <> ZIP_EXTENSION then // могут быть проблемы!
+    AFile := AFile + AExt;
+end;
+
+procedure TDMUser.GetBookLibID(BookID: Integer; DatabaseID: Integer; out ARes: String);
+begin
+  Assert(AllBooks.Active);
+
+  if not AllBooks.Locate(BOOK_ID_FIELD, BookID, []) then
+  begin
+    Assert(False);
+    Exit;
+  end;
+
+  ARes := AllBooksLibID.AsString;
+end;
 
 function TDMUser.ActivateGroup(const ID: Integer): Boolean;
 begin
@@ -738,7 +780,8 @@ begin
           Author.MiddleName := Reader.ReadString;
           Author.AuthorID := Reader.ReadInteger;
 
-          BookRecord.AddAuthor(
+          TAuthorsHelper.Add(
+            BookRecord.Authors,
             Author.LastName,
             Author.FirstName,
             Author.MiddleName,
@@ -754,10 +797,11 @@ begin
           Genre.FB2GenreCode := Reader.ReadString;
           Genre.GenreAlias := Reader.ReadString;
 
-          BookRecord.AddGenreFB2(
+          TGenresHelper.Add(
+            BookRecord.Genres,
             Genre.GenreCode,
-            Genre.FB2GenreCode,
-            Genre.GenreAlias
+            Genre.GenreAlias,
+            Genre.FB2GenreCode
           );
         end;
         Reader.ReadListEnd;

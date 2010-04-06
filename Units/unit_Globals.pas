@@ -161,9 +161,6 @@ type
   TAppLanguage = (alEng, alRus);
   TExportMode = (emFB2, emFB2Zip, emLrf, emTxt, emEpub, emPDF);
 
-  TBookFlag = (bfLocalBook, bfDeletedBook);
-  TBookFlags = set of TBookFlag;
-
   //
   // TreeView data records
   //
@@ -191,6 +188,19 @@ type
   end;
   TBookAuthors = array of TAuthorData;
 
+  TAuthorsHelper = class
+  public
+    class procedure Add(
+      var Authors: TBookAuthors;
+      const LastName: string;
+      const FirstName: string;
+      const MiddleName: string;
+      AuthorID: Integer = 0
+    );
+
+    class function GetList(const Authors: TBookAuthors): string;
+  end;
+
   // --------------------------------------------------------------------------
   PSerieData = ^TSerieData;
   TSerieData = record
@@ -209,6 +219,18 @@ type
     procedure Clear;
   end;
   TBookGenres = array of TGenreData;
+
+  TGenresHelper = class
+  public
+    class procedure Add(
+      var Genres: TBookGenres;
+      const GenreCode: string;
+      const Alias: string;
+      const GenreFb2Code: string
+    );
+
+    class function GetList(const Genres: TBookGenres): string;
+  end;
 
   // --------------------------------------------------------------------------
   PGroupData = ^TGroupData;
@@ -258,20 +280,9 @@ type
     Progress: Integer;
     LibRate: Integer;
     Code: Integer;
-    Flags: TBookFlags;
+    Local: Boolean;
+    Deleted: Boolean;
     Date: TDateTime;
-
-    function GetGenres: string;
-    function GetAuthors: string;
-
-    function GetLocal: Boolean; inline;
-    procedure SetLocal(const Value: Boolean); inline;
-
-    function GetDeleted: Boolean; inline;
-    procedure SetDeleted(const Value: Boolean); inline;
-
-    property Local: Boolean read GetLocal write SetLocal;
-    property Deleted: Boolean read GetDeleted write SetDeleted;
   end;
 
   TBookRecord = record
@@ -296,7 +307,8 @@ type
     Code: Integer;
     Size: Integer;
     LibID: Integer;
-    Flags: TBookFlags;
+    Local: Boolean;
+    Deleted: Boolean;
     Date: TDateTime;
     Lang: string;
     LibRate: Integer;
@@ -326,24 +338,10 @@ type
     function GenerateLocation: string;
 
     procedure ClearAuthors; inline;
-    procedure AddAuthor(const LastName: string; const FirstName: string; const MiddleName: string; AuthorID: Integer = 0);
     function AuthorCount: Integer; inline;
-    function GetAutorsList: string;
 
     procedure ClearGenres; inline;
-    procedure AddGenreFB2(const GenreCode: string; const GenreFb2Code: string; const Alias: string);
-    procedure AddGenreAny(const GenreCode: string; const Alias: string);
     function GenreCount: Integer; inline;
-    function GetGenresList: string;
-
-    function GetLocal: Boolean; inline;
-    procedure SetLocal(const Value: Boolean); inline;
-
-    function GetDeleted: Boolean; inline;
-    procedure SetDeleted(const Value: Boolean); inline;
-
-    property Local: Boolean read GetLocal write SetLocal;
-    property Deleted: Boolean read GetDeleted write SetDeleted;
 
     // ----------------------------------------------------
     procedure FillBookData(Data: PBookData);
@@ -557,8 +555,8 @@ begin
   for i := 1 to Length(Input) do
     Result[i] := Chr(Ord(Input[i]) - 5);
 end;
-{$WARNINGS OFF}
 
+{$WARNINGS OFF}
 function ClearDir(const DirectoryName: string): Boolean;
 var
   SearchRec: TSearchRec;
@@ -672,10 +670,20 @@ begin
   Result := LastName;
 
   if FirstName <> '' then
-    Result := Result + ' ' + IfThen(onlyInitials, FirstName[1] + '.', FirstName);
+  begin
+    if onlyInitials then
+      Result := Result + ' ' + FirstName[1] + '.'
+    else
+      Result := Result + ' ' + FirstName;
+  end;
 
   if MiddleName <> '' then
-    Result := Result + ' ' + IfThen(onlyInitials, MiddleName[1] + '.', MiddleName);
+  begin
+    if onlyInitials then
+      Result := Result + ' ' + MiddleName[1] + '.'
+    else
+      Result := Result + ' ' + MiddleName;
+  end;
 
   if nickName <> '' then
   begin
@@ -708,6 +716,39 @@ begin
   FMiddleName := Trim(Value);
 end;
 
+{ TAuthorsHelper }
+
+class procedure TAuthorsHelper.Add(
+  var Authors: TBookAuthors;
+  const LastName: string;
+  const FirstName: string;
+  const MiddleName: string;
+  AuthorID: Integer = 0
+);
+var
+  i: Integer;
+begin
+  i := Length(Authors);
+  SetLength(Authors, i + 1);
+
+  Authors[i].LastName := LastName;
+  Authors[i].FirstName := FirstName;
+  Authors[i].MiddleName := MiddleName;
+  Authors[i].AuthorID := AuthorID;
+end;
+
+class function TAuthorsHelper.GetList(const Authors: TBookAuthors): string;
+begin
+  Result := TArrayUtils.Join<TAuthorData>(
+    Authors,
+    ', ',
+    function(const Author: TAuthorData): string
+    begin
+      Result := Author.GetFullName;
+    end
+  );
+end;
+
 { TGenreData }
 
 procedure TGenreData.Clear;
@@ -718,6 +759,32 @@ begin
   GenreAlias := '';
 end;
 
+{ TGenresHelper }
+
+class procedure TGenresHelper.Add(var Genres: TBookGenres; const GenreCode, Alias, GenreFb2Code: string);
+var
+  i: Integer;
+begin
+  i := Length(Genres);
+  SetLength(Genres, i + 1);
+
+  Genres[i].GenreCode := GenreCode;
+  Genres[i].ParentCode := '';
+  Genres[i].FB2GenreCode := GenreFb2Code;
+  Genres[i].GenreAlias := Alias;
+end;
+
+class function TGenresHelper.GetList(const Genres: TBookGenres): string;
+begin
+  Result := TArrayUtils.Join<TGenreData>(
+    Genres,
+    ' / ',
+    function(const genre: TGenreData): string
+    begin
+      Result := genre.GenreAlias;
+    end
+  );
+end;
 
 procedure TBookRecord.Clear;
 begin
@@ -767,39 +834,13 @@ begin
     if Authors[i].LastName = '' then
       Authors[i].LastName := UNKNOWN_AUTHOR_LASTNAME;
   if AuthorCount = 0 then
-    AddAuthor(UNKNOWN_AUTHOR_LASTNAME, '', '');
+    TAuthorsHelper.Add(Authors, UNKNOWN_AUTHOR_LASTNAME, '', '');
 
   for i := 0 to GenreCount - 1 do
     if Genres[i].GenreCode = '' then
       Genres[i].GenreCode := UNKNOWN_GENRE_CODE;
   if GenreCount = 0 then
-    AddGenreFB2(UNKNOWN_GENRE_CODE, '', '');
-end;
-
-function TBookRecord.GetDeleted: Boolean;
-begin
-  Result := bfDeletedBook in Flags;
-end;
-
-procedure TBookRecord.SetDeleted(const Value: Boolean);
-begin
-  if Value then
-    Include(Flags, bfDeletedBook)
-  else
-    Exclude(Flags, bfDeletedBook);
-end;
-
-function TBookRecord.GetLocal: Boolean;
-begin
-  Result := bfLocalBook in Flags;
-end;
-
-procedure TBookRecord.SetLocal(const Value: Boolean);
-begin
-  if Value then
-    Include(Flags, bfLocalBook)
-  else
-    Exclude(Flags, bfLocalBook);
+    TGenresHelper.Add(Genres, UNKNOWN_GENRE_CODE, '', '');
 end;
 
 //
@@ -816,34 +857,9 @@ begin
   SetLength(Authors, 0);
 end;
 
-procedure TBookRecord.AddAuthor(const LastName: string; const FirstName: string; const MiddleName: string; AuthorID: Integer = 0);
-var
-  i: Integer;
-begin
-  i := AuthorCount;
-  SetLength(Authors, i + 1);
-
-  Authors[i].LastName := LastName;
-  Authors[i].FirstName := FirstName;
-  Authors[i].MiddleName := MiddleName;
-  Authors[i].AuthorID := AuthorID;
-end;
-
 function TBookRecord.AuthorCount: Integer;
 begin
   Result := Length(Authors);
-end;
-
-function TBookRecord.GetAutorsList: string;
-begin
-  Result := TArrayUtils.Join<TAuthorData>(
-    Authors,
-    ', ',
-    function(const Author: TAuthorData): string
-    begin
-      Result := Author.GetFullName;
-    end
-  );
 end;
 
 procedure TBookRecord.ClearGenres;
@@ -851,47 +867,9 @@ begin
   SetLength(Genres, 0);
 end;
 
-procedure TBookRecord.AddGenreFB2(const GenreCode: string; const GenreFb2Code: string; const Alias: string);
-var
-  i: Integer;
-begin
-  i := GenreCount;
-  SetLength(Genres, i + 1);
-
-  Genres[i].GenreCode := GenreCode;
-  Genres[i].ParentCode := '';
-  Genres[i].FB2GenreCode := GenreFb2Code;
-  Genres[i].GenreAlias := Alias;
-end;
-
-procedure TBookRecord.AddGenreAny(const GenreCode: string; const Alias: string);
-var
-  i: Integer;
-begin
-  i := GenreCount;
-  SetLength(Genres, i + 1);
-
-  Genres[i].GenreCode := GenreCode;
-  Genres[i].ParentCode := '';
-  Genres[i].FB2GenreCode := '';
-  Genres[i].GenreAlias := Alias;
-end;
-
 function TBookRecord.GenreCount: Integer;
 begin
   Result := Length(Genres);
-end;
-
-function TBookRecord.GetGenresList: string;
-begin
-  Result := TArrayUtils.Join<TGenreData>(
-    Genres,
-    ' / ',
-    function(const genre: TGenreData): string
-    begin
-      Result := genre.GenreAlias;
-    end
-  );
 end;
 
 procedure TBookRecord.FillBookData(Data: PBookData);
@@ -1160,58 +1138,6 @@ begin
   finally
     Zip.Free;
   end;
-end;
-
-{ TBookData }
-
-function TBookData.GetAuthors: string;
-begin
-  Result := TArrayUtils.Join<TAuthorData>(
-    Authors,
-    ', ',
-    function(const Author: TAuthorData): string
-    begin
-      Result := Author.GetFullName;
-    end
-  );
-end;
-
-function TBookData.GetGenres: string;
-begin
-  Result := TArrayUtils.Join<TGenreData>(
-    Genres,
-    ' / ',
-    function(const genre: TGenreData): string
-    begin
-      Result := genre.GenreAlias;
-    end
-  );
-end;
-
-function TBookData.GetDeleted: Boolean;
-begin
-  Result := bfDeletedBook in Flags;
-end;
-
-procedure TBookData.SetDeleted(const Value: Boolean);
-begin
-  if Value then
-    Include(Flags, bfDeletedBook)
-  else
-    Exclude(Flags, bfDeletedBook);
-end;
-
-function TBookData.GetLocal: Boolean;
-begin
-  Result := bfLocalBook in Flags;
-end;
-
-procedure TBookData.SetLocal(const Value: Boolean);
-begin
-  if Value then
-    Include(Flags, bfLocalBook)
-  else
-    Exclude(Flags, bfLocalBook);
 end;
 
 end.

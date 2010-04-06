@@ -27,13 +27,8 @@ type
 
 function FindParentInTree(Tree: TVirtualStringTree; const Folder: string): PVirtualNode;
 function FindSeriesInTree(Tree: TVirtualStringTree; Parent: PVirtualNode; SerieID: Integer): PVirtualNode;
-function GetSelectedBookData(Tree: TVirtualStringTree): PBookData;
 procedure SelectBookById(Tree: TVirtualStringTree; ID: Integer);
 procedure GetSelections(Tree: TVirtualStringTree; out List: TSelectionList);
-
-//procedure SortChild(Tree: TVirtualStringTree; Parent: PVirtualNode);
-// procedure SortAuthors(Tree:TVirtualStringTree);
-//procedure SortSeries(Tree: TVirtualStringTree; Parent: PVirtualNode);
 
 implementation
 
@@ -98,117 +93,16 @@ begin
   end;
 end;
 
-procedure SortAuthors(Tree: TVirtualStringTree);
-
-  function FindNext(A: PVirtualNode): PVirtualNode;
-  var
-    Data: PBookData;
-  begin
-    A := Tree.GetNextSibling(A);
-    while A <> nil do
-    begin
-      Data := Tree.GetNodeData(A);
-      if Data^.nodeType = ntAuthorInfo then
-        Break;
-      A := Tree.GetNextSibling(A);
-    end;
-    Result := A;
-  end;
-
-var
-  A, B: PVirtualNode;
-  DataA, DataB: PBookData;
-begin
-  A := Tree.GetFirst;
-  if A = nil then
-    Exit;
-
-  B := FindNext(A);
-  while (B <> nil) do
-  begin
-    DataA := Tree.GetNodeData(A);
-    DataB := Tree.GetNodeData(B);
-    if CompareStr(DataB.GetAuthors, DataA.GetAuthors) < 0 then
-    begin
-      Tree.MoveTo(B, A, amInsertBefore, false);
-      A := Tree.GetFirst;
-      B := FindNext(A);
-    end
-    else
-    begin
-      A := B;
-      B := FindNext(B);
-    end;
-  end;
-end;
-
-procedure SortSeries(Tree: TVirtualStringTree; Parent: PVirtualNode);
-var
-  A, B: PVirtualNode;
-  DataA, DataB: PBookData;
-begin
-  A := Parent.FirstChild;
-  while (A <> Parent.LastChild) and (A <> nil) do
-  begin
-    DataA := Tree.GetNodeData(A);
-    B := Tree.GetNext(A);
-    DataB := Tree.GetNodeData(B);
-    if DataB^.nodeType = ntBookInfo then
-      Break;
-    if DataB <> nil then
-      if DataB.Serie < DataA.Serie then
-      begin
-        Tree.MoveTo(B, A, amInsertBefore, false);
-        A := Parent.FirstChild;
-      end
-      else
-        A := B;
-    B := Tree.GetNext(B);
-  end;
-end;
-
-procedure SortChild(Tree: TVirtualStringTree; Parent: PVirtualNode);
-var
-  A, B: PVirtualNode;
-  DataA, DataB: PBookData;
-begin
-  A := Parent.FirstChild;
-  while (A <> Parent.LastChild) and (A <> nil) do
-  begin
-    DataA := Tree.GetNodeData(A);
-    B := Tree.GetNext(A);
-    DataB := Tree.GetNodeData(B);
-    if Assigned(DataB) then
-      if DataB.SeqNumber < DataA.SeqNumber then
-      begin
-        Tree.MoveTo(B, A, amInsertBefore, false);
-        A := Parent.FirstChild;
-      end
-      else
-        A := B;
-    B := Tree.GetNext(B);
-  end;
-end;
-
-function GetSelectedBookData(Tree: TVirtualStringTree): PBookData;
-begin
-  Result := Tree.GetNodeData(Tree.GetFirstSelected);
-  if Result = nil then
-  begin
-    New(Result);
-    Result.BookID := -1;
-  end;
-end;
-
 procedure SelectBookById(Tree: TVirtualStringTree; ID: Integer);
 var
   Node: PVirtualNode;
   Data: PBookData;
 begin
   Node := Tree.GetFirst;
-  while Node <> nil do
+  while Assigned(Node) do
   begin
     Data := Tree.GetNodeData(Node);
+    Assert(Assigned(Data));
     if Data.BookID = ID then
     begin
       Tree.Selected[Node] := True;

@@ -130,13 +130,13 @@ begin
     R.SeqNumber := StrToInt(Edit9.Text);
   if CheckBox1.Checked then
   begin
-    R.AddAuthor(Edit1.Text, Edit2.Text, Edit3.Text);
-    R.AddAuthor(Edit4.Text, Edit5.Text, Edit6.Text);
+    TAuthorsHelper.Add(R.Authors, Edit1.Text, Edit2.Text, Edit3.Text);
+    TAuthorsHelper.Add(R.Authors, Edit4.Text, Edit5.Text, Edit6.Text);
   end;
   if CheckBox6.Checked then
   begin
-    R.AddGenreAny('', Edit11.Text);
-    R.AddGenreAny('', Edit12.Text);
+    TGenresHelper.Add(R.Genres, '', Edit11.Text, '');
+    TGenresHelper.Add(R.Genres, '', Edit12.Text, '');
   end;
   if CheckBox7.Checked then
     R.RootGenre.GenreAlias := Edit13.Text;

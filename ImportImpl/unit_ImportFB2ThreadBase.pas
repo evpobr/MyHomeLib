@@ -111,13 +111,13 @@ begin
   with book.Description.Titleinfo do
   begin
     for i := 0 to Author.Count - 1 do
-      R.AddAuthor(Author[i].Lastname.Text, Author[i].Firstname.Text, Author[i].MiddleName.Text);
+      TAuthorsHelper.Add(R.Authors, Author[i].Lastname.Text, Author[i].Firstname.Text, Author[i].MiddleName.Text);
 
     if Booktitle.IsTextElement then
       R.Title := Booktitle.Text;
 
     for i := 0 to Genre.Count - 1 do
-      R.AddGenreFB2('', Genre[i], '');
+      TGenresHelper.Add(R.Genres, '', '', Genre[i]);
 
     R.Lang := Lang;
     R.KeyWords := KeyWords.Text;

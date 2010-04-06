@@ -48,7 +48,7 @@ type
     FFile: string;
 
     // function CalcURI(Template: string):string;
-    function DoDownload: boolean;
+    function DoDownload(BookID: Integer; DatabaseID: Integer): Boolean;
     function Query(Kind: TQueryKind; const URL: string): boolean;
     procedure AddParam(const Name: string; const Value: string);
     function CheckResponce: boolean;
@@ -62,7 +62,7 @@ type
 
     procedure ProcessError(const LongMsg, ShortMsg, AFileName: string);
 
-    procedure ParseCommand(S: string; out Command: TCommand);
+    procedure ParseCommand(ConstParams: TStringList; S: string; out Command: TCommand);
 
   public
     constructor Create;
@@ -71,7 +71,7 @@ type
     function Download(BookID: Integer; DatabaseID: Integer): boolean;
     procedure Stop;
 
-    property IgnoreErrors: boolean read FIgnoreErrors write FIgnoreErrors;
+    property IgnoreErrors: Boolean read FIgnoreErrors write FIgnoreErrors;
 
     property OnProgress: TProgressEvent read FOnSetProgress write FOnSetProgress;
     property OnSetComment: TSetCommentEvent read FOnSetComment write FOnSetComment;
@@ -175,24 +175,21 @@ end;
 
 function TDownloader.Download(BookID: Integer; DatabaseID: Integer): boolean;
 var
-  Ext: string;
-  FN: string;
   Folder: string;
+  FileName: string;
+  Ext: string;
   No: Integer;
 begin
   Result := False;
 
-  dmCollection.GetBookFileName(BookID, FN, Folder, Ext, No);
+  dmCollection.GetBookFileName(BookID, DatabaseID, Folder, FileName, Ext, No);
 
   if Ext = FB2_EXTENSION then
-    dmCollection.GetBookFolder(BookID, FFile)
+    FFile := Folder
   else
-  begin
-    Folder := StringReplace(Folder, FB2ZIP_EXTENSION, Ext, []);
-    FFile := DMUser.ActiveCollection.RootPath + Folder;
-  end;
+    FFile := StringReplace(Folder, FB2ZIP_EXTENSION, Ext, []);
 
-  if FileExists(FFile) or DoDownload then
+  if FileExists(FFile) or DoDownload(BookID, DatabaseID) then
   begin
     unit_Messages.BookLocalStatusChanged(BookID, DatabaseID, True);
     Result := True;
@@ -249,80 +246,89 @@ begin
   FOnSetComment(rstrReadyMessage, '');
 end;
 
-function TDownloader.DoDownload: Boolean;
+function TDownloader.DoDownload(BookID: Integer; DatabaseID: Integer): Boolean;
 var
+  ConstParams: TStringList;
+  BookLibID: string;
   CL: TStringList;
   Commands: array of TCommand;
   i: Integer;
 begin
-  CL := TStringList.Create;
+  ConstParams := TStringList.Create;
   try
-    CL.Text := DMUser.ActiveCollection.Script;
-    SetLength(Commands, CL.Count);
+    dmCollection.GetBookLibID(BookID, DatabaseID, BookLibID);
+    ConstParams.Values['LIBID'] := BookLibID;
+    ConstParams.Values['USER'] := DMUser.ActiveCollection.User;
+    ConstParams.Values['PASS'] := DMUser.ActiveCollection.Password;
+    ConstParams.Values['URL'] := DMUser.ActiveCollection.URL;
 
-    FParams := TIdMultiPartFormDataStream.Create;
+    CL := TStringList.Create;
     try
-      FResponce := TMemoryStream.Create;
+      CL.Text := DMUser.ActiveCollection.Script;
+      SetLength(Commands, CL.Count);
+
+      FParams := TIdMultiPartFormDataStream.Create;
       try
-        for i := 0 to CL.Count - 1 do
-        begin
-          if Canceled then
-            Break;
+        FResponce := TMemoryStream.Create;
+        try
+          for i := 0 to CL.Count - 1 do
+          begin
+            if Canceled then
+              Break;
 
-          ParseCommand(CL[i], Commands[i]);
-          case Commands[i].Code of
-            0:
-              begin
-                AddParam(Commands[i].Params[1], Commands[i].Params[2]);
-                Result := True;
-              end;
+            ParseCommand(ConstParams, CL[i], Commands[i]);
+            case Commands[i].Code of
+              0:
+                begin
+                  AddParam(Commands[i].Params[1], Commands[i].Params[2]);
+                  Result := True;
+                end;
 
-            1:
-              Result := Query(qkGet, Commands[i].Params[1]);
+              1:
+                Result := Query(qkGet, Commands[i].Params[1]);
 
-            2:
-              Result := Query(qkPost, Commands[i].Params[1]);
+              2:
+                Result := Query(qkPost, Commands[i].Params[1]);
 
-            3:
-              Result := CheckRedirect;
+              3:
+                Result := CheckRedirect;
 
-            4:
-              Result := CheckResponce;
+              4:
+                Result := CheckResponce;
 
-            5:
-              Result := Pause(StrToInt(Commands[i].Params[1]));
+              5:
+                Result := Pause(StrToInt(Commands[i].Params[1]));
+            end;
+
+            if not Result then
+              Break;
           end;
-
-          if not Result then
-            Break;
+        finally
+          FResponce.Free;
         end;
       finally
-        FResponce.Free;
+        FParams.Free;
       end;
     finally
-      FParams.Free;
+      CL.Free;
     end;
   finally
-    CL.Free;
+    ConstParams.Free;
   end;
 end;
 
-procedure TDownloader.ParseCommand(S: string; out Command: TCommand);
+procedure TDownloader.ParseCommand(ConstParams: TStringList; S: string; out Command: TCommand);
 var
   p, I: Integer;
   s1: string;
-
-  t: string;
 begin
   Command.Code := -1;
 
-  dmCollection.CurrentLibID(t);
-  StrReplace('%LIBID%', t, S);
+  StrReplace('%LIBID%', ConstParams.Values['LIBID'], S);
+  StrReplace('%USER%', ConstParams.Values['USER'], S);
+  StrReplace('%PASS%', ConstParams.Values['PASS'], S);
+  StrReplace('%URL%', ConstParams.Values['URL'], S);
 
-  StrReplace('%USER%', DMUser.ActiveCollection.User, S);
-  StrReplace('%PASS%', DMUser.ActiveCollection.Password, S);
-
-  StrReplace('%URL%', DMUser.ActiveCollection.URL, S);
   StrReplace('%RESURL%', FNewURL, S);
 
   p := Pos(' ', S);

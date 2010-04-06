@@ -2218,12 +2218,29 @@ begin
 end;
 
 procedure TfrmMain.SavePositions;
+var
+  Data: PBookData;
 begin
   Settings.LastAuthor := lblAuthor.Caption;
   Settings.LastSeries := lblSeries.Caption;
-  Settings.LastBookInAuthors := GetSelectedBookData(tvBooksA).BookID;
-  Settings.LastBookInSeries := GetSelectedBookData(tvBooksS).BookID;
-  Settings.LastBookInFavorites := GetSelectedBookData(tvBooksF).BookID;
+
+  Data := tvBooksA.GetNodeData(tvBooksA.GetFirstSelected);
+  if Assigned(Data) then
+    Settings.LastBookInAuthors := Data^.BookID
+  else
+    Settings.LastBookInAuthors := -1;
+
+  Data := tvBooksS.GetNodeData(tvBooksS.GetFirstSelected);
+  if Assigned(Data) then
+    Settings.LastBookInSeries := Data^.BookID
+  else
+    Settings.LastBookInSeries := -1;
+
+  Data := tvBooksF.GetNodeData(tvBooksF.GetFirstSelected);
+  if Assigned(Data) then
+    Settings.LastBookInFavorites := Data^.BookID
+  else
+    Settings.LastBookInFavorites := -1;
 end;
 
 procedure TfrmMain.SaveMainFormSettings;
@@ -2262,7 +2279,7 @@ begin
   Assert(Assigned(Data));
   case Tag of
     COL_AUTHOR:
-      Result := Data^.GetAuthors;
+      Result := TAuthorsHelper.GetList(Data^.Authors);
     COL_TITLE:
       Result := Data^.Title;
     COL_SERIES:
@@ -2274,7 +2291,7 @@ begin
     COL_DATE:
       Result := DateToStr(Data^.Date);
     COL_GENRE:
-      Result := Data^.GetGenres;
+      Result := TGenresHelper.GetList(Data^.Genres);
     COL_TYPE:
       Result := Data^.FileType;
     COL_LANG:
@@ -2302,7 +2319,7 @@ begin
         begin
           case GetTreeTag(Sender, Column) of
             COL_TITLE:
-              CellText := Data^.GetAuthors;
+              CellText := TAuthorsHelper.GetList(Data^.Authors);
           end;
         end;
 
@@ -2739,13 +2756,11 @@ begin
     Exit;
   end;
 
-  dmCollection.GetBookFileName(Data^.BookID, FileName, Folder, Ext, No);
+  dmCollection.GetBookFileName(Data^.BookID, Data^.DatabaseID, Folder, FileName, Ext, No);
 
-  Folder := TPath.Combine(FCollectionRoot, Folder);
-
-  InfoPanel.Author := Data^.GetAuthors;
+  InfoPanel.Author := TAuthorsHelper.GetList(Data^.Authors);
   InfoPanel.Title := Data^.Title;
-  InfoPanel.Genre := Data^.GetGenres;
+  InfoPanel.Genre := TGenresHelper.GetList(Data^.Genres);
   //
   // Вынужден заполнить эти поля (хоть они иногда и не показываются), т.к. они используются в других методах
   // для получения информации о положении книги
@@ -2785,7 +2800,7 @@ begin
     begin
       Result := 0;
       if Data1^.nodeType = ntAuthorInfo then
-        Result := CompareStr(Data1^.GetAuthors, Data2^.GetAuthors)
+        Result := CompareStr(TAuthorsHelper.GetList(Data1^.Authors), TAuthorsHelper.GetList(Data2^.Authors))
       else if Data1^.nodeType = ntSeriesInfo then
         Result := CompareStr(Data1^.Serie, Data2^.Serie)
       else
@@ -2803,13 +2818,13 @@ begin
   else
   begin
     case (Sender as TVirtualStringTree).Header.Columns[Column].Tag of
-      COL_AUTHOR:  Result := CompareStr(Data1^.GetAuthors, Data2^.GetAuthors);
+      COL_AUTHOR:  Result := CompareStr(TAuthorsHelper.GetList(Data1^.Authors), TAuthorsHelper.GetList(Data2^.Authors));
       COL_TITLE:   Result := CompareStr(Data1^.Title, Data2^.Title);
       COL_SERIES:  Result := CompareStr(Data1^.Serie, Data2^.Serie);
       COL_NO:      Result := CompareSeqNumber(Data1^.SeqNumber, Data2^.SeqNumber);
       COL_SIZE:    Result := CompareInt(Data1^.Size, Data2^.Size);
       COL_RATE:    Result := CompareInt(Data1^.Rate, Data2^.Rate);
-      COL_GENRE:   Result := CompareStr(Data1^.GetGenres, Data2^.GetGenres);
+      COL_GENRE:   Result := CompareStr(TGenresHelper.GetList(Data1^.Genres), TGenresHelper.GetList(Data2^.Genres));
       COL_DATE:    Result := CompareDate(Data1^.Date, Data2^.Date);
       COL_LANG:    Result := CompareStr(Data1^.Lang, Data2^.Lang);
       COL_LIBRATE: Result := CompareInt(Data1^.LibRate, Data2^.LibRate);
@@ -3379,15 +3394,14 @@ var
   Tree: TVirtualStringTree;
   Cover: TMHLCoverPanel;
   Panel: TMHLInfoPanel;
-  No: Integer;
   Data: PBookData;
 
   FS: TMemoryStream;
   Zip: TZipForge;
   ID, i: Integer;
 
-  FileName, Folder, Ext: string;
-
+  BookFolder, BookFileName, Ext: string;
+  No: Integer;
 begin
   GetActiveViewComponents(Tree, Panel, Cover);
 
@@ -3403,7 +3417,9 @@ begin
 
   Screen.Cursor := crHourGlass;
   try
-    if ExtractFileExt(Panel.Folder) = ZIP_EXTENSION then
+    dmCollection.GetBookFileName(Data^.BookID, Data^.DatabaseID, BookFolder, BookFileName, Ext, No);
+
+    if ExtractFileExt(BookFolder) = ZIP_EXTENSION then
     begin
       //
       if ActiveView = FavoritesView then
@@ -3413,7 +3429,7 @@ begin
         if isOnlineCollection(DMUser.tblBasesCode.Value) then
         begin
           DownloadBooks;
-          if not FileExists(Panel.Folder) then
+          if not FileExists(BookFolder) then
             Exit;
         end;
         ID := DMUser.BooksByGroupBookID.Value;
@@ -3423,43 +3439,20 @@ begin
         if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
         begin
           DownloadBooks;
-          if not FileExists(Panel.Folder) then
+          if not FileExists(BookFolder) then
             Exit; // если файла нет, значит закачка не удалась, и юзер об  этом уже знает
         end;
         ID := Data^.BookID;
       end; // if .. else
 
-      if not FileExists(Panel.Folder) then
-        raise EInvalidOp.Create('Архив ' + Panel.Folder + ' не найден!');
-
-      dmCollection.GetBookFileName(Data^.BookID, FileName, Folder, Ext, No);
+      if not FileExists(BookFolder) then
+        raise EInvalidOp.CreateFmt('Архив %s не найден!', [BookFolder]);
 
       Assert(Length(Data^.Authors) > 0);
-      WorkFile :=
-        Settings.ReadPath +
-        Format('%s - %s.%d%s', [CheckSymbols(Data^.Authors[0].GetFullName), CheckSymbols(Data^.Title), ID, Ext]);
-
-      if not FileExists(WorkFile) then
-      begin
-        Zip := TZipForge.Create(nil);
-        FS := TMemoryStream.Create;
-        try
-          Zip.FileName := Panel.Folder;
-          Zip.BaseDir := Settings.ReadPath;
-          Zip.OpenArchive;
-          Zip.ExtractToStream(GetFileNameZip(Zip, No), FS);
-          FS.SaveToFile(WorkFile);
-        finally
-          FS.Free;
-          Zip.Free;
-        end;
-      end; // if Exists
-    end
-    else if ExtractFileExt(Panel.FileName) = ZIP_EXTENSION then
-    begin
-      dmCollection.GetBookFileName(Data^.BookID, FileName, Folder, Ext, No);
-
-      WorkFile := Settings.ReadPath + Format('%s - %s.%d%s', [CheckSymbols(Panel.Author), CheckSymbols(Panel.Title), ID, Ext]);
+      WorkFile := TPath.Combine(
+        Settings.ReadPath,
+        Format('%s - %s.%d%s', [CheckSymbols(Data^.Authors[0].GetFullName), CheckSymbols(Data^.Title), ID, Ext])
+      );
 
       if not FileExists(WorkFile) then
       begin
@@ -3467,7 +3460,34 @@ begin
         try
           FS := TMemoryStream.Create;
           try
-            Zip.FileName := Panel.Folder + Panel.FileName;
+            Zip.FileName := BookFolder;
+            Zip.BaseDir := Settings.ReadPath;
+            Zip.OpenArchive;
+            Zip.ExtractToStream(GetFileNameZip(Zip, No), FS);
+            FS.SaveToFile(WorkFile);
+          finally
+            FS.Free;
+          end;
+        finally
+          Zip.Free;
+        end;
+      end; // if Exists
+    end
+    else if ExtractFileExt(BookFileName) = ZIP_EXTENSION then
+    begin
+      Assert(Length(Data^.Authors) > 0);
+      WorkFile := TPath.Combine(
+        Settings.ReadPath,
+        Format('%s - %s.%d%s', [CheckSymbols(Data^.Authors[0].GetFullName), CheckSymbols(Data^.Title), ID, Ext])
+      );
+
+      if not FileExists(WorkFile) then
+      begin
+        Zip := TZipForge.Create(nil);
+        try
+          FS := TMemoryStream.Create;
+          try
+            Zip.FileName := TPath.Combine(BookFolder, BookFileName);
             Zip.BaseDir := Settings.ReadPath;
             Zip.OpenArchive;
             WorkFile := GetFileNameZip(Zip, No);
@@ -3484,7 +3504,7 @@ begin
 
     end
     else
-      WorkFile := Panel.Folder + Panel.FileName;
+      WorkFile := TPath.Combine(BookFolder, BookFileName);
 
     if Settings.OverwriteFB2Info and (Ext = FB2_EXTENSION) then
       WriteFb2InfoToFile(WorkFile);
@@ -3870,7 +3890,7 @@ begin
                 authorNode := nil;
                 if ShowAuth then
                 begin
-                  Author := BookRecord.GetAutorsList;
+                  Author := TAuthorsHelper.GetList(BookRecord.Authors);
                   if not AuthorNodes.TryGetValue(Author, authorNode) then
                   begin
                     authorNode := Tree.AddChild(nil);
@@ -4078,13 +4098,13 @@ begin
 
     case Data^.nodeType of
       ntSeriesInfo:
-        S := Data^.GetAuthors + '. Серия: ' + Data^.Serie;
+        S := TAuthorsHelper.GetList(Data^.Authors) + '. Серия: ' + Data^.Serie;
 
       ntBookInfo:
         if (Data^.Serie = NO_SERIES_TITLE) or (Data^.Serie = '') then
-          S := Data^.GetAuthors + '. ' + Data^.Title
+          S := TAuthorsHelper.GetList(Data^.Authors) + '. ' + Data^.Title
         else
-          S := Data^.GetAuthors + '. Серия: ' + Data^.Serie + '. ' + Data^.Title;
+          S := TAuthorsHelper.GetList(Data^.Authors) + '. Серия: ' + Data^.Serie + '. ' + Data^.Title;
     end;
     if S = '' then
       R := S
@@ -4131,8 +4151,9 @@ begin
 
       if IsSelectedBookNode(Node, Data) then
       begin
-        dmCollection.GetBookFileName(Data.BookID, FileName, Folder, Ext, No);
-        if (IsOnline and Data^.Local) and DeleteFile(FCollectionRoot + Folder) then
+        dmCollection.GetBookFileName(Data^.BookID, Data^.DatabaseID, Folder, FileName, Ext, No);
+
+        if (IsOnline and Data^.Local) and DeleteFile(Folder) then
           SetBookLocalStatus(Data^.BookID, Data^.DatabaseID, False)
         else
         begin
@@ -4141,17 +4162,17 @@ begin
             if not IsFB2 then
             begin
               if (ExtractFileExt(FileName) = ZIP_EXTENSION) then
-                DeleteFile(FCollectionRoot + Folder + FileName)
+                DeleteFile(Folder + FileName)
               else
-                DeleteFile(FCollectionRoot + Folder + FileName + Ext);
+                DeleteFile(Folder + FileName + Ext);
             end;
 
             if IsFB2 and IsPrivate then
             begin
               if (ExtractFileExt(Folder) = ZIP_EXTENSION) then
-                DeleteFile(FCollectionRoot + Folder)
+                DeleteFile(Folder)
               else
-                DeleteFile(FCollectionRoot + Folder + FileName + Ext);
+                DeleteFile(Folder + FileName + Ext);
             end;
           end;
 
@@ -4212,9 +4233,9 @@ begin
   begin
     Data := Tree.GetNodeData(Node);
 
-    if (Data^.nodeType = ntBookInfo) and ((tvBooksG.CheckState[Node] = csCheckedNormal) or (tvBooksG.Selected[Node])) and Data^.Local then
+    if IsSelectedBookNode(Node, Data) and Data^.Local then
     begin
-      if dmCollection.tblBooks.Locate(BOOK_ID_FIELD, Data.BookID, []) then
+      if dmCollection.tblBooks.Locate(BOOK_ID_FIELD, Data^.BookID, []) then
       begin
         // только для online-коллекции. поэтому получаем путь к файлу по упрощенной схеме
         try
@@ -4223,16 +4244,7 @@ begin
 
         end;
 
-        dmCollection.tblBooks.Edit;
-        dmCollection.tblBooksLocal.Value := False;
-        dmCollection.tblBooks.Post;
-
-        Data^.Local := False;
-        tvBooksG.CheckState[Node] := csUncheckedNormal;
-        Tree.RepaintNode(Node);
-
-        // синхронизация с избранным
-        DMUser.SetLocal(Data^.BookID, Data^.DatabaseID, False);
+        SetBookLocalStatus(Data^.BookID, Data^.DatabaseID, False);
       end;
     end;
     Node := Tree.GetNext(Node);
@@ -4302,7 +4314,7 @@ begin
           Initialize(DownloadData^);
           DownloadData^.BookID := BookData^.BookID;
           DownloadData^.DataBaseID := BookData^.DatabaseID;
-          DownloadData^.Author := BookRecord.GetAutorsList;
+          DownloadData^.Author := TAuthorsHelper.GetList(BookData^.Authors);
           DownloadData^.Title := BookData^.Title;
           DownloadData^.Size := BookData^.Size;
           DownloadData^.FileName := TPath.Combine(DMUser.ActiveCollection.RootPath, BookRecord.Folder);
@@ -4507,7 +4519,6 @@ procedure TfrmMain.PrepareFb2EditData(Data: PBookData; var R: TBookRecord);
 var
   Family: TListItem;
   Author: TAuthorData;
-  Genre: TGenreData;
 begin
   //
   // TODO : избавиться от необходимости получать BookRecord
@@ -4525,14 +4536,7 @@ begin
 
   FillGenresTree(frmGenreTree.tvGenresTree);
   frmGenreTree.SelectGenres(Data^.Genres);
-  frmEditBookInfo.lblGenre.Text := TArrayUtils.Join<TGenreData>(
-    Data^.Genres,
-    ' / ',
-    function(const Genre: TGenreData): string
-    begin
-      Result := Genre.GenreAlias;
-    end
-  );
+  frmEditBookInfo.lblGenre.Text := TGenresHelper.GetList(Data^.Genres);
 
   frmEditBookInfo.edT.Text := Data^.Title;
 
@@ -4566,7 +4570,7 @@ begin
   R.ClearAuthors;
 
   for i := 0 to frmEditBookInfo.lvAuthors.Items.Count - 1 do
-    R.AddAuthor(frmEditBookInfo.lvAuthors.Items[i].Caption, frmEditBookInfo.lvAuthors.Items[i].SubItems[0], frmEditBookInfo.lvAuthors.Items[i].SubItems[1]);
+    TAuthorsHelper.Add(R.Authors, frmEditBookInfo.lvAuthors.Items[i].Caption, frmEditBookInfo.lvAuthors.Items[i].SubItems[0], frmEditBookInfo.lvAuthors.Items[i].SubItems[1]);
 
   frmGenreTree.GetSelectedGenres(R);
   R.Title := frmEditBookInfo.edT.Text;
@@ -5325,37 +5329,38 @@ begin
   Tree.BeginUpdate;
   try
     Tree.Clear;
+
     dmCollection.Authors.DisableControls;
-
-    if FullMode then
-      dmCollection.Authors.Filtered := False;
-
     try
-      dmCollection.Authors.First;
+      if FullMode then
+        dmCollection.Authors.Filtered := False;
+      try
+        dmCollection.Authors.First;
 
-      while not dmCollection.Authors.Eof do
-      begin
-        Node := Tree.AddChild(nil);
-        Data := Tree.GetNodeData(Node);
+        while not dmCollection.Authors.Eof do
+        begin
+          Node := Tree.AddChild(nil);
+          Data := Tree.GetNodeData(Node);
 
-        Initialize(Data^);
-        Data^.AuthorID := dmCollection.AuthorsID.Value;
-        Data^.FirstName := dmCollection.AuthorsName.Value;
-        Data^.LastName := dmCollection.AuthorsFamily.Value;
-        Data^.MiddleName := dmCollection.AuthorsMiddle.Value;
-        Include(Node.States, vsInitialUserData);
+          Initialize(Data^);
+          Data^.AuthorID := dmCollection.AuthorsID.Value;
+          Data^.FirstName := dmCollection.AuthorsName.Value;
+          Data^.LastName := dmCollection.AuthorsFamily.Value;
+          Data^.MiddleName := dmCollection.AuthorsMiddle.Value;
+          Include(Node.States, vsInitialUserData);
 
-        dmCollection.Authors.Next;
+          dmCollection.Authors.Next;
+        end;
+        Tree.Selected[Tree.GetFirst] := True;
+      finally
+        if FullMode then
+          dmCollection.Authors.Filtered := True;
       end;
     finally
       dmCollection.Authors.EnableControls;
     end;
-
-    Tree.Selected[Tree.GetFirst] := True;
   finally
     Tree.EndUpdate;
-    if FullMode then
-      dmCollection.Authors.Filtered := True;
   end;
 end;
 
@@ -5374,8 +5379,8 @@ begin
     try
       dmCollection.Series.First;
 
-      if dmCollection.SeriesTitle.IsNull then
-        tvBooksS.Clear;
+      //if dmCollection.SeriesTitle.IsNull then
+      //  tvBooksS.Clear;
 
       while not dmCollection.Series.Eof do
       begin
@@ -5453,25 +5458,30 @@ var
   Node: PVirtualNode;
   Data: PGroupData;
 begin
-  tvGroups.Clear;
+  tvGroups.BeginUpdate;
+  try
+    tvGroups.Clear;
 
-  DMUser.Groups.First;
-  while not DMUser.Groups.Eof do
-  begin
-    Node := tvGroups.AddChild(nil);
-    Data := tvGroups.GetNodeData(Node);
+    DMUser.Groups.First;
+    while not DMUser.Groups.Eof do
+    begin
+      Node := tvGroups.AddChild(nil);
+      Data := tvGroups.GetNodeData(Node);
 
-    Initialize(Data^);
-    Data^.Text := DMUser.GroupsGroupName.Value;
-    Data^.GroupID := DMUser.GroupsGroupID.Value;
-    Data^.CanDelete := DMUser.GroupsAllowDelete.Value;
-    Include(Node.States, vsInitialUserData);
+      Initialize(Data^);
+      Data^.Text := DMUser.GroupsGroupName.Value;
+      Data^.GroupID := DMUser.GroupsGroupID.Value;
+      Data^.CanDelete := DMUser.GroupsAllowDelete.Value;
+      Include(Node.States, vsInitialUserData);
 
-    DMUser.Groups.Next;
+      DMUser.Groups.Next;
+    end;
+
+    // активируем последнюю группу в списке
+    tvGroups.Selected[tvGroups.GetLast] := True;
+  finally
+    tvGroups.EndUpdate;
   end;
-
-  // активируем последнюю группу в списке
-  tvGroups.Selected[tvGroups.GetLast] := True;
 end;
 
 procedure TfrmMain.miAboutClick(Sender: TObject);
