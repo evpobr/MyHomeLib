@@ -2149,8 +2149,8 @@ begin
 
   // ------------------------------------------------------------------------------
 
-  LoadLastCollection;
   dmCollection.SetActiveTable(pgControl.ActivePageIndex);
+  LoadLastCollection;
 
   FillGroupsList;
   CreateGroupsMenu;
@@ -2924,12 +2924,15 @@ begin
     if Assigned(Node) then
     begin
       BookTreeStatus := bsBusy;
-      Data := Tree.GetNodeData(Node);
-      if Data^.nodeType = ntBookInfo then
-        Tree.CheckState[Node] := CheckState[Tree.CheckState[Node] = csCheckedNormal];
-      Tree.Selected[Node] := False;
-      Node := Tree.GetNext(Node);
-      BookTreeStatus := bsFree;
+      try
+        Data := Tree.GetNodeData(Node);
+        if Data^.nodeType = ntBookInfo then
+          Tree.CheckState[Node] := CheckState[Tree.CheckState[Node] = csCheckedNormal];
+        Tree.Selected[Node] := False;
+        Node := Tree.GetNext(Node);
+      finally
+        BookTreeStatus := bsFree;
+      end;
 
       if Assigned(Node) then
       begin
@@ -3976,9 +3979,9 @@ begin
       Data := Tree.GetNodeData(bookNode);
       if Data^.nodeType = ntBookInfo then
       begin
-        Tree.FullyVisible[bookNode] := True;
         Tree.Selected[bookNode] := True;
         Tree.FocusedNode := bookNode;
+        Tree.FullyVisible[bookNode] := True;
         Break;
       end;
       bookNode := Tree.GetNext(bookNode);
