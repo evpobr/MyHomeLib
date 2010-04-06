@@ -444,10 +444,10 @@ begin
   if alBookAuthors.Count > 0 then
   begin
     for Author in alBookAuthors.Items do
-      FBookRecord.AddAuthor(Author.Last, Author.First, Author.Middle);
+      TAuthorsHelper.Add(FBookRecord.Authors, Author.Last, Author.First, Author.Middle);
   end
   else
-    FBookRecord.AddAuthor(UNKNOWN_AUTHOR_LASTNAME, '', '');
+    TAuthorsHelper.Add(FBookRecord.Authors, UNKNOWN_AUTHOR_LASTNAME, '', '');
 
   frmGenreTree.GetSelectedGenres(FBookRecord);
   FBookRecord.Title := edT.Text;

@@ -125,9 +125,7 @@ type
     AllAuthorsMiddleName: TWideStringField;
 
   strict private
-    // CurrentLibID
-    // GetBookFolder
-    // GetBookFileName
+    // GetCurrentBook(var R: TBookRecord);
     // SetActiveTable
     FIsFavorites: Boolean;
     FActiveTable: TABSTable;
@@ -148,22 +146,19 @@ type
     procedure GetBookGenres(BookID: Integer; var BookGenres: TBookGenres; RootGenre: PGenreData = nil); overload;
 
   public
-    // TDownloader.Download
-    procedure GetBookFolder(ID: Integer; out AFolder: string); deprecated;
-
     // TfrmMain.tvBooksTreeChange
     // TfrmMain.tbtbnReadClick
     // TfrmMain.tbtbnReadClick
     // TfrmMain.miDeleteBookClick
     // TDownloader.Download
-    procedure GetBookFileName(BookID: Integer; out AFile, AFolder, AExt: string; out ANo: Integer); deprecated;
+    procedure GetBookFileName(BookID: Integer; DatabaseID: Integer; out AFolder, AFile, AExt: string; out ANo: Integer); deprecated;
 
     // TfrmMain.FormCreate
     // TfrmMain.pgControlChange
     procedure SetActiveTable(Tag: Integer); deprecated;
 
-    // TDownloader.ParseCommand
-    procedure CurrentLibID(out ARes: string); overload; deprecated;
+    // TDownloader.DoDownload
+    procedure GetBookLibID(BookID: Integer; DatabaseID: Integer; out ARes: string); deprecated;
 
     // TExport2XMLThread.WorkFunction
     // TExport2INPXThread.WorkFunction
@@ -219,7 +214,6 @@ uses
   StrUtils,
   IOUtils,
   Variants,
-  Math,
   dm_user,
   unit_Consts,
   unit_Messages,
@@ -229,29 +223,53 @@ uses
 
 { TDMMain }
 
-procedure TDMCollection.CurrentLibID(out ARes: String);
+procedure TDMCollection.GetBookLibID(BookID: Integer; DatabaseID: Integer; out ARes: String);
 begin
-  ARes := FActiveTable.FieldByName(BOOK_LIBID_FIELD).AsString;
+  if DatabaseID = DMUser.ActiveCollection.ID then
+  begin
+    Assert(AllBooks.Active);
+
+    if not AllBooks.Locate(BOOK_ID_FIELD, BookID, []) then
+    begin
+      Assert(False);
+      Exit;
+    end;
+
+    ARes := AllBooksLibID.AsString;
+  end
+  else
+    DMUser.GetBookLibID(BookID, DatabaseID, ARes);
 end;
 
 procedure TDMCollection.GetBookFileName(
   BookID: Integer;
-  out AFile: string;
+  DatabaseID: Integer;
   out AFolder: string;
+  out AFile: string;
   out AExt: string;
   out ANo: Integer
   );
 begin
-  Assert(Assigned(FActiveTable));
-  FActiveTable.Locate(BOOK_ID_FIELD, BookID, []);
+  if DatabaseID = DMUser.ActiveCollection.ID then
+  begin
+    Assert(AllBooks.Active);
 
-  AFolder := FActiveTable.FieldByName(BOOK_FOLDER_FIELD).AsString;
-  AFile := FActiveTable.FieldByName(BOOK_FILENAME_FIELD).AsString;
-  AExt := FActiveTable.FieldByName(BOOK_EXT_FIELD).AsString;
-  ANo := FActiveTable.FieldByName(BOOK_INSIDENO_FIELD).AsInteger;
+    if not AllBooks.Locate(BOOK_ID_FIELD, BookID, []) then
+    begin
+      // TODO : RESTORE Assert(False);
+      Exit;
+    end;
 
-  if ExtractFileExt(AFile) <> ZIP_EXTENSION then // могут быть проблемы!
-    AFile := AFile + AExt;
+    AFolder := TPath.Combine(DMUser.ActiveCollection.RootPath, AllBooksFolder.Value);
+    AFile := AllBooksFileName.Value;
+    AExt := AllBooksExt.Value;
+    ANo := AllBooksInsideNo.Value;
+
+    if ExtractFileExt(AFile) <> ZIP_EXTENSION then // могут быть проблемы!
+      AFile := AFile + AExt;
+  end
+  else
+    DMUser.GetBookFileName(BookID, DatabaseID, AFolder, AFile, AExt, ANo);
 end;
 
 procedure TDMCollection.GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
@@ -299,16 +317,6 @@ begin
     FActiveTable := tblBooks;
     FIsFavorites := False;
   end;
-end;
-
-procedure TDMCollection.GetBookFolder(ID: Integer; out AFolder: string);
-begin
-  Assert(Assigned(FActiveTable));
-  FActiveTable.Locate(BOOK_ID_FIELD, ID, []);
-  if FActiveTable = tblBooks then
-    AFolder := TPath.Combine(DMUser.ActiveCollection.RootPath, tblBooksFolder.Value)
-  else
-    AFolder := FActiveTable.FieldByName(BOOK_FOLDER_FIELD).AsString;
 end;
 
 procedure TDMCollection.SetTableState(State: Boolean);
@@ -453,6 +461,8 @@ begin
 
   if DatabaseID = DMUser.ActiveCollection.ID then
   begin
+    Assert(AllBooks.Active);
+
     if not AllBooks.Locate(BOOK_ID_FIELD, BookID, []) then
     begin
       Assert(False);

@@ -43,9 +43,6 @@ type
 
     procedure LoadGenres(const GenresFileName: string);
 
-    procedure AddBookGenre(BookID: Integer; const GenreCode: string);
-    function GetGenreAlias(const FB2Code: string): string;
-
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -810,12 +807,6 @@ begin
   LoadGenres(FileName);
 end;
 
-function TMHLLibrary.GetGenreAlias(const FB2Code: string): string;
-begin
-  FGenres.Locate(GENRE_FB2CODE_FIELD, FB2Code, []);
-  Result := FGenresAlias.Value;
-end;
-
 function TMHLLibrary.GetTopGenreAlias(const FB2Code: string): string;
 var
   Code: string;
@@ -1060,20 +1051,6 @@ begin
     end;
 
     { TODO 5 -oNickR -cBug : Необходимо удалить книгу из групп }
-  end;
-end;
-
-procedure TMHLLibrary.AddBookGenre(BookID: Integer; const GenreCode: string);
-begin
-  CheckActive;
-
-  if FBooks.Locate(BOOK_ID_FIELD, BookID, []) then
-  begin
-    FGenreList.Append;
-    FGenreListBookID.Value := BookID;
-    FGenreListGenreCode.Value := GenreCode;
-
-    FGenreList.Post;
   end;
 end;
 

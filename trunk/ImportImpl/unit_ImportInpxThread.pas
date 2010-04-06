@@ -222,7 +222,7 @@ begin
 
               strMidName := s;
 
-              R.AddAuthor(strLastName, strFirstName, strMidName);
+              TAuthorsHelper.Add(R.Authors, strLastName, strFirstName, strMidName);
 
               p := PosChr(':', AuthorList);
             end;
@@ -235,9 +235,9 @@ begin
             while p <> 0 do
             begin
               if FGenresType = gtFb2 then
-                R.AddGenreFB2('', Copy(GenreList, 1, p - 1), '')
+                TGenresHelper.Add(R.Genres, '', '', Copy(GenreList, 1, p - 1))
               else
-                R.AddGenreAny(Copy(GenreList, 1, p - 1), '');
+                TGenresHelper.Add(R.Genres, Copy(GenreList, 1, p - 1), '', '');
 
               Delete(GenreList, 1, p);
               p := PosChr(':', GenreList);

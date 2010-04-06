@@ -690,7 +690,7 @@ begin
   FWorker.OnSetComment := FProgressPage.SetComment;
   FWorker.OnShowMessage := ShowMessage;
 
-  FWorker.Resume;
+  FWorker.Start;
 
   Result := True;
 end;
