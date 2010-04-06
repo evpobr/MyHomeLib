@@ -1942,7 +1942,7 @@ begin
   if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
   begin
     if Settings.DoNotShowDeleted and Settings.ShowLocalOnly then
-      SwitchFilter(flLocal + ' and ' + flNotShowDeleted)
+      SwitchFilter(flLocal + ' AND ' + flNotShowDeleted)
     else if Settings.DoNotShowDeleted and not Settings.ShowLocalOnly then
       SwitchFilter(flNotShowDeleted)
     else if not Settings.DoNotShowDeleted and Settings.ShowLocalOnly then
@@ -2746,14 +2746,13 @@ begin
   InfoPanel.Author := Data^.GetAuthors;
   InfoPanel.Title := Data^.Title;
   InfoPanel.Genre := Data^.GetGenres;
-  if Data^.Local or not isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
-  begin
-    InfoPanel.FileName := FileName;
-    InfoPanel.Folder := Folder;
-    InfoPanel.ShowFileInfo := True;
-  end
-  else
-    InfoPanel.ShowFileInfo := False;
+  //
+  // ¬ынужден заполнить эти пол€ (хоть они иногда и не показываютс€), т.к. они используютс€ в других методах
+  // дл€ получени€ информации о положении книги
+  //
+  InfoPanel.Folder := Folder;
+  InfoPanel.FileName := FileName;
+  InfoPanel.ShowFileInfo := Data^.Local or not isOnlineCollection(DMUser.ActiveCollection.CollectionType);
 
   CoverOK := Cover.Show(Folder, FileName, No);
 
@@ -3823,15 +3822,15 @@ begin
 
   spProgress.Visible := True;
 
-  BookTreeStatus := bsBusy;
+  Screen.Cursor := crHourGlass;
   try
-    Tree.BeginUpdate;
+    BookTreeStatus := bsBusy;
     try
-      Tree.Clear;
-      Tree.NodeDataSize := SizeOf(TBookData);
-
-      Screen.Cursor := crHourGlass;
+      Tree.BeginUpdate;
       try
+        Tree.Clear;
+        Tree.NodeDataSize := SizeOf(TBookData);
+
         spStatus.Caption := 'ѕостроение списка ...';
 
         i := 0;
@@ -3953,48 +3952,47 @@ begin
               Tree.SortTree(FSortSettings[Tree.Tag].Column, FSortSettings[Tree.Tag].Direction)
             else
               Tree.SortTree(NoColumn, sdAscending);
-
-            //
-            // ¬ыбрать первую книгу
-            //
-            bookNode := Tree.GetFirst;
-            while Assigned(bookNode) do
-            begin
-              Data := Tree.GetNodeData(bookNode);
-              if Data^.nodeType = ntBookInfo then
-              begin
-                Tree.FullyVisible[bookNode] := True;
-                Tree.Selected[bookNode] := True;
-                Tree.FocusedNode := bookNode;
-                Break;
-              end;
-              bookNode := Tree.GetNext(bookNode);
-            end;
           finally
             FreeAndNil(AuthorNodes);
           end;
-
-          case Tree.Tag of
-            0: lblBooksTotalA.Caption := Format('(%d)', [i]);
-            1: lblBooksTotalS.Caption := Format('(%d)', [i]);
-            2: lblBooksTotalG.Caption := Format('(%d)', [i]);
-            3: lblTotalBooksFL.Caption := Format('(%d)', [i]);
-            4: lblBooksTotalF.Caption := Format('(%d)', [i]);
-          end;
-
         finally
           spProgress.Percent := 100;
           spProgress.Visible := False;
           spStatus.Caption := rstrReadyMessage;
         end;
       finally
-        Screen.Cursor := crDefault;
+        Tree.EndUpdate;
       end;
     finally
-      Tree.EndUpdate;
+      BookTreeStatus := bsFree;
+    end;
+
+    //
+    // ¬ыбрать первую книгу
+    //
+    bookNode := Tree.GetFirst;
+    while Assigned(bookNode) do
+    begin
+      Data := Tree.GetNodeData(bookNode);
+      if Data^.nodeType = ntBookInfo then
+      begin
+        Tree.FullyVisible[bookNode] := True;
+        Tree.Selected[bookNode] := True;
+        Tree.FocusedNode := bookNode;
+        Break;
+      end;
+      bookNode := Tree.GetNext(bookNode);
+    end;
+
+    case Tree.Tag of
+      0: lblBooksTotalA.Caption := Format('(%d)', [i]);
+      1: lblBooksTotalS.Caption := Format('(%d)', [i]);
+      2: lblBooksTotalG.Caption := Format('(%d)', [i]);
+      3: lblTotalBooksFL.Caption := Format('(%d)', [i]);
+      4: lblBooksTotalF.Caption := Format('(%d)', [i]);
     end;
   finally
-    BookTreeStatus := bsFree;
+    Screen.Cursor := crDefault;
   end;
 end;
 

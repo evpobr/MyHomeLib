@@ -3,9 +3,7 @@ object DMUser: TDMUser
   Height = 623
   Width = 463
   object DBUser: TABSDatabase
-    Connected = True
     CurrentVersion = '6.05 '
-    DatabaseFileName = 'H:\Projects\myHomeLib.trunk\Debug\Bin\Data\user.dbs'
     DatabaseName = 'UserData'
     Exclusive = False
     MaxConnections = 5
