@@ -5,7 +5,7 @@
   * Copyright (C) 2008-2010 Aleksey Penkov
   *
   * Created             12.02.2010
-  * Description
+  * Description         Базовый шаблонизатор. Реализации конкретных классов находятся в модуле Templater
   * Author(s)           Nick Rymanov (nrymanov@gmail.com)
   *
   ****************************************************************************** *)
@@ -41,29 +41,30 @@ resourcestring
 
 type
   // --------------------------------------------------------------------------
-  TCheckParamFunc<T> = reference to function(const paramName: string): Boolean;
-  TGetValueFunc<T> = reference to function(const params: T; const paramName: string): string;
-
   IParamsParser<T> = interface
+    function CheckLiteral(const literalValue: string): Boolean;
     function CheckParam(const paramName: string): Boolean;
     function GetValue(const params: T; const paramName: string): string;
   end;
 
-  TBaseParamsParser<T> = class(TInterfacedObject, IParamsParser<T>)
-  strict private
-    FCheckParam: TCheckParamFunc<T>;
-    FGetValue: TGetValueFunc<T>;
-
+  TBaseParamsParser<T> = class abstract (TInterfacedObject, IParamsParser<T>)
   public
-    constructor Create(const checkParam: TCheckParamFunc<T>; const getValue: TGetValueFunc<T>);
-
-    function CheckParam(const paramName: string): Boolean;
-    function GetValue(const params: T; const paramName: string): string;
+    //
+    // IParamsParser<T>
+    //
+    function CheckLiteral(const literalValue: string): Boolean; virtual;
+    function CheckParam(const paramName: string): Boolean; virtual;
+    function GetValue(const params: T; const paramName: string): string; virtual; abstract;
   end;
 
   // --------------------------------------------------------------------------
   TTemplateElement<T> = class
   protected
+    FParamParser: IParamsParser<T>;
+
+  protected
+    constructor Create(paramParser: IParamsParser<T>);
+
     function MinWeight: Integer; virtual; abstract;
     function GetValue(const params: T; out strValue: string): Integer; virtual; abstract;
 
@@ -79,7 +80,7 @@ type
     FValue: string;
 
   protected
-    constructor Create(const Value: string);
+    constructor Create(paramParser: IParamsParser<T>; const Value: string);
 
     function MinWeight: Integer; override;
     function GetValue(const params: T; out strValue: string): Integer; override;
@@ -92,7 +93,6 @@ type
 
   TParamTemplateElement<T> = class(TTemplateElement<T>)
   strict private
-    FParamParser: IParamsParser<T>;
     FParamName: string;
 
     procedure RaiseTemplateError(const paramName: string);
@@ -111,12 +111,11 @@ type
 
   TBlockTemplateElement<T> = class(TTemplateElement<T>)
   strict private
-    FParamParser: IParamsParser<T>;
     FTopLevel: Boolean;
-    FElements: TObjectList < TTemplateElement < T >> ;
+    FElements: TObjectList<TTemplateElement<T>>;
 
-    procedure AddLiteral(const Value: string);
-    procedure AddParam(const Value: string);
+    procedure AddLiteral(const Value: string); inline;
+    procedure AddParam(const Value: string); inline;
 
     procedure ParseParamOrLitral(const strTemplate: string; startPos: Integer; out endPos: Integer);
     procedure ParseBlock(const strTemplate: string; startPos: Integer; out endPos: Integer);
@@ -126,13 +125,13 @@ type
     function MinWeight: Integer; override;
     function GetValue(const params: T; out strValue: string): Integer; override;
 
+    procedure SetTemplate(const strTemplate: string);
+    function Value(const params: T): string; //virtual;
+
   public
     constructor Create(paramParser: IParamsParser<T>);
     destructor Destroy; override;
 
-    procedure SetTemplate(const strTemplate: string);
-
-    function Value(const params: T): string;
 {$IFDEF SUPPORT_DUMP}
   public
     function ToString: string; override;
@@ -147,24 +146,24 @@ uses
 
 { TBaseParamsParser }
 
-constructor TBaseParamsParser<T>.Create(const checkParam: TCheckParamFunc<T>; const getValue: TGetValueFunc<T>);
+function TBaseParamsParser<T>.CheckLiteral(const literalValue: string): Boolean;
 begin
-  inherited Create;
-  FCheckParam := checkParam;
-  FGetValue := getValue;
+  Result := True;
 end;
 
 function TBaseParamsParser<T>.CheckParam(const paramName: string): Boolean;
 begin
-  Result := FCheckParam(paramName);
-end;
-
-function TBaseParamsParser<T>.GetValue(const params: T; const paramName: string): string;
-begin
-  Result := FGetValue(params, paramName);
+  Result := True;
 end;
 
 { TTemplateElement }
+
+constructor TTemplateElement<T>.Create(paramParser: IParamsParser<T>);
+begin
+  inherited Create;
+  FParamParser := paramParser;
+end;
+
 procedure TTemplateElement<T>.RaiseTemplateError(const Msg: string; nPos: Integer = -1);
 var
   Error: ETemplateError;
@@ -180,9 +179,11 @@ end;
 
 { TLiteralTemplateElement }
 
-constructor TLiteralTemplateElement<T>.Create(const Value: string);
+constructor TLiteralTemplateElement<T>.Create(paramParser: IParamsParser<T>; const Value: string);
 begin
-  inherited Create;
+  inherited Create(paramParser);
+  if not FParamParser.CheckLiteral(Value) then
+    RaiseTemplateError(Value);
   FValue := Value;
 end;
 
@@ -201,8 +202,7 @@ end;
 
 constructor TParamTemplateElement<T>.Create(paramParser: IParamsParser<T>; const paramName: string);
 begin
-  inherited Create;
-  FParamParser := paramParser;
+  inherited Create(paramParser);
   if not FParamParser.CheckParam(paramName) then
     RaiseTemplateError(paramName);
   FParamName := paramName;
@@ -231,10 +231,9 @@ end;
 
 constructor TBlockTemplateElement<T>.Create(paramParser: IParamsParser<T>);
 begin
-  inherited Create;
-  FParamParser := paramParser;
+  inherited Create(paramParser);
   FTopLevel := True;
-  FElements := TObjectList < TTemplateElement < T >> .Create;
+  FElements := TObjectList<TTemplateElement<T>>.Create;
   FElements.OwnsObjects := True;
 end;
 
@@ -246,7 +245,7 @@ end;
 
 procedure TBlockTemplateElement<T>.AddLiteral(const Value: string);
 begin
-  FElements.Add(TLiteralTemplateElement<T>.Create(Value));
+  FElements.Add(TLiteralTemplateElement<T>.Create(FParamParser, Value));
 end;
 
 procedure TBlockTemplateElement<T>.AddParam(const Value: string);
@@ -340,7 +339,6 @@ var
   nLen: Integer;
   ch: Char;
   strLiteral: string;
-
 begin
   nPos := startPos;
   nLen := Length(strTemplate);
@@ -384,7 +382,7 @@ begin
     Parse(strTemplate, 1, endPos);
   except
     FElements.Clear;
-    raise ;
+    raise;
   end;
 end;
 

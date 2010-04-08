@@ -23,7 +23,7 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
-			<DCC_UsePackage>vclx;vcl;dbrtl;bdertl;rtl;vclactnband;vcldb;vcldbx;dsnap;vclib;ibxpress;IndyCore;IndySystem;IndyProtocols;xmlrtl;inet;VclSmp;vclie;webdsnap;inetdbbde;inetdbxpress;soaprtl;vclribbon;DbxCommonDriver;DbxClientDriver;DBXInterBaseDriver;DBXMySQLDriver;dbexpress;dbxcds;ZipmasterD12;VirtualTreesD12;vclAbsDBd12;RaizeComponentsVcl;RaizeComponentsVclDb;lmdrtlx9rt_120;lmdrtl9rt_120;lmdcore9rt_120;lmdplugin1rt_120;MHLComponents;dclZipForged11;vclZipForged12</DCC_UsePackage>
+			<DCC_UsePackage>vclx;vcl;dbrtl;bdertl;rtl;vclactnband;vcldb;vcldbx;dsnap;vclib;ibxpress;IndyCore;IndySystem;IndyProtocols;xmlrtl;inet;VclSmp;vclie;webdsnap;inetdbbde;inetdbxpress;soaprtl;vclribbon;DbxCommonDriver;DbxClientDriver;DBXInterBaseDriver;DBXMySQLDriver;dbexpress;dbxcds;ZipmasterD12;VirtualTreesD12;vclAbsDBd12;RaizeComponentsVcl;RaizeComponentsVclDb;lmdrtlx9rt_120;lmdrtl9rt_120;lmdcore9rt_120;lmdplugin1rt_120;dclZipForged11;vclZipForged12</DCC_UsePackage>
 			<DCC_DependencyCheckOutputName>MyhomeLib.exe</DCC_DependencyCheckOutputName>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
@@ -249,6 +249,8 @@
 			<DCCReference Include="Forms\frmEditAuthorEx.pas">
 				<Form>frmEditAuthorDataEx</Form>
 			</DCCReference>
+			<DCCReference Include="Units\Templater.pas"/>
+			<DCCReference Include="Units\TemplaterInternal.pas"/>
 			<RcItem Include="Resources\Images\16x16\star_small.png">
 				<ResourceType>RCData</ResourceType>
 				<ResourceId>smallStar</ResourceId>
@@ -312,10 +314,7 @@
 					<Source>
 						<Source Name="MainSource">MyhomeLib.dpr</Source>
 					</Source>
-					<Excluded_Packages>
-						<Excluded_Packages Name="$(BDS)\bin\dcloffice2k140.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
-						<Excluded_Packages Name="$(BDS)\bin\dclofficexp140.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
-					</Excluded_Packages>
+					<Excluded_Packages/>
 				</Delphi.Personality>
 				<ModelSupport>False</ModelSupport>
 			</BorlandProject>
