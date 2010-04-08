@@ -111,7 +111,9 @@ uses
   unit_Downloader in 'DwnldImpl\unit_Downloader.pas',
   frame_NCWDownload in 'Wizards\NewCollection\frame_NCWDownload.pas' {frameNCWDownload: TFrame},
   unit_Templater in 'Units\unit_Templater.pas',
-  frmEditAuthorEx in 'Forms\frmEditAuthorEx.pas' {frmEditAuthorDataEx};
+  frmEditAuthorEx in 'Forms\frmEditAuthorEx.pas' {frmEditAuthorDataEx},
+  Templater in 'Units\Templater.pas',
+  TemplaterInternal in 'Units\TemplaterInternal.pas';
 
 {$R *.res}
 
