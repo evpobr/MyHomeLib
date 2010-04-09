@@ -413,29 +413,11 @@ procedure TDMUser.RegisterCollection(
   const User: string;
   const Password: string
   );
-var
-  ID: Integer;
 begin
-  { TODO -oNickR -cRefactoring : магические числа!!! }
-  case CollectionType of // предопределенные типы
-    65536: ID := 10001; // либрусек fb2
-    65537: ID := 10002; // либрусек не-fb2
-    134283264: ID := 10003; // либрусек on-line
-  else
-    begin
-      Randomize;
-      ID := Random(10000);
-    end;
-  end;
-
-  while tblBases.Locate(ID_FIELD, ID, []) do // проверяем уникальность
-    ID := Random(10000);
-
   //
   // регистрируем коллекцию
   //
   tblBases.Insert;
-  tblBasesID.Value := ID;                           // хм... это автоинкрементное поле, зачем его заполнять?
   tblBasesBaseName.Value := DisplayName;
   tblBasesRootFolder.Value := RootFolder;
   tblBasesDBFileName.Value := DBFileName;
@@ -651,7 +633,7 @@ begin
     ID := StrToInt(Copy(SL[i], 1, p - 1));
     S := Copy(SL[i], p + 1);
 
-    StrReplace('~', #13#10, S);
+    StrReplace('~', CRLF, S);
 
     dmCollection.tblBooks.Locate(BOOK_LIBID_FIELD, ID, []); // получаем реальный ID
     ID := dmCollection.tblBooksID.Value;

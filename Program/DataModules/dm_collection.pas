@@ -25,68 +25,58 @@ uses
 type
   TDMCollection = class(TDataModule)
     DBCollection: TABSDatabase;
-    dsAuthors: TDataSource;
-    BooksByAuthor: TABSTable;
-    BooksByGenre: TABSTable;
-    Genres: TABSTable;
-    BooksBySerie: TABSTable;
-    dsSeries: TDataSource;
-    BooksByAuthorID: TAutoIncField;
-    BookGenres: TABSTable;
-    GenreBooks: TABSTable;
-    dsGenreBooks: TDataSource;
-    BooksBySerieID: TAutoIncField;
-    BooksBySerieSerieID: TIntegerField;
-    BooksByGenreID: TAutoIncField;
-    AuthorBooks: TABSTable;
-    dsAuthorBooks: TDataSource;
-    tblBooks: TABSTable;
-    AllAuthors: TABSTable;
-    BookAuthors: TABSTable;
-    tblBooksID: TAutoIncField;
-    tblBooksSerieID: TIntegerField;
-    tblBooksSeqNumber: TSmallintField;
-    tblBooksLibID: TIntegerField;
-    tblBooksDate: TDateField;
-    tblBooksTitle: TWideStringField;
-    tblBooksInsideNo: TIntegerField;
-    tblBooksFileName: TWideStringField;
-    tblBooksExt: TWideStringField;
-    tblBooksSize: TIntegerField;
-    tblBooksCode: TSmallintField;
-    tblBooksFolder: TWideStringField;
-    tblBooksLocal: TBooleanField;
-    tblBooksDeleted: TBooleanField;
-    tblSeriesB1: TABSTable;
+
     Authors: TABSQuery;
     AuthorsID: TAutoIncField;
     AuthorsFamily: TWideStringField;
     AuthorsName: TWideStringField;
     AuthorsMiddle: TWideStringField;
+
+    dsAuthors: TDataSource;
+
+    AuthorBooks: TABSTable;
+    AuthorBooksAuthorID: TIntegerField;
+    AuthorBooksBookID: TIntegerField;
+
+    dsAuthorBooks: TDataSource;
+
+    BooksByAuthor: TABSTable;
+    BooksByAuthorID: TAutoIncField;
+
     Series: TABSQuery;
     SeriesSerieID: TAutoIncField;
     SeriesTitle: TWideStringField;
-    tblBooksLibRate: TIntegerField;
-    tblBooksLang: TWideStringField;
-    tblBooksKeyWords: TWideStringField;
-    sqlBooks: TABSQuery;
+
+    dsSeries: TDataSource;
+
+    BooksBySerie: TABSTable;
+    BooksBySerieID: TAutoIncField;
+    BooksBySerieSerieID: TIntegerField;
+
+    Genres: TABSTable;
     GenresGenreCode: TWideStringField;
     GenresParentCode: TWideStringField;
     GenresFB2Code: TWideStringField;
     GenresGenreAlias: TWideStringField;
+
+    dsGenres: TDataSource;
+
+    GenreBooks: TABSTable;
     GenreBooksGenreCode: TWideStringField;
     GenreBooksBookID: TIntegerField;
-    AuthorBooksAuthorID: TIntegerField;
-    AuthorBooksBookID: TIntegerField;
-    BookGenresGenreCode: TWideStringField;
-    BookGenresBookID: TIntegerField;
+    dsGenreBooks: TDataSource;
+
+    BooksByGenre: TABSTable;
+    BooksByGenreID: TAutoIncField;
+
+    BookAuthors: TABSTable;
     BookAuthorsAuthorID: TIntegerField;
     BookAuthorsBookID: TIntegerField;
-    dsGenres: TDataSource;
-    tblSeriesB1SerieID: TAutoIncField;
-    tblSeriesB1SerieTitle: TWideStringField;
-    tblBooksSeries: TWideStringField;
-    sqlBooksID: TIntegerField;
+
+    BookGenres: TABSTable;
+    BookGenresGenreCode: TWideStringField;
+    BookGenresBookID: TIntegerField;
+
     AllBooks: TABSTable;
     AllBooksBookID: TAutoIncField;
     AllBooksLibID: TIntegerField;
@@ -105,6 +95,13 @@ type
     AllBooksLocal: TBooleanField;
     AllBooksDeleted: TBooleanField;
     AllBooksKeyWords: TWideStringField;
+
+    AllAuthors: TABSTable;
+    AllAuthorsAuthorID: TAutoIncField;
+    AllAuthorsLastName: TWideStringField;
+    AllAuthorsFirstName: TWideStringField;
+    AllAuthorsMiddleName: TWideStringField;
+
     AllSeries: TABSTable;
     AllSeriesSerieID: TAutoIncField;
     AllSeriesSerieTitle: TWideStringField;
@@ -119,10 +116,33 @@ type
     AllGenresParentCode: TWideStringField;
     AllGenresFB2Code: TWideStringField;
     AllGenresAlias: TWideStringField;
-    AllAuthorsAuthorID: TAutoIncField;
-    AllAuthorsLastName: TWideStringField;
-    AllAuthorsFirstName: TWideStringField;
-    AllAuthorsMiddleName: TWideStringField;
+
+    sqlBooks: TABSQuery;
+    sqlBooksID: TIntegerField;
+
+    tblBooks: TABSTable;
+    tblBooksID: TAutoIncField;
+    tblBooksSerieID: TIntegerField;
+    tblBooksSeqNumber: TSmallintField;
+    tblBooksLibID: TIntegerField;
+    tblBooksDate: TDateField;
+    tblBooksTitle: TWideStringField;
+    tblBooksInsideNo: TIntegerField;
+    tblBooksFileName: TWideStringField;
+    tblBooksExt: TWideStringField;
+    tblBooksSize: TIntegerField;
+    tblBooksCode: TSmallintField;
+    tblBooksFolder: TWideStringField;
+    tblBooksLocal: TBooleanField;
+    tblBooksDeleted: TBooleanField;
+    tblBooksLibRate: TIntegerField;
+    tblBooksLang: TWideStringField;
+    tblBooksKeyWords: TWideStringField;
+    tblBooksSeries: TWideStringField;
+
+    tblSeriesB1: TABSTable;
+    tblSeriesB1SerieID: TAutoIncField;
+    tblSeriesB1SerieTitle: TWideStringField;
 
   strict private
     // GetCurrentBook(var R: TBookRecord);
@@ -174,7 +194,7 @@ type
     //
 
     //
-    // Объединить эти методы
+    // Получение полной информации о книге
     //
     procedure GetBookRecord(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord; LoadExtra: Boolean); overload;
 

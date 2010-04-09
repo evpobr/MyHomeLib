@@ -12,8 +12,7 @@ uses
   IdStack,
   IdStackConsts,
   IdWinsock2,
-  IdMultipartFormData,
-  DateUtils;
+  IdMultipartFormData;
 
 type
   TQueryKind = (qkGet, qkPost);
@@ -47,7 +46,6 @@ type
 
     FFile: string;
 
-    // function CalcURI(Template: string):string;
     function DoDownload(BookID: Integer; DatabaseID: Integer): Boolean;
     function Query(Kind: TQueryKind; const URL: string): boolean;
     procedure AddParam(const Name: string; const Value: string);
@@ -81,74 +79,22 @@ implementation
 
 uses
   Forms,
+  StrUtils,
+  DateUtils,
   unit_Globals,
   unit_Settings,
   dm_collection,
   dm_user,
   unit_Consts,
   unit_MHL_strings,
-  unit_Messages;
+  unit_Messages,
+  unit_Helpers;
 
 const
   CommandList: array [0 .. 5] of string = ('ADD', 'GET', 'POST', 'REDIR', 'CHECK', 'PAUSE');
   Params: array [0 .. 2] of string = ('%USER%', '%PASS%', '%RESURL%');
 
-  { TDownloader }
-
-procedure TDownloader.AddParam(const Name: string; const Value: string);
-begin
-  FParams.AddFormField(Name, Value);
-end;
-
-{
-  function TDownloader.CalcURI(Template: string):string;
-  var
-  S: string;
-  begin
-  dmCollection.FieldByName(0, LIB_ID_FIELD, S);
-  StrReplace('%LIBID%', S, Template);
-  Result := Template;
-  end;
-}
-
-function TDownloader.CheckRedirect: boolean;
-begin
-  Result := (FNewURL <> '');
-  if not Result then
-    raise EInvalidLogin.Create('Неправильный логин/пароль');
-end;
-
-function TDownloader.CheckResponce: boolean;
-var
-  Path: string;
-  Str: TStringList;
-begin
-  Path := ExtractFileDir(FFile);
-  CreateFolders('', Path);
-  FResponce.Position := 0;
-
-  Str := TStringList.Create;
-  try
-    Str.LoadFromStream(FResponce);
-    if Str.Count > 0 then
-    begin
-      if (Pos('<!DOCTYPE', Str[0]) <> 0) or (Pos('overload', Str[0]) <> 0) or (Pos('not found', Str[0]) <> 0) then
-      begin
-        ProcessError('Загрузка файла заблокирована сервером!' + #13 + ' Ответ сервера можно посмотреть в файле "server_error.html"', 'Заблокировано сервером', FFile);
-        Str.SaveToFile(Settings.SystemFileName[sfServerErrorLog]);
-      end
-      else
-      begin
-        FResponce.SaveToFile(FFile);
-        Result := TestArchive(FFile);
-        if not Result then
-          DeleteFile(PChar(FFile));
-      end;
-    end;
-  finally
-    Str.Free;
-  end;
-end;
+{ TDownloader }
 
 constructor TDownloader.Create;
 begin
@@ -173,6 +119,50 @@ begin
   inherited Destroy;
 end;
 
+procedure TDownloader.AddParam(const Name: string; const Value: string);
+begin
+  FParams.AddFormField(Name, Value);
+end;
+
+function TDownloader.CheckRedirect: boolean;
+begin
+  Result := (FNewURL <> '');
+  if not Result then
+    raise EInvalidLogin.Create('Неправильный логин/пароль');
+end;
+
+function TDownloader.CheckResponce: boolean;
+var
+  Path: string;
+  Str: TStringList;
+begin
+  Path := ExtractFileDir(FFile);
+  CreateFolders('', Path);
+  FResponce.Position := 0;
+
+  Str := TStringList.Create;
+  try
+    Str.LoadFromStream(FResponce);
+    if Str.Count > 0 then
+    begin
+      if (Pos('<!DOCTYPE', Str[0]) <> 0) or (Pos('overload', Str[0]) <> 0) or (Pos('not found', Str[0]) <> 0) then
+      begin
+        ProcessError('Загрузка файла заблокирована сервером!' + CRLF + ' Ответ сервера можно посмотреть в файле "server_error.html"', 'Заблокировано сервером', FFile);
+        Str.SaveToFile(Settings.SystemFileName[sfServerErrorLog]);
+      end
+      else
+      begin
+        FResponce.SaveToFile(FFile);
+        Result := TestArchive(FFile);
+        if not Result then
+          DeleteFile(PChar(FFile));
+      end;
+    end;
+  finally
+    Str.Free;
+  end;
+end;
+
 function TDownloader.Download(BookID: Integer; DatabaseID: Integer): boolean;
 var
   Folder: string;
@@ -182,11 +172,18 @@ var
 begin
   Result := False;
 
-  dmCollection.GetBookFileName(BookID, DatabaseID, Folder, FileName, Ext, No);
+  DMCollection.GetBookFileName(BookID, DatabaseID, Folder, FileName, Ext, No);
 
   if Ext = FB2_EXTENSION then
+    //
+    // Качаем fb2. В этом случае Folder содержит имя файла контейнера
+    //
     FFile := Folder
   else
+    //
+    // Не очень понимаю эту строчку :( Насколько я вижу, здесь заменяется .fb2.zip на реальное расщирение файла...
+    // Только зачем? Скорее всего это связано с Genesis... Проверить.
+    //
     FFile := StringReplace(Folder, FB2ZIP_EXTENSION, Ext, []);
 
   if FileExists(FFile) or DoDownload(BookID, DatabaseID) then
@@ -198,7 +195,7 @@ end;
 
 procedure TDownloader.HTTPRedirect(Sender: TObject; var dest: string; var NumRedirect: Integer; var Handled: boolean; var VMethod: string);
 begin
-  if Pos('fb2.zip', dest) <> 0 then
+  if EndsText(FB2ZIP_EXTENSION, dest) then
     FNewURL := dest
   else
     FNewURL := '';
@@ -256,7 +253,7 @@ var
 begin
   ConstParams := TStringList.Create;
   try
-    dmCollection.GetBookLibID(BookID, DatabaseID, BookLibID);
+    DMCollection.GetBookLibID(BookID, DatabaseID, BookLibID);
     ConstParams.Values['LIBID'] := BookLibID;
     ConstParams.Values['USER'] := DMUser.ActiveCollection.User;
     ConstParams.Values['PASS'] := DMUser.ActiveCollection.Password;
@@ -319,7 +316,7 @@ end;
 
 procedure TDownloader.ParseCommand(ConstParams: TStringList; S: string; out Command: TCommand);
 var
-  p, I: Integer;
+  p, i: Integer;
   s1: string;
 begin
   Command.Code := -1;
@@ -340,26 +337,28 @@ begin
   else
     s1 := S;
 
-  for I := 0 to 5 do
-    if CommandList[I] = s1 then
+  for i := 0 to 5 do
+  begin
+    if CommandList[i] = s1 then
     begin
-      Command.Code := I;
+      Command.Code := i;
       Break;
     end;
+  end;
 
   p := Pos(' ', S);
-  I := 1;
+  i := 1;
   while p <> 0 do
   begin
     s1 := Copy(S, 1, p - 1);
-    Command.Params[I] := s1;
-    Inc(I);
+    Command.Params[i] := s1;
+    Inc(i);
     Delete(S, 1, p);
     p := Pos(' ', S);
   end;
 
   if S <> '' then
-    Command.Params[I] := S
+    Command.Params[i] := S
 end;
 
 function TDownloader.Pause(Time: Integer): boolean;
@@ -422,7 +421,7 @@ begin
 
     on E: Exception do
       if (FidHTTP.ResponseCode <> 405) and not((FidHTTP.ResponseCode = 404) and (FNewURL <> '')) then
-        ProcessError('Закачка не удалась! Сервер сообщает об ошибке "' + E.Message + '".' + #10#13, 'Код Ошибки ' + IntToStr(FidHTTP.ResponseCode), FFile)
+        ProcessError('Закачка не удалась! Сервер сообщает об ошибке "' + E.Message + '".' + CRLF, 'Код Ошибки ' + IntToStr(FidHTTP.ResponseCode), FFile)
       else
         Result := True;
   end; // try ... except

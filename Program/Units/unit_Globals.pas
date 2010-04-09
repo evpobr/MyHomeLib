@@ -984,7 +984,7 @@ begin
   IdHTTP.Request.UserAgent := 'MyHomeLib/2.0 (compatible; Indy Library)';
 
   IdHTTP.ConnectTimeout := Settings.TimeOut;
-  IdHTTP.ReadTimeout := Settings.ReadTimeout;
+  IdHTTP.ReadTimeout := Settings.ReadTimeOut;
 
   // idHTTP.CookieManager := frmMain.IdCookieManager;
   IdHTTP.AllowCookies := True;

@@ -66,7 +66,7 @@ begin
     pageHint.Caption := CREATENEW
   else if Sender = rbExisting then
     pageHint.Caption := ADDEXISTS
-  else if Sender = rbINPX then
+  else if Sender = rbInpx then
     pageHint.Caption := INPXBASED
 end;
 
@@ -104,7 +104,8 @@ begin
   end
   else if rbExisting.Checked then
     FPParams^.Operation := otExisting
-      else FPParams^.Operation := otInpx;
+  else
+    FPParams^.Operation := otInpx;
 
   Result := True;
 end;

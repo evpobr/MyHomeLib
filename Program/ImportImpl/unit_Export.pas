@@ -1,42 +1,43 @@
-{******************************************************************************}
-{                                                                              }
-{ MyHomeLib                                                                    }
-{                                                                              }
-{ Version 0.9                                                                  }
-{ 20.08.2008                                                                   }
-{ Copyright (c) Aleksey Penkov  alex.penkov@gmail.com                          }
-{                                                                              }
-{ @author Nick Rymanov nrymanov@gmail.com                                      }
-{                                                                              }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Created             22.02.2010
+  * Description
+  * Author(s)           Nick Rymanov    nrymanov@gmail.com
+  *                     Aleksey Penkov  alex.penkov@gmail.com
+  *
+  * History
+  * NickR 02.03.2010    Код переформатирован
+  * NickR 08.04.2010    Убраны ненужные зависимости
+  *
+  ****************************************************************************** *)
 
 unit unit_Export;
 
 interface
 
-procedure Export2XML;
-procedure Export2INPX;
+procedure Export2XML(const FileName: string);
+procedure Export2INPX(const FileName: string);
 
 implementation
 
-uses Forms,
-unit_ExportXMLThread,
-unit_ExportINPXThread,
-unit_Helpers,
-frm_ExportProgressForm;
+uses
+  Forms,
+  unit_ExportXMLThread,
+  unit_ExportINPXThread,
+  frm_ExportProgressForm;
 
-procedure Export2XML;
+procedure Export2XML(const FileName: string);
 var
-  xmlFileName: string;
   worker: TExport2XMLThread;
   frmProgress: TExportProgressForm;
 begin
-  if not GetFileName(fnSaveImportFile, xmlFileName) then
-    Exit;
-
   worker := TExport2XMLThread.Create;
   try
-    worker.XMLFileName := xmlFileName;
+    worker.XMLFileName := FileName;
     frmProgress := TExportProgressForm.Create(Application);
     try
       frmProgress.WorkerThread := worker;
@@ -49,18 +50,14 @@ begin
   end;
 end;
 
-procedure Export2INPX;
+procedure Export2INPX(const FileName: string);
 var
-  xmlFileName: string;
   worker: TExport2INPXThread;
   frmProgress: TExportProgressForm;
 begin
-  if not GetFileName(fnSaveINPX, xmlFileName) then
-    Exit;
-
   worker := TExport2INPXThread.Create;
   try
-    worker.INPXFileName := xmlFileName;
+    worker.INPXFileName := FileName;
     frmProgress := TExportProgressForm.Create(Application);
     try
       frmProgress.WorkerThread := worker;

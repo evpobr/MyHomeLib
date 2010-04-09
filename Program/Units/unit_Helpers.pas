@@ -85,6 +85,7 @@ function CreateImageFromResource(GraphicClass: TGraphicClass; const ResName: str
 
 type
   TConversion<T> = reference to function(const items: T): string;
+  TValueSetter<T> = reference to procedure(var Item: T; const Value: string);
 
   TArrayUtils = class
   public
@@ -99,6 +100,14 @@ type
       const itemDelimeter: string;
       const Converter: TConversion<T>
     ): string;
+
+    class procedure Split{<T>}(
+      const Value: string;
+      const itemDelimeter: string;
+      var Items: array of string{T}
+      {;
+      const Setter: TValueSetter<T>}
+    );
   end;
 
 
@@ -106,6 +115,7 @@ implementation
 
 uses
   SysUtils,
+  StrUtils,
   Forms,
   unit_Settings,
   ShlObj,
@@ -294,7 +304,7 @@ resourcestring
 
   //fnOpenCoverImage
   rstrOpenCIDlgTitle = 'Загрузка файла обложки';
-  rstrOpenCIDlgFilter = 'изображения (png jpg jpeg)|*.jpeg;*.jpg;*.png';
+  rstrOpenCIDlgFilter = 'Изображения (*.png;*.jpg;*.jpeg)|*.jpeg;*.jpg;*.png';
   rstrOpenCIDlgDefaultExt = 'jpeg';
 
 
@@ -362,8 +372,8 @@ const
       DialogKey:  'SaveUserData';            OpenFile: False
     ),
     ( // fnOpenCoverImage
-      Title:      rstrOpenCiDlgTitle;
-      Filter:     rstrOpenCiDlgFilter;     DefaultExt: rstrOpenCIDlgDefaultExt;
+      Title:      rstrOpenCIDlgTitle;
+      Filter:     rstrOpenCIDlgFilter;     DefaultExt: rstrOpenCIDlgDefaultExt;
       DialogKey:  'OpenCoverImage';        OpenFile: True
     )
 
@@ -417,7 +427,7 @@ begin
   BrowseInfo.lParam := LPARAM(PChar(strFolder));
 
   lpItemID := SHBrowseForFolder(BrowseInfo);
-  if Assigned(lpItemId) then
+  if Assigned(lpItemID) then
   begin
     Result := SHGetPathFromIDList(lpItemID, TempPath);
     if Result then
@@ -484,6 +494,38 @@ begin
     end;
   finally
     Enum.Free;
+  end;
+end;
+
+class procedure TArrayUtils.Split{<T>}(
+  const Value: string;
+  const itemDelimeter: string;
+  var Items: array of string{T;
+  const Setter: TValueSetter<T>}
+);
+var
+  ValueLen: Integer;
+  SeparatorLen: Integer;
+  StartPos: Integer;
+  SeparatorPos: Integer;
+
+  s: string;
+begin
+  ValueLen := Length(Value);
+  SeparatorLen := Length(itemDelimeter);
+  StartPos := 1;
+
+  SeparatorPos := PosEx(itemDelimeter, Value, StartPos);
+  while SeparatorPos <> 0 do
+  begin
+    s := Copy(Value, StartPos, SeparatorPos - StartPos);
+    StartPos := SeparatorPos + SeparatorLen;
+    SeparatorPos := PosEx(itemDelimeter, Value, StartPos);
+  end;
+
+  if StartPos < ValueLen then
+  begin
+    s := Copy(Value, StartPos, ValueLen);
   end;
 end;
 

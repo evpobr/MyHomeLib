@@ -1,30 +1,30 @@
-{******************************************************************************}
-{                                                                              }
-{ MyHomeLib                                                                    }
-{                                                                              }
-{ Version 0.9                                                                  }
-{ 20.08.2008                                                                   }
-{ Copyright (c) Aleksey Penkov  alex.penkov@gmail.com                          }
-{                                                                              }
-{ @author Nick Rymanov nrymanov@gmail.com                                      }
-{                                                                              }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Created             22.02.2010
+  * Description
+  * Author(s)           Nick Rymanov    nrymanov@gmail.com
+  *                     Aleksey Penkov  alex.penkov@gmail.com
+  *
+  * History
+  * NickR 02.03.2010    Код переформатирован
+  * NickR 08.04.2010    Убраны ненужные зависимости
+  *
+  ****************************************************************************** *)
 
 unit unit_Import;
 
 interface
 
 uses
-  Controls,
-  Forms,
-  Dialogs,
-  Windows,
-  XMLIntf,
-  XMLDoc,
   dm_user;
   
 procedure ImportXML(
-  ACollection: TMHLActiveCollection
+  ACollection: TMHLActiveCollection;
+  const FileName: string
   );
 
 procedure ImportFB2(
@@ -42,29 +42,26 @@ procedure ImportFBD(
 implementation
 
 uses
+  Forms,
   unit_ImportXMLThread,
-  frm_ImportProgressForm,
   unit_ImportFB2Thread,
-  unit_ImportFBDThread,
-  frm_ImportProgressFormEx,
   unit_ImportFB2ZIPThread,
-  unit_Helpers,
+  unit_ImportFBDThread,
+  frm_ImportProgressForm,
+  frm_ImportProgressFormEx,
   unit_Consts;
 
 procedure ImportXML(
-  ACollection: TMHLActiveCollection
+  ACollection: TMHLActiveCollection;
+  const FileName: string
   );
 var
-  strFileName: string;
   worker: TImportXMLThread;
   frmProgress: TImportProgressForm;
 begin
-  if not GetFileName(fnOpenImportFile, strFileName) then
-    Exit;
-
   worker := TImportXMLThread.Create;
   try
-    worker.XMLFileName := strFileName;
+    worker.XMLFileName := FileName;
     worker.DBFileName := ACollection.DBFileName;
     worker.CollectionName := ACollection.Name;
     worker.CollectionType := Ord(ACollection.CollectionType);
@@ -91,35 +88,6 @@ begin
   worker := TImportFB2Thread.Create;
   try
     worker.DBFileName := ACollection.DBFileName;
-    worker.TargetExt := FB2_EXTENSION;
-    worker.ZipFolder := False;
-    worker.FullNameSearch := False;
-    frmProgress := TImportProgressFormEx.Create(Application);
-    try
-      frmProgress.WorkerThread := worker;
-      frmProgress.btnSaveLog.Visible := True;
-      frmProgress.ShowModal;
-    finally
-      frmProgress.Free;
-    end;
-  finally
-    worker.Free;
-  end;
-end;
-
-procedure ImportFBD(
-  ACollection: TMHLActiveCollection
-  );
-var
-  worker: TImportFBDThread;
-  frmProgress: TImportProgressFormEx;
-begin
-  worker := TImportFBDThread.Create;
-  try
-    worker.DBFileName := ACollection.DBFileName;
-    worker.TargetExt := ZIP_EXTENSION;
-    worker.ZipFolder := False;
-    worker.FullNameSearch := True;
     frmProgress := TImportProgressFormEx.Create(Application);
     try
       frmProgress.WorkerThread := worker;
@@ -143,8 +111,29 @@ begin
   worker := TImportFB2ZIPThread.Create;
   try
     worker.DBFileName := ACollection.DBFileName;
-    worker.TargetExt := ZIP_EXTENSION;
-     worker.ZipFolder := True;
+    frmProgress := TImportProgressFormEx.Create(Application);
+    try
+      frmProgress.WorkerThread := worker;
+      frmProgress.btnSaveLog.Visible := True;
+      frmProgress.ShowModal;
+    finally
+      frmProgress.Free;
+    end;
+  finally
+    worker.Free;
+  end;
+end;
+
+procedure ImportFBD(
+  ACollection: TMHLActiveCollection
+  );
+var
+  worker: TImportFBDThread;
+  frmProgress: TImportProgressFormEx;
+begin
+  worker := TImportFBDThread.Create;
+  try
+    worker.DBFileName := ACollection.DBFileName;
     frmProgress := TImportProgressFormEx.Create(Application);
     try
       frmProgress.WorkerThread := worker;

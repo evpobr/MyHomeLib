@@ -63,11 +63,11 @@ var
 
   IsLocal: Boolean;
 begin
-  totalBooks := dmCollection.tblBooks.RecordCount;
+  totalBooks := DMCollection.tblBooks.RecordCount;
   processedBooks := 0;
 
-  dmCollection.tblBooks.First;
-  while not dmCollection.tblBooks.Eof do
+  DMCollection.tblBooks.First;
+  while not DMCollection.tblBooks.Eof do
   begin
     if Canceled then
       Exit;
@@ -78,27 +78,27 @@ begin
       //
       // TODO -cBug: это работает не всегда. См. схему хранения расположения книги
       //
-      BookFile := TPath.Combine(FCollectionRoot, dmCollection.tblBooksFolder.Value);
+      BookFile := TPath.Combine(FCollectionRoot, DMCollection.tblBooksFolder.Value);
       IsLocal := FileExists(BookFile);
 
-      if Settings.DeleteDeleted and IsLocal and dmCollection.tblBooksDeleted.Value then
+      if Settings.DeleteDeleted and IsLocal and DMCollection.tblBooksDeleted.Value then
       begin
         SysUtils.DeleteFile(BookFile);
         IsLocal := False;
       end;
 
-      if dmCollection.tblBooksLocal.Value <> IsLocal then
-        unit_Messages.BookLocalStatusChanged(dmCollection.tblBooksId.Value, FCollectionID, IsLocal);
+      if DMCollection.tblBooksLocal.Value <> IsLocal then
+        unit_Messages.BookLocalStatusChanged(DMCollection.tblBooksID.Value, FCollectionID, IsLocal);
     except
       on E: Exception do
         Application.MessageBox(PChar('Какие-то проблемы с книгой ' + BookFile), '', MB_OK);
     end;
 
-    dmCollection.tblBooks.Next;
+    DMCollection.tblBooks.Next;
 
     Inc(processedBooks);
     if (processedBooks mod ProcessedItemThreshold) = 0 then
-        SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
+      SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
     SetProgress(processedBooks * 100 div totalBooks);
   end;
 

@@ -18,6 +18,14 @@ unit unit_Consts;
 interface
 
 const
+  CR = #13;
+  LF = #10;
+  CRLF = CR + LF;
+
+  INPX_FIELD_DELIMITER = Chr(4);
+  INPX_ITEM_DELIMITER = ':';
+  INPX_SUBITEM_DELIMITER = ',';
+
   COLLECTION_EXTENSION_SHORT = 'hlc';
   COLLECTION_EXTENSION = '.' + COLLECTION_EXTENSION_SHORT;          // .hlc
 

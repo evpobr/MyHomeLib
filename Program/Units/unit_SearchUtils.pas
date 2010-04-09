@@ -25,7 +25,8 @@ implementation
 uses
   StrUtils,
   SysUtils,
-  unit_Globals;
+  unit_Globals,
+  unit_Consts;
 
 procedure AddToFilter(const Field: string; Value: string; UP: Boolean; var FilterString: string);
 begin
@@ -62,7 +63,7 @@ end;
 function Clear(const S: string): string; inline;
 begin
   Result := S;
-  StrReplace(#13#10, ' ', Result);
+  StrReplace(CRLF, ' ', Result);
   Trim(Result);
 end;
 

@@ -25,14 +25,12 @@ type
   private
     FZipper: TZipForge;
 
-    //procedure ShowZipErrorMessage(Sender: TObject; ErrCode: Integer; Message: string);
-
   protected
     procedure SortFiles(var R: TBookRecord); override;
     procedure ProcessFileList; override;
 
   public
-
+    constructor Create;
   end;
 
 
@@ -49,9 +47,17 @@ uses
 
 { TImportFB2ZIPThread }
 
+constructor TImportFB2ZIPThread.Create;
+begin
+  inherited Create;
+
+  FTargetExt := ZIP_EXTENSION;
+  FZipFolder := True;
+end;
+
 procedure TImportFB2ZIPThread.SortFiles(var R: TBookRecord);
 var
-  Filename, NewFilename, NewFolder: string;
+  FileName, NewFileName, NewFolder: string;
   F: TZfArchiveItem;
 begin
   FileName := ExtractFileName(R.Folder);
@@ -60,9 +66,7 @@ begin
 
 
   CreateFolders(FRootPath,NewFolder);
-
-  CopyFile(R.Folder,
-           FRootPath +  NewFolder + FileName);
+  CopyFile(R.Folder, FRootPath +  NewFolder + FileName);
 
   R.Folder := NewFolder + FileName;
 
@@ -70,7 +74,7 @@ begin
   if NewFileName <> '' then
   begin
     NewFolder := R.Folder;
-    StrReplace(Filename, NewFileName + FB2ZIP_EXTENSION, NewFolder);
+    StrReplace(FileName, NewFileName + FB2ZIP_EXTENSION, NewFolder);
     RenameFile(FRootPath + R.Folder, FRootPath +  NewFolder);
     R.Folder :=  NewFolder;
 

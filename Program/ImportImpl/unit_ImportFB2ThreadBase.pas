@@ -22,18 +22,15 @@ uses
   Windows,
   Classes,
   SysUtils,
-  unit_WorkerThread,
-  unit_globals,
-  FictionBook_21,
-  unit_database,
+  fictionbook_21,
   files_list,
+  unit_Globals,
+  unit_WorkerThread,
+  unit_Database,
   unit_Templater;
 
 type
   TImportFB2ThreadBase = class(TWorker)
-  private
-    FFullNameSearch: Boolean;
-
   protected
     FDBFileName: string;
     FLibrary: TMHLLibrary;
@@ -42,8 +39,12 @@ type
     FRootPath: string;
     FFilesList: TFilesList;
 
+    //
+    // Эти поля должны быть установлены конструктором производного класса
+    //
     FTargetExt: string;
     FZipFolder: Boolean;
+    FFullNameSearch: Boolean;
 
     FCheckExistsFiles: Boolean;
 
@@ -63,12 +64,19 @@ type
 
   public
     property DBFileName: string read FDBFileName write FDBFileName;
-    property TargetExt: string write FTargetExt;
-    property ZipFolder: Boolean write FZipFolder;
-    property FullNameSearch: Boolean write FFullNameSearch default False;
   end;
 
 implementation
+
+{
+Settings.CheckExistsFiles
+Settings.EnableSort
+Settings.FB2FolderTemplate
+Settings.FB2FileTemplate
+Settings.FBDFolderTemplate
+Settings.FBDFileTemplate
+Settings.ImportPath
+}
 
 uses
   dm_user,
@@ -78,36 +86,13 @@ uses
 
 { TImportFB2Thread }
 
-procedure TImportFB2ThreadBase.AddFile2List(Sender: TObject; const F: TSearchRec);
-var
-  FileName: string;
-begin
-  if ExtractFileExt(F.Name) = FTargetExt then
-  begin
-    if FCheckExistsFiles then
-    begin
-      if Settings.EnableSort then
-        FileName := FFilesList.LastDir + F.Name
-      else
-        FileName := ExtractRelativePath(FRootPath, FFilesList.LastDir) + F.Name;
-      if not FLibrary.CheckFileInCollection(FileName, FFullNameSearch, FZipFolder) then
-        FFiles.Add(FFilesList.LastDir + F.Name);
-    end;
-  end;
-
-  //
-  // сколько найдем файлов неизвестно => зациклим прогресс
-  //
-  SetProgress(FFiles.Count mod 100);
-
-  if Canceled then
-    Abort;
-end;
-
 procedure TImportFB2ThreadBase.GetBookInfo(book: IXMLFictionBook; var R: TBookRecord);
 var
   i: Integer;
 begin
+  //
+  // TODO : создать в unit_FB2Utils ф-ию для получения инф-ии о книге из файла и заменить ее этот метод
+  //
   with book.Description.Titleinfo do
   begin
     for i := 0 to Author.Count - 1 do
@@ -133,15 +118,11 @@ begin
 
     for i := 0 to Annotation.P.Count - 1 do
       if Annotation.P.Items[i].IsTextElement then
-        R.Annotation := R.Annotation + #10#13 + Annotation.P.Items[i].OnlyText;
+        R.Annotation := R.Annotation + CRLF + Annotation.P.Items[i].OnlyText;
 
-    R.RootGenre.GenreAlias := Trim(FLibrary.GetTopGenreAlias(R.Genres[0].FB2GenreCode));
+    if R.GenreCount > 0 then
+      R.RootGenre.GenreAlias := Trim(FLibrary.GetTopGenreAlias(R.Genres[0].FB2GenreCode));
   end;
-end;
-
-procedure TImportFB2ThreadBase.ShowCurrentDir(Sender: TObject; const Dir: string);
-begin
-  SetComment(Format('Сканируем %s', [Dir]));
 end;
 
 procedure TImportFB2ThreadBase.SortFiles(var R: TBookRecord);
@@ -149,8 +130,8 @@ var
   NewFilename, NewFolder: string;
 begin
   NewFolder := GetNewFolder(Settings.FB2FolderTemplate, R);
-
   CreateFolders(FRootPath, NewFolder);
+
   CopyFile(Settings.ImportPath + R.FileName + R.FileExt, FRootPath + NewFolder + R.FileName + R.FileExt);
   R.Folder := NewFolder;
 
@@ -200,6 +181,37 @@ begin
     Result := '';
 end;
 
+procedure TImportFB2ThreadBase.ShowCurrentDir(Sender: TObject; const Dir: string);
+begin
+  SetComment(Format('Сканируем %s', [Dir]));
+end;
+
+procedure TImportFB2ThreadBase.AddFile2List(Sender: TObject; const F: TSearchRec);
+var
+  FileName: string;
+begin
+  if ExtractFileExt(F.Name) = FTargetExt then
+  begin
+    if FCheckExistsFiles then
+    begin
+      if Settings.EnableSort then
+        FileName := FFilesList.LastDir + F.Name
+      else
+        FileName := ExtractRelativePath(FRootPath, FFilesList.LastDir) + F.Name;
+      if not FLibrary.CheckFileInCollection(FileName, FFullNameSearch, FZipFolder) then
+        FFiles.Add(FFilesList.LastDir + F.Name);
+    end;
+  end;
+
+  //
+  // сколько найдем файлов неизвестно => зациклим прогресс
+  //
+  SetProgress(FFiles.Count mod 100);
+
+  if Canceled then
+    Abort;
+end;
+
 procedure TImportFB2ThreadBase.ScanFolder;
 begin
   SetProgress(0);
@@ -209,14 +221,15 @@ begin
   FCheckExistsFiles := Settings.CheckExistsFiles;
 
   FFilesList := TFilesList.Create(nil);
-  FFilesList.OnFile := AddFile2List;
   try
-    if not Settings.EnableSort then
-      FFilesList.TargetPath := DMUser.ActiveCollection.RootPath
-    else
-      FFilesList.TargetPath := Settings.ImportPath;
-
     FFilesList.OnDirectory := ShowCurrentDir;
+    FFilesList.OnFile := AddFile2List;
+
+    if Settings.EnableSort then
+      FFilesList.TargetPath := Settings.ImportPath
+    else
+      FFilesList.TargetPath := DMUser.ActiveCollection.RootPath;
+
     try
       FFilesList.Process;
     except

@@ -19,12 +19,10 @@ uses
 
 type
   TImportFB2Thread = class(TImportFB2ThreadBase)
-  private
-
   protected
     procedure ProcessFileList; override;
   public
-
+    constructor Create;
   end;
 
 implementation
@@ -42,6 +40,15 @@ uses
   unit_Templater;
 
 { TImportFB2Thread }
+
+constructor TImportFB2Thread.Create;
+begin
+  inherited Create;
+
+  FTargetExt := FB2_EXTENSION;
+  FZipFolder := False;
+  FFullNameSearch := False;
+end;
 
 procedure TImportFB2Thread.ProcessFileList;
 var
@@ -73,7 +80,7 @@ begin
         R.Folder := ExtractFilePath(FFiles[i]);
         book := LoadFictionBook(FFiles[i]);
         GetBookInfo(book, R);
-        SortFiles(R);
+        SortFiles(R); // изменит R.Folder и R.FileName
       end
       else
       begin
@@ -82,13 +89,13 @@ begin
         GetBookInfo(book, R);
       end;
       FLibrary.InsertBook(R, True, True);
-      inc(AddedBooks);
+      Inc(AddedBooks);
     except
       on e: Exception do
         Teletype('Ошибка структуры fb2: ' + R.Folder + '.zip -> ' + R.FileName + FB2_EXTENSION, tsError);
     end;
 
-    if (i mod ProcessedItemThreshold) = 0 then
+    if ((i + 1) mod ProcessedItemThreshold) = 0 then
       SetComment(Format('Обработано файлов: %u из %u', [i + 1, FFiles.Count]));
     SetProgress((i + 1) * 100 div FFiles.Count);
   end;

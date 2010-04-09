@@ -95,7 +95,7 @@ begin
   if FCurrentData <> nil then
     if Not FError then
     begin
-      FCurrentData.State := dsOK ;
+      FCurrentData.State := dsOk ;
       frmMain.tvDownloadList.DeleteNode(FCurrentNode);
       FCurrentNode := nil;
       FCurrentData := nil;
@@ -150,7 +150,7 @@ begin
   while FCurrentNode <> nil do
   begin
     FCurrentData := frmMain.tvDownloadList.GetNodeData(FCurrentNode);
-    if FCurrentData.State <> dsOK then
+    if FCurrentData.State <> dsOk then
     begin
       FBookID := FCurrentData^.BookID;
       FDatabaseID := FCurrentData^.DataBaseID;
@@ -169,7 +169,7 @@ begin
         frmMain.TrayIcon.Hint := Format('%s %s %s Подключение ...',
                                             [FCurrentData.Author,
                                              FCurrentData.Title,
-                                             #13]);
+                                             CRLF]);
       frmMain.btnPauseDownload.Enabled := True;
       frmMain.btnStartDownload.Enabled := False;
 
@@ -211,8 +211,9 @@ begin
     frmMain.TrayIcon.Hint := Format('%s. %s %s Загрузка: %s Kb/s    %d %%',
                                     [FCurrentData.Author,
                                      FCurrentData.Title,
-                                     #13,
-                                     '',Current])
+                                     CRLF,
+                                     '',
+                                     Current])
 
 end;
 
