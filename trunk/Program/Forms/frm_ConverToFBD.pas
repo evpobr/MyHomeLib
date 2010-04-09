@@ -196,7 +196,7 @@ end;
 
 function TfrmConvertToFBD.FillFBDData: Boolean;
 var
-  I: Integer;
+  i: Integer;
   AuthorsFBD: TAuthorDataList;
 begin
   Result := False;
@@ -223,7 +223,7 @@ begin
     FBD.AddSeries(sltBook, FBookRecord.Serie, FBookRecord.SeqNumber);
 
     Genre.Clear;
-    for I := 0 to High(FBookRecord.Genres) do
+    for i := 0 to High(FBookRecord.Genres) do
       Genre.Add(FBookRecord.Genres[i].FB2GenreCode);
   end;
 
@@ -277,7 +277,7 @@ begin
   try
     if FillFBDData then
     begin
-      FBD.Save(FeditorMode);
+      FBD.Save(FEditorMode);
       if not FEditorMode then
         ChangeBookData;
     end;

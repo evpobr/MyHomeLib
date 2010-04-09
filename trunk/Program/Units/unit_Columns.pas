@@ -343,7 +343,7 @@ begin
     begin
       slHelper := TIniStringList.Create;
       try
-        for I := 0 to sl.Count - 1 do
+        for i := 0 to sl.Count - 1 do
         begin
           if Pos('Column', sl[i]) = 1 then
           begin
@@ -509,7 +509,7 @@ begin
   begin
     sl := TIniStringList.Create;
     try
-      for I := 0 to Count - 1 do
+      for i := 0 to Count - 1 do
       begin
         sl.Clear;
         sl.Add(IntToStr(Items[i].Tag));
@@ -532,7 +532,7 @@ begin
   Obj.BeginUpdate;
   try
     Obj.Clear;
-    for I := 0 to Count - 1 do
+    for i := 0 to Count - 1 do
     begin
       Column := TVirtualTreeColumn.Create(Obj);
       Column.Text := Items[i].Caption;

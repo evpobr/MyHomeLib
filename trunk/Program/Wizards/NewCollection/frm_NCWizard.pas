@@ -283,7 +283,7 @@ begin
   begin
     pageIndex := GetPageIndex(goForward);
 
-    if not FPages[PageIndex].Activate(goForward) then
+    if not FPages[pageIndex].Activate(goForward) then
       Exit;
 
     ShowPage(pageIndex);
@@ -629,14 +629,14 @@ begin
 
     ltLRELocal, ltLREOnline:
     begin
-      FWorker := TImportLibRusEcThread.Create;
-      with FWorker as TImportLibRusEcThread do
+      FWorker := TImportInpxThread.Create;
+      with FWorker as TImportInpxThread do
       begin
         DBFileName := FParams.CollectionFile;
         CollectionRoot := FParams.CollectionRoot;
         CollectionType := FParams.CollectionCode;
         if FParams.INPXFile = '' then
-          InpxFileName := Settings.SystemFileName[sfLibRusEcinpx]
+          InpxFileName := Settings.SystemFileName[sfLibRusEcInpx]
         else
           InpxFileName := FParams.INPXFile;
       end;
@@ -644,8 +644,8 @@ begin
 
     ltUserFB2:
     begin
-      FWorker := TImportLibRusEcThread.Create;
-      with FWorker as TImportLibRusEcThread do
+      FWorker := TImportInpxThread.Create;
+      with FWorker as TImportInpxThread do
       begin
         DBFileName := FParams.CollectionFile;
         CollectionRoot := FParams.CollectionRoot;
@@ -657,8 +657,8 @@ begin
 
     ltUserAny:
     begin
-      FWorker := TImportLibRusEcThread.Create;
-      with FWorker as TImportLibRusEcThread do
+      FWorker := TImportInpxThread.Create;
+      with FWorker as TImportInpxThread do
       begin
         DBFileName := FParams.CollectionFile;
         CollectionRoot := FParams.CollectionRoot;

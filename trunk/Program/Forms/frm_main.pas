@@ -785,7 +785,7 @@ uses
   unit_Lib_Updates;
 
 resourcestring
-  rstrFileNotFoundMsg = 'Файл %s не найден!'#13'Проверьте настройки коллекции!';
+  rstrFileNotFoundMsg = 'Файл %s не найден!' + CRLF + 'Проверьте настройки коллекции!';
 
 {$R *.dfm}
 
@@ -2020,7 +2020,7 @@ procedure TfrmMain.TheFirstRun;
 begin
   if DMUser.tblBases.IsEmpty then
     DeleteFile(Settings.WorkPath + CHECK_FILE)
-  else if FileExists(Settings.WorkPath + CHECK_FILE) and (Application.MessageBox('Вы успешно обновили программу. Для нормальной работы необходимо' + #13 + 'обновить струткуру таблиц БД. Сделать это прямо сейчас?', 'MyHomeLib - первый запуск', mb_YesNo) = mrYes) then
+  else if FileExists(Settings.WorkPath + CHECK_FILE) and (Application.MessageBox('Вы успешно обновили программу. Для нормальной работы необходимо обновить струткуру таблиц БД. Сделать это прямо сейчас?', 'MyHomeLib - первый запуск', mb_YesNo) = mrYes) then
   begin
     RenameFile(Settings.SystemFileName[sfLibRusEcinpx], Settings.SystemFileName[sfLibRusEcUpdate]);
     DeleteFile(Settings.WorkPath + CHECK_FILE);
@@ -2033,7 +2033,7 @@ procedure TfrmMain.tbtnAutoFBDClick(Sender: TObject);
 begin
   if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
   begin
-    MessageDlg('Для конвертации книги перейдите ' + #13 + 'в соответствующую коллекцию', mtWarning, [mbOk], 0);
+    MessageDlg('Для конвертации книги перейдите в соответствующую коллекцию', mtWarning, [mbOk], 0);
     Exit;
   end;
 
@@ -2063,7 +2063,7 @@ begin
     DMUser.ActivateCollection(Settings.ActiveCollection);
     if not FileExists(DMUser.ActiveCollection.DBFileName) then
     begin
-      MessageDlg('Файл коллекции "' + DMUser.ActiveCollection.DBFileName + '" не найден.' + #13 + 'Невозможно запустить программу.', mtError, [mbOk], 0);
+      MessageDlg('Файл коллекции "' + DMUser.ActiveCollection.DBFileName + '" не найден.' + CRLF + 'Невозможно запустить программу.', mtError, [mbOk], 0);
       Application.Terminate;
     end;
 
@@ -2144,7 +2144,7 @@ begin
     if CheckLibUpdates(True) then
       if Settings.AutoRunUpdate then
         StartLibUpdate
-      else if MessageDlg('Доступно обновление для коллекций "lib.rus.ec".' + #13 + ' Начать обновление ?', mtInformation, mbYesNo, 0) = mrYes then
+      else if MessageDlg('Доступно обновление для коллекций "lib.rus.ec".' + CRLF + ' Начать обновление ?', mtInformation, mbYesNo, 0) = mrYes then
         StartLibUpdate;
 
   // ------------------------------------------------------------------------------
@@ -2192,7 +2192,7 @@ procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   CanClose := True;
   if CheckActiveDownloads then
-    if MessageDlg('В списке есть незавершенные закачки!' + #13 + 'Вы все еще хотите выйти из программы?', mtWarning, mbYesNo, 0) = mrYes then
+    if MessageDlg('В списке есть незавершенные закачки!' + CRLF + 'Вы все еще хотите выйти из программы?', mtWarning, mbYesNo, 0) = mrYes then
     begin
       if Assigned(FDMThread) then
         FDMThread.TerminateNow;
@@ -4041,7 +4041,7 @@ begin
           if strText = '' then
             strText := AuthorData^.GetFullName
           else
-            strText := strText + #13#10 + AuthorData^.GetFullName;
+            strText := strText + CRLF + AuthorData^.GetFullName;
           Node := tvAuthors.GetNextSelected(Node);
         end;
       end;
@@ -4055,7 +4055,7 @@ begin
           if strText = '' then
             strText := SerieData^.SerieTitle
           else
-            strText := strText + #13#10 + SerieData^.SerieTitle;
+            strText := strText + CRLF + SerieData^.SerieTitle;
           Node := tvSeries.GetNextSelected(Node);
         end;
       end;
@@ -4069,7 +4069,7 @@ begin
           if strText = '' then
             strText := GenreData.GenreAlias
           else
-            strText := strText + #13#10 + GenreData.GenreAlias;
+            strText := strText + CRLF + GenreData.GenreAlias;
           Node := tvGenres.GetNextSelected(Node);
         end;
       end;
@@ -4109,7 +4109,7 @@ begin
     if S = '' then
       R := S
     else
-      R := R + #13#10 + S;
+      R := R + CRLF + S;
 
     Node := Tree.GetNextSelected(Node);
   end;
@@ -4128,7 +4128,7 @@ var
 begin
   if ActiveView = FavoritesView then
   begin
-    MessageDlg('Для удаления книги перейдите ' + #13 + 'в соответствующую коллекцию', mtWarning, [mbOk], 0);
+    MessageDlg('Для удаления книги перейдите в соответствующую коллекцию', mtWarning, [mbOk], 0);
     Exit;
   end;
 
@@ -4503,7 +4503,7 @@ function TfrmMain.IsLibRusecEdit(BookID: Integer): Boolean;
 begin
   if isExternalCollection(DMUser.ActiveCollection.CollectionType) then
   begin
-    if MessageDlg('Изменения информации о книгах в онлайн-коллекциях возможно только на сайте.' + #13 + 'Перейти на сайт "Электронная библиотека lib.rus.ec"?', mtWarning, [mbYes, mbNo], 0) = mrYes then
+    if MessageDlg('Изменения информации о книгах в онлайн-коллекциях возможно только на сайте.' + CRLF + 'Перейти на сайт "Электронная библиотека lib.rus.ec"?', mtWarning, [mbYes, mbNo], 0) = mrYes then
     begin
       dmCollection.tblBooks.Locate(BOOK_ID_FIELD, BookID, []);
       { TODO -oNickR -cLibDesc : этот URL должен формироваться обвязкой библиотеки, т к его формат может меняться }
@@ -4979,7 +4979,7 @@ begin
     if Edit.Text = '' then
       Edit.Text := Format('="%s"', [Data^.GetFullName])
     else
-      Edit.Text := Format('%s OR%s="%s"', [Edit.Text, #13#10, Data^.GetFullName]);
+      Edit.Text := Format('%s OR%s="%s"', [Edit.Text, CRLF, Data^.GetFullName]);
     Node := treeView.GetNextSelected(Node);
   end;
 end;
@@ -5827,11 +5827,11 @@ begin
       except
         on E: EIdSocketError do
           if E.LastError = 11001 then
-            ShowMessage('Проверка обновления не удалось! Сервер не найден.' + #13 + 'Код ошибки: ' + IntToStr(E.LastError))
+            ShowMessage('Проверка обновления не удалось! Сервер не найден.' + CRLF + 'Код ошибки: ' + IntToStr(E.LastError))
           else
-            ShowMessage('Проверка обновления не удалось! Ошибка подключения.' + #13 + 'Код ошибки: ' + IntToStr(E.LastError));
+            ShowMessage('Проверка обновления не удалось! Ошибка подключения.' + CRLF + 'Код ошибки: ' + IntToStr(E.LastError));
         on E: Exception do
-          ShowMessage('Проверка обновления не удалось! Сервер сообщает об ошибке ' + #13 + 'Код ошибки: ' + IntToStr(HTTP.ResponseCode));
+          ShowMessage('Проверка обновления не удалось! Сервер сообщает об ошибке ' + CRLF + 'Код ошибки: ' + IntToStr(HTTP.ResponseCode));
       end;
       { TODO -oNickR -cRefactoring : проверить использование файла last_version.info. Возможно он больше нигде не нужен и можно не сохранять его на диск }
       LF.SaveToFile(Settings.SystemFileName[sfAppVerInfo]);
@@ -5839,11 +5839,11 @@ begin
       if SL.Count > 0 then
         if CompareStr(VersionInfo.FileVersion, SL[0]) < 0 then
         begin
-          S := #13;
+          S := CRLF;
           for i := 1 to SL.Count - 1 do
-            S := S + '  ' + SL[i] + #13;
+            S := S + '  ' + SL[i] + CRLF;
 
-          ShowMessage('Доступна новая версия - ' + SL[0] + #13 + S + #13 + 'Посетите сайт программы для загрузки обновлений.');
+          ShowMessage('Доступна новая версия - ' + SL[0] + CRLF + S + CRLF + 'Посетите сайт программы для загрузки обновлений.');
         end
         else if not FAutoCheck then
           ShowMessage('У вас самая свежая версия.');
@@ -5940,7 +5940,7 @@ procedure TfrmMain.miConverToFBDClick(Sender: TObject);
 begin
   if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
   begin
-    MessageDlg('Для конвертации книги перейдите ' + #13 + 'в соответствующую коллекцию', mtWarning, [mbOk], 0);
+    MessageDlg('Для конвертации книги перейдите в соответствующую коллекцию', mtWarning, [mbOk], 0);
     Exit;
   end;
 
@@ -5970,8 +5970,17 @@ end;
 
 procedure TfrmMain.miExportToHTMLClick(Sender: TObject);
 const
-  HTMLHead = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">'#13#10 + '<html>'#13#10 + '<head>'#13#10 + '  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">'#13#10 + '  <title>MyHomeLib HTML</title>'#13#10 + '</head>'#13#10 + '<body>'#13#10;
-  HTMLFoot = '</body>'#13#10 + '</html>' + #13#10;
+  HTMLHead =
+    '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">' + CRLF +
+    '<html>' + CRLF +
+    '<head>' + CRLF +
+    '  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">' + CRLF +
+    '  <title>MyHomeLib HTML</title>' + CRLF +
+    '</head>' + CRLF +
+    '<body>' + CRLF;
+  HTMLFoot =
+    '</body>' + CRLF +
+    '</html>' + CRLF;
 
   Ext: array [351 .. 353] of string = ('html', 'txt', 'rtf');
 var
@@ -6100,7 +6109,7 @@ begin
     while not dmCollection.tblExtra.Eof do
     begin
       S := dmCollection.tblExtraReview.Value;
-      StrReplace(#13#10, '~', S);
+      StrReplace(CRLF, '~', S);
       dmCollection.tblBooks.Locate(BOOK_ID_FIELD, dmCollection.tblExtraBookID.Value, []);
       if dmCollection.tblBooksLibID.Value <> 0 then
         ID := dmCollection.tblBooksLibID.Value
@@ -6175,19 +6184,34 @@ begin
 end;
 
 procedure TfrmMain.miCollectionExportClick(Sender: TObject);
+var
+  FileName: string;
 begin
-  if MessageDlg('Экспорт в xml работает в режиме совместимости со старыми версиями.' + #10#13 + 'Не все данные будут сохранены. Рекомендуется использовать экспорт в inpx.' + #10#13 + 'Продолжить?', mtWarning, [mbYes, mbNo], 0) = mrNo then
+  if MessageDlg(
+    'Экспорт в xml работает в режиме совместимости со старыми версиями.' + CRLF +
+    'Не все данные будут сохранены. Рекомендуется использовать экспорт в inpx.' + CRLF +
+    'Продолжить?', mtWarning, [mbYes, mbNo], 0
+    ) = mrNo
+  then
+    Exit;
+
+  if not GetFileName(fnSaveImportFile, FileName) then
     Exit;
 
   DMUser.ActivateCollection(Settings.ActiveCollection);
-  unit_Export.Export2XML;
+  unit_Export.Export2XML(FileName);
 end;
 
 procedure TfrmMain.miCollectionImportClick(Sender: TObject);
+var
+  FileName: string;
 begin
+  if not GetFileName(fnOpenImportFile, FileName) then
+    Exit;
+
   dmCollection.DBCollection.Connected := False;
 
-  unit_Import.ImportXML(DMUser.ActiveCollection);
+  unit_Import.ImportXML(DMUser.ActiveCollection, FileName);
 
   InitCollection(True);
 end;
@@ -6534,9 +6558,14 @@ begin
 end;
 
 procedure TfrmMain.miINPXCollectionExportClick(Sender: TObject);
+var
+  FileName: string;
 begin
+  if not GetFileName(fnSaveINPX, FileName) then
+    Exit;
+
   DMUser.ActivateCollection(Settings.ActiveCollection);
-  unit_Export.Export2INPX;
+  unit_Export.Export2INPX(FileName);
   InitCollection(True);
 end;
 

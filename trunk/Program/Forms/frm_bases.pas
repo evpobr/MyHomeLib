@@ -185,8 +185,7 @@ end;
 
 procedure TfrmBases.SetScript(const Value: string);
 begin
-  mmScript.Lines.Clear;
-  mmscript.Lines.Text := Value;
+  mmScript.Lines.Text := Value;
 end;
 
 function TfrmBases.GetURL: string;

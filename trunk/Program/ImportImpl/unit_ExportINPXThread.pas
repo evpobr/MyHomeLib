@@ -1,30 +1,39 @@
-{ ****************************************************************************** }
-{ }
-{ MyHomeLib }
-{ }
-{ Version 0.9 }
-{ 20.08.2008 }
-{ Copyright (c) Aleksey Penkov  alex.penkov@gmail.com }
-{ }
-{ @author Nick Rymanov nrymanov@gmail.com }
-{ }
-{ ****************************************************************************** }
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Created             22.02.2010
+  * Description
+  * Author(s)           Nick Rymanov    nrymanov@gmail.com
+  *                     Aleksey Penkov  alex.penkov@gmail.com
+  *
+  * History
+  * NickR 08.04.2010    Информация из глобальных переменных зачитывается в контексте основного потока.
+  *
+  ****************************************************************************** *)
 
 unit unit_ExportINPXThread;
 
 interface
 
 uses
-  Windows,
   Classes,
-  SysUtils,
   unit_WorkerThread,
-  unit_Globals,
-  unit_Settings;
+  unit_Globals;
 
 type
   TExport2INPXThread = class(TWorker)
   private
+    FTempPath: string;
+
+    FCollectionName: string;
+    FCollectionDBFileName: string;
+    FCollectionType: COLLECTION_TYPE;
+    FCollectionVersion: Integer;
+    FCollectionNotes: string;
+
     FINPXFileName: string;
 
     FGenresType: TGenresType;
@@ -36,18 +45,23 @@ type
     procedure WorkFunction; override;
 
   public
+    constructor Create;
+
     property INPXFileName: string read FINPXFileName write FINPXFileName;
   end;
 
 implementation
 
 uses
+  Windows,
   Forms,
+  SysUtils,
   StrUtils,
   dm_collection,
   dm_user,
   ZipForge,
   unit_Consts,
+  unit_Settings,
   unit_MHL_strings;
 
 const
@@ -55,36 +69,48 @@ const
 
   { TImportXMLThread }
 
-  (*
+(*
 
-    Вообще говоря, использовать основной экземпляр датамодуля в потоке не очень корректно.
-    Но!, 1) мы не используем датаэвэ-контролы, 2) все использование происходит при поднятой модальной форме.
-    Возможно, стоит создавать новый экземпляр, но пока обойдемся и так.
+  Вообще говоря, использовать основной экземпляр датамодуля в потоке не очень корректно.
+  Но!, 1) мы не используем датаэвэ-контролы, 2) все использование происходит при поднятой модальной форме.
+  Возможно, стоит создавать новый экземпляр, но пока обойдемся и так.
 
-    *)
+*)
+
+constructor TExport2INPXThread.Create;
+begin
+  inherited Create;
+
+  FTempPath := Settings.TempPath;
+
+  FCollectionType := DMUser.ActiveCollection.CollectionType;
+  FCollectionVersion := DMUser.ActiveCollection.Version;
+  FCollectionName := DMUser.ActiveCollection.Name;
+  FCollectionDBFileName := DMUser.ActiveCollection.DBFileName;
+
+  FCollectionNotes := DMUser.ActiveCollection.Notes;
+  if FCollectionNotes = '' then
+    FCollectionNotes := 'Версия от ' + DateToStr(Now);
+end;
 
 procedure TExport2INPXThread.WorkFunction;
 var
   slFileList: TStringList;
   slHelper: TStringList;
   cINPRecord: string;
-  nCollectionVersion: Integer;
+
   cVersion: string;
 
   totalBooks: Integer;
   processedBooks: Integer;
   R: TBookRecord;
-
-  strTempPath: string;
 begin
   SetComment('Экспортируем коллекцию.');
 
   totalBooks := DMCollection.tblBooks.RecordCount;
   processedBooks := 0;
 
-  strTempPath := Settings.TempPath;
-
-  if isFB2Collection(DMUser.ActiveCollection.CollectionType) then
+  if isFB2Collection(FCollectionType) then
     FGenresType := gtFb2
   else
     FGenresType := gtAny;
@@ -119,14 +145,13 @@ begin
 
       SetComment('Сохраняем документ. Подождите, пожалуйста.');
 
-      slHelper.SaveToFile(strTempPath + BOOKS_INFO_FILE, TEncoding.UTF8);
-      slFileList.Add(strTempPath + BOOKS_INFO_FILE);
+      slHelper.SaveToFile(FTempPath + BOOKS_INFO_FILE, TEncoding.UTF8);
+      slFileList.Add(FTempPath + BOOKS_INFO_FILE);
 
       //
       // Создаём файл version.info
       //
-      nCollectionVersion := DMUser.ActiveCollection.Version;
-      cVersion := IntToStr(nCollectionVersion); // Получаем дату в формате '20091231'
+      cVersion := IntToStr(FCollectionVersion); // Получаем дату в формате '20091231'
       if Length(cVersion) <> 8 then
       begin                            // Если длина строки не равна 8, то получаем текущую дату
         cVersion := DateToStr(Date()); // Получаем дату в формате '2009-12-31'
@@ -136,16 +161,16 @@ begin
 
       slHelper.Clear;
       slHelper.Add(cVersion);
-      slHelper.SaveToFile(strTempPath + VERINFO_FILENAME);
-      slFileList.Add(strTempPath + VERINFO_FILENAME);
+      slHelper.SaveToFile(FTempPath + VERINFO_FILENAME);
+      slFileList.Add(FTempPath + VERINFO_FILENAME);
 
       //
       // Записываем файл structure.info
       //
       slHelper.Clear;
       slHelper.Add('AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;INSNO;FOLDER;LANG;KEYWORDS;');
-      slHelper.SaveToFile(strTempPath + STRUCTUREINFO_FILENAME);
-      slFileList.Add(strTempPath + STRUCTUREINFO_FILENAME);
+      slHelper.SaveToFile(FTempPath + STRUCTUREINFO_FILENAME);
+      slFileList.Add(FTempPath + STRUCTUREINFO_FILENAME);
     finally
       FreeAndNil(slHelper);
     end;
@@ -161,13 +186,6 @@ end;
 
 procedure TExport2INPXThread.INPXPack(const INPXFileName: string; const FileList: TStrings);
 var
-  CollectionName: string;
-  CollectionDBFileName: string;
-  CollectionType: Integer;
-  CollectionNotes: String;
-
-  cComment: String;
-
   ZIP: TZipForge;
   nIndex: Integer;
 begin
@@ -182,7 +200,7 @@ begin
   ZIP := TZipForge.Create(Application.MainForm);
   try
     ZIP.FileName := INPXFileName;
-    ZIP.BaseDir := Settings.TempPath;
+    ZIP.BaseDir := FTempPath;
     ZIP.OpenArchive;
 
     //
@@ -194,21 +212,11 @@ begin
     //
     // Устанавливаем комментарий для INPX-файла
     //
-    CollectionName := DMUser.ActiveCollection.Name;
-    CollectionDBFileName := DMUser.ActiveCollection.DBFileName;
-    CollectionType := DMUser.ActiveCollection.CollectionType;
-
-    if DMUser.ActiveCollection.Notes <> '' then
-      CollectionNotes := DMUser.ActiveCollection.Notes
-    else
-      CollectionNotes := 'Версия от ' + DateToStr(Now);
-
-    cComment := CollectionName + #13#10 +              // '%s'#13#10
-      ExtractFileName(CollectionDBFileName) + #13#10 + // '%s'#13#10
-      IntToStr(CollectionType) + #13#10 +              // '%u'#13#10
-      CollectionNotes;                                 // '%s'
-
-    ZIP.Comment := cComment;
+    ZIP.Comment :=
+      FCollectionName + CRLF +
+      ExtractFileName(FCollectionDBFileName) + CRLF +
+      IntToStr(FCollectionType) + CRLF +
+      FCollectionNotes;
     ZIP.CloseArchive;
   finally
     ZIP.Free;
@@ -216,10 +224,6 @@ begin
 end;
 
 function TExport2INPXThread.INPRecordCreate(const R: TBookRecord): string;
-const
-  FieldDelimiterChar = Chr(4);
-  ItemDelimiterChar = ':';
-  SubItemDelimiterChar = ',';
 var
   author: TAuthorData;
   strAuthors: string;
@@ -233,13 +237,13 @@ begin
   for author in R.Authors do
   begin
     strAuthors := strAuthors +
-      author.LastName + SubItemDelimiterChar +
-      author.FirstName + SubItemDelimiterChar +
+      author.LastName + INPX_SUBITEM_DELIMITER +
+      author.FirstName + INPX_SUBITEM_DELIMITER +
       author.MiddleName +
-      ItemDelimiterChar;
+      INPX_ITEM_DELIMITER;
   end;
   if strAuthors = '' then
-    strAuthors := ItemDelimiterChar;
+    strAuthors := INPX_ITEM_DELIMITER;
 
   //
   // Список жанров
@@ -247,30 +251,30 @@ begin
   for genre in R.Genres do
   begin
     strGenres := strGenres +
-      IfThen(FGenresType = gtFb2, genre.FB2GenreCode, genre.GenreCode) + ItemDelimiterChar;
+      IfThen(FGenresType = gtFb2, genre.FB2GenreCode, genre.GenreCode) + INPX_ITEM_DELIMITER;
   end;
   if strGenres = '' then
-    strGenres := ItemDelimiterChar;
+    strGenres := INPX_ITEM_DELIMITER;
 
   strFileExt := R.FileExt;
   Delete(strFileExt, 1, 1);
 
   Result :=
-    strAuthors                           + FieldDelimiterChar + // 0 - authors list
-    strGenres                            + FieldDelimiterChar + // 1 - genres list
-    Trim(R.Title)                        + FieldDelimiterChar + // 2 - book title
-    Trim(R.Serie)                        + FieldDelimiterChar + // 3 - book serie title
-    IntToStr(R.SeqNumber)                + FieldDelimiterChar + // 4 - book serie no
-    CheckSymbols(Trim(R.FileName))       + FieldDelimiterChar + // 5 - book filename
-    IntToStr(R.Size)                     + FieldDelimiterChar + // 6 - unpacked book filesize
-    IntToStr(R.LibID)                    + FieldDelimiterChar + // 7 - book LibID
-    IfThen(R.Deleted, '1', '0')          + FieldDelimiterChar + // 8 - book deleted flag
-    strFileExt                           + FieldDelimiterChar + // 9 - book fileext
-    FormatDateTime('yyyy-mm-dd', R.Date) + FieldDelimiterChar + // 10 - book data added
-    IntToStr(R.InsideNo)                 + FieldDelimiterChar + // 11 - File InsideNo in archive
-    R.Folder                             + FieldDelimiterChar + // 12 - Base folder/base archive name
-    R.Lang                               + FieldDelimiterChar + // 12 - language
-    R.KeyWords                           + FieldDelimiterChar;  // 13 - keywords
+    strAuthors                           + INPX_FIELD_DELIMITER + // 0 - authors list
+    strGenres                            + INPX_FIELD_DELIMITER + // 1 - genres list
+    Trim(R.Title)                        + INPX_FIELD_DELIMITER + // 2 - book title
+    Trim(R.Serie)                        + INPX_FIELD_DELIMITER + // 3 - book serie title
+    IntToStr(R.SeqNumber)                + INPX_FIELD_DELIMITER + // 4 - book serie no
+    CheckSymbols(Trim(R.FileName))       + INPX_FIELD_DELIMITER + // 5 - book filename
+    IntToStr(R.Size)                     + INPX_FIELD_DELIMITER + // 6 - unpacked book filesize
+    IntToStr(R.LibID)                    + INPX_FIELD_DELIMITER + // 7 - book LibID
+    IfThen(R.Deleted, '1', '0')          + INPX_FIELD_DELIMITER + // 8 - book deleted flag
+    strFileExt                           + INPX_FIELD_DELIMITER + // 9 - book fileext
+    FormatDateTime('yyyy-mm-dd', R.Date) + INPX_FIELD_DELIMITER + // 10 - book data added
+    IntToStr(R.InsideNo)                 + INPX_FIELD_DELIMITER + // 11 - File InsideNo in archive
+    R.Folder                             + INPX_FIELD_DELIMITER + // 12 - Base folder/base archive name
+    R.Lang                               + INPX_FIELD_DELIMITER + // 12 - language
+    R.KeyWords                           + INPX_FIELD_DELIMITER;  // 13 - keywords
 end;
 
 end.

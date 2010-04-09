@@ -77,27 +77,29 @@ uses
 procedure TframeNCWNameAndLocation.GetCollectionDataFromINPX;
 var
   Zip: TZipForge;
-  S  : ansistring;
+  S: AnsiString;
   Script: string;
 
-  function GetParam(var S: ansistring): string;
+  function GetParam(var S: AnsiString): string;
   var
-    p: integer;
+    p: Integer;
   begin
-    p := pos(#13#10,S);
+    p := Pos(CRLF, S);
     if p <> 0 then
     begin
-      Result := copy(S,1,p - 1);
-      delete(S,1,p + 1);
+      Result := Copy(S, 1, p - 1);
+      Delete(S, 1, p + 1);
     end
-    else begin
+    else
+    begin
       Result := S;
       S := '';
     end;
   end;
 
 begin
-  if (FPParams^.INPXFile = '') or not (FileExists(FPParams^.INPXFile)) then Exit;
+  if (FPParams^.INPXFile = '') or not (FileExists(FPParams^.INPXFile)) then
+    Exit;
 
   try
     Zip := TZipForge.Create(self);
@@ -122,7 +124,7 @@ begin
     if S <> '' then FPParams^.URL := GetParam(S);
     Script := '';
     while S <> '' do
-      Script := Script + GetParam(S) + #13#10;
+      Script := Script + GetParam(S) + CRLF;
     FPParams^.Script := Script;
   except
   end;

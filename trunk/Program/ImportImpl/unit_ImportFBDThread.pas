@@ -27,7 +27,7 @@ type
     procedure ProcessFileList; override;
     procedure SortFiles(var R: TBookRecord); override;
   public
-
+    constructor Create;
   end;
 implementation
 
@@ -42,9 +42,18 @@ uses
 
 { TImportFB2Thread }
 
+constructor TImportFBDThread.Create;
+begin
+  inherited Create;
+
+  FTargetExt := ZIP_EXTENSION;
+  FZipFolder := False;
+  FFullNameSearch := True;
+end;
+
 procedure TImportFBDThread.SortFiles(var R: TBookRecord);
 var
-  NewFilename, NewFolder, Ext: string;
+  NewFileName, NewFolder, Ext: string;
   F:  TZFArchiveItem;
 begin
   NewFolder := GetNewFolder(Settings.FBDFolderTemplate, R);

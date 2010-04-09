@@ -59,7 +59,7 @@ begin
       frmProgress.Caption := 'Отправка на устройство';
       frmProgress.WorkerThread := worker;
       frmProgress.ShowModal;
-      ProcessedFiles := Worker.ProcessedFiles;
+      ProcessedFiles := worker.ProcessedFiles;
     finally
       frmProgress.Free;
     end;

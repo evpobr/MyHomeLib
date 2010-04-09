@@ -241,7 +241,7 @@ procedure TframeNCWInpxSource.lvCollectionsChange(Sender: TObject; Item: TListIt
 begin
   pageHint.Caption := FCollections[Item.Index].Desc;
   FPParams^.INPXFile := Settings.WorkPath + FCollections[Item.Index].INPX;
-  FPParams^.INPXUrl := Settings.INPXUrl + FCollections[Item.Index].INPX;
+  FPParams^.INPXUrl := Settings.InpxURL + FCollections[Item.Index].INPX;
 end;
 
 procedure TframeNCWInpxSource.OnSetCollectionType(Sender: TObject);

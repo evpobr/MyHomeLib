@@ -54,7 +54,7 @@ type
     FType: TFields;
   end;
 
-  TImportLibRusEcThread = class(TWorker)
+  TImportInpxThread = class(TWorker)
   private
     FDBFileName: string;
     FCollectionRoot: string;
@@ -75,7 +75,7 @@ type
     procedure GetFields;
 
   public
-    function Import(CheckFiles: boolean): Integer;
+    function Import(CheckFiles: Boolean): Integer;
 
     property DBFileName: string read FDBFileName write FDBFileName;
     property CollectionRoot: string read FCollectionRoot write SetCollectionRoot;
@@ -125,8 +125,6 @@ const
   { TImportLibRusEcThread }
 
 function ParseString(const InputStr: string; const DelimiterChar: Char; var slParams: TStringList): Boolean;
-// const
-// DelimiterChar = Chr(4);
 var
   nPos: Integer;
   cParam: string;
@@ -168,10 +166,7 @@ begin
   Result := slParams.Count = nParamsCount;
 end;
 
-procedure TImportLibRusEcThread.ParseData(const input: string; var R: TBookRecord);
-const
-  DelimiterChar = Chr(4);
-
+procedure TImportInpxThread.ParseData(const input: string; var R: TBookRecord);
 var
   p, i: Integer;
   slParams: TStringList;
@@ -191,7 +186,7 @@ begin
   R.Clear;
   slParams := TStringList.Create;
   try
-    ParseString(input, DelimiterChar, slParams);
+    ParseString(input, INPX_FIELD_DELIMITER, slParams);
 
     // -- костыль
     if slParams.Count < High(FFields) then
@@ -206,17 +201,17 @@ begin
         flAuthor:
           begin // Список авторов
             AuthorList := slParams[i];
-            p := PosChr(':', AuthorList);
+            p := PosChr(INPX_ITEM_DELIMITER, AuthorList);
             while p <> 0 do
             begin
               s := Copy(AuthorList, 1, p - 1);
               Delete(AuthorList, 1, p);
 
-              p := PosChr(',', s);
+              p := PosChr(INPX_SUBITEM_DELIMITER, s);
               strLastName := Copy(s, 1, p - 1);
               Delete(s, 1, p);
 
-              p := PosChr(',', s);
+              p := PosChr(INPX_SUBITEM_DELIMITER, s);
               strFirstName := Copy(s, 1, p - 1);
               Delete(s, 1, p);
 
@@ -224,14 +219,14 @@ begin
 
               TAuthorsHelper.Add(R.Authors, strLastName, strFirstName, strMidName);
 
-              p := PosChr(':', AuthorList);
+              p := PosChr(INPX_ITEM_DELIMITER, AuthorList);
             end;
           end;
 
         flGenre:
           begin // Список жанров
             GenreList := slParams[i];
-            p := PosChr(':', GenreList);
+            p := PosChr(INPX_ITEM_DELIMITER, GenreList);
             while p <> 0 do
             begin
               if FGenresType = gtFb2 then
@@ -240,7 +235,7 @@ begin
                 TGenresHelper.Add(R.Genres, Copy(GenreList, 1, p - 1), '', '');
 
               Delete(GenreList, 1, p);
-              p := PosChr(':', GenreList);
+              p := PosChr(INPX_ITEM_DELIMITER, GenreList);
             end;
           end;
 
@@ -308,7 +303,7 @@ begin
   end;
 end;
 
-procedure TImportLibRusEcThread.GetFields;
+procedure TImportInpxThread.GetFields;
 const
   del = ';';
   Default = 'AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;LANG;LIBRATE;KEYWORDS';
@@ -365,7 +360,7 @@ begin
   end;
 end;
 
-function TImportLibRusEcThread.Import(CheckFiles: boolean): Integer;
+function TImportInpxThread.Import(CheckFiles: Boolean): Integer;
 var
   FLibrary: TMHLLibrary;
   BookList: TStringList;
@@ -469,12 +464,12 @@ begin
   end;
 end;
 
-procedure TImportLibRusEcThread.SetCollectionRoot(const Value: string);
+procedure TImportInpxThread.SetCollectionRoot(const Value: string);
 begin
   FCollectionRoot := IncludeTrailingPathDelimiter(Value);
 end;
 
-procedure TImportLibRusEcThread.WorkFunction;
+procedure TImportInpxThread.WorkFunction;
 begin
   Import(False);
 end;

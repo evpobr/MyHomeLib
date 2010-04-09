@@ -425,7 +425,7 @@ begin
         Tree.RepaintNode(Tree.GetFirstSelected);
       end
       else
-        MessageDlg('Переименование не удалось!' + #13 + 'Возможно, файл заблокирован другой программой.', mtError, [mbOk], 0);
+        MessageDlg('Переименование не удалось!' + CRLF + 'Возможно, файл заблокирован другой программой.', mtError, [mbOk], 0);
     end;
   finally
     btnRenameFile.Enabled := True;

@@ -88,7 +88,7 @@ var
   worker : TLibUpdateThread;
   ProgressForm : TImportProgressFormEx;
 begin
-  Worker := TLibUpdateThread.Create;
+  worker := TLibUpdateThread.Create;
   try
     ProgressForm := TImportProgressFormEx.Create(Application);
     ProgressForm.Caption := 'Обновление коллекций';
