@@ -1377,15 +1377,16 @@ begin
   Screen.Cursor := crHourGlass;
 
   ClearLabels(PAGE_ALL, True);
-  dmCollection.SetTableState(False);
   tvGenres.Clear;
   tvBooksG.Clear;
   tvBooksSR.Clear;
-
-  dmCollection.DBCollection.Connected := False;
-
+  tvBooksS.Clear;
+  tvBooksG.Clear;
   edLocateAuthor.Text := '';
   edLocateSeries.Text := '';
+
+  dmCollection.SetTableState(False);
+  dmCollection.DBCollection.Connected := False;
 
   if DMUser.tblBases.IsEmpty then
   begin
@@ -1393,8 +1394,6 @@ begin
     tvAuthors.Clear;
     tvSeries.Clear;
     tvBooksA.Clear;
-    tvBooksS.Clear;
-    tvBooksG.Clear;
     tvBooksF.Clear;
     Screen.Cursor := crDefault;
 
@@ -1518,7 +1517,7 @@ begin
   FillSeriesTree;
   FillGenresTree(tvGenres);
 
-  FillAllBooksTree;
+//  FillAllBooksTree;           есть подозрение, что этот вызов здесь не нужен
 
   CreateCollectionMenu;
   CreateScriptMenu;
@@ -1831,20 +1830,23 @@ begin
         ipnlAuthors.Clear;
         cpCoverA.Clear;
         if Full then
-          lblAuthor.Caption := '';
+            lblAuthor.Caption := '';
       end;
 
     PAGE_SERIES:
       begin
         ipnlSeries.Clear;
         cpCoverS.Clear;
-        lblSeries.Caption := '';
+        lblSeries.Caption := '...';
+        lblBooksTotalS.Caption := '()';
       end;
 
     PAGE_GENRES:
       begin
         ipnlGenres.Clear;
         cpCoverG.Clear;
+        lblGenreTitle.Caption := '...';
+        lblBooksTotalG.Caption := '()';
       end;
 
     PAGE_FAVORITES:
