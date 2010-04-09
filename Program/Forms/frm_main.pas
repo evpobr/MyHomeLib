@@ -524,7 +524,13 @@ type
     //
     //
     //
-    procedure tvBooksTreeHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
+    procedure tvBooksTreeHeaderClick(
+      Sender: TVTHeader;
+      Column: TColumnIndex;
+      Button: TMouseButton;
+      Shift: TShiftState;
+      X, Y: Integer
+    );
     procedure tvBooksTreeCompareNodes(Sender: TBaseVirtualTree; Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
     procedure tvBooksTreePaintText(Sender: TBaseVirtualTree; const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType);
     procedure tbtnShowLocalOnlyClick(Sender: TObject);
@@ -2359,20 +2365,26 @@ begin
   Sender.CheckState[Node] := csUncheckedNormal;
 end;
 
-procedure TfrmMain.tvBooksTreeHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
+procedure TfrmMain.tvBooksTreeHeaderClick(
+  Sender: TVTHeader;
+  Column: TColumnIndex;
+  Button: TMouseButton;
+  Shift: TShiftState;
+  X, Y: Integer
+);
 var
   Tree: TVirtualStringTree;
 begin
-  if (HitInfo.Button = mbLeft) then
+  if (Button = mbLeft) then
   begin
     GetActiveTree(Tree);
-    if (Settings.TreeModes[Tree.Tag] = tmTree) or (HitInfo.Column < 0) then
+    if (Settings.TreeModes[Tree.Tag] = tmTree) or (Column < 0) then
       Exit;
 
     //
     // Меняем индекс сортирующей колонки на индекс колонки, которая была нажата.
     //
-    Tree.Header.SortColumn := HitInfo.Column;
+    Tree.Header.SortColumn := Column;
 
     //
     // Сортируем всё дерево относительно этой колонки и изменяем порядок сортировки на противополжный
@@ -2381,10 +2393,10 @@ begin
       Tree.Header.SortDirection := sdDescending
     else
       Tree.Header.SortDirection := sdAscending;
-    Tree.SortTree(HitInfo.Column, Tree.Header.SortDirection);
+    Tree.SortTree(Column, Tree.Header.SortDirection);
 
     // запоминаем параметры для активного дерева
-    FSortSettings[Tree.Tag].Column := HitInfo.Column;
+    FSortSettings[Tree.Tag].Column := Column;
     FSortSettings[Tree.Tag].Direction := Tree.Header.SortDirection;
   end;
 end;
