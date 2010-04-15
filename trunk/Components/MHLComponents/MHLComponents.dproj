@@ -22,7 +22,7 @@
 		<PropertyGroup Condition="'$(Base)'!=''">
 			<DCC_DcuOutput>.\Units</DCC_DcuOutput>
 			<DesignOnlyPackage>false</DesignOnlyPackage>
-			<DCC_DependencyCheckOutputName>C:\Users\Public\Documents\RAD Studio\7.0\Bpl\MHLComponents.bpl</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>C:\Documents and Settings\All Users\Documents\RAD Studio\7.0\Bpl\MHLComponents.bpl</DCC_DependencyCheckOutputName>
 			<GenDll>true</GenDll>
 			<GenPackage>true</GenPackage>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
@@ -65,6 +65,8 @@
 			<DCCReference Include="unit_MHLHelpers.pas"/>
 			<DCCReference Include="fictionbook_21.pas"/>
 			<DCCReference Include="unit_FB2Utils.pas"/>
+			<DCCReference Include="BookInfoPanel.pas"/>
+			<DCCReference Include="MHLLinkLabel.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
