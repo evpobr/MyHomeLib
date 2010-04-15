@@ -24,14 +24,27 @@ uses
   unit_StaticTip,
   unit_AutoCompleteEdit,
   unit_CoverPanel,
-  unit_InfoPanel;
+  unit_InfoPanel,
+  MHLLinkLabel,
+  BookInfoPanel;
 
 const
   PAGE_NAME = 'MHLComponents';
 
 procedure Register;
 begin
-  RegisterComponents(PAGE_NAME, [TFilesList, TMHLStaticTip, TMHLAutoCompleteEdit, TMHLCoverPanel, TMHLInfoPanel]);
+  RegisterComponents(
+    PAGE_NAME,
+    [
+    TFilesList,
+    TMHLStaticTip,
+    TMHLAutoCompleteEdit,
+    TMHLCoverPanel,
+    TMHLInfoPanel,
+    TMHLLinkLabel,
+    TInfoPanel
+    ]
+  );
 end;
 
 end.

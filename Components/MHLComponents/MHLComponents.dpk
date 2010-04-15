@@ -48,6 +48,8 @@ contains
   unit_InfoPanel in 'unit_InfoPanel.pas',
   unit_MHLHelpers in 'unit_MHLHelpers.pas',
   fictionbook_21 in 'fictionbook_21.pas',
-  unit_FB2Utils in 'unit_FB2Utils.pas';
+  unit_FB2Utils in 'unit_FB2Utils.pas',
+  BookInfoPanel in 'BookInfoPanel.pas',
+  MHLLinkLabel in 'MHLLinkLabel.pas';
 
 end.
