@@ -26,6 +26,7 @@ uses
   unit_CoverPanel,
   unit_InfoPanel,
   MHLLinkLabel,
+  MHLSplitter,
   BookInfoPanel;
 
 const
@@ -42,6 +43,7 @@ begin
     TMHLCoverPanel,
     TMHLInfoPanel,
     TMHLLinkLabel,
+    TMHLSplitter,
     TInfoPanel
     ]
   );
