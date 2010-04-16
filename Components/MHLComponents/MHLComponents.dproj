@@ -67,6 +67,7 @@
 			<DCCReference Include="unit_FB2Utils.pas"/>
 			<DCCReference Include="BookInfoPanel.pas"/>
 			<DCCReference Include="MHLLinkLabel.pas"/>
+			<DCCReference Include="MHLSplitter.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
