@@ -43,6 +43,9 @@ type
     function GetShowCover: boolean;
     procedure SetShowCover(const Value: boolean);
 
+    function GetShowAnnotation: Boolean;
+    procedure SetShowAnnotation(const Value: Boolean);
+
     procedure UpdateLinkTexts;
 
     procedure OnLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
@@ -65,7 +68,7 @@ type
     property Anchors;
     property BiDiMode;
     property Color;
-    property Constraints;
+    //property Constraints;
     property Ctl3D;
     property UseDockManager default True;
     property DockSite;
@@ -76,7 +79,7 @@ type
     property Enabled;
     property FullRepaint;
     property Font;
-    property Locked;
+    //property Locked;
     property Padding;
     property ParentBiDiMode;
     property ParentBackground;
@@ -121,7 +124,8 @@ type
     property OnStartDrag;
     property OnUnDock;
 
-    property ShowCover: boolean read GetShowCover write SetShowCover default True;
+    property ShowCover: Boolean read GetShowCover write SetShowCover default True;
+    property ShowAnnotation: Boolean read GetShowAnnotation write SetShowAnnotation default True;
 
     property OnAuthorLinkClicked: TSysLinkEvent read FOnAuthorLinkClicked write FOnAuthorLinkClicked;
     property OnSerieLinkClicked: TSysLinkEvent read FOnSerieLinkClicked write FOnAuthorLinkClicked;
@@ -215,11 +219,11 @@ begin
   FSerieLabel.SetBounds(0, 40, 60, 20);  FSerie.SetBounds(60, 40, 140, 20);
   FGenreLabel.SetBounds(0, 60, 60, 20);  FGenres.SetBounds(60, 60, 140, 20);
   FAnnotation.SetBounds(0, 80, 300, 120);
-end;
 
-function TInfoPanel.GetShowCover: boolean;
-begin
-  Result := FCover.Visible;
+  //
+  //
+  //
+  Constraints.MinHeight := 150;
 end;
 
 procedure TInfoPanel.OnLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
@@ -272,6 +276,28 @@ begin
   FSerie.Caption := '';
   FGenres.Caption := '';
   FAnnotation.Lines.Clear;
+end;
+
+function TInfoPanel.GetShowAnnotation: Boolean;
+begin
+  Result := FAnnotation.Visible;
+end;
+
+procedure TInfoPanel.SetShowAnnotation(const Value: Boolean);
+begin
+  if GetShowAnnotation <> Value then
+  begin
+    FAnnotation.Visible := Value;
+    if Value then
+      Constraints.MinHeight := 150
+    else
+      Constraints.MinHeight := 80;
+  end;
+end;
+
+function TInfoPanel.GetShowCover: boolean;
+begin
+  Result := FCover.Visible;
 end;
 
 procedure TInfoPanel.SetShowCover(const Value: boolean);

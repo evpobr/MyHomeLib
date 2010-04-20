@@ -236,9 +236,50 @@ begin
     Cursor := crHSplit;
 end;
 
+procedure DrawXPGrip(ACanvas: TCanvas; ARect: TRect; LoC, HiC: TColor);
+var
+  I, J: Integer;
+  XCellCount, YCellCount: Integer;
+  R: TRect;
+  C: TColor;
+begin
+  //  4 x 4 cells (Grey, White, Null)
+  //  GG--
+  //  GGW-
+  //  -WW-
+  //  ----
+
+  C := ACanvas.Brush.Color;
+
+  XCellCount := (ARect.Right - ARect.Left) div 4;
+  YCellCount := (ARect.Bottom - ARect.Top) div 4;
+  if XCellCount = 0 then
+    XCellCount := 1;
+  if YCellCount = 0 then
+    YCellCount := 1;
+
+  for J := 0 to YCellCount - 1 do
+    for I := 0 to XCellCount - 1 do
+    begin
+      R.Left := ARect.Left + (I * 4) + 1;
+      R.Right := R.Left + 2;
+      R.Top := ARect.Top + (J * 4) + 1;
+      R.Bottom := R.Top + 2;
+
+      ACanvas.Brush.Color := HiC;
+      ACanvas.FillRect(R);
+      OffsetRect(R, -1, -1);
+      ACanvas.Brush.Color := LoC;
+      ACanvas.FillRect(R);
+    end;
+
+  ACanvas.Brush.Color := C;
+end;
+
 procedure TMHLSplitter.Paint;
 const
   XorColor = $00FFD8CE;
+  DEF_GRIP_SIZE = 50;
 var
   FrameBrush: HBRUSH;
   R: TRect;
@@ -260,6 +301,20 @@ begin
         Rectangle(0, 0, ClientWidth, ClientHeight);
       end;
   end;
+
+  // Paint grip
+  if Align in [alLeft, alRight] then
+  begin
+    R := Bounds(0, (Height - DEF_GRIP_SIZE) div 2, Width, DEF_GRIP_SIZE);
+    InflateRect(R, -1, -10)
+  end
+  else
+  begin
+    R := Bounds((Width - DEF_GRIP_SIZE) div 2, 0, DEF_GRIP_SIZE, Height);
+    InflateRect(R, -10, -1);
+  end;
+
+  DrawXPGrip(Canvas, R, clBtnShadow, clWindow);
 end;
 
 function TMHLSplitter.DoCanResize(var NewSize: Integer): Boolean;
