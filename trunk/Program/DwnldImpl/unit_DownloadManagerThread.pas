@@ -76,7 +76,7 @@ begin
   FCurrentData.State := dsError;
   frmMain.tvDownloadList.RepaintNode(FCurrentNode);
 
-  frmMain.pbDownloadProgress.Percent := 0;
+  frmMain.pbDownloadProgress.Position := 0;
   frmMain.lblDownloadState.Caption := 'Готово';
   frmMain.lblDnldAuthor.Caption := '';
   frmMain.lblDnldTitle.Caption :=  '';
@@ -107,7 +107,7 @@ begin
       frmMain.tvDownloadList.RepaintNode(FCurrentNode);
     end;
 
-  frmMain.pbDownloadProgress.Percent := 0;
+  frmMain.pbDownloadProgress.Position := 0;
   frmMain.lblDownloadState.Caption := 'Готово';
   frmMain.lblDnldAuthor.Caption := '';
   frmMain.lblDnldTitle.Caption :=  '';
@@ -205,7 +205,7 @@ procedure TDownloadManagerThread.SetProgress(Current, Total: Integer);
 begin
   if frmMain.Visible then
   begin
-    frmMain.pbDownloadProgress.Percent := Current;
+    frmMain.pbDownloadProgress.Position := Current;
   end
   else
     frmMain.TrayIcon.Hint := Format('%s. %s %s Загрузка: %s Kb/s    %d %%',

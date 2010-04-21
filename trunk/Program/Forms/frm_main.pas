@@ -67,19 +67,21 @@ uses
   IdBaseComponent,
   IdHTTP,
   IdAntiFreezeBase,
-  IdAntiFreeze;
+  IdAntiFreeze, 
+  Buttons, 
+  MHLSplitter, 
+  ActnList, 
+  BookInfoPanel;
 
 type
-
   TfrmMain = class(TForm)
     MainMenu: TMainMenu;
     miBook: TMenuItem;
     miQuitApp: TMenuItem;
-    rpLang: TRzPanel;
     RusBar: TToolBar;
     tbtnStar: TToolButton;
     EngBar: TToolBar;
-    ToolButton2: TToolButton;
+    tbtnStar2: TToolButton;
     pmMain: TPopupMenu;
     pmiReadBook: TMenuItem;
     pmiSendToDevice: TMenuItem;
@@ -183,27 +185,21 @@ type
     N1: TMenuItem;
     miGoSite: TMenuItem;
     miGoForum: TMenuItem;
-    pgControl: TRzPageControl;
-    tsSearch: TRzTabSheet;
+    pgControl: TPageControl;
+    tsSearch: TTabSheet;
     tvBooksF: TVirtualStringTree;
-    tsByGroup: TRzTabSheet;
-    cpCoverF: TMHLCoverPanel;
+    tsByGroup: TTabSheet;
     ilFileTypes: TImageList;
-    tsByAuthor: TRzTabSheet;
-    rzsSplitterA: TRzSplitter;
-    RzPanel13: TRzPanel;
+    tsByAuthor: TTabSheet;
     tvAuthors: TVirtualStringTree;
-    RzPanel16: TRzPanel;
-    Label19: TLabel;
-    tbClearEdAuthor: TRzToolButton;
-    edLocateAuthor: TRzEdit;
-    RzPanel15: TRzPanel;
-    RzPanel17: TRzPanel;
-    RzPanel18: TRzPanel;
-    lblBooksTotalA: TRzLabel;
-    RzPanel23: TRzPanel;
+    pnAuthorSearch: TPanel;
+    lblAuthorsSearch: TLabel;
+    tbClearEdAuthor: TSpeedButton;
+    edLocateAuthor: TEdit;
+    pnAuthorBooksTitle: TPanel;
+    lblBooksTotalA: TLabel;
     tvBooksA: TVirtualStringTree;
-    ipnlAuthors: TMHLInfoPanel;
+    ipnlAuthors: TInfoPanel;
     pmHeaders: TPopupMenu;
     N3: TMenuItem;
     N4: TMenuItem;
@@ -216,43 +212,35 @@ type
     N22: TMenuItem;
     N25: TMenuItem;
     N27: TMenuItem;
-    tsBySerie: TRzTabSheet;
-    rzsSplitterS: TRzSplitter;
-    RzPanel1: TRzPanel;
+    tsBySerie: TTabSheet;
+    pnSeriesView: TPanel;
     tvSeries: TVirtualStringTree;
-    RzPanel19: TRzPanel;
-    Label11: TLabel;
-    btnClearEdSeries: TRzToolButton;
-    edLocateSeries: TRzEdit;
-    RzPanel3: TRzPanel;
-    RzPanel4: TRzPanel;
-    RzPanel5: TRzPanel;
-    lblBooksTotalS: TRzLabel;
+    pnSerieSearch: TPanel;
+    lblSerieSearch: TLabel;
+    btnClearEdSeries: TSpeedButton;
+    edLocateSeries: TEdit;
+    pnSerieBooksView: TPanel;
+    pnSerieBooksTitle: TPanel;
+    lblBooksTotalS: TLabel;
     tvBooksS: TVirtualStringTree;
-    RichEdit1: TRichEdit;
-    ipnlSeries: TMHLInfoPanel;
-    cpCoverS: TMHLCoverPanel;
-    tsByGenre: TRzTabSheet;
-    rzsSplitterG: TRzSplitter;
-    RzPanel25: TRzPanel;
+    ipnlSeries: TInfoPanel;
+    tsByGenre: TTabSheet;
+    pnGenresView: TPanel;
     tvGenres: TVirtualStringTree;
-    RzPanel27: TRzPanel;
-    RzPanel28: TRzPanel;
+    pnGenreBooksView: TPanel;
     tvBooksG: TVirtualStringTree;
-    RichEdit4: TRichEdit;
-    RzPanel26: TRzPanel;
-    lblBooksTotalG: TRzLabel;
-    lblGenreTitle: TRzLabel;
-    ipnlGenres: TMHLInfoPanel;
-    cpCoverG: TMHLCoverPanel;
-    ToolButton4: TToolButton;
-    ToolButton6: TToolButton;
+    pnGenreBooksTitle: TPanel;
+    lblBooksTotalG: TLabel;
+    lblGenreTitle: TLabel;
+    ipnlGenres: TInfoPanel;
+    tbtnAllAlpha: TToolButton;
+    tbtnAllAlpha2: TToolButton;
     TrayIcon: TTrayIcon;
     pmTray: TPopupMenu;
     N29: TMenuItem;
     N32: TMenuItem;
     N33: TMenuItem;
-    tsDownload: TRzTabSheet;
+    tsDownload: TTabSheet;
     pmDownloadList: TPopupMenu;
     mi_dwnl_LocateAuthor: TMenuItem;
     N35: TMenuItem;
@@ -260,54 +248,48 @@ type
     ilToolBar_Disabled: TImageList;
     N26: TMenuItem;
     N34: TMenuItem;
-    N36: TMenuItem;
-    tlbrDownloadList: TRzToolbar;
-    RzSpacer1: TRzSpacer;
+    tlbrDownloadList: TToolBar;
     ilDownloadToolBar: TImageList;
-    BtnDwnldUp: TRzToolButton;
-    BtnDwnldDown: TRzToolButton;
-    BtnDelete: TRzToolButton;
-    BtnFirstRecord: TRzToolButton;
-    BtnLastRecord: TRzToolButton;
-    RzSpacer2: TRzSpacer;
+    BtnDwnldUp: TToolButton;
+    BtnDwnldDown: TToolButton;
+    BtnDelete: TToolButton;
+    BtnFirstRecord: TToolButton;
+    BtnLastRecord: TToolButton;
+    RzSpacer2: TToolButton;
     ToolButton7: TToolButton;
-    lblAuthor: TRzLabel;
-    lblSeries: TRzLabel;
-    btnStartDownload: TRzToolButton;
-    btnPauseDownload: TRzToolButton;
+    lblAuthor: TLabel;
+    lblSeries: TLabel;
+    btnStartDownload: TToolButton;
+    btnPauseDownload: TToolButton;
     Panel1: TPanel;
-    RzPanel2: TRzPanel;
+    RzPanel2: TPanel;
     lblDownloadState: TLabel;
     lblDnldAuthor: TLabel;
     lblDnldTitle: TLabel;
-    lblDownloadCount: TRzLabel;
-    btnClearDownload: TRzBitBtn;
+    lblDownloadCount: TLabel;
     tvDownloadList: TVirtualStringTree;
-    BtnSave: TRzToolButton;
-    RzSpacer3: TRzSpacer;
+    BtnSave: TToolButton;
     N28: TMenuItem;
     N37: TMenuItem;
     miAddToSearch: TMenuItem;
     miINPXCollectionExport: TMenuItem;
     N38: TMenuItem;
-    rzsSplitterF: TRzSplitter;
-    RzPanel7: TRzPanel;
+    pnGroupsView: TPanel;
     tvGroups: TVirtualStringTree;
-    RzPanel8: TRzPanel;
-    RzPanel20: TRzPanel;
-    RzPanel21: TRzPanel;
-    ipnlFavorites: TMHLInfoPanel;
-    lblTotalBooksF: TRzLabel;
-    btnClearFavorites: TRzBitBtn;
+    RzPanel8: TPanel;
+    pnGroupBooksView: TPanel;
+    ipnlFavorites: TInfoPanel;
+    lblTotalBooksF: TLabel;
+    btnClearFavorites: TBitBtn;
     pmGroups: TPopupMenu;
     GroupMenuItem: TMenuItem;
-    btnAddGroup: TRzBitBtn;
-    btnDeleteGroup: TRzBitBtn;
-    btnClearGroup: TRzBitBtn;
+    btnAddGroup: TBitBtn;
+    btnDeleteGroup: TBitBtn;
+    btnClearGroup: TBitBtn;
     pmiGroups: TMenuItem;
-    RzPanel6: TRzPanel;
-    lblBooksTotalF: TRzLabel;
-    lblGroups: TRzLabel;
+    pnGroupBooksTitle: TPanel;
+    lblBooksTotalF: TLabel;
+    lblGroups: TLabel;
     N39: TMenuItem;
     N40: TMenuItem;
     N41: TMenuItem;
@@ -318,16 +300,15 @@ type
     N44: TMenuItem;
     N42: TMenuItem;
     N45: TMenuItem;
-    rzsSplitterSR: TRzSplitter;
-    CategoryPanelGroup1: TCategoryPanelGroup;
+    SearchParams: TCategoryPanelGroup;
     ctpOther: TCategoryPanel;
     Label30: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
-    cbDate: TRzComboBox;
-    cbLang: TRzComboBox;
-    cbDownloaded: TRzComboBox;
+    cbDate: TComboBox;
+    cbLang: TComboBox;
+    cbDownloaded: TComboBox;
     edFKeyWords: TRzButtonEdit;
     cbDeleted: TCheckBox;
     ctpFile: TCategoryPanel;
@@ -337,22 +318,17 @@ type
     edFFile: TRzButtonEdit;
     edFFolder: TRzButtonEdit;
     edFExt: TRzButtonEdit;
-    cpCoverSR: TMHLCoverPanel;
-    RzPanel9: TRzPanel;
-    RzPanel10: TRzPanel;
+    pnSearchBooksView: TPanel;
     tvBooksSR: TVirtualStringTree;
-    RichEdit2: TRichEdit;
-    ipnlSearch: TMHLInfoPanel;
+    ipnlSearch: TInfoPanel;
     pnlFullSearch: TPanel;
-    RzGroupBox2: TRzGroupBox;
-    lblTotalBooksFL: TRzLabel;
+    lblTotalBooksFL: TLabel;
     Label1: TLabel;
-    cbPresetName: TRzComboBox;
-    btnDeletePreset: TRzBitBtn;
-    btnSavePreset: TRzBitBtn;
-    RzGroupBox5: TRzGroupBox;
-    btnClearFilterEdits: TRzBitBtn;
-    btnApplyFilter: TRzBitBtn;
+    cbPresetName: TComboBox;
+    btnDeletePreset: TBitBtn;
+    btnSavePreset: TBitBtn;
+    btnClearFilterEdits: TButton;
+    btnApplyFilter: TButton;
     BalloonHint1: TBalloonHint;
     miRepairDataBase: TMenuItem;
     N6: TMenuItem;
@@ -370,11 +346,10 @@ type
     miDeleteFiles: TMenuItem;
     miFastBookSearch: TMenuItem;
     pmiSelectAll: TMenuItem;
-    pbDownloadProgress: TRzProgressBar;
-    cpCoverA: TMHLCoverPanel;
+    pbDownloadProgress: TProgressBar;
     miFBDImport: TMenuItem;
     miConverToFBD: TMenuItem;
-    miEditToolbarVisible: TMenuItem;
+    miShowEditToolbar: TMenuItem;
     tlbrEdit: TToolBar;
     tbtnEditAuthor: TToolButton;
     tbtnEditSeries: TToolButton;
@@ -396,6 +371,38 @@ type
     ToolButton5: TToolButton;
     edFAnnotation: TRzButtonEdit;
     Label7: TLabel;
+    pnAuthorsView: TPanel;
+    pnAuthorBooksView: TPanel;
+    MHLSplitter1: TMHLSplitter;
+    MHLSplitter2: TMHLSplitter;
+    ilAlphabetNormal: TImageList;
+    ilAlphabetActive: TImageList;
+    Actions: TActionList;
+    acShowRusAlphabet: TAction;
+    acShowEngAlphabet: TAction;
+    miShowRusAlphabet: TMenuItem;
+    miShowEngAlphabet: TMenuItem;
+    acShowEditToolbar: TAction;
+    N49: TMenuItem;
+    acShowMainToolbar: TAction;
+    acShowStatusbar: TAction;
+    miShowMainToolbar: TMenuItem;
+    miShowStatusbar: TMenuItem;
+    miView: TMenuItem;
+    acShowBookInfo: TAction;
+    miShowBookInfo: TMenuItem;
+    MHLSplitter3: TMHLSplitter;
+    MHLSplitter4: TMHLSplitter;
+    MHLSplitter5: TMHLSplitter;
+    MHLSplitter6: TMHLSplitter;
+    MHLSplitter7: TMHLSplitter;
+    MHLSplitter8: TMHLSplitter;
+    Panel2: TPanel;
+    pnSearchControl: TPanel;
+    MHLSplitter9: TMHLSplitter;
+    MHLSplitter10: TMHLSplitter;
+    ToolButton2: TToolButton;
+    tbtnClear: TToolButton;
 
     //
     // События формы
@@ -467,8 +474,6 @@ type
     procedure tbtnStarClick(Sender: TObject);
     procedure tbtbnReadClick(Sender: TObject);
     procedure miSettingsClick(Sender: TObject);
-    procedure tbtnRusClick(Sender: TObject);
-    procedure tbtnEngClick(Sender: TObject);
     procedure tbSelectAllClick(Sender: TObject);
     procedure tbSendToDeviceClick(Sender: TObject);
     procedure pmiCheckAllClick(Sender: TObject);
@@ -503,7 +508,6 @@ type
     procedure miGoToAuthorClick(Sender: TObject);
     procedure miFb2ImportClick(Sender: TObject);
     procedure ShowBookInfo(Sender: TObject);
-    procedure tbtnShowCoverClick(Sender: TObject);
     procedure miCopyAuthorClick(Sender: TObject);
     procedure tbtnShowDeletedClick(Sender: TObject);
     procedure pgControlChange(Sender: TObject);
@@ -546,7 +550,7 @@ type
     procedure tvBooksTreeChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure HeaderPopupItemClick(Sender: TObject);
     procedure N27Click(Sender: TObject);
-    procedure CoverPanelResize(Sender: TObject);
+    procedure InfoPanelResize(Sender: TObject);
     procedure TrayIconDblClick(Sender: TObject);
     procedure N33Click(Sender: TObject);
     procedure btnStartDownloadClick(Sender: TObject);
@@ -585,11 +589,22 @@ type
     procedure pmiSelectAllClick(Sender: TObject);
     procedure miFBDImportClick(Sender: TObject);
     procedure miConverToFBDClick(Sender: TObject);
-    procedure miEditToolbarVisibleClick(Sender: TObject);
     procedure tbtnAutoFBDClick(Sender: TObject);
     procedure miExportToHTMLClick(Sender: TObject);
     procedure GetDownloadNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
     procedure FreeDownloadNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure ShowRusAlphabetUpdate(Sender: TObject);
+    procedure ShowEngAlphabetUpdate(Sender: TObject);
+    procedure ShowEditToolbarUpdate(Sender: TObject);
+    procedure ShowRusAlphabetExecute(Sender: TObject);
+    procedure ShowEngAlphabetExecute(Sender: TObject);
+    procedure ShowEditToolbarExecute(Sender: TObject);
+    procedure ShowMainToolbarUpdate(Sender: TObject);
+    procedure ShowMainToolbarExecute(Sender: TObject);
+    procedure ShowStatusbarUpdate(Sender: TObject);
+    procedure ShowStatusbarExecute(Sender: TObject);
+    procedure ShowBookInfoUpdate(Sender: TObject);
+    procedure ShowBookInfoExecute(Sender: TObject);
 
   protected
     procedure WMGetSysCommand(var Message: TMessage); message WM_SYSCOMMAND;
@@ -643,7 +658,7 @@ type
     procedure CreateCollectionMenu;
     procedure CreateScriptMenu;
     procedure SetColors;
-    procedure CreateAlphabet;
+    procedure CreateAlphabetToolbar;
 
   private type
     TNodeUpdateProc = reference to procedure(Data: PBookData);
@@ -717,8 +732,9 @@ type
     procedure FillAllBooksTree;
     procedure ChangeLetterButton(const S: string);
     function CheckLibUpdates(Auto: Boolean): Boolean;
-    procedure GetActiveViewComponents(var Tree: TVirtualStringTree; var Panel: TMHLInfoPanel; var Cover: TMHLCoverPanel);
-    procedure SetCoversVisible(State: Boolean);
+    procedure GetActiveViewComponents(var Tree: TVirtualStringTree; var Panel: TInfoPanel);
+    procedure SetInfoPanelHeight(Height: Integer);
+    procedure SetInfoPanelVisible(State: Boolean);
     procedure SetColumns;
     procedure SaveColumns;
     function GetTreeTag(const Sender: TBaseVirtualTree; const Column: Integer): Integer;
@@ -727,7 +743,6 @@ type
     procedure RestorePositions;
     procedure DownloadBooks;
     function CheckActiveDownloads: Boolean;
-    procedure SetLangBarSize;
     procedure TheFirstRun;
 
     function GetActiveView: TView;
@@ -1021,21 +1036,6 @@ begin
   TreeFontSize := Settings.TreeFontSize;
   FontColor := Settings.FontColor;
 
-  cpCoverA.FontSize := Settings.ShortFontSize;
-  cpCoverA.AnnotationColor := BGColor;
-
-  cpCoverS.FontSize := Settings.ShortFontSize;
-  cpCoverS.AnnotationColor := BGColor;
-
-  cpCoverG.FontSize := Settings.ShortFontSize;
-  cpCoverG.AnnotationColor := BGColor;
-
-  cpCoverF.FontSize := Settings.ShortFontSize;
-  cpCoverF.AnnotationColor := BGColor;
-
-  cpCoverSR.FontSize := Settings.ShortFontSize;
-  cpCoverSR.AnnotationColor := BGColor;
-
   SetTreeViewColor(tvAuthors);
   SetTreeViewColor(tvBooksA);
   SetTreeViewColor(tvBooksS);
@@ -1047,8 +1047,8 @@ begin
   SetTreeViewColor(tvGroups);
   SetTreeViewColor(tvDownloadList);
 
-  SetEditColor(edLocateAuthor);
-  SetEditColor(edLocateSeries);
+  //SetEditColor(edLocateAuthor);
+  //SetEditColor(edLocateSeries);
 
   SetEditColor(edFFullName);
   SetEditColor(edFTitle);
@@ -1060,9 +1060,9 @@ begin
   SetEditColor(edFKeyWords);
   SetEditColor(edFAnnotation);
 
-  SetCBColor(cbDownloaded);
-  SetCBColor(cbDate);
-  SetCBColor(cbLang);
+  //SetCBColor(cbDownloaded);
+  //SetCBColor(cbDate);
+  //SetCBColor(cbLang);
 end;
 
 procedure TfrmMain.ReadINIData;
@@ -1072,11 +1072,17 @@ begin
 
   SetColors;
 
-  tlbrEdit.Visible := Settings.EditToolbarVisible;
-  miEditToolbarVisible.Checked := tlbrEdit.Visible;
-
+  //
+  // Синхронизация с настройками
+  //
+  tlbrMain.Visible := Settings.ShowToolbar;
   RusBar.Visible := Settings.ShowRusBar;
   EngBar.Visible := Settings.ShowEngBar;
+  tlbrEdit.Visible := Settings.EditToolbarVisible;
+  StatusBar.Visible := Settings.ShowStatusBar;
+  ///cpCoverSR.Fb2InfoVisible := Settings.ShowFb2Info;
+  SetInfoPanelHeight(Settings.InfoPanelHeight);
+  SetInfoPanelVisible(Settings.ShowInfoPanel);
 
   tbtnShowDeleted.Down := Settings.DoNotShowDeleted;
   tbtnShowLocalOnly.Down := Settings.ShowLocalOnly;
@@ -1097,28 +1103,14 @@ begin
     miDevice.Tag := 0;
   end;
 
-  cpCoverA.TmpFolder := Settings.TempPath;
-  cpCoverS.TmpFolder := Settings.TempPath;
-  cpCoverG.TmpFolder := Settings.TempPath;
-  cpCoverF.TmpFolder := Settings.TempPath;
-  cpCoverSR.TmpFolder := Settings.TempPath;
-
-  cpCoverA.Fb2InfoVisible := Settings.ShowFb2Info;
-  cpCoverS.Fb2InfoVisible := Settings.ShowFb2Info;
-  cpCoverG.Fb2InfoVisible := Settings.ShowFb2Info;
-  cpCoverF.Fb2InfoVisible := Settings.ShowFb2Info;
-  cpCoverSR.Fb2InfoVisible := Settings.ShowFb2Info;
-
-  rzsSplitterA.Position := Settings.Splitters[0];
-  rzsSplitterS.Position := Settings.Splitters[1];
-  rzsSplitterG.Position := Settings.Splitters[2];
-  rzsSplitterSR.Position := Settings.Splitters[3];
+  ///rzsSplitterA.Position := Settings.Splitters[0];
+  ///rzsSplitterS.Position := Settings.Splitters[1];
+  ///rzsSplitterG.Position := Settings.Splitters[2];
+  ///rzsSplitterSR.Position := Settings.Splitters[3];
 
   ctpBook.Collapsed := Settings.BookSRCollapsed;
   ctpFile.Collapsed := Settings.FileSRCollapsed;
   ctpOther.Collapsed := Settings.OtherSRCollapsed;
-
-  cpCoverA.Width := Settings.CoverWidth;
 end;
 
 (*
@@ -1504,10 +1496,10 @@ begin
   // SetCoversVisible((not IsNonFB2 and Settings.ShowInfoPanel)
   // or (Settings.AllowMixed and Settings.ShowInfoPanel));
 
-  if IsNonFB2 and not IsPrivate then
-    SetCoversVisible(False)
-  else
-    SetCoversVisible(Settings.ShowInfoPanel);
+  //if IsNonFB2 and not IsPrivate then
+  //  SetInfoPanelVisible(False)
+  //else
+  //  SetInfoPanelVisible(Settings.ShowInfoPanel);
 
   SetAuthorsShowLocalOnly;
   SetSeriesShowLocalOnly;
@@ -1517,7 +1509,7 @@ begin
   FillSeriesTree;
   FillGenresTree(tvGenres);
 
-//  FillAllBooksTree;           есть подозрение, что этот вызов здесь не нужен
+  // FillAllBooksTree;           есть подозрение, что этот вызов здесь не нужен
 
   CreateCollectionMenu;
   CreateScriptMenu;
@@ -1530,38 +1522,84 @@ begin
     pgControl.ActivePageIndex := PAGE_AUTHORS;
 end;
 
-procedure TfrmMain.CreateAlphabet;
+procedure TfrmMain.CreateAlphabetToolbar;
 const
-  E: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  R: string = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЭЮЯ';
+  EngAlphabet: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  RusAlphabet: string = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЭЮЯ';
 var
-  i: Integer;
-  B: TToolButton;
-begin
-  for i := 1 to Length(E) do
+  Image: TBitmap;
+  ImageCanvas: TCanvas;
+  ImageRect: TRect;
+  AlphaChar: Char;
+  tmpStr: string;
+  ImageIndex: Integer;
+  ButtonPos: Integer;
+  Button: TToolButton;
+
+  function CreateTextImage(ImageText: string): Integer;
   begin
-    B := TToolButton.Create(EngBar);
-    B.Caption := E[i];
-    B.Left := 100 + i * 27;
-    B.Width := 25;
-    B.Height := 25;
-    B.Style := tbsTextButton;
-    B.OnClick := tbtnStarClick;
-    EngBar.InsertControl(B);
+    ImageCanvas.FillRect(ImageRect);
+    ImageCanvas.Font.Color := clWindowText;
+    ImageCanvas.TextRect(ImageRect, ImageText, [tfCenter, tfSingleLine, tfVerticalCenter]);
+    ilAlphabetNormal.AddMasked(Image, clRed);
+
+    ImageCanvas.FillRect(ImageRect);
+    ImageCanvas.Font.Color := clHotLight;
+    ImageCanvas.TextRect(ImageRect, ImageText, [tfCenter, tfSingleLine, tfVerticalCenter]);
+    Result := ilAlphabetActive.AddMasked(Image, clRed);
   end;
 
-  for i := 1 to Length(R) do
+  function CreateTextButton(ToolBar: TToolBar; ImageIndex: Integer; Position: Integer): Integer;
   begin
-    B := TToolButton.Create(RusBar);
-    B.Caption := R[i];
-    B.Left := 100 + i * 27;
-    B.Width := 25;
-    B.Height := 25;
-    B.Style := tbsTextButton;
-    B.OnClick := tbtnStarClick;
-    RusBar.InsertControl(B);
-    if R[i] = 'А' then
-      ALetter := B;
+    Button := TToolButton.Create(ToolBar);
+    Button.Caption := tmpStr;
+    Button.ImageIndex := ImageIndex;
+    Button.OnClick := tbtnStarClick;
+    Button.Left := Position;
+    Button.Parent := ToolBar;
+    Result := Button.Left + Button.Width;
+  end;
+
+begin
+  Image := TBitmap.Create;
+  try
+    Image.Width := ilAlphabetNormal.Width;
+    Image.Height := ilAlphabetNormal.Height;
+
+    ImageRect.Left := 0;
+    ImageRect.Top := 0;
+    ImageRect.Right := ilAlphabetNormal.Width;
+    ImageRect.Bottom := ilAlphabetNormal.Height;
+
+    ImageCanvas := Image.Canvas;
+
+    ImageCanvas.Brush.Color := clRed;
+    ImageCanvas.Font.Style := [fsBold];
+
+    tbtnStar.ImageIndex := CreateTextImage('*');
+    tbtnStar2.ImageIndex := tbtnStar.ImageIndex;
+
+    tbtnAllAlpha2.ImageIndex := CreateTextImage('AZ');
+    ButtonPos := tbtnAllAlpha2.Left + tbtnAllAlpha2.Width;
+    for AlphaChar in EngAlphabet do
+    begin
+      tmpStr := AlphaChar;
+      ImageIndex := CreateTextImage(tmpStr);
+      ButtonPos := CreateTextButton(EngBar, ImageIndex, ButtonPos);
+    end;
+
+    tbtnAllAlpha.ImageIndex := CreateTextImage('АЯ');
+    ButtonPos := tbtnAllAlpha.Left + tbtnAllAlpha.Width;
+    for AlphaChar in RusAlphabet do
+    begin
+      tmpStr := AlphaChar;
+      ImageIndex := CreateTextImage(tmpStr);
+      ButtonPos := CreateTextButton(RusBar, ImageIndex, ButtonPos);
+      if AlphaChar = 'А' then
+        ALetter := Button;
+    end;
+  finally
+    Image.Free;
   end;
 end;
 
@@ -1828,15 +1866,13 @@ begin
     PAGE_AUTHORS:
       begin
         ipnlAuthors.Clear;
-        cpCoverA.Clear;
         if Full then
-            lblAuthor.Caption := '';
+          lblAuthor.Caption := '';
       end;
 
     PAGE_SERIES:
       begin
         ipnlSeries.Clear;
-        cpCoverS.Clear;
         lblSeries.Caption := '...';
         lblBooksTotalS.Caption := '()';
       end;
@@ -1844,7 +1880,6 @@ begin
     PAGE_GENRES:
       begin
         ipnlGenres.Clear;
-        cpCoverG.Clear;
         lblGenreTitle.Caption := '...';
         lblBooksTotalG.Caption := '()';
       end;
@@ -1852,13 +1887,11 @@ begin
     PAGE_FAVORITES:
       begin
         ipnlFavorites.Clear;
-        cpCoverF.Clear;
       end;
 
     PAGE_SEARCH:
       begin
         ipnlSearch.Clear;
-        cpCoverSR.Clear;
         lblTotalBooksFL.Caption := '()';
       end;
 
@@ -2014,16 +2047,6 @@ begin
   end;
 end;
 
-procedure TfrmMain.SetLangBarSize;
-begin
-  // исправляем косяк с алфавитными панелями
-  rpLang.Visible := RusBar.Visible or EngBar.Visible;
-  if (RusBar.Visible and not EngBar.Visible) or (not RusBar.Visible and EngBar.Visible) then
-    rpLang.Height := RusBar.Height + 5
-  else
-    rpLang.Height := 2 * RusBar.Height + 10;
-end;
-
 procedure TfrmMain.TheFirstRun;
 begin
   if DMUser.tblBases.IsEmpty then
@@ -2111,7 +2134,7 @@ begin
   FLastLetterA := tbtnStar;
   FLastLetterS := tbtnStar;
 
-  CreateAlphabet;
+  CreateAlphabetToolbar;
 
   ReadINIData;
 
@@ -2166,8 +2189,6 @@ begin
   TheFirstRun;
 
   // ------------------------------------------------------------------------------
-
-  SetLangBarSize;
   frmSplash.lblState.Caption := 'Старт ...';
 
   //
@@ -2257,16 +2278,16 @@ begin
 
   SavePositions;
 
-  Settings.Splitters[0] := rzsSplitterA.Position;
-  Settings.Splitters[1] := rzsSplitterS.Position;
-  Settings.Splitters[2] := rzsSplitterG.Position;
-  Settings.Splitters[3] := rzsSplitterSR.Position;
+  ///Settings.Splitters[0] := rzsSplitterA.Position;
+  ///Settings.Splitters[1] := rzsSplitterS.Position;
+  ///Settings.Splitters[2] := rzsSplitterG.Position;
+  ///Settings.Splitters[3] := rzsSplitterSR.Position;
 
   Settings.BookSRCollapsed := ctpBook.Collapsed;
   Settings.FileSRCollapsed := ctpFile.Collapsed;
   Settings.OtherSRCollapsed := ctpOther.Collapsed;
 
-  Settings.CoverWidth := cpCoverA.Width;
+  Settings.InfoPanelHeight := ipnlAuthors.Height;
 
   Settings.WindowState := Ord(Self.WindowState);
   if WindowState = wsNormal then
@@ -2702,38 +2723,33 @@ begin
   end;
 end;
 
-procedure TfrmMain.GetActiveViewComponents(var Tree: TVirtualStringTree; var Panel: TMHLInfoPanel; var Cover: TMHLCoverPanel);
+procedure TfrmMain.GetActiveViewComponents(var Tree: TVirtualStringTree; var Panel: TInfoPanel);
 begin
   case ActiveView of
     ByAuthorView:
       begin
         Tree := tvBooksA;
         Panel := ipnlAuthors;
-        Cover := cpCoverA;
       end;
     BySeriesView:
       begin
         Tree := tvBooksS;
         Panel := ipnlSeries;
-        Cover := cpCoverS;
       end;
     ByGenreView:
       begin
         Tree := tvBooksG;
         Panel := ipnlGenres;
-        Cover := cpCoverG;
       end;
     SearchView:
       begin
         Tree := tvBooksSR;
         Panel := ipnlSearch;
-        Cover := cpCoverSR;
       end;
     FavoritesView:
       begin
         Tree := tvBooksF;
         Panel := ipnlFavorites;
-        Cover := cpCoverF;
       end;
   end;
 end;
@@ -2742,20 +2758,13 @@ procedure TfrmMain.tvBooksTreeChange(Sender: TBaseVirtualTree; Node: PVirtualNod
 var
   Data: PBookData;
   Tree: TVirtualStringTree;
-  InfoPanel: TMHLInfoPanel;
-  Cover: TMHLCoverPanel;
-  Folder: string;
-  FileName: string;
-  Ext: string;
-
+  InfoPanel: TInfoPanel;
   CoverOK: Boolean;
-
-  No: Integer;
 begin
   if BookTreeStatus = bsBusy then
     Exit;
 
-  GetActiveViewComponents(Tree, InfoPanel, Cover);
+  GetActiveViewComponents(Tree, InfoPanel);
 
   Data := Tree.GetNodeData(Tree.GetFirstSelected);
   if not Assigned(Data) then
@@ -2770,20 +2779,24 @@ begin
     Exit;
   end;
 
-  dmCollection.GetBookFileName(Data^.BookID, Data^.DatabaseID, Folder, FileName, Ext, No);
+  if Settings.ShowInfoPanel then
+  begin
+    //
+    // TODO : необходимо вынести этот код в отдельную функцию, т к он нужен и после переключения режима показа
+    // информации о книге. Если информация была скрыта и пользователь хочет ее видеть, то необходимо обновить панель.
+    // Заодно этот метод должен зачитывать обложку и аннотацию.
+    // Желательно сделать показ информации о книге с таймаутом, т к чтение обложки может занимать достаточно много времени
+    //
+    InfoPanel.SetBookInfo(
+      Data^.Title,
+      TAuthorsHelper.GetLinkList(Data^.Authors),
+      Data^.Serie,
+      TGenresHelper.GetLinkList(Data^.Genres),
+      '' // TODO
+      );
+  end;
 
-  InfoPanel.Author := TAuthorsHelper.GetList(Data^.Authors);
-  InfoPanel.Title := Data^.Title;
-  InfoPanel.Genre := TGenresHelper.GetList(Data^.Genres);
-  //
-  // Вынужден заполнить эти поля (хоть они иногда и не показываются), т.к. они используются в других методах
-  // для получения информации о положении книги
-  //
-  InfoPanel.Folder := Folder;
-  InfoPanel.FileName := FileName;
-  InfoPanel.ShowFileInfo := Data^.Local or not isOnlineCollection(DMUser.ActiveCollection.CollectionType);
-
-  CoverOK := Cover.Show(Folder, FileName, No);
+  CoverOK := True; /// Cover.Show(Folder, FileName, No);
 
   if IsPrivate and IsNonFB2 then
   begin
@@ -2797,8 +2810,6 @@ begin
       frmConvertToFBD.Caption := IfThen(CoverOK, 'Редактирование FBD', 'Преобразование в FBD');
     end;
   end;
-
-  Application.ProcessMessages;
 end;
 
 procedure TfrmMain.tvBooksTreeCompareNodes(Sender: TBaseVirtualTree; Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
@@ -3241,19 +3252,9 @@ begin
   Screen.Cursor := crDefault;
 end;
 
-procedure TfrmMain.CoverPanelResize(Sender: TObject);
-var
-  NewSize: Integer;
+procedure TfrmMain.InfoPanelResize(Sender: TObject);
 begin
-  NewSize := (Sender as TWinControl).Width;
-  if NewSize < 150 then
-    NewSize := 150;
-
-  cpCoverA.Width := NewSize;
-  cpCoverS.Width := NewSize;
-  cpCoverG.Width := NewSize;
-  cpCoverF.Width := NewSize;
-  cpCoverSR.Width := NewSize;
+  SetInfoPanelHeight((Sender as TWinControl).Height);
 end;
 
 procedure TfrmMain.FillBookIdList(const Tree: TVirtualStringTree; var BookIDList: TBookIdList);
@@ -3406,8 +3407,7 @@ procedure TfrmMain.tbtbnReadClick(Sender: TObject);
 var
   WorkFile: string;
   Tree: TVirtualStringTree;
-  Cover: TMHLCoverPanel;
-  Panel: TMHLInfoPanel;
+  Panel: TInfoPanel;
   Data: PBookData;
 
   FS: TMemoryStream;
@@ -3417,7 +3417,7 @@ var
   BookFolder, BookFileName, Ext: string;
   No: Integer;
 begin
-  GetActiveViewComponents(Tree, Panel, Cover);
+  GetActiveViewComponents(Tree, Panel);
 
   Data := Tree.GetNodeData(Tree.GetFirstSelected);
   if not Assigned(Data) then
@@ -3530,22 +3530,6 @@ begin
   end;
 end;
 
-procedure TfrmMain.tbtnEngClick(Sender: TObject);
-begin
-  Settings.ShowEngBar := not Settings.ShowEngBar;
-  EngBar.Visible := Settings.ShowEngBar;
-
-  SetLangBarSize;
-end;
-
-procedure TfrmMain.tbtnRusClick(Sender: TObject);
-begin
-  Settings.ShowRusBar := not Settings.ShowRusBar;
-  RusBar.Visible := Settings.ShowRusBar;
-
-  SetLangBarSize;
-end;
-
 procedure TfrmMain.tbtnShowDeletedClick(Sender: TObject);
 begin
   SavePositions;
@@ -3567,31 +3551,40 @@ begin
 end;
 
 procedure TfrmMain.tbtnStarClick(Sender: TObject);
+var
+  Button: TToolButton;
 begin
-  if (pgControl.ActivePageIndex <> PAGE_AUTHORS) and (pgControl.ActivePageIndex <> PAGE_SERIES) then
+  if not pgControl.ActivePageIndex in [PAGE_AUTHORS, PAGE_SERIES] then
     Exit;
+
+  Assert(Sender is TToolButton);
+  Button := Sender as TToolButton;
 
   Screen.Cursor := crHourGlass;
   case ActiveView of
     ByAuthorView:
       begin
         ClearLabels(PAGE_AUTHORS, True);
+
         if Assigned(FLastLetterA) then
           FLastLetterA.Down := False;
+        FLastLetterA := Button;
+        Button.Down := True;
 
-        FLastLetterA := (Sender as TToolButton);
-        (Sender as TToolButton).Down := True;
-        if (Sender as TToolButton).Tag >= 90 then
-          case (Sender as TToolButton).Tag of
-            91: dmCollection.Authors.Filter := 'UPPER(LastName) >= "А*"';
-            92: dmCollection.Authors.Filter := 'UPPER(LastName) < "А*"';
+        if Button.Tag >= 90 then
+          case Button.Tag of
+            91: dmCollection.Authors.Filter := 'UPPER(' + AUTHOR_LASTTNAME_FIELD + ') >= "А*"';
+            92: dmCollection.Authors.Filter := 'UPPER(' + AUTHOR_LASTTNAME_FIELD + ') < "А*"';
           end
         else
         begin
-          edLocateAuthor.Text := (Sender as TToolButton).Caption;
-          dmCollection.Authors.Filter := '(LastName=' + QuotedStr((Sender as TToolButton).Caption + '*') + ') OR (LastName=' + QuotedStr(AnsiLowercase((Sender as TToolButton).Caption) + '*') + ')';
+          edLocateAuthor.Text := Button.Caption;
+          dmCollection.Authors.Filter :=
+          '(' + AUTHOR_LASTTNAME_FIELD + '=' + QuotedStr(Button.Caption + '*') + ') ' +
+          'OR ' +
+          '(' + AUTHOR_LASTTNAME_FIELD + '=' + QuotedStr(AnsiLowercase(Button.Caption) + '*') + ')';
         end;
-        dmCollection.Authors.Filtered := (Sender as TToolButton).Tag <> 90;
+        dmCollection.Authors.Filtered := Button.Tag <> 90;
         FillAuthorTree(tvAuthors);
 
         // tvAuthors.Selected[tvAuthors.GetFirst] := True;
@@ -3601,21 +3594,25 @@ begin
     BySeriesView:
       begin
         ClearLabels(PAGE_SERIES, True);
+
         if Assigned(FLastLetterS) then
           FLastLetterS.Down := False;
-        FLastLetterS := (Sender as TToolButton);
-        (Sender as TToolButton).Down := True;
+        FLastLetterS := Button;
+        Button.Down := True;
 
-        if (Sender as TToolButton).Tag >= 90 then
-          case (Sender as TToolButton).Tag of
-            90: dmCollection.Series.Filter := SERIE_TITLE_FIELD + ' <>' + QuotedStr(NO_SERIES_TITLE);
+        if Button.Tag >= 90 then
+          case Button.Tag of
+            90: dmCollection.Series.Filter := SERIE_TITLE_FIELD + ' <> ' + QuotedStr(NO_SERIES_TITLE);
             91: dmCollection.Series.Filter := 'UPPER(' + SERIE_TITLE_FIELD + ') >= "А*"';
-            92: dmCollection.Series.Filter := 'UPPER(' + SERIE_TITLE_FIELD + ') < "A*" and ' + SERIE_TITLE_FIELD + ' <>' + QuotedStr(NO_SERIES_TITLE);
+            92: dmCollection.Series.Filter := 'UPPER(' + SERIE_TITLE_FIELD + ') < "A*" AND ' + SERIE_TITLE_FIELD + ' <>' + QuotedStr(NO_SERIES_TITLE);
           end
         else
         begin
-          edLocateSeries.Text := (Sender as TToolButton).Caption;
-          dmCollection.Series.Filter := '(' + SERIE_TITLE_FIELD + '=' + QuotedStr((Sender as TToolButton).Caption + '*') + ') OR (' + SERIE_TITLE_FIELD + '=' + QuotedStr(AnsiLowercase((Sender as TToolButton).Caption) + '*') + ')';
+          edLocateSeries.Text := Button.Caption;
+          dmCollection.Series.Filter :=
+            '(' + SERIE_TITLE_FIELD + '=' + QuotedStr(Button.Caption + '*') + ') ' +
+            'OR ' +
+            '(' + SERIE_TITLE_FIELD + '=' + QuotedStr(AnsiLowercase(Button.Caption) + '*') + ')';
         end;
         dmCollection.Series.Filtered := True;
         FillSeriesTree;
@@ -3650,30 +3647,24 @@ begin
   RestorePositions;
 end;
 
-procedure TfrmMain.SetCoversVisible(State: Boolean);
+procedure TfrmMain.SetInfoPanelHeight(Height: Integer);
 begin
-  cpCoverA.Visible := State;
-  cpCoverS.Visible := State;
-  cpCoverG.Visible := State;
-  cpCoverF.Visible := State;
-  cpCoverSR.Visible := State;
+  ipnlAuthors.Height := Height;
+  ipnlSeries.Height := Height;
+  ipnlGenres.Height := Height;
+  ipnlSearch.Height := Height;
+  ipnlFavorites.Height := Height;
 end;
 
-procedure TfrmMain.tbtnShowCoverClick(Sender: TObject);
-var
-  ShowCover: Boolean;
+procedure TfrmMain.SetInfoPanelVisible(State: Boolean);
 begin
-  Settings.ShowInfoPanel := not Settings.ShowInfoPanel;
+  ipnlAuthors.Visible := State;
+  MHLSplitter2.Visible := State;
 
-  // Visible := (Settings.ShowInfoPanel and not isNonFb2Collection(DMUser.ActiveCollection.CollectionType)
-  // or (Settings.ShowInfoPanel and isNonFB2Collection(DMUser.ActiveCollection.CollectionType)
-  // and Settings.AllowMixed));
-
-  ShowCover := Settings.ShowInfoPanel;
-
-  SetCoversVisible(ShowCover);
-  if ShowCover then
-    tvBooksTreeChange(nil, nil);
+  ipnlSeries.Visible := State;
+  ipnlGenres.Visible := State;
+  ipnlSearch.Visible := State;
+  ipnlFavorites.Visible := State;
 end;
 
 procedure TfrmMain.tbClearEdAuthorClick(Sender: TObject);
@@ -4847,6 +4838,79 @@ begin
     ShowMessage('Нельзя удалить встроенную группу!');
 end;
 
+procedure TfrmMain.ShowRusAlphabetUpdate(Sender: TObject);
+begin
+  acShowRusAlphabet.Checked := Settings.ShowRusBar;
+end;
+
+procedure TfrmMain.ShowRusAlphabetExecute(Sender: TObject);
+begin
+  Settings.ShowRusBar := not Settings.ShowRusBar;
+  RusBar.Visible := Settings.ShowRusBar;
+end;
+
+procedure TfrmMain.ShowEngAlphabetUpdate(Sender: TObject);
+begin
+  acShowEngAlphabet.Checked := Settings.ShowEngBar;
+end;
+
+procedure TfrmMain.ShowEngAlphabetExecute(Sender: TObject);
+begin
+  Settings.ShowEngBar := not Settings.ShowEngBar;
+  EngBar.Visible := Settings.ShowEngBar;
+end;
+
+procedure TfrmMain.ShowEditToolbarUpdate(Sender: TObject);
+begin
+  acShowEditToolbar.Checked := Settings.EditToolbarVisible;
+end;
+
+procedure TfrmMain.ShowEditToolbarExecute(Sender: TObject);
+begin
+  Settings.EditToolbarVisible := not Settings.EditToolbarVisible;
+  tlbrEdit.Visible := Settings.EditToolbarVisible;
+end;
+
+procedure TfrmMain.ShowMainToolbarUpdate(Sender: TObject);
+begin
+  acShowMainToolbar.Checked := Settings.ShowToolbar;
+end;
+
+procedure TfrmMain.ShowMainToolbarExecute(Sender: TObject);
+begin
+  Settings.ShowToolbar := not Settings.ShowToolbar;
+  tlbrMain.Visible := Settings.ShowToolbar;
+end;
+
+procedure TfrmMain.ShowStatusbarUpdate(Sender: TObject);
+begin
+  acShowStatusbar.Checked := Settings.ShowStatusBar;
+end;
+
+procedure TfrmMain.ShowStatusbarExecute(Sender: TObject);
+begin
+  Settings.ShowStatusBar := not Settings.ShowStatusBar;
+  StatusBar.Visible := Settings.ShowStatusBar;
+end;
+
+procedure TfrmMain.ShowBookInfoUpdate(Sender: TObject);
+begin
+  acShowBookInfo.Checked := Settings.ShowInfoPanel;
+end;
+
+procedure TfrmMain.ShowBookInfoExecute(Sender: TObject);
+begin
+  Settings.ShowInfoPanel := not Settings.ShowInfoPanel;
+
+  //
+  // Принудительно обновим информацию о книге, т к если она не показывалась, то и не обновлялась
+  //
+  if Settings.ShowInfoPanel then
+    tvBooksTreeChange(nil, nil);
+
+  SetInfoPanelVisible(Settings.ShowInfoPanel);
+end;
+
 procedure TfrmMain.AddBookToGroup(Sender: TObject);
 var
   Tree: TVirtualStringTree;
@@ -5976,12 +6040,6 @@ begin
     ClearDir(dirPath);
 end;
 
-procedure TfrmMain.miEditToolbarVisibleClick(Sender: TObject);
-begin
-  tlbrEdit.Visible := miEditToolbarVisible.Checked;
-  Settings.EditToolbarVisible := tlbrEdit.Visible;
-end;
-
 procedure TfrmMain.miExportToHTMLClick(Sender: TObject);
 const
   HTMLHead =
@@ -6400,10 +6458,7 @@ begin
   BtnFav_add.Enabled := ToolBuutonVisible;
   tbSelectAll.Enabled := ToolBuutonVisible;
   tbCollapse.Enabled := ToolBuutonVisible;
-  tbtnShowCover.Enabled := ToolBuutonVisible;
   tbtnRead.Enabled := ToolBuutonVisible;
-  tbtnRus.Enabled := ToolBuutonVisible;
-  tbtnEng.Enabled := ToolBuutonVisible;
   btnRefreshCollection.Enabled := ToolBuutonVisible;
   tbtnShowDeleted.Enabled := ToolBuutonVisible;
   tbtnShowLocalOnly.Enabled := ToolBuutonVisible;
@@ -6641,7 +6696,8 @@ begin
     if Text = Items[ItemIndex] then
     begin
       DeleteFile(Settings.PresetPath + Text + '.mhlf');
-      Delete(ItemIndex);
+      ///Delete(ItemIndex);
+      Assert(False, 'Not implemented yet!');
       Text := '';
     end;
   end;

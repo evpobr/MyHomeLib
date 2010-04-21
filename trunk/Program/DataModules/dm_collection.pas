@@ -23,6 +23,8 @@ uses
   unit_Globals;
 
 type
+  TThreeState = (tsTrue, tsFalse, tsUnknown);
+
   TDMCollection = class(TDataModule)
     DBCollection: TABSDatabase;
 
@@ -220,6 +222,12 @@ type
     // Статистика по текущей коллекции
     //
     procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
+
+    //
+    // Установка фильтра.
+    // NOTE: !!! После установки фильтра датасеты остаются закрытыми !!!
+    //
+    procedure SetFilter(LocalState: TThreeState; ShowDeleted: TThreeState);
   end;
 
 var
@@ -709,6 +717,69 @@ begin
   GetBookRecord(BookID, DatabaseID, BookRecord, True);
 
   DMUser.AddBookToGroup(BookID, DatabaseID, GroupID, BookRecord);
+end;
+
+procedure TDMCollection.SetFilter(LocalState: TThreeState; ShowDeleted: TThreeState);
+const
+  GetAuthorsBegin = 'SELECT a.AuthorID, a.LastName, a.FirstName, a.MiddleName FROM Authors a ';
+  GetAuthorsQuery: array [TThreeState] of string = (
+  // Авторы, книги которых скачаны
+  'WHERE (' +
+  'a.AuthorID IN (SELECT DISTINCT l.AuthorID FROM Author_List l INNER JOIN Books b ON l.BookID = b.BookID WHERE b.local = true)' +
+  ') ',
+
+  // Авторы, книги которых не скачаны
+  'WHERE (' +
+  'a.AuthorID IN (SELECT DISTINCT l.AuthorID FROM Author_List l INNER JOIN Books b ON l.BookID = b.BookID WHERE b.local = false)' +
+  ') ',
+
+  // Все авторы
+  ''
+  );
+  GetAuthorsEnd = 'ORDER BY a.LastName, a.FirstName, a.MiddleName ';
+
+  GetSeriessBegin = 'SELECT s.SerieID, s.SerieTitle FROM Series s ';
+  GetSeriessQuery: array [TThreeState] of string = (
+  // Серии, книги которых скачаны
+  'WHERE (s.SerieID <> 1) AND ( ' +
+  's."SerieID" in (SELECT DISTINCT b."SerieID" FROM "books" b WHERE b.local = true) ' +
+  ') ',
+
+  // Серии, книги которых не скачаны
+  'WHERE (s.SerieID <> 1) AND ( ' +
+  's."SerieID" in (SELECT DISTINCT b."SerieID" FROM "books" b WHERE b.local = false) ' +
+  ') ',
+
+  // Все серии
+  'WHERE (s.SerieID <> 1) '
+  );
+  GetSeriessEnd = 'ORDER BY s.SerieTitle';
+
+begin
+  Assert(not Authors.Active);
+  Assert(not Series.Active);
+
+  Assert(isOnlineCollection(DMUser.ActiveCollection.CollectionType));
+
+  Authors.SQL.Text := GetAuthorsBegin + GetAuthorsQuery[LocalState] + GetAuthorsEnd;
+  Series.SQL.Text := GetSeriessBegin + GetSeriessQuery[LocalState] + GetSeriessEnd;
+
+  if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
+  begin
+    if (ShowDeleted = tsTrue) and (LocalState = tsTrue) then
+      //SwitchFilter(flLocal + ' AND ' + flNotShowDeleted)
+    else if (ShowDeleted = tsTrue) and (LocalState = tsFalse) then
+      //SwitchFilter(flNotShowDeleted)
+    else if (ShowDeleted = tsFalse) and (LocalState = tsTrue) then
+      //SwitchFilter(flLocal)
+    else if (ShowDeleted = tsFalse) and (LocalState = tsFalse) then
+      //SwitchFilter('');
+  end
+  else if (ShowDeleted = tsTrue) then
+    //SwitchFilter(flNotShowDeleted)
+  else
+    //SwitchFilter('');
+    ;
 end;
 
 end.

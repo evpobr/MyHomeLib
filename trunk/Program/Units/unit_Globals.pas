@@ -199,6 +199,7 @@ type
     );
 
     class function GetList(const Authors: TBookAuthors): string;
+    class function GetLinkList(const Authors: TBookAuthors): string;
   end;
 
   // --------------------------------------------------------------------------
@@ -230,6 +231,7 @@ type
     );
 
     class function GetList(const Genres: TBookGenres): string;
+    class function GetLinkList(const Genres: TBookGenres): string;
   end;
 
   // --------------------------------------------------------------------------
@@ -749,6 +751,18 @@ begin
   );
 end;
 
+class function TAuthorsHelper.GetLinkList(const Authors: TBookAuthors): string;
+begin
+  Result := TArrayUtils.Join<TAuthorData>(
+    Authors,
+    ' ',
+    function(const Author: TAuthorData): string
+    begin
+      Result := '<a>' + Author.GetFullName(True) + '</a>';
+    end
+  );
+end;
+
 { TGenreData }
 
 procedure TGenreData.Clear;
@@ -782,6 +796,18 @@ begin
     function(const genre: TGenreData): string
     begin
       Result := genre.GenreAlias;
+    end
+  );
+end;
+
+class function TGenresHelper.GetLinkList(const Genres: TBookGenres): string;
+begin
+  Result := TArrayUtils.Join<TGenreData>(
+    Genres,
+    ' ',
+    function(const genre: TGenreData): string
+    begin
+      Result := '<a>' + genre.GenreAlias + '</a>';
     end
   );
 end;
