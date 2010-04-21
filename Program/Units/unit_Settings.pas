@@ -103,7 +103,7 @@ type
     FWindowState: Integer;
     FFormWidth: Integer;
     FFormHeight: Integer;
-    FCoverWidth: Integer;
+    FInfoPanelHeight: Integer;
 
     FBookSRCollapsed: Boolean;
     FFileSRCollapsed: Boolean;
@@ -166,13 +166,17 @@ type
     FAllowMixed: Boolean;
 
     FAutoRunUpdate: Boolean;
-    FShowInfoPanel: Boolean;
+
+    FShowToolbar: Boolean;
     FShowRusBar: Boolean;
     FShowEngBar: Boolean;
+    FShowStatusBar: Boolean;
+
     FDoNotShowDeleted: Boolean;
     FShowLocalOnly: Boolean;
     FDeleteDeleted: Boolean;
     FAutoLoadReview: Boolean;
+    FShowInfoPanel: Boolean;
 
     FForceConvertToFBD: Boolean;
     FOverwriteFB2Info: Boolean;
@@ -285,8 +289,12 @@ type
     property ExportMode: TExportMode read FExportMode write FExportMode;
     property TXTEncoding: TTXTEncoding read FTXTEncoding write FTXTEncoding;
 
+    property ShowToolbar: Boolean read FShowToolbar write FShowToolbar;
     property ShowRusBar: Boolean read FShowRusBar write FShowRusBar;
     property ShowEngBar: Boolean read FShowEngBar write FShowEngBar;
+    property EditToolBarVisible: Boolean read FEditToolBarVisible write FEditToolBarVisible;
+    property ShowStatusBar: Boolean read FShowStatusBar write FShowStatusBar;
+
     property TreeFontSize: Integer read FTreeFontSize write FTreeFontSize;
     property ShortFontSize: Integer read FShortFontSize write FShortFontSize;
     property ShowInfoPanel: Boolean read FShowInfoPanel write FShowInfoPanel;
@@ -295,7 +303,6 @@ type
     property ShowLocalOnly: Boolean read FShowLocalOnly write FShowLocalOnly;
     property ShowSubGenreBooks: Boolean read FShowSubGenreBooks write FShowSubGenreBooks;
     property ShowFb2Info: Boolean read FShowFb2Info write FShowFb2Info;
-    property EditToolBarVisible: Boolean read FEditToolBarVisible write FEditToolBarVisible;
 
     property AutoRunUpdate: Boolean read FAutoRunUpdate write FAutoRunUpdate;
 
@@ -347,7 +354,7 @@ type
     property FormTop: Integer read FFormTop write FFormTop;
     property FormLeft: Integer read FFormLeft write FFormLeft;
 
-    property CoverWidth: Integer read FCoverWidth write FCoverWidth;
+    property InfoPanelHeight: Integer read FInfoPanelHeight write FInfoPanelHeight;
 
     property BookSRCollapsed: Boolean read FBookSRCollapsed write FBookSRCollapsed;
     property FileSRCollapsed: Boolean read FFileSRCollapsed write FFileSRCollapsed;
@@ -713,7 +720,7 @@ begin
     FFormTop := iniFile.ReadInteger(INTERFACE_SECTION, 'FormTop ', 0);
     FFormLeft := iniFile.ReadInteger(INTERFACE_SECTION, 'FormLeft ', 0);
 
-    FCoverWidth := iniFile.ReadInteger(INTERFACE_SECTION, 'CoverWidth ', 250);
+    FInfoPanelHeight := iniFile.ReadInteger(INTERFACE_SECTION, 'InfoPanelHeight ', 250);
 
     FBookSRCollapsed := iniFile.ReadBool(INTERFACE_SECTION, 'BookSR', False);
     FFileSRCollapsed := iniFile.ReadBool(INTERFACE_SECTION, 'FileSR', False);
@@ -787,9 +794,11 @@ begin
     //
     // BEHAVIOR_SECTION
     //
-
+    FShowToolbar := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowToolbar', True);
     FShowRusBar := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowRusABC', True);
     FShowEngBar := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowEngABC', True);
+    FShowStatusBar := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowStatusBar', True);
+
     FShowInfoPanel := iniFile.ReadBool(BEHAVIOR_SECTION, 'CoverPanel', True);
     FDoNotShowDeleted := iniFile.ReadBool(BEHAVIOR_SECTION, 'DoNotShowDeleted', True);
     FShowLocalOnly := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowLocalOnly', False);
@@ -881,7 +890,7 @@ begin
     iniFile.WriteInteger(INTERFACE_SECTION, 'FormTop ', FFormTop);
     iniFile.WriteInteger(INTERFACE_SECTION, 'FormLeft ', FFormLeft);
 
-    iniFile.WriteInteger(INTERFACE_SECTION, 'CoverWidth ', FCoverWidth);
+    iniFile.WriteInteger(INTERFACE_SECTION, 'InfoPanelHeight ', FInfoPanelHeight);
 
     iniFile.WriteBool(INTERFACE_SECTION, 'BookSR', FBookSRCollapsed);
     iniFile.WriteBool(INTERFACE_SECTION, 'FileSR', FFileSRCollapsed);
@@ -946,8 +955,11 @@ begin
     //
     // BEHAVIOR_SECTION
     //
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowToolbar', FShowToolbar);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowRusABC', FShowRusBar);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowEngABC', FShowEngBar);
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowStatusBar', FShowStatusBar);
+
     iniFile.WriteBool(BEHAVIOR_SECTION, 'DoNotShowDeleted', FDoNotShowDeleted);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowLocalOnly', FShowLocalOnly);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'CoverPanel', FShowInfoPanel);
