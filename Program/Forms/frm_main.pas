@@ -51,16 +51,10 @@ uses
   htmlhlp,
 
   RzCommon,
-  RzButton,
   RzStatus,
-  RzPrgres,
   RzPanel,
   RzBtnEdt,
-  RzCmboBx,
-  RzSplit,
-  RzLabel,
   RzEdit,
-  RzTabs,
 
   idStack,
   idComponent,
@@ -71,7 +65,8 @@ uses
   Buttons, 
   MHLSplitter, 
   ActnList, 
-  BookInfoPanel;
+  BookInfoPanel,
+  ActnMan;
 
 type
   TfrmMain = class(TForm)
@@ -681,6 +676,11 @@ type
     //
     procedure SetBookLocalStatus(BookID: Integer; DatabaseID: Integer; IsLocal: Boolean);
 
+    //
+    // Восстанавить тулбар в правильной позиции
+    //
+    procedure ChangeToolbarVisability(ToolBar: TToolBar; ShowToolbar: Boolean);
+
   public
     procedure FillAuthorTree(Tree: TVirtualStringTree; FullMode: Boolean = False);
     procedure FillGenresTree(Tree: TVirtualStringTree; FillFB2: Boolean = False);
@@ -1025,12 +1025,6 @@ var
     AControl.Font.Color := FontColor;
   end;
 
-  procedure SetCBColor(AControl: TRzComboBox);
-  begin
-    AControl.Color := BGColor;
-    AControl.Font.Color := FontColor;
-  end;
-
 begin
   BGColor := Settings.BGColor;
   TreeFontSize := Settings.TreeFontSize;
@@ -1047,9 +1041,6 @@ begin
   SetTreeViewColor(tvGroups);
   SetTreeViewColor(tvDownloadList);
 
-  //SetEditColor(edLocateAuthor);
-  //SetEditColor(edLocateSeries);
-
   SetEditColor(edFFullName);
   SetEditColor(edFTitle);
   SetEditColor(edFSeries);
@@ -1059,10 +1050,6 @@ begin
   SetEditColor(edFExt);
   SetEditColor(edFKeyWords);
   SetEditColor(edFAnnotation);
-
-  //SetCBColor(cbDownloaded);
-  //SetCBColor(cbDate);
-  //SetCBColor(cbLang);
 end;
 
 procedure TfrmMain.ReadINIData;
@@ -3199,7 +3186,7 @@ var
 begin
   GetSelections(tvDownloadList, List);
   for i := 0 to tvDownloadList.SelectedCount - 1 do
-    case (Sender as TRzToolButton).Tag of
+    case (Sender as TToolButton).Tag of
       20: tvDownloadList.MoveTo(List[tvDownloadList.SelectedCount - i - 1], tvDownloadList.GetFirst, amInsertBefore, False);
       21: tvDownloadList.MoveTo(List[i], tvDownloadList.GetPrevious(List[i]), amInsertBefore, False);
       22: tvDownloadList.MoveTo(List[tvDownloadList.SelectedCount - i - 1], tvDownloadList.GetNext(List[tvDownloadList.SelectedCount - i - 1]), amInsertAfter, False);
@@ -4838,6 +4825,51 @@ begin
     ShowMessage('Нельзя удалить встроенную группу!');
 end;
 
+procedure TfrmMain.ChangeToolbarVisability(ToolBar: TToolBar; ShowToolbar: Boolean);
+var
+  ToolBars: array[0..3] of TToolBar;
+  BarTop: Integer;
+  i: Integer;
+begin
+  DisableAlign;
+  try
+    if ShowToolbar then
+    begin
+      //
+      // раздвигаем тулбары для правильного алигна
+      // Располагаем текущий тулбар под первым видимым старшим
+      // а все видимые младшие сдвигаем на 1 ниже
+      //
+      ToolBars[0] := tlbrMain;
+      ToolBars[1] := tlbrEdit;
+      ToolBars[2] := RusBar;
+      ToolBars[3] := EngBar;
+
+      BarTop := 0;
+      for i := 0 to High(ToolBars) do
+      begin
+        if ToolBars[i] = ToolBar then
+          Break;
+        if ToolBars[i].Visible then
+          BarTop := ToolBars[i].BoundsRect.Bottom;
+      end;
+
+      ToolBar.Top := BarTop;
+
+      for i := High(ToolBars) downto 0 do
+      begin
+        if ToolBars[i] = ToolBar then
+          Break;
+        if ToolBars[i].Visible then
+          ToolBars[i].Top := ToolBars[i].Top + 1;
+      end;
+    end;
+    ToolBar.Visible := ShowToolbar;
+  finally
+    EnableAlign;
+  end;
+end;
+
 procedure TfrmMain.ShowRusAlphabetUpdate(Sender: TObject);
 begin
   acShowRusAlphabet.Checked := Settings.ShowRusBar;
@@ -4846,7 +4878,7 @@ end;
 procedure TfrmMain.ShowRusAlphabetExecute(Sender: TObject);
 begin
   Settings.ShowRusBar := not Settings.ShowRusBar;
-  RusBar.Visible := Settings.ShowRusBar;
+  ChangeToolbarVisability(RusBar, Settings.ShowRusBar);
 end;
 
 procedure TfrmMain.ShowEngAlphabetUpdate(Sender: TObject);
@@ -4857,7 +4889,7 @@ end;
 procedure TfrmMain.ShowEngAlphabetExecute(Sender: TObject);
 begin
   Settings.ShowEngBar := not Settings.ShowEngBar;
-  EngBar.Visible := Settings.ShowEngBar;
+  ChangeToolbarVisability(EngBar, Settings.ShowEngBar);
 end;
 
 procedure TfrmMain.ShowEditToolbarUpdate(Sender: TObject);
@@ -4868,7 +4900,7 @@ end;
 procedure TfrmMain.ShowEditToolbarExecute(Sender: TObject);
 begin
   Settings.EditToolbarVisible := not Settings.EditToolbarVisible;
-  tlbrEdit.Visible := Settings.EditToolbarVisible;
+  ChangeToolbarVisability(tlbrEdit, Settings.EditToolbarVisible);
 end;
 
 procedure TfrmMain.ShowMainToolbarUpdate(Sender: TObject);
@@ -4879,7 +4911,7 @@ end;
 procedure TfrmMain.ShowMainToolbarExecute(Sender: TObject);
 begin
   Settings.ShowToolbar := not Settings.ShowToolbar;
-  tlbrMain.Visible := Settings.ShowToolbar;
+  ChangeToolbarVisability(tlbrMain, Settings.ShowToolbar);
 end;
 
 procedure TfrmMain.ShowStatusbarUpdate(Sender: TObject);
