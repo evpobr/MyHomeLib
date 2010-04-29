@@ -128,8 +128,8 @@ type
     property ShowAnnotation: Boolean read GetShowAnnotation write SetShowAnnotation default True;
 
     property OnAuthorLinkClicked: TSysLinkEvent read FOnAuthorLinkClicked write FOnAuthorLinkClicked;
-    property OnSerieLinkClicked: TSysLinkEvent read FOnSerieLinkClicked write FOnAuthorLinkClicked;
-    property OnGenreLinkClicked: TSysLinkEvent read FOnGenreLinkClicked write FOnAuthorLinkClicked;
+    property OnSerieLinkClicked: TSysLinkEvent read FOnSerieLinkClicked write FOnSerieLinkClicked;
+    property OnGenreLinkClicked: TSysLinkEvent read FOnGenreLinkClicked write FOnGenreLinkClicked;
   end;
 
 implementation
