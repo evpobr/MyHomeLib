@@ -325,14 +325,14 @@ object frmMain: TfrmMain
     Width = 786
     Height = 415
     HelpContext = 1
-    ActivePage = tsDownload
+    ActivePage = tsByAuthor
     Align = alClient
     TabOrder = 4
     OnChange = pgControlChange
     object tsByAuthor: TTabSheet
       HelpContext = 135
       Caption = #1040#1074#1090#1086#1088#1099
-      object MHLSplitter1: TMHLSplitter
+      object AuthorsViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
         Height = 387
@@ -467,7 +467,7 @@ object frmMain: TfrmMain
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 1
-        object MHLSplitter2: TMHLSplitter
+        object AuthorBookInfoSplitter: TMHLSplitter
           Left = 0
           Top = 278
           Width = 545
@@ -636,7 +636,7 @@ object frmMain: TfrmMain
     object tsBySerie: TTabSheet
       HelpContext = 135
       Caption = #1057#1077#1088#1080#1080
-      object MHLSplitter3: TMHLSplitter
+      object SeriesViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
         Height = 387
@@ -770,25 +770,25 @@ object frmMain: TfrmMain
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 1
-        object MHLSplitter4: TMHLSplitter
+        object SerieBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 278
+          Top = 228
           Width = 545
           Height = 3
           Cursor = crVSplit
           Align = alBottom
           ResizeControl = ipnlSeries
-          ExplicitTop = 31
-          ExplicitWidth = 250
+          ExplicitTop = 225
         end
         object ipnlSeries: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 284
+          Top = 234
           Width = 539
-          Height = 100
+          Height = 150
           Align = alBottom
           TabOrder = 0
+          OnResize = InfoPanelResize
         end
         object pnSerieBooksTitle: TPanel
           AlignWithMargins = True
@@ -834,7 +834,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 240
+          Height = 190
           Align = alClient
           ClipboardFormats.Strings = (
             'CSV'
@@ -942,7 +942,7 @@ object frmMain: TfrmMain
     object tsByGenre: TTabSheet
       HelpContext = 135
       Caption = #1046#1072#1085#1088#1099
-      object MHLSplitter5: TMHLSplitter
+      object GenresViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
         Height = 387
@@ -997,7 +997,7 @@ object frmMain: TfrmMain
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 1
-        object MHLSplitter6: TMHLSplitter
+        object GenreBookInfoSplitter: TMHLSplitter
           Left = 0
           Top = 278
           Width = 545
@@ -1054,6 +1054,7 @@ object frmMain: TfrmMain
           Height = 100
           Align = alBottom
           TabOrder = 1
+          OnResize = InfoPanelResize
         end
         object tvBooksG: TVirtualStringTree
           Tag = 2
@@ -1161,7 +1162,7 @@ object frmMain: TfrmMain
     object tsSearch: TTabSheet
       HelpContext = 126
       Caption = #1055#1086#1080#1089#1082
-      object MHLSplitter7: TMHLSplitter
+      object SearchViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
         Height = 387
@@ -1178,9 +1179,9 @@ object frmMain: TfrmMain
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 0
-        object MHLSplitter8: TMHLSplitter
+        object SearchBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 278
+          Top = 228
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -1193,11 +1194,12 @@ object frmMain: TfrmMain
         object ipnlSearch: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 284
+          Top = 234
           Width = 539
-          Height = 100
+          Height = 150
           Align = alBottom
           TabOrder = 0
+          OnResize = InfoPanelResize
         end
         object pnlFullSearch: TPanel
           AlignWithMargins = True
@@ -1344,7 +1346,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 240
+          Height = 190
           Align = alClient
           ClipboardFormats.Strings = (
             'CSV'
@@ -1857,7 +1859,7 @@ object frmMain: TfrmMain
     object tsByGroup: TTabSheet
       HelpContext = 125
       Caption = #1043#1088#1091#1087#1087#1099
-      object MHLSplitter9: TMHLSplitter
+      object GroupsViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
         Height = 387
@@ -2036,9 +2038,9 @@ object frmMain: TfrmMain
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 1
-        object MHLSplitter10: TMHLSplitter
+        object GroupBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 278
+          Top = 228
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -2050,18 +2052,19 @@ object frmMain: TfrmMain
         object ipnlFavorites: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 284
+          Top = 234
           Width = 539
-          Height = 100
+          Height = 150
           Align = alBottom
           TabOrder = 0
+          OnResize = InfoPanelResize
           DesignSize = (
             539
-            100)
+            150)
           object lblTotalBooksF: TLabel
             AlignWithMargins = True
             Left = 2011
-            Top = 3
+            Top = 9
             Width = 12
             Height = 19
             Alignment = taRightJustify
@@ -2074,10 +2077,11 @@ object frmMain: TfrmMain
             Font.Style = []
             ParentFont = False
             ExplicitLeft = 1601
+            ExplicitTop = 3
           end
           object btnClearFavorites: TBitBtn
             Left = 905
-            Top = 66
+            Top = 116
             Width = 118
             Height = 25
             Anchors = [akRight, akBottom]
@@ -2091,7 +2095,7 @@ object frmMain: TfrmMain
           end
           object btnClearGroup: TBitBtn
             Left = 414
-            Top = 66
+            Top = 116
             Width = 118
             Height = 25
             Anchors = [akRight, akBottom]
@@ -2147,7 +2151,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 240
+          Height = 190
           Align = alClient
           ClipboardFormats.Strings = (
             'CSV'

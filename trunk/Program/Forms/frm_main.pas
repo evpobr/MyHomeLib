@@ -368,8 +368,8 @@ type
     Label7: TLabel;
     pnAuthorsView: TPanel;
     pnAuthorBooksView: TPanel;
-    MHLSplitter1: TMHLSplitter;
-    MHLSplitter2: TMHLSplitter;
+    AuthorsViewSplitter: TMHLSplitter;
+    AuthorBookInfoSplitter: TMHLSplitter;
     ilAlphabetNormal: TImageList;
     ilAlphabetActive: TImageList;
     Actions: TActionList;
@@ -386,16 +386,16 @@ type
     miView: TMenuItem;
     acShowBookInfo: TAction;
     miShowBookInfo: TMenuItem;
-    MHLSplitter3: TMHLSplitter;
-    MHLSplitter4: TMHLSplitter;
-    MHLSplitter5: TMHLSplitter;
-    MHLSplitter6: TMHLSplitter;
-    MHLSplitter7: TMHLSplitter;
-    MHLSplitter8: TMHLSplitter;
+    SeriesViewSplitter: TMHLSplitter;
+    SerieBookInfoSplitter: TMHLSplitter;
+    GenresViewSplitter: TMHLSplitter;
+    GenreBookInfoSplitter: TMHLSplitter;
+    SearchViewSplitter: TMHLSplitter;
+    SearchBookInfoSplitter: TMHLSplitter;
     Panel2: TPanel;
     pnSearchControl: TPanel;
-    MHLSplitter9: TMHLSplitter;
-    MHLSplitter10: TMHLSplitter;
+    GroupsViewSplitter: TMHLSplitter;
+    GroupBookInfoSplitter: TMHLSplitter;
     ToolButton2: TToolButton;
     tbtnClear: TToolButton;
 
@@ -3646,12 +3646,19 @@ end;
 procedure TfrmMain.SetInfoPanelVisible(State: Boolean);
 begin
   ipnlAuthors.Visible := State;
-  MHLSplitter2.Visible := State;
+  AuthorBookInfoSplitter.Visible := State;
 
   ipnlSeries.Visible := State;
+  SerieBookInfoSplitter.Visible := State;
+
   ipnlGenres.Visible := State;
+  GenreBookInfoSplitter.Visible := State;
+
   ipnlSearch.Visible := State;
+  SearchBookInfoSplitter.Visible := State;
+
   ipnlFavorites.Visible := State;
+  GroupBookInfoSplitter.Visible := State;
 end;
 
 procedure TfrmMain.tbClearEdAuthorClick(Sender: TObject);
