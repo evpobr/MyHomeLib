@@ -487,6 +487,9 @@ object frmMain: TfrmMain
           Align = alBottom
           TabOrder = 0
           OnResize = InfoPanelResize
+          OnAuthorLinkClicked = AuthorLinkClicked
+          OnSerieLinkClicked = SerieLinkClicked
+          OnGenreLinkClicked = GenreLinkClicked
         end
         object pnAuthorBooksTitle: TPanel
           AlignWithMargins = True
@@ -789,6 +792,9 @@ object frmMain: TfrmMain
           Align = alBottom
           TabOrder = 0
           OnResize = InfoPanelResize
+          OnAuthorLinkClicked = AuthorLinkClicked
+          OnSerieLinkClicked = SerieLinkClicked
+          OnGenreLinkClicked = GenreLinkClicked
         end
         object pnSerieBooksTitle: TPanel
           AlignWithMargins = True
@@ -1055,6 +1061,9 @@ object frmMain: TfrmMain
           Align = alBottom
           TabOrder = 1
           OnResize = InfoPanelResize
+          OnAuthorLinkClicked = AuthorLinkClicked
+          OnSerieLinkClicked = SerieLinkClicked
+          OnGenreLinkClicked = GenreLinkClicked
         end
         object tvBooksG: TVirtualStringTree
           Tag = 2
@@ -1200,6 +1209,9 @@ object frmMain: TfrmMain
           Align = alBottom
           TabOrder = 0
           OnResize = InfoPanelResize
+          OnAuthorLinkClicked = AuthorLinkClicked
+          OnSerieLinkClicked = SerieLinkClicked
+          OnGenreLinkClicked = GenreLinkClicked
         end
         object pnlFullSearch: TPanel
           AlignWithMargins = True
@@ -2058,6 +2070,9 @@ object frmMain: TfrmMain
           Align = alBottom
           TabOrder = 0
           OnResize = InfoPanelResize
+          OnAuthorLinkClicked = AuthorLinkClicked
+          OnSerieLinkClicked = SerieLinkClicked
+          OnGenreLinkClicked = GenreLinkClicked
           DesignSize = (
             539
             150)
@@ -13212,10 +13227,12 @@ object frmMain: TfrmMain
     Top = 240
   end
   object ilAlphabetNormal: TImageList
+    DrawingStyle = dsTransparent
     Left = 576
     Top = 320
   end
   object ilAlphabetActive: TImageList
+    DrawingStyle = dsTransparent
     Left = 672
     Top = 320
   end

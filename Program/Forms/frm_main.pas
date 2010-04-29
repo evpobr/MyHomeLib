@@ -600,6 +600,9 @@ type
     procedure ShowStatusbarExecute(Sender: TObject);
     procedure ShowBookInfoUpdate(Sender: TObject);
     procedure ShowBookInfoExecute(Sender: TObject);
+    procedure AuthorLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
+    procedure GenreLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
+    procedure SerieLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
 
   protected
     procedure WMGetSysCommand(var Message: TMessage); message WM_SYSCOMMAND;
@@ -1509,6 +1512,21 @@ begin
     pgControl.ActivePageIndex := PAGE_AUTHORS;
 end;
 
+procedure TfrmMain.SerieLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
+begin
+//
+end;
+
+procedure TfrmMain.GenreLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
+begin
+//
+end;
+
+procedure TfrmMain.AuthorLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
+begin
+//
+end;
+
 procedure TfrmMain.CreateAlphabetToolbar;
 const
   EngAlphabet: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -1528,12 +1546,12 @@ var
     ImageCanvas.FillRect(ImageRect);
     ImageCanvas.Font.Color := clWindowText;
     ImageCanvas.TextRect(ImageRect, ImageText, [tfCenter, tfSingleLine, tfVerticalCenter]);
-    ilAlphabetNormal.AddMasked(Image, clRed);
+    ilAlphabetNormal.AddMasked(Image, clBtnFace);
 
     ImageCanvas.FillRect(ImageRect);
     ImageCanvas.Font.Color := clHotLight;
     ImageCanvas.TextRect(ImageRect, ImageText, [tfCenter, tfSingleLine, tfVerticalCenter]);
-    Result := ilAlphabetActive.AddMasked(Image, clRed);
+    Result := ilAlphabetActive.AddMasked(Image, clBtnFace);
   end;
 
   function CreateTextButton(ToolBar: TToolBar; ImageIndex: Integer; Position: Integer): Integer;
@@ -1560,7 +1578,7 @@ begin
 
     ImageCanvas := Image.Canvas;
 
-    ImageCanvas.Brush.Color := clRed;
+    ImageCanvas.Brush.Color := clBtnFace;
     ImageCanvas.Font.Style := [fsBold];
 
     tbtnStar.ImageIndex := CreateTextImage('*');
