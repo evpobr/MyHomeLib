@@ -19,6 +19,7 @@ interface
 
 uses
   VirtualTrees,
+  BookTreeView,
   unit_Globals,
   SysUtils;
 
@@ -26,13 +27,13 @@ type
   TSelectionList = array of PVirtualNode;
 
 function FindParentInTree(Tree: TVirtualStringTree; const Folder: string): PVirtualNode;
-function FindSeriesInTree(Tree: TVirtualStringTree; Parent: PVirtualNode; SerieID: Integer): PVirtualNode;
-procedure SelectBookById(Tree: TVirtualStringTree; ID: Integer);
-procedure GetSelections(Tree: TVirtualStringTree; out List: TSelectionList);
+function FindSeriesInTree(Tree: TBookTree; Parent: PVirtualNode; SerieID: Integer): PVirtualNode;
+procedure SelectBookById(Tree: TBookTree; ID: Integer);
+procedure GetSelections(Tree: TBookTree; out List: TSelectionList);
 
 implementation
 
-procedure GetSelections(Tree: TVirtualStringTree; out List: TSelectionList);
+procedure GetSelections(Tree: TBookTree; out List: TSelectionList);
 var
   Node: PVirtualNode;
   i: Integer;
@@ -69,7 +70,7 @@ begin
   end;
 end;
 
-function FindSeriesInTree(Tree: TVirtualStringTree; Parent: PVirtualNode; SerieID: Integer): PVirtualNode;
+function FindSeriesInTree(Tree: TBookTree; Parent: PVirtualNode; SerieID: Integer): PVirtualNode;
 var
   Node: PVirtualNode;
   Data: PBookData;
@@ -93,7 +94,7 @@ begin
   end;
 end;
 
-procedure SelectBookById(Tree: TVirtualStringTree; ID: Integer);
+procedure SelectBookById(Tree: TBookTree; ID: Integer);
 var
   Node: PVirtualNode;
   Data: PBookData;

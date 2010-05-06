@@ -71,7 +71,7 @@ begin
   FCollection.Info.Name := DMUser.ActiveCollection.Name;
   FCollection.Info.Code := Ord(DMUser.ActiveCollection.CollectionType);
 
-  totalBooks := dmCollection.tblBooks.RecordCount;
+  totalBooks := DMCollection.tblBooks.RecordCount;
   processedBooks := 0;
 
   DMCollection.tblBooks.First;

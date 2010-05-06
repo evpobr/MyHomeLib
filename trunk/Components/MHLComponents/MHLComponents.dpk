@@ -36,8 +36,8 @@ requires
   IndySystem,
   IndyProtocols,
   vclAbsDBd13,
-  VirtualTreesD13,
-  vclZipForged13;
+  vclZipForged13,
+  VirtualTreesD14;
 
 contains
   unit_StaticTip in 'unit_StaticTip.pas',
@@ -45,12 +45,13 @@ contains
   MHLComponents_Register in 'MHLComponents_Register.pas',
   unit_AutoCompleteEdit in 'unit_AutoCompleteEdit.pas',
   unit_CoverPanel in 'unit_CoverPanel.pas',
-  unit_InfoPanel in 'unit_InfoPanel.pas',
   unit_MHLHelpers in 'unit_MHLHelpers.pas',
   fictionbook_21 in 'fictionbook_21.pas',
   unit_FB2Utils in 'unit_FB2Utils.pas',
   BookInfoPanel in 'BookInfoPanel.pas',
   MHLLinkLabel in 'MHLLinkLabel.pas',
-  MHLSplitter in 'MHLSplitter.pas';
+  MHLSplitter in 'MHLSplitter.pas',
+  BookTreeView in 'BookTreeView.pas',
+  MHLSimplePanel in 'MHLSimplePanel.pas';
 
 end.

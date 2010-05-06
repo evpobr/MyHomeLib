@@ -96,11 +96,11 @@ procedure TFb2ToText.GetEncoding(const S: string);
 begin
   FSourceEncoding := enUnknown;
 
-  if Pos('windows-1251', AnsiLowerCase(s)) <> 0 then
+  if Pos('windows-1251', AnsiLowerCase(S)) <> 0 then
     FSourceEncoding := en1251
-  else if Pos('utf-8', AnsiLowerCase(s)) <> 0 then
+  else if Pos('utf-8', AnsiLowerCase(S)) <> 0 then
     FSourceEncoding := enUTF8
-  else if Pos('unicode', AnsiLowerCase(s)) <> 0 then
+  else if Pos('unicode', AnsiLowerCase(S)) <> 0 then
     FSourceEncoding := enUnicode;
 end;
 

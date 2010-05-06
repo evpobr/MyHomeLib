@@ -67,7 +67,7 @@ var
   Folder: string;
   NewFolder: string;
 begin
-  totalBooks := dmCollection.tblBooks.RecordCount;
+  totalBooks := DMCollection.tblBooks.RecordCount;
   processedBooks := 0;
   FRootPath := DMUser.ActiveCollection.RootPath;
 
@@ -81,29 +81,29 @@ begin
       SetComment('Построение списка файлов ...');
       FFiles.Process;
 
-      dmCollection.tblBooks.First;
-      while not dmCollection.tblBooks.Eof do
+      DMCollection.tblBooks.First;
+      while not DMCollection.tblBooks.Eof do
       begin
         if Canceled then
           Exit;
 
-        Folder := dmCollection.tblBooksFolder.Value;
-        if  ExtractFileExt(dmCollection.tblBooksFileName.Value) <> ZIP_EXTENSION then
-          FileName := dmCollection.tblBooksFileName.Value + dmCollection.tblBooksExt.Value
+        Folder := DMCollection.tblBooksFolder.Value;
+        if  ExtractFileExt(DMCollection.tblBooksFileName.Value) <> ZIP_EXTENSION then
+          FileName := DMCollection.tblBooksFileName.Value + DMCollection.tblBooksExt.Value
         else
-          FileName := dmCollection.tblBooksFileName.Value;
+          FileName := DMCollection.tblBooksFileName.Value;
 
         if not FileExists(FRootPath + Folder + FileName)  then
         begin
-          NewFolder := FindNewFolder(FileName + ' ' + dmCollection.tblBooksSize.AsString);
+          NewFolder := FindNewFolder(FileName + ' ' + DMCollection.tblBooksSize.AsString);
           if NewFolder <> '*' then
           begin
-            dmCollection.tblBooks.Edit;
-            dmCollection.tblBooksFolder.Value := NewFolder;
-            dmCollection.tblBooks.Post;
+            DMCollection.tblBooks.Edit;
+            DMCollection.tblBooksFolder.Value := NewFolder;
+            DMCollection.tblBooks.Post;
           end;
         end;
-        dmCollection.tblBooks.Next;
+        DMCollection.tblBooks.Next;
 
         Inc(processedBooks);
         if (processedBooks mod ProcessedItemThreshold) = 0 then

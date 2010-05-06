@@ -60,7 +60,6 @@ uses
   unit_Settings,
   IdMultipartFormData;
 
-
 procedure TDownloadManagerThread.TerminateNow;
 begin
   try
@@ -153,7 +152,7 @@ begin
     if FCurrentData.State <> dsOk then
     begin
       FBookID := FCurrentData^.BookID;
-      FDatabaseID := FCurrentData^.DataBaseID;
+      FDatabaseID := FCurrentData^.DatabaseID;
 
       FCurrentData.State := dsRun;
       frmMain.tvDownloadList.RepaintNode(FCurrentNode);
@@ -191,7 +190,7 @@ end;
 procedure TDownloadManagerThread.SetControlsState;
 begin
   frmMain.BtnFirstRecord.Enabled := FControlState;
-  frmMain.BtnDwnldUP.Enabled := FControlState;
+  frmMain.BtnDwnldUp.Enabled := FControlState;
   frmMain.BtnDwnldDown.Enabled := FControlState;
   frmMain.BtnLastRecord.Enabled := FControlState;
 

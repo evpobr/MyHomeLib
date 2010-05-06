@@ -1002,7 +1002,7 @@ end;
 
 procedure TMHLSettings.LoadSplitters(iniFile: TIniFile);
 var
-  I: Integer;
+  i: Integer;
   slHelper: TStringList;
 begin
   slHelper := TIniStringList.Create;
@@ -1010,20 +1010,20 @@ begin
     //
     // Сначала сплиттеры
     //
-    slHelper.DelimitedText := iniFile.ReadString(INTERFACE_SECTION, 'Splitters', '250;250;250;250');
-    SetLength(FSplitters, 4);
-    for I := 0 to slHelper.Count - 1 do
-      FSplitters[I] := StrToIntDef(slHelper[I], 250);
+    slHelper.DelimitedText := iniFile.ReadString(INTERFACE_SECTION, 'Splitters', '250;250;250;250;250');
+    SetLength(FSplitters, 5);
+    for i := 0 to slHelper.Count - 1 do
+      FSplitters[i] := StrToIntDef(slHelper[i], 250);
 
     //
     // режимы таблиц
     //
     slHelper.DelimitedText := iniFile.ReadString(INTERFACE_SECTION, 'TreeModes', '0;1;0;1;0;1');
     SetLength(FTreeModes, 6);
-    for I := 0 to slHelper.Count - 1 do
-      case StrToIntDef(slHelper[I], 0) of
-        0: FTreeModes[I] := tmTree;
-        1: FTreeModes[I] := tmFlat;
+    for i := 0 to slHelper.Count - 1 do
+      case StrToIntDef(slHelper[i], 0) of
+        0: FTreeModes[i] := tmTree;
+        1: FTreeModes[i] := tmFlat;
       end;
   finally
     slHelper.Free;
@@ -1084,22 +1084,26 @@ end;
 
 procedure TMHLSettings.SaveSplitters(iniFile: TIniFile);
 var
-  I: Integer;
+  Splitter: Integer;
+  Mode: TTreeMode;
   sl: TStringList;
 begin
   sl := TIniStringList.Create;
   try
+    //
     // сначала сплиттеры
-    for I := 0 to High(FSplitters) do
-      sl.Add(IntToStr(FSplitters[I]));
-
+    //
+    for Splitter in FSplitters do
+      sl.Add(IntToStr(Splitter));
     iniFile.WriteString(INTERFACE_SECTION, 'Splitters', sl.DelimitedText);
 
-    // потом - режимы списков
     sl.Clear;
-    for I := 0 to High(FTreeModes) do
-      sl.Add(IntToStr(Ord(FTreeModes[I])));
 
+    //
+    // потом - режимы списков
+    //
+    for Mode in FTreeModes do
+      sl.Add(IntToStr(Ord(Mode)));
     iniFile.WriteString(INTERFACE_SECTION, 'TreeModes', sl.DelimitedText);
   finally
     sl.Free;
