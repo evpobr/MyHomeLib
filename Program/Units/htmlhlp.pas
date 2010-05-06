@@ -11,7 +11,7 @@
 {                                                       }
 {*******************************************************}
 
-unit HtmlHlp;
+unit htmlhlp;
 
 {$UNDEF DEBUG}
 {.$DEFINE DEBUG}
@@ -384,13 +384,10 @@ const
   ATOM_HTMLHELP_API_UNICODE: PChar = #0#0#0#15;
 
 type
-
   PFNHtmlHelpW = ^TFNHtmlHelpW;
-  TFNHtmlHelpW = function(hwndCaller: HWND; pszFile: PChar;
-    uCommand: UINT; dwData: DWORD): HWND; stdcall;
+  TFNHtmlHelpW = function(hwndCaller: HWND; pszFile: PChar; uCommand: UINT; dwData: DWORD): HWND; stdcall;
 
-function HtmlHelp(hwndCaller: HWND; pszFile: PChar;
-  uCommand: UINT; dwData: DWORD): HWND; stdcall;
+function HtmlHelp(hwndCaller: HWND; pszFile: PChar; uCommand: UINT; dwData: DWORD): HWND; stdcall;
 
 const
   HELPDLL: string = 'HHCTRL.OCX';
@@ -398,7 +395,7 @@ const
 implementation
 
 var
-  HelpModule: HModule;
+  HelpModule: HMODULE;
   HH: TFNHtmlHelpW;
   HelpChecked: Boolean;
 
@@ -412,21 +409,24 @@ begin
     except
       HelpModule := 0;
     end;
+
     if HelpModule <> 0 then
-      try
-        @HH := GetProcAddress(HelpModule, 'HtmlHelpW');
-      except
-        @HH := nil;
-      end;
+    try
+      @HH := GetProcAddress(HelpModule, 'HtmlHelpW');
+    except
+      @HH := nil;
+    end;
   end;
 end;
 
-function HtmlHelp(hwndCaller: HWND; pszFile: PChar; uCommand: UINT;
-  dwData: DWORD): HWND;
+function HtmlHelp(hwndCaller: HWND; pszFile: PChar; uCommand: UINT; dwData: DWORD): HWND;
 begin
-  if (uCommand = HH_CLOSE_ALL) and (not HelpChecked) then Exit;
+  if (uCommand = HH_CLOSE_ALL) and (not HelpChecked) then
+    Exit(0);
+
   InitHelp;
-  if (@HH <> nil) then
+
+  if Assigned(HH) then
     Result := HH(hwndCaller, pszFile, uCommand, dwData)
   else
     Result := 0;
@@ -436,7 +436,9 @@ initialization
   HelpModule := 0;
   HH := nil;
   HelpChecked := False;
+
 finalization
-  if (HelpModule <> 0) then FreeLibrary(HelpModule);
+  if (HelpModule <> 0) then
+    FreeLibrary(HelpModule);
 end.
 

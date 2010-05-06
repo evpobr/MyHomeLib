@@ -24,10 +24,11 @@ uses
   unit_StaticTip,
   unit_AutoCompleteEdit,
   unit_CoverPanel,
-  unit_InfoPanel,
   MHLLinkLabel,
   MHLSplitter,
-  BookInfoPanel;
+  BookTreeView,
+  BookInfoPanel,
+  MHLSimplePanel;
 
 const
   PAGE_NAME = 'MHLComponents';
@@ -41,9 +42,10 @@ begin
     TMHLStaticTip,
     TMHLAutoCompleteEdit,
     TMHLCoverPanel,
-    TMHLInfoPanel,
     TMHLLinkLabel,
     TMHLSplitter,
+    TMHLSimplePanel,
+    TBookTree,
     TInfoPanel
     ]
   );

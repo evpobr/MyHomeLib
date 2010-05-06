@@ -564,8 +564,8 @@ begin
     ID := StrToInt(Copy(SL[i], 1, p - 1));
     Progress := StrToInt(Copy(SL[i], p + 1));
 
-    dmCollection.tblBooks.Locate(BOOK_LIBID_FIELD, ID, []);
-    ID := dmCollection.tblBooksID.Value;
+    DMCollection.tblBooks.Locate(BOOK_LIBID_FIELD, ID, []);
+    ID := DMCollection.tblBooksID.Value;
 
     {***
     if not tblFinished.Locate(DB_ID_FIELD + '; ID', VarArrayOf([ActiveCollection.ID, ID]), []) then
@@ -614,8 +614,8 @@ begin
     if not Groups.Locate(GROUP_NAME_FIELD, Name, []) then
       Groups.Locate(GROUP_ID_FIELD, GroupID, []);
 
-    ///if dmCollection.tblBooks.Locate(LIB_ID_FIELD, ID, []) then
-    ///  InsertToGroupTable(dmCollection.tblBooksID.Value, dmCollection.GetBookGenres(dmCollection.tblBooksID.Value, False));
+    ///if DMCollection.tblBooks.Locate(LIB_ID_FIELD, ID, []) then
+    ///  InsertToGroupTable(DMCollection.tblBooksID.Value, DMCollection.GetBookGenres(DMCollection.tblBooksID.Value, False));
     Inc(i);
   end;
 end;
@@ -635,19 +635,19 @@ begin
 
     StrReplace('~', CRLF, S);
 
-    dmCollection.tblBooks.Locate(BOOK_LIBID_FIELD, ID, []); // получаем реальный ID
-    ID := dmCollection.tblBooksID.Value;
+    DMCollection.tblBooks.Locate(BOOK_LIBID_FIELD, ID, []); // получаем реальный ID
+    ID := DMCollection.tblBooksID.Value;
 
-    if dmCollection.tblBooks.Locate(BOOK_ID_FIELD, ID, []) then
+    if DMCollection.tblBooks.Locate(BOOK_ID_FIELD, ID, []) then
     begin
       {
-      dmCollection.tblExtra.Insert;
-      dmCollection.tblExtraReview.Value := S;
-      dmCollection.tblExtra.Post;
+      DMCollection.tblExtra.Insert;
+      DMCollection.tblExtraReview.Value := S;
+      DMCollection.tblExtra.Post;
 
-      dmCollection.tblBooks.Edit;
-      dmCollection.tblBooksCode.Value := 1;
-      dmCollection.tblBooks.Post;
+      DMCollection.tblBooks.Edit;
+      DMCollection.tblBooksCode.Value := 1;
+      DMCollection.tblBooks.Post;
       }
     end;
 
@@ -682,8 +682,8 @@ begin
     LibID := StrToInt(Copy(SL[i], 1, p - 1));
     Rate := StrToInt(Copy(SL[i], p + 1));
 
-    dmCollection.tblBooks.Locate(BOOK_LIBID_FIELD, LibID, []); // получаем реальный ID
-    ID := dmCollection.tblBooksID.Value;
+    DMCollection.tblBooks.Locate(BOOK_LIBID_FIELD, LibID, []); // получаем реальный ID
+    ID := DMCollection.tblBooksID.Value;
 
     {***
     if not tblRates.Locate(BOOK_DB_FIELDS, VarArrayOf([ID, ActiveCollection.ID]), []) then

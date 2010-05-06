@@ -465,7 +465,7 @@ begin
   FBookRecord.Deleted := False;
   FBookRecord.Size := Data.Size;
   FBookRecord.Date := Now;
-  FBookRecord.Keywords := edKeyWords.Text;
+  FBookRecord.KeyWords := edKeyWords.Text;
   FBookRecord.Lang := cbLang.Text;
 end;
 

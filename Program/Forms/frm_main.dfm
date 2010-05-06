@@ -341,24 +341,20 @@ object frmMain: TfrmMain
         ExplicitTop = 112
         ExplicitHeight = 100
       end
-      object pnAuthorsView: TPanel
+      object pnAuthorsView: TMHLSimplePanel
         Left = 0
         Top = 0
         Width = 230
         Height = 387
         Align = alLeft
-        BevelOuter = bvNone
-        ShowCaption = False
         TabOrder = 0
-        object pnAuthorSearch: TPanel
+        object pnAuthorSearch: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
           Top = 3
           Width = 224
           Height = 26
           Align = alTop
-          BevelOuter = bvNone
-          ShowCaption = False
           TabOrder = 0
           DesignSize = (
             224
@@ -458,14 +454,12 @@ object frmMain: TfrmMain
           Columns = <>
         end
       end
-      object pnAuthorBooksView: TPanel
+      object pnAuthorBooksView: TMHLSimplePanel
         Left = 233
         Top = 0
         Width = 545
         Height = 387
         Align = alClient
-        BevelOuter = bvNone
-        ShowCaption = False
         TabOrder = 1
         object AuthorBookInfoSplitter: TMHLSplitter
           Left = 0
@@ -491,21 +485,19 @@ object frmMain: TfrmMain
           OnSerieLinkClicked = SerieLinkClicked
           OnGenreLinkClicked = GenreLinkClicked
         end
-        object pnAuthorBooksTitle: TPanel
+        object pnAuthorBooksTitle: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
           Top = 3
           Width = 539
           Height = 26
           Align = alTop
-          BevelOuter = bvNone
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
-          ShowCaption = False
           TabOrder = 1
           object lblBooksTotalA: TLabel
             Left = 432
@@ -529,22 +521,13 @@ object frmMain: TfrmMain
             ExplicitHeight = 13
           end
         end
-        object tvBooksA: TVirtualStringTree
+        object tvBooksA: TBookTree
           AlignWithMargins = True
           Left = 3
           Top = 35
           Width = 539
           Height = 240
           Align = alClient
-          ClipboardFormats.Strings = (
-            'CSV'
-            'HTML Format'
-            'Plain text'
-            'Rich Text Format'
-            'Rich Text Format Without Objects'
-            'Unicode text'
-            'Virtual Tree Data')
-          EditDelay = 100
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
           Header.MainColumn = 1
@@ -557,9 +540,6 @@ object frmMain: TfrmMain
           PopupMenu = pmMain
           ShowHint = False
           TabOrder = 2
-          TreeOptions.MiscOptions = [toCheckSupport, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
-          TreeOptions.PaintOptions = [toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-          TreeOptions.SelectionOptions = [toFullRowSelect, toRightClickSelect]
           OnAfterCellPaint = tvBooksTreeAfterCellPaint
           OnBeforeCellPaint = tvBooksTreeBeforeCellPaint
           OnChange = tvBooksTreeChange
@@ -648,14 +628,12 @@ object frmMain: TfrmMain
         ExplicitTop = 144
         ExplicitHeight = 100
       end
-      object pnSeriesView: TPanel
+      object pnSeriesView: TMHLSimplePanel
         Left = 0
         Top = 0
         Width = 230
         Height = 387
         Align = alLeft
-        BevelOuter = bvNone
-        ShowCaption = False
         TabOrder = 0
         object tvSeries: TVirtualStringTree
           AlignWithMargins = True
@@ -685,15 +663,13 @@ object frmMain: TfrmMain
           OnKeyDown = tvSeriesKeyDown
           Columns = <>
         end
-        object pnSerieSearch: TPanel
+        object pnSerieSearch: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
           Top = 3
           Width = 224
           Height = 26
           Align = alTop
-          BevelOuter = bvNone
-          ShowCaption = False
           TabOrder = 1
           DesignSize = (
             224
@@ -764,14 +740,12 @@ object frmMain: TfrmMain
           end
         end
       end
-      object pnSerieBooksView: TPanel
+      object pnSerieBooksView: TMHLSimplePanel
         Left = 233
         Top = 0
         Width = 545
         Height = 387
         Align = alClient
-        BevelOuter = bvNone
-        ShowCaption = False
         TabOrder = 1
         object SerieBookInfoSplitter: TMHLSplitter
           Left = 0
@@ -796,21 +770,19 @@ object frmMain: TfrmMain
           OnSerieLinkClicked = SerieLinkClicked
           OnGenreLinkClicked = GenreLinkClicked
         end
-        object pnSerieBooksTitle: TPanel
+        object pnSerieBooksTitle: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
           Top = 3
           Width = 539
           Height = 26
           Align = alTop
-          BevelOuter = bvNone
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
-          ShowCaption = False
           TabOrder = 1
           object lblBooksTotalS: TLabel
             Left = 432
@@ -834,7 +806,7 @@ object frmMain: TfrmMain
             ExplicitHeight = 13
           end
         end
-        object tvBooksS: TVirtualStringTree
+        object tvBooksS: TBookTree
           Tag = 1
           AlignWithMargins = True
           Left = 3
@@ -842,15 +814,6 @@ object frmMain: TfrmMain
           Width = 539
           Height = 190
           Align = alClient
-          ClipboardFormats.Strings = (
-            'CSV'
-            'HTML Format'
-            'Plain text'
-            'Rich Text Format'
-            'Rich Text Format Without Objects'
-            'Unicode text'
-            'Virtual Tree Data')
-          EditDelay = 100
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
           Header.Options = [hoColumnResize, hoDrag, hoHotTrack, hoOwnerDraw, hoRestrictDrag, hoShowHint, hoShowImages, hoShowSortGlyphs, hoVisible]
@@ -862,9 +825,6 @@ object frmMain: TfrmMain
           PopupMenu = pmMain
           ShowHint = False
           TabOrder = 2
-          TreeOptions.MiscOptions = [toCheckSupport, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
-          TreeOptions.PaintOptions = [toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-          TreeOptions.SelectionOptions = [toFullRowSelect, toRightClickSelect]
           OnAfterCellPaint = tvBooksTreeAfterCellPaint
           OnChange = tvBooksTreeChange
           OnCompareNodes = tvBooksTreeCompareNodes
@@ -957,14 +917,12 @@ object frmMain: TfrmMain
         ExplicitTop = 144
         ExplicitHeight = 100
       end
-      object pnGenresView: TPanel
+      object pnGenresView: TMHLSimplePanel
         Left = 0
         Top = 0
         Width = 230
         Height = 387
         Align = alLeft
-        BevelOuter = bvNone
-        ShowCaption = False
         TabOrder = 0
         object tvGenres: TVirtualStringTree
           AlignWithMargins = True
@@ -994,14 +952,12 @@ object frmMain: TfrmMain
           Columns = <>
         end
       end
-      object pnGenreBooksView: TPanel
+      object pnGenreBooksView: TMHLSimplePanel
         Left = 233
         Top = 0
         Width = 545
         Height = 387
         Align = alClient
-        BevelOuter = bvNone
-        ShowCaption = False
         TabOrder = 1
         object GenreBookInfoSplitter: TMHLSplitter
           Left = 0
@@ -1014,21 +970,19 @@ object frmMain: TfrmMain
           ExplicitTop = 31
           ExplicitWidth = 250
         end
-        object pnGenreBooksTitle: TPanel
+        object pnGenreBooksTitle: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
           Top = 3
           Width = 539
           Height = 26
           Align = alTop
-          BevelOuter = bvNone
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
-          ShowCaption = False
           TabOrder = 0
           object lblBooksTotalG: TLabel
             Left = 432
@@ -1065,7 +1019,7 @@ object frmMain: TfrmMain
           OnSerieLinkClicked = SerieLinkClicked
           OnGenreLinkClicked = GenreLinkClicked
         end
-        object tvBooksG: TVirtualStringTree
+        object tvBooksG: TBookTree
           Tag = 2
           AlignWithMargins = True
           Left = 3
@@ -1073,15 +1027,6 @@ object frmMain: TfrmMain
           Width = 539
           Height = 240
           Align = alClient
-          ClipboardFormats.Strings = (
-            'CSV'
-            'HTML Format'
-            'Plain text'
-            'Rich Text Format'
-            'Rich Text Format Without Objects'
-            'Unicode text'
-            'Virtual Tree Data')
-          EditDelay = 100
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
           Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoHotTrack, hoOwnerDraw, hoRestrictDrag, hoShowHint, hoShowSortGlyphs, hoVisible, hoFullRepaintOnResize]
@@ -1093,9 +1038,6 @@ object frmMain: TfrmMain
           PopupMenu = pmMain
           ShowHint = False
           TabOrder = 2
-          TreeOptions.MiscOptions = [toCheckSupport, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
-          TreeOptions.PaintOptions = [toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-          TreeOptions.SelectionOptions = [toFullRowSelect, toRightClickSelect]
           OnAfterCellPaint = tvBooksTreeAfterCellPaint
           OnChange = tvBooksTreeChange
           OnCompareNodes = tvBooksTreeCompareNodes
@@ -1175,18 +1117,16 @@ object frmMain: TfrmMain
         Left = 230
         Top = 0
         Height = 387
-        ResizeControl = Panel2
+        ResizeControl = pnSearchView
         ExplicitLeft = 185
         ExplicitTop = 3
       end
-      object pnSearchBooksView: TPanel
+      object pnSearchBooksView: TMHLSimplePanel
         Left = 233
         Top = 0
         Width = 545
         Height = 387
         Align = alClient
-        BevelOuter = bvNone
-        ShowCaption = False
         TabOrder = 0
         object SearchBookInfoSplitter: TMHLSplitter
           Left = 0
@@ -1213,15 +1153,13 @@ object frmMain: TfrmMain
           OnSerieLinkClicked = SerieLinkClicked
           OnGenreLinkClicked = GenreLinkClicked
         end
-        object pnlFullSearch: TPanel
+        object pnlFullSearch: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
           Top = 3
           Width = 539
           Height = 26
           Align = alTop
-          BevelOuter = bvNone
-          ShowCaption = False
           TabOrder = 1
           object Label1: TLabel
             Left = 0
@@ -1231,13 +1169,13 @@ object frmMain: TfrmMain
             Caption = #1055#1088#1077#1089#1077#1090
           end
           object lblTotalBooksFL: TLabel
-            Left = 529
+            Left = 432
             Top = 0
-            Width = 10
+            Width = 107
             Height = 26
             Align = alRight
             Alignment = taRightJustify
-            Caption = '()'
+            Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -1352,7 +1290,7 @@ object frmMain: TfrmMain
             OnClick = btnDeletePresetClick
           end
         end
-        object tvBooksSR: TVirtualStringTree
+        object tvBooksSR: TBookTree
           Tag = 3
           AlignWithMargins = True
           Left = 3
@@ -1360,15 +1298,6 @@ object frmMain: TfrmMain
           Width = 539
           Height = 190
           Align = alClient
-          ClipboardFormats.Strings = (
-            'CSV'
-            'HTML Format'
-            'Plain text'
-            'Rich Text Format'
-            'Rich Text Format Without Objects'
-            'Unicode text'
-            'Virtual Tree Data')
-          EditDelay = 100
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
           Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoHotTrack, hoOwnerDraw, hoRestrictDrag, hoShowHint, hoShowSortGlyphs, hoVisible, hoFullRepaintOnResize]
@@ -1380,9 +1309,6 @@ object frmMain: TfrmMain
           PopupMenu = pmMain
           ShowHint = False
           TabOrder = 2
-          TreeOptions.MiscOptions = [toCheckSupport, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
-          TreeOptions.PaintOptions = [toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-          TreeOptions.SelectionOptions = [toFullRowSelect, toRightClickSelect]
           OnAfterCellPaint = tvBooksTreeAfterCellPaint
           OnChange = tvBooksTreeChange
           OnCompareNodes = tvBooksTreeCompareNodes
@@ -1466,14 +1392,12 @@ object frmMain: TfrmMain
             end>
         end
       end
-      object Panel2: TPanel
+      object pnSearchView: TMHLSimplePanel
         Left = 0
         Top = 0
         Width = 230
         Height = 387
         Align = alLeft
-        BevelOuter = bvNone
-        ShowCaption = False
         TabOrder = 1
         object SearchParams: TCategoryPanelGroup
           AlignWithMargins = True
@@ -1835,15 +1759,13 @@ object frmMain: TfrmMain
             end
           end
         end
-        object pnSearchControl: TPanel
+        object pnSearchControl: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
           Top = 352
           Width = 224
           Height = 32
           Align = alBottom
-          BevelOuter = bvNone
-          ShowCaption = False
           TabOrder = 1
           object btnApplyFilter: TButton
             Left = 0
@@ -1880,14 +1802,12 @@ object frmMain: TfrmMain
         ExplicitTop = 144
         ExplicitHeight = 100
       end
-      object pnGroupsView: TPanel
+      object pnGroupsView: TMHLSimplePanel
         Left = 0
         Top = 0
         Width = 230
         Height = 387
         Align = alLeft
-        BevelOuter = bvNone
-        ShowCaption = False
         TabOrder = 0
         object tvGroups: TVirtualStringTree
           AlignWithMargins = True
@@ -1917,15 +1837,13 @@ object frmMain: TfrmMain
           OnKeyDown = tvGroupsKeyDown
           Columns = <>
         end
-        object RzPanel8: TPanel
+        object RzPanel8: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
           Top = 355
           Width = 224
           Height = 29
           Align = alBottom
-          BevelOuter = bvNone
-          ShowCaption = False
           TabOrder = 1
           object btnAddGroup: TBitBtn
             Left = 5
@@ -2041,14 +1959,12 @@ object frmMain: TfrmMain
           end
         end
       end
-      object pnGroupBooksView: TPanel
+      object pnGroupBooksView: TMHLSimplePanel
         Left = 233
         Top = 0
         Width = 545
         Height = 387
         Align = alClient
-        BevelOuter = bvNone
-        ShowCaption = False
         TabOrder = 1
         object GroupBookInfoSplitter: TMHLSplitter
           Left = 0
@@ -2122,30 +2038,28 @@ object frmMain: TfrmMain
             OnClick = ClearGroup
           end
         end
-        object pnGroupBooksTitle: TPanel
+        object pnGroupBooksTitle: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
           Top = 3
           Width = 539
           Height = 26
           Align = alTop
-          BevelOuter = bvNone
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
-          ShowCaption = False
           TabOrder = 1
           object lblBooksTotalF: TLabel
-            Left = 529
+            Left = 432
             Top = 0
-            Width = 10
+            Width = 107
             Height = 26
             Align = alRight
             Alignment = taRightJustify
-            Caption = '()'
+            Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
             Layout = tlCenter
             ExplicitHeight = 13
           end
@@ -2160,7 +2074,7 @@ object frmMain: TfrmMain
             ExplicitHeight = 13
           end
         end
-        object tvBooksF: TVirtualStringTree
+        object tvBooksF: TBookTree
           Tag = 4
           AlignWithMargins = True
           Left = 3
@@ -2168,15 +2082,6 @@ object frmMain: TfrmMain
           Width = 539
           Height = 190
           Align = alClient
-          ClipboardFormats.Strings = (
-            'CSV'
-            'HTML Format'
-            'Plain text'
-            'Rich Text Format'
-            'Rich Text Format Without Objects'
-            'Unicode text'
-            'Virtual Tree Data')
-          EditDelay = 100
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
           Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoHotTrack, hoOwnerDraw, hoRestrictDrag, hoShowHint, hoShowSortGlyphs, hoVisible, hoFullRepaintOnResize]
@@ -2188,9 +2093,6 @@ object frmMain: TfrmMain
           PopupMenu = pmMain
           ShowHint = False
           TabOrder = 2
-          TreeOptions.MiscOptions = [toCheckSupport, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
-          TreeOptions.PaintOptions = [toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-          TreeOptions.SelectionOptions = [toFullRowSelect, toRightClickSelect]
           OnAfterCellPaint = tvBooksTreeAfterCellPaint
           OnChange = tvBooksTreeChange
           OnCompareNodes = tvBooksTreeCompareNodes
@@ -2366,24 +2268,20 @@ object frmMain: TfrmMain
           OnClick = btnClearDownloadClick
         end
       end
-      object Panel1: TPanel
+      object Panel1: TMHLSimplePanel
         Left = 0
         Top = 28
         Width = 778
         Height = 359
         Align = alClient
-        BevelOuter = bvNone
-        ShowCaption = False
         TabOrder = 1
-        object RzPanel2: TPanel
+        object RzPanel2: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
           Top = 314
           Width = 772
           Height = 42
           Align = alBottom
-          BevelOuter = bvNone
-          ShowCaption = False
           TabOrder = 0
           object lblDownloadState: TLabel
             Left = 288
@@ -2411,13 +2309,13 @@ object frmMain: TfrmMain
           end
           object lblDownloadCount: TLabel
             AlignWithMargins = True
-            Left = 759
+            Left = 662
             Top = 3
-            Width = 10
+            Width = 107
             Height = 36
             Align = alRight
             Alignment = taRightJustify
-            Caption = '()'
+            Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -2436,7 +2334,7 @@ object frmMain: TfrmMain
             Visible = False
           end
         end
-        object tvDownloadList: TVirtualStringTree
+        object tvDownloadList: TBookTree
           AlignWithMargins = True
           Left = 3
           Top = 3
@@ -2449,8 +2347,6 @@ object frmMain: TfrmMain
           Header.ParentFont = True
           PopupMenu = pmDownloadList
           TabOrder = 1
-          TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-          TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect]
           OnFreeNode = FreeDownloadNodeData
           OnGetText = tvDownloadListGetText
           OnPaintText = tvDownloadListPaintText
@@ -2534,11 +2430,11 @@ object frmMain: TfrmMain
       Style = tbsTextButton
       OnClick = miEditBookClick
     end
-    object ToolButton14: TToolButton
+    object tbtnSplitter1: TToolButton
       Left = 243
       Top = 0
       Width = 8
-      Caption = 'ToolButton14'
+      Caption = 'tbtnSplitter1'
       ImageIndex = 4
       Style = tbsSeparator
     end
@@ -2550,11 +2446,11 @@ object frmMain: TfrmMain
       Style = tbsTextButton
       OnClick = miDeleteBookClick
     end
-    object ToolButton16: TToolButton
+    object tbtnSplitter2: TToolButton
       Left = 323
       Top = 0
       Width = 8
-      Caption = 'ToolButton16'
+      Caption = 'tbtnSplitter2'
       ImageIndex = 5
       Style = tbsSeparator
     end
