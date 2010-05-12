@@ -7,6 +7,9 @@
   * Authors Aleksey Penkov   alex.penkov@gmail.com
   *         Nick Rymanov     nrymanov@gmail.com
   *
+  * History
+  * NickR 07.05.2010         Добавил функцию определения формата стрима. Пока она не определяет ZIP.
+  *
   ****************************************************************************** *)
 
 unit unit_MHLHelpers;
@@ -14,6 +17,7 @@ unit unit_MHLHelpers;
 interface
 
 uses
+  Classes,
   SysUtils,
   ZipForge;
 
@@ -23,6 +27,27 @@ uses
 function DecodeBase64(const CinLine: AnsiString): AnsiString;
 
 //
+// Stream helpers
+//
+type
+  TStreamFormat = (
+    sfUnknown,
+    sfText,
+    sfRichText,
+    sfBitmap,
+    sfGif,
+    sfJPEGImage,
+    sfTiff,
+    sfPngImage,
+    sfMetafile,
+    sfPDF,
+    sfHTML,
+    fsIcon
+  );
+
+function DetectStreamFormat(Stream: TStream): TStreamFormat;
+
+//
 // ZIP helpers
 //
 function GetFileNameZip(Zip: TZipForge; No: Integer): string;
@@ -30,6 +55,12 @@ function GetFileNameZip(Zip: TZipForge; No: Integer): string;
 function GetFormattedSize(sizeInBytes: Integer; showBytes: Boolean = False): string;
 
 implementation
+
+uses
+  Windows,
+  ActiveX,
+  UrlMon,
+  Graphics;
 
 function DecodeBase64(const CinLine: AnsiString): AnsiString;
 const
@@ -81,6 +112,65 @@ begin
         Exit;
       Result := Result + AnsiChar((StoredC4[2] shl 6) or (StoredC4[3]));
     end;
+  end;
+end;
+
+function DetectStreamFormat(Stream: TStream): TStreamFormat;
+  function TestICO: Boolean;
+  const
+    RC3_STOCKICON = 0;
+    RC3_ICON = 1;
+  var
+    Header: TCursorOrIcon;
+  begin
+    Stream.Seek(0, soFromBeginning);
+    Result :=
+      (Stream.Read(Header, SizeOf(Header)) = SizeOf(Header)) and
+      (Header.wType in [RC3_STOCKICON, RC3_ICON]);
+  end;
+
+var
+  Buffer: array[0..255] of Byte;
+  sz: Longint;
+  pwszMIME: PWideChar;
+  strMIME: string;
+begin
+  Assert(Assigned(Stream));
+
+  Result := sfUnknown;
+  sz := Stream.Read(Buffer, SizeOf(Buffer));
+  try
+    if NOERROR = FindMimeFromData(nil, nil, @Buffer, sz, nil, 0, pwszMIME, 0) then
+    try
+      strMIME := pwszMIME;
+
+      if (strMIME = CFSTR_MIME_TEXT) then
+        Result := sfText
+      else if (strMIME = CFSTR_MIME_RICHTEXT) then
+        Result := sfRichText
+      else if (strMIME = CFSTR_MIME_X_BITMAP) or (strMIME = CFSTR_MIME_BMP) then
+        Result := sfBitmap
+      else if (strMIME = CFSTR_MIME_GIF) then
+        Result := sfGif
+      else if (strMIME = CFSTR_MIME_PJPEG) or (strMIME = CFSTR_MIME_JPEG) then
+        Result := sfJPEGImage
+      else if (strMIME = CFSTR_MIME_TIFF) then
+        Result := sfTiff
+      else if (strMIME = CFSTR_MIME_X_PNG) then
+        Result := sfPngImage
+      else if (strMIME = CFSTR_MIME_X_EMF) or (strMIME = CFSTR_MIME_X_WMF) then
+        Result := sfMetafile
+      else if (strMIME = CFSTR_MIME_PDF) then
+        Result := sfPDF
+      else if (strMIME = CFSTR_MIME_HTML) then
+        Result := sfHTML
+      else if TestICO then
+        Result := fsIcon;
+    finally
+      CoTaskMemFree(pwszMIME);
+    end;
+  finally
+    Stream.Seek(0, soFromBeginning);
   end;
 end;
 

@@ -60,7 +60,6 @@
 			<DCCReference Include="files_list.pas"/>
 			<DCCReference Include="MHLComponents_Register.pas"/>
 			<DCCReference Include="unit_AutoCompleteEdit.pas"/>
-			<DCCReference Include="unit_CoverPanel.pas"/>
 			<DCCReference Include="unit_MHLHelpers.pas"/>
 			<DCCReference Include="fictionbook_21.pas"/>
 			<DCCReference Include="unit_FB2Utils.pas"/>
