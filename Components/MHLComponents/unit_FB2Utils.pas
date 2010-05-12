@@ -10,6 +10,7 @@
   *
   * History
   * NickR 19.02.2010    создан
+  *       07.05.2010    Формат обложки определяется более точно (не на основании расширения).
   *
   ****************************************************************************** *)
 
@@ -22,6 +23,7 @@ uses
   Graphics,
   fictionbook_21;
 
+function GetBookCoverStream(book: IXMLFictionBook): TStream;
 function GetBookCover(book: IXMLFictionBook): TGraphic;
 
 { TODO -oNickR -cRefactoring : доделать эту функцию. Для этого необходимо вынести определение TBookRecord в доступное место }
@@ -30,35 +32,20 @@ function GetBookCover(book: IXMLFictionBook): TGraphic;
 implementation
 
 uses
+  Windows,
   SysUtils,
+  ActiveX,
+  UrlMon,
   unit_MHLHelpers,
+  GIFImg,
   jpeg,
   pngimage;
 
-function CreateImage(ext: string): TGraphic;
-begin
-  //
-  // TODO -oNickR -cRefactoring : избавиться от привязки к расширению и определять формат изображения из стрима
-  //
-  Result := nil;
-
-  ext := LowerCase(ext);
-  if ext = '.png' then
-  begin
-    Result := TPngImage.Create;
-  end
-  else if (ext = '.jpg') or (ext = '.jpeg') then
-  begin
-    Result := TJPEGImage.Create;
-  end;
-end;
-
-function GetBookCover(book: IXMLFictionBook): TGraphic;
+function InternalGetBookCoverStream(book: IXMLFictionBook): TStream;
 var
   coverID: string;
   i: Integer;
   outStr: AnsiString;
-  coverStream: TMemoryStream;
 begin
   Result := nil;
 
@@ -76,22 +63,12 @@ begin
         begin
           outStr := DecodeBase64(book.Binary[i].Text);
 
-          coverStream := TMemoryStream.Create;
+          Result := TMemoryStream.Create;
           try
-            coverStream.Write(PAnsiChar(outStr)^, Length(outStr));
-            /// MS.SaveToFile('C:\temp\' + CoverID);
-
-            Result := CreateImage(ExtractFileExt(coverID));
-            if Assigned(Result) then
-            begin
-              coverStream.Seek(0, soFromBeginning);
-              Result.LoadFromStream(coverStream);
-              Exit;
-            end;
-          finally
-            coverStream.Free;
+            Result.Write(PAnsiChar(outStr)^, Length(outStr));
+          except
+            FreeAndNil(Result);
           end;
-
           Break;
         end;
       end;
@@ -99,11 +76,76 @@ begin
   end;
 end;
 
-{
-  procedure GetBookInfo(book: IXMLFictionBook; var R: TBookRecord);
-  var
-  i: Integer;
+function IsSupportedImageFormat(StreamFormat: TStreamFormat): Boolean;
+begin
+  Result := StreamFormat in [sfBitmap, sfGif, sfJPEGImage, sfMetafile, sfPngImage, fsIcon];
+end;
+
+function InternalCreateGraphic(StreamFormat: TStreamFormat): TGraphic;
+begin
+  Assert(IsSupportedImageFormat(StreamFormat));
+  Result := nil;
+
+  case StreamFormat of
+    sfBitmap: Result := Graphics.TBitmap.Create;
+    sfGif: Result := TGIFImage.Create;
+    sfJPEGImage: Result := TJPEGImage.Create;
+    //sfTiff: ;
+    sfPngImage: Result := TPngImage.Create;
+    sfMetafile: Result := Graphics.TMetafile.Create;
+    fsIcon: Result := Graphics.TIcon.Create;
+  else
+    Assert(False);
+  end;
+end;
+
+function GetBookCoverStream(book: IXMLFictionBook): TStream;
+var
+  StreamFormat: TStreamFormat;
+begin
+  Result := InternalGetBookCoverStream(book);
+  if Assigned(Result) then
   begin
+    Result.Seek(0, soFromBeginning);
+    StreamFormat := DetectStreamFormat(Result);
+    if not IsSupportedImageFormat(StreamFormat) then
+      FreeAndNil(Result);
+  end;
+end;
+
+function GetBookCover(book: IXMLFictionBook): TGraphic;
+var
+  coverStream: TStream;
+  StreamFormat: TStreamFormat;
+begin
+  Result := nil;
+
+  coverStream := InternalGetBookCoverStream(book);
+  if Assigned(coverStream) then
+  try
+    coverStream.Seek(0, soFromBeginning);
+    StreamFormat := DetectStreamFormat(coverStream);
+    if not IsSupportedImageFormat(StreamFormat) then
+      Exit;
+
+    Result := InternalCreateGraphic(StreamFormat);
+    if Assigned(Result) then
+    try
+      coverStream.Seek(0, soFromBeginning);
+      Result.LoadFromStream(coverStream);
+    except
+      FreeAndNil(Result);
+    end;
+  finally
+    coverStream.Free;
+  end;
+end;
+
+{
+procedure GetBookInfo(book: IXMLFictionBook; var R: TBookRecord);
+var
+  i: Integer;
+begin
   with book.Description.Titleinfo do
   begin
   for i := 0 to Author.Count - 1 do
@@ -133,7 +175,7 @@ end;
 
   ///R.RootGenre:= Trim(FLibrary.GetTopGenreAlias(R.Genres[0].GenreFb2Code));
   end;
-  end;
+end;
 }
 
 end.

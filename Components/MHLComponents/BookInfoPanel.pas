@@ -57,9 +57,16 @@ type
       const BookTitle: string;
       const Autors: string;
       const Serie: string;
-      const Genres: string;
-      const Annotation: string
+      const Genres: string
     );
+
+    procedure SetBookCover(
+      BookCover: TGraphic
+      );
+
+    procedure SetBookAnnotation(
+      const Annotation: string
+      );
 
     procedure Clear;
 
@@ -153,6 +160,9 @@ begin
   FCover.SetBounds(0, 0, 200, 200);
   FCover.Align := alLeft;
   FCover.AlignWithMargins := True;
+  FCover.Center := True;
+  FCover.Proportional := True;
+  FCover.Stretch := True;
 
   FInfoPanel := TPanel.Create(Self);
   FInfoPanel.Parent := Self;
@@ -163,6 +173,7 @@ begin
 
   FTitle := TLabel.Create(FInfoPanel);
   FTitle.Parent := FInfoPanel;
+  FTitle.Anchors := [akLeft, akTop, akRight];
   FTitle.AutoSize := False;
   FTitle.Font.Style := [fsBold];
 
@@ -251,14 +262,26 @@ procedure TInfoPanel.SetBookInfo(
   const BookTitle: string;
   const Autors: string;
   const Serie: string;
-  const Genres: string;
-  const Annotation: string
+  const Genres: string
 );
 begin
   FTitle.Caption := BookTitle;
   FAuthors.Caption := Autors;
   FSerie.Caption := Serie;
   FGenres.Caption := Genres;
+end;
+
+procedure TInfoPanel.SetBookCover(
+  BookCover: TGraphic
+  );
+begin
+  FCover.Picture.Assign(BookCover);
+end;
+
+procedure TInfoPanel.SetBookAnnotation(
+  const Annotation: string
+  );
+begin
   FAnnotation.Lines.BeginUpdate;
   try
     FAnnotation.Lines.Text := Annotation;
@@ -276,6 +299,7 @@ begin
   FSerie.Caption := '';
   FGenres.Caption := '';
   FAnnotation.Lines.Clear;
+  FCover.Picture.Assign(nil);
 end;
 
 function TInfoPanel.GetShowAnnotation: Boolean;
