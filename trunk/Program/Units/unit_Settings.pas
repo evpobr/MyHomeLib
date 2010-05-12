@@ -162,7 +162,6 @@ type
     FMinimizeToTray: Boolean;
     FAutoStartDwnld: Boolean;
     FShowSubGenreBooks: Boolean;
-    FShowFb2Info: Boolean;
     FAllowMixed: Boolean;
 
     FAutoRunUpdate: Boolean;
@@ -177,6 +176,8 @@ type
     FDeleteDeleted: Boolean;
     FAutoLoadReview: Boolean;
     FShowInfoPanel: Boolean;
+    FShowBookCover: Boolean;
+    FShowBookAnnotation: Boolean;
 
     FForceConvertToFBD: Boolean;
     FOverwriteFB2Info: Boolean;
@@ -298,11 +299,13 @@ type
     property TreeFontSize: Integer read FTreeFontSize write FTreeFontSize;
     property ShortFontSize: Integer read FShortFontSize write FShortFontSize;
     property ShowInfoPanel: Boolean read FShowInfoPanel write FShowInfoPanel;
+    property ShowBookCover: Boolean read FShowBookCover write FShowBookCover;
+    property ShowBookAnnotation: Boolean read FShowBookAnnotation write FShowBookAnnotation;
+
     property AppLanguage: TAppLanguage read FAppLanguage write FAppLanguage;
     property DoNotShowDeleted: Boolean read FDoNotShowDeleted write FDoNotShowDeleted;
     property ShowLocalOnly: Boolean read FShowLocalOnly write FShowLocalOnly;
     property ShowSubGenreBooks: Boolean read FShowSubGenreBooks write FShowSubGenreBooks;
-    property ShowFb2Info: Boolean read FShowFb2Info write FShowFb2Info;
 
     property AutoRunUpdate: Boolean read FAutoRunUpdate write FAutoRunUpdate;
 
@@ -800,11 +803,13 @@ begin
     FShowStatusBar := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowStatusBar', True);
 
     FShowInfoPanel := iniFile.ReadBool(BEHAVIOR_SECTION, 'CoverPanel', True);
+    FShowBookCover := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowCover', True);
+    FShowBookAnnotation := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowAnnotation', True);
+
     FDoNotShowDeleted := iniFile.ReadBool(BEHAVIOR_SECTION, 'DoNotShowDeleted', True);
     FShowLocalOnly := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowLocalOnly', False);
 
     FShowSubGenreBooks := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowSubGenreBooks', True);
-    FShowFb2Info := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowFb2Info', True);
     FMinimizeToTray := iniFile.ReadBool(BEHAVIOR_SECTION, 'MinimizeToTray', False);
     FAutoStartDwnld := iniFile.ReadBool(BEHAVIOR_SECTION, 'AutoStartDwnld', False);
     FAllowMixed := iniFile.ReadBool(BEHAVIOR_SECTION, 'AllowMixed', False);
@@ -963,10 +968,11 @@ begin
     iniFile.WriteBool(BEHAVIOR_SECTION, 'DoNotShowDeleted', FDoNotShowDeleted);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowLocalOnly', FShowLocalOnly);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'CoverPanel', FShowInfoPanel);
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowCover', FShowBookCover);
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowAnnotation', FShowBookAnnotation);
 
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowSubGenreBooks', FShowSubGenreBooks);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'MinimizeToTray', FMinimizeToTray);
-    iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowFb2Info', FShowFb2Info);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'AutoStartDwnld', FAutoStartDwnld);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'AllowMixed', FAllowMixed);
 

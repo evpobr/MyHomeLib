@@ -93,6 +93,7 @@ type
     AllBooksLocal: TBooleanField;
     AllBooksDeleted: TBooleanField;
     AllBooksKeyWords: TWideStringField;
+    AllBooksAnnotation: TWideMemoField;
     AllBooksReview: TWideMemoField;
     AllBooksRate: TIntegerField;
     AllBooksProgress: TSmallintField;
@@ -183,6 +184,8 @@ type
 
     procedure SetRate(BookID: Integer; DatabaseID: Integer; Rate: Integer);
     procedure SetProgress(BookID: Integer; DatabaseID: Integer; Progress: Integer);
+    function GetAnnotation(BookID: Integer; DatabaseID: Integer): string;
+    procedure SetAnnotation(BookID: Integer; DatabaseID: Integer; const Annotation: string);
     function GetReview(BookID: Integer; DatabaseID: Integer): string;
     function SetReview(BookID: Integer; DatabaseID: Integer; const Review: string): Integer;
     procedure SetLocal(BookID: Integer; DatabaseID: Integer; Value: Boolean);
@@ -744,7 +747,7 @@ begin
     BookRecord.KeyWords := AllBooksKeyWords.Value;
 
     BookRecord.Review := AllBooksReview.Value;
-    //BookRecord.Annotation := ???;
+    BookRecord.Annotation := AllBooksAnnotation.Value;
     BookRecord.Rate := AllBooksRate.Value;
     BookRecord.Progress := AllBooksProgress.Value;
 
@@ -821,6 +824,29 @@ begin
   begin
     AllBooks.Edit;
     AllBooksProgress.Value := Progress;
+    AllBooks.Post;
+  end;
+end;
+
+function TDMUser.GetAnnotation(BookID: Integer; DatabaseID: Integer): string;
+begin
+  Assert(AllBooks.Active);
+  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+    Result := AllBooksAnnotation.Value
+  else
+    Result := '';
+end;
+
+procedure TDMUser.SetAnnotation(BookID: Integer; DatabaseID: Integer; const Annotation: string);
+begin
+  Assert(AllBooks.Active);
+  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  begin
+    AllBooks.Edit;
+    if Annotation = '' then
+      AllBooksAnnotation.Clear
+    else
+      AllBooksAnnotation.Value := Annotation;
     AllBooks.Post;
   end;
 end;
@@ -967,6 +993,7 @@ begin
     AllBooksDeleted.Value := BookRecord.Deleted;
     AllBooksKeyWords.Value := BookRecord.KeyWords;
 
+    AllBooksAnnotation.Value := BookRecord.Annotation;
     AllBooksReview.Value := BookRecord.Review;
     AllBooksRate.Value := BookRecord.Rate;
     AllBooksProgress.Value := BookRecord.Progress;

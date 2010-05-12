@@ -26,12 +26,10 @@ object frmSettings: TfrmSettings
     ActivePage = tsDevices
     Align = alClient
     TabOrder = 0
-    ExplicitHeight = 458
     object tsDevices: TTabSheet
       HelpContext = 143
       Caption = 'tsDevices'
       TabVisible = False
-      ExplicitHeight = 448
       object pnDeviceOptions: TPanel
         AlignWithMargins = True
         Left = 3
@@ -381,7 +379,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsReaders'
       ImageIndex = 1
       TabVisible = False
-      ExplicitHeight = 448
       object Label11: TLabel
         AlignWithMargins = True
         Left = 3
@@ -407,7 +404,6 @@ object frmSettings: TfrmSettings
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 1
-        ExplicitTop = 415
         object btnAddExt: TButton
           Left = 3
           Top = 3
@@ -460,7 +456,6 @@ object frmSettings: TfrmSettings
         TabOrder = 0
         ViewStyle = vsReport
         OnDblClick = btnChangeExtClick
-        ExplicitHeight = 390
       end
     end
     object tsInterface: TTabSheet
@@ -468,7 +463,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsInterface'
       ImageIndex = 2
       TabVisible = False
-      ExplicitHeight = 448
       object Panel8: TPanel
         AlignWithMargins = True
         Left = 3
@@ -791,7 +785,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsInternet'
       ImageIndex = 4
       TabVisible = False
-      ExplicitHeight = 448
       object Panel5: TPanel
         AlignWithMargins = True
         Left = 3
@@ -1182,7 +1175,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsScripts'
       ImageIndex = 4
       TabVisible = False
-      ExplicitHeight = 448
       object Label12: TLabel
         AlignWithMargins = True
         Left = 3
@@ -1208,7 +1200,6 @@ object frmSettings: TfrmSettings
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 1
-        ExplicitTop = 379
         DesignSize = (
           447
           69)
@@ -1285,14 +1276,12 @@ object frmSettings: TfrmSettings
         TabOrder = 0
         ViewStyle = vsReport
         OnDblClick = btnEditScriptClick
-        ExplicitHeight = 354
       end
     end
     object tsBehavour: TTabSheet
       Caption = 'tsBehavior'
       ImageIndex = 5
       TabVisible = False
-      ExplicitHeight = 448
       object Panel3: TPanel
         AlignWithMargins = True
         Left = 3
@@ -1326,7 +1315,7 @@ object frmSettings: TfrmSettings
         end
         object Label10: TLabel
           Left = 15
-          Top = 238
+          Top = 215
           Width = 131
           Height = 13
           Alignment = taRightJustify
@@ -1370,7 +1359,7 @@ object frmSettings: TfrmSettings
           Caption = #1057#1090#1072#1088#1090#1086#1074#1072#1090#1100' '#1079#1072#1082#1072#1095#1082#1080' '#1072#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080
           TabOrder = 2
         end
-        object cbShowFb2Info: TCheckBox
+        object cbAllowMixedCollections: TCheckBox
           AlignWithMargins = True
           Left = 9
           Top = 91
@@ -1378,12 +1367,13 @@ object frmSettings: TfrmSettings
           Height = 17
           Margins.Left = 9
           Align = alTop
-          Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1080#1085#1092#1086#1088#1084#1072#1094#1080#1102' '#1080#1079' fb2 '
+          Caption = #1056#1072#1079#1088#1077#1096#1080#1090#1100' '#1089#1084#1077#1096#1072#1085#1085#1099#1077' '#1082#1086#1083#1083#1077#1082#1094#1080#1080
           Color = clBtnFace
           ParentColor = False
           TabOrder = 3
+          ExplicitTop = 114
         end
-        object cbAllowMixedCollections: TCheckBox
+        object cbDeleteDeleted: TCheckBox
           AlignWithMargins = True
           Left = 9
           Top = 114
@@ -1391,12 +1381,13 @@ object frmSettings: TfrmSettings
           Height = 17
           Margins.Left = 9
           Align = alTop
-          Caption = #1056#1072#1079#1088#1077#1096#1080#1090#1100' '#1089#1084#1077#1096#1072#1085#1085#1099#1077' '#1082#1086#1083#1083#1077#1082#1094#1080#1080
+          Caption = #1059#1076#1072#1083#1103#1090#1100' "'#1091#1076#1072#1083#1077#1085#1099#1077' '#1074' '#1073#1080#1073#1083#1080#1086#1090#1077#1082#1077'"'
           Color = clBtnFace
           ParentColor = False
           TabOrder = 4
+          ExplicitTop = 137
         end
-        object cbDeleteDeleted: TCheckBox
+        object cbAutoLoadReview: TCheckBox
           AlignWithMargins = True
           Left = 9
           Top = 137
@@ -1404,12 +1395,13 @@ object frmSettings: TfrmSettings
           Height = 17
           Margins.Left = 9
           Align = alTop
-          Caption = #1059#1076#1072#1083#1103#1090#1100' "'#1091#1076#1072#1083#1077#1085#1099#1077' '#1074' '#1073#1080#1073#1083#1080#1086#1090#1077#1082#1077'"'
+          Caption = #1040#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080' '#1079#1072#1075#1088#1091#1078#1072#1090#1100' '#1088#1077#1094#1077#1085#1079#1080#1080
           Color = clBtnFace
           ParentColor = False
           TabOrder = 5
+          ExplicitTop = 160
         end
-        object cbAutoLoadReview: TCheckBox
+        object cbDeleteFiles: TCheckBox
           AlignWithMargins = True
           Left = 9
           Top = 160
@@ -1417,55 +1409,44 @@ object frmSettings: TfrmSettings
           Height = 17
           Margins.Left = 9
           Align = alTop
-          Caption = #1040#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080' '#1079#1072#1075#1088#1091#1078#1072#1090#1100' '#1088#1077#1094#1077#1085#1079#1080#1080
-          Color = clBtnFace
-          ParentColor = False
-          TabOrder = 6
-        end
-        object cbDeleteFiles: TCheckBox
-          AlignWithMargins = True
-          Left = 9
-          Top = 183
-          Width = 429
-          Height = 17
-          Margins.Left = 9
-          Align = alTop
           Caption = #1059#1076#1072#1083#1103#1090#1100' '#1092#1072#1081#1083#1099' '#1087#1088#1080' '#1091#1076#1072#1083#1077#1085#1080#1080' '#1082#1085#1080#1075
           Color = clBtnFace
           ParentColor = False
-          TabOrder = 7
+          TabOrder = 6
+          ExplicitTop = 183
         end
         object cbOverwriteFB2Info: TCheckBox
           AlignWithMargins = True
           Left = 9
-          Top = 212
+          Top = 189
           Width = 429
           Height = 17
           Margins.Left = 9
           Margins.Top = 9
           Align = alTop
           Caption = #1055#1077#1088#1077#1079#1072#1087#1080#1089#1099#1074#1072#1090#1100' '#1079#1072#1075#1086#1083#1086#1074#1086#1082' fb2'
-          TabOrder = 8
+          TabOrder = 7
           OnClick = cbOverwriteFB2InfoClick
+          ExplicitTop = 212
         end
         object edTitleTemplate: TEdit
           Left = 152
-          Top = 235
+          Top = 212
           Width = 201
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           ReadOnly = True
-          TabOrder = 9
+          TabOrder = 8
           Text = '[%s [(%n) ]- ]%t'
         end
         object btnTitleTemplate: TButton
           Left = 359
-          Top = 233
+          Top = 210
           Width = 75
           Height = 25
           Anchors = [akTop, akRight]
           Caption = #1048#1079#1084#1077#1085#1080#1090#1100
-          TabOrder = 10
+          TabOrder = 9
           OnClick = EditTextTemplate
         end
       end
@@ -1474,7 +1455,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsFileSort'
       ImageIndex = 6
       TabVisible = False
-      ExplicitHeight = 448
       object Panel4: TPanel
         AlignWithMargins = True
         Left = 3
@@ -1707,7 +1687,6 @@ object frmSettings: TfrmSettings
     Caption = 'pnButtons'
     ShowCaption = False
     TabOrder = 1
-    ExplicitTop = 464
     DesignSize = (
       617
       41)
@@ -1772,7 +1751,6 @@ object frmSettings: TfrmSettings
       043504400000000000000000000000FFFFFFFFFFFFFFFF000000000000000000
       000000011121043E0440044204380440043E0432043A04300420004404300439
       043B043E043204}
-    ExplicitHeight = 455
   end
   object dlgColors: TColorDialog
     Left = 32

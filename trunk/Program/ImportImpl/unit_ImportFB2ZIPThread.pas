@@ -124,7 +124,6 @@ begin
   FZipper := TZipForge.Create(nil);
   // FZipper.Options.OEMFileNames := False;
   try
-
     for i := 0 to FFiles.Count - 1 do
     begin
       if Canceled then
@@ -155,7 +154,7 @@ begin
             R.Size := ArchiveItem.UncompressedSize;
             R.InsideNo := j;
             R.Date := Now;
-            FZipper.ExtractToStream(AFileName,FS);
+            FZipper.ExtractToStream(AFileName, FS);
             if not Assigned(FS) then
               Continue;
 
@@ -180,7 +179,7 @@ begin
           finally
             FS.Free;
           end;
-          inc(j);
+          Inc(j);
         until (not FZipper.FindNext(ArchiveItem));
 
         FZipper.CloseArchive;

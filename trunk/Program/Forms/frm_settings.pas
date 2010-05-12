@@ -71,7 +71,6 @@ type
     cbShowSubGenreBooks: TCheckBox;
     cbMinimizeToTray: TCheckBox;
     cbAutoStartDwnld: TCheckBox;
-    cbShowFb2Info: TCheckBox;
     cbAllowMixedCollections: TCheckBox;
     pnDownloadedFontColor: TPanel;
     pnDeletedFontColor: TPanel;
@@ -336,7 +335,6 @@ begin
   //
   // Page 6 - Behavior
   //
-  cbShowFb2Info.Checked := Settings.ShowFb2Info;
   cbShowSubGenreBooks.Checked := Settings.ShowSubGenreBooks;
   cbMinimizeToTray.Checked := Settings.MinimizeToTray;
   cbAutoStartDwnld.Checked := Settings.AutoStartDwnld;
@@ -440,7 +438,6 @@ begin
 
   Settings.ShowSubGenreBooks := cbShowSubGenreBooks.Checked;
   Settings.MinimizeToTray := cbMinimizeToTray.Checked;
-  Settings.ShowFb2Info := cbShowFb2Info.Checked;
   Settings.AutoStartDwnld := cbAutoStartDwnld.Checked;
   Settings.AllowMixed := cbAllowMixedCollections.Checked;
   Settings.DeleteDeleted := cbDeleteDeleted.Checked;

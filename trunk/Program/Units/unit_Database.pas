@@ -140,6 +140,10 @@ uses
   bdeconst,
   unit_Consts;
 
+resourcestring
+  rstrFavoritesGroupName = 'Избранное';
+  rstrToReadGroupName = 'К прочтению';
+
 const
   TEMP_DATABASE = 'TempDB';
   USER_DATABASE = 'UserDB';
@@ -281,10 +285,10 @@ GenreListTableIndexes: array [1 .. 2] of TIndexDesc = (
 //
 ExtraTableFields: array [1 .. 5] of TFieldDesc = (
   (Name: BOOK_ID_FIELD;         DataType: ftInteger;    Size: 0;   Required: True),
-  (Name: BOOK_ANNOTATION_FIELD; DataType: ftWideMemo;   Size: 0;   Required: False),
-  (Name: BOOK_REVIEW_FIELD;     DataType: ftWideMemo;   Size: 0;   Required: False),
   (Name: BOOK_RATE_FIELD;       DataType: ftInteger;    Size: 0;   Required: False),
-  (Name: BOOK_PROGRESS_FIELD;   DataType: ftInteger;    Size: 0;   Required: False)
+  (Name: BOOK_PROGRESS_FIELD;   DataType: ftInteger;    Size: 0;   Required: False),
+  (Name: BOOK_ANNOTATION_FIELD; DataType: ftWideMemo;   Size: 0;   Required: False),
+  (Name: BOOK_REVIEW_FIELD;     DataType: ftWideMemo;   Size: 0;   Required: False)
 );
 
 ExtraTableIndexes: array [1 .. 1] of TIndexDesc = (
@@ -365,7 +369,7 @@ BookGroupsTableIndexes: array [1 .. 2] of TIndexDesc = (
 // Groups table
 //
 // TODO -oNickR -cDB opt : инхронизировать с таблицей Books
-GroupsTableFields: array [1 .. 22] of TFieldDesc = (
+GroupsTableFields: array [1 .. 23] of TFieldDesc = (
   (Name: BOOK_ID_FIELD;        DataType: ftInteger;    Size: 0;   Required: True),
   (Name: DB_ID_FIELD;          DataType: ftInteger;    Size: 0;   Required: True),
   (Name: BOOK_LIBID_FIELD;     DataType: ftInteger;    Size: 0;   Required: False),
@@ -388,9 +392,10 @@ GroupsTableFields: array [1 .. 22] of TFieldDesc = (
   //
   // Данные из таблицы Extra
   //
-  (Name: BOOK_REVIEW_FIELD;    DataType: ftWideMemo;   Size: 0;   Required: False),
   (Name: BOOK_RATE_FIELD;      DataType: ftInteger;    Size: 0;   Required: False),
   (Name: BOOK_PROGRESS_FIELD;  DataType: ftSmallInt;   Size: 0;   Required: False),
+  (Name: BOOK_ANNOTATION_FIELD;DataType: ftWideMemo;   Size: 0;   Required: False),
+  (Name: BOOK_REVIEW_FIELD;    DataType: ftWideMemo;   Size: 0;   Required: False),
 
   //
   // Данные из других таблиц. Название серии, авторы, жанры.
@@ -404,7 +409,8 @@ GroupsTableIndexes: array [1 .. 2] of TIndexDesc = (
   (Name: 'File_Index';     Fields: BOOK_FILENAME_FIELD;  Options: [])
 );
 
-GroupBooksTableBlobs: array [1 .. 2] of TBLOBFieldDesc = (
+GroupBooksTableBlobs: array [1 .. 3] of TBLOBFieldDesc = (
+  (Name: BOOK_ANNOTATION_FIELD;BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5),
   (Name: BOOK_REVIEW_FIELD;    BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5),
   (Name: BOOK_EXTRAINFO_FIELD; BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5)
 );
@@ -643,8 +649,8 @@ begin
 
     CreateTable(ADatabase, 'Bases',      BasesTableFields,      BasesTableIndexes,      BasesTableBlobs);
     CreateTable(ADatabase, 'Groups',     GroupsListTableFields, GroupsListTableIndexes, []);
-    CreateTable(ADatabase, 'BookGroups', BookGroupsTableFields, BookGroupsTableIndexes, GroupBooksTableBlobs);
-    CreateTable(ADatabase, 'Books',      GroupsTableFields,     GroupsTableIndexes,     []);
+    CreateTable(ADatabase, 'BookGroups', BookGroupsTableFields, BookGroupsTableIndexes, []);
+    CreateTable(ADatabase, 'Books',      GroupsTableFields,     GroupsTableIndexes,     GroupBooksTableBlobs);
     ADatabase.Connected := False;
 
     //
@@ -655,12 +661,12 @@ begin
     Groups.Active := True;
 
     Groups.Append;
-    Groups.FieldByName(GROUP_NAME_FIELD).AsWideString := 'Избранное';
+    Groups.FieldByName(GROUP_NAME_FIELD).AsWideString := rstrFavoritesGroupName;
     Groups.FieldByName('AllowDelete').AsBoolean := False;
     Groups.Post;
 
     Groups.Append;
-    Groups.FieldByName(GROUP_NAME_FIELD).AsWideString := 'К прочтению';
+    Groups.FieldByName(GROUP_NAME_FIELD).AsWideString := rstrToReadGroupName;
     Groups.FieldByName('AllowDelete').AsBoolean := False;
     Groups.Post;
   finally
@@ -990,9 +996,16 @@ begin
     begin
       FExtra.Append;
       FExtraBookID.Value := FBookBookID.Value;
-      FExtraAnnotation.Value := BookRecord.Annotation;
-      FExtraRate.Value := BookRecord.Rate;
-      FExtraProgress.Value := BookRecord.Progress;
+
+      if BookRecord.Rate <> 0 then
+        FExtraRate.Value := BookRecord.Rate;
+
+      if BookRecord.Progress <> 0 then
+        FExtraProgress.Value := BookRecord.Progress;
+
+      if BookRecord.Annotation <> '' then
+        FExtraAnnotation.Value := BookRecord.Annotation;
+
       FExtra.Post;
     end;
 

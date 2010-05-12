@@ -402,6 +402,11 @@ type
     tvBooksSR: TBookTree;
     tvBooksF: TBookTree;
     tvDownloadList: TBookTree;
+    acShowBookCover: TAction;
+    acShowBookAnnotation: TAction;
+    miViewExtra: TMenuItem;
+    miShowBookCover: TMenuItem;
+    miShowBookAnnotation: TMenuItem;
 
     //
     // События формы
@@ -607,6 +612,10 @@ type
     procedure AuthorLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
     procedure GenreLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
     procedure SerieLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
+    procedure ShowBookCoverExecute(Sender: TObject);
+    procedure ShowBookCoverUpdate(Sender: TObject);
+    procedure ShowBookAnnotationExecute(Sender: TObject);
+    procedure ShowBookAnnotationUpdate(Sender: TObject);
 
   protected
     procedure WMGetSysCommand(var Message: TMessage); message WM_SYSCOMMAND;
@@ -742,6 +751,8 @@ type
     procedure GetActiveViewComponents(var Tree: TBookTree; var Panel: TInfoPanel);
     procedure SetInfoPanelHeight(Height: Integer);
     procedure SetInfoPanelVisible(State: Boolean);
+    procedure SetShowBookCover(State: Boolean);
+    procedure SetShowBookAnnotation(State: Boolean);
     procedure SetColumns;
     procedure SaveColumns;
     function GetTreeTag(const Sender: TBaseVirtualTree; const Column: Integer): Integer;
@@ -780,6 +791,8 @@ uses
   IOUtils,
   Generics.Collections,
   Math,
+  fictionbook_21,
+  unit_FB2Utils,
   dm_collection,
   dm_user,
   unit_Columns,
@@ -1093,9 +1106,10 @@ begin
   EngBar.Visible := Settings.ShowEngBar;
   tlbrEdit.Visible := Settings.EditToolBarVisible;
   StatusBar.Visible := Settings.ShowStatusBar;
-  ///cpCoverSR.Fb2InfoVisible := Settings.ShowFb2Info;
   SetInfoPanelHeight(Settings.InfoPanelHeight);
   SetInfoPanelVisible(Settings.ShowInfoPanel);
+  SetShowBookCover(Settings.ShowBookCover);
+  SetShowBookAnnotation(Settings.ShowBookAnnotation);
 
   tbtnShowDeleted.Down := Settings.DoNotShowDeleted;
   tbtnShowLocalOnly.Down := Settings.ShowLocalOnly;
@@ -2252,21 +2266,6 @@ begin
     btnStartDownloadClick(Sender);
 
   SetFormState;
-
-  //
-  // TODO : REMOVE Временно спрячем обложку и аннотацию
-  //
-  ipnlAuthors.ShowCover := False;
-  ipnlSeries.ShowCover := False;
-  ipnlGenres.ShowCover := False;
-  ipnlSearch.ShowCover := False;
-  ipnlFavorites.ShowCover := False;
-
-  ipnlAuthors.ShowAnnotation := False;
-  ipnlSeries.ShowAnnotation := False;
-  ipnlGenres.ShowAnnotation := False;
-  ipnlSearch.ShowAnnotation := False;
-  ipnlFavorites.ShowAnnotation := False;
 end;
 
 procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -2812,6 +2811,11 @@ var
   Data: PBookData;
   Tree: TBookTree;
   InfoPanel: TInfoPanel;
+  R: TBookRecord;
+  bookStream: TMemoryStream;
+  book: IXMLFictionBook;
+  imgBookCover: TGraphic;
+  tmpStr: string;
   CoverOK: Boolean;
 begin
   if BookTreeStatus = bsBusy then
@@ -2834,21 +2838,48 @@ begin
 
   if Settings.ShowInfoPanel then
   begin
-    //
-    // TODO : необходимо вынести этот код в отдельную функцию, т к он нужен и после переключения режима показа
-    // информации о книге. Если информация была скрыта и пользователь хочет ее видеть, то необходимо обновить панель.
-    // Заодно этот метод должен зачитывать обложку и аннотацию.
-    // Желательно сделать показ информации о книге с таймаутом, т к чтение обложки может занимать достаточно много времени
-    //
     InfoPanel.SetBookInfo(
       Data^.Title,
       TAuthorsHelper.GetLinkList(Data^.Authors),
       Data^.Serie,
-      TGenresHelper.GetLinkList(Data^.Genres),
-      '' // TODO
+      TGenresHelper.GetLinkList(Data^.Genres)
       );
+
+    //
+    // TODO : Желательно сделать показ информации о книге с таймаутом, т к чтение обложки может занимать достаточно много времени
+    //
+    if Settings.ShowBookCover then
+    begin
+      DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, R, False);
+      bookStream := TMemoryStream.Create;
+      try
+        try
+          ExtractBookToStream(R, bookStream);
+          book := LoadFictionBook(bookStream);
+
+          imgBookCover := GetBookCover(book);
+          try
+            InfoPanel.SetBookCover(imgBookCover);
+          finally
+            imgBookCover.Free;
+          end;
+        except
+          InfoPanel.SetBookCover(nil);
+        end;
+      finally
+        bookStream.Free;
+      end;
+    end;
+
+    if Settings.ShowBookAnnotation then
+    begin
+      InfoPanel.SetBookAnnotation(DMCollection.GetAnnotation(Data^.BookID, Data^.DatabaseID));
+    end;
   end;
 
+  //
+  // TODO : Для неFB2 коллекций необходимо знать, конвертирована книга в FBD или нет
+  //
   CoverOK := True; /// Cover.Show(Folder, FileName, No);
 
   if IsPrivate and IsNonFB2 then
@@ -2895,7 +2926,7 @@ begin
   end
   else
   begin
-    case (Sender as TVirtualStringTree).Header.Columns[Column].Tag of
+    case (Sender as TBookTree).Header.Columns[Column].Tag of
       COL_AUTHOR:  Result := CompareStr(TAuthorsHelper.GetList(Data1^.Authors), TAuthorsHelper.GetList(Data2^.Authors));
       COL_TITLE:   Result := CompareStr(Data1^.Title, Data2^.Title);
       COL_SERIES:  Result := CompareStr(Data1^.Serie, Data2^.Serie);
@@ -2942,7 +2973,7 @@ begin
   if Column < 0 then
     Result := -1
   else
-    Result := (Sender as TVirtualStringTree).Header.Columns[Column].Tag;
+    Result := (Sender as TBookTree).Header.Columns[Column].Tag;
 end;
 
 procedure TfrmMain.tvBooksTreeAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; CellRect: TRect);
@@ -2980,23 +3011,34 @@ begin
 
   Tag := GetTreeTag(Sender, Column);
 
-  X := (Sender as TVirtualStringTree).Header.Columns.Items[Column].Left;
+  X := (Sender as TBookTree).Header.Columns.Items[Column].Left;
 
   if (Tag = COL_STATE) then
   begin
+    //
+    // Книга доступна локально
+    //
     if isOnlineCollection(DMUser.ActiveCollection.CollectionType) and (Data^.Local) then
       ilFileTypes.Draw(TargetCanvas, X, CellRect.Top + 1, 7);
-    if Data.Progress = 100 then
+
+    //
+    // Книга прочитана
+    //
+    if Data^.Progress = 100 then
       ilFileTypes.Draw(TargetCanvas, X + 10, CellRect.Top, 8);
-    if Data.Code = 1 then
+
+    //
+    // У книги есть аннотация
+    //
+    if Data^.Code = 1 then
       ilFileTypes.Draw(TargetCanvas, X + 25, CellRect.Top + 1, 9);
   end
   else if (Tag = COL_RATE) then
-    Stars(Data.Rate)
+    Stars(Data^.Rate)
   else if (Tag = COL_LIBRATE) then
   begin
-    if Data.LibRate <= 5 then
-      Stars(Data.LibRate)
+    if Data^.LibRate <= 5 then
+      Stars(Data^.LibRate)
     else
       Stars(0);
   end;
@@ -3725,6 +3767,24 @@ begin
 
   ipnlFavorites.Visible := State;
   GroupBookInfoSplitter.Visible := State;
+end;
+
+procedure TfrmMain.SetShowBookCover(State: Boolean);
+begin
+  ipnlAuthors.ShowCover := State;
+  ipnlSeries.ShowCover := State;
+  ipnlGenres.ShowCover := State;
+  ipnlSearch.ShowCover := State;
+  ipnlFavorites.ShowCover := State;
+end;
+
+procedure TfrmMain.SetShowBookAnnotation(State: Boolean);
+begin
+  ipnlAuthors.ShowAnnotation := State;
+  ipnlSeries.ShowAnnotation := State;
+  ipnlGenres.ShowAnnotation := State;
+  ipnlSearch.ShowAnnotation := State;
+  ipnlFavorites.ShowAnnotation := State;
 end;
 
 procedure TfrmMain.tbClearEdAuthorClick(Sender: TObject);
@@ -5014,6 +5074,44 @@ begin
     tvBooksTreeChange(nil, nil);
 
   SetInfoPanelVisible(Settings.ShowInfoPanel);
+end;
+
+procedure TfrmMain.ShowBookCoverExecute(Sender: TObject);
+begin
+  Settings.ShowBookCover := not Settings.ShowBookCover;
+
+  //
+  // Принудительно обновим информацию о книге, т к если она не показывалась, то и не обновлялась
+  //
+  if Settings.ShowInfoPanel and Settings.ShowBookCover then
+    tvBooksTreeChange(nil, nil);
+
+  SetShowBookCover(Settings.ShowBookCover);
+end;
+
+procedure TfrmMain.ShowBookCoverUpdate(Sender: TObject);
+begin
+  acShowBookCover.Checked := Settings.ShowBookCover;
+  acShowBookCover.Enabled := Settings.ShowInfoPanel;
+end;
+
+procedure TfrmMain.ShowBookAnnotationExecute(Sender: TObject);
+begin
+  Settings.ShowBookAnnotation := not Settings.ShowBookAnnotation;
+
+  //
+  // Принудительно обновим информацию о книге, т к если она не показывалась, то и не обновлялась
+  //
+  if Settings.ShowInfoPanel and Settings.ShowBookAnnotation then
+    tvBooksTreeChange(nil, nil);
+
+  SetShowBookAnnotation(Settings.ShowBookAnnotation);
+end;
+
+procedure TfrmMain.ShowBookAnnotationUpdate(Sender: TObject);
+begin
+  acShowBookAnnotation.Checked := Settings.ShowBookAnnotation;
+  acShowBookAnnotation.Enabled := Settings.ShowInfoPanel;
 end;
 
 procedure TfrmMain.AddBookToGroup(Sender: TObject);

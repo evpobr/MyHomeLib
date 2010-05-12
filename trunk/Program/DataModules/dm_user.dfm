@@ -940,6 +940,10 @@ object DMUser: TDMUser
       FieldName = 'KeyWords'
       Size = 255
     end
+    object AllBooksAnnotation: TWideMemoField
+      FieldName = 'Annotation'
+      BlobType = ftWideMemo
+    end
     object AllBooksReview: TWideMemoField
       FieldName = 'Review'
       BlobType = ftWideMemo

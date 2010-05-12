@@ -161,19 +161,22 @@ begin
           inc(j);
         until (not FZipper.FindNext(ArchiveItem));
         FZipper.CloseArchive;
-        if Settings.EnableSort then SortFiles(R);
-        if IsValid and (BookFileName = FBDFileName)
-           and (FLibrary.InsertBook(R, True, True)<>0)
-            Then Inc(AddCount)
-            else
-            begin
-              Teletype('Ошибка FBD: ' + AZipFileName, tsError);
-              Inc(DefectCount);
-            end;
+
+        if Settings.EnableSort then
+          SortFiles(R);
+
+        if IsValid and (BookFileName = FBDFileName) and (FLibrary.InsertBook(R, True, True)<>0) then
+          Inc(AddCount)
+        else
+        begin
+          Teletype('Ошибка FBD: ' + AZipFileName, tsError);
+          Inc(DefectCount);
+        end;
       except
         on e: Exception do
-           Teletype('Ошибка распаковки архива: ' + AZipFileName, tsError);
+          Teletype('Ошибка распаковки архива: ' + AZipFileName, tsError);
       end;
+
       if (i mod ProcessedItemThreshold) = 0 then
         SetComment(Format('Обработано архивов: %u из %u', [i + 1, FFiles.Count]));
       SetProgress((i + 1) * 100 div FFiles.Count);
