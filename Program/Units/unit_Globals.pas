@@ -323,10 +323,10 @@ type
     //
     // Следующие поля зачитываются из таблицы Extra
     //
-    Review: string;
-    Annotation: string;
     Rate: Integer;
     Progress: Integer;
+    Annotation: string;
+    Review: string;
 
     //
     // Вычисляемые поля

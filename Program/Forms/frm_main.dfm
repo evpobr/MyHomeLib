@@ -2794,6 +2794,15 @@ object frmMain: TfrmMain
       object miShowBookInfo: TMenuItem
         Action = acShowBookInfo
       end
+      object miViewExtra: TMenuItem
+        Caption = #1044#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1086
+        object miShowBookCover: TMenuItem
+          Action = acShowBookCover
+        end
+        object miShowBookAnnotation: TMenuItem
+          Action = acShowBookAnnotation
+        end
+      end
     end
     object N5: TMenuItem
       Caption = '?'
@@ -13162,17 +13171,29 @@ object frmMain: TfrmMain
       OnExecute = ShowEngAlphabetExecute
       OnUpdate = ShowEngAlphabetUpdate
     end
+    object acShowStatusbar: TAction
+      Category = #1042#1080#1076
+      Caption = #1057#1090#1072#1090#1091#1089#1073#1072#1088
+      OnExecute = ShowStatusbarExecute
+      OnUpdate = ShowStatusbarUpdate
+    end
     object acShowBookInfo: TAction
       Category = #1042#1080#1076
       Caption = #1048#1085#1092#1086#1088#1084#1072#1094#1080#1103' '#1086' '#1082#1085#1080#1075#1077
       OnExecute = ShowBookInfoExecute
       OnUpdate = ShowBookInfoUpdate
     end
-    object acShowStatusbar: TAction
+    object acShowBookCover: TAction
       Category = #1042#1080#1076
-      Caption = #1057#1090#1072#1090#1091#1089#1073#1072#1088
-      OnExecute = ShowStatusbarExecute
-      OnUpdate = ShowStatusbarUpdate
+      Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1086#1073#1083#1086#1078#1082#1091
+      OnExecute = ShowBookCoverExecute
+      OnUpdate = ShowBookCoverUpdate
+    end
+    object acShowBookAnnotation: TAction
+      Category = #1042#1080#1076
+      Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1072#1085#1085#1086#1090#1072#1094#1080#1102
+      OnExecute = ShowBookAnnotationExecute
+      OnUpdate = ShowBookAnnotationUpdate
     end
   end
 end

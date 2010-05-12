@@ -210,6 +210,10 @@ type
     //
     procedure SetRate(BookID: Integer; DatabaseID: Integer; Rate: Integer);
     procedure SetProgress(BookID: Integer; DatabaseID: Integer; Progress: Integer);
+
+    function GetAnnotation(BookID: Integer; DatabaseID: Integer): string;
+    procedure SetAnnotation(BookID: Integer; DatabaseID: Integer; const Annotation: string);
+
     function GetReview(BookID: Integer; DatabaseID: Integer): string;
     function SetReview(BookID: Integer; DatabaseID: Integer; const Review: string): Integer;
 
@@ -645,6 +649,62 @@ begin
   DMUser.SetProgress(BookID, DatabaseID, Progress);
 end;
 
+function TDMCollection.GetAnnotation(BookID: Integer; DatabaseID: Integer): string;
+begin
+  Assert(AllExtra.Active);
+
+  if DatabaseID = DMUser.ActiveCollection.ID then
+  begin
+    if AllExtra.Locate(BOOK_ID_FIELD, BookID, []) then
+    begin
+      Result := AllExtraAnnotation.Value;
+    end;
+  end
+  else
+    Result := DMUser.GetAnnotation(BookID, DatabaseID);
+end;
+
+procedure TDMCollection.SetAnnotation(BookID: Integer; DatabaseID: Integer; const Annotation: string);
+var
+  NewAnnotation: string;
+begin
+  Assert(DatabaseID = DMUser.ActiveCollection.ID);
+
+  NewAnnotation := Trim(Annotation);
+
+  if AllBooks.Locate(BOOK_ID_FIELD, BookID, []) then
+  begin
+    AllBooks.Edit;
+
+    if NewAnnotation = '' then
+    begin
+      ClearExtra(
+        BookID, DatabaseID,
+        procedure
+        begin
+          AllExtraAnnotation.Clear;
+        end
+      );
+    end
+    else
+    begin
+      UpdateExtra(
+        BookID, DatabaseID,
+        procedure
+        begin
+          AllExtraAnnotation.Value := NewAnnotation;
+        end
+      );
+    end;
+
+    AllBooks.Post;
+
+    //
+    // Обновим информацию в группах
+    //
+    DMUser.SetAnnotation(BookID, DatabaseID, NewAnnotation);
+  end;
+end;
 function TDMCollection.GetReview(BookID: Integer; DatabaseID: Integer): string;
 begin
   Assert(AllExtra.Active);
