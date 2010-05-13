@@ -50,6 +50,9 @@ type
 
     procedure OnLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
 
+  protected
+    procedure Resize; override;
+
   public
     constructor Create(AOwner: TComponent); override;
 
@@ -146,6 +149,11 @@ resourcestring
   rstrGenreLabel = 'Жанр(ы):';
   rstrNoAnnotationHint = 'Аннотация отсутствует';
 
+function GetCoverWidth(Height: Integer): Integer;
+begin
+  Result := Height * 2 div 3;
+end;
+
 constructor TInfoPanel.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -157,7 +165,7 @@ begin
 
   FCover := TImage.Create(Self);
   FCover.Parent := Self;
-  FCover.SetBounds(0, 0, 200, 200);
+  FCover.SetBounds(0, 0, GetCoverWidth(200), 200);
   FCover.Align := alLeft;
   FCover.AlignWithMargins := True;
   FCover.Center := True;
@@ -235,6 +243,12 @@ begin
   //
   //
   Constraints.MinHeight := 150;
+end;
+
+procedure TInfoPanel.Resize;
+begin
+  FCover.Width := GetCoverWidth(FCover.Height);
+  inherited;
 end;
 
 procedure TInfoPanel.OnLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
