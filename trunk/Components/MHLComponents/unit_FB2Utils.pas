@@ -25,6 +25,7 @@ uses
 
 function GetBookCoverStream(book: IXMLFictionBook): TStream;
 function GetBookCover(book: IXMLFictionBook): TGraphic;
+function GetBookAnnotation(book: IXMLFictionBook): string;
 
 { TODO -oNickR -cRefactoring : доделать эту функцию. Для этого необходимо вынести определение TBookRecord в доступное место }
 // procedure GetBookInfo(book: IXMLFictionBook; var R: TBookRecord);
@@ -138,6 +139,27 @@ begin
     end;
   finally
     coverStream.Free;
+  end;
+end;
+
+function GetBookAnnotation(book: IXMLFictionBook): string;
+var
+  i: Integer;
+  sl: TStringList;
+begin
+  Result := '';
+
+  sl := TStringList.Create;
+  try
+    with book.Description.Titleinfo do
+    begin
+      for i := 0 to Annotation.p.Count - 1 do
+        sl.Add(Annotation.p[i].OnlyText);
+    end;
+
+    Result := sl.Text;
+  finally
+    sl.Free;
   end;
 end;
 

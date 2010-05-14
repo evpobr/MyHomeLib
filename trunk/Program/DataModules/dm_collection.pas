@@ -211,6 +211,9 @@ type
     procedure SetRate(BookID: Integer; DatabaseID: Integer; Rate: Integer);
     procedure SetProgress(BookID: Integer; DatabaseID: Integer; Progress: Integer);
 
+    //
+    // NOTE: Эти методы сейчас не используются.
+    //
     function GetAnnotation(BookID: Integer; DatabaseID: Integer): string;
     procedure SetAnnotation(BookID: Integer; DatabaseID: Integer; const Annotation: string);
 

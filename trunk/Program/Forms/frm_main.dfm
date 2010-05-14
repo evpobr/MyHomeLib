@@ -3,7 +3,7 @@ object frmMain: TfrmMain
   Top = 0
   HelpContext = 2
   Caption = 'MyHomeLib'
-  ClientHeight = 546
+  ClientHeight = 646
   ClientWidth = 792
   Color = clBtnFace
   Constraints.MinHeight = 600
@@ -61,7 +61,7 @@ object frmMain: TfrmMain
   TextHeight = 13
   object StatusBar: TRzStatusBar
     Left = 0
-    Top = 527
+    Top = 627
     Width = 792
     Height = 19
     BorderInner = fsNone
@@ -323,7 +323,7 @@ object frmMain: TfrmMain
     Left = 3
     Top = 109
     Width = 786
-    Height = 415
+    Height = 515
     HelpContext = 1
     ActivePage = tsByAuthor
     Align = alClient
@@ -335,7 +335,7 @@ object frmMain: TfrmMain
       object AuthorsViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
-        Height = 387
+        Height = 487
         ResizeControl = pnAuthorsView
         ExplicitLeft = 392
         ExplicitTop = 112
@@ -345,7 +345,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 230
-        Height = 387
+        Height = 487
         Align = alLeft
         TabOrder = 0
         object pnAuthorSearch: TMHLSimplePanel
@@ -430,7 +430,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 224
-          Height = 349
+          Height = 449
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -458,12 +458,12 @@ object frmMain: TfrmMain
         Left = 233
         Top = 0
         Width = 545
-        Height = 387
+        Height = 487
         Align = alClient
         TabOrder = 1
         object AuthorBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 278
+          Top = 378
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -475,7 +475,7 @@ object frmMain: TfrmMain
         object ipnlAuthors: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 284
+          Top = 384
           Width = 539
           Height = 100
           Align = alBottom
@@ -526,7 +526,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 240
+          Height = 340
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -622,7 +622,7 @@ object frmMain: TfrmMain
       object SeriesViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
-        Height = 387
+        Height = 487
         ResizeControl = pnSeriesView
         ExplicitLeft = 392
         ExplicitTop = 144
@@ -632,7 +632,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 230
-        Height = 387
+        Height = 487
         Align = alLeft
         TabOrder = 0
         object tvSeries: TVirtualStringTree
@@ -640,7 +640,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 224
-          Height = 349
+          Height = 449
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -744,12 +744,12 @@ object frmMain: TfrmMain
         Left = 233
         Top = 0
         Width = 545
-        Height = 387
+        Height = 487
         Align = alClient
         TabOrder = 1
         object SerieBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 228
+          Top = 328
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -760,7 +760,7 @@ object frmMain: TfrmMain
         object ipnlSeries: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 234
+          Top = 334
           Width = 539
           Height = 150
           Align = alBottom
@@ -812,7 +812,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 190
+          Height = 290
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -911,7 +911,7 @@ object frmMain: TfrmMain
       object GenresViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
-        Height = 387
+        Height = 487
         ResizeControl = pnGenresView
         ExplicitLeft = 392
         ExplicitTop = 144
@@ -921,7 +921,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 230
-        Height = 387
+        Height = 487
         Align = alLeft
         TabOrder = 0
         object tvGenres: TVirtualStringTree
@@ -929,7 +929,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 224
-          Height = 381
+          Height = 481
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -956,12 +956,12 @@ object frmMain: TfrmMain
         Left = 233
         Top = 0
         Width = 545
-        Height = 387
+        Height = 487
         Align = alClient
         TabOrder = 1
         object GenreBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 278
+          Top = 378
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -1009,7 +1009,7 @@ object frmMain: TfrmMain
         object ipnlGenres: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 284
+          Top = 384
           Width = 539
           Height = 100
           Align = alBottom
@@ -1025,7 +1025,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 240
+          Height = 340
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -1116,21 +1116,22 @@ object frmMain: TfrmMain
       object SearchViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
-        Height = 387
+        Height = 487
         ResizeControl = pnSearchView
         ExplicitLeft = 185
         ExplicitTop = 3
+        ExplicitHeight = 387
       end
       object pnSearchBooksView: TMHLSimplePanel
         Left = 233
         Top = 0
         Width = 545
-        Height = 387
+        Height = 487
         Align = alClient
         TabOrder = 0
         object SearchBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 228
+          Top = 328
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -1143,7 +1144,7 @@ object frmMain: TfrmMain
         object ipnlSearch: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 234
+          Top = 334
           Width = 539
           Height = 150
           Align = alBottom
@@ -1296,7 +1297,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 190
+          Height = 290
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -1396,7 +1397,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 230
-        Height = 387
+        Height = 487
         Align = alLeft
         TabOrder = 1
         object SearchParams: TCategoryPanelGroup
@@ -1404,7 +1405,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 224
-          Height = 343
+          Height = 443
           VertScrollBar.Tracking = True
           Align = alClient
           HeaderFont.Charset = DEFAULT_CHARSET
@@ -1762,7 +1763,7 @@ object frmMain: TfrmMain
         object pnSearchControl: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
-          Top = 352
+          Top = 452
           Width = 224
           Height = 32
           Align = alBottom
@@ -1796,7 +1797,7 @@ object frmMain: TfrmMain
       object GroupsViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
-        Height = 387
+        Height = 487
         ResizeControl = pnGroupsView
         ExplicitLeft = 392
         ExplicitTop = 144
@@ -1806,7 +1807,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 230
-        Height = 387
+        Height = 487
         Align = alLeft
         TabOrder = 0
         object tvGroups: TVirtualStringTree
@@ -1814,7 +1815,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 224
-          Height = 346
+          Height = 446
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -1840,7 +1841,7 @@ object frmMain: TfrmMain
         object RzPanel8: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
-          Top = 355
+          Top = 455
           Width = 224
           Height = 29
           Align = alBottom
@@ -1963,12 +1964,12 @@ object frmMain: TfrmMain
         Left = 233
         Top = 0
         Width = 545
-        Height = 387
+        Height = 487
         Align = alClient
         TabOrder = 1
         object GroupBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 228
+          Top = 328
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -1980,7 +1981,7 @@ object frmMain: TfrmMain
         object ipnlFavorites: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 234
+          Top = 334
           Width = 539
           Height = 150
           Align = alBottom
@@ -2080,7 +2081,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 190
+          Height = 290
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -2272,13 +2273,13 @@ object frmMain: TfrmMain
         Left = 0
         Top = 28
         Width = 778
-        Height = 359
+        Height = 459
         Align = alClient
         TabOrder = 1
         object RzPanel2: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
-          Top = 314
+          Top = 414
           Width = 772
           Height = 42
           Align = alBottom
@@ -2339,7 +2340,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 772
-          Height = 305
+          Height = 405
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -2914,35 +2915,29 @@ object frmMain: TfrmMain
       ImageIndex = 30
       object miSetRate1: TMenuItem
         Tag = 1
-        Caption = '*'
-        OnClick = SetBookRate
+        Action = acBookSetRate1
       end
       object miSetRate2: TMenuItem
         Tag = 2
-        Caption = '* *'
-        OnClick = SetBookRate
+        Action = acBookSetRate2
       end
       object miSetRate3: TMenuItem
         Tag = 3
-        Caption = '* * *'
-        OnClick = SetBookRate
+        Action = acBookSetRate3
       end
       object miSetRate4: TMenuItem
         Tag = 4
-        Caption = '* * * *'
-        OnClick = SetBookRate
+        Action = acBookSetRate4
       end
       object miSetRate5: TMenuItem
         Tag = 5
-        Caption = '* * * * *'
-        OnClick = SetBookRate
+        Action = acBookSetRate5
       end
       object N11: TMenuItem
         Caption = '-'
       end
       object miClearRate: TMenuItem
-        Caption = #1054#1095#1080#1089#1090#1080#1090#1100
-        OnClick = SetBookRate
+        Action = acBookSetRateClear
       end
     end
     object N20: TMenuItem
@@ -13194,6 +13189,42 @@ object frmMain: TfrmMain
       Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1072#1085#1085#1086#1090#1072#1094#1080#1102
       OnExecute = ShowBookAnnotationExecute
       OnUpdate = ShowBookAnnotationUpdate
+    end
+    object acBookSetRate1: TAction
+      Category = #1050#1085#1080#1075#1072
+      Caption = '*'
+      OnExecute = BookSetRateExecute
+      OnUpdate = UpdateBookAction
+    end
+    object acBookSetRate2: TAction
+      Category = #1050#1085#1080#1075#1072
+      Caption = '* *'
+      OnExecute = BookSetRateExecute
+      OnUpdate = UpdateBookAction
+    end
+    object acBookSetRate3: TAction
+      Category = #1050#1085#1080#1075#1072
+      Caption = '* * *'
+      OnExecute = BookSetRateExecute
+      OnUpdate = UpdateBookAction
+    end
+    object acBookSetRate4: TAction
+      Category = #1050#1085#1080#1075#1072
+      Caption = '* * * *'
+      OnExecute = BookSetRateExecute
+      OnUpdate = UpdateBookAction
+    end
+    object acBookSetRate5: TAction
+      Category = #1050#1085#1080#1075#1072
+      Caption = '* * * * *'
+      OnExecute = BookSetRateExecute
+      OnUpdate = UpdateBookAction
+    end
+    object acBookSetRateClear: TAction
+      Category = #1050#1085#1080#1075#1072
+      Caption = #1054#1095#1080#1089#1090#1080#1090#1100
+      OnExecute = BookSetRateExecute
+      OnUpdate = UpdateBookAction
     end
   end
 end
