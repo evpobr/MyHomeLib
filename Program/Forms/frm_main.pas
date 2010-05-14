@@ -407,6 +407,12 @@ type
     miViewExtra: TMenuItem;
     miShowBookCover: TMenuItem;
     miShowBookAnnotation: TMenuItem;
+    acBookSetRate1: TAction;
+    acBookSetRate2: TAction;
+    acBookSetRate3: TAction;
+    acBookSetRate4: TAction;
+    acBookSetRate5: TAction;
+    acBookSetRateClear: TAction;
 
     //
     // События формы
@@ -493,7 +499,6 @@ type
     procedure DeleteBookFromGroup(Sender: TObject);
     procedure ClearGroup(Sender: TObject);
 
-    procedure SetBookRate(Sender: TObject);
     procedure tbCollapseClick(Sender: TObject);
     procedure edLocateAuthorChange(Sender: TObject);
     procedure edLocateSeriesChange(Sender: TObject);
@@ -616,6 +621,8 @@ type
     procedure ShowBookCoverUpdate(Sender: TObject);
     procedure ShowBookAnnotationExecute(Sender: TObject);
     procedure ShowBookAnnotationUpdate(Sender: TObject);
+    procedure BookSetRateExecute(Sender: TObject);
+    procedure UpdateBookAction(Sender: TObject);
 
   protected
     procedure WMGetSysCommand(var Message: TMessage); message WM_SYSCOMMAND;
@@ -672,6 +679,7 @@ type
     procedure CreateAlphabetToolbar;
 
   private type
+    TNodeProcessProc = reference to procedure(Tree: TBookTree; Node: PVirtualNode);
     TNodeUpdateProc = reference to procedure(Data: PBookData);
 
   strict private
@@ -680,6 +688,12 @@ type
     // В случае если книга из онлайн коллекции предлагает перейти на сайт для изменения информации там
     //
     function IsLibRusecEdit(BookID: Integer): Boolean;
+
+    //
+    // Применяет операцию ProcessProc ко всем помеченным нодам или (ели ничего не отмечено) к текущей ноде.
+    // После применения ноды обновляются
+    //
+    procedure ProcessNodes(ProcessProc: TNodeProcessProc);
 
     //
     // Обновить во всех деревьях ноду BookID:DatabaseID (если есть).
@@ -2848,7 +2862,7 @@ begin
     //
     // TODO : Желательно сделать показ информации о книге с таймаутом, т к чтение обложки может занимать достаточно много времени
     //
-    if Settings.ShowBookCover then
+    if Settings.ShowBookCover or Settings.ShowBookAnnotation then
     begin
       DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, R, False);
       bookStream := TMemoryStream.Create;
@@ -2857,23 +2871,33 @@ begin
           ExtractBookToStream(R, bookStream);
           book := LoadFictionBook(bookStream);
 
-          imgBookCover := GetBookCover(book);
-          try
-            InfoPanel.SetBookCover(imgBookCover);
-          finally
-            imgBookCover.Free;
+          //
+          // Покажем обложку
+          //
+          if Settings.ShowBookCover then
+          begin
+            imgBookCover := GetBookCover(book);
+            try
+              InfoPanel.SetBookCover(imgBookCover);
+            finally
+              imgBookCover.Free;
+            end;
+          end;
+
+          //
+          // Покажем аннотацию
+          //
+          if Settings.ShowBookAnnotation then
+          begin
+            InfoPanel.SetBookAnnotation(GetBookAnnotation(book));
           end;
         except
           InfoPanel.SetBookCover(nil);
+          InfoPanel.SetBookAnnotation('');
         end;
       finally
         bookStream.Free;
       end;
-    end;
-
-    if Settings.ShowBookAnnotation then
-    begin
-      InfoPanel.SetBookAnnotation(DMCollection.GetAnnotation(Data^.BookID, Data^.DatabaseID));
     end;
   end;
 
@@ -3048,13 +3072,14 @@ procedure TfrmMain.tvBooksTreeKeyDown(Sender: TObject; var Key: Word; Shift: TSh
 const
   CheckState: array [Boolean] of TCheckState = (csCheckedNormal, csUncheckedNormal);
 var
-  Tree, Left: TVirtualStringTree;
+  Tree: TBookTree;
+  Left: TVirtualStringTree;
   Node: PVirtualNode;
   Data: PBookData;
 begin
   if Key = VK_INSERT then
   begin
-    Tree := (Sender as TVirtualStringTree);
+    Tree := (Sender as TBookTree);
     Node := Tree.FocusedNode;
     if Assigned(Node) then
     begin
@@ -3078,7 +3103,6 @@ begin
   end
   else if (Key in [VK_RIGHT, VK_LEFT]) and (ssCtrl in Shift) then
   begin
-    Tree := (Sender as TVirtualStringTree);
     case ActiveView of
       AuthorsView:
         Left := tvAuthors;
@@ -3106,6 +3130,7 @@ begin
       Left.FocusedNode := Node;
     end;
 
+    Tree := (Sender as TBookTree);
     Node := Tree.GetFirst;
     if Assigned(Node) then
       Tree.Selected[Node] := True;
@@ -5114,6 +5139,67 @@ begin
   acShowBookAnnotation.Enabled := Settings.ShowInfoPanel;
 end;
 
+procedure TfrmMain.BookSetRateExecute(Sender: TObject);
+var
+  NewRate: Integer;
+begin
+  if Sender = acBookSetRate1 then
+    NewRate := 1
+  else if Sender = acBookSetRate2 then
+    NewRate := 2
+  else if Sender = acBookSetRate3 then
+    NewRate := 3
+  else if Sender = acBookSetRate4 then
+    NewRate := 4
+  else if Sender = acBookSetRate5 then
+    NewRate := 5
+  else
+    NewRate := 0;
+
+  ProcessNodes(
+    procedure (Tree: TBookTree; Node: PVirtualNode)
+    var
+      Data: PBookData;
+    begin
+      Data := Tree.GetNodeData(Node);
+      if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
+      begin
+        DMCollection.SetRate(Data^.BookID, Data^.DatabaseID, NewRate);
+        UpdateNodes(
+          Data^.BookID, Data^.DatabaseID,
+          procedure(BookData: PBookData)
+          begin
+            Assert(Assigned(BookData));
+            BookData^.Rate := NewRate;
+          end
+        );
+      end;
+    end
+  );
+end;
+
+procedure TfrmMain.UpdateBookAction(Sender: TObject);
+var
+  fBookNodesSelected: Boolean;
+begin
+  fBookNodesSelected := False;
+
+  ProcessNodes(
+    procedure (Tree: TBookTree; Node: PVirtualNode)
+    var
+      Data: PBookData;
+    begin
+      Data := Tree.GetNodeData(Node);
+      if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
+      begin
+        fBookNodesSelected := True;
+      end;
+    end
+  );
+
+  (Sender as TAction).Enabled := fBookNodesSelected;
+end;
+
 procedure TfrmMain.AddBookToGroup(Sender: TObject);
 var
   Tree: TBookTree;
@@ -5295,49 +5381,6 @@ begin
   unit_Import.ImportFBD(DMUser.ActiveCollection);
 
   InitCollection(True);
-end;
-
-procedure TfrmMain.SetBookRate(Sender: TObject);
-var
-  Tree: TBookTree;
-  Node: PVirtualNode;
-  Data: PBookData;
-  NewRate: Integer;
-begin
-  if Sender = miSetRate1 then
-    NewRate := 1
-  else if Sender = miSetRate2 then
-    NewRate := 2
-  else if Sender = miSetRate3 then
-    NewRate := 3
-  else if Sender = miSetRate4 then
-    NewRate := 4
-  else if Sender = miSetRate5 then
-    NewRate := 5
-  else
-    NewRate := 0;
-
-  GetActiveTree(Tree);
-  Assert(Assigned(Tree));
-  Node := Tree.GetFirstSelected;
-  while Assigned(Node) do
-  begin
-    Data := Tree.GetNodeData(Node);
-    if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
-    begin
-      DMCollection.SetRate(Data^.BookID, Data^.DatabaseID, NewRate);
-      UpdateNodes(
-        Data^.BookID, Data^.DatabaseID,
-        procedure(BookData: PBookData)
-        begin
-          Assert(Assigned(BookData));
-          BookData^.Rate := NewRate;
-        end
-      );
-    end;
-
-    Node := Tree.GetNextSelected(Node);
-  end;
 end;
 
 procedure TfrmMain.btnSavePresetClick(Sender: TObject);
@@ -6940,6 +6983,30 @@ begin
     end;
     Node := Tree.GetNext(Node);
   end;
+end;
+
+procedure TfrmMain.ProcessNodes(ProcessProc: TNodeProcessProc);
+var
+  Tree: TBookTree;
+  FNode: PVirtualNode;
+  Node: PVirtualNode;
+begin
+  GetActiveTree(Tree);
+  Assert(Assigned(Tree));
+
+  FNode := Tree.FocusedNode;
+
+  Node := Tree.GetFirstChecked;
+  while Assigned(Node) do
+  begin
+    if Node = FNode then
+      FNode := nil;
+    ProcessProc(Tree, Node);
+    Node := Tree.GetNextChecked(Node);
+  end;
+
+  if Assigned(FNode) then
+    ProcessProc(Tree, FNode);
 end;
 
 procedure TfrmMain.UpdateNodes(BookID: Integer; DatabaseID: Integer; UpdateProc: TNodeUpdateProc);
