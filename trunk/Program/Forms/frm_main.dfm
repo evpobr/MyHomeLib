@@ -13226,5 +13226,17 @@ object frmMain: TfrmMain
       OnExecute = BookSetRateExecute
       OnUpdate = UpdateBookAction
     end
+    object acGroupCreate: TAction
+      Category = #1043#1088#1091#1087#1087#1099
+      Caption = #1057#1086#1079#1076#1072#1090#1100
+    end
+    object acGroupDelete: TAction
+      Category = #1043#1088#1091#1087#1087#1099
+      Caption = #1059#1076#1072#1083#1080#1090#1100
+    end
+    object acGroupClear: TAction
+      Category = #1043#1088#1091#1087#1087#1099
+      Caption = #1054#1095#1080#1089#1090#1080#1090#1100
+    end
   end
 end

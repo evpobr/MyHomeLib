@@ -107,20 +107,13 @@ end;
 
 procedure LocateBook;
 var
-  Worker : TSearchThread;
+  SearchForm: TfrmBookSearch;
 begin
-  Worker := TSearchThread.Create(true);
+  SearchForm := TfrmBookSearch.Create(Application);
   try
-    Worker.SearchForm := TfrmBookSearch.Create(Application);
-    try
-      Worker.OnChange := Worker.SearchForm.edText.OnChange;
-      Worker.OnKeyDown := Worker.SearchForm.edText.OnKeyDown;
-      Worker.SearchForm.ShowModal;
-    finally
-      Worker.SearchForm.Free;
-    end;
+    SearchForm.ShowModal;
   finally
-    Worker.Free;
+    SearchForm.Free;
   end;
 end;
 
@@ -140,7 +133,5 @@ begin
     frmInfoPopup.Free;
   end;
 end;
-
-
 
 end.

@@ -54,6 +54,8 @@ function GetFileNameZip(Zip: TZipForge; No: Integer): string;
 
 function GetFormattedSize(sizeInBytes: Integer; showBytes: Boolean = False): string;
 
+function GetFileVersion(const FilePath: string): string;
+
 implementation
 
 uses
@@ -243,5 +245,62 @@ begin
   else
     Result := Format('%s %s', [strSz, strSizes[nIndex]]);
 end;
+
+function GetFileVersion(const FilePath: string): string;
+var
+  InfoSize: DWord;
+  Temp: DWord;
+  Len: DWord;
+  InfoBuf: Pointer;
+  TranslationTable: Pointer;
+  TranslationLength: Cardinal;
+  CodePage: string;
+  LanguageID: string;
+  Value: PChar;
+  LookupString: string;
+begin
+  Result := '';
+
+  InfoSize := GetFileVersionInfoSize(PChar(FilePath), Temp);
+  if InfoSize > 0 then
+  begin
+    InfoBuf := AllocMem(InfoSize);
+    try
+      GetFileVersionInfo(PChar(FilePath), 0, InfoSize, InfoBuf);
+
+      if VerQueryValue(InfoBuf, '\VarFileInfo\Translation', TranslationTable, TranslationLength) then
+      begin
+        CodePage := Format('%.4x', [HiWord(PLongInt(TranslationTable)^)]);
+        LanguageID := Format('%.4x', [LoWord(PLongInt(TranslationTable)^)]);
+      end;
+
+      LookupString := 'StringFileInfo\' + LanguageID + CodePage + '\';
+
+      //if VerQueryValue( InfoBuf, PChar( LookupString + 'CompanyName' ), Pointer( Value ), Len ) then
+      //  CompanyName := Value;
+      //if VerQueryValue( InfoBuf, PChar( LookupString + 'FileDescription' ), Pointer( Value ), Len ) then
+      //  FileDescription := Value;
+      if VerQueryValue(InfoBuf, PChar(LookupString + 'FileVersion'), Pointer(Value), Len) then
+        Result := Value;
+      //if VerQueryValue( InfoBuf, PChar( LookupString + 'InternalName' ), Pointer( Value ), Len ) then
+      //  InternalName := Value;
+      //if VerQueryValue( InfoBuf, PChar( LookupString + 'LegalCopyright' ), Pointer( Value ), Len ) then
+      //  LegalCopyright := Value;
+      //if VerQueryValue( InfoBuf, PChar( LookupString + 'LegalTrademarks' ), Pointer( Value ), Len ) then
+      //  LegalTradeMarks := Value;
+      //if VerQueryValue( InfoBuf, PChar( LookupString + 'OriginalFilename' ), Pointer( Value ), Len ) then
+      //  OriginalFilename := Value;
+      //if VerQueryValue( InfoBuf, PChar( LookupString + 'ProductName' ), Pointer( Value ), Len ) then
+      //  ProductName := Value;
+      //if VerQueryValue( InfoBuf, PChar( LookupString + 'ProductVersion' ), Pointer( Value ), Len ) then
+      //  ProductVersion := Value;
+      //if VerQueryValue( InfoBuf, PChar( LookupString + 'Comments' ), Pointer( Value ), Len ) then
+      //  Comments := Value;
+    finally
+      FreeMem(InfoBuf, InfoSize);
+    end;
+  end;
+end;
+
 
 end.

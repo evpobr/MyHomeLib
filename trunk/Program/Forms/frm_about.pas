@@ -15,24 +15,32 @@ unit frm_about;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, RzStatus, RzLabel, StdCtrls, RzButton, ExtCtrls, RzPanel;
+  Windows,
+  Classes,
+  Controls,
+  Forms,
+  StdCtrls,
+  ExtCtrls,
+  unit_MHLHelpers,
+  MHLSimplePanel,
+  MHLLinkLabel;
 
 type
   TfrmAbout = class(TForm)
-    RzVersionInfo1: TRzVersionInfo;
-    RzPanel1: TRzPanel;
-    RzURLLabel1: TRzURLLabel;
-    RzBitBtn1: TRzBitBtn;
-    RzVersionInfoStatus1: TRzVersionInfoStatus;
-    RzLabel1: TRzLabel;
-    RzLabel2: TRzLabel;
-    RzLabel3: TRzLabel;
-    RzLabel4: TRzLabel;
-    RzLabel5: TRzLabel;
-    RzLabel6: TRzLabel;
-    RzLabel7: TRzLabel;
-    RzLabel8: TRzLabel;
+    RzPanel1: TMHLSimplePanel;
+    RzURLLabel1: TMHLLinkLabel;
+    RzBitBtn1: TButton;
+    versionInfoLabel: TLabel;
+    RzLabel1: TLabel;
+    RzLabel2: TLabel;
+    RzLabel3: TLabel;
+    RzLabel4: TLabel;
+    RzLabel5: TLabel;
+    RzLabel6: TLabel;
+    RzLabel7: TLabel;
+    RzLabel8: TLabel;
+    procedure FormCreate(Sender: TObject);
+    procedure RzURLLabel1LinkClick(Sender: TObject; const Link: string; LinkType: TSysLinkType);
   private
     { Private declarations }
   public
@@ -44,6 +52,30 @@ var
 
 implementation
 
+uses
+  SysUtils,
+  ShellAPI;
+
+resourcestring
+  rstrAppVersionInfo = 'Версия: %s';
+
 {$R *.dfm}
+
+procedure TfrmAbout.FormCreate(Sender: TObject);
+begin
+  versionInfoLabel.Caption := Format(rstrAppVersionInfo, [GetFileVersion(Application.ExeName)]);
+end;
+
+procedure TfrmAbout.RzURLLabel1LinkClick(Sender: TObject; const Link: string; LinkType: TSysLinkType);
+begin
+  ShellExecute(
+    Handle,
+    'open',
+    PChar(Link),
+    nil,
+    nil,
+    SW_SHOW
+  );
+end;
 
 end.

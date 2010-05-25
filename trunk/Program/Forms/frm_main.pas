@@ -413,6 +413,9 @@ type
     acBookSetRate4: TAction;
     acBookSetRate5: TAction;
     acBookSetRateClear: TAction;
+    acGroupCreate: TAction;
+    acGroupDelete: TAction;
+    acGroupClear: TAction;
 
     //
     // События формы
@@ -831,6 +834,7 @@ uses
   unit_Utils,
   unit_ExportToDevice,
   unit_Helpers,
+  unit_Errors,
   frm_NCWizard,
   frm_editor,
   unit_SearchUtils,
@@ -846,13 +850,14 @@ resourcestring
   rstrCreatingFilter = 'Подготовка фильтра ...';
   rstrCheckFilterParams = 'Проверьте параметры фильтра';
   rstrApplyingFilter = 'Применяем фильтр ...';
-  rstrFilterParamError = 'Синтаксическая ошибка. Проверьте параметры фильтра';
+  rstrFilterParamError = 'Синтаксическая ошибка.' + CRLF + 'Проверьте параметры фильтра';
   rstrNoUpdatesAvailable = 'Нет доступных обновлений';
   rstrEditFBD = 'Редактировать FBD';
   rstrConvert2FBD = 'Преобразовать FBD';
   rstrCannotEditFavoritesError = 'Редактирование книг из избранного или списка закачек невозможно.';
   rstrUnableDeleteBuiltinGroupError = 'Нельзя удалить встроенную группу!';
   rstrCheckingUpdates = 'Проверка обновлений ...';
+  rstrGroupAlreadyExists = 'Группа с таким именем уже существует!';
 
 {$R *.dfm}
 
@@ -1313,7 +1318,7 @@ begin
       FillBooksTree(tvBooksSR, nil, DMCollection.sqlBooks, True, True);
     except
       on E: Exception do
-        ShowMessage(rstrFilterParamError);
+        MHLShowError(rstrFilterParamError);
     end;
   finally
     DMCollection.tblBooks.Filtered := False;
@@ -2108,7 +2113,7 @@ begin
   begin
     HidePopup;
     if not Result then
-      ShowMessage(rstrNoUpdatesAvailable);
+      MHLShowInfo(rstrNoUpdatesAvailable);
   end;
 end;
 
@@ -2129,7 +2134,7 @@ procedure TfrmMain.tbtnAutoFBDClick(Sender: TObject);
 begin
   if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
   begin
-    MessageDlg('Для конвертации книги перейдите в соответствующую коллекцию', mtWarning, [mbOk], 0);
+    MHLShowWarning('Для конвертации книги перейдите в соответствующую коллекцию');
     Exit;
   end;
 
@@ -2159,7 +2164,7 @@ begin
     DMUser.ActivateCollection(Settings.ActiveCollection);
     if not FileExists(DMUser.ActiveCollection.DBFileName) then
     begin
-      MessageDlg('Файл коллекции "' + DMUser.ActiveCollection.DBFileName + '" не найден.' + CRLF + 'Невозможно запустить программу.', mtError, [mbOk], 0);
+      MHLShowError('Файл коллекции "%s" не найден.' + CRLF + 'Невозможно запустить программу.', [DMUser.ActiveCollection.DBFileName]);
       Application.Terminate;
     end;
 
@@ -2240,7 +2245,7 @@ begin
     if CheckLibUpdates(True) then
       if Settings.AutoRunUpdate then
         StartLibUpdate
-      else if MessageDlg('Доступно обновление для коллекций "lib.rus.ec".' + CRLF + ' Начать обновление ?', mtInformation, mbYesNo, 0) = mrYes then
+      else if MHLShowInfo('Доступно обновление для коллекций "lib.rus.ec".' + CRLF + ' Начать обновление ?', mbYesNo) = mrYes then
         StartLibUpdate;
 
   // ------------------------------------------------------------------------------
@@ -2286,7 +2291,7 @@ procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   CanClose := True;
   if CheckActiveDownloads then
-    if MessageDlg('В списке есть незавершенные закачки!' + CRLF + 'Вы все еще хотите выйти из программы?', mtWarning, mbYesNo, 0) = mrYes then
+    if MHLShowWarning('В списке есть незавершенные закачки!' + CRLF + 'Вы все еще хотите выйти из программы?', mbYesNo) = mrYes then
     begin
       if Assigned(FDMThread) then
         FDMThread.TerminateNow;
@@ -2865,38 +2870,47 @@ begin
     if Settings.ShowBookCover or Settings.ShowBookAnnotation then
     begin
       DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, R, False);
-      bookStream := TMemoryStream.Create;
-      try
+
+      if IsLocal or Data^.Local then
+      begin
+        bookStream := TMemoryStream.Create;
         try
-          ExtractBookToStream(R, bookStream);
-          book := LoadFictionBook(bookStream);
+          try
+            ExtractBookToStream(R, bookStream);
+            book := LoadFictionBook(bookStream);
 
-          //
-          // Покажем обложку
-          //
-          if Settings.ShowBookCover then
-          begin
-            imgBookCover := GetBookCover(book);
-            try
-              InfoPanel.SetBookCover(imgBookCover);
-            finally
-              imgBookCover.Free;
+            //
+            // Покажем обложку
+            //
+            if Settings.ShowBookCover then
+            begin
+              imgBookCover := GetBookCover(book);
+              try
+                InfoPanel.SetBookCover(imgBookCover);
+              finally
+                imgBookCover.Free;
+              end;
             end;
-          end;
 
-          //
-          // Покажем аннотацию
-          //
-          if Settings.ShowBookAnnotation then
-          begin
-            InfoPanel.SetBookAnnotation(GetBookAnnotation(book));
+            //
+            // Покажем аннотацию
+            //
+            if Settings.ShowBookAnnotation then
+            begin
+              InfoPanel.SetBookAnnotation(GetBookAnnotation(book));
+            end;
+          except
+            InfoPanel.SetBookCover(nil);
+            InfoPanel.SetBookAnnotation('');
           end;
-        except
-          InfoPanel.SetBookCover(nil);
-          InfoPanel.SetBookAnnotation('');
+        finally
+          bookStream.Free;
         end;
-      finally
-        bookStream.Free;
+      end
+      else
+      begin
+        InfoPanel.SetBookCover(nil);
+        InfoPanel.SetBookAnnotation('');
       end;
     end;
   end;
@@ -3340,7 +3354,7 @@ begin
 
   if ActiveView = FavoritesView then
   begin
-    MessageDlg(main_unable_to_copy, mtWarning, [mbOk], 0);
+    MHLShowWarning(main_unable_to_copy);
     Exit;
   end;
 
@@ -3420,7 +3434,7 @@ begin
 
   if Length(BookIDList) = 0 then
   begin
-    ShowMessage('Ни одной книги не выбрано!');
+    MHLShowError('Ни одной книги не выбрано!');
     Exit;
   end;
 
@@ -4278,7 +4292,7 @@ var
 begin
   if ActiveView = FavoritesView then
   begin
-    MessageDlg('Для удаления книги перейдите в соответствующую коллекцию', mtWarning, [mbOk], 0);
+    MHLShowWarning('Для удаления книги перейдите в соответствующую коллекцию');
     Exit;
   end;
 
@@ -4653,7 +4667,7 @@ function TfrmMain.IsLibRusecEdit(BookID: Integer): Boolean;
 begin
   if isExternalCollection(DMUser.ActiveCollection.CollectionType) then
   begin
-    if MessageDlg('Изменения информации о книгах в онлайн-коллекциях возможно только на сайте.' + CRLF + 'Перейти на сайт "Электронная библиотека lib.rus.ec"?', mtWarning, [mbYes, mbNo], 0) = mrYes then
+    if MHLShowWarning('Изменения информации о книгах в онлайн-коллекциях возможно только на сайте.' + CRLF + 'Перейти на сайт "Электронная библиотека lib.rus.ec"?', mbYesNo) = mrYes then
     begin
       DMCollection.tblBooks.Locate(BOOK_ID_FIELD, BookID, []);
       { TODO -oNickR -cLibDesc : этот URL должен формироваться обвязкой библиотеки, т к его формат может меняться }
@@ -4771,7 +4785,7 @@ var
 begin
   if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
   begin
-    MessageDlg(rstrCannotEditFavoritesError, mtWarning, [mbOk], 0);
+    MHLShowWarning(rstrCannotEditFavoritesError);
     Exit;
   end;
 
@@ -4805,7 +4819,7 @@ var
 begin
   if ActiveView = FavoritesView then
   begin
-    MessageDlg('Редактирование книг из избранного невозможно.', mtWarning, [mbOk], 0);
+    MHLShowWarning('Редактирование книг из избранного невозможно.');
     Exit;
   end;
 
@@ -4870,7 +4884,7 @@ var
 begin
   if ActiveView = FavoritesView then
   begin
-    MessageDlg('Редактирование книг из избранного невозможно.', mtWarning, [mbOk], 0);
+    MHLShowWarning('Редактирование книг из избранного невозможно.');
     Exit;
   end;
 
@@ -4959,7 +4973,7 @@ begin
       FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True);
     end
     else
-      ShowMessage('Группа с таким именем уже существует!');
+      MHLShowError(rstrGroupAlreadyExists);
   end;
 end;
 
@@ -4980,7 +4994,7 @@ begin
     FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True);
   end
   else
-    ShowMessage(rstrUnableDeleteBuiltinGroupError);
+    MHLShowError(rstrUnableDeleteBuiltinGroupError);
 end;
 
 procedure TfrmMain.ChangeToolbarVisability(ToolBar: TToolBar; ShowToolbar: Boolean);
@@ -5970,11 +5984,8 @@ begin
             // Скорее всего произошла ошибка при чтении файла (не найден, а должен был быть)
             // или при парсинге книги (загрузили какую-то ерунду).
             // Покажем сообщение об ощибке и загрузим только библиотечную информацию
-
             //
-            // TODO : написать и использовать стандартную функцию для показа сообщений об ошибках
-            //
-            Application.ShowException(e);
+            MHLShowError(e.Message);
             frmBookDetails.FillBookInfo(R, nil);
           end;
         end;
@@ -6109,7 +6120,7 @@ begin
       else
       begin
         Screen.Cursor := crDefault;
-        ShowMessage('Коллекция не зарегистрирована !');
+        MHLShowError('Коллекция не зарегистрирована !');
         Exit;
       end;
 
@@ -6151,11 +6162,11 @@ begin
       except
         on E: EIdSocketError do
           if E.LastError = 11001 then
-            ShowMessage('Проверка обновления не удалось! Сервер не найден.' + CRLF + 'Код ошибки: ' + IntToStr(E.LastError))
+            MHLShowError('Проверка обновления не удалось! Сервер не найден.' + CRLF + 'Код ошибки: %d', [E.LastError])
           else
-            ShowMessage('Проверка обновления не удалось! Ошибка подключения.' + CRLF + 'Код ошибки: ' + IntToStr(E.LastError));
+            MHLShowError('Проверка обновления не удалось! Ошибка подключения.' + CRLF + 'Код ошибки: %d', [E.LastError]);
         on E: Exception do
-          ShowMessage('Проверка обновления не удалось! Сервер сообщает об ошибке ' + CRLF + 'Код ошибки: ' + IntToStr(HTTP.ResponseCode));
+          MHLShowError('Проверка обновления не удалось! Сервер сообщает об ошибке ' + CRLF + 'Код ошибки: %d', [HTTP.ResponseCode]);
       end;
       { TODO -oNickR -cRefactoring : проверить использование файла last_version.info. Возможно он больше нигде не нужен и можно не сохранять его на диск }
       LF.SaveToFile(Settings.SystemFileName[sfAppVerInfo]);
@@ -6167,10 +6178,10 @@ begin
           for i := 1 to SL.Count - 1 do
             S := S + '  ' + SL[i] + CRLF;
 
-          ShowMessage('Доступна новая версия - ' + SL[0] + CRLF + S + CRLF + 'Посетите сайт программы для загрузки обновлений.');
+          MHLShowInfo('Доступна новая версия - ' + SL[0] + CRLF + S + CRLF + 'Посетите сайт программы для загрузки обновлений.');
         end
         else if not FAutoCheck then
-          ShowMessage('У вас самая свежая версия.');
+          MHLShowInfo('У вас самая свежая версия.');
       FAutoCheck := False;
     finally
       HTTP.Free;
@@ -6264,7 +6275,7 @@ procedure TfrmMain.miConverToFBDClick(Sender: TObject);
 begin
   if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
   begin
-    MessageDlg('Для конвертации книги перейдите в соответствующую коллекцию', mtWarning, [mbOk], 0);
+    MHLShowWarning('Для конвертации книги перейдите в соответствующую коллекцию');
     Exit;
   end;
 
@@ -6505,10 +6516,10 @@ procedure TfrmMain.miCollectionExportClick(Sender: TObject);
 var
   FileName: string;
 begin
-  if MessageDlg(
+  if MHLShowWarning(
     'Экспорт в xml работает в режиме совместимости со старыми версиями.' + CRLF +
     'Не все данные будут сохранены. Рекомендуется использовать экспорт в inpx.' + CRLF +
-    'Продолжить?', mtWarning, [mbYes, mbNo], 0
+    'Продолжить?', mbYesNo
     ) = mrNo
   then
     Exit;

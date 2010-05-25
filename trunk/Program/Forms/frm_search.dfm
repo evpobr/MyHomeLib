@@ -5,7 +5,7 @@ object frmBookSearch: TfrmBookSearch
   AlphaBlendValue = 200
   BorderStyle = bsNone
   Caption = 'frmBookSearch'
-  ClientHeight = 63
+  ClientHeight = 58
   ClientWidth = 258
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -24,30 +24,30 @@ object frmBookSearch: TfrmBookSearch
   OnKeyDown = FormKeyDown
   PixelsPerInch = 96
   TextHeight = 13
-  object RzPanel1: TRzPanel
+  object RzPanel1: TMHLSimplePanel
     Left = 0
     Top = 0
     Width = 258
-    Height = 63
+    Height = 58
     Align = alClient
-    BorderInner = fsFlat
-    BorderOuter = fsFlatBold
     BorderWidth = 5
     TabOrder = 0
+    ExplicitHeight = 63
     object Label1: TLabel
       AlignWithMargins = True
-      Left = 11
-      Top = 11
-      Width = 98
+      Left = 8
+      Top = 8
+      Width = 242
       Height = 13
       Align = alTop
       Caption = #1055#1086#1080#1089#1082' '#1087#1086' '#1085#1072#1079#1074#1072#1085#1080#1102
+      ExplicitWidth = 98
     end
-    object edText: TRzEdit
+    object edText: TEdit
       AlignWithMargins = True
-      Left = 11
-      Top = 30
-      Width = 236
+      Left = 8
+      Top = 27
+      Width = 242
       Height = 21
       Align = alTop
       TabOrder = 0
