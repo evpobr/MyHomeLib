@@ -104,6 +104,9 @@ var
 
 implementation
 
+uses
+  unit_Errors;
+
 {$R *.dfm}
 
 resourcestring
@@ -238,16 +241,15 @@ var
 begin
   Valid := FTemplater.ValidateTemplate(Template, TemplateType);
 
-  { TODO -cUsability -oNickR : использовать стандартную функцию для показа сообщения об ошибке }
   case Valid of
     ErFine:
       ModalResult := mrOk;
     ErTemplate:
-      ShowMessage('Проверьте правильность шаблона');
+      MHLShowError('Проверьте правильность шаблона');
     ErBlocks:
-      ShowMessage('Проверьте соответствие открывающих и закрывающих скобок блоков элемнтов');
+      MHLShowError('Проверьте соответствие открывающих и закрывающих скобок блоков элемнтов');
     ErElements:
-      ShowMessage('Неверные элементы шаблона');
+      MHLShowError('Неверные элементы шаблона');
   end;
 end;
 

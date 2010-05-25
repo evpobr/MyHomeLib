@@ -25,8 +25,6 @@ type
     btnSaveLog: TButton;
     Timer: TTimer;
 
-
-
     procedure FormCreate(Sender: TObject);
     procedure btnSaveLogClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -36,11 +34,13 @@ type
     FCloseOnTimer: boolean;
 
     procedure DoCloseForm(Sender: TObject);
+
   protected
     procedure ShowTeletype(const Msg: string; Severity: TTeletypeSeverity); override;
     procedure CloseProgress; override;
+
   public
-    property CloseOnTimer:boolean read FCloseOnTimer write FCloseOnTimer;
+    property CloseOnTimer: Boolean read FCloseOnTimer write FCloseOnTimer;
   end;
 
 var
@@ -119,7 +119,7 @@ begin
 
   if Severity = tsError then
     FErrors.Add(Msg);
-  errorLog.Perform(WM_KEYDOWN,VK_DOWN,0);
+  errorLog.Perform(WM_KEYDOWN, VK_DOWN, 0);
 end;
 
 procedure TImportProgressFormEx.TimerTimer(Sender: TObject);
