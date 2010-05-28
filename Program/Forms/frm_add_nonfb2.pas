@@ -29,32 +29,23 @@ uses
   Dialogs,
   RzButton,
   ExtCtrls,
-  RzPanel,
   VirtualTrees,
-  RzCommon,
-  RzSelDir,
   StdCtrls,
   ShellApi,
   Mask,
-  RzEdit,
-  RzBtnEdt,
-  RzLstBox,
   ComCtrls,
-  RzListVw,
   Menus,
-  RzCmboBx,
   files_list,
   unit_database,
   unit_globals,
-  RzTabs,
-  RzLabel,
-  RzRadChk,
   FBDDocument,
-  FBDAuthorTable;
+  FBDAuthorTable,
+  Buttons,
+
+  RzPanel;
 
 type
   TfrmAddnonfb2 = class(TForm)
-    dlgFolder: TRzSelDirDialog;
     pmEdit: TPopupMenu;
     N1: TMenuItem;
     N2: TMenuItem;
@@ -67,60 +58,59 @@ type
     N6: TMenuItem;
     miOpenExplorer: TMenuItem;
     miOpenFile: TMenuItem;
-    pcPages: TRzPageControl;
-    tsFiles: TRzTabSheet;
+    pcPages: TPageControl;
+    tsFiles: TTabSheet;
     Tree: TVirtualStringTree;
-    tsBookInfo: TRzTabSheet;
-    TabSheet3: TRzTabSheet;
-    RzGroupBox12: TRzGroupBox;
+    tsBookInfo: TTabSheet;
+    gbFile: TGroupBox;
     edFileName: TEdit;
     btnCopyToFamily: TButton;
     btnCopyToName: TButton;
     btnCopyToTitle: TButton;
     btnCopyToSeries: TButton;
-    btnRenameFile: TRzBitBtn;
-    RzGroupBox5: TRzGroupBox;
+    btnRenameFile: TBitBtn;
+    gbGenres: TGroupBox;
     lblGenre: TLabel;
     btnShowGenres: TButton;
-    RzGroupBox8: TRzGroupBox;
-    cbLang: TRzComboBox;
-    RzGroupBox7: TRzGroupBox;
+    gbLang: TGroupBox;
+    cbLang: TComboBox;
+    gbKeywords: TGroupBox;
     edKeyWords: TEdit;
-    RzGroupBox4: TRzGroupBox;
-    edSN: TRzNumericEdit;
-    cbSeries: TRzComboBox;
-    RzGroupBox2: TRzGroupBox;
+    gbSerie: TGroupBox;
+    edSN: TEdit;
+    cbSeries: TComboBox;
+    gbTitle: TGroupBox;
     edT: TEdit;
-    RzGroupBox3: TRzGroupBox;
+    gbOptions: TGroupBox;
     cbAutoSeries: TCheckBox;
     cbSelectFileName: TCheckBox;
     cbNoAuthorAllowed: TCheckBox;
-    RzGroupBox6: TRzGroupBox;
-    cbClearOptions: TRzComboBox;
-    btnNext: TRzBitBtn;
-    tsFBD: TRzTabSheet;
-    RzGroupBox9: TRzGroupBox;
+    RzGroupBox6: TGroupBox;
+    cbClearOptions: TComboBox;
+    btnNext: TBitBtn;
+    tsFBD: TTabSheet;
+    gbFDBCover: TGroupBox;
     FCover: TImage;
-    btnPasteCover: TRzBitBtn;
-    btnLoad: TRzBitBtn;
-    RzGroupBox10: TRzGroupBox;
-    RzLabel4: TRzLabel;
-    RzLabel6: TRzLabel;
-    RzLabel7: TRzLabel;
-    RzLabel5: TRzLabel;
-    edISBN: TRzEdit;
-    edPublisher: TRzEdit;
-    edYear: TRzEdit;
-    edCity: TRzEdit;
+    btnPasteCover: TButton;
+    btnLoad: TButton;
+    gbPublisher: TGroupBox;
+    RzLabel4: TLabel;
+    RzLabel6: TLabel;
+    RzLabel7: TLabel;
+    RzLabel5: TLabel;
+    edISBN: TEdit;
+    edPublisher: TEdit;
+    edYear: TEdit;
+    edCity: TEdit;
     mmAnnotation: TMemo;
-    dtnConvert: TRzBitBtn;
-    btnClose: TRzBitBtn;
-    cbForceConvertToFBD: TRzCheckBox;
-    btnOpenBook: TRzBitBtn;
+    dtnConvert: TBitBtn;
+    btnClose: TBitBtn;
+    cbForceConvertToFBD: TCheckBox;
+    btnOpenBook: TBitBtn;
     FBD: TFBDDocument;
     alBookAuthors: TFBDAuthorTable;
     alFBDAuthors: TFBDAuthorTable;
-    btnAddAuthorFromList: TRzBitBtn;
+    btnAddAuthorFromList: TBitBtn;
     procedure RzButton3Click(Sender: TObject);
     procedure TreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
     procedure TreeDblClick(Sender: TObject);
@@ -183,6 +173,7 @@ uses
   unit_MHLHelpers,
   unit_Helpers,
   frm_author_list;
+
 {$R *.dfm}
 
 procedure TfrmAddnonfb2.FillLists;
@@ -281,7 +272,7 @@ begin
     Booktitle.Text := edT.Text;
     Keywords.Text := edKeyWords.Text;
     Lang := cbLang.Text;
-    FBD.AddSeries(sltBook, cbSeries.Text, Round(edSN.Value));
+    FBD.AddSeries(sltBook, cbSeries.Text, StrToIntDef(edSN.Text, 0));
     Genre.Clear;
     for I := 0 to High(FBookRecord.Genres) do
       Genre.Add(FBookRecord.Genres[I].FB2GenreCode);
@@ -308,7 +299,7 @@ begin
   alBookAuthors.Clear;
   alFBDAuthors.Clear;
   cbSeries.Text := '';
-  edSN.Value := 0;
+  edSN.Text := '0';
   edKeyWords.Text := '';
 
   edPublisher.Clear;
@@ -373,7 +364,7 @@ begin
   end;
   FillLists;
   if cbAutoSeries.Checked then
-    edSN.Value := edSN.Value + 1;
+    edSN.Text := IntToStr(StrToIntDef(edSN.Text, 0) + 1);
   TreeChange(Tree, Next);
 
   Data := Tree.GetNodeData(Next);
@@ -460,7 +451,7 @@ begin
   FBookRecord.FileExt := Data.Ext;
   FBookRecord.Code := 0;
   FBookRecord.InsideNo := 0;
-  FBookRecord.SeqNumber := Round(edSN.Value);
+  FBookRecord.SeqNumber := StrToIntDef(edSN.Text, 0);
   FBookRecord.LibID := DMUser.ActiveCollection.ID;
   FBookRecord.Deleted := False;
   FBookRecord.Size := Data.Size;
