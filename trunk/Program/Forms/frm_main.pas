@@ -53,7 +53,6 @@ uses
   htmlhlp,
 
   RzCommon,
-  RzStatus,
   RzPanel,
   RzBtnEdt,
   RzEdit,
@@ -114,11 +113,6 @@ type
     miDevice: TMenuItem;
     miEditBook: TMenuItem;
     N7: TMenuItem;
-    StatusBar: TRzStatusBar;
-    RzVersionInfoStatus1: TRzVersionInfoStatus;
-    spStatus: TRzStatusPane;
-    VersionInfo: TRzVersionInfo;
-    spProgress: TRzProgressStatus;
     miCollsettings: TMenuItem;
     N16: TMenuItem;
     miCopyToCollection: TMenuItem;
@@ -131,7 +125,6 @@ type
     miCheckUpdates: TMenuItem;
     N30: TMenuItem;
     miShowHelp: TMenuItem;
-    RzStatusPane1: TRzStatusPane;
     IdAntiFreeze1: TIdAntiFreeze;
     N17: TMenuItem;
     pmAuthor: TPopupMenu;
@@ -360,7 +353,6 @@ type
     miExportToHTML: TMenuItem;
     txt1: TMenuItem;
     RTF1: TMenuItem;
-    spExecTime: TRzStatusPane;
     ToolButton5: TToolButton;
     edFAnnotation: TRzButtonEdit;
     Label7: TLabel;
@@ -416,6 +408,7 @@ type
     acGroupCreate: TAction;
     acGroupDelete: TAction;
     acGroupClear: TAction;
+    StatusBar: TStatusBar;
 
     //
     // События формы
@@ -626,6 +619,8 @@ type
     procedure ShowBookAnnotationUpdate(Sender: TObject);
     procedure BookSetRateExecute(Sender: TObject);
     procedure UpdateBookAction(Sender: TObject);
+    procedure StatusBarDrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel; const Rect: TRect);
+    procedure StatusBarResize(Sender: TObject);
 
   protected
     procedure WMGetSysCommand(var Message: TMessage); message WM_SYSCOMMAND;
@@ -754,6 +749,10 @@ type
     FFirstFoundBook: PVirtualNode;
     FLastBookRecord: TBookRecord;
 
+    // SB
+    FStatusProgressBar: TProgressBar;
+    // SB
+
     //
     function GetBookNode(const Tree: TBookTree; BookID: Integer; DatabaseID: Integer): PVirtualNode; overload;
 
@@ -791,7 +790,17 @@ type
     function ShowNCWizard: Boolean;
     procedure LoadLastCollection;
     procedure ExtractBookToStream(const BookRecord: TBookRecord; var FS: TMemoryStream);
+    procedure SetShowStatusProgress(const Value: Boolean);
+    procedure SetStatusProgress(const Value: Integer);
+    function GetShowStatusProgress: Boolean;
+    function GetStatusProgress: Integer;
+    function GetStatusMessage: string;
+    procedure SetStatusMessage(const Value: string);
     property ActiveView: TView read GetActiveView;
+
+    property ShowStatusProgress: Boolean read GetShowStatusProgress write SetShowStatusProgress;
+    property StatusMessage: string read GetStatusMessage write SetStatusMessage;
+    property StatusProgress: Integer read GetStatusProgress write SetStatusProgress;
   end;
 
 var
@@ -1196,8 +1205,8 @@ const
   SQLStartStr = 'SELECT DISTINCT b.' + BOOK_ID_FIELD;
 begin
   Screen.Cursor := crSQLWait;
-  spStatus.Caption := rstrCreatingFilter;
-  spStatus.Repaint;
+  StatusMessage := rstrCreatingFilter;
+
   tvBooksSR.Clear;
   lblTotalBooksFL.Caption := '(0)';
   ClearLabels(tvBooksSR.Tag, True);
@@ -1308,12 +1317,11 @@ begin
 {$ENDIF}
 
       // Ставим фильтр
-      spStatus.Caption := rstrApplyingFilter;
-      spStatus.Repaint;
+      StatusMessage := rstrApplyingFilter;
 
       Time := Now;
       DMCollection.sqlBooks.Active := True;
-      spExecTime.Caption := FloatToStrF(MilliSecondsBetween(Now, Time) / 1000, ffFixed, 3, 2) + ' сек.';
+      ///SB spExecTime.Caption := FloatToStrF(MilliSecondsBetween(Now, Time) / 1000, ffFixed, 3, 2) + ' сек.';
 
       FillBooksTree(tvBooksSR, nil, DMCollection.sqlBooks, True, True);
     except
@@ -1326,7 +1334,7 @@ begin
     DMCollection.tblBooks.Filtered := Filtered;
 
     Screen.Cursor := crDefault;
-    spStatus.Caption := rstrReadyMessage;
+    StatusMessage := rstrReadyMessage;
     ClearLabels(PAGE_FILTER, True);
   end;
 end;
@@ -2157,6 +2165,61 @@ begin
     InitCollection(True);
 end;
 
+function TfrmMain.GetShowStatusProgress: Boolean;
+begin
+  Result := (psOwnerDraw = StatusBar.Panels[1].Style);
+end;
+
+procedure TfrmMain.SetShowStatusProgress(const Value: Boolean);
+begin
+  if Value then
+    StatusBar.Panels[1].Style := psOwnerDraw
+  else
+    StatusBar.Panels[1].Style := psText;
+end;
+
+function TfrmMain.GetStatusMessage: string;
+begin
+  Result := StatusBar.Panels[0].Text;
+end;
+
+procedure TfrmMain.SetStatusMessage(const Value: string);
+begin
+  StatusBar.Panels[0].Text := Value;
+  if StatusBar.Visible then
+    StatusBar.Repaint;
+end;
+
+function TfrmMain.GetStatusProgress: Integer;
+begin
+  Result := FStatusProgressBar.Position;
+end;
+
+procedure TfrmMain.SetStatusProgress(const Value: Integer);
+begin
+  if FStatusProgressBar.Position <> Value then
+  begin
+    FStatusProgressBar.Position := Value;
+    if StatusBar.Visible and ShowStatusProgress then
+      StatusBar.Repaint;
+  end;
+end;
+
+procedure TfrmMain.StatusBarDrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel; const Rect: TRect);
+begin
+  if Panel = StatusBar.Panels[1] then
+  begin
+    FStatusProgressBar.BoundsRect := Rect;
+    FStatusProgressBar.PaintTo(StatusBar.Canvas.Handle, Rect.Left, Rect.Top);
+  end;
+end;
+
+procedure TfrmMain.StatusBarResize(Sender: TObject);
+begin
+  StatusBar.Panels[0].Width :=
+    StatusBar.Width - (StatusBar.Panels[1].Width + StatusBar.Panels[2].Width);
+end;
+
 procedure TfrmMain.LoadLastCollection;
 begin
   if not DMUser.tblBases.IsEmpty then
@@ -2205,6 +2268,17 @@ begin
   FLastLetterS := tbtnStar;
 
   CreateAlphabetToolbar;
+
+  // SB
+  FStatusProgressBar := TProgressBar.Create(Self);
+  FStatusProgressBar.Parent := StatusBar;
+  FStatusProgressBar.Visible := False;
+  StatusMessage := '';
+  ShowStatusProgress := False;
+  StatusProgress := 0;
+
+  StatusBar.Panels[2].Text := GetFileVersion(Application.ExeName);
+  // SB
 
   ReadINIData;
 
@@ -3522,8 +3596,8 @@ end;
 
 procedure TfrmMain.HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
 begin
-  spStatus.Caption := rstrReadyMessage;
-  spProgress.Percent := 100;
+  StatusMessage := rstrReadyMessage;
+  ShowStatusProgress := False;
 end;
 
 procedure TfrmMain.DownloadBooks;
@@ -4007,7 +4081,8 @@ begin
 
   DatabaseID := DMUser.ActiveCollection.ID;
 
-  spProgress.Visible := True;
+  ShowStatusProgress := True;
+  StatusProgress := 0;
 
   Screen.Cursor := crHourGlass;
   try
@@ -4018,7 +4093,7 @@ begin
         Tree.Clear;
         Tree.NodeDataSize := SizeOf(TBookData);
 
-        spStatus.Caption := 'Построение списка ...';
+        StatusMessage := 'Построение списка ...';
 
         i := 0;
         try
@@ -4124,7 +4199,7 @@ begin
                 Include(bookNode.States, vsInitialUserData);
 
                 Inc(i);
-                spProgress.Percent := i * 100 div Max;
+                StatusProgress := i * 100 div Max;
 
                 Master.Next;
               end; // while
@@ -4143,9 +4218,8 @@ begin
             FreeAndNil(AuthorNodes);
           end;
         finally
-          spProgress.Percent := 100;
-          spProgress.Visible := False;
-          spStatus.Caption := rstrReadyMessage;
+          ShowStatusProgress := False;
+          StatusMessage := rstrReadyMessage;
         end;
       finally
         Tree.EndUpdate;
@@ -5237,9 +5311,9 @@ begin
 
   Screen.Cursor := crHourGlass;
   try
-    spProgress.Visible := True;
-    spStatus.Caption := 'Добавляем в избранное...';
-    spProgress.Percent := 0;
+    StatusMessage := 'Добавляем в избранное...';
+    StatusProgress := 0;
+    ShowStatusProgress := True;
 
     Node := Tree.GetFirst;
     i := 0;
@@ -5251,13 +5325,12 @@ begin
         DMCollection.AddBookToGroup(Data^.BookID, Data^.DatabaseID, GroupID);
 
       Inc(i);
-      spProgress.Percent := i * 100 div Max;
-      spProgress.Repaint;
+      StatusProgress := i * 100 div Max;
 
       Node := Tree.GetNext(Node);
     end;
 
-    spProgress.Visible := False;
+    ShowStatusProgress := False;
     Selection(False);
   finally
     Screen.Cursor := crDefault;
@@ -6172,7 +6245,7 @@ begin
       LF.SaveToFile(Settings.SystemFileName[sfAppVerInfo]);
       SL.LoadFromFile(Settings.SystemFileName[sfAppVerInfo]);
       if SL.Count > 0 then
-        if CompareStr(VersionInfo.FileVersion, SL[0]) < 0 then
+        if CompareStr(GetFileVersion(Application.ExeName), SL[0]) < 0 then
         begin
           S := CRLF;
           for i := 1 to SL.Count - 1 do

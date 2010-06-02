@@ -59,61 +59,6 @@ object frmMain: TfrmMain
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
-  object StatusBar: TRzStatusBar
-    Left = 0
-    Top = 627
-    Width = 792
-    Height = 19
-    BorderInner = fsNone
-    BorderOuter = fsNone
-    BorderSides = [sdLeft, sdTop, sdRight, sdBottom]
-    BorderWidth = 0
-    TabOrder = 5
-    object RzVersionInfoStatus1: TRzVersionInfoStatus
-      Left = 0
-      Top = 0
-      Height = 19
-      Align = alLeft
-      Alignment = taCenter
-      Field = vifFileVersion
-      VersionInfo = VersionInfo
-    end
-    object spStatus: TRzStatusPane
-      Left = 100
-      Top = 0
-      Width = 216
-      Height = 19
-      Align = alLeft
-      Alignment = taRightJustify
-    end
-    object spProgress: TRzProgressStatus
-      Left = 316
-      Top = 0
-      Width = 187
-      Height = 19
-      Align = alLeft
-      ParentShowHint = False
-      PartsComplete = 0
-      Percent = 0
-      ShowPercent = True
-      TotalParts = 0
-    end
-    object RzStatusPane1: TRzStatusPane
-      Left = 503
-      Top = 0
-      Width = 200
-      Height = 19
-      Align = alLeft
-    end
-    object spExecTime: TRzStatusPane
-      Left = 703
-      Top = 0
-      Height = 19
-      Align = alLeft
-      ExplicitLeft = 942
-      ExplicitHeight = 20
-    end
-  end
   object tlbrMain: TToolBar
     Left = 0
     Top = 0
@@ -1846,6 +1791,9 @@ object frmMain: TfrmMain
           Height = 29
           Align = alBottom
           TabOrder = 1
+          DesignSize = (
+            224
+            29)
           object btnAddGroup: TBitBtn
             Left = 5
             Top = 0
@@ -1903,8 +1851,8 @@ object frmMain: TfrmMain
             OnClick = AddGroup
           end
           object btnDeleteGroup: TBitBtn
-            Left = 184
-            Top = 2
+            Left = 47
+            Top = 0
             Width = 29
             Height = 25
             Hint = #1059#1076#1072#1083#1080#1090#1100' '#1075#1088#1091#1087#1087#1091
@@ -1957,6 +1905,19 @@ object frmMain: TfrmMain
             ShowHint = True
             TabOrder = 1
             OnClick = DeleteGroup
+          end
+          object btnClearGroup: TBitBtn
+            Left = 126
+            Top = 0
+            Width = 98
+            Height = 25
+            Anchors = [akRight, akBottom]
+            Caption = #1054#1095#1080#1089#1090#1080#1090#1100
+            DoubleBuffered = True
+            Kind = bkRetry
+            ParentDoubleBuffered = False
+            TabOrder = 2
+            OnClick = ClearGroup
           end
         end
       end
@@ -2023,19 +1984,6 @@ object frmMain: TfrmMain
             Kind = bkRetry
             ParentDoubleBuffered = False
             TabOrder = 0
-            OnClick = ClearGroup
-          end
-          object btnClearGroup: TBitBtn
-            Left = 414
-            Top = 116
-            Width = 118
-            Height = 25
-            Anchors = [akRight, akBottom]
-            Caption = #1054#1095#1080#1089#1090#1080#1090#1100
-            DoubleBuffered = True
-            Kind = bkRetry
-            ParentDoubleBuffered = False
-            TabOrder = 1
             OnClick = ClearGroup
           end
         end
@@ -2525,6 +2473,26 @@ object frmMain: TfrmMain
       OnClick = tbtnStarClick
     end
   end
+  object StatusBar: TStatusBar
+    Left = 0
+    Top = 627
+    Width = 792
+    Height = 19
+    AutoHint = True
+    Panels = <
+      item
+        Width = 200
+      end
+      item
+        Width = 100
+      end
+      item
+        Alignment = taCenter
+        Width = 100
+      end>
+    OnDrawPanel = StatusBarDrawPanel
+    OnResize = StatusBarResize
+  end
   object MainMenu: TMainMenu
     Images = ilMainMenu
     OwnerDraw = True
@@ -2972,11 +2940,6 @@ object frmMain: TfrmMain
       ShortCut = 16451
       OnClick = miCopyClBrdClick
     end
-  end
-  object VersionInfo: TRzVersionInfo
-    FilePath = 'MyHomeLib.exe'
-    Left = 368
-    Top = 288
   end
   object IdAntiFreeze1: TIdAntiFreeze
     Left = 368
