@@ -63,7 +63,7 @@ resourcestring
 
 procedure TfrmAbout.FormCreate(Sender: TObject);
 begin
-  versionInfoLabel.Caption := Format(rstrAppVersionInfo, [GetFileVersion(Application.ExeName)]);
+  versionInfoLabel.Caption := Format(rstrAppVersionInfo, [unit_MHLHelpers.GetFileVersion(Application.ExeName)]);
 end;
 
 procedure TfrmAbout.RzURLLabel1LinkClick(Sender: TObject; const Link: string; LinkType: TSysLinkType);

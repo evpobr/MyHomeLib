@@ -2277,7 +2277,7 @@ begin
   ShowStatusProgress := False;
   StatusProgress := 0;
 
-  StatusBar.Panels[2].Text := GetFileVersion(Application.ExeName);
+  StatusBar.Panels[2].Text := unit_MHLHelpers.GetFileVersion(Application.ExeName);
   // SB
 
   ReadINIData;
