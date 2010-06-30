@@ -27,7 +27,8 @@ uses
   MHLSplitter,
   BookTreeView,
   BookInfoPanel,
-  MHLSimplePanel;
+  MHLSimplePanel,
+  MHLButtonedEdit;
 
 const
   PAGE_NAME = 'MHLComponents';
@@ -44,7 +45,8 @@ begin
     TMHLSplitter,
     TMHLSimplePanel,
     TBookTree,
-    TInfoPanel
+    TInfoPanel,
+    TMHLButtonedEdit
     ]
   );
 end;

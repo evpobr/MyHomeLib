@@ -51,12 +51,6 @@ uses
   files_list,
   ActiveX,
   htmlhlp,
-
-  RzCommon,
-  RzPanel,
-  RzBtnEdt,
-  RzEdit,
-
   idStack,
   idComponent,
   IdBaseComponent,
@@ -69,7 +63,8 @@ uses
   BookInfoPanel,
   ActnMan,
   MHLSimplePanel,
-  BookTreeView;
+  BookTreeView,
+  SearchPresets, MHLButtonedEdit;
 
 type
   TfrmMain = class(TForm)
@@ -296,15 +291,15 @@ type
     cbDate: TComboBox;
     cbLang: TComboBox;
     cbDownloaded: TComboBox;
-    edFKeyWords: TRzButtonEdit;
+    edFKeyWords: TMHLButtonedEdit;
     cbDeleted: TCheckBox;
     ctpFile: TCategoryPanel;
     Label27: TLabel;
     Label29: TLabel;
     Label28: TLabel;
-    edFFile: TRzButtonEdit;
-    edFFolder: TRzButtonEdit;
-    edFExt: TRzButtonEdit;
+    edFFile: TMHLButtonedEdit;
+    edFFolder: TMHLButtonedEdit;
+    edFExt: TMHLButtonedEdit;
     pnSearchBooksView: TMHLSimplePanel;
     ipnlSearch: TInfoPanel;
     pnlFullSearch: TMHLSimplePanel;
@@ -321,12 +316,12 @@ type
     miCompactDataBase: TMenuItem;
     ctpBook: TCategoryPanel;
     Label5: TLabel;
-    edFFullName: TRzButtonEdit;
+    edFFullName: TMHLButtonedEdit;
     Label24: TLabel;
-    edFTitle: TRzButtonEdit;
+    edFTitle: TMHLButtonedEdit;
     Label26: TLabel;
-    edFSeries: TRzButtonEdit;
-    edFGenre: TRzButtonEdit;
+    edFSeries: TMHLButtonedEdit;
+    edFGenre: TMHLButtonedEdit;
     Label6: TLabel;
     N31: TMenuItem;
     miDeleteFiles: TMenuItem;
@@ -347,14 +342,13 @@ type
     tbtnSplitter2: TToolButton;
     tbtnDeleteBook: TToolButton;
     tbtnAutoFBD: TToolButton;
-    FilesList: TFilesList;
     tbtnHelp: TToolButton;
     N46: TMenuItem;
     miExportToHTML: TMenuItem;
     txt1: TMenuItem;
     RTF1: TMenuItem;
     ToolButton5: TToolButton;
-    edFAnnotation: TRzButtonEdit;
+    edFAnnotation: TMHLButtonedEdit;
     Label7: TLabel;
     pnAuthorsView: TMHLSimplePanel;
     pnAuthorBooksView: TMHLSimplePanel;
@@ -409,6 +403,11 @@ type
     acGroupDelete: TAction;
     acGroupClear: TAction;
     StatusBar: TStatusBar;
+    ilToolImages: TImageList;
+    acSavePreset: TAction;
+    acDeletePreset: TAction;
+    acApplyPreset: TAction;
+    acClearPreset: TAction;
 
     //
     // События формы
@@ -494,6 +493,15 @@ type
     procedure AddBookToGroup(Sender: TObject);
     procedure DeleteBookFromGroup(Sender: TObject);
     procedure ClearGroup(Sender: TObject);
+    procedure cbPresetNameSelect(Sender: TObject);
+    procedure btnClearFilterEditsClick(Sender: TObject);
+    procedure btnApplyFilterClick(Sender: TObject);
+    procedure edFFullNameKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure edFFullNameButtonClick(Sender: TObject);
+    procedure SaveSearchPreset(Sender: TObject);
+    procedure DeleteSearchPreset(Sender: TObject);
+    procedure SavePresetUpdate(Sender: TObject);
+    procedure DeletePresetUpdate(Sender: TObject);
 
     procedure tbCollapseClick(Sender: TObject);
     procedure edLocateAuthorChange(Sender: TObject);
@@ -545,11 +553,8 @@ type
     procedure tbtnShowLocalOnlyClick(Sender: TObject);
     procedure ShowNewCollectionWizard(Sender: TObject);
     procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
-    procedure btnApplyFilterClick(Sender: TObject);
-    procedure btnClearFilterEditsClick(Sender: TObject);
     procedure tvBooksTreeMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure tvBooksTreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure edFFullNameKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure tbClearEdAuthorClick(Sender: TObject);
     procedure btnClearEdSeriesClick(Sender: TObject);
     procedure tvBooksTreeChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -572,12 +577,6 @@ type
     procedure tvDownloadListPaintText(Sender: TBaseVirtualTree; const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType);
     procedure BtnSaveClick(Sender: TObject);
     procedure edLocateAuthorKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure btnSavePresetClick(Sender: TObject);
-    procedure edFFullNameButtonClick(Sender: TObject);
-    procedure cbPresetNameChange(Sender: TObject);
-    procedure cbPresetNameSelect(Sender: TObject);
-    procedure FilesListFile(Sender: TObject; const F: TSearchRec);
-    procedure btnDeletePresetClick(Sender: TObject);
     procedure miAddToSearchClick(Sender: TObject);
     procedure miINPXCollectionExportClick(Sender: TObject);
     procedure pmAuthorPopup(Sender: TObject);
@@ -753,6 +752,8 @@ type
     FStatusProgressBar: TProgressBar;
     // SB
 
+    FPresets: TSearchPresets;
+
     //
     function GetBookNode(const Tree: TBookTree; BookID: Integer; DatabaseID: Integer): PVirtualNode; overload;
 
@@ -781,7 +782,6 @@ type
 
     function GetActiveView: TView;
     procedure StartLibUpdate;
-    procedure LoadSearchPreset(const fileName: string);
     procedure CreateGroupsMenu;
     procedure SaveMainFormSettings;
     procedure SavePositions;
@@ -1086,12 +1086,13 @@ var
     AControl.Font.Color := FontColor;
   end;
 
+  {
   procedure SetEditColor(AControl: TRzEdit);
   begin
     AControl.Color := BGColor;
     AControl.Font.Color := FontColor;
   end;
-
+  }
 begin
   BGColor := Settings.BGColor;
   TreeFontSize := Settings.TreeFontSize;
@@ -1108,15 +1109,15 @@ begin
   SetTreeViewColor(tvBooksF);
   SetTreeViewColor(tvDownloadList);
 
-  SetEditColor(edFFullName);
-  SetEditColor(edFTitle);
-  SetEditColor(edFSeries);
-  SetEditColor(edFGenre);
-  SetEditColor(edFFile);
-  SetEditColor(edFFolder);
-  SetEditColor(edFExt);
-  SetEditColor(edFKeyWords);
-  SetEditColor(edFAnnotation);
+  //SetEditColor(edFFullName);
+  //SetEditColor(edFTitle);
+  //SetEditColor(edFSeries);
+  //SetEditColor(edFGenre);
+  //SetEditColor(edFFile);
+  //SetEditColor(edFFolder);
+  //SetEditColor(edFExt);
+  //SetEditColor(edFKeyWords);
+  //SetEditColor(edFAnnotation);
 end;
 
 procedure TfrmMain.ReadINIData;
@@ -1342,62 +1343,26 @@ end;
 procedure TfrmMain.btnClearFilterEditsClick(Sender: TObject);
 begin
   edFFullName.Text := '';
-  edFSeries.Text := '';
   edFTitle.Text := '';
+  edFSeries.Text := '';
   edFGenre.Text := '';
   edFGenre.Hint := '';
+  edFAnnotation.Text := '';
+
   edFFile.Text := '';
   edFFolder.Text := '';
   edFExt.Text := '';
-  edFAnnotation.Text := '';
 
-  cbDate.Text := '';
-  cbDate.ItemIndex := -1;
-
-  cbPresetName.Text := '';
-  cbDeleted.Checked := False;
-  cbLang.Text := '';
-  edFKeyWords.Text := '';
   cbDownloaded.ItemIndex := 0;
+  edFKeyWords.Text := '';
+  cbDeleted.Checked := False;
+  cbDate.ItemIndex := -1;
+  cbLang.ItemIndex := -1;
+
+  cbPresetName.ItemIndex := -1;
+
   tvBooksSR.Clear;
   ClearLabels(PAGE_SEARCH, True);
-end;
-
-procedure TfrmMain.LoadSearchPreset(const fileName: string);
-var
-  SL: TStringList;
-  HL: TStringList;
-begin
-  SL := TStringList.Create;
-  try
-    HL := TStringList.Create;
-    try
-      HL.Delimiter := ';';
-      HL.QuoteChar := '~';
-
-      SL.LoadFromFile(Settings.PresetPath + fileName + '.mhlf');
-      HL.DelimitedText := SL.Text;
-
-      edFFullName.Text := HL[0];
-      edFTitle.Text := HL[1];
-      edFSeries.Text := HL[2];
-      edFGenre.Text := HL[3];
-      edFGenre.Hint := HL[4];
-      edFAnnotation.Text := HL[5];
-      edFFile.Text := HL[6];
-      edFFolder.Text := HL[7];
-      edFExt.Text := HL[8];
-      cbDate.Text := HL[9];
-      cbDownloaded.Text := HL[10];
-      cbDeleted.Checked := StrToBool(HL[11]);
-      cbLang.Text := HL[12];
-      edFKeyWords.Text := HL[13];
-    finally
-      HL.Free;
-    end;
-  finally
-    SL.Free;
-  end;
 end;
 
 function TfrmMain.GetActiveView: TView;
@@ -2075,12 +2040,6 @@ begin
     SwitchFilter('');
 end;
 
-procedure TfrmMain.FilesListFile(Sender: TObject; const F: TSearchRec);
-begin
-  if ExtractFileExt(F.Name) = '.mhlf' then
-    cbPresetName.Items.Add(TPath.GetFileNameWithoutExtension(F.Name));
-end;
-
 procedure TfrmMain.FillAllBooksTree;
 begin
   FillBooksTree(tvBooksA, DMCollection.AuthorBooks, DMCollection.BooksByAuthor, False, True); // авторы
@@ -2242,6 +2201,9 @@ end;
 //
 // ----------------------------------------------------------------------------
 procedure TfrmMain.FormCreate(Sender: TObject);
+var
+  PresetFile: string;
+  preset: TSearchPreset;
 begin
   Application.OnHelp := HH;
   UseLatestCommonDialogs := True;
@@ -2284,7 +2246,24 @@ begin
 
   TDirectory.CreateDirectory(Settings.TempDir);
   TDirectory.CreateDirectory(Settings.DataDir);
-  TDirectory.CreateDirectory(Settings.PresetDir);
+
+  //
+  // загрузка списка пресетов для поиска
+  //
+  FPresets := TSearchPresets.Create;
+  PresetFile := Settings.SystemFileName[sfPresets];
+  if TFile.Exists(PresetFile) then
+  begin
+    try
+      FPresets.Load(PresetFile);
+
+      for preset in FPresets do
+        cbPresetName.Items.Add(preset.DisplayName);
+    except
+      on e: Exception do
+        Application.ShowException(e);
+    end;
+  end;
 
   SetColumns;
   SetHeaderPopUp;
@@ -2341,10 +2320,6 @@ begin
   FStarImage := CreateImageFromResource(TPngImage, 'smallStar') as TPngImage;
   FEmptyStarImage := CreateImageFromResource(TPngImage, 'smallStarEmpty') as TPngImage;
 
-  // загрузка списка пресетов для поиска
-  FilesList.TargetPath := Settings.PresetPath;
-  FilesList.Process;
-
   if not DMUser.tblBases.IsEmpty then
     RestorePositions;
 
@@ -2376,6 +2351,9 @@ end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
+  // SQ
+  FreeAndNil(FPresets);
+
   FreeAndNil(FStarImage);
   FreeAndNil(FEmptyStarImage);
 
@@ -5288,6 +5266,16 @@ begin
   (Sender as TAction).Enabled := fBookNodesSelected;
 end;
 
+procedure TfrmMain.SavePresetUpdate(Sender: TObject);
+begin
+  acSavePreset.Enabled := (Trim(cbPresetName.Text) <> '');
+end;
+
+procedure TfrmMain.DeletePresetUpdate(Sender: TObject);
+begin
+  acDeletePreset.Enabled := cbPresetName.Items.IndexOf(cbPresetName.Text) <> -1;
+end;
+
 procedure TfrmMain.AddBookToGroup(Sender: TObject);
 var
   Tree: TBookTree;
@@ -5403,7 +5391,7 @@ end;
 
 procedure TfrmMain.miAddToSearchClick(Sender: TObject);
 var
-  Edit: TRzButtonEdit;
+  Edit: TMHLButtonedEdit;
   treeView: TVirtualStringTree;
   Node: PVirtualNode;
   Data: PAuthorData;
@@ -5470,48 +5458,40 @@ begin
   InitCollection(True);
 end;
 
-procedure TfrmMain.btnSavePresetClick(Sender: TObject);
-const
-  d = '~;~';
+procedure TfrmMain.SaveSearchPreset(Sender: TObject);
 var
-  SL: TStringList;
-  S: string;
-  FN: string;
-
+  presetName: string;
+  preset: TSearchPreset;
+  Value: string;
 begin
-  if cbPresetName.Text = '' then
+  presetName := Trim(cbPresetName.Text);
+  if presetName = '' then
     Exit;
 
-  FN := cbPresetName.Text + '.mhlf';
+  preset := FPresets.GetPreset(presetName);
+  preset.Clear;
 
-  if not FileExists(Settings.PresetPath + FN) then
-    cbPresetName.Items.Add(cbPresetName.Text);
+  preset.AddOrSetValue(SF_AUTHORS, edFFullName.Text);
+  preset.AddOrSetValue(SF_TITLE, edFTitle.Text);
+  preset.AddOrSetValue(SF_SERIE, edFSeries.Text);
+  preset.AddOrSetValue(SF_GENRE_TITLE, edFGenre.Text);
+  preset.AddOrSetValue(SF_GENRE_CODES, edFGenre.Hint);
+  preset.AddOrSetValue(SF_ANNOTATION, edFAnnotation.Text);
 
-  SL := TStringList.Create;
-  try
-    S := '~' +
-      edFFullName.Text + d +
-      edFTitle.Text + d +
-      edFSeries.Text + d +
-      edFGenre.Text + d +
-      edFGenre.Hint + d +
-      edFAnnotation.Text + d +
-      edFFile.Text + d +
-      edFFolder.Text + d +
-      edFExt.Text + d +
-      cbDate.Text + d +
-      cbDownloaded.Text + d +
-      BoolToStr(cbDeleted.Checked) + d +
-      cbLang.Text + d +
-      edFKeyWords.Text + '~';
+  preset.AddOrSetValue(SF_FILE, edFFile.Text);
+  preset.AddOrSetValue(SF_FOLDER, edFFolder.Text);
+  preset.AddOrSetValue(SF_EXTENSION, edFExt.Text);
 
-    SL.Add(S);
-    SL.SaveToFile(Settings.PresetPath + FN, TEncoding.UTF8);
+  preset.AddOrSetValue(SF_DOWNLOADED, IntToStr(cbDownloaded.ItemIndex));
+  preset.AddOrSetValue(SF_KEYWORDS, edFKeyWords.Text);
+  preset.AddOrSetValue(SF_DELETED, BoolToStr(cbDeleted.Checked));
+  preset.AddOrSetValue(SF_DATE, IntToStr(cbDate.ItemIndex));
+  preset.AddOrSetValue(SF_LANG, IntToStr(cbLang.ItemIndex));
 
-    btnDeletePreset.Enabled := True;
-  finally
-    SL.Free;
-  end;
+  FPresets.Save(Settings.SystemFileName[sfPresets]);
+
+  if cbPresetName.Items.IndexOf(presetName) = -1 then
+    cbPresetName.Items.Add(presetName);
 end;
 
 procedure TfrmMain.LocateAuthor(const Text: string);
@@ -5655,9 +5635,9 @@ var
 begin
   frmEditor := TfrmEditor.Create(self);
   try
-    frmEditor.Text := (Sender as TRzButtonEdit).Text;
+    frmEditor.Text := (Sender as TMHLButtonedEdit).Text;
     if frmEditor.ShowModal = mrOk then
-      (Sender as TRzButtonEdit).Text := frmEditor.Text;
+      (Sender as TMHLButtonedEdit).Text := frmEditor.Text;
   finally
     frmEditor.Free;
   end;
@@ -6968,16 +6948,32 @@ begin
   InitCollection(True);
 end;
 
-procedure TfrmMain.cbPresetNameChange(Sender: TObject);
-begin
-  btnSavePreset.Enabled := (cbPresetName.Text <> '');
-end;
-
 procedure TfrmMain.cbPresetNameSelect(Sender: TObject);
+var
+  preset: TSearchPreset;
+  Value: string;
 begin
-  btnDeletePreset.Enabled := cbPresetName.ItemIndex >= 0;
-  btnSavePreset.Enabled := True;
-  LoadSearchPreset(cbPresetName.Text);
+  preset := FPresets.GetPreset(cbPresetName.Text);
+
+  if preset.TryGetValue(SF_AUTHORS, Value) then edFFullName.Text := Value;
+  if preset.TryGetValue(SF_TITLE, Value) then edFTitle.Text := Value;
+  if preset.TryGetValue(SF_SERIE, Value) then edFSeries.Text := Value;
+  if preset.TryGetValue(SF_GENRE_TITLE, Value) then edFGenre.Text := Value;
+  if preset.TryGetValue(SF_GENRE_CODES, Value) then edFGenre.Hint := Value;
+  if preset.TryGetValue(SF_ANNOTATION, Value) then edFAnnotation.Text := Value;
+
+  if preset.TryGetValue(SF_FILE, Value) then edFFile.Text := Value;
+  if preset.TryGetValue(SF_FOLDER, Value) then edFFolder.Text := Value;
+  if preset.TryGetValue(SF_EXTENSION, Value) then edFExt.Text := Value;
+
+  if preset.TryGetValue(SF_DOWNLOADED, Value) then
+    cbDownloaded.ItemIndex := EnsureRange(StrToIntDef(Value, 0), 0, cbDownloaded.Items.Count - 1);
+  if preset.TryGetValue(SF_KEYWORDS, Value) then edFKeyWords.Text := Value;
+  if preset.TryGetValue(SF_DELETED, Value) then cbDeleted.Checked := StrToBoolDef(Value, False);
+  if preset.TryGetValue(SF_DATE, Value) then
+    cbDate.ItemIndex := EnsureRange(StrToIntDef(Value, -1), -1, cbDate.Items.Count - 1);
+  if preset.TryGetValue(SF_LANG, Value) then
+    cbLang.ItemIndex := EnsureRange(StrToIntDef(Value, -1), -1, cbLang.Items.Count - 1);
 end;
 
 procedure TfrmMain.btnStartDownloadClick(Sender: TObject);
@@ -7019,20 +7015,17 @@ begin
   end;
 end;
 
-procedure TfrmMain.btnDeletePresetClick(Sender: TObject);
+procedure TfrmMain.DeleteSearchPreset(Sender: TObject);
+var
+  presetName: string;
 begin
-  with cbPresetName do
-  begin
-    if Text = Items[ItemIndex] then
-    begin
-      DeleteFile(Settings.PresetPath + Text + '.mhlf');
-      ///Delete(ItemIndex);
-      Assert(False, 'Not implemented yet!');
-      Text := '';
-    end;
-  end;
-  btnDeletePreset.Enabled := cbPresetName.ItemIndex >= 0;
-  btnSavePreset.Enabled := cbPresetName.ItemIndex >= 0;
+  presetName := cbPresetName.Items[cbPresetName.ItemIndex];
+  FPresets.RemovePreset(presetName);
+  FPresets.Save(Settings.SystemFileName[sfPresets]);
+
+  cbPresetName.Items.Delete(cbPresetName.ItemIndex);
+  cbPresetName.ItemIndex := -1;
+  cbPresetName.Text := '';
 end;
 
 procedure TfrmMain.BtnFav_addClick(Sender: TObject);

@@ -72,6 +72,7 @@ const
   DOWNLOADS_STORE_FILENAME = 'downloads.sav';
   DOWNLOAD_ERRORLOG_FILENAME = 'download_errors.log';
   COLLECTIONS_FILENAME = 'collections.ini';
+  PRESETS_FILENAME = 'presets.xml';
 
   //
   // Значения полей по умолчанию
@@ -153,6 +154,26 @@ const
 
   SECTION_FL_FLAT = 'COLUMNS_FILTER_FLAT';
   SECTION_FL_TREE = 'COLUMNS_FILTER_TREE';
+
+  //
+  // Поля поиска
+  //
+  SF_AUTHORS = 'Authors';
+  SF_TITLE = 'Title';
+  SF_SERIE = 'Serie';
+  SF_GENRE_TITLE = 'Genres';
+  SF_GENRE_CODES = 'GenreCodes';
+  SF_ANNOTATION = 'Annotation';
+
+  SF_FILE = 'File';
+  SF_FOLDER = 'Folder';
+  SF_EXTENSION = 'Extension';
+
+  SF_DOWNLOADED = 'Downloaded';
+  SF_KEYWORDS = 'Keywords';
+  SF_DELETED = 'Deleted';
+  SF_DATE = 'Date';
+  SF_LANG = 'Lang';
 
   //
   // некоторые ограничения  для БД

@@ -50,7 +50,8 @@ type
     sfColumnsStore,
     sfDownloadsStore,
     sfDownloadErrorLog,
-    sfCollectionsStore
+    sfCollectionsStore,
+    sfPresets
   );
 
   TSplitters = array of Integer;
@@ -66,7 +67,6 @@ type
     FTempDir: string;
     FWorkDir: string;
     FReadDir: string;
-    FPresetDir: string;
     FUpdateDir: string;
 
     //
@@ -231,8 +231,6 @@ type
     function GetInitialDir(const key: string): string;
     procedure SetInitialDir(const key, Value: string);
 
-    function GetPresetPath: string;
-
     procedure SetUpdateDir(const Value: string);
     function GetUpdatePath: string;
 
@@ -257,9 +255,6 @@ type
 
     property WorkDir: string read FWorkDir;
     property WorkPath: string read GetWorkPath;
-
-    property PresetDir: string read FPresetDir;
-    property PresetPath: string read GetPresetPath;
 
     property UpdateDir: string read FUpdateDir write SetUpdateDir;
     property UpdatePath: string read GetUpdatePath;
@@ -537,11 +532,6 @@ begin
     FTempDir := FAppPath + TEMP_DIR_NAME
   else
     FTempDir := TPath.Combine(TPath.GetTempPath, '_myhomelib');
-
-  //
-  // устанавливаем путь для хранения пресетов
-  //
-  FPresetDir := WorkPath + PRESET_DIR_NAME;
 
   // -----------------------------------------------------
   FReaders := TReaders.Create;
@@ -1320,6 +1310,7 @@ begin
     sfDownloadsStore: Result := WorkPath + DOWNLOADS_STORE_FILENAME;
     sfDownloadErrorLog: Result := WorkPath + DOWNLOAD_ERRORLOG_FILENAME;
     sfCollectionsStore: Result := WorkPath + COLLECTIONS_FILENAME;
+    sfPresets: Result := WorkPath + PRESETS_FILENAME;
   else
     Assert(False);
   end;
@@ -1358,12 +1349,6 @@ end;
 procedure TMHLSettings.SetInitialDir(const key, Value: string);
 begin
   FInitialDirs.Values[key] := Value;
-end;
-
-function TMHLSettings.GetPresetPath: string;
-begin
-  Assert(FPresetDir <> '');
-  Result := SafeGetPath(FPresetDir);
 end;
 
 function TMHLSettings.GetReadPath: string;

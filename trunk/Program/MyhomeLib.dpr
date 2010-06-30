@@ -113,7 +113,8 @@ uses
   unit_Templater in 'Units\unit_Templater.pas',
   frmEditAuthorEx in 'Forms\frmEditAuthorEx.pas' {frmEditAuthorDataEx},
   Templater in 'Units\Templater.pas',
-  TemplaterInternal in 'Units\TemplaterInternal.pas';
+  TemplaterInternal in 'Units\TemplaterInternal.pas',
+  SearchPresets in 'Units\SearchPresets.pas';
 
 {$R *.res}
 

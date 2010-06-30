@@ -51,6 +51,7 @@ contains
   MHLLinkLabel in 'MHLLinkLabel.pas',
   MHLSplitter in 'MHLSplitter.pas',
   BookTreeView in 'BookTreeView.pas',
-  MHLSimplePanel in 'MHLSimplePanel.pas';
+  MHLSimplePanel in 'MHLSimplePanel.pas',
+  MHLButtonedEdit in 'MHLButtonedEdit.pas';
 
 end.
