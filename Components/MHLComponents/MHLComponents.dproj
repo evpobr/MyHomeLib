@@ -68,6 +68,7 @@
 			<DCCReference Include="MHLSplitter.pas"/>
 			<DCCReference Include="BookTreeView.pas"/>
 			<DCCReference Include="MHLSimplePanel.pas"/>
+			<DCCReference Include="MHLButtonedEdit.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
