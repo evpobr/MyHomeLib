@@ -1,16 +1,17 @@
-{******************************************************************************}
-{                                                                              }
-{ MyHomeLib                                                                    }
-{                                                                              }
-{ Version 0.9                                                                  }
-{ 20.08.2008                                                                   }
-{ Copyright (c) Aleksey Penkov alex.penkov@gmail.com                           }
-{                                                                              }
-{ @author Nick Rymanov nrymanov@gmail.com                                      }
-{                                                                              }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Created             20.08.2008
+  * Description
+  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
+  *
+  * History
+  *
+  ****************************************************************************** *)
 
-{ DONE -oNickR : добавить поддержку ImageList-а }
 { TODO -oNickR : добавить поддержку тени }
 
 unit unit_StaticTip;
@@ -161,12 +162,13 @@ begin
   { DoDrawText takes care of BiDi alignments }
   DrawStyle := DT_EXPANDTABS or DT_WORDBREAK or DT_LEFT;
 
+  InflateRect(Rect, -FTextMargin, -FTextMargin);
+
   CaptionRect := Rect;
-  InflateRect(CaptionRect, -FTextMargin, -FTextMargin);
 
   CalcRect := Rect;
   DoDrawText(CalcRect, DrawStyle or DT_CALCRECT);
-  OffsetRect(Rect, 0, (Height - CalcRect.Bottom) div 2);
+  Inc(Rect.Top, ((Rect.Bottom - Rect.Top) - (CalcRect.Bottom - CalcRect.Top)) div 2);
 
   IntersectRect(CaptionRect, CaptionRect, Rect);
   DoDrawText(CaptionRect, DrawStyle);
