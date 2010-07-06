@@ -8,7 +8,7 @@ inherited frameNCWInpxSource: TframeNCWInpxSource
   object pageHint: TMHLStaticTip [0]
     AlignWithMargins = True
     Left = 14
-    Top = 284
+    Top = 289
     Width = 302
     Height = 58
     Margins.Left = 14
@@ -16,7 +16,7 @@ inherited frameNCWInpxSource: TframeNCWInpxSource
     TextMargin = 15
     Images = DMUser.SeverityImagesBig
     ImageIndex = 0
-    Align = alTop
+    Align = alBottom
     ExplicitTop = 276
   end
   inherited pnTitle: TPanel
@@ -33,14 +33,14 @@ inherited frameNCWInpxSource: TframeNCWInpxSource
       ExplicitWidth = 231
     end
   end
-  object Panel1: TPanel
+  object Panel1: TMHLSimplePanel
     Left = 0
     Top = 56
     Width = 330
-    Height = 225
-    Align = alTop
-    BevelOuter = bvNone
+    Height = 230
+    Align = alClient
     TabOrder = 1
+    ExplicitHeight = 273
     object rbLocal: TRadioButton
       AlignWithMargins = True
       Left = 14
@@ -56,25 +56,10 @@ inherited frameNCWInpxSource: TframeNCWInpxSource
       TabOrder = 0
       OnClick = OnSetCollectionType
     end
-    object edINPXPath: TRzButtonEdit
-      AlignWithMargins = True
-      Left = 14
-      Top = 27
-      Width = 302
-      Height = 21
-      Margins.Left = 14
-      Margins.Right = 14
-      Margins.Bottom = 0
-      Align = alTop
-      TabOrder = 1
-      AltBtnWidth = 15
-      ButtonWidth = 15
-      OnButtonClick = edINPXPathButtonClick
-    end
     object rbDownload: TRadioButton
       AlignWithMargins = True
       Left = 14
-      Top = 55
+      Top = 60
       Width = 302
       Height = 17
       Margins.Left = 14
@@ -89,7 +74,7 @@ inherited frameNCWInpxSource: TframeNCWInpxSource
     object lvCollections: TListView
       AlignWithMargins = True
       Left = 14
-      Top = 75
+      Top = 80
       Width = 302
       Height = 140
       Margins.Left = 14
@@ -105,6 +90,38 @@ inherited frameNCWInpxSource: TframeNCWInpxSource
       TabOrder = 3
       ViewStyle = vsReport
       OnChange = lvCollectionsChange
+      ExplicitHeight = 183
+    end
+    object MHLSimplePanel1: TMHLSimplePanel
+      Left = 0
+      Top = 24
+      Width = 330
+      Height = 29
+      Margins.Left = 13
+      Margins.Right = 13
+      Align = alTop
+      TabOrder = 1
+      DesignSize = (
+        330
+        29)
+      object edINPXPath: TMHLAutoCompleteEdit
+        Left = 14
+        Top = 3
+        Width = 221
+        Height = 21
+        Anchors = [akLeft, akTop, akRight]
+        TabOrder = 0
+      end
+      object btnSelectINPX: TButton
+        Left = 241
+        Top = 1
+        Width = 75
+        Height = 25
+        Anchors = [akTop, akRight]
+        Caption = #1042#1099#1073#1088#1072#1090#1100
+        TabOrder = 1
+        OnClick = edINPXPathButtonClick
+      end
     end
   end
 end

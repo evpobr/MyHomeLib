@@ -20,9 +20,7 @@ uses
   ImgList,
   xmldom,
   FBDDocument,
-  FBDAuthorTable,
-  RzLabel,
-  RzPanel;
+  FBDAuthorTable;
 
 type
   TfrmConvertToFBD = class(TForm)
@@ -30,7 +28,7 @@ type
     pnButtons: TPanel;
     mmAnnotation: TMemo;
     btnSave: TButton;
-    RzLabel1: TRzLabel;
+    RzLabel1: TLabel;
     RzGroupBox2: TGroupBox;
     RzLabel4: TLabel;
     edISBN: TEdit;

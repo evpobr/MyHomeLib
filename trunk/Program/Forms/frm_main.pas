@@ -493,6 +493,10 @@ type
     procedure AddBookToGroup(Sender: TObject);
     procedure DeleteBookFromGroup(Sender: TObject);
     procedure ClearGroup(Sender: TObject);
+
+    //
+    // Работа с Search Preset-ами
+    //
     procedure cbPresetNameSelect(Sender: TObject);
     procedure btnClearFilterEditsClick(Sender: TObject);
     procedure btnApplyFilterClick(Sender: TObject);
@@ -503,6 +507,15 @@ type
     procedure SavePresetUpdate(Sender: TObject);
     procedure DeletePresetUpdate(Sender: TObject);
 
+    //
+    // Сохранение и восстановление пользовательских данных
+    //
+    procedure miExportUserDataClick(Sender: TObject);
+    procedure miImportUserDataClick(Sender: TObject);
+
+    //
+    //
+    //
     procedure tbCollapseClick(Sender: TObject);
     procedure edLocateAuthorChange(Sender: TObject);
     procedure edLocateSeriesChange(Sender: TObject);
@@ -581,9 +594,7 @@ type
     procedure miINPXCollectionExportClick(Sender: TObject);
     procedure pmAuthorPopup(Sender: TObject);
     procedure GroupMenuItemClick(Sender: TObject);
-    procedure miImportUserDataClick(Sender: TObject);
     procedure miReadedClick(Sender: TObject);
-    procedure miExportUserDataClick(Sender: TObject);
     procedure miRepairDataBaseClick(Sender: TObject);
     procedure miCompactDataBaseClick(Sender: TObject);
     procedure edFGenreButtonClick(Sender: TObject);
@@ -850,7 +861,7 @@ uses
   unit_WriteFb2Info,
   frm_ConverToFBD,
   frmEditAuthorEx,
-  unit_Lib_Updates;
+  unit_Lib_Updates, UserData;
 
 resourcestring
   rstrFileNotFoundMsg = 'Файл %s не найден!' + CRLF + 'Проверьте настройки коллекции!';
@@ -6394,120 +6405,18 @@ end;
 
 procedure TfrmMain.miExportUserDataClick(Sender: TObject);
 var
-  SL: TStringList;
-  FN: string;
-  ID: Integer;
-  S: string;
+  FileName: string;
+  data: TUserData;
 begin
-  SL := TStringList.Create;
+  if not unit_Helpers.GetFileName(fnSaveUserData, FileName) then
+    Exit;
+
+  data := TUserData.Create;
   try
-    //
-    // Группы
-    //
-    SL.Add('# Группы');
-    DMUser.Groups.First;
-    while not DMUser.Groups.Eof do
-    begin
-      SL.Add(Format('%s', [DMUser.GroupsGroupName.Value]));
-      DMUser.Groups.Next;
-    end;
-
-    //
-    // Рейтинги
-    //
-    {***
-    SL.Add('# Рейтинги');
-    DMUser.tblRates.Filter := DB_ID_FIELD + '=' + QuotedStr(IntToStr(DMUser.ActiveCollection.ID));
-    DMUser.tblRates.Filtered := True;
-    DMUser.tblRates.First;
-    while not DMUser.tblRates.Eof do
-    begin
-      DMCollection.tblBooks.Locate(BOOK_ID_FIELD, DMUser.tblRatesBookID.Value, []);
-      if DMCollection.tblBooksLibID.Value <> 0 then
-        ID := DMCollection.tblBooksLibID.Value
-      else
-        ID := DMCollection.tblBooksID.Value;
-
-      SL.Add(Format('%d %d', [ID, DMUser.tblRatesRate.Value]));
-      DMUser.tblRates.Next;
-    end;
-    DMUser.tblRates.Filtered := False;
-    ***}
-
-    //
-    // Прочитанное
-    //
-    (***
-    SL.Add('# Прочитанное');
-    DMUser.tblFinished.Filter := DB_ID_FIELD + '=' + QuotedStr(IntToStr(DMUser.ActiveCollection.ID));
-    DMUser.tblFinished.Filtered := True;
-    DMUser.tblFinished.First;
-    while not DMUser.tblFinished.Eof do
-    begin
-      DMCollection.tblBooks.Locate(BOOK_ID_FIELD, DMUser.tblFinishedBookID.Value, []);
-      if DMCollection.tblBooksLibID.Value <> 0 then
-        ID := DMCollection.tblBooksLibID.Value
-      else
-        ID := DMCollection.tblBooksID.Value;
-
-      SL.Add(Format('%d %d', [ID, DMUser.tblFinishedProgress.Value]));
-      DMUser.tblFinished.Next;
-    end;
-    DMUser.tblFinished.Filtered := False;
-    ***)
-
-    //
-    // Избранное
-    //
-    SL.Add('# Избранное');
-    {
-    DMUser.Groups.First;
-    while not DMUser.Groups.Eof do
-    begin
-      DMUser.BooksByGroup.Filter := DB_ID_FIELD + '=' + QuotedStr(IntToStr(DMUser.ActiveCollection.ID));
-      DMUser.BooksByGroup.Filtered := True;
-      DMUser.BooksByGroup.First;
-      while not DMUser.BooksByGroup.Eof do
-      begin
-        if DMUser.BooksByGroupLibID.Value <> 0 then
-          ID := DMUser.BooksByGroupLibID.Value
-        else
-          ID := DMUser.BooksByGroupBookID.Value;
-        SL.Add(Format('%d %s', [ID, DMUser.GroupsGroupName.Value]));
-        DMUser.BooksByGroup.Next;
-      end;
-      DMUser.Groups.Next;
-    end;
-    }
-    DMUser.BooksByGroup.MasterSource := DMUser.dsGroups;
-
-    //
-    // избранное
-    //
-    SL.Add('# Рецензии');
-    {
-    DMCollection.tblExtra.MasterSource := nil;
-    DMCollection.tblExtra.First;
-    while not DMCollection.tblExtra.Eof do
-    begin
-      S := DMCollection.tblExtraReview.Value;
-      StrReplace(CRLF, '~', S);
-      DMCollection.tblBooks.Locate(BOOK_ID_FIELD, DMCollection.tblExtraBookID.Value, []);
-      if DMCollection.tblBooksLibID.Value <> 0 then
-        ID := DMCollection.tblBooksLibID.Value
-      else
-        ID := DMCollection.tblBooksID.Value;
-
-      SL.Add(Format('%d %s', [ID, S]));
-      DMCollection.tblExtra.Next;
-    end;
-    DMCollection.tblExtra.MasterSource := DMCollection.dsBooks;
-    }
-
-    if unit_Helpers.GetFileName(fnSaveUserData, FN) then
-      SL.SaveToFile(FN, TEncoding.UTF8);
+    DMCollection.ExportUserData(data);
+    data.Save(FileName);
   finally
-    SL.Free;
+    data.Free;
   end;
 end;
 

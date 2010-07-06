@@ -20,7 +20,8 @@ uses
   Classes,
   ABSMain,
   DB,
-  unit_Globals;
+  unit_Globals,
+  UserData;
 
 type
   TThreeState = (tsTrue, tsFalse, tsUnknown);
@@ -235,6 +236,12 @@ type
     // NOTE: !!! После установки фильтра датасеты остаются закрытыми !!!
     //
     procedure SetFilter(LocalState: TThreeState; ShowDeleted: TThreeState);
+
+    //
+    // Пользовательские данные
+    //
+    procedure ExportUserData(data: TUserData);
+    procedure ImportUserData(data: TUserData);
   end;
 
 var
@@ -843,6 +850,41 @@ begin
   else
     //SwitchFilter('');
     ;
+end;
+
+procedure TDMCollection.ExportUserData(data: TUserData);
+begin
+  Assert(Assigned(data));
+  Assert(AllBooks.Active);
+  Assert(AllExtra.Active);
+
+  AllExtra.First;
+  while not AllExtra.Eof do
+  begin
+    if AllBooks.Locate(BOOK_ID_FIELD, AllExtraBookID.Value, []) then
+    begin
+      if
+        (AllExtraRate.Value <> 0) or
+        (AllExtraProgress.Value <> 0) or
+        (AllExtraReview.Value <> '')
+      then
+        data.Extras.AddExtra(
+          AllExtraBookID.Value,
+          AllBooksLibID.Value,
+          AllExtraRate.Value,
+          AllExtraProgress.Value,
+          AllExtraReview.Value
+        );
+    end;
+    AllExtra.Next;
+  end;
+
+  DMUser.ExportUserData(data);
+end;
+
+procedure TDMCollection.ImportUserData(data: TUserData);
+begin
+//
 end;
 
 end.

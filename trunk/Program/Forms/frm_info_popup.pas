@@ -4,16 +4,15 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, RzLabel, ExtCtrls, RzPanel;
+  Dialogs, StdCtrls, ExtCtrls;
 
 type
   TfrmInfoPopup = class(TForm)
-    RzPanel1: TRzPanel;
-    lblText: TRzLabel;
+    lblText: TLabel;
   private
-    { Private declarations }
+
   public
-    { Public declarations }
+
   end;
 
 var

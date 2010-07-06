@@ -27,7 +27,6 @@ uses
   Controls,
   Forms,
   Dialogs,
-  RzButton,
   ExtCtrls,
   VirtualTrees,
   StdCtrls,
@@ -40,9 +39,7 @@ uses
   unit_globals,
   FBDDocument,
   FBDAuthorTable,
-  Buttons,
-
-  RzPanel;
+  Buttons;
 
 type
   TfrmAddnonfb2 = class(TForm)

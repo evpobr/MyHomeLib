@@ -82,6 +82,10 @@ object frmAddnonfb2: TfrmAddnonfb2
     end
     object tsBookInfo: TTabSheet
       Caption = #1050#1085#1080#1075#1072
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         738
         461)
@@ -525,14 +529,13 @@ object frmAddnonfb2: TfrmAddnonfb2
         Height = 185
         Align = alTop
         Anchors = [akLeft, akTop, akRight, akBottom]
-        Caption = #1040#1074#1090#1086#1088'('#1099') '#1082#1085#1080#1075#1080
         TabOrder = 2
         DesignSize = (
           732
           185)
         object btnAddAuthorFromList: TBitBtn
-          Left = 227
-          Top = 155
+          Left = 241
+          Top = 160
           Width = 78
           Height = 25
           Anchors = [akLeft, akBottom]
@@ -546,6 +549,10 @@ object frmAddnonfb2: TfrmAddnonfb2
     end
     object tsFBD: TTabSheet
       Caption = 'FBD'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         738
         461)
@@ -766,7 +773,6 @@ object frmAddnonfb2: TfrmAddnonfb2
         Width = 484
         Height = 166
         Anchors = [akLeft, akTop, akRight, akBottom]
-        Caption = #1040#1074#1090#1086#1088'('#1099') FBD'
         TabOrder = 2
         DesignSize = (
           484

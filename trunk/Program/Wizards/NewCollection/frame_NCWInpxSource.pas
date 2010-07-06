@@ -1,13 +1,15 @@
-{ ****************************************************************************** }
-{ }
-{ MyHomeLib }
-{ }
-{ Version 0.9 }
-{ 20.08.2008 }
-{ Copyright (c) Aleksey Penkov  alex.penkov@gmail.com }
-{ }
-{ }
-{ ****************************************************************************** }
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Authors Nick Rymanov     nrymanov@gmail.com
+  *         Aleksey Penkov   alex.penkov@gmail.com
+  *
+  * History
+  *
+  ****************************************************************************** *)
 
 unit frame_NCWInpxSource;
 
@@ -29,12 +31,11 @@ uses
   unit_StaticTip,
   unit_NCWParams,
   Mask,
-  RzEdit,
-  RzBtnEdt,
-  ComCtrls;
+  ComCtrls,
+  MHLSimplePanel,
+  unit_AutoCompleteEdit;
 
 type
-
   TCollectionDesc = record
     Group: integer;
     Title: string;
@@ -43,12 +44,14 @@ type
   end;
 
   TframeNCWInpxSource = class(TInteriorPageBase)
-    Panel1: TPanel;
+    Panel1: TMHLSimplePanel;
     pageHint: TMHLStaticTip;
     rbLocal: TRadioButton;
-    edINPXPath: TRzButtonEdit;
+    edINPXPath: TMHLAutoCompleteEdit;
     rbDownload: TRadioButton;
     lvCollections: TListView;
+    MHLSimplePanel1: TMHLSimplePanel;
+    btnSelectINPX: TButton;
     procedure OnSetCollectionType(Sender: TObject);
     procedure edINPXPathButtonClick(Sender: TObject);
     procedure lvCollectionsChange(Sender: TObject; Item: TListItem;
@@ -252,6 +255,7 @@ begin
     pageHint.Caption := SERVERDOWNLOAD;
 
   edINPXPath.Enabled := rbLocal.Checked;
+  btnSelectINPX.Enabled := rbLocal.Checked;
   lvCollections.Enabled := rbDownload.Checked;
 end;
 
