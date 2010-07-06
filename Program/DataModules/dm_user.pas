@@ -23,7 +23,8 @@ uses
   unit_Globals,
   ImgList,
   Controls,
-  unit_Consts;
+  unit_Consts,
+  UserData;
 
 type
   TCollectionProp = (cpDisplayName, cpFileName, cpRootFolder);
@@ -207,6 +208,11 @@ type
       MoveBook: Boolean
     );
 
+    //
+    // Пользовательские данные
+    //
+    procedure ExportUserData(data: TUserData);
+    procedure ImportUserData(data: TUserData);
   end;
 
   TMHLCollection = class
@@ -983,7 +989,7 @@ begin
     AllBooksDate.Value := BookRecord.Date;
     AllBooksLibRate.Value := BookRecord.LibRate;
     AllBooksLang.Value := BookRecord.Lang;
-    AllBooksFolder.Value := TPath.Combine(DMUser.ActiveCollection.RootFolder, BookRecord.Folder);
+    AllBooksFolder.Value := TPath.Combine(ActiveCollection.RootFolder, BookRecord.Folder);
     AllBooksFileName.Value := BookRecord.FileName;
     AllBooksInsideNo.Value := BookRecord.InsideNo;
     AllBooksExt.Value := BookRecord.FileExt;
@@ -1093,6 +1099,38 @@ begin
       AllBookGroups.Cancel;
     end;
   end;
+end;
+
+procedure TDMUser.ExportUserData(data: TUserData);
+var
+  CollectionID: Integer;
+  group: TBookGroup;
+begin
+  Assert(Assigned(data));
+
+  CollectionID := ActiveCollection.ID;
+
+  Groups.First;
+  while not Groups.Eof do
+  begin
+    group := data.Groups.AddGroup(GroupsGroupID.Value, GroupsGroupName.Value);
+
+    GroupBooks.First;
+    while not GroupBooks.Eof do
+    begin
+      if BooksByGroupDatabaseID.Value = CollectionID then
+        group.AddBook(BooksByGroupBookID.Value, BooksByGroupLibID.Value);
+
+      GroupBooks.Next;
+    end;
+
+    Groups.Next;
+  end;
+end;
+
+procedure TDMUser.ImportUserData(data: TUserData);
+begin
+
 end;
 
 { TMHLCollection }

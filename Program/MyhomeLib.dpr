@@ -114,7 +114,8 @@ uses
   frmEditAuthorEx in 'Forms\frmEditAuthorEx.pas' {frmEditAuthorDataEx},
   Templater in 'Units\Templater.pas',
   TemplaterInternal in 'Units\TemplaterInternal.pas',
-  SearchPresets in 'Units\SearchPresets.pas';
+  SearchPresets in 'Units\SearchPresets.pas',
+  UserData in 'Units\UserData.pas';
 
 {$R *.res}
 

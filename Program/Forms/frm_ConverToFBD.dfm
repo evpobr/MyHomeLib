@@ -25,7 +25,7 @@ object frmConvertToFBD: TfrmConvertToFBD
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
-    object RzLabel1: TRzLabel
+    object RzLabel1: TLabel
       Left = 207
       Top = 283
       Width = 55
@@ -200,12 +200,10 @@ object frmConvertToFBD: TfrmConvertToFBD
       end
     end
     object alFBDAuthors: TFBDAuthorTable
-      AlignWithMargins = True
       Left = 207
       Top = 127
       Width = 372
       Height = 150
-      Caption = #1040#1074#1090#1086#1088'('#1099') FBD'
       TabOrder = 4
       DesignSize = (
         372
