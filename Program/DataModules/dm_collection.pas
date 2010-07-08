@@ -883,8 +883,77 @@ begin
 end;
 
 procedure TDMCollection.ImportUserData(data: TUserData);
+var
+  extra: TBookExtra;
+  group: TBookGroup;
+  groupBook: TGroupBook;
+
+  DatabaseID: Integer;
+  BookID: Integer;
+
+  function GetBookID(bookInfo: TBookInfo; out BookID: Integer): Boolean;
+  begin
+    if bookInfo.LibID = 0 then
+      Result := AllBooks.Locate(BOOK_ID_FIELD, bookInfo.BookID, [])
+    else
+      Result := AllBooks.Locate(BOOK_LIBID_FIELD, bookInfo.LibID, []);
+
+    if Result then
+      BookID := AllBooksBookID.Value;
+  end;
+
 begin
-//
+  Assert(Assigned(data));
+  Assert(AllBooks.Active);
+  Assert(AllExtra.Active);
+
+  DatabaseID := DMUser.ActiveCollection.ID;
+
+  //
+  // Заполним рейтинги, аннотации и признак прочитанности
+  //
+  for extra in data.Extras do
+  begin
+    if GetBookID(extra, BookID) then
+    begin
+      UpdateExtra(
+        BookID, DatabaseID,
+        procedure
+        begin
+          if extra.Rating <> 0 then
+            AllExtraRate.Value := extra.Rating;
+          if extra.Progress <> 0 then
+            AllExtraProgress.Value := extra.Progress;
+          if extra.Review <> '' then
+            AllExtraReview.Value := extra.Review;
+        end
+      );
+
+      //
+      // Обновим информацию в группах
+      //
+      DMUser.SetExtra(BookID, DatabaseID, extra);
+    end;
+  end;
+
+  //
+  // Создадим пользовательские группы
+  //
+  DMUser.ImportUserData(data);
+
+  //
+  // Добавим книги в группы
+  //
+  for group in data.Groups do
+  begin
+    for groupBook in group do
+    begin
+      if GetBookID(groupBook, BookID) then
+      begin
+        AddBookToGroup(BookID, DatabaseID, group.GroupID);
+      end;
+    end;
+  end;
 end;
 
 end.

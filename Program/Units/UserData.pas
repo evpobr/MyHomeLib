@@ -57,7 +57,7 @@ type
 
   TBookExtras = class(TObjectList<TBookExtra>)
   private
-    procedure Load(element: IXMLDOMElement);
+    procedure Load(element: IXMLDOMNode);
     procedure Save(doc: IXMLDOMDocument; parentElement: IXMLDOMElement);
 
   public
@@ -123,6 +123,7 @@ implementation
 
 uses
   msxmldom,
+  XMLConst,
   SysUtils;
 
 { TBookInfo }
@@ -161,9 +162,16 @@ begin
 end;
 
 procedure TBookInfo.Load(element: IXMLDOMNode);
+var
+  Node: IXMLDOMNode;
 begin
-  FBookID := StrToIntDef(element.attributes.getNamedItem(ATTRIBUTE_ID).Text, 0);
-  FLibID := StrToIntDef(element.attributes.getNamedItem(ATTRIBUTE_LIBID).Text, 0);
+  Node := element.attributes.getNamedItem(ATTRIBUTE_ID);
+  if Assigned(Node) then
+    FBookID := StrToIntDef(Node.Text, 0);
+
+  Node := element.attributes.getNamedItem(ATTRIBUTE_LIBID);
+  if Assigned(Node) then
+    FLibID := StrToIntDef(Node.Text, 0);
 end;
 
 procedure TBookInfo.Save(doc: IXMLDOMDocument; parentElement: IXMLDOMElement);
@@ -266,7 +274,7 @@ begin
   Add(TBookExtra.Create(BookID, LibID, Rating, Progress, Review));
 end;
 
-procedure TBookExtras.Load(element: IXMLDOMElement);
+procedure TBookExtras.Load(element: IXMLDOMNode);
 var
   xmlExtras: IXMLDOMNodeList;
   xmlExtra: IXMLDOMNode;
@@ -274,12 +282,15 @@ begin
   Clear;
 
   xmlExtras := element.selectNodes(ELEMENT_EXTRAS + '/' + ELEMENT_BOOK);
-  xmlExtra := xmlExtras.nextNode;
-  while Assigned(xmlExtra) do
+  if Assigned(xmlExtras) then
   begin
-    Add(TBookExtra.Create(xmlExtra));
-
     xmlExtra := xmlExtras.nextNode;
+    while Assigned(xmlExtra) do
+    begin
+      Add(TBookExtra.Create(xmlExtra));
+
+      xmlExtra := xmlExtras.nextNode;
+    end;
   end;
 end;
 
@@ -330,19 +341,28 @@ procedure TBookGroup.Load(element: IXMLDOMNode);
 var
   xmlBooks: IXMLDOMNodeList;
   xmlBook: IXMLDOMNode;
+  Node: IXMLDOMNode;
 begin
   Clear;
 
-  FGroupID := StrToIntDef(element.attributes.getNamedItem(ATTRIBUTE_ID).Text, -1);
-  FGroupName := element.attributes.getNamedItem(ATTRIBUTE_NAME).Text;
+  Node := element.attributes.getNamedItem(ATTRIBUTE_ID);
+  if Assigned(Node) then
+    FGroupID := StrToIntDef(Node.Text, -1);
+
+  Node := element.attributes.getNamedItem(ATTRIBUTE_NAME);
+  if Assigned(Node) then
+    FGroupName := Node.Text;
 
   xmlBooks := element.selectNodes(ELEMENT_BOOK);
-  xmlBook := xmlBooks.nextNode;
-  while Assigned(xmlBook) do
+  if Assigned(xmlBooks) then
   begin
-    Add(TGroupBook.Create(xmlBook));
-
     xmlBook := xmlBooks.nextNode;
+    while Assigned(xmlBook) do
+    begin
+      Add(TGroupBook.Create(xmlBook));
+
+      xmlBook := xmlBooks.nextNode;
+    end;
   end;
 end;
 
@@ -379,12 +399,15 @@ begin
   Clear;
 
   xmlGroups := element.selectNodes(ELEMENT_GROUPS + '/' + ELEMENT_GROUP);
-  xmlGroup := xmlGroups.nextNode;
-  while Assigned(xmlGroup) do
+  if Assigned(xmlGroups) then
   begin
-    Add(TBookGroup.Create(xmlGroup));
-
     xmlGroup := xmlGroups.nextNode;
+    while Assigned(xmlGroup) do
+    begin
+      Add(TBookGroup.Create(xmlGroup));
+
+      xmlGroup := xmlGroups.nextNode;
+    end;
   end;
 end;
 
@@ -427,8 +450,35 @@ begin
 end;
 
 procedure TUserData.Load(const FileName: string);
+var
+  doc: IXMLDOMDocument;
+  parseError: IXMLDOMParseError;
+  xmlRoot: IXMLDOMNode;
 begin
+  doc := msxmldom.CreateDOMDocument;
+  doc.async := False;
 
+  if not doc.load(FileName) then
+  begin
+    parseError := doc.parseError;
+
+    raise Exception.CreateFmt(
+      '%s%s%s: %d%s%s',
+      [
+      parseError.reason, SLineBreak,
+      SLine, parseError.line, SLineBreak,
+      Copy(parseError.srcText, 1, 40)
+      ]
+    );
+  end;
+
+  xmlRoot := doc.selectSingleNode(ELEMENT_USERDATA);
+
+  if Assigned(xmlRoot) then
+  begin
+    FExtras.Load(xmlRoot);
+    FGroups.Load(xmlRoot);
+  end;
 end;
 
 procedure TUserData.Save(const FileName: string);

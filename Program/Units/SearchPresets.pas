@@ -149,7 +149,7 @@ begin
   xmlDoc.async := False;
 
   // Create a processing instruction targeted for xml.
-  xmlPI := xmlDoc.createProcessingInstruction('xml', 'version=''1.0''');
+  xmlPI := xmlDoc.createProcessingInstruction('xml', 'version="1.0" encoding="UTF-8"');
   xmlDoc.appendChild(xmlPI);
 
   // Create the root element (i.e., the documentElement).
