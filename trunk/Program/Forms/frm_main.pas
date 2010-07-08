@@ -6804,42 +6804,27 @@ end;
 
 procedure TfrmMain.miImportUserDataClick(Sender: TObject);
 var
-  SL: TStringList;
-  FN: string;
-  i: Integer;
+  FileName: string;
+  data: TUserData;
 begin
-  if not GetFileName(fnOpenUserData, FN) then
+  if not GetFileName(fnOpenUserData, FileName) then
     Exit;
 
   Screen.Cursor := crHourGlass;
   try
-    SL := TStringList.Create;
+    data := TUserData.Create;
     try
-      SL.LoadFromFile(FN);
-      i := 0;
-      while (i < SL.Count) do
-      begin
-        if Pos('#', SL[i]) <> 0 then
-        begin
-          if SL[i] = '# Группы' then
-            DMUser.LoadGroups(SL, i)
-          else if SL[i] = '# Рейтинги' then
-            DMUser.LoadRates(SL, i)
-          else if SL[i] = '# Прочитанное' then
-            DMUser.LoadFinished(SL, i)
-          else if SL[i] = '# Рецензии' then
-            DMUser.LoadReviews(SL, i)
-          else if SL[i] = '# Избранное' then
-            DMUser.LoadGroupedBooks(SL, i)
-          else
-            Inc(i);
-        end;
-      end;
-      FillGroupsList;
-      CreateGroupsMenu;
+      data.Load(FileName);
+      DMCollection.ImportUserData(data);
     finally
-      SL.Free;
+      data.Free;
     end;
+
+    FillGroupsList;
+    CreateGroupsMenu;
+    //
+    // TODO:Обновить списки книг
+    //
   finally
     Screen.Cursor := crDefault;
   end;

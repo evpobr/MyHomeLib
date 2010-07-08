@@ -115,6 +115,8 @@ type
     FCollection: TMHLCollection;
 
   private
+    function InternalFindGroup(const GroupName: string): Boolean; overload; inline;
+    function InternalFindGroup(GroupID: Integer): Boolean; overload; inline;
     procedure InternalClearGroup(GroupID: Integer; RemoveGroup: Boolean);
 
   public const
@@ -169,13 +171,6 @@ type
 
     function ActivateGroup(const ID: Integer): Boolean;
 
-    ///procedure InsertToGroupTable(BookID: Integer; const Genre: string);
-
-    procedure LoadRates(const SL: TStringList; var i: Integer);
-    procedure LoadGroupedBooks(const SL: TStringList; var i: Integer);
-    procedure LoadFinished(const SL: TStringList; var i: Integer);
-    procedure LoadGroups(const SL: TStringList; var i: Integer);
-    procedure LoadReviews(const SL: TStringList; var i: Integer);
     procedure CorrectExtra(OldID, NewID: Integer);
 
     //
@@ -183,6 +178,7 @@ type
     //
     procedure GetBookRecord(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord);
 
+    procedure SetExtra(BookID: Integer; DatabaseID: Integer; extra: TBookExtra);
     procedure SetRate(BookID: Integer; DatabaseID: Integer; Rate: Integer);
     procedure SetProgress(BookID: Integer; DatabaseID: Integer; Progress: Integer);
     function GetAnnotation(BookID: Integer; DatabaseID: Integer): string;
@@ -561,160 +557,6 @@ begin
   //
 end;
 
-procedure TDMUser.LoadFinished;
-var
-  p, ID, Progress: Integer;
-begin
-  // Прочитаное
-  Inc(i);
-  while (i < SL.Count) and (Pos('#', SL[i]) = 0) do
-  begin
-    p := Pos(' ', SL[i]);
-    ID := StrToInt(Copy(SL[i], 1, p - 1));
-    Progress := StrToInt(Copy(SL[i], p + 1));
-
-    DMCollection.tblBooks.Locate(BOOK_LIBID_FIELD, ID, []);
-    ID := DMCollection.tblBooksID.Value;
-
-    {***
-    if not tblFinished.Locate(DB_ID_FIELD + '; ID', VarArrayOf([ActiveCollection.ID, ID]), []) then
-    begin
-      tblFinished.Insert;
-      tblFinishedBookID.Value := ID;
-      tblFinishedDataBaseID.Value := ActiveCollection.ID;
-      tblFinishedDate.Value := Now;
-      tblFinishedProgress.Value := Progress;
-      tblFinished.Post;
-    end
-    else
-    begin
-      tblFinished.Edit;
-      tblFinishedProgress.Value := Progress;
-      tblFinished.Post;
-    end;
-    ***}
-
-    Inc(i);
-  end;
-end;
-
-procedure TDMUser.LoadGroupedBooks;
-var
-  p, ID, GroupID: Integer;
-  Name: string;
-begin
-  // Избранное
-  Inc(i);
-  while (i < SL.Count) and (Pos('#', SL[i]) = 0) do
-  begin
-    p := Pos(' ', SL[i]);
-    if p <> 0 then
-    begin
-      ID := StrToInt(Copy(SL[i], 1, p - 1));
-      Name := Copy(SL[i], p + 1);
-    end
-    else
-    begin
-      ID := StrToInt(SL[i]);
-      GroupID := 1;
-      Name := '';
-    end;
-
-    if not Groups.Locate(GROUP_NAME_FIELD, Name, []) then
-      Groups.Locate(GROUP_ID_FIELD, GroupID, []);
-
-    ///if DMCollection.tblBooks.Locate(LIB_ID_FIELD, ID, []) then
-    ///  InsertToGroupTable(DMCollection.tblBooksID.Value, DMCollection.GetBookGenres(DMCollection.tblBooksID.Value, False));
-    Inc(i);
-  end;
-end;
-
-procedure TDMUser.LoadReviews;
-var
-  ID, p: Integer;
-  S: string;
-begin
-  // Рецензии
-  Inc(i);
-  while (i < SL.Count) and (Pos('#', SL[i]) = 0) do
-  begin
-    p := Pos(' ', SL[i]);
-    ID := StrToInt(Copy(SL[i], 1, p - 1));
-    S := Copy(SL[i], p + 1);
-
-    StrReplace('~', CRLF, S);
-
-    DMCollection.tblBooks.Locate(BOOK_LIBID_FIELD, ID, []); // получаем реальный ID
-    ID := DMCollection.tblBooksID.Value;
-
-    if DMCollection.tblBooks.Locate(BOOK_ID_FIELD, ID, []) then
-    begin
-      {
-      DMCollection.tblExtra.Insert;
-      DMCollection.tblExtraReview.Value := S;
-      DMCollection.tblExtra.Post;
-
-      DMCollection.tblBooks.Edit;
-      DMCollection.tblBooksCode.Value := 1;
-      DMCollection.tblBooks.Post;
-      }
-    end;
-
-    Inc(i);
-  end;
-end;
-
-procedure TDMUser.LoadGroups(const SL: TStringList; var i: Integer);
-var
-  k: Integer;
-begin
-  Inc(i);
-  k := 1;
-  while Pos('#', SL[i]) = 0 do
-  begin
-    if k > 2 then
-      AddGroup(SL[i]);
-    Inc(k);
-    Inc(i);
-  end;
-end;
-
-procedure TDMUser.LoadRates;
-var
-  p, ID, LibID, Rate: Integer;
-begin
-  // Рейтинги
-  Inc(i);
-  while Pos('#', SL[i]) = 0 do
-  begin
-    p := Pos(' ', SL[i]);
-    LibID := StrToInt(Copy(SL[i], 1, p - 1));
-    Rate := StrToInt(Copy(SL[i], p + 1));
-
-    DMCollection.tblBooks.Locate(BOOK_LIBID_FIELD, LibID, []); // получаем реальный ID
-    ID := DMCollection.tblBooksID.Value;
-
-    {***
-    if not tblRates.Locate(BOOK_DB_FIELDS, VarArrayOf([ID, ActiveCollection.ID]), []) then
-    begin
-      tblRates.Insert;
-      tblRatesBookID.Value := ID;
-      tblRatesRate.Value := Rate;
-      tblRatesDataBaseID.Value := ActiveCollection.ID;
-      tblRatesDate.Value := Now;
-      tblRates.Post;
-    end
-    else
-    begin
-      tblRates.Edit;
-      tblRatesRate.Value := Rate;
-      tblRates.Post;
-    end;
-    ***}
-    Inc(i);
-  end;
-end;
-
 procedure TDMUser.SetTableState(State: Boolean);
 begin
   tblBases.Active := State;
@@ -812,6 +654,22 @@ begin
     Assert(False);
 end;
 
+procedure TDMUser.SetExtra(BookID: Integer; DatabaseID: Integer; extra: TBookExtra);
+begin
+  Assert(AllBooks.Active);
+  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  begin
+    AllBooks.Edit;
+    if extra.Rating <> 0 then
+      AllBooksRate.Value := extra.Rating;
+    if extra.Progress <> 0 then
+      AllBooksProgress.Value := extra.Progress;
+    if extra.Review <> '' then
+      AllBooksAnnotation.Value := extra.Review;
+    AllBooks.Post;
+  end;
+end;
+
 procedure TDMUser.SetRate(BookID: Integer; DatabaseID: Integer; Rate: Integer);
 begin
   Assert(AllBooks.Active);
@@ -904,7 +762,7 @@ end;
 //
 function TDMUser.AddGroup(const Name: string): Boolean;
 begin
-  if not Groups.Locate(GROUP_NAME_FIELD, Name, []) then
+  if not InternalFindGroup(Name) then
   begin
     Groups.Append;
     GroupsGroupName.Value := Name;
@@ -917,12 +775,22 @@ begin
     Result := False;
 end;
 
+function TDMUser.InternalFindGroup(const GroupName: string): Boolean;
+begin
+  Result := Groups.Locate(GROUP_NAME_FIELD, GroupName, []);
+end;
+
+function TDMUser.InternalFindGroup(GroupID: Integer): Boolean;
+begin
+  Result := Groups.Locate(GROUP_ID_FIELD, GroupID, []);
+end;
+
 //
 // Очищает текущую группу
 //
 procedure TDMUser.InternalClearGroup(GroupID: Integer; RemoveGroup: Boolean);
 begin
-  if Groups.Locate(GROUP_ID_FIELD, GroupID, []) then
+  if InternalFindGroup(GroupID) then
   begin
     //
     // Удалить книги из группы
@@ -1050,7 +918,7 @@ end;
 //
 procedure TDMUser.DeleteFromGroup(BookID: Integer; DatabaseID: Integer; GroupID: Integer);
 begin
-  if Groups.Locate(GROUP_ID_FIELD, GroupID, []) then
+  if InternalFindGroup(GroupID) then
   begin
     if GroupBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
       GroupBooks.Delete;
@@ -1129,8 +997,18 @@ begin
 end;
 
 procedure TDMUser.ImportUserData(data: TUserData);
+var
+  group: TBookGroup;
 begin
+  Assert(Assigned(data));
 
+  for group in data.Groups do
+  begin
+    if AddGroup(group.GroupName) then
+    begin
+      group.GroupID := GroupsGroupID.Value;
+    end;
+  end;
 end;
 
 { TMHLCollection }
