@@ -117,6 +117,7 @@ type
   private
     function InternalFindGroup(const GroupName: string): Boolean; overload; inline;
     function InternalFindGroup(GroupID: Integer): Boolean; overload; inline;
+    function InternalAddGroup(const GroupName: string; out GroupID: Integer): Boolean;
     procedure InternalClearGroup(GroupID: Integer; RemoveGroup: Boolean);
 
   public const
@@ -190,7 +191,7 @@ type
     //
     // Работа с группами
     //
-    function AddGroup(const Name: string): Boolean;
+    function AddGroup(const GroupName: string): Boolean;
     procedure DeleteGroup(GroupID: Integer);
     procedure ClearGroup(GroupID: Integer);
 
@@ -760,19 +761,11 @@ end;
 //
 // Создать группу
 //
-function TDMUser.AddGroup(const Name: string): Boolean;
+function TDMUser.AddGroup(const GroupName: string): Boolean;
+var
+  GroupID: Integer;
 begin
-  if not InternalFindGroup(Name) then
-  begin
-    Groups.Append;
-    GroupsGroupName.Value := Name;
-    GroupsAllowDelete.Value := True;
-    Groups.Post;
-
-    Result := True;
-  end
-  else
-    Result := False;
+  Result := InternalAddGroup(GroupName, GroupID);
 end;
 
 function TDMUser.InternalFindGroup(const GroupName: string): Boolean;
@@ -788,6 +781,19 @@ end;
 //
 // Очищает текущую группу
 //
+function TDMUser.InternalAddGroup(const GroupName: string; out GroupID: Integer): Boolean;
+begin
+  Result := not InternalFindGroup(GroupName);
+  if Result then
+  begin
+    Groups.Append;
+    GroupsGroupName.Value := GroupName;
+    GroupsAllowDelete.Value := True;
+    Groups.Post;
+  end;
+  GroupID := GroupsGroupID.Value;
+end;
+
 procedure TDMUser.InternalClearGroup(GroupID: Integer; RemoveGroup: Boolean);
 begin
   if InternalFindGroup(GroupID) then
@@ -999,15 +1005,14 @@ end;
 procedure TDMUser.ImportUserData(data: TUserData);
 var
   group: TBookGroup;
+  GroupID: Integer;
 begin
   Assert(Assigned(data));
 
   for group in data.Groups do
   begin
-    if AddGroup(group.GroupName) then
-    begin
-      group.GroupID := GroupsGroupID.Value;
-    end;
+    InternalAddGroup(group.GroupName, GroupID);
+    group.GroupID := GroupID;
   end;
 end;
 

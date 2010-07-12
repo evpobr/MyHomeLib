@@ -108,12 +108,14 @@ type
     AllSeries: TABSTable;
     AllSeriesSerieID: TAutoIncField;
     AllSeriesSerieTitle: TWideStringField;
+
     AllExtra: TABSTable;
     AllExtraBookID: TIntegerField;
     AllExtraAnnotation: TWideMemoField;
     AllExtraReview: TWideMemoField;
     AllExtraRate: TIntegerField;
     AllExtraProgress: TIntegerField;
+
     AllGenres: TABSTable;
     AllGenresGenreCode: TWideStringField;
     AllGenresParentCode: TWideStringField;
@@ -155,6 +157,12 @@ type
 
   private type
     TUpdateExtraProc = reference to procedure;
+
+  public type
+    TGUIUpdateExtraProc = reference to procedure(
+      BookID: Integer; DatabaseID: Integer;
+      extra: TBookExtra
+      );
 
   strict private
     procedure UpdateExtra(BookID: Integer; DatabaseID: Integer; UpdateProc: TUpdateExtraProc);
@@ -241,7 +249,7 @@ type
     // Пользовательские данные
     //
     procedure ExportUserData(data: TUserData);
-    procedure ImportUserData(data: TUserData);
+    procedure ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc);
   end;
 
 var
@@ -882,7 +890,10 @@ begin
   DMUser.ExportUserData(data);
 end;
 
-procedure TDMCollection.ImportUserData(data: TUserData);
+procedure TDMCollection.ImportUserData(
+  data: TUserData;
+  guiUpdateCallback: TGUIUpdateExtraProc
+  );
 var
   extra: TBookExtra;
   group: TBookGroup;
@@ -904,6 +915,7 @@ var
 
 begin
   Assert(Assigned(data));
+  Assert(Assigned(guiUpdateCallback));
   Assert(AllBooks.Active);
   Assert(AllExtra.Active);
 
@@ -933,6 +945,11 @@ begin
       // Обновим информацию в группах
       //
       DMUser.SetExtra(BookID, DatabaseID, extra);
+
+      //
+      // Дадим возможность главному окну обновить измененные ноды
+      //
+      guiUpdateCallback(BookID, DatabaseID, extra);
     end;
   end;
 
