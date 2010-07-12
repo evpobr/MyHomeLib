@@ -657,18 +657,24 @@ begin
     // Зададим дефлотные группы
     //
     Groups := TABSTable.Create(ADatabase);
-    Groups.TableName := 'Groups';
-    Groups.Active := True;
+    try
+      Groups.TableName := 'Groups';
+      Groups.Active := True;
 
-    Groups.Append;
-    Groups.FieldByName(GROUP_NAME_FIELD).AsWideString := rstrFavoritesGroupName;
-    Groups.FieldByName('AllowDelete').AsBoolean := False;
-    Groups.Post;
+      Groups.Append;
+      Groups.FieldByName(GROUP_NAME_FIELD).AsWideString := rstrFavoritesGroupName;
+      Groups.FieldByName('AllowDelete').AsBoolean := False;
+      Groups.Post;
+      Assert(Groups.FieldByName(GROUP_ID_FIELD).AsInteger = FAVORITES_GROUP_ID);
 
-    Groups.Append;
-    Groups.FieldByName(GROUP_NAME_FIELD).AsWideString := rstrToReadGroupName;
-    Groups.FieldByName('AllowDelete').AsBoolean := False;
-    Groups.Post;
+      Groups.Append;
+      Groups.FieldByName(GROUP_NAME_FIELD).AsWideString := rstrToReadGroupName;
+      Groups.FieldByName('AllowDelete').AsBoolean := False;
+      Groups.Post;
+      Assert(Groups.FieldByName(GROUP_ID_FIELD).AsInteger = (FAVORITES_GROUP_ID + 1));
+    finally
+      Groups.Free;
+    end;
   finally
     ADatabase.Free;
   end;

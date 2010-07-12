@@ -232,7 +232,6 @@ type
     N26: TMenuItem;
     N34: TMenuItem;
     tlbrDownloadList: TToolBar;
-    ilDownloadToolBar: TImageList;
     BtnDwnldUp: TToolButton;
     BtnDwnldDown: TToolButton;
     BtnDelete: TToolButton;
@@ -265,9 +264,9 @@ type
     btnClearFavorites: TBitBtn;
     pmGroups: TPopupMenu;
     GroupMenuItem: TMenuItem;
-    btnAddGroup: TBitBtn;
-    btnDeleteGroup: TBitBtn;
-    btnClearGroup: TBitBtn;
+    btnAddGroup: TButton;
+    btnDeleteGroup: TButton;
+    btnClearGroup: TButton;
     pmiGroups: TMenuItem;
     pnGroupBooksTitle: TMHLSimplePanel;
     lblBooksTotalF: TLabel;
@@ -306,8 +305,8 @@ type
     lblTotalBooksFL: TLabel;
     Label1: TLabel;
     cbPresetName: TComboBox;
-    btnDeletePreset: TBitBtn;
-    btnSavePreset: TBitBtn;
+    btnDeletePreset: TButton;
+    btnSavePreset: TButton;
     btnClearFilterEdits: TButton;
     btnApplyFilter: TButton;
     BalloonHint1: TBalloonHint;
@@ -1732,31 +1731,33 @@ end;
 procedure TfrmMain.CreateGroupsMenu;
 var
   Item, ItemP: TMenuItem;
-  i: Integer;
 begin
   pmGroups.Items.Clear;
   pmiGroups.Clear;
 
-  i := 0;
   DMUser.Groups.First;
-  DMUser.Groups.Next; // пропускаем "Избранное"
   while not DMUser.Groups.Eof do
   begin
-    // меню для кнопки
-    Item := TMenuItem.Create(pmGroups);
-    Item.Caption := DMUser.GroupsGroupName.Value;
-    Item.Tag := DMUser.GroupsGroupID.Value;
-    Item.OnClick := GroupMenuItemClick;
-    pmGroups.Items.Insert(i, Item);
+    //
+    // пропускаем "Избранное"
+    //
+    if DMUser.GroupsGroupID.Value <> FAVORITES_GROUP_ID then
+    begin
+      // меню для кнопки
+      Item := TMenuItem.Create(pmGroups);
+      Item.Caption := DMUser.GroupsGroupName.Value;
+      Item.Tag := DMUser.GroupsGroupID.Value;
+      Item.OnClick := GroupMenuItemClick;
+      pmGroups.Items.Add(Item);
 
-    // подменю для контекстного
-    ItemP := TMenuItem.Create(pmMain);
-    ItemP.Caption := DMUser.GroupsGroupName.Value;
-    ItemP.Tag := DMUser.GroupsGroupID.Value;
-    ItemP.OnClick := GroupMenuItemClick;
-    pmiGroups.Insert(i, ItemP);
+      // подменю для контекстного
+      ItemP := TMenuItem.Create(pmMain);
+      ItemP.Caption := DMUser.GroupsGroupName.Value;
+      ItemP.Tag := DMUser.GroupsGroupID.Value;
+      ItemP.OnClick := GroupMenuItemClick;
+      pmiGroups.Add(ItemP);
+    end;
 
-    Inc(i);
     DMUser.Groups.Next;
   end;
 end;
@@ -6815,16 +6816,39 @@ begin
     data := TUserData.Create;
     try
       data.Load(FileName);
-      DMCollection.ImportUserData(data);
+      DMCollection.ImportUserData(
+        data,
+        procedure(BookID: Integer; DatabaseID: Integer; extra: TBookExtra)
+        begin
+          //
+          // На всех страницах (кроме "Группы") необходимо обновить список книг,
+          // т к могли поменяться пользовательские данные
+          //
+          UpdateNodes(
+            BookID, DatabaseID,
+            procedure(BookData: PBookData)
+            begin
+              Assert(Assigned(BookData));
+              if extra.Rating <> 0 then
+                BookData^.Rate := extra.Rating;
+              if extra.Progress <> 0 then
+                BookData^.Progress := extra.Progress;
+              if extra.Review <> '' then
+                BookData^.Code := 1;
+            end
+          );
+        end
+      );
     finally
       data.Free;
     end;
 
-    FillGroupsList;
     CreateGroupsMenu;
+
     //
-    // TODO:Обновить списки книг
+    // Обновим список групп. Побочным эффектом будет перечитывание списка книг на странице "Группы"
     //
+    FillGroupsList;
   finally
     Screen.Cursor := crDefault;
   end;
