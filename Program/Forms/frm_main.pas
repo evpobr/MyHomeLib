@@ -2898,7 +2898,6 @@ var
   bookStream: TMemoryStream;
   book: IXMLFictionBook;
   imgBookCover: TGraphic;
-  tmpStr: string;
   CoverOK: Boolean;
 begin
   if BookTreeStatus = bsBusy then
@@ -5474,7 +5473,6 @@ procedure TfrmMain.SaveSearchPreset(Sender: TObject);
 var
   presetName: string;
   preset: TSearchPreset;
-  Value: string;
 begin
   presetName := Trim(cbPresetName.Text);
   if presetName = '' then
@@ -6386,6 +6384,7 @@ var
 begin
   GetActiveTree(Tree);
   FileName := (Settings.TempPath + 'book_list.' + Ext[(Sender as TMenuItem).Tag]);
+
   FS := TFileStream.Create(FileName, fmCreate);
   try
     case (Sender as TMenuItem).Tag of
@@ -6401,6 +6400,7 @@ begin
   finally
     FreeAndNil(FS);
   end;
+
   ShellExecute(Handle, 'open', PChar(FileName), nil, nil, SW_RESTORE);
 end;
 
