@@ -115,7 +115,8 @@ uses
   Templater in 'Units\Templater.pas',
   TemplaterInternal in 'Units\TemplaterInternal.pas',
   SearchPresets in 'Units\SearchPresets.pas',
-  UserData in 'Units\UserData.pas';
+  UserData in 'Units\UserData.pas',
+  xmlUtils in 'Units\xmlUtils.pas';
 
 {$R *.res}
 

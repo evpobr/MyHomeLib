@@ -51,7 +51,8 @@ implementation
 uses
   msxmldom,
   XMLConst,
-  SysUtils;
+  SysUtils,
+  xmlUtils;
 
 resourcestring
   rstrInvalidPresetName = 'Неверное название пресета';
@@ -90,29 +91,13 @@ end;
 procedure TSearchPresets.Load(const FileName: string);
 var
   xmlDoc : IXMLDOMDocument;
-  parseError: IXMLDOMParseError;
   xmlPresets: IXMLDOMNodeList;
   xmlPreset: IXMLDOMNode;
   xmlFields: IXMLDOMNodeList;
   xmlField: IXMLDOMNode;
   preset: TSearchPreset;
 begin
-  xmlDoc := msxmldom.CreateDOMDocument;
-  xmlDoc.async := False;
-
-  if not xmlDoc.load(FileName) then
-  begin
-    parseError := xmlDoc.parseError;
-
-    raise Exception.CreateFmt(
-      '%s%s%s: %d%s%s',
-      [
-      parseError.reason, SLineBreak,
-      SLine, parseError.line, SLineBreak,
-      Copy(parseError.srcText, 1, 40)
-      ]
-    );
-  end;
+  xmlDoc := TMSXMLHelper.LoadFromZFile(FileName);
 
   xmlPresets := xmlDoc.selectNodes('/' + PRESETS_ELEMENT + '/' + PRESET_ELEMENT);
   xmlPreset := xmlPresets.nextNode;
@@ -136,7 +121,6 @@ end;
 procedure TSearchPresets.Save(const FileName: string);
 var
   xmlDoc : IXMLDOMDocument;
-  xmlPI: IXMLDOMProcessingInstruction;
   xmlPresets: IXMLDOMElement;
   i: Integer;
   preset: TSearchPreset;
@@ -145,12 +129,7 @@ var
   xmlValue: IXMLDOMCDATASection;
   presetField: TPair<string, string>;
 begin
-  xmlDoc := msxmldom.CreateDOMDocument;
-  xmlDoc.async := False;
-
-  // Create a processing instruction targeted for xml.
-  xmlPI := xmlDoc.createProcessingInstruction('xml', 'version="1.0" encoding="UTF-8"');
-  xmlDoc.appendChild(xmlPI);
+  xmlDoc := TMSXMLHelper.CreateEmptyDocument;
 
   // Create the root element (i.e., the documentElement).
   xmlPresets := xmlDoc.createElement(PRESETS_ELEMENT);
@@ -177,7 +156,7 @@ begin
     xmlPresets.appendChild(xmlPreset);
   end;
 
-  xmlDoc.save(FileName);
+  TMSXMLHelper.SaveToZFile(xmlDoc, FileName);
 end;
 
 function TSearchPresets.PresetByName(const presetName: string): Integer;

@@ -253,6 +253,7 @@
 			<DCCReference Include="Units\TemplaterInternal.pas"/>
 			<DCCReference Include="Units\SearchPresets.pas"/>
 			<DCCReference Include="Units\UserData.pas"/>
+			<DCCReference Include="Units\xmlUtils.pas"/>
 			<RcItem Include="Resources\Images\16x16\star_small.png">
 				<ResourceType>RCData</ResourceType>
 				<ResourceId>smallStar</ResourceId>

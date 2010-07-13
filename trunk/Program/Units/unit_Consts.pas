@@ -72,7 +72,7 @@ const
   DOWNLOADS_STORE_FILENAME = 'downloads.sav';
   DOWNLOAD_ERRORLOG_FILENAME = 'download_errors.log';
   COLLECTIONS_FILENAME = 'collections.ini';
-  PRESETS_FILENAME = 'presets.xml';
+  PRESETS_FILENAME = 'presets.cxml';
 
   //
   // Значения полей по умолчанию

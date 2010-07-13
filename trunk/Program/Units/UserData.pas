@@ -3,6 +3,7 @@ unit UserData;
 interface
 
 uses
+  Classes,
   msxml,
   ComObj,
   Generics.Collections;
@@ -124,7 +125,8 @@ implementation
 uses
   msxmldom,
   XMLConst,
-  SysUtils;
+  SysUtils,
+  xmlUtils;
 
 { TBookInfo }
 
@@ -451,28 +453,11 @@ end;
 
 procedure TUserData.Load(const FileName: string);
 var
-  doc: IXMLDOMDocument;
-  parseError: IXMLDOMParseError;
+  xmlDoc: IXMLDOMDocument;
   xmlRoot: IXMLDOMNode;
 begin
-  doc := msxmldom.CreateDOMDocument;
-  doc.async := False;
-
-  if not doc.load(FileName) then
-  begin
-    parseError := doc.parseError;
-
-    raise Exception.CreateFmt(
-      '%s%s%s: %d%s%s',
-      [
-      parseError.reason, SLineBreak,
-      SLine, parseError.line, SLineBreak,
-      Copy(parseError.srcText, 1, 40)
-      ]
-    );
-  end;
-
-  xmlRoot := doc.selectSingleNode(ELEMENT_USERDATA);
+  xmlDoc := TMSXMLHelper.LoadFromZFile(FileName);
+  xmlRoot := xmlDoc.selectSingleNode(ELEMENT_USERDATA);
 
   if Assigned(xmlRoot) then
   begin
@@ -484,15 +469,9 @@ end;
 procedure TUserData.Save(const FileName: string);
 var
   xmlDoc : IXMLDOMDocument;
-  xmlPI: IXMLDOMProcessingInstruction;
   xmlRoot: IXMLDOMElement;
 begin
-  xmlDoc := msxmldom.CreateDOMDocument;
-  xmlDoc.async := False;
-
-  // Create a processing instruction targeted for xml.
-  xmlPI := xmlDoc.createProcessingInstruction('xml', 'version="1.0" encoding="UTF-8"');
-  xmlDoc.appendChild(xmlPI);
+  xmlDoc := TMSXMLHelper.CreateEmptyDocument;
 
   // Create the root element (i.e., the documentElement).
   xmlRoot := xmlDoc.createElement(ELEMENT_USERDATA);
@@ -502,7 +481,7 @@ begin
 
   xmlDoc.appendChild(xmlRoot);
 
-  xmlDoc.save(FileName);
+  TMSXMLHelper.SaveToZFile(xmlDoc, FileName);
 end;
 
 end.
