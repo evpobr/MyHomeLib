@@ -7,6 +7,10 @@
   * Authors Aleksey Penkov   alex.penkov@gmail.com
   *         Nick Rymanov     nrymanov@gmail.com
   *
+  * $LastChangedDate$
+  * $LastChangedRevision$
+  * $LastChangedBy$
+  *
   * History
   * NickR 06.05.2010    ƒл€ уменьшени€ размера dfm и единообрази€ интерфейса некоторые компоненты
   *                     заменены своими верси€ми с заранее настроенными свойствами.
@@ -1399,11 +1403,22 @@ begin
   Screen.Cursor := crHourGlass;
 
   ClearLabels(PAGE_ALL, True);
-  tvGenres.Clear;
-  tvBooksG.Clear;
-  tvBooksSR.Clear;
-  tvBooksS.Clear;
-  tvBooksG.Clear;
+
+  BookTreeStatus := bsBusy;
+  try
+    tvAuthors.Clear;
+    tvBooksA.Clear;
+    tvSeries.Clear;
+    tvBooksS.Clear;
+    tvGenres.Clear;
+    tvBooksG.Clear;
+    tvBooksSR.Clear;
+    tvBooksG.Clear;
+    tvBooksF.Clear;
+  finally
+    BookTreeStatus := bsFree;
+  end;
+
   edLocateAuthor.Text := '';
   edLocateSeries.Text := '';
 
@@ -1413,10 +1428,6 @@ begin
   if DMUser.tblBases.IsEmpty then
   begin
     frmMain.Caption := 'MyHomeLib';
-    tvAuthors.Clear;
-    tvSeries.Clear;
-    tvBooksA.Clear;
-    tvBooksF.Clear;
     Screen.Cursor := crDefault;
 
     if not ShowNCWizard then
@@ -1922,42 +1933,57 @@ begin
       begin
         ipnlAuthors.Clear;
         if Full then
-          lblAuthor.Caption := '';
+        begin
+          lblAuthor.Caption := '...';
+          lblBooksTotalA.Caption := '()';
+        end;
       end;
 
     PAGE_SERIES:
       begin
         ipnlSeries.Clear;
-        lblSeries.Caption := '...';
-        lblBooksTotalS.Caption := '()';
+        if Full then
+        begin
+          lblSeries.Caption := '...';
+          lblBooksTotalS.Caption := '()';
+        end;
       end;
 
     PAGE_GENRES:
       begin
         ipnlGenres.Clear;
-        lblGenreTitle.Caption := '...';
-        lblBooksTotalG.Caption := '()';
+        if Full then
+        begin
+          lblGenreTitle.Caption := '...';
+          lblBooksTotalG.Caption := '()';
+        end;
       end;
 
     PAGE_FAVORITES:
       begin
         ipnlFavorites.Clear;
+        if Full then
+        begin
+          lblGroups.Caption := '...';
+          lblBooksTotalF.Caption := '()';
+        end;
       end;
 
     PAGE_SEARCH:
       begin
         ipnlSearch.Clear;
-        lblTotalBooksFL.Caption := '()';
+        if Full then
+          lblTotalBooksFL.Caption := '()';
       end;
 
     PAGE_ALL:
       begin
-        ClearLabels(PAGE_AUTHORS, True);
-        ClearLabels(PAGE_SERIES, True);
-        ClearLabels(PAGE_GENRES, True);
-        ClearLabels(PAGE_FAVORITES, True);
-        ClearLabels(PAGE_FILTER, True);
-        ClearLabels(PAGE_SEARCH, True);
+        ClearLabels(PAGE_AUTHORS, Full);
+        ClearLabels(PAGE_SERIES, Full);
+        ClearLabels(PAGE_GENRES, Full);
+        ClearLabels(PAGE_FAVORITES, Full);
+        ClearLabels(PAGE_FILTER, Full);
+        ClearLabels(PAGE_SEARCH, Full);
       end;
   end;
 end;
