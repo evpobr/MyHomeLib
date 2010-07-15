@@ -95,7 +95,7 @@ const
   PAGE_GENRES = 2;      // жанры
   PAGE_SEARCH = 3;      // поиск
   PAGE_FAVORITES = 4;   // группы
-  PAGE_FILTER = 5;      // фильтр
+  /// REMOVE PAGE_FILTER = 5;      // фильтр
   PAGE_DOWNLOAD = 6;    // фильтр
 
   PAGE_ALL = 99;        // все вкладки
