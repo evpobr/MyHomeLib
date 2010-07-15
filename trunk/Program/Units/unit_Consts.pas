@@ -8,6 +8,8 @@
   * Description         Глобальные константы
   * Author(s)           Nick Rymanov (nrymanov@gmail.com)
   *
+  * $Id$
+  *
   * History
   * NickR 15.02.2010    Код переформатирован
   *
