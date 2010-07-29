@@ -3,8 +3,8 @@ object frmEditor: TfrmEditor
   Top = 0
   BorderIcons = [biSystemMenu]
   Caption = #1042#1074#1077#1076#1080#1090#1077' '#1090#1077#1082#1089#1090' '#1074#1099#1088#1072#1078#1077#1085#1080#1103
-  ClientHeight = 200
-  ClientWidth = 350
+  ClientHeight = 202
+  ClientWidth = 358
   Color = clBtnFace
   Constraints.MinHeight = 236
   Constraints.MinWidth = 366
@@ -21,8 +21,8 @@ object frmEditor: TfrmEditor
     AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 344
-    Height = 105
+    Width = 352
+    Height = 107
     Align = alClient
     ScrollBars = ssVertical
     TabOrder = 0
@@ -30,8 +30,8 @@ object frmEditor: TfrmEditor
   object RzGroupBox4: TPanel
     AlignWithMargins = True
     Left = 3
-    Top = 111
-    Width = 344
+    Top = 113
+    Width = 352
     Height = 45
     Margins.Top = 0
     Align = alBottom
@@ -130,8 +130,8 @@ object frmEditor: TfrmEditor
   end
   object pnButtons: TPanel
     Left = 0
-    Top = 159
-    Width = 350
+    Top = 161
+    Width = 358
     Height = 41
     Align = alBottom
     BevelOuter = bvNone
@@ -139,10 +139,10 @@ object frmEditor: TfrmEditor
     ShowCaption = False
     TabOrder = 2
     DesignSize = (
-      350
+      358
       41)
     object btnOk: TButton
-      Left = 186
+      Left = 194
       Top = 10
       Width = 75
       Height = 25
@@ -153,7 +153,7 @@ object frmEditor: TfrmEditor
       TabOrder = 0
     end
     object btnCancel: TButton
-      Left = 267
+      Left = 275
       Top = 10
       Width = 75
       Height = 25

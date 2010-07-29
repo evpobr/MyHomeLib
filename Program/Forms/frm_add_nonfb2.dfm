@@ -2,6 +2,7 @@ object frmAddnonfb2: TfrmAddnonfb2
   Left = 0
   Top = 0
   HelpContext = 129
+  BorderIcons = [biSystemMenu, biMaximize]
   Caption = #1044#1086#1073#1072#1074#1083#1077#1085#1080#1077' '#1082#1085#1080#1075' '#1074' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
   ClientHeight = 531
   ClientWidth = 752
@@ -14,7 +15,6 @@ object frmAddnonfb2: TfrmAddnonfb2
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  PopupMenu = pmMain
   Position = poOwnerFormCenter
   OnCloseQuery = FormCloseQuery
   OnShow = FormShow
@@ -82,10 +82,6 @@ object frmAddnonfb2: TfrmAddnonfb2
     end
     object tsBookInfo: TTabSheet
       Caption = #1050#1085#1080#1075#1072
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         738
         461)
@@ -549,10 +545,6 @@ object frmAddnonfb2: TfrmAddnonfb2
     end
     object tsFBD: TTabSheet
       Caption = 'FBD'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         738
         461)

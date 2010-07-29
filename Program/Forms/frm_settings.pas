@@ -7,6 +7,12 @@
   * Authors Aleksey Penkov   alex.penkov@gmail.com
   *         Nick Rymanov     nrymanov@gmail.com
   *         Matvienko Sergei matv84@mail.ru
+  * Created                  20.08.2008
+  * Description              
+  *
+  * $Id$
+  *
+  * History
   *
   ****************************************************************************** *)
 

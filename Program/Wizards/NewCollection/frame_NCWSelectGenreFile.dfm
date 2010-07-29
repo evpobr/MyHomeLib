@@ -21,7 +21,6 @@ inherited frameNCWSelectGenreFile: TframeNCWSelectGenreFile
   end
   inherited pnTitle: TPanel
     Width = 460
-    TabOrder = 1
     ExplicitWidth = 460
     inherited lblTitle: TLabel
       Width = 432
@@ -46,7 +45,7 @@ inherited frameNCWSelectGenreFile: TframeNCWSelectGenreFile
     Align = alTop
     BevelOuter = bvNone
     Constraints.MinWidth = 460
-    TabOrder = 0
+    TabOrder = 1
     DesignSize = (
       460
       92)

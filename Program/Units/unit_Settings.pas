@@ -4,11 +4,13 @@
   *
   * Copyright (C) 2008-2010 Aleksey Penkov
   *
-  * Created             12.02.2010
-  * Description
   * Author(s)           Nick Rymanov (nrymanov@gmail.com)
   *                     Aleksey Penkov  alex.penkov@gmail.com
   *                     Matvienko Sergei  matv84@mail.ru
+  * Created             12.02.2010
+  * Description
+  *
+  * $Id$
   *
   * History
   * NickR 15.02.2010    Код переформатирован
@@ -298,7 +300,7 @@ type
     property ShowBookAnnotation: Boolean read FShowBookAnnotation write FShowBookAnnotation;
 
     property AppLanguage: TAppLanguage read FAppLanguage write FAppLanguage;
-    property DoNotShowDeleted: Boolean read FDoNotShowDeleted write FDoNotShowDeleted;
+    property HideDeletedBooks: Boolean read FDoNotShowDeleted write FDoNotShowDeleted;
     property ShowLocalOnly: Boolean read FShowLocalOnly write FShowLocalOnly;
     property ShowSubGenreBooks: Boolean read FShowSubGenreBooks write FShowSubGenreBooks;
 

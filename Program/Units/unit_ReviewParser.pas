@@ -4,9 +4,11 @@
   *
   * Copyright (C) 2008-2010 Aleksey Penkov
   *
+  * Author(s)           eg (http://forum.home-lib.net)
   * Created             12.02.2010
   * Description         A parser for Lib.rus.ec book reviews
-  * Author(s)           eg (http://forum.home-lib.net)
+  *
+  * $Id$
   *
   * History
   * NickR 15.02.2010    Код переформатирован

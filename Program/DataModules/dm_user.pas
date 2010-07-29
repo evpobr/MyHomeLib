@@ -4,8 +4,12 @@
   *
   * Copyright (C) 2008-2010 Aleksey Penkov
   *
-  * Authors Aleksey Penkov   alex.penkov@gmail.com
-  *         Nick Rymanov     nrymanov@gmail.com
+  * Authors             Aleksey Penkov   alex.penkov@gmail.com
+  *                     Nick Rymanov     nrymanov@gmail.com
+  * Created             
+  * Description         
+  *
+  * $Id$
   *
   * History
   * NickR 02.03.2010    Код переформатирован

@@ -23,9 +23,9 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 455
     Height = 385
-    ActivePage = tsDevices
+    ActivePage = tsFileSort
     Align = alClient
-    TabOrder = 0
+    TabOrder = 1
     object tsDevices: TTabSheet
       HelpContext = 143
       Caption = 'tsDevices'
@@ -512,7 +512,7 @@ object frmSettings: TfrmSettings
           Width = 75
           Height = 25
           Caption = #1048#1079#1084#1077#1085#1080#1090#1100
-          TabOrder = 0
+          TabOrder = 5
           OnClick = SetDefaultFontColor
         end
         object pnDeletedFontColor: TPanel
@@ -530,7 +530,7 @@ object frmSettings: TfrmSettings
           Font.Name = 'Tahoma'
           Font.Style = []
           ParentFont = False
-          TabOrder = 1
+          TabOrder = 8
         end
         object pnDownloadedFontColor: TPanel
           Left = 9
@@ -547,7 +547,7 @@ object frmSettings: TfrmSettings
           Font.Name = 'Tahoma'
           Font.Style = []
           ParentFont = False
-          TabOrder = 2
+          TabOrder = 6
         end
         object edFontSize: TEdit
           Left = 154
@@ -556,7 +556,7 @@ object frmSettings: TfrmSettings
           Height = 21
           Alignment = taRightJustify
           NumbersOnly = True
-          TabOrder = 3
+          TabOrder = 0
           Text = '10'
           OnExit = CheckNumValue
         end
@@ -567,7 +567,7 @@ object frmSettings: TfrmSettings
           Height = 21
           Alignment = taRightJustify
           NumbersOnly = True
-          TabOrder = 4
+          TabOrder = 2
           Text = '10'
           OnExit = CheckNumValue
         end
@@ -580,7 +580,7 @@ object frmSettings: TfrmSettings
           Min = 6
           Max = 20
           Position = 10
-          TabOrder = 5
+          TabOrder = 1
         end
         object udShortFontSize: TUpDown
           Left = 201
@@ -591,7 +591,7 @@ object frmSettings: TfrmSettings
           Min = 6
           Max = 20
           Position = 10
-          TabOrder = 6
+          TabOrder = 3
         end
         object pnDefaultFontColor: TPanel
           Left = 9
@@ -608,7 +608,7 @@ object frmSettings: TfrmSettings
           Font.Name = 'Tahoma'
           Font.Style = []
           ParentFont = False
-          TabOrder = 7
+          TabOrder = 4
         end
         object btnDownloadedFontColor: TButton
           Left = 223
@@ -616,7 +616,7 @@ object frmSettings: TfrmSettings
           Width = 75
           Height = 25
           Caption = #1048#1079#1084#1077#1085#1080#1090#1100
-          TabOrder = 8
+          TabOrder = 7
           OnClick = SetCustomFontColor
         end
         object btnDeletedFontColor: TButton
@@ -661,7 +661,7 @@ object frmSettings: TfrmSettings
           Width = 75
           Height = 25
           Caption = #1048#1079#1084#1077#1085#1080#1090#1100
-          TabOrder = 0
+          TabOrder = 1
           OnClick = SetBackgroundColor
         end
         object btnCS: TButton
@@ -670,7 +670,7 @@ object frmSettings: TfrmSettings
           Width = 75
           Height = 25
           Caption = #1048#1079#1084#1077#1085#1080#1090#1100
-          TabOrder = 1
+          TabOrder = 3
           OnClick = SetBackgroundColor
         end
         object btnASG: TButton
@@ -679,7 +679,7 @@ object frmSettings: TfrmSettings
           Width = 75
           Height = 25
           Caption = #1048#1079#1084#1077#1085#1080#1090#1100
-          TabOrder = 2
+          TabOrder = 5
           OnClick = SetBackgroundColor
         end
         object pnASG: TPanel
@@ -698,7 +698,7 @@ object frmSettings: TfrmSettings
           Font.Style = []
           ParentBackground = False
           ParentFont = False
-          TabOrder = 3
+          TabOrder = 4
         end
         object pnBS: TPanel
           Left = 9
@@ -716,7 +716,7 @@ object frmSettings: TfrmSettings
           Font.Style = []
           ParentBackground = False
           ParentFont = False
-          TabOrder = 4
+          TabOrder = 8
         end
         object pnCA: TPanel
           Left = 9
@@ -728,7 +728,7 @@ object frmSettings: TfrmSettings
           Caption = #1040#1074#1090#1086#1088
           Color = clWhite
           ParentBackground = False
-          TabOrder = 5
+          TabOrder = 0
         end
         object pnCS: TPanel
           Left = 9
@@ -740,7 +740,7 @@ object frmSettings: TfrmSettings
           Caption = #1057#1077#1088#1080#1103
           Color = clWhite
           ParentBackground = False
-          TabOrder = 6
+          TabOrder = 2
         end
         object pnCT: TPanel
           Left = 9
@@ -758,7 +758,7 @@ object frmSettings: TfrmSettings
           Font.Style = []
           ParentBackground = False
           ParentFont = False
-          TabOrder = 7
+          TabOrder = 6
         end
         object btnCT: TButton
           Left = 223
@@ -766,7 +766,7 @@ object frmSettings: TfrmSettings
           Width = 75
           Height = 25
           Caption = #1048#1079#1084#1077#1085#1080#1090#1100
-          TabOrder = 8
+          TabOrder = 7
           OnClick = SetBackgroundColor
         end
         object btnBS: TButton
@@ -1371,7 +1371,6 @@ object frmSettings: TfrmSettings
           Color = clBtnFace
           ParentColor = False
           TabOrder = 3
-          ExplicitTop = 114
         end
         object cbDeleteDeleted: TCheckBox
           AlignWithMargins = True
@@ -1385,7 +1384,6 @@ object frmSettings: TfrmSettings
           Color = clBtnFace
           ParentColor = False
           TabOrder = 4
-          ExplicitTop = 137
         end
         object cbAutoLoadReview: TCheckBox
           AlignWithMargins = True
@@ -1399,7 +1397,6 @@ object frmSettings: TfrmSettings
           Color = clBtnFace
           ParentColor = False
           TabOrder = 5
-          ExplicitTop = 160
         end
         object cbDeleteFiles: TCheckBox
           AlignWithMargins = True
@@ -1413,7 +1410,6 @@ object frmSettings: TfrmSettings
           Color = clBtnFace
           ParentColor = False
           TabOrder = 6
-          ExplicitTop = 183
         end
         object cbOverwriteFB2Info: TCheckBox
           AlignWithMargins = True
@@ -1427,7 +1423,6 @@ object frmSettings: TfrmSettings
           Caption = #1055#1077#1088#1077#1079#1072#1087#1080#1089#1099#1074#1072#1090#1100' '#1079#1072#1075#1086#1083#1086#1074#1086#1082' fb2'
           TabOrder = 7
           OnClick = cbOverwriteFB2InfoClick
-          ExplicitTop = 212
         end
         object edTitleTemplate: TEdit
           Left = 152
@@ -1686,7 +1681,7 @@ object frmSettings: TfrmSettings
     BevelOuter = bvNone
     Caption = 'pnButtons'
     ShowCaption = False
-    TabOrder = 1
+    TabOrder = 2
     DesignSize = (
       617
       41)
@@ -1735,7 +1730,7 @@ object frmSettings: TfrmSettings
     HideSelection = False
     Indent = 19
     RowSelect = True
-    TabOrder = 2
+    TabOrder = 0
     OnChange = tvSectionsChange
     Items.NodeData = {
       03070000003E0000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF000000

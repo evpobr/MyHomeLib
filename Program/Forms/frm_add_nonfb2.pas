@@ -8,6 +8,8 @@
   * Description
   * Author(s)           Aleksey Penkov  alex.penkov@gmail.com
   *
+  * $Id$
+  *
   * History
   * NickR 02.03.2010    Код переформатирован
   *
@@ -169,7 +171,8 @@ uses
   unit_Settings,
   unit_MHLHelpers,
   unit_Helpers,
-  frm_author_list;
+  frm_author_list,
+  dm_collection;
 
 {$R *.dfm}
 
@@ -202,8 +205,8 @@ procedure TfrmAddnonfb2.btnCopyToFamilyClick(Sender: TObject);
 var
   Author: TAuthorRecord;
 begin
-  Author.Last := trim(edFileName.SelText);
-  alBookAuthors.AddRow(Author);
+  Author.Last := Trim(edFileName.SelText);
+  alBookAuthors.AddAuthor(Author);
 end;
 
 procedure TfrmAddnonfb2.btnCopyToNameClick(Sender: TObject);
@@ -220,12 +223,12 @@ end;
 
 procedure TfrmAddnonfb2.btnCopyToSeriesClick(Sender: TObject);
 begin
-  cbSeries.Text := trim(edFileName.SelText);
+  cbSeries.Text := Trim(edFileName.SelText);
 end;
 
 procedure TfrmAddnonfb2.btnCopyToTitleClick(Sender: TObject);
 begin
-  edT.Text := trim(edFileName.SelText);
+  edT.Text := Trim(edFileName.SelText);
 end;
 
 procedure TfrmAddnonfb2.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -251,7 +254,7 @@ begin
   ScanFolder;
 
   FillLists;
-  frmMain.FillGenresTree(frmGenreTree.tvGenresTree, True);
+  FillGenresTree(frmGenreTree.tvGenresTree, True);
   pcPages.ActivePageIndex := 0;
 
   FBD.CoverSizeCode := 4;
@@ -459,11 +462,19 @@ end;
 
 procedure TfrmAddnonfb2.btnAddAuthorFromListClick(Sender: TObject);
 var
+  FFiltered: Boolean;
   Row: TAuthorRecord;
   Data: PAuthorData;
   Node: PVirtualNode;
 begin
-  frmMain.FillAuthorTree(frmAuthorList.tvAuthorList, True);
+  FFiltered := DMCollection.Authors.Filtered;
+  DMCollection.Authors.Filtered := False;
+  try
+    FillAuthorTree(frmAuthorList.tvAuthorList);
+  finally
+    DMCollection.Authors.Filtered := FFiltered;
+  end;
+
   if frmAuthorList.ShowModal = mrOk then
   begin
     Node := frmAuthorList.tvAuthorList.GetFirstSelected;
@@ -475,7 +486,7 @@ begin
       Row.First := Data^.FirstName;
       Row.Middle := Data^.MiddleName;
 
-      alBookAuthors.AddRow(Row);
+      alBookAuthors.AddAuthor(Row);
 
       Node := frmAuthorList.tvAuthorList.GetNextSelected(Node);
     end;

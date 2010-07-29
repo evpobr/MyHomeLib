@@ -4,9 +4,11 @@
   *
   * Copyright (C) 2008-2010 Aleksey Penkov
   *
+  * Author(s)           Aleksey Penkov  alex.penkov@gmail.com
   * Created             12.02.2010
   * Description
-  * Author(s)           Aleksey Penkov  alex.penkov@gmail.com
+  *
+  * $Id$
   *
   * History
   * NickR 15.02.2010    Код переформатирован

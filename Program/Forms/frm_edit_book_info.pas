@@ -2,10 +2,17 @@
   *
   * MyHomeLib
   *
-  * Version 0.9
-  * 20.08.2008
-  * Copyright (c) Aleksey Penkov  alex.penkov@gmail.com
-  *               Nick Rymanov    nrymanov@gmail.com
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Authors Aleksey Penkov   alex.penkov@gmail.com
+  *         Nick Rymanov     nrymanov@gmail.com
+  * Created                  20.08.2008
+  * Description              
+  *
+  * $Id$
+  *
+  * History
+  *
   ****************************************************************************** *)
 
 {
@@ -17,8 +24,16 @@ unit frm_edit_book_info;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Mask, ExtCtrls, ComCtrls, VirtualTrees;
+  Windows,
+  Messages,
+  Classes,
+  Graphics,
+  Controls,
+  StdCtrls,
+  ExtCtrls,
+  ComCtrls,
+  Forms,
+  Dialogs;
 
 type
   TfrmEditBookInfo = class(TForm)
@@ -56,11 +71,12 @@ type
     procedure btnSaveClick(Sender: TObject);
     procedure btnNextBookClick(Sender: TObject);
     procedure btnPrevBookClick(Sender: TObject);
+
   private
-    FChanged: boolean;
+    FChanged: Boolean;
 
     procedure FillLists;
-    function SaveData: boolean;
+    function SaveData: Boolean;
   public
 
   end;
@@ -77,6 +93,8 @@ uses
   unit_globals,
   frm_main,
   frm_edit_author,
+  unit_TreeUtils,
+  VirtualTrees,
   unit_Consts;
 
 {$R *.dfm}
@@ -85,7 +103,7 @@ procedure TfrmEditBookInfo.FormShow(Sender: TObject);
 begin
   FChanged := False;
   if frmGenreTree.tvGenresTree.GetFirstSelected = nil then
-    frmMain.FillGenresTree(frmGenreTree.tvGenresTree);
+    FillGenresTree(frmGenreTree.tvGenresTree);
   FillLists;
 end;
 
@@ -200,14 +218,27 @@ begin
 end;
 
 procedure TfrmEditBookInfo.FillLists;
+var
+  FFiltered: Boolean;
 begin
   cbSeries.Items.Clear;
-  DMCollection.Series.First;
-  DMCollection.Series.Next;
-  while not DMCollection.Series.Eof do
-  begin
-    cbSeries.Items.Add(DMCollection.Series[SERIE_TITLE_FIELD]);
-    DMCollection.Series.Next;
+
+  DMCollection.Series.DisableControls;
+  try
+    FFiltered := DMCollection.Series.Filtered;
+    DMCollection.Series.Filtered := False;
+    try
+      DMCollection.Series.First;
+      while not DMCollection.Series.Eof do
+      begin
+        cbSeries.Items.Add(DMCollection.Series[SERIE_TITLE_FIELD]);
+        DMCollection.Series.Next;
+      end;
+    finally
+      DMCollection.Series.Filtered := FFiltered;
+    end;
+  finally
+    DMCollection.Series.EnableControls;
   end;
 end;
 

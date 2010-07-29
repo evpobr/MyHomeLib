@@ -4,9 +4,9 @@
   *
   * Copyright (C) 2008-2010 Aleksey Penkov
   *
+  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
   * Created             12.02.2010
   * Description         Глобальные константы
-  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
   *
   * $Id$
   *

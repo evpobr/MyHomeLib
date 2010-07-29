@@ -2,13 +2,19 @@
   *
   * MyHomeLib
   *
-  * Version 0.9
-  * 20.08.2008
-  * Copyright (c) Aleksey Penkov  alex.penkov@gmail.com
-  *               Nick Rymanov    nrymanov@gmail.com
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Authors Aleksey Penkov   alex.penkov@gmail.com
+  *         Nick Rymanov     nrymanov@gmail.com
+  * Created                  20.08.2008
+  * Description              
+  *
+  * $Id$
   *
   * ВНИМАНИЕ!!! Эта форма является базовой для TfrmEditAuthorDataEx.
   *             Любые изменения, сделанные в этой форме, будут влиять и на производную.
+  *
+  * History
   *
   ****************************************************************************** *)
 

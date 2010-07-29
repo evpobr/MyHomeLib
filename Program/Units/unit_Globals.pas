@@ -4,10 +4,12 @@
   *
   * Copyright (C) 2008-2010 Aleksey Penkov
   *
-  * Created             12.02.2010
-  * Description
   * Author(s)           Aleksey Penkov  alex.penkov@gmail.com
   *                     Nick Rymanov (nrymanov@gmail.com)
+  * Created             12.02.2010
+  * Description
+  *
+  * $Id$
   *
   * History
   * NickR 15.02.2010    Код переформатирован
@@ -758,7 +760,7 @@ begin
     ' ',
     function(const Author: TAuthorData): string
     begin
-      Result := '<a>' + Author.GetFullName(True) + '</a>';
+      Result := Format('<a href="%d">%s</a>', [Author.AuthorID, Author.GetFullName(True)]);
     end
   );
 end;
@@ -807,7 +809,7 @@ begin
     ' ',
     function(const genre: TGenreData): string
     begin
-      Result := '<a>' + genre.GenreAlias + '</a>';
+      Result := Format('<a href="%s">%s</a>', [genre.GenreCode, genre.GenreAlias]);
     end
   );
 end;

@@ -4,9 +4,11 @@
   *
   * Copyright (C) 2008-2010 Aleksey Penkov
   *
+  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
   * Created             12.02.2010
   * Description
-  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
+  *
+  * $Id$
   *
   * History
   * NickR 15.02.2010    Код переформатирован
@@ -20,6 +22,7 @@ interface
 uses
   Windows,
   Classes,
+  StdCtrls,
   Dialogs,
   Graphics,
   Generics.Collections;
@@ -34,6 +37,8 @@ type
   public
     constructor Create; overload;
   end;
+
+procedure SetTextNoChange(editControl: TCustomEdit; const newText: string);
 
 function GetFileSize(const FileName: string): Integer;
 
@@ -156,6 +161,21 @@ begin
   QuoteChar := '"';
   Delimiter := ';';
   StrictDelimiter := True;
+end;
+
+// ============================================================================
+type
+  THackEdit = class(TCustomEdit);
+
+procedure SetTextNoChange(editControl: TCustomEdit; const newText: string);
+var
+  FOnChange: TNotifyEvent;
+begin
+  Assert(Assigned(editControl));
+
+  FOnChange := THackEdit(editControl).OnChange;
+  editControl.Text := newText;
+  THackEdit(editControl).OnChange := FOnChange;
 end;
 
 // ============================================================================

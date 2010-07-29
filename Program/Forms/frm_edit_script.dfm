@@ -48,7 +48,7 @@ object frmEditScript: TfrmEditScript
     BevelOuter = bvNone
     Caption = 'pnButtons'
     ShowCaption = False
-    TabOrder = 0
+    TabOrder = 4
     DesignSize = (
       346
       41)
@@ -81,21 +81,21 @@ object frmEditScript: TfrmEditScript
     Top = 119
     Width = 330
     Height = 21
-    TabOrder = 1
+    TabOrder = 3
   end
   object edPath: TMHLAutoCompleteEdit
     Left = 8
     Top = 73
     Width = 249
     Height = 21
-    TabOrder = 2
+    TabOrder = 1
   end
   object edTitle: TEdit
     Left = 8
     Top = 27
     Width = 330
     Height = 21
-    TabOrder = 3
+    TabOrder = 0
   end
   object btnBrowse: TButton
     Left = 263
@@ -103,7 +103,7 @@ object frmEditScript: TfrmEditScript
     Width = 75
     Height = 25
     Caption = #1054#1073'&'#1079#1086#1088'...'
-    TabOrder = 4
+    TabOrder = 2
     OnClick = edPathButtonClick
   end
 end

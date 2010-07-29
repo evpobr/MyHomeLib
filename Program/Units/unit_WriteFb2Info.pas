@@ -4,10 +4,12 @@
   *
   * Copyright (C) 2008-2010 Aleksey Penkov
   *
-  * Created             12.02.2010
-  * Description         Запись в fb2info информации из базы
   * Author(s)           Matvienko Sergei  matv84@mail.ru
   *                     Aleksey Penkov  alex.penkov@gmail.com
+  * Created             12.02.2010
+  * Description         Запись в fb2info информации из базы
+  *
+  * $Id$
   *
   * History
   * NickR 15.02.2010    Код переформатирован

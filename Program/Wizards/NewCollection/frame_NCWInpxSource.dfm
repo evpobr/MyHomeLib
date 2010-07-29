@@ -40,7 +40,6 @@ inherited frameNCWInpxSource: TframeNCWInpxSource
     Height = 230
     Align = alClient
     TabOrder = 1
-    ExplicitHeight = 273
     object rbLocal: TRadioButton
       AlignWithMargins = True
       Left = 14
@@ -90,7 +89,6 @@ inherited frameNCWInpxSource: TframeNCWInpxSource
       TabOrder = 3
       ViewStyle = vsReport
       OnChange = lvCollectionsChange
-      ExplicitHeight = 183
     end
     object MHLSimplePanel1: TMHLSimplePanel
       Left = 0

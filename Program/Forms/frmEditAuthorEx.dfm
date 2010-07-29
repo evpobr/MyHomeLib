@@ -1,11 +1,13 @@
 inherited frmEditAuthorDataEx: TfrmEditAuthorDataEx
   ClientHeight = 195
-  ExplicitHeight = 221
+  ExplicitWidth = 364
+  ExplicitHeight = 227
   PixelsPerInch = 96
   TextHeight = 13
   inherited pnButtons: TPanel
     Top = 154
     TabOrder = 4
+    ExplicitTop = 154
   end
   object gbAddNew: TGroupBox [4]
     AlignWithMargins = True

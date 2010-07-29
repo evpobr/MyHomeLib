@@ -27,7 +27,7 @@ object frmBookDetails: TfrmBookDetails
     Align = alClient
     DoubleBuffered = True
     ParentDoubleBuffered = False
-    TabOrder = 0
+    TabOrder = 1
     object tsFileInfo: TTabSheet
       Caption = #1060#1072#1081#1083
       ImageIndex = 2
@@ -58,10 +58,6 @@ object frmBookDetails: TfrmBookDetails
     end
     object tsInfo: TTabSheet
       Caption = 'Fb2 '#1080#1085#1092#1086
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object imgCover: TImage
         AlignWithMargins = True
         Left = 3
@@ -87,7 +83,7 @@ object frmBookDetails: TfrmBookDetails
         Align = alBottom
         ReadOnly = True
         ScrollBars = ssVertical
-        TabOrder = 0
+        TabOrder = 1
         WantReturns = False
       end
       object lvInfo: TListView
@@ -111,7 +107,7 @@ object frmBookDetails: TfrmBookDetails
         ReadOnly = True
         RowSelect = True
         PopupMenu = pmBookInfo
-        TabOrder = 1
+        TabOrder = 0
         ViewStyle = vsReport
       end
     end
@@ -176,7 +172,7 @@ object frmBookDetails: TfrmBookDetails
     Height = 37
     Align = alBottom
     BevelOuter = bvNone
-    TabOrder = 1
+    TabOrder = 2
     DesignSize = (
       628
       37)
@@ -208,7 +204,7 @@ object frmBookDetails: TfrmBookDetails
     Padding.Bottom = 6
     ParentBackground = False
     ShowCaption = False
-    TabOrder = 2
+    TabOrder = 0
     object lblAuthors: TLabel
       AlignWithMargins = True
       Left = 9
