@@ -104,7 +104,6 @@ type
     miTools: TMenuItem;
     miSettings: TMenuItem;
     N5: TMenuItem;
-    N9: TMenuItem;
     miCollSelect: TMenuItem;
     miDeleteCol: TMenuItem;
     N18: TMenuItem;
@@ -234,7 +233,6 @@ type
     N35: TMenuItem;
     mi_dwnl_Delete: TMenuItem;
     ilToolBar_Disabled: TImageList;
-    N26: TMenuItem;
     N34: TMenuItem;
     tlbrDownloadList: TToolBar;
     BtnDwnldUp: TToolButton;
@@ -411,6 +409,32 @@ type
     acDeletePreset: TAction;
     acApplyPreset: TAction;
     acClearPreset: TAction;
+    acEditAuthor: TAction;
+    acEditSerie: TAction;
+    acEditGenre: TAction;
+    acEditBook: TAction;
+    acEditDeleteBook: TAction;
+    acEditConver2FBD: TAction;
+    acEditAutoConver2FBD: TAction;
+    N36: TMenuItem;
+    N47: TMenuItem;
+    N48: TMenuItem;
+    N50: TMenuItem;
+    N51: TMenuItem;
+    N52: TMenuItem;
+    FBD1: TMenuItem;
+    FBD2: TMenuItem;
+    acGroupEdit: TAction;
+    N53: TMenuItem;
+    N54: TMenuItem;
+    N55: TMenuItem;
+    N56: TMenuItem;
+    N57: TMenuItem;
+    pmGroupActions: TPopupMenu;
+    N9: TMenuItem;
+    N26: TMenuItem;
+    N58: TMenuItem;
+    N59: TMenuItem;
 
     //
     // События формы
@@ -491,11 +515,16 @@ type
     //
     // Работа с группами
     //
+    procedure CreateGroupUpdate(Sender: TObject);
+    procedure EditGroupUpdate(Sender: TObject);
+    procedure ClearGroupUpdate(Sender: TObject);
+
     procedure AddGroup(Sender: TObject);
+    procedure RenameGroup(Sender: TObject);
     procedure DeleteGroup(Sender: TObject);
+    procedure ClearGroup(Sender: TObject);
     procedure AddBookToGroup(Sender: TObject);
     procedure DeleteBookFromGroup(Sender: TObject);
-    procedure ClearGroup(Sender: TObject);
 
     //
     // Работа с Search Preset-ами
@@ -634,6 +663,9 @@ type
     procedure UpdateBookAction(Sender: TObject);
     procedure StatusBarDrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel; const Rect: TRect);
     procedure StatusBarResize(Sender: TObject);
+    procedure EditAuthorUpdate(Sender: TObject);
+    procedure EditSerieUpdate(Sender: TObject);
+    procedure EditGenreUpdate(Sender: TObject);
 
   protected
     procedure WMGetSysCommand(var Message: TMessage); message WM_SYSCOMMAND;
@@ -719,6 +751,18 @@ type
     // Восстанавить тулбар в правильной позиции
     //
     procedure ChangeToolbarVisability(ToolBar: TToolBar; ShowToolbar: Boolean);
+
+    //
+    // Проверяет, не является ли текущая коллекция онлайн-коллекцией.
+    // Для онлайн-коллекции запрещает и прячет Action.
+    // Результат: True - Action был обновлен
+    //
+    function UpdateEditAction(Action: TAction): Boolean;
+
+    //
+    // Проверяет, что текущий режим просмотра "по группа" и соответственно разрешает или запрещает
+    //
+    function InternalUpdateGroupAction(Action: TAction): Boolean;
 
   public
     procedure DisableControls(State: Boolean);
@@ -859,7 +903,8 @@ uses
   frm_ConverToFBD,
   frmEditAuthorEx,
   unit_Lib_Updates,
-  UserData;
+  UserData,
+  frm_EditGroup;
 
 resourcestring
   rstrFileNotFoundMsg = 'Файл %s не найден!' + CRLF + 'Проверьте настройки коллекции!';
@@ -1425,7 +1470,7 @@ begin
   Screen.Cursor := crHourGlass;
   try
     //
-    // TODO сохранить позиции
+    // TODO : сохранить позиции
     //
 
     tvAuthors.Clear;
@@ -1965,7 +2010,7 @@ begin
     2: FillBooksTree(tvBooksG,  DMCollection.GenreBooks,  DMCollection.BooksByGenre,  True,  True);  // жанры
     3: FillBooksTree(tvBooksSR, nil,                      DMCollection.sqlBooks,      True,  True);  // поиск
     4: FillBooksTree(tvBooksF,  DMUser.GroupBooks,        DMUser.BooksByGroup,        True,  True);  // избранное
-    /// TODO что это было???? 5: btnApplyFilterClick(self);
+    /// TODO : что это было???? 5: btnApplyFilterClick(self);
   end;
 
   SetHeaderPopUp;
@@ -4789,7 +4834,14 @@ begin
     begin
       DMCollection.tblBooks.Locate(BOOK_ID_FIELD, BookID, []);
       { TODO -oNickR -cLibDesc : этот URL должен формироваться обвязкой библиотеки, т к его формат может меняться }
-      ShellExecute(Handle, 'open', PChar('http://lib.rus.ec/b/' + IntToStr(DMCollection.tblBooks[BOOK_LIBID_FIELD]) + '/edit'), nil, nil, SW_SHOW);
+      ShellExecute(
+        Handle,
+        'open',
+        PChar(Format('http://lib.rus.ec/b/%u/edit', [DMCollection.tblBooksLibID.Value])),
+        nil,
+        nil,
+        SW_SHOW
+      );
     end;
     Result := True;
   end
@@ -5070,25 +5122,46 @@ begin
       DMCollection.tblSeriesB1.Edit;
       DMCollection.tblSeriesB1SerieTitle.Value := S;
       DMCollection.tblSeriesB1.Post;
+
       Data^.Serie := S;
       Tree.RepaintNode(Node);
     end;
   end;
-
 end;
 
 procedure TfrmMain.AddGroup(Sender: TObject);
 var
   GroupName: string;
 begin
-  GroupName := Trim(InputBox('Добавление группы', 'Название группы', ''));
-  if GroupName <> '' then
+  if NewGroup(GroupName) then
   begin
     if DMUser.AddGroup(GroupName) then
     begin
-      FillGroupsList(tvGroups);
       CreateGroupsMenu;
-      FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True);
+      FillGroupsList(tvGroups);
+    end
+    else
+      MHLShowError(rstrGroupAlreadyExists);
+  end;
+end;
+
+procedure TfrmMain.RenameGroup(Sender: TObject);
+var
+  Data: PGroupData;
+  GroupName: string;
+begin
+  Data := tvGroups.GetNodeData(tvGroups.GetFirstSelected());
+  if not Assigned(Data) or not Data^.CanDelete then
+    Exit;
+
+  GroupName := Data^.Text;
+
+  if EditGroup(GroupName) then
+  begin
+    if DMUser.RenameGroup(Data^.GroupID, GroupName) then
+    begin
+      CreateGroupsMenu;
+      FillGroupsList(tvGroups);
     end
     else
       MHLShowError(rstrGroupAlreadyExists);
@@ -5099,7 +5172,7 @@ procedure TfrmMain.DeleteGroup(Sender: TObject);
 var
   Data: PGroupData;
 begin
-  Data := tvGroups.GetNodeData(tvGroups.FocusedNode);
+  Data := tvGroups.GetNodeData(tvGroups.GetFirstSelected());
   if not Assigned(Data) then
     Exit;
 
@@ -5107,12 +5180,32 @@ begin
   begin
     DMUser.DeleteGroup(Data^.GroupID);
 
-    FillGroupsList(tvGroups);
     CreateGroupsMenu;
-    FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True);
+    FillGroupsList(tvGroups);
   end
   else
     MHLShowError(rstrUnableDeleteBuiltinGroupError);
+end;
+
+//
+// Очистить выделенную группу
+//
+procedure TfrmMain.ClearGroup(Sender: TObject);
+var
+  GroupData: PGroupData;
+begin
+  GroupData := tvGroups.GetNodeData(tvGroups.GetFirstSelected());
+  if not Assigned(GroupData) then
+    Exit;
+
+  Screen.Cursor := crHourGlass;
+  try
+    DMUser.ClearGroup(GroupData^.GroupID);
+
+    FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True); // избранное
+  finally
+    Screen.Cursor := crDefault;
+  end;
 end;
 
 procedure TfrmMain.ChangeToolbarVisability(ToolBar: TToolBar; ShowToolbar: Boolean);
@@ -5342,21 +5435,148 @@ begin
   acDeletePreset.Enabled := cbPresetName.Items.IndexOf(cbPresetName.Text) <> -1;
 end;
 
+function TfrmMain.UpdateEditAction(Action: TAction): Boolean;
+begin
+  Result := isOnlineCollection(DMUser.ActiveCollection.CollectionType);
+
+  if Result then
+    Action.Enabled := False;
+
+  Action.Visible := not Result;
+end;
+
+procedure TfrmMain.EditAuthorUpdate(Sender: TObject);
+var
+  Data: PAuthorData;
+begin
+  //
+  // нельзя редактировать данные из онлайн коллекции
+  //
+  if UpdateEditAction(acEditAuthor) then
+    Exit;
+
+  //
+  // только на старанице "по авторам"
+  //
+  if ActiveView <> AuthorsView then
+  begin
+    acEditAuthor.Enabled := False;
+    Exit;
+  end;
+
+  Data := tvAuthors.GetNodeData(tvAuthors.GetFirstSelected);
+  acEditAuthor.Enabled := Assigned(Data);
+end;
+
+procedure TfrmMain.EditSerieUpdate(Sender: TObject);
+var
+  Data: PSerieData;
+begin
+  //
+  // нельзя редактировать данные из онлайн коллекции
+  //
+  if UpdateEditAction(acEditSerie) then
+    Exit;
+
+  //
+  // только на старанице "по сериям"
+  //
+  if ActiveView <> SeriesView then
+  begin
+    acEditSerie.Enabled := False;
+    Exit;
+  end;
+
+  Data := tvSeries.GetNodeData(tvSeries.GetFirstSelected);
+  acEditSerie.Enabled := Assigned(Data);
+end;
+
+procedure TfrmMain.EditGenreUpdate(Sender: TObject);
+var
+  Data: PGenreData;
+begin
+  //
+  // нельзя редактировать данные из онлайн коллекции
+  //
+  if UpdateEditAction(acEditGenre) then
+    Exit;
+
+  //
+  // только на старанице "по жанрам"
+  //
+  if ActiveView <> GenresView then
+  begin
+    acEditGenre.Enabled := False;
+    Exit;
+  end;
+
+  Data := tvGenres.GetNodeData(tvGenres.GetFirstSelected);
+  acEditGenre.Enabled := Assigned(Data);
+end;
+
+function TfrmMain.InternalUpdateGroupAction(Action: TAction): Boolean;
+begin
+  Result := ActiveView <> FavoritesView;
+  if Result then
+    Action.Enabled:= False;
+end;
+
+procedure TfrmMain.CreateGroupUpdate(Sender: TObject);
+begin
+  //
+  // только на старанице "по группам"
+  //
+  if InternalUpdateGroupAction(acGroupCreate) then
+    Exit;
+
+  acGroupCreate.Enabled := True;
+end;
+
+procedure TfrmMain.EditGroupUpdate(Sender: TObject);
+var
+  Data: PGroupData;
+begin
+  //
+  // только на старанице "по группам"
+  //
+  if InternalUpdateGroupAction(Sender as TAction) then
+    Exit;
+
+  Data := tvGroups.GetNodeData(tvGroups.GetFirstSelected);
+  (Sender as TAction).Enabled := Assigned(Data) and Data^.CanDelete;
+end;
+
+procedure TfrmMain.ClearGroupUpdate(Sender: TObject);
+var
+  Data: PGroupData;
+begin
+  //
+  // только на старанице "по группам"
+  //
+  if InternalUpdateGroupAction(acGroupClear) then
+    Exit;
+
+  Data := tvGroups.GetNodeData(tvGroups.GetFirstSelected);
+  acGroupClear.Enabled := Assigned(Data);
+end;
+
 procedure TfrmMain.AddBookToGroup(Sender: TObject);
 var
   Tree: TBookTree;
-  i, Max: Integer;
-  Data: PBookData;
+  booksToProcess: Integer;
+  booksProcessed: Integer;
   GroupID: Integer;
   GroupData: PGroupData;
-
-  Node: PVirtualNode;
 begin
   GetActiveTree(Tree);
-  Max := Tree.TotalCount;
+  Assert(Assigned(Tree));
 
-  if Max = 0 then
+  booksToProcess := Tree.CheckedCount;
+  if Assigned(Tree.FocusedNode) and (Tree.CheckState[Tree.FocusedNode] <> csCheckedNormal) then
+    Inc(booksToProcess);
+  if booksToProcess = 0 then
     Exit;
+  booksProcessed := 0;
 
   if Sender is TMenuItem then
     GroupID := (Sender as TMenuItem).Tag
@@ -5365,27 +5585,28 @@ begin
 
   Screen.Cursor := crHourGlass;
   try
-    StatusMessage := 'Добавляем в избранное...';
+    StatusMessage := 'Добавляем книги в группу...';
     StatusProgress := 0;
     ShowStatusProgress := True;
+    try
+      ProcessNodes(
+        procedure (Tree: TBookTree; Node: PVirtualNode)
+        var
+          Data: PBookData;
+        begin
+          Data := Tree.GetNodeData(Node);
+          if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
+          begin
+            DMCollection.AddBookToGroup(Data^.BookID, Data^.DatabaseID, GroupID);
 
-    Node := Tree.GetFirst;
-    i := 0;
-    while Assigned(Node) do
-    begin
-      Data := Tree.GetNodeData(Node);
-      Assert(Assigned(Data));
-      if IsSelectedBookNode(Node, Data) then
-        DMCollection.AddBookToGroup(Data^.BookID, Data^.DatabaseID, GroupID);
-
-      Inc(i);
-      StatusProgress := i * 100 div Max;
-
-      Node := Tree.GetNext(Node);
+            Inc(booksProcessed);
+            StatusProgress := booksProcessed * 100 div booksToProcess;
+          end;
+        end
+      );
+    finally
+      ShowStatusProgress := False;
     end;
-
-    ShowStatusProgress := False;
-    Selection(False);
   finally
     Screen.Cursor := crDefault;
   end;
@@ -5393,63 +5614,63 @@ begin
   //
   // если выделенная группа совпадает с той, куда добавляем книги, нужно перерисовать список
   //
-  if (tvGroups.SelectedCount > 0) then
+  GroupData := tvGroups.GetNodeData(tvGroups.GetFirstSelected);
+  if Assigned(GroupData) and (GroupData^.GroupID = GroupID) then
   begin
-    GroupData := tvGroups.GetNodeData(tvGroups.GetFirstSelected);
-    if GroupData.GroupID = GroupID then
-      FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True); // Группы
+    FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True); // Группы
   end;
 end;
 
 procedure TfrmMain.DeleteBookFromGroup(Sender: TObject);
 var
-  Node: PVirtualNode;
   GroupData: PGroupData;
-  Data: PBookData;
+  booksToProcess: Integer;
+  booksProcessed: Integer;
 begin
+  Assert(ActiveView = FavoritesView);
+
+  booksToProcess := tvBooksF.CheckedCount;
+  if Assigned(tvBooksF.FocusedNode) and (tvBooksF.CheckState[tvBooksF.FocusedNode] <> csCheckedNormal) then
+    Inc(booksToProcess);
+  if booksToProcess = 0 then
+    Exit;
+  booksProcessed := 0;
+
   GroupData := tvGroups.GetNodeData(tvGroups.GetFirstSelected);
   if not Assigned(GroupData) then
     Exit;
 
   Screen.Cursor := crHourGlass;
   try
-    Node := tvBooksF.GetFirst;
-    while Assigned(Node) do
-    begin
-      Data := tvBooksF.GetNodeData(Node);
-      Assert(Assigned(Data));
-      if (Data^.nodeType = ntBookInfo) and ((tvBooksG.CheckState[Node] = csCheckedNormal) or (tvBooksG.Selected[Node])) then
-        DMUser.DeleteFromGroup(Data.BookID, Data^.DatabaseID, GroupData^.GroupID);
+    StatusMessage := 'Удаляем книги из группы...';
+    StatusProgress := 0;
+    ShowStatusProgress := True;
+    try
+      ProcessNodes(
+        procedure (Tree: TBookTree; Node: PVirtualNode)
+        var
+          Data: PBookData;
+        begin
+          Data := Tree.GetNodeData(Node);
+          if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
+          begin
+            DMUser.DeleteFromGroup(Data.BookID, Data^.DatabaseID, GroupData^.GroupID);
 
-      Node := tvBooksF.GetNext(Node);
+            Inc(booksProcessed);
+            StatusProgress := booksProcessed * 100 div booksToProcess;
+          end;
+        end
+      );
+
+      //
+      // удалить информацию о книгах, не входящих ни в одну группу
+      //
+      DMUser.RemoveUnusedBooks;
+
+      FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True);
+    finally
+      ShowStatusProgress := False;
     end;
-
-    DMUser.RemoveUnusedBooks;
-
-    ClearLabels(PAGE_FAVORITES, True);
-    FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True);
-  finally
-    Screen.Cursor := crDefault;
-  end;
-end;
-
-//
-// Очистить выделенную группу
-//
-procedure TfrmMain.ClearGroup(Sender: TObject);
-var
-  GroupData: PGroupData;
-begin
-  GroupData := tvGroups.GetNodeData(tvGroups.GetFirstSelected);
-  if not Assigned(GroupData) then
-    Exit;
-
-  Screen.Cursor := crHourGlass;
-  try
-    DMUser.ClearGroup(GroupData^.GroupID);
-
-    ClearLabels(PAGE_FAVORITES, True);
-    FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True); // избранное
   finally
     Screen.Cursor := crDefault;
   end;
@@ -6418,37 +6639,31 @@ begin
 end;
 
 procedure TfrmMain.miReadedClick(Sender: TObject);
-var
-  Tree: TBookTree;
-  Node: PVirtualNode;
-  Data: PBookData;
-  NewProgress: Integer;
 begin
-  GetActiveTree(Tree);
-  Assert(Assigned(Tree));
-
-  Node := Tree.GetFirstSelected;
-  while Assigned(Node) do
-  begin
-    Data := Tree.GetNodeData(Node);
-    if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
+  ProcessNodes(
+    procedure (Tree: TBookTree; Node: PVirtualNode)
+    var
+      Data: PBookData;
+      NewProgress: Integer;
     begin
-      // заглушка
-      NewProgress := IfThen(Data^.Progress = 0, 100, 0);
+      Data := Tree.GetNodeData(Node);
+      if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
+      begin
+        // заглушка
+        NewProgress := IfThen(Data^.Progress = 0, 100, 0);
 
-      DMCollection.SetProgress(Data^.BookID, Data^.DatabaseID, NewProgress);
-      UpdateNodes(
-        Data^.BookID, Data^.DatabaseID,
-        procedure(BookData: PBookData)
-        begin
-          Assert(Assigned(BookData));
-          BookData^.Progress := NewProgress;
-        end
-      );
-    end;
-
-    Node := Tree.GetNextSelected(Node);
-  end;
+        DMCollection.SetProgress(Data^.BookID, Data^.DatabaseID, NewProgress);
+        UpdateNodes(
+          Data^.BookID, Data^.DatabaseID,
+          procedure(BookData: PBookData)
+          begin
+            Assert(Assigned(BookData));
+            BookData^.Progress := NewProgress;
+          end
+        );
+      end;
+    end
+  );
 end;
 
 procedure TfrmMain.miRefreshClick(Sender: TObject);

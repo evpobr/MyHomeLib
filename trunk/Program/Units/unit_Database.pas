@@ -328,7 +328,7 @@ BasesTableFields: array [1 .. 15] of TFieldDesc = (
 
 BasesTableIndexes: array [1..2] of TIndexDesc = (
   (Name: 'ID_Index';   Fields: ID_FIELD;        Options: [ixPrimary]),
-  (Name: 'Name_Index'; Fields: BASE_NAME_FIELD; Options: [])
+  (Name: 'Name_Index'; Fields: BASE_NAME_FIELD; Options: [ixUnique])
 );
 
 BasesTableBlobs: array [1 .. 2] of TBLOBFieldDesc = (
@@ -349,7 +349,7 @@ GroupsListTableFields: array [1..5] of TFieldDesc = (
 
 GroupsListTableIndexes: array [1..2] of TIndexDesc = (
   (Name: 'ID_Index';   Fields: GROUP_ID_FIELD;   Options: [ixPrimary]),
-  (Name: 'NameIndex';  Fields: GROUP_NAME_FIELD; Options: [])
+  (Name: 'NameIndex';  Fields: GROUP_NAME_FIELD; Options: [ixUnique])
 );
 
 //

@@ -196,6 +196,7 @@ type
     // Работа с группами
     //
     function AddGroup(const GroupName: string): Boolean;
+    function RenameGroup(GroupID: Integer; const NewName: string): Boolean;
     procedure DeleteGroup(GroupID: Integer);
     procedure ClearGroup(GroupID: Integer);
 
@@ -770,6 +771,23 @@ var
   GroupID: Integer;
 begin
   Result := InternalAddGroup(GroupName, GroupID);
+end;
+
+function TDMUser.RenameGroup(GroupID: Integer; const NewName: string): Boolean;
+begin
+  Result := False;
+  if InternalFindGroup(GroupID) then
+  begin
+    Groups.Edit;
+    try
+      GroupsGroupName.Value := NewName;
+      Groups.Post;
+
+      Result := True;
+    except
+      Groups.Cancel;
+    end;
+  end;
 end;
 
 function TDMUser.InternalFindGroup(const GroupName: string): Boolean;
