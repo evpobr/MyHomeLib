@@ -2,10 +2,17 @@
   *
   * MyHomeLib
   *
-  * Version 0.9
-  * 20.08.2008
-  * Copyright (c) Aleksey Penkov  alex.penkov@gmail.com
-  *               Nick Rymanov    nrymanov@gmail.com
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Authors Aleksey Penkov   alex.penkov@gmail.com
+  *         Nick Rymanov     nrymanov@gmail.com
+  * Created                  20.08.2008
+  * Description              
+  *
+  * $Id$
+  *
+  * History
+  *
   ****************************************************************************** *)
 
 unit frm_edit_reader;

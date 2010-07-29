@@ -4,9 +4,11 @@
   *
   * Copyright (C) 2008-2010 Aleksey Penkov
   *
+  * Author(s)           Matvienko Sergei  matv84@mail.ru
   * Created             12.02.2010
   * Description         Класс работы с шаблонами
-  * Author(s)           Matvienko Sergei  matv84@mail.ru
+  *
+  * $Id$
   *
   * History
   * NickR 15.02.2010    Код переформатирован

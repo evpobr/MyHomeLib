@@ -60,7 +60,7 @@ object frmConvertToFBD: TfrmConvertToFBD
       Height = 115
       Color = clCream
       ScrollBars = ssBoth
-      TabOrder = 3
+      TabOrder = 4
       WordWrap = False
     end
     object RzGroupBox2: TGroupBox
@@ -204,7 +204,7 @@ object frmConvertToFBD: TfrmConvertToFBD
       Top = 127
       Width = 372
       Height = 150
-      TabOrder = 4
+      TabOrder = 3
       DesignSize = (
         372
         150)

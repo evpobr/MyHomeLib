@@ -3,7 +3,7 @@ object frmMain: TfrmMain
   Top = 0
   HelpContext = 2
   Caption = 'MyHomeLib'
-  ClientHeight = 646
+  ClientHeight = 666
   ClientWidth = 792
   Color = clBtnFace
   Constraints.MinHeight = 600
@@ -268,7 +268,7 @@ object frmMain: TfrmMain
     Left = 3
     Top = 109
     Width = 786
-    Height = 515
+    Height = 535
     HelpContext = 1
     ActivePage = tsByAuthor
     Align = alClient
@@ -280,7 +280,7 @@ object frmMain: TfrmMain
       object AuthorsViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
-        Height = 487
+        Height = 507
         MinSize = 230
         ResizeControl = pnAuthorsView
         ExplicitLeft = 392
@@ -291,7 +291,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 230
-        Height = 487
+        Height = 507
         Align = alLeft
         TabOrder = 0
         object pnAuthorSearch: TMHLSimplePanel
@@ -376,8 +376,9 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 224
-          Height = 449
+          Height = 469
           Align = alClient
+          ChangeDelay = 250
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
           Header.Font.Charset = DEFAULT_CHARSET
@@ -404,12 +405,12 @@ object frmMain: TfrmMain
         Left = 233
         Top = 0
         Width = 545
-        Height = 487
+        Height = 507
         Align = alClient
         TabOrder = 1
         object AuthorBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 378
+          Top = 398
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -421,11 +422,11 @@ object frmMain: TfrmMain
         object ipnlAuthors: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 384
+          Top = 404
           Width = 539
           Height = 100
           Align = alBottom
-          TabOrder = 0
+          TabOrder = 2
           OnResize = InfoPanelResize
           OnAuthorLinkClicked = AuthorLinkClicked
           OnSerieLinkClicked = SerieLinkClicked
@@ -444,7 +445,7 @@ object frmMain: TfrmMain
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
-          TabOrder = 1
+          TabOrder = 0
           object lblBooksTotalA: TLabel
             Left = 432
             Top = 0
@@ -472,7 +473,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 340
+          Height = 360
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -485,7 +486,7 @@ object frmMain: TfrmMain
           ParentShowHint = False
           PopupMenu = pmMain
           ShowHint = False
-          TabOrder = 2
+          TabOrder = 1
           OnAfterCellPaint = tvBooksTreeAfterCellPaint
           OnBeforeCellPaint = tvBooksTreeBeforeCellPaint
           OnChange = tvBooksTreeChange
@@ -568,7 +569,7 @@ object frmMain: TfrmMain
       object SeriesViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
-        Height = 487
+        Height = 507
         MinSize = 230
         ResizeControl = pnSeriesView
         ExplicitLeft = 392
@@ -579,7 +580,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 230
-        Height = 487
+        Height = 507
         Align = alLeft
         TabOrder = 0
         object tvSeries: TVirtualStringTree
@@ -587,8 +588,9 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 224
-          Height = 449
+          Height = 469
           Align = alClient
+          ChangeDelay = 250
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
           Header.Font.Charset = DEFAULT_CHARSET
@@ -600,7 +602,7 @@ object frmMain: TfrmMain
           Header.Options = [hoColumnResize, hoDrag]
           IncrementalSearch = isAll
           PopupMenu = pmAuthor
-          TabOrder = 0
+          TabOrder = 1
           TreeOptions.PaintOptions = [toPopupMode, toShowDropmark, toShowHorzGridLines, toThemeAware, toUseBlendedImages]
           TreeOptions.SelectionOptions = [toFullRowSelect, toRightClickSelect]
           OnChange = tvSeriesChange
@@ -617,7 +619,7 @@ object frmMain: TfrmMain
           Width = 224
           Height = 26
           Align = alTop
-          TabOrder = 1
+          TabOrder = 0
           DesignSize = (
             224
             26)
@@ -691,12 +693,12 @@ object frmMain: TfrmMain
         Left = 233
         Top = 0
         Width = 545
-        Height = 487
+        Height = 507
         Align = alClient
         TabOrder = 1
         object SerieBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 328
+          Top = 348
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -707,11 +709,11 @@ object frmMain: TfrmMain
         object ipnlSeries: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 334
+          Top = 354
           Width = 539
           Height = 150
           Align = alBottom
-          TabOrder = 0
+          TabOrder = 2
           OnResize = InfoPanelResize
           OnAuthorLinkClicked = AuthorLinkClicked
           OnSerieLinkClicked = SerieLinkClicked
@@ -730,7 +732,7 @@ object frmMain: TfrmMain
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
-          TabOrder = 1
+          TabOrder = 0
           object lblBooksTotalS: TLabel
             Left = 432
             Top = 0
@@ -759,7 +761,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 290
+          Height = 310
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -771,7 +773,7 @@ object frmMain: TfrmMain
           ParentShowHint = False
           PopupMenu = pmMain
           ShowHint = False
-          TabOrder = 2
+          TabOrder = 1
           OnAfterCellPaint = tvBooksTreeAfterCellPaint
           OnChange = tvBooksTreeChange
           OnCompareNodes = tvBooksTreeCompareNodes
@@ -858,7 +860,7 @@ object frmMain: TfrmMain
       object GenresViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
-        Height = 487
+        Height = 507
         MinSize = 230
         ResizeControl = pnGenresView
         ExplicitLeft = 392
@@ -869,7 +871,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 230
-        Height = 487
+        Height = 507
         Align = alLeft
         TabOrder = 0
         object tvGenres: TVirtualStringTree
@@ -877,8 +879,9 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 224
-          Height = 481
+          Height = 501
           Align = alClient
+          ChangeDelay = 250
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
           Header.Font.Charset = DEFAULT_CHARSET
@@ -904,12 +907,12 @@ object frmMain: TfrmMain
         Left = 233
         Top = 0
         Width = 545
-        Height = 487
+        Height = 507
         Align = alClient
         TabOrder = 1
         object GenreBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 378
+          Top = 398
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -957,11 +960,11 @@ object frmMain: TfrmMain
         object ipnlGenres: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 384
+          Top = 404
           Width = 539
           Height = 100
           Align = alBottom
-          TabOrder = 1
+          TabOrder = 2
           OnResize = InfoPanelResize
           OnAuthorLinkClicked = AuthorLinkClicked
           OnSerieLinkClicked = SerieLinkClicked
@@ -973,7 +976,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 340
+          Height = 360
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -985,7 +988,7 @@ object frmMain: TfrmMain
           ParentShowHint = False
           PopupMenu = pmMain
           ShowHint = False
-          TabOrder = 2
+          TabOrder = 1
           OnAfterCellPaint = tvBooksTreeAfterCellPaint
           OnChange = tvBooksTreeChange
           OnCompareNodes = tvBooksTreeCompareNodes
@@ -1064,7 +1067,7 @@ object frmMain: TfrmMain
       object SearchViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
-        Height = 487
+        Height = 507
         MinSize = 230
         ResizeControl = pnSearchView
         ExplicitLeft = 185
@@ -1075,12 +1078,12 @@ object frmMain: TfrmMain
         Left = 233
         Top = 0
         Width = 545
-        Height = 487
+        Height = 507
         Align = alClient
-        TabOrder = 0
+        TabOrder = 1
         object SearchBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 328
+          Top = 348
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -1093,11 +1096,11 @@ object frmMain: TfrmMain
         object ipnlSearch: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 334
+          Top = 354
           Width = 539
           Height = 150
           Align = alBottom
-          TabOrder = 0
+          TabOrder = 2
           OnResize = InfoPanelResize
           OnAuthorLinkClicked = AuthorLinkClicked
           OnSerieLinkClicked = SerieLinkClicked
@@ -1110,7 +1113,7 @@ object frmMain: TfrmMain
           Width = 539
           Height = 26
           Align = alTop
-          TabOrder = 1
+          TabOrder = 0
           object Label1: TLabel
             Left = 0
             Top = 5
@@ -1167,7 +1170,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 290
+          Height = 310
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -1179,7 +1182,7 @@ object frmMain: TfrmMain
           ParentShowHint = False
           PopupMenu = pmMain
           ShowHint = False
-          TabOrder = 2
+          TabOrder = 1
           OnAfterCellPaint = tvBooksTreeAfterCellPaint
           OnChange = tvBooksTreeChange
           OnCompareNodes = tvBooksTreeCompareNodes
@@ -1267,9 +1270,9 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 230
-        Height = 487
+        Height = 507
         Align = alLeft
-        TabOrder = 1
+        TabOrder = 0
         object SearchParams: TCategoryPanelGroup
           AlignWithMargins = True
           Left = 3
@@ -1285,11 +1288,11 @@ object frmMain: TfrmMain
           HeaderFont.Style = []
           TabOrder = 0
           object ctpOther: TCategoryPanel
-            Top = 289
-            Height = 30
+            Top = 252
+            Height = 209
             Caption = #1056#1072#1079#1085#1086#1077
             Collapsed = True
-            TabOrder = 0
+            TabOrder = 2
             ExplicitWidth = 205
             ExpandedHeight = 209
             object Label30: TLabel
@@ -1312,7 +1315,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 49
-              Width = 214
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
@@ -1322,7 +1325,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 3
-              Width = 214
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1056#1072#1079#1084#1077#1097#1077#1085#1080#1077
@@ -1334,8 +1337,8 @@ object frmMain: TfrmMain
               Width = 99
               Height = 21
               Style = csDropDownList
-              TabOrder = 0
-              OnKeyDown = edFFullNameKeyDown
+              TabOrder = 3
+              OnKeyDown = PresetFieldKeyDown
               Items.Strings = (
                 #1089#1077#1075#1086#1076#1085#1103
                 #1079#1072' 3 '#1076#1085#1103
@@ -1350,8 +1353,8 @@ object frmMain: TfrmMain
               Width = 99
               Height = 21
               Style = csDropDownList
-              TabOrder = 1
-              OnKeyDown = edFFullNameKeyDown
+              TabOrder = 4
+              OnKeyDown = PresetFieldKeyDown
               Items.Strings = (
                 'be'
                 'bg'
@@ -1390,47 +1393,50 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 22
-              Width = 214
+              Width = 197
               Height = 21
               Align = alTop
               Style = csDropDownList
               ItemIndex = 0
-              TabOrder = 2
+              TabOrder = 0
               Text = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1074#1089#1077
               Items.Strings = (
                 #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1074#1089#1077
                 #1058#1086#1083#1100#1082#1086' '#1089#1082#1072#1095#1072#1085#1085#1099#1077
                 #1058#1086#1083#1100#1082#1086' '#1053#1045' '#1089#1082#1072#1095#1072#1085#1085#1099#1077)
+              ExplicitWidth = 214
             end
             object edFKeyWords: TMHLButtonedEdit
               AlignWithMargins = True
               Left = 3
               Top = 68
-              Width = 214
+              Width = 197
               Height = 21
               Hint = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
               Align = alTop
               ParentShowHint = False
               ShowHint = True
-              TabOrder = 3
-              OnKeyDown = edFFullNameKeyDown
-              OnRightButtonClick = edFFullNameButtonClick
+              TabOrder = 1
+              OnKeyDown = PresetFieldKeyDown
+              OnRightButtonClick = ShowExpressionEditor
+              ExplicitWidth = 214
             end
             object cbDeleted: TCheckBox
               AlignWithMargins = True
               Left = 5
               Top = 95
-              Width = 212
+              Width = 195
               Height = 17
               Margins.Left = 5
               Align = alTop
               Caption = #1057#1082#1088#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
-              TabOrder = 4
+              TabOrder = 2
+              ExplicitWidth = 212
             end
           end
           object ctpFile: TCategoryPanel
-            Top = 259
-            Height = 30
+            Top = 75
+            Height = 177
             Caption = #1060#1072#1081#1083
             Collapsed = True
             TabOrder = 1
@@ -1440,7 +1446,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 3
-              Width = 214
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1048#1084#1103
@@ -1450,7 +1456,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 95
-              Width = 214
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1058#1080#1087
@@ -1460,7 +1466,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 49
-              Width = 214
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1055#1072#1087#1082#1072' ('#1072#1088#1093#1080#1074')'
@@ -1470,47 +1476,49 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 22
-              Width = 214
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 0
-              OnKeyDown = edFFullNameKeyDown
-              OnRightButtonClick = edFFullNameButtonClick
+              OnKeyDown = PresetFieldKeyDown
+              OnRightButtonClick = ShowExpressionEditor
+              ExplicitWidth = 214
             end
             object edFFolder: TMHLButtonedEdit
               AlignWithMargins = True
               Left = 3
               Top = 68
-              Width = 214
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 1
-              OnKeyDown = edFFullNameKeyDown
-              OnRightButtonClick = edFFullNameButtonClick
+              OnKeyDown = PresetFieldKeyDown
+              OnRightButtonClick = ShowExpressionEditor
+              ExplicitWidth = 214
             end
             object edFExt: TMHLButtonedEdit
               AlignWithMargins = True
               Left = 3
               Top = 114
-              Width = 214
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 2
-              OnKeyDown = edFFullNameKeyDown
-              OnRightButtonClick = edFFullNameButtonClick
+              OnKeyDown = PresetFieldKeyDown
+              OnRightButtonClick = ShowExpressionEditor
+              ExplicitWidth = 214
             end
           end
           object ctpBook: TCategoryPanel
-            Top = 0
+            Top = -184
             Height = 259
             Caption = #1050#1085#1080#1075#1072
-            TabOrder = 2
-            ExplicitWidth = 205
+            TabOrder = 0
             object Label5: TLabel
               AlignWithMargins = True
               Left = 3
               Top = 3
-              Width = 214
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1040#1074#1090#1086#1088
@@ -1520,7 +1528,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 49
-              Width = 214
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1053#1072#1079#1074#1072#1085#1080#1077
@@ -1530,7 +1538,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 141
-              Width = 214
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1046#1072#1085#1088
@@ -1540,7 +1548,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 95
-              Width = 214
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1057#1077#1088#1080#1103
@@ -1550,7 +1558,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 183
-              Width = 214
+              Width = 197
               Height = 13
               Align = alBottom
               Caption = #1040#1085#1085#1086#1090#1072#1094#1080#1103
@@ -1560,65 +1568,71 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 22
-              Width = 214
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 0
-              OnKeyDown = edFFullNameKeyDown
-              OnRightButtonClick = edFFullNameButtonClick
+              OnKeyDown = PresetFieldKeyDown
+              OnRightButtonClick = ShowExpressionEditor
+              ExplicitWidth = 214
             end
             object edFTitle: TMHLButtonedEdit
               AlignWithMargins = True
               Left = 3
               Top = 68
-              Width = 214
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 1
-              OnKeyDown = edFFullNameKeyDown
-              OnRightButtonClick = edFFullNameButtonClick
+              OnKeyDown = PresetFieldKeyDown
+              OnRightButtonClick = ShowExpressionEditor
+              ExplicitWidth = 214
             end
             object edFSeries: TMHLButtonedEdit
               AlignWithMargins = True
               Left = 3
               Top = 114
-              Width = 214
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 2
-              OnKeyDown = edFFullNameKeyDown
-              OnRightButtonClick = edFFullNameButtonClick
+              OnKeyDown = PresetFieldKeyDown
+              OnRightButtonClick = ShowExpressionEditor
+              ExplicitWidth = 214
             end
             object edFGenre: TMHLButtonedEdit
               AlignWithMargins = True
               Left = 3
               Top = 160
-              Width = 214
+              Width = 197
               Height = 21
               Margins.Bottom = 10
               Align = alTop
               TabOrder = 3
+              OnKeyDown = PresetFieldKeyDown
               OnKeyPress = edFGenreKeyPress
-              OnRightButtonClick = edFGenreButtonClick
+              OnRightButtonClick = ShowGenreEditor
+              ExplicitWidth = 214
             end
             object edFAnnotation: TMHLButtonedEdit
               AlignWithMargins = True
               Left = 3
               Top = 202
-              Width = 214
+              Width = 197
               Height = 21
               Margins.Bottom = 10
               Align = alBottom
               TabOrder = 4
-              OnKeyDown = edFFullNameKeyDown
-              OnRightButtonClick = edFFullNameButtonClick
+              OnKeyDown = PresetFieldKeyDown
+              OnRightButtonClick = ShowExpressionEditor
+              ExplicitWidth = 214
             end
           end
         end
         object pnSearchControl: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
-          Top = 452
+          Top = 472
           Width = 224
           Height = 32
           Align = alBottom
@@ -1648,7 +1662,7 @@ object frmMain: TfrmMain
       object GroupsViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
-        Height = 487
+        Height = 507
         MinSize = 230
         ResizeControl = pnGroupsView
         ExplicitLeft = 392
@@ -1659,7 +1673,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 230
-        Height = 487
+        Height = 507
         Align = alLeft
         TabOrder = 0
         object tvGroups: TVirtualStringTree
@@ -1667,8 +1681,9 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 224
-          Height = 446
+          Height = 466
           Align = alClient
+          ChangeDelay = 250
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
           Header.Font.Charset = DEFAULT_CHARSET
@@ -1693,7 +1708,7 @@ object frmMain: TfrmMain
         object RzPanel8: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
-          Top = 455
+          Top = 475
           Width = 224
           Height = 29
           Align = alBottom
@@ -1732,12 +1747,12 @@ object frmMain: TfrmMain
         Left = 233
         Top = 0
         Width = 545
-        Height = 487
+        Height = 507
         Align = alClient
         TabOrder = 1
         object GroupBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 328
+          Top = 348
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -1749,11 +1764,11 @@ object frmMain: TfrmMain
         object ipnlFavorites: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 334
+          Top = 354
           Width = 539
           Height = 150
           Align = alBottom
-          TabOrder = 0
+          TabOrder = 2
           OnResize = InfoPanelResize
           OnAuthorLinkClicked = AuthorLinkClicked
           OnSerieLinkClicked = SerieLinkClicked
@@ -1779,20 +1794,6 @@ object frmMain: TfrmMain
             ExplicitLeft = 1601
             ExplicitTop = 3
           end
-          object btnClearFavorites: TBitBtn
-            Left = 905
-            Top = 116
-            Width = 118
-            Height = 25
-            Anchors = [akRight, akBottom]
-            Caption = #1054#1095#1080#1089#1090#1080#1090#1100
-            DoubleBuffered = True
-            Enabled = False
-            Kind = bkRetry
-            ParentDoubleBuffered = False
-            TabOrder = 0
-            OnClick = ClearGroup
-          end
         end
         object pnGroupBooksTitle: TMHLSimplePanel
           AlignWithMargins = True
@@ -1807,7 +1808,7 @@ object frmMain: TfrmMain
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
-          TabOrder = 1
+          TabOrder = 0
           object lblBooksTotalF: TLabel
             Left = 432
             Top = 0
@@ -1836,7 +1837,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 290
+          Height = 310
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -1848,7 +1849,7 @@ object frmMain: TfrmMain
           ParentShowHint = False
           PopupMenu = pmMain
           ShowHint = False
-          TabOrder = 2
+          TabOrder = 1
           OnAfterCellPaint = tvBooksTreeAfterCellPaint
           OnChange = tvBooksTreeChange
           OnCompareNodes = tvBooksTreeCompareNodes
@@ -2028,17 +2029,17 @@ object frmMain: TfrmMain
         Left = 0
         Top = 28
         Width = 778
-        Height = 459
+        Height = 479
         Align = alClient
         TabOrder = 1
         object RzPanel2: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
-          Top = 414
+          Top = 434
           Width = 772
           Height = 42
           Align = alBottom
-          TabOrder = 0
+          TabOrder = 1
           object lblDownloadState: TLabel
             Left = 288
             Top = 19
@@ -2095,14 +2096,14 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 772
-          Height = 405
+          Height = 425
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
           Header.Options = [hoColumnResize, hoDrag, hoVisible]
           Header.ParentFont = True
           PopupMenu = pmDownloadList
-          TabOrder = 1
+          TabOrder = 0
           OnFreeNode = FreeDownloadNodeData
           OnGetText = tvDownloadListGetText
           OnPaintText = tvDownloadListPaintText
@@ -2282,7 +2283,7 @@ object frmMain: TfrmMain
   end
   object StatusBar: TStatusBar
     Left = 0
-    Top = 627
+    Top = 647
     Width = 792
     Height = 19
     AutoHint = True
@@ -12223,13 +12224,13 @@ object frmMain: TfrmMain
       Category = #1055#1086#1080#1089#1082
       Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100
       Hint = #1053#1072#1095#1072#1090#1100' '#1087#1086#1080#1089#1082
-      OnExecute = btnApplyFilterClick
+      OnExecute = DoApplyFilter
     end
     object acClearPreset: TAction
       Category = #1055#1086#1080#1089#1082
       Caption = #1054#1095#1080#1089#1090#1080#1090#1100
       Hint = #1054#1095#1080#1089#1090#1080#1090#1100' '#1074#1089#1077' '#1087#1086#1083#1103
-      OnExecute = btnClearFilterEditsClick
+      OnExecute = DoClearFilter
     end
   end
   object ilToolImages: TImageList

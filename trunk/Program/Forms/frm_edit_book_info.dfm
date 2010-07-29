@@ -89,9 +89,9 @@ object frmEditBookInfo: TfrmEditBookInfo
   end
   object edT: TEdit
     AlignWithMargins = True
-    Left = 103
+    Left = 66
     Top = 16
-    Width = 497
+    Width = 534
     Height = 21
     TabOrder = 0
     OnChange = edTChange

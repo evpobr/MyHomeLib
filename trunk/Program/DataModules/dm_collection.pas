@@ -4,8 +4,12 @@
   *
   * Copyright (C) 2008-2010 Aleksey Penkov
   *
-  * Authors Aleksey Penkov   alex.penkov@gmail.com
-  *         Nick Rymanov     nrymanov@gmail.com
+  * Authors             Aleksey Penkov   alex.penkov@gmail.com
+  *                     Nick Rymanov     nrymanov@gmail.com
+  * Created             30.06.2010
+  * Description         
+  *
+  * $Id$
   *
   * History
   * NickR 02.03.2010    Код переформатирован
@@ -241,9 +245,10 @@ type
 
     //
     // Установка фильтра.
-    // NOTE: !!! После установки фильтра датасеты остаются закрытыми !!!
     //
-    procedure SetFilter(LocalState: TThreeState; ShowDeleted: TThreeState);
+    procedure SetAuthorFilter(const Value: string);
+    procedure SetSerieFilter(const Value: string);
+    procedure SetStateFilter(LocalState: TThreeState; HideDeletedState: TThreeState);
 
     //
     // Пользовательские данные
@@ -723,6 +728,7 @@ begin
     DMUser.SetAnnotation(BookID, DatabaseID, NewAnnotation);
   end;
 end;
+
 function TDMCollection.GetReview(BookID: Integer; DatabaseID: Integer): string;
 begin
   Assert(AllExtra.Active);
@@ -797,67 +803,98 @@ begin
   DMUser.AddBookToGroup(BookID, DatabaseID, GroupID, BookRecord);
 end;
 
-procedure TDMCollection.SetFilter(LocalState: TThreeState; ShowDeleted: TThreeState);
+procedure TDMCollection.SetAuthorFilter(const Value: string);
+begin
+  if Value = '' then
+  begin
+    Authors.Filter := '';
+    Authors.Filtered := False;
+  end
+  else
+  begin
+    Authors.Filter := Format('%s = "%s"', [AUTHOR_LASTTNAME_FIELD, Value]);
+    Authors.Filtered := True;
+  end;
+end;
+
+procedure TDMCollection.SetSerieFilter(const Value: string);
+begin
+  if Value = '' then
+  begin
+    Series.Filter := '';
+    Series.Filtered := False;
+  end
+  else
+  begin
+    Series.Filter := Format('%s = "%s"', [SERIE_TITLE_FIELD, Value]);
+    Series.Filtered := True;
+  end;
+end;
+
+procedure TDMCollection.SetStateFilter(LocalState: TThreeState; HideDeletedState: TThreeState);
 const
   GetAuthorsBegin = 'SELECT a.AuthorID, a.LastName, a.FirstName, a.MiddleName FROM Authors a ';
-  GetAuthorsQuery: array [TThreeState] of string = (
-  // Авторы, книги которых скачаны
-  'WHERE (' +
-  'a.AuthorID IN (SELECT DISTINCT l.AuthorID FROM Author_List l INNER JOIN Books b ON l.BookID = b.BookID WHERE b.local = true)' +
-  ') ',
-
-  // Авторы, книги которых не скачаны
-  'WHERE (' +
-  'a.AuthorID IN (SELECT DISTINCT l.AuthorID FROM Author_List l INNER JOIN Books b ON l.BookID = b.BookID WHERE b.local = false)' +
-  ') ',
-
-  // Все авторы
-  ''
-  );
+  GetAuthorsQuery = 'WHERE (a.AuthorID IN (SELECT DISTINCT l.AuthorID FROM Author_List l INNER JOIN Books b ON l.BookID = b.BookID WHERE %s)) ';
   GetAuthorsEnd = 'ORDER BY a.LastName, a.FirstName, a.MiddleName ';
 
   GetSeriessBegin = 'SELECT s.SerieID, s.SerieTitle FROM Series s ';
-  GetSeriessQuery: array [TThreeState] of string = (
-  // Серии, книги которых скачаны
-  'WHERE (s.SerieID <> 1) AND ( ' +
-  's."SerieID" in (SELECT DISTINCT b."SerieID" FROM "books" b WHERE b.local = true) ' +
-  ') ',
-
-  // Серии, книги которых не скачаны
-  'WHERE (s.SerieID <> 1) AND ( ' +
-  's."SerieID" in (SELECT DISTINCT b."SerieID" FROM "books" b WHERE b.local = false) ' +
-  ') ',
-
-  // Все серии
-  'WHERE (s.SerieID <> 1) '
-  );
+  GetSeriessQuery = 'WHERE (s.SerieID <> 1) AND (s.SerieID IN (SELECT DISTINCT b.SerieID FROM Books b WHERE %s)) ';
   GetSeriessEnd = 'ORDER BY s.SerieTitle';
 
+  // tsTrue, tsFalse, tsUnknown
+  LocalFilters: array [TThreeState] of string = ('(`Local` = true)', '(`Local` = false)', '');
+  HideDeletedFilters: array [TThreeState] of string = ('(`Deleted` = false)', '(`Deleted` = true)', '');
+
+var
+  SQLQuery: string;
+  LocalFilter: string;
+  HideDeletedFilter: string;
+  TotalFilter: string;
+  SetFilter: Boolean;
 begin
   Assert(not Authors.Active);
   Assert(not Series.Active);
 
-  Assert(isOnlineCollection(DMUser.ActiveCollection.CollectionType));
+  LocalFilter := LocalFilters[LocalState];
+  HideDeletedFilter := HideDeletedFilters[HideDeletedState];
 
-  Authors.SQL.Text := GetAuthorsBegin + GetAuthorsQuery[LocalState] + GetAuthorsEnd;
-  Series.SQL.Text := GetSeriessBegin + GetSeriessQuery[LocalState] + GetSeriessEnd;
-
-  if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
-  begin
-    if (ShowDeleted = tsTrue) and (LocalState = tsTrue) then
-      //SwitchFilter(flLocal + ' AND ' + flNotShowDeleted)
-    else if (ShowDeleted = tsTrue) and (LocalState = tsFalse) then
-      //SwitchFilter(flNotShowDeleted)
-    else if (ShowDeleted = tsFalse) and (LocalState = tsTrue) then
-      //SwitchFilter(flLocal)
-    else if (ShowDeleted = tsFalse) and (LocalState = tsFalse) then
-      //SwitchFilter('');
-  end
-  else if (ShowDeleted = tsTrue) then
-    //SwitchFilter(flNotShowDeleted)
+  SetFilter := True;
+  if (LocalFilter <> '') and (HideDeletedFilter <> '') then
+    TotalFilter := LocalFilter + ' AND ' + HideDeletedFilter
+  else if (LocalFilter <> '') then
+    TotalFilter := LocalFilter
+  else if (HideDeletedFilter <> '') then
+    TotalFilter := HideDeletedFilter
   else
-    //SwitchFilter('');
-    ;
+  begin
+    TotalFilter := '';
+    SetFilter := False;
+  end;
+
+  SQLQuery := GetAuthorsBegin;
+  if SetFilter then
+    SQLQuery := SQLQuery + Format(GetAuthorsQuery, [TotalFilter]);
+  SQLQuery := SQLQuery + GetAuthorsEnd;
+  Authors.SQL.Text := SQLQuery;
+
+  SQLQuery := GetSeriessBegin;
+  if SetFilter then
+    SQLQuery := SQLQuery + Format(GetSeriessQuery, [TotalFilter]);
+  SQLQuery := SQLQuery + GetSeriessEnd;
+  Series.SQL.Text := SQLQuery;
+
+  if SetFilter then
+  begin
+    BooksByAuthor.Filter := TotalFilter;
+    BooksByGenre.Filter := TotalFilter;
+    BooksBySerie.Filter := TotalFilter;
+    DMUser.BooksByGroup.Filter := TotalFilter;
+  end;
+
+  BooksByAuthor.Filtered := SetFilter;
+  BooksByGenre.Filtered := SetFilter;
+  BooksBySerie.Filtered := SetFilter;
+  DMUser.BooksByGroup.Filtered := SetFilter;
 end;
 
 procedure TDMCollection.ExportUserData(data: TUserData);

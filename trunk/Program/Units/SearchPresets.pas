@@ -4,13 +4,12 @@
   *
   * Copyright (C) 2008-2010 Aleksey Penkov
   *
+  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
   * Created             30.06.2010
   * Description         
-  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
   *
-  * $LastChangedDate$
-  * $LastChangedRevision$
-  * $LastChangedBy$
+  * $Id$
+  *
   *
   * History
   *

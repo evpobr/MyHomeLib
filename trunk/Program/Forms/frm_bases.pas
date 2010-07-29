@@ -4,10 +4,14 @@
   *
   * Copyright (C) 2008-2010 Aleksey Penkov
   *
-  * Created             22.02.2010
-  * Description         Форма редактирования свойств коллекции
-  * Author(s)           Aleksey Penkov  alex.penkov@gmail.com
-  *                     Nick Rymanov    nrymanov@gmail.com
+  * Authors Aleksey Penkov   alex.penkov@gmail.com
+  *         Nick Rymanov     nrymanov@gmail.com
+  * Created                  22.02.2010
+  * Description              Форма редактирования свойств коллекции
+  *
+  * $Id$
+  *
+  * History
   *
   ****************************************************************************** *)
 
