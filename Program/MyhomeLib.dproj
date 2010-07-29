@@ -254,6 +254,9 @@
 			<DCCReference Include="Units\SearchPresets.pas"/>
 			<DCCReference Include="Units\UserData.pas"/>
 			<DCCReference Include="Units\xmlUtils.pas"/>
+			<DCCReference Include="Forms\frm_EditGroup.pas">
+				<Form>frmEditGroup</Form>
+			</DCCReference>
 			<RcItem Include="Resources\Images\16x16\star_small.png">
 				<ResourceType>RCData</ResourceType>
 				<ResourceId>smallStar</ResourceId>
