@@ -31,9 +31,9 @@ object frmAddnonfb2: TfrmAddnonfb2
     Width = 741
     Height = 467
     Margins.Bottom = 30
-    ActivePage = tsBookInfo
+    ActivePage = tsFiles
     Align = alClient
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     FixedDimension = 19
     object tsFiles: TRzTabSheet
@@ -45,7 +45,6 @@ object frmAddnonfb2: TfrmAddnonfb2
         Width = 731
         Height = 438
         Align = alClient
-        Color = clCream
         Header.AutoSizeIndex = 0
         Header.DefaultHeight = 17
         Header.Font.Charset = DEFAULT_CHARSET
@@ -105,7 +104,6 @@ object frmAddnonfb2: TfrmAddnonfb2
           Margins.Right = 90
           TabStop = False
           Align = alTop
-          Color = clCream
           PopupMenu = pmEdit
           ReadOnly = True
           TabOrder = 0
@@ -289,7 +287,6 @@ object frmAddnonfb2: TfrmAddnonfb2
           Width = 46
           Height = 21
           Align = alClient
-          Color = clCream
           TabOrder = 0
           Items.Strings = (
             'be'
@@ -340,7 +337,6 @@ object frmAddnonfb2: TfrmAddnonfb2
           Width = 564
           Height = 23
           Align = alClient
-          Color = clCream
           TabOrder = 0
           ExplicitHeight = 21
         end
@@ -361,7 +357,6 @@ object frmAddnonfb2: TfrmAddnonfb2
           Width = 49
           Height = 21
           Anchors = [akRight, akBottom]
-          Color = clCream
           TabOrder = 1
           DisplayFormat = ',0;(,0)'
         end
@@ -370,7 +365,6 @@ object frmAddnonfb2: TfrmAddnonfb2
           Top = 18
           Width = 318
           Height = 21
-          Color = clCream
           TabOrder = 0
         end
       end
@@ -388,7 +382,6 @@ object frmAddnonfb2: TfrmAddnonfb2
           Width = 723
           Height = 23
           Align = alClient
-          Color = clCream
           TabOrder = 0
           ExplicitHeight = 21
         end
@@ -441,7 +434,6 @@ object frmAddnonfb2: TfrmAddnonfb2
             Margins.Left = 5
             Margins.Right = 5
             Align = alClient
-            Color = clCream
             TabOrder = 0
             Text = #1042#1089#1077
             Items.Strings = (
@@ -516,14 +508,13 @@ object frmAddnonfb2: TfrmAddnonfb2
         Top = 115
         Width = 731
         Height = 187
-        Caption = #1040#1074#1090#1086#1088'('#1099') '#1082#1085#1080#1075#1080
         TabOrder = 9
         DesignSize = (
           731
           187)
         object btnAddAuthorFromList: TRzBitBtn
-          Left = 226
-          Top = 157
+          Left = 244
+          Top = 162
           Width = 78
           Caption = #1048#1079' '#1089#1087#1080#1089#1082#1072
           TabOrder = 4
@@ -619,7 +610,6 @@ object frmAddnonfb2: TfrmAddnonfb2
           Top = 43
           Width = 312
           Height = 21
-          Color = clCream
           TabOrder = 2
         end
         object edPublisher: TRzEdit
@@ -627,7 +617,6 @@ object frmAddnonfb2: TfrmAddnonfb2
           Top = 16
           Width = 228
           Height = 21
-          Color = clCream
           TabOrder = 0
         end
         object edYear: TRzEdit
@@ -635,7 +624,6 @@ object frmAddnonfb2: TfrmAddnonfb2
           Top = 43
           Width = 60
           Height = 21
-          Color = clCream
           TabOrder = 3
         end
         object edCity: TRzEdit
@@ -643,7 +631,6 @@ object frmAddnonfb2: TfrmAddnonfb2
           Top = 16
           Width = 132
           Height = 21
-          Color = clCream
           TabOrder = 1
         end
       end
@@ -652,7 +639,6 @@ object frmAddnonfb2: TfrmAddnonfb2
         Top = 213
         Width = 486
         Height = 172
-        Color = clCream
         ScrollBars = ssBoth
         TabOrder = 2
         WordWrap = False
@@ -730,7 +716,7 @@ object frmAddnonfb2: TfrmAddnonfb2
         Top = 73
         Width = 486
         Height = 134
-        Caption = #1040#1074#1090#1086#1088'('#1099') FBD'
+        ParentBackground = False
         TabOrder = 5
         DesignSize = (
           486
@@ -876,9 +862,5 @@ object frmAddnonfb2: TfrmAddnonfb2
     Image = FCover
     Left = 168
     Top = 368
-  end
-  object XPManifest1: TXPManifest
-    Left = 488
-    Top = 72
   end
 end

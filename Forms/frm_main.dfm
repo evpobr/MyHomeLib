@@ -436,9 +436,9 @@ object frmMain: TfrmMain
     Width = 934
     Height = 523
     HelpContext = 1
-    ActivePage = TabSheet7
+    ActivePage = TabSheet1
     Align = alClient
-    TabIndex = 5
+    TabIndex = 0
     TabOrder = 3
     TabStop = False
     OnChange = pgControlChange
@@ -709,6 +709,7 @@ object frmMain: TfrmMain
                 OnMouseUp = tvBooksTreeMouseUp
                 Columns = <
                   item
+                    BiDiMode = bdLeftToRight
                     MaxWidth = 1000
                     MinWidth = 40
                     Options = [coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
@@ -722,6 +723,7 @@ object frmMain: TfrmMain
                   end
                   item
                     Alignment = taCenter
+                    BiDiMode = bdLeftToRight
                     MaxWidth = 80
                     MinWidth = 35
                     Options = [coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
@@ -749,6 +751,7 @@ object frmMain: TfrmMain
                   end
                   item
                     Alignment = taCenter
+                    BiDiMode = bdLeftToRight
                     MaxWidth = 60
                     MinWidth = 60
                     Options = [coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
@@ -757,6 +760,7 @@ object frmMain: TfrmMain
                     WideText = #1056#1077#1081#1090#1080#1085#1075
                   end
                   item
+                    BiDiMode = bdLeftToRight
                     MinWidth = 40
                     Options = [coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
                     Position = 4
@@ -1355,6 +1359,7 @@ object frmMain: TfrmMain
               OnMouseUp = tvBooksTreeMouseUp
               Columns = <
                 item
+                  BiDiMode = bdLeftToRight
                   MinWidth = 30
                   Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring]
                   Position = 0
@@ -1367,6 +1372,7 @@ object frmMain: TfrmMain
                 end
                 item
                   Alignment = taCenter
+                  BiDiMode = bdLeftToRight
                   MaxWidth = 90
                   MinWidth = 30
                   Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coShowDropMark, coVisible, coAutoSpring]
@@ -1394,6 +1400,7 @@ object frmMain: TfrmMain
                 end
                 item
                   Alignment = taCenter
+                  BiDiMode = bdLeftToRight
                   MaxWidth = 65
                   MinWidth = 65
                   Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring]
@@ -1402,6 +1409,7 @@ object frmMain: TfrmMain
                   WideText = #1056#1077#1081#1090#1080#1085#1075
                 end
                 item
+                  BiDiMode = bdLeftToRight
                   Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring]
                   Position = 4
                   Width = 139
@@ -2539,6 +2547,7 @@ object frmMain: TfrmMain
               OnMouseUp = tvBooksTreeMouseUp
               Columns = <
                 item
+                  BiDiMode = bdLeftToRight
                   Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
                   Position = 0
                   Spacing = 10
@@ -2550,6 +2559,7 @@ object frmMain: TfrmMain
                 end
                 item
                   Alignment = taCenter
+                  BiDiMode = bdLeftToRight
                   MaxWidth = 90
                   MinWidth = 35
                   Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring]
@@ -2576,6 +2586,7 @@ object frmMain: TfrmMain
                 end
                 item
                   Alignment = taCenter
+                  BiDiMode = bdLeftToRight
                   MaxWidth = 60
                   MinWidth = 60
                   Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
@@ -2584,6 +2595,7 @@ object frmMain: TfrmMain
                   WideText = #1056#1077#1081#1090#1080#1085#1075
                 end
                 item
+                  BiDiMode = bdLeftToRight
                   Options = [coAllowClick, coDraggable, coEnabled, coParentColor, coResizable, coShowDropMark, coVisible]
                   Position = 4
                   Width = 200
@@ -3541,7 +3553,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 312
     Bitmap = {
-      494C01011B000002FC0120002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C01011B000002040220002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -7249,7 +7261,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 256
     Bitmap = {
-      494C010125002700C00110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010125002700C80110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000040000000A0000000010020000000000000A0
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -8608,7 +8620,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 368
     Bitmap = {
-      494C01010A003801A80110001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C01010A003801B00110001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -9138,7 +9150,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 480
     Bitmap = {
-      494C010118001A00C00120002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C010118001A00C80120002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12845,7 +12857,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 424
     Bitmap = {
-      494C010112004800C00110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010112004800C80110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000005000000001002000000000000050
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -13529,5 +13541,12 @@ object frmMain: TfrmMain
     OnFile = FilesListFile
     Left = 616
     Top = 352
+  end
+  object tmrCheckUpdates: TTimer
+    Enabled = False
+    Interval = 15000
+    OnTimer = tmrCheckUpdatesTimer
+    Left = 536
+    Top = 448
   end
 end
