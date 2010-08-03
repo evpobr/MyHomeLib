@@ -409,6 +409,7 @@ type
     Panel2: TPanel;
     btnClearDownload: TRzBitBtn;
     lblDownloadCount: TRzLabel;
+    tmrCheckUpdates: TTimer;
 
     //
     // События формы
@@ -530,7 +531,8 @@ type
     //
     //
     procedure tvBooksTreeHeaderClick(Sender: TVTHeader;
-  HitInfo: TVTHeaderHitInfo);
+      Column: TColumnIndex; Button: TMouseButton; Shift: TShiftState; X,
+      Y: Integer);
     procedure tvBooksTreeCompareNodes(Sender: TBaseVirtualTree; Node1,
       Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
     procedure tvBooksTreePaintText(Sender: TBaseVirtualTree;
@@ -619,6 +621,7 @@ type
     procedure miEditToolbarVisibleClick(Sender: TObject);
     procedure tbtnAutoFBDClick(Sender: TObject);
     procedure miExportToHTMLClick(Sender: TObject);
+    procedure tmrCheckUpdatesTimer(Sender: TObject);
 
   protected
     procedure OnBookDownloadComplete(var Message: TDownloadCompleteMessage); message WM_MHL_DOWNLOAD_COMPLETE;
@@ -2034,6 +2037,7 @@ begin
           Result := True;
           Break;
         end;
+    Application.ProcessMessages;
   until not DMUser.FindNextCollection;
   DMUser.ActivateCollection(Active);
 
@@ -2071,6 +2075,34 @@ begin
     if unit_utils.LibrusecUpdate then
       InitCollection(True);
   end;
+end;
+
+procedure TfrmMain.tmrCheckUpdatesTimer(Sender: TObject);
+begin
+  //------------------------------------------------------------------------------
+  //  Проверка обновлений
+  //------------------------------------------------------------------------------
+  tmrCheckUpdates.Enabled := False;
+
+  spStatus.Caption := 'Проверка обновлений ...';
+
+  if Settings.CheckUpdate then
+  begin
+    FAutoCheck := True;
+    frmMain.miCheckUpdatesClick(nil);
+  end
+  else
+    FAutoCheck := False;
+
+  if Settings.CheckExternalLibUpdate then
+    if CheckLibUpdates(True) then
+      if Settings.AutoRunUpdate then
+          StartLibUpdate
+      else
+        if MessageDlg('Доступно обновление для коллекций.' + #13 + ' Начать обновление ?', mtWarning, [mbYes, mbNo], 0) = mrYes then
+           StartLibUpdate;
+
+  spStatus.Caption := 'Готово';
 end;
 
 procedure TfrmMain.tbtnAutoFBDClick(Sender: TObject);
@@ -2179,27 +2211,6 @@ begin
   DMUser.DBUser.Connected := True;
   DMUser.SetUserTableState(True);
 
- //------------------------------------------------------------------------------
- //  Проверка обновлений
- //------------------------------------------------------------------------------
-
-  frmSplash.lblState.Caption := main_check_updates;
-  if Settings.CheckUpdate then
-  begin
-    FAutoCheck := True;
-    frmMain.miCheckUpdatesClick(nil);
-  end
-  else
-    FAutoCheck := False;
-
-  if Settings.CheckExternalLibUpdate then
-    if CheckLibUpdates(True) then
-      if Settings.AutoRunUpdate then
-          StartLibUpdate
-      else
-        if MessageDlg('Доступно обновление для коллекций.' + #13 + ' Начать обновление ?', mtWarning, [mbYes, mbNo], 0) = mrYes then
-           StartLibUpdate;
-
 //------------------------------------------------------------------------------
   LoadLastCollection;
 
@@ -2253,6 +2264,8 @@ begin
     frmMain.Width  := Settings.FormWidth;
     frmMain.Height := Settings.FormHeight;
   end;
+
+  tmrCheckUpdates.Enabled := True;
 end;
 
 procedure TfrmMain.SavePositions;
@@ -2378,31 +2391,32 @@ begin
 end;
 
 procedure TfrmMain.tvBooksTreeHeaderClick(Sender: TVTHeader;
-  HitInfo: TVTHeaderHitInfo);
+  Column: TColumnIndex; Button: TMouseButton; Shift: TShiftState; X,
+  Y: Integer);
 var
   Tree:TVirtualStringTree;
 begin
-  if (HitInfo.Button = mbLeft) then
+  if Button = mbLeft then
   begin
     GetActiveTree(Tree);
-    if (Settings.TreeModes[Tree.Tag] = tmTree) or (HitInfo.Column < 0) then Exit;
+    if (Settings.TreeModes[Tree.Tag] = tmTree) or (Column < 0) then Exit;
     // Меняем индекс сортирующей колонки на индекс колонки,
     // которая была нажата.
-    Tree.Header.SortColumn := HitInfo.Column;
+    Tree.Header.SortColumn := Column;
     // Сортируем всё дерево относительно этой колонки
     // и изменяем порядок сортировки на противополжный
     if Tree.Header.SortDirection = sdAscending then
     begin
       Tree.Header.SortDirection := sdDescending;
-      Tree.SortTree(HitInfo.Column, Tree.Header.SortDirection);
+      Tree.SortTree(Column, Tree.Header.SortDirection);
     end
     else begin
       Tree.Header.SortDirection := sdAscending;
-      Tree.SortTree(HitInfo.Column, Tree.Header.SortDirection);
+      Tree.SortTree(Column, Tree.Header.SortDirection);
     end;
 
     // запоминаем параметры для активного дерева
-    FSortSettings[Tree.Tag].Column := HitInfo.Column;
+    FSortSettings[Tree.Tag].Column := Column;
     FSortSettings[Tree.Tag].Direction := Tree.Header.SortDirection;
   end;
 end;

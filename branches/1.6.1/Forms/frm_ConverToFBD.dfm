@@ -58,7 +58,6 @@ object frmConvertToFBD: TfrmConvertToFBD
       Top = 248
       Width = 338
       Height = 113
-      Color = clCream
       ScrollBars = ssBoth
       TabOrder = 3
       WordWrap = False
@@ -103,7 +102,6 @@ object frmConvertToFBD: TfrmConvertToFBD
         Top = 43
         Width = 230
         Height = 21
-        Color = clCream
         TabOrder = 2
       end
       object edPublisher: TRzEdit
@@ -111,7 +109,6 @@ object frmConvertToFBD: TfrmConvertToFBD
         Top = 18
         Width = 124
         Height = 21
-        Color = clCream
         TabOrder = 0
       end
       object edYear: TRzEdit
@@ -119,7 +116,6 @@ object frmConvertToFBD: TfrmConvertToFBD
         Top = 45
         Width = 28
         Height = 21
-        Color = clCream
         TabOrder = 3
       end
       object edCity: TRzEdit
@@ -127,7 +123,6 @@ object frmConvertToFBD: TfrmConvertToFBD
         Top = 18
         Width = 100
         Height = 21
-        Color = clCream
         TabOrder = 1
       end
     end
@@ -197,7 +192,7 @@ object frmConvertToFBD: TfrmConvertToFBD
       Top = 120
       Width = 337
       Height = 113
-      Caption = #1040#1074#1090#1086#1088'('#1099') FBD'
+      ParentBackground = False
       TabOrder = 4
       DesignSize = (
         337
@@ -380,7 +375,7 @@ object frmConvertToFBD: TfrmConvertToFBD
     Left = 344
     Top = 256
     Bitmap = {
-      494C010103000800D00010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010103000800D40010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000838383FF838383FF828282FF828282FF818181FF808080FF808080FF7E7E

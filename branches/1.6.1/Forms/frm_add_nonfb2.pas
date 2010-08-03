@@ -115,7 +115,6 @@ type
     btnOpenBook: TRzBitBtn;
     FBD: TFBDDocument;
     alBookAuthors: TFBDAuthorTable;
-    XPManifest1: TXPManifest;
     alFBDAuthors: TFBDAuthorTable;
     btnAddAuthorFromList: TRzBitBtn;
     procedure RzButton3Click(Sender: TObject);

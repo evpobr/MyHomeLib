@@ -272,6 +272,11 @@ begin
               end; // case
               Exit;
             end;
+            on E: EIdConnClosedGracefully do
+            begin
+                ProcessError('Закачка не удалась! У вас нет доступа к скачиванию этоq книги.','Нет доступа!', Folder);
+                Exit;
+            end;
             on E: Exception do
               if (FidHTTP.ResponseCode <> 405) and
                  not ((FidHTTP.ResponseCode = 404) and (FNewURL <> ''))
@@ -285,7 +290,7 @@ begin
           mpfds.Free;
         end;
         FOnPostReq := False;
-        if FNewURL = '' then raise EInvalidLogin.Create('Неправильный логин/пароль');
+        if FNewURL = '' then raise EInvalidLogin.Create('Неправильный логин/пароль или доступ заблокирован');
         FidHTTP.Get(FNewURL, FS);
         if Canceled then
         begin
