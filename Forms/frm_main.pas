@@ -3329,7 +3329,6 @@ begin
   //  dlgFolder.Directory := Settings.DeviceDir;
   ScriptID := (Sender as TComponent).Tag;
 
-
   if isFB2Collection(DMUser.ActiveCollection.CollectionType) then
   case ScriptID of
     850: ExportMode := emFb2;
@@ -3346,14 +3345,9 @@ begin
   Dec(ScriptID, 901);
 
   if (ScriptID < 1 ) and (Settings.PromptDevicePath) then
-    //if not dlgFolder.Execute then
     if not GetFolderName(Handle, 'Укажите путь', AFolder) then
       Exit
     else
-      { TODO -oNickR -cRefactoring : это временное изменение в настройках и оно не должно сохраняться при закрытии программы
-                             Это изменение нужно только для работы функций ZipToDevice/FileToDevice и решается
-                             параметрами этих функций
-      }
       Settings.DeviceDir := AFolder;
 
   if ScriptID >= 0 then
