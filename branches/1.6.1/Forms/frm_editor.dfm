@@ -24,8 +24,6 @@ object frmEditor: TfrmEditor
     Align = alClient
     ScrollBars = ssVertical
     TabOrder = 0
-    ExplicitWidth = 200
-    ExplicitHeight = 223
   end
   object RzBitBtn1: TRzBitBtn
     Left = 65
@@ -45,9 +43,6 @@ object frmEditor: TfrmEditor
     Align = alTop
     Alignment = taCenter
     TabOrder = 2
-    ExplicitLeft = 58
-    ExplicitTop = -8
-    ExplicitWidth = 375
     object btnInsertFilterTemplate: TRzToolButton
       Tag = 50
       Left = 10
@@ -61,7 +56,7 @@ object frmEditor: TfrmEditor
     end
     object RzToolButton3: TRzToolButton
       Tag = 52
-      Left = 84
+      Left = 47
       Top = 42
       Width = 31
       Flat = False
@@ -105,7 +100,7 @@ object frmEditor: TfrmEditor
     end
     object RzToolButton7: TRzToolButton
       Tag = 56
-      Left = 10
+      Left = 121
       Top = 42
       Width = 31
       Flat = False
@@ -116,7 +111,7 @@ object frmEditor: TfrmEditor
     end
     object RzToolButton8: TRzToolButton
       Tag = 57
-      Left = 47
+      Left = 158
       Top = 42
       Width = 31
       Flat = False
@@ -127,7 +122,7 @@ object frmEditor: TfrmEditor
     end
     object RzToolButton9: TRzToolButton
       Tag = 58
-      Left = 158
+      Left = 84
       Top = 42
       Width = 31
       Flat = False
@@ -138,13 +133,24 @@ object frmEditor: TfrmEditor
     end
     object RzToolButton1: TRzToolButton
       Tag = 59
-      Left = 121
-      Top = 42
+      Left = 158
+      Top = 11
       Width = 31
       Flat = False
       ShowCaption = True
       UseToolbarShowCaption = False
       Caption = '" "'
+      OnClick = btnInsertFilterTemplateClick
+    end
+    object RzToolButton2: TRzToolButton
+      Tag = 51
+      Left = 10
+      Top = 42
+      Width = 31
+      Flat = False
+      ShowCaption = True
+      UseToolbarShowCaption = False
+      Caption = '= " "'
       OnClick = btnInsertFilterTemplateClick
     end
   end

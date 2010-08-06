@@ -20,6 +20,7 @@ type
     RzToolButton8: TRzToolButton;
     RzToolButton9: TRzToolButton;
     RzToolButton1: TRzToolButton;
+    RzToolButton2: TRzToolButton;
     procedure RzBitBtn1Click(Sender: TObject);
     procedure btnInsertFilterTemplateClick(Sender: TObject);
   private
@@ -44,36 +45,43 @@ procedure TfrmEditor.btnInsertFilterTemplateClick(Sender: TObject);
 var
    OldText: string;
    p: integer;
-   AddText: string;
+   AddText, InsText: string;
    Offset : integer;
 begin
   OldText := mmMemo.Lines.Text;
 
   p := mmMemo.SelStart;
+  if mmMemo.SelLength > 0 then
+  begin
+    InsText := mmMemo.SelText;
+    Delete(OldText, p + 1, mmMemo.SelLength);
+  end
+  else
+    InsText := '';
 
   case (Sender as TrzToolButton).Tag of
       50: begin
-            AddText := 'LIKE "%%"';
+            AddText := 'LIKE "%' + InsText + '%"';
             OffSet  := P + 7;
           end;
       51: begin
-            AddText := '=""';
+            AddText := '="' + InsText + '"';
             OffSet  := P + 2;
           end;
       52: begin
-            AddText := '<> ""';
+            AddText := '<> "' + InsText + '"';
             OffSet  := P + 4;
           end;
       53: begin
-            AddText := '<""';
+            AddText := '<"' + InsText + '"';
             OffSet  := P + 2;
           end;
       54: begin
-            AddText := '>""';
+            AddText := '>"' + InsText + '"';
             OffSet  := P + 2;
           end;
       55: begin
-            AddText := '("")';
+            AddText := '(' + InsText + '"")';
             OffSet  := P + 2;
           end;
       56: begin
@@ -89,7 +97,7 @@ begin
             OffSet  := P + 5;
           end;
        59: begin
-            AddText := '""';
+            AddText := '"' + InsText + '"';
             OffSet  := P + 1;
           end;
     end;

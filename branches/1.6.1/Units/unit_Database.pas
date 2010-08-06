@@ -236,7 +236,7 @@ GenresTableFields: array [1 .. 5] of TFieldDesc = (
   (Name: 'G_ID';    DataType: ftAutoInc;    Size: 0;  Required: true),
   (Name: 'G_Code';       DataType: ftWideString; Size: 20; Required: false),
   (Name: 'G_ParentCode'; DataType: ftWideString; Size: 20; Required: false),
-  (Name: 'G_FB2Code';    DataType: ftWideString; Size: 20; Required: false),
+  (Name: 'G_FB2Code';    DataType: ftWideString; Size: 30; Required: false),
   (Name: 'G_Alias';      DataType: ftWideString; Size: 50; Required: false)
 );
 
