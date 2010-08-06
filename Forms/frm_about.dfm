@@ -69,7 +69,7 @@ object frmAbout: TfrmAbout
       Width = 134
       Height = 13
       Alignment = taCenter
-      Caption = '(c) 2009 '#1040#1083#1077#1082#1089#1077#1081' '#1055#1077#1085#1100#1082#1086#1074' '
+      Caption = '(c) 2010 '#1040#1083#1077#1082#1089#1077#1081' '#1055#1077#1085#1100#1082#1086#1074' '
     end
     object RzLabel3: TRzLabel
       Left = 47
