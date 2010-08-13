@@ -390,6 +390,7 @@ begin
     PrepareBookRecord;
     if cbForceConvertToFBD.Checked then
     begin
+      FBD.ProgramUsed := GetProgramUsed(Application.ExeName);
       FBD.New(FRootPath + FBookRecord.Folder, FBookRecord.FileName, FBookRecord.FileExt);
       if FillFBDData then
       begin

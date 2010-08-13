@@ -37,7 +37,8 @@ uses
   ImgList,
   xmldom,
   FBDDocument,
-  FBDAuthorTable;
+  FBDAuthorTable,
+  unit_MHLHelpers;
 
 type
   TfrmConvertToFBD = class(TForm)
@@ -277,6 +278,7 @@ begin
   try
     if FillFBDData then
     begin
+      FBD.ProgramUsed := GetProgramUsed(Application.ExeName);
       FBD.Save(FEditorMode);
       if not FEditorMode then
         ChangeBookData;
