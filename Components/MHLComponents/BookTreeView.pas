@@ -1,9 +1,28 @@
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
+  * Created             05.07.2010
+  * Description
+  *
+  * $Id$
+  *
+  * History
+  *
+  ****************************************************************************** *)
+
 unit BookTreeView;
 
 interface
 
 uses
-  SysUtils, Classes, Controls, VirtualTrees;
+  Classes,
+  SysUtils,
+  Controls,
+  VirtualTrees;
 
 const
   DefaultSelectionOptions = [

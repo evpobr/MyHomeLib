@@ -1,12 +1,14 @@
-(* *****************************************************************************
+  (* *****************************************************************************
   *
   * MyHomeLib
   *
   * Copyright (C) 2008-2010 Aleksey Penkov
   *
+  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
   * Created             20.08.2008
   * Description
-  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
+  *
+  * $Id$
   *
   * History
   *

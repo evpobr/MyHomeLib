@@ -1,9 +1,30 @@
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
+  * Created             05.07.2010
+  * Description         TButtonedEdit, без правой кнопки и загружающий картинку для левой кнопки из ресурсов.
+  *
+  * $Id$
+  *
+  * History
+  *
+  ****************************************************************************** *)
+
 unit MHLButtonedEdit;
 
 interface
 
 uses
-  SysUtils, Classes, Controls, StdCtrls, ExtCtrls, ImgList;
+  Classes,
+  Controls,
+  StdCtrls,
+  ExtCtrls,
+  SysUtils,
+  ImgList;
 
 type
   TMHLButtonedEdit = class(TCustomButtonedEdit)

@@ -1,12 +1,19 @@
-{******************************************************************************}
-{                                                                              }
-{                       Package MyHomeLib Components                           }
-{                                                                              }
-{                                Version 1                                     }
-{                                                                              }
-{         Copyright (c) 2008, 2009 Nyck Rymanov,Aleksey Penkov                 }
-{                        alex.penkov@gmail.com                                 }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Authors             Aleksey Penkov   alex.penkov@gmail.com
+  *                     Nick Rymanov     nrymanov@gmail.com
+  * Created             20.08.2008
+  * Description
+  *
+  * $Id: $
+  *
+  * History
+  *
+  ****************************************************************************** *)
 
 unit files_list;
 

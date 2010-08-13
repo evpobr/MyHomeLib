@@ -4,9 +4,11 @@
   *
   * Copyright (C) 2008-2010 Aleksey Penkov
   *
+  * Author(s)           Nick Rymanov     nrymanov@gmail.com
   * Created             19.02.2010
   * Description         набор функций для получения информации из файлов в формате fb2
-  * Author(s)           Nick Rymanov     nrymanov@gmail.com
+  *
+  * $Id$
   *
   * History
   * NickR 19.02.2010    создан
