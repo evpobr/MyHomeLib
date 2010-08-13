@@ -68,15 +68,17 @@ type
     btnNext: TButton;
     FBD: TFBDDocument;
     alFBDAuthors: TFBDAuthorTable;
-    procedure btnPasteCoverClick(Sender: TObject);
-    procedure btnSaveClick(Sender: TObject);
-    procedure btnOpenBookClick(Sender: TObject);
+
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+
+    procedure btnOpenBookClick(Sender: TObject);
+    procedure btnPasteCoverClick(Sender: TObject);
     procedure btnLoadClick(Sender: TObject);
     procedure btnPreviousClick(Sender: TObject);
     procedure btnNextClick(Sender: TObject);
+    procedure btnSaveClick(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
 
   private
     FBookRecord: TBookRecord;
@@ -85,16 +87,17 @@ type
     FBusy: Boolean;
     FTerminated: Boolean;
 
-    procedure ChangeBookData;
     procedure PrepareForm;
-    procedure EnableButtons(State: boolean);
     function FillFBDData: boolean;
+    procedure ChangeBookData;
     procedure SaveFBD;
+    procedure EnableButtons(State: boolean);
 
   public
     procedure AutoMode;
+
     property EditorMode: Boolean read FEditorMode write FEditorMode;
-    property BookRecord: TBookRecord write FBookRecord;
+    property BookRecord: TBookRecord read FBookRecord write FBookRecord;
   end;
 
 var
@@ -119,32 +122,14 @@ uses
 
 {$R *.dfm}
 
-procedure TfrmConvertToFBD.AutoMode;
-var
-  FirstID: integer;
+procedure TfrmConvertToFBD.FormCreate(Sender: TObject);
 begin
-  FTerminated := False;
+  FBD.CoverSizeCode := 4;
+end;
+
+procedure TfrmConvertToFBD.FormShow(Sender: TObject);
+begin
   PrepareForm;
-  Show;
-  btnNextClick(Self);
-  FirstID := frmMain.LastActiveBookID;
-  repeat
-    btnNextClick(Self);
-  until (FirstID = frmMain.LastActiveBookID) or FTerminated;
-  Close;
-end;
-
-procedure TfrmConvertToFBD.btnCancelClick(Sender: TObject);
-begin
-  FTerminated := True;
-end;
-
-procedure TfrmConvertToFBD.btnLoadClick(Sender: TObject);
-var
-  FileName: string;
-begin
-  if GetFileName(fnOpenCoverImage, FileName) then
-    FBD.LoadCoverFromFile(FileName);
 end;
 
 procedure TfrmConvertToFBD.btnOpenBookClick(Sender: TObject);
@@ -157,23 +142,12 @@ begin
   FBD.LoadCoverFromClpbrd;
 end;
 
-procedure TfrmConvertToFBD.btnSaveClick(Sender: TObject);
+procedure TfrmConvertToFBD.btnLoadClick(Sender: TObject);
+var
+  FileName: string;
 begin
-  if FBusy then
-    Exit;
-
-  SaveFBD;
-  ModalResult := mrOk;
-end;
-
-procedure TfrmConvertToFBD.btnNextClick(Sender: TObject);
-begin
-  if FBusy then
-    Exit;
-
-  SaveFBD;
-  frmMain.SelectNextBook(False, True);
-  PrepareForm;
+  if GetFileName(fnOpenCoverImage, FileName) then
+    FBD.LoadCoverFromFile(FileName);
 end;
 
 procedure TfrmConvertToFBD.btnPreviousClick(Sender: TObject);
@@ -186,28 +160,60 @@ begin
   PrepareForm;
 end;
 
-procedure TfrmConvertToFBD.ChangeBookData;
+procedure TfrmConvertToFBD.btnNextClick(Sender: TObject);
 begin
-  DMCollection.tblBooks.Edit;
-  DMCollection.tblBooksFileName.Value := DMCollection.tblBooksFileName.Value + '.zip';
-  DMCollection.tblBooks.Post;
-end;
+  if FBusy then
+    Exit;
 
-procedure TfrmConvertToFBD.EnableButtons(State: boolean);
-begin
-  btnPrevious.Enabled := State;
-  btnNext.Enabled     := State;
-  btnSave.Enabled     := State;
-end;
-
-procedure TfrmConvertToFBD.FormCreate(Sender: TObject);
-begin
-  FBD.CoverSizeCode := 4;
-end;
-
-procedure TfrmConvertToFBD.FormShow(Sender: TObject);
-begin
+  SaveFBD;
+  frmMain.SelectNextBook(False, True);
   PrepareForm;
+end;
+
+procedure TfrmConvertToFBD.btnSaveClick(Sender: TObject);
+begin
+  if FBusy then
+    Exit;
+
+  SaveFBD;
+  ModalResult := mrOk;
+end;
+
+procedure TfrmConvertToFBD.btnCancelClick(Sender: TObject);
+begin
+  FTerminated := True;
+end;
+
+procedure TfrmConvertToFBD.PrepareForm;
+var
+  Folder: string;
+begin
+  //
+  // Assume FBookRecord is correctly initialized by the main form and passed on init.
+  //
+  lblAuthor.Caption := FBookRecord.Authors[0].GetFullName;
+  lblTitle.Caption := FBookRecord.Title;
+  Folder := TPath.Combine(DMUser.ActiveCollection.RootPath, FBookRecord.Folder);
+
+  if
+    FEditorMode and
+    FBD.Load(Folder, TPath.GetFileNameWithoutExtension(FBookRecord.FileName), FBookRecord.FileExt)
+  then
+  begin
+    alFBDAuthors.Items := FBD.GetAuthors(atlFBD);
+    with FBD.Publisher do
+    begin
+      edPublisher.Text := Publisher.Text;
+      edCity.Text := City.Text;
+      edISBN.Text := ISBN.Text;
+      edYear.Text := Year;
+    end;
+    //
+    // TODO : зачитывать аннотацию и обложку
+    //
+  end
+  else
+    FBD.New(Folder, FBookRecord.FileName, FBookRecord.FileExt);
 end;
 
 function TfrmConvertToFBD.FillFBDData: Boolean;
@@ -256,36 +262,11 @@ begin
   Result := True;
 end;
 
-procedure TfrmConvertToFBD.PrepareForm;
-var
-  Folder: string;
+procedure TfrmConvertToFBD.ChangeBookData;
 begin
-  //
-  // здесь использование этого метода не полностью оправдано
-  //
-  // DMCollection.GetCurrentBook(FBookRecord);
-
-  // Assume FBookRecord is correctly initialized by the main form
-  //  and passed on init.
-
-  lblAuthor.Caption := FBookRecord.Authors[0].GetFullName;
-  lblTitle.Caption := FBookRecord.Title;
-  Folder := TPath.Combine(DMUser.ActiveCollection.RootPath, FBookRecord.Folder);
-
-  if FEditorMode then
-  begin
-    FBD.Load(Folder, TPath.GetFileNameWithoutExtension(FBookRecord.FileName), FBookRecord.FileExt);
-    alFBDAuthors.Items := FBD.GetAuthors(atlFBD);
-    with FBD.Publisher do
-    begin
-      edPublisher.Text := Publisher.Text;
-      edCity.Text := City.Text;
-      edISBN.Text := ISBN.Text;
-      edYear.Text := Year;
-    end;
-  end
-  else
-    FBD.New(Folder, FBookRecord.FileName, FBookRecord.FileExt);
+  DMCollection.tblBooks.Edit;
+  DMCollection.tblBooksFileName.Value := DMCollection.tblBooksFileName.Value + '.zip';
+  DMCollection.tblBooks.Post;
 end;
 
 procedure TfrmConvertToFBD.SaveFBD;
@@ -305,6 +286,28 @@ begin
     Screen.Cursor := crDefault;
     FBusy := False;
   end;
+end;
+
+procedure TfrmConvertToFBD.EnableButtons(State: boolean);
+begin
+  btnPrevious.Enabled := State;
+  btnNext.Enabled     := State;
+  btnSave.Enabled     := State;
+end;
+
+procedure TfrmConvertToFBD.AutoMode;
+var
+  FirstID: integer;
+begin
+  FTerminated := False;
+  PrepareForm;
+  Show;
+  btnNextClick(Self);
+  FirstID := frmMain.LastActiveBookID;
+  repeat
+    btnNextClick(Self);
+  until (FirstID = frmMain.LastActiveBookID) or FTerminated;
+  Close;
 end;
 
 end.
