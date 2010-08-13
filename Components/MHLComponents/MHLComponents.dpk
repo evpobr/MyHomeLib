@@ -29,7 +29,6 @@ requires
   vcl,
   xmlrtl,
   vclx,
-  RaizeComponentsVcl,
   vclimg,
   dbrtl,
   IndyCore,
