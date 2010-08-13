@@ -1,15 +1,19 @@
-
-{******************************************************************************}
-{                                                                              }
-{                               FictionBook 2.1                                }
-{                                                                              }
-{                                Version 0.97                                  }
-{                                12.10.2009                                    }
-{                    Copyright (c) Alex Sedykh alexs@vsi.ru                    }
-{                                                                              }
-{   * multy-p in the annotation added (Alex Penkov)                            }
-{                                                                              }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * FictionBook 2.1
+  *
+  * Copyright (c) Alex Sedykh alexs@vsi.ru
+  *
+  * Author(s)
+  * Created                  12.10.2009
+  * Description
+  *
+  * $Id$
+  *
+  * History
+  * Alex Penkov              multy-p in the annotation added
+  *
+  ****************************************************************************** *)
 
 unit fictionbook_21;
 

@@ -4,9 +4,11 @@
   *
   * Copyright (C) 2008-2010 Aleksey Penkov
   *
+  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
   * Created             15.04.2010
   * Description         LinkLabel с исправленной поддержкой Themes
-  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
+  *
+  * $Id$
   *
   * History
   *
@@ -17,7 +19,12 @@ unit MHLLinkLabel;
 interface
 
 uses
-  SysUtils, Classes, Messages, Windows, Controls, ExtCtrls;
+  SysUtils,
+  Classes,
+  Messages,
+  Windows,
+  Controls,
+  ExtCtrls;
 
 type
   TMHLLinkLabel = class(TCustomLinkLabel)

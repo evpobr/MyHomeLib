@@ -1,12 +1,18 @@
-{******************************************************************************}
-{                                                                              }
-{                       Package MyHomeLib Components                           }
-{                                                                              }
-{                                Version 2                                     }
-{                                                                              }
-{         Copyright (c) 2008, 2009 Aleksey Penkov  alex.penkov@gmail.com       }
-{                                                                              }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
+  * Created             15.04.2010
+  * Description
+  *
+  * $Id$
+  *
+  * History
+  *
+  ****************************************************************************** *)
 
 unit MHLComponents_Register;
 

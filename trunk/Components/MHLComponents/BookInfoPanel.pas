@@ -4,9 +4,11 @@
   *
   * Copyright (C) 2008-2010 Aleksey Penkov
   *
+  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
   * Created             14.04.2010
   * Description         Панель информации о книге
-  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
+  *
+  * $Id$
   *
   * History
   *

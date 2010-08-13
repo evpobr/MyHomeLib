@@ -4,8 +4,12 @@
   *
   * Copyright (C) 2008-2010 Aleksey Penkov
   *
-  * Authors Aleksey Penkov   alex.penkov@gmail.com
-  *         Nick Rymanov     nrymanov@gmail.com
+  * Authors             Aleksey Penkov   alex.penkov@gmail.com
+  *                     Nick Rymanov     nrymanov@gmail.com
+  * Created             20.08.2008
+  * Description         Набор вспомогательных функций.
+  *
+  * $Id$
   *
   * History
   * NickR 07.05.2010         Добавил функцию определения формата стрима. Пока она не определяет ZIP.
