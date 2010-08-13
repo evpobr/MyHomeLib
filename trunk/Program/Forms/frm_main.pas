@@ -4886,7 +4886,7 @@ begin
       ShellExecute(
         Handle,
         'open',
-        PChar(Format(URL, [DMCollection.tblBooksLibID.Value])),
+        PChar(URL),
         nil,
         nil,
         SW_SHOW
