@@ -194,8 +194,8 @@ begin
     COL_RATE:
       begin
         Caption := rstrRate;
-        MaxWidth := 65;
-        MinWidth := 65;
+        MaxWidth := 100;
+        MinWidth := 70;
         Alignment := taCenter;
         Options := Rez;
       end;
