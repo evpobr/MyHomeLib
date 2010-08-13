@@ -94,6 +94,7 @@ type
   public
     procedure AutoMode;
     property EditorMode: Boolean read FEditorMode write FEditorMode;
+    property BookRecord: TBookRecord write FBookRecord;
   end;
 
 var
@@ -262,7 +263,10 @@ begin
   //
   // здесь использование этого метода не полностью оправдано
   //
-  DMCollection.GetCurrentBook(FBookRecord);
+  // DMCollection.GetCurrentBook(FBookRecord);
+
+  // Assume FBookRecord is correctly initialized by the main form
+  //  and passed on init.
 
   lblAuthor.Caption := FBookRecord.Authors[0].GetFullName;
   lblTitle.Caption := FBookRecord.Title;

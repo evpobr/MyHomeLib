@@ -2272,6 +2272,8 @@ begin
 end;
 
 procedure TfrmMain.tbtnAutoFBDClick(Sender: TObject);
+var
+  BookRecord: TBookRecord;
 begin
   if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
   begin
@@ -2281,6 +2283,8 @@ begin
 
   DisableControls(False);
   try
+    DMCollection.GetCurrentBook(BookRecord);
+    frmConvertToFBD.BookRecord := BookRecord;
     frmConvertToFBD.AutoMode;
   finally
     DisableControls(True);
@@ -6495,12 +6499,26 @@ begin
 end;
 
 procedure TfrmMain.miConverToFBDClick(Sender: TObject);
+var
+  Tree: TBookTree;
+  Data: PBookData;
+  Node: PVirtualNode;
+  BookRecord: TBookRecord;
 begin
   if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
   begin
     MHLShowWarning(rstrToConvertChangeCollection);
     Exit;
   end;
+
+  // Locate the selected book record and pass it to the edit form:
+  GetActiveTree(Tree);
+  Node := Tree.GetFirstSelected;
+  Data := Tree.GetNodeData(Node);
+  if not Assigned(Data) or (Data^.nodeType <> ntBookInfo) then
+    Exit;
+  DMCollection.GetBookRecord(Data.BookID, Data.DatabaseID, BookRecord, True);
+  frmConvertToFBD.BookRecord := BookRecord;
 
   frmConvertToFBD.EditorMode := miConverToFBD.Tag <> 0;
   frmConvertToFBD.ShowModal;
