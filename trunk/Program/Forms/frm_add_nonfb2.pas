@@ -109,7 +109,6 @@ type
     FBD: TFBDDocument;
     alBookAuthors: TFBDAuthorTable;
     alFBDAuthors: TFBDAuthorTable;
-    btnAddAuthorFromList: TBitBtn;
     procedure RzButton3Click(Sender: TObject);
     procedure TreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
     procedure TreeDblClick(Sender: TObject);
@@ -135,8 +134,8 @@ type
     procedure dtnConvertClick(Sender: TObject);
     procedure btnFileOpenClick(Sender: TObject);
     procedure btnNextClick(Sender: TObject);
-    procedure btnAddAuthorFromListClick(Sender: TObject);
     procedure TreeFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure AddAuthorFromList(Sender: TObject);
 
   private
     FBookRecord: TBookRecord;
@@ -264,6 +263,9 @@ begin
   pcPages.ActivePageIndex := 0;
 
   FBD.CoverSizeCode := 4;
+
+  alBookAuthors.AddAuthorFromListButton.OnClick := AddAuthorFromList;
+  alBookAuthors.AddAuthorFromListButton.Visible := True;
 end;
 
 function TfrmAddnonfb2.FillFBDData: Boolean;
@@ -466,7 +468,7 @@ begin
   FBookRecord.Lang := cbLang.Text;
 end;
 
-procedure TfrmAddnonfb2.btnAddAuthorFromListClick(Sender: TObject);
+procedure TfrmAddnonfb2.AddAuthorFromList(Sender: TObject);
 var
   FFiltered: Boolean;
   Row: TAuthorRecord;
