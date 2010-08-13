@@ -60,6 +60,8 @@ function GetFormattedSize(sizeInBytes: Integer; showBytes: Boolean = False): str
 
 function GetFileVersion(const FilePath: string): string;
 
+function GetProgramUsed(const FilePath: string): string;
+
 implementation
 
 uses
@@ -306,5 +308,9 @@ begin
   end;
 end;
 
+function GetProgramUsed(const FilePath: string): string;
+begin
+  Result := 'MyHomeLib ' + GetFileVersion(FilePath);
+end;
 
 end.
