@@ -53,9 +53,9 @@ implementation
 uses dm_user;
 
 resourcestring
-  rstrCreateNew = 'Выберите этот пункт для создания коллекций lib.rus.ec, коллекций на основе файлов inpx или пустых коллекций';
+  rstrCreateNew = 'Выберите этот пункт для создания пустых коллекций';
   rstrAddExists = 'Подключить ранее созданную коллекцию. Необходим файл коллекции *.hlc';
-  rstrInpxBased = 'Создать коллекцию из имеющегося файла inpx (коллекции lib.rus.ec, flibusta, Traum)';
+  rstrInpxBased = 'Создать коллекцию из имеющегося файла inpx (коллекции lib.rus.ec, Flibusta, Traum)';
 
 {$R *.dfm}
 
