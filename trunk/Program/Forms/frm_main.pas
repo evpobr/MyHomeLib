@@ -4873,17 +4873,20 @@ begin
 end;
 
 function TfrmMain.IsLibRusecEdit(BookID: Integer): Boolean;
+var
+  URL : string;
 begin
   if isExternalCollection(DMUser.ActiveCollection.CollectionType) then
   begin
-    if MHLShowWarning(Format(rstrGoToLibrarySite, ['lib.rus.ec']), mbYesNo) = mrYes then
+    if MHLShowWarning(Format(rstrGoToLibrarySite, [DMUser.ActiveCollection.URL]), mbYesNo) = mrYes then
     begin
       DMCollection.tblBooks.Locate(BOOK_ID_FIELD, BookID, []);
       { TODO -oNickR -cLibDesc : этот URL должен формироваться обвязкой библиотеки, т к его формат может меняться }
+      URL := Format('%sb/%u/edit', [DMUser.ActiveCollection.URL, DMCollection.tblBooksLibID.Value]);
       ShellExecute(
         Handle,
         'open',
-        PChar(Format('http://lib.rus.ec/b/%u/edit', [DMCollection.tblBooksLibID.Value])),
+        PChar(Format(URL, [DMCollection.tblBooksLibID.Value])),
         nil,
         nil,
         SW_SHOW
