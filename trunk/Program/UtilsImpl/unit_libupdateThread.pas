@@ -34,6 +34,18 @@ type
     property Updated: Boolean read FUpdated;
   end;
 
+implementation
+
+uses
+  DateUtils,
+  unit_Globals,
+  dm_collection,
+  dm_user,
+  unit_Consts,
+  unit_Settings,
+  unit_WorkerThread,
+  unit_Database;
+
 resourcestring
   rstrDownloadProgress = 'Загружено: %u%% из %u байт';
   rstrCheckingUpdate = 'Проверяем наличие обновлений основной базы ...';
@@ -50,19 +62,12 @@ resourcestring
   rstrUpdateComplete = 'Обновление завершено.';
   rstrRemovingOldCollection = 'Удаление старой коллекции "%s"...';
   rstrCreatingCollection = 'Создание новой коллекции  "%s"...';
-
-
-implementation
-
-uses
-  DateUtils,
-  unit_Globals,
-  dm_collection,
-  dm_user,
-  unit_Consts,
-  unit_Settings,
-  unit_WorkerThread,
-  unit_Database;
+  rstrSpeed = 'Загрузка: %s Kb/s';
+  rstrConnectingToServer = 'Подключение к серверу ...';
+  rstrCollectionUpdate = 'Обновление коллекции "%s" до версии %d:';
+  rstrUpdateFailedDownload = 'Загрузка обновлений не удалась.';
+  rstrCancelledByUser = 'Операция отменена пользователем.';
+  rstrImportIntoCollection = 'Импорт данных в коллекцию:';
 
 { TDownloadBooksThread }
 
@@ -87,14 +92,14 @@ begin
   if ElapsedTime>0 then
   begin
     Speed := FormatFloat('0.00',AWorkCount/1024/ElapsedTime);
-    SetComment(Format('Загрузка: %s Kb/s',[Speed]));
+    SetComment(Format(rstrSpeed,[Speed]));
   end;
 end;
 
 procedure TLibUpdateThread.HTTPWorkBegin(ASender: TObject;
   AWorkMode: TWorkMode; AWorkCountMax: Int64);
 begin
-  SetComment('Подключение к серверу ...');
+  SetComment(rstrConnectingToServer);
   FDownloadSize := AWorkCountMax;
   FStartDate := Now;
   SetProgress(0);
@@ -136,16 +141,16 @@ begin
           Continue;
 
         DMUser.ActivateCollection(Settings.Updates[i].CollectionID);
-        Teletype(Format('Обновление коллекции "%s" до версии %d:', [Settings.Updates[i].Name, Settings.Updates[i].ExternalVersion]), tsInfo);
+        Teletype(Format(rstrCollectionUpdate, [Settings.Updates[i].Name, Settings.Updates[i].ExternalVersion]), tsInfo);
 
         if Settings.Updates[i].Local then
-          Teletype('Обновление из локального архива', tsInfo)
+          Teletype(rstrUpdatingFromLocalArchive, tsInfo)
         else
         begin
-          Teletype('Загрузка обновлений ...', tsInfo);
+          Teletype(rstrDownloadingUpdates, tsInfo);
           if not Settings.Updates.DownloadUpdate(i, FidHTTP) then
           begin
-            Teletype('Загрузка обновлений не удалась.', tsInfo);
+            Teletype(rstrUpdateFailedDownload, tsInfo);
             Continue;
           end;
         end;
@@ -153,7 +158,7 @@ begin
         if Canceled then
         begin
           DeleteFile(Settings.WorkPath + Settings.Updates.Items[i].UpdateFile);
-          Teletype('Операция отменена пользователем.', tsInfo);
+          Teletype(rstrCancelledByUser, tsInfo);
           Exit;
         end;
 
@@ -187,7 +192,7 @@ begin
         end; //if FULL
 
         //  импортирум данные
-        Teletype('Импорт данных в коллекцию:', tsInfo);
+        Teletype(rstrImportIntoCollection, tsInfo);
 
         Import(not Settings.Updates[i].Full);
 

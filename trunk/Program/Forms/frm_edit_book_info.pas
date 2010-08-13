@@ -97,6 +97,10 @@ uses
   VirtualTrees,
   unit_Consts;
 
+resourcestring
+  rstrProvideAtLeastOneAuthor = 'Укажите минимум одного автора!';
+  rstrProvideBookTitle = 'Укажите название книги!';
+
 {$R *.dfm}
 
 procedure TfrmEditBookInfo.FormShow(Sender: TObject);
@@ -254,13 +258,13 @@ begin
 
   if lvAuthors.Items.Count = 0 then
   begin
-    MessageDlg('Укажите минимум одного автора!', mtError, [mbOk], 0);
+    MessageDlg(rstrProvideAtLeastOneAuthor, mtError, [mbOk], 0);
     Exit;
   end;
 
   if edT.Text = '' then
   begin
-    MessageDlg('Укажите название книги!', mtError, [mbOk], 0);
+    MessageDlg(rstrProvideBookTitle, mtError, [mbOk], 0);
     Exit;
   end;
 

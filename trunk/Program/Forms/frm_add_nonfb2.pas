@@ -174,6 +174,12 @@ uses
   frm_author_list,
   dm_collection;
 
+resourcestring
+  rstrFileNotSelected = 'Файл не выбран!';
+  rstrProvideAtLeastOneAuthor = 'Укажите минимум одного автора!';
+  rstrProvideBookTitle = 'Укажите название книги!';
+  rstrFailedToRename = 'Переименование не удалось!' + CRLF + 'Возможно, файл заблокирован другой программой.';
+
 {$R *.dfm}
 
 procedure TfrmAddnonfb2.FillLists;
@@ -326,11 +332,11 @@ begin
   Result := False;
   try
     if Data = nil then
-      raise EInvalidOp.Create('Файл не выбран!');
+      raise EInvalidOp.Create(rstrFileNotSelected);
     if (not cbNoAuthorAllowed.Checked) and (alBookAuthors.Count = 0) then
-      raise EInvalidOp.Create('Укажите минимум одного автора!');
+      raise EInvalidOp.Create(rstrProvideAtLeastOneAuthor);
     if edT.Text = '' then
-      raise EInvalidOp.Create('Укажите название книги!');
+      raise EInvalidOp.Create(rstrProvideBookTitle);
     if Data.DataType = dtFolder then
       Result := False
     else
@@ -416,7 +422,7 @@ begin
         Tree.RepaintNode(Tree.GetFirstSelected);
       end
       else
-        MessageDlg('Переименование не удалось!' + CRLF + 'Возможно, файл заблокирован другой программой.', mtError, [mbOk], 0);
+        MessageDlg(rstrFailedToRename, mtError, [mbOk], 0);
     end;
   finally
     btnRenameFile.Enabled := True;
@@ -438,7 +444,7 @@ begin
       TAuthorsHelper.Add(FBookRecord.Authors, Author.Last, Author.First, Author.Middle);
   end
   else
-    TAuthorsHelper.Add(FBookRecord.Authors, UNKNOWN_AUTHOR_LASTNAME, '', '');
+    TAuthorsHelper.Add(FBookRecord.Authors, rstrUnknownAuthor, '', '');
 
   frmGenreTree.GetSelectedGenres(FBookRecord);
   FBookRecord.Title := edT.Text;

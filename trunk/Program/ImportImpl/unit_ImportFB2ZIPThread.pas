@@ -45,6 +45,14 @@ uses
   unit_Settings,
   fictionbook_21;
 
+resourcestring
+  rstrErrorUnpackingWithCode = 'Ошибка распаковки архива %s, Код: %d';
+  rstrFoundNewArchives = 'Обнаружено новых архивов: %u';
+  rstrErrorFB2Structure = 'Ошибка структуры fb2: %s -> %s';
+  rstrErrorUnpacking = 'Ошибка распаковки архива: ';
+  rstrProcessedArchives = 'Обработано архивов: %u из %u';
+  rstrAddedBooks = 'Добавленo книг: %u, пропущено книг: %u';
+
 { TImportFB2ZIPThread }
 
 constructor TImportFB2ZIPThread.Create;
@@ -95,7 +103,7 @@ end;
 procedure TImportFB2ZIPThread.ShowZipErrorMessage(Sender: TObject; ErrCode: Integer; Message: string);
 begin
   if ErrCode <> 0 then
-    Teletype(Format('Ошибка распаковки архива %s, Код: %d', [FZipper.FileName, 0]), tsError);
+    Teletype(Format(rstrErrorUnpackingWithCode, [FZipper.FileName, 0]), tsError);
 end;
 }
 
@@ -119,7 +127,7 @@ begin
   DefectCount := 0;
 
   SetProgress(0);
-  Teletype(Format('Обнаружено новых архивов: %u', [FFiles.Count]));
+  Teletype(Format(rstrFoundNewArchives, [FFiles.Count]));
 
   FZipper := TZipForge.Create(nil);
   // FZipper.Options.OEMFileNames := False;
@@ -171,7 +179,7 @@ begin
               on e: Exception do
               begin
                 NoErrors := False;
-                Teletype('Ошибка структуры fb2: ' + AZipFileName + ' -> ' + R.FileName + FB2_EXTENSION, tsError);
+                Teletype(Format(rstrErrorFB2Structure, [AZipFileName, R.FileName + FB2_EXTENSION]), tsError);
                 //Teletype(e.Message, tsError);
                 Inc(DefectCount);
               end;
@@ -193,21 +201,21 @@ begin
         end;
       except
         on e: Exception do
-           Teletype('Ошибка распаковки архива: ' + AZipFileName, tsError);
+           Teletype(rstrErrorUnpacking + AZipFileName, tsError);
       end;
 
       if (i mod ProcessedItemThreshold) = 0 then
-        SetComment(Format('Обработано архивов: %u из %u', [i + 1, FFiles.Count]));
+        SetComment(Format(rstrProcessedArchives, [i + 1, FFiles.Count]));
       SetProgress((i + 1) * 100 div FFiles.Count);
     end;
   finally
     FreeAndNil(FZipper);
   end;
 
-  SetComment(Format('Обработано архивов: %u из %u', [FFiles.Count, FFiles.Count]));
+  SetComment(Format(rstrProcessedArchives, [FFiles.Count, FFiles.Count]));
 
   if FFiles.Count > 0 then
-    Teletype(Format('Добавленo книг: %u, пропущено книг: %u', [AddCount, DefectCount]));
+    Teletype(Format(rstrAddedBooks, [AddCount, DefectCount]));
 end;
 
 end.

@@ -95,6 +95,20 @@ uses
   unit_Consts,
   unit_Helpers;
 
+resourcestring
+  rstrAuthor = 'Автор';
+  rstrTitle = 'Название';
+  rstrSeries = 'Серия';
+  rstrNO = '№';
+  rstrSize = 'Размер';
+  rstrRate = 'Рейтинг';
+  rstrDate = 'Добавлено';
+  rstrGenre = 'Жанр';
+  rstrCollection = 'Коллекция';
+  rstrType = 'Тип';
+  rstrLang = 'Язык';
+  rstrLibrate = 'Оценка';
+
 const
   //
   // Наборы опций для изменяемых и неизменяемых колонок
@@ -134,7 +148,7 @@ begin
   case Tag of
     COL_AUTHOR:
       begin
-        Caption := 'Автор';
+        Caption := rstrAuthor;
         MaxWidth := 900;
         MinWidth := 30;
         Alignment := taLeftJustify;
@@ -143,7 +157,7 @@ begin
 
     COL_TITLE:
       begin
-        Caption := 'Название';
+        Caption := rstrTitle;
         MaxWidth := 900;
         MinWidth := 30;
         Alignment := taLeftJustify;
@@ -152,7 +166,7 @@ begin
 
     COL_SERIES:
       begin
-        Caption := 'Серия';
+        Caption := rstrSeries;
         MaxWidth := 900;
         MinWidth := 30;
         Alignment := taLeftJustify;
@@ -161,7 +175,7 @@ begin
 
     COL_NO:
       begin
-        Caption := '№';
+        Caption := rstrNO;
         MaxWidth := 900;
         MinWidth := 20;
         Alignment := taRightJustify;
@@ -170,7 +184,7 @@ begin
 
     COL_SIZE:
       begin
-        Caption := 'Размер';
+        Caption := rstrSize;
         MaxWidth := 900;
         MinWidth := 20;
         Alignment := taRightJustify;
@@ -179,7 +193,7 @@ begin
 
     COL_RATE:
       begin
-        Caption := 'Рейтинг';
+        Caption := rstrRate;
         MaxWidth := 65;
         MinWidth := 65;
         Alignment := taCenter;
@@ -188,7 +202,7 @@ begin
 
     COL_DATE:
       begin
-        Caption := 'Добавлено';
+        Caption := rstrDate;
         MaxWidth := 900;
         MinWidth := 40;
         Alignment := taLeftJustify;
@@ -197,7 +211,7 @@ begin
 
     COL_GENRE:
       begin
-        Caption := 'Жанр';
+        Caption := rstrGenre;
         MaxWidth := 900;
         MinWidth := 30;
         Alignment := taLeftJustify;
@@ -206,7 +220,7 @@ begin
 
     COL_COLLECTION:
       begin
-        Caption := 'Коллекция';
+        Caption := rstrCollection;
         MaxWidth := 900;
         MinWidth := 30;
         Alignment := taLeftJustify;
@@ -215,7 +229,7 @@ begin
 
     COL_TYPE:
       begin
-        Caption := 'Тип';
+        Caption := rstrType;
         MaxWidth := 55;
         MinWidth := 55;
         Alignment := taCenter;
@@ -224,7 +238,7 @@ begin
 
     COL_LANG:
       begin
-        Caption := 'Язык';
+        Caption := rstrLang;
         MaxWidth := 55;
         MinWidth := 55;
         Alignment := taCenter;
@@ -233,7 +247,7 @@ begin
 
     COL_LIBRATE:
       begin
-        Caption := 'Оценка';
+        Caption := rstrLibrate;
         MaxWidth := 60;
         MinWidth := 60;
         Alignment := taCenter;

@@ -42,6 +42,9 @@ uses
   frm_info_popup,
   frm_search;
 
+resourcestring
+  rstrUpdateCollections = 'Обновление коллекций';
+
 procedure SyncOnLineFiles;
 var
   worker: TSyncOnLineThread;
@@ -91,7 +94,7 @@ begin
   worker := TLibUpdateThread.Create;
   try
     ProgressForm := TImportProgressFormEx.Create(Application);
-    ProgressForm.Caption := 'Обновление коллекций';
+    ProgressForm.Caption := rstrUpdateCollections;
     ProgressForm.CloseOnTimer := True;
     try
       ProgressForm.WorkerThread := worker;

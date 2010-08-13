@@ -39,6 +39,12 @@ uses
   unit_Settings,
   unit_Templater;
 
+resourcestring
+  rstrFoundFiles = 'Обнаружено файлов: %u';
+  rstrStructureError = 'Ошибка структуры fb2: %s.zip -> %s';
+  rstrProcessedFiles = 'Обработано файлов: %u из %u';
+  rstrAddedFiles = 'Добавлено файлов: %u из %u';
+
 { TImportFB2Thread }
 
 constructor TImportFB2Thread.Create;
@@ -59,7 +65,7 @@ var
   FileName: string;
 begin
   SetProgress(0);
-  Teletype(Format('Обнаружено файлов: %u', [FFiles.Count]));
+  Teletype(Format(rstrFoundFiles, [FFiles.Count]));
   AddedBooks := 0;
   FTemplater:= TTemplater.Create;
   for i := 0 to FFiles.Count - 1 do
@@ -92,15 +98,15 @@ begin
       Inc(AddedBooks);
     except
       on e: Exception do
-        Teletype('Ошибка структуры fb2: ' + R.Folder + '.zip -> ' + R.FileName + FB2_EXTENSION, tsError);
+        Teletype(Format(rstrStructureError, [R.Folder, R.FileName + FB2_EXTENSION]), tsError);
     end;
 
     if ((i + 1) mod ProcessedItemThreshold) = 0 then
-      SetComment(Format('Обработано файлов: %u из %u', [i + 1, FFiles.Count]));
+      SetComment(Format(rstrProcessedFiles, [i + 1, FFiles.Count]));
     SetProgress((i + 1) * 100 div FFiles.Count);
   end;
   FTemplater.Free;
-  Teletype(Format('Добавлено файлов: %u из %u', [AddedBooks, FFiles.Count]),tsInfo);
+  Teletype(Format(rstrAddedFiles, [AddedBooks, FFiles.Count]),tsInfo);
 end;
 
 end.

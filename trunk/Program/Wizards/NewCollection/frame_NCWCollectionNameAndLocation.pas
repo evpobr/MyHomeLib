@@ -52,12 +52,6 @@ type
 var
   frameNCWNameAndLocation: TframeNCWNameAndLocation;
 
-resourcestring
-  SHOWCOLLECTIONTYPE = 'Укажите название коллекции.';
-  SHOWCOLLECTIONFILE = 'Укажите файл коллекции.';
-  SHOWCOLLECTIONFOLDER = 'Укажите расположение папки с книгами.';
-  SELECTFOLDER = 'Выберите папку с книгами';
-
 implementation
 
 uses
@@ -69,6 +63,13 @@ uses
   unit_Consts,
   unit_Globals,
   ZipForge;
+
+resourcestring
+  rstrShowCollectionType = 'Укажите название коллекции.';
+  rstrShowCollectionFile = 'Укажите файл коллекции.';
+  rstrShowCollectionFolder = 'Укажите расположение папки с книгами.';
+  rstrSelectFolder = 'Выберите папку с книгами';
+  rstrDamagedArchive = 'Архив поврежден или имеет неправильный формат!';
 
 {$R *.dfm}
 
@@ -110,7 +111,7 @@ begin
       Zip.CloseArchive;
     except
       on E: exception do
-        MessageDlg('Архив поврежден или имеет неправильный формат!', mtError, [mbOK], 0);
+        MessageDlg(rstrDamagedArchive, mtError, [mbOK], 0);
     end;
   finally
     Zip.Free;
@@ -210,7 +211,7 @@ begin
     strValue := Trim(edCollectionName.Text);
     if strValue = '' then
     begin
-      ShowPageMessage(SHOWCOLLECTIONTYPE, 0);
+      ShowPageMessage(rstrShowCollectionType, 0);
       Exit;
     end;
 
@@ -229,7 +230,7 @@ begin
     strValue := Trim(edCollectionFile.Text);
     if strValue = '' then
     begin
-      ShowPageMessage(SHOWCOLLECTIONFILE, 0);
+      ShowPageMessage(rstrShowCollectionFile, 0);
       Exit;
     end;
 
@@ -255,7 +256,7 @@ begin
     strValue := Trim(edCollectionRoot.Text);
     if strValue = '' then
     begin
-      ShowPageMessage(SHOWCOLLECTIONFOLDER, 0);
+      ShowPageMessage(rstrShowCollectionFolder, 0);
       Exit;
     end;
   end;
@@ -285,7 +286,7 @@ procedure TframeNCWNameAndLocation.btnSelectRootClick(Sender: TObject);
 var
   AFolder: string;
 begin
-  if GetFolderName(Handle, SELECTFOLDER , AFolder) then
+  if GetFolderName(Handle, rstrSelectFolder, AFolder) then
     edCollectionRoot.Text := AFolder;
 end;
 

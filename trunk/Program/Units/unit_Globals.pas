@@ -383,6 +383,9 @@ uses
   unit_fb2ToText,
   unit_Helpers;
 
+resourcestring
+  rstrUnableToLaunch = ' Не удалось запустить %s ! ';
+
 const
   lat: set of AnsiChar = ['A' .. 'Z', 'a' .. 'z', '\', '-', ':', '`', ',', '.', '0' .. '9', '_', ' ', '(', ')', '[', ']', '{', '}'];
 
@@ -644,7 +647,7 @@ begin
 
   AuthorName := Trim(AuthorName);
   if AuthorName = '' then
-    AuthorName := UNKNOWN_AUTHOR_LASTNAME;
+    AuthorName := rstrUnknownAuthor;
 
   Result := IncludeTrailingPathDelimiter(Letter) + IncludeTrailingPathDelimiter(AuthorName);
 end;
@@ -655,7 +658,7 @@ var
 begin
   BookTitle := Trim(CheckSymbols(Title));
   if BookTitle = '' then
-    BookTitle := BOOK_NO_TITLE;
+    BookTitle := rstrNoTitle;
   Result := IntToStr(libID) + ' ' + BookTitle;
 end;
 
@@ -666,7 +669,7 @@ begin
   AuthorID := 0;
   FFirstName := '';
   FMiddleName := '';
-  FLastName := UNKNOWN_AUTHOR_LASTNAME;
+  FLastName := rstrUnknownAuthor;
 end;
 
 class function TAuthorData.FormatName(const LastName: string; const FirstName: string; const MiddleName: string; const nickName: string = ''; onlyInitials: Boolean = False): string;
@@ -854,15 +857,15 @@ var
   i: Integer;
 begin
   if Title = '' then
-    Title := BOOK_NO_TITLE;
+    Title := rstrNoTitle;
   if Serie = '' then
     Serie := NO_SERIES_TITLE;
 
   for i := 0 to AuthorCount - 1 do
     if Authors[i].LastName = '' then
-      Authors[i].LastName := UNKNOWN_AUTHOR_LASTNAME;
+      Authors[i].LastName := rstrUnknownAuthor;
   if AuthorCount = 0 then
-    TAuthorsHelper.Add(Authors, UNKNOWN_AUTHOR_LASTNAME, '', '');
+    TAuthorsHelper.Add(Authors, rstrUnknownAuthor, '', '');
 
   for i := 0 to GenreCount - 1 do
     if Genres[i].GenreCode = '' then
@@ -1121,7 +1124,7 @@ begin
   else
   begin
     // { TODO -oNickR -cRefactoring : не самая лучшая идея показывать диалоги прямо из этой функции. Она может быть вызвана из рабочего потока. }
-    Application.MessageBox(PChar(Format(' Не удалось запустить %s ! ', [FileName])), '', mb_IconExclamation)
+    Application.MessageBox(PChar(Format(rstrUnableToLaunch, [FileName])), '', mb_IconExclamation)
   end;
 end;
 

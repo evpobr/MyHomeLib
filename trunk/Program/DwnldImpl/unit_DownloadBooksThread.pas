@@ -75,6 +75,13 @@ uses
   unit_Settings,
   frm_main;
 
+resourcestring
+  rstrDownloaded = 'Скачано файлов: %u из %u';
+  rstrConnecting = 'Подключение...';
+  rstrIgnoreDownloadErrors = 'Игнорировать ошибки загрузки ?';
+  rstrDone = 'Готово';
+  rstrOperationCompleted = 'Завершение операции ...';
+
 procedure TDownloadBooksThread.WorkFunction;
 var
   i: Integer;
@@ -90,11 +97,11 @@ begin
     FDownloader.OnProgress := SetProgress2;
 
     totalBooks := High(FBookIdList) + 1;
-    SetComment2(' ', Format('Скачано файлов: %u из %u', [0, totalBooks]));
+    SetComment2(' ', Format(rstrDownloaded, [0, totalBooks]));
 
     for i := 0 to totalBooks - 1 do
     begin
-      SetComment2('Подключение...', '');
+      SetComment2(rstrConnecting, '');
 
       FBookIdList[i].Res := FDownloader.Download(FBookIdList[i].BookID, FBookIdList[i].DatabaseID);
       if
@@ -105,16 +112,16 @@ begin
         (not FIgnoreErrors)               //
       then
       begin
-        Res := ShowMessage('Игнорировать ошибки загрузки ?', MB_ICONQUESTION or MB_YESNO);
+        Res := ShowMessage(rstrIgnoreDownloadErrors, MB_ICONQUESTION or MB_YESNO);
         FIgnoreErrors := (Res = IDYES);
       end;
 
-      SetComment2('Готово', Format('Скачано файлов: %u из %u', [i + 1, totalBooks]));
+      SetComment2(rstrDone, Format(rstrDownloaded, [i + 1, totalBooks]));
       SetProgress2(100, (i + 1) * 100 div totalBooks);
 
       if Canceled then
       begin
-        SetComment2(' ', 'Завершение операции ...');
+        SetComment2(' ', rstrOperationCompleted);
         Break;
       end;
 

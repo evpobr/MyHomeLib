@@ -56,6 +56,9 @@ uses
   dm_user,
   unit_Helpers;
 
+resourcestring
+  rstrClose = 'Закрыть';
+
 {$R *.dfm}
 
 { TImportProgressForm1 }
@@ -89,7 +92,7 @@ begin
   if FErrors.Count <> 0 then
     btnSaveLog.Visible := True;
   btnCancel.OnClick := DoCloseForm;
-  btnCancel.Caption := 'Закрыть';
+  btnCancel.Caption := rstrClose;
   Timer.Enabled := FCloseOnTimer;
 end;
 

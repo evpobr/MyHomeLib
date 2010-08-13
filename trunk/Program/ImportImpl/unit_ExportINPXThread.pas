@@ -66,6 +66,11 @@ uses
   unit_Settings,
   unit_MHL_strings;
 
+resourcestring
+  rstrVersionFrom = 'Версия от ';
+  rstrExportingCollection = 'Экспортируем коллекцию.';
+  rstrSaving = 'Сохраняем документ. Подождите, пожалуйста.';
+
 const
   BOOKS_INFO_FILE = 'books.inp'; { TODO -oNickR -cRefactoring : добавить в систебные файлы? }
 
@@ -92,7 +97,7 @@ begin
 
   FCollectionNotes := DMUser.ActiveCollection.Notes;
   if FCollectionNotes = '' then
-    FCollectionNotes := 'Версия от ' + DateToStr(Now);
+    FCollectionNotes := rstrVersionFrom + DateToStr(Now);
 end;
 
 procedure TExport2INPXThread.WorkFunction;
@@ -107,7 +112,7 @@ var
   processedBooks: Integer;
   R: TBookRecord;
 begin
-  SetComment('Экспортируем коллекцию.');
+  SetComment(rstrExportingCollection);
 
   totalBooks := DMCollection.tblBooks.RecordCount;
   processedBooks := 0;
@@ -145,7 +150,7 @@ begin
         SetProgress(processedBooks * 100 div totalBooks);
       end;
 
-      SetComment('Сохраняем документ. Подождите, пожалуйста.');
+      SetComment(rstrSaving);
 
       slHelper.SaveToFile(FTempPath + BOOKS_INFO_FILE, TEncoding.UTF8);
       slFileList.Add(FTempPath + BOOKS_INFO_FILE);

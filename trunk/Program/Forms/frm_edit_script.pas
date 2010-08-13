@@ -58,6 +58,9 @@ implementation
 uses
   unit_Helpers;
 
+resourcestring
+  rstrProvideNameAndPath = '”кажите название и путь!';
+
 {$R *.dfm}
 
 procedure TfrmEditScript.edPathButtonClick(Sender: TObject);
@@ -101,7 +104,7 @@ end;
 procedure TfrmEditScript.btnSaveClick(Sender: TObject);
 begin
   if (Title = '') or (Path = '') then
-    MessageDlg('”кажите название и путь!', mtError, [mbOk], 0)
+    MessageDlg(rstrProvideNameAndPath, mtError, [mbOk], 0)
   else
     ModalResult := mrOk;
 end;

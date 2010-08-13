@@ -124,6 +124,36 @@ uses
   unit_MHLHelpers,
   unit_FB2Utils;
 
+resourcestring
+  rstrFileInfo = 'Информация о файле';
+  rstrFolder = 'Папка';
+  rstrFile = 'Файл';
+  rstrSize = 'Размер';
+  rstrAdded = 'Добавлен';
+  rstrGeneralInfo = 'Общая информация';
+  rstrTitle = 'Название';
+  rstrAuthors = 'Автор(ы)';
+  rstrSingleSeries = 'Серия';
+  rstrGenre = 'Жанр';
+  rstrKeywords = 'Ключевые слова';
+  rstrDate = 'Дата';
+  rstrBookLanguage = 'Язык книги';
+  rstrSourceLanguage = 'Язык оригинала';
+  rstrTranslators = 'Переводчик(и)';
+  rstrPublisherInfo = 'Издательская информация';
+  rstrPublisher = 'Издательство';
+  rstrCity = 'Город';
+  rstrYear = 'Год';
+  rstrISBN = 'ISBN';
+  rstrOCRInfo ='Информация о документе (OCR)';
+  rstrProgram = 'Программа';
+  rstrID = 'ID';
+  rstrVersion = 'Версия';
+  rstrSource = 'Источник';
+  rstrSourceAuthor = 'Автор источника';
+  rstrHistory = 'История';
+
+
 {$R *.dfm}
 
 procedure TfrmBookDetails.FormCreate(Sender: TObject);
@@ -260,11 +290,11 @@ begin
 
   with lvFileInfo.Groups.Add do
   begin
-    Header := 'Информация о файле';
-    AddItem(lvFileInfo, 'Папка', bookInfo.Folder, GroupID);
-    AddItem(lvFileInfo, 'Файл', bookInfo.FileName, GroupID);
-    AddItem(lvFileInfo, 'Размер', GetFormattedSize(bookInfo.Size, True), GroupID);
-    AddItem(lvFileInfo, 'Добавлен', DateToStr(bookInfo.Date), GroupID);
+    Header := rstrFileInfo;
+    AddItem(lvFileInfo, rstrFolder, bookInfo.Folder, GroupID);
+    AddItem(lvFileInfo, rstrFile, bookInfo.FileName, GroupID);
+    AddItem(lvFileInfo, rstrSize, GetFormattedSize(bookInfo.Size, True), GroupID);
+    AddItem(lvFileInfo, rstrAdded, DateToStr(bookInfo.Date), GroupID);
   end;
   { TODO -oNickR -cUsability : для онлайн коллекций необходимо показывать следующие поля }
   // libID: Integer;    ???
@@ -304,85 +334,85 @@ begin
     // ---------------------------------------------
     with book.Description.Titleinfo, lvInfo.Groups.Add do
     begin
-      Header := 'Общая информация';
+      Header := rstrGeneralInfo;
 
-      AddItem(lvInfo, 'Название', Booktitle.Text, GroupID);
+      AddItem(lvInfo, rstrTitle, Booktitle.Text, GroupID);
 
       for i := 0 to Author.Count - 1 do
       begin
         with Author[i] do
           tmpStr := TAuthorData.FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
-        AddItem(lvInfo, IfThen(i = 0, 'Автор(ы)'), tmpStr, GroupID);
+        AddItem(lvInfo, IfThen(i = 0, rstrAuthors), tmpStr, GroupID);
       end;
 
       { TODO -oNickR -cUsability : показывать номер в серии }
       for i := 0 to Sequence.Count - 1 do
       begin
-        AddItem(lvInfo, IfThen(i = 0, 'Серия'), Sequence[i].Name, GroupID);
+        AddItem(lvInfo, IfThen(i = 0, rstrSingleSeries), Sequence[i].Name, GroupID);
       end;
 
       { TODO -oNickR -cUsability : показывать алиасы вместо внутренних имен }
       for i := 0 to Genre.Count - 1 do
       begin
-        AddItem(lvInfo, IfThen(i = 0, 'Жанр'), Genre[i], GroupID);
+        AddItem(lvInfo, IfThen(i = 0, rstrGenre), Genre[i], GroupID);
       end;
 
-      AddItem(lvInfo, 'Ключевые слова', Keywords.Text, GroupID);
-      AddItem(lvInfo, 'Дата', Date.Text, GroupID);
-      AddItem(lvInfo, 'Язык книги', Lang, GroupID);
-      AddItem(lvInfo, 'Язык оригинала', Srclang, GroupID);
+      AddItem(lvInfo, rstrKeywords, Keywords.Text, GroupID);
+      AddItem(lvInfo, rstrDate, Date.Text, GroupID);
+      AddItem(lvInfo, rstrBookLanguage, Lang, GroupID);
+      AddItem(lvInfo, rstrSourceLanguage, Srclang, GroupID);
 
       for i := 0 to Translator.Count - 1 do
       begin
         with Translator[i] do
           tmpStr := TAuthorData.FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
-        AddItem(lvInfo, IfThen(i = 0, 'Переводчик(и)'), tmpStr, GroupID);
+        AddItem(lvInfo, IfThen(i = 0, rstrTranslators), tmpStr, GroupID);
       end;
     end;
 
     // ---------------------------------------------
     with book.Description.Publishinfo, lvInfo.Groups.Add do
     begin
-      Header := 'Издательская информация';
+      Header := rstrPublisherInfo;
 
-      AddItem(lvInfo, 'Название', Bookname.Text, GroupID);
+      AddItem(lvInfo, rstrTitle, Bookname.Text, GroupID);
 
-      AddItem(lvInfo, 'Издательство', Publisher.Text, GroupID);
-      AddItem(lvInfo, 'Город', City.Text, GroupID);
-      AddItem(lvInfo, 'Год', Year, GroupID);
-      AddItem(lvInfo, 'ISBN', Isbn.Text, GroupID);
+      AddItem(lvInfo, rstrPublisher, Publisher.Text, GroupID);
+      AddItem(lvInfo, rstrCity, City.Text, GroupID);
+      AddItem(lvInfo, rstrYear, Year, GroupID);
+      AddItem(lvInfo, rstrISBN, Isbn.Text, GroupID);
 
       { TODO -oNickR -cUsability : показывать номер в серии }
       for i := 0 to Sequence.Count - 1 do
       begin
-        AddItem(lvInfo, IfThen(i = 0, 'Серия'), Sequence[i].Name, GroupID);
+        AddItem(lvInfo, IfThen(i = 0, rstrSingleSeries), Sequence[i].Name, GroupID);
       end;
     end;
 
     // ---------------------------------------------
     with book.Description.Documentinfo, lvInfo.Groups.Add do
     begin
-      Header := 'Информация о документе (OCR)';
+      Header := rstrOCRInfo;
       for i := 0 to Author.Count - 1 do
       begin
         with Author[i] do
           tmpStr := TAuthorData.FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
-        AddItem(lvInfo, IfThen(i = 0, 'Авторы'), tmpStr, GroupID);
+        AddItem(lvInfo, IfThen(i = 0, rstrAuthors), tmpStr, GroupID);
       end;
 
-      AddItem(lvInfo, 'Программа', Programused.Text, GroupID);
-      AddItem(lvInfo, 'Дата', Date.Text, GroupID);
-      AddItem(lvInfo, 'ID', book.Description.Documentinfo.Id, GroupID);
-      AddItem(lvInfo, 'Версия', Version, GroupID);
+      AddItem(lvInfo, rstrProgram, Programused.Text, GroupID);
+      AddItem(lvInfo, rstrDate, Date.Text, GroupID);
+      AddItem(lvInfo, rstrID, book.Description.Documentinfo.Id, GroupID);
+      AddItem(lvInfo, rstrVersion, Version, GroupID);
 
       for i := 0 to Srcurl.Count - 1 do
       begin
-        AddItem(lvInfo, IfThen(i = 0, 'Источник'), Srcurl[i], GroupID);
+        AddItem(lvInfo, IfThen(i = 0, rstrSource), Srcurl[i], GroupID);
       end;
-      AddItem(lvInfo, 'Автор источника', Srcocr.Text, GroupID);
+      AddItem(lvInfo, rstrSourceAuthor, Srcocr.Text, GroupID);
 
       for i := 0 to History.p.Count - 1 do
-        AddItem(lvInfo, IfThen(i = 0, 'История'), History.p[i].OnlyText, GroupID);
+        AddItem(lvInfo, IfThen(i = 0, rstrHistory), History.p[i].OnlyText, GroupID);
     end;
 
     // ---------------------------------------------

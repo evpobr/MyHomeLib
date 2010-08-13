@@ -36,6 +36,9 @@ uses
   dm_Collection,
   Dialogs;
 
+resourcestring
+  rstrCheckTemplateValidity = 'Проверьте правильность шаблона';
+
 function WriteFb2InfoToFile(const FileName: string): Boolean;
 var
   R: TBookRecord;
@@ -70,7 +73,7 @@ begin
         TitleBook := Templater.ParseString(R, TpText)
       else
       begin
-        ShowMessage('Проверьте правильность шаблона');
+        ShowMessage(rstrCheckTemplateValidity);
         Exit;
       end;
     finally

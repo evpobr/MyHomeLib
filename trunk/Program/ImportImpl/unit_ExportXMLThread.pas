@@ -40,6 +40,10 @@ uses
   unit_Globals,
   unit_MHL_strings;
 
+resourcestring
+  rstrExportingCollection = 'Экспортируем коллекцию.';
+  rstrSavingDocumentPleaseWait = 'Сохраняем документ. Подождите, пожалуйста.';
+
 { TImportXMLThread }
 
 (*
@@ -62,7 +66,7 @@ var
   AuthorRecord: TAuthorData;
   GenreRecord: TGenreData;
 begin
-  SetComment('Экспортируем коллекцию.');
+  SetComment(rstrExportingCollection);
 
   FCollection := NewCollection();
 
@@ -121,7 +125,7 @@ begin
   end;
   SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
 
-  SetComment('Сохраняем документ. Подождите, пожалуйста.');
+  SetComment(rstrSavingDocumentPleaseWait);
   FCollection.OwnerDocument.SaveToFile(FXMLFileName);
 end;
 

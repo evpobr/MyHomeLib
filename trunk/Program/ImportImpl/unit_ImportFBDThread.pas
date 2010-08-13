@@ -40,6 +40,14 @@ uses
   unit_Consts,
   unit_Settings;
 
+resourcestring
+  rstrFoundNewArchives = 'Обнаружено новых архивов: %u';
+  rstrErrorFB2Structure = 'Ошибка структуры fb2: %s -> %s.fbd';
+  rstrErrorFBD = 'Ошибка FBD: ';
+  rstrErrorUnpacking = 'Ошибка распаковки архива: ';
+  rstrProcessedArchives = 'Обработано архивов: %u из %u';
+  rstrBooksAdded = 'Добавленo книг: %u, пропущено книг: %u';
+
 { TImportFB2Thread }
 
 constructor TImportFBDThread.Create;
@@ -104,7 +112,7 @@ begin
   DefectCount := 0;
 
   SetProgress(0);
-  Teletype(Format('Обнаружено новых архивов: %u', [FFiles.Count]));
+  Teletype(Format(rstrFoundNewArchives, [FFiles.Count]));
 
   FZipper := TZipForge.Create(nil);
 //  FZipper.Options.OEMFileNames := False;
@@ -143,7 +151,7 @@ begin
             except
               on e: Exception do
               begin
-                Teletype('Ошибка структуры fb2: ' + AZipFileName + ' -> ' + R.FileName + '.fbd', tsError);
+                Teletype(Format(rstrErrorFB2Structure, [AZipFileName, R.FileName]), tsError);
                 //Teletype(e.Message, tsError);
                 Inc(DefectCount);
               end;
@@ -169,26 +177,26 @@ begin
           Inc(AddCount)
         else
         begin
-          Teletype('Ошибка FBD: ' + AZipFileName, tsError);
+          Teletype(rstrErrorFBD + AZipFileName, tsError);
           Inc(DefectCount);
         end;
       except
         on e: Exception do
-          Teletype('Ошибка распаковки архива: ' + AZipFileName, tsError);
+          Teletype(rstrErrorUnpacking + AZipFileName, tsError);
       end;
 
       if (i mod ProcessedItemThreshold) = 0 then
-        SetComment(Format('Обработано архивов: %u из %u', [i + 1, FFiles.Count]));
+        SetComment(Format(rstrProcessedArchives, [i + 1, FFiles.Count]));
       SetProgress((i + 1) * 100 div FFiles.Count);
     end;
   finally
     FreeAndNil(FZipper);
   end;
 
-  SetComment(Format('Обработано архивов: %u из %u', [FFiles.Count, FFiles.Count]));
+  SetComment(Format(rstrProcessedArchives, [FFiles.Count, FFiles.Count]));
 
   if FFiles.Count > 0 then
-    Teletype(Format('Добавленo книг: %u, пропущено книг: %u', [AddCount, DefectCount]));
+    Teletype(Format(rstrBooksAdded, [AddCount, DefectCount]));
 end;
 
 end.

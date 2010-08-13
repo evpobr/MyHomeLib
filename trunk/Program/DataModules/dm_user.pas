@@ -335,6 +335,7 @@ uses
 
 resourcestring
   rstrNamelessColection = 'безымянная коллекция';
+  rstrUnknownCollection = 'неизвестная коллекция';
 
 {$R *.dfm}
 
@@ -654,7 +655,7 @@ begin
     if SelectCollection(DatabaseID) then
       BookRecord.CollectionName := CurrentCollection.Name
     else
-      BookRecord.CollectionName := 'неизвестная коллекция';
+      BookRecord.CollectionName := rstrUnknownCollection;
   end
   else
     Assert(False);

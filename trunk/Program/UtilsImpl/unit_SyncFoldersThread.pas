@@ -42,6 +42,9 @@ uses
   unit_Consts,
   unit_MHL_strings;
 
+resourcestring
+  rstrBuildingFileList = 'Построение списка файлов ...';
+
 { TImportXMLThread }
 
 function TSyncFoldersThread.FindNewFolder(const FileName: string): string;
@@ -78,7 +81,7 @@ begin
 
     FList := TStringList.Create;
     try
-      SetComment('Построение списка файлов ...');
+      SetComment(rstrBuildingFileList);
       FFiles.Process;
 
       DMCollection.tblBooks.First;

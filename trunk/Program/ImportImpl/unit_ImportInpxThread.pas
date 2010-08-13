@@ -97,6 +97,11 @@ uses
   unit_Helpers,
   ZipForge;
 
+resourcestring
+  rstrProcessingFile = 'Обрабатываем файл %s';
+  rstrAddedBooks = 'Добавлено %u книг';
+  rstrErrorInpStructure = 'Ошибка структуры inp. Файл %s, Строка %u ';
+
 //type
 //  INPXType = (inpUnknown, inpFormat_10, inpFormat_11);
 
@@ -404,7 +409,7 @@ begin
               if not isOnlineCollection(CollectionType) and (CurrentFile = 'extra.inp') then
                 Continue;
 
-              Teletype(Format('Обрабатываем файл %s', [CurrentFile]), tsInfo);
+              Teletype(Format(rstrProcessingFile, [CurrentFile]), tsInfo);
 
               BookList.LoadFromFile(Settings.TempPath + CurrentFile, TEncoding.UTF8);
 
@@ -436,11 +441,11 @@ begin
                   if (filesProcessed mod ProcessedItemThreshold) = 0 then
                   begin
                     SetProgress(Round((i + j / BookList.Count) * 100 / unZip.FileCount));
-                    SetComment(Format('Добавлено %u книг', [filesProcessed]));
+                    SetComment(Format(rstrAddedBooks, [filesProcessed]));
                   end;
                 except
                   on EConvertError do
-                    Teletype(Format('Ошибка структуры inp. Файл %s, Строка %u ', [CurrentFile, j]), tsError);
+                    Teletype(Format(rstrErrorInpStructure, [CurrentFile, j]), tsError);
                 end;
               end;
 
@@ -452,7 +457,7 @@ begin
         finally
           BookList.Free;
         end;
-        Teletype(Format('Добавлено %u книг', [filesProcessed]), tsInfo);
+        Teletype(Format(rstrAddedBooks, [filesProcessed]), tsInfo);
       finally
         unZip.Free;
       end;

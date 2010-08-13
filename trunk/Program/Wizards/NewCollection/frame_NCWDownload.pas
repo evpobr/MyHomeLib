@@ -69,13 +69,18 @@ uses
   unit_NCWParams,
   frm_NCWizard;
 
+resourcestring
+  rstrConnecting = 'Подключение ...';
+  rstrSpeed = 'Загружено %d из %d кб (%n кб/с)';
+  rstrDownloadComplete = 'Загрузка завершена';
+
 {$R *.dfm}
 
 { TframeNCWDownload }
 
 function TframeNCWDownload.Activate(LoadData: Boolean): Boolean;
 begin
-  lblStatus.Caption := 'Подключение ...';
+  lblStatus.Caption := rstrConnecting;
   Bar.Position := 0;
 
   Result := True;
@@ -126,7 +131,7 @@ begin
   begin
     { TODO -oNickR -cRefactoring : создать и использовать во всех подобных местах FormatSize функцию }
     lblStatus.Caption := Format(
-      'Загружено %d из %d кб (%n кб/с)',
+      rstrSpeed,
       [KB, FDownloadSize div 1024, KB / ElapsedTime]
     );
   end;
@@ -135,7 +140,7 @@ end;
 
 procedure TframeNCWDownload.HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
 begin
-  lblStatus.Caption := 'Загрузка завершена';
+  lblStatus.Caption := rstrDownloadComplete;
   Application.ProcessMessages;
 end;
 

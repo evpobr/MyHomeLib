@@ -42,15 +42,14 @@ var
   frameNCWSelectGenreFile: TframeNCWSelectGenreFile;
 
 
-resourcestring
-  STANDARTGENRES = 'Использовать файл описания жанров, поставляемый с программой.';
-  USERGENRES = 'Использовать собственный файл описания жанров.';
-
 implementation
 
-
-
 uses unit_Helpers, dm_user;
+
+resourcestring
+  rstrStandartGenres = 'Использовать файл описания жанров, поставляемый с программой.';
+  rstrUserGenres = 'Использовать собственный файл описания жанров.';
+
 
 {$R *.dfm}
 
@@ -114,9 +113,9 @@ end;
 procedure TframeNCWSelectGenreFile.OnSetFileType(Sender: TObject);
 begin
   if Sender = rbDefaultGenreFile then
-    pageHint.Caption := STANDARTGENRES
+    pageHint.Caption := rstrStandartGenres
   else if Sender = rbSpecialGenreFile  then
-    pageHint.Caption := USERGENRES;
+    pageHint.Caption := rstrUserGenres;
 
   edGenreList.Enabled := (Sender = rbSpecialGenreFile);
   btnGenreList.Enabled := edGenreList.Enabled;

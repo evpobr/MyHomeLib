@@ -34,6 +34,10 @@ function EditGroup(var groupName: string): Boolean;
 
 implementation
 
+resourcestring
+  rstrNewGroup = 'Новая группа';
+  rstrEditGroup = 'Редактирование группы';
+
 {$R *.dfm}
 
 procedure TfrmEditGroup.FormShow(Sender: TObject);
@@ -64,11 +68,11 @@ begin
   try
     if createNew then
     begin
-      frmEditGroup.Caption := 'Новая группа';
+      frmEditGroup.Caption := rstrNewGroup;
     end
     else
     begin
-      frmEditGroup.Caption := 'Редактирование группы';
+      frmEditGroup.Caption := rstrEditGroup;
       frmEditGroup.GroupName := groupName;
     end;
 

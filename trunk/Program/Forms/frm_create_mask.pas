@@ -119,8 +119,11 @@ resourcestring
   rstrFileTemplateCaption = 'Редактирование шаблона: Имя файла';
   rstrPathTemplateCaption = 'Редактирование шаблона: Путь к файлу';
   rstrTextTemplateCaption = 'Редактирование шаблона: Текст';
-
   rstrSampleTemplate = '[%s [(%n) ]- ]%t';
+  rstrWrongTemplate = 'Шаблон неверен';
+  rstrCheckTemplateValidity = 'Проверьте правильность шаблона';
+  rstrCheckBrackets = 'Проверьте соответствие открывающих и закрывающих скобок блоков элемнтов';
+  rstrWrongTemplateElements = 'Неверные элементы шаблона';
 
 const
   DlgCaptions: array [TTemplateType] of string = (rstrFileTemplateCaption, rstrPathTemplateCaption, rstrTextTemplateCaption);
@@ -211,7 +214,7 @@ begin
   if Valid <> ErFine then
   begin
     Label2.Font.Color := clRed;
-    Label2.Caption := 'Шаблон неверен';
+    Label2.Caption := rstrWrongTemplate;
     exit;
   end;
   R := GetTestData;
@@ -251,11 +254,11 @@ begin
     ErFine:
       ModalResult := mrOk;
     ErTemplate:
-      MHLShowError('Проверьте правильность шаблона');
+      MHLShowError(rstrCheckTemplateValidity);
     ErBlocks:
-      MHLShowError('Проверьте соответствие открывающих и закрывающих скобок блоков элемнтов');
+      MHLShowError(rstrCheckBrackets);
     ErElements:
-      MHLShowError('Неверные элементы шаблона');
+      MHLShowError(rstrWrongTemplateElements);
   end;
 end;
 

@@ -48,26 +48,25 @@ type
 var
   frameNCWOperation: TframeNCWOperation;
 
-resourcestring
-
-  CREATENEW = 'Выберите этот пункт для создания коллекций lib.rus.ec, коллекций на основе файлов inpx или пустых коллекций';
-  ADDEXISTS = 'Подключить ранее созданную коллекцию. Необходим файл коллекции *.hlc';
-  INPXBASED = 'Создать коллекцию из имеющегося файла inpx (коллекции lib.rus.ec, flibusta, Traum)';
-
 implementation
 
 uses dm_user;
+
+resourcestring
+  rstrCreateNew = 'Выберите этот пункт для создания коллекций lib.rus.ec, коллекций на основе файлов inpx или пустых коллекций';
+  rstrAddExists = 'Подключить ранее созданную коллекцию. Необходим файл коллекции *.hlc';
+  rstrInpxBased = 'Создать коллекцию из имеющегося файла inpx (коллекции lib.rus.ec, flibusta, Traum)';
 
 {$R *.dfm}
 
 procedure TframeNCWOperation.OnSetCollectionType(Sender: TObject);
 begin
   if Sender = rbNew then
-    pageHint.Caption := CREATENEW
+    pageHint.Caption := rstrCreateNew
   else if Sender = rbExisting then
-    pageHint.Caption := ADDEXISTS
+    pageHint.Caption := rstrAddExists
   else if Sender = rbInpx then
-    pageHint.Caption := INPXBASED
+    pageHint.Caption := rstrInpxBased
 end;
 
 function TframeNCWOperation.Activate(LoadData: Boolean): Boolean;

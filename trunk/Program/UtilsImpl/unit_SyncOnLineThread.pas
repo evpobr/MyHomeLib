@@ -47,6 +47,9 @@ uses
   unit_MHL_strings,
   unit_Messages;
 
+resourcestring
+  rstrProblemsWithABook = 'Какие-то проблемы с книгой ';
+
 { TImportXMLThread }
 
 procedure TSyncOnLineThread.SetCollectionRoot(const Value: string);
@@ -91,7 +94,7 @@ begin
         unit_Messages.BookLocalStatusChanged(DMCollection.tblBooksID.Value, FCollectionID, IsLocal);
     except
       on E: Exception do
-        Application.MessageBox(PChar('Какие-то проблемы с книгой ' + BookFile), '', MB_OK);
+        Application.MessageBox(PChar(rstrProblemsWithABook + BookFile), '', MB_OK);
     end;
 
     DMCollection.tblBooks.Next;
