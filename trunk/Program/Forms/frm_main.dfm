@@ -477,6 +477,7 @@ object frmMain: TfrmMain
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
+          Header.Height = 20
           Header.MainColumn = 1
           Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoHotTrack, hoOwnerDraw, hoRestrictDrag, hoShowHint, hoShowSortGlyphs, hoVisible, hoFullRepaintOnResize]
           Header.ParentFont = True
@@ -765,6 +766,7 @@ object frmMain: TfrmMain
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
+          Header.Height = 20
           Header.Options = [hoColumnResize, hoDrag, hoHotTrack, hoOwnerDraw, hoRestrictDrag, hoShowHint, hoShowImages, hoShowSortGlyphs, hoVisible]
           Header.ParentFont = True
           Header.PopupMenu = pmHeaders
@@ -980,6 +982,7 @@ object frmMain: TfrmMain
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
+          Header.Height = 20
           Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoHotTrack, hoOwnerDraw, hoRestrictDrag, hoShowHint, hoShowSortGlyphs, hoVisible, hoFullRepaintOnResize]
           Header.ParentFont = True
           Header.PopupMenu = pmHeaders
@@ -1174,6 +1177,7 @@ object frmMain: TfrmMain
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
+          Header.Height = 20
           Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoHotTrack, hoOwnerDraw, hoRestrictDrag, hoShowHint, hoShowSortGlyphs, hoVisible, hoFullRepaintOnResize]
           Header.ParentFont = True
           Header.PopupMenu = pmHeaders
@@ -1828,6 +1832,7 @@ object frmMain: TfrmMain
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
+          Header.Height = 20
           Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoHotTrack, hoOwnerDraw, hoRestrictDrag, hoShowHint, hoShowSortGlyphs, hoVisible, hoFullRepaintOnResize]
           Header.ParentFont = True
           Header.PopupMenu = pmHeaders
@@ -2087,6 +2092,7 @@ object frmMain: TfrmMain
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
+          Header.Height = 20
           Header.Options = [hoColumnResize, hoDrag, hoVisible]
           Header.ParentFont = True
           PopupMenu = pmDownloadList

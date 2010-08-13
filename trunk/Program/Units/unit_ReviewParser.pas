@@ -6,7 +6,7 @@
   *
   * Author(s)           eg (http://forum.home-lib.net)
   * Created             12.02.2010
-  * Description         A parser for Lib.rus.ec book reviews
+  * Description         A parser for Lib.rus.ec / Flibusta book reviews
   *
   * $Id$
   *
