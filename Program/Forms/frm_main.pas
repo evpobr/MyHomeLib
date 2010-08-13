@@ -684,9 +684,6 @@ type
 
     FLastActiveBookID: Integer;
 
-    // поиск аторов, серий
-    FIgnoreChange: Boolean;
-
     function IsSelectedBookNode(Node: PVirtualNode; Data: PBookData): Boolean;
 
     //
@@ -778,7 +775,6 @@ type
 
   private
     FSelectionState: Boolean;
-    FCollectionRoot: string;
 
     FAutoCheck: Boolean;
     FFormBusy: Boolean;
@@ -921,6 +917,9 @@ resourcestring
   rstrUnableDeleteBuiltinGroupError = 'Нельзя удалить встроенную группу!';
   rstrCheckingUpdates = 'Проверка обновлений ...';
   rstrGroupAlreadyExists = 'Группа с таким именем уже существует!';
+  rstrAdding2GroupMessage = 'Добавляем книги в группу...';
+  rstrRemovingFromGroupMessage = 'Удаляем книги из группы...';
+  rstrBuildingListMessage = 'Построение списка ...';
 
   rstrHintTable = 'Переключится в режим "Таблица"';
   rstrHintTree = 'Переключится в режим "Дерево"';
@@ -1025,6 +1024,19 @@ procedure TfrmMain.RestorePositions;
 var
   APage: Integer;
 begin
+  //
+  // TODO: реализовать следующий алгоритм работы
+  //
+  // эти пункты должны быть сделаны до вызова этой функции
+  //   1. Установить правильный фильтр
+  //   2. Загрузить список авторов
+  //
+  // задачи, выполняемые здесь
+  //   3. Найти в этом списке нужного автора. Возможно, будет лучше искать автора при выполнении пункта 2.
+  //   4. Загрузить книги автора
+  //   5. Найти нужную книгу
+  //
+
   APage := Settings.ActivePage;
 
   pgControl.ActivePageIndex := PAGE_AUTHORS;
@@ -1037,11 +1049,8 @@ begin
 
   SelectBookById(tvBooksF, Settings.LastBookInFavorites);
 
-  FIgnoreChange := True;
-  edLocateAuthor.Text := '';
-  edLocateSeries.Text := '';
-
-  FIgnoreChange := False;
+  SetTextNoChange(edLocateAuthor, '');
+  SetTextNoChange(edLocateSeries, '');
 
   pgControl.ActivePageIndex := APage;
 end;
@@ -1545,7 +1554,7 @@ begin
   CloseCollection;
 
   //
-  //
+  // Если коллекций нет - запустим мастера создания коллекции.
   //
   if DMUser.tblBases.IsEmpty then
   begin
@@ -1568,9 +1577,6 @@ begin
   DMCollection.DBCollection.Connected := True;
 
   frmMain.Caption := 'MyHomeLib - ' + DMUser.ActiveCollection.Name;
-
-  { TODO -oNickR -cRefactoring : проверить использование }
-  FCollectionRoot := DMUser.ActiveCollection.RootPath;
 
   // определяем типы коллекции
   CollectionType := DMUser.ActiveCollection.CollectionType;
@@ -1693,7 +1699,6 @@ begin
 
   Screen.Cursor := crDefault;
   FDoNotLocate := False;
-  FIgnoreChange := False;
 
   if not IsOnline and (ActiveView = DownloadView) then
     pgControl.ActivePageIndex := PAGE_AUTHORS;
@@ -2273,8 +2278,14 @@ end;
 
 procedure TfrmMain.tbtnAutoFBDClick(Sender: TObject);
 var
+  Tree: TBookTree;
+  Node: PVirtualNode;
+  Data: PBookData;
   BookRecord: TBookRecord;
 begin
+  //
+  // Очень стремный метод. Режим редактирования\создания FBD для формы не ставиться, форма ничего не проверяет...
+  //
   if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
   begin
     MHLShowWarning(rstrToConvertChangeCollection);
@@ -2283,12 +2294,17 @@ begin
 
   DisableControls(False);
   try
-    DMCollection.GetCurrentBook(BookRecord);
+    GetActiveTree(Tree);
+    Node := Tree.GetFirstSelected;
+    Data := Tree.GetNodeData(Node);
+    if not Assigned(Data) or (Data^.nodeType <> ntBookInfo) then
+      Exit;
+
+    DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, BookRecord, True);
     frmConvertToFBD.BookRecord := BookRecord;
     frmConvertToFBD.AutoMode;
   finally
     DisableControls(True);
-    ///Show;
   end;
 end;
 
@@ -3035,7 +3051,7 @@ var
 begin
   Data := Sender.GetNodeData(Node);
   Assert(Assigned(Data));
-  CellText := Data.Text;
+  CellText := Data^.Text;
 end;
 
 procedure TfrmMain.tvGroupsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -3055,7 +3071,29 @@ var
   bookStream: TMemoryStream;
   book: IXMLFictionBook;
   imgBookCover: TGraphic;
-  CoverOK: Boolean;
+  isFBDDocument: Boolean;
+
+  function IsFBD(const BookRecord: TBookRecord): Boolean;
+  var
+    BookContainer: string;
+    PathLen: Integer;
+    FileName: string;
+  begin
+    Result := False;
+
+    BookContainer := TPath.Combine(DMUser.ActiveCollection.RootFolder, BookRecord.Folder);
+    PathLen := Length(BookContainer);
+
+    if
+      (PathLen = 0) or                                              // а вот эту строчку я вообще не понимаю :(
+      (BookContainer[PathLen] = TPath.DirectorySeparatorChar) or
+      (BookContainer[PathLen] = TPath.AltDirectorySeparatorChar) then
+    begin
+      FileName := TPath.Combine(BookContainer, BookRecord.FileName);
+      Result := (ExtractFileExt(FileName) = ZIP_EXTENSION);
+    end;
+  end;
+
 begin
   Tree := Sender as TBookTree;
 
@@ -3086,6 +3124,17 @@ begin
     Exit;
   end;
 
+  //
+  // BookRecord нужна не всегда, получим только если _действительно_ нужно
+  //
+  if
+    (Settings.ShowInfoPanel and (Settings.ShowBookCover or Settings.ShowBookAnnotation)) or
+    (IsPrivate and IsNonFB2)
+  then
+  begin
+    DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, R, False);
+  end;
+
   if Settings.ShowInfoPanel then
   begin
     InfoPanel.SetBookInfo(
@@ -3100,8 +3149,6 @@ begin
     //
     if Settings.ShowBookCover or Settings.ShowBookAnnotation then
     begin
-      DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, R, False);
-
       if IsLocal or Data^.Local then
       begin
         bookStream := TMemoryStream.Create;
@@ -3146,21 +3193,18 @@ begin
     end;
   end;
 
-  //
-  // TODO : Для неFB2 коллекций необходимо знать, конвертирована книга в FBD или нет
-  //
-  CoverOK := True; /// Cover.Show(Folder, FileName, No);
-
   if IsPrivate and IsNonFB2 then
   begin
+    isFBDDocument := IsFBD(R);
+
     miConverToFBD.Visible := True;
-    miConverToFBD.Tag := IfThen(CoverOK, 999, 0);
-    miConverToFBD.Caption := IfThen(CoverOK, rstrEditFBD, rstrConvert2FBD);
+    miConverToFBD.Tag := IfThen(isFBDDocument, 999, 0);
+    miConverToFBD.Caption := IfThen(isFBDDocument, rstrEditFBD, rstrConvert2FBD);
 
     if Assigned(frmConvertToFBD) then
     begin
-      frmConvertToFBD.EditorMode := CoverOK;
-      frmConvertToFBD.Caption := IfThen(CoverOK, rstrEditFBD, rstrConvert2FBD);
+      frmConvertToFBD.EditorMode := isFBDDocument;
+      frmConvertToFBD.Caption := IfThen(isFBDDocument, rstrEditFBD, rstrConvert2FBD);
     end;
   end;
 end;
@@ -3867,7 +3911,6 @@ begin
           Zip.Free;
         end;
       end; // if Exists
-
     end
     else
       WorkFile := TPath.Combine(BookFolder, BookFileName);
@@ -4600,32 +4643,46 @@ end;
 
 procedure TfrmMain.miDeleteFilesClick(Sender: TObject);
 var
-  Node: PVirtualNode;
-  Data: PBookData;
-  Tree: TBookTree;
+  DatabaseID: Integer;
+  FRoot: string;
+  FilePath: string;
 begin
-  GetActiveTree(Tree);
-  Node := Tree.GetFirst;
-  while Assigned(Node) do
-  begin
-    Data := Tree.GetNodeData(Node);
+  DatabaseID := DMUser.ActiveCollection.ID;
+  FRoot := DMUser.ActiveCollection.RootPath;
 
-    if IsSelectedBookNode(Node, Data) and Data^.Local then
+  ProcessNodes(
+    procedure (Tree: TBookTree; Node: PVirtualNode)
+    var
+      Data: PBookData;
     begin
-      if DMCollection.tblBooks.Locate(BOOK_ID_FIELD, Data^.BookID, []) then
+      Data := Tree.GetNodeData(Node);
+      if Assigned(Data) and (Data^.nodeType = ntBookInfo) and (Data^.DatabaseID = DatabaseID) then
       begin
-        // только для online-коллекции. поэтому получаем путь к файлу по упрощенной схеме
-        try
-          DeleteFile(FCollectionRoot + DMCollection.tblBooksFolder.Value);
-        except
+        if DMCollection.tblBooks.Locate(BOOK_ID_FIELD, Data^.BookID, []) then
+        begin
+          // только для online-коллекции. поэтому получаем путь к файлу по упрощенной схеме
+          FilePath := FRoot + DMCollection.tblBooksFolder.Value;
+          try
+            if TFile.Exists(FilePath) then
+              TFile.Delete(FilePath);
+          except
+            // игнорируем все ошибки
+          end;
 
+          DMCollection.SetLocal(Data^.BookID, Data^.DatabaseID, False);
+
+          UpdateNodes(
+            Data^.BookID, Data^.DatabaseID,
+            procedure(BookData: PBookData)
+            begin
+              Assert(Assigned(BookData));
+              BookData^.Local := False;
+            end
+          );
         end;
-
-        SetBookLocalStatus(Data^.BookID, Data^.DatabaseID, False);
       end;
-    end;
-    Node := Tree.GetNext(Node);
-  end;
+    end
+  );
 end;
 
 procedure TfrmMain.miDownloadBooksClick(Sender: TObject);
@@ -4882,6 +4939,9 @@ var
 begin
   if isExternalCollection(DMUser.ActiveCollection.CollectionType) then
   begin
+    //
+    // TODO -oNickR : Думаю, стоит приделать к этому диалогу возможность запоминать выбор пользователя и переходить на сайт без вопроса
+    //
     if MHLShowWarning(Format(rstrGoToLibrarySite, [DMUser.ActiveCollection.URL]), mbYesNo) = mrYes then
     begin
       DMCollection.tblBooks.Locate(BOOK_ID_FIELD, BookID, []);
@@ -5932,8 +5992,6 @@ var
   S: string;
   OldText: string;
 begin
-  if FIgnoreChange then
-    Exit;
   S := AnsiUpperCase(Copy(edLocateAuthor.Text, 1, 1));
   if S <> FLastLetterA.Caption then
   begin
@@ -5942,6 +6000,7 @@ begin
     edLocateAuthor.Text := OldText;
     edLocateAuthor.Perform(WM_KEYDOWN, VK_RIGHT, 0);
   end;
+
   if not FDoNotLocate then
     LocateAuthor(edLocateAuthor.Text);
 end;
@@ -6035,8 +6094,9 @@ var
   S: string;
   OldText: string;
 begin
-  if FIgnoreChange or (Length(edLocateSeries.Text) = 0) then
+  if Length(edLocateSeries.Text) = 0 then
     Exit;
+
   S := AnsiUpperCase(Copy(edLocateSeries.Text, 1, 1));
   if S <> FLastLetterS.Caption then
   begin
@@ -6511,16 +6571,23 @@ begin
     Exit;
   end;
 
-  // Locate the selected book record and pass it to the edit form:
+  //
+  // Locate the selected book record and pass it to the edit form
+  //
   GetActiveTree(Tree);
   Node := Tree.GetFirstSelected;
   Data := Tree.GetNodeData(Node);
   if not Assigned(Data) or (Data^.nodeType <> ntBookInfo) then
     Exit;
-  DMCollection.GetBookRecord(Data.BookID, Data.DatabaseID, BookRecord, True);
-  frmConvertToFBD.BookRecord := BookRecord;
 
+  DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, BookRecord, True);
+
+  frmConvertToFBD.BookRecord := BookRecord;
+  //
+  // TODO: необходимо определять режим Создания/Редактирования из самой книги, я не привязываться к меню
+  //
   frmConvertToFBD.EditorMode := miConverToFBD.Tag <> 0;
+
   frmConvertToFBD.ShowModal;
 end;
 
