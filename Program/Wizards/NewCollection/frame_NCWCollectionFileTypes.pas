@@ -47,15 +47,15 @@ type
 var
   frameNCWCollectionFileTypes: TframeNCWCollectionFileTypes;
 
-resourcestring
-   COLLECTIONTYPEFB2 = 'Книги в формате fb2 (обычно художественная литература). Книги могут быть упакованы в архив по несколько штук (zip) или по одиночке (fb2.zip). ';
-   COLLECTIONTYPEANY = 'Книги в любом формате. Вы будете сами заполнять информацию о книге при добавлении ее в коллекцию. Вы также можете указать файл с описанием жанров на следующей странице.';
-
 implementation
 
 uses
   dm_user,
   unit_NCWParams;
+
+resourcestring
+  rstrCollectionTypeFB2 = 'Книги в формате fb2 (обычно художественная литература). Книги могут быть упакованы в архив по несколько штук (zip) или по одиночке (fb2.zip). ';
+  rstrCollectionTypeAny = 'Книги в любом формате. Вы будете сами заполнять информацию о книге при добавлении ее в коллекцию. Вы также можете указать файл с описанием жанров на следующей странице.';
 
 {$R *.dfm}
 
@@ -96,9 +96,9 @@ end;
 procedure TframeNCWCollectionFileTypes.OnSetFileType(Sender: TObject);
 begin
   if Sender = rbSoreFB2Files then
-    pageHint.Caption := COLLECTIONTYPEFB2
+    pageHint.Caption := rstrCollectionTypeFB2
   else if Sender = rbSoreAnyFiles  then
-    pageHint.Caption := COLLECTIONTYPEANY;
+    pageHint.Caption := rstrCollectionTypeAny;
 end;
 
 end.

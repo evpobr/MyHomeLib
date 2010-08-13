@@ -20,10 +20,10 @@ unit unit_MHL_strings;
 interface
 
 resourcestring
-  main_unable_to_copy = 'Копирование книг из избранного невозможно.';
-  main_connecttodb = 'Подключение БД...';
-  main_loading_collection = 'Загрузка коллекции...';
-  main_check_updates = 'Проверка обновлений...';
+  rstrMainUnableToCopy = 'Копирование книг из избранного невозможно.';
+  rstrMainConnectToDb = 'Подключение БД...';
+  rstrMainLoadingCollection = 'Загрузка коллекции...';
+  rstrMainCheckUpdates = 'Проверка обновлений...';
 
   rstrCancelOperationWarningMsg = 'Вы действительно хотите прервать операцию?';
 

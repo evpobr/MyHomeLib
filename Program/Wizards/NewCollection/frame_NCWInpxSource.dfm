@@ -29,15 +29,15 @@ inherited frameNCWInpxSource: TframeNCWInpxSource
     end
     inherited lblSubTitle: TLabel
       Width = 295
-      Caption = #1042#1099#1073#1080#1088#1080#1090#1077' '#1092#1072#1081#1083' inpx '#1076#1083#1103' '#1089#1086#1079#1076#1072#1085#1080#1103' '#1082#1086#1083#1083#1077#1082#1094#1080#1080
-      ExplicitWidth = 231
+      Caption = #1042#1099#1073#1077#1088#1080#1090#1077' '#1092#1072#1081#1083' inpx '#1076#1083#1103' '#1089#1086#1079#1076#1072#1085#1080#1103' '#1082#1086#1083#1083#1077#1082#1094#1080#1080
+      ExplicitWidth = 267
     end
   end
   object Panel1: TMHLSimplePanel
     Left = 0
-    Top = 56
+    Top = 59
     Width = 330
-    Height = 230
+    Height = 227
     Align = alClient
     TabOrder = 1
     object rbLocal: TRadioButton
@@ -75,7 +75,7 @@ inherited frameNCWInpxSource: TframeNCWInpxSource
       Left = 14
       Top = 80
       Width = 302
-      Height = 140
+      Height = 137
       Margins.Left = 14
       Margins.Right = 14
       Margins.Bottom = 10
@@ -106,7 +106,7 @@ inherited frameNCWInpxSource: TframeNCWInpxSource
         Left = 14
         Top = 3
         Width = 221
-        Height = 21
+        Height = 24
         Anchors = [akLeft, akTop, akRight]
         TabOrder = 0
       end

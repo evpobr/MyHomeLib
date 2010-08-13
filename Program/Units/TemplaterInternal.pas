@@ -39,10 +39,10 @@ type
   end;
 
 resourcestring
-  EInvalidTemplate = 'Неверный шаблон, позиция %d';
-  EInvalidParam = 'Нераспознанный параметр "%s"';
-  EUnopenedBracket = 'Неоткрытая скобка, позиция %d';
-  EUnclosedBracket = 'Незакрытая скобка, позиция %d';
+  rstrEInvalidTemplate = 'Неверный шаблон, позиция %d';
+  rstrEInvalidParam = 'Нераспознанный параметр "%s"';
+  rstrEUnopenedBracket = 'Неоткрытая скобка, позиция %d';
+  rstrEUnclosedBracket = 'Незакрытая скобка, позиция %d';
 
 type
   // --------------------------------------------------------------------------
@@ -215,7 +215,7 @@ end;
 
 procedure TParamTemplateElement<T>.RaiseTemplateError(const paramName: string);
 begin
-  raise ETemplateError.CreateFmt(EInvalidParam, [paramName]);
+  raise ETemplateError.CreateFmt(rstrEInvalidParam, [paramName]);
 end;
 
 function TParamTemplateElement<T>.MinWeight: Integer;
@@ -291,7 +291,7 @@ begin
       end;
 
       if FTopLevel then
-        RaiseTemplateError(EUnopenedBracket, nPos);
+        RaiseTemplateError(rstrEUnopenedBracket, nPos);
 
       // + проверки на пустоту ??? уже забыл зачем
 
@@ -314,7 +314,7 @@ begin
   end;
 
   if not FTopLevel then
-    RaiseTemplateError(EUnclosedBracket, startPos - 1);
+    RaiseTemplateError(rstrEUnclosedBracket, startPos - 1);
 
   if strLiteral <> '' then
   begin
@@ -349,7 +349,7 @@ begin
   nLen := Length(strTemplate);
 
   if nPos > nLen then
-    RaiseTemplateError(EInvalidTemplate, startPos - 1);
+    RaiseTemplateError(rstrEInvalidTemplate, startPos - 1);
 
   ch := strTemplate[nPos];
 
@@ -371,7 +371,7 @@ begin
   end;
 
   if strLiteral = '' then
-    RaiseTemplateError(EInvalidTemplate, startPos - 1);
+    RaiseTemplateError(rstrEInvalidTemplate, startPos - 1);
 
   AddParam(strLiteral);
   endPos := nPos;

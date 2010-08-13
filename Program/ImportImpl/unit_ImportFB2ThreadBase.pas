@@ -86,6 +86,12 @@ uses
   unit_Consts,
   Dialogs;
 
+resourcestring
+  rstrCheckTemplateValidity = 'Проверьте правильность шаблона';
+  rstrScanningOne = 'Сканируем %s';
+  rstrScanningAll = 'Сканируем...';
+  rstrScanningFolders = 'Сканирование папок...';
+
 { TImportFB2Thread }
 
 procedure TImportFB2ThreadBase.GetBookInfo(book: IXMLFictionBook; var R: TBookRecord);
@@ -153,7 +159,7 @@ begin
     FileName := FTemplater.ParseString(R, TpFile)
   else
   begin
-    Dialogs.ShowMessage('Проверьте правильность шаблона');
+    Dialogs.ShowMessage(rstrCheckTemplateValidity);
     Exit;
   end;
 
@@ -172,7 +178,7 @@ begin
     Folder := FTemplater.ParseString(R, TpPath)
   else
   begin
-    Dialogs.ShowMessage('Проверьте правильность шаблона');
+    Dialogs.ShowMessage(rstrCheckTemplateValidity);
     Exit;
   end;
 
@@ -185,7 +191,7 @@ end;
 
 procedure TImportFB2ThreadBase.ShowCurrentDir(Sender: TObject; const Dir: string);
 begin
-  SetComment(Format('Сканируем %s', [Dir]));
+  SetComment(Format(rstrScanningOne, [Dir]));
 end;
 
 procedure TImportFB2ThreadBase.AddFile2List(Sender: TObject; const F: TSearchRec);
@@ -217,8 +223,8 @@ end;
 procedure TImportFB2ThreadBase.ScanFolder;
 begin
   SetProgress(0);
-  SetComment('Сканируем...');
-  Teletype('Сканирование папок...');
+  SetComment(rstrScanningAll);
+  Teletype(rstrScanningFolders);
 
   FCheckExistsFiles := Settings.CheckExistsFiles;
 

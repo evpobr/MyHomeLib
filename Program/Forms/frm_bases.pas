@@ -116,6 +116,9 @@ uses
   unit_Consts,
   unit_Errors;
 
+resourcestring
+  rstrChooseDataFolder = 'Выберите папку для сохранения данных';
+
 {$R *.dfm}
 
 procedure TfrmBases.FormShow(Sender: TObject);
@@ -226,7 +229,7 @@ var
   AFolder: string;
 begin
   AFolder := edCollectionRoot.Text;
-  if GetFolderName(Handle, 'Выберите папку для сохранения данных', AFolder) then
+  if GetFolderName(Handle, rstrChooseDataFolder, AFolder) then
     edCollectionRoot.Text := AFolder;
 end;
 

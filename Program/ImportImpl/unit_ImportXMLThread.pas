@@ -53,6 +53,7 @@ resourcestring
   rstrImportingMsg = 'Импортируем...';
   rstrCollectionTypeMismatchErrorMsg = 'Тип импортируемых данных не соответствует типу коллекции!';
   rstrCollectionNameMismatchWarningMsg = 'Название импортируемой коллекции не совпадает.';
+  rstrNumberOfBooksImported = 'Импортированно %u книг';
 
 { TImportXMLThread }
 
@@ -125,7 +126,7 @@ begin
           FLibrary.InsertBook(R, True, True);
 
           if ((i + 1) mod ProcessedItemThreshold) = 0 then
-            SetComment(Format('Импортированно %u книг', [(i + 1)]));
+            SetComment(Format(rstrNumberOfBooksImported, [(i + 1)]));
           SetProgress((i + 1) * 100 div totalBooks);
 
           if Canceled then

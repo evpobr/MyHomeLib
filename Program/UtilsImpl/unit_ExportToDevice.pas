@@ -39,6 +39,10 @@ uses
   unit_DownloadBooksThread,
   frm_DownloadProgressForm;
 
+resourcestring
+  rstrSendToDevice = 'Отправка на устройство';
+  rstrDownloadingBooks = 'Скачивание книг';
+
 procedure ExportToDevice(
   const DeviceDir: string;
   const IdList: TBookIdList;
@@ -56,7 +60,7 @@ begin
     worker.ExportMode := Mode;
     frmProgress := TExportToDeviceProgressForm.Create(Application);
     try
-      frmProgress.Caption := 'Отправка на устройство';
+      frmProgress.Caption := rstrSendToDevice;
       frmProgress.WorkerThread := worker;
       frmProgress.ShowModal;
       ProcessedFiles := worker.ProcessedFiles;
@@ -78,7 +82,7 @@ begin
     worker.BookIdList := IdList;
     frmProgress := TDownloadProgressForm.Create(Application);
     try
-      frmProgress.Caption := 'Скачивание книг';
+      frmProgress.Caption := rstrDownloadingBooks;
       frmProgress.WorkerThread := worker;
       frmProgress.ShowModal;
     finally

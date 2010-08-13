@@ -922,6 +922,52 @@ resourcestring
   rstrCheckingUpdates = 'Проверка обновлений ...';
   rstrGroupAlreadyExists = 'Группа с таким именем уже существует!';
 
+  rstrHintTable = 'Переключится в режим "Таблица"';
+  rstrHintTree = 'Переключится в режим "Дерево"';
+  rstrShuttingDown = 'отключаемся';
+  rstrNeedDBUpgrade = 'Вы успешно обновили программу. Для нормальной работы необходимо обновить струткуру таблиц БД. Сделать это прямо сейчас?';
+  rstrFirstRun = 'MyHomeLib - первый запуск';
+  rstrToConvertChangeCollection = 'Для конвертации книги перейдите в соответствующую коллекцию';
+  rstrCollectionFileNotFound = 'Файл коллекции "%s" не найден.' + CRLF + 'Невозможно запустить программу.';
+  //rstrStartCollectionUpdate = 'Доступно обновление коллекций.' + CRLF + ' Начать обновление ?';
+  rstrStarting = 'Старт ...';
+  rstrUnfinishedDownloads = 'В списке есть незавершенные закачки!' + CRLF + 'Вы все еще хотите выйти из программы?';
+  rstrSingleSeries = 'Серия: ';
+  rstrDownloadStateWaiting = 'Ожидание';
+  rstrDownloadStateDownloading = 'Закачка';
+  rstrDownloadStateDone = 'Готово';
+  rstrDownloadStateError = 'Ошибка';
+  rstrNoBookSelected = 'Ни одной книги не выбрано!';
+  rstrProvideThePath = 'Укажите путь';
+  rstrCheckUsage = 'Проверить использование, возможна ошибка';
+  rstrBuildingTheList = 'Построение списка ...';
+  rstrChangeCollectionToRemoveABook = 'Для удаления книги перейдите в соответствующую коллекцию';
+  rstrRemoveSelectedBooks = 'Удалить отмеченные книги?';
+  rstrRemoveCollection = 'Удалить коллекцию ';
+  rstrGoToLibrarySite = 'Изменения информации о книгах в онлайн-коллекциях возможно только на сайте.' + CRLF + 'Перейти на сайт электронной библиотеки "%s"?';
+  rstrUnableToEditBooksFromFavourites = 'Редактирование книг из избранного невозможно.';
+  rstrCreateMoveSeries = 'Создание серии / Перенос в серию';
+  rstrTitle = 'Название:';
+  rstrEditSeries = 'Редактирование серии';
+  rstrAddingBookToGroup = 'Добавляем книги в группу...';
+  rstrRemovingBookFromGroup = 'Удаляем книги из группы...';
+  rstrNeedSpecialDataTypeForSeries = 'Необходимо использовать отдельный тип данных для серии';
+  rstrBookNotFoundInArchive = 'В архиве "%s" не найдено описание книги!';
+  rstrCollectionNotRegistered = 'Коллекция не зарегистрирована !';
+  rstrUpdateFailedServerNotFound = 'Проверка обновления не удалось! Сервер не найден.' + CRLF + 'Код ошибки: %d';
+  rstrUpdateFailedConnectionError = 'Проверка обновления не удалось! Ошибка подключения.' + CRLF + 'Код ошибки: %d';
+  rstrUpdateFailedServerError = 'Проверка обновления не удалось! Сервер сообщает об ошибке ' + CRLF + 'Код ошибки: %d';
+  rstrFoundNewAppVersion = 'Доступна новая версия - "%s" Посетите сайт программы для загрузки обновлений.';
+  rstrLatestVersion = 'У вас самая свежая версия.';
+  rstrXmlExportInCompatibilityMode = 'Экспорт в xml работает в режиме совместимости со старыми версиями.' + CRLF + 'Не все данные будут сохранены. Рекомендуется использовать экспорт в inpx.' + CRLF + 'Продолжить?';
+  rstrRemoveFromGroup = 'Удалить из группы';
+  rstrRemoveFromDownloadList = 'Удалить из списка закачек';
+  rstrAddToFavorites = 'Добавить в избранное';
+  rstrAddToDownloads = 'Добавить в список закачек';
+  rstrCollectionUpdateAvailable = 'Доступно обновление для коллекций.' + CRLF + ' Начать обновление ?';
+
+
+
 {$R *.dfm}
 
 //
@@ -937,7 +983,7 @@ var
 
 const
   TreeIcons: array [0 .. 1] of Integer = (10, 11);
-  TreeHints: array [0 .. 1] of string = ('Переключится в режим "Таблица"', 'Переключится в режим "Дерево"');
+  TreeHints: array [0 .. 1] of string = (rstrHintTable, rstrHintTree);
 
 function TfrmMain.CheckActiveDownloads: Boolean;
 var
@@ -962,7 +1008,7 @@ procedure TfrmMain.WMGetSysCommand(var Message: TMessage);
 begin
   if Message.Msg = WM_Destroy then
   begin
-    ShowMessage('отключаемся');
+    ShowMessage(rstrShuttingDown);
     inherited;
   end;
 
@@ -2216,7 +2262,7 @@ procedure TfrmMain.TheFirstRun;
 begin
   if DMUser.tblBases.IsEmpty then
     DeleteFile(Settings.WorkPath + CHECK_FILE)
-  else if FileExists(Settings.WorkPath + CHECK_FILE) and (Application.MessageBox('Вы успешно обновили программу. Для нормальной работы необходимо обновить струткуру таблиц БД. Сделать это прямо сейчас?', 'MyHomeLib - первый запуск', mb_YesNo) = mrYes) then
+  else if FileExists(Settings.WorkPath + CHECK_FILE) and (Application.MessageBox(PWideChar(rstrNeedDBUpgrade), PWideChar(rstrFirstRun), mb_YesNo) = mrYes) then
   begin
     RenameFile(Settings.SystemFileName[sfLibRusEcInpx], Settings.SystemFileName[sfLibRusEcUpdate]);
     DeleteFile(Settings.WorkPath + CHECK_FILE);
@@ -2229,7 +2275,7 @@ procedure TfrmMain.tbtnAutoFBDClick(Sender: TObject);
 begin
   if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
   begin
-    MHLShowWarning('Для конвертации книги перейдите в соответствующую коллекцию');
+    MHLShowWarning(rstrToConvertChangeCollection);
     Exit;
   end;
 
@@ -2314,11 +2360,11 @@ begin
     DMUser.ActivateCollection(Settings.ActiveCollection);
     if not FileExists(DMUser.ActiveCollection.DBFileName) then
     begin
-      MHLShowError('Файл коллекции "%s" не найден.' + CRLF + 'Невозможно запустить программу.', [DMUser.ActiveCollection.DBFileName]);
+      MHLShowError(rstrCollectionFileNotFound, [DMUser.ActiveCollection.DBFileName]);
       Application.Terminate;
     end;
 
-    frmSplash.lblState.Caption := main_loading_collection;
+    frmSplash.lblState.Caption := rstrMainLoadingCollection;
   end;
   InitCollection(False);
 end;
@@ -2400,7 +2446,7 @@ begin
   if (ParamCount > 0) and (ParamStr(1) = '/clear') then
     ClearDir(Settings.DataDir);
 
-  frmSplash.lblState.Caption := main_connecttodb;
+  frmSplash.lblState.Caption := rstrMainConnectToDb;
 
   DMUser.DBUser.DatabaseFileName := Settings.SystemFileName[sfSystemDB];
   if not FileExists(DMUser.DBUser.DatabaseFileName) then
@@ -2413,7 +2459,7 @@ begin
   // Проверка обновлений
   // ------------------------------------------------------------------------------
 
-  frmSplash.lblState.Caption := main_check_updates;
+  frmSplash.lblState.Caption := rstrMainCheckUpdates;
   if Settings.CheckUpdate then
   begin
     FAutoCheck := True;
@@ -2426,7 +2472,7 @@ begin
     if CheckLibUpdates(True) then
       if Settings.AutoRunUpdate then
         StartLibUpdate
-      else if MHLShowInfo('Доступно обновление для коллекций "lib.rus.ec".' + CRLF + ' Начать обновление ?', mbYesNo) = mrYes then
+      else if MHLShowInfo(rstrCollectionUpdateAvailable, mbYesNo) = mrYes then
         StartLibUpdate;
 
   // ------------------------------------------------------------------------------
@@ -2440,7 +2486,7 @@ begin
   TheFirstRun;
 
   // ------------------------------------------------------------------------------
-  frmSplash.lblState.Caption := 'Старт ...';
+  frmSplash.lblState.Caption := rstrStarting;
 
   //
   // Create & Load "star" images from resources
@@ -2468,7 +2514,7 @@ procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   CanClose := True;
   if CheckActiveDownloads then
-    if MHLShowWarning('В списке есть незавершенные закачки!' + CRLF + 'Вы все еще хотите выйти из программы?', mbYesNo) = mrYes then
+    if MHLShowWarning(rstrUnfinishedDownloads, mbYesNo) = mrYes then
     begin
       if Assigned(FDMThread) then
         FDMThread.TerminateNow;
@@ -2606,7 +2652,7 @@ begin
       ntSeriesInfo:
         begin
           if GetTreeTag(Sender, Column) = COL_TITLE then
-            CellText := 'Серия: ' + Data^.Serie;
+            CellText := rstrSingleSeries + Data^.Serie;
         end;
 
       ntBookInfo:
@@ -3110,7 +3156,7 @@ begin
     if Assigned(frmConvertToFBD) then
     begin
       frmConvertToFBD.EditorMode := CoverOK;
-      frmConvertToFBD.Caption := IfThen(CoverOK, 'Редактирование FBD', 'Преобразование в FBD');
+      frmConvertToFBD.Caption := IfThen(CoverOK, rstrEditFBD, rstrConvert2FBD);
     end;
   end;
 end;
@@ -3392,7 +3438,7 @@ end;
 
 procedure TfrmMain.tvDownloadListGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
 const
-  States: array [TDownloadState] of string = ('Ожидание', 'Закачка', 'Готово', 'Ошибка');
+  States: array [TDownloadState] of string = (rstrDownloadStateWaiting, rstrDownloadStateDownloading, rstrDownloadStateDone, rstrDownloadStateError);
 var
   Data: PDownloadData;
 begin
@@ -3528,7 +3574,7 @@ begin
 
   if ActiveView = FavoritesView then
   begin
-    MHLShowWarning(main_unable_to_copy);
+    MHLShowWarning(rstrMainUnableToCopy);
     Exit;
   end;
 
@@ -3608,7 +3654,7 @@ begin
 
   if Length(BookIDList) = 0 then
   begin
-    MHLShowError('Ни одной книги не выбрано!');
+    MHLShowError(rstrNoBookSelected);
     Exit;
   end;
 
@@ -3636,7 +3682,7 @@ begin
 
   if (ScriptID < 1) and (Settings.PromptDevicePath) then
   begin
-    if not GetFolderName(Handle, 'Укажите путь', AFolder) then
+    if not GetFolderName(Handle, rstrProvideThePath, AFolder) then
       Exit
     else
       { TODO -oNickR -cRefactoring : это временное изменение в настройках и оно не должно сохраняться при закрытии программы
@@ -4026,7 +4072,7 @@ begin
       Result := tvBooksF;
   else
     begin
-      Assert(False, 'Проверить использование, возможна ошибка');
+      Assert(False, rstrCheckUsage);
       Result := nil;
     end;
   end;
@@ -4185,7 +4231,7 @@ begin
       Tree.Clear;
       Tree.NodeDataSize := SizeOf(TBookData);
 
-      StatusMessage := 'Построение списка ...';
+      StatusMessage := rstrBuildingTheList;
 
       i := 0;
       try
@@ -4425,13 +4471,13 @@ begin
 
     case Data^.nodeType of
       ntSeriesInfo:
-        S := TAuthorsHelper.GetList(Data^.Authors) + '. Серия: ' + Data^.Serie;
+        S := TAuthorsHelper.GetList(Data^.Authors) + '. ' + rstrSingleSeries + Data^.Serie;
 
       ntBookInfo:
         if (Data^.Serie = NO_SERIES_TITLE) or (Data^.Serie = '') then
           S := TAuthorsHelper.GetList(Data^.Authors) + '. ' + Data^.Title
         else
-          S := TAuthorsHelper.GetList(Data^.Authors) + '. Серия: ' + Data^.Serie + '. ' + Data^.Title;
+          S := TAuthorsHelper.GetList(Data^.Authors) + '. ' + rstrSingleSeries + Data^.Serie + '. ' + Data^.Title;
     end;
     if S = '' then
       R := S
@@ -4455,11 +4501,11 @@ var
 begin
   if ActiveView = FavoritesView then
   begin
-    MHLShowWarning('Для удаления книги перейдите в соответствующую коллекцию');
+    MHLShowWarning(rstrChangeCollectionToRemoveABook);
     Exit;
   end;
 
-  if MessageDlg('Удалить отмеченные книги?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+  if MessageDlg(rstrRemoveSelectedBooks, mtConfirmation, [mbYes, mbNo], 0) = mrNo then
     Exit;
 
   Screen.Cursor := crHourGlass;
@@ -4534,7 +4580,7 @@ end;
 procedure TfrmMain.miDeleteColClick(Sender: TObject);
 begin
   { TODO -oNickR -cUsability : Думаю, стоит сделать специальный диалог для этого случая. Тогда мы сможем спросить, удалять файл коллекции или нет. }
-  if MessageDlg('Удалить коллекцию "' + DMUser.ActiveCollection.Name + '"?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+  if MessageDlg(rstrRemoveCollection + '"' + DMUser.ActiveCollection.Name + '"?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
     Exit;
 
   //
@@ -4682,7 +4728,7 @@ begin
   (*
   if ActiveView = FavoritesView then
   begin
-    MessageDlg('Редактирование книг из избранного невозможно.', mtWarning, [mbOk], 0);
+    MessageDlg(rstrUnableToEditBooksFromFavourites, mtWarning, [mbOk], 0);
     Exit;
   end;
 
@@ -4830,7 +4876,7 @@ function TfrmMain.IsLibRusecEdit(BookID: Integer): Boolean;
 begin
   if isExternalCollection(DMUser.ActiveCollection.CollectionType) then
   begin
-    if MHLShowWarning('Изменения информации о книгах в онлайн-коллекциях возможно только на сайте.' + CRLF + 'Перейти на сайт "Электронная библиотека lib.rus.ec"?', mbYesNo) = mrYes then
+    if MHLShowWarning(Format(rstrGoToLibrarySite, ['lib.rus.ec']), mbYesNo) = mrYes then
     begin
       DMCollection.tblBooks.Locate(BOOK_ID_FIELD, BookID, []);
       { TODO -oNickR -cLibDesc : этот URL должен формироваться обвязкой библиотеки, т к его формат может меняться }
@@ -4989,7 +5035,7 @@ var
 begin
   if ActiveView = FavoritesView then
   begin
-    MHLShowWarning('Редактирование книг из избранного невозможно.');
+    MHLShowWarning(rstrUnableToEditBooksFromFavourites);
     Exit;
   end;
 
@@ -5054,7 +5100,7 @@ var
 begin
   if ActiveView = FavoritesView then
   begin
-    MHLShowWarning('Редактирование книг из избранного невозможно.');
+    MHLShowWarning(rstrUnableToEditBooksFromFavourites);
     Exit;
   end;
 
@@ -5074,7 +5120,7 @@ begin
     Assert(Length(Data^.Authors) > 0);
     AuthID := Data^.Authors[0].AuthorID;
 
-    if InputQuery('Создание серии / Перенос в серию', 'Название:', S) then
+    if InputQuery(rstrCreateMoveSeries, rstrTitle, S) then
     begin
       if S = '' then
         S := NO_SERIES_TITLE;
@@ -5104,7 +5150,7 @@ begin
     end;
   end
   else // редактирукм название существующей
-  if InputQuery('Редактирование серии', 'Название:', S) then
+  if InputQuery(rstrEditSeries, rstrTitle, S) then
   begin
     if S = '' then { TODO : заменить на один update }
     begin
@@ -5585,7 +5631,7 @@ begin
 
   Screen.Cursor := crHourGlass;
   try
-    StatusMessage := 'Добавляем книги в группу...';
+    StatusMessage := rstrAddingBookToGroup;
     StatusProgress := 0;
     ShowStatusProgress := True;
     try
@@ -5642,7 +5688,7 @@ begin
 
   Screen.Cursor := crHourGlass;
   try
-    StatusMessage := 'Удаляем книги из группы...';
+    StatusMessage := rstrRemovingBookFromGroup;
     StatusProgress := 0;
     ShowStatusProgress := True;
     try
@@ -5692,7 +5738,7 @@ begin
       end;
     SeriesView:
       begin
-        Assert(False, 'Необходимо использовать отдельный тип данных для серии');
+        Assert(False, rstrNeedSpecialDataTypeForSeries);
         Exit;
         treeView := tvSeries;
         Edit := edFSeries;
@@ -6058,7 +6104,7 @@ begin
         if Zip.FindFirst('*' + FBD_EXTENSION, F) then
           Zip.ExtractToStream(F.FileName, FS)
         else
-          raise Exception.CreateFmt('В архиве "%s" не найдено описание книги!', [FileName]);
+          raise Exception.CreateFmt(rstrBookNotFoundInArchive, [FileName]);
         Zip.CloseArchive;
 
         Exit;
@@ -6294,7 +6340,7 @@ begin
       else
       begin
         Screen.Cursor := crDefault;
-        MHLShowError('Коллекция не зарегистрирована !');
+        MHLShowError(rstrCollectionNotRegistered);
         Exit;
       end;
 
@@ -6336,11 +6382,11 @@ begin
       except
         on E: EIdSocketError do
           if E.LastError = 11001 then
-            MHLShowError('Проверка обновления не удалось! Сервер не найден.' + CRLF + 'Код ошибки: %d', [E.LastError])
+            MHLShowError(rstrUpdateFailedServerNotFound, [E.LastError])
           else
-            MHLShowError('Проверка обновления не удалось! Ошибка подключения.' + CRLF + 'Код ошибки: %d', [E.LastError]);
+            MHLShowError(rstrUpdateFailedConnectionError, [E.LastError]);
         on E: Exception do
-          MHLShowError('Проверка обновления не удалось! Сервер сообщает об ошибке ' + CRLF + 'Код ошибки: %d', [HTTP.ResponseCode]);
+          MHLShowError(rstrUpdateFailedServerError, [HTTP.ResponseCode]);
       end;
       { TODO -oNickR -cRefactoring : проверить использование файла last_version.info. Возможно он больше нигде не нужен и можно не сохранять его на диск }
       LF.SaveToFile(Settings.SystemFileName[sfAppVerInfo]);
@@ -6352,10 +6398,10 @@ begin
           for i := 1 to SL.Count - 1 do
             S := S + '  ' + SL[i] + CRLF;
 
-          MHLShowInfo('Доступна новая версия - ' + SL[0] + CRLF + S + CRLF + 'Посетите сайт программы для загрузки обновлений.');
+          MHLShowInfo(Format(rstrFoundNewAppVersion, [SL[0] + CRLF + S + CRLF]));
         end
         else if not FAutoCheck then
-          MHLShowInfo('У вас самая свежая версия.');
+          MHLShowInfo(rstrLatestVersion);
       FAutoCheck := False;
     finally
       HTTP.Free;
@@ -6449,7 +6495,7 @@ procedure TfrmMain.miConverToFBDClick(Sender: TObject);
 begin
   if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
   begin
-    MHLShowWarning('Для конвертации книги перейдите в соответствующую коллекцию');
+    MHLShowWarning(rstrToConvertChangeCollection);
     Exit;
   end;
 
@@ -6590,11 +6636,7 @@ procedure TfrmMain.miCollectionExportClick(Sender: TObject);
 var
   FileName: string;
 begin
-  if MHLShowWarning(
-    'Экспорт в xml работает в режиме совместимости со старыми версиями.' + CRLF +
-    'Не все данные будут сохранены. Рекомендуется использовать экспорт в inpx.' + CRLF +
-    'Продолжить?', mbYesNo
-    ) = mrNo
+  if MHLShowWarning(rstrXmlExportInCompatibilityMode, mbYesNo) = mrNo
   then
     Exit;
 
@@ -6821,7 +6863,7 @@ begin
         miGoToAuthor.Visible := True;
         miDelFavorites.Visible := True;
         miAddFavorites.Visible := False;
-        BtnFav_add.Hint := 'Удалить из группы';
+        BtnFav_add.Hint := rstrRemoveFromGroup;
         BtnFav_add.DropdownMenu := nil;
         BtnFav_add.ImageIndex := 16;
         pmiGroups.Visible := False;
@@ -6830,7 +6872,7 @@ begin
     DownloadView:
       begin
         tbtnDownloadList_Add.ImageIndex := 23;
-        tbtnDownloadList_Add.Hint := 'Удалить из списка закачек';
+        tbtnDownloadList_Add.Hint := rstrRemoveFromDownloadList;
         btnSwitchTreeMode.Enabled := False;
         Exit;
       end;
@@ -6839,7 +6881,7 @@ begin
       miGoToAuthor.Visible := False;
       miDelFavorites.Visible := False;
       miAddFavorites.Visible := True;
-      BtnFav_add.Hint := 'Добавить в избранное';
+      BtnFav_add.Hint := rstrAddToFavorites;
       BtnFav_add.DropdownMenu := pmGroups;
       BtnFav_add.ImageIndex := 15;
       pmiGroups.Visible := True;
@@ -6849,7 +6891,7 @@ begin
   end;
 
   tbtnDownloadList_Add.ImageIndex := 2;
-  tbtnDownloadList_Add.Hint := 'Добавить в список закачек';
+  tbtnDownloadList_Add.Hint := rstrAddToDownloads;
 
   DMCollection.SetActiveTable(Ord(ActiveView));
 

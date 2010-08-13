@@ -19,6 +19,10 @@ unit unit_Consts;
 
 interface
 
+resourcestring
+  rstrNoTitle = 'Без названия';
+  rstrUnknownAuthor = 'Неизвестный';
+
 const
   CR = #13;
   LF = #10;
@@ -84,8 +88,6 @@ const
 
   NO_SERIE_ID = 1;
   NO_SERIES_TITLE = '---';
-  BOOK_NO_TITLE = 'Без названия';
-  UNKNOWN_AUTHOR_LASTNAME = 'Неизвестный';
 
   FAVORITES_GROUP_ID = 1;
 

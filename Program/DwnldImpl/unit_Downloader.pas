@@ -107,6 +107,19 @@ uses
   unit_Messages,
   unit_Helpers;
 
+resourcestring
+  rstrWrongCredentials = 'Неправильный логин/пароль';
+  rstrDownloadBlockedByServer = 'Загрузка файла заблокирована сервером!' + CRLF + ' Ответ сервера можно посмотреть в файле "server_error.html"';
+  rstrBlockedByServer = 'Заблокировано сервером';
+  rstrSpeed = 'Загрузка: %s Kb/s';
+  rstrDownloadError = 'Ошибка закачки';
+  rstrServerNotFound = 'Закачка не удалась! Сервер не найден.';
+  rstrError = 'Ошибка ';
+  rstrTimeout = 'Закачка не удалась! Превышено время ожидания.';
+  rstrConnectionError = 'Закачка не удалась! Ошибка подключения.';
+  rstrServerError = 'Закачка не удалась! Сервер сообщает об ошибке "%s".' + CRLF;
+  rstrErrorCode = 'Код Ошибки ';
+
 const
   CommandList: array [0 .. 5] of string = ('ADD', 'GET', 'POST', 'REDIR', 'CHECK', 'PAUSE');
   Params: array [0 .. 2] of string = ('%USER%', '%PASS%', '%RESURL%');
@@ -145,7 +158,7 @@ function TDownloader.CheckRedirect: boolean;
 begin
   Result := (FNewURL <> '');
   if not Result then
-    raise EInvalidLogin.Create('Неправильный логин/пароль');
+    raise EInvalidLogin.Create(rstrWrongCredentials);
 end;
 
 function TDownloader.CheckResponce: boolean;
@@ -164,7 +177,7 @@ begin
     begin
       if (Pos('<!DOCTYPE', Str[0]) <> 0) or (Pos('overload', Str[0]) <> 0) or (Pos('not found', Str[0]) <> 0) then
       begin
-        ProcessError('Загрузка файла заблокирована сервером!' + CRLF + ' Ответ сервера можно посмотреть в файле "server_error.html"', 'Заблокировано сервером', FFile);
+        ProcessError(rstrDownloadBlockedByServer, rstrBlockedByServer, FFile);
         Str.SaveToFile(Settings.SystemFileName[sfServerErrorLog]);
       end
       else
@@ -239,7 +252,7 @@ begin
   if ElapsedTime > 0 then
   begin
     Speed := FormatFloat('0.00', AWorkCount / 1024 / ElapsedTime);
-    FOnSetComment(Format('Загрузка: %s Kb/s', [Speed]), '');
+    FOnSetComment(Format(rstrSpeed, [Speed]), '');
   end;
 end;
 
@@ -401,7 +414,7 @@ begin
     CloseFile(F);
   end;
   if not FIgnoreErrors then
-    Application.MessageBox(PChar(LongMsg), 'Ошибка закачки');
+    Application.MessageBox(PChar(LongMsg), PChar(rstrDownloadError));
 end;
 
 function TDownloader.Query(Kind: TQueryKind; const URL: string): boolean;
@@ -427,18 +440,18 @@ begin
     begin
       case E.LastError of
         WSAHOST_NOT_FOUND:
-          ProcessError('Закачка не удалась! Сервер не найден.', 'Ошибка ' + IntToStr(E.LastError), FFile);
+          ProcessError(rstrServerNotFound, rstrError + IntToStr(E.LastError), FFile);
 
         Id_WSAETIMEDOUT:
-          ProcessError('Закачка не удалась! Превышено время ожидания.', 'Ошибка ' + IntToStr(E.LastError), FFile);
+          ProcessError(rstrTimeout, rstrError + IntToStr(E.LastError), FFile);
       else
-        ProcessError('Закачка не удалась! Ошибка подключения.', 'Ошибка ' + IntToStr(E.LastError), FFile);
+        ProcessError(rstrConnectionError, rstrError + IntToStr(E.LastError), FFile);
       end; // case
     end;
 
     on E: Exception do
       if (FidHTTP.ResponseCode <> 405) and not((FidHTTP.ResponseCode = 404) and (FNewURL <> '')) then
-        ProcessError('Закачка не удалась! Сервер сообщает об ошибке "' + E.Message + '".' + CRLF, 'Код Ошибки ' + IntToStr(FidHTTP.ResponseCode), FFile)
+        ProcessError(Format(rstrServerError, [E.Message]), rstrErrorCode + IntToStr(FidHTTP.ResponseCode), FFile)
       else
         Result := True;
   end; // try ... except

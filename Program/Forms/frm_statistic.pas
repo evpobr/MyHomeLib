@@ -53,6 +53,9 @@ uses
   CommCtrl,
   dm_collection;
 
+resourcestring
+  rstrUnknown = 'unknown';
+
 {$R *.dfm}
 
 procedure TfrmStat.LoadCollectionInfo;
@@ -63,7 +66,7 @@ var
   SeriesCount: Integer;
 begin
   if DMUser.ActiveCollection.Version = UNVERSIONED_COLLECTION then
-    Version := 'unknown'
+    Version := rstrUnknown
   else
     Version := IntToStr(DMUser.ActiveCollection.Version);
   DMCollection.GetStatistics(AuthorsCount, BooksCount, SeriesCount);

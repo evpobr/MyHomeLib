@@ -106,14 +106,6 @@ type
 var
   frmNCWizard: TfrmNCWizard;
 
-resourcestring
-  CAPTIONCANCEL = 'Отмена';
-  CAPTIONCLOSE = 'Закрыть';
-  CREATIONCOLLECTION = 'Создание коллекции';
-  DATAIMPORT = 'Импорт данныx';
-  DATAIMPORTING = 'Импортируем данные';
-  REGISTRATION = 'Регистрируем коллекцию';
-
 implementation
 
 uses
@@ -124,6 +116,16 @@ uses
   unit_ImportInpxThread,
   unit_Consts,
   unit_mhl_strings;
+
+resourcestring
+  rstrCaptionCancel = 'Отмена';
+  rstrCaptionClose = 'Закрыть';
+  rstrCreationCollection = 'Создание коллекции';
+  rstrDataImport = 'Импорт данныx';
+  rstrDataImporting = 'Импортируем данные';
+  rstrRegistration = 'Регистрируем коллекцию';
+  rstrDownloadFailed = 'Закачка не удалась. Сервер сообщает об ошибке.';
+  rstrImportDoneWithErrors = 'Импорт закончен с ошибками. Продолжить регистрацию коллекции ?';
 
 {$R *.dfm}
 
@@ -227,12 +229,12 @@ begin
 
   if wbCancel in EnabledButtons then
   begin
-    btnCancel.Caption := CAPTIONCANCEL;
+    btnCancel.Caption := rstrCaptionCancel;
     FModalResult := mrCancel;
   end
   else
   begin
-    btnCancel.Caption := CAPTIONCLOSE;
+    btnCancel.Caption := rstrCaptionClose;
     FModalResult := mrOk;
   end;
 end;
@@ -440,7 +442,7 @@ begin
     except
       on E: Exception do
       begin
-        MessageDlg('Закачка не удалась. Сервер сообщает об ошибке.', mtError, [mbOK], 0);
+        MessageDlg(rstrDownloadFailed, mtError, [mbOK], 0);
         DoChangePage(btnBackward);
       end;
     end;
@@ -550,7 +552,7 @@ begin
   Result := False;
 
   FProgressPage.OpenProgress;
-  FProgressPage.SetComment(CREATIONCOLLECTION);
+  FProgressPage.SetComment(rstrCreationCollection);
 
   try
     //
@@ -560,7 +562,7 @@ begin
     try
       if FParams.Operation <> otExisting then
       begin
-        FProgressPage.ShowTeletype(CREATIONCOLLECTION, tsInfo);
+        FProgressPage.ShowTeletype(rstrCreationCollection, tsInfo);
         { TODO -oNickR -cUsability : проверять существование на соответствующей странице с выдачей предупреждения }
         //Assert(not FileExists(FParams.CollectionFile));
         Assert(FileExists(FParams.GenreFile));
@@ -677,8 +679,8 @@ begin
     Exit;
   end;
 
-  FProgressPage.SetComment(DATAIMPORT);
-  FProgressPage.ShowTeletype(DATAIMPORTING, tsInfo);
+  FProgressPage.SetComment(rstrDataImport);
+  FProgressPage.ShowTeletype(rstrDataImporting, tsInfo);
 
   //
   // подключить и запустить импортер
@@ -697,7 +699,7 @@ end;
 
 procedure TfrmNCWizard.RegisterCollection;
 begin
-  FProgressPage.ShowTeletype(REGISTRATION, tsInfo);
+  FProgressPage.ShowTeletype(rstrRegistration, tsInfo);
 
   FVersion := GetLibUpdateVersion(True);
 
@@ -737,7 +739,7 @@ begin
   //
 
   if FProgressPage.HasErrors then
-    IgnoreErrors := ( MessageDlg('Импорт закончен с ошибками. Продолжить регистрацию коллекции ?',
+    IgnoreErrors := ( MessageDlg(rstrImportDoneWithErrors,
                   mtWarning,[mbYes,mbNo],0) = mrYes);
 
   ANoChangePage := (not IgnoreErrors) or FWorker.Canceled;

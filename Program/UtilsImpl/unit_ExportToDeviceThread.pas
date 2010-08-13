@@ -81,6 +81,14 @@ uses
   unit_MHLHelpers,
   unit_WriteFb2Info;
 
+resourcestring
+  rstrCheckTemplateValidity = 'Проверьте правильность шаблона';
+  rstrArchiveNotFound = 'Архив ' + CR + ' не найден!';
+  rstrFileNotFound = 'File "%s" not found';
+  rstrProcessRemainingFiles = 'Обрабатывать оставшиеся файлы ?';
+  rstrFilesProcessed = 'Записано файлов: %u из %u';
+  rstrCompleted = 'Завершение операции ...';
+
 { TExportToDeviceThread }
 
 //
@@ -108,7 +116,7 @@ begin
     FFileOprecord.TargetFolder := FTemplater.ParseString(R, TpPath)
   else
   begin
-    Dialogs.ShowMessage('Проверьте правильность шаблона');
+    Dialogs.ShowMessage(rstrCheckTemplateValidity);
     Exit;
   end;
   FFileOprecord.TargetFolder := IncludeTrailingPathDelimiter(Trim(CheckSymbols(FFileOprecord.TargetFolder)));
@@ -120,7 +128,7 @@ begin
     FFileOprecord.TargetFileName := FTemplater.ParseString(R, TpFile)
   else
   begin
-    Dialogs.ShowMessage('Проверьте правильность шаблона');
+    Dialogs.ShowMessage(rstrCheckTemplateValidity);
     Exit;
   end;
   FFileOprecord.TargetFileName := Trim(CheckSymbols(FFileOprecord.TargetFileName));
@@ -157,7 +165,7 @@ begin
   begin
     if not FileExists(CR) then
     begin
-      ShowMessage('Архив ' + CR + ' не найден!', MB_ICONERROR or MB_OK);
+      ShowMessage(rstrArchiveNotFound, MB_ICONERROR or MB_OK);
       Exit;
     end;
 
@@ -186,7 +194,7 @@ var
 begin
   if not FileExists(FFileOprecord.SArch) then
   begin
-    ShowMessage(Format('File "%s" not found', [FFileOprecord.SArch]), MB_ICONERROR or MB_OK);
+    ShowMessage(Format(rstrFileNotFound, [FFileOprecord.SArch]), MB_ICONERROR or MB_OK);
     Result := False;
     Exit;
   end;
@@ -280,20 +288,20 @@ begin
           //
           // TODO -oNickR -cUsability : предусмотреть возможность сказать "да для всех"
           //
-          Canceled := (ShowMessage('Обрабатывать оставшиеся файлы ?', MB_ICONQUESTION or MB_YESNO) = IDNO);
+          Canceled := (ShowMessage(rstrProcessRemainingFiles, MB_ICONQUESTION or MB_YESNO) = IDNO);
         end;
 
-        SetComment(Format('Записано файлов: %u из %u', [i + 1, totalBooks]));
+        SetComment(Format(rstrFilesProcessed, [i + 1, totalBooks]));
         SetProgress(i * 100 div totalBooks);
 
         if Canceled then
         begin
-          SetComment('Завершение операции ...');
+          SetComment(rstrCompleted);
           Break;
         end;
       end;
 
-      SetComment(Format('Записано файлов: %u из %u', [i + 1, totalBooks]));
+      SetComment(Format(rstrFilesProcessed, [i + 1, totalBooks]));
     finally
       FreeAndNil(FTemplater);
     end;

@@ -53,6 +53,9 @@ implementation
 uses
   unit_Helpers;
 
+resourcestring
+  rstrMissingFileType = 'Тип файла не указан!';
+
 {$R *.dfm}
 
 procedure TfrmEditReader.edPathButtonClick(Sender: TObject);
@@ -86,7 +89,7 @@ end;
 procedure TfrmEditReader.btnSaveClick(Sender: TObject);
 begin
   if Extension = '' then
-    MessageDlg('Тип файла не указан!', mtError, [mbOk], 0)
+    MessageDlg(rstrMissingFileType, mtError, [mbOk], 0)
   else
     ModalResult := mrOk;
 end;

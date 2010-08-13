@@ -250,6 +250,16 @@ uses
   frm_create_mask,
   unit_Templater;
 
+resourcestring
+  rstrStandart = 'Стандартное';
+  rstrNeedTemplate = 'Необходимо задать шаблон для заголовка книги в разделе "Разное"';
+  rstrChangeFileType = 'Изменение типа файлов';
+  rstrAddFileType = 'Добавление типа файлов';
+  rstrTypeAlreadyInTheList = 'Тип "%s" уже есть в списке!';
+  rstrChangeScriptParams = 'Изменение параметров скрипта';
+  rstrAddScript = 'Добавление скрипта';
+  rstrProvideFolder = 'Укажите папку';
+
 {$R *.dfm}
 
 procedure TfrmSettings.LoadSetting;
@@ -323,7 +333,7 @@ begin
   //
   lvScripts.Items.Clear;
   cbDefaultAction.Items.Clear;
-  cbDefaultAction.Items.Add('Стандартное');
+  cbDefaultAction.Items.Add(rstrStandart);
 
   for i := 0 to Settings.Scripts.Count - 1 do
   begin
@@ -498,7 +508,7 @@ procedure TfrmSettings.SaveSettingsClick(Sender: TObject);
 begin
   if cbOverwriteFB2Info.Checked and (edTitleTemplate.Text = '') then
   begin
-    ShowMessage('Необходимо задать шаблон для заголовка книги в разделе "Разное"');
+    ShowMessage(rstrNeedTemplate);
     tvSections.Select(tvSections.Items[5]);
     Exit;
   end;
@@ -519,7 +529,7 @@ var
 begin
   frmEditReader := TfrmEditReader.Create(Self);
   try
-    frmEditReader.Caption := IfThen(Assigned(AItem), 'Изменение типа файлов', 'Добавление типа файлов');
+    frmEditReader.Caption := IfThen(Assigned(AItem), rstrChangeFileType, rstrAddFileType);
     if Assigned(AItem) then
     begin
       frmEditReader.Extension := AItem.Caption;
@@ -539,7 +549,7 @@ begin
       if lvReaders.FindCaption(0, frmEditReader.Extension, False, True, False) <> nil then
       begin
         // Это расширение уже зарегистрировано
-        MessageDlg('Тип "' + frmEditReader.Extension + '" уже есть в списке!', mtError, [mbOk], 0);
+        MessageDlg(Format(rstrTypeAlreadyInTheList, [frmEditReader.Extension]), mtError, [mbOk], 0);
         Exit;
       end;
 
@@ -590,7 +600,7 @@ var
 begin
   frmEditScript := TfrmEditScript.Create(Self);
   try
-    frmEditReader.Caption := IfThen(Assigned(AItem), 'Изменение параметров скрипта', 'Добавление скрипта');
+    frmEditReader.Caption := IfThen(Assigned(AItem), rstrChangeScriptParams, rstrAddScript);
     if Assigned(AItem) then
     begin
       frmEditScript.Title := AItem.Caption;
@@ -849,7 +859,7 @@ begin
   end;
 
   AFolder := EditControl.Text;
-  if GetFolderName(Handle, 'Укажите папку', AFolder) then
+  if GetFolderName(Handle, rstrProvideFolder, AFolder) then
     EditControl.Text := AFolder;
 end;
 

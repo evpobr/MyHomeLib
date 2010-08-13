@@ -77,6 +77,13 @@ uses
   unit_Settings,
   IdMultipartFormData;
 
+resourcestring
+  rstrDone = 'Готово';
+  rstrConnecting = 'Подключение ...';
+  rstrConnectingWithInfo = '%s %s %s Подключение ...';
+  rstrDownloading = '%s. %s %s Загрузка: %s Kb/s    %d %%';
+  rstrIgnoreDownloadErrors = 'Игнорировать ошибки загрузки ?';
+
 procedure TDownloadManagerThread.TerminateNow;
 begin
   try
@@ -93,7 +100,7 @@ begin
   frmMain.tvDownloadList.RepaintNode(FCurrentNode);
 
   frmMain.pbDownloadProgress.Position := 0;
-  frmMain.lblDownloadState.Caption := 'Готово';
+  frmMain.lblDownloadState.Caption := rstrDone;
   frmMain.lblDnldAuthor.Caption := '';
   frmMain.lblDnldTitle.Caption :=  '';
 
@@ -124,7 +131,7 @@ begin
     end;
 
   frmMain.pbDownloadProgress.Position := 0;
-  frmMain.lblDownloadState.Caption := 'Готово';
+  frmMain.lblDownloadState.Caption := rstrDone;
   frmMain.lblDnldAuthor.Caption := '';
   frmMain.lblDnldTitle.Caption :=  '';
 
@@ -176,13 +183,13 @@ begin
 
       if frmMain.Visible then
       begin
-        frmMain.lblDownloadState.Caption := 'Подключение ...';
+        frmMain.lblDownloadState.Caption := rstrConnecting;
         frmMain.lblDnldAuthor.Caption := FCurrentData.Author;
         frmMain.lblDnldTitle.Caption := FCurrentData.Title;
         frmMain.pbDownloadProgress.Visible := True;
       end
       else
-        frmMain.TrayIcon.Hint := Format('%s %s %s Подключение ...',
+        frmMain.TrayIcon.Hint := Format(rstrConnectingWithInfo,
                                             [FCurrentData.Author,
                                              FCurrentData.Title,
                                              CRLF]);
@@ -224,7 +231,7 @@ begin
     frmMain.pbDownloadProgress.Position := Current;
   end
   else
-    frmMain.TrayIcon.Hint := Format('%s. %s %s Загрузка: %s Kb/s    %d %%',
+    frmMain.TrayIcon.Hint := Format(rstrDownloading,
                                     [FCurrentData.Author,
                                      FCurrentData.Title,
                                      CRLF,
@@ -273,7 +280,7 @@ begin
       Synchronize(GetCurrentFile);
       if FError and not FIgnoreErrors and not FCanceled then
       begin
-        Res := Application.MessageBox('Игнорировать ошибки загрузки ?','', MB_YESNOCANCEL);
+        Res := Application.MessageBox(PWideChar(rstrIgnoreDownloadErrors),'', MB_YESNOCANCEL);
         FCanceled := (Res = IDCANCEL);
         FIgnoreErrors := (Res = IDYES);
       end;
