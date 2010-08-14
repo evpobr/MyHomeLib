@@ -237,8 +237,8 @@ begin
 
   FTitle.SetBounds(0, 0, 300, 20);
   FAuthors.SetBounds(0, 20, 300, 20);
-  FSerieLabel.SetBounds(0, 40, 60, 20);  FSerie.SetBounds(60, 40, 140, 20);
-  FGenreLabel.SetBounds(0, 60, 60, 20);  FGenres.SetBounds(60, 60, 140, 20);
+  FSerieLabel.SetBounds(0, 40, 70, 20);  FSerie.SetBounds(70, 40, 140, 20);
+  FGenreLabel.SetBounds(0, 60, 70, 20);  FGenres.SetBounds(70, 60, 140, 20);
   FAnnotation.SetBounds(0, 80, 300, 120);
 
   //
