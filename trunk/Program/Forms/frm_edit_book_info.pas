@@ -33,7 +33,8 @@ uses
   ExtCtrls,
   ComCtrls,
   Forms,
-  Dialogs;
+  Dialogs,
+  unit_Globals;
 
 type
   TfrmEditBookInfo = class(TForm)
@@ -78,7 +79,7 @@ type
     procedure FillLists;
     function SaveData: Boolean;
   public
-
+    function GetGenres: TBookGenres;
   end;
 
 var
@@ -90,7 +91,6 @@ uses
   dm_collection,
   dm_user,
   frm_genre_tree,
-  unit_globals,
   frm_main,
   frm_edit_author,
   unit_TreeUtils,
@@ -121,19 +121,12 @@ end;
 
 procedure TfrmEditBookInfo.btnGenresClick(Sender: TObject);
 var
-  Data: PGenreData;
-  Node: PVirtualNode;
+  Genres: TBookGenres;
 begin
   if frmGenreTree.ShowModal = mrOk then
   begin
-    lblGenre.Text := '';
-    Node := frmGenreTree.tvGenresTree.GetFirstSelected;
-    while Assigned(Node) do
-    begin
-      Data := frmGenreTree.tvGenresTree.GetNodeData(Node);
-      lblGenre.Text := lblGenre.Text + Data.GenreAlias + ' ; ';
-      Node := frmGenreTree.tvGenresTree.GetNextSelected(Node);
-    end;
+    Genres := GetGenres;
+    lblGenre.Text := TGenresHelper.GetList(Genres);
     FChanged := True;
   end;
 end;
@@ -269,6 +262,26 @@ begin
   end;
 
   Result := True;
+end;
+
+function TfrmEditBookInfo.GetGenres: TBookGenres;
+var
+  Data: PGenreData;
+  Node: PVirtualNode;
+  Idx: Integer;
+begin
+  Node := frmGenreTree.tvGenresTree.GetFirstSelected;
+  Idx := 0;
+  while Assigned(Node) do
+  begin
+    Data := frmGenreTree.tvGenresTree.GetNodeData(Node);
+
+    TGenresHelper.Add(Result, Data.GenreCode, Data.GenreAlias, Data.FB2GenreCode);
+    Result[Idx].ParentCode := Data.ParentCode;
+
+    Node := frmGenreTree.tvGenresTree.GetNextSelected(Node);
+    Inc(Idx);
+  end;
 end;
 
 end.
