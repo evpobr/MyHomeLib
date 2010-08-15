@@ -274,7 +274,7 @@ begin
             end;
             on E: EIdConnClosedGracefully do
             begin
-                ProcessError('Закачка не удалась! У вас нет доступа к скачиванию этоq книги.','Нет доступа!', Folder);
+                ProcessError('Закачка не удалась! У вас нет доступа к скачиванию этой книги.','Нет доступа!', Folder);
                 Exit;
             end;
             on E: Exception do

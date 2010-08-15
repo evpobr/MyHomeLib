@@ -3187,6 +3187,8 @@ end;
 
 procedure TfrmMain.btnClearFavoritesClick(Sender: TObject);
 begin
+  if MessageDlg('Удалить все книги из активной группы?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then Exit;
+
   Screen.Cursor := crHourGlass;
   try
     ClearLabels(PAGE_FAVORITES, True);
