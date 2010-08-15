@@ -35,7 +35,8 @@ type
 
   public
     procedure SelectGenres(const Genres: TBookGenres);
-    procedure GetSelectedGenres(var R: TBookRecord);
+    procedure GetSelectedGenres(var R: TBookRecord); overload;
+    function GetSelectedGenres: TBookGenres; overload;
   end;
 
 var
@@ -87,6 +88,14 @@ begin
 
   if R.GenreCount = 0 then
     TGenresHelper.Add(R.Genres, UNKNOWN_GENRE_CODE, '', '');
+end;
+
+function TfrmGenreTree.GetSelectedGenres: TBookGenres;
+var
+  R: TBookRecord;
+begin
+  GetSelectedGenres(R);
+  Result := R.Genres;
 end;
 
 procedure TfrmGenreTree.tvGenresTreeFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);

@@ -5047,7 +5047,7 @@ begin
     DMUser.CorrectExtra(OldID, Data^.BookID);
 
     Data^.Title := frmEditBookInfo.edT.Text;
-    Data^.Genres := frmEditBookInfo.GetGenres;
+    Data^.Genres := frmGenreTree.GetSelectedGenres;
     Data^.SeqNumber := StrToIntDef(frmEditBookInfo.edSN.Text, 0);
     Data^.Lang := frmEditBookInfo.cbLang.Text;
     Tree.RepaintNode(Node);
