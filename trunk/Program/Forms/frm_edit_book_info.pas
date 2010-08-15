@@ -79,7 +79,6 @@ type
     procedure FillLists;
     function SaveData: Boolean;
   public
-    function GetGenres: TBookGenres;
   end;
 
 var
@@ -125,7 +124,7 @@ var
 begin
   if frmGenreTree.ShowModal = mrOk then
   begin
-    Genres := GetGenres;
+    Genres := frmGenreTree.GetSelectedGenres;
     lblGenre.Text := TGenresHelper.GetList(Genres);
     FChanged := True;
   end;
@@ -262,26 +261,6 @@ begin
   end;
 
   Result := True;
-end;
-
-function TfrmEditBookInfo.GetGenres: TBookGenres;
-var
-  Data: PGenreData;
-  Node: PVirtualNode;
-  Idx: Integer;
-begin
-  Node := frmGenreTree.tvGenresTree.GetFirstSelected;
-  Idx := 0;
-  while Assigned(Node) do
-  begin
-    Data := frmGenreTree.tvGenresTree.GetNodeData(Node);
-
-    TGenresHelper.Add(Result, Data.GenreCode, Data.GenreAlias, Data.FB2GenreCode);
-    Result[Idx].ParentCode := Data.ParentCode;
-
-    Node := frmGenreTree.tvGenresTree.GetNextSelected(Node);
-    Inc(Idx);
-  end;
 end;
 
 end.
