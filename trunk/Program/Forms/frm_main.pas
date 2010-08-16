@@ -900,7 +900,8 @@ uses
   frmEditAuthorEx,
   unit_Lib_Updates,
   UserData,
-  frm_EditGroup;
+  frm_EditGroup,
+  unit_BookFormat;
 
 resourcestring
   rstrFileNotFoundMsg = 'Файл %s не найден!' + CRLF + 'Проверьте настройки коллекции!';
@@ -3073,27 +3074,6 @@ var
   imgBookCover: TGraphic;
   isFBDDocument: Boolean;
 
-  function IsFBD(const BookRecord: TBookRecord): Boolean;
-  var
-    BookContainer: string;
-    PathLen: Integer;
-    FileName: string;
-  begin
-    Result := False;
-
-    BookContainer := TPath.Combine(DMUser.ActiveCollection.RootFolder, BookRecord.Folder);
-    PathLen := Length(BookContainer);
-
-    if
-      (PathLen = 0) or                                              // а вот эту строчку я вообще не понимаю :(
-      (BookContainer[PathLen] = TPath.DirectorySeparatorChar) or
-      (BookContainer[PathLen] = TPath.AltDirectorySeparatorChar) then
-    begin
-      FileName := TPath.Combine(BookContainer, BookRecord.FileName);
-      Result := (ExtractFileExt(FileName) = ZIP_EXTENSION);
-    end;
-  end;
-
 begin
   Tree := Sender as TBookTree;
 
@@ -3195,7 +3175,7 @@ begin
 
   if IsPrivate and IsNonFB2 then
   begin
-    isFBDDocument := IsFBD(R);
+    isFBDDocument := TBookFormatUtils.GetBookFormat(R) = bfFBD;
 
     miConverToFBD.Visible := True;
     miConverToFBD.Tag := IfThen(isFBDDocument, 999, 0);
@@ -6132,90 +6112,62 @@ end;
 
 procedure TfrmMain.ExtractBookToStream(const BookRecord: TBookRecord; var FS: TMemoryStream);
 var
-  BookContainer: string;
-  PathLen: Integer;
   FileName: string;
   Zip: TZipForge;
   F: TZFArchiveItem;
+  BookFormat: TBookFormat;
+  msgNotFound: string;
 begin
-  BookContainer := TPath.Combine(DMUser.ActiveCollection.RootFolder, BookRecord.Folder);
-  PathLen := Length(BookContainer);
+  BookFormat := TBookFormatUtils.GetBookFormat(BookRecord);
+  FileName := TBookFormatUtils.GetExpandedBookFileName(BookRecord);
 
-  if
-    (PathLen = 0) or                                              // а вот эту строчку я вообще не понимаю :(
-    (BookContainer[PathLen] = TPath.DirectorySeparatorChar) or
-    (BookContainer[PathLen] = TPath.AltDirectorySeparatorChar) then
+  if (BookFormat = bfFB2ZIP) or (BookFormat = bfFBD) then
+    msgNotFound := rstrArchiveNotFound
+  else
+    msgNotFound := rstrFileNotFound;
+  if not FileExists(FileName) then
   begin
-    FileName := TPath.Combine(BookContainer, BookRecord.FileName);
-
-    if ExtractFileExt(FileName) = ZIP_EXTENSION then // fbd
-    begin
-      //
-      // ZIP-ы рассматриваются как контейнеры для fbd
-      //
-      if not FileExists(FileName) then
-      begin
-        if IsLocal then
-          raise Exception.CreateFmt(rstrArchiveNotFound, [FileName]);
-        Exit;
-      end;
-
-      Zip := TZipForge.Create(Self);
-      try
-        Zip.FileName := FileName;
-        Zip.OpenArchive;
-        if Zip.FindFirst('*' + FBD_EXTENSION, F) then
-          Zip.ExtractToStream(F.FileName, FS)
-        else
-          raise Exception.CreateFmt(rstrBookNotFoundInArchive, [FileName]);
-        Zip.CloseArchive;
-
-        Exit;
-      finally
-        Zip.Free;
-      end;
-    end;
-
-    //
-    // просто файл. в этом случае рассширение хранится отдельно
-    //
-    FileName := FileName + BookRecord.FileExt;
-    if not FileExists(FileName) then
-    begin
-      if IsLocal then
-        raise Exception.CreateFmt(rstrFileNotFound, [FileName]);
-      Exit;
-    end;
-
-    //
-    // В настоящее время мы не можем получать никакую информацию из "сырого" файла. Т ч и читать ничего не будем
-    //
-    ///FS.LoadFromFile(fileName);
+    if IsLocal then
+      raise Exception.CreateFmt(msgNotFound, [FileName]);
     Exit;
   end;
 
-  if ExtractFileExt(BookContainer) = ZIP_EXTENSION then
+  if BookFormat = bfFBD then
   begin
-    //
-    // Книга находится внутри архива. Предполагается, что это fb2
-    //
-    if not FileExists(BookContainer) then
-    begin
-      if IsLocal then
-        raise Exception.CreateFmt(rstrArchiveNotFound, [BookContainer]);
-      Exit;
-    end;
+    Zip := TZipForge.Create(Self);
+    try
+      Zip.FileName := FileName;
+      Zip.OpenArchive;
+      if Zip.FindFirst('*' + FBD_EXTENSION, F) then
+        Zip.ExtractToStream(F.FileName, FS)
+      else
+        raise Exception.CreateFmt(rstrBookNotFoundInArchive, [FileName]);
+      Zip.CloseArchive;
 
+      Exit;
+    finally
+      Zip.Free;
+    end;
+  end
+  else if BookFormat = bfFB2ZIP then
+  begin
     Zip := TZipForge.Create(self);
     try
-      Zip.FileName := BookContainer;
+      Zip.FileName := FileName;
       Zip.OpenArchive;
       Zip.ExtractToStream(GetFileNameZip(Zip, BookRecord.InsideNo), FS);
       Zip.CloseArchive;
     finally
       Zip.Free;
     end;
-  end;
+  end
+  else if BookFormat = bfFB2 then
+    FS.LoadFromFile(FileName);
+
+  // else bfRaw
+  //
+  // В настоящее время мы не можем получать никакую информацию из "сырого" файла. Т ч и читать ничего не будем
+  //
 end;
 
 procedure TfrmMain.ShowBookInfo(Sender: TObject);
