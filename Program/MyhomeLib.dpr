@@ -117,7 +117,8 @@ uses
   SearchPresets in 'Units\SearchPresets.pas',
   UserData in 'Units\UserData.pas',
   xmlUtils in 'Units\xmlUtils.pas',
-  frm_EditGroup in 'Forms\frm_EditGroup.pas' {frmEditGroup};
+  frm_EditGroup in 'Forms\frm_EditGroup.pas' {frmEditGroup},
+  unit_BookFormat in 'Units\unit_BookFormat.pas';
 
 {$R *.res}
 
