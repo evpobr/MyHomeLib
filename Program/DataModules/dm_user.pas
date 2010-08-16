@@ -363,8 +363,6 @@ begin
   AExt := AllBooksExt.Value;
   ANo := AllBooksInsideNo.Value;
 
-  if ExtractFileExt(AFile) <> ZIP_EXTENSION then // могут быть проблемы!
-    AFile := AFile + AExt;
 end;
 
 procedure TDMUser.GetBookLibID(BookID: Integer; DatabaseID: Integer; out ARes: String);
