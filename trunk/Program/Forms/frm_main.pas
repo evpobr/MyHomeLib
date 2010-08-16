@@ -3796,8 +3796,9 @@ var
   Zip: TZipForge;
   ID, i: Integer;
 
-  BookFolder, BookFileName, Ext: string;
+  BookFolder, FN, Ext: string;
   No: Integer;
+  ExpandedBookFileName: string;
 begin
   GetActiveTree(Tree);
 
@@ -3807,9 +3808,10 @@ begin
 
   Screen.Cursor := crHourGlass;
   try
-    DMCollection.GetBookFileName(Data^.BookID, Data^.DatabaseID, BookFolder, BookFileName, Ext, No);
+    ExpandedBookFileName := TBookFormatUtils.GetExpandedBookFileName(Data);
+    DMCollection.GetBookFileName(Data^.BookID, Data^.DatabaseID, BookFolder, FN, Ext, No);
 
-    if ExtractFileExt(BookFolder) = ZIP_EXTENSION then
+    if ExtractFileExt(ExpandedBookFileName) = ZIP_EXTENSION then
     begin
       //
       if ActiveView = FavoritesView then
@@ -3819,7 +3821,7 @@ begin
         if isOnlineCollection(DMUser.tblBasesCode.Value) then
         begin
           DownloadBooks;
-          if not FileExists(BookFolder) then
+          if not FileExists(ExpandedBookFileName) then
             Exit;
         end;
         ID := DMUser.BooksByGroupBookID.Value;
@@ -3829,14 +3831,14 @@ begin
         if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
         begin
           DownloadBooks;
-          if not FileExists(BookFolder) then
+          if not FileExists(ExpandedBookFileName) then
             Exit; // если файла нет, значит закачка не удалась, и юзер об  этом уже знает
         end;
         ID := Data^.BookID;
       end; // if .. else
 
-      if not FileExists(BookFolder) then
-        raise EInvalidOp.CreateFmt(rstrArchiveNotFound, [BookFolder]);
+      if not FileExists(ExpandedBookFileName) then
+        raise EInvalidOp.CreateFmt(rstrArchiveNotFound, [ExpandedBookFileName]);
 
       Assert(Length(Data^.Authors) > 0);
       WorkFile := TPath.Combine(
@@ -3850,7 +3852,7 @@ begin
         try
           FS := TMemoryStream.Create;
           try
-            Zip.FileName := BookFolder;
+            Zip.FileName := ExpandedBookFileName;
             Zip.BaseDir := Settings.ReadPath;
             Zip.OpenArchive;
             Zip.ExtractToStream(GetFileNameZip(Zip, No), FS);
@@ -3863,7 +3865,7 @@ begin
         end;
       end; // if Exists
     end
-    else if ExtractFileExt(BookFileName) = ZIP_EXTENSION then
+    else if ExtractFileExt(ExpandedBookFileName) = ZIP_EXTENSION then
     begin
       Assert(Length(Data^.Authors) > 0);
       WorkFile := TPath.Combine(
@@ -3877,7 +3879,7 @@ begin
         try
           FS := TMemoryStream.Create;
           try
-            Zip.FileName := TPath.Combine(BookFolder, BookFileName);
+            Zip.FileName := ExpandedBookFileName;
             Zip.BaseDir := Settings.ReadPath;
             Zip.OpenArchive;
             WorkFile := GetFileNameZip(Zip, No);
@@ -3893,7 +3895,7 @@ begin
       end; // if Exists
     end
     else
-      WorkFile := TPath.Combine(BookFolder, BookFileName);
+      WorkFile := ExpandedBookFileName;
 
     if Settings.OverwriteFB2Info and (Ext = FB2_EXTENSION) then
       WriteFb2InfoToFile(WorkFile);
@@ -6112,23 +6114,23 @@ end;
 
 procedure TfrmMain.ExtractBookToStream(const BookRecord: TBookRecord; var FS: TMemoryStream);
 var
-  FileName: string;
+  ExpandedBookFileName: string;
   Zip: TZipForge;
   F: TZFArchiveItem;
   BookFormat: TBookFormat;
   msgNotFound: string;
 begin
   BookFormat := TBookFormatUtils.GetBookFormat(BookRecord);
-  FileName := TBookFormatUtils.GetExpandedBookFileName(BookRecord);
+  ExpandedBookFileName := TBookFormatUtils.GetExpandedBookFileName(BookRecord);
 
   if (BookFormat = bfFB2ZIP) or (BookFormat = bfFBD) then
     msgNotFound := rstrArchiveNotFound
   else
     msgNotFound := rstrFileNotFound;
-  if not FileExists(FileName) then
+  if not FileExists(ExpandedBookFileName) then
   begin
     if IsLocal then
-      raise Exception.CreateFmt(msgNotFound, [FileName]);
+      raise Exception.CreateFmt(msgNotFound, [ExpandedBookFileName]);
     Exit;
   end;
 
@@ -6136,12 +6138,12 @@ begin
   begin
     Zip := TZipForge.Create(Self);
     try
-      Zip.FileName := FileName;
+      Zip.FileName := ExpandedBookFileName;
       Zip.OpenArchive;
       if Zip.FindFirst('*' + FBD_EXTENSION, F) then
         Zip.ExtractToStream(F.FileName, FS)
       else
-        raise Exception.CreateFmt(rstrBookNotFoundInArchive, [FileName]);
+        raise Exception.CreateFmt(rstrBookNotFoundInArchive, [ExpandedBookFileName]);
       Zip.CloseArchive;
 
       Exit;
@@ -6153,7 +6155,7 @@ begin
   begin
     Zip := TZipForge.Create(self);
     try
-      Zip.FileName := FileName;
+      Zip.FileName := ExpandedBookFileName;
       Zip.OpenArchive;
       Zip.ExtractToStream(GetFileNameZip(Zip, BookRecord.InsideNo), FS);
       Zip.CloseArchive;
@@ -6162,7 +6164,7 @@ begin
     end;
   end
   else if BookFormat = bfFB2 then
-    FS.LoadFromFile(FileName);
+    FS.LoadFromFile(ExpandedBookFileName);
 
   // else bfRaw
   //

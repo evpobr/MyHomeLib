@@ -320,8 +320,6 @@ begin
     AExt := AllBooksExt.Value;
     ANo := AllBooksInsideNo.Value;
 
-    if ExtractFileExt(AFile) <> ZIP_EXTENSION then // могут быть проблемы!
-      AFile := AFile + AExt;
   end
   else
     DMUser.GetBookFileName(BookID, DatabaseID, AFolder, AFile, AExt, ANo);
