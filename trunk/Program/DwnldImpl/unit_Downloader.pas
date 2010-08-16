@@ -105,7 +105,8 @@ uses
   unit_Consts,
   unit_MHL_strings,
   unit_Messages,
-  unit_Helpers;
+  unit_Helpers,
+  unit_BookFormat;
 
 resourcestring
   rstrWrongCredentials = 'Неправильный логин/пароль';
@@ -194,28 +195,10 @@ begin
 end;
 
 function TDownloader.Download(BookID: Integer; DatabaseID: Integer): boolean;
-var
-  Folder: string;
-  FileName: string;
-  Ext: string;
-  No: Integer;
 begin
   Result := False;
 
-  DMCollection.GetBookFileName(BookID, DatabaseID, Folder, FileName, Ext, No);
-
-  if Ext = FB2_EXTENSION then
-    //
-    // Качаем fb2. В этом случае Folder содержит имя файла контейнера
-    //
-    FFile := Folder
-  else
-    //
-    // Не очень понимаю эту строчку :( Насколько я вижу, здесь заменяется .fb2.zip на реальное расщирение файла...
-    // Только зачем? Скорее всего это связано с Genesis... Проверить.
-    //
-    FFile := StringReplace(Folder, FB2ZIP_EXTENSION, Ext, []);
-
+  FFile := TBookFormatUtils.GetExpandedBookFileName(BookID, DatabaseID);
   if FileExists(FFile) or DoDownload(BookID, DatabaseID) then
   begin
     unit_Messages.BookLocalStatusChanged(BookID, DatabaseID, True);

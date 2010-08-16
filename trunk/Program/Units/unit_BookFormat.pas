@@ -32,9 +32,11 @@ type
   public
     class function GetBookFormat(const BookRecord: TBookRecord): TBookFormat; overload;
     class function GetBookFormat(const BookData: PBookData): TBookFormat; overload;
+    class function GetBookFormat(const BookID: Integer; const DatabaseID: Integer): TBookFormat; overload;
 
     class function GetExpandedBookFileName(const BookRecord: TBookRecord): string; overload;
     class function GetExpandedBookFileName(const BookData: PBookData): string; overload;
+    class function GetExpandedBookFileName(const BookID: Integer; const DatabaseID: Integer): string; overload;
 
   private
     class function GetBookFormat(const Folder: string; const PureFileName: string; const FileExt: string) : TBookFormat; overload;
@@ -57,13 +59,18 @@ begin
 end;
 
 class function TBookFormatUtils.GetBookFormat(const BookData: PBookData): TBookFormat;
+begin
+  Result := GetBookFormat(BookData^.BookID, BookData^.DatabaseID);
+end;
+
+class function TBookFormatUtils.GetBookFormat(const BookID: Integer; const DatabaseID: Integer): TBookFormat;
 var
   Folder: string;
   FileName: string;
   FileExt: string;
   No: Integer;
 begin
-  DMCollection.GetBookFileName(BookData^.BookID, BookData^.DatabaseID, Folder, FileName, FileExt, No);
+  DMCollection.GetBookFileName(BookID, DatabaseID, Folder, FileName, FileExt, No);
   Result := GetBookFormat(Folder, FileName, FileExt);
 end;
 
@@ -73,15 +80,21 @@ begin
 end;
 
 class function TBookFormatUtils.GetExpandedBookFileName(const BookData: PBookData): string;
+begin
+  Result := GetExpandedBookFileName(BookData^.BookID, BookData^.DatabaseID);
+end;
+
+class function TBookFormatUtils.GetExpandedBookFileName(const BookID: Integer; const DatabaseID: Integer): string;
 var
   Folder: string;
   FileName: string;
   FileExt: string;
   No: Integer;
 begin
-  DMCollection.GetBookFileName(BookData^.BookID, BookData^.DatabaseID, Folder, FileName, FileExt, No);
+  DMCollection.GetBookFileName(BookID, DatabaseID, Folder, FileName, FileExt, No);
   Result := GetExpandedBookFileName(Folder, FileName, FileExt);
 end;
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -90,6 +103,7 @@ end;
 ///////////////////////////////////////////////////////////////////////////////
 
 // The code was extracted from multiple occurencies in TfrmMain
+// PureFileName is assumed to be without extension
 class function TBookFormatUtils.GetBookFormat(const Folder: string; const PureFileName: string; const FileExt: string) : TBookFormat;
 var
   BookContainer: string;
@@ -124,6 +138,7 @@ begin
 end;
 
 // Get an expanded book file name, also extracted from TfrmMain
+// PureFileName is assumed to be without extension
 class function TBookFormatUtils.GetExpandedBookFileName(const Folder: string; const PureFileName: string; const FileExt: string): string;
 var
   BookFormat: TBookFormat;

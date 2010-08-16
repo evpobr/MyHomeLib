@@ -4524,9 +4524,7 @@ var
   Node, OldNode: PVirtualNode;
   Data: PBookData;
   ALibrary: TMHLLibrary;
-  FileName, Folder, Ext: string;
-  No: Integer;
-
+  ExpandedBookFileName: string;
 begin
   if ActiveView = FavoritesView then
   begin
@@ -4553,29 +4551,18 @@ begin
 
       if IsSelectedBookNode(Node, Data) then
       begin
-        DMCollection.GetBookFileName(Data^.BookID, Data^.DatabaseID, Folder, FileName, Ext, No);
+        ExpandedBookFileName := TBookFormatUtils.GetExpandedBookFileName(Data);
 
-        if (IsOnline and Data^.Local) and DeleteFile(Folder) then
+        if (IsOnline and Data^.Local) and DeleteFile(ExpandedBookFileName) then
           SetBookLocalStatus(Data^.BookID, Data^.DatabaseID, False)
         else
         begin
           if Settings.DeleteFiles then
           begin
             if not IsFB2 then
-            begin
-              if (ExtractFileExt(FileName) = ZIP_EXTENSION) then
-                DeleteFile(Folder + FileName)
-              else
-                DeleteFile(Folder + FileName + Ext);
-            end;
-
-            if IsFB2 and IsPrivate then
-            begin
-              if (ExtractFileExt(Folder) = ZIP_EXTENSION) then
-                DeleteFile(Folder)
-              else
-                DeleteFile(Folder + FileName + Ext);
-            end;
+              DeleteFile(ExpandedBookFileName)
+            else if IsFB2 and IsPrivate then
+              DeleteFile(ExpandedBookFileName);
           end;
 
           ALibrary.BeginBulkOperation;
