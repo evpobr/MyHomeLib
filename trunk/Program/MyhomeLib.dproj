@@ -257,6 +257,7 @@
 			<DCCReference Include="Forms\frm_EditGroup.pas">
 				<Form>frmEditGroup</Form>
 			</DCCReference>
+			<DCCReference Include="Units\unit_BookFormat.pas"/>
 			<RcItem Include="Resources\Images\16x16\star_small.png">
 				<ResourceType>RCData</ResourceType>
 				<ResourceId>smallStar</ResourceId>

@@ -25,8 +25,8 @@ type
     bfFB2,    // A pure FB2 file
     bfFB2ZIP, // An FB2 packed in a ZIP
     bfFBD,    // An (FBD + a raw book file) packed together in a zip
-    bfRaw
-  );   // A raw file = any other book format
+    bfRaw     // A raw file = any other book format
+  );
 
   TBookFormatUtils = class
   public
