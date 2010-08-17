@@ -43,6 +43,7 @@ type
   private
     class function GetBookFormatInternal(const CollectionRoot: string; const Folder: string; const PureFileName: string; const FileExt: string) : TBookFormat;
     class function GetExpandedBookFileNameInternal(const CollectionRoot: string; const Folder: string; const PureFileName: string; const FileExt: string): string;
+    class function GetDefaultCollectionRoot: string;
   end;
 
 implementation
@@ -57,7 +58,7 @@ uses
 
 class function TBookFormatUtils.GetBookFormat(const BookRecord: TBookRecord): TBookFormat;
 begin
-  Result := GetBookFormatInternal(DMUser.ActiveCollection.RootFolder, BookRecord.Folder, BookRecord.FileName, BookRecord.FileExt);
+  Result := GetBookFormatInternal(GetDefaultCollectionRoot, BookRecord.Folder, BookRecord.FileName, BookRecord.FileExt);
 end;
 
 class function TBookFormatUtils.GetBookFormat(const CollectionRoot: string; const BookRecord: TBookRecord): TBookFormat;
@@ -71,7 +72,7 @@ var
   No: Integer;
 begin
   DMCollection.GetBookFileName(BookData^.BookID, BookData^.DatabaseID, Folder, FileName, FileExt, No);
-  Result := GetBookFormatInternal(DMUser.ActiveCollection.RootFolder, Folder, FileName, FileExt);
+  Result := GetBookFormatInternal(GetDefaultCollectionRoot, Folder, FileName, FileExt);
 end;
 
 class function TBookFormatUtils.GetBookFormat(const BookID: Integer; const DatabaseID: Integer): TBookFormat;
@@ -80,42 +81,8 @@ var
   No: Integer;
 begin
   DMCollection.GetBookFileName(BookID, DatabaseID, Folder, FileName, FileExt, No);
-  Result := GetBookFormatInternal(DMUser.ActiveCollection.RootFolder, Folder, FileName, FileExt);
+  Result := GetBookFormatInternal(GetDefaultCollectionRoot, Folder, FileName, FileExt);
 end;
-
-class function TBookFormatUtils.GetExpandedBookFileName(const BookRecord: TBookRecord): string;
-begin
-  Result := GetExpandedBookFileNameInternal(DMUser.ActiveCollection.RootFolder, BookRecord.Folder, BookRecord.FileName, BookRecord.FileExt);
-end;
-
-class function TBookFormatUtils.GetExpandedBookFileName(const CollectionRoot: string; const BookRecord: TBookRecord): string;
-begin
-  Result := GetExpandedBookFileNameInternal(CollectionRoot, BookRecord.Folder, BookRecord.FileName, BookRecord.FileExt);
-end;
-
-class function TBookFormatUtils.GetExpandedBookFileName(const BookData: PBookData): string;
-var
-  Folder, FileName, FileExt: string;
-  No: Integer;
-begin
-  DMCollection.GetBookFileName(BookData^.BookID, BookData^.DatabaseID, Folder, FileName, FileExt, No);
-  Result := GetExpandedBookFileNameInternal(DMUser.ActiveCollection.RootFolder, Folder, FileName, FileExt);
-end;
-
-class function TBookFormatUtils.GetExpandedBookFileName(const BookID: Integer; const DatabaseID: Integer): string;
-var
-  Folder, FileName, FileExt: string;
-  No: Integer;
-begin
-  DMCollection.GetBookFileName(BookID, DatabaseID, Folder, FileName, FileExt, No);
-  Result := GetExpandedBookFileNameInternal(DMUser.ActiveCollection.RootFolder, Folder, FileName, FileExt);
-end;
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Private methods
-//
-///////////////////////////////////////////////////////////////////////////////
 
 // The code was extracted from multiple occurencies in TfrmMain
 // PureFileName is assumed to be without extension
@@ -152,8 +119,38 @@ begin
     Result := bfFb2
 end;
 
+///////////////////////////////////////////////////////////////////////////////
+
+class function TBookFormatUtils.GetExpandedBookFileName(const BookRecord: TBookRecord): string;
+begin
+  Result := GetExpandedBookFileNameInternal(DMUser.ActiveCollection.RootFolder, BookRecord.Folder, BookRecord.FileName, BookRecord.FileExt);
+end;
+
+class function TBookFormatUtils.GetExpandedBookFileName(const CollectionRoot: string; const BookRecord: TBookRecord): string;
+begin
+  Result := GetExpandedBookFileNameInternal(CollectionRoot, BookRecord.Folder, BookRecord.FileName, BookRecord.FileExt);
+end;
+
+class function TBookFormatUtils.GetExpandedBookFileName(const BookData: PBookData): string;
+var
+  Folder, FileName, FileExt: string;
+  No: Integer;
+begin
+  DMCollection.GetBookFileName(BookData^.BookID, BookData^.DatabaseID, Folder, FileName, FileExt, No);
+  Result := GetExpandedBookFileNameInternal(DMUser.ActiveCollection.RootFolder, Folder, FileName, FileExt);
+end;
+
+class function TBookFormatUtils.GetExpandedBookFileName(const BookID: Integer; const DatabaseID: Integer): string;
+var
+  Folder, FileName, FileExt: string;
+  No: Integer;
+begin
+  DMCollection.GetBookFileName(BookID, DatabaseID, Folder, FileName, FileExt, No);
+  Result := GetExpandedBookFileNameInternal(DMUser.ActiveCollection.RootFolder, Folder, FileName, FileExt);
+end;
+
 // Get an expanded book file name, also extracted from TfrmMain
-// PureFileName is assumed to be without extension
+// PureFileName is assumed to be without extension and without path
 class function TBookFormatUtils.GetExpandedBookFileNameInternal(const CollectionRoot: string; const Folder: string; const PureFileName: string; const FileExt: string): string;
 var
   BookFormat: TBookFormat;
@@ -168,6 +165,14 @@ begin
     Result := BookContainer
   else // bfFb2 or bfRaw
     Result := TPath.Combine(BookContainer, PureFileName) + FileExt;
+end;
+
+///////////////////////////////////////////////////////////////////////////////
+
+// Get the default collection's root folder (used in methods that don't receive it explicitly)
+class function TBookFormatUtils.GetDefaultCollectionRoot: string;
+begin
+  Result := DMUser.ActiveCollection.RootFolder;
 end;
 
 end.
