@@ -4720,7 +4720,7 @@ begin
           DownloadData^.Author := TAuthorsHelper.GetList(BookData^.Authors);
           DownloadData^.Title := BookData^.Title;
           DownloadData^.Size := BookData^.Size;
-          DownloadData^.FileName := TPath.Combine(DMUser.ActiveCollection.RootPath, BookRecord.Folder);
+          DownloadData^.FileName := TBookFormatUtils.GetExpandedBookFileName(BookRecord);
           DownloadData^.URL := Format(Settings.InpxURL + 'b/%d/get', [BookRecord.LibID]);
           DownloadData^.State := dsWait;
           Include(DownloadNode.States, vsInitialUserData);
