@@ -195,10 +195,13 @@ begin
 end;
 
 function TDownloader.Download(BookID: Integer; DatabaseID: Integer): boolean;
+var
+  BookRecord: TBookRecord;
 begin
   Result := False;
 
-  FFile := TBookFormatUtils.GetExpandedBookFileName(BookID, DatabaseID);
+  DMCollection.GetBookRecord(BookID, DatabaseID, BookRecord, false);
+  FFile := TBookFormatUtils.GetBookFileName(DMUser.ActiveCollection.RootFolder, BookRecord);
   if FileExists(FFile) or DoDownload(BookID, DatabaseID) then
   begin
     unit_Messages.BookLocalStatusChanged(BookID, DatabaseID, True);
