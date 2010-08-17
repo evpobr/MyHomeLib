@@ -181,13 +181,6 @@ type
     procedure GetBookGenres(BookID: Integer; var BookGenres: TBookGenres; RootGenre: PGenreData = nil); overload;
 
   public
-    // TfrmMain.tvBooksTreeChange
-    // TfrmMain.tbtbnReadClick
-    // TfrmMain.tbtbnReadClick
-    // TfrmMain.miDeleteBookClick
-    // TDownloader.Download
-    procedure GetBookFileName(BookID: Integer; DatabaseID: Integer; out AFolder, AFile, AExt: string; out ANo: Integer); deprecated;
-
     // TfrmMain.FormCreate
     // TfrmMain.pgControlChange
     procedure SetActiveTable(Tag: Integer); deprecated;
@@ -294,35 +287,6 @@ begin
   end
   else
     DMUser.GetBookLibID(BookID, DatabaseID, ARes);
-end;
-
-procedure TDMCollection.GetBookFileName(
-  BookID: Integer;
-  DatabaseID: Integer;
-  out AFolder: string;
-  out AFile: string;
-  out AExt: string;
-  out ANo: Integer
-  );
-begin
-  if DatabaseID = DMUser.ActiveCollection.ID then
-  begin
-    Assert(AllBooks.Active);
-
-    if not AllBooks.Locate(BOOK_ID_FIELD, BookID, []) then
-    begin
-      // TODO : RESTORE Assert(False);
-      Exit;
-    end;
-
-    AFolder := TPath.Combine(DMUser.ActiveCollection.RootPath, AllBooksFolder.Value);
-    AFile := AllBooksFileName.Value;
-    AExt := AllBooksExt.Value;
-    ANo := AllBooksInsideNo.Value;
-
-  end
-  else
-    DMUser.GetBookFileName(BookID, DatabaseID, AFolder, AFile, AExt, ANo);
 end;
 
 procedure TDMCollection.GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);

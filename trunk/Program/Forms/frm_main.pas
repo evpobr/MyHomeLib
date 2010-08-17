@@ -3796,8 +3796,7 @@ var
   Zip: TZipForge;
   ID, i: Integer;
 
-  BookFolder, FN, Ext: string;
-  No: Integer;
+  BookRecord: TBookRecord;
   ExpandedBookFileName: string;
   BookFormat: TBookFormat;
 begin
@@ -3809,10 +3808,9 @@ begin
 
   Screen.Cursor := crHourGlass;
   try
-    ExpandedBookFileName := TBookFormatUtils.GetExpandedBookFileName(Data);
-    BookFormat := TBookFormatUtils.GetBookFormat(Data);
-
-    DMCollection.GetBookFileName(Data^.BookID, Data^.DatabaseID, BookFolder, FN, Ext, No);
+    DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, BookRecord, False);
+    ExpandedBookFileName := TBookFormatUtils.GetExpandedBookFileName(BookRecord);
+    BookFormat := TBookFormatUtils.GetBookFormat(BookRecord);
 
     if BookFormat = bfFb2Zip then
     begin
@@ -3846,7 +3844,7 @@ begin
       Assert(Length(Data^.Authors) > 0);
       WorkFile := TPath.Combine(
         Settings.ReadPath,
-        Format('%s - %s.%d%s', [CheckSymbols(Data^.Authors[0].GetFullName), CheckSymbols(Data^.Title), ID, Ext])
+        Format('%s - %s.%d%s', [CheckSymbols(Data^.Authors[0].GetFullName), CheckSymbols(Data^.Title), ID, BookRecord.FileExt])
       );
 
       if not FileExists(WorkFile) then
@@ -3858,7 +3856,7 @@ begin
             Zip.FileName := ExpandedBookFileName;
             Zip.BaseDir := Settings.ReadPath;
             Zip.OpenArchive;
-            Zip.ExtractToStream(GetFileNameZip(Zip, No), FS);
+            Zip.ExtractToStream(GetFileNameZip(Zip, BookRecord.InsideNo), FS);
             FS.SaveToFile(WorkFile);
           finally
             FS.Free;
@@ -3873,7 +3871,7 @@ begin
       Assert(Length(Data^.Authors) > 0);
       WorkFile := TPath.Combine(
         Settings.ReadPath,
-        Format('%s - %s.%d%s', [CheckSymbols(Data^.Authors[0].GetFullName), CheckSymbols(Data^.Title), ID, Ext])
+        Format('%s - %s.%d%s', [CheckSymbols(Data^.Authors[0].GetFullName), CheckSymbols(Data^.Title), ID, BookRecord.FileExt])
       );
 
       if not FileExists(WorkFile) then
@@ -3885,7 +3883,7 @@ begin
             Zip.FileName := ExpandedBookFileName;
             Zip.BaseDir := Settings.ReadPath;
             Zip.OpenArchive;
-            WorkFile := GetFileNameZip(Zip, No);
+            WorkFile := GetFileNameZip(Zip, BookRecord.InsideNo);
             Zip.ExtractToStream(WorkFile, FS);
             WorkFile := Settings.ReadPath + WorkFile;
             FS.SaveToFile(WorkFile);
