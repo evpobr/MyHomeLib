@@ -133,7 +133,7 @@ begin
   FFileOprecord.TargetFileName := FFileOprecord.TargetFileName + R.FileExt;
 
   FBookFormat := TBookFormatUtils.GetBookFormat(FCollectionRoot, R);
-  FFileOprecord.SArch := TBookFormatUtils.GetExpandedBookFileName(FCollectionRoot, R);
+  FFileOprecord.SArch := TBookFormatUtils.GetBookFileName(FCollectionRoot, R);
   FFileOprecord.SNo := R.InsideNo;
 
   //

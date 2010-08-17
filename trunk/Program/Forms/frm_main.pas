@@ -3175,7 +3175,7 @@ begin
 
   if IsPrivate and IsNonFB2 then
   begin
-    isFBDDocument := TBookFormatUtils.GetBookFormat(R) = bfFbd;
+    isFBDDocument := TBookFormatUtils.GetBookFormat(DMUser.ActiveCollection.RootFolder, R) = bfFbd;
 
     miConverToFBD.Visible := True;
     miConverToFBD.Tag := IfThen(isFBDDocument, 999, 0);
@@ -3797,7 +3797,7 @@ var
   ID, i: Integer;
 
   BookRecord: TBookRecord;
-  ExpandedBookFileName: string;
+  BookFileName: string;
   BookFormat: TBookFormat;
 begin
   GetActiveTree(Tree);
@@ -3809,8 +3809,8 @@ begin
   Screen.Cursor := crHourGlass;
   try
     DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, BookRecord, False);
-    ExpandedBookFileName := TBookFormatUtils.GetExpandedBookFileName(BookRecord);
-    BookFormat := TBookFormatUtils.GetBookFormat(BookRecord);
+    BookFileName := TBookFormatUtils.GetBookFileName(DMUser.ActiveCollection.RootFolder, BookRecord);
+    BookFormat := TBookFormatUtils.GetBookFormat(DMUser.ActiveCollection.RootFolder, BookRecord);
 
     if BookFormat = bfFb2Zip then
     begin
@@ -3822,7 +3822,7 @@ begin
         if isOnlineCollection(DMUser.tblBasesCode.Value) then
         begin
           DownloadBooks;
-          if not FileExists(ExpandedBookFileName) then
+          if not FileExists(BookFileName) then
             Exit;
         end;
         ID := DMUser.BooksByGroupBookID.Value;
@@ -3832,14 +3832,14 @@ begin
         if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
         begin
           DownloadBooks;
-          if not FileExists(ExpandedBookFileName) then
+          if not FileExists(BookFileName) then
             Exit; // если файла нет, значит закачка не удалась, и юзер об  этом уже знает
         end;
         ID := Data^.BookID;
       end; // if .. else
 
-      if not FileExists(ExpandedBookFileName) then
-        raise EInvalidOp.CreateFmt(rstrArchiveNotFound, [ExpandedBookFileName]);
+      if not FileExists(BookFileName) then
+        raise EInvalidOp.CreateFmt(rstrArchiveNotFound, [BookFileName]);
 
       Assert(Length(Data^.Authors) > 0);
       WorkFile := TPath.Combine(
@@ -3853,7 +3853,7 @@ begin
         try
           FS := TMemoryStream.Create;
           try
-            Zip.FileName := ExpandedBookFileName;
+            Zip.FileName := BookFileName;
             Zip.BaseDir := Settings.ReadPath;
             Zip.OpenArchive;
             Zip.ExtractToStream(GetFileNameZip(Zip, BookRecord.InsideNo), FS);
@@ -3880,7 +3880,7 @@ begin
         try
           FS := TMemoryStream.Create;
           try
-            Zip.FileName := ExpandedBookFileName;
+            Zip.FileName := BookFileName;
             Zip.BaseDir := Settings.ReadPath;
             Zip.OpenArchive;
             WorkFile := GetFileNameZip(Zip, BookRecord.InsideNo);
@@ -3896,7 +3896,7 @@ begin
       end; // if Exists
     end
     else // bfFb2 or bfRaw
-      WorkFile := ExpandedBookFileName;
+      WorkFile := BookFileName;
 
     if Settings.OverwriteFB2Info and (BookFormat = bfFb2) then
       WriteFb2InfoToFile(WorkFile);
@@ -4525,7 +4525,8 @@ var
   Node, OldNode: PVirtualNode;
   Data: PBookData;
   ALibrary: TMHLLibrary;
-  ExpandedBookFileName: string;
+  BookFileName: string;
+  BookRecord: TBookRecord;
 begin
   if ActiveView = FavoritesView then
   begin
@@ -4552,18 +4553,19 @@ begin
 
       if IsSelectedBookNode(Node, Data) then
       begin
-        ExpandedBookFileName := TBookFormatUtils.GetExpandedBookFileName(Data);
+        DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, BookRecord, false);
+        BookFileName := TBookFormatUtils.GetBookFileName(DMUser.ActiveCollection.RootFolder, BookRecord);
 
-        if (IsOnline and Data^.Local) and DeleteFile(ExpandedBookFileName) then
+        if (IsOnline and Data^.Local) and DeleteFile(BookFileName) then
           SetBookLocalStatus(Data^.BookID, Data^.DatabaseID, False)
         else
         begin
           if Settings.DeleteFiles then
           begin
             if not IsFB2 then
-              DeleteFile(ExpandedBookFileName)
+              DeleteFile(BookFileName)
             else if IsFB2 and IsPrivate then
-              DeleteFile(ExpandedBookFileName);
+              DeleteFile(BookFileName);
           end;
 
           ALibrary.BeginBulkOperation;
@@ -4721,7 +4723,7 @@ begin
           DownloadData^.Author := TAuthorsHelper.GetList(BookData^.Authors);
           DownloadData^.Title := BookData^.Title;
           DownloadData^.Size := BookData^.Size;
-          DownloadData^.FileName := TBookFormatUtils.GetExpandedBookFileName(BookRecord);
+          DownloadData^.FileName := TBookFormatUtils.GetBookFileName(DMUser.ActiveCollection.RootFolder, BookRecord);
           DownloadData^.URL := Format(Settings.InpxURL + 'b/%d/get', [BookRecord.LibID]);
           DownloadData^.State := dsWait;
           Include(DownloadNode.States, vsInitialUserData);
@@ -6102,23 +6104,23 @@ end;
 
 procedure TfrmMain.ExtractBookToStream(const BookRecord: TBookRecord; var FS: TMemoryStream);
 var
-  ExpandedBookFileName: string;
+  BookFileName: string;
   Zip: TZipForge;
   F: TZFArchiveItem;
   BookFormat: TBookFormat;
   msgNotFound: string;
 begin
-  BookFormat := TBookFormatUtils.GetBookFormat(BookRecord);
-  ExpandedBookFileName := TBookFormatUtils.GetExpandedBookFileName(BookRecord);
+  BookFormat := TBookFormatUtils.GetBookFormat(DMUser.ActiveCollection.RootFolder, BookRecord);
+  BookFileName := TBookFormatUtils.GetBookFileName(DMUser.ActiveCollection.RootFolder, BookRecord);
 
   if (BookFormat = bfFb2Zip) or (BookFormat = bfFbd) then
     msgNotFound := rstrArchiveNotFound
   else
     msgNotFound := rstrFileNotFound;
-  if not FileExists(ExpandedBookFileName) then
+  if not FileExists(BookFileName) then
   begin
     if IsLocal then
-      raise Exception.CreateFmt(msgNotFound, [ExpandedBookFileName]);
+      raise Exception.CreateFmt(msgNotFound, [BookFileName]);
     Exit;
   end;
 
@@ -6126,12 +6128,12 @@ begin
   begin
     Zip := TZipForge.Create(Self);
     try
-      Zip.FileName := ExpandedBookFileName;
+      Zip.FileName := BookFileName;
       Zip.OpenArchive;
       if Zip.FindFirst('*' + FBD_EXTENSION, F) then
         Zip.ExtractToStream(F.FileName, FS)
       else
-        raise Exception.CreateFmt(rstrBookNotFoundInArchive, [ExpandedBookFileName]);
+        raise Exception.CreateFmt(rstrBookNotFoundInArchive, [BookFileName]);
       Zip.CloseArchive;
 
       Exit;
@@ -6143,7 +6145,7 @@ begin
   begin
     Zip := TZipForge.Create(self);
     try
-      Zip.FileName := ExpandedBookFileName;
+      Zip.FileName := BookFileName;
       Zip.OpenArchive;
       Zip.ExtractToStream(GetFileNameZip(Zip, BookRecord.InsideNo), FS);
       Zip.CloseArchive;
@@ -6152,7 +6154,7 @@ begin
     end;
   end
   else if BookFormat = bfFb2 then
-    FS.LoadFromFile(ExpandedBookFileName);
+    FS.LoadFromFile(BookFileName);
 
   // else bfRaw
   //
