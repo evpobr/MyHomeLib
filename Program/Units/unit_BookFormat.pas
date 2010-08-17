@@ -123,7 +123,7 @@ end;
 
 class function TBookFormatUtils.GetExpandedBookFileName(const BookRecord: TBookRecord): string;
 begin
-  Result := GetExpandedBookFileNameInternal(DMUser.ActiveCollection.RootFolder, BookRecord.Folder, BookRecord.FileName, BookRecord.FileExt);
+  Result := GetExpandedBookFileNameInternal(GetDefaultCollectionRoot, BookRecord.Folder, BookRecord.FileName, BookRecord.FileExt);
 end;
 
 class function TBookFormatUtils.GetExpandedBookFileName(const CollectionRoot: string; const BookRecord: TBookRecord): string;
@@ -137,7 +137,7 @@ var
   No: Integer;
 begin
   DMCollection.GetBookFileName(BookData^.BookID, BookData^.DatabaseID, Folder, FileName, FileExt, No);
-  Result := GetExpandedBookFileNameInternal(DMUser.ActiveCollection.RootFolder, Folder, FileName, FileExt);
+  Result := GetExpandedBookFileNameInternal(GetDefaultCollectionRoot, Folder, FileName, FileExt);
 end;
 
 class function TBookFormatUtils.GetExpandedBookFileName(const BookID: Integer; const DatabaseID: Integer): string;
@@ -146,7 +146,7 @@ var
   No: Integer;
 begin
   DMCollection.GetBookFileName(BookID, DatabaseID, Folder, FileName, FileExt, No);
-  Result := GetExpandedBookFileNameInternal(DMUser.ActiveCollection.RootFolder, Folder, FileName, FileExt);
+  Result := GetExpandedBookFileNameInternal(GetDefaultCollectionRoot, Folder, FileName, FileExt);
 end;
 
 // Get an expanded book file name, also extracted from TfrmMain
