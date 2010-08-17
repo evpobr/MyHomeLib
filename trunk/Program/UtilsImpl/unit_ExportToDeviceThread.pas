@@ -21,7 +21,8 @@ uses
   Dialogs,
   ABSMain,
   ZipForge,
-  unit_Templater;
+  unit_Templater,
+  unit_BookFormat;
 
 type
   TExportToDeviceThread = class(TWorker)
@@ -38,7 +39,7 @@ type
 
     FFileOprecord: TFileOprecord;
 
-    FFileOpMode: (fmFb2Zip, fmFb2, fmFBD);
+    FBookFormat: TBookFormat;
     FBookIdList: TBookIdList;
     FTemplater: TTemplater;
     FCollectionRoot: string;
@@ -97,7 +98,6 @@ resourcestring
 //
 function TExportToDeviceThread.PrepareFile(BookID: Integer; DatabaseID: Integer): Boolean;
 var
-  CR: string;
   FS: TMemoryStream;
   R: TBookRecord;
 begin
@@ -108,8 +108,6 @@ begin
   // TODO : заменить вызов этих методов на потокобезопасные методы, принимающие BookID и DatabaseID
   //
   DMCollection.GetBookRecord(BookID, DatabaseID, R, False);
-
-  CR := TPath.Combine(FCollectionRoot, R.Folder);
 
   // Сформируем имя каталога в соответствии с заданным темплейтом
   if FTemplater.SetTemplate(Settings.FolderTemplate, TpPath) = ErFine then
@@ -134,36 +132,16 @@ begin
   FFileOprecord.TargetFileName := Trim(CheckSymbols(FFileOprecord.TargetFileName));
   FFileOprecord.TargetFileName := FFileOprecord.TargetFileName + R.FileExt;
 
-  //
-  //
-  //
-  if (ExtractFileExt(R.FileName) = ZIP_EXTENSION) and (R.FileExt <> ZIP_EXTENSION) then
-    FFileOpMode := fmFBD
-  else if ExtractFileExt(CR) <> ZIP_EXTENSION then
-    FFileOpMode := fmFb2;
-
-  case FFileOpMode of
-    fmFb2Zip:
-      FFileOprecord.SArch := CR;
-
-    fmFb2:
-      FFileOprecord.SArch := CR + R.FileName + R.FileExt;
-
-    fmFBD:
-      begin
-        CR := CR + R.FileName;
-        FFileOprecord.SArch := CR;
-      end;
-  end;
-
+  FBookFormat := TBookFormatUtils.GetBookFormat(FCollectionRoot, R);
+  FFileOprecord.SArch := TBookFormatUtils.GetExpandedBookFileName(FCollectionRoot, R);
   FFileOprecord.SNo := R.InsideNo;
 
   //
   // Если файл в архиве - распаковываем в $tmp
   //
-  if FFileOpMode in [fmFb2Zip, fmFBD] then
+  if FBookFormat in [bfFb2Zip, bfFbd] then
   begin
-    if not FileExists(CR) then
+    if not FileExists(FFileOprecord.SArch) then
     begin
       ShowMessage(rstrArchiveNotFound, MB_ICONERROR or MB_OK);
       Exit;

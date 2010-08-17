@@ -3175,7 +3175,7 @@ begin
 
   if IsPrivate and IsNonFB2 then
   begin
-    isFBDDocument := TBookFormatUtils.GetBookFormat(R) = bfFBD;
+    isFBDDocument := TBookFormatUtils.GetBookFormat(R) = bfFbd;
 
     miConverToFBD.Visible := True;
     miConverToFBD.Tag := IfThen(isFBDDocument, 999, 0);
@@ -6110,7 +6110,7 @@ begin
   BookFormat := TBookFormatUtils.GetBookFormat(BookRecord);
   ExpandedBookFileName := TBookFormatUtils.GetExpandedBookFileName(BookRecord);
 
-  if (BookFormat = bfFB2ZIP) or (BookFormat = bfFBD) then
+  if (BookFormat = bfFb2Zip) or (BookFormat = bfFbd) then
     msgNotFound := rstrArchiveNotFound
   else
     msgNotFound := rstrFileNotFound;
@@ -6121,7 +6121,7 @@ begin
     Exit;
   end;
 
-  if BookFormat = bfFBD then
+  if BookFormat = bfFbd then
   begin
     Zip := TZipForge.Create(Self);
     try
@@ -6138,7 +6138,7 @@ begin
       Zip.Free;
     end;
   end
-  else if BookFormat = bfFB2ZIP then
+  else if BookFormat = bfFb2Zip then
   begin
     Zip := TZipForge.Create(self);
     try
@@ -6150,7 +6150,7 @@ begin
       Zip.Free;
     end;
   end
-  else if BookFormat = bfFB2 then
+  else if BookFormat = bfFb2 then
     FS.LoadFromFile(ExpandedBookFileName);
 
   // else bfRaw
