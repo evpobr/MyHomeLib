@@ -3799,6 +3799,7 @@ var
   BookFolder, FN, Ext: string;
   No: Integer;
   ExpandedBookFileName: string;
+  BookFormat: TBookFormat;
 begin
   GetActiveTree(Tree);
 
@@ -3809,9 +3810,11 @@ begin
   Screen.Cursor := crHourGlass;
   try
     ExpandedBookFileName := TBookFormatUtils.GetExpandedBookFileName(Data);
+    BookFormat := TBookFormatUtils.GetBookFormat(Data);
+
     DMCollection.GetBookFileName(Data^.BookID, Data^.DatabaseID, BookFolder, FN, Ext, No);
 
-    if ExtractFileExt(ExpandedBookFileName) = ZIP_EXTENSION then
+    if BookFormat = bfFb2Zip then
     begin
       //
       if ActiveView = FavoritesView then
@@ -3865,7 +3868,7 @@ begin
         end;
       end; // if Exists
     end
-    else if ExtractFileExt(ExpandedBookFileName) = ZIP_EXTENSION then
+    else if BookFormat = bfFbd then
     begin
       Assert(Length(Data^.Authors) > 0);
       WorkFile := TPath.Combine(
@@ -3894,10 +3897,10 @@ begin
         end;
       end; // if Exists
     end
-    else
+    else // bfFb2 or bfRaw
       WorkFile := ExpandedBookFileName;
 
-    if Settings.OverwriteFB2Info and (Ext = FB2_EXTENSION) then
+    if Settings.OverwriteFB2Info and (BookFormat = bfFb2) then
       WriteFb2InfoToFile(WorkFile);
 
     Settings.Readers.RunReader(WorkFile);
