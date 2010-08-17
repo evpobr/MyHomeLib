@@ -159,7 +159,6 @@ type
     procedure SetTableState(State: Boolean);
 
   public
-    procedure GetBookFileName(BookID: Integer; DatabaseID: Integer; out AFolder, AFile, AExt: string; out ANo: Integer); deprecated;
     procedure GetBookLibID(BookID: Integer; DatabaseID: Integer; out ARes: string); deprecated;
 
     //
@@ -340,30 +339,6 @@ resourcestring
 {$R *.dfm}
 
 { TDMUser }
-
-procedure TDMUser.GetBookFileName(
-  BookID: Integer;
-  DatabaseID: Integer;
-  out AFolder: string;
-  out AFile: string;
-  out AExt: string;
-  out ANo: Integer
-  );
-begin
-  Assert(AllBooks.Active);
-
-  if not AllBooks.Locate(BOOK_ID_FIELD, BookID, []) then
-  begin
-    // TODO : RESTORE Assert(False);
-    Exit;
-  end;
-
-  AFolder := AllBooksFolder.Value;
-  AFile := AllBooksFileName.Value;
-  AExt := AllBooksExt.Value;
-  ANo := AllBooksInsideNo.Value;
-
-end;
 
 procedure TDMUser.GetBookLibID(BookID: Integer; DatabaseID: Integer; out ARes: String);
 begin
