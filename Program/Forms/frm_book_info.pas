@@ -83,7 +83,7 @@ type
     procedure AllowOnlineReview(const URL: string);
     procedure Download;
 
-    procedure FillBookInfo(bookInfo: TBookRecord; bookStream: TMemoryStream);
+    procedure FillBookInfo(bookInfo: TBookRecord; bookStream: TStream);
 
     property Review: string read GetReview write SetReview;
     property ReviewChanged: Boolean read FReviewChanged write FReviewChanged;
@@ -261,7 +261,7 @@ begin
   mmReview.Lines.Text := Value;
 end;
 
-procedure TfrmBookDetails.FillBookInfo(bookInfo: TBookRecord; bookStream: TMemoryStream);
+procedure TfrmBookDetails.FillBookInfo(bookInfo: TBookRecord; bookStream: TStream);
 var
   book: IXMLFictionBook;
   i: integer;

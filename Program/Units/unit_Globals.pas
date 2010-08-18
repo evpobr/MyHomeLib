@@ -35,6 +35,13 @@ type
 
   TGenresType = (gtFb2, gtAny);
 
+  TBookFormat = (
+    bfFb2,    // A pure FB2 file
+    bfFb2Zip, // An FB2 packed in a ZIP
+    bfFbd,    // An (FBD + a raw book file) packed together in a zip
+    bfRaw     // A raw file = any other book format
+  );
+
   TBookIdStruct = record
     BookID: Integer;
     DatabaseID: Integer;
@@ -334,6 +341,7 @@ type
     // Вычисляемые поля
     //
     CollectionName: string;
+    CollectionRootFolder: String;
 
     // ----------------------------------------------------
     procedure Normalize;
@@ -349,6 +357,13 @@ type
 
     // ----------------------------------------------------
     procedure FillBookData(Data: PBookData);
+
+    // ----------------------------------------------------
+    function GetBookFormat: TBookFormat;
+    function GetBookFileName: string;
+    function GetBookStream: TStream;
+    function GetBookDescriptorStream: TStream;
+    procedure SaveBookToFile(const DestFileName: String);
   end;
 
   // --------------------------------------------------------------------------
@@ -381,10 +396,12 @@ uses
   unit_Consts,
   ShlObj,
   unit_fb2ToText,
-  unit_Helpers;
+  unit_Helpers,
+  unit_MHLHelpers;
 
 resourcestring
   rstrUnableToLaunch = ' Не удалось запустить %s ! ';
+  rstrBookNotFoundInArchive = 'В архиве "%s" не найдено описание книги!';
 
 const
   lat: set of AnsiChar = ['A' .. 'Z', 'a' .. 'z', '\', '-', ':', '`', ',', '.', '0' .. '9', '_', ' ', '(', ')', '[', ']', '{', '}'];
@@ -933,6 +950,163 @@ begin
   //
   Data^.Rate := Rate;
   Data^.Progress := Progress;
+end;
+
+// Get the book format enum value
+function TBookRecord.GetBookFormat: TBookFormat;
+var
+  BookContainer: string;
+  PathLen: Integer;
+  LongFileName: string;
+begin
+  Result := bfRaw; // default
+  BookContainer := TPath.Combine(CollectionRootFolder, Folder);
+  PathLen := Length(BookContainer);
+
+  if
+    (PathLen = 0) or
+    (BookContainer[PathLen] = TPath.DirectorySeparatorChar) or
+    (BookContainer[PathLen] = TPath.AltDirectorySeparatorChar) then
+  begin
+    //BookContainer is either empty or a path
+    LongFileName := TPath.Combine(BookContainer, FileName);
+
+    if ExtractFileExt(LongFileName) = ZIP_EXTENSION then
+      Result := bfFbd
+    else if FileExt = FB2_EXTENSION then
+      Result := bfFb2
+  end
+  else
+  begin
+    if ExtractFileExt(BookContainer) = ZIP_EXTENSION then
+      Result := bfFb2Zip;
+  end;
+
+  if (Result = bfRaw) and (FileExt = FB2_EXTENSION) then
+    Result := bfFb2
+end;
+
+// Get the fully expanded book file name
+function TBookRecord.GetBookFileName: string;
+var
+  BookFormat: TBookFormat;
+  BookContainer: string;
+begin
+  BookContainer := TPath.Combine(CollectionRootFolder, Folder);
+
+  BookFormat := GetBookFormat;
+  if BookFormat = bfFBD then
+    Result := TPath.Combine(BookContainer, FileName)
+  else if BookFormat = bfFb2Zip then
+    Result := BookContainer
+  else // bfFb2 or bfRaw
+    Result := TPath.Combine(BookContainer, FileName) + FileExt;
+end;
+
+// Get the book file as a stream.
+// The caller code must free the stream when done!
+// For FBD archives brings the raw book (and NOT the FBD descriptor)
+function TBookRecord.GetBookStream: TStream;
+var
+  BookFormat: TBookFormat;
+  BookFileName: string;
+  Zip: TZipForge;
+begin
+  Result := nil;
+  BookFileName := GetBookFileName;
+
+  if not FileExists(BookFileName) then
+    Exit; // File not found, returned stream is nil
+
+  BookFormat := GetBookFormat;
+  if BookFormat in [bfFb2Zip, bfFbd] then
+  begin
+    Result := TMemoryStream.Create;
+    try
+      Zip := TZipForge.Create(nil);
+      try
+        Zip.BaseDir := Settings.ReadPath;
+        Zip.FileName := BookFileName;
+        Zip.OpenArchive;
+        Zip.ExtractToStream(GetFileNameZip(Zip, InsideNo), Result);
+        Zip.CloseArchive;
+      finally
+        FreeAndNil(Zip);
+      end;
+    except
+      FreeAndNil(Result);
+    end;
+  end
+  else // bfFb2, bfRaw
+    Result := TFileStream.Create(BookFileName, fmOpenRead);
+end;
+
+// Get the descriptor file as a stream.
+// The caller code must free the stream when done!
+//  For bfFbd - brings the FBD descriptor file
+//  For bfFb2Zip and bfFb2 - brings the FB2 file
+//  For bfRaw - brings nil
+function TBookRecord.GetBookDescriptorStream: TStream;
+var
+  BookFormat: TBookFormat;
+  BookFileName: string;
+  Zip: TZipForge;
+  ArciveItem: TZFArchiveItem;
+begin
+  Result := nil;
+  BookFileName := GetBookFileName;
+
+  if not FileExists(BookFileName) then
+    Exit; // File not found, returned stream is nil
+
+  BookFormat := GetBookFormat;
+  if BookFormat = bfFbd then
+  begin
+    Result := TMemoryStream.Create;
+    try
+      Zip := TZipForge.Create(nil);
+      try
+        Zip.BaseDir := Settings.ReadPath;
+        Zip.FileName := BookFileName;
+        Zip.OpenArchive;
+        if Zip.FindFirst('*' + FBD_EXTENSION, ArciveItem) then
+          Zip.ExtractToStream(ArciveItem.FileName, Result)
+        else // not a valid FBD structure, return nil
+          raise Exception.CreateFmt(rstrBookNotFoundInArchive, [BookFileName]);
+
+        Zip.CloseArchive;
+      finally
+        FreeAndNil(Zip);
+      end;
+    except
+      FreeAndNil(Result);
+    end;
+  end
+  else if BookFormat in [bfFb2, bfFb2Zip] then
+    Result := GetBookStream;
+  // else bfRaw no descriptor by design
+end;
+
+// Save the book to a destination file
+procedure TBookRecord.SaveBookToFile(const DestFileName: String);
+var
+  SourceStream: TStream;
+  DestStream: TFileStream;
+begin
+  SourceStream := GetBookStream;
+  try
+    if SourceStream <> nil then
+    begin
+      DestStream := TFileStream.Create(DestFileName, fmCreate);
+      try
+        DestStream.CopyFrom(SourceStream, 0);
+      finally
+        FreeAndNil(DestStream);
+      end;
+    end;
+  finally
+    FreeAndNil(SourceStream);
+  end;
 end;
 
 // ============================================================================

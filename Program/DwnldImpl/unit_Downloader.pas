@@ -105,8 +105,7 @@ uses
   unit_Consts,
   unit_MHL_strings,
   unit_Messages,
-  unit_Helpers,
-  unit_BookFormat;
+  unit_Helpers;
 
 resourcestring
   rstrWrongCredentials = 'Неправильный логин/пароль';
@@ -201,7 +200,7 @@ begin
   Result := False;
 
   DMCollection.GetBookRecord(BookID, DatabaseID, BookRecord, false);
-  FFile := TBookFormatUtils.GetBookFileName(DMUser.ActiveCollection.RootFolder, BookRecord);
+  FFile := BookRecord.GetBookFileName;
   if FileExists(FFile) or DoDownload(BookID, DatabaseID) then
   begin
     unit_Messages.BookLocalStatusChanged(BookID, DatabaseID, True);

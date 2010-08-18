@@ -837,7 +837,7 @@ type
     procedure SaveFb2DataAfterEdit(R: TBookRecord);
     function ShowNCWizard: Boolean;
     procedure LoadLastCollection;
-    procedure ExtractBookToStream(const BookRecord: TBookRecord; var FS: TMemoryStream);
+    function ExtractBookDescriptorToStream(const BookRecord: TBookRecord): TStream;
     procedure SetShowStatusProgress(const Value: Boolean);
     procedure SetStatusProgress(const Value: Integer);
     function GetShowStatusProgress: Boolean;
@@ -900,8 +900,7 @@ uses
   frmEditAuthorEx,
   unit_Lib_Updates,
   UserData,
-  frm_EditGroup,
-  unit_BookFormat;
+  frm_EditGroup;
 
 resourcestring
   rstrFileNotFoundMsg = 'Файл %s не найден!' + CRLF + 'Проверьте настройки коллекции!';
@@ -3069,7 +3068,7 @@ var
   Tree: TBookTree;
   InfoPanel: TInfoPanel;
   R: TBookRecord;
-  bookStream: TMemoryStream;
+  bookStream: TStream;
   book: IXMLFictionBook;
   imgBookCover: TGraphic;
   isFBDDocument: Boolean;
@@ -3131,38 +3130,45 @@ begin
     begin
       if IsLocal or Data^.Local then
       begin
-        bookStream := TMemoryStream.Create;
         try
           try
-            ExtractBookToStream(R, bookStream);
-            book := LoadFictionBook(bookStream);
-
-            //
-            // Покажем обложку
-            //
-            if Settings.ShowBookCover then
+            bookStream := ExtractBookDescriptorToStream(R);
+            if bookStream <> nil then
             begin
-              imgBookCover := GetBookCover(book);
-              try
-                InfoPanel.SetBookCover(imgBookCover);
-              finally
-                imgBookCover.Free;
+              book := LoadFictionBook(bookStream);
+
+              //
+              // Покажем обложку
+              //
+              if Settings.ShowBookCover then
+              begin
+                imgBookCover := GetBookCover(book);
+                try
+                  InfoPanel.SetBookCover(imgBookCover);
+                finally
+                  imgBookCover.Free;
+                end;
               end;
-            end;
 
-            //
-            // Покажем аннотацию
-            //
-            if Settings.ShowBookAnnotation then
+              //
+              // Покажем аннотацию
+              //
+              if Settings.ShowBookAnnotation then
+              begin
+                InfoPanel.SetBookAnnotation(GetBookAnnotation(book));
+              end;
+            end
+            else
             begin
-              InfoPanel.SetBookAnnotation(GetBookAnnotation(book));
+              InfoPanel.SetBookCover(nil);
+              InfoPanel.SetBookAnnotation('');
             end;
           except
             InfoPanel.SetBookCover(nil);
             InfoPanel.SetBookAnnotation('');
           end;
         finally
-          bookStream.Free;
+          FreeAndNil(bookStream);
         end;
       end
       else
@@ -3175,7 +3181,7 @@ begin
 
   if IsPrivate and IsNonFB2 then
   begin
-    isFBDDocument := TBookFormatUtils.GetBookFormat(DMUser.ActiveCollection.RootFolder, R) = bfFbd;
+    isFBDDocument := R.GetBookFormat = bfFbd;
 
     miConverToFBD.Visible := True;
     miConverToFBD.Tag := IfThen(isFBDDocument, 999, 0);
@@ -3809,8 +3815,8 @@ begin
   Screen.Cursor := crHourGlass;
   try
     DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, BookRecord, False);
-    BookFileName := TBookFormatUtils.GetBookFileName(DMUser.ActiveCollection.RootFolder, BookRecord);
-    BookFormat := TBookFormatUtils.GetBookFormat(DMUser.ActiveCollection.RootFolder, BookRecord);
+    BookFileName := BookRecord.GetBookFileName;
+    BookFormat := BookRecord.GetBookFormat;
 
     if BookFormat = bfFb2Zip then
     begin
@@ -3848,23 +3854,7 @@ begin
       );
 
       if not FileExists(WorkFile) then
-      begin
-        Zip := TZipForge.Create(nil);
-        try
-          FS := TMemoryStream.Create;
-          try
-            Zip.FileName := BookFileName;
-            Zip.BaseDir := Settings.ReadPath;
-            Zip.OpenArchive;
-            Zip.ExtractToStream(GetFileNameZip(Zip, BookRecord.InsideNo), FS);
-            FS.SaveToFile(WorkFile);
-          finally
-            FS.Free;
-          end;
-        finally
-          Zip.Free;
-        end;
-      end; // if Exists
+        BookRecord.SaveBookToFile(WorkFile);
     end
     else if BookFormat = bfFbd then
     begin
@@ -3875,25 +3865,7 @@ begin
       );
 
       if not FileExists(WorkFile) then
-      begin
-        Zip := TZipForge.Create(nil);
-        try
-          FS := TMemoryStream.Create;
-          try
-            Zip.FileName := BookFileName;
-            Zip.BaseDir := Settings.ReadPath;
-            Zip.OpenArchive;
-            WorkFile := GetFileNameZip(Zip, BookRecord.InsideNo);
-            Zip.ExtractToStream(WorkFile, FS);
-            WorkFile := Settings.ReadPath + WorkFile;
-            FS.SaveToFile(WorkFile);
-          finally
-            FS.Free;
-          end;
-        finally
-          Zip.Free;
-        end;
-      end; // if Exists
+        BookRecord.SaveBookToFile(WorkFile);
     end
     else // bfFb2 or bfRaw
       WorkFile := BookFileName;
@@ -4554,7 +4526,7 @@ begin
       if IsSelectedBookNode(Node, Data) then
       begin
         DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, BookRecord, false);
-        BookFileName := TBookFormatUtils.GetBookFileName(DMUser.ActiveCollection.RootFolder, BookRecord);
+        BookFileName := BookRecord.GetBookFileName;
 
         if (IsOnline and Data^.Local) and DeleteFile(BookFileName) then
           SetBookLocalStatus(Data^.BookID, Data^.DatabaseID, False)
@@ -4723,7 +4695,7 @@ begin
           DownloadData^.Author := TAuthorsHelper.GetList(BookData^.Authors);
           DownloadData^.Title := BookData^.Title;
           DownloadData^.Size := BookData^.Size;
-          DownloadData^.FileName := TBookFormatUtils.GetBookFileName(DMUser.ActiveCollection.RootFolder, BookRecord);
+          DownloadData^.FileName := BookRecord.GetBookFileName;
           DownloadData^.URL := Format(Settings.InpxURL + 'b/%d/get', [BookRecord.LibID]);
           DownloadData^.State := dsWait;
           Include(DownloadNode.States, vsInitialUserData);
@@ -6102,16 +6074,17 @@ begin
   end;
 end;
 
-procedure TfrmMain.ExtractBookToStream(const BookRecord: TBookRecord; var FS: TMemoryStream);
+// For bfFb2, bfFb2Zip and bfFbd bring a book descriptor info in the fiction book format
+// For bfRaw brings nil
+// Don't forget to free the stream once done
+function TfrmMain.ExtractBookDescriptorToStream(const BookRecord: TBookRecord): TStream;
 var
   BookFileName: string;
-  Zip: TZipForge;
-  F: TZFArchiveItem;
   BookFormat: TBookFormat;
   msgNotFound: string;
 begin
-  BookFormat := TBookFormatUtils.GetBookFormat(DMUser.ActiveCollection.RootFolder, BookRecord);
-  BookFileName := TBookFormatUtils.GetBookFileName(DMUser.ActiveCollection.RootFolder, BookRecord);
+  BookFormat := BookRecord.GetBookFormat;
+  BookFileName := BookRecord.GetBookFileName;
 
   if (BookFormat = bfFb2Zip) or (BookFormat = bfFbd) then
     msgNotFound := rstrArchiveNotFound
@@ -6124,42 +6097,7 @@ begin
     Exit;
   end;
 
-  if BookFormat = bfFbd then
-  begin
-    Zip := TZipForge.Create(Self);
-    try
-      Zip.FileName := BookFileName;
-      Zip.OpenArchive;
-      if Zip.FindFirst('*' + FBD_EXTENSION, F) then
-        Zip.ExtractToStream(F.FileName, FS)
-      else
-        raise Exception.CreateFmt(rstrBookNotFoundInArchive, [BookFileName]);
-      Zip.CloseArchive;
-
-      Exit;
-    finally
-      Zip.Free;
-    end;
-  end
-  else if BookFormat = bfFb2Zip then
-  begin
-    Zip := TZipForge.Create(self);
-    try
-      Zip.FileName := BookFileName;
-      Zip.OpenArchive;
-      Zip.ExtractToStream(GetFileNameZip(Zip, BookRecord.InsideNo), FS);
-      Zip.CloseArchive;
-    finally
-      Zip.Free;
-    end;
-  end
-  else if BookFormat = bfFb2 then
-    FS.LoadFromFile(BookFileName);
-
-  // else bfRaw
-  //
-  // В настоящее время мы не можем получать никакую информацию из "сырого" файла. Т ч и читать ничего не будем
-  //
+  Result := BookRecord.GetBookDescriptorStream;
 end;
 
 procedure TfrmMain.ShowBookInfo(Sender: TObject);
@@ -6168,7 +6106,7 @@ var
   Data: PBookData;
   frmBookDetails: TfrmBookDetails;
 
-  bookStream: TMemoryStream;
+  bookStream: TStream;
   ReviewEditable: Boolean;
 
   URL: string;
@@ -6199,11 +6137,10 @@ begin
       // загрузим книгу в стрим и отдадим его форме для чтения из него информации
       // сейчас мы грузим только fb2 или fbd, т к больше ничего разбирать не умеем
       //
-      bookStream := TMemoryStream.Create;
       try
         try
-          ExtractBookToStream(R, bookStream);
-          frmBookDetails.FillBookInfo(R, bookStream);
+          bookStream := ExtractBookDescriptorToStream(R);
+          frmBookDetails.FillBookInfo(R, bookStream)
         except
           on e: Exception do
           begin
@@ -6217,7 +6154,7 @@ begin
           end;
         end;
       finally
-        bookStream.Free;
+        FreeAndNil(bookStream);
       end;
 
       frmBookDetails.mmReview.ReadOnly := not ReviewEditable;

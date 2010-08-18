@@ -198,7 +198,7 @@ begin
 
   if
     FEditorMode and
-    FBD.Load(Folder, TPath.GetFileNameWithoutExtension(FBookRecord.FileName), FBookRecord.FileExt)
+    FBD.Load(Folder, TPath.GetFileNameWithoutExtension(FBookRecord.FileName), FBookRecord.FileExt) 
   then
   begin
     alFBDAuthors.Items := FBD.GetAuthors(atlFBD);
@@ -209,12 +209,22 @@ begin
       edISBN.Text := ISBN.Text;
       edYear.Text := Year;
     end;
+  end
+  else
+  begin
+    FBD.New(Folder, FBookRecord.FileName, FBookRecord.FileExt);
+    edPublisher.Text := '';
+    edCity.Text := '';
+    edISBN.Text := '';
+    edYear.Text := '';
+    mmAnnotation.Text := '';
+    alFBDAuthors.Clear;
+    FCover.Picture := nil;
+  end;
+
     //
     // TODO : зачитывать аннотацию и обложку
     //
-  end
-  else
-    FBD.New(Folder, FBookRecord.FileName, FBookRecord.FileExt);
 end;
 
 function TfrmConvertToFBD.FillFBDData: Boolean;
