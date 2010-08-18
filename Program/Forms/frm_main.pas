@@ -684,7 +684,7 @@ type
 
     FLastActiveBookID: Integer;
 
-    function IsSelectedBookNode(Node: PVirtualNode; Data: PBookData): Boolean;
+    function IsSelectedBookNode(Node: PVirtualNode; Data: PBookRecord): Boolean;
 
     //
     // Построение деревьев
@@ -718,7 +718,7 @@ type
 
   private type
     TNodeProcessProc = reference to procedure(Tree: TBookTree; Node: PVirtualNode);
-    TNodeUpdateProc = reference to procedure(Data: PBookData);
+    TNodeUpdateProc = reference to procedure(Data: PBookRecord);
 
   strict private
     //
@@ -821,7 +821,7 @@ type
     procedure SetColumns;
     procedure SaveColumns;
     function GetTreeTag(const Sender: TBaseVirtualTree; const Column: Integer): Integer;
-    function GetText(Tag: Integer; Data: PBookData): string;
+    function GetText(Tag: Integer; Data: PBookRecord): string;
     procedure SetHeaderPopUp;
     procedure RestorePositions;
     procedure DownloadBooks;
@@ -833,7 +833,7 @@ type
     procedure CreateGroupsMenu;
     procedure SaveMainFormSettings;
     procedure SavePositions;
-    procedure PrepareFb2EditData(Data: PBookData; var R: TBookRecord);
+    procedure PrepareFb2EditData(Data: PBookRecord; var R: TBookRecord);
     procedure SaveFb2DataAfterEdit(R: TBookRecord);
     function ShowNCWizard: Boolean;
     procedure LoadLastCollection;
@@ -2280,7 +2280,7 @@ procedure TfrmMain.tbtnAutoFBDClick(Sender: TObject);
 var
   Tree: TBookTree;
   Node: PVirtualNode;
-  Data: PBookData;
+  Data: PBookRecord;
   BookRecord: TBookRecord;
 begin
   //
@@ -2405,11 +2405,11 @@ begin
   //
   // событие OnGetNodeDataSize почему-то не обрабатывается, инициализируем вручную
   //
-  tvBooksA.NodeDataSize := SizeOf(TBookData);
-  tvBooksS.NodeDataSize := SizeOf(TBookData);
-  tvBooksG.NodeDataSize := SizeOf(TBookData);
-  tvBooksSR.NodeDataSize := SizeOf(TBookData);
-  tvBooksF.NodeDataSize := SizeOf(TBookData);
+  tvBooksA.NodeDataSize := SizeOf(TBookRecord);
+  tvBooksS.NodeDataSize := SizeOf(TBookRecord);
+  tvBooksG.NodeDataSize := SizeOf(TBookRecord);
+  tvBooksSR.NodeDataSize := SizeOf(TBookRecord);
+  tvBooksF.NodeDataSize := SizeOf(TBookRecord);
   tvDownloadList.NodeDataSize := SizeOf(TDownloadData);
 
   // -----------------------------
@@ -2564,7 +2564,7 @@ end;
 
 procedure TfrmMain.SavePositions;
 var
-  Data: PBookData;
+  Data: PBookRecord;
 begin
   Settings.LastAuthor := lblAuthor.Caption;
   Settings.LastSeries := lblSeries.Caption;
@@ -2620,7 +2620,7 @@ end;
 //
 // Список книг
 //
-function TfrmMain.GetText(Tag: Integer; Data: PBookData): string;
+function TfrmMain.GetText(Tag: Integer; Data: PBookRecord): string;
 begin
   Assert(Assigned(Data));
   case Tag of
@@ -2639,7 +2639,7 @@ begin
     COL_GENRE:
       Result := TGenresHelper.GetList(Data^.Genres);
     COL_TYPE:
-      Result := Data^.FileType;
+      Result := Data^.GetFileType;
     COL_LANG:
       Result := Data^.Lang;
     // COL_LIBRATE   : Result := IntToStr(Data^.LibRate);
@@ -2651,7 +2651,7 @@ end;
 procedure TfrmMain.OnBooksTreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
 var
   Page: Integer;
-  Data: PBookData;
+  Data: PBookRecord;
 begin
   Page := Sender.Tag;
   Data := Sender.GetNodeData(Node);
@@ -2687,12 +2687,12 @@ end;
 
 procedure TfrmMain.GetBookNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
 begin
-  NodeDataSize := SizeOf(TBookData);
+  NodeDataSize := SizeOf(TBookRecord);
 end;
 
 procedure TfrmMain.FreeBookNodeDate(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
-  Data: PBookData;
+  Data: PBookRecord;
 begin
   Data := Sender.GetNodeData(Node);
   if Assigned(Data) then
@@ -2971,7 +2971,7 @@ var
   GroupData: PGroupData;
   SourceGroupID: Integer;
   TargetGroupID: Integer;
-  BookData: PBookData;
+  BookData: PBookRecord;
 
   procedure SelectChildNodes(ParentNode: PVirtualNode);
   var
@@ -3064,10 +3064,9 @@ end;
 
 procedure TfrmMain.tvBooksTreeChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
-  Data: PBookData;
+  Data: PBookRecord;
   Tree: TBookTree;
   InfoPanel: TInfoPanel;
-  R: TBookRecord;
   bookStream: TStream;
   book: IXMLFictionBook;
   imgBookCover: TGraphic;
@@ -3103,17 +3102,6 @@ begin
     Exit;
   end;
 
-  //
-  // BookRecord нужна не всегда, получим только если _действительно_ нужно
-  //
-  if
-    (Settings.ShowInfoPanel and (Settings.ShowBookCover or Settings.ShowBookAnnotation)) or
-    (IsPrivate and IsNonFB2)
-  then
-  begin
-    DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, R, False);
-  end;
-
   if Settings.ShowInfoPanel then
   begin
     InfoPanel.SetBookInfo(
@@ -3132,7 +3120,7 @@ begin
       begin
         try
           try
-            bookStream := ExtractBookDescriptorToStream(R);
+            bookStream := ExtractBookDescriptorToStream(Data^);
             if bookStream <> nil then
             begin
               book := LoadFictionBook(bookStream);
@@ -3181,7 +3169,7 @@ begin
 
   if IsPrivate and IsNonFB2 then
   begin
-    isFBDDocument := R.GetBookFormat = bfFbd;
+    isFBDDocument := Data^.GetBookFormat = bfFbd;
 
     miConverToFBD.Visible := True;
     miConverToFBD.Tag := IfThen(isFBDDocument, 999, 0);
@@ -3197,7 +3185,7 @@ end;
 
 procedure TfrmMain.tvBooksTreeCompareNodes(Sender: TBaseVirtualTree; Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
 var
-  Data1, Data2: PBookData;
+  Data1, Data2: PBookRecord;
 begin
   Data1 := Sender.GetNodeData(Node1);
   Data2 := Sender.GetNodeData(Node2);
@@ -3242,7 +3230,7 @@ end;
 
 procedure TfrmMain.tvBooksTreeBeforeCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
 var
-  Data: PBookData;
+  Data: PBookRecord;
   Color: TColor;
 begin
   Data := Sender.GetNodeData(Node);
@@ -3277,7 +3265,7 @@ end;
 
 procedure TfrmMain.tvBooksTreeAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; CellRect: TRect);
 var
-  Data: PBookData;
+  Data: PBookRecord;
   Tag: Integer;
   X: Integer;
 
@@ -3350,7 +3338,7 @@ var
   Tree: TBookTree;
   Left: TVirtualStringTree;
   Node: PVirtualNode;
-  Data: PBookData;
+  Data: PBookRecord;
 begin
   if Key = VK_INSERT then
   begin
@@ -3424,7 +3412,7 @@ end;
 procedure TfrmMain.tvBooksTreeMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
   Node: PVirtualNode;
-  Data: PBookData;
+  Data: PBookRecord;
   Tree: TBookTree;
   Selected: PVirtualNode;
 begin
@@ -3456,7 +3444,7 @@ end;
 
 procedure TfrmMain.tvBooksTreePaintText(Sender: TBaseVirtualTree; const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType);
 var
-  Data: PBookData;
+  Data: PBookRecord;
 begin
   Data := Sender.GetNodeData(Node);
   if Data^.nodeType <> ntBookInfo then
@@ -3601,7 +3589,7 @@ var
   ID: Integer;
   Tree: TBookTree;
   Node: PVirtualNode;
-  Data: PBookData;
+  Data: PBookRecord;
   ALibrary: TMHLLibrary;
 begin
   Screen.Cursor := crHourGlass;
@@ -3649,7 +3637,7 @@ procedure TfrmMain.FillBookIdList(const Tree: TBookTree; var BookIDList: TBookId
 var
   i: Integer;
   Node: PVirtualNode;
-  Data: PBookData;
+  Data: PBookRecord;
 begin
   i := 0;
   Node := Tree.GetFirst;
@@ -3794,7 +3782,7 @@ end;
 procedure TfrmMain.tbtbnReadClick(Sender: TObject);
 var
   Tree: TBookTree;
-  Data: PBookData;
+  Data: PBookRecord;
 
   WorkFile: string;
 
@@ -3802,7 +3790,6 @@ var
   Zip: TZipForge;
   ID, i: Integer;
 
-  BookRecord: TBookRecord;
   BookFileName: string;
   BookFormat: TBookFormat;
 begin
@@ -3814,9 +3801,8 @@ begin
 
   Screen.Cursor := crHourGlass;
   try
-    DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, BookRecord, False);
-    BookFileName := BookRecord.GetBookFileName;
-    BookFormat := BookRecord.GetBookFormat;
+    BookFileName := Data^.GetBookFileName;
+    BookFormat := Data^.GetBookFormat;
 
     if BookFormat = bfFb2Zip then
     begin
@@ -3850,22 +3836,22 @@ begin
       Assert(Length(Data^.Authors) > 0);
       WorkFile := TPath.Combine(
         Settings.ReadPath,
-        Format('%s - %s.%d%s', [CheckSymbols(Data^.Authors[0].GetFullName), CheckSymbols(Data^.Title), ID, BookRecord.FileExt])
+        Format('%s - %s.%d%s', [CheckSymbols(Data^.Authors[0].GetFullName), CheckSymbols(Data^.Title), ID, Data^.FileExt])
       );
 
       if not FileExists(WorkFile) then
-        BookRecord.SaveBookToFile(WorkFile);
+        Data^.SaveBookToFile(WorkFile);
     end
     else if BookFormat = bfFbd then
     begin
       Assert(Length(Data^.Authors) > 0);
       WorkFile := TPath.Combine(
         Settings.ReadPath,
-        Format('%s - %s.%d%s', [CheckSymbols(Data^.Authors[0].GetFullName), CheckSymbols(Data^.Title), ID, BookRecord.FileExt])
+        Format('%s - %s.%d%s', [CheckSymbols(Data^.Authors[0].GetFullName), CheckSymbols(Data^.Title), ID, Data^.FileExt])
       );
 
       if not FileExists(WorkFile) then
-        BookRecord.SaveBookToFile(WorkFile);
+        Data^.SaveBookToFile(WorkFile);
     end
     else // bfFb2 or bfRaw
       WorkFile := BookFileName;
@@ -4116,7 +4102,7 @@ procedure TfrmMain.SelectNextBook(Changed, Frwrd: Boolean);
 var
   Tree: TBookTree;
   NewNode, OldNode: PVirtualNode;
-  Data: PBookData;
+  Data: PBookRecord;
 begin
   if Changed then
     SaveFb2DataAfterEdit(FLastBookRecord);
@@ -4165,7 +4151,7 @@ var
   serieNode: PVirtualNode;
   bookNode: PVirtualNode;
 
-  Data: PBookData;
+  Data: PBookRecord;
   Max, i: Integer;
   Author: string;
 
@@ -4231,7 +4217,7 @@ begin
     Tree.BeginUpdate;
     try
       Tree.Clear;
-      Tree.NodeDataSize := SizeOf(TBookData);
+      Tree.NodeDataSize := SizeOf(TBookRecord);
 
       StatusMessage := rstrBuildingTheList;
 
@@ -4457,7 +4443,7 @@ procedure TfrmMain.miCopyClBrdClick(Sender: TObject);
 var
   Tree: TBookTree;
   S, R: string;
-  Data: PBookData;
+  Data: PBookRecord;
   Node: PVirtualNode;
 
 begin
@@ -4495,10 +4481,9 @@ procedure TfrmMain.miDeleteBookClick(Sender: TObject);
 var
   Tree: TBookTree;
   Node, OldNode: PVirtualNode;
-  Data: PBookData;
+  Data: PBookRecord;
   ALibrary: TMHLLibrary;
   BookFileName: string;
-  BookRecord: TBookRecord;
 begin
   if ActiveView = FavoritesView then
   begin
@@ -4525,8 +4510,7 @@ begin
 
       if IsSelectedBookNode(Node, Data) then
       begin
-        DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, BookRecord, false);
-        BookFileName := BookRecord.GetBookFileName;
+        BookFileName := Data^.GetBookFileName;
 
         if (IsOnline and Data^.Local) and DeleteFile(BookFileName) then
           SetBookLocalStatus(Data^.BookID, Data^.DatabaseID, False)
@@ -4597,7 +4581,7 @@ begin
   ProcessNodes(
     procedure (Tree: TBookTree; Node: PVirtualNode)
     var
-      Data: PBookData;
+      Data: PBookRecord;
     begin
       Data := Tree.GetNodeData(Node);
       if Assigned(Data) and (Data^.nodeType = ntBookInfo) and (Data^.DatabaseID = DatabaseID) then
@@ -4617,7 +4601,7 @@ begin
 
           UpdateNodes(
             Data^.BookID, Data^.DatabaseID,
-            procedure(BookData: PBookData)
+            procedure(BookData: PBookRecord)
             begin
               Assert(Assigned(BookData));
               BookData^.Local := False;
@@ -4634,8 +4618,7 @@ var
   Tree: TBookTree;
 
   BookNode: PVirtualNode;
-  BookData: PBookData;
-  BookRecord: TBookRecord;
+  BookData: PBookRecord;
 
   DownloadNode: PVirtualNode;
   DownloadData: PDownloadData;
@@ -4681,11 +4664,6 @@ begin
       begin
         if not BookInDownloadList(BookData^.BookID, BookData^.DatabaseID) then
         begin
-          //
-          // TODO : избавиться от необходимости получать BookRecord
-          //
-          DMCollection.GetBookRecord(BookData^.BookID, BookData^.DatabaseID, BookRecord, False);
-
           DownloadNode := tvDownloadList.AddChild(nil);
           DownloadData := tvDownloadList.GetNodeData(DownloadNode);
 
@@ -4695,8 +4673,8 @@ begin
           DownloadData^.Author := TAuthorsHelper.GetList(BookData^.Authors);
           DownloadData^.Title := BookData^.Title;
           DownloadData^.Size := BookData^.Size;
-          DownloadData^.FileName := BookRecord.GetBookFileName;
-          DownloadData^.URL := Format(Settings.InpxURL + 'b/%d/get', [BookRecord.LibID]);
+          DownloadData^.FileName := BookData^.GetBookFileName;
+          DownloadData^.URL := Format(Settings.InpxURL + 'b/%d/get', [BookData^.LibID]);
           DownloadData^.State := dsWait;
           Include(DownloadNode.States, vsInitialUserData);
         end;
@@ -4718,7 +4696,7 @@ procedure TfrmMain.miEditAuthorClick(Sender: TObject);
 var
   Tree: TVirtualStringTree;
   Node: PVirtualNode;
-  Data: PBookData;
+  Data: PBookRecord;
   Res: Boolean;
   S: string;
 
@@ -4906,7 +4884,7 @@ begin
     Result := False;
 end;
 
-procedure TfrmMain.PrepareFb2EditData(Data: PBookData; var R: TBookRecord);
+procedure TfrmMain.PrepareFb2EditData(Data: PBookRecord; var R: TBookRecord);
 var
   Family: TListItem;
   Author: TAuthorData;
@@ -4944,7 +4922,7 @@ end;
 procedure TfrmMain.SaveFb2DataAfterEdit(R: TBookRecord);
 var
   Tree: TBookTree;
-  Data: PBookData;
+  Data: PBookRecord;
   Node: PVirtualNode;
   i: Integer;
   ALibrary: TMHLLibrary;
@@ -5003,7 +4981,7 @@ end;
 procedure TfrmMain.miEditBookClick(Sender: TObject);
 var
   Tree: TBookTree;
-  Data: PBookData;
+  Data: PBookRecord;
   Node: PVirtualNode;
 begin
   if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
@@ -5036,7 +5014,7 @@ procedure TfrmMain.miEditGenresClick(Sender: TObject);
 var
   NodeB, NodeG: PVirtualNode;
   DataG: PGenreData;
-  DataB: PBookData;
+  DataB: PBookRecord;
   Tree: TBookTree;
   ALibrary: TMHLLibrary;
 begin
@@ -5100,7 +5078,7 @@ end;
 procedure TfrmMain.miEditSeriesClick(Sender: TObject);
 var
   Tree: TBookTree;
-  Data: PBookData;
+  Data: PBookRecord;
   Node: PVirtualNode;
   AuthID: Integer;
   S: string;
@@ -5437,7 +5415,7 @@ begin
   ProcessNodes(
     procedure (Tree: TBookTree; Node: PVirtualNode)
     var
-      Data: PBookData;
+      Data: PBookRecord;
     begin
       Data := Tree.GetNodeData(Node);
       if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
@@ -5445,7 +5423,7 @@ begin
         DMCollection.SetRate(Data^.BookID, Data^.DatabaseID, NewRate);
         UpdateNodes(
           Data^.BookID, Data^.DatabaseID,
-          procedure(BookData: PBookData)
+          procedure(BookData: PBookRecord)
           begin
             Assert(Assigned(BookData));
             BookData^.Rate := NewRate;
@@ -5465,7 +5443,7 @@ begin
   ProcessNodes(
     procedure (Tree: TBookTree; Node: PVirtualNode)
     var
-      Data: PBookData;
+      Data: PBookRecord;
     begin
       Data := Tree.GetNodeData(Node);
       if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
@@ -5645,7 +5623,7 @@ begin
       ProcessNodes(
         procedure (Tree: TBookTree; Node: PVirtualNode)
         var
-          Data: PBookData;
+          Data: PBookRecord;
         begin
           Data := Tree.GetNodeData(Node);
           if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
@@ -5702,7 +5680,7 @@ begin
       ProcessNodes(
         procedure (Tree: TBookTree; Node: PVirtualNode)
         var
-          Data: PBookData;
+          Data: PBookRecord;
         begin
           Data := Tree.GetNodeData(Node);
           if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
@@ -5880,7 +5858,7 @@ end;
 procedure TfrmMain.LocateBook(Text: string; Next: Boolean);
 var
   Node: PVirtualNode;
-  Data: PBookData;
+  Data: PBookRecord;
   L: Integer;
   Tree: TBookTree;
 begin
@@ -6103,7 +6081,7 @@ end;
 procedure TfrmMain.ShowBookInfo(Sender: TObject);
 var
   Tree: TBookTree;
-  Data: PBookData;
+  Data: PBookRecord;
   frmBookDetails: TfrmBookDetails;
 
   bookStream: TStream;
@@ -6111,7 +6089,6 @@ var
 
   URL: string;
 
-  R: TBookRecord;
   strReview: string;
   NewCode: Integer;
 begin
@@ -6124,8 +6101,6 @@ begin
 
   FFormBusy := True;
   try
-    DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, R, False);
-
     //
     // ревью можно изменять только для книг из текущей коллекции
     //
@@ -6139,8 +6114,8 @@ begin
       //
       try
         try
-          bookStream := ExtractBookDescriptorToStream(R);
-          frmBookDetails.FillBookInfo(R, bookStream)
+          bookStream := ExtractBookDescriptorToStream(Data^);
+          frmBookDetails.FillBookInfo(Data^, bookStream)
         except
           on e: Exception do
           begin
@@ -6150,7 +6125,7 @@ begin
             // Покажем сообщение об ощибке и загрузим только библиотечную информацию
             //
             MHLShowError(e.Message);
-            frmBookDetails.FillBookInfo(R, nil);
+            frmBookDetails.FillBookInfo(Data^, nil);
           end;
         end;
       finally
@@ -6163,14 +6138,14 @@ begin
       begin
         { TODO -oNickR -cLibDesc : этот URL должен формироваться обвязкой библиотеки, т к его формат может меняться }
         if DMUser.ActiveCollection.URL = '' then
-          URL := Format('%sb/%d/', [Settings.InpxURL, R.LibID])
+          URL := Format('%sb/%d/', [Settings.InpxURL, Data^.LibID])
         else
-          URL := Format('%sb/%d/', [DMUser.ActiveCollection.URL, R.LibID]);
+          URL := Format('%sb/%d/', [DMUser.ActiveCollection.URL, Data^.LibID]);
 
         frmBookDetails.AllowOnlineReview(URL);
       end;
 
-      if R.Code = 1 then
+      if Data^.Code = 1 then
         //
         // ревью уже есть - покажем его
         //
@@ -6191,7 +6166,7 @@ begin
     NewCode := DMCollection.SetReview(Data^.BookID, Data^.DatabaseID, strReview);
     UpdateNodes(
       Data^.BookID, Data^.DatabaseID,
-      procedure(BookData: PBookData)
+      procedure(BookData: PBookRecord)
       begin
         Assert(Assigned(BookData));
         BookData^.Code := NewCode;
@@ -6244,11 +6219,10 @@ procedure TfrmMain.miGoToAuthorClick(Sender: TObject);
 var
   Tree: TBookTree;
   Node: PVirtualNode;
-  Data: PBookData;
+  Data: PBookRecord;
   BookID: Integer;
   DatabaseID: Integer;
   FullAuthorName: string;
-  BookRecord: TBookRecord;
 begin
   GetActiveTree(Tree);
 
@@ -6288,10 +6262,8 @@ begin
         Exit;
       end;
 
-      DMCollection.GetBookRecord(BookID, DatabaseID, BookRecord, False);
-
-      Assert(Length(BookRecord.Authors) > 0);
-      FullAuthorName := BookRecord.Authors[0].GetFullName;
+      Assert(Length(Data^.Authors) > 0);
+      FullAuthorName := Data^.Authors[0].GetFullName;
     end
     else
     begin
@@ -6438,7 +6410,7 @@ end;
 procedure TfrmMain.miConverToFBDClick(Sender: TObject);
 var
   Tree: TBookTree;
-  Data: PBookData;
+  Data: PBookRecord;
   Node: PVirtualNode;
   BookRecord: TBookRecord;
 begin
@@ -6650,7 +6622,7 @@ begin
   ProcessNodes(
     procedure (Tree: TBookTree; Node: PVirtualNode)
     var
-      Data: PBookData;
+      Data: PBookRecord;
       NewProgress: Integer;
     begin
       Data := Tree.GetNodeData(Node);
@@ -6662,7 +6634,7 @@ begin
         DMCollection.SetProgress(Data^.BookID, Data^.DatabaseID, NewProgress);
         UpdateNodes(
           Data^.BookID, Data^.DatabaseID,
-          procedure(BookData: PBookData)
+          procedure(BookData: PBookRecord)
           begin
             Assert(Assigned(BookData));
             BookData^.Progress := NewProgress;
@@ -6907,7 +6879,7 @@ begin
 
   UpdateNodes(
     BookID, DatabaseID,
-    procedure(BookData: PBookData)
+    procedure(BookData: PBookRecord)
     begin
       Assert(Assigned(BookData));
       BookData^.Local := IsLocal;
@@ -6938,7 +6910,7 @@ begin
           //
           UpdateNodes(
             BookID, DatabaseID,
-            procedure(BookData: PBookData)
+            procedure(BookData: PBookRecord)
             begin
               Assert(Assigned(BookData));
               if extra.Rating <> 0 then
@@ -7068,7 +7040,7 @@ end;
 
 function TfrmMain.GetBookNode(const Tree: TBookTree; BookID: Integer; DatabaseID: Integer): PVirtualNode;
 var
-  Data: PBookData;
+  Data: PBookRecord;
   Node: PVirtualNode;
 begin
   Assert(Assigned(Tree));
@@ -7120,7 +7092,7 @@ var
   BookTrees: TTreeArray;
   Tree: TBookTree;
   Node: PVirtualNode;
-  Data: PBookData;
+  Data: PBookRecord;
 begin
   BookTrees := TTreeArray.Create(tvBooksA, tvBooksS, tvBooksG, tvBooksSR, tvBooksF {, tvDownloadList});
   for Tree in BookTrees do
@@ -7139,7 +7111,7 @@ begin
   end;
 end;
 
-function TfrmMain.IsSelectedBookNode(Node: PVirtualNode; Data: PBookData): Boolean;
+function TfrmMain.IsSelectedBookNode(Node: PVirtualNode; Data: PBookRecord): Boolean;
 begin
   Result :=
     Assigned(Node) and Assigned(Data) and

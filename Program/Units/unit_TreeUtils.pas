@@ -85,7 +85,7 @@ end;
 function FindSeriesInTree(Tree: TBookTree; Parent: PVirtualNode; SerieID: Integer): PVirtualNode;
 var
   Node: PVirtualNode;
-  Data: PBookData;
+  Data: PBookRecord;
 begin
   Result := nil;
   if Assigned(Parent) then
@@ -109,7 +109,7 @@ end;
 procedure SelectBookById(Tree: TBookTree; ID: Integer);
 var
   Node: PVirtualNode;
-  Data: PBookData;
+  Data: PBookRecord;
 begin
   Node := Tree.GetFirst;
   while Assigned(Node) do

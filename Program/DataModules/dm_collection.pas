@@ -503,6 +503,8 @@ begin
     BookRecord.Lang := AllBooksLang.Value;
     BookRecord.LibRate := AllBooksLibRate.Value;
     BookRecord.KeyWords := AllBooksKeyWords.Value;
+    BookRecord.NodeType := ntBookInfo;
+    BookRecord.BookID := AllBooksBookID.Value;
 
     //
     // данные из таблицы Extra
@@ -525,6 +527,7 @@ begin
 
     BookRecord.CollectionName := DMUser.ActiveCollection.Name;
     BookRecord.CollectionRootFolder := DMUser.ActiveCollection.RootFolder;
+    BookRecord.DatabaseID := DMUser.ActiveCollection.ID;
   end
   else
     DMUser.GetBookRecord(BookID, DatabaseID, BookRecord);
