@@ -194,7 +194,8 @@ begin
   //
   lblAuthor.Caption := FBookRecord.Authors[0].GetFullName;
   lblTitle.Caption := FBookRecord.Title;
-  Folder := TPath.Combine(DMUser.ActiveCollection.RootPath, FBookRecord.Folder);
+  //The following code is never used for bfFb2Zip, so it's always a folder:
+  Folder := FBookRecord.GetBookContainer;
 
   if
     FEditorMode and
