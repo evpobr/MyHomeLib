@@ -524,9 +524,11 @@ begin
     GetBookAuthors(BookID, BookRecord.Authors);
 
     BookRecord.CollectionName := DMUser.ActiveCollection.Name;
+    BookRecord.CollectionRootFolder := DMUser.ActiveCollection.RootFolder;
   end
   else
     DMUser.GetBookRecord(BookID, DatabaseID, BookRecord);
+
 end;
 
 procedure TDMCollection.SetLocal(BookID: Integer; DatabaseID: Integer; AState: Boolean);

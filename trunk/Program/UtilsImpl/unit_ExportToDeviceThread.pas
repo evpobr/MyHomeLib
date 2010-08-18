@@ -21,8 +21,7 @@ uses
   Dialogs,
   ABSMain,
   ZipForge,
-  unit_Templater,
-  unit_BookFormat;
+  unit_Templater;
 
 type
   TExportToDeviceThread = class(TWorker)
@@ -98,7 +97,6 @@ resourcestring
 //
 function TExportToDeviceThread.PrepareFile(BookID: Integer; DatabaseID: Integer): Boolean;
 var
-  FS: TMemoryStream;
   R: TBookRecord;
 begin
   { DONE -oalex : рефакторинг: разобрать на отдельные модули, разобраться с логикой }
@@ -132,8 +130,8 @@ begin
   FFileOprecord.TargetFileName := Trim(CheckSymbols(FFileOprecord.TargetFileName));
   FFileOprecord.TargetFileName := FFileOprecord.TargetFileName + R.FileExt;
 
-  FBookFormat := TBookFormatUtils.GetBookFormat(FCollectionRoot, R);
-  FFileOprecord.SArch := TBookFormatUtils.GetBookFileName(FCollectionRoot, R);
+  FBookFormat := R.GetBookFormat;
+  FFileOprecord.SArch := R.GetBookFileName;
   FFileOprecord.SNo := R.InsideNo;
 
   //
@@ -147,17 +145,7 @@ begin
       Exit;
     end;
 
-    FS := TMemoryStream.Create;
-    try
-      FZipper.FileName := FFileOprecord.SArch;
-      FZipper.OpenArchive;
-      FZipper.ExtractToStream(GetFileNameZip(FZipper, FFileOprecord.SNo), FS);
-      FFileOprecord.SArch := TPath.Combine(Settings.TempPath, FFileOprecord.TargetFileName);
-      FS.SaveToFile(FFileOprecord.SArch);
-      ///FIsTmp := True;
-    finally
-      FS.Free;
-    end;
+    R.SaveBookToFile(TPath.Combine(Settings.TempPath, FFileOprecord.TargetFileName));
   end;
 
   if (R.FileExt = FB2_EXTENSION) and Settings.OverwriteFB2Info then

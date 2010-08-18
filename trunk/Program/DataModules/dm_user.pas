@@ -626,7 +626,10 @@ begin
     end;
 
     if SelectCollection(DatabaseID) then
-      BookRecord.CollectionName := CurrentCollection.Name
+    begin
+      BookRecord.CollectionName := CurrentCollection.Name;
+      BookRecord.CollectionRootFolder := CurrentCollection.RootFolder;
+    end
     else
       BookRecord.CollectionName := rstrUnknownCollection;
   end
