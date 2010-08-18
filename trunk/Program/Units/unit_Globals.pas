@@ -361,6 +361,7 @@ type
     // ----------------------------------------------------
     function GetBookFormat: TBookFormat;
     function GetBookFileName: string;
+    function GetBookContainer: string;
     function GetBookStream: TStream;
     function GetBookDescriptorStream: TStream;
     procedure SaveBookToFile(const DestFileName: String);
@@ -992,8 +993,7 @@ var
   BookFormat: TBookFormat;
   BookContainer: string;
 begin
-  BookContainer := TPath.Combine(CollectionRootFolder, Folder);
-
+  BookContainer := GetBookContainer;
   BookFormat := GetBookFormat;
   if BookFormat = bfFBD then
     Result := TPath.Combine(BookContainer, FileName)
@@ -1001,6 +1001,14 @@ begin
     Result := BookContainer
   else // bfFb2 or bfRaw
     Result := TPath.Combine(BookContainer, FileName) + FileExt;
+end;
+
+// Get the container holding the book (folder or zip file)
+//  For bfFb2, bfFBD and bfRaw - brings the folder containing the file
+//  For bfFb2Zip - brings the name of the Zip file
+function TBookRecord.GetBookContainer: string;
+begin
+  Result := TPath.Combine(CollectionRootFolder, Folder);
 end;
 
 // Get the book file as a stream.
