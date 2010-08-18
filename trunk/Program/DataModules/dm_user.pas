@@ -578,6 +578,8 @@ begin
     BookRecord.Annotation := AllBooksAnnotation.Value;
     BookRecord.Rate := AllBooksRate.Value;
     BookRecord.Progress := AllBooksProgress.Value;
+    BookRecord.NodeType := ntBookInfo;
+    BookRecord.BookID := AllBooksBookID.Value;
 
     Stream := TABSBlobStream.Create(AllBooksExtraInfo, bmRead);
     try
@@ -629,6 +631,7 @@ begin
     begin
       BookRecord.CollectionName := CurrentCollection.Name;
       BookRecord.CollectionRootFolder := CurrentCollection.RootFolder;
+      BookRecord.DatabaseID := CurrentCollection.ID;
     end
     else
       BookRecord.CollectionName := rstrUnknownCollection;

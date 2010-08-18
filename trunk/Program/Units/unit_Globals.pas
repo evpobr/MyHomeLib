@@ -268,22 +268,18 @@ type
   // --------------------------------------------------------------------------
   TBookNodeType = (ntAuthorInfo = 1, ntSeriesInfo, ntBookInfo);
 
-  PBookData = ^TBookData;
-  TBookData = record
+  PBookRecord = ^TBookRecord;
+  TBookRecord = record
+    // Fields used in trees:
     nodeType: TBookNodeType;
-
     BookID: Integer;
     DatabaseID: Integer;
     SerieID: Integer;
-
     Title: string;
     Serie: string;
-
     Genres: TBookGenres;
     Authors: TBookAuthors;
-
     CollectionName: string;
-    FileType: string;
     Lang: string;
     Size: Integer;
     Rate: Integer;
@@ -294,56 +290,21 @@ type
     Local: Boolean;
     Deleted: Boolean;
     Date: TDateTime;
-  end;
 
-  TBookRecord = record
-    //
-    // TODO : добавить отдельное поле для ID книги, SeriesID в эту структуру
-    //
-    Title: string;
-
+    // Fields not used in trees:
     Folder: string;
     FileName: string;
     FileExt: string;
     InsideNo: Integer;
-
-    SerieID: Integer;
-    Serie: string;
-    SeqNumber: Integer;
-
-    Authors: TBookAuthors;
-    Genres: TBookGenres;
     RootGenre: TGenreData;
-
-    Code: Integer;
-    Size: Integer;
     LibID: Integer;
-    Local: Boolean;
-    Deleted: Boolean;
-    Date: TDateTime;
-    Lang: string;
-    LibRate: Integer;
-
-    //
-    // TODO : проверить использование этих полей
-    //
     KeyWords: string;
-
-    //
-    // Следующие поля зачитываются из таблицы Extra
-    //
-    Rate: Integer;
-    Progress: Integer;
     Annotation: string;
     Review: string;
-
-    //
-    // Вычисляемые поля
-    //
-    CollectionName: string;
     CollectionRootFolder: String;
 
     // ----------------------------------------------------
+    function GetFileType: string;
     procedure Normalize;
     procedure Clear;
 
@@ -356,7 +317,7 @@ type
     function GenreCount: Integer; inline;
 
     // ----------------------------------------------------
-    procedure FillBookData(Data: PBookData);
+    procedure FillBookData(Data: PBookRecord);
 
     // ----------------------------------------------------
     function GetBookFormat: TBookFormat;
@@ -365,6 +326,7 @@ type
     function GetBookStream: TStream;
     function GetBookDescriptorStream: TStream;
     procedure SaveBookToFile(const DestFileName: String);
+
   end;
 
   // --------------------------------------------------------------------------
@@ -892,6 +854,11 @@ begin
     TGenresHelper.Add(Genres, UNKNOWN_GENRE_CODE, '', '');
 end;
 
+function TBookRecord.GetFileType: string;
+begin
+  Result := CleanExtension(FileExt);
+end;
+
 //
 // Формирует И\Иванов Иван Иванович\Просто книга
 //
@@ -921,7 +888,7 @@ begin
   Result := Length(Genres);
 end;
 
-procedure TBookRecord.FillBookData(Data: PBookData);
+procedure TBookRecord.FillBookData(Data: PBookRecord);
 begin
   Assert(Assigned(Data));
 
@@ -936,7 +903,7 @@ begin
   Data^.Authors := Authors;
 
   Data^.CollectionName := CollectionName;
-  Data^.FileType := CleanExtension(FileExt);
+  Data^.FileExt := FileExt;
   Data^.Lang := Lang;
   Data^.Size := Size;
   Data^.SeqNumber := SeqNumber;
@@ -951,6 +918,20 @@ begin
   //
   Data^.Rate := Rate;
   Data^.Progress := Progress;
+
+  //////////////////////////
+  Data^.BookID := BookID;
+  Data^.DatabaseID := DatabaseID;
+  Data^.Folder := Folder;
+  Data^.FileName := FileName;
+  Data^.InsideNo := InsideNo;
+  Data^.RootGenre := RootGenre;
+  Data^.LibID := LibID;
+  Data^.KeyWords := KeyWords;
+  Data^.Annotation := Annotation;
+  Data^.Review := Review;
+  Data^.CollectionRootFolder := CollectionRootFolder;
+
 end;
 
 // Get the book format enum value
