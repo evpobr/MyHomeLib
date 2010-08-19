@@ -270,7 +270,6 @@ type
 
   PBookRecord = ^TBookRecord;
   TBookRecord = record
-    // Fields used in trees:
     nodeType: TBookNodeType;
     BookID: Integer;
     DatabaseID: Integer;
@@ -290,18 +289,17 @@ type
     Local: Boolean;
     Deleted: Boolean;
     Date: TDateTime;
-
-    // Fields not used in trees:
-    Folder: string;
-    FileName: string;
     FileExt: string;
+
+    FileName: string;
+    LibID: Integer;
+    Folder: string;
     InsideNo: Integer;
     RootGenre: TGenreData;
-    LibID: Integer;
     KeyWords: string;
     Annotation: string;
     Review: string;
-    CollectionRootFolder: String;
+    CollectionRoot: String;
 
     // ----------------------------------------------------
     function GetFileType: string;
@@ -930,7 +928,7 @@ begin
   Data^.KeyWords := KeyWords;
   Data^.Annotation := Annotation;
   Data^.Review := Review;
-  Data^.CollectionRootFolder := CollectionRootFolder;
+  Data^.CollectionRoot := CollectionRoot;
 
 end;
 
@@ -942,7 +940,7 @@ var
   LongFileName: string;
 begin
   Result := bfRaw; // default
-  BookContainer := TPath.Combine(CollectionRootFolder, Folder);
+  BookContainer := TPath.Combine(CollectionRoot, Folder);
   PathLen := Length(BookContainer);
 
   if
@@ -989,7 +987,7 @@ end;
 //  For bfFb2Zip - brings the name of the Zip file
 function TBookRecord.GetBookContainer: string;
 begin
-  Result := TPath.Combine(CollectionRootFolder, Folder);
+  Result := TPath.Combine(CollectionRoot, Folder);
 end;
 
 // Get the book file as a stream.

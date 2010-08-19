@@ -629,9 +629,9 @@ begin
 
     if SelectCollection(DatabaseID) then
     begin
-      BookRecord.CollectionName := CurrentCollection.Name;
-      BookRecord.CollectionRootFolder := CurrentCollection.RootFolder;
-      BookRecord.DatabaseID := CurrentCollection.ID;
+      BookRecord.CollectionName := DMUser.ActiveCollection.Name;
+      BookRecord.CollectionRoot := DMUser.ActiveCollection.RootPath;
+      BookRecord.DatabaseID := DMUser.ActiveCollection.ID;
     end
     else
       BookRecord.CollectionName := rstrUnknownCollection;
