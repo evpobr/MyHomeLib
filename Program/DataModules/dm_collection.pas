@@ -204,7 +204,7 @@ type
     //
     // ѕолучение полной информации о книге
     //
-    procedure GetBookRecord(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord; LoadExtra: Boolean); overload;
+    procedure GetBookRecord(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord; LoadMemos: Boolean); overload;
 
     //
     // ќбновление полей
@@ -472,7 +472,7 @@ begin
   GetBookRecord(BookID, DatabaseID, R, True);
 end;
 
-procedure TDMCollection.GetBookRecord(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord; LoadExtra: Boolean);
+procedure TDMCollection.GetBookRecord(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord; LoadMemos: Boolean);
 begin
   BookRecord.Clear;
 
@@ -510,16 +510,21 @@ begin
     // данные из таблицы Extra
     //
     Assert(AllExtra.Active);
-    if LoadExtra and AllExtra.Locate(BOOK_ID_FIELD, BookID, []) then
+    if AllExtra.Locate(BOOK_ID_FIELD, BookID, []) then
     begin
-      //
-      // Ёто поле нужно зачитывать только при копировании книги в другую коллекцию.
-      // ¬о всех остальных случа€х оно не используетс€.
-      //
-      BookRecord.Review := AllExtraReview.Value;
-      BookRecord.Annotation := AllExtraAnnotation.Value;
       BookRecord.Rate := AllExtraRate.Value;
       BookRecord.Progress := AllExtraProgress.Value;
+      if LoadMemos then
+      begin
+        //TODO - rethink when to load the memo fields.
+
+        //
+        // Ёто поле нужно зачитывать только при копировании книги в другую коллекцию.
+        // ¬о всех остальных случа€х оно не используетс€.
+        //
+        BookRecord.Review := AllExtraReview.Value;
+        BookRecord.Annotation := AllExtraAnnotation.Value;
+      end;
     end;
 
     GetBookGenres(BookID, BookRecord.Genres, @(BookRecord.RootGenre));

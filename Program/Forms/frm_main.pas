@@ -2306,8 +2306,6 @@ begin
   finally
     DisableControls(True);
   end;
-
-  InitCollection(True);
 end;
 
 //
@@ -4321,9 +4319,7 @@ begin
               Data := Tree.GetNodeData(bookNode);
 
               Initialize(Data^);
-              BookRecord.FillBookData(Data);
-              Data^.BookID := BookID;
-              Data^.DatabaseID := DatabaseID;
+              Data^ := BookRecord;
               Include(bookNode.States, vsInitialUserData);
 
               Inc(i);
@@ -6442,10 +6438,6 @@ begin
   frmConvertToFBD.EditorMode := miConverToFBD.Tag <> 0;
 
   frmConvertToFBD.ShowModal;
-
-  // reload the node data from DB after editing:
-  DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, BookRecord, True);
-  BookRecord.FillBookData(Data);
 end;
 
 procedure TfrmMain.N33Click(Sender: TObject);

@@ -50,6 +50,8 @@ type
 
   TBookIdList = array of TBookIdStruct;
 
+
+
 type
   EInvalidLogin = class(Exception);
 
@@ -297,9 +299,12 @@ type
     InsideNo: Integer;
     RootGenre: TGenreData;
     KeyWords: string;
+    CollectionRoot: String;
+
+    //TODO - rethink when to load the memo fields. Today are loaded only when LoadMemos flag is True
     Annotation: string;
     Review: string;
-    CollectionRoot: String;
+
 
     // ----------------------------------------------------
     function GetFileType: string;
@@ -313,9 +318,6 @@ type
 
     procedure ClearGenres; inline;
     function GenreCount: Integer; inline;
-
-    // ----------------------------------------------------
-    procedure FillBookData(Data: PBookRecord);
 
     // ----------------------------------------------------
     function GetBookFormat: TBookFormat;
@@ -884,52 +886,6 @@ end;
 function TBookRecord.GenreCount: Integer;
 begin
   Result := Length(Genres);
-end;
-
-procedure TBookRecord.FillBookData(Data: PBookRecord);
-begin
-  Assert(Assigned(Data));
-
-  Data^.nodeType := ntBookInfo;
-
-  Data^.Title := Title;
-
-  Data^.SerieID := SerieID;
-  Data^.Serie := Serie;
-
-  Data^.Genres := Genres;
-  Data^.Authors := Authors;
-
-  Data^.CollectionName := CollectionName;
-  Data^.FileExt := FileExt;
-  Data^.Lang := Lang;
-  Data^.Size := Size;
-  Data^.SeqNumber := SeqNumber;
-  Data^.LibRate := LibRate;
-  Data^.Code := Code;
-  Data^.Local := Local;
-  Data^.Deleted := Deleted;
-  Data^.Date := Date;
-
-  //
-  // данные из таблицы Extra
-  //
-  Data^.Rate := Rate;
-  Data^.Progress := Progress;
-
-  //////////////////////////
-  Data^.BookID := BookID;
-  Data^.DatabaseID := DatabaseID;
-  Data^.Folder := Folder;
-  Data^.FileName := FileName;
-  Data^.InsideNo := InsideNo;
-  Data^.RootGenre := RootGenre;
-  Data^.LibID := LibID;
-  Data^.KeyWords := KeyWords;
-  Data^.Annotation := Annotation;
-  Data^.Review := Review;
-  Data^.CollectionRoot := CollectionRoot;
-
 end;
 
 // Get the book format enum value
