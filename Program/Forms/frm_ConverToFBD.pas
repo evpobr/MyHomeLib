@@ -314,6 +314,8 @@ var
   FirstID: integer;
   BookRecord: TBookRecord;
 begin
+  Assert(False, 'Not implemented yet');
+  // TODO - add normal logic with a mutex that never corrupts a book file!
   FTerminated := False;
   PrepareForm;
   Show;
