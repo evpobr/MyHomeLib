@@ -29,16 +29,12 @@ uses
   Controls,
   Forms,
   StdCtrls,
-  Mask,
   Buttons,
   ExtCtrls,
-  dm_Collection,
-  unit_Globals,
   ImgList,
-  xmldom,
   FBDDocument,
   FBDAuthorTable,
-  unit_MHLHelpers;
+  unit_Globals;
 
 type
   TfrmConvertToFBD = class(TForm)
@@ -94,14 +90,15 @@ type
     FOnChangeBook2Zip: TBookEvent;
 
     procedure PrepareForm;
-    function FillFBDData: boolean;
+    function FillFBDData: Boolean;
     procedure SaveFBD;
-    procedure EnableButtons(State: boolean);
+    procedure EnableButtons(State: Boolean);
+
+    procedure InternalSelectBook(Next: Boolean);
+    procedure DoGetBook(var BookRecord: TBookRecord);
 
   public
     procedure AutoMode;
-
-    property EditorMode: Boolean read FEditorMode write FEditorMode;
 
     property OnReadBook: TBookEvent read FOnReadBook write FOnReadBook;
     property OnSelectBook: TSelectBookEvent read FOnSelectBook write FOnSelectBook;
@@ -116,17 +113,15 @@ implementation
 
 uses
   IOUtils,
-  EncdDecd,
+  StrUtils,
+  //EncdDecd,
   jpeg,
   pngimage,
   Clipbrd,
-  ZipForge,
-  dm_user,
+  unit_MHLHelpers,
   unit_Helpers,
-  ActiveX,
-  ComObj,
-  Dialogs,
-  unit_Consts;
+  unit_Consts,
+  unit_MHL_strings;
 
 {$R *.dfm}
 
@@ -142,7 +137,10 @@ end;
 
 procedure TfrmConvertToFBD.btnOpenBookClick(Sender: TObject);
 begin
-  OnReadBook;
+  if Assigned(FOnReadBook) then
+    FOnReadBook
+  else
+    Assert(False);
 end;
 
 procedure TfrmConvertToFBD.btnPasteCoverClick(Sender: TObject);
@@ -158,24 +156,29 @@ begin
     FBD.LoadCoverFromFile(FileName);
 end;
 
-procedure TfrmConvertToFBD.btnPreviousClick(Sender: TObject);
+procedure TfrmConvertToFBD.InternalSelectBook(Next: Boolean);
 begin
   if FBusy then
     Exit;
 
   SaveFBD;
-  OnSelectBook(False);
+
+  if Assigned(FOnSelectBook) then
+    FOnSelectBook(Next)
+  else
+    Assert(False);
+
   PrepareForm;
+end;
+
+procedure TfrmConvertToFBD.btnPreviousClick(Sender: TObject);
+begin
+  InternalSelectBook(False);
 end;
 
 procedure TfrmConvertToFBD.btnNextClick(Sender: TObject);
 begin
-  if FBusy then
-    Exit;
-
-  SaveFBD;
-  OnSelectBook(True);
-  PrepareForm;
+  InternalSelectBook(True);
 end;
 
 procedure TfrmConvertToFBD.btnSaveClick(Sender: TObject);
@@ -184,7 +187,16 @@ begin
     Exit;
 
   SaveFBD;
+
   ModalResult := mrOk;
+end;
+
+procedure TfrmConvertToFBD.DoGetBook(var BookRecord: TBookRecord);
+begin
+  if Assigned(FOnGetBook) then
+    FOnGetBook(BookRecord)
+  else
+    Assert(False);
 end;
 
 procedure TfrmConvertToFBD.btnCancelClick(Sender: TObject);
@@ -197,7 +209,12 @@ var
   Folder: string;
   BookRecord: TBookRecord;
 begin
-  OnGetBook(BookRecord);
+  DoGetBook(BookRecord);
+
+  Assert(BookRecord.GetBookFormat in [bfFbd, bfRaw]);
+  FEditorMode := (BookRecord.GetBookFormat = bfFbd);
+  Caption := IfThen(FEditorMode, rstrEditFBD, rstrConvert2FBD);
+
   lblAuthor.Caption := BookRecord.Authors[0].GetFullName;
   lblTitle.Caption := BookRecord.Title;
   // Never bfFb2Zip, so it's always a folder:
@@ -229,9 +246,9 @@ begin
     FCover.Picture := nil;
   end;
 
-    //
-    // TODO : зачитывать аннотацию и обложку
-    //
+  //
+  // TODO : зачитывать аннотацию и обложку
+  //
 end;
 
 function TfrmConvertToFBD.FillFBDData: Boolean;
@@ -242,7 +259,8 @@ var
 begin
   Result := False;
 
-  OnGetBook(BookRecord);
+  DoGetBook(BookRecord);
+
   SetLength(AuthorsFBD, BookRecord.AuthorCount);
   for i := 0 to BookRecord.AuthorCount - 1 do
   begin
@@ -293,7 +311,12 @@ begin
       FBD.ProgramUsed := GetProgramUsed(Application.ExeName);
       FBD.Save(FEditorMode);
       if not FEditorMode then
-        OnChangeBook2Zip;
+      begin
+        if Assigned(FOnChangeBook2Zip) then
+          FOnChangeBook2Zip
+        else
+          Assert(False);
+      end;
     end;
   finally
     EnableButtons(True);

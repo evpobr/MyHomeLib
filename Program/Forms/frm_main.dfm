@@ -57,7 +57,7 @@ object frmMain: TfrmMain
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  PixelsPerInch = 120
+  PixelsPerInch = 96
   TextHeight = 13
   object tlbrMain: TToolBar
     Left = 0
@@ -102,7 +102,7 @@ object frmMain: TfrmMain
       OnClick = tbSendToDeviceClick
     end
     object ToolButton13: TToolButton
-      Left = 142
+      Left = 136
       Top = 0
       Width = 8
       Caption = 'ToolButton13'
@@ -110,19 +110,19 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnRus: TToolButton
-      Left = 150
+      Left = 144
       Top = 0
       Action = acShowRusAlphabet
       ImageIndex = 3
     end
     object tbtnEng: TToolButton
-      Left = 191
+      Left = 185
       Top = 0
       Action = acShowEngAlphabet
       ImageIndex = 4
     end
     object ToolButton12: TToolButton
-      Left = 232
+      Left = 226
       Top = 0
       Width = 8
       Caption = 'ToolButton12'
@@ -130,7 +130,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnWizard: TToolButton
-      Left = 240
+      Left = 234
       Top = 0
       Hint = #1052#1072#1089#1090#1077#1088' '#1076#1086#1073#1072#1074#1083#1077#1085#1080#1103' '#1082#1086#1083#1083#1077#1082#1094#1080#1081
       Caption = 'tbtnWizard'
@@ -140,7 +140,7 @@ object frmMain: TfrmMain
       OnClick = ShowNewCollectionWizard
     end
     object tbtnSelect: TToolButton
-      Left = 281
+      Left = 275
       Top = 0
       Hint = #1042#1099#1073#1088#1072#1090#1100' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
       Caption = #1042#1099#1073#1088#1072#1090#1100' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
@@ -151,7 +151,7 @@ object frmMain: TfrmMain
       ShowHint = True
     end
     object ToolButton3: TToolButton
-      Left = 322
+      Left = 316
       Top = 0
       Width = 8
       Caption = 'ToolButton3'
@@ -159,7 +159,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object BtnFav_add: TToolButton
-      Left = 330
+      Left = 324
       Top = 0
       Hint = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1080#1079#1073#1088#1072#1085#1085#1086#1077
       Caption = 'BtnFav_add'
@@ -169,7 +169,7 @@ object frmMain: TfrmMain
       OnClick = BtnFav_addClick
     end
     object ToolButton7: TToolButton
-      Left = 390
+      Left = 378
       Top = 0
       Width = 8
       Caption = 'ToolButton7'
@@ -177,7 +177,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbSelectAll: TToolButton
-      Left = 398
+      Left = 386
       Top = 0
       Hint = #1054#1090#1084#1077#1090#1080#1090#1100' '#1074#1089#1077
       Caption = 'tbSelectAll'
@@ -185,7 +185,7 @@ object frmMain: TfrmMain
       OnClick = tbSelectAllClick
     end
     object tbCollapse: TToolButton
-      Left = 439
+      Left = 427
       Top = 0
       Hint = #1056#1072#1079#1074#1077#1088#1085#1091#1090#1100'/'#1057#1074#1077#1088#1085#1091#1090#1100' '#1089#1087#1080#1089#1086#1082
       Caption = 'tbCollapse'
@@ -193,7 +193,7 @@ object frmMain: TfrmMain
       OnClick = tbCollapseClick
     end
     object btnRefreshCollection: TToolButton
-      Left = 480
+      Left = 468
       Top = 0
       Hint = #1054#1073#1085#1086#1074#1080#1090#1100' '#1089#1087#1080#1089#1086#1082
       Caption = 'btnRefreshCollection'
@@ -201,7 +201,7 @@ object frmMain: TfrmMain
       OnClick = miRefreshClick
     end
     object ToolButton1: TToolButton
-      Left = 521
+      Left = 509
       Top = 0
       Width = 8
       Caption = 'ToolButton1'
@@ -209,7 +209,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object btnSwitchTreeMode: TToolButton
-      Left = 529
+      Left = 517
       Top = 0
       Hint = #1055#1077#1088#1077#1082#1083#1102#1095#1080#1090#1100' '#1074' '#1088#1077#1078#1080#1084' "'#1058#1072#1073#1083#1080#1094#1072'"'
       Caption = 'btnSwitchTreeMode'
@@ -217,7 +217,7 @@ object frmMain: TfrmMain
       OnClick = btnSwitchTreeModeClick
     end
     object tbtnShowDeleted: TToolButton
-      Left = 570
+      Left = 558
       Top = 0
       Hint = #1057#1082#1088#1099#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
       Caption = 'tbtnShowDeleted'
@@ -225,7 +225,7 @@ object frmMain: TfrmMain
       OnClick = tbtnShowDeletedClick
     end
     object tbtnShowLocalOnly: TToolButton
-      Left = 611
+      Left = 599
       Top = 0
       Hint = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1090#1086#1083#1100#1082#1086' '#1089#1082#1072#1095#1072#1085#1085#1099#1077' '#1082#1085#1080#1075#1080
       Caption = 'tbtnShowLocalOnly'
@@ -233,13 +233,13 @@ object frmMain: TfrmMain
       OnClick = tbtnShowLocalOnlyClick
     end
     object tbtnShowCover: TToolButton
-      Left = 652
+      Left = 640
       Top = 0
       Action = acShowBookInfo
       ImageIndex = 14
     end
     object ToolButton5: TToolButton
-      Left = 693
+      Left = 681
       Top = 0
       Width = 8
       Caption = 'ToolButton5'
@@ -247,7 +247,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnSettings: TToolButton
-      Left = 701
+      Left = 689
       Top = 0
       Hint = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
       Caption = 'tbtnSettings'
@@ -255,7 +255,7 @@ object frmMain: TfrmMain
       OnClick = miSettingsClick
     end
     object tbtnHelp: TToolButton
-      Left = 742
+      Left = 730
       Top = 0
       Hint = #1057#1087#1088#1072#1074#1082#1072
       Caption = 'tbtnHelp'
@@ -266,21 +266,21 @@ object frmMain: TfrmMain
   object pgControl: TPageControl
     AlignWithMargins = True
     Left = 3
-    Top = 109
+    Top = 65
     Width = 786
-    Height = 435
+    Height = 479
     HelpContext = 1
     ActivePage = tsByAuthor
     Align = alClient
-    TabOrder = 4
+    TabOrder = 2
     OnChange = pgControlChange
     object tsByAuthor: TTabSheet
       HelpContext = 135
       Caption = #1040#1074#1090#1086#1088#1099
       object AuthorsViewSplitter: TMHLSplitter
         Left = 230
-        Top = 0
-        Height = 407
+        Top = 70
+        Height = 381
         MinSize = 230
         ResizeControl = pnAuthorsView
         ExplicitLeft = 392
@@ -289,11 +289,11 @@ object frmMain: TfrmMain
       end
       object pnAuthorsView: TMHLSimplePanel
         Left = 0
-        Top = 0
+        Top = 70
         Width = 230
-        Height = 407
+        Height = 381
         Align = alLeft
-        TabOrder = 0
+        TabOrder = 2
         object pnAuthorSearch: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
@@ -376,7 +376,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 224
-          Height = 369
+          Height = 343
           Align = alClient
           ChangeDelay = 250
           Header.AutoSizeIndex = 0
@@ -403,14 +403,14 @@ object frmMain: TfrmMain
       end
       object pnAuthorBooksView: TMHLSimplePanel
         Left = 233
-        Top = 0
+        Top = 70
         Width = 545
-        Height = 407
+        Height = 381
         Align = alClient
-        TabOrder = 1
+        TabOrder = 3
         object AuthorBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 298
+          Top = 272
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -422,7 +422,7 @@ object frmMain: TfrmMain
         object ipnlAuthors: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 304
+          Top = 278
           Width = 539
           Height = 100
           Align = alBottom
@@ -473,7 +473,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 260
+          Height = 234
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -563,14 +563,44 @@ object frmMain: TfrmMain
             end>
         end
       end
+      object tbarAuthorsRus: TToolBar
+        AlignWithMargins = True
+        Left = 3
+        Top = 3
+        Width = 772
+        Height = 29
+        AutoSize = True
+        Caption = 'tbarAuthorsRus'
+        HotImages = ilAlphabetActive
+        Images = ilAlphabetNormal
+        TabOrder = 0
+        Wrapable = False
+      end
+      object tbarAuthorsEng: TToolBar
+        AlignWithMargins = True
+        Left = 3
+        Top = 38
+        Width = 772
+        Height = 29
+        AutoSize = True
+        Caption = 'tbarAuthorFilter1'
+        HotImages = ilAlphabetActive
+        Images = ilAlphabetNormal
+        TabOrder = 1
+        Wrapable = False
+      end
     end
     object tsBySerie: TTabSheet
       HelpContext = 135
       Caption = #1057#1077#1088#1080#1080
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object SeriesViewSplitter: TMHLSplitter
         Left = 230
-        Top = 0
-        Height = 407
+        Top = 70
+        Height = 381
         MinSize = 230
         ResizeControl = pnSeriesView
         ExplicitLeft = 392
@@ -579,9 +609,9 @@ object frmMain: TfrmMain
       end
       object pnSeriesView: TMHLSimplePanel
         Left = 0
-        Top = 0
+        Top = 70
         Width = 230
-        Height = 407
+        Height = 381
         Align = alLeft
         TabOrder = 0
         object tvSeries: TVirtualStringTree
@@ -589,7 +619,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 224
-          Height = 369
+          Height = 343
           Align = alClient
           ChangeDelay = 250
           Header.AutoSizeIndex = 0
@@ -692,14 +722,14 @@ object frmMain: TfrmMain
       end
       object pnSerieBooksView: TMHLSimplePanel
         Left = 233
-        Top = 0
+        Top = 70
         Width = 545
-        Height = 407
+        Height = 381
         Align = alClient
         TabOrder = 1
         object SerieBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 248
+          Top = 222
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -710,7 +740,7 @@ object frmMain: TfrmMain
         object ipnlSeries: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 254
+          Top = 228
           Width = 539
           Height = 150
           Align = alBottom
@@ -738,22 +768,20 @@ object frmMain: TfrmMain
             Left = 432
             Top = 0
             Width = 107
-            Height = 26
+            Height = 13
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
             Layout = tlCenter
-            ExplicitHeight = 13
           end
           object lblSeries: TLabel
             Left = 0
             Top = 0
             Width = 90
-            Height = 26
+            Height = 13
             Align = alLeft
             Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1089#1077#1088#1080#1080
             Layout = tlCenter
-            ExplicitHeight = 13
           end
         end
         object tvBooksS: TBookTree
@@ -762,7 +790,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 210
+          Height = 184
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -855,14 +883,44 @@ object frmMain: TfrmMain
             end>
         end
       end
+      object tbarSeriesEng: TToolBar
+        AlignWithMargins = True
+        Left = 3
+        Top = 38
+        Width = 772
+        Height = 29
+        AutoSize = True
+        Caption = 'tbarAuthorFilter1'
+        HotImages = ilAlphabetActive
+        Images = ilAlphabetNormal
+        TabOrder = 2
+        Wrapable = False
+      end
+      object tbarSeriesRus: TToolBar
+        AlignWithMargins = True
+        Left = 3
+        Top = 3
+        Width = 772
+        Height = 29
+        AutoSize = True
+        Caption = 'tbarAuthorFilter1'
+        HotImages = ilAlphabetActive
+        Images = ilAlphabetNormal
+        TabOrder = 3
+        Wrapable = False
+      end
     end
     object tsByGenre: TTabSheet
       HelpContext = 135
       Caption = #1046#1072#1085#1088#1099
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object GenresViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
-        Height = 407
+        Height = 451
         MinSize = 230
         ResizeControl = pnGenresView
         ExplicitLeft = 392
@@ -873,7 +931,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 230
-        Height = 407
+        Height = 451
         Align = alLeft
         TabOrder = 0
         object tvGenres: TVirtualStringTree
@@ -881,7 +939,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 224
-          Height = 401
+          Height = 445
           Align = alClient
           ChangeDelay = 250
           Header.AutoSizeIndex = 0
@@ -909,12 +967,12 @@ object frmMain: TfrmMain
         Left = 233
         Top = 0
         Width = 545
-        Height = 407
+        Height = 451
         Align = alClient
         TabOrder = 1
         object GenreBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 298
+          Top = 342
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -941,28 +999,26 @@ object frmMain: TfrmMain
             Left = 432
             Top = 0
             Width = 107
-            Height = 26
+            Height = 13
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
             Layout = tlCenter
-            ExplicitHeight = 13
           end
           object lblGenreTitle: TLabel
             Left = 0
             Top = 0
             Width = 97
-            Height = 26
+            Height = 13
             Align = alLeft
             Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1078#1072#1085#1088#1072
             Layout = tlCenter
-            ExplicitHeight = 13
           end
         end
         object ipnlGenres: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 304
+          Top = 348
           Width = 539
           Height = 100
           Align = alBottom
@@ -978,7 +1034,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 260
+          Height = 304
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -1067,10 +1123,14 @@ object frmMain: TfrmMain
     object tsSearch: TTabSheet
       HelpContext = 126
       Caption = #1055#1086#1080#1089#1082
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object SearchViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
-        Height = 407
+        Height = 451
         MinSize = 230
         ResizeControl = pnSearchView
         ExplicitLeft = 185
@@ -1081,12 +1141,12 @@ object frmMain: TfrmMain
         Left = 233
         Top = 0
         Width = 545
-        Height = 407
+        Height = 451
         Align = alClient
         TabOrder = 1
         object SearchBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 248
+          Top = 292
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -1099,7 +1159,7 @@ object frmMain: TfrmMain
         object ipnlSearch: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 254
+          Top = 298
           Width = 539
           Height = 150
           Align = alBottom
@@ -1128,7 +1188,7 @@ object frmMain: TfrmMain
             Left = 432
             Top = 0
             Width = 107
-            Height = 26
+            Height = 13
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
@@ -1139,7 +1199,6 @@ object frmMain: TfrmMain
             Font.Style = [fsBold]
             ParentFont = False
             Layout = tlCenter
-            ExplicitHeight = 13
           end
           object cbPresetName: TComboBox
             Left = 42
@@ -1173,7 +1232,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 210
+          Height = 254
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -1274,7 +1333,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 230
-        Height = 407
+        Height = 451
         Align = alLeft
         TabOrder = 0
         object SearchParams: TCategoryPanelGroup
@@ -1282,7 +1341,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 224
-          Height = 363
+          Height = 407
           VertScrollBar.Tracking = True
           Align = alClient
           HeaderFont.Charset = DEFAULT_CHARSET
@@ -1297,6 +1356,7 @@ object frmMain: TfrmMain
             Caption = #1056#1072#1079#1085#1086#1077
             Collapsed = True
             TabOrder = 2
+            ExplicitWidth = 185
             ExpandedHeight = 209
             object Label30: TLabel
               Left = 3
@@ -1318,7 +1378,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 49
-              Width = 193
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
@@ -1328,7 +1388,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 3
-              Width = 193
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1056#1072#1079#1084#1077#1097#1077#1085#1080#1077
@@ -1396,7 +1456,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 22
-              Width = 193
+              Width = 197
               Height = 21
               Align = alTop
               Style = csDropDownList
@@ -1412,7 +1472,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 68
-              Width = 193
+              Width = 197
               Height = 21
               Hint = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
               Align = alTop
@@ -1426,7 +1486,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 5
               Top = 95
-              Width = 191
+              Width = 195
               Height = 17
               Margins.Left = 5
               Align = alTop
@@ -1440,42 +1500,40 @@ object frmMain: TfrmMain
             Caption = #1060#1072#1081#1083
             Collapsed = True
             TabOrder = 1
+            ExplicitWidth = 222
             ExpandedHeight = 177
             object Label27: TLabel
               AlignWithMargins = True
               Left = 3
               Top = 3
-              Width = 193
+              Width = 19
               Height = 13
               Align = alTop
               Caption = #1048#1084#1103
-              ExplicitWidth = 19
             end
             object Label29: TLabel
               AlignWithMargins = True
               Left = 3
               Top = 95
-              Width = 193
+              Width = 18
               Height = 13
               Align = alTop
               Caption = #1058#1080#1087
-              ExplicitWidth = 18
             end
             object Label28: TLabel
               AlignWithMargins = True
               Left = 3
               Top = 49
-              Width = 193
+              Width = 72
               Height = 13
               Align = alTop
               Caption = #1055#1072#1087#1082#1072' ('#1072#1088#1093#1080#1074')'
-              ExplicitWidth = 72
             end
             object edFFile: TMHLButtonedEdit
               AlignWithMargins = True
               Left = 3
               Top = 22
-              Width = 193
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 0
@@ -1486,7 +1544,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 68
-              Width = 193
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 1
@@ -1497,7 +1555,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 114
-              Width = 193
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 2
@@ -1510,61 +1568,57 @@ object frmMain: TfrmMain
             Height = 259
             Caption = #1050#1085#1080#1075#1072
             TabOrder = 0
+            ExplicitWidth = 222
             object Label5: TLabel
               AlignWithMargins = True
               Left = 3
               Top = 3
-              Width = 193
+              Width = 31
               Height = 13
               Align = alTop
               Caption = #1040#1074#1090#1086#1088
-              ExplicitWidth = 31
             end
             object Label24: TLabel
               AlignWithMargins = True
               Left = 3
               Top = 49
-              Width = 193
+              Width = 48
               Height = 13
               Align = alTop
               Caption = #1053#1072#1079#1074#1072#1085#1080#1077
-              ExplicitWidth = 48
             end
             object Label26: TLabel
               AlignWithMargins = True
               Left = 3
               Top = 141
-              Width = 193
+              Width = 28
               Height = 13
               Align = alTop
               Caption = #1046#1072#1085#1088
-              ExplicitWidth = 28
             end
             object Label6: TLabel
               AlignWithMargins = True
               Left = 3
               Top = 95
-              Width = 193
+              Width = 31
               Height = 13
               Align = alTop
               Caption = #1057#1077#1088#1080#1103
-              ExplicitWidth = 31
             end
             object Label7: TLabel
               AlignWithMargins = True
               Left = 3
               Top = 183
-              Width = 193
+              Width = 55
               Height = 13
               Align = alBottom
               Caption = #1040#1085#1085#1086#1090#1072#1094#1080#1103
-              ExplicitWidth = 55
             end
             object edFFullName: TMHLButtonedEdit
               AlignWithMargins = True
               Left = 3
               Top = 22
-              Width = 193
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 0
@@ -1575,7 +1629,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 68
-              Width = 193
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 1
@@ -1586,7 +1640,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 114
-              Width = 193
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 2
@@ -1597,7 +1651,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 160
-              Width = 193
+              Width = 197
               Height = 21
               Margins.Bottom = 10
               Align = alTop
@@ -1610,7 +1664,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 202
-              Width = 193
+              Width = 197
               Height = 21
               Margins.Bottom = 10
               Align = alBottom
@@ -1623,7 +1677,7 @@ object frmMain: TfrmMain
         object pnSearchControl: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
-          Top = 372
+          Top = 416
           Width = 224
           Height = 32
           Align = alBottom
@@ -1650,10 +1704,14 @@ object frmMain: TfrmMain
     object tsByGroup: TTabSheet
       HelpContext = 125
       Caption = #1043#1088#1091#1087#1087#1099
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object GroupsViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
-        Height = 407
+        Height = 451
         MinSize = 230
         ResizeControl = pnGroupsView
         ExplicitLeft = 392
@@ -1664,7 +1722,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 230
-        Height = 407
+        Height = 451
         Align = alLeft
         TabOrder = 0
         object tvGroups: TVirtualStringTree
@@ -1672,7 +1730,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 224
-          Height = 370
+          Height = 414
           Align = alClient
           ChangeDelay = 250
           Header.AutoSizeIndex = 0
@@ -1700,7 +1758,7 @@ object frmMain: TfrmMain
         object RzPanel8: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
-          Top = 379
+          Top = 423
           Width = 224
           Height = 25
           Align = alBottom
@@ -1738,12 +1796,12 @@ object frmMain: TfrmMain
         Left = 233
         Top = 0
         Width = 545
-        Height = 407
+        Height = 451
         Align = alClient
         TabOrder = 1
         object GroupBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 248
+          Top = 292
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -1755,7 +1813,7 @@ object frmMain: TfrmMain
         object ipnlFavorites: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 254
+          Top = 298
           Width = 539
           Height = 150
           Align = alBottom
@@ -1769,7 +1827,7 @@ object frmMain: TfrmMain
             150)
           object lblTotalBooksF: TLabel
             AlignWithMargins = True
-            Left = 2011
+            Left = 2033
             Top = 9
             Width = 12
             Height = 19
@@ -1804,22 +1862,20 @@ object frmMain: TfrmMain
             Left = 432
             Top = 0
             Width = 107
-            Height = 26
+            Height = 13
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
             Layout = tlCenter
-            ExplicitHeight = 13
           end
           object lblGroups: TLabel
             Left = 0
             Top = 0
             Width = 102
-            Height = 26
+            Height = 13
             Align = alLeft
             Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1075#1088#1091#1087#1087#1099
             Layout = tlCenter
-            ExplicitHeight = 13
           end
         end
         object tvBooksF: TBookTree
@@ -1828,7 +1884,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 210
+          Height = 254
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -1916,6 +1972,10 @@ object frmMain: TfrmMain
     object tsDownload: TTabSheet
       HelpContext = 108
       Caption = #1057#1087#1080#1089#1086#1082' '#1079#1072#1082#1072#1095#1077#1082
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object tlbrDownloadList: TToolBar
         AlignWithMargins = True
         Left = 3
@@ -2021,13 +2081,13 @@ object frmMain: TfrmMain
         Left = 0
         Top = 28
         Width = 778
-        Height = 379
+        Height = 423
         Align = alClient
         TabOrder = 1
         object RzPanel2: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
-          Top = 334
+          Top = 378
           Width = 772
           Height = 42
           Align = alBottom
@@ -2061,7 +2121,7 @@ object frmMain: TfrmMain
             Left = 662
             Top = 3
             Width = 107
-            Height = 36
+            Height = 13
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
@@ -2072,7 +2132,6 @@ object frmMain: TfrmMain
             Font.Style = [fsBold]
             ParentFont = False
             Layout = tlCenter
-            ExplicitHeight = 13
           end
           object pbDownloadProgress: TProgressBar
             Left = 0
@@ -2088,7 +2147,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 772
-          Height = 325
+          Height = 369
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -2219,59 +2278,6 @@ object frmMain: TfrmMain
       ImageIndex = 5
       Style = tbsTextButton
       OnClick = tbtnAutoFBDClick
-    end
-  end
-  object EngBar: TToolBar
-    Left = 0
-    Top = 84
-    Width = 792
-    Height = 22
-    Caption = 'RusBar'
-    HotImages = ilAlphabetActive
-    Images = ilAlphabetNormal
-    TabOrder = 3
-    Wrapable = False
-    object tbtnStar2: TToolButton
-      Tag = 90
-      Left = 0
-      Top = 0
-      Caption = '*'
-      ImageIndex = 0
-      OnClick = tbtnStarClick
-    end
-    object tbtnAllAlpha2: TToolButton
-      Tag = 92
-      Left = 23
-      Top = 0
-      Caption = 'A-Z'
-      ImageIndex = 1
-      OnClick = tbtnStarClick
-    end
-  end
-  object RusBar: TToolBar
-    Left = 0
-    Top = 62
-    Width = 792
-    Height = 22
-    Caption = 'RusBar'
-    HotImages = ilAlphabetActive
-    Images = ilAlphabetNormal
-    TabOrder = 2
-    Wrapable = False
-    object tbtnStar: TToolButton
-      Tag = 90
-      Left = 0
-      Top = 0
-      Caption = '*'
-      ImageIndex = 0
-      OnClick = tbtnStarClick
-    end
-    object tbtnAllAlpha: TToolButton
-      Tag = 91
-      Left = 23
-      Top = 0
-      Caption = #1040'-'#1071
-      OnClick = tbtnStarClick
     end
   end
   object StatusBar: TStatusBar

@@ -58,7 +58,6 @@ object frmConvertToFBD: TfrmConvertToFBD
       Top = 302
       Width = 372
       Height = 115
-      Color = clCream
       ScrollBars = ssBoth
       TabOrder = 4
       WordWrap = False
@@ -107,7 +106,6 @@ object frmConvertToFBD: TfrmConvertToFBD
         Top = 42
         Width = 251
         Height = 21
-        Color = clCream
         TabOrder = 2
       end
       object edPublisher: TEdit
@@ -115,7 +113,6 @@ object frmConvertToFBD: TfrmConvertToFBD
         Top = 15
         Width = 142
         Height = 21
-        Color = clCream
         TabOrder = 0
       end
       object edYear: TEdit
@@ -123,7 +120,6 @@ object frmConvertToFBD: TfrmConvertToFBD
         Top = 42
         Width = 28
         Height = 21
-        Color = clCream
         TabOrder = 3
       end
       object edCity: TEdit
@@ -131,7 +127,6 @@ object frmConvertToFBD: TfrmConvertToFBD
         Top = 15
         Width = 100
         Height = 21
-        Color = clCream
         TabOrder = 1
       end
     end
