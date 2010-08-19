@@ -1,5 +1,6 @@
 object DMCollection: TDMCollection
   OldCreateOrder = False
+  OnCreate = DataModuleCreate
   Height = 580
   Width = 779
   object DBCollection: TABSDatabase

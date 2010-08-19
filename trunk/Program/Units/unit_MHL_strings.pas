@@ -45,6 +45,12 @@ resourcestring
   //
   rstrBookProcessedMsg2 = 'Обработано книг: %u из %u';
 
+  //
+  // Форма редактирования/создания FBD и пунк меню в главной форме
+  //
+  rstrEditFBD = 'Редактировать FBD';
+  rstrConvert2FBD = 'Преобразовать FBD';
+
 implementation
 
 end.

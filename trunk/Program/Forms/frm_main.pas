@@ -76,10 +76,6 @@ type
     MainMenu: TMainMenu;
     miBook: TMenuItem;
     miQuitApp: TMenuItem;
-    RusBar: TToolBar;
-    tbtnStar: TToolButton;
-    EngBar: TToolBar;
-    tbtnStar2: TToolButton;
     pmMain: TPopupMenu;
     pmiReadBook: TMenuItem;
     pmiSendToDevice: TMenuItem;
@@ -220,8 +216,6 @@ type
     lblBooksTotalG: TLabel;
     lblGenreTitle: TLabel;
     ipnlGenres: TInfoPanel;
-    tbtnAllAlpha: TToolButton;
-    tbtnAllAlpha2: TToolButton;
     TrayIcon: TTrayIcon;
     pmTray: TPopupMenu;
     N29: TMenuItem;
@@ -435,6 +429,10 @@ type
     N26: TMenuItem;
     N58: TMenuItem;
     N59: TMenuItem;
+    tbarAuthorsRus: TToolBar;
+    tbarAuthorsEng: TToolBar;
+    tbarSeriesEng: TToolBar;
+    tbarSeriesRus: TToolBar;
 
     //
     // События формы
@@ -503,7 +501,6 @@ type
     //
     //
     procedure miQuitAppClick(Sender: TObject);
-    procedure tbtnStarClick(Sender: TObject);
     procedure tbtbnReadClick(Sender: TObject);
     procedure miSettingsClick(Sender: TObject);
     procedure tbSelectAllClick(Sender: TObject);
@@ -753,7 +750,7 @@ type
     //
     // Восстанавить тулбар в правильной позиции
     //
-    procedure ChangeToolbarVisability(ToolBar: TToolBar; ShowToolbar: Boolean);
+    procedure ChangeToolbarVisability(ToolBars: array of TToolBar; ToolBar: TToolBar; ShowToolbar: Boolean);
 
     //
     // Проверяет, не является ли текущая коллекция онлайн-коллекцией.
@@ -766,6 +763,23 @@ type
     // Проверяет, что текущий режим просмотра "по группа" и соответственно разрешает или запрещает
     //
     function InternalUpdateGroupAction(Action: TAction): Boolean;
+
+    //
+    // Возвращает кнопку, соответствующую заданному фильтру.
+    //
+    function GetFilterButton(ToolBars: array of TToolBar; const Filter: string): TToolButton;
+
+    //
+    // Обработчик события для кнопок алфавитного тулбара на странице "Авторы"
+    //
+    function InternalSetAuthorFilter(Button: TToolButton): string;
+    procedure OnSetAuthorFilter(Sender: TObject);
+
+    //
+    // Обработчик события для кнопок алфавитного тулбара на странице "Серии"
+    //
+    function InternalSetSerieFilter(Button: TToolButton): string;
+    procedure OnSetSerieFilter(Sender: TObject);
 
   public
     procedure DisableControls(State: Boolean);
@@ -784,7 +798,10 @@ type
     FFormBusy: Boolean;
 
     FFileOpMode: (fmFb2Zip, fmFb2);
-    FDoNotLocate: Boolean;
+
+    FMainBars: array[0..1] of TToolBar;
+    FAuthorBars: array[0..1] of TToolBar;
+    FSerieBars: array[0..1] of TToolBar;
 
     FLastLetterA: TToolButton;
     FLastLetterS: TToolButton;
@@ -812,9 +829,6 @@ type
 
     procedure FillBookIdList(const Tree: TBookTree; var BookIDList: TBookIdList);
     procedure ClearLabels(Tag: Integer; Full: Boolean);
-    procedure SetAuthorsShowLocalOnly;
-    procedure SetSeriesShowLocalOnly;
-    procedure SetBooksFilter;
     procedure FillAllBooksTree;
     procedure ChangeLetterButton(const S: string);
     function CheckLibUpdates(Auto: Boolean): Boolean;
@@ -867,6 +881,7 @@ uses
   StrUtils,
   DateUtils,
   IOUtils,
+  Character,
   Generics.Collections,
   Math,
   fictionbook_21,
@@ -915,8 +930,6 @@ resourcestring
   rstrApplyingFilter = 'Применяем фильтр ...';
   rstrFilterParamError = 'Синтаксическая ошибка.' + CRLF + 'Проверьте параметры фильтра';
   rstrNoUpdatesAvailable = 'Нет доступных обновлений';
-  rstrEditFBD = 'Редактировать FBD';
-  rstrConvert2FBD = 'Преобразовать FBD';
   rstrCannotEditFavoritesError = 'Редактирование книг из избранного или списка закачек невозможно.';
   rstrUnableDeleteBuiltinGroupError = 'Нельзя удалить встроенную группу!';
   rstrCheckingUpdates = 'Проверка обновлений ...';
@@ -1041,6 +1054,10 @@ begin
   //   5. Найти нужную книгу
   //
 
+  (*
+
+  TODO : RESTORE
+
   APage := Settings.ActivePage;
 
   pgControl.ActivePageIndex := PAGE_AUTHORS;
@@ -1057,6 +1074,8 @@ begin
   SetTextNoChange(edLocateSeries, '');
 
   pgControl.ActivePageIndex := APage;
+
+  *)
 end;
 
 procedure TfrmMain.SetColumns;
@@ -1166,6 +1185,7 @@ procedure TfrmMain.ChangeLetterButton(const S: string);
 var
   i: Integer;
 begin
+  {
   for i := 0 to RusBar.ControlCount - 1 do
     if RusBar.Controls[i] is TToolButton then
       if (RusBar.Controls[i] as TToolButton).Caption = S then
@@ -1181,6 +1201,7 @@ begin
         tbtnStarClick(EngBar.Controls[i] as TToolButton);
         Exit;
       end;
+  }
 end;
 
 procedure TfrmMain.SetColors;
@@ -1248,9 +1269,14 @@ begin
   // Синхронизация с настройками
   //
   tlbrMain.Visible := Settings.ShowToolbar;
-  RusBar.Visible := Settings.ShowRusBar;
-  EngBar.Visible := Settings.ShowEngBar;
+
   tlbrEdit.Visible := Settings.EditToolBarVisible;
+
+  tbarAuthorsRus.Visible := Settings.ShowRusBar;
+  tbarSeriesRus.Visible := Settings.ShowRusBar;
+  tbarAuthorsEng.Visible := Settings.ShowEngBar;
+  tbarSeriesEng.Visible := Settings.ShowEngBar;
+
   StatusBar.Visible := Settings.ShowStatusBar;
   SetInfoPanelHeight(Settings.InfoPanelHeight);
   SetInfoPanelVisible(Settings.ShowInfoPanel);
@@ -1550,162 +1576,161 @@ end;
 
 procedure TfrmMain.InitCollection(ApplyAuthorFilter: Boolean);
 var
+  SaveCursor: TCursor;
   CollectionType: Integer;
 begin
-  FDoNotLocate := True;
+  SaveCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
+  try
+    CloseCollection;
 
-  CloseCollection;
-
-  //
-  // Если коллекций нет - запустим мастера создания коллекции.
-  //
-  if DMUser.tblBases.IsEmpty then
-  begin
-    frmMain.Caption := 'MyHomeLib';
-    Screen.Cursor := crDefault;
-
-    if not ShowNCWizard then
-      Application.Terminate;
-
-    DeleteFile(Settings.WorkPath + CHECK_FILE);
-    Exit;
-  end;
-
-  //
-  // Открыть коллекцию
-  //
-  DMUser.ActivateCollection(Settings.ActiveCollection);
-
-  DMCollection.DBCollection.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
-  DMCollection.DBCollection.Connected := True;
-
-  frmMain.Caption := 'MyHomeLib - ' + DMUser.ActiveCollection.Name;
-
-  // определяем типы коллекции
-  CollectionType := DMUser.ActiveCollection.CollectionType;
-  IsPrivate := isPrivateCollection(CollectionType);
-  IsOnline := isOnlineCollection(CollectionType);
-  IsLocal := isLocalCollection(CollectionType);
-  IsFB2 := isFB2Collection(CollectionType);
-  IsNonFB2 := isNonFB2Collection(CollectionType);
-
-  // ----------------------------------------------------------------------------
-  // высталяем видимость пунктов меню в завичимости от типа коллекции
-  // ----------------------------------------------------------------------------
-
-  // ------    Главное меню   ---------------------------------------------------
-
-  // Книга
-
-  miFb2ZipImport.Visible := (IsPrivate and IsFB2) or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
-  miFb2Import.Visible := (IsPrivate and IsFB2) or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
-  miPdfdjvu.Visible := IsPrivate and IsNonFB2;
-  miFBDImport.Visible := IsPrivate and IsNonFB2;
-  miConverToFBD.Visible := False;
-
-  miImport.Visible := IsPrivate;
-  miEditAuthor.Visible := IsPrivate;
-  miEditGenres.Visible := IsPrivate;
-  miEditSeries.Visible := IsPrivate;
-  miBookEdit.Visible := IsPrivate;
-  miConverToFBD.Visible := IsPrivate and not IsFB2;
-  miDeleteBook.Visible := IsPrivate; // DMUser.ActiveCollection.AllowDelete;
-  miDeleteFiles.Visible := IsOnline and (ActiveView <> FavoritesView);
-
-  miDownloadBooks.Visible := IsOnline;
-
-  // Коллекция
-
-  // Инструменты
-
-  miSyncOnline.Visible := IsOnline or IsNonFB2;
-
-  // -------- Контекстное меню --------------------------------------------------
-
-  // pmiBookInfo.Visible := IsFB2;
-  pmiDownloadBooks.Visible := IsOnline;
-
-  // --------- Панели онструментов ----------------------------------------------
-  tbtnShowLocalOnly.Visible := IsOnline;
-  tbtnDownloadList_Add.Visible := IsOnline;
-  tbtnShowDeleted.Visible := not IsPrivate;
-
-  //
-  // Панель редактирования
-  //
-  tbtnEditAuthor.Enabled := IsPrivate;
-  tbtnEditSeries.Enabled := IsPrivate;
-  tbtnEditGenre.Enabled := IsPrivate;
-  //tbtnEditBook
-  //tbtnSplitter1
-  tbtnDeleteBook.Enabled := IsPrivate;
-  //tbtnSplitter2
-  tbtnFBD.Enabled := IsPrivate and not IsFB2;
-  tbtnAutoFBD.Enabled := IsPrivate and not IsFB2;
-
-  //
-  // Поиск
-  //
-  edFAnnotation.Enabled := IsPrivate;
-
-  // --------- Вкладки, прочее  -------------------------------------------------
-
-  tsDownload.TabVisible := IsOnline;
-
-  // ----------------------------------------------------------------------------
-
-  DMCollection.SetTableState(True);
-
-  if Assigned(FLastLetterA) then
-    FLastLetterA.Down := False;
-
-  DMCollection.Authors.Filtered := False;
-  if ApplyAuthorFilter then
-  begin
-    if DMCollection.Authors.RecordCount > 500 then
+    //
+    // Если коллекций нет - запустим мастера создания коллекции.
+    //
+    if DMUser.tblBases.IsEmpty then
     begin
-      DMCollection.Authors.Filter := AUTHOR_LASTTNAME_FIELD + '="А*"';
-      DMCollection.Authors.Filtered := True;
-      ALetter.Down := True;
-      FLastLetterA := ALetter;
-      edLocateAuthor.Text := 'А';
-    end
-    else
-    begin
-      DMCollection.Authors.Filtered := False;
-      tbtnStar.Down := True;
-      FLastLetterA := tbtnStar;
-      edLocateAuthor.Text := '';
+      frmMain.Caption := 'MyHomeLib';
+      Screen.Cursor := crDefault;
+
+      if not ShowNCWizard then
+        Application.Terminate;
+
+      DeleteFile(Settings.WorkPath + CHECK_FILE);
+      Exit;
     end;
+
+    //
+    // Активировать коллекцию
+    //
+    DMUser.ActivateCollection(Settings.ActiveCollection);
+
+    frmMain.Caption := 'MyHomeLib - ' + DMUser.ActiveCollection.Name;
+
+    // определяем типы коллекции
+    CollectionType := DMUser.ActiveCollection.CollectionType;
+    IsPrivate := isPrivateCollection(CollectionType);
+    IsOnline := isOnlineCollection(CollectionType);
+    IsLocal := isLocalCollection(CollectionType);
+    IsFB2 := isFB2Collection(CollectionType);
+    IsNonFB2 := isNonFB2Collection(CollectionType);
+
+    // ----------------------------------------------------------------------------
+    // высталяем видимость пунктов меню в завичимости от типа коллекции
+    // ----------------------------------------------------------------------------
+
+    // ------    Главное меню   ---------------------------------------------------
+
+    // Книга
+
+    miFb2ZipImport.Visible := (IsPrivate and IsFB2) or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
+    miFb2Import.Visible := (IsPrivate and IsFB2) or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
+    miPdfdjvu.Visible := IsPrivate and IsNonFB2;
+    miFBDImport.Visible := IsPrivate and IsNonFB2;
+    miConverToFBD.Visible := False;
+
+    miImport.Visible := IsPrivate;
+    miEditAuthor.Visible := IsPrivate;
+    miEditGenres.Visible := IsPrivate;
+    miEditSeries.Visible := IsPrivate;
+    miBookEdit.Visible := IsPrivate;
+    miConverToFBD.Visible := IsPrivate and not IsFB2;
+    miDeleteBook.Visible := IsPrivate; // DMUser.ActiveCollection.AllowDelete;
+    miDeleteFiles.Visible := IsOnline and (ActiveView <> FavoritesView);
+
+    miDownloadBooks.Visible := IsOnline;
+
+    // Коллекция
+
+    // Инструменты
+
+    miSyncOnline.Visible := IsOnline or IsNonFB2;
+
+    // -------- Контекстное меню --------------------------------------------------
+
+    // pmiBookInfo.Visible := IsFB2;
+    pmiDownloadBooks.Visible := IsOnline;
+
+    // --------- Панели онструментов ----------------------------------------------
+    tbtnShowLocalOnly.Visible := IsOnline;
+    tbtnDownloadList_Add.Visible := IsOnline;
+    tbtnShowDeleted.Visible := not IsPrivate;
+
+    //
+    // Панель редактирования
+    //
+    tbtnEditAuthor.Enabled := IsPrivate;
+    tbtnEditSeries.Enabled := IsPrivate;
+    tbtnEditGenre.Enabled := IsPrivate;
+    //tbtnEditBook
+    //tbtnSplitter1
+    tbtnDeleteBook.Enabled := IsPrivate;
+    //tbtnSplitter2
+    tbtnFBD.Enabled := IsPrivate and not IsFB2;
+    tbtnAutoFBD.Enabled := IsPrivate and not IsFB2;
+
+    //
+    // Поиск
+    //
+    edFAnnotation.Enabled := IsPrivate;
+
+    // --------- Вкладки, прочее  -------------------------------------------------
+
+    tsDownload.TabVisible := IsOnline;
+
+    if not IsOnline and (ActiveView = DownloadView) then
+      pgControl.ActivePageIndex := PAGE_AUTHORS;
+
+    CreateCollectionMenu;
+    CreateScriptMenu;
+
+    // SetCoversVisible((not IsNonFB2 and Settings.ShowInfoPanel)
+    // or (Settings.AllowMixed and Settings.ShowInfoPanel));
+
+    //if IsNonFB2 and not IsPrivate then
+    //  SetInfoPanelVisible(False)
+    //else
+    //  SetInfoPanelVisible(Settings.ShowInfoPanel);
+
+    // ----------------------------------------------------------------------------
+
+    // DMCollection.SetTableState(True);
+
+    // RESORE if Assigned(FLastLetterA) then
+    // RESORE   FLastLetterA.Down := False;
+
+    // RESORE DMCollection.Authors.Filtered := False;
+    //if ApplyAuthorFilter then
+    //begin
+      //if DMCollection.Authors.RecordCount > 500 then
+      //begin
+        // RESORE DMCollection.Authors.Filter := AUTHOR_LASTTNAME_FIELD + '="А*"';
+        // RESORE DMCollection.Authors.Filtered := True;
+        // RESORE ALetter.Down := True;
+        // RESORE FLastLetterA := ALetter;
+        // RESORE edLocateAuthor.Text := 'А';
+      //end
+      //else
+      //begin
+        // RESORE DMCollection.Authors.Filtered := False;
+        // RESTORE tbtnStar.Down := True;
+        // RESTORE FLastLetterA := tbtnStar;
+        // RESTORE edLocateAuthor.Text := '';
+      //end;
+    //end;
+
+    DMCollection.DBCollection.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
+    DMCollection.DBCollection.Connected := True;
+
+    DMCollection.SetShowLocalBookOnly(Settings.ShowLocalOnly, False);
+    DMCollection.SetHideDeletedBook(Settings.HideDeletedBooks, False);
+    DMCollection.SetTableState(True);
+
+    FillAuthorTree(tvAuthors);
+    FillSeriesTree(tvSeries);
+    FillGenresTree(tvGenres);
+  finally
+    Screen.Cursor := SaveCursor;
   end;
-
-  // SetCoversVisible((not IsNonFB2 and Settings.ShowInfoPanel)
-  // or (Settings.AllowMixed and Settings.ShowInfoPanel));
-
-  //if IsNonFB2 and not IsPrivate then
-  //  SetInfoPanelVisible(False)
-  //else
-  //  SetInfoPanelVisible(Settings.ShowInfoPanel);
-
-  SetAuthorsShowLocalOnly;
-  SetSeriesShowLocalOnly;
-  SetBooksFilter;
-
-  FillAuthorTree(tvAuthors);
-  FillSeriesTree(tvSeries);
-  FillGenresTree(tvGenres);
-
-  // FillAllBooksTree;           есть подозрение, что этот вызов здесь не нужен
-
-  CreateCollectionMenu;
-  CreateScriptMenu;
-
-  Screen.Cursor := crDefault;
-  FDoNotLocate := False;
-
-  if not IsOnline and (ActiveView = DownloadView) then
-    pgControl.ActivePageIndex := PAGE_AUTHORS;
 end;
 
 procedure TfrmMain.SerieLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
@@ -1725,18 +1750,19 @@ end;
 
 procedure TfrmMain.CreateAlphabetToolbar;
 const
-  EngAlphabet: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  RusAlphabet: string = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЭЮЯ';
+  EngAlphabet: string = ALPHA_FILTER_ALL + ALPHA_FILTER_NON_ALPHA + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  RusAlphabet: string = ALPHA_FILTER_ALL + ALPHA_FILTER_NON_ALPHA + 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЭЮЯ';
+
 var
   Image: TBitmap;
   ImageCanvas: TCanvas;
   ImageRect: TRect;
   AlphaChar: Char;
-  tmpStr: string;
   ImageIndex: Integer;
-  ButtonPos: Integer;
+  ButtonPosA: Integer;
+  ButtonPosS: Integer;
   Button: TToolButton;
-  ///s0, s1, s2: TSize;
+  //s0, s1, s2: TSize;
 
   function CreateTextImage(ImageText: string): Integer;
   begin
@@ -1751,12 +1777,18 @@ var
     Result := ilAlphabetActive.AddMasked(Image, clBtnFace);
   end;
 
-  function CreateTextButton(ToolBar: TToolBar; ImageIndex: Integer; Position: Integer): Integer;
+  function CreateTextButton(
+    ToolBar: TToolBar;
+    const ACaption: string;
+    ImageIndex: Integer;
+    FOnClick: TNotifyEvent;
+    Position: Integer
+  ): Integer;
   begin
     Button := TToolButton.Create(ToolBar);
-    Button.Caption := tmpStr;
+    Button.Caption := ACaption;
     Button.ImageIndex := ImageIndex;
-    Button.OnClick := tbtnStarClick;
+    Button.OnClick := FOnClick;
     Button.Left := Position;
     Button.Parent := ToolBar;
     Result := Button.Left + Button.Width;
@@ -1768,44 +1800,42 @@ begin
     ImageCanvas := Image.Canvas;
 
     ImageCanvas.Brush.Color := clBtnFace;
-    ImageCanvas.Font := RusBar.Font;
+    ImageCanvas.Font := tbarAuthorsRus.Font;
     ImageCanvas.Font.Style := [fsBold];
 
-    (*
+    (** )
     s0.cx := ilAlphabetNormal.Width;
     s0.cy := ilAlphabetNormal.Height;
     s1 := ImageCanvas.TextExtent('AZ');
     s2 := ImageCanvas.TextExtent('АЯ');
     ilAlphabetNormal.Width := Max(s0.cx, Max(s1.cx, s2.cx));
     ilAlphabetNormal.Height := Max(s0.cy, Max(s1.cy, s2.cy));
-    *)
+    ( **)
 
     Image.Width := ilAlphabetNormal.Width;
     Image.Height := ilAlphabetNormal.Height;
 
     ImageRect := Bounds(0, 0, ilAlphabetNormal.Width, ilAlphabetNormal.Height);
 
-    tbtnStar.ImageIndex := CreateTextImage('*');
-    tbtnStar2.ImageIndex := tbtnStar.ImageIndex;
-
-    tbtnAllAlpha2.ImageIndex := CreateTextImage('AZ');
-    ButtonPos := tbtnAllAlpha2.Left + tbtnAllAlpha2.Width;
-    for AlphaChar in EngAlphabet do
-    begin
-      tmpStr := AlphaChar;
-      ImageIndex := CreateTextImage(tmpStr);
-      ButtonPos := CreateTextButton(EngBar, ImageIndex, ButtonPos);
-    end;
-
-    tbtnAllAlpha.ImageIndex := CreateTextImage('АЯ');
-    ButtonPos := tbtnAllAlpha.Left + tbtnAllAlpha.Width;
+    //
+    //
+    //
+    ButtonPosA := 0;
+    ButtonPosS := 0;
     for AlphaChar in RusAlphabet do
     begin
-      tmpStr := AlphaChar;
-      ImageIndex := CreateTextImage(tmpStr);
-      ButtonPos := CreateTextButton(RusBar, ImageIndex, ButtonPos);
-      if AlphaChar = 'А' then
-        ALetter := Button;
+      ImageIndex := CreateTextImage(AlphaChar);
+      ButtonPosA := CreateTextButton(tbarAuthorsRus, AlphaChar, ImageIndex, OnSetAuthorFilter, ButtonPosA);
+      ButtonPosS := CreateTextButton(tbarSeriesRus, AlphaChar, ImageIndex, OnSetSerieFilter, ButtonPosS);
+    end;
+
+    ButtonPosA := 0;
+    ButtonPosS := 0;
+    for AlphaChar in EngAlphabet do
+    begin
+      ImageIndex := CreateTextImage(AlphaChar);
+      ButtonPosA := CreateTextButton(tbarAuthorsEng, AlphaChar, ImageIndex, OnSetAuthorFilter, ButtonPosA);
+      ButtonPosS := CreateTextButton(tbarSeriesEng, AlphaChar, ImageIndex, OnSetSerieFilter, ButtonPosS);
     end;
   finally
     Image.Free;
@@ -2127,111 +2157,17 @@ begin
         ClearLabels(PAGE_SERIES, Full);
         ClearLabels(PAGE_GENRES, Full);
         ClearLabels(PAGE_FAVORITES, Full);
-        /// REMOVE ClearLabels(PAGE_FILTER, Full);
         ClearLabels(PAGE_SEARCH, Full);
       end;
   end;
 end;
 
-procedure TfrmMain.SetAuthorsShowLocalOnly;
-var
-  SaveCursor: TCursor;
-begin
-  SaveCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
-  try
-    DMCollection.Authors.Close;
-    if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
-    begin
-      if Settings.ShowLocalOnly then
-        DMCollection.Authors.ParamByName('All').AsInteger := 1
-      else
-        DMCollection.Authors.ParamByName('All').AsInteger := 0;
-    end
-    else
-    begin
-      DMCollection.Authors.ParamByName('All').AsInteger := 0;
-    end;
-    DMCollection.Authors.Open;
-  finally
-    Screen.Cursor := SaveCursor;
-  end;
-end;
-
-procedure TfrmMain.SetSeriesShowLocalOnly;
-var
-  SaveCursor: TCursor;
-begin
-  SaveCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
-  try
-    DMCollection.Series.Close;
-    if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
-    begin
-      if Settings.ShowLocalOnly then
-        DMCollection.Series.ParamByName('All').AsInteger := 1
-      else
-        DMCollection.Series.ParamByName('All').AsInteger := 0;
-    end
-    else
-    begin
-      DMCollection.Series.ParamByName('All').AsInteger := 0;
-    end;
-    DMCollection.Series.Open;
-  finally
-    Screen.Cursor := SaveCursor;
-  end;
-end;
-
-procedure TfrmMain.SetBooksFilter;
-const
-  flLocal = '`Local` = True';
-  flNotShowDeleted = '`Deleted` <> True';
-
-  procedure SwitchFilter(const Filter: string);
-  var
-    State: Boolean;
-  begin
-    State := (Filter <> '');
-
-    DMCollection.BooksByAuthor.Filter := Filter;
-    DMCollection.BooksByGenre.Filter := Filter;
-    DMCollection.BooksBySerie.Filter := Filter;
-    DMUser.BooksByGroup.Filter := Filter;
-
-    DMCollection.BooksByAuthor.Filtered := State;
-    DMCollection.BooksByGenre.Filtered := State;
-    DMCollection.BooksBySerie.Filtered := State;
-    DMUser.BooksByGroup.Filtered := State;
-  end;
-
-begin
-  if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
-  begin
-    if Settings.HideDeletedBooks and Settings.ShowLocalOnly then
-      SwitchFilter(flLocal + ' AND ' + flNotShowDeleted)
-    else if Settings.HideDeletedBooks and not Settings.ShowLocalOnly then
-      SwitchFilter(flNotShowDeleted)
-    else if not Settings.HideDeletedBooks and Settings.ShowLocalOnly then
-      SwitchFilter(flLocal)
-    else if not Settings.HideDeletedBooks and not Settings.ShowLocalOnly then
-      SwitchFilter('');
-  end
-  else if Settings.HideDeletedBooks then
-    SwitchFilter(flNotShowDeleted)
-  else
-    SwitchFilter('');
-end;
-
 procedure TfrmMain.FillAllBooksTree;
 begin
-  FillBooksTree(tvBooksA, DMCollection.AuthorBooks, DMCollection.BooksByAuthor, False, True); // авторы
+  FillBooksTree(tvBooksA, DMCollection.AuthorBooks, DMCollection.BooksByAuthor, False, True);  // авторы
   FillBooksTree(tvBooksS, nil,                      DMCollection.BooksBySerie,  False, False); // серии
-  FillBooksTree(tvBooksG, DMCollection.GenreBooks,  DMCollection.BooksByGenre,  True,  True); // жанры
-  FillBooksTree(tvBooksF, DMUser.GroupBooks,        DMUser.BooksByGroup,        True,  True); // избранное
-
-  // if DMCollection.sqlBooks.Active then
-  // FillBooksTree(0, tvBooksSR, nil, DMCollection.sqlBooks, True, True);
+  FillBooksTree(tvBooksG, DMCollection.GenreBooks,  DMCollection.BooksByGenre,  True,  True);  // жанры
+  FillBooksTree(tvBooksF, DMUser.GroupBooks,        DMUser.BooksByGroup,        True,  True);  // избранное
 end;
 
 function TfrmMain.CheckLibUpdates(Auto: Boolean): Boolean;
@@ -2376,18 +2312,26 @@ begin
 end;
 
 procedure TfrmMain.LoadLastCollection;
+var
+  ID: Integer;
 begin
-  if not DMUser.tblBases.IsEmpty then
+  if not DMUser.FindFirstExistingCollection(Settings.ActiveCollection) then
   begin
-    DMUser.ActivateCollection(Settings.ActiveCollection);
-    if not FileExists(DMUser.ActiveCollection.DBFileName) then
-    begin
-      MHLShowError(rstrCollectionFileNotFound, [DMUser.ActiveCollection.DBFileName]);
-      Application.Terminate;
-    end;
-
-    frmSplash.lblState.Caption := rstrMainLoadingCollection;
+    MHLShowError(rstrCollectionFileNotFound, [DMUser.ActiveCollection.DBFileName]);
+    //
+    // Мне кажется, это очень жестко по отношению к пользователю.
+    // Может лучше вернуть ошибку и запустить мастера создания коллекции?
+    //
+    Application.Terminate;
   end;
+
+  //
+  // небольшой хак. Будет правильнее передавать ID коллекции в InitCollection
+  //
+  Settings.ActiveCollection := DMUser.CurrentCollection.ID;
+
+  frmSplash.lblState.Caption := rstrMainLoadingCollection;
+
   InitCollection(False);
 end;
 
@@ -2422,10 +2366,19 @@ begin
 
   FFileOpMode := fmFb2Zip;
 
-  FLastLetterA := tbtnStar;
-  FLastLetterS := tbtnStar;
+  FMainBars[0] := tlbrMain;
+  FMainBars[1] := tlbrEdit;
+
+  FAuthorBars[0] := tbarAuthorsRus;
+  FAuthorBars[1] := tbarAuthorsEng;
+
+  FSerieBars[0] := tbarSeriesRus;
+  FSerieBars[1] := tbarSeriesEng;
 
   CreateAlphabetToolbar;
+
+  FLastLetterA := tbarAuthorsRus.Buttons[0];
+  FLastLetterS := tbarSeriesRus.Buttons[0];
 
   // SB
   FStatusProgressBar := TProgressBar.Create(Self);
@@ -3176,12 +3129,6 @@ begin
     miConverToFBD.Visible := True;
     miConverToFBD.Tag := IfThen(isFBDDocument, 999, 0);
     miConverToFBD.Caption := IfThen(isFBDDocument, rstrEditFBD, rstrConvert2FBD);
-
-    if Assigned(frmConvertToFBD) then
-    begin
-      frmConvertToFBD.EditorMode := isFBDDocument;
-      frmConvertToFBD.Caption := IfThen(isFBDDocument, rstrEditFBD, rstrConvert2FBD);
-    end;
   end;
 end;
 
@@ -3894,9 +3841,7 @@ begin
 
   cbDeleted.Checked := Settings.HideDeletedBooks;
 
-  SetAuthorsShowLocalOnly;
-  SetSeriesShowLocalOnly;
-  SetBooksFilter;
+  DMCollection.SetHideDeletedBook(Settings.HideDeletedBooks, True);
 
   FillAuthorTree(tvAuthors);
   FillSeriesTree(tvSeries);
@@ -3905,77 +3850,139 @@ begin
   RestorePositions;
 end;
 
-procedure TfrmMain.tbtnStarClick(Sender: TObject);
+function TfrmMain.GetFilterButton(ToolBars: array of TToolBar; const Filter: string): TToolButton;
 var
-  Button: TToolButton;
+  RealFilter: string;
+  barIndex: Integer;
+  bar: TToolBar;
+  i: Integer;
 begin
-  if not pgControl.ActivePageIndex in [PAGE_AUTHORS, PAGE_SERIES] then
+  if Filter = '' then
+  begin
+    Result := nil;
     Exit;
-
-  Assert(Sender is TToolButton);
-  Button := Sender as TToolButton;
-
-  Screen.Cursor := crHourGlass;
-  case ActiveView of
-    AuthorsView:
-      begin
-        ClearLabels(PAGE_AUTHORS, True);
-
-        if Assigned(FLastLetterA) then
-          FLastLetterA.Down := False;
-        FLastLetterA := Button;
-        Button.Down := True;
-
-        if Button.Tag >= 90 then
-          case Button.Tag of
-            91: DMCollection.Authors.Filter := 'UPPER(' + AUTHOR_LASTTNAME_FIELD + ') >= "А*"';
-            92: DMCollection.Authors.Filter := 'UPPER(' + AUTHOR_LASTTNAME_FIELD + ') < "А*"';
-          end
-        else
-        begin
-          edLocateAuthor.Text := Button.Caption;
-          DMCollection.Authors.Filter :=
-          '(' + AUTHOR_LASTTNAME_FIELD + '=' + QuotedStr(Button.Caption + '*') + ') ' +
-          'OR ' +
-          '(' + AUTHOR_LASTTNAME_FIELD + '=' + QuotedStr(AnsiLowercase(Button.Caption) + '*') + ')';
-        end;
-        DMCollection.Authors.Filtered := Button.Tag <> 90;
-        FillAuthorTree(tvAuthors);
-
-        // tvAuthors.Selected[tvAuthors.GetFirst] := True;
-        edLocateAuthor.Perform(WM_KEYDOWN, vk_Right, 0);
-      end;
-
-    SeriesView:
-      begin
-        ClearLabels(PAGE_SERIES, True);
-
-        if Assigned(FLastLetterS) then
-          FLastLetterS.Down := False;
-        FLastLetterS := Button;
-        Button.Down := True;
-
-        if Button.Tag >= 90 then
-          case Button.Tag of
-            90: DMCollection.Series.Filter := SERIE_TITLE_FIELD + ' <> ' + QuotedStr(NO_SERIES_TITLE);
-            91: DMCollection.Series.Filter := 'UPPER(' + SERIE_TITLE_FIELD + ') >= "А*"';
-            92: DMCollection.Series.Filter := 'UPPER(' + SERIE_TITLE_FIELD + ') < "A*" AND ' + SERIE_TITLE_FIELD + ' <>' + QuotedStr(NO_SERIES_TITLE);
-          end
-        else
-        begin
-          edLocateSeries.Text := Button.Caption;
-          DMCollection.Series.Filter :=
-            '(' + SERIE_TITLE_FIELD + '=' + QuotedStr(Button.Caption + '*') + ') ' +
-            'OR ' +
-            '(' + SERIE_TITLE_FIELD + '=' + QuotedStr(AnsiLowercase(Button.Caption) + '*') + ')';
-        end;
-        DMCollection.Series.Filtered := True;
-        FillSeriesTree(tvSeries);
-        tvSeries.Selected[tvSeries.GetFirst] := True;
-        edLocateSeries.Perform(WM_KEYDOWN, vk_Right, 0);
-      end;
   end;
-  Screen.Cursor := crDefault;
+
+  RealFilter := TCharacter.ToUpper(Copy(Filter, 1, 1));
+
+  if not TCharacter.IsLetter(RealFilter, 1) then
+    RealFilter := ALPHA_FILTER_NON_ALPHA;
+
+  for barIndex := 0 to High(ToolBars) do
+  begin
+    bar := ToolBars[barIndex];
+
+    for i := 0 to bar.ControlCount - 1 do
+    begin
+      if (bar.Controls[i] is TToolButton) and ((bar.Controls[i] as TToolButton).Caption = RealFilter) then
+      begin
+        Result := bar.Controls[i] as TToolButton;
+        Exit;
+      end;
+    end;
+  end;
+
+  Assert(False);
+end;
+
+function TfrmMain.InternalSetAuthorFilter(Button: TToolButton): string;
+begin
+  if Assigned(FLastLetterA) then
+    FLastLetterA.Down := False;
+  FLastLetterA := Button;
+  FLastLetterA.Down := True;
+
+  Result := TCharacter.ToUpper(Button.Caption);
+
+  DMCollection.SetAuthorFilter(Result);
+
+  FillAuthorTree(tvAuthors);
+  // tvAuthors.Selected[tvAuthors.GetFirst] := True;
+
+  if (Result = ALPHA_FILTER_ALL) or (Result = ALPHA_FILTER_NON_ALPHA) then
+  begin
+    Result := '';
+  end
+  else
+  begin
+    Assert(Length(Result) = 1);
+  end;
+end;
+
+procedure TfrmMain.OnSetAuthorFilter(Sender: TObject);
+var
+  SaveCursor: TCursor;
+  Button: TToolButton;
+  AFilter: string;
+begin
+  SaveCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    Assert(Sender is TToolButton);
+    Button := Sender as TToolButton;
+
+    AFilter := InternalSetAuthorFilter(Button);
+
+    Assert(Length(AFilter) < 2);
+    SetTextNoChange(edLocateAuthor, AFilter);
+    if AFilter <> '' then
+    begin
+      edLocateAuthor.SelStart := 1;
+      edLocateAuthor.SelLength := 0;
+    end;
+  finally
+    Screen.Cursor := SaveCursor;
+  end;
+end;
+
+function TfrmMain.InternalSetSerieFilter(Button: TToolButton): string;
+begin
+  if Assigned(FLastLetterS) then
+    FLastLetterS.Down := False;
+  FLastLetterS := Button;
+  FLastLetterS.Down := True;
+
+  Result := TCharacter.ToUpper(Button.Caption);
+
+  DMCollection.SetSerieFilter(Result);
+
+  if (Result = ALPHA_FILTER_ALL) or (Result = ALPHA_FILTER_NON_ALPHA) then
+  begin
+    Result := '';
+  end
+  else
+  begin
+    Assert(Length(Result) = 1);
+  end;
+end;
+
+procedure TfrmMain.OnSetSerieFilter(Sender: TObject);
+var
+  SaveCursor: TCursor;
+  Button: TToolButton;
+  AFilter: string;
+begin
+  SaveCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    Assert(Sender is TToolButton);
+    Button := Sender as TToolButton;
+
+    AFilter := InternalSetSerieFilter(Button);
+
+    FillSeriesTree(tvSeries);
+    //tvSeries.Selected[tvSeries.GetFirst] := True;
+
+    Assert(Length(AFilter) < 2);
+    SetTextNoChange(edLocateSeries, AFilter);
+    if AFilter <> '' then
+    begin
+      edLocateSeries.SelStart := 1;
+      edLocateSeries.SelLength := 0;
+    end;
+  finally
+    Screen.Cursor := SaveCursor;
+  end;
 end;
 
 procedure TfrmMain.TrayIconDblClick(Sender: TObject);
@@ -3991,9 +3998,7 @@ begin
   Settings.ShowLocalOnly := not Settings.ShowLocalOnly;
   tbtnShowLocalOnly.Down := Settings.ShowLocalOnly;
 
-  SetAuthorsShowLocalOnly;
-  SetSeriesShowLocalOnly;
-  SetBooksFilter;
+  DMCollection.SetShowLocalBookOnly(Settings.ShowLocalOnly, True);
 
   FillAuthorTree(tvAuthors);
   FillSeriesTree(tvSeries);
@@ -4049,7 +4054,7 @@ end;
 
 procedure TfrmMain.tbClearEdAuthorClick(Sender: TObject);
 begin
-  edLocateAuthor.Clear;
+  SetTextNoChange(edLocateAuthor, '');
   frmMain.ActiveControl := edLocateAuthor;
 end;
 
@@ -4574,19 +4579,23 @@ end;
 
 procedure TfrmMain.miDeleteColClick(Sender: TObject);
 begin
-  { TODO -oNickR -cUsability : Думаю, стоит сделать специальный диалог для этого случая. Тогда мы сможем спросить, удалять файл коллекции или нет. }
-  if MessageDlg(rstrRemoveCollection + '"' + DMUser.ActiveCollection.Name + '"?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
-    Exit;
+  if DMUser.SelectCollection(DMUser.ActiveCollection.ID) then
+  begin
+    { TODO -oNickR -cUsability : Думаю, стоит сделать специальный диалог для этого случая. Тогда мы сможем спросить, удалять файл коллекции или нет. }
+    if MessageDlg(rstrRemoveCollection + '"' + DMUser.ActiveCollection.Name + '"?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+      Exit;
 
-  //
-  // TODO : перенести в метод датамодуля
-  //
-  DMUser.ActivateCollection(Settings.ActiveCollection);
-  DMUser.tblBases.Delete;
-  DMUser.tblBases.First;
+    //
+    // TODO : перенести в метод датамодуля
+    //
+    DMUser.tblBases.Delete;
+    DMUser.tblBases.First;
 
-  Settings.ActiveCollection := DMUser.CurrentCollection.ID;
-  InitCollection(True);
+    Settings.ActiveCollection := DMUser.CurrentCollection.ID;
+    InitCollection(True);
+  end
+  else
+    Assert(False);
 end;
 
 procedure TfrmMain.miDeleteFilesClick(Sender: TObject);
@@ -5259,9 +5268,8 @@ begin
   end;
 end;
 
-procedure TfrmMain.ChangeToolbarVisability(ToolBar: TToolBar; ShowToolbar: Boolean);
+procedure TfrmMain.ChangeToolbarVisability(ToolBars: array of TToolBar; ToolBar: TToolBar; ShowToolbar: Boolean);
 var
-  ToolBars: array[0..3] of TToolBar;
   BarTop: Integer;
   i: Integer;
 begin
@@ -5274,11 +5282,6 @@ begin
       // Располагаем текущий тулбар под первым видимым старшим
       // а все видимые младшие сдвигаем на 1 ниже
       //
-      ToolBars[0] := tlbrMain;
-      ToolBars[1] := tlbrEdit;
-      ToolBars[2] := RusBar;
-      ToolBars[3] := EngBar;
-
       BarTop := 0;
       for i := 0 to High(ToolBars) do
       begin
@@ -5312,7 +5315,8 @@ end;
 procedure TfrmMain.ShowRusAlphabetExecute(Sender: TObject);
 begin
   Settings.ShowRusBar := not Settings.ShowRusBar;
-  ChangeToolbarVisability(RusBar, Settings.ShowRusBar);
+  ChangeToolbarVisability(FAuthorBars, tbarAuthorsRus, Settings.ShowRusBar);
+  ChangeToolbarVisability(FSerieBars, tbarSeriesRus, Settings.ShowRusBar);
 end;
 
 procedure TfrmMain.ShowEngAlphabetUpdate(Sender: TObject);
@@ -5323,7 +5327,8 @@ end;
 procedure TfrmMain.ShowEngAlphabetExecute(Sender: TObject);
 begin
   Settings.ShowEngBar := not Settings.ShowEngBar;
-  ChangeToolbarVisability(EngBar, Settings.ShowEngBar);
+  ChangeToolbarVisability(FAuthorBars, tbarAuthorsEng, Settings.ShowEngBar);
+  ChangeToolbarVisability(FSerieBars, tbarSeriesEng, Settings.ShowEngBar);
 end;
 
 procedure TfrmMain.ShowEditToolbarUpdate(Sender: TObject);
@@ -5334,7 +5339,7 @@ end;
 procedure TfrmMain.ShowEditToolbarExecute(Sender: TObject);
 begin
   Settings.EditToolBarVisible := not Settings.EditToolBarVisible;
-  ChangeToolbarVisability(tlbrEdit, Settings.EditToolBarVisible);
+  ChangeToolbarVisability(FMainBars, tlbrEdit, Settings.EditToolBarVisible);
 end;
 
 procedure TfrmMain.ShowMainToolbarUpdate(Sender: TObject);
@@ -5345,7 +5350,7 @@ end;
 procedure TfrmMain.ShowMainToolbarExecute(Sender: TObject);
 begin
   Settings.ShowToolbar := not Settings.ShowToolbar;
-  ChangeToolbarVisability(tlbrMain, Settings.ShowToolbar);
+  ChangeToolbarVisability(FMainBars, tlbrMain, Settings.ShowToolbar);
 end;
 
 procedure TfrmMain.ShowStatusbarUpdate(Sender: TObject);
@@ -5927,20 +5932,21 @@ end;
 
 procedure TfrmMain.edLocateAuthorChange(Sender: TObject);
 var
-  S: string;
-  OldText: string;
+  Button: TToolButton;
 begin
-  S := AnsiUpperCase(Copy(edLocateAuthor.Text, 1, 1));
-  if S <> FLastLetterA.Caption then
+  //
+  // Проверим текущий фильтр и изменим его если нужо
+  //
+  Assert(Assigned(FLastLetterA));
+  Button := GetFilterButton(FAuthorBars, edLocateAuthor.Text);
+  //Assert(Assigned(Button));
+
+  if Assigned(Button) and (Button <> FLastLetterA) then
   begin
-    OldText := edLocateAuthor.Text;
-    ChangeLetterButton(S);
-    edLocateAuthor.Text := OldText;
-    edLocateAuthor.Perform(WM_KEYDOWN, VK_RIGHT, 0);
+    InternalSetAuthorFilter(Button);
   end;
 
-  if not FDoNotLocate then
-    LocateAuthor(edLocateAuthor.Text);
+  LocateAuthor(edLocateAuthor.Text);
 end;
 
 procedure TfrmMain.edLocateAuthorKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -6043,8 +6049,8 @@ begin
     edLocateSeries.Text := OldText;
     edLocateSeries.Perform(WM_KEYDOWN, VK_RIGHT, 0);
   end;
-  if not FDoNotLocate then
-    LocateSerie(edLocateSeries.Text);
+
+  LocateSerie(edLocateSeries.Text);
 end;
 
 procedure TfrmMain.miAboutClick(Sender: TObject);
@@ -6064,7 +6070,7 @@ var
   i: Integer;
 begin
   i := (Sender as TMenuItem).Tag;
-  if DMUser.ActivateCollection(i) then
+  if DMUser.SelectCollection(i) then
   begin
     (Sender as TMenuItem).Checked := True;
     Settings.ActiveCollection := i;
@@ -6354,7 +6360,7 @@ procedure TfrmMain.miStatClick(Sender: TObject);
 var
   frmStat: TfrmStat;
 begin
-  DMUser.ActivateCollection(Settings.ActiveCollection);
+  ///DMUser.ActivateCollection(Settings.ActiveCollection);
 
   frmStat := TfrmStat.Create(Application);
   try
@@ -6451,10 +6457,6 @@ begin
     Exit;
 
   InitFrmConvertToFBDHandlers(Data);
-  //
-  // TODO: необходимо определять режим Создания/Редактирования из самой книги, я не привязываться к меню
-  //
-  frmConvertToFBD.EditorMode := miConverToFBD.Tag <> 0;
 
   frmConvertToFBD.ShowModal;
 end;
@@ -6599,7 +6601,7 @@ begin
   if not GetFileName(fnSaveImportFile, FileName) then
     Exit;
 
-  DMUser.ActivateCollection(Settings.ActiveCollection);
+  ///DMUser.ActivateCollection(Settings.ActiveCollection);
   unit_Export.Export2XML(FileName);
 end;
 
@@ -6621,7 +6623,7 @@ procedure TfrmMain.miCollsettingsClick(Sender: TObject);
 var
   frmBases: TfrmBases;
 begin
-  DMUser.ActivateCollection(Settings.ActiveCollection);
+  ///DMUser.ActivateCollection(Settings.ActiveCollection);
 
   frmBases := TfrmBases.Create(Application);
   try
@@ -6790,30 +6792,6 @@ begin
   btnSwitchTreeMode.Enabled := not((ActiveView = SeriesView) or (ActiveView = DownloadView));
 
   case ActiveView of
-    AuthorsView:
-      begin
-        FLastLetterA.Down := True;
-        if FLastLetterA = FLastLetterS then
-          FLastLetterS.Down := True
-        else
-          FLastLetterS.Down := False;
-      end;
-    SeriesView:
-      begin
-        FLastLetterS.Down := True;
-        if FLastLetterA = FLastLetterS then
-          FLastLetterA.Down := True
-        else
-          FLastLetterA.Down := False;
-      end;
-  else
-    begin
-      FLastLetterA.Down := False;
-      FLastLetterS.Down := False;
-    end;
-  end;
-
-  case ActiveView of
     FavoritesView:
       begin
         miGoToAuthor.Visible := True;
@@ -6964,7 +6942,7 @@ begin
   if not GetFileName(fnSaveINPX, FileName) then
     Exit;
 
-  DMUser.ActivateCollection(Settings.ActiveCollection);
+  ///DMUser.ActivateCollection(Settings.ActiveCollection);
   unit_Export.Export2INPX(FileName);
   InitCollection(True);
 end;
@@ -7146,29 +7124,31 @@ end;
 // A raw file just became a zip archive (FBD + raw)
 // Change the book's file name in both the database and the trees
 procedure TfrmMain.OnChangeBook2ZipHandler();
+var
+  Tree: TBookTree;
+  Node: PVirtualNode;
+  Data: PBookRecord;
+  NewFileName: string;
 begin
-  ProcessNodes(
-    procedure (Tree: TBookTree; Node: PVirtualNode)
-    var
-      Data: PBookRecord;
-      NewFileName: string;
-    begin
-      Data := Tree.GetNodeData(Node);
-      if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
+  GetActiveTree(Tree);
+
+  Node := Tree.GetFirstSelected;
+  Data := Tree.GetNodeData(Node);
+  Assert(Assigned(Data) and (Data^.nodeType = ntBookInfo));
+
+  if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
+  begin
+    NewFileName := Data^.FileName + ZIP_EXTENSION;
+    DMCollection.SetFileName(Data^.BookID, Data^.DatabaseID, NewFileName);
+    UpdateNodes(
+      Data^.BookID, Data^.DatabaseID,
+      procedure(BookData: PBookRecord)
       begin
-        NewFileName := Data^.FileName + '.zip';
-        DMCollection.SetFileName(Data^.BookID, Data^.DatabaseID, NewFileName);
-        UpdateNodes(
-          Data^.BookID, Data^.DatabaseID,
-          procedure(BookData: PBookRecord)
-          begin
-            Assert(Assigned(BookData));
-            BookData^.FileName := NewFileName;
-          end
-        );
-      end;
-    end
-  );
+        Assert(Assigned(BookData));
+        BookData^.FileName := NewFileName;
+      end
+    );
+  end;
 end;
 
 end.

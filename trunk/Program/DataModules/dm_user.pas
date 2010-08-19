@@ -173,6 +173,8 @@ type
     function FindFirstCollection: Boolean;
     function FindNextCollection: Boolean;
 
+    function FindFirstExistingCollection(const PrefferedID: Integer): Boolean;
+
     function ActivateGroup(const ID: Integer): Boolean;
 
     procedure CorrectExtra(OldID, NewID: Integer);
@@ -479,11 +481,8 @@ end;
 
 function TDMUser.FindFirstCollection: Boolean;
 begin
-  Result := False;
-  if tblBases.IsEmpty then
-    Exit;
-
   tblBases.First;
+  Result := not tblBases.Eof;
 end;
 
 function TDMUser.FindFirstExternalCollection: Boolean;
@@ -527,6 +526,38 @@ begin
   end;
 
   Result := False;
+end;
+
+function TDMUser.FindFirstExistingCollection(const PrefferedID: Integer): Boolean;
+var
+  ID: Integer;
+begin
+  ID := TDMUser.INVALID_COLLECTION_ID;
+
+  if FindFirstCollection then
+  repeat
+    if FileExists(CurrentCollection.DBFileName) then
+    begin
+      if CurrentCollection.ID = PrefferedID then
+      begin
+        //
+        // Пользователь предпочитает эту коллекцию, она доступна -> выходим
+        //
+        ID := CurrentCollection.ID;
+        Break;
+      end;
+
+      if ID = TDMUser.INVALID_COLLECTION_ID then
+      begin
+        //
+        // Запомним первую доступную коллекцию
+        //
+        ID := CurrentCollection.ID;
+      end;
+    end;
+  until not FindNextCollection;
+
+  Result := (INVALID_COLLECTION_ID <> ID);
 end;
 
 procedure TDMUser.DeleteCollection(CollectionID: Integer);

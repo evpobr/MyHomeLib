@@ -247,6 +247,13 @@ const
   GROUP_ID_BOOK_ID_DB_ID_FIELDS = GROUP_ID_FIELD + ';' + BOOK_ID_FIELD + ';' + DB_ID_FIELD;
 
   PX_INDEX = 'PXIndex';
+
+  //
+  // специальные значения фильтров
+  //
+  ALPHA_FILTER_ALL = '*';
+  ALPHA_FILTER_NON_ALPHA = '#';
+
 type
   TColumnSet = set of 0 .. 255;
 
