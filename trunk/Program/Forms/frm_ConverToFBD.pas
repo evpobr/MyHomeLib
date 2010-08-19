@@ -275,10 +275,18 @@ begin
 end;
 
 procedure TfrmConvertToFBD.ChangeBookData;
+var
+  NewFileName: string;
 begin
-  DMCollection.tblBooks.Edit;
-  DMCollection.tblBooksFileName.Value := DMCollection.tblBooksFileName.Value + '.zip';
-  DMCollection.tblBooks.Post;
+  if DMCollection.tblBooks.Locate(BOOK_ID_FIELD, FBookRecord.BookID, []) then
+  begin
+    NewFileName := DMCollection.tblBooksFileName.Value + '.zip';
+    DMCollection.tblBooks.Edit;
+    DMCollection.tblBooksFileName.Value := NewFileName;
+    DMCollection.tblBooks.Post;
+  end
+  else // Shouldn't happen as we are locating the just-now-edited book
+    Assert(False);
 end;
 
 procedure TfrmConvertToFBD.SaveFBD;

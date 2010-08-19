@@ -526,7 +526,7 @@ begin
     GetBookAuthors(BookID, BookRecord.Authors);
 
     BookRecord.CollectionName := DMUser.ActiveCollection.Name;
-    BookRecord.CollectionRootFolder := DMUser.ActiveCollection.RootFolder;
+    BookRecord.CollectionRoot := DMUser.ActiveCollection.RootPath;
     BookRecord.DatabaseID := DMUser.ActiveCollection.ID;
   end
   else
