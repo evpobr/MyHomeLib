@@ -82,15 +82,19 @@ type
     procedure btnCancelClick(Sender: TObject);
 
   private
-    FBookRecord: TBookRecord;
     FEditorMode: Boolean;
 
     FBusy: Boolean;
     FTerminated: Boolean;
 
+    // Events:
+    FOnReadBook: TBookEvent;
+    FOnSelectBook: TSelectBookEvent;
+    FOnGetBook: TGetBookEvent;
+    FOnChangeBook2Zip: TBookEvent;
+
     procedure PrepareForm;
     function FillFBDData: boolean;
-    procedure ChangeBookData;
     procedure SaveFBD;
     procedure EnableButtons(State: boolean);
 
@@ -98,7 +102,11 @@ type
     procedure AutoMode;
 
     property EditorMode: Boolean read FEditorMode write FEditorMode;
-    property BookRecord: TBookRecord read FBookRecord write FBookRecord;
+
+    property OnReadBook: TBookEvent read FOnReadBook write FOnReadBook;
+    property OnSelectBook: TSelectBookEvent read FOnSelectBook write FOnSelectBook;
+    property OnGetBook: TGetBookEvent read FOnGetBook write FOnGetBook;
+    property OnChangeBook2Zip: TBookEvent read FOnChangeBook2Zip write FOnChangeBook2Zip;
   end;
 
 var
@@ -112,7 +120,6 @@ uses
   jpeg,
   pngimage,
   Clipbrd,
-  frm_Main,
   ZipForge,
   dm_user,
   unit_Helpers,
@@ -135,7 +142,7 @@ end;
 
 procedure TfrmConvertToFBD.btnOpenBookClick(Sender: TObject);
 begin
-  frmMain.tbtbnReadClick(Sender);
+  OnReadBook;
 end;
 
 procedure TfrmConvertToFBD.btnPasteCoverClick(Sender: TObject);
@@ -157,7 +164,7 @@ begin
     Exit;
 
   SaveFBD;
-  frmMain.SelectNextBook(False, False);
+  OnSelectBook(False);
   PrepareForm;
 end;
 
@@ -167,7 +174,7 @@ begin
     Exit;
 
   SaveFBD;
-  frmMain.SelectNextBook(False, True);
+  OnSelectBook(True);
   PrepareForm;
 end;
 
@@ -188,18 +195,17 @@ end;
 procedure TfrmConvertToFBD.PrepareForm;
 var
   Folder: string;
+  BookRecord: TBookRecord;
 begin
-  //
-  // Assume FBookRecord is correctly initialized by the main form and passed on init.
-  //
-  lblAuthor.Caption := FBookRecord.Authors[0].GetFullName;
-  lblTitle.Caption := FBookRecord.Title;
-  //The following code is never used for bfFb2Zip, so it's always a folder:
-  Folder := FBookRecord.GetBookContainer;
+  OnGetBook(BookRecord);
+  lblAuthor.Caption := BookRecord.Authors[0].GetFullName;
+  lblTitle.Caption := BookRecord.Title;
+  // Never bfFb2Zip, so it's always a folder:
+  Folder := BookRecord.GetBookContainer;
 
   if
     FEditorMode and
-    FBD.Load(Folder, TPath.GetFileNameWithoutExtension(FBookRecord.FileName), FBookRecord.FileExt) 
+    FBD.Load(Folder, TPath.GetFileNameWithoutExtension(BookRecord.FileName), BookRecord.FileExt)
   then
   begin
     alFBDAuthors.Items := FBD.GetAuthors(atlFBD);
@@ -213,7 +219,7 @@ begin
   end
   else
   begin
-    FBD.New(Folder, FBookRecord.FileName, FBookRecord.FileExt);
+    FBD.New(Folder, BookRecord.FileName, BookRecord.FileExt);
     edPublisher.Text := '';
     edCity.Text := '';
     edISBN.Text := '';
@@ -232,15 +238,17 @@ function TfrmConvertToFBD.FillFBDData: Boolean;
 var
   i: Integer;
   AuthorsFBD: TAuthorDataList;
+  BookRecord: TBookRecord;
 begin
   Result := False;
 
-  SetLength(AuthorsFBD, FBookRecord.AuthorCount);
-  for i := 0 to FBookRecord.AuthorCount - 1 do
+  OnGetBook(BookRecord);
+  SetLength(AuthorsFBD, BookRecord.AuthorCount);
+  for i := 0 to BookRecord.AuthorCount - 1 do
   begin
-    AuthorsFBD[i].Last := FBookRecord.Authors[i].LastName;
-    AuthorsFBD[i].First := FBookRecord.Authors[i].FirstName;
-    AuthorsFBD[i].Middle := FBookRecord.Authors[i].MiddleName;
+    AuthorsFBD[i].Last := BookRecord.Authors[i].LastName;
+    AuthorsFBD[i].First := BookRecord.Authors[i].FirstName;
+    AuthorsFBD[i].Middle := BookRecord.Authors[i].MiddleName;
     AuthorsFBD[i].Nick := '';
     AuthorsFBD[i].Email := '';
     AuthorsFBD[i].HomePage := '';
@@ -251,14 +259,14 @@ begin
 
   with FBD.Title do
   begin
-    Booktitle.Text := FBookRecord.Title;
-    Keywords.Text := FBookRecord.KeyWords;
-    Lang := FBookRecord.Lang;
-    FBD.AddSeries(sltBook, FBookRecord.Serie, FBookRecord.SeqNumber);
+    Booktitle.Text := BookRecord.Title;
+    Keywords.Text := BookRecord.KeyWords;
+    Lang := BookRecord.Lang;
+    FBD.AddSeries(sltBook, BookRecord.Serie, BookRecord.SeqNumber);
 
     Genre.Clear;
-    for i := 0 to High(FBookRecord.Genres) do
-      Genre.Add(FBookRecord.Genres[i].FB2GenreCode);
+    for i := 0 to High(BookRecord.Genres) do
+      Genre.Add(BookRecord.Genres[i].FB2GenreCode);
   end;
 
   with FBD.Publisher do
@@ -274,21 +282,6 @@ begin
   Result := True;
 end;
 
-procedure TfrmConvertToFBD.ChangeBookData;
-var
-  NewFileName: string;
-begin
-  if DMCollection.tblBooks.Locate(BOOK_ID_FIELD, FBookRecord.BookID, []) then
-  begin
-    NewFileName := DMCollection.tblBooksFileName.Value + '.zip';
-    DMCollection.tblBooks.Edit;
-    DMCollection.tblBooksFileName.Value := NewFileName;
-    DMCollection.tblBooks.Post;
-  end
-  else // Shouldn't happen as we are locating the just-now-edited book
-    Assert(False);
-end;
-
 procedure TfrmConvertToFBD.SaveFBD;
 begin
   EnableButtons(False);
@@ -300,7 +293,7 @@ begin
       FBD.ProgramUsed := GetProgramUsed(Application.ExeName);
       FBD.Save(FEditorMode);
       if not FEditorMode then
-        ChangeBookData;
+        OnChangeBook2Zip;
     end;
   finally
     EnableButtons(True);
@@ -319,15 +312,18 @@ end;
 procedure TfrmConvertToFBD.AutoMode;
 var
   FirstID: integer;
+  BookRecord: TBookRecord;
 begin
   FTerminated := False;
   PrepareForm;
   Show;
   btnNextClick(Self);
-  FirstID := frmMain.LastActiveBookID;
+  OnGetBook(BookRecord);
+  FirstID := BookRecord.BookID;
   repeat
     btnNextClick(Self);
-  until (FirstID = frmMain.LastActiveBookID) or FTerminated;
+    OnGetBook(BookRecord);
+  until (FirstID = BookRecord.BookID) or FTerminated;
   Close;
 end;
 

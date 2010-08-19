@@ -682,8 +682,6 @@ type
   private
     FDMThread: TDownloadManagerThread;
 
-    FLastActiveBookID: Integer;
-
     function IsSelectedBookNode(Node: PVirtualNode; Data: PBookRecord): Boolean;
 
     //
@@ -715,6 +713,14 @@ type
     procedure CreateScriptMenu;
     procedure SetColors;
     procedure CreateAlphabetToolbar;
+
+    // Handlers:
+    procedure OnReadBookHandler;
+    procedure OnSelectBookHandler(const MoveForward: Boolean);
+    procedure OnGetBookHandler(var BookRecord: TBookRecord);
+    procedure OnChangeBook2ZipHandler();
+
+    procedure InitFrmConvertToFBDHandlers(const Data: PBookRecord);
 
   private type
     TNodeProcessProc = reference to procedure(Tree: TBookTree; Node: PVirtualNode);
@@ -767,9 +773,7 @@ type
     function HH(Command: Word; Data: Integer; var CallHelp: Boolean): Boolean;
     procedure LocateBook(Text: string; Next: Boolean);
 
-    procedure SelectNextBook(Changed, Frwrd: Boolean);
-
-    property LastActiveBookID: Integer read FLastActiveBookID;
+    procedure SelectNextBook(Changed, MoveForward: Boolean);
 
     procedure SetFormState;
 
@@ -2281,7 +2285,6 @@ var
   Tree: TBookTree;
   Node: PVirtualNode;
   Data: PBookRecord;
-  BookRecord: TBookRecord;
 begin
   //
   // Очень стремный метод. Режим редактирования\создания FBD для формы не ставиться, форма ничего не проверяет...
@@ -2300,8 +2303,7 @@ begin
     if not Assigned(Data) or (Data^.nodeType <> ntBookInfo) then
       Exit;
 
-    DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, BookRecord, True);
-    frmConvertToFBD.BookRecord := BookRecord;
+    InitFrmConvertToFBDHandlers(Data);
     frmConvertToFBD.AutoMode;
   finally
     DisableControls(True);
@@ -3780,6 +3782,11 @@ begin
 end;
 
 procedure TfrmMain.tbtbnReadClick(Sender: TObject);
+begin
+  OnReadBookHandler;
+end;
+
+procedure TfrmMain.OnReadBookHandler;
 var
   Tree: TBookTree;
   Data: PBookRecord;
@@ -3864,6 +3871,18 @@ begin
   finally
     Screen.Cursor := crDefault;
   end;
+end;
+
+// Init TFrmConvertToFBD's handlers
+procedure TfrmMain.InitFrmConvertToFBDHandlers(const Data: PBookRecord);
+begin
+  // Init FLastBookRecord to be used by the form + load memos:
+  DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, FLastBookRecord, True);
+
+  frmConvertToFBD.OnReadBook := OnReadBookHandler;
+  frmConvertToFBD.OnSelectBook := OnSelectBookHandler;
+  frmConvertToFBD.OnGetBook := OnGetBookHandler;
+  frmConvertToFBD.OnChangeBook2Zip := OnChangeBook2ZipHandler;
 end;
 
 procedure TfrmMain.tbtnShowDeletedClick(Sender: TObject);
@@ -4098,19 +4117,23 @@ begin
   end;
 end;
 
-procedure TfrmMain.SelectNextBook(Changed, Frwrd: Boolean);
+procedure TfrmMain.SelectNextBook(Changed, MoveForward: Boolean);
+begin
+  if Changed then
+    SaveFb2DataAfterEdit(FLastBookRecord);
+  OnSelectBookHandler(MoveForward);
+end;
+
+procedure TfrmMain.OnSelectBookHandler(const MoveForward: Boolean);
 var
   Tree: TBookTree;
   NewNode, OldNode: PVirtualNode;
   Data: PBookRecord;
 begin
-  if Changed then
-    SaveFb2DataAfterEdit(FLastBookRecord);
-
   GetActiveTree(Tree);
   repeat
     OldNode := Tree.GetFirstSelected;
-    if Frwrd then
+    if MoveForward then
     begin
       NewNode := Tree.GetNext(OldNode);
       if not Assigned(NewNode) then
@@ -4125,7 +4148,6 @@ begin
     Tree.Selected[OldNode] := False;
     Tree.Selected[NewNode] := True;
     Data := Tree.GetNodeData(NewNode);
-    FLastActiveBookID := Data^.BookID;
   until Data^.nodeType = ntBookInfo;
 
   PrepareFb2EditData(Data, FLastBookRecord);
@@ -6412,7 +6434,6 @@ var
   Tree: TBookTree;
   Data: PBookRecord;
   Node: PVirtualNode;
-  BookRecord: TBookRecord;
 begin
   if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
   begin
@@ -6429,9 +6450,7 @@ begin
   if not Assigned(Data) or (Data^.nodeType <> ntBookInfo) then
     Exit;
 
-  DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, BookRecord, True);
-
-  frmConvertToFBD.BookRecord := BookRecord;
+  InitFrmConvertToFBDHandlers(Data);
   //
   // TODO: необходимо определять режим Создания/Редактирования из самой книги, я не привязываться к меню
   //
@@ -7117,6 +7136,39 @@ begin
     Assigned(Node) and Assigned(Data) and
    (Data^.nodeType = ntBookInfo) and
    ((Node^.CheckState = csCheckedNormal) or (vsSelected in Node.States));
+end;
+
+procedure TfrmMain.OnGetBookHandler(var BookRecord: TBookRecord);
+begin
+  BookRecord := FLastBookRecord;
+end;
+
+// A raw file just became a zip archive (FBD + raw)
+// Change the book's file name in both the database and the trees
+procedure TfrmMain.OnChangeBook2ZipHandler();
+begin
+  ProcessNodes(
+    procedure (Tree: TBookTree; Node: PVirtualNode)
+    var
+      Data: PBookRecord;
+      NewFileName: string;
+    begin
+      Data := Tree.GetNodeData(Node);
+      if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
+      begin
+        NewFileName := Data^.FileName + '.zip';
+        DMCollection.SetFileName(Data^.BookID, Data^.DatabaseID, NewFileName);
+        UpdateNodes(
+          Data^.BookID, Data^.DatabaseID,
+          procedure(BookData: PBookRecord)
+          begin
+            Assert(Assigned(BookData));
+            BookData^.FileName := NewFileName;
+          end
+        );
+      end;
+    end
+  );
 end;
 
 end.

@@ -210,6 +210,7 @@ type
     // Обновление полей
     //
     procedure SetLocal(BookID: Integer; DatabaseID: Integer; AState: Boolean);
+    procedure SetFileName(const BookID: Integer; const DatabaseID: Integer; const FileName: string);
 
     //
     // Обновление полей из таблицы Extra
@@ -642,6 +643,21 @@ begin
   // Обновим информацию в группах
   //
   DMUser.SetProgress(BookID, DatabaseID, Progress);
+end;
+
+procedure TDMCollection.SetFileName(const BookID: Integer; const DatabaseID: Integer; const FileName: string);
+begin
+  Assert(DatabaseID = DMUser.ActiveCollection.ID);
+  Assert(AllBooks.Active);
+
+  if AllBooks.Locate(BOOK_ID_FIELD, BookID, []) then
+  begin
+    AllBooks.Edit;
+    AllBooksFileName.Value := FileName;
+    AllBooks.Post;
+  end;
+
+  DMUser.SetFileName(BookID, DatabaseID, FileName);
 end;
 
 function TDMCollection.GetAnnotation(BookID: Integer; DatabaseID: Integer): string;

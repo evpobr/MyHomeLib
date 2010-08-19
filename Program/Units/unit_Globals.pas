@@ -50,8 +50,6 @@ type
 
   TBookIdList = array of TBookIdStruct;
 
-
-
 type
   EInvalidLogin = class(Exception);
 
@@ -328,6 +326,11 @@ type
     procedure SaveBookToFile(const DestFileName: String);
 
   end;
+
+  // --------------------------------------------------------------------------
+  TBookEvent = procedure of object;
+  TSelectBookEvent = procedure(const MoveForward: Boolean) of object;
+  TGetBookEvent = procedure(var BookRecord: TBookRecord) of object;
 
   // --------------------------------------------------------------------------
   PFileData = ^TFileData;
