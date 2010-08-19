@@ -2306,6 +2306,8 @@ begin
   finally
     DisableControls(True);
   end;
+
+  InitCollection(True);
 end;
 
 //
@@ -6061,21 +6063,23 @@ var
   BookFormat: TBookFormat;
   msgNotFound: string;
 begin
-  BookFormat := BookRecord.GetBookFormat;
   BookFileName := BookRecord.GetBookFileName;
 
-  if (BookFormat = bfFb2Zip) or (BookFormat = bfFbd) then
-    msgNotFound := rstrArchiveNotFound
-  else
-    msgNotFound := rstrFileNotFound;
   if not FileExists(BookFileName) then
   begin
     if IsLocal then
-      raise Exception.CreateFmt(msgNotFound, [BookFileName]);
-    Exit;
-  end;
-
-  Result := BookRecord.GetBookDescriptorStream;
+    begin
+      BookFormat := BookRecord.GetBookFormat;
+      if (BookFormat = bfFb2Zip) or (BookFormat = bfFbd) then
+        msgNotFound := rstrArchiveNotFound
+      else
+        msgNotFound := rstrFileNotFound;
+      MHLShowError(Format(msgNotFound, [BookFileName]));
+    end;
+    Result := nil;
+  end
+  else
+    Result := BookRecord.GetBookDescriptorStream;
 end;
 
 procedure TfrmMain.ShowBookInfo(Sender: TObject);
@@ -6438,6 +6442,10 @@ begin
   frmConvertToFBD.EditorMode := miConverToFBD.Tag <> 0;
 
   frmConvertToFBD.ShowModal;
+
+  // reload the node data from DB after editing:
+  DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, BookRecord, True);
+  BookRecord.FillBookData(Data);
 end;
 
 procedure TfrmMain.N33Click(Sender: TObject);
