@@ -190,6 +190,7 @@ type
     function GetReview(BookID: Integer; DatabaseID: Integer): string;
     function SetReview(BookID: Integer; DatabaseID: Integer; const Review: string): Integer;
     procedure SetLocal(BookID: Integer; DatabaseID: Integer; Value: Boolean);
+    procedure SetFileName(const BookID: Integer; const DatabaseID: Integer; const FileName: string);
 
     //
     // Работа с группами
@@ -739,6 +740,17 @@ begin
   begin
     AllBooks.Edit;
     AllBooksLocal.Value := Value;
+    AllBooks.Post;
+  end;
+end;
+
+procedure TDMUser.SetFileName(const BookID: Integer; const DatabaseID: Integer; const FileName: string);
+begin
+  Assert(AllBooks.Active);
+  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  begin
+    AllBooks.Edit;
+    AllBooksFileName.Value := FileName;
     AllBooks.Post;
   end;
 end;
