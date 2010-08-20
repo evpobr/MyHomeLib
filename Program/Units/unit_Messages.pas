@@ -21,7 +21,8 @@ interface
 
 uses
   Windows,
-  Messages;
+  Messages,
+  unit_Globals;
 
 const
   WM_MHL_BASE = WM_APP + $0500;
@@ -31,8 +32,7 @@ const
 type
   PBookLocalStatus = ^TBookLocalStatus;
   TBookLocalStatus = record
-    BookID: Integer;
-    DatabaseID: Integer;
+    BookKey: TBookKey;
     LocalStatus: Boolean;
   end;
 
@@ -44,8 +44,7 @@ type
   end;
 
 procedure BookLocalStatusChanged(
-  BookID: Integer;
-  DatabaseID: Integer;
+  const BookKey: TBookKey;
   LocalStatus: Boolean
 );
 
@@ -55,16 +54,14 @@ uses
   Forms;
 
 procedure BookLocalStatusChanged(
-  BookID: Integer;
-  DatabaseID: Integer;
+  const BookKey: TBookKey;
   LocalStatus: Boolean
 );
 var
   Param: PBookLocalStatus;
 begin
   New(Param);
-  Param^.BookID := BookID;
-  Param^.DatabaseID := DatabaseID;
+  Param^.BookKey := BookKey;
   Param^.LocalStatus := LocalStatus;
 
   PostMessage(

@@ -116,7 +116,7 @@ begin
   begin
     Data := Tree.GetNodeData(Node);
     Assert(Assigned(Data));
-    if Data.BookID = ID then
+    if Data.BookKey.BookID = ID then
     begin
       Tree.Selected[Node] := True;
       Break;

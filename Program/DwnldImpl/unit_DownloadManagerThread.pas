@@ -38,8 +38,7 @@ type
     FProcessed: integer;
     FTotal: integer;
 
-    FBookID: Integer;
-    FDatabaseID: Integer;
+    FBookKey: TBookKey;
 
     FCurrentNode : PVirtualNode;
     FCurrentData : PDownloadData;
@@ -175,8 +174,7 @@ begin
     FCurrentData := frmMain.tvDownloadList.GetNodeData(FCurrentNode);
     if FCurrentData.State <> dsOk then
     begin
-      FBookID := FCurrentData^.BookID;
-      FDatabaseID := FCurrentData^.DatabaseID;
+      FBookKey := FCurrentData^.BookKey;
 
       FCurrentData.State := dsRun;
       frmMain.tvDownloadList.RepaintNode(FCurrentNode);
@@ -274,7 +272,7 @@ begin
       if FError then
         Sleep(30000);
       Sleep(Settings.DwnldInterval);
-      FError := not FDownloader.Download(FBookID, FDatabaseID);
+      FError := not FDownloader.Download(FBookKey);
       Synchronize(Finished);
 
       Synchronize(GetCurrentFile);

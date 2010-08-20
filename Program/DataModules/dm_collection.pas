@@ -192,13 +192,13 @@ type
 
   public type
     TGUIUpdateExtraProc = reference to procedure(
-      BookID: Integer; DatabaseID: Integer;
+      const BookKey: TBookKey;
       extra: TBookExtra
       );
 
   strict private
-    procedure UpdateExtra(BookID: Integer; DatabaseID: Integer; UpdateProc: TUpdateExtraProc);
-    procedure ClearExtra(BookID: Integer; DatabaseID: Integer; UpdateProc: TUpdateExtraProc);
+    procedure UpdateExtra(const BookKey: TBookKey; UpdateProc: TUpdateExtraProc);
+    procedure ClearExtra(const BookKey: TBookKey; UpdateProc: TUpdateExtraProc);
 
     procedure GetAuthor(AuthorID: Integer; var Author: TAuthorData);
     procedure GetBookAuthors(BookID: Integer; var BookAuthors: TBookAuthors);
@@ -226,7 +226,7 @@ type
     procedure SetActiveTable(Tag: Integer); deprecated;
 
     // TDownloader.DoDownload
-    procedure GetBookLibID(BookID: Integer; DatabaseID: Integer; out ARes: string); deprecated;
+    procedure GetBookLibID(const BookKey: TBookKey; out ARes: string); deprecated;
 
     // TExport2XMLThread.WorkFunction
     // TExport2INPXThread.WorkFunction
@@ -244,33 +244,33 @@ type
     //
     // Получение полной информации о книге
     //
-    procedure GetBookRecord(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord; LoadMemos: Boolean); overload;
+    procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord; LoadMemos: Boolean); overload;
 
     //
     // Обновление полей
     //
-    procedure SetLocal(BookID: Integer; DatabaseID: Integer; AState: Boolean);
-    procedure SetFileName(const BookID: Integer; const DatabaseID: Integer; const FileName: string);
+    procedure SetLocal(const BookKey: TBookKey; AState: Boolean);
+    procedure SetFileName(const BookKey: TBookKey; const FileName: string);
 
     //
     // Обновление полей из таблицы Extra
     //
-    procedure SetRate(BookID: Integer; DatabaseID: Integer; Rate: Integer);
-    procedure SetProgress(BookID: Integer; DatabaseID: Integer; Progress: Integer);
+    procedure SetRate(const BookKey: TBookKey; Rate: Integer);
+    procedure SetProgress(const BookKey: TBookKey; Progress: Integer);
 
     //
     // NOTE: Эти методы сейчас не используются.
     //
-    function GetAnnotation(BookID: Integer; DatabaseID: Integer): string;
-    procedure SetAnnotation(BookID: Integer; DatabaseID: Integer; const Annotation: string);
+    function GetAnnotation(const BookKey: TBookKey): string;
+    procedure SetAnnotation(const BookKey: TBookKey; const Annotation: string);
 
-    function GetReview(BookID: Integer; DatabaseID: Integer): string;
-    function SetReview(BookID: Integer; DatabaseID: Integer; const Review: string): Integer;
+    function GetReview(const BookKey: TBookKey): string;
+    function SetReview(const BookKey: TBookKey; const Review: string): Integer;
 
     //
     // Работа с группами
     //
-    procedure AddBookToGroup(BookID: Integer; DatabaseID: Integer; GroupID: Integer);
+    procedure AddBookToGroup(const BookKey: TBookKey; GroupID: Integer);
 
     //
     // Статистика по текущей коллекции
@@ -314,13 +314,13 @@ uses
 
 { TDMMain }
 
-procedure TDMCollection.GetBookLibID(BookID: Integer; DatabaseID: Integer; out ARes: String);
+procedure TDMCollection.GetBookLibID(const BookKey: TBookKey; out ARes: String);
 begin
-  if DatabaseID = DMUser.ActiveCollection.ID then
+  if BookKey.DatabaseID = DMUser.ActiveCollection.ID then
   begin
     Assert(AllBooks.Active);
 
-    if not AllBooks.Locate(BOOK_ID_FIELD, BookID, []) then
+    if not AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
     begin
       Assert(False);
       Exit;
@@ -329,7 +329,7 @@ begin
     ARes := AllBooksLibID.AsString;
   end
   else
-    DMUser.GetBookLibID(BookID, DatabaseID, ARes);
+    DMUser.GetBookLibID(BookKey, ARes);
 end;
 
 procedure TDMCollection.GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
@@ -503,27 +503,26 @@ end;
 
 procedure TDMCollection.GetCurrentBook(var R: TBookRecord);
 var
-  BookID: Integer;
-  DatabaseID: Integer;
+  BookKey: TBookKey;
 begin
-  BookID := FActiveTable.FieldByName(BOOK_ID_FIELD).Value;
+  BookKey.BookID := FActiveTable.FieldByName(BOOK_ID_FIELD).Value;
   if FActiveTable = tblBooks then
-    DatabaseID := DMUser.ActiveCollection.ID
+    BookKey.DatabaseID := DMUser.ActiveCollection.ID
   else
-    DatabaseID := FActiveTable.FieldByName(DB_ID_FIELD).AsInteger;
+    BookKey.DatabaseID := FActiveTable.FieldByName(DB_ID_FIELD).AsInteger;
 
-  GetBookRecord(BookID, DatabaseID, R, True);
+  GetBookRecord(BookKey, R, True);
 end;
 
-procedure TDMCollection.GetBookRecord(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord; LoadMemos: Boolean);
+procedure TDMCollection.GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord; LoadMemos: Boolean);
 begin
   BookRecord.Clear;
 
-  if DatabaseID = DMUser.ActiveCollection.ID then
+  if BookKey.DatabaseID = DMUser.ActiveCollection.ID then
   begin
     Assert(AllBooks.Active);
 
-    if not AllBooks.Locate(BOOK_ID_FIELD, BookID, []) then
+    if not AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
     begin
       Assert(False);
       Exit;
@@ -547,13 +546,15 @@ begin
     BookRecord.LibRate := AllBooksLibRate.Value;
     BookRecord.KeyWords := AllBooksKeyWords.Value;
     BookRecord.NodeType := ntBookInfo;
-    BookRecord.BookID := AllBooksBookID.Value;
+    BookRecord.BookKey.BookID := AllBooksBookID.Value;
+    BookRecord.BookKey.DatabaseID := DMUser.ActiveCollection.ID;
+    BookRecord.CollectionRoot := DMUser.ActiveCollection.RootPath;
 
     //
     // данные из таблицы Extra
     //
     Assert(AllExtra.Active);
-    if AllExtra.Locate(BOOK_ID_FIELD, BookID, []) then
+    if AllExtra.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
     begin
       BookRecord.Rate := AllExtraRate.Value;
       BookRecord.Progress := AllExtraProgress.Value;
@@ -570,43 +571,41 @@ begin
       end;
     end;
 
-    GetBookGenres(BookID, BookRecord.Genres, @(BookRecord.RootGenre));
-    GetBookAuthors(BookID, BookRecord.Authors);
+    GetBookGenres(BookKey.BookID, BookRecord.Genres, @(BookRecord.RootGenre));
+    GetBookAuthors(BookKey.BookID, BookRecord.Authors);
 
     BookRecord.CollectionName := DMUser.ActiveCollection.Name;
-    BookRecord.CollectionRoot := DMUser.ActiveCollection.RootPath;
-    BookRecord.DatabaseID := DMUser.ActiveCollection.ID;
   end
   else
-    DMUser.GetBookRecord(BookID, DatabaseID, BookRecord);
+    DMUser.GetBookRecord(BookKey, BookRecord);
 
 end;
 
-procedure TDMCollection.SetLocal(BookID: Integer; DatabaseID: Integer; AState: Boolean);
+procedure TDMCollection.SetLocal(const BookKey: TBookKey; AState: Boolean);
 begin
-  Assert(DatabaseID = DMUser.ActiveCollection.ID);
+  Assert(BookKey.DatabaseID = DMUser.ActiveCollection.ID);
 
-  if AllBooks.Locate(BOOK_ID_FIELD, BookID, []) then
+  if AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
   begin
     AllBooks.Edit;
     AllBooksLocal.Value := AState;
     AllBooks.Post;
   end;
 
-  DMUser.SetLocal(BookID, DatabaseID, AState);
+  DMUser.SetLocal(BookKey, AState);
 end;
 
-procedure TDMCollection.UpdateExtra(BookID, DatabaseID: Integer; UpdateProc: TUpdateExtraProc);
+procedure TDMCollection.UpdateExtra(const BookKey: TBookKey; UpdateProc: TUpdateExtraProc);
 begin
-  Assert(DatabaseID = DMUser.ActiveCollection.ID);
+  Assert(BookKey.DatabaseID = DMUser.ActiveCollection.ID);
   Assert(AllExtra.Active);
 
-  if AllExtra.Locate(BOOK_ID_FIELD, BookID, []) then
+  if AllExtra.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
     AllExtra.Edit
   else
   begin
     AllExtra.Append;
-    AllExtraBookID.Value := BookID;
+    AllExtraBookID.Value := BookKey.BookID;
   end;
 
   UpdateProc;
@@ -614,12 +613,12 @@ begin
   AllExtra.Post;
 end;
 
-procedure TDMCollection.ClearExtra(BookID: Integer; DatabaseID: Integer; UpdateProc: TUpdateExtraProc);
+procedure TDMCollection.ClearExtra(const BookKey: TBookKey; UpdateProc: TUpdateExtraProc);
 begin
-  Assert(DatabaseID = DMUser.ActiveCollection.ID);
+  Assert(BookKey.DatabaseID = DMUser.ActiveCollection.ID);
   Assert(AllExtra.Active);
 
-  if AllExtra.Locate(BOOK_ID_FIELD, BookID, []) then
+  if AllExtra.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
   begin
     AllExtra.Edit;
     UpdateProc;
@@ -639,13 +638,13 @@ begin
   FHideDeleted := True;
 end;
 
-procedure TDMCollection.SetRate(BookID, DatabaseID, Rate: Integer);
+procedure TDMCollection.SetRate(const BookKey: TBookKey; Rate: Integer);
 begin
-  Assert(DatabaseID = DMUser.ActiveCollection.ID);
+  Assert(BookKey.DatabaseID = DMUser.ActiveCollection.ID);
 
   if Rate = 0 then
     ClearExtra(
-      BookID, DatabaseID,
+      BookKey,
       procedure
       begin
         AllExtraRate.Clear;
@@ -653,7 +652,7 @@ begin
     )
   else
     UpdateExtra(
-      BookID, DatabaseID,
+      BookKey,
       procedure
       begin
         AllExtraRate.Value := Rate;
@@ -663,16 +662,16 @@ begin
   //
   // Обновим информацию в группах
   //
-  DMUser.SetRate(BookID, DatabaseID, Rate);
+  DMUser.SetRate(BookKey, Rate);
 end;
 
-procedure TDMCollection.SetProgress(BookID, DatabaseID, Progress: Integer);
+procedure TDMCollection.SetProgress(const BookKey: TBookKey; Progress: Integer);
 begin
-  Assert(DatabaseID = DMUser.ActiveCollection.ID);
+  Assert(BookKey.DatabaseID = DMUser.ActiveCollection.ID);
 
   if Progress = 0 then
     ClearExtra(
-      BookID, DatabaseID,
+      BookKey,
       procedure
       begin
         AllExtraProgress.Clear;
@@ -680,7 +679,7 @@ begin
     )
   else
     UpdateExtra(
-      BookID, DatabaseID,
+      BookKey,
       procedure
       begin
         AllExtraProgress.Value := Progress;
@@ -690,55 +689,55 @@ begin
   //
   // Обновим информацию в группах
   //
-  DMUser.SetProgress(BookID, DatabaseID, Progress);
+  DMUser.SetProgress(BookKey, Progress);
 end;
 
-procedure TDMCollection.SetFileName(const BookID: Integer; const DatabaseID: Integer; const FileName: string);
+procedure TDMCollection.SetFileName(const BookKey: TBookKey; const FileName: string);
 begin
-  Assert(DatabaseID = DMUser.ActiveCollection.ID);
+  Assert(BookKey.DatabaseID = DMUser.ActiveCollection.ID);
   Assert(AllBooks.Active);
 
-  if AllBooks.Locate(BOOK_ID_FIELD, BookID, []) then
+  if AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
   begin
     AllBooks.Edit;
     AllBooksFileName.Value := FileName;
     AllBooks.Post;
   end;
 
-  DMUser.SetFileName(BookID, DatabaseID, FileName);
+  DMUser.SetFileName(BookKey, FileName);
 end;
 
-function TDMCollection.GetAnnotation(BookID: Integer; DatabaseID: Integer): string;
+function TDMCollection.GetAnnotation(const BookKey: TBookKey): string;
 begin
   Assert(AllExtra.Active);
 
-  if DatabaseID = DMUser.ActiveCollection.ID then
+  if BookKey.DatabaseID = DMUser.ActiveCollection.ID then
   begin
-    if AllExtra.Locate(BOOK_ID_FIELD, BookID, []) then
+    if AllExtra.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
     begin
       Result := AllExtraAnnotation.Value;
     end;
   end
   else
-    Result := DMUser.GetAnnotation(BookID, DatabaseID);
+    Result := DMUser.GetAnnotation(BookKey);
 end;
 
-procedure TDMCollection.SetAnnotation(BookID: Integer; DatabaseID: Integer; const Annotation: string);
+procedure TDMCollection.SetAnnotation(const BookKey: TBookKey; const Annotation: string);
 var
   NewAnnotation: string;
 begin
-  Assert(DatabaseID = DMUser.ActiveCollection.ID);
+  Assert(BookKey.DatabaseID = DMUser.ActiveCollection.ID);
 
   NewAnnotation := Trim(Annotation);
 
-  if AllBooks.Locate(BOOK_ID_FIELD, BookID, []) then
+  if AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
   begin
     AllBooks.Edit;
 
     if NewAnnotation = '' then
     begin
       ClearExtra(
-        BookID, DatabaseID,
+        BookKey,
         procedure
         begin
           AllExtraAnnotation.Clear;
@@ -748,7 +747,7 @@ begin
     else
     begin
       UpdateExtra(
-        BookID, DatabaseID,
+        BookKey,
         procedure
         begin
           AllExtraAnnotation.Value := NewAnnotation;
@@ -761,42 +760,42 @@ begin
     //
     // Обновим информацию в группах
     //
-    DMUser.SetAnnotation(BookID, DatabaseID, NewAnnotation);
+    DMUser.SetAnnotation(BookKey, NewAnnotation);
   end;
 end;
 
-function TDMCollection.GetReview(BookID: Integer; DatabaseID: Integer): string;
+function TDMCollection.GetReview(const BookKey: TBookKey): string;
 begin
   Assert(AllExtra.Active);
 
-  if DatabaseID = DMUser.ActiveCollection.ID then
+  if BookKey.DatabaseID = DMUser.ActiveCollection.ID then
   begin
-    if AllExtra.Locate(BOOK_ID_FIELD, BookID, []) then
+    if AllExtra.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
     begin
       Result := AllExtraReview.Value;
     end;
   end
   else
-    Result := DMUser.GetReview(BookID, DatabaseID);
+    Result := DMUser.GetReview(BookKey);
 end;
 
-function TDMCollection.SetReview(BookID: Integer; DatabaseID: Integer; const Review: string): Integer;
+function TDMCollection.SetReview(const BookKey: TBookKey; const Review: string): Integer;
 var
   NewReview: string;
 begin
-  Assert(DatabaseID = DMUser.ActiveCollection.ID);
+  Assert(BookKey.DatabaseID = DMUser.ActiveCollection.ID);
 
   Result := 0;
   NewReview := Trim(Review);
 
-  if AllBooks.Locate(BOOK_ID_FIELD, BookID, []) then
+  if AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
   begin
     AllBooks.Edit;
 
     if NewReview = '' then
     begin
       ClearExtra(
-        BookID, DatabaseID,
+        BookKey,
         procedure
         begin
           AllExtraReview.Clear;
@@ -807,7 +806,7 @@ begin
     else
     begin
       UpdateExtra(
-        BookID, DatabaseID,
+        BookKey,
         procedure
         begin
           AllExtraReview.Value := NewReview;
@@ -822,21 +821,21 @@ begin
     //
     // Обновим информацию в группах
     //
-    Result := Result or DMUser.SetReview(BookID, DatabaseID, NewReview);
+    Result := Result or DMUser.SetReview(BookKey, NewReview);
   end;
 end;
 
-procedure TDMCollection.AddBookToGroup(BookID: Integer; DatabaseID: Integer; GroupID: Integer);
+procedure TDMCollection.AddBookToGroup(const BookKey: TBookKey; GroupID: Integer);
 var
   BookRecord: TBookRecord;
 begin
-  Assert(DatabaseID = DMUser.ActiveCollection.ID);
+  Assert(BookKey.DatabaseID = DMUser.ActiveCollection.ID);
   Assert(AllBooks.Active);
   Assert(AllExtra.Active);
 
-  GetBookRecord(BookID, DatabaseID, BookRecord, True);
+  GetBookRecord(BookKey, BookRecord, True);
 
-  DMUser.AddBookToGroup(BookID, DatabaseID, GroupID, BookRecord);
+  DMUser.AddBookToGroup(BookKey, GroupID, BookRecord);
 end;
 
 function TDMCollection.UpdateFilters(Parts: TFilterParts): TDataParts;
@@ -1090,10 +1089,9 @@ var
   group: TBookGroup;
   groupBook: TGroupBook;
 
-  DatabaseID: Integer;
-  BookID: Integer;
+  BookKey: TBookKey;
 
-  function GetBookID(bookInfo: TBookInfo; out BookID: Integer): Boolean;
+  function GetBookKey(bookInfo: TBookInfo; out BookKey: TBookKey): Boolean;
   begin
     if bookInfo.LibID = 0 then
       Result := AllBooks.Locate(BOOK_ID_FIELD, bookInfo.BookID, [])
@@ -1101,7 +1099,9 @@ var
       Result := AllBooks.Locate(BOOK_LIBID_FIELD, bookInfo.LibID, []);
 
     if Result then
-      BookID := AllBooksBookID.Value;
+    begin
+      BookKey.Init(AllBooksBookID.Value, DMUser.ActiveCollection.ID);
+    end;
   end;
 
 begin
@@ -1110,17 +1110,14 @@ begin
   Assert(AllBooks.Active);
   Assert(AllExtra.Active);
 
-  DatabaseID := DMUser.ActiveCollection.ID;
-
   //
   // Заполним рейтинги, аннотации и признак прочитанности
   //
   for extra in data.Extras do
   begin
-    if GetBookID(extra, BookID) then
+    if GetBookKey(extra, BookKey) then
     begin
-      UpdateExtra(
-        BookID, DatabaseID,
+      UpdateExtra(BookKey,
         procedure
         begin
           if extra.Rating <> 0 then
@@ -1135,12 +1132,12 @@ begin
       //
       // Обновим информацию в группах
       //
-      DMUser.SetExtra(BookID, DatabaseID, extra);
+      DMUser.SetExtra(BookKey, extra);
 
       //
       // Дадим возможность главному окну обновить измененные ноды
       //
-      guiUpdateCallback(BookID, DatabaseID, extra);
+      guiUpdateCallback(BookKey, extra);
     end;
   end;
 
@@ -1156,9 +1153,9 @@ begin
   begin
     for groupBook in group do
     begin
-      if GetBookID(groupBook, BookID) then
+      if GetBookKey(groupBook, BookKey) then
       begin
-        AddBookToGroup(BookID, DatabaseID, group.GroupID);
+        AddBookToGroup(BookKey, group.GroupID);
       end;
     end;
   end;

@@ -29,7 +29,8 @@ uses
   IdStack,
   IdStackConsts,
   IdWinsock2,
-  IdMultipartFormData;
+  IdMultipartFormData,
+  unit_Globals;
 
 type
   TQueryKind = (qkGet, qkPost);
@@ -63,7 +64,7 @@ type
 
     FFile: string;
 
-    function DoDownload(BookID: Integer; DatabaseID: Integer): Boolean;
+    function DoDownload(const BookKey: TBookKey): Boolean;
     function Query(Kind: TQueryKind; const URL: string): boolean;
     procedure AddParam(const Name: string; const Value: string);
     function CheckResponce: boolean;
@@ -83,7 +84,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    function Download(BookID: Integer; DatabaseID: Integer): boolean;
+    function Download(const BookKey: TBookKey): boolean;
     procedure Stop;
 
     property IgnoreErrors: Boolean read FIgnoreErrors write FIgnoreErrors;
@@ -98,7 +99,6 @@ uses
   Forms,
   StrUtils,
   DateUtils,
-  unit_Globals,
   unit_Settings,
   dm_collection,
   dm_user,
@@ -193,17 +193,17 @@ begin
   end;
 end;
 
-function TDownloader.Download(BookID: Integer; DatabaseID: Integer): boolean;
+function TDownloader.Download(const BookKey: TBookKey): boolean;
 var
   BookRecord: TBookRecord;
 begin
   Result := False;
 
-  DMCollection.GetBookRecord(BookID, DatabaseID, BookRecord, false);
+  DMCollection.GetBookRecord(BookKey, BookRecord, false);
   FFile := BookRecord.GetBookFileName;
-  if FileExists(FFile) or DoDownload(BookID, DatabaseID) then
+  if FileExists(FFile) or DoDownload(BookKey) then
   begin
-    unit_Messages.BookLocalStatusChanged(BookID, DatabaseID, True);
+    unit_Messages.BookLocalStatusChanged(BookKey, True);
     Result := True;
   end;
 end;
@@ -258,7 +258,7 @@ begin
   FOnSetComment(rstrReadyMessage, '');
 end;
 
-function TDownloader.DoDownload(BookID: Integer; DatabaseID: Integer): Boolean;
+function TDownloader.DoDownload(const BookKey: TBookKey): Boolean;
 var
   ConstParams: TStringList;
   BookLibID: string;
@@ -268,7 +268,7 @@ var
 begin
   ConstParams := TStringList.Create;
   try
-    DMCollection.GetBookLibID(BookID, DatabaseID, BookLibID);
+    DMCollection.GetBookLibID(BookKey, BookLibID);
     ConstParams.Values['LIBID'] := BookLibID;
     ConstParams.Values['USER'] := DMUser.ActiveCollection.User;
     ConstParams.Values['PASS'] := DMUser.ActiveCollection.Password;

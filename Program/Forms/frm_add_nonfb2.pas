@@ -384,6 +384,8 @@ end;
 
 procedure TfrmAddnonfb2.dtnConvertClick(Sender: TObject);
 begin
+  // TODO: fix to save the cover
+
   Screen.Cursor := crHourGlass;
   frmAddnonfb2.Enabled := False;
   try
@@ -512,6 +514,8 @@ procedure TfrmAddnonfb2.btnLoadClick(Sender: TObject);
 var
   FileName: string;
 begin
+  // TODO: uncomment when TfrmAddnonfb2.dtnConvertClick is fixed to actually save the cover
+  Assert(False, 'Not implemented yet!');
   if GetFileName(fnOpenCoverImage, FileName) then
     FBD.LoadCoverFromFile(FileName);
 end;
@@ -523,6 +527,8 @@ end;
 
 procedure TfrmAddnonfb2.btnPasteCoverClick(Sender: TObject);
 begin
+  // TODO: uncomment when TfrmAddnonfb2.dtnConvertClick is fixed to actually save the cover
+  Assert(False, 'Not implemented yet!');
   FBD.LoadCoverFromClpbrd;
 end;
 
