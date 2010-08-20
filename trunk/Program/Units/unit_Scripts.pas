@@ -63,7 +63,8 @@ uses
   SysUtils,
   Forms,
   unit_Errors,
-  StrUtils;
+  StrUtils,
+  unit_Helpers;
 
 { TScriptC }
 
@@ -88,14 +89,7 @@ var
   P: string;
 begin
   P := IfThen(TmpParams = '', Params, TmpParams);
-  AHInst := ShellAPI.ShellExecute(
-    Application.Handle,
-    nil,
-    PChar(Path),
-    PChar(P),
-    nil,
-    SW_SHOWNORMAL
-    );
+  AHInst := SimpleShellExecute(Application.Handle, Path, SW_SHOWNORMAL, P, '');
   TmpParams := '';
   if AHInst <= 32 then
     raise Exception.Create(SysErrorMessage(AHInst));

@@ -100,9 +100,9 @@ type
   public
     // TODO: RESTORE procedure AutoMode;
 
+    property OnGetBook: TGetBookEvent read FOnGetBook write FOnGetBook;
     property OnReadBook: TBookEvent read FOnReadBook write FOnReadBook;
     property OnSelectBook: TSelectBookEvent read FOnSelectBook write FOnSelectBook;
-    property OnGetBook: TGetBookEvent read FOnGetBook write FOnGetBook;
     property OnChangeBook2Zip: TBookEvent read FOnChangeBook2Zip write FOnChangeBook2Zip;
   end;
 
@@ -248,8 +248,6 @@ var
   i: Integer;
   AuthorsFBD: TAuthorDataList;
 begin
-  Result := False;
-
   SetLength(AuthorsFBD, FBookRecord.AuthorCount);
   for i := 0 to FBookRecord.AuthorCount - 1 do
   begin

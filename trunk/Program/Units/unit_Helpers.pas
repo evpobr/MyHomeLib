@@ -97,7 +97,14 @@ type
     );
   end;
 
-procedure ShellOpenExecute(hWnd: HWND; const FileName: string);
+function SimpleShellExecute(
+  hWnd: HWND;
+  const FileName: string;
+  ShowCmd: Integer = SW_SHOWNORMAL;
+  const Parameters: string = '';
+  const Operation: string = 'open';
+  const Directory: string = ''
+  ): Cardinal;
 
 implementation
 
@@ -533,9 +540,16 @@ begin
   end;
 end;
 
-procedure ShellOpenExecute(hWnd: HWND; const FileName: string);
+function SimpleShellExecute(
+  hWnd: HWND;
+  const FileName: string;
+  ShowCmd: Integer = SW_SHOWNORMAL;
+  const Parameters: string = '';
+  const Operation: string = 'open';
+  const Directory: string = ''
+): Cardinal;
 begin
-  ShellAPI.ShellExecute(hWnd, 'open', PChar(FileName), nil, nil, SW_SHOW);
+  Result := ShellAPI.ShellExecute(hWnd, PChar(Operation), PChar(FileName), PChar(Parameters), PChar(Directory), ShowCmd);
 end;
 
 end.

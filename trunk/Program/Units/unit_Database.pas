@@ -860,7 +860,6 @@ function TMHLLibrary.InsertBook(BookRecord: TBookRecord; CheckFileName, FullChec
 var
   i: Integer;
   ASeqNumber: Integer;
-  Genre: TGenreData;
   Author: TAuthorData;
 
   Res: Boolean;

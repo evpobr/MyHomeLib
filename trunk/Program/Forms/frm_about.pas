@@ -71,7 +71,7 @@ end;
 
 procedure TfrmAbout.RzURLLabel1LinkClick(Sender: TObject; const Link: string; LinkType: TSysLinkType);
 begin
-  ShellOpenExecute(Handle, Link);
+  SimpleShellExecute(Handle, Link);
 end;
 
 end.
