@@ -470,7 +470,7 @@ begin
   FBookRecord.Code := 0;
   FBookRecord.InsideNo := 0;
   FBookRecord.SeqNumber := StrToIntDef(edSN.Text, 0);
-  FBookRecord.LibID := DMUser.ActiveCollection.ID;
+  FBookRecord.LibID := 0;
   FBookRecord.Deleted := False;
   FBookRecord.Size := Data.Size;
   FBookRecord.Date := Now;
