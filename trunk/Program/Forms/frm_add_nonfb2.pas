@@ -139,6 +139,7 @@ type
 
   private
     FBookRecord: TBookRecord;
+    FOnSetControlsState: TChangeStateEvent;
 
     procedure PrepareBookRecord;
     procedure CommitData;
@@ -148,6 +149,7 @@ type
     procedure SortTree;
     function FillFBDData: Boolean;
   public
+    property OnSetControlsState: TChangeStateEvent read FOnSetControlsState write FOnSetControlsState;
 
   private
     FLibrary: TMHLLibrary;
@@ -163,7 +165,6 @@ implementation
 uses
   IOUtils,
   dm_user,
-  frm_main,
   frm_genre_tree,
   unit_TreeUtils,
   unit_Consts,
@@ -240,7 +241,10 @@ procedure TfrmAddnonfb2.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   FLibrary.Active := False;
   FreeAndNil(FLibrary);
-  frmMain.DisableControls(True);
+
+  Assert(Assigned(FOnSetControlsState));
+  FOnSetControlsState(True);
+
   Settings.ForceConvertToFBD := cbForceConvertToFBD.Checked;
   CanClose := True;
 end;

@@ -76,9 +76,17 @@ type
   private
     FChanged: Boolean;
 
+    FOnHelp: TOnHelpEvent;
+    FOnUpdateBook: TBookEvent;
+    FOnSelectBook: TSelectBookEvent;
+
     procedure FillLists;
     function SaveData: Boolean;
+    procedure DoNextBook(const MoveForward: Boolean);
   public
+    property OnHelp: TOnHelpEvent read FOnHelp write FOnHelp;
+    property OnSelectBook: TSelectBookEvent read FOnSelectBook write FOnSelectBook;
+    property OnUpdateBook: TBookEvent read FOnUpdateBook write FOnUpdateBook;
   end;
 
 var
@@ -90,7 +98,6 @@ uses
   dm_collection,
   dm_user,
   frm_genre_tree,
-  frm_main,
   frm_edit_author,
   unit_TreeUtils,
   VirtualTrees,
@@ -115,7 +122,10 @@ var
   Dummy: boolean;
 begin
   if Key = VK_F1 then
-    frmMain.HH(0, 0, Dummy);
+  begin
+    Assert(Assigned(FOnHelp));
+    FOnHelp(0, 0, Dummy)
+  end;
 end;
 
 procedure TfrmEditBookInfo.btnGenresClick(Sender: TObject);
@@ -198,20 +208,12 @@ end;
 
 procedure TfrmEditBookInfo.btnNextBookClick(Sender: TObject);
 begin
-  if SaveData then
-  begin
-    frmMain.SelectNextBook(FChanged, True);
-    FChanged := False;
-  end;
+  DoNextBook(True);
 end;
 
 procedure TfrmEditBookInfo.btnPrevBookClick(Sender: TObject);
 begin
-  if SaveData then
-  begin
-    frmMain.SelectNextBook(FChanged, False);
-    FChanged := False;
-  end;
+  DoNextBook(False);
 end;
 
 procedure TfrmEditBookInfo.FillLists;
@@ -262,6 +264,22 @@ begin
   end;
 
   Result := True;
+end;
+
+// Update the current book if changed and move on to another book.
+procedure TfrmEditBookInfo.DoNextBook(const MoveForward: Boolean);
+begin
+  Assert(Assigned(FOnUpdateBook) and Assigned(FOnSelectBook));
+
+  if SaveData then
+  begin
+    if FChanged then
+    begin
+      FOnUpdateBook;
+      FChanged := False;
+    end;
+    FOnSelectBook(MoveForward);
+  end;
 end;
 
 end.

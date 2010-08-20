@@ -94,7 +94,7 @@ type
     procedure SaveFBD;
     procedure EnableButtons(State: Boolean);
 
-    procedure InternalSelectBook(Next: Boolean);
+    procedure InternalSelectBook(MoveForward: Boolean);
     procedure DoGetBook(var BookRecord: TBookRecord);
 
   public
@@ -137,10 +137,8 @@ end;
 
 procedure TfrmConvertToFBD.btnOpenBookClick(Sender: TObject);
 begin
-  if Assigned(FOnReadBook) then
-    FOnReadBook
-  else
-    Assert(False);
+  Assert(Assigned(FOnReadBook));
+  FOnReadBook
 end;
 
 procedure TfrmConvertToFBD.btnPasteCoverClick(Sender: TObject);
@@ -156,17 +154,15 @@ begin
     FBD.LoadCoverFromFile(FileName);
 end;
 
-procedure TfrmConvertToFBD.InternalSelectBook(Next: Boolean);
+procedure TfrmConvertToFBD.InternalSelectBook(MoveForward: Boolean);
 begin
   if FBusy then
     Exit;
 
   SaveFBD;
 
-  if Assigned(FOnSelectBook) then
-    FOnSelectBook(Next)
-  else
-    Assert(False);
+  Assert(Assigned(FOnSelectBook));
+  FOnSelectBook(MoveForward);
 
   PrepareForm;
 end;
@@ -193,10 +189,8 @@ end;
 
 procedure TfrmConvertToFBD.DoGetBook(var BookRecord: TBookRecord);
 begin
-  if Assigned(FOnGetBook) then
-    FOnGetBook(BookRecord)
-  else
-    Assert(False);
+  Assert(Assigned(FOnGetBook));
+  FOnGetBook(BookRecord)
 end;
 
 procedure TfrmConvertToFBD.btnCancelClick(Sender: TObject);
@@ -312,10 +306,8 @@ begin
       FBD.Save(FEditorMode);
       if not FEditorMode then
       begin
-        if Assigned(FOnChangeBook2Zip) then
-          FOnChangeBook2Zip
-        else
-          Assert(False);
+        Assert(Assigned(FOnChangeBook2Zip));
+        FOnChangeBook2Zip
       end;
     end;
   finally
