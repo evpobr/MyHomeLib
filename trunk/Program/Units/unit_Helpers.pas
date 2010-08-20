@@ -42,24 +42,6 @@ procedure SetTextNoChange(editControl: TCustomEdit; const newText: string);
 
 function GetFileSize(const FileName: string): Integer;
 
-function GetOpenFileName(
-  const Title: string;
-  const DefaultExt: string;
-  const Filter: string;
-  out strFileName: string;
-  const dialogKey: string = '';
-  ExtraOptions: TOpenOptions = []
-  ): Boolean;
-
-function GetSaveFileName(
-  const Title: string;
-  const DefaultExt: string;
-  const Filter: string;
-  out strFileName: string;
-  const dialogKey: string = '';
-  ExtraOptions: TOpenOptions = []
-  ): Boolean;
-
 type
   TMHLFileName = (
     fnGenreList,
@@ -115,6 +97,7 @@ type
     );
   end;
 
+procedure ShellOpenExecute(hWnd: HWND; const FileName: string);
 
 implementation
 
@@ -124,6 +107,7 @@ uses
   Forms,
   unit_Settings,
   ShlObj,
+  ShellAPI,
   ActiveX;
 
 // ============================================================================
@@ -547,6 +531,11 @@ begin
   begin
     s := Copy(Value, StartPos, ValueLen);
   end;
+end;
+
+procedure ShellOpenExecute(hWnd: HWND; const FileName: string);
+begin
+  ShellAPI.ShellExecute(hWnd, 'open', PChar(FileName), nil, nil, SW_SHOW);
 end;
 
 end.

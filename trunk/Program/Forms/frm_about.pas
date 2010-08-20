@@ -57,7 +57,7 @@ implementation
 
 uses
   SysUtils,
-  ShellAPI;
+  unit_Helpers;
 
 resourcestring
   rstrAppVersionInfo = 'Версия: %s';
@@ -71,14 +71,7 @@ end;
 
 procedure TfrmAbout.RzURLLabel1LinkClick(Sender: TObject; const Link: string; LinkType: TSysLinkType);
 begin
-  ShellExecute(
-    Handle,
-    'open',
-    PChar(Link),
-    nil,
-    nil,
-    SW_SHOW
-  );
+  ShellOpenExecute(Handle, Link);
 end;
 
 end.

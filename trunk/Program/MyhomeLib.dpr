@@ -148,7 +148,6 @@ begin
   Application.CreateForm(TfrmEditBookInfo, frmEditBookInfo);
   Application.CreateForm(TfrmGenreTree, frmGenreTree);
   Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
-  Application.CreateForm(TfrmConvertToFBD, frmConvertToFBD);
   Application.CreateForm(TfrmAuthorList, frmAuthorList);
   frmSplash.Hide;  // Hide the splash screen
   finally
