@@ -256,6 +256,14 @@ const
   ALPHA_FILTER_ALL = '*';
   ALPHA_FILTER_NON_ALPHA = '#';
 
+  //
+  // позиции в коллекции
+  //
+  LAST_AUTHOR_ID = 'lastAuthorID';
+  LAST_AUTHOR_BOOK_ID = 'lastAuthorBookID';
+  LAST_SERIE_ID = 'lastSerieID';
+  LAST_SERIE_BOOK_ID = 'lastSerieBookID';
+
 type
   TColumnSet = set of 0 .. 255;
 

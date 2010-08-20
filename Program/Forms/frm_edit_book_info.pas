@@ -275,7 +275,7 @@ begin
   begin
     if FChanged then
     begin
-      FOnUpdateBook;
+      /// RESTORE !!! FOnUpdateBook;
       FChanged := False;
     end;
     FOnSelectBook(MoveForward);

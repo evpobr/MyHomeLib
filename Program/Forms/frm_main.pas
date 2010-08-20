@@ -712,14 +712,13 @@ type
     procedure CreateAlphabetToolbar;
 
     // Handlers:
-    procedure OnReadBookHandler;
-    procedure OnSelectBookHandler(const MoveForward: Boolean);
+    procedure OnReadBookHandler(const BookRecord: TBookRecord);
+    procedure OnSelectBookHandler(MoveForward: Boolean);
     procedure OnGetBookHandler(var BookRecord: TBookRecord);
-    procedure OnUpdateBookHandler;
-    procedure OnChangeBook2ZipHandler();
+    procedure OnUpdateBookHandler(const BookRecord: TBookRecord);
+    procedure OnChangeBook2ZipHandler(const BookRecord: TBookRecord);
     function OnHelpHandler(Command: Word; Data: Integer; var CallHelp: Boolean): Boolean;
     // Init callbacks for different forms:
-    procedure InitFrmConvertToFBDHandlers(const Data: PBookRecord);
     procedure InitFrmEditBookInfoHandlers;
 
   private type
@@ -785,9 +784,9 @@ type
     procedure OnSetSerieFilter(Sender: TObject);
 
   public
-    procedure OnSetControlsStateHandler(const State: Boolean);
+    procedure OnSetControlsStateHandler(State: Boolean);
 
-    procedure LocateBook(const Text: string; const MoveForward: Boolean);
+    procedure LocateBook(const Text: string; MoveForward: Boolean);
 
     procedure SetFormState;
 
@@ -815,6 +814,10 @@ type
     FFirstFoundBook: PVirtualNode;
     FLastBookRecord: TBookRecord;
 
+    //
+    // автор и серия, которым _реально_ принадлежат книги, показываемые сейчас в списке
+    // т. к. обновление списка происходит с задержкой, значения могут не совпадать в ID выбранных элементов
+    //
     FLastAuthorID: Integer;
     FLastSerieID: Integer;
 
@@ -841,7 +844,6 @@ type
     function GetTreeTag(const Sender: TBaseVirtualTree; const Column: Integer): Integer;
     function GetText(Tag: Integer; Data: PBookRecord): string;
     procedure SetHeaderPopUp;
-    procedure RestorePositions;
     procedure DownloadBooks;
     function CheckActiveDownloads: Boolean;
     procedure TheFirstRun;
@@ -850,7 +852,10 @@ type
     procedure StartLibUpdate;
     procedure CreateGroupsMenu;
     procedure SaveMainFormSettings;
+
     procedure SavePositions;
+    procedure RestorePositions;
+
     procedure PrepareFb2EditData(Data: PBookRecord; var R: TBookRecord);
     procedure SaveFb2DataAfterEdit(R: TBookRecord);
     function ShowNCWizard: Boolean;
@@ -1032,47 +1037,6 @@ begin
   end
   else
     inherited;
-end;
-
-procedure TfrmMain.RestorePositions;
-var
-  APage: Integer;
-begin
-  //
-  // TODO: реализовать следующий алгоритм работы
-  //
-  // эти пункты должны быть сделаны до вызова этой функции
-  //   1. Установить правильный фильтр
-  //   2. Загрузить список авторов
-  //
-  // задачи, выполняемые здесь
-  //   3. Найти в этом списке нужного автора. Возможно, будет лучше искать автора при выполнении пункта 2.
-  //   4. Загрузить книги автора
-  //   5. Найти нужную книгу
-  //
-
-  (*
-
-  TODO : RESTORE
-
-  APage := Settings.ActivePage;
-
-  pgControl.ActivePageIndex := PAGE_AUTHORS;
-  edLocateAuthor.Text := Settings.LastAuthor;
-  SelectBookById(tvBooksA, Settings.LastBookInAuthors);
-
-  pgControl.ActivePageIndex := PAGE_SERIES;
-  edLocateSeries.Text := Settings.LastSeries;
-  SelectBookById(tvBooksS, Settings.LastBookInSeries);
-
-  SelectBookById(tvBooksF, Settings.LastBookInFavorites);
-
-  SetTextNoChange(edLocateAuthor, '');
-  SetTextNoChange(edLocateSeries, '');
-
-  pgControl.ActivePageIndex := APage;
-
-  *)
 end;
 
 procedure TfrmMain.SetColumns;
@@ -1540,7 +1504,7 @@ begin
   Result := views[pgControl.ActivePageIndex];
 end;
 
-procedure TfrmMain.OnSetControlsStateHandler(const State: Boolean);
+procedure TfrmMain.OnSetControlsStateHandler(State: Boolean);
 begin
   frmMain.Enabled := State;
 end;
@@ -2233,6 +2197,12 @@ begin
     Exit;
   end;
 
+  Assert(False, 'Not implemented yet');
+
+  (*
+
+  TODO : RESTORE
+
   OnSetControlsStateHandler(False);
   try
     GetActiveTree(Tree);
@@ -2241,11 +2211,11 @@ begin
     if not Assigned(Data) or (Data^.nodeType <> ntBookInfo) then
       Exit;
 
-    InitFrmConvertToFBDHandlers(Data);
     frmConvertToFBD.AutoMode;
   finally
     OnSetControlsStateHandler(True);
   end;
+  *)
 end;
 
 //
@@ -2543,26 +2513,26 @@ begin
   AuthorData := tvAuthors.GetNodeData(tvAuthors.GetFirstSelected);
   if Assigned(AuthorData) then
   begin
-    ASettings.Values['lastAuthorID'] := IntToStr(AuthorData^.AuthorID);
+    ASettings.Values[LAST_AUTHOR_ID] := IntToStr(AuthorData^.AuthorID);
 
     if FLastAuthorID = AuthorData^.AuthorID then
     begin
       BookData := tvBooksA.GetNodeData(tvBooksA.GetFirstSelected);
       if Assigned(BookData) then
-        ASettings.Values['lastAuthorBookID'] := IntToStr(BookData^.BookKey.BookID);
+        ASettings.Values[LAST_AUTHOR_BOOK_ID] := IntToStr(BookData^.BookKey.BookID);
     end;
   end;
 
   SerieData:= tvSeries.GetNodeData(tvSeries.GetFirstSelected);
   if Assigned(SerieData) then
   begin
-    ASettings.Values['lastSerieID'] := IntToStr(SerieData^.SerieID);
+    ASettings.Values[LAST_SERIE_ID] := IntToStr(SerieData^.SerieID);
 
     if FLastSerieID = SerieData^.SerieID then
     begin
       BookData := tvBooksS.GetNodeData(tvBooksS.GetFirstSelected);
       if Assigned(BookData) then
-        ASettings.Values['lastSerieBookID'] := IntToStr(BookData^.BookKey.BookID);
+        ASettings.Values[LAST_SERIE_BOOK_ID] := IntToStr(BookData^.BookKey.BookID);
     end;
   end;
 
@@ -2603,6 +2573,47 @@ begin
   else
     Settings.LastBookInFavorites := -1;
   }
+end;
+
+procedure TfrmMain.RestorePositions;
+var
+  APage: Integer;
+begin
+  //
+  // TODO: реализовать следующий алгоритм работы
+  //
+  // эти пункты должны быть сделаны до вызова этой функции
+  //   1. Установить правильный фильтр
+  //   2. Загрузить список авторов
+  //
+  // задачи, выполняемые здесь
+  //   3. Найти в этом списке нужного автора. Возможно, будет лучше искать автора при выполнении пункта 2.
+  //   4. Загрузить книги автора
+  //   5. Найти нужную книгу
+  //
+
+  (*
+
+  TODO : RESTORE
+
+  APage := Settings.ActivePage;
+
+  pgControl.ActivePageIndex := PAGE_AUTHORS;
+  edLocateAuthor.Text := Settings.LastAuthor;
+  SelectBookById(tvBooksA, Settings.LastBookInAuthors);
+
+  pgControl.ActivePageIndex := PAGE_SERIES;
+  edLocateSeries.Text := Settings.LastSeries;
+  SelectBookById(tvBooksS, Settings.LastBookInSeries);
+
+  SelectBookById(tvBooksF, Settings.LastBookInFavorites);
+
+  SetTextNoChange(edLocateAuthor, '');
+  SetTextNoChange(edLocateSeries, '');
+
+  pgControl.ActivePageIndex := APage;
+
+  *)
 end;
 
 procedure TfrmMain.SaveMainFormSettings;
@@ -3789,83 +3800,65 @@ begin
 end;
 
 procedure TfrmMain.tbtbnReadClick(Sender: TObject);
-begin
-  OnReadBookHandler;
-end;
-
-procedure TfrmMain.OnReadBookHandler;
 var
   Tree: TBookTree;
   Data: PBookRecord;
-
-  WorkFile: string;
-
-  ID, i: Integer;
-
-  BookFileName: string;
-  BookFormat: TBookFormat;
-  SavedCursor: TCursor;
 begin
   GetActiveTree(Tree);
 
   Data := Tree.GetNodeData(Tree.GetFirstSelected);
-  if not Assigned(Data) or (Data.nodeType <> ntBookInfo) then
-    Exit;
+  if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
+  begin
+    OnReadBookHandler(Data^);
+  end;
+end;
+
+procedure TfrmMain.OnReadBookHandler(const BookRecord: TBookRecord);
+var
+  SavedCursor: TCursor;
+  BookFileName: string;
+  BookFormat: TBookFormat;
+  WorkFile: string;
+begin
+  Assert(BookRecord.nodeType = ntBookInfo);
 
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
-    BookFileName := Data^.GetBookFileName;
-    BookFormat := Data^.GetBookFormat;
+    BookFileName := BookRecord.GetBookFileName;
+    BookFormat := BookRecord.GetBookFormat;
 
-    if BookFormat = bfFb2Zip then
+    if BookFormat in [bfFb2Zip, bfFbd] then
     begin
-      //
-      if ActiveView = FavoritesView then
+      if BookFormat = bfFb2Zip then
       begin
-        i := DMUser.BooksByGroupDatabaseID.Value;
-        DMUser.tblBases.Locate(ID_FIELD, i, []);
-        if isOnlineCollection(DMUser.tblBasesCode.Value) then
+        DMUser.SelectCollection(BookRecord.BookKey.DatabaseID);
+
+        if isOnlineCollection(DMUser.CurrentCollection.CollectionType) then
         begin
           DownloadBooks;
-          if not FileExists(BookFileName) then
-            Exit;
-        end;
-        ID := DMUser.BooksByGroupBookID.Value;
-      end // if ActiveView
-      else
-      begin
-        if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
-        begin
-          DownloadBooks;
+          /// TODO : RESTORE ??? Tree.RepaintNode(Tree.GetFirstSelected);
           if not FileExists(BookFileName) then
             Exit; // если файла нет, значит закачка не удалась, и юзер об  этом уже знает
         end;
-        ID := Data^.BookKey.BookID;
-      end; // if .. else
+      end;
 
-      if not FileExists(BookFileName) then
-        raise EInvalidOp.CreateFmt(rstrArchiveNotFound, [BookFileName]);
-
-      Assert(Length(Data^.Authors) > 0);
+      Assert(Length(BookRecord.Authors) > 0);
       WorkFile := TPath.Combine(
         Settings.ReadPath,
-        Format('%s - %s.%d%s', [CheckSymbols(Data^.Authors[0].GetFullName), CheckSymbols(Data^.Title), ID, Data^.FileExt])
+        Format(
+          '%s - %s.%d%s',
+          [
+            CheckSymbols(BookRecord.Authors[0].GetFullName),
+            CheckSymbols(BookRecord.Title),
+            BookRecord.BookKey.BookID,
+            BookRecord.FileExt
+          ]
+        )
       );
 
       if not FileExists(WorkFile) then
-        Data^.SaveBookToFile(WorkFile);
-    end
-    else if BookFormat = bfFbd then
-    begin
-      Assert(Length(Data^.Authors) > 0);
-      WorkFile := TPath.Combine(
-        Settings.ReadPath,
-        Format('%s - %s.%d%s', [CheckSymbols(Data^.Authors[0].GetFullName), CheckSymbols(Data^.Title), ID, Data^.FileExt])
-      );
-
-      if not FileExists(WorkFile) then
-        Data^.SaveBookToFile(WorkFile);
+        BookRecord.SaveBookToFile(WorkFile);
     end
     else // bfFb2 or bfRaw
       WorkFile := BookFileName;
@@ -3874,22 +3867,9 @@ begin
       WriteFb2InfoToFile(WorkFile);
 
     Settings.Readers.RunReader(WorkFile);
-    Tree.RepaintNode(Tree.GetFirstSelected);
   finally
     Screen.Cursor := SavedCursor;
   end;
-end;
-
-// Init TFrmConvertToFBD's callback handlers
-procedure TfrmMain.InitFrmConvertToFBDHandlers(const Data: PBookRecord);
-begin
-  // Init FLastBookRecord to be used by the form + load memos:
-  DMCollection.GetBookRecord(Data^.BookKey, FLastBookRecord, True);
-
-  frmConvertToFBD.OnReadBook := OnReadBookHandler;
-  frmConvertToFBD.OnSelectBook := OnSelectBookHandler;
-  frmConvertToFBD.OnGetBook := OnGetBookHandler;
-  frmConvertToFBD.OnChangeBook2Zip := OnChangeBook2ZipHandler;
 end;
 
 // Init FrmEditBookInfo's callback handlers
@@ -4189,7 +4169,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.OnSelectBookHandler(const MoveForward: Boolean);
+procedure TfrmMain.OnSelectBookHandler(MoveForward: Boolean);
 var
   Tree: TBookTree;
   NewNode, OldNode: PVirtualNode;
@@ -4960,14 +4940,7 @@ begin
       DMCollection.tblBooks.Locate(BOOK_ID_FIELD, BookID, []);
       { TODO -oNickR -cLibDesc : этот URL должен формироваться обвязкой библиотеки, т к его формат может меняться }
       URL := Format('%sb/%u/edit', [DMUser.ActiveCollection.URL, DMCollection.tblBooksLibID.Value]);
-      ShellExecute(
-        Handle,
-        'open',
-        PChar(URL),
-        nil,
-        nil,
-        SW_SHOW
-      );
+      ShellOpenExecute(Handle, URL);
     end;
     Result := True;
   end
@@ -5087,7 +5060,7 @@ begin
   if not Assigned(Data) or (Data^.nodeType <> ntBookInfo) then
     Exit;
 
-  if IsLibRusecEdit(Data.BookKey.BookID) then
+  if IsLibRusecEdit(Data^.BookKey.BookID) then
     Exit;
 
   PrepareFb2EditData(Data, FLastBookRecord);
@@ -5096,6 +5069,7 @@ begin
   if frmEditBookInfo.ShowModal = mrOk then
   begin
     SaveFb2DataAfterEdit(FLastBookRecord);
+
     SavePositions;
     InitCollection(True);
     RestorePositions;
@@ -5942,7 +5916,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.LocateBook(const Text: string; const MoveForward: Boolean);
+procedure TfrmMain.LocateBook(const Text: string; MoveForward: Boolean);
 var
   Node: PVirtualNode;
   Data: PBookRecord;
@@ -6271,12 +6245,12 @@ end;
 
 procedure TfrmMain.miGoForumClick(Sender: TObject);
 begin
-  ShellExecute(Handle, 'open', '"http://myhomelib.org/"', nil, nil, SW_SHOW);
+  ShellOpenExecute(Handle, '"http://myhomelib.org/"');
 end;
 
 procedure TfrmMain.miGoSiteClick(Sender: TObject);
 begin
-  ShellExecute(Handle, 'open', 'http://home-lib.net/', nil, nil, SW_SHOW);
+  ShellOpenExecute(Handle, 'http://home-lib.net/');
 end;
 
 procedure TfrmMain.miGoToAuthorClick(Sender: TObject);
@@ -6470,8 +6444,9 @@ end;
 procedure TfrmMain.miConverToFBDClick(Sender: TObject);
 var
   Tree: TBookTree;
-  Data: PBookRecord;
   Node: PVirtualNode;
+  Data: PBookRecord;
+  frmConvert: TfrmConvertToFBD;
 begin
   if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
   begin
@@ -6488,9 +6463,17 @@ begin
   if not Assigned(Data) or (Data^.nodeType <> ntBookInfo) then
     Exit;
 
-  InitFrmConvertToFBDHandlers(Data);
+  frmConvert := TfrmConvertToFBD.Create(Application);
+  try
+    frmConvert.OnGetBook := OnGetBookHandler;
+    frmConvert.OnReadBook := OnReadBookHandler;
+    frmConvert.OnSelectBook := OnSelectBookHandler;
+    frmConvert.OnChangeBook2Zip := OnChangeBook2ZipHandler;
 
-  frmConvertToFBD.ShowModal;
+    frmConvert.ShowModal;
+  finally
+    frmConvert.Free;
+  end;
 end;
 
 procedure TfrmMain.N33Click(Sender: TObject);
@@ -7152,44 +7135,47 @@ begin
 end;
 
 procedure TfrmMain.OnGetBookHandler(var BookRecord: TBookRecord);
-begin
-  BookRecord := FLastBookRecord;
-end;
-
-// Invoked when it's time to update the current book in DB
-procedure TfrmMain.OnUpdateBookHandler;
-begin
-  SaveFb2DataAfterEdit(FLastBookRecord);
-end;
-
-// A raw file just became a zip archive (FBD + raw)
-// Change the book's file name in both the database and the trees
-procedure TfrmMain.OnChangeBook2ZipHandler();
 var
   Tree: TBookTree;
   Node: PVirtualNode;
   Data: PBookRecord;
-  NewFileName: string;
 begin
+  //
+  // Locate the selected book record and pass it to the edit form
+  //
   GetActiveTree(Tree);
-
   Node := Tree.GetFirstSelected;
   Data := Tree.GetNodeData(Node);
+
   Assert(Assigned(Data) and (Data^.nodeType = ntBookInfo));
 
-  if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
-  begin
-    NewFileName := Data^.FileName + ZIP_EXTENSION;
-    DMCollection.SetFileName(Data^.BookKey, NewFileName);
-    UpdateNodes(
-      Data^.BookKey,
-      procedure(BookData: PBookRecord)
-      begin
-        Assert(Assigned(BookData));
-        BookData^.FileName := NewFileName;
-      end
-    );
-  end;
+  DMCollection.GetBookRecord(Data^.BookKey, BookRecord, True);
+end;
+
+// Invoked when it's time to update the current book in DB
+procedure TfrmMain.OnUpdateBookHandler(const BookRecord: TBookRecord);
+begin
+  SaveFb2DataAfterEdit(BookRecord);
+end;
+
+// A raw file just became a zip archive (FBD + raw)
+// Change the book's file name in both the database and the trees
+procedure TfrmMain.OnChangeBook2ZipHandler(const BookRecord: TBookRecord);
+var
+  NewFileName: string;
+begin
+  Assert(BookRecord.nodeType = ntBookInfo);
+
+  NewFileName := BookRecord.FileName + ZIP_EXTENSION;
+  DMCollection.SetFileName(BookRecord.BookKey, NewFileName);
+  UpdateNodes(
+    BookRecord.BookKey,
+    procedure(BookData: PBookRecord)
+    begin
+      Assert(Assigned(BookData));
+      BookData^.FileName := NewFileName;
+    end
+  );
 end;
 
 end.
