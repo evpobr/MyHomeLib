@@ -28,6 +28,8 @@ const
   LF = #10;
   CRLF = CR + LF;
 
+  MHL_INVALID_ID = -1;
+
   INPX_FIELD_DELIMITER = Chr(4);
   INPX_ITEM_DELIMITER = ':';
   INPX_SUBITEM_DELIMITER = ',';
@@ -83,8 +85,8 @@ const
   //
   // Значения полей по умолчанию
   //
-  NO_ACTIVECOLLECTION_ID = -1;
-  UNVERSIONED_COLLECTION = -1;
+  NO_ACTIVECOLLECTION_ID = MHL_INVALID_ID;
+  UNVERSIONED_COLLECTION = MHL_INVALID_ID;
 
   NO_SERIE_ID = 1;
   NO_SERIES_TITLE = '---';

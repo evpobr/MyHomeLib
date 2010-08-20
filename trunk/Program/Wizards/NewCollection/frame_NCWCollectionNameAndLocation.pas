@@ -106,11 +106,11 @@ begin
     Zip := TZipForge.Create(self);
     try
       Zip.FileName := FPParams^.INPXFile;
-      Zip.OpenArchive;
+      Zip.OpenArchive(fmOpenRead);
       S := Zip.Comment;
       Zip.CloseArchive;
     except
-      on E: exception do
+      on E: Exception do
         MessageDlg(rstrDamagedArchive, mtError, [mbOK], 0);
     end;
   finally

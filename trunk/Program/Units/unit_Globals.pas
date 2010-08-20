@@ -25,10 +25,77 @@ uses
   SysUtils,
   Generics.Collections,
   VirtualTrees,
-  IdHTTP,
-  ZipForge;
+  IdHTTP;
+
+//
+// Global consts
+//
+// -----------------------------------------------------------------------------
+const
+  {
+    0000 0000
+    \ /   |
+    |    - 0 - fb2, 1 - non-fb2
+    |
+    |-- 00 - пользовательская, 10 - внешняя локальная, 11 - внешняя онлайн
+
+    Младшее слово - тип содержимого
+    Пока определены следующие типы:
+    0000        : книги в fb2
+    0001        : книги не в fb2
+
+    Старшее слово - тип коллекции
+    Определены следующие диапазоны:
+    0000        : пользовательская коллекция (всегда локальная)
+    0001 - 07FF : внешние локальные коллекции
+    0800 - 0FFF : внешние онлайн коллекции
+
+    Note: Установленный старший бит указывает на онлайн коллекцию
+    }
+
+  //
+  // тип содержимого
+  //
+  CONTENT_FB = $0000;
+  CONTENT_NONFB = $0001;
+
+  //
+  // расположения библиотеки
+  //
+  LOCATION_LOCAL = $00000000;
+  LOCATION_ONLINE = $08000000;
+
+  //
+  // предопределенные библиотеки
+  //
+  LIBRARY_PRIVATE = $00000000;
+  LIBRARY_LIBRUSEC = $00010000;
+  LIBRARY_GENESIS = $00020000;
+
+  //
+  // различные маски
+  //
+  CT_CONTENT_MASK = $00000001;
+  CT_LOCATION_MASK = $08000000;
+  CT_TYPE_MASK = $08030000;
+  CT_MASK = CT_CONTENT_MASK or CT_TYPE_MASK;
+
+  //
+  // Несколько предопределенных типов
+  //
+  CT_PRIVATE_FB = LIBRARY_PRIVATE or CONTENT_FB; // 0000 0000 -
+  CT_PRIVATE_NONFB = LIBRARY_PRIVATE or CONTENT_NONFB; // 0000 0001 -
+  CT_LIBRUSEC_LOCAL_FB = LOCATION_LOCAL or LIBRARY_LIBRUSEC or CONTENT_FB; // 0001 0000 - local lib.rus.ec
+  CT_LIBRUSEC_ONLINE_FB = LOCATION_ONLINE or LIBRARY_LIBRUSEC or CONTENT_FB; // 0801 0000 - online lib.rus.ec
+  CT_GENESIS_LOCAL_NONFB = LOCATION_LOCAL or LIBRARY_GENESIS or CONTENT_NONFB; // 0002 0001 - local Genesis
+  CT_GENESIS_ONLINE_NONFB = LOCATION_ONLINE or LIBRARY_GENESIS or CONTENT_NONFB; // 0802 0001 - online Genesis
+  CT_LIBRUSEC_USR = LOCATION_LOCAL or LIBRARY_LIBRUSEC or CONTENT_NONFB; // 0001 0001 - online Genesis
+
+  CT_DEPRICATED_ONLINE_FB = 99;
 
 type
+  COLLECTION_TYPE = Integer;
+
   TTXTEncoding = (enUTF8, en1251, enUnicode, enUnknown);
 
   TTreeMode = (tmTree, tmFlat);
@@ -41,7 +108,6 @@ type
     bfFbd,    // An (FBD + a raw book file) packed together in a zip
     bfRaw     // A raw file = any other book format
   );
-
 
   TBookKey = record
     BookID: Integer;
@@ -58,123 +124,6 @@ type
 
   TBookIdList = array of TBookIdStruct;
 
-type
-  EInvalidLogin = class(Exception);
-
-    //
-    // Global consts
-    //
-    // -----------------------------------------------------------------------------
-  const
-    {
-      0000 0000
-      \ /   |
-      |    - 0 - fb2, 1 - non-fb2
-      |
-      |-- 00 - пользовательская, 10 - внешняя локальная, 11 - внешняя онлайн
-
-      Младшее слово - тип содержимого
-      Пока определены следующие типы:
-      0000        : книги в fb2
-      0001        : книги не в fb2
-
-      Старшее слово - тип коллекции
-      Определены следующие диапазоны:
-      0000        : пользовательская коллекция (всегда локальная)
-      0001 - 07FF : внешние локальные коллекции
-      0800 - 0FFF : внешние онлайн коллекции
-
-      Note: Установленный старший бит указывает на онлайн коллекцию
-      }
-
-    //
-    // тип содержимого
-    //
-    CONTENT_FB = $0000;
-    CONTENT_NONFB = $0001;
-
-    //
-    // расположения библиотеки
-    //
-    LOCATION_LOCAL = $00000000;
-    LOCATION_ONLINE = $08000000;
-
-    //
-    // предопределенные библиотеки
-    //
-    LIBRARY_PRIVATE = $00000000;
-    LIBRARY_LIBRUSEC = $00010000;
-    LIBRARY_GENESIS = $00020000;
-
-    //
-    // различные маски
-    //
-    CT_CONTENT_MASK = $00000001;
-    CT_LOCATION_MASK = $08000000;
-    CT_TYPE_MASK = $08030000;
-    CT_MASK = CT_CONTENT_MASK or CT_TYPE_MASK;
-
-    //
-    // Несколько предопределенных типов
-    //
-    CT_PRIVATE_FB = LIBRARY_PRIVATE or CONTENT_FB; // 0000 0000 -
-    CT_PRIVATE_NONFB = LIBRARY_PRIVATE or CONTENT_NONFB; // 0000 0001 -
-    CT_LIBRUSEC_LOCAL_FB = LOCATION_LOCAL or LIBRARY_LIBRUSEC or CONTENT_FB; // 0001 0000 - local lib.rus.ec
-    CT_LIBRUSEC_ONLINE_FB = LOCATION_ONLINE or LIBRARY_LIBRUSEC or CONTENT_FB; // 0801 0000 - online lib.rus.ec
-    CT_GENESIS_LOCAL_NONFB = LOCATION_LOCAL or LIBRARY_GENESIS or CONTENT_NONFB; // 0002 0001 - local Genesis
-    CT_GENESIS_ONLINE_NONFB = LOCATION_ONLINE or LIBRARY_GENESIS or CONTENT_NONFB; // 0802 0001 - online Genesis
-    CT_LIBRUSEC_USR = LOCATION_LOCAL or LIBRARY_LIBRUSEC or CONTENT_NONFB; // 0001 0001 - online Genesis
-
-    CT_DEPRICATED_ONLINE_FB = 99;
-
-  type
-    COLLECTION_TYPE = Integer;
-
-  function isPrivateCollection(t: COLLECTION_TYPE): Boolean; inline;
-  function isExternalCollection(t: COLLECTION_TYPE): Boolean; inline;
-  function isLocalCollection(t: COLLECTION_TYPE): Boolean; inline;
-  function isOnlineCollection(t: COLLECTION_TYPE): Boolean; inline;
-  function isFB2Collection(t: COLLECTION_TYPE): Boolean; inline;
-  function isNonFB2Collection(t: COLLECTION_TYPE): Boolean; inline;
-
-  // -----------------------------------------------------------------------------
-  function Transliterate(const Input: string): string;
-  function CheckSymbols(const Input: string): string;
-  function EncodePassString(const Input: string): string;
-  function DecodePassString(const Input: string): string;
-  procedure StrReplace(const s1: string; const s2: string; var s3: string);
-
-  function ClearDir(const DirectoryName: string): Boolean;
-  //function IsRelativePath(const FileName: string): Boolean;
-  function CreateFolders(const Root: string; const Path: string): Boolean;
-  procedure CopyFile(const SourceFileName: string; const DestFileName: string);
-  procedure ConvertToTxt(const SourceFileName: string; DestFileName: string; Enc: TTXTEncoding);
-  procedure ZipFile(const FileName: string; const ZipFileName: string);
-
-  function InclideUrlSlash(const S: string): string;
-
-  function PosChr(aCh: Char; const S: string): Integer;
-  function CompareInt(i1, i2: Integer): Integer; inline;
-  function CompareSeqNumber(i1, i2: Integer): Integer; inline;
-  function CompareDate(d1, d2: TDateTime): Integer; inline;
-
-  function GenerateBookLocation(const FullName: string): string;
-  function GenerateFileName(const Title: string; libID: Integer): string;
-
-  procedure DebugOut(const DebugMessage: string); overload;
-  procedure DebugOut(const DebugMessage: string; const Args: array of const ); overload;
-
-  procedure SetProxySettings(var IdHTTP: TidHTTP);
-
-  function GetSpecialPath(CSIDL: word): string;
-  function GetLibUpdateVersion(Full: Boolean): Integer;
-  function ExecAndWait(const FileName, Params: string; const WinState: word): Boolean;
-
-  function CleanExtension(const Ext: string): string;
-
-  function TestArchive(const FileName: string): Boolean;
-
-type
   TAppLanguage = (alEng, alRus);
   TExportMode = (emFB2, emFB2Zip, emLrf, emTxt, emEpub, emPDF);
 
@@ -330,7 +279,6 @@ type
     function GetBookStream: TStream;
     function GetBookDescriptorStream: TStream;
     procedure SaveBookToFile(const DestFileName: String);
-
   end;
 
   // --------------------------------------------------------------------------
@@ -358,6 +306,56 @@ type
     Options: TVTColumnOptions;
   end;
 
+// ============================================================================
+//
+// helpers
+//
+// ============================================================================
+
+  function isPrivateCollection(t: COLLECTION_TYPE): Boolean; inline;
+  function isExternalCollection(t: COLLECTION_TYPE): Boolean; inline;
+  function isLocalCollection(t: COLLECTION_TYPE): Boolean; inline;
+  function isOnlineCollection(t: COLLECTION_TYPE): Boolean; inline;
+  function isFB2Collection(t: COLLECTION_TYPE): Boolean; inline;
+  function isNonFB2Collection(t: COLLECTION_TYPE): Boolean; inline;
+
+  // -----------------------------------------------------------------------------
+  function Transliterate(const Input: string): string;
+  function CheckSymbols(const Input: string): string;
+  function EncodePassString(const Input: string): string;
+  function DecodePassString(const Input: string): string;
+  procedure StrReplace(const s1: string; const s2: string; var s3: string);
+
+  function ClearDir(const DirectoryName: string): Boolean;
+  //function IsRelativePath(const FileName: string): Boolean;
+  function CreateFolders(const Root: string; const Path: string): Boolean;
+  procedure CopyFile(const SourceFileName: string; const DestFileName: string);
+  procedure ConvertToTxt(const SourceFileName: string; DestFileName: string; Enc: TTXTEncoding);
+  procedure ZipFile(const FileName: string; const ZipFileName: string);
+
+  function InclideUrlSlash(const S: string): string;
+
+  function PosChr(aCh: Char; const S: string): Integer;
+  function CompareInt(i1, i2: Integer): Integer; inline;
+  function CompareSeqNumber(i1, i2: Integer): Integer; inline;
+  function CompareDate(d1, d2: TDateTime): Integer; inline;
+
+  function GenerateBookLocation(const FullName: string): string;
+  function GenerateFileName(const Title: string; libID: Integer): string;
+
+  procedure DebugOut(const DebugMessage: string); overload;
+  procedure DebugOut(const DebugMessage: string; const Args: array of const ); overload;
+
+  procedure SetProxySettings(var IdHTTP: TidHTTP);
+
+  function GetSpecialPath(CSIDL: word): string;
+  function GetLibUpdateVersion(Full: Boolean): Integer;
+  function ExecAndWait(const FileName, Params: string; const WinState: word): Boolean;
+
+  function CleanExtension(const Ext: string): string;
+
+  function TestArchive(const FileName: string): Boolean;
+
 implementation
 
 uses
@@ -367,6 +365,10 @@ uses
   Math,
   IOUtils,
   Character,
+  ZFConst,
+  ZFExcept,
+  ZipForge,
+  unit_Errors,
   unit_Settings,
   unit_Consts,
   ShlObj,
@@ -528,8 +530,9 @@ begin
   ziper := TZipForge.Create(nil);
   try
     ziper.FileName := ZipFileName;
-    ziper.OpenArchive(fmCreate);
     ziper.BaseDir := ExtractFilePath(FileName);
+    ziper.TempDir := Settings.TempDir;
+    ziper.OpenArchive(fmCreate);
     ziper.AddFiles(ExtractFileName(FileName));
     ziper.CloseArchive;
   finally
@@ -978,80 +981,138 @@ var
   BookFormat: TBookFormat;
   BookFileName: string;
   Zip: TZipForge;
+
+  function GetFileNameZip(Zip: TZipForge; No: Integer): string;
+  var
+    i: Integer;
+    ArchItem: TZFArchiveItem;
+  begin
+    i := 0;
+    if (Zip.FindFirst('*.*', ArchItem, faAnyFile - faDirectory)) then
+      while i <> No do
+      begin
+        Zip.FindNext(ArchItem);
+        Inc(i);
+      end;
+    Result := ArchItem.FileName;
+  end;
+
 begin
   Result := nil;
   BookFileName := GetBookFileName;
 
-  if not FileExists(BookFileName) then
-    Exit; // File not found, returned stream is nil
-
   BookFormat := GetBookFormat;
   if BookFormat in [bfFb2Zip, bfFbd] then
   begin
-    Result := TMemoryStream.Create;
+    Zip := TZipForge.Create(nil);
     try
-      Zip := TZipForge.Create(nil);
+      Zip.BaseDir := Settings.ReadPath;
+      Zip.TempDir := Settings.TempDir;
+      Zip.FileName := BookFileName;
       try
-        Zip.BaseDir := Settings.ReadPath;
-        Zip.FileName := BookFileName;
-        Zip.OpenArchive;
-        Zip.ExtractToStream(GetFileNameZip(Zip, InsideNo), Result);
-        Zip.CloseArchive;
-      finally
-        FreeAndNil(Zip);
+        Zip.OpenArchive(fmOpenRead);
+        Result := TMemoryStream.Create;
+        try
+          Zip.ExtractToStream(GetFileNameZip(Zip, InsideNo), Result);
+          Zip.CloseArchive;
+        except
+          FreeAndNil(Result);
+          raise;
+        end;
+      except
+        on e: EZFException do
+        begin
+          if e.NativeError = ErCannotOpenFile then
+            raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName])
+          else
+            raise;
+        end;
       end;
-    except
-      FreeAndNil(Result);
+    finally
+      FreeAndNil(Zip);
     end;
   end
   else // bfFb2, bfRaw
-    Result := TFileStream.Create(BookFileName, fmOpenRead);
+  begin
+    try
+      Result := TFileStream.Create(BookFileName, fmOpenRead);
+    except
+      on e: EFOpenError do
+      begin
+        //
+        // TODO: на самом деле, файл может существовать, но буть заблокирован другим приложением
+        //
+        raise EBookNotFound.CreateFmt(rstrFileNotFound, [BookFileName]);
+      end;
+    end;
+  end;
+
+  Assert(Assigned(Result));
 end;
 
 // Get the descriptor file as a stream.
 // The caller code must free the stream when done!
 //  For bfFbd - brings the FBD descriptor file
 //  For bfFb2Zip and bfFb2 - brings the FB2 file
-//  For bfRaw - brings nil
+//  For bfRaw - raise ENotSupportedException exception
 function TBookRecord.GetBookDescriptorStream: TStream;
 var
-  BookFormat: TBookFormat;
   BookFileName: string;
   Zip: TZipForge;
   ArciveItem: TZFArchiveItem;
 begin
-  Result := nil;
-  BookFileName := GetBookFileName;
-
-  if not FileExists(BookFileName) then
-    Exit; // File not found, returned stream is nil
-
-  BookFormat := GetBookFormat;
-  if BookFormat = bfFbd then
-  begin
-    Result := TMemoryStream.Create;
-    try
-      Zip := TZipForge.Create(nil);
-      try
-        Zip.BaseDir := Settings.ReadPath;
-        Zip.FileName := BookFileName;
-        Zip.OpenArchive;
-        if Zip.FindFirst('*' + FBD_EXTENSION, ArciveItem) then
-          Zip.ExtractToStream(ArciveItem.FileName, Result)
-        else // not a valid FBD structure, return nil
-          raise Exception.CreateFmt(rstrBookNotFoundInArchive, [BookFileName]);
-
-        Zip.CloseArchive;
-      finally
-        FreeAndNil(Zip);
+  case GetBookFormat of
+    bfFb2, bfFb2Zip:
+      begin
+        Result := GetBookStream;
       end;
-    except
-      FreeAndNil(Result);
-    end;
-  end
-  else if BookFormat in [bfFb2, bfFb2Zip] then
-    Result := GetBookStream;
-  // else bfRaw no descriptor by design
+
+    bfFbd:
+      begin
+        BookFileName := GetBookFileName;
+
+        Zip := TZipForge.Create(nil);
+        try
+          Zip.BaseDir := Settings.ReadPath;
+          Zip.TempDir := Settings.TempDir;
+          Zip.FileName := BookFileName;
+
+          try
+            Zip.OpenArchive(fmOpenRead);
+
+            Result := TMemoryStream.Create;
+            try
+              if Zip.FindFirst('*' + FBD_EXTENSION, ArciveItem) then
+                Zip.ExtractToStream(ArciveItem.FileName, Result)
+              else // not a valid FBD structure
+                raise EBookNotFound.CreateFmt(rstrBookNotFoundInArchive, [BookFileName]);
+
+              Zip.CloseArchive;
+            except
+              FreeAndNil(Result);
+              raise;
+            end;
+          except
+            on e: EZFException do
+            begin
+              if e.NativeError = ErCannotOpenFile then
+                raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName])
+              else
+                raise;
+            end;
+          end;
+        finally
+          FreeAndNil(Zip);
+        end;
+      end;
+
+    bfRaw:
+      begin
+        raise ENotSupportedException.Create(rstrErrorNotSupported);
+      end;
+  end;
+
+  Assert(Assigned(Result));
 end;
 
 // Save the book to a destination file
@@ -1269,21 +1330,6 @@ begin
   end;
 end;
 
-function GetFileNameZip(Zip: TZipForge; No: Integer): string;
-var
-  i: Integer;
-  ArchItem: TZFArchiveItem;
-begin
-  i := 0;
-  if (Zip.FindFirst('*.*', ArchItem, faAnyFile - faDirectory)) then
-    while i <> No do
-    begin
-      Zip.FindNext(ArchItem);
-      Inc(i);
-    end;
-  Result := ArchItem.FileName;
-end;
-
 function CleanExtension(const Ext: string): string;
 begin
   Result := Trim(Ext);
@@ -1300,7 +1346,7 @@ begin
     Zip.FileName := FileName;
     Zip.TempDir := Settings.TempDir;
     try
-      Zip.OpenArchive;
+      Zip.OpenArchive(fmOpenRead);
       Zip.TestFiles('*.*');
       Zip.CloseArchive;
       Result := True;

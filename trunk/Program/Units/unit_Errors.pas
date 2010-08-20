@@ -25,15 +25,21 @@ uses
 
 type
   EMHLError = class(Exception);
+  //EInvalidLogin = class(Exception);
+  EBookNotFound = class(Exception);
 
 resourcestring
   rstrErrorInvalidArgument = 'Invalid argument';
+  rstrErrorNotSupported = 'Operation is not supported';
 
   rstrAllFieldsShouldBeFilled = 'Все поля должны быть заполнены!';
 
   rstrCollectionAlreadyExists = 'Коллекция "%s" уже существует!';
   rstrFileDoesntExists = 'Файл "%s" не существует!';
   rstrFileAlreadyExistsInDB = 'Файл "%s" используется другой коллекцией!';
+
+  rstrArchiveNotFound = 'Архив "%s" не найден!';
+  rstrFileNotFound = 'Файл "%s" не найден!';
 
 function MHLShowInfo(
   const InfoMessage: string;

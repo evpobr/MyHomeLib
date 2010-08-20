@@ -6,8 +6,8 @@
   *
   * Authors             Aleksey Penkov   alex.penkov@gmail.com
   *                     Nick Rymanov     nrymanov@gmail.com
-  * Created             
-  * Description         
+  * Created
+  * Description
   *
   * $Id$
   *
@@ -24,9 +24,9 @@ uses
   Classes,
   DB,
   ABSMain,
-  unit_Globals,
   ImgList,
   Controls,
+  unit_Globals,
   unit_Consts,
   UserData;
 
@@ -125,7 +125,7 @@ type
     procedure InternalClearGroup(GroupID: Integer; RemoveGroup: Boolean);
 
   public const
-    INVALID_COLLECTION_ID = -1;
+    INVALID_COLLECTION_ID = MHL_INVALID_ID;
 
   public
     constructor Create(AOwner: TComponent); override;
@@ -164,9 +164,6 @@ type
     //
     // Active Collection
     //
-    property ActiveCollection: TMHLActiveCollection read FActiveCollection;
-    property CurrentCollection: TMHLCollection read FCollection;
-
     function FindFirstExternalCollection: Boolean;
     function FindNextExternalCollection: Boolean;
 
@@ -217,6 +214,10 @@ type
     //
     procedure ExportUserData(data: TUserData);
     procedure ImportUserData(data: TUserData);
+
+  public
+    property ActiveCollection: TMHLActiveCollection read FActiveCollection;
+    property CurrentCollection: TMHLCollection read FCollection;
   end;
 
   TMHLCollection = class
@@ -268,6 +269,8 @@ type
     procedure Save;
     procedure Cancel;
 
+    procedure UpdateSettings(ASettings: TStrings);
+
     property Active: Boolean read GetActive;
 
     property ID: Integer read GetID;
@@ -275,10 +278,10 @@ type
     property RootFolder: string read GetRootFolder write SetRootFolder;
     property DBFileName: string read GetDBFileName write SetDBFileName;
     property Notes: string read GetNotes write SetNotes;
-    property CreationDate: TDateTime read GetCreationDate {write SetCreationDate};
+    property CreationDate: TDateTime read GetCreationDate { write SetCreationDate } ;
     property Version: Integer read GetVersion write SetVersion;
-    property CollectionType: COLLECTION_TYPE read GetCollectionType {write SetCollectionType};
-    property AllowDelete: Boolean read GetAllowDelete {write SetAllowDelete};
+    property CollectionType: COLLECTION_TYPE read GetCollectionType { write SetCollectionType } ;
+    property AllowDelete: Boolean read GetAllowDelete { write SetAllowDelete } ;
     property User: string read GetUser write SetUser;
     property Password: string read GetPassword write SetPassword;
     property URL: string read GetURL write SetURL;
@@ -300,10 +303,13 @@ type
     FAllowDelete: Boolean;
     FURL: string;
     FScript: string;
+    FSettings: TStrings;
+
     function GetRootPath: string;
 
   public
     constructor Create;
+    destructor Destroy; override;
 
     procedure Clear;
 
@@ -321,6 +327,7 @@ type
     property Password: string read FPassword;
     property URL: string read FURL;
     property Script: string read FScript;
+    property Settings: TStrings read FSettings;
   end;
 
 var
@@ -389,10 +396,10 @@ begin
 end;
 
 procedure TDMUser.RegisterCollection(
-  const DisplayName: string;
-  const RootFolder: string;
-  const DBFileName: string;
-  CollectionType: COLLECTION_TYPE;
+  const DisplayName: string; 
+  const RootFolder: string; 
+  const DBFileName: string; 
+  CollectionType: COLLECTION_TYPE; 
   AllowDelete: Boolean;
   Version: Integer;
   const Notes: string;
@@ -427,6 +434,8 @@ begin
 end;
 
 function TDMUser.ActivateCollection(CollectionID: Integer): Boolean;
+var
+  Stream: TABSBlobStream;
 begin
   Result := SelectCollection(CollectionID);
   if Result then
@@ -450,6 +459,16 @@ begin
       FActiveCollection.FAllowDelete := tblBasesAllowDelete.Value;
     FActiveCollection.FURL := tblBasesURL.Value;
     FActiveCollection.FScript := tblBasesConnection.Value;
+
+    Stream := TABSBlobStream.Create(tblBasesSettings, bmRead);
+    try
+      Assert(Assigned(FActiveCollection.FSettings));
+      FActiveCollection.FSettings.LoadFromStream(Stream);
+    finally
+      Stream.Free;
+    end;
+
+    FActiveCollection.FSettings.DelimitedText := tblBasesSettings.Value;
   end
   else
     FActiveCollection.Clear;
@@ -535,29 +554,29 @@ begin
   ID := TDMUser.INVALID_COLLECTION_ID;
 
   if FindFirstCollection then
-  repeat
-    if FileExists(CurrentCollection.DBFileName) then
-    begin
-      if CurrentCollection.ID = PrefferedID then
+    repeat
+      if FileExists(CurrentCollection.DBFileName) then
       begin
-        //
-        // Пользователь предпочитает эту коллекцию, она доступна -> выходим
-        //
-        ID := CurrentCollection.ID;
-        Break;
-      end;
+        if CurrentCollection.ID = PrefferedID then
+        begin
+          //
+          // Пользователь предпочитает эту коллекцию, она доступна -> выходим
+          //
+          ID := CurrentCollection.ID;
+          Break;
+        end;
 
-      if ID = TDMUser.INVALID_COLLECTION_ID then
-      begin
-        //
-        // Запомним первую доступную коллекцию
-        //
-        ID := CurrentCollection.ID;
+        if ID = TDMUser.INVALID_COLLECTION_ID then
+        begin
+          //
+          // Запомним первую доступную коллекцию
+          //
+          ID := CurrentCollection.ID;
+        end;
       end;
-    end;
-  until not FindNextCollection;
+    until not FindNextCollection;
 
-  Result := (INVALID_COLLECTION_ID <> ID);
+    Result := (INVALID_COLLECTION_ID <> ID);
 end;
 
 procedure TDMUser.DeleteCollection(CollectionID: Integer);
@@ -1113,19 +1132,21 @@ begin
   Result := FSysDataModule.tblBasesRootFolder.Value;
 end;
 
-function TMHLCollection.GetScript: string;
-begin
-  Result := FSysDataModule.tblBasesConnection.Value;
-end;
-
 procedure TMHLCollection.SetRootFolder(const Value: string);
 begin
   Assert(Assigned(FSysDataModule));
   FSysDataModule.tblBasesRootFolder.Value := ExcludeTrailingPathDelimiter(Value);
 end;
 
+function TMHLCollection.GetScript: string;
+begin
+  Assert(Assigned(FSysDataModule));
+  Result := FSysDataModule.tblBasesConnection.Value;
+end;
+
 procedure TMHLCollection.SetScript(const Value: string);
 begin
+  Assert(Assigned(FSysDataModule));
   FSysDataModule.tblBasesConnection.Value := Value;
 end;
 
@@ -1214,6 +1235,21 @@ begin
   FSysDataModule.tblBasesVersion.Value := Value;
 end;
 
+procedure TMHLCollection.UpdateSettings(ASettings: TStrings);
+var
+  Stream: TABSBlobStream;
+begin
+  Assert(Assigned(FSysDataModule));
+  Assert(Assigned(ASettings));
+
+  Stream := TABSBlobStream.Create(FSysDataModule.tblBasesSettings, bmWrite);
+  try
+    ASettings.SaveToStream(Stream);
+  finally
+    Stream.Free;
+  end;
+end;
+
 function TMHLCollection.GetCollectionType: COLLECTION_TYPE;
 begin
   Assert(Assigned(FSysDataModule));
@@ -1249,7 +1285,15 @@ end;
 constructor TMHLActiveCollection.Create;
 begin
   inherited Create;
+  FSettings := TStringList.Create;
+
   Clear;
+end;
+
+destructor TMHLActiveCollection.Destroy;
+begin
+  FreeAndNil(FSettings);
+  inherited Destroy;
 end;
 
 function TMHLActiveCollection.GetRootPath: string;
@@ -1272,7 +1316,7 @@ begin
   FPassword := '';
   FURL := '';
   FScript := '';
+  FSettings.Clear;
 end;
 
 end.
-

@@ -401,7 +401,7 @@ begin
       try
         unZip.BaseDir := Settings.TempPath;
         unZip.FileName := FInpxFileName;
-        unZip.OpenArchive;
+        unZip.OpenArchive(fmOpenRead);
         unZip.ExtractFiles('*.*');
 
         GetFields;
