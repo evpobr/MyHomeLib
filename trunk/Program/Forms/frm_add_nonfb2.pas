@@ -387,11 +387,14 @@ begin
 end;
 
 procedure TfrmAddnonfb2.dtnConvertClick(Sender: TObject);
+var
+  SavedCursor: TCursor;
 begin
   // TODO: fix to save the cover
 
-  Screen.Cursor := crHourGlass;
   frmAddnonfb2.Enabled := False;
+  SavedCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
   try
     PrepareBookRecord;
     if cbForceConvertToFBD.Checked then
@@ -408,8 +411,8 @@ begin
     else
       CommitData;
   finally
+    Screen.Cursor := SavedCursor;
     frmAddnonfb2.Enabled := True;
-    Screen.Cursor := crDefault;
   end;
 end;
 

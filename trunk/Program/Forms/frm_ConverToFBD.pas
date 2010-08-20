@@ -295,9 +295,12 @@ begin
 end;
 
 procedure TfrmConvertToFBD.SaveFBD;
+var
+ SavedCursor: TCursor;
 begin
   EnableButtons(False);
   FBusy := True;
+  SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
     if FillFBDData then
@@ -311,8 +314,8 @@ begin
       end;
     end;
   finally
+    Screen.Cursor := SavedCursor;
     EnableButtons(True);
-    Screen.Cursor := crDefault;
     FBusy := False;
   end;
 end;
