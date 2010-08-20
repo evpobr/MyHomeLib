@@ -1592,7 +1592,7 @@ begin
     if DMUser.tblBases.IsEmpty then
     begin
       frmMain.Caption := 'MyHomeLib';
-	  Screen.Cursor := SavedCursor;
+	    Screen.Cursor := SavedCursor;
 
       if not ShowNCWizard then
         Application.Terminate;
@@ -2315,22 +2315,31 @@ end;
 
 procedure TfrmMain.LoadLastCollection;
 begin
-  if not DMUser.FindFirstExistingCollection(Settings.ActiveCollection) then
+  //
+  // этот метод вызывается и в том случае, если коллекций нет совсем (и никогда небыло)
+  // а по смыслу, должен активировать последнюю коллекцию
+  //
+  // пока оставляю старую логику
+  //
+  if not DMUser.tblBases.IsEmpty then
   begin
-    MHLShowError(rstrCollectionFileNotFound, [DMUser.ActiveCollection.DBFileName]);
+    if not DMUser.FindFirstExistingCollection(Settings.ActiveCollection) then
+    begin
+      MHLShowError(rstrCollectionFileNotFound, [DMUser.ActiveCollection.DBFileName]);
+      //
+      // Мне кажется, это очень жестко по отношению к пользователю.
+      // Может лучше вернуть ошибку и запустить мастера создания коллекции?
+      //
+      Application.Terminate;
+    end;
+
     //
-    // Мне кажется, это очень жестко по отношению к пользователю.
-    // Может лучше вернуть ошибку и запустить мастера создания коллекции?
+    // небольшой хак. Будет правильнее передавать ID коллекции в InitCollection
     //
-    Application.Terminate;
+    Settings.ActiveCollection := DMUser.CurrentCollection.ID;
+
+    frmSplash.lblState.Caption := rstrMainLoadingCollection;
   end;
-
-  //
-  // небольшой хак. Будет правильнее передавать ID коллекции в InitCollection
-  //
-  Settings.ActiveCollection := DMUser.CurrentCollection.ID;
-
-  frmSplash.lblState.Caption := rstrMainLoadingCollection;
 
   InitCollection(False);
 end;
@@ -2566,8 +2575,9 @@ begin
     try
       DMUser.CurrentCollection.UpdateSettings(ASettings);
       DMUser.CurrentCollection.Save;
-    finally
+    except
       DMUser.CurrentCollection.Cancel;
+      raise;
     end;
   end;
 
