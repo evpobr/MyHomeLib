@@ -74,17 +74,21 @@ type
     procedure btnPrevBookClick(Sender: TObject);
 
   private
+    FBookRecord: TBookRecord;
     FChanged: Boolean;
 
     FOnHelp: TOnHelpEvent;
+    FOnGetBook: TGetBookEvent;
     FOnUpdateBook: TBookEvent;
     FOnSelectBook: TSelectBookEvent;
 
-    procedure FillLists;
+    procedure PrepareForm;
     function SaveData: Boolean;
     procedure DoNextBook(const MoveForward: Boolean);
+
   public
     property OnHelp: TOnHelpEvent read FOnHelp write FOnHelp;
+    property OnGetBook: TGetBookEvent read FOnGetBook write FOnGetBook;
     property OnSelectBook: TSelectBookEvent read FOnSelectBook write FOnSelectBook;
     property OnUpdateBook: TBookEvent read FOnUpdateBook write FOnUpdateBook;
   end;
@@ -95,6 +99,7 @@ var
 implementation
 
 uses
+  SysUtils,
   dm_collection,
   dm_user,
   frm_genre_tree,
@@ -110,11 +115,68 @@ resourcestring
 {$R *.dfm}
 
 procedure TfrmEditBookInfo.FormShow(Sender: TObject);
+var
+  FFiltered: Boolean;
 begin
   FChanged := False;
+
   if frmGenreTree.tvGenresTree.GetFirstSelected = nil then
     FillGenresTree(frmGenreTree.tvGenresTree);
-  FillLists;
+
+  cbSeries.Items.Clear;
+  DMCollection.Series.DisableControls;
+  try
+    FFiltered := DMCollection.Series.Filtered;
+    DMCollection.Series.Filtered := False;
+    try
+      DMCollection.Series.First;
+      while not DMCollection.Series.Eof do
+      begin
+        cbSeries.Items.Add(DMCollection.Series[SERIE_TITLE_FIELD]);
+        DMCollection.Series.Next;
+      end;
+    finally
+      DMCollection.Series.Filtered := FFiltered;
+    end;
+  finally
+    DMCollection.Series.EnableControls;
+  end;
+
+  FillGenresTree(frmGenreTree.tvGenresTree);
+
+  PrepareForm;
+end;
+
+procedure TfrmEditBookInfo.PrepareForm;
+var
+  Author: TAuthorData;
+  Family: TListItem;
+begin
+  Assert(Assigned(FOnGetBook));
+  FOnGetBook(FBookRecord);
+
+  lvAuthors.Items.Clear;
+  for Author in FBookRecord.Authors do
+  begin
+    Family := lvAuthors.Items.Add;
+    Family.Caption := Author.LastName;
+    Family.SubItems.Add(Author.FirstName);
+    Family.SubItems.Add(Author.MiddleName);
+  end;
+
+  frmGenreTree.SelectGenres(FBookRecord.Genres);
+  lblGenre.Text := TGenresHelper.GetList(FBookRecord.Genres);
+
+  edT.Text := FBookRecord.Title;
+
+  if FBookRecord.Serie = NO_SERIES_TITLE then
+    cbSeries.Text := ''
+  else
+    cbSeries.Text := FBookRecord.Serie;
+
+  edSN.Text := IntToStr(FBookRecord.SeqNumber);
+  edKeyWords.Text := FBookRecord.KeyWords;
+  cbLang.Text := FBookRecord.Lang;
 end;
 
 procedure TfrmEditBookInfo.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -129,14 +191,11 @@ begin
 end;
 
 procedure TfrmEditBookInfo.btnGenresClick(Sender: TObject);
-var
-  BookRecord: TBookRecord;
-  Genres: TBookGenres;
 begin
   if frmGenreTree.ShowModal = mrOk then
   begin
-    frmGenreTree.GetSelectedGenres(BookRecord);
-    lblGenre.Text := TGenresHelper.GetList(BookRecord.Genres);
+    frmGenreTree.GetSelectedGenres(FBookRecord);
+    lblGenre.Text := TGenresHelper.GetList(FBookRecord.Genres);
     FChanged := True;
   end;
 end;
@@ -216,40 +275,17 @@ begin
   DoNextBook(False);
 end;
 
-procedure TfrmEditBookInfo.FillLists;
-var
-  FFiltered: Boolean;
-begin
-  cbSeries.Items.Clear;
-
-  DMCollection.Series.DisableControls;
-  try
-    FFiltered := DMCollection.Series.Filtered;
-    DMCollection.Series.Filtered := False;
-    try
-      DMCollection.Series.First;
-      while not DMCollection.Series.Eof do
-      begin
-        cbSeries.Items.Add(DMCollection.Series[SERIE_TITLE_FIELD]);
-        DMCollection.Series.Next;
-      end;
-    finally
-      DMCollection.Series.Filtered := FFiltered;
-    end;
-  finally
-    DMCollection.Series.EnableControls;
-  end;
-end;
-
 function TfrmEditBookInfo.SaveData: boolean;
+var
+ i: Integer;
 begin
-  Result := False;
-
   if not FChanged then
   begin
     Result := True;
     Exit;
   end;
+
+  Result := False;
 
   if lvAuthors.Items.Count = 0 then
   begin
@@ -263,6 +299,18 @@ begin
     Exit;
   end;
 
+  FBookRecord.Title := edT.Text;
+  FBookRecord.ClearAuthors;
+  for i := 0 to lvAuthors.Items.Count - 1 do
+    TAuthorsHelper.Add(FBookRecord.Authors, lvAuthors.Items[i].Caption, lvAuthors.Items[i].SubItems[0], lvAuthors.Items[i].SubItems[1]);
+  FBookRecord.Serie := cbSeries.Text;
+  FBookRecord.SeqNumber := StrToIntDef(edSN.Text, 0);
+  FBookRecord.KeyWords := edKeyWords.Text;
+  FBookRecord.Lang := cbLang.Text;
+
+  FOnUpdateBook(FBookRecord);
+  FChanged := False;
+
   Result := True;
 end;
 
@@ -273,12 +321,9 @@ begin
 
   if SaveData then
   begin
-    if FChanged then
-    begin
-      /// RESTORE !!! FOnUpdateBook;
-      FChanged := False;
-    end;
     FOnSelectBook(MoveForward);
+
+    PrepareForm;
   end;
 end;
 

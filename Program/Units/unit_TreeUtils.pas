@@ -206,7 +206,6 @@ var
   Data: PGenreData;
   Nodes: TDictionary<string, PVirtualNode>;
   strParentCode: string;
-  nParentIndex: Integer;
   ParentNode: PVirtualNode;
 begin
   Tree.NodeDataSize := SizeOf(TGenreData);

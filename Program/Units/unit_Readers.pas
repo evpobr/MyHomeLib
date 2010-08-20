@@ -63,7 +63,8 @@ uses
   Forms,
   ShellAPI,
   unit_Errors,
-  unit_Globals;
+  unit_Globals,
+  unit_Helpers;
 
 { TReaderC }
 
@@ -151,23 +152,9 @@ begin
 
   AReader := Find(Ext);
   if Assigned(AReader) and (AReader.Path <> '') then
-    AHInst := ShellExecute(
-      Application.Handle,
-      'open',
-      PChar(AReader.Path),
-      PChar('"' + FileName + '"'),
-      nil,
-      SW_SHOWNORMAL
-      )
+    AHInst := SimpleShellExecute(Application.Handle, AReader.Path, SW_SHOWNORMAL, QuotedStr(FileName))
   else
-    AHInst := ShellExecute(
-      Application.Handle,
-      nil,
-      PChar(FileName),
-      nil,
-      nil,
-      SW_SHOWNORMAL
-      );
+    AHInst := SimpleShellExecute(Application.Handle, FileName);
 
   if AHInst <= 32 then
     raise Exception.Create(SysErrorMessage(AHInst) + ': ' + AReader.Path);

@@ -145,7 +145,6 @@ begin
     Application.CreateForm(TDMUser, DMUser);
   Application.CreateForm(TDMCollection, DMCollection);
   Application.CreateForm(TfrmMain, frmMain);
-  Application.CreateForm(TfrmEditBookInfo, frmEditBookInfo);
   Application.CreateForm(TfrmGenreTree, frmGenreTree);
   Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
   Application.CreateForm(TfrmAuthorList, frmAuthorList);

@@ -330,7 +330,7 @@ begin
   Data := Tree.GetNodeData(Tree.GetFirstSelected);
   if (Data = nil) or (Data.DataType = dtFolder) then
     Exit;
-  ShellExecute(Handle, 'explore', PChar(AnsiLowercase(ExtractFilePath(Data.FullPath))), '', nil, SW_SHOWNORMAL);
+  SimpleShellExecute(Handle, ExtractFilePath(Data^.FullPath), SW_SHOWNORMAL, '', 'explore');
 end;
 
 function TfrmAddnonfb2.CheckEmptyFields(Data: PFileData): Boolean;
@@ -688,7 +688,7 @@ begin
   if Data <> nil then
   begin
     S := AnsiLowercase(Data.FullPath + Data.FileName + Data.Ext);
-    ShellExecute(Handle, 'open', PChar(S), '', nil, SW_SHOWNORMAL);
+    SimpleShellExecute(Handle, S);
   end;
 end;
 
@@ -734,7 +734,7 @@ begin
   // if Data <> nil then
   // begin
   // S := AnsiLowercase(Data.FullPath + Data.FileName + Data.Ext);
-  // ShellExecute(Handle, 'open', PChar(s), '', nil, SW_SHOWNORMAL);
+  // SimpleShellExecute(Handle, s);
   // end;
   pcPages.ActivePageIndex := 1;
 end;
