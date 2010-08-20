@@ -2036,7 +2036,6 @@ begin
     2: FillBooksTree(tvBooksG,  DMCollection.GenreBooks,  DMCollection.BooksByGenre,  True,  True);  // жанры
     3: FillBooksTree(tvBooksSR, nil,                      DMCollection.sqlBooks,      True,  True);  // поиск
     4: FillBooksTree(tvBooksF,  DMUser.GroupBooks,        DMUser.BooksByGroup,        True,  True);  // избранное
-    /// TODO : что это было???? 5: btnApplyFilterClick(self);
   end;
 
   SetHeaderPopUp;
@@ -3110,11 +3109,8 @@ begin
       TAuthorsHelper.GetLinkList(Data^.Authors),
       Data^.Serie,
       TGenresHelper.GetLinkList(Data^.Genres)
-      );
+    );
 
-    //
-    // TODO : Желательно сделать показ информации о книге с таймаутом, т к чтение обложки может занимать достаточно много времени
-    //
     if Settings.ShowBookCover or Settings.ShowBookAnnotation then
     begin
       if IsLocal or Data^.Local then
@@ -4139,24 +4135,29 @@ var
   Data: PBookRecord;
 begin
   GetActiveTree(Tree);
+  OldNode := Tree.GetFirstSelected;
+  NewNode := OldNode;
+
   repeat
-    OldNode := Tree.GetFirstSelected;
     if MoveForward then
     begin
-      NewNode := Tree.GetNext(OldNode);
+      NewNode := Tree.GetNext(NewNode);
       if not Assigned(NewNode) then
         NewNode := Tree.GetFirst;
     end
     else
     begin
-      NewNode := Tree.GetPrevious(OldNode);
+      NewNode := Tree.GetPrevious(NewNode);
       if not Assigned(NewNode) then
         NewNode := Tree.GetLast;
     end;
-    Tree.Selected[OldNode] := False;
-    Tree.Selected[NewNode] := True;
+
     Data := Tree.GetNodeData(NewNode);
   until Data^.nodeType = ntBookInfo;
+
+  Tree.Selected[OldNode] := False;
+  Tree.Selected[NewNode] := True;
+  Tree.FocusedNode := NewNode;
 end;
 
 procedure TfrmMain.tbSelectAllClick(Sender: TObject);
