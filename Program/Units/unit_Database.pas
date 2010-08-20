@@ -67,6 +67,7 @@ type
 
     function GetTopGenreAlias(const FB2Code: string): string;
     procedure CleanBookGenres(BookID: Integer);
+    procedure InsertBookGenres(const BookID: Integer; const Genres: TBookGenres);
 
     procedure GetSeries(SeriesList: TStrings);
 
@@ -974,18 +975,7 @@ begin
     FBookKeyWords.Value := BookRecord.KeyWords;
     FBooks.Post;
 
-    for Genre in BookRecord.Genres do
-    begin
-      FGenreList.Append;
-      try
-        FGenreListBookID.Value := FBookBookID.Value;
-        FGenreListGenreCode.Value := Genre.GenreCode;
-
-        FGenreList.Post;
-      except
-        FGenreList.Cancel;
-      end;
-    end;
+    InsertBookGenres(FBookBookID.Value, BookRecord.Genres);
 
     for Author in BookRecord.Authors do
     begin
@@ -1081,6 +1071,25 @@ begin
 
   while FGenreList.Locate(BOOK_ID_FIELD, BookID, []) do
     FGenreList.Delete;
+end;
+
+// Add book genres for the book specified by BookID, doesn't check for duplicates
+procedure TMHLLibrary.InsertBookGenres(const BookID: Integer; const Genres: TBookGenres);
+var
+  Genre: TGenreData;
+begin
+  for Genre in Genres do
+  begin
+    FGenreList.Append;
+    try
+      FGenreListBookID.Value := BookID;
+      FGenreListGenreCode.Value := Genre.GenreCode;
+
+      FGenreList.Post;
+    except
+      FGenreList.Cancel;
+    end;
+  end;
 end;
 
 procedure TMHLLibrary.CorrectExtra(OldID, NewID: Integer);
