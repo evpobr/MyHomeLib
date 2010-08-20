@@ -202,8 +202,10 @@ procedure TfrmBookDetails.Download;
 var
   reviewParser: TReviewParser;
   Review: TStringList;
+  SavedCursor: TCursor;
 begin
   btnLoadReview.Enabled := False;
+  SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
     reviewParser := TReviewParser.Create;
@@ -221,7 +223,7 @@ begin
       reviewParser.Free;
     end;
   finally
-    Screen.Cursor := crDefault;
+    Screen.Cursor := SavedCursor;
     btnLoadReview.Enabled := True;
   end;
 end;

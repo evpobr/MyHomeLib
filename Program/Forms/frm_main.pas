@@ -1355,9 +1355,11 @@ WHERE
 procedure TfrmMain.DoApplyFilter(Sender: TObject);
 var
   FilterString: string;
+  SavedCursor: TCursor;
 const
   SQLStartStr = 'SELECT DISTINCT b.' + BOOK_ID_FIELD;
 begin
+  SavedCursor := Screen.Cursor;
   Screen.Cursor := crSQLWait;
   try
     StatusMessage := rstrCreatingFilter;
@@ -1501,7 +1503,7 @@ begin
       StatusMessage := rstrReadyMessage;
     end;
   finally
-    Screen.Cursor := crDefault;
+    Screen.Cursor := SavedCursor;
   end;
 end;
 
@@ -1576,10 +1578,10 @@ end;
 
 procedure TfrmMain.InitCollection(ApplyAuthorFilter: Boolean);
 var
-  SaveCursor: TCursor;
+  SavedCursor: TCursor;
   CollectionType: Integer;
 begin
-  SaveCursor := Screen.Cursor;
+  SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
     CloseCollection;
@@ -1590,7 +1592,7 @@ begin
     if DMUser.tblBases.IsEmpty then
     begin
       frmMain.Caption := 'MyHomeLib';
-      Screen.Cursor := crDefault;
+	  Screen.Cursor := SavedCursor;
 
       if not ShowNCWizard then
         Application.Terminate;
@@ -1729,7 +1731,7 @@ begin
     FillSeriesTree(tvSeries);
     FillGenresTree(tvGenres);
   finally
-    Screen.Cursor := SaveCursor;
+    Screen.Cursor := SavedCursor;
   end;
 end;
 
@@ -3540,41 +3542,45 @@ var
   Node: PVirtualNode;
   Data: PBookRecord;
   ALibrary: TMHLLibrary;
+  SavedCursor: TCursor;
 begin
+  SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
-
-  if ActiveView = FavoritesView then
-  begin
-    MHLShowWarning(rstrMainUnableToCopy);
-    Exit;
-  end;
-
-  GetActiveTree(Tree);
-  ID := (Sender as TMenuItem).Tag;
-  if not DMUser.SelectCollection(ID) then
-    Exit;
-
-  ALibrary := TMHLLibrary.Create(nil);
   try
-    ALibrary.DatabaseFileName := DMUser.CurrentCollection.DBFileName;
-    ALibrary.Active := True;
-
-    Node := Tree.GetFirst;
-    while Assigned(Node) do
+    if ActiveView = FavoritesView then
     begin
-      Data := Tree.GetNodeData(Node);
-      if IsSelectedBookNode(Node, Data) then
-      begin
-        DMCollection.GetBookRecord(Data^.BookKey, R, True);
-        ALibrary.InsertBook(R, True, True);
-      end;
+      MHLShowWarning(rstrMainUnableToCopy);
+      Exit;
+    end;
 
-      Node := Tree.GetNext(Node);
+    GetActiveTree(Tree);
+    ID := (Sender as TMenuItem).Tag;
+    if not DMUser.SelectCollection(ID) then
+      Exit;
+
+    ALibrary := TMHLLibrary.Create(nil);
+    try
+      ALibrary.DatabaseFileName := DMUser.CurrentCollection.DBFileName;
+      ALibrary.Active := True;
+
+      Node := Tree.GetFirst;
+      while Assigned(Node) do
+      begin
+        Data := Tree.GetNodeData(Node);
+        if IsSelectedBookNode(Node, Data) then
+        begin
+          DMCollection.GetBookRecord(Data^.BookKey, R, True);
+          ALibrary.InsertBook(R, True, True);
+        end;
+
+        Node := Tree.GetNext(Node);
+      end;
+    finally
+      ALibrary.Free;
     end;
   finally
-    ALibrary.Free;
+    Screen.Cursor := SavedCursor;
   end;
-  Screen.Cursor := crDefault;
 end;
 
 procedure TfrmMain.InfoPanelResize(Sender: TObject);
@@ -3745,6 +3751,7 @@ var
 
   BookFileName: string;
   BookFormat: TBookFormat;
+  SavedCursor: TCursor;
 begin
   GetActiveTree(Tree);
 
@@ -3752,6 +3759,7 @@ begin
   if not Assigned(Data) or (Data.nodeType <> ntBookInfo) then
     Exit;
 
+  SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
     BookFileName := Data^.GetBookFileName;
@@ -3815,7 +3823,7 @@ begin
     Settings.Readers.RunReader(WorkFile);
     Tree.RepaintNode(Tree.GetFirstSelected);
   finally
-    Screen.Cursor := crDefault;
+    Screen.Cursor := SavedCursor;
   end;
 end;
 
@@ -3918,11 +3926,11 @@ end;
 
 procedure TfrmMain.OnSetAuthorFilter(Sender: TObject);
 var
-  SaveCursor: TCursor;
+  SavedCursor: TCursor;
   Button: TToolButton;
   AFilter: string;
 begin
-  SaveCursor := Screen.Cursor;
+  SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
     Assert(Sender is TToolButton);
@@ -3938,7 +3946,7 @@ begin
       edLocateAuthor.SelLength := 0;
     end;
   finally
-    Screen.Cursor := SaveCursor;
+    Screen.Cursor := SavedCursor;
   end;
 end;
 
@@ -4193,6 +4201,7 @@ var
   SerieID: Integer;
 
   BookRecord: TBookRecord;
+  SavedCursor: TCursor;
 
 begin
   Assert(Assigned(Tree));
@@ -4238,6 +4247,7 @@ begin
   ShowStatusProgress := True;
   StatusProgress := 0;
 
+  SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
     Tree.BeginUpdate;
@@ -4400,7 +4410,7 @@ begin
       4: lblBooksTotalF.Caption := Format('(%d)', [i]);
     end;
   finally
-    Screen.Cursor := crDefault;
+    Screen.Cursor := SavedCursor;
   end;
 end;
 
@@ -4508,6 +4518,7 @@ var
   Data: PBookRecord;
   ALibrary: TMHLLibrary;
   BookFileName: string;
+  SavedCursor: TCursor;
 begin
   if ActiveView = FavoritesView then
   begin
@@ -4518,10 +4529,11 @@ begin
   if MessageDlg(rstrRemoveSelectedBooks, mtConfirmation, [mbYes, mbNo], 0) = mrNo then
     Exit;
 
-  Screen.Cursor := crHourGlass;
   GetActiveTree(Tree);
 
   ALibrary := TMHLLibrary.Create(nil);
+  SavedCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
   try
     ALibrary.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
     ALibrary.Active := True;
@@ -4571,8 +4583,8 @@ begin
         Node := Tree.GetNext(Node);
     end;
   finally
+    Screen.Cursor := SavedCursor;
     ALibrary.Free;
-    Screen.Cursor := crDefault;
   end;
 end;
 
@@ -5245,18 +5257,20 @@ end;
 procedure TfrmMain.ClearGroup(Sender: TObject);
 var
   GroupData: PGroupData;
+  SavedCursor: TCursor;
 begin
   GroupData := tvGroups.GetNodeData(tvGroups.GetFirstSelected());
   if not Assigned(GroupData) then
     Exit;
 
+  SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
     DMUser.ClearGroup(GroupData^.GroupID);
 
     FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True); // избранное
   finally
-    Screen.Cursor := crDefault;
+    Screen.Cursor := SavedCursor;
   end;
 end;
 
@@ -5615,6 +5629,7 @@ var
   booksProcessed: Integer;
   GroupID: Integer;
   GroupData: PGroupData;
+  SavedCursor: TCursor;
 begin
   GetActiveTree(Tree);
   Assert(Assigned(Tree));
@@ -5631,6 +5646,7 @@ begin
   else
     GroupID := FAVORITES_GROUP_ID;
 
+  SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
     StatusMessage := rstrAddingBookToGroup;
@@ -5656,7 +5672,7 @@ begin
       ShowStatusProgress := False;
     end;
   finally
-    Screen.Cursor := crDefault;
+    Screen.Cursor := SavedCursor;
   end;
 
   //
@@ -5674,6 +5690,7 @@ var
   GroupData: PGroupData;
   booksToProcess: Integer;
   booksProcessed: Integer;
+  SavedCursor: TCursor;
 begin
   Assert(ActiveView = FavoritesView);
 
@@ -5688,6 +5705,7 @@ begin
   if not Assigned(GroupData) then
     Exit;
 
+  SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
     StatusMessage := rstrRemovingBookFromGroup;
@@ -5720,7 +5738,7 @@ begin
       ShowStatusProgress := False;
     end;
   finally
-    Screen.Cursor := crDefault;
+    Screen.Cursor := SavedCursor;
   end;
 end;
 
@@ -6242,6 +6260,7 @@ var
   Node: PVirtualNode;
   Data: PBookRecord;
   FullAuthorName: string;
+  SavedCursor: TCursor;
 begin
   GetActiveTree(Tree);
 
@@ -6263,6 +6282,7 @@ begin
     until (Data^.nodeType = ntBookInfo);
   end;
 
+  SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
     if Data^.BookKey.DatabaseID <> DMUser.ActiveCollection.ID then
@@ -6274,7 +6294,7 @@ begin
       end
       else
       begin
-        Screen.Cursor := crDefault;
+        Screen.Cursor := SavedCursor;
         MHLShowError(rstrCollectionNotRegistered);
         Exit;
       end;
@@ -6292,7 +6312,7 @@ begin
     edLocateAuthor.Text := FullAuthorName;
     LocateBook(Data.Title, False);
   finally
-    Screen.Cursor := crDefault;
+    Screen.Cursor := SavedCursor;
   end;
 end;
 
@@ -6878,10 +6898,12 @@ procedure TfrmMain.miImportUserDataClick(Sender: TObject);
 var
   FileName: string;
   data: TUserData;
+  SavedCursor: TCursor;
 begin
   if not GetFileName(fnOpenUserData, FileName) then
     Exit;
 
+  SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
     data := TUserData.Create;
@@ -6921,7 +6943,7 @@ begin
     //
     FillGroupsList(tvGroups);
   finally
-    Screen.Cursor := crDefault;
+    Screen.Cursor := SavedCursor;
   end;
 end;
 
