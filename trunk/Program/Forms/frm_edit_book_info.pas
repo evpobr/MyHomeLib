@@ -120,12 +120,13 @@ end;
 
 procedure TfrmEditBookInfo.btnGenresClick(Sender: TObject);
 var
+  BookRecord: TBookRecord;
   Genres: TBookGenres;
 begin
   if frmGenreTree.ShowModal = mrOk then
   begin
-    Genres := frmGenreTree.GetSelectedGenres;
-    lblGenre.Text := TGenresHelper.GetList(Genres);
+    frmGenreTree.GetSelectedGenres(BookRecord);
+    lblGenre.Text := TGenresHelper.GetList(BookRecord.Genres);
     FChanged := True;
   end;
 end;

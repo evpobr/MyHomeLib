@@ -4995,7 +4995,7 @@ begin
     DMUser.CorrectExtra(OldID, Data^.BookKey.BookID);
 
     Data^.Title := frmEditBookInfo.edT.Text;
-    Data^.Genres := frmGenreTree.GetSelectedGenres;
+    Data^.Genres := R.Genres;
     Data^.SeqNumber := StrToIntDef(frmEditBookInfo.edSN.Text, 0);
     Data^.Lang := frmEditBookInfo.cbLang.Text;
     Tree.RepaintNode(Node);
@@ -5070,31 +5070,24 @@ begin
         DataB := Tree.GetNodeData(NodeB);
         if (DataB^.nodeType = ntBookInfo) and ((Tree.CheckState[NodeB] = csCheckedNormal) or (Tree.Selected[NodeB])) then
         begin
-          ALibrary.CleanBookGenres(DataB.BookKey.BookID);
+          frmGenreTree.GetSelectedGenres(DataB^);
 
-          Assert(False, 'Not implemented yet!');
-          //
-          // TODO : restore this code
-          //
-          {
-          DataB.Genre := '';
-          NodeG := frmGenreTree.tvGenresTree.GetFirstSelected;
-          while Assigned(NodeG) do
-          begin
-            DataG := frmGenreTree.tvGenresTree.GetNodeData(NodeG);
+          ALibrary.BeginBulkOperation;
+          try
+            ALibrary.CleanBookGenres(DataB.BookKey.BookID);
+            ALibrary.InsertBookGenres(DataB.BookKey.BookID, DataB^.Genres);
 
-            ALibrary.AddBookGenre(DataB.BookID, DataG.Code);
-
-            DataB.Genre := DataB.Genre + DataG.Text + ' / ';
-            NodeG := frmGenreTree.tvGenresTree.GetNextSelected(NodeG);
+            ALibrary.EndBulkOperation(True); // commit
+          except
+            ALibrary.EndBulkOperation(False); // rollback
           end;
-
-          Delete(DataB.Genre, Length(DataB.Genre) - 2, 3);
-          }
         end;
         Tree.RepaintNode(NodeB);
         NodeB := Tree.GetNext(NodeB);
       end;
+      SavePositions;
+      InitCollection(True);
+      RestorePositions;
     finally
       ALibrary.Free;
     end;
