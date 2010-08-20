@@ -70,7 +70,7 @@ type
     FGenresType: TGenresType;
 
     procedure SetCollectionRoot(const Value: string);
-    procedure ParseData(const input: string; var R: TBookRecord);
+    procedure ParseData(const input: string; const OnlineCollection: Boolean; var R: TBookRecord);
 
   protected
     procedure WorkFunction; override;
@@ -173,7 +173,7 @@ begin
   Result := slParams.Count = nParamsCount;
 end;
 
-procedure TImportInpxThread.ParseData(const input: string; var R: TBookRecord);
+procedure TImportInpxThread.ParseData(const input: string; const OnlineCollection: Boolean; var R: TBookRecord);
 var
   p, i: Integer;
   slParams: TStringList;
@@ -265,7 +265,13 @@ begin
           R.Size := StrToIntDef(slParams[i], 0); // Размер
 
         flLibID:
-          R.LibID := StrToIntDef(slParams[i], 0); // внутр. номер
+          begin
+            // relevant only for online collections in which will used to access the remote book by this id
+            if OnlineCollection then
+              R.LibID := StrToIntDef(slParams[i], 0) // внутр. номер
+            else
+              R.LibID := 0;
+          end;
 
         flDeleted:
           R.Deleted := (slParams[i] = '1'); // удалена
@@ -378,6 +384,7 @@ var
   unZip: TZipForge;
   CurrentFile: string;
   ArchItem: TZFArchiveItem;
+  OnlineCollection: Boolean;
   //FileStream: TMemoryStream;
 begin
   filesProcessed := 0;
@@ -406,6 +413,7 @@ begin
             repeat
               CurrentFile := ArchItem.FileName;
 
+              OnlineCollection := isOnlineCollection(CollectionType);
               if not isOnlineCollection(CollectionType) and (CurrentFile = 'extra.inp') then
                 Continue;
 
@@ -416,8 +424,8 @@ begin
               for j := 0 to BookList.Count - 1 do
               begin
                 try
-                  ParseData(BookList[j], R);
-                  if isOnlineCollection(CollectionType) then
+                  ParseData(BookList[j], OnlineCollection, R);
+                  if OnlineCollection then
                   begin
                     // И\Иванов Иван\1234 Просто книга.fb2.zip
                     R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;
