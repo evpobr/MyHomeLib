@@ -208,7 +208,7 @@ begin
   try
     ZIP.FileName := INPXFileName;
     ZIP.BaseDir := FTempPath;
-    ZIP.OpenArchive;
+    ZIP.OpenArchive(fmCreate);
 
     //
     // Перемещаем файлы в архив согласно списку FileList

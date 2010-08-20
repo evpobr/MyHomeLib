@@ -806,9 +806,6 @@ type
     FLastLetterA: TToolButton;
     FLastLetterS: TToolButton;
 
-    ALetter: TToolButton;
-    ///BookTreeStatus: (bsFree, bsBusy);
-
     FSortSettings: array [0 .. 5] of TSortSetting;
 
     FStarImage: TPngImage;
@@ -817,6 +814,9 @@ type
     FLastFoundBook: PVirtualNode;
     FFirstFoundBook: PVirtualNode;
     FLastBookRecord: TBookRecord;
+
+    FLastAuthorID: Integer;
+    FLastSerieID: Integer;
 
     // SB
     FStatusProgressBar: TProgressBar;
@@ -855,7 +855,6 @@ type
     procedure SaveFb2DataAfterEdit(R: TBookRecord);
     function ShowNCWizard: Boolean;
     procedure LoadLastCollection;
-    function ExtractBookDescriptorToStream(const BookRecord: TBookRecord): TStream;
     procedure SetShowStatusProgress(const Value: Boolean);
     procedure SetStatusProgress(const Value: Integer);
     function GetShowStatusProgress: Boolean;
@@ -923,8 +922,6 @@ uses
 
 resourcestring
   rstrFileNotFoundMsg = 'Файл %s не найден!' + CRLF + 'Проверьте настройки коллекции!';
-  rstrArchiveNotFound = 'Архив "%s" не найден!';
-  rstrFileNotFound = 'Файл "%s" не найден!';
   rstrCreatingFilter = 'Подготовка фильтра ...';
   rstrCheckFilterParams = 'Проверьте параметры фильтра';
   rstrApplyingFilter = 'Применяем фильтр ...';
@@ -1182,8 +1179,8 @@ begin
 end;
 
 procedure TfrmMain.ChangeLetterButton(const S: string);
-var
-  i: Integer;
+//var
+//  i: Integer;
 begin
   {
   for i := 0 to RusBar.ControlCount - 1 do
@@ -1571,6 +1568,9 @@ begin
 
     DMCollection.SetTableState(False);
     DMCollection.DBCollection.Connected := False;
+
+    FLastAuthorID := MHL_INVALID_ID;
+    FLastSerieID := MHL_INVALID_ID;
   finally
     Screen.Cursor := FCursor;
   end;
@@ -2314,8 +2314,6 @@ begin
 end;
 
 procedure TfrmMain.LoadLastCollection;
-var
-  ID: Integer;
 begin
   if not DMUser.FindFirstExistingCollection(Settings.ActiveCollection) then
   begin
@@ -2381,6 +2379,8 @@ begin
 
   FLastLetterA := tbarAuthorsRus.Buttons[0];
   FLastLetterS := tbarSeriesRus.Buttons[0];
+  FLastAuthorID := MHL_INVALID_ID;
+  FLastSerieID := MHL_INVALID_ID;
 
   // SB
   FStatusProgressBar := TProgressBar.Create(Self);
@@ -2521,8 +2521,57 @@ end;
 
 procedure TfrmMain.SavePositions;
 var
-  Data: PBookRecord;
+  AuthorData: PAuthorData;
+  SerieData: PSerieData;
+  BookData: PBookRecord;
+  ASettings: TStrings;
 begin
+  ASettings := DMUser.ActiveCollection.Settings;
+  Assert(Assigned(ASettings));
+
+  ASettings.Clear;
+
+  AuthorData := tvAuthors.GetNodeData(tvAuthors.GetFirstSelected);
+  if Assigned(AuthorData) then
+  begin
+    ASettings.Values['lastAuthorID'] := IntToStr(AuthorData^.AuthorID);
+
+    if FLastAuthorID = AuthorData^.AuthorID then
+    begin
+      BookData := tvBooksA.GetNodeData(tvBooksA.GetFirstSelected);
+      if Assigned(BookData) then
+        ASettings.Values['lastAuthorBookID'] := IntToStr(BookData^.BookKey.BookID);
+    end;
+  end;
+
+  SerieData:= tvSeries.GetNodeData(tvSeries.GetFirstSelected);
+  if Assigned(SerieData) then
+  begin
+    ASettings.Values['lastSerieID'] := IntToStr(SerieData^.SerieID);
+
+    if FLastSerieID = SerieData^.SerieID then
+    begin
+      BookData := tvBooksS.GetNodeData(tvBooksS.GetFirstSelected);
+      if Assigned(BookData) then
+        ASettings.Values['lastSerieBookID'] := IntToStr(BookData^.BookKey.BookID);
+    end;
+  end;
+
+  //
+  // TODO : по хорошему, это должно храниться в самой коллекции. Т е должно быть DMCollection.UpdateSettings(ASettings);
+  //
+  if DMUser.SelectCollection(DMUser.ActiveCollection.ID) then
+  begin
+    DMUser.CurrentCollection.Edit;
+    try
+      DMUser.CurrentCollection.UpdateSettings(ASettings);
+      DMUser.CurrentCollection.Save;
+    finally
+      DMUser.CurrentCollection.Cancel;
+    end;
+  end;
+
+  {
   Settings.LastAuthor := lblAuthor.Caption;
   Settings.LastSeries := lblSeries.Caption;
 
@@ -2543,6 +2592,7 @@ begin
     Settings.LastBookInFavorites := Data^.BookKey.BookID
   else
     Settings.LastBookInFavorites := -1;
+  }
 end;
 
 procedure TfrmMain.SaveMainFormSettings;
@@ -2719,6 +2769,7 @@ begin
 
   DMCollection.Authors.Locate(AUTHOR_ID_FIELD, Data^.AuthorID, []);
   lblAuthor.Caption := Data^.GetFullName;
+  FLastAuthorID := Data^.AuthorID;
   FillBooksTree(tvBooksA, DMCollection.AuthorBooks, DMCollection.BooksByAuthor, False, True); // авторы
 end;
 
@@ -2775,6 +2826,7 @@ begin
 
   DMCollection.Series.Locate(SERIE_ID_FIELD, Data^.SerieID, []);
   lblSeries.Caption := Data^.SerieTitle;
+  FLastSerieID := Data^.SerieID;
   FillBooksTree(tvBooksS, nil, DMCollection.BooksBySerie, False, False); // авторы
 end;
 
@@ -3076,44 +3128,37 @@ begin
       if IsLocal or Data^.Local then
       begin
         try
+          bookStream := Data^.GetBookDescriptorStream;
           try
-            bookStream := ExtractBookDescriptorToStream(Data^);
-            if bookStream <> nil then
-            begin
-              book := LoadFictionBook(bookStream);
+            Assert(Assigned(bookStream));
+            book := LoadFictionBook(bookStream);
 
-              //
-              // Покажем обложку
-              //
-              if Settings.ShowBookCover then
-              begin
-                imgBookCover := GetBookCover(book);
-                try
-                  InfoPanel.SetBookCover(imgBookCover);
-                finally
-                  imgBookCover.Free;
-                end;
-              end;
-
-              //
-              // Покажем аннотацию
-              //
-              if Settings.ShowBookAnnotation then
-              begin
-                InfoPanel.SetBookAnnotation(GetBookAnnotation(book));
-              end;
-            end
-            else
+            //
+            // Покажем обложку
+            //
+            if Settings.ShowBookCover then
             begin
-              InfoPanel.SetBookCover(nil);
-              InfoPanel.SetBookAnnotation('');
+              imgBookCover := GetBookCover(book);
+              try
+                InfoPanel.SetBookCover(imgBookCover);
+              finally
+                imgBookCover.Free;
+              end;
             end;
-          except
-            InfoPanel.SetBookCover(nil);
-            InfoPanel.SetBookAnnotation('');
+
+            //
+            // Покажем аннотацию
+            //
+            if Settings.ShowBookAnnotation then
+            begin
+              InfoPanel.SetBookAnnotation(GetBookAnnotation(book));
+            end;
+          finally
+            FreeAndNil(bookStream);
           end;
-        finally
-          FreeAndNil(bookStream);
+        except
+          InfoPanel.SetBookCover(nil);
+          InfoPanel.SetBookAnnotation('');
         end;
       end
       else
@@ -3745,8 +3790,6 @@ var
 
   WorkFile: string;
 
-  FS: TMemoryStream;
-  Zip: TZipForge;
   ID, i: Integer;
 
   BookFileName: string;
@@ -3872,11 +3915,10 @@ var
   bar: TToolBar;
   i: Integer;
 begin
+  Result := nil;
+
   if Filter = '' then
-  begin
-    Result := nil;
     Exit;
-  end;
 
   RealFilter := TCharacter.ToUpper(Copy(Filter, 1, 1));
 
@@ -5380,10 +5422,10 @@ begin
   Settings.ShowInfoPanel := not Settings.ShowInfoPanel;
 
   //
-  // Принудительно обновим информацию о книге, т к если она не показывалась, то и не обновлялась
+  // TODO: Принудительно обновим информацию о книге, т к если она не показывалась, то и не обновлялась
   //
-  if Settings.ShowInfoPanel then
-    tvBooksTreeChange(nil, nil);
+  //if Settings.ShowInfoPanel then
+  //  tvBooksTreeChange(nil, nil);
 
   SetInfoPanelVisible(Settings.ShowInfoPanel);
 end;
@@ -5393,10 +5435,10 @@ begin
   Settings.ShowBookCover := not Settings.ShowBookCover;
 
   //
-  // Принудительно обновим информацию о книге, т к если она не показывалась, то и не обновлялась
+  // TODO: Принудительно обновим информацию о книге, т к если она не показывалась, то и не обновлялась
   //
-  if Settings.ShowInfoPanel and Settings.ShowBookCover then
-    tvBooksTreeChange(nil, nil);
+  //if Settings.ShowInfoPanel and Settings.ShowBookCover then
+  //  tvBooksTreeChange(nil, nil);
 
   SetShowBookCover(Settings.ShowBookCover);
 end;
@@ -5412,10 +5454,10 @@ begin
   Settings.ShowBookAnnotation := not Settings.ShowBookAnnotation;
 
   //
-  // Принудительно обновим информацию о книге, т к если она не показывалась, то и не обновлялась
+  // TODO: Принудительно обновим информацию о книге, т к если она не показывалась, то и не обновлялась
   //
-  if Settings.ShowInfoPanel and Settings.ShowBookAnnotation then
-    tvBooksTreeChange(nil, nil);
+  //if Settings.ShowInfoPanel and Settings.ShowBookAnnotation then
+  //  tvBooksTreeChange(nil, nil);
 
   SetShowBookAnnotation(Settings.ShowBookAnnotation);
 end;
@@ -6089,34 +6131,6 @@ begin
   end;
 end;
 
-// For bfFb2, bfFb2Zip and bfFbd bring a book descriptor info in the fiction book format
-// For bfRaw brings nil
-// Don't forget to free the stream once done
-function TfrmMain.ExtractBookDescriptorToStream(const BookRecord: TBookRecord): TStream;
-var
-  BookFileName: string;
-  BookFormat: TBookFormat;
-  msgNotFound: string;
-begin
-  BookFileName := BookRecord.GetBookFileName;
-
-  if not FileExists(BookFileName) then
-  begin
-    if IsLocal then
-    begin
-      BookFormat := BookRecord.GetBookFormat;
-      if (BookFormat = bfFb2Zip) or (BookFormat = bfFbd) then
-        msgNotFound := rstrArchiveNotFound
-      else
-        msgNotFound := rstrFileNotFound;
-      MHLShowError(Format(msgNotFound, [BookFileName]));
-    end;
-    Result := nil;
-  end
-  else
-    Result := BookRecord.GetBookDescriptorStream;
-end;
-
 procedure TfrmMain.ShowBookInfo(Sender: TObject);
 var
   Tree: TBookTree;
@@ -6152,23 +6166,24 @@ begin
       // сейчас мы грузим только fb2 или fbd, т к больше ничего разбирать не умеем
       //
       try
+        bookStream := Data^.GetBookDescriptorStream;
         try
-          bookStream := ExtractBookDescriptorToStream(Data^);
           frmBookDetails.FillBookInfo(Data^, bookStream)
-        except
-          on e: Exception do
-          begin
-            //
-            // Скорее всего произошла ошибка при чтении файла (не найден, а должен был быть)
-            // или при парсинге книги (загрузили какую-то ерунду).
-            // Покажем сообщение об ощибке и загрузим только библиотечную информацию
-            //
-            MHLShowError(e.Message);
-            frmBookDetails.FillBookInfo(Data^, nil);
-          end;
+        finally
+          FreeAndNil(bookStream);
         end;
-      finally
-        FreeAndNil(bookStream);
+      except
+        //
+        // Скорее всего произошла ошибка при чтении файла (не найден, а должен был быть)
+        // или при парсинге книги (загрузили какую-то ерунду).
+        // Покажем сообщение об ощибке и загрузим только библиотечную информацию
+        //
+        on e: Exception do
+        begin
+          if not (e is ENotSupportedException) then
+            MHLShowError(e.Message);
+          frmBookDetails.FillBookInfo(Data^, nil);
+        end;
       end;
 
       frmBookDetails.mmReview.ReadOnly := not ReviewEditable;
@@ -6369,8 +6384,6 @@ procedure TfrmMain.miStatClick(Sender: TObject);
 var
   frmStat: TfrmStat;
 begin
-  ///DMUser.ActivateCollection(Settings.ActiveCollection);
-
   frmStat := TfrmStat.Create(Application);
   try
     frmStat.LoadCollectionInfo;
