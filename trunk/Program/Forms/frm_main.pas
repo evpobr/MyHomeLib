@@ -740,12 +740,12 @@ type
     // Обновить во всех деревьях ноду BookID:DatabaseID (если есть).
     // Обновления не должны менять положение ноды в дереве.
     //
-    procedure UpdateNodes(BookID: Integer; DatabaseID: Integer; UpdateProc: TNodeUpdateProc);
+    procedure UpdateNodes(const BookKey: TBookKey; UpdateProc: TNodeUpdateProc);
 
     //
     // Обновить статус книги (присутствует локально)
     //
-    procedure SetBookLocalStatus(BookID: Integer; DatabaseID: Integer; IsLocal: Boolean);
+    procedure SetBookLocalStatus(const BookKey: TBookKey; IsLocal: Boolean);
 
     //
     // Восстанавить тулбар в правильной позиции
@@ -825,7 +825,7 @@ type
     FPresets: TSearchPresets;
 
     //
-    function GetBookNode(const Tree: TBookTree; BookID: Integer; DatabaseID: Integer): PVirtualNode; overload;
+    function GetBookNode(const Tree: TBookTree; const BookKey: TBookKey): PVirtualNode; overload;
 
     procedure FillBookIdList(const Tree: TBookTree; var BookIDList: TBookIdList);
     procedure ClearLabels(Tag: Integer; Full: Boolean);
@@ -2526,19 +2526,19 @@ begin
 
   Data := tvBooksA.GetNodeData(tvBooksA.GetFirstSelected);
   if Assigned(Data) then
-    Settings.LastBookInAuthors := Data^.BookID
+    Settings.LastBookInAuthors := Data^.BookKey.BookID
   else
     Settings.LastBookInAuthors := -1;
 
   Data := tvBooksS.GetNodeData(tvBooksS.GetFirstSelected);
   if Assigned(Data) then
-    Settings.LastBookInSeries := Data^.BookID
+    Settings.LastBookInSeries := Data^.BookKey.BookID
   else
     Settings.LastBookInSeries := -1;
 
   Data := tvBooksF.GetNodeData(tvBooksF.GetFirstSelected);
   if Assigned(Data) then
-    Settings.LastBookInFavorites := Data^.BookID
+    Settings.LastBookInFavorites := Data^.BookKey.BookID
   else
     Settings.LastBookInFavorites := -1;
 end;
@@ -2967,7 +2967,7 @@ begin
     if BookData^.nodeType = ntBookInfo then
     begin
       DMUser.CopyBookToGroup(
-        BookData^.BookID, BookData^.DatabaseID,
+        BookData^.BookKey,
         SourceGroupID, TargetGroupID,
         ssShift in Shift
         );
@@ -3440,7 +3440,7 @@ var
 begin
   Data := Sender.GetNodeData(Node);
   // ID
-  Stream.Read(Data^.BookID, SizeOf(Data^.BookID));
+  Stream.Read(Data^.BookKey, SizeOf(Data^.BookKey));
 
   Data^.Title := GetString;
   Data^.Author := GetString;
@@ -3486,7 +3486,7 @@ begin
     Exit;
 
   // ID
-  Stream.Write(Data^.BookID, SizeOf(Data^.BookID));
+  Stream.Write(Data^.BookKey, SizeOf(Data^.BookKey));
 
   WriteString(Data^.Title);
   WriteString(Data^.Author);
@@ -3565,7 +3565,7 @@ begin
       Data := Tree.GetNodeData(Node);
       if IsSelectedBookNode(Node, Data) then
       begin
-        DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, R, True);
+        DMCollection.GetBookRecord(Data^.BookKey, R, True);
         ALibrary.InsertBook(R, True, True);
       end;
 
@@ -3597,8 +3597,7 @@ begin
     if IsSelectedBookNode(Node, Data) then
     begin
       SetLength(BookIDList, i + 1);
-      BookIDList[i].BookID := Data^.BookID;
-      BookIDList[i].DatabaseID := Data^.DatabaseID;
+      BookIDList[i].BookKey := Data^.BookKey;
       Inc(i);
       Tree.CheckState[Node] := csUncheckedNormal;
     end;
@@ -3781,7 +3780,7 @@ begin
           if not FileExists(BookFileName) then
             Exit; // если файла нет, значит закачка не удалась, и юзер об  этом уже знает
         end;
-        ID := Data^.BookID;
+        ID := Data^.BookKey.BookID;
       end; // if .. else
 
       if not FileExists(BookFileName) then
@@ -3824,7 +3823,7 @@ end;
 procedure TfrmMain.InitFrmConvertToFBDHandlers(const Data: PBookRecord);
 begin
   // Init FLastBookRecord to be used by the form + load memos:
-  DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, FLastBookRecord, True);
+  DMCollection.GetBookRecord(Data^.BookKey, FLastBookRecord, True);
 
   frmConvertToFBD.OnReadBook := OnReadBookHandler;
   frmConvertToFBD.OnSelectBook := OnSelectBookHandler;
@@ -4189,9 +4188,8 @@ var
 
   AuthorNodes: TDictionary<string, PVirtualNode>;
 
-  BookID: Integer;
+  BookKey: TBookKey;
   SerieID: Integer;
-  DatabaseID: Integer;
 
   BookRecord: TBookRecord;
 
@@ -4234,7 +4232,7 @@ begin
   else
     DatabaseIDField := nil;
 
-  DatabaseID := DMUser.ActiveCollection.ID;
+  BookKey.DatabaseID := DMUser.ActiveCollection.ID;
 
   ShowStatusProgress := True;
   StatusProgress := 0;
@@ -4271,11 +4269,11 @@ begin
               //
               // Получим ключевые поля и зачитаем данные о книге
               //
-              BookID := BookIDField.AsInteger;
+              BookKey.BookID := BookIDField.AsInteger;
               if IsGroupView then
-                DatabaseID := DatabaseIDField.AsInteger;
+                BookKey.DatabaseID := DatabaseIDField.AsInteger;
 
-              DMCollection.GetBookRecord(BookID, DatabaseID, BookRecord, True);
+              DMCollection.GetBookRecord(BookKey, BookRecord, True);
 
               SerieID := BookRecord.SerieID;
 
@@ -4538,7 +4536,7 @@ begin
         BookFileName := Data^.GetBookFileName;
 
         if (IsOnline and Data^.Local) and DeleteFile(BookFileName) then
-          SetBookLocalStatus(Data^.BookID, Data^.DatabaseID, False)
+          SetBookLocalStatus(Data^.BookKey, False)
         else
         begin
           if Settings.DeleteFiles then
@@ -4551,13 +4549,13 @@ begin
 
           ALibrary.BeginBulkOperation;
           try
-            ALibrary.DeleteBook(Data.BookID);
+            ALibrary.DeleteBook(Data.BookKey.BookID);
             ALibrary.EndBulkOperation(True);
           except
             ALibrary.EndBulkOperation(False);
           end;
 
-          if DMUser.BooksByGroup.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([Data.BookID, Settings.ActiveCollection]), []) then
+          if DMUser.BooksByGroup.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([Data.BookKey.BookID, Settings.ActiveCollection]), []) then
           begin
             DMUser.BooksByGroup.Delete;
           end;
@@ -4613,9 +4611,9 @@ begin
       Data: PBookRecord;
     begin
       Data := Tree.GetNodeData(Node);
-      if Assigned(Data) and (Data^.nodeType = ntBookInfo) and (Data^.DatabaseID = DatabaseID) then
+      if Assigned(Data) and (Data^.nodeType = ntBookInfo) and (Data^.BookKey.DatabaseID = DatabaseID) then
       begin
-        if DMCollection.tblBooks.Locate(BOOK_ID_FIELD, Data^.BookID, []) then
+        if DMCollection.tblBooks.Locate(BOOK_ID_FIELD, Data^.BookKey.BookID, []) then
         begin
           // только для online-коллекции. поэтому получаем путь к файлу по упрощенной схеме
           FilePath := FRoot + DMCollection.tblBooksFolder.Value;
@@ -4626,10 +4624,10 @@ begin
             // игнорируем все ошибки
           end;
 
-          DMCollection.SetLocal(Data^.BookID, Data^.DatabaseID, False);
+          DMCollection.SetLocal(Data^.BookKey, False);
 
           UpdateNodes(
-            Data^.BookID, Data^.DatabaseID,
+            Data^.BookKey,
             procedure(BookData: PBookRecord)
             begin
               Assert(Assigned(BookData));
@@ -4652,7 +4650,7 @@ var
   DownloadNode: PVirtualNode;
   DownloadData: PDownloadData;
 
-  function BookInDownloadList(BookID: Integer; DatabaseID: Integer): Boolean;
+  function BookInDownloadList(const BookKey: TBookKey): Boolean;
   var
     Node: PVirtualNode;
     Data: PDownloadData;
@@ -4663,7 +4661,7 @@ var
     while Assigned(Node) do
     begin
       Data := tvDownloadList.GetNodeData(Node);
-      if (Data^.BookID = BookID) and (Data^.DatabaseID = DatabaseID) then
+      if (Data^.BookKey.IsSameAs(BookKey)) then
       begin
         Result := True;
         Break;
@@ -4689,16 +4687,15 @@ begin
     Assert(Assigned(BookData));
     if IsSelectedBookNode(BookNode, BookData) then
     begin
-      if not BookData^.Local and (BookData^.DatabaseID = DMUser.ActiveCollection.ID) then
+      if not BookData^.Local and (BookData^.BookKey.DatabaseID = DMUser.ActiveCollection.ID) then
       begin
-        if not BookInDownloadList(BookData^.BookID, BookData^.DatabaseID) then
+        if not BookInDownloadList(BookData^.BookKey) then
         begin
           DownloadNode := tvDownloadList.AddChild(nil);
           DownloadData := tvDownloadList.GetNodeData(DownloadNode);
 
           Initialize(DownloadData^);
-          DownloadData^.BookID := BookData^.BookID;
-          DownloadData^.DatabaseID := BookData^.DatabaseID;
+          DownloadData^.BookKey := BookData^.BookKey;
           DownloadData^.Author := TAuthorsHelper.GetList(BookData^.Authors);
           DownloadData^.Title := BookData^.Title;
           DownloadData^.Size := BookData^.Size;
@@ -4921,7 +4918,7 @@ begin
   //
   // TODO : избавиться от необходимости получать BookRecord
   //
-  DMCollection.GetBookRecord(Data^.BookID, Data^.DatabaseID, R, False);
+  DMCollection.GetBookRecord(Data^.BookKey, R, False);
 
   frmEditBookInfo.lvAuthors.Items.Clear;
   for Author in Data^.Authors do
@@ -4978,7 +4975,7 @@ begin
   R.KeyWords := frmEditBookInfo.edKeyWords.Text;
   R.Lang := frmEditBookInfo.cbLang.Text;
 
-  OldID := Data.BookID;
+  OldID := Data.BookKey.BookID;
 
   ALibrary := TMHLLibrary.Create(nil);
   try
@@ -4987,15 +4984,15 @@ begin
 
     ALibrary.BeginBulkOperation;
     try
-      ALibrary.DeleteBook(Data^.BookID, False);
-      Data^.BookID := ALibrary.InsertBook(R, False, False);
-      ALibrary.CorrectExtra(OldID, Data^.BookID);
+      ALibrary.DeleteBook(Data^.BookKey.BookID, False);
+      Data^.BookKey.BookID := ALibrary.InsertBook(R, False, False);
+      ALibrary.CorrectExtra(OldID, Data^.BookKey.BookID);
       ALibrary.EndBulkOperation(True);
     except
       ALibrary.EndBulkOperation(False);
     end;
 
-    DMUser.CorrectExtra(OldID, Data^.BookID);
+    DMUser.CorrectExtra(OldID, Data^.BookKey.BookID);
 
     Data^.Title := frmEditBookInfo.edT.Text;
     Data^.Genres := frmGenreTree.GetSelectedGenres;
@@ -5025,7 +5022,7 @@ begin
   if not Assigned(Data) or (Data^.nodeType <> ntBookInfo) then
     Exit;
 
-  if IsLibRusecEdit(Data.BookID) then
+  if IsLibRusecEdit(Data.BookKey.BookID) then
     Exit;
 
   PrepareFb2EditData(Data, FLastBookRecord);
@@ -5073,7 +5070,7 @@ begin
         DataB := Tree.GetNodeData(NodeB);
         if (DataB^.nodeType = ntBookInfo) and ((Tree.CheckState[NodeB] = csCheckedNormal) or (Tree.Selected[NodeB])) then
         begin
-          ALibrary.CleanBookGenres(DataB.BookID);
+          ALibrary.CleanBookGenres(DataB.BookKey.BookID);
 
           Assert(False, 'Not implemented yet!');
           //
@@ -5124,7 +5121,7 @@ begin
   if not Assigned(Data) then
     Exit;
 
-  if IsLibRusecEdit(Data^.BookID) then
+  if IsLibRusecEdit(Data^.BookKey.BookID) then
     Exit;
 
   S := Data^.Serie;
@@ -5152,7 +5149,7 @@ begin
         Data := Tree.GetNodeData(Node);
         if ((Tree.CheckState[Node] = csCheckedNormal) or (Tree.Selected[Node])) then
         begin
-          DMCollection.tblBooks.Locate(BOOK_ID_FIELD, Data.BookID, []);
+          DMCollection.tblBooks.Locate(BOOK_ID_FIELD, Data.BookKey.BookID, []);
           DMCollection.tblBooks.Edit;
           DMCollection.tblBooksSerieID.Value := DMCollection.tblSeriesB1SerieID.Value;
           DMCollection.tblBooks.Post;
@@ -5445,9 +5442,9 @@ begin
       Data := Tree.GetNodeData(Node);
       if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
       begin
-        DMCollection.SetRate(Data^.BookID, Data^.DatabaseID, NewRate);
+        DMCollection.SetRate(Data^.BookKey, NewRate);
         UpdateNodes(
-          Data^.BookID, Data^.DatabaseID,
+          Data^.BookKey,
           procedure(BookData: PBookRecord)
           begin
             Assert(Assigned(BookData));
@@ -5653,7 +5650,7 @@ begin
           Data := Tree.GetNodeData(Node);
           if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
           begin
-            DMCollection.AddBookToGroup(Data^.BookID, Data^.DatabaseID, GroupID);
+            DMCollection.AddBookToGroup(Data^.BookKey, GroupID);
 
             Inc(booksProcessed);
             StatusProgress := booksProcessed * 100 div booksToProcess;
@@ -5710,7 +5707,7 @@ begin
           Data := Tree.GetNodeData(Node);
           if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
           begin
-            DMUser.DeleteFromGroup(Data.BookID, Data^.DatabaseID, GroupData^.GroupID);
+            DMUser.DeleteFromGroup(Data.BookKey, GroupData^.GroupID);
 
             Inc(booksProcessed);
             StatusProgress := booksProcessed * 100 div booksToProcess;
@@ -6132,7 +6129,7 @@ begin
     //
     // ревью можно изменять только для книг из текущей коллекции
     //
-    ReviewEditable := (Data^.DatabaseID = DMUser.ActiveCollection.ID);
+    ReviewEditable := (Data^.BookKey.DatabaseID = DMUser.ActiveCollection.ID);
 
     frmBookDetails := TfrmBookDetails.Create(Application);
     try
@@ -6177,7 +6174,7 @@ begin
         //
         // ревью уже есть - покажем его
         //
-        frmBookDetails.Review := DMCollection.GetReview(Data^.BookID, Data^.DatabaseID)
+        frmBookDetails.Review := DMCollection.GetReview(Data^.BookKey)
       else if IsOnline and ReviewEditable and Settings.AutoLoadReview then
         DownloadReview(frmBookDetails, URL);
 
@@ -6191,9 +6188,9 @@ begin
       FreeAndNil(frmBookDetails);
     end;
 
-    NewCode := DMCollection.SetReview(Data^.BookID, Data^.DatabaseID, strReview);
+    NewCode := DMCollection.SetReview(Data^.BookKey, strReview);
     UpdateNodes(
-      Data^.BookID, Data^.DatabaseID,
+      Data^.BookKey,
       procedure(BookData: PBookRecord)
       begin
         Assert(Assigned(BookData));
@@ -6248,8 +6245,6 @@ var
   Tree: TBookTree;
   Node: PVirtualNode;
   Data: PBookRecord;
-  BookID: Integer;
-  DatabaseID: Integer;
   FullAuthorName: string;
 begin
   GetActiveTree(Tree);
@@ -6274,13 +6269,11 @@ begin
 
   Screen.Cursor := crHourGlass;
   try
-    if Data^.DatabaseID <> DMUser.ActiveCollection.ID then
+    if Data^.BookKey.DatabaseID <> DMUser.ActiveCollection.ID then
     begin
-      BookID := Data^.BookID;
-      DatabaseID := Data^.DatabaseID;
-      if DMUser.SelectCollection(DatabaseID) then
+      if DMUser.SelectCollection(Data^.BookKey.DatabaseID) then
       begin
-        Settings.ActiveCollection := DatabaseID;
+        Settings.ActiveCollection := Data^.BookKey.DatabaseID;
         InitCollection(True);
       end
       else
@@ -6652,9 +6645,9 @@ begin
         // заглушка
         NewProgress := IfThen(Data^.Progress = 0, 100, 0);
 
-        DMCollection.SetProgress(Data^.BookID, Data^.DatabaseID, NewProgress);
+        DMCollection.SetProgress(Data^.BookKey, NewProgress);
         UpdateNodes(
-          Data^.BookID, Data^.DatabaseID,
+          Data^.BookKey,
           procedure(BookData: PBookRecord)
           begin
             Assert(Assigned(BookData));
@@ -6865,17 +6858,17 @@ procedure TfrmMain.OnChangeLocalStatus(var Message: TLocalStatusChangedMessage);
 begin
   Assert(Assigned(Message.Params));
 
-  SetBookLocalStatus(Message.Params^.BookID, Message.Params^.DatabaseID, Message.Params^.LocalStatus);
+  SetBookLocalStatus(Message.Params^.BookKey, Message.Params^.LocalStatus);
 
   Dispose(Message.Params);
 end;
 
-procedure TfrmMain.SetBookLocalStatus(BookID: Integer; DatabaseID: Integer; IsLocal: Boolean);
+procedure TfrmMain.SetBookLocalStatus(const BookKey: TBookKey; IsLocal: Boolean);
 begin
-  DMCollection.SetLocal(BookID, DatabaseID, IsLocal);
+  DMCollection.SetLocal(BookKey, IsLocal);
 
   UpdateNodes(
-    BookID, DatabaseID,
+    BookKey,
     procedure(BookData: PBookRecord)
     begin
       Assert(Assigned(BookData));
@@ -6899,14 +6892,14 @@ begin
       data.Load(FileName);
       DMCollection.ImportUserData(
         data,
-        procedure(BookID: Integer; DatabaseID: Integer; extra: TBookExtra)
+        procedure(const BookKey: TBookKey; extra: TBookExtra)
         begin
           //
           // На всех страницах (кроме "Группы") необходимо обновить список книг,
           // т к могли поменяться пользовательские данные
           //
           UpdateNodes(
-            BookID, DatabaseID,
+            BookKey,
             procedure(BookData: PBookRecord)
             begin
               Assert(Assigned(BookData));
@@ -7035,7 +7028,7 @@ begin
     AddBookToGroup(Sender);
 end;
 
-function TfrmMain.GetBookNode(const Tree: TBookTree; BookID: Integer; DatabaseID: Integer): PVirtualNode;
+function TfrmMain.GetBookNode(const Tree: TBookTree; const BookKey: TBookKey): PVirtualNode;
 var
   Data: PBookRecord;
   Node: PVirtualNode;
@@ -7049,7 +7042,7 @@ begin
   begin
     Data := Tree.GetNodeData(Node);
     Assert(Assigned(Data));
-    if (Data^.nodeType = ntBookInfo) and (Data^.BookID = BookID) and (Data^.DatabaseID = DatabaseID) then
+    if (Data^.nodeType = ntBookInfo) and (Data^.BookKey.IsSameAs(BookKey)) then
     begin
       Result := Node;
       Exit;
@@ -7082,7 +7075,7 @@ begin
     ProcessProc(Tree, FNode);
 end;
 
-procedure TfrmMain.UpdateNodes(BookID: Integer; DatabaseID: Integer; UpdateProc: TNodeUpdateProc);
+procedure TfrmMain.UpdateNodes(const BookKey: TBookKey; UpdateProc: TNodeUpdateProc);
 type
   TTreeArray = array of TBookTree;
 var
@@ -7094,7 +7087,7 @@ begin
   BookTrees := TTreeArray.Create(tvBooksA, tvBooksS, tvBooksG, tvBooksSR, tvBooksF {, tvDownloadList});
   for Tree in BookTrees do
   begin
-    Node := GetBookNode(Tree, BookID, DatabaseID);
+    Node := GetBookNode(Tree, BookKey);
     if Assigned(Node) then
     begin
       Data := Tree.GetNodeData(Node);
@@ -7139,9 +7132,9 @@ begin
   if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
   begin
     NewFileName := Data^.FileName + ZIP_EXTENSION;
-    DMCollection.SetFileName(Data^.BookID, Data^.DatabaseID, NewFileName);
+    DMCollection.SetFileName(Data^.BookKey, NewFileName);
     UpdateNodes(
-      Data^.BookID, Data^.DatabaseID,
+      Data^.BookKey,
       procedure(BookData: PBookRecord)
       begin
         Assert(Assigned(BookData));

@@ -60,6 +60,7 @@ end;
 procedure TSyncOnLineThread.WorkFunction;
 var
   BookFile: string;
+  BookKey: TBookKey;
 
   totalBooks: Integer;
   processedBooks: Integer;
@@ -91,7 +92,10 @@ begin
       end;
 
       if DMCollection.tblBooksLocal.Value <> IsLocal then
-        unit_Messages.BookLocalStatusChanged(DMCollection.tblBooksID.Value, FCollectionID, IsLocal);
+      begin
+        BookKey.Init(DMCollection.tblBooksID.Value, FCollectionID);
+        unit_Messages.BookLocalStatusChanged(BookKey, IsLocal);
+      end;
     except
       on E: Exception do
         Application.MessageBox(PChar(rstrProblemsWithABook + BookFile), '', MB_OK);

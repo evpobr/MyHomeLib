@@ -159,7 +159,7 @@ type
     procedure SetTableState(State: Boolean);
 
   public
-    procedure GetBookLibID(BookID: Integer; DatabaseID: Integer; out ARes: string); deprecated;
+    procedure GetBookLibID(const BookKey: TBookKey; out ARes: string); deprecated;
 
     //
     // Active Collection
@@ -182,17 +182,17 @@ type
     //
     //
     //
-    procedure GetBookRecord(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord);
+    procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord);
 
-    procedure SetExtra(BookID: Integer; DatabaseID: Integer; extra: TBookExtra);
-    procedure SetRate(BookID: Integer; DatabaseID: Integer; Rate: Integer);
-    procedure SetProgress(BookID: Integer; DatabaseID: Integer; Progress: Integer);
-    function GetAnnotation(BookID: Integer; DatabaseID: Integer): string;
-    procedure SetAnnotation(BookID: Integer; DatabaseID: Integer; const Annotation: string);
-    function GetReview(BookID: Integer; DatabaseID: Integer): string;
-    function SetReview(BookID: Integer; DatabaseID: Integer; const Review: string): Integer;
-    procedure SetLocal(BookID: Integer; DatabaseID: Integer; Value: Boolean);
-    procedure SetFileName(const BookID: Integer; const DatabaseID: Integer; const FileName: string);
+    procedure SetExtra(const BookKey: TBookKey; extra: TBookExtra);
+    procedure SetRate(const BookKey: TBookKey; Rate: Integer);
+    procedure SetProgress(const BookKey: TBookKey; Progress: Integer);
+    function GetAnnotation(const BookKey: TBookKey): string;
+    procedure SetAnnotation(const BookKey: TBookKey; const Annotation: string);
+    function GetReview(const BookKey: TBookKey): string;
+    function SetReview(const BookKey: TBookKey; const Review: string): Integer;
+    procedure SetLocal(const BookKey: TBookKey; Value: Boolean);
+    procedure SetFileName(const BookKey: TBookKey; const FileName: string);
 
     //
     // Работа с группами
@@ -202,11 +202,11 @@ type
     procedure DeleteGroup(GroupID: Integer);
     procedure ClearGroup(GroupID: Integer);
 
-    procedure AddBookToGroup(BookID: Integer; DatabaseID: Integer; GroupID: Integer; const BookRecord: TBookRecord);
-    procedure DeleteFromGroup(BookID: Integer; DatabaseID: Integer; GroupID: Integer);
+    procedure AddBookToGroup(const BookKey: TBookKey; GroupID: Integer; const BookRecord: TBookRecord);
+    procedure DeleteFromGroup(const BookKey: TBookKey; GroupID: Integer);
     procedure RemoveUnusedBooks;
     procedure CopyBookToGroup(
-      BookID: Integer; DatabaseID: Integer;
+      const BookKey: TBookKey;
       SourceGroupID: Integer;
       TargetGroupID: Integer;
       MoveBook: Boolean
@@ -343,11 +343,11 @@ resourcestring
 
 { TDMUser }
 
-procedure TDMUser.GetBookLibID(BookID: Integer; DatabaseID: Integer; out ARes: String);
+procedure TDMUser.GetBookLibID(const BookKey: TBookKey; out ARes: String);
 begin
   Assert(AllBooks.Active);
 
-  if not AllBooks.Locate(BOOK_ID_FIELD, BookID, []) then
+  if not AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
   begin
     Assert(False);
     Exit;
@@ -579,7 +579,7 @@ begin
   AllBookGroups.Active := State;
 end;
 
-procedure TDMUser.GetBookRecord(BookID: Integer; DatabaseID: Integer; var BookRecord: TBookRecord);
+procedure TDMUser.GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord);
 var
   Stream: TABSBlobStream;
   Reader: TReader;
@@ -587,7 +587,7 @@ var
   Genre: TGenreData;
 begin
   Assert(AllBooks.Active);
-  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
   begin
     BookRecord.Title := AllBooksTitle.Value;
     BookRecord.Folder := AllBooksFolder.Value;
@@ -611,7 +611,9 @@ begin
     BookRecord.Rate := AllBooksRate.Value;
     BookRecord.Progress := AllBooksProgress.Value;
     BookRecord.NodeType := ntBookInfo;
-    BookRecord.BookID := AllBooksBookID.Value;
+    BookRecord.BookKey.BookID := AllBooksBookID.Value;
+    BookRecord.BookKey.DatabaseID := DMUser.ActiveCollection.ID;
+    BookRecord.CollectionRoot := DMUser.ActiveCollection.RootPath;
 
     Stream := TABSBlobStream.Create(AllBooksExtraInfo, bmRead);
     try
@@ -659,11 +661,9 @@ begin
       Stream.Free;
     end;
 
-    if SelectCollection(DatabaseID) then
+    if SelectCollection(BookKey.DatabaseID) then
     begin
       BookRecord.CollectionName := DMUser.ActiveCollection.Name;
-      BookRecord.CollectionRoot := DMUser.ActiveCollection.RootPath;
-      BookRecord.DatabaseID := DMUser.ActiveCollection.ID;
     end
     else
       BookRecord.CollectionName := rstrUnknownCollection;
@@ -672,10 +672,10 @@ begin
     Assert(False);
 end;
 
-procedure TDMUser.SetExtra(BookID: Integer; DatabaseID: Integer; extra: TBookExtra);
+procedure TDMUser.SetExtra(const BookKey: TBookKey; extra: TBookExtra);
 begin
   Assert(AllBooks.Active);
-  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
   begin
     AllBooks.Edit;
     if extra.Rating <> 0 then
@@ -688,10 +688,10 @@ begin
   end;
 end;
 
-procedure TDMUser.SetRate(BookID: Integer; DatabaseID: Integer; Rate: Integer);
+procedure TDMUser.SetRate(const BookKey: TBookKey; Rate: Integer);
 begin
   Assert(AllBooks.Active);
-  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
   begin
     AllBooks.Edit;
     AllBooksRate.Value := Rate;
@@ -699,10 +699,10 @@ begin
   end;
 end;
 
-procedure TDMUser.SetProgress(BookID: Integer; DatabaseID: Integer; Progress: Integer);
+procedure TDMUser.SetProgress(const BookKey: TBookKey; Progress: Integer);
 begin
   Assert(AllBooks.Active);
-  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
   begin
     AllBooks.Edit;
     AllBooksProgress.Value := Progress;
@@ -710,19 +710,19 @@ begin
   end;
 end;
 
-function TDMUser.GetAnnotation(BookID: Integer; DatabaseID: Integer): string;
+function TDMUser.GetAnnotation(const BookKey: TBookKey): string;
 begin
   Assert(AllBooks.Active);
-  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
     Result := AllBooksAnnotation.Value
   else
     Result := '';
 end;
 
-procedure TDMUser.SetAnnotation(BookID: Integer; DatabaseID: Integer; const Annotation: string);
+procedure TDMUser.SetAnnotation(const BookKey: TBookKey; const Annotation: string);
 begin
   Assert(AllBooks.Active);
-  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
   begin
     AllBooks.Edit;
     if Annotation = '' then
@@ -733,20 +733,20 @@ begin
   end;
 end;
 
-function TDMUser.GetReview(BookID: Integer; DatabaseID: Integer): string;
+function TDMUser.GetReview(const BookKey: TBookKey): string;
 begin
   Assert(AllBooks.Active);
-  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
     Result := AllBooksReview.Value
   else
     Result := '';
 end;
 
-function TDMUser.SetReview(BookID: Integer; DatabaseID: Integer; const Review: string): Integer;
+function TDMUser.SetReview(const BookKey: TBookKey; const Review: string): Integer;
 begin
   Assert(AllBooks.Active);
   Result := 0;
-  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
   begin
     AllBooks.Edit;
     if Review = '' then
@@ -764,10 +764,10 @@ begin
   end;
 end;
 
-procedure TDMUser.SetLocal(BookID: Integer; DatabaseID: Integer; Value: Boolean);
+procedure TDMUser.SetLocal(const BookKey: TBookKey; Value: Boolean);
 begin
   Assert(AllBooks.Active);
-  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
   begin
     AllBooks.Edit;
     AllBooksLocal.Value := Value;
@@ -775,10 +775,10 @@ begin
   end;
 end;
 
-procedure TDMUser.SetFileName(const BookID: Integer; const DatabaseID: Integer; const FileName: string);
+procedure TDMUser.SetFileName(const BookKey: TBookKey; const FileName: string);
 begin
   Assert(AllBooks.Active);
-  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
   begin
     AllBooks.Edit;
     AllBooksFileName.Value := FileName;
@@ -882,8 +882,7 @@ begin
 end;
 
 procedure TDMUser.AddBookToGroup(
-  BookID: Integer;
-  DatabaseID: Integer;
+  const BookKey: TBookKey;
   GroupID: Integer;
   const BookRecord: TBookRecord
   );
@@ -894,12 +893,12 @@ var
   Genre: TGenreData;
 begin
   Assert(AllBooks.Active);
-  if not AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+  if not AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
   begin
     AllBooks.Append;
 
-    AllBooksBookID.Value := BookID;
-    AllBooksDatabaseID.Value := DatabaseID;
+    AllBooksBookID.Value := BookKey.BookID;
+    AllBooksDatabaseID.Value := BookKey.DatabaseID;
 
     AllBooksLibID.Value := BookRecord.LibID;
     AllBooksTitle.Value := BookRecord.Title;
@@ -960,18 +959,18 @@ begin
   //
   // Поместить книгу в нужную группу
   //
-  CopyBookToGroup(BookID, DatabaseID, 0, GroupID, False);
+  CopyBookToGroup(BookKey, 0, GroupID, False);
 end;
 
 //
 // Удалить указанную книгу из указанной группы.
 // NOTE: этот метод не удаляет неиспользуемые книги !!! После его вызова обязательно нужно вызвать RemoveUnusedBooks
 //
-procedure TDMUser.DeleteFromGroup(BookID: Integer; DatabaseID: Integer; GroupID: Integer);
+procedure TDMUser.DeleteFromGroup(const BookKey: TBookKey; GroupID: Integer);
 begin
   if InternalFindGroup(GroupID) then
   begin
-    if GroupBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookID, DatabaseID]), []) then
+    if GroupBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
       GroupBooks.Delete;
   end;
 end;
@@ -985,7 +984,7 @@ begin
 end;
 
 procedure TDMUser.CopyBookToGroup(
-  BookID: Integer; DatabaseID: Integer;
+  const BookKey: TBookKey;
   SourceGroupID: Integer;
   TargetGroupID: Integer;
   MoveBook: Boolean
@@ -995,7 +994,7 @@ begin
 
   if MoveBook then
   begin
-    if AllBookGroups.Locate(GROUP_ID_BOOK_ID_DB_ID_FIELDS, VarArrayOf([SourceGroupID, BookID, DatabaseID]), []) then
+    if AllBookGroups.Locate(GROUP_ID_BOOK_ID_DB_ID_FIELDS, VarArrayOf([SourceGroupID, BookKey.BookID, BookKey.DatabaseID]), []) then
     begin
       AllBookGroups.Edit;
       try
@@ -1011,8 +1010,8 @@ begin
     AllBookGroups.Append;
     try
       AllBookGroupsGroupID.Value := TargetGroupID;
-      AllBookGroupsBookID.Value := BookID;
-      AllBookGroupsDatabaseID.Value := DatabaseID;
+      AllBookGroupsBookID.Value := BookKey.BookID;
+      AllBookGroupsDatabaseID.Value := BookKey.DatabaseID;
       AllBookGroups.Post;
     except
       AllBookGroups.Cancel;

@@ -55,7 +55,7 @@ type
     procedure SetDeviceDir(const Value: string);
 
   strict private
-    function PrepareFile(BookID: Integer; DatabaseID: Integer): Boolean;
+    function PrepareFile(const BookKey: TBookKey): Boolean;
     function SendFileToDevice: Boolean;
 
   protected
@@ -95,7 +95,7 @@ resourcestring
 // Определяем имя файла, если нужно - предварительно распаковываем
 // формируем названия папок и файла
 //
-function TExportToDeviceThread.PrepareFile(BookID: Integer; DatabaseID: Integer): Boolean;
+function TExportToDeviceThread.PrepareFile(const BookKey: TBookKey): Boolean;
 var
   R: TBookRecord;
 begin
@@ -105,7 +105,7 @@ begin
   //
   // TODO : заменить вызов этих методов на потокобезопасные методы, принимающие BookID и DatabaseID
   //
-  DMCollection.GetBookRecord(BookID, DatabaseID, R, False);
+  DMCollection.GetBookRecord(BookKey, R, False);
 
   // Сформируем имя каталога в соответствии с заданным темплейтом
   if FTemplater.SetTemplate(Settings.FolderTemplate, TpPath) = ErFine then
@@ -240,7 +240,7 @@ begin
 
       for i := 0 to totalBooks - 1 do
       begin
-        Res := PrepareFile(FBookIdList[i].BookID, FBookIdList[i].DatabaseID);
+        Res := PrepareFile(FBookIdList[i].BookKey);
         if Res then
         begin
           if i = 0 then

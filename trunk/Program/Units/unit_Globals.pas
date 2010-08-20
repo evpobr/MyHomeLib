@@ -42,9 +42,17 @@ type
     bfRaw     // A raw file = any other book format
   );
 
-  TBookIdStruct = record
+
+  TBookKey = record
     BookID: Integer;
     DatabaseID: Integer;
+
+    procedure Init(const NewBookID: Integer; const NewDatabaseID: Integer);
+    function IsSameAs(const other: TBookKey): Boolean; inline;
+  end;
+
+  TBookIdStruct = record
+    BookKey: TBookKey;
     Res: Boolean;
   end;
 
@@ -255,8 +263,7 @@ type
   TDownloadState = (dsWait, dsRun, dsOk, dsError);
   PDownloadData = ^TDownloadData;
   TDownloadData = record
-    BookID: Integer;
-    DatabaseID: Integer;
+    BookKey: TBookKey;
     Author: string;
     Title: string;
     Size: Integer;
@@ -271,8 +278,7 @@ type
   PBookRecord = ^TBookRecord;
   TBookRecord = record
     nodeType: TBookNodeType;
-    BookID: Integer;
-    DatabaseID: Integer;
+    BookKey: TBookKey;
     SerieID: Integer;
     Title: string;
     Serie: string;
@@ -798,6 +804,18 @@ begin
       Result := Format('<a href="%s">%s</a>', [genre.GenreCode, genre.GenreAlias]);
     end
   );
+end;
+
+procedure TBookKey.Init(const NewBookID: Integer; const NewDatabaseID: Integer);
+begin
+  BookID := NewBookID;
+  DatabaseID := NewDatabaseID;
+end;
+
+// Is the other key equal to this one?
+function TBookKey.IsSameAs(const other: TBookKey): Boolean;
+begin
+  Result := (BookID = other.BookID) and (DatabaseID = other.DatabaseID);
 end;
 
 procedure TBookRecord.Clear;

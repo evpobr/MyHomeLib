@@ -334,7 +334,7 @@ end;
 
 procedure TfrmConvertToFBD.AutoMode;
 var
-  FirstID: integer;
+  FirstBookKey: TBookKey;
   BookRecord: TBookRecord;
 begin
   Assert(False, 'Not implemented yet');
@@ -344,11 +344,11 @@ begin
   Show;
   btnNextClick(Self);
   OnGetBook(BookRecord);
-  FirstID := BookRecord.BookID;
+  FirstBookKey := BookRecord.BookKey;
   repeat
     btnNextClick(Self);
     OnGetBook(BookRecord);
-  until (FirstID = BookRecord.BookID) or FTerminated;
+  until (FirstBookKey.IsSameAs(BookRecord.BookKey)) or FTerminated;
   Close;
 end;
 
