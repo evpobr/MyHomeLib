@@ -20,8 +20,20 @@ unit frm_search;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Mask, ExtCtrls, MHLSimplePanel;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  StdCtrls,
+  Mask,
+  ExtCtrls,
+  MHLSimplePanel,
+  unit_Globals;
 
 type
   TfrmBookSearch = class(TForm)
@@ -35,15 +47,14 @@ type
 
   private
     FBusy: boolean;
+    FOnLocateBook: TOnLocateBookEvent;
 
   public
+    property OnLocateBook: TOnLocateBookEvent read FOnLocateBook write FOnLocateBook;
 
   end;
 
 implementation
-
-uses
-  frm_Main;
 
 {$R *.dfm}
 
@@ -58,7 +69,8 @@ begin
   begin
     FBusy := True;
     try
-      frmMain.LocateBook(edText.Text, False);
+      Assert(Assigned(FOnLocateBook));
+      FOnLocateBook(edText.Text, False)
     finally
       FBusy := False;
     end;
@@ -71,7 +83,8 @@ begin
   begin
     FBusy := True;
     try
-      frmMain.LocateBook(edText.Text, True);
+      Assert(Assigned(FOnLocateBook));
+      FOnLocateBook(edText.Text, True)
     finally
       FBusy := False;
     end;

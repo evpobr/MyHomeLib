@@ -715,9 +715,12 @@ type
     procedure OnReadBookHandler;
     procedure OnSelectBookHandler(const MoveForward: Boolean);
     procedure OnGetBookHandler(var BookRecord: TBookRecord);
+    procedure OnUpdateBookHandler;
     procedure OnChangeBook2ZipHandler();
-
+    function OnHelpHandler(Command: Word; Data: Integer; var CallHelp: Boolean): Boolean;
+    // Init callbacks for different forms:
     procedure InitFrmConvertToFBDHandlers(const Data: PBookRecord);
+    procedure InitFrmEditBookInfoHandlers;
 
   private type
     TNodeProcessProc = reference to procedure(Tree: TBookTree; Node: PVirtualNode);
@@ -782,12 +785,9 @@ type
     procedure OnSetSerieFilter(Sender: TObject);
 
   public
-    procedure DisableControls(State: Boolean);
+    procedure OnSetControlsStateHandler(const State: Boolean);
 
-    function HH(Command: Word; Data: Integer; var CallHelp: Boolean): Boolean;
-    procedure LocateBook(Text: string; Next: Boolean);
-
-    procedure SelectNextBook(Changed, MoveForward: Boolean);
+    procedure LocateBook(const Text: string; const MoveForward: Boolean);
 
     procedure SetFormState;
 
@@ -1541,7 +1541,7 @@ begin
   Result := views[pgControl.ActivePageIndex];
 end;
 
-procedure TfrmMain.DisableControls(State: Boolean);
+procedure TfrmMain.OnSetControlsStateHandler(const State: Boolean);
 begin
   frmMain.Enabled := State;
 end;
@@ -2231,7 +2231,7 @@ begin
     Exit;
   end;
 
-  DisableControls(False);
+  OnSetControlsStateHandler(False);
   try
     GetActiveTree(Tree);
     Node := Tree.GetFirstSelected;
@@ -2242,7 +2242,7 @@ begin
     InitFrmConvertToFBDHandlers(Data);
     frmConvertToFBD.AutoMode;
   finally
-    DisableControls(True);
+    OnSetControlsStateHandler(True);
   end;
 end;
 
@@ -2345,7 +2345,7 @@ var
   PresetFile: string;
   preset: TSearchPreset;
 begin
-  Application.OnHelp := HH;
+  Application.OnHelp := OnHelpHandler;
   UseLatestCommonDialogs := True;
 
   //
@@ -3819,7 +3819,7 @@ begin
   end;
 end;
 
-// Init TFrmConvertToFBD's handlers
+// Init TFrmConvertToFBD's callback handlers
 procedure TfrmMain.InitFrmConvertToFBDHandlers(const Data: PBookRecord);
 begin
   // Init FLastBookRecord to be used by the form + load memos:
@@ -3829,6 +3829,14 @@ begin
   frmConvertToFBD.OnSelectBook := OnSelectBookHandler;
   frmConvertToFBD.OnGetBook := OnGetBookHandler;
   frmConvertToFBD.OnChangeBook2Zip := OnChangeBook2ZipHandler;
+end;
+
+// Init FrmEditBookInfo's callback handlers
+procedure TfrmMain.InitFrmEditBookInfoHandlers;
+begin
+  frmEditBookInfo.OnHelp := OnHelpHandler;
+  frmEditBookInfo.OnSelectBook := OnSelectBookHandler;
+  frmEditBookInfo.OnUpdateBook := OnUpdateBookHandler;
 end;
 
 procedure TfrmMain.tbtnShowDeletedClick(Sender: TObject);
@@ -4119,13 +4127,6 @@ begin
   finally
     Tree.EndUpdate;
   end;
-end;
-
-procedure TfrmMain.SelectNextBook(Changed, MoveForward: Boolean);
-begin
-  if Changed then
-    SaveFb2DataAfterEdit(FLastBookRecord);
-  OnSelectBookHandler(MoveForward);
 end;
 
 procedure TfrmMain.OnSelectBookHandler(const MoveForward: Boolean);
@@ -5027,6 +5028,7 @@ begin
 
   PrepareFb2EditData(Data, FLastBookRecord);
 
+  InitFrmEditBookInfoHandlers;
   if frmEditBookInfo.ShowModal = mrOk then
   begin
     SaveFb2DataAfterEdit(FLastBookRecord);
@@ -5870,38 +5872,39 @@ begin
   end;
 end;
 
-procedure TfrmMain.LocateBook(Text: string; Next: Boolean);
+procedure TfrmMain.LocateBook(const Text: string; const MoveForward: Boolean);
 var
   Node: PVirtualNode;
   Data: PBookRecord;
   L: Integer;
   Tree: TBookTree;
+  FixedText: string;
 begin
   GetActiveTree(Tree);
 
   Tree.ClearSelection;
 
-  if not Next then
+  if not MoveForward then
     FLastFoundBook := nil;
 
-  if Next and Assigned(FLastFoundBook) then
+  if MoveForward and Assigned(FLastFoundBook) then
     Node := Tree.GetNext(FLastFoundBook)
   else
     Node := Tree.GetFirst;
 
   L := Length(Text);
-  Text := AnsiUpperCase(Text);
+  FixedText := AnsiUpperCase(Text);
 
   while Assigned(Node) do
   begin
     Data := Tree.GetNodeData(Node);
     Assert(Assigned(Data));
-    if Text = Copy(AnsiUpperCase(Data.Title), 1, L) then
+    if FixedText = Copy(AnsiUpperCase(Data.Title), 1, L) then
     begin
       Tree.Selected[Node] := True;
       Tree.FocusedNode := Node;
 
-      if not Next then
+      if not MoveForward then
         FFirstFoundBook := Node;
 
       FLastFoundBook := Node;
@@ -6566,7 +6569,7 @@ begin
   SaveColumns;
 end;
 
-function TfrmMain.HH(Command: Word; Data: Integer; var CallHelp: Boolean): Boolean;
+function TfrmMain.OnHelpHandler(Command: Word; Data: Integer; var CallHelp: Boolean): Boolean;
 begin
   if Data = 0 then
     HtmlHelp(Application.Handle, PChar(Settings.SystemFileName[sfAppHelp]), HH_DISPLAY_TOC, 0)
@@ -6838,11 +6841,12 @@ procedure TfrmMain.miShowHelpClick(Sender: TObject);
 var
   dummy: Boolean;
 begin
-  HH(0, 0, dummy);
+  OnHelpHandler(0, 0, dummy);
 end;
 
 procedure TfrmMain.miPdfdjvuClick(Sender: TObject);
 begin
+  frmAddnonfb2.OnSetControlsState := OnSetControlsStateHandler;
   frmAddnonfb2.ShowModal;
   InitCollection(True);
 end;
@@ -7105,6 +7109,12 @@ end;
 procedure TfrmMain.OnGetBookHandler(var BookRecord: TBookRecord);
 begin
   BookRecord := FLastBookRecord;
+end;
+
+// Invoked when it's time to update the current book in DB
+procedure TfrmMain.OnUpdateBookHandler;
+begin
+  SaveFb2DataAfterEdit(FLastBookRecord);
 end;
 
 // A raw file just became a zip archive (FBD + raw)

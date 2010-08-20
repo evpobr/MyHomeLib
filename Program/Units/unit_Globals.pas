@@ -337,6 +337,9 @@ type
   TBookEvent = procedure of object;
   TSelectBookEvent = procedure(const MoveForward: Boolean) of object;
   TGetBookEvent = procedure(var BookRecord: TBookRecord) of object;
+  TChangeStateEvent = procedure(const State: Boolean) of object;
+  TOnLocateBookEvent = procedure(const Text: string; const MoveForward: Boolean) of object;
+  TOnHelpEvent = function(Command: Word; Data: Integer; var CallHelp: Boolean): Boolean of object;
 
   // --------------------------------------------------------------------------
   PFileData = ^TFileData;

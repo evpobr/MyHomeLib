@@ -40,7 +40,8 @@ uses
   frm_ImportProgressFormEx,
   unit_libupdateThread,
   frm_info_popup,
-  frm_search;
+  frm_search,
+  frm_main;
 
 resourcestring
   rstrUpdateCollections = 'Обновление коллекций';
@@ -113,6 +114,7 @@ var
   SearchForm: TfrmBookSearch;
 begin
   SearchForm := TfrmBookSearch.Create(Application);
+  SearchForm.OnLocateBook := frmMain.LocateBook;
   try
     SearchForm.ShowModal;
   finally
