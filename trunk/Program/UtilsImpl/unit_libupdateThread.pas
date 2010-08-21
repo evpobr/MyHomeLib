@@ -197,8 +197,13 @@ begin
         Import(not Settings.Updates[i].Full);
 
         DMUser.CurrentCollection.Edit;
-        DMUser.CurrentCollection.Version := GetLibUpdateVersion(True);
-        DMUser.CurrentCollection.Save;
+        try
+          DMUser.CurrentCollection.Version := GetLibUpdateVersion(True);
+          DMUser.CurrentCollection.Save;
+        except
+          DMUser.CurrentCollection.Cancel;
+          raise;
+        end;
 
         Teletype(rstrReady,tsInfo);
       end; //for .. with

@@ -642,15 +642,25 @@ begin
       Groups.Active := True;
 
       Groups.Append;
-      Groups.FieldByName(GROUP_NAME_FIELD).AsWideString := rstrFavoritesGroupName;
-      Groups.FieldByName('AllowDelete').AsBoolean := False;
-      Groups.Post;
+      try
+        Groups.FieldByName(GROUP_NAME_FIELD).AsWideString := rstrFavoritesGroupName;
+        Groups.FieldByName('AllowDelete').AsBoolean := False;
+        Groups.Post;
+      except
+        Groups.Cancel;
+        raise;
+      end;
       Assert(Groups.FieldByName(GROUP_ID_FIELD).AsInteger = FAVORITES_GROUP_ID);
 
       Groups.Append;
-      Groups.FieldByName(GROUP_NAME_FIELD).AsWideString := rstrToReadGroupName;
-      Groups.FieldByName('AllowDelete').AsBoolean := False;
-      Groups.Post;
+      try
+        Groups.FieldByName(GROUP_NAME_FIELD).AsWideString := rstrToReadGroupName;
+        Groups.FieldByName('AllowDelete').AsBoolean := False;
+        Groups.Post;
+      except
+        Groups.Cancel;
+        raise;
+      end;
       Assert(Groups.FieldByName(GROUP_ID_FIELD).AsInteger = (FAVORITES_GROUP_ID + 1));
     finally
       Groups.Free;
@@ -688,8 +698,13 @@ begin
   // Создадим фиктивную серию
   //
   FSeries.Append;
-  FSeriesSerieTitle.Value := NO_SERIES_TITLE;
-  FSeries.Post;
+  try
+    FSeriesSerieTitle.Value := NO_SERIES_TITLE;
+    FSeries.Post;
+  except
+    FSeries.Cancel;
+    raise;
+  end;
 end;
 
 procedure TMHLLibrary.LoadGenres(const GenresFileName: string);
@@ -773,11 +788,16 @@ begin
       // все хорошо => добавляем в базу
       //
       FGenres.Insert;
-      FGenresGenreCode.Value := Code;
-      FGenresParentCode.Value := ParentCode;
-      FGenresFB2Code.Value := FB2Code;
-      FGenresAlias.Value := S;
-      FGenres.Post;
+      try
+        FGenresGenreCode.Value := Code;
+        FGenresParentCode.Value := ParentCode;
+        FGenresFB2Code.Value := FB2Code;
+        FGenresAlias.Value := S;
+        FGenres.Post;
+      except
+        FGenres.Cancel;
+        raise;
+      end;
     end;
   finally
     FS.Free;
@@ -858,10 +878,15 @@ begin
     if not FAuthors.Locate(AUTHOR_FULLNAME_FIELDS, VarArrayOf([BookRecord.Authors[i].LastName, BookRecord.Authors[i].FirstName, BookRecord.Authors[i].MiddleName]), [loCaseInsensitive]) then
     begin
       FAuthors.Insert;
-      FAuthorLastName.Value := BookRecord.Authors[i].LastName;
-      FAuthorFirstName.Value := BookRecord.Authors[i].FirstName;
-      FAuthorMiddleName.Value := BookRecord.Authors[i].MiddleName;
-      FAuthors.Post;
+      try
+        FAuthorLastName.Value := BookRecord.Authors[i].LastName;
+        FAuthorFirstName.Value := BookRecord.Authors[i].FirstName;
+        FAuthorMiddleName.Value := BookRecord.Authors[i].MiddleName;
+        FAuthors.Post;
+      except
+        FAuthors.Cancel;
+        raise;
+      end;
     end;
 
     //
@@ -910,8 +935,13 @@ begin
   if not FSeries.Locate(SERIE_TITLE_FIELD, BookRecord.Serie, [loCaseInsensitive]) then
   begin
     FSeries.Append;
-    FSeriesSerieTitle.Value := BookRecord.Serie;
-    FSeries.Post;
+    try
+      FSeriesSerieTitle.Value := BookRecord.Serie;
+      FSeries.Post;
+    except
+      FSeries.Cancel;
+      Raise;
+    end;
   end;
 
   //
@@ -932,29 +962,34 @@ begin
       ASeqNumber := 0;
 
     FBooks.Append;
-    FBookLibID.Value := BookRecord.LibID;
-    FBookTitle.Value := BookRecord.Title;
-    FBookSerieID.Value := FSeriesSerieID.AsInteger;
-    FBookSeqNumber.Value := ASeqNumber;
-    FBookDate.Value := BookRecord.Date;
-    FBookLibRate.Value := BookRecord.LibRate;
-    FBookLang.Value := BookRecord.Lang;
-    FBookFolder.Value := BookRecord.Folder;
-    FBookFileName.Value := BookRecord.FileName;
-    FBookInsideNo.Value := BookRecord.InsideNo;
-    FBookExt.Value := BookRecord.FileExt;
-    FBookSize.Value := BookRecord.Size;
-    FBookCode.Value := BookRecord.Code;
-    FBookLocal.Value := BookRecord.Local;
-    FBookDeleted.Value := BookRecord.Deleted;
-    FBookKeyWords.Value := BookRecord.KeyWords;
-    FBookRate.Value := BookRecord.Rate;
-    FBookProgress.Value := BookRecord.Progress;
-    if BookRecord.Annotation <> '' then
-      FBookAnnotation.Value := BookRecord.Annotation;
-    if BookRecord.Review <> '' then
-      FBookReview.Value := BookRecord.Review;
-    FBooks.Post;
+    try
+      FBookLibID.Value := BookRecord.LibID;
+      FBookTitle.Value := BookRecord.Title;
+      FBookSerieID.Value := FSeriesSerieID.AsInteger;
+      FBookSeqNumber.Value := ASeqNumber;
+      FBookDate.Value := BookRecord.Date;
+      FBookLibRate.Value := BookRecord.LibRate;
+      FBookLang.Value := BookRecord.Lang;
+      FBookFolder.Value := BookRecord.Folder;
+      FBookFileName.Value := BookRecord.FileName;
+      FBookInsideNo.Value := BookRecord.InsideNo;
+      FBookExt.Value := BookRecord.FileExt;
+      FBookSize.Value := BookRecord.Size;
+      FBookCode.Value := BookRecord.Code;
+      FBookLocal.Value := BookRecord.Local;
+      FBookDeleted.Value := BookRecord.Deleted;
+      FBookKeyWords.Value := BookRecord.KeyWords;
+      FBookRate.Value := BookRecord.Rate;
+      FBookProgress.Value := BookRecord.Progress;
+      if BookRecord.Annotation <> '' then
+        FBookAnnotation.Value := BookRecord.Annotation;
+      if BookRecord.Review <> '' then
+        FBookReview.Value := BookRecord.Review;
+      FBooks.Post;
+    except
+      FBooks.Cancel;
+      raise;
+    end;
 
     InsertBookGenres(FBookBookID.Value, BookRecord.Genres);
 
@@ -968,6 +1003,7 @@ begin
         FAuthorList.Post;
       except
         FAuthorList.Cancel;
+        raise;
       end;
     end;
 
@@ -1048,6 +1084,7 @@ begin
       FGenreList.Post;
     except
       FGenreList.Cancel;
+      raise;
     end;
   end;
 end;

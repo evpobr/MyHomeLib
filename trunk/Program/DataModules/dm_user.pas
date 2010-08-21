@@ -373,8 +373,13 @@ begin
   if BooksByGroup.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([OldID, CurrentCollection.GetID]), []) then
   begin
     BooksByGroup.Edit;
-    BooksByGroupBookID.Value := NewID;
-    BooksByGroup.Post;
+    try
+      BooksByGroupBookID.Value := NewID;
+      BooksByGroup.Post;
+    except
+      BooksByGroup.Cancel;
+      raise;
+    end;
   end;
 end;
 
@@ -413,19 +418,24 @@ begin
   // регистрируем коллекцию
   //
   tblBases.Insert;
-  tblBasesBaseName.Value := DisplayName;
-  tblBasesRootFolder.Value := RootFolder;
-  tblBasesDBFileName.Value := DBFileName;
-  tblBasesCode.Value := CollectionType;
-  tblBasesDate.Value := Now;
-  tblBasesVersion.Value := Version;
-  tblBasesAllowDelete.Value := AllowDelete;
-  tblBasesNotes.Value := Notes;
-  tblBasesUser.Value := User;
-  tblBasesPass.Value := Password;
-  tblBasesURL.Value := URL;
-  tblBasesConnection.Value := Script;
-  tblBases.Post;
+  try
+    tblBasesBaseName.Value := DisplayName;
+    tblBasesRootFolder.Value := RootFolder;
+    tblBasesDBFileName.Value := DBFileName;
+    tblBasesCode.Value := CollectionType;
+    tblBasesDate.Value := Now;
+    tblBasesVersion.Value := Version;
+    tblBasesAllowDelete.Value := AllowDelete;
+    tblBasesNotes.Value := Notes;
+    tblBasesUser.Value := User;
+    tblBasesPass.Value := Password;
+    tblBasesURL.Value := URL;
+    tblBasesConnection.Value := Script;
+    tblBases.Post;
+  except
+    tblBases.Cancel;
+    raise;
+  end;
 end;
 
 function TDMUser.SelectCollection(CollectionID: Integer): Boolean;
@@ -697,13 +707,18 @@ begin
   if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
   begin
     AllBooks.Edit;
-    if extra.Rating <> 0 then
-      AllBooksRate.Value := extra.Rating;
-    if extra.Progress <> 0 then
-      AllBooksProgress.Value := extra.Progress;
-    if extra.Review <> '' then
-      AllBooksReview.Value := extra.Review;
-    AllBooks.Post;
+    try
+      if extra.Rating <> 0 then
+        AllBooksRate.Value := extra.Rating;
+      if extra.Progress <> 0 then
+        AllBooksProgress.Value := extra.Progress;
+      if extra.Review <> '' then
+        AllBooksReview.Value := extra.Review;
+      AllBooks.Post;
+    except
+      AllBooks.Cancel;
+      raise;
+    end;
   end;
 end;
 
@@ -713,8 +728,13 @@ begin
   if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
   begin
     AllBooks.Edit;
-    AllBooksRate.Value := Rate;
-    AllBooks.Post;
+    try
+      AllBooksRate.Value := Rate;
+      AllBooks.Post;
+    except
+      AllBooks.Cancel;
+      raise;
+    end;
   end;
 end;
 
@@ -724,8 +744,13 @@ begin
   if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
   begin
     AllBooks.Edit;
-    AllBooksProgress.Value := Progress;
-    AllBooks.Post;
+    try
+      AllBooksProgress.Value := Progress;
+      AllBooks.Post;
+    except
+      AllBooks.Cancel;
+      raise;
+    end;
   end;
 end;
 
@@ -744,11 +769,16 @@ begin
   if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
   begin
     AllBooks.Edit;
-    if Annotation = '' then
-      AllBooksAnnotation.Clear
-    else
-      AllBooksAnnotation.Value := Annotation;
-    AllBooks.Post;
+    try
+      if Annotation = '' then
+        AllBooksAnnotation.Clear
+      else
+        AllBooksAnnotation.Value := Annotation;
+      AllBooks.Post;
+    except
+      AllBooks.Cancel;
+      raise;
+    end;
   end;
 end;
 
@@ -768,18 +798,23 @@ begin
   if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
   begin
     AllBooks.Edit;
-    if Review = '' then
-    begin
-      AllBooksReview.Clear;
-      AllBooksCode.Value := 0;
-    end
-    else
-    begin
-      AllBooksReview.Value := Review;
-      AllBooksCode.Value := 1;
-      Result := 1;
+    try
+      if Review = '' then
+      begin
+        AllBooksReview.Clear;
+        AllBooksCode.Value := 0;
+      end
+      else
+      begin
+        AllBooksReview.Value := Review;
+        AllBooksCode.Value := 1;
+        Result := 1;
+      end;
+      AllBooks.Post;
+    except
+      AllBooks.Cancel;
+      raise;
     end;
-    AllBooks.Post;
   end;
 end;
 
@@ -789,8 +824,13 @@ begin
   if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
   begin
     AllBooks.Edit;
-    AllBooksLocal.Value := Value;
-    AllBooks.Post;
+    try
+      AllBooksLocal.Value := Value;
+      AllBooks.Post;
+    except
+      AllBooks.Cancel;
+      raise;
+    end;
   end;
 end;
 
@@ -800,8 +840,13 @@ begin
   if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
   begin
     AllBooks.Edit;
-    AllBooksFileName.Value := FileName;
-    AllBooks.Post;
+    try
+      AllBooksFileName.Value := FileName;
+      AllBooks.Post;
+    except
+      AllBooks.Cancel;
+      raise;
+    end;
   end;
 end;
 
@@ -828,6 +873,7 @@ begin
       Result := True;
     except
       Groups.Cancel;
+      raise;
     end;
   end;
 end;
@@ -851,9 +897,14 @@ begin
   if Result then
   begin
     Groups.Append;
-    GroupsGroupName.Value := GroupName;
-    GroupsAllowDelete.Value := True;
-    Groups.Post;
+    try
+      GroupsGroupName.Value := GroupName;
+      GroupsAllowDelete.Value := True;
+      Groups.Post;
+    except
+      Groups.Cancel;
+      raise;
+    end;
   end;
   GroupID := GroupsGroupID.Value;
 end;
@@ -916,63 +967,68 @@ begin
   begin
     AllBooks.Append;
 
-    AllBooksBookID.Value := BookKey.BookID;
-    AllBooksDatabaseID.Value := BookKey.DatabaseID;
-
-    AllBooksLibID.Value := BookRecord.LibID;
-    AllBooksTitle.Value := BookRecord.Title;
-    AllBooksSerieID.Value := BookRecord.SerieID;
-    AllBooksSeqNumber.Value := BookRecord.SeqNumber;
-    AllBooksDate.Value := BookRecord.Date;
-    AllBooksLibRate.Value := BookRecord.LibRate;
-    AllBooksLang.Value := BookRecord.Lang;
-    AllBooksFolder.Value := TPath.Combine(ActiveCollection.RootFolder, BookRecord.Folder);
-    AllBooksFileName.Value := BookRecord.FileName;
-    AllBooksInsideNo.Value := BookRecord.InsideNo;
-    AllBooksExt.Value := BookRecord.FileExt;
-    AllBooksSize.Value := BookRecord.Size;
-    AllBooksCode.Value := BookRecord.Code;
-    AllBooksLocal.Value := BookRecord.Local;
-    AllBooksDeleted.Value := BookRecord.Deleted;
-    AllBooksKeyWords.Value := BookRecord.KeyWords;
-
-    AllBooksAnnotation.Value := BookRecord.Annotation;
-    AllBooksReview.Value := BookRecord.Review;
-    AllBooksRate.Value := BookRecord.Rate;
-    AllBooksProgress.Value := BookRecord.Progress;
-
-    Stream := TABSBlobStream.Create(AllBooksExtraInfo, bmWrite);
     try
-      Writer := TWriter.Create(Stream, 4096);
+      AllBooksBookID.Value := BookKey.BookID;
+      AllBooksDatabaseID.Value := BookKey.DatabaseID;
+
+      AllBooksLibID.Value := BookRecord.LibID;
+      AllBooksTitle.Value := BookRecord.Title;
+      AllBooksSerieID.Value := BookRecord.SerieID;
+      AllBooksSeqNumber.Value := BookRecord.SeqNumber;
+      AllBooksDate.Value := BookRecord.Date;
+      AllBooksLibRate.Value := BookRecord.LibRate;
+      AllBooksLang.Value := BookRecord.Lang;
+      AllBooksFolder.Value := TPath.Combine(ActiveCollection.RootFolder, BookRecord.Folder);
+      AllBooksFileName.Value := BookRecord.FileName;
+      AllBooksInsideNo.Value := BookRecord.InsideNo;
+      AllBooksExt.Value := BookRecord.FileExt;
+      AllBooksSize.Value := BookRecord.Size;
+      AllBooksCode.Value := BookRecord.Code;
+      AllBooksLocal.Value := BookRecord.Local;
+      AllBooksDeleted.Value := BookRecord.Deleted;
+      AllBooksKeyWords.Value := BookRecord.KeyWords;
+
+      AllBooksAnnotation.Value := BookRecord.Annotation;
+      AllBooksReview.Value := BookRecord.Review;
+      AllBooksRate.Value := BookRecord.Rate;
+      AllBooksProgress.Value := BookRecord.Progress;
+
+      Stream := TABSBlobStream.Create(AllBooksExtraInfo, bmWrite);
       try
-        Writer.WriteString(BookRecord.Serie);
+        Writer := TWriter.Create(Stream, 4096);
+        try
+          Writer.WriteString(BookRecord.Serie);
 
-        Writer.WriteListBegin;
-        for Author in BookRecord.Authors do
-        begin
-          Writer.WriteString(Author.LastName);
-          Writer.WriteString(Author.FirstName);
-          Writer.WriteString(Author.MiddleName);
-          Writer.WriteInteger(Author.AuthorID);
-        end;
-        Writer.WriteListEnd;
+          Writer.WriteListBegin;
+          for Author in BookRecord.Authors do
+          begin
+            Writer.WriteString(Author.LastName);
+            Writer.WriteString(Author.FirstName);
+            Writer.WriteString(Author.MiddleName);
+            Writer.WriteInteger(Author.AuthorID);
+          end;
+          Writer.WriteListEnd;
 
-        Writer.WriteListBegin;
-        for Genre in BookRecord.Genres do
-        begin
-          Writer.WriteString(Genre.GenreCode);
-          Writer.WriteString(Genre.FB2GenreCode);
-          Writer.WriteString(Genre.GenreAlias);
+          Writer.WriteListBegin;
+          for Genre in BookRecord.Genres do
+          begin
+            Writer.WriteString(Genre.GenreCode);
+            Writer.WriteString(Genre.FB2GenreCode);
+            Writer.WriteString(Genre.GenreAlias);
+          end;
+          Writer.WriteListEnd;
+        finally
+          Writer.Free;
         end;
-        Writer.WriteListEnd;
       finally
-        Writer.Free;
+        Stream.Free;
       end;
-    finally
-      Stream.Free;
-    end;
 
-    AllBooks.Post;
+      AllBooks.Post;
+    except
+      AllBooks.Cancel;
+      raise;
+    end;
   end;
 
   //
@@ -1021,6 +1077,7 @@ begin
         AllBookGroups.Post;
       except
         AllBookGroups.Cancel;
+        raise;
       end;
     end;
   end
@@ -1034,6 +1091,7 @@ begin
       AllBookGroups.Post;
     except
       AllBookGroups.Cancel;
+      raise;
     end;
   end;
 end;

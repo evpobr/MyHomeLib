@@ -306,6 +306,7 @@ begin
         CurrentCollection.Save;
       except
         CurrentCollection.Cancel;
+        raise;
       end;
     end;
   end;
