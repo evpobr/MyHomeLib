@@ -139,6 +139,7 @@ implementation
 uses
   SysUtils,
   IOUtils,
+  Generics.Collections,
   bdeconst,
   unit_Consts;
 
@@ -1111,26 +1112,24 @@ end;
 
 // Filter out duplicates by author ID
 procedure TMHLLibrary.FilterDuplicateAuthorsByID(var Authors: TBookAuthors);
-const
-  Found: string = 'V';
 var
-  MapId: TStringList;
+  MapId: TList<Integer>;
   NewAuthors: TBookAuthors;
   AuthorData: TAuthorData;
   Len: Integer;
-  Key: string;
 begin
-  MapId := TStringList.Create;
+  Len := 0;
+
+  MapId := TList<Integer>.Create;
   try
     for AuthorData in Authors do
     begin
-      Key := IntToStr(AuthorData.AuthorID);
-      if MapId.Values[Key] <> Found then
+      if -1 = MapId.IndexOf(AuthorData.AuthorID) then
       begin
-        Len := Length(NewAuthors);
         SetLength(NewAuthors, Len + 1);
         NewAuthors[Len] := AuthorData;
-        MapId.Values[Key] := Found;
+        Inc(Len);
+        MapId.Add(AuthorData.AuthorID);
       end;
     end;
   finally
@@ -1141,26 +1140,24 @@ end;
 
 // Filter out duplicates by genre code
 procedure TMHLLibrary.FilterDuplicateGenresByCode(var Genres: TBookGenres);
-const
-  Found: string = 'V';
 var
-  MapId: TStringList;
+  MapId: TList<string>;
   NewGenres: TBookGenres;
   GenreData: TGenreData;
   Len: Integer;
-  Key: string;
 begin
-  MapId := TStringList.Create;
+  Len := 0;
+
+  MapId := TList<string>.Create;
   try
     for GenreData in Genres do
     begin
-      Key := GenreData.GenreCode;
-      if MapId.Values[Key] <> Found then
+      if -1 = MapId.IndexOf(GenreData.GenreCode) then
       begin
-        Len := Length(NewGenres);
         SetLength(NewGenres, Len + 1);
         NewGenres[Len] := GenreData;
-        MapId.Values[Key] := Found;
+        Inc(Len);
+        MapId.Add(GenreData.GenreCode);
       end;
     end;
   finally
