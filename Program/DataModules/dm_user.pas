@@ -174,7 +174,7 @@ type
 
     function ActivateGroup(const ID: Integer): Boolean;
 
-    procedure CorrectExtra(OldID, NewID: Integer);
+    procedure ChangeBookID(OldID, NewID: Integer);
 
     //
     //
@@ -368,7 +368,7 @@ begin
   Result := Groups.Locate(GROUP_ID_FIELD, ID, []);
 end;
 
-procedure TDMUser.CorrectExtra(OldID, NewID: Integer);
+procedure TDMUser.ChangeBookID(OldID, NewID: Integer);
 begin
   if BooksByGroup.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([OldID, CurrentCollection.GetID]), []) then
   begin
@@ -702,7 +702,7 @@ begin
     if extra.Progress <> 0 then
       AllBooksProgress.Value := extra.Progress;
     if extra.Review <> '' then
-      AllBooksAnnotation.Value := extra.Review;
+      AllBooksReview.Value := extra.Review;
     AllBooks.Post;
   end;
 end;

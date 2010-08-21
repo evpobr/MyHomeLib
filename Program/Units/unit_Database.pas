@@ -63,7 +63,6 @@ type
 
     function InsertBook(BookRecord: TBookRecord; CheckFileName, FullCheck: Boolean): Integer;
     procedure DeleteBook(BookID: Integer; ClearExtra: Boolean = True);
-    procedure CorrectExtra(OldID, NewID: Integer);
 
     function GetTopGenreAlias(const FB2Code: string): string;
     procedure CleanBookGenres(BookID: Integer);
@@ -112,6 +111,10 @@ type
     FBookLocal: TBooleanField;
     FBookDeleted: TBooleanField;
     FBookKeyWords: TWideStringField;
+    FBookRate: TIntegerField;
+    FBookProgress: TIntegerField;
+    FBookAnnotation: TWideMemoField;
+    FBookReview: TWideMemoField;
 
     FSeries: TABSTable;
     FSeriesSerieID: TIntegerField;
@@ -126,13 +129,6 @@ type
     FGenreList: TABSTable;
     FGenreListGenreCode: TWideStringField;
     FGenreListBookID: TIntegerField;
-
-    FExtra: TABSTable;
-    FExtraBookID: TIntegerField;
-    FExtraAnnotation: TWideMemoField;
-    //FExtraReview: TWideMemoField;
-    FExtraRate: TIntegerField;
-    FExtraProgress: TIntegerField;
   end;
 
 implementation
@@ -207,24 +203,28 @@ AuthorsTableIndexes: array [1 .. 2] of TIndexDesc = (
 //
 // Books table
 //
-BooksTableFields: array [1 .. 17] of TFieldDesc = (
-  (Name: BOOK_ID_FIELD;        DataType: ftAutoInc;     Size: 0;   Required: True),
-  (Name: BOOK_LIBID_FIELD;     DataType: ftInteger;     Size: 0;   Required: False),
-  (Name: BOOK_TITLE_FIELD;     DataType: ftWideString;  Size: 150; Required: False),
-  (Name: SERIE_ID_FIELD;       DataType: ftInteger;     Size: 0;   Required: False),
-  (Name: BOOK_SEQNUMBER_FIELD; DataType: ftSmallInt;    Size: 0;   Required: False),
-  (Name: BOOK_DATE_FIELD;      DataType: ftDate;        Size: 0;   Required: False),
-  (Name: BOOK_LIBRATE_FIELD;   DataType: ftInteger;     Size: 0;   Required: False),
-  (Name: BOOK_LANG_FIELD;      DataType: ftWideString;  Size: 2;   Required: False),
-  (Name: BOOK_FOLDER_FIELD;    DataType: ftWideString;  Size: MAXFOLDERLENGTH; Required: False),
-  (Name: BOOK_FILENAME_FIELD;  DataType: ftWideString;  Size: 170; Required: True),
-  (Name: BOOK_INSIDENO_FIELD;  DataType: ftInteger;     Size: 0;   Required: True),
-  (Name: BOOK_EXT_FIELD;       DataType: ftWideString;  Size: 10;  Required: False),
-  (Name: BOOK_SIZE_FIELD;      DataType: ftInteger;     Size: 0;   Required: False),
-  (Name: BOOK_CODE_FIELD;      DataType: ftSmallInt;    Size: 0;   Required: False),
-  (Name: BOOK_LOCAL_FIELD;     DataType: ftBoolean;     Size: 0;   Required: False),
-  (Name: BOOK_DELETED_FIELD;   DataType: ftBoolean;     Size: 0;   Required: False),
-  (Name: BOOK_KEYWORDS_FIELD;  DataType: ftWideString;  Size: 255; Required: False)
+BooksTableFields: array [1 .. 21] of TFieldDesc = (
+  (Name: BOOK_ID_FIELD;         DataType: ftAutoInc;     Size: 0;   Required: True),
+  (Name: BOOK_LIBID_FIELD;      DataType: ftInteger;     Size: 0;   Required: False),
+  (Name: BOOK_TITLE_FIELD;      DataType: ftWideString;  Size: 150; Required: False),
+  (Name: SERIE_ID_FIELD;        DataType: ftInteger;     Size: 0;   Required: False),
+  (Name: BOOK_SEQNUMBER_FIELD;  DataType: ftSmallInt;    Size: 0;   Required: False),
+  (Name: BOOK_DATE_FIELD;       DataType: ftDate;        Size: 0;   Required: False),
+  (Name: BOOK_LIBRATE_FIELD;    DataType: ftInteger;     Size: 0;   Required: False),
+  (Name: BOOK_LANG_FIELD;       DataType: ftWideString;  Size: 2;   Required: False),
+  (Name: BOOK_FOLDER_FIELD;     DataType: ftWideString;  Size: MAXFOLDERLENGTH; Required: False),
+  (Name: BOOK_FILENAME_FIELD;   DataType: ftWideString;  Size: 170; Required: True),
+  (Name: BOOK_INSIDENO_FIELD;   DataType: ftInteger;     Size: 0;   Required: True),
+  (Name: BOOK_EXT_FIELD;        DataType: ftWideString;  Size: 10;  Required: False),
+  (Name: BOOK_SIZE_FIELD;       DataType: ftInteger;     Size: 0;   Required: False),
+  (Name: BOOK_CODE_FIELD;       DataType: ftSmallInt;    Size: 0;   Required: False),
+  (Name: BOOK_LOCAL_FIELD;      DataType: ftBoolean;     Size: 0;   Required: False),
+  (Name: BOOK_DELETED_FIELD;    DataType: ftBoolean;     Size: 0;   Required: False),
+  (Name: BOOK_KEYWORDS_FIELD;   DataType: ftWideString;  Size: 255; Required: False),
+  (Name: BOOK_RATE_FIELD;       DataType: ftInteger;    Size: 0;   Required: False),
+  (Name: BOOK_PROGRESS_FIELD;   DataType: ftInteger;    Size: 0;   Required: False),
+  (Name: BOOK_ANNOTATION_FIELD; DataType: ftWideMemo;   Size: 0;   Required: False),
+  (Name: BOOK_REVIEW_FIELD;     DataType: ftWideMemo;   Size: 0;   Required: False)
 );
 
 BooksTableIndexes: array [1 .. 10] of TIndexDesc = (
@@ -238,6 +238,11 @@ BooksTableIndexes: array [1 .. 10] of TIndexDesc = (
   (Name: 'Local_Index';    Fields: BOOK_LOCAL_FIELD;          Options: []),
   (Name: 'LibID_Index';    Fields: BOOK_LIBID_FIELD;          Options: []),
   (Name: 'KeyWords_Index'; Fields: BOOK_KEYWORDS_FIELD;       Options: [ixCaseInsensitive])
+);
+
+BooksTableBlobs: array [1 .. 2] of TBLOBFieldDesc = (
+  (Name: BOOK_ANNOTATION_FIELD; BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5),
+  (Name: BOOK_REVIEW_FIELD;     BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5)
 );
 
 //
@@ -281,26 +286,6 @@ GenreListTableFields: array [1 .. 2] of TFieldDesc = (
 GenreListTableIndexes: array [1 .. 2] of TIndexDesc = (
   (Name: 'ID_Index';   Fields: GENRE_CODE_BOOK_ID_FIELDS; Options: [ixPrimary]),
   (Name: 'BookIndex';  Fields: BOOK_ID_FIELD;             Options: [])
-);
-
-//
-// Extra
-//
-ExtraTableFields: array [1 .. 5] of TFieldDesc = (
-  (Name: BOOK_ID_FIELD;         DataType: ftInteger;    Size: 0;   Required: True),
-  (Name: BOOK_RATE_FIELD;       DataType: ftInteger;    Size: 0;   Required: False),
-  (Name: BOOK_PROGRESS_FIELD;   DataType: ftInteger;    Size: 0;   Required: False),
-  (Name: BOOK_ANNOTATION_FIELD; DataType: ftWideMemo;   Size: 0;   Required: False),
-  (Name: BOOK_REVIEW_FIELD;     DataType: ftWideMemo;   Size: 0;   Required: False)
-);
-
-ExtraTableIndexes: array [1 .. 1] of TIndexDesc = (
-  (Name: 'ID_Index';     Fields: BOOK_ID_FIELD;         Options: [ixPrimary])
-);
-
-ExtraTableBlobs: array [1 .. 2] of TBLOBFieldDesc = (
-  (Name: BOOK_ANNOTATION_FIELD; BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5),
-  (Name: BOOK_REVIEW_FIELD;     BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5)
 );
 
 // -----------------------------------------------------------------------------
@@ -507,9 +492,6 @@ begin
 
   FGenreList := TABSTable.Create(FDatabase);
   FGenreList.TableName := 'Genre_list';
-
-  FExtra := TABSTable.Create(FDatabase);
-  FExtra.TableName := 'Extra';
 end;
 
 destructor TMHLLibrary.Destroy;
@@ -533,7 +515,6 @@ begin
   FSeries.Active := Value;
   FGenres.Active := Value;
   FGenreList.Active := Value;
-  FExtra.Active := Value;
 
   if Value then
   begin
@@ -562,12 +543,10 @@ begin
     FBookLocal := FBooks.FieldByName(BOOK_LOCAL_FIELD) as TBooleanField;
     FBookDeleted := FBooks.FieldByName(BOOK_DELETED_FIELD) as TBooleanField;
     FBookKeyWords := FBooks.FieldByName(BOOK_KEYWORDS_FIELD) as TWideStringField;
-
-    FExtraBookID := FExtra.FieldByName(BOOK_ID_FIELD) as TIntegerField;
-    FExtraAnnotation := FExtra.FieldByName(BOOK_ANNOTATION_FIELD) as TWideMemoField;
-    //FExtraReview := FExtra.FieldByName(BOOK_REVIEW_FIELD) as TWideMemoField;
-    FExtraRate := FExtra.FieldByName(BOOK_RATE_FIELD) as TIntegerField;
-    FExtraProgress := FExtra.FieldByName(BOOK_PROGRESS_FIELD) as TIntegerField;
+    FBookRate := FBooks.FieldByName(BOOK_RATE_FIELD) as TIntegerField;
+    FBookProgress := FBooks.FieldByName(BOOK_PROGRESS_FIELD) as TIntegerField;
+    FBookAnnotation := FBooks.FieldByName(BOOK_ANNOTATION_FIELD) as TWideMemoField;
+    FBookReview := FBooks.FieldByName(BOOK_REVIEW_FIELD) as TWideMemoField;
 
     FSeriesSerieID := FSeries.FieldByName(SERIE_ID_FIELD) as TIntegerField;
     FSeriesSerieTitle := FSeries.FieldByName(SERIE_TITLE_FIELD) as TWideStringField;
@@ -607,12 +586,10 @@ begin
     FBookLocal := nil;
     FBookDeleted := nil;
     FBookKeyWords := nil;
-
-    FExtraBookID := nil;
-    FExtraAnnotation := nil;
-    //FExtraReview := nil;
-    FExtraRate := nil;
-    FExtraProgress := nil;
+    FBookRate := nil;
+    FBookProgress := nil;
+    FBookAnnotation := nil;
+    FBookReview := nil;
 
     FSeriesSerieID := nil;
     FSeriesSerieTitle := nil;
@@ -693,13 +670,12 @@ begin
   //
   // Создадим таблицы
   //
-  CreateTable(FDatabase, 'Books',       BooksTableFields,      BooksTableIndexes,      []);
+  CreateTable(FDatabase, 'Books',       BooksTableFields,      BooksTableIndexes,      BooksTableBlobs);
   CreateTable(FDatabase, 'Authors',     AuthorsTableFields,    AuthorsTableIndexes,    []);
   CreateTable(FDatabase, 'Series',      SeriesTableFields,     SeriesTableIndexes,     []);
   CreateTable(FDatabase, 'Genres',      GenresTableFields,     GenresTableIndexes,     []);
   CreateTable(FDatabase, 'Genre_List',  GenreListTableFields,  GenreListTableIndexes,  []);
   CreateTable(FDatabase, 'Author_List', AuthorListTableFields, AuthorListTableIndexes, []);
-  CreateTable(FDatabase, 'Extra',       ExtraTableFields,      ExtraTableIndexes,      ExtraTableBlobs);
 
   Active := True;
 
@@ -972,6 +948,12 @@ begin
     FBookLocal.Value := BookRecord.Local;
     FBookDeleted.Value := BookRecord.Deleted;
     FBookKeyWords.Value := BookRecord.KeyWords;
+    FBookRate.Value := BookRecord.Rate;
+    FBookProgress.Value := BookRecord.Progress;
+    if BookRecord.Annotation <> '' then
+      FBookAnnotation.Value := BookRecord.Annotation;
+    if BookRecord.Review <> '' then
+      FBookReview.Value := BookRecord.Review;
     FBooks.Post;
 
     InsertBookGenres(FBookBookID.Value, BookRecord.Genres);
@@ -987,23 +969,6 @@ begin
       except
         FAuthorList.Cancel;
       end;
-    end;
-
-    if (BookRecord.Annotation <> '') or (BookRecord.Rate <> 0) or (BookRecord.Progress <> 0) then
-    begin
-      FExtra.Append;
-      FExtraBookID.Value := FBookBookID.Value;
-
-      if BookRecord.Rate <> 0 then
-        FExtraRate.Value := BookRecord.Rate;
-
-      if BookRecord.Progress <> 0 then
-        FExtraProgress.Value := BookRecord.Progress;
-
-      if BookRecord.Annotation <> '' then
-        FExtraAnnotation.Value := BookRecord.Annotation;
-
-      FExtra.Post;
     end;
 
     Result := FBookBookID.Value;
@@ -1042,10 +1007,6 @@ begin
         FSeries.Delete;
       end;
     end;
-
-    // удаляем из Extra
-    if ClearExtra and FExtra.Locate(BOOK_ID_FIELD, BookID, []) then
-      FExtra.Delete;
 
     //
     // У каждого автора должна быть хоть одна книга.
@@ -1088,16 +1049,6 @@ begin
     except
       FGenreList.Cancel;
     end;
-  end;
-end;
-
-procedure TMHLLibrary.CorrectExtra(OldID, NewID: Integer);
-begin
-  if FExtra.Locate(BOOK_ID_FIELD, OldID, []) then
-  begin
-    FExtra.Edit;
-    FExtraBookID.AsInteger := NewID;
-    FExtra.Post;
   end;
 end;
 

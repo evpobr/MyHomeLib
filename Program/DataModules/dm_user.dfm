@@ -3,7 +3,7 @@ object DMUser: TDMUser
   Height = 623
   Width = 463
   object DBUser: TABSDatabase
-    CurrentVersion = '6.05 '
+    CurrentVersion = '6.06 '
     DatabaseName = 'UserData'
     Exclusive = False
     MaxConnections = 5
@@ -13,7 +13,7 @@ object DMUser: TDMUser
     Top = 32
   end
   object tblBases: TABSTable
-    CurrentVersion = '6.05 '
+    CurrentVersion = '6.06 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
@@ -80,7 +80,7 @@ object DMUser: TDMUser
     end
   end
   object BooksByGroup: TABSTable
-    CurrentVersion = '6.05 '
+    CurrentVersion = '6.06 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
@@ -810,7 +810,7 @@ object DMUser: TDMUser
     Top = 176
   end
   object Groups: TABSTable
-    CurrentVersion = '6.05 '
+    CurrentVersion = '6.06 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
@@ -837,7 +837,7 @@ object DMUser: TDMUser
     end
   end
   object GroupBooks: TABSTable
-    CurrentVersion = '6.05 '
+    CurrentVersion = '6.06 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
@@ -867,7 +867,7 @@ object DMUser: TDMUser
     Top = 248
   end
   object AllBooks: TABSTable
-    CurrentVersion = '6.05 '
+    CurrentVersion = '6.06 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
@@ -959,7 +959,7 @@ object DMUser: TDMUser
     end
   end
   object ClearQuery: TABSQuery
-    CurrentVersion = '6.05 '
+    CurrentVersion = '6.06 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False
@@ -974,7 +974,7 @@ object DMUser: TDMUser
     Top = 472
   end
   object AllBookGroups: TABSTable
-    CurrentVersion = '6.05 '
+    CurrentVersion = '6.06 '
     DatabaseName = 'UserData'
     InMemory = False
     ReadOnly = False

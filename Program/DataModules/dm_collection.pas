@@ -102,6 +102,10 @@ type
     AllBooksLocal: TBooleanField;
     AllBooksDeleted: TBooleanField;
     AllBooksKeyWords: TWideStringField;
+    AllBooksRate: TIntegerField;
+    AllBooksProgress: TIntegerField;
+    AllBooksAnnotation: TWideMemoField;
+    AllBooksReview: TWideMemoField;
 
     AllAuthors: TABSTable;
     AllAuthorsAuthorID: TAutoIncField;
@@ -112,13 +116,6 @@ type
     AllSeries: TABSTable;
     AllSeriesSerieID: TAutoIncField;
     AllSeriesSerieTitle: TWideStringField;
-
-    AllExtra: TABSTable;
-    AllExtraBookID: TIntegerField;
-    AllExtraAnnotation: TWideMemoField;
-    AllExtraReview: TWideMemoField;
-    AllExtraRate: TIntegerField;
-    AllExtraProgress: TIntegerField;
 
     AllGenres: TABSTable;
     AllGenresGenreCode: TWideStringField;
@@ -152,6 +149,7 @@ type
     tblSeriesB1: TABSTable;
     tblSeriesB1SerieID: TAutoIncField;
     tblSeriesB1SerieTitle: TWideStringField;
+
     procedure DataModuleCreate(Sender: TObject);
 
   strict private
@@ -197,9 +195,6 @@ type
       );
 
   strict private
-    procedure UpdateExtra(const BookKey: TBookKey; UpdateProc: TUpdateExtraProc);
-    procedure ClearExtra(const BookKey: TBookKey; UpdateProc: TUpdateExtraProc);
-
     procedure GetAuthor(AuthorID: Integer; var Author: TAuthorData);
     procedure GetBookAuthors(BookID: Integer; var BookAuthors: TBookAuthors);
 
@@ -401,7 +396,6 @@ begin
   AllAuthors.Active := State;
   AllSeries.Active := State;
   AllBooks.Active := State;
-  AllExtra.Active := State;
   AllGenres.Active := State;
 end;
 
@@ -549,26 +543,18 @@ begin
     BookRecord.BookKey.BookID := AllBooksBookID.Value;
     BookRecord.BookKey.DatabaseID := DMUser.ActiveCollection.ID;
     BookRecord.CollectionRoot := DMUser.ActiveCollection.RootPath;
+    BookRecord.Rate := AllBooksRate.Value;
+    BookRecord.Progress := AllBooksProgress.Value;
 
-    //
-    // данные из таблицы Extra
-    //
-    Assert(AllExtra.Active);
-    if AllExtra.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
+    if LoadMemos then
     begin
-      BookRecord.Rate := AllExtraRate.Value;
-      BookRecord.Progress := AllExtraProgress.Value;
-      if LoadMemos then
-      begin
-        //TODO - rethink when to load the memo fields.
-
-        //
-        // Это поле нужно зачитывать только при копировании книги в другую коллекцию.
-        // Во всех остальных случаях оно не используется.
-        //
-        BookRecord.Review := AllExtraReview.Value;
-        BookRecord.Annotation := AllExtraAnnotation.Value;
-      end;
+      //TODO - rethink when to load the memo fields.
+      //
+      // Это поле нужно зачитывать только при копировании книги в другую коллекцию.
+      // Во всех остальных случаях оно не используется.
+      //
+      BookRecord.Review := AllBooksReview.Value;
+      BookRecord.Annotation := AllBooksAnnotation.Value;
     end;
 
     GetBookGenres(BookKey.BookID, BookRecord.Genres, @(BookRecord.RootGenre));
@@ -595,43 +581,6 @@ begin
   DMUser.SetLocal(BookKey, AState);
 end;
 
-procedure TDMCollection.UpdateExtra(const BookKey: TBookKey; UpdateProc: TUpdateExtraProc);
-begin
-  Assert(BookKey.DatabaseID = DMUser.ActiveCollection.ID);
-  Assert(AllExtra.Active);
-
-  if AllExtra.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
-    AllExtra.Edit
-  else
-  begin
-    AllExtra.Append;
-    AllExtraBookID.Value := BookKey.BookID;
-  end;
-
-  UpdateProc;
-
-  AllExtra.Post;
-end;
-
-procedure TDMCollection.ClearExtra(const BookKey: TBookKey; UpdateProc: TUpdateExtraProc);
-begin
-  Assert(BookKey.DatabaseID = DMUser.ActiveCollection.ID);
-  Assert(AllExtra.Active);
-
-  if AllExtra.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
-  begin
-    AllExtra.Edit;
-    UpdateProc;
-    AllExtra.Post;
-
-    //
-    // все значимые поля таблицы пусты - удалим запись
-    //
-    if AllExtraAnnotation.IsNull and AllExtraReview.IsNull and AllExtraRate.IsNull and AllExtraProgress.IsNull then
-      AllExtra.Delete;
-  end;
-end;
-
 procedure TDMCollection.DataModuleCreate(Sender: TObject);
 begin
   FShowLocalOnly := False;
@@ -641,23 +590,14 @@ end;
 procedure TDMCollection.SetRate(const BookKey: TBookKey; Rate: Integer);
 begin
   Assert(BookKey.DatabaseID = DMUser.ActiveCollection.ID);
+  Assert(AllBooks.Active);
 
-  if Rate = 0 then
-    ClearExtra(
-      BookKey,
-      procedure
-      begin
-        AllExtraRate.Clear;
-      end
-    )
-  else
-    UpdateExtra(
-      BookKey,
-      procedure
-      begin
-        AllExtraRate.Value := Rate;
-      end
-    );
+  if AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
+  begin
+    AllBooks.Edit;
+    AllBooksRate.Value := Rate;
+    AllBooks.Post;
+  end;
 
   //
   // Обновим информацию в группах
@@ -668,23 +608,14 @@ end;
 procedure TDMCollection.SetProgress(const BookKey: TBookKey; Progress: Integer);
 begin
   Assert(BookKey.DatabaseID = DMUser.ActiveCollection.ID);
+  Assert(AllBooks.Active);
 
-  if Progress = 0 then
-    ClearExtra(
-      BookKey,
-      procedure
-      begin
-        AllExtraProgress.Clear;
-      end
-    )
-  else
-    UpdateExtra(
-      BookKey,
-      procedure
-      begin
-        AllExtraProgress.Value := Progress;
-      end
-    );
+  if AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
+  begin
+    AllBooks.Edit;
+    AllBooksProgress.Value := Progress;
+    AllBooks.Post;
+  end;
 
   //
   // Обновим информацию в группах
@@ -709,13 +640,13 @@ end;
 
 function TDMCollection.GetAnnotation(const BookKey: TBookKey): string;
 begin
-  Assert(AllExtra.Active);
+  Assert(AllBooks.Active);
 
   if BookKey.DatabaseID = DMUser.ActiveCollection.ID then
   begin
-    if AllExtra.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
+    if AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
     begin
-      Result := AllExtraAnnotation.Value;
+      Result := AllBooksAnnotation.Value;
     end;
   end
   else
@@ -730,50 +661,32 @@ begin
 
   NewAnnotation := Trim(Annotation);
 
+  Assert(AllBooks.Active);
   if AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
   begin
     AllBooks.Edit;
-
-    if NewAnnotation = '' then
-    begin
-      ClearExtra(
-        BookKey,
-        procedure
-        begin
-          AllExtraAnnotation.Clear;
-        end
-      );
-    end
+    if Annotation = '' then
+      AllBooksAnnotation.Clear
     else
-    begin
-      UpdateExtra(
-        BookKey,
-        procedure
-        begin
-          AllExtraAnnotation.Value := NewAnnotation;
-        end
-      );
-    end;
-
+      AllBooksAnnotation.Value := NewAnnotation;
     AllBooks.Post;
-
-    //
-    // Обновим информацию в группах
-    //
-    DMUser.SetAnnotation(BookKey, NewAnnotation);
   end;
+
+  //
+  // Обновим информацию в группах
+  //
+  DMUser.SetAnnotation(BookKey, NewAnnotation);
 end;
 
 function TDMCollection.GetReview(const BookKey: TBookKey): string;
 begin
-  Assert(AllExtra.Active);
-
   if BookKey.DatabaseID = DMUser.ActiveCollection.ID then
   begin
-    if AllExtra.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
-    begin
-      Result := AllExtraReview.Value;
-    end;
+    Assert(AllBooks.Active);
+    if AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
+      Result := AllBooksReview.Value
+    else
+      Result := '';
   end
   else
     Result := DMUser.GetReview(BookKey);
@@ -784,45 +697,33 @@ var
   NewReview: string;
 begin
   Assert(BookKey.DatabaseID = DMUser.ActiveCollection.ID);
+  Assert(AllBooks.Active);
 
   Result := 0;
   NewReview := Trim(Review);
 
+  Result := 0;
   if AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
   begin
     AllBooks.Edit;
-
-    if NewReview = '' then
+    if Review = '' then
     begin
-      ClearExtra(
-        BookKey,
-        procedure
-        begin
-          AllExtraReview.Clear;
-        end
-      );
+      AllBooksReview.Clear;
       AllBooksCode.Value := 0;
     end
     else
     begin
-      UpdateExtra(
-        BookKey,
-        procedure
-        begin
-          AllExtraReview.Value := NewReview;
-        end
-      );
+      AllBooksReview.Value := Review;
       AllBooksCode.Value := 1;
       Result := 1;
     end;
-
     AllBooks.Post;
-
-    //
-    // Обновим информацию в группах
-    //
-    Result := Result or DMUser.SetReview(BookKey, NewReview);
   end;
+
+  //
+  // Обновим информацию в группах
+  //
+  Result := Result or DMUser.SetReview(BookKey, NewReview);
 end;
 
 procedure TDMCollection.AddBookToGroup(const BookKey: TBookKey; GroupID: Integer);
@@ -831,7 +732,6 @@ var
 begin
   Assert(BookKey.DatabaseID = DMUser.ActiveCollection.ID);
   Assert(AllBooks.Active);
-  Assert(AllExtra.Active);
 
   GetBookRecord(BookKey, BookRecord, True);
 
@@ -1054,27 +954,24 @@ procedure TDMCollection.ExportUserData(data: TUserData);
 begin
   Assert(Assigned(data));
   Assert(AllBooks.Active);
-  Assert(AllExtra.Active);
 
-  AllExtra.First;
-  while not AllExtra.Eof do
+  AllBooks.First;
+  while not AllBooks.Eof do
   begin
-    if AllBooks.Locate(BOOK_ID_FIELD, AllExtraBookID.Value, []) then
-    begin
-      if
-        (AllExtraRate.Value <> 0) or
-        (AllExtraProgress.Value <> 0) or
-        (AllExtraReview.Value <> '')
-      then
-        data.Extras.AddExtra(
-          AllExtraBookID.Value,
-          AllBooksLibID.Value,
-          AllExtraRate.Value,
-          AllExtraProgress.Value,
-          AllExtraReview.Value
-        );
-    end;
-    AllExtra.Next;
+    if
+      (AllBooksRate.Value <> 0) or
+      (AllBooksProgress.Value <> 0) or
+      (not AllBooksReview.IsNull )
+    then
+      data.Extras.AddExtra(
+        AllBooksBookID.Value,
+        AllBooksLibID.Value,
+        AllBooksRate.Value,
+        AllBooksProgress.Value,
+        AllBooksReview.Value
+      );
+
+    AllBooks.Next;
   end;
 
   DMUser.ExportUserData(data);
@@ -1108,37 +1005,33 @@ begin
   Assert(Assigned(data));
   Assert(Assigned(guiUpdateCallback));
   Assert(AllBooks.Active);
-  Assert(AllExtra.Active);
 
   //
-  // Заполним рейтинги, аннотации и признак прочитанности
+  // Заполним рейтинги, review и признак прочитанности
   //
   for extra in data.Extras do
   begin
     if GetBookKey(extra, BookKey) then
     begin
-      UpdateExtra(BookKey,
-        procedure
-        begin
-          if extra.Rating <> 0 then
-            AllExtraRate.Value := extra.Rating;
-          if extra.Progress <> 0 then
-            AllExtraProgress.Value := extra.Progress;
-          if extra.Review <> '' then
-            AllExtraReview.Value := extra.Review;
-        end
-      );
-
-      //
-      // Обновим информацию в группах
-      //
-      DMUser.SetExtra(BookKey, extra);
-
-      //
-      // Дадим возможность главному окну обновить измененные ноды
-      //
-      guiUpdateCallback(BookKey, extra);
+      AllBooks.Edit;
+      if extra.Rating <> 0 then
+        AllBooksRate.Value := extra.Rating;
+      if extra.Progress <> 0 then
+        AllBooksProgress.Value := extra.Progress;
+      if extra.Review <> '' then
+        AllBooksReview.Value := extra.Review;
+      AllBooks.Post;
     end;
+
+    //
+    // Обновим информацию в группах
+    //
+    DMUser.SetExtra(BookKey, extra);
+
+    //
+    // Дадим возможность главному окну обновить измененные ноды
+    //
+    guiUpdateCallback(BookKey, extra);
   end;
 
   //
