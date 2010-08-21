@@ -459,10 +459,12 @@ begin
                     SetComment(Format(rstrAddedBooks, [filesProcessed]));
                   end;
                 except
-                  on EConvertError do
+                  on E: EConvertError do
                     Teletype(Format(rstrErrorInpStructure, [CurrentFile, j]), tsError);
                   on E: EDBError do
                     Teletype(Format(rstrDBErrorInp, [CurrentFile, j]), tsError);
+                  on E: Exception do
+                    Teletype(E.Message, tsError);
                 end;
               end;
 
