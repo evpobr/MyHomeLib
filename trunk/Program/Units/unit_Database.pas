@@ -69,6 +69,7 @@ type
     procedure InsertBookGenres(const BookID: Integer; const Genres: TBookGenres);
 
     procedure GetSeries(SeriesList: TStrings);
+    procedure FilterDuplicateAuthors(var Authors: TBookAuthors);
 
     //
     // Bulk operation
@@ -895,6 +896,9 @@ begin
     BookRecord.Authors[i].AuthorID := FAuthorID.Value;
   end;
 
+  // Filter out duplicate authors by AuthorID:
+  FilterDuplicateAuthors(BookRecord.Authors);
+
   //
   // Определяем код жанра
   //
@@ -1098,6 +1102,36 @@ begin
       SeriesList.Add(FSeriesSerieTitle.Value);
     FSeries.Next;
   end;
+end;
+
+// Filter out duplicates by author ID
+procedure TMHLLibrary.FilterDuplicateAuthors(var Authors: TBookAuthors);
+const
+  Found: string = 'V';
+var
+  MapId: TStringList;
+  AuthorsResult: TBookAuthors;
+  AuthorData: TAuthorData;
+  Len: Integer;
+  Key: string;
+begin
+  MapId := TStringList.Create;
+  try
+    for AuthorData in Authors do
+    begin
+      Key := IntToStr(AuthorData.AuthorID);
+      if MapId.Values[Key] <> Found then
+      begin
+        Len := Length(AuthorsResult);
+        SetLength(AuthorsResult, Len + 1);
+        AuthorsResult[Len] := AuthorData;
+        MapId.Values[Key] := Found;
+      end;
+    end;
+  finally
+    FreeAndNil(MapId);
+  end;
+  Authors := AuthorsResult;
 end;
 
 procedure TMHLLibrary.BeginBulkOperation;
