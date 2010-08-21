@@ -27,6 +27,7 @@ type
   EMHLError = class(Exception);
   //EInvalidLogin = class(Exception);
   EBookNotFound = class(Exception);
+  EDBError = class(Exception);
 
 resourcestring
   rstrErrorInvalidArgument = 'Invalid argument';

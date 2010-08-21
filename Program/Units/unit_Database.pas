@@ -66,10 +66,9 @@ type
 
     function GetTopGenreAlias(const FB2Code: string): string;
     procedure CleanBookGenres(BookID: Integer);
-    procedure InsertBookGenres(const BookID: Integer; const Genres: TBookGenres);
+    procedure InsertBookGenres(const BookID: Integer; var Genres: TBookGenres);
 
     procedure GetSeries(SeriesList: TStrings);
-    procedure FilterDuplicateAuthors(var Authors: TBookAuthors);
 
     //
     // Bulk operation
@@ -130,6 +129,9 @@ type
     FGenreList: TABSTable;
     FGenreListGenreCode: TWideStringField;
     FGenreListBookID: TIntegerField;
+
+    procedure FilterDuplicateAuthorsByID(var Authors: TBookAuthors);
+    procedure FilterDuplicateGenresByCode(var Genres: TBookGenres);
   end;
 
 implementation
@@ -897,7 +899,7 @@ begin
   end;
 
   // Filter out duplicate authors by AuthorID:
-  FilterDuplicateAuthors(BookRecord.Authors);
+  FilterDuplicateAuthorsByID(BookRecord.Authors);
 
   //
   // Определяем код жанра
@@ -1073,11 +1075,14 @@ begin
     FGenreList.Delete;
 end;
 
-// Add book genres for the book specified by BookID, doesn't check for duplicates
-procedure TMHLLibrary.InsertBookGenres(const BookID: Integer; const Genres: TBookGenres);
+// Add book genres for the book specified by BookID
+// Please notice that Genres could be altered by the method if it contains genres with duplicate codes
+procedure TMHLLibrary.InsertBookGenres(const BookID: Integer; var Genres: TBookGenres);
 var
   Genre: TGenreData;
 begin
+  FilterDuplicateGenresByCode(Genres);
+
   for Genre in Genres do
   begin
     FGenreList.Append;
@@ -1105,12 +1110,12 @@ begin
 end;
 
 // Filter out duplicates by author ID
-procedure TMHLLibrary.FilterDuplicateAuthors(var Authors: TBookAuthors);
+procedure TMHLLibrary.FilterDuplicateAuthorsByID(var Authors: TBookAuthors);
 const
   Found: string = 'V';
 var
   MapId: TStringList;
-  AuthorsResult: TBookAuthors;
+  NewAuthors: TBookAuthors;
   AuthorData: TAuthorData;
   Len: Integer;
   Key: string;
@@ -1122,16 +1127,46 @@ begin
       Key := IntToStr(AuthorData.AuthorID);
       if MapId.Values[Key] <> Found then
       begin
-        Len := Length(AuthorsResult);
-        SetLength(AuthorsResult, Len + 1);
-        AuthorsResult[Len] := AuthorData;
+        Len := Length(NewAuthors);
+        SetLength(NewAuthors, Len + 1);
+        NewAuthors[Len] := AuthorData;
         MapId.Values[Key] := Found;
       end;
     end;
   finally
     FreeAndNil(MapId);
   end;
-  Authors := AuthorsResult;
+  Authors := NewAuthors;
+end;
+
+// Filter out duplicates by genre code
+procedure TMHLLibrary.FilterDuplicateGenresByCode(var Genres: TBookGenres);
+const
+  Found: string = 'V';
+var
+  MapId: TStringList;
+  NewGenres: TBookGenres;
+  GenreData: TGenreData;
+  Len: Integer;
+  Key: string;
+begin
+  MapId := TStringList.Create;
+  try
+    for GenreData in Genres do
+    begin
+      Key := GenreData.GenreCode;
+      if MapId.Values[Key] <> Found then
+      begin
+        Len := Length(NewGenres);
+        SetLength(NewGenres, Len + 1);
+        NewGenres[Len] := GenreData;
+        MapId.Values[Key] := Found;
+      end;
+    end;
+  finally
+    FreeAndNil(MapId);
+  end;
+  Genres := NewGenres;
 end;
 
 procedure TMHLLibrary.BeginBulkOperation;
