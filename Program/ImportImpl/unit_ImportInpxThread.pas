@@ -395,84 +395,85 @@ begin
   try
     FLibrary.DatabaseFileName := DBFileName;
     FLibrary.Active := True;
-    FLibrary.BeginBulkOperation;
+    unZip := TZipForge.Create(nil);
     try
-      unZip := TZipForge.Create(nil);
+      unZip.BaseDir := Settings.TempPath;
+      unZip.FileName := FInpxFileName;
+      unZip.OpenArchive(fmOpenRead);
+      unZip.ExtractFiles('*.*');
+
+      GetFields;
+      BookList := TStringListEx.Create; { TODO -oNickR -cunused code : насколько я понимаю, этот класс больше ненужен }
       try
-        unZip.BaseDir := Settings.TempPath;
-        unZip.FileName := FInpxFileName;
-        unZip.OpenArchive(fmOpenRead);
-        unZip.ExtractFiles('*.*');
+        if (unZip.FindFirst('*.inp', ArchItem, faAnyFile - faDirectory)) then
+        begin
+          repeat
+            CurrentFile := ArchItem.FileName;
 
-        GetFields;
+            OnlineCollection := isOnlineCollection(CollectionType);
+            if not isOnlineCollection(CollectionType) and (CurrentFile = 'extra.inp') then
+              Continue;
 
-        BookList := TStringListEx.Create; { TODO -oNickR -cunused code : насколько я понимаю, этот класс больше ненужен }
-        try
-          if (unZip.FindFirst('*.inp', ArchItem, faAnyFile - faDirectory)) then
-          begin
-            repeat
-              CurrentFile := ArchItem.FileName;
+            Teletype(Format(rstrProcessingFile, [CurrentFile]), tsInfo);
 
-              OnlineCollection := isOnlineCollection(CollectionType);
-              if not isOnlineCollection(CollectionType) and (CurrentFile = 'extra.inp') then
-                Continue;
+            BookList.LoadFromFile(Settings.TempPath + CurrentFile, TEncoding.UTF8);
 
-              Teletype(Format(rstrProcessingFile, [CurrentFile]), tsInfo);
-
-              BookList.LoadFromFile(Settings.TempPath + CurrentFile, TEncoding.UTF8);
-
-              for j := 0 to BookList.Count - 1 do
-              begin
-                try
-                  ParseData(BookList[j], OnlineCollection, R);
-                  if OnlineCollection then
+            for j := 0 to BookList.Count - 1 do
+            begin
+              try
+                ParseData(BookList[j], OnlineCollection, R);
+                if OnlineCollection then
+                begin
+                  // И\Иванов Иван\1234 Просто книга.fb2.zip
+                  R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;
+                  // Сохраним отметку о существовании файла
+                  R.Local := FileExists(FCollectionRoot + R.Folder);
+                end
+                else
+                begin
+                  if not FPersonalFolder then
                   begin
-                    // И\Иванов Иван\1234 Просто книга.fb2.zip
-                    R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;
-                    // Сохраним отметку о существовании файла
-                    R.Local := FileExists(FCollectionRoot + R.Folder);
+                    // 98058-98693.inp -> 98058-98693.zip
+                    R.Folder := ChangeFileExt(CurrentFile, ZIP_EXTENSION);
+                    //
+                    R.InsideNo := j;
                   end
-                  else
-                  begin
-                    if not FPersonalFolder then
-                    begin
-                      // 98058-98693.inp -> 98058-98693.zip
-                      R.Folder := ChangeFileExt(CurrentFile, ZIP_EXTENSION);
-                      //
-                      R.InsideNo := j;
-                    end
-                  end;
+                end;
 
+                FLibrary.BeginBulkOperation;
+                try
                   if FLibrary.InsertBook(R, CheckFiles, False) <> 0 then
                     Inc(filesProcessed);
-
-                  if (filesProcessed mod ProcessedItemThreshold) = 0 then
-                  begin
-                    SetProgress(Round((i + j / BookList.Count) * 100 / unZip.FileCount));
-                    SetComment(Format(rstrAddedBooks, [filesProcessed]));
-                  end;
+                  FLibrary.EndBulkOperation(True);
                 except
-                  on EConvertError do
-                    Teletype(Format(rstrErrorInpStructure, [CurrentFile, j]), tsError);
+                  FLibrary.EndBulkOperation(False);
+                  raise;
                 end;
-              end;
 
-              Inc(i);
-              if Canceled then
-                Break;
-            until (not unZip.FindNext(ArchItem));
-          end;
-        finally
-          BookList.Free;
+                if (filesProcessed mod ProcessedItemThreshold) = 0 then
+                begin
+                  SetProgress(Round((i + j / BookList.Count) * 100 / unZip.FileCount));
+                  SetComment(Format(rstrAddedBooks, [filesProcessed]));
+                end;
+              except
+                on EConvertError do
+                  Teletype(Format(rstrErrorInpStructure, [CurrentFile, j]), tsError);
+                on E: Exception do
+                  Teletype(E.Message, tsError);
+              end;
+            end;
+
+            Inc(i);
+            if Canceled then
+              Break;
+          until (not unZip.FindNext(ArchItem));
         end;
-        Teletype(Format(rstrAddedBooks, [filesProcessed]), tsInfo);
       finally
-        unZip.Free;
+        BookList.Free;
       end;
-      FLibrary.EndBulkOperation(True);
-    except
-      FLibrary.EndBulkOperation(False);
-      raise;
+      Teletype(Format(rstrAddedBooks, [filesProcessed]), tsInfo);
+    finally
+      unZip.Free;
     end;
   finally
     FLibrary.Free;
