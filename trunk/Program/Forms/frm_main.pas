@@ -1669,6 +1669,7 @@ begin
     FillAuthorTree(tvAuthors);
     FillSeriesTree(tvSeries);
     FillGenresTree(tvGenres);
+    FillGroupsList(tvGroups);
   finally
     Screen.Cursor := SavedCursor;
   end;
