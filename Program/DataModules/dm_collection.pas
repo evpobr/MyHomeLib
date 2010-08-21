@@ -215,6 +215,8 @@ type
 
     procedure RefreshData(Parts: TDataParts);
 
+    procedure VerifyCurrentCollection(const DatabaseID: Integer);
+
   public
     // TfrmMain.FormCreate
     // TfrmMain.pgControlChange
@@ -304,6 +306,9 @@ uses
   unit_Consts,
   unit_Messages,
   unit_Helpers;
+
+resourcestring
+  rstrErrorOnlyForCurrentCollection = 'Эта операция недоступна для данной книги при выбраной коллекции. Текущая коллекция: "%s", а книга принадлежит коллекции "%s".';
 
 {$R *.dfm}
 
@@ -569,7 +574,7 @@ end;
 
 procedure TDMCollection.SetLocal(const BookKey: TBookKey; AState: Boolean);
 begin
-  Assert(BookKey.DatabaseID = DMUser.ActiveCollection.ID);
+  VerifyCurrentCollection(BookKey.DatabaseID);
 
   if AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
   begin
@@ -594,7 +599,7 @@ end;
 
 procedure TDMCollection.SetRate(const BookKey: TBookKey; Rate: Integer);
 begin
-  Assert(BookKey.DatabaseID = DMUser.ActiveCollection.ID);
+  VerifyCurrentCollection(BookKey.DatabaseID);
   Assert(AllBooks.Active);
 
   if AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
@@ -617,7 +622,7 @@ end;
 
 procedure TDMCollection.SetProgress(const BookKey: TBookKey; Progress: Integer);
 begin
-  Assert(BookKey.DatabaseID = DMUser.ActiveCollection.ID);
+  VerifyCurrentCollection(BookKey.DatabaseID);
   Assert(AllBooks.Active);
 
   if AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
@@ -640,7 +645,7 @@ end;
 
 procedure TDMCollection.SetFileName(const BookKey: TBookKey; const FileName: string);
 begin
-  Assert(BookKey.DatabaseID = DMUser.ActiveCollection.ID);
+  VerifyCurrentCollection(BookKey.DatabaseID);
   Assert(AllBooks.Active);
 
   if AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
@@ -677,7 +682,7 @@ procedure TDMCollection.SetAnnotation(const BookKey: TBookKey; const Annotation:
 var
   NewAnnotation: string;
 begin
-  Assert(BookKey.DatabaseID = DMUser.ActiveCollection.ID);
+  VerifyCurrentCollection(BookKey.DatabaseID);
 
   NewAnnotation := Trim(Annotation);
 
@@ -721,7 +726,7 @@ function TDMCollection.SetReview(const BookKey: TBookKey; const Review: string):
 var
   NewReview: string;
 begin
-  Assert(BookKey.DatabaseID = DMUser.ActiveCollection.ID);
+  VerifyCurrentCollection(BookKey.DatabaseID);
   Assert(AllBooks.Active);
 
   Result := 0;
@@ -760,7 +765,7 @@ procedure TDMCollection.AddBookToGroup(const BookKey: TBookKey; GroupID: Integer
 var
   BookRecord: TBookRecord;
 begin
-  Assert(BookKey.DatabaseID = DMUser.ActiveCollection.ID);
+  VerifyCurrentCollection(BookKey.DatabaseID);
   Assert(AllBooks.Active);
 
   GetBookRecord(BookKey, BookRecord, True);
@@ -1086,6 +1091,21 @@ begin
         AddBookToGroup(BookKey, group.GroupID);
       end;
     end;
+  end;
+end;
+
+procedure TDMCollection.VerifyCurrentCollection(const DatabaseID: Integer);
+var
+  BookCollectionName: string;
+  CurrentCollectionName: string;
+begin
+  if DatabaseID <> DMUser.ActiveCollection.ID then
+  begin
+    if (DMUser.SelectCollection(DatabaseID)) then
+      BookCollectionName := DMUser.CurrentCollection.Name
+    else
+      BookCollectionName := '';
+    raise ENotSupportedException.Create(Format(rstrErrorOnlyForCurrentCollection, [DMUser.ActiveCollection.Name, BookCollectionName]));
   end;
 end;
 

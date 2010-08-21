@@ -277,8 +277,8 @@ begin
       DMUser.Groups.Next;
     end;
 
-    // активируем последнюю группу в списке
-    Tree.Selected[Tree.GetLast] := True;
+    // activate the first group in the list
+    Tree.Selected[Tree.GetFirst] := True;
   finally
     Tree.EndUpdate;
   end;

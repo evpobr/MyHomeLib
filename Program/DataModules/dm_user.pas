@@ -641,8 +641,7 @@ begin
     BookRecord.Progress := AllBooksProgress.Value;
     BookRecord.NodeType := ntBookInfo;
     BookRecord.BookKey.BookID := AllBooksBookID.Value;
-    BookRecord.BookKey.DatabaseID := DMUser.ActiveCollection.ID;
-    BookRecord.CollectionRoot := DMUser.ActiveCollection.RootPath;
+    BookRecord.BookKey.DatabaseID := AllBooksDatabaseID.Value;
 
     Stream := TABSBlobStream.Create(AllBooksExtraInfo, bmRead);
     try
@@ -690,12 +689,18 @@ begin
       Stream.Free;
     end;
 
-    if SelectCollection(BookKey.DatabaseID) then
+    if SelectCollection(BookRecord.BookKey.DatabaseID) then
     begin
-      BookRecord.CollectionName := DMUser.ActiveCollection.Name;
+      // Please notice that the collection for a book in a group might not match ActiveCollection
+      // Need to use values from tblBases instead (the record was located by SelectCollection)
+      BookRecord.CollectionName := tblBasesBaseName.Value;
+      BookRecord.CollectionRoot := IncludeTrailingPathDelimiter(tblBasesRootFolder.Value);
     end
     else
+    begin
       BookRecord.CollectionName := rstrUnknownCollection;
+      BookRecord.CollectionRoot := '';
+    end;
   end
   else
     Assert(False);
