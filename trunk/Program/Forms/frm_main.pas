@@ -7052,13 +7052,12 @@ begin
     try
       ALibrary.DeleteBook(Data^.BookKey.BookID, False);
       Data^.BookKey.BookID := ALibrary.InsertBook(BookRecord, False, False);
-      ALibrary.CorrectExtra(OldID, Data^.BookKey.BookID);
       ALibrary.EndBulkOperation(True);
     except
       ALibrary.EndBulkOperation(False);
     end;
 
-    DMUser.CorrectExtra(OldID, Data^.BookKey.BookID);
+    DMUser.ChangeBookID(OldID, Data^.BookKey.BookID);
 
     Data^.Title := BookRecord.Title;
     Data^.Genres := BookRecord.Genres;
