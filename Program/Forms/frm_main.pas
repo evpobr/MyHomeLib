@@ -5042,8 +5042,13 @@ begin
       if not DMCollection.tblSeriesB1.Locate(SERIE_TITLE_FIELD, S, []) then
       begin
         DMCollection.tblSeriesB1.Append;
-        DMCollection.tblSeriesB1SerieTitle.Value := S;
-        DMCollection.tblSeriesB1.Post;
+        try
+          DMCollection.tblSeriesB1SerieTitle.Value := S;
+          DMCollection.tblSeriesB1.Post;
+        except
+          DMCollection.tblSeriesB1.Cancel;
+          raise;
+        end;
       end;
 
       Node := Tree.GetFirst;
@@ -5054,8 +5059,13 @@ begin
         begin
           DMCollection.tblBooks.Locate(BOOK_ID_FIELD, Data.BookKey.BookID, []);
           DMCollection.tblBooks.Edit;
-          DMCollection.tblBooksSerieID.Value := DMCollection.tblSeriesB1SerieID.Value;
-          DMCollection.tblBooks.Post;
+          try
+            DMCollection.tblBooksSerieID.Value := DMCollection.tblSeriesB1SerieID.Value;
+            DMCollection.tblBooks.Post;
+          except
+            DMCollection.tblBooks.Cancel;
+            raise;
+          end;
         end;
         Node := Tree.GetNext(Node);
       end;
@@ -5070,8 +5080,13 @@ begin
       while DMCollection.tblBooks.Locate(SERIE_ID_FIELD, Data^.SerieID, []) do
       begin
         DMCollection.tblBooks.Edit;
-        DMCollection.tblBooksSerieID.Value := NO_SERIE_ID;
-        DMCollection.tblBooks.Post;
+        try
+          DMCollection.tblBooksSerieID.Value := NO_SERIE_ID;
+          DMCollection.tblBooks.Post;
+        except
+          DMCollection.tblBooks.Cancel;
+          raise;
+        end;
       end;
       FillAllBooksTree;
     end
@@ -5079,8 +5094,13 @@ begin
     begin
       DMCollection.tblSeriesB1.Locate(SERIE_ID_FIELD, Data^.SerieID, []);
       DMCollection.tblSeriesB1.Edit;
-      DMCollection.tblSeriesB1SerieTitle.Value := S;
-      DMCollection.tblSeriesB1.Post;
+      try
+        DMCollection.tblSeriesB1SerieTitle.Value := S;
+        DMCollection.tblSeriesB1.Post;
+      except
+        DMCollection.tblSeriesB1.Cancel;
+        raise;
+      end;
 
       Data^.Serie := S;
       Tree.RepaintNode(Node);

@@ -574,8 +574,13 @@ begin
   if AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
   begin
     AllBooks.Edit;
-    AllBooksLocal.Value := AState;
-    AllBooks.Post;
+    try
+      AllBooksLocal.Value := AState;
+      AllBooks.Post;
+    except
+      AllBooks.Cancel;
+      raise;
+    end;
   end;
 
   DMUser.SetLocal(BookKey, AState);
@@ -595,8 +600,13 @@ begin
   if AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
   begin
     AllBooks.Edit;
-    AllBooksRate.Value := Rate;
-    AllBooks.Post;
+    try
+      AllBooksRate.Value := Rate;
+      AllBooks.Post;
+    except
+      AllBooks.Cancel;
+      raise;
+    end;
   end;
 
   //
@@ -613,8 +623,13 @@ begin
   if AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
   begin
     AllBooks.Edit;
-    AllBooksProgress.Value := Progress;
-    AllBooks.Post;
+    try
+      AllBooksProgress.Value := Progress;
+      AllBooks.Post;
+    except
+      AllBooks.Cancel;
+      raise;
+    end;
   end;
 
   //
@@ -631,8 +646,13 @@ begin
   if AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
   begin
     AllBooks.Edit;
-    AllBooksFileName.Value := FileName;
-    AllBooks.Post;
+    try
+      AllBooksFileName.Value := FileName;
+      AllBooks.Post;
+    except
+      AllBooks.Cancel;
+      raise;
+    end;
   end;
 
   DMUser.SetFileName(BookKey, FileName);
@@ -665,11 +685,16 @@ begin
   if AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
   begin
     AllBooks.Edit;
-    if Annotation = '' then
-      AllBooksAnnotation.Clear
-    else
-      AllBooksAnnotation.Value := NewAnnotation;
-    AllBooks.Post;
+    try
+      if Annotation = '' then
+        AllBooksAnnotation.Clear
+      else
+        AllBooksAnnotation.Value := NewAnnotation;
+      AllBooks.Post;
+    except
+      AllBooks.Cancel;
+      raise;
+    end;
   end;
 
   //
@@ -706,18 +731,23 @@ begin
   if AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
   begin
     AllBooks.Edit;
-    if Review = '' then
-    begin
-      AllBooksReview.Clear;
-      AllBooksCode.Value := 0;
-    end
-    else
-    begin
-      AllBooksReview.Value := Review;
-      AllBooksCode.Value := 1;
-      Result := 1;
+    try
+      if Review = '' then
+      begin
+        AllBooksReview.Clear;
+        AllBooksCode.Value := 0;
+      end
+      else
+      begin
+        AllBooksReview.Value := Review;
+        AllBooksCode.Value := 1;
+        Result := 1;
+      end;
+      AllBooks.Post;
+    except
+      AllBooks.Cancel;
+      raise;
     end;
-    AllBooks.Post;
   end;
 
   //
@@ -1014,13 +1044,18 @@ begin
     if GetBookKey(extra, BookKey) then
     begin
       AllBooks.Edit;
-      if extra.Rating <> 0 then
-        AllBooksRate.Value := extra.Rating;
-      if extra.Progress <> 0 then
-        AllBooksProgress.Value := extra.Progress;
-      if extra.Review <> '' then
-        AllBooksReview.Value := extra.Review;
-      AllBooks.Post;
+      try
+        if extra.Rating <> 0 then
+          AllBooksRate.Value := extra.Rating;
+        if extra.Progress <> 0 then
+          AllBooksProgress.Value := extra.Progress;
+        if extra.Review <> '' then
+          AllBooksReview.Value := extra.Review;
+        AllBooks.Post;
+      except
+        AllBooks.Cancel;
+        raise;
+      end;
     end;
 
     //

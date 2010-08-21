@@ -102,8 +102,13 @@ begin
           if NewFolder <> '*' then
           begin
             DMCollection.tblBooks.Edit;
-            DMCollection.tblBooksFolder.Value := NewFolder;
-            DMCollection.tblBooks.Post;
+            try
+              DMCollection.tblBooksFolder.Value := NewFolder;
+              DMCollection.tblBooks.Post;
+            except
+              DMCollection.tblBooks.Cancel;
+              raise;
+            end;
           end;
         end;
         DMCollection.tblBooks.Next;
