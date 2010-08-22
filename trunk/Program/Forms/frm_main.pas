@@ -928,7 +928,7 @@ resourcestring
   rstrShuttingDown = 'отключаемся';
   rstrNeedDBUpgrade = 'Вы успешно обновили программу. Для нормальной работы необходимо обновить струткуру таблиц БД. Сделать это прямо сейчас?';
   rstrFirstRun = 'MyHomeLib - первый запуск';
-  rstrToConvertChangeCollection = 'Для конвертации книги перейдите в соответствующую коллекцию';
+  rstrToConvertChangeCollection = 'Для конвертирования книги перейдите в соответствующую коллекцию';
   rstrCollectionFileNotFound = 'Файл коллекции "%s" не найден.' + CRLF + 'Невозможно запустить программу.';
   // rstrStartCollectionUpdate = 'Доступно обновление коллекций.' + CRLF + ' Начать обновление ?';
   rstrStarting = 'Старт ...';
@@ -3802,7 +3802,7 @@ begin
       begin
         DMUser.SelectCollection(BookRecord.BookKey.DatabaseID);
 
-        if isOnlineCollection(DMUser.CurrentCollection.CollectionType) then
+        if (not BookRecord.Local) and isOnlineCollection(DMUser.CurrentCollection.CollectionType) then
         begin
           DownloadBooks;
           /// TODO : RESTORE ??? Tree.RepaintNode(Tree.GetFirstSelected);
@@ -4632,7 +4632,8 @@ begin
             // игнорируем все ошибки
           end;
 
-          DMCollection.SetLocal(Data^.BookKey, False);
+          if Data^.Local then
+            DMCollection.SetLocal(Data^.BookKey, False);
 
           UpdateNodes(
             Data^.BookKey,

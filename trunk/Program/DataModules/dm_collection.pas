@@ -308,7 +308,7 @@ uses
   unit_Helpers;
 
 resourcestring
-  rstrErrorOnlyForCurrentCollection = 'Эта операция недоступна для данной книги при выбраной коллекции. Текущая коллекция: "%s", а книга принадлежит коллекции "%s".';
+  rstrErrorOnlyForCurrentCollection = 'Операция недоступна. Текущая коллекция: "%s", а книга принадлежит коллекции "%s".';
 
 {$R *.dfm}
 

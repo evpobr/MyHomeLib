@@ -162,6 +162,7 @@ begin
             R.Size := ArchiveItem.UncompressedSize;
             R.InsideNo := j;
             R.Date := Now;
+            R.Local := True;
             FZipper.ExtractToStream(AFileName, FS);
             if not Assigned(FS) then
               Continue;
