@@ -4613,11 +4613,9 @@ end;
 procedure TfrmMain.miDeleteFilesClick(Sender: TObject);
 var
   DatabaseID: Integer;
-  FRoot: string;
   FilePath: string;
 begin
   DatabaseID := DMUser.ActiveCollection.ID;
-  FRoot := DMUser.ActiveCollection.RootPath;
 
   ProcessNodes(
     procedure (Tree: TBookTree; Node: PVirtualNode)
@@ -4627,29 +4625,25 @@ begin
       Data := Tree.GetNodeData(Node);
       if Assigned(Data) and (Data^.nodeType = ntBookInfo) and (Data^.BookKey.DatabaseID = DatabaseID) then
       begin
-        if DMCollection.tblBooks.Locate(BOOK_ID_FIELD, Data^.BookKey.BookID, []) then
-        begin
-          // только для online-коллекции. поэтому получаем путь к файлу по упрощенной схеме
-          FilePath := FRoot + DMCollection.tblBooksFolder.Value;
-          try
-            if TFile.Exists(FilePath) then
-              TFile.Delete(FilePath);
-          except
-            // игнорируем все ошибки
-          end;
-
-          if Data^.Local then
-            DMCollection.SetLocal(Data^.BookKey, False);
-
-          UpdateNodes(
-            Data^.BookKey,
-            procedure(BookData: PBookRecord)
-            begin
-              Assert(Assigned(BookData));
-              BookData^.Local := False;
-            end
-          );
+        FilePath := Data^.GetBookFileName;
+        try
+          if TFile.Exists(FilePath) then
+            TFile.Delete(FilePath);
+        except
+          // игнорируем все ошибки
         end;
+
+        if Data^.Local then
+          DMCollection.SetLocal(Data^.BookKey, False);
+
+        UpdateNodes(
+          Data^.BookKey,
+          procedure(BookData: PBookRecord)
+          begin
+            Assert(Assigned(BookData));
+            BookData^.Local := False;
+          end
+        );
       end;
     end
   );
@@ -4898,6 +4892,8 @@ end;
 
 function TfrmMain.IsLibRusecEdit(BookID: Integer): Boolean;
 var
+  BookKey: TBookKey;
+  BookRecord: TBookRecord;
   URL: string;
 begin
   if isExternalCollection(DMUser.ActiveCollection.CollectionType) then
@@ -4907,9 +4903,10 @@ begin
     //
     if MHLShowWarning(Format(rstrGoToLibrarySite, [DMUser.ActiveCollection.URL]), mbYesNo) = mrYes then
     begin
-      DMCollection.tblBooks.Locate(BOOK_ID_FIELD, BookID, []);
+      BookKey.Init(BookID, DMUser.ActiveCollection.ID);
+      DMCollection.GetBookRecord(BookKey, BookRecord, False);
       { TODO -oNickR -cLibDesc : этот URL должен формироваться обвязкой библиотеки, т к его формат может меняться }
-      URL := Format('%sb/%u/edit', [DMUser.ActiveCollection.URL, DMCollection.tblBooksLibID.Value]);
+      URL := Format('%sb/%u/edit', [DMUser.ActiveCollection.URL, BookRecord.LibID]);
       SimpleShellExecute(Handle, URL);
     end;
     Result := True;
@@ -5022,6 +5019,7 @@ var
   Node: PVirtualNode;
   AuthID: Integer;
   S: string;
+  SerieID: Integer;
 begin
   if ActiveView = FavoritesView then
   begin
@@ -5058,23 +5056,14 @@ begin
           raise;
         end;
       end;
+      SerieID := DMCollection.tblSeriesB1SerieID.Value;
 
       Node := Tree.GetFirst;
       while Assigned(Node) do
       begin
         Data := Tree.GetNodeData(Node);
         if ((Tree.CheckState[Node] = csCheckedNormal) or (Tree.Selected[Node])) then
-        begin
-          DMCollection.tblBooks.Locate(BOOK_ID_FIELD, Data.BookKey.BookID, []);
-          DMCollection.tblBooks.Edit;
-          try
-            DMCollection.tblBooksSerieID.Value := DMCollection.tblSeriesB1SerieID.Value;
-            DMCollection.tblBooks.Post;
-          except
-            DMCollection.tblBooks.Cancel;
-            raise;
-          end;
-        end;
+          DMCollection.SetSerieID(Data^.BookKey, SerieID);
         Node := Tree.GetNext(Node);
       end;
 
