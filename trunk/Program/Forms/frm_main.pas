@@ -3288,9 +3288,10 @@ begin
   if (Tag = COL_STATE) then
   begin
     //
-    //  нига доступна локально
+    // The book belongs to an online collection and is available locally (already downloaded)
     //
-    if isOnlineCollection(DMUser.ActiveCollection.CollectionType) and (Data^.Local) then
+    DMUser.SelectCollection(Data^.BookKey.DatabaseID);
+    if (Data^.Local) and isOnlineCollection(DMUser.CurrentCollection.CollectionType) then
       ilFileTypes.Draw(TargetCanvas, X, CellRect.Top + 1, 7);
 
     //
@@ -3800,15 +3801,20 @@ begin
     begin
       if BookFormat = bfFb2Zip then
       begin
-        DMUser.SelectCollection(BookRecord.BookKey.DatabaseID);
-
-        if (not BookRecord.Local) and isOnlineCollection(DMUser.CurrentCollection.CollectionType) then
+        if (DMUser.SelectCollection(BookRecord.BookKey.DatabaseID)) then
         begin
-          DownloadBooks;
-          /// TODO : RESTORE ??? Tree.RepaintNode(Tree.GetFirstSelected);
-          if not FileExists(BookFileName) then
-            Exit; // если файла нет, значит закачка не удалась, и юзер об  этом уже знает
-        end;
+          if (not BookRecord.Local) and isOnlineCollection(DMUser.CurrentCollection.CollectionType) then
+          begin
+            // A not-yet-downloaded book of an online collection, can download only if book's collection is selected
+            DMCollection.VerifyCurrentCollection(BookRecord.BookKey.DatabaseID);
+            DownloadBooks;
+            /// TODO : RESTORE ??? Tree.RepaintNode(Tree.GetFirstSelected);
+            if not FileExists(BookFileName) then
+              Exit; // если файла нет, значит закачка не удалась, и юзер об  этом уже знает
+          end;
+        end
+        else
+          Assert(False);
       end;
 
       Assert(Length(BookRecord.Authors) > 0);

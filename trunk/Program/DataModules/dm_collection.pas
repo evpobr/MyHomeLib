@@ -215,8 +215,6 @@ type
 
     procedure RefreshData(Parts: TDataParts);
 
-    procedure VerifyCurrentCollection(const DatabaseID: Integer);
-
   public
     // TfrmMain.FormCreate
     // TfrmMain.pgControlChange
@@ -232,6 +230,8 @@ type
     procedure GetCurrentBook(var R: TBookRecord); overload; deprecated;
 
     procedure SetTableState(State: Boolean);
+
+    procedure VerifyCurrentCollection(const DatabaseID: Integer);
 
   public
     //
@@ -305,10 +305,8 @@ uses
   dm_user,
   unit_Consts,
   unit_Messages,
-  unit_Helpers;
-
-resourcestring
-  rstrErrorOnlyForCurrentCollection = 'Операция недоступна. Текущая коллекция: "%s", а книга принадлежит коллекции "%s".';
+  unit_Helpers,
+  unit_Errors;
 
 {$R *.dfm}
 

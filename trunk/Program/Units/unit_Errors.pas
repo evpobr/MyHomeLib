@@ -42,6 +42,9 @@ resourcestring
   rstrArchiveNotFound = 'Архив "%s" не найден!';
   rstrFileNotFound = 'Файл "%s" не найден!';
 
+  rstrErrorOnlyForCurrentCollection = 'Операция недоступна. Текущая коллекция: "%s", а книга принадлежит коллекции "%s".';
+
+
 function MHLShowInfo(
   const InfoMessage: string;
   Buttons: TMsgDlgButtons = [mbOK]
