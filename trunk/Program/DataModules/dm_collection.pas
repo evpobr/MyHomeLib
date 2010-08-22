@@ -179,11 +179,21 @@ type
       TFilterPart = (fpAuthors, fpSeries, fpLocalOnly, fpHideDeleted);
       TFilterParts = set of TFilterPart;
 
+  public type
+    TBookIterator = class
+    public
+      procedure First(var BookRecord: TBookRecord);
+      procedure Next(var BookRecord: TBookRecord);
+      function IsOnData: Boolean;
+      procedure SetFolder(const Folder: string);
+    end;
+      
   strict private
     FAuthorFilter: string;
     FSerieFilter: string;
     FShowLocalOnly: Boolean;
     FHideDeleted: Boolean;
+    FBookIterator: TBookIterator;
 
   private type
     TUpdateExtraProc = reference to procedure;
@@ -230,8 +240,6 @@ type
     procedure GetCurrentBook(var R: TBookRecord); overload; deprecated;
 
     procedure SetTableState(State: Boolean);
-
-    procedure VerifyCurrentCollection(const DatabaseID: Integer);
 
   public
     //
@@ -287,8 +295,15 @@ type
     //
     procedure ExportUserData(data: TUserData);
     procedure ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc);
+
+    procedure VerifyCurrentCollection(const DatabaseID: Integer);
+    function GetTotalNumBooks: Integer;
+
+    property BookIterator: TBookIterator read FBookIterator;
   end;
 
+
+  
 var
   DMCollection: TDMCollection;
 
@@ -1105,6 +1120,66 @@ begin
       BookCollectionName := '';
     raise ENotSupportedException.Create(Format(rstrErrorOnlyForCurrentCollection, [DMUser.ActiveCollection.Name, BookCollectionName]));
   end;
+end;
+
+// Get the total number of books
+function TDMCollection.GetTotalNumBooks: Integer;
+begin
+  Result := tblBooks.RecordCount;
+end;
+
+// Read first book record
+procedure TDMCollection.TBookIterator.First(var BookRecord: TBookRecord);
+var
+  EmptyBookRecord: TBookRecord;
+begin
+  Assert(DMCollection.tblBooks.Active);
+  DMCollection.tblBooks.First;
+  if IsOnData then
+    DMCollection.GetCurrentBook(BookRecord)
+  else
+    BookRecord := EmptyBookRecord;  
+end;
+
+// Read next book record
+procedure TDMCollection.TBookIterator.Next(var BookRecord: TBookRecord);
+var
+  EmptyBookRecord: TBookRecord;
+begin
+  Assert(DMCollection.tblBooks.Active);
+  DMCollection.tblBooks.Next;
+  if IsOnData then
+    DMCollection.GetCurrentBook(BookRecord)
+  else
+    BookRecord := EmptyBookRecord;  
+end;
+
+// tblBooks is on a data record and not beyond
+function TDMCollection.TBookIterator.IsOnData(): Boolean;
+begin
+  Assert(DMCollection.tblBooks.Active);
+  Result := not DMCollection.tblBooks.Eof;
+end;
+
+// Set the Folder field on the current books DB record 
+// No locate
+procedure TDMCollection.TBookIterator.SetFolder(const Folder: string);
+var 
+  BookKey: TBookKey;
+begin
+  Assert(DMCollection.tblBooks.Active);
+  DMCollection.tblBooks.Edit;
+  try
+    DMCollection.tblBooksFolder.Value := Folder;
+    DMCollection.tblBooks.Post;
+  except
+    DMCollection.tblBooks.Cancel;
+    raise;
+  end;
+
+  BookKey.BookID := DMCollection.AllBooksBookID.Value;
+  BookKey.DatabaseID := DMUser.ActiveCollection.ID;
+  DMUser.SetFolder(BookKey, Folder);
 end;
 
 end.

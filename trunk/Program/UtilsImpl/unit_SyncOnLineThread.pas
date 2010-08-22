@@ -66,12 +66,15 @@ var
   processedBooks: Integer;
 
   IsLocal: Boolean;
+  BookIterator: TDMCollection.TBookIterator;
+  BookRecord: TBookRecord;
 begin
-  totalBooks := DMCollection.tblBooks.RecordCount;
+  totalBooks := DMCollection.GetTotalNumBooks;
   processedBooks := 0;
 
-  DMCollection.tblBooks.First;
-  while not DMCollection.tblBooks.Eof do
+  BookIterator := DMCollection.BookIterator;
+  BookIterator.First(BookRecord);
+  while BookIterator.IsOnData do
   begin
     if Canceled then
       Exit;
@@ -82,26 +85,23 @@ begin
       //
       // TODO -cBug: это работает не всегда. См. схему хранения расположения книги
       //
-      BookFile := TPath.Combine(FCollectionRoot, DMCollection.tblBooksFolder.Value);
+      BookFile := BookRecord.GetBookFileName;
       IsLocal := FileExists(BookFile);
 
-      if Settings.DeleteDeleted and IsLocal and DMCollection.tblBooksDeleted.Value then
+      if Settings.DeleteDeleted and IsLocal and BookRecord.Deleted then
       begin
         SysUtils.DeleteFile(BookFile);
         IsLocal := False;
       end;
 
-      if DMCollection.tblBooksLocal.Value <> IsLocal then
-      begin
-        BookKey.Init(DMCollection.tblBooksID.Value, FCollectionID);
-        unit_Messages.BookLocalStatusChanged(BookKey, IsLocal);
-      end;
+      if BookRecord.Local <> IsLocal then
+        unit_Messages.BookLocalStatusChanged(BookRecord.BookKey, IsLocal);
     except
       on E: Exception do
         Application.MessageBox(PChar(rstrProblemsWithABook + BookFile), '', MB_OK);
     end;
 
-    DMCollection.tblBooks.Next;
+    BookIterator.Next(BookRecord);
 
     Inc(processedBooks);
     if (processedBooks mod ProcessedItemThreshold) = 0 then

@@ -111,10 +111,11 @@ var
   totalBooks: Integer;
   processedBooks: Integer;
   R: TBookRecord;
+  BookIterator: TDMCollection.TBookIterator;
 begin
   SetComment(rstrExportingCollection);
 
-  totalBooks := DMCollection.tblBooks.RecordCount;
+  totalBooks := DMCollection.GetTotalNumBooks;
   processedBooks := 0;
 
   if isFB2Collection(FCollectionType) then
@@ -126,23 +127,19 @@ begin
   try
     slHelper := TStringList.Create;
     try
-      DMCollection.tblBooks.First;
-      while not DMCollection.tblBooks.Eof do
+      BookIterator := DMCollection.BookIterator;
+      BookIterator.First(R);
+      while BookIterator.IsOnData do
       begin
         if Canceled then
           Exit;
-
-        //
-        // можно оставить
-        //
-        DMCollection.GetCurrentBook(R);
 
         cINPRecord := INPRecordCreate(R);
         Assert(cINPRecord <> '');
 
         slHelper.Add(cINPRecord);
 
-        DMCollection.tblBooks.Next;
+        BookIterator.Next(R);
 
         Inc(processedBooks);
         if (processedBooks mod ProcessedItemThreshold) = 0 then
