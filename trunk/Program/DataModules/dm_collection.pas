@@ -256,10 +256,7 @@ type
     //
     procedure SetLocal(const BookKey: TBookKey; AState: Boolean);
     procedure SetFileName(const BookKey: TBookKey; const FileName: string);
-
-    //
-    // Обновление полей из таблицы Extra
-    //
+    procedure SetSerieID(const BookKey: TBookKey; const SerieID: Integer);
     procedure SetRate(const BookKey: TBookKey; Rate: Integer);
     procedure SetProgress(const BookKey: TBookKey; Progress: Integer);
 
@@ -673,8 +670,29 @@ begin
     end;
   end;
 
+  // Обновим информацию в группах
   DMUser.SetFileName(BookKey, FileName);
 end;
+
+procedure TDMCollection.SetSerieID(const BookKey: TBookKey; const SerieID: Integer);
+begin
+  VerifyCurrentCollection(BookKey.DatabaseID);
+  Assert(AllBooks.Active);
+
+  DMCollection.tblBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []);
+  DMCollection.tblBooks.Edit;
+  try
+    DMCollection.tblBooksSerieID.Value := SerieID;
+    DMCollection.tblBooks.Post;
+  except
+    DMCollection.tblBooks.Cancel;
+    raise;
+  end;
+
+  // Обновим информацию в группах
+  DMUser.SetSerieID(BookKey, SerieID);
+end;
+
 
 function TDMCollection.GetAnnotation(const BookKey: TBookKey): string;
 begin
