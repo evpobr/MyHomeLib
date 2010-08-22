@@ -80,6 +80,7 @@ begin
 
     R.Size := unit_Helpers.GetFileSize(FFiles[i]);
     R.Date := Now;
+    R.Local := True;
     try
       if Settings.EnableSort then
       begin

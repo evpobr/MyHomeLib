@@ -122,6 +122,7 @@ begin
           R.FileExt := Book.File_.Ext;
           R.InsideNo := Book.File_.Inside_no;
           R.Date := StrToDate(Book.Date);
+          R.Local := True;
 
           FLibrary.InsertBook(R, True, True);
 
