@@ -190,6 +190,7 @@ type
     function SetReview(const BookKey: TBookKey; const Review: string): Integer;
     procedure SetLocal(const BookKey: TBookKey; Value: Boolean);
     procedure SetFileName(const BookKey: TBookKey; const FileName: string);
+    procedure SetFolder(const BookKey: TBookKey; const Folder: string);
 
     //
     // Работа с группами
@@ -851,6 +852,23 @@ begin
     except
       AllBooks.Cancel;
       raise;
+    end;
+  end;
+end;
+
+procedure TDMUser.SetFolder(const BookKey: TBookKey; const Folder: string);
+begin
+  Assert(AllBooks.Active);
+  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf
+      ([BookKey.BookID, BookKey.DatabaseID]), []) then
+  begin
+    AllBooks.Edit;
+    try
+      AllBooksFolder.Value := Folder;
+      AllBooks.Post;
+    except
+      AllBooks.Cancel;
+      raise ;
     end;
   end;
 end;

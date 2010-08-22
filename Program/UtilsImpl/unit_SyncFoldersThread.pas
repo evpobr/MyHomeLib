@@ -40,7 +40,8 @@ uses
   dm_user,
   dm_collection,
   unit_Consts,
-  unit_MHL_strings;
+  unit_MHL_strings,
+  unit_Globals;
 
 resourcestring
   rstrBuildingFileList = 'Построение списка файлов ...';
@@ -66,11 +67,11 @@ procedure TSyncFoldersThread.WorkFunction;
 var
   totalBooks: Integer;
   processedBooks: Integer;
-  FileName: string;
-  Folder: string;
   NewFolder: string;
+  BookIterator: TDMCollection.TBookIterator;
+  BookRecord: TBookRecord;
 begin
-  totalBooks := DMCollection.tblBooks.RecordCount;
+  totalBooks := DMCollection.GetTotalNumBooks;
   processedBooks := 0;
   FRootPath := DMUser.ActiveCollection.RootPath;
 
@@ -84,34 +85,22 @@ begin
       SetComment(rstrBuildingFileList);
       FFiles.Process;
 
-      DMCollection.tblBooks.First;
-      while not DMCollection.tblBooks.Eof do
+      BookIterator := DMCollection.BookIterator;
+      BookIterator.First(BookRecord);
+      while BookIterator.IsOnData do
       begin
         if Canceled then
           Exit;
 
-        Folder := DMCollection.tblBooksFolder.Value;
-        if  ExtractFileExt(DMCollection.tblBooksFileName.Value) <> ZIP_EXTENSION then
-          FileName := DMCollection.tblBooksFileName.Value + DMCollection.tblBooksExt.Value
-        else
-          FileName := DMCollection.tblBooksFileName.Value;
-
-        if not FileExists(FRootPath + Folder + FileName)  then
+        if not FileExists(BookRecord.GetBookFileName)  then
         begin
-          NewFolder := FindNewFolder(FileName + ' ' + DMCollection.tblBooksSize.AsString);
+          NewFolder := FindNewFolder(BookRecord.FileName + ' ' + IntToStr(BookRecord.Size));
           if NewFolder <> '*' then
           begin
-            DMCollection.tblBooks.Edit;
-            try
-              DMCollection.tblBooksFolder.Value := NewFolder;
-              DMCollection.tblBooks.Post;
-            except
-              DMCollection.tblBooks.Cancel;
-              raise;
-            end;
+            BookIterator.SetFolder(NewFolder);
           end;
         end;
-        DMCollection.tblBooks.Next;
+        BookIterator.Next(BookRecord);
 
         Inc(processedBooks);
         if (processedBooks mod ProcessedItemThreshold) = 0 then
