@@ -89,7 +89,7 @@ var
   P: string;
 begin
   P := IfThen(TmpParams = '', Params, TmpParams);
-  AHInst := SimpleShellExecute(Application.Handle, Path, SW_SHOWNORMAL, P, '');
+  AHInst := SimpleShellExecute(Application.Handle, Path, P, '');
   TmpParams := '';
   if AHInst <= 32 then
     raise Exception.Create(SysErrorMessage(AHInst));
