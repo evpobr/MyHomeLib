@@ -5063,7 +5063,7 @@ begin
       begin
         Data := Tree.GetNodeData(Node);
         if ((Tree.CheckState[Node] = csCheckedNormal) or (Tree.Selected[Node])) then
-          DMCollection.SetSerieID(Data^.BookKey, SerieID);
+          DMCollection.SetBookSerieID(Data^.BookKey, SerieID);
         Node := Tree.GetNext(Node);
       end;
 
@@ -5072,19 +5072,9 @@ begin
   end
   else if InputQuery(rstrEditSeries, rstrTitle, S) then // редактируем название существующей
   begin
-    if S = '' then { TODO : заменить на один update }
+    if S = '' then
     begin
-      while DMCollection.tblBooks.Locate(SERIE_ID_FIELD, Data^.SerieID, []) do
-      begin
-        DMCollection.tblBooks.Edit;
-        try
-          DMCollection.tblBooksSerieID.Value := NO_SERIE_ID;
-          DMCollection.tblBooks.Post;
-        except
-          DMCollection.tblBooks.Cancel;
-          raise;
-        end;
-      end;
+      DMCollection.ChangeBookSerieID(Data^.SerieID, NO_SERIE_ID, DMUser.ActiveCollection.ID);
       FillAllBooksTree;
     end
     else

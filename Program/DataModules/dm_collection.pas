@@ -208,7 +208,7 @@ type
     procedure GetAuthor(AuthorID: Integer; var Author: TAuthorData);
     procedure GetBookAuthors(BookID: Integer; var BookAuthors: TBookAuthors);
 
-    function GetBookSerie(SerieID: Integer): string;
+    function GetSerieTitle(SerieID: Integer): string;
 
     procedure GetGenre(const GenreCode: string; var Genre: TGenreData);
     procedure GetBookGenres(BookID: Integer; var BookGenres: TBookGenres; RootGenre: PGenreData = nil); overload;
@@ -256,7 +256,7 @@ type
     //
     procedure SetLocal(const BookKey: TBookKey; AState: Boolean);
     procedure SetFileName(const BookKey: TBookKey; const FileName: string);
-    procedure SetSerieID(const BookKey: TBookKey; const SerieID: Integer);
+    procedure SetBookSerieID(const BookKey: TBookKey; const SerieID: Integer);
     procedure SetRate(const BookKey: TBookKey; Rate: Integer);
     procedure SetProgress(const BookKey: TBookKey; Progress: Integer);
 
@@ -293,13 +293,14 @@ type
     procedure ExportUserData(data: TUserData);
     procedure ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc);
 
+    // Batch update methods:
+    procedure ChangeBookSerieID(const OldSerieID: Integer; const NewSerieID: Integer; const DatabaseID: Integer);
+
     procedure VerifyCurrentCollection(const DatabaseID: Integer);
     function GetTotalNumBooks: Integer;
 
     property BookIterator: TBookIterator read FBookIterator;
   end;
-
-
   
 var
   DMCollection: TDMCollection;
@@ -420,7 +421,7 @@ end;
 //
 // ============================================================================
 
-function TDMCollection.GetBookSerie(SerieID: Integer): string;
+function TDMCollection.GetSerieTitle(SerieID: Integer): string;
 begin
   if AllSeries.Locate(SERIE_ID_FIELD, SerieID, []) then
     Result := AllSeriesSerieTitle.Value
@@ -543,7 +544,7 @@ begin
     BookRecord.FileExt := AllBooksExt.Value;
     BookRecord.InsideNo := AllBooksInsideNo.Value;
     BookRecord.SerieID := AllBooksSerieID.Value;
-    BookRecord.Serie := GetBookSerie(AllBooksSerieID.Value);
+    BookRecord.Serie := GetSerieTitle(AllBooksSerieID.Value);
     BookRecord.SeqNumber := AllBooksSeqNumber.Value;
     BookRecord.Code := AllBooksCode.Value;
     BookRecord.Size := AllBooksSize.Value;
@@ -674,7 +675,7 @@ begin
   DMUser.SetFileName(BookKey, FileName);
 end;
 
-procedure TDMCollection.SetSerieID(const BookKey: TBookKey; const SerieID: Integer);
+procedure TDMCollection.SetBookSerieID(const BookKey: TBookKey; const SerieID: Integer);
 begin
   VerifyCurrentCollection(BookKey.DatabaseID);
   Assert(AllBooks.Active);
@@ -690,7 +691,7 @@ begin
   end;
 
   // Обновим информацию в группах
-  DMUser.SetSerieID(BookKey, SerieID);
+  DMUser.SetBookSerieID(BookKey, SerieID);
 end;
 
 
@@ -1146,6 +1147,20 @@ begin
   Result := tblBooks.RecordCount;
 end;
 
+// Change SerieID value for all books in the current database with old SerieID value
+procedure TDMCollection.ChangeBookSerieID(const OldSerieID: Integer; const NewSerieID: Integer; const DatabaseID: Integer);
+const
+  UPDATE_SQL = 'UPDATE Books SET SerieID = %u WHERE SerieID = %u';
+begin
+  VerifyCurrentCollection(DatabaseID);
+
+  sqlBooks.SQL.Text := Format(UPDATE_SQL, [NewSerieID, OldSerieID]);
+  sqlBooks.ExecSQL;
+
+  // Обновим информацию в группах
+  DMUser.ChangeBookSerieID(OldSerieID, NewSerieID, DatabaseID);
+end;
+
 // Read first book record
 procedure TDMCollection.TBookIterator.First(var BookRecord: TBookRecord);
 var
@@ -1156,7 +1171,7 @@ begin
   if IsOnData then
     DMCollection.GetCurrentBook(BookRecord)
   else
-    BookRecord := EmptyBookRecord;  
+    BookRecord := EmptyBookRecord;
 end;
 
 // Read next book record
@@ -1169,7 +1184,7 @@ begin
   if IsOnData then
     DMCollection.GetCurrentBook(BookRecord)
   else
-    BookRecord := EmptyBookRecord;  
+    BookRecord := EmptyBookRecord;
 end;
 
 // tblBooks is on a data record and not beyond
@@ -1179,10 +1194,10 @@ begin
   Result := not DMCollection.tblBooks.Eof;
 end;
 
-// Set the Folder field on the current books DB record 
+// Set the Folder field on the current books DB record
 // No locate
 procedure TDMCollection.TBookIterator.SetFolder(const Folder: string);
-var 
+var
   BookKey: TBookKey;
 begin
   Assert(DMCollection.tblBooks.Active);

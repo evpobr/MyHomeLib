@@ -104,6 +104,7 @@ type
     AllBooksProgress: TSmallintField;
 
     ClearQuery: TABSQuery;
+    SqlQuery: TABSQuery;
 
     AllBookGroups: TABSTable;
     AllBookGroupsBookID: TIntegerField;
@@ -190,7 +191,7 @@ type
     function SetReview(const BookKey: TBookKey; const Review: string): Integer;
     procedure SetLocal(const BookKey: TBookKey; Value: Boolean);
     procedure SetFileName(const BookKey: TBookKey; const FileName: string);
-    procedure SetSerieID(const BookKey: TBookKey; const SerieID: Integer);
+    procedure SetBookSerieID(const BookKey: TBookKey; const SerieID: Integer);
     procedure SetFolder(const BookKey: TBookKey; const Folder: string);
 
     //
@@ -216,6 +217,9 @@ type
     //
     procedure ExportUserData(data: TUserData);
     procedure ImportUserData(data: TUserData);
+
+    // Batch update methods:
+    procedure ChangeBookSerieID(const OldSerieID: Integer; const NewSerieID: Integer; const DatabaseID: Integer);
 
   public
     property ActiveCollection: TMHLActiveCollection read FActiveCollection;
@@ -857,7 +861,7 @@ begin
   end;
 end;
 
-procedure TDMUser.SetSerieID(const BookKey: TBookKey; const SerieID: Integer);
+procedure TDMUser.SetBookSerieID(const BookKey: TBookKey; const SerieID: Integer);
 begin
   Assert(AllBooks.Active);
   if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
@@ -871,6 +875,15 @@ begin
       raise;
     end;
   end;
+end;
+
+// Change SerieID value for all books having provided DatabaseID and old SerieID value
+procedure TDMUser.ChangeBookSerieID(const OldSerieID: Integer; const NewSerieID: Integer; const DatabaseID: Integer);
+const
+  UPDATE_SQL = 'UPDATE Books SET SerieID = %u WHERE DatabaseID = %u AND SerieID = %u';
+begin
+  SqlQuery.SQL.Text := Format(UPDATE_SQL, [NewSerieID, DatabaseID, OldSerieID]);
+  SqlQuery.ExecSQL;
 end;
 
 procedure TDMUser.SetFolder(const BookKey: TBookKey; const Folder: string);
@@ -1106,6 +1119,8 @@ procedure TDMUser.CopyBookToGroup(
 );
 begin
   Assert(AllBookGroups.Active);
+  if AllBookGroups.Locate(GROUP_ID_BOOK_ID_DB_ID_FIELDS, VarArrayOf([TargetGroupID, BookKey.BookID, BookKey.DatabaseID]), []) then
+    Exit; // Skip, book already in the target group
 
   if MoveBook then
   begin
