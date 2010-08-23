@@ -152,7 +152,7 @@ begin
 
   AReader := Find(Ext);
   if Assigned(AReader) and (AReader.Path <> '') then
-    AHInst := SimpleShellExecute(Application.Handle, AReader.Path, SW_SHOWNORMAL, QuotedStr(FileName))
+    AHInst := SimpleShellExecute(Application.Handle, AReader.Path, FileName)
   else
     AHInst := SimpleShellExecute(Application.Handle, FileName);
 

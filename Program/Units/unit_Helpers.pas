@@ -100,9 +100,9 @@ type
 function SimpleShellExecute(
   hWnd: HWND;
   const FileName: string;
-  ShowCmd: Integer = SW_SHOWNORMAL;
   const Parameters: string = '';
   const Operation: string = 'open';
+  ShowCmd: Integer = SW_SHOWNORMAL;
   const Directory: string = ''
   ): Cardinal;
 
@@ -111,6 +111,7 @@ implementation
 uses
   SysUtils,
   StrUtils,
+  IOUtils,
   Forms,
   unit_Settings,
   ShlObj,
@@ -540,16 +541,43 @@ begin
   end;
 end;
 
+function SimpleQuoteString(const Value: string): string;
+const
+  QUOTECHAR = '"';
+begin
+  if (Value = '') or (Value[1] = QUOTECHAR) then
+    Result := Value
+  else
+    Result := QUOTECHAR + Value + QUOTECHAR;
+end;
+
 function SimpleShellExecute(
   hWnd: HWND;
   const FileName: string;
-  ShowCmd: Integer = SW_SHOWNORMAL;
   const Parameters: string = '';
   const Operation: string = 'open';
+  ShowCmd: Integer = SW_SHOWNORMAL;
   const Directory: string = ''
-): Cardinal;
+  ): Cardinal;
+var
+  AFileName: string;
+  AParameters: string;
+  ADirectory: string;
 begin
-  Result := ShellAPI.ShellExecute(hWnd, PChar(Operation), PChar(FileName), PChar(Parameters), PChar(Directory), ShowCmd);
+  AFileName := SimpleQuoteString(FileName);
+  AParameters := SimpleQuoteString(Parameters);
+  ADirectory := Directory;
+  if ADirectory = '' then
+    ADirectory := TPath.GetDirectoryName(Application.ExeName);
+
+  Result := ShellAPI.ShellExecute(
+    hWnd,
+    PChar(Operation),
+    PChar(AFileName),
+    PChar(AParameters),
+    PChar(Directory),
+    ShowCmd
+  );
 end;
 
 end.

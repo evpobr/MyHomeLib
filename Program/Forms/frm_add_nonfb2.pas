@@ -330,7 +330,7 @@ begin
   Data := Tree.GetNodeData(Tree.GetFirstSelected);
   if (Data = nil) or (Data.DataType = dtFolder) then
     Exit;
-  SimpleShellExecute(Handle, ExtractFilePath(Data^.FullPath), SW_SHOWNORMAL, '', 'explore');
+  SimpleShellExecute(Handle, ExtractFilePath(Data^.FullPath), '', 'explore');
 end;
 
 function TfrmAddnonfb2.CheckEmptyFields(Data: PFileData): Boolean;
