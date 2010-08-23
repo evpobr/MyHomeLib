@@ -168,6 +168,8 @@ type
     function FindFirstExternalCollection: Boolean;
     function FindNextExternalCollection: Boolean;
 
+    function HasCollections: Boolean;
+    procedure DeleteCurrentCollection;
     function FindFirstCollection: Boolean;
     function FindNextCollection: Boolean;
 
@@ -512,6 +514,19 @@ begin
 
     tblBases.Next;
   end;
+end;
+
+function TDMUser.HasCollections: Boolean;
+begin
+  Assert(tblBases.Active);
+  Result := not tblBases.IsEmpty;
+end;
+
+procedure TDMUser.DeleteCurrentCollection;
+begin
+  Assert(tblBases.Active);
+  DMUser.tblBases.Delete;
+  DMUser.tblBases.First;
 end;
 
 function TDMUser.FindFirstCollection: Boolean;

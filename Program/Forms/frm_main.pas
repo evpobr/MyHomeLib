@@ -1531,7 +1531,7 @@ begin
     //
     // ≈сли коллекций нет - запустим мастера создани€ коллекции.
     //
-    if DMUser.tblBases.IsEmpty then
+    if not DMUser.HasCollections then
     begin
       frmMain.Caption := 'MyHomeLib';
       Screen.Cursor := SavedCursor;
@@ -1788,6 +1788,7 @@ procedure TfrmMain.CreateCollectionMenu;
 var
   SubItem: TMenuItem;
   ActiveCollectionID: Integer;
+  IsOnData: Boolean;
 
   function GetCollectionTypeImageIndex: Integer;
   begin
@@ -1812,8 +1813,8 @@ begin
   miCopyToCollection.Clear;
   pmCollection.Items.Clear;
 
-  DMUser.tblBases.First;
-  while not DMUser.tblBases.Eof do
+  IsOnData := DMUser.FindFirstCollection;
+  while IsOnData do
   begin
     if ActiveCollectionID <> DMUser.CurrentCollection.ID then
     begin
@@ -1849,7 +1850,7 @@ begin
         miCopyToCollection.Add(SubItem);
       end;
     end;
-    DMUser.tblBases.Next;
+    IsOnData := DMUser.FindNextCollection;
   end;
 
   miCopyToCollection.Enabled := (miCopyToCollection.Count > 0);
@@ -2146,7 +2147,7 @@ end;
 
 procedure TfrmMain.TheFirstRun;
 begin
-  if DMUser.tblBases.IsEmpty then
+  if not DMUser.HasCollections then
     DeleteFile(Settings.WorkPath + CHECK_FILE)
   else if FileExists(Settings.WorkPath + CHECK_FILE) and (Application.MessageBox(PWideChar(rstrNeedDBUpgrade), PWideChar(rstrFirstRun), mb_YesNo) = mrYes) then
   begin
@@ -2266,7 +2267,7 @@ begin
   //
   // пока оставл€ю старую логику
   //
-  if not DMUser.tblBases.IsEmpty then
+  if DMUser.HasCollections then
   begin
     if not DMUser.FindFirstExistingCollection(Settings.ActiveCollection) then
     begin
@@ -2425,7 +2426,7 @@ begin
   FStarImage := CreateImageFromResource(TPngImage, 'smallStar') as TPngImage;
   FEmptyStarImage := CreateImageFromResource(TPngImage, 'smallStarEmpty') as TPngImage;
 
-  if not DMUser.tblBases.IsEmpty then
+  if DMUser.HasCollections then
     RestorePositions;
 
   // загрузка списка закачек
@@ -4597,11 +4598,8 @@ begin
     if MessageDlg(rstrRemoveCollection + '"' + DMUser.ActiveCollection.Name + '"?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
       Exit;
 
-    //
-    // TODO : перенести в метод датамодул€
-    //
-    DMUser.tblBases.Delete;
-    DMUser.tblBases.First;
+    // Delete current collection and choose another:
+    DMUser.DeleteCurrentCollection;
 
     Settings.ActiveCollection := DMUser.CurrentCollection.ID;
     InitCollection(True);
