@@ -525,8 +525,8 @@ end;
 procedure TDMUser.DeleteCurrentCollection;
 begin
   Assert(tblBases.Active);
-  DMUser.tblBases.Delete;
-  DMUser.tblBases.First;
+  tblBases.Delete;
+  tblBases.First;
 end;
 
 function TDMUser.FindFirstCollection: Boolean;
