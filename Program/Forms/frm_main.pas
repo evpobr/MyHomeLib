@@ -5038,26 +5038,14 @@ begin
 
   S := Data^.Serie;
 
-  if Data^.nodeType = ntBookInfo then // добавляем новую серию
+  if Data^.nodeType = ntBookInfo then // Standing on a book node, change/add series info
   begin
     if InputQuery(rstrCreateMoveSeries, rstrTitle, S) then
     begin
       if S = '' then
         S := NO_SERIES_TITLE;
 
-      if not DMCollection.tblSeriesB1.Locate(SERIE_TITLE_FIELD, S, []) then
-      begin
-        DMCollection.tblSeriesB1.Append;
-        try
-          DMCollection.tblSeriesB1SerieTitle.Value := S;
-          DMCollection.tblSeriesB1.Post;
-        except
-          DMCollection.tblSeriesB1.Cancel;
-          raise;
-        end;
-      end;
-      SerieID := DMCollection.tblSeriesB1SerieID.Value;
-
+      SerieID := DMCollection.AddOrLocateSerieIDBySerieTitle(S);
       Node := Tree.GetFirst;
       while Assigned(Node) do
       begin
@@ -5070,25 +5058,17 @@ begin
       FillAllBooksTree;
     end;
   end
-  else if InputQuery(rstrEditSeries, rstrTitle, S) then // редактируем название существующей
+  else if InputQuery(rstrEditSeries, rstrTitle, S) then // Change a series node
   begin
     if S = '' then
     begin
+      // Clear the series for all books in DB:
       DMCollection.ChangeBookSerieID(Data^.SerieID, NO_SERIE_ID, DMUser.ActiveCollection.ID);
       FillAllBooksTree;
     end
     else
     begin
-      DMCollection.tblSeriesB1.Locate(SERIE_ID_FIELD, Data^.SerieID, []);
-      DMCollection.tblSeriesB1.Edit;
-      try
-        DMCollection.tblSeriesB1SerieTitle.Value := S;
-        DMCollection.tblSeriesB1.Post;
-      except
-        DMCollection.tblSeriesB1.Cancel;
-        raise;
-      end;
-
+      DMCollection.SetSerieTitle(Data^.SerieID, S);
       Data^.Serie := S;
       Tree.RepaintNode(Node);
     end;

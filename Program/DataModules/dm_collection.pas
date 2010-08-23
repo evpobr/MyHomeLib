@@ -296,6 +296,9 @@ type
     // Batch update methods:
     procedure ChangeBookSerieID(const OldSerieID: Integer; const NewSerieID: Integer; const DatabaseID: Integer);
 
+    function AddOrLocateSerieIDBySerieTitle(const SerieTitle: string): Integer;
+    procedure SetSerieTitle(const SerieID: Integer; const NewSerieTitle: string);
+
     procedure VerifyCurrentCollection(const DatabaseID: Integer);
     function GetTotalNumBooks: Integer;
 
@@ -1159,6 +1162,43 @@ begin
 
   // Обновим информацию в группах
   DMUser.ChangeBookSerieID(OldSerieID, NewSerieID, DatabaseID);
+end;
+
+// If the series title is already in DB - locate it and return the SerieID
+// If the title is not in DB - add and returned the ID of the added row
+function TDMCollection.AddOrLocateSerieIDBySerieTitle(const SerieTitle: string): Integer;
+begin
+  Assert(tblSeriesB1.Active);
+
+  if not tblSeriesB1.Locate(SERIE_TITLE_FIELD, SerieTitle, []) then
+  begin
+    tblSeriesB1.Append;
+    try
+      tblSeriesB1SerieTitle.Value := SerieTitle;
+      tblSeriesB1.Post;
+    except
+      tblSeriesB1.Cancel;
+      raise;
+    end;
+  end;
+  Result := tblSeriesB1SerieID.Value;
+end;
+
+procedure TDMCollection.SetSerieTitle(const SerieID: Integer; const NewSerieTitle: string);
+begin
+  Assert(tblSeriesB1.Active);
+
+  if (tblSeriesB1.Locate(SERIE_ID_FIELD, SerieID, [])) then
+  begin
+    tblSeriesB1.Edit;
+    try
+      DMCollection.tblSeriesB1SerieTitle.Value := NewSerieTitle;
+      DMCollection.tblSeriesB1.Post;
+    except
+      DMCollection.tblSeriesB1.Cancel;
+      raise;
+    end;
+  end;
 end;
 
 // Read first book record
