@@ -996,4 +996,12 @@ object DMUser: TDMUser
       Required = True
     end
   end
+  object SqlQuery: TABSQuery
+    CurrentVersion = '6.06 '
+    DatabaseName = 'UserData'
+    InMemory = False
+    ReadOnly = False
+    Left = 264
+    Top = 472
+  end
 end
