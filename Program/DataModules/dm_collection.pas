@@ -959,6 +959,10 @@ begin
       SetFilter := False;
     end;
 
+    BooksByAuthor.Active := False;
+    BooksByGenre.Active := False;
+    BooksBySerie.Active := False;
+
     if SetFilter then
     begin
       BooksByAuthor.Filter := TotalFilter;
@@ -971,6 +975,8 @@ begin
     BooksByGenre.Filtered := SetFilter;
     BooksBySerie.Filtered := SetFilter;
     DMUser.BooksByGroup.Filtered := SetFilter;
+
+    Include(Result, dpBooks);
   end;
 end;
 
@@ -988,6 +994,9 @@ begin
 
   if dpBooks in Parts then
   begin
+    BooksByAuthor.Active := True;
+    BooksByGenre.Active := True;
+    BooksBySerie.Active := True;
   end;
 end;
 
