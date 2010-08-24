@@ -485,6 +485,10 @@ type
     acExport2XML: TAction;
     acExport2INPX: TAction;
     acExportUserData: TAction;
+    acCollectionUpdateGenres: TAction;
+    acCollectionSyncFiles: TAction;
+    acCollectionRepair: TAction;
+    acCollectionCompact: TAction;
 
     //
     // События формы
@@ -564,18 +568,20 @@ type
     procedure ShowCollectionStatisticsExecute(Sender: TObject);
     procedure ImportFb2ZipExecute(Sender: TObject);
     procedure ImportFb2Execute(Sender: TObject);
+    procedure ImportFb2Update(Sender: TObject);
     procedure ImportNonFB2Execute(Sender: TObject);
     procedure ImportFBDExecute(Sender: TObject);
+    procedure ImportNonFB2Update(Sender: TObject);
     procedure ImportXMLExecute(Sender: TObject);
     procedure ImportUserDataExecute(Sender: TObject);
     procedure Export2HTMLExecute(Sender: TObject);
     procedure Export2XMLExecute(Sender: TObject);
     procedure Export2INPXExecute(Sender: TObject);
     procedure ExportUserDataExecute(Sender: TObject);
-    procedure miRefreshGenresClick(Sender: TObject);
-    procedure miSyncOnlineClick(Sender: TObject);
-    procedure miRepairDataBaseClick(Sender: TObject);
-    procedure miCompactDataBaseClick(Sender: TObject);
+    procedure UpdateGenresExecute(Sender: TObject);
+    procedure SyncFilesExecute(Sender: TObject);
+    procedure RepairDataBaseExecute(Sender: TObject);
+    procedure CompactDataBaseExecute(Sender: TObject);
     procedure DeleteCollectionExecute(Sender: TObject);
     procedure AddGroupExecute(Sender: TObject);
     procedure AddGroupUpdate(Sender: TObject);
@@ -1277,14 +1283,11 @@ begin
   // Синхронизация с настройками
   //
   tlbrMain.Visible := Settings.ShowToolbar;
-
   tlbrEdit.Visible := Settings.EditToolBarVisible;
-
   tbarAuthorsRus.Visible := Settings.ShowRusBar;
   tbarSeriesRus.Visible := Settings.ShowRusBar;
   tbarAuthorsEng.Visible := Settings.ShowEngBar;
   tbarSeriesEng.Visible := Settings.ShowEngBar;
-
   StatusBar.Visible := Settings.ShowStatusBar;
   SetInfoPanelHeight(Settings.InfoPanelHeight);
   SetInfoPanelVisible(Settings.ShowInfoPanel);
@@ -1633,48 +1636,32 @@ begin
 
     // Книга
 
-    miFb2ZipImport.Visible := (IsPrivate and IsFB2) or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
-    miFb2Import.Visible := (IsPrivate and IsFB2) or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
-    miPdfdjvu.Visible := IsPrivate and IsNonFB2;
-    miFBDImport.Visible := IsPrivate and IsNonFB2;
-    ///miConverToFBD.Visible := False;
-
     ///miImport.Visible := IsPrivate;
-    ///miEditAuthor.Visible := IsPrivate;
-    ///miEditGenres.Visible := IsPrivate;
-    ///miEditSeries.Visible := IsPrivate;
     ///miBookEdit.Visible := IsPrivate;
+    ///tbtnFBD.Enabled := IsPrivate and not IsFB2;
     ///miConverToFBD.Visible := IsPrivate and not IsFB2;
+    ///tbtnAutoFBD.Enabled := IsPrivate and not IsFB2;
     ///miDeleteBook.Visible := IsPrivate; // DMUser.ActiveCollection.AllowDelete;
+    ///tbtnDeleteBook.Enabled := IsPrivate;
     ///miDeleteFiles.Visible := IsOnline and (ActiveView <> FavoritesView);
 
-    miDownloadBooks.Visible := IsOnline;
+    ///miDownloadBooks.Visible := IsOnline;
 
     // Коллекция
 
     // Инструменты
 
-    miSyncOnline.Visible := IsOnline or IsNonFB2;
+    ///miSyncOnline.Visible := IsOnline or IsNonFB2;
 
     // -------- Контекстное меню --------------------------------------------------
 
     // pmiBookInfo.Visible := IsFB2;
-    pmiDownloadBooks.Visible := IsOnline;
+    ///pmiDownloadBooks.Visible := IsOnline;
 
     // --------- Панели онструментов ----------------------------------------------
-    tbtnShowLocalOnly.Visible := IsOnline;
-    tbtnDownloadList_Add.Visible := IsOnline;
-    tbtnShowDeleted.Visible := not IsPrivate;
-
-    //
-    // Панель редактирования
-    //
-    tbtnEditAuthor.Enabled := IsPrivate;
-    tbtnEditSeries.Enabled := IsPrivate;
-    tbtnEditGenre.Enabled := IsPrivate;
-    tbtnDeleteBook.Enabled := IsPrivate;
-    tbtnFBD.Enabled := IsPrivate and not IsFB2;
-    tbtnAutoFBD.Enabled := IsPrivate and not IsFB2;
+    ///tbtnShowLocalOnly.Visible := IsOnline;
+    ///tbtnDownloadList_Add.Visible := IsOnline;
+    ///tbtnShowDeleted.Visible := not IsPrivate;
 
     //
     // Поиск
@@ -2065,19 +2052,19 @@ end;
 
 procedure TfrmMain.SetFormState;
 begin
-  frmMain.WindowState := TWindowState(Settings.WindowState);
-  if frmMain.WindowState = wsNormal then
+  WindowState := TWindowState(Settings.WindowState);
+  if WindowState = wsNormal then
   begin
-    frmMain.Top := Settings.FormTop;
-    frmMain.Left := Settings.FormLeft;
-    frmMain.Width := Settings.FormWidth;
-    frmMain.Height := Settings.FormHeight;
+    Top := Settings.FormTop;
+    Left := Settings.FormLeft;
+    Width := Settings.FormWidth;
+    Height := Settings.FormHeight;
   end;
 
   // костыль
-  frmMain.Visible := True;
-  if frmMain.WindowState = wsMinimized then
-    frmMain.WindowState := wsNormal;
+  Visible := True;
+  if WindowState = wsMinimized then
+    WindowState := wsNormal;
   // конец костыля
 end;
 
@@ -5735,6 +5722,17 @@ begin
   InitCollection(True);
 end;
 
+procedure TfrmMain.ImportFb2Update(Sender: TObject);
+var
+  Action: TAction;
+begin
+  Assert(Sender is TAction);
+
+  Action := Sender as TAction;
+  Action.Visible := IsPrivate and (IsFB2 or Settings.AllowMixed);
+  Action.Enabled := Action.Visible;
+end;
+
 procedure TfrmMain.ImportFb2ZipExecute(Sender: TObject);
 begin
   DMCollection.DBCollection.Connected := False;
@@ -6143,6 +6141,7 @@ end;
 
 procedure TfrmMain.pmAuthorPopup(Sender: TObject);
 begin
+  // actions
   miAddToSearch.Visible := (ActiveView <> GenresView);
 end;
 
@@ -6293,7 +6292,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.miSyncOnlineClick(Sender: TObject);
+procedure TfrmMain.SyncFilesExecute(Sender: TObject);
 begin
   SavePositions;
 
@@ -6344,7 +6343,7 @@ begin
   SetHeaderPopUp;
 end;
 
-procedure TfrmMain.miCompactDataBaseClick(Sender: TObject);
+procedure TfrmMain.CompactDataBaseExecute(Sender: TObject);
 begin
   try
     DMCollection.DBCollection.Close;
@@ -6598,7 +6597,7 @@ begin
   InitCollection(True);
 end;
 
-procedure TfrmMain.miRefreshGenresClick(Sender: TObject);
+procedure TfrmMain.UpdateGenresExecute(Sender: TObject);
 var
   ALibrary: TMHLLibrary;
   AFileName: string;
@@ -6619,7 +6618,7 @@ begin
   InitCollection(True);
 end;
 
-procedure TfrmMain.miRepairDataBaseClick(Sender: TObject);
+procedure TfrmMain.RepairDataBaseExecute(Sender: TObject);
 begin
   DMCollection.DBCollection.Close;
   DMCollection.DBCollection.RepairDatabase;
@@ -6721,6 +6720,7 @@ begin
   case ActiveView of
     FavoritesView:
       begin
+        // actions
         miGoToAuthor.Visible := True;
         miDelFavorites.Visible := True;
         miAddFavorites.Visible := False;
@@ -6734,11 +6734,13 @@ begin
       begin
         tbtnDownloadList_Add.ImageIndex := 23;
         tbtnDownloadList_Add.Hint := rstrRemoveFromDownloadList;
+        // actions
         btnSwitchTreeMode.Enabled := False;
         Exit;
       end;
   else
     begin
+      // actions
       miGoToAuthor.Visible := False;
       miDelFavorites.Visible := False;
       miAddFavorites.Visible := True;
@@ -6758,19 +6760,17 @@ begin
 
   ///miEditAuthor.Enabled := (ActiveView = AuthorsView);
   ///miEditSeries.Enabled := (ActiveView = AuthorsView);
-
-  tbtnEditSeries.Enabled := (ActiveView = AuthorsView);
-  tbtnEditAuthor.Enabled := (ActiveView = AuthorsView);
-  tlbrEdit.Enabled := (ActiveView <> FavoritesView);
-
-  miGoToAuthor.Visible := (ActiveView <> AuthorsView);
+  ///tbtnEditSeries.Enabled := (ActiveView = AuthorsView);
+  ///tbtnEditAuthor.Enabled := (ActiveView = AuthorsView);
+  ///tlbrEdit.Enabled := (ActiveView <> FavoritesView);
+  ///miGoToAuthor.Visible := (ActiveView <> AuthorsView);
 
   SetHeaderPopUp;
 
   /// tvBooksTreeChange(nil, nil);
 
-  btnSwitchTreeMode.ImageIndex := TreeIcons[ord(Settings.TreeModes[pgControl.ActivePageIndex])];
-  btnSwitchTreeMode.Hint := TreeHints[ord(Settings.TreeModes[pgControl.ActivePageIndex])];
+  ///btnSwitchTreeMode.ImageIndex := TreeIcons[ord(Settings.TreeModes[pgControl.ActivePageIndex])];
+  ///btnSwitchTreeMode.Hint := TreeHints[ord(Settings.TreeModes[pgControl.ActivePageIndex])];
 
   Settings.ActivePage := pgControl.ActivePageIndex;
 end;
@@ -6787,6 +6787,17 @@ begin
   frmAddnonfb2.OnSetControlsState := OnSetControlsStateHandler;
   frmAddnonfb2.ShowModal;
   InitCollection(True);
+end;
+
+procedure TfrmMain.ImportNonFB2Update(Sender: TObject);
+var
+  Action: TAction;
+begin
+  Assert(Sender is TAction);
+
+  Action := Sender as TAction;
+  Action.Visible := IsPrivate and IsNonFB2;
+  Action.Enabled := Action.Visible;
 end;
 
 procedure TfrmMain.OnChangeLocalStatus(var Message: TLocalStatusChangedMessage);
