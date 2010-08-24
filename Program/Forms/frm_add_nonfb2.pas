@@ -389,9 +389,8 @@ end;
 procedure TfrmAddnonfb2.dtnConvertClick(Sender: TObject);
 var
   SavedCursor: TCursor;
+  Cover: TCover;
 begin
-  // TODO: fix to save the cover
-
   frmAddnonfb2.Enabled := False;
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -400,9 +399,11 @@ begin
     if cbForceConvertToFBD.Checked then
     begin
       FBD.ProgramUsed := GetProgramUsed(Application.ExeName);
+      Cover := FBD.Cover;
       FBD.New(FRootPath + FBookRecord.Folder, FBookRecord.FileName, FBookRecord.FileExt);
       if FillFBDData then
       begin
+        FBD.Cover := Cover;
         FBD.Save(False);
         FBookRecord.FileName := FBookRecord.FileName + ZIP_EXTENSION;
         CommitData;
@@ -476,6 +477,7 @@ begin
   FBookRecord.Date := Now;
   FBookRecord.KeyWords := edKeyWords.Text;
   FBookRecord.Lang := cbLang.Text;
+  FBookRecord.Local := True;
 end;
 
 procedure TfrmAddnonfb2.AddAuthorFromList(Sender: TObject);
@@ -521,8 +523,6 @@ procedure TfrmAddnonfb2.btnLoadClick(Sender: TObject);
 var
   FileName: string;
 begin
-  // TODO: uncomment when TfrmAddnonfb2.dtnConvertClick is fixed to actually save the cover
-  Assert(False, 'Not implemented yet!');
   if GetFileName(fnOpenCoverImage, FileName) then
     FBD.LoadCoverFromFile(FileName);
 end;
@@ -534,8 +534,6 @@ end;
 
 procedure TfrmAddnonfb2.btnPasteCoverClick(Sender: TObject);
 begin
-  // TODO: uncomment when TfrmAddnonfb2.dtnConvertClick is fixed to actually save the cover
-  Assert(False, 'Not implemented yet!');
   FBD.LoadCoverFromClpbrd;
 end;
 
