@@ -183,6 +183,7 @@ type
     //
     //
     procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord);
+    procedure DeleteBook(const BookKey: TBookKey);
 
     procedure SetExtra(const BookKey: TBookKey; extra: TBookExtra);
     procedure SetRate(const BookKey: TBookKey; Rate: Integer);
@@ -523,9 +524,19 @@ begin
 end;
 
 procedure TDMUser.DeleteCurrentCollection;
+const
+  SQL: string = 'DELETE FROM Books WHERE DatabaseID = %u';
 begin
   Assert(tblBases.Active);
+
+  // Delete books from groups by DatabaseID:
+  SqlQuery.SQL.Text := Format(SQL, [DMUser.CurrentCollection.ID]);
+  SqlQuery.ExecSQL;
+
+  // Delete the collection:
   tblBases.Delete;
+
+  // The first collection becomes the current one:
   tblBases.First;
 end;
 
@@ -727,6 +738,18 @@ begin
     Assert(False);
 end;
 
+procedure TDMUser.DeleteBook(const BookKey: TBookKey);
+const
+  SQL_DELETE_FROM_BOOK_GROUPS: string = 'DELETE FROM BookGroups WHERE BookID = %u AND DatabaseID = %u ';
+  SQL_DELETE_FROM_BOOKS: string = 'DELETE FROM Books WHERE BookID = %u AND DatabaseID = %u ';
+begin
+  SqlQuery.SQL.Text := Format(SQL_DELETE_FROM_BOOK_GROUPS, [BookKey.BookID, BookKey.DatabaseID]);
+  SqlQuery.ExecSQL;
+
+  SqlQuery.SQL.Text := Format(SQL_DELETE_FROM_BOOKS, [BookKey.BookID, BookKey.DatabaseID]);
+  SqlQuery.ExecSQL;
+end;
+
 procedure TDMUser.SetExtra(const BookKey: TBookKey; extra: TBookExtra);
 begin
   Assert(AllBooks.Active);
@@ -895,9 +918,9 @@ end;
 // Change SerieID value for all books having provided DatabaseID and old SerieID value
 procedure TDMUser.ChangeBookSerieID(const OldSerieID: Integer; const NewSerieID: Integer; const DatabaseID: Integer);
 const
-  UPDATE_SQL = 'UPDATE Books SET SerieID = %u WHERE DatabaseID = %u AND SerieID = %u';
+  SQL: string = 'UPDATE Books SET SerieID = %u WHERE DatabaseID = %u AND SerieID = %u';
 begin
-  SqlQuery.SQL.Text := Format(UPDATE_SQL, [NewSerieID, DatabaseID, OldSerieID]);
+  SqlQuery.SQL.Text := Format(SQL, [NewSerieID, DatabaseID, OldSerieID]);
   SqlQuery.ExecSQL;
 end;
 

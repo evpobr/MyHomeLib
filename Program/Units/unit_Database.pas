@@ -62,7 +62,7 @@ type
     function CheckFileInCollection(const FileName: string; const FullNameSearch: Boolean; const ZipFolder: Boolean): Boolean;
 
     function InsertBook(BookRecord: TBookRecord; CheckFileName, FullCheck: Boolean): Integer;
-    procedure DeleteBook(BookID: Integer; ClearExtra: Boolean = True);
+    procedure DeleteBook(const BookKey: TBookKey);
 
     function GetTopGenreAlias(const FB2Code: string): string;
     procedure CleanBookGenres(BookID: Integer);
@@ -141,7 +141,8 @@ uses
   IOUtils,
   Generics.Collections,
   bdeconst,
-  unit_Consts;
+  unit_Consts,
+  dm_user;
 
 resourcestring
   rstrFavoritesGroupName = 'Избранное';
@@ -1018,22 +1019,22 @@ begin
   end;
 end;
 
-procedure TMHLLibrary.DeleteBook(BookID: Integer; ClearExtra: Boolean = True);
+procedure TMHLLibrary.DeleteBook(const BookKey: TBookKey);
 var
   SerieID: Integer;
 begin
   CheckActive;
 
-  if FBooks.Locate(BOOK_ID_FIELD, BookID, []) then
+  if FBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
   begin
     SerieID := FBookSerieID.Value;
     FBooks.Delete;
 
     { TODO -oNickR : Заменить эти вызовы на DELETE FROM query }
 
-    while FGenreList.Locate(BOOK_ID_FIELD, BookID, []) do
+    while FGenreList.Locate(BOOK_ID_FIELD, BookKey.BookID, []) do
       FGenreList.Delete;
-    while FAuthorList.Locate(BOOK_ID_FIELD, BookID, []) do
+    while FAuthorList.Locate(BOOK_ID_FIELD, BookKey.BookID, []) do
       FAuthorList.Delete;
 
     //
@@ -1064,7 +1065,7 @@ begin
         FAuthors.Delete;
     end;
 
-    { TODO 5 -oNickR -cBug : Необходимо удалить книгу из групп }
+    DMUser.DeleteBook(BookKey);
   end;
 end;
 

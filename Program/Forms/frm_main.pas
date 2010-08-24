@@ -4564,15 +4564,10 @@ begin
 
           ALibrary.BeginBulkOperation;
           try
-            ALibrary.DeleteBook(Data.BookKey.BookID);
+            ALibrary.DeleteBook(Data.BookKey);
             ALibrary.EndBulkOperation(True);
           except
             ALibrary.EndBulkOperation(False);
-          end;
-
-          if DMUser.BooksByGroup.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([Data.BookKey.BookID, Settings.ActiveCollection]), []) then
-          begin
-            DMUser.BooksByGroup.Delete;
           end;
         end;
 
@@ -7035,7 +7030,7 @@ begin
 
     ALibrary.BeginBulkOperation;
     try
-      ALibrary.DeleteBook(Data^.BookKey.BookID, False);
+      ALibrary.DeleteBook(Data^.BookKey);
       Data^.BookKey.BookID := ALibrary.InsertBook(BookRecord, False, False);
       ALibrary.EndBulkOperation(True);
     except
