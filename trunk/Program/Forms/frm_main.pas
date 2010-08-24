@@ -106,14 +106,9 @@ type
     miStat: TMenuItem;
     miRead: TMenuItem;
     miDevice: TMenuItem;
-    miEditBook: TMenuItem;
     N7: TMenuItem;
     miCollsettings: TMenuItem;
-    N16: TMenuItem;
     miCopyToCollection: TMenuItem;
-    CopyToCollection: TMenuItem;
-    miDeleteBook: TMenuItem;
-    miImport: TMenuItem;
     miFb2ZipImport: TMenuItem;
     miFb2Import: TMenuItem;
     miAbout: TMenuItem;
@@ -128,14 +123,9 @@ type
     miCollectionExport: TMenuItem;
     miCollectionImport: TMenuItem;
     miBookEdit: TMenuItem;
-    N24: TMenuItem;
     miRefreshGenres: TMenuItem;
     miDownloadBooks: TMenuItem;
     pmiDownloadBooks: TMenuItem;
-    miEdit: TMenuItem;
-    miEditAuthor: TMenuItem;
-    miEditSeries: TMenuItem;
-    miEditGenres: TMenuItem;
     ilToolBar: TImageList;
     ilMainMenu: TImageList;
     pmCollection: TPopupMenu;
@@ -319,12 +309,10 @@ type
     edFGenre: TMHLButtonedEdit;
     Label6: TLabel;
     N31: TMenuItem;
-    miDeleteFiles: TMenuItem;
     miFastBookSearch: TMenuItem;
     pmiSelectAll: TMenuItem;
     pbDownloadProgress: TProgressBar;
     miFBDImport: TMenuItem;
-    miConverToFBD: TMenuItem;
     miShowEditToolbar: TMenuItem;
     tlbrEdit: TToolBar;
     tbtnEditAuthor: TToolButton;
@@ -333,7 +321,6 @@ type
     tbtnEditBook: TToolButton;
     tbtnSplitter1: TToolButton;
     tbtnFBD: TToolButton;
-    N43: TMenuItem;
     tbtnSplitter2: TToolButton;
     tbtnDeleteBook: TToolButton;
     tbtnAutoFBD: TToolButton;
@@ -407,7 +394,6 @@ type
     acEditSerie: TAction;
     acEditGenre: TAction;
     acEditBook: TAction;
-    acEditDeleteBook: TAction;
     acEditConver2FBD: TAction;
     acEditAutoConver2FBD: TAction;
     N36: TMenuItem;
@@ -433,6 +419,72 @@ type
     tbarAuthorsEng: TToolBar;
     tbarSeriesEng: TToolBar;
     tbarSeriesRus: TToolBar;
+    acBookRead: TAction;
+    acBookSend2Device: TAction;
+    acBookAdd2DownloadList: TAction;
+    acBookMarkAsRead: TAction;
+    acBookAdd2Favorites: TAction;
+    acBookAdd2Group: TAction;
+    acBookRemoveFromGroup: TAction;
+    acBookShowInfo: TAction;
+    acBookCopy2Collection: TAction;
+    acBookDelete: TAction;
+    acApplicationExit: TAction;
+    acCollectionNew: TAction;
+    acCollectionSelect: TAction;
+    acCollectionProperties: TAction;
+    acCollectionStatistics: TAction;
+    acCollectionDelete: TAction;
+    acViewTreeView: TAction;
+    acViewTableView: TAction;
+    acViewHideDeletedBooks: TAction;
+    acViewShowLocalOnly: TAction;
+    acToolsQuickSearch: TAction;
+    acToolsUpdateOnlineCollections: TAction;
+    acToolsClearReadFolder: TAction;
+    acToolsRunScript: TAction;
+    acToolsSettings: TAction;
+    acHelpHelp: TAction;
+    acHelpCheckUpdates: TAction;
+    acHelpProgramSite: TAction;
+    acHelpSupportForum: TAction;
+    acHelpAbout: TAction;
+    N60: TMenuItem;
+    N61: TMenuItem;
+    N62: TMenuItem;
+    N63: TMenuItem;
+    N64: TMenuItem;
+    N65: TMenuItem;
+    N66: TMenuItem;
+    N67: TMenuItem;
+    N68: TMenuItem;
+    N69: TMenuItem;
+    N70: TMenuItem;
+    N71: TMenuItem;
+    N72: TMenuItem;
+    N73: TMenuItem;
+    N74: TMenuItem;
+    N75: TMenuItem;
+    N76: TMenuItem;
+    acViewTreeView1: TMenuItem;
+    acViewTableView1: TMenuItem;
+    acViewSelectColumns: TAction;
+    N77: TMenuItem;
+    N78: TMenuItem;
+    N79: TMenuItem;
+    N16: TMenuItem;
+    acImportFb2Zip: TAction;
+    acImportFb2: TAction;
+    acImportNonFB2: TAction;
+    acImportFBD: TAction;
+    acImportXML: TAction;
+    acImportUserData: TAction;
+    acExport2HTML: TAction;
+    acExport2Txt: TAction;
+    acExport2RTF: TAction;
+    acExport2XML: TAction;
+    acExport2INPX: TAction;
+    acExportUserData: TAction;
 
     //
     // События формы
@@ -494,17 +546,100 @@ type
     procedure tvBooksTreeAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; CellRect: TRect);
 
     //
+    // Меню "Книга"
     //
+    procedure ReadBookExecute(Sender: TObject);
+    procedure SendToDeviceExecute(Sender: TObject);
+    procedure Add2DownloadListExecute(Sender: TObject);
+    procedure MarkAsReadedExecute(Sender: TObject);
+    procedure BookSetRateExecute(Sender: TObject);
+    procedure DeleteBookExecute(Sender: TObject);
+    procedure QuitAppExecute(Sender: TObject);
+
     //
+    // Меню "Коллекция"
+    //
+    procedure ShowNewCollectionWizard(Sender: TObject);
+    procedure ShowCollectionSettingsExecute(Sender: TObject);
+    procedure ShowCollectionStatisticsExecute(Sender: TObject);
+    procedure ImportFb2ZipExecute(Sender: TObject);
+    procedure ImportFb2Execute(Sender: TObject);
+    procedure ImportNonFB2Execute(Sender: TObject);
+    procedure ImportFBDExecute(Sender: TObject);
+    procedure ImportXMLExecute(Sender: TObject);
+    procedure ImportUserDataExecute(Sender: TObject);
+    procedure Export2HTMLExecute(Sender: TObject);
+    procedure Export2XMLExecute(Sender: TObject);
+    procedure Export2INPXExecute(Sender: TObject);
+    procedure ExportUserDataExecute(Sender: TObject);
+    procedure miRefreshGenresClick(Sender: TObject);
+    procedure miSyncOnlineClick(Sender: TObject);
+    procedure miRepairDataBaseClick(Sender: TObject);
+    procedure miCompactDataBaseClick(Sender: TObject);
+    procedure DeleteCollectionExecute(Sender: TObject);
+    procedure AddGroupExecute(Sender: TObject);
+    procedure AddGroupUpdate(Sender: TObject);
+    procedure RenameGroupExecute(Sender: TObject);
+    procedure EditGroupUpdate(Sender: TObject);
+    procedure ClearGroupExecute(Sender: TObject);
+    procedure ClearGroupUpdate(Sender: TObject);
+    procedure DeleteGroupExecute(Sender: TObject);
+
+    //
+    // Меню "Редактирование"
+    //
+    procedure EditBookExecute(Sender: TObject);
+    procedure Conver2FBDExecute(Sender: TObject);
+    procedure EditAuthorExecute(Sender: TObject);
+    procedure EditAuthorUpdate(Sender: TObject);
+    procedure EditSeriesExecute(Sender: TObject);
+    procedure EditSerieUpdate(Sender: TObject);
+    procedure EditGenresExecute(Sender: TObject);
+    procedure EditGenreUpdate(Sender: TObject);
+
+    //
+    // Меню "Вид"
+    //
+    procedure ShowMainToolbarExecute(Sender: TObject);
+    procedure ShowMainToolbarUpdate(Sender: TObject);
+    procedure ShowEditToolbarExecute(Sender: TObject);
+    procedure ShowEditToolbarUpdate(Sender: TObject);
+    procedure ShowRusAlphabetExecute(Sender: TObject);
+    procedure ShowRusAlphabetUpdate(Sender: TObject);
+    procedure ShowEngAlphabetExecute(Sender: TObject);
+    procedure ShowEngAlphabetUpdate(Sender: TObject);
+    procedure ShowStatusbarExecute(Sender: TObject);
+    procedure ShowStatusbarUpdate(Sender: TObject);
+    procedure ShowBookInfoExecute(Sender: TObject);
+    procedure ShowBookInfoUpdate(Sender: TObject);
+    procedure ShowBookCoverExecute(Sender: TObject);
+    procedure ShowBookCoverUpdate(Sender: TObject);
+    procedure ShowBookAnnotationExecute(Sender: TObject);
+    procedure ShowBookAnnotationUpdate(Sender: TObject);
+    procedure HideDeletedBooksExecute(Sender: TObject);
+    procedure ShowLocalOnlyExecute(Sender: TObject);
+
+    //
+    // Меню "Инструменты"
+    //
+    procedure QuickSearchExecute(Sender: TObject);
+    procedure UpdateOnlineCollectionExecute(Sender: TObject);
+    procedure ClearReadFolderExecute(Sender: TObject);
+    procedure ChangeSettingsExecute(Sender: TObject);
+
+    //
+    // Меню "Помощь"
+    //
+    procedure ShowHelpExecute(Sender: TObject);
+    procedure CheckUpdatesExecute(Sender: TObject);
+    procedure GoForumExecute(Sender: TObject);
+    procedure GoSiteExecute(Sender: TObject);
+    procedure ShowAboutExecute(Sender: TObject);
 
     //
     //
     //
-    procedure miQuitAppClick(Sender: TObject);
-    procedure tbtbnReadClick(Sender: TObject);
-    procedure miSettingsClick(Sender: TObject);
     procedure tbSelectAllClick(Sender: TObject);
-    procedure tbSendToDeviceClick(Sender: TObject);
     procedure pmiCheckAllClick(Sender: TObject);
     procedure pmiDeselectAllClick(Sender: TObject);
     procedure miCopyClBrdClick(Sender: TObject);
@@ -512,14 +647,6 @@ type
     //
     // Работа с группами
     //
-    procedure CreateGroupUpdate(Sender: TObject);
-    procedure EditGroupUpdate(Sender: TObject);
-    procedure ClearGroupUpdate(Sender: TObject);
-
-    procedure AddGroup(Sender: TObject);
-    procedure RenameGroup(Sender: TObject);
-    procedure DeleteGroup(Sender: TObject);
-    procedure ClearGroup(Sender: TObject);
     procedure AddBookToGroup(Sender: TObject);
     procedure DeleteBookFromGroup(Sender: TObject);
 
@@ -539,48 +666,19 @@ type
     procedure DeletePresetUpdate(Sender: TObject);
 
     //
-    // Сохранение и восстановление пользовательских данных
-    //
-    procedure miExportUserDataClick(Sender: TObject);
-    procedure miImportUserDataClick(Sender: TObject);
-
-    //
     //
     //
     procedure tbCollapseClick(Sender: TObject);
     procedure edLocateAuthorChange(Sender: TObject);
     procedure edLocateSeriesChange(Sender: TObject);
-    procedure miStatClick(Sender: TObject);
-    procedure miCollsettingsClick(Sender: TObject);
     procedure miActiveCollectionClick(Sender: TObject);
-    procedure miDeleteColClick(Sender: TObject);
     procedure CopyToCollectionClick(Sender: TObject);
-    procedure miDeleteBookClick(Sender: TObject);
-    procedure miFb2ZipImportClick(Sender: TObject);
-    procedure miAboutClick(Sender: TObject);
-    procedure miCheckUpdatesClick(Sender: TObject);
-    procedure miGoForumClick(Sender: TObject);
-    procedure miGoSiteClick(Sender: TObject);
-    procedure miShowHelpClick(Sender: TObject);
     procedure miGoToAuthorClick(Sender: TObject);
-    procedure miFb2ImportClick(Sender: TObject);
     procedure ShowBookInfo(Sender: TObject);
     procedure miCopyAuthorClick(Sender: TObject);
-    procedure tbtnShowDeletedClick(Sender: TObject);
     procedure pgControlChange(Sender: TObject);
-    procedure miPdfdjvuClick(Sender: TObject);
-    procedure miCollectionExportClick(Sender: TObject);
-    procedure miCollectionImportClick(Sender: TObject);
-    procedure miEditBookClick(Sender: TObject);
     procedure miRefreshClick(Sender: TObject);
 
-    procedure miRefreshGenresClick(Sender: TObject);
-    procedure miDownloadBooksClick(Sender: TObject);
-    procedure miEditAuthorClick(Sender: TObject);
-    procedure miEditSeriesClick(Sender: TObject);
-    procedure miEditGenresClick(Sender: TObject);
-    procedure miUpdateClick(Sender: TObject);
-    procedure miSyncOnlineClick(Sender: TObject);
     procedure btnSwitchTreeModeClick(Sender: TObject);
     //
     //
@@ -588,8 +686,6 @@ type
     procedure tvBooksTreeHeaderClick(Sender: TVTHeader; Column: TColumnIndex; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure tvBooksTreeCompareNodes(Sender: TBaseVirtualTree; Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
     procedure tvBooksTreePaintText(Sender: TBaseVirtualTree; const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType);
-    procedure tbtnShowLocalOnlyClick(Sender: TObject);
-    procedure ShowNewCollectionWizard(Sender: TObject);
     procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
     procedure tvBooksTreeMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure tvBooksTreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -609,54 +705,25 @@ type
     procedure btnClearDownloadClick(Sender: TObject);
     procedure tvDownloadListSaveNode(Sender: TBaseVirtualTree; Node: PVirtualNode; Stream: TStream);
     procedure tvDownloadListLoadNode(Sender: TBaseVirtualTree; Node: PVirtualNode; Stream: TStream);
-    procedure N34Click(Sender: TObject);
     procedure MoveDwnldListNodes(Sender: TObject);
     procedure BtnFav_addClick(Sender: TObject);
     procedure tvDownloadListPaintText(Sender: TBaseVirtualTree; const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType);
     procedure BtnSaveClick(Sender: TObject);
     procedure edLocateAuthorKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure miAddToSearchClick(Sender: TObject);
-    procedure miINPXCollectionExportClick(Sender: TObject);
     procedure pmAuthorPopup(Sender: TObject);
     procedure GroupMenuItemClick(Sender: TObject);
-    procedure miReadedClick(Sender: TObject);
-    procedure miRepairDataBaseClick(Sender: TObject);
-    procedure miCompactDataBaseClick(Sender: TObject);
     procedure miDeleteFilesClick(Sender: TObject);
-    procedure miFastBookSearchClick(Sender: TObject);
     procedure pmiSelectAllClick(Sender: TObject);
-    procedure miFBDImportClick(Sender: TObject);
-    procedure miConverToFBDClick(Sender: TObject);
     procedure tbtnAutoFBDClick(Sender: TObject);
-    procedure miExportToHTMLClick(Sender: TObject);
     procedure GetDownloadNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
     procedure FreeDownloadNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
-    procedure ShowRusAlphabetUpdate(Sender: TObject);
-    procedure ShowEngAlphabetUpdate(Sender: TObject);
-    procedure ShowEditToolbarUpdate(Sender: TObject);
-    procedure ShowRusAlphabetExecute(Sender: TObject);
-    procedure ShowEngAlphabetExecute(Sender: TObject);
-    procedure ShowEditToolbarExecute(Sender: TObject);
-    procedure ShowMainToolbarUpdate(Sender: TObject);
-    procedure ShowMainToolbarExecute(Sender: TObject);
-    procedure ShowStatusbarUpdate(Sender: TObject);
-    procedure ShowStatusbarExecute(Sender: TObject);
-    procedure ShowBookInfoUpdate(Sender: TObject);
-    procedure ShowBookInfoExecute(Sender: TObject);
     procedure AuthorLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
     procedure GenreLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
     procedure SerieLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
-    procedure ShowBookCoverExecute(Sender: TObject);
-    procedure ShowBookCoverUpdate(Sender: TObject);
-    procedure ShowBookAnnotationExecute(Sender: TObject);
-    procedure ShowBookAnnotationUpdate(Sender: TObject);
-    procedure BookSetRateExecute(Sender: TObject);
     procedure UpdateBookAction(Sender: TObject);
     procedure StatusBarDrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel; const Rect: TRect);
     procedure StatusBarResize(Sender: TObject);
-    procedure EditAuthorUpdate(Sender: TObject);
-    procedure EditSerieUpdate(Sender: TObject);
-    procedure EditGenreUpdate(Sender: TObject);
 
   protected
     procedure WMGetSysCommand(var Message: TMessage); message WM_SYSCOMMAND;
@@ -1570,16 +1637,16 @@ begin
     miFb2Import.Visible := (IsPrivate and IsFB2) or (IsPrivate and IsNonFB2 and Settings.AllowMixed);
     miPdfdjvu.Visible := IsPrivate and IsNonFB2;
     miFBDImport.Visible := IsPrivate and IsNonFB2;
-    miConverToFBD.Visible := False;
+    ///miConverToFBD.Visible := False;
 
-    miImport.Visible := IsPrivate;
-    miEditAuthor.Visible := IsPrivate;
-    miEditGenres.Visible := IsPrivate;
-    miEditSeries.Visible := IsPrivate;
-    miBookEdit.Visible := IsPrivate;
-    miConverToFBD.Visible := IsPrivate and not IsFB2;
-    miDeleteBook.Visible := IsPrivate; // DMUser.ActiveCollection.AllowDelete;
-    miDeleteFiles.Visible := IsOnline and (ActiveView <> FavoritesView);
+    ///miImport.Visible := IsPrivate;
+    ///miEditAuthor.Visible := IsPrivate;
+    ///miEditGenres.Visible := IsPrivate;
+    ///miEditSeries.Visible := IsPrivate;
+    ///miBookEdit.Visible := IsPrivate;
+    ///miConverToFBD.Visible := IsPrivate and not IsFB2;
+    ///miDeleteBook.Visible := IsPrivate; // DMUser.ActiveCollection.AllowDelete;
+    ///miDeleteFiles.Visible := IsOnline and (ActiveView <> FavoritesView);
 
     miDownloadBooks.Visible := IsOnline;
 
@@ -1911,7 +1978,7 @@ begin
       Item := TMenuItem.Create(pmScripts);
       Item.Caption := ExpTypes[i];
       Item.Tag := 850 + i;
-      Item.OnClick := tbSendToDeviceClick;
+      ///Item.OnClick := tbSendToDeviceClick;
       Item.ImageIndex := i;
       pmScripts.Items.Insert(i, Item);
     end;
@@ -1941,7 +2008,7 @@ begin
     Item := TMenuItem.Create(pmScripts);
     Item.Caption := Settings.Scripts[i].Title;
     Item.Tag := 901 + i;
-    Item.OnClick := tbSendToDeviceClick;
+    ///Item.OnClick := tbSendToDeviceClick;
     Item.ImageIndex := 6;
     pmScripts.Items.Insert(i + F, Item);
 
@@ -1949,14 +2016,14 @@ begin
     ItemP := TMenuItem.Create(pmMain);
     ItemP.Caption := Settings.Scripts[i].Title;
     ItemP.Tag := 901 + i;
-    ItemP.OnClick := tbSendToDeviceClick;
+    ///ItemP.OnClick := tbSendToDeviceClick;
     pmiScripts.Insert(i, ItemP);
 
     // ------ main -----------------
     ItemM := TMenuItem.Create(MainMenu);
     ItemM.Caption := Settings.Scripts[i].Title;
     ItemM.Tag := 901 + i;
-    ItemM.OnClick := tbSendToDeviceClick;
+    ///ItemM.OnClick := tbSendToDeviceClick;
     mmiScripts.Insert(i, ItemM);
   end;
 
@@ -2395,7 +2462,7 @@ begin
   if Settings.CheckUpdate then
   begin
     FAutoCheck := True;
-    frmMain.miCheckUpdatesClick(nil);
+    ///frmMain.miCheckUpdatesClick(nil);
   end
   else
     FAutoCheck := False;
@@ -3163,9 +3230,9 @@ begin
   begin
     isFBDDocument := Data^.GetBookFormat = bfFbd;
 
-    miConverToFBD.Visible := True;
-    miConverToFBD.Tag := IfThen(isFBDDocument, 999, 0);
-    miConverToFBD.Caption := IfThen(isFBDDocument, rstrEditFBD, rstrConvert2FBD);
+    ///miConverToFBD.Visible := True;
+    ///miConverToFBD.Tag := IfThen(isFBDDocument, 999, 0);
+    ///miConverToFBD.Caption := IfThen(isFBDDocument, rstrEditFBD, rstrConvert2FBD);
   end;
 end;
 
@@ -3647,7 +3714,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.tbSendToDeviceClick(Sender: TObject);
+procedure TfrmMain.SendToDeviceExecute(Sender: TObject);
 var
   AFolder: string;
   SaveDeviceDir: string;
@@ -3769,7 +3836,7 @@ begin
   unit_ExportToDevice.DownloadBooks(BookIDList);
 end;
 
-procedure TfrmMain.tbtbnReadClick(Sender: TObject);
+procedure TfrmMain.ReadBookExecute(Sender: TObject);
 var
   Tree: TBookTree;
   Data: PBookRecord;
@@ -3847,7 +3914,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.tbtnShowDeletedClick(Sender: TObject);
+procedure TfrmMain.HideDeletedBooksExecute(Sender: TObject);
 begin
   SavePositions;
 
@@ -4005,7 +4072,7 @@ begin
   TrayIcon.Visible := not Visible;
 end;
 
-procedure TfrmMain.tbtnShowLocalOnlyClick(Sender: TObject);
+procedure TfrmMain.ShowLocalOnlyExecute(Sender: TObject);
 begin
   SavePositions;
 
@@ -4513,7 +4580,7 @@ begin
   Clipboard.AsText := Trim(R);
 end;
 
-procedure TfrmMain.miDeleteBookClick(Sender: TObject);
+procedure TfrmMain.DeleteBookExecute(Sender: TObject);
 var
   Tree: TBookTree;
   Node, OldNode: PVirtualNode;
@@ -4585,7 +4652,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.miDeleteColClick(Sender: TObject);
+procedure TfrmMain.DeleteCollectionExecute(Sender: TObject);
 begin
   if DMUser.SelectCollection(DMUser.ActiveCollection.ID) then
   begin
@@ -4642,7 +4709,7 @@ begin
   );
 end;
 
-procedure TfrmMain.miDownloadBooksClick(Sender: TObject);
+procedure TfrmMain.Add2DownloadListExecute(Sender: TObject);
 var
   Tree: TBookTree;
 
@@ -4719,7 +4786,7 @@ begin
     btnStartDownloadClick(Sender);
 end;
 
-procedure TfrmMain.miEditAuthorClick(Sender: TObject);
+procedure TfrmMain.EditAuthorExecute(Sender: TObject);
 (*
 var
   Tree: TVirtualStringTree;
@@ -4908,7 +4975,7 @@ begin
     Result := False;
 end;
 
-procedure TfrmMain.miEditBookClick(Sender: TObject);
+procedure TfrmMain.EditBookExecute(Sender: TObject);
 var
   Tree: TBookTree;
   Data: PBookRecord;
@@ -4948,7 +5015,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.miEditGenresClick(Sender: TObject);
+procedure TfrmMain.EditGenresExecute(Sender: TObject);
 var
   NodeB: PVirtualNode;
   DataB: PBookRecord;
@@ -5005,7 +5072,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.miEditSeriesClick(Sender: TObject);
+procedure TfrmMain.EditSeriesExecute(Sender: TObject);
 var
   Tree: TBookTree;
   Data: PBookRecord;
@@ -5068,7 +5135,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.AddGroup(Sender: TObject);
+procedure TfrmMain.AddGroupExecute(Sender: TObject);
 var
   GroupName: string;
 begin
@@ -5084,7 +5151,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.RenameGroup(Sender: TObject);
+procedure TfrmMain.RenameGroupExecute(Sender: TObject);
 var
   Data: PGroupData;
   GroupName: string;
@@ -5107,7 +5174,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.DeleteGroup(Sender: TObject);
+procedure TfrmMain.DeleteGroupExecute(Sender: TObject);
 var
   Data: PGroupData;
 begin
@@ -5129,7 +5196,7 @@ end;
 //
 // Очистить выделенную группу
 //
-procedure TfrmMain.ClearGroup(Sender: TObject);
+procedure TfrmMain.ClearGroupExecute(Sender: TObject);
 var
   GroupData: PGroupData;
   SavedCursor: TCursor;
@@ -5458,7 +5525,7 @@ begin
     Action.Enabled := False;
 end;
 
-procedure TfrmMain.CreateGroupUpdate(Sender: TObject);
+procedure TfrmMain.AddGroupUpdate(Sender: TObject);
 begin
   //
   // только на старанице "по группам"
@@ -5654,12 +5721,12 @@ begin
   end;
 end;
 
-procedure TfrmMain.miFastBookSearchClick(Sender: TObject);
+procedure TfrmMain.QuickSearchExecute(Sender: TObject);
 begin
   unit_Utils.LocateBook;
 end;
 
-procedure TfrmMain.miFb2ImportClick(Sender: TObject);
+procedure TfrmMain.ImportFb2Execute(Sender: TObject);
 begin
   DMCollection.DBCollection.Connected := False;
 
@@ -5668,7 +5735,7 @@ begin
   InitCollection(True);
 end;
 
-procedure TfrmMain.miFb2ZipImportClick(Sender: TObject);
+procedure TfrmMain.ImportFb2ZipExecute(Sender: TObject);
 begin
   DMCollection.DBCollection.Connected := False;
 
@@ -5677,7 +5744,7 @@ begin
   InitCollection(True);
 end;
 
-procedure TfrmMain.miFBDImportClick(Sender: TObject);
+procedure TfrmMain.ImportFBDExecute(Sender: TObject);
 begin
   DMCollection.DBCollection.Connected := False;
 
@@ -5939,7 +6006,7 @@ begin
   LocateSerie(edLocateSeries.Text);
 end;
 
-procedure TfrmMain.miAboutClick(Sender: TObject);
+procedure TfrmMain.ShowAboutExecute(Sender: TObject);
 var
   frmAbout: TfrmAbout;
 begin
@@ -6064,7 +6131,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.miQuitAppClick(Sender: TObject);
+procedure TfrmMain.QuitAppExecute(Sender: TObject);
 begin
   Close;
 end;
@@ -6092,12 +6159,12 @@ begin
   Tree.SelectAll(False);
 end;
 
-procedure TfrmMain.miGoForumClick(Sender: TObject);
+procedure TfrmMain.GoForumExecute(Sender: TObject);
 begin
   SimpleShellExecute(Handle, 'http://myhomelib.org/');
 end;
 
-procedure TfrmMain.miGoSiteClick(Sender: TObject);
+procedure TfrmMain.GoSiteExecute(Sender: TObject);
 begin
   SimpleShellExecute(Handle, 'http://home-lib.net/');
 end;
@@ -6164,7 +6231,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.miCheckUpdatesClick(Sender: TObject);
+procedure TfrmMain.CheckUpdatesExecute(Sender: TObject);
 var
   SL: TStringList;
   LF: TMemoryStream;
@@ -6213,7 +6280,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.miStatClick(Sender: TObject);
+procedure TfrmMain.ShowCollectionStatisticsExecute(Sender: TObject);
 var
   frmStat: TfrmStat;
 begin
@@ -6239,7 +6306,7 @@ begin
   RestorePositions;
 end;
 
-procedure TfrmMain.miUpdateClick(Sender: TObject);
+procedure TfrmMain.UpdateOnlineCollectionExecute(Sender: TObject);
 var
   ActiveCollectionID: Integer;
 begin
@@ -6290,7 +6357,7 @@ begin
   DMCollection.SetTableState(True);
 end;
 
-procedure TfrmMain.miConverToFBDClick(Sender: TObject);
+procedure TfrmMain.Conver2FBDExecute(Sender: TObject);
 var
   Tree: TBookTree;
   Node: PVirtualNode;
@@ -6330,7 +6397,7 @@ begin
   Close;
 end;
 
-procedure TfrmMain.N34Click(Sender: TObject);
+procedure TfrmMain.ClearReadFolderExecute(Sender: TObject);
 var
   dirPath: string;
 begin
@@ -6339,7 +6406,7 @@ begin
     ClearDir(dirPath);
 end;
 
-procedure TfrmMain.miExportToHTMLClick(Sender: TObject);
+procedure TfrmMain.Export2HTMLExecute(Sender: TObject);
 const
   HTMLHead =
     '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">' + CRLF +
@@ -6383,7 +6450,7 @@ begin
   SimpleShellExecute(Handle, FileName);
 end;
 
-procedure TfrmMain.miExportUserDataClick(Sender: TObject);
+procedure TfrmMain.ExportUserDataExecute(Sender: TObject);
 var
   FileName: string;
   Data: TUserData;
@@ -6454,7 +6521,7 @@ begin
   CallHelp := False;
 end;
 
-procedure TfrmMain.miCollectionExportClick(Sender: TObject);
+procedure TfrmMain.Export2XMLExecute(Sender: TObject);
 var
   FileName: string;
 begin
@@ -6467,7 +6534,7 @@ begin
   unit_Export.Export2XML(FileName);
 end;
 
-procedure TfrmMain.miCollectionImportClick(Sender: TObject);
+procedure TfrmMain.ImportXMLExecute(Sender: TObject);
 var
   FileName: string;
 begin
@@ -6481,7 +6548,7 @@ begin
   InitCollection(True);
 end;
 
-procedure TfrmMain.miCollsettingsClick(Sender: TObject);
+procedure TfrmMain.ShowCollectionSettingsExecute(Sender: TObject);
 var
   frmBases: TfrmBases;
 begin
@@ -6498,7 +6565,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.miReadedClick(Sender: TObject);
+procedure TfrmMain.MarkAsReadedExecute(Sender: TObject);
 begin
   ProcessNodes(
     procedure (Tree: TBookTree; Node: PVirtualNode)
@@ -6562,7 +6629,7 @@ begin
   DMCollection.SetTableState(True);
 end;
 
-procedure TfrmMain.miSettingsClick(Sender: TObject);
+procedure TfrmMain.ChangeSettingsExecute(Sender: TObject);
 var
   frmSettings: TfrmSettings;
 begin
@@ -6661,7 +6728,7 @@ begin
         BtnFav_add.DropdownMenu := nil;
         BtnFav_add.ImageIndex := 16;
         pmiGroups.Visible := False;
-        miDeleteFiles.Visible := False;
+        ///miDeleteFiles.Visible := False;
       end;
     DownloadView:
       begin
@@ -6679,7 +6746,7 @@ begin
       BtnFav_add.DropdownMenu := pmGroups;
       BtnFav_add.ImageIndex := 15;
       pmiGroups.Visible := True;
-      miDeleteFiles.Visible := isOnlineCollection(DMUser.ActiveCollection.CollectionType);
+      ///miDeleteFiles.Visible := isOnlineCollection(DMUser.ActiveCollection.CollectionType);
     end;
 
   end;
@@ -6689,8 +6756,8 @@ begin
 
   DMCollection.SetActiveTable(Ord(ActiveView));
 
-  miEditAuthor.Enabled := (ActiveView = AuthorsView);
-  miEditSeries.Enabled := (ActiveView = AuthorsView);
+  ///miEditAuthor.Enabled := (ActiveView = AuthorsView);
+  ///miEditSeries.Enabled := (ActiveView = AuthorsView);
 
   tbtnEditSeries.Enabled := (ActiveView = AuthorsView);
   tbtnEditAuthor.Enabled := (ActiveView = AuthorsView);
@@ -6708,14 +6775,14 @@ begin
   Settings.ActivePage := pgControl.ActivePageIndex;
 end;
 
-procedure TfrmMain.miShowHelpClick(Sender: TObject);
+procedure TfrmMain.ShowHelpExecute(Sender: TObject);
 var
   dummy: Boolean;
 begin
   OnHelpHandler(0, 0, dummy);
 end;
 
-procedure TfrmMain.miPdfdjvuClick(Sender: TObject);
+procedure TfrmMain.ImportNonFB2Execute(Sender: TObject);
 begin
   frmAddnonfb2.OnSetControlsState := OnSetControlsStateHandler;
   frmAddnonfb2.ShowModal;
@@ -6745,7 +6812,7 @@ begin
   );
 end;
 
-procedure TfrmMain.miImportUserDataClick(Sender: TObject);
+procedure TfrmMain.ImportUserDataExecute(Sender: TObject);
 var
   FileName: string;
   Data: TUserData;
@@ -6798,7 +6865,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.miINPXCollectionExportClick(Sender: TObject);
+procedure TfrmMain.Export2INPXExecute(Sender: TObject);
 var
   FileName: string;
 begin
@@ -7014,6 +7081,21 @@ begin
   //
   // См. TfrmMain.OnChangeBook2ZipHandler как пример верной реализации
   //
+  Assert(BookRecord.nodeType = ntBookInfo);
+
+  DMCollection.UpdateBook(BookRecord);
+  {
+  UpdateNodes(
+    BookRecord.BookKey,
+    procedure(BookData: PBookRecord)
+    begin
+      Assert(Assigned(BookData));
+      BookData^.FileName := NewFileName;
+    end
+  );
+  }
+
+  {
   GetActiveTree(Tree);
   Node := Tree.GetFirstSelected;
 
@@ -7047,6 +7129,7 @@ begin
   finally
     ALibrary.Free;
   end;
+  }
 end;
 
 // A raw file just became a zip archive (FBD + raw)

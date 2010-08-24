@@ -4,7 +4,7 @@ object DMCollection: TDMCollection
   Height = 580
   Width = 779
   object DBCollection: TABSDatabase
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     Exclusive = True
     MaxConnections = 5
@@ -20,7 +20,7 @@ object DMCollection: TDMCollection
     Top = 96
   end
   object BooksByAuthor: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
@@ -36,7 +36,7 @@ object DMCollection: TDMCollection
     end
   end
   object BooksByGenre: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
@@ -52,7 +52,7 @@ object DMCollection: TDMCollection
     end
   end
   object Genres: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
@@ -75,7 +75,7 @@ object DMCollection: TDMCollection
     end
   end
   object BooksBySerie: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
@@ -99,7 +99,7 @@ object DMCollection: TDMCollection
     Top = 96
   end
   object BookGenres: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
@@ -117,7 +117,7 @@ object DMCollection: TDMCollection
     end
   end
   object GenreBooks: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
@@ -141,7 +141,7 @@ object DMCollection: TDMCollection
     Top = 152
   end
   object AuthorBooks: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
@@ -165,7 +165,7 @@ object DMCollection: TDMCollection
     Top = 152
   end
   object tblBooks: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
@@ -247,7 +247,7 @@ object DMCollection: TDMCollection
     end
   end
   object AllAuthors: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
@@ -274,7 +274,7 @@ object DMCollection: TDMCollection
     end
   end
   object BookAuthors: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
@@ -291,7 +291,7 @@ object DMCollection: TDMCollection
     end
   end
   object tblSeriesB1: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
@@ -312,7 +312,7 @@ object DMCollection: TDMCollection
     end
   end
   object Authors: TABSQuery
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
@@ -365,7 +365,7 @@ object DMCollection: TDMCollection
     end
   end
   object Series: TABSQuery
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
@@ -409,7 +409,7 @@ object DMCollection: TDMCollection
     end
   end
   object sqlBooks: TABSQuery
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = True
@@ -428,7 +428,7 @@ object DMCollection: TDMCollection
     Top = 96
   end
   object AllBooks: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
@@ -512,7 +512,7 @@ object DMCollection: TDMCollection
     end
   end
   object AllSeries: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
@@ -531,7 +531,7 @@ object DMCollection: TDMCollection
     end
   end
   object AllGenres: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False

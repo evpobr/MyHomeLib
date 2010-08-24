@@ -197,6 +197,8 @@ type
     procedure SetBookSerieID(const BookKey: TBookKey; const SerieID: Integer);
     procedure SetFolder(const BookKey: TBookKey; const Folder: string);
 
+    procedure UpdateBook(const BookRecord: TBookRecord);
+
     //
     // Работа с группами
     //
@@ -939,6 +941,11 @@ begin
       raise ;
     end;
   end;
+end;
+
+procedure TDMUser.UpdateBook(const BookRecord: TBookRecord);
+begin
+
 end;
 
 //

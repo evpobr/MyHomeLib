@@ -185,6 +185,7 @@ type
       procedure First(var BookRecord: TBookRecord);
       procedure Next(var BookRecord: TBookRecord);
       function IsOnData: Boolean;
+
       procedure SetFolder(const Folder: string);
     end;
       
@@ -268,6 +269,11 @@ type
 
     function GetReview(const BookKey: TBookKey): string;
     function SetReview(const BookKey: TBookKey; const Review: string): Integer;
+
+    //
+    // Полностью обновляет информацию о книге с сохранением BookID
+    //
+    procedure UpdateBook(const BookRecord: TBookRecord);
 
     //
     // Работа с группами
@@ -794,6 +800,19 @@ begin
   // Обновим информацию в группах
   //
   Result := Result or DMUser.SetReview(BookKey, NewReview);
+end;
+
+procedure TDMCollection.UpdateBook(const BookRecord: TBookRecord);
+begin
+  VerifyCurrentCollection(BookRecord.BookKey.DatabaseID);
+  Assert(AllBooks.Active);
+
+  if AllBooks.Locate(BOOK_ID_FIELD, BookRecord.BookKey.BookID, []) then
+  begin
+
+  end;
+
+  DMUser.UpdateBook(BookRecord);
 end;
 
 procedure TDMCollection.AddBookToGroup(const BookKey: TBookKey; GroupID: Integer);
