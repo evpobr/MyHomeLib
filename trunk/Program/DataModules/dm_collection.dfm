@@ -539,7 +539,7 @@ object DMCollection: TDMCollection
     TableName = 'Genres'
     Exclusive = False
     Left = 688
-    Top = 328
+    Top = 320
     object AllGenresGenreCode: TWideStringField
       FieldName = 'GenreCode'
       Required = True

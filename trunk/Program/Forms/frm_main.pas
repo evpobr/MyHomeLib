@@ -350,7 +350,7 @@ type
     miShowMainToolbar: TMenuItem;
     miShowStatusbar: TMenuItem;
     miView: TMenuItem;
-    acShowBookInfo: TAction;
+    acShowBookInfoPanel: TAction;
     miShowBookInfo: TMenuItem;
     SeriesViewSplitter: TMHLSplitter;
     SerieBookInfoSplitter: TMHLSplitter;
@@ -616,14 +616,16 @@ type
     procedure ShowEngAlphabetUpdate(Sender: TObject);
     procedure ShowStatusbarExecute(Sender: TObject);
     procedure ShowStatusbarUpdate(Sender: TObject);
-    procedure ShowBookInfoExecute(Sender: TObject);
-    procedure ShowBookInfoUpdate(Sender: TObject);
+    procedure ShowBookInfoPanelExecute(Sender: TObject);
+    procedure ShowBookInfoPanelUpdate(Sender: TObject);
     procedure ShowBookCoverExecute(Sender: TObject);
     procedure ShowBookCoverUpdate(Sender: TObject);
     procedure ShowBookAnnotationExecute(Sender: TObject);
     procedure ShowBookAnnotationUpdate(Sender: TObject);
     procedure HideDeletedBooksExecute(Sender: TObject);
+    procedure HideDeletedBooksUpdate(Sender: TObject);
     procedure ShowLocalOnlyExecute(Sender: TObject);
+    procedure ShowLocalOnlyUpdate(Sender: TObject);
 
     //
     // Меню "Инструменты"
@@ -1294,11 +1296,6 @@ begin
   SetShowBookCover(Settings.ShowBookCover);
   SetShowBookAnnotation(Settings.ShowBookAnnotation);
 
-  tbtnShowDeleted.Down := Settings.HideDeletedBooks;
-  tbtnShowLocalOnly.Down := Settings.ShowLocalOnly;
-
-  cbDeleted.Checked := Settings.HideDeletedBooks;
-
   CreateScriptMenu;
   if Settings.DefaultScript <> 0 then
   begin
@@ -1659,9 +1656,7 @@ begin
     ///pmiDownloadBooks.Visible := IsOnline;
 
     // --------- Панели онструментов ----------------------------------------------
-    ///tbtnShowLocalOnly.Visible := IsOnline;
     ///tbtnDownloadList_Add.Visible := IsOnline;
-    ///tbtnShowDeleted.Visible := not IsPrivate;
 
     //
     // Поиск
@@ -1713,11 +1708,17 @@ begin
       //end;
     //end;
 
+    //
+    // Действия, видимость которых зависит от типа коллекции и которые доступны через тулбар, необходимо обновить вручную
+    //
+    HideDeletedBooksUpdate(nil);
+    ShowLocalOnlyUpdate(nil);
+
     DMCollection.DBCollection.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
     DMCollection.DBCollection.Connected := True;
 
-    DMCollection.SetShowLocalBookOnly(Settings.ShowLocalOnly, False);
-    DMCollection.SetHideDeletedBook(Settings.HideDeletedBooks, False);
+    DMCollection.SetShowLocalBookOnly(IsOnline and Settings.ShowLocalOnly, False);
+    DMCollection.SetHideDeletedBook((not IsPrivate) and Settings.HideDeletedBooks, False);
     DMCollection.SetTableState(True);
 
     FillAuthorTree(tvAuthors);
@@ -3902,21 +3903,32 @@ begin
 end;
 
 procedure TfrmMain.HideDeletedBooksExecute(Sender: TObject);
+var
+  SavedCursor: TCursor;
 begin
-  SavePositions;
+  SavedCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    SavePositions;
 
-  Settings.HideDeletedBooks := not Settings.HideDeletedBooks;
-  tbtnShowDeleted.Down := Settings.HideDeletedBooks;
+    Settings.HideDeletedBooks := not Settings.HideDeletedBooks;
 
-  cbDeleted.Checked := Settings.HideDeletedBooks;
+    DMCollection.SetHideDeletedBook(Settings.HideDeletedBooks, True);
 
-  DMCollection.SetHideDeletedBook(Settings.HideDeletedBooks, True);
+    FillAuthorTree(tvAuthors);
+    FillSeriesTree(tvSeries);
+    FillAllBooksTree;
 
-  FillAuthorTree(tvAuthors);
-  FillSeriesTree(tvSeries);
-  FillAllBooksTree;
+    RestorePositions;
+  finally
+    Screen.Cursor := SavedCursor;
+  end;
+end;
 
-  RestorePositions;
+procedure TfrmMain.HideDeletedBooksUpdate(Sender: TObject);
+begin
+  acViewHideDeletedBooks.Visible := (not IsPrivate);
+  acViewHideDeletedBooks.Checked := Settings.HideDeletedBooks;
 end;
 
 function TfrmMain.GetFilterButton(ToolBars: array of TToolBar; const Filter: string): TToolButton;
@@ -4060,19 +4072,32 @@ begin
 end;
 
 procedure TfrmMain.ShowLocalOnlyExecute(Sender: TObject);
+var
+  SavedCursor: TCursor;
 begin
-  SavePositions;
+  SavedCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    SavePositions;
 
-  Settings.ShowLocalOnly := not Settings.ShowLocalOnly;
-  tbtnShowLocalOnly.Down := Settings.ShowLocalOnly;
+    Settings.ShowLocalOnly := not Settings.ShowLocalOnly;
 
-  DMCollection.SetShowLocalBookOnly(Settings.ShowLocalOnly, True);
+    DMCollection.SetShowLocalBookOnly(Settings.ShowLocalOnly, True);
 
-  FillAuthorTree(tvAuthors);
-  FillSeriesTree(tvSeries);
-  FillAllBooksTree;
+    FillAuthorTree(tvAuthors);
+    FillSeriesTree(tvSeries);
+    FillAllBooksTree;
 
-  RestorePositions;
+    RestorePositions;
+  finally
+    Screen.Cursor := SavedCursor;
+  end;
+end;
+
+procedure TfrmMain.ShowLocalOnlyUpdate(Sender: TObject);
+begin
+  acViewShowLocalOnly.Visible := IsOnline;
+  acViewShowLocalOnly.Checked := Settings.ShowLocalOnly;
 end;
 
 procedure TfrmMain.SetInfoPanelHeight(Height: Integer);
@@ -5299,12 +5324,12 @@ begin
   StatusBar.Visible := Settings.ShowStatusBar;
 end;
 
-procedure TfrmMain.ShowBookInfoUpdate(Sender: TObject);
+procedure TfrmMain.ShowBookInfoPanelUpdate(Sender: TObject);
 begin
-  acShowBookInfo.Checked := Settings.ShowInfoPanel;
+  acShowBookInfoPanel.Checked := Settings.ShowInfoPanel;
 end;
 
-procedure TfrmMain.ShowBookInfoExecute(Sender: TObject);
+procedure TfrmMain.ShowBookInfoPanelExecute(Sender: TObject);
 begin
   Settings.ShowInfoPanel := not Settings.ShowInfoPanel;
 
@@ -6711,8 +6736,6 @@ begin
   tbCollapse.Enabled := ToolBuutonVisible;
   tbtnRead.Enabled := ToolBuutonVisible;
   btnRefreshCollection.Enabled := ToolBuutonVisible;
-  tbtnShowDeleted.Enabled := ToolBuutonVisible;
-  tbtnShowLocalOnly.Enabled := ToolBuutonVisible;
 
   tbSendToDevice.Enabled := ToolBuutonVisible;
   btnSwitchTreeMode.Enabled := not((ActiveView = SeriesView) or (ActiveView = DownloadView));
