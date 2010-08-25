@@ -68,7 +68,7 @@ var
   totalBooks: Integer;
   processedBooks: Integer;
   NewFolder: string;
-  BookIterator: TDMCollection.TBookIterator;
+  BookIterator: IBookIterator;
   BookRecord: TBookRecord;
 begin
   totalBooks := DMCollection.GetTotalNumBooks;
@@ -85,9 +85,8 @@ begin
       SetComment(rstrBuildingFileList);
       FFiles.Process;
 
-      BookIterator := DMCollection.BookIterator;
-      BookIterator.First(BookRecord);
-      while BookIterator.IsOnData do
+      BookIterator := DMCollection.GetBookIterator(True);
+      while BookIterator.Next(BookRecord) do
       begin
         if Canceled then
           Exit;
@@ -100,7 +99,6 @@ begin
             BookIterator.SetFolder(NewFolder);
           end;
         end;
-        BookIterator.Next(BookRecord);
 
         Inc(processedBooks);
         if (processedBooks mod ProcessedItemThreshold) = 0 then

@@ -111,7 +111,7 @@ var
   totalBooks: Integer;
   processedBooks: Integer;
   R: TBookRecord;
-  BookIterator: TDMCollection.TBookIterator;
+  BookIterator: IBookIterator;
 begin
   SetComment(rstrExportingCollection);
 
@@ -127,9 +127,8 @@ begin
   try
     slHelper := TStringList.Create;
     try
-      BookIterator := DMCollection.BookIterator;
-      BookIterator.First(R);
-      while BookIterator.IsOnData do
+      BookIterator := DMCollection.GetBookIterator(True);
+      while BookIterator.Next(R) do
       begin
         if Canceled then
           Exit;
@@ -138,8 +137,6 @@ begin
         Assert(cINPRecord <> '');
 
         slHelper.Add(cINPRecord);
-
-        BookIterator.Next(R);
 
         Inc(processedBooks);
         if (processedBooks mod ProcessedItemThreshold) = 0 then
