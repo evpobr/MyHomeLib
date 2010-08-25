@@ -888,7 +888,9 @@ type
 
     FPresets: TSearchPresets;
 
+    // Filters for the iterators:
     FGenreBookFilter: string;
+    FAuthorBookFilter: string;
 
     //
     function GetBookNode(const Tree: TBookTree; const BookKey: TBookKey): PVirtualNode; overload;
@@ -1597,6 +1599,7 @@ begin
   Screen.Cursor := crHourGlass;
   try
     FGenreBookFilter := '';
+    FAuthorBookFilter := '';
     CloseCollection;
 
     //
@@ -2092,9 +2095,9 @@ begin
   SetColumns;
 
   case Page of
-    0: FillBooksTree(tvBooksA,  DMCollection.AuthorBooks, DMCollection.BooksByAuthor, False, True);  // авторы
+    0: FillBooksTree(tvBooksA,  DMCollection.GetBookIterator(bmAuthorBook, False, FAuthorBookFilter), False, True);  // авторы
     1: FillBooksTree(tvBooksS,  nil,                      DMCollection.BooksBySerie,  False, False); // серии
-    2: FillBooksTree(tvBooksG,  DMCollection.GetBookIterator(bimGenreBook, False, FGenreBookFilter),  True,  True);      // жанры
+    2: FillBooksTree(tvBooksG,  DMCollection.GetBookIterator(bmGenreBook, False, FGenreBookFilter),  True,  True);      // жанры
     3: FillBooksTree(tvBooksSR, nil,                      DMCollection.sqlBooks,      True,  True);  // поиск
     4: FillBooksTree(tvBooksF,  DMUser.GroupBooks,        DMUser.BooksByGroup,        True,  True);  // избранное
   end;
@@ -2165,9 +2168,9 @@ end;
 
 procedure TfrmMain.FillAllBooksTree;
 begin
-  FillBooksTree(tvBooksA, DMCollection.AuthorBooks, DMCollection.BooksByAuthor, False, True);  // авторы
+  FillBooksTree(tvBooksA, DMCollection.GetBookIterator(bmAuthorBook, False, FAuthorBookFilter), False, True);  // авторы
   FillBooksTree(tvBooksS, nil,                      DMCollection.BooksBySerie,  False, False); // серии
-  FillBooksTree(tvBooksG, DMCollection.GetBookIterator(bimGenreBook, False, FGenreBookFilter),      True,  True);  // жанры
+  FillBooksTree(tvBooksG, DMCollection.GetBookIterator(bmGenreBook, False, FGenreBookFilter),      True,  True);  // жанры
   FillBooksTree(tvBooksF, DMUser.GroupBooks,        DMUser.BooksByGroup,        True,  True);  // избранное
 end;
 
@@ -2826,7 +2829,8 @@ begin
   DMCollection.Authors.Locate(AUTHOR_ID_FIELD, Data^.AuthorID, []);
   lblAuthor.Caption := Data^.GetFullName;
   FLastAuthorID := Data^.AuthorID;
-  FillBooksTree(tvBooksA, DMCollection.AuthorBooks, DMCollection.BooksByAuthor, False, True); // авторы
+  FAuthorBookFilter := '`AuthorID` = ' + QuotedStr(IntToStr(FLastAuthorID));
+  FillBooksTree(tvBooksA, DMCollection.GetBookIterator(bmAuthorBook, False, FAuthorBookFilter), False, True); // авторы
 end;
 
 procedure TfrmMain.FreeAuthorNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -2943,7 +2947,7 @@ begin
     FGenreBookFilter := '`GenreCode` = ' + QuotedStr(ID)
   else
     FGenreBookFilter := '`GenreCode` Like ' + QuotedStr(ID + IfThen(Node.ChildCount > 0, '.%', '%'));
-  FillBooksTree(tvBooksG, DMCollection.GetBookIterator(bimGenreBook, False, FGenreBookFilter), True, True);
+  FillBooksTree(tvBooksG, DMCollection.GetBookIterator(bmGenreBook, False, FGenreBookFilter), True, True);
 
   lblGenreTitle.Caption := Data.GenreAlias;
 end;

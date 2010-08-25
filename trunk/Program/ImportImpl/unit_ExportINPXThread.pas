@@ -127,7 +127,7 @@ begin
   try
     slHelper := TStringList.Create;
     try
-      BookIterator := DMCollection.GetBookIterator(bimBook, True);
+      BookIterator := DMCollection.GetBookIterator(bmBook, True);
       while BookIterator.Next(R) do
       begin
         if Canceled then
