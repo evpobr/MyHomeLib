@@ -102,6 +102,8 @@ type
 
   TGenresType = (gtFb2, gtAny);
 
+  TBookIteratorMode = (bimBook, bimGenreBook);
+
   TBookFormat = (
     bfFb2,    // A pure FB2 file
     bfFb2Zip, // An FB2 packed in a ZIP

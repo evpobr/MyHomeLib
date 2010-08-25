@@ -753,7 +753,8 @@ type
     //
     // Построение деревьев
     //
-    procedure FillBooksTree(const Tree: TBookTree; Master: TDataSet; Detail: TDataSet; ShowAuth: Boolean; ShowSer: Boolean);
+    procedure FillBooksTree(const Tree: TBookTree; Master: TDataSet; Detail: TDataSet; ShowAuth: Boolean; ShowSer: Boolean); overload;
+    procedure FillBooksTree(const Tree: TBookTree; const BookIterator: IBookIterator; ShowAuth: Boolean; ShowSer: Boolean); overload;
 
     //
     // TODO -oNickR -cRefactoring : вынести эти методы в соответствующие датамодули
@@ -886,6 +887,8 @@ type
     // SB
 
     FPresets: TSearchPresets;
+
+    FGenreBookFilter: string;
 
     //
     function GetBookNode(const Tree: TBookTree; const BookKey: TBookKey): PVirtualNode; overload;
@@ -1593,6 +1596,7 @@ begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
+    FGenreBookFilter := '';
     CloseCollection;
 
     //
@@ -2090,7 +2094,7 @@ begin
   case Page of
     0: FillBooksTree(tvBooksA,  DMCollection.AuthorBooks, DMCollection.BooksByAuthor, False, True);  // авторы
     1: FillBooksTree(tvBooksS,  nil,                      DMCollection.BooksBySerie,  False, False); // серии
-    2: FillBooksTree(tvBooksG,  DMCollection.GenreBooks,  DMCollection.BooksByGenre,  True,  True);  // жанры
+    2: FillBooksTree(tvBooksG,  DMCollection.GetBookIterator(bimGenreBook, False, FGenreBookFilter),  True,  True);      // жанры
     3: FillBooksTree(tvBooksSR, nil,                      DMCollection.sqlBooks,      True,  True);  // поиск
     4: FillBooksTree(tvBooksF,  DMUser.GroupBooks,        DMUser.BooksByGroup,        True,  True);  // избранное
   end;
@@ -2163,7 +2167,7 @@ procedure TfrmMain.FillAllBooksTree;
 begin
   FillBooksTree(tvBooksA, DMCollection.AuthorBooks, DMCollection.BooksByAuthor, False, True);  // авторы
   FillBooksTree(tvBooksS, nil,                      DMCollection.BooksBySerie,  False, False); // серии
-  FillBooksTree(tvBooksG, DMCollection.GenreBooks,  DMCollection.BooksByGenre,  True,  True);  // жанры
+  FillBooksTree(tvBooksG, DMCollection.GetBookIterator(bimGenreBook, False, FGenreBookFilter),      True,  True);  // жанры
   FillBooksTree(tvBooksF, DMUser.GroupBooks,        DMUser.BooksByGroup,        True,  True);  // избранное
 end;
 
@@ -2936,26 +2940,11 @@ begin
 
   ID := Data^.GenreCode;
   if isFB2Collection(DMUser.ActiveCollection.CollectionType) or not Settings.ShowSubGenreBooks then
-  begin
-    DMCollection.Genres.Locate(GENRE_CODE_FIELD, ID, []);
-    FillBooksTree(tvBooksG, DMCollection.GenreBooks, DMCollection.BooksByGenre, True, True); // жанры
-  end
+    FGenreBookFilter := '`GenreCode` = ' + QuotedStr(ID)
   else
-  begin
-    DMCollection.GenreBooks.MasterSource := nil;
-    try
-      DMCollection.GenreBooks.Filter :=
-        '`GenreCode` Like ' + QuotedStr(ID + IfThen(Node.ChildCount > 0, '.%', '%'));
-      DMCollection.GenreBooks.Filtered := True;
-      try
-        FillBooksTree(tvBooksG, DMCollection.GenreBooks, DMCollection.BooksByGenre, True, True); // жанры
-      finally
-        DMCollection.GenreBooks.Filtered := False;
-      end;
-    finally
-      DMCollection.GenreBooks.MasterSource := DMCollection.dsGenres;
-    end;
-  end;
+    FGenreBookFilter := '`GenreCode` Like ' + QuotedStr(ID + IfThen(Node.ChildCount > 0, '.%', '%'));
+  FillBooksTree(tvBooksG, DMCollection.GetBookIterator(bimGenreBook, False, FGenreBookFilter), True, True);
+
   lblGenreTitle.Caption := Data.GenreAlias;
 end;
 
@@ -4478,6 +4467,184 @@ begin
           Break;
         end;
         bookNode := Tree.GetNext(bookNode);
+      end;
+    finally
+      Tree.EndUpdate;
+    end;
+
+    case Tree.Tag of
+      0: lblBooksTotalA.Caption := Format('(%d)', [i]);
+      1: lblBooksTotalS.Caption := Format('(%d)', [i]);
+      2: lblBooksTotalG.Caption := Format('(%d)', [i]);
+      3: lblTotalBooksFL.Caption := Format('(%d)', [i]);
+      4: lblBooksTotalF.Caption := Format('(%d)', [i]);
+    end;
+  finally
+    Screen.Cursor := SavedCursor;
+  end;
+end;
+
+procedure TfrmMain.FillBooksTree(const Tree: TBookTree; const BookIterator: IBookIterator; ShowAuth: Boolean; ShowSer: Boolean);
+var
+  AuthorNode: PVirtualNode;
+  SerieNode: PVirtualNode;
+  BookNode: PVirtualNode;
+
+  Data: PBookRecord;
+  Max, i: Integer;
+  Author: string;
+
+  IsGroupView: Boolean;
+
+  AuthorNodes: TDictionary<string, PVirtualNode>;
+
+  SerieID: Integer;
+
+  BookRecord: TBookRecord;
+  SavedCursor: TCursor;
+
+begin
+  Assert(Assigned(Tree));
+  Assert(Assigned(BookIterator));
+
+  IsGroupView := (Tree.Tag = 4);
+
+  //
+  // Если включен "плоский" режим отображения, принудительно сбрасываем ключи блокировки
+  //
+  if Settings.TreeModes[Tree.Tag] = tmFlat then
+  begin
+    ShowAuth := False;
+    ShowSer := False;
+  end;
+
+  ShowStatusProgress := True;
+  StatusProgress := 0;
+
+  SavedCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    Tree.BeginUpdate;
+    try
+      Tree.Clear;
+      Tree.NodeDataSize := SizeOf(TBookRecord);
+
+      StatusMessage := rstrBuildingTheList;
+
+      i := 0;
+      try
+        AuthorNodes := TDictionary<string, PVirtualNode>.Create;
+        try
+          Max := BookIterator.GetNumRecords;
+
+          while BookIterator.Next(BookRecord) do
+          begin
+            SerieID := BookRecord.SerieID;
+
+            AuthorNode := nil;
+            if ShowAuth then
+            begin
+              Author := TAuthorsHelper.GetList(BookRecord.Authors);
+              if not AuthorNodes.TryGetValue(Author, AuthorNode) then
+              begin
+                AuthorNode := Tree.AddChild(nil);
+                Data := Tree.GetNodeData(AuthorNode);
+
+                Initialize(Data^);
+                Data^.nodeType := ntAuthorInfo;
+                Data^.Authors := BookRecord.Authors;
+                Include(AuthorNode.States, vsInitialUserData);
+
+                AuthorNodes.Add(Author, AuthorNode);
+              end;
+            end
+            else
+              AuthorNode := nil;
+
+            Assert(ShowAuth = Assigned(AuthorNode));
+
+            if ShowSer then
+            begin
+              if SerieID = NO_SERIE_ID then
+              begin
+                //
+                // книга без серии
+                //
+                SerieNode := AuthorNode;
+              end
+              else
+              begin
+                SerieNode := FindSeriesInTree(Tree, AuthorNode, SerieID);
+                if not Assigned(SerieNode) then
+                begin
+                  //
+                  // Серия не найдена
+                  //
+                  //
+                  Assert(not Assigned(SerieNode));
+
+                  SerieNode := Tree.AddChild(AuthorNode);
+
+                  //
+                  // заполним данные о серии
+                  //
+                  Data := Tree.GetNodeData(SerieNode);
+
+                  Initialize(Data^);
+                  Data^.nodeType := ntSeriesInfo;
+                  Data^.SerieID := SerieID;
+                  Data^.Serie := BookRecord.Serie;
+                  Include(SerieNode.States, vsInitialUserData);
+                end;
+              end;
+            end
+            else
+              SerieNode := AuthorNode;
+
+            //
+            // заполним данные о книге
+            //
+            BookNode := Tree.AddChild(SerieNode);
+            Data := Tree.GetNodeData(BookNode);
+
+            Initialize(Data^);
+            Data^ := BookRecord;
+            Include(BookNode.States, vsInitialUserData);
+
+            Inc(i);
+            StatusProgress := i * 100 div Max;
+          end; // while
+
+          //
+          // Отсортировать дерево
+          //
+          if (Settings.TreeModes[Tree.Tag] = tmFlat) then
+            Tree.SortTree(FSortSettings[Tree.Tag].Column, FSortSettings[Tree.Tag].Direction)
+          else
+            Tree.SortTree(NoColumn, sdAscending);
+        finally
+          FreeAndNil(AuthorNodes);
+        end;
+      finally
+        ShowStatusProgress := False;
+        StatusMessage := rstrReadyMessage;
+      end;
+
+      //
+      // Выбрать первую книгу
+      //
+      BookNode := Tree.GetFirst;
+      while Assigned(BookNode) do
+      begin
+        Data := Tree.GetNodeData(BookNode);
+        if Data^.nodeType = ntBookInfo then
+        begin
+          Tree.Selected[BookNode] := True;
+          Tree.FocusedNode := BookNode;
+          Tree.FullyVisible[BookNode] := True;
+          Break;
+        end;
+        BookNode := Tree.GetNext(BookNode);
       end;
     finally
       Tree.EndUpdate;
