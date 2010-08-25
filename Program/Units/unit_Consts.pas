@@ -234,6 +234,8 @@ const
   AUTHOR_FIRSTNAME_FIELD = 'FirstName';
   AUTHOR_MIDDLENAME_FIELD = 'MiddleName';
 
+  SETTING_VALIE_FIELD = 'Value';
+
   //
   // индексные поля
   //
@@ -249,6 +251,12 @@ const
   GROUP_ID_BOOK_ID_DB_ID_FIELDS = GROUP_ID_FIELD + ';' + BOOK_ID_FIELD + ';' + DB_ID_FIELD;
 
   PX_INDEX = 'PXIndex';
+
+  //
+  // Индексы свойств коллекции
+  //
+  SETTING_VERSION = 0;
+  SETTING_CREATION_DATE = 1;
 
   //
   // специальные значения фильтров
