@@ -102,7 +102,7 @@ type
 
   TGenresType = (gtFb2, gtAny);
 
-  TBookIteratorMode = (bmBook, bmGenreBook, bmAuthorBook);
+  TBookIteratorMode = (bmBook, bmGenreBook, bmAuthorBook, bmSeriesBook);
 
   TBookFormat = (
     bfFb2,    // A pure FB2 file

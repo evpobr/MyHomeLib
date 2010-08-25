@@ -41,24 +41,11 @@ type
 
     dsAuthors: TDataSource;
 
-    AuthorBooks: TABSTable;
-    AuthorBooksAuthorID: TIntegerField;
-    AuthorBooksBookID: TIntegerField;
-
-    dsAuthorBooks: TDataSource;
-
-    BooksByAuthor: TABSTable;
-    BooksByAuthorID: TAutoIncField;
-
     Series: TABSQuery;
     SeriesSerieID: TAutoIncField;
     SeriesTitle: TWideStringField;
 
     dsSeries: TDataSource;
-
-    BooksBySerie: TABSTable;
-    BooksBySerieID: TAutoIncField;
-    BooksBySerieSerieID: TIntegerField;
 
     Genres: TABSTable;
     GenresGenreCode: TWideStringField;
@@ -67,14 +54,6 @@ type
     GenresGenreAlias: TWideStringField;
 
     dsGenres: TDataSource;
-
-    GenreBooks: TABSTable;
-    GenreBooksGenreCode: TWideStringField;
-    GenreBooksBookID: TIntegerField;
-    dsGenreBooks: TDataSource;
-
-    BooksByGenre: TABSTable;
-    BooksByGenreID: TAutoIncField;
 
     BookAuthors: TABSTable;
     BookAuthorsAuthorID: TIntegerField;
@@ -420,6 +399,9 @@ begin
     bmAuthorBook:
       Result :=
         'SELECT b.BookID FROM Author_List al INNER JOIN Books b ON al.BookID = b.BookID ';
+    bmSeriesBook:
+      Result :=
+        'SELECT b.BookID FROM Series s INNER JOIN Books b ON s.SerieID = b.SerieID ';
   else
     Assert(False);
   end;
@@ -514,15 +496,10 @@ end;
 procedure TDMCollection.SetTableState(State: Boolean);
 begin
   Authors.Active := State;
-  AuthorBooks.Active := State;
-  BooksByAuthor.Active := State;
 
   Series.Active := State;
-  BooksBySerie.Active := State;
 
   Genres.Active := State;
-  GenreBooks.Active := State;
-  BooksByGenre.Active := State;
 
   BookGenres.Active := State;
   BookAuthors.Active := State;
@@ -1095,21 +1072,9 @@ begin
       SetFilter := False;
     end;
 
-    BooksByAuthor.Active := False;
-    BooksByGenre.Active := False;
-    BooksBySerie.Active := False;
-
     if SetFilter then
-    begin
-      BooksByAuthor.Filter := TotalFilter;
-      BooksByGenre.Filter := TotalFilter;
-      BooksBySerie.Filter := TotalFilter;
       DMUser.BooksByGroup.Filter := TotalFilter;
-    end;
 
-    BooksByAuthor.Filtered := SetFilter;
-    BooksByGenre.Filtered := SetFilter;
-    BooksBySerie.Filtered := SetFilter;
     DMUser.BooksByGroup.Filtered := SetFilter;
 
     Include(Result, dpBooks);
@@ -1128,12 +1093,6 @@ begin
     Series.Active := True;
   end;
 
-  if dpBooks in Parts then
-  begin
-    BooksByAuthor.Active := True;
-    BooksByGenre.Active := True;
-    BooksBySerie.Active := True;
-  end;
 end;
 
 procedure TDMCollection.SetAuthorFilter(const Value: string;
