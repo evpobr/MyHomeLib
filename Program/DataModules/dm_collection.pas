@@ -412,11 +412,14 @@ var
 begin
   Result := '';
   case Mode of
-    bimBook:
+    bmBook:
       Result := 'SELECT BookID FROM Books';
-    bimGenreBook:
+    bmGenreBook:
       Result :=
         'SELECT b.BookID FROM Genre_List gl INNER JOIN Books b ON gl.BookID = b.BookID ';
+    bmAuthorBook:
+      Result :=
+        'SELECT b.BookID FROM Author_List al INNER JOIN Books b ON al.BookID = b.BookID ';
   else
     Assert(False);
   end;
