@@ -333,9 +333,7 @@ type
 
     // Iterators:
     function GetBookIterator(const Mode: TBookIteratorMode;
-      const LoadMemos: Boolean): IBookIterator; overload;
-    function GetBookIterator(const Mode: TBookIteratorMode;
-      const LoadMemos: Boolean; const Filter: string): IBookIterator; overload;
+      const LoadMemos: Boolean; const Filter: string = ''): IBookIterator; overload;
 
   end;
 
@@ -1311,15 +1309,9 @@ begin
 end;
 
 // Return an iterator working on the active collection
-// but having its own Books datase (the rest of the tables are from the active collection).
+// but having its own Books dataset (the rest of the tables are from the active collection).
 // No need to free the iterator when done as it's a TInterfacedObject
 // and knows to self destroyed when no longer referenced.
-function TDMCollection.GetBookIterator(const Mode: TBookIteratorMode;
-  const LoadMemos: Boolean): IBookIterator;
-begin
-  Result := TBookIteratorImpl.Create(Self, Mode, LoadMemos, '');
-end;
-
 function TDMCollection.GetBookIterator(const Mode: TBookIteratorMode;
   const LoadMemos: Boolean; const Filter: string): IBookIterator;
 begin
