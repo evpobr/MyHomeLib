@@ -201,7 +201,8 @@ type
       FCollectionID: Integer; // Active collection's ID at the time the iterator was created
       FLoadMemos: Boolean;
 
-      procedure InitSQL(const Mode: TBookIteratorMode; const Filter: string);
+      function CreateSQL(const Mode: TBookIteratorMode; const Filter: string): string;
+      procedure AddFilter(var Where: string; const Filter: string);
     end;
 
   strict private
@@ -374,7 +375,7 @@ begin
 
   FBooks := TABSQuery.Create(FCollection.DBCollection);
   FBooks.DatabaseName := FCollection.DBCollection.DatabaseName;
-  InitSql(Mode, Filter);
+  FBooks.SQL.Text := CreateSQL(Mode, Filter);
   FBooks.Active := True;
 
   FBookID := FBooks.FieldByName(BOOK_ID_FIELD) as TIntegerField;
@@ -407,15 +408,16 @@ begin
   Result := FBooks.RecordCount;
 end;
 
-procedure TDMCollection.TBookIteratorImpl.InitSQL(const Mode: TBookIteratorMode; const Filter: string);
+function TDMCollection.TBookIteratorImpl.CreateSQL(const Mode: TBookIteratorMode; const Filter: string): string;
 var
   Where: string;
 begin
+  Result := '';
   case Mode of
     bimBook:
-      FBooks.SQL.Text := 'SELECT BookID FROM Books';
+      Result := 'SELECT BookID FROM Books';
     bimGenreBook:
-      FBooks.SQL.Text :=
+      Result :=
         'SELECT b.BookID FROM Genre_List gl INNER JOIN Books b ON gl.BookID = b.BookID ';
   else
     Assert(False);
@@ -423,27 +425,21 @@ begin
 
   Where := '';
   if Filter <> '' then
-  begin
-    if Where = '' then
-      Where := ' WHERE ' + Filter
-    else
-      Where := Where + ' AND ' + Filter;
-  end;
+    AddFilter(Where, Filter);
   if FCollection.FHideDeleted then
-  begin
-    if Where = '' then
-      Where := ' WHERE b.Deleted = False '
-    else
-      Where := Where + ' AND b.Deleted = False ';
-  end;
+    AddFilter(Where, ' b.Deleted = False ');
   if FCollection.FShowLocalOnly then
-  begin
+    AddFilter(Where, ' b.Local = True ');
+  Result := Result + Where;
+end;
+
+procedure TDMCollection.TBookIteratorImpl.AddFilter(var Where: string; const Filter: string);
+begin
     if Where = '' then
-      Where := ' WHERE b.Local = True '
+      Where := ' WHERE '
     else
-      Where := Where + ' AND b.Local = True ';
-  end;
-  FBooks.SQL.Text := FBooks.SQL.Text + Where;
+      Where := Where + ' AND ';
+    Where := Where + Filter;
 end;
 
 { TDMCollection }
