@@ -83,6 +83,10 @@ type
   private
     FDatabase: TABSDatabase;
 
+    FSettings: TABSTable;
+    FSettingsID: TIntegerField;
+    FSettingsValue: TWideMemoField;
+
     FAuthors: TABSTable;
     FAuthorID: TIntegerField;
     FAuthorLastName: TWideStringField;
@@ -177,6 +181,21 @@ const
 //-----------------------------------------------------------------------------
 //                                 Коллекция
 //-----------------------------------------------------------------------------
+DATABASE_VERSION = '1000';
+
+SettingsTableFields: array [1 .. 2] of TFieldDesc = (
+  (Name: ID_FIELD;            DataType: ftInteger;    Size: 0;         Required: True),
+  (Name: SETTING_VALIE_FIELD; DataType: ftWideMemo;   Size: 0;         Required: False)
+);
+
+SettingsTableIndexes: array [1 .. 1] of TIndexDesc = (
+  (Name: PX_INDEX;            Fields: ID_FIELD; Options: [ixPrimary])
+);
+
+SettingsTableBlobs: array [1 .. 1] of TBLOBFieldDesc = (
+  (Name: SETTING_VALIE_FIELD; BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5)
+);
+
 //
 // Author List
 //
@@ -480,6 +499,9 @@ begin
   FDatabase.PageSize := 65535;
   FDatabase.PageCountInExtent := 16;
 
+  FSettings := TABSTable.Create(FDatabase);
+  FSettings.TableName := 'Settings';
+
   FAuthors := TABSTable.Create(FDatabase);
   FAuthors.TableName := 'Authors';
 
@@ -514,6 +536,7 @@ procedure TMHLLibrary.SetActive(const Value: Boolean);
 begin
   FDatabase.Connected := Value;
 
+  FSettings.Active := Value;
   FAuthors.Active := Value;
   FAuthorList.Active := Value;
   FBooks.Active := Value;
@@ -523,6 +546,9 @@ begin
 
   if Value then
   begin
+    FSettingsID := FSettings.FieldByName(ID_FIELD) as TIntegerField;
+    FSettingsValue := FSettings.FieldByName(SETTING_VALIE_FIELD) as TWideMemoField;
+
     FAuthorID := FAuthors.FieldByName(AUTHOR_ID_FIELD) as TIntegerField;
     FAuthorLastName := FAuthors.FieldByName(AUTHOR_LASTTNAME_FIELD) as TWideStringField;
     FAuthorFirstName := FAuthors.FieldByName(AUTHOR_FIRSTNAME_FIELD) as TWideStringField;
@@ -566,6 +592,9 @@ begin
   end
   else
   begin
+    FSettingsID := nil;
+    FSettingsValue := nil;
+
     FAuthorID := nil;
     FAuthorLastName := nil;
     FAuthorFirstName := nil;
@@ -685,6 +714,7 @@ begin
   //
   // Создадим таблицы
   //
+  CreateTable(FDatabase, 'Settings',    SettingsTableFields,   SettingsTableIndexes,   []{SettingsTableBlobs});
   CreateTable(FDatabase, 'Books',       BooksTableFields,      BooksTableIndexes,      BooksTableBlobs);
   CreateTable(FDatabase, 'Authors',     AuthorsTableFields,    AuthorsTableIndexes,    []);
   CreateTable(FDatabase, 'Series',      SeriesTableFields,     SeriesTableIndexes,     []);
@@ -693,6 +723,12 @@ begin
   CreateTable(FDatabase, 'Author_List', AuthorListTableFields, AuthorListTableIndexes, []);
 
   Active := True;
+
+  //
+  // Запишем версию метаданных, и дату создания
+  //
+  FSettings.AppendRecord([SETTING_VERSION, DATABASE_VERSION]);
+  FSettings.AppendRecord([SETTING_CREATION_DATE, FormatDateTime('', Now)]);
 
   //
   // Заполним таблицу жанров
