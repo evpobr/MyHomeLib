@@ -113,7 +113,6 @@ type
     BookID: Integer;
     DatabaseID: Integer;
 
-    //procedure Init(const NewBookID: Integer; const NewDatabaseID: Integer);
     function IsSameAs(const other: TBookKey): Boolean; inline;
   end;
 
@@ -308,9 +307,8 @@ type
 
   // --------------------------------------------------------------------------
   IBookIterator = interface
-    function Eof: Boolean;
-    procedure Next;
-    procedure Get(var BookRecord: TBookRecord);
+    function Next(out BookRecord: TBookRecord): Boolean;
+    function GetNumRecords: Integer;
   end;
 
 // ============================================================================
