@@ -96,7 +96,8 @@ begin
           NewFolder := FindNewFolder(BookRecord.FileName + ' ' + IntToStr(BookRecord.Size));
           if NewFolder <> '*' then
           begin
-            BookIterator.SetFolder(NewFolder);
+            BookRecord.Folder := NewFolder;
+            DMCollection.SetFolder(BookRecord.BookKey, BookRecord.Folder);
           end;
         end;
 
