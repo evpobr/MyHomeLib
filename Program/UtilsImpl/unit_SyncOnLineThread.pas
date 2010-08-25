@@ -73,12 +73,10 @@ begin
   processedBooks := 0;
 
   BookIterator := DMCollection.GetBookIterator(True);
-  while BookIterator.Eof do
+  while BookIterator.Next(BookRecord) do
   begin
     if Canceled then
       Exit;
-
-    BookIterator.Get(BookRecord);
 
     try
       //
@@ -106,8 +104,6 @@ begin
     if (processedBooks mod ProcessedItemThreshold) = 0 then
       SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
     SetProgress(processedBooks * 100 div totalBooks);
-
-    BookIterator.Next;
   end;
 
   SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));

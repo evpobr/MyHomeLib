@@ -188,9 +188,8 @@ type
         //
         // IBookIterator
         //
-        function Eof: Boolean;
-        procedure Next;
-        procedure Get(var BookRecord: TBookRecord);
+        function Next(out BookRecord: TBookRecord): Boolean;
+        function GetNumRecords: Integer;
 
       private
         FCollection: TDMCollection;
@@ -362,7 +361,6 @@ begin
   FBooks := TABSQuery.Create(FCollection.DBCollection);
   FBooks.DatabaseName := FCollection.DBCollection.DatabaseName;
   FBooks.SQL.Text := 'SELECT BookID FROM Books';
-
   FBooks.Active := True;
 
   FBookID := FBooks.FieldByName(BOOK_ID_FIELD) as TIntegerField;
@@ -375,20 +373,22 @@ begin
   inherited Destroy;
 end;
 
-function TDMCollection.TBookIteratorImpl.Eof: Boolean;
+// Read next record (if present), return True if read
+function TDMCollection.TBookIteratorImpl.Next(out BookRecord: TBookRecord): Boolean;
 begin
-  Result := FBooks.Eof;
+  Result := not FBooks.Eof;
+
+  if Result then
+  begin
+    Assert(DMUser.ActiveCollection.ID = FCollectionID); // shouldn't happen
+    FCollection.GetBookRecord(CreateBookKey(FBookID.Value, FCollectionID), BookRecord, FLoadMemos);
+    FBooks.Next;
+  end;
 end;
 
-procedure TDMCollection.TBookIteratorImpl.Next;
+function TDMCollection.TBookIteratorImpl.GetNumRecords: Integer;
 begin
-  FBooks.Next;
-end;
-
-procedure TDMCollection.TBookIteratorImpl.Get(var BookRecord: TBookRecord);
-begin
-  Assert(not FBooks.Eof);
-  FCollection.GetBookRecord(CreateBookKey(FBookID.Value, FCollectionID), BookRecord, FLoadMemos);
+  Result := FBooks.RecordCount;
 end;
 
 { TDMCollection }

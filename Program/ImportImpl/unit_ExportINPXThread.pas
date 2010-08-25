@@ -128,12 +128,10 @@ begin
     slHelper := TStringList.Create;
     try
       BookIterator := DMCollection.GetBookIterator(True);
-      while not BookIterator.Eof do
+      while BookIterator.Next(R) do
       begin
         if Canceled then
           Exit;
-
-        BookIterator.Get(R);
 
         cINPRecord := INPRecordCreate(R);
         Assert(cINPRecord <> '');
@@ -144,8 +142,6 @@ begin
         if (processedBooks mod ProcessedItemThreshold) = 0 then
           SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
         SetProgress(processedBooks * 100 div totalBooks);
-
-        BookIterator.Next;
       end;
 
       SetComment(rstrSaving);
