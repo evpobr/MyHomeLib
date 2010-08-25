@@ -86,10 +86,12 @@ begin
       FFiles.Process;
 
       BookIterator := DMCollection.GetBookIterator(True);
-      while BookIterator.Next(BookRecord) do
+      while BookIterator.Eof do
       begin
         if Canceled then
           Exit;
+
+        BookIterator.Get(BookRecord);
 
         if not FileExists(BookRecord.GetBookFileName)  then
         begin
@@ -105,6 +107,8 @@ begin
         if (processedBooks mod ProcessedItemThreshold) = 0 then
             SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
         SetProgress(processedBooks * 100 div totalBooks);
+
+        BookIterator.Next;
       end;
 
       SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
