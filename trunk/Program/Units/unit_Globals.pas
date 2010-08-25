@@ -113,7 +113,7 @@ type
     BookID: Integer;
     DatabaseID: Integer;
 
-    procedure Init(const NewBookID: Integer; const NewDatabaseID: Integer);
+    //procedure Init(const NewBookID: Integer; const NewDatabaseID: Integer);
     function IsSameAs(const other: TBookKey): Boolean; inline;
   end;
 
@@ -308,7 +308,9 @@ type
 
   // --------------------------------------------------------------------------
   IBookIterator = interface
-    function Next(var BookRecord: TBookRecord): Boolean;
+    function Eof: Boolean;
+    procedure Next;
+    procedure Get(var BookRecord: TBookRecord);
   end;
 
 // ============================================================================
@@ -316,6 +318,7 @@ type
 // helpers
 //
 // ============================================================================
+  function CreateBookKey(BookID: Integer; DatabaseID: Integer): TBookKey; inline;
 
   function isPrivateCollection(t: COLLECTION_TYPE): Boolean; inline;
   function isExternalCollection(t: COLLECTION_TYPE): Boolean; inline;
@@ -817,10 +820,10 @@ begin
   );
 end;
 
-procedure TBookKey.Init(const NewBookID: Integer; const NewDatabaseID: Integer);
+function CreateBookKey(BookID: Integer; DatabaseID: Integer): TBookKey;
 begin
-  BookID := NewBookID;
-  DatabaseID := NewDatabaseID;
+  Result.BookID := BookID;
+  Result.DatabaseID := DatabaseID;
 end;
 
 // Is the other key equal to this one?

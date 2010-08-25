@@ -4975,7 +4975,7 @@ begin
     //
     if MHLShowWarning(Format(rstrGoToLibrarySite, [DMUser.ActiveCollection.URL]), mbYesNo) = mrYes then
     begin
-      BookKey.Init(BookID, DMUser.ActiveCollection.ID);
+      BookKey := CreateBookKey(BookID, DMUser.ActiveCollection.ID);
       DMCollection.GetBookRecord(BookKey, BookRecord, False);
       { TODO -oNickR -cLibDesc : этот URL должен формироваться обвязкой библиотеки, т к его формат может меняться }
       URL := Format('%sb/%u/edit', [DMUser.ActiveCollection.URL, BookRecord.LibID]);
