@@ -30,26 +30,6 @@ uses
 type
   //TThreeState = (tsTrue, tsFalse, tsUnknown);
 
-  IBookIterator = interface
-    function Next(var BookRecord: TBookRecord): Boolean;
-    procedure SetFolder(const Folder: string);
-  end;
-
-  TBookIteratorImpl = class(TInterfacedObject, IBookIterator)
-  public
-    constructor Create(const LoadMemos: Boolean);
-    destructor Destroy; override;
-  protected
-    function Next(var BookRecord: TBookRecord): Boolean;
-    procedure SetFolder(const Folder: string);
-  private
-    FDatabase: TABSDatabase;
-    FBooks: TABSTable;
-
-    FCollectionID: Integer; // Active collection's ID at the time the iterator was created
-    FLoadMemos: Boolean;
-  end;
-
   TDMCollection = class(TDataModule)
     DBCollection: TABSDatabase;
 
@@ -199,11 +179,26 @@ type
       TFilterPart = (fpAuthors, fpSeries, fpLocalOnly, fpHideDeleted);
       TFilterParts = set of TFilterPart;
 
+      TBookIteratorImpl = class(TInterfacedObject, IBookIterator)
+      public
+        constructor Create(const IdxDatabase: Integer; const LoadMemos: Boolean);
+        destructor Destroy; override;
+      protected
+        function Next(var BookRecord: TBookRecord): Boolean;
+      private
+        FDatabase: TABSDatabase;
+        FBooks: TABSQuery;
+
+        FCollectionID: Integer; // Active collection's ID at the time the iterator was created
+        FLoadMemos: Boolean;
+      end;
+
   strict private
     FAuthorFilter: string;
     FSerieFilter: string;
     FShowLocalOnly: Boolean;
     FHideDeleted: Boolean;
+    FIdxDatabase: Integer;
 
   private type
     TUpdateExtraProc = reference to procedure;
@@ -266,6 +261,7 @@ type
     //
     procedure SetLocal(const BookKey: TBookKey; AState: Boolean);
     procedure SetFileName(const BookKey: TBookKey; const FileName: string);
+    procedure SetFolder(const BookKey: TBookKey; const Folder: string);
     procedure SetBookSerieID(const BookKey: TBookKey; const SerieID: Integer);
     procedure SetRate(const BookKey: TBookKey; Rate: Integer);
     procedure SetProgress(const BookKey: TBookKey; Progress: Integer);
@@ -321,8 +317,8 @@ type
     function getBookIterator(const LoadMemos: Boolean): IBookIterator;
 
   protected
-    procedure ReadBookKey(Books: TABSTable; var BookKey: TBookKey);
-    procedure ReadBookRecord(Books: TABSTable; var BookRecord: TBookRecord; LoadMemos: Boolean);
+    procedure ReadBookKey(Books: TABSDataset; var BookKey: TBookKey);
+    procedure ReadBookRecord(Books: TABSDataset; var BookRecord: TBookRecord; LoadMemos: Boolean);
   end;
 
 var
@@ -349,7 +345,7 @@ uses
 
 {TBookIteratorImpl}
 
-constructor TBookIteratorImpl.Create(const LoadMemos: Boolean);
+constructor TDMCollection.TBookIteratorImpl.Create(const IdxDatabase: Integer; const LoadMemos: Boolean);
 begin
   inherited Create;
 
@@ -361,18 +357,19 @@ begin
 
   FDatabase := TABSDatabase.Create(nil);
   FDatabase.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
-  FDatabase.DatabaseName := FDatabase.DatabaseFileName;
+  // Use IdxDatabase as Delphi doesn't allow to have more than one database in memory having the same name
+  FDatabase.DatabaseName := FDatabase.DatabaseFileName + ':' + IntToStr(IdxDatabase);
   FDatabase.MaxConnections := 5;
   FDatabase.PageSize := 65535;
   FDatabase.PageCountInExtent := 16;
 
-  FBooks := TABSTable.Create(FDatabase);
+  FBooks := TABSQuery.Create(FDatabase);
   FBooks.DatabaseName := FDatabase.DatabaseName;
-  FBooks.TableName := 'Books';
+  FBooks.SQL.Text := 'SELECT * FROM Books ORDER BY BookID';
   FBooks.Active := True;
 end;
 
-destructor TBookIteratorImpl.Destroy;
+destructor TDMCollection.TBookIteratorImpl.Destroy;
 begin
   FreeAndNil(FBooks);
   FreeAndNil(FDatabase);
@@ -381,7 +378,7 @@ begin
 end;
 
 // Read next book record, return True if a record exists
-function TBookIteratorImpl.Next(var BookRecord: TBookRecord): Boolean;
+function TDMCollection.TBookIteratorImpl.Next(var BookRecord: TBookRecord): Boolean;
 var
   EmptyBookRecord: TBookRecord;
 begin
@@ -394,29 +391,6 @@ begin
   if Result then
     DMCollection.ReadBookRecord(FBooks, BookRecord, FLoadMemos)
 end;
-
-// Set the Folder field on the iterator's current DB book record
-// No locate
-procedure TBookIteratorImpl.SetFolder(const Folder: string);
-var
-  BookKey: TBookKey;
-begin
-  DMCollection.VerifyCurrentCollection(FCollectionID);
-  Assert(FBooks.Active);
-
-  FBooks.Edit;
-  try
-    FBooks.FieldByName(BOOK_FOLDER_FIELD).Value := Folder;
-    FBooks.Post;
-  except
-    FBooks.Cancel;
-    raise;
-  end;
-
-  DMCollection.ReadBookKey(FBooks, BookKey);
-  DMUser.SetFolder(BookKey, Folder);
-end;
-
 
 { TDMCollection }
 
@@ -642,7 +616,7 @@ begin
 end;
 
 // Read the book key from the current record of the provided Books table
-procedure TDMCollection.ReadBookKey(Books: TABSTable; var BookKey: TBookKey);
+procedure TDMCollection.ReadBookKey(Books: TABSDataset; var BookKey: TBookKey);
 begin
   Assert(Books.Active);
   Assert(not Books.Eof);
@@ -654,7 +628,7 @@ end;
 // Read the current book record from the provided Books table
 // All additional data (serie title, genres, authors, etc are taken from the active collection)
 // Assumes the table already points to the correct record
-procedure TDMCollection.ReadBookRecord(Books: TABSTable; var BookRecord: TBookRecord; LoadMemos: Boolean);
+procedure TDMCollection.ReadBookRecord(Books: TABSDataset; var BookRecord: TBookRecord; LoadMemos: Boolean);
 begin
   Assert(Books.Active);
   Assert(not Books.Eof);
@@ -790,6 +764,27 @@ begin
 
   // Обновим информацию в группах
   DMUser.SetFileName(BookKey, FileName);
+end;
+
+procedure TDMCollection.SetFolder(const BookKey: TBookKey; const Folder: string);
+begin
+  VerifyCurrentCollection(BookKey.DatabaseID);
+  Assert(AllBooks.Active);
+
+  if AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
+  begin
+    AllBooks.Edit;
+    try
+      AllBooksFolder.Value := Folder;
+      AllBooks.Post;
+    except
+      AllBooks.Cancel;
+      raise;
+    end;
+  end;
+
+  // Обновим информацию в группах
+  DMUser.SetFolder(BookKey, Folder);
 end;
 
 procedure TDMCollection.SetBookSerieID(const BookKey: TBookKey; const SerieID: Integer);
@@ -1292,7 +1287,8 @@ end;
 //  and knows to self destroyed when no longer referenced.
 function TDMCollection.getBookIterator(const LoadMemos: Boolean): IBookIterator;
 begin
-  Result := TBookIteratorImpl.Create(LoadMemos);
+  Inc(FIdxDatabase);
+  Result := TBookIteratorImpl.Create(FIdxDatabase, LoadMemos);
 end;
 
 // Change SerieID value for all books in the current database with old SerieID value

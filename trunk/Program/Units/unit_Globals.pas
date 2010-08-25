@@ -306,6 +306,11 @@ type
     Options: TVTColumnOptions;
   end;
 
+  // --------------------------------------------------------------------------
+  IBookIterator = interface
+    function Next(var BookRecord: TBookRecord): Boolean;
+  end;
+
 // ============================================================================
 //
 // helpers
