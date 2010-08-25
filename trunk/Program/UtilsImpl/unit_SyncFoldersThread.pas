@@ -85,7 +85,7 @@ begin
       SetComment(rstrBuildingFileList);
       FFiles.Process;
 
-      BookIterator := DMCollection.GetBookIterator(True);
+      BookIterator := DMCollection.GetBookIterator(bimBook, True);
       while BookIterator.Next(BookRecord) do
       begin
         if Canceled then
