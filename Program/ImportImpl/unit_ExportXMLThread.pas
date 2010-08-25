@@ -65,7 +65,7 @@ var
   R: TBookRecord;
   AuthorRecord: TAuthorData;
   GenreRecord: TGenreData;
-  BookIterator: TDMCollection.TBookIterator;
+  BookIterator: IBookIterator;
 begin
   SetComment(rstrExportingCollection);
 
@@ -79,9 +79,8 @@ begin
   totalBooks := DMCollection.GetTotalNumBooks;
   processedBooks := 0;
 
-  BookIterator := DMCollection.BookIterator;
-  BookIterator.First(R);
-  while BookIterator.IsOnData do
+  BookIterator := DMCollection.GetBookIterator(True);
+  while BookIterator.Next(R) do
   begin
     if Canceled then
       Exit;
@@ -112,8 +111,6 @@ begin
       FGenre.Fb2_Code := GenreRecord.FB2GenreCode;
       FGenre.Alias := GenreRecord.GenreAlias;
     end;
-
-    BookIterator.Next(R);
 
     Inc(processedBooks);
     if (processedBooks mod ProcessedItemThreshold) = 0 then

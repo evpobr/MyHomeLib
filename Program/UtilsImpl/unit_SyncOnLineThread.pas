@@ -66,15 +66,14 @@ var
   processedBooks: Integer;
 
   IsLocal: Boolean;
-  BookIterator: TDMCollection.TBookIterator;
+  BookIterator: IBookIterator;
   BookRecord: TBookRecord;
 begin
   totalBooks := DMCollection.GetTotalNumBooks;
   processedBooks := 0;
 
-  BookIterator := DMCollection.BookIterator;
-  BookIterator.First(BookRecord);
-  while BookIterator.IsOnData do
+  BookIterator := DMCollection.GetBookIterator(True);
+  while BookIterator.Next(BookRecord) do
   begin
     if Canceled then
       Exit;
@@ -100,8 +99,6 @@ begin
       on E: Exception do
         Application.MessageBox(PChar(rstrProblemsWithABook + BookFile), '', MB_OK);
     end;
-
-    BookIterator.Next(BookRecord);
 
     Inc(processedBooks);
     if (processedBooks mod ProcessedItemThreshold) = 0 then

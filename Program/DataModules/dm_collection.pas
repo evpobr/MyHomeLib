@@ -7,7 +7,7 @@
   * Authors             Aleksey Penkov   alex.penkov@gmail.com
   *                     Nick Rymanov     nrymanov@gmail.com
   * Created             30.06.2010
-  * Description         
+  * Description
   *
   * $Id$
   *
@@ -29,6 +29,26 @@ uses
 
 type
   //TThreeState = (tsTrue, tsFalse, tsUnknown);
+
+  IBookIterator = interface
+    function Next(var BookRecord: TBookRecord): Boolean;
+    procedure SetFolder(const Folder: string);
+  end;
+
+  TBookIteratorImpl = class(TInterfacedObject, IBookIterator)
+  public
+    constructor Create(const LoadMemos: Boolean);
+    destructor Destroy; override;
+  protected
+    function Next(var BookRecord: TBookRecord): Boolean;
+    procedure SetFolder(const Folder: string);
+  private
+    FDatabase: TABSDatabase;
+    FBooks: TABSTable;
+
+    FCollectionID: Integer; // Active collection's ID at the time the iterator was created
+    FLoadMemos: Boolean;
+  end;
 
   TDMCollection = class(TDataModule)
     DBCollection: TABSDatabase;
@@ -179,22 +199,11 @@ type
       TFilterPart = (fpAuthors, fpSeries, fpLocalOnly, fpHideDeleted);
       TFilterParts = set of TFilterPart;
 
-  public type
-    TBookIterator = class
-    public
-      procedure First(var BookRecord: TBookRecord);
-      procedure Next(var BookRecord: TBookRecord);
-      function IsOnData: Boolean;
-
-      procedure SetFolder(const Folder: string);
-    end;
-      
   strict private
     FAuthorFilter: string;
     FSerieFilter: string;
     FShowLocalOnly: Boolean;
     FHideDeleted: Boolean;
-    FBookIterator: TBookIterator;
 
   private type
     TUpdateExtraProc = reference to procedure;
@@ -250,7 +259,7 @@ type
     //
     // ѕолучение полной информации о книге
     //
-    procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord; LoadMemos: Boolean); overload;
+    procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord; LoadMemos: Boolean);
 
     //
     // ќбновление полей
@@ -308,9 +317,14 @@ type
     procedure VerifyCurrentCollection(const DatabaseID: Integer);
     function GetTotalNumBooks: Integer;
 
-    property BookIterator: TBookIterator read FBookIterator;
+    // Iterators:
+    function getBookIterator(const LoadMemos: Boolean): IBookIterator;
+
+  protected
+    procedure ReadBookKey(Books: TABSTable; var BookKey: TBookKey);
+    procedure ReadBookRecord(Books: TABSTable; var BookRecord: TBookRecord; LoadMemos: Boolean);
   end;
-  
+
 var
   DMCollection: TDMCollection;
 
@@ -332,7 +346,79 @@ uses
 
 {$R *.dfm}
 
-{ TDMMain }
+
+{TBookIteratorImpl}
+
+constructor TBookIteratorImpl.Create(const LoadMemos: Boolean);
+begin
+  inherited Create;
+
+  FDatabase := nil;
+  FBooks := nil;
+
+  FCollectionID := DMUser.ActiveCollection.ID;
+  FLoadMemos := LoadMemos;
+
+  FDatabase := TABSDatabase.Create(nil);
+  FDatabase.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
+  FDatabase.DatabaseName := FDatabase.DatabaseFileName;
+  FDatabase.MaxConnections := 5;
+  FDatabase.PageSize := 65535;
+  FDatabase.PageCountInExtent := 16;
+
+  FBooks := TABSTable.Create(FDatabase);
+  FBooks.DatabaseName := FDatabase.DatabaseName;
+  FBooks.TableName := 'Books';
+  FBooks.Active := True;
+end;
+
+destructor TBookIteratorImpl.Destroy;
+begin
+  FreeAndNil(FBooks);
+  FreeAndNil(FDatabase);
+
+  inherited Destroy;
+end;
+
+// Read next book record, return True if a record exists
+function TBookIteratorImpl.Next(var BookRecord: TBookRecord): Boolean;
+var
+  EmptyBookRecord: TBookRecord;
+begin
+  DMCollection.VerifyCurrentCollection(FCollectionID);
+  Assert(FBooks.Active);
+
+  FBooks.Next;
+  BookRecord := EmptyBookRecord;
+  Result := not FBooks.Eof;
+  if Result then
+    DMCollection.ReadBookRecord(FBooks, BookRecord, FLoadMemos)
+end;
+
+// Set the Folder field on the iterator's current DB book record
+// No locate
+procedure TBookIteratorImpl.SetFolder(const Folder: string);
+var
+  BookKey: TBookKey;
+begin
+  DMCollection.VerifyCurrentCollection(FCollectionID);
+  Assert(FBooks.Active);
+
+  FBooks.Edit;
+  try
+    FBooks.FieldByName(BOOK_FOLDER_FIELD).Value := Folder;
+    FBooks.Post;
+  except
+    FBooks.Cancel;
+    raise;
+  end;
+
+  DMCollection.ReadBookKey(FBooks, BookKey);
+  DMUser.SetFolder(BookKey, Folder);
+end;
+
+
+{ TDMCollection }
 
 procedure TDMCollection.GetBookLibID(const BookKey: TBookKey; out ARes: String);
 begin
@@ -547,50 +633,72 @@ begin
       Exit;
     end;
 
-    BookRecord.Title := AllBooksTitle.Value;
-    BookRecord.Folder := AllBooksFolder.Value;
-    BookRecord.FileName := AllBooksFileName.Value;
-    BookRecord.FileExt := AllBooksExt.Value;
-    BookRecord.InsideNo := AllBooksInsideNo.Value;
-    BookRecord.SerieID := AllBooksSerieID.Value;
-    BookRecord.Serie := GetSerieTitle(AllBooksSerieID.Value);
-    BookRecord.SeqNumber := AllBooksSeqNumber.Value;
-    BookRecord.Code := AllBooksCode.Value;
-    BookRecord.Size := AllBooksSize.Value;
-    BookRecord.LibID := AllBooksLibID.Value;
-    BookRecord.Deleted := AllBooksDeleted.Value;
-    BookRecord.Local := AllBooksLocal.Value;
-    BookRecord.Date := AllBooksDate.Value;
-    BookRecord.Lang := AllBooksLang.Value;
-    BookRecord.LibRate := AllBooksLibRate.Value;
-    BookRecord.KeyWords := AllBooksKeyWords.Value;
-    BookRecord.NodeType := ntBookInfo;
-    BookRecord.BookKey.BookID := AllBooksBookID.Value;
-    BookRecord.BookKey.DatabaseID := DMUser.ActiveCollection.ID;
-    BookRecord.CollectionRoot := DMUser.ActiveCollection.RootPath;
-    BookRecord.Rate := AllBooksRate.Value;
-    BookRecord.Progress := AllBooksProgress.Value;
-
-    if LoadMemos then
-    begin
-      //TODO - rethink when to load the memo fields.
-      //
-      // Ёто поле нужно зачитывать только при копировании книги в другую коллекцию.
-      // ¬о всех остальных случа€х оно не используетс€.
-      //
-      BookRecord.Review := AllBooksReview.Value;
-      BookRecord.Annotation := AllBooksAnnotation.Value;
-    end;
-
-    GetBookGenres(BookKey.BookID, BookRecord.Genres, @(BookRecord.RootGenre));
-    GetBookAuthors(BookKey.BookID, BookRecord.Authors);
-
-    BookRecord.CollectionName := DMUser.ActiveCollection.Name;
+    ReadBookRecord(AllBooks, BookRecord, LoadMemos);
+    Assert(BookKey.IsSameAs(BookRecord.BookKey));
   end
   else
     DMUser.GetBookRecord(BookKey, BookRecord);
 
 end;
+
+// Read the book key from the current record of the provided Books table
+procedure TDMCollection.ReadBookKey(Books: TABSTable; var BookKey: TBookKey);
+begin
+  Assert(Books.Active);
+  Assert(not Books.Eof);
+
+  BookKey.BookID := Books.FieldByName(BOOK_ID_FIELD).AsInteger;
+  BookKey.DatabaseID := DMUser.ActiveCollection.ID;
+end;
+
+// Read the current book record from the provided Books table
+// All additional data (serie title, genres, authors, etc are taken from the active collection)
+// Assumes the table already points to the correct record
+procedure TDMCollection.ReadBookRecord(Books: TABSTable; var BookRecord: TBookRecord; LoadMemos: Boolean);
+begin
+  Assert(Books.Active);
+  Assert(not Books.Eof);
+
+  ReadBookKey(Books, BookRecord.BookKey);
+
+  BookRecord.Title := Books.FieldByName(BOOK_TITLE_FIELD).AsString;
+  BookRecord.Folder := Books.FieldByName(BOOK_FOLDER_FIELD).AsString;
+  BookRecord.FileName := Books.FieldByName(BOOK_FILENAME_FIELD).AsString;
+  BookRecord.FileExt := Books.FieldByName(BOOK_EXT_FIELD).AsString;
+  BookRecord.InsideNo := Books.FieldByName(BOOK_INSIDENO_FIELD).AsInteger;
+  BookRecord.SerieID := Books.FieldByName(SERIE_ID_FIELD).AsInteger;
+  BookRecord.Serie := GetSerieTitle(BookRecord.SerieID);
+  BookRecord.SeqNumber := Books.FieldByName(BOOK_SEQNUMBER_FIELD).AsInteger;
+  BookRecord.Code := Books.FieldByName(BOOK_CODE_FIELD).AsInteger;
+  BookRecord.Size := Books.FieldByName(BOOK_SIZE_FIELD).AsInteger;
+  BookRecord.LibID := Books.FieldByName(BOOK_LIBID_FIELD).AsInteger;
+  BookRecord.Deleted := Books.FieldByName(BOOK_DELETED_FIELD).AsBoolean;
+  BookRecord.Local := Books.FieldByName(BOOK_LOCAL_FIELD).AsBoolean;
+  BookRecord.Date := Books.FieldByName(BOOK_DATE_FIELD).AsDateTime;
+  BookRecord.Lang := Books.FieldByName(BOOK_LANG_FIELD).AsString;
+  BookRecord.LibRate := Books.FieldByName(BOOK_LIBRATE_FIELD).AsInteger;
+  BookRecord.KeyWords := Books.FieldByName(BOOK_KEYWORDS_FIELD).AsString;
+  BookRecord.NodeType := ntBookInfo;
+  BookRecord.Rate := Books.FieldByName(BOOK_RATE_FIELD).AsInteger;
+  BookRecord.Progress := Books.FieldByName(BOOK_PROGRESS_FIELD).AsInteger;
+  BookRecord.CollectionRoot := DMUser.ActiveCollection.RootPath;
+  BookRecord.CollectionName := DMUser.ActiveCollection.Name;
+
+  GetBookGenres(BookRecord.BookKey.BookID, BookRecord.Genres, @(BookRecord.RootGenre));
+  GetBookAuthors(BookRecord.BookKey.BookID, BookRecord.Authors);
+
+  if LoadMemos then
+  begin
+    //TODO - rethink when to load the memo fields.
+    //
+    // Ёто поле нужно зачитывать только при копировании книги в другую коллекцию.
+    // ¬о всех остальных случа€х оно не используетс€.
+    //
+    BookRecord.Review := Books.FieldByName(BOOK_REVIEW_FIELD).AsString;
+    BookRecord.Annotation := Books.FieldByName(BOOK_ANNOTATION_FIELD).AsString;
+  end;
+end;
+
 
 procedure TDMCollection.SetLocal(const BookKey: TBookKey; AState: Boolean);
 begin
@@ -1178,6 +1286,15 @@ begin
   Result := tblBooks.RecordCount;
 end;
 
+// Return an iterator working on the active collection
+//  but having its own Books datase (the rest of the tables are from the active collection).
+// No need to free the iterator when done as it's a TInterfacedObject
+//  and knows to self destroyed when no longer referenced.
+function TDMCollection.getBookIterator(const LoadMemos: Boolean): IBookIterator;
+begin
+  Result := TBookIteratorImpl.Create(LoadMemos);
+end;
+
 // Change SerieID value for all books in the current database with old SerieID value
 procedure TDMCollection.ChangeBookSerieID(const OldSerieID: Integer; const NewSerieID: Integer; const DatabaseID: Integer);
 const
@@ -1227,60 +1344,6 @@ begin
       raise;
     end;
   end;
-end;
-
-// Read first book record
-procedure TDMCollection.TBookIterator.First(var BookRecord: TBookRecord);
-var
-  EmptyBookRecord: TBookRecord;
-begin
-  Assert(DMCollection.tblBooks.Active);
-  DMCollection.tblBooks.First;
-  if IsOnData then
-    DMCollection.GetCurrentBook(BookRecord)
-  else
-    BookRecord := EmptyBookRecord;
-end;
-
-// Read next book record
-procedure TDMCollection.TBookIterator.Next(var BookRecord: TBookRecord);
-var
-  EmptyBookRecord: TBookRecord;
-begin
-  Assert(DMCollection.tblBooks.Active);
-  DMCollection.tblBooks.Next;
-  if IsOnData then
-    DMCollection.GetCurrentBook(BookRecord)
-  else
-    BookRecord := EmptyBookRecord;
-end;
-
-// tblBooks is on a data record and not beyond
-function TDMCollection.TBookIterator.IsOnData(): Boolean;
-begin
-  Assert(DMCollection.tblBooks.Active);
-  Result := not DMCollection.tblBooks.Eof;
-end;
-
-// Set the Folder field on the current books DB record
-// No locate
-procedure TDMCollection.TBookIterator.SetFolder(const Folder: string);
-var
-  BookKey: TBookKey;
-begin
-  Assert(DMCollection.tblBooks.Active);
-  DMCollection.tblBooks.Edit;
-  try
-    DMCollection.tblBooksFolder.Value := Folder;
-    DMCollection.tblBooks.Post;
-  except
-    DMCollection.tblBooks.Cancel;
-    raise;
-  end;
-
-  BookKey.BookID := DMCollection.AllBooksBookID.Value;
-  BookKey.DatabaseID := DMUser.ActiveCollection.ID;
-  DMUser.SetFolder(BookKey, Folder);
 end;
 
 end.
