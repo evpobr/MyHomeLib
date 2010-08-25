@@ -892,6 +892,7 @@ type
     FGenreBookFilter: string;
     FAuthorBookFilter: string;
     FSeriesBookFilter: string;
+    FGroupBookFIlter: string;
 
     //
     function GetBookNode(const Tree: TBookTree; const BookKey: TBookKey): PVirtualNode; overload;
@@ -1602,6 +1603,7 @@ begin
     FGenreBookFilter := '';
     FAuthorBookFilter := '';
     FSeriesBookFilter := '';
+    FGroupBookFIlter := '';
 
     CloseCollection;
 
@@ -2099,10 +2101,10 @@ begin
 
   case Page of
     0: FillBooksTree(tvBooksA,  DMCollection.GetBookIterator(bmAuthorBook, False, FAuthorBookFilter), False, True);  // авторы
-    1: FillBooksTree(tvBooksS,  DMCollection.GetBookIterator(bmSeriesBook, False, FSeriesBookFilter),  False, False); // серии
+    1: FillBooksTree(tvBooksS,  DMCollection.GetBookIterator(bmSeriesBook, False, FSeriesBookFilter), False, False); // серии
     2: FillBooksTree(tvBooksG,  DMCollection.GetBookIterator(bmGenreBook, False, FGenreBookFilter),  True,  True);      // жанры
     3: FillBooksTree(tvBooksSR, nil,                      DMCollection.sqlBooks,      True,  True);  // поиск
-    4: FillBooksTree(tvBooksF,  DMUser.GroupBooks,        DMUser.BooksByGroup,        True,  True);  // избранное
+    4: FillBooksTree(tvBooksF,  DMUser.GetBookIterator(FGroupBookFIlter), True,  True);  // избранное
   end;
 
   SetHeaderPopUp;
@@ -2174,7 +2176,7 @@ begin
   FillBooksTree(tvBooksA, DMCollection.GetBookIterator(bmAuthorBook, False, FAuthorBookFilter), False, True);  // авторы
   FillBooksTree(tvBooksS, DMCollection.GetBookIterator(bmSeriesBook, False, FSeriesBookFilter), False, False); // серии
   FillBooksTree(tvBooksG, DMCollection.GetBookIterator(bmGenreBook, False, FGenreBookFilter),   True,  True);  // жанры
-  FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup,                               True,  True);  // избранное
+  FillBooksTree(tvBooksF, DMUser.GetBookIterator(FGroupBookFIlter), True,  True);  // избранное
 end;
 
 function TfrmMain.CheckLibUpdates(Auto: Boolean): Boolean;
@@ -3010,9 +3012,11 @@ begin
     Exit;
   end;
 
-  DMUser.ActivateGroup(Data.GroupID);
+  DMUser.ActivateGroup(Data^.GroupID);
   lblGroups.Caption := DMUser.GroupsGroupName.Value;
-  FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True);
+
+  FGroupBookFIlter := '`GroupID` = ' + QuotedStr(IntToStr(Data^.GroupID));
+  FillBooksTree(tvBooksF, DMUser.GetBookIterator(FGroupBookFIlter), True, True);
 end;
 
 procedure TfrmMain.tvGroupsDragDrop(
@@ -3074,7 +3078,7 @@ begin
       DMUser.CopyBookToGroup(BookData^.BookKey, SourceGroupID, TargetGroupID, ssShift in Shift);
     end;
   end;
-  FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True);
+  FillBooksTree(tvBooksF, DMUser.GetBookIterator(FGroupBookFIlter), True, True);
 end;
 
 procedure TfrmMain.tvGroupsDragOver(Sender: TBaseVirtualTree; Source: TObject; Shift: TShiftState; State: TDragState; Pt: TPoint; Mode: TDropMode; var Effect: Integer; var Accept: Boolean);
@@ -5399,7 +5403,7 @@ begin
   try
     DMUser.ClearGroup(GroupData^.GroupID);
 
-    FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True); // избранное
+    FillBooksTree(tvBooksF, DMUser.GetBookIterator(FGroupBookFIlter), True, True); // избранное
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -5812,7 +5816,7 @@ begin
   GroupData := tvGroups.GetNodeData(tvGroups.GetFirstSelected);
   if Assigned(GroupData) and (GroupData^.GroupID = GroupID) then
   begin
-    FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True); // Группы
+    FillBooksTree(tvBooksF, DMUser.GetBookIterator(FGroupBookFIlter), True, True); // Группы
   end;
 end;
 
@@ -5864,7 +5868,7 @@ begin
       //
       DMUser.RemoveUnusedBooks;
 
-      FillBooksTree(tvBooksF, DMUser.GroupBooks, DMUser.BooksByGroup, True, True);
+      FillBooksTree(tvBooksF, DMUser.GetBookIterator(FGroupBookFIlter), True, True);
     finally
       ShowStatusProgress := False;
     end;

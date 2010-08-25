@@ -183,6 +183,7 @@ type
       function CreateSQL(const Mode: TBookIteratorMode; const Filter: string): string;
       procedure AddFilter(var Where: string; const Filter: string);
     end;
+    // << TBookIteratorImpl
 
   strict private
     FAuthorFilter: string;
@@ -312,7 +313,7 @@ type
 
     // Iterators:
     function GetBookIterator(const Mode: TBookIteratorMode;
-      const LoadMemos: Boolean; const Filter: string = ''): IBookIterator; overload;
+      const LoadMemos: Boolean; const Filter: string = ''): IBookIterator;
 
   end;
 
@@ -1273,7 +1274,7 @@ end;
 // Return an iterator working on the active collection
 // but having its own Books dataset (the rest of the tables are from the active collection).
 // No need to free the iterator when done as it's a TInterfacedObject
-// and knows to self destroyed when no longer referenced.
+// and knows to self destroy when no longer referenced.
 function TDMCollection.GetBookIterator(const Mode: TBookIteratorMode;
   const LoadMemos: Boolean; const Filter: string): IBookIterator;
 begin

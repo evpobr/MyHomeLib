@@ -115,6 +115,32 @@ type
     SeverityImages: TImageList;
     SeverityImagesBig: TImageList;
 
+  strict private
+  type
+    TBookIteratorImpl = class(TInterfacedObject, IBookIterator)
+    public
+      constructor Create(User: TDMUser; const Filter: string);
+      destructor Destroy; override;
+
+    protected
+      //
+      // IBookIterator
+      //
+      function Next(out BookRecord: TBookRecord): Boolean;
+      function GetNumRecords: Integer;
+
+    private
+      FUser: TDMUser;
+      FBooks: TABSQuery;
+      FBookID: TIntegerField;
+      FDatabaseID: TIntegerField;
+
+      function CreateSQL(const Filter: string): string;
+      procedure AddFilter(var Where: string; const Filter: string);
+    end;
+    // << TBookIteratorImpl
+
+
   private
     FActiveCollection: TMHLActiveCollection;
     FCollection: TMHLCollection;
@@ -225,6 +251,9 @@ type
 
     // Batch update methods:
     procedure ChangeBookSerieID(const OldSerieID: Integer; const NewSerieID: Integer; const DatabaseID: Integer);
+
+    //Iterators:
+    function GetBookIterator(const Filter: string): IBookIterator;
 
   public
     property ActiveCollection: TMHLActiveCollection read FActiveCollection;
@@ -358,6 +387,71 @@ resourcestring
   rstrUnknownCollection = 'неизвестная коллекция';
 
 {$R *.dfm}
+
+{ TBookIteratorImpl }
+
+constructor TDMUser.TBookIteratorImpl.Create(User: TDMUser; const Filter: string);
+begin
+  inherited Create;
+
+  Assert(Assigned(User));
+
+  FUser := User;
+
+  FBooks := TABSQuery.Create(FUser.DBUser);
+  FBooks.DatabaseName := FUser.DBUser.DatabaseName;
+  FBooks.SQL.Text := CreateSQL(Filter);
+  FBooks.Active := True;
+
+  FBookID := FBooks.FieldByName(BOOK_ID_FIELD) as TIntegerField;
+  FDatabaseID := FBooks.FieldByName(DB_ID_FIELD) as TIntegerField;
+end;
+
+destructor TDMUser.TBookIteratorImpl.Destroy;
+begin
+  FreeAndNil(FBooks);
+
+  inherited Destroy;
+end;
+
+// Read next record (if present), return True if read
+function TDMUser.TBookIteratorImpl.Next(out BookRecord: TBookRecord)
+  : Boolean;
+begin
+  Result := not FBooks.Eof;
+
+  if Result then
+  begin
+    FUser.GetBookRecord(CreateBookKey(FBookID.Value, FDatabaseID.Value), BookRecord);
+    FBooks.Next;
+  end;
+end;
+
+function TDMUser.TBookIteratorImpl.GetNumRecords: Integer;
+begin
+  Result := FBooks.RecordCount;
+end;
+
+function TDMUser.TBookIteratorImpl.CreateSQL(const Filter: string): string;
+var
+  Where: string;
+begin
+  Result := 'SELECT b.BookID, b.DatabaseID FROM BookGroups bg INNER JOIN Books b ON bg.BookID = b.BookID AND bg.DatabaseID = b.DatabaseID ';
+
+  Where := '';
+  if Filter <> '' then
+    AddFilter(Where, Filter);
+  Result := Result + Where;
+end;
+
+procedure TDMUser.TBookIteratorImpl.AddFilter(var Where: string; const Filter: string);
+begin
+    if Where = '' then
+      Where := ' WHERE '
+    else
+      Where := Where + ' AND ';
+    Where := Where + Filter;
+end;
 
 { TDMUser }
 
@@ -924,6 +1018,14 @@ const
 begin
   SqlQuery.SQL.Text := Format(SQL, [NewSerieID, DatabaseID, OldSerieID]);
   SqlQuery.ExecSQL;
+end;
+
+// Return an iterator working on the User data Books dataset
+// No need to free the iterator when done as it's a TInterfacedObject
+// and knows to self destroy when no longer referenced.
+function TDMUser.GetBookIterator(const Filter: string): IBookIterator;
+begin
+  Result := TBookIteratorImpl.Create(Self, Filter);
 end;
 
 procedure TDMUser.SetFolder(const BookKey: TBookKey; const Folder: string);
