@@ -880,6 +880,8 @@ type
     //
     FLastAuthorID: Integer;
     FLastSerieID: Integer;
+    FLastGenreCode: string;
+    FLastGenreIsContainer: Boolean;
 
     // SB
     FStatusProgressBar: TProgressBar;
@@ -888,11 +890,12 @@ type
     FPresets: TSearchPresets;
 
     // Filters for the iterators:
-    FGenreBookFilter: string;
-    FAuthorBookFilter: string;
-    FSeriesBookFilter: string;
-    FGroupBookFIlter: string;
+    FGroupBookFilter: string;
     FSearchCriteria: TBookSearchCriteria;
+
+    function AuthorBookFilter: string;
+    function SeriesBookFilter: string;
+    function GenreBookFilter: string;
 
     //
     function GetBookNode(const Tree: TBookTree; const BookKey: TBookKey): PVirtualNode; overload;
@@ -1481,6 +1484,8 @@ begin
 
     FLastAuthorID := MHL_INVALID_ID;
     FLastSerieID := MHL_INVALID_ID;
+    FLastGenreCode := '';
+    FLastGenreIsContainer := False;
   finally
     Screen.Cursor := FCursor;
   end;
@@ -1495,9 +1500,6 @@ begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
-    FGenreBookFilter := '';
-    FAuthorBookFilter := '';
-    FSeriesBookFilter := '';
     FGroupBookFIlter := '';
     FSearchCriteria := EmptySearchCriteria;
 
@@ -1979,31 +1981,38 @@ end;
 
 procedure TfrmMain.btnSwitchTreeModeClick(Sender: TObject);
 var
+  SavedCursor: TCursor;
   Page: Integer;
 begin
-  SaveColumns;
+  SavedCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    SaveColumns;
 
-  Page := pgControl.ActivePageIndex;
+    Page := pgControl.ActivePageIndex;
 
-  if Settings.TreeModes[Page] = tmFlat then
-    Settings.TreeModes[Page] := tmTree
-  else
-    Settings.TreeModes[Page] := tmFlat;
+    if Settings.TreeModes[Page] = tmFlat then
+      Settings.TreeModes[Page] := tmTree
+    else
+      Settings.TreeModes[Page] := tmFlat;
 
-  btnSwitchTreeMode.ImageIndex := TreeIcons[Ord(Settings.TreeModes[pgControl.ActivePageIndex])];
-  btnSwitchTreeMode.Hint := TreeHints[Ord(Settings.TreeModes[pgControl.ActivePageIndex])];
+    btnSwitchTreeMode.ImageIndex := TreeIcons[Ord(Settings.TreeModes[pgControl.ActivePageIndex])];
+    btnSwitchTreeMode.Hint := TreeHints[Ord(Settings.TreeModes[pgControl.ActivePageIndex])];
 
-  SetColumns;
+    SetColumns;
 
-  case Page of
-    0: FillBooksTree(tvBooksA,  DMCollection.GetBookIterator(bmAuthorBook, False, FAuthorBookFilter), False, True);  // авторы
-    1: FillBooksTree(tvBooksS,  DMCollection.GetBookIterator(bmSeriesBook, False, FSeriesBookFilter), False, False); // серии
-    2: FillBooksTree(tvBooksG,  DMCollection.GetBookIterator(bmGenreBook, False, FGenreBookFilter),  True,  True);      // жанры
-    3: FillBooksTree(tvBooksSR, DMCollection.GetBookIterator(False, FSearchCriteria), True,  True);  // поиск
-    4: FillBooksTree(tvBooksF,  DMUser.GetBookIterator(FGroupBookFIlter), True,  True);  // избранное
+    case Page of
+      0: FillBooksTree(tvBooksA,  DMCollection.GetBookIterator(bmAuthorBook, False, AuthorBookFilter), False, True);  // авторы
+      1: FillBooksTree(tvBooksS,  DMCollection.GetBookIterator(bmSeriesBook, False, SeriesBookFilter), False, False); // серии
+      2: FillBooksTree(tvBooksG,  DMCollection.GetBookIterator(bmGenreBook, False, GenreBookFilter),  True,  True);      // жанры
+      3: FillBooksTree(tvBooksSR, DMCollection.GetBookIterator(False, FSearchCriteria), True,  True);  // поиск
+      4: FillBooksTree(tvBooksF,  DMUser.GetBookIterator(FGroupBookFIlter), True,  True);  // избранное
+    end;
+
+    SetHeaderPopUp;
+  finally
+    Screen.Cursor := SavedCursor;
   end;
-
-  SetHeaderPopUp;
 end;
 
 procedure TfrmMain.ClearLabels(Tag: Integer; Full: Boolean);
@@ -2068,11 +2077,19 @@ begin
 end;
 
 procedure TfrmMain.FillAllBooksTree;
+var
+  SavedCursor: TCursor;
 begin
-  FillBooksTree(tvBooksA, DMCollection.GetBookIterator(bmAuthorBook, False, FAuthorBookFilter), False, True);  // авторы
-  FillBooksTree(tvBooksS, DMCollection.GetBookIterator(bmSeriesBook, False, FSeriesBookFilter), False, False); // серии
-  FillBooksTree(tvBooksG, DMCollection.GetBookIterator(bmGenreBook, False, FGenreBookFilter),   True,  True);  // жанры
-  FillBooksTree(tvBooksF, DMUser.GetBookIterator(FGroupBookFIlter), True,  True);  // избранное
+  SavedCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    FillBooksTree(tvBooksA, DMCollection.GetBookIterator(bmAuthorBook, False, AuthorBookFilter), False, True);  // авторы
+    FillBooksTree(tvBooksS, DMCollection.GetBookIterator(bmSeriesBook, False, SeriesBookFilter), False, False); // серии
+    FillBooksTree(tvBooksG, DMCollection.GetBookIterator(bmGenreBook, False, GenreBookFilter),   True,  True);  // жанры
+    FillBooksTree(tvBooksF, DMUser.GetBookIterator(FGroupBookFIlter), True,  True);  // избранное
+  finally
+    Screen.Cursor := SavedCursor;
+  end;
 end;
 
 function TfrmMain.CheckLibUpdates(Auto: Boolean): Boolean;
@@ -2715,24 +2732,30 @@ end;
 // ----------------------------------------------------------------------------
 procedure TfrmMain.tvAuthorsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
+  SavedCursor: TCursor;
   Data: PAuthorData;
 begin
-  Data := tvAuthors.GetNodeData(Node);
-  if not Assigned(Data) then
-  begin
-    lblAuthor.Caption := '...';
-    lblBooksTotalA.Caption := '()';
-    ipnlAuthors.Clear;
-    tvBooksA.Clear;
-    Exit;
+  SavedCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    Data := tvAuthors.GetNodeData(Node);
+    if not Assigned(Data) then
+    begin
+      lblAuthor.Caption := '...';
+      lblBooksTotalA.Caption := '()';
+      ipnlAuthors.Clear;
+      tvBooksA.Clear;
+      Exit;
+    end;
+
+    DMCollection.Authors.Locate(AUTHOR_ID_FIELD, Data^.AuthorID, []);
+    lblAuthor.Caption := Data^.GetFullName;
+    FLastAuthorID := Data^.AuthorID;
+
+    FillBooksTree(tvBooksA, DMCollection.GetBookIterator(bmAuthorBook, False, AuthorBookFilter), False, True); // авторы
+  finally
+    Screen.Cursor := SavedCursor;
   end;
-
-  DMCollection.Authors.Locate(AUTHOR_ID_FIELD, Data^.AuthorID, []);
-  lblAuthor.Caption := Data^.GetFullName;
-  FLastAuthorID := Data^.AuthorID;
-
-  FAuthorBookFilter := Format('%s = %u', [AUTHOR_ID_FIELD, FLastAuthorID]);
-  FillBooksTree(tvBooksA, DMCollection.GetBookIterator(bmAuthorBook, False, FAuthorBookFilter), False, True); // авторы
 end;
 
 procedure TfrmMain.FreeAuthorNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -2774,24 +2797,30 @@ end;
 // ----------------------------------------------------------------------------
 procedure TfrmMain.tvSeriesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
+  SavedCursor: TCursor;
   Data: PSerieData;
 begin
-  Data := tvSeries.GetNodeData(Node);
-  if not Assigned(Data) then
-  begin
-    lblSeries.Caption := '...';
-    lblBooksTotalS.Caption := '()';
-    ipnlSeries.Clear;
-    tvBooksS.Clear;
-    Exit;
+  SavedCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    Data := tvSeries.GetNodeData(Node);
+    if not Assigned(Data) then
+    begin
+      lblSeries.Caption := '...';
+      lblBooksTotalS.Caption := '()';
+      ipnlSeries.Clear;
+      tvBooksS.Clear;
+      Exit;
+    end;
+
+    DMCollection.Series.Locate(SERIE_ID_FIELD, Data^.SerieID, []);
+    lblSeries.Caption := Data^.SerieTitle;
+    FLastSerieID := Data^.SerieID;
+
+    FillBooksTree(tvBooksS, DMCollection.GetBookIterator(bmSeriesBook, False, SeriesBookFilter), False, False); // авторы
+  finally
+    Screen.Cursor := SavedCursor;
   end;
-
-  DMCollection.Series.Locate(SERIE_ID_FIELD, Data^.SerieID, []);
-  lblSeries.Caption := Data^.SerieTitle;
-  FLastSerieID := Data^.SerieID;
-
-  FSeriesBookFilter := SERIE_ID_FIELD + ' = ' + QuotedStr(IntToStr(FLastSerieID));
-  FillBooksTree(tvBooksS, DMCollection.GetBookIterator(bmSeriesBook, False, FSeriesBookFilter), False, False); // авторы
 end;
 
 procedure TfrmMain.FreeSerieNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -2833,27 +2862,31 @@ end;
 // ----------------------------------------------------------------------------
 procedure TfrmMain.tvGenresChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
+  SavedCursor: TCursor;
   Data: PGenreData;
-  ID: string;
 begin
-  Data := tvGenres.GetNodeData(Node);
-  if not Assigned(Data) then
-  begin
-    lblGenreTitle.Caption := '...';
-    lblBooksTotalG.Caption := '()';
-    ipnlGenres.Clear;
-    tvBooksG.Clear;
-    Exit;
+  SavedCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    Data := tvGenres.GetNodeData(Node);
+    if not Assigned(Data) then
+    begin
+      lblGenreTitle.Caption := '...';
+      lblBooksTotalG.Caption := '()';
+      ipnlGenres.Clear;
+      tvBooksG.Clear;
+      Exit;
+    end;
+
+    FLastGenreCode := Data^.GenreCode;
+    FLastGenreIsContainer := (Node^.ChildCount > 0);
+
+    FillBooksTree(tvBooksG, DMCollection.GetBookIterator(bmGenreBook, False, GenreBookFilter), True, True);
+
+    lblGenreTitle.Caption := Data^.GenreAlias;
+  finally
+    Screen.Cursor := SavedCursor;
   end;
-
-  ID := Data^.GenreCode;
-  if isFB2Collection(DMUser.ActiveCollection.CollectionType) or not Settings.ShowSubGenreBooks then
-    FGenreBookFilter := GENRE_CODE_FIELD + ' = ' + QuotedStr(ID)
-  else
-    FGenreBookFilter := GENRE_CODE_FIELD + ' Like ' + QuotedStr(ID + IfThen(Node.ChildCount > 0, '.%', '%'));
-  FillBooksTree(tvBooksG, DMCollection.GetBookIterator(bmGenreBook, False, FGenreBookFilter), True, True);
-
-  lblGenreTitle.Caption := Data.GenreAlias;
 end;
 
 procedure TfrmMain.FreeGenreNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -2896,23 +2929,30 @@ end;
 
 procedure TfrmMain.tvGroupsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
+  SavedCursor: TCursor;
   Data: PGroupData;
 begin
-  Data := tvGroups.GetNodeData(Node);
-  if not Assigned(Data) then
-  begin
-    lblGroups.Caption := '...';
-    lblBooksTotalF.Caption := '()';
-    ipnlFavorites.Clear;
-    tvBooksF.Clear;
-    Exit;
+  SavedCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    Data := tvGroups.GetNodeData(Node);
+    if not Assigned(Data) then
+    begin
+      lblGroups.Caption := '...';
+      lblBooksTotalF.Caption := '()';
+      ipnlFavorites.Clear;
+      tvBooksF.Clear;
+      Exit;
+    end;
+
+    DMUser.ActivateGroup(Data^.GroupID);
+    lblGroups.Caption := DMUser.GroupsGroupName.Value;
+
+    FGroupBookFIlter := GROUP_ID_FIELD + ' = ' + QuotedStr(IntToStr(Data^.GroupID));
+    FillBooksTree(tvBooksF, DMUser.GetBookIterator(FGroupBookFIlter), True, True);
+  finally
+    Screen.Cursor := SavedCursor;
   end;
-
-  DMUser.ActivateGroup(Data^.GroupID);
-  lblGroups.Caption := DMUser.GroupsGroupName.Value;
-
-  FGroupBookFIlter := GROUP_ID_FIELD + ' = ' + QuotedStr(IntToStr(Data^.GroupID));
-  FillBooksTree(tvBooksF, DMUser.GetBookIterator(FGroupBookFIlter), True, True);
 end;
 
 procedure TfrmMain.tvGroupsDragDrop(
@@ -7021,6 +7061,24 @@ begin
       BookData^.FileName := NewFileName;
     end
   );
+end;
+
+function TfrmMain.AuthorBookFilter: string;
+begin
+  Result := Format('%s = %d', [AUTHOR_ID_FIELD, FLastAuthorID]);
+end;
+
+function TfrmMain.SeriesBookFilter: string;
+begin
+  Result := Format('%s = %d', [SERIE_ID_FIELD, FLastSerieID]);
+end;
+
+function TfrmMain.GenreBookFilter: string;
+begin
+  if isFB2Collection(DMUser.ActiveCollection.CollectionType) or not Settings.ShowSubGenreBooks then
+    Result := Format('%s = %s', [GENRE_CODE_FIELD, QuotedStr(FLastGenreCode)])
+  else
+    Result := Format('%s LIKE %s', [GENRE_CODE_FIELD, QuotedStr(FLastGenreCode + IfThen(FLastGenreIsContainer, '.%', '%'))]);
 end;
 
 end.
