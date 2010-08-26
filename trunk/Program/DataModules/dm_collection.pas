@@ -49,10 +49,6 @@ type
     GenresFB2Code: TWideStringField;
     GenresGenreAlias: TWideStringField;
 
-    BookAuthors: TABSTable;
-    BookAuthorsAuthorID: TIntegerField;
-    BookAuthorsBookID: TIntegerField;
-
     BookGenres: TABSTable;
     BookGenresGenreCode: TWideStringField;
     BookGenresBookID: TIntegerField;
@@ -170,7 +166,7 @@ type
       function Next(out BookRecord: TBookRecord): Boolean;
       function GetNumRecords: Integer;
 
-    private
+    strict private
       FCollection: TDMCollection;
       FBooks: TABSQuery;
       FBookID: TIntegerField;
@@ -180,9 +176,34 @@ type
 
       function CreateSQL(const Mode: TBookIteratorMode; const Filter: string; const SearchCriteria: TBookSearchCriteria): string;
       function CreateSearchSQL(const SearchCriteria: TBookSearchCriteria): string;
-      procedure AddToWhere(var Where: string; const Filter: string);
     end;
     // << TBookIteratorImpl
+
+    TAuthorIteratorImpl = class(TInterfacedObject, IAuthorIterator)
+    public
+      constructor Create(
+        Collection: TDMCollection;
+        const Mode: TAuthorIteratorMode;
+        const Filter: string
+      );
+      destructor Destroy; override;
+
+    protected
+      //
+      // IAuthorIterator
+      //
+      function Next(out AuthorData: TAuthorData): Boolean;
+      function GetNumRecords: Integer;
+
+    strict private
+      FCollection: TDMCollection;
+      FAuthors: TABSQuery;
+      FAuthorID: TIntegerField;
+      FCollectionID: Integer; // Active collection's ID at the time the iterator was created
+
+      function CreateSQL(const Mode: TAuthorIteratorMode; const Filter: string): string;
+    end;
+    // << TAuthorIteratorImpl
 
   strict private
     FAuthorFilter: string;
@@ -311,6 +332,12 @@ type
       const LoadMemos: Boolean;
       const SearchCriteria: TBookSearchCriteria
     ): IBookIterator; overload;
+
+    function GetAuthorIterator(
+      const Mode: TAuthorIteratorMode;
+      const Filter: string
+    ): IAuthorIterator; overload;
+
   end;
 
 var
@@ -401,7 +428,7 @@ var
 begin
   Result := '';
 
-  if Mode = bmSearchBook then
+  if Mode = bmSearch then
   begin
     Assert(Filter = '');
     Result := CreateSearchSQL(SearchCriteria);
@@ -409,15 +436,15 @@ begin
   else
   begin
     case Mode of
-      bmBook:
+      bmAll:
         Result := 'SELECT b.' + BOOK_ID_FIELD + ' FROM Books';
-      bmGenreBook:
+      bmByGenre:
         Result :=
           'SELECT b.' + BOOK_ID_FIELD + ' FROM Genre_List gl INNER JOIN Books b ON gl.' + BOOK_ID_FIELD + ' = b.' + BOOK_ID_FIELD + ' ';
-      bmAuthorBook:
+      bmByAuthor:
         Result :=
           'SELECT b.' + BOOK_ID_FIELD + ' FROM Author_List al INNER JOIN Books b ON al.' + BOOK_ID_FIELD + ' = b.' + BOOK_ID_FIELD + ' ';
-      bmSeriesBook:
+      bmBySeries:
         Result :=
           'SELECT b.' + BOOK_ID_FIELD + ' FROM Series s INNER JOIN Books b ON s.' + SERIE_ID_FIELD + ' = b.' + SERIE_ID_FIELD + ' ';
       else
@@ -542,13 +569,73 @@ begin
     raise Exception.Create(rstrCheckFilterParams);
 end;
 
-procedure TDMCollection.TBookIteratorImpl.AddToWhere(var Where: string; const Filter: string);
+{ TAuthorIteratorImpl }
+
+constructor TDMCollection.TAuthorIteratorImpl.Create(
+  Collection: TDMCollection;
+  const Mode: TAuthorIteratorMode;
+  const Filter: string
+);
 begin
-  if Where = '' then
-    Where := ' WHERE '
-  else
-    Where := Where + ' AND ';
-  Where := Where + Filter;
+  inherited Create;
+
+  Assert(Assigned(Collection));
+
+  FCollectionID := DMUser.ActiveCollection.ID;
+  FCollection := Collection;
+
+  FAuthors := TABSQuery.Create(FCollection.DBCollection);
+  FAuthors.DatabaseName := FCollection.DBCollection.DatabaseName;
+  FAuthors.SQL.Text := CreateSQL(Mode, Filter);
+{$IFDEF DEBUG}
+  FAuthors.SQL.SaveToFile(Settings.AppPath + 'Last.sql');
+{$ENDIF}
+  FAuthors.Active := True;
+
+  FAuthorID := FAuthors.FieldByName(AUTHOR_ID_FIELD) as TIntegerField;
+end;
+
+destructor TDMCollection.TAuthorIteratorImpl.Destroy;
+begin
+  FreeAndNil(FAuthors);
+
+  inherited Destroy;
+end;
+
+// Read next record (if present), return True if read
+function TDMCollection.TAuthorIteratorImpl.Next(out AuthorData: TAuthorData): Boolean;
+begin
+  Result := not FAuthors.Eof;
+
+  if Result then
+  begin
+    Assert(DMUser.ActiveCollection.ID = FCollectionID); // shouldn't happen
+    FCollection.GetAuthor(FAuthorID.Value, AuthorData);
+    FAuthors.Next;
+  end;
+end;
+
+function TDMCollection.TAuthorIteratorImpl.GetNumRecords: Integer;
+begin
+  Result := FAuthors.RecordCount;
+end;
+
+function TDMCollection.TAuthorIteratorImpl.CreateSQL(
+  const Mode: TAuthorIteratorMode;
+  const Filter: string
+): string;
+begin
+  Result := '';
+
+  case Mode of
+    amByBook:
+      Result := 'SELECT al.' + AUTHOR_ID_FIELD + ' FROM Author_List al ';
+    else
+      Assert(False);
+  end;
+
+  if Filter <> '' then
+    Result := Result + ' WHERE ' + Filter + ' ';
 end;
 
 { TDMCollection }
@@ -605,7 +692,6 @@ begin
   Genres.Active := State;
 
   BookGenres.Active := State;
-  BookAuthors.Active := State;
 
   tblBooks.Active := State;
   tblSeriesB1.Active := State;
@@ -660,23 +746,17 @@ end;
 
 procedure TDMCollection.GetBookAuthors(BookID: Integer; var BookAuthors: TBookAuthors);
 var
+  AuthorIterator: IAuthorIterator;
+  AuthorData: TAuthorData;
   i: Integer;
 begin
-  Assert(Self.BookAuthors.Active);
-  Self.BookAuthors.SetRange([BookID], [BookID]);
-  try
-    i := Length(BookAuthors);
-    Self.BookAuthors.First;
-    while not Self.BookAuthors.Eof do
-    begin
-      SetLength(BookAuthors, i + 1);
-      GetAuthor(Self.BookAuthorsAuthorID.Value, BookAuthors[i]);
-
-      Inc(i);
-      Self.BookAuthors.Next;
-    end;
-  finally
-    Self.BookAuthors.CancelRange;
+  AuthorIterator := GetAuthorIterator(amByBook, Format('%s = %u', [BOOK_ID_FIELD, BookID]));
+  SetLength(BookAuthors, AuthorIterator.GetNumRecords);
+  i := 0;
+  while AuthorIterator.Next(AuthorData) do
+  begin
+    BookAuthors[i] := AuthorData;
+    Inc(i);
   end;
 end;
 
@@ -1375,7 +1455,12 @@ end;
 
 function TDMCollection.GetBookIterator(const LoadMemos: Boolean; const SearchCriteria: TBookSearchCriteria): IBookIterator;
 begin
-  Result := TBookIteratorImpl.Create(Self, bmSearchBook, LoadMemos, '', SearchCriteria);
+  Result := TBookIteratorImpl.Create(Self, bmSearch, LoadMemos, '', SearchCriteria);
+end;
+
+function TDMCollection.GetAuthorIterator(const Mode: TAuthorIteratorMode; const Filter: string): IAuthorIterator;
+begin
+  Result := TAuthorIteratorImpl.Create(Self, amByBook, Filter);
 end;
 
 // Change SerieID value for all books in the current database with old SerieID value

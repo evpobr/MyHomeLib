@@ -79,7 +79,7 @@ begin
   totalBooks := DMCollection.GetTotalNumBooks;
   processedBooks := 0;
 
-  BookIterator := DMCollection.GetBookIterator(bmBook, True);
+  BookIterator := DMCollection.GetBookIterator(bmAll, True);
   while BookIterator.Next(R) do
   begin
     if Canceled then
