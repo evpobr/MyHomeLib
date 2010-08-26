@@ -22,8 +22,9 @@ interface
 uses
   VirtualTrees,
   BookTreeView,
+  SysUtils,
   unit_Globals,
-  SysUtils;
+  unit_Consts;
 
 type
   TSelectionList = array of PVirtualNode;
@@ -33,10 +34,10 @@ function FindSeriesInTree(Tree: TBookTree; Parent: PVirtualNode; SerieID: Intege
 procedure SelectBookById(Tree: TBookTree; ID: Integer);
 procedure GetSelections(Tree: TBookTree; out List: TSelectionList);
 
-procedure FillAuthorTree(Tree: TVirtualStringTree);
-procedure FillSeriesTree(Tree: TVirtualStringTree);
-procedure FillGenresTree(Tree: TVirtualStringTree; FillFB2: Boolean = False);
-procedure FillGroupsList(Tree: TVirtualStringTree);
+procedure FillAuthorTree(Tree: TVirtualStringTree; SelectID: Integer = MHL_INVALID_ID);
+procedure FillSeriesTree(Tree: TVirtualStringTree; SelectID: Integer = MHL_INVALID_ID);
+procedure FillGenresTree(Tree: TVirtualStringTree; FillFB2: Boolean = False; const SelectCode: string = '');
+procedure FillGroupsList(Tree: TVirtualStringTree; SelectID: Integer = MHL_INVALID_ID);
 
 implementation
 
@@ -126,21 +127,38 @@ begin
 end;
 
 // ============================================================================
-procedure FillAuthorTree(Tree: TVirtualStringTree);
+procedure SafeSelectNode(Tree: TVirtualStringTree; Node: PVirtualNode);
+begin
+  Assert(Assigned(Tree));
+
+  if not Assigned(Node) then
+    Node := Tree.GetFirst;
+
+  if Assigned(Node) then
+  begin
+    Tree.Selected[Node] := True;
+    Tree.FocusedNode := Node;
+    //Tree.FullyVisible[Node] := True;
+    Tree.ScrollIntoView(Node, True);
+  end;
+end;
+
+procedure FillAuthorTree(Tree: TVirtualStringTree; SelectID: Integer = MHL_INVALID_ID);
 var
   Node: PVirtualNode;
   Data: PAuthorData;
+  SelectedNode: PVirtualNode;
 begin
   Tree.NodeDataSize := SizeOf(TAuthorData);
 
-  Tree.BeginUpdate;
+  Tree.BeginSynch;
   try
-    Tree.Clear;
-
-    DMCollection.Authors.DisableControls;
+    Tree.BeginUpdate;
     try
-      DMCollection.Authors.First;
+      Tree.Clear;
+      SelectedNode := nil;
 
+      DMCollection.Authors.First;
       while not DMCollection.Authors.Eof do
       begin
         Node := Tree.AddChild(nil);
@@ -151,35 +169,39 @@ begin
         Data^.FirstName := DMCollection.AuthorsName.Value;
         Data^.LastName := DMCollection.AuthorsFamily.Value;
         Data^.MiddleName := DMCollection.AuthorsMiddle.Value;
-        Include(Node.States, vsInitialUserData);
+        Include(Node^.States, vsInitialUserData);
+
+        if Data^.AuthorID = SelectID then
+          SelectedNode := Node;
 
         DMCollection.Authors.Next;
       end;
 
-      Tree.Selected[Tree.GetFirst] := True;
+      SafeSelectNode(Tree, SelectedNode);
     finally
-      DMCollection.Authors.EnableControls;
+      Tree.EndUpdate;
     end;
   finally
-    Tree.EndUpdate;
+    Tree.EndSynch;
   end;
 end;
 
-procedure FillSeriesTree(Tree: TVirtualStringTree);
+procedure FillSeriesTree(Tree: TVirtualStringTree; SelectID: Integer = MHL_INVALID_ID);
 var
   Node: PVirtualNode;
   Data: PSerieData;
+  SelectedNode: PVirtualNode;
 begin
   Tree.NodeDataSize := SizeOf(TSerieData);
 
-  Tree.BeginUpdate;
+  Tree.BeginSynch;
   try
-    Tree.Clear;
-
-    DMCollection.Series.DisableControls;
+    Tree.BeginUpdate;
     try
-      DMCollection.Series.First;
+      Tree.Clear;
+      SelectedNode := nil;
 
+      DMCollection.Series.First;
       while not DMCollection.Series.Eof do
       begin
         Node := Tree.AddChild(nil);
@@ -190,34 +212,41 @@ begin
         Data^.SerieTitle := DMCollection.SeriesTitle.AsString;
         Include(Node.States, vsInitialUserData);
 
+        if Data^.SerieID = SelectID then
+          SelectedNode := Node;
+
         DMCollection.Series.Next;
       end;
+
+      SafeSelectNode(Tree, SelectedNode);
     finally
-      DMCollection.Series.EnableControls;
+      Tree.EndUpdate;
     end;
   finally
-    Tree.EndUpdate;
+    Tree.EndSynch;
   end;
 end;
 
-procedure FillGenresTree(Tree: TVirtualStringTree; FillFB2: Boolean);
+procedure FillGenresTree(Tree: TVirtualStringTree; FillFB2: Boolean = False; const SelectCode: string = '');
 var
   genreNode: PVirtualNode;
   Data: PGenreData;
   Nodes: TDictionary<string, PVirtualNode>;
   strParentCode: string;
   ParentNode: PVirtualNode;
+  SelectedNode: PVirtualNode;
 begin
   Tree.NodeDataSize := SizeOf(TGenreData);
 
   Nodes := TDictionary<string, PVirtualNode>.Create;
   try
-    Tree.BeginUpdate;
+    Tree.BeginSynch;
     try
-      Tree.Clear;
-
-      DMCollection.Genres.DisableControls;
+      Tree.BeginUpdate;
       try
+        Tree.Clear;
+        SelectedNode := nil;
+
         DMCollection.Genres.First;
         while not DMCollection.Genres.Eof do
         begin
@@ -240,47 +269,61 @@ begin
 
           Nodes.AddOrSetValue(Data^.GenreCode, genreNode);
 
+          if Data^.GenreCode = SelectCode then
+            SelectedNode := genreNode;
+
           DMCollection.Genres.Next;
         end;
+
+        SafeSelectNode(Tree, SelectedNode);
       finally
-        DMCollection.Genres.EnableControls;
+        Tree.EndUpdate;
       end;
     finally
-      Tree.EndUpdate;
+      Tree.EndSynch;
     end;
   finally
     Nodes.Free;
   end;
 end;
 
-procedure FillGroupsList(Tree: TVirtualStringTree);
+procedure FillGroupsList(Tree: TVirtualStringTree; SelectID: Integer = MHL_INVALID_ID);
 var
   Node: PVirtualNode;
   Data: PGroupData;
+  SelectedNode: PVirtualNode;
 begin
-  Tree.BeginUpdate;
+  Tree.BeginSynch;
   try
-    Tree.Clear;
+    Tree.BeginUpdate;
+    try
+      Tree.Clear;
+      SelectedNode := nil;
 
-    DMUser.Groups.First;
-    while not DMUser.Groups.Eof do
-    begin
-      Node := Tree.AddChild(nil);
-      Data := Tree.GetNodeData(Node);
+      DMUser.Groups.First;
+      while not DMUser.Groups.Eof do
+      begin
+        Node := Tree.AddChild(nil);
+        Data := Tree.GetNodeData(Node);
 
-      Initialize(Data^);
-      Data^.Text := DMUser.GroupsGroupName.Value;
-      Data^.GroupID := DMUser.GroupsGroupID.Value;
-      Data^.CanDelete := DMUser.GroupsAllowDelete.Value;
-      Include(Node.States, vsInitialUserData);
+        Initialize(Data^);
+        Data^.Text := DMUser.GroupsGroupName.Value;
+        Data^.GroupID := DMUser.GroupsGroupID.Value;
+        Data^.CanDelete := DMUser.GroupsAllowDelete.Value;
+        Include(Node.States, vsInitialUserData);
 
-      DMUser.Groups.Next;
+        if Data^.GroupID = SelectID then
+          SelectedNode := Node;
+
+        DMUser.Groups.Next;
+      end;
+
+      SafeSelectNode(Tree, SelectedNode);
+    finally
+      Tree.EndUpdate;
     end;
-
-    // activate the first group in the list
-    Tree.Selected[Tree.GetFirst] := True;
   finally
-    Tree.EndUpdate;
+    Tree.EndSynch;
   end;
 end;
 
