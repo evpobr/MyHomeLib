@@ -35,8 +35,8 @@ begin
   if Value = '' then
     Exit;
 
-  StrReplace(LF, ' ', Value);
   StrReplace(CRLF, ' ', Value);
+  StrReplace(LF, ' ', Value);
   StrReplace('NOT LIKE', 'NOT#LIKE', Value);
   StrReplace(' LIKE', ' ' + Field + '#LIKE', Value);
   StrReplace(' =', ' ' + Field + #7 + '=', Value);
