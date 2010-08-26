@@ -113,10 +113,12 @@ type
     bfRaw     // A raw file = any other book format
   );
 
+  PBookKey = ^TBookKey;
   TBookKey = record
     BookID: Integer;
     DatabaseID: Integer;
 
+    procedure Clear; inline;
     function IsSameAs(const other: TBookKey): Boolean; inline;
   end;
 
@@ -852,6 +854,12 @@ function CreateBookKey(BookID: Integer; DatabaseID: Integer): TBookKey;
 begin
   Result.BookID := BookID;
   Result.DatabaseID := DatabaseID;
+end;
+
+procedure TBookKey.Clear;
+begin
+  BookID := MHL_INVALID_ID;
+  DatabaseID := MHL_INVALID_ID;
 end;
 
 // Is the other key equal to this one?
