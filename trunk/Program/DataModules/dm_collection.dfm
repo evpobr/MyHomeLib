@@ -1,33 +1,28 @@
 object DMCollection: TDMCollection
   OldCreateOrder = False
   OnCreate = DataModuleCreate
-  Height = 580
-  Width = 779
+  Height = 438
+  Width = 291
   object DBCollection: TABSDatabase
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     Exclusive = True
     MaxConnections = 5
     MultiUser = False
     SessionName = 'Default'
     DisableTempFiles = True
-    Left = 352
+    Left = 136
     Top = 16
   end
-  object dsAuthors: TDataSource
-    DataSet = Authors
-    Left = 160
-    Top = 96
-  end
   object Genres: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     TableName = 'Genres'
     Exclusive = False
-    Left = 496
-    Top = 96
+    Left = 56
+    Top = 256
     object GenresGenreCode: TWideStringField
       FieldName = 'GenreCode'
     end
@@ -42,21 +37,16 @@ object DMCollection: TDMCollection
       Size = 50
     end
   end
-  object dsSeries: TDataSource
-    DataSet = Series
-    Left = 392
-    Top = 96
-  end
   object BookGenres: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     IndexName = 'BookIndex'
     TableName = 'Genre_List'
     Exclusive = False
-    Left = 496
-    Top = 320
+    Left = 216
+    Top = 208
     object BookGenresGenreCode: TWideStringField
       FieldName = 'GenreCode'
       Size = 30
@@ -66,7 +56,7 @@ object DMCollection: TDMCollection
     end
   end
   object tblBooks: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
@@ -75,8 +65,8 @@ object DMCollection: TDMCollection
     IndexName = 'Title_Index'
     TableName = 'books'
     Exclusive = False
-    Left = 56
-    Top = 488
+    Left = 88
+    Top = 376
     object tblBooksID: TAutoIncField
       FieldName = 'BookID'
     end
@@ -148,15 +138,15 @@ object DMCollection: TDMCollection
     end
   end
   object AllAuthors: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     IndexName = 'ID_Index'
     TableName = 'Authors'
     Exclusive = False
-    Left = 688
-    Top = 160
+    Left = 136
+    Top = 144
     object AllAuthorsAuthorID: TAutoIncField
       FieldName = 'AuthorID'
     end
@@ -175,15 +165,15 @@ object DMCollection: TDMCollection
     end
   end
   object BookAuthors: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     IndexName = 'BookIndex'
     TableName = 'Author_List'
     Exclusive = False
-    Left = 56
-    Top = 320
+    Left = 216
+    Top = 144
     object BookAuthorsAuthorID: TIntegerField
       FieldName = 'AuthorID'
     end
@@ -192,7 +182,7 @@ object DMCollection: TDMCollection
     end
   end
   object tblSeriesB1: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
@@ -201,8 +191,8 @@ object DMCollection: TDMCollection
     IndexName = 'SerieTitleIndex'
     TableName = 'series'
     Exclusive = False
-    Left = 128
-    Top = 488
+    Left = 160
+    Top = 376
     object tblSeriesB1SerieID: TAutoIncField
       FieldName = 'SerieID'
     end
@@ -213,37 +203,17 @@ object DMCollection: TDMCollection
     end
   end
   object Authors: TABSQuery
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
-    Filter = 'LastName="'#1040'*"'
     RequestLive = True
     SQL.Strings = (
-      'select a."*"'
+      'select a.AuthorID, a.LastName, a.FirstName, a.MiddleName'
       'from "authors" a'
-      'where '
-      '('
-      '  :All = 0'
-      '  or'
-      '  a."AuthorID" in'
-      '  ('
-      '    select distinct l."AuthorID"'
-      '    from "books" b, "author_list" l'
-      '    where l."BookID" = b."BookID"'
-      '    and b.local = true'
-      '  )'
-      ')'
-      'order by a.LastName, a.FirstName, a.MiddleName;')
+      'order by a.LastName, a.FirstName, a.MiddleName')
     Left = 56
-    Top = 96
-    ParamData = <
-      item
-        DataType = ftInteger
-        Name = 'All'
-        ParamType = ptInput
-        Value = 0
-      end>
+    Top = 144
     object AuthorsID: TAutoIncField
       DisplayLabel = 'ID'
       FieldName = 'AuthorID'
@@ -266,7 +236,7 @@ object DMCollection: TDMCollection
     end
   end
   object Series: TABSQuery
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
@@ -276,27 +246,10 @@ object DMCollection: TDMCollection
     SQL.Strings = (
       'select s.SerieID, s.SerieTitle'
       'from "Series" s'
-      'where s.SerieTitle <> "---" and'
-      '('
-      '  :All = 0'
-      '  or'
-      '  s."SerieID" in'
-      '  ('
-      '    select b."SerieID"'
-      '    from "books" b'
-      '    where b.local = true'
-      '  )'
-      ')'
+      'where s.SerieTitle <> "---"'
       'order by s.SerieTitle')
-    Left = 288
-    Top = 96
-    ParamData = <
-      item
-        DataType = ftInteger
-        Name = 'All'
-        ParamType = ptInput
-        Value = 0
-      end>
+    Left = 56
+    Top = 200
     object SeriesSerieID: TAutoIncField
       DisplayWidth = 10
       FieldName = 'SerieID'
@@ -310,34 +263,29 @@ object DMCollection: TDMCollection
     end
   end
   object sqlBooks: TABSQuery
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = True
     FilterOptions = [foCaseInsensitive, foNoPartialCompare]
     SQL.Strings = (
       'select * from books where BookID=1')
-    Left = 688
-    Top = 408
+    Left = 216
+    Top = 88
     object sqlBooksID: TIntegerField
       FieldName = 'BookID'
     end
   end
-  object dsGenres: TDataSource
-    DataSet = Genres
-    Left = 576
-    Top = 96
-  end
   object AllBooks: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     IndexName = 'ID_Index'
     TableName = 'Books'
     Exclusive = False
-    Left = 688
-    Top = 96
+    Left = 136
+    Top = 88
     object AllBooksBookID: TAutoIncField
       FieldName = 'BookID'
     end
@@ -413,15 +361,15 @@ object DMCollection: TDMCollection
     end
   end
   object AllSeries: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     IndexName = 'ID_Index'
     TableName = 'Series'
     Exclusive = False
-    Left = 688
-    Top = 216
+    Left = 136
+    Top = 200
     object AllSeriesSerieID: TAutoIncField
       FieldName = 'SerieID'
     end
@@ -432,15 +380,15 @@ object DMCollection: TDMCollection
     end
   end
   object AllGenres: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
     IndexName = 'ID_Index'
     TableName = 'Genres'
     Exclusive = False
-    Left = 688
-    Top = 320
+    Left = 136
+    Top = 256
     object AllGenresGenreCode: TWideStringField
       FieldName = 'GenreCode'
       Required = True

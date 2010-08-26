@@ -39,21 +39,15 @@ type
     AuthorsName: TWideStringField;
     AuthorsMiddle: TWideStringField;
 
-    dsAuthors: TDataSource;
-
     Series: TABSQuery;
     SeriesSerieID: TAutoIncField;
     SeriesTitle: TWideStringField;
-
-    dsSeries: TDataSource;
 
     Genres: TABSTable;
     GenresGenreCode: TWideStringField;
     GenresParentCode: TWideStringField;
     GenresFB2Code: TWideStringField;
     GenresGenreAlias: TWideStringField;
-
-    dsGenres: TDataSource;
 
     BookAuthors: TABSTable;
     BookAuthorsAuthorID: TIntegerField;
@@ -160,9 +154,13 @@ type
 
     TBookIteratorImpl = class(TInterfacedObject, IBookIterator)
     public
-      constructor Create(Collection: TDMCollection;
-        const Mode: TBookIteratorMode; const LoadMemos: Boolean;
-        const Filter: string; const SearchCriteria: TBookSearchCriteria);
+      constructor Create(
+        Collection: TDMCollection;
+        const Mode: TBookIteratorMode;
+        const LoadMemos: Boolean;
+        const Filter: string;
+        const SearchCriteria: TBookSearchCriteria
+      );
       destructor Destroy; override;
 
     protected
@@ -180,10 +178,8 @@ type
       FCollectionID: Integer; // Active collection's ID at the time the iterator was created
       FLoadMemos: Boolean;
 
-      function CreateSQL(const Mode: TBookIteratorMode; const Filter: string;
-        const SearchCriteria: TBookSearchCriteria): string;
-      function CreateSearchSQL(const SearchCriteria: TBookSearchCriteria)
-        : string;
+      function CreateSQL(const Mode: TBookIteratorMode; const Filter: string; const SearchCriteria: TBookSearchCriteria): string;
+      function CreateSearchSQL(const SearchCriteria: TBookSearchCriteria): string;
       procedure AddToWhere(var Where: string; const Filter: string);
     end;
     // << TBookIteratorImpl
@@ -198,8 +194,10 @@ type
     TUpdateExtraProc = reference to procedure;
 
   public type
-    TGUIUpdateExtraProc = reference to procedure(const BookKey: TBookKey;
-      extra: TBookExtra);
+    TGUIUpdateExtraProc = reference to procedure(
+      const BookKey: TBookKey;
+      extra: TBookExtra
+    );
 
   strict private
     procedure GetAuthor(AuthorID: Integer; var Author: TAuthorData);
@@ -208,8 +206,7 @@ type
     function GetSerieTitle(SerieID: Integer): string;
 
     procedure GetGenre(const GenreCode: string; var Genre: TGenreData);
-    procedure GetBookGenres(BookID: Integer; var BookGenres: TBookGenres;
-      RootGenre: PGenreData = nil); overload;
+    procedure GetBookGenres(BookID: Integer; var BookGenres: TBookGenres; RootGenre: PGenreData = nil); overload;
 
     //
     // Установка фильтров
@@ -226,19 +223,16 @@ type
   public
     // TfrmMain.FormCreate
     // TfrmMain.pgControlChange
-    procedure SetActiveTable(Tag: Integer);
-    deprecated;
+    procedure SetActiveTable(Tag: Integer); deprecated;
 
     // TDownloader.DoDownload
-    procedure GetBookLibID(const BookKey: TBookKey; out ARes: string);
-    deprecated;
+    procedure GetBookLibID(const BookKey: TBookKey; out ARes: string); deprecated;
 
     // TExport2XMLThread.WorkFunction
     // TExport2INPXThread.WorkFunction
     // WriteFb2InfoToFile
     // TfrmConvertToFBD.PrepareForm
-    procedure GetCurrentBook(var R: TBookRecord); overload;
-    deprecated;
+    procedure GetCurrentBook(var R: TBookRecord); overload; deprecated;
 
     procedure SetTableState(State: Boolean);
 
@@ -250,8 +244,7 @@ type
     //
     // Получение полной информации о книге
     //
-    procedure GetBookRecord(const BookKey: TBookKey;
-      var BookRecord: TBookRecord; LoadMemos: Boolean);
+    procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord; LoadMemos: Boolean);
 
     //
     // Обновление полей
@@ -285,8 +278,7 @@ type
     //
     // Статистика по текущей коллекции
     //
-    procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer;
-      out SeriesCount: Integer);
+    procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
 
     //
     // Установка фильтров
@@ -300,26 +292,28 @@ type
     // Пользовательские данные
     //
     procedure ExportUserData(data: TUserData);
-    procedure ImportUserData(data: TUserData;
-      guiUpdateCallback: TGUIUpdateExtraProc);
+    procedure ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc);
 
     // Batch update methods:
-    procedure ChangeBookSerieID(const OldSerieID: Integer;
-      const NewSerieID: Integer; const DatabaseID: Integer);
+    procedure ChangeBookSerieID(const OldSerieID: Integer; const NewSerieID: Integer; const DatabaseID: Integer);
 
     function AddOrLocateSerieIDBySerieTitle(const SerieTitle: string): Integer;
-    procedure SetSerieTitle(const SerieID: Integer;
-      const NewSerieTitle: string);
+    procedure SetSerieTitle(const SerieID: Integer; const NewSerieTitle: string);
 
     procedure VerifyCurrentCollection(const DatabaseID: Integer);
     function GetTotalNumBooks: Integer;
 
     // Iterators:
-    function GetBookIterator(const Mode: TBookIteratorMode;
-      const LoadMemos: Boolean; const Filter: string = ''): IBookIterator;
-      overload;
-    function GetBookIterator(const LoadMemos: Boolean;
-      const SearchCriteria: TBookSearchCriteria): IBookIterator; overload;
+    function GetBookIterator(
+      const Mode: TBookIteratorMode;
+      const LoadMemos: Boolean;
+      const Filter: string = ''
+    ): IBookIterator; overload;
+
+    function GetBookIterator(
+      const LoadMemos: Boolean;
+      const SearchCriteria: TBookSearchCriteria
+    ): IBookIterator; overload;
   end;
 
 var
@@ -343,12 +337,18 @@ uses
   unit_Errors,
   unit_SearchUtils,
   unit_Settings;
+
 {$R *.dfm}
+
 { TBookIteratorImpl }
 
-constructor TDMCollection.TBookIteratorImpl.Create(Collection: TDMCollection;
-  const Mode: TBookIteratorMode; const LoadMemos: Boolean;
-  const Filter: string; const SearchCriteria: TBookSearchCriteria);
+constructor TDMCollection.TBookIteratorImpl.Create(
+  Collection: TDMCollection;
+  const Mode: TBookIteratorMode;
+  const LoadMemos: Boolean;
+  const Filter: string;
+  const SearchCriteria: TBookSearchCriteria
+);
 begin
   inherited Create;
 
@@ -377,16 +377,14 @@ begin
 end;
 
 // Read next record (if present), return True if read
-function TDMCollection.TBookIteratorImpl.Next(out BookRecord: TBookRecord)
-  : Boolean;
+function TDMCollection.TBookIteratorImpl.Next(out BookRecord: TBookRecord): Boolean;
 begin
   Result := not FBooks.Eof;
 
   if Result then
   begin
     Assert(DMUser.ActiveCollection.ID = FCollectionID); // shouldn't happen
-    FCollection.GetBookRecord(CreateBookKey(FBookID.Value, FCollectionID),
-      BookRecord, FLoadMemos);
+    FCollection.GetBookRecord(CreateBookKey(FBookID.Value, FCollectionID), BookRecord, FLoadMemos);
     FBooks.Next;
   end;
 end;
@@ -396,9 +394,11 @@ begin
   Result := FBooks.RecordCount;
 end;
 
-function TDMCollection.TBookIteratorImpl.CreateSQL
-  (const Mode: TBookIteratorMode; const Filter: string;
-  const SearchCriteria: TBookSearchCriteria): string;
+function TDMCollection.TBookIteratorImpl.CreateSQL(
+  const Mode: TBookIteratorMode;
+  const Filter: string;
+  const SearchCriteria: TBookSearchCriteria
+): string;
 var
   Where: string;
 begin
@@ -439,8 +439,7 @@ begin
 end;
 
 // Original code was extracted from TfrmMain.DoApplyFilter
-function TDMCollection.TBookIteratorImpl.CreateSearchSQL
-  (const SearchCriteria: TBookSearchCriteria): string;
+function TDMCollection.TBookIteratorImpl.CreateSearchSQL(const SearchCriteria: TBookSearchCriteria): string;
 var
   FilterString: string;
 const
@@ -488,26 +487,6 @@ begin
       end;
     end;
 
-    // ------------------------ аннотация -----------------------------------------
-    FilterString := '';
-    if SearchCriteria.Annotation <> '' then
-    begin
-      AddToFilter('b.' + BOOK_ANNOTATION_FIELD, PrepareQuery
-          (SearchCriteria.Annotation, True), True, FilterString);
-
-      if FilterString <> '' then
-      begin
-        FilterString := SQLStartStr +
-          ' FROM Books b WHERE ' +
-          FilterString;
-
-        if Result <> '' then
-          Result := Result + ' INTERSECT ';
-
-        Result := Result + FilterString;
-      end;
-    end;
-
     // -------------------------- жанр ----------------------------------------
     FilterString := '';
     if (SearchCriteria.Genre <> '') then
@@ -524,49 +503,29 @@ begin
 
     // -------------------  все остальное   -----------------------------------
     FilterString := '';
-    AddToFilter('b.' + BOOK_TITLE_FIELD, PrepareQuery
-        (SearchCriteria.Title, True), True, FilterString);
-    AddToFilter('b.' + BOOK_FILENAME_FIELD, PrepareQuery
-        (SearchCriteria.FileName, False), False, FilterString);
-    AddToFilter('b.' + BOOK_FOLDER_FIELD, PrepareQuery(SearchCriteria.Folder,
-        False), False, FilterString);
-    AddToFilter('b.' + BOOK_EXT_FIELD, PrepareQuery(SearchCriteria.FileExt,
-        False), False, FilterString);
-    AddToFilter('b.' + BOOK_LANG_FIELD, PrepareQuery(SearchCriteria.Lang, True,
-        False), True, FilterString);
-    AddToFilter('b.' + BOOK_KEYWORDS_FIELD, PrepareQuery
-        (SearchCriteria.KeyWord, True), True, FilterString);
+    AddToFilter('b.' + BOOK_ANNOTATION_FIELD, PrepareQuery(SearchCriteria.Annotation, True), True, FilterString);
+    AddToFilter('b.' + BOOK_TITLE_FIELD, PrepareQuery(SearchCriteria.Title, True), True, FilterString);
+    AddToFilter('b.' + BOOK_FILENAME_FIELD, PrepareQuery(SearchCriteria.FileName, False), False, FilterString);
+    AddToFilter('b.' + BOOK_FOLDER_FIELD, PrepareQuery(SearchCriteria.Folder, False), False, FilterString);
+    AddToFilter('b.' + BOOK_EXT_FIELD, PrepareQuery(SearchCriteria.FileExt, False), False, FilterString);
+    AddToFilter('b.' + BOOK_LANG_FIELD, PrepareQuery(SearchCriteria.Lang, True, False), True, FilterString);
+    AddToFilter('b.' + BOOK_KEYWORDS_FIELD, PrepareQuery(SearchCriteria.KeyWord, True), True, FilterString);
     //
     if SearchCriteria.DateIdx = -1 then
-      AddToFilter('b.' + BOOK_DATE_FIELD, PrepareQuery(SearchCriteria.DateText,
-          False), False, FilterString)
+      AddToFilter('b.' + BOOK_DATE_FIELD, PrepareQuery(SearchCriteria.DateText, False), False, FilterString)
     else
       case SearchCriteria.DateIdx of
-        0:
-          AddToFilter('b.' + BOOK_DATE_FIELD, Format
-              ('> "%s"', [DateToStr(IncDay(Now, -1))]), False, FilterString);
-        1:
-          AddToFilter('b.' + BOOK_DATE_FIELD, Format
-              ('> "%s"', [DateToStr(IncDay(Now, -3))]), False, FilterString);
-        2:
-          AddToFilter('b.' + BOOK_DATE_FIELD, Format
-              ('> "%s"', [DateToStr(IncDay(Now, -7))]), False, FilterString);
-        3:
-          AddToFilter('b.' + BOOK_DATE_FIELD, Format
-              ('> "%s"', [DateToStr(IncDay(Now, -14))]), False, FilterString);
-        4:
-          AddToFilter('b.' + BOOK_DATE_FIELD, Format
-              ('> "%s"', [DateToStr(IncDay(Now, -30))]), False, FilterString);
-        5:
-          AddToFilter('b.' + BOOK_DATE_FIELD, Format
-              ('> "%s"', [DateToStr(IncDay(Now, -90))]), False, FilterString);
+        0: AddToFilter('b.' + BOOK_DATE_FIELD, Format('> "%s"', [DateToStr(IncDay(Now, -1))]), False, FilterString);
+        1: AddToFilter('b.' + BOOK_DATE_FIELD, Format('> "%s"', [DateToStr(IncDay(Now, -3))]), False, FilterString);
+        2: AddToFilter('b.' + BOOK_DATE_FIELD, Format('> "%s"', [DateToStr(IncDay(Now, -7))]), False, FilterString);
+        3: AddToFilter('b.' + BOOK_DATE_FIELD, Format('> "%s"', [DateToStr(IncDay(Now, -14))]), False, FilterString);
+        4: AddToFilter('b.' + BOOK_DATE_FIELD, Format('> "%s"', [DateToStr(IncDay(Now, -30))]), False, FilterString);
+        5: AddToFilter('b.' + BOOK_DATE_FIELD, Format('> "%s"', [DateToStr(IncDay(Now, -90))]), False, FilterString);
       end;
 
     case SearchCriteria.DownloadedIdx of
-      1:
-        AddToFilter('b.' + BOOK_LOCAL_FIELD, '= True', False, FilterString);
-      2:
-        AddToFilter('b.' + BOOK_LOCAL_FIELD, '= False', False, FilterString);
+      1: AddToFilter('b.' + BOOK_LOCAL_FIELD, '= True', False, FilterString);
+      2: AddToFilter('b.' + BOOK_LOCAL_FIELD, '= False', False, FilterString);
     end;
 
     if SearchCriteria.Deleted then
@@ -587,8 +546,7 @@ begin
     raise Exception.Create(rstrCheckFilterParams);
 end;
 
-procedure TDMCollection.TBookIteratorImpl.AddToWhere
-  (var Where: string; const Filter: string);
+procedure TDMCollection.TBookIteratorImpl.AddToWhere(var Where: string; const Filter: string);
 begin
   if Where = '' then
     Where := ' WHERE '
@@ -617,13 +575,7 @@ begin
     DMUser.GetBookLibID(BookKey, ARes);
 end;
 
-procedure TDMCollection.GetStatistics(out AuthorsCount: Integer;
-  out BooksCount: Integer; out SeriesCount: Integer);
-var
-  FilterStateA: Boolean;
-  FilterStringA: string;
-
-  BM1: TBookMark;
+procedure TDMCollection.GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
 begin
   (* ***************************************************************************
     *
@@ -631,24 +583,9 @@ begin
     * но пока оставим как есть
     *
     *************************************************************************** *)
-
-  BM1 := Authors.GetBookmark;
-  try
-    FilterStateA := Authors.Filtered;
-    FilterStringA := Authors.Filter;
-    Authors.Filtered := False;
-
-    AuthorsCount := Authors.RecordCount;
-    BooksCount := AllBooks.RecordCount;
-    SeriesCount := AllSeries.RecordCount;
-
-    Authors.Filter := FilterStringA;
-    Authors.Filtered := FilterStateA;
-
-    Authors.GotoBookmark(BM1);
-  finally
-    Authors.FreeBookmark(BM1);
-  end;
+  AuthorsCount := AllAuthors.RecordCount;
+  BooksCount := AllBooks.RecordCount;
+  SeriesCount := AllSeries.RecordCount;
 end;
 
 procedure TDMCollection.SetActiveTable(Tag: Integer);
@@ -668,9 +605,7 @@ end;
 procedure TDMCollection.SetTableState(State: Boolean);
 begin
   Authors.Active := State;
-
   Series.Active := State;
-
   Genres.Active := State;
 
   BookGenres.Active := State;
@@ -699,8 +634,7 @@ begin
     Result := '';
 end;
 
-procedure TDMCollection.GetGenre(const GenreCode: string;
-  var Genre: TGenreData);
+procedure TDMCollection.GetGenre(const GenreCode: string; var Genre: TGenreData);
 begin
   Assert(AllGenres.Active);
   if AllGenres.Locate(GENRE_CODE_FIELD, GenreCode, []) then
@@ -728,8 +662,7 @@ begin
     Author.Clear;
 end;
 
-procedure TDMCollection.GetBookAuthors(BookID: Integer;
-  var BookAuthors: TBookAuthors);
+procedure TDMCollection.GetBookAuthors(BookID: Integer; var BookAuthors: TBookAuthors);
 var
   i: Integer;
 begin
@@ -751,8 +684,7 @@ begin
   end;
 end;
 
-procedure TDMCollection.GetBookGenres(BookID: Integer;
-  var BookGenres: TBookGenres; RootGenre: PGenreData = nil);
+procedure TDMCollection.GetBookGenres(BookID: Integer; var BookGenres: TBookGenres; RootGenre: PGenreData = nil);
 var
   i: Integer;
 begin
@@ -797,8 +729,7 @@ begin
   GetBookRecord(BookKey, R, True);
 end;
 
-procedure TDMCollection.GetBookRecord(const BookKey: TBookKey;
-  var BookRecord: TBookRecord; LoadMemos: Boolean);
+procedure TDMCollection.GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord; LoadMemos: Boolean);
 begin
   BookRecord.Clear;
 
@@ -837,8 +768,7 @@ begin
     BookRecord.CollectionRoot := DMUser.ActiveCollection.RootPath;
     BookRecord.CollectionName := DMUser.ActiveCollection.Name;
 
-    GetBookGenres(BookRecord.BookKey.BookID, BookRecord.Genres, @
-        (BookRecord.RootGenre));
+    GetBookGenres(BookRecord.BookKey.BookID, BookRecord.Genres, @(BookRecord.RootGenre));
     GetBookAuthors(BookRecord.BookKey.BookID, BookRecord.Authors);
 
     if LoadMemos then
@@ -927,8 +857,7 @@ begin
   DMUser.SetProgress(BookKey, Progress);
 end;
 
-procedure TDMCollection.SetFileName(const BookKey: TBookKey;
-  const FileName: string);
+procedure TDMCollection.SetFileName(const BookKey: TBookKey; const FileName: string);
 begin
   VerifyCurrentCollection(BookKey.DatabaseID);
   Assert(AllBooks.Active);
@@ -949,8 +878,7 @@ begin
   DMUser.SetFileName(BookKey, FileName);
 end;
 
-procedure TDMCollection.SetFolder(const BookKey: TBookKey;
-  const Folder: string);
+procedure TDMCollection.SetFolder(const BookKey: TBookKey; const Folder: string);
 begin
   VerifyCurrentCollection(BookKey.DatabaseID);
   Assert(AllBooks.Active);
@@ -971,8 +899,7 @@ begin
   DMUser.SetFolder(BookKey, Folder);
 end;
 
-procedure TDMCollection.SetBookSerieID(const BookKey: TBookKey;
-  const SerieID: Integer);
+procedure TDMCollection.SetBookSerieID(const BookKey: TBookKey; const SerieID: Integer);
 begin
   VerifyCurrentCollection(BookKey.DatabaseID);
   Assert(AllBooks.Active);
@@ -1006,8 +933,7 @@ begin
     Result := DMUser.GetAnnotation(BookKey);
 end;
 
-procedure TDMCollection.SetAnnotation(const BookKey: TBookKey;
-  const Annotation: string);
+procedure TDMCollection.SetAnnotation(const BookKey: TBookKey; const Annotation: string);
 var
   NewAnnotation: string;
 begin
@@ -1051,8 +977,7 @@ begin
     Result := DMUser.GetReview(BookKey);
 end;
 
-function TDMCollection.SetReview(const BookKey: TBookKey; const Review: string)
-  : Integer;
+function TDMCollection.SetReview(const BookKey: TBookKey; const Review: string): Integer;
 var
   NewReview: string;
 begin
@@ -1104,8 +1029,7 @@ begin
   DMUser.UpdateBook(BookRecord);
 end;
 
-procedure TDMCollection.AddBookToGroup(const BookKey: TBookKey;
-  GroupID: Integer);
+procedure TDMCollection.AddBookToGroup(const BookKey: TBookKey; GroupID: Integer);
 var
   BookRecord: TBookRecord;
 begin
@@ -1119,15 +1043,12 @@ end;
 
 function TDMCollection.UpdateFilters(Parts: TFilterParts): TDataParts;
 const
-  GetAuthorsBegin =
-    'SELECT a.AuthorID, a.LastName, a.FirstName, a.MiddleName FROM Authors a ';
-  GetAuthorsQuery =
-    'WHERE (a.AuthorID IN (SELECT DISTINCT l.AuthorID FROM Author_List l INNER JOIN Books b ON l.BookID = b.BookID WHERE `Local` = true)) ';
+  GetAuthorsBegin = 'SELECT a.AuthorID, a.LastName, a.FirstName, a.MiddleName FROM Authors a ';
+  GetAuthorsQuery = 'WHERE (a.AuthorID IN (SELECT DISTINCT l.AuthorID FROM Author_List l INNER JOIN Books b ON l.BookID = b.BookID WHERE `Local` = true)) ';
   GetAuthorsEnd = 'ORDER BY a.LastName, a.FirstName, a.MiddleName ';
 
   GetSeriessBegin = 'SELECT s.SerieID, s.SerieTitle FROM Series s ';
-  GetSeriessQuery =
-    'WHERE (s.SerieID <> 1) AND (s.SerieID IN (SELECT DISTINCT b.SerieID FROM Books b WHERE `Local` = true)) ';
+  GetSeriessQuery = 'WHERE (s.SerieID <> 1) AND (s.SerieID IN (SELECT DISTINCT b.SerieID FROM Books b WHERE `Local` = true)) ';
   GetSeriessEnd = 'ORDER BY s.SerieTitle';
 
   LocalFilters: array [Boolean] of string = ('', '(`Local` = true)');
@@ -1151,22 +1072,25 @@ begin
     end
     else if FAuthorFilter = ALPHA_FILTER_NON_ALPHA then
     begin
-      Authors.Filter := Format('(UPPER(%0:s) <> "Ё*") AND ' +
-        // буква Ё лежит отдельно
-          '(' + '(UPPER(%0:s) < "A*") OR ' + // меньше латинской A
-          '(UPPER(%0:s) > "Z*" AND UPPER(%0:s) < "А*") OR ' +
-        // больше латинской Z и меньше русской А
-          '(UPPER(%0:s) > "Я*")' + // меньше русской Я
-          ')', [AUTHOR_LASTTNAME_FIELD]);
+      Authors.Filter := Format(
+        '(UPPER(%0:s) <> "Ё*") AND ' +                          // буква Ё лежит отдельно
+        '(' +
+          '(UPPER(%0:s) < "A*") OR ' +                          // меньше латинской A
+          '(UPPER(%0:s) > "Z*" AND UPPER(%0:s) < "А*") OR ' +   // больше латинской Z и меньше русской А
+          '(UPPER(%0:s) > "Я*")' +                              // меньше русской Я
+        ')',
+        [AUTHOR_LASTTNAME_FIELD]
+      );
       Authors.Filtered := True;
     end
     else
     begin
       Assert(Length(FAuthorFilter) = 1);
       Assert(TCharacter.IsUpper(FAuthorFilter, 1));
-      Authors.Filter := Format('UPPER(%0:s) = "%1:s*"',
-        // начинается на заданную букву
-        [AUTHOR_LASTTNAME_FIELD, FAuthorFilter]);
+      Authors.Filter := Format(
+        'UPPER(%0:s) = "%1:s*"',                                // начинается на заданную букву
+        [AUTHOR_LASTTNAME_FIELD, FAuthorFilter]
+      );
       Authors.Filtered := True;
     end;
   end;
@@ -1176,27 +1100,32 @@ begin
   begin
     if FSerieFilter = ALPHA_FILTER_ALL then
     begin
-      Series.Filter := Format('%0:s <> "%1:s"', // фильтруем специальную серию
-        [SERIE_TITLE_FIELD, NO_SERIES_TITLE]);
+      Series.Filter := Format(
+        '%0:s <> "%1:s"',                                       // фильтруем специальную серию
+        [SERIE_TITLE_FIELD, NO_SERIES_TITLE]
+      );
     end
     else if FSerieFilter = ALPHA_FILTER_NON_ALPHA then
     begin
-      Series.Filter := Format('(%0:s <> "%1:s") AND ' +
-        // фильтруем специальную серию
-          '(UPPER(%0:s) <> "Ё*") AND ' + // буква Ё лежит отдельно
-          '(' + '(UPPER(%0:s) < "A*") OR ' + // меньше латинской A
-          '(UPPER(%0:s) > "Z*" AND UPPER(%0:s) < "А*") OR ' +
-        // больше латинской Z и меньше русской А
-          '(UPPER(%0:s) > "Я*")' + // меньше русской Я
-          ')', [SERIE_TITLE_FIELD, NO_SERIES_TITLE]);
+      Series.Filter := Format(
+        '(%0:s <> "%1:s") AND ' +                               // фильтруем специальную серию
+        '(UPPER(%0:s) <> "Ё*") AND ' +                          // буква Ё лежит отдельно
+        '(' +
+          '(UPPER(%0:s) < "A*") OR ' +                          // меньше латинской A
+          '(UPPER(%0:s) > "Z*" AND UPPER(%0:s) < "А*") OR ' +   // больше латинской Z и меньше русской А
+          '(UPPER(%0:s) > "Я*")' +                              // меньше русской Я
+        ')',
+        [SERIE_TITLE_FIELD, NO_SERIES_TITLE]
+      );
     end
     else
     begin
       Assert(Length(FSerieFilter) = 1);
       Assert(TCharacter.IsUpper(FSerieFilter, 1));
-      Series.Filter := Format('UPPER(%0:s) = "%1:s*"',
-        // начинается на заданную букву
-        [SERIE_TITLE_FIELD, FSerieFilter]);
+      Series.Filter := Format(
+        'UPPER(%0:s) = "%1:s*"',                                // начинается на заданную букву
+        [SERIE_TITLE_FIELD, FSerieFilter]
+      );
     end;
     Series.Filtered := True;
   end;
@@ -1256,19 +1185,13 @@ end;
 procedure TDMCollection.RefreshData(Parts: TDataParts);
 begin
   if dpAuthors in Parts then
-  begin
     Authors.Active := True;
-  end;
 
   if dpSeries in Parts then
-  begin
     Series.Active := True;
-  end;
-
 end;
 
-procedure TDMCollection.SetAuthorFilter(const Value: string;
-  Refresh: Boolean = True);
+procedure TDMCollection.SetAuthorFilter(const Value: string; Refresh: Boolean = True);
 var
   Parts: TDataParts;
 begin
@@ -1280,8 +1203,7 @@ begin
     RefreshData(Parts);
 end;
 
-procedure TDMCollection.SetSerieFilter(const Value: string;
-  Refresh: Boolean = True);
+procedure TDMCollection.SetSerieFilter(const Value: string; Refresh: Boolean = True);
 var
   Parts: TDataParts;
 begin
@@ -1293,8 +1215,7 @@ begin
     RefreshData(Parts);
 end;
 
-procedure TDMCollection.SetShowLocalBookOnly
-  (Value: Boolean; Refresh: Boolean = True);
+procedure TDMCollection.SetShowLocalBookOnly(Value: Boolean; Refresh: Boolean = True);
 var
   Parts: TDataParts;
 begin
@@ -1306,8 +1227,7 @@ begin
     RefreshData(Parts);
 end;
 
-procedure TDMCollection.SetHideDeletedBook
-  (Value: Boolean; Refresh: Boolean = True);
+procedure TDMCollection.SetHideDeletedBook(Value: Boolean; Refresh: Boolean = True);
 var
   Parts: TDataParts;
 begin
@@ -1327,10 +1247,18 @@ begin
   AllBooks.First;
   while not AllBooks.Eof do
   begin
-    if (AllBooksRate.Value <> 0) or (AllBooksProgress.Value <> 0) or
-      (not AllBooksReview.IsNull) then
-      data.Extras.AddExtra(AllBooksBookID.Value, AllBooksLibID.Value,
-        AllBooksRate.Value, AllBooksProgress.Value, AllBooksReview.Value);
+    if
+      (AllBooksRate.Value <> 0) or
+      (AllBooksProgress.Value <> 0) or
+      (not AllBooksReview.IsNull)
+    then
+      data.Extras.AddExtra(
+        AllBooksBookID.Value,
+        AllBooksLibID.Value,
+        AllBooksRate.Value,
+        AllBooksProgress.Value,
+        AllBooksReview.Value
+      );
 
     AllBooks.Next;
   end;
@@ -1338,8 +1266,7 @@ begin
   DMUser.ExportUserData(data);
 end;
 
-procedure TDMCollection.ImportUserData(data: TUserData;
-  guiUpdateCallback: TGUIUpdateExtraProc);
+procedure TDMCollection.ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc);
 var
   extra: TBookExtra;
   group: TBookGroup;
@@ -1356,8 +1283,7 @@ var
 
     if Result then
     begin
-      BookKey := CreateBookKey
-        (AllBooksBookID.Value, DMUser.ActiveCollection.ID);
+      BookKey := CreateBookKey(AllBooksBookID.Value, DMUser.ActiveCollection.ID);
     end;
   end;
 
@@ -1430,9 +1356,7 @@ begin
       BookCollectionName := DMUser.CurrentCollection.Name
     else
       BookCollectionName := '';
-    raise ENotSupportedException.Create
-      (Format(rstrErrorOnlyForCurrentCollection, [DMUser.ActiveCollection.Name,
-        BookCollectionName]));
+    raise ENotSupportedException.Create(Format(rstrErrorOnlyForCurrentCollection, [DMUser.ActiveCollection.Name, BookCollectionName]));
   end;
 end;
 
@@ -1446,25 +1370,20 @@ end;
 // but having its own Books dataset (the rest of the tables are from the active collection).
 // No need to free the iterator when done as it's a TInterfacedObject
 // and knows to self destroy when no longer referenced.
-function TDMCollection.GetBookIterator(const Mode: TBookIteratorMode;
-  const LoadMemos: Boolean; const Filter: string): IBookIterator;
+function TDMCollection.GetBookIterator(const Mode: TBookIteratorMode; const LoadMemos: Boolean; const Filter: string): IBookIterator;
 var
   EmptySearchCriteria: TBookSearchCriteria;
 begin
-  Result := TBookIteratorImpl.Create(Self, Mode, LoadMemos, Filter,
-    EmptySearchCriteria);
+  Result := TBookIteratorImpl.Create(Self, Mode, LoadMemos, Filter, EmptySearchCriteria);
 end;
 
-function TDMCollection.GetBookIterator(const LoadMemos: Boolean;
-  const SearchCriteria: TBookSearchCriteria): IBookIterator;
+function TDMCollection.GetBookIterator(const LoadMemos: Boolean; const SearchCriteria: TBookSearchCriteria): IBookIterator;
 begin
-  Result := TBookIteratorImpl.Create(Self, bmSearchBook, LoadMemos, '',
-    SearchCriteria);
+  Result := TBookIteratorImpl.Create(Self, bmSearchBook, LoadMemos, '', SearchCriteria);
 end;
 
 // Change SerieID value for all books in the current database with old SerieID value
-procedure TDMCollection.ChangeBookSerieID(const OldSerieID: Integer;
-  const NewSerieID: Integer; const DatabaseID: Integer);
+procedure TDMCollection.ChangeBookSerieID(const OldSerieID: Integer; const NewSerieID: Integer; const DatabaseID: Integer);
 const
   UPDATE_SQL = 'UPDATE Books SET SerieID = %u WHERE SerieID = %u';
 begin
@@ -1479,8 +1398,7 @@ end;
 
 // If the series title is already in DB - locate it and return the SerieID
 // If the title is not in DB - add and returned the ID of the added row
-function TDMCollection.AddOrLocateSerieIDBySerieTitle(const SerieTitle: string)
-  : Integer;
+function TDMCollection.AddOrLocateSerieIDBySerieTitle(const SerieTitle: string): Integer;
 begin
   Assert(tblSeriesB1.Active);
 
@@ -1498,8 +1416,7 @@ begin
   Result := tblSeriesB1SerieID.Value;
 end;
 
-procedure TDMCollection.SetSerieTitle(const SerieID: Integer;
-  const NewSerieTitle: string);
+procedure TDMCollection.SetSerieTitle(const SerieID: Integer; const NewSerieTitle: string);
 begin
   Assert(tblSeriesB1.Active);
 
