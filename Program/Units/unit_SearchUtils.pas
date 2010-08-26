@@ -31,37 +31,31 @@ uses
   unit_Consts;
 
 procedure AddToFilter(const Field: string; Value: string; UP: Boolean; var FilterString: string);
+var
+  FixedField: string;
 begin
   if Value = '' then
     Exit;
 
+  if UP then
+    FixedField := 'UPPER(' + Field + ')'
+  else
+    FixedField := Field;
+
+  Value := ' ' + Value; // this way the search for ' LIKE' and such is possible for the first expression as well
   StrReplace(CRLF, ' ', Value);
   StrReplace(LF, ' ', Value);
-  StrReplace('NOT LIKE', 'NOT#LIKE', Value);
-  StrReplace(' LIKE', ' ' + Field + '#LIKE', Value);
-  StrReplace(' =', ' ' + Field + #7 + '=', Value);
-  StrReplace(' <>', ' ' + Field + #7 + '<>', Value);
-  StrReplace(' <', ' ' + Field + #7 + '<', Value);
-  StrReplace(' >', ' ' + Field + #7 + '>', Value);
+  StrReplace(' LIKE ', ' ' + FixedField + #7 + 'LIKE ', Value);
+  StrReplace(' =', ' ' + FixedField + #7 + '=', Value);
+  StrReplace(' <>', ' ' + FixedField + #7 + '<>', Value);
+  StrReplace(' <', ' ' + FixedField + #7 + '<', Value);
+  StrReplace(' >', ' ' + FixedField + #7 + '>', Value);
   StrReplace(#7, ' ', Value);
 
-  if UP then
-  begin
-    StrReplace(Field, '()', Value);
-    StrReplace('()', 'UPPER(' + Field + ')', Value);
-  end;
-
-  if UP then
-  begin
-    if FilterString <> '' then
-      FilterString := FilterString + ' AND (UPPER(' + Field + ') ' + Value + ')'
-    else
-      FilterString := '(UPPER(' + Field + ') ' + Value + ')';
-  end
-  else if FilterString <> '' then
-    FilterString := FilterString + ' AND (' + Field + ' ' + Value + ')'
+  if FilterString <> '' then
+    FilterString := FilterString + ' AND (' + Value + ')'
   else
-    FilterString := '(' + Field + ' ' + Value + ')';
+    FilterString := '(' + Value + ')';
 end;
 
 function Clear(const S: string): string; inline;
