@@ -46,6 +46,7 @@ begin
   StrReplace(CRLF, ' ', Value);
   StrReplace(LF, ' ', Value);
   StrReplace(' LIKE ', ' ' + FixedField + #7 + 'LIKE ', Value);
+  StrReplace('(LIKE ', ' (' + FixedField + #7 + 'LIKE ', Value);
   StrReplace(' =', ' ' + FixedField + #7 + '=', Value);
   StrReplace(' <>', ' ' + FixedField + #7 + '<>', Value);
   StrReplace(' <', ' ' + FixedField + #7 + '<', Value);
