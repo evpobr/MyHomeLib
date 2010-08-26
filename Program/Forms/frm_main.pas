@@ -2731,7 +2731,7 @@ begin
   lblAuthor.Caption := Data^.GetFullName;
   FLastAuthorID := Data^.AuthorID;
 
-  FAuthorBookFilter := AUTHOR_ID_FIELD + '= ' + QuotedStr(IntToStr(FLastAuthorID));
+  FAuthorBookFilter := Format('%s = %u', [AUTHOR_ID_FIELD, FLastAuthorID]);
   FillBooksTree(tvBooksA, DMCollection.GetBookIterator(bmAuthorBook, False, FAuthorBookFilter), False, True); // авторы
 end;
 
