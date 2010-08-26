@@ -228,10 +228,7 @@ type
     // TDownloader.DoDownload
     procedure GetBookLibID(const BookKey: TBookKey; out ARes: string); deprecated;
 
-    // TExport2XMLThread.WorkFunction
-    // TExport2INPXThread.WorkFunction
     // WriteFb2InfoToFile
-    // TfrmConvertToFBD.PrepareForm
     procedure GetCurrentBook(var R: TBookRecord); overload; deprecated;
 
     procedure SetTableState(State: Boolean);
@@ -471,8 +468,7 @@ begin
     FilterString := '';
     if SearchCriteria.Series <> '' then
     begin
-      AddToFilter('s.' + SERIE_TITLE_FIELD, PrepareQuery
-          (SearchCriteria.Series, True), True, FilterString);
+      AddToFilter('s.' + SERIE_TITLE_FIELD, PrepareQuery(SearchCriteria.Series, True), True, FilterString);
 
       if FilterString <> '' then
       begin
