@@ -924,8 +924,7 @@ type
     procedure CreateGroupsMenu;
     procedure SaveMainFormSettings;
 
-    procedure SavePositions;
-    procedure RestorePositions;
+    procedure UpdatePositions;
 
     function ShowNCWizard: Boolean;
     procedure LoadLastCollection;
@@ -2409,9 +2408,6 @@ begin
   FStarImage := CreateImageFromResource(TPngImage, 'smallStar') as TPngImage;
   FEmptyStarImage := CreateImageFromResource(TPngImage, 'smallStarEmpty') as TPngImage;
 
-  if DMUser.HasCollections then
-    RestorePositions;
-
   // загрузка списка закачек
   if FileExists(Settings.SystemFileName[sfDownloadsStore]) then
   begin
@@ -2457,7 +2453,7 @@ begin
   FreeSettings;
 end;
 
-procedure TfrmMain.SavePositions;
+procedure TfrmMain.UpdatePositions;
 var
   AuthorData: PAuthorData;
   SerieData: PSerieData;
@@ -2538,52 +2534,11 @@ begin
   }
 end;
 
-procedure TfrmMain.RestorePositions;
-//var
-//  APage: Integer;
-begin
-  //
-  // TODO: реализовать следующий алгоритм работы
-  //
-  // эти пункты должны быть сделаны до вызова этой функции
-  //   1. Установить правильный фильтр
-  //   2. Загрузить список авторов
-  //
-  // задачи, выполняемые здесь
-  //   3. Найти в этом списке нужного автора. Возможно, будет лучше искать автора при выполнении пункта 2.
-  //   4. Загрузить книги автора
-  //   5. Найти нужную книгу
-  //
-
-  (*
-
-  TODO : RESTORE
-
-  APage := Settings.ActivePage;
-
-  pgControl.ActivePageIndex := PAGE_AUTHORS;
-  edLocateAuthor.Text := Settings.LastAuthor;
-  SelectBookById(tvBooksA, Settings.LastBookInAuthors);
-
-  pgControl.ActivePageIndex := PAGE_SERIES;
-  edLocateSeries.Text := Settings.LastSeries;
-  SelectBookById(tvBooksS, Settings.LastBookInSeries);
-
-  SelectBookById(tvBooksF, Settings.LastBookInFavorites);
-
-  SetTextNoChange(edLocateAuthor, '');
-  SetTextNoChange(edLocateSeries, '');
-
-  pgControl.ActivePageIndex := APage;
-
-  *)
-end;
-
 procedure TfrmMain.SaveMainFormSettings;
 begin
   SaveColumns;
 
-  SavePositions;
+  UpdatePositions;
 
   Settings.Splitters[0] := pnAuthorsView.Width;
   Settings.Splitters[1] := pnSeriesView.Width;
@@ -3851,7 +3806,7 @@ begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
-    SavePositions;
+    UpdatePositions;
 
     Settings.HideDeletedBooks := not Settings.HideDeletedBooks;
 
@@ -3860,8 +3815,6 @@ begin
     FillAuthorTree(tvAuthors, FLastAuthorID);
     FillSeriesTree(tvSeries, FLastSerieID);
     FillAllBooksTree;
-
-    RestorePositions;
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -3909,8 +3862,6 @@ end;
 
 function TfrmMain.InternalSetAuthorFilter(Button: TToolButton): string;
 begin
-  SavePositions;
-
   if Assigned(FLastLetterA) then
     FLastLetterA.Down := False;
   FLastLetterA := Button;
@@ -3941,6 +3892,8 @@ begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
+    UpdatePositions;
+
     Assert(Sender is TToolButton);
     Button := Sender as TToolButton;
 
@@ -3960,8 +3913,6 @@ end;
 
 function TfrmMain.InternalSetSerieFilter(Button: TToolButton): string;
 begin
-  SavePositions;
-
   if Assigned(FLastLetterS) then
     FLastLetterS.Down := False;
   FLastLetterS := Button;
@@ -3990,6 +3941,8 @@ begin
   SaveCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
+    UpdatePositions;
+
     Assert(Sender is TToolButton);
     Button := Sender as TToolButton;
 
@@ -4022,7 +3975,7 @@ begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
-    SavePositions;
+    UpdatePositions;
 
     Settings.ShowLocalOnly := not Settings.ShowLocalOnly;
 
@@ -4031,8 +3984,6 @@ begin
     FillAuthorTree(tvAuthors, FLastAuthorID);
     FillSeriesTree(tvSeries, FLastSerieID);
     FillAllBooksTree;
-
-    RestorePositions;
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -4900,9 +4851,8 @@ begin
 
     if frmEditBook.ShowModal = mrOk then
     begin
-      SavePositions;
+      UpdatePositions;
       InitCollection(True);
-      RestorePositions;
     end;
   finally
     frmEditBook.Free;
@@ -4957,9 +4907,8 @@ begin
         Tree.RepaintNode(NodeB);
         NodeB := Tree.GetNext(NodeB);
       end;
-      SavePositions;
+      UpdatePositions;
       InitCollection(True);
-      RestorePositions;
     finally
       ALibrary.Free;
     end;
@@ -6201,15 +6150,14 @@ end;
 
 procedure TfrmMain.SyncFilesExecute(Sender: TObject);
 begin
-  SavePositions;
+  UpdatePositions;
 
   if isOnlineCollection(DMUser.ActiveCollection.CollectionType) then
     unit_Utils.SyncOnLineFiles
   else
     unit_Utils.SyncFolders;
-  InitCollection(True);
 
-  RestorePositions;
+  InitCollection(True);
 end;
 
 procedure TfrmMain.UpdateOnlineCollectionExecute(Sender: TObject);
@@ -6218,15 +6166,13 @@ var
 begin
   if CheckLibUpdates(False) then
   begin
-    SavePositions;
+    UpdatePositions;
 
     ActiveCollectionID := DMUser.ActiveCollection.ID;
     StartLibUpdate;
     Settings.ActiveCollection := ActiveCollectionID;
     DMUser.ActivateCollection(ActiveCollectionID);
     InitCollection(True);
-
-    RestorePositions;
   end;
 end;
 
