@@ -1490,6 +1490,7 @@ procedure TfrmMain.InitCollection(ApplyAuthorFilter: Boolean);
 var
   SavedCursor: TCursor;
   CollectionType: Integer;
+  EmptySearchCriteria: TBookSearchCriteria;
 begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -1498,6 +1499,7 @@ begin
     FAuthorBookFilter := '';
     FSeriesBookFilter := '';
     FGroupBookFIlter := '';
+    FSearchCriteria := EmptySearchCriteria;
 
     CloseCollection;
 
@@ -2729,7 +2731,7 @@ begin
   lblAuthor.Caption := Data^.GetFullName;
   FLastAuthorID := Data^.AuthorID;
 
-  FAuthorBookFilter := '`AuthorID` = ' + QuotedStr(IntToStr(FLastAuthorID));
+  FAuthorBookFilter := AUTHOR_ID_FIELD + '= ' + QuotedStr(IntToStr(FLastAuthorID));
   FillBooksTree(tvBooksA, DMCollection.GetBookIterator(bmAuthorBook, False, FAuthorBookFilter), False, True); // авторы
 end;
 
@@ -2788,7 +2790,7 @@ begin
   lblSeries.Caption := Data^.SerieTitle;
   FLastSerieID := Data^.SerieID;
 
-  FSeriesBookFilter := '`SerieID` = ' + QuotedStr(IntToStr(FLastSerieID));
+  FSeriesBookFilter := SERIE_ID_FIELD + ' = ' + QuotedStr(IntToStr(FLastSerieID));
   FillBooksTree(tvBooksS, DMCollection.GetBookIterator(bmSeriesBook, False, FSeriesBookFilter), False, False); // авторы
 end;
 
@@ -2846,9 +2848,9 @@ begin
 
   ID := Data^.GenreCode;
   if isFB2Collection(DMUser.ActiveCollection.CollectionType) or not Settings.ShowSubGenreBooks then
-    FGenreBookFilter := '`GenreCode` = ' + QuotedStr(ID)
+    FGenreBookFilter := GENRE_CODE_FIELD + ' = ' + QuotedStr(ID)
   else
-    FGenreBookFilter := '`GenreCode` Like ' + QuotedStr(ID + IfThen(Node.ChildCount > 0, '.%', '%'));
+    FGenreBookFilter := GENRE_CODE_FIELD + ' Like ' + QuotedStr(ID + IfThen(Node.ChildCount > 0, '.%', '%'));
   FillBooksTree(tvBooksG, DMCollection.GetBookIterator(bmGenreBook, False, FGenreBookFilter), True, True);
 
   lblGenreTitle.Caption := Data.GenreAlias;
@@ -2909,7 +2911,7 @@ begin
   DMUser.ActivateGroup(Data^.GroupID);
   lblGroups.Caption := DMUser.GroupsGroupName.Value;
 
-  FGroupBookFIlter := '`GroupID` = ' + QuotedStr(IntToStr(Data^.GroupID));
+  FGroupBookFIlter := GROUP_ID_FIELD + ' = ' + QuotedStr(IntToStr(Data^.GroupID));
   FillBooksTree(tvBooksF, DMUser.GetBookIterator(FGroupBookFIlter), True, True);
 end;
 
