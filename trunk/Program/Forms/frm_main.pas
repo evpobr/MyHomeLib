@@ -753,7 +753,6 @@ type
     //
     // Построение деревьев
     //
-    procedure FillBooksTree(const Tree: TBookTree; Master: TDataSet; Detail: TDataSet; ShowAuth: Boolean; ShowSer: Boolean); overload;
     procedure FillBooksTree(const Tree: TBookTree; const BookIterator: IBookIterator; ShowAuth: Boolean; ShowSer: Boolean); overload;
 
     //
@@ -893,6 +892,7 @@ type
     FAuthorBookFilter: string;
     FSeriesBookFilter: string;
     FGroupBookFIlter: string;
+    FSearchCriteria: TBookSearchCriteria;
 
     //
     function GetBookNode(const Tree: TBookTree; const BookKey: TBookKey): PVirtualNode; overload;
@@ -993,9 +993,7 @@ uses
 resourcestring
   rstrFileNotFoundMsg = 'Файл %s не найден!' + CRLF + 'Проверьте настройки коллекции!';
   rstrCreatingFilter = 'Подготовка фильтра ...';
-  rstrCheckFilterParams = 'Проверьте параметры фильтра';
   rstrApplyingFilter = 'Применяем фильтр ...';
-  rstrFilterParamError = 'Синтаксическая ошибка.' + CRLF + 'Проверьте параметры фильтра';
   rstrNoUpdatesAvailable = 'Нет доступных обновлений';
   rstrCannotEditFavoritesError = 'Редактирование книг из избранного или списка закачек невозможно.';
   rstrUnableDeleteBuiltinGroupError = 'Нельзя удалить встроенную группу!';
@@ -1371,8 +1369,7 @@ procedure TfrmMain.DoApplyFilter(Sender: TObject);
 var
   FilterString: string;
   SavedCursor: TCursor;
-const
-  SQLStartStr = 'SELECT DISTINCT b.' + BOOK_ID_FIELD;
+  BookIterator: IBookIterator;
 begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crSQLWait;
@@ -1382,132 +1379,29 @@ begin
       tvBooksSR.Clear;
       ClearLabels(tvBooksSR.Tag, True);
 
-      DMCollection.sqlBooks.Active := False;
-      DMCollection.sqlBooks.SQL.Clear;
       try
-        // ------------------------ авторы ----------------------------------------
-        (*
-        *)
-        FilterString := '';
-        if edFFullName.Text <> '' then
-        begin
-          AddToFilter(
-            'a.' + AUTHOR_LASTTNAME_FIELD + ' + ' +
-            'CASE WHEN a.' + AUTHOR_FIRSTNAME_FIELD + ' IS NULL THEN '''' ELSE '' '' END + a.' + AUTHOR_FIRSTNAME_FIELD + ' + ' +
-            'CASE WHEN a.' + AUTHOR_MIDDLENAME_FIELD + ' IS NULL THEN '''' ELSE '' '' END + a.' + AUTHOR_MIDDLENAME_FIELD,
-            PrepareQuery(edFFullName.Text, True),
-            True,
-            FilterString
-            );
-          if FilterString <> '' then
-          begin
-            FilterString :=
-              SQLStartStr +
-              ' FROM Authors a INNER JOIN Author_List b ON (a.AuthorID = b.AuthorID) WHERE ' + FilterString;
+        FSearchCriteria.FullName := edFFullName.Text;
+        FSearchCriteria.Series := edFSeries.Text;
+        FSearchCriteria.Annotation := edFAnnotation.Text;
+        FSearchCriteria.Genre := edFGenre.Hint;
+        FSearchCriteria.Title := edFTitle.Text;
+        FSearchCriteria.FileName := edFFile.Text;
+        FSearchCriteria.Folder := edFFolder.Text;
+        FSearchCriteria.FileExt := edFExt.Text;
+        FSearchCriteria.Lang := cbLang.Text;
+        FSearchCriteria.Keyword := edFKeyWords.Text;
+        FSearchCriteria.DownloadedIdx := cbDownloaded.ItemIndex;
+        FSearchCriteria.Deleted := cbDeleted.Checked;
 
-            DMCollection.sqlBooks.SQL.Add(FilterString);
-          end;
-        end;
+        FSearchCriteria.DateIdx := cbDate.ItemIndex;
+        if FSearchCriteria.DateIdx= -1 then
+          FSearchCriteria.DateText := cbDate.Text;
 
-        // ------------------------ серия -----------------------------------------
-        FilterString := '';
-        if edFSeries.Text <> '' then
-        begin
-          AddToFilter('s.' + SERIE_TITLE_FIELD, PrepareQuery(edFSeries.Text, True), True, FilterString);
+        BookIterator := DMCollection.GetBookIterator(False, FSearchCriteria);
 
-          if FilterString <> '' then
-          begin
-            FilterString :=
-              SQLStartStr +
-              ' FROM Series s JOIN Books b ON b.SerieID = s.SerieID WHERE ' + FilterString;
-
-            if DMCollection.sqlBooks.SQL.Count <> 0 then
-              DMCollection.sqlBooks.SQL.Add('INTERSECT');
-
-            DMCollection.sqlBooks.SQL.Add(FilterString);
-          end;
-        end;
-
-        // ------------------------ аннотация -----------------------------------------
-        FilterString := '';
-        if edFAnnotation.Text <> '' then
-        begin
-          AddToFilter('e.' + BOOK_ANNOTATION_FIELD, PrepareQuery(edFAnnotation.Text, True), True, FilterString);
-
-          if FilterString <> '' then
-          begin
-            FilterString :=
-              SQLStartStr +
-              ' FROM Extra e JOIN Books b ON b.BookID = e.BookID WHERE ' + FilterString;
-
-            if DMCollection.sqlBooks.SQL.Count <> 0 then
-              DMCollection.sqlBooks.SQL.Add('INTERSECT');
-
-            DMCollection.sqlBooks.SQL.Add(FilterString);
-          end;
-        end;
-
-        // -------------------------- жанр ----------------------------------------
-        FilterString := '';
-        if (edFGenre.Hint <> '') then
-        begin
-          FilterString :=
-            SQLStartStr +
-            ' FROM Genre_List g JOIN Books b ON b.BookID = g.BookID WHERE (' + edFGenre.Hint + ')';
-
-          if DMCollection.sqlBooks.SQL.Count <> 0 then
-            DMCollection.sqlBooks.SQL.Add('INTERSECT');
-
-          DMCollection.sqlBooks.SQL.Add(FilterString);
-        end;
-
-        // -------------------  все остальное   -----------------------------------
-        FilterString := '';
-        AddToFilter('b.' + BOOK_TITLE_FIELD,    PrepareQuery(edFTitle.Text,    True),        True,  FilterString);
-        AddToFilter('b.' + BOOK_FILENAME_FIELD, PrepareQuery(edFFile.Text,     False),       False, FilterString);
-        AddToFilter('b.' + BOOK_FOLDER_FIELD,   PrepareQuery(edFFolder.Text,   False),       False, FilterString);
-        AddToFilter('b.' + BOOK_EXT_FIELD,      PrepareQuery(edFExt.Text,      False),       False, FilterString);
-        AddToFilter('b.' + BOOK_LANG_FIELD,     PrepareQuery(cbLang.Text,      True, False), True,  FilterString);
-        AddToFilter('b.' + BOOK_KEYWORDS_FIELD, PrepareQuery(edFKeyWords.Text, True),        True,  FilterString);
-        //
-        if cbDate.ItemIndex = -1 then
-          AddToFilter('b.' + BOOK_DATE_FIELD, PrepareQuery(cbDate.Text, False), False, FilterString)
-        else
-          case cbDate.ItemIndex of
-            0: AddToFilter('b.' + BOOK_DATE_FIELD, Format('> "%s"', [DateToStr(IncDay(Now, -1))]),  False, FilterString);
-            1: AddToFilter('b.' + BOOK_DATE_FIELD, Format('> "%s"', [DateToStr(IncDay(Now, -3))]),  False, FilterString);
-            2: AddToFilter('b.' + BOOK_DATE_FIELD, Format('> "%s"', [DateToStr(IncDay(Now, -7))]),  False, FilterString);
-            3: AddToFilter('b.' + BOOK_DATE_FIELD, Format('> "%s"', [DateToStr(IncDay(Now, -14))]), False, FilterString);
-            4: AddToFilter('b.' + BOOK_DATE_FIELD, Format('> "%s"', [DateToStr(IncDay(Now, -30))]), False, FilterString);
-            5: AddToFilter('b.' + BOOK_DATE_FIELD, Format('> "%s"', [DateToStr(IncDay(Now, -90))]), False, FilterString);
-          end;
-
-        case cbDownloaded.ItemIndex of
-          1: AddToFilter('b.' + BOOK_LOCAL_FIELD, '= True', False, FilterString);
-          2: AddToFilter('b.' + BOOK_LOCAL_FIELD, '= False', False, FilterString);
-        end;
-
-        if cbDeleted.Checked then
-          AddToFilter('b.' + BOOK_DELETED_FIELD, '= False', False, FilterString);
-
-        if FilterString <> '' then
-        begin
-          if DMCollection.sqlBooks.SQL.Count <> 0 then
-            DMCollection.sqlBooks.SQL.Add('INTERSECT');
-          DMCollection.sqlBooks.SQL.Add(SQLStartStr + ' FROM Books b WHERE ' + FilterString);
-        end;
-
-        if (DMCollection.sqlBooks.SQL.Count) = 0 then
-          raise Exception.Create(rstrCheckFilterParams);
-{$IFDEF DEBUG}
-        DMCollection.sqlBooks.SQL.SaveToFile(Settings.AppPath + 'Last.sql');
-{$ENDIF}
         // Ставим фильтр
         StatusMessage := rstrApplyingFilter;
-
-        DMCollection.sqlBooks.Active := True;
-
-        FillBooksTree(tvBooksSR, nil, DMCollection.sqlBooks, True, True);
+        FillBooksTree(tvBooksSR, BookIterator, True, True);
       except
         on E: Exception do
           MHLShowError(rstrFilterParamError);
@@ -2103,7 +1997,7 @@ begin
     0: FillBooksTree(tvBooksA,  DMCollection.GetBookIterator(bmAuthorBook, False, FAuthorBookFilter), False, True);  // авторы
     1: FillBooksTree(tvBooksS,  DMCollection.GetBookIterator(bmSeriesBook, False, FSeriesBookFilter), False, False); // серии
     2: FillBooksTree(tvBooksG,  DMCollection.GetBookIterator(bmGenreBook, False, FGenreBookFilter),  True,  True);      // жанры
-    3: FillBooksTree(tvBooksSR, nil,                      DMCollection.sqlBooks,      True,  True);  // поиск
+    3: FillBooksTree(tvBooksSR, DMCollection.GetBookIterator(False, FSearchCriteria), True,  True);  // поиск
     4: FillBooksTree(tvBooksF,  DMUser.GetBookIterator(FGroupBookFIlter), True,  True);  // избранное
   end;
 
@@ -4257,246 +4151,6 @@ begin
 end;
 
 // - - - - - - Дерево книг для поиска, серий и избранного - - - - - - - - - - - -
-
-procedure TfrmMain.FillBooksTree(
-  const Tree: TBookTree;
-  Master: TDataSet;
-  Detail: TDataSet;
-  ShowAuth: Boolean;
-  ShowSer: Boolean
-);
-var
-  authorNode: PVirtualNode;
-  serieNode: PVirtualNode;
-  bookNode: PVirtualNode;
-
-  Data: PBookRecord;
-  Max, i: Integer;
-  Author: string;
-
-  IsGroupView: Boolean;
-
-  BookIDField: TField;
-  DatabaseIDField: TField;
-
-  AuthorNodes: TDictionary<string, PVirtualNode>;
-
-  BookKey: TBookKey;
-  SerieID: Integer;
-
-  BookRecord: TBookRecord;
-  SavedCursor: TCursor;
-
-begin
-  Assert(Assigned(Tree));
-  Assert(Assigned(Detail));
-
-  if not Assigned(Master) then
-    Master := Detail;
-
-  IsGroupView := (Tree.Tag = 4);
-
-  //
-  // Если включен "плоский" режим отображения, принудительно сбрасываем ключи блокировки
-  //
-  if Settings.TreeModes[Tree.Tag] = tmFlat then
-  begin
-    ShowAuth := False;
-    ShowSer := False;
-  end;
-
-  //
-  // Мастер таблица должна содержать следующие поля
-  //  1. BOOK_ID_FIELD
-  // для просмотра книг в группе нужны поля
-  //  2. DB_ID_FIELD
-  //
-
-  //
-  // найдем и запомним наиболее часто используемые поля
-  //
-  BookIDField := Detail.FieldByName(BOOK_ID_FIELD);
-  Assert(Assigned(BookIDField) and (BookIDField is TIntegerField));
-
-  if IsGroupView then
-  begin
-    DatabaseIDField := Detail.FieldByName(DB_ID_FIELD);
-    Assert(Assigned(DatabaseIDField) and (DatabaseIDField is TIntegerField));
-  end
-  else
-    DatabaseIDField := nil;
-
-  BookKey.DatabaseID := DMUser.ActiveCollection.ID;
-
-  ShowStatusProgress := True;
-  StatusProgress := 0;
-
-  SavedCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
-  try
-    Tree.BeginUpdate;
-    try
-      Tree.Clear;
-      Tree.NodeDataSize := SizeOf(TBookRecord);
-
-      StatusMessage := rstrBuildingTheList;
-
-      i := 0;
-      try
-        AuthorNodes := TDictionary<string, PVirtualNode>.Create;
-        try
-          Detail.DisableControls;
-          try
-            Max := Master.RecordCount;
-
-            Master.First;
-            while not Master.Eof do
-            begin
-              //
-              // для этой записи в мастере нет книг, переходим к следующей записе
-              //
-              if Detail.IsEmpty then
-              begin
-                Master.Next;
-                Continue;
-              end;
-
-              //
-              // Получим ключевые поля и зачитаем данные о книге
-              //
-              BookKey.BookID := BookIDField.AsInteger;
-              if IsGroupView then
-                BookKey.DatabaseID := DatabaseIDField.AsInteger;
-
-              DMCollection.GetBookRecord(BookKey, BookRecord, True);
-
-              SerieID := BookRecord.SerieID;
-
-              authorNode := nil;
-              if ShowAuth then
-              begin
-                Author := TAuthorsHelper.GetList(BookRecord.Authors);
-                if not AuthorNodes.TryGetValue(Author, authorNode) then
-                begin
-                  authorNode := Tree.AddChild(nil);
-                  Data := Tree.GetNodeData(authorNode);
-
-                  Initialize(Data^);
-                  Data^.nodeType := ntAuthorInfo;
-                  Data^.Authors := BookRecord.Authors;
-                  Include(authorNode.States, vsInitialUserData);
-
-                  AuthorNodes.Add(Author, authorNode);
-                end;
-              end
-              else
-                authorNode := nil;
-
-              Assert(ShowAuth = Assigned(authorNode));
-
-              if ShowSer then
-              begin
-                if SerieID = NO_SERIE_ID then
-                begin
-                  //
-                  // книга без серии
-                  //
-                  serieNode := authorNode;
-                end
-                else
-                begin
-                  serieNode := FindSeriesInTree(Tree, authorNode, SerieID);
-                  if not Assigned(serieNode) then
-                  begin
-                    //
-                    // Серия не найдена
-                    //
-                    //
-                    Assert(not Assigned(serieNode));
-
-                    serieNode := Tree.AddChild(authorNode);
-
-                    //
-                    // заполним данные о серии
-                    //
-                    Data := Tree.GetNodeData(serieNode);
-
-                    Initialize(Data^);
-                    Data^.nodeType := ntSeriesInfo;
-                    Data^.SerieID := SerieID;
-                    Data^.Serie := BookRecord.Serie;
-                    Include(serieNode.States, vsInitialUserData);
-                  end;
-                end;
-              end
-              else
-                serieNode := authorNode;
-
-              //
-              // заполним данные о книге
-              //
-              bookNode := Tree.AddChild(serieNode);
-              Data := Tree.GetNodeData(bookNode);
-
-              Initialize(Data^);
-              Data^ := BookRecord;
-              Include(bookNode.States, vsInitialUserData);
-
-              Inc(i);
-              StatusProgress := i * 100 div Max;
-
-              Master.Next;
-            end; // while
-          finally
-            Detail.EnableControls;
-          end;
-
-          //
-          // Отсортировать дерево
-          //
-          if (Settings.TreeModes[Tree.Tag] = tmFlat) then
-            Tree.SortTree(FSortSettings[Tree.Tag].Column, FSortSettings[Tree.Tag].Direction)
-          else
-            Tree.SortTree(NoColumn, sdAscending);
-        finally
-          FreeAndNil(AuthorNodes);
-        end;
-      finally
-        ShowStatusProgress := False;
-        StatusMessage := rstrReadyMessage;
-      end;
-
-      //
-      // Выбрать первую книгу
-      //
-      bookNode := Tree.GetFirst;
-      while Assigned(bookNode) do
-      begin
-        Data := Tree.GetNodeData(bookNode);
-        if Data^.nodeType = ntBookInfo then
-        begin
-          Tree.Selected[bookNode] := True;
-          Tree.FocusedNode := bookNode;
-          Tree.FullyVisible[bookNode] := True;
-          Break;
-        end;
-        bookNode := Tree.GetNext(bookNode);
-      end;
-    finally
-      Tree.EndUpdate;
-    end;
-
-    case Tree.Tag of
-      0: lblBooksTotalA.Caption := Format('(%d)', [i]);
-      1: lblBooksTotalS.Caption := Format('(%d)', [i]);
-      2: lblBooksTotalG.Caption := Format('(%d)', [i]);
-      3: lblTotalBooksFL.Caption := Format('(%d)', [i]);
-      4: lblBooksTotalF.Caption := Format('(%d)', [i]);
-    end;
-  finally
-    Screen.Cursor := SavedCursor;
-  end;
-end;
 
 procedure TfrmMain.FillBooksTree(const Tree: TBookTree; const BookIterator: IBookIterator; ShowAuth: Boolean; ShowSer: Boolean);
 var

@@ -102,7 +102,7 @@ type
 
   TGenresType = (gtFb2, gtAny);
 
-  TBookIteratorMode = (bmBook, bmGenreBook, bmAuthorBook, bmSeriesBook);
+  TBookIteratorMode = (bmBook, bmGenreBook, bmAuthorBook, bmSeriesBook, bmSearchBook);
 
   TBookFormat = (
     bfFb2,    // A pure FB2 file
@@ -312,6 +312,26 @@ type
     function Next(out BookRecord: TBookRecord): Boolean;
     function GetNumRecords: Integer;
   end;
+
+  // --------------------------------------------------------------------------
+  TBookSearchCriteria = record
+    FullName: string;
+    Series: string;
+    Annotation: string;
+    Genre: string;
+    Title: string;
+    FileName: string;
+    Folder: string;
+    FileExt: string;
+    Lang: string;
+    KeyWord: string;
+    Deleted: Boolean;
+
+    DownloadedIdx: Integer;
+    DateIdx: Integer;
+    DateText: string
+  end;
+
 
 // ============================================================================
 //

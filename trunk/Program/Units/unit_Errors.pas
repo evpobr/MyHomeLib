@@ -21,7 +21,8 @@ interface
 
 uses
   SysUtils,
-  Dialogs;
+  Dialogs,
+  unit_Consts;
 
 type
   EMHLError = class(Exception);
@@ -44,6 +45,8 @@ resourcestring
 
   rstrErrorOnlyForCurrentCollection = 'Операция недоступна. Текущая коллекция: "%s", а книга принадлежит коллекции "%s".';
 
+  rstrCheckFilterParams = 'Проверьте параметры фильтра';
+  rstrFilterParamError = 'Синтаксическая ошибка.' + CRLF + 'Проверьте параметры фильтра';
 
 function MHLShowInfo(
   const InfoMessage: string;
