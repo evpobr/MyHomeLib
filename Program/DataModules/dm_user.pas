@@ -136,7 +136,6 @@ type
       FDatabaseID: TIntegerField;
 
       function CreateSQL(const Filter: string): string;
-      procedure AddFilter(var Where: string; const Filter: string);
     end;
     // << TBookIteratorImpl
 
@@ -380,7 +379,8 @@ uses
   StrUtils,
   IOUtils,
   Variants,
-  dm_Collection;
+  dm_Collection,
+  unit_SearchUtils;
 
 resourcestring
   rstrNamelessColection = 'безымянная коллекция';
@@ -438,19 +438,8 @@ var
 begin
   Result := 'SELECT b.BookID, b.DatabaseID FROM BookGroups bg INNER JOIN Books b ON bg.BookID = b.BookID AND bg.DatabaseID = b.DatabaseID ';
 
-  Where := '';
   if Filter <> '' then
-    AddFilter(Where, Filter);
-  Result := Result + Where;
-end;
-
-procedure TDMUser.TBookIteratorImpl.AddFilter(var Where: string; const Filter: string);
-begin
-    if Where = '' then
-      Where := ' WHERE '
-    else
-      Where := Where + ' AND ';
-    Where := Where + Filter;
+    Result := Result + ' WHERE ' + Filter + ' ';
 end;
 
 { TDMUser }

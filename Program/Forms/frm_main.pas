@@ -2002,9 +2002,9 @@ begin
     SetColumns;
 
     case Page of
-      0: FillBooksTree(tvBooksA,  DMCollection.GetBookIterator(bmAuthorBook, False, AuthorBookFilter), False, True);  // авторы
-      1: FillBooksTree(tvBooksS,  DMCollection.GetBookIterator(bmSeriesBook, False, SeriesBookFilter), False, False); // серии
-      2: FillBooksTree(tvBooksG,  DMCollection.GetBookIterator(bmGenreBook, False, GenreBookFilter),  True,  True);      // жанры
+      0: FillBooksTree(tvBooksA,  DMCollection.GetBookIterator(bmByAuthor, False, AuthorBookFilter), False, True);  // авторы
+      1: FillBooksTree(tvBooksS,  DMCollection.GetBookIterator(bmBySeries, False, SeriesBookFilter), False, False); // серии
+      2: FillBooksTree(tvBooksG,  DMCollection.GetBookIterator(bmByGenre, False, GenreBookFilter),  True,  True);      // жанры
       3: FillBooksTree(tvBooksSR, DMCollection.GetBookIterator(False, FSearchCriteria), True,  True);  // поиск
       4: FillBooksTree(tvBooksF,  DMUser.GetBookIterator(GroupBookFIlter), True,  True);  // избранное
     end;
@@ -2083,9 +2083,9 @@ begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
-    FillBooksTree(tvBooksA, DMCollection.GetBookIterator(bmAuthorBook, False, AuthorBookFilter), False, True);  // авторы
-    FillBooksTree(tvBooksS, DMCollection.GetBookIterator(bmSeriesBook, False, SeriesBookFilter), False, False); // серии
-    FillBooksTree(tvBooksG, DMCollection.GetBookIterator(bmGenreBook, False, GenreBookFilter),   True,  True);  // жанры
+    FillBooksTree(tvBooksA, DMCollection.GetBookIterator(bmByAuthor, False, AuthorBookFilter), False, True);  // авторы
+    FillBooksTree(tvBooksS, DMCollection.GetBookIterator(bmBySeries, False, SeriesBookFilter), False, False); // серии
+    FillBooksTree(tvBooksG, DMCollection.GetBookIterator(bmByGenre, False, GenreBookFilter),   True,  True);  // жанры
     FillBooksTree(tvBooksF, DMUser.GetBookIterator(GroupBookFIlter), True,  True);  // избранное
   finally
     Screen.Cursor := SavedCursor;
@@ -2713,7 +2713,7 @@ begin
     lblAuthor.Caption := Data^.GetFullName;
     FLastAuthorID := Data^.AuthorID;
 
-    FillBooksTree(tvBooksA, DMCollection.GetBookIterator(bmAuthorBook, False, AuthorBookFilter), False, True); // авторы
+    FillBooksTree(tvBooksA, DMCollection.GetBookIterator(bmByAuthor, False, AuthorBookFilter), False, True); // авторы
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -2777,7 +2777,7 @@ begin
     lblSeries.Caption := Data^.SerieTitle;
     FLastSerieID := Data^.SerieID;
 
-    FillBooksTree(tvBooksS, DMCollection.GetBookIterator(bmSeriesBook, False, SeriesBookFilter), False, False); // авторы
+    FillBooksTree(tvBooksS, DMCollection.GetBookIterator(bmBySeries, False, SeriesBookFilter), False, False); // авторы
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -2842,7 +2842,7 @@ begin
     FLastGenreCode := Data^.GenreCode;
     FLastGenreIsContainer := (Node^.ChildCount > 0);
 
-    FillBooksTree(tvBooksG, DMCollection.GetBookIterator(bmGenreBook, False, GenreBookFilter), True, True);
+    FillBooksTree(tvBooksG, DMCollection.GetBookIterator(bmByGenre, False, GenreBookFilter), True, True);
   finally
     Screen.Cursor := SavedCursor;
   end;

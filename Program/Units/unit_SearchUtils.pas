@@ -22,6 +22,8 @@ interface
 procedure AddToFilter(const Field: string; Value: string; UP: Boolean; var FilterString: string);
 function PrepareQuery(S: string; UP: Boolean; ConverToFull: Boolean = True): string;
 
+procedure AddToWhere(var Where: string; const Filter: string);
+
 implementation
 
 uses
@@ -90,6 +92,15 @@ begin
   end;
 
   Result := Clear(S);
+end;
+
+procedure AddToWhere(var Where: string; const Filter: string);
+begin
+  if Where = '' then
+    Where := ' WHERE '
+  else
+    Where := Where + ' AND ';
+  Where := Where + Filter;
 end;
 
 end.

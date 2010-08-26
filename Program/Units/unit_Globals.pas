@@ -102,7 +102,9 @@ type
 
   TGenresType = (gtFb2, gtAny);
 
-  TBookIteratorMode = (bmBook, bmGenreBook, bmAuthorBook, bmSeriesBook, bmSearchBook);
+  TBookIteratorMode = (bmAll, bmByGenre, bmByAuthor, bmBySeries, bmSearch);
+
+  TAuthorIteratorMode = (amByBook);
 
   TBookFormat = (
     bfFb2,    // A pure FB2 file
@@ -310,6 +312,12 @@ type
   // --------------------------------------------------------------------------
   IBookIterator = interface
     function Next(out BookRecord: TBookRecord): Boolean;
+    function GetNumRecords: Integer;
+  end;
+
+  // --------------------------------------------------------------------------
+  IAuthorIterator = interface
+    function Next(out AuthorData: TAuthorData): Boolean;
     function GetNumRecords: Integer;
   end;
 
