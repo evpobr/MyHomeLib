@@ -3,165 +3,239 @@ object frmEditor: TfrmEditor
   Top = 0
   BorderIcons = [biSystemMenu]
   Caption = #1042#1074#1077#1076#1080#1090#1077' '#1090#1077#1082#1089#1090' '#1074#1099#1088#1072#1078#1077#1085#1080#1103
-  ClientHeight = 202
-  ClientWidth = 358
+  ClientHeight = 266
+  ClientWidth = 513
   Color = clBtnFace
-  Constraints.MinHeight = 236
-  Constraints.MinWidth = 366
+  Constraints.MinHeight = 309
+  Constraints.MinWidth = 479
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -14
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
   Position = poOwnerFormCenter
-  PixelsPerInch = 96
-  TextHeight = 13
+  PixelsPerInch = 120
+  TextHeight = 17
   object mmMemo: TMemo
     AlignWithMargins = True
-    Left = 3
-    Top = 3
-    Width = 352
-    Height = 107
+    Left = 4
+    Top = 4
+    Width = 505
+    Height = 142
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
     Align = alClient
     ScrollBars = ssVertical
     TabOrder = 0
+    ExplicitWidth = 460
   end
   object RzGroupBox4: TPanel
     AlignWithMargins = True
-    Left = 3
-    Top = 113
-    Width = 352
-    Height = 45
+    Left = 4
+    Top = 150
+    Width = 505
+    Height = 59
+    Margins.Left = 4
     Margins.Top = 0
+    Margins.Right = 4
+    Margins.Bottom = 4
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitWidth = 460
     object btnNotEq: TButton
       Tag = 52
-      Left = 306
-      Top = 11
-      Width = 31
-      Height = 25
+      Left = 400
+      Top = 14
+      Width = 41
+      Height = 33
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
       Caption = '<>'
       TabOrder = 8
       OnClick = btnLikeClick
     end
     object btnBraket: TButton
       Tag = 55
-      Left = 158
-      Top = 11
-      Width = 31
-      Height = 25
+      Left = 207
+      Top = 14
+      Width = 40
+      Height = 33
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
       Caption = '()'
       TabOrder = 4
       OnClick = btnLikeClick
     end
     object btnGreat: TButton
       Tag = 54
-      Left = 232
-      Top = 11
-      Width = 31
-      Height = 25
+      Left = 303
+      Top = 14
+      Width = 41
+      Height = 33
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
       Caption = '>'
       TabOrder = 6
       OnClick = btnLikeClick
     end
     object btnLess: TButton
       Tag = 53
-      Left = 195
-      Top = 11
-      Width = 31
-      Height = 25
+      Left = 255
+      Top = 14
+      Width = 41
+      Height = 33
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
       Caption = '<'
       TabOrder = 5
       OnClick = btnLikeClick
     end
     object btnAnd: TButton
       Tag = 56
-      Left = 47
-      Top = 11
-      Width = 31
-      Height = 25
+      Left = 61
+      Top = 14
+      Width = 41
+      Height = 33
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
       Caption = 'AND'
       TabOrder = 1
       OnClick = btnLikeClick
     end
     object btnOr: TButton
       Tag = 57
-      Left = 84
-      Top = 11
-      Width = 31
-      Height = 25
+      Left = 110
+      Top = 14
+      Width = 40
+      Height = 33
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
       Caption = 'OR'
       TabOrder = 2
       OnClick = btnLikeClick
     end
     object btnNot: TButton
       Tag = 58
-      Left = 121
-      Top = 11
-      Width = 31
-      Height = 25
+      Left = 158
+      Top = 14
+      Width = 41
+      Height = 33
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
       Caption = 'NOT'
       TabOrder = 3
       OnClick = btnLikeClick
     end
     object btnCommas: TButton
       Tag = 59
-      Left = 269
-      Top = 11
-      Width = 31
-      Height = 25
+      Left = 352
+      Top = 14
+      Width = 40
+      Height = 33
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
       Caption = '" "'
       TabOrder = 7
       OnClick = btnLikeClick
     end
     object btnLike: TButton
       Tag = 50
-      Left = 10
-      Top = 11
-      Width = 31
-      Height = 25
+      Left = 13
+      Top = 14
+      Width = 41
+      Height = 33
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
       Caption = 'LIKE'
       TabOrder = 0
+      OnClick = btnLikeClick
+    end
+    object btnEq: TButton
+      Tag = 52
+      Left = 449
+      Top = 14
+      Width = 41
+      Height = 33
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
+      Caption = '='
+      TabOrder = 9
       OnClick = btnLikeClick
     end
   end
   object pnButtons: TPanel
     Left = 0
-    Top = 161
-    Width = 358
-    Height = 41
+    Top = 213
+    Width = 513
+    Height = 53
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
     Align = alBottom
     BevelOuter = bvNone
     Caption = 'pnButtons'
     ShowCaption = False
     TabOrder = 2
+    ExplicitWidth = 468
     DesignSize = (
-      358
-      41)
+      513
+      53)
     object btnOk: TButton
-      Left = 194
-      Top = 10
-      Width = 75
-      Height = 25
+      Left = 299
+      Top = 13
+      Width = 98
+      Height = 33
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
       Anchors = [akTop, akRight]
       Caption = '&'#1057#1086#1093#1088#1072#1085#1080#1090#1100
       Default = True
       ModalResult = 1
       TabOrder = 0
+      ExplicitLeft = 254
     end
     object btnCancel: TButton
-      Left = 275
-      Top = 10
-      Width = 75
-      Height = 25
+      Left = 405
+      Top = 13
+      Width = 98
+      Height = 33
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
       Anchors = [akTop, akRight]
       Cancel = True
       Caption = '&'#1054#1090#1084#1077#1085#1072
       ModalResult = 2
       TabOrder = 1
+      ExplicitLeft = 360
     end
   end
 end

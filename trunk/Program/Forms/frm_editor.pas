@@ -39,6 +39,7 @@ type
     pnButtons: TPanel;
     btnOk: TButton;
     btnCancel: TButton;
+    btnEq: TButton;
     procedure btnLikeClick(Sender: TObject);
 
   private
@@ -69,13 +70,11 @@ begin
     AddText := 'LIKE "%%"';
     Offset := p + 7;
   end
-  {
   else if Sender = btnEq then
   begin
     AddText := '=""';
     Offset := p + 2;
   end
-  }
   else if Sender = btnNotEq then
   begin
     AddText := '<> ""';

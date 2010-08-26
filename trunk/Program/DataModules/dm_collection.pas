@@ -413,16 +413,16 @@ begin
   begin
     case Mode of
       bmBook:
-        Result := 'SELECT BookID FROM Books';
+        Result := 'SELECT b.' + BOOK_ID_FIELD + ' FROM Books';
       bmGenreBook:
         Result :=
-          'SELECT b.BookID FROM Genre_List gl INNER JOIN Books b ON gl.BookID = b.BookID ';
+          'SELECT b.' + BOOK_ID_FIELD + ' FROM Genre_List gl INNER JOIN Books b ON gl.' + BOOK_ID_FIELD + ' = b.' + BOOK_ID_FIELD + ' ';
       bmAuthorBook:
         Result :=
-          'SELECT b.BookID FROM Author_List al INNER JOIN Books b ON al.BookID = b.BookID ';
+          'SELECT b.' + BOOK_ID_FIELD + ' FROM Author_List al INNER JOIN Books b ON al.' + BOOK_ID_FIELD + ' = b.' + BOOK_ID_FIELD + ' ';
       bmSeriesBook:
         Result :=
-          'SELECT b.BookID FROM Series s INNER JOIN Books b ON s.SerieID = b.SerieID ';
+          'SELECT b.' + BOOK_ID_FIELD + ' FROM Series s INNER JOIN Books b ON s.' + SERIE_ID_FIELD + ' = b.' + SERIE_ID_FIELD + ' ';
       else
         Assert(False);
     end;
@@ -431,9 +431,9 @@ begin
     if Filter <> '' then
       AddToWhere(Where, Filter);
     if FCollection.FHideDeleted then
-      AddToWhere(Where, ' b.Deleted = False ');
+      AddToWhere(Where, ' b.' + BOOK_DELETED_FIELD + ' = False ');
     if FCollection.FShowLocalOnly then
-      AddToWhere(Where, ' b.Local = True ');
+      AddToWhere(Where, ' b.' + BOOK_LOCAL_FIELD + ' = True ');
     Result := Result + Where;
   end;
 end;
@@ -461,7 +461,7 @@ begin
       if FilterString <> '' then
       begin
         FilterString := SQLStartStr +
-          ' FROM Authors a INNER JOIN Author_List b ON (a.AuthorID = b.AuthorID) WHERE '
+          ' FROM Authors a INNER JOIN Author_List b ON (a.' + AUTHOR_ID_FIELD + ' = b.' + AUTHOR_ID_FIELD + ') WHERE '
           + FilterString;
 
         Result := Result + FilterString;
@@ -478,7 +478,7 @@ begin
       if FilterString <> '' then
       begin
         FilterString := SQLStartStr +
-          ' FROM Series s JOIN Books b ON b.SerieID = s.SerieID WHERE ' +
+          ' FROM Series s JOIN Books b ON b.' + SERIE_ID_FIELD + ' = s.' + SERIE_ID_FIELD + ' WHERE ' +
           FilterString;
 
         if Result <> '' then
@@ -492,13 +492,13 @@ begin
     FilterString := '';
     if SearchCriteria.Annotation <> '' then
     begin
-      AddToFilter('e.' + BOOK_ANNOTATION_FIELD, PrepareQuery
+      AddToFilter('b.' + BOOK_ANNOTATION_FIELD, PrepareQuery
           (SearchCriteria.Annotation, True), True, FilterString);
 
       if FilterString <> '' then
       begin
         FilterString := SQLStartStr +
-          ' FROM Extra e JOIN Books b ON b.BookID = e.BookID WHERE ' +
+          ' FROM Books b WHERE ' +
           FilterString;
 
         if Result <> '' then
@@ -513,7 +513,7 @@ begin
     if (SearchCriteria.Genre <> '') then
     begin
       FilterString := SQLStartStr +
-        ' FROM Genre_List g JOIN Books b ON b.BookID = g.BookID WHERE (' +
+        ' FROM Genre_List g JOIN Books b ON b.' + BOOK_ID_FIELD + ' = g.' + BOOK_ID_FIELD + ' WHERE (' +
         SearchCriteria.Genre + ')';
 
       if Result <> '' then
