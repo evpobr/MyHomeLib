@@ -166,8 +166,12 @@ begin
   Assert(Assigned(editControl));
 
   FOnChange := THackEdit(editControl).OnChange;
-  editControl.Text := newText;
-  THackEdit(editControl).OnChange := FOnChange;
+  THackEdit(editControl).OnChange := nil;
+  try
+    editControl.Text := newText;
+  finally
+    THackEdit(editControl).OnChange := FOnChange;
+  end;
 end;
 
 // ============================================================================

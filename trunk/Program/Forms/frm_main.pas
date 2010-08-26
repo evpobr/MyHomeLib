@@ -882,6 +882,7 @@ type
     FLastSerieID: Integer;
     FLastGenreCode: string;
     FLastGenreIsContainer: Boolean;
+    FLastGroupID: Integer;
 
     // SB
     FStatusProgressBar: TProgressBar;
@@ -890,12 +891,12 @@ type
     FPresets: TSearchPresets;
 
     // Filters for the iterators:
-    FGroupBookFilter: string;
     FSearchCriteria: TBookSearchCriteria;
 
     function AuthorBookFilter: string;
     function SeriesBookFilter: string;
     function GenreBookFilter: string;
+    function GroupBookFilter: string;
 
     //
     function GetBookNode(const Tree: TBookTree; const BookKey: TBookKey): PVirtualNode; overload;
@@ -1486,6 +1487,7 @@ begin
     FLastSerieID := MHL_INVALID_ID;
     FLastGenreCode := '';
     FLastGenreIsContainer := False;
+    FLastGroupID := MHL_INVALID_ID;
   finally
     Screen.Cursor := FCursor;
   end;
@@ -1500,7 +1502,6 @@ begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
-    FGroupBookFIlter := '';
     FSearchCriteria := EmptySearchCriteria;
 
     CloseCollection;
@@ -1631,10 +1632,10 @@ begin
     DMCollection.SetHideDeletedBook((not IsPrivate) and Settings.HideDeletedBooks, False);
     DMCollection.SetTableState(True);
 
-    FillAuthorTree(tvAuthors);
-    FillSeriesTree(tvSeries);
-    FillGenresTree(tvGenres);
-    FillGroupsList(tvGroups);
+    FillAuthorTree(tvAuthors, FLastAuthorID);
+    FillSeriesTree(tvSeries, FLastSerieID);
+    FillGenresTree(tvGenres, False, FLastGenreCode);
+    FillGroupsList(tvGroups, FLastGroupID);
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -2006,7 +2007,7 @@ begin
       1: FillBooksTree(tvBooksS,  DMCollection.GetBookIterator(bmSeriesBook, False, SeriesBookFilter), False, False); // серии
       2: FillBooksTree(tvBooksG,  DMCollection.GetBookIterator(bmGenreBook, False, GenreBookFilter),  True,  True);      // жанры
       3: FillBooksTree(tvBooksSR, DMCollection.GetBookIterator(False, FSearchCriteria), True,  True);  // поиск
-      4: FillBooksTree(tvBooksF,  DMUser.GetBookIterator(FGroupBookFIlter), True,  True);  // избранное
+      4: FillBooksTree(tvBooksF,  DMUser.GetBookIterator(GroupBookFIlter), True,  True);  // избранное
     end;
 
     SetHeaderPopUp;
@@ -2086,7 +2087,7 @@ begin
     FillBooksTree(tvBooksA, DMCollection.GetBookIterator(bmAuthorBook, False, AuthorBookFilter), False, True);  // авторы
     FillBooksTree(tvBooksS, DMCollection.GetBookIterator(bmSeriesBook, False, SeriesBookFilter), False, False); // серии
     FillBooksTree(tvBooksG, DMCollection.GetBookIterator(bmGenreBook, False, GenreBookFilter),   True,  True);  // жанры
-    FillBooksTree(tvBooksF, DMUser.GetBookIterator(FGroupBookFIlter), True,  True);  // избранное
+    FillBooksTree(tvBooksF, DMUser.GetBookIterator(GroupBookFIlter), True,  True);  // избранное
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -2316,6 +2317,8 @@ begin
   FLastLetterS := tbarSeriesRus.Buttons[0];
   FLastAuthorID := MHL_INVALID_ID;
   FLastSerieID := MHL_INVALID_ID;
+  FLastGenreIsContainer := False;
+  FLastGroupID := MHL_INVALID_ID;
 
   // SB
   FStatusProgressBar := TProgressBar.Create(Self);
@@ -2392,7 +2395,7 @@ begin
   DMCollection.SetActiveTable(pgControl.ActivePageIndex);
   LoadLastCollection;
 
-  FillGroupsList(tvGroups);
+  FillGroupsList(tvGroups, FLastGroupID);
   CreateGroupsMenu;
 
   TheFirstRun;
@@ -2458,54 +2461,58 @@ procedure TfrmMain.SavePositions;
 var
   AuthorData: PAuthorData;
   SerieData: PSerieData;
-  BookData: PBookRecord;
-  ASettings: TStrings;
+  GenreData: PGenreData;
+  GroupData: PGroupData;
+  //BookData: PBookRecord;
 begin
-  ASettings := DMUser.ActiveCollection.Settings;
-  Assert(Assigned(ASettings));
-
-  ASettings.Clear;
-
   AuthorData := tvAuthors.GetNodeData(tvAuthors.GetFirstSelected);
   if Assigned(AuthorData) then
   begin
-    ASettings.Values[LAST_AUTHOR_ID] := IntToStr(AuthorData^.AuthorID);
-
-    if FLastAuthorID = AuthorData^.AuthorID then
+    if FLastAuthorID <> AuthorData^.AuthorID then
     begin
-      BookData := tvBooksA.GetNodeData(tvBooksA.GetFirstSelected);
-      if Assigned(BookData) then
-        ASettings.Values[LAST_AUTHOR_BOOK_ID] := IntToStr(BookData^.BookKey.BookID);
+      FLastAuthorID := AuthorData^.AuthorID;
     end;
-  end;
+  end
+  else
+    FLastAuthorID := MHL_INVALID_ID;
 
   SerieData := tvSeries.GetNodeData(tvSeries.GetFirstSelected);
   if Assigned(SerieData) then
   begin
-    ASettings.Values[LAST_SERIE_ID] := IntToStr(SerieData^.SerieID);
-
-    if FLastSerieID = SerieData^.SerieID then
+    if FLastSerieID <> SerieData^.SerieID then
     begin
-      BookData := tvBooksS.GetNodeData(tvBooksS.GetFirstSelected);
-      if Assigned(BookData) then
-        ASettings.Values[LAST_SERIE_BOOK_ID] := IntToStr(BookData^.BookKey.BookID);
+      FLastSerieID := SerieData^.SerieID;
     end;
+  end
+  else
+    FLastSerieID := MHL_INVALID_ID;
+
+  GenreData := tvGenres.GetNodeData(tvGenres.GetFirstSelected);
+  if Assigned(GenreData) then
+  begin
+    if FLastGenreCode <> GenreData^.GenreCode then
+    begin
+      FLastGenreCode := GenreData^.GenreCode;
+      Assert(Assigned(tvGenres.GetFirstSelected()));
+      FLastGenreIsContainer := (tvGenres.GetFirstSelected^.ChildCount > 0);
+    end;
+  end
+  else
+  begin
+    FLastGenreCode := '';
+    FLastGenreIsContainer := False;
   end;
 
-  //
-  // TODO : по хорошему, это должно храниться в самой коллекции. Т е должно быть DMCollection.UpdateSettings(ASettings);
-  //
-  if DMUser.SelectCollection(DMUser.ActiveCollection.ID) then
+  GroupData := tvGroups.GetNodeData(tvGroups.GetFirstSelected);
+  if Assigned(GroupData) then
   begin
-    DMUser.CurrentCollection.Edit;
-    try
-      DMUser.CurrentCollection.UpdateSettings(ASettings);
-      DMUser.CurrentCollection.Save;
-    except
-      DMUser.CurrentCollection.Cancel;
-      raise;
+    if FLastGroupID <> GroupData^.GroupID then
+    begin
+      FLastGroupID := GroupData^.GroupID;
     end;
-  end;
+  end
+  else
+    FLastGroupID := MHL_INVALID_ID;
 
   {
   Settings.LastAuthor := lblAuthor.Caption;
@@ -2748,7 +2755,6 @@ begin
       Exit;
     end;
 
-    DMCollection.Authors.Locate(AUTHOR_ID_FIELD, Data^.AuthorID, []);
     lblAuthor.Caption := Data^.GetFullName;
     FLastAuthorID := Data^.AuthorID;
 
@@ -2813,7 +2819,6 @@ begin
       Exit;
     end;
 
-    DMCollection.Series.Locate(SERIE_ID_FIELD, Data^.SerieID, []);
     lblSeries.Caption := Data^.SerieTitle;
     FLastSerieID := Data^.SerieID;
 
@@ -2878,12 +2883,11 @@ begin
       Exit;
     end;
 
+    lblGenreTitle.Caption := Data^.GenreAlias;
     FLastGenreCode := Data^.GenreCode;
     FLastGenreIsContainer := (Node^.ChildCount > 0);
 
     FillBooksTree(tvBooksG, DMCollection.GetBookIterator(bmGenreBook, False, GenreBookFilter), True, True);
-
-    lblGenreTitle.Caption := Data^.GenreAlias;
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -2945,11 +2949,10 @@ begin
       Exit;
     end;
 
-    DMUser.ActivateGroup(Data^.GroupID);
     lblGroups.Caption := DMUser.GroupsGroupName.Value;
+    FLastGroupID := Data^.GroupID;
 
-    FGroupBookFIlter := GROUP_ID_FIELD + ' = ' + QuotedStr(IntToStr(Data^.GroupID));
-    FillBooksTree(tvBooksF, DMUser.GetBookIterator(FGroupBookFIlter), True, True);
+    FillBooksTree(tvBooksF, DMUser.GetBookIterator(GroupBookFIlter), True, True);
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -3014,7 +3017,7 @@ begin
       DMUser.CopyBookToGroup(BookData^.BookKey, SourceGroupID, TargetGroupID, ssShift in Shift);
     end;
   end;
-  FillBooksTree(tvBooksF, DMUser.GetBookIterator(FGroupBookFIlter), True, True);
+  FillBooksTree(tvBooksF, DMUser.GetBookIterator(GroupBookFIlter), True, True);
 end;
 
 procedure TfrmMain.tvGroupsDragOver(Sender: TBaseVirtualTree; Source: TObject; Shift: TShiftState; State: TDragState; Pt: TPoint; Mode: TDropMode; var Effect: Integer; var Accept: Boolean);
@@ -3854,8 +3857,8 @@ begin
 
     DMCollection.SetHideDeletedBook(Settings.HideDeletedBooks, True);
 
-    FillAuthorTree(tvAuthors);
-    FillSeriesTree(tvSeries);
+    FillAuthorTree(tvAuthors, FLastAuthorID);
+    FillSeriesTree(tvSeries, FLastSerieID);
     FillAllBooksTree;
 
     RestorePositions;
@@ -3906,6 +3909,8 @@ end;
 
 function TfrmMain.InternalSetAuthorFilter(Button: TToolButton): string;
 begin
+  SavePositions;
+
   if Assigned(FLastLetterA) then
     FLastLetterA.Down := False;
   FLastLetterA := Button;
@@ -3915,8 +3920,7 @@ begin
 
   DMCollection.SetAuthorFilter(Result);
 
-  FillAuthorTree(tvAuthors);
-  // tvAuthors.Selected[tvAuthors.GetFirst] := True;
+  FillAuthorTree(tvAuthors, FLastAuthorID);
 
   if (Result = ALPHA_FILTER_ALL) or (Result = ALPHA_FILTER_NON_ALPHA) then
   begin
@@ -3956,6 +3960,8 @@ end;
 
 function TfrmMain.InternalSetSerieFilter(Button: TToolButton): string;
 begin
+  SavePositions;
+
   if Assigned(FLastLetterS) then
     FLastLetterS.Down := False;
   FLastLetterS := Button;
@@ -3989,8 +3995,7 @@ begin
 
     AFilter := InternalSetSerieFilter(Button);
 
-    FillSeriesTree(tvSeries);
-    // tvSeries.Selected[tvSeries.GetFirst] := True;
+    FillSeriesTree(tvSeries, FLastSerieID);
 
     Assert(Length(AFilter) < 2);
     SetTextNoChange(edLocateSeries, AFilter);
@@ -4023,8 +4028,8 @@ begin
 
     DMCollection.SetShowLocalBookOnly(Settings.ShowLocalOnly, True);
 
-    FillAuthorTree(tvAuthors);
-    FillSeriesTree(tvSeries);
+    FillAuthorTree(tvAuthors, FLastAuthorID);
+    FillSeriesTree(tvSeries, FLastSerieID);
     FillAllBooksTree;
 
     RestorePositions;
@@ -5033,7 +5038,7 @@ begin
     if DMUser.AddGroup(GroupName) then
     begin
       CreateGroupsMenu;
-      FillGroupsList(tvGroups);
+      FillGroupsList(tvGroups, FLastGroupID);
     end
     else
       MHLShowError(rstrGroupAlreadyExists);
@@ -5056,7 +5061,7 @@ begin
     if DMUser.RenameGroup(Data^.GroupID, GroupName) then
     begin
       CreateGroupsMenu;
-      FillGroupsList(tvGroups);
+      FillGroupsList(tvGroups, FLastGroupID);
     end
     else
       MHLShowError(rstrGroupAlreadyExists);
@@ -5076,7 +5081,7 @@ begin
     DMUser.DeleteGroup(Data^.GroupID);
 
     CreateGroupsMenu;
-    FillGroupsList(tvGroups);
+    FillGroupsList(tvGroups, FLastGroupID);
   end
   else
     MHLShowError(rstrUnableDeleteBuiltinGroupError);
@@ -5099,7 +5104,7 @@ begin
   try
     DMUser.ClearGroup(GroupData^.GroupID);
 
-    FillBooksTree(tvBooksF, DMUser.GetBookIterator(FGroupBookFIlter), True, True); // избранное
+    FillBooksTree(tvBooksF, DMUser.GetBookIterator(GroupBookFIlter), True, True); // избранное
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -5512,7 +5517,7 @@ begin
   GroupData := tvGroups.GetNodeData(tvGroups.GetFirstSelected);
   if Assigned(GroupData) and (GroupData^.GroupID = GroupID) then
   begin
-    FillBooksTree(tvBooksF, DMUser.GetBookIterator(FGroupBookFIlter), True, True); // Группы
+    FillBooksTree(tvBooksF, DMUser.GetBookIterator(GroupBookFIlter), True, True); // Группы
   end;
 end;
 
@@ -5564,7 +5569,7 @@ begin
       //
       DMUser.RemoveUnusedBooks;
 
-      FillBooksTree(tvBooksF, DMUser.GetBookIterator(FGroupBookFIlter), True, True);
+      FillBooksTree(tvBooksF, DMUser.GetBookIterator(GroupBookFIlter), True, True);
     finally
       ShowStatusProgress := False;
     end;
@@ -6770,7 +6775,7 @@ begin
     //
     // Обновим список групп. Побочным эффектом будет перечитывание списка книг на странице "Группы"
     //
-    FillGroupsList(tvGroups);
+    FillGroupsList(tvGroups, FLastGroupID);
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -7070,7 +7075,7 @@ end;
 
 function TfrmMain.SeriesBookFilter: string;
 begin
-  Result := Format('%s = %d', [SERIE_ID_FIELD, FLastSerieID]);
+  Result := Format('b.%s = %d', [SERIE_ID_FIELD, FLastSerieID]);
 end;
 
 function TfrmMain.GenreBookFilter: string;
@@ -7079,6 +7084,11 @@ begin
     Result := Format('%s = %s', [GENRE_CODE_FIELD, QuotedStr(FLastGenreCode)])
   else
     Result := Format('%s LIKE %s', [GENRE_CODE_FIELD, QuotedStr(FLastGenreCode + IfThen(FLastGenreIsContainer, '.%', '%'))]);
+end;
+
+function TfrmMain.GroupBookFilter: string;
+begin
+  Result := Format('%s = %d', [GROUP_ID_FIELD, FLastGroupID]);
 end;
 
 end.
