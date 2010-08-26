@@ -162,7 +162,7 @@ type
     public
       constructor Create(Collection: TDMCollection;
         const Mode: TBookIteratorMode; const LoadMemos: Boolean;
-        const Filter: string);
+        const Filter: string; const SearchCriteria: TBookSearchCriteria);
       destructor Destroy; override;
 
     protected
@@ -180,8 +180,11 @@ type
       FCollectionID: Integer; // Active collection's ID at the time the iterator was created
       FLoadMemos: Boolean;
 
-      function CreateSQL(const Mode: TBookIteratorMode; const Filter: string): string;
-      procedure AddFilter(var Where: string; const Filter: string);
+      function CreateSQL(const Mode: TBookIteratorMode; const Filter: string;
+        const SearchCriteria: TBookSearchCriteria): string;
+      function CreateSearchSQL(const SearchCriteria: TBookSearchCriteria)
+        : string;
+      procedure AddToWhere(var Where: string; const Filter: string);
     end;
     // << TBookIteratorImpl
 
@@ -314,7 +317,9 @@ type
     // Iterators:
     function GetBookIterator(const Mode: TBookIteratorMode;
       const LoadMemos: Boolean; const Filter: string = ''): IBookIterator;
-
+      overload;
+    function GetBookIterator(const LoadMemos: Boolean;
+      const SearchCriteria: TBookSearchCriteria): IBookIterator; overload;
   end;
 
 var
@@ -330,18 +335,20 @@ uses
   IOUtils,
   Variants,
   Character,
+  DateUtils,
   dm_user,
   unit_Consts,
   unit_Messages,
   unit_Helpers,
-  unit_Errors;
+  unit_Errors,
+  unit_SearchUtils,
+  unit_Settings;
 {$R *.dfm}
-
 { TBookIteratorImpl }
 
 constructor TDMCollection.TBookIteratorImpl.Create(Collection: TDMCollection;
   const Mode: TBookIteratorMode; const LoadMemos: Boolean;
-  const Filter: string);
+  const Filter: string; const SearchCriteria: TBookSearchCriteria);
 begin
   inherited Create;
 
@@ -353,7 +360,10 @@ begin
 
   FBooks := TABSQuery.Create(FCollection.DBCollection);
   FBooks.DatabaseName := FCollection.DBCollection.DatabaseName;
-  FBooks.SQL.Text := CreateSQL(Mode, Filter);
+  FBooks.SQL.Text := CreateSQL(Mode, Filter, SearchCriteria);
+{$IFDEF DEBUG}
+  FBooks.SQL.SaveToFile(Settings.AppPath + 'Last.sql');
+{$ENDIF}
   FBooks.Active := True;
 
   FBookID := FBooks.FieldByName(BOOK_ID_FIELD) as TIntegerField;
@@ -386,44 +396,205 @@ begin
   Result := FBooks.RecordCount;
 end;
 
-function TDMCollection.TBookIteratorImpl.CreateSQL(const Mode: TBookIteratorMode; const Filter: string): string;
+function TDMCollection.TBookIteratorImpl.CreateSQL
+  (const Mode: TBookIteratorMode; const Filter: string;
+  const SearchCriteria: TBookSearchCriteria): string;
 var
   Where: string;
 begin
   Result := '';
-  case Mode of
-    bmBook:
-      Result := 'SELECT BookID FROM Books';
-    bmGenreBook:
-      Result :=
-        'SELECT b.BookID FROM Genre_List gl INNER JOIN Books b ON gl.BookID = b.BookID ';
-    bmAuthorBook:
-      Result :=
-        'SELECT b.BookID FROM Author_List al INNER JOIN Books b ON al.BookID = b.BookID ';
-    bmSeriesBook:
-      Result :=
-        'SELECT b.BookID FROM Series s INNER JOIN Books b ON s.SerieID = b.SerieID ';
-  else
-    Assert(False);
-  end;
 
-  Where := '';
-  if Filter <> '' then
-    AddFilter(Where, Filter);
-  if FCollection.FHideDeleted then
-    AddFilter(Where, ' b.Deleted = False ');
-  if FCollection.FShowLocalOnly then
-    AddFilter(Where, ' b.Local = True ');
-  Result := Result + Where;
+  if Mode = bmSearchBook then
+  begin
+    Assert(Filter = '');
+    Result := CreateSearchSQL(SearchCriteria);
+  end
+  else
+  begin
+    case Mode of
+      bmBook:
+        Result := 'SELECT BookID FROM Books';
+      bmGenreBook:
+        Result :=
+          'SELECT b.BookID FROM Genre_List gl INNER JOIN Books b ON gl.BookID = b.BookID ';
+      bmAuthorBook:
+        Result :=
+          'SELECT b.BookID FROM Author_List al INNER JOIN Books b ON al.BookID = b.BookID ';
+      bmSeriesBook:
+        Result :=
+          'SELECT b.BookID FROM Series s INNER JOIN Books b ON s.SerieID = b.SerieID ';
+      else
+        Assert(False);
+    end;
+
+    Where := '';
+    if Filter <> '' then
+      AddToWhere(Where, Filter);
+    if FCollection.FHideDeleted then
+      AddToWhere(Where, ' b.Deleted = False ');
+    if FCollection.FShowLocalOnly then
+      AddToWhere(Where, ' b.Local = True ');
+    Result := Result + Where;
+  end;
 end;
 
-procedure TDMCollection.TBookIteratorImpl.AddFilter(var Where: string; const Filter: string);
+// Original code was extracted from TfrmMain.DoApplyFilter
+function TDMCollection.TBookIteratorImpl.CreateSearchSQL
+  (const SearchCriteria: TBookSearchCriteria): string;
+var
+  FilterString: string;
+const
+  SQLStartStr = 'SELECT DISTINCT b.' + BOOK_ID_FIELD;
 begin
-    if Where = '' then
-      Where := ' WHERE '
+  Result := '';
+  try
+    // ------------------------ авторы ----------------------------------------
+    FilterString := '';
+    if SearchCriteria.FullName <> '' then
+    begin
+      AddToFilter('a.' + AUTHOR_LASTTNAME_FIELD + ' + ' + 'CASE WHEN a.' +
+          AUTHOR_FIRSTNAME_FIELD + ' IS NULL THEN '''' ELSE '' '' END + a.' +
+          AUTHOR_FIRSTNAME_FIELD + ' + ' + 'CASE WHEN a.' +
+          AUTHOR_MIDDLENAME_FIELD + ' IS NULL THEN '''' ELSE '' '' END + a.' +
+          AUTHOR_MIDDLENAME_FIELD, PrepareQuery(SearchCriteria.FullName, True),
+        True, FilterString);
+      if FilterString <> '' then
+      begin
+        FilterString := SQLStartStr +
+          ' FROM Authors a INNER JOIN Author_List b ON (a.AuthorID = b.AuthorID) WHERE '
+          + FilterString;
+
+        Result := Result + FilterString;
+      end;
+    end;
+
+    // ------------------------ серия -----------------------------------------
+    FilterString := '';
+    if SearchCriteria.Series <> '' then
+    begin
+      AddToFilter('s.' + SERIE_TITLE_FIELD, PrepareQuery
+          (SearchCriteria.Series, True), True, FilterString);
+
+      if FilterString <> '' then
+      begin
+        FilterString := SQLStartStr +
+          ' FROM Series s JOIN Books b ON b.SerieID = s.SerieID WHERE ' +
+          FilterString;
+
+        if Result <> '' then
+          Result := Result + ' INTERSECT ';
+
+        Result := Result + FilterString;
+      end;
+    end;
+
+    // ------------------------ аннотация -----------------------------------------
+    FilterString := '';
+    if SearchCriteria.Annotation <> '' then
+    begin
+      AddToFilter('e.' + BOOK_ANNOTATION_FIELD, PrepareQuery
+          (SearchCriteria.Annotation, True), True, FilterString);
+
+      if FilterString <> '' then
+      begin
+        FilterString := SQLStartStr +
+          ' FROM Extra e JOIN Books b ON b.BookID = e.BookID WHERE ' +
+          FilterString;
+
+        if Result <> '' then
+          Result := Result + ' INTERSECT ';
+
+        Result := Result + FilterString;
+      end;
+    end;
+
+    // -------------------------- жанр ----------------------------------------
+    FilterString := '';
+    if (SearchCriteria.Genre <> '') then
+    begin
+      FilterString := SQLStartStr +
+        ' FROM Genre_List g JOIN Books b ON b.BookID = g.BookID WHERE (' +
+        SearchCriteria.Genre + ')';
+
+      if Result <> '' then
+        Result := Result + ' INTERSECT ';
+
+      Result := Result + FilterString;
+    end;
+
+    // -------------------  все остальное   -----------------------------------
+    FilterString := '';
+    AddToFilter('b.' + BOOK_TITLE_FIELD, PrepareQuery
+        (SearchCriteria.Title, True), True, FilterString);
+    AddToFilter('b.' + BOOK_FILENAME_FIELD, PrepareQuery
+        (SearchCriteria.FileName, False), False, FilterString);
+    AddToFilter('b.' + BOOK_FOLDER_FIELD, PrepareQuery(SearchCriteria.Folder,
+        False), False, FilterString);
+    AddToFilter('b.' + BOOK_EXT_FIELD, PrepareQuery(SearchCriteria.FileExt,
+        False), False, FilterString);
+    AddToFilter('b.' + BOOK_LANG_FIELD, PrepareQuery(SearchCriteria.Lang, True,
+        False), True, FilterString);
+    AddToFilter('b.' + BOOK_KEYWORDS_FIELD, PrepareQuery
+        (SearchCriteria.KeyWord, True), True, FilterString);
+    //
+    if SearchCriteria.DateIdx = -1 then
+      AddToFilter('b.' + BOOK_DATE_FIELD, PrepareQuery(SearchCriteria.DateText,
+          False), False, FilterString)
     else
-      Where := Where + ' AND ';
-    Where := Where + Filter;
+      case SearchCriteria.DateIdx of
+        0:
+          AddToFilter('b.' + BOOK_DATE_FIELD, Format
+              ('> "%s"', [DateToStr(IncDay(Now, -1))]), False, FilterString);
+        1:
+          AddToFilter('b.' + BOOK_DATE_FIELD, Format
+              ('> "%s"', [DateToStr(IncDay(Now, -3))]), False, FilterString);
+        2:
+          AddToFilter('b.' + BOOK_DATE_FIELD, Format
+              ('> "%s"', [DateToStr(IncDay(Now, -7))]), False, FilterString);
+        3:
+          AddToFilter('b.' + BOOK_DATE_FIELD, Format
+              ('> "%s"', [DateToStr(IncDay(Now, -14))]), False, FilterString);
+        4:
+          AddToFilter('b.' + BOOK_DATE_FIELD, Format
+              ('> "%s"', [DateToStr(IncDay(Now, -30))]), False, FilterString);
+        5:
+          AddToFilter('b.' + BOOK_DATE_FIELD, Format
+              ('> "%s"', [DateToStr(IncDay(Now, -90))]), False, FilterString);
+      end;
+
+    case SearchCriteria.DownloadedIdx of
+      1:
+        AddToFilter('b.' + BOOK_LOCAL_FIELD, '= True', False, FilterString);
+      2:
+        AddToFilter('b.' + BOOK_LOCAL_FIELD, '= False', False, FilterString);
+    end;
+
+    if SearchCriteria.Deleted then
+      AddToFilter('b.' + BOOK_DELETED_FIELD, '= False', False, FilterString);
+
+    if FilterString <> '' then
+    begin
+      if Result <> '' then
+        Result := Result + ' INTERSECT ';
+      Result := Result + SQLStartStr + ' FROM Books b WHERE ' + FilterString;
+    end;
+  except
+    on E: Exception do
+      raise Exception.Create(rstrFilterParamError);
+  end;
+
+  if Result = '' then
+    raise Exception.Create(rstrCheckFilterParams);
+end;
+
+procedure TDMCollection.TBookIteratorImpl.AddToWhere
+  (var Where: string; const Filter: string);
+begin
+  if Where = '' then
+    Where := ' WHERE '
+  else
+    Where := Where + ' AND ';
+  Where := Where + Filter;
 end;
 
 { TDMCollection }
@@ -1277,8 +1448,18 @@ end;
 // and knows to self destroy when no longer referenced.
 function TDMCollection.GetBookIterator(const Mode: TBookIteratorMode;
   const LoadMemos: Boolean; const Filter: string): IBookIterator;
+var
+  EmptySearchCriteria: TBookSearchCriteria;
 begin
-  Result := TBookIteratorImpl.Create(Self, Mode, LoadMemos, Filter);
+  Result := TBookIteratorImpl.Create(Self, Mode, LoadMemos, Filter,
+    EmptySearchCriteria);
+end;
+
+function TDMCollection.GetBookIterator(const LoadMemos: Boolean;
+  const SearchCriteria: TBookSearchCriteria): IBookIterator;
+begin
+  Result := TBookIteratorImpl.Create(Self, bmSearchBook, LoadMemos, '',
+    SearchCriteria);
 end;
 
 // Change SerieID value for all books in the current database with old SerieID value
