@@ -116,6 +116,11 @@ type
     amFullFilter // Full filter - both Alpha, Local and Deleted
   );
 
+  TGenreIteratorMode = (
+    gmAll,       // All genres
+    gmByBook     // Genres by book id
+  );
+
   TBookFormat = (
     bfFb2,    // A pure FB2 file
     bfFb2Zip, // An FB2 packed in a ZIP

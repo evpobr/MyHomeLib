@@ -243,7 +243,7 @@ begin
         Tree.Clear;
         SelectedNode := nil;
 
-        GenreIterator := DMCollection.GetGenreIterator;
+        GenreIterator := DMCollection.GetGenreIterator(gmAll);
         while GenreIterator.Next(Genre) do
         begin
           ParentNode := nil;

@@ -28,7 +28,6 @@ uses
   UserData;
 
 type
-  // TThreeState = (tsTrue, tsFalse, tsUnknown);
 
   TDMCollection = class(TDataModule)
     DBCollection: TABSDatabase;
@@ -36,10 +35,6 @@ type
     Series: TABSQuery;
     SeriesSerieID: TAutoIncField;
     SeriesTitle: TWideStringField;
-
-    BookGenres: TABSTable;
-    BookGenresGenreCode: TWideStringField;
-    BookGenresBookID: TIntegerField;
 
     AllBooks: TABSTable;
     AllBooksBookID: TAutoIncField;
@@ -196,7 +191,7 @@ type
 
     TGenreIteratorImpl = class(TInterfacedObject, IGenreIterator)
     public
-      constructor Create(Collection: TDMCollection);
+      constructor Create(Collection: TDMCollection; const Mode: TGenreIteratorMode; const Filter: string);
       destructor Destroy; override;
 
     protected
@@ -212,7 +207,7 @@ type
       FGenreCode: TWideStringField;
       FCollectionID: Integer; // Active collection's ID at the time the iterator was created
 
-      function CreateSQL: string;
+      function CreateSQL(const Mode: TGenreIteratorMode; const Filter: string): string;
     end;
     // << TGenreIteratorImpl
 
@@ -338,7 +333,7 @@ type
     function GetBookIterator(const Mode: TBookIteratorMode; const LoadMemos: Boolean; const Filter: string = ''): IBookIterator; overload;
     function GetBookIterator(const LoadMemos: Boolean; const SearchCriteria: TBookSearchCriteria): IBookIterator; overload;
     function GetAuthorIterator(const Mode: TAuthorIteratorMode; const Filter: string = ''): IAuthorIterator;
-    function GetGenreIterator: IGenreIterator;
+    function GetGenreIterator(const Mode: TGenreIteratorMode; const Filter: string = ''): IGenreIterator;
   end;
 
 var
@@ -662,7 +657,7 @@ end;
 
 { TGenreIteratorImpl }
 
-constructor TDMCollection.TGenreIteratorImpl.Create(Collection: TDMCollection);
+constructor TDMCollection.TGenreIteratorImpl.Create(Collection: TDMCollection; const Mode: TGenreIteratorMode; const Filter: string);
 begin
   inherited Create;
 
@@ -673,7 +668,7 @@ begin
 
   FGenres := TABSQuery.Create(FCollection.DBCollection);
   FGenres.DatabaseName := FCollection.DBCollection.DatabaseName;
-  FGenres.SQL.Text := CreateSQL;
+  FGenres.SQL.Text := CreateSQL(Mode, Filter);
 {$IFDEF DEBUG}
   FGenres.SQL.SaveToFile(Settings.AppPath + 'Last.sql');
 {$ENDIF}
@@ -707,9 +702,24 @@ begin
   Result := FGenres.RecordCount;
 end;
 
-function TDMCollection.TGenreIteratorImpl.CreateSQL: string;
+function TDMCollection.TGenreIteratorImpl.CreateSQL(const Mode: TGenreIteratorMode; const Filter: string): string;
+var
+  Where: string;
 begin
-  Result := 'SELECT g.' + GENRE_CODE_FIELD + ' FROM Genres g ';
+  Where := '';
+
+  case Mode of
+    gmAll:
+      Result := 'SELECT g.' + GENRE_CODE_FIELD + ' FROM Genres g ';
+    gmByBook:
+      Result := 'SELECT gl.' + GENRE_CODE_FIELD + ' FROM Genre_List gl ';
+    else
+      Assert(False);
+  end;
+
+  if Filter <> '' then
+    AddToWhere(Where, Filter);
+  Result := Result + Where;
 end;
 
 { TDMCollection }
@@ -762,8 +772,6 @@ end;
 procedure TDMCollection.SetTableState(State: Boolean);
 begin
   Series.Active := State;
-
-  BookGenres.Active := State;
 
   tblBooks.Active := State;
   tblSeriesB1.Active := State;
@@ -832,32 +840,24 @@ end;
 procedure TDMCollection.GetBookGenres(BookID: Integer; var BookGenres: TBookGenres; RootGenre: PGenreData = nil);
 var
   i: Integer;
+  GenreIterator: IGenreIterator;
+  Genre: TGenreData;
 begin
-  Assert(Self.BookGenres.Active);
+  GenreIterator := DMCollection.GetGenreIterator(gmByBook, Format('gl.%s = %d', [BOOK_ID_FIELD, BookID]));
+  i := Length(BookGenres);
+  while GenreIterator.Next(Genre) do
+  begin
+    SetLength(BookGenres, i + 1);
+    BookGenres[i] := Genre;
+    Inc(i);
+  end;
 
-  Self.BookGenres.SetRange([BookID], [BookID]);
-  try
-    i := Length(BookGenres);
-    Self.BookGenres.First;
-
-    while not Self.BookGenres.Eof do
-    begin
-      SetLength(BookGenres, i + 1);
-      GetGenre(BookGenresGenreCode.Value, BookGenres[i]);
-
-      Inc(i);
-      Self.BookGenres.Next;
-    end;
-
-    if Assigned(RootGenre) then
-    begin
-      if Length(BookGenres) > 0 then
-        GetGenre(BookGenres[0].ParentCode, RootGenre^)
-      else
-        RootGenre^.Clear;
-    end;
-  finally
-    Self.BookGenres.CancelRange;
+  if Assigned(RootGenre) then
+  begin
+    if Length(BookGenres) > 0 then
+      GetGenre(BookGenres[0].ParentCode, RootGenre^)
+    else
+      RootGenre^.Clear;
   end;
 end;
 
@@ -1513,9 +1513,9 @@ begin
   Result := TAuthorIteratorImpl.Create(Self, Mode, Filter);
 end;
 
-function TDMCollection.GetGenreIterator: IGenreIterator;
+function TDMCollection.GetGenreIterator(const Mode: TGenreIteratorMode; const Filter: string): IGenreIterator;
 begin
-  Result := TGenreIteratorImpl.Create(Self);
+  Result := TGenreIteratorImpl.Create(Self, Mode, Filter);
 end;
 
 // Change SerieID value for all books in the current database with old SerieID value
