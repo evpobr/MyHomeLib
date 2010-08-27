@@ -14,29 +14,6 @@ object DMCollection: TDMCollection
     Left = 136
     Top = 16
   end
-  object Genres: TABSTable
-    CurrentVersion = '6.06 '
-    DatabaseName = 'Collection'
-    InMemory = False
-    ReadOnly = False
-    TableName = 'Genres'
-    Exclusive = False
-    Left = 56
-    Top = 256
-    object GenresGenreCode: TWideStringField
-      FieldName = 'GenreCode'
-    end
-    object GenresParentCode: TWideStringField
-      FieldName = 'ParentCode'
-    end
-    object GenresFB2Code: TWideStringField
-      FieldName = 'FB2Code'
-    end
-    object GenresGenreAlias: TWideStringField
-      FieldName = 'GenreAlias'
-      Size = 50
-    end
-  end
   object BookGenres: TABSTable
     CurrentVersion = '6.06 '
     DatabaseName = 'Collection'
