@@ -1647,7 +1647,7 @@ begin
     DMCollection.SetHideDeletedBook((not IsPrivate) and Settings.HideDeletedBooks, False);
     DMCollection.SetTableState(True);
 
-    FillAuthorTree(tvAuthors, FLastAuthorID);
+    FillAuthorTree(tvAuthors, DMCollection.GetAuthorIterator(amFullFilter), FLastAuthorID);
     FillSeriesTree(tvSeries, FLastSerieID);
     FillGenresTree(tvGenres, False, FLastGenreCode);
     FillGroupsList(tvGroups, FLastGroupID);
@@ -3847,7 +3847,7 @@ begin
 
     DMCollection.SetHideDeletedBook(Settings.HideDeletedBooks, True);
 
-    FillAuthorTree(tvAuthors, FLastAuthorID);
+    FillAuthorTree(tvAuthors, DMCollection.GetAuthorIterator(amFullFilter), FLastAuthorID);
     FillSeriesTree(tvSeries, FLastSerieID);
     FillAllBooksTree;
   finally
@@ -3906,7 +3906,7 @@ begin
 
   DMCollection.SetAuthorFilter(Result);
 
-  FillAuthorTree(tvAuthors, FLastAuthorID);
+  FillAuthorTree(tvAuthors, DMCollection.GetAuthorIterator(amFullFilter), FLastAuthorID);
 
   if (Result = ALPHA_FILTER_ALL) or (Result = ALPHA_FILTER_NON_ALPHA) then
   begin
@@ -4016,7 +4016,7 @@ begin
 
     DMCollection.SetShowLocalBookOnly(Settings.ShowLocalOnly, True);
 
-    FillAuthorTree(tvAuthors, FLastAuthorID);
+    FillAuthorTree(tvAuthors, DMCollection.GetAuthorIterator(amFullFilter), FLastAuthorID);
     FillSeriesTree(tvSeries, FLastSerieID);
     FillAllBooksTree;
   finally

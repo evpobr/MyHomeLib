@@ -102,9 +102,19 @@ type
 
   TGenresType = (gtFb2, gtAny);
 
-  TBookIteratorMode = (bmAll, bmByGenre, bmByAuthor, bmBySeries, bmSearch);
+  TBookIteratorMode = (
+    bmAll,       // All books
+    bmByGenre,   // Books by genre
+    bmByAuthor,  // Books by author
+    bmBySeries,  // Books by series
+    bmSearch     // Book search
+  );
 
-  TAuthorIteratorMode = (amByBook);
+  TAuthorIteratorMode = (
+    amAll,       // All authors
+    amByBook,    // Authors by book id
+    amFullFilter // Full filter - both Alpha, Local and Deleted
+  );
 
   TBookFormat = (
     bfFb2,    // A pure FB2 file

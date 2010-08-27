@@ -185,39 +185,6 @@ object DMCollection: TDMCollection
       Size = 80
     end
   end
-  object Authors: TABSQuery
-    CurrentVersion = '6.06 '
-    DatabaseName = 'Collection'
-    InMemory = False
-    ReadOnly = False
-    RequestLive = True
-    SQL.Strings = (
-      'select a.AuthorID, a.LastName, a.FirstName, a.MiddleName'
-      'from "authors" a'
-      'order by a.LastName, a.FirstName, a.MiddleName')
-    Left = 56
-    Top = 144
-    object AuthorsID: TAutoIncField
-      DisplayLabel = 'ID'
-      FieldName = 'AuthorID'
-    end
-    object AuthorsFamily: TWideStringField
-      DisplayLabel = 'Family'
-      FieldName = 'LastName'
-      Required = True
-      Size = 128
-    end
-    object AuthorsName: TWideStringField
-      DisplayLabel = 'Name'
-      FieldName = 'FirstName'
-      Size = 128
-    end
-    object AuthorsMiddle: TWideStringField
-      DisplayLabel = 'Middle'
-      FieldName = 'MiddleName'
-      Size = 128
-    end
-  end
   object Series: TABSQuery
     CurrentVersion = '6.06 '
     DatabaseName = 'Collection'

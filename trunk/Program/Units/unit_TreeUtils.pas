@@ -34,7 +34,7 @@ function FindSeriesInTree(Tree: TBookTree; Parent: PVirtualNode; SerieID: Intege
 procedure SelectBookById(Tree: TBookTree; ID: Integer);
 procedure GetSelections(Tree: TBookTree; out List: TSelectionList);
 
-procedure FillAuthorTree(Tree: TVirtualStringTree; SelectID: Integer = MHL_INVALID_ID);
+procedure FillAuthorTree(Tree: TVirtualStringTree; AuthorIterator: IAuthorIterator; SelectID: Integer = MHL_INVALID_ID);
 procedure FillSeriesTree(Tree: TVirtualStringTree; SelectID: Integer = MHL_INVALID_ID);
 procedure FillGenresTree(Tree: TVirtualStringTree; FillFB2: Boolean = False; const SelectCode: string = '');
 procedure FillGroupsList(Tree: TVirtualStringTree; SelectID: Integer = MHL_INVALID_ID);
@@ -143,10 +143,11 @@ begin
   end;
 end;
 
-procedure FillAuthorTree(Tree: TVirtualStringTree; SelectID: Integer = MHL_INVALID_ID);
+procedure FillAuthorTree(Tree: TVirtualStringTree;  AuthorIterator: IAuthorIterator; SelectID: Integer = MHL_INVALID_ID);
 var
   Node: PVirtualNode;
-  Data: PAuthorData;
+  NodeData: PAuthorData;
+  AuthorData: TAuthorData;
   SelectedNode: PVirtualNode;
 begin
   Tree.NodeDataSize := SizeOf(TAuthorData);
@@ -158,23 +159,17 @@ begin
       Tree.Clear;
       SelectedNode := nil;
 
-      DMCollection.Authors.First;
-      while not DMCollection.Authors.Eof do
+      while AuthorIterator.Next(AuthorData) do
       begin
         Node := Tree.AddChild(nil);
-        Data := Tree.GetNodeData(Node);
+        NodeData := Tree.GetNodeData(Node);
 
-        Initialize(Data^);
-        Data^.AuthorID := DMCollection.AuthorsID.Value;
-        Data^.FirstName := DMCollection.AuthorsName.Value;
-        Data^.LastName := DMCollection.AuthorsFamily.Value;
-        Data^.MiddleName := DMCollection.AuthorsMiddle.Value;
+        Initialize(NodeData^);
+        NodeData^ := AuthorData;
         Include(Node^.States, vsInitialUserData);
 
-        if Data^.AuthorID = SelectID then
+        if NodeData^.AuthorID = SelectID then
           SelectedNode := Node;
-
-        DMCollection.Authors.Next;
       end;
 
       SafeSelectNode(Tree, SelectedNode);
