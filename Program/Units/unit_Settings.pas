@@ -239,6 +239,14 @@ type
     procedure SetImportDir(const Value: string);
     function GetImportPath: string;
 
+  private
+    class var
+      mg_objSettings: TMHLSettings;
+
+  public
+    class constructor Create;
+    class destructor Destroy;
+
   public
     constructor Create;
     destructor Destroy; override;
@@ -393,9 +401,7 @@ type
     property FBDFileTemplate: string read FFBDFileTemplate write FFBDFileTemplate;
   end;
 
-procedure CreateSettings;
-procedure FreeSettings;
-function Settings: TMHLSettings;
+function Settings: TMHLSettings; inline;
 
 implementation
 
@@ -409,29 +415,11 @@ uses
   WinInet,
   unit_Helpers;
 
-var
-  g_objSettings: TMHLSettings;
-
-procedure CreateSettings;
-begin
-  Assert(not Assigned(g_objSettings));
-
-  if not Assigned(g_objSettings) then
-    g_objSettings := TMHLSettings.Create;
-end;
-
-procedure FreeSettings;
-begin
-  Assert(Assigned(g_objSettings));
-
-  FreeAndNil(g_objSettings);
-end;
-
 function Settings: TMHLSettings;
 begin
-  Assert(Assigned(g_objSettings));
+  Assert(Assigned(TMHLSettings.mg_objSettings));
 
-  Result := g_objSettings;
+  Result := TMHLSettings.mg_objSettings;
 end;
 
 const
@@ -1035,6 +1023,8 @@ var
   slHelper: TStringList;
   iniFile: TIniFile;
 begin
+  FUpdateList.Clear;
+
   FUpdateList.URL := FUpdateURL;
   FUpdateList.Path := UpdatePath;
 
@@ -1114,6 +1104,8 @@ var
   sl: TStringList;
   slHelper: TStringList;
 begin
+  FReaders.Clear;
+
   sl := TStringList.Create;
   try
     iniFile.ReadSection(READERS_SECTION, sl);
@@ -1187,6 +1179,8 @@ var
   slHelper: TStringList;
   S: string;
 begin
+  FScripts.Clear;
+
   sl := TStringList.Create;
   try
     iniFile.ReadSection(SCRIPTS_SECTION, sl);
@@ -1323,6 +1317,8 @@ var
   I: Integer;
   sl: TStringList;
 begin
+  FInitialDirs.Clear;
+
   sl := TStringList.Create;
   try
     iniFile.ReadSection(INITIAL_DIRS_SECTION, sl);
@@ -1366,7 +1362,14 @@ begin
   FReadDir := SafeGetDirName(Value);
 end;
 
-initialization
-  g_objSettings := nil;
+class constructor TMHLSettings.Create;
+begin
+  mg_objSettings := TMHLSettings.Create;
+end;
+
+class destructor TMHLSettings.Destroy;
+begin
+  FreeAndNil(mg_objSettings);
+end;
 
 end.

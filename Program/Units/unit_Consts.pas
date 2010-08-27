@@ -51,6 +51,12 @@ const
   UNKNOWN_GENRE_CODE = '0.0';
 
   //
+  // Алфавиты
+  //
+  ENGLISH_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  RUSSIAN_ALPHABET = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЭЮЯ';
+
+  //
   // Некоторые пути
   //
   DATA_DIR_NAME = 'Data';
@@ -88,8 +94,8 @@ const
   NO_ACTIVECOLLECTION_ID = MHL_INVALID_ID;
   UNVERSIONED_COLLECTION = MHL_INVALID_ID;
 
-  NO_SERIE_ID = 1;
-  NO_SERIES_TITLE = '---';
+  NO_SERIE_ID = MHL_INVALID_ID;
+  NO_SERIES_TITLE = '';
 
   FAVORITES_GROUP_ID = 1;
 
@@ -257,6 +263,13 @@ const
   //
   SETTING_VERSION = 0;
   SETTING_CREATION_DATE = 1;
+  SETTING_NOTES = 2;
+  SETTING_DATA_VERSION = 3;
+  SETTING_CODE = 4;
+  SETTING_ALLOW_DELETE = 5;
+  SETTING_URL = 6;
+  SETTING_DOWNLOAD_SCRIPT = 7;
+  SETTING_POSITIONS = 8;
 
   //
   // специальные значения фильтров

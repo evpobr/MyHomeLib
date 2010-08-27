@@ -56,6 +56,9 @@ type
     procedure CreateCollectionTables(const DBFile: string; const GenresFileName: string);
     procedure ReloadDefaultGenres(const FileName: string);
 
+    procedure SetProperty(PropID: Integer; const Value: string); overload;
+    procedure SetProperty(PropID: Integer; const Value: Integer); overload;
+
     //
     // Content management
     //
@@ -649,6 +652,36 @@ begin
   FDatabase.DatabaseFileName := Value;
 end;
 
+procedure TMHLLibrary.SetProperty(PropID: Integer; const Value: Integer);
+begin
+  if Value = 0 then
+    Exit;
+
+  SetProperty(PropID, IntToStr(Value));
+end;
+
+procedure TMHLLibrary.SetProperty(PropID: Integer; const Value: string);
+begin
+  if Value = '' then
+    Exit;
+
+  CheckActive;
+
+  if FSettings.Locate(ID_FIELD, PropID, []) then
+    FSettings.Edit
+  else
+    FSettings.Append;
+
+  try
+    FSettingsID.Value := PropID;
+    FSettingsValue.Value := Value;
+
+    FSettings.Post;
+  except
+    FSettings.Cancel;
+  end;
+end;
+
 class procedure TMHLLibrary.CreateSystemTables(const DBFile: string);
 var
   ADatabase: TABSDatabase;
@@ -728,24 +761,12 @@ begin
   // Запишем версию метаданных, и дату создания
   //
   FSettings.AppendRecord([SETTING_VERSION, DATABASE_VERSION]);
-  FSettings.AppendRecord([SETTING_CREATION_DATE, FormatDateTime('', Now)]);
+  FSettings.AppendRecord([SETTING_CREATION_DATE, FormatDateTime('yyyy-mm-dd hh:nn:ss', Now)]);
 
   //
   // Заполним таблицу жанров
   //
   LoadGenres(GenresFileName);
-
-  //
-  // Создадим фиктивную серию
-  //
-  FSeries.Append;
-  try
-    FSeriesSerieTitle.Value := NO_SERIES_TITLE;
-    FSeries.Post;
-  except
-    FSeries.Cancel;
-    raise;
-  end;
 end;
 
 procedure TMHLLibrary.LoadGenres(const GenresFileName: string);
@@ -896,7 +917,6 @@ end;
 function TMHLLibrary.InsertBook(BookRecord: TBookRecord; CheckFileName, FullCheck: Boolean): Integer;
 var
   i: Integer;
-  ASeqNumber: Integer;
   Author: TAuthorData;
 
   Res: Boolean;
@@ -976,16 +996,24 @@ begin
   //
   // создадим отсутствующую серию
   //
-  if not FSeries.Locate(SERIE_TITLE_FIELD, BookRecord.Serie, [loCaseInsensitive]) then
+  if NO_SERIES_TITLE = BookRecord.Serie then
   begin
-    FSeries.Append;
-    try
-      FSeriesSerieTitle.Value := BookRecord.Serie;
-      FSeries.Post;
-    except
-      FSeries.Cancel;
-      Raise;
+    BookRecord.SerieID := NO_SERIE_ID;
+  end
+  else
+  begin
+    if not FSeries.Locate(SERIE_TITLE_FIELD, BookRecord.Serie, [loCaseInsensitive]) then
+    begin
+      FSeries.Append;
+      try
+        FSeriesSerieTitle.Value := BookRecord.Serie;
+        FSeries.Post;
+      except
+        FSeries.Cancel;
+        raise;
+      end;
     end;
+    BookRecord.SerieID := FSeriesSerieID.AsInteger;
   end;
 
   //
@@ -1001,16 +1029,18 @@ begin
 
   if not Res then
   begin
-    ASeqNumber := BookRecord.SeqNumber;
-    if ASeqNumber > 5000 then
-      ASeqNumber := 0;
+    if BookRecord.SeqNumber > 5000 then
+      BookRecord.SeqNumber := 0;
 
     FBooks.Append;
     try
       FBookLibID.Value := BookRecord.LibID;
       FBookTitle.Value := BookRecord.Title;
-      FBookSerieID.Value := FSeriesSerieID.AsInteger;
-      FBookSeqNumber.Value := ASeqNumber;
+      if NO_SERIE_ID <> BookRecord.SerieID then
+      begin
+        FBookSerieID.Value := BookRecord.SerieID;
+        FBookSeqNumber.Value := BookRecord.SeqNumber;
+      end;
       FBookDate.Value := BookRecord.Date;
       FBookLibRate.Value := BookRecord.LibRate;
       FBookLang.Value := BookRecord.Lang;
@@ -1076,7 +1106,7 @@ begin
     //
     // Если книга входила в серию (SerieID <> 1) проверим, не пора ли удалить серию.
     //
-    if SerieID <> 1 then
+    if SerieID <> NO_SERIE_ID then
     begin
       if not FBooks.Locate(SERIE_ID_FIELD, SerieID, []) then
       begin
@@ -1141,8 +1171,7 @@ begin
   FSeries.First;
   while not FSeries.Eof do
   begin
-    if FSeriesSerieID.Value <> NO_SERIE_ID then
-      SeriesList.Add(FSeriesSerieTitle.Value);
+    SeriesList.Add(FSeriesSerieTitle.Value);
     FSeries.Next;
   end;
 end;

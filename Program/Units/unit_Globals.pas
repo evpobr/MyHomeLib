@@ -899,8 +899,8 @@ procedure TBookRecord.Clear;
 begin
   Title := '';
 
-  SerieID := 0;
-  Serie := '';
+  SerieID := NO_SERIE_ID;
+  Serie := NO_SERIES_TITLE;
 
   Folder := '';
   FileName := '';
@@ -936,8 +936,6 @@ var
 begin
   if Title = '' then
     Title := rstrNoTitle;
-  if Serie = '' then
-    Serie := NO_SERIES_TITLE;
 
   for i := 0 to AuthorCount - 1 do
     if Authors[i].LastName = '' then

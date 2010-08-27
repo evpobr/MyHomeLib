@@ -190,14 +190,11 @@ type
     //
     // Active Collection
     //
-    function FindFirstExternalCollection: Boolean;
-    function FindNextExternalCollection: Boolean;
-
     function HasCollections: Boolean;
-    procedure DeleteCurrentCollection;
     function FindFirstCollection: Boolean;
     function FindNextCollection: Boolean;
-
+    function FindFirstExternalCollection: Boolean;
+    function FindNextExternalCollection: Boolean;
     function FindFirstExistingCollection(const PrefferedID: Integer): Boolean;
 
     function ActivateGroup(const ID: Integer): Boolean;
@@ -415,8 +412,7 @@ begin
 end;
 
 // Read next record (if present), return True if read
-function TDMUser.TBookIteratorImpl.Next(out BookRecord: TBookRecord)
-  : Boolean;
+function TDMUser.TBookIteratorImpl.Next(out BookRecord: TBookRecord): Boolean;
 begin
   Result := not FBooks.Eof;
 
@@ -608,23 +604,6 @@ begin
   Result := not tblBases.IsEmpty;
 end;
 
-procedure TDMUser.DeleteCurrentCollection;
-const
-  SQL: string = 'DELETE FROM Books WHERE DatabaseID = %u';
-begin
-  Assert(tblBases.Active);
-
-  // Delete books from groups by DatabaseID:
-  SqlQuery.SQL.Text := Format(SQL, [DMUser.CurrentCollection.ID]);
-  SqlQuery.ExecSQL;
-
-  // Delete the collection:
-  tblBases.Delete;
-
-  // The first collection becomes the current one:
-  tblBases.First;
-end;
-
 function TDMUser.FindFirstCollection: Boolean;
 begin
   tblBases.First;
@@ -707,12 +686,28 @@ begin
 end;
 
 procedure TDMUser.DeleteCollection(CollectionID: Integer);
+const
+  DELETE_REL_QUERY = 'DELETE FROM BookGroups WHERE DatabaseID = %u';
+  DELETE_BOOKS_QUERY = 'DELETE FROM Books WHERE DatabaseID = %u';
 begin
-  Assert(False, 'Not implemented yet!');
   //
   // 1. Удалить все книги этой коллекции из групп
-  // 2. Удалить коллекцию
+  // 2. Удалить коллекцию из списка коллекций
   //
+  Assert(tblBases.Active);
+
+  // Delete books from groups by DatabaseID:
+  SqlQuery.SQL.Text := Format(DELETE_REL_QUERY, [CollectionID]);
+  SqlQuery.ExecSQL;
+
+  SqlQuery.SQL.Text := Format(DELETE_BOOKS_QUERY, [CollectionID]);
+  SqlQuery.ExecSQL;
+
+  // Delete the collection:
+  tblBases.Delete;
+
+  // The first collection becomes the current one:
+  tblBases.First;
 end;
 
 procedure TDMUser.SetTableState(State: Boolean);
@@ -740,8 +735,16 @@ begin
     BookRecord.FileName := AllBooksFileName.Value;
     BookRecord.FileExt := AllBooksExt.Value;
     BookRecord.InsideNo := AllBooksInsideNo.Value;
-    BookRecord.SerieID := AllBooksSerieID.Value;
-    BookRecord.SeqNumber := AllBooksSeqNumber.Value;
+    if AllBooksSerieID.IsNull then
+    begin
+      BookRecord.SerieID := NO_SERIE_ID;
+      BookRecord.SeqNumber := 0;
+    end
+    else
+    begin
+      BookRecord.SerieID := AllBooksSerieID.Value;
+      BookRecord.SeqNumber := AllBooksSeqNumber.Value;
+    end;
     BookRecord.Code := AllBooksCode.Value;
     BookRecord.Size := AllBooksSize.Value;
     BookRecord.LibID := AllBooksLibID.Value;
@@ -765,6 +768,7 @@ begin
       Reader := TReader.Create(Stream, 4096);
       try
         BookRecord.Serie := Reader.ReadString;
+        Assert((BookRecord.SerieID = NO_SERIE_ID) = (BookRecord.Serie = NO_SERIES_TITLE));
 
         Reader.ReadListBegin;
         while not Reader.EndOfList do
@@ -991,7 +995,15 @@ begin
   begin
     AllBooks.Edit;
     try
-      AllBooksSerieID.Value := SerieID;
+      if NO_SERIE_ID = SerieID then
+        AllBooksSerieID.Clear
+      else
+        AllBooksSerieID.Value := SerieID;
+
+      //
+      // TODO: BUG необходимо обновить и название серии
+      //
+
       AllBooks.Post;
     except
       AllBooks.Cancel;
@@ -1003,10 +1015,27 @@ end;
 // Change SerieID value for all books having provided DatabaseID and old SerieID value
 procedure TDMUser.ChangeBookSerieID(const OldSerieID: Integer; const NewSerieID: Integer; const DatabaseID: Integer);
 const
-  SQL: string = 'UPDATE Books SET SerieID = %u WHERE DatabaseID = %u AND SerieID = %u';
+  UPDATE_SQL = 'UPDATE Books SET SerieID = %s WHERE DatabaseID = %u AND SerieID %s';
+var
+  newSerie: string;
+  oldSerie: string;
 begin
-  SqlQuery.SQL.Text := Format(SQL, [NewSerieID, DatabaseID, OldSerieID]);
-  SqlQuery.ExecSQL;
+  if OldSerieID <> NewSerieID then
+  begin
+    if NO_SERIE_ID = NewSerieID then
+      newSerie := 'NULL'
+    else
+      newSerie := Format('%u', [NewSerieID]);
+
+    if NO_SERIE_ID = OldSerieID then
+      oldSerie := 'IS NULL'
+    else
+      oldSerie := Format('= %u', [OldSerieID]);
+
+    SqlQuery.SQL.Text := Format(UPDATE_SQL, [newSerie, DatabaseID, oldSerie]);
+
+    SqlQuery.ExecSQL;
+  end;
 end;
 
 // Return an iterator working on the User data Books dataset

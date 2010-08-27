@@ -186,7 +186,7 @@ begin
           Teletype(rstrErrorUnpacking + AZipFileName, tsError);
       end;
 
-      if (i mod ProcessedItemThreshold) = 0 then
+      if ((i + 1) mod ProcessedItemThreshold) = 0 then
         SetComment(Format(rstrProcessedArchives, [i + 1, FFiles.Count]));
       SetProgress((i + 1) * 100 div FFiles.Count);
     end;

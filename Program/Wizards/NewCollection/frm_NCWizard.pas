@@ -567,6 +567,15 @@ begin
         //Assert(not FileExists(FParams.CollectionFile));
         Assert(FileExists(FParams.GenreFile));
         ALibrary.CreateCollectionTables(FParams.CollectionFile, FParams.GenreFile);
+
+        //
+        // Установить свойства коллекции
+        //
+        ALibrary.SetProperty(SETTING_NOTES, FParams.Notes);
+        ALibrary.SetProperty(SETTING_DATA_VERSION, GetLibUpdateVersion(True));
+        ALibrary.SetProperty(SETTING_CODE, FParams.CollectionCode);
+        ALibrary.SetProperty(SETTING_URL, FParams.URL);
+        ALibrary.SetProperty(SETTING_DOWNLOAD_SCRIPT, FParams.Script);
       end;
 
       FProgressPage.ShowProgress(60);

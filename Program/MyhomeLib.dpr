@@ -143,14 +143,15 @@ begin
     // Важно! сначала создаем датамодули и главную форму
     // а потом - остальные формы!
     Application.CreateForm(TDMUser, DMUser);
-  Application.CreateForm(TDMCollection, DMCollection);
-  Application.CreateForm(TfrmMain, frmMain);
-  Application.CreateForm(TfrmGenreTree, frmGenreTree);
-  Application.CreateForm(TfrmAddnonfb2, frmAddnonfb2);
-  Application.CreateForm(TfrmAuthorList, frmAuthorList);
-  frmSplash.Hide;  // Hide the splash screen
+    Application.CreateForm(TDMCollection, DMCollection);
+
+    Application.CreateForm(TfrmMain, frmMain);
+    Application.CreateForm(TfrmGenreTree, frmGenreTree);
+
+    frmSplash.Hide;  // Hide the splash screen
   finally
     frmSplash.Free;  // Free the splash screen
   end;
+
   Application.Run;
 end.

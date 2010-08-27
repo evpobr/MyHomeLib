@@ -1294,7 +1294,6 @@ end;
 
 procedure TfrmMain.ReadINIData;
 begin
-  CreateSettings;
   Settings.LoadSettings;
 
   SetColors;
@@ -1673,8 +1672,8 @@ end;
 
 procedure TfrmMain.CreateAlphabetToolbar;
 const
-  EngAlphabet: string = ALPHA_FILTER_ALL + ALPHA_FILTER_NON_ALPHA + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  RusAlphabet: string = ALPHA_FILTER_ALL + ALPHA_FILTER_NON_ALPHA + '¿¡¬√ƒ≈®∆«»… ÀÃÕŒœ–—“”‘’÷◊ÿŸ›ﬁﬂ';
+  EngAlphabet: string = ALPHA_FILTER_ALL + ALPHA_FILTER_NON_ALPHA + ENGLISH_ALPHABET;
+  RusAlphabet: string = ALPHA_FILTER_ALL + ALPHA_FILTER_NON_ALPHA + RUSSIAN_ALPHABET;
 
 var
   Image: TBitmap;
@@ -2475,7 +2474,6 @@ begin
   SaveMainFormSettings;
 
   Settings.SaveSettings;
-  FreeSettings;
 end;
 
 procedure TfrmMain.UpdatePositions;
@@ -4463,7 +4461,7 @@ begin
         S := TAuthorsHelper.GetList(Data^.Authors) + '. ' + rstrSingleSeries + Data^.Serie;
 
       ntBookInfo:
-        if (Data^.Serie = NO_SERIES_TITLE) or (Data^.Serie = '') then
+        if NO_SERIES_TITLE = Data^.Serie then
           S := TAuthorsHelper.GetList(Data^.Authors) + '. ' + Data^.Title
         else
           S := TAuthorsHelper.GetList(Data^.Authors) + '. ' + rstrSingleSeries + Data^.Serie + '. ' + Data^.Title;
@@ -4559,7 +4557,7 @@ begin
       Exit;
 
     // Delete current collection and choose another:
-    DMUser.DeleteCurrentCollection;
+    DMUser.DeleteCollection(DMUser.ActiveCollection.ID);
 
     Settings.ActiveCollection := DMUser.CurrentCollection.ID;
     InitCollection(True);
@@ -4998,9 +4996,6 @@ begin
   begin
     if InputQuery(rstrCreateMoveSeries, rstrTitle, S) then
     begin
-      if S = '' then
-        S := NO_SERIES_TITLE;
-
       SerieID := DMCollection.AddOrLocateSerieIDBySerieTitle(S);
       Node := Tree.GetFirst;
       while Assigned(Node) do
@@ -5016,7 +5011,7 @@ begin
   end
   else if InputQuery(rstrEditSeries, rstrTitle, S) then // Change a series node
   begin
-    if S = '' then
+    if S = NO_SERIES_TITLE then
     begin
       // Clear the series for all books in DB:
       DMCollection.ChangeBookSerieID(Data^.SerieID, NO_SERIE_ID, DMUser.ActiveCollection.ID);
@@ -6546,7 +6541,6 @@ begin
     frmSettings.ShowModal;
 
     Settings.SaveSettings;
-    FreeSettings;
   finally
     frmSettings.Free;
   end;
@@ -6687,10 +6681,17 @@ begin
 end;
 
 procedure TfrmMain.ImportNonFB2Execute(Sender: TObject);
+var
+  frmAddBooks: TfrmAddnonfb2;
 begin
-  frmAddnonfb2.OnSetControlsState := OnSetControlsStateHandler;
-  frmAddnonfb2.ShowModal;
-  InitCollection(True);
+  frmAddBooks := TfrmAddnonfb2.Create(Application);
+  try
+    frmAddBooks.OnSetControlsState := OnSetControlsStateHandler;
+    frmAddBooks.ShowModal;
+    InitCollection(True);
+  finally
+    frmAddBooks.Free;
+  end;
 end;
 
 procedure TfrmMain.ImportNonFB2Update(Sender: TObject);
@@ -6788,6 +6789,7 @@ begin
     Exit;
 
   unit_Export.Export2INPX(FileName);
+
   InitCollection(True);
 end;
 

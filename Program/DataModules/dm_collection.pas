@@ -280,6 +280,16 @@ type
     procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
 
     //
+    // Получение и установка свойств коллекции
+    //
+    //procedure SetProperty(PropID: string; const Value: string); overload;
+    //procedure SetProperty(PropID: string; Value: Integer); overload;
+    //procedure SetProperty(PropID: string; const Value: TStrings); overload;
+    //procedure GetProperty(PropID: string; var Value: string); overload;
+    //procedure GetProperty(PropID: string; var Value: Integer); overload;
+    //procedure GetProperty(PropID: string; var Value: TStrings); overload;
+
+    //
     // Установка фильтров
     //
     procedure SetAuthorFilter(const Value: string; Refresh: Boolean = True);
@@ -760,10 +770,10 @@ end;
 
 function TDMCollection.GetSerieTitle(SerieID: Integer): string;
 begin
-  if AllSeries.Locate(SERIE_ID_FIELD, SerieID, []) then
+  if (NO_SERIE_ID <> SerieID) and AllSeries.Locate(SERIE_ID_FIELD, SerieID, []) then
     Result := AllSeriesSerieTitle.Value
   else
-    Result := '';
+    Result := NO_SERIES_TITLE;
 end;
 
 procedure TDMCollection.GetGenre(const GenreCode: string; var Genre: TGenreData);
@@ -865,9 +875,12 @@ begin
     BookRecord.FileName := AllBooksFileName.Value;
     BookRecord.FileExt := AllBooksExt.Value;
     BookRecord.InsideNo := AllBooksInsideNo.Value;
-    BookRecord.SerieID := AllBooksSerieID.Value;
-    BookRecord.Serie := GetSerieTitle(AllBooksSerieID.Value);
-    BookRecord.SeqNumber := AllBooksSeqNumber.Value;
+    if not AllBooksSerieID.IsNull then
+    begin
+      BookRecord.SerieID := AllBooksSerieID.Value;
+      BookRecord.Serie := GetSerieTitle(AllBooksSerieID.Value);
+      BookRecord.SeqNumber := AllBooksSeqNumber.Value;
+    end;
     BookRecord.Code := AllBooksCode.Value;
     BookRecord.Size := AllBooksSize.Value;
     BookRecord.LibID := AllBooksLibID.Value;
@@ -1022,7 +1035,10 @@ begin
   AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []);
   AllBooks.Edit;
   try
-    AllBooksSerieID.Value := SerieID;
+    if NO_SERIE_ID = SerieID then
+      AllBooksSerieID.Clear
+    else
+      AllBooksSerieID.Value := SerieID;
     AllBooks.Post;
   except
     AllBooks.Cancel;
@@ -1163,7 +1179,7 @@ const
   GetAuthorsEnd = 'ORDER BY a.LastName, a.FirstName, a.MiddleName ';
 
   GetSeriessBegin = 'SELECT s.SerieID, s.SerieTitle FROM Series s ';
-  GetSeriessQuery = 'WHERE (s.SerieID <> 1) AND (s.SerieID IN (SELECT DISTINCT b.SerieID FROM Books b WHERE `Local` = true)) ';
+  GetSeriessQuery = 'WHERE (s.SerieID IN (SELECT DISTINCT b.SerieID FROM Books b WHERE `Local` = true)) ';
   GetSeriessEnd = 'ORDER BY s.SerieTitle';
 
   LocalFilters: array [Boolean] of string = ('', '(`Local` = true)');
@@ -1187,10 +1203,8 @@ begin
     else if FAuthorFilterType = ALPHA_FILTER_NON_ALPHA then
     begin
       FAuthorFilterText := Format(
-        '(SUBSTRING(UPPER(%0:s),1,1) <> "Ё") AND ' +      // буква Ё лежит отдельно
-        '(SUBSTRING(UPPER(%0:s),1,1) < "А" OR SUBSTRING(UPPER(%0:s),1,1) > "Я") AND ' +
-        '(SUBSTRING(UPPER(%0:s),1,1) < "A" OR SUBSTRING(UPPER(%0:s),1,1) > "Z") ',
-        [AUTHOR_LASTTNAME_FIELD]
+        '(POS(UPPER(SUBSTRING(%0:s, 1, 1)), "%1:s") = 0) AND (POS(UPPER(SUBSTRING(%0:s, 1, 1)), "%2:s") = 0)',
+        [AUTHOR_LASTTNAME_FIELD, ENGLISH_ALPHABET, RUSSIAN_ALPHABET]
       );
     end
     else
@@ -1209,34 +1223,27 @@ begin
   begin
     if FSerieFilter = ALPHA_FILTER_ALL then
     begin
-      Series.Filter := Format(
-        '%0:s <> "%1:s"',                                       // фильтруем специальную серию
-        [SERIE_TITLE_FIELD, NO_SERIES_TITLE]
-      );
+      Series.Filter := '';
+      Series.Filtered := False;
     end
     else if FSerieFilter = ALPHA_FILTER_NON_ALPHA then
     begin
       Series.Filter := Format(
-        '(%0:s <> "%1:s") AND ' +                               // фильтруем специальную серию
-        '(UPPER(%0:s) <> "Ё*") AND ' +                          // буква Ё лежит отдельно
-        '(' +
-          '(UPPER(%0:s) < "A*") OR ' +                          // меньше латинской A
-          '(UPPER(%0:s) > "Z*" AND UPPER(%0:s) < "А*") OR ' +   // больше латинской Z и меньше русской А
-          '(UPPER(%0:s) > "Я*")' +                              // меньше русской Я
-        ')',
-        [SERIE_TITLE_FIELD, NO_SERIES_TITLE]
+        '(POS(UPPER(SUBSTRING(%0:s, 1, 1)), "%1:s") = 0) AND (POS(UPPER(SUBSTRING(%0:s, 1, 1)), "%2:s") = 0)',
+        [SERIE_TITLE_FIELD, ENGLISH_ALPHABET, RUSSIAN_ALPHABET]
       );
+      Series.Filtered := True;
     end
     else
     begin
       Assert(Length(FSerieFilter) = 1);
       Assert(TCharacter.IsUpper(FSerieFilter, 1));
       Series.Filter := Format(
-        'UPPER(%0:s) = "%1:s*"',                                // начинается на заданную букву
+        'UPPER(%0:s) LIKE "%1:s%%"',                                // начинается на заданную букву
         [SERIE_TITLE_FIELD, FSerieFilter]
       );
+      Series.Filtered := True;
     end;
-    Series.Filtered := True;
   end;
 
   // ----------------------------------------------
@@ -1491,16 +1498,32 @@ end;
 // Change SerieID value for all books in the current database with old SerieID value
 procedure TDMCollection.ChangeBookSerieID(const OldSerieID: Integer; const NewSerieID: Integer; const DatabaseID: Integer);
 const
-  UPDATE_SQL = 'UPDATE Books SET SerieID = %u WHERE SerieID = %u';
+  UPDATE_SQL = 'UPDATE Books SET SerieID = %s WHERE SerieID %s';
 var
   Query: TABSQuery;
+  newSerie: string;
+  oldSerie: string;
 begin
+  Assert(OldSerieID <> NewSerieID);
+
   VerifyCurrentCollection(DatabaseID);
 
   Query := TABSQuery.Create(DBCollection);
   try
     Query.DatabaseName := DBCollection.DatabaseName;
-    Query.SQL.Text := Format(UPDATE_SQL, [NewSerieID, OldSerieID]);
+
+    if NO_SERIE_ID = NewSerieID then
+      newSerie := 'NULL'
+    else
+      newSerie := Format('%u', [NewSerieID]);
+
+    if NO_SERIE_ID = OldSerieID then
+      oldSerie := 'IS NULL'
+    else
+      oldSerie := Format('= %u', [NewSerieID]);
+
+    Query.SQL.Text := Format(UPDATE_SQL, [newSerie, oldSerie]);
+
     Query.ExecSQL;
   finally
     FreeAndNil(Query);
@@ -1515,6 +1538,12 @@ end;
 function TDMCollection.AddOrLocateSerieIDBySerieTitle(const SerieTitle: string): Integer;
 begin
   Assert(AllSeries.Active);
+
+  if NO_SERIES_TITLE = SerieTitle then
+  begin
+    Result := NO_SERIE_ID;
+    Exit;
+  end;
 
   if not AllSeries.Locate(SERIE_TITLE_FIELD, SerieTitle, []) then
   begin
@@ -1533,6 +1562,8 @@ end;
 procedure TDMCollection.SetSerieTitle(const SerieID: Integer; const NewSerieTitle: string);
 begin
   Assert(AllSeries.Active);
+  Assert(SerieID <> NO_SERIE_ID);
+  Assert(NewSerieTitle <> NO_SERIES_TITLE);
 
   if (AllSeries.Locate(SERIE_ID_FIELD, SerieID, [])) then
   begin
