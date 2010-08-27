@@ -391,7 +391,7 @@ var
   SavedCursor: TCursor;
   Cover: TCover;
 begin
-  frmAddnonfb2.Enabled := False;
+  Self.Enabled := False;
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
@@ -413,7 +413,7 @@ begin
       CommitData;
   finally
     Screen.Cursor := SavedCursor;
-    frmAddnonfb2.Enabled := True;
+    Self.Enabled := True;
   end;
 end;
 
@@ -482,28 +482,33 @@ end;
 
 procedure TfrmAddnonfb2.AddAuthorFromList(Sender: TObject);
 var
-  FFiltered: Boolean;
+  frmAuthorList: TfrmAuthorList;
   Row: TAuthorRecord;
   Data: PAuthorData;
   Node: PVirtualNode;
 begin
-  FillAuthorTree(frmAuthorList.tvAuthorList, DMCollection.GetAuthorIterator(amAll));
+  frmAuthorList := TfrmAuthorList.Create(Application);
+  try
+    FillAuthorTree(frmAuthorList.tvAuthorList, DMCollection.GetAuthorIterator(amAll));
 
-  if frmAuthorList.ShowModal = mrOk then
-  begin
-    Node := frmAuthorList.tvAuthorList.GetFirstSelected;
-    while Assigned(Node) do
+    if frmAuthorList.ShowModal = mrOk then
     begin
-      Data := frmAuthorList.tvAuthorList.GetNodeData(Node);
+      Node := frmAuthorList.tvAuthorList.GetFirstSelected;
+      while Assigned(Node) do
+      begin
+        Data := frmAuthorList.tvAuthorList.GetNodeData(Node);
 
-      Row.Last := Data^.LastName;
-      Row.First := Data^.FirstName;
-      Row.Middle := Data^.MiddleName;
+        Row.Last := Data^.LastName;
+        Row.First := Data^.FirstName;
+        Row.Middle := Data^.MiddleName;
 
-      alBookAuthors.AddAuthor(Row);
+        alBookAuthors.AddAuthor(Row);
 
-      Node := frmAuthorList.tvAuthorList.GetNextSelected(Node);
+        Node := frmAuthorList.tvAuthorList.GetNextSelected(Node);
+      end;
     end;
+  finally
+    frmAuthorList.Free;
   end;
 end;
 

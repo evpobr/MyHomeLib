@@ -168,12 +168,7 @@ begin
   lblGenre.Text := TGenresHelper.GetList(FBookRecord.Genres);
 
   edT.Text := FBookRecord.Title;
-
-  if FBookRecord.Serie = NO_SERIES_TITLE then
-    cbSeries.Text := ''
-  else
-    cbSeries.Text := FBookRecord.Serie;
-
+  cbSeries.Text := FBookRecord.Serie;
   edSN.Text := IntToStr(FBookRecord.SeqNumber);
   edKeyWords.Text := FBookRecord.KeyWords;
   cbLang.Text := FBookRecord.Lang;

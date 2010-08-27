@@ -240,8 +240,7 @@ begin
 
     9: // 's' - серия книги
       begin
-        if params.Serie <> NO_SERIES_TITLE then
-          Result := Trim(params.Serie);
+        Result := Trim(params.Serie);
       end;
 
     10: // 't' - название книги
