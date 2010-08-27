@@ -1,8 +1,8 @@
 object DMCollection: TDMCollection
   OldCreateOrder = False
   OnCreate = DataModuleCreate
-  Height = 438
-  Width = 291
+  Height = 331
+  Width = 209
   object DBCollection: TABSDatabase
     CurrentVersion = '6.06 '
     DatabaseName = 'Collection'
@@ -13,88 +13,6 @@ object DMCollection: TDMCollection
     DisableTempFiles = True
     Left = 136
     Top = 16
-  end
-  object tblBooks: TABSTable
-    CurrentVersion = '6.06 '
-    DatabaseName = 'Collection'
-    InMemory = False
-    ReadOnly = False
-    Filtered = True
-    FilterOptions = [foCaseInsensitive]
-    IndexName = 'Title_Index'
-    TableName = 'books'
-    Exclusive = False
-    Left = 88
-    Top = 376
-    object tblBooksID: TAutoIncField
-      FieldName = 'BookID'
-    end
-    object tblBooksSerieID: TIntegerField
-      FieldName = 'SerieID'
-    end
-    object tblBooksSeqNumber: TSmallintField
-      FieldName = 'SeqNumber'
-    end
-    object tblBooksLibID: TIntegerField
-      FieldName = 'LibID'
-    end
-    object tblBooksDate: TDateField
-      FieldName = 'Date'
-    end
-    object tblBooksInsideNo: TIntegerField
-      FieldName = 'InsideNo'
-      Required = True
-    end
-    object tblBooksFileName: TWideStringField
-      FieldName = 'FileName'
-      Required = True
-      Size = 170
-    end
-    object tblBooksTitle: TWideStringField
-      FieldName = 'Title'
-      Size = 150
-    end
-    object tblBooksExt: TWideStringField
-      FieldName = 'Ext'
-      Size = 10
-    end
-    object tblBooksSize: TIntegerField
-      FieldName = 'Size'
-    end
-    object tblBooksCode: TSmallintField
-      FieldName = 'Code'
-    end
-    object tblBooksFolder: TWideStringField
-      FieldName = 'Folder'
-      Size = 200
-    end
-    object tblBooksLocal: TBooleanField
-      FieldName = 'Local'
-    end
-    object tblBooksDeleted: TBooleanField
-      FieldName = 'Deleted'
-    end
-    object tblBooksLibRate: TIntegerField
-      FieldName = 'LibRate'
-    end
-    object tblBooksLang: TWideStringField
-      FieldName = 'Lang'
-      Size = 2
-    end
-    object tblBooksSeries: TWideStringField
-      FieldKind = fkLookup
-      FieldName = 'Series'
-      LookupDataSet = tblSeriesB1
-      LookupKeyFields = 'SerieID'
-      LookupResultField = 'SerieTitle'
-      KeyFields = 'SerieID'
-      Size = 100
-      Lookup = True
-    end
-    object tblBooksKeyWords: TWideStringField
-      FieldName = 'KeyWords'
-      Size = 255
-    end
   end
   object AllAuthors: TABSTable
     CurrentVersion = '6.06 '
@@ -123,27 +41,6 @@ object DMCollection: TDMCollection
       Size = 128
     end
   end
-  object tblSeriesB1: TABSTable
-    CurrentVersion = '6.06 '
-    DatabaseName = 'Collection'
-    InMemory = False
-    ReadOnly = False
-    Filter = 'SerieTitle <> "---"'
-    Filtered = True
-    IndexName = 'SerieTitleIndex'
-    TableName = 'series'
-    Exclusive = False
-    Left = 160
-    Top = 376
-    object tblSeriesB1SerieID: TAutoIncField
-      FieldName = 'SerieID'
-    end
-    object tblSeriesB1SerieTitle: TWideStringField
-      FieldName = 'SerieTitle'
-      Required = True
-      Size = 80
-    end
-  end
   object Series: TABSQuery
     CurrentVersion = '6.06 '
     DatabaseName = 'Collection'
@@ -157,8 +54,8 @@ object DMCollection: TDMCollection
       'from "Series" s'
       'where s.SerieTitle <> "---"'
       'order by s.SerieTitle')
-    Left = 56
-    Top = 200
+    Left = 8
+    Top = 16
     object SeriesSerieID: TAutoIncField
       DisplayWidth = 10
       FieldName = 'SerieID'
@@ -169,20 +66,6 @@ object DMCollection: TDMCollection
       FieldName = 'SerieTitle'
       Required = True
       Size = 80
-    end
-  end
-  object sqlBooks: TABSQuery
-    CurrentVersion = '6.06 '
-    DatabaseName = 'Collection'
-    InMemory = False
-    ReadOnly = True
-    FilterOptions = [foCaseInsensitive, foNoPartialCompare]
-    SQL.Strings = (
-      'select * from books where BookID=1')
-    Left = 216
-    Top = 88
-    object sqlBooksID: TIntegerField
-      FieldName = 'BookID'
     end
   end
   object AllBooks: TABSTable

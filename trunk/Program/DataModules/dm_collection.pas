@@ -75,29 +75,6 @@ type
     AllGenresFB2Code: TWideStringField;
     AllGenresAlias: TWideStringField;
 
-    sqlBooks: TABSQuery;
-    sqlBooksID: TIntegerField;
-
-    tblBooks: TABSTable;
-    tblBooksID: TAutoIncField;
-    tblBooksSerieID: TIntegerField;
-    tblBooksSeqNumber: TSmallintField;
-    tblBooksLibID: TIntegerField;
-    tblBooksDate: TDateField;
-    tblBooksTitle: TWideStringField;
-    tblBooksInsideNo: TIntegerField;
-    tblBooksFileName: TWideStringField;
-    tblBooksExt: TWideStringField;
-    tblBooksSize: TIntegerField;
-    tblBooksCode: TSmallintField;
-    tblBooksFolder: TWideStringField;
-    tblBooksLocal: TBooleanField;
-    tblBooksDeleted: TBooleanField;
-    tblBooksLibRate: TIntegerField;
-    tblBooksLang: TWideStringField;
-    tblBooksKeyWords: TWideStringField;
-    tblBooksSeries: TWideStringField;
-
     procedure DataModuleCreate(Sender: TObject);
 
   strict private
@@ -760,7 +737,7 @@ begin
   end
   else
   begin
-    FActiveTable := tblBooks;
+    FActiveTable := AllBooks;
     FIsFavorites := False;
   end;
 end;
@@ -768,8 +745,6 @@ end;
 procedure TDMCollection.SetTableState(State: Boolean);
 begin
   Series.Active := State;
-
-  tblBooks.Active := State;
 
   AllAuthors.Active := State;
   AllSeries.Active := State;
@@ -861,7 +836,7 @@ var
   BookKey: TBookKey;
 begin
   BookKey.BookID := FActiveTable.FieldByName(BOOK_ID_FIELD).Value;
-  if FActiveTable = tblBooks then
+  if FActiveTable = AllBooks then
     BookKey.DatabaseID := DMUser.ActiveCollection.ID
   else
     BookKey.DatabaseID := FActiveTable.FieldByName(DB_ID_FIELD).AsInteger;
@@ -1044,13 +1019,13 @@ begin
   VerifyCurrentCollection(BookKey.DatabaseID);
   Assert(AllBooks.Active);
 
-  DMCollection.tblBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []);
-  DMCollection.tblBooks.Edit;
+  AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []);
+  AllBooks.Edit;
   try
-    DMCollection.tblBooksSerieID.Value := SerieID;
-    DMCollection.tblBooks.Post;
+    AllBooksSerieID.Value := SerieID;
+    AllBooks.Post;
   except
-    DMCollection.tblBooks.Cancel;
+    AllBooks.Cancel;
     raise ;
   end;
 
@@ -1484,7 +1459,7 @@ end;
 // Get the total number of books
 function TDMCollection.GetTotalNumBooks: Integer;
 begin
-  Result := tblBooks.RecordCount;
+  Result := AllBooks.RecordCount;
 end;
 
 // Return an iterator working on the active collection
@@ -1517,11 +1492,19 @@ end;
 procedure TDMCollection.ChangeBookSerieID(const OldSerieID: Integer; const NewSerieID: Integer; const DatabaseID: Integer);
 const
   UPDATE_SQL = 'UPDATE Books SET SerieID = %u WHERE SerieID = %u';
+var
+  Query: TABSQuery;
 begin
   VerifyCurrentCollection(DatabaseID);
 
-  sqlBooks.SQL.Text := Format(UPDATE_SQL, [NewSerieID, OldSerieID]);
-  sqlBooks.ExecSQL;
+  Query := TABSQuery.Create(DBCollection);
+  try
+    Query.DatabaseName := DBCollection.DatabaseName;
+    Query.SQL.Text := Format(UPDATE_SQL, [NewSerieID, OldSerieID]);
+    Query.ExecSQL;
+  finally
+    FreeAndNil(Query);
+  end;
 
   // Обновим информацию в группах
   DMUser.ChangeBookSerieID(OldSerieID, NewSerieID, DatabaseID);
