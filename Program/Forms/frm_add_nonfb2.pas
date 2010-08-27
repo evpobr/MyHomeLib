@@ -487,13 +487,7 @@ var
   Data: PAuthorData;
   Node: PVirtualNode;
 begin
-  FFiltered := DMCollection.Authors.Filtered;
-  DMCollection.Authors.Filtered := False;
-  try
-    FillAuthorTree(frmAuthorList.tvAuthorList);
-  finally
-    DMCollection.Authors.Filtered := FFiltered;
-  end;
+  FillAuthorTree(frmAuthorList.tvAuthorList, DMCollection.GetAuthorIterator(amAll));
 
   if frmAuthorList.ShowModal = mrOk then
   begin

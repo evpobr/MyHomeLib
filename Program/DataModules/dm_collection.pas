@@ -33,12 +33,6 @@ type
   TDMCollection = class(TDataModule)
     DBCollection: TABSDatabase;
 
-    Authors: TABSQuery;
-    AuthorsID: TAutoIncField;
-    AuthorsFamily: TWideStringField;
-    AuthorsName: TWideStringField;
-    AuthorsMiddle: TWideStringField;
-
     Series: TABSQuery;
     SeriesSerieID: TAutoIncField;
     SeriesTitle: TWideStringField;
@@ -142,7 +136,7 @@ type
 
   strict private
   type
-    TDataPart = (dpAuthors, dpSeries, dpBooks);
+    TDataPart = (dpSeries, dpBooks);
     TDataParts = set of TDataPart;
 
     TFilterPart = (fpAuthors, fpSeries, fpLocalOnly, fpHideDeleted);
@@ -206,7 +200,8 @@ type
     // << TAuthorIteratorImpl
 
   strict private
-    FAuthorFilter: string;
+    FAuthorFilterType: string;
+    FAuthorFilterText: string;
     FSerieFilter: string;
     FShowLocalOnly: Boolean;
     FHideDeleted: Boolean;
@@ -335,7 +330,7 @@ type
 
     function GetAuthorIterator(
       const Mode: TAuthorIteratorMode;
-      const Filter: string
+      const Filter: string = ''
     ): IAuthorIterator; overload;
 
   end;
@@ -426,40 +421,41 @@ function TDMCollection.TBookIteratorImpl.CreateSQL(
 var
   Where: string;
 begin
-  Result := '';
+  Where := '';
 
-  if Mode = bmSearch then
-  begin
-    Assert(Filter = '');
-    Result := CreateSearchSQL(SearchCriteria);
-  end
-  else
-  begin
-    case Mode of
-      bmAll:
-        Result := 'SELECT b.' + BOOK_ID_FIELD + ' FROM Books';
-      bmByGenre:
-        Result :=
-          'SELECT b.' + BOOK_ID_FIELD + ' FROM Genre_List gl INNER JOIN Books b ON gl.' + BOOK_ID_FIELD + ' = b.' + BOOK_ID_FIELD + ' ';
-      bmByAuthor:
-        Result :=
-          'SELECT b.' + BOOK_ID_FIELD + ' FROM Author_List al INNER JOIN Books b ON al.' + BOOK_ID_FIELD + ' = b.' + BOOK_ID_FIELD + ' ';
-      bmBySeries:
-        Result :=
-          'SELECT b.' + BOOK_ID_FIELD + ' FROM Series s INNER JOIN Books b ON s.' + SERIE_ID_FIELD + ' = b.' + SERIE_ID_FIELD + ' ';
-      else
-        Assert(False);
-    end;
+  case Mode of
+    bmAll:
+      Result := 'SELECT b.' + BOOK_ID_FIELD + ' FROM Books';
+    bmByGenre:
+      Result :=
+        'SELECT b.' + BOOK_ID_FIELD + ' FROM Genre_List gl INNER JOIN Books b ON gl.' + BOOK_ID_FIELD + ' = b.' + BOOK_ID_FIELD + ' ';
+    bmByAuthor:
+      Result :=
+        'SELECT b.' + BOOK_ID_FIELD + ' FROM Author_List al INNER JOIN Books b ON al.' + BOOK_ID_FIELD + ' = b.' + BOOK_ID_FIELD + ' ';
+    bmBySeries:
+      Result :=
+        'SELECT b.' + BOOK_ID_FIELD + ' FROM Series s INNER JOIN Books b ON s.' + SERIE_ID_FIELD + ' = b.' + SERIE_ID_FIELD + ' ';
+    bmSearch:
+    begin
+      Assert(Filter = '');
+      Result := CreateSearchSQL(SearchCriteria);
+    end
+    else
+      Assert(False);
+  end;
 
-    Where := '';
-    if Filter <> '' then
-      AddToWhere(Where, Filter);
+  if Filter <> '' then
+    AddToWhere(Where, Filter);
+
+  if Mode in [bmByGenre, bmByAuthor, bmBySeries] then
+  begin
     if FCollection.FHideDeleted then
       AddToWhere(Where, ' b.' + BOOK_DELETED_FIELD + ' = False ');
     if FCollection.FShowLocalOnly then
       AddToWhere(Where, ' b.' + BOOK_LOCAL_FIELD + ' = True ');
-    Result := Result + Where;
   end;
+
+  Result := Result + Where + ' ORDER BY ' + BOOK_ID_FIELD; // Order fo result consistency
 end;
 
 // Original code was extracted from TfrmMain.DoApplyFilter
@@ -624,18 +620,37 @@ function TDMCollection.TAuthorIteratorImpl.CreateSQL(
   const Mode: TAuthorIteratorMode;
   const Filter: string
 ): string;
+var
+  Where: string;
 begin
-  Result := '';
+  Where := '';
 
   case Mode of
+    amAll:
+      Result := 'SELECT a.' + AUTHOR_ID_FIELD + ' FROM Authors a ';
     amByBook:
-      Result := 'SELECT al.' + AUTHOR_ID_FIELD + ' FROM Author_List al ';
+      Result := 'SELECT DISTINCT a.' + AUTHOR_ID_FIELD + ' FROM Authors a INNER JOIN Author_List al ON a.' + AUTHOR_ID_FIELD + ' = al.' + AUTHOR_ID_FIELD + ' ';
+    amFullFilter:
+    begin
+      Result := 'SELECT DISTINCT a.' + AUTHOR_ID_FIELD + ' FROM Authors a ';
+      if FCollection.FHideDeleted or FCollection.FShowLocalOnly then
+      begin
+        Result := Result + ' INNER JOIN Author_List al ON a.' + AUTHOR_ID_FIELD + ' = al.' + AUTHOR_ID_FIELD + ' INNER JOIN Books b ON al.' + BOOK_ID_FIELD + ' = b.' + BOOK_ID_FIELD + ' ';
+        if FCollection.FHideDeleted then
+          AddToWhere(Where, ' b.' + BOOK_DELETED_FIELD + ' = False ');
+        if FCollection.FShowLocalOnly then
+          AddToWhere(Where, ' b.' + BOOK_LOCAL_FIELD + ' = True ');
+      end;
+      if FCollection.FAuthorFilterText <> '' then
+        AddToWhere(Where, FCollection.FAuthorFilterText);
+    end
     else
       Assert(False);
   end;
 
   if Filter <> '' then
-    Result := Result + ' WHERE ' + Filter + ' ';
+    AddToWhere(Where, Filter);
+  Result := Result + Where + ' ORDER BY a.' + AUTHOR_LASTTNAME_FIELD + ', a.' + AUTHOR_FIRSTNAME_FIELD + ', a.' + AUTHOR_MIDDLENAME_FIELD + ' ';
 end;
 
 { TDMCollection }
@@ -687,7 +702,7 @@ end;
 
 procedure TDMCollection.SetTableState(State: Boolean);
 begin
-  Authors.Active := State;
+//  Authors.Active := State;
   Series.Active := State;
   Genres.Active := State;
 
@@ -1141,33 +1156,27 @@ begin
   // ----------------------------------------------
   if fpAuthors in Parts then
   begin
-    if FAuthorFilter = ALPHA_FILTER_ALL then
+    if FAuthorFilterType = ALPHA_FILTER_ALL then
     begin
-      Authors.Filter := '';
-      Authors.Filtered := False;
+      FAuthorFilterText := '';
     end
-    else if FAuthorFilter = ALPHA_FILTER_NON_ALPHA then
+    else if FAuthorFilterType = ALPHA_FILTER_NON_ALPHA then
     begin
-      Authors.Filter := Format(
-        '(UPPER(%0:s) <> "Ё*") AND ' +                          // буква Ё лежит отдельно
-        '(' +
-          '(UPPER(%0:s) < "A*") OR ' +                          // меньше латинской A
-          '(UPPER(%0:s) > "Z*" AND UPPER(%0:s) < "А*") OR ' +   // больше латинской Z и меньше русской А
-          '(UPPER(%0:s) > "Я*")' +                              // меньше русской Я
-        ')',
+      FAuthorFilterText := Format(
+        '(SUBSTRING(UPPER(%0:s),1,1) <> "Ё") AND ' +      // буква Ё лежит отдельно
+        '(SUBSTRING(UPPER(%0:s),1,1) < "А" OR SUBSTRING(UPPER(%0:s),1,1) > "Я") AND ' +
+        '(SUBSTRING(UPPER(%0:s),1,1) < "A" OR SUBSTRING(UPPER(%0:s),1,1) > "Z") ',
         [AUTHOR_LASTTNAME_FIELD]
       );
-      Authors.Filtered := True;
     end
     else
     begin
-      Assert(Length(FAuthorFilter) = 1);
-      Assert(TCharacter.IsUpper(FAuthorFilter, 1));
-      Authors.Filter := Format(
-        'UPPER(%0:s) = "%1:s*"',                                // начинается на заданную букву
-        [AUTHOR_LASTTNAME_FIELD, FAuthorFilter]
+      Assert(Length(FAuthorFilterType) = 1);
+      Assert(TCharacter.IsUpper(FAuthorFilterType, 1));
+      FAuthorFilterText := Format(
+        'UPPER(%0:s) LIKE "%1:s%%"',                                // начинается на заданную букву
+        [AUTHOR_LASTTNAME_FIELD, FAuthorFilterType]
       );
-      Authors.Filtered := True;
     end;
   end;
 
@@ -1209,16 +1218,6 @@ begin
   // ----------------------------------------------
   if fpLocalOnly in Parts then
   begin
-    SQLQuery := GetAuthorsBegin;
-    if FShowLocalOnly then
-      SQLQuery := SQLQuery + GetAuthorsQuery;
-    SQLQuery := SQLQuery + GetAuthorsEnd;
-
-    Authors.Active := False;
-    Authors.SQL.Text := SQLQuery;
-    Authors.Prepare;
-    Include(Result, dpAuthors);
-
     SQLQuery := GetSeriessBegin;
     if FShowLocalOnly then
       SQLQuery := SQLQuery + GetSeriessQuery;
@@ -1260,9 +1259,6 @@ end;
 
 procedure TDMCollection.RefreshData(Parts: TDataParts);
 begin
-  if dpAuthors in Parts then
-    Authors.Active := True;
-
   if dpSeries in Parts then
     Series.Active := True;
 end;
@@ -1271,7 +1267,7 @@ procedure TDMCollection.SetAuthorFilter(const Value: string; Refresh: Boolean = 
 var
   Parts: TDataParts;
 begin
-  FAuthorFilter := Value;
+  FAuthorFilterType := Value;
 
   Parts := UpdateFilters([fpAuthors]);
 
@@ -1460,7 +1456,7 @@ end;
 
 function TDMCollection.GetAuthorIterator(const Mode: TAuthorIteratorMode; const Filter: string): IAuthorIterator;
 begin
-  Result := TAuthorIteratorImpl.Create(Self, amByBook, Filter);
+  Result := TAuthorIteratorImpl.Create(Self, Mode, Filter);
 end;
 
 // Change SerieID value for all books in the current database with old SerieID value
