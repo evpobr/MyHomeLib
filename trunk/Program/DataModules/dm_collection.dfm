@@ -84,6 +84,7 @@ object DMCollection: TDMCollection
     object tblBooksSeries: TWideStringField
       FieldKind = fkLookup
       FieldName = 'Series'
+      LookupDataSet = tblSeriesB1
       LookupKeyFields = 'SerieID'
       LookupResultField = 'SerieTitle'
       KeyFields = 'SerieID'
@@ -120,6 +121,27 @@ object DMCollection: TDMCollection
     object AllAuthorsMiddleName: TWideStringField
       FieldName = 'MiddleName'
       Size = 128
+    end
+  end
+  object tblSeriesB1: TABSTable
+    CurrentVersion = '6.06 '
+    DatabaseName = 'Collection'
+    InMemory = False
+    ReadOnly = False
+    Filter = 'SerieTitle <> "---"'
+    Filtered = True
+    IndexName = 'SerieTitleIndex'
+    TableName = 'series'
+    Exclusive = False
+    Left = 160
+    Top = 376
+    object tblSeriesB1SerieID: TAutoIncField
+      FieldName = 'SerieID'
+    end
+    object tblSeriesB1SerieTitle: TWideStringField
+      FieldName = 'SerieTitle'
+      Required = True
+      Size = 80
     end
   end
   object Series: TABSQuery
