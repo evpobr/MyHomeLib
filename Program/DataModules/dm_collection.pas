@@ -382,6 +382,7 @@ begin
   FBooks.SQL.Text := CreateSQL(Mode, Filter, SearchCriteria);
 {$IFDEF DEBUG}
   FBooks.SQL.SaveToFile(Settings.AppPath + 'Last.sql');
+  DebugOut(FBooks.SQL.Text);
 {$ENDIF}
   FBooks.Active := True;
 
@@ -434,7 +435,7 @@ begin
         'SELECT b.' + BOOK_ID_FIELD + ' FROM Author_List al INNER JOIN Books b ON al.' + BOOK_ID_FIELD + ' = b.' + BOOK_ID_FIELD + ' ';
     bmBySeries:
       Result :=
-        'SELECT b.' + BOOK_ID_FIELD + ' FROM Series s INNER JOIN Books b ON s.' + SERIE_ID_FIELD + ' = b.' + SERIE_ID_FIELD + ' ';
+        'SELECT b.' + BOOK_ID_FIELD + ' FROM Books b ';
     bmSearch:
     begin
       Assert(Filter = '');
@@ -455,7 +456,8 @@ begin
       AddToWhere(Where, ' b.' + BOOK_LOCAL_FIELD + ' = True ');
   end;
 
-  Result := Result + Where + ' ORDER BY ' + BOOK_ID_FIELD; // Order fo result consistency
+  Result := Result + Where;
+  // + ' ORDER BY ' + BOOK_ID_FIELD; // Order fo result consistency
 end;
 
 // Original code was extracted from TfrmMain.DoApplyFilter
@@ -585,6 +587,7 @@ begin
   FAuthors.SQL.Text := CreateSQL(Mode, Filter);
 {$IFDEF DEBUG}
   FAuthors.SQL.SaveToFile(Settings.AppPath + 'Last.sql');
+  DebugOut(FAuthors.SQL.Text);
 {$ENDIF}
   FAuthors.Active := True;
 
@@ -762,17 +765,14 @@ end;
 procedure TDMCollection.GetBookAuthors(BookID: Integer; var BookAuthors: TBookAuthors);
 var
   AuthorIterator: IAuthorIterator;
-  AuthorData: TAuthorData;
   i: Integer;
 begin
-  AuthorIterator := GetAuthorIterator(amByBook, Format('%s = %u', [BOOK_ID_FIELD, BookID]));
-  SetLength(BookAuthors, AuthorIterator.GetNumRecords);
+  AuthorIterator := GetAuthorIterator(amByBook, Format('al.%s = %u', [BOOK_ID_FIELD, BookID]));
+  SetLength(BookAuthors, AuthorIterator.GetNumRecords + 1); // an extra dummy element
   i := 0;
-  while AuthorIterator.Next(AuthorData) do
-  begin
-    BookAuthors[i] := AuthorData;
+  while AuthorIterator.Next(BookAuthors[i]) do
     Inc(i);
-  end;
+  SetLength(BookAuthors, AuthorIterator.GetNumRecords); // remove the dummy element
 end;
 
 procedure TDMCollection.GetBookGenres(BookID: Integer; var BookGenres: TBookGenres; RootGenre: PGenreData = nil);
