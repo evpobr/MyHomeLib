@@ -98,10 +98,6 @@ type
     tblBooksKeyWords: TWideStringField;
     tblBooksSeries: TWideStringField;
 
-    tblSeriesB1: TABSTable;
-    tblSeriesB1SerieID: TAutoIncField;
-    tblSeriesB1SerieTitle: TWideStringField;
-
     procedure DataModuleCreate(Sender: TObject);
 
   strict private
@@ -774,7 +770,6 @@ begin
   Series.Active := State;
 
   tblBooks.Active := State;
-  tblSeriesB1.Active := State;
 
   AllAuthors.Active := State;
   AllSeries.Active := State;
@@ -1536,34 +1531,34 @@ end;
 // If the title is not in DB - add and returned the ID of the added row
 function TDMCollection.AddOrLocateSerieIDBySerieTitle(const SerieTitle: string): Integer;
 begin
-  Assert(tblSeriesB1.Active);
+  Assert(AllSeries.Active);
 
-  if not tblSeriesB1.Locate(SERIE_TITLE_FIELD, SerieTitle, []) then
+  if not AllSeries.Locate(SERIE_TITLE_FIELD, SerieTitle, []) then
   begin
-    tblSeriesB1.Append;
+    AllSeries.Append;
     try
-      tblSeriesB1SerieTitle.Value := SerieTitle;
-      tblSeriesB1.Post;
+      AllSeriesSerieTitle.Value := SerieTitle;
+      AllSeries.Post;
     except
-      tblSeriesB1.Cancel;
+      AllSeries.Cancel;
       raise ;
     end;
   end;
-  Result := tblSeriesB1SerieID.Value;
+  Result := AllSeriesSerieID.Value;
 end;
 
 procedure TDMCollection.SetSerieTitle(const SerieID: Integer; const NewSerieTitle: string);
 begin
-  Assert(tblSeriesB1.Active);
+  Assert(AllSeries.Active);
 
-  if (tblSeriesB1.Locate(SERIE_ID_FIELD, SerieID, [])) then
+  if (AllSeries.Locate(SERIE_ID_FIELD, SerieID, [])) then
   begin
-    tblSeriesB1.Edit;
+    AllSeries.Edit;
     try
-      DMCollection.tblSeriesB1SerieTitle.Value := NewSerieTitle;
-      DMCollection.tblSeriesB1.Post;
+      AllSeriesSerieTitle.Value := NewSerieTitle;
+      AllSeries.Post;
     except
-      DMCollection.tblSeriesB1.Cancel;
+      AllSeries.Cancel;
       raise ;
     end;
   end;
