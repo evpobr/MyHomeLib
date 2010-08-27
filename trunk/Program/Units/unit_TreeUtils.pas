@@ -224,12 +224,13 @@ end;
 
 procedure FillGenresTree(Tree: TVirtualStringTree; FillFB2: Boolean = False; const SelectCode: string = '');
 var
-  genreNode: PVirtualNode;
+  GenreNode: PVirtualNode;
   Data: PGenreData;
+  Genre: TGenreData;
   Nodes: TDictionary<string, PVirtualNode>;
-  strParentCode: string;
   ParentNode: PVirtualNode;
   SelectedNode: PVirtualNode;
+  GenreIterator: IGenreIterator;
 begin
   Tree.NodeDataSize := SizeOf(TGenreData);
 
@@ -242,32 +243,26 @@ begin
         Tree.Clear;
         SelectedNode := nil;
 
-        DMCollection.Genres.First;
-        while not DMCollection.Genres.Eof do
+        GenreIterator := DMCollection.GetGenreIterator;
+        while GenreIterator.Next(Genre) do
         begin
-          strParentCode := DMCollection.GenresParentCode.Value;
-
           ParentNode := nil;
-          if (strParentCode <> '0') and Nodes.ContainsKey(strParentCode) then
-            ParentNode := Nodes[strParentCode];
+          if (Genre.ParentCode <> '0') and Nodes.ContainsKey(Genre.ParentCode) then
+            ParentNode := Nodes[Genre.ParentCode];
 
-          genreNode := Tree.AddChild(ParentNode);
-          Data := Tree.GetNodeData(genreNode);
+          GenreNode := Tree.AddChild(ParentNode);
+          Data := Tree.GetNodeData(GenreNode);
 
           Initialize(Data^);
-          Data^.GenreAlias := DMCollection.GenresGenreAlias.Value;
-          Data^.GenreCode := DMCollection.GenresGenreCode.Value;
-          Data^.ParentCode := strParentCode;
-          if FillFB2 then
-            Data^.FB2GenreCode := DMCollection.GenresFB2Code.Value;
-          Include(genreNode.States, vsInitialUserData);
+          Data^ := Genre;
+          if not FillFB2 then
+            Data^.FB2GenreCode := '';
+          Include(GenreNode.States, vsInitialUserData);
 
-          Nodes.AddOrSetValue(Data^.GenreCode, genreNode);
+          Nodes.AddOrSetValue(Data^.GenreCode, GenreNode);
 
           if Data^.GenreCode = SelectCode then
-            SelectedNode := genreNode;
-
-          DMCollection.Genres.Next;
+            SelectedNode := GenreNode;
         end;
 
         SafeSelectNode(Tree, SelectedNode);
