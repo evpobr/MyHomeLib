@@ -1840,34 +1840,34 @@ end;
 procedure TfrmMain.CreateGroupsMenu;
 var
   Item, ItemP: TMenuItem;
+  GroupIterator: IGroupIterator;
+  Group: TGroupData;
 begin
   pmGroups.Items.Clear;
   pmiGroups.Clear;
 
-  DMUser.Groups.First;
-  while not DMUser.Groups.Eof do
+  GroupIterator := DMUser.GetGroupIterator;
+  while GroupIterator.Next(Group) do
   begin
     //
     // пропускаем "Избранное"
     //
-    if DMUser.GroupsGroupID.Value <> FAVORITES_GROUP_ID then
+    if Group.GroupID <> FAVORITES_GROUP_ID then
     begin
       // меню для кнопки
       Item := TMenuItem.Create(pmGroups);
-      Item.Caption := DMUser.GroupsGroupName.Value;
-      Item.Tag := DMUser.GroupsGroupID.Value;
+      Item.Caption := Group.Text;
+      Item.Tag := Group.GroupID;
       Item.OnClick := GroupMenuItemClick;
       pmGroups.Items.Add(Item);
 
       // подменю для контекстного
       ItemP := TMenuItem.Create(pmMain);
-      ItemP.Caption := DMUser.GroupsGroupName.Value;
-      ItemP.Tag := DMUser.GroupsGroupID.Value;
+      ItemP.Caption := Group.Text;
+      ItemP.Tag := Group.GroupID;
       ItemP.OnClick := GroupMenuItemClick;
       pmiGroups.Add(ItemP);
     end;
-
-    DMUser.Groups.Next;
   end;
 end;
 

@@ -137,6 +137,29 @@ type
     // << TBookIteratorImpl
 
 
+    TGroupIteratorImpl = class(TInterfacedObject, IGroupIterator)
+    public
+      constructor Create(User: TDMUser);
+      destructor Destroy; override;
+
+    protected
+      //
+      // IGroupIterator
+      //
+      function Next(out Group: TGroupData): Boolean;
+      function GetNumRecords: Integer;
+
+    private
+      FUser: TDMUser;
+      FGroups: TABSQuery;
+      FGroupID: TIntegerField;
+      FGroupName: TWideStringField;
+      FAllowDelete: TBooleanField;
+
+      function CreateSQL: string;
+    end;
+    // << TGroupIteratorImpl
+
   private
     FActiveCollection: TMHLActiveCollection;
     FCollection: TMHLCollection;
@@ -247,6 +270,7 @@ type
 
     //Iterators:
     function GetBookIterator(const Filter: string): IBookIterator;
+    function GetGroupIterator: IGroupIterator;
 
   public
     property ActiveCollection: TMHLActiveCollection read FActiveCollection;
@@ -374,7 +398,8 @@ uses
   IOUtils,
   Variants,
   dm_Collection,
-  unit_SearchUtils;
+  unit_SearchUtils,
+  unit_Settings;
 
 resourcestring
   rstrNamelessColection = 'безымянная коллекция';
@@ -395,6 +420,9 @@ begin
   FBooks := TABSQuery.Create(FUser.DBUser);
   FBooks.DatabaseName := FUser.DBUser.DatabaseName;
   FBooks.SQL.Text := CreateSQL(Filter);
+{$IFDEF DEBUG}
+  FBooks.SQL.SaveToFile(Settings.AppPath + 'Last.sql');
+{$ENDIF}
   FBooks.Active := True;
 
   FBookID := FBooks.FieldByName(BOOK_ID_FIELD) as TIntegerField;
@@ -433,6 +461,60 @@ begin
 
   if Filter <> '' then
     Result := Result + ' WHERE ' + Filter + ' ';
+end;
+
+{ TGroupIteratorImpl }
+
+constructor TDMUser.TGroupIteratorImpl.Create(User: TDMUser);
+begin
+  inherited Create;
+
+  Assert(Assigned(User));
+
+  FUser := User;
+
+  FGroups := TABSQuery.Create(FUser.DBUser);
+  FGroups.DatabaseName := FUser.DBUser.DatabaseName;
+  FGroups.SQL.Text := CreateSQL;
+{$IFDEF DEBUG}
+  FGroups.SQL.SaveToFile(Settings.AppPath + 'Last.sql');
+{$ENDIF}
+  FGroups.Active := True;
+
+  FGroupID := FGroups.FieldByName(GROUP_ID_FIELD) as TIntegerField;
+  FGroupName := FGroups.FieldByName(GROUP_NAME_FIELD) as TWideStringField;
+  FAllowDelete := FGroups.FieldByName(GROUP_ALLOWDELETE_FIELD) as TBooleanField;
+end;
+
+destructor TDMUser.TGroupIteratorImpl.Destroy;
+begin
+  FreeAndNil(FGroups);
+
+  inherited Destroy;
+end;
+
+// Read next record (if present), return True if read
+function TDMUser.TGroupIteratorImpl.Next(out Group: TGroupData): Boolean;
+begin
+  Result := not FGroups.Eof;
+
+  if Result then
+  begin
+    Group.GroupID := FGroupID.Value;
+    Group.Text := FGroupName.Value;
+    Group.CanDelete := FAllowDelete.Value;
+    FGroups.Next;
+  end;
+end;
+
+function TDMUser.TGroupIteratorImpl.GetNumRecords: Integer;
+begin
+  Result := FGroups.RecordCount;
+end;
+
+function TDMUser.TGroupIteratorImpl.CreateSQL: string;
+begin
+  Result := 'SELECT g.' + GROUP_ID_FIELD + ', g.' + GROUP_NAME_FIELD + ', g. ' + GROUP_ALLOWDELETE_FIELD + ' FROM Groups g ';
 end;
 
 { TDMUser }
@@ -1067,6 +1149,11 @@ begin
   Result := TBookIteratorImpl.Create(Self, Filter);
 end;
 
+function TDMUser.GetGroupIterator: IGroupIterator;
+begin
+  Result := TGroupIteratorImpl.Create(Self);
+end;
+
 procedure TDMUser.SetFolder(const BookKey: TBookKey; const Folder: string);
 begin
   Assert(AllBooks.Active);
@@ -1355,7 +1442,7 @@ end;
 procedure TDMUser.ExportUserData(data: TUserData);
 var
   CollectionID: Integer;
-  group: TBookGroup;
+  BookGroup: TBookGroup;
 begin
   Assert(Assigned(data));
 
@@ -1364,13 +1451,13 @@ begin
   Groups.First;
   while not Groups.Eof do
   begin
-    group := data.Groups.AddGroup(GroupsGroupID.Value, GroupsGroupName.Value);
+    BookGroup := data.Groups.AddGroup(GroupsGroupID.Value, GroupsGroupName.Value);
 
     GroupBooks.First;
     while not GroupBooks.Eof do
     begin
       if BooksByGroupDatabaseID.Value = CollectionID then
-        group.AddBook(BooksByGroupBookID.Value, BooksByGroupLibID.Value);
+        BookGroup.AddBook(BooksByGroupBookID.Value, BooksByGroupLibID.Value);
 
       GroupBooks.Next;
     end;
