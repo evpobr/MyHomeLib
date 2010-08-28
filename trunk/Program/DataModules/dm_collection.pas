@@ -616,10 +616,10 @@ begin
     amAll:
       Result := 'SELECT a.' + AUTHOR_ID_FIELD + ' FROM Authors a ';
     amByBook:
-      Result := 'SELECT a.' + AUTHOR_ID_FIELD + ' FROM Authors a INNER JOIN Author_List al ON a.' + AUTHOR_ID_FIELD + ' = al.' + AUTHOR_ID_FIELD + ' ';
+      Result := 'SELECT DISTINCT a.' + AUTHOR_ID_FIELD + ' FROM Authors a INNER JOIN Author_List al ON a.' + AUTHOR_ID_FIELD + ' = al.' + AUTHOR_ID_FIELD + ' ';
     amFullFilter:
     begin
-      Result := 'SELECT a.' + AUTHOR_ID_FIELD + ' FROM Authors a ';
+      Result := 'SELECT DISTINCT a.' + AUTHOR_ID_FIELD + ' FROM Authors a ';
       if FCollection.FHideDeleted or FCollection.FShowLocalOnly then
       begin
         Result := Result + ' INNER JOIN Author_List al ON a.' + AUTHOR_ID_FIELD + ' = al.' + AUTHOR_ID_FIELD + ' INNER JOIN Books b ON al.' + BOOK_ID_FIELD + ' = b.' + BOOK_ID_FIELD + ' ';
