@@ -70,15 +70,6 @@ type
     GroupBooksDatabaseID: TIntegerField;
     dsBookGroups: TDataSource;
 
-    BooksByGroup: TABSTable;
-    BooksByGroupBookID: TIntegerField;
-    BooksByGroupDatabaseID: TIntegerField;
-    BooksByGroupFolder: TWideStringField;
-    BooksByGroupFileName: TWideStringField;
-    BooksByGroupInsideNo: TIntegerField;
-    BooksByGroupExt: TWideStringField;
-    BooksByGroupLibID: TIntegerField;
-
     AllBooks: TABSTable;
     AllBooksBookID: TIntegerField;
     AllBooksDatabaseID: TIntegerField;
@@ -219,7 +210,6 @@ type
 
     function ActivateGroup(const ID: Integer): Boolean;
 
-    procedure ChangeBookID(OldID, NewID: Integer);
 
     //
     //
@@ -537,21 +527,6 @@ begin
   Result := Groups.Locate(GROUP_ID_FIELD, ID, []);
 end;
 
-procedure TDMUser.ChangeBookID(OldID, NewID: Integer);
-begin
-  if BooksByGroup.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([OldID, CurrentCollection.GetID]), []) then
-  begin
-    BooksByGroup.Edit;
-    try
-      BooksByGroupBookID.Value := NewID;
-      BooksByGroup.Post;
-    except
-      BooksByGroup.Cancel;
-      raise;
-    end;
-  end;
-end;
-
 constructor TDMUser.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -803,7 +778,6 @@ begin
   tblBases.Active := State;
   Groups.Active := State;
   GroupBooks.Active := State;
-  BooksByGroup.Active := State;
   AllBooks.Active := State;
   AllBookGroups.Active := State;
 end;
@@ -1443,26 +1417,23 @@ procedure TDMUser.ExportUserData(data: TUserData);
 var
   CollectionID: Integer;
   BookGroup: TBookGroup;
+  GroupIterator: IGroupIterator;
+  GroupData: TGroupData;
+  BookIterator: IBookIterator;
+  BookRecord: TBookRecord;
 begin
   Assert(Assigned(data));
 
   CollectionID := ActiveCollection.ID;
 
-  Groups.First;
-  while not Groups.Eof do
+  GroupIterator := GetGroupIterator;
+  while GroupIterator.Next(GroupData) do
   begin
-    BookGroup := data.Groups.AddGroup(GroupsGroupID.Value, GroupsGroupName.Value);
+    BookGroup := data.Groups.AddGroup(GroupData.GroupID, GroupData.Text);
 
-    GroupBooks.First;
-    while not GroupBooks.Eof do
-    begin
-      if BooksByGroupDatabaseID.Value = CollectionID then
-        BookGroup.AddBook(BooksByGroupBookID.Value, BooksByGroupLibID.Value);
-
-      GroupBooks.Next;
-    end;
-
-    Groups.Next;
+    BookIterator := GetBookIterator(Format('bg.%0:s = %1:d AND bg.%2:s = %3:d', [GROUP_ID_FIELD, GroupData.GroupID, DB_ID_FIELD, CollectionID]));
+    while BookIterator.Next(BookRecord) do
+      BookGroup.AddBook(BookRecord.BookKey.BookID, BookRecord.LibID);
   end;
 end;
 

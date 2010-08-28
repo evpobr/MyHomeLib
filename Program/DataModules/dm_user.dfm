@@ -1,6 +1,6 @@
 object DMUser: TDMUser
   OldCreateOrder = False
-  Height = 457
+  Height = 405
   Width = 228
   object DBUser: TABSDatabase
     CurrentVersion = '6.06 '
@@ -77,47 +77,6 @@ object DMUser: TDMUser
     object tblBasesConnection: TWideMemoField
       FieldName = 'Connection'
       BlobType = ftWideMemo
-    end
-  end
-  object BooksByGroup: TABSTable
-    CurrentVersion = '6.06 '
-    DatabaseName = 'UserData'
-    InMemory = False
-    ReadOnly = False
-    IndexName = 'ID_Index'
-    TableName = 'Books'
-    Exclusive = False
-    MasterFields = 'BookID;DatabaseID'
-    MasterSource = dsBookGroups
-    Left = 40
-    Top = 312
-    object BooksByGroupBookID: TIntegerField
-      FieldName = 'BookID'
-      Required = True
-    end
-    object BooksByGroupDatabaseID: TIntegerField
-      FieldName = 'DatabaseID'
-      Required = True
-    end
-    object BooksByGroupFolder: TWideStringField
-      FieldName = 'Folder'
-      Size = 255
-    end
-    object BooksByGroupFileName: TWideStringField
-      FieldName = 'FileName'
-      Required = True
-      Size = 255
-    end
-    object BooksByGroupInsideNo: TIntegerField
-      FieldName = 'InsideNo'
-      Required = True
-    end
-    object BooksByGroupExt: TWideStringField
-      FieldName = 'Ext'
-      Size = 10
-    end
-    object BooksByGroupLibID: TIntegerField
-      FieldName = 'LibID'
     end
   end
   object SeverityImages: TImageList
@@ -875,7 +834,7 @@ object DMUser: TDMUser
     TableName = 'Books'
     Exclusive = False
     Left = 40
-    Top = 384
+    Top = 328
     object AllBooksBookID: TIntegerField
       FieldName = 'BookID'
       Required = True
@@ -967,7 +926,7 @@ object DMUser: TDMUser
     TableName = 'BookGroups'
     Exclusive = False
     Left = 128
-    Top = 384
+    Top = 328
     object AllBookGroupsBookID: TIntegerField
       FieldName = 'BookID'
       Required = True
