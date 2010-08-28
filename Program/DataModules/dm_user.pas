@@ -103,9 +103,6 @@ type
     AllBooksRate: TIntegerField;
     AllBooksProgress: TSmallintField;
 
-    ClearQuery: TABSQuery;
-    SqlQuery: TABSQuery;
-
     AllBookGroups: TABSTable;
     AllBookGroupsBookID: TIntegerField;
     AllBookGroupsDatabaseID: TIntegerField;
@@ -689,6 +686,8 @@ procedure TDMUser.DeleteCollection(CollectionID: Integer);
 const
   DELETE_REL_QUERY = 'DELETE FROM BookGroups WHERE DatabaseID = %u';
   DELETE_BOOKS_QUERY = 'DELETE FROM Books WHERE DatabaseID = %u';
+var
+  Query: TABSQuery;
 begin
   //
   // 1. Удалить все книги этой коллекции из групп
@@ -696,12 +695,19 @@ begin
   //
   Assert(tblBases.Active);
 
-  // Delete books from groups by DatabaseID:
-  SqlQuery.SQL.Text := Format(DELETE_REL_QUERY, [CollectionID]);
-  SqlQuery.ExecSQL;
+  Query := TABSQuery.Create(DBUser);
+  try
+    Query.DatabaseName := DBUser.DatabaseName;
 
-  SqlQuery.SQL.Text := Format(DELETE_BOOKS_QUERY, [CollectionID]);
-  SqlQuery.ExecSQL;
+    // Delete books from groups by DatabaseID:
+    Query.SQL.Text := Format(DELETE_REL_QUERY, [CollectionID]);
+    Query.ExecSQL;
+
+    Query.SQL.Text := Format(DELETE_BOOKS_QUERY, [CollectionID]);
+    Query.ExecSQL;
+  finally
+    FreeAndNil(Query);
+  end;
 
   // Delete the collection:
   tblBases.Delete;
@@ -831,12 +837,21 @@ procedure TDMUser.DeleteBook(const BookKey: TBookKey);
 const
   SQL_DELETE_FROM_BOOK_GROUPS: string = 'DELETE FROM BookGroups WHERE BookID = %u AND DatabaseID = %u ';
   SQL_DELETE_FROM_BOOKS: string = 'DELETE FROM Books WHERE BookID = %u AND DatabaseID = %u ';
+var
+  Query: TABSQuery;
 begin
-  SqlQuery.SQL.Text := Format(SQL_DELETE_FROM_BOOK_GROUPS, [BookKey.BookID, BookKey.DatabaseID]);
-  SqlQuery.ExecSQL;
+  Query := TABSQuery.Create(DBUser);
+  try
+    Query.DatabaseName := DBUser.DatabaseName;
 
-  SqlQuery.SQL.Text := Format(SQL_DELETE_FROM_BOOKS, [BookKey.BookID, BookKey.DatabaseID]);
-  SqlQuery.ExecSQL;
+    Query.SQL.Text := Format(SQL_DELETE_FROM_BOOK_GROUPS, [BookKey.BookID, BookKey.DatabaseID]);
+    Query.ExecSQL;
+
+    Query.SQL.Text := Format(SQL_DELETE_FROM_BOOKS, [BookKey.BookID, BookKey.DatabaseID]);
+    Query.ExecSQL;
+  finally
+    FreeAndNil(Query);
+  end;
 end;
 
 procedure TDMUser.SetExtra(const BookKey: TBookKey; extra: TBookExtra);
@@ -1019,6 +1034,7 @@ const
 var
   newSerie: string;
   oldSerie: string;
+  Query: TABSQuery;
 begin
   if OldSerieID <> NewSerieID then
   begin
@@ -1032,9 +1048,14 @@ begin
     else
       oldSerie := Format('= %u', [OldSerieID]);
 
-    SqlQuery.SQL.Text := Format(UPDATE_SQL, [newSerie, DatabaseID, oldSerie]);
-
-    SqlQuery.ExecSQL;
+    Query := TABSQuery.Create(DBUser);
+    try
+      Query.DatabaseName := DBUser.DatabaseName;
+      Query.SQL.Text := Format(UPDATE_SQL, [newSerie, DatabaseID, oldSerie]);
+      Query.ExecSQL;
+    finally
+      FreeAndNil(Query);
+    end;
   end;
 end;
 
@@ -1272,8 +1293,23 @@ end;
 // Удалить книги, не входящие в группы
 //
 procedure TDMUser.RemoveUnusedBooks;
+const
+  SQL: string =
+      'DELETE FROM Books b WHERE NOT EXISTS( ' +
+      ' SELECT 1 FROM BookGroups g ' +
+      ' WHERE g.BookID = b.BookID AND g.DatabaseID = b.DatabaseID ' +
+      ')';
+var
+  Query: TABSQuery;
 begin
-  ClearQuery.ExecSQL;
+  Query := TABSQuery.Create(DBUser);
+  try
+    Query.DatabaseName := DBUser.DatabaseName;
+    Query.SQL.Text := SQL;
+    Query.ExecSQL;
+  finally
+    FreeAndNil(Query);
+  end;
 end;
 
 procedure TDMUser.CopyBookToGroup(
