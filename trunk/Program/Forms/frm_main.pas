@@ -2384,6 +2384,8 @@ begin
   if (ParamCount > 0) and (ParamStr(1) = '/clear') then
     ClearDir(Settings.DataDir);
 
+  ClearLog;
+
   frmSplash.lblState.Caption := rstrMainConnectToDb;
 
   DMUser.DBUser.DatabaseFileName := Settings.SystemFileName[sfSystemDB];
@@ -7089,7 +7091,7 @@ end;
 
 function TfrmMain.GroupBookFilter: string;
 begin
-  Result := Format('%s = %d', [GROUP_ID_FIELD, FLastGroupID]);
+  Result := Format('bg.%s = %d', [GROUP_ID_FIELD, FLastGroupID]);
 end;
 
 end.
