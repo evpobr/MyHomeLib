@@ -234,6 +234,7 @@ const
 
   GROUP_ID_FIELD = 'GroupID';
   GROUP_NAME_FIELD = 'GroupName';
+  GROUP_ALLOWDELETE_FIELD = 'AllowDelete';
 
   AUTHOR_ID_FIELD = 'AuthorID';
   AUTHOR_LASTTNAME_FIELD = 'LastName';

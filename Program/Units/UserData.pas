@@ -22,7 +22,8 @@ uses
   Classes,
   msxml,
   ComObj,
-  Generics.Collections;
+  Generics.Collections,
+  unit_Globals;
 
 type
   TBookInfo = class
@@ -134,6 +135,11 @@ type
 
     property Extras: TBookExtras read FExtras;
     property Groups: TBookGroups read FGroups;
+  end;
+
+  IGroupIterator = interface
+    function Next(out Group: TGroupData): Boolean;
+    function GetNumRecords: Integer;
   end;
 
 implementation

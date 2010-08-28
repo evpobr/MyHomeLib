@@ -44,6 +44,7 @@ implementation
 uses
   dm_user,
   dm_collection,
+  UserData,
   Generics.Collections;
 
 procedure GetSelections(Tree: TBookTree; out List: TSelectionList);
@@ -282,6 +283,8 @@ var
   Node: PVirtualNode;
   Data: PGroupData;
   SelectedNode: PVirtualNode;
+  GroupIterator: IGroupIterator;
+  Group: TGroupData;
 begin
   Tree.BeginSynch;
   try
@@ -290,22 +293,18 @@ begin
       Tree.Clear;
       SelectedNode := nil;
 
-      DMUser.Groups.First;
-      while not DMUser.Groups.Eof do
+      GroupIterator := DMUser.GetGroupIterator;
+      while GroupIterator.Next(Group) do
       begin
         Node := Tree.AddChild(nil);
         Data := Tree.GetNodeData(Node);
 
         Initialize(Data^);
-        Data^.Text := DMUser.GroupsGroupName.Value;
-        Data^.GroupID := DMUser.GroupsGroupID.Value;
-        Data^.CanDelete := DMUser.GroupsAllowDelete.Value;
+        Data^ := Group;
         Include(Node.States, vsInitialUserData);
 
         if Data^.GroupID = SelectID then
           SelectedNode := Node;
-
-        DMUser.Groups.Next;
       end;
 
       SafeSelectNode(Tree, SelectedNode);
