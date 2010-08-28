@@ -742,7 +742,7 @@ procedure TDMCollection.SetActiveTable(Tag: Integer);
 begin
   if Tag = PAGE_FAVORITES then
   begin
-    FActiveTable := DMUser.BooksByGroup;
+    FActiveTable := DMUser.AllBooks;
     FIsFavorites := True;
   end
   else
@@ -1260,32 +1260,6 @@ begin
     Include(Result, dpSeries);
   end;
 
-  // ----------------------------------------------
-  if ([fpLocalOnly, fpHideDeleted] * Parts) <> [] then
-  begin
-    LocalFilter := LocalFilters[FShowLocalOnly];
-    HideDeletedFilter := HideDeletedFilters[FHideDeleted];
-
-    SetFilter := True;
-    if (LocalFilter <> '') and (HideDeletedFilter <> '') then
-      TotalFilter := LocalFilter + ' AND ' + HideDeletedFilter
-    else if (LocalFilter <> '') then
-      TotalFilter := LocalFilter
-    else if (HideDeletedFilter <> '') then
-      TotalFilter := HideDeletedFilter
-    else
-    begin
-      TotalFilter := '';
-      SetFilter := False;
-    end;
-
-    if SetFilter then
-      DMUser.BooksByGroup.Filter := TotalFilter;
-
-    DMUser.BooksByGroup.Filtered := SetFilter;
-
-    Include(Result, dpBooks);
-  end;
 end;
 
 procedure TDMCollection.RefreshData(Parts: TDataParts);
