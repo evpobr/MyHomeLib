@@ -364,10 +364,11 @@ begin
   FBooks := TABSQuery.Create(FCollection.DBCollection);
   FBooks.DatabaseName := FCollection.DBCollection.DatabaseName;
   FBooks.SQL.Text := CreateSQL(Mode, Filter, SearchCriteria);
-{$IFDEF DEBUG}
-  FBooks.SQL.SaveToFile(Settings.AppPath + 'Last.sql');
-{$ENDIF}
+  Log('TBookIteratorImpl >> ' + FBooks.SQL.Text);
+  FBooks.ReadOnly := True;
+  FBooks.RequestLive := True;
   FBooks.Active := True;
+  Log('TBookIteratorImpl done');
 
   FBookID := FBooks.FieldByName(BOOK_ID_FIELD) as TIntegerField;
 end;
@@ -568,10 +569,11 @@ begin
   FAuthors := TABSQuery.Create(FCollection.DBCollection);
   FAuthors.DatabaseName := FCollection.DBCollection.DatabaseName;
   FAuthors.SQL.Text := CreateSQL(Mode, Filter);
-{$IFDEF DEBUG}
-  FAuthors.SQL.SaveToFile(Settings.AppPath + 'Last.sql');
-{$ENDIF}
+  Log('TAuthorIteratorImpl >> ' + FAuthors.SQL.Text);
+  FAuthors.ReadOnly := True;
+  FAuthors.RequestLive := True;
   FAuthors.Active := True;
+  Log('TAuthorIteratorImpl done ');
 
   FAuthorID := FAuthors.FieldByName(AUTHOR_ID_FIELD) as TIntegerField;
 end;
@@ -614,10 +616,10 @@ begin
     amAll:
       Result := 'SELECT a.' + AUTHOR_ID_FIELD + ' FROM Authors a ';
     amByBook:
-      Result := 'SELECT DISTINCT a.' + AUTHOR_ID_FIELD + ' FROM Authors a INNER JOIN Author_List al ON a.' + AUTHOR_ID_FIELD + ' = al.' + AUTHOR_ID_FIELD + ' ';
+      Result := 'SELECT a.' + AUTHOR_ID_FIELD + ' FROM Authors a INNER JOIN Author_List al ON a.' + AUTHOR_ID_FIELD + ' = al.' + AUTHOR_ID_FIELD + ' ';
     amFullFilter:
     begin
-      Result := 'SELECT DISTINCT a.' + AUTHOR_ID_FIELD + ' FROM Authors a ';
+      Result := 'SELECT a.' + AUTHOR_ID_FIELD + ' FROM Authors a ';
       if FCollection.FHideDeleted or FCollection.FShowLocalOnly then
       begin
         Result := Result + ' INNER JOIN Author_List al ON a.' + AUTHOR_ID_FIELD + ' = al.' + AUTHOR_ID_FIELD + ' INNER JOIN Books b ON al.' + BOOK_ID_FIELD + ' = b.' + BOOK_ID_FIELD + ' ';
@@ -652,10 +654,11 @@ begin
   FGenres := TABSQuery.Create(FCollection.DBCollection);
   FGenres.DatabaseName := FCollection.DBCollection.DatabaseName;
   FGenres.SQL.Text := CreateSQL(Mode, Filter);
-{$IFDEF DEBUG}
-  FGenres.SQL.SaveToFile(Settings.AppPath + 'Last.sql');
-{$ENDIF}
+  Log('TGenreIteratorImpl >> ' + FGenres.SQL.Text);
+  FGenres.ReadOnly := True;
+  FGenres.RequestLive := True;
   FGenres.Active := True;
+  Log('TGenreIteratorImpl done ');
 
   FGenreCode := FGenres.FieldByName(GENRE_CODE_FIELD) as TWideStringField;
 end;
@@ -1497,7 +1500,7 @@ begin
       oldSerie := Format('= %u', [NewSerieID]);
 
     Query.SQL.Text := Format(UPDATE_SQL, [newSerie, oldSerie]);
-
+    Log(Query.SQL.Text);
     Query.ExecSQL;
   finally
     FreeAndNil(Query);

@@ -410,9 +410,8 @@ begin
   FBooks := TABSQuery.Create(FUser.DBUser);
   FBooks.DatabaseName := FUser.DBUser.DatabaseName;
   FBooks.SQL.Text := CreateSQL(Filter);
-{$IFDEF DEBUG}
-  FBooks.SQL.SaveToFile(Settings.AppPath + 'Last.sql');
-{$ENDIF}
+  Log(FBooks.SQL.Text);
+  FBooks.ReadOnly := True;
   FBooks.Active := True;
 
   FBookID := FBooks.FieldByName(BOOK_ID_FIELD) as TIntegerField;
@@ -466,9 +465,8 @@ begin
   FGroups := TABSQuery.Create(FUser.DBUser);
   FGroups.DatabaseName := FUser.DBUser.DatabaseName;
   FGroups.SQL.Text := CreateSQL;
-{$IFDEF DEBUG}
-  FGroups.SQL.SaveToFile(Settings.AppPath + 'Last.sql');
-{$ENDIF}
+  Log(FGroups.SQL.Text);
+  FGroups.ReadOnly := True;
   FGroups.Active := True;
 
   FGroupID := FGroups.FieldByName(GROUP_ID_FIELD) as TIntegerField;
@@ -758,9 +756,11 @@ begin
 
     // Delete books from groups by DatabaseID:
     Query.SQL.Text := Format(DELETE_REL_QUERY, [CollectionID]);
+    Log(Query.SQL.Text);
     Query.ExecSQL;
 
     Query.SQL.Text := Format(DELETE_BOOKS_QUERY, [CollectionID]);
+    Log(Query.SQL.Text);
     Query.ExecSQL;
   finally
     FreeAndNil(Query);
@@ -901,9 +901,11 @@ begin
     Query.DatabaseName := DBUser.DatabaseName;
 
     Query.SQL.Text := Format(SQL_DELETE_FROM_BOOK_GROUPS, [BookKey.BookID, BookKey.DatabaseID]);
+    Log(Query.SQL.Text);
     Query.ExecSQL;
 
     Query.SQL.Text := Format(SQL_DELETE_FROM_BOOKS, [BookKey.BookID, BookKey.DatabaseID]);
+    Log(Query.SQL.Text);
     Query.ExecSQL;
   finally
     FreeAndNil(Query);
@@ -1108,6 +1110,7 @@ begin
     try
       Query.DatabaseName := DBUser.DatabaseName;
       Query.SQL.Text := Format(UPDATE_SQL, [newSerie, DatabaseID, oldSerie]);
+      Log(Query.SQL.Text);
       Query.ExecSQL;
     finally
       FreeAndNil(Query);
@@ -1367,6 +1370,7 @@ begin
   try
     Query.DatabaseName := DBUser.DatabaseName;
     Query.SQL.Text := SQL;
+    Log(Query.SQL.Text);
     Query.ExecSQL;
   finally
     FreeAndNil(Query);
