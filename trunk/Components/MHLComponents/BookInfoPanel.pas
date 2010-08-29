@@ -34,7 +34,7 @@ type
     FTitle: TLabel;
     FAuthors: TMHLLinkLabel;
     FSerieLabel: TLabel;
-    FSerie: TMHLLinkLabel;
+    FSeries: TMHLLinkLabel;
     FGenreLabel: TLabel;
     FGenres: TMHLLinkLabel;
     FAnnotation: TMemo;
@@ -61,7 +61,7 @@ type
     procedure SetBookInfo(
       const BookTitle: string;
       const Autors: string;
-      const Serie: string;
+      const Series: string;
       const Genres: string
     );
 
@@ -198,10 +198,10 @@ begin
   FSerieLabel.AutoSize := False;
   FSerieLabel.Font.Style := [fsBold];
 
-  FSerie := TMHLLinkLabel.Create(FInfoPanel);
-  FSerie.Parent := FInfoPanel;
-  FSerie.UseVisualStyle := True;
-  FSerie.OnLinkClick := OnLinkClicked;
+  FSeries := TMHLLinkLabel.Create(FInfoPanel);
+  FSeries.Parent := FInfoPanel;
+  FSeries.UseVisualStyle := True;
+  FSeries.OnLinkClick := OnLinkClicked;
 
   FGenreLabel := TLabel.Create(FInfoPanel);
   FGenreLabel.Parent := FInfoPanel;
@@ -231,13 +231,13 @@ begin
   begin
     FTitle.Caption := 'Название книги';
     FAuthors.Caption := '<a>Автор книги</a> <a>Автор книги</a>';
-    FSerie.Caption := '<a>Название серии</a>';
+    FSeries.Caption := '<a>Название серии</a>';
     FGenres.Caption := '<a>Название жанра</a> <a>Название жанра</a> <a>Название жанра</a>';
   end;
 
   FTitle.SetBounds(0, 0, 300, 20);
   FAuthors.SetBounds(0, 20, 300, 20);
-  FSerieLabel.SetBounds(0, 40, 70, 20);  FSerie.SetBounds(70, 40, 140, 20);
+  FSerieLabel.SetBounds(0, 40, 70, 20);  FSeries.SetBounds(70, 40, 140, 20);
   FGenreLabel.SetBounds(0, 60, 70, 20);  FGenres.SetBounds(70, 60, 140, 20);
   FAnnotation.SetBounds(0, 80, 300, 120);
 
@@ -260,7 +260,7 @@ begin
     if Assigned(FOnAuthorLinkClicked) then
       FOnAuthorLinkClicked(Self, Link, LinkType);
   end
-  else if Sender = FSerie then
+  else if Sender = FSeries then
   begin
     if Assigned(FOnSerieLinkClicked) then
       FOnSerieLinkClicked(Self, Link, LinkType);
@@ -277,13 +277,13 @@ end;
 procedure TInfoPanel.SetBookInfo(
   const BookTitle: string;
   const Autors: string;
-  const Serie: string;
+  const Series: string;
   const Genres: string
 );
 begin
   FTitle.Caption := BookTitle;
   FAuthors.Caption := Autors;
-  FSerie.Caption := Serie;
+  FSeries.Caption := Series;
   FGenres.Caption := Genres;
 end;
 
@@ -312,7 +312,7 @@ procedure TInfoPanel.Clear;
 begin
   FTitle.Caption := '';
   FAuthors.Caption := '';
-  FSerie.Caption := '';
+  FSeries.Caption := '';
   FGenres.Caption := '';
   FAnnotation.Lines.Clear;
   FCover.Picture.Assign(nil);
