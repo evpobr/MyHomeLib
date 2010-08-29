@@ -172,7 +172,7 @@ const
   //
   SF_AUTHORS = 'Authors';
   SF_TITLE = 'Title';
-  SF_SERIE = 'Serie';
+  SF_SERIES = 'Series';
   SF_GENRE_TITLE = 'Genres';
   SF_GENRE_CODES = 'GenreCodes';
   SF_ANNOTATION = 'Annotation';
@@ -224,8 +224,8 @@ const
 
   DB_ID_FIELD = 'DatabaseID';
 
-  SERIE_ID_FIELD = 'SerieID';
-  SERIE_TITLE_FIELD = 'SerieTitle';
+  SERIES_ID_FIELD = 'SeriesID';
+  SERIES_TITLE_FIELD = 'SeriesTitle';
 
   GENRE_CODE_FIELD = 'GenreCode';
   GENRE_PARENTCODE_FIELD = 'ParentCode';
@@ -249,7 +249,7 @@ const
   AUTHOR_FULLNAME_FIELDS = AUTHOR_LASTTNAME_FIELD + ';' + AUTHOR_FIRSTNAME_FIELD + ';' + AUTHOR_MIDDLENAME_FIELD;
   AUTHOR_ID_BOOK_ID_FIELDS = AUTHOR_ID_FIELD + ';' + BOOK_ID_FIELD;
 
-  SERIE_ID_SEQNUMBER_FIELDS = SERIE_ID_FIELD + ';' + BOOK_SEQNUMBER_FIELD;
+  SERIE_ID_SEQNUMBER_FIELDS = SERIES_ID_FIELD + ';' + BOOK_SEQNUMBER_FIELD;
 
   GENRE_PARENTCODE_CODE_FIELDS = GENRE_PARENTCODE_FIELD + ';' + GENRE_CODE_FIELD;
   GENRE_CODE_BOOK_ID_FIELDS = GENRE_CODE_FIELD + ';' + BOOK_ID_FIELD;
@@ -283,8 +283,8 @@ const
   //
   LAST_AUTHOR_ID = 'lastAuthorID';
   LAST_AUTHOR_BOOK_ID = 'lastAuthorBookID';
-  LAST_SERIE_ID = 'lastSerieID';
-  LAST_SERIE_BOOK_ID = 'lastSerieBookID';
+  LAST_SERIEs_ID = 'lastSeriesID';
+  LAST_SERIES_BOOK_ID = 'lastSerieBookID';
 
 type
   TColumnSet = set of 0 .. 255;

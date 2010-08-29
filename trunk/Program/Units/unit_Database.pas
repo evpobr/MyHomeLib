@@ -104,7 +104,7 @@ type
     FBookBookID: TIntegerField;
     FBookLibID: TIntegerField;
     FBookTitle: TWideStringField;
-    FBookSerieID: TIntegerField;
+    FBookSeriesID: TIntegerField;
     FBookSeqNumber: TSmallintField;
     FBookDate: TDateField;
     FBookLibRate: TIntegerField;
@@ -124,8 +124,8 @@ type
     FBookReview: TWideMemoField;
 
     FSeries: TABSTable;
-    FSeriesSerieID: TIntegerField;
-    FSeriesSerieTitle: TWideStringField;
+    FSeriesSeriesID: TIntegerField;
+    FSeriesSeriesTitle: TWideStringField;
 
     FGenres: TABSTable;
     FGenresGenreCode: TWideStringField;
@@ -234,7 +234,7 @@ BooksTableFields: array [1 .. 21] of TFieldDesc = (
   (Name: BOOK_ID_FIELD;         DataType: ftAutoInc;     Size: 0;   Required: True),
   (Name: BOOK_LIBID_FIELD;      DataType: ftInteger;     Size: 0;   Required: False),
   (Name: BOOK_TITLE_FIELD;      DataType: ftWideString;  Size: 150; Required: False),
-  (Name: SERIE_ID_FIELD;        DataType: ftInteger;     Size: 0;   Required: False),
+  (Name: SERIES_ID_FIELD;        DataType: ftInteger;     Size: 0;   Required: False),
   (Name: BOOK_SEQNUMBER_FIELD;  DataType: ftSmallInt;    Size: 0;   Required: False),
   (Name: BOOK_DATE_FIELD;       DataType: ftDate;        Size: 0;   Required: False),
   (Name: BOOK_LIBRATE_FIELD;    DataType: ftInteger;     Size: 0;   Required: False),
@@ -276,13 +276,13 @@ BooksTableBlobs: array [1 .. 2] of TBLOBFieldDesc = (
 // Series
 //
 SeriesTableFields: array [1 .. 2] of TFieldDesc = (
-  (Name: SERIE_ID_FIELD;    DataType: ftAutoInc;    Size: 0;  Required: True),
-  (Name: SERIE_TITLE_FIELD; DataType: ftWideString; Size: 80; Required: True)
+  (Name: SERIES_ID_FIELD;    DataType: ftAutoInc;    Size: 0;  Required: True),
+  (Name: SERIES_TITLE_FIELD; DataType: ftWideString; Size: 80; Required: True)
 );
 
 SeriesTableIndexes: array [1 .. 2] of TIndexDesc = (
-  (Name: 'ID_Index';        Fields: SERIE_ID_FIELD;    Options: [ixPrimary]),
-  (Name: 'SerieTitleIndex'; Fields: SERIE_TITLE_FIELD; Options: [ixCaseInsensitive])
+  (Name: 'ID_Index';        Fields: SERIES_ID_FIELD;    Options: [ixPrimary]),
+  (Name: 'SeriesTitleIndex'; Fields: SERIES_TITLE_FIELD; Options: [ixCaseInsensitive])
 );
 
 //
@@ -389,7 +389,7 @@ GroupsTableFields: array [1 .. 23] of TFieldDesc = (
   (Name: DB_ID_FIELD;          DataType: ftInteger;    Size: 0;   Required: True),
   (Name: BOOK_LIBID_FIELD;     DataType: ftInteger;    Size: 0;   Required: False),
   (Name: BOOK_TITLE_FIELD;     DataType: ftWideString; Size: 150; Required: False),
-  (Name: SERIE_ID_FIELD;       DataType: ftInteger;    Size: 0;   Required: False),
+  (Name: SERIES_ID_FIELD;       DataType: ftInteger;    Size: 0;   Required: False),
   (Name: BOOK_SEQNUMBER_FIELD; DataType: ftSmallInt;   Size: 0;   Required: False),
   (Name: BOOK_DATE_FIELD;      DataType: ftDate;       Size: 0;   Required: False),
   (Name: BOOK_LIBRATE_FIELD;   DataType: ftInteger;    Size: 0;   Required: False),
@@ -563,7 +563,7 @@ begin
     FBookBookID := FBooks.FieldByName(BOOK_ID_FIELD) as TIntegerField;
     FBookLibID := FBooks.FieldByName(BOOK_LIBID_FIELD) as TIntegerField;
     FBookTitle := FBooks.FieldByName(BOOK_TITLE_FIELD) as TWideStringField;
-    FBookSerieID := FBooks.FieldByName(SERIE_ID_FIELD) as TIntegerField;
+    FBookSeriesID := FBooks.FieldByName(SERIES_ID_FIELD) as TIntegerField;
     FBookSeqNumber := FBooks.FieldByName(BOOK_SEQNUMBER_FIELD) as TSmallintField;
     FBookDate := FBooks.FieldByName(BOOK_DATE_FIELD) as TDateField;
     FBookLibRate := FBooks.FieldByName(BOOK_LIBRATE_FIELD) as TIntegerField;
@@ -582,8 +582,8 @@ begin
     FBookAnnotation := FBooks.FieldByName(BOOK_ANNOTATION_FIELD) as TWideMemoField;
     FBookReview := FBooks.FieldByName(BOOK_REVIEW_FIELD) as TWideMemoField;
 
-    FSeriesSerieID := FSeries.FieldByName(SERIE_ID_FIELD) as TIntegerField;
-    FSeriesSerieTitle := FSeries.FieldByName(SERIE_TITLE_FIELD) as TWideStringField;
+    FSeriesSeriesID := FSeries.FieldByName(SERIES_ID_FIELD) as TIntegerField;
+    FSeriesSeriesTitle := FSeries.FieldByName(SERIES_TITLE_FIELD) as TWideStringField;
 
     FGenresGenreCode := FGenres.FieldByName(GENRE_CODE_FIELD) as TWideStringField;
     FGenresParentCode := FGenres.FieldByName(GENRE_PARENTCODE_FIELD) as TWideStringField;
@@ -609,7 +609,7 @@ begin
     FBookBookID := nil;
     FBookLibID := nil;
     FBookTitle := nil;
-    FBookSerieID := nil;
+    FBookSeriesID := nil;
     FBookSeqNumber := nil;
     FBookDate := nil;
     FBookLibRate := nil;
@@ -628,8 +628,8 @@ begin
     FBookAnnotation := nil;
     FBookReview := nil;
 
-    FSeriesSerieID := nil;
-    FSeriesSerieTitle := nil;
+    FSeriesSeriesID := nil;
+    FSeriesSeriesTitle := nil;
 
     FGenresGenreCode := nil;
     FGenresParentCode := nil;
@@ -996,24 +996,24 @@ begin
   //
   // создадим отсутствующую серию
   //
-  if NO_SERIES_TITLE = BookRecord.Serie then
+  if NO_SERIES_TITLE = BookRecord.Series then
   begin
-    BookRecord.SerieID := NO_SERIE_ID;
+    BookRecord.SeriesID := NO_SERIE_ID;
   end
   else
   begin
-    if not FSeries.Locate(SERIE_TITLE_FIELD, BookRecord.Serie, [loCaseInsensitive]) then
+    if not FSeries.Locate(SERIES_TITLE_FIELD, BookRecord.Series, [loCaseInsensitive]) then
     begin
       FSeries.Append;
       try
-        FSeriesSerieTitle.Value := BookRecord.Serie;
+        FSeriesSeriesTitle.Value := BookRecord.Series;
         FSeries.Post;
       except
         FSeries.Cancel;
         raise;
       end;
     end;
-    BookRecord.SerieID := FSeriesSerieID.AsInteger;
+    BookRecord.SeriesID := FSeriesSeriesID.AsInteger;
   end;
 
   //
@@ -1036,9 +1036,9 @@ begin
     try
       FBookLibID.Value := BookRecord.LibID;
       FBookTitle.Value := BookRecord.Title;
-      if NO_SERIE_ID <> BookRecord.SerieID then
+      if NO_SERIE_ID <> BookRecord.SeriesID then
       begin
-        FBookSerieID.Value := BookRecord.SerieID;
+        FBookSeriesID.Value := BookRecord.SeriesID;
         FBookSeqNumber.Value := BookRecord.SeqNumber;
       end;
       FBookDate.Value := BookRecord.Date;
@@ -1087,13 +1087,13 @@ end;
 
 procedure TMHLLibrary.DeleteBook(const BookKey: TBookKey);
 var
-  SerieID: Integer;
+  SeriesID: Integer;
 begin
   CheckActive;
 
   if FBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
   begin
-    SerieID := FBookSerieID.Value;
+    SeriesID := FBookSeriesID.Value;
     FBooks.Delete;
 
     { TODO -oNickR : Заменить эти вызовы на DELETE FROM query }
@@ -1104,16 +1104,16 @@ begin
       FAuthorList.Delete;
 
     //
-    // Если книга входила в серию (SerieID <> 1) проверим, не пора ли удалить серию.
+    // Если книга входила в серию (SeriesID <> 1) проверим, не пора ли удалить серию.
     //
-    if SerieID <> NO_SERIE_ID then
+    if SeriesID <> NO_SERIE_ID then
     begin
-      if not FBooks.Locate(SERIE_ID_FIELD, SerieID, []) then
+      if not FBooks.Locate(SERIES_ID_FIELD, SeriesID, []) then
       begin
         //
         // Больше книг из этой серии нет => удалим серию
         //
-        FSeries.Locate(SERIE_ID_FIELD, SerieID, []);
+        FSeries.Locate(SERIES_ID_FIELD, SeriesID, []);
         FSeries.Delete;
       end;
     end;
@@ -1171,7 +1171,7 @@ begin
   FSeries.First;
   while not FSeries.Eof do
   begin
-    SeriesList.Add(FSeriesSerieTitle.Value);
+    SeriesList.Add(FSeriesSeriesTitle.Value);
     FSeries.Next;
   end;
 end;

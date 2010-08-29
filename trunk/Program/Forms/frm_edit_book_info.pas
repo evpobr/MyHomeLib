@@ -132,7 +132,7 @@ begin
       DMCollection.Series.First;
       while not DMCollection.Series.Eof do
       begin
-        cbSeries.Items.Add(DMCollection.Series[SERIE_TITLE_FIELD]);
+        cbSeries.Items.Add(DMCollection.Series[SERIES_TITLE_FIELD]);
         DMCollection.Series.Next;
       end;
     finally
@@ -168,7 +168,7 @@ begin
   lblGenre.Text := TGenresHelper.GetList(FBookRecord.Genres);
 
   edT.Text := FBookRecord.Title;
-  cbSeries.Text := FBookRecord.Serie;
+  cbSeries.Text := FBookRecord.Series;
   edSN.Text := IntToStr(FBookRecord.SeqNumber);
   edKeyWords.Text := FBookRecord.KeyWords;
   cbLang.Text := FBookRecord.Lang;
@@ -298,7 +298,7 @@ begin
   FBookRecord.ClearAuthors;
   for i := 0 to lvAuthors.Items.Count - 1 do
     TAuthorsHelper.Add(FBookRecord.Authors, lvAuthors.Items[i].Caption, lvAuthors.Items[i].SubItems[0], lvAuthors.Items[i].SubItems[1]);
-  FBookRecord.Serie := cbSeries.Text;
+  FBookRecord.Series := cbSeries.Text;
   FBookRecord.SeqNumber := StrToIntDef(edSN.Text, 0);
   FBookRecord.KeyWords := edKeyWords.Text;
   FBookRecord.Lang := cbLang.Text;

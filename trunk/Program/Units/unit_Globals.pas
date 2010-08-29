@@ -121,6 +121,10 @@ type
     gmByBook     // Genres by book id
   );
 
+  TSeriesIteratorMode = (
+    smAll       // All series
+  );
+
   TBookFormat = (
     bfFb2,    // A pure FB2 file
     bfFb2Zip, // An FB2 packed in a ZIP
@@ -189,10 +193,10 @@ type
   end;
 
   // --------------------------------------------------------------------------
-  PSerieData = ^TSerieData;
-  TSerieData = record
-    SerieID: Integer;
-    SerieTitle: string;
+  PSeriesData = ^TSeriesData;
+  TSeriesData = record
+    SeriesID: Integer;
+    SeriesTitle: string;
   end;
 
   // --------------------------------------------------------------------------
@@ -248,9 +252,9 @@ type
   TBookRecord = record
     nodeType: TBookNodeType;
     BookKey: TBookKey;
-    SerieID: Integer;
+    SeriesID: Integer;
     Title: string;
-    Serie: string;
+    Series: string;
     Genres: TBookGenres;
     Authors: TBookAuthors;
     CollectionName: string;
@@ -332,15 +336,18 @@ type
     function GetNumRecords: Integer;
   end;
 
-  // --------------------------------------------------------------------------
   IAuthorIterator = interface
     function Next(out AuthorData: TAuthorData): Boolean;
     function GetNumRecords: Integer;
   end;
 
-  // --------------------------------------------------------------------------
   IGenreIterator = interface
     function Next(out GenreData: TGenreData): Boolean;
+    function GetNumRecords: Integer;
+  end;
+
+  ISeriesIterator = interface
+    function Next(out SerieData: TSeriesData): Boolean;
     function GetNumRecords: Integer;
   end;
 
@@ -902,8 +909,8 @@ procedure TBookRecord.Clear;
 begin
   Title := '';
 
-  SerieID := NO_SERIE_ID;
-  Serie := NO_SERIES_TITLE;
+  SeriesID := NO_SERIE_ID;
+  Series := NO_SERIES_TITLE;
 
   Folder := '';
   FileName := '';
@@ -1440,10 +1447,14 @@ begin
   FileName := Settings.AppPath + 'MyHomeLib.log';
   AssignFile(LogFile, FileName);
   if FileExists(FileName) then
+  begin
     Append(LogFile)
+  end
   else
     ReWrite(LogFile);
   try
+    if FileSize(LogFile) >= 10000 then
+      ReWrite(LogFile);       // No more than 10000 lines
     WriteLn(LogFile, FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now) + '> ' + Text);
   finally
     CloseFile(LogFile);

@@ -264,8 +264,8 @@ begin
     strAuthors                           + INPX_FIELD_DELIMITER + // 0 - authors list
     strGenres                            + INPX_FIELD_DELIMITER + // 1 - genres list
     Trim(R.Title)                        + INPX_FIELD_DELIMITER + // 2 - book title
-    Trim(R.Serie)                        + INPX_FIELD_DELIMITER + // 3 - book serie title
-    IntToStr(R.SeqNumber)                + INPX_FIELD_DELIMITER + // 4 - book serie no
+    Trim(R.Series)                        + INPX_FIELD_DELIMITER + // 3 - book series' title
+    IntToStr(R.SeqNumber)                + INPX_FIELD_DELIMITER + // 4 - book series' no
     CheckSymbols(Trim(R.FileName))       + INPX_FIELD_DELIMITER + // 5 - book filename
     IntToStr(R.Size)                     + INPX_FIELD_DELIMITER + // 6 - unpacked book filesize
     IntToStr(R.LibID)                    + INPX_FIELD_DELIMITER + // 7 - book LibID

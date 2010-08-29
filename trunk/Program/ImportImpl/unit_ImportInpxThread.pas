@@ -252,7 +252,7 @@ begin
           R.Title := slParams[i]; // Название
 
         flSeries:
-          R.Serie := slParams[i]; // Серия
+          R.Series := slParams[i]; // Серия
 
         flSerNo:
           R.SeqNumber := StrToIntDef(slParams[i], 0); // Номер внутри серии

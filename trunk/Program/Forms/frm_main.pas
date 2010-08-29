@@ -886,8 +886,8 @@ type
     //
     FLastAuthorID: Integer;
     FLastAuthorBookID: TBookKey;
-    FLastSerieID: Integer;
-    FLastSerieBookID: TBookKey;
+    FLastSeriesID: Integer;
+    FLastSeriesBookID: TBookKey;
     FLastGenreCode: string;
     FLastGenreIsContainer: Boolean;
     FLastGenreBookID: TBookKey;
@@ -1353,7 +1353,7 @@ WHERE
 
 intersect
 
-SELECT DISTINCT B1."BookID", B1."SerieID"
+SELECT DISTINCT B1."BookID", B1."SeriesID"
 FROM "Books" B1
  INNER JOIN "Genre_List"  G5 ON (B1."BookID" = G5."BookID")
  INNER JOIN "Genres"      G6 ON (G5."GenreCode" = G6."GenreCode")
@@ -1362,15 +1362,15 @@ WHERE
 
 intersect
 
-SELECT DISTINCT B1."BookID", B1."SerieID"
+SELECT DISTINCT B1."BookID", B1."SeriesID"
 FROM "Books" B1
- INNER JOIN "Series"      S7 ON (B1."SerieID" = S7."SerieID")
+ INNER JOIN "Series"      S7 ON (B1."SeriesID" = S7."SeriesID")
 WHERE
-  (UPPER(S7.SerieTitle) LIKE "ИЗ%")
+  (UPPER(S7.SeriesTitle) LIKE "ИЗ%")
 
 intersect
 
-SELECT DISTINCT B1."BookID", B1."SerieID"
+SELECT DISTINCT B1."BookID", B1."SeriesID"
 FROM "Books" B1
 WHERE
   (UPPER(b1.Title) LIKE "Д%")
@@ -1493,8 +1493,8 @@ begin
     FLastAuthorID := MHL_INVALID_ID;
     FLastAuthorBookID.Clear;
 
-    FLastSerieID := MHL_INVALID_ID;
-    FLastSerieBookID.Clear;
+    FLastSeriesID := MHL_INVALID_ID;
+    FLastSeriesBookID.Clear;
 
     FLastGenreCode := '';
     FLastGenreIsContainer := False;
@@ -1647,7 +1647,7 @@ begin
     DMCollection.SetTableState(True);
 
     FillAuthorTree(tvAuthors, DMCollection.GetAuthorIterator(amFullFilter), FLastAuthorID);
-    FillSeriesTree(tvSeries, FLastSerieID);
+    FillSeriesTree(tvSeries, FLastSeriesID);
     FillGenresTree(tvGenres, False, FLastGenreCode);
     FillGroupsList(tvGroups, FLastGroupID);
   finally
@@ -2018,7 +2018,7 @@ begin
 
     case Page of
       0: FillBooksTree(tvBooksA,  DMCollection.GetBookIterator(bmByAuthor, False, AuthorBookFilter), False, True, @FLastAuthorBookID);  // авторы
-      1: FillBooksTree(tvBooksS,  DMCollection.GetBookIterator(bmBySeries, False, SeriesBookFilter), False, False, @FLastSerieBookID); // серии
+      1: FillBooksTree(tvBooksS,  DMCollection.GetBookIterator(bmBySeries, False, SeriesBookFilter), False, False, @FLastSeriesBookID); // серии
       2: FillBooksTree(tvBooksG,  DMCollection.GetBookIterator(bmByGenre, False, GenreBookFilter),  True,  True, @FLastGenreBookID);      // жанры
       3: FillBooksTree(tvBooksSR, DMCollection.GetBookIterator(False, FSearchCriteria), True,  True, nil);  // поиск
       4: FillBooksTree(tvBooksF,  DMUser.GetBookIterator(GroupBookFIlter), True,  True, @FLastGroupBookID);  // избранное
@@ -2099,7 +2099,7 @@ begin
   Screen.Cursor := crHourGlass;
   try
     FillBooksTree(tvBooksA, DMCollection.GetBookIterator(bmByAuthor, False, AuthorBookFilter), False, True, @FLastAuthorBookID);  // авторы
-    FillBooksTree(tvBooksS, DMCollection.GetBookIterator(bmBySeries, False, SeriesBookFilter), False, False, @FLastSerieBookID); // серии
+    FillBooksTree(tvBooksS, DMCollection.GetBookIterator(bmBySeries, False, SeriesBookFilter), False, False, @FLastSeriesBookID); // серии
     FillBooksTree(tvBooksG, DMCollection.GetBookIterator(bmByGenre, False, GenreBookFilter),   True,  True, @FLastGenreBookID);  // жанры
     FillBooksTree(tvBooksF, DMUser.GetBookIterator(GroupBookFIlter), True,  True, @FLastGroupBookID);  // избранное
   finally
@@ -2333,8 +2333,8 @@ begin
   FLastAuthorID := MHL_INVALID_ID;
   FLastAuthorBookID.Clear;
 
-  FLastSerieID := MHL_INVALID_ID;
-  FLastSerieBookID.Clear;
+  FLastSeriesID := MHL_INVALID_ID;
+  FLastSeriesBookID.Clear;
 
   FLastGenreCode := '';
   FLastGenreIsContainer := False;
@@ -2481,7 +2481,7 @@ end;
 procedure TfrmMain.UpdatePositions;
 var
   AuthorData: PAuthorData;
-  SerieData: PSerieData;
+  SerieData: PSeriesData;
   GenreData: PGenreData;
   GroupData: PGroupData;
   //BookData: PBookRecord;
@@ -2497,13 +2497,13 @@ begin
   end;
 
   SerieData := tvSeries.GetNodeData(tvSeries.GetFirstSelected);
-  if not Assigned(SerieData) or (FLastSerieID <> SerieData^.SerieID) then
+  if not Assigned(SerieData) or (FLastSeriesID <> SerieData^.SeriesID) then
   begin
     if Assigned(SerieData) then
-      FLastSerieID := SerieData^.SerieID
+      FLastSeriesID := SerieData^.SeriesID
     else
-      FLastSerieID := MHL_INVALID_ID;
-    FLastSerieBookID.Clear;
+      FLastSeriesID := MHL_INVALID_ID;
+    FLastSeriesBookID.Clear;
   end;
 
   GenreData := tvGenres.GetNodeData(tvGenres.GetFirstSelected);
@@ -2575,7 +2575,7 @@ begin
     COL_TITLE:
       Result := Data^.Title;
     COL_SERIES:
-      Result := Data^.Serie;
+      Result := Data^.Series;
     COL_NO:
       Result := IfThen(Data^.SeqNumber = 0, '', IntToStr(Data^.SeqNumber));
     COL_SIZE:
@@ -2618,7 +2618,7 @@ begin
       ntSeriesInfo:
         begin
           if GetTreeTag(Sender, Column) = COL_TITLE then
-            CellText := rstrSingleSeries + Data^.Serie;
+            CellText := rstrSingleSeries + Data^.Series;
         end;
 
       ntBookInfo:
@@ -2763,7 +2763,7 @@ end;
 procedure TfrmMain.tvSeriesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
   SavedCursor: TCursor;
-  Data: PSerieData;
+  Data: PSeriesData;
 begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -2778,14 +2778,14 @@ begin
       Exit;
     end;
 
-    if FLastSerieID <> Data^.SerieID then
+    if FLastSeriesID <> Data^.SeriesID then
     begin
-      lblSeries.Caption := Data^.SerieTitle;
-      FLastSerieID := Data^.SerieID;
-      FLastSerieBookID.Clear;
+      lblSeries.Caption := Data^.SeriesTitle;
+      FLastSeriesID := Data^.SeriesID;
+      FLastSeriesBookID.Clear;
     end;
 
-    FillBooksTree(tvBooksS, DMCollection.GetBookIterator(bmBySeries, False, SeriesBookFilter), False, False, @FLastSerieBookID); // авторы
+    FillBooksTree(tvBooksS, DMCollection.GetBookIterator(bmBySeries, False, SeriesBookFilter), False, False, @FLastSeriesBookID); // авторы
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -2793,7 +2793,7 @@ end;
 
 procedure TfrmMain.FreeSerieNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
-  Data: PSerieData;
+  Data: PSeriesData;
 begin
   Data := Sender.GetNodeData(Node);
   if Assigned(Data) then
@@ -2802,17 +2802,17 @@ end;
 
 procedure TfrmMain.GetSerieNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
 begin
-  NodeDataSize := SizeOf(TSerieData);
+  NodeDataSize := SizeOf(TSeriesData);
 end;
 
 procedure TfrmMain.tvSeriesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
 var
-  Data: PSerieData;
+  Data: PSeriesData;
 begin
   Data := Sender.GetNodeData(Node);
   Assert(Assigned(Data));
 
-  CellText := Data^.SerieTitle;
+  CellText := Data^.SeriesTitle;
 end;
 
 procedure TfrmMain.tvSeriesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -3055,7 +3055,7 @@ begin
   else if Tree = tvBooksS then
   begin
     InfoPanel := ipnlSeries;
-    StoredBookKey := @FLastSerieBookID;
+    StoredBookKey := @FLastSeriesBookID;
   end
   else if Tree = tvBooksG then
   begin
@@ -3096,7 +3096,7 @@ begin
     InfoPanel.SetBookInfo(
       Data^.Title,
       TAuthorsHelper.GetLinkList(Data^.Authors),
-      Data^.Serie,
+      Data^.Series,
       TGenresHelper.GetLinkList(Data^.Genres)
     );
 
@@ -3171,14 +3171,14 @@ begin
       if Data1^.nodeType = ntAuthorInfo then
         Result := CompareStr(TAuthorsHelper.GetList(Data1^.Authors), TAuthorsHelper.GetList(Data2^.Authors))
       else if Data1^.nodeType = ntSeriesInfo then
-        Result := CompareStr(Data1^.Serie, Data2^.Serie)
+        Result := CompareStr(Data1^.Series, Data2^.Series)
       else
       begin
         Result := CompareSeqNumber(Data1^.SeqNumber, Data2^.SeqNumber);
         if Result = 0 then
           Result := CompareStr(Data1^.Title, Data2^.Title);
         if Result = 0 then
-          Result := CompareStr(Data1^.Serie, Data2^.Serie);
+          Result := CompareStr(Data1^.Series, Data2^.Series);
       end;
     end
     else
@@ -3189,7 +3189,7 @@ begin
     case (Sender as TBookTree).Header.Columns[Column].Tag of
       COL_AUTHOR:  Result := CompareStr(TAuthorsHelper.GetList(Data1^.Authors), TAuthorsHelper.GetList(Data2^.Authors));
       COL_TITLE:   Result := CompareStr(Data1^.Title, Data2^.Title);
-      COL_SERIES:  Result := CompareStr(Data1^.Serie, Data2^.Serie);
+      COL_SERIES:  Result := CompareStr(Data1^.Series, Data2^.Series);
       COL_NO:      Result := CompareSeqNumber(Data1^.SeqNumber, Data2^.SeqNumber);
       COL_SIZE:    Result := CompareInt(Data1^.Size, Data2^.Size);
       COL_RATE:    Result := CompareInt(Data1^.Rate, Data2^.Rate);
@@ -3217,7 +3217,7 @@ begin
       Color := Settings.SeriesColor;
     ntBookInfo:
       begin
-        if Data^.Serie = '' then
+        if Data^.Series = '' then
           Color := Settings.BookColor
         else
           Color := Settings.SeriesBookColor;
@@ -3848,7 +3848,7 @@ begin
     DMCollection.SetHideDeletedBook(Settings.HideDeletedBooks, True);
 
     FillAuthorTree(tvAuthors, DMCollection.GetAuthorIterator(amFullFilter), FLastAuthorID);
-    FillSeriesTree(tvSeries, FLastSerieID);
+    FillSeriesTree(tvSeries, FLastSeriesID);
     FillAllBooksTree;
   finally
     Screen.Cursor := SavedCursor;
@@ -3983,7 +3983,7 @@ begin
 
     AFilter := InternalSetSerieFilter(Button);
 
-    FillSeriesTree(tvSeries, FLastSerieID);
+    FillSeriesTree(tvSeries, FLastSeriesID);
 
     Assert(Length(AFilter) < 2);
     SetTextNoChange(edLocateSeries, AFilter);
@@ -4017,7 +4017,7 @@ begin
     DMCollection.SetShowLocalBookOnly(Settings.ShowLocalOnly, True);
 
     FillAuthorTree(tvAuthors, DMCollection.GetAuthorIterator(amFullFilter), FLastAuthorID);
-    FillSeriesTree(tvSeries, FLastSerieID);
+    FillSeriesTree(tvSeries, FLastSeriesID);
     FillAllBooksTree;
   finally
     Screen.Cursor := SavedCursor;
@@ -4206,7 +4206,7 @@ var
 
   AuthorNodes: TDictionary<string, PVirtualNode>;
 
-  SerieID: Integer;
+  SeriesID: Integer;
 
   BookRecord: TBookRecord;
   SavedCursor: TCursor;
@@ -4249,7 +4249,7 @@ begin
 
           while BookIterator.Next(BookRecord) do
           begin
-            SerieID := BookRecord.SerieID;
+            SeriesID := BookRecord.SeriesID;
 
             AuthorNode := nil;
             if ShowAuth then
@@ -4275,7 +4275,7 @@ begin
 
             if ShowSer then
             begin
-              if SerieID = NO_SERIE_ID then
+              if SeriesID = NO_SERIE_ID then
               begin
                 //
                 // книга без серии
@@ -4284,7 +4284,7 @@ begin
               end
               else
               begin
-                SerieNode := FindSeriesInTree(Tree, AuthorNode, SerieID);
+                SerieNode := FindSeriesInTree(Tree, AuthorNode, SeriesID);
                 if not Assigned(SerieNode) then
                 begin
                   //
@@ -4302,8 +4302,8 @@ begin
 
                   Initialize(Data^);
                   Data^.nodeType := ntSeriesInfo;
-                  Data^.SerieID := SerieID;
-                  Data^.Serie := BookRecord.Serie;
+                  Data^.SeriesID := SeriesID;
+                  Data^.Series := BookRecord.Series;
                   Include(SerieNode.States, vsInitialUserData);
                 end;
               end;
@@ -4384,7 +4384,7 @@ end;
 procedure TfrmMain.miCopyAuthorClick(Sender: TObject);
 var
   AuthorData: PAuthorData;
-  SerieData: PSerieData;
+  SerieData: PSeriesData;
   GenreData: PGenreData;
   strText: string;
 
@@ -4415,9 +4415,9 @@ begin
         begin
           SerieData := tvSeries.GetNodeData(Node);
           if strText = '' then
-            strText := SerieData^.SerieTitle
+            strText := SerieData^.SeriesTitle
           else
-            strText := strText + CRLF + SerieData^.SerieTitle;
+            strText := strText + CRLF + SerieData^.SeriesTitle;
           Node := tvSeries.GetNextSelected(Node);
         end;
       end;
@@ -4460,13 +4460,13 @@ begin
 
     case Data^.nodeType of
       ntSeriesInfo:
-        S := TAuthorsHelper.GetList(Data^.Authors) + '. ' + rstrSingleSeries + Data^.Serie;
+        S := TAuthorsHelper.GetList(Data^.Authors) + '. ' + rstrSingleSeries + Data^.Series;
 
       ntBookInfo:
-        if NO_SERIES_TITLE = Data^.Serie then
+        if NO_SERIES_TITLE = Data^.Series then
           S := TAuthorsHelper.GetList(Data^.Authors) + '. ' + Data^.Title
         else
-          S := TAuthorsHelper.GetList(Data^.Authors) + '. ' + rstrSingleSeries + Data^.Serie + '. ' + Data^.Title;
+          S := TAuthorsHelper.GetList(Data^.Authors) + '. ' + rstrSingleSeries + Data^.Series + '. ' + Data^.Title;
     end;
     if S = '' then
       R := S
@@ -4975,7 +4975,7 @@ var
   Node: PVirtualNode;
   AuthID: Integer;
   S: string;
-  SerieID: Integer;
+  SeriesID: Integer;
 begin
   if ActiveView = FavoritesView then
   begin
@@ -4992,19 +4992,19 @@ begin
   if IsLibRusecEdit(Data^.BookKey.BookID) then
     Exit;
 
-  S := Data^.Serie;
+  S := Data^.Series;
 
   if Data^.nodeType = ntBookInfo then // Standing on a book node, change/add series info
   begin
     if InputQuery(rstrCreateMoveSeries, rstrTitle, S) then
     begin
-      SerieID := DMCollection.AddOrLocateSerieIDBySerieTitle(S);
+      SeriesID := DMCollection.AddOrLocateSeriesIDBySeriesTitle(S);
       Node := Tree.GetFirst;
       while Assigned(Node) do
       begin
         Data := Tree.GetNodeData(Node);
         if ((Tree.CheckState[Node] = csCheckedNormal) or (Tree.Selected[Node])) then
-          DMCollection.SetBookSerieID(Data^.BookKey, SerieID);
+          DMCollection.SetBookSeriesID(Data^.BookKey, SeriesID);
         Node := Tree.GetNext(Node);
       end;
 
@@ -5016,13 +5016,13 @@ begin
     if S = NO_SERIES_TITLE then
     begin
       // Clear the series for all books in DB:
-      DMCollection.ChangeBookSerieID(Data^.SerieID, NO_SERIE_ID, DMUser.ActiveCollection.ID);
+      DMCollection.ChangeBookSeriesID(Data^.SeriesID, NO_SERIE_ID, DMUser.ActiveCollection.ID);
       FillAllBooksTree;
     end
     else
     begin
-      DMCollection.SetSerieTitle(Data^.SerieID, S);
-      Data^.Serie := S;
+      DMCollection.SetSeriesTitle(Data^.SeriesID, S);
+      Data^.Series := S;
       Tree.RepaintNode(Node);
     end;
   end;
@@ -5367,7 +5367,7 @@ end;
 
 procedure TfrmMain.EditSerieUpdate(Sender: TObject);
 var
-  Data: PSerieData;
+  Data: PSeriesData;
 begin
   //
   // нельзя редактировать данные из онлайн коллекции
@@ -5671,7 +5671,7 @@ begin
 
   preset.AddOrSetValue(SF_AUTHORS, edFFullName.Text);
   preset.AddOrSetValue(SF_TITLE, edFTitle.Text);
-  preset.AddOrSetValue(SF_SERIE, edFSeries.Text);
+  preset.AddOrSetValue(SF_SERIES, edFSeries.Text);
   preset.AddOrSetValue(SF_GENRE_TITLE, edFGenre.Text);
   preset.AddOrSetValue(SF_GENRE_CODES, edFGenre.Hint);
   preset.AddOrSetValue(SF_ANNOTATION, edFAnnotation.Text);
@@ -5717,7 +5717,7 @@ end;
 procedure TfrmMain.LocateSerie(const Text: string);
 var
   Node: PVirtualNode;
-  Data: PSerieData;
+  Data: PSeriesData;
 begin
   tvSeries.ClearSelection;
   Node := tvSeries.GetFirst;
@@ -5726,7 +5726,7 @@ begin
   begin
     Data := tvSeries.GetNodeData(Node);
     Assert(Assigned(Data));
-    if StartsText(Text, Data^.SerieTitle) then
+    if StartsText(Text, Data^.SeriesTitle) then
     begin
       tvSeries.Selected[Node] := True;
       tvSeries.FocusedNode := Node;
@@ -6804,7 +6804,7 @@ begin
 
   if preset.TryGetValue(SF_AUTHORS, Value) then edFFullName.Text := Value;
   if preset.TryGetValue(SF_TITLE, Value) then edFTitle.Text := Value;
-  if preset.TryGetValue(SF_SERIE, Value) then edFSeries.Text := Value;
+  if preset.TryGetValue(SF_SERIES, Value) then edFSeries.Text := Value;
   if preset.TryGetValue(SF_GENRE_TITLE, Value) then edFGenre.Text := Value;
   if preset.TryGetValue(SF_GENRE_CODES, Value) then edFGenre.Hint := Value;
   if preset.TryGetValue(SF_ANNOTATION, Value) then edFAnnotation.Text := Value;
@@ -7073,20 +7073,20 @@ end;
 
 function TfrmMain.AuthorBookFilter: string;
 begin
-  Result := Format('%s = %d', [AUTHOR_ID_FIELD, FLastAuthorID]);
+  Result := Format('al.%s = %d', [AUTHOR_ID_FIELD, FLastAuthorID]);
 end;
 
 function TfrmMain.SeriesBookFilter: string;
 begin
-  Result := Format('b.%s = %d', [SERIE_ID_FIELD, FLastSerieID]);
+  Result := Format('b.%s = %d', [SERIES_ID_FIELD, FLastSeriesID]);
 end;
 
 function TfrmMain.GenreBookFilter: string;
 begin
   if isFB2Collection(DMUser.ActiveCollection.CollectionType) or not Settings.ShowSubGenreBooks then
-    Result := Format('%s = %s', [GENRE_CODE_FIELD, QuotedStr(FLastGenreCode)])
+    Result := Format('gl.%s = %s', [GENRE_CODE_FIELD, QuotedStr(FLastGenreCode)])
   else
-    Result := Format('%s LIKE %s', [GENRE_CODE_FIELD, QuotedStr(FLastGenreCode + IfThen(FLastGenreIsContainer, '.%', '%'))]);
+    Result := Format('gl.%s LIKE %s', [GENRE_CODE_FIELD, QuotedStr(FLastGenreCode + IfThen(FLastGenreIsContainer, '.%', '%'))]);
 end;
 
 function TfrmMain.GroupBookFilter: string;

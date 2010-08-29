@@ -97,13 +97,13 @@ begin
       for i := 0 to High(R.Genres) do
         Genre.Add(R.Genres[i].FB2GenreCode);
 
-      if R.Serie <> '' then
+      if R.Series <> '' then
       begin
         try
           Sequence.Clear;
           S := Sequence.Add;
 
-          S.Name := R.Serie;
+          S.Name := R.Series;
           S.Number := R.SeqNumber;
         except
         end;
