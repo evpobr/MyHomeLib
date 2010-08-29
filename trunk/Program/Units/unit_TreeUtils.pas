@@ -35,7 +35,7 @@ procedure SelectBookById(Tree: TBookTree; ID: Integer);
 procedure GetSelections(Tree: TBookTree; out List: TSelectionList);
 
 procedure FillAuthorTree(Tree: TVirtualStringTree; AuthorIterator: IAuthorIterator; SelectID: Integer = MHL_INVALID_ID);
-procedure FillSeriesTree(Tree: TVirtualStringTree; SelectID: Integer = MHL_INVALID_ID);
+procedure FillSeriesTree(Tree: TVirtualStringTree; SeriesIterator: ISeriesIterator; SelectID: Integer = MHL_INVALID_ID);
 procedure FillGenresTree(Tree: TVirtualStringTree; FillFB2: Boolean = False; const SelectCode: string = '');
 procedure FillGroupsList(Tree: TVirtualStringTree; SelectID: Integer = MHL_INVALID_ID);
 
@@ -182,11 +182,12 @@ begin
   end;
 end;
 
-procedure FillSeriesTree(Tree: TVirtualStringTree; SelectID: Integer = MHL_INVALID_ID);
+procedure FillSeriesTree(Tree: TVirtualStringTree; SeriesIterator: ISeriesIterator; SelectID: Integer = MHL_INVALID_ID);
 var
   Node: PVirtualNode;
   Data: PSeriesData;
   SelectedNode: PVirtualNode;
+  SeriesData: TSeriesData;
 begin
   Tree.NodeDataSize := SizeOf(TSeriesData);
 
@@ -197,21 +198,17 @@ begin
       Tree.Clear;
       SelectedNode := nil;
 
-      DMCollection.Series.First;
-      while not DMCollection.Series.Eof do
+      while SeriesIterator.Next(SeriesData) do
       begin
         Node := Tree.AddChild(nil);
         Data := Tree.GetNodeData(Node);
 
         Initialize(Data^);
-        Data^.SeriesID := DMCollection.SeriesSeriesID.AsInteger;
-        Data^.SeriesTitle := DMCollection.SeriesTitle.AsString;
+        Data^ := SeriesData;
         Include(Node.States, vsInitialUserData);
 
         if Data^.SeriesID = SelectID then
           SelectedNode := Node;
-
-        DMCollection.Series.Next;
       end;
 
       SafeSelectNode(Tree, SelectedNode);

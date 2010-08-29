@@ -1642,12 +1642,12 @@ begin
     DMCollection.DBCollection.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
     DMCollection.DBCollection.Connected := True;
 
-    DMCollection.SetShowLocalBookOnly(IsOnline and Settings.ShowLocalOnly, False);
-    DMCollection.SetHideDeletedBook((not IsPrivate) and Settings.HideDeletedBooks, False);
+    DMCollection.SetShowLocalBookOnly(IsOnline and Settings.ShowLocalOnly);
+    DMCollection.SetHideDeletedBook((not IsPrivate) and Settings.HideDeletedBooks);
     DMCollection.SetTableState(True);
 
     FillAuthorTree(tvAuthors, DMCollection.GetAuthorIterator(amFullFilter), FLastAuthorID);
-    FillSeriesTree(tvSeries, FLastSeriesID);
+    FillSeriesTree(tvSeries, DMCollection.GetSeriesIterator(smFullFilter), FLastSeriesID);
     FillGenresTree(tvGenres, False, FLastGenreCode);
     FillGroupsList(tvGroups, FLastGroupID);
   finally
@@ -3845,10 +3845,10 @@ begin
 
     Settings.HideDeletedBooks := not Settings.HideDeletedBooks;
 
-    DMCollection.SetHideDeletedBook(Settings.HideDeletedBooks, True);
+    DMCollection.SetHideDeletedBook(Settings.HideDeletedBooks);
 
     FillAuthorTree(tvAuthors, DMCollection.GetAuthorIterator(amFullFilter), FLastAuthorID);
-    FillSeriesTree(tvSeries, FLastSeriesID);
+    FillSeriesTree(tvSeries, DMCollection.GetSeriesIterator(smFullFilter), FLastSeriesID);
     FillAllBooksTree;
   finally
     Screen.Cursor := SavedCursor;
@@ -3983,7 +3983,7 @@ begin
 
     AFilter := InternalSetSerieFilter(Button);
 
-    FillSeriesTree(tvSeries, FLastSeriesID);
+    FillSeriesTree(tvSeries, DMCollection.GetSeriesIterator(smFullFilter), FLastSeriesID);
 
     Assert(Length(AFilter) < 2);
     SetTextNoChange(edLocateSeries, AFilter);
@@ -4014,10 +4014,10 @@ begin
 
     Settings.ShowLocalOnly := not Settings.ShowLocalOnly;
 
-    DMCollection.SetShowLocalBookOnly(Settings.ShowLocalOnly, True);
+    DMCollection.SetShowLocalBookOnly(Settings.ShowLocalOnly);
 
     FillAuthorTree(tvAuthors, DMCollection.GetAuthorIterator(amFullFilter), FLastAuthorID);
-    FillSeriesTree(tvSeries, FLastSeriesID);
+    FillSeriesTree(tvSeries, DMCollection.GetSeriesIterator(smFullFilter), FLastSeriesID);
     FillAllBooksTree;
   finally
     Screen.Cursor := SavedCursor;

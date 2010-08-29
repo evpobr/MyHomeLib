@@ -41,33 +41,6 @@ object DMCollection: TDMCollection
       Size = 128
     end
   end
-  object Series: TABSQuery
-    CurrentVersion = '6.06 '
-    DatabaseName = 'Collection'
-    InMemory = False
-    ReadOnly = False
-    Filtered = True
-    FilterOptions = [foCaseInsensitive]
-    RequestLive = True
-    SQL.Strings = (
-      'select s.SerieID, s.SerieTitle'
-      'from "Series" s'
-      'where s.SerieTitle <> "---"'
-      'order by s.SerieTitle')
-    Left = 8
-    Top = 16
-    object SeriesSeriesID: TAutoIncField
-      DisplayWidth = 10
-      FieldName = 'SeriesID'
-    end
-    object SeriesTitle: TWideStringField
-      DisplayLabel = 'Title'
-      DisplayWidth = 80
-      FieldName = 'SeriesTitle'
-      Required = True
-      Size = 80
-    end
-  end
   object AllBooks: TABSTable
     CurrentVersion = '6.06 '
     DatabaseName = 'Collection'
