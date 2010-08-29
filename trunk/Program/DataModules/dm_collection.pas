@@ -94,12 +94,6 @@ type
 
   strict private
   type
-    TDataPart = (dpSeries, dpBooks);
-    TDataParts = set of TDataPart;
-
-    TFilterPart = (fpAuthors, fpSeries, fpLocalOnly, fpHideDeleted);
-    TFilterParts = set of TFilterPart;
-
     TBookIteratorImpl = class(TInterfacedObject, IBookIterator)
     public
       constructor Create(
@@ -207,9 +201,7 @@ type
 
   strict private
     FAuthorFilterType: string;
-    FAuthorFilterText: string;
     FSeriesFilterType: string;
-    FSeriesFilterText: string;
     FShowLocalOnly: Boolean;
     FHideDeleted: Boolean;
 
@@ -230,16 +222,6 @@ type
 
     procedure GetGenre(const GenreCode: string; var Genre: TGenreData);
     procedure GetBookGenres(BookID: Integer; var BookGenres: TBookGenres; RootGenre: PGenreData = nil); overload;
-
-    //
-    // Установка фильтров
-    //
-
-    //
-    // Создает и устанавливает фильтры и запросы в соответствии с текущими режимами
-    // Т к при
-    //
-    procedure UpdateFilters(Parts: TFilterParts);
 
   public
     // TfrmMain.FormCreate
@@ -311,10 +293,10 @@ type
     //
     // Установка фильтров
     //
-    procedure SetAuthorFilter(const Value: string);
-    procedure SetSerieFilter(const Value: string);
-    procedure SetShowLocalBookOnly(Value: Boolean);
-    procedure SetHideDeletedBook(Value: Boolean);
+    property AuthorFilterType: string read FAuthorFilterType write FAuthorFilterType;
+    property SeriesFilterType: string read FSeriesFilterType write FSeriesFilterType;
+    property ShowLocalOnly: Boolean read FShowLocalOnly write FShowLocalOnly;
+    property HideDeleted: Boolean read FHideDeleted write FHideDeleted;
 
     //
     // Пользовательские данные
@@ -648,8 +630,27 @@ begin
         if FCollection.FShowLocalOnly then
           AddToWhere(Where, ' b.' + BOOK_LOCAL_FIELD + ' = True ');
       end;
-      if FCollection.FAuthorFilterText <> '' then
-        AddToWhere(Where, FCollection.FAuthorFilterText);
+
+      // Add an author type filter:
+      if FCollection.FAuthorFilterType <> '' then
+      begin
+        if FCollection.FAuthorFilterType = ALPHA_FILTER_NON_ALPHA then
+        begin
+          AddToWhere(Where, Format(
+            '(POS(UPPER(SUBSTRING(a.%0:s, 1, 1)), "%1:s") = 0) AND (POS(UPPER(SUBSTRING(a.%0:s, 1, 1)), "%2:s") = 0)',
+            [AUTHOR_LASTTNAME_FIELD, ENGLISH_ALPHABET, RUSSIAN_ALPHABET]
+          ));
+        end
+        else if FCollection.FAuthorFilterType <> ALPHA_FILTER_ALL then
+        begin
+          Assert(Length(FCollection.FAuthorFilterType) = 1);
+          Assert(TCharacter.IsUpper(FCollection.FAuthorFilterType, 1));
+          AddToWhere(Where, Format(
+            'UPPER(a.%0:s) LIKE "%1:s%%"',                                // начинается на заданную букву
+            [AUTHOR_LASTTNAME_FIELD, FCollection.FAuthorFilterType]
+          ));
+        end;
+      end;
     end
     else
       Assert(False);
@@ -797,8 +798,25 @@ begin
         if FCollection.FShowLocalOnly then
           AddToWhere(Where, ' b.' + BOOK_LOCAL_FIELD + ' = True ');
       end;
-      if FCollection.FSeriesFilterText <> '' then
-        AddToWhere(Where, FCollection.FSeriesFilterText);
+
+      // Series type filter
+      if FCollection.FSeriesFilterType <> '' then
+      begin
+        if FCollection.FSeriesFilterType = ALPHA_FILTER_NON_ALPHA then
+          AddToWhere(Where, Format(
+            '(POS(UPPER(SUBSTRING(s.%0:s, 1, 1)), "%1:s") = 0) AND (POS(UPPER(SUBSTRING(s.%0:s, 1, 1)), "%2:s") = 0)',
+            [SERIES_TITLE_FIELD, ENGLISH_ALPHABET, RUSSIAN_ALPHABET]
+          ))
+        else if FCollection.FSeriesFilterType <> ALPHA_FILTER_ALL then
+        begin
+          Assert(Length(FCollection.FSeriesFilterType) = 1);
+          Assert(TCharacter.IsUpper(FCollection.FSeriesFilterType, 1));
+          AddToWhere(Where, Format(
+            'UPPER(s.%0:s) LIKE "%1:s%%"',                                // начинается на заданную букву
+            [SERIES_TITLE_FIELD, FCollection.FSeriesFilterType]
+          ));
+        end;
+      end;
     end
     else
       Assert(False);
@@ -1273,85 +1291,6 @@ begin
   GetBookRecord(BookKey, BookRecord, True);
 
   DMUser.AddBookToGroup(BookKey, GroupID, BookRecord);
-end;
-
-procedure TDMCollection.UpdateFilters(Parts: TFilterParts);
-begin
-  // ----------------------------------------------
-  if fpAuthors in Parts then
-  begin
-    if FAuthorFilterType = ALPHA_FILTER_ALL then
-    begin
-      FAuthorFilterText := '';
-    end
-    else if FAuthorFilterType = ALPHA_FILTER_NON_ALPHA then
-    begin
-      FAuthorFilterText := Format(
-        '(POS(UPPER(SUBSTRING(a.%0:s, 1, 1)), "%1:s") = 0) AND (POS(UPPER(SUBSTRING(a.%0:s, 1, 1)), "%2:s") = 0)',
-        [AUTHOR_LASTTNAME_FIELD, ENGLISH_ALPHABET, RUSSIAN_ALPHABET]
-      );
-    end
-    else
-    begin
-      Assert(Length(FAuthorFilterType) = 1);
-      Assert(TCharacter.IsUpper(FAuthorFilterType, 1));
-      FAuthorFilterText := Format(
-        'UPPER(a.%0:s) LIKE "%1:s%%"',                                // начинается на заданную букву
-        [AUTHOR_LASTTNAME_FIELD, FAuthorFilterType]
-      );
-    end;
-  end;
-
-  // ----------------------------------------------
-  if fpSeries in Parts then
-  begin
-    if FSeriesFilterType = ALPHA_FILTER_ALL then
-      FSeriesFilterText := ''
-    else if FSeriesFilterType = ALPHA_FILTER_NON_ALPHA then
-      FSeriesFilterText := Format(
-        '(POS(UPPER(SUBSTRING(s.%0:s, 1, 1)), "%1:s") = 0) AND (POS(UPPER(SUBSTRING(s.%0:s, 1, 1)), "%2:s") = 0)',
-        [SERIES_TITLE_FIELD, ENGLISH_ALPHABET, RUSSIAN_ALPHABET]
-      )
-    else
-    begin
-      Assert(Length(FSeriesFilterType) = 1);
-      Assert(TCharacter.IsUpper(FSeriesFilterType, 1));
-      FSeriesFilterText := Format(
-        'UPPER(s.%0:s) LIKE "%1:s%%"',                                // начинается на заданную букву
-        [SERIES_TITLE_FIELD, FSeriesFilterType]
-      );
-    end;
-  end;
-end;
-
-procedure TDMCollection.SetAuthorFilter(const Value: string);
-var
-  Parts: TDataParts;
-begin
-  FAuthorFilterType := Value;
-
-  UpdateFilters([fpAuthors]);
-end;
-
-procedure TDMCollection.SetSerieFilter(const Value: string);
-begin
-  FSeriesFilterType := Value;
-
-  UpdateFilters([fpSeries]);
-end;
-
-procedure TDMCollection.SetShowLocalBookOnly(Value: Boolean);
-begin
-  FShowLocalOnly := Value;
-
-  UpdateFilters([fpLocalOnly]);
-end;
-
-procedure TDMCollection.SetHideDeletedBook(Value: Boolean);
-begin
-  FHideDeleted := Value;
-
-  UpdateFilters([fpHideDeleted]);
 end;
 
 procedure TDMCollection.ExportUserData(data: TUserData);

@@ -371,13 +371,6 @@ type
     DateText: string
   end;
 
-  // --------------------------------------------------------------------------
-  TFilterParam = record
-    ShowLocalOnly: Boolean;
-    HideDeleted: Boolean;
-    AuthorFilterType: String; // ALPHA_FILTER_ALL or ALPHA_FILTER_NON_ALPHA or a single letter
-  end;
-
 // ============================================================================
 //
 // helpers
