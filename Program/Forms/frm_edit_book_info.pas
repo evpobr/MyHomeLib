@@ -116,7 +116,8 @@ resourcestring
 
 procedure TfrmEditBookInfo.FormShow(Sender: TObject);
 var
-  FFiltered: Boolean;
+  SeriesIterator: ISeriesIterator;
+  SeriesData: TSeriesData;
 begin
   FChanged := False;
 
@@ -124,23 +125,9 @@ begin
     FillGenresTree(frmGenreTree.tvGenresTree);
 
   cbSeries.Items.Clear;
-  DMCollection.Series.DisableControls;
-  try
-    FFiltered := DMCollection.Series.Filtered;
-    DMCollection.Series.Filtered := False;
-    try
-      DMCollection.Series.First;
-      while not DMCollection.Series.Eof do
-      begin
-        cbSeries.Items.Add(DMCollection.Series[SERIES_TITLE_FIELD]);
-        DMCollection.Series.Next;
-      end;
-    finally
-      DMCollection.Series.Filtered := FFiltered;
-    end;
-  finally
-    DMCollection.Series.EnableControls;
-  end;
+  SeriesIterator := DMCollection.GetSeriesIterator(smAll);
+  while SeriesIterator.Next(SeriesData) do
+    cbSeries.Items.Add(SeriesData.SeriesTitle);
 
   FillGenresTree(frmGenreTree.tvGenresTree);
 

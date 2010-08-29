@@ -32,10 +32,6 @@ type
   TDMCollection = class(TDataModule)
     DBCollection: TABSDatabase;
 
-    Series: TABSQuery;
-    SeriesSeriesID: TAutoIncField;
-    SeriesTitle: TWideStringField;
-
     AllBooks: TABSTable;
     AllBooksBookID: TAutoIncField;
     AllBooksLibID: TIntegerField;
@@ -212,7 +208,8 @@ type
   strict private
     FAuthorFilterType: string;
     FAuthorFilterText: string;
-    FSerieFilter: string;
+    FSeriesFilterType: string;
+    FSeriesFilterText: string;
     FShowLocalOnly: Boolean;
     FHideDeleted: Boolean;
 
@@ -242,9 +239,7 @@ type
     // —оздает и устанавливает фильтры и запросы в соответствии с текущими режимами
     // “ к при
     //
-    function UpdateFilters(Parts: TFilterParts): TDataParts;
-
-    procedure RefreshData(Parts: TDataParts);
+    procedure UpdateFilters(Parts: TFilterParts);
 
   public
     // TfrmMain.FormCreate
@@ -316,10 +311,10 @@ type
     //
     // ”становка фильтров
     //
-    procedure SetAuthorFilter(const Value: string; Refresh: Boolean = True);
-    procedure SetSerieFilter(const Value: string; Refresh: Boolean = True);
-    procedure SetShowLocalBookOnly(Value: Boolean; Refresh: Boolean = True);
-    procedure SetHideDeletedBook(Value: Boolean; Refresh: Boolean = True);
+    procedure SetAuthorFilter(const Value: string);
+    procedure SetSerieFilter(const Value: string);
+    procedure SetShowLocalBookOnly(Value: Boolean);
+    procedure SetHideDeletedBook(Value: Boolean);
 
     //
     // ѕользовательские данные
@@ -341,6 +336,7 @@ type
     function GetBookIterator(const LoadMemos: Boolean; const SearchCriteria: TBookSearchCriteria): IBookIterator; overload;
     function GetAuthorIterator(const Mode: TAuthorIteratorMode; const Filter: string = ''): IAuthorIterator;
     function GetGenreIterator(const Mode: TGenreIteratorMode; const Filter: string = ''): IGenreIterator;
+    function GetSeriesIterator(const Mode: TSeriesIteratorMode; const Filter: string = ''): ISeriesIterator;
   end;
 
 var
@@ -783,30 +779,35 @@ begin
 end;
 
 function TDMCollection.TSeriesIteratorImpl.CreateSQL(const Mode: TSeriesIteratorMode; const Filter: string): string;
+var
+  Where: string;
 begin
+  Where := '';
   case Mode of
     smAll:
-      Result := 'SELECT g.' + SERIES_ID_FIELD + ' FROM Genres g ';
+      Result := 'SELECT s.' + SERIES_ID_FIELD + ', s.' + SERIES_TITLE_FIELD + ' FROM Series s ';
+    smFullFilter:
+    begin
+      Result := 'SELECT DISTINCT s.' + SERIES_ID_FIELD + ', s.' + SERIES_TITLE_FIELD + ' FROM Series s ';
+      if FCollection.FHideDeleted or FCollection.FShowLocalOnly then
+      begin
+        Result := Result + ' INNER JOIN Books b ON s.' + SERIES_ID_FIELD + ' = b.' + SERIES_ID_FIELD + ' ';
+        if FCollection.FHideDeleted then
+          AddToWhere(Where, ' b.' + BOOK_DELETED_FIELD + ' = False ');
+        if FCollection.FShowLocalOnly then
+          AddToWhere(Where, ' b.' + BOOK_LOCAL_FIELD + ' = True ');
+      end;
+      if FCollection.FSeriesFilterText <> '' then
+        AddToWhere(Where, FCollection.FSeriesFilterText);
+    end
     else
       Assert(False);
   end;
-//var
-//  Where: string;
-//begin
-//  Where := '';
-//
-//  case Mode of
-//    gmAll:
-//      Result := 'SELECT g.' + GENRE_CODE_FIELD + ' FROM Genres g ';
-//    gmByBook:
-//      Result := 'SELECT gl.' + GENRE_CODE_FIELD + ' FROM Genre_List gl ';
-//    else
-//      Assert(False);
-//  end;
-//
-//  if Filter <> '' then
-//    AddToWhere(Where, Filter);
-//  Result := Result + Where;
+
+  if Filter <> '' then
+    AddToWhere(Where, Filter);
+  Result := Result + Where;
+  Result := Result + ' ORDER BY s.' + SERIES_TITLE_FIELD;
 end;
 
 { TDMCollection }
@@ -858,8 +859,6 @@ end;
 
 procedure TDMCollection.SetTableState(State: Boolean);
 begin
-  Series.Active := State;
-
   AllAuthors.Active := State;
   AllSeries.Active := State;
   AllBooks.Active := State;
@@ -1276,27 +1275,8 @@ begin
   DMUser.AddBookToGroup(BookKey, GroupID, BookRecord);
 end;
 
-function TDMCollection.UpdateFilters(Parts: TFilterParts): TDataParts;
-const
-  GetAuthorsBegin = 'SELECT a.AuthorID, a.LastName, a.FirstName, a.MiddleName FROM Authors a ';
-  GetAuthorsQuery = 'WHERE (a.AuthorID IN (SELECT DISTINCT l.AuthorID FROM Author_List l INNER JOIN Books b ON l.BookID = b.BookID WHERE `Local` = true)) ';
-  GetAuthorsEnd = 'ORDER BY a.LastName, a.FirstName, a.MiddleName ';
-
-  GetSeriessBegin = 'SELECT s.SeriesID, s.SeriesTitle FROM Series s ';
-  GetSeriessQuery = 'WHERE (s.SeriesID IN (SELECT DISTINCT b.SeriesID FROM Books b WHERE `Local` = true)) ';
-  GetSeriessEnd = 'ORDER BY s.SeriesTitle';
-
-  LocalFilters: array [Boolean] of string = ('', '(`Local` = true)');
-  HideDeletedFilters: array [Boolean] of string = ('', '(`Deleted` = false)');
-var
-  SQLQuery: string;
-  LocalFilter: string;
-  HideDeletedFilter: string;
-  TotalFilter: string;
-  SetFilter: Boolean;
+procedure TDMCollection.UpdateFilters(Parts: TFilterParts);
 begin
-  Result := [];
-
   // ----------------------------------------------
   if fpAuthors in Parts then
   begin
@@ -1307,7 +1287,7 @@ begin
     else if FAuthorFilterType = ALPHA_FILTER_NON_ALPHA then
     begin
       FAuthorFilterText := Format(
-        '(POS(UPPER(SUBSTRING(%0:s, 1, 1)), "%1:s") = 0) AND (POS(UPPER(SUBSTRING(%0:s, 1, 1)), "%2:s") = 0)',
+        '(POS(UPPER(SUBSTRING(a.%0:s, 1, 1)), "%1:s") = 0) AND (POS(UPPER(SUBSTRING(a.%0:s, 1, 1)), "%2:s") = 0)',
         [AUTHOR_LASTTNAME_FIELD, ENGLISH_ALPHABET, RUSSIAN_ALPHABET]
       );
     end
@@ -1316,7 +1296,7 @@ begin
       Assert(Length(FAuthorFilterType) = 1);
       Assert(TCharacter.IsUpper(FAuthorFilterType, 1));
       FAuthorFilterText := Format(
-        'UPPER(%0:s) LIKE "%1:s%%"',                                // начинаетс€ на заданную букву
+        'UPPER(a.%0:s) LIKE "%1:s%%"',                                // начинаетс€ на заданную букву
         [AUTHOR_LASTTNAME_FIELD, FAuthorFilterType]
       );
     end;
@@ -1325,99 +1305,53 @@ begin
   // ----------------------------------------------
   if fpSeries in Parts then
   begin
-    if FSerieFilter = ALPHA_FILTER_ALL then
-    begin
-      Series.Filter := '';
-      Series.Filtered := False;
-    end
-    else if FSerieFilter = ALPHA_FILTER_NON_ALPHA then
-    begin
-      Series.Filter := Format(
-        '(POS(UPPER(SUBSTRING(%0:s, 1, 1)), "%1:s") = 0) AND (POS(UPPER(SUBSTRING(%0:s, 1, 1)), "%2:s") = 0)',
+    if FSeriesFilterType = ALPHA_FILTER_ALL then
+      FSeriesFilterText := ''
+    else if FSeriesFilterType = ALPHA_FILTER_NON_ALPHA then
+      FSeriesFilterText := Format(
+        '(POS(UPPER(SUBSTRING(s.%0:s, 1, 1)), "%1:s") = 0) AND (POS(UPPER(SUBSTRING(s.%0:s, 1, 1)), "%2:s") = 0)',
         [SERIES_TITLE_FIELD, ENGLISH_ALPHABET, RUSSIAN_ALPHABET]
-      );
-      Series.Filtered := True;
-    end
+      )
     else
     begin
-      Assert(Length(FSerieFilter) = 1);
-      Assert(TCharacter.IsUpper(FSerieFilter, 1));
-      Series.Filter := Format(
-        'UPPER(%0:s) LIKE "%1:s%%"',                                // начинаетс€ на заданную букву
-        [SERIES_TITLE_FIELD, FSerieFilter]
+      Assert(Length(FSeriesFilterType) = 1);
+      Assert(TCharacter.IsUpper(FSeriesFilterType, 1));
+      FSeriesFilterText := Format(
+        'UPPER(s.%0:s) LIKE "%1:s%%"',                                // начинаетс€ на заданную букву
+        [SERIES_TITLE_FIELD, FSeriesFilterType]
       );
-      Series.Filtered := True;
     end;
   end;
-
-  // ----------------------------------------------
-  if fpLocalOnly in Parts then
-  begin
-    SQLQuery := GetSeriessBegin;
-    if FShowLocalOnly then
-      SQLQuery := SQLQuery + GetSeriessQuery;
-    SQLQuery := SQLQuery + GetSeriessEnd;
-
-    Series.Active := False;
-    Series.SQL.Text := SQLQuery;
-    Series.Prepare;
-    Include(Result, dpSeries);
-  end;
-
 end;
 
-procedure TDMCollection.RefreshData(Parts: TDataParts);
-begin
-  if dpSeries in Parts then
-    Series.Active := True;
-end;
-
-procedure TDMCollection.SetAuthorFilter(const Value: string; Refresh: Boolean = True);
+procedure TDMCollection.SetAuthorFilter(const Value: string);
 var
   Parts: TDataParts;
 begin
   FAuthorFilterType := Value;
 
-  Parts := UpdateFilters([fpAuthors]);
-
-  if Refresh then
-    RefreshData(Parts);
+  UpdateFilters([fpAuthors]);
 end;
 
-procedure TDMCollection.SetSerieFilter(const Value: string; Refresh: Boolean = True);
-var
-  Parts: TDataParts;
+procedure TDMCollection.SetSerieFilter(const Value: string);
 begin
-  FSerieFilter := Value;
+  FSeriesFilterType := Value;
 
-  Parts := UpdateFilters([fpSeries]);
-
-  if Refresh then
-    RefreshData(Parts);
+  UpdateFilters([fpSeries]);
 end;
 
-procedure TDMCollection.SetShowLocalBookOnly(Value: Boolean; Refresh: Boolean = True);
-var
-  Parts: TDataParts;
+procedure TDMCollection.SetShowLocalBookOnly(Value: Boolean);
 begin
   FShowLocalOnly := Value;
 
-  Parts := UpdateFilters([fpLocalOnly]);
-
-  if Refresh then
-    RefreshData(Parts);
+  UpdateFilters([fpLocalOnly]);
 end;
 
-procedure TDMCollection.SetHideDeletedBook(Value: Boolean; Refresh: Boolean = True);
-var
-  Parts: TDataParts;
+procedure TDMCollection.SetHideDeletedBook(Value: Boolean);
 begin
   FHideDeleted := Value;
 
-  Parts := UpdateFilters([fpHideDeleted]);
-
-  if Refresh then
-    RefreshData(Parts);
+  UpdateFilters([fpHideDeleted]);
 end;
 
 procedure TDMCollection.ExportUserData(data: TUserData);
@@ -1571,6 +1505,11 @@ end;
 function TDMCollection.GetGenreIterator(const Mode: TGenreIteratorMode; const Filter: string): IGenreIterator;
 begin
   Result := TGenreIteratorImpl.Create(Self, Mode, Filter);
+end;
+
+function TDMCollection.GetSeriesIterator(const Mode: TSeriesIteratorMode; const Filter: string = ''): ISeriesIterator;
+begin
+  Result := TSeriesIteratorImpl.Create(Self, Mode, Filter);
 end;
 
 // Change SeriesID value for all books in the current database with old SeriesID value

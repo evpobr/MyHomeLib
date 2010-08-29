@@ -122,7 +122,8 @@ type
   );
 
   TSeriesIteratorMode = (
-    smAll       // All series
+    smAll,       // All series
+    smFullFilter // Full filter - both Alpha, Local and Deleted
   );
 
   TBookFormat = (
