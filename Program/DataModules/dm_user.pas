@@ -75,7 +75,7 @@ type
     AllBooksDatabaseID: TIntegerField;
     AllBooksLibID: TIntegerField;
     AllBooksTitle: TWideStringField;
-    AllBooksSerieID: TIntegerField;
+    AllBooksSeriesID: TIntegerField;
     AllBooksSeqNumber: TSmallintField;
     AllBooksDate: TDateField;
     AllBooksLibRate: TIntegerField;
@@ -226,7 +226,7 @@ type
     function SetReview(const BookKey: TBookKey; const Review: string): Integer;
     procedure SetLocal(const BookKey: TBookKey; Value: Boolean);
     procedure SetFileName(const BookKey: TBookKey; const FileName: string);
-    procedure SetBookSerieID(const BookKey: TBookKey; const SerieID: Integer);
+    procedure SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
     procedure SetFolder(const BookKey: TBookKey; const Folder: string);
 
     procedure UpdateBook(const BookRecord: TBookRecord);
@@ -256,7 +256,7 @@ type
     procedure ImportUserData(data: TUserData);
 
     // Batch update methods:
-    procedure ChangeBookSerieID(const OldSerieID: Integer; const NewSerieID: Integer; const DatabaseID: Integer);
+    procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer);
 
     //Iterators:
     function GetBookIterator(const Filter: string): IBookIterator;
@@ -797,14 +797,14 @@ begin
     BookRecord.FileName := AllBooksFileName.Value;
     BookRecord.FileExt := AllBooksExt.Value;
     BookRecord.InsideNo := AllBooksInsideNo.Value;
-    if AllBooksSerieID.IsNull then
+    if AllBooksSeriesID.IsNull then
     begin
-      BookRecord.SerieID := NO_SERIE_ID;
+      BookRecord.SeriesID := NO_SERIE_ID;
       BookRecord.SeqNumber := 0;
     end
     else
     begin
-      BookRecord.SerieID := AllBooksSerieID.Value;
+      BookRecord.SeriesID := AllBooksSeriesID.Value;
       BookRecord.SeqNumber := AllBooksSeqNumber.Value;
     end;
     BookRecord.Code := AllBooksCode.Value;
@@ -829,8 +829,8 @@ begin
     try
       Reader := TReader.Create(Stream, 4096);
       try
-        BookRecord.Serie := Reader.ReadString;
-        Assert((BookRecord.SerieID = NO_SERIE_ID) = (BookRecord.Serie = NO_SERIES_TITLE));
+        BookRecord.Series := Reader.ReadString;
+        Assert((BookRecord.SeriesID = NO_SERIE_ID) = (BookRecord.Series = NO_SERIES_TITLE));
 
         Reader.ReadListBegin;
         while not Reader.EndOfList do
@@ -1061,17 +1061,17 @@ begin
   end;
 end;
 
-procedure TDMUser.SetBookSerieID(const BookKey: TBookKey; const SerieID: Integer);
+procedure TDMUser.SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
 begin
   Assert(AllBooks.Active);
   if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
   begin
     AllBooks.Edit;
     try
-      if NO_SERIE_ID = SerieID then
-        AllBooksSerieID.Clear
+      if NO_SERIE_ID = SeriesID then
+        AllBooksSeriesID.Clear
       else
-        AllBooksSerieID.Value := SerieID;
+        AllBooksSeriesID.Value := SeriesID;
 
       //
       // TODO: BUG необходимо обновить и название серии
@@ -1085,26 +1085,26 @@ begin
   end;
 end;
 
-// Change SerieID value for all books having provided DatabaseID and old SerieID value
-procedure TDMUser.ChangeBookSerieID(const OldSerieID: Integer; const NewSerieID: Integer; const DatabaseID: Integer);
+// Change SeriesID value for all books having provided DatabaseID and old SeriesID value
+procedure TDMUser.ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer);
 const
-  UPDATE_SQL = 'UPDATE Books SET SerieID = %s WHERE DatabaseID = %u AND SerieID %s';
+  UPDATE_SQL = 'UPDATE Books SET ' + SERIES_ID_FIELD + ' = %s WHERE ' + DB_ID_FIELD + ' = %u AND ' + SERIES_ID_FIELD + '= %s';
 var
   newSerie: string;
   oldSerie: string;
   Query: TABSQuery;
 begin
-  if OldSerieID <> NewSerieID then
+  if OldSeriesID <> NewSeriesID then
   begin
-    if NO_SERIE_ID = NewSerieID then
+    if NO_SERIE_ID = NewSeriesID then
       newSerie := 'NULL'
     else
-      newSerie := Format('%u', [NewSerieID]);
+      newSerie := Format('%u', [NewSeriesID]);
 
-    if NO_SERIE_ID = OldSerieID then
+    if NO_SERIE_ID = OldSeriesID then
       oldSerie := 'IS NULL'
     else
-      oldSerie := Format('= %u', [OldSerieID]);
+      oldSerie := Format('= %u', [OldSeriesID]);
 
     Query := TABSQuery.Create(DBUser);
     try
@@ -1276,7 +1276,7 @@ begin
 
       AllBooksLibID.Value := BookRecord.LibID;
       AllBooksTitle.Value := BookRecord.Title;
-      AllBooksSerieID.Value := BookRecord.SerieID;
+      AllBooksSeriesID.Value := BookRecord.SeriesID;
       AllBooksSeqNumber.Value := BookRecord.SeqNumber;
       AllBooksDate.Value := BookRecord.Date;
       AllBooksLibRate.Value := BookRecord.LibRate;
@@ -1300,7 +1300,7 @@ begin
       try
         Writer := TWriter.Create(Stream, 4096);
         try
-          Writer.WriteString(BookRecord.Serie);
+          Writer.WriteString(BookRecord.Series);
 
           Writer.WriteListBegin;
           for Author in BookRecord.Authors do

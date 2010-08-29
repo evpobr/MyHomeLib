@@ -33,14 +33,14 @@ type
     DBCollection: TABSDatabase;
 
     Series: TABSQuery;
-    SeriesSerieID: TAutoIncField;
+    SeriesSeriesID: TAutoIncField;
     SeriesTitle: TWideStringField;
 
     AllBooks: TABSTable;
     AllBooksBookID: TAutoIncField;
     AllBooksLibID: TIntegerField;
     AllBooksTitle: TWideStringField;
-    AllBooksSerieID: TIntegerField;
+    AllBooksSeriesID: TIntegerField;
     AllBooksSeqNumber: TSmallintField;
     AllBooksDate: TDateField;
     AllBooksLibRate: TIntegerField;
@@ -66,8 +66,8 @@ type
     AllAuthorsMiddleName: TWideStringField;
 
     AllSeries: TABSTable;
-    AllSeriesSerieID: TAutoIncField;
-    AllSeriesSerieTitle: TWideStringField;
+    AllSeriesSeriesID: TAutoIncField;
+    AllSeriesSeriesTitle: TWideStringField;
 
     AllGenres: TABSTable;
     AllGenresGenreCode: TWideStringField;
@@ -185,6 +185,30 @@ type
     // << TGenreIteratorImpl
 
 
+    TSeriesIteratorImpl = class(TInterfacedObject, ISeriesIterator)
+    public
+      constructor Create(Collection: TDMCollection; const Mode: TSeriesIteratorMode; const Filter: string);
+      destructor Destroy; override;
+
+    protected
+      //
+      // ISeriesIterator
+      //
+      function Next(out SeriesData: TSeriesData): Boolean;
+      function GetNumRecords: Integer;
+
+    strict private
+      FCollection: TDMCollection;
+      FSeries: TABSQuery;
+      FSeriesID: TIntegerField;
+      FSeriesTitle: TWideStringField;
+      FCollectionID: Integer; // Active collection's ID at the time the iterator was created
+
+      function CreateSQL(const Mode: TSeriesIteratorMode; const Filter: string): string;
+    end;
+    // << TSeriesIteratorImpl
+
+
   strict private
     FAuthorFilterType: string;
     FAuthorFilterText: string;
@@ -205,7 +229,7 @@ type
     procedure GetAuthor(AuthorID: Integer; var Author: TAuthorData);
     procedure GetBookAuthors(BookID: Integer; var BookAuthors: TBookAuthors);
 
-    function GetSerieTitle(SerieID: Integer): string;
+    function GetSeriesTitle(SeriesID: Integer): string;
 
     procedure GetGenre(const GenreCode: string; var Genre: TGenreData);
     procedure GetBookGenres(BookID: Integer; var BookGenres: TBookGenres; RootGenre: PGenreData = nil); overload;
@@ -251,7 +275,7 @@ type
     procedure SetLocal(const BookKey: TBookKey; AState: Boolean);
     procedure SetFileName(const BookKey: TBookKey; const FileName: string);
     procedure SetFolder(const BookKey: TBookKey; const Folder: string);
-    procedure SetBookSerieID(const BookKey: TBookKey; const SerieID: Integer);
+    procedure SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
     procedure SetRate(const BookKey: TBookKey; Rate: Integer);
     procedure SetProgress(const BookKey: TBookKey; Progress: Integer);
 
@@ -304,10 +328,10 @@ type
     procedure ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc);
 
     // Batch update methods:
-    procedure ChangeBookSerieID(const OldSerieID: Integer; const NewSerieID: Integer; const DatabaseID: Integer);
+    procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer);
 
-    function AddOrLocateSerieIDBySerieTitle(const SerieTitle: string): Integer;
-    procedure SetSerieTitle(const SerieID: Integer; const NewSerieTitle: string);
+    function AddOrLocateSeriesIDBySeriesTitle(const SeriesTitle: string): Integer;
+    procedure SetSeriesTitle(const SeriesID: Integer; const NewSeriesTitle: string);
 
     procedure VerifyCurrentCollection(const DatabaseID: Integer);
     function GetTotalNumBooks: Integer;
@@ -477,12 +501,12 @@ begin
     FilterString := '';
     if SearchCriteria.Series <> '' then
     begin
-      AddToFilter('s.' + SERIE_TITLE_FIELD, PrepareQuery(SearchCriteria.Series, True), True, FilterString);
+      AddToFilter('s.' + SERIES_TITLE_FIELD, PrepareQuery(SearchCriteria.Series, True), True, FilterString);
 
       if FilterString <> '' then
       begin
         FilterString := SQLStartStr +
-          ' FROM Series s JOIN Books b ON b.' + SERIE_ID_FIELD + ' = s.' + SERIE_ID_FIELD + ' WHERE ' +
+          ' FROM Series s JOIN Books b ON b.' + SERIES_ID_FIELD + ' = s.' + SERIES_ID_FIELD + ' WHERE ' +
           FilterString;
 
         if Result <> '' then
@@ -708,6 +732,83 @@ begin
   Result := Result + Where;
 end;
 
+{ TSeriesIteratorImpl }
+
+constructor TDMCollection.TSeriesIteratorImpl.Create(Collection: TDMCollection; const Mode: TSeriesIteratorMode; const Filter: string);
+begin
+  inherited Create;
+
+  Assert(Assigned(Collection));
+
+  FCollectionID := DMUser.ActiveCollection.ID;
+  FCollection := Collection;
+
+  FSeries := TABSQuery.Create(FCollection.DBCollection);
+  FSeries.DatabaseName := FCollection.DBCollection.DatabaseName;
+  FSeries.SQL.Text := CreateSQL(Mode, Filter);
+  Log('TSeriesIteratorImpl >> ' + FSeries.SQL.Text);
+  FSeries.ReadOnly := True;
+  FSeries.RequestLive := True;
+  FSeries.Active := True;
+  Log('TSeriesIteratorImpl done ');
+
+  FSeriesID := FSeries.FieldByName(SERIES_ID_FIELD) as TIntegerField;
+  FSeriesTitle := FSeries.FieldByName(SERIES_TITLE_FIELD) as TWideStringField;
+end;
+
+destructor TDMCollection.TSeriesIteratorImpl.Destroy;
+begin
+  FreeAndNil(FSeries);
+
+  inherited Destroy;
+end;
+
+// Read next record (if present), return True if read
+function TDMCollection.TSeriesIteratorImpl.Next(out SeriesData: TSeriesData): Boolean;
+begin
+  Result := not FSeries.Eof;
+
+  if Result then
+  begin
+    Assert(DMUser.ActiveCollection.ID = FCollectionID); // shouldn't happen
+    SeriesData.SeriesID := FSeriesID.Value;
+    SeriesData.SeriesTitle := FSeriesTitle.Value;
+    FSeries.Next;
+  end;
+end;
+
+function TDMCollection.TSeriesIteratorImpl.GetNumRecords: Integer;
+begin
+  Result := FSeries.RecordCount;
+end;
+
+function TDMCollection.TSeriesIteratorImpl.CreateSQL(const Mode: TSeriesIteratorMode; const Filter: string): string;
+begin
+  case Mode of
+    smAll:
+      Result := 'SELECT g.' + SERIES_ID_FIELD + ' FROM Genres g ';
+    else
+      Assert(False);
+  end;
+//var
+//  Where: string;
+//begin
+//  Where := '';
+//
+//  case Mode of
+//    gmAll:
+//      Result := 'SELECT g.' + GENRE_CODE_FIELD + ' FROM Genres g ';
+//    gmByBook:
+//      Result := 'SELECT gl.' + GENRE_CODE_FIELD + ' FROM Genre_List gl ';
+//    else
+//      Assert(False);
+//  end;
+//
+//  if Filter <> '' then
+//    AddToWhere(Where, Filter);
+//  Result := Result + Where;
+end;
+
 { TDMCollection }
 
 procedure TDMCollection.GetBookLibID(const BookKey: TBookKey; out ARes: String);
@@ -771,10 +872,10 @@ end;
 //
 // ============================================================================
 
-function TDMCollection.GetSerieTitle(SerieID: Integer): string;
+function TDMCollection.GetSeriesTitle(SeriesID: Integer): string;
 begin
-  if (NO_SERIE_ID <> SerieID) and AllSeries.Locate(SERIE_ID_FIELD, SerieID, []) then
-    Result := AllSeriesSerieTitle.Value
+  if (NO_SERIE_ID <> SeriesID) and AllSeries.Locate(SERIES_ID_FIELD, SeriesID, []) then
+    Result := AllSeriesSeriesTitle.Value
   else
     Result := NO_SERIES_TITLE;
 end;
@@ -878,10 +979,10 @@ begin
     BookRecord.FileName := AllBooksFileName.Value;
     BookRecord.FileExt := AllBooksExt.Value;
     BookRecord.InsideNo := AllBooksInsideNo.Value;
-    if not AllBooksSerieID.IsNull then
+    if not AllBooksSeriesID.IsNull then
     begin
-      BookRecord.SerieID := AllBooksSerieID.Value;
-      BookRecord.Serie := GetSerieTitle(AllBooksSerieID.Value);
+      BookRecord.SeriesID := AllBooksSeriesID.Value;
+      BookRecord.Series := GetSeriesTitle(AllBooksSeriesID.Value);
       BookRecord.SeqNumber := AllBooksSeqNumber.Value;
     end;
     BookRecord.Code := AllBooksCode.Value;
@@ -1030,7 +1131,7 @@ begin
   DMUser.SetFolder(BookKey, Folder);
 end;
 
-procedure TDMCollection.SetBookSerieID(const BookKey: TBookKey; const SerieID: Integer);
+procedure TDMCollection.SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
 begin
   VerifyCurrentCollection(BookKey.DatabaseID);
   Assert(AllBooks.Active);
@@ -1038,10 +1139,10 @@ begin
   AllBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []);
   AllBooks.Edit;
   try
-    if NO_SERIE_ID = SerieID then
-      AllBooksSerieID.Clear
+    if NO_SERIE_ID = SeriesID then
+      AllBooksSeriesID.Clear
     else
-      AllBooksSerieID.Value := SerieID;
+      AllBooksSeriesID.Value := SeriesID;
     AllBooks.Post;
   except
     AllBooks.Cancel;
@@ -1049,7 +1150,7 @@ begin
   end;
 
   // Обновим информацию в группах
-  DMUser.SetBookSerieID(BookKey, SerieID);
+  DMUser.SetBookSeriesID(BookKey, SeriesID);
 end;
 
 function TDMCollection.GetAnnotation(const BookKey: TBookKey): string;
@@ -1181,9 +1282,9 @@ const
   GetAuthorsQuery = 'WHERE (a.AuthorID IN (SELECT DISTINCT l.AuthorID FROM Author_List l INNER JOIN Books b ON l.BookID = b.BookID WHERE `Local` = true)) ';
   GetAuthorsEnd = 'ORDER BY a.LastName, a.FirstName, a.MiddleName ';
 
-  GetSeriessBegin = 'SELECT s.SerieID, s.SerieTitle FROM Series s ';
-  GetSeriessQuery = 'WHERE (s.SerieID IN (SELECT DISTINCT b.SerieID FROM Books b WHERE `Local` = true)) ';
-  GetSeriessEnd = 'ORDER BY s.SerieTitle';
+  GetSeriessBegin = 'SELECT s.SeriesID, s.SeriesTitle FROM Series s ';
+  GetSeriessQuery = 'WHERE (s.SeriesID IN (SELECT DISTINCT b.SeriesID FROM Books b WHERE `Local` = true)) ';
+  GetSeriessEnd = 'ORDER BY s.SeriesTitle';
 
   LocalFilters: array [Boolean] of string = ('', '(`Local` = true)');
   HideDeletedFilters: array [Boolean] of string = ('', '(`Deleted` = false)');
@@ -1233,7 +1334,7 @@ begin
     begin
       Series.Filter := Format(
         '(POS(UPPER(SUBSTRING(%0:s, 1, 1)), "%1:s") = 0) AND (POS(UPPER(SUBSTRING(%0:s, 1, 1)), "%2:s") = 0)',
-        [SERIE_TITLE_FIELD, ENGLISH_ALPHABET, RUSSIAN_ALPHABET]
+        [SERIES_TITLE_FIELD, ENGLISH_ALPHABET, RUSSIAN_ALPHABET]
       );
       Series.Filtered := True;
     end
@@ -1243,7 +1344,7 @@ begin
       Assert(TCharacter.IsUpper(FSerieFilter, 1));
       Series.Filter := Format(
         'UPPER(%0:s) LIKE "%1:s%%"',                                // начинается на заданную букву
-        [SERIE_TITLE_FIELD, FSerieFilter]
+        [SERIES_TITLE_FIELD, FSerieFilter]
       );
       Series.Filtered := True;
     end;
@@ -1472,16 +1573,16 @@ begin
   Result := TGenreIteratorImpl.Create(Self, Mode, Filter);
 end;
 
-// Change SerieID value for all books in the current database with old SerieID value
-procedure TDMCollection.ChangeBookSerieID(const OldSerieID: Integer; const NewSerieID: Integer; const DatabaseID: Integer);
+// Change SeriesID value for all books in the current database with old SeriesID value
+procedure TDMCollection.ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer);
 const
-  UPDATE_SQL = 'UPDATE Books SET SerieID = %s WHERE SerieID %s';
+  UPDATE_SQL = 'UPDATE Books SET ' + SERIES_ID_FIELD + ' = %s WHERE ' + SERIES_ID_FIELD + ' = %s';
 var
   Query: TABSQuery;
   newSerie: string;
   oldSerie: string;
 begin
-  Assert(OldSerieID <> NewSerieID);
+  Assert(OldSeriesID <> NewSeriesID);
 
   VerifyCurrentCollection(DatabaseID);
 
@@ -1489,15 +1590,15 @@ begin
   try
     Query.DatabaseName := DBCollection.DatabaseName;
 
-    if NO_SERIE_ID = NewSerieID then
+    if NO_SERIE_ID = NewSeriesID then
       newSerie := 'NULL'
     else
-      newSerie := Format('%u', [NewSerieID]);
+      newSerie := Format('%u', [NewSeriesID]);
 
-    if NO_SERIE_ID = OldSerieID then
+    if NO_SERIE_ID = OldSeriesID then
       oldSerie := 'IS NULL'
     else
-      oldSerie := Format('= %u', [NewSerieID]);
+      oldSerie := Format('= %u', [NewSeriesID]);
 
     Query.SQL.Text := Format(UPDATE_SQL, [newSerie, oldSerie]);
     Log(Query.SQL.Text);
@@ -1507,46 +1608,46 @@ begin
   end;
 
   // Обновим информацию в группах
-  DMUser.ChangeBookSerieID(OldSerieID, NewSerieID, DatabaseID);
+  DMUser.ChangeBookSeriesID(OldSeriesID, NewSeriesID, DatabaseID);
 end;
 
-// If the series title is already in DB - locate it and return the SerieID
+// If the series title is already in DB - locate it and return the SeriesID
 // If the title is not in DB - add and returned the ID of the added row
-function TDMCollection.AddOrLocateSerieIDBySerieTitle(const SerieTitle: string): Integer;
+function TDMCollection.AddOrLocateSeriesIDBySeriesTitle(const SeriesTitle: string): Integer;
 begin
   Assert(AllSeries.Active);
 
-  if NO_SERIES_TITLE = SerieTitle then
+  if NO_SERIES_TITLE = SeriesTitle then
   begin
     Result := NO_SERIE_ID;
     Exit;
   end;
 
-  if not AllSeries.Locate(SERIE_TITLE_FIELD, SerieTitle, []) then
+  if not AllSeries.Locate(SERIES_TITLE_FIELD, SeriesTitle, []) then
   begin
     AllSeries.Append;
     try
-      AllSeriesSerieTitle.Value := SerieTitle;
+      AllSeriesSeriesTitle.Value := SeriesTitle;
       AllSeries.Post;
     except
       AllSeries.Cancel;
       raise ;
     end;
   end;
-  Result := AllSeriesSerieID.Value;
+  Result := AllSeriesSeriesID.Value;
 end;
 
-procedure TDMCollection.SetSerieTitle(const SerieID: Integer; const NewSerieTitle: string);
+procedure TDMCollection.SetSeriesTitle(const SeriesID: Integer; const NewSeriesTitle: string);
 begin
   Assert(AllSeries.Active);
-  Assert(SerieID <> NO_SERIE_ID);
-  Assert(NewSerieTitle <> NO_SERIES_TITLE);
+  Assert(SeriesID <> NO_SERIE_ID);
+  Assert(NewSeriesTitle <> NO_SERIES_TITLE);
 
-  if (AllSeries.Locate(SERIE_ID_FIELD, SerieID, [])) then
+  if (AllSeries.Locate(SERIES_ID_FIELD, SeriesID, [])) then
   begin
     AllSeries.Edit;
     try
-      AllSeriesSerieTitle.Value := NewSerieTitle;
+      AllSeriesSeriesTitle.Value := NewSeriesTitle;
       AllSeries.Post;
     except
       AllSeries.Cancel;

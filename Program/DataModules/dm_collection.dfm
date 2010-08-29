@@ -56,14 +56,14 @@ object DMCollection: TDMCollection
       'order by s.SerieTitle')
     Left = 8
     Top = 16
-    object SeriesSerieID: TAutoIncField
+    object SeriesSeriesID: TAutoIncField
       DisplayWidth = 10
-      FieldName = 'SerieID'
+      FieldName = 'SeriesID'
     end
     object SeriesTitle: TWideStringField
       DisplayLabel = 'Title'
       DisplayWidth = 80
-      FieldName = 'SerieTitle'
+      FieldName = 'SeriesTitle'
       Required = True
       Size = 80
     end
@@ -88,8 +88,8 @@ object DMCollection: TDMCollection
       FieldName = 'Title'
       Size = 150
     end
-    object AllBooksSerieID: TIntegerField
-      FieldName = 'SerieID'
+    object AllBooksSeriesID: TIntegerField
+      FieldName = 'SeriesID'
     end
     object AllBooksSeqNumber: TSmallintField
       FieldName = 'SeqNumber'
@@ -162,11 +162,11 @@ object DMCollection: TDMCollection
     Exclusive = False
     Left = 136
     Top = 200
-    object AllSeriesSerieID: TAutoIncField
-      FieldName = 'SerieID'
+    object AllSeriesSeriesID: TAutoIncField
+      FieldName = 'SeriesID'
     end
-    object AllSeriesSerieTitle: TWideStringField
-      FieldName = 'SerieTitle'
+    object AllSeriesSeriesTitle: TWideStringField
+      FieldName = 'SeriesTitle'
       Required = True
       Size = 80
     end

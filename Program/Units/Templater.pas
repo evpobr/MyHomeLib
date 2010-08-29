@@ -240,7 +240,7 @@ begin
 
     9: // 's' - серия книги
       begin
-        Result := Trim(params.Serie);
+        Result := Trim(params.Series);
       end;
 
     10: // 't' - название книги

@@ -851,7 +851,7 @@ object DMUser: TDMUser
       Size = 150
     end
     object AllBooksSerieID: TIntegerField
-      FieldName = 'SerieID'
+      FieldName = 'SeriesID'
     end
     object AllBooksSeqNumber: TSmallintField
       FieldName = 'SeqNumber'

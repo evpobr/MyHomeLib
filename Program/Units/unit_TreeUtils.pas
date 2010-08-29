@@ -30,7 +30,7 @@ type
   TSelectionList = array of PVirtualNode;
 
 function FindParentInTree(Tree: TVirtualStringTree; const Folder: string): PVirtualNode;
-function FindSeriesInTree(Tree: TBookTree; Parent: PVirtualNode; SerieID: Integer): PVirtualNode;
+function FindSeriesInTree(Tree: TBookTree; Parent: PVirtualNode; SeriesID: Integer): PVirtualNode;
 procedure SelectBookById(Tree: TBookTree; ID: Integer);
 procedure GetSelections(Tree: TBookTree; out List: TSelectionList);
 
@@ -84,7 +84,7 @@ begin
   end;
 end;
 
-function FindSeriesInTree(Tree: TBookTree; Parent: PVirtualNode; SerieID: Integer): PVirtualNode;
+function FindSeriesInTree(Tree: TBookTree; Parent: PVirtualNode; SeriesID: Integer): PVirtualNode;
 var
   Node: PVirtualNode;
   Data: PBookRecord;
@@ -99,7 +99,7 @@ begin
   begin
     Data := Tree.GetNodeData(Node);
     Assert(Assigned(Data));
-    if (Data^.nodeType = ntSeriesInfo) and (Data.SerieID = SerieID) then
+    if (Data^.nodeType = ntSeriesInfo) and (Data.SeriesID = SeriesID) then
     begin
       Result := Node;
       Break;
@@ -185,10 +185,10 @@ end;
 procedure FillSeriesTree(Tree: TVirtualStringTree; SelectID: Integer = MHL_INVALID_ID);
 var
   Node: PVirtualNode;
-  Data: PSerieData;
+  Data: PSeriesData;
   SelectedNode: PVirtualNode;
 begin
-  Tree.NodeDataSize := SizeOf(TSerieData);
+  Tree.NodeDataSize := SizeOf(TSeriesData);
 
   Tree.BeginSynch;
   try
@@ -204,11 +204,11 @@ begin
         Data := Tree.GetNodeData(Node);
 
         Initialize(Data^);
-        Data^.SerieID := DMCollection.SeriesSerieID.AsInteger;
-        Data^.SerieTitle := DMCollection.SeriesTitle.AsString;
+        Data^.SeriesID := DMCollection.SeriesSeriesID.AsInteger;
+        Data^.SeriesTitle := DMCollection.SeriesTitle.AsString;
         Include(Node.States, vsInitialUserData);
 
-        if Data^.SerieID = SelectID then
+        if Data^.SeriesID = SelectID then
           SelectedNode := Node;
 
         DMCollection.Series.Next;

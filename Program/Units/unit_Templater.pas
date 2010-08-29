@@ -318,7 +318,7 @@ begin
     MaskElements[7].value := '';
 
   MaskElements[8].templ := 's';
-  MaskElements[8].value := Trim(R.Serie);
+  MaskElements[8].value := Trim(R.Series);
 
   MaskElements[9].templ := 'n';
   if R.SeqNumber <> 0 then
