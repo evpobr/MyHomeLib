@@ -591,7 +591,7 @@ begin
       Result := 'SELECT a.' + AUTHOR_ID_FIELD + ' FROM Authors a ';
 
     amByBook:
-      Result := 'SELECT a.' + AUTHOR_ID_FIELD + ' FROM Author_List a ';
+      Result := 'SELECT DISTINCT a.' + AUTHOR_ID_FIELD + ' FROM Author_List a ';
 
     amFullFilter:
       begin
@@ -634,8 +634,10 @@ begin
   if Filter <> '' then
     AddToWhere(Where, Filter);
 
+  Result := Result + Where;
+
   if Mode in [amAll, amFullFilter] then
-    Result := Result + Where + ' ORDER BY a.' + AUTHOR_LASTTNAME_FIELD + ', a.' + AUTHOR_FIRSTNAME_FIELD + ', a.' + AUTHOR_MIDDLENAME_FIELD + ' ';
+    Result := Result + ' ORDER BY a.' + AUTHOR_LASTTNAME_FIELD + ', a.' + AUTHOR_FIRSTNAME_FIELD + ', a.' + AUTHOR_MIDDLENAME_FIELD + ' ';
 end;
 
 { TGenreIteratorImpl }
@@ -893,7 +895,7 @@ var
   AuthorIterator: IAuthorIterator;
   i: Integer;
 begin
-  AuthorIterator := GetAuthorIterator(amByBook, Format('al.%s = %u', [BOOK_ID_FIELD, BookID]));
+  AuthorIterator := GetAuthorIterator(amByBook, Format('a.%s = %u', [BOOK_ID_FIELD, BookID]));
   SetLength(BookAuthors, AuthorIterator.GetNumRecords + 1); // an extra dummy element
   i := 0;
   while AuthorIterator.Next(BookAuthors[i]) do
