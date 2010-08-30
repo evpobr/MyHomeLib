@@ -4,9 +4,10 @@
   *
   * Copyright (C) 2008-2010 Aleksey Penkov
   *
+  * Author(s)           Aleksey Penkov   alex.penkov@gmail.com
+  *                     Nick Rymanov     nrymanov@gmail.com
   * Created             22.02.2010
   * Description
-  * Author(s)           Aleksey Penkov  alex.penkov@gmail.com
   *
   * $Id$
   *
@@ -364,6 +365,7 @@ begin
   Tree.DeleteNode(Tree.GetFirstSelected, True);
   if Next <> nil then
     Tree.Selected[Next] := True;
+
   case cbClearOptions.ItemIndex of
     0:
       miClearAllClick(nil);
@@ -374,9 +376,12 @@ begin
         edT.Text := '';
       end;
   end;
+
   FillLists;
+
   if cbAutoSeries.Checked then
     edSN.Text := IntToStr(StrToIntDef(edSN.Text, 0) + 1);
+
   TreeChange(Tree, Next);
 
   Data := Tree.GetNodeData(Next);
@@ -460,6 +465,7 @@ begin
     TAuthorsHelper.Add(FBookRecord.Authors, rstrUnknownAuthor, '', '');
 
   frmGenreTree.GetSelectedGenres(FBookRecord);
+
   FBookRecord.Title := edT.Text;
   FBookRecord.Series := cbSeries.Text;
   if Data.Folder <> '\' then

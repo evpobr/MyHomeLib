@@ -4,9 +4,9 @@
   *
   * Copyright (C) 2008-2010 Aleksey Penkov
   *
-  * Authors Aleksey Penkov   alex.penkov@gmail.com
-  *         Nick Rymanov     nrymanov@gmail.com
-  * Created                  20.08.2008
+  * Authors             Aleksey Penkov   alex.penkov@gmail.com
+  *                     Nick Rymanov     nrymanov@gmail.com
+  * Created             20.08.2008
   * Description
   *
   * $Id$
@@ -2417,7 +2417,6 @@ begin
 
   // ------------------------------------------------------------------------------
 
-  DMCollection.SetActiveTable(pgControl.ActivePageIndex);
   LoadLastCollection;
 
   FillGroupsList(tvGroups, FLastGroupID);
@@ -3826,7 +3825,7 @@ begin
       WorkFile := BookFileName;
 
     if Settings.OverwriteFB2Info and (BookFormat = bfFb2) then
-      WriteFb2InfoToFile(WorkFile);
+      WriteFb2InfoToFile(BookRecord, WorkFile);
 
     Settings.Readers.RunReader(WorkFile);
   finally
@@ -5850,33 +5849,38 @@ end;
 
 procedure TfrmMain.ShowGenreEditor(Sender: TObject);
 var
+  frmGenres: TfrmGenreTree;
   Data: PGenreData;
   Node: PVirtualNode;
+  Genres: TBookGenres;
 begin
-  FillGenresTree(frmGenreTree.tvGenresTree);
-  if frmGenreTree.ShowModal = mrOk then
-  begin
-    edFGenre.Text := '';
-    edFGenre.Hint := '';
-    with frmGenreTree.tvGenresTree do
+  frmGenres := TfrmGenreTree.Create(Application);
+  try
+    FillGenresTree(frmGenres.tvGenresTree);
+    if frmGenres.ShowModal = mrOk then
     begin
-      Node := GetFirstSelected;
-      while Assigned(Node) do
-      begin
-        Data := GetNodeData(Node);
-        if edFGenre.Text = '' then
+      frmGenres.GetSelectedGenres(Genres);
+
+      edFGenre.Text := TArrayUtils.Join<TGenreData>(
+        Genres,
+        ' / ',
+        function(const Genre: TGenreData): string
         begin
-          edFGenre.Text := Data.GenreAlias;
-          edFGenre.Hint := Format('(g.GenreCode = "%s")', [Data^.GenreCode]);
+          Result := Genre.GenreAlias;
         end
-        else
+      );
+
+      edFGenre.Hint := TArrayUtils.Join<TGenreData>(
+        Genres,
+        ' OR ',
+        function(const Genre: TGenreData): string
         begin
-          edFGenre.Text := edFGenre.Text + '/' + Data.GenreAlias;
-          edFGenre.Hint := Format('%s OR (g.GenreCode = "%s")', [edFGenre.Hint, Data^.GenreCode]);
-        end;
-        Node := GetNextSelected(Node, False);
-      end;
+          Result := Format('(g.GenreCode = "%s")', [Genre.GenreCode]);
+        end
+      );
     end;
+  finally
+    frmGenres.Free;
   end;
 end;
 
@@ -6655,8 +6659,6 @@ begin
 
   tbtnDownloadList_Add.ImageIndex := 2;
   tbtnDownloadList_Add.Hint := rstrAddToDownloads;
-
-  DMCollection.SetActiveTable(Ord(ActiveView));
 
   ///miEditAuthor.Enabled := (ActiveView = AuthorsView);
   ///miEditSeries.Enabled := (ActiveView = AuthorsView);

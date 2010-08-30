@@ -20,12 +20,14 @@ unit unit_WriteFb2Info;
 
 interface
 
-function WriteFb2InfoToFile(const FileName: string): Boolean;
+uses
+  unit_Globals;
+
+function WriteFb2InfoToFile(const BookRecord: TBookRecord; const FileName: string): Boolean;
 
 implementation
 
 uses
-  unit_globals,
   FictionBook_21,
   unit_Helpers,
   unit_Consts,
@@ -39,9 +41,8 @@ uses
 resourcestring
   rstrCheckTemplateValidity = 'ѕроверьте правильность шаблона';
 
-function WriteFb2InfoToFile(const FileName: string): Boolean;
+function WriteFb2InfoToFile(const BookRecord: TBookRecord; const FileName: string): Boolean;
 var
-  R: TBookRecord;
   book: IXMLFictionBook;
   i: Integer;
 
@@ -55,11 +56,6 @@ var
   Templater: TTemplater;
 begin
   try
-    //
-    // TODO : полностью переписать этот метод. ћне кажетс€, что здесь делаетс€ огромное количество ненужных действий.
-    //
-    DMCollection.GetCurrentBook(R);
-
     { TODO -oNickR -cBug : MEMLEAK проверить }
     XML := TXmlDocument.Create(FileName);
 
@@ -68,9 +64,8 @@ begin
 
     Templater := TTemplater.Create;
     try
-      { DONE -oNickR -cBug : нет реакции на невалидный шаблон }
       if Templater.SetTemplate(Settings.BookHeaderTemplate, TpText) = ErFine then
-        TitleBook := Templater.ParseString(R, TpText)
+        TitleBook := Templater.ParseString(BookRecord, TpText)
       else
       begin
         ShowMessage(rstrCheckTemplateValidity);
@@ -83,28 +78,28 @@ begin
     with book.Description.Titleinfo do
     begin
       Author.Clear;
-      for i := 0 to High(R.Authors) do
+      for i := 0 to High(BookRecord.Authors) do
       begin
         A := Author.Add;
-        A.Lastname.Text := R.Authors[i].LastName;
-        A.Firstname.Text := R.Authors[i].FirstName;
-        A.Middlename.Text := R.Authors[i].MiddleName;
+        A.Lastname.Text := BookRecord.Authors[i].LastName;
+        A.Firstname.Text := BookRecord.Authors[i].FirstName;
+        A.Middlename.Text := BookRecord.Authors[i].MiddleName;
       end;
 
       Booktitle.Text := TitleBook;
 
       Genre.Clear;
-      for i := 0 to High(R.Genres) do
-        Genre.Add(R.Genres[i].FB2GenreCode);
+      for i := 0 to High(BookRecord.Genres) do
+        Genre.Add(BookRecord.Genres[i].FB2GenreCode);
 
-      if R.Series <> '' then
+      if BookRecord.Series <> NO_SERIES_TITLE then
       begin
         try
           Sequence.Clear;
           S := Sequence.Add;
 
-          S.Name := R.Series;
-          S.Number := R.SeqNumber;
+          S.Name := BookRecord.Series;
+          S.Number := BookRecord.SeqNumber;
         except
         end;
       end;
