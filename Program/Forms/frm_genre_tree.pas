@@ -35,7 +35,9 @@ type
 
   public
     procedure SelectGenres(const Genres: TBookGenres);
-    procedure GetSelectedGenres(var R: TBookRecord); 
+
+    procedure GetSelectedGenres(var R: TBookRecord); overload;
+    procedure GetSelectedGenres(var Genres: TBookGenres); overload;
   end;
 
 var
@@ -64,26 +66,34 @@ begin
       begin
         tvGenresTree.Selected[Node] := True;
         tvGenresTree.Expanded[Node.Parent] := True;
+        Break;
       end;
       Node := tvGenresTree.GetNext(Node);
     end;
   end;
 end;
 
-procedure TfrmGenreTree.GetSelectedGenres(var R: TBookRecord);
+procedure TfrmGenreTree.GetSelectedGenres(var Genres: TBookGenres);
 var
   Node: PVirtualNode;
   Data: PGenreData;
 begin
-  R.ClearGenres;
+  SetLength(Genres, 0);
 
   Node := tvGenresTree.GetFirstSelected;
   while Assigned(Node) do
   begin
     Data := frmGenreTree.tvGenresTree.GetNodeData(Node);
-    TGenresHelper.Add(R.Genres, Data^.GenreCode, Data^.GenreAlias, Data^.FB2GenreCode);
+    TGenresHelper.Add(Genres, Data^.GenreCode, Data^.GenreAlias, Data^.FB2GenreCode);
     Node := tvGenresTree.GetNextSelected(Node);
   end;
+end;
+
+procedure TfrmGenreTree.GetSelectedGenres(var R: TBookRecord);
+begin
+  R.ClearGenres;
+
+  GetSelectedGenres(R.Genres);
 
   if R.GenreCount = 0 then
     TGenresHelper.Add(R.Genres, UNKNOWN_GENRE_CODE, '', '');

@@ -74,25 +74,6 @@ type
     procedure DataModuleCreate(Sender: TObject);
 
   strict private
-    // GetCurrentBook(var R: TBookRecord);
-    // SetActiveTable
-    FIsFavorites: Boolean;
-    FActiveTable: TABSTable;
-
-    //
-    // Фильтрация базы
-    //
-    // В текущей версии
-    // - фильт по авторам и серия выставляется через Filter DataSet-а
-    // - фильтр скачанных книг через запрос
-    // - фильтр удаленных книг через Filter DataSet-а
-    //
-    // В результате возможна ситуация, когда автор показан, но книг у него нет, т к они все помеченны как удаленные.
-    // Использовать запрос для предотвращения этой ситуации можно, но работает это очень медленно.
-    // Поэтому, отложим это до перехода на нормальный SQL сервер.
-    //
-
-  strict private
   type
     TBookIteratorImpl = class(TInterfacedObject, IBookIterator)
     public
@@ -174,7 +155,6 @@ type
     end;
     // << TGenreIteratorImpl
 
-
     TSeriesIteratorImpl = class(TInterfacedObject, ISeriesIterator)
     public
       constructor Create(Collection: TDMCollection; const Mode: TSeriesIteratorMode; const Filter: string);
@@ -197,7 +177,6 @@ type
       function CreateSQL(const Mode: TSeriesIteratorMode; const Filter: string): string;
     end;
     // << TSeriesIteratorImpl
-
 
   strict private
     FAuthorFilterType: string;
@@ -224,15 +203,8 @@ type
     procedure GetBookGenres(BookID: Integer; var BookGenres: TBookGenres; RootGenre: PGenreData = nil); overload;
 
   public
-    // TfrmMain.FormCreate
-    // TfrmMain.pgControlChange
-    procedure SetActiveTable(Tag: Integer); deprecated;
-
     // TDownloader.DoDownload
     procedure GetBookLibID(const BookKey: TBookKey; out ARes: string); deprecated;
-
-    // WriteFb2InfoToFile
-    procedure GetCurrentBook(var R: TBookRecord); overload; deprecated;
 
     procedure SetTableState(State: Boolean);
 
@@ -617,48 +589,53 @@ begin
   case Mode of
     amAll:
       Result := 'SELECT a.' + AUTHOR_ID_FIELD + ' FROM Authors a ';
-    amByBook:
-      Result := 'SELECT DISTINCT a.' + AUTHOR_ID_FIELD + ' FROM Authors a INNER JOIN Author_List al ON a.' + AUTHOR_ID_FIELD + ' = al.' + AUTHOR_ID_FIELD + ' ';
-    amFullFilter:
-    begin
-      Result := 'SELECT DISTINCT a.' + AUTHOR_ID_FIELD + ' FROM Authors a ';
-      if FCollection.FHideDeleted or FCollection.FShowLocalOnly then
-      begin
-        Result := Result + ' INNER JOIN Author_List al ON a.' + AUTHOR_ID_FIELD + ' = al.' + AUTHOR_ID_FIELD + ' INNER JOIN Books b ON al.' + BOOK_ID_FIELD + ' = b.' + BOOK_ID_FIELD + ' ';
-        if FCollection.FHideDeleted then
-          AddToWhere(Where, ' b.' + BOOK_DELETED_FIELD + ' = False ');
-        if FCollection.FShowLocalOnly then
-          AddToWhere(Where, ' b.' + BOOK_LOCAL_FIELD + ' = True ');
-      end;
 
-      // Add an author type filter:
-      if FCollection.FAuthorFilterType <> '' then
+    amByBook:
+      Result := 'SELECT a.' + AUTHOR_ID_FIELD + ' FROM Author_List a ';
+
+    amFullFilter:
       begin
-        if FCollection.FAuthorFilterType = ALPHA_FILTER_NON_ALPHA then
+        Result := 'SELECT DISTINCT a.' + AUTHOR_ID_FIELD + ' FROM Authors a ';
+        if FCollection.FHideDeleted or FCollection.FShowLocalOnly then
         begin
-          AddToWhere(Where, Format(
-            '(POS(UPPER(SUBSTRING(a.%0:s, 1, 1)), "%1:s") = 0) AND (POS(UPPER(SUBSTRING(a.%0:s, 1, 1)), "%2:s") = 0)',
-            [AUTHOR_LASTTNAME_FIELD, ENGLISH_ALPHABET, RUSSIAN_ALPHABET]
-          ));
-        end
-        else if FCollection.FAuthorFilterType <> ALPHA_FILTER_ALL then
+          Result := Result + ' INNER JOIN Author_List al ON a.' + AUTHOR_ID_FIELD + ' = al.' + AUTHOR_ID_FIELD + ' INNER JOIN Books b ON al.' + BOOK_ID_FIELD + ' = b.' + BOOK_ID_FIELD + ' ';
+          if FCollection.FHideDeleted then
+            AddToWhere(Where, ' b.' + BOOK_DELETED_FIELD + ' = False ');
+          if FCollection.FShowLocalOnly then
+            AddToWhere(Where, ' b.' + BOOK_LOCAL_FIELD + ' = True ');
+        end;
+
+        // Add an author type filter:
+        if FCollection.FAuthorFilterType <> '' then
         begin
-          Assert(Length(FCollection.FAuthorFilterType) = 1);
-          Assert(TCharacter.IsUpper(FCollection.FAuthorFilterType, 1));
-          AddToWhere(Where, Format(
-            'UPPER(a.%0:s) LIKE "%1:s%%"',                                // начинается на заданную букву
-            [AUTHOR_LASTTNAME_FIELD, FCollection.FAuthorFilterType]
-          ));
+          if FCollection.FAuthorFilterType = ALPHA_FILTER_NON_ALPHA then
+          begin
+            AddToWhere(Where, Format(
+              '(POS(UPPER(SUBSTRING(a.%0:s, 1, 1)), "%1:s") = 0) AND (POS(UPPER(SUBSTRING(a.%0:s, 1, 1)), "%2:s") = 0)',
+              [AUTHOR_LASTTNAME_FIELD, ENGLISH_ALPHABET, RUSSIAN_ALPHABET]
+            ));
+          end
+          else if FCollection.FAuthorFilterType <> ALPHA_FILTER_ALL then
+          begin
+            Assert(Length(FCollection.FAuthorFilterType) = 1);
+            Assert(TCharacter.IsUpper(FCollection.FAuthorFilterType, 1));
+            AddToWhere(Where, Format(
+              'UPPER(a.%0:s) LIKE "%1:s%%"',                                // начинается на заданную букву
+              [AUTHOR_LASTTNAME_FIELD, FCollection.FAuthorFilterType]
+            ));
+          end;
         end;
       end;
-    end
+
     else
       Assert(False);
   end;
 
   if Filter <> '' then
     AddToWhere(Where, Filter);
-  Result := Result + Where + ' ORDER BY a.' + AUTHOR_LASTTNAME_FIELD + ', a.' + AUTHOR_FIRSTNAME_FIELD + ', a.' + AUTHOR_MIDDLENAME_FIELD + ' ';
+
+  if Mode in [amAll, amFullFilter] then
+    Result := Result + Where + ' ORDER BY a.' + AUTHOR_LASTTNAME_FIELD + ', a.' + AUTHOR_FIRSTNAME_FIELD + ', a.' + AUTHOR_MIDDLENAME_FIELD + ' ';
 end;
 
 { TGenreIteratorImpl }
@@ -861,20 +838,6 @@ begin
   SeriesCount := AllSeries.RecordCount;
 end;
 
-procedure TDMCollection.SetActiveTable(Tag: Integer);
-begin
-  if Tag = PAGE_FAVORITES then
-  begin
-    FActiveTable := DMUser.AllBooks;
-    FIsFavorites := True;
-  end
-  else
-  begin
-    FActiveTable := AllBooks;
-    FIsFavorites := False;
-  end;
-end;
-
 procedure TDMCollection.SetTableState(State: Boolean);
 begin
   AllAuthors.Active := State;
@@ -944,7 +907,7 @@ var
   GenreIterator: IGenreIterator;
   Genre: TGenreData;
 begin
-  GenreIterator := DMCollection.GetGenreIterator(gmByBook, Format('gl.%s = %d', [BOOK_ID_FIELD, BookID]));
+  GenreIterator := GetGenreIterator(gmByBook, Format('gl.%s = %d', [BOOK_ID_FIELD, BookID]));
   i := Length(BookGenres);
   while GenreIterator.Next(Genre) do
   begin
@@ -960,19 +923,6 @@ begin
     else
       RootGenre^.Clear;
   end;
-end;
-
-procedure TDMCollection.GetCurrentBook(var R: TBookRecord);
-var
-  BookKey: TBookKey;
-begin
-  BookKey.BookID := FActiveTable.FieldByName(BOOK_ID_FIELD).Value;
-  if FActiveTable = AllBooks then
-    BookKey.DatabaseID := DMUser.ActiveCollection.ID
-  else
-    BookKey.DatabaseID := FActiveTable.FieldByName(DB_ID_FIELD).AsInteger;
-
-  GetBookRecord(BookKey, R, True);
 end;
 
 procedure TDMCollection.GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord; LoadMemos: Boolean);

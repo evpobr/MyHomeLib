@@ -149,7 +149,7 @@ begin
   end;
 
   if (R.FileExt = FB2_EXTENSION) and Settings.OverwriteFB2Info then
-    WriteFb2InfoToFile(FFileOprecord.SArch);
+    WriteFb2InfoToFile(R, FFileOprecord.SArch);
 
   Result := True;
 end;

@@ -332,6 +332,17 @@ type
   end;
 
   // --------------------------------------------------------------------------
+  IIterator<T> = interface
+    function Next(out v: T): Boolean;
+    function GetNumRecords: Integer;
+  end;
+
+  IBookIterator = IIterator<TBookRecord>;
+  IAuthorIterator = IIterator<TAuthorData>;
+  IGenreIterator = IIterator<TGenreData>;
+  ISeriesIterator = IIterator<TSeriesData>;
+
+  {
   IBookIterator = interface
     function Next(out BookRecord: TBookRecord): Boolean;
     function GetNumRecords: Integer;
@@ -351,6 +362,7 @@ type
     function Next(out SerieData: TSeriesData): Boolean;
     function GetNumRecords: Integer;
   end;
+  }
 
   // --------------------------------------------------------------------------
   TBookSearchCriteria = record
