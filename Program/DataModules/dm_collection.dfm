@@ -4,7 +4,7 @@ object DMCollection: TDMCollection
   Height = 331
   Width = 209
   object DBCollection: TABSDatabase
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     Exclusive = True
     MaxConnections = 5
@@ -15,7 +15,7 @@ object DMCollection: TDMCollection
     Top = 16
   end
   object AllAuthors: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
@@ -42,7 +42,7 @@ object DMCollection: TDMCollection
     end
   end
   object AllBooks: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
@@ -126,7 +126,7 @@ object DMCollection: TDMCollection
     end
   end
   object AllSeries: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
@@ -145,7 +145,7 @@ object DMCollection: TDMCollection
     end
   end
   object AllGenres: TABSTable
-    CurrentVersion = '6.06 '
+    CurrentVersion = '6.05 '
     DatabaseName = 'Collection'
     InMemory = False
     ReadOnly = False
