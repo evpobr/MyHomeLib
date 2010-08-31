@@ -266,6 +266,16 @@
 				<ResourceType>RCData</ResourceType>
 				<ResourceId>smallStarEmpty</ResourceId>
 			</RcItem>
+			<RcItem Include="Resources\CreateSystemDB.sql">
+				<ContainerId>ResourceItem</ContainerId>
+				<ResourceType>RCData</ResourceType>
+				<ResourceId>CreateSystemDB</ResourceId>
+			</RcItem>
+			<RcItem Include="Resources\CreateCollectionDB.sql">
+				<ContainerId>ResourceItem</ContainerId>
+				<ResourceType>RCData</ResourceType>
+				<ResourceId>CreateCollectionDB</ResourceId>
+			</RcItem>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

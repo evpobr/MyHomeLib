@@ -47,8 +47,8 @@ type
     AllBooksExt: TWideStringField;
     AllBooksSize: TIntegerField;
     AllBooksCode: TSmallintField;
-    AllBooksLocal: TBooleanField;
-    AllBooksDeleted: TBooleanField;
+    AllBooksIsLocal: TBooleanField;
+    AllBooksIsDeleted: TBooleanField;
     AllBooksKeyWords: TWideStringField;
     AllBooksRate: TIntegerField;
     AllBooksProgress: TIntegerField;
@@ -970,8 +970,8 @@ begin
     BookRecord.Code := AllBooksCode.Value;
     BookRecord.Size := AllBooksSize.Value;
     BookRecord.LibID := AllBooksLibID.Value;
-    BookRecord.Deleted := AllBooksDeleted.Value;
-    BookRecord.Local := AllBooksLocal.Value;
+    BookRecord.IsDeleted := AllBooksIsDeleted.Value;
+    BookRecord.IsLocal := AllBooksIsLocal.Value;
     BookRecord.Date := AllBooksDate.Value;
     BookRecord.Lang := AllBooksLang.Value;
     BookRecord.LibRate := AllBooksLibRate.Value;
@@ -1008,7 +1008,7 @@ begin
   begin
     AllBooks.Edit;
     try
-      AllBooksLocal.Value := AState;
+      AllBooksIsLocal.Value := AState;
       AllBooks.Post;
     except
       AllBooks.Cancel;

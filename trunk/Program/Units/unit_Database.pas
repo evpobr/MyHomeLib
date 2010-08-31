@@ -115,8 +115,8 @@ type
     FBookExt: TWideStringField;
     FBookSize: TIntegerField;
     FBookCode: TSmallintField;
-    FBookLocal: TBooleanField;
-    FBookDeleted: TBooleanField;
+    FBookIsLocal: TBooleanField;
+    FBookIsDeleted: TBooleanField;
     FBookKeyWords: TWideStringField;
     FBookRate: TIntegerField;
     FBookProgress: TIntegerField;
@@ -144,6 +144,7 @@ type
 implementation
 
 uses
+  Types,
   SysUtils,
   IOUtils,
   Generics.Collections,
@@ -158,325 +159,9 @@ resourcestring
 const
   TEMP_DATABASE = 'TempDB';
   USER_DATABASE = 'UserDB';
-
-type
-  TFieldDesc = record
-    Name: string;
-    DataType: TFieldType;
-    Size: Integer;
-    Required: Boolean;
-  end;
-
-  TIndexDesc = record
-    Name: string;
-    Fields: string;
-    Options: TIndexOptions;
-  end;
-
-  TBLOBFieldDesc = record
-    Name: string;
-    BlobCompressionAlgorithm: TCompressionAlgorithm;
-    BlobCompressionMode: Byte;
-  end;
-
-const
-
-//-----------------------------------------------------------------------------
-//                                 Коллекция
-//-----------------------------------------------------------------------------
-DATABASE_VERSION = '1000';
-
-SettingsTableFields: array [1 .. 2] of TFieldDesc = (
-  (Name: ID_FIELD;            DataType: ftInteger;    Size: 0;         Required: True),
-  (Name: SETTING_VALIE_FIELD; DataType: ftWideMemo;   Size: 0;         Required: False)
-);
-
-SettingsTableIndexes: array [1 .. 1] of TIndexDesc = (
-  (Name: PX_INDEX;            Fields: ID_FIELD; Options: [ixPrimary])
-);
-
-SettingsTableBlobs: array [1 .. 1] of TBLOBFieldDesc = (
-  (Name: SETTING_VALIE_FIELD; BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5)
-);
-
-//
-// Author List
-//
-AuthorListTableFields: array [1 .. 2] of TFieldDesc = (
-  (Name: AUTHOR_ID_FIELD; DataType: ftInteger;    Size: 0;         Required: True),
-  (Name: BOOK_ID_FIELD;   DataType: ftInteger;    Size: 0;         Required: True)
-);
-
-AuthorListTableIndexes: array [1 .. 2] of TIndexDesc = (
-  (Name: 'ID_Index';  Fields: AUTHOR_ID_BOOK_ID_FIELDS; Options: [ixPrimary]),
-  (Name: 'BookIndex'; Fields: BOOK_ID_FIELD;            Options: [])
-);
-
-//
-//  Authors
-//
-AuthorsTableFields: array [1 .. 4] of TFieldDesc = (
-  (Name: AUTHOR_ID_FIELD;         DataType: ftAutoInc;    Size: 0;   Required: True),
-  (Name: AUTHOR_LASTTNAME_FIELD;  DataType: ftWideString; Size: 128; Required: True),
-  (Name: AUTHOR_FIRSTNAME_FIELD;  DataType: ftWideString; Size: 128; Required: False),
-  (Name: AUTHOR_MIDDLENAME_FIELD; DataType: ftWideString; Size: 128; Required: False)
-);
-
-AuthorsTableIndexes: array [1 .. 2] of TIndexDesc = (
-  (Name: 'ID_Index';      Fields: AUTHOR_ID_FIELD;        Options: [ixPrimary]),
-  (Name: 'AlphabetIndex'; Fields: AUTHOR_FULLNAME_FIELDS; Options: [ixCaseInsensitive])
-);
-
-//
-// Books table
-//
-BooksTableFields: array [1 .. 21] of TFieldDesc = (
-  (Name: BOOK_ID_FIELD;         DataType: ftAutoInc;     Size: 0;   Required: True),
-  (Name: BOOK_LIBID_FIELD;      DataType: ftInteger;     Size: 0;   Required: False),
-  (Name: BOOK_TITLE_FIELD;      DataType: ftWideString;  Size: 150; Required: False),
-  (Name: SERIES_ID_FIELD;        DataType: ftInteger;     Size: 0;   Required: False),
-  (Name: BOOK_SEQNUMBER_FIELD;  DataType: ftSmallInt;    Size: 0;   Required: False),
-  (Name: BOOK_DATE_FIELD;       DataType: ftDate;        Size: 0;   Required: False),
-  (Name: BOOK_LIBRATE_FIELD;    DataType: ftInteger;     Size: 0;   Required: False),
-  (Name: BOOK_LANG_FIELD;       DataType: ftWideString;  Size: 2;   Required: False),
-  (Name: BOOK_FOLDER_FIELD;     DataType: ftWideString;  Size: MAXFOLDERLENGTH; Required: False),
-  (Name: BOOK_FILENAME_FIELD;   DataType: ftWideString;  Size: 170; Required: True),
-  (Name: BOOK_INSIDENO_FIELD;   DataType: ftInteger;     Size: 0;   Required: True),
-  (Name: BOOK_EXT_FIELD;        DataType: ftWideString;  Size: 10;  Required: False),
-  (Name: BOOK_SIZE_FIELD;       DataType: ftInteger;     Size: 0;   Required: False),
-  (Name: BOOK_CODE_FIELD;       DataType: ftSmallInt;    Size: 0;   Required: False),
-  (Name: BOOK_LOCAL_FIELD;      DataType: ftBoolean;     Size: 0;   Required: False),
-  (Name: BOOK_DELETED_FIELD;    DataType: ftBoolean;     Size: 0;   Required: False),
-  (Name: BOOK_KEYWORDS_FIELD;   DataType: ftWideString;  Size: 255; Required: False),
-  (Name: BOOK_RATE_FIELD;       DataType: ftInteger;    Size: 0;   Required: False),
-  (Name: BOOK_PROGRESS_FIELD;   DataType: ftInteger;    Size: 0;   Required: False),
-  (Name: BOOK_ANNOTATION_FIELD; DataType: ftWideMemo;   Size: 0;   Required: False),
-  (Name: BOOK_REVIEW_FIELD;     DataType: ftWideMemo;   Size: 0;   Required: False)
-);
-
-BooksTableIndexes: array [1 .. 10] of TIndexDesc = (
-  (Name: 'ID_Index';       Fields: BOOK_ID_FIELD;             Options: [ixPrimary]),
-  (Name: 'Series_Index';   Fields: SERIE_ID_SEQNUMBER_FIELDS; Options: []),
-  (Name: 'Title_Index';    Fields: BOOK_TITLE_FIELD;          Options: [ixCaseInsensitive]),
-  (Name: 'File_Index';     Fields: BOOK_FILENAME_FIELD;       Options: [ixCaseInsensitive]),
-  (Name: 'Folder_Index';   Fields: BOOK_FOLDER_FIELD;         Options: [ixCaseInsensitive]),
-  (Name: 'Deleted_Index';  Fields: BOOK_DELETED_FIELD;        Options: []),
-  (Name: 'Date_Index';     Fields: BOOK_DATE_FIELD;           Options: []),
-  (Name: 'Local_Index';    Fields: BOOK_LOCAL_FIELD;          Options: []),
-  (Name: 'LibID_Index';    Fields: BOOK_LIBID_FIELD;          Options: []),
-  (Name: 'KeyWords_Index'; Fields: BOOK_KEYWORDS_FIELD;       Options: [ixCaseInsensitive])
-);
-
-BooksTableBlobs: array [1 .. 2] of TBLOBFieldDesc = (
-  (Name: BOOK_ANNOTATION_FIELD; BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5),
-  (Name: BOOK_REVIEW_FIELD;     BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5)
-);
-
-//
-// Series
-//
-SeriesTableFields: array [1 .. 2] of TFieldDesc = (
-  (Name: SERIES_ID_FIELD;    DataType: ftAutoInc;    Size: 0;  Required: True),
-  (Name: SERIES_TITLE_FIELD; DataType: ftWideString; Size: 80; Required: True)
-);
-
-SeriesTableIndexes: array [1 .. 2] of TIndexDesc = (
-  (Name: 'ID_Index';        Fields: SERIES_ID_FIELD;    Options: [ixPrimary]),
-  (Name: 'SeriesTitleIndex'; Fields: SERIES_TITLE_FIELD; Options: [ixCaseInsensitive])
-);
-
-//
-// Genres
-//
-GenresTableFields: array [1 .. 4] of TFieldDesc = (
-  (Name: GENRE_CODE_FIELD;       DataType: ftWideString; Size: 20; Required: True),
-  (Name: GENRE_PARENTCODE_FIELD; DataType: ftWideString; Size: 20; Required: False),
-  (Name: GENRE_FB2CODE_FIELD;    DataType: ftWideString; Size: 20; Required: False),
-  (Name: GENRE_ALIAS_FIELD;      DataType: ftWideString; Size: 50; Required: True)
-);
-
-GenresTableIndexes: array [1 .. 4] of TIndexDesc = (
-  (Name: 'ID_Index';     Fields: GENRE_CODE_FIELD;             Options: [ixPrimary]),
-  (Name: 'CodeIndex';    Fields: GENRE_PARENTCODE_CODE_FIELDS; Options: [ixCaseInsensitive, ixUnique]),
-  (Name: 'FB2CodeIndex'; Fields: GENRE_FB2CODE_FIELD;          Options: [ixCaseInsensitive]),
-  (Name: 'AliasIndex';   Fields: GENRE_ALIAS_FIELD;            Options: [])
-);
-
-//
-// Genre List
-//
-GenreListTableFields: array [1 .. 2] of TFieldDesc = (
-  (Name: GENRE_CODE_FIELD; DataType: ftWideString; Size: 20;        Required: True),
-  (Name: BOOK_ID_FIELD;    DataType: ftInteger;    Size: 0;         Required: True)
-);
-
-GenreListTableIndexes: array [1 .. 2] of TIndexDesc = (
-  (Name: 'ID_Index';   Fields: GENRE_CODE_BOOK_ID_FIELDS; Options: [ixPrimary]),
-  (Name: 'BookIndex';  Fields: BOOK_ID_FIELD;             Options: [])
-);
-
-// -----------------------------------------------------------------------------
-// User.dbsx
-// -----------------------------------------------------------------------------
-//
-// Bases table
-//
-BasesTableFields: array [1 .. 15] of TFieldDesc = (
-  (Name: ID_FIELD;        DataType: ftAutoInc;    Size: 0;   Required: True),
-  (Name: BASE_NAME_FIELD; DataType: ftWideString; Size: 64;  Required: True),
-  (Name: 'RootFolder';    DataType: ftWideString; Size: 128; Required: True),
-  (Name: 'DBFileName';    DataType: ftWideString; Size: 128; Required: True),
-  (Name: 'Notes';         DataType: ftWideString; Size: 255; Required: False),
-  (Name: 'Date';          DataType: ftDate;       Size: 0;   Required: False),
-  (Name: 'Version';       DataType: ftInteger;    Size: 0;   Required: False),
-  (Name: 'Code';          DataType: ftInteger;    Size: 0;   Required: False),
-  (Name: 'AllowDelete';   DataType: ftBoolean;    Size: 0;   Required: False),
-  (Name: 'Settings';      DataType: ftWideMemo;   Size: 0;   Required: False),
-  (Name: 'Icon';          DataType: ftBlob;       Size: 0;   Required: False),
-  (Name: 'URL';           DataType: ftWideString; Size: 255; Required: False),
-  (Name: 'User';          DataType: ftWideString; Size: 50;  Required: False),
-  (Name: 'Pass';          DataType: ftWideString; Size: 50;  Required: False),
-  (Name: 'Connection';    DataType: ftWideMemo;   Size: 0;   Required: False)
-);
-
-BasesTableIndexes: array [1..2] of TIndexDesc = (
-  (Name: 'ID_Index';   Fields: ID_FIELD;        Options: [ixPrimary]),
-  (Name: 'Name_Index'; Fields: BASE_NAME_FIELD; Options: [ixUnique])
-);
-
-BasesTableBlobs: array [1 .. 2] of TBLOBFieldDesc = (
-  (Name: 'Settings';     BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5),
-  (Name: 'Connection';   BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5)
-);
-
-//
-// Groups List (группы: избранное, прочитанное, к прочтению и т.п.)
-//
-GroupsListTableFields: array [1..5] of TFieldDesc = (
-  (Name: GROUP_ID_FIELD;   DataType: ftAutoInc;    Size: 0;   Required: True),
-  (Name: GROUP_NAME_FIELD; DataType: ftWideString; Size: 255; Required: False),
-  (Name: 'AllowDelete';    DataType: ftBoolean;    Size: 0;   Required: False),
-  (Name: 'Notes';          DataType: ftMemo;       Size: 0;   Required: False),
-  (Name: 'Icon';           DataType: ftBlob;       Size: 0;   Required: False)
-);
-
-GroupsListTableIndexes: array [1..2] of TIndexDesc = (
-  (Name: 'ID_Index';   Fields: GROUP_ID_FIELD;   Options: [ixPrimary]),
-  (Name: 'NameIndex';  Fields: GROUP_NAME_FIELD; Options: [ixUnique])
-);
-
-//
-// Book Groups
-//
-BookGroupsTableFields: array [1 .. 3] of TFieldDesc = (
-  (Name: BOOK_ID_FIELD;  DataType: ftInteger;    Size: 0; Required: True),
-  (Name: DB_ID_FIELD;    DataType: ftInteger;    Size: 0; Required: True),
-  (Name: GROUP_ID_FIELD; DataType: ftInteger;    Size: 0; Required: True)
-);
-
-BookGroupsTableIndexes: array [1 .. 2] of TIndexDesc = (
-  (Name: 'ID_Index';    Fields: GROUP_ID_BOOK_ID_DB_ID_FIELDS; Options: [ixPrimary]),
-  (Name: 'BookDBIndex'; Fields: BOOK_ID_DB_ID_FIELDS;          Options: [])
-);
-
-
-//
-// Groups table
-//
-// TODO -oNickR -cDB opt : инхронизировать с таблицей Books
-GroupsTableFields: array [1 .. 23] of TFieldDesc = (
-  (Name: BOOK_ID_FIELD;        DataType: ftInteger;    Size: 0;   Required: True),
-  (Name: DB_ID_FIELD;          DataType: ftInteger;    Size: 0;   Required: True),
-  (Name: BOOK_LIBID_FIELD;     DataType: ftInteger;    Size: 0;   Required: False),
-  (Name: BOOK_TITLE_FIELD;     DataType: ftWideString; Size: 150; Required: False),
-  (Name: SERIES_ID_FIELD;       DataType: ftInteger;    Size: 0;   Required: False),
-  (Name: BOOK_SEQNUMBER_FIELD; DataType: ftSmallInt;   Size: 0;   Required: False),
-  (Name: BOOK_DATE_FIELD;      DataType: ftDate;       Size: 0;   Required: False),
-  (Name: BOOK_LIBRATE_FIELD;   DataType: ftInteger;    Size: 0;   Required: False),
-  (Name: BOOK_LANG_FIELD;      DataType: ftWideString; Size: 2;   Required: False),
-  (Name: BOOK_FOLDER_FIELD;    DataType: ftWideString; Size: 255; Required: False),
-  (Name: BOOK_FILENAME_FIELD;  DataType: ftWideString; Size: 255; Required: True),
-  (Name: BOOK_INSIDENO_FIELD;  DataType: ftInteger;    Size: 0;   Required: True),
-  (Name: BOOK_EXT_FIELD;       DataType: ftWideString; Size: 10;  Required: False),
-  (Name: BOOK_SIZE_FIELD;      DataType: ftInteger;    Size: 0;   Required: False),
-  (Name: BOOK_CODE_FIELD;      DataType: ftSmallInt;   Size: 0;   Required: False),
-  (Name: BOOK_LOCAL_FIELD;     DataType: ftBoolean;    Size: 0;   Required: False),
-  (Name: BOOK_DELETED_FIELD;   DataType: ftBoolean;    Size: 0;   Required: False),
-  (Name: BOOK_KEYWORDS_FIELD;  DataType: ftWideString; Size: 255; Required: False),
-
-  //
-  // Данные из таблицы Extra
-  //
-  (Name: BOOK_RATE_FIELD;      DataType: ftInteger;    Size: 0;   Required: False),
-  (Name: BOOK_PROGRESS_FIELD;  DataType: ftSmallInt;   Size: 0;   Required: False),
-  (Name: BOOK_ANNOTATION_FIELD;DataType: ftWideMemo;   Size: 0;   Required: False),
-  (Name: BOOK_REVIEW_FIELD;    DataType: ftWideMemo;   Size: 0;   Required: False),
-
-  //
-  // Данные из других таблиц. Название серии, авторы, жанры.
-  // TODO : Необходимо сделать обновление этой информации.
-  //
-  (Name: BOOK_EXTRAINFO_FIELD; DataType: ftBlob;       Size: 0;   Required: False)
-);
-
-GroupsTableIndexes: array [1 .. 2] of TIndexDesc = (
-  (Name: 'ID_Index';       Fields: BOOK_ID_DB_ID_FIELDS; Options: [ixPrimary]),
-  (Name: 'File_Index';     Fields: BOOK_FILENAME_FIELD;  Options: [])
-);
-
-GroupBooksTableBlobs: array [1 .. 3] of TBLOBFieldDesc = (
-  (Name: BOOK_ANNOTATION_FIELD;BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5),
-  (Name: BOOK_REVIEW_FIELD;    BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5),
-  (Name: BOOK_EXTRAINFO_FIELD; BlobCompressionAlgorithm: caZLIB;   BlobCompressionMode: 5)
-);
+  DATABASE_VERSION = '1000';
 
 // ------------------------------------------------------------------------------
-
-procedure CreateTable(
-  ADatabase: TABSDatabase;
-  const TableName: string;
-  const FieldDesc: array of TFieldDesc;
-  const IndexDesc: array of TIndexDesc;
-  const BLOBDesc: array of TBLOBFieldDesc
-  );
-var
-  TempTable: TABSTable;
-  i: Integer;
-  f: TABSAdvFieldDef;
-begin
-  TempTable := TABSTable.Create(ADatabase);
-  try
-    TempTable.TableName := TableName;
-
-    for i := 0 to High(FieldDesc) do
-      TempTable.FieldDefs.Add(FieldDesc[i].Name, FieldDesc[i].DataType, FieldDesc[i].Size, FieldDesc[i].Required);
-
-    for i := 0 to High(IndexDesc) do
-      TempTable.IndexDefs.Add(IndexDesc[i].Name, IndexDesc[i].Fields, IndexDesc[i].Options);
-
-    TempTable.CreateTable;
-
-    if Length(BLOBDesc) > 0 then
-    begin
-      TempTable.Open;
-      TempTable.Close;
-
-      for i := 0 to High(BLOBDesc) do
-      begin
-        f := TempTable.RestructureFieldDefs.Find(BLOBDesc[i].Name);
-        if Assigned(f) then
-        begin
-          f.BlobCompressionAlgorithm := BLOBDesc[i].BlobCompressionAlgorithm;
-          f.BlobCompressionMode := BLOBDesc[i].BlobCompressionMode;
-        end;
-      end;
-
-      TempTable.RestructureTable;
-    end;
-  finally
-    TempTable.Free;
-  end;
-end;
 
 { TMHLLibrary }
 
@@ -574,8 +259,8 @@ begin
     FBookExt := FBooks.FieldByName(BOOK_EXT_FIELD) as TWideStringField;
     FBookSize := FBooks.FieldByName(BOOK_SIZE_FIELD) as TIntegerField;
     FBookCode := FBooks.FieldByName(BOOK_CODE_FIELD) as TSmallintField;
-    FBookLocal := FBooks.FieldByName(BOOK_LOCAL_FIELD) as TBooleanField;
-    FBookDeleted := FBooks.FieldByName(BOOK_DELETED_FIELD) as TBooleanField;
+    FBookIsLocal := FBooks.FieldByName(BOOK_LOCAL_FIELD) as TBooleanField;
+    FBookIsDeleted := FBooks.FieldByName(BOOK_DELETED_FIELD) as TBooleanField;
     FBookKeyWords := FBooks.FieldByName(BOOK_KEYWORDS_FIELD) as TWideStringField;
     FBookRate := FBooks.FieldByName(BOOK_RATE_FIELD) as TIntegerField;
     FBookProgress := FBooks.FieldByName(BOOK_PROGRESS_FIELD) as TIntegerField;
@@ -620,8 +305,8 @@ begin
     FBookExt := nil;
     FBookSize := nil;
     FBookCode := nil;
-    FBookLocal := nil;
-    FBookDeleted := nil;
+    FBookIsLocal := nil;
+    FBookIsDeleted := nil;
     FBookKeyWords := nil;
     FBookRate := nil;
     FBookProgress := nil;
@@ -685,6 +370,8 @@ end;
 class procedure TMHLLibrary.CreateSystemTables(const DBFile: string);
 var
   ADatabase: TABSDatabase;
+  createScript: TStream;
+  createQuery: TABSQuery;
   Groups: TABSTable;
 begin
   ADatabase := TABSDatabase.Create(nil);
@@ -694,10 +381,20 @@ begin
     ADatabase.MaxConnections := 5;
     ADatabase.CreateDatabase;
 
-    CreateTable(ADatabase, 'Bases',      BasesTableFields,      BasesTableIndexes,      BasesTableBlobs);
-    CreateTable(ADatabase, 'Groups',     GroupsListTableFields, GroupsListTableIndexes, []);
-    CreateTable(ADatabase, 'BookGroups', BookGroupsTableFields, BookGroupsTableIndexes, []);
-    CreateTable(ADatabase, 'Books',      GroupsTableFields,     GroupsTableIndexes,     GroupBooksTableBlobs);
+    createScript := TResourceStream.Create(HInstance, 'CreateSystemDB', RT_RCDATA);
+    try
+      createQuery := TABSQuery.Create(nil);
+      try
+        createQuery.DatabaseName := ADatabase.DatabaseName;
+        createQuery.SQL.LoadFromStream(createScript);
+        createQuery.ExecSQL;
+      finally
+        createQuery.Free;
+      end;
+    finally
+      createScript.Free;
+    end;
+
     ADatabase.Connected := False;
 
     //
@@ -708,27 +405,8 @@ begin
       Groups.TableName := 'Groups';
       Groups.Active := True;
 
-      Groups.Append;
-      try
-        Groups.FieldByName(GROUP_NAME_FIELD).AsWideString := rstrFavoritesGroupName;
-        Groups.FieldByName('AllowDelete').AsBoolean := False;
-        Groups.Post;
-      except
-        Groups.Cancel;
-        raise;
-      end;
-      Assert(Groups.FieldByName(GROUP_ID_FIELD).AsInteger = FAVORITES_GROUP_ID);
-
-      Groups.Append;
-      try
-        Groups.FieldByName(GROUP_NAME_FIELD).AsWideString := rstrToReadGroupName;
-        Groups.FieldByName('AllowDelete').AsBoolean := False;
-        Groups.Post;
-      except
-        Groups.Cancel;
-        raise;
-      end;
-      Assert(Groups.FieldByName(GROUP_ID_FIELD).AsInteger = (FAVORITES_GROUP_ID + 1));
+      Groups.AppendRecord([FAVORITES_GROUP_ID, rstrFavoritesGroupName, False]);
+      Groups.AppendRecord([FAVORITES_GROUP_ID + 1, rstrToReadGroupName, False]);
     finally
       Groups.Free;
     end;
@@ -738,22 +416,28 @@ begin
 end;
 
 procedure TMHLLibrary.CreateCollectionTables(const DBFile: string; const GenresFileName: string);
+var
+  createScript: TStream;
+  createQuery: TABSQuery;
 begin
   CheckInactive;
 
   DatabaseFileName := DBFile;
   FDatabase.CreateDatabase;
 
-  //
-  // Создадим таблицы
-  //
-  CreateTable(FDatabase, 'Settings',    SettingsTableFields,   SettingsTableIndexes,   []{SettingsTableBlobs});
-  CreateTable(FDatabase, 'Books',       BooksTableFields,      BooksTableIndexes,      BooksTableBlobs);
-  CreateTable(FDatabase, 'Authors',     AuthorsTableFields,    AuthorsTableIndexes,    []);
-  CreateTable(FDatabase, 'Series',      SeriesTableFields,     SeriesTableIndexes,     []);
-  CreateTable(FDatabase, 'Genres',      GenresTableFields,     GenresTableIndexes,     []);
-  CreateTable(FDatabase, 'Genre_List',  GenreListTableFields,  GenreListTableIndexes,  []);
-  CreateTable(FDatabase, 'Author_List', AuthorListTableFields, AuthorListTableIndexes, []);
+  createScript := TResourceStream.Create(HInstance, 'CreateCollectionDB', RT_RCDATA);
+  try
+    createQuery := TABSQuery.Create(nil);
+    try
+      createQuery.DatabaseName := FDatabase.DatabaseName;
+      createQuery.SQL.LoadFromStream(createScript);
+      createQuery.ExecSQL;
+    finally
+      createQuery.Free;
+    end;
+  finally
+    createScript.Free;
+  end;
 
   Active := True;
 
@@ -1050,8 +734,8 @@ begin
       FBookExt.Value := BookRecord.FileExt;
       FBookSize.Value := BookRecord.Size;
       FBookCode.Value := BookRecord.Code;
-      FBookLocal.Value := BookRecord.Local;
-      FBookDeleted.Value := BookRecord.Deleted;
+      FBookIsLocal.Value := BookRecord.IsLocal;
+      FBookIsDeleted.Value := BookRecord.IsDeleted;
       FBookKeyWords.Value := BookRecord.KeyWords;
       FBookRate.Value := BookRecord.Rate;
       FBookProgress.Value := BookRecord.Progress;

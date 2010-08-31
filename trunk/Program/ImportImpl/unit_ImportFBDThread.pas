@@ -140,7 +140,7 @@ begin
             R.Folder := ExtractRelativePath(FRootPath,ExtractFilePath(FFiles[i]));
             R.FileName := ExtractFilename(FFiles[i]);
             R.Date := Now;
-            R.Local := True;
+            R.IsLocal := True;
             FZipper.ExtractToStream(ArchiveItem.FileName,FS);
             if not Assigned(FS) then
               Continue;

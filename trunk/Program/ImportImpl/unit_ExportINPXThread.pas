@@ -264,12 +264,12 @@ begin
     strAuthors                           + INPX_FIELD_DELIMITER + // 0 - authors list
     strGenres                            + INPX_FIELD_DELIMITER + // 1 - genres list
     Trim(R.Title)                        + INPX_FIELD_DELIMITER + // 2 - book title
-    Trim(R.Series)                        + INPX_FIELD_DELIMITER + // 3 - book series' title
+    Trim(R.Series)                       + INPX_FIELD_DELIMITER + // 3 - book series' title
     IntToStr(R.SeqNumber)                + INPX_FIELD_DELIMITER + // 4 - book series' no
     CheckSymbols(Trim(R.FileName))       + INPX_FIELD_DELIMITER + // 5 - book filename
     IntToStr(R.Size)                     + INPX_FIELD_DELIMITER + // 6 - unpacked book filesize
     IntToStr(R.LibID)                    + INPX_FIELD_DELIMITER + // 7 - book LibID
-    IfThen(R.Deleted, '1', '0')          + INPX_FIELD_DELIMITER + // 8 - book deleted flag
+    IfThen(R.IsDeleted, '1', '0')        + INPX_FIELD_DELIMITER + // 8 - book deleted flag
     strFileExt                           + INPX_FIELD_DELIMITER + // 9 - book fileext
     FormatDateTime('yyyy-mm-dd', R.Date) + INPX_FIELD_DELIMITER + // 10 - book data added
     IntToStr(R.InsideNo)                 + INPX_FIELD_DELIMITER + // 11 - File InsideNo in archive
