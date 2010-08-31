@@ -313,7 +313,8 @@ uses
   unit_Helpers,
   unit_Errors,
   unit_SearchUtils,
-  unit_Settings;
+  unit_Settings,
+  unit_Logger;
 
 {$R *.dfm}
 
@@ -326,6 +327,8 @@ constructor TDMCollection.TBookIteratorImpl.Create(
   const Filter: string;
   const SearchCriteria: TBookSearchCriteria
 );
+var
+  pLogger: IIntervalLogger;
 begin
   inherited Create;
 
@@ -338,11 +341,12 @@ begin
   FBooks := TABSQuery.Create(FCollection.DBCollection);
   FBooks.DatabaseName := FCollection.DBCollection.DatabaseName;
   FBooks.SQL.Text := CreateSQL(Mode, Filter, SearchCriteria);
-  Log('TBookIteratorImpl >> ' + FBooks.SQL.Text);
   FBooks.ReadOnly := True;
   FBooks.RequestLive := True;
+
+  pLogger := GetIntervalLogger('TBookIteratorImpl.Create', FBooks.SQL.Text);
   FBooks.Active := True;
-  Log('TBookIteratorImpl done');
+  pLogger := nil;
 
   FBookID := FBooks.FieldByName(BOOK_ID_FIELD) as TIntegerField;
 end;
@@ -532,6 +536,8 @@ constructor TDMCollection.TAuthorIteratorImpl.Create(
   const Mode: TAuthorIteratorMode;
   const Filter: string
 );
+var
+  pLogger: IIntervalLogger;
 begin
   inherited Create;
 
@@ -543,11 +549,12 @@ begin
   FAuthors := TABSQuery.Create(FCollection.DBCollection);
   FAuthors.DatabaseName := FCollection.DBCollection.DatabaseName;
   FAuthors.SQL.Text := CreateSQL(Mode, Filter);
-  Log('TAuthorIteratorImpl >> ' + FAuthors.SQL.Text);
   FAuthors.ReadOnly := True;
   FAuthors.RequestLive := True;
+
+  pLogger := GetIntervalLogger('TAuthorIteratorImpl.Create', FAuthors.SQL.Text);
   FAuthors.Active := True;
-  Log('TAuthorIteratorImpl done ');
+  pLogger := nil;
 
   FAuthorID := FAuthors.FieldByName(AUTHOR_ID_FIELD) as TIntegerField;
 end;
@@ -643,6 +650,8 @@ end;
 { TGenreIteratorImpl }
 
 constructor TDMCollection.TGenreIteratorImpl.Create(Collection: TDMCollection; const Mode: TGenreIteratorMode; const Filter: string);
+var
+  pLogger: IIntervalLogger;
 begin
   inherited Create;
 
@@ -654,11 +663,12 @@ begin
   FGenres := TABSQuery.Create(FCollection.DBCollection);
   FGenres.DatabaseName := FCollection.DBCollection.DatabaseName;
   FGenres.SQL.Text := CreateSQL(Mode, Filter);
-  Log('TGenreIteratorImpl >> ' + FGenres.SQL.Text);
   FGenres.ReadOnly := True;
   FGenres.RequestLive := True;
+
+  pLogger := GetIntervalLogger('TGenreIteratorImpl.Create', FGenres.SQL.Text);
   FGenres.Active := True;
-  Log('TGenreIteratorImpl done ');
+  pLogger := nil;
 
   FGenreCode := FGenres.FieldByName(GENRE_CODE_FIELD) as TWideStringField;
 end;
@@ -711,6 +721,8 @@ end;
 { TSeriesIteratorImpl }
 
 constructor TDMCollection.TSeriesIteratorImpl.Create(Collection: TDMCollection; const Mode: TSeriesIteratorMode; const Filter: string);
+var
+  pLogger: IIntervalLogger;
 begin
   inherited Create;
 
@@ -722,11 +734,12 @@ begin
   FSeries := TABSQuery.Create(FCollection.DBCollection);
   FSeries.DatabaseName := FCollection.DBCollection.DatabaseName;
   FSeries.SQL.Text := CreateSQL(Mode, Filter);
-  Log('TSeriesIteratorImpl >> ' + FSeries.SQL.Text);
   FSeries.ReadOnly := True;
   FSeries.RequestLive := True;
+
+  pLogger := GetIntervalLogger('TSeriesIteratorImpl.Create', FSeries.SQL.Text);
   FSeries.Active := True;
-  Log('TSeriesIteratorImpl done ');
+  pLogger := nil;
 
   FSeriesID := FSeries.FieldByName(SERIES_ID_FIELD) as TIntegerField;
   FSeriesTitle := FSeries.FieldByName(SERIES_TITLE_FIELD) as TWideStringField;
@@ -1406,11 +1419,13 @@ end;
 // Change SeriesID value for all books in the current database with old SeriesID value
 procedure TDMCollection.ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer);
 const
-  UPDATE_SQL = 'UPDATE Books SET ' + SERIES_ID_FIELD + ' = %s WHERE ' + SERIES_ID_FIELD + ' = %s';
+  UPDATE_SQL = 'UPDATE Books SET ' + SERIES_ID_FIELD + ' = %s WHERE ' + SERIES_ID_FIELD + ' %s';
 var
   Query: TABSQuery;
   newSerie: string;
   oldSerie: string;
+var
+  pLogger: IIntervalLogger;
 begin
   Assert(OldSeriesID <> NewSeriesID);
 
@@ -1431,8 +1446,11 @@ begin
       oldSerie := Format('= %u', [NewSeriesID]);
 
     Query.SQL.Text := Format(UPDATE_SQL, [newSerie, oldSerie]);
-    Log(Query.SQL.Text);
+
+    pLogger := GetIntervalLogger('TDMCollection.ChangeBookSeriesID', Query.SQL.Text);
     Query.ExecSQL;
+    pLogger := nil;
+
   finally
     FreeAndNil(Query);
   end;

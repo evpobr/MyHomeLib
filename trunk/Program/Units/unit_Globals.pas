@@ -434,9 +434,6 @@ type
 
   function TestArchive(const FileName: string): Boolean;
 
-  procedure Log(const Text: string);
-  procedure ClearLog;
-
 implementation
 
 uses
@@ -1441,47 +1438,6 @@ begin
   finally
     Zip.Free;
   end;
-end;
-
-// When in DEBUG mode, append the text to the log file
-procedure Log(const Text: string);
-var
-  FileName: string;
-  LogFile: TextFile;
-begin
-{$IFDEF DEBUG}
-  FileName := Settings.AppPath + 'MyHomeLib.log';
-  AssignFile(LogFile, FileName);
-  if FileExists(FileName) then
-  begin
-    Append(LogFile)
-  end
-  else
-    ReWrite(LogFile);
-  try
-    if FileSize(LogFile) >= 10000 then
-      ReWrite(LogFile);       // No more than 10000 lines
-    WriteLn(LogFile, FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now) + '> ' + Text);
-  finally
-    CloseFile(LogFile);
-  end;
-{$ENDIF}
-end;
-
-procedure ClearLog;
-var
-  FileName: string;
-  LogFile: TextFile;
-begin
-{$IFDEF DEBUG}
-  FileName := Settings.AppPath + 'MyHomeLib.log';
-  AssignFile(LogFile, FileName);
-  if FileExists(FileName) then
-  begin
-    ReWrite(LogFile);
-    CloseFile(LogFile);
-  end;
-{$ENDIF}
 end;
 
 end.

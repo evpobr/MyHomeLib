@@ -2384,8 +2384,6 @@ begin
   if (ParamCount > 0) and (ParamStr(1) = '/clear') then
     ClearDir(Settings.DataDir);
 
-  ClearLog;
-
   frmSplash.lblState.Caption := rstrMainConnectToDb;
 
   DMUser.DBUser.DatabaseFileName := Settings.SystemFileName[sfSystemDB];

@@ -408,7 +408,7 @@ begin
 
         GetFields;
 
-        BookList := TStringListEx.Create; { TODO -oNickR -cunused code : насколько я понимаю, этот класс больше ненужен }
+        BookList := TStringList.Create; { TODO -oNickR -cunused code : насколько я понимаю, этот класс больше ненужен }
         try
           if (unZip.FindFirst('*.inp', ArchItem, faAnyFile - faDirectory)) then
           begin

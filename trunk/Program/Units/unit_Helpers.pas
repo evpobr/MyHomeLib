@@ -28,11 +28,6 @@ uses
   Generics.Collections;
 
 type
-  TStringListEx = class(TStringList)
-  public
-    procedure LoadFromStream(Stream: TStream); override;
-  end;
-
   TIniStringList = class(TStringList)
   public
     constructor Create; overload;
@@ -76,25 +71,35 @@ type
 
   TArrayUtils = class
   public
+    class function Join(
+      const Values: array of string;
+      const itemDelimeter: string
+    ): string; overload;
+
     class function Join<T>(
       const Values: array of T;
       const itemDelimeter: string;
       const Converter: TConversion<T>
-    ): string;
+    ): string; overload;
 
-    class function Join2<T>(
+    class function Join<T>(
       const Values: TEnumerable<T>;
       const itemDelimeter: string;
       const Converter: TConversion<T>
-    ): string;
+    ): string; overload;
 
-    class procedure Split{<T>}(
+    class procedure Split(
       const Value: string;
       const itemDelimeter: string;
-      var Items: array of string{T}
-      {;
-      const Setter: TValueSetter<T>}
-    );
+      var AItems: array of string
+    ); overload;
+
+    class procedure Split<T>(
+      const Value: string;
+      const itemDelimeter: string;
+      var AItems: array of T;
+      const Setter: TValueSetter<T>
+    ); overload;
   end;
 
 function SimpleShellExecute(
@@ -117,31 +122,6 @@ uses
   ShlObj,
   ShellAPI,
   ActiveX;
-
-// ============================================================================
-// TStringListEx
-// ============================================================================
-procedure TStringListEx.LoadFromStream(Stream: TStream);
-const
-  UTF8BOM: array [1..3] of Byte = ($EF, $BB, $BF); //the UTF-8 byte order mark (BOM).
-var
-  FIsUTF8File: Boolean;
-  APosition: Int64;
-  bomBuffer: array [1..3] of Byte;
-begin
-  APosition := Stream.Position;
-  FIsUTF8File := False;
-
-  if Stream.Read(bomBuffer, SizeOf(bomBuffer)) = SizeOf(bomBuffer) then
-  begin
-    FIsUTF8File := (bomBuffer[1] = UTF8BOM[1]) and (bomBuffer[2] = UTF8BOM[2]) or (bomBuffer[3] = UTF8BOM[3]);
-  end;
-
-  if not FIsUTF8File then
-    Stream.Position := APosition;
-
-  inherited;
-end;
 
 // ============================================================================
 // TIniStringList
@@ -472,6 +452,26 @@ end;
 
 { TArrayUtils }
 
+class function TArrayUtils.Join(const Values: array of string; const itemDelimeter: string): string;
+var
+  i, L, R: Integer;
+begin
+  if Length(Values) = 0 then
+    Exit;
+
+  L := Low(Values);
+  R := High(Values);
+
+  Result := Values[L];
+  Inc(L);
+
+  while L <= R do
+  begin
+    Result := Result + itemDelimeter + Values[L];
+    Inc(L);
+  end;
+end;
+
 class function TArrayUtils.Join<T>(const Values: array of T; const itemDelimeter: string; const Converter: TConversion<T>): string;
 var
   i, L, R: Integer;
@@ -492,7 +492,7 @@ begin
   end;
 end;
 
-class function TArrayUtils.Join2<T>(
+class function TArrayUtils.Join<T>(
   const Values: TEnumerable<T>;
   const itemDelimeter: string;
   const Converter: TConversion<T>
@@ -513,11 +513,10 @@ begin
   end;
 end;
 
-class procedure TArrayUtils.Split{<T>}(
+class procedure TArrayUtils.Split(
   const Value: string;
   const itemDelimeter: string;
-  var Items: array of string{T;
-  const Setter: TValueSetter<T>}
+  var AItems: array of string
 );
 var
   ValueLen: Integer;
@@ -525,11 +524,14 @@ var
   StartPos: Integer;
   SeparatorPos: Integer;
 
+  ItemsLen: Integer;
+
   s: string;
 begin
   ValueLen := Length(Value);
   SeparatorLen := Length(itemDelimeter);
   StartPos := 1;
+  ItemsLen := Length(AItems);
 
   SeparatorPos := PosEx(itemDelimeter, Value, StartPos);
   while SeparatorPos <> 0 do
@@ -537,11 +539,57 @@ begin
     s := Copy(Value, StartPos, SeparatorPos - StartPos);
     StartPos := SeparatorPos + SeparatorLen;
     SeparatorPos := PosEx(itemDelimeter, Value, StartPos);
+
+    //SetLength(AItems, ItemsLen + 1);
+    AItems[ItemsLen] := s;
+    Inc(ItemsLen);
   end;
 
   if StartPos < ValueLen then
   begin
     s := Copy(Value, StartPos, ValueLen);
+    //SetLength(Items, ItemsLen + 1);
+    AItems[ItemsLen] := s;
+  end;
+end;
+
+class procedure TArrayUtils.Split<T>(
+  const Value: string;
+  const itemDelimeter: string;
+  var AItems: array of T;
+  const Setter: TValueSetter<T>
+);
+var
+  ValueLen: Integer;
+  SeparatorLen: Integer;
+  StartPos: Integer;
+  SeparatorPos: Integer;
+
+  ItemsLen: Integer;
+
+  s: string;
+begin
+  ValueLen := Length(Value);
+  SeparatorLen := Length(itemDelimeter);
+  StartPos := 1;
+  ItemsLen := Length(AItems);
+
+  SeparatorPos := PosEx(itemDelimeter, Value, StartPos);
+  while SeparatorPos <> 0 do
+  begin
+    s := Copy(Value, StartPos, SeparatorPos - StartPos);
+    StartPos := SeparatorPos + SeparatorLen;
+    SeparatorPos := PosEx(itemDelimeter, Value, StartPos);
+    //SetLength(AItems, ItemsLen + 1);
+    Setter(AItems[ItemsLen], s);
+    Inc(ItemsLen);
+  end;
+
+  if StartPos < ValueLen then
+  begin
+    s := Copy(Value, StartPos, ValueLen);
+    //SetLength(AItems, ItemsLen + 1);
+    Setter(AItems[ItemsLen], s);
   end;
 end;
 

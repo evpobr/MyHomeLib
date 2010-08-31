@@ -389,7 +389,8 @@ uses
   Variants,
   dm_Collection,
   unit_SearchUtils,
-  unit_Settings;
+  unit_Settings,
+  unit_Logger;
 
 resourcestring
   rstrNamelessColection = 'безымянная коллекция';
@@ -400,6 +401,8 @@ resourcestring
 { TBookIteratorImpl }
 
 constructor TDMUser.TBookIteratorImpl.Create(User: TDMUser; const Filter: string);
+var
+  pLogger: IIntervalLogger;
 begin
   inherited Create;
 
@@ -410,9 +413,11 @@ begin
   FBooks := TABSQuery.Create(FUser.DBUser);
   FBooks.DatabaseName := FUser.DBUser.DatabaseName;
   FBooks.SQL.Text := CreateSQL(Filter);
-  Log(FBooks.SQL.Text);
   FBooks.ReadOnly := True;
+
+  pLogger := GetIntervalLogger('TBookIteratorImpl.Create', FBooks.SQL.Text);
   FBooks.Active := True;
+  pLogger := nil;
 
   FBookID := FBooks.FieldByName(BOOK_ID_FIELD) as TIntegerField;
   FDatabaseID := FBooks.FieldByName(DB_ID_FIELD) as TIntegerField;
@@ -455,6 +460,8 @@ end;
 { TGroupIteratorImpl }
 
 constructor TDMUser.TGroupIteratorImpl.Create(User: TDMUser);
+var
+  pLogger: IIntervalLogger;
 begin
   inherited Create;
 
@@ -465,9 +472,11 @@ begin
   FGroups := TABSQuery.Create(FUser.DBUser);
   FGroups.DatabaseName := FUser.DBUser.DatabaseName;
   FGroups.SQL.Text := CreateSQL;
-  Log(FGroups.SQL.Text);
   FGroups.ReadOnly := True;
+
+  pLogger := GetIntervalLogger('TGroupIteratorImpl.Create', FGroups.SQL.Text);
   FGroups.Active := True;
+  pLogger := nil;
 
   FGroupID := FGroups.FieldByName(GROUP_ID_FIELD) as TIntegerField;
   FGroupName := FGroups.FieldByName(GROUP_NAME_FIELD) as TWideStringField;
@@ -743,6 +752,7 @@ const
   DELETE_BOOKS_QUERY = 'DELETE FROM Books WHERE DatabaseID = %u';
 var
   Query: TABSQuery;
+  pLogger: IIntervalLogger;
 begin
   //
   // 1. Удалить все книги этой коллекции из групп
@@ -756,12 +766,14 @@ begin
 
     // Delete books from groups by DatabaseID:
     Query.SQL.Text := Format(DELETE_REL_QUERY, [CollectionID]);
-    Log(Query.SQL.Text);
+    pLogger := GetIntervalLogger('TDMUser.DeleteCollection', Query.SQL.Text);
     Query.ExecSQL;
+    pLogger := nil;
 
     Query.SQL.Text := Format(DELETE_BOOKS_QUERY, [CollectionID]);
-    Log(Query.SQL.Text);
+    pLogger := GetIntervalLogger('TDMUser.DeleteCollection', Query.SQL.Text);
     Query.ExecSQL;
+    pLogger := nil;
   finally
     FreeAndNil(Query);
   end;
@@ -895,18 +907,21 @@ const
   SQL_DELETE_FROM_BOOKS: string = 'DELETE FROM Books WHERE BookID = %u AND DatabaseID = %u ';
 var
   Query: TABSQuery;
+  pLogger: IIntervalLogger;
 begin
   Query := TABSQuery.Create(DBUser);
   try
     Query.DatabaseName := DBUser.DatabaseName;
 
     Query.SQL.Text := Format(SQL_DELETE_FROM_BOOK_GROUPS, [BookKey.BookID, BookKey.DatabaseID]);
-    Log(Query.SQL.Text);
+    pLogger := GetIntervalLogger('TDMUser.DeleteBook', Query.SQL.Text);
     Query.ExecSQL;
+    pLogger := nil;
 
     Query.SQL.Text := Format(SQL_DELETE_FROM_BOOKS, [BookKey.BookID, BookKey.DatabaseID]);
-    Log(Query.SQL.Text);
+    pLogger := GetIntervalLogger('TDMUser.DeleteBook', Query.SQL.Text);
     Query.ExecSQL;
+    pLogger := nil;
   finally
     FreeAndNil(Query);
   end;
@@ -1088,11 +1103,12 @@ end;
 // Change SeriesID value for all books having provided DatabaseID and old SeriesID value
 procedure TDMUser.ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer);
 const
-  UPDATE_SQL = 'UPDATE Books SET ' + SERIES_ID_FIELD + ' = %s WHERE ' + DB_ID_FIELD + ' = %u AND ' + SERIES_ID_FIELD + '= %s';
+  UPDATE_SQL = 'UPDATE Books SET ' + SERIES_ID_FIELD + ' = %s WHERE ' + DB_ID_FIELD + ' = %u AND ' + SERIES_ID_FIELD + ' %s';
 var
   newSerie: string;
   oldSerie: string;
   Query: TABSQuery;
+  pLogger: IIntervalLogger;
 begin
   if OldSeriesID <> NewSeriesID then
   begin
@@ -1110,8 +1126,9 @@ begin
     try
       Query.DatabaseName := DBUser.DatabaseName;
       Query.SQL.Text := Format(UPDATE_SQL, [newSerie, DatabaseID, oldSerie]);
-      Log(Query.SQL.Text);
+      pLogger := GetIntervalLogger('TDMUser.ChangeBookSeriesID', Query.SQL.Text);
       Query.ExecSQL;
+      pLogger := nil;
     finally
       FreeAndNil(Query);
     end;
@@ -1365,13 +1382,15 @@ const
       ')';
 var
   Query: TABSQuery;
+  pLogger: IIntervalLogger;
 begin
   Query := TABSQuery.Create(DBUser);
   try
     Query.DatabaseName := DBUser.DatabaseName;
     Query.SQL.Text := SQL;
-    Log(Query.SQL.Text);
+    pLogger := GetIntervalLogger('TDMUser.RemoveUnusedBooks', Query.SQL.Text);
     Query.ExecSQL;
+    pLogger := nil;
   finally
     FreeAndNil(Query);
   end;
