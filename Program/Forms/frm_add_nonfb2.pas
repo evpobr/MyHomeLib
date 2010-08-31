@@ -478,12 +478,12 @@ begin
   FBookRecord.InsideNo := 0;
   FBookRecord.SeqNumber := StrToIntDef(edSN.Text, 0);
   FBookRecord.LibID := 0;
-  FBookRecord.Deleted := False;
+  FBookRecord.IsDeleted := False;
   FBookRecord.Size := Data.Size;
   FBookRecord.Date := Now;
   FBookRecord.KeyWords := edKeyWords.Text;
   FBookRecord.Lang := cbLang.Text;
-  FBookRecord.Local := True;
+  FBookRecord.IsLocal := True;
 end;
 
 procedure TfrmAddnonfb2.AddAuthorFromList(Sender: TObject);

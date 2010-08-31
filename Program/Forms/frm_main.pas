@@ -3099,7 +3099,7 @@ begin
 
     if Settings.ShowBookCover or Settings.ShowBookAnnotation then
     begin
-      if IsLocal or Data^.Local then
+      if IsLocal or Data^.IsLocal then
       begin
         try
           bookStream := Data^.GetBookDescriptorStream;
@@ -3276,7 +3276,7 @@ begin
     // The book belongs to an online collection and is available locally (already downloaded)
     //
     DMUser.SelectCollection(Data^.BookKey.DatabaseID);
-    if (Data^.Local) and isOnlineCollection(DMUser.CurrentCollection.CollectionType) then
+    if (Data^.IsLocal) and isOnlineCollection(DMUser.CurrentCollection.CollectionType) then
       ilFileTypes.Draw(TargetCanvas, X, CellRect.Top + 1, 7);
 
     //
@@ -3422,9 +3422,9 @@ begin
     TargetCanvas.Font.Style := [fsBold]
   else if not Sender.Selected[Node] then
   begin
-    if Data^.Local then
+    if Data^.IsLocal then
       TargetCanvas.Font.Color := Settings.LocalColor;
-    if Data^.Deleted then
+    if Data^.IsDeleted then
       TargetCanvas.Font.Color := Settings.DeletedColor;
   end;
 end;
@@ -3788,7 +3788,7 @@ begin
       begin
         if (DMUser.SelectCollection(BookRecord.BookKey.DatabaseID)) then
         begin
-          if (not BookRecord.Local) and isOnlineCollection(DMUser.CurrentCollection.CollectionType) then
+          if (not BookRecord.IsLocal) and isOnlineCollection(DMUser.CurrentCollection.CollectionType) then
           begin
             // A not-yet-downloaded book of an online collection, can download only if book's collection is selected
             DMCollection.VerifyCurrentCollection(BookRecord.BookKey.DatabaseID);
@@ -4512,7 +4512,7 @@ begin
       begin
         BookFileName := Data^.GetBookFileName;
 
-        if (IsOnline and Data^.Local) and DeleteFile(BookFileName) then
+        if (IsOnline and Data^.IsLocal) and DeleteFile(BookFileName) then
           SetBookLocalStatus(Data^.BookKey, False)
         else
         begin
@@ -4588,7 +4588,7 @@ begin
           // игнорируем все ошибки
         end;
 
-        if Data^.Local then
+        if Data^.IsLocal then
           DMCollection.SetLocal(Data^.BookKey, False);
 
         UpdateNodes(
@@ -4596,7 +4596,7 @@ begin
           procedure(BookData: PBookRecord)
           begin
             Assert(Assigned(BookData));
-            BookData^.Local := False;
+            BookData^.IsLocal := False;
           end
         );
       end;
@@ -4651,7 +4651,7 @@ begin
     Assert(Assigned(BookData));
     if IsSelectedBookNode(BookNode, BookData) then
     begin
-      if not BookData^.Local and (BookData^.BookKey.DatabaseID = DMUser.ActiveCollection.ID) then
+      if not BookData^.IsLocal and (BookData^.BookKey.DatabaseID = DMUser.ActiveCollection.ID) then
       begin
         if not BookInDownloadList(BookData^.BookKey) then
         begin
@@ -6725,7 +6725,7 @@ begin
     procedure(BookData: PBookRecord)
     begin
       Assert(Assigned(BookData));
-      BookData^.Local := IsLocal;
+      BookData^.IsLocal := IsLocal;
     end
   );
 end;

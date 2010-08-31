@@ -44,7 +44,7 @@ object DMUser: TDMUser
       Size = 255
     end
     object tblBasesDate: TDateField
-      FieldName = 'Date'
+      FieldName = 'CreationDate'
     end
     object tblBasesVersion: TIntegerField
       FieldName = 'Version'
@@ -67,15 +67,15 @@ object DMUser: TDMUser
       Size = 255
     end
     object tblBasesUser: TWideStringField
-      FieldName = 'User'
+      FieldName = 'LibUser'
       Size = 50
     end
     object tblBasesPass: TWideStringField
-      FieldName = 'Pass'
+      FieldName = 'LibPassword'
       Size = 50
     end
     object tblBasesConnection: TWideMemoField
-      FieldName = 'Connection'
+      FieldName = 'ConnectionScript'
       BlobType = ftWideMemo
     end
   end
@@ -857,7 +857,7 @@ object DMUser: TDMUser
       FieldName = 'SeqNumber'
     end
     object AllBooksDate: TDateField
-      FieldName = 'Date'
+      FieldName = 'UpdateDate'
     end
     object AllBooksLibRate: TIntegerField
       FieldName = 'LibRate'
@@ -884,16 +884,16 @@ object DMUser: TDMUser
       Size = 10
     end
     object AllBooksSize: TIntegerField
-      FieldName = 'Size'
+      FieldName = 'BookSize'
     end
     object AllBooksCode: TSmallintField
       FieldName = 'Code'
     end
-    object AllBooksLocal: TBooleanField
-      FieldName = 'Local'
+    object AllBooksIsLocal: TBooleanField
+      FieldName = 'IsLocal'
     end
-    object AllBooksDeleted: TBooleanField
-      FieldName = 'Deleted'
+    object AllBooksIsDeleted: TBooleanField
+      FieldName = 'IsDeleted'
     end
     object AllBooksKeyWords: TWideStringField
       FieldName = 'KeyWords'

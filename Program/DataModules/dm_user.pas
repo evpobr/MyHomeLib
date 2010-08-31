@@ -86,8 +86,8 @@ type
     AllBooksExt: TWideStringField;
     AllBooksSize: TIntegerField;
     AllBooksCode: TSmallintField;
-    AllBooksLocal: TBooleanField;
-    AllBooksDeleted: TBooleanField;
+    AllBooksIsLocal: TBooleanField;
+    AllBooksIsDeleted: TBooleanField;
     AllBooksKeyWords: TWideStringField;
     AllBooksAnnotation: TWideMemoField;
     AllBooksReview: TWideMemoField;
@@ -822,8 +822,8 @@ begin
     BookRecord.Code := AllBooksCode.Value;
     BookRecord.Size := AllBooksSize.Value;
     BookRecord.LibID := AllBooksLibID.Value;
-    BookRecord.Deleted := AllBooksDeleted.Value;
-    BookRecord.Local := AllBooksLocal.Value;
+    BookRecord.IsDeleted := AllBooksIsDeleted.Value;
+    BookRecord.IsLocal := AllBooksIsLocal.Value;
     BookRecord.Date := AllBooksDate.Value;
     BookRecord.Lang := AllBooksLang.Value;
     BookRecord.LibRate := AllBooksLibRate.Value;
@@ -1051,7 +1051,7 @@ begin
   begin
     AllBooks.Edit;
     try
-      AllBooksLocal.Value := Value;
+      AllBooksIsLocal.Value := Value;
       AllBooks.Post;
     except
       AllBooks.Cancel;
@@ -1304,8 +1304,8 @@ begin
       AllBooksExt.Value := BookRecord.FileExt;
       AllBooksSize.Value := BookRecord.Size;
       AllBooksCode.Value := BookRecord.Code;
-      AllBooksLocal.Value := BookRecord.Local;
-      AllBooksDeleted.Value := BookRecord.Deleted;
+      AllBooksIsLocal.Value := BookRecord.IsLocal;
+      AllBooksIsDeleted.Value := BookRecord.IsDeleted;
       AllBooksKeyWords.Value := BookRecord.KeyWords;
 
       AllBooksAnnotation.Value := BookRecord.Annotation;

@@ -210,15 +210,15 @@ const
   BOOK_PROGRESS_FIELD = 'Progress';
 
   BOOK_SEQNUMBER_FIELD = 'SeqNumber';
-  BOOK_DATE_FIELD = 'Date';
+  BOOK_DATE_FIELD = 'UpdateDate';
   BOOK_LIBRATE_FIELD = 'LibRate';
   BOOK_LANG_FIELD = 'Lang';
   BOOK_INSIDENO_FIELD = 'InsideNo';
   BOOK_EXT_FIELD = 'Ext';
-  BOOK_SIZE_FIELD = 'Size';
+  BOOK_SIZE_FIELD = 'BookSize';
   BOOK_CODE_FIELD = 'Code';
-  BOOK_LOCAL_FIELD = 'Local';
-  BOOK_DELETED_FIELD = 'Deleted';
+  BOOK_LOCAL_FIELD = 'IsLocal';
+  BOOK_DELETED_FIELD = 'IsDeleted';
   BOOK_KEYWORDS_FIELD = 'KeyWords';
   BOOK_EXTRAINFO_FIELD = 'ExtraInfo';
 
@@ -241,7 +241,10 @@ const
   AUTHOR_FIRSTNAME_FIELD = 'FirstName';
   AUTHOR_MIDDLENAME_FIELD = 'MiddleName';
 
-  SETTING_VALIE_FIELD = 'Value';
+  HAS_LOCAL_BOOKS = 'HasLocalBooks';
+  HAS_NONDELETED_BOOKS = 'HasNonDeletedBooks';
+
+  SETTING_VALIE_FIELD = 'SettingValue';
 
   //
   // индексные поля

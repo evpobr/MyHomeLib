@@ -276,7 +276,7 @@ begin
           end;
 
         flDeleted:
-          R.Deleted := (slParams[i] = '1'); // удалена
+          R.IsDeleted := (slParams[i] = '1'); // удалена
 
         flDate:
           begin // дата
@@ -432,7 +432,7 @@ begin
                     // И\Иванов Иван\1234 Просто книга.fb2.zip
                     R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;
                     // Сохраним отметку о существовании файла
-                    R.Local := FileExists(FCollectionRoot + R.Folder);
+                    R.IsLocal := FileExists(FCollectionRoot + R.Folder);
                   end
                   else
                   begin

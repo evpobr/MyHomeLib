@@ -266,8 +266,8 @@ type
     Progress: Integer;
     LibRate: Integer;
     Code: Integer;
-    Local: Boolean;
-    Deleted: Boolean;
+    IsLocal: Boolean;
+    IsDeleted: Boolean;
     Date: TDateTime;
     FileExt: string;
 
@@ -928,8 +928,8 @@ begin
   SeqNumber := 0;
   libID := 0;
 
-  Deleted := False;
-  Local := False;
+  IsDeleted := False;
+  IsLocal := False;
   Date := 0;
 
   Review := '';
