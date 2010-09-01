@@ -183,12 +183,7 @@ begin
 
           // создаем его заново
           Teletype(Format(rstrCreatingCollection, [Settings.Updates[i].Name]),tsInfo);
-          ALibrary := TMHLLibrary.Create(nil);
-          try
-            ALibrary.CreateCollectionTables(DBFileName, GENRES_FB2_FILENAME);
-          finally
-            ALibrary.Free;
-          end;
+          TMHLLibrary.CreateCollectionTables(DBFileName, GENRES_FB2_FILENAME);
         end; //if FULL
 
         //  импортирум данные

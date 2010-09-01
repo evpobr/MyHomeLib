@@ -28,32 +28,20 @@ uses
   unit_Globals;
 
 type
-  TABSTableHelper = class helper for TABSTable
-    constructor Create(AOwner: TComponent);
-  end;
-
   TMHLLibrary = class(TComponent)
   private
-    procedure CheckActive;
-    procedure CheckInactive;
-
-    function GetDatabaseFileName: string;
-    procedure SetDatabaseFileName(const Value: string);
-
-    function GetActive: Boolean;
-    procedure SetActive(const Value: Boolean);
-
     procedure LoadGenres(const GenresFileName: string);
 
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create(const DBCollectionFile: string);
     destructor Destroy; override;
 
     //
     // Database creation & management
     //
-    class procedure CreateSystemTables(const DBFile: string);
-    procedure CreateCollectionTables(const DBFile: string; const GenresFileName: string);
+    class procedure CreateSystemTables(const DBUserFile: string);
+    class procedure CreateCollectionTables(const DBCollectionFile: string; const GenresFileName: string);
+
     procedure ReloadDefaultGenres(const FileName: string);
 
     procedure SetProperty(PropID: Integer; const Value: string); overload;
@@ -78,10 +66,6 @@ type
     //
     procedure BeginBulkOperation;
     procedure EndBulkOperation(Commit: Boolean = True);
-
-  public
-    property DatabaseFileName: string read GetDatabaseFileName write SetDatabaseFileName;
-    property Active: Boolean read GetActive write SetActive;
 
   private
     FDatabase: TABSDatabase;
@@ -165,176 +149,111 @@ const
 
 { TMHLLibrary }
 
-procedure TMHLLibrary.CheckActive;
+constructor TMHLLibrary.Create(const DBCollectionFile: string);
 begin
-  if not Active then
-    DatabaseError(SDatabaseClosed, Self);
-end;
-
-procedure TMHLLibrary.CheckInactive;
-begin
-  if Active then
-    DatabaseError(SDatabaseOpen, Self);
-end;
-
-constructor TMHLLibrary.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
+  inherited Create(nil);
 
   FDatabase := TABSDatabase.Create(Self);
+  FDatabase.DatabaseFileName := DBCollectionFile;
   FDatabase.DatabaseName := TEMP_DATABASE;
   FDatabase.MaxConnections := 5;
   FDatabase.PageSize := 65535;
   FDatabase.PageCountInExtent := 16;
+  FDatabase.Connected := True;
 
   FSettings := TABSTable.Create(FDatabase);
   FSettings.TableName := 'Settings';
+  FSettings.DatabaseName := FDatabase.DatabaseName;
+  FSettings.Active := True;
 
   FAuthors := TABSTable.Create(FDatabase);
   FAuthors.TableName := 'Authors';
+  FAuthors.DatabaseName := FDatabase.DatabaseName;
+  FAuthors.Active := True;
 
   FAuthorList := TABSTable.Create(FDatabase);
   FAuthorList.TableName := 'Author_list';
+  FAuthorList.DatabaseName := FDatabase.DatabaseName;
+  FAuthorList.Active := True;
 
   FBooks := TABSTable.Create(FDatabase);
   FBooks.TableName := 'Books';
+  FBooks.DatabaseName := FDatabase.DatabaseName;
+  FBooks.Active := True;
 
   FSeries := TABSTable.Create(FDatabase);
   FSeries.TableName := 'Series';
+  FSeries.DatabaseName := FDatabase.DatabaseName;
+  FSeries.Active := True;
 
   FGenres := TABSTable.Create(FDatabase);
   FGenres.TableName := 'Genres';
+  FGenres.DatabaseName := FDatabase.DatabaseName;
+  FGenres.Active := True;
 
   FGenreList := TABSTable.Create(FDatabase);
   FGenreList.TableName := 'Genre_list';
+  FGenreList.DatabaseName := FDatabase.DatabaseName;
+  FGenreList.Active := True;
+
+  FSettingsID := FSettings.FieldByName(ID_FIELD) as TIntegerField;
+  FSettingsValue := FSettings.FieldByName(SETTING_VALIE_FIELD) as TWideMemoField;
+
+  FAuthorID := FAuthors.FieldByName(AUTHOR_ID_FIELD) as TIntegerField;
+  FAuthorLastName := FAuthors.FieldByName(AUTHOR_LASTTNAME_FIELD) as TWideStringField;
+  FAuthorFirstName := FAuthors.FieldByName(AUTHOR_FIRSTNAME_FIELD) as TWideStringField;
+  FAuthorMiddleName := FAuthors.FieldByName(AUTHOR_MIDDLENAME_FIELD) as TWideStringField;
+
+  FAuthorListAuthorID := FAuthorList.FieldByName(AUTHOR_ID_FIELD) as TIntegerField;
+  FAuthorListBookID := FAuthorList.FieldByName(BOOK_ID_FIELD) as TIntegerField;
+
+  FBookBookID := FBooks.FieldByName(BOOK_ID_FIELD) as TIntegerField;
+  FBookLibID := FBooks.FieldByName(BOOK_LIBID_FIELD) as TIntegerField;
+  FBookTitle := FBooks.FieldByName(BOOK_TITLE_FIELD) as TWideStringField;
+  FBookSeriesID := FBooks.FieldByName(SERIES_ID_FIELD) as TIntegerField;
+  FBookSeqNumber := FBooks.FieldByName(BOOK_SEQNUMBER_FIELD) as TSmallintField;
+  FBookDate := FBooks.FieldByName(BOOK_DATE_FIELD) as TDateField;
+  FBookLibRate := FBooks.FieldByName(BOOK_LIBRATE_FIELD) as TIntegerField;
+  FBookLang := FBooks.FieldByName(BOOK_LANG_FIELD) as TWideStringField;
+  FBookFolder := FBooks.FieldByName(BOOK_FOLDER_FIELD) as TWideStringField;
+  FBookFileName := FBooks.FieldByName(BOOK_FILENAME_FIELD) as TWideStringField;
+  FBookInsideNo := FBooks.FieldByName(BOOK_INSIDENO_FIELD) as TIntegerField;
+  FBookExt := FBooks.FieldByName(BOOK_EXT_FIELD) as TWideStringField;
+  FBookSize := FBooks.FieldByName(BOOK_SIZE_FIELD) as TIntegerField;
+  FBookCode := FBooks.FieldByName(BOOK_CODE_FIELD) as TSmallintField;
+  FBookIsLocal := FBooks.FieldByName(BOOK_LOCAL_FIELD) as TBooleanField;
+  FBookIsDeleted := FBooks.FieldByName(BOOK_DELETED_FIELD) as TBooleanField;
+  FBookKeyWords := FBooks.FieldByName(BOOK_KEYWORDS_FIELD) as TWideStringField;
+  FBookRate := FBooks.FieldByName(BOOK_RATE_FIELD) as TIntegerField;
+  FBookProgress := FBooks.FieldByName(BOOK_PROGRESS_FIELD) as TIntegerField;
+  FBookAnnotation := FBooks.FieldByName(BOOK_ANNOTATION_FIELD) as TWideMemoField;
+  FBookReview := FBooks.FieldByName(BOOK_REVIEW_FIELD) as TWideMemoField;
+
+  FSeriesSeriesID := FSeries.FieldByName(SERIES_ID_FIELD) as TIntegerField;
+  FSeriesSeriesTitle := FSeries.FieldByName(SERIES_TITLE_FIELD) as TWideStringField;
+
+  FGenresGenreCode := FGenres.FieldByName(GENRE_CODE_FIELD) as TWideStringField;
+  FGenresParentCode := FGenres.FieldByName(GENRE_PARENTCODE_FIELD) as TWideStringField;
+  FGenresFB2Code := FGenres.FieldByName(GENRE_FB2CODE_FIELD) as TWideStringField;
+  FGenresAlias := FGenres.FieldByName(GENRE_ALIAS_FIELD) as TWideStringField;
+
+  FGenreListGenreCode := FGenreList.FieldByName(GENRE_CODE_FIELD) as TWideStringField;
+  FGenreListBookID := FGenreList.FieldByName(BOOK_ID_FIELD) as TIntegerField;
 end;
 
 destructor TMHLLibrary.Destroy;
 begin
-  Active := False;
+  FreeAndNil(FSettings);
+  FreeAndNil(FAuthors);
+  FreeAndNil(FAuthorList);
+  FreeAndNil(FBooks);
+  FreeAndNil(FSeries);
+  FreeAndNil(FGenres);
+  FreeAndNil(FGenreList);
+
+  FreeAndNil(FDatabase);
+
   inherited Destroy;
-end;
-
-function TMHLLibrary.GetActive: Boolean;
-begin
-  Result := FDatabase.Connected;
-end;
-
-procedure TMHLLibrary.SetActive(const Value: Boolean);
-begin
-  FDatabase.Connected := Value;
-
-  FSettings.Active := Value;
-  FAuthors.Active := Value;
-  FAuthorList.Active := Value;
-  FBooks.Active := Value;
-  FSeries.Active := Value;
-  FGenres.Active := Value;
-  FGenreList.Active := Value;
-
-  if Value then
-  begin
-    FSettingsID := FSettings.FieldByName(ID_FIELD) as TIntegerField;
-    FSettingsValue := FSettings.FieldByName(SETTING_VALIE_FIELD) as TWideMemoField;
-
-    FAuthorID := FAuthors.FieldByName(AUTHOR_ID_FIELD) as TIntegerField;
-    FAuthorLastName := FAuthors.FieldByName(AUTHOR_LASTTNAME_FIELD) as TWideStringField;
-    FAuthorFirstName := FAuthors.FieldByName(AUTHOR_FIRSTNAME_FIELD) as TWideStringField;
-    FAuthorMiddleName := FAuthors.FieldByName(AUTHOR_MIDDLENAME_FIELD) as TWideStringField;
-
-    FAuthorListAuthorID := FAuthorList.FieldByName(AUTHOR_ID_FIELD) as TIntegerField;
-    FAuthorListBookID := FAuthorList.FieldByName(BOOK_ID_FIELD) as TIntegerField;
-
-    FBookBookID := FBooks.FieldByName(BOOK_ID_FIELD) as TIntegerField;
-    FBookLibID := FBooks.FieldByName(BOOK_LIBID_FIELD) as TIntegerField;
-    FBookTitle := FBooks.FieldByName(BOOK_TITLE_FIELD) as TWideStringField;
-    FBookSeriesID := FBooks.FieldByName(SERIES_ID_FIELD) as TIntegerField;
-    FBookSeqNumber := FBooks.FieldByName(BOOK_SEQNUMBER_FIELD) as TSmallintField;
-    FBookDate := FBooks.FieldByName(BOOK_DATE_FIELD) as TDateField;
-    FBookLibRate := FBooks.FieldByName(BOOK_LIBRATE_FIELD) as TIntegerField;
-    FBookLang := FBooks.FieldByName(BOOK_LANG_FIELD) as TWideStringField;
-    FBookFolder := FBooks.FieldByName(BOOK_FOLDER_FIELD) as TWideStringField;
-    FBookFileName := FBooks.FieldByName(BOOK_FILENAME_FIELD) as TWideStringField;
-    FBookInsideNo := FBooks.FieldByName(BOOK_INSIDENO_FIELD) as TIntegerField;
-    FBookExt := FBooks.FieldByName(BOOK_EXT_FIELD) as TWideStringField;
-    FBookSize := FBooks.FieldByName(BOOK_SIZE_FIELD) as TIntegerField;
-    FBookCode := FBooks.FieldByName(BOOK_CODE_FIELD) as TSmallintField;
-    FBookIsLocal := FBooks.FieldByName(BOOK_LOCAL_FIELD) as TBooleanField;
-    FBookIsDeleted := FBooks.FieldByName(BOOK_DELETED_FIELD) as TBooleanField;
-    FBookKeyWords := FBooks.FieldByName(BOOK_KEYWORDS_FIELD) as TWideStringField;
-    FBookRate := FBooks.FieldByName(BOOK_RATE_FIELD) as TIntegerField;
-    FBookProgress := FBooks.FieldByName(BOOK_PROGRESS_FIELD) as TIntegerField;
-    FBookAnnotation := FBooks.FieldByName(BOOK_ANNOTATION_FIELD) as TWideMemoField;
-    FBookReview := FBooks.FieldByName(BOOK_REVIEW_FIELD) as TWideMemoField;
-
-    FSeriesSeriesID := FSeries.FieldByName(SERIES_ID_FIELD) as TIntegerField;
-    FSeriesSeriesTitle := FSeries.FieldByName(SERIES_TITLE_FIELD) as TWideStringField;
-
-    FGenresGenreCode := FGenres.FieldByName(GENRE_CODE_FIELD) as TWideStringField;
-    FGenresParentCode := FGenres.FieldByName(GENRE_PARENTCODE_FIELD) as TWideStringField;
-    FGenresFB2Code := FGenres.FieldByName(GENRE_FB2CODE_FIELD) as TWideStringField;
-    FGenresAlias := FGenres.FieldByName(GENRE_ALIAS_FIELD) as TWideStringField;
-
-    FGenreListGenreCode := FGenreList.FieldByName(GENRE_CODE_FIELD) as TWideStringField;
-    FGenreListBookID := FGenreList.FieldByName(BOOK_ID_FIELD) as TIntegerField;
-  end
-  else
-  begin
-    FSettingsID := nil;
-    FSettingsValue := nil;
-
-    FAuthorID := nil;
-    FAuthorLastName := nil;
-    FAuthorFirstName := nil;
-    FAuthorMiddleName := nil;
-
-    FAuthorListAuthorID := nil;
-    FAuthorListBookID := nil;
-
-    FBookBookID := nil;
-    FBookLibID := nil;
-    FBookTitle := nil;
-    FBookSeriesID := nil;
-    FBookSeqNumber := nil;
-    FBookDate := nil;
-    FBookLibRate := nil;
-    FBookLang := nil;
-    FBookFolder := nil;
-    FBookFileName := nil;
-    FBookInsideNo := nil;
-    FBookExt := nil;
-    FBookSize := nil;
-    FBookCode := nil;
-    FBookIsLocal := nil;
-    FBookIsDeleted := nil;
-    FBookKeyWords := nil;
-    FBookRate := nil;
-    FBookProgress := nil;
-    FBookAnnotation := nil;
-    FBookReview := nil;
-
-    FSeriesSeriesID := nil;
-    FSeriesSeriesTitle := nil;
-
-    FGenresGenreCode := nil;
-    FGenresParentCode := nil;
-    FGenresFB2Code := nil;
-    FGenresAlias := nil;
-
-    FGenreListGenreCode := nil;
-    FGenreListBookID := nil;
-  end;
-end;
-
-function TMHLLibrary.GetDatabaseFileName: string;
-begin
-  Result := FDatabase.DatabaseFileName;
-end;
-
-procedure TMHLLibrary.SetDatabaseFileName(const Value: string);
-begin
-  CheckInactive;
-  FDatabase.DatabaseFileName := Value;
 end;
 
 procedure TMHLLibrary.SetProperty(PropID: Integer; const Value: Integer);
@@ -347,10 +266,10 @@ end;
 
 procedure TMHLLibrary.SetProperty(PropID: Integer; const Value: string);
 begin
+  Assert(FSettings.Active);
+
   if Value = '' then
     Exit;
-
-  CheckActive;
 
   if FSettings.Locate(ID_FIELD, PropID, []) then
     FSettings.Edit
@@ -367,7 +286,7 @@ begin
   end;
 end;
 
-class procedure TMHLLibrary.CreateSystemTables(const DBFile: string);
+class procedure TMHLLibrary.CreateSystemTables(const DBUserFile: string);
 var
   ADatabase: TABSDatabase;
   createScript: TStream;
@@ -376,7 +295,7 @@ var
 begin
   ADatabase := TABSDatabase.Create(nil);
   try
-    ADatabase.DatabaseFileName := DBFile;
+    ADatabase.DatabaseFileName := DBUserFile;
     ADatabase.DatabaseName := USER_DATABASE;
     ADatabase.MaxConnections := 5;
     ADatabase.CreateDatabase;
@@ -389,13 +308,11 @@ begin
         createQuery.SQL.LoadFromStream(createScript);
         createQuery.ExecSQL;
       finally
-        createQuery.Free;
+        FreeAndNil(createQuery);
       end;
     finally
-      createScript.Free;
+      FreeAndNil(createScript);
     end;
-
-    ADatabase.Connected := False;
 
     //
     // Зададим дефлотные группы
@@ -408,49 +325,62 @@ begin
       Groups.AppendRecord([FAVORITES_GROUP_ID, rstrFavoritesGroupName, False]);
       Groups.AppendRecord([FAVORITES_GROUP_ID + 1, rstrToReadGroupName, False]);
     finally
-      Groups.Free;
+      FreeAndNil(Groups);
     end;
   finally
-    ADatabase.Free;
+    FreeAndNil(ADatabase);
   end;
 end;
 
-procedure TMHLLibrary.CreateCollectionTables(const DBFile: string; const GenresFileName: string);
+class procedure TMHLLibrary.CreateCollectionTables(const DBCollectionFile: string; const GenresFileName: string);
 var
+  ADatabase: TABSDatabase;
   createScript: TStream;
   createQuery: TABSQuery;
+
+  ALibrary: TMHLLibrary;
 begin
-  CheckInactive;
-
-  DatabaseFileName := DBFile;
-  FDatabase.CreateDatabase;
-
-  createScript := TResourceStream.Create(HInstance, 'CreateCollectionDB', RT_RCDATA);
+  ADatabase := TABSDatabase.Create(nil);
   try
-    createQuery := TABSQuery.Create(nil);
+    ADatabase.DatabaseFileName := DBCollectionFile;
+    ADatabase.DatabaseName := TEMP_DATABASE;
+    ADatabase.MaxConnections := 5;
+    ADatabase.CreateDatabase;
+
+    createScript := TResourceStream.Create(HInstance, 'CreateCollectionDB', RT_RCDATA);
     try
-      createQuery.DatabaseName := FDatabase.DatabaseName;
-      createQuery.SQL.LoadFromStream(createScript);
-      createQuery.ExecSQL;
+      createQuery := TABSQuery.Create(nil);
+      try
+        createQuery.DatabaseName := ADatabase.DatabaseName;
+        createQuery.SQL.LoadFromStream(createScript);
+        createQuery.ExecSQL;
+      finally
+        FreeAndNil(createQuery);
+      end;
     finally
-      createQuery.Free;
+      FreeAndNil(createScript);
     end;
   finally
-    createScript.Free;
+    FreeAndNil(ADatabase);
   end;
 
-  Active := True;
+  // Now that we have the DB structure in place for DBCollectionFile, we can create an instance of the library for it:
+  ALibrary := TMHLLibrary.Create(DBCollectionFile);
+  try
+    //
+    // Запишем версию метаданных, и дату создания
+    //
+    Assert(ALibrary.FSettings.Active);
+    ALibrary.FSettings.AppendRecord([SETTING_VERSION, DATABASE_VERSION]);
+    ALibrary.FSettings.AppendRecord([SETTING_CREATION_DATE, FormatDateTime('yyyy-mm-dd hh:nn:ss', Now)]);
 
-  //
-  // Запишем версию метаданных, и дату создания
-  //
-  FSettings.AppendRecord([SETTING_VERSION, DATABASE_VERSION]);
-  FSettings.AppendRecord([SETTING_CREATION_DATE, FormatDateTime('yyyy-mm-dd hh:nn:ss', Now)]);
-
-  //
-  // Заполним таблицу жанров
-  //
-  LoadGenres(GenresFileName);
+    //
+    // Заполним таблицу жанров
+    //
+    ALibrary.LoadGenres(GenresFileName);
+  finally
+    FreeAndNil(ALibrary);
+  end;
 end;
 
 procedure TMHLLibrary.LoadGenres(const GenresFileName: string);
@@ -463,7 +393,7 @@ var
   Code: string;
   FB2Code: string;
 begin
-  CheckActive;
+  Assert(FGenres.Active);
 
   FS := TStringList.Create;
   try
@@ -552,7 +482,7 @@ end;
 
 procedure TMHLLibrary.ReloadDefaultGenres(const FileName: string);
 begin
-  CheckActive;
+  Assert(FGenres.Active);
 
   //
   // почистить таблицу Genres
@@ -569,6 +499,8 @@ var
   Code: string;
   p: Integer;
 begin
+  Assert(FGenres.Active);
+
   FGenres.Locate(GENRE_FB2CODE_FIELD, FB2Code, []);
   Code := FGenresGenreCode.Value;
 
@@ -584,7 +516,7 @@ function TMHLLibrary.CheckFileInCollection(const FileName: string; const FullNam
 var
   S: string;
 begin
-  CheckActive;
+  Assert(FBooks.Active);
 
   if ZipFolder then
     Result := FBooks.Locate(BOOK_FOLDER_FIELD, FileName, [loCaseInsensitive])
@@ -606,8 +538,13 @@ var
   Res: Boolean;
 
 begin
+  Assert(FAuthors.Active);
+  Assert(FAuthorList.Active);
+  Assert(FBooks.Active);
+  Assert(FSeries.Active);
+  Assert(FGenres.Active);
+
   Result := 0;
-  CheckActive;
 
   if BookRecord.FileName = '' then
     Exit;
@@ -773,7 +710,11 @@ procedure TMHLLibrary.DeleteBook(const BookKey: TBookKey);
 var
   SeriesID: Integer;
 begin
-  CheckActive;
+  Assert(FAuthors.Active);
+  Assert(FAuthorList.Active);
+  Assert(FBooks.Active);
+  Assert(FSeries.Active);
+  Assert(FGenreList.Active);
 
   if FBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
   begin
@@ -821,7 +762,7 @@ end;
 
 procedure TMHLLibrary.CleanBookGenres(BookID: Integer);
 begin
-  CheckActive;
+  Assert(FGenreList.Active);
 
   while FGenreList.Locate(BOOK_ID_FIELD, BookID, []) do
     FGenreList.Delete;
@@ -833,6 +774,8 @@ procedure TMHLLibrary.InsertBookGenres(const BookID: Integer; var Genres: TBookG
 var
   Genre: TGenreData;
 begin
+  Assert(FGenreList.Active);
+
   FilterDuplicateGenresByCode(Genres);
 
   for Genre in Genres do
@@ -852,6 +795,8 @@ end;
 
 procedure TMHLLibrary.GetSeries(SeriesList: TStrings);
 begin
+  Assert(FSeries.Active);
+
   FSeries.First;
   while not FSeries.Eof do
   begin
@@ -918,7 +863,6 @@ end;
 
 procedure TMHLLibrary.BeginBulkOperation;
 begin
-  CheckActive;
   Assert(not FDatabase.InTransaction);
 
   FDatabase.StartTransaction;
@@ -926,27 +870,12 @@ end;
 
 procedure TMHLLibrary.EndBulkOperation(Commit: Boolean = True);
 begin
-  CheckActive;
   Assert(FDatabase.InTransaction);
 
   if Commit then
     FDatabase.Commit(False)
   else
     FDatabase.Rollback;
-end;
-
-{ TAbsTableHelper }
-
-constructor TABSTableHelper.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-  //
-  // TABSDatabase не наследуется от TDatabase. Как результат, конструктор TDataset-а
-  // (базового класса TAbsTable) не может установить свойство "DatabaseName".
-  // Восстановим это поведение.
-  //
-  if AOwner is TABSDatabase then
-    DatabaseName := TABSDatabase(AOwner).DatabaseName;
 end;
 
 end.

@@ -240,7 +240,6 @@ end;
 
 procedure TfrmAddnonfb2.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
-  FLibrary.Active := False;
   FreeAndNil(FLibrary);
 
   Assert(Assigned(FOnSetControlsState));
@@ -257,9 +256,7 @@ begin
   miClearAllClick(Sender);
   lblGenre.Caption := '';
 
-  FLibrary := TMHLLibrary.Create(Self);
-  FLibrary.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
-  FLibrary.Active := True;
+  FLibrary := TMHLLibrary.Create(DMUser.ActiveCollection.DBFileName);
 
   ScanFolder;
 

@@ -558,16 +558,16 @@ begin
     //
     // Создаем коллекцию
     //
-    ALibrary := TMHLLibrary.Create(nil);
-    try
-      if FParams.Operation <> otExisting then
-      begin
-        FProgressPage.ShowTeletype(rstrCreationCollection, tsInfo);
-        { TODO -oNickR -cUsability : проверять существование на соответствующей странице с выдачей предупреждения }
-        //Assert(not FileExists(FParams.CollectionFile));
-        Assert(FileExists(FParams.GenreFile));
-        ALibrary.CreateCollectionTables(FParams.CollectionFile, FParams.GenreFile);
+    if FParams.Operation <> otExisting then
+    begin
+      FProgressPage.ShowTeletype(rstrCreationCollection, tsInfo);
+      { TODO -oNickR -cUsability : проверять существование на соответствующей странице с выдачей предупреждения }
+      //Assert(not FileExists(FParams.CollectionFile));
+      Assert(FileExists(FParams.GenreFile));
+      TMHLLibrary.CreateCollectionTables(FParams.CollectionFile, FParams.GenreFile);
 
+      ALibrary := TMHLLibrary.Create(FParams.CollectionFile);
+      try
         //
         // Установить свойства коллекции
         //
@@ -576,11 +576,10 @@ begin
         ALibrary.SetProperty(SETTING_CODE, FParams.CollectionCode);
         ALibrary.SetProperty(SETTING_URL, FParams.URL);
         ALibrary.SetProperty(SETTING_DOWNLOAD_SCRIPT, FParams.Script);
+        FProgressPage.ShowProgress(60);
+      finally
+          FreeAndNil(ALibrary);
       end;
-
-      FProgressPage.ShowProgress(60);
-    finally
-      ALibrary.Free;
     end;
 
     FProgressPage.ShowProgress(100);
