@@ -205,18 +205,24 @@ end;
 
 procedure TMHLStaticTip.SetImages(const Value: TCustomImageList);
 begin
-  if Images <> nil then
-    Images.UnRegisterChanges(FImageChangeLink);
-
-  FImages := Value;
-
-  if Images <> nil then
+  if Value <> FImages then
   begin
-    Images.RegisterChanges(FImageChangeLink);
-    Images.FreeNotification(Self);
-  end;
+    if Assigned(FImages) then
+    begin
+      FImages.UnRegisterChanges(FImageChangeLink);
+      FImages.RemoveFreeNotification(Self);
+    end;
 
-  Invalidate;
+    FImages := Value;
+
+    if Assigned(FImages) then
+    begin
+      FImages.RegisterChanges(FImageChangeLink);
+      FImages.FreeNotification(Self);
+    end;
+
+    Invalidate;
+  end;
 end;
 
 procedure TMHLStaticTip.ImageListChange(Sender: TObject);
