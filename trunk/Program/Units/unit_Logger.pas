@@ -107,7 +107,7 @@ var
   logString: AnsiString;
   bytesWritten: Longword;
 begin
-  logString := Format('%s;%s;%s;%s' + CRLF, [FormatDateTime('c', Now), string(Elapsed), Trim(logMessage), Trim(extraInfo)]);
+  logString := Format('%s; %s; %s; %s' + CRLF, [FormatDateTime('c', Now), string(Elapsed), Trim(logMessage), Trim(extraInfo)]);
 
   WriteFile(FLogFile, PAnsiChar(logString)^, Length(logString), bytesWritten, nil);
 end;
