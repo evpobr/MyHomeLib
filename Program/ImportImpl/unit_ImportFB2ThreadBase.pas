@@ -253,11 +253,8 @@ procedure TImportFB2ThreadBase.WorkFunction;
 begin
   FRootPath := DMUser.ActiveCollection.RootPath;
 
-  FLibrary := TMHLLibrary.Create(nil);
+  FLibrary := TMHLLibrary.Create(DMUser.ActiveCollection.DBFileName);
   try
-    FLibrary.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
-    FLibrary.Active := True;
-
     FFiles := TStringList.Create;
     try
       ScanFolder;

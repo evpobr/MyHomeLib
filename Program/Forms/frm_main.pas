@@ -3578,11 +3578,8 @@ begin
     if not DMUser.SelectCollection(ID) then
       Exit;
 
-    ALibrary := TMHLLibrary.Create(nil);
+    ALibrary := TMHLLibrary.Create(DMUser.CurrentCollection.DBFileName);
     try
-      ALibrary.DatabaseFileName := DMUser.CurrentCollection.DBFileName;
-      ALibrary.Active := True;
-
       Node := Tree.GetFirst;
       while Assigned(Node) do
       begin
@@ -4495,13 +4492,10 @@ begin
 
   GetActiveTree(Tree);
 
-  ALibrary := TMHLLibrary.Create(nil);
+  ALibrary := TMHLLibrary.Create(DMUser.ActiveCollection.DBFileName);
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
-    ALibrary.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
-    ALibrary.Active := True;
-
     Node := Tree.GetFirst;
     while Assigned(Node) do
     begin
@@ -4931,11 +4925,8 @@ begin
 
   if frmGenreTree.ShowModal = mrOk then
   begin
-    ALibrary := TMHLLibrary.Create(nil);
+    ALibrary := TMHLLibrary.Create(DMUser.ActiveCollection.DBFileName);
     try
-      ALibrary.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
-      ALibrary.Active := True;
-
       NodeB := Tree.GetFirst;
       while Assigned(NodeB) do
       begin
@@ -6508,17 +6499,14 @@ var
   AFileName: string;
 begin
   DMCollection.DBCollection.Connected := False;
-  ALibrary := TMHLLibrary.Create(nil);
+  ALibrary := TMHLLibrary.Create(DMUser.ActiveCollection.DBFileName);
   try
-    ALibrary.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
-    ALibrary.Active := True;
-
     if isFB2Collection(DMUser.ActiveCollection.CollectionType) then
       ALibrary.ReloadDefaultGenres(Settings.SystemFileName[sfGenresFB2])
     else if unit_Helpers.GetFileName(fnGenreList, AFileName) then
       ALibrary.ReloadDefaultGenres(AFileName);
   finally
-    ALibrary.Free;
+    FreeAndNil(ALibrary);
   end;
   InitCollection(True);
 end;

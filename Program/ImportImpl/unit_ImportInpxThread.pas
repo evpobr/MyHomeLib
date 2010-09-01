@@ -393,10 +393,8 @@ begin
   i := 0;
   SetProgress(0);
 
-  FLibrary := TMHLLibrary.Create(nil);
+  FLibrary := TMHLLibrary.Create(DBFileName);
   try
-    FLibrary.DatabaseFileName := DBFileName;
-    FLibrary.Active := True;
     FLibrary.BeginBulkOperation;
     try
       unZip := TZipForge.Create(nil);

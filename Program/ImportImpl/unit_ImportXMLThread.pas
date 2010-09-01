@@ -89,11 +89,8 @@ begin
     if FCollection.Info.Name <> CollectionName then
       Teletype(rstrCollectionNameMismatchWarningMsg, tsWarning);
 
-    FLibrary := TMHLLibrary.Create(nil);
+    FLibrary := TMHLLibrary.Create(FDBFileName);
     try
-      FLibrary.DatabaseFileName := FDBFileName;
-      FLibrary.Active := True;
-
       BookList := FCollection.BookList;
 
       SetComment(rstrImportingMsg);
