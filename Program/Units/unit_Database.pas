@@ -155,7 +155,7 @@ begin
 
   FDatabase := TABSDatabase.Create(Self);
   FDatabase.DatabaseFileName := DBCollectionFile;
-  FDatabase.DatabaseName := TEMP_DATABASE;
+  FDatabase.DatabaseName := TEMP_DATABASE + '>' + FormatDateTime('c.zzz', Now);
   FDatabase.MaxConnections := 5;
   FDatabase.PageSize := 65535;
   FDatabase.PageCountInExtent := 16;
@@ -343,7 +343,7 @@ begin
   ADatabase := TABSDatabase.Create(nil);
   try
     ADatabase.DatabaseFileName := DBCollectionFile;
-    ADatabase.DatabaseName := TEMP_DATABASE;
+    ADatabase.DatabaseName := TEMP_DATABASE + '>' + FormatDateTime('c.zzz', Now);
     ADatabase.MaxConnections := 5;
     ADatabase.CreateDatabase;
 
