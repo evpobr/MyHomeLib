@@ -76,14 +76,6 @@ const
 
   { TImportXMLThread }
 
-(*
-
-  Вообще говоря, использовать основной экземпляр датамодуля в потоке не очень корректно.
-  Но!, 1) мы не используем датаэвэ-контролы, 2) все использование происходит при поднятой модальной форме.
-  Возможно, стоит создавать новый экземпляр, но пока обойдемся и так.
-
-*)
-
 constructor TExport2INPXThread.Create;
 begin
   inherited Create;
@@ -102,6 +94,7 @@ end;
 
 procedure TExport2INPXThread.WorkFunction;
 var
+  BookCollection: TBookCollection;
   slFileList: TStringList;
   slHelper: TStringList;
   cINPRecord: string;
@@ -126,22 +119,33 @@ begin
   try
     slHelper := TStringList.Create;
     try
-      BookIterator := GetActiveBookCollection.GetBookIterator(bmAll, True);
-      totalBooks := BookIterator.GetNumRecords;
-      while BookIterator.Next(R) do
-      begin
-        if Canceled then
-          Exit;
+      BookCollection := TBookCollection.Create(FCollectionDBFileName, False);
+      try
+        BookIterator := BookCollection.GetBookIterator(bmAll, True);
+        try
+          totalBooks := BookIterator.GetNumRecords;
+          while BookIterator.Next(R) do
+          begin
+            if Canceled then
+              Exit;
 
-        cINPRecord := INPRecordCreate(R);
-        Assert(cINPRecord <> '');
+            cINPRecord := INPRecordCreate(R);
+            Assert(cINPRecord <> '');
 
-        slHelper.Add(cINPRecord);
+            slHelper.Add(cINPRecord);
 
-        Inc(processedBooks);
-        if (processedBooks mod ProcessedItemThreshold) = 0 then
-          SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
-        SetProgress(processedBooks * 100 div totalBooks);
+            Inc(processedBooks);
+            if (processedBooks mod ProcessedItemThreshold) = 0 then
+              SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
+            SetProgress(processedBooks * 100 div totalBooks);
+          end;
+          Assert(processedBooks = totalBooks);
+          SetProgress(100);
+        finally
+          BookIterator := nil;
+        end;
+      finally
+        FreeAndNil(BookCollection);
       end;
 
       SetComment(rstrSaving);

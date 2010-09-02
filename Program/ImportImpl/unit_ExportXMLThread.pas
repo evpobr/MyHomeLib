@@ -1,14 +1,20 @@
-{******************************************************************************}
-{                                                                              }
-{ MyHomeLib                                                                    }
-{                                                                              }
-{ Version 0.9                                                                  }
-{ 20.08.2008                                                                   }
-{ Copyright (c) Aleksey Penkov  alex.penkov@gmail.com                          }
-{                                                                              }
-{ @author Nick Rymanov nrymanov@gmail.com                                      }
-{                                                                              }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Author(s)           Nick Rymanov    nrymanov@gmail.com
+  *                     Aleksey Penkov  alex.penkov@gmail.com
+  * Created             20.08.2008
+  * Description
+  *
+  * $Id$
+  *
+  * History
+  * NickR 02.09.2010    Информация из глобальных переменных зачитывается в контексте основного потока.
+  *
+  ****************************************************************************** *)
 
 unit unit_ExportXMLThread;
 
@@ -17,18 +23,24 @@ interface
 uses
   Classes,
   SysUtils,
+  unit_Globals,
   unit_WorkerThread,
   unit_MHL_xml;
 
 type
   TExport2XMLThread = class(TWorker)
   private
+    FCollectionName: string;
+    FCollectionDBFileName: string;
+    FCollectionType: COLLECTION_TYPE;
     FXMLFileName: string;
 
   protected
     procedure WorkFunction; override;
 
   public
+    constructor Create;
+
     property XMLFileName: string read FXMLFileName write FXMLFileName;
   end;
 
@@ -36,7 +48,6 @@ implementation
 
 uses
   dm_user,
-  unit_Globals,
   unit_MHL_strings,
   unit_Database;
 
@@ -46,17 +57,19 @@ resourcestring
 
 { TImportXMLThread }
 
-(*
+constructor TExport2XMLThread.Create;
+begin
+  inherited Create;
 
-Вообще говоря, использовать основной экземпляр датамодуля в потоке не очень корректно.
-Но!, 1) мы не используем датаэвэ-контролы, 2) все использование происходит при поднятой модальной форме.
-Возможно, стоит создавать новый экземпляр, но пока обойдемся и так.
-
-*)
+  FCollectionName := DMUser.ActiveCollectionInfo.Name;
+  FCollectionDBFileName := DMUser.ActiveCollectionInfo.DBFileName;
+  FCollectionType := DMUser.ActiveCollectionInfo.CollectionType;
+end;
 
 procedure TExport2XMLThread.WorkFunction;
 var
   FCollection: IXMLCollection;
+  BookCollection: TBookCollection;
   FBook: IXMLBook;
   FAuthor: IXMLAuthor;
   FGenre: IXMLGenre;
@@ -73,51 +86,60 @@ begin
 
   FCollection.OwnerDocument.Encoding := 'UTF-8';
 
-  FCollection.Info.Name := DMUser.ActiveCollectionInfo.Name;
-  FCollection.Info.Code := Ord(DMUser.ActiveCollectionInfo.CollectionType);
+  FCollection.Info.Name := FCollectionName;
+  FCollection.Info.Code := Ord(FCollectionType);
 
   processedBooks := 0;
 
-  BookIterator := GetActiveBookCollection.GetBookIterator(bmAll, True);
-  totalBooks := BookIterator.GetNumRecords;
-  while BookIterator.Next(R) do
-  begin
-    if Canceled then
-      Exit;
+  BookCollection := TBookCollection.Create(FCollectionDBFileName, False);
+  try
+    BookIterator := GetActiveBookCollection.GetBookIterator(bmAll, True);
+    try
+      totalBooks := BookIterator.GetNumRecords;
+      while BookIterator.Next(R) do
+      begin
+        if Canceled then
+          Exit;
 
-    FBook := FCollection.BookList.Add;
-    FBook.Title := R.Title;
-    FBook.Series := R.Series;
-    FBook.File_.Inside_no := R.InsideNo;
-    FBook.No := R.SeqNumber;
-    FBook.File_.Folder := R.Folder;
-    FBook.File_.Ext := R.FileExt;
-    FBook.File_.Size := R.Size;
-    FBook.File_. Name := R.FileName;
-    FBook.Date := DateToStr(R.Date);
+        FBook := FCollection.BookList.Add;
+        FBook.Title := R.Title;
+        FBook.Series := R.Series;
+        FBook.File_.Inside_no := R.InsideNo;
+        FBook.No := R.SeqNumber;
+        FBook.File_.Folder := R.Folder;
+        FBook.File_.Ext := R.FileExt;
+        FBook.File_.Size := R.Size;
+        FBook.File_. Name := R.FileName;
+        FBook.Date := DateToStr(R.Date);
 
-    for AuthorRecord in R.Authors do
-    begin
-      FAuthor := FBook.AuthorList.Add;
-      FAuthor.Name := AuthorRecord.FirstName;
-      FAuthor.Family := AuthorRecord.LastName;
-      FAuthor.Middle := AuthorRecord.MiddleName;
-    end;
+        for AuthorRecord in R.Authors do
+        begin
+          FAuthor := FBook.AuthorList.Add;
+          FAuthor.Name := AuthorRecord.FirstName;
+          FAuthor.Family := AuthorRecord.LastName;
+          FAuthor.Middle := AuthorRecord.MiddleName;
+        end;
 
-    for GenreRecord in R.Genres do
-    begin
-      FGenre := FBook.GenreList.Add;
-      FGenre.MHL_Code := GenreRecord.GenreCode;
-      FGenre.Fb2_Code := GenreRecord.FB2GenreCode;
-      FGenre.Alias := GenreRecord.GenreAlias;
-    end;
+        for GenreRecord in R.Genres do
+        begin
+          FGenre := FBook.GenreList.Add;
+          FGenre.MHL_Code := GenreRecord.GenreCode;
+          FGenre.Fb2_Code := GenreRecord.FB2GenreCode;
+          FGenre.Alias := GenreRecord.GenreAlias;
+        end;
 
-    Inc(processedBooks);
-    if (processedBooks mod ProcessedItemThreshold) = 0 then
+        Inc(processedBooks);
+        if (processedBooks mod ProcessedItemThreshold) = 0 then
+          SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
+        SetProgress(processedBooks * 100 div totalBooks);
+      end;
       SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
-    SetProgress(processedBooks * 100 div totalBooks);
+    finally
+      BookIterator := nil;
+    end;
+  finally
+    FreeAndNil(BookCollection);
   end;
-  SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
 
   SetComment(rstrSavingDocumentPleaseWait);
   FCollection.OwnerDocument.SaveToFile(FXMLFileName);
