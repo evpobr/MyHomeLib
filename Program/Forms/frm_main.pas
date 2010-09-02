@@ -6256,6 +6256,7 @@ end;
 procedure TfrmMain.CompactDataBaseExecute(Sender: TObject);
 begin
   GetActiveBookCollection.CompactDatabase;
+  FreeBookCollectionMap;
 
   DMUser.SetTableState(True);
   //DMCollection.SetTableState(True);
@@ -6523,9 +6524,9 @@ end;
 procedure TfrmMain.RepairDataBaseExecute(Sender: TObject);
 begin
   GetActiveBookCollection.RepairDatabase;
+  FreeBookCollectionMap;
 
   DMUser.SetTableState(True);
-  //DMCollection.SetTableState(True);
 end;
 
 procedure TfrmMain.ChangeSettingsExecute(Sender: TObject);

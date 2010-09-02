@@ -199,7 +199,6 @@ type
 
     procedure CompactDatabase;
     procedure RepairDatabase;
-//    procedure SetTableState(State: Boolean);
 
   private
     FDatabase: TABSDatabase;
@@ -2199,15 +2198,6 @@ begin
   DMUser.SetLocal(BookKey, AState);
 end;
 
-//procedure TBookCollection.SetTableState(State: Boolean);
-//begin
-//  FAuthors.Active := State;
-//  FSeries.Active := State;
-//  FBooks.Active := State;
-//  FGenres.Active := State;
-//end;
-
-
 procedure TBookCollection.GetBookLibID(const BookKey: TBookKey; out ARes: String);
 begin
   if BookKey.DatabaseID = DMUser.ActiveCollectionInfo.ID then
@@ -2228,21 +2218,16 @@ end;
 
 procedure TBookCollection.CompactDatabase;
 begin
-  try
-    FDatabase.Close;
-    FDatabase.CompactDatabase;
-  finally
-    FDatabase.Open;
-  end;
+  FDatabase.Close;
+  FDatabase.CompactDatabase;
+  // After this the collection is unusable and has to be reloaded
 end;
 
 procedure TBookCollection.RepairDatabase;
 begin
-  try
-    FDatabase.Close;
-    FDatabase.RepairDatabase;
-  finally
-    FDatabase.Open;
-  end;
+  FDatabase.Close;
+  FDatabase.RepairDatabase;
+  // After this the collection is unusable and has to be reloaded
 end;
+
 end.
