@@ -61,12 +61,10 @@ type
     FCollectionRoot: string;
     FCollectionType: Integer;
     FInpxFileName: string;
+    FGenresType: TGenresType;
 
     FFields: array of TFields;
-
-    FPersonalFolder: boolean;
-
-    FGenresType: TGenresType;
+    FUseStoredFolder: Boolean;
 
     procedure SetCollectionRoot(const Value: string);
     procedure ParseData(const input: string; const OnlineCollection: Boolean; var R: TBookRecord);
@@ -74,15 +72,14 @@ type
   protected
     procedure WorkFunction; override;
     procedure GetFields(const StructureInfo: string);
+    procedure Import(CheckFiles: Boolean);
 
   public
-    function Import(CheckFiles: Boolean): Integer;
-
     property DBFileName: string read FDBFileName write FDBFileName;
     property CollectionRoot: string read FCollectionRoot write SetCollectionRoot;
     property CollectionType: COLLECTION_TYPE read FCollectionType write FCollectionType;
     property InpxFileName: string read FInpxFileName write FInpxFileName;
-    property GenresType: TGenresType write FGenresType;
+    property GenresType: TGenresType read FGenresType write FGenresType;
   end;
 
 implementation
@@ -90,7 +87,7 @@ implementation
 uses
   Classes,
   SysUtils,
-  unit_database,
+  unit_Database,
   unit_Settings,
   unit_Consts,
   unit_Helpers,
@@ -102,9 +99,6 @@ resourcestring
   rstrAddedBooks = 'Добавлено %u книг';
   rstrErrorInpStructure = 'Ошибка структуры inp. Файл %s, Строка %u ';
   rstrDBErrorInp = 'Ошибка базы данных при импорте книги. Файл %s, Строка %u ';
-
-//type
-//  INPXType = (inpUnknown, inpFormat_10, inpFormat_11);
 
 const
   FieldsDescr: array [1 .. 20] of TFieldDescr = (
@@ -132,49 +126,7 @@ const
 
   DEFAULTSTRUCTURE = 'AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;LANG;LIBRATE;KEYWORDS';
 
-  { TImportLibRusEcThread }
-
-function ParseString(const InputStr: string; const DelimiterChar: Char; var slParams: TStringList): Boolean;
-var
-  nPos: Integer;
-  cParam: string;
-  nParamsCount: Integer;
-begin
-  nParamsCount := 0;
-  slParams.Clear;
-  //
-  // Инициализируем выходной стринглист slParams
-  // В цикле обрабатываем строку, если символ равен разделителю - добавляем параметр в стринглист,
-  // иначе - прибавляем символ ко временной переменной
-  //
-  cParam := '';
-  for nPos := 1 to Length(InputStr) do
-  begin
-    if InputStr[nPos] <> DelimiterChar then
-      cParam := cParam + InputStr[nPos]
-    else
-    begin
-      slParams.Add(cParam);
-      cParam := '';
-      Inc(nParamsCount);
-    end;
-  end;
-  //
-  // Если временная переменная не пуста, добавляем её в стринглист.
-  //
-  if cParam <> '' then
-  begin
-    slParams.Add(cParam);
-    Inc(nParamsCount);
-    cParam := '';
-  end;
-
-  //
-  // Проверяем соответствие количества параметров в стринглисте счётчику
-  // и выводим полученное значение как результат функции разбора
-  //
-  Result := slParams.Count = nParamsCount;
-end;
+{ TImportInpxThread }
 
 function ExtractStrings(Content: PChar; const Separator: Char; Strings: TStrings): Integer;
 var
@@ -183,7 +135,7 @@ var
   Item: string;
 begin
   Result := 0;
-  if (Content = nil) or (Content^=#0) or (Strings = nil) then
+  if (Content = nil) or (Content^ = #0) or (Strings = nil) then
     Exit;
   Tail := Content;
 
@@ -213,7 +165,6 @@ procedure TImportInpxThread.ParseData(const input: string; const OnlineCollectio
 var
   p, i: Integer;
   slParams: TStringList;
-  //nParamsCount: Integer;
   AuthorList: string;
   strLastName: string;
   strFirstName: string;
@@ -229,7 +180,6 @@ begin
 
   slParams := TStringList.Create;
   try
-    //ParseString(input, INPX_FIELD_DELIMITER, slParams);
     ExtractStrings(PChar(input), INPX_FIELD_DELIMITER, slParams);
 
     // -- костыль
@@ -387,14 +337,16 @@ begin
     Delete(s, 1, p);
     p := Pos(del, s);
 
-    if not FPersonalFolder then
-      FPersonalFolder := (FFields[i] = flFolder);
+    //
+    // если среди полей есть Folder, то необходимо использовать это поле при создании BookRecord
+    //
+    FUseStoredFolder := FUseStoredFolder or (FFields[i] = flFolder);
 
     Inc(i);
   end;
 end;
 
-function TImportInpxThread.Import(CheckFiles: Boolean): Integer;
+procedure TImportInpxThread.Import(CheckFiles: Boolean);
 var
   FLibrary: TBookCollection;
   BookList: TStringList;
@@ -414,6 +366,8 @@ begin
   SetProgress(0);
 
   IsOnline := isOnlineCollection(CollectionType);
+  SetLength(FFields, 0);
+  FUseStoredFolder := False;
 
   FLibrary := GetBookCollection(DBFileName);
   FLibrary.BeginBulkOperation;
@@ -458,6 +412,10 @@ begin
                 ParseData(BookList[j], IsOnline, R);
                 if IsOnline then
                 begin
+                  //
+                  // TODO: здесь некоторая фигня. Что будет, если этот INPX описывает не-FB2 коллекцию?
+                  //
+
                   // И\Иванов Иван\1234 Просто книга.fb2.zip
                   R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;
                   // Сохраним отметку о существовании файла
@@ -465,7 +423,7 @@ begin
                 end
                 else
                 begin
-                  if not FPersonalFolder then
+                  if not FUseStoredFolder then
                   begin
                     // 98058-98693.inp -> 98058-98693.zip
                     R.Folder := ChangeFileExt(CurrentFile, ZIP_EXTENSION);
@@ -524,7 +482,12 @@ end;
 
 procedure TImportInpxThread.WorkFunction;
 begin
-  Import(False);
+  try
+    Import(False);
+  except
+    on E: Exception do
+      Teletype(E.Message, tsError);
+  end;
 end;
 
 end.
