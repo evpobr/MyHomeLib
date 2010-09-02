@@ -23,11 +23,13 @@ type
   TImportFBDThread = class(TImportFB2ThreadBase)
   private
     FZipper: TZipForge;
+
   protected
     procedure ProcessFileList; override;
     procedure SortFiles(var R: TBookRecord); override;
+
   public
-    constructor Create;
+    constructor Create(const CollectionRoot: string; const DBFileName: string);
   end;
 implementation
 
@@ -50,9 +52,9 @@ resourcestring
 
 { TImportFB2Thread }
 
-constructor TImportFBDThread.Create;
+constructor TImportFBDThread.Create(const CollectionRoot: string; const DBFileName: string);
 begin
-  inherited Create;
+  inherited Create(CollectionRoot, DBFileName);
 
   FTargetExt := ZIP_EXTENSION;
   FZipFolder := False;
@@ -66,19 +68,19 @@ var
 begin
   NewFolder := GetNewFolder(Settings.FBDFolderTemplate, R);
 
-  CreateFolders(FRootPath, NewFolder);
-  CopyFile(Settings.ImportPath + R.FileName, FRootPath + NewFolder + R.FileName);
+  CreateFolders(FCollectionRoot, NewFolder);
+  CopyFile(Settings.ImportPath + R.FileName, FCollectionRoot + NewFolder + R.FileName);
   R.Folder := NewFolder;
 
   NewFileName := GetNewFileName(Settings.FBDFileTemplate, R);
   if NewFileName <> '' then
   begin
     NewFileName := NewFileName;
-    RenameFile(FRootPath + NewFolder + R.FileName, FRootPath + NewFolder + NewFileName + ZIP_EXTENSION);
+    RenameFile(FCollectionRoot + NewFolder + R.FileName, FCollectionRoot + NewFolder + NewFileName + ZIP_EXTENSION);
     R.FileName := NewFileName + ZIP_EXTENSION;
 
     try
-      FZipper.FileName := FRootPath + NewFolder + NewFileName + ZIP_EXTENSION;
+      FZipper.FileName := FCollectionRoot + NewFolder + NewFileName + ZIP_EXTENSION;
       FZipper.OpenArchive(fmOpenReadWrite);
 
       if (FZipper.FindFirst('*.*', F,faAnyFile-faDirectory)) then
@@ -137,7 +139,7 @@ begin
           if  Ext = '.fbd' then
           try
             FS := TMemoryStream.Create;
-            R.Folder := ExtractRelativePath(FRootPath,ExtractFilePath(FFiles[i]));
+            R.Folder := ExtractRelativePath(FCollectionRoot, ExtractFilePath(FFiles[i]));
             R.FileName := ExtractFilename(FFiles[i]);
             R.Date := Now;
             R.IsLocal := True;
