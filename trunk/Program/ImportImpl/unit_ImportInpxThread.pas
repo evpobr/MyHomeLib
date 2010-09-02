@@ -13,10 +13,9 @@
   *
   * History
   * NickR 02.03.2010    Код переформатирован
+  * NickR 02.09.2010    INPX больше не распаковывается на диск для обработки. Вся работа происходит в памяти.
   *
   ****************************************************************************** *)
-
-{ TODO -oNickR : думаю, стоит попробовать не распаковывать архив на диск, а распаковывать нужный файл напрямую в Stream }
 
 unit unit_ImportInpxThread;
 
@@ -74,7 +73,7 @@ type
 
   protected
     procedure WorkFunction; override;
-    procedure GetFields;
+    procedure GetFields(const StructureInfo: string);
 
   public
     function Import(CheckFiles: Boolean): Integer;
@@ -131,6 +130,8 @@ const
     (Code: 'URL';      FType: flURI)
   );
 
+  DEFAULTSTRUCTURE = 'AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;LANG;LIBRATE;KEYWORDS';
+
   { TImportLibRusEcThread }
 
 function ParseString(const InputStr: string; const DelimiterChar: Char; var slParams: TStringList): Boolean;
@@ -175,6 +176,39 @@ begin
   Result := slParams.Count = nParamsCount;
 end;
 
+function ExtractStrings(Content: PChar; const Separator: Char; Strings: TStrings): Integer;
+var
+  Head, Tail: PChar;
+  EOS: Boolean;
+  Item: string;
+begin
+  Result := 0;
+  if (Content = nil) or (Content^=#0) or (Strings = nil) then
+    Exit;
+  Tail := Content;
+
+  Strings.BeginUpdate;
+  try
+    repeat
+      Head := Tail;
+      while not CharInSet(Tail^, [Separator, #0]) do
+        Tail := StrNextChar(Tail);
+
+      EOS := Tail^ = #0;
+      if {(Head <> Tail) and} (Head^ <> #0) then
+      begin
+        SetString(Item, Head, Tail - Head);
+        Strings.Add(Item);
+
+        Inc(Result);
+      end;
+      Tail := StrNextChar(Tail);
+    until EOS;
+  finally
+    Strings.EndUpdate;
+  end;
+end;
+
 procedure TImportInpxThread.ParseData(const input: string; const OnlineCollection: Boolean; var R: TBookRecord);
 var
   p, i: Integer;
@@ -191,11 +225,12 @@ var
   Max: Integer;
 
 begin
-
   R.Clear;
+
   slParams := TStringList.Create;
   try
-    ParseString(input, INPX_FIELD_DELIMITER, slParams);
+    //ParseString(input, INPX_FIELD_DELIMITER, slParams);
+    ExtractStrings(PChar(input), INPX_FIELD_DELIMITER, slParams);
 
     // -- костыль
     if slParams.Count < High(FFields) then
@@ -318,16 +353,12 @@ begin
   end;
 end;
 
-procedure TImportInpxThread.GetFields;
+procedure TImportInpxThread.GetFields(const StructureInfo: string);
 const
   del = ';';
-  Default = 'AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;LANG;LIBRATE;KEYWORDS';
-  FN = 'structure.info';
-
 var
   s: string;
   p, i: Integer;
-  F: text;
 
   function FindType(const s: string): TFields;
   var
@@ -343,19 +374,7 @@ var
   end;
 
 begin
-  s := '';
-  if FileExists(Settings.TempPath + FN) then
-  begin
-    AssignFile(F, Settings.TempPath + FN);
-    Reset(F);
-    Read(F, s);
-    CloseFile(F);
-
-    DeleteFile(Settings.TempPath + FN);
-  end;
-
-  if s = '' then
-    s := Default;
+  s := StructureInfo;
 
   // код
   SetLength(FFields, 0);
@@ -386,12 +405,15 @@ var
   unZip: TZipForge;
   CurrentFile: string;
   ArchItem: TZFArchiveItem;
-  OnlineCollection: Boolean;
-  //FileStream: TMemoryStream;
+  IsOnline: Boolean;
+  FileStream: TMemoryStream;
+  StructureInfo: string;
 begin
   filesProcessed := 0;
   i := 0;
   SetProgress(0);
+
+  IsOnline := isOnlineCollection(CollectionType);
 
   FLibrary := GetBookCollection(DBFileName);
   FLibrary.BeginBulkOperation;
@@ -401,30 +423,40 @@ begin
       unZip.BaseDir := Settings.TempPath;
       unZip.FileName := FInpxFileName;
       unZip.OpenArchive(fmOpenRead);
-      unZip.ExtractFiles('*.*');
 
-      GetFields;
+      if unZip.FindFirst(STRUCTUREINFO_FILENAME, ArchItem, faAnyFile - faDirectory) then
+        unZip.ExtractToString(ArchItem.FileName, StructureInfo)
+      else
+        StructureInfo := DEFAULTSTRUCTURE;
 
-      BookList := TStringList.Create; { TODO -oNickR -cunused code : насколько я понимаю, этот класс больше ненужен }
-      try
-        if (unZip.FindFirst('*.inp', ArchItem, faAnyFile - faDirectory)) then
-        begin
-          repeat
-            CurrentFile := ArchItem.FileName;
+      GetFields(StructureInfo);
 
-            OnlineCollection := isOnlineCollection(CollectionType);
-            if not isOnlineCollection(CollectionType) and (CurrentFile = 'extra.inp') then
-              Continue;
+      if (unZip.FindFirst('*.inp', ArchItem, faAnyFile - faDirectory)) then
+      begin
+        repeat
+          CurrentFile := ArchItem.FileName;
 
-            Teletype(Format(rstrProcessingFile, [CurrentFile]), tsInfo);
+          if not IsOnline and (CurrentFile = 'extra.inp') then
+            Continue;
 
-            BookList.LoadFromFile(Settings.TempPath + CurrentFile, TEncoding.UTF8);
+          Teletype(Format(rstrProcessingFile, [CurrentFile]), tsInfo);
+
+          BookList := TStringList.Create;
+          try
+            FileStream := TMemoryStream.Create;
+            try
+              unZip.ExtractToStream(CurrentFile, FileStream);
+              FileStream.Seek(0, soBeginning);
+              BookList.LoadFromStream(FileStream, TEncoding.UTF8);
+            finally
+              FreeAndNil(FileStream);
+            end;
 
             for j := 0 to BookList.Count - 1 do
             begin
               try
-                ParseData(BookList[j], OnlineCollection, R);
-                if OnlineCollection then
+                ParseData(BookList[j], IsOnline, R);
+                if IsOnline then
                 begin
                   // И\Иванов Иван\1234 Просто книга.fb2.zip
                   R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;
@@ -464,15 +496,16 @@ begin
                   Teletype(E.Message, tsError);
               end;
             end;
+          finally
+            FreeAndNil(BookList);
+          end;
 
-            Inc(i);
-            if Canceled then
-              Break;
-          until (not unZip.FindNext(ArchItem));
-        end;
-      finally
-        BookList.Free;
+          Inc(i);
+          if Canceled then
+            Break;
+        until (not unZip.FindNext(ArchItem));
       end;
+
       Teletype(Format(rstrAddedBooks, [filesProcessed]), tsInfo);
     finally
       unZip.Free;
