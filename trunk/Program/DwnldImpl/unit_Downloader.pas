@@ -100,12 +100,12 @@ uses
   StrUtils,
   DateUtils,
   unit_Settings,
-  dm_collection,
   dm_user,
   unit_Consts,
   unit_MHL_strings,
   unit_Messages,
-  unit_Helpers;
+  unit_Helpers,
+  unit_Database;
 
 resourcestring
   rstrWrongCredentials = 'Неправильный логин/пароль';
@@ -199,7 +199,7 @@ var
 begin
   Result := False;
 
-  DMCollection.GetBookRecord(BookKey, BookRecord, false);
+  GetActiveBookCollection.GetBookRecord(BookKey, BookRecord, false);
   FFile := BookRecord.GetBookFileName;
   if FileExists(FFile) or DoDownload(BookKey) then
   begin
@@ -268,15 +268,15 @@ var
 begin
   ConstParams := TStringList.Create;
   try
-    DMCollection.GetBookLibID(BookKey, BookLibID);
+    GetActiveBookCollection.GetBookLibID(BookKey, BookLibID);
     ConstParams.Values['LIBID'] := BookLibID;
-    ConstParams.Values['USER'] := DMUser.ActiveCollection.User;
-    ConstParams.Values['PASS'] := DMUser.ActiveCollection.Password;
-    ConstParams.Values['URL'] := DMUser.ActiveCollection.URL;
+    ConstParams.Values['USER'] := DMUser.ActiveCollectionInfo.User;
+    ConstParams.Values['PASS'] := DMUser.ActiveCollectionInfo.Password;
+    ConstParams.Values['URL'] := DMUser.ActiveCollectionInfo.URL;
 
     CL := TStringList.Create;
     try
-      CL.Text := DMUser.ActiveCollection.Script;
+      CL.Text := DMUser.ActiveCollectionInfo.Script;
       SetLength(Commands, CL.Count);
 
       FParams := TIdMultiPartFormDataStream.Create;

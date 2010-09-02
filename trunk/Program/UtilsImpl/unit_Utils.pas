@@ -53,8 +53,8 @@ var
 begin
   worker := TSyncOnLineThread.Create;
   try
-    worker.CollectionID := DMUser.ActiveCollection.ID;
-    worker.CollectionRoot := DMUser.ActiveCollection.RootPath;
+    worker.CollectionID := DMUser.ActiveCollectionInfo.ID;
+    worker.CollectionRoot := DMUser.ActiveCollectionInfo.RootPath;
 
     frmProgress := TSyncOnLineProgressForm.Create(Application);
     try

@@ -39,7 +39,6 @@ implementation
 uses
   DateUtils,
   unit_Globals,
-  dm_collection,
   dm_user,
   unit_Consts,
   unit_Settings,
@@ -121,7 +120,7 @@ end;
 
 procedure TLibUpdateThread.WorkFunction;
 var
-  ALibrary: TMHLLibrary;
+  ALibrary: TBookCollection;
   i: integer;
 begin
   FidHTTP := TidHTTP.Create(nil);
@@ -164,9 +163,9 @@ begin
 
         InpxFileName := Settings.UpdatePath + Settings.Updates[i].UpdateFile;
 
-        DBFileName := DMUser.CurrentCollection.DBFileName;
-        CollectionRoot :=  IncludeTrailingPathDelimiter(DMUser.CurrentCollection.RootFolder);
-        CollectionType := DMUser.CurrentCollection.CollectionType;
+        DBFileName := DMUser.CurrentCollectionInfo.DBFileName;
+        CollectionRoot :=  IncludeTrailingPathDelimiter(DMUser.CurrentCollectionInfo.RootFolder);
+        CollectionType := DMUser.CurrentCollectionInfo.CollectionType;
 
         if Settings.Updates[i].Full then
         begin
@@ -177,13 +176,11 @@ begin
           Teletype(Format(rstrRemovingOldCollection, [Settings.Updates[i].Name]),tsInfo);
 
           // удаляем старый файл коллекции
-          DMCollection.DBCollection.Close;
-          DMCollection.DBCollection.DatabaseFileName := DBFileName;
-          DMCollection.DBCollection.DeleteDatabase;
+          DropCollectionDatabase(DBFileName);
 
           // создаем его заново
           Teletype(Format(rstrCreatingCollection, [Settings.Updates[i].Name]),tsInfo);
-          TMHLLibrary.CreateCollectionTables(DBFileName, GENRES_FB2_FILENAME);
+          CreateCollectionTables(DBFileName, GENRES_FB2_FILENAME);
         end; //if FULL
 
         //  импортирум данные
@@ -191,12 +188,12 @@ begin
 
         Import(not Settings.Updates[i].Full);
 
-        DMUser.CurrentCollection.Edit;
+        DMUser.CurrentCollectionInfo.Edit;
         try
-          DMUser.CurrentCollection.Version := GetLibUpdateVersion(True);
-          DMUser.CurrentCollection.Save;
+          DMUser.CurrentCollectionInfo.Version := GetLibUpdateVersion(True);
+          DMUser.CurrentCollectionInfo.Save;
         except
-          DMUser.CurrentCollection.Cancel;
+          DMUser.CurrentCollectionInfo.Cancel;
           raise;
         end;
 

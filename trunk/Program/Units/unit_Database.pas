@@ -21,26 +21,129 @@ unit unit_Database;
 interface
 
 uses
-  DB,
   Classes,
-  Variants,
+  Generics.Collections,
   ABSMain,
+  DB,
+  UserData,
   unit_Globals;
 
 type
-  TMHLLibrary = class(TComponent)
+  TBookCollection = class
+  strict private
+  type
+    //-------------------------------------------------------------------------
+    TBookIteratorImpl = class(TInterfacedObject, IBookIterator)
+    public
+      constructor Create(
+        Collection: TBookCollection;
+        const Mode: TBookIteratorMode;
+        const LoadMemos: Boolean;
+        const Filter: string;
+        const SearchCriteria: TBookSearchCriteria
+      );
+      destructor Destroy; override;
+
+    protected
+      // IBookIterator
+      function Next(out BookRecord: TBookRecord): Boolean;
+      function GetNumRecords: Integer;
+
+    strict private
+      FCollection: TBookCollection;
+      FBooks: TABSQuery;
+      FBookID: TIntegerField;
+
+      FCollectionID: Integer; // Active collection's ID at the time the iterator was created
+      FLoadMemos: Boolean;
+
+      function CreateSQL(const Mode: TBookIteratorMode; const Filter: string; const SearchCriteria: TBookSearchCriteria): string;
+      function CreateSearchSQL(const SearchCriteria: TBookSearchCriteria): string;
+    end;
+    // << TBookIteratorImpl
+
+    //-------------------------------------------------------------------------
+    TAuthorIteratorImpl = class(TInterfacedObject, IAuthorIterator)
+    public
+      constructor Create(
+        Collection: TBookCollection;
+        const Mode: TAuthorIteratorMode;
+        const Filter: string
+      );
+      destructor Destroy; override;
+
+    protected
+      // IAuthorIterator
+      function Next(out AuthorData: TAuthorData): Boolean;
+      function GetNumRecords: Integer;
+
+    strict private
+      FCollection: TBookCollection;
+      FAuthors: TABSQuery;
+      FAuthorID: TIntegerField;
+      FCollectionID: Integer; // Active collection's ID at the time the iterator was created
+
+      function CreateSQL(const Mode: TAuthorIteratorMode; const Filter: string): string;
+    end;
+    // << TAuthorIteratorImpl
+
+    //-------------------------------------------------------------------------
+    TGenreIteratorImpl = class(TInterfacedObject, IGenreIterator)
+    public
+      constructor Create(Collection: TBookCollection; const Mode: TGenreIteratorMode; const Filter: string);
+      destructor Destroy; override;
+
+    protected
+      // IGenreIterator
+      function Next(out GenreData: TGenreData): Boolean;
+      function GetNumRecords: Integer;
+
+    strict private
+      FCollection: TBookCollection;
+      FGenres: TABSQuery;
+      FGenreCode: TWideStringField;
+      FCollectionID: Integer; // Active collection's ID at the time the iterator was created
+
+      function CreateSQL(const Mode: TGenreIteratorMode; const Filter: string): string;
+    end;
+    // << TGenreIteratorImpl
+
+    //-------------------------------------------------------------------------
+    TSeriesIteratorImpl = class(TInterfacedObject, ISeriesIterator)
+    public
+      constructor Create(Collection: TBookCollection; const Mode: TSeriesIteratorMode; const Filter: string);
+      destructor Destroy; override;
+
+    protected
+      //
+      // ISeriesIterator
+      //
+      function Next(out SeriesData: TSeriesData): Boolean;
+      function GetNumRecords: Integer;
+
+    strict private
+      FCollection: TBookCollection;
+      FSeries: TABSQuery;
+      FSeriesID: TIntegerField;
+      FSeriesTitle: TWideStringField;
+      FCollectionID: Integer; // Active collection's ID at the time the iterator was created
+
+      function CreateSQL(const Mode: TSeriesIteratorMode; const Filter: string): string;
+    end;
+    // << TSeriesIteratorImpl
+
+  public type
+    TGUIUpdateExtraProc = reference to procedure(
+      const BookKey: TBookKey;
+      extra: TBookExtra
+    );
+
   private
     procedure LoadGenres(const GenresFileName: string);
 
   public
     constructor Create(const DBCollectionFile: string);
     destructor Destroy; override;
-
-    //
-    // Database creation & management
-    //
-    class procedure CreateSystemTables(const DBUserFile: string);
-    class procedure CreateCollectionTables(const DBCollectionFile: string; const GenresFileName: string);
 
     procedure ReloadDefaultGenres(const FileName: string);
 
@@ -54,6 +157,7 @@ type
 
     function InsertBook(BookRecord: TBookRecord; CheckFileName, FullCheck: Boolean): Integer;
     procedure DeleteBook(const BookKey: TBookKey);
+    procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord; LoadMemos: Boolean);
 
     function GetTopGenreAlias(const FB2Code: string): string;
     procedure CleanBookGenres(BookID: Integer);
@@ -67,6 +171,36 @@ type
     procedure BeginBulkOperation;
     procedure EndBulkOperation(Commit: Boolean = True);
 
+    // Iterators:
+    function GetBookIterator(const Mode: TBookIteratorMode; const LoadMemos: Boolean; const Filter: string = ''): IBookIterator; overload;
+    function GetBookIterator(const LoadMemos: Boolean; const SearchCriteria: TBookSearchCriteria): IBookIterator; overload;
+    function GetAuthorIterator(const Mode: TAuthorIteratorMode; const Filter: string = ''): IAuthorIterator;
+    function GetGenreIterator(const Mode: TGenreIteratorMode; const Filter: string = ''): IGenreIterator;
+    function GetSeriesIterator(const Mode: TSeriesIteratorMode; const Filter: string = ''): ISeriesIterator;
+
+    procedure VerifyCurrentCollection(const DatabaseID: Integer);
+    procedure SetSeriesTitle(const SeriesID: Integer; const NewSeriesTitle: string);
+    function AddOrLocateSeriesIDBySeriesTitle(const SeriesTitle: string): Integer;
+    procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer);
+    procedure AddBookToGroup(const BookKey: TBookKey; GroupID: Integer);
+    procedure ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc);
+    procedure ExportUserData(data: TUserData);
+    procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
+    procedure UpdateBook(const BookRecord: TBookRecord);
+    function SetReview(const BookKey: TBookKey; const Review: string): Integer;
+    function GetReview(const BookKey: TBookKey): string;
+    procedure SetProgress(const BookKey: TBookKey; Progress: Integer);
+    procedure SetRate(const BookKey: TBookKey; Rate: Integer);
+    procedure SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
+    procedure SetFolder(const BookKey: TBookKey; const Folder: string);
+    procedure SetFileName(const BookKey: TBookKey; const FileName: string);
+    procedure SetLocal(const BookKey: TBookKey; AState: Boolean);
+    procedure GetBookLibID(const BookKey: TBookKey; out ARes: string); deprecated;
+
+    procedure CompactDatabase;
+    procedure RepairDatabase;
+//    procedure SetTableState(State: Boolean);
+
   private
     FDatabase: TABSDatabase;
 
@@ -75,37 +209,37 @@ type
     FSettingsValue: TWideMemoField;
 
     FAuthors: TABSTable;
-    FAuthorID: TIntegerField;
-    FAuthorLastName: TWideStringField;
-    FAuthorFirstName: TWideStringField;
-    FAuthorMiddleName: TWideStringField;
+    FAuthorsID: TIntegerField;
+    FAuthorsLastName: TWideStringField;
+    FAuthorsFirstName: TWideStringField;
+    FAuthorsMiddleName: TWideStringField;
 
     FAuthorList: TABSTable;
     FAuthorListAuthorID: TIntegerField;
     FAuthorListBookID: TIntegerField;
 
     FBooks: TABSTable;
-    FBookBookID: TIntegerField;
-    FBookLibID: TIntegerField;
-    FBookTitle: TWideStringField;
-    FBookSeriesID: TIntegerField;
-    FBookSeqNumber: TSmallintField;
-    FBookDate: TDateField;
-    FBookLibRate: TIntegerField;
-    FBookLang: TWideStringField;
-    FBookFolder: TWideStringField;
-    FBookFileName: TWideStringField;
-    FBookInsideNo: TIntegerField;
-    FBookExt: TWideStringField;
-    FBookSize: TIntegerField;
-    FBookCode: TSmallintField;
-    FBookIsLocal: TBooleanField;
-    FBookIsDeleted: TBooleanField;
-    FBookKeyWords: TWideStringField;
-    FBookRate: TIntegerField;
-    FBookProgress: TIntegerField;
-    FBookAnnotation: TWideMemoField;
-    FBookReview: TWideMemoField;
+    FBooksBookID: TIntegerField;
+    FBooksLibID: TIntegerField;
+    FBooksTitle: TWideStringField;
+    FBooksSeriesID: TIntegerField;
+    FBooksSeqNumber: TSmallintField;
+    FBooksDate: TDateField;
+    FBooksLibRate: TIntegerField;
+    FBooksLang: TWideStringField;
+    FBooksFolder: TWideStringField;
+    FBooksFileName: TWideStringField;
+    FBooksInsideNo: TIntegerField;
+    FBooksExt: TWideStringField;
+    FBooksSize: TIntegerField;
+    FBooksCode: TSmallintField;
+    FBooksIsLocal: TBooleanField;
+    FBooksIsDeleted: TBooleanField;
+    FBooksKeyWords: TWideStringField;
+    FBooksRate: TIntegerField;
+    FBooksProgress: TIntegerField;
+    FBooksAnnotation: TWideMemoField;
+    FBooksReview: TWideMemoField;
 
     FSeries: TABSTable;
     FSeriesSeriesID: TIntegerField;
@@ -121,19 +255,51 @@ type
     FGenreListGenreCode: TWideStringField;
     FGenreListBookID: TIntegerField;
 
+  strict private
+    FAuthorFilterType: string;
+    FSeriesFilterType: string;
+    FShowLocalOnly: Boolean;
+    FHideDeleted: Boolean;
+
     procedure FilterDuplicateAuthorsByID(var Authors: TBookAuthors);
     procedure FilterDuplicateGenresByCode(var Genres: TBookGenres);
+
+    procedure GetBookGenres(BookID: Integer; var BookGenres: TBookGenres; RootGenre: PGenreData = nil);
+    procedure GetBookAuthors(BookID: Integer; var BookAuthors: TBookAuthors);
+    procedure GetGenre(const GenreCode: string; var Genre: TGenreData);
+    procedure GetAuthor(AuthorID: Integer; var Author: TAuthorData);
+    function GetSeriesTitle(SeriesID: Integer): string;
+
+  public
+    property HideDeleted: Boolean read FHideDeleted write FHideDeleted;
+    property ShowLocalOnly: Boolean read FShowLocalOnly write FShowLocalOnly;
+    property SeriesFilterType: string read FSeriesFilterType write FSeriesFilterType;
+    property AuthorFilterType: string read FAuthorFilterType write FAuthorFilterType;
   end;
+
+  function GetBookCollection(const DBCollectionFile: string): TBookCollection;
+  function GetActiveBookCollection: TBookCollection;
+  procedure InitBookCollectionMap;
+  procedure FreeBookCollectionMap;
+
+  procedure CreateSystemTables(const DBUserFile: string);
+  procedure CreateCollectionTables(const DBCollectionFile: string; const GenresFileName: string);
+  procedure DropCollectionDatabase(const DBCollectionFile: string);
 
 implementation
 
 uses
+  Variants,
   Types,
   SysUtils,
   IOUtils,
-  Generics.Collections,
+  DateUtils,
+  Character,
   bdeconst,
   unit_Consts,
+  unit_Logger,
+  unit_SearchUtils,
+  unit_Errors,
   dm_user;
 
 resourcestring
@@ -141,152 +307,70 @@ resourcestring
   rstrToReadGroupName = 'К прочтению';
 
 const
-  TEMP_DATABASE = 'TempDB';
+  COLLECTION_DATABASE = 'CollectionDB';
   USER_DATABASE = 'UserDB';
   DATABASE_VERSION = '1000';
 
+type
+  TBookCollectionMap = TObjectDictionary<string, TBookCollection>;
+
+var
+  BookCollectionMap: TBookCollectionMap;
+
 // ------------------------------------------------------------------------------
 
-{ TMHLLibrary }
-
-constructor TMHLLibrary.Create(const DBCollectionFile: string);
+procedure InitBookCollectionMap;
 begin
-  inherited Create(nil);
-
-  FDatabase := TABSDatabase.Create(Self);
-  FDatabase.DatabaseFileName := DBCollectionFile;
-  FDatabase.DatabaseName := TEMP_DATABASE + '>' + FormatDateTime('c.zzz', Now);
-  FDatabase.MaxConnections := 5;
-  FDatabase.PageSize := 65535;
-  FDatabase.PageCountInExtent := 16;
-  FDatabase.Connected := True;
-
-  FSettings := TABSTable.Create(FDatabase);
-  FSettings.TableName := 'Settings';
-  FSettings.DatabaseName := FDatabase.DatabaseName;
-  FSettings.Active := True;
-
-  FAuthors := TABSTable.Create(FDatabase);
-  FAuthors.TableName := 'Authors';
-  FAuthors.DatabaseName := FDatabase.DatabaseName;
-  FAuthors.Active := True;
-
-  FAuthorList := TABSTable.Create(FDatabase);
-  FAuthorList.TableName := 'Author_list';
-  FAuthorList.DatabaseName := FDatabase.DatabaseName;
-  FAuthorList.Active := True;
-
-  FBooks := TABSTable.Create(FDatabase);
-  FBooks.TableName := 'Books';
-  FBooks.DatabaseName := FDatabase.DatabaseName;
-  FBooks.Active := True;
-
-  FSeries := TABSTable.Create(FDatabase);
-  FSeries.TableName := 'Series';
-  FSeries.DatabaseName := FDatabase.DatabaseName;
-  FSeries.Active := True;
-
-  FGenres := TABSTable.Create(FDatabase);
-  FGenres.TableName := 'Genres';
-  FGenres.DatabaseName := FDatabase.DatabaseName;
-  FGenres.Active := True;
-
-  FGenreList := TABSTable.Create(FDatabase);
-  FGenreList.TableName := 'Genre_list';
-  FGenreList.DatabaseName := FDatabase.DatabaseName;
-  FGenreList.Active := True;
-
-  FSettingsID := FSettings.FieldByName(ID_FIELD) as TIntegerField;
-  FSettingsValue := FSettings.FieldByName(SETTING_VALIE_FIELD) as TWideMemoField;
-
-  FAuthorID := FAuthors.FieldByName(AUTHOR_ID_FIELD) as TIntegerField;
-  FAuthorLastName := FAuthors.FieldByName(AUTHOR_LASTTNAME_FIELD) as TWideStringField;
-  FAuthorFirstName := FAuthors.FieldByName(AUTHOR_FIRSTNAME_FIELD) as TWideStringField;
-  FAuthorMiddleName := FAuthors.FieldByName(AUTHOR_MIDDLENAME_FIELD) as TWideStringField;
-
-  FAuthorListAuthorID := FAuthorList.FieldByName(AUTHOR_ID_FIELD) as TIntegerField;
-  FAuthorListBookID := FAuthorList.FieldByName(BOOK_ID_FIELD) as TIntegerField;
-
-  FBookBookID := FBooks.FieldByName(BOOK_ID_FIELD) as TIntegerField;
-  FBookLibID := FBooks.FieldByName(BOOK_LIBID_FIELD) as TIntegerField;
-  FBookTitle := FBooks.FieldByName(BOOK_TITLE_FIELD) as TWideStringField;
-  FBookSeriesID := FBooks.FieldByName(SERIES_ID_FIELD) as TIntegerField;
-  FBookSeqNumber := FBooks.FieldByName(BOOK_SEQNUMBER_FIELD) as TSmallintField;
-  FBookDate := FBooks.FieldByName(BOOK_DATE_FIELD) as TDateField;
-  FBookLibRate := FBooks.FieldByName(BOOK_LIBRATE_FIELD) as TIntegerField;
-  FBookLang := FBooks.FieldByName(BOOK_LANG_FIELD) as TWideStringField;
-  FBookFolder := FBooks.FieldByName(BOOK_FOLDER_FIELD) as TWideStringField;
-  FBookFileName := FBooks.FieldByName(BOOK_FILENAME_FIELD) as TWideStringField;
-  FBookInsideNo := FBooks.FieldByName(BOOK_INSIDENO_FIELD) as TIntegerField;
-  FBookExt := FBooks.FieldByName(BOOK_EXT_FIELD) as TWideStringField;
-  FBookSize := FBooks.FieldByName(BOOK_SIZE_FIELD) as TIntegerField;
-  FBookCode := FBooks.FieldByName(BOOK_CODE_FIELD) as TSmallintField;
-  FBookIsLocal := FBooks.FieldByName(BOOK_LOCAL_FIELD) as TBooleanField;
-  FBookIsDeleted := FBooks.FieldByName(BOOK_DELETED_FIELD) as TBooleanField;
-  FBookKeyWords := FBooks.FieldByName(BOOK_KEYWORDS_FIELD) as TWideStringField;
-  FBookRate := FBooks.FieldByName(BOOK_RATE_FIELD) as TIntegerField;
-  FBookProgress := FBooks.FieldByName(BOOK_PROGRESS_FIELD) as TIntegerField;
-  FBookAnnotation := FBooks.FieldByName(BOOK_ANNOTATION_FIELD) as TWideMemoField;
-  FBookReview := FBooks.FieldByName(BOOK_REVIEW_FIELD) as TWideMemoField;
-
-  FSeriesSeriesID := FSeries.FieldByName(SERIES_ID_FIELD) as TIntegerField;
-  FSeriesSeriesTitle := FSeries.FieldByName(SERIES_TITLE_FIELD) as TWideStringField;
-
-  FGenresGenreCode := FGenres.FieldByName(GENRE_CODE_FIELD) as TWideStringField;
-  FGenresParentCode := FGenres.FieldByName(GENRE_PARENTCODE_FIELD) as TWideStringField;
-  FGenresFB2Code := FGenres.FieldByName(GENRE_FB2CODE_FIELD) as TWideStringField;
-  FGenresAlias := FGenres.FieldByName(GENRE_ALIAS_FIELD) as TWideStringField;
-
-  FGenreListGenreCode := FGenreList.FieldByName(GENRE_CODE_FIELD) as TWideStringField;
-  FGenreListBookID := FGenreList.FieldByName(BOOK_ID_FIELD) as TIntegerField;
+  BookCollectionMap := nil;
 end;
 
-destructor TMHLLibrary.Destroy;
+procedure FreeBookCollectionMap;
 begin
-  FreeAndNil(FSettings);
-  FreeAndNil(FAuthors);
-  FreeAndNil(FAuthorList);
-  FreeAndNil(FBooks);
-  FreeAndNil(FSeries);
-  FreeAndNil(FGenres);
-  FreeAndNil(FGenreList);
-
-  FreeAndNil(FDatabase);
-
-  inherited Destroy;
+  FreeAndNil(BookCollectionMap);
 end;
 
-procedure TMHLLibrary.SetProperty(PropID: Integer; const Value: Integer);
+function GetBookCollection(const DBCollectionFile: string): TBookCollection;
 begin
-  if Value = 0 then
-    Exit;
-
-  SetProperty(PropID, IntToStr(Value));
-end;
-
-procedure TMHLLibrary.SetProperty(PropID: Integer; const Value: string);
-begin
-  Assert(FSettings.Active);
-
-  if Value = '' then
-    Exit;
-
-  if FSettings.Locate(ID_FIELD, PropID, []) then
-    FSettings.Edit
-  else
-    FSettings.Append;
+  Assert(DBCollectionFile <> '');
+  if BookCollectionMap = nil then
+    BookCollectionMap := TBookCollectionMap.Create([doOwnsValues]);
 
   try
-    FSettingsID.Value := PropID;
-    FSettingsValue.Value := Value;
-
-    FSettings.Post;
+    Result := BookCollectionMap[DBCollectionFile];
+    Assert(Assigned(Result));
   except
-    FSettings.Cancel;
+    on E: EListError do
+    begin
+      // A valid case - the collection is not yet in the map, add it:
+      Result := TBookCollection.Create(DBCollectionFile);
+      BookCollectionMap.AddOrSetValue(DBCollectionFile, Result);
+    end;
   end;
 end;
 
-class procedure TMHLLibrary.CreateSystemTables(const DBUserFile: string);
+function GetActiveBookCollection: TBookCollection;
+begin
+  Result := GetBookCollection(DMUser.ActiveCollectionInfo.DBFileName);
+end;
+
+procedure DropCollectionDatabase(const DBCollectionFile: string);
+var
+  BookCollection: TBookCollection;
+begin
+  if BookCollectionMap <> nil then
+  begin
+    try
+      BookCollection := BookCollectionMap[DBCollectionFile];
+      FreeAndNil(BookCollection);
+    except
+      on E: EListError do
+        // A valid case - the collection is not yet in the map, nothing to free - ignore
+    end;
+  end;
+  DeleteFile(DBCollectionFile);
+end;
+
+procedure CreateSystemTables(const DBUserFile: string);
 var
   ADatabase: TABSDatabase;
   createScript: TStream;
@@ -332,18 +416,18 @@ begin
   end;
 end;
 
-class procedure TMHLLibrary.CreateCollectionTables(const DBCollectionFile: string; const GenresFileName: string);
+procedure CreateCollectionTables(const DBCollectionFile: string; const GenresFileName: string);
 var
   ADatabase: TABSDatabase;
   createScript: TStream;
   createQuery: TABSQuery;
 
-  ALibrary: TMHLLibrary;
+  ALibrary: TBookCollection;
 begin
   ADatabase := TABSDatabase.Create(nil);
   try
     ADatabase.DatabaseFileName := DBCollectionFile;
-    ADatabase.DatabaseName := TEMP_DATABASE + '>' + FormatDateTime('c.zzz', Now);
+    ADatabase.DatabaseName := COLLECTION_DATABASE + '>' + FormatDateTime('c.zzz', Now);
     ADatabase.MaxConnections := 5;
     ADatabase.CreateDatabase;
 
@@ -365,7 +449,7 @@ begin
   end;
 
   // Now that we have the DB structure in place for DBCollectionFile, we can create an instance of the library for it:
-  ALibrary := TMHLLibrary.Create(DBCollectionFile);
+  ALibrary := TBookCollection.Create(DBCollectionFile);
   try
     //
     // Запишем версию метаданных, и дату создания
@@ -383,7 +467,650 @@ begin
   end;
 end;
 
-procedure TMHLLibrary.LoadGenres(const GenresFileName: string);
+// ------------------------------------------------------------------------------
+
+{ TBookIteratorImpl }
+
+constructor TBookCollection.TBookIteratorImpl.Create(
+  Collection: TBookCollection;
+  const Mode: TBookIteratorMode;
+  const LoadMemos: Boolean;
+  const Filter: string;
+  const SearchCriteria: TBookSearchCriteria
+);
+var
+  pLogger: IIntervalLogger;
+begin
+  inherited Create;
+
+  Assert(Assigned(Collection));
+
+  FCollectionID := DMUser.ActiveCollectionInfo.ID;
+  FLoadMemos := LoadMemos;
+  FCollection := Collection;
+
+  FBooks := TABSQuery.Create(FCollection.FDatabase);
+  FBooks.DatabaseName := FCollection.FDatabase.DatabaseName;
+  FBooks.SQL.Text := CreateSQL(Mode, Filter, SearchCriteria);
+  FBooks.ReadOnly := True;
+  FBooks.RequestLive := True;
+
+  pLogger := GetIntervalLogger('TBookIteratorImpl.Create', FBooks.SQL.Text);
+  FBooks.Active := True;
+  pLogger := nil;
+
+  FBookID := FBooks.FieldByName(BOOK_ID_FIELD) as TIntegerField;
+end;
+
+destructor TBookCollection.TBookIteratorImpl.Destroy;
+begin
+  FreeAndNil(FBooks);
+
+  inherited Destroy;
+end;
+
+// Read next record (if present), return True if read
+function TBookCollection.TBookIteratorImpl.Next(out BookRecord: TBookRecord): Boolean;
+begin
+  Result := not FBooks.Eof;
+
+  if Result then
+  begin
+    Assert(DMUser.ActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
+    FCollection.GetBookRecord(CreateBookKey(FBookID.Value, FCollectionID), BookRecord, FLoadMemos);
+    FBooks.Next;
+  end;
+end;
+
+function TBookCollection.TBookIteratorImpl.GetNumRecords: Integer;
+begin
+  Result := FBooks.RecordCount;
+end;
+
+function TBookCollection.TBookIteratorImpl.CreateSQL(
+  const Mode: TBookIteratorMode;
+  const Filter: string;
+  const SearchCriteria: TBookSearchCriteria
+): string;
+var
+  Where: string;
+begin
+  Where := '';
+
+  case Mode of
+    bmAll:
+      Result := 'SELECT b.' + BOOK_ID_FIELD + ' FROM Books';
+    bmByGenre:
+      Result :=
+        'SELECT b.' + BOOK_ID_FIELD + ' FROM Genre_List gl INNER JOIN Books b ON gl.' + BOOK_ID_FIELD + ' = b.' + BOOK_ID_FIELD + ' ';
+    bmByAuthor:
+      Result :=
+        'SELECT b.' + BOOK_ID_FIELD + ' FROM Author_List al INNER JOIN Books b ON al.' + BOOK_ID_FIELD + ' = b.' + BOOK_ID_FIELD + ' ';
+    bmBySeries:
+      Result :=
+        'SELECT b.' + BOOK_ID_FIELD + ' FROM Books b ';
+    bmSearch:
+    begin
+      Assert(Filter = '');
+      Result := CreateSearchSQL(SearchCriteria);
+    end
+    else
+      Assert(False);
+  end;
+
+  if Filter <> '' then
+    AddToWhere(Where, Filter);
+
+  if Mode in [bmByGenre, bmByAuthor, bmBySeries] then
+  begin
+    if FCollection.FHideDeleted then
+      AddToWhere(Where, ' b.' + BOOK_DELETED_FIELD + ' = False ');
+    if FCollection.FShowLocalOnly then
+      AddToWhere(Where, ' b.' + BOOK_LOCAL_FIELD + ' = True ');
+  end;
+
+  Result := Result + Where;
+  // + ' ORDER BY ' + BOOK_ID_FIELD; // Order fo result consistency
+end;
+
+// Original code was extracted from TfrmMain.DoApplyFilter
+function TBookCollection.TBookIteratorImpl.CreateSearchSQL(const SearchCriteria: TBookSearchCriteria): string;
+var
+  FilterString: string;
+const
+  SQLStartStr = 'SELECT DISTINCT b.' + BOOK_ID_FIELD;
+begin
+  Result := '';
+  try
+    // ------------------------ авторы ----------------------------------------
+    FilterString := '';
+    if SearchCriteria.FullName <> '' then
+    begin
+      AddToFilter('a.' + AUTHOR_LASTTNAME_FIELD + ' + ' + 'CASE WHEN a.' +
+          AUTHOR_FIRSTNAME_FIELD + ' IS NULL THEN '''' ELSE '' '' END + a.' +
+          AUTHOR_FIRSTNAME_FIELD + ' + ' + 'CASE WHEN a.' +
+          AUTHOR_MIDDLENAME_FIELD + ' IS NULL THEN '''' ELSE '' '' END + a.' +
+          AUTHOR_MIDDLENAME_FIELD, PrepareQuery(SearchCriteria.FullName, True),
+        True, FilterString);
+      if FilterString <> '' then
+      begin
+        FilterString := SQLStartStr +
+          ' FROM Authors a INNER JOIN Author_List b ON (a.' + AUTHOR_ID_FIELD + ' = b.' + AUTHOR_ID_FIELD + ') WHERE '
+          + FilterString;
+
+        Result := Result + FilterString;
+      end;
+    end;
+
+    // ------------------------ серия -----------------------------------------
+    FilterString := '';
+    if SearchCriteria.Series <> '' then
+    begin
+      AddToFilter('s.' + SERIES_TITLE_FIELD, PrepareQuery(SearchCriteria.Series, True), True, FilterString);
+
+      if FilterString <> '' then
+      begin
+        FilterString := SQLStartStr +
+          ' FROM Series s JOIN Books b ON b.' + SERIES_ID_FIELD + ' = s.' + SERIES_ID_FIELD + ' WHERE ' +
+          FilterString;
+
+        if Result <> '' then
+          Result := Result + ' INTERSECT ';
+
+        Result := Result + FilterString;
+      end;
+    end;
+
+    // -------------------------- жанр ----------------------------------------
+    FilterString := '';
+    if (SearchCriteria.Genre <> '') then
+    begin
+      FilterString := SQLStartStr +
+        ' FROM Genre_List g JOIN Books b ON b.' + BOOK_ID_FIELD + ' = g.' + BOOK_ID_FIELD + ' WHERE (' +
+        SearchCriteria.Genre + ')';
+
+      if Result <> '' then
+        Result := Result + ' INTERSECT ';
+
+      Result := Result + FilterString;
+    end;
+
+    // -------------------  все остальное   -----------------------------------
+    FilterString := '';
+    AddToFilter('b.' + BOOK_ANNOTATION_FIELD, PrepareQuery(SearchCriteria.Annotation, True), True, FilterString);
+    AddToFilter('b.' + BOOK_TITLE_FIELD, PrepareQuery(SearchCriteria.Title, True), True, FilterString);
+    AddToFilter('b.' + BOOK_FILENAME_FIELD, PrepareQuery(SearchCriteria.FileName, False), False, FilterString);
+    AddToFilter('b.' + BOOK_FOLDER_FIELD, PrepareQuery(SearchCriteria.Folder, False), False, FilterString);
+    AddToFilter('b.' + BOOK_EXT_FIELD, PrepareQuery(SearchCriteria.FileExt, False), False, FilterString);
+    AddToFilter('b.' + BOOK_LANG_FIELD, PrepareQuery(SearchCriteria.Lang, True, False), True, FilterString);
+    AddToFilter('b.' + BOOK_KEYWORDS_FIELD, PrepareQuery(SearchCriteria.KeyWord, True), True, FilterString);
+    //
+    if SearchCriteria.DateIdx = -1 then
+      AddToFilter('b.' + BOOK_DATE_FIELD, PrepareQuery(SearchCriteria.DateText, False), False, FilterString)
+    else
+      case SearchCriteria.DateIdx of
+        0: AddToFilter('b.' + BOOK_DATE_FIELD, Format('> "%s"', [DateToStr(IncDay(Now, -1))]), False, FilterString);
+        1: AddToFilter('b.' + BOOK_DATE_FIELD, Format('> "%s"', [DateToStr(IncDay(Now, -3))]), False, FilterString);
+        2: AddToFilter('b.' + BOOK_DATE_FIELD, Format('> "%s"', [DateToStr(IncDay(Now, -7))]), False, FilterString);
+        3: AddToFilter('b.' + BOOK_DATE_FIELD, Format('> "%s"', [DateToStr(IncDay(Now, -14))]), False, FilterString);
+        4: AddToFilter('b.' + BOOK_DATE_FIELD, Format('> "%s"', [DateToStr(IncDay(Now, -30))]), False, FilterString);
+        5: AddToFilter('b.' + BOOK_DATE_FIELD, Format('> "%s"', [DateToStr(IncDay(Now, -90))]), False, FilterString);
+      end;
+
+    case SearchCriteria.DownloadedIdx of
+      1: AddToFilter('b.' + BOOK_LOCAL_FIELD, '= True', False, FilterString);
+      2: AddToFilter('b.' + BOOK_LOCAL_FIELD, '= False', False, FilterString);
+    end;
+
+    if SearchCriteria.Deleted then
+      AddToFilter('b.' + BOOK_DELETED_FIELD, '= False', False, FilterString);
+
+    if FilterString <> '' then
+    begin
+      if Result <> '' then
+        Result := Result + ' INTERSECT ';
+      Result := Result + SQLStartStr + ' FROM Books b WHERE ' + FilterString;
+    end;
+  except
+    on E: Exception do
+      raise Exception.Create(rstrFilterParamError);
+  end;
+
+  if Result = '' then
+    raise Exception.Create(rstrCheckFilterParams);
+end;
+
+{ TAuthorIteratorImpl }
+
+constructor TBookCollection.TAuthorIteratorImpl.Create(
+  Collection: TBookCollection;
+  const Mode: TAuthorIteratorMode;
+  const Filter: string
+);
+var
+  pLogger: IIntervalLogger;
+begin
+  inherited Create;
+
+  Assert(Assigned(Collection));
+
+  FCollectionID := DMUser.ActiveCollectionInfo.ID;
+  FCollection := Collection;
+
+  FAuthors := TABSQuery.Create(FCollection.FDatabase);
+  FAuthors.DatabaseName := FCollection.FDatabase.DatabaseName;
+  FAuthors.SQL.Text := CreateSQL(Mode, Filter);
+  FAuthors.ReadOnly := True;
+  FAuthors.RequestLive := True;
+
+  pLogger := GetIntervalLogger('TAuthorIteratorImpl.Create', FAuthors.SQL.Text);
+  FAuthors.Active := True;
+  pLogger := nil;
+
+  FAuthorID := FAuthors.FieldByName(AUTHOR_ID_FIELD) as TIntegerField;
+end;
+
+destructor TBookCollection.TAuthorIteratorImpl.Destroy;
+begin
+  FreeAndNil(FAuthors);
+
+  inherited Destroy;
+end;
+
+// Read next record (if present), return True if read
+function TBookCollection.TAuthorIteratorImpl.Next(out AuthorData: TAuthorData): Boolean;
+begin
+  Result := not FAuthors.Eof;
+
+  if Result then
+  begin
+    Assert(DMUser.ActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
+    FCollection.GetAuthor(FAuthorID.Value, AuthorData);
+    FAuthors.Next;
+  end;
+end;
+
+function TBookCollection.TAuthorIteratorImpl.GetNumRecords: Integer;
+begin
+  Result := FAuthors.RecordCount;
+end;
+
+function TBookCollection.TAuthorIteratorImpl.CreateSQL(
+  const Mode: TAuthorIteratorMode;
+  const Filter: string
+): string;
+var
+  Where: string;
+begin
+  Where := '';
+
+  case Mode of
+    amAll:
+      Result := 'SELECT a.' + AUTHOR_ID_FIELD + ' FROM Authors a ';
+
+    amByBook:
+      Result := 'SELECT DISTINCT a.' + AUTHOR_ID_FIELD + ' FROM Author_List a ';
+
+    amFullFilter:
+      begin
+        Result := 'SELECT DISTINCT a.' + AUTHOR_ID_FIELD + ' FROM Authors a ';
+        if FCollection.FHideDeleted or FCollection.FShowLocalOnly then
+        begin
+          Result := Result + ' INNER JOIN Author_List al ON a.' + AUTHOR_ID_FIELD + ' = al.' + AUTHOR_ID_FIELD + ' INNER JOIN Books b ON al.' + BOOK_ID_FIELD + ' = b.' + BOOK_ID_FIELD + ' ';
+          if FCollection.FHideDeleted then
+            AddToWhere(Where, ' b.' + BOOK_DELETED_FIELD + ' = False ');
+          if FCollection.FShowLocalOnly then
+            AddToWhere(Where, ' b.' + BOOK_LOCAL_FIELD + ' = True ');
+        end;
+
+        // Add an author type filter:
+        if FCollection.FAuthorFilterType <> '' then
+        begin
+          if FCollection.FAuthorFilterType = ALPHA_FILTER_NON_ALPHA then
+          begin
+            AddToWhere(Where, Format(
+              '(POS(UPPER(SUBSTRING(a.%0:s, 1, 1)), "%1:s") = 0) AND (POS(UPPER(SUBSTRING(a.%0:s, 1, 1)), "%2:s") = 0)',
+              [AUTHOR_LASTTNAME_FIELD, ENGLISH_ALPHABET, RUSSIAN_ALPHABET]
+            ));
+          end
+          else if FCollection.FAuthorFilterType <> ALPHA_FILTER_ALL then
+          begin
+            Assert(Length(FCollection.FAuthorFilterType) = 1);
+            Assert(TCharacter.IsUpper(FCollection.FAuthorFilterType, 1));
+            AddToWhere(Where, Format(
+              'UPPER(a.%0:s) LIKE "%1:s%%"',                                // начинается на заданную букву
+              [AUTHOR_LASTTNAME_FIELD, FCollection.FAuthorFilterType]
+            ));
+          end;
+        end;
+      end;
+
+    else
+      Assert(False);
+  end;
+
+  if Filter <> '' then
+    AddToWhere(Where, Filter);
+
+  Result := Result + Where;
+
+  if Mode in [amAll, amFullFilter] then
+    Result := Result + ' ORDER BY a.' + AUTHOR_LASTTNAME_FIELD + ', a.' + AUTHOR_FIRSTNAME_FIELD + ', a.' + AUTHOR_MIDDLENAME_FIELD + ' ';
+end;
+
+{ TGenreIteratorImpl }
+
+constructor TBookCollection.TGenreIteratorImpl.Create(Collection: TBookCollection; const Mode: TGenreIteratorMode; const Filter: string);
+var
+  pLogger: IIntervalLogger;
+begin
+  inherited Create;
+
+  Assert(Assigned(Collection));
+
+  FCollectionID := DMUser.ActiveCollectionInfo.ID;
+  FCollection := Collection;
+
+  FGenres := TABSQuery.Create(FCollection.FDatabase);
+  FGenres.DatabaseName := FCollection.FDatabase.DatabaseName;
+  FGenres.SQL.Text := CreateSQL(Mode, Filter);
+  FGenres.ReadOnly := True;
+  FGenres.RequestLive := True;
+
+  pLogger := GetIntervalLogger('TGenreIteratorImpl.Create', FGenres.SQL.Text);
+  FGenres.Active := True;
+  pLogger := nil;
+
+  FGenreCode := FGenres.FieldByName(GENRE_CODE_FIELD) as TWideStringField;
+end;
+
+destructor TBookCollection.TGenreIteratorImpl.Destroy;
+begin
+  FreeAndNil(FGenres);
+
+  inherited Destroy;
+end;
+
+// Read next record (if present), return True if read
+function TBookCollection.TGenreIteratorImpl.Next(out GenreData: TGenreData): Boolean;
+begin
+  Result := not FGenres.Eof;
+
+  if Result then
+  begin
+    Assert(DMUser.ActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
+    FCollection.GetGenre(FGenreCode.Value, GenreData);
+    FGenres.Next;
+  end;
+end;
+
+function TBookCollection.TGenreIteratorImpl.GetNumRecords: Integer;
+begin
+  Result := FGenres.RecordCount;
+end;
+
+function TBookCollection.TGenreIteratorImpl.CreateSQL(const Mode: TGenreIteratorMode; const Filter: string): string;
+var
+  Where: string;
+begin
+  Where := '';
+
+  case Mode of
+    gmAll:
+      Result := 'SELECT g.' + GENRE_CODE_FIELD + ' FROM Genres g ';
+    gmByBook:
+      Result := 'SELECT gl.' + GENRE_CODE_FIELD + ' FROM Genre_List gl ';
+    else
+      Assert(False);
+  end;
+
+  if Filter <> '' then
+    AddToWhere(Where, Filter);
+  Result := Result + Where;
+end;
+
+{ TSeriesIteratorImpl }
+
+constructor TBookCollection.TSeriesIteratorImpl.Create(Collection: TBookCollection; const Mode: TSeriesIteratorMode; const Filter: string);
+var
+  pLogger: IIntervalLogger;
+begin
+  inherited Create;
+
+  Assert(Assigned(Collection));
+
+  FCollectionID := DMUser.ActiveCollectionInfo.ID;
+  FCollection := Collection;
+
+  FSeries := TABSQuery.Create(FCollection.FDatabase);
+  FSeries.DatabaseName := FCollection.FDatabase.DatabaseName;
+  FSeries.SQL.Text := CreateSQL(Mode, Filter);
+  FSeries.ReadOnly := True;
+  FSeries.RequestLive := True;
+
+  pLogger := GetIntervalLogger('TSeriesIteratorImpl.Create', FSeries.SQL.Text);
+  FSeries.Active := True;
+  pLogger := nil;
+
+  FSeriesID := FSeries.FieldByName(SERIES_ID_FIELD) as TIntegerField;
+  FSeriesTitle := FSeries.FieldByName(SERIES_TITLE_FIELD) as TWideStringField;
+end;
+
+destructor TBookCollection.TSeriesIteratorImpl.Destroy;
+begin
+  FreeAndNil(FSeries);
+
+  inherited Destroy;
+end;
+
+// Read next record (if present), return True if read
+function TBookCollection.TSeriesIteratorImpl.Next(out SeriesData: TSeriesData): Boolean;
+begin
+  Result := not FSeries.Eof;
+
+  if Result then
+  begin
+    Assert(DMUser.ActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
+    SeriesData.SeriesID := FSeriesID.Value;
+    SeriesData.SeriesTitle := FSeriesTitle.Value;
+    FSeries.Next;
+  end;
+end;
+
+function TBookCollection.TSeriesIteratorImpl.GetNumRecords: Integer;
+begin
+  Result := FSeries.RecordCount;
+end;
+
+function TBookCollection.TSeriesIteratorImpl.CreateSQL(const Mode: TSeriesIteratorMode; const Filter: string): string;
+var
+  Where: string;
+begin
+  Where := '';
+  case Mode of
+    smAll:
+      Result := 'SELECT s.' + SERIES_ID_FIELD + ', s.' + SERIES_TITLE_FIELD + ' FROM Series s ';
+    smFullFilter:
+    begin
+      Result := 'SELECT DISTINCT s.' + SERIES_ID_FIELD + ', s.' + SERIES_TITLE_FIELD + ' FROM Series s ';
+      if FCollection.FHideDeleted or FCollection.FShowLocalOnly then
+      begin
+        Result := Result + ' INNER JOIN Books b ON s.' + SERIES_ID_FIELD + ' = b.' + SERIES_ID_FIELD + ' ';
+        if FCollection.FHideDeleted then
+          AddToWhere(Where, ' b.' + BOOK_DELETED_FIELD + ' = False ');
+        if FCollection.FShowLocalOnly then
+          AddToWhere(Where, ' b.' + BOOK_LOCAL_FIELD + ' = True ');
+      end;
+
+      // Series type filter
+      if FCollection.FSeriesFilterType <> '' then
+      begin
+        if FCollection.FSeriesFilterType = ALPHA_FILTER_NON_ALPHA then
+          AddToWhere(Where, Format(
+            '(POS(UPPER(SUBSTRING(s.%0:s, 1, 1)), "%1:s") = 0) AND (POS(UPPER(SUBSTRING(s.%0:s, 1, 1)), "%2:s") = 0)',
+            [SERIES_TITLE_FIELD, ENGLISH_ALPHABET, RUSSIAN_ALPHABET]
+          ))
+        else if FCollection.FSeriesFilterType <> ALPHA_FILTER_ALL then
+        begin
+          Assert(Length(FCollection.FSeriesFilterType) = 1);
+          Assert(TCharacter.IsUpper(FCollection.FSeriesFilterType, 1));
+          AddToWhere(Where, Format(
+            'UPPER(s.%0:s) LIKE "%1:s%%"',                                // начинается на заданную букву
+            [SERIES_TITLE_FIELD, FCollection.FSeriesFilterType]
+          ));
+        end;
+      end;
+    end
+    else
+      Assert(False);
+  end;
+
+  if Filter <> '' then
+    AddToWhere(Where, Filter);
+  Result := Result + Where;
+  Result := Result + ' ORDER BY s.' + SERIES_TITLE_FIELD;
+end;
+
+{ TBookCollection }
+
+constructor TBookCollection.Create(const DBCollectionFile: string);
+begin
+  inherited Create;
+
+  FDatabase := TABSDatabase.Create(nil);
+  FDatabase.DatabaseFileName := DBCollectionFile;
+  FDatabase.DatabaseName := COLLECTION_DATABASE + '>' + FormatDateTime('c.zzz', Now);
+  FDatabase.MaxConnections := 5;
+  FDatabase.PageSize := 65535;
+  FDatabase.PageCountInExtent := 16;
+  FDatabase.Connected := True;
+
+  FSettings := TABSTable.Create(FDatabase);
+  FSettings.TableName := 'Settings';
+  FSettings.DatabaseName := FDatabase.DatabaseName;
+  FSettings.Active := True;
+
+  FAuthors := TABSTable.Create(FDatabase);
+  FAuthors.TableName := 'Authors';
+  FAuthors.DatabaseName := FDatabase.DatabaseName;
+  FAuthors.Active := True;
+
+  FAuthorList := TABSTable.Create(FDatabase);
+  FAuthorList.TableName := 'Author_list';
+  FAuthorList.DatabaseName := FDatabase.DatabaseName;
+  FAuthorList.Active := True;
+
+  FBooks := TABSTable.Create(FDatabase);
+  FBooks.TableName := 'Books';
+  FBooks.DatabaseName := FDatabase.DatabaseName;
+  FBooks.Active := True;
+
+  FSeries := TABSTable.Create(FDatabase);
+  FSeries.TableName := 'Series';
+  FSeries.DatabaseName := FDatabase.DatabaseName;
+  FSeries.Active := True;
+
+  FGenres := TABSTable.Create(FDatabase);
+  FGenres.TableName := 'Genres';
+  FGenres.DatabaseName := FDatabase.DatabaseName;
+  FGenres.Active := True;
+
+  FGenreList := TABSTable.Create(FDatabase);
+  FGenreList.TableName := 'Genre_list';
+  FGenreList.DatabaseName := FDatabase.DatabaseName;
+  FGenreList.Active := True;
+
+  FSettingsID := FSettings.FieldByName(ID_FIELD) as TIntegerField;
+  FSettingsValue := FSettings.FieldByName(SETTING_VALIE_FIELD) as TWideMemoField;
+
+  FAuthorsID := FAuthors.FieldByName(AUTHOR_ID_FIELD) as TIntegerField;
+  FAuthorsLastName := FAuthors.FieldByName(AUTHOR_LASTTNAME_FIELD) as TWideStringField;
+  FAuthorsFirstName := FAuthors.FieldByName(AUTHOR_FIRSTNAME_FIELD) as TWideStringField;
+  FAuthorsMiddleName := FAuthors.FieldByName(AUTHOR_MIDDLENAME_FIELD) as TWideStringField;
+
+  FAuthorListAuthorID := FAuthorList.FieldByName(AUTHOR_ID_FIELD) as TIntegerField;
+  FAuthorListBookID := FAuthorList.FieldByName(BOOK_ID_FIELD) as TIntegerField;
+
+  FBooksBookID := FBooks.FieldByName(BOOK_ID_FIELD) as TIntegerField;
+  FBooksLibID := FBooks.FieldByName(BOOK_LIBID_FIELD) as TIntegerField;
+  FBooksTitle := FBooks.FieldByName(BOOK_TITLE_FIELD) as TWideStringField;
+  FBooksSeriesID := FBooks.FieldByName(SERIES_ID_FIELD) as TIntegerField;
+  FBooksSeqNumber := FBooks.FieldByName(BOOK_SEQNUMBER_FIELD) as TSmallintField;
+  FBooksDate := FBooks.FieldByName(BOOK_DATE_FIELD) as TDateField;
+  FBooksLibRate := FBooks.FieldByName(BOOK_LIBRATE_FIELD) as TIntegerField;
+  FBooksLang := FBooks.FieldByName(BOOK_LANG_FIELD) as TWideStringField;
+  FBooksFolder := FBooks.FieldByName(BOOK_FOLDER_FIELD) as TWideStringField;
+  FBooksFileName := FBooks.FieldByName(BOOK_FILENAME_FIELD) as TWideStringField;
+  FBooksInsideNo := FBooks.FieldByName(BOOK_INSIDENO_FIELD) as TIntegerField;
+  FBooksExt := FBooks.FieldByName(BOOK_EXT_FIELD) as TWideStringField;
+  FBooksSize := FBooks.FieldByName(BOOK_SIZE_FIELD) as TIntegerField;
+  FBooksCode := FBooks.FieldByName(BOOK_CODE_FIELD) as TSmallintField;
+  FBooksIsLocal := FBooks.FieldByName(BOOK_LOCAL_FIELD) as TBooleanField;
+  FBooksIsDeleted := FBooks.FieldByName(BOOK_DELETED_FIELD) as TBooleanField;
+  FBooksKeyWords := FBooks.FieldByName(BOOK_KEYWORDS_FIELD) as TWideStringField;
+  FBooksRate := FBooks.FieldByName(BOOK_RATE_FIELD) as TIntegerField;
+  FBooksProgress := FBooks.FieldByName(BOOK_PROGRESS_FIELD) as TIntegerField;
+  FBooksAnnotation := FBooks.FieldByName(BOOK_ANNOTATION_FIELD) as TWideMemoField;
+  FBooksReview := FBooks.FieldByName(BOOK_REVIEW_FIELD) as TWideMemoField;
+
+  FSeriesSeriesID := FSeries.FieldByName(SERIES_ID_FIELD) as TIntegerField;
+  FSeriesSeriesTitle := FSeries.FieldByName(SERIES_TITLE_FIELD) as TWideStringField;
+
+  FGenresGenreCode := FGenres.FieldByName(GENRE_CODE_FIELD) as TWideStringField;
+  FGenresParentCode := FGenres.FieldByName(GENRE_PARENTCODE_FIELD) as TWideStringField;
+  FGenresFB2Code := FGenres.FieldByName(GENRE_FB2CODE_FIELD) as TWideStringField;
+  FGenresAlias := FGenres.FieldByName(GENRE_ALIAS_FIELD) as TWideStringField;
+
+  FGenreListGenreCode := FGenreList.FieldByName(GENRE_CODE_FIELD) as TWideStringField;
+  FGenreListBookID := FGenreList.FieldByName(BOOK_ID_FIELD) as TIntegerField;
+end;
+
+destructor TBookCollection.Destroy;
+begin
+  FreeAndNil(FSettings);
+  FreeAndNil(FAuthors);
+  FreeAndNil(FAuthorList);
+  FreeAndNil(FBooks);
+  FreeAndNil(FSeries);
+  FreeAndNil(FGenres);
+  FreeAndNil(FGenreList);
+
+  FreeAndNil(FDatabase);
+
+  inherited Destroy;
+end;
+
+procedure TBookCollection.SetProperty(PropID: Integer; const Value: Integer);
+begin
+  if Value = 0 then
+    Exit;
+
+  SetProperty(PropID, IntToStr(Value));
+end;
+
+procedure TBookCollection.SetProperty(PropID: Integer; const Value: string);
+begin
+  Assert(FSettings.Active);
+
+  if Value = '' then
+    Exit;
+
+  if FSettings.Locate(ID_FIELD, PropID, []) then
+    FSettings.Edit
+  else
+    FSettings.Append;
+
+  try
+    FSettingsID.Value := PropID;
+    FSettingsValue.Value := Value;
+
+    FSettings.Post;
+  except
+    FSettings.Cancel;
+  end;
+end;
+
+procedure TBookCollection.LoadGenres(const GenresFileName: string);
 var
   FS: TStringList;
   i: Integer;
@@ -480,7 +1207,7 @@ begin
   end;
 end;
 
-procedure TMHLLibrary.ReloadDefaultGenres(const FileName: string);
+procedure TBookCollection.ReloadDefaultGenres(const FileName: string);
 begin
   Assert(FGenres.Active);
 
@@ -494,7 +1221,7 @@ begin
   LoadGenres(FileName);
 end;
 
-function TMHLLibrary.GetTopGenreAlias(const FB2Code: string): string;
+function TBookCollection.GetTopGenreAlias(const FB2Code: string): string;
 var
   Code: string;
   p: Integer;
@@ -512,7 +1239,7 @@ begin
   Result := FGenresAlias.Value;
 end;
 
-function TMHLLibrary.CheckFileInCollection(const FileName: string; const FullNameSearch: Boolean; const ZipFolder: Boolean): Boolean;
+function TBookCollection.CheckFileInCollection(const FileName: string; const FullNameSearch: Boolean; const ZipFolder: Boolean): Boolean;
 var
   S: string;
 begin
@@ -530,7 +1257,7 @@ begin
   end;
 end;
 
-function TMHLLibrary.InsertBook(BookRecord: TBookRecord; CheckFileName, FullCheck: Boolean): Integer;
+function TBookCollection.InsertBook(BookRecord: TBookRecord; CheckFileName, FullCheck: Boolean): Integer;
 var
   i: Integer;
   Author: TAuthorData;
@@ -561,9 +1288,9 @@ begin
     begin
       FAuthors.Insert;
       try
-        FAuthorLastName.Value := BookRecord.Authors[i].LastName;
-        FAuthorFirstName.Value := BookRecord.Authors[i].FirstName;
-        FAuthorMiddleName.Value := BookRecord.Authors[i].MiddleName;
+        FAuthorsLastName.Value := BookRecord.Authors[i].LastName;
+        FAuthorsFirstName.Value := BookRecord.Authors[i].FirstName;
+        FAuthorsMiddleName.Value := BookRecord.Authors[i].MiddleName;
         FAuthors.Post;
       except
         FAuthors.Cancel;
@@ -574,7 +1301,7 @@ begin
     //
     // и запомним ID-ки
     //
-    BookRecord.Authors[i].AuthorID := FAuthorID.Value;
+    BookRecord.Authors[i].AuthorID := FAuthorsID.Value;
   end;
 
   // Filter out duplicate authors by AuthorID:
@@ -655,45 +1382,45 @@ begin
 
     FBooks.Append;
     try
-      FBookLibID.Value := BookRecord.LibID;
-      FBookTitle.Value := BookRecord.Title;
+      FBooksLibID.Value := BookRecord.LibID;
+      FBooksTitle.Value := BookRecord.Title;
       if NO_SERIE_ID <> BookRecord.SeriesID then
       begin
-        FBookSeriesID.Value := BookRecord.SeriesID;
-        FBookSeqNumber.Value := BookRecord.SeqNumber;
+        FBooksSeriesID.Value := BookRecord.SeriesID;
+        FBooksSeqNumber.Value := BookRecord.SeqNumber;
       end;
-      FBookDate.Value := BookRecord.Date;
-      FBookLibRate.Value := BookRecord.LibRate;
-      FBookLang.Value := BookRecord.Lang;
-      FBookFolder.Value := BookRecord.Folder;
-      FBookFileName.Value := BookRecord.FileName;
-      FBookInsideNo.Value := BookRecord.InsideNo;
-      FBookExt.Value := BookRecord.FileExt;
-      FBookSize.Value := BookRecord.Size;
-      FBookCode.Value := BookRecord.Code;
-      FBookIsLocal.Value := BookRecord.IsLocal;
-      FBookIsDeleted.Value := BookRecord.IsDeleted;
-      FBookKeyWords.Value := BookRecord.KeyWords;
-      FBookRate.Value := BookRecord.Rate;
-      FBookProgress.Value := BookRecord.Progress;
+      FBooksDate.Value := BookRecord.Date;
+      FBooksLibRate.Value := BookRecord.LibRate;
+      FBooksLang.Value := BookRecord.Lang;
+      FBooksFolder.Value := BookRecord.Folder;
+      FBooksFileName.Value := BookRecord.FileName;
+      FBooksInsideNo.Value := BookRecord.InsideNo;
+      FBooksExt.Value := BookRecord.FileExt;
+      FBooksSize.Value := BookRecord.Size;
+      FBooksCode.Value := BookRecord.Code;
+      FBooksIsLocal.Value := BookRecord.IsLocal;
+      FBooksIsDeleted.Value := BookRecord.IsDeleted;
+      FBooksKeyWords.Value := BookRecord.KeyWords;
+      FBooksRate.Value := BookRecord.Rate;
+      FBooksProgress.Value := BookRecord.Progress;
       if BookRecord.Annotation <> '' then
-        FBookAnnotation.Value := BookRecord.Annotation;
+        FBooksAnnotation.Value := BookRecord.Annotation;
       if BookRecord.Review <> '' then
-        FBookReview.Value := BookRecord.Review;
+        FBooksReview.Value := BookRecord.Review;
       FBooks.Post;
     except
       FBooks.Cancel;
       raise;
     end;
 
-    InsertBookGenres(FBookBookID.Value, BookRecord.Genres);
+    InsertBookGenres(FBooksBookID.Value, BookRecord.Genres);
 
     for Author in BookRecord.Authors do
     begin
       FAuthorList.Append;
       try
         FAuthorListAuthorID.Value := Author.AuthorID;
-        FAuthorListBookID.Value := FBookBookID.Value;
+        FAuthorListBookID.Value := FBooksBookID.Value;
 
         FAuthorList.Post;
       except
@@ -702,11 +1429,11 @@ begin
       end;
     end;
 
-    Result := FBookBookID.Value;
+    Result := FBooksBookID.Value;
   end;
 end;
 
-procedure TMHLLibrary.DeleteBook(const BookKey: TBookKey);
+procedure TBookCollection.DeleteBook(const BookKey: TBookKey);
 var
   SeriesID: Integer;
 begin
@@ -718,7 +1445,7 @@ begin
 
   if FBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
   begin
-    SeriesID := FBookSeriesID.Value;
+    SeriesID := FBooksSeriesID.Value;
     FBooks.Delete;
 
     { TODO -oNickR : Заменить эти вызовы на DELETE FROM query }
@@ -750,7 +1477,7 @@ begin
     FAuthors.First;
     while not FAuthors.Eof do
     begin
-      if FAuthorList.Locate(AUTHOR_ID_FIELD, FAuthorID.Value, []) then
+      if FAuthorList.Locate(AUTHOR_ID_FIELD, FAuthorsID.Value, []) then
         FAuthors.Next
       else
         FAuthors.Delete;
@@ -760,7 +1487,67 @@ begin
   end;
 end;
 
-procedure TMHLLibrary.CleanBookGenres(BookID: Integer);
+procedure TBookCollection.GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord; LoadMemos: Boolean);
+begin
+  BookRecord.Clear;
+
+  if BookKey.DatabaseID = DMUser.ActiveCollectionInfo.ID then
+  begin
+    Assert(FBooks.Active);
+
+    if not FBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
+    begin
+      Assert(False);
+      Exit;
+    end;
+
+    BookRecord.BookKey.BookID := FBooksBookID.Value;
+    BookRecord.BookKey.DatabaseID := DMUser.ActiveCollectionInfo.ID;
+    BookRecord.Title := FBooksTitle.Value;
+    BookRecord.Folder := FBooksFolder.Value;
+    BookRecord.FileName := FBooksFileName.Value;
+    BookRecord.FileExt := FBooksExt.Value;
+    BookRecord.InsideNo := FBooksInsideNo.Value;
+    if not FBooksSeriesID.IsNull then
+    begin
+      BookRecord.SeriesID := FBooksSeriesID.Value;
+      BookRecord.Series := GetSeriesTitle(FBooksSeriesID.Value);
+      BookRecord.SeqNumber := FBooksSeqNumber.Value;
+    end;
+    BookRecord.Code := FBooksCode.Value;
+    BookRecord.Size := FBooksSize.Value;
+    BookRecord.LibID := FBooksLibID.Value;
+    BookRecord.IsDeleted := FBooksIsDeleted.Value;
+    BookRecord.IsLocal := FBooksIsLocal.Value;
+    BookRecord.Date := FBooksDate.Value;
+    BookRecord.Lang := FBooksLang.Value;
+    BookRecord.LibRate := FBooksLibRate.Value;
+    BookRecord.KeyWords := FBooksKeyWords.Value;
+    BookRecord.NodeType := ntBookInfo;
+    BookRecord.Rate := FBooksRate.Value;
+    BookRecord.Progress := FBooksProgress.Value;
+    BookRecord.CollectionRoot := DMUser.ActiveCollectionInfo.RootPath;
+    BookRecord.CollectionName := DMUser.ActiveCollectionInfo.Name;
+
+    GetBookGenres(BookRecord.BookKey.BookID, BookRecord.Genres, @(BookRecord.RootGenre));
+    GetBookAuthors(BookRecord.BookKey.BookID, BookRecord.Authors);
+
+    if LoadMemos then
+    begin
+      // TODO - rethink when to load the memo fields.
+      //
+      // Это поле нужно зачитывать только при копировании книги в другую коллекцию.
+      // Во всех остальных случаях оно не используется.
+      //
+      BookRecord.Review := FBooksReview.Value;
+      BookRecord.Annotation := FBooksAnnotation.Value;
+    end;
+  end
+  else
+    DMUser.GetBookRecord(BookKey, BookRecord);
+end;
+
+procedure TBookCollection.CleanBookGenres(BookID: Integer);
 begin
   Assert(FGenreList.Active);
 
@@ -770,7 +1557,7 @@ end;
 
 // Add book genres for the book specified by BookID
 // Please notice that Genres could be altered by the method if it contains genres with duplicate codes
-procedure TMHLLibrary.InsertBookGenres(const BookID: Integer; var Genres: TBookGenres);
+procedure TBookCollection.InsertBookGenres(const BookID: Integer; var Genres: TBookGenres);
 var
   Genre: TGenreData;
 begin
@@ -793,7 +1580,7 @@ begin
   end;
 end;
 
-procedure TMHLLibrary.GetSeries(SeriesList: TStrings);
+procedure TBookCollection.GetSeries(SeriesList: TStrings);
 begin
   Assert(FSeries.Active);
 
@@ -806,7 +1593,7 @@ begin
 end;
 
 // Filter out duplicates by author ID
-procedure TMHLLibrary.FilterDuplicateAuthorsByID(var Authors: TBookAuthors);
+procedure TBookCollection.FilterDuplicateAuthorsByID(var Authors: TBookAuthors);
 var
   MapId: TList<Integer>;
   NewAuthors: TBookAuthors;
@@ -834,7 +1621,7 @@ begin
 end;
 
 // Filter out duplicates by genre code
-procedure TMHLLibrary.FilterDuplicateGenresByCode(var Genres: TBookGenres);
+procedure TBookCollection.FilterDuplicateGenresByCode(var Genres: TBookGenres);
 var
   MapId: TList<string>;
   NewGenres: TBookGenres;
@@ -861,14 +1648,14 @@ begin
   Genres := NewGenres;
 end;
 
-procedure TMHLLibrary.BeginBulkOperation;
+procedure TBookCollection.BeginBulkOperation;
 begin
   Assert(not FDatabase.InTransaction);
 
   FDatabase.StartTransaction;
 end;
 
-procedure TMHLLibrary.EndBulkOperation(Commit: Boolean = True);
+procedure TBookCollection.EndBulkOperation(Commit: Boolean = True);
 begin
   Assert(FDatabase.InTransaction);
 
@@ -878,4 +1665,584 @@ begin
     FDatabase.Rollback;
 end;
 
+// Return an iterator working on the active collection
+// but having its own Books dataset (the rest of the tables are from the active collection).
+// No need to free the iterator when done as it's a TInterfacedObject
+// and knows to self destroy when no longer referenced.
+function TBookCollection.GetBookIterator(const Mode: TBookIteratorMode; const LoadMemos: Boolean; const Filter: string): IBookIterator;
+var
+  EmptySearchCriteria: TBookSearchCriteria;
+begin
+  Result := TBookIteratorImpl.Create(Self, Mode, LoadMemos, Filter, EmptySearchCriteria);
+end;
+
+function TBookCollection.GetBookIterator(const LoadMemos: Boolean; const SearchCriteria: TBookSearchCriteria): IBookIterator;
+begin
+  Result := TBookIteratorImpl.Create(Self, bmSearch, LoadMemos, '', SearchCriteria);
+end;
+
+function TBookCollection.GetAuthorIterator(const Mode: TAuthorIteratorMode; const Filter: string): IAuthorIterator;
+begin
+  Result := TAuthorIteratorImpl.Create(Self, Mode, Filter);
+end;
+
+function TBookCollection.GetGenreIterator(const Mode: TGenreIteratorMode; const Filter: string): IGenreIterator;
+begin
+  Result := TGenreIteratorImpl.Create(Self, Mode, Filter);
+end;
+
+function TBookCollection.GetSeriesIterator(const Mode: TSeriesIteratorMode; const Filter: string = ''): ISeriesIterator;
+begin
+  Result := TSeriesIteratorImpl.Create(Self, Mode, Filter);
+end;
+
+procedure TBookCollection.GetBookGenres(BookID: Integer; var BookGenres: TBookGenres; RootGenre: PGenreData = nil);
+var
+  i: Integer;
+  GenreIterator: IGenreIterator;
+  Genre: TGenreData;
+begin
+  GenreIterator := GetGenreIterator(gmByBook, Format('gl.%s = %d', [BOOK_ID_FIELD, BookID]));
+  i := Length(BookGenres);
+  while GenreIterator.Next(Genre) do
+  begin
+    SetLength(BookGenres, i + 1);
+    BookGenres[i] := Genre;
+    Inc(i);
+  end;
+
+  if Assigned(RootGenre) then
+  begin
+    if Length(BookGenres) > 0 then
+      GetGenre(BookGenres[0].ParentCode, RootGenre^)
+    else
+      RootGenre^.Clear;
+  end;
+end;
+
+procedure TBookCollection.GetBookAuthors(BookID: Integer; var BookAuthors: TBookAuthors);
+var
+  AuthorIterator: IAuthorIterator;
+  i: Integer;
+begin
+  AuthorIterator := GetAuthorIterator(amByBook, Format('a.%s = %u', [BOOK_ID_FIELD, BookID]));
+  SetLength(BookAuthors, AuthorIterator.GetNumRecords + 1); // an extra dummy element
+  i := 0;
+  while AuthorIterator.Next(BookAuthors[i]) do
+    Inc(i);
+  SetLength(BookAuthors, AuthorIterator.GetNumRecords); // remove the dummy element
+end;
+
+procedure TBookCollection.GetGenre(const GenreCode: string; var Genre: TGenreData);
+begin
+  Assert(FGenres.Active);
+  if FGenres.Locate(GENRE_CODE_FIELD, GenreCode, []) then
+  begin
+    Genre.GenreCode := GenreCode;
+    Genre.ParentCode := FGenresParentCode.Value;
+    Genre.FB2GenreCode := FGenresFB2Code.Value;
+    Genre.GenreAlias := FGenresAlias.Value;
+  end
+  else
+    Genre.Clear;
+end;
+
+procedure TBookCollection.GetAuthor(AuthorID: Integer; var Author: TAuthorData);
+begin
+  Assert(FAuthors.Active);
+  if FAuthors.Locate(AUTHOR_ID_FIELD, AuthorID, []) then
+  begin
+    Author.AuthorID := AuthorID;
+    Author.LastName := FAuthorsLastName.Value;
+    Author.FirstName := FAuthorsFirstName.Value;
+    Author.MiddleName := FAuthorsMiddleName.Value;
+  end
+  else
+    Author.Clear;
+end;
+
+function TBookCollection.GetSeriesTitle(SeriesID: Integer): string;
+begin
+  if (NO_SERIE_ID <> SeriesID) and FSeries.Locate(SERIES_ID_FIELD, SeriesID, []) then
+    Result := FSeriesSeriesTitle.Value
+  else
+    Result := NO_SERIES_TITLE;
+end;
+
+procedure TBookCollection.VerifyCurrentCollection(const DatabaseID: Integer);
+var
+  BookCollectionName: string;
+  CurrentCollectionName: string;
+begin
+  if DatabaseID <> DMUser.ActiveCollectionInfo.ID then
+  begin
+    if (DMUser.SelectCollection(DatabaseID)) then
+      BookCollectionName := DMUser.CurrentCollectionInfo.Name
+    else
+      BookCollectionName := '';
+    raise ENotSupportedException.Create(Format(rstrErrorOnlyForCurrentCollection, [DMUser.ActiveCollectionInfo.Name, BookCollectionName]));
+  end;
+end;
+
+procedure TBookCollection.SetSeriesTitle(const SeriesID: Integer; const NewSeriesTitle: string);
+begin
+  Assert(FSeries.Active);
+  Assert(SeriesID <> NO_SERIE_ID);
+  Assert(NewSeriesTitle <> NO_SERIES_TITLE);
+
+  if (FSeries.Locate(SERIES_ID_FIELD, SeriesID, [])) then
+  begin
+    FSeries.Edit;
+    try
+      FSeriesSeriesTitle.Value := NewSeriesTitle;
+      FSeries.Post;
+    except
+      FSeries.Cancel;
+      raise ;
+    end;
+  end;
+end;
+
+// If the series title is already in DB - locate it and return the SeriesID
+// If the title is not in DB - add and returned the ID of the added row
+function TBookCollection.AddOrLocateSeriesIDBySeriesTitle(const SeriesTitle: string): Integer;
+begin
+  Assert(FSeries.Active);
+
+  if NO_SERIES_TITLE = SeriesTitle then
+  begin
+    Result := NO_SERIE_ID;
+    Exit;
+  end;
+
+  if not FSeries.Locate(SERIES_TITLE_FIELD, SeriesTitle, []) then
+  begin
+    FSeries.Append;
+    try
+      FSeriesSeriesTitle.Value := SeriesTitle;
+      FSeries.Post;
+    except
+      FSeries.Cancel;
+      raise ;
+    end;
+  end;
+  Result := FSeriesSeriesID.Value;
+end;
+
+// Change SeriesID value for all books in the current database with old SeriesID value
+procedure TBookCollection.ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer);
+const
+  UPDATE_SQL = 'UPDATE Books SET ' + SERIES_ID_FIELD + ' = %s WHERE ' + SERIES_ID_FIELD + ' %s';
+var
+  Query: TABSQuery;
+  newSerie: string;
+  oldSerie: string;
+var
+  pLogger: IIntervalLogger;
+begin
+  Assert(OldSeriesID <> NewSeriesID);
+
+  VerifyCurrentCollection(DatabaseID);
+
+  Query := TABSQuery.Create(FDatabase);
+  try
+    Query.DatabaseName := FDatabase.DatabaseName;
+
+    if NO_SERIE_ID = NewSeriesID then
+      newSerie := 'NULL'
+    else
+      newSerie := Format('%u', [NewSeriesID]);
+
+    if NO_SERIE_ID = OldSeriesID then
+      oldSerie := 'IS NULL'
+    else
+      oldSerie := Format('= %u', [NewSeriesID]);
+
+    Query.SQL.Text := Format(UPDATE_SQL, [newSerie, oldSerie]);
+
+    pLogger := GetIntervalLogger('TBookCollection.ChangeBookSeriesID', Query.SQL.Text);
+    Query.ExecSQL;
+    pLogger := nil;
+
+  finally
+    FreeAndNil(Query);
+  end;
+
+  // Обновим информацию в группах
+  DMUser.ChangeBookSeriesID(OldSeriesID, NewSeriesID, DatabaseID);
+end;
+
+procedure TBookCollection.ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc);
+var
+  extra: TBookExtra;
+  group: TBookGroup;
+  groupBook: TGroupBook;
+
+  BookKey: TBookKey;
+
+  function GetBookKey(bookInfo: TBookInfo; out BookKey: TBookKey): Boolean;
+  begin
+    if bookInfo.LibID = 0 then
+      Result := FBooks.Locate(BOOK_ID_FIELD, bookInfo.BookID, [])
+    else
+      Result := FBooks.Locate(BOOK_LIBID_FIELD, bookInfo.LibID, []);
+
+    if Result then
+    begin
+      BookKey := CreateBookKey(FBooksBookID.Value, DMUser.ActiveCollectionInfo.ID);
+    end;
+  end;
+
+begin
+  Assert(Assigned(data));
+  Assert(Assigned(guiUpdateCallback));
+  Assert(FBooks.Active);
+
+  //
+  // Заполним рейтинги, review и признак прочитанности
+  //
+  for extra in data.Extras do
+  begin
+    if GetBookKey(extra, BookKey) then
+    begin
+      FBooks.Edit;
+      try
+        if extra.Rating <> 0 then
+          FBooksRate.Value := extra.Rating;
+        if extra.Progress <> 0 then
+          FBooksProgress.Value := extra.Progress;
+        if extra.Review <> '' then
+          FBooksReview.Value := extra.Review;
+        FBooks.Post;
+      except
+        FBooks.Cancel;
+        raise ;
+      end;
+    end;
+
+    //
+    // Обновим информацию в группах
+    //
+    DMUser.SetExtra(BookKey, extra);
+
+    //
+    // Дадим возможность главному окну обновить измененные ноды
+    //
+    guiUpdateCallback(BookKey, extra);
+  end;
+
+  //
+  // Создадим пользовательские группы
+  //
+  DMUser.ImportUserData(data);
+
+  //
+  // Добавим книги в группы
+  //
+  for group in data.Groups do
+  begin
+    for groupBook in group do
+    begin
+      if GetBookKey(groupBook, BookKey) then
+      begin
+        AddBookToGroup(BookKey, group.GroupID);
+      end;
+    end;
+  end;
+end;
+
+procedure TBookCollection.AddBookToGroup(const BookKey: TBookKey; GroupID: Integer);
+var
+  BookRecord: TBookRecord;
+begin
+  VerifyCurrentCollection(BookKey.DatabaseID);
+  Assert(FBooks.Active);
+
+  GetBookRecord(BookKey, BookRecord, True);
+
+  DMUser.AddBookToGroup(BookKey, GroupID, BookRecord);
+end;
+
+procedure TBookCollection.ExportUserData(data: TUserData);
+begin
+  Assert(Assigned(data));
+  Assert(FBooks.Active);
+
+  FBooks.First;
+  while not FBooks.Eof do
+  begin
+    if
+      (FBooksRate.Value <> 0) or
+      (FBooksProgress.Value <> 0) or
+      (not FBooksReview.IsNull)
+    then
+      data.Extras.AddExtra(
+        FBooksBookID.Value,
+        FBooksLibID.Value,
+        FBooksRate.Value,
+        FBooksProgress.Value,
+        FBooksReview.Value
+      );
+
+    FBooks.Next;
+  end;
+
+  DMUser.ExportUserData(data);
+end;
+
+procedure TBookCollection.GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
+begin
+  (* ***************************************************************************
+    *
+    * Более предпочтительно использовать 3 простых запроса,
+    * но пока оставим как есть
+    *
+    *************************************************************************** *)
+  AuthorsCount := FAuthors.RecordCount;
+  BooksCount := FBooks.RecordCount;
+  SeriesCount := FSeries.RecordCount;
+end;
+
+// Полностью обновляет информацию о книге с сохранением BookID:
+procedure TBookCollection.UpdateBook(const BookRecord: TBookRecord);
+begin
+  VerifyCurrentCollection(BookRecord.BookKey.DatabaseID);
+  Assert(FBooks.Active);
+
+  if FBooks.Locate(BOOK_ID_FIELD, BookRecord.BookKey.BookID, []) then
+  begin
+
+  end;
+
+  DMUser.UpdateBook(BookRecord);
+end;
+
+function TBookCollection.SetReview(const BookKey: TBookKey; const Review: string): Integer;
+var
+  NewReview: string;
+begin
+  VerifyCurrentCollection(BookKey.DatabaseID);
+  Assert(FBooks.Active);
+
+  Result := 0;
+  NewReview := Trim(Review);
+
+  Result := 0;
+  if FBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
+  begin
+    FBooks.Edit;
+    try
+      if Review = '' then
+      begin
+        FBooksReview.Clear;
+        FBooksCode.Value := 0;
+      end
+      else
+      begin
+        FBooksReview.Value := Review;
+        FBooksCode.Value := 1;
+        Result := 1;
+      end;
+      FBooks.Post;
+    except
+      FBooks.Cancel;
+      raise ;
+    end;
+  end;
+
+  //
+  // Обновим информацию в группах
+  //
+  Result := Result or DMUser.SetReview(BookKey, NewReview);
+end;
+
+function TBookCollection.GetReview(const BookKey: TBookKey): string;
+begin
+  if BookKey.DatabaseID = DMUser.ActiveCollectionInfo.ID then
+  begin
+    Assert(FBooks.Active);
+    if FBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
+      Result := FBooksReview.Value
+    else
+      Result := '';
+  end
+  else
+    Result := DMUser.GetReview(BookKey);
+end;
+
+procedure TBookCollection.SetProgress(const BookKey: TBookKey; Progress: Integer);
+begin
+  VerifyCurrentCollection(BookKey.DatabaseID);
+  Assert(FBooks.Active);
+
+  if FBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
+  begin
+    FBooks.Edit;
+    try
+      FBooksProgress.Value := Progress;
+      FBooks.Post;
+    except
+      FBooks.Cancel;
+      raise ;
+    end;
+  end;
+
+  //
+  // Обновим информацию в группах
+  //
+  DMUser.SetProgress(BookKey, Progress);
+end;
+
+procedure TBookCollection.SetRate(const BookKey: TBookKey; Rate: Integer);
+begin
+  VerifyCurrentCollection(BookKey.DatabaseID);
+  Assert(FBooks.Active);
+
+  if FBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
+  begin
+    FBooks.Edit;
+    try
+      FBooksRate.Value := Rate;
+      FBooks.Post;
+    except
+      FBooks.Cancel;
+      raise ;
+    end;
+  end;
+
+  //
+  // Обновим информацию в группах
+  //
+  DMUser.SetRate(BookKey, Rate);
+end;
+
+procedure TBookCollection.SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
+begin
+  VerifyCurrentCollection(BookKey.DatabaseID);
+  Assert(FBooks.Active);
+
+  FBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []);
+  FBooks.Edit;
+  try
+    if NO_SERIE_ID = SeriesID then
+      FBooksSeriesID.Clear
+    else
+      FBooksSeriesID.Value := SeriesID;
+    FBooks.Post;
+  except
+    FBooks.Cancel;
+    raise ;
+  end;
+
+  // Обновим информацию в группах
+  DMUser.SetBookSeriesID(BookKey, SeriesID);
+end;
+
+procedure TBookCollection.SetFolder(const BookKey: TBookKey; const Folder: string);
+begin
+  VerifyCurrentCollection(BookKey.DatabaseID);
+  Assert(FBooks.Active);
+
+  if FBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
+  begin
+    FBooks.Edit;
+    try
+      FBooksFolder.Value := Folder;
+      FBooks.Post;
+    except
+      FBooks.Cancel;
+      raise ;
+    end;
+  end;
+
+  // Обновим информацию в группах
+  DMUser.SetFolder(BookKey, Folder);
+end;
+
+procedure TBookCollection.SetFileName(const BookKey: TBookKey; const FileName: string);
+begin
+  VerifyCurrentCollection(BookKey.DatabaseID);
+  Assert(FBooks.Active);
+
+  if FBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
+  begin
+    FBooks.Edit;
+    try
+      FBooksFileName.Value := FileName;
+      FBooks.Post;
+    except
+      FBooks.Cancel;
+      raise ;
+    end;
+  end;
+
+  // Обновим информацию в группах
+  DMUser.SetFileName(BookKey, FileName);
+end;
+
+procedure TBookCollection.SetLocal(const BookKey: TBookKey; AState: Boolean);
+begin
+  VerifyCurrentCollection(BookKey.DatabaseID);
+
+  if FBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
+  begin
+    FBooks.Edit;
+    try
+      FBooksIsLocal.Value := AState;
+      FBooks.Post;
+    except
+      FBooks.Cancel;
+      raise ;
+    end;
+  end;
+
+  DMUser.SetLocal(BookKey, AState);
+end;
+
+//procedure TBookCollection.SetTableState(State: Boolean);
+//begin
+//  FAuthors.Active := State;
+//  FSeries.Active := State;
+//  FBooks.Active := State;
+//  FGenres.Active := State;
+//end;
+
+
+procedure TBookCollection.GetBookLibID(const BookKey: TBookKey; out ARes: String);
+begin
+  if BookKey.DatabaseID = DMUser.ActiveCollectionInfo.ID then
+  begin
+    Assert(FBooks.Active);
+
+    if not FBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
+    begin
+      Assert(False);
+      Exit;
+    end;
+
+    ARes := FBooksLibID.AsString;
+  end
+  else
+    DMUser.GetBookLibID(BookKey, ARes);
+end;
+
+procedure TBookCollection.CompactDatabase;
+begin
+  try
+    FDatabase.Close;
+    FDatabase.CompactDatabase;
+  finally
+    FDatabase.Open;
+  end;
+end;
+
+procedure TBookCollection.RepairDatabase;
+begin
+  try
+    FDatabase.Close;
+    FDatabase.RepairDatabase;
+  finally
+    FDatabase.Open;
+  end;
+end;
 end.

@@ -35,7 +35,7 @@ type
   TImportFB2ThreadBase = class(TWorker)
   protected
     FDBFileName: string;
-    FLibrary: TMHLLibrary;
+    FLibrary: TBookCollection;
     FTemplater: TTemplater;
     FFiles: TStringList;
     FRootPath: string;
@@ -236,7 +236,7 @@ begin
     if Settings.EnableSort then
       FFilesList.TargetPath := Settings.ImportPath
     else
-      FFilesList.TargetPath := DMUser.ActiveCollection.RootPath;
+      FFilesList.TargetPath := DMUser.ActiveCollectionInfo.RootPath;
 
     try
       FFilesList.Process;
@@ -251,28 +251,24 @@ end;
 
 procedure TImportFB2ThreadBase.WorkFunction;
 begin
-  FRootPath := DMUser.ActiveCollection.RootPath;
+  FRootPath := DMUser.ActiveCollectionInfo.RootPath;
 
-  FLibrary := TMHLLibrary.Create(DMUser.ActiveCollection.DBFileName);
+  FLibrary := GetActiveBookCollection;
+  FFiles := TStringList.Create;
   try
-    FFiles := TStringList.Create;
+    ScanFolder;
+
+    if Canceled then
+      Exit;
+
+    FLibrary.BeginBulkOperation;
     try
-      ScanFolder;
-
-      if Canceled then
-        Exit;
-
-      FLibrary.BeginBulkOperation;
-      try
-        ProcessFileList;
-      finally
-        FLibrary.EndBulkOperation;
-      end;
+      ProcessFileList;
     finally
-      FreeAndNil(FFiles);
+      FLibrary.EndBulkOperation;
     end;
   finally
-    FreeAndNil(FLibrary);
+    FreeAndNil(FFiles);
   end;
 end;
 

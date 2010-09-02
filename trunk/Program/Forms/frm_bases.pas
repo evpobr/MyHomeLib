@@ -123,16 +123,16 @@ resourcestring
 
 procedure TfrmBases.FormShow(Sender: TObject);
 begin
-  CollectionID := DMUser.ActiveCollection.ID;
+  CollectionID := DMUser.ActiveCollectionInfo.ID;
 
-  DisplayName := DMUser.ActiveCollection.Name;
-  DBFileName := DMUser.ActiveCollection.DBFileName;
-  RootFolder := DMUser.ActiveCollection.RootFolder;
-  Description := DMUser.ActiveCollection.Notes;
-  URL := DMUser.ActiveCollection.URL;
-  Pass := DMUser.ActiveCollection.Password;
-  User := DMUser.ActiveCollection.User;
-  Script := DMUser.ActiveCollection.Script;
+  DisplayName := DMUser.ActiveCollectionInfo.Name;
+  DBFileName := DMUser.ActiveCollectionInfo.DBFileName;
+  RootFolder := DMUser.ActiveCollectionInfo.RootFolder;
+  Description := DMUser.ActiveCollectionInfo.Notes;
+  URL := DMUser.ActiveCollectionInfo.URL;
+  Pass := DMUser.ActiveCollectionInfo.Password;
+  User := DMUser.ActiveCollectionInfo.User;
+  Script := DMUser.ActiveCollectionInfo.Script;
 end;
 
 function TfrmBases.GetDisplayName: string;
@@ -292,20 +292,20 @@ begin
   begin
     if SelectCollection(CollectionID) then
     begin
-      CurrentCollection.Edit;
+      CurrentCollectionInfo.Edit;
       try
-        CurrentCollection.Name := DisplayName;
-        CurrentCollection.RootFolder := ARootFolder;
-        CurrentCollection.DBFileName := ADBFileName;
-        CurrentCollection.Notes := Description;
-        CurrentCollection.URL := URL;
-        CurrentCollection.User := User;
-        CurrentCollection.Password := Pass;
-        CurrentCollection.Script := Script;
+        CurrentCollectionInfo.Name := DisplayName;
+        CurrentCollectionInfo.RootFolder := ARootFolder;
+        CurrentCollectionInfo.DBFileName := ADBFileName;
+        CurrentCollectionInfo.Notes := Description;
+        CurrentCollectionInfo.URL := URL;
+        CurrentCollectionInfo.User := User;
+        CurrentCollectionInfo.Password := Pass;
+        CurrentCollectionInfo.Script := Script;
 
-        CurrentCollection.Save;
+        CurrentCollectionInfo.Save;
       except
-        CurrentCollection.Cancel;
+        CurrentCollectionInfo.Cancel;
         raise;
       end;
     end;

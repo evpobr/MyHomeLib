@@ -35,10 +35,10 @@ type
 implementation
 
 uses
-  dm_collection,
   dm_user,
   unit_Globals,
-  unit_MHL_strings;
+  unit_MHL_strings,
+  unit_Database;
 
 resourcestring
   rstrExportingCollection = 'Ёкспортируем коллекцию.';
@@ -73,13 +73,13 @@ begin
 
   FCollection.OwnerDocument.Encoding := 'UTF-8';
 
-  FCollection.Info.Name := DMUser.ActiveCollection.Name;
-  FCollection.Info.Code := Ord(DMUser.ActiveCollection.CollectionType);
+  FCollection.Info.Name := DMUser.ActiveCollectionInfo.Name;
+  FCollection.Info.Code := Ord(DMUser.ActiveCollectionInfo.CollectionType);
 
-  totalBooks := DMCollection.GetTotalNumBooks;
   processedBooks := 0;
 
-  BookIterator := DMCollection.GetBookIterator(bmAll, True);
+  BookIterator := GetActiveBookCollection.GetBookIterator(bmAll, True);
+  totalBooks := BookIterator.GetNumRecords;
   while BookIterator.Next(R) do
   begin
     if Canceled then

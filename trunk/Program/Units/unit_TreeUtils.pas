@@ -43,9 +43,9 @@ implementation
 
 uses
   dm_user,
-  dm_collection,
   UserData,
-  Generics.Collections;
+  Generics.Collections,
+  unit_Database;
 
 procedure GetSelections(Tree: TBookTree; out List: TSelectionList);
 var
@@ -241,7 +241,7 @@ begin
         Tree.Clear;
         SelectedNode := nil;
 
-        GenreIterator := DMCollection.GetGenreIterator(gmAll);
+        GenreIterator := GetActiveBookCollection.GetGenreIterator(gmAll);
         while GenreIterator.Next(Genre) do
         begin
           ParentNode := nil;
