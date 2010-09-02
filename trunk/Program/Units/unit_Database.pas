@@ -34,7 +34,7 @@ type
   //
   TABSQueryEx = class(TABSQuery)
   public
-    constructor Create(ADatabase: TABSDatabase);
+    constructor Create(ADatabase: TABSDatabase; const AQueryText: string);
   end;
 
   TABSTableEx = class(TABSTable)
@@ -382,7 +382,7 @@ begin
 
     createScript := TResourceStream.Create(HInstance, 'CreateSystemDB', RT_RCDATA);
     try
-      createQuery := TABSQueryEx.Create(ADatabase);
+      createQuery := TABSQueryEx.Create(ADatabase, '');
       try
         createQuery.SQL.LoadFromStream(createScript);
         createQuery.ExecSQL;
@@ -430,7 +430,7 @@ begin
 
     createScript := TResourceStream.Create(HInstance, 'CreateCollectionDB', RT_RCDATA);
     try
-      createQuery := TABSQueryEx.Create(ADatabase);
+      createQuery := TABSQueryEx.Create(ADatabase, '');
       try
         createQuery.SQL.LoadFromStream(createScript);
         createQuery.ExecSQL;
@@ -477,12 +477,13 @@ end;
 
 { TABSQueryEx }
 
-constructor TABSQueryEx.Create(ADatabase: TABSDatabase);
+constructor TABSQueryEx.Create(ADatabase: TABSDatabase; const AQueryText: string);
 begin
   inherited Create(ADatabase);
   Assert(Assigned(ADatabase));
   SessionName := ADatabase.SessionName;
   DatabaseName := ADatabase.DatabaseName;
+  SQL.Text := AQueryText;
 end;
 
 // ------------------------------------------------------------------------------
@@ -507,8 +508,7 @@ begin
   FLoadMemos := LoadMemos;
   FCollection := Collection;
 
-  FBooks := TABSQueryEx.Create(FCollection.FDatabase);
-  FBooks.SQL.Text := CreateSQL(Mode, Filter, SearchCriteria);
+  FBooks := TABSQueryEx.Create(FCollection.FDatabase, CreateSQL(Mode, Filter, SearchCriteria));
   FBooks.ReadOnly := True;
   FBooks.RequestLive := True;
 
@@ -556,7 +556,7 @@ begin
 
   case Mode of
     bmAll:
-      Result := 'SELECT b.' + BOOK_ID_FIELD + ' FROM Books';
+      Result := 'SELECT b.' + BOOK_ID_FIELD + ' FROM Books b ';
     bmByGenre:
       Result :=
         'SELECT b.' + BOOK_ID_FIELD + ' FROM Genre_List gl INNER JOIN Books b ON gl.' + BOOK_ID_FIELD + ' = b.' + BOOK_ID_FIELD + ' ';
@@ -714,8 +714,7 @@ begin
   FCollectionID := DMUser.ActiveCollectionInfo.ID;
   FCollection := Collection;
 
-  FAuthors := TABSQueryEx.Create(FCollection.FDatabase);
-  FAuthors.SQL.Text := CreateSQL(Mode, Filter);
+  FAuthors := TABSQueryEx.Create(FCollection.FDatabase, CreateSQL(Mode, Filter));
   FAuthors.ReadOnly := True;
   FAuthors.RequestLive := True;
 
@@ -827,8 +826,7 @@ begin
   FCollectionID := DMUser.ActiveCollectionInfo.ID;
   FCollection := Collection;
 
-  FGenres := TABSQueryEx.Create(FCollection.FDatabase);
-  FGenres.SQL.Text := CreateSQL(Mode, Filter);
+  FGenres := TABSQueryEx.Create(FCollection.FDatabase, CreateSQL(Mode, Filter));
   FGenres.ReadOnly := True;
   FGenres.RequestLive := True;
 
@@ -897,8 +895,7 @@ begin
   FCollectionID := DMUser.ActiveCollectionInfo.ID;
   FCollection := Collection;
 
-  FSeries := TABSQueryEx.Create(FCollection.FDatabase);
-  FSeries.SQL.Text := CreateSQL(Mode, Filter);
+  FSeries := TABSQueryEx.Create(FCollection.FDatabase, CreateSQL(Mode, Filter));
   FSeries.ReadOnly := True;
   FSeries.RequestLive := True;
 
@@ -1858,24 +1855,21 @@ begin
 
   VerifyCurrentCollection(DatabaseID);
 
-  Query := TABSQueryEx.Create(FDatabase);
+  if NO_SERIE_ID = NewSeriesID then
+    newSerie := 'NULL'
+  else
+    newSerie := Format('%u', [NewSeriesID]);
+
+  if NO_SERIE_ID = OldSeriesID then
+    oldSerie := 'IS NULL'
+  else
+    oldSerie := Format('= %u', [NewSeriesID]);
+
+  Query := TABSQueryEx.Create(FDatabase, Format(UPDATE_SQL, [newSerie, oldSerie]));
   try
-    if NO_SERIE_ID = NewSeriesID then
-      newSerie := 'NULL'
-    else
-      newSerie := Format('%u', [NewSeriesID]);
-
-    if NO_SERIE_ID = OldSeriesID then
-      oldSerie := 'IS NULL'
-    else
-      oldSerie := Format('= %u', [NewSeriesID]);
-
-    Query.SQL.Text := Format(UPDATE_SQL, [newSerie, oldSerie]);
-
     pLogger := GetIntervalLogger('TBookCollection.ChangeBookSeriesID', Query.SQL.Text);
     Query.ExecSQL;
     pLogger := nil;
-
   finally
     FreeAndNil(Query);
   end;
