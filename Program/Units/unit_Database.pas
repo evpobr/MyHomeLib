@@ -402,6 +402,7 @@ begin
     //
     Groups := TABSTable.Create(ADatabase);
     try
+      Groups.DatabaseName := ADatabase.DatabaseName;
       Groups.TableName := 'Groups';
       Groups.Active := True;
 
