@@ -29,6 +29,19 @@ uses
   unit_Globals;
 
 type
+  //
+  // Вспомогательные классы для облегчения работы и устранения ошибок.
+  //
+  TABSQueryEx = class(TABSQuery)
+  public
+    constructor Create(ADatabase: TABSDatabase);
+  end;
+
+  TABSTableEx = class(TABSTable)
+  public
+    constructor Create(ADatabase: TABSDatabase; const ATableName: string);
+  end;
+
   TBookCollection = class
   strict private
   type
@@ -142,7 +155,7 @@ type
     procedure LoadGenres(const GenresFileName: string);
 
   public
-    constructor Create(const DBCollectionFile: string);
+    constructor Create(const DBCollectionFile: string; ADefaultSession: Boolean = True);
     destructor Destroy; override;
 
     procedure ReloadDefaultGenres(const FileName: string);
@@ -201,6 +214,8 @@ type
     procedure RepairDatabase;
 
   private
+    FDefaultSession: Boolean;
+    FSession: TABSSession;
     FDatabase: TABSDatabase;
 
     FSettings: TABSTable;
@@ -278,7 +293,6 @@ type
 
   function GetBookCollection(const DBCollectionFile: string): TBookCollection;
   function GetActiveBookCollection: TBookCollection;
-  procedure InitBookCollectionMap;
   procedure FreeBookCollectionMap;
 
   procedure CreateSystemTables(const DBUserFile: string);
@@ -318,11 +332,6 @@ var
 
 // ------------------------------------------------------------------------------
 
-procedure InitBookCollectionMap;
-begin
-  BookCollectionMap := nil;
-end;
-
 procedure FreeBookCollectionMap;
 begin
   FreeAndNil(BookCollectionMap);
@@ -331,19 +340,13 @@ end;
 function GetBookCollection(const DBCollectionFile: string): TBookCollection;
 begin
   Assert(DBCollectionFile <> '');
-  if BookCollectionMap = nil then
+  if not Assigned(BookCollectionMap) then
     BookCollectionMap := TBookCollectionMap.Create([doOwnsValues]);
 
-  try
-    Result := BookCollectionMap[DBCollectionFile];
-    Assert(Assigned(Result));
-  except
-    on E: EListError do
-    begin
-      // A valid case - the collection is not yet in the map, add it:
-      Result := TBookCollection.Create(DBCollectionFile);
-      BookCollectionMap.AddOrSetValue(DBCollectionFile, Result);
-    end;
+  if not BookCollectionMap.TryGetValue(DBCollectionFile, Result) then
+  begin
+    Result := TBookCollection.Create(DBCollectionFile);
+    BookCollectionMap.Add(DBCollectionFile, Result);
   end;
 end;
 
@@ -354,15 +357,10 @@ end;
 
 procedure DropCollectionDatabase(const DBCollectionFile: string);
 begin
-  if BookCollectionMap <> nil then
+  if Assigned(BookCollectionMap) then
   begin
-    try
-      // Remove and free:
+    if BookCollectionMap.ContainsKey(DBCollectionFile) then
       BookCollectionMap.Remove(DBCollectionFile);
-    except
-      on E: EListError do
-        // A valid case - the collection is not yet in the map, nothing to free - ignore
-    end;
   end;
   DeleteFile(DBCollectionFile);
 end;
@@ -376,16 +374,16 @@ var
 begin
   ADatabase := TABSDatabase.Create(nil);
   try
-    ADatabase.DatabaseFileName := DBUserFile;
     ADatabase.DatabaseName := USER_DATABASE;
+    ADatabase.DatabaseFileName := DBUserFile;
     ADatabase.MaxConnections := 5;
+
     ADatabase.CreateDatabase;
 
     createScript := TResourceStream.Create(HInstance, 'CreateSystemDB', RT_RCDATA);
     try
-      createQuery := TABSQuery.Create(nil);
+      createQuery := TABSQueryEx.Create(ADatabase);
       try
-        createQuery.DatabaseName := ADatabase.DatabaseName;
         createQuery.SQL.LoadFromStream(createScript);
         createQuery.ExecSQL;
       finally
@@ -398,10 +396,8 @@ begin
     //
     // Зададим дефлотные группы
     //
-    Groups := TABSTable.Create(ADatabase);
+    Groups := TABSTableEx.Create(ADatabase, 'Groups');
     try
-      Groups.DatabaseName := ADatabase.DatabaseName;
-      Groups.TableName := 'Groups';
       Groups.Active := True;
 
       Groups.AppendRecord([FAVORITES_GROUP_ID, rstrFavoritesGroupName, False]);
@@ -425,15 +421,17 @@ begin
   ADatabase := TABSDatabase.Create(nil);
   try
     ADatabase.DatabaseFileName := DBCollectionFile;
-    ADatabase.DatabaseName := COLLECTION_DATABASE + '>' + FormatDateTime('c.zzz', Now);
+    ADatabase.DatabaseName := COLLECTION_DATABASE + '_' + IntToStr(Integer(Pointer(ADatabase)));
     ADatabase.MaxConnections := 5;
+    ADatabase.PageSize := 65535;
+    ADatabase.PageCountInExtent := 16;
+
     ADatabase.CreateDatabase;
 
     createScript := TResourceStream.Create(HInstance, 'CreateCollectionDB', RT_RCDATA);
     try
-      createQuery := TABSQuery.Create(nil);
+      createQuery := TABSQueryEx.Create(ADatabase);
       try
-        createQuery.DatabaseName := ADatabase.DatabaseName;
         createQuery.SQL.LoadFromStream(createScript);
         createQuery.ExecSQL;
       finally
@@ -466,6 +464,28 @@ begin
 end;
 
 // ------------------------------------------------------------------------------
+{ TABSTableEx }
+
+constructor TABSTableEx.Create(ADatabase: TABSDatabase; const ATableName: string);
+begin
+  inherited Create(ADatabase);
+  Assert(Assigned(ADatabase));
+  SessionName := ADatabase.SessionName;
+  DatabaseName := ADatabase.DatabaseName;
+  TableName := ATableName;
+end;
+
+{ TABSQueryEx }
+
+constructor TABSQueryEx.Create(ADatabase: TABSDatabase);
+begin
+  inherited Create(ADatabase);
+  Assert(Assigned(ADatabase));
+  SessionName := ADatabase.SessionName;
+  DatabaseName := ADatabase.DatabaseName;
+end;
+
+// ------------------------------------------------------------------------------
 
 { TBookIteratorImpl }
 
@@ -487,8 +507,7 @@ begin
   FLoadMemos := LoadMemos;
   FCollection := Collection;
 
-  FBooks := TABSQuery.Create(FCollection.FDatabase);
-  FBooks.DatabaseName := FCollection.FDatabase.DatabaseName;
+  FBooks := TABSQueryEx.Create(FCollection.FDatabase);
   FBooks.SQL.Text := CreateSQL(Mode, Filter, SearchCriteria);
   FBooks.ReadOnly := True;
   FBooks.RequestLive := True;
@@ -695,8 +714,7 @@ begin
   FCollectionID := DMUser.ActiveCollectionInfo.ID;
   FCollection := Collection;
 
-  FAuthors := TABSQuery.Create(FCollection.FDatabase);
-  FAuthors.DatabaseName := FCollection.FDatabase.DatabaseName;
+  FAuthors := TABSQueryEx.Create(FCollection.FDatabase);
   FAuthors.SQL.Text := CreateSQL(Mode, Filter);
   FAuthors.ReadOnly := True;
   FAuthors.RequestLive := True;
@@ -809,8 +827,7 @@ begin
   FCollectionID := DMUser.ActiveCollectionInfo.ID;
   FCollection := Collection;
 
-  FGenres := TABSQuery.Create(FCollection.FDatabase);
-  FGenres.DatabaseName := FCollection.FDatabase.DatabaseName;
+  FGenres := TABSQueryEx.Create(FCollection.FDatabase);
   FGenres.SQL.Text := CreateSQL(Mode, Filter);
   FGenres.ReadOnly := True;
   FGenres.RequestLive := True;
@@ -880,8 +897,7 @@ begin
   FCollectionID := DMUser.ActiveCollectionInfo.ID;
   FCollection := Collection;
 
-  FSeries := TABSQuery.Create(FCollection.FDatabase);
-  FSeries.DatabaseName := FCollection.FDatabase.DatabaseName;
+  FSeries := TABSQueryEx.Create(FCollection.FDatabase);
   FSeries.SQL.Text := CreateSQL(Mode, Filter);
   FSeries.ReadOnly := True;
   FSeries.RequestLive := True;
@@ -971,51 +987,50 @@ end;
 
 { TBookCollection }
 
-constructor TBookCollection.Create(const DBCollectionFile: string);
+constructor TBookCollection.Create(const DBCollectionFile: string; ADefaultSession: Boolean = True);
 begin
   inherited Create;
 
+  FDefaultSession := ADefaultSession;
+
+  //
+  // TODO: если требуется экземпляр в отдельной сессии, то необходимо создать отдельный эеземпляр и DMUser
+  //
+
+  if not FDefaultSession then
+  begin
+    FSession := TABSSession.Create(nil);
+    FSession.AutoSessionName := True;
+  end;
+
   FDatabase := TABSDatabase.Create(nil);
+  FDatabase.DatabaseName := COLLECTION_DATABASE + '_' + IntToStr(Integer(Pointer(Self)));
   FDatabase.DatabaseFileName := DBCollectionFile;
-  FDatabase.DatabaseName := COLLECTION_DATABASE + '>' + FormatDateTime('c.zzz', Now);
-  FDatabase.MaxConnections := 5;
-  FDatabase.PageSize := 65535;
-  FDatabase.PageCountInExtent := 16;
+  FDatabase.MultiUser := True;
+  if not FDefaultSession then
+    FDatabase.SessionName := FSession.SessionName;
+
   FDatabase.Connected := True;
 
-  FSettings := TABSTable.Create(FDatabase);
-  FSettings.TableName := 'Settings';
-  FSettings.DatabaseName := FDatabase.DatabaseName;
+  FSettings := TABSTableEx.Create(FDatabase, 'Settings');
   FSettings.Active := True;
 
-  FAuthors := TABSTable.Create(FDatabase);
-  FAuthors.TableName := 'Authors';
-  FAuthors.DatabaseName := FDatabase.DatabaseName;
+  FAuthors := TABSTableEx.Create(FDatabase, 'Authors');
   FAuthors.Active := True;
 
-  FAuthorList := TABSTable.Create(FDatabase);
-  FAuthorList.TableName := 'Author_list';
-  FAuthorList.DatabaseName := FDatabase.DatabaseName;
+  FAuthorList := TABSTableEx.Create(FDatabase, 'Author_list');
   FAuthorList.Active := True;
 
-  FBooks := TABSTable.Create(FDatabase);
-  FBooks.TableName := 'Books';
-  FBooks.DatabaseName := FDatabase.DatabaseName;
+  FBooks := TABSTableEx.Create(FDatabase, 'Books');
   FBooks.Active := True;
 
-  FSeries := TABSTable.Create(FDatabase);
-  FSeries.TableName := 'Series';
-  FSeries.DatabaseName := FDatabase.DatabaseName;
+  FSeries := TABSTableEx.Create(FDatabase, 'Series');
   FSeries.Active := True;
 
-  FGenres := TABSTable.Create(FDatabase);
-  FGenres.TableName := 'Genres';
-  FGenres.DatabaseName := FDatabase.DatabaseName;
+  FGenres := TABSTableEx.Create(FDatabase, 'Genres');
   FGenres.Active := True;
 
-  FGenreList := TABSTable.Create(FDatabase);
-  FGenreList.TableName := 'Genre_list';
-  FGenreList.DatabaseName := FDatabase.DatabaseName;
+  FGenreList := TABSTableEx.Create(FDatabase, 'Genre_list');
   FGenreList.Active := True;
 
   FSettingsID := FSettings.FieldByName(ID_FIELD) as TIntegerField;
@@ -1074,6 +1089,7 @@ begin
   FreeAndNil(FGenreList);
 
   FreeAndNil(FDatabase);
+  FreeAndNil(FSession);
 
   inherited Destroy;
 end;
@@ -1842,10 +1858,8 @@ begin
 
   VerifyCurrentCollection(DatabaseID);
 
-  Query := TABSQuery.Create(FDatabase);
+  Query := TABSQueryEx.Create(FDatabase);
   try
-    Query.DatabaseName := FDatabase.DatabaseName;
-
     if NO_SERIE_ID = NewSeriesID then
       newSerie := 'NULL'
     else
@@ -2228,5 +2242,8 @@ begin
   FDatabase.RepairDatabase;
   // After this the collection is unusable and has to be reloaded
 end;
+
+initialization
+  BookCollectionMap := nil;
 
 end.

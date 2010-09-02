@@ -140,14 +140,13 @@ begin
     frmSplash.Show;   // Display the splash screen
     frmSplash.Update; // Update the splash screen to ensure it gets drawn
 
-    InitBookCollectionMap;
-
     // Важно! сначала создаем датамодули и главную форму
     // а потом - остальные формы!
     Application.CreateForm(TDMUser, DMUser);
-  Application.CreateForm(TfrmMain, frmMain);
-  Application.CreateForm(TfrmGenreTree, frmGenreTree);
-  frmSplash.Hide;  // Hide the splash screen
+    Application.CreateForm(TfrmMain, frmMain);
+    Application.CreateForm(TfrmGenreTree, frmGenreTree);
+
+    frmSplash.Hide;  // Hide the splash screen
   finally
     frmSplash.Free;  // Free the splash screen
   end;
