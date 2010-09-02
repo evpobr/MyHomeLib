@@ -34,11 +34,12 @@ uses
 type
   TImportFB2ThreadBase = class(TWorker)
   protected
-    FDBFileName: string;
+    FCollectionRoot: string;
+    FCollectionDBFileName: string;
+
     FLibrary: TBookCollection;
     FTemplater: TTemplater;
     FFiles: TStringList;
-    FRootPath: string;
     FFilesList: TFilesList;
 
     //
@@ -65,7 +66,7 @@ type
     procedure SortFiles(var R: TBookRecord); virtual;
 
   public
-    property DBFileName: string read FDBFileName write FDBFileName;
+    constructor Create(const CollectionRoot: string; const DBFileName: string);
   end;
 
 implementation
@@ -81,7 +82,6 @@ Settings.ImportPath
 }
 
 uses
-  dm_user,
   unit_Settings,
   unit_Consts,
   Dialogs;
@@ -93,6 +93,14 @@ resourcestring
   rstrScanningFolders = 'Сканирование папок...';
 
 { TImportFB2Thread }
+
+constructor TImportFB2ThreadBase.Create(const CollectionRoot: string; const DBFileName: string);
+begin
+  inherited Create;
+
+  FCollectionRoot := CollectionRoot;
+  FCollectionDBFileName := DBFileName;
+end;
 
 procedure TImportFB2ThreadBase.GetBookInfo(book: IXMLFictionBook; var R: TBookRecord);
 var
@@ -138,15 +146,15 @@ var
   NewFilename, NewFolder: string;
 begin
   NewFolder := GetNewFolder(Settings.FB2FolderTemplate, R);
-  CreateFolders(FRootPath, NewFolder);
+  CreateFolders(FCollectionRoot, NewFolder);
 
-  CopyFile(Settings.ImportPath + R.FileName + R.FileExt, FRootPath + NewFolder + R.FileName + R.FileExt);
+  CopyFile(Settings.ImportPath + R.FileName + R.FileExt, FCollectionRoot + NewFolder + R.FileName + R.FileExt);
   R.Folder := NewFolder;
 
   NewFilename := GetNewFileName(Settings.FB2FileTemplate, R);
   if NewFilename <> '' then
   begin
-    RenameFile(FRootPath + NewFolder + R.FileName + R.FileExt, FRootPath + NewFolder + NewFilename + R.FileExt);
+    RenameFile(FCollectionRoot + NewFolder + R.FileName + R.FileExt, FCollectionRoot + NewFolder + NewFilename + R.FileExt);
     R.FileName := NewFilename;
   end;
 end;
@@ -205,7 +213,7 @@ begin
       if Settings.EnableSort then
         FileName := FFilesList.LastDir + F.Name
       else
-        FileName := ExtractRelativePath(FRootPath, FFilesList.LastDir) + F.Name;
+        FileName := ExtractRelativePath(FCollectionRoot, FFilesList.LastDir) + F.Name;
       if not FLibrary.CheckFileInCollection(FileName, FFullNameSearch, FZipFolder) then
         FFiles.Add(FFilesList.LastDir + F.Name);
     end;
@@ -236,7 +244,7 @@ begin
     if Settings.EnableSort then
       FFilesList.TargetPath := Settings.ImportPath
     else
-      FFilesList.TargetPath := DMUser.ActiveCollectionInfo.RootPath;
+      FFilesList.TargetPath := FCollectionRoot;
 
     try
       FFilesList.Process;
@@ -251,24 +259,26 @@ end;
 
 procedure TImportFB2ThreadBase.WorkFunction;
 begin
-  FRootPath := DMUser.ActiveCollectionInfo.RootPath;
-
-  FLibrary := GetActiveBookCollection;
-  FFiles := TStringList.Create;
+  FLibrary := TBookCollection.Create(FCollectionDBFileName, False);
   try
-    ScanFolder;
-
-    if Canceled then
-      Exit;
-
-    FLibrary.BeginBulkOperation;
+    FFiles := TStringList.Create;
     try
-      ProcessFileList;
+      ScanFolder;
+
+      if Canceled then
+        Exit;
+
+      FLibrary.BeginBulkOperation;
+      try
+        ProcessFileList;
+      finally
+        FLibrary.EndBulkOperation;
+      end;
     finally
-      FLibrary.EndBulkOperation;
+      FreeAndNil(FFiles);
     end;
   finally
-    FreeAndNil(FFiles);
+    FreeAndNil(FLibrary);
   end;
 end;
 

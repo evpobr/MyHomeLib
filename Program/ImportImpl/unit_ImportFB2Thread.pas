@@ -22,7 +22,7 @@ type
   protected
     procedure ProcessFileList; override;
   public
-    constructor Create;
+    constructor Create(const CollectionRoot: string; const DBFileName: string);
   end;
 
 implementation
@@ -47,9 +47,9 @@ resourcestring
 
 { TImportFB2Thread }
 
-constructor TImportFB2Thread.Create;
+constructor TImportFB2Thread.Create(const CollectionRoot: string; const DBFileName: string);
 begin
-  inherited Create;
+  inherited Create(CollectionRoot, DBFileName);
 
   FTargetExt := FB2_EXTENSION;
   FZipFolder := False;
@@ -91,7 +91,7 @@ begin
       end
       else
       begin
-        R.Folder := ExtractRelativePath(FRootPath, ExtractFilePath(FFiles[i]));
+        R.Folder := ExtractRelativePath(FCollectionRoot, ExtractFilePath(FFiles[i]));
         book := LoadFictionBook(FFiles[i]);
         GetBookInfo(book, R);
       end;

@@ -87,9 +87,8 @@ var
   worker: TImportFB2Thread;
   frmProgress: TImportProgressFormEx;
 begin
-  worker := TImportFB2Thread.Create;
+  worker := TImportFB2Thread.Create(ACollection.RootPath, ACollection.DBFileName);
   try
-    worker.DBFileName := ACollection.DBFileName;
     frmProgress := TImportProgressFormEx.Create(Application);
     try
       frmProgress.WorkerThread := worker;
@@ -110,9 +109,8 @@ var
   worker: TImportFB2ZIPThread;
   frmProgress: TImportProgressFormEx;
 begin
-  worker := TImportFB2ZIPThread.Create;
+  worker := TImportFB2ZIPThread.Create(ACollection.RootPath, ACollection.DBFileName);
   try
-    worker.DBFileName := ACollection.DBFileName;
     frmProgress := TImportProgressFormEx.Create(Application);
     try
       frmProgress.WorkerThread := worker;
@@ -133,9 +131,8 @@ var
   worker: TImportFBDThread;
   frmProgress: TImportProgressFormEx;
 begin
-  worker := TImportFBDThread.Create;
+  worker := TImportFBDThread.Create(ACollection.RootPath, ACollection.DBFileName);
   try
-    worker.DBFileName := ACollection.DBFileName;
     frmProgress := TImportProgressFormEx.Create(Application);
     try
       frmProgress.WorkerThread := worker;

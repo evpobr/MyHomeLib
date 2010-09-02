@@ -30,7 +30,7 @@ type
     procedure ProcessFileList; override;
 
   public
-    constructor Create;
+    constructor Create(const CollectionRoot: string; const DBFileName: string);
   end;
 
 
@@ -55,9 +55,9 @@ resourcestring
 
 { TImportFB2ZIPThread }
 
-constructor TImportFB2ZIPThread.Create;
+constructor TImportFB2ZIPThread.Create(const CollectionRoot: string; const DBFileName: string);
 begin
-  inherited Create;
+  inherited Create(CollectionRoot, DBFileName);
 
   FTargetExt := ZIP_EXTENSION;
   FZipFolder := True;
@@ -73,8 +73,8 @@ begin
   NewFolder := GetNewFolder(Settings.FB2FolderTemplate, R);
 
 
-  CreateFolders(FRootPath,NewFolder);
-  CopyFile(R.Folder, FRootPath +  NewFolder + FileName);
+  CreateFolders(FCollectionRoot, NewFolder);
+  CopyFile(R.Folder, FCollectionRoot +  NewFolder + FileName);
 
   R.Folder := NewFolder + FileName;
 
@@ -83,11 +83,11 @@ begin
   begin
     NewFolder := R.Folder;
     StrReplace(FileName, NewFileName + FB2ZIP_EXTENSION, NewFolder);
-    RenameFile(FRootPath + R.Folder, FRootPath +  NewFolder);
+    RenameFile(FCollectionRoot + R.Folder, FCollectionRoot + NewFolder);
     R.Folder :=  NewFolder;
 
     try
-      FZipper.FileName := FRootPath + NewFolder;
+      FZipper.FileName := FCollectionRoot + NewFolder;
       FZipper.OpenArchive(fmOpenReadWrite);
       FZipper.FindFirst('*.fb2', F);
       FZipper.RenameFile(F.FileName, NewFileName + FB2_EXTENSION);
@@ -172,7 +172,7 @@ begin
               GetBookInfo(book, R);
               if not Settings.EnableSort then
               begin
-                R.Folder := ExtractRelativePath(FRootPath, AZipFileName);
+                R.Folder := ExtractRelativePath(FCollectionRoot, AZipFileName);
                 if FLibrary.InsertBook(R, True, True) <> 0 then
                   Inc(AddCount);
               end;
