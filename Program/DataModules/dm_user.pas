@@ -33,8 +33,8 @@ uses
 type
   TCollectionProp = (cpDisplayName, cpFileName, cpRootFolder);
 
-  TMHLActiveCollection = class;
-  TMHLCollection = class;
+  TActiveCollectionInfo = class;
+  TCollectionInfo = class;
 
   TDMUser = class(TDataModule)
     DBUser: TABSDatabase;
@@ -152,8 +152,8 @@ type
     // << TGroupIteratorImpl
 
   private
-    FActiveCollection: TMHLActiveCollection;
-    FCollection: TMHLCollection;
+    FActiveCollectionInfo: TActiveCollectionInfo;
+    FCollectionInfo: TCollectionInfo;
 
   private
     function InternalFindGroup(const GroupName: string): Boolean; overload; inline;
@@ -263,11 +263,11 @@ type
     function GetGroupIterator: IGroupIterator;
 
   public
-    property ActiveCollection: TMHLActiveCollection read FActiveCollection;
-    property CurrentCollection: TMHLCollection read FCollection;
+    property ActiveCollectionInfo: TActiveCollectionInfo read FActiveCollectionInfo;
+    property CurrentCollectionInfo: TCollectionInfo read FCollectionInfo;
   end;
 
-  TMHLCollection = class
+  TCollectionInfo = class
   private
     FSysDataModule: TDMUser;
 
@@ -335,7 +335,7 @@ type
     property Script: string read GetScript write SetScript;
   end;
 
-  TMHLActiveCollection = class(TObject)
+  TActiveCollectionInfo = class(TObject)
   private
     FID: Integer;
     FName: string;
@@ -387,7 +387,6 @@ uses
   StrUtils,
   IOUtils,
   Variants,
-  dm_Collection,
   unit_SearchUtils,
   unit_Settings,
   unit_Logger;
@@ -538,16 +537,16 @@ constructor TDMUser.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 
-  FActiveCollection := TMHLActiveCollection.Create;
+  FActiveCollectionInfo := TActiveCollectionInfo.Create;
 
-  FCollection := TMHLCollection.Create;
-  FCollection.FSysDataModule := Self;
+  FCollectionInfo := TCollectionInfo.Create;
+  FCollectionInfo.FSysDataModule := Self;
 end;
 
 destructor TDMUser.Destroy;
 begin
-  FreeAndNil(FCollection);
-  FreeAndNil(FActiveCollection);
+  FreeAndNil(FCollectionInfo);
+  FreeAndNil(FActiveCollectionInfo);
   inherited Destroy;
 end;
 
@@ -601,38 +600,38 @@ begin
   Result := SelectCollection(CollectionID);
   if Result then
   begin
-    FActiveCollection.FID := CollectionID;
-    FActiveCollection.FName := tblBasesBaseName.Value;
-    FActiveCollection.FRootFolder := tblBasesRootFolder.Value;
-    FActiveCollection.FDBFileName := tblBasesDBFileName.Value;
-    FActiveCollection.FNotes := tblBasesNotes.Value;
-    FActiveCollection.FUser := tblBasesUser.Value;
-    FActiveCollection.FPassword := tblBasesPass.Value;
-    FActiveCollection.FCreationDate := tblBasesDate.Value;
+    FActiveCollectionInfo.FID := CollectionID;
+    FActiveCollectionInfo.FName := tblBasesBaseName.Value;
+    FActiveCollectionInfo.FRootFolder := tblBasesRootFolder.Value;
+    FActiveCollectionInfo.FDBFileName := tblBasesDBFileName.Value;
+    FActiveCollectionInfo.FNotes := tblBasesNotes.Value;
+    FActiveCollectionInfo.FUser := tblBasesUser.Value;
+    FActiveCollectionInfo.FPassword := tblBasesPass.Value;
+    FActiveCollectionInfo.FCreationDate := tblBasesDate.Value;
     if tblBasesVersion.IsNull then
-      FActiveCollection.FVersion := UNVERSIONED_COLLECTION
+      FActiveCollectionInfo.FVersion := UNVERSIONED_COLLECTION
     else
-      FActiveCollection.FVersion := tblBasesVersion.Value;
-    FActiveCollection.FCollectionType := tblBasesCode.Value;
+      FActiveCollectionInfo.FVersion := tblBasesVersion.Value;
+    FActiveCollectionInfo.FCollectionType := tblBasesCode.Value;
     if tblBasesAllowDelete.IsNull then
-      FActiveCollection.FAllowDelete := True
+      FActiveCollectionInfo.FAllowDelete := True
     else
-      FActiveCollection.FAllowDelete := tblBasesAllowDelete.Value;
-    FActiveCollection.FURL := tblBasesURL.Value;
-    FActiveCollection.FScript := tblBasesConnection.Value;
+      FActiveCollectionInfo.FAllowDelete := tblBasesAllowDelete.Value;
+    FActiveCollectionInfo.FURL := tblBasesURL.Value;
+    FActiveCollectionInfo.FScript := tblBasesConnection.Value;
 
     Stream := TABSBlobStream.Create(tblBasesSettings, bmRead);
     try
-      Assert(Assigned(FActiveCollection.FSettings));
-      FActiveCollection.FSettings.LoadFromStream(Stream);
+      Assert(Assigned(FActiveCollectionInfo.FSettings));
+      FActiveCollectionInfo.FSettings.LoadFromStream(Stream);
     finally
       Stream.Free;
     end;
 
-    FActiveCollection.FSettings.DelimitedText := tblBasesSettings.Value;
+    FActiveCollectionInfo.FSettings.DelimitedText := tblBasesSettings.Value;
   end
   else
-    FActiveCollection.Clear;
+    FActiveCollectionInfo.Clear;
 end;
 
 function TDMUser.FindCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer): Boolean;
@@ -680,7 +679,7 @@ begin
   tblBases.First;
   while not tblBases.Eof do
   begin
-    if isExternalCollection(CurrentCollection.CollectionType) then
+    if isExternalCollection(CurrentCollectionInfo.CollectionType) then
     begin
       Result := True;
       Exit;
@@ -702,7 +701,7 @@ begin
 
   while not tblBases.Eof do
   begin
-    if isExternalCollection(CurrentCollection.CollectionType) then
+    if isExternalCollection(CurrentCollectionInfo.CollectionType) then
     begin
       Result := True;
       Exit;
@@ -722,14 +721,14 @@ begin
 
   if FindFirstCollection then
     repeat
-      if FileExists(CurrentCollection.DBFileName) then
+      if FileExists(CurrentCollectionInfo.DBFileName) then
       begin
-        if CurrentCollection.ID = PrefferedID then
+        if CurrentCollectionInfo.ID = PrefferedID then
         begin
           //
           // Пользователь предпочитает эту коллекцию, она доступна -> выходим
           //
-          ID := CurrentCollection.ID;
+          ID := CurrentCollectionInfo.ID;
           Break;
         end;
 
@@ -738,7 +737,7 @@ begin
           //
           // Запомним первую доступную коллекцию
           //
-          ID := CurrentCollection.ID;
+          ID := CurrentCollectionInfo.ID;
         end;
       end;
     until not FindNextCollection;
@@ -1298,7 +1297,7 @@ begin
       AllBooksDate.Value := BookRecord.Date;
       AllBooksLibRate.Value := BookRecord.LibRate;
       AllBooksLang.Value := BookRecord.Lang;
-      AllBooksFolder.Value := TPath.Combine(ActiveCollection.RootFolder, BookRecord.Folder);
+      AllBooksFolder.Value := TPath.Combine(ActiveCollectionInfo.RootFolder, BookRecord.Folder);
       AllBooksFileName.Value := BookRecord.FileName;
       AllBooksInsideNo.Value := BookRecord.InsideNo;
       AllBooksExt.Value := BookRecord.FileExt;
@@ -1447,7 +1446,7 @@ var
 begin
   Assert(Assigned(data));
 
-  CollectionID := ActiveCollection.ID;
+  CollectionID := ActiveCollectionInfo.ID;
 
   GroupIterator := GetGroupIterator;
   while GroupIterator.Next(GroupData) do
@@ -1476,28 +1475,28 @@ end;
 
 { TMHLCollection }
 
-procedure TMHLCollection.Edit;
+procedure TCollectionInfo.Edit;
 begin
   FSysDataModule.tblBases.Edit;
 end;
 
-procedure TMHLCollection.Save;
+procedure TCollectionInfo.Save;
 begin
   FSysDataModule.tblBases.Post;
 end;
 
-procedure TMHLCollection.Cancel;
+procedure TCollectionInfo.Cancel;
 begin
   FSysDataModule.tblBases.Cancel;
 end;
 
-function TMHLCollection.GetActive: Boolean;
+function TCollectionInfo.GetActive: Boolean;
 begin
   Assert(Assigned(FSysDataModule));
   Result := FSysDataModule.tblBases.Active and not FSysDataModule.tblBasesID.IsNull;
 end;
 
-function TMHLCollection.GetID: Integer;
+function TCollectionInfo.GetID: Integer;
 begin
   Assert(Assigned(FSysDataModule));
   if FSysDataModule.tblBasesID.IsNull then
@@ -1506,7 +1505,7 @@ begin
     Result := FSysDataModule.tblBasesID.Value;
 end;
 
-function TMHLCollection.GetName: string;
+function TCollectionInfo.GetName: string;
 begin
   Assert(Assigned(FSysDataModule));
   if FSysDataModule.tblBasesBaseName.IsNull then
@@ -1515,107 +1514,107 @@ begin
     Result := FSysDataModule.tblBasesBaseName.Value;
 end;
 
-procedure TMHLCollection.SetName(const Value: string);
+procedure TCollectionInfo.SetName(const Value: string);
 begin
   Assert(Assigned(FSysDataModule));
   FSysDataModule.tblBasesBaseName.Value := Value;
 end;
 
-function TMHLCollection.GetRootFolder: string;
+function TCollectionInfo.GetRootFolder: string;
 begin
   Assert(Assigned(FSysDataModule));
   Result := FSysDataModule.tblBasesRootFolder.Value;
 end;
 
-procedure TMHLCollection.SetRootFolder(const Value: string);
+procedure TCollectionInfo.SetRootFolder(const Value: string);
 begin
   Assert(Assigned(FSysDataModule));
   FSysDataModule.tblBasesRootFolder.Value := ExcludeTrailingPathDelimiter(Value);
 end;
 
-function TMHLCollection.GetScript: string;
+function TCollectionInfo.GetScript: string;
 begin
   Assert(Assigned(FSysDataModule));
   Result := FSysDataModule.tblBasesConnection.Value;
 end;
 
-procedure TMHLCollection.SetScript(const Value: string);
+procedure TCollectionInfo.SetScript(const Value: string);
 begin
   Assert(Assigned(FSysDataModule));
   FSysDataModule.tblBasesConnection.Value := Value;
 end;
 
-function TMHLCollection.GetDBFileName: string;
+function TCollectionInfo.GetDBFileName: string;
 begin
   Assert(Assigned(FSysDataModule));
   Result := FSysDataModule.tblBasesDBFileName.Value;
 end;
 
-procedure TMHLCollection.SetDBFileName(const Value: string);
+procedure TCollectionInfo.SetDBFileName(const Value: string);
 begin
   Assert(Assigned(FSysDataModule));
   FSysDataModule.tblBasesDBFileName.Value := Value;
 end;
 
-function TMHLCollection.GetNotes: string;
+function TCollectionInfo.GetNotes: string;
 begin
   Assert(Assigned(FSysDataModule));
   Result := FSysDataModule.tblBasesNotes.Value;
 end;
 
-procedure TMHLCollection.SetNotes(const Value: string);
+procedure TCollectionInfo.SetNotes(const Value: string);
 begin
   Assert(Assigned(FSysDataModule));
   FSysDataModule.tblBasesNotes.Value := Value;
 end;
 
-function TMHLCollection.GetURL: string;
+function TCollectionInfo.GetURL: string;
 begin
   Result := FSysDataModule.tblBasesURL.Value;
 end;
 
-function TMHLCollection.GetUser: string;
+function TCollectionInfo.GetUser: string;
 begin
   Assert(Assigned(FSysDataModule));
   Result := FSysDataModule.tblBasesUser.Value;
 end;
 
-procedure TMHLCollection.SetURL(const Value: string);
+procedure TCollectionInfo.SetURL(const Value: string);
 begin
   FSysDataModule.tblBasesURL.Value := Value;
 end;
 
-procedure TMHLCollection.SetUser(const Value: string);
+procedure TCollectionInfo.SetUser(const Value: string);
 begin
   Assert(Assigned(FSysDataModule));
   FSysDataModule.tblBasesUser.Value := Value;
 end;
 
-function TMHLCollection.GetPassword: string;
+function TCollectionInfo.GetPassword: string;
 begin
   Assert(Assigned(FSysDataModule));
   Result := FSysDataModule.tblBasesPass.Value;
 end;
 
-procedure TMHLCollection.SetPassword(const Value: string);
+procedure TCollectionInfo.SetPassword(const Value: string);
 begin
   Assert(Assigned(FSysDataModule));
   FSysDataModule.tblBasesPass.Value := Value;
 end;
 
-function TMHLCollection.GetCreationDate: TDateTime;
+function TCollectionInfo.GetCreationDate: TDateTime;
 begin
   Assert(Assigned(FSysDataModule));
   Result := FSysDataModule.tblBasesDate.Value;
 end;
 
-procedure TMHLCollection.SetCreationDate(const Value: TDateTime);
+procedure TCollectionInfo.SetCreationDate(const Value: TDateTime);
 begin
   Assert(Assigned(FSysDataModule));
   FSysDataModule.tblBasesDate.Value := Value;
 end;
 
-function TMHLCollection.GetVersion: Integer;
+function TCollectionInfo.GetVersion: Integer;
 begin
   Assert(Assigned(FSysDataModule));
   if FSysDataModule.tblBasesVersion.IsNull then
@@ -1624,13 +1623,13 @@ begin
     Result := FSysDataModule.tblBasesVersion.Value;
 end;
 
-procedure TMHLCollection.SetVersion(const Value: Integer);
+procedure TCollectionInfo.SetVersion(const Value: Integer);
 begin
   Assert(Assigned(FSysDataModule));
   FSysDataModule.tblBasesVersion.Value := Value;
 end;
 
-procedure TMHLCollection.UpdateSettings(ASettings: TStrings);
+procedure TCollectionInfo.UpdateSettings(ASettings: TStrings);
 var
   Stream: TABSBlobStream;
 begin
@@ -1645,7 +1644,7 @@ begin
   end;
 end;
 
-function TMHLCollection.GetCollectionType: COLLECTION_TYPE;
+function TCollectionInfo.GetCollectionType: COLLECTION_TYPE;
 begin
   Assert(Assigned(FSysDataModule));
   Result := FSysDataModule.tblBasesCode.Value;
@@ -1654,13 +1653,13 @@ begin
     Result := CT_LIBRUSEC_ONLINE_FB;
 end;
 
-procedure TMHLCollection.SetCollectionType(const Value: COLLECTION_TYPE);
+procedure TCollectionInfo.SetCollectionType(const Value: COLLECTION_TYPE);
 begin
   Assert(Assigned(FSysDataModule));
   FSysDataModule.tblBasesCode.Value := Value;
 end;
 
-function TMHLCollection.GetAllowDelete: Boolean;
+function TCollectionInfo.GetAllowDelete: Boolean;
 begin
   Assert(Assigned(FSysDataModule));
   if FSysDataModule.tblBasesAllowDelete.IsNull then
@@ -1669,7 +1668,7 @@ begin
     Result := FSysDataModule.tblBasesAllowDelete.Value;
 end;
 
-procedure TMHLCollection.SetAllowDelete(const Value: Boolean);
+procedure TCollectionInfo.SetAllowDelete(const Value: Boolean);
 begin
   Assert(Assigned(FSysDataModule));
   FSysDataModule.tblBasesAllowDelete.Value := Value;
@@ -1677,7 +1676,7 @@ end;
 
 { TMHLActiveCollection }
 
-constructor TMHLActiveCollection.Create;
+constructor TActiveCollectionInfo.Create;
 begin
   inherited Create;
   FSettings := TStringList.Create;
@@ -1685,18 +1684,18 @@ begin
   Clear;
 end;
 
-destructor TMHLActiveCollection.Destroy;
+destructor TActiveCollectionInfo.Destroy;
 begin
   FreeAndNil(FSettings);
   inherited Destroy;
 end;
 
-function TMHLActiveCollection.GetRootPath: string;
+function TActiveCollectionInfo.GetRootPath: string;
 begin
   Result := IncludeTrailingPathDelimiter(FRootFolder);
 end;
 
-procedure TMHLActiveCollection.Clear;
+procedure TActiveCollectionInfo.Clear;
 begin
   FID := DMUser.INVALID_COLLECTION_ID;
   FName := '';

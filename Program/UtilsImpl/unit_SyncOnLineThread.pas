@@ -41,11 +41,11 @@ uses
   Forms,
   IOUtils,
   dm_user,
-  dm_collection,
   unit_Globals,
   unit_Settings,
   unit_MHL_strings,
-  unit_Messages;
+  unit_Messages,
+  unit_Database;
 
 resourcestring
   rstrProblemsWithABook = 'Какие-то проблемы с книгой ';
@@ -69,10 +69,10 @@ var
   BookIterator: IBookIterator;
   BookRecord: TBookRecord;
 begin
-  totalBooks := DMCollection.GetTotalNumBooks;
   processedBooks := 0;
 
-  BookIterator := DMCollection.GetBookIterator(bmAll, True);
+  BookIterator := GetActiveBookCollection.GetBookIterator(bmAll, True);
+  totalBooks := BookIterator.GetNumRecords;
   while BookIterator.Next(BookRecord) do
   begin
     if Canceled then

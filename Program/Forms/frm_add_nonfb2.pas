@@ -153,7 +153,7 @@ type
     property OnSetControlsState: TChangeStateEvent read FOnSetControlsState write FOnSetControlsState;
 
   private
-    FLibrary: TMHLLibrary;
+    FLibrary: TBookCollection;
     FRootPath: string;
     function CheckEmptyFields(Data: PFileData): Boolean;
   end;
@@ -172,8 +172,7 @@ uses
   unit_Settings,
   unit_MHLHelpers,
   unit_Helpers,
-  frm_author_list,
-  dm_collection;
+  frm_author_list;
 
 resourcestring
   rstrFileNotSelected = 'Файл не выбран!';
@@ -240,7 +239,7 @@ end;
 
 procedure TfrmAddnonfb2.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
-  FreeAndNil(FLibrary);
+  FLibrary := Nil;
 
   Assert(Assigned(FOnSetControlsState));
   FOnSetControlsState(True);
@@ -256,7 +255,7 @@ begin
   miClearAllClick(Sender);
   lblGenre.Caption := '';
 
-  FLibrary := TMHLLibrary.Create(DMUser.ActiveCollection.DBFileName);
+  FLibrary := GetActiveBookCollection;
 
   ScanFolder;
 
@@ -492,7 +491,7 @@ var
 begin
   frmAuthorList := TfrmAuthorList.Create(Application);
   try
-    FillAuthorTree(frmAuthorList.tvAuthorList, DMCollection.GetAuthorIterator(amAll));
+    FillAuthorTree(frmAuthorList.tvAuthorList, GetActiveBookCollection.GetAuthorIterator(amAll));
 
     if frmAuthorList.ShowModal = mrOk then
     begin
@@ -635,9 +634,9 @@ begin
   Tree.Clear;
   Tree.NodeDataSize := SizeOf(TFileData);
 
-  FRootPath := DMUser.ActiveCollection.RootPath;
+  FRootPath := DMUser.ActiveCollectionInfo.RootPath;
 
-  flFiles.TargetPath := DMUser.ActiveCollection.RootFolder;
+  flFiles.TargetPath := DMUser.ActiveCollectionInfo.RootFolder;
   flFiles.Process;
   SortTree;
 end;

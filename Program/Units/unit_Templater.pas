@@ -20,7 +20,6 @@ unit unit_Templater;
 interface
 
 uses
-  dm_Collection,
   FictionBook_21,
   unit_Database,
   unit_Globals;

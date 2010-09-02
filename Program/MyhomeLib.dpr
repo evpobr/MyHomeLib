@@ -98,7 +98,6 @@ uses
   unit_SearchUtils in 'Units\unit_SearchUtils.pas',
   unit_ExportINPXThread in 'ImportImpl\unit_ExportINPXThread.pas',
   frm_info_popup in 'Forms\frm_info_popup.pas' {frmInfoPopup},
-  dm_collection in 'DataModules\dm_collection.pas' {DMCollection: TDataModule},
   htmlhlp in 'Units\htmlhlp.pas',
   frm_search in 'Forms\frm_search.pas' {frmBookSearch},
   unit_ReviewParser in 'Units\unit_ReviewParser.pas',
@@ -141,10 +140,11 @@ begin
     frmSplash.Show;   // Display the splash screen
     frmSplash.Update; // Update the splash screen to ensure it gets drawn
 
+    InitBookCollectionMap;
+
     // Важно! сначала создаем датамодули и главную форму
     // а потом - остальные формы!
     Application.CreateForm(TDMUser, DMUser);
-  Application.CreateForm(TDMCollection, DMCollection);
   Application.CreateForm(TfrmMain, frmMain);
   Application.CreateForm(TfrmGenreTree, frmGenreTree);
   frmSplash.Hide;  // Hide the splash screen

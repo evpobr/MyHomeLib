@@ -65,7 +65,7 @@ end;
 procedure TImportXMLThread.WorkFunction;
 var
   FCollection: IXMLCollection;
-  FLibrary: TMHLLibrary;
+  FLibrary: TBookCollection;
   BookList: IXMLBookList;
   Book: IXMLBook;
   totalBooks: Integer;
@@ -89,52 +89,48 @@ begin
     if FCollection.Info.Name <> CollectionName then
       Teletype(rstrCollectionNameMismatchWarningMsg, tsWarning);
 
-    FLibrary := TMHLLibrary.Create(FDBFileName);
+    FLibrary := GetBookCollection(FDBFileName);
+    BookList := FCollection.BookList;
+
+    SetComment(rstrImportingMsg);
+
+    FLibrary.BeginBulkOperation;
     try
-      BookList := FCollection.BookList;
+      totalBooks := BookList.Count;
+      for i := 0 to totalBooks - 1 do
+      begin
+        R.Clear;
 
-      SetComment(rstrImportingMsg);
+        Book := BookList.Items[i];
 
-      FLibrary.BeginBulkOperation;
-      try
-        totalBooks := BookList.Count;
-        for i := 0 to totalBooks - 1 do
-        begin
-          R.Clear;
+        for j := 0 to Book.AuthorList.Count - 1 do
+          TAuthorsHelper.Add(R.Authors, Book.AuthorList.Items[j].Family, Book.AuthorList.Items[j].Name, Book.AuthorList.Items[j].Middle);
 
-          Book := BookList.Items[i];
+        for j := 0 to Book.GenreList.Count - 1 do
+          TGenresHelper.Add(R.Genres, Book.GenreList.Items[j].MHL_Code, '', Book.GenreList.Items[j].Fb2_Code);
 
-          for j := 0 to Book.AuthorList.Count - 1 do
-            TAuthorsHelper.Add(R.Authors, Book.AuthorList.Items[j].Family, Book.AuthorList.Items[j].Name, Book.AuthorList.Items[j].Middle);
+        R.Title := Book.Title;
+        R.Series := Book.Series;
+        R.SeqNumber := Book.No;
+        R.Folder := Book.File_.Folder;
+        R.FileName := Book.File_.Name;
+        R.Size := Book.File_.Size;
+        R.FileExt := Book.File_.Ext;
+        R.InsideNo := Book.File_.Inside_no;
+        R.Date := StrToDate(Book.Date);
+        R.IsLocal := True;
 
-          for j := 0 to Book.GenreList.Count - 1 do
-            TGenresHelper.Add(R.Genres, Book.GenreList.Items[j].MHL_Code, '', Book.GenreList.Items[j].Fb2_Code);
+        FLibrary.InsertBook(R, True, True);
 
-          R.Title := Book.Title;
-          R.Series := Book.Series;
-          R.SeqNumber := Book.No;
-          R.Folder := Book.File_.Folder;
-          R.FileName := Book.File_.Name;
-          R.Size := Book.File_.Size;
-          R.FileExt := Book.File_.Ext;
-          R.InsideNo := Book.File_.Inside_no;
-          R.Date := StrToDate(Book.Date);
-          R.IsLocal := True;
+        if ((i + 1) mod ProcessedItemThreshold) = 0 then
+          SetComment(Format(rstrNumberOfBooksImported, [(i + 1)]));
+        SetProgress((i + 1) * 100 div totalBooks);
 
-          FLibrary.InsertBook(R, True, True);
-
-          if ((i + 1) mod ProcessedItemThreshold) = 0 then
-            SetComment(Format(rstrNumberOfBooksImported, [(i + 1)]));
-          SetProgress((i + 1) * 100 div totalBooks);
-
-          if Canceled then
-            Break;
-        end;
-      finally
-        FLibrary.EndBulkOperation;
+        if Canceled then
+          Break;
       end;
     finally
-      FreeAndNil(FLibrary);
+      FLibrary.EndBulkOperation;
     end;
   finally
     FCollection := nil;

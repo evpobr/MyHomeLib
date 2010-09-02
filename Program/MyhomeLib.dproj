@@ -217,10 +217,6 @@
 			<DCCReference Include="Forms\frm_info_popup.pas">
 				<Form>frmInfoPopup</Form>
 			</DCCReference>
-			<DCCReference Include="DataModules\dm_collection.pas">
-				<Form>DMCollection</Form>
-				<DesignClass>TDataModule</DesignClass>
-			</DCCReference>
 			<DCCReference Include="Units\htmlhlp.pas"/>
 			<DCCReference Include="Forms\frm_search.pas">
 				<Form>frmBookSearch</Form>

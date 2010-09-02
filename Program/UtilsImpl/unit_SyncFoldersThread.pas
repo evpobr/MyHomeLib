@@ -38,10 +38,10 @@ implementation
 
 uses
   dm_user,
-  dm_collection,
   unit_Consts,
   unit_MHL_strings,
-  unit_Globals;
+  unit_Globals,
+  unit_Database;
 
 resourcestring
   rstrBuildingFileList = 'Построение списка файлов ...';
@@ -68,24 +68,26 @@ var
   totalBooks: Integer;
   processedBooks: Integer;
   NewFolder: string;
+  BookCollection: TBookCollection;
   BookIterator: IBookIterator;
   BookRecord: TBookRecord;
 begin
-  totalBooks := DMCollection.GetTotalNumBooks;
   processedBooks := 0;
-  FRootPath := DMUser.ActiveCollection.RootPath;
+  FRootPath := DMUser.ActiveCollectionInfo.RootPath;
 
   FFiles := TFilesList.Create(nil);
   try
     FFiles.OnFile := OnFile;
-    FFiles.TargetPath := DMUser.ActiveCollection.RootFolder;
+    FFiles.TargetPath := DMUser.ActiveCollectionInfo.RootFolder;
 
     FList := TStringList.Create;
     try
       SetComment(rstrBuildingFileList);
       FFiles.Process;
 
-      BookIterator := DMCollection.GetBookIterator(bmAll, True);
+      BookCollection := GetActiveBookCollection;
+      BookIterator := BookCollection.GetBookIterator(bmAll, True);
+      totalBooks := BookIterator.GetNumRecords;
       while BookIterator.Next(BookRecord) do
       begin
         if Canceled then
@@ -97,7 +99,7 @@ begin
           if NewFolder <> '*' then
           begin
             BookRecord.Folder := NewFolder;
-            DMCollection.SetFolder(BookRecord.BookKey, BookRecord.Folder);
+            BookCollection.SetFolder(BookRecord.BookKey, BookRecord.Folder);
           end;
         end;
 

@@ -74,12 +74,12 @@ uses
   Windows,
   SysUtils,
   IOUtils,
-  dm_collection,
   dm_user,
   unit_Consts,
   unit_Settings,
   unit_MHLHelpers,
-  unit_WriteFb2Info;
+  unit_WriteFb2Info,
+  unit_Database;
 
 resourcestring
   rstrCheckTemplateValidity = 'Проверьте правильность шаблона';
@@ -105,7 +105,7 @@ begin
   //
   // TODO : заменить вызов этих методов на потокобезопасные методы, принимающие BookID и DatabaseID
   //
-  DMCollection.GetBookRecord(BookKey, R, False);
+  GetActiveBookCollection.GetBookRecord(BookKey, R, False);
 
   // Сформируем имя каталога в соответствии с заданным темплейтом
   if FTemplater.SetTemplate(Settings.FolderTemplate, TpPath) = ErFine then
@@ -229,7 +229,7 @@ var
   totalBooks: Integer;
   Res: Boolean;
 begin
-  FCollectionRoot := DMUser.ActiveCollection.RootPath;
+  FCollectionRoot := DMUser.ActiveCollectionInfo.RootPath;
 
   FZipper := TZipForge.Create(nil);
   try

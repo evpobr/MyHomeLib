@@ -545,7 +545,7 @@ end;
 
 function TfrmNCWizard.CreateCollection: Boolean;
 var
-  ALibrary: TMHLLibrary;
+  ALibrary: TBookCollection;
 begin
   Assert(Assigned(FProgressPage));
 
@@ -564,22 +564,18 @@ begin
       { TODO -oNickR -cUsability : проверять существование на соответствующей странице с выдачей предупреждения }
       //Assert(not FileExists(FParams.CollectionFile));
       Assert(FileExists(FParams.GenreFile));
-      TMHLLibrary.CreateCollectionTables(FParams.CollectionFile, FParams.GenreFile);
+      CreateCollectionTables(FParams.CollectionFile, FParams.GenreFile);
 
-      ALibrary := TMHLLibrary.Create(FParams.CollectionFile);
-      try
-        //
-        // Установить свойства коллекции
-        //
-        ALibrary.SetProperty(SETTING_NOTES, FParams.Notes);
-        ALibrary.SetProperty(SETTING_DATA_VERSION, GetLibUpdateVersion(True));
-        ALibrary.SetProperty(SETTING_CODE, FParams.CollectionCode);
-        ALibrary.SetProperty(SETTING_URL, FParams.URL);
-        ALibrary.SetProperty(SETTING_DOWNLOAD_SCRIPT, FParams.Script);
-        FProgressPage.ShowProgress(60);
-      finally
-          FreeAndNil(ALibrary);
-      end;
+      ALibrary := GetBookCollection(FParams.CollectionFile);
+      //
+      // Установить свойства коллекции
+      //
+      ALibrary.SetProperty(SETTING_NOTES, FParams.Notes);
+      ALibrary.SetProperty(SETTING_DATA_VERSION, GetLibUpdateVersion(True));
+      ALibrary.SetProperty(SETTING_CODE, FParams.CollectionCode);
+      ALibrary.SetProperty(SETTING_URL, FParams.URL);
+      ALibrary.SetProperty(SETTING_DOWNLOAD_SCRIPT, FParams.Script);
+      FProgressPage.ShowProgress(60);
     end;
 
     FProgressPage.ShowProgress(100);

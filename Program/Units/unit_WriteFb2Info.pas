@@ -35,7 +35,6 @@ uses
   XMLDoc,
   SysUtils,
   unit_Templater,
-  dm_Collection,
   Dialogs;
 
 resourcestring

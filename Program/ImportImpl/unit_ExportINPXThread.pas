@@ -59,12 +59,12 @@ uses
   Forms,
   SysUtils,
   StrUtils,
-  dm_collection,
   dm_user,
   ZipForge,
   unit_Consts,
   unit_Settings,
-  unit_MHL_strings;
+  unit_MHL_strings,
+  unit_Database;
 
 resourcestring
   rstrVersionFrom = 'Версия от ';
@@ -90,12 +90,12 @@ begin
 
   FTempPath := Settings.TempPath;
 
-  FCollectionType := DMUser.ActiveCollection.CollectionType;
-  FCollectionVersion := DMUser.ActiveCollection.Version;
-  FCollectionName := DMUser.ActiveCollection.Name;
-  FCollectionDBFileName := DMUser.ActiveCollection.DBFileName;
+  FCollectionType := DMUser.ActiveCollectionInfo.CollectionType;
+  FCollectionVersion := DMUser.ActiveCollectionInfo.Version;
+  FCollectionName := DMUser.ActiveCollectionInfo.Name;
+  FCollectionDBFileName := DMUser.ActiveCollectionInfo.DBFileName;
 
-  FCollectionNotes := DMUser.ActiveCollection.Notes;
+  FCollectionNotes := DMUser.ActiveCollectionInfo.Notes;
   if FCollectionNotes = '' then
     FCollectionNotes := rstrVersionFrom + DateToStr(Now);
 end;
@@ -115,7 +115,6 @@ var
 begin
   SetComment(rstrExportingCollection);
 
-  totalBooks := DMCollection.GetTotalNumBooks;
   processedBooks := 0;
 
   if isFB2Collection(FCollectionType) then
@@ -127,7 +126,8 @@ begin
   try
     slHelper := TStringList.Create;
     try
-      BookIterator := DMCollection.GetBookIterator(bmAll, True);
+      BookIterator := GetActiveBookCollection.GetBookIterator(bmAll, True);
+      totalBooks := BookIterator.GetNumRecords;
       while BookIterator.Next(R) do
       begin
         if Canceled then

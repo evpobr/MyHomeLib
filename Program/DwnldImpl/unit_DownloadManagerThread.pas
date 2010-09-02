@@ -68,7 +68,6 @@ uses
   frm_main,
   SysUtils,
   DateUtils,
-  dm_collection,
   IdStack,
   IdStackConsts,
   IdException,

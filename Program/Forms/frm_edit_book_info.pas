@@ -100,13 +100,13 @@ implementation
 
 uses
   SysUtils,
-  dm_collection,
   dm_user,
   frm_genre_tree,
   frm_edit_author,
   unit_TreeUtils,
   VirtualTrees,
-  unit_Consts;
+  unit_Consts,
+  unit_Database;
 
 resourcestring
   rstrProvideAtLeastOneAuthor = 'Укажите минимум одного автора!';
@@ -125,7 +125,7 @@ begin
     FillGenresTree(frmGenreTree.tvGenresTree);
 
   cbSeries.Items.Clear;
-  SeriesIterator := DMCollection.GetSeriesIterator(smAll);
+  SeriesIterator := GetActiveBookCollection.GetSeriesIterator(smAll);
   while SeriesIterator.Next(SeriesData) do
     cbSeries.Items.Add(SeriesData.SeriesTitle);
 
