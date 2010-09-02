@@ -353,14 +353,12 @@ begin
 end;
 
 procedure DropCollectionDatabase(const DBCollectionFile: string);
-var
-  BookCollection: TBookCollection;
 begin
   if BookCollectionMap <> nil then
   begin
     try
-      BookCollection := BookCollectionMap[DBCollectionFile];
-      FreeAndNil(BookCollection);
+      // Remove and free:
+      BookCollectionMap.Remove(DBCollectionFile);
     except
       on E: EListError do
         // A valid case - the collection is not yet in the map, nothing to free - ignore
