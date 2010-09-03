@@ -259,7 +259,7 @@ end;
 
 procedure TImportFB2ThreadBase.WorkFunction;
 begin
-  FLibrary := TBookCollection.Create(FCollectionDBFileName, False);
+  FLibrary := CreateBookCollection(FCollectionDBFileName, False);
   try
     FFiles := TStringList.Create;
     try

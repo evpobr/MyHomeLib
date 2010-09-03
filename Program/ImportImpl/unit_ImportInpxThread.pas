@@ -475,7 +475,7 @@ procedure TImportInpxThread.WorkFunction;
 var
   BookCollection: TBookCollection;
 begin
-  BookCollection := TBookCollection.Create(DBFileName, False);
+  BookCollection := CreateBookCollection(DBFileName, False);
   try
     BookCollection.BeginBulkOperation;
     try

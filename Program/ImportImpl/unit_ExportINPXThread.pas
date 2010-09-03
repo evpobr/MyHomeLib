@@ -120,7 +120,7 @@ begin
   try
     slHelper := TStringList.Create;
     try
-      BookCollection := TBookCollection.Create(FCollectionDBFileName, False);
+      BookCollection := CreateBookCollection(FCollectionDBFileName, False);
       try
         BookIterator := BookCollection.GetBookIterator(bmAll, True);
         try
