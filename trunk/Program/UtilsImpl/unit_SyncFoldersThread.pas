@@ -41,7 +41,8 @@ uses
   unit_Consts,
   unit_MHL_strings,
   unit_Globals,
-  unit_Database;
+  unit_Database,
+  unit_Interfaces;
 
 resourcestring
   rstrBuildingFileList = 'Построение списка файлов ...';

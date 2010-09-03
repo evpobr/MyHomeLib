@@ -43,6 +43,7 @@ uses
   ABSMain,
   ShellAPI,
   unit_Globals,
+  unit_Interfaces,
   XMLIntf,
   XMLDoc,
   pngimage,

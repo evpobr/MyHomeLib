@@ -28,6 +28,7 @@ uses
   Controls,
   unit_Globals,
   unit_Consts,
+  unit_Interfaces,
   UserData;
 
 type

@@ -18,13 +18,8 @@ unit unit_Logger;
 
 interface
 
-type
-  ILogger = interface
-    procedure Log(const logMessage: string; const extraInfo: string);
-  end;
-
-  IIntervalLogger = interface(ILogger)
-  end;
+uses
+  unit_Interfaces;
 
 function GetLogger: ILogger;
 function GetIntervalLogger(const intervalName: string; const extraInfo: string): IIntervalLogger;

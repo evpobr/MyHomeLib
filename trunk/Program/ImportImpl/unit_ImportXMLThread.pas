@@ -18,7 +18,8 @@ uses
   Classes,
   unit_WorkerThread,
   unit_globals,
-  unit_MHL_xml;
+  unit_MHL_xml,
+  unit_Interfaces;
 
 type
   TImportXMLThread = class(TWorker)

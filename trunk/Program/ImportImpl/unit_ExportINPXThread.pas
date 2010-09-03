@@ -64,7 +64,8 @@ uses
   unit_Consts,
   unit_Settings,
   unit_MHL_strings,
-  unit_Database;
+  unit_Database,
+  unit_Interfaces;
 
 resourcestring
   rstrVersionFrom = 'Версия от ';

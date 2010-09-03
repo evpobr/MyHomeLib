@@ -45,7 +45,8 @@ uses
   unit_Settings,
   unit_MHL_strings,
   unit_Messages,
-  unit_Database;
+  unit_Database,
+  unit_Interfaces;
 
 resourcestring
   rstrProblemsWithABook = 'Какие-то проблемы с книгой ';

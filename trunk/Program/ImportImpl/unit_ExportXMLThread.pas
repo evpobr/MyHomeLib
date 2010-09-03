@@ -49,7 +49,8 @@ implementation
 uses
   dm_user,
   unit_MHL_strings,
-  unit_Database;
+  unit_Database,
+  unit_Interfaces;
 
 resourcestring
   rstrExportingCollection = 'Ёкспортируем коллекцию.';
