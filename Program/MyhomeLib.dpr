@@ -117,7 +117,8 @@ uses
   UserData in 'Units\UserData.pas',
   xmlUtils in 'Units\xmlUtils.pas',
   frm_EditGroup in 'Forms\frm_EditGroup.pas' {frmEditGroup},
-  unit_Logger in 'Units\unit_Logger.pas';
+  unit_Logger in 'Units\unit_Logger.pas',
+  unit_Interfaces in 'Units\unit_Interfaces.pas';
 
 {$R *.res}
 
@@ -143,10 +144,9 @@ begin
     // Важно! сначала создаем датамодули и главную форму
     // а потом - остальные формы!
     Application.CreateForm(TDMUser, DMUser);
-    Application.CreateForm(TfrmMain, frmMain);
-    Application.CreateForm(TfrmGenreTree, frmGenreTree);
-
-    frmSplash.Hide;  // Hide the splash screen
+  Application.CreateForm(TfrmMain, frmMain);
+  Application.CreateForm(TfrmGenreTree, frmGenreTree);
+  frmSplash.Hide;  // Hide the splash screen
   finally
     frmSplash.Free;  // Free the splash screen
   end;

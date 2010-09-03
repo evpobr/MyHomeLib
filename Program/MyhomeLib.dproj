@@ -254,6 +254,7 @@
 				<Form>frmEditGroup</Form>
 			</DCCReference>
 			<DCCReference Include="Units\unit_Logger.pas"/>
+			<DCCReference Include="Units\unit_Interfaces.pas"/>
 			<RcItem Include="Resources\Images\16x16\star_small.png">
 				<ResourceType>RCData</ResourceType>
 				<ResourceId>smallStar</ResourceId>
