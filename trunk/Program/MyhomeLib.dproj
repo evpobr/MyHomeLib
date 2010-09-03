@@ -69,7 +69,6 @@
 				<Form>DMUser</Form>
 				<DesignClass>TDataModule</DesignClass>
 			</DCCReference>
-			<DCCReference Include="Units\unit_Database.pas"/>
 			<DCCReference Include="Units\unit_Globals.pas"/>
 			<DCCReference Include="Forms\frm_settings.pas">
 				<Form>frmSettings</Form>
@@ -248,6 +247,10 @@
 			</DCCReference>
 			<DCCReference Include="Units\unit_Logger.pas"/>
 			<DCCReference Include="Units\unit_Interfaces.pas"/>
+			<DCCReference Include="DAO\unit_Database.pas"/>
+			<DCCReference Include="DAO\SQLite\Lib\SQLite3.pas"/>
+			<DCCReference Include="DAO\SQLite\Lib\SQLite3UDF.pas"/>
+			<DCCReference Include="DAO\SQLite\Lib\SQLiteWrap.pas"/>
 			<RcItem Include="Resources\Images\16x16\star_small.png">
 				<ResourceType>RCData</ResourceType>
 				<ResourceId>smallStar</ResourceId>
@@ -261,10 +264,15 @@
 				<ResourceType>RCData</ResourceType>
 				<ResourceId>CreateSystemDB</ResourceId>
 			</RcItem>
-			<RcItem Include="Resources\CreateCollectionDB.sql">
+			<RcItem Include="DAO\ABS\Resources\CreateCollectionDB_ABS.sql">
 				<ContainerId>ResourceItem</ContainerId>
 				<ResourceType>RCData</ResourceType>
-				<ResourceId>CreateCollectionDB</ResourceId>
+				<ResourceId>CreateCollectionDB_ABS</ResourceId>
+			</RcItem>
+			<RcItem Include="DAO\SQLite\Resources\CreateCollectionDB_SQLite.sql">
+				<ContainerId>ResourceItem</ContainerId>
+				<ResourceType>RCData</ResourceType>
+				<ResourceId>CreateCollectionDB_SQLite</ResourceId>
 			</RcItem>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>

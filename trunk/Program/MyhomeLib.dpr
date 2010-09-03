@@ -28,7 +28,6 @@ uses
   IMouse,
   frm_main in 'Forms\frm_main.pas' {frmMain},
   dm_user in 'DataModules\dm_user.pas' {DMUser: TDataModule},
-  unit_Database in 'Units\unit_Database.pas',
   unit_Globals in 'Units\unit_Globals.pas',
   frm_settings in 'Forms\frm_settings.pas' {frmSettings},
   frm_about in 'Forms\frm_about.pas' {frmAbout},
@@ -114,7 +113,11 @@ uses
   xmlUtils in 'Units\xmlUtils.pas',
   frm_EditGroup in 'Forms\frm_EditGroup.pas' {frmEditGroup},
   unit_Logger in 'Units\unit_Logger.pas',
-  unit_Interfaces in 'Units\unit_Interfaces.pas';
+  unit_Interfaces in 'Units\unit_Interfaces.pas',
+  unit_Database in 'DAO\unit_Database.pas',
+  SQLite3 in 'DAO\SQLite\Lib\SQLite3.pas',
+  SQLite3UDF in 'DAO\SQLite\Lib\SQLite3UDF.pas',
+  SQLiteWrap in 'DAO\SQLite\Lib\SQLiteWrap.pas';
 
 {$R *.res}
 
