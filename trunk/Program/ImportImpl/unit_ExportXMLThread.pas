@@ -92,7 +92,7 @@ begin
 
   processedBooks := 0;
 
-  BookCollection := TBookCollection.Create(FCollectionDBFileName, False);
+  BookCollection := CreateBookCollection(FCollectionDBFileName, False);
   try
     BookIterator := GetActiveBookCollection.GetBookIterator(bmAll, True);
     try

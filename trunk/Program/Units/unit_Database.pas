@@ -155,8 +155,10 @@ type
   private
     procedure LoadGenres(const GenresFileName: string);
 
-  public
+  protected
     constructor Create(const DBCollectionFile: string; ADefaultSession: Boolean = True);
+
+  public
     destructor Destroy; override;
 
     procedure ReloadDefaultGenres(const FileName: string);
@@ -294,6 +296,7 @@ type
     property AuthorFilterType: string read FAuthorFilterType write FAuthorFilterType;
   end;
 
+  function CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True): TBookCollection;
   function GetBookCollection(const DBCollectionFile: string): TBookCollection;
   function GetActiveBookCollection: TBookCollection;
   procedure FreeBookCollectionMap;
@@ -348,9 +351,14 @@ begin
 
   if not BookCollectionMap.TryGetValue(DBCollectionFile, Result) then
   begin
-    Result := TBookCollection.Create(DBCollectionFile);
+    Result := CreateBookCollection(DBCollectionFile);
     BookCollectionMap.Add(DBCollectionFile, Result);
   end;
+end;
+
+function CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True): TBookCollection;
+begin
+  Result := TBookCollection.Create(DBCollectionFile, ADefaultSession);
 end;
 
 function GetActiveBookCollection: TBookCollection;
@@ -448,7 +456,7 @@ begin
   end;
 
   // Now that we have the DB structure in place for DBCollectionFile, we can create an instance of the library for it:
-  ALibrary := TBookCollection.Create(DBCollectionFile);
+  ALibrary := CreateBookCollection(DBCollectionFile);
   try
     //
     // «апишем версию метаданных, и дату создани€
