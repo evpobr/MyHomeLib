@@ -25,7 +25,8 @@ uses
   Windows,
   unit_WorkerThread,
   unit_Globals,
-  unit_Database;
+  unit_Database,
+  unit_Database_Abstract;
 
 type
   TFields = (

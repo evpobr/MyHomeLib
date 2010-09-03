@@ -29,6 +29,7 @@ uses
   unit_Globals,
   unit_WorkerThread,
   unit_Database,
+  unit_Database_Abstract,
   unit_Templater;
 
 type

@@ -42,6 +42,7 @@ uses
   unit_MHL_strings,
   unit_Globals,
   unit_Database,
+  unit_Database_Abstract,
   unit_Interfaces;
 
 resourcestring
@@ -87,7 +88,7 @@ begin
       FFiles.Process;
 
       BookCollection := GetActiveBookCollection;
-      BookIterator := BookCollection.GetBookIterator(bmAll, True);
+      BookIterator := BookCollection.GetBookIterator1(bmAll, True);
       totalBooks := BookIterator.GetNumRecords;
       while BookIterator.Next(BookRecord) do
       begin

@@ -6,6 +6,14 @@ Note: Requires Sqlite 3.6.8 and higher!
 
 Designed for Delphi 6+ and Freepascal, Unicode support for Delphi 2009+
 
+  ------------------------ Modifications for MyHomeLib ------------------------
+
+  Sep 2010
+    - added method UpdateBlob (Tim Anderson's implementation from http://www.itwriting.com/blog/?page_id=659 but with UTF-8 support)
+    - added method AddParamBoolean
+
+  -----------------------------------------------------------------------------
+
   V2.0.0  29 June 2010
     Ported to D2009 Unicode by Roger Lascelles (support@veecad.com)
 
