@@ -9,7 +9,8 @@ uses
   unit_ImportInpxThread,
   ABSMain,
   IdHTTP,
-  IdComponent;
+  IdComponent,
+  UserData;
 
 type
   TDownloadProgressEvent = procedure (Current, Total: Integer) of object;
@@ -21,6 +22,7 @@ type
     FDownloadSize: Integer;
     FStartDate : TDateTime;
     FUpdated: Boolean;
+    FOnImportUserData: TOnImportUserDataEvent;
 
     function ReplaceFiles: Boolean;
 
@@ -31,6 +33,7 @@ type
     procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
 
   public
+    constructor Create(OnImportUserData: TOnImportUserDataEvent);
     property Updated: Boolean read FUpdated;
   end;
 
@@ -59,7 +62,10 @@ resourcestring
   rstrListsExtraUpdateIsAvailable = 'Доступно обновление on-line списков до версии %d';
   rstrNothingToUpdate = 'Нечего обновлять!';
   rstrUpdateComplete = 'Обновление завершено.';
-  rstrRemovingOldCollection = 'Удаление старой коллекции "%s"...';
+  rstrUpdateFailed = 'Обновление не удалось.';
+  rstrBackupUserData = 'Сохранение резервной копии пользовательских данных ...';
+  rstrRestoreUserData = 'Восстановление пользовательских данных ...';
+  rstrRemovingOldCollection = 'Удаление всех записей старой коллекции "%s" ...';
   rstrCreatingCollection = 'Создание новой коллекции  "%s"...';
   rstrSpeed = 'Загрузка: %s Kb/s';
   rstrConnectingToServer = 'Подключение к серверу ...';
@@ -68,8 +74,14 @@ resourcestring
   rstrCancelledByUser = 'Операция отменена пользователем.';
   rstrImportIntoCollection = 'Импорт данных в коллекцию:';
 
-{ TDownloadBooksThread }
+{ TLibUpdateThread }
 
+constructor TLibUpdateThread.Create(OnImportUserData: TOnImportUserDataEvent);
+begin
+  inherited Create;
+  Assert(Assigned(OnImportUserData));
+  FOnImportUserData := OnImportUserData;
+end;
 
 procedure TLibUpdateThread.HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
   AWorkCount: Int64);
@@ -120,9 +132,11 @@ end;
 
 procedure TLibUpdateThread.WorkFunction;
 var
-  ALibrary: TBookCollection;
+  BookCollection: TBookCollection;
   i: integer;
+  UserDataBackup: TUserData;
 begin
+  UserDataBackup := nil;
   FidHTTP := TidHTTP.Create(nil);
   try
     FidHTTP.OnWork := HTTPWork;
@@ -167,26 +181,38 @@ begin
         CollectionRoot :=  IncludeTrailingPathDelimiter(DMUser.CurrentCollectionInfo.RootFolder);
         CollectionType := DMUser.CurrentCollectionInfo.CollectionType;
 
-        if Settings.Updates[i].Full then
-        begin
-          //
-          // TODO : по хорошему, это полная фигня.
-          // Жанры зачитываем неправильные, группы не чистим...
-          //
-          Teletype(Format(rstrRemovingOldCollection, [Settings.Updates[i].Name]),tsInfo);
+        //Truncate won't work with TBookCollection.Create(DBFileName, False)
+        BookCollection := GetBookCollection(DBFileName);
+        BookCollection.BeginBulkOperation;
+        try
+          if Settings.Updates[i].Full then
+          begin
+            // Backup user data:
+            Teletype(Format(rstrBackupUserData, [Settings.Updates[i].Name]),tsInfo);
+            UserDataBackup := TUserData.Create;
+            BookCollection.ExportUserData(UserDataBackup);
 
-          // удаляем старый файл коллекции
-          DropCollectionDatabase(DBFileName);
+            // clear most tables in a collection
+            Teletype(Format(rstrRemovingOldCollection, [Settings.Updates[i].Name]),tsInfo);
+            BookCollection.TruncateTablesBeforeImport;
+          end; //if FULL
 
-          // создаем его заново
-          Teletype(Format(rstrCreatingCollection, [Settings.Updates[i].Name]),tsInfo);
-          CreateCollectionTables(DBFileName, GENRES_FB2_FILENAME);
-        end; //if FULL
+          //  импортирум данные
+          Teletype(rstrImportIntoCollection, tsInfo);
+          Import(not Settings.Updates[i].Full, BookCollection);
 
-        //  импортирум данные
-        Teletype(rstrImportIntoCollection, tsInfo);
+          if (UserDataBackup <> nil) then // a full import mode, had a backup before the process
+          begin
+            // Restore user data:
+            Teletype(Format(rstrRestoreUserData, [Settings.Updates[i].Name]),tsInfo);
+            FOnImportUserData(UserDataBackup);
+          end;
 
-        Import(not Settings.Updates[i].Full);
+          BookCollection.EndBulkOperation(True);
+        except
+          BookCollection.EndBulkOperation(False);
+          raise;
+        end;
 
         DMUser.CurrentCollectionInfo.Edit;
         try
@@ -213,10 +239,14 @@ begin
        SetComment(rstrReady);
     except
       on E: Exception do
+      begin
+        Teletype(rstrUpdateFailed, tsError);
         DeleteFile(Settings.WorkPath + Settings.Updates.Items[i].UpdateFile);
+      end;
     end;
   finally
     FreeAndNil(FidHTTP);
+    FreeAndNil(UserDataBackup);
   end;
 end;
 

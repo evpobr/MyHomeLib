@@ -142,6 +142,8 @@ type
     function GetNumRecords: Integer;
   end;
 
+  TOnImportUserDataEvent = procedure(const UserDataSource: TUserData) of object;
+
 implementation
 
 uses
