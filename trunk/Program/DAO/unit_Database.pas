@@ -439,7 +439,7 @@ begin
 
     ADatabase.CreateDatabase;
 
-    createScript := TResourceStream.Create(HInstance, 'CreateCollectionDB', RT_RCDATA);
+    createScript := TResourceStream.Create(HInstance, 'CreateCollectionDB_ABS', RT_RCDATA);
     try
       createQuery := TABSQueryEx.Create(ADatabase, '');
       try
