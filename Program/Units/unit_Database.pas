@@ -30,19 +30,6 @@ uses
   unit_Interfaces;
 
 type
-  //
-  // Вспомогательные классы для облегчения работы и устранения ошибок.
-  //
-  TABSQueryEx = class(TABSQuery)
-  public
-    constructor Create(ADatabase: TABSDatabase; const AQueryText: string);
-  end;
-
-  TABSTableEx = class(TABSTable)
-  public
-    constructor Create(ADatabase: TABSDatabase; const ATableName: string);
-  end;
-
   TBookCollection = class
   strict private
   type
@@ -331,6 +318,19 @@ const
   DATABASE_VERSION = '1000';
 
 type
+  //
+  // Вспомогательные классы для облегчения работы и устранения ошибок.
+  //
+  TABSQueryEx = class(TABSQuery)
+  public
+    constructor Create(ADatabase: TABSDatabase; const AQueryText: string);
+  end;
+
+  TABSTableEx = class(TABSTable)
+  public
+    constructor Create(ADatabase: TABSDatabase; const ATableName: string);
+  end;
+
   TBookCollectionMap = TObjectDictionary<string, TBookCollection>;
 
 var

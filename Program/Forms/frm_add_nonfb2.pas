@@ -42,7 +42,7 @@ uses
   unit_globals,
   FBDDocument,
   FBDAuthorTable,
-  Buttons;
+  Buttons, MHLSimplePanel;
 
 type
   TfrmAddnonfb2 = class(TForm)
@@ -62,38 +62,51 @@ type
     tsFiles: TTabSheet;
     Tree: TVirtualStringTree;
     tsBookInfo: TTabSheet;
-    gbFile: TGroupBox;
     edFileName: TEdit;
     btnCopyToFamily: TButton;
     btnCopyToName: TButton;
     btnCopyToTitle: TButton;
     btnCopyToSeries: TButton;
     btnRenameFile: TBitBtn;
-    gbGenres: TGroupBox;
+    gbExtraInfo: TGroupBox;
     lblGenre: TLabel;
     btnShowGenres: TButton;
-    gbLang: TGroupBox;
     cbLang: TComboBox;
-    gbKeywords: TGroupBox;
     edKeyWords: TEdit;
-    gbSerie: TGroupBox;
     edSN: TEdit;
     cbSeries: TComboBox;
-    gbTitle: TGroupBox;
-    edT: TEdit;
+    edTitle: TEdit;
+    btnNext: TBitBtn;
+    btnClose: TBitBtn;
+    btnOpenBook: TBitBtn;
+    FBD: TFBDDocument;
     gbOptions: TGroupBox;
     cbAutoSeries: TCheckBox;
     cbSelectFileName: TCheckBox;
     cbNoAuthorAllowed: TCheckBox;
-    RzGroupBox6: TGroupBox;
     cbClearOptions: TComboBox;
-    btnNext: TBitBtn;
-    tsFBD: TTabSheet;
+    Label1: TLabel;
+    Label2: TLabel;
+    cbForceConvertToFBD: TCheckBox;
+    Label3: TLabel;
+    Label6: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
     gbFDBCover: TGroupBox;
     FCover: TImage;
     btnPasteCover: TButton;
     btnLoad: TButton;
-    gbPublisher: TGroupBox;
+    MHLSimplePanel1: TMHLSimplePanel;
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    alBookAuthors: TFBDAuthorTable;
+    TabSheet2: TTabSheet;
+    alFBDAuthors: TFBDAuthorTable;
+    TabSheet3: TTabSheet;
+    mmAnnotation: TMemo;
+    TabSheet4: TTabSheet;
     RzLabel4: TLabel;
     RzLabel6: TLabel;
     RzLabel7: TLabel;
@@ -102,40 +115,35 @@ type
     edPublisher: TEdit;
     edYear: TEdit;
     edCity: TEdit;
-    mmAnnotation: TMemo;
-    dtnConvert: TBitBtn;
-    btnClose: TBitBtn;
-    cbForceConvertToFBD: TCheckBox;
-    btnOpenBook: TBitBtn;
-    FBD: TFBDDocument;
-    alBookAuthors: TFBDAuthorTable;
-    alFBDAuthors: TFBDAuthorTable;
-    procedure RzButton3Click(Sender: TObject);
+
+    procedure FormShow(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+
     procedure TreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
     procedure TreeDblClick(Sender: TObject);
     procedure TreeChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
-    procedure btnAddClick(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure TreePaintText(Sender: TBaseVirtualTree; const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType);
+    procedure TreeFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure TreeClick(Sender: TObject);
+
+    procedure flFilesDirectory(Sender: TObject; const Dir: string);
+    procedure flFilesFile(Sender: TObject; const F: TSearchRec);
+
+    procedure RzButton3Click(Sender: TObject);
+    procedure btnAddClick(Sender: TObject);
     procedure btnShowGenresClick(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure btnCopyToTitleClick(Sender: TObject);
     procedure btnCopyToSeriesClick(Sender: TObject);
     procedure btnCopyToFamilyClick(Sender: TObject);
     procedure btnCopyToNameClick(Sender: TObject);
-    procedure flFilesFile(Sender: TObject; const F: TSearchRec);
     procedure miClearAllClick(Sender: TObject);
     procedure miOpenExplorerClick(Sender: TObject);
     procedure miRenameFileClick(Sender: TObject);
-    procedure flFilesDirectory(Sender: TObject; const Dir: string);
-    procedure TreeCompareNodes(Sender: TBaseVirtualTree; Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
-    procedure TreeClick(Sender: TObject);
     procedure btnLoadClick(Sender: TObject);
     procedure btnPasteCoverClick(Sender: TObject);
     procedure dtnConvertClick(Sender: TObject);
     procedure btnFileOpenClick(Sender: TObject);
     procedure btnNextClick(Sender: TObject);
-    procedure TreeFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure AddAuthorFromList(Sender: TObject);
 
   private
@@ -148,7 +156,7 @@ type
     procedure ScanFolder;
     procedure FillLists;
     procedure SortTree;
-    function FillFBDData: Boolean;
+    procedure FillFBDData;
   public
     property OnSetControlsState: TChangeStateEvent read FOnSetControlsState write FOnSetControlsState;
 
@@ -201,7 +209,7 @@ begin
     while Node <> nil do
     begin
       Data := frmGenreTree.tvGenresTree.GetNodeData(Node);
-      lblGenre.Caption := lblGenre.Caption + Data.GenreAlias + ' ; ';
+      lblGenre.Caption := lblGenre.Caption + Data^.GenreAlias + ' ; ';
       Node := frmGenreTree.tvGenresTree.GetNextSelected(Node);
     end;
   end;
@@ -222,7 +230,7 @@ begin
   if alBookAuthors.Count > 0 then
   begin
     Author := alBookAuthors.ActiveRecord;
-    Author.First := (trim(edFileName.SelText));
+    Author.First := Trim(edFileName.SelText);
     alBookAuthors.ActiveRecord := Author;
   end;
 end;
@@ -234,7 +242,7 @@ end;
 
 procedure TfrmAddnonfb2.btnCopyToTitleClick(Sender: TObject);
 begin
-  edT.Text := Trim(edFileName.SelText);
+  edTitle.Text := Trim(edFileName.SelText);
 end;
 
 procedure TfrmAddnonfb2.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -269,41 +277,46 @@ begin
   alBookAuthors.AddAuthorFromListButton.Visible := True;
 end;
 
-function TfrmAddnonfb2.FillFBDData: Boolean;
+procedure TfrmAddnonfb2.FillFBDData;
 var
-  I: Integer;
+  Cover: TCover;
+  Genre: TGenreData;
 begin
-  Result := False;
+  FBD.ProgramUsed := GetProgramUsed(Application.ExeName);
+  Cover := FBD.Cover;
+
+  FBD.New(FRootPath + FBookRecord.Folder, FBookRecord.FileName, FBookRecord.FileExt);
+  FBD.Title.Genre.Clear;
+  FBD.Custom.Clear;
+
+  FBD.Title.Booktitle.Text := edTitle.Text;
+  FBD.Title.Keywords.Text := edKeyWords.Text;
+  FBD.Title.Lang := cbLang.Text;
+
+  for Genre in FBookRecord.Genres do
+    FBD.Title.Genre.Add(Genre.FB2GenreCode);
 
   FBD.SetAuthors(alBookAuthors.Items, atlBook);
-  with FBD.Title do
-  begin
-    Booktitle.Text := edT.Text;
-    Keywords.Text := edKeyWords.Text;
-    Lang := cbLang.Text;
-    FBD.AddSeries(sltBook, cbSeries.Text, StrToIntDef(edSN.Text, 0));
-    Genre.Clear;
-    for I := 0 to High(FBookRecord.Genres) do
-      Genre.Add(FBookRecord.Genres[I].FB2GenreCode);
-  end;
-
   FBD.SetAuthors(alFBDAuthors.Items, atlFBD);
 
-  with FBD.Publisher do
-  begin
-    Publisher.Text := edPublisher.Text;
-    City.Text := edCity.Text;
-    ISBN.Text := edISBN.Text;
-    Year := edYear.Text;
-  end;
-  FBD.Custom.Clear;
+  FBD.AddSeries(sltBook, cbSeries.Text, StrToIntDef(edSN.Text, 0));
+
+  FBD.Publisher.Publisher.Text := edPublisher.Text;
+  FBD.Publisher.City.Text := edCity.Text;
+  FBD.Publisher.ISBN.Text := edISBN.Text;
+  FBD.Publisher.Year := edYear.Text;
+
   FBD.AutoLoadCover;
-  Result := True;
+
+  FBD.Cover := Cover;
+  FBD.Save(False);
+
+  FBookRecord.FileName := FBookRecord.FileName + ZIP_EXTENSION;
 end;
 
 procedure TfrmAddnonfb2.miClearAllClick(Sender: TObject);
 begin
-  edT.Text := '';
+  edTitle.Text := '';
   edFileName.Text := '';
   alBookAuthors.Clear;
   alFBDAuthors.Clear;
@@ -334,13 +347,16 @@ function TfrmAddnonfb2.CheckEmptyFields(Data: PFileData): Boolean;
 begin
   Result := False;
   try
-    if Data = nil then
+    if not Assigned(Data) then
       raise EInvalidOp.Create(rstrFileNotSelected);
+
     if (not cbNoAuthorAllowed.Checked) and (alBookAuthors.Count = 0) then
       raise EInvalidOp.Create(rstrProvideAtLeastOneAuthor);
-    if edT.Text = '' then
+
+    if edTitle.Text = '' then
       raise EInvalidOp.Create(rstrProvideBookTitle);
-    if Data.DataType = dtFolder then
+
+    if Data^.DataType = dtFolder then
       Result := False
     else
       Result := True;
@@ -359,18 +375,13 @@ begin
 
   Next := Tree.GetNext(Tree.GetFirstSelected);
   Tree.DeleteNode(Tree.GetFirstSelected, True);
-  if Next <> nil then
+  if Assigned(Next) then
     Tree.Selected[Next] := True;
 
   case cbClearOptions.ItemIndex of
-    0:
-      miClearAllClick(nil);
-    1:
-      alBookAuthors.Clear;
-    2:
-      begin
-        edT.Text := '';
-      end;
+    0: miClearAllClick(nil);
+    1: alBookAuthors.Clear;
+    2: edTitle.Text := '';
   end;
 
   FillLists;
@@ -381,7 +392,7 @@ begin
   TreeChange(Tree, Next);
 
   Data := Tree.GetNodeData(Next);
-  if (Data <> nil) and (Data.DataType = dtFile) then
+  if Assigned(Data) and (Data^.DataType = dtFile) then
     pcPages.ActivePage := tsBookInfo
   else
     pcPages.ActivePage := tsFiles;
@@ -390,7 +401,6 @@ end;
 procedure TfrmAddnonfb2.dtnConvertClick(Sender: TObject);
 var
   SavedCursor: TCursor;
-  Cover: TCover;
 begin
   Self.Enabled := False;
   SavedCursor := Screen.Cursor;
@@ -399,19 +409,9 @@ begin
     PrepareBookRecord;
     if cbForceConvertToFBD.Checked then
     begin
-      FBD.ProgramUsed := GetProgramUsed(Application.ExeName);
-      Cover := FBD.Cover;
-      FBD.New(FRootPath + FBookRecord.Folder, FBookRecord.FileName, FBookRecord.FileExt);
-      if FillFBDData then
-      begin
-        FBD.Cover := Cover;
-        FBD.Save(False);
-        FBookRecord.FileName := FBookRecord.FileName + ZIP_EXTENSION;
-        CommitData;
-      end;
-    end
-    else
-      CommitData;
+      FillFBDData;
+    end;
+    CommitData;
   finally
     Screen.Cursor := SavedCursor;
     Self.Enabled := True;
@@ -428,10 +428,10 @@ begin
     Data := Tree.GetNodeData(Tree.GetFirstSelected);
     if CheckEmptyFields(Data) then
     begin
-      NewName := CheckSymbols(alBookAuthors.ActiveRecord.Last + ' ' + alBookAuthors.ActiveRecord.First + ' ' + edT.Text);
-      if RenameFile(Data.FullPath + Data.FileName + Data.Ext, Data.FullPath + NewName + Data.Ext) then
+      NewName := CheckSymbols(alBookAuthors.ActiveRecord.Last + ' ' + alBookAuthors.ActiveRecord.First + ' ' + edTitle.Text);
+      if RenameFile(Data^.FullPath + Data^.FileName + Data^.Ext, Data^.FullPath + NewName + Data^.Ext) then
       begin
-        Data.FileName := NewName;
+        Data^.FileName := NewName;
         edFileName.Text := NewName;
         Tree.RepaintNode(Tree.GetFirstSelected);
       end
@@ -462,24 +462,24 @@ begin
 
   frmGenreTree.GetSelectedGenres(FBookRecord);
 
-  FBookRecord.Title := edT.Text;
+  FBookRecord.Title := edTitle.Text;
   FBookRecord.Series := cbSeries.Text;
-  if Data.Folder <> '\' then
-    FBookRecord.Folder := Data.Folder
+  if Data^.Folder <> '\' then
+    FBookRecord.Folder := Data^.Folder
   else
     FBookRecord.Folder := '';
-  FBookRecord.FileName := Data.FileName;
-  FBookRecord.FileExt := Data.Ext;
+  FBookRecord.FileName := Data^.FileName;
+  FBookRecord.FileExt := Data^.Ext;
   FBookRecord.Code := 0;
   FBookRecord.InsideNo := 0;
   FBookRecord.SeqNumber := StrToIntDef(edSN.Text, 0);
   FBookRecord.LibID := 0;
+  FBookRecord.IsLocal := True;
   FBookRecord.IsDeleted := False;
-  FBookRecord.Size := Data.Size;
+  FBookRecord.Size := Data^.Size;
   FBookRecord.Date := Now;
   FBookRecord.KeyWords := edKeyWords.Text;
   FBookRecord.Lang := cbLang.Text;
-  FBookRecord.IsLocal := True;
 end;
 
 procedure TfrmAddnonfb2.AddAuthorFromList(Sender: TObject);
@@ -530,7 +530,7 @@ end;
 
 procedure TfrmAddnonfb2.btnNextClick(Sender: TObject);
 begin
-  pcPages.ActivePage := tsFBD;
+  ///pcPages.ActivePage := tsFBD;
 end;
 
 procedure TfrmAddnonfb2.btnPasteCoverClick(Sender: TObject);
@@ -551,10 +551,10 @@ var
     Data := Tree.GetNodeData(Node);
 
     Initialize(Data^);
-    Data.Title := ExtractFileName(ExcludeTrailingPathdelimiter(Path));
-    Data.Folder := Path;
-    Data.DataType := dtFolder;
-    Include(Node.States, vsInitialUserData);
+    Data^.Title := ExtractFileName(ExcludeTrailingPathdelimiter(Path));
+    Data^.Folder := Path;
+    Data^.DataType := dtFolder;
+    Include(Node^.States, vsInitialUserData);
   end;
 
 begin
@@ -619,13 +619,13 @@ begin
   Data := Tree.GetNodeData(CurrentNode);
 
   Initialize(Data^);
-  Data.DataType := dtFile;
-  Data.FileName := FileName;
-  Data.Size := F.Size;
-  Data.FullPath := flFiles.LastDir;
-  Data.Folder := Path;
-  Data.Ext := Ext;
-  Data.Date := F.Time;
+  Data^.DataType := dtFile;
+  Data^.FileName := FileName;
+  Data^.Size := F.Size;
+  Data^.FullPath := flFiles.LastDir;
+  Data^.Folder := Path;
+  Data^.Ext := Ext;
+  Data^.Date := F.Time;
   Include(CurrentNode.States, vsInitialUserData);
 end;
 
@@ -686,7 +686,7 @@ begin
   Data := Tree.GetNodeData(Tree.GetFirstSelected);
   if Data <> nil then
   begin
-    S := AnsiLowercase(Data.FullPath + Data.FileName + Data.Ext);
+    S := AnsiLowercase(Data^.FullPath + Data^.FileName + Data^.Ext);
     SimpleShellExecute(Handle, S);
   end;
 end;
@@ -697,7 +697,6 @@ begin
 end;
 
 procedure TfrmAddnonfb2.TreeChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
-
 begin
   TreeClick(Sender);
 end;
@@ -707,34 +706,17 @@ var
   Data: PFileData;
 begin
   Data := Tree.GetNodeData(Tree.GetFirstSelected);
-  if (Data = nil) or (Data.DataType = dtFolder) then
+  if not Assigned(Data) or (Data^.DataType = dtFolder) then
     Exit;
-  edFileName.Text := Data.FileName;
+
+  edFileName.Text := Data^.FileName;
+
   if cbSelectFileName.Checked then
     edFileName.SelectAll;
-
-end;
-
-procedure TfrmAddnonfb2.TreeCompareNodes(Sender: TBaseVirtualTree; Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
-var
-  Data1, Data2: PFileData;
-begin
-  Data1 := Sender.GetNodeData(Node1);
-  Data2 := Sender.GetNodeData(Node2);
-  // Result := CompareInt(Data1.DataType, Data1.DataType);
 end;
 
 procedure TfrmAddnonfb2.TreeDblClick(Sender: TObject);
-// var
-// Data: PFileData;
-// S: string;
 begin
-  // Data := Tree.GetNodedata(Tree.GetFirstSelected);
-  // if Data <> nil then
-  // begin
-  // S := AnsiLowercase(Data.FullPath + Data.FileName + Data.Ext);
-  // SimpleShellExecute(Handle, s);
-  // end;
   pcPages.ActivePageIndex := 1;
 end;
 
@@ -752,17 +734,18 @@ var
   Data: PFileData;
 begin
   Data := Sender.GetNodeData(Node);
-  case Data.DataType of
+  case Data^.DataType of
     dtFolder:
       if Column = 0 then
-        CellText := Data.Title
+        CellText := Data^.Title
       else
         CellText := '';
+
     dtFile:
       case Column of
-        0: CellText := Data.FileName;
-        1: CellText := CleanExtension(Data.Ext);
-        2: CellText := GetFormattedSize(Data.Size);
+        0: CellText := Data^.FileName;
+        1: CellText := CleanExtension(Data^.Ext);
+        2: CellText := GetFormattedSize(Data^.Size);
         3: CellText := '';
       end;
   end;

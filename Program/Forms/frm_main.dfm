@@ -57,7 +57,7 @@ object frmMain: TfrmMain
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  PixelsPerInch = 120
+  PixelsPerInch = 96
   TextHeight = 13
   object tlbrMain: TToolBar
     Left = 0
@@ -98,7 +98,7 @@ object frmMain: TfrmMain
       OnClick = SendToDeviceExecute
     end
     object ToolButton13: TToolButton
-      Left = 142
+      Left = 136
       Top = 0
       Width = 8
       Caption = 'ToolButton13'
@@ -106,19 +106,19 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnRus: TToolButton
-      Left = 150
+      Left = 144
       Top = 0
       Action = acShowRusAlphabet
       ImageIndex = 3
     end
     object tbtnEng: TToolButton
-      Left = 191
+      Left = 185
       Top = 0
       Action = acShowEngAlphabet
       ImageIndex = 4
     end
     object ToolButton12: TToolButton
-      Left = 232
+      Left = 226
       Top = 0
       Width = 8
       Caption = 'ToolButton12'
@@ -126,7 +126,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnWizard: TToolButton
-      Left = 240
+      Left = 234
       Top = 0
       Action = acCollectionNew
       ImageIndex = 5
@@ -134,7 +134,7 @@ object frmMain: TfrmMain
       ShowHint = True
     end
     object tbtnSelect: TToolButton
-      Left = 281
+      Left = 275
       Top = 0
       Hint = #1042#1099#1073#1088#1072#1090#1100' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
       Caption = #1042#1099#1073#1088#1072#1090#1100' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
@@ -145,7 +145,7 @@ object frmMain: TfrmMain
       ShowHint = True
     end
     object ToolButton3: TToolButton
-      Left = 322
+      Left = 316
       Top = 0
       Width = 8
       Caption = 'ToolButton3'
@@ -153,7 +153,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object BtnFav_add: TToolButton
-      Left = 330
+      Left = 324
       Top = 0
       Hint = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1080#1079#1073#1088#1072#1085#1085#1086#1077
       Caption = 'BtnFav_add'
@@ -163,7 +163,7 @@ object frmMain: TfrmMain
       OnClick = BtnFav_addClick
     end
     object ToolButton7: TToolButton
-      Left = 390
+      Left = 378
       Top = 0
       Width = 8
       Caption = 'ToolButton7'
@@ -171,7 +171,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbSelectAll: TToolButton
-      Left = 398
+      Left = 386
       Top = 0
       Hint = #1054#1090#1084#1077#1090#1080#1090#1100' '#1074#1089#1077
       Caption = 'tbSelectAll'
@@ -179,7 +179,7 @@ object frmMain: TfrmMain
       OnClick = tbSelectAllClick
     end
     object tbCollapse: TToolButton
-      Left = 439
+      Left = 427
       Top = 0
       Hint = #1056#1072#1079#1074#1077#1088#1085#1091#1090#1100'/'#1057#1074#1077#1088#1085#1091#1090#1100' '#1089#1087#1080#1089#1086#1082
       Caption = 'tbCollapse'
@@ -187,7 +187,7 @@ object frmMain: TfrmMain
       OnClick = tbCollapseClick
     end
     object btnRefreshCollection: TToolButton
-      Left = 480
+      Left = 468
       Top = 0
       Hint = #1054#1073#1085#1086#1074#1080#1090#1100' '#1089#1087#1080#1089#1086#1082
       Caption = 'btnRefreshCollection'
@@ -195,7 +195,7 @@ object frmMain: TfrmMain
       OnClick = miRefreshClick
     end
     object ToolButton1: TToolButton
-      Left = 521
+      Left = 509
       Top = 0
       Width = 8
       Caption = 'ToolButton1'
@@ -203,7 +203,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object btnSwitchTreeMode: TToolButton
-      Left = 529
+      Left = 517
       Top = 0
       Hint = #1055#1077#1088#1077#1082#1083#1102#1095#1080#1090#1100' '#1074' '#1088#1077#1078#1080#1084' "'#1058#1072#1073#1083#1080#1094#1072'"'
       Caption = 'btnSwitchTreeMode'
@@ -211,25 +211,25 @@ object frmMain: TfrmMain
       OnClick = btnSwitchTreeModeClick
     end
     object tbtnShowDeleted: TToolButton
-      Left = 570
+      Left = 558
       Top = 0
       Action = acViewHideDeletedBooks
       ImageIndex = 12
     end
     object tbtnShowLocalOnly: TToolButton
-      Left = 611
+      Left = 599
       Top = 0
       Action = acViewShowLocalOnly
       ImageIndex = 13
     end
     object tbtnShowCover: TToolButton
-      Left = 652
+      Left = 640
       Top = 0
       Action = acShowBookInfoPanel
       ImageIndex = 14
     end
     object ToolButton5: TToolButton
-      Left = 693
+      Left = 681
       Top = 0
       Width = 8
       Caption = 'ToolButton5'
@@ -237,13 +237,13 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnSettings: TToolButton
-      Left = 701
+      Left = 689
       Top = 0
       Action = acToolsSettings
       ImageIndex = 17
     end
     object tbtnHelp: TToolButton
-      Left = 742
+      Left = 730
       Top = 0
       Action = acHelpHelp
       ImageIndex = 26
@@ -1354,7 +1354,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 49
-              Width = 193
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
@@ -1364,7 +1364,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 3
-              Width = 193
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1056#1072#1079#1084#1077#1097#1077#1085#1080#1077
@@ -1432,7 +1432,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 22
-              Width = 193
+              Width = 197
               Height = 21
               Align = alTop
               Style = csDropDownList
@@ -1448,7 +1448,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 68
-              Width = 193
+              Width = 197
               Height = 21
               Hint = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
               Align = alTop
@@ -1462,7 +1462,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 5
               Top = 95
-              Width = 191
+              Width = 195
               Height = 17
               Margins.Left = 5
               Align = alTop
@@ -1479,7 +1479,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 3
-              Width = 193
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1048#1084#1103
@@ -1489,7 +1489,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 95
-              Width = 193
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1058#1080#1087
@@ -1499,7 +1499,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 49
-              Width = 193
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1055#1072#1087#1082#1072' ('#1072#1088#1093#1080#1074')'
@@ -1509,7 +1509,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 22
-              Width = 193
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 0
@@ -1520,7 +1520,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 68
-              Width = 193
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 1
@@ -1531,7 +1531,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 114
-              Width = 193
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 2
@@ -1548,7 +1548,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 3
-              Width = 193
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1040#1074#1090#1086#1088
@@ -1558,7 +1558,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 49
-              Width = 193
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1053#1072#1079#1074#1072#1085#1080#1077
@@ -1568,7 +1568,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 141
-              Width = 193
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1046#1072#1085#1088
@@ -1578,7 +1578,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 95
-              Width = 193
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1057#1077#1088#1080#1103
@@ -1588,7 +1588,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 183
-              Width = 193
+              Width = 197
               Height = 13
               Align = alBottom
               Caption = #1040#1085#1085#1086#1090#1072#1094#1080#1103
@@ -1598,7 +1598,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 22
-              Width = 193
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 0
@@ -1609,7 +1609,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 68
-              Width = 193
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 1
@@ -1620,7 +1620,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 114
-              Width = 193
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 2
@@ -1631,7 +1631,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 160
-              Width = 193
+              Width = 197
               Height = 21
               Margins.Bottom = 10
               Align = alTop
@@ -1644,7 +1644,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 202
-              Width = 193
+              Width = 197
               Height = 21
               Margins.Bottom = 10
               Align = alBottom
@@ -2372,9 +2372,6 @@ object frmMain: TfrmMain
         object miFBDImport: TMenuItem
           Action = acImportFBD
         end
-        object miCollectionImport: TMenuItem
-          Action = acImportXML
-        end
         object N14: TMenuItem
           Caption = '-'
         end
@@ -2399,9 +2396,6 @@ object frmMain: TfrmMain
             Tag = 353
             Action = acExport2RTF
           end
-        end
-        object miCollectionExport: TMenuItem
-          Action = acExport2XML
         end
         object miINPXCollectionExport: TMenuItem
           Action = acExport2INPX
@@ -12425,11 +12419,6 @@ object frmMain: TfrmMain
       OnExecute = ImportFBDExecute
       OnUpdate = ImportNonFB2Update
     end
-    object acImportXML: TAction
-      Category = #1048#1084#1087#1086#1088#1090
-      Caption = #1048#1084#1087#1086#1088#1090#1080#1088#1086#1074#1072#1090#1100' '#1080#1079' xml'
-      OnExecute = ImportXMLExecute
-    end
     object acImportUserData: TAction
       Category = #1048#1084#1087#1086#1088#1090
       Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1100#1089#1082#1080#1077' '#1076#1072#1085#1085#1099#1077
@@ -12450,11 +12439,6 @@ object frmMain: TfrmMain
       Category = #1069#1082#1089#1087#1086#1088#1090
       Caption = 'RTF'
       OnExecute = Export2HTMLExecute
-    end
-    object acExport2XML: TAction
-      Category = #1069#1082#1089#1087#1086#1088#1090
-      Caption = #1069#1082#1089#1087#1086#1088#1090#1080#1088#1086#1074#1072#1090#1100' '#1074' xml'
-      OnExecute = Export2XMLExecute
     end
     object acExport2INPX: TAction
       Category = #1069#1082#1089#1087#1086#1088#1090

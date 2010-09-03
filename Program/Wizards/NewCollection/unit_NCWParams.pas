@@ -30,11 +30,9 @@ type
     DisplayName: string;
     CollectionFile: string;
     CollectionRoot: string;
-    DoImport: Boolean;
-    ImportFile: string;
-    RelativePaths:boolean;
+    RelativePaths: Boolean;
     INPXFile: string;
-    Code: integer;
+    Code: Integer;
     Notes: string;
     URL: string;
     Script: string;
