@@ -137,11 +137,6 @@ type
     property Groups: TBookGroups read FGroups;
   end;
 
-  IGroupIterator = interface
-    function Next(out Group: TGroupData): Boolean;
-    function GetNumRecords: Integer;
-  end;
-
   TOnImportUserDataEvent = procedure(const UserDataSource: TUserData) of object;
 
 implementation

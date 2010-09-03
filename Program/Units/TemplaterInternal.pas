@@ -29,7 +29,8 @@ uses
 {$IFDEF SUPPORT_DUMP}
   ComCtrls,
 {$ENDIF}
-  Generics.Collections;
+  Generics.Collections,
+  unit_Interfaces;
 
 type
   // --------------------------------------------------------------------------
@@ -46,12 +47,6 @@ resourcestring
 
 type
   // --------------------------------------------------------------------------
-  IParamsParser<T> = interface
-    function CheckLiteral(const literalValue: string): Boolean;
-    function CheckParam(const paramName: string): Boolean;
-    function GetValue(const params: T; const paramName: string): string;
-  end;
-
   TBaseParamsParser<T> = class abstract (TInterfacedObject, IParamsParser<T>)
   public
     //

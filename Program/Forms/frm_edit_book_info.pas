@@ -106,7 +106,8 @@ uses
   unit_TreeUtils,
   VirtualTrees,
   unit_Consts,
-  unit_Database;
+  unit_Database,
+  unit_Interfaces;
 
 resourcestring
   rstrProvideAtLeastOneAuthor = 'Укажите минимум одного автора!';

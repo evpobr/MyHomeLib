@@ -26,7 +26,8 @@ uses
   ABSMain,
   DB,
   UserData,
-  unit_Globals;
+  unit_Globals,
+  unit_Interfaces;
 
 type
   //

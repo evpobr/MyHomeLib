@@ -24,7 +24,8 @@ uses
   BookTreeView,
   SysUtils,
   unit_Globals,
-  unit_Consts;
+  unit_Consts,
+  unit_Interfaces;
 
 type
   TSelectionList = array of PVirtualNode;
