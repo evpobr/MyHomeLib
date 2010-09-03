@@ -22,9 +22,6 @@ interface
 
 uses
   Classes,
-  Generics.Collections,
-  ABSMain,
-  DB,
   UserData,
   unit_Globals,
   unit_Interfaces;
@@ -118,18 +115,11 @@ resourcestring
 implementation
 
 uses
-  Variants,
-  Types,
+  Generics.Collections,
   SysUtils,
-  IOUtils,
-  DateUtils,
-  Character,
-  bdeconst,
-  unit_Consts,
-  unit_Logger,
-  unit_SearchUtils,
+  dm_user,
   unit_Errors,
-  dm_user;
+  unit_Consts;
 
 { TBookCollection }
 
