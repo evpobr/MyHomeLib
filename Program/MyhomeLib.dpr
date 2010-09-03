@@ -117,7 +117,9 @@ uses
   unit_Database in 'DAO\unit_Database.pas',
   SQLite3 in 'DAO\SQLite\Lib\SQLite3.pas',
   SQLite3UDF in 'DAO\SQLite\Lib\SQLite3UDF.pas',
-  SQLiteWrap in 'DAO\SQLite\Lib\SQLiteWrap.pas';
+  SQLiteWrap in 'DAO\SQLite\Lib\SQLiteWrap.pas',
+  unit_Database_Abstract in 'DAO\unit_Database_Abstract.pas',
+  unit_Database_ABS in 'DAO\ABS\unit_Database_ABS.pas';
 
 {$R *.res}
 

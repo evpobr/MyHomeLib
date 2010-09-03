@@ -65,6 +65,7 @@ uses
   unit_Settings,
   unit_MHL_strings,
   unit_Database,
+  unit_Database_Abstract,
   unit_Interfaces;
 
 resourcestring
@@ -122,7 +123,7 @@ begin
     try
       BookCollection := CreateBookCollection(FCollectionDBFileName, False);
       try
-        BookIterator := BookCollection.GetBookIterator(bmAll, True);
+        BookIterator := BookCollection.GetBookIterator1(bmAll, True);
         try
           totalBooks := BookIterator.GetNumRecords;
           while BookIterator.Next(R) do

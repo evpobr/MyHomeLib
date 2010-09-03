@@ -46,7 +46,8 @@ uses
   unit_Consts,
   unit_Settings,
   unit_WorkerThread,
-  unit_Database;
+  unit_Database,
+  unit_Database_Abstract;
 
 resourcestring
   rstrDownloadProgress = 'Загружено: %u%% из %u байт';

@@ -112,7 +112,8 @@ var
 implementation
 
 uses
-  unit_database,
+  unit_Database,
+  unit_Database_Abstract,
   unit_Settings,
   unit_globals,
   unit_ImportInpxThread,
@@ -565,11 +566,11 @@ begin
       //
       // Установить свойства коллекции
       //
-      ALibrary.SetProperty(SETTING_NOTES, FParams.Notes);
-      ALibrary.SetProperty(SETTING_DATA_VERSION, UNVERSIONED_COLLECTION);
-      ALibrary.SetProperty(SETTING_CODE, FParams.CollectionCode);
-      ALibrary.SetProperty(SETTING_URL, FParams.URL);
-      ALibrary.SetProperty(SETTING_DOWNLOAD_SCRIPT, FParams.Script);
+      ALibrary.SetPropertyS(SETTING_NOTES, FParams.Notes);
+      ALibrary.SetPropertyI(SETTING_DATA_VERSION, UNVERSIONED_COLLECTION);
+      ALibrary.SetPropertyI(SETTING_CODE, FParams.CollectionCode);
+      ALibrary.SetPropertyS(SETTING_URL, FParams.URL);
+      ALibrary.SetPropertyS(SETTING_DOWNLOAD_SCRIPT, FParams.Script);
       FProgressPage.ShowProgress(60);
     end;
 
