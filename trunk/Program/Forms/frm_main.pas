@@ -122,8 +122,6 @@ type
     pmAuthor: TPopupMenu;
     miCopyAuthor: TMenuItem;
     miPdfdjvu: TMenuItem;
-    miCollectionExport: TMenuItem;
-    miCollectionImport: TMenuItem;
     miBookEdit: TMenuItem;
     miRefreshGenres: TMenuItem;
     miDownloadBooks: TMenuItem;
@@ -479,12 +477,10 @@ type
     acImportFb2: TAction;
     acImportNonFB2: TAction;
     acImportFBD: TAction;
-    acImportXML: TAction;
     acImportUserData: TAction;
     acExport2HTML: TAction;
     acExport2Txt: TAction;
     acExport2RTF: TAction;
-    acExport2XML: TAction;
     acExport2INPX: TAction;
     acExportUserData: TAction;
     acCollectionUpdateGenres: TAction;
@@ -574,10 +570,8 @@ type
     procedure ImportNonFB2Execute(Sender: TObject);
     procedure ImportFBDExecute(Sender: TObject);
     procedure ImportNonFB2Update(Sender: TObject);
-    procedure ImportXMLExecute(Sender: TObject);
     procedure ImportUserDataExecute(Sender: TObject);
     procedure Export2HTMLExecute(Sender: TObject);
-    procedure Export2XMLExecute(Sender: TObject);
     procedure Export2INPXExecute(Sender: TObject);
     procedure ExportUserDataExecute(Sender: TObject);
     procedure UpdateGenresExecute(Sender: TObject);
@@ -1054,7 +1048,6 @@ resourcestring
   rstrUpdateFailedServerError = 'Проверка обновления не удалось! Сервер сообщает об ошибке ' + CRLF + 'Код ошибки: %d';
   rstrFoundNewAppVersion = 'Доступна новая версия - "%s" Посетите сайт программы для загрузки обновлений.';
   rstrLatestVersion = 'У вас самая свежая версия.';
-  rstrXmlExportInCompatibilityMode = 'Экспорт в xml работает в режиме совместимости со старыми версиями.' + CRLF + 'Не все данные будут сохранены. Рекомендуется использовать экспорт в inpx.' + CRLF + 'Продолжить?';
   rstrRemoveFromGroup = 'Удалить из группы';
   rstrRemoveFromDownloadList = 'Удалить из списка закачек';
   rstrAddToFavorites = 'Добавить в избранное';
@@ -6424,33 +6417,6 @@ begin
     HtmlHelp(Application.Handle, PChar(Settings.SystemFileName[sfAppHelp]), HH_HELP_CONTEXT, Data);
 
   CallHelp := False;
-end;
-
-procedure TfrmMain.Export2XMLExecute(Sender: TObject);
-var
-  FileName: string;
-begin
-  if MHLShowWarning(rstrXmlExportInCompatibilityMode, mbYesNo) = mrNo then
-    Exit;
-
-  if not GetFileName(fnSaveImportFile, FileName) then
-    Exit;
-
-  unit_Export.Export2XML(FileName);
-end;
-
-procedure TfrmMain.ImportXMLExecute(Sender: TObject);
-var
-  FileName: string;
-begin
-  if not GetFileName(fnOpenImportFile, FileName) then
-    Exit;
-
-  //DMCollection.DBCollection.Connected := False;
-
-  unit_Import.ImportXML(DMUser.ActiveCollectionInfo, FileName);
-
-  InitCollection(True);
 end;
 
 procedure TfrmMain.ShowCollectionSettingsExecute(Sender: TObject);

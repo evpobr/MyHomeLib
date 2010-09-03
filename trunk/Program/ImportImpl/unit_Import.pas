@@ -24,11 +24,6 @@ interface
 uses
   dm_user;
   
-procedure ImportXML(
-  ACollection: TActiveCollectionInfo;
-  const FileName: string
-  );
-
 procedure ImportFB2(
   ACollection: TActiveCollectionInfo
   );
@@ -45,40 +40,12 @@ implementation
 
 uses
   Forms,
-  unit_ImportXMLThread,
   unit_ImportFB2Thread,
   unit_ImportFB2ZIPThread,
   unit_ImportFBDThread,
   frm_ImportProgressForm,
   frm_ImportProgressFormEx,
   unit_Consts;
-
-procedure ImportXML(
-  ACollection: TActiveCollectionInfo;
-  const FileName: string
-  );
-var
-  worker: TImportXMLThread;
-  frmProgress: TImportProgressForm;
-begin
-  worker := TImportXMLThread.Create;
-  try
-    worker.XMLFileName := FileName;
-    worker.DBFileName := ACollection.DBFileName;
-    worker.CollectionName := ACollection.Name;
-    worker.CollectionType := Ord(ACollection.CollectionType);
-
-    frmProgress := TImportProgressForm.Create(Application);
-    try
-      frmProgress.WorkerThread := worker;
-      frmProgress.ShowModal;
-    finally
-      frmProgress.Free;
-    end;
-  finally
-    worker.Free;
-  end;
-end;
 
 procedure ImportFB2(
   ACollection: TActiveCollectionInfo

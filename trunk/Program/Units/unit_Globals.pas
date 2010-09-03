@@ -394,7 +394,7 @@ type
   procedure SetProxySettings(var IdHTTP: TidHTTP);
 
   function GetSpecialPath(CSIDL: word): string;
-  function GetLibUpdateVersion(Full: Boolean): Integer;
+  function GetLibUpdateVersion(Full: Boolean): Integer; deprecated;
   function ExecAndWait(const FileName, Params: string; const WinState: word): Boolean;
 
   function CleanExtension(const Ext: string): string;
@@ -1317,6 +1317,10 @@ var
   f: Text;
   S: string;
 begin
+  //
+  // TODO -oNickR: BUG версия коллекции больше не храниться в этом файле.
+  // Версия данных коллекции должна устанавливаться при импорте из INPX или при обновлении коллекции
+  //
   Result := 0;
   S := Settings.SystemFileName[sfCollectionVerInfo];
 

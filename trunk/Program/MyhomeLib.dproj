@@ -100,7 +100,6 @@
 				<Form>frmGenreTree</Form>
 			</DCCReference>
 			<DCCReference Include="Units\unit_TreeUtils.pas"/>
-			<DCCReference Include="Units\unit_MHL_xml.pas"/>
 			<DCCReference Include="Forms\frm_edit_reader.pas">
 				<Form>frmEditReader</Form>
 			</DCCReference>
@@ -114,7 +113,6 @@
 			<DCCReference Include="Units\unit_Errors.pas"/>
 			<DCCReference Include="Units\unit_Consts.pas"/>
 			<DCCReference Include="ImportImpl\unit_WorkerThread.pas"/>
-			<DCCReference Include="ImportImpl\unit_ImportXMLThread.pas"/>
 			<DCCReference Include="ImportImpl\unit_Import.pas"/>
 			<DCCReference Include="ImportImpl\frm_BaseProgressForm.pas">
 				<Form>ProgressFormBase</Form>
@@ -130,7 +128,6 @@
 			<DCCReference Include="ImportImpl\unit_ImportFB2ThreadBase.pas"/>
 			<DCCReference Include="ImportImpl\unit_ImportFB2ZIPThread.pas"/>
 			<DCCReference Include="ImportImpl\unit_ImportInpxThread.pas"/>
-			<DCCReference Include="ImportImpl\unit_ExportXMLThread.pas"/>
 			<DCCReference Include="ImportImpl\unit_Export.pas"/>
 			<DCCReference Include="ImportImpl\frm_ExportProgressForm.pas">
 				<Form>ExportProgressForm</Form>
@@ -186,10 +183,6 @@
 			</DCCReference>
 			<DCCReference Include="Wizards\NewCollection\frame_WizardPageBase.pas">
 				<Form>WizardPageBase</Form>
-				<DesignClass>TFrame</DesignClass>
-			</DCCReference>
-			<DCCReference Include="Wizards\NewCollection\frame_NCWImport.pas">
-				<Form>frameNCWImport</Form>
 				<DesignClass>TFrame</DesignClass>
 			</DCCReference>
 			<DCCReference Include="Wizards\NewCollection\unit_NCWParams.pas"/>

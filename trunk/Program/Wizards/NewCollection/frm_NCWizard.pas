@@ -1,14 +1,20 @@
-{******************************************************************************}
-{                                                                              }
-{ MyHomeLib                                                                    }
-{                                                                              }
-{ Version 0.9                                                                  }
-{ 20.08.2008                                                                   }
-{ Copyright (c) Aleksey Penkov  alex.penkov@gmail.com                          }
-{                                                                              }
-{ @author Nick Rymanov nrymanov@gmail.com                                      }
-{                                                                              }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
+  *                     Aleksey Penkov alex.penkov@gmail.com
+  * Created             20.08.2008
+  * Description
+  *
+  * $Id$
+  *
+  * History
+  * NickR 03.09.2010    Импорт из XML больше не поддерживается. Удалил соответствующую страницу визарда.
+  *
+  ****************************************************************************** *)
 
 unit frm_NCWizard;
 
@@ -37,7 +43,6 @@ uses
   frame_NCWCollectionNameAndLocation,
   frame_NCWCollectionFileTypes,
   frame_NCWSelectGenreFile,
-  frame_NCWImport,
   frame_NCWProgress,
   frame_NCWFinish,
   frame_NCWDownload,
@@ -57,7 +62,7 @@ type
   private
     procedure PMWorkerDone(var Message: TMessage); message PM_WORKERDONE;
 
-  private
+  strict private
     FParams: TNCWParams;
 
     FWelcomPage: TframeNCWWelcom;
@@ -67,7 +72,6 @@ type
     FNameAndLocationPage: TframeNCWNameAndLocation;
     FFileTypesPage: TframeNCWCollectionFileTypes;
     FSelectGenreFilePage: TframeNCWSelectGenreFile;
-    FImportPage: TframeNCWImport;
     FProgressPage: TframeNCWProgress;
     FFinishPage: TframeNCWFinish;
 
@@ -75,7 +79,6 @@ type
     FCurrentPage: Integer;
 
     FWorker: TWorker;
-    FVersion: Integer;
     FModalResult: TModalResult;
 
     procedure AdjustButtons(VisibleButtons: TWizardButtons; EnabledButtons: TWizardButtons);
@@ -98,9 +101,9 @@ type
     procedure CancelWorker;
 
     function ShowMessage(const Text: string; Flags: Longint = MB_OK): Integer;
+
   public
     destructor Destroy; override;
-
   end;
 
 var
@@ -112,7 +115,6 @@ uses
   unit_database,
   unit_Settings,
   unit_globals,
-  unit_ImportXMLThread,
   unit_ImportInpxThread,
   unit_Consts,
   unit_mhl_strings;
@@ -139,9 +141,8 @@ const
   NAMEANDLOCATION_PAGE_ID = 4;
   FILETYPES_PAGE_ID = 5;
   GENREFILE_PAGE_ID = 6;
-  IMPORT_PAGE_ID = 7;
-  PROGRESS_PAGE_ID = 8;
-  FINISH_PAGE_ID = 9;
+  PROGRESS_PAGE_ID = 7;
+  FINISH_PAGE_ID = 8;
 
 destructor TfrmNCWizard.Destroy;
 begin
@@ -203,12 +204,9 @@ begin
       Result := (FParams.CollectionType = ltEmpty);
 
     GENREFILE_PAGE_ID:
-      Result := ((FParams.Operation = otNew) and (FParams.CollectionType = ltEmpty) and
-                (FParams.FileTypes = ftAny)) or
-                ((FParams.Operation = otNew) and (FParams.CollectionType = ltUserAny));
-
-    IMPORT_PAGE_ID:
-      Result := (FParams.Operation = otNew) and (FParams.CollectionType = ltEmpty);
+      Result := // TODO -oNickR: Упростить и описать :)
+        ((FParams.Operation = otNew) and (FParams.CollectionType = ltEmpty) and (FParams.FileTypes = ftAny)) or
+        ((FParams.Operation = otNew) and (FParams.CollectionType = ltUserAny));
 
     PROGRESS_PAGE_ID:
       Result := True;
@@ -267,7 +265,7 @@ end;
 function TfrmNCWizard.ActivePage: TWizardPageBase;
 begin
   Assert(IsValidPageIndex(FCurrentPage));
-  
+
   if IsValidPageIndex(FCurrentPage) then
     Result := FPages[FCurrentPage]
   else
@@ -358,13 +356,9 @@ begin
   // Проинициализируем параметры по умолчанию
   //
   FParams.Operation := otNew;
-  // FParams.CollectionType := ltEmpty;
-
   FParams.CollectionType := ltLRELocal;
-
   FParams.FileTypes := ftFB2;
   FParams.DefaultGenres := True;
-  FParams.DoImport := False;
 
   FWelcomPage := AddPage(TframeNCWWelcom) as TframeNCWWelcom;
   FCollectionTypePage := AddPage(TframeNCWOperation) as TframeNCWOperation;
@@ -373,7 +367,6 @@ begin
   FNameAndLocationPage := AddPage(TframeNCWNameAndLocation) as TframeNCWNameAndLocation;
   FFileTypesPage := AddPage(TframeNCWCollectionFileTypes) as TframeNCWCollectionFileTypes;
   FSelectGenreFilePage := AddPage(TframeNCWSelectGenreFile) as TframeNCWSelectGenreFile;
-  FImportPage := AddPage(TframeNCWImport) as TframeNCWImport;
   FProgressPage := AddPage(TframeNCWProgress) as TframeNCWProgress;
   FFinishPage := AddPage(TframeNCWFinish) as TframeNCWFinish;
 
@@ -393,7 +386,7 @@ begin
     frame.Initialize(@FParams);
   end;
 
- { TODO -oAlex -cRefactoring : Костыль! может быть его пристроить в другое место? }
+  { TODO -oAlex -cRefactoring : Костыль! может быть его пристроить в другое место? }
 
   FFinishPage.lblPageHint.Caption := '';
 
@@ -413,8 +406,8 @@ begin
     if not CreateCollection then
     begin
       //
-      // мы не смогли создать/зарегистрировать коллекцию
-      // DONE: CancelToClose и никакого продолжения
+      // мы не смогли создать/зарегистрировать коллекцию,
+      // CancelToClose и никакого продолжения
       //
       FProgressPage.ShowSaveLogPanel(True);
       AdjustButtons([wbFinish], [wbFinish]);
@@ -451,6 +444,9 @@ end;
 
 procedure TfrmNCWizard.CorrectParams;
 begin
+  //
+  // TODO -oNickR: интересно, почему каталог для книг и коллекции создается только в случае абсолютных путей?
+  //
   if not FParams.RelativePaths then
   begin
     //
@@ -467,6 +463,9 @@ begin
   end
   else
   begin
+    //
+    // TODO -oNickR: на мой взгляд, определение относительных путей тут неправильное
+    //
     if ExtractFilePath(FParams.CollectionFile) = '' then
     begin
       FParams.CollectionFile := IncludeTrailingPathDelimiter(DATA_DIR_NAME) + FParams.CollectionFile;
@@ -486,6 +485,7 @@ begin
   // определим реальный код коллекции
   //
   if FParams.CollectionCode = 0 then
+  begin
     if FParams.CollectionType = ltLREOnline then
       FParams.CollectionCode := CT_LIBRUSEC_ONLINE_FB
     else if FParams.CollectionType = ltLRELocal then
@@ -497,6 +497,7 @@ begin
       else
         FParams.CollectionCode := CT_PRIVATE_NONFB;
     end;
+  end;
 
   //
   // для специальных коллекций установим некоторые параметры по умолчанию
@@ -534,12 +535,6 @@ begin
     FParams.GenreFile := ExpandFileName(FParams.GenreFile);
   end;
 
-  //
-  // относительно текущего каталога
-  //
-  if FParams.DoImport then
-    FParams.ImportFile := ExpandFileName(FParams.ImportFile);
-
   Assert(FileExists(FParams.GenreFile));
 end;
 
@@ -571,7 +566,7 @@ begin
       // Установить свойства коллекции
       //
       ALibrary.SetProperty(SETTING_NOTES, FParams.Notes);
-      ALibrary.SetProperty(SETTING_DATA_VERSION, GetLibUpdateVersion(True));
+      ALibrary.SetProperty(SETTING_DATA_VERSION, UNVERSIONED_COLLECTION);
       ALibrary.SetProperty(SETTING_CODE, FParams.CollectionCode);
       ALibrary.SetProperty(SETTING_URL, FParams.URL);
       ALibrary.SetProperty(SETTING_DOWNLOAD_SCRIPT, FParams.Script);
@@ -598,10 +593,11 @@ begin
 
   {
   1. Если подключаем существующую коллекцию, то ничего делать не надо
-  2. При создании пустой импортируем данные
+  2. При создании пустой коллекции ничего делать не надо
   3. При создании lib.rus.ec-коллекции импортируем список
   4. При создании Genesis импортируем ???
   }
+
   if FParams.Operation = otExisting then
   begin
     Result := False;
@@ -612,26 +608,7 @@ begin
   FWorker := nil;
 
   case FParams.CollectionType of
-    ltEmpty:
-    begin
-      if FParams.DoImport then
-      begin
-        Assert(FileExists(FParams.ImportFile));
-        FWorker := TImportXMLThread.Create;
-        with FWorker as TImportXMLThread do
-        begin
-          XMLFileName := FParams.ImportFile;
-          DBFileName := FParams.CollectionFile;
-          CollectionName := FParams.DisplayName;
-
-          //ctFBLocal = 0, ctNonFBLocal = 1
-          if FParams.FileTypes = ftFB2 then
-            CollectionType := CT_PRIVATE_FB
-          else
-            CollectionType := CT_PRIVATE_NONFB;
-        end;
-      end;
-    end;
+    ltEmpty: ;
 
     ltLRELocal, ltLREOnline:
     begin
@@ -641,10 +618,12 @@ begin
         DBFileName := FParams.CollectionFile;
         CollectionRoot := FParams.CollectionRoot;
         CollectionType := FParams.CollectionCode;
+        // TODO -oNickR: Проверить, в каких случаях это возможно
         if FParams.INPXFile = '' then
           InpxFileName := Settings.SystemFileName[sfLibRusEcInpx]
         else
           InpxFileName := FParams.INPXFile;
+        // TODO -oNickR: Проверить, почему не устанавливается тип жанров коллекции
       end;
     end;
 
@@ -673,8 +652,6 @@ begin
         GenresType := gtAny;
       end;
     end;
-
-
   end;
 
   if not Assigned(FWorker) then
@@ -702,9 +679,15 @@ begin
 end;
 
 procedure TfrmNCWizard.RegisterCollection;
+var
+  FVersion: Integer;
 begin
   FProgressPage.ShowTeletype(rstrRegistration, tsInfo);
 
+  //
+  // TODO -oNickR: BUG версия коллекции больше не храниться в этом файле.
+  // Версия данных коллекции должна устанавливаться при импорте из INPX или при обновлении коллекции
+  //
   FVersion := GetLibUpdateVersion(True);
 
   //
@@ -741,10 +724,8 @@ begin
   //
   // Если во время работы небыло ошибок и поток небыл остановлен пользователем
   //
-
   if FProgressPage.HasErrors then
-    IgnoreErrors := ( MessageDlg(rstrImportDoneWithErrors,
-                  mtWarning,[mbYes,mbNo],0) = mrYes);
+    IgnoreErrors := (MessageDlg(rstrImportDoneWithErrors, mtWarning,[mbYes,mbNo],0) = mrYes);
 
   ANoChangePage := (not IgnoreErrors) or FWorker.Canceled;
 
