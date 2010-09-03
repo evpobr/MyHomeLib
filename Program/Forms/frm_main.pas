@@ -69,7 +69,8 @@ uses
   MHLSimplePanel,
   BookTreeView,
   SearchPresets,
-  MHLButtonedEdit;
+  MHLButtonedEdit,
+  UserData;
 
 type
   TfrmMain = class(TForm)
@@ -787,6 +788,7 @@ type
     procedure OnUpdateBookHandler(const BookRecord: TBookRecord);
     procedure OnChangeBook2ZipHandler(const BookRecord: TBookRecord);
     function OnHelpHandler(Command: Word; Data: Integer; var CallHelp: Boolean): Boolean;
+    procedure OnImportUserDataHandler(const UserDataSource: TUserData);
 
   private type
     TNodeProcessProc = reference to procedure(Tree: TBookTree; Node: PVirtualNode);
@@ -999,7 +1001,6 @@ uses
   frm_ConverToFBD,
   frmEditAuthorEx,
   unit_Lib_Updates,
-  UserData,
   frm_EditGroup;
 
 resourcestring
@@ -2147,7 +2148,7 @@ begin
   begin
     RenameFile(Settings.SystemFileName[sfLibRusEcInpx], Settings.SystemFileName[sfLibRusEcUpdate]);
     DeleteFile(Settings.WorkPath + CHECK_FILE);
-    if unit_Utils.LibrusecUpdate then
+    if unit_Utils.LibrusecUpdate(OnImportUserDataHandler) then
       InitCollection(True);
   end;
 end;
@@ -2194,7 +2195,7 @@ end;
 
 procedure TfrmMain.StartLibUpdate;
 begin
-  if unit_Utils.LibrusecUpdate then
+  if unit_Utils.LibrusecUpdate(OnImportUserDataHandler) then
     InitCollection(True);
 end;
 
@@ -6256,10 +6257,8 @@ end;
 procedure TfrmMain.CompactDataBaseExecute(Sender: TObject);
 begin
   GetActiveBookCollection.CompactDatabase;
-  FreeBookCollectionMap;
 
   DMUser.SetTableState(True);
-  //DMCollection.SetTableState(True);
 end;
 
 procedure TfrmMain.Conver2FBDExecute(Sender: TObject);
@@ -6524,7 +6523,6 @@ end;
 procedure TfrmMain.RepairDataBaseExecute(Sender: TObject);
 begin
   GetActiveBookCollection.RepairDatabase;
-  FreeBookCollectionMap;
 
   DMUser.SetTableState(True);
 end;
@@ -6741,32 +6739,46 @@ begin
     Data := TUserData.Create;
     try
       Data.Load(FileName);
-      GetActiveBookCollection.ImportUserData(
-        Data,
-        procedure(const BookKey: TBookKey; extra: TBookExtra)
-        begin
-          //
-          // На всех страницах (кроме "Группы") необходимо обновить список книг,
-          // т к могли поменяться пользовательские данные
-          //
-          UpdateNodes(
-            BookKey,
-            procedure(BookData: PBookRecord)
-            begin
-              Assert(Assigned(BookData));
-              if extra.Rating <> 0 then
-                BookData^.Rate := extra.Rating;
-              if extra.Progress <> 0 then
-                BookData^.Progress := extra.Progress;
-              if extra.Review <> '' then
-                BookData^.Code := 1;
-            end
-          );
-        end
-      );
+      OnImportUserDataHandler(Data);
     finally
       Data.Free;
     end;
+  finally
+    Screen.Cursor := SavedCursor;
+  end;
+end;
+
+// Load user data from an in-memory instance of TUserData
+procedure TfrmMain.OnImportUserDataHandler(const UserDataSource: TUserData);
+var
+  SavedCursor: TCursor;
+begin
+  SavedCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    GetActiveBookCollection.ImportUserData(
+      UserDataSource,
+      procedure(const BookKey: TBookKey; extra: TBookExtra)
+      begin
+        //
+        // На всех страницах (кроме "Группы") необходимо обновить список книг,
+        // т к могли поменяться пользовательские данные
+        //
+        UpdateNodes(
+          BookKey,
+          procedure(BookData: PBookRecord)
+          begin
+            Assert(Assigned(BookData));
+            if extra.Rating <> 0 then
+              BookData^.Rate := extra.Rating;
+            if extra.Progress <> 0 then
+              BookData^.Progress := extra.Progress;
+            if extra.Review <> '' then
+              BookData^.Code := 1;
+          end
+        );
+      end
+    );
 
     CreateGroupsMenu;
 

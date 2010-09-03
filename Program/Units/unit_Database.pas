@@ -209,6 +209,8 @@ type
     procedure SetFileName(const BookKey: TBookKey; const FileName: string);
     procedure SetLocal(const BookKey: TBookKey; AState: Boolean);
     procedure GetBookLibID(const BookKey: TBookKey; out ARes: string); deprecated;
+    procedure TruncateTablesBeforeImport;
+    procedure MountTables(const Mounted: Boolean);
 
     procedure CompactDatabase;
     procedure RepairDatabase;
@@ -1010,69 +1012,16 @@ begin
   FDatabase.Connected := True;
 
   FSettings := TABSTableEx.Create(FDatabase, 'Settings');
-  FSettings.Active := True;
+  FSettings.DatabaseName := FDatabase.DatabaseName;
 
   FAuthors := TABSTableEx.Create(FDatabase, 'Authors');
-  FAuthors.Active := True;
-
   FAuthorList := TABSTableEx.Create(FDatabase, 'Author_list');
-  FAuthorList.Active := True;
-
   FBooks := TABSTableEx.Create(FDatabase, 'Books');
-  FBooks.Active := True;
-
   FSeries := TABSTableEx.Create(FDatabase, 'Series');
-  FSeries.Active := True;
-
   FGenres := TABSTableEx.Create(FDatabase, 'Genres');
-  FGenres.Active := True;
-
   FGenreList := TABSTableEx.Create(FDatabase, 'Genre_list');
-  FGenreList.Active := True;
 
-  FSettingsID := FSettings.FieldByName(ID_FIELD) as TIntegerField;
-  FSettingsValue := FSettings.FieldByName(SETTING_VALIE_FIELD) as TWideMemoField;
-
-  FAuthorsID := FAuthors.FieldByName(AUTHOR_ID_FIELD) as TIntegerField;
-  FAuthorsLastName := FAuthors.FieldByName(AUTHOR_LASTTNAME_FIELD) as TWideStringField;
-  FAuthorsFirstName := FAuthors.FieldByName(AUTHOR_FIRSTNAME_FIELD) as TWideStringField;
-  FAuthorsMiddleName := FAuthors.FieldByName(AUTHOR_MIDDLENAME_FIELD) as TWideStringField;
-
-  FAuthorListAuthorID := FAuthorList.FieldByName(AUTHOR_ID_FIELD) as TIntegerField;
-  FAuthorListBookID := FAuthorList.FieldByName(BOOK_ID_FIELD) as TIntegerField;
-
-  FBooksBookID := FBooks.FieldByName(BOOK_ID_FIELD) as TIntegerField;
-  FBooksLibID := FBooks.FieldByName(BOOK_LIBID_FIELD) as TIntegerField;
-  FBooksTitle := FBooks.FieldByName(BOOK_TITLE_FIELD) as TWideStringField;
-  FBooksSeriesID := FBooks.FieldByName(SERIES_ID_FIELD) as TIntegerField;
-  FBooksSeqNumber := FBooks.FieldByName(BOOK_SEQNUMBER_FIELD) as TSmallintField;
-  FBooksDate := FBooks.FieldByName(BOOK_DATE_FIELD) as TDateField;
-  FBooksLibRate := FBooks.FieldByName(BOOK_LIBRATE_FIELD) as TIntegerField;
-  FBooksLang := FBooks.FieldByName(BOOK_LANG_FIELD) as TWideStringField;
-  FBooksFolder := FBooks.FieldByName(BOOK_FOLDER_FIELD) as TWideStringField;
-  FBooksFileName := FBooks.FieldByName(BOOK_FILENAME_FIELD) as TWideStringField;
-  FBooksInsideNo := FBooks.FieldByName(BOOK_INSIDENO_FIELD) as TIntegerField;
-  FBooksExt := FBooks.FieldByName(BOOK_EXT_FIELD) as TWideStringField;
-  FBooksSize := FBooks.FieldByName(BOOK_SIZE_FIELD) as TIntegerField;
-  FBooksCode := FBooks.FieldByName(BOOK_CODE_FIELD) as TSmallintField;
-  FBooksIsLocal := FBooks.FieldByName(BOOK_LOCAL_FIELD) as TBooleanField;
-  FBooksIsDeleted := FBooks.FieldByName(BOOK_DELETED_FIELD) as TBooleanField;
-  FBooksKeyWords := FBooks.FieldByName(BOOK_KEYWORDS_FIELD) as TWideStringField;
-  FBooksRate := FBooks.FieldByName(BOOK_RATE_FIELD) as TIntegerField;
-  FBooksProgress := FBooks.FieldByName(BOOK_PROGRESS_FIELD) as TIntegerField;
-  FBooksAnnotation := FBooks.FieldByName(BOOK_ANNOTATION_FIELD) as TWideMemoField;
-  FBooksReview := FBooks.FieldByName(BOOK_REVIEW_FIELD) as TWideMemoField;
-
-  FSeriesSeriesID := FSeries.FieldByName(SERIES_ID_FIELD) as TIntegerField;
-  FSeriesSeriesTitle := FSeries.FieldByName(SERIES_TITLE_FIELD) as TWideStringField;
-
-  FGenresGenreCode := FGenres.FieldByName(GENRE_CODE_FIELD) as TWideStringField;
-  FGenresParentCode := FGenres.FieldByName(GENRE_PARENTCODE_FIELD) as TWideStringField;
-  FGenresFB2Code := FGenres.FieldByName(GENRE_FB2CODE_FIELD) as TWideStringField;
-  FGenresAlias := FGenres.FieldByName(GENRE_ALIAS_FIELD) as TWideStringField;
-
-  FGenreListGenreCode := FGenreList.FieldByName(GENRE_CODE_FIELD) as TWideStringField;
-  FGenreListBookID := FGenreList.FieldByName(BOOK_ID_FIELD) as TIntegerField;
+  MountTables(True);
 end;
 
 destructor TBookCollection.Destroy;
@@ -2223,18 +2172,116 @@ begin
     DMUser.GetBookLibID(BookKey, ARes);
 end;
 
+// Clear contents of collection tables (except for Settings and Genres)
+procedure TBookCollection.TruncateTablesBeforeImport;
+const
+  SQL_TRUNCATE = 'TRUNCATE TABLE %s';
+  TABLE_NAMES: array [0 .. 4] of string = ('Author_List', 'Genre_List', 'Books', 'Authors', 'Series');
+var
+  Query: TABSQuery;
+  TableName: string;
+begin
+  try
+    MountTables(False);
+
+    Query := TABSQueryEx.Create(FDatabase, '');
+    try
+      for TableName in TABLE_NAMES do
+      begin
+        Query.SQL.Text := Format(SQL_TRUNCATE, [TableName]);
+        Query.ExecSQL;
+      end;
+    finally
+      FreeAndNil(Query);
+    end;
+  finally
+    MountTables(True);
+  end;
+end;
+
 procedure TBookCollection.CompactDatabase;
 begin
+  MountTables(False);
   FDatabase.Close;
+
   FDatabase.CompactDatabase;
+
+  FDatabase.Open;
+  MountTables(True);
+
   // After this the collection is unusable and has to be reloaded
 end;
 
 procedure TBookCollection.RepairDatabase;
 begin
+  MountTables(False);
   FDatabase.Close;
+
   FDatabase.RepairDatabase;
+
+  FDatabase.Open;
+  MountTables(True);
+
   // After this the collection is unusable and has to be reloaded
+end;
+
+// This operation is needed, as some operations cause the datasets and field mappings to become invalid
+procedure TBookCollection.MountTables(const Mounted: Boolean);
+begin
+  FSettings.Active := Mounted;
+  FAuthors.Active := Mounted;
+  FAuthorList.Active := Mounted;
+  FBooks.Active := Mounted;
+  FSeries.Active := Mounted;
+  FGenres.Active := Mounted;
+  FGenreList.Active := Mounted;
+
+  if Mounted then
+  begin
+    FSettingsID := FSettings.FieldByName(ID_FIELD) as TIntegerField;
+    FSettingsValue := FSettings.FieldByName(SETTING_VALIE_FIELD) as TWideMemoField;
+
+    FAuthorsID := FAuthors.FieldByName(AUTHOR_ID_FIELD) as TIntegerField;
+    FAuthorsLastName := FAuthors.FieldByName(AUTHOR_LASTTNAME_FIELD) as TWideStringField;
+    FAuthorsFirstName := FAuthors.FieldByName(AUTHOR_FIRSTNAME_FIELD) as TWideStringField;
+    FAuthorsMiddleName := FAuthors.FieldByName(AUTHOR_MIDDLENAME_FIELD) as TWideStringField;
+
+    FAuthorListAuthorID := FAuthorList.FieldByName(AUTHOR_ID_FIELD) as TIntegerField;
+    FAuthorListBookID := FAuthorList.FieldByName(BOOK_ID_FIELD) as TIntegerField;
+
+    FBooksBookID := FBooks.FieldByName(BOOK_ID_FIELD) as TIntegerField;
+    FBooksLibID := FBooks.FieldByName(BOOK_LIBID_FIELD) as TIntegerField;
+    FBooksTitle := FBooks.FieldByName(BOOK_TITLE_FIELD) as TWideStringField;
+    FBooksSeriesID := FBooks.FieldByName(SERIES_ID_FIELD) as TIntegerField;
+    FBooksSeqNumber := FBooks.FieldByName(BOOK_SEQNUMBER_FIELD) as TSmallintField;
+    FBooksDate := FBooks.FieldByName(BOOK_DATE_FIELD) as TDateField;
+    FBooksLibRate := FBooks.FieldByName(BOOK_LIBRATE_FIELD) as TIntegerField;
+    FBooksLang := FBooks.FieldByName(BOOK_LANG_FIELD) as TWideStringField;
+    FBooksFolder := FBooks.FieldByName(BOOK_FOLDER_FIELD) as TWideStringField;
+    FBooksFileName := FBooks.FieldByName(BOOK_FILENAME_FIELD) as TWideStringField;
+    FBooksInsideNo := FBooks.FieldByName(BOOK_INSIDENO_FIELD) as TIntegerField;
+    FBooksExt := FBooks.FieldByName(BOOK_EXT_FIELD) as TWideStringField;
+    FBooksSize := FBooks.FieldByName(BOOK_SIZE_FIELD) as TIntegerField;
+    FBooksCode := FBooks.FieldByName(BOOK_CODE_FIELD) as TSmallintField;
+    FBooksIsLocal := FBooks.FieldByName(BOOK_LOCAL_FIELD) as TBooleanField;
+    FBooksIsDeleted := FBooks.FieldByName(BOOK_DELETED_FIELD) as TBooleanField;
+    FBooksKeyWords := FBooks.FieldByName(BOOK_KEYWORDS_FIELD) as TWideStringField;
+    FBooksRate := FBooks.FieldByName(BOOK_RATE_FIELD) as TIntegerField;
+    FBooksProgress := FBooks.FieldByName(BOOK_PROGRESS_FIELD) as TIntegerField;
+    FBooksAnnotation := FBooks.FieldByName(BOOK_ANNOTATION_FIELD) as TWideMemoField;
+    FBooksReview := FBooks.FieldByName(BOOK_REVIEW_FIELD) as TWideMemoField;
+
+    FSeriesSeriesID := FSeries.FieldByName(SERIES_ID_FIELD) as TIntegerField;
+    FSeriesSeriesTitle := FSeries.FieldByName(SERIES_TITLE_FIELD) as TWideStringField;
+
+    FGenresGenreCode := FGenres.FieldByName(GENRE_CODE_FIELD) as TWideStringField;
+    FGenresParentCode := FGenres.FieldByName(GENRE_PARENTCODE_FIELD) as TWideStringField;
+    FGenresFB2Code := FGenres.FieldByName(GENRE_FB2CODE_FIELD) as TWideStringField;
+    FGenresAlias := FGenres.FieldByName(GENRE_ALIAS_FIELD) as TWideStringField;
+
+    FGenreListGenreCode := FGenreList.FieldByName(GENRE_CODE_FIELD) as TWideStringField;
+    FGenreListBookID := FGenreList.FieldByName(BOOK_ID_FIELD) as TIntegerField;
+  end;
 end;
 
 initialization

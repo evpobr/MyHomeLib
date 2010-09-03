@@ -15,13 +15,14 @@ interface
 
 uses
   Windows,
-  Dialogs;
+  Dialogs,
+  UserData;
 
 procedure SyncOnLineFiles;
 
 procedure SyncFolders;
 
-function LibrusecUpdate: Boolean;
+function LibrusecUpdate(OnImportUserData: TOnImportUserDataEvent): Boolean;
 
 procedure ShowPopup(const Msg: string);
 procedure HidePopup;
@@ -87,12 +88,12 @@ begin
   end;
 end;
 
-function LibrusecUpdate: boolean;
+function LibrusecUpdate(OnImportUserData: TOnImportUserDataEvent): boolean;
 var
   worker : TLibUpdateThread;
   ProgressForm : TImportProgressFormEx;
 begin
-  worker := TLibUpdateThread.Create;
+  worker := TLibUpdateThread.Create(OnImportUserData);
   try
     ProgressForm := TImportProgressFormEx.Create(Application);
     ProgressForm.Caption := rstrUpdateCollections;
