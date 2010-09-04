@@ -21,8 +21,7 @@ unit unit_Database;
 interface
 
 uses
-  unit_Database_Abstract,
-  unit_Database_ABS;
+  unit_Database_Abstract;
 
   function CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True): TBookCollection;
   function GetBookCollection(const DBCollectionFile: string): TBookCollection;
@@ -38,7 +37,9 @@ implementation
 uses
   Generics.Collections,
   SysUtils,
-  dm_user;
+  dm_user,
+  unit_Database_ABS,
+  unit_Database_SQLite;
 
 type
   TBookCollectionMap = TObjectDictionary<string, TBookCollection>;

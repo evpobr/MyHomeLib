@@ -86,9 +86,9 @@ type
     procedure SetPropertyI(PropID: Integer; const Value: Integer);
     procedure VerifyCurrentCollection(const DatabaseID: Integer);
     procedure AddBookToGroup(const BookKey: TBookKey; GroupID: Integer);
+    procedure LoadGenres(const GenresFileName: string);
 
   protected
-    procedure LoadGenres(const GenresFileName: string);
     procedure FilterDuplicateAuthorsByID(var Authors: TBookAuthors);
     procedure FilterDuplicateGenresByCode(var Genres: TBookGenres);
     procedure GetBookGenres(BookID: Integer; var BookGenres: TBookGenres; RootGenre: PGenreData = nil);
@@ -111,6 +111,8 @@ resourcestring
   rstrFavoritesGroupName = 'Избранное';
   rstrToReadGroupName = 'К прочтению';
 
+const
+  DATABASE_VERSION = '1000';
 
 implementation
 

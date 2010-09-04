@@ -1,79 +1,80 @@
-CREATE TABLE Settings (
-  ID INTEGER NOT NULL,
-  SettingValue WIDEMEMO BLOBBlockSize 102400 BLOBCompressionAlgorithm ZLIB BLOBCompressionMode 5,
-  PRIMARY KEY PXIndex (ID)
+CREATE TABLE [Settings] (
+  [ID] INTEGER NOT NULL PRIMARY KEY UNIQUE,
+  [SettingValue] BLOB
 );
-CREATE TABLE Series (
-  SeriesID AUTOINCINTEGER NOT NULL,
-  SeriesTitle WIDESTRING(80) NOT NULL,
-  HasLocalBooks LOGICAL DEFAULT False NOT NULL,
-  HasNonDeletedBooks LOGICAL DEFAULT False NOT NULL,
-  PRIMARY KEY ID_Index (SeriesID),
-  INDEX SeriesTitleIndex (SeriesTitle NOCASE)
+
+CREATE TABLE [Series] (
+  [SeriesID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+  [SeriesTitle] VARCHAR(80) NOT NULL,
+  [HasLocalBooks] BOOLEAN NOT NULL DEFAULT 0,
+  [HasNonDeletedBooks] BOOLEAN NOT NULL DEFAULT 0
 );
-CREATE TABLE Genres (
-  GenreCode WIDESTRING(20) NOT NULL,
-  ParentCode WIDESTRING(20),
-  FB2Code WIDESTRING(20),
-  GenreAlias WIDESTRING(50) NOT NULL,
-  PRIMARY KEY ID_Index (GenreCode),
-  UNIQUE INDEX CodeIndex (ParentCode NOCASE, GenreCode NOCASE),
-  INDEX FB2CodeIndex (FB2Code NOCASE),
-  INDEX AliasIndex (GenreAlias)
+CREATE INDEX [IXSeries_Title] ON [Series] ([SeriesTitle] COLLATE NOCASE ASC);
+
+CREATE TABLE [Genres] (
+  [GenreCode] VARCHAR(20) NOT NULL PRIMARY KEY UNIQUE,
+  [ParentCode] VARCHAR(20),
+  [FB2Code] VARCHAR(20),
+  [GenreAlias] VARCHAR(50) NOT NULL
 );
-CREATE TABLE Authors (
-  AuthorID AUTOINCINTEGER NOT NULL,
-  LastName WIDESTRING(128) NOT NULL,
-  FirstName WIDESTRING(128),
-  MiddleName WIDESTRING(128),
-  HasLocalBooks LOGICAL DEFAULT False NOT NULL,
-  HasNonDeletedBooks LOGICAL DEFAULT False NOT NULL,
-  PRIMARY KEY ID_Index (AuthorID),
-  INDEX AlphabetIndex (LastName NOCASE, FirstName NOCASE, MiddleName NOCASE)
+CREATE UNIQUE INDEX [IXGenres_ParentCode_GenreCode] ON [Genres] ([ParentCode] COLLATE NOCASE ASC, [GenreCode] COLLATE NOCASE ASC);
+CREATE INDEX [IXGenres_FB2Code] ON [Genres] ([FB2Code] COLLATE NOCASE ASC);
+CREATE INDEX [IXGenres_GenreAlias] ON [Genres] ([GenreAlias] COLLATE NOCASE ASC);
+
+CREATE TABLE [Authors] (
+  [AuthorID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+  [LastName] VARCHAR(128) NOT NULL,
+  [FirstName] VARCHAR(128),
+  [MiddleName] VARCHAR(128),
+  [HasLocalBooks] BOOLEAN NOT NULL DEFAULT 0,
+  [HasNonDeletedBooks] BOOLEAN NOT NULL DEFAULT 0
 );
-CREATE TABLE Books (
-  BookID AUTOINCINTEGER NOT NULL,
-  LibID INTEGER NOT NULL,
-  Title WIDESTRING(150),
-  SeriesID INTEGER,
-  SeqNumber SMALLINT,
-  UpdateDate DATE DEFAULT CURRENT_DATE NOT NULL,
-  LibRate INTEGER DEFAULT 0 NOT NULL,
-  Lang WIDESTRING(2),
-  Folder WIDESTRING(200),
-  FileName WIDESTRING(170) NOT NULL,
-  InsideNo INTEGER NOT NULL,
-  Ext WIDESTRING(10),
-  BookSize INTEGER,
-  Code SMALLINT DEFAULT 0 NOT NULL,
-  IsLocal LOGICAL DEFAULT False NOT NULL,
-  IsDeleted LOGICAL DEFAULT False NOT NULL,
-  KeyWords WIDESTRING(255),
-  Rate INTEGER DEFAULT 0 NOT NULL,
-  Progress INTEGER DEFAULT 0 NOT NULL,
-  Annotation WIDEMEMO BLOBBlockSize 102400 BLOBCompressionAlgorithm ZLIB BLOBCompressionMode 5,
-  Review WIDEMEMO BLOBBlockSize 102400 BLOBCompressionAlgorithm ZLIB BLOBCompressionMode 5,
-  PRIMARY KEY ID_Index (BookID),
-  INDEX Series_Index (SeriesID, SeqNumber),
-  INDEX Title_Index (Title NOCASE),
-  INDEX File_Index (FileName NOCASE),
-  INDEX Folder_Index (Folder NOCASE),
-  INDEX Deleted_Index (IsDeleted),
-  INDEX Date_Index (UpdateDate),
-  INDEX Local_Index (IsLocal),
-  INDEX LibID_Index (LibID),
-  INDEX KeyWords_Index (KeyWords NOCASE)
+CREATE INDEX [IXAuthors_LastName_FirstName_MiddleName] ON [Authors] ([LastName] COLLATE NOCASE ASC, [FirstName] COLLATE NOCASE ASC, [MiddleName] COLLATE NOCASE ASC);
+
+CREATE TABLE [Books] (
+  [BookID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+  [LibID] INTEGER NOT NULL,
+  [Title] VARCHAR(150),
+  [SeriesID] INTEGER,
+  [SeqNumber] INTEGER,
+  [UpdateDate] DATETIME NOT NULL,
+  [LibRate] INTEGER NOT NULL DEFAULT 0,
+  [Lang] VARCHAR(2),
+  [Folder] VARCHAR(200),
+  [FileName] VARCHAR(170) NOT NULL,
+  [InsideNo] INTEGER NOT NULL,
+  [Ext] VARCHAR(10),
+  [BookSize] INTEGER,
+  [Code] INTEGER NOT NULL DEFAULT 0,
+  [IsLocal] BOOLEAN NOT NULL DEFAULT 0,
+  [IsDeleted] BOOLEAN NOT NULL DEFAULT 0,
+  [KeyWords] VARCHAR(255),
+  [Rate] INTEGER NOT NULL DEFAULT 0,
+  [Progress] INTEGER NOT NULL DEFAULT 0,
+  [Annotation] BLOB, [Review] BLOB
 );
-CREATE TABLE Genre_List (
-  GenreCode WIDESTRING(20) NOT NULL,
-  BookID INTEGER NOT NULL,
-  PRIMARY KEY ID_Index (GenreCode, BookID),
-  INDEX BookIndex (BookID)
+CREATE INDEX [IXBooks_SeriesID_SeqNumber] ON [Books] ([SeriesID] ASC, [SeqNumber] ASC);
+CREATE INDEX [IXBooks_Title] ON [Books] ([Title] COLLATE NOCASE ASC);
+CREATE INDEX [IXBooks_FileName] ON [Books] ([FileName] COLLATE NOCASE ASC);
+CREATE INDEX [IXBooks_Folder] ON [Books] ([Folder] COLLATE NOCASE ASC);
+CREATE INDEX [IXBooks_IsDeleted] ON [Books] ([IsDeleted] COLLATE NOCASE ASC);
+CREATE INDEX [IXBooks_UpdateDate] ON [Books] ([UpdateDate] ASC);
+CREATE INDEX [IXBooks_IsLocal] ON [Books] ([IsLocal] ASC);
+CREATE INDEX [IXBooks_LibID] ON [Books] ([LibID] ASC);
+CREATE INDEX [IXBooks_KeyWords] ON [Books] ([KeyWords] COLLATE NOCASE ASC);
+
+CREATE TABLE [Genre_List] (
+  [GenreCode] VARCHAR(20) NOT NULL,
+  [BookID] INTEGER NOT NULL,
+  CONSTRAINT "PKGenreList" PRIMARY KEY ([BookID], [GenreCode])
 );
-CREATE TABLE Author_List (
-  AuthorID INTEGER NOT NULL,
-  BookID INTEGER NOT NULL,
-  PRIMARY KEY ID_Index (AuthorID, BookID),
-  INDEX BookIndex (BookID)
+CREATE INDEX [IXGenreList_BookID] ON [Genre_List] ([BookID]);
+
+CREATE TABLE [Author_List] (
+  [AuthorID] INTEGER NOT NULL,
+  [BookID] INTEGER NOT NULL,
+  CONSTRAINT "PKAuthorList" PRIMARY KEY ([BookID], [AuthorID])
 );
+CREATE INDEX [IXAuthorList_BookID] ON [Author_List] ([BookID]);
+
 
