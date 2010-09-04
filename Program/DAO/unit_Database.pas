@@ -18,6 +18,8 @@
 
 unit unit_Database;
 
+// {$DEFINE USE_SQLITE}
+
 interface
 
 uses
@@ -67,7 +69,11 @@ end;
 
 function CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True): TBookCollection;
 begin
+{$IFDEF USE_SQLITE}
+  Result := TBookCollection_SQLite.Create(DBCollectionFile);
+{$ELSE}
   Result := TBookCollection_ABS.Create(DBCollectionFile, ADefaultSession);
+{$ENDIF}
 end;
 
 function GetActiveBookCollection: TBookCollection;
@@ -87,12 +93,17 @@ end;
 
 procedure CreateSystemTables(const DBUserFile: string);
 begin
+  // So far, there is only an ABS implementation for the system DB connection (DMUser)
   CreateSystemTables_ABS(DBUserFile);
 end;
 
 procedure CreateCollectionTables(const DBCollectionFile: string; const GenresFileName: string);
 begin
+{$IFDEF USE_SQLITE}
+  CreateCollectionTables_SQLite(DBCollectionFile, GenresFileName);
+{$ELSE}
   CreateCollectionTables_ABS(DBCollectionFile, GenresFileName);
+{$ENDIF}
 end;
 
 initialization
