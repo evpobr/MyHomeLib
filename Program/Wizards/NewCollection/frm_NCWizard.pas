@@ -566,11 +566,11 @@ begin
       //
       // Установить свойства коллекции
       //
-      ALibrary.SetPropertyS(SETTING_NOTES, FParams.Notes);
-      ALibrary.SetPropertyI(SETTING_DATA_VERSION, UNVERSIONED_COLLECTION);
-      ALibrary.SetPropertyI(SETTING_CODE, FParams.CollectionCode);
-      ALibrary.SetPropertyS(SETTING_URL, FParams.URL);
-      ALibrary.SetPropertyS(SETTING_DOWNLOAD_SCRIPT, FParams.Script);
+      ALibrary.SetStringProperty(SETTING_NOTES, FParams.Notes);
+      ALibrary.SetIntProperty(SETTING_DATA_VERSION, UNVERSIONED_COLLECTION);
+      ALibrary.SetIntProperty(SETTING_CODE, FParams.CollectionCode);
+      ALibrary.SetStringProperty(SETTING_URL, FParams.URL);
+      ALibrary.SetStringProperty(SETTING_DOWNLOAD_SCRIPT, FParams.Script);
       FProgressPage.ShowProgress(60);
     end;
 

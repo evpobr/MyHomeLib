@@ -1403,7 +1403,7 @@ begin
         if FSearchCriteria.DateIdx= -1 then
           FSearchCriteria.DateText := cbDate.Text;
 
-        BookIterator := GetActiveBookCollection.GetBookIterator2(False, FSearchCriteria);
+        BookIterator := GetActiveBookCollection.Search(FSearchCriteria, False);
 
         // Ставим фильтр
         StatusMessage := rstrApplyingFilter;
@@ -2010,10 +2010,10 @@ begin
 
     BookCollection := GetActiveBookCollection;
     case Page of
-      0: FillBooksTree(tvBooksA,  BookCollection.GetBookIterator1(bmByAuthor, False, AuthorBookFilter), False, True, @FLastAuthorBookID);  // авторы
-      1: FillBooksTree(tvBooksS,  BookCollection.GetBookIterator1(bmBySeries, False, SeriesBookFilter), False, False, @FLastSeriesBookID); // серии
-      2: FillBooksTree(tvBooksG,  BookCollection.GetBookIterator1(bmByGenre, False, GenreBookFilter),  True,  True, @FLastGenreBookID);      // жанры
-      3: FillBooksTree(tvBooksSR, BookCollection.GetBookIterator2(False, FSearchCriteria), True,  True, nil);  // поиск
+      0: FillBooksTree(tvBooksA,  BookCollection.GetBookIterator(bmByAuthor, False, AuthorBookFilter), False, True, @FLastAuthorBookID);  // авторы
+      1: FillBooksTree(tvBooksS,  BookCollection.GetBookIterator(bmBySeries, False, SeriesBookFilter), False, False, @FLastSeriesBookID); // серии
+      2: FillBooksTree(tvBooksG,  BookCollection.GetBookIterator(bmByGenre, False, GenreBookFilter),  True,  True, @FLastGenreBookID);      // жанры
+      3: FillBooksTree(tvBooksSR, BookCollection.Search(FSearchCriteria, False), True,  True, nil);  // поиск
       4: FillBooksTree(tvBooksF,  DMUser.GetBookIterator(GroupBookFIlter), True,  True, @FLastGroupBookID);  // избранное
     end;
 
@@ -2093,9 +2093,9 @@ begin
   Screen.Cursor := crHourGlass;
   try
     BookCollection := GetActiveBookCollection;
-    FillBooksTree(tvBooksA, BookCollection.GetBookIterator1(bmByAuthor, False, AuthorBookFilter), False, True, @FLastAuthorBookID);  // авторы
-    FillBooksTree(tvBooksS, BookCollection.GetBookIterator1(bmBySeries, False, SeriesBookFilter), False, False, @FLastSeriesBookID); // серии
-    FillBooksTree(tvBooksG, BookCollection.GetBookIterator1(bmByGenre, False, GenreBookFilter),   True,  True, @FLastGenreBookID);  // жанры
+    FillBooksTree(tvBooksA, BookCollection.GetBookIterator(bmByAuthor, False, AuthorBookFilter), False, True, @FLastAuthorBookID);  // авторы
+    FillBooksTree(tvBooksS, BookCollection.GetBookIterator(bmBySeries, False, SeriesBookFilter), False, False, @FLastSeriesBookID); // серии
+    FillBooksTree(tvBooksG, BookCollection.GetBookIterator(bmByGenre, False, GenreBookFilter),   True,  True, @FLastGenreBookID);  // жанры
     FillBooksTree(tvBooksF, DMUser.GetBookIterator(GroupBookFIlter), True,  True, @FLastGroupBookID);  // избранное
   finally
     Screen.Cursor := SavedCursor;
@@ -2711,7 +2711,7 @@ begin
       FLastAuthorBookID.Clear;
     end;
 
-    FillBooksTree(tvBooksA, GetActiveBookCollection.GetBookIterator1(bmByAuthor, False, AuthorBookFilter), False, True, @FLastAuthorBookID); // авторы
+    FillBooksTree(tvBooksA, GetActiveBookCollection.GetBookIterator(bmByAuthor, False, AuthorBookFilter), False, True, @FLastAuthorBookID); // авторы
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -2779,7 +2779,7 @@ begin
       FLastSeriesBookID.Clear;
     end;
 
-    FillBooksTree(tvBooksS, GetActiveBookCollection.GetBookIterator1(bmBySeries, False, SeriesBookFilter), False, False, @FLastSeriesBookID); // авторы
+    FillBooksTree(tvBooksS, GetActiveBookCollection.GetBookIterator(bmBySeries, False, SeriesBookFilter), False, False, @FLastSeriesBookID); // авторы
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -2848,7 +2848,7 @@ begin
       FLastGenreBookID.Clear;
     end;
 
-    FillBooksTree(tvBooksG, GetActiveBookCollection.GetBookIterator1(bmByGenre, False, GenreBookFilter), True, True, @FLastGenreBookID);
+    FillBooksTree(tvBooksG, GetActiveBookCollection.GetBookIterator(bmByGenre, False, GenreBookFilter), True, True, @FLastGenreBookID);
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -4239,7 +4239,7 @@ begin
       try
         AuthorNodes := TDictionary<string, PVirtualNode>.Create;
         try
-          Max := BookIterator.GetNumRecords;
+          Max := BookIterator.RecordCount;
 
           while BookIterator.Next(BookRecord) do
           begin
@@ -4989,13 +4989,13 @@ begin
   begin
     if InputQuery(rstrCreateMoveSeries, rstrTitle, S) then
     begin
-      SeriesID := BookCollection.AddOrLocateSeriesIDBySeriesTitle(S);
+      SeriesID := BookCollection.FindOrCreateSeries(S);
       Node := Tree.GetFirst;
       while Assigned(Node) do
       begin
         Data := Tree.GetNodeData(Node);
         if ((Tree.CheckState[Node] = csCheckedNormal) or (Tree.Selected[Node])) then
-          BookCollection.SetBookSeriesID(Data^.BookKey, SeriesID);
+          BookCollection.SetSeriesID(Data^.BookKey, SeriesID);
         Node := Tree.GetNext(Node);
       end;
 
@@ -6482,9 +6482,9 @@ begin
   //DMCollection.DBCollection.Connected := False;
   ALibrary := GetActiveBookCollection;
   if isFB2Collection(DMUser.ActiveCollectionInfo.CollectionType) then
-    ALibrary.ReloadDefaultGenres(Settings.SystemFileName[sfGenresFB2])
+    ALibrary.ReloadGenres(Settings.SystemFileName[sfGenresFB2])
   else if unit_Helpers.GetFileName(fnGenreList, AFileName) then
-    ALibrary.ReloadDefaultGenres(AFileName);
+    ALibrary.ReloadGenres(AFileName);
   InitCollection(True);
 end;
 

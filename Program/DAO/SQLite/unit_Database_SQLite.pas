@@ -44,7 +44,7 @@ type
     protected
       // IAuthorIterator
       function Next(out AuthorData: TAuthorData): Boolean;
-      function GetNumRecords: Integer;
+      function RecordCount: Integer;
 
     strict private
       FCollection: TBookCollection_SQLite;
@@ -65,7 +65,7 @@ type
     protected
       // IGenreIterator
       function Next(out GenreData: TGenreData): Boolean;
-      function GetNumRecords: Integer;
+      function RecordCount: Integer;
 
     strict private
       FCollection: TBookCollection_SQLite;
@@ -88,7 +88,7 @@ type
       // ISeriesIterator
       //
       function Next(out SeriesData: TSeriesData): Boolean;
-      function GetNumRecords: Integer;
+      function RecordCount: Integer;
 
     strict private
       FCollection: TBookCollection_SQLite;
@@ -105,7 +105,7 @@ type
     destructor Destroy; override;
 
 //    procedure ReloadDefaultGenres(const FileName: string); override;
-    procedure SetPropertyS(PropID: Integer; const Value: string); override;
+    procedure SetStringProperty(const PropID: Integer; const Value: string); override;
 //    function CheckFileInCollection(const FileName: string; const FullNameSearch: Boolean; const ZipFolder: Boolean): Boolean; override;
 //    function InsertBook(BookRecord: TBookRecord; CheckFileName, FullCheck: Boolean): Integer; override;
 //    procedure DeleteBook(const BookKey: TBookKey); override;
@@ -233,8 +233,8 @@ begin
   BookCollection := TBookCollection_SQLite.Create(DBCollectionFile);
   try
     // Fill metadata version and creation date:
-    BookCollection.SetPropertyS(SETTING_VERSION, DATABASE_VERSION);
-    BookCollection.SetPropertyS(SETTING_CREATION_DATE, FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now));
+    BookCollection.SetStringProperty(SETTING_VERSION, DATABASE_VERSION);
+    BookCollection.SetStringProperty(SETTING_CREATION_DATE, FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now));
 
     // Fill the Genres table:
     BookCollection.LoadGenres(GenresFileName);
@@ -288,7 +288,7 @@ begin
   end;
 end;
 
-function TBookCollection_SQLite.TAuthorIteratorImpl.GetNumRecords: Integer;
+function TBookCollection_SQLite.TAuthorIteratorImpl.RecordCount: Integer;
 begin
   Result := FNumRecords;
 end;
@@ -413,7 +413,7 @@ begin
   end;
 end;
 
-function TBookCollection_SQLite.TGenreIteratorImpl.GetNumRecords: Integer;
+function TBookCollection_SQLite.TGenreIteratorImpl.RecordCount: Integer;
 begin
   Result := FNumRecords;
 end;
@@ -487,7 +487,7 @@ begin
   end;
 end;
 
-function TBookCollection_SQLite.TSeriesIteratorImpl.GetNumRecords: Integer;
+function TBookCollection_SQLite.TSeriesIteratorImpl.RecordCount: Integer;
 begin
   Result := FNumRecords;
 end;
@@ -581,7 +581,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TBookCollection_SQLite.SetPropertyS(PropID: Integer; const Value: string);
+procedure TBookCollection_SQLite.SetStringProperty(const PropID: Integer; const Value: string);
 const
   // A special format of query with a '?' sign for the blob value
   SQL_UPDATE = 'UPDATE Settings SET SettingValue = ? WHERE ID = :v0 ';

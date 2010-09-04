@@ -27,43 +27,50 @@ uses
   unit_Interfaces;
 
 type
-  TGUIUpdateExtraProc = reference to procedure(
-    const BookKey: TBookKey;
-    extra: TBookExtra
-  );
-
-  TBookCollection = class abstract
+  TBookCollection = class abstract (TInterfacedObject, IBookCollection)
   public // virtual
-    procedure ReloadDefaultGenres(const FileName: string); virtual; abstract;
-    procedure SetPropertyS(PropID: Integer; const Value: string); virtual; abstract;
-    function CheckFileInCollection(const FileName: string; const FullNameSearch: Boolean; const ZipFolder: Boolean): Boolean; virtual; abstract;
-    function InsertBook(BookRecord: TBookRecord; CheckFileName, FullCheck: Boolean): Integer; virtual; abstract;
-    procedure DeleteBook(const BookKey: TBookKey); virtual; abstract;
-    procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord; LoadMemos: Boolean); virtual; abstract;
-    function GetTopGenreAlias(const FB2Code: string): string; virtual; abstract;
-    procedure CleanBookGenres(BookID: Integer); virtual; abstract;
-    procedure InsertBookGenres(const BookID: Integer; var Genres: TBookGenres); virtual; abstract;
-    procedure GetSeries(SeriesList: TStrings); virtual; abstract;
-    procedure SetSeriesTitle(const SeriesID: Integer; const NewSeriesTitle: string); virtual; abstract;
-    function AddOrLocateSeriesIDBySeriesTitle(const SeriesTitle: string): Integer; virtual; abstract;
-    procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer); virtual; abstract;
-    procedure ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc); virtual; abstract;
-    procedure ExportUserData(data: TUserData); virtual; abstract;
-    procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer); virtual; abstract;
+    // Iterators:
+    function GetAuthorIterator(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue = nil): IAuthorIterator; virtual; abstract;
+    function GetGenreIterator(const Mode: TGenreIteratorMode; const FilterValue: PFilterValue = nil): IGenreIterator; virtual; abstract;
+    function GetSeriesIterator(const Mode: TSeriesIteratorMode): ISeriesIterator; virtual; abstract;
+    function GetBookIterator(const Mode: TBookIteratorMode; const LoadMemos: Boolean; const Filter: string = ''): IBookIterator; virtual; abstract;
+    function Search(const SearchCriteria: TBookSearchCriteria; const LoadMemos: Boolean): IBookIterator; virtual; abstract;
+
+    //
+    //
+    //
+    function InsertBook(BookRecord: TBookRecord; const CheckFileName: Boolean; const FullCheck: Boolean): Integer; virtual; abstract;
+    procedure GetBookRecord(const BookKey: TBookKey; out BookRecord: TBookRecord; const LoadMemos: Boolean); virtual; abstract;
     procedure UpdateBook(const BookRecord: TBookRecord); virtual; abstract;
-    function SetReview(const BookKey: TBookKey; const Review: string): Integer; virtual; abstract;
+    procedure DeleteBook(const BookKey: TBookKey); virtual; abstract;
+    procedure AddBookToGroup(const BookKey: TBookKey; const GroupID: Integer);
+
+    function GetLibID(const BookKey: TBookKey): string; virtual; abstract; // deprecated;
     function GetReview(const BookKey: TBookKey): string; virtual; abstract;
-    procedure SetProgress(const BookKey: TBookKey; Progress: Integer); virtual; abstract;
-    procedure SetRate(const BookKey: TBookKey; Rate: Integer); virtual; abstract;
-    procedure SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer); virtual; abstract;
+
+    function SetReview(const BookKey: TBookKey; const Review: string): Integer; virtual; abstract;
+    procedure SetProgress(const BookKey: TBookKey; const Progress: Integer); virtual; abstract;
+    procedure SetRate(const BookKey: TBookKey; const Rate: Integer); virtual; abstract;
+    procedure SetLocal(const BookKey: TBookKey; const AState: Boolean); virtual; abstract;
     procedure SetFolder(const BookKey: TBookKey; const Folder: string); virtual; abstract;
     procedure SetFileName(const BookKey: TBookKey; const FileName: string); virtual; abstract;
-    procedure SetLocal(const BookKey: TBookKey; AState: Boolean); virtual; abstract;
-    procedure GetBookLibID(const BookKey: TBookKey; out ARes: string); virtual; abstract; // deprecated;
-    procedure TruncateTablesBeforeImport; virtual; abstract;
+    procedure SetSeriesID(const BookKey: TBookKey; const SeriesID: Integer); virtual; abstract;
 
-    procedure CompactDatabase; virtual; abstract;
-    procedure RepairDatabase; virtual; abstract;
+    procedure CleanBookGenres(const BookID: Integer); virtual; abstract;
+    procedure InsertBookGenres(const BookID: Integer; var Genres: TBookGenres); virtual; abstract;
+
+    function FindOrCreateSeries(const Title: string): Integer; virtual; abstract;
+    procedure SetSeriesTitle(const SeriesID: Integer; const NewTitle: string); virtual; abstract;
+    procedure ChangeBookSeriesID(const OldID: Integer; const NewID: Integer; const DatabaseID: Integer); virtual; abstract;
+
+    procedure SetStringProperty(const PropID: Integer; const Value: string); virtual; abstract;
+    procedure SetIntProperty(const PropID: Integer; const Value: Integer);
+
+    procedure ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc); virtual; abstract;
+    procedure ExportUserData(data: TUserData); virtual; abstract;
+
+    function CheckFileInCollection(const FileName: string; const FullNameSearch: Boolean; const ZipFolder: Boolean): Boolean; virtual; abstract;
+    function GetTopGenreAlias(const FB2Code: string): string; virtual; abstract;
 
     //
     // Bulk operation
@@ -71,21 +78,20 @@ type
     procedure BeginBulkOperation; virtual; abstract;
     procedure EndBulkOperation(Commit: Boolean = True); virtual; abstract;
 
-    // Iterators:
-    function GetBookIterator1(const Mode: TBookIteratorMode; const LoadMemos: Boolean; const Filter: string = ''): IBookIterator; virtual; abstract;
-    function GetBookIterator2(const LoadMemos: Boolean; const SearchCriteria: TBookSearchCriteria): IBookIterator; virtual; abstract;
-    function GetAuthorIterator(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue = nil): IAuthorIterator; virtual; abstract;
-    function GetGenreIterator(const Mode: TGenreIteratorMode; const FilterValue: PFilterValue = nil): IGenreIterator; virtual; abstract;
-    function GetSeriesIterator(const Mode: TSeriesIteratorMode): ISeriesIterator; virtual; abstract;
+    procedure CompactDatabase; virtual; abstract;
+    procedure RepairDatabase; virtual; abstract;
+    procedure ReloadGenres(const FileName: string); virtual; abstract;
+    procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer); virtual; abstract;
+
+    procedure TruncateTablesBeforeImport; virtual; abstract;
+
 
   protected // virtual
     procedure InsertGenreIfMissing(const GenreData: TGenreData); virtual; abstract;
     procedure GetGenre(const GenreCode: string; var Genre: TGenreData); virtual; abstract;
 
   public
-    procedure SetPropertyI(PropID: Integer; const Value: Integer);
     procedure VerifyCurrentCollection(const DatabaseID: Integer);
-    procedure AddBookToGroup(const BookKey: TBookKey; GroupID: Integer);
     procedure LoadGenres(const GenresFileName: string);
 
   protected
@@ -125,12 +131,12 @@ uses
 
 { TBookCollection }
 
-procedure TBookCollection.SetPropertyI(PropID: Integer; const Value: Integer);
+procedure TBookCollection.SetIntProperty(const PropID: Integer; const Value: Integer);
 begin
   if Value = 0 then
     Exit;
 
-  SetPropertyS(PropID, IntToStr(Value));
+  SetStringProperty(PropID, IntToStr(Value));
 end;
 
 procedure TBookCollection.LoadGenres(const GenresFileName: string);
@@ -301,11 +307,11 @@ var
 begin
   FilterValue.ValueInt := BookID;
   AuthorIterator := GetAuthorIterator(amByBook, @FilterValue);
-  SetLength(BookAuthors, AuthorIterator.GetNumRecords + 1); // an extra dummy element
+  SetLength(BookAuthors, AuthorIterator.RecordCount + 1); // an extra dummy element
   i := 0;
-  while AuthorIterator.Next(BookAuthors[i]) do
+  while AuthorIterator.Next(BookAuthors[i]) do;
     Inc(i);
-  SetLength(BookAuthors, AuthorIterator.GetNumRecords); // remove the dummy element
+  SetLength(BookAuthors, AuthorIterator.RecordCount); // remove the dummy element
 end;
 
 procedure TBookCollection.VerifyCurrentCollection(const DatabaseID: Integer);
@@ -323,7 +329,7 @@ begin
   end;
 end;
 
-procedure TBookCollection.AddBookToGroup(const BookKey: TBookKey; GroupID: Integer);
+procedure TBookCollection.AddBookToGroup(const BookKey: TBookKey; const GroupID: Integer);
 var
   BookRecord: TBookRecord;
 begin
