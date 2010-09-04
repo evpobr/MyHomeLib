@@ -283,7 +283,6 @@ resourcestring
 const
   COLLECTION_DATABASE = 'CollectionDB';
   USER_DATABASE = 'UserDB';
-  DATABASE_VERSION = '1000';
 
 type
   //
@@ -383,12 +382,9 @@ begin
   // Now that we have the DB structure in place for DBCollectionFile, we can create an instance of the library for it:
   ALibrary := TBookCollection_ABS.Create(DBCollectionFile);
   try
-    //
-    // Запишем версию метаданных, и дату создания
-    //
-    Assert(ALibrary.FSettings.Active);
-    ALibrary.FSettings.AppendRecord([SETTING_VERSION, DATABASE_VERSION]);
-    ALibrary.FSettings.AppendRecord([SETTING_CREATION_DATE, FormatDateTime('yyyy-mm-dd hh:nn:ss', Now)]);
+    // Fill metadata version and creation date:
+    ALibrary.SetPropertyS(SETTING_VERSION, DATABASE_VERSION);
+    ALibrary.SetPropertyS(SETTING_CREATION_DATE, FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now));
 
     //
     // Заполним таблицу жанров
