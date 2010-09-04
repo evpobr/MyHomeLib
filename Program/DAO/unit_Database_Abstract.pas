@@ -74,7 +74,7 @@ type
     // Iterators:
     function GetBookIterator1(const Mode: TBookIteratorMode; const LoadMemos: Boolean; const Filter: string = ''): IBookIterator; virtual; abstract;
     function GetBookIterator2(const LoadMemos: Boolean; const SearchCriteria: TBookSearchCriteria): IBookIterator; virtual; abstract;
-    function GetAuthorIterator(const Mode: TAuthorIteratorMode; const Filter: string = ''): IAuthorIterator; virtual; abstract;
+    function GetAuthorIterator(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue = nil): IAuthorIterator; virtual; abstract;
     function GetGenreIterator(const Mode: TGenreIteratorMode; const Filter: string = ''): IGenreIterator; virtual; abstract;
     function GetSeriesIterator(const Mode: TSeriesIteratorMode; const Filter: string = ''): ISeriesIterator; virtual; abstract;
 
@@ -295,8 +295,10 @@ procedure TBookCollection.GetBookAuthors(BookID: Integer; var BookAuthors: TBook
 var
   AuthorIterator: IAuthorIterator;
   i: Integer;
+  FilterValue: TFilterValue;
 begin
-  AuthorIterator := GetAuthorIterator(amByBook, Format('a.%s = %u', [BOOK_ID_FIELD, BookID]));
+  FilterValue.ValueInt := BookID;
+  AuthorIterator := GetAuthorIterator(amByBook, @FilterValue);
   SetLength(BookAuthors, AuthorIterator.GetNumRecords + 1); // an extra dummy element
   i := 0;
   while AuthorIterator.Next(BookAuthors[i]) do

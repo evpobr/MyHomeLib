@@ -350,6 +350,15 @@ type
     DateText: string
   end;
 
+  PFilterValue = ^TFilterValue;
+  TFilterValue = record
+    // Only one of the following values will actually be used, according to the matching FilterType:
+    ValueInt: Integer;
+    ValueDateTime: TDateTime;
+    ValueBoolean: Boolean;
+    ValueString: string;
+  end;
+
 // ============================================================================
 //
 // helpers

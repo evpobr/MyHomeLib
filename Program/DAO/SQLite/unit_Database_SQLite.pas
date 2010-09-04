@@ -30,6 +30,32 @@ uses
 type
   // The class is NOT THREAD-SAFE as the connection instance FDatabase is not.
   TBookCollection_SQLite = class(TBookCollection)
+  strict private type
+    //-------------------------------------------------------------------------
+    TAuthorIteratorImpl = class(TInterfacedObject, IAuthorIterator)
+    public
+      constructor Create(
+        Collection: TBookCollection_SQLite;
+        const Mode: TAuthorIteratorMode;
+        const FilterValue: PFilterValue
+      );
+      destructor Destroy; override;
+
+    protected
+      // IAuthorIterator
+      function Next(out AuthorData: TAuthorData): Boolean;
+      function GetNumRecords: Integer;
+
+    strict private
+      FCollection: TBookCollection_SQLite;
+      FAuthors: TSQLiteTable;
+      FCollectionID: Integer; // Active collection's ID at the time the iterator was created
+      FNumRecords: Integer;
+
+      procedure PrepareData(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue);
+    end;
+    // << TAuthorIteratorImpl
+
   public
     constructor Create(const DBCollectionFile: string);
     destructor Destroy; override;
@@ -71,10 +97,10 @@ type
 //    procedure BeginBulkOperation; override;
 //    procedure EndBulkOperation(Commit: Boolean = True); override;
 //
-//    // Iterators:
+    // Iterators:
 //    function GetBookIterator1(const Mode: TBookIteratorMode; const LoadMemos: Boolean; const Filter: string = ''): IBookIterator; override;
 //    function GetBookIterator2(const LoadMemos: Boolean; const SearchCriteria: TBookSearchCriteria): IBookIterator; override;
-//    function GetAuthorIterator(const Mode: TAuthorIteratorMode; const Filter: string = ''): IAuthorIterator; override;
+    function GetAuthorIterator(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue = nil): IAuthorIterator; override;
 //    function GetGenreIterator(const Mode: TGenreIteratorMode; const Filter: string = ''): IGenreIterator; override;
 //    function GetSeriesIterator(const Mode: TSeriesIteratorMode; const Filter: string = ''): ISeriesIterator; override;
 
@@ -83,7 +109,9 @@ type
 //    procedure GetGenre(const GenreCode: string; var Genre: TGenreData); override;
 
   strict private
-    FDatabase: TSQLiteDatabase; // NOT THREAD-SAFE!
+    FDatabase: TSQLiteDatabase; // NOT THREAD-SAFE (query parameters are stored on the object)!
+
+    procedure GetAuthor(AuthorID: Integer; var Author: TAuthorData);
   end;
 
 procedure CreateCollectionTables_SQLite(const DBCollectionFile: string; const GenresFileName: string);
@@ -93,8 +121,11 @@ implementation
 uses
   SysUtils,
   Windows,
+  Character,
+  dm_user,
   unit_Consts,
-  unit_Logger;
+  unit_Logger,
+  unit_SearchUtils;
 
 // Read provided resource file as a string list (split by ';')
 // This is done as ExecSQL works with only one statement at a time
@@ -168,6 +199,139 @@ begin
   end;
 end;
 
+{ TAuthorIteratorImpl }
+
+constructor TBookCollection_SQLite.TAuthorIteratorImpl.Create(
+  Collection: TBookCollection_SQLite;
+  const Mode: TAuthorIteratorMode;
+  const FilterValue: PFilterValue
+);
+var
+  pLogger: IIntervalLogger;
+begin
+  inherited Create;
+
+  Assert(Assigned(Collection));
+
+  FCollectionID := DMUser.ActiveCollectionInfo.ID;
+  FCollection := Collection;
+
+  PrepareData(Mode, FilterValue);
+end;
+
+destructor TBookCollection_SQLite.TAuthorIteratorImpl.Destroy;
+begin
+  FreeAndNil(FAuthors);
+
+  inherited Destroy;
+end;
+
+// Read next record (if present), return True if read
+function TBookCollection_SQLite.TAuthorIteratorImpl.Next(out AuthorData: TAuthorData): Boolean;
+var
+  AuthorID: Integer;
+begin
+  Result := not FAuthors.Eof;
+
+  if Result then
+  begin
+    Assert(DMUser.ActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
+
+    AuthorID := FAuthors.FieldAsInteger(0);
+    FCollection.GetAuthor(AuthorID, AuthorData);
+
+    FAuthors.Next;
+  end;
+end;
+
+function TBookCollection_SQLite.TAuthorIteratorImpl.GetNumRecords: Integer;
+begin
+  Result := FNumRecords;
+end;
+
+procedure TBookCollection_SQLite.TAuthorIteratorImpl.PrepareData(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue);
+var
+  Where: string;
+  SQLRows: string;
+  SQLCount: string;
+  Logger: IIntervalLogger;
+begin
+  Where := '';
+  FCollection.FDatabase.ParamsClear;
+
+  case Mode of
+    amAll:
+      SQLRows := 'SELECT a.AuthorID FROM Authors a ';
+
+    amByBook:
+      begin
+        Assert(Assigned(FilterValue));
+        SQLRows := 'SELECT DISTINCT a.AuthorID FROM Author_List a WHERE a.BookID = :v0 ';
+        FCollection.FDatabase.AddParamInt(':v0', FilterValue^.ValueInt);
+      end;
+
+    amFullFilter:
+      begin
+        SQLRows := 'SELECT DISTINCT a.AuthorID FROM Authors a ';
+        if FCollection.HideDeleted or FCollection.ShowLocalOnly then
+        begin
+          SQLRows := SQLRows + ' INNER JOIN Author_List al ON a.AuthorID = al.AuthorID INNER JOIN Books b ON al.BookID = b.BookID ';
+          if FCollection.HideDeleted then
+          begin
+            AddToWhere(Where, ' b.IsDeleted = :IsDeleted ');
+            FCollection.FDatabase.AddParamBoolean(':IsDeleted', False);
+          end;
+          if FCollection.ShowLocalOnly then
+          begin
+            AddToWhere(Where, ' b.IsLocal = :IsLocal ');
+            FCollection.FDatabase.AddParamBoolean(':IsLocal', True);
+          end;
+        end;
+
+        // Add an author type filter:
+        if FCollection.AuthorFilterType <> '' then
+        begin
+          if FCollection.AuthorFilterType = ALPHA_FILTER_NON_ALPHA then
+          begin
+            AddToWhere(Where, Format(
+              '(POS(UPPER(SUBSTRING(a.%0:s, 1, 1)), ":EN") = 0) AND (POS(UPPER(SUBSTRING(a.%0:s, 1, 1)), ":RU") = 0)',
+              [AUTHOR_LASTTNAME_FIELD]
+            ));
+            FCollection.FDatabase.AddParamText(':EN', ENGLISH_ALPHABET);
+            FCollection.FDatabase.AddParamText(':RU', RUSSIAN_ALPHABET);
+          end
+          else if FCollection.AuthorFilterType <> ALPHA_FILTER_ALL then
+          begin
+            Assert(Length(FCollection.AuthorFilterType) = 1);
+            Assert(TCharacter.IsUpper(FCollection.AuthorFilterType, 1));
+            AddToWhere(Where, Format(
+              'UPPER(a.%0:s) LIKE ":FilterType%"',                                // начинается на заданную букву
+              [AUTHOR_LASTTNAME_FIELD]
+            ));
+            FCollection.FDatabase.AddParamText(':FilterType', FCollection.AuthorFilterType);
+          end;
+        end;
+      end;
+
+    else
+      Assert(False);
+  end;
+
+  SQLRows := SQLRows + Where;
+  SQLCount := 'SELECT COUNT(*) FROM (' + SQLRows + ') ROWS ';
+
+  Logger := GetIntervalLogger('TAuthorIteratorImpl.PrepareData', SQLCount);
+  FNumRecords := FCollection.FDatabase.GetTableValue(SQLCount);
+  Logger := nil;
+
+  if Mode in [amAll, amFullFilter] then
+    SQLRows := SQLRows + ' ORDER BY a.LastName, a.FirstName, a.MiddleName ';
+
+  Logger := GetIntervalLogger('TAuthorIteratorImpl.PrepareData', SQLRows);
+  FAuthors := FCollection.FDatabase.GetTable(SQLRows);
+  Logger := nil;
+end;
+
 //-----------------------------------------------------------------------------
 
 { TBookCollection_SQLite }
@@ -189,20 +353,31 @@ end;
 procedure TBookCollection_SQLite.SetPropertyS(PropID: Integer; const Value: string);
 const
   // A special format of query with a '?' sign for the blob value
-  SQL = 'UPDATE Settings SET SettingValue = ? WHERE ID = :v0 ';
+  SQL_UPDATE = 'UPDATE Settings SET SettingValue = ? WHERE ID = :v0 ';
+  SQL_DELETE = 'DELETE FROM Settings WHERE ID = :v0 ';
 var
   ValueStream: TStringStream;
   Logger: IIntervalLogger;
 begin
-  ValueStream := TStringStream.Create(Value);
-  try
-    Logger := GetIntervalLogger('TBookCollection_SQLite.SetPropertyS', SQL);
-    FDatabase.ParamsClear;
-    FDatabase.AddParamInt(':v0', PropID);
-    FDatabase.UpdateBlob(SQL, ValueStream);
+  FDatabase.ParamsClear;
+  FDatabase.AddParamInt(':v0', PropID);
+
+  if Value <> '' then
+  begin
+    ValueStream := TStringStream.Create(Value);
+    try
+      Logger := GetIntervalLogger('SetPropertyS', SQL_UPDATE);
+      FDatabase.UpdateBlob(SQL_UPDATE, ValueStream);
+      Logger := nil;
+    finally
+      FreeAndNil(ValueStream);
+    end;
+  end
+  else
+  begin
+    Logger := GetIntervalLogger('SetPropertyS', SQL_DELETE);
+    FDatabase.ExecSQL(SQL_DELETE);
     Logger := nil;
-  finally
-    FreeAndNil(ValueStream);
   end;
 end;
 
@@ -215,23 +390,53 @@ var
   Logger: IIntervalLogger;
   Count: Integer;
 begin
-  Logger := GetIntervalLogger('TBookCollection_SQLite.InsertGenreIfMissing', SQL_SELECT);
   FDatabase.ParamsClear;
   FDatabase.AddParamText(':v0', GenreData.GenreCode);
+  Logger := GetIntervalLogger('InsertGenreIfMissing', SQL_SELECT);
   Count := FDatabase.GetTableValue(SQL_SELECT);
   Logger := nil;
 
   if Count = 0 then // A new Genre
   begin
-    Logger := GetIntervalLogger('TBookCollection_SQLite.InsertGenreIfMissing', SQL_INSERT);
     FDatabase.ParamsClear;
     FDatabase.AddParamText(':v0', GenreData.GenreCode);
     FDatabase.AddParamText(':v1', GenreData.ParentCode);
     FDatabase.AddParamText(':v2', GenreData.FB2GenreCode);
     FDatabase.AddParamText(':v3', GenreData.GenreAlias);
+    Logger := GetIntervalLogger('InsertGenreIfMissing', SQL_INSERT);
     FDatabase.ExecSQL(SQL_INSERT);
     Logger := nil;
   end;
+end;
+
+function TBookCollection_SQLite.GetAuthorIterator(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue = nil): IAuthorIterator;
+begin
+  Result := TAuthorIteratorImpl.Create(Self, Mode, FilterValue);
+end;
+
+procedure TBookCollection_SQLite.GetAuthor(AuthorID: Integer; var Author: TAuthorData);
+const
+  SQL = 'SELECT LastName, FirstName, MiddleName FROM Authors WHERE AuthorID = :v0 ';
+var
+  Logger: IIntervalLogger;
+  Table: TSQLiteTable;
+begin
+  FDatabase.ParamsClear;
+  FDatabase.AddParamInt(':v0', AuthorID);
+
+  Logger := GetIntervalLogger('CreateCollectionTables_SQLite', SQL);
+  Table := FDatabase.GetTable(SQL);
+  Logger := nil;
+
+  if not Table.Eof then
+  begin
+    Author.AuthorID := AuthorID;
+    Author.LastName := Table.FieldAsString(0);
+    Author.FirstName := Table.FieldAsString(1);
+    Author.MiddleName := Table.FieldAsString(2);
+  end
+  else
+    Author.Clear;
 end;
 
 end.
