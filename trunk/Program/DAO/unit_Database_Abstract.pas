@@ -75,7 +75,7 @@ type
     function GetBookIterator1(const Mode: TBookIteratorMode; const LoadMemos: Boolean; const Filter: string = ''): IBookIterator; virtual; abstract;
     function GetBookIterator2(const LoadMemos: Boolean; const SearchCriteria: TBookSearchCriteria): IBookIterator; virtual; abstract;
     function GetAuthorIterator(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue = nil): IAuthorIterator; virtual; abstract;
-    function GetGenreIterator(const Mode: TGenreIteratorMode; const Filter: string = ''): IGenreIterator; virtual; abstract;
+    function GetGenreIterator(const Mode: TGenreIteratorMode; const FilterValue: PFilterValue = nil): IGenreIterator; virtual; abstract;
     function GetSeriesIterator(const Mode: TSeriesIteratorMode): ISeriesIterator; virtual; abstract;
 
   protected // virtual
@@ -272,8 +272,10 @@ var
   i: Integer;
   GenreIterator: IGenreIterator;
   Genre: TGenreData;
+  FilterValue: TFilterValue;
 begin
-  GenreIterator := GetGenreIterator(gmByBook, Format('gl.%s = %d', [BOOK_ID_FIELD, BookID]));
+  FilterValue.ValueInt := BookID;
+  GenreIterator := GetGenreIterator(gmByBook, @FilterValue); //Format('gl.%s = %d', [BOOK_ID_FIELD, BookID])
   i := Length(BookGenres);
   while GenreIterator.Next(Genre) do
   begin

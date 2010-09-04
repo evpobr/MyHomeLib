@@ -57,6 +57,27 @@ type
     // << TAuthorIteratorImpl
 
     //-------------------------------------------------------------------------
+    TGenreIteratorImpl = class(TInterfacedObject, IGenreIterator)
+    public
+      constructor Create(Collection: TBookCollection_SQLite; const Mode: TGenreIteratorMode; const FilterValue: PFilterValue);
+      destructor Destroy; override;
+
+    protected
+      // IGenreIterator
+      function Next(out GenreData: TGenreData): Boolean;
+      function GetNumRecords: Integer;
+
+    strict private
+      FCollection: TBookCollection_SQLite;
+      FGenres: TSQLiteTable;
+      FCollectionID: Integer; // Active collection's ID at the time the iterator was created
+      FNumRecords: Integer;
+
+      procedure PrepareData(const Mode: TGenreIteratorMode; const FilterValue: PFilterValue);
+    end;
+    // << TGenreIteratorImpl
+
+    //-------------------------------------------------------------------------
     TSeriesIteratorImpl = class(TInterfacedObject, ISeriesIterator)
     public
       constructor Create(Collection: TBookCollection_SQLite; const Mode: TSeriesIteratorMode);
@@ -124,12 +145,12 @@ type
 //    function GetBookIterator1(const Mode: TBookIteratorMode; const LoadMemos: Boolean; const Filter: string = ''): IBookIterator; override;
 //    function GetBookIterator2(const LoadMemos: Boolean; const SearchCriteria: TBookSearchCriteria): IBookIterator; override;
     function GetAuthorIterator(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue = nil): IAuthorIterator; override;
-//    function GetGenreIterator(const Mode: TGenreIteratorMode; const Filter: string = ''): IGenreIterator; override;
+    function GetGenreIterator(const Mode: TGenreIteratorMode; const FilterValue: PFilterValue = nil): IGenreIterator; override;
     function GetSeriesIterator(const Mode: TSeriesIteratorMode): ISeriesIterator; override;
 
   protected
     procedure InsertGenreIfMissing(const GenreData: TGenreData); override;
-//    procedure GetGenre(const GenreCode: string; var Genre: TGenreData); override;
+    procedure GetGenre(const GenreCode: string; var Genre: TGenreData); override;
 
   strict private
     FDatabase: TSQLiteDatabase; // NOT THREAD-SAFE (query parameters are stored on the object)!
@@ -353,6 +374,82 @@ begin
   Logger := nil;
 end;
 
+{ TGenreIteratorImpl }
+
+constructor TBookCollection_SQLite.TGenreIteratorImpl.Create(Collection: TBookCollection_SQLite; const Mode: TGenreIteratorMode; const FilterValue: PFilterValue);
+var
+  pLogger: IIntervalLogger;
+begin
+  inherited Create;
+
+  Assert(Assigned(Collection));
+
+  FCollectionID := DMUser.ActiveCollectionInfo.ID;
+  FCollection := Collection;
+
+  PrepareData(Mode, FilterValue);
+end;
+
+destructor TBookCollection_SQLite.TGenreIteratorImpl.Destroy;
+begin
+  FreeAndNil(FGenres);
+
+  inherited Destroy;
+end;
+
+// Read next record (if present), return True if read
+function TBookCollection_SQLite.TGenreIteratorImpl.Next(out GenreData: TGenreData): Boolean;
+var
+  GenreCode: String;
+begin
+  Result := not FGenres.Eof;
+
+  if Result then
+  begin
+    Assert(DMUser.ActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
+    GenreCode := FGenres.FieldAsString(0);
+    FCollection.GetGenre(GenreCode, GenreData);
+    FGenres.Next;
+  end;
+end;
+
+function TBookCollection_SQLite.TGenreIteratorImpl.GetNumRecords: Integer;
+begin
+  Result := FNumRecords;
+end;
+
+procedure TBookCollection_SQLite.TGenreIteratorImpl.PrepareData(const Mode: TGenreIteratorMode; const FilterValue: PFilterValue);
+var
+  SQLRows: String;
+  SQLCount: String;
+  Logger: IIntervalLogger;
+begin
+  FCollection.FDatabase.ParamsClear;
+
+  case Mode of
+    gmAll:
+      SQLRows := 'SELECT g.GenreCode FROM Genres g ';
+    gmByBook:
+    begin
+      Assert(Assigned(FilterValue));
+      SQLRows := 'SELECT gl.GenreCode FROM Genre_List gl WHERE BookID = :v0 ';
+      FCollection.FDatabase.AddParamInt(':v0', FilterValue^.ValueInt);
+   end
+    else
+      Assert(False);
+  end;
+
+  SQLCount := 'SELECT COUNT(*) FROM (' + SQLRows + ') ROWS ';
+
+  Logger := GetIntervalLogger('TGenreIteratorImpl.PrepareData', SQLCount);
+  FNumRecords := FCollection.FDatabase.GetTableValue(SQLCount);
+  Logger := nil;
+
+  Logger := GetIntervalLogger('TGenreIteratorImpl.PrepareData', SQLRows);
+  FGenres := FCollection.FDatabase.GetTable(SQLRows);
+  Logger := nil;
+end;
+
 { TSeriesIteratorImpl }
 
 constructor TBookCollection_SQLite.TSeriesIteratorImpl.Create(Collection: TBookCollection_SQLite; const Mode: TSeriesIteratorMode);
@@ -543,6 +640,34 @@ begin
   end;
 end;
 
+procedure TBookCollection_SQLite.GetGenre(const GenreCode: string; var Genre: TGenreData);
+const
+  SQL = 'SELECT ParentCode, FB2Code, GenreAlias FROM Genres WHERE GenreCode = :v0 ';
+var
+  Logger: IIntervalLogger;
+  Table: TSQLiteTable;
+begin
+  FDatabase.ParamsClear;
+  FDatabase.AddParamText(':v0', GenreCode);
+
+  Logger := GetIntervalLogger('GetGenre', SQL);
+  Table := FDatabase.GetTable(SQL);
+  try
+    Logger := nil;
+    if not Table.Eof then
+    begin
+      Genre.GenreCode := GenreCode;
+      Genre.ParentCode := Table.FieldAsString(0);
+      Genre.FB2GenreCode := Table.FieldAsString(1);
+      Genre.GenreAlias := Table.FieldAsString(2);
+    end
+    else
+      Genre.Clear;
+  finally
+    FreeAndNil(Table);
+  end;
+end;
+
 function TBookCollection_SQLite.GetAuthorIterator(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue = nil): IAuthorIterator;
 begin
   Result := TAuthorIteratorImpl.Create(Self, Mode, FilterValue);
@@ -551,6 +676,11 @@ end;
 function TBookCollection_SQLite.GetSeriesIterator(const Mode: TSeriesIteratorMode): ISeriesIterator;
 begin
   Result := TSeriesIteratorImpl.Create(Self, Mode);
+end;
+
+function TBookCollection_SQLite.GetGenreIterator(const Mode: TGenreIteratorMode; const FilterValue: PFilterValue = nil): IGenreIterator;
+begin
+  Result := TGenreIteratorImpl.Create(Self, Mode, FilterValue);
 end;
 
 procedure TBookCollection_SQLite.GetAuthor(AuthorID: Integer; var Author: TAuthorData);
@@ -563,19 +693,23 @@ begin
   FDatabase.ParamsClear;
   FDatabase.AddParamInt(':v0', AuthorID);
 
-  Logger := GetIntervalLogger('CreateCollectionTables_SQLite', SQL);
+  Logger := GetIntervalLogger('GetAuthor', SQL);
   Table := FDatabase.GetTable(SQL);
-  Logger := nil;
+  try
+    Logger := nil;
 
-  if not Table.Eof then
-  begin
-    Author.AuthorID := AuthorID;
-    Author.LastName := Table.FieldAsString(0);
-    Author.FirstName := Table.FieldAsString(1);
-    Author.MiddleName := Table.FieldAsString(2);
-  end
-  else
-    Author.Clear;
+    if not Table.Eof then
+    begin
+      Author.AuthorID := AuthorID;
+      Author.LastName := Table.FieldAsString(0);
+      Author.FirstName := Table.FieldAsString(1);
+      Author.MiddleName := Table.FieldAsString(2);
+    end
+    else
+      Author.Clear;
+  finally
+    FreeAndNil(Table);
+  end;
 end;
 
 end.

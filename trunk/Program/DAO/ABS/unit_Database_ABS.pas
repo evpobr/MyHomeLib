@@ -92,7 +92,7 @@ type
     //-------------------------------------------------------------------------
     TGenreIteratorImpl = class(TInterfacedObject, IGenreIterator)
     public
-      constructor Create(Collection: TBookCollection_ABS; const Mode: TGenreIteratorMode; const Filter: string);
+      constructor Create(Collection: TBookCollection_ABS; const Mode: TGenreIteratorMode; const FilterValue: PFilterValue);
       destructor Destroy; override;
 
     protected
@@ -106,7 +106,7 @@ type
       FGenreCode: TWideStringField;
       FCollectionID: Integer; // Active collection's ID at the time the iterator was created
 
-      function CreateSQL(const Mode: TGenreIteratorMode; const Filter: string): string;
+      function CreateSQL(const Mode: TGenreIteratorMode; const FilterValue: PFilterValue): string;
     end;
     // << TGenreIteratorImpl
 
@@ -171,7 +171,7 @@ type
     function GetBookIterator1(const Mode: TBookIteratorMode; const LoadMemos: Boolean; const Filter: string = ''): IBookIterator; override;
     function GetBookIterator2(const LoadMemos: Boolean; const SearchCriteria: TBookSearchCriteria): IBookIterator; override;
     function GetAuthorIterator(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue = nil): IAuthorIterator; override;
-    function GetGenreIterator(const Mode: TGenreIteratorMode; const Filter: string = ''): IGenreIterator; override;
+    function GetGenreIterator(const Mode: TGenreIteratorMode; const FilterValue: PFilterValue = nil): IGenreIterator; override;
     function GetSeriesIterator(const Mode: TSeriesIteratorMode): ISeriesIterator; override;
 
     procedure SetSeriesTitle(const SeriesID: Integer; const NewSeriesTitle: string); override;
@@ -748,7 +748,7 @@ end;
 
 { TGenreIteratorImpl }
 
-constructor TBookCollection_ABS.TGenreIteratorImpl.Create(Collection: TBookCollection_ABS; const Mode: TGenreIteratorMode; const Filter: string);
+constructor TBookCollection_ABS.TGenreIteratorImpl.Create(Collection: TBookCollection_ABS; const Mode: TGenreIteratorMode; const FilterValue: PFilterValue);
 var
   pLogger: IIntervalLogger;
 begin
@@ -759,7 +759,7 @@ begin
   FCollectionID := DMUser.ActiveCollectionInfo.ID;
   FCollection := Collection;
 
-  FGenres := TABSQueryEx.Create(FCollection.FDatabase, CreateSQL(Mode, Filter));
+  FGenres := TABSQueryEx.Create(FCollection.FDatabase, CreateSQL(Mode, FilterValue));
   FGenres.ReadOnly := True;
   FGenres.RequestLive := True;
 
@@ -795,7 +795,7 @@ begin
   Result := FGenres.RecordCount;
 end;
 
-function TBookCollection_ABS.TGenreIteratorImpl.CreateSQL(const Mode: TGenreIteratorMode; const Filter: string): string;
+function TBookCollection_ABS.TGenreIteratorImpl.CreateSQL(const Mode: TGenreIteratorMode; const FilterValue: PFilterValue): string;
 var
   Where: string;
 begin
@@ -803,15 +803,17 @@ begin
 
   case Mode of
     gmAll:
-      Result := 'SELECT g.' + GENRE_CODE_FIELD + ' FROM Genres g ';
+      Result := 'SELECT g.GenreCode FROM Genres g ';
     gmByBook:
-      Result := 'SELECT gl.' + GENRE_CODE_FIELD + ' FROM Genre_List gl ';
+    begin
+      Assert(Assigned(FilterValue));
+      Result := 'SELECT gl.GenreCode FROM Genre_List gl ';
+      AddToWhere(Where, Format('gl.BookID = %d',[FilterValue^.ValueInt]) );
+    end
     else
       Assert(False);
   end;
 
-  if Filter <> '' then
-    AddToWhere(Where, Filter);
   Result := Result + Where;
 end;
 
@@ -1442,9 +1444,9 @@ begin
   Result := TAuthorIteratorImpl.Create(Self, Mode, FilterValue);
 end;
 
-function TBookCollection_ABS.GetGenreIterator(const Mode: TGenreIteratorMode; const Filter: string): IGenreIterator;
+function TBookCollection_ABS.GetGenreIterator(const Mode: TGenreIteratorMode; const FilterValue: PFilterValue = nil): IGenreIterator;
 begin
-  Result := TGenreIteratorImpl.Create(Self, Mode, Filter);
+  Result := TGenreIteratorImpl.Create(Self, Mode, FilterValue);
 end;
 
 function TBookCollection_ABS.GetSeriesIterator(const Mode: TSeriesIteratorMode): ISeriesIterator;
