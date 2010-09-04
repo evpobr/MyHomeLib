@@ -175,6 +175,7 @@ implementation
 uses
   IOUtils,
   dm_user,
+  unit_Interfaces,
   frm_genre_tree,
   unit_TreeUtils,
   unit_Consts,
@@ -192,9 +193,18 @@ resourcestring
 {$R *.dfm}
 
 procedure TfrmAddnonfb2.FillLists;
+var
+  SeriesIterator: ISeriesIterator;
+  SeriesData: TSeriesData;
 begin
-  cbSeries.Items.Clear;
-  FLibrary.GetSeries(cbSeries.Items);
+  cbSeries.Items.BeginUpdate;
+  try
+    SeriesIterator := FLibrary.GetSeriesIterator(smAll);
+    while SeriesIterator.Next(SeriesData) do
+      cbSeries.Items.Add(SeriesData.SeriesTitle);
+  finally
+    cbSeries.Items.EndUpdate;
+  end;
 end;
 
 procedure TfrmAddnonfb2.btnShowGenresClick(Sender: TObject);

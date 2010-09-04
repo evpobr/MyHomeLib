@@ -88,8 +88,8 @@ begin
       FFiles.Process;
 
       BookCollection := GetActiveBookCollection;
-      BookIterator := BookCollection.GetBookIterator1(bmAll, True);
-      totalBooks := BookIterator.GetNumRecords;
+      BookIterator := BookCollection.GetBookIterator(bmAll, True);
+      totalBooks := BookIterator.RecordCount;
       while BookIterator.Next(BookRecord) do
       begin
         if Canceled then

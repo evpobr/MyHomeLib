@@ -9,7 +9,7 @@
   * Created             12.02.2010
   * Description
   *
-  * $Id: unit_Database_ABS.pas -1   $
+  * $Id$
   *
   * History
   * NickR 15.02.2010    Код переформатирован
@@ -49,7 +49,7 @@ type
     protected
       // IBookIterator
       function Next(out BookRecord: TBookRecord): Boolean;
-      function GetNumRecords: Integer;
+      function RecordCount: Integer;
 
     strict private
       FCollection: TBookCollection_ABS;
@@ -77,7 +77,7 @@ type
     protected
       // IAuthorIterator
       function Next(out AuthorData: TAuthorData): Boolean;
-      function GetNumRecords: Integer;
+      function RecordCount: Integer;
 
     strict private
       FCollection: TBookCollection_ABS;
@@ -98,7 +98,7 @@ type
     protected
       // IGenreIterator
       function Next(out GenreData: TGenreData): Boolean;
-      function GetNumRecords: Integer;
+      function RecordCount: Integer;
 
     strict private
       FCollection: TBookCollection_ABS;
@@ -121,7 +121,7 @@ type
       // ISeriesIterator
       //
       function Next(out SeriesData: TSeriesData): Boolean;
-      function GetNumRecords: Integer;
+      function RecordCount: Integer;
 
     strict private
       FCollection: TBookCollection_ABS;
@@ -142,24 +142,22 @@ type
     constructor Create(const DBCollectionFile: string; ADefaultSession: Boolean = True);
     destructor Destroy; override;
 
-    procedure ReloadDefaultGenres(const FileName: string); override;
+    procedure ReloadGenres(const FileName: string); override;
 
-    procedure SetPropertyS(PropID: Integer; const Value: string); override;
+    procedure SetStringProperty(const PropID: Integer; const Value: string); override;
 
     //
     // Content management
     //
     function CheckFileInCollection(const FileName: string; const FullNameSearch: Boolean; const ZipFolder: Boolean): Boolean; override;
 
-    function InsertBook(BookRecord: TBookRecord; CheckFileName, FullCheck: Boolean): Integer; override;
+    function InsertBook(BookRecord: TBookRecord; const CheckFileName: Boolean; const FullCheck: Boolean): Integer; override;
     procedure DeleteBook(const BookKey: TBookKey); override;
-    procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord; LoadMemos: Boolean); override;
+    procedure GetBookRecord(const BookKey: TBookKey; out BookRecord: TBookRecord; const LoadMemos: Boolean); override;
 
     function GetTopGenreAlias(const FB2Code: string): string; override;
-    procedure CleanBookGenres(BookID: Integer); override;
+    procedure CleanBookGenres(const BookID: Integer); override;
     procedure InsertBookGenres(const BookID: Integer; var Genres: TBookGenres); override;
-
-    procedure GetSeries(SeriesList: TStrings); override;
 
     //
     // Bulk operation
@@ -168,14 +166,14 @@ type
     procedure EndBulkOperation(Commit: Boolean = True); override;
 
     // Iterators:
-    function GetBookIterator1(const Mode: TBookIteratorMode; const LoadMemos: Boolean; const Filter: string = ''): IBookIterator; override;
-    function GetBookIterator2(const LoadMemos: Boolean; const SearchCriteria: TBookSearchCriteria): IBookIterator; override;
+    function GetBookIterator(const Mode: TBookIteratorMode; const LoadMemos: Boolean; const Filter: string = ''): IBookIterator; override;
+    function Search(const SearchCriteria: TBookSearchCriteria; const LoadMemos: Boolean): IBookIterator; override;
     function GetAuthorIterator(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue = nil): IAuthorIterator; override;
     function GetGenreIterator(const Mode: TGenreIteratorMode; const FilterValue: PFilterValue = nil): IGenreIterator; override;
     function GetSeriesIterator(const Mode: TSeriesIteratorMode): ISeriesIterator; override;
 
     procedure SetSeriesTitle(const SeriesID: Integer; const NewSeriesTitle: string); override;
-    function AddOrLocateSeriesIDBySeriesTitle(const SeriesTitle: string): Integer; override;
+    function FindOrCreateSeries(const Title: string): Integer; override;
     procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer); override;
     procedure ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc); override;
     procedure ExportUserData(data: TUserData); override;
@@ -183,13 +181,13 @@ type
     procedure UpdateBook(const BookRecord: TBookRecord); override;
     function SetReview(const BookKey: TBookKey; const Review: string): Integer; override;
     function GetReview(const BookKey: TBookKey): string; override;
-    procedure SetProgress(const BookKey: TBookKey; Progress: Integer); override;
-    procedure SetRate(const BookKey: TBookKey; Rate: Integer); override;
-    procedure SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer); override;
+    procedure SetProgress(const BookKey: TBookKey; const Progress: Integer); override;
+    procedure SetRate(const BookKey: TBookKey; const Rate: Integer); override;
+    procedure SetSeriesID(const BookKey: TBookKey; const SeriesID: Integer); override;
     procedure SetFolder(const BookKey: TBookKey; const Folder: string); override;
     procedure SetFileName(const BookKey: TBookKey; const FileName: string); override;
-    procedure SetLocal(const BookKey: TBookKey; AState: Boolean); override;
-    procedure GetBookLibID(const BookKey: TBookKey; out ARes: string); override; // deprecated;
+    procedure SetLocal(const BookKey: TBookKey; const AState: Boolean); override;
+    function GetLibID(const BookKey: TBookKey): string; override; // deprecated;
     procedure TruncateTablesBeforeImport; override;
 
     procedure CompactDatabase; override;
@@ -383,8 +381,8 @@ begin
   ALibrary := TBookCollection_ABS.Create(DBCollectionFile);
   try
     // Fill metadata version and creation date:
-    ALibrary.SetPropertyS(SETTING_VERSION, DATABASE_VERSION);
-    ALibrary.SetPropertyS(SETTING_CREATION_DATE, FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now));
+    ALibrary.SetStringProperty(SETTING_VERSION, DATABASE_VERSION);
+    ALibrary.SetStringProperty(SETTING_CREATION_DATE, FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now));
 
     //
     // Заполним таблицу жанров
@@ -471,7 +469,7 @@ begin
   end;
 end;
 
-function TBookCollection_ABS.TBookIteratorImpl.GetNumRecords: Integer;
+function TBookCollection_ABS.TBookIteratorImpl.RecordCount: Integer;
 begin
   Result := FBooks.RecordCount;
 end;
@@ -677,7 +675,7 @@ begin
   end;
 end;
 
-function TBookCollection_ABS.TAuthorIteratorImpl.GetNumRecords: Integer;
+function TBookCollection_ABS.TAuthorIteratorImpl.RecordCount: Integer;
 begin
   Result := FAuthors.RecordCount;
 end;
@@ -790,7 +788,7 @@ begin
   end;
 end;
 
-function TBookCollection_ABS.TGenreIteratorImpl.GetNumRecords: Integer;
+function TBookCollection_ABS.TGenreIteratorImpl.RecordCount: Integer;
 begin
   Result := FGenres.RecordCount;
 end;
@@ -863,7 +861,7 @@ begin
   end;
 end;
 
-function TBookCollection_ABS.TSeriesIteratorImpl.GetNumRecords: Integer;
+function TBookCollection_ABS.TSeriesIteratorImpl.RecordCount: Integer;
 begin
   Result := FSeries.RecordCount;
 end;
@@ -972,7 +970,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TBookCollection_ABS.SetPropertyS(PropID: Integer; const Value: string);
+procedure TBookCollection_ABS.SetStringProperty(const PropID: Integer; const Value: string);
 begin
   Assert(FSettings.Active);
 
@@ -1021,7 +1019,7 @@ begin
   end;
 end;
 
-procedure TBookCollection_ABS.ReloadDefaultGenres(const FileName: string);
+procedure TBookCollection_ABS.ReloadGenres(const FileName: string);
 begin
   Assert(FGenres.Active);
 
@@ -1071,7 +1069,7 @@ begin
   end;
 end;
 
-function TBookCollection_ABS.InsertBook(BookRecord: TBookRecord; CheckFileName, FullCheck: Boolean): Integer;
+function TBookCollection_ABS.InsertBook(BookRecord: TBookRecord; const CheckFileName: Boolean; const FullCheck: Boolean): Integer;
 var
   i: Integer;
   Author: TAuthorData;
@@ -1301,7 +1299,7 @@ begin
   end;
 end;
 
-procedure TBookCollection_ABS.GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord; LoadMemos: Boolean);
+procedure TBookCollection_ABS.GetBookRecord(const BookKey: TBookKey; out BookRecord: TBookRecord; const LoadMemos: Boolean);
 begin
   BookRecord.Clear;
 
@@ -1361,7 +1359,7 @@ begin
     DMUser.GetBookRecord(BookKey, BookRecord);
 end;
 
-procedure TBookCollection_ABS.CleanBookGenres(BookID: Integer);
+procedure TBookCollection_ABS.CleanBookGenres(const BookID: Integer);
 begin
   Assert(FGenreList.Active);
 
@@ -1377,6 +1375,9 @@ var
 begin
   Assert(FGenreList.Active);
 
+  //
+  // следующая функция используется только здесь. Но из-за нее мы вынуждены передавать Genres как var.
+  //
   FilterDuplicateGenresByCode(Genres);
 
   for Genre in Genres do
@@ -1391,18 +1392,6 @@ begin
       FGenreList.Cancel;
       raise;
     end;
-  end;
-end;
-
-procedure TBookCollection_ABS.GetSeries(SeriesList: TStrings);
-begin
-  Assert(FSeries.Active);
-
-  FSeries.First;
-  while not FSeries.Eof do
-  begin
-    SeriesList.Add(FSeriesSeriesTitle.Value);
-    FSeries.Next;
   end;
 end;
 
@@ -1427,14 +1416,14 @@ end;
 // but having its own Books dataset (the rest of the tables are from the active collection).
 // No need to free the iterator when done as it's a TInterfacedObject
 // and knows to self destroy when no longer referenced.
-function TBookCollection_ABS.GetBookIterator1(const Mode: TBookIteratorMode; const LoadMemos: Boolean; const Filter: string): IBookIterator;
+function TBookCollection_ABS.GetBookIterator(const Mode: TBookIteratorMode; const LoadMemos: Boolean; const Filter: string): IBookIterator;
 var
   EmptySearchCriteria: TBookSearchCriteria;
 begin
   Result := TBookIteratorImpl.Create(Self, Mode, LoadMemos, Filter, EmptySearchCriteria);
 end;
 
-function TBookCollection_ABS.GetBookIterator2(const LoadMemos: Boolean; const SearchCriteria: TBookSearchCriteria): IBookIterator;
+function TBookCollection_ABS.Search(const SearchCriteria: TBookSearchCriteria; const LoadMemos: Boolean): IBookIterator;
 begin
   Result := TBookIteratorImpl.Create(Self, bmSearch, LoadMemos, '', SearchCriteria);
 end;
@@ -1511,21 +1500,21 @@ end;
 
 // If the series title is already in DB - locate it and return the SeriesID
 // If the title is not in DB - add and returned the ID of the added row
-function TBookCollection_ABS.AddOrLocateSeriesIDBySeriesTitle(const SeriesTitle: string): Integer;
+function TBookCollection_ABS.FindOrCreateSeries(const Title: string): Integer;
 begin
   Assert(FSeries.Active);
 
-  if NO_SERIES_TITLE = SeriesTitle then
+  if NO_SERIES_TITLE = Title then
   begin
     Result := NO_SERIE_ID;
     Exit;
   end;
 
-  if not FSeries.Locate(SERIES_TITLE_FIELD, SeriesTitle, []) then
+  if not FSeries.Locate(SERIES_TITLE_FIELD, Title, []) then
   begin
     FSeries.Append;
     try
-      FSeriesSeriesTitle.Value := SeriesTitle;
+      FSeriesSeriesTitle.Value := Title;
       FSeries.Post;
     except
       FSeries.Cancel;
@@ -1759,7 +1748,7 @@ begin
     Result := DMUser.GetReview(BookKey);
 end;
 
-procedure TBookCollection_ABS.SetProgress(const BookKey: TBookKey; Progress: Integer);
+procedure TBookCollection_ABS.SetProgress(const BookKey: TBookKey; const Progress: Integer);
 begin
   VerifyCurrentCollection(BookKey.DatabaseID);
   Assert(FBooks.Active);
@@ -1782,7 +1771,7 @@ begin
   DMUser.SetProgress(BookKey, Progress);
 end;
 
-procedure TBookCollection_ABS.SetRate(const BookKey: TBookKey; Rate: Integer);
+procedure TBookCollection_ABS.SetRate(const BookKey: TBookKey; const Rate: Integer);
 begin
   VerifyCurrentCollection(BookKey.DatabaseID);
   Assert(FBooks.Active);
@@ -1805,7 +1794,7 @@ begin
   DMUser.SetRate(BookKey, Rate);
 end;
 
-procedure TBookCollection_ABS.SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
+procedure TBookCollection_ABS.SetSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
 begin
   VerifyCurrentCollection(BookKey.DatabaseID);
   Assert(FBooks.Active);
@@ -1869,7 +1858,7 @@ begin
   DMUser.SetFileName(BookKey, FileName);
 end;
 
-procedure TBookCollection_ABS.SetLocal(const BookKey: TBookKey; AState: Boolean);
+procedure TBookCollection_ABS.SetLocal(const BookKey: TBookKey; const AState: Boolean);
 begin
   VerifyCurrentCollection(BookKey.DatabaseID);
 
@@ -1888,7 +1877,7 @@ begin
   DMUser.SetLocal(BookKey, AState);
 end;
 
-procedure TBookCollection_ABS.GetBookLibID(const BookKey: TBookKey; out ARes: String);
+function TBookCollection_ABS.GetLibID(const BookKey: TBookKey): string;
 begin
   if BookKey.DatabaseID = DMUser.ActiveCollectionInfo.ID then
   begin
@@ -1897,13 +1886,14 @@ begin
     if not FBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
     begin
       Assert(False);
+      Result := '';
       Exit;
     end;
 
-    ARes := FBooksLibID.AsString;
+    Result := FBooksLibID.AsString;
   end
   else
-    DMUser.GetBookLibID(BookKey, ARes);
+    DMUser.GetBookLibID(BookKey, Result);
 end;
 
 // Clear contents of collection tables (except for Settings and Genres)

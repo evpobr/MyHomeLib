@@ -261,15 +261,16 @@ end;
 function TDownloader.DoDownload(const BookKey: TBookKey): Boolean;
 var
   ConstParams: TStringList;
-  BookLibID: string;
   CL: TStringList;
   Commands: array of TCommand;
   i: Integer;
 begin
   ConstParams := TStringList.Create;
   try
-    GetActiveBookCollection.GetBookLibID(BookKey, BookLibID);
-    ConstParams.Values['LIBID'] := BookLibID;
+    //
+    // TODO: достаточно стремная операция - получение информации из глобальных объектов. Убрать нафиг!!!
+    //
+    ConstParams.Values['LIBID'] := GetActiveBookCollection.GetLibID(BookKey);;
     ConstParams.Values['USER'] := DMUser.ActiveCollectionInfo.User;
     ConstParams.Values['PASS'] := DMUser.ActiveCollectionInfo.Password;
     ConstParams.Values['URL'] := DMUser.ActiveCollectionInfo.URL;

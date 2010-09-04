@@ -72,8 +72,8 @@ var
 begin
   processedBooks := 0;
 
-  BookIterator := GetActiveBookCollection.GetBookIterator1(bmAll, True);
-  totalBooks := BookIterator.GetNumRecords;
+  BookIterator := GetActiveBookCollection.GetBookIterator(bmAll, True);
+  totalBooks := BookIterator.RecordCount;
   while BookIterator.Next(BookRecord) do
   begin
     if Canceled then

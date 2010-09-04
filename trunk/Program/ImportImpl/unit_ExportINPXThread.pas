@@ -123,9 +123,9 @@ begin
     try
       BookCollection := CreateBookCollection(FCollectionDBFileName, False);
       try
-        BookIterator := BookCollection.GetBookIterator1(bmAll, True);
+        BookIterator := BookCollection.GetBookIterator(bmAll, True);
         try
-          totalBooks := BookIterator.GetNumRecords;
+          totalBooks := BookIterator.RecordCount;
           while BookIterator.Next(R) do
           begin
             if Canceled then

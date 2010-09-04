@@ -116,7 +116,7 @@ type
       // IBookIterator
       //
       function Next(out BookRecord: TBookRecord): Boolean;
-      function GetNumRecords: Integer;
+      function RecordCount: Integer;
 
     private
       FUser: TDMUser;
@@ -139,7 +139,7 @@ type
       // IGroupIterator
       //
       function Next(out Group: TGroupData): Boolean;
-      function GetNumRecords: Integer;
+      function RecordCount: Integer;
 
     private
       FUser: TDMUser;
@@ -442,7 +442,7 @@ begin
   end;
 end;
 
-function TDMUser.TBookIteratorImpl.GetNumRecords: Integer;
+function TDMUser.TBookIteratorImpl.RecordCount: Integer;
 begin
   Result := FBooks.RecordCount;
 end;
@@ -504,7 +504,7 @@ begin
   end;
 end;
 
-function TDMUser.TGroupIteratorImpl.GetNumRecords: Integer;
+function TDMUser.TGroupIteratorImpl.RecordCount: Integer;
 begin
   Result := FGroups.RecordCount;
 end;
