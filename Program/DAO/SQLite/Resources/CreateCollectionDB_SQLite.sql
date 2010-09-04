@@ -1,43 +1,10 @@
-DROP INDEX IF EXISTS [IXAuthorList_BookID];
-DROP TABLE IF EXISTS [Author_List];
-
-DROP INDEX IF EXISTS [IXGenreList_BookID];
-DROP TABLE IF EXISTS [Genre_List];
-
-DROP INDEX IF EXISTS [IXBooks_SeriesID_SeqNumber];
-DROP INDEX IF EXISTS [IXBooks_Title];
-DROP INDEX IF EXISTS [IXBooks_FileName];
-DROP INDEX IF EXISTS [IXBooks_Folder];
-DROP INDEX IF EXISTS [IXBooks_IsDeleted];
-DROP INDEX IF EXISTS [IXBooks_UpdateDate];
-DROP INDEX IF EXISTS [IXBooks_IsLocal];
-DROP INDEX IF EXISTS [IXBooks_LibID];
-DROP INDEX IF EXISTS [IXBooks_KeyWords];
-DROP TABLE IF EXISTS [Books];
-
-DROP INDEX IF EXISTS [IXAuthors_LastName_FirstName_MiddleName];
-DROP TABLE IF EXISTS [Authors];
-
-DROP INDEX IF EXISTS [IXGenres_ParentCode_GenreCode];
-DROP INDEX IF EXISTS [IXGenres_FB2Code];
-DROP INDEX IF EXISTS [IXGenres_GenreAlias];
-DROP TABLE IF EXISTS [Genres];
-
-DROP INDEX IF EXISTS [IXSeries_Title];
-DROP TABLE IF EXISTS [Series];
-
 DROP TABLE IF EXISTS [Settings];
-
-
-
-
-
-
 CREATE TABLE [Settings] (
   [ID] INTEGER NOT NULL PRIMARY KEY UNIQUE,
   [SettingValue] BLOB
 );
 
+DROP TABLE IF EXISTS [Series];
 CREATE TABLE [Series] (
   [SeriesID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
   [SeriesTitle] VARCHAR(80) NOT NULL,
@@ -46,6 +13,7 @@ CREATE TABLE [Series] (
 );
 CREATE INDEX [IXSeries_Title] ON [Series] ([SeriesTitle] COLLATE NOCASE ASC);
 
+DROP TABLE IF EXISTS [Genres];
 CREATE TABLE [Genres] (
   [GenreCode] VARCHAR(20) NOT NULL PRIMARY KEY UNIQUE,
   [ParentCode] VARCHAR(20),
@@ -56,6 +24,7 @@ CREATE UNIQUE INDEX [IXGenres_ParentCode_GenreCode] ON [Genres] ([ParentCode] CO
 CREATE INDEX [IXGenres_FB2Code] ON [Genres] ([FB2Code] COLLATE NOCASE ASC);
 CREATE INDEX [IXGenres_GenreAlias] ON [Genres] ([GenreAlias] COLLATE NOCASE ASC);
 
+DROP TABLE IF EXISTS [Authors];
 CREATE TABLE [Authors] (
   [AuthorID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
   [LastName] VARCHAR(128) NOT NULL,
@@ -66,6 +35,7 @@ CREATE TABLE [Authors] (
 );
 CREATE INDEX [IXAuthors_LastName_FirstName_MiddleName] ON [Authors] ([LastName] COLLATE NOCASE ASC, [FirstName] COLLATE NOCASE ASC, [MiddleName] COLLATE NOCASE ASC);
 
+DROP TABLE IF EXISTS [Books];
 CREATE TABLE [Books] (
   [BookID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
   [LibID] INTEGER NOT NULL,
@@ -98,6 +68,7 @@ CREATE INDEX [IXBooks_IsLocal] ON [Books] ([IsLocal] ASC);
 CREATE INDEX [IXBooks_LibID] ON [Books] ([LibID] ASC);
 CREATE INDEX [IXBooks_KeyWords] ON [Books] ([KeyWords] COLLATE NOCASE ASC);
 
+DROP TABLE IF EXISTS [Genre_List];
 CREATE TABLE [Genre_List] (
   [GenreCode] VARCHAR(20) NOT NULL,
   [BookID] INTEGER NOT NULL,
@@ -105,6 +76,7 @@ CREATE TABLE [Genre_List] (
 );
 CREATE INDEX [IXGenreList_BookID] ON [Genre_List] ([BookID]);
 
+DROP TABLE IF EXISTS [Author_List];
 CREATE TABLE [Author_List] (
   [AuthorID] INTEGER NOT NULL,
   [BookID] INTEGER NOT NULL,

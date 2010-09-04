@@ -9,7 +9,7 @@
   * Created             04.09.2010
   * Description
   *
-  * $Id: unit_Database_SQLite.pas -1   $
+  * $Id$
   *
   * History
   *
