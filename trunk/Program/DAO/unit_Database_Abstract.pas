@@ -76,7 +76,7 @@ type
     function GetBookIterator2(const LoadMemos: Boolean; const SearchCriteria: TBookSearchCriteria): IBookIterator; virtual; abstract;
     function GetAuthorIterator(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue = nil): IAuthorIterator; virtual; abstract;
     function GetGenreIterator(const Mode: TGenreIteratorMode; const Filter: string = ''): IGenreIterator; virtual; abstract;
-    function GetSeriesIterator(const Mode: TSeriesIteratorMode; const Filter: string = ''): ISeriesIterator; virtual; abstract;
+    function GetSeriesIterator(const Mode: TSeriesIteratorMode): ISeriesIterator; virtual; abstract;
 
   protected // virtual
     procedure InsertGenreIfMissing(const GenreData: TGenreData); virtual; abstract;

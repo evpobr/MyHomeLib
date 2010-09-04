@@ -56,6 +56,29 @@ type
     end;
     // << TAuthorIteratorImpl
 
+    //-------------------------------------------------------------------------
+    TSeriesIteratorImpl = class(TInterfacedObject, ISeriesIterator)
+    public
+      constructor Create(Collection: TBookCollection_SQLite; const Mode: TSeriesIteratorMode);
+      destructor Destroy; override;
+
+    protected
+      //
+      // ISeriesIterator
+      //
+      function Next(out SeriesData: TSeriesData): Boolean;
+      function GetNumRecords: Integer;
+
+    strict private
+      FCollection: TBookCollection_SQLite;
+      FSeries: TSQLiteTable;
+      FCollectionID: Integer; // Active collection's ID at the time the iterator was created
+      FNumRecords: Integer;
+
+      procedure PrepareData(const Mode: TSeriesIteratorMode);
+    end;
+    // << TSeriesIteratorImpl
+
   public
     constructor Create(const DBCollectionFile: string);
     destructor Destroy; override;
@@ -102,7 +125,7 @@ type
 //    function GetBookIterator2(const LoadMemos: Boolean; const SearchCriteria: TBookSearchCriteria): IBookIterator; override;
     function GetAuthorIterator(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue = nil): IAuthorIterator; override;
 //    function GetGenreIterator(const Mode: TGenreIteratorMode; const Filter: string = ''): IGenreIterator; override;
-//    function GetSeriesIterator(const Mode: TSeriesIteratorMode; const Filter: string = ''): ISeriesIterator; override;
+    function GetSeriesIterator(const Mode: TSeriesIteratorMode): ISeriesIterator; override;
 
   protected
     procedure InsertGenreIfMissing(const GenreData: TGenreData); override;
@@ -293,10 +316,9 @@ begin
         begin
           if FCollection.AuthorFilterType = ALPHA_FILTER_NON_ALPHA then
           begin
-            AddToWhere(Where, Format(
-              '(POS(UPPER(SUBSTRING(a.%0:s, 1, 1)), ":EN") = 0) AND (POS(UPPER(SUBSTRING(a.%0:s, 1, 1)), ":RU") = 0)',
-              [AUTHOR_LASTTNAME_FIELD]
-            ));
+            AddToWhere(Where,
+              '(POS(UPPER(SUBSTRING(a.LastName, 1, 1)), ":EN") = 0) AND (POS(UPPER(SUBSTRING(a.LastName, 1, 1)), ":RU") = 0)'
+            );
             FCollection.FDatabase.AddParamText(':EN', ENGLISH_ALPHABET);
             FCollection.FDatabase.AddParamText(':RU', RUSSIAN_ALPHABET);
           end
@@ -304,10 +326,9 @@ begin
           begin
             Assert(Length(FCollection.AuthorFilterType) = 1);
             Assert(TCharacter.IsUpper(FCollection.AuthorFilterType, 1));
-            AddToWhere(Where, Format(
-              'UPPER(a.%0:s) LIKE ":FilterType%"',                                // начинается на заданную букву
-              [AUTHOR_LASTTNAME_FIELD]
-            ));
+            AddToWhere(Where,
+              'UPPER(a.LastName) LIKE ":FilterType%"'  // начинается на заданную букву
+            );
             FCollection.FDatabase.AddParamText(':FilterType', FCollection.AuthorFilterType);
           end;
         end;
@@ -329,6 +350,119 @@ begin
 
   Logger := GetIntervalLogger('TAuthorIteratorImpl.PrepareData', SQLRows);
   FAuthors := FCollection.FDatabase.GetTable(SQLRows);
+  Logger := nil;
+end;
+
+{ TSeriesIteratorImpl }
+
+constructor TBookCollection_SQLite.TSeriesIteratorImpl.Create(Collection: TBookCollection_SQLite; const Mode: TSeriesIteratorMode);
+var
+  pLogger: IIntervalLogger;
+begin
+  inherited Create;
+
+  Assert(Assigned(Collection));
+
+  FCollectionID := DMUser.ActiveCollectionInfo.ID;
+  FCollection := Collection;
+
+  PrepareData(Mode);
+end;
+
+destructor TBookCollection_SQLite.TSeriesIteratorImpl.Destroy;
+begin
+  FreeAndNil(FSeries);
+
+  inherited Destroy;
+end;
+
+// Read next record (if present), return True if read
+function TBookCollection_SQLite.TSeriesIteratorImpl.Next(out SeriesData: TSeriesData): Boolean;
+begin
+  Result := not FSeries.Eof;
+
+  if Result then
+  begin
+    Assert(DMUser.ActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
+    SeriesData.SeriesID := FSeries.FieldAsInteger(0);
+    SeriesData.SeriesTitle := FSeries.FieldAsString(1);
+    FSeries.Next;
+  end;
+end;
+
+function TBookCollection_SQLite.TSeriesIteratorImpl.GetNumRecords: Integer;
+begin
+  Result := FNumRecords;
+end;
+
+procedure TBookCollection_SQLite.TSeriesIteratorImpl.PrepareData(const Mode: TSeriesIteratorMode);
+var
+  Where: string;
+  SQLRows: string;
+  SQLCount: string;
+  Logger: IIntervalLogger;
+begin
+  Where := '';
+  FCollection.FDatabase.ParamsClear;
+
+  case Mode of
+    smAll:
+      SQLRows := 'SELECT s.SeriesID, s.SeriesTitle FROM Series s ';
+
+    smFullFilter:
+    begin
+      SQLRows := 'SELECT DISTINCT s.SeriesID, s.SeriesTitle FROM Series s ';
+      if FCollection.HideDeleted or FCollection.ShowLocalOnly then
+      begin
+        SQLRows := SQLRows + ' INNER JOIN Books b ON s.SeriesID = b.SeriesID ';
+        if FCollection.HideDeleted then
+        begin
+          AddToWhere(Where, ' b.IsDeleted = :IsDeleted ');
+          FCollection.FDatabase.AddParamBoolean(':IsDeleted', False);
+        end;
+        if FCollection.ShowLocalOnly then
+        begin
+          AddToWhere(Where, ' b.IsLocal = :IsLocal ');
+          FCollection.FDatabase.AddParamBoolean(':IsLocal', True);
+        end;
+      end;
+
+      // Series type filter
+      if FCollection.SeriesFilterType <> '' then
+      begin
+        if FCollection.SeriesFilterType = ALPHA_FILTER_NON_ALPHA then
+        begin
+          AddToWhere(Where,
+            '(POS(UPPER(SUBSTRING(s.SeriesTitle, 1, 1)), ":EN") = 0) AND (POS(UPPER(SUBSTRING(s.SeriesTitle, 1, 1)), ":RU") = 0)'
+          );
+          FCollection.FDatabase.AddParamText(':EN', ENGLISH_ALPHABET);
+          FCollection.FDatabase.AddParamText(':RU', RUSSIAN_ALPHABET);
+        end
+        else if FCollection.SeriesFilterType <> ALPHA_FILTER_ALL then
+        begin
+          Assert(Length(FCollection.SeriesFilterType) = 1);
+          Assert(TCharacter.IsUpper(FCollection.SeriesFilterType, 1));
+          AddToWhere(Where,
+            'UPPER(s.SeriesTitle) LIKE ":FilterType%"'   // начинается на заданную букву
+          );
+          FCollection.FDatabase.AddParamText(':FilterType', FCollection.SeriesFilterType);
+        end;
+      end;
+    end
+    else
+      Assert(False);
+  end;
+
+  SQLRows := SQLRows + Where;
+  SQLCount := 'SELECT COUNT(*) FROM (' + SQLRows + ') ROWS ';
+  SQLRows := SQLRows + ' ORDER BY s.' + SERIES_TITLE_FIELD;
+
+  Logger := GetIntervalLogger('TSeriesIteratorImpl.PrepareData', SQLCount);
+  FNumRecords := FCollection.FDatabase.GetTableValue(SQLCount);
+  Logger := nil;
+
+  Logger := GetIntervalLogger('TSeriesIteratorImpl.PrepareData', SQLRows);
+  FSeries := FCollection.FDatabase.GetTable(SQLRows);
   Logger := nil;
 end;
 
@@ -412,6 +546,11 @@ end;
 function TBookCollection_SQLite.GetAuthorIterator(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue = nil): IAuthorIterator;
 begin
   Result := TAuthorIteratorImpl.Create(Self, Mode, FilterValue);
+end;
+
+function TBookCollection_SQLite.GetSeriesIterator(const Mode: TSeriesIteratorMode): ISeriesIterator;
+begin
+  Result := TSeriesIteratorImpl.Create(Self, Mode);
 end;
 
 procedure TBookCollection_SQLite.GetAuthor(AuthorID: Integer; var Author: TAuthorData);

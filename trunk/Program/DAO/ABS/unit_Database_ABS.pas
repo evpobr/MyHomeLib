@@ -113,7 +113,7 @@ type
     //-------------------------------------------------------------------------
     TSeriesIteratorImpl = class(TInterfacedObject, ISeriesIterator)
     public
-      constructor Create(Collection: TBookCollection_ABS; const Mode: TSeriesIteratorMode; const Filter: string);
+      constructor Create(Collection: TBookCollection_ABS; const Mode: TSeriesIteratorMode);
       destructor Destroy; override;
 
     protected
@@ -130,7 +130,7 @@ type
       FSeriesTitle: TWideStringField;
       FCollectionID: Integer; // Active collection's ID at the time the iterator was created
 
-      function CreateSQL(const Mode: TSeriesIteratorMode; const Filter: string): string;
+      function CreateSQL(const Mode: TSeriesIteratorMode): string;
     end;
     // << TSeriesIteratorImpl
 
@@ -172,7 +172,7 @@ type
     function GetBookIterator2(const LoadMemos: Boolean; const SearchCriteria: TBookSearchCriteria): IBookIterator; override;
     function GetAuthorIterator(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue = nil): IAuthorIterator; override;
     function GetGenreIterator(const Mode: TGenreIteratorMode; const Filter: string = ''): IGenreIterator; override;
-    function GetSeriesIterator(const Mode: TSeriesIteratorMode; const Filter: string = ''): ISeriesIterator; override;
+    function GetSeriesIterator(const Mode: TSeriesIteratorMode): ISeriesIterator; override;
 
     procedure SetSeriesTitle(const SeriesID: Integer; const NewSeriesTitle: string); override;
     function AddOrLocateSeriesIDBySeriesTitle(const SeriesTitle: string): Integer; override;
@@ -817,7 +817,7 @@ end;
 
 { TSeriesIteratorImpl }
 
-constructor TBookCollection_ABS.TSeriesIteratorImpl.Create(Collection: TBookCollection_ABS; const Mode: TSeriesIteratorMode; const Filter: string);
+constructor TBookCollection_ABS.TSeriesIteratorImpl.Create(Collection: TBookCollection_ABS; const Mode: TSeriesIteratorMode);
 var
   pLogger: IIntervalLogger;
 begin
@@ -828,7 +828,7 @@ begin
   FCollectionID := DMUser.ActiveCollectionInfo.ID;
   FCollection := Collection;
 
-  FSeries := TABSQueryEx.Create(FCollection.FDatabase, CreateSQL(Mode, Filter));
+  FSeries := TABSQueryEx.Create(FCollection.FDatabase, CreateSQL(Mode));
   FSeries.ReadOnly := True;
   FSeries.RequestLive := True;
 
@@ -866,7 +866,7 @@ begin
   Result := FSeries.RecordCount;
 end;
 
-function TBookCollection_ABS.TSeriesIteratorImpl.CreateSQL(const Mode: TSeriesIteratorMode; const Filter: string): string;
+function TBookCollection_ABS.TSeriesIteratorImpl.CreateSQL(const Mode: TSeriesIteratorMode): string;
 var
   Where: string;
 begin
@@ -874,6 +874,7 @@ begin
   case Mode of
     smAll:
       Result := 'SELECT s.' + SERIES_ID_FIELD + ', s.' + SERIES_TITLE_FIELD + ' FROM Series s ';
+
     smFullFilter:
     begin
       Result := 'SELECT DISTINCT s.' + SERIES_ID_FIELD + ', s.' + SERIES_TITLE_FIELD + ' FROM Series s ';
@@ -909,8 +910,6 @@ begin
       Assert(False);
   end;
 
-  if Filter <> '' then
-    AddToWhere(Where, Filter);
   Result := Result + Where;
   Result := Result + ' ORDER BY s.' + SERIES_TITLE_FIELD;
 end;
@@ -1448,9 +1447,9 @@ begin
   Result := TGenreIteratorImpl.Create(Self, Mode, Filter);
 end;
 
-function TBookCollection_ABS.GetSeriesIterator(const Mode: TSeriesIteratorMode; const Filter: string = ''): ISeriesIterator;
+function TBookCollection_ABS.GetSeriesIterator(const Mode: TSeriesIteratorMode): ISeriesIterator;
 begin
-  Result := TSeriesIteratorImpl.Create(Self, Mode, Filter);
+  Result := TSeriesIteratorImpl.Create(Self, Mode);
 end;
 
 procedure TBookCollection_ABS.GetGenre(const GenreCode: string; var Genre: TGenreData);
