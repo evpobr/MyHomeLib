@@ -307,8 +307,6 @@ constructor TBookCollection_SQLite.TBookIteratorImpl.Create(
   const FilterValue: PFilterValue;
   const SearchCriteria: TBookSearchCriteria
 );
-var
-  pLogger: IIntervalLogger;
 begin
   inherited Create;
 
@@ -423,9 +421,7 @@ begin
 
   Logger := GetIntervalLogger('TBookIteratorImpl.PrepareData', SQLCount);
   FNumRecords := FCollection.FDatabase.GetTableInt(SQLCount);
-  Logger := nil;
-
-  Logger := GetIntervalLogger('TBookIteratorImpl.PrepareData', SQLRows);
+  Logger.Restart(SQLRows);
   FBooks := FCollection.FDatabase.GetTable(SQLRows);
   Logger := nil;
 end;
@@ -545,9 +541,7 @@ begin
 
   Logger := GetIntervalLogger('TBookIteratorImpl.PrepareSearchData', SQLCount);
   FNumRecords := FCollection.FDatabase.GetTableInt(SQLCount);
-  Logger := nil;
-
-  Logger := GetIntervalLogger('TBookIteratorImpl.PrepareSearchData', SQLRows);
+  Logger.Restart(SQLRows);
   FBooks := FCollection.FDatabase.GetTable(SQLRows);
   Logger := nil;
 end;
@@ -559,8 +553,6 @@ constructor TBookCollection_SQLite.TAuthorIteratorImpl.Create(
   const Mode: TAuthorIteratorMode;
   const FilterValue: PFilterValue
 );
-var
-  pLogger: IIntervalLogger;
 begin
   inherited Create;
 
@@ -670,15 +662,12 @@ begin
 
   SQLRows := SQLRows + Where;
   SQLCount := 'SELECT COUNT(*) FROM (' + SQLRows + ') ROWS ';
-
-  Logger := GetIntervalLogger('TAuthorIteratorImpl.PrepareData', SQLCount);
-  FNumRecords := FCollection.FDatabase.GetTableInt(SQLCount);
-  Logger := nil;
-
   if Mode in [amAll, amFullFilter] then
     SQLRows := SQLRows + ' ORDER BY a.LastName, a.FirstName, a.MiddleName ';
 
-  Logger := GetIntervalLogger('TAuthorIteratorImpl.PrepareData', SQLRows);
+  Logger := GetIntervalLogger('TAuthorIteratorImpl.PrepareData', SQLCount);
+  FNumRecords := FCollection.FDatabase.GetTableInt(SQLCount);
+  Logger.Restart(SQLRows);
   FAuthors := FCollection.FDatabase.GetTable(SQLRows);
   Logger := nil;
 end;
@@ -686,8 +675,6 @@ end;
 { TGenreIteratorImpl }
 
 constructor TBookCollection_SQLite.TGenreIteratorImpl.Create(Collection: TBookCollection_SQLite; const Mode: TGenreIteratorMode; const FilterValue: PFilterValue);
-var
-  pLogger: IIntervalLogger;
 begin
   inherited Create;
 
@@ -752,9 +739,7 @@ begin
 
   Logger := GetIntervalLogger('TGenreIteratorImpl.PrepareData', SQLCount);
   FNumRecords := FCollection.FDatabase.GetTableInt(SQLCount);
-  Logger := nil;
-
-  Logger := GetIntervalLogger('TGenreIteratorImpl.PrepareData', SQLRows);
+  Logger.Restart(SQLRows);
   FGenres := FCollection.FDatabase.GetTable(SQLRows);
   Logger := nil;
 end;
@@ -762,8 +747,6 @@ end;
 { TSeriesIteratorImpl }
 
 constructor TBookCollection_SQLite.TSeriesIteratorImpl.Create(Collection: TBookCollection_SQLite; const Mode: TSeriesIteratorMode);
-var
-  pLogger: IIntervalLogger;
 begin
   inherited Create;
 
@@ -865,9 +848,7 @@ begin
 
   Logger := GetIntervalLogger('TSeriesIteratorImpl.PrepareData', SQLCount);
   FNumRecords := FCollection.FDatabase.GetTableInt(SQLCount);
-  Logger := nil;
-
-  Logger := GetIntervalLogger('TSeriesIteratorImpl.PrepareData', SQLRows);
+  Logger.Restart(SQLRows);
   FSeries := FCollection.FDatabase.GetTable(SQLRows);
   Logger := nil;
 end;

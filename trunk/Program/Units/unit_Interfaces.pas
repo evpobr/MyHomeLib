@@ -103,12 +103,16 @@ type
 
   ILogger = interface
     ['{E0BE38F4-2911-4FD7-8CA2-B6E3981BBFC0}']
-
     procedure Log(const logMessage: string; const extraInfo: string);
   end;
 
   IIntervalLogger = interface(ILogger)
     ['{F1E77E3D-7D8C-421D-9647-8E11B9105271}']
+    procedure Restart(const extraInfo: string);
+  end;
+
+  IScopeLogger = interface(ILogger)
+    ['{B3497AEA-D495-4425-8C1A-24EBA789E3DE}']
   end;
 
   IParamsParser<T> = interface

@@ -31,6 +31,10 @@ uses
   function GetActiveBookCollection: TBookCollection;
   procedure FreeBookCollectionMap;
 
+  function CreateBookCollectionEx(const DBCollectionFile: string; ADefaultSession: Boolean = True): IBookCollection;
+  function GetBookCollectionEx(const DBCollectionFile: string): IBookCollection;
+  function GetActiveBookCollectionEx: IBookCollection;
+
   procedure CreateSystemTables(const DBUserFile: string);
   procedure CreateCollectionTables(const DBCollectionFile: string; const GenresFileName: string);
   procedure DropCollectionDatabase(const DBCollectionFile: string);
@@ -78,10 +82,15 @@ type
 
 var
   BookCollectionMap: TBookCollectionMap;
+  g_CollectionCache: TCollectionCache;
 
-procedure FreeBookCollectionMap;
+function CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True): TBookCollection;
 begin
-  FreeAndNil(BookCollectionMap);
+{$IFDEF USE_SQLITE}
+  Result := TBookCollection_SQLite.Create(DBCollectionFile);
+{$ELSE}
+  Result := TBookCollection_ABS.Create(DBCollectionFile, ADefaultSession);
+{$ENDIF}
 end;
 
 function GetBookCollection(const DBCollectionFile: string): TBookCollection;
@@ -97,7 +106,17 @@ begin
   end;
 end;
 
-function CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True): TBookCollection;
+function GetActiveBookCollection: TBookCollection;
+begin
+  Result := GetBookCollection(DMUser.ActiveCollectionInfo.DBFileName);
+end;
+
+procedure FreeBookCollectionMap;
+begin
+  FreeAndNil(BookCollectionMap);
+end;
+
+function CreateBookCollectionEx(const DBCollectionFile: string; ADefaultSession: Boolean = True): IBookCollection;
 begin
 {$IFDEF USE_SQLITE}
   Result := TBookCollection_SQLite.Create(DBCollectionFile);
@@ -106,9 +125,30 @@ begin
 {$ENDIF}
 end;
 
-function GetActiveBookCollection: TBookCollection;
+function GetBookCollectionEx(const DBCollectionFile: string): IBookCollection;
 begin
-  Result := GetBookCollection(DMUser.ActiveCollectionInfo.DBFileName);
+  Assert(DBCollectionFile <> '');
+  Assert(Assigned(g_CollectionCache));
+
+  g_CollectionCache.LockMap;
+  try
+    if g_CollectionCache.ContainsKey(DBCollectionFile) then
+    begin
+      Result := g_CollectionCache.Get(DBCollectionFile);
+    end
+    else
+    begin
+      Result := CreateBookCollectionEx(DBCollectionFile);
+      g_CollectionCache.Add(DBCollectionFile, Result);
+    end;
+  finally
+    g_CollectionCache.UnlockMap;
+  end;
+end;
+
+function GetActiveBookCollectionEx: IBookCollection;
+begin
+  Result := GetBookCollectionEx(DMUser.ActiveCollectionInfo.DBFileName);
 end;
 
 procedure DropCollectionDatabase(const DBCollectionFile: string);
@@ -217,5 +257,9 @@ end;
 
 initialization
   BookCollectionMap := nil;
+  g_CollectionCache := TCollectionCache.Create;
+
+finalization
+  FreeAndNil(g_CollectionCache);
 
 end.
