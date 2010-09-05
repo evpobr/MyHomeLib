@@ -176,11 +176,11 @@ type
 //    function CheckFileInCollection(const FileName: string; const FullNameSearch: Boolean; const ZipFolder: Boolean): Boolean; override;
 //    function GetTopGenreAlias(const FB2Code: string): string; override;
 //
-//    //
-//    // Bulk operation
-//    //
-//    procedure BeginBulkOperation; override;
-//    procedure EndBulkOperation(Commit: Boolean = True); override;
+    //
+    // Bulk operation
+    //
+    procedure BeginBulkOperation; override;
+    procedure EndBulkOperation(Commit: Boolean = True); override;
 //
 //    procedure CompactDatabase; override;
 //    procedure RepairDatabase; override;
@@ -1112,5 +1112,23 @@ begin
       Result := NO_SERIES_TITLE;
   end
 end;
+
+procedure TBookCollection_SQLite.BeginBulkOperation;
+begin
+  Assert(not FDatabase.InTransaction);
+
+  FDatabase.Start('');
+end;
+
+procedure TBookCollection_SQLite.EndBulkOperation(Commit: Boolean = True);
+begin
+  Assert(FDatabase.InTransaction);
+
+  if Commit then
+    FDatabase.Commit('')
+  else
+    FDatabase.Rollback('');
+end;
+
 
 end.
