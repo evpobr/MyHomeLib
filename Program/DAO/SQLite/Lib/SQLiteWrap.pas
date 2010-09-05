@@ -9,8 +9,11 @@ Designed for Delphi 6+ and Freepascal, Unicode support for Delphi 2009+
   ------------------------ Modifications for MyHomeLib ------------------------
 
   Sep 2010
-    - added method UpdateBlob (Tim Anderson's implementation from http://www.itwriting.com/blog/?page_id=659 but with UTF-8 support)
-    - added method AddParamBoolean
+    - added method TSQLiteDatabase.UpdateBlob (Tim Anderson's implementation from http://www.itwriting.com/blog/?page_id=659 but with UTF-8 support)
+    - added method TSQLiteDatabase.AddParamBoolean
+    - added method TSQLiteDatabase.AddParamDateTime
+    - added method TSQLiteTable.FieldAsBoolean
+    - added method TSQLiteTable.FieldAsDateTime
 
   -----------------------------------------------------------------------------
 
@@ -224,6 +227,11 @@ type
     function FieldAsString(I: cardinal): String;
     {: Read field from current row as floating-point.}
     function FieldAsDouble(I: cardinal): double;
+    {: Read field from current row as Boolean.}
+    function FieldAsBoolean(I: cardinal): Boolean;
+    {: Read field from current row as TDateTime.}
+    function FieldAsDateTime(I: cardinal): TDateTime;
+
     {: Go to next row.}
     function Next: boolean;
     {: Reset all query params.}
@@ -274,6 +282,9 @@ resourcestring
   c_errorparam = 'SQL must include a ? parameter';
   c_errormemoryblob = 'Error getting memory to save blob';
   c_errorbindingblob = 'Error binding blob to database';
+
+const
+  DATE_TIME_FORMAT = 'yyyy-mm-dd hh:nn:ss.zzz';
 
 {$IFDEF WIN32}
 function SystemCollate(Userdta: pointer; Buf1Len: integer; Buf1: pointer;
@@ -528,7 +539,7 @@ end;
 
 procedure TSQLiteDatabase.AddParamDateTime(const name: String; const value: TDateTime);
 begin
-  AddParamText(name, FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', value));
+  AddParamText(name, FormatDateTime(DATE_TIME_FORMAT, value));
 end;
 
 procedure TSQLiteDatabase.AddParamBoolean(const name: String; const value: Boolean);
@@ -787,6 +798,22 @@ end;
 function TSQLiteTable.FieldAsInteger(I: cardinal): int64;
 begin
   Result := Sqlite3_ColumnInt64(fstmt, i);
+end;
+
+function TSQLiteTable.FieldAsBoolean(I: cardinal): Boolean;
+var
+  IntVal: Integer;
+begin
+  IntVal := FieldAsInteger(I);
+  Result := (IntVal = 1);
+end;
+
+function TSQLiteTable.FieldAsDateTime(I: cardinal): TDateTime;
+var
+  StringVal: string;
+begin
+  StringVal := FieldAsString(I);
+  Result := StrToDateTime(StringVal);
 end;
 
 function TSQLiteTable.FieldAsString(I: cardinal): String;
