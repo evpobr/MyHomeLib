@@ -23,6 +23,7 @@ uses
 
 function GetLogger: ILogger;
 function GetIntervalLogger(const intervalName: string; const extraInfo: string): IIntervalLogger;
+function GetScopeLogger(const scopeName: string): IScopeLogger;
 
 implementation
 
@@ -51,7 +52,7 @@ type
   end;
 
   TLoggerImpl = class(TInterfacedObject, ILogger)
-  private
+  protected
     //
     // ILogger
     //
@@ -63,17 +64,41 @@ type
     constructor Create(const intervalName: string; const extraInfo: string);
     destructor Destroy; override;
 
+  protected
+    //
+    // IIntervalLogger
+    //
+    procedure Restart(const extraInfo: string);
+
   private
     FIntervalName: string;
     FExtraInfo: string;
     FStopwatch: TStopwatch;
   end;
 
+  TScopeLoggerImpl = class(TLoggerImpl, IScopeLogger)
+  private
+    constructor Create(const scopeName: string);
+    destructor Destroy; override;
+
+  protected
+    //
+    // IScopeLogger
+    //
+
+  private
+    FScopeName: string;
+  end;
+
 { TGlobalLogger }
 
 class constructor TGlobalLogger.Create;
 begin
+{$IFOPT D+}
   FLogFileName := TPath.ChangeExtension(Application.ExeName, 'log');
+{$ELSE}
+  FLogFileName := TPath.Combine(TPath.GetTempPath, TPath.GetFileName(TPath.ChangeExtension(Application.ExeName, 'log')));
+{$ENDIF}
 
   FLogFile := Integer(CreateFile(
     PChar(FLogFileName),
@@ -136,6 +161,29 @@ begin
   inherited;
 end;
 
+procedure TIntervalLoggerImpl.Restart(const extraInfo: string);
+begin
+  FStopwatch.Stop;
+  TGlobalLogger.Log(FIntervalName, FExtraInfo, FStopwatch.Elapsed);
+  FExtraInfo := extraInfo;
+  FStopwatch := TStopwatch.StartNew;
+end;
+
+{ TScopeLoggerImpl }
+
+constructor TScopeLoggerImpl.Create(const scopeName: string);
+begin
+  inherited Create;
+  FScopeName := scopeName;
+  TGlobalLogger.Log(FScopeName, '>>>>>>>>>>>>>> - enter');
+end;
+
+destructor TScopeLoggerImpl.Destroy;
+begin
+  TGlobalLogger.Log(FScopeName, '<<<<<<<<<<<<<< - exit');
+  inherited;
+end;
+
 function GetLogger: ILogger;
 begin
   Result := TLoggerImpl.Create;
@@ -144,6 +192,11 @@ end;
 function GetIntervalLogger(const intervalName: string; const extraInfo: string): IIntervalLogger;
 begin
   Result := TIntervalLoggerImpl.Create(intervalName, extraInfo);
+end;
+
+function GetScopeLogger(const scopeName: string): IScopeLogger;
+begin
+  Result := TScopeLoggerImpl.Create(scopeName);
 end;
 
 end.
