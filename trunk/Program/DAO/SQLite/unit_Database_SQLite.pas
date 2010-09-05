@@ -138,11 +138,11 @@ type
     function GetGenreIterator(const Mode: TGenreIteratorMode; const FilterValue: PFilterValue = nil): IGenreIterator; override;
     function GetSeriesIterator(const Mode: TSeriesIteratorMode): ISeriesIterator; override;
     function GetBookIterator(const Mode: TBookIteratorMode; const LoadMemos: Boolean; const FilterValue: PFilterValue = nil): IBookIterator; override;
-//    function Search(const SearchCriteria: TBookSearchCriteria; const LoadMemos: Boolean): IBookIterator; override;
-//
-//    //
-//    //
-//    //
+    function Search(const SearchCriteria: TBookSearchCriteria; const LoadMemos: Boolean): IBookIterator; override;
+
+    //
+    //
+    //
 //    function InsertBook(BookRecord: TBookRecord; const CheckFileName: Boolean; const FullCheck: Boolean): Integer; override;
     procedure GetBookRecord(const BookKey: TBookKey; out BookRecord: TBookRecord; const LoadMemos: Boolean); override;
 //    procedure UpdateBook(const BookRecord: TBookRecord); override;
@@ -310,7 +310,13 @@ begin
   FLoadMemos := LoadMemos;
   FCollection := Collection;
 
-  PrepareData(Mode, FilterValue, SearchCriteria);
+  if Mode = bmSearch then
+  begin
+    Assert(not Assigned(FilterValue));
+    PrepareSearchData(SearchCriteria);
+  end
+  else
+    PrepareData(Mode, FilterValue, SearchCriteria);
 end;
 
 destructor TBookCollection_SQLite.TBookIteratorImpl.Destroy;
@@ -386,11 +392,6 @@ begin
       FCollection.FDatabase.AddParamInt(':SeriesID', FilterValue^.ValueInt);
     end;
 
-    bmSearch:
-    begin
-      Assert(not Assigned(FilterValue));
-      PrepareSearchData(SearchCriteria);
-    end
     else
       Assert(False);
   end;
@@ -423,13 +424,14 @@ end;
 
 // Original code was extracted from TfrmMain.DoApplyFilter
 procedure TBookCollection_SQLite.TBookIteratorImpl.PrepareSearchData(const SearchCriteria: TBookSearchCriteria);
+const
+  SQL_START_STR = 'SELECT DISTINCT b.BookID ';
+  DT_FORMAT = 'yyyy-mm-dd "00:00:00.000"';
 var
   FilterString: string;
   SQLRows: string;
   SQLCount: string;
   Logger: IIntervalLogger;
-const
-  SQLStartStr = 'SELECT DISTINCT b.BookID ';
 begin
   SQLRows := '';
   FCollection.FDatabase.ParamsClear;
@@ -446,7 +448,7 @@ begin
         True, FilterString);
       if FilterString <> '' then
       begin
-        FilterString := SQLStartStr +
+        FilterString := SQL_START_STR +
           ' FROM Authors a INNER JOIN Author_List b ON (a.AuthorID = b.AuthorID) WHERE '
           + FilterString;
 
@@ -462,7 +464,7 @@ begin
 
       if FilterString <> '' then
       begin
-        FilterString := SQLStartStr +
+        FilterString := SQL_START_STR +
           ' FROM Series s JOIN Books b ON b.' + SERIES_ID_FIELD + ' = s.' + SERIES_ID_FIELD + ' WHERE ' +
           FilterString;
 
@@ -477,7 +479,7 @@ begin
     FilterString := '';
     if (SearchCriteria.Genre <> '') then
     begin
-      FilterString := SQLStartStr +
+      FilterString := SQL_START_STR +
         ' FROM Genre_List g JOIN Books b ON b.BookID = g.BookID WHERE (' +
         SearchCriteria.Genre + ')';
 
@@ -501,12 +503,12 @@ begin
       AddToFilter('b.UpdateDate', PrepareQuery(SearchCriteria.DateText, False), False, FilterString)
     else
       case SearchCriteria.DateIdx of
-        0: AddToFilter('b.UpdateDate', Format('> "%s"', [DateToStr(IncDay(Now, -1))]), False, FilterString);
-        1: AddToFilter('b.UpdateDate', Format('> "%s"', [DateToStr(IncDay(Now, -3))]), False, FilterString);
-        2: AddToFilter('b.UpdateDate', Format('> "%s"', [DateToStr(IncDay(Now, -7))]), False, FilterString);
-        3: AddToFilter('b.UpdateDate', Format('> "%s"', [DateToStr(IncDay(Now, -14))]), False, FilterString);
-        4: AddToFilter('b.UpdateDate', Format('> "%s"', [DateToStr(IncDay(Now, -30))]), False, FilterString);
-        5: AddToFilter('b.UpdateDate', Format('> "%s"', [DateToStr(IncDay(Now, -90))]), False, FilterString);
+        0: AddToFilter('b.UpdateDate', Format('> "%s"', [FormatDateTime(DT_FORMAT, IncDay(Now, -1))]), False, FilterString);
+        1: AddToFilter('b.UpdateDate', Format('> "%s"', [FormatDateTime(DT_FORMAT, IncDay(Now, -3))]), False, FilterString);
+        2: AddToFilter('b.UpdateDate', Format('> "%s"', [FormatDateTime(DT_FORMAT, IncDay(Now, -7))]), False, FilterString);
+        3: AddToFilter('b.UpdateDate', Format('> "%s"', [FormatDateTime(DT_FORMAT, IncDay(Now, -14))]), False, FilterString);
+        4: AddToFilter('b.UpdateDate', Format('> "%s"', [FormatDateTime(DT_FORMAT, IncDay(Now, -30))]), False, FilterString);
+        5: AddToFilter('b.UpdateDate', Format('> "%s"', [FormatDateTime(DT_FORMAT, IncDay(Now, -90))]), False, FilterString);
       end;
 
     case SearchCriteria.DownloadedIdx of
@@ -521,7 +523,7 @@ begin
     begin
       if SQLRows <> '' then
         SQLRows := SQLRows + ' INTERSECT ';
-      SQLRows := SQLRows + SQLStartStr + ' FROM Books b WHERE ' + FilterString;
+      SQLRows := SQLRows + SQL_START_STR + ' FROM Books b WHERE ' + FilterString;
     end;
   except
     on E: Exception do
@@ -974,6 +976,11 @@ begin
   Result := TBookIteratorImpl.Create(Self, Mode, LoadMemos, FilterValue, EmptySearchCriteria);
 end;
 
+function TBookCollection_SQLite.Search(const SearchCriteria: TBookSearchCriteria; const LoadMemos: Boolean): IBookIterator;
+begin
+  Result := TBookIteratorImpl.Create(Self, bmSearch, LoadMemos, nil, SearchCriteria);
+end;
+
 function TBookCollection_SQLite.GetAuthorIterator(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue = nil): IAuthorIterator;
 begin
   Result := TAuthorIteratorImpl.Create(Self, Mode, FilterValue);
@@ -1021,10 +1028,10 @@ end;
 procedure TBookCollection_SQLite.GetBookRecord(const BookKey: TBookKey; out BookRecord: TBookRecord; const LoadMemos: Boolean);
 const
   SQL = 'SELECT ' +
-    'b.Title,     b.Folder,    b.FileName,   b.Ext,      b.InsideNo, ' +  // 0  .. 4
-    'b.SeriesID,  b.SeqNumber, b.Code,       b.BookSize, b.LibID, ' +     // 5  .. 9
-    'b.IsDeleted, b.IsLocal,   b.UpdateDate, b.Lang,     b.LibRate, ' +   // 10 .. 14
-    'b.KeyWords,  b.Rate,      b.Progress,   b.Review,   b.Annotation ' + // 15 .. 19
+    'b.Title, b.Folder, b.FileName, b.Ext, b.InsideNo, ' +        // 0  .. 4
+    'b.SeriesID, b.SeqNumber, b.Code, b.BookSize, b.LibID, ' +    // 5  .. 9
+    'b.IsDeleted, b.IsLocal, b.UpdateDate, b.Lang, b.LibRate, ' + // 10 .. 14
+    'b.KeyWords, b.Rate, b.Progress, b.Review, b.Annotation ' +   // 15 .. 19
     'FROM Books b WHERE BookID = :v0 ';
 var
   Logger: IIntervalLogger;
