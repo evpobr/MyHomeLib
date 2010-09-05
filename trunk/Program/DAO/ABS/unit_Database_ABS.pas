@@ -136,7 +136,7 @@ type
 
   protected
     procedure InsertGenreIfMissing(const GenreData: TGenreData); override;
-    procedure GetGenre(const GenreCode: string; var Genre: TGenreData); override;
+    procedure InternalLoadGenres;
 
   public
     constructor Create(const DBCollectionFile: string; ADefaultSession: Boolean = True);
@@ -1459,18 +1459,24 @@ begin
   Result := TSeriesIteratorImpl.Create(Self, Mode);
 end;
 
-procedure TBookCollection_ABS.GetGenre(const GenreCode: string; var Genre: TGenreData);
+procedure TBookCollection_ABS.InternalLoadGenres;
+var
+  Genre: TGenreData;
 begin
-  Assert(FGenres.Active);
-  if FGenres.Locate(GENRE_CODE_FIELD, GenreCode, []) then
+  FGenreCache.Clear;
+
+  FGenres.First;
+  while not FGenres.Eof do
   begin
-    Genre.GenreCode := GenreCode;
+    Genre.GenreCode := FGenresGenreCode.Value;
     Genre.ParentCode := FGenresParentCode.Value;
     Genre.FB2GenreCode := FGenresFB2Code.Value;
     Genre.GenreAlias := FGenresAlias.Value;
-  end
-  else
-    Genre.Clear;
+
+    FGenreCache.Add(Genre.GenreCode, Genre);
+
+    FGenres.Next;
+  end;
 end;
 
 procedure TBookCollection_ABS.GetAuthor(AuthorID: Integer; var Author: TAuthorData);
@@ -2021,6 +2027,8 @@ begin
 
     FGenreListGenreCode := FGenreList.FieldByName(GENRE_CODE_FIELD) as TWideStringField;
     FGenreListBookID := FGenreList.FieldByName(BOOK_ID_FIELD) as TIntegerField;
+
+    InternalLoadGenres;
   end;
 end;
 

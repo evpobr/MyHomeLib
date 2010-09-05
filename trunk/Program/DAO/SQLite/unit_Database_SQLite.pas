@@ -191,7 +191,7 @@ type
 
   protected
     procedure InsertGenreIfMissing(const GenreData: TGenreData); override;
-    procedure GetGenre(const GenreCode: string; var Genre: TGenreData); override;
+    procedure InternalLoadGenres;
 
   strict private
     FDatabase: TSQLiteDatabase; // NOT THREAD-SAFE (query parameters are stored on the object)!
@@ -873,6 +873,7 @@ begin
   inherited Create;
 
   FDatabase := TSQLiteDatabase.Create(DBCollectionFile);
+  InternalLoadGenres;
 end;
 
 destructor TBookCollection_SQLite.Destroy;
@@ -941,29 +942,31 @@ begin
   end;
 end;
 
-procedure TBookCollection_SQLite.GetGenre(const GenreCode: string; var Genre: TGenreData);
+procedure TBookCollection_SQLite.InternalLoadGenres;
 const
-  SQL = 'SELECT ParentCode, FB2Code, GenreAlias FROM Genres WHERE GenreCode = :v0 ';
+  SQL = 'SELECT GenreCode, ParentCode, FB2Code, GenreAlias FROM Genres';
 var
   Logger: IIntervalLogger;
   Table: TSQLiteTable;
+  Genre: TGenreData;
 begin
-  FDatabase.ParamsClear;
-  FDatabase.AddParamText(':v0', GenreCode);
+  FGenreCache.Clear;
 
-  Logger := GetIntervalLogger('GetGenre', SQL);
+  Logger := GetIntervalLogger('InternalLoadGenres', SQL);
   Table := FDatabase.GetTable(SQL);
   try
     Logger := nil;
-    if not Table.Eof then
+    while not Table.EOF do
     begin
-      Genre.GenreCode := GenreCode;
-      Genre.ParentCode := Table.FieldAsString(0);
-      Genre.FB2GenreCode := Table.FieldAsString(1);
-      Genre.GenreAlias := Table.FieldAsString(2);
-    end
-    else
-      Genre.Clear;
+      Genre.GenreCode := Table.FieldAsString(0);
+      Genre.ParentCode := Table.FieldAsString(1);
+      Genre.FB2GenreCode := Table.FieldAsString(2);
+      Genre.GenreAlias := Table.FieldAsString(3);
+
+      FGenreCache.Add(Genre.GenreCode, Genre);
+
+      Table.Next;
+    end;
   finally
     FreeAndNil(Table);
   end;

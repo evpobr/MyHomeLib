@@ -22,6 +22,7 @@ interface
 
 uses
   Classes,
+  Generics.Collections,
   UserData,
   unit_Globals,
   unit_Interfaces;
@@ -29,6 +30,10 @@ uses
 type
   TBookCollection = class abstract (TInterfacedObject, IBookCollection)
   public // virtual
+    //
+    // IBookCollection
+    //
+
     // Iterators:
     function GetAuthorIterator(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue = nil): IAuthorIterator; virtual; abstract;
     function GetGenreIterator(const Mode: TGenreIteratorMode; const FilterValue: PFilterValue = nil): IGenreIterator; virtual; abstract;
@@ -85,26 +90,30 @@ type
 
     procedure TruncateTablesBeforeImport; virtual; abstract;
 
-
   protected // virtual
     procedure InsertGenreIfMissing(const GenreData: TGenreData); virtual; abstract;
-    procedure GetGenre(const GenreCode: string; var Genre: TGenreData); virtual; abstract;
 
   public
     procedure VerifyCurrentCollection(const DatabaseID: Integer);
     procedure LoadGenres(const GenresFileName: string);
 
   protected
+    constructor Create;
+    destructor Destroy; override;
+
     procedure FilterDuplicateAuthorsByID(var Authors: TBookAuthors);
     procedure FilterDuplicateGenresByCode(var Genres: TBookGenres);
+
+    procedure GetGenre(const GenreCode: string; var Genre: TGenreData);
     procedure GetBookGenres(BookID: Integer; var BookGenres: TBookGenres; RootGenre: PGenreData = nil);
     procedure GetBookAuthors(BookID: Integer; var BookAuthors: TBookAuthors);
 
-  strict private
+  strict protected
     FAuthorFilterType: string;
     FSeriesFilterType: string;
     FShowLocalOnly: Boolean;
     FHideDeleted: Boolean;
+    FGenreCache: TDictionary<string, TGenreData>;
 
   public
     property HideDeleted: Boolean read FHideDeleted write FHideDeleted;
@@ -123,7 +132,6 @@ const
 implementation
 
 uses
-  Generics.Collections,
   SysUtils,
   dm_user,
   unit_Errors,
@@ -218,6 +226,18 @@ begin
 end;
 
 // Filter out duplicates by author ID
+constructor TBookCollection.Create;
+begin
+  inherited Create;
+  FGenreCache := TDictionary<string, TGenreData>.Create;
+end;
+
+destructor TBookCollection.Destroy;
+begin
+  FreeAndNil(FGenreCache);
+  inherited Destroy;
+end;
+
 procedure TBookCollection.FilterDuplicateAuthorsByID(var Authors: TBookAuthors);
 var
   MapId: TList<Integer>;
@@ -299,19 +319,28 @@ begin
   end;
 end;
 
+procedure TBookCollection.GetGenre(const GenreCode: string; var Genre: TGenreData);
+begin
+  if not FGenreCache.TryGetValue(GenreCode, Genre) then
+    Genre.Clear;
+end;
+
 procedure TBookCollection.GetBookAuthors(BookID: Integer; var BookAuthors: TBookAuthors);
 var
   AuthorIterator: IAuthorIterator;
   i: Integer;
   FilterValue: TFilterValue;
+  Author: TAuthorData;
 begin
   FilterValue.ValueInt := BookID;
   AuthorIterator := GetAuthorIterator(amByBook, @FilterValue);
-  SetLength(BookAuthors, AuthorIterator.RecordCount + 1); // an extra dummy element
-  i := 0;
-  while AuthorIterator.Next(BookAuthors[i]) do;
+  i := Length(BookAuthors);
+  while AuthorIterator.Next(Author) do
+  begin
+    SetLength(BookAuthors, i + 1);
+    BookAuthors[i] := Author;
     Inc(i);
-  SetLength(BookAuthors, AuthorIterator.RecordCount); // remove the dummy element
+  end;
 end;
 
 procedure TBookCollection.VerifyCurrentCollection(const DatabaseID: Integer);
