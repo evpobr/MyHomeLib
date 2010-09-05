@@ -14,7 +14,11 @@ Designed for Delphi 6+ and Freepascal, Unicode support for Delphi 2009+
     - added method TSQLiteDatabase.AddParamDateTime
     - added method TSQLiteTable.FieldAsBoolean
     - added method TSQLiteTable.FieldAsDateTime
-
+    - Renamed a few method names (have a naming convention for matching Add*/Field* methods):
+        AddParamText    ==> AddParamString
+        FieldAsBlobText ==> FieldAsBlobString
+        FieldAsInteger  ==> FieldAsInt
+        GetTableValue   ==> GetTableInt
   -----------------------------------------------------------------------------
 
   V2.0.0  29 June 2010
@@ -139,7 +143,7 @@ type
     function GetTable(const SQL: String; PrepareOnly: Boolean = false): TSQLiteTable;
     {: Run SQL command and number from first field in first row is returned.
        You can call before functions AddParam* for set query parameters.}
-    function GetTableValue(const SQL: String): int64;
+    function GetTableInt(const SQL: String): int64;
     {: Run SQL command and value from first field in first row is returned.
        You can call before functions AddParam* for set query parameters.}
     function GetTableString(const SQL: String): String;
@@ -177,7 +181,7 @@ type
     {: Add named query parameter of floating-point type.}
     procedure AddParamFloat(const name: String; value: double);
     {: Add named query parameter of string or binary type.}
-    procedure AddParamText(const name: String; const value: String);
+    procedure AddParamString(const name: String; const value: String);
     {: Add named query parameter of TDateTime type.}
     procedure AddParamDateTime(const name: String; const value: TDateTime);
     {: Add named query parameter of Boolean type.}
@@ -214,13 +218,13 @@ type
     {: Class descructor. Call Free instead.}
     destructor Destroy; override;
     {: Read field from current row as integer.}
-    function FieldAsInteger(I: cardinal): int64;
+    function FieldAsInt(I: cardinal): int64;
     {: Read field from current row as blob to memory stream.}
     function FieldAsBlob(I: cardinal): TMemoryStream;
     {: Read field from current row as pointer to memory.}
     function FieldAsBlobPtr(I: cardinal; out iNumBytes: integer): Pointer;
     {: Read field from current row as blob to AnsiString.}
-    function FieldAsBlobText(I: cardinal): AnsiString;
+    function FieldAsBlobString(I: cardinal): AnsiString;
     {: Test if field from current row contains null value.}
     function FieldIsNull(I: cardinal): boolean;
     {: Read field from current row as string.}
@@ -395,7 +399,7 @@ begin
   Result := TSQLiteTable.Create(Self, SQL, PrepareOnly);
 end;
 
-function TSQLiteDatabase.GetTableValue(const SQL: String): int64;
+function TSQLiteDatabase.GetTableInt(const SQL: String): int64;
 var
   Table: TSQLiteTable;
 begin
@@ -403,7 +407,7 @@ begin
   Table := self.GetTable(SQL);
   try
     if not Table.EOF then
-      Result := Table.FieldAsInteger(0);
+      Result := Table.FieldAsInt(0);
   finally
     Table.Free;
   end;
@@ -526,7 +530,7 @@ begin
   fParams.Add(par);
 end;
 
-procedure TSQLiteDatabase.AddParamText(const name: String; const value: String);
+procedure TSQLiteDatabase.AddParamString(const name: String; const value: String);
 var
   par: TSQliteParam;
 begin
@@ -539,7 +543,7 @@ end;
 
 procedure TSQLiteDatabase.AddParamDateTime(const name: String; const value: TDateTime);
 begin
-  AddParamText(name, FormatDateTime(DATE_TIME_FORMAT, value));
+  AddParamString(name, FormatDateTime(DATE_TIME_FORMAT, value));
 end;
 
 procedure TSQLiteDatabase.AddParamBoolean(const name: String; const value: Boolean);
@@ -763,7 +767,7 @@ begin
   Result := Sqlite3_ColumnBlob(fstmt, i);
 end;
 
-function TSQLiteTable.FieldAsBlobText(I: cardinal): AnsiString;
+function TSQLiteTable.FieldAsBlobString(I: cardinal): AnsiString;
 var
   MemStream: TMemoryStream;
   Buffer: PAnsiChar;
@@ -795,7 +799,7 @@ begin
   Result := Sqlite3_ColumnDouble(fstmt, i);
 end;
 
-function TSQLiteTable.FieldAsInteger(I: cardinal): int64;
+function TSQLiteTable.FieldAsInt(I: cardinal): int64;
 begin
   Result := Sqlite3_ColumnInt64(fstmt, i);
 end;
@@ -804,16 +808,26 @@ function TSQLiteTable.FieldAsBoolean(I: cardinal): Boolean;
 var
   IntVal: Integer;
 begin
-  IntVal := FieldAsInteger(I);
+  IntVal := FieldAsInt(I);
   Result := (IntVal = 1);
 end;
 
 function TSQLiteTable.FieldAsDateTime(I: cardinal): TDateTime;
 var
   StringVal: string;
+  FormatSettings: TFormatSettings;
 begin
   StringVal := FieldAsString(I);
-  Result := StrToDateTime(StringVal);
+
+  GetLocaleFormatSettings(LOCALE_SYSTEM_DEFAULT, FormatSettings);
+  FormatSettings.ShortDateFormat := 'yyyy-mm-dd';
+  FormatSettings.LongDateFormat := 'yyyy-mm-dd';
+  FormatSettings.DateSeparator := '-';
+
+  FormatSettings.ShortTimeFormat := 'hh:nn:ss.zzz';
+  FormatSettings.LongTimeFormat := 'hh:nn:ss.zzz';
+  FormatSettings.TimeSeparator := ':';
+  Result := StrToDateTime(StringVal, FormatSettings);
 end;
 
 function TSQLiteTable.FieldAsString(I: cardinal): String;

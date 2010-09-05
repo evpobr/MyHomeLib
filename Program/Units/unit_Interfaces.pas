@@ -74,7 +74,7 @@ type
     procedure SetSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
 
     procedure CleanBookGenres(const BookKey: Integer); // заменить Integer на TBookKey
-    procedure InsertBookGenres(const BookKey: Integer; var Genres: TBookGenres); // заменить Integer на TBookKey, заменить var  на const
+    procedure InsertBookGenres(const BookKey: Integer; const Genres: TBookGenres); // заменить Integer на TBookKey
 
     //
     //

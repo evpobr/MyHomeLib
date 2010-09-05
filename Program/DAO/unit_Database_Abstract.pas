@@ -62,7 +62,7 @@ type
     procedure SetSeriesID(const BookKey: TBookKey; const SeriesID: Integer); virtual; abstract;
 
     procedure CleanBookGenres(const BookID: Integer); virtual; abstract;
-    procedure InsertBookGenres(const BookID: Integer; var Genres: TBookGenres); virtual; abstract;
+    procedure InsertBookGenres(const BookID: Integer; const Genres: TBookGenres); virtual; abstract;
 
     function FindOrCreateSeries(const Title: string): Integer; virtual; abstract;
     procedure SetSeriesTitle(const SeriesID: Integer; const NewTitle: string); virtual; abstract;

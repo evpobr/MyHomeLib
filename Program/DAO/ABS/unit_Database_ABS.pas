@@ -157,7 +157,7 @@ type
 
     function GetTopGenreAlias(const FB2Code: string): string; override;
     procedure CleanBookGenres(const BookID: Integer); override;
-    procedure InsertBookGenres(const BookID: Integer; var Genres: TBookGenres); override;
+    procedure InsertBookGenres(const BookID: Integer; const Genres: TBookGenres); override;
 
     //
     // Bulk operation
@@ -1241,6 +1241,7 @@ begin
       raise;
     end;
 
+    FilterDuplicateGenresByCode(BookRecord.Genres);
     InsertBookGenres(FBooksBookID.Value, BookRecord.Genres);
 
     for Author in BookRecord.Authors do
@@ -1384,17 +1385,11 @@ begin
 end;
 
 // Add book genres for the book specified by BookID
-// Please notice that Genres could be altered by the method if it contains genres with duplicate codes
-procedure TBookCollection_ABS.InsertBookGenres(const BookID: Integer; var Genres: TBookGenres);
+procedure TBookCollection_ABS.InsertBookGenres(const BookID: Integer; const Genres: TBookGenres);
 var
   Genre: TGenreData;
 begin
   Assert(FGenreList.Active);
-
-  //
-  // следующая функция используется только здесь. Но из-за нее мы вынуждены передавать Genres как var.
-  //
-  FilterDuplicateGenresByCode(Genres);
 
   for Genre in Genres do
   begin
@@ -1724,7 +1719,6 @@ begin
   VerifyCurrentCollection(BookKey.DatabaseID);
   Assert(FBooks.Active);
 
-  Result := 0;
   NewReview := Trim(Review);
 
   Result := 0;
