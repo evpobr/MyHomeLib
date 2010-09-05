@@ -7090,9 +7090,9 @@ end;
 function TfrmMain.GenreBookFilter: TFilterValue;
 begin
   if isFB2Collection(DMUser.ActiveCollectionInfo.CollectionType) or not Settings.ShowSubGenreBooks then
-    Result.ValueString := QuotedStr(FLastGenreCode)
+    Result.ValueString := FLastGenreCode
   else
-    Result.ValueString := QuotedStr(FLastGenreCode + IfThen(FLastGenreIsContainer, '.', ''));
+    Result.ValueString := FLastGenreCode + IfThen(FLastGenreIsContainer, '.', '');
 end;
 
 function TfrmMain.GroupBookFilter: string;
