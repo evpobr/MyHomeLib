@@ -181,9 +181,9 @@ type
     //
     procedure BeginBulkOperation; override;
     procedure EndBulkOperation(Commit: Boolean = True); override;
-//
-//    procedure CompactDatabase; override;
-//    procedure RepairDatabase; override;
+
+    procedure CompactDatabase; override;
+    procedure RepairDatabase; override;
 //    procedure ReloadGenres(const FileName: string); override;
 //    procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer); override;
 //
@@ -1130,5 +1130,21 @@ begin
     FDatabase.Rollback('');
 end;
 
+procedure TBookCollection_SQLite.CompactDatabase;
+const
+  SQL = 'VACUUM';
+var
+  Logger: IIntervalLogger;
+begin
+  FDatabase.ParamsClear;
+  Logger := GetIntervalLogger('CompactDatabase', SQL);
+  FDatabase.ExecSQL(SQL);
+  Logger := nil;
+end;
+
+procedure TBookCollection_SQLite.RepairDatabase;
+begin
+  // Not supported for SQLite, skip
+end;
 
 end.
