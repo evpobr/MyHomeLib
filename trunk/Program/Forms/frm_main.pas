@@ -900,9 +900,9 @@ type
     // Filters for the iterators:
     FSearchCriteria: TBookSearchCriteria;
 
-    function AuthorBookFilter: string;
-    function SeriesBookFilter: string;
-    function GenreBookFilter: string;
+    function AuthorBookFilter: TFilterValue;
+    function SeriesBookFilter: TFilterValue;
+    function GenreBookFilter: TFilterValue;
     function GroupBookFilter: string;
 
     //
@@ -1990,6 +1990,7 @@ var
   SavedCursor: TCursor;
   Page: Integer;
   BookCollection: TBookCollection;
+  FilterValue: TFilterValue;
 begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -2010,9 +2011,24 @@ begin
 
     BookCollection := GetActiveBookCollection;
     case Page of
-      0: FillBooksTree(tvBooksA,  BookCollection.GetBookIterator(bmByAuthor, False, AuthorBookFilter), False, True, @FLastAuthorBookID);  // авторы
-      1: FillBooksTree(tvBooksS,  BookCollection.GetBookIterator(bmBySeries, False, SeriesBookFilter), False, False, @FLastSeriesBookID); // серии
-      2: FillBooksTree(tvBooksG,  BookCollection.GetBookIterator(bmByGenre, False, GenreBookFilter),  True,  True, @FLastGenreBookID);      // жанры
+      0:
+      begin
+        FilterValue := AuthorBookFilter;
+        FillBooksTree(tvBooksA,  BookCollection.GetBookIterator(bmByAuthor, False, @FilterValue), False, True, @FLastAuthorBookID);  // авторы
+      end;
+
+      1:
+      begin
+        FilterValue := SeriesBookFilter;
+        FillBooksTree(tvBooksS,  BookCollection.GetBookIterator(bmBySeries, False, @FilterValue), False, False, @FLastSeriesBookID); // серии
+      end;
+
+      2:
+      begin
+        FilterValue := GenreBookFilter;
+        FillBooksTree(tvBooksG,  BookCollection.GetBookIterator(bmByGenre, False, @FilterValue),  True,  True, @FLastGenreBookID);      // жанры
+      end;
+
       3: FillBooksTree(tvBooksSR, BookCollection.Search(FSearchCriteria, False), True,  True, nil);  // поиск
       4: FillBooksTree(tvBooksF,  DMUser.GetBookIterator(GroupBookFIlter), True,  True, @FLastGroupBookID);  // избранное
     end;
@@ -2088,14 +2104,22 @@ procedure TfrmMain.FillAllBooksTree;
 var
   SavedCursor: TCursor;
   BookCollection: TBookCollection;
+  FilterValue: TFilterValue;
 begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
     BookCollection := GetActiveBookCollection;
-    FillBooksTree(tvBooksA, BookCollection.GetBookIterator(bmByAuthor, False, AuthorBookFilter), False, True, @FLastAuthorBookID);  // авторы
-    FillBooksTree(tvBooksS, BookCollection.GetBookIterator(bmBySeries, False, SeriesBookFilter), False, False, @FLastSeriesBookID); // серии
-    FillBooksTree(tvBooksG, BookCollection.GetBookIterator(bmByGenre, False, GenreBookFilter),   True,  True, @FLastGenreBookID);  // жанры
+
+    FilterValue := AuthorBookFilter;
+    FillBooksTree(tvBooksA, BookCollection.GetBookIterator(bmByAuthor, False, @FilterValue), False, True, @FLastAuthorBookID);  // авторы
+
+    FilterValue := SeriesBookFilter;
+    FillBooksTree(tvBooksS, BookCollection.GetBookIterator(bmBySeries, False, @FilterValue), False, False, @FLastSeriesBookID); // серии
+
+    FilterValue := GenreBookFilter;
+    FillBooksTree(tvBooksG, BookCollection.GetBookIterator(bmByGenre, False, @FilterValue),   True,  True, @FLastGenreBookID);  // жанры
+
     FillBooksTree(tvBooksF, DMUser.GetBookIterator(GroupBookFIlter), True,  True, @FLastGroupBookID);  // избранное
   finally
     Screen.Cursor := SavedCursor;
@@ -2690,6 +2714,7 @@ procedure TfrmMain.tvAuthorsChange(Sender: TBaseVirtualTree; Node: PVirtualNode)
 var
   SavedCursor: TCursor;
   Data: PAuthorData;
+  FilterValue: TFilterValue;
 begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -2711,7 +2736,8 @@ begin
       FLastAuthorBookID.Clear;
     end;
 
-    FillBooksTree(tvBooksA, GetActiveBookCollection.GetBookIterator(bmByAuthor, False, AuthorBookFilter), False, True, @FLastAuthorBookID); // авторы
+    FilterValue := AuthorBookFilter;
+    FillBooksTree(tvBooksA, GetActiveBookCollection.GetBookIterator(bmByAuthor, False, @FilterValue), False, True, @FLastAuthorBookID); // авторы
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -2758,6 +2784,7 @@ procedure TfrmMain.tvSeriesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
   SavedCursor: TCursor;
   Data: PSeriesData;
+  FilterValue: TFilterValue;
 begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -2779,7 +2806,8 @@ begin
       FLastSeriesBookID.Clear;
     end;
 
-    FillBooksTree(tvBooksS, GetActiveBookCollection.GetBookIterator(bmBySeries, False, SeriesBookFilter), False, False, @FLastSeriesBookID); // авторы
+    FilterValue := SeriesBookFilter;
+    FillBooksTree(tvBooksS, GetActiveBookCollection.GetBookIterator(bmBySeries, False, @FilterValue), False, False, @FLastSeriesBookID); // авторы
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -2826,6 +2854,7 @@ procedure TfrmMain.tvGenresChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
   SavedCursor: TCursor;
   Data: PGenreData;
+  FilterValue: TFilterValue;
 begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -2848,7 +2877,8 @@ begin
       FLastGenreBookID.Clear;
     end;
 
-    FillBooksTree(tvBooksG, GetActiveBookCollection.GetBookIterator(bmByGenre, False, GenreBookFilter), True, True, @FLastGenreBookID);
+    FilterValue := GenreBookFilter;
+    FillBooksTree(tvBooksG, GetActiveBookCollection.GetBookIterator(bmByGenre, False, @FilterValue), True, True, @FLastGenreBookID);
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -7047,27 +7077,26 @@ begin
   );
 end;
 
-function TfrmMain.AuthorBookFilter: string;
+function TfrmMain.AuthorBookFilter: TFilterValue;
 begin
-  Result := Format('al.%s = %d', [AUTHOR_ID_FIELD, FLastAuthorID]);
+  Result.ValueInt := FLastAuthorID;
 end;
 
-function TfrmMain.SeriesBookFilter: string;
+function TfrmMain.SeriesBookFilter: TFilterValue;
 begin
-  Result := Format('b.%s = %d', [SERIES_ID_FIELD, FLastSeriesID]);
+  Result.ValueInt := FLastSeriesID;
 end;
 
-function TfrmMain.GenreBookFilter: string;
+function TfrmMain.GenreBookFilter: TFilterValue;
 begin
   if isFB2Collection(DMUser.ActiveCollectionInfo.CollectionType) or not Settings.ShowSubGenreBooks then
-    Result := Format('gl.%s = %s', [GENRE_CODE_FIELD, QuotedStr(FLastGenreCode)])
+    Result.ValueString := QuotedStr(FLastGenreCode)
   else
-    Result := Format('gl.%s LIKE %s', [GENRE_CODE_FIELD, QuotedStr(FLastGenreCode + IfThen(FLastGenreIsContainer, '.%', '%'))]);
+    Result.ValueString := QuotedStr(FLastGenreCode + IfThen(FLastGenreIsContainer, '.', ''));
 end;
 
 function TfrmMain.GroupBookFilter: string;
 begin
   Result := Format('bg.%s = %d', [GROUP_ID_FIELD, FLastGroupID]);
 end;
-
 end.

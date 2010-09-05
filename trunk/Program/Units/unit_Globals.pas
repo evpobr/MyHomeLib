@@ -352,10 +352,8 @@ type
 
   PFilterValue = ^TFilterValue;
   TFilterValue = record
-    // Only one of the following values will actually be used, according to the matching FilterType:
+    // Only one of the following values will actually be used at a time
     ValueInt: Integer;
-    ValueDateTime: TDateTime;
-    ValueBoolean: Boolean;
     ValueString: string;
   end;
 
