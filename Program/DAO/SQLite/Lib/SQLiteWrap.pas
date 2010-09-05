@@ -288,7 +288,9 @@ resourcestring
   c_errorbindingblob = 'Error binding blob to database';
 
 const
-  DATE_TIME_FORMAT = 'yyyy-mm-dd hh:nn:ss.zzz';
+  DATE_FORMAT = 'yyyy-mm-dd';
+  TIME_FORMAT = 'hh:nn:ss.zzz';
+  DATE_TIME_FORMAT = DATE_FORMAT + ' ' + TIME_FORMAT;
 
 {$IFDEF WIN32}
 function SystemCollate(Userdta: pointer; Buf1Len: integer; Buf1: pointer;
@@ -820,13 +822,13 @@ begin
   StringVal := FieldAsString(I);
 
   GetLocaleFormatSettings(LOCALE_SYSTEM_DEFAULT, FormatSettings);
-  FormatSettings.ShortDateFormat := 'yyyy-mm-dd';
-  FormatSettings.LongDateFormat := 'yyyy-mm-dd';
+  FormatSettings.ShortDateFormat := DATE_FORMAT;
+  FormatSettings.LongDateFormat := DATE_FORMAT;
   FormatSettings.DateSeparator := '-';
-
-  FormatSettings.ShortTimeFormat := 'hh:nn:ss.zzz';
-  FormatSettings.LongTimeFormat := 'hh:nn:ss.zzz';
+  FormatSettings.ShortTimeFormat := TIME_FORMAT;
+  FormatSettings.LongTimeFormat := TIME_FORMAT;
   FormatSettings.TimeSeparator := ':';
+
   Result := StrToDateTime(StringVal, FormatSettings);
 end;
 
