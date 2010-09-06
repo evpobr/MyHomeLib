@@ -7,11 +7,9 @@ CREATE TABLE [Settings] (
 DROP TABLE IF EXISTS [Series];
 CREATE TABLE [Series] (
   [SeriesID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-  [SeriesTitle] VARCHAR(80) NOT NULL,
-  [SearchTitle] VARCHAR(80) NOT NULL
+  [SeriesTitle] VARCHAR(80) NOT NULL
 );
 CREATE INDEX [IXSeries_Title] ON [Series] ([SeriesTitle] COLLATE NOCASE ASC);
-CREATE INDEX [IXSeries_SearchTitle] ON [Series] ([SearchTitle] COLLATE NOCASE ASC);
 
 DROP TABLE IF EXISTS [Genres];
 CREATE TABLE [Genres] (
@@ -29,13 +27,10 @@ CREATE TABLE [Authors] (
   [AuthorID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
   [LastName] VARCHAR(128) NOT NULL,
   [FirstName] VARCHAR(128),
-  [MiddleName] VARCHAR(128),
-  [FullName] VARCHAR(512) NOT NULL UNIQUE,
-  [SearchName] VARCHAR(512) NOT NULL
+  [MiddleName] VARCHAR(128)
 );
-CREATE INDEX [IXAuthors_SearchName] ON [Authors] ([SearchName] COLLATE NOCASE ASC);
 
-DROP TABLE IF EXISTS [Books];
+DROP TABLE IF EXISTS [Books];
 CREATE TABLE [Books] (
   [BookID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
   [LibID] INTEGER NOT NULL,
@@ -56,7 +51,8 @@ CREATE TABLE [Books] (
   [KeyWords] VARCHAR(255),
   [Rate] INTEGER NOT NULL DEFAULT 0,
   [Progress] INTEGER NOT NULL DEFAULT 0,
-  [Annotation] BLOB, [Review] BLOB
+  [Annotation] BLOB,
+  [Review] BLOB
 );
 CREATE INDEX [IXBooks_SeriesID_SeqNumber] ON [Books] ([SeriesID] ASC, [SeqNumber] ASC);
 CREATE INDEX [IXBooks_Title] ON [Books] ([Title] COLLATE NOCASE ASC);

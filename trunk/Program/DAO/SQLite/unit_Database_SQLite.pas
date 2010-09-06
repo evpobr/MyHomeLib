@@ -50,7 +50,7 @@ type
 
     strict private
       FCollection: TBookCollection_SQLite;
-      FBooks: TSQLiteTable;
+      FBooks: TSQLiteQuery;
       FCollectionID: Integer; // Active collection's ID at the time the iterator was created
       FLoadMemos: Boolean;
       FNumRecords: Integer;
@@ -77,7 +77,7 @@ type
 
     strict private
       FCollection: TBookCollection_SQLite;
-      FAuthors: TSQLiteTable;
+      FAuthors: TSQLiteQuery;
       FCollectionID: Integer; // Active collection's ID at the time the iterator was created
       FNumRecords: Integer;
 
@@ -98,7 +98,7 @@ type
 
     strict private
       FCollection: TBookCollection_SQLite;
-      FGenres: TSQLiteTable;
+      FGenres: TSQLiteQuery;
       FCollectionID: Integer; // Active collection's ID at the time the iterator was created
       FNumRecords: Integer;
 
@@ -121,7 +121,7 @@ type
 
     strict private
       FCollection: TBookCollection_SQLite;
-      FSeries: TSQLiteTable;
+      FSeries: TSQLiteQuery;
       FCollectionID: Integer; // Active collection's ID at the time the iterator was created
       FNumRecords: Integer;
 
@@ -201,7 +201,6 @@ type
     function IsFileNameConflict(const BookRecord: TBookRecord; const IncludeFolder: Boolean): Boolean;
     procedure FixGenreCode(var GenreData: TGenreData);
     procedure SetAnnotation(const BookKey: TBookKey; const Annotation: string);
-    function GenerateFullName(const LastName: string; const FirstName: string; const MiddleName: string): String; inline;
   end;
 
 procedure CreateCollectionTables_SQLite(const DBCollectionFile: string; const GenresFileName: string);
@@ -369,7 +368,6 @@ begin
   for InitRows in INIT_ROWS_ARR do
   begin
     Where := '';
-    FCollection.FDatabase.ParamsClear;
 
     case Mode of
       bmAll:
@@ -382,12 +380,12 @@ begin
         if isFB2Collection(DMUser.ActiveCollectionInfo.CollectionType) or not Settings.ShowSubGenreBooks then
         begin
           AddToWhere(Where, 'gl.GenreCode = :GenreCode');
-          FCollection.FDatabase.AddParamString(':GenreCode', FilterValue^.ValueString);
+          ////FCollection.FDatabase.AddParamString(':GenreCode', FilterValue^.ValueString);
         end
         else
         begin
           AddToWhere(Where, 'gl.GenreCode LIKE :GenreCode');
-          FCollection.FDatabase.AddParamString(':GenreCode', FilterValue^.ValueString + '%');
+          ////FCollection.FDatabase.AddParamString(':GenreCode', FilterValue^.ValueString + '%');
         end;
       end;
 
@@ -396,7 +394,7 @@ begin
         Assert(Assigned(FilterValue));
         SQLRows := 'SELECT b.BookID FROM Author_List al INNER JOIN Books b ON al.BookID = b.BookID ';
         AddToWhere(Where, 'al.AuthorID = :AuthorID ');
-        FCollection.FDatabase.AddParamInt(':AuthorID', FilterValue^.ValueInt);
+        ////FCollection.FDatabase.AddParamInt(':AuthorID', FilterValue^.ValueInt);
       end;
 
       bmBySeries:
@@ -404,7 +402,7 @@ begin
         Assert(Assigned(FilterValue));
         SQLRows := 'SELECT b.BookID FROM Books b ';
         AddToWhere(Where, 'b.SeriesID = :SeriesID ');
-        FCollection.FDatabase.AddParamInt(':SeriesID', FilterValue^.ValueInt);
+        ////FCollection.FDatabase.AddParamInt(':SeriesID', FilterValue^.ValueInt);
       end;
 
       else
@@ -416,12 +414,12 @@ begin
       if FCollection.HideDeleted then
       begin
         AddToWhere(Where, ' b.IsDeleted = :IsDeleted');
-        FCollection.FDatabase.AddParamBoolean(':IsDeleted', False);
+        ////FCollection.FDatabase.AddParamBoolean(':IsDeleted', False);
       end;
       if FCollection.ShowLocalOnly then
       begin
         AddToWhere(Where, ' b.IsLocal = :IsLocal ');
-        FCollection.FDatabase.AddParamBoolean(':IsLocal', True);
+        ////FCollection.FDatabase.AddParamBoolean(':IsLocal', True);
       end;
     end;
 
@@ -431,7 +429,7 @@ begin
     if InitRows then
     begin
       Logger := GetIntervalLogger('TBookIteratorImpl.PrepareData', SQLRows);
-      FBooks := FCollection.FDatabase.GetTable(SQLRows);
+      FBooks := FCollection.FDatabase.NewQuery(SQLRows);
       Logger := nil;
     end
     else
@@ -459,7 +457,6 @@ begin
   for InitRows in INIT_ROWS_ARR do
   begin
     SQLRows := '';
-    FCollection.FDatabase.ParamsClear;
 
     try
       // ------------------------ авторы ----------------------------------------
@@ -560,7 +557,7 @@ begin
     if InitRows then
     begin
       Logger := GetIntervalLogger('TBookIteratorImpl.PrepareSearchData', SQLCount);
-      FBooks := FCollection.FDatabase.GetTable(SQLRows);
+      FBooks := FCollection.FDatabase.NewQuery(SQLRows);
       Logger := nil;
     end
     else
@@ -632,7 +629,6 @@ begin
   for InitRows in INIT_ROWS_ARR do
   begin
     Where := '';
-    FCollection.FDatabase.ParamsClear;
 
     case Mode of
       amAll:
@@ -642,7 +638,7 @@ begin
         begin
           Assert(Assigned(FilterValue));
           SQLRows := 'SELECT DISTINCT a.AuthorID FROM Author_List a WHERE a.BookID = :v0 ';
-          FCollection.FDatabase.AddParamInt(':v0', FilterValue^.ValueInt);
+          ////FCollection.FDatabase.AddParamInt(':v0', FilterValue^.ValueInt);
         end;
 
       amFullFilter:
@@ -654,12 +650,12 @@ begin
             if FCollection.HideDeleted then
             begin
               AddToWhere(Where, ' b.IsDeleted = :IsDeleted ');
-              FCollection.FDatabase.AddParamBoolean(':IsDeleted', False);
+              ////FCollection.FDatabase.AddParamBoolean(':IsDeleted', False);
             end;
             if FCollection.ShowLocalOnly then
             begin
               AddToWhere(Where, ' b.IsLocal = :IsLocal ');
-              FCollection.FDatabase.AddParamBoolean(':IsLocal', True);
+              ////FCollection.FDatabase.AddParamBoolean(':IsLocal', True);
             end;
           end;
 
@@ -680,7 +676,7 @@ begin
               AddToWhere(Where,
                 'UPPER(a.LastName) LIKE :FilterType'  // начинается на заданную букву
               );
-              FCollection.FDatabase.AddParamString(':FilterType', FCollection.AuthorFilterType + '%');
+              ////FCollection.FDatabase.AddParamString(':FilterType', FCollection.AuthorFilterType + '%');
             end;
           end;
         end;
@@ -697,7 +693,7 @@ begin
     if InitRows then
     begin
       Logger := GetIntervalLogger('TAuthorIteratorImpl.PrepareData', SQLRows);
-      FAuthors := FCollection.FDatabase.GetTable(SQLRows);
+      FAuthors := FCollection.FDatabase.NewQuery(SQLRows);
       Logger := nil;
     end
     else
@@ -756,39 +752,52 @@ var
   SQLRows: String;
   SQLCount: String;
   Logger: IIntervalLogger;
-  InitRows: Boolean;
+  query: TSQLiteQuery;
 begin
-  for InitRows in INIT_ROWS_ARR do
-  begin
-    FCollection.FDatabase.ParamsClear;
-
-    case Mode of
-      gmAll:
-        SQLRows := 'SELECT g.GenreCode FROM Genres g ';
-      gmByBook:
-      begin
-        Assert(Assigned(FilterValue));
-        SQLRows := 'SELECT gl.GenreCode FROM Genre_List gl WHERE BookID = :v0 ';
-        FCollection.FDatabase.AddParamInt(':v0', FilterValue^.ValueInt);
-     end
-      else
-        Assert(False);
+  case Mode of
+    gmAll:
+    begin
+      SQLRows := 'SELECT GenreCode FROM Genres';
+      SQLCount := 'SELECT COUNT(*) FROM Genres';
     end;
 
-    SQLCount := 'SELECT COUNT(*) FROM (' + SQLRows + ') ROWS ';
-
-    if InitRows then
+    gmByBook:
     begin
-      Logger := GetIntervalLogger('TGenreIteratorImpl.PrepareData', SQLRows);
-      FGenres := FCollection.FDatabase.GetTable(SQLRows);
-      Logger := nil;
-    end
+      Assert(Assigned(FilterValue));
+      SQLRows := 'SELECT GenreCode FROM Genre_List WHERE BookID = :v0';
+      SQLCount := 'SELECT COUNT(*) FROM Genre_List WHERE BookID = :v0';
+      ////FCollection.FDatabase.AddParamInt(':v0', FilterValue^.ValueInt);
+    end;
+
     else
-    begin
-      Logger := GetIntervalLogger('TGenreIteratorImpl.PrepareData', SQLCount);
-      FNumRecords := FCollection.FDatabase.GetTableInt(SQLCount);
-      Logger := nil;
-    end;
+      Assert(False);
+  end;
+
+  query := FCollection.FDatabase.NewQuery(SQLCount);
+  try
+    if Mode = gmByBook then
+      query.SetParam(1, FilterValue^.ValueInt);
+
+    Logger := GetIntervalLogger('TGenreIteratorImpl.PrepareData', SQLCount);
+    query.Open;
+    Logger := nil;
+
+    if not query.Eof then
+      FNumRecords := query.FieldAsInt(0);
+  finally
+    query.Free;
+  end;
+
+  FGenres := FCollection.FDatabase.NewQuery(SQLRows);
+  try
+    if Mode = gmByBook then
+      FGenres.SetParam(1, FilterValue^.ValueInt);
+
+    Logger := GetIntervalLogger('TGenreIteratorImpl.PrepareData', SQLRows);
+    FGenres.Open;
+    Logger := nil;
+  except
+    FreeAndNil(FGenres);
   end;
 end;
 
@@ -843,7 +852,6 @@ begin
   for InitRows in INIT_ROWS_ARR do
   begin
     Where := '';
-    FCollection.FDatabase.ParamsClear;
 
     case Mode of
       smAll:
@@ -858,12 +866,12 @@ begin
           if FCollection.HideDeleted then
           begin
             AddToWhere(Where, ' b.IsDeleted = :IsDeleted ');
-            FCollection.FDatabase.AddParamBoolean(':IsDeleted', False);
+            ////FCollection.FDatabase.AddParamBoolean(':IsDeleted', False);
           end;
           if FCollection.ShowLocalOnly then
           begin
             AddToWhere(Where, ' b.IsLocal = :IsLocal ');
-            FCollection.FDatabase.AddParamBoolean(':IsLocal', True);
+            ////FCollection.FDatabase.AddParamBoolean(':IsLocal', True);
           end;
         end;
 
@@ -884,7 +892,7 @@ begin
             AddToWhere(Where,
               'UPPER(s.SeriesTitle) LIKE :FilterType'   // начинается на заданную букву
             );
-            FCollection.FDatabase.AddParamString(':FilterType', FCollection.SeriesFilterType + '%');
+            ////FCollection.FDatabase.AddParamString(':FilterType', FCollection.SeriesFilterType + '%');
           end;
         end;
       end
@@ -899,7 +907,7 @@ begin
     if InitRows then
     begin
       Logger := GetIntervalLogger('TSeriesIteratorImpl.PrepareData', SQLRows);
-      FSeries := FCollection.FDatabase.GetTable(SQLRows);
+      FSeries := FCollection.FDatabase.NewQuery(SQLRows);
       Logger := nil;
     end
     else
@@ -939,8 +947,7 @@ var
   ValueStream: TStringStream;
   Logger: IIntervalLogger;
 begin
-  FDatabase.ParamsClear;
-  FDatabase.AddParamInt(':v0', PropID);
+  ////FDatabase.AddParamInt(':v0', PropID);
 
   if Value <> '' then
   begin
@@ -979,16 +986,15 @@ var
     Logger: IIntervalLogger;
     BookID: Integer;
   begin
-    FDatabase.ParamsClear;
     if bookInfo.LibID = 0 then
     begin
-      FDatabase.AddParamInt(':v0', bookInfo.BookID);
+      ////FDatabase.AddParamInt(':v0', bookInfo.BookID);
       Logger := GetIntervalLogger('ImportUserData.GetBookKey', SQL_BY_BOOKID);
       BookID := FDatabase.GetTableInt(SQL_BY_BOOKID);
     end
     else
     begin
-      FDatabase.AddParamInt(':v0', bookInfo.LibID);
+      ////FDatabase.AddParamInt(':v0', bookInfo.LibID);
       Logger := GetIntervalLogger('ImportUserData.GetBookKey', SQL_BY_LIBID);
       BookID := FDatabase.GetTableInt(SQL_BY_LIBID);
     end;
@@ -1012,20 +1018,19 @@ begin
   for extra in data.Extras do
   begin
     Sql := ''; //UPDATE Books SET
-    FDatabase.ParamsClear;
     if GetBookKey(extra, BookKey) then
     begin
       if extra.Rating <> 0 then
       begin
         Sql := 'Rate = :v0 ';
-        FDatabase.AddParamInt(':v0', extra.Rating);
+        ////FDatabase.AddParamInt(':v0', extra.Rating);
       end;
       if extra.Progress <> 0 then
       begin
         if Sql <> '' then
           Sql := Sql + ', ';
         Sql := 'Progress = :v1 ';
-        FDatabase.AddParamInt(':v1', extra.Progress);
+        ////FDatabase.AddParamInt(':v1', extra.Progress);
       end;
       if Sql <> '' then
       begin
@@ -1079,25 +1084,28 @@ const
     'ORDER BY b.BookID ';
 var
   Logger: IIntervalLogger;
-  Table: TSQLiteTable;
+  query: TSQLiteQuery;
 begin
   Assert(Assigned(data));
 
-  FDatabase.ParamsClear;
-  Logger := GetIntervalLogger('ExportUserData', SQL);
-  Table := FDatabase.GetTable(SQL);
-  Logger := nil;
-  while not Table.Eof do
-  begin
-    data.Extras.AddExtra(
-      Table.FieldAsInt(0),        // BookID
-      Table.FieldAsInt(1),        // LibID
-      Table.FieldAsInt(2),        // Rate
-      Table.FieldAsInt(3),        // Progress
-      Table.FieldAsBlobString(4)  // Review
-    );
+  query := FDatabase.NewQuery(SQL);
+  try
+    Logger := GetIntervalLogger('ExportUserData', SQL);
+    query.Open;
+    Logger := nil;
+    while not query.Eof do
+    begin
+      data.Extras.AddExtra(
+        query.FieldAsInt(0),        // BookID
+        query.FieldAsInt(1),        // LibID
+        query.FieldAsInt(2),        // Rate
+        query.FieldAsInt(3),        // Progress
+        query.FieldAsBlobString(4)  // Review
+      );
+    end;
+  finally
+    query.Free;
   end;
-
   DMUser.ExportUserData(data);
 end;
 
@@ -1111,8 +1119,7 @@ var
 begin
   if ZipFolder then
   begin
-    FDatabase.ParamsClear;
-    FDatabase.AddParamString(':v0', FileName);
+    ////FDatabase.AddParamString(':v0', FileName);
     Logger := GetIntervalLogger('CheckFileInCollection', SQL_BY_FOLDER);
     Result := (FDatabase.GetTableInt(SQL_BY_FOLDER) > 0);
     Logger := nil;
@@ -1124,8 +1131,7 @@ begin
     else
       S := TPath.GetFileNameWithoutExtension(FileName);
 
-    FDatabase.ParamsClear;
-    FDatabase.AddParamString(':v0', S);
+    ////FDatabase.AddParamString(':v0', S);
     Logger := GetIntervalLogger('CheckFileInCollection', SQL_BY_FILENAME);
     Result := (FDatabase.GetTableInt(SQL_BY_FILENAME) > 0);
     Logger := nil;
@@ -1141,8 +1147,7 @@ var
   P: Integer;
   Logger: IIntervalLogger;
 begin
-  FDatabase.ParamsClear;
-  FDatabase.AddParamString(':v0', FB2Code);
+  ////FDatabase.AddParamString(':v0', FB2Code);
   Logger := GetIntervalLogger('GetTopGenreAlias', SQL_BY_FB2CODE);
   Code := FDatabase.GetTableString(SQL_BY_FB2CODE);
   Logger := nil;
@@ -1151,8 +1156,7 @@ begin
   P := Pos('.', Code);
   Code := '0.' + Copy(Code, 1, P - 1);
 
-  FDatabase.ParamsClear;
-  FDatabase.AddParamString(':v0', Code);
+  ////FDatabase.AddParamString(':v0', Code);
   Logger := GetIntervalLogger('GetTopGenreAlias', SQL_BY_GENRECODE);
   Result := FDatabase.GetTableString(SQL_BY_GENRECODE); // Alias
   Logger := nil;
@@ -1160,59 +1164,70 @@ end;
 
 procedure TBookCollection_SQLite.InsertGenreIfMissing(const GenreData: TGenreData);
 const
-  SQL_SELECT = 'SELECT COUNT(*) FROM Genres g WHERE g.GenreCode = :v0';
-  SQL_INSERT = 'INSERT INTO Genres (GenreCode, ParentCode, FB2Code, GenreAlias) ' +
-    'SELECT :v0, :v1, :v2, :v3 ';
+  SQL_SELECT = 'SELECT 1 FROM Genres g WHERE g.GenreCode = :v0';
+  SQL_INSERT = 'INSERT INTO Genres (GenreCode, ParentCode, FB2Code, GenreAlias) VALUES(:v0, :v1, :v2, :v3)';
 var
+  searchQuery: TSQLiteQuery;
+  insertQuery: TSQLiteQuery;
   Logger: IIntervalLogger;
   Count: Integer;
 begin
-  FDatabase.ParamsClear;
-  FDatabase.AddParamString(':v0', GenreData.GenreCode);
-  Logger := GetIntervalLogger('InsertGenreIfMissing', SQL_SELECT);
-  Count := FDatabase.GetTableInt(SQL_SELECT);
-  Logger := nil;
-
-  if Count = 0 then // A new Genre
-  begin
-    FDatabase.ParamsClear;
-    FDatabase.AddParamString(':v0', GenreData.GenreCode);
-    FDatabase.AddParamString(':v1', GenreData.ParentCode);
-    FDatabase.AddParamString(':v2', GenreData.FB2GenreCode);
-    FDatabase.AddParamString(':v3', GenreData.GenreAlias);
-    Logger := GetIntervalLogger('InsertGenreIfMissing', SQL_INSERT);
-    FDatabase.ExecSQL(SQL_INSERT);
+  searchQuery := FDatabase.NewQuery(SQL_SELECT);
+  try
+    searchQuery.SetParam('1', GenreData.GenreCode);
+    Logger := GetIntervalLogger('InsertGenreIfMissing', SQL_SELECT);
+    searchQuery.Open;
     Logger := nil;
+
+    if searchQuery.Eof then
+    begin
+      insertQuery := FDatabase.NewQuery(SQL_INSERT);
+      try
+        insertQuery.SetParam(1, GenreData.GenreCode);
+        insertQuery.SetParam(2, GenreData.ParentCode);
+        insertQuery.SetParam(3, GenreData.FB2GenreCode);
+        insertQuery.SetParam(4, GenreData.GenreAlias);
+
+        Logger := GetIntervalLogger('InsertGenreIfMissing', SQL_INSERT);
+        insertQuery.ExecSQL;
+        Logger := nil;
+      finally
+        insertQuery.Free;
+      end;
+    end;
+  finally
+    searchQuery.Free;
   end;
 end;
 
 procedure TBookCollection_SQLite.InternalLoadGenres;
 const
-  SQL = 'SELECT g.GenreCode, g.ParentCode, g.FB2Code, g.GenreAlias FROM Genres g ';
+  SQL = 'SELECT GenreCode, ParentCode, FB2Code, GenreAlias FROM Genres';
 var
   Logger: IIntervalLogger;
-  Table: TSQLiteTable;
+  query: TSQLiteQuery;
   Genre: TGenreData;
 begin
   FGenreCache.Clear;
 
-  Logger := GetIntervalLogger('InternalLoadGenres', SQL);
-  Table := FDatabase.GetTable(SQL);
+  query := FDatabase.NewQuery(SQL);
   try
+    Logger := GetIntervalLogger('InternalLoadGenres', SQL);
+    query.Open;
     Logger := nil;
-    while not Table.EOF do
+    while not query.EOF do
     begin
-      Genre.GenreCode := Table.FieldAsString(0);
-      Genre.ParentCode := Table.FieldAsString(1);
-      Genre.FB2GenreCode := Table.FieldAsString(2);
-      Genre.GenreAlias := Table.FieldAsString(3);
+      Genre.GenreCode := query.FieldAsString(0);
+      Genre.ParentCode := query.FieldAsString(1);
+      Genre.FB2GenreCode := query.FieldAsString(2);
+      Genre.GenreAlias := query.FieldAsString(3);
 
       FGenreCache.Add(Genre.GenreCode, Genre);
 
-      Table.Next;
+      query.Next;
     end;
   finally
-    FreeAndNil(Table);
+    FreeAndNil(query);
   end;
 end;
 
@@ -1245,30 +1260,30 @@ end;
 
 procedure TBookCollection_SQLite.GetAuthor(AuthorID: Integer; var Author: TAuthorData);
 const
-  SQL = 'SELECT a.LastName, a.FirstName, a.MiddleName FROM Authors a WHERE AuthorID = :v0 ';
+  SQL = 'SELECT LastName, FirstName, MiddleName FROM Authors WHERE AuthorID = :v0';
 var
   Logger: IIntervalLogger;
-  Table: TSQLiteTable;
+  query: TSQLiteQuery;
 begin
-  FDatabase.ParamsClear;
-  FDatabase.AddParamInt(':v0', AuthorID);
-
-  Logger := GetIntervalLogger('GetAuthor', SQL);
-  Table := FDatabase.GetTable(SQL);
+  query := FDatabase.NewQuery(SQL);
   try
+    query.SetParam(1, AuthorID);
+
+    Logger := GetIntervalLogger('GetAuthor', SQL);
+    query.Open;
     Logger := nil;
 
-    if not Table.Eof then
+    if not query.Eof then
     begin
       Author.AuthorID := AuthorID;
-      Author.LastName := Table.FieldAsString(0);
-      Author.FirstName := Table.FieldAsString(1);
-      Author.MiddleName := Table.FieldAsString(2);
+      Author.LastName := query.FieldAsString(0);
+      Author.FirstName := query.FieldAsString(1);
+      Author.MiddleName := query.FieldAsString(2);
     end
     else
       Author.Clear;
   finally
-    FreeAndNil(Table);
+    FreeAndNil(query);
   end;
 end;
 
@@ -1276,50 +1291,55 @@ end;
 // Return AuthorID of the existing/added Author record
 function TBookCollection_SQLite.InsertAuthorIfMissing(const Author: TAuthorData): Integer;
 const
-  SQL_SELECT = 'SELECT a.AuthorID FROM Authors a ' +
-    'WHERE a.FullName = :v0 ';
-  SQL_INSERT = 'INSERT INTO Authors (LastName, FirstName, MiddleName, FullName, SearchName) ' +
-    'SELECT :v0, :v1, :v2, :v3, :v4 ';
+  SQL_SELECT = 'SELECT AuthorID FROM Authors WHERE UPPER(LastName) = ? AND UPPER(FirstName) = ? AND UPPER(MiddleName) = ?';
+  SQL_INSERT = 'INSERT INTO Authors (LastName, FirstName, MiddleName) VALUES(?, ?, ?)';
 
 var
+  searchQuery: TSQLiteQuery;
+  insertQuery: TSQLiteQuery;
   Logger: IIntervalLogger;
-  FullName: string;
-  SearchName: string;
 begin
-  FullName := GenerateFullName(Author.LastName, Author.FirstName, Author.MiddleName);
+  searchQuery := FDatabase.NewQuery(SQL_SELECT);
+  try
+    searchQuery.SetParam(1, Author.LastName);
+    searchQuery.SetParam(2, Author.FirstName);
+    searchQuery.SetParam(3, Author.MiddleName);
 
-  SearchName := FullName;
-  StrReplace(';;', ' ', SearchName);
-  StrReplace(';', ' ', SearchName);
-  SearchName := Trim(SearchName);
-
-  FDatabase.ParamsClear;
-  FDatabase.AddParamString(':v0', FullName);
-  Logger := GetIntervalLogger('InsertAuthorIfMissing', SQL_SELECT);
-  Result := FDatabase.GetTableInt(SQL_SELECT);
-  Logger := nil;
-
-  if Result = 0 then // not found in DB
-  begin
-    FDatabase.ParamsClear;
-    FDatabase.AddParamString(':v0', Author.LastName);
-    FDatabase.AddParamString(':v1', Author.FirstName);
-    FDatabase.AddParamString(':v2', Author.MiddleName);
-    FDatabase.AddParamString(':v3', FullName);
-    FDatabase.AddParamString(':v4', SearchName);
-    Logger := GetIntervalLogger('InsertAuthorIfMissing', SQL_INSERT);
-    FDatabase.ExecSQL(SQL_INSERT);
+    Logger := GetIntervalLogger('InsertAuthorIfMissing', SQL_SELECT);
+    searchQuery.Open;
     Logger := nil;
-    Result := FDatabase.LastInsertRowID;
+
+    if searchQuery.Eof then
+    begin
+      insertQuery := FDatabase.NewQuery(SQL_INSERT);
+      try
+        insertQuery.SetParam(1, Author.LastName);
+        insertQuery.SetParam(2, Author.FirstName);
+        insertQuery.SetParam(3, Author.MiddleName);
+
+        Logger := GetIntervalLogger('InsertAuthorIfMissing', SQL_INSERT);
+        insertQuery.ExecSQL;
+        Logger := nil;
+        Result := FDatabase.LastInsertRowID;
+      finally
+        insertQuery.Free;
+      end;
+    end
+    else
+      Result := searchQuery.FieldAsInt(0);
+  finally
+    searchQuery.Free;
   end;
 end;
 
 function TBookCollection_SQLite.FindOrCreateSeries(const Title: string): Integer;
 const
-  SQL_SELECT = 'SELECT s.SeriesID FROM Series s WHERE SearchTitle = :v0 LIMIT 1 ';
-  SQL_INSERT = 'INSERT INTO Series (SeriesTitle, SearchTitle) SELECT :v0, :v1 ';
+  SQL_SELECT = 'SELECT SeriesID FROM Series WHERE UPPER(SeriesTitle) = UPPER(:v0) LIMIT 1';
+  SQL_INSERT = 'INSERT INTO Series (SeriesTitle) VALUES (:v0)';
 var
   Logger: IIntervalLogger;
+  searchQuery: TSQLiteQuery;
+  insertQuery: TSQLiteQuery;
   SearchExpr: string;
 begin
   if NO_SERIES_TITLE = Title then
@@ -1328,38 +1348,50 @@ begin
   begin
     SearchExpr := ToUpper(Trim(Title));
 
-    FDatabase.ParamsClear;
-    FDatabase.AddParamString(':v0', SearchExpr);
-    Logger := GetIntervalLogger('FindOrCreateSeries', SQL_SELECT);
-    Result := FDatabase.GetTableInt(SQL_SELECT);
-    Logger := nil;
-
-    if Result = 0 then // not found
-    begin
-      FDatabase.ParamsClear;
-      FDatabase.AddParamString(':v0', Title);
-      FDatabase.AddParamString(':v1', SearchExpr);
-      Logger := GetIntervalLogger('FindOrCreateSeries', SQL_INSERT);
-      FDatabase.ExecSQL(SQL_INSERT);
+    searchQuery := FDatabase.NewQuery(SQL_SELECT);
+    try
+      searchQuery.SetParam(1, Title);
+      Logger := GetIntervalLogger('FindOrCreateSeries', SQL_SELECT);
+      searchQuery.Open;
       Logger := nil;
-      Result := FDatabase.LastInsertRowID;
+      if searchQuery.Eof then
+      begin
+        insertQuery := FDatabase.NewQuery(SQL_INSERT);
+        try
+          insertQuery.SetParam(1, Title);
+          Logger := GetIntervalLogger('FindOrCreateSeries', SQL_INSERT);
+          insertQuery.ExecSQL;
+          Logger := nil;
+          Result := FDatabase.LastInsertRowID;
+        finally
+          insertQuery.Free;
+        end;
+      end
+      else
+        Result := searchQuery.FieldAsInt(0);
+    finally
+      searchQuery.Free;
     end;
   end;
 end;
 
 function TBookCollection_SQLite.InsertAuthorListEntry(const BookKey: TBookKey; const Author: TAuthorData): Integer;
 const
-  SQL_INSERT = 'INSERT INTO Author_List (AuthorID, BookID) ' +
-    'SELECT :v0, :v1 ';
+  SQL_INSERT = 'INSERT INTO Author_List (AuthorID, BookID) VALUES(:v0, :v1)';
 var
+  query: TSQLiteQuery;
   Logger: IIntervalLogger;
 begin
-  FDatabase.ParamsClear;
-  FDatabase.AddParamInt(':v0', Author.AuthorID);
-  FDatabase.AddParamInt(':v1', BookKey.BookID);
-  Logger := GetIntervalLogger('InsertAuthorListEntry', SQL_INSERT);
-  FDatabase.ExecSQL(SQL_INSERT);
-  Logger := nil;
+  query := FDatabase.NewQuery(SQL_INSERT);
+  try
+    query.SetParam(1, Author.AuthorID);
+    query.SetParam(2, BookKey.BookID);
+    Logger := GetIntervalLogger('InsertAuthorListEntry', SQL_INSERT);
+    query.ExecSQL;
+    Logger := nil;
+  finally
+    query.Free;
+  end;
 end;
 
 function TBookCollection_SQLite.IsFileNameConflict(const BookRecord: TBookRecord; const IncludeFolder: Boolean): Boolean;
@@ -1371,11 +1403,10 @@ const
 var
   Logger: IIntervalLogger;
 begin
-  FDatabase.ParamsClear;
-  FDatabase.AddParamString(':v0', BookRecord.FileName);
+  ////FDatabase.AddParamString(':v0', BookRecord.FileName);
   if IncludeFolder then
   begin
-    FDatabase.AddParamString(':v1', BookRecord.Folder);
+    ////FDatabase.AddParamString(':v1', BookRecord.Folder);
     Logger := GetIntervalLogger('IsFileNameConflict', SQL_SELECT_BY_FOLDER_AND_FILENAME);
     Result := (FDatabase.GetTableInt(SQL_SELECT_BY_FOLDER_AND_FILENAME) > 0);
     Logger := nil;
@@ -1405,8 +1436,7 @@ begin
     //
     // Знаем fb2-код жанра => получаем внутренний код
     //
-    FDatabase.ParamsClear;
-    FDatabase.AddParamString(':v0', GenreData.FB2GenreCode);
+    ////FDatabase.AddParamString(':v0', GenreData.FB2GenreCode);
     Logger := GetIntervalLogger('FixGenreCode', SQL_BY_FB2CODE);
     Code := FDatabase.GetTableString(SQL_BY_FB2CODE);
     Logger := nil;
@@ -1429,8 +1459,7 @@ begin
       GenreData.GenreCode := UNKNOWN_GENRE_CODE
     else
     begin
-      FDatabase.ParamsClear;
-      FDatabase.AddParamString(':v0', GenreData.GenreCode);
+      ////FDatabase.AddParamString(':v0', GenreData.GenreCode);
       Logger := GetIntervalLogger('FixGenreCode', SQL_BY_GENRECODE);
       Count := FDatabase.GetTableInt(SQL_BY_GENRECODE);
       Logger := nil;
@@ -1447,11 +1476,12 @@ const
     'SeriesID, SeqNumber, Code, BookSize, LibID, ' +    // 5  .. 9
     'IsDeleted, IsLocal, UpdateDate, Lang, LibRate, ' + // 10 .. 14
     'KeyWords, Rate, Progress ' +                       // 15 .. 17
-    ') SELECT :v0, :v1, :v2, :v3, :v4, :v5, :v6, :v7, :v8, :v9, :v10, :v11, :v12, :v13, :v14, :v15, :v16, :v17 ';
+    ') VALUES(:v0, :v1, :v2, :v3, :v4, :v5, :v6, :v7, :v8, :v9, :v10, :v11, :v12, :v13, :v14, :v15, :v16, :v17)';
 var
   i: Integer;
   Author: TAuthorData;
   NameConflict: Boolean;
+  query: TSQLiteQuery;
   Logger: IIntervalLogger;
 begin
   Result := 0;
@@ -1494,42 +1524,47 @@ begin
     if BookRecord.SeqNumber > 5000 then
       BookRecord.SeqNumber := 0;
 
-    FDatabase.ParamsClear;
-    FDatabase.AddParamString(':v0', BookRecord.Title);
-    FDatabase.AddParamString(':v1', BookRecord.Folder);
-    FDatabase.AddParamString(':v2', BookRecord.FileName);
-    FDatabase.AddParamString(':v3', BookRecord.FileExt);
-    FDatabase.AddParamInt(':v4', BookRecord.InsideNo);
-    if NO_SERIE_ID <> BookRecord.SeriesID then
-    begin
-      FDatabase.AddParamInt(':v5', BookRecord.SeriesID);
-      FDatabase.AddParamInt(':v6', BookRecord.SeqNumber);
-    end
-    else
-    begin
-      FDatabase.AddParamNull(':v5');
-      FDatabase.AddParamNull(':v6');
+    query := FDatabase.NewQuery(SQL_INSERT);
+    try
+      query.SetParam('1', BookRecord.Title);
+      query.SetParam('2', BookRecord.Folder);
+      query.SetParam('3', BookRecord.FileName);
+      query.SetParam('4', BookRecord.FileExt);
+      query.SetParam('5', BookRecord.InsideNo);
+      if NO_SERIE_ID <> BookRecord.SeriesID then
+      begin
+        query.SetParam('6', BookRecord.SeriesID);
+        query.SetParam('7', BookRecord.SeqNumber);
+      end
+      else
+      begin
+        query.SetParam('6');
+        query.SetParam('7');
+      end;
+      query.SetParam('8', BookRecord.Code);
+      query.SetParam('9', BookRecord.Size);
+      query.SetParam('10', BookRecord.LibID);
+      query.SetParam('11', BookRecord.IsDeleted);
+      query.SetParam('12', BookRecord.IsLocal);
+      query.SetParam('13', BookRecord.Date);
+      query.SetParam('14', BookRecord.Lang);
+      query.SetParam('15', BookRecord.LibRate);
+      query.SetParam('16', BookRecord.KeyWords);
+      query.SetParam('17', BookRecord.Rate);
+      query.SetParam('18', BookRecord.Progress);
+
+      Logger := GetIntervalLogger('InsertBook', SQL_INSERT);
+      query.ExecSQL;
+      Logger := nil;
+      BookRecord.BookKey.BookID := FDatabase.LastInsertRowID;
+      BookRecord.BookKey.DatabaseID := DMUser.ActiveCollectionInfo.ID;
+    finally
+      query.Free;
     end;
-    FDatabase.AddParamInt(':v7', BookRecord.Code);
-    FDatabase.AddParamInt(':v8', BookRecord.Size);
-    FDatabase.AddParamInt(':v9', BookRecord.LibID);
-    FDatabase.AddParamBoolean(':v10', BookRecord.IsDeleted);
-    FDatabase.AddParamBoolean(':v11', BookRecord.IsLocal);
-    FDatabase.AddParamDateTime(':v12', BookRecord.Date);
-    FDatabase.AddParamString(':v13', BookRecord.Lang);
-    FDatabase.AddParamInt(':v14', BookRecord.LibRate);
-    FDatabase.AddParamString(':v15', BookRecord.KeyWords);
-    FDatabase.AddParamInt(':v16', BookRecord.Rate);
-    FDatabase.AddParamInt(':v17', BookRecord.Progress);
-    Logger := GetIntervalLogger('InsertBook', SQL_INSERT);
-    FDatabase.ExecSQL(SQL_INSERT);
-    Logger := nil;
-    BookRecord.BookKey.BookID := FDatabase.LastInsertRowID;
-    BookRecord.BookKey.DatabaseID := DMUser.ActiveCollectionInfo.ID;
 
     if BookRecord.Review <> '' then
       SetReview(BookRecord.BookKey, BookRecord.Review);
-    if BookRecord.Annotation < '' then
+    if BookRecord.Annotation <> '' then
       SetAnnotation(BookRecord.BookKey, BookRecord.Annotation);
 
     FilterDuplicateGenresByCode(BookRecord.Genres);
@@ -1553,17 +1588,17 @@ const
 var
   Logger: IIntervalLogger;
   Count: Integer;
-  Table: TSQLiteTable;
+  Table: TSQLiteQuery;
 begin
   BookRecord.Clear;
 
   if BookKey.DatabaseID = DMUser.ActiveCollectionInfo.ID then
   begin
-    FDatabase.ParamsClear;
-    FDatabase.AddParamInt(':v0', BookKey.BookID);
-    Logger := GetIntervalLogger('GetBookRecord', SQL);
-    Table := FDatabase.GetTable(SQL);
+    Table := FDatabase.NewQuery(SQL);
     try
+      Table.SetParam(1, BookKey.BookID);
+      Logger := GetIntervalLogger('GetBookRecord', SQL);
+      Table.Open;
       Logger := nil;
       Assert(not Table.Eof);
 
@@ -1615,6 +1650,9 @@ end;
 
 procedure TBookCollection_SQLite.DeleteBook(const BookKey: TBookKey);
 const
+  //
+  // Предлагаю обойтись триггерами
+  //
   SQL_DELETE_GENRELIST = 'DELETE FROM Genre_List WHERE BookID = :v0 ';
   SQL_DELETE_AUTHORLIST = 'DELETE FROM Author_List WHERE BookID = :v0 ';
   SQL_DELETE_SERIES = 'DELETE FROM Series WHERE SeriesID in ' +
@@ -1624,56 +1662,101 @@ const
 
 var
   Logger: IIntervalLogger;
+  query: TSQLiteQuery;
 begin
   VerifyCurrentCollection(BookKey.DatabaseID);
 
-  Logger := GetIntervalLogger('DeleteBook', SQL_DELETE_GENRELIST);
-  FDatabase.ParamsClear;
-  FDatabase.AddParamInt(':v0', BookKey.BookID);
-  FDatabase.ExecSQL(SQL_DELETE_GENRELIST);
+  query := FDatabase.NewQuery(SQL_DELETE_GENRELIST);
+  try
+    query.SetParam(1, BookKey.BookID);
+    Logger := GetIntervalLogger('DeleteBook', SQL_DELETE_GENRELIST);
+    query.ExecSQL;
+    Logger := nil;
+  finally
+    query.Free;
+  end;
 
-  Logger.Restart(SQL_DELETE_AUTHORLIST);
-  FDatabase.ParamsClear;
-  FDatabase.AddParamInt(':v0', BookKey.BookID);
-  FDatabase.ExecSQL(SQL_DELETE_AUTHORLIST);
+  query := FDatabase.NewQuery(SQL_DELETE_AUTHORLIST);
+  try
+    query.SetParam(1, BookKey.BookID);
+    Logger := GetIntervalLogger('DeleteBook', SQL_DELETE_AUTHORLIST);
+    query.ExecSQL;
+    Logger := nil;
+  finally
+    query.Free;
+  end;
 
-  Logger.Restart(SQL_DELETE_SERIES);
-  FDatabase.ParamsClear;
-  FDatabase.AddParamInt(':v0', BookKey.BookID);
-  FDatabase.AddParamInt(':v1', NO_SERIE_ID);
-  FDatabase.ExecSQL(SQL_DELETE_SERIES);
+  query := FDatabase.NewQuery(SQL_DELETE_SERIES);
+  try
+    query.SetParam(1, BookKey.BookID);
+    query.SetParam(2, NO_SERIE_ID);
+    Logger := GetIntervalLogger('DeleteBook', SQL_DELETE_SERIES);
+    query.ExecSQL;
+    Logger := nil;
+  finally
+    query.Free;
+  end;
 
-  Logger.Restart(SQL_DELETE_AUTHORS);
-  FDatabase.ParamsClear;
-  FDatabase.ExecSQL(SQL_DELETE_AUTHORS);
+  query := FDatabase.NewQuery(SQL_DELETE_AUTHORS);
+  try
+    Logger := GetIntervalLogger('DeleteBook', SQL_DELETE_AUTHORS);
+    query.ExecSQL;
+    Logger := nil;
+  finally
+    query.Free;
+  end;
 
-  Logger.Restart(SQL_DELETE_BOOKS);
-  FDatabase.ParamsClear;
-  FDatabase.AddParamInt(':v0', BookKey.BookID);
-  FDatabase.ExecSQL(SQL_DELETE_BOOKS);
-  Logger := nil;
+  query := FDatabase.NewQuery(SQL_DELETE_BOOKS);
+  try
+    query.SetParam(1, BookKey.BookID);
+    Logger := GetIntervalLogger('DeleteBook', SQL_DELETE_BOOKS);
+    query.ExecSQL;
+    Logger := nil;
+  finally
+    query.Free;
+  end;
 
   DMUser.DeleteBook(BookKey);
 end;
 
 function TBookCollection_SQLite.GetReview(const BookKey: TBookKey): string;
 const
-  SQL = 'SELECT b.Review FROM Books b WHERE b.BookID = :v0 ';
+  SQL = 'SELECT Review FROM Books WHERE BookID = ?';
 var
   Logger: IIntervalLogger;
-  Table: TSQLiteTable;
+  query: TSQLiteQuery;
+  blobStream: TStream;
+  strStream: TStringStream;
 begin
   if BookKey.DatabaseID = DMUser.ActiveCollectionInfo.ID then
   begin
-    FDatabase.ParamsClear;
-    FDatabase.AddParamInt(':v0', BookKey.BookID);
-    Logger := GetIntervalLogger('GetReview', SQL);
-    Table := FDatabase.GetTable(SQL);
+    query := FDatabase.NewQuery(SQL);
     try
+      query.SetParam(1, BookKey.BookID);
+
+      Logger := GetIntervalLogger('GetReview', SQL);
+      query.Open;
       Logger := nil;
-      Result := Table.FieldAsBlobString(0);
+
+      if not query.Eof then
+      begin
+        blobStream := query.FieldAsBlob(0);
+        try
+          strStream := TStringStream.Create('', TEncoding.UTF8, False);
+          try
+            strStream.CopyFrom(blobStream, 0);
+            Result := strStream.DataString;
+          finally
+            strStream.Free;
+          end;
+        finally
+          blobStream.Free;
+        end;
+      end
+      else
+        Result := '';
     finally
-      FreeAndNil(Table);
+      query.Free;
     end;
   end
   else
@@ -1682,64 +1765,77 @@ end;
 
 function TBookCollection_SQLite.SetReview(const BookKey: TBookKey; const Review: string): Integer;
 const
-  SQL_UPDATE_CODE_AND_NULL_REVIEW = 'UPDATE Books SET Code = :v0, Review = NULL WHERE BookID = :v1 ';
-  SQL_UPDATE_BLOB = 'UPDATE Books SET Review = ? WHERE BookID = :v0 ';
+  SQL_UPDATE = 'UPDATE Books SET Code = ?, Review = ? WHERE BookID = ?';
 var
-  ValueStream: TStringStream;
   NewReview: string;
+  NewCode: Integer;
+  query: TSQLiteQuery;
+  ValueStream: TStringStream;
   Logger: IIntervalLogger;
 begin
   VerifyCurrentCollection(BookKey.DatabaseID);
 
   NewReview := Trim(Review);
   if NewReview = '' then
-    Result := 0
+    NewCode := 0
   else
-    Result := 1;
+    NewCode := 1;
 
-  FDatabase.ParamsClear;
-  FDatabase.AddParamInt(':v0', Result); // Code
-  FDatabase.AddParamInt(':v1', BookKey.BookID);
-  Logger := GetIntervalLogger('SetReview', SQL_UPDATE_CODE_AND_NULL_REVIEW);
-  FDatabase.ExecSQL(SQL_UPDATE_CODE_AND_NULL_REVIEW);
-
-  if NewReview <> '' then
-  begin
-    FDatabase.ParamsClear;
-    FDatabase.AddParamInt(':v0', BookKey.BookID);
-    ValueStream := TStringStream.Create(NewReview);
-    try
-      Logger.Restart(SQL_UPDATE_BLOB);
-      FDatabase.UpdateBlob(SQL_UPDATE_BLOB, ValueStream);
-    finally
-      FreeAndNil(ValueStream);
+  query := FDatabase.NewQuery(SQL_UPDATE);
+  try
+    query.SetParam(1, NewCode);
+    if NewCode = 0 then
+    begin
+      query.SetParam(2);
+    end
+    else
+    begin
+      ValueStream := TStringStream.Create(NewReview, TEncoding.UTF8, False);
+      try
+        query.SetParam(2, ValueStream);
+      finally
+        FreeAndNil(ValueStream);
+      end;
     end;
+    query.SetParam(3, BookKey.BookID);
+
+    Logger := GetIntervalLogger('SetReview', SQL_UPDATE);
+    query.ExecSQL;
+    Logger := nil;
+  finally
+    query.Free;
   end;
 
   //
   // Обновим информацию в группах
   //
-  Result := Result or DMUser.SetReview(BookKey, NewReview);
+  Result := NewCode or DMUser.SetReview(BookKey, NewReview);
 end;
 
 function TBookCollection_SQLite.GetSeriesTitle(SeriesID: Integer): string;
 const
-  SQL = 'SELECT s.SeriesTitle FROM Series s WHERE s.SeriesID = :v0 ';
+  SQL = 'SELECT s.SeriesTitle FROM Series s WHERE s.SeriesID = ?';
 var
   Logger: IIntervalLogger;
+  query: TSQLiteQuery;
 begin
   Result := NO_SERIES_TITLE;
 
   if (NO_SERIE_ID <> SeriesID) then
   begin
-    FDatabase.ParamsClear;
-    FDatabase.AddParamInt(':v0', SeriesID);
-    Logger := GetIntervalLogger('GetSeriesTitle', SQL);
-    Result := FDatabase.GetTableString(SQL);
-    Logger := nil;
+    query := FDatabase.NewQuery(SQL);
+    try
+      query.SetParam(1, SeriesID);
 
-    if Result = '' then
-      Result := NO_SERIES_TITLE;
+      Logger := GetIntervalLogger('GetSeriesTitle', SQL);
+      query.Open;
+      Logger := nil;
+
+      if not query.Eof then
+        Result := query.FieldAsString(0);
+    finally
+      query.Free;
+    end;
   end
 end;
 
@@ -1747,7 +1843,7 @@ procedure TBookCollection_SQLite.BeginBulkOperation;
 begin
   Assert(not FDatabase.InTransaction);
 
-  FDatabase.Start('');
+  FDatabase.Start;
 end;
 
 procedure TBookCollection_SQLite.EndBulkOperation(Commit: Boolean = True);
@@ -1755,9 +1851,9 @@ begin
   Assert(FDatabase.InTransaction);
 
   if Commit then
-    FDatabase.Commit('')
+    FDatabase.Commit
   else
-    FDatabase.Rollback('');
+    FDatabase.Rollback;
 end;
 
 procedure TBookCollection_SQLite.CompactDatabase;
@@ -1766,7 +1862,6 @@ const
 var
   Logger: IIntervalLogger;
 begin
-  FDatabase.ParamsClear;
   Logger := GetIntervalLogger('CompactDatabase', SQL);
   FDatabase.ExecSQL(SQL);
   Logger := nil;
@@ -1788,24 +1883,21 @@ begin
 
   Sql := Format(SQL_SELECT, ['Authors']);
   Logger := GetIntervalLogger('GetStatistics', Sql);
-  FDatabase.ParamsClear;
   AuthorsCount := FDatabase.GetTableInt(Sql);
 
   Sql := Format(SQL_SELECT, ['Books']);
   Logger.Restart(Sql);
-  FDatabase.ParamsClear;
   BooksCount := FDatabase.GetTableInt(Sql);
 
   Sql := Format(SQL_SELECT, ['Series']);
   Logger.Restart(Sql);
-  FDatabase.ParamsClear;
   SeriesCount := FDatabase.GetTableInt(Sql);
 end;
 
 // Clear contents of collection tables (except for Settings and Genres)
 procedure TBookCollection_SQLite.TruncateTablesBeforeImport;
 const
-  SQL_TRUNCATE = 'DELETE FROM %s ';
+  SQL_TRUNCATE = 'DELETE FROM %s';
   TABLE_NAMES: array [0 .. 4] of string = ('Author_List', 'Genre_List', 'Books', 'Authors', 'Series');
 var
   TableName: string;
@@ -1814,12 +1906,10 @@ begin
   Logger := nil;
   for TableName in TABLE_NAMES do
   begin
-    FDatabase.ParamsClear;
-    FDatabase.AddParamString(':v0', TableName);
     if not Assigned(Logger) then
-      Logger := GetIntervalLogger('InsertBookGenres', SQL_TRUNCATE)
+      Logger := GetIntervalLogger('InsertBookGenres', Format(SQL_TRUNCATE, [TableName]))
     else
-      Logger.Restart(SQL_TRUNCATE);
+      Logger.Restart(Format(SQL_TRUNCATE, [TableName]));
     FDatabase.ExecSQL(Format(SQL_TRUNCATE, [TableName]));
   end;
 end;
@@ -1827,60 +1917,74 @@ end;
 // Add book genres for the book specified by BookID
 procedure TBookCollection_SQLite.InsertBookGenres(const BookID: Integer; const Genres: TBookGenres);
 const
-  SQL_INSERT = 'INSERT INTO Genre_List (BookID, GenreCode) ' +
-    'SELECT :v0, :v1 ';
+  SQL_INSERT = 'INSERT INTO Genre_List (BookID, GenreCode) VALUES(:v0, :v1)';
 var
+  query: TSQLiteQuery;
   Genre: TGenreData;
   Logger: IIntervalLogger;
 begin
-  for Genre in Genres do
-  begin
-    FDatabase.ParamsClear;
-    FDatabase.AddParamInt(':v0', BookID);
-    FDatabase.AddParamString(':v1', Genre.GenreCode);
-    Logger := GetIntervalLogger('InsertBookGenres', SQL_INSERT);
-    FDatabase.ExecSQL(SQL_INSERT);
-    Logger := nil;
+  query := FDatabase.NewQuery(SQL_INSERT);
+  try
+    for Genre in Genres do
+    begin
+      query.SetParam(1, BookID);
+      query.SetParam(2, Genre.GenreCode);
+      Logger := GetIntervalLogger('InsertBookGenres', SQL_INSERT);
+      query.ExecSQL;
+      Logger := nil;
+    end;
+  finally
+    query.Free;
   end;
 end;
 
 procedure TBookCollection_SQLite.SetAnnotation(const BookKey: TBookKey; const Annotation: string);
 const
-  SQL_UPDATE_BLOB = 'UPDATE Books SET Annotation = ? WHERE BookID = :v0 ';
-  SQL_NULL = 'UPDATE Books SET Annotation = NULL WHERE BookID = :v0 ';
+  SQL_UPDATE_BLOB = 'UPDATE Books SET Annotation = ? WHERE BookID = ?';
+  SQL_NULL = 'UPDATE Books SET Annotation = NULL WHERE BookID = ?';
 var
+  query: TSQLiteQuery;
   NewAnnotation: string;
   ValueStream: TStringStream;
   Logger: IIntervalLogger;
 begin
   VerifyCurrentCollection(BookKey.DatabaseID);
 
-  FDatabase.ParamsClear;
-  FDatabase.AddParamInT(':v0', BookKey.BookID);
-
   NewAnnotation := Trim(Annotation);
   if NewAnnotation <> '' then
   begin
     ValueStream := TStringStream.Create(NewAnnotation);
     try
-      Logger := GetIntervalLogger('SetAnnotation', SQL_UPDATE_BLOB);
-      FDatabase.UpdateBlob(SQL_UPDATE_BLOB, ValueStream);
+      query := FDatabase.NewQuery(SQL_UPDATE_BLOB);
+      try
+        query.SetParam(1, ValueStream);
+        query.SetParam(2, BookKey.BookID);
+
+        Logger := GetIntervalLogger('SetAnnotation', SQL_UPDATE_BLOB);
+        query.ExecSQL;
+        Logger := nil;
+      finally
+        query.Free;
+      end;
     finally
       FreeAndNil(ValueStream);
     end;
   end
   else
   begin
-    Logger := GetIntervalLogger('SetAnnotation', SQL_NULL);
-    FDatabase.ExecSQL(SQL_NULL);
+    query := FDatabase.NewQuery(SQL_NULL);
+    try
+      query.SetParam(1, BookKey.BookID);
+
+      Logger := GetIntervalLogger('SetAnnotation', SQL_NULL);
+      query.ExecSQL;
+      Logger := nil;
+    finally
+      query.Free;
+    end;
   end;
 
   DMUser.SetAnnotation(BookKey, NewAnnotation);
-end;
-
-function TBookCollection_SQLite.GenerateFullName(const LastName: string; const FirstName: string; const MiddleName: string): String;
-begin
-  Result := ToUpper(Trim(LastName) + ';' + Trim(FirstName) + ';' + Trim(MiddleName));
 end;
 
 end.

@@ -1047,6 +1047,8 @@ begin
   FGenres.Active := True;
 
   LoadGenres(FileName);
+
+  InternalLoadGenres;
 end;
 
 function TBookCollection_ABS.GetTopGenreAlias(const FB2Code: string): string;
