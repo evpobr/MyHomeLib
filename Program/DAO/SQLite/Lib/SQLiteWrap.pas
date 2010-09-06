@@ -92,36 +92,24 @@ uses
 
 type
   {: @abstract(Exception Class for SQLite based errors)}
-  ESQLiteException = class(Exception)
-  end;
-
-  {: @abstract(Class for storing deferred parameters)
-  Do not use it, it is used internally only!
-  }
-  TSQliteParam = class
-  public
-    name: UTF8String;
-    valuetype: integer;
-    valueinteger: int64;
-    valuefloat: double;
-    valuedata: UTF8String;
-  end;
+  ESQLiteException = class(Exception);
 
   {: @abstract(procedural prototype for @link(OnQuery) hook.)}
-  THookQuery = procedure(Sender: TObject; const SQL: String) of object;
+  THookQuery = procedure(Sender: TObject; const SQL: string) of object;
 
-  TSQLiteTable = class;
+  TSQLiteQuery = class;
 
   {: @abstract(Class for handling SQLite database)}
   TSQLiteDatabase = class(TObject)
   private
-    fDB: TSQLiteDB;
-    fParams: TList;
+    FDB: TSQLite3DB;
     FOnQuery: THookQuery;
-    procedure RaiseError(const s, SQL: String);
-    procedure SetParams(const Stmt: TSQLiteStmt);
+
   protected
-    procedure DoQuery(const value: String);
+    procedure RegisterSystemCollateAndFunc;
+    procedure RaiseError(const s, SQL: string);
+    procedure DoLogQuery(const QueryText: string);
+
   public
     {: Class constructor. Pass filename of database. If databas not exists, then new one is created.
     If you pass empty string as filename, then temporary database is created.
@@ -131,507 +119,381 @@ type
       Pass FileName as AnsiString (if you are not using Unicode Delphi version)
       or as UnicodeString (on Delphi 2009 and higher)!
     }
-    constructor Create(const FileName: String);
+    constructor Create(const FileName: string);
+
     {: Class descructor. Call Free instead.}
     destructor Destroy; override;
-    {: Run SQL command without result.
-       You can call before functions AddParam* for set query parameters.}
-    procedure ExecSQL(const SQL : String);
-    {: Run SQL command with result.
-       You can call before functions AddParam* for set query parameters.
-       If you set PerpareOnly, then query is just prepared but first row is not fetched!}
-    function GetTable(const SQL: String; PrepareOnly: Boolean = false): TSQLiteTable;
-    {: Run SQL command and number from first field in first row is returned.
-       You can call before functions AddParam* for set query parameters.}
-    function GetTableInt(const SQL: String): int64;
-    {: Run SQL command and value from first field in first row is returned.
-       You can call before functions AddParam* for set query parameters.}
-    function GetTableString(const SQL: String): String;
-    {: Run SQL command and values from first field in each row is filled to stringlist.
-       You can call before functions AddParam* for set query parameters.}
-    procedure GetTableStrings(const SQL: String; const Value: TStrings);
-    {: Return @True if database is in transaction state.}
-    function InTransaction: Boolean;
-    {: Start transaction. You can modify transaction type by Param parameter.
-       If you use non-empty Name parameter, then savepoint is used. Savepoint is named and can be nested.}
-    procedure Start(const name:String; const param: String = '');
-    {: Commit transaction.
-       If you use non-empty Name parameter, then savepoint is used. Savepoint is named and can be nested.}
-    procedure Commit(const name:String);
-    {: Rollback transaction.
-       If you use non-empty Name parameter, then savepoint is used. Savepoint is named and can be nested.}
-    procedure Rollback(const name:String);
-    {: Get ROWID of last inserted row.}
-    function LastInsertRowID: int64;
-    {: Return number of modified rows by last query.}
-    function LastChangedRows: int64;
-    {: Set wait timeout. if database is locked, then it wait this timeout.
-       If database is not released within this timeout, then error is returned.}
-    procedure SetTimeout(Value: integer);
-    {: Return SQLite engine version.}
-    function Version: String;
-    {: Add custom sorting procedure as new Collate.}
-    procedure AddCustomCollate(name: String; xCompare: TCollateXCompare);
-    {: Add collate named SYSTEM for correct data sorting by user's locale}
-    Procedure AddSystemCollate;
-    {: Clear all query parameters.}
-    procedure ParamsClear;
-    {: Add named query parameter of integer type.}
-    procedure AddParamInt(const name: String; value: int64);
-    {: Add named query parameter of floating-point type.}
-    procedure AddParamFloat(const name: String; value: double);
-    {: Add named query parameter of string or binary type.}
-    procedure AddParamString(const name: String; const value: String);
-    {: Add named query parameter of TDateTime type.}
-    procedure AddParamDateTime(const name: String; const value: TDateTime);
-    {: Add named query parameter of Boolean type.}
-    procedure AddParamBoolean(const name: String; const value: Boolean);
-    {: Add named query parameter with null value.}
-    procedure AddParamNull(const name: String);
-    {: Update a blob using data from the stream}
-    procedure UpdateBlob(const SQL: String; BlobData: TStream);
 
-    {: SQLite database handler.}
-    property DB: TSQLiteDB read fDB;
-  published
-    {: Debug hook for log all called queries.}
+    { Run SQL command with result. }
+    function NewQuery(const SQL: string): TSQLiteQuery;
+
+    { Run SQL command without result. }
+    procedure ExecSQL(const SQL : string);
+
+    { Run SQL command and number from first field in first row is returned. }
+    function GetTableInt(const SQL: string): Int64; deprecated;
+    function GetTableString(const SQL: string): string; deprecated;
+    procedure GetTableStrings(const SQL: string; const Value: TStrings); deprecated;
+
+    { Return @True if database is in transaction state.}
+    function InTransaction: Boolean;
+    procedure Start(const name: string = ''; const param: string = '');
+    procedure Commit(const name: string = '');
+    procedure Rollback(const name: string = '');
+
+    { Get ROWID of last inserted row.}
+    function LastInsertRowID: Int64;
+
+    { Return number of modified rows by last query.}
+    function LastChangedRows: Int64;
+
+    { Set wait timeout. if database is locked, then it wait this timeout.
+       If database is not released within this timeout, then error is returned.}
+    procedure SetTimeout(Value: Integer);
+
+    { Return SQLite engine version.}
+    function Version: string;
+
+    { Add custom sorting procedure as new Collate.}
+    procedure AddCustomCollate(name: string; xCompare: TCollateXCompare);
+    procedure AddFunction(const FunctionName: string; const nArg: Integer; PrefferedEncoding: Integer; xFunc: TxFunc);
+
+    { Update a blob using data from the stream}
+    procedure UpdateBlob(const SQL: string; BlobData: TStream);
+
+    { SQLite database handler.}
+    property DB: TSQLite3DB read FDB;
+
+    { Debug hook for log all called queries.}
     property OnQuery: THookQuery read FOnQuery write FOnQuery;
   end;
 
   {: @abstract(Class for handling SQLite query result)}
-  TSQLiteTable = class(TObject)
+  TSQLiteQuery = class(TObject)
   private
-    fColCount: cardinal;
-    fCols: TStringList;
-    fRow: cardinal;
-    fEOF: boolean;
-    fStmt: TSQLiteStmt;
-    fDB: TSQLiteDatabase;
-    fSQL: String;
-    function GetFields(I: cardinal): String;
-    function GetColumns(I: integer): String;
-    function GetFieldByName(FieldName: String): String;
-    function GetFieldIndex(FieldName: String): integer;
+    FDatabase: TSQLiteDatabase;
+    FStmt: TSQLiteStmt;
+    FColCount: Cardinal;
+    FCols: TStringList;
+    FRow: Cardinal;
+    FEof: Boolean;
+    FSQL: string;
+
+    function GetColumns(const I: Integer): string; inline;
+    function GetFields(const I: Cardinal): string; inline;
+    function GetFieldIndex(const FieldName: string): Integer;
+    function GetFieldByName(const FieldName: string): string;
+
   public
     {: Class constructor. Called internally by @link(TSqliteDatabase)}
-    constructor Create(const DB: TSQLiteDatabase; const SQL: String; PrepareOnly: Boolean = false);
+    constructor Create(const DB: TSQLiteDatabase; const SQL: string);
+
     {: Class descructor. Call Free instead.}
     destructor Destroy; override;
-    {: Read field from current row as integer.}
-    function FieldAsInt(I: cardinal): int64;
-    {: Read field from current row as blob to memory stream.}
-    function FieldAsBlob(I: cardinal): TMemoryStream;
-    {: Read field from current row as pointer to memory.}
-    function FieldAsBlobPtr(I: cardinal; out iNumBytes: integer): Pointer;
-    {: Read field from current row as blob to AnsiString.}
-    function FieldAsBlobString(I: cardinal): AnsiString;
-    {: Test if field from current row contains null value.}
-    function FieldIsNull(I: cardinal): boolean;
-    {: Read field from current row as string.}
-    function FieldAsString(I: cardinal): String;
-    {: Read field from current row as floating-point.}
-    function FieldAsDouble(I: cardinal): double;
-    {: Read field from current row as Boolean.}
-    function FieldAsBoolean(I: cardinal): Boolean;
-    {: Read field from current row as TDateTime.}
-    function FieldAsDateTime(I: cardinal): TDateTime;
 
-    {: Go to next row.}
-    function Next: boolean;
-    {: Reset all query params.}
+    //
+    // Установка параметров
+    //
     procedure ParamsClear;
-    {: Reset current result set. After this you can set new query parameters values
-       and call prepared query again by @link(next)}
-    procedure Reset;
-    {: Add named query parameter of integer type.}
-    procedure AddParamInt(const name: String; value: int64);
-    {: Add named query parameter of floating-point type.}
-    procedure AddParamFloat(const name: String; value: double);
-    {: Add named query parameter of string or binary type.}
-    procedure AddParamText(const name: String; const value: String);
-    {: Add named query parameter with null value.}
-    procedure AddParamNull(const name: String);
+
+    procedure SetParam(const ParamIndex: Integer; const Value: Int64); overload; inline;
+    procedure SetParam(const ParamName: string; const Value: Int64); overload; inline;
+    procedure SetParam(const ParamIndex: Integer; const Value: Double); overload; inline;
+    procedure SetParam(const ParamName: string; const Value: Double); overload; inline;
+    procedure SetParam(const ParamIndex: Integer; const Value: string); overload; inline;
+    procedure SetParam(const ParamName: string; const Value: string); overload; inline;
+    procedure SetParam(const ParamIndex: Integer); overload; inline;
+    procedure SetParam(const ParamName: string); overload; inline;
+
+    //
+    // доступ к полям
+    //
+    function FieldIsNull(I: Integer): Boolean;
+    function FieldAsString(I: Integer): string;
+    function FieldAsInt(I: Integer): Int64; inline;
+    function FieldAsBoolean(I: Integer): Boolean;
+    function FieldAsDateTime(I: Integer): TDateTime;
+    function FieldAsDouble(I: Integer): Double; inline;
+    function FieldAsBlob(I: Integer): TMemoryStream;
+    function FieldAsBlobPtr(I: Integer; out iNumBytes: Integer): Pointer; inline; deprecated;
+    function FieldAsBlobString(I: Integer): AnsiString; deprecated;
+
+    //
+    // Навигация и выплнение запросов
+    //
+    procedure ExecSQL; inline;
+    procedure Open; inline;
+    function Next: Boolean;
+    procedure Reset; inline;
+
+    //
+    // Свойства, для упрощения текста. В большинстве своем бесполезные.
+    //
     {: Return value of some field in current row.}
-    property Fields[I: cardinal]: String read GetFields;
+    property Fields[const I: Cardinal]: string read GetFields;
+
     {: Return value of named field in current row.}
-    property FieldByName[FieldName: String]: String read GetFieldByName;
+    property FieldByName[const FieldName: string]: string read GetFieldByName;
+
     {: Return index of some named field.}
-    property FieldIndex[FieldName: String]: integer read GetFieldIndex;
+    property FieldIndex[const FieldName: string]: Integer read GetFieldIndex;
+
     {: Return field type of some field.}
-    property Columns[I: integer]: String read GetColumns;
-  published
+    property Columns[const I: Integer]: string read GetColumns;
+
     {: Indicate last row in result set.}
-    property EOF: boolean read FEOF;
+    property Eof: Boolean read FEof;
+
     {: Return number of fields in row.}
-    property ColCount: cardinal read fColCount;
+    property ColCount: Cardinal read FColCount;
+
     {: Number of current row.}
-    property Row: cardinal read fRow;
+    property Row: Cardinal read FRow;
   end;
 
-  procedure DisposePointer(ptr: pointer); cdecl;
-
-implementation
+  procedure DisposePointer(ptr: Pointer); cdecl;
 
 resourcestring
   c_unknown = 'Unknown error';
   c_failopen = 'Failed to open database "%s" : %s';
-  c_error = '.' + slinebreak + 'Error [%d]: %s.'+slinebreak+'"%s": %s';
+  c_error = '.' + sLineBreak + 'Error [%d]: %s.' + sLineBreak + '"%s": %s';
   c_nomessage = 'No message';
   c_errorsql = 'Error executing SQL';
   c_errorprepare = 'Could not prepare SQL statement';
   c_errorexec = 'Error executing SQL statement';
-  c_errorempty = 'Field %s Not found. Empty dataset';
+  c_errorempty = 'Field %s not found. Empty dataset';
   c_errorfield = 'Field not found in dataset: %s';
   c_errordata = 'Could not retrieve data';
   c_errorparam = 'SQL must include a ? parameter';
   c_errormemoryblob = 'Error getting memory to save blob';
   c_errorbindingblob = 'Error binding blob to database';
+  c_errorbindingparam = 'Error binding param';
+
+implementation
+
+uses
+  SQLite3UDF;
 
 const
   DATE_FORMAT = 'yyyy-mm-dd';
   TIME_FORMAT = 'hh:nn:ss.zzz';
   DATE_TIME_FORMAT = DATE_FORMAT + ' ' + TIME_FORMAT;
 
-{$IFDEF WIN32}
-function SystemCollate(Userdta: pointer; Buf1Len: integer; Buf1: pointer;
-    Buf2Len: integer; Buf2: pointer): integer; cdecl;
-begin
-  Result := CompareStringW(LOCALE_USER_DEFAULT, 0, PWideChar(Buf1), Buf1Len,
-    PWideChar(Buf2), Buf2Len) - 2;
-end;
-{$ENDIF}
+var
+  SQLite_FormatSettings: TFormatSettings;
 
 { TSQLiteDatabase }
 
-constructor TSQLiteDatabase.Create(const FileName: String);
+constructor TSQLiteDatabase.Create(const FileName: string);
 var
-  Msg: PAnsiChar;
-  iResult: integer;
-  s: String;
+  s: string;
 begin
   inherited Create;
-  fParams := TList.Create;
-  Msg := nil;
-  fDb := nil;
-  try
-    {$IFDEF SQUNI}
-    iResult := SQLite3_Open(@UTF8String(FileName)[1], Fdb);
-    {$ELSE}
-    iResult := SQLite3_Open(PAnsiChar(AnsiToUtf8(FileName)), Fdb);
-    {$ENDIF}
-    if iResult <> SQLITE_OK then
-    begin
+
+  if SQLite3_Open(PUTF8Char(UTF8String(FileName)), FDB) <> SQLITE_OK then
+  begin
+    if Assigned(FDB) then
+      s := string(UTF8String(SQLite3_ErrMsg(FDB)))
+    else
       s := c_unknown;
-      if Assigned(Fdb) then
-      begin
-        Msg := Sqlite3_ErrMsg(Fdb);
-        s := String(UTF8String(Msg));
-      end;
-      raise ESqliteException.CreateFmt(c_failopen, [FileName, s]);
-    end;
-  finally
-    if Assigned(Msg) then
-      SQLite3_Free(Msg);
+    raise ESqliteException.CreateFmt(c_failopen, [FileName, s]);
   end;
+
+  RegisterSystemCollateAndFunc;
 end;
 
 destructor TSQLiteDatabase.Destroy;
 begin
-  if Assigned(fDB) then
-    SQLite3_Close(fDB);
-  ParamsClear;
-  fParams.Free;
-  inherited;
+  if Assigned(FDB) then
+    SQLite3_Close(FDB);
+
+  inherited Destroy;
 end;
 
-function TSQLiteDatabase.LastInsertRowID: int64;
-begin
-  Result := Sqlite3_LastInsertRowID(self.fDB);
-end;
-
-function TSQLiteDatabase.LastChangedRows: int64;
-begin
-  Result := SQLite3_Changes(self.fDB);
-end;
-
-procedure TSQLiteDatabase.RaiseError(const s, SQL: String);
+procedure TSQLiteDatabase.RaiseError(const s, SQL: string);
 var
   Msg: PAnsiChar;
-  ret : integer;
+  ret: Integer;
 begin
   Msg := nil;
-  ret := sqlite3_errcode(self.fDB);
+  ret := SQLite3_ErrCode(FDB);
   if ret <> SQLITE_OK then
-    Msg := sqlite3_errmsg(self.fDB);
-  if Msg <> nil then
-    raise ESqliteException.CreateFmt(s + c_error, [ret, SQLiteErrorStr(ret),SQL, Msg])
+    Msg := SQLite3_ErrMsg(FDB);
+
+  if Assigned(Msg) then
+    raise ESqliteException.CreateFmt(s + c_error, [ret, SQLiteErrorStr(ret), SQL, Msg])
   else
     raise ESqliteException.CreateFmt(s, [SQL, c_nomessage]);
 end;
 
-procedure TSQLiteDatabase.ExecSQL(const SQL: String);
-var
-  Stmt: TSQLiteStmt;
-  NextSQLStatement: PAnsiChar;
-  iStepResult: integer;
+procedure TSQLiteDatabase.DoLogQuery(const QueryText: string);
 begin
-  try
-    if Sqlite3_Prepare_v2(self.fDB, @UTF8String(SQl)[1], -1, Stmt, NextSQLStatement) <>
-      SQLITE_OK then
-      RaiseError(c_errorsql, SQL);
-    if (Stmt = nil) then
-      RaiseError(c_errorprepare, SQL);
-    DoQuery(SQL);
-    SetParams(Stmt);
+  if Assigned(FOnQuery) then
+    FOnQuery(Self, QueryText);
+end;
 
-    iStepResult := Sqlite3_step(Stmt);
-    if (iStepResult <> SQLITE_DONE) then
-      begin
-      SQLite3_reset(stmt);
-      RaiseError(c_errorexec, SQL);
-      end;
+function TSQLiteDatabase.NewQuery(const SQL: string): TSQLiteQuery;
+begin
+  Result := TSQLiteQuery.Create(Self, SQL);
+end;
+
+procedure TSQLiteDatabase.ExecSQL(const SQL: string);
+var
+  Query: TSQLiteQuery;
+begin
+  Query := NewQuery(SQL);
+  try
+    Query.ExecSQL;
   finally
-    if Assigned(Stmt) then
-      Sqlite3_Finalize(stmt);
+    Query.Free;
   end;
 end;
 
-function TSQLiteDatabase.GetTable(const SQL: string; PrepareOnly: Boolean = false): TSQLiteTable;
-begin
-  Result := TSQLiteTable.Create(Self, SQL, PrepareOnly);
-end;
-
-function TSQLiteDatabase.GetTableInt(const SQL: String): int64;
+function TSQLiteDatabase.GetTableInt(const SQL: string): Int64;
 var
-  Table: TSQLiteTable;
+  Query: TSQLiteQuery;
 begin
   Result := 0;
-  Table := self.GetTable(SQL);
+  Query := NewQuery(SQL);
   try
-    if not Table.EOF then
-      Result := Table.FieldAsInt(0);
+    Query.Open;
+    if not Query.EOF then
+      Result := Query.FieldAsInt(0);
   finally
-    Table.Free;
+    Query.Free;
   end;
 end;
 
-function TSQLiteDatabase.GetTableString(const SQL: String): String;
+function TSQLiteDatabase.GetTableString(const SQL: string): string;
 var
-  Table: TSQLiteTable;
+  Query: TSQLiteQuery;
 begin
   Result := '';
-  Table := self.GetTable(SQL);
+  Query := NewQuery(SQL);
   try
-    if not Table.EOF then
-      Result := Table.FieldAsString(0);
+    Query.Open;
+    if not Query.EOF then
+      Result := Query.FieldAsString(0);
   finally
-    Table.Free;
+    Query.Free;
   end;
 end;
 
-procedure TSQLiteDatabase.GetTableStrings(const SQL: String;
-  const Value: TStrings);
+procedure TSQLiteDatabase.GetTableStrings(const SQL: string; const Value: TStrings);
 var
-  Table: TSQLiteTable;
+  Query: TSQLiteQuery;
 begin
   Value.Clear;
-  Table := self.GetTable(SQL);
+  Query := NewQuery(SQL);
   try
-    while not table.EOF do
+    Query.Open;
+    while not Query.EOF do
     begin
-      Value.Add(Table.FieldAsString(0));
-      table.Next;
+      Value.Add(Query.FieldAsString(0));
+      Query.Next;
     end;
   finally
-    Table.Free;
+    Query.Free;
   end;
 end;
 
-procedure TSQLiteDatabase.Start(const name:String; const param: String = '');
+function TSQLiteDatabase.InTransaction: Boolean;
+begin
+  Result := SQLite3_Get_Autocommit(FDB) = 0;
+end;
+
+procedure TSQLiteDatabase.Start(const name: string = ''; const param: string = '');
 var
-  s: String;
+  s: string;
 begin
   if name = '' then
   begin
     s := 'BEGIN';
     if param <> '' then
       s := s + ' ' + param;
-    self.ExecSQL(s);
+    ExecSQL(s);
   end
   else
-    self.ExecSQL('SAVEPOINT ' + name);
+    ExecSQL('SAVEPOINT ' + name);
 end;
 
-procedure TSQLiteDatabase.Commit(const name:String);
+procedure TSQLiteDatabase.Commit(const name: string = '');
 begin
   if name = '' then
-    self.ExecSQL('COMMIT')
+    ExecSQL('COMMIT')
   else
-    self.ExecSQL('RELEASE ' + name);
+    ExecSQL('RELEASE ' + name);
 end;
 
-procedure TSQLiteDatabase.Rollback(const name:String);
+procedure TSQLiteDatabase.Rollback(const name: string = '');
 begin
   if name = '' then
-    self.ExecSQL('ROLLBACK')
+    ExecSQL('ROLLBACK')
   else
-    self.ExecSQL('ROLLBACK TO ' + name);
+    ExecSQL('ROLLBACK TO ' + name);
 end;
 
-procedure TSQLiteDatabase.SetTimeout(Value: integer);
+function TSQLiteDatabase.LastInsertRowID: int64;
 begin
-  SQLite3_BusyTimeout(self.fDB, Value);
+  Result := SQLite3_LastInsertRowID(FDB);
 end;
 
-function TSQLiteDatabase.Version: String;
+function TSQLiteDatabase.LastChangedRows: int64;
 begin
-  Result := String(UTF8String(SQLite3_Version));
+  Result := SQLite3_Changes(FDB);
 end;
 
-procedure TSQLiteDatabase.AddCustomCollate(name: String;
-  xCompare: TCollateXCompare);
+procedure TSQLiteDatabase.SetTimeout(Value: Integer);
 begin
-  sqlite3_create_collation(fdb, @UTF8String(name)[1], SQLITE_UTF8, nil, xCompare);
+  SQLite3_BusyTimeout(FDB, Value);
 end;
 
-procedure TSQLiteDatabase.AddSystemCollate;
+function TSQLiteDatabase.Version: string;
 begin
-  {$IFDEF WIN32}
-  sqlite3_create_collation(fdb, 'SYSTEM', SQLITE_UTF16LE, nil, @SystemCollate);
-  {$ENDIF}
+  Result := string(UTF8String(SQLite3_Version));
 end;
 
-procedure TSQLiteDatabase.ParamsClear;
+procedure TSQLiteDatabase.AddCustomCollate(name: string; xCompare: TCollateXCompare);
+begin
+  SQLite3_Create_Collation(FDB, PUTF8Char(UTF8String(name)), SQLITE_UTF8, nil, xCompare);
+end;
+
+procedure TSQLiteDatabase.RegisterSystemCollateAndFunc;
+begin
+  SQLite3_Create_Collation(FDB, PUTF8Char('SYSTEM'), SQLITE_UTF16, nil, @SystemCollate);
+  SQLite3_Create_Collation(FDB, PUTF8Char('SYSTEM_NOCASE'), SQLITE_UTF16, nil, @SystemCollateNoCase);
+  AddFunction('UPPER', 1, SQLITE_ANY, SystemUpperString);
+  AddFunction('LOWER', 1, SQLITE_ANY, SystemLowerString);
+end;
+
+procedure TSQLiteDatabase.AddFunction(const FunctionName: string; const nArg: Integer; PrefferedEncoding: Integer; xFunc: TxFunc);
 var
-  n: integer;
+  nRc: Integer;
 begin
-  for n := fParams.Count - 1 downto 0 do
-    TSQliteParam(fparams[n]).free;
-  fParams.Clear;
+  nRc := SQLite3_Create_Function(FDB, PUTF8Char(UTF8String(FunctionName)), nArg, PrefferedEncoding, nil, @xFunc, nil, nil);
+  if SQLITE_OK <> nRc then
+    RaiseError('', FunctionName);
 end;
 
-procedure TSQLiteDatabase.AddParamInt(const name: String; value: int64);
+procedure TSQLiteDatabase.UpdateBlob(const SQL: string; BlobData: TStream);
 var
-  par: TSQliteParam;
-begin
-  par := TSQliteParam.Create;
-  par.name := UTF8String( name );
-  par.valuetype := SQLITE_INTEGER;
-  par.valueinteger := value;
-  fParams.Add(par);
-end;
-
-procedure TSQLiteDatabase.AddParamFloat(const name: String; value: double);
-var
-  par: TSQliteParam;
-begin
-  par := TSQliteParam.Create;
-  par.name := UTF8String( name );
-  par.valuetype := SQLITE_FLOAT;
-  par.valuefloat := value;
-  fParams.Add(par);
-end;
-
-procedure TSQLiteDatabase.AddParamString(const name: String; const value: String);
-var
-  par: TSQliteParam;
-begin
-  par := TSQliteParam.Create;
-  par.name := UTF8String( name );
-  par.valuetype := SQLITE_TEXT;
-  par.valuedata := UTF8String( value );
-  fParams.Add(par);
-end;
-
-procedure TSQLiteDatabase.AddParamDateTime(const name: String; const value: TDateTime);
-begin
-  AddParamString(name, FormatDateTime(DATE_TIME_FORMAT, value));
-end;
-
-procedure TSQLiteDatabase.AddParamBoolean(const name: String; const value: Boolean);
-begin
-  if value then
-    AddParamInt(name, 1)
-  else
-    AddParamInt(name, 0);
-end;
-
-procedure TSQLiteDatabase.AddParamNull(const name: String);
-var
-  par: TSQliteParam;
-begin
-  par := TSQliteParam.Create;
-  par.name := UTF8String( name );
-  par.valuetype := SQLITE_NULL;
-  fParams.Add(par);
-end;
-
-procedure TSQLiteDatabase.SetParams(const Stmt: TSQLiteStmt);
-var
-  n: integer;
-  i: integer;
-  par: TSQliteParam;
-begin
-  try
-    for n := 0 to fParams.Count - 1 do
-    begin
-      par := TSQliteParam(fParams[n]);
-      i := sqlite3_bind_parameter_index(Stmt, @par.name[1]);
-      if i > 0 then
-      begin
-        case par.valuetype of
-          SQLITE_INTEGER:
-            sqlite3_bind_int64(Stmt, i, par.valueinteger);
-          SQLITE_FLOAT:
-            sqlite3_bind_double(Stmt, i, par.valuefloat);
-          SQLITE_TEXT:
-            sqlite3_bind_text(Stmt, i, @par.valuedata[1],
-              length(par.valuedata), SQLITE_TRANSIENT);
-          SQLITE_NULL:
-            sqlite3_bind_null(Stmt, i);
-        end;
-      end;
-    end;
-  finally
-    ParamsClear;
-  end;
-end;
-
-procedure TSQLiteDatabase.DoQuery(const value: String);
-begin
-  if assigned(OnQuery) then
-    OnQuery(Self, Value);
-end;
-
-function TSQLiteDatabase.InTransaction: Boolean;
-begin
-  Result := SQLite3_Get_Autocommit(FDB) = 0; 
-end;
-
-procedure TSQLiteDatabase.UpdateBlob(const SQL: String; BlobData: TStream);
-var
-  iSize: integer;
-  ptr: pointer;
+  iSize: Integer;
+  ptr: Pointer;
   Stmt: TSQLiteStmt;
-  Msg: PAnsiChar;
-  NextSQLStatement: PAnsiChar;
-  iStepResult: integer;
-  iBindResult: integer;
+  NextSQLStatement: PUTF8Char;
 begin
   //expects SQL of the form 'UPDATE MYTABLE SET MYFIELD = ? WHERE MYKEY = 1'
-  if pos('?', SQL) = 0 then
+  if Pos('?', SQL) = 0 then
     RaiseError(c_errorparam, SQL);
 
-  Msg := nil;
   try
-
-    if Sqlite3_Prepare_v2(self.fDB, @UTF8String(SQl)[1], -1, Stmt, NextSQLStatement) <>
-      SQLITE_OK then
+    if SQLite3_Prepare_v2(FDB, PUTF8Char(UTF8String(SQL)), -1, Stmt, NextSQLStatement) <> SQLITE_OK then
       RaiseError(c_errorprepare, SQL);
 
     if (Stmt = nil) then
       RaiseError(c_errorprepare, SQL);
-    DoQuery(SQL);
+
+    DoLogQuery(SQL);
 
     //now bind the blob data
     iSize := BlobData.size;
@@ -639,174 +501,181 @@ begin
     GetMem(ptr, iSize);
 
     if (ptr = nil) then
-      raise ESqliteException.CreateFmt(c_errormemoryblob,
-        [SQL, 'Error']);
+      raise ESqliteException.CreateFmt(c_errormemoryblob, [SQL, 'Error']);
 
-    BlobData.position := 0;
+    BlobData.Position := 0;
     BlobData.Read(ptr^, iSize);
 
-    iBindResult := SQLite3_Bind_Blob(stmt, 1, ptr, iSize, @DisposePointer);
-
-    if iBindResult <> SQLITE_OK then
+    if SQLite3_Bind_Blob(stmt, 1, ptr, iSize, @DisposePointer) <> SQLITE_OK then
       RaiseError(c_errorbindingblob, SQL);
 
-    iStepResult := Sqlite3_step(Stmt);
-
-    if (iStepResult <> SQLITE_DONE) then
+    if (SQLite3_Step(Stmt) <> SQLITE_DONE) then
     begin
-      SQLite3_reset(stmt);
+      SQLite3_Reset(stmt);
       RaiseError(c_errorexec, SQL);
     end;
 
   finally
-
     if Assigned(Stmt) then
-      Sqlite3_Finalize(stmt);
-
-    if Assigned(Msg) then
-      SQLite3_Free(Msg);
+      SQLite3_Finalize(stmt);
   end;
 end;
 
-{ TSQLiteTable }
+{ TSQLiteQuery }
 
-procedure TSQLiteTable.AddParamFloat(const name: String; value: double);
+constructor TSQLiteQuery.Create(const DB: TSQLiteDatabase; const SQL: string);
 var
-  i: integer;
+  NextSQLStatement: PUTF8Char;
+  i: Integer;
 begin
-  i := sqlite3_bind_parameter_index(FStmt, @UTF8String(name)[1]);
-  if i > 0 then
-    sqlite3_bind_double(FStmt, i, value);
-end;
+  inherited Create;
 
-procedure TSQLiteTable.AddParamInt(const name: String; value: int64);
-var
-  i: integer;
-begin
-  i := sqlite3_bind_parameter_index(FStmt, @UTF8String(name)[1]);
-  if i > 0 then
-    sqlite3_bind_int64(FStmt, i, value);
-end;
+  FDatabase := db;
+  FEof := False;
+  FRow := 0;
+  FColCount := 0;
+  FSQL := SQL;
 
-procedure TSQLiteTable.AddParamNull(const name: String);
-var
-  i: integer;
-begin
-  i := sqlite3_bind_parameter_index(FStmt, @UTF8String(name)[1]);
-  if i > 0 then
-    sqlite3_bind_null(FStmt, i);
-end;
+  if SQLITE_OK <> Sqlite3_Prepare_v2(FDatabase.FDB, PUTF8Char(UTF8String(FSQL)), -1, FStmt, NextSQLStatement) then
+    DB.RaiseError(c_errorsql, FSQL);
 
-procedure TSQLiteTable.AddParamText(const name : string; const value: String);
-var
-  i: integer;
-  valueUTF8 : UTF8String;
-begin
-  i := sqlite3_bind_parameter_index(FStmt, @UTF8String(name)[1] );
-  if i > 0 then
-  begin
-    valueUTF8 := UTF8String( value );
-    sqlite3_bind_text(FStmt, i, @valueUTF8[1], length(valueUTF8), SQLITE_TRANSIENT);
-  end;
-end;
+  if not Assigned(FStmt) then
+    DB.RaiseError(c_errorprepare, FSQL);
 
-constructor TSQLiteTable.Create(const DB: TSQLiteDatabase; const SQL: String; PrepareOnly: Boolean = false);
-var
-  NextSQLStatement: PAnsiChar;
-  i: integer;
-begin
-  inherited create;
-  self.fDB := db;
-  self.fEOF := false;
-  self.fRow := 0;
-  self.fColCount := 0;
-  self.fSQL := SQL;
-  if Sqlite3_Prepare_v2(DB.fDB, @UTF8String(SQL)[1], -1, fStmt, NextSQLStatement) <> SQLITE_OK then
-    DB.RaiseError(c_errorsql, SQL);
-  if (fStmt = nil) then
-    DB.RaiseError(c_errorprepare, SQL);
-  DB.DoQuery(SQL);
+  DB.DoLogQuery(SQL);
+
   //get data types
-  fCols := TStringList.Create;
-  fColCount := SQLite3_ColumnCount(fstmt);
-  for i := 0 to Pred(fColCount) do
-    // AnsiUpperCase operates on UNICODE strings but according to Ansi Collation Rules!
-    fCols.Add( AnsiUpperCase(String(UTF8String(Sqlite3_ColumnName(fstmt, i)))));
-  if not PrepareOnly then
-  begin
-    DB.SetParams(fStmt);
-    Next;
-  end;
+  FCols := TStringList.Create;
+  FColCount := SQLite3_ColumnCount(FStmt);
+  for i := 0 to FColCount - 1 do
+    FCols.Add(string(UTF8String(SQLite3_ColumnName(FStmt, i))));
 end;
 
-destructor TSQLiteTable.Destroy;
+destructor TSQLiteQuery.Destroy;
 begin
-  if Assigned(fStmt) then
-    Sqlite3_Finalize(fstmt);
-  if Assigned(fCols) then
-    fCols.Free;
+  if Assigned(FStmt) then
+  begin
+    Sqlite3_Finalize(FStmt);
+    FStmt := nil;
+  end;
+
+  if Assigned(FCols) then
+    FreeAndNil(FCols);
+
   inherited;
 end;
 
-function TSQLiteTable.FieldAsBlob(I: cardinal): TMemoryStream;
+function TSQLiteQuery.GetColumns(const I: Integer): string;
+begin
+  Assert(Assigned(FCols));
+  Result := FCols[I];
+end;
+
+procedure TSQLiteQuery.ParamsClear;
+begin
+  SQLite3_clear_bindings(FStmt);
+end;
+
+procedure TSQLiteQuery.SetParam(const ParamIndex: Integer; const Value: Int64);
+begin
+  if SQLITE_OK <> SQLite3_bind_int64(FStmt, ParamIndex, Value) then
+    FDatabase.RaiseError(c_errorbindingparam, FSQL);
+end;
+
+procedure TSQLiteQuery.SetParam(const ParamName: string; const Value: Int64);
 var
-  iNumBytes: integer;
-  ptr: pointer;
+  i: Integer;
 begin
-  Result := TMemoryStream.Create;
-  iNumBytes := Sqlite3_ColumnBytes(fstmt, i);
-  if iNumBytes > 0 then
-  begin
-    ptr := Sqlite3_ColumnBlob(fstmt, i);
-    Result.writebuffer(ptr^, iNumBytes);
-    Result.Position := 0;
-  end;
+  i := SQLite3_bind_parameter_index(FStmt, PUTF8Char(UTF8String(ParamName)));
+  if i > 0 then
+    SetParam(i, Value);
 end;
 
-function TSQLiteTable.FieldAsBlobPtr(I: cardinal; out iNumBytes: integer): Pointer;
+procedure TSQLiteQuery.SetParam(const ParamIndex: Integer; const Value: Double);
 begin
-  iNumBytes := Sqlite3_ColumnBytes(fstmt, i);
-  Result := Sqlite3_ColumnBlob(fstmt, i);
+  if SQLITE_OK <> SQLite3_bind_double(FStmt, ParamIndex, Value) then
+    FDatabase.RaiseError(c_errorbindingparam, FSQL);
 end;
 
-function TSQLiteTable.FieldAsBlobString(I: cardinal): AnsiString;
+procedure TSQLiteQuery.SetParam(const ParamName: string; const Value: Double);
 var
-  MemStream: TMemoryStream;
-  Buffer: PAnsiChar;
+  i: Integer;
 begin
-  Result := '';
-  MemStream := self.FieldAsBlob(I);
-  if MemStream <> nil then
-     try
-      if MemStream.Size > 0 then
-      begin
-        MemStream.position := 0;
-        {$IFDEF UNICODE}
-        Buffer := AnsiStralloc(MemStream.Size + 1);
-        {$ELSE}
-        Buffer := Stralloc(MemStream.Size + 1);
-        {$ENDIF}
-        MemStream.readbuffer(Buffer[0], MemStream.Size);
-        (Buffer + MemStream.Size)^ := chr(0);
-        SetString(Result, Buffer, MemStream.size);
-        strdispose(Buffer);
-      end;
-     finally
-     MemStream.Free;
-     end
+  i := SQLite3_bind_parameter_index(FStmt, PUTF8Char(UTF8String(ParamName)));
+  if i > 0 then
+    SetParam(i, Value);
 end;
 
-function TSQLiteTable.FieldAsDouble(I: cardinal): double;
+procedure TSQLiteQuery.SetParam(const ParamIndex: Integer; const Value: string);
+var
+  valueUTF8: UTF8String;
 begin
-  Result := Sqlite3_ColumnDouble(fstmt, i);
+  valueUTF8 := UTF8String(Value);
+  if SQLITE_OK <> SQLite3_bind_text(FStmt, ParamIndex, PUTF8Char(valueUTF8), Length(valueUTF8), SQLITE_TRANSIENT) then
+    FDatabase.RaiseError(c_errorbindingparam, FSQL);
 end;
 
-function TSQLiteTable.FieldAsInt(I: cardinal): int64;
+procedure TSQLiteQuery.SetParam(const ParamName: string; const Value: string);
+var
+  i: Integer;
 begin
-  Result := Sqlite3_ColumnInt64(fstmt, i);
+  i := SQLite3_bind_parameter_index(FStmt, PUTF8Char(UTF8String(ParamName)));
+  if i > 0 then
+    SetParam(i, Value);
 end;
 
-function TSQLiteTable.FieldAsBoolean(I: cardinal): Boolean;
+procedure TSQLiteQuery.SetParam(const ParamIndex: Integer);
+begin
+  if SQLITE_OK <> SQLite3_bind_null(FStmt, ParamIndex) then
+    FDatabase.RaiseError(c_errorbindingparam, FSQL);
+end;
+
+procedure TSQLiteQuery.SetParam(const ParamName: string);
+var
+  i: Integer;
+begin
+  i := SQLite3_bind_parameter_index(FStmt, PUTF8Char(UTF8String(ParamName)));
+  if i > 0 then
+    SetParam(i);
+end;
+
+function TSQLiteQuery.GetFields(const I: Cardinal): string;
+begin
+  Result := string(UTF8String(Sqlite3_ColumnText(FStmt, i)));
+end;
+
+function TSQLiteQuery.GetFieldIndex(const FieldName: string): Integer;
+begin
+  if not Assigned(FCols) or (FCols.Count = 0) then
+    raise ESQLiteException.Create(Format(c_errorempty, [FieldName]));
+
+  Result := FCols.IndexOf(AnsiUpperCase(FieldName));
+
+  if (Result < 0) then
+    raise ESQLiteException.Create(Format(c_errorfield, [FieldName]))
+end;
+
+function TSQLiteQuery.GetFieldByName(const FieldName: string): string;
+begin
+  Result := GetFields(GetFieldIndex(FieldName));
+end;
+
+function TSQLiteQuery.FieldIsNull(I: Integer): Boolean;
+begin
+  Result := SQLite3_ColumnText(FStmt, i) = nil;
+end;
+
+function TSQLiteQuery.FieldAsString(I: Integer): string;
+begin
+  Result := GetFields(I);
+end;
+
+function TSQLiteQuery.FieldAsInt(I: Integer): Int64;
+begin
+  Result := SQLite3_ColumnInt64(FStmt, i);
+end;
+
+function TSQLiteQuery.FieldAsBoolean(I: Integer): Boolean;
 var
   IntVal: Integer;
 begin
@@ -814,111 +683,129 @@ begin
   Result := (IntVal = 1);
 end;
 
-function TSQLiteTable.FieldAsDateTime(I: cardinal): TDateTime;
+function TSQLiteQuery.FieldAsDateTime(I: Integer): TDateTime;
 var
   StringVal: string;
-  FormatSettings: TFormatSettings;
 begin
   StringVal := FieldAsString(I);
-
-  GetLocaleFormatSettings(LOCALE_SYSTEM_DEFAULT, FormatSettings);
-  FormatSettings.ShortDateFormat := DATE_FORMAT;
-  FormatSettings.LongDateFormat := DATE_FORMAT;
-  FormatSettings.DateSeparator := '-';
-  FormatSettings.ShortTimeFormat := TIME_FORMAT;
-  FormatSettings.LongTimeFormat := TIME_FORMAT;
-  FormatSettings.TimeSeparator := ':';
-
-  Result := StrToDateTime(StringVal, FormatSettings);
+  Result := StrToDateTime(StringVal, SQLite_FormatSettings);
 end;
 
-function TSQLiteTable.FieldAsString(I: cardinal): String;
+function TSQLiteQuery.FieldAsDouble(I: Integer): Double;
 begin
-  Result := self.GetFields(I);
+  Result := SQLite3_ColumnDouble(FStmt, i);
 end;
 
-function TSQLiteTable.FieldIsNull(I: cardinal): boolean;
-begin
-  Result := Sqlite3_ColumnText(fstmt, i) = nil;
-end;
-
-function TSQLiteTable.GetColumns(I: integer): String;
-begin
-  Result := fCols[I];
-end;
-
-function TSQLiteTable.GetFieldByName(FieldName: String): String;
-begin
-  Result := GetFields(self.GetFieldIndex(FieldName));
-end;
-
-function TSQLiteTable.GetFieldIndex(FieldName: String): integer;
-begin
-  if (fCols = nil) then
-  begin
-    raise ESqliteException.Create(format(c_errorempty, [fieldname]));
-    exit;
-  end;
-  if (fCols.count = 0) then
-  begin
-    raise ESqliteException.Create(format(c_errorempty, [fieldname]));
-    exit;
-  end;
-  Result := fCols.IndexOf(AnsiUpperCase(FieldName));
-  if (result < 0) then
-  begin
-    raise ESqliteException.Create(format(c_errorfield, [fieldname]))
-  end;
-end;
-
-function TSQLiteTable.GetFields(I: cardinal): String;
-begin
-  Result := String(UTF8String((Sqlite3_ColumnText(fstmt, i))));
-end;
-
-function TSQLiteTable.Next: boolean;
+function TSQLiteQuery.FieldAsBlob(I: Integer): TMemoryStream;
 var
-  iStepResult: integer;
+  iNumBytes: Integer;
+  ptr: Pointer;
 begin
-  fEOF := true;
-  iStepResult := Sqlite3_step(fStmt);
-  case iStepResult of
+  Result := TMemoryStream.Create;
+  iNumBytes := SQLite3_ColumnBytes(FStmt, i);
+  if iNumBytes > 0 then
+  begin
+    ptr := Sqlite3_ColumnBlob(FStmt, i);
+    Result.WriteBuffer(ptr^, iNumBytes);
+    Result.Position := 0;
+  end;
+end;
+
+function TSQLiteQuery.FieldAsBlobPtr(I: Integer; out iNumBytes: Integer): Pointer;
+begin
+  iNumBytes := SQLite3_ColumnBytes(FStmt, i);
+  Result := SQLite3_ColumnBlob(FStmt, i);
+end;
+
+function TSQLiteQuery.FieldAsBlobString(I: Integer): AnsiString;
+var
+  MemStream: TMemoryStream;
+  Buffer: PAnsiChar;
+begin
+  Result := '';
+  MemStream := FieldAsBlob(I);
+  if Assigned(MemStream) then
+  try
+    if MemStream.Size > 0 then
+    begin
+      MemStream.Position := 0;
+      {$IFDEF UNICODE}
+      Buffer := AnsiStrAlloc(MemStream.Size + 1);
+      {$ELSE}
+      Buffer := Stralloc(MemStream.Size + 1);
+      {$ENDIF}
+      MemStream.ReadBuffer(Buffer[0], MemStream.Size);
+      (Buffer + MemStream.Size)^ := Chr(0);
+      SetString(Result, Buffer, MemStream.Size);
+      StrDispose(Buffer);
+    end;
+   finally
+     MemStream.Free;
+  end
+end;
+
+procedure TSQLiteQuery.ExecSQL;
+begin
+  try
+    if SQLITE_DONE <> SQLite3_Step(FStmt) then
+      FDatabase.RaiseError(c_errorexec, FSQL);
+  finally
+    Reset;
+  end;
+end;
+
+procedure TSQLiteQuery.Open;
+begin
+  Next;
+end;
+
+function TSQLiteQuery.Next: Boolean;
+var
+  iStepResult: Integer;
+begin
+  FEof := True;
+  case SQLite3_Step(FStmt) of
     SQLITE_ROW:
       begin
-        fEOF := false;
-        inc(fRow);
+        FEof := False;
+        Inc(fRow);
       end;
+
     SQLITE_DONE:
       // we are on the end of dataset
       // return EOF=true only
       ;
-  else
-    begin
-    SQLite3_reset(fStmt);
-    fDB.RaiseError(c_errordata, fSQL);
-    end;
+
+    else
+      begin
+        Reset;
+        FDatabase.RaiseError(c_errordata, FSQL);
+      end;
   end;
-  Result := not fEOF;
+  Result := not FEof;
 end;
 
-procedure TSQLiteTable.ParamsClear;
+procedure TSQLiteQuery.Reset;
 begin
-  sqlite3_clear_bindings(FStmt);
+  SQLite3_Reset(FStmt);
 end;
 
-procedure TSQLiteTable.Reset;
+procedure DisposePointer(ptr: Pointer); cdecl;
 begin
-  SQLite3_Reset(fstmt);
-end;
-
-procedure DisposePointer(ptr: pointer); cdecl;
-begin
-  if assigned(ptr) then
-    freemem(ptr);
+  if Assigned(ptr) then
+    FreeMem(ptr);
 end;
 
 initialization
   SQLite3_Initialize;
+
+  GetLocaleFormatSettings(LOCALE_SYSTEM_DEFAULT, SQLite_FormatSettings);
+  SQLite_FormatSettings.ShortDateFormat := DATE_FORMAT;
+  SQLite_FormatSettings.LongDateFormat := DATE_FORMAT;
+  SQLite_FormatSettings.DateSeparator := '-';
+  SQLite_FormatSettings.ShortTimeFormat := TIME_FORMAT;
+  SQLite_FormatSettings.LongTimeFormat := TIME_FORMAT;
+  SQLite_FormatSettings.TimeSeparator := ':';
 
 finalization
   SQLite3_Shutdown;
