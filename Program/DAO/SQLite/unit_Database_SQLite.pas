@@ -149,7 +149,7 @@ type
     procedure DeleteBook(const BookKey: TBookKey); override;
 //
 //    function GetLibID(const BookKey: TBookKey): string; override; // deprecated;
-//    function GetReview(const BookKey: TBookKey): string; override;
+    function GetReview(const BookKey: TBookKey): string; override;
 //
     function SetReview(const BookKey: TBookKey; const Review: string): Integer; override;
 //    procedure SetProgress(const BookKey: TBookKey; const Progress: Integer); override;
@@ -1644,52 +1644,70 @@ begin
   DMUser.DeleteBook(BookKey);
 end;
 
+function TBookCollection_SQLite.GetReview(const BookKey: TBookKey): string;
+const
+  SQL = 'SELECT b.Review FROM Books b WHERE b.BookID = :v0 ';
+var
+  Logger: IIntervalLogger;
+  Table: TSQLiteTable;
+begin
+  if BookKey.DatabaseID = DMUser.ActiveCollectionInfo.ID then
+  begin
+    FDatabase.ParamsClear;
+    FDatabase.AddParamInt(':v0', BookKey.BookID);
+    Logger := GetIntervalLogger('GetReview', SQL);
+    Table := FDatabase.GetTable(SQL);
+    try
+      Logger := nil;
+      Result := Table.FieldAsBlobString(0);
+    finally
+      FreeAndNil(Table);
+    end;
+  end
+  else
+    Result := DMUser.GetReview(BookKey);
+end;
+
 function TBookCollection_SQLite.SetReview(const BookKey: TBookKey; const Review: string): Integer;
 const
+  SQL_UPDATE_CODE_AND_NULL_REVIEW = 'UPDATE Books SET Code = :v0, Review = NULL WHERE BookID = :v1 ';
   SQL_UPDATE_BLOB = 'UPDATE Books SET Review = ? WHERE BookID = :v0 ';
 var
   ValueStream: TStringStream;
   NewReview: string;
+  Logger: IIntervalLogger;
 begin
-  Result := 0;
-  // TODO  SetReview
+  VerifyCurrentCollection(BookKey.DatabaseID);
 
+  NewReview := Trim(Review);
+  if NewReview = '' then
+    Result := 0
+  else
+    Result := 1;
 
-//  VerifyCurrentCollection(BookKey.DatabaseID);
-//  Assert(FBooks.Active);
-//
-//  Result := 0;
-//  NewReview := Trim(Review);
-//
-//  Result := 0;
-//  if FBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
-//  begin
-//    FBooks.Edit;
-//    try
-//      if Review = '' then
-//      begin
-//        FBooksReview.Clear;
-//        FBooksCode.Value := 0;
-//      end
-//      else
-//      begin
-//        FBooksReview.Value := Review;
-//        FBooksCode.Value := 1;
-//        Result := 1;
-//      end;
-//      FBooks.Post;
-//    except
-//      FBooks.Cancel;
-//      raise ;
-//    end;
-//  end;
-//
-//  //
-//  // Обновим информацию в группах
-//  //
-//  Result := Result or DMUser.SetReview(BookKey, NewReview);
-//
-//  // TODO
+  FDatabase.ParamsClear;
+  FDatabase.AddParamInt(':v0', Result); // Code
+  FDatabase.AddParamInt(':v1', BookKey.BookID);
+  Logger := GetIntervalLogger('SetReview', SQL_UPDATE_CODE_AND_NULL_REVIEW);
+  FDatabase.ExecSQL(SQL_UPDATE_CODE_AND_NULL_REVIEW);
+
+  if NewReview <> '' then
+  begin
+    FDatabase.ParamsClear;
+    FDatabase.AddParamInt(':v0', BookKey.BookID);
+    ValueStream := TStringStream.Create(NewReview);
+    try
+      Logger.Restart(SQL_UPDATE_BLOB);
+      FDatabase.UpdateBlob(SQL_UPDATE_BLOB, ValueStream);
+    finally
+      FreeAndNil(ValueStream);
+    end;
+  end;
+
+  //
+  // Обновим информацию в группах
+  //
+  Result := Result or DMUser.SetReview(BookKey, NewReview);
 end;
 
 function TBookCollection_SQLite.GetSeriesTitle(SeriesID: Integer): string;
@@ -1792,11 +1810,35 @@ end;
 procedure TBookCollection_SQLite.SetAnnotation(const BookKey: TBookKey; const Annotation: string);
 const
   SQL_UPDATE_BLOB = 'UPDATE Books SET Annotation = ? WHERE BookID = :v0 ';
+  SQL_NULL = 'UPDATE Books SET Annotation = NULL WHERE BookID = :v0 ';
 var
+  NewAnnotation: string;
   ValueStream: TStringStream;
+  Logger: IIntervalLogger;
 begin
-  // TODO SetAnnotation
+  VerifyCurrentCollection(BookKey.DatabaseID);
 
+  FDatabase.ParamsClear;
+  FDatabase.AddParamInT(':v0', BookKey.BookID);
+
+  NewAnnotation := Trim(Annotation);
+  if NewAnnotation <> '' then
+  begin
+    ValueStream := TStringStream.Create(NewAnnotation);
+    try
+      Logger := GetIntervalLogger('SetAnnotation', SQL_UPDATE_BLOB);
+      FDatabase.UpdateBlob(SQL_UPDATE_BLOB, ValueStream);
+    finally
+      FreeAndNil(ValueStream);
+    end;
+  end
+  else
+  begin
+    Logger := GetIntervalLogger('SetAnnotation', SQL_NULL);
+    FDatabase.ExecSQL(SQL_NULL);
+  end;
+
+  DMUser.SetAnnotation(BookKey, NewAnnotation);
 end;
 
 function TBookCollection_SQLite.GenerateFullName(const LastName: string; const FirstName: string; const MiddleName: string): String;
