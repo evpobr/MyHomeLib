@@ -167,8 +167,7 @@ type
 //    procedure ChangeBookSeriesID(const OldID: Integer; const NewID: Integer; const DatabaseID: Integer); override;
 //
     procedure SetStringProperty(const PropID: Integer; const Value: string); override;
-//    procedure SetIntProperty(const PropID: Integer; const Value: Integer);
-//
+
     procedure ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc); override;
     procedure ExportUserData(data: TUserData); override;
 
@@ -184,8 +183,8 @@ type
     procedure CompactDatabase; override;
     procedure RepairDatabase; override;
 //    procedure ReloadGenres(const FileName: string); override;
-//    procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer); override;
-//
+    procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer); override;
+
     procedure TruncateTablesBeforeImport; override;
 
   protected
@@ -1763,6 +1762,31 @@ end;
 procedure TBookCollection_SQLite.RepairDatabase;
 begin
   // Not supported for SQLite, skip
+end;
+
+procedure TBookCollection_SQLite.GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
+const
+  SQL_SELECT = 'SELECT COUNT(*) FROM %s ';
+var
+  Logger: IIntervalLogger;
+  Sql: string;
+begin
+  Logger := nil;
+
+  Sql := Format(SQL_SELECT, ['Authors']);
+  Logger := GetIntervalLogger('GetStatistics', Sql);
+  FDatabase.ParamsClear;
+  AuthorsCount := FDatabase.GetTableInt(Sql);
+
+  Sql := Format(SQL_SELECT, ['Books']);
+  Logger.Restart(Sql);
+  FDatabase.ParamsClear;
+  BooksCount := FDatabase.GetTableInt(Sql);
+
+  Sql := Format(SQL_SELECT, ['Series']);
+  Logger.Restart(Sql);
+  FDatabase.ParamsClear;
+  SeriesCount := FDatabase.GetTableInt(Sql);
 end;
 
 // Clear contents of collection tables (except for Settings and Genres)
