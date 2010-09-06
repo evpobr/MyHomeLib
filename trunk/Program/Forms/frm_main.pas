@@ -6994,7 +6994,7 @@ var
   Tree: TBookTree;
   Data: PBookRecord;
   Node: PVirtualNode;
-  ALibrary: TBookCollection;
+  BookCollection: TBookCollection;
   OldID: Integer;
 begin
   //
@@ -7008,7 +7008,14 @@ begin
   //
   Assert(BookRecord.nodeType = ntBookInfo);
 
-  GetActiveBookCollection.UpdateBook(BookRecord);
+  BookCollection := GetActiveBookCollection;
+  BookCollection.BeginBulkOperation;
+  try
+    BookCollection.UpdateBook(BookRecord);
+    BookCollection.EndBulkOperation(True);
+  except
+    BookCollection.EndBulkOperation(False);
+  end;
   {
   UpdateNodes(
     BookRecord.BookKey,
