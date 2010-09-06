@@ -146,7 +146,7 @@ type
     function InsertBook(BookRecord: TBookRecord; const CheckFileName: Boolean; const FullCheck: Boolean): Integer; override;
     procedure GetBookRecord(const BookKey: TBookKey; out BookRecord: TBookRecord; const LoadMemos: Boolean); override;
 //    procedure UpdateBook(const BookRecord: TBookRecord); override;
-//    procedure DeleteBook(const BookKey: TBookKey); override;
+    procedure DeleteBook(const BookKey: TBookKey); override;
 //    procedure AddBookToGroup(const BookKey: TBookKey; const GroupID: Integer);
 //
 //    function GetLibID(const BookKey: TBookKey): string; override; // deprecated;
@@ -1461,6 +1461,49 @@ begin
   end
   else
     DMUser.GetBookRecord(BookKey, BookRecord);
+end;
+
+procedure TBookCollection_SQLite.DeleteBook(const BookKey: TBookKey);
+const
+  SQL_DELETE_GENRELIST = 'DELETE FROM Genre_List WHERE BookID = :v0 ';
+  SQL_DELETE_AUTHORLIST = 'DELETE FROM Author_List WHERE BookID = :v0 ';
+  SQL_DELETE_SERIES = 'DELETE FROM Series WHERE SeriesID in ' +
+    '(SELECT b.SeriesID FROM Books b WHERE b.BookID = :v0 AND b.SeriesID <> :v1 GROUP BY b.SeriesID HAVING COUNT(*) <= 1) ';
+  SQL_DELETE_AUTHORS = 'DELETE FROM Authors WHERE NOT AuthorID in (SELECT DISTINCT al.AuthorID FROM Author_List al) ';
+  SQL_DELETE_BOOKS = 'DELETE FROM Books WHERE BookID = :v0 ';
+
+var
+  Logger: IIntervalLogger;
+begin
+  VerifyCurrentCollection(BookKey.DatabaseID);
+
+  Logger := GetIntervalLogger('DeleteBook', SQL_DELETE_GENRELIST);
+  FDatabase.ParamsClear;
+  FDatabase.AddParamInt(':v0', BookKey.BookID);
+  FDatabase.ExecSQL(SQL_DELETE_GENRELIST);
+
+  Logger.Restart(SQL_DELETE_AUTHORLIST);
+  FDatabase.ParamsClear;
+  FDatabase.AddParamInt(':v0', BookKey.BookID);
+  FDatabase.ExecSQL(SQL_DELETE_AUTHORLIST);
+
+  Logger.Restart(SQL_DELETE_SERIES);
+  FDatabase.ParamsClear;
+  FDatabase.AddParamInt(':v0', BookKey.BookID);
+  FDatabase.AddParamInt(':v1', NO_SERIE_ID);
+  FDatabase.ExecSQL(SQL_DELETE_SERIES);
+
+  Logger.Restart(SQL_DELETE_AUTHORS);
+  FDatabase.ParamsClear;
+  FDatabase.ExecSQL(SQL_DELETE_AUTHORS);
+
+  Logger.Restart(SQL_DELETE_BOOKS);
+  FDatabase.ParamsClear;
+  FDatabase.AddParamInt(':v0', BookKey.BookID);
+  FDatabase.ExecSQL(SQL_DELETE_BOOKS);
+  Logger := nil;
+
+  DMUser.DeleteBook(BookKey);
 end;
 
 function TBookCollection_SQLite.SetReview(const BookKey: TBookKey; const Review: string): Integer;
