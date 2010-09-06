@@ -8,10 +8,10 @@ DROP TABLE IF EXISTS [Series];
 CREATE TABLE [Series] (
   [SeriesID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
   [SeriesTitle] VARCHAR(80) NOT NULL,
-  [HasLocalBooks] BOOLEAN NOT NULL DEFAULT 0,
-  [HasNonDeletedBooks] BOOLEAN NOT NULL DEFAULT 0
+  [SearchTitle] VARCHAR(80) NOT NULL
 );
 CREATE INDEX [IXSeries_Title] ON [Series] ([SeriesTitle] COLLATE NOCASE ASC);
+CREATE INDEX [IXSeries_SearchTitle] ON [Series] ([SearchTitle] COLLATE NOCASE ASC);
 
 DROP TABLE IF EXISTS [Genres];
 CREATE TABLE [Genres] (
@@ -30,11 +30,10 @@ CREATE TABLE [Authors] (
   [LastName] VARCHAR(128) NOT NULL,
   [FirstName] VARCHAR(128),
   [MiddleName] VARCHAR(128),
-  [FullName] VARCHAR(384) NOT NULL UNIQUE,
-  [HasLocalBooks] BOOLEAN NOT NULL DEFAULT 0,
-  [HasNonDeletedBooks] BOOLEAN NOT NULL DEFAULT 0
+  [FullName] VARCHAR(512) NOT NULL UNIQUE,
+  [SearchName] VARCHAR(512) NOT NULL
 );
-CREATE INDEX [IXAuthors_LastName_FirstName_MiddleName] ON [Authors] ([LastName] COLLATE NOCASE ASC, [FirstName] COLLATE NOCASE ASC, [MiddleName] COLLATE NOCASE ASC);
+CREATE INDEX [IXAuthors_SearchName] ON [Authors] ([SearchName] COLLATE NOCASE ASC);
 
 DROP TABLE IF EXISTS [Books];
 CREATE TABLE [Books] (

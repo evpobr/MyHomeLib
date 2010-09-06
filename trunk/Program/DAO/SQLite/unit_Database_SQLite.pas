@@ -161,8 +161,8 @@ type
 //
 //    procedure CleanBookGenres(const BookID: Integer); override;
     procedure InsertBookGenres(const BookID: Integer; const Genres: TBookGenres); override;
-//
-//    function FindOrCreateSeries(const Title: string): Integer; override;
+
+    function FindOrCreateSeries(const Title: string): Integer; override;
 //    procedure SetSeriesTitle(const SeriesID: Integer; const NewTitle: string); override;
 //    procedure ChangeBookSeriesID(const OldID: Integer; const NewID: Integer; const DatabaseID: Integer); override;
 //
@@ -197,7 +197,6 @@ type
     procedure GetAuthor(AuthorID: Integer; var Author: TAuthorData);
     function GetSeriesTitle(SeriesID: Integer): string;
     function InsertAuthorIfMissing(const Author: TAuthorData): Integer;
-    function InsertSeriesIfMissing(const SeriesTitle: string): Integer;
     function InsertAuthorListEntry(const BookKey: TBookKey; const Author: TAuthorData): Integer;
     function IsFileNameConflict(const BookRecord: TBookRecord; const IncludeFolder: Boolean): Boolean;
     procedure FixGenreCode(var GenreData: TGenreData);
@@ -381,10 +380,15 @@ begin
         Assert(Assigned(FilterValue));
         SQLRows := 'SELECT b.BookID FROM Genre_List gl INNER JOIN Books b ON gl.BookID = b.BookID ';
         if isFB2Collection(DMUser.ActiveCollectionInfo.CollectionType) or not Settings.ShowSubGenreBooks then
-          AddToWhere(Where, 'gl.GenreCode = :GenreCode')
+        begin
+          AddToWhere(Where, 'gl.GenreCode = :GenreCode');
+          FCollection.FDatabase.AddParamString(':GenreCode', FilterValue^.ValueString);
+        end
         else
-          AddToWhere(Where, 'gl.GenreCode LIKE :GenreCode%');
-        FCollection.FDatabase.AddParamString(':GenreCode', FilterValue^.ValueString);
+        begin
+          AddToWhere(Where, 'gl.GenreCode LIKE :GenreCode');
+          FCollection.FDatabase.AddParamString(':GenreCode', FilterValue^.ValueString + '%');
+        end;
       end;
 
       bmByAuthor:
@@ -462,11 +466,9 @@ begin
       FilterString := '';
       if SearchCriteria.FullName <> '' then
       begin
-        AddToFilter('a.LastName + CASE WHEN a.FirstName' +
-            ' IS NULL THEN '''' ELSE '' '' END + a.FirstName' +
-            ' + CASE WHEN a.MiddleName IS NULL THEN '''' ELSE '' '' END + a.MiddleName ',
+        AddToFilter('a.SearchName ',
           PrepareQuery(SearchCriteria.FullName, True),
-          True, FilterString);
+          False, FilterString);
         if FilterString <> '' then
         begin
           FilterString := SQL_START_STR +
@@ -481,7 +483,7 @@ begin
       FilterString := '';
       if SearchCriteria.Series <> '' then
       begin
-        AddToFilter('s.SeriesTitle', PrepareQuery(SearchCriteria.Series, True), True, FilterString);
+        AddToFilter('s.SearchTitle', PrepareQuery(SearchCriteria.Series, True), False, FilterString);
 
         if FilterString <> '' then
         begin
@@ -1276,14 +1278,20 @@ function TBookCollection_SQLite.InsertAuthorIfMissing(const Author: TAuthorData)
 const
   SQL_SELECT = 'SELECT a.AuthorID FROM Authors a ' +
     'WHERE a.FullName = :v0 ';
-  SQL_INSERT = 'INSERT INTO Authors (LastName, FirstName, MiddleName, FullName) ' +
-    'SELECT :v0, :v1, :v2, :v3 ';
+  SQL_INSERT = 'INSERT INTO Authors (LastName, FirstName, MiddleName, FullName, SearchName) ' +
+    'SELECT :v0, :v1, :v2, :v3, :v4 ';
 
 var
   Logger: IIntervalLogger;
   FullName: string;
+  SearchName: string;
 begin
   FullName := GenerateFullName(Author.LastName, Author.FirstName, Author.MiddleName);
+
+  SearchName := FullName;
+  StrReplace(';;', ' ', SearchName);
+  StrReplace(';', ' ', SearchName);
+  SearchName := Trim(SearchName);
 
   FDatabase.ParamsClear;
   FDatabase.AddParamString(':v0', FullName);
@@ -1298,6 +1306,7 @@ begin
     FDatabase.AddParamString(':v1', Author.FirstName);
     FDatabase.AddParamString(':v2', Author.MiddleName);
     FDatabase.AddParamString(':v3', FullName);
+    FDatabase.AddParamString(':v4', SearchName);
     Logger := GetIntervalLogger('InsertAuthorIfMissing', SQL_INSERT);
     FDatabase.ExecSQL(SQL_INSERT);
     Logger := nil;
@@ -1305,28 +1314,32 @@ begin
   end;
 end;
 
-function TBookCollection_SQLite.InsertSeriesIfMissing(const SeriesTitle: string): Integer;
+function TBookCollection_SQLite.FindOrCreateSeries(const Title: string): Integer;
 const
-  SQL_SELECT = 'SELECT s.SeriesID FROM Series s WHERE UPPER(s.SeriesTitle) = UPPER(:v0) LIMIT 1 ';
-  SQL_INSERT = 'INSERT INTO Series (SeriesTitle) SELECT :v0 ';
+  SQL_SELECT = 'SELECT s.SeriesID FROM Series s WHERE SearchTitle = :v0 LIMIT 1 ';
+  SQL_INSERT = 'INSERT INTO Series (SeriesTitle, SearchTitle) SELECT :v0, :v1 ';
 var
   Logger: IIntervalLogger;
+  SearchExpr: string;
 begin
-  if NO_SERIES_TITLE = SeriesTitle then
+  if NO_SERIES_TITLE = Title then
     Result := NO_SERIE_ID
   else
   begin
+    SearchExpr := ToUpper(Trim(Title));
+
     FDatabase.ParamsClear;
-    FDatabase.AddParamString(':v0', SeriesTitle);
-    Logger := GetIntervalLogger('InsertSeriesIfMissing', SQL_SELECT);
+    FDatabase.AddParamString(':v0', SearchExpr);
+    Logger := GetIntervalLogger('FindOrCreateSeries', SQL_SELECT);
     Result := FDatabase.GetTableInt(SQL_SELECT);
     Logger := nil;
 
     if Result = 0 then // not found
     begin
       FDatabase.ParamsClear;
-      FDatabase.AddParamString(':v0', SeriesTitle);
-      Logger := GetIntervalLogger('InsertSeriesIfMissing', SQL_INSERT);
+      FDatabase.AddParamString(':v0', Title);
+      FDatabase.AddParamString(':v1', SearchExpr);
+      Logger := GetIntervalLogger('FindOrCreateSeries', SQL_INSERT);
       FDatabase.ExecSQL(SQL_INSERT);
       Logger := nil;
       Result := FDatabase.LastInsertRowID;
@@ -1468,7 +1481,7 @@ begin
   //
   // создадим отсутствующую серию
   //
-  BookRecord.SeriesID := InsertSeriesIfMissing(BookRecord.Series);
+  BookRecord.SeriesID := FindOrCreateSeries(BookRecord.Series);
 
   //
   // Собственно сохраним информацию о книге
@@ -1867,7 +1880,8 @@ end;
 
 function TBookCollection_SQLite.GenerateFullName(const LastName: string; const FirstName: string; const MiddleName: string): String;
 begin
-  Result := ToUpper(LastName + ';' + FirstName + ';' + MiddleName);
+  Result := ToUpper(Trim(LastName) + ';' + Trim(FirstName) + ';' + Trim(MiddleName));
 end;
 
 end.
+
