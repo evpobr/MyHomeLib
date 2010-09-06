@@ -272,8 +272,10 @@ begin
       FLibrary.BeginBulkOperation;
       try
         ProcessFileList;
-      finally
-        FLibrary.EndBulkOperation;
+        FLibrary.EndBulkOperation(True);
+      except
+        FLibrary.EndBulkOperation(False);
+        raise;
       end;
     finally
       FreeAndNil(FFiles);
