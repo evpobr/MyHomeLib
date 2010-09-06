@@ -679,9 +679,9 @@ begin
               Assert(Length(FCollection.AuthorFilterType) = 1);
               Assert(TCharacter.IsUpper(FCollection.AuthorFilterType, 1));
               AddToWhere(Where,
-                'UPPER(a.LastName) LIKE ":FilterType%"'  // начинается на заданную букву
+                'UPPER(a.LastName) LIKE :FilterType'  // начинается на заданную букву
               );
-              FCollection.FDatabase.AddParamString(':FilterType', FCollection.AuthorFilterType);
+              FCollection.FDatabase.AddParamString(':FilterType', FCollection.AuthorFilterType + '%');
             end;
           end;
         end;
@@ -884,9 +884,9 @@ begin
             Assert(Length(FCollection.SeriesFilterType) = 1);
             Assert(TCharacter.IsUpper(FCollection.SeriesFilterType, 1));
             AddToWhere(Where,
-              'UPPER(s.SeriesTitle) LIKE ":FilterType%"'   // начинается на заданную букву
+              'UPPER(s.SeriesTitle) LIKE :FilterType'   // начинается на заданную букву
             );
-            FCollection.FDatabase.AddParamString(':FilterType', FCollection.SeriesFilterType);
+            FCollection.FDatabase.AddParamString(':FilterType', FCollection.SeriesFilterType + '%');
           end;
         end;
       end
