@@ -147,7 +147,6 @@ type
     procedure GetBookRecord(const BookKey: TBookKey; out BookRecord: TBookRecord; const LoadMemos: Boolean); override;
 //    procedure UpdateBook(const BookRecord: TBookRecord); override;
     procedure DeleteBook(const BookKey: TBookKey); override;
-//    procedure AddBookToGroup(const BookKey: TBookKey; const GroupID: Integer);
 //
 //    function GetLibID(const BookKey: TBookKey): string; override; // deprecated;
 //    function GetReview(const BookKey: TBookKey): string; override;
@@ -170,9 +169,9 @@ type
     procedure SetStringProperty(const PropID: Integer; const Value: string); override;
 //    procedure SetIntProperty(const PropID: Integer; const Value: Integer);
 //
-//    procedure ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc); override;
-//    procedure ExportUserData(data: TUserData); override;
-//
+    procedure ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc); override;
+    procedure ExportUserData(data: TUserData); override;
+
     function CheckFileInCollection(const FileName: string; const FullNameSearch: Boolean; const ZipFolder: Boolean): Boolean; override;
     function GetTopGenreAlias(const FB2Code: string): string; override;
 
@@ -187,7 +186,7 @@ type
 //    procedure ReloadGenres(const FileName: string); override;
 //    procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer); override;
 //
-//    procedure TruncateTablesBeforeImport; override;
+    procedure TruncateTablesBeforeImport; override;
 
   protected
     procedure InsertGenreIfMissing(const GenreData: TGenreData); override;
@@ -961,6 +960,146 @@ begin
   end;
 end;
 
+procedure TBookCollection_SQLite.ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc);
+var
+  extra: TBookExtra;
+  group: TBookGroup;
+  groupBook: TGroupBook;
+  Sql: String;
+  Logger: IIntervalLogger;
+
+  BookKey: TBookKey;
+
+  function GetBookKey(bookInfo: TBookInfo; out BookKey: TBookKey): Boolean;
+  const
+    SQL_BY_BOOKID = 'SELECT b.BookID FROM Books b WHERE b.BookID = :v0 ';
+    SQL_BY_LIBID = 'SELECT b.BookID FROM Books b WHERE b.LibID = :v0 ';
+  var
+    Logger: IIntervalLogger;
+    BookID: Integer;
+  begin
+    FDatabase.ParamsClear;
+    if bookInfo.LibID = 0 then
+    begin
+      FDatabase.AddParamInt(':v0', bookInfo.BookID);
+      Logger := GetIntervalLogger('ImportUserData.GetBookKey', SQL_BY_BOOKID);
+      BookID := FDatabase.GetTableInt(SQL_BY_BOOKID);
+    end
+    else
+    begin
+      FDatabase.AddParamInt(':v0', bookInfo.LibID);
+      Logger := GetIntervalLogger('ImportUserData.GetBookKey', SQL_BY_LIBID);
+      BookID := FDatabase.GetTableInt(SQL_BY_LIBID);
+    end;
+    Logger := nil;
+
+    Result := BookID > 0;
+    if Result then
+    begin
+      BookKey := CreateBookKey(BookID, DMUser.ActiveCollectionInfo.ID);
+    end;
+  end;
+
+begin
+  Assert(Assigned(data));
+  Assert(Assigned(guiUpdateCallback));
+
+  Logger := nil;
+  //
+  // Заполним рейтинги, review и признак прочитанности
+  //
+  for extra in data.Extras do
+  begin
+    Sql := ''; //UPDATE Books SET
+    FDatabase.ParamsClear;
+    if GetBookKey(extra, BookKey) then
+    begin
+      if extra.Rating <> 0 then
+      begin
+        Sql := 'Rate = :v0 ';
+        FDatabase.AddParamInt(':v0', extra.Rating);
+      end;
+      if extra.Progress <> 0 then
+      begin
+        if Sql <> '' then
+          Sql := Sql + ', ';
+        Sql := 'Progress = :v1 ';
+        FDatabase.AddParamInt(':v1', extra.Progress);
+      end;
+      if Sql <> '' then
+      begin
+        Sql := 'UPDATE Books SET ' + Sql;
+        if not Assigned(Logger)  then
+          Logger := GetIntervalLogger('ImportUserData', Sql)
+        else
+          Logger.Restart(Sql);
+        FDatabase.ExecSql(Sql);
+      end;
+
+      if extra.Review <> '' then
+        SetReview(BookKey, extra.Review);
+    end;
+
+    //
+    // Обновим информацию в группах
+    //
+    DMUser.SetExtra(BookKey, extra);
+
+    //
+    // Дадим возможность главному окну обновить измененные ноды
+    //
+    guiUpdateCallback(BookKey, extra);
+  end;
+
+  //
+  // Создадим пользовательские группы
+  //
+  DMUser.ImportUserData(data);
+
+  //
+  // Добавим книги в группы
+  //
+  for group in data.Groups do
+  begin
+    for groupBook in group do
+    begin
+      if GetBookKey(groupBook, BookKey) then
+      begin
+        AddBookToGroup(BookKey, group.GroupID);
+      end;
+    end;
+  end;
+end;
+
+procedure TBookCollection_SQLite.ExportUserData(data: TUserData);
+const
+  SQL = 'SELECT b.BookID, b.LibID, b.Rate, b.Progress, b.Review FROM Books b ' +
+    'WHERE b.Rate > 0 OR b.Progress > 0 OR b.Review IS NOT NULL ' +
+    'ORDER BY b.BookID ';
+var
+  Logger: IIntervalLogger;
+  Table: TSQLiteTable;
+begin
+  Assert(Assigned(data));
+
+  FDatabase.ParamsClear;
+  Logger := GetIntervalLogger('ExportUserData', SQL);
+  Table := FDatabase.GetTable(SQL);
+  Logger := nil;
+  while not Table.Eof do
+  begin
+    data.Extras.AddExtra(
+      Table.FieldAsInt(0),        // BookID
+      Table.FieldAsInt(1),        // LibID
+      Table.FieldAsInt(2),        // Rate
+      Table.FieldAsInt(3),        // Progress
+      Table.FieldAsBlobString(4)  // Review
+    );
+  end;
+
+  DMUser.ExportUserData(data);
+end;
+
 function TBookCollection_SQLite.CheckFileInCollection(const FileName: string; const FullNameSearch: Boolean; const ZipFolder: Boolean): Boolean;
 const
   SQL_BY_FOLDER = 'SELECT COUNT(*) FROM Books b WHERE UPPER(b.Folder) = UPPER(:v0) ';
@@ -1606,6 +1745,28 @@ end;
 procedure TBookCollection_SQLite.RepairDatabase;
 begin
   // Not supported for SQLite, skip
+end;
+
+// Clear contents of collection tables (except for Settings and Genres)
+procedure TBookCollection_SQLite.TruncateTablesBeforeImport;
+const
+  SQL_TRUNCATE = 'DELETE FROM %s ';
+  TABLE_NAMES: array [0 .. 4] of string = ('Author_List', 'Genre_List', 'Books', 'Authors', 'Series');
+var
+  TableName: string;
+  Logger: IIntervalLogger;
+begin
+  Logger := nil;
+  for TableName in TABLE_NAMES do
+  begin
+    FDatabase.ParamsClear;
+    FDatabase.AddParamString(':v0', TableName);
+    if not Assigned(Logger) then
+      Logger := GetIntervalLogger('InsertBookGenres', SQL_TRUNCATE)
+    else
+      Logger.Restart(SQL_TRUNCATE);
+    FDatabase.ExecSQL(Format(SQL_TRUNCATE, [TableName]));
+  end;
 end;
 
 // Add book genres for the book specified by BookID
