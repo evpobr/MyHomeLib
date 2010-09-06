@@ -202,6 +202,10 @@ type
     procedure SetParam(const ParamName: string; const Value: Double); overload; inline;
     procedure SetParam(const ParamIndex: Integer; const Value: string); overload; inline;
     procedure SetParam(const ParamName: string; const Value: string); overload; inline;
+    procedure SetParam(const ParamIndex: Integer; const Value: TStream); overload;
+    procedure SetParam(const ParamName: string; const Value: TStream); overload; inline;
+    procedure SetParam(const ParamIndex: Integer; const Value: Boolean); overload; inline;
+    procedure SetParam(const ParamName: string; const Value: Boolean); overload; inline;
     procedure SetParam(const ParamIndex: Integer); overload; inline;
     procedure SetParam(const ParamName: string); overload; inline;
 
@@ -616,6 +620,48 @@ begin
 end;
 
 procedure TSQLiteQuery.SetParam(const ParamName: string; const Value: string);
+var
+  i: Integer;
+begin
+  i := SQLite3_bind_parameter_index(FStmt, PUTF8Char(UTF8String(ParamName)));
+  if i > 0 then
+    SetParam(i, Value);
+end;
+
+procedure TSQLiteQuery.SetParam(const ParamIndex: Integer; const Value: TStream);
+var
+  iSize: Integer;
+  ptrBuff: Pointer;
+begin
+  Value.Position := 0;
+  iSize := Value.Size;
+  ptrBuff := SQlite3_Malloc(iSize);
+  if not Assigned(ptrBuff) then
+    FDatabase.RaiseError(c_errormemoryblob, '');
+
+  Value.Read(ptrBuff^, iSize);
+  if SQLITE_OK <> SQLite3_Bind_Blob(FStmt, ParamIndex, ptrBuff, iSize, SQLite3_Free) then
+    FDatabase.RaiseError(c_errorbindingparam, FSQL);
+end;
+
+procedure TSQLiteQuery.SetParam(const ParamName: string; const Value: TStream);
+var
+  i: Integer;
+begin
+  i := SQLite3_bind_parameter_index(FStmt, PUTF8Char(UTF8String(ParamName)));
+  if i > 0 then
+    SetParam(i, Value);
+end;
+
+procedure TSQLiteQuery.SetParam(const ParamIndex: Integer; const Value: Boolean);
+begin
+  if Value then
+    SetParam(ParamIndex, 1)
+  else
+    SetParam(ParamIndex, 0);
+end;
+
+procedure TSQLiteQuery.SetParam(const ParamName: string; const Value: Boolean);
 var
   i: Integer;
 begin

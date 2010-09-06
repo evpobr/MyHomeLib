@@ -75,6 +75,10 @@ type
     procedure ExportUserData(data: TUserData); virtual; abstract;
 
     function CheckFileInCollection(const FileName: string; const FullNameSearch: Boolean; const ZipFolder: Boolean): Boolean; virtual; abstract;
+
+    //
+    // очень странная ф-ия. Нужна только в одном месте и то, не ясно, нужна ли на самом деле.
+    //
     function GetTopGenreAlias(const FB2Code: string): string; virtual; abstract;
 
     //
