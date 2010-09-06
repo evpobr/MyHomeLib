@@ -669,10 +669,9 @@ begin
             if FCollection.AuthorFilterType = ALPHA_FILTER_NON_ALPHA then
             begin
               AddToWhere(Where,
-                '(POS(UPPER(SUBSTRING(a.LastName, 1, 1)), ":EN") = 0) AND (POS(UPPER(SUBSTRING(a.LastName, 1, 1)), ":RU") = 0)'
+                '(UPPER(SUBSTR(a.LastName, 1, 1)) NOT IN (' + ENGLISH_ALPHABET_SEPARATORS + ')) AND ' +
+                '(UPPER(SUBSTR(a.LastName, 1, 1)) NOT IN (' + RUSSIAN_ALPHABET_SEPARATORS + '))'
               );
-              FCollection.FDatabase.AddParamString(':EN', ENGLISH_ALPHABET);
-              FCollection.FDatabase.AddParamString(':RU', RUSSIAN_ALPHABET);
             end
             else if FCollection.AuthorFilterType <> ALPHA_FILTER_ALL then
             begin
@@ -874,10 +873,9 @@ begin
           if FCollection.SeriesFilterType = ALPHA_FILTER_NON_ALPHA then
           begin
             AddToWhere(Where,
-              '(POS(UPPER(SUBSTRING(s.SeriesTitle, 1, 1)), ":EN") = 0) AND (POS(UPPER(SUBSTRING(s.SeriesTitle, 1, 1)), ":RU") = 0)'
+              '(UPPER(SUBSTR(s.SeriesTitle, 1, 1)) NOT IN (' + ENGLISH_ALPHABET_SEPARATORS + ')) AND ' +
+              '(UPPER(SUBSTR(s.SeriesTitle, 1, 1)) NOT IN (' + RUSSIAN_ALPHABET_SEPARATORS + '))'
             );
-            FCollection.FDatabase.AddParamString(':EN', ENGLISH_ALPHABET);
-            FCollection.FDatabase.AddParamString(':RU', RUSSIAN_ALPHABET);
           end
           else if FCollection.SeriesFilterType <> ALPHA_FILTER_ALL then
           begin
