@@ -204,7 +204,7 @@ type
     function IsFileNameConflict(const BookRecord: TBookRecord; const IncludeFolder: Boolean): Boolean;
     procedure FixGenreCode(var GenreData: TGenreData);
     procedure SetAnnotation(const BookKey: TBookKey; const Annotation: string);
-
+    function GenerateFullName(const LastName: string; const FirstName: string; const MiddleName: string): String; inline;
   end;
 
 procedure CreateCollectionTables_SQLite(const DBCollectionFile: string; const GenresFileName: string);
@@ -1139,18 +1139,18 @@ end;
 function TBookCollection_SQLite.InsertAuthorIfMissing(const Author: TAuthorData): Integer;
 const
   SQL_SELECT = 'SELECT a.AuthorID FROM Authors a ' +
-    'WHERE UPPER(a.LastName) = UPPER(:v0) ' +
-    'AND UPPER(a.FirstName) = UPPER(:v1) ' +
-    'AND UPPER(a.MiddleName) = UPPER(:v2) ';
-  SQL_INSERT = 'INSERT INTO Authors (LastName, FirstName, MiddleName) ' +
-    'SELECT :v0, :v1, :v2 ';
+    'WHERE a.FullName = :v0 ';
+  SQL_INSERT = 'INSERT INTO Authors (LastName, FirstName, MiddleName, FullName) ' +
+    'SELECT :v0, :v1, :v2, :v3 ';
+
 var
   Logger: IIntervalLogger;
+  FullName: string;
 begin
+  FullName := GenerateFullName(Author.LastName, Author.FirstName, Author.MiddleName);
+
   FDatabase.ParamsClear;
-  FDatabase.AddParamString(':v0', Author.LastName);
-  FDatabase.AddParamString(':v1', Author.FirstName);
-  FDatabase.AddParamString(':v2', Author.MiddleName);
+  FDatabase.AddParamString(':v0', FullName);
   Logger := GetIntervalLogger('InsertAuthorIfMissing', SQL_SELECT);
   Result := FDatabase.GetTableInt(SQL_SELECT);
   Logger := nil;
@@ -1161,6 +1161,7 @@ begin
     FDatabase.AddParamString(':v0', Author.LastName);
     FDatabase.AddParamString(':v1', Author.FirstName);
     FDatabase.AddParamString(':v2', Author.MiddleName);
+    FDatabase.AddParamString(':v3', FullName);
     Logger := GetIntervalLogger('InsertAuthorIfMissing', SQL_INSERT);
     FDatabase.ExecSQL(SQL_INSERT);
     Logger := nil;
@@ -1170,7 +1171,7 @@ end;
 
 function TBookCollection_SQLite.InsertSeriesIfMissing(const SeriesTitle: string): Integer;
 const
-  SQL_SELECT = 'SELECT COUNT(*) FROM Series s WHERE UPPER(s.SeriesTitle) = UPPER(:v0) ';
+  SQL_SELECT = 'SELECT s.SeriesID FROM Series s WHERE UPPER(s.SeriesTitle) = UPPER(:v0) LIMIT 1 ';
   SQL_INSERT = 'INSERT INTO Series (SeriesTitle) SELECT :v0 ';
 var
   Logger: IIntervalLogger;
@@ -1637,6 +1638,11 @@ var
 begin
   // TODO SetAnnotation
 
+end;
+
+function TBookCollection_SQLite.GenerateFullName(const LastName: string; const FirstName: string; const MiddleName: string): String;
+begin
+  Result := ToUpper(LastName + ';' + FirstName + ';' + MiddleName);
 end;
 
 end.

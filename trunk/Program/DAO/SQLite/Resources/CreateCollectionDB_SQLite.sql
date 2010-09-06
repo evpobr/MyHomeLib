@@ -30,6 +30,7 @@ CREATE TABLE [Authors] (
   [LastName] VARCHAR(128) NOT NULL,
   [FirstName] VARCHAR(128),
   [MiddleName] VARCHAR(128),
+  [FullName] VARCHAR(384) NOT NULL UNIQUE,
   [HasLocalBooks] BOOLEAN NOT NULL DEFAULT 0,
   [HasNonDeletedBooks] BOOLEAN NOT NULL DEFAULT 0
 );
