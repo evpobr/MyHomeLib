@@ -73,6 +73,9 @@ type
     procedure SetFileName(const BookKey: TBookKey; const FileName: string);
     procedure SetSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
 
+    //
+    // заменить на один метод SetBookGenres
+    //
     procedure CleanBookGenres(const BookKey: Integer); // заменить Integer на TBookKey
     procedure InsertBookGenres(const BookKey: Integer; const Genres: TBookGenres); // заменить Integer на TBookKey
 
