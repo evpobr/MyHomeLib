@@ -61,6 +61,15 @@ type
     procedure SetFileName(const BookKey: TBookKey; const FileName: string); virtual; abstract;
     procedure SetSeriesID(const BookKey: TBookKey; const SeriesID: Integer); virtual; abstract;
 
+    //
+    // манипуляции с авторами книги
+    //
+    procedure CleanBookAuthors(const BookID: Integer); virtual; abstract;
+    procedure InsertBookAuthors(const BookID: Integer; const Authors: TBookAuthors); virtual; abstract;
+
+    //
+    // манипуляции с жанрами книги
+    //
     procedure CleanBookGenres(const BookID: Integer); virtual; abstract;
     procedure InsertBookGenres(const BookID: Integer; const Genres: TBookGenres); virtual; abstract;
 
@@ -79,7 +88,7 @@ type
     //
     // очень странная ф-ия. Нужна только в одном месте и то, не ясно, нужна ли на самом деле.
     //
-    function GetTopGenreAlias(const FB2Code: string): string; virtual; abstract;
+    function GetTopGenreAlias(const FB2Code: string): string;
 
     //
     // Bulk operation
@@ -101,12 +110,27 @@ type
     procedure VerifyCurrentCollection(const DatabaseID: Integer);
     procedure LoadGenres(const GenresFileName: string);
 
+  protected type
+    TGenreCache = class(TDictionary<string, TGenreData>)
+    private
+      function GetByFB2Code(const FB2Code: string): TGenreData;
+      function GetItems(const Code: string): TGenreData; inline;
+
+    public
+      constructor Create;
+
+      procedure Add(const Genre: TGenreData); inline;
+      function HasGenre(const Code: string): Boolean; inline;
+      function GetRootGenre(const Code: string): TGenreData;
+      function GetRootGenreByFB2Code(const FB2Code: string): TGenreData;
+
+      property Items[const Code: string]: TGenreData read GetItems; default;
+      property ByFB2Code[const FB2Code: string]: TGenreData read GetByFB2Code;
+    end;
+
   protected
     constructor Create;
     destructor Destroy; override;
-
-    procedure FilterDuplicateAuthorsByID(var Authors: TBookAuthors);
-    procedure FilterDuplicateGenresByCode(var Genres: TBookGenres);
 
     procedure GetGenre(const GenreCode: string; var Genre: TGenreData);
     procedure GetBookGenres(BookID: Integer; var BookGenres: TBookGenres; RootGenre: PGenreData = nil);
@@ -117,7 +141,7 @@ type
     FSeriesFilterType: string;
     FShowLocalOnly: Boolean;
     FHideDeleted: Boolean;
-    FGenreCache: TDictionary<string, TGenreData>;
+    FGenreCache: TGenreCache;
 
   public
     property HideDeleted: Boolean read FHideDeleted write FHideDeleted;
@@ -233,68 +257,13 @@ end;
 constructor TBookCollection.Create;
 begin
   inherited Create;
-  FGenreCache := TDictionary<string, TGenreData>.Create;
+  FGenreCache := TGenreCache.Create;
 end;
 
 destructor TBookCollection.Destroy;
 begin
   FreeAndNil(FGenreCache);
   inherited Destroy;
-end;
-
-procedure TBookCollection.FilterDuplicateAuthorsByID(var Authors: TBookAuthors);
-var
-  MapId: TList<Integer>;
-  NewAuthors: TBookAuthors;
-  AuthorData: TAuthorData;
-  Len: Integer;
-begin
-  Len := 0;
-
-  MapId := TList<Integer>.Create;
-  try
-    for AuthorData in Authors do
-    begin
-      if -1 = MapId.IndexOf(AuthorData.AuthorID) then
-      begin
-        SetLength(NewAuthors, Len + 1);
-        NewAuthors[Len] := AuthorData;
-        Inc(Len);
-        MapId.Add(AuthorData.AuthorID);
-      end;
-    end;
-  finally
-    FreeAndNil(MapId);
-  end;
-  Authors := NewAuthors;
-end;
-
-// Filter out duplicates by genre code
-procedure TBookCollection.FilterDuplicateGenresByCode(var Genres: TBookGenres);
-var
-  MapId: TList<string>;
-  NewGenres: TBookGenres;
-  GenreData: TGenreData;
-  Len: Integer;
-begin
-  Len := 0;
-
-  MapId := TList<string>.Create;
-  try
-    for GenreData in Genres do
-    begin
-      if -1 = MapId.IndexOf(GenreData.GenreCode) then
-      begin
-        SetLength(NewGenres, Len + 1);
-        NewGenres[Len] := GenreData;
-        Inc(Len);
-        MapId.Add(GenreData.GenreCode);
-      end;
-    end;
-  finally
-    FreeAndNil(MapId);
-  end;
-  Genres := NewGenres;
 end;
 
 procedure TBookCollection.GetBookGenres(BookID: Integer; var BookGenres: TBookGenres; RootGenre: PGenreData = nil);
@@ -315,18 +284,17 @@ begin
   end;
 
   if Assigned(RootGenre) then
-  begin
-    if Length(BookGenres) > 0 then
-      GetGenre(BookGenres[0].ParentCode, RootGenre^)
-    else
-      RootGenre^.Clear;
-  end;
+    RootGenre^ := FGenreCache.GetRootGenre(BookGenres[0].GenreCode);
 end;
 
 procedure TBookCollection.GetGenre(const GenreCode: string; var Genre: TGenreData);
 begin
-  if not FGenreCache.TryGetValue(GenreCode, Genre) then
-    Genre.Clear;
+  Genre := FGenreCache[GenreCode];
+end;
+
+function TBookCollection.GetTopGenreAlias(const FB2Code: string): string;
+begin
+  Result := FGenreCache.GetRootGenreByFB2Code(FB2Code).GenreAlias;
 end;
 
 procedure TBookCollection.GetBookAuthors(BookID: Integer; var BookAuthors: TBookAuthors);
@@ -371,6 +339,59 @@ begin
   GetBookRecord(BookKey, BookRecord, True);
 
   DMUser.AddBookToGroup(BookKey, GroupID, BookRecord);
+end;
+
+{ TBookCollection.TGenreCache }
+
+constructor TBookCollection.TGenreCache.Create;
+begin
+  inherited Create;
+end;
+
+procedure TBookCollection.TGenreCache.Add(const Genre: TGenreData);
+begin
+  inherited Add(Genre.GenreCode, Genre);
+end;
+
+function TBookCollection.TGenreCache.HasGenre(const Code: string): Boolean;
+begin
+  Result := ContainsKey(code);
+end;
+
+function TBookCollection.TGenreCache.GetItems(const Code: string): TGenreData;
+begin
+  if not TryGetValue(Code, Result) then
+    Result.Clear;
+end;
+
+function TBookCollection.TGenreCache.GetByFB2Code(const FB2Code: string): TGenreData;
+var
+  Genre: TGenreData;
+begin
+  for Genre in Values do
+  begin
+    if FB2Code = Genre.FB2GenreCode then
+    begin
+      Result := Genre;
+      Exit;
+    end;
+  end;
+
+  Result.Clear;
+end;
+
+function TBookCollection.TGenreCache.GetRootGenre(const Code: string): TGenreData;
+begin
+  Result := Items[Code];
+  while Result.ParentCode <> '' do
+    Result := Items[Result.ParentCode];
+end;
+
+function TBookCollection.TGenreCache.GetRootGenreByFB2Code(const FB2Code: string): TGenreData;
+begin
+  Result := ByFB2Code[FB2Code];
+  while Result.ParentCode <> '' do
+    Result := Items[Result.ParentCode];
 end;
 
 end.

@@ -50,7 +50,6 @@ type
     function GetGenreIterator(const Mode: TGenreIteratorMode; const FilterValue: PFilterValue = nil): IGenreIterator;
     function GetSeriesIterator(const Mode: TSeriesIteratorMode): ISeriesIterator;
     function GetBookIterator(const Mode: TBookIteratorMode; const LoadMemos: Boolean; const FilterValue: PFilterValue = nil): IBookIterator;
-
     function Search(const SearchCriteria: TBookSearchCriteria; const LoadMemos: Boolean): IBookIterator;
 
     //
@@ -74,10 +73,16 @@ type
     procedure SetSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
 
     //
-    // заменить на один метод SetBookGenres
+    // манипуляции с авторами книги
     //
-    procedure CleanBookGenres(const BookKey: Integer); // заменить Integer на TBookKey
-    procedure InsertBookGenres(const BookKey: Integer; const Genres: TBookGenres); // заменить Integer на TBookKey
+    procedure CleanBookAuthors(const BookID: Integer); // заменить Integer на TBookKey
+    procedure InsertBookAuthors(const BookID: Integer; const Authors: TBookAuthors); // заменить Integer на TBookKey
+
+    //
+    // манипуляции с жанрами книги
+    //
+    procedure CleanBookGenres(const BookID: Integer); // заменить Integer на TBookKey
+    procedure InsertBookGenres(const BookID: Integer; const Genres: TBookGenres); // заменить Integer на TBookKey
 
     //
     //
@@ -93,14 +98,16 @@ type
     procedure ExportUserData(data: TUserData);
 
     function CheckFileInCollection(const FileName: string; const FullNameSearch: Boolean; const ZipFolder: Boolean): Boolean;
-    function GetTopGenreAlias(const FB2Code: string): string;
 
     procedure BeginBulkOperation;
     procedure EndBulkOperation(Commit: Boolean = True);
 
     procedure CompactDatabase;
     procedure RepairDatabase;
+
+    function GetTopGenreAlias(const FB2Code: string): string;
     procedure ReloadGenres(const FileName: string);
+
     procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
   end;
 

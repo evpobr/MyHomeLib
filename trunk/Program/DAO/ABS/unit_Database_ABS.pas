@@ -155,7 +155,15 @@ type
     procedure DeleteBook(const BookKey: TBookKey); override;
     procedure GetBookRecord(const BookKey: TBookKey; out BookRecord: TBookRecord; const LoadMemos: Boolean); override;
 
-    function GetTopGenreAlias(const FB2Code: string): string; override;
+    //
+    // манипуляции с авторами книги
+    //
+    procedure CleanBookAuthors(const BookID: Integer); override;
+    procedure InsertBookAuthors(const BookID: Integer; const Authors: TBookAuthors); override;
+
+    //
+    // манипуляции с жанрами книги
+    //
     procedure CleanBookGenres(const BookID: Integer); override;
     procedure InsertBookGenres(const BookID: Integer; const Genres: TBookGenres); override;
 
@@ -495,9 +503,9 @@ begin
       Result :=
         'SELECT b.' + BOOK_ID_FIELD + ' FROM Genre_List gl INNER JOIN Books b ON gl.' + BOOK_ID_FIELD + ' = b.' + BOOK_ID_FIELD + ' ';
       if isFB2Collection(DMUser.ActiveCollectionInfo.CollectionType) or not Settings.ShowSubGenreBooks then
-        AddToWhere(Where, Format('gl.GenreCode = %s', [FilterValue^.ValueString]))
+        AddToWhere(Where, Format('gl.GenreCode = ''%s''', [FilterValue^.ValueString]))
       else
-        AddToWhere(Where, Format('gl.GenreCode LIKE %s%', [FilterValue^.ValueString]));
+        AddToWhere(Where, Format('gl.GenreCode LIKE ''%s%''', [FilterValue^.ValueString]));
     end;
 
     bmByAuthor:
@@ -1016,7 +1024,7 @@ begin
   // Если такой жанр уже существует => пропустим его
   //
   { TODO -oNickR : может стоит проверить и остальные поля? }
-  if FGenres.Locate(GENRE_CODE_FIELD, GenreData.GenreCode, []) then
+  if FGenreCache.HasGenre(GenreData.GenreCode) then
     Exit;
 
   //
@@ -1029,6 +1037,8 @@ begin
     FGenresFB2Code.Value := GenreData.FB2GenreCode;
     FGenresAlias.Value := GenreData.GenreAlias;
     FGenres.Post;
+
+    FGenreCache.Add(GenreData);
   except
     FGenres.Cancel;
     raise;
@@ -1044,29 +1054,10 @@ begin
   //
   FGenres.Active := False;
   FGenres.EmptyTable;
+  FGenreCache.Clear;
   FGenres.Active := True;
 
   LoadGenres(FileName);
-
-  InternalLoadGenres;
-end;
-
-function TBookCollection_ABS.GetTopGenreAlias(const FB2Code: string): string;
-var
-  Code: string;
-  p: Integer;
-begin
-  Assert(FGenres.Active);
-
-  FGenres.Locate(GENRE_FB2CODE_FIELD, FB2Code, []);
-  Code := FGenresGenreCode.Value;
-
-  Delete(Code, 1, 2); // "0."
-  p := Pos('.', Code);
-  Code := '0.' + Copy(Code, 1, p - 1);
-
-  FGenres.Locate(GENRE_CODE_FIELD, Code, []);
-  Result := FGenresAlias.Value;
 end;
 
 function TBookCollection_ABS.CheckFileInCollection(const FileName: string; const FullNameSearch: Boolean; const ZipFolder: Boolean): Boolean;
@@ -1134,9 +1125,6 @@ begin
     BookRecord.Authors[i].AuthorID := FAuthorsID.Value;
   end;
 
-  // Filter out duplicate authors by AuthorID:
-  FilterDuplicateAuthorsByID(BookRecord.Authors);
-
   //
   // Определяем код жанра
   //
@@ -1147,28 +1135,9 @@ begin
     // Если fb2 код указан, переводим его в универсальный код
     //
     if BookRecord.Genres[i].FB2GenreCode <> '' then
-    begin
-      //
-      // Знаем fb2-код жанра => получаем внутренний код
-      //
-      if FGenres.Locate(GENRE_FB2CODE_FIELD, BookRecord.Genres[i].FB2GenreCode, [loCaseInsensitive]) then
-        BookRecord.Genres[i].GenreCode := FGenresGenreCode.Value
-      else
-        //
-        // fb2-код неизвестный - так и запишем
-        //
-        BookRecord.Genres[i].GenreCode := UNKNOWN_GENRE_CODE;
-    end
+      BookRecord.Genres[i] := FGenreCache.ByFB2Code[BookRecord.Genres[i].FB2GenreCode]
     else
-    //
-    // если не указан fb2-код, проверяем наличие внутреннего кода.
-    // если внутренний код неизвестен или не указан => "так и запишем"
-    //
-    if
-      (BookRecord.Genres[i].GenreCode = '') or                         // внутренний код не указан
-      (not FGenres.Locate(GENRE_CODE_FIELD, BookRecord.Genres[i].GenreCode, [loCaseInsensitive]))  // внутренний код неизвестен
-    then
-      BookRecord.Genres[i].GenreCode := UNKNOWN_GENRE_CODE;
+      BookRecord.Genres[i] := FGenreCache[BookRecord.Genres[i].GenreCode];
   end;
 
   //
@@ -1243,22 +1212,8 @@ begin
       raise;
     end;
 
-    FilterDuplicateGenresByCode(BookRecord.Genres);
     InsertBookGenres(FBooksBookID.Value, BookRecord.Genres);
-
-    for Author in BookRecord.Authors do
-    begin
-      FAuthorList.Append;
-      try
-        FAuthorListAuthorID.Value := Author.AuthorID;
-        FAuthorListBookID.Value := FBooksBookID.Value;
-
-        FAuthorList.Post;
-      except
-        FAuthorList.Cancel;
-        raise;
-      end;
-    end;
+    InsertBookAuthors(FBooksBookID.Value, BookRecord.Authors);
 
     Result := FBooksBookID.Value;
   end;
@@ -1280,11 +1235,8 @@ begin
     FBooks.Delete;
 
     { TODO -oNickR : Заменить эти вызовы на DELETE FROM query }
-
-    while FGenreList.Locate(BOOK_ID_FIELD, BookKey.BookID, []) do
-      FGenreList.Delete;
-    while FAuthorList.Locate(BOOK_ID_FIELD, BookKey.BookID, []) do
-      FAuthorList.Delete;
+    CleanBookGenres(BookKey.BookID);
+    CleanBookAuthors(BookKey.BookID);
 
     //
     // Если книга входила в серию (SeriesID <> 1) проверим, не пора ли удалить серию.
@@ -1378,6 +1330,43 @@ begin
     DMUser.GetBookRecord(BookKey, BookRecord);
 end;
 
+procedure TBookCollection_ABS.CleanBookAuthors(const BookID: Integer);
+begin
+  Assert(FAuthorList.Active);
+
+  while FAuthorList.Locate(BOOK_ID_FIELD, BookID, []) do
+    FAuthorList.Delete;
+end;
+
+procedure TBookCollection_ABS.InsertBookAuthors(const BookID: Integer; const Authors: TBookAuthors);
+var
+  insertedIds: TList<Integer>;
+  Author: TAuthorData;
+begin
+  insertedIds := TList<Integer>.Create;
+  try
+    for Author in Authors do
+    begin
+      if -1 = insertedIds.IndexOf(Author.AuthorID) then
+      begin
+        FAuthorList.Append;
+        try
+          FAuthorListAuthorID.Value := Author.AuthorID;
+          FAuthorListBookID.Value := FBooksBookID.Value;
+
+          FAuthorList.Post;
+          insertedIds.Add(Author.AuthorID);
+        except
+          FAuthorList.Cancel;
+          raise;
+        end;
+      end;
+    end;
+  finally
+    insertedIds.Free;
+  end;
+end;
+
 procedure TBookCollection_ABS.CleanBookGenres(const BookID: Integer);
 begin
   Assert(FGenreList.Active);
@@ -1389,22 +1378,32 @@ end;
 // Add book genres for the book specified by BookID
 procedure TBookCollection_ABS.InsertBookGenres(const BookID: Integer; const Genres: TBookGenres);
 var
+  insertedCodes: TList<string>;
   Genre: TGenreData;
 begin
   Assert(FGenreList.Active);
 
-  for Genre in Genres do
-  begin
-    FGenreList.Append;
-    try
-      FGenreListBookID.Value := BookID;
-      FGenreListGenreCode.Value := Genre.GenreCode;
+  insertedCodes := TList<string>.Create;
+  try
+    for Genre in Genres do
+    begin
+      if -1 = insertedCodes.IndexOf(Genre.GenreCode) then
+      begin
+        FGenreList.Append;
+        try
+          FGenreListBookID.Value := BookID;
+          FGenreListGenreCode.Value := Genre.GenreCode;
 
-      FGenreList.Post;
-    except
-      FGenreList.Cancel;
-      raise;
+          FGenreList.Post;
+          insertedCodes.Add(Genre.GenreCode);
+        except
+          FGenreList.Cancel;
+          raise;
+        end;
+      end;
     end;
+  finally
+    insertedCodes.Free;
   end;
 end;
 
@@ -1470,7 +1469,7 @@ begin
     Genre.FB2GenreCode := FGenresFB2Code.Value;
     Genre.GenreAlias := FGenresAlias.Value;
 
-    FGenreCache.Add(Genre.GenreCode, Genre);
+    FGenreCache.Add(Genre);
 
     FGenres.Next;
   end;
@@ -2025,6 +2024,10 @@ begin
     FGenreListBookID := FGenreList.FieldByName(BOOK_ID_FIELD) as TIntegerField;
 
     InternalLoadGenres;
+  end
+  else
+  begin
+    FGenreCache.Clear;
   end;
 end;
 
