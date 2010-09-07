@@ -1,9 +1,19 @@
-{
-UDF Sqlite3 support v1.0.0
-  translation to Pascal by Lukas Gebauer
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Author(s)           Nick Rymanov    nrymanov@gmail.com
+  * Created             07.09.2010
+  * Description
+  *
+  * $Id$
+  *
+  * History
+  *
+  ****************************************************************************** *)
 
-This is experimental translation. Be patient!
-}
 unit SQLite3UDF;
 
 interface
@@ -24,12 +34,22 @@ uses
 
 function SystemCollate(Userdta: Pointer; Buf1Len: Integer; Buf1: Pointer; Buf2Len: Integer; Buf2: Pointer): Integer; cdecl;
 begin
-  Result := CompareString(LOCALE_USER_DEFAULT, 0, PWideChar(Buf1), Buf1Len, PWideChar(Buf2), Buf2Len) - CSTR_EQUAL;
+  Result := CompareString(
+    LOCALE_USER_DEFAULT,
+    0,
+    PWideChar(Buf1), Buf1Len div SizeOf(WideChar),
+    PWideChar(Buf2), Buf2Len div SizeOf(WideChar)
+  ) - CSTR_EQUAL;
 end;
 
 function SystemCollateNoCase(Userdta: Pointer; Buf1Len: Integer; Buf1: Pointer; Buf2Len: Integer; Buf2: Pointer): Integer; cdecl;
 begin
-  Result := CompareString(LOCALE_USER_DEFAULT, NORM_IGNORECASE, PWideChar(Buf1), Buf1Len, PWideChar(Buf2), Buf2Len) - CSTR_EQUAL;
+  Result := CompareString(
+    LOCALE_USER_DEFAULT,
+    NORM_IGNORECASE,
+    PWideChar(Buf1), Buf1Len div SizeOf(WideChar),
+    PWideChar(Buf2), Buf2Len div SizeOf(WideChar)
+  ) - CSTR_EQUAL;
 end;
 
 procedure SystemUpperString(pCtx: TSQLite3Context; nArgs: Integer; Args: TSQLite3Value); cdecl;
