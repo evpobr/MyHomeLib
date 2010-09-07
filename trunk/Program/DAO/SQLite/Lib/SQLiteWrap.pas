@@ -273,8 +273,13 @@ resourcestring
 implementation
 
 uses
-  SQLite3UDF,
-  unit_Logger, unit_Interfaces;
+{$DEFINE USELOGGER}
+
+{$IFDEF USELOGGER}
+  unit_Logger,
+  unit_Interfaces,
+{$ENDIF}
+  SQLite3UDF;
 
 const
   DATE_FORMAT = 'yyyy-mm-dd';
@@ -793,11 +798,14 @@ begin
 end;
 
 procedure TSQLiteQuery.ExecSQL;
+{$IFDEF USELOGGER}
 var
   Logger: IIntervalLogger;
 begin
   Logger := GetIntervalLogger('TSQLiteQuery.ExecSQL', FSQL);
-
+{$ELSE}
+begin
+{$ENDIF}
   try
     if SQLITE_DONE <> SQLite3_Step(FStmt) then
       FDatabase.RaiseError(c_errorexec, FSQL);
@@ -807,11 +815,14 @@ begin
 end;
 
 procedure TSQLiteQuery.Open;
+{$IFDEF USELOGGER}
 var
   Logger: IIntervalLogger;
 begin
   Logger := GetIntervalLogger('TSQLiteQuery.Open', FSQL);
-
+{$ELSE}
+begin
+{$ENDIF}
   Next;
 end;
 

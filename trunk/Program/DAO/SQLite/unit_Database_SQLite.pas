@@ -5,7 +5,7 @@
   * Copyright (C) 2008-2010 Aleksey Penkov
   *
   * Author(s)           eg
-  *
+  *                     Nick Rymanov    nrymanov@gmail.com
   * Created             04.09.2010
   * Description
   *
@@ -1193,18 +1193,11 @@ end;
 
 function TBookCollection_SQLite.CheckFileInCollection(const FileName: string; const FullNameSearch: Boolean; const ZipFolder: Boolean): Boolean;
 const
-  SQL_BY_FOLDER = 'SELECT COUNT(*) FROM Books b WHERE UPPER(b.Folder) = UPPER(:v0) ';
-  SQL_BY_FILENAME = 'SELECT COUNT(*) FROM Books b WHERE UPPER(b.FileName) = UPPER(:v0) ';
+  SQL_BY_FOLDER = 'SELECT COUNT(*) FROM Books b WHERE b.Folder = UPPER(:v0) ';
+  SQL_BY_FILENAME = 'SELECT COUNT(*) FROM Books b WHERE b.FileName = UPPER(:v0) ';
 var
   S: string;
 begin
-  //
-  // TEMP!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  //
-
-  Result := False;
-  Exit;
-
   if ZipFolder then
   begin
     ////FDatabase.AddParamString(':v0', FileName);
@@ -1333,7 +1326,7 @@ end;
 // Return AuthorID of the existing/added Author record
 function TBookCollection_SQLite.InsertAuthorIfMissing(const Author: TAuthorData): Integer;
 const
-  SQL_SELECT = 'SELECT AuthorID FROM Authors WHERE UPPER(LastName) = UPPER(?) AND UPPER(FirstName) = UPPER(?) AND UPPER(MiddleName) = UPPER(?)';
+  SQL_SELECT = 'SELECT AuthorID FROM Authors WHERE LastName = ? AND FirstName = ? AND MiddleName = ?';
   SQL_INSERT = 'INSERT INTO Authors (LastName, FirstName, MiddleName) VALUES(?, ?, ?)';
 var
   searchQuery: TSQLiteQuery;
@@ -1369,7 +1362,7 @@ end;
 
 function TBookCollection_SQLite.FindOrCreateSeries(const Title: string): Integer;
 const
-  SQL_SELECT = 'SELECT SeriesID FROM Series WHERE UPPER(SeriesTitle) = UPPER(?) LIMIT 1';
+  SQL_SELECT = 'SELECT SeriesID FROM Series WHERE SeriesTitle = ?';
   SQL_INSERT = 'INSERT INTO Series (SeriesTitle) VALUES (?)';
 var
   searchQuery: TSQLiteQuery;
@@ -1410,9 +1403,9 @@ end;
 function TBookCollection_SQLite.IsFileNameConflict(const BookRecord: TBookRecord; const IncludeFolder: Boolean): Boolean;
 const
   SQL_SELECT_BY_FOLDER_AND_FILENAME = 'SELECT COUNT(*) FROM Books b ' +
-    'WHERE UPPER(b.FileName) = UPPER(:v0) AND UPPER(b.Folder) = UPPER(:v1) ';
+    'WHERE b.FileName = :v0 AND b.Folder = :v1 ';
   SQL_SELECT_BY_FILENAME = 'SELECT COUNT(*) FROM Books b ' +
-    'WHERE UPPER(b.FileName) = UPPER(:v0) ';
+    'WHERE b.FileName = :v0 ';
 begin
   ////FDatabase.AddParamString(':v0', BookRecord.FileName);
   if IncludeFolder then
