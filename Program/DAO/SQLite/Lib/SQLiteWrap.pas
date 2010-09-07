@@ -103,12 +103,10 @@ type
   TSQLiteDatabase = class(TObject)
   private
     FDB: TSQLite3DB;
-    FOnQuery: THookQuery;
 
   protected
     procedure RegisterSystemCollateAndFunc;
     procedure RaiseError(const s, SQL: string);
-    procedure DoLogQuery(const QueryText: string);
 
   public
     {: Class constructor. Pass filename of database. If databas not exists, then new one is created.
@@ -163,9 +161,6 @@ type
 
     { SQLite database handler.}
     property DB: TSQLite3DB read FDB;
-
-    { Debug hook for log all called queries.}
-    property OnQuery: THookQuery read FOnQuery write FOnQuery;
   end;
 
   {: @abstract(Class for handling SQLite query result)}
@@ -206,6 +201,8 @@ type
     procedure SetParam(const ParamName: string; const Value: TStream); overload; inline;
     procedure SetParam(const ParamIndex: Integer; const Value: Boolean); overload; inline;
     procedure SetParam(const ParamName: string; const Value: Boolean); overload; inline;
+    procedure SetParam(const ParamIndex: Integer; const Value: TDateTime); overload;
+    procedure SetParam(const ParamName: string; const Value: TDateTime); overload; inline;
     procedure SetParam(const ParamIndex: Integer); overload; inline;
     procedure SetParam(const ParamName: string); overload; inline;
 
@@ -276,7 +273,8 @@ resourcestring
 implementation
 
 uses
-  SQLite3UDF;
+  SQLite3UDF,
+  unit_Logger, unit_Interfaces;
 
 const
   DATE_FORMAT = 'yyyy-mm-dd';
@@ -328,12 +326,6 @@ begin
     raise ESqliteException.CreateFmt(s + c_error, [ret, SQLiteErrorStr(ret), SQL, Msg])
   else
     raise ESqliteException.CreateFmt(s, [SQL, c_nomessage]);
-end;
-
-procedure TSQLiteDatabase.DoLogQuery(const QueryText: string);
-begin
-  if Assigned(FOnQuery) then
-    FOnQuery(Self, QueryText);
 end;
 
 function TSQLiteDatabase.NewQuery(const SQL: string): TSQLiteQuery;
@@ -497,8 +489,6 @@ begin
     if (Stmt = nil) then
       RaiseError(c_errorprepare, SQL);
 
-    DoLogQuery(SQL);
-
     //now bind the blob data
     iSize := BlobData.size;
 
@@ -545,8 +535,6 @@ begin
 
   if not Assigned(FStmt) then
     DB.RaiseError(c_errorprepare, FSQL);
-
-  DB.DoLogQuery(SQL);
 
   //get data types
   FCols := TStringList.Create;
@@ -662,6 +650,20 @@ begin
 end;
 
 procedure TSQLiteQuery.SetParam(const ParamName: string; const Value: Boolean);
+var
+  i: Integer;
+begin
+  i := SQLite3_bind_parameter_index(FStmt, PUTF8Char(UTF8String(ParamName)));
+  if i > 0 then
+    SetParam(i, Value);
+end;
+
+procedure TSQLiteQuery.SetParam(const ParamIndex: Integer; const Value: TDateTime);
+begin
+  SetParam(ParamIndex, DateTimeToStr(Value, SQLite_FormatSettings));
+end;
+
+procedure TSQLiteQuery.SetParam(const ParamName: string; const Value: TDateTime);
 var
   i: Integer;
 begin
@@ -791,7 +793,11 @@ begin
 end;
 
 procedure TSQLiteQuery.ExecSQL;
+var
+  Logger: IIntervalLogger;
 begin
+  Logger := GetIntervalLogger('TSQLiteQuery.ExecSQL', FSQL);
+
   try
     if SQLITE_DONE <> SQLite3_Step(FStmt) then
       FDatabase.RaiseError(c_errorexec, FSQL);
@@ -801,7 +807,11 @@ begin
 end;
 
 procedure TSQLiteQuery.Open;
+var
+  Logger: IIntervalLogger;
 begin
+  Logger := GetIntervalLogger('TSQLiteQuery.Open', FSQL);
+
   Next;
 end;
 
