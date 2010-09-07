@@ -16,7 +16,7 @@ CREATE TABLE [Genres] (
   [GenreCode] VARCHAR(20) NOT NULL PRIMARY KEY COLLATE NOCASE,
   [ParentCode] VARCHAR(20) COLLATE NOCASE,
   [FB2Code] VARCHAR(20) COLLATE NOCASE,
-  [GenreAlias] VARCHAR(50) NOT NULL SYSTEM_NOCASE
+  [GenreAlias] VARCHAR(50) NOT NULL COLLATE SYSTEM_NOCASE
 );
 CREATE UNIQUE INDEX [IXGenres_ParentCode_GenreCode] ON [Genres] ([ParentCode], [GenreCode]);
 CREATE INDEX [IXGenres_FB2Code] ON [Genres] ([FB2Code]);
@@ -31,7 +31,7 @@ CREATE TABLE [Authors] (
 );
 CREATE INDEX [IXAuthors_FullName] ON [Authors] ([LastName], [FirstName], [MiddleName]);
 
-DROP TABLE IF EXISTS [Books];
+DROP TABLE IF EXISTS [Books];
 CREATE TABLE [Books] (
   [BookID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   [LibID] INTEGER NOT NULL,
