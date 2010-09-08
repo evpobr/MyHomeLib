@@ -234,7 +234,7 @@ resourcestring
 implementation
 
 uses
-{$DEFINE USELOGGER}
+{.$DEFINE USELOGGER}
 
 {$IFDEF USELOGGER}
   unit_Logger,
