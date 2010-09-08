@@ -38,64 +38,23 @@ pre-Delphi 2009
   convert data to UTF-8 explicitly!
   Pasing data by UTF8String typed variable made your source forward compatible
   with Delphi 2009+.
-
-
-Sample usage:
-@longcode(#
-procedure sample;
-var
-  database: TSqliteDatabase;
-  tab: TSqliteTable;
-  s: utf8string;
-begin
-  database := TSqliteDatabase.Create('somedatabase.db3');
-  try
-    database.AddParamInt(':key', 123456);
-    tab := database.GetTable('SELECT * FROM some_table WHERE ROWID=:key');
-    try
-      while not tab.EOF do
-      begin
-        s := tab.FieldAsString(tab.FieldIndex['ROWID']);
-        //do something with 'S' variable...
-        //...
-        //...then go to nexr row.
-        tab.next;
-      end;
-    finally
-      tab.free;
-    end;
-  finally
-    database.free;
-  end;
-end;
-#)
 }
 
 unit SQLiteWrap;
 
 interface
-{$IFDEF FPC}
-  {$MODE Delphi}{$H+}
-{$ENDIF}
-
-{$IFDEF UNICODE}
-  {$IFNDEF FPC}
-    {$DEFINE SQUNI}
-  {$ENDIF}
-{$ENDIF}
 
 uses
   {$IFDEF WIN32}
   Windows,
   {$ENDIF}
-  SQLite3, Classes, SysUtils;
+  SQLite3,
+  Classes,
+  SysUtils;
 
 type
   {: @abstract(Exception Class for SQLite based errors)}
   ESQLiteException = class(Exception);
-
-  {: @abstract(procedural prototype for @link(OnQuery) hook.)}
-  THookQuery = procedure(Sender: TObject; const SQL: string) of object;
 
   TSQLiteQuery = class;
 
@@ -126,7 +85,8 @@ type
     function NewQuery(const SQL: string): TSQLiteQuery;
 
     { Run SQL command without result. }
-    procedure ExecSQL(const SQL : string);
+    procedure ExecSQL(const SQL : string); overload;
+    procedure ExecSQL(const SQL : string; const Params: array of const); overload;
 
     { Run SQL command and number from first field in first row is returned. }
     function GetTableInt(const SQL: string): Int64; deprecated;
@@ -156,9 +116,6 @@ type
     procedure AddCustomCollate(name: string; xCompare: TCollateXCompare);
     procedure AddFunction(const FunctionName: string; const nArg: Integer; PrefferedEncoding: Integer; xFunc: TxFunc);
 
-    { Update a blob using data from the stream}
-    procedure UpdateBlob(const SQL: string; BlobData: TStream);
-
     { SQLite database handler.}
     property DB: TSQLite3DB read FDB;
   end;
@@ -175,9 +132,11 @@ type
     FSQL: string;
 
     function GetColumns(const I: Integer): string; inline;
-    function GetFields(const I: Cardinal): string; inline;
+    function GetFields(const I: Integer): string; inline;
     function GetFieldIndex(const FieldName: string): Integer;
     function GetFieldByName(const FieldName: string): string;
+
+    procedure LoadBlob(I: Integer; Stream: TStream);
 
   public
     {: Class constructor. Called internally by @link(TSqliteDatabase)}
@@ -197,14 +156,18 @@ type
     procedure SetParam(const ParamName: string; const Value: Double); overload; inline;
     procedure SetParam(const ParamIndex: Integer; const Value: string); overload; inline;
     procedure SetParam(const ParamName: string; const Value: string); overload; inline;
-    procedure SetParam(const ParamIndex: Integer; const Value: TStream); overload;
-    procedure SetParam(const ParamName: string; const Value: TStream); overload; inline;
     procedure SetParam(const ParamIndex: Integer; const Value: Boolean); overload; inline;
     procedure SetParam(const ParamName: string; const Value: Boolean); overload; inline;
     procedure SetParam(const ParamIndex: Integer; const Value: TDateTime); overload;
     procedure SetParam(const ParamName: string; const Value: TDateTime); overload; inline;
-    procedure SetParam(const ParamIndex: Integer); overload; inline;
-    procedure SetParam(const ParamName: string); overload; inline;
+
+    procedure SetBlobParam(const ParamIndex: Integer; const Value: TStream); overload;
+    procedure SetBlobParam(const ParamName: string; const Value: TStream); overload; inline;
+    procedure SetBlobParam(const ParamIndex: Integer; const Value: string); overload;
+    procedure SetBlobParam(const ParamName: string; const Value: string); overload; inline;
+
+    procedure SetNullParam(const ParamIndex: Integer); overload; inline;
+    procedure SetNullParam(const ParamName: string); overload; inline;
 
     //
     // доступ к полям
@@ -215,9 +178,9 @@ type
     function FieldAsBoolean(I: Integer): Boolean;
     function FieldAsDateTime(I: Integer): TDateTime;
     function FieldAsDouble(I: Integer): Double; inline;
-    function FieldAsBlob(I: Integer): TMemoryStream;
+    function FieldAsBlob(I: Integer): TStream;
     function FieldAsBlobPtr(I: Integer; out iNumBytes: Integer): Pointer; inline; deprecated;
-    function FieldAsBlobString(I: Integer): AnsiString; deprecated;
+    function FieldAsBlobString(I: Integer): string;
 
     //
     // Навигация и выплнение запросов
@@ -231,7 +194,7 @@ type
     // Свойства, для упрощения текста. В большинстве своем бесполезные.
     //
     {: Return value of some field in current row.}
-    property Fields[const I: Cardinal]: string read GetFields;
+    property Fields[const I: Integer]: string read GetFields;
 
     {: Return value of named field in current row.}
     property FieldByName[const FieldName: string]: string read GetFieldByName;
@@ -251,8 +214,6 @@ type
     {: Number of current row.}
     property Row: Cardinal read FRow;
   end;
-
-  procedure DisposePointer(ptr: Pointer); cdecl;
 
 resourcestring
   c_unknown = 'Unknown error';
@@ -303,7 +264,7 @@ begin
       s := string(UTF8String(SQLite3_ErrMsg(FDB)))
     else
       s := c_unknown;
-    raise ESqliteException.CreateFmt(c_failopen, [FileName, s]);
+    raise ESQLiteException.CreateFmt(c_failopen, [FileName, s]);
   end;
 
   RegisterSystemCollateAndFunc;
@@ -328,9 +289,9 @@ begin
     Msg := SQLite3_ErrMsg(FDB);
 
   if Assigned(Msg) then
-    raise ESqliteException.CreateFmt(s + c_error, [ret, SQLiteErrorStr(ret), SQL, Msg])
+    raise ESQLiteException.CreateFmt(s + c_error, [ret, SQLiteErrorStr(ret), SQL, Msg])
   else
-    raise ESqliteException.CreateFmt(s, [SQL, c_nomessage]);
+    raise ESQLiteException.CreateFmt(s, [SQL, c_nomessage]);
 end;
 
 function TSQLiteDatabase.NewQuery(const SQL: string): TSQLiteQuery;
@@ -340,13 +301,47 @@ end;
 
 procedure TSQLiteDatabase.ExecSQL(const SQL: string);
 var
-  Query: TSQLiteQuery;
+  query: TSQLiteQuery;
 begin
-  Query := NewQuery(SQL);
+  query := NewQuery(SQL);
   try
-    Query.ExecSQL;
+    query.ExecSQL;
   finally
-    Query.Free;
+    query.Free;
+  end;
+end;
+
+procedure TSQLiteDatabase.ExecSQL(const SQL : string; const Params: array of const);
+var
+  query: TSQLiteQuery;
+  i: Integer;
+begin
+  query := NewQuery(SQL);
+  try
+    for i := 0 to High(Params) do
+    case Params[i].VType of
+      vtInteger:       query.SetParam(i, Params[i].VInteger);
+      vtBoolean:       query.SetParam(i, Params[i].VBoolean);
+      //vtChar:          query.SetParam(i, Params[i].VChar);
+      //vtExtended:      query.SetParam(i, Params[i].VExtended^);
+      //vtString:        query.SetParam(i, Params[i].VString^);
+      //vtPChar:         query.SetParam(i, Params[i].VPChar);
+      //vtObject:        query.SetParam(i, Params[i].VObject.ClassName);
+      //vtClass:         query.SetParam(i, Params[i].VClass.ClassName);
+      //vtWideChar:;
+      //vtPWideChar:;
+      vtAnsiString:    query.SetParam(i, string(Params[i].VAnsiString));
+      //vtCurrency:      query.SetParam(i, Params[i].VCurrency^);
+      //vtVariant:       query.SetParam(i, Params[i].VVariant^);
+      vtInt64:         query.SetParam(i, Params[i].VInt64^);
+      vtUnicodeString: query.SetParam(i, string(Params[i].VUnicodeString));
+    else
+      raise ESQLiteException.Create('Unsupported param type');
+    end;
+
+    query.ExecSQL;
+  finally
+    query.Free;
   end;
 end;
 
@@ -476,50 +471,6 @@ begin
     RaiseError('', FunctionName);
 end;
 
-procedure TSQLiteDatabase.UpdateBlob(const SQL: string; BlobData: TStream);
-var
-  iSize: Integer;
-  ptr: Pointer;
-  Stmt: TSQLiteStmt;
-  NextSQLStatement: PUTF8Char;
-begin
-  //expects SQL of the form 'UPDATE MYTABLE SET MYFIELD = ? WHERE MYKEY = 1'
-  if Pos('?', SQL) = 0 then
-    RaiseError(c_errorparam, SQL);
-
-  try
-    if SQLite3_Prepare_v2(FDB, PUTF8Char(UTF8String(SQL)), -1, Stmt, NextSQLStatement) <> SQLITE_OK then
-      RaiseError(c_errorprepare, SQL);
-
-    if (Stmt = nil) then
-      RaiseError(c_errorprepare, SQL);
-
-    //now bind the blob data
-    iSize := BlobData.size;
-
-    GetMem(ptr, iSize);
-
-    if (ptr = nil) then
-      raise ESqliteException.CreateFmt(c_errormemoryblob, [SQL, 'Error']);
-
-    BlobData.Position := 0;
-    BlobData.Read(ptr^, iSize);
-
-    if SQLite3_Bind_Blob(stmt, 1, ptr, iSize, @DisposePointer) <> SQLITE_OK then
-      RaiseError(c_errorbindingblob, SQL);
-
-    if (SQLite3_Step(Stmt) <> SQLITE_DONE) then
-    begin
-      SQLite3_Reset(stmt);
-      RaiseError(c_errorexec, SQL);
-    end;
-
-  finally
-    if Assigned(Stmt) then
-      SQLite3_Finalize(stmt);
-  end;
-end;
-
 { TSQLiteQuery }
 
 constructor TSQLiteQuery.Create(const DB: TSQLiteDatabase; const SQL: string);
@@ -621,31 +572,6 @@ begin
     SetParam(i, Value);
 end;
 
-procedure TSQLiteQuery.SetParam(const ParamIndex: Integer; const Value: TStream);
-var
-  iSize: Integer;
-  ptrBuff: Pointer;
-begin
-  Value.Position := 0;
-  iSize := Value.Size;
-  ptrBuff := SQlite3_Malloc(iSize);
-  if not Assigned(ptrBuff) then
-    FDatabase.RaiseError(c_errormemoryblob, '');
-
-  Value.Read(ptrBuff^, iSize);
-  if SQLITE_OK <> SQLite3_Bind_Blob(FStmt, ParamIndex, ptrBuff, iSize, SQLite3_Free) then
-    FDatabase.RaiseError(c_errorbindingparam, FSQL);
-end;
-
-procedure TSQLiteQuery.SetParam(const ParamName: string; const Value: TStream);
-var
-  i: Integer;
-begin
-  i := SQLite3_bind_parameter_index(FStmt, PUTF8Char(UTF8String(ParamName)));
-  if i > 0 then
-    SetParam(i, Value);
-end;
-
 procedure TSQLiteQuery.SetParam(const ParamIndex: Integer; const Value: Boolean);
 begin
   if Value then
@@ -677,22 +603,69 @@ begin
     SetParam(i, Value);
 end;
 
-procedure TSQLiteQuery.SetParam(const ParamIndex: Integer);
+procedure TSQLiteQuery.SetBlobParam(const ParamIndex: Integer; const Value: TStream);
+var
+  iSize: Integer;
+  ptrBuff: Pointer;
 begin
-  if SQLITE_OK <> SQLite3_bind_null(FStmt, ParamIndex) then
+  Value.Position := 0;
+  iSize := Value.Size;
+
+  ptrBuff := SQlite3_Malloc(iSize);
+  if not Assigned(ptrBuff) then
+    FDatabase.RaiseError(c_errormemoryblob, '');
+
+  Value.Read(ptrBuff^, iSize);
+  if SQLITE_OK <> SQLite3_Bind_Blob(FStmt, ParamIndex, ptrBuff, iSize, SQLite3_Free) then
     FDatabase.RaiseError(c_errorbindingparam, FSQL);
 end;
 
-procedure TSQLiteQuery.SetParam(const ParamName: string);
+procedure TSQLiteQuery.SetBlobParam(const ParamName: string; const Value: TStream);
 var
   i: Integer;
 begin
   i := SQLite3_bind_parameter_index(FStmt, PUTF8Char(UTF8String(ParamName)));
   if i > 0 then
-    SetParam(i);
+    SetBlobParam(i, Value);
 end;
 
-function TSQLiteQuery.GetFields(const I: Cardinal): string;
+procedure TSQLiteQuery.SetBlobParam(const ParamIndex: Integer; const Value: string);
+var
+  strStream: TStringStream;
+begin
+  strStream := TStringStream.Create(Value, TEncoding.UTF8, False);
+  try
+    SetBlobParam(ParamIndex, strStream);
+  finally
+    strStream.Free;
+  end;
+end;
+
+procedure TSQLiteQuery.SetBlobParam(const ParamName: string; const Value: string);
+var
+  i: Integer;
+begin
+  i := SQLite3_bind_parameter_index(FStmt, PUTF8Char(UTF8String(ParamName)));
+  if i > 0 then
+    SetBlobParam(i, Value);
+end;
+
+procedure TSQLiteQuery.SetNullParam(const ParamIndex: Integer);
+begin
+  if SQLITE_OK <> SQLite3_bind_null(FStmt, ParamIndex) then
+    FDatabase.RaiseError(c_errorbindingparam, FSQL);
+end;
+
+procedure TSQLiteQuery.SetNullParam(const ParamName: string);
+var
+  i: Integer;
+begin
+  i := SQLite3_bind_parameter_index(FStmt, PUTF8Char(UTF8String(ParamName)));
+  if i > 0 then
+    SetNullParam(i);
+end;
+
+function TSQLiteQuery.GetFields(const I: Integer): string;
 begin
   Result := string(UTF8String(Sqlite3_ColumnText(FStmt, i)));
 end;
@@ -749,19 +722,27 @@ begin
   Result := SQLite3_ColumnDouble(FStmt, i);
 end;
 
-function TSQLiteQuery.FieldAsBlob(I: Integer): TMemoryStream;
+procedure TSQLiteQuery.LoadBlob(I: Integer; Stream: TStream);
+var
+  iNumBytes: Integer;
+  ptr: Pointer;
+begin
+  Assert(Assigned(Stream));
+  iNumBytes := SQLite3_ColumnBytes(FStmt, i);
+  if iNumBytes > 0 then
+  begin
+    ptr := Sqlite3_ColumnBlob(FStmt, i);
+    Stream.WriteBuffer(ptr^, iNumBytes);
+  end;
+end;
+
+function TSQLiteQuery.FieldAsBlob(I: Integer): TStream;
 var
   iNumBytes: Integer;
   ptr: Pointer;
 begin
   Result := TMemoryStream.Create;
-  iNumBytes := SQLite3_ColumnBytes(FStmt, i);
-  if iNumBytes > 0 then
-  begin
-    ptr := Sqlite3_ColumnBlob(FStmt, i);
-    Result.WriteBuffer(ptr^, iNumBytes);
-    Result.Position := 0;
-  end;
+  LoadBlob(i, Result);
 end;
 
 function TSQLiteQuery.FieldAsBlobPtr(I: Integer; out iNumBytes: Integer): Pointer;
@@ -770,31 +751,17 @@ begin
   Result := SQLite3_ColumnBlob(FStmt, i);
 end;
 
-function TSQLiteQuery.FieldAsBlobString(I: Integer): AnsiString;
+function TSQLiteQuery.FieldAsBlobString(I: Integer): string;
 var
-  MemStream: TMemoryStream;
-  Buffer: PAnsiChar;
+  strStream: TStringStream;
 begin
-  Result := '';
-  MemStream := FieldAsBlob(I);
-  if Assigned(MemStream) then
+  strStream := TStringStream.Create('', TEncoding.UTF8, False);
   try
-    if MemStream.Size > 0 then
-    begin
-      MemStream.Position := 0;
-      {$IFDEF UNICODE}
-      Buffer := AnsiStrAlloc(MemStream.Size + 1);
-      {$ELSE}
-      Buffer := Stralloc(MemStream.Size + 1);
-      {$ENDIF}
-      MemStream.ReadBuffer(Buffer[0], MemStream.Size);
-      (Buffer + MemStream.Size)^ := Chr(0);
-      SetString(Result, Buffer, MemStream.Size);
-      StrDispose(Buffer);
-    end;
-   finally
-     MemStream.Free;
-  end
+    LoadBlob(i, strStream);
+    Result := strStream.DataString;
+  finally
+    strStream.Free;
+  end;
 end;
 
 procedure TSQLiteQuery.ExecSQL;
@@ -855,12 +822,6 @@ end;
 procedure TSQLiteQuery.Reset;
 begin
   SQLite3_Reset(FStmt);
-end;
-
-procedure DisposePointer(ptr: Pointer); cdecl;
-begin
-  if Assigned(ptr) then
-    FreeMem(ptr);
 end;
 
 initialization
