@@ -151,11 +151,11 @@ type
     // function GetLibID(const BookKey: TBookKey): string; override; // deprecated;
     function GetReview(const BookKey: TBookKey): string; override;
     function SetReview(const BookKey: TBookKey; const Review: string): Integer; override;
-    // procedure SetProgress(const BookKey: TBookKey; const Progress: Integer); override;
-    // procedure SetRate(const BookKey: TBookKey; const Rate: Integer); override;
-    // procedure SetLocal(const BookKey: TBookKey; const AState: Boolean); override;
-    // procedure SetFolder(const BookKey: TBookKey; const Folder: string); override;
-    // procedure SetFileName(const BookKey: TBookKey; const FileName: string); override;
+    procedure SetProgress(const BookKey: TBookKey; const Progress: Integer); override;
+    procedure SetRate(const BookKey: TBookKey; const Rate: Integer); override;
+    procedure SetLocal(const BookKey: TBookKey; const AState: Boolean); override;
+    procedure SetFolder(const BookKey: TBookKey; const Folder: string); override;
+    procedure SetFileName(const BookKey: TBookKey; const FileName: string); override;
     // procedure SetSeriesID(const BookKey: TBookKey; const SeriesID: Integer); override;
 
     //
@@ -201,11 +201,11 @@ type
   strict private
     FDatabase: TSQLiteDatabase; // NOT THREAD-SAFE (query parameters are stored on the object)!
 
+    procedure InternalUpdateField(const BookID: Integer; const UpdateSQL: string; const NewValue: string);
     procedure GetAuthor(AuthorID: Integer; var Author: TAuthorData);
     function GetSeriesTitle(SeriesID: Integer): string;
     function InsertAuthorIfMissing(const Author: TAuthorData): Integer;
     function IsFileNameConflict(const BookRecord: TBookRecord; const IncludeFolder: Boolean): Boolean;
-    procedure SetAnnotation(const BookKey: TBookKey; const Annotation: string);
   end;
 
 procedure CreateCollectionTables_SQLite(const DBCollectionFile: string; const GenresFileName: string);
@@ -220,6 +220,8 @@ uses
   SQLite3,
   dm_user,
   DateUtils,
+  Math,
+  StrUtils,
   IOUtils,
   unit_Consts,
   unit_Logger,
@@ -287,12 +289,20 @@ begin
   // Now that we have the DB structure in place, can create a collection instance:
   BookCollection := TBookCollection_SQLite.Create(DBCollectionFile);
   try
-    // Fill metadata version and creation date:
-    BookCollection.SetStringProperty(SETTING_VERSION, DATABASE_VERSION);
-    BookCollection.SetStringProperty(SETTING_CREATION_DATE, FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now));
+    BookCollection.BeginBulkOperation;
+    try
+      // Fill metadata version and creation date:
+      BookCollection.SetStringProperty(SETTING_VERSION, DATABASE_VERSION);
+      BookCollection.SetStringProperty(SETTING_CREATION_DATE, FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now));
 
-    // Fill the Genres table:
-    BookCollection.LoadGenres(GenresFileName);
+      // Fill the Genres table:
+      BookCollection.LoadGenres(GenresFileName);
+
+      BookCollection.EndBulkOperation(True);
+    except
+      BookCollection.EndBulkOperation(False);
+      raise;
+    end;
   finally
     FreeAndNil(BookCollection);
   end;
@@ -1003,38 +1013,24 @@ end;
 
 procedure TBookCollection_SQLite.SetStringProperty(const PropID: Integer; const Value: string);
 const
-  // A special format of query with a '?' sign for the blob value
-  SQL_UPDATE = 'UPDATE Settings SET SettingValue = ? WHERE ID = ?';
   SQL_DELETE = 'DELETE FROM Settings WHERE ID = ?';
+  SQL_UPDATE = 'UPDATE Settings SET SettingValue = ? WHERE ID = ?';
 var
-  ValueStream: TStringStream;
   query: TSQLiteQuery;
 begin
-  if Value <> '' then
-  begin
-    ValueStream := TStringStream.Create(Value, TEncoding.UTF8, False);
-    try
-      query := FDatabase.NewQuery(SQL_UPDATE);
-      try
-        query.SetParam(1, ValueStream);
-        query.SetParam(2, PropID);
-        query.ExecSQL;
-      finally
-        query.Free;
-      end;
-    finally
-      FreeAndNil(ValueStream);
+  query := FDatabase.NewQuery(IfThen(Value = '', SQL_DELETE, SQL_UPDATE));
+  try
+    if Value = '' then
+      query.SetParam(1, PropID)
+    else
+    begin
+      query.SetBlobParam(1, Value);
+      query.SetParam(2, PropID);
     end;
-  end
-  else
-  begin
-    query := FDatabase.NewQuery(SQL_DELETE);
-    try
-      query.SetParam(1, PropID);
-      query.ExecSQL;
-    finally
-      query.Free;
-    end;
+
+    query.ExecSQL;
+  finally
+    query.Free;
   end;
 end;
 
@@ -1052,25 +1048,12 @@ var
     SQL_BY_BOOKID = 'SELECT b.BookID FROM Books b WHERE b.BookID = ?';
     SQL_BY_LIBID = 'SELECT b.BookID FROM Books b WHERE b.LibID = ?';
   var
-    sql: string;
-    id: Integer;
     query: TSQLiteQuery;
     BookID: Integer;
   begin
-    if bookInfo.LibID = 0 then
-    begin
-      sql := SQL_BY_BOOKID;
-      id := bookInfo.BookID;
-    end
-    else
-    begin
-      sql := SQL_BY_LIBID;
-      id := bookInfo.LibID;
-    end;
-
-    query := FDatabase.NewQuery(sql);
+    query := FDatabase.NewQuery(IfThen(bookInfo.LibID = 0, SQL_BY_BOOKID, SQL_BY_LIBID));
     try
-      query.SetParam(1, id);
+      query.SetParam(1, IfThen(bookInfo.LibID = 0, bookInfo.BookID, bookInfo.LibID));
       query.Open;
       if query.Eof then
         BookID := 0
@@ -1193,25 +1176,49 @@ end;
 
 function TBookCollection_SQLite.CheckFileInCollection(const FileName: string; const FullNameSearch: Boolean; const ZipFolder: Boolean): Boolean;
 const
-  SQL_BY_FOLDER = 'SELECT COUNT(*) FROM Books b WHERE b.Folder = UPPER(:v0) ';
-  SQL_BY_FILENAME = 'SELECT COUNT(*) FROM Books b WHERE b.FileName = UPPER(:v0) ';
+  SQL_BY_FOLDER = 'SELECT 1 FROM Books b WHERE b.Folder = ?';
+  SQL_BY_FILENAME = 'SELECT 1 FROM Books b WHERE b.FileName = ?';
 var
   S: string;
+  query: TSQLiteQuery;
 begin
-  if ZipFolder then
-  begin
-    ////FDatabase.AddParamString(':v0', FileName);
-    Result := (FDatabase.GetTableInt(SQL_BY_FOLDER) > 0);
-  end
-  else
-  begin
-    if FullNameSearch then
+  query := FDatabase.NewQuery(IfThen(ZipFolder, SQL_BY_FOLDER, SQL_BY_FILENAME));
+  try
+    if ZipFolder then
+      S := FileName
+    else if FullNameSearch then
       S := ExtractFileName(FileName)
     else
       S := TPath.GetFileNameWithoutExtension(FileName);
 
-    ////FDatabase.AddParamString(':v0', S);
-    Result := (FDatabase.GetTableInt(SQL_BY_FILENAME) > 0);
+    query.SetParam(1, s);
+
+    query.Open;
+
+    Result := not query.Eof;
+  finally
+    query.Free;
+  end;
+end;
+
+function TBookCollection_SQLite.IsFileNameConflict(const BookRecord: TBookRecord; const IncludeFolder: Boolean): Boolean;
+const
+  SQL_SELECT_BY_FOLDER_AND_FILENAME = 'SELECT 1 FROM Books b WHERE b.FileName = ? AND b.Folder = ?';
+  SQL_SELECT_BY_FILENAME = 'SELECT 1 FROM Books b WHERE b.FileName = ?';
+var
+  query: TSQLiteQuery;
+begin
+  query := FDatabase.NewQuery(IfThen(IncludeFolder, SQL_SELECT_BY_FOLDER_AND_FILENAME, SQL_SELECT_BY_FILENAME));
+  try
+    query.SetParam(1, BookRecord.FileName);
+    if IncludeFolder then
+      query.SetParam(2, BookRecord.Folder);
+
+    query.Open;
+
+    Result := not query.Eof;
+  finally
+    query.Free;
   end;
 end;
 
@@ -1400,37 +1407,23 @@ begin
   end;
 end;
 
-function TBookCollection_SQLite.IsFileNameConflict(const BookRecord: TBookRecord; const IncludeFolder: Boolean): Boolean;
-const
-  SQL_SELECT_BY_FOLDER_AND_FILENAME = 'SELECT COUNT(*) FROM Books b ' +
-    'WHERE b.FileName = :v0 AND b.Folder = :v1 ';
-  SQL_SELECT_BY_FILENAME = 'SELECT COUNT(*) FROM Books b ' +
-    'WHERE b.FileName = :v0 ';
-begin
-  ////FDatabase.AddParamString(':v0', BookRecord.FileName);
-  if IncludeFolder then
-  begin
-    ////FDatabase.AddParamString(':v1', BookRecord.Folder);
-    Result := (FDatabase.GetTableInt(SQL_SELECT_BY_FOLDER_AND_FILENAME) > 0);
-  end
-  else
-  begin
-    Result := (FDatabase.GetTableInt(SQL_SELECT_BY_FILENAME) > 0);
-  end;
-end;
-
 function TBookCollection_SQLite.InsertBook(BookRecord: TBookRecord; const CheckFileName: Boolean; const FullCheck: Boolean): Integer;
 const
-  SQL_INSERT = 'INSERT INTO Books (' +
-    'Title, Folder, FileName, Ext, InsideNo, ' +        // 0  .. 4
-    'SeriesID, SeqNumber, Code, BookSize, LibID, ' +    // 5  .. 9
-    'IsDeleted, IsLocal, UpdateDate, Lang, LibRate, ' + // 10 .. 14
-    'KeyWords, Rate, Progress ' +                       // 15 .. 17
-    ') VALUES (:v0, :v1, :v2, :v3, :v4, :v5, :v6, :v7, :v8, :v9, :v10, :v11, :v12, :v13, :v14, :v15, :v16, :v17)';
-
+  SQL_INSERT =
+    'INSERT INTO Books (' +
+    'Title,     Folder,    FileName,   Ext,      InsideNo, ' +  // 01 .. 05
+    'SeriesID,  SeqNumber, Code,       BookSize, LibID, ' +     // 06 .. 10
+    'IsDeleted, IsLocal,   UpdateDate, Lang,     LibRate, ' +   // 11 .. 15
+    'KeyWords,  Rate,      Progress,   Review,   Annotation' +  // 16 .. 20
+    ') ' +
+    'VALUES (' +
+    ':v01, :v02, :v03, :v04, :v05, ' +
+    ':v06, :v07, :v08, :v09, :v10, ' +
+    ':v11, :v12, :v13, :v14, :v15, ' +
+    ':v16, :v17, :v18, :v19, :v20' +
+    ')';
 var
   i: Integer;
-  Author: TAuthorData;
   NameConflict: Boolean;
   query: TSQLiteQuery;
 begin
@@ -1471,13 +1464,16 @@ begin
   //
   // Собственно сохраним информацию о книге
   //
-  if CheckFileName then
-    NameConflict := IsFileNameConflict(BookRecord, FullCheck);
+  NameConflict := CheckFileName and IsFileNameConflict(BookRecord, FullCheck);
 
   if not NameConflict then
   begin
     if BookRecord.SeqNumber > 5000 then
       BookRecord.SeqNumber := 0;
+
+    BookRecord.Review := Trim(BookRecord.Review);
+    BookRecord.Code := IfThen(BookRecord.Review = '', 0, 1);
+    BookRecord.Annotation := Trim(BookRecord.Annotation);
 
     query := FDatabase.NewQuery(SQL_INSERT);
     try
@@ -1493,8 +1489,8 @@ begin
       end
       else
       begin
-        query.SetParam(6);
-        query.SetParam(7);
+        query.SetNullParam(6);
+        query.SetNullParam(7);
       end;
       query.SetParam(8, BookRecord.Code);
       query.SetParam(9, BookRecord.Size);
@@ -1508,6 +1504,16 @@ begin
       query.SetParam(17, BookRecord.Rate);
       query.SetParam(18, BookRecord.Progress);
 
+      if BookRecord.Review = '' then
+        query.SetNullParam(19)
+      else
+        query.SetBlobParam(19, BookRecord.Review);
+
+      if BookRecord.Annotation = '' then
+        query.SetNullParam(20)
+      else
+        query.SetBlobParam(20, BookRecord.Annotation);
+
       query.ExecSQL;
 
       BookRecord.BookKey.BookID := FDatabase.LastInsertRowID;
@@ -1515,11 +1521,6 @@ begin
     finally
       query.Free;
     end;
-
-    if BookRecord.Review <> '' then
-      SetReview(BookRecord.BookKey, BookRecord.Review);
-    if BookRecord.Annotation <> '' then
-      SetAnnotation(BookRecord.BookKey, BookRecord.Annotation);
 
     InsertBookGenres(BookRecord.BookKey.BookID, BookRecord.Genres);
     InsertBookAuthors(BookRecord.BookKey.BookID, BookRecord.Authors);
@@ -1530,14 +1531,15 @@ end;
 
 procedure TBookCollection_SQLite.GetBookRecord(const BookKey: TBookKey; out BookRecord: TBookRecord; const LoadMemos: Boolean);
 const
-  SQL = 'SELECT ' +
+  SQL =
+    'SELECT ' +
     'b.Title, b.Folder, b.FileName, b.Ext, b.InsideNo, ' +        // 0  .. 4
     'b.SeriesID, b.SeqNumber, b.Code, b.BookSize, b.LibID, ' +    // 5  .. 9
     'b.IsDeleted, b.IsLocal, b.UpdateDate, b.Lang, b.LibRate, ' + // 10 .. 14
     'b.KeyWords, b.Rate, b.Progress, b.Review, b.Annotation ' +   // 15 .. 19
-    'FROM Books b WHERE BookID = :v0 ';
+    'FROM Books b ' +
+    'WHERE BookID = ?';
 var
-  Count: Integer;
   Table: TSQLiteQuery;
 begin
   BookRecord.Clear;
@@ -1551,13 +1553,13 @@ begin
 
       Assert(not Table.Eof);
 
+      BookRecord.NodeType := ntBookInfo;
       BookRecord.BookKey := BookKey;
       BookRecord.Title := Table.FieldAsString(0);
       BookRecord.Folder := Table.FieldAsString(1);
       BookRecord.FileName := Table.FieldAsString(2);
       BookRecord.FileExt := Table.FieldAsString(3);
       BookRecord.InsideNo := Table.FieldAsInt(4);
-
       if not Table.FieldIsNull(5) then
       begin
         BookRecord.SeriesID := Table.FieldAsInt(5);
@@ -1573,7 +1575,6 @@ begin
       BookRecord.Lang := Table.FieldAsString(13);
       BookRecord.LibRate := Table.FieldAsInt(14);
       BookRecord.KeyWords := Table.FieldAsString(15);
-      BookRecord.NodeType := ntBookInfo;
       BookRecord.Rate := Table.FieldAsInt(16);
       BookRecord.Progress := Table.FieldAsInt(17);
       BookRecord.CollectionRoot := DMUser.ActiveCollectionInfo.RootPath;
@@ -1602,6 +1603,11 @@ const
   //
   // Предлагаю обойтись триггерами
   //
+
+  //
+  // TODO: BUG - мы никогда не записываем в SeriesID значение NO_SERIE_ID
+  //
+
   SQL_DELETE_SERIES = 'DELETE FROM Series WHERE SeriesID in ' +
     '(SELECT b.SeriesID FROM Books b WHERE b.BookID = :v0 AND b.SeriesID <> :v1 GROUP BY b.SeriesID HAVING COUNT(*) <= 1) ';
   SQL_DELETE_AUTHORS = 'DELETE FROM Authors WHERE NOT AuthorID in (SELECT DISTINCT al.AuthorID FROM Author_List al) ';
@@ -1647,8 +1653,6 @@ const
   SQL = 'SELECT Review FROM Books WHERE BookID = ?';
 var
   query: TSQLiteQuery;
-  blobStream: TStream;
-  strStream: TStringStream;
 begin
   if BookKey.DatabaseID = DMUser.ActiveCollectionInfo.ID then
   begin
@@ -1658,20 +1662,7 @@ begin
       query.Open;
 
       if not query.Eof then
-      begin
-        blobStream := query.FieldAsBlob(0);
-        try
-          strStream := TStringStream.Create('', TEncoding.UTF8, False);
-          try
-            strStream.CopyFrom(blobStream, 0);
-            Result := strStream.DataString;
-          finally
-            strStream.Free;
-          end;
-        finally
-          blobStream.Free;
-        end;
-      end
+        Result := query.FieldAsBlobString(0)
       else
         Result := '';
     finally
@@ -1689,32 +1680,19 @@ var
   NewReview: string;
   NewCode: Integer;
   query: TSQLiteQuery;
-  ValueStream: TStringStream;
 begin
   VerifyCurrentCollection(BookKey.DatabaseID);
 
   NewReview := Trim(Review);
-  if NewReview = '' then
-    NewCode := 0
-  else
-    NewCode := 1;
+  NewCode := IfThen(NewReview = '', 0, 1);
 
   query := FDatabase.NewQuery(SQL_UPDATE);
   try
     query.SetParam(1, NewCode);
     if NewCode = 0 then
-    begin
-      query.SetParam(2);
-    end
+      query.SetNullParam(2)
     else
-    begin
-      ValueStream := TStringStream.Create(NewReview, TEncoding.UTF8, False);
-      try
-        query.SetParam(2, ValueStream);
-      finally
-        FreeAndNil(ValueStream);
-      end;
-    end;
+      query.SetBlobParam(2, NewReview);
     query.SetParam(3, BookKey.BookID);
 
     query.ExecSQL;
@@ -1726,6 +1704,121 @@ begin
   // Обновим информацию в группах
   //
   Result := NewCode or DMUser.SetReview(BookKey, NewReview);
+end;
+
+procedure TBookCollection_SQLite.SetProgress(const BookKey: TBookKey; const Progress: Integer);
+const
+  SQL_UPDATE = 'UPDATE Books SET Progress = ? WHERE BookID = ?';
+var
+  query: TSQLiteQuery;
+begin
+  VerifyCurrentCollection(BookKey.DatabaseID);
+
+  query := FDatabase.NewQuery(SQL_UPDATE);
+  try
+    query.SetParam(1, Progress);
+    query.SetParam(2, BookKey.BookID);
+
+    query.ExecSQL;
+  finally
+    query.Free;
+  end;
+
+  //
+  // Обновим информацию в группах
+  //
+  DMUser.SetProgress(BookKey, Progress);
+end;
+
+procedure TBookCollection_SQLite.SetRate(const BookKey: TBookKey; const Rate: Integer);
+const
+  SQL_UPDATE = 'UPDATE Books SET Rate = ? WHERE BookID = ?';
+var
+  query: TSQLiteQuery;
+begin
+  VerifyCurrentCollection(BookKey.DatabaseID);
+
+  query := FDatabase.NewQuery(SQL_UPDATE);
+  try
+    query.SetParam(1, Rate);
+    query.SetParam(2, BookKey.BookID);
+
+    query.ExecSQL;
+  finally
+    query.Free;
+  end;
+
+  //
+  // Обновим информацию в группах
+  //
+  DMUser.SetRate(BookKey, Rate);
+end;
+
+procedure TBookCollection_SQLite.SetLocal(const BookKey: TBookKey; const AState: Boolean);
+const
+  SQL_UPDATE = 'UPDATE Books SET IsLocal = ? WHERE BookID = ?';
+var
+  query: TSQLiteQuery;
+begin
+  VerifyCurrentCollection(BookKey.DatabaseID);
+
+  query := FDatabase.NewQuery(SQL_UPDATE);
+  try
+    query.SetParam(1, AState);
+    query.SetParam(2, BookKey.BookID);
+
+    query.ExecSQL;
+  finally
+    query.Free;
+  end;
+
+  //
+  // Обновим информацию в группах
+  //
+  DMUser.SetLocal(BookKey, AState);
+end;
+
+procedure TBookCollection_SQLite.InternalUpdateField(const BookID: Integer; const UpdateSQL: string; const NewValue: string);
+var
+  query: TSQLiteQuery;
+begin
+  query := FDatabase.NewQuery(UpdateSQL);
+  try
+    query.SetParam(1, NewValue);
+    query.SetParam(2, BookID);
+
+    query.ExecSQL;
+  finally
+    query.Free;
+  end;
+end;
+
+procedure TBookCollection_SQLite.SetFolder(const BookKey: TBookKey; const Folder: string);
+const
+  SQL_UPDATE = 'UPDATE Books SET Folder = ? WHERE BookID = ?';
+begin
+  VerifyCurrentCollection(BookKey.DatabaseID);
+
+  InternalUpdateField(BookKey.BookID, SQL_UPDATE, Folder);
+
+  //
+  // Обновим информацию в группах
+  //
+  DMUser.SetFolder(BookKey, Folder);
+end;
+
+procedure TBookCollection_SQLite.SetFileName(const BookKey: TBookKey; const FileName: string);
+const
+  SQL_UPDATE = 'UPDATE Books SET FileName = ? WHERE BookID = ?';
+begin
+  VerifyCurrentCollection(BookKey.DatabaseID);
+
+  InternalUpdateField(BookKey.BookID, SQL_UPDATE, FileName);
+
+  //
+  // Обновим информацию в группах
+  //
+  DMUser.SetFileName(BookKey, FileName);
 end;
 
 function TBookCollection_SQLite.GetSeriesTitle(SeriesID: Integer): string;
@@ -1897,48 +1990,6 @@ begin
   finally
     insertedCodes.Free;
   end;
-end;
-
-procedure TBookCollection_SQLite.SetAnnotation(const BookKey: TBookKey; const Annotation: string);
-const
-  SQL_UPDATE_BLOB = 'UPDATE Books SET Annotation = ? WHERE BookID = ?';
-  SQL_NULL = 'UPDATE Books SET Annotation = NULL WHERE BookID = ?';
-var
-  query: TSQLiteQuery;
-  NewAnnotation: string;
-  ValueStream: TStringStream;
-begin
-  VerifyCurrentCollection(BookKey.DatabaseID);
-
-  NewAnnotation := Trim(Annotation);
-  if NewAnnotation <> '' then
-  begin
-    ValueStream := TStringStream.Create(NewAnnotation);
-    try
-      query := FDatabase.NewQuery(SQL_UPDATE_BLOB);
-      try
-        query.SetParam(1, ValueStream);
-        query.SetParam(2, BookKey.BookID);
-        query.ExecSQL;
-      finally
-        query.Free;
-      end;
-    finally
-      FreeAndNil(ValueStream);
-    end;
-  end
-  else
-  begin
-    query := FDatabase.NewQuery(SQL_NULL);
-    try
-      query.SetParam(1, BookKey.BookID);
-      query.ExecSQL;
-    finally
-      query.Free;
-    end;
-  end;
-
-  DMUser.SetAnnotation(BookKey, NewAnnotation);
 end;
 
 end.
