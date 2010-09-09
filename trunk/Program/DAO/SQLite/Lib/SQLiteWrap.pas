@@ -6,20 +6,8 @@ Note: Requires Sqlite 3.6.8 and higher!
 
 Designed for Delphi 6+ and Freepascal, Unicode support for Delphi 2009+
 
-  ------------------------ Modifications for MyHomeLib ------------------------
-
-  Sep 2010
-    - added method TSQLiteDatabase.UpdateBlob (Tim Anderson's implementation from http://www.itwriting.com/blog/?page_id=659 but with UTF-8 support)
-    - added method TSQLiteDatabase.AddParamBoolean
-    - added method TSQLiteDatabase.AddParamDateTime
-    - added method TSQLiteTable.FieldAsBoolean
-    - added method TSQLiteTable.FieldAsDateTime
-    - Renamed a few method names (have a naming convention for matching Add*/Field* methods):
-        AddParamText    ==> AddParamString
-        FieldAsBlobText ==> FieldAsBlobString
-        FieldAsInteger  ==> FieldAsInt
-        GetTableValue   ==> GetTableInt
-  -----------------------------------------------------------------------------
+  MyHomeLib version, Sep 2010
+    Full rework of the wrapper by Nick to properly support multi-threading and unicode
 
   V2.0.0  29 June 2010
     Ported to D2009 Unicode by Roger Lascelles (support@veecad.com)
