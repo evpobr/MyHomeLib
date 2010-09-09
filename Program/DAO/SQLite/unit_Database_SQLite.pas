@@ -231,6 +231,7 @@ uses
 
 const
   INIT_ROWS_ARR: array[0 .. 1] of Boolean = (False, True);
+  ANNOTATION_SIZE_LIMIT = 4096;
 
 
 // Read provided resource file as a string list (split by ';')
@@ -251,11 +252,12 @@ begin
     Text := Result.Text;
     StrReplace(CRLF, ' ', Text);
     StrReplace(LF, ' ', Text);
+    StrReplace('--', '@', Text);
 
     // Split by ';'
     Result.Clear;
     Result.StrictDelimiter := True; // so that spaces are ignored
-    Result.Delimiter := ';';
+    Result.Delimiter := '@';
     Result.DelimitedText := Text;
   finally
     FreeAndNil(ResourceStream);
@@ -516,12 +518,12 @@ begin
       FilterString := '';
       if SearchCriteria.Series <> '' then
       begin
-        AddToFilter('s.SearchTitle', PrepareQuery(SearchCriteria.Series, True), False, FilterString);
+        AddToFilter('s.SearchSeriesTitle', PrepareQuery(SearchCriteria.Series, True), False, FilterString);
 
         if FilterString <> '' then
         begin
           FilterString := SQL_START_STR +
-            ' FROM Series s JOIN Books b ON b.' + SERIES_ID_FIELD + ' = s.' + SERIES_ID_FIELD + ' WHERE ' +
+            ' FROM Series s JOIN Books b ON b.SeriesID = s.SeriesID WHERE ' +
             FilterString;
 
           if SQLRows <> '' then
@@ -547,13 +549,13 @@ begin
 
       // -------------------  все остальное   -----------------------------------
       FilterString := '';
-      AddToFilter('b.Annotation', PrepareQuery(SearchCriteria.Annotation, True), True, FilterString);
-      AddToFilter('b.Title', PrepareQuery(SearchCriteria.Title, True), True, FilterString);
-      AddToFilter('b.FileName', PrepareQuery(SearchCriteria.FileName, False), False, FilterString);
-      AddToFilter('b.Folder', PrepareQuery(SearchCriteria.Folder, False), False, FilterString);
-      AddToFilter('b.Ext', PrepareQuery(SearchCriteria.FileExt, False), False, FilterString);
-      AddToFilter('b.Lang', PrepareQuery(SearchCriteria.Lang, True, False), True, FilterString);
-      AddToFilter('b.KeyWords', PrepareQuery(SearchCriteria.KeyWord, True), True, FilterString);
+      AddToFilter('b.SearchAnnotation', PrepareQuery(SearchCriteria.Annotation, True), False, FilterString);
+      AddToFilter('b.SearchTitle', PrepareQuery(SearchCriteria.Title, True), False, FilterString);
+      AddToFilter('b.SearchFileName', PrepareQuery(SearchCriteria.FileName, True), False, FilterString);
+      AddToFilter('b.SearchFolder', PrepareQuery(SearchCriteria.Folder, True), False, FilterString);
+      AddToFilter('b.SearchExt', PrepareQuery(SearchCriteria.FileExt, True), False, FilterString);
+      AddToFilter('b.SearchLang', PrepareQuery(SearchCriteria.Lang, True, False), False, FilterString);
+      AddToFilter('b.SearchKeyWords', PrepareQuery(SearchCriteria.KeyWord, True), False, FilterString);
       //
       if SearchCriteria.DateIdx = -1 then
         AddToFilter('b.UpdateDate', PrepareQuery(SearchCriteria.DateText, False), False, FilterString)
@@ -1473,7 +1475,7 @@ begin
 
     BookRecord.Review := Trim(BookRecord.Review);
     BookRecord.Code := IfThen(BookRecord.Review = '', 0, 1);
-    BookRecord.Annotation := Trim(BookRecord.Annotation);
+    BookRecord.Annotation := LeftStr(Trim(BookRecord.Annotation), ANNOTATION_SIZE_LIMIT);
 
     query := FDatabase.NewQuery(SQL_INSERT);
     try
@@ -1512,7 +1514,7 @@ begin
       if BookRecord.Annotation = '' then
         query.SetNullParam(20)
       else
-        query.SetBlobParam(20, BookRecord.Annotation);
+        query.SetParam(20, LeftStr(BookRecord.Annotation, ANNOTATION_SIZE_LIMIT));
 
       query.ExecSQL;
 
@@ -1588,7 +1590,7 @@ begin
         // TODO - rethink when to load the memo fields.
         //
         BookRecord.Review := Table.FieldAsBlobString(18);
-        BookRecord.Annotation := Table.FieldAsBlobString(19);
+        BookRecord.Annotation := Table.FieldAsString(19);
       end;
     finally
       FreeAndNil(Table);
