@@ -95,6 +95,7 @@ CREATE INDEX [IXBooks_UpdateDate] ON [Books] ([UpdateDate]);--
 CREATE INDEX [IXBooks_IsLocal] ON [Books] ([IsLocal]);--
 CREATE INDEX [IXBooks_LibID] ON [Books] ([LibID]);--
 CREATE INDEX [IXBooks_KeyWords] ON [Books] ([KeyWords]);--
+CREATE INDEX [IXBooks_BookID_IsDeleted_IsLocal] ON [Books] ([BookID], [IsDeleted], [IsLocal]);--
 CREATE INDEX [IXBooks_SearchTitle] ON [Books] ([SearchTitle]);--
 CREATE INDEX [IXBooks_SearchLang] ON [Books] ([SearchLang]);--
 CREATE INDEX [IXBooks_SearchFolder] ON [Books] ([SearchFolder]);--
