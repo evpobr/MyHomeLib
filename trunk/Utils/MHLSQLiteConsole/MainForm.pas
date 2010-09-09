@@ -3,8 +3,23 @@ unit MainForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, SQLiteWrap, SQLite3, ExtCtrls, ComCtrls, MHLSimplePanel, MHLSplitter;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  StdCtrls,
+  SQLiteWrap,
+  SQLite3,
+  ExtCtrls,
+  ComCtrls,
+  MHLSimplePanel,
+  MHLSplitter,
+  TimeSpan;
 
 type
   TfrmMain = class(TForm)
@@ -44,6 +59,7 @@ type
     procedure Connect;
     procedure Disconnect;
     procedure DoSelect(const SQL: string);
+    procedure SetPrepareTimeCaption(const Elapsed: TTimeSpan);
   public
 
   end;
@@ -78,7 +94,7 @@ begin
   q := FDatabase.NewQuery(edQuery.Lines.Text);
   try
     sw.Stop;
-    prepareTime.Caption := string(sw.Elapsed);
+    SetPrepareTimeCaption(sw.Elapsed);
 
     sw.Reset;
     q.ExecSQL;
@@ -150,7 +166,7 @@ begin
       q := FDatabase.NewQuery(SQL);
       try
         sw.Stop;
-        prepareTime.Caption := string(sw.Elapsed);
+        SetPrepareTimeCaption(sw.Elapsed);
 
         sw.Reset;
         q.Open;
@@ -199,6 +215,11 @@ end;
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
   Disconnect;
+end;
+
+procedure TfrmMain.SetPrepareTimeCaption(const Elapsed: TTimeSpan);
+begin
+  prepareTime.Caption := Format('%.2d:%.2d:%.2d:%.3d', [Elapsed.Hours, Elapsed.Minutes, Elapsed.Seconds, Elapsed.Milliseconds]);
 end;
 
 end.
