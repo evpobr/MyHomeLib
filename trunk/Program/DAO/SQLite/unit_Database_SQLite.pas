@@ -700,7 +700,7 @@ begin
     amByBook:
       begin
         Assert(Assigned(FilterValue));
-        SQLRows := 'SELECT AuthorID FROM Author_List WHERE BookID = :v0';
+        SQLRows := 'SELECT al.AuthorID FROM Author_List al INNER JOIN Authors a ON al.AuthorID = a.AuthorID WHERE BookID = :v0 ORDER BY a.LastName, a.FirstName, a.MiddleName ';
         SQLCount := 'SELECT COUNT(*) FROM Author_List WHERE BookID = :v0';
       end;
 
@@ -709,8 +709,7 @@ begin
         FromList := 'Author_List al ';
         if FCollection.HideDeleted or FCollection.ShowLocalOnly then
           FromList := FromList + 'INNER JOIN Books b ON al.BookID = b.BookID ';
-        if (FCollection.AuthorFilterType <> '') and (FCollection.AuthorFilterType <> ALPHA_FILTER_ALL) then
-          FromList := FromList + 'INNER JOIN Authors a ON a.AuthorID = al.AuthorID ';
+        FromList := FromList + 'INNER JOIN Authors a ON a.AuthorID = al.AuthorID ';
 
         if FCollection.HideDeleted then
           AddToWhere(Where, ' b.IsDeleted = :IsDeleted ');
@@ -736,6 +735,7 @@ begin
 
         SQLRows := 'SELECT DISTINCT al.AuthorID FROM ' + FromList + Where;
         SQLCount := 'SELECT COUNT(*) FROM (' + SQLRows + ') ROWS ';
+        SQLRows := 'SELECT DISTINCT al.AuthorID FROM ' + FromList + Where + ' ORDER BY a.LastName, a.FirstName, a.MiddleName ';
       end;
 
     else
