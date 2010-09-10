@@ -145,7 +145,7 @@ type
     //
     function InsertBook(BookRecord: TBookRecord; const CheckFileName: Boolean; const FullCheck: Boolean): Integer; override;
     procedure GetBookRecord(const BookKey: TBookKey; out BookRecord: TBookRecord; const LoadMemos: Boolean); override;
-    // procedure UpdateBook(const BookRecord: TBookRecord); override;
+    procedure UpdateBook(BookRecord: TBookRecord); override;
     procedure DeleteBook(const BookKey: TBookKey); override;
 
     // function GetLibID(const BookKey: TBookKey): string; override; // deprecated;
@@ -1600,6 +1600,117 @@ begin
     DMUser.GetBookRecord(BookKey, BookRecord);
 end;
 
+procedure TBookCollection_SQLite.UpdateBook(BookRecord: TBookRecord);
+const
+  SQL_INSERT =
+    'UPDATE Books SET ' +
+    'Title = ?,     Folder = ?,    FileName = ?,   Ext = ?,      InsideNo = ?, ' +  // 01 .. 05
+    'SeriesID = ?,  SeqNumber = ?, Code = ?,       BookSize = ?, LibID = ?, ' +     // 06 .. 10
+    'IsDeleted = ?, IsLocal = ?,   UpdateDate = ?, Lang = ?,     LibRate = ?, ' +   // 11 .. 15
+    'KeyWords = ?,  Rate = ?,      Progress = ?,   Review = ?,   Annotation = ?' +  // 16 .. 20
+    'WHERE BookID = ? ';
+var
+  i: Integer;
+  NameConflict: Boolean;
+  query: TSQLiteQuery;
+begin
+  Assert(BookRecord.FileName <> '');
+  VerifyCurrentCollection(BookRecord.BookKey.DatabaseID);
+
+  BookRecord.Normalize;
+
+  //
+  // Создадим отсутствующих авторов
+  //
+  Assert(BookRecord.AuthorCount > 0);
+  for i := 0 to BookRecord.AuthorCount - 1 do
+    BookRecord.Authors[i].AuthorID := InsertAuthorIfMissing(BookRecord.Authors[i]);
+
+  //
+  // Определяем код жанра
+  //
+  Assert(BookRecord.GenreCount > 0);
+  for i := 0 to BookRecord.GenreCount - 1 do
+  begin
+    //
+    // Если fb2 код указан, переводим его в универсальный код
+    //
+    if BookRecord.Genres[i].FB2GenreCode <> '' then
+      BookRecord.Genres[i] := FGenreCache.ByFB2Code[BookRecord.Genres[i].FB2GenreCode]
+    else
+      BookRecord.Genres[i] := FGenreCache[BookRecord.Genres[i].GenreCode];
+  end;
+
+  //
+  // создадим отсутствующую серию
+  //
+  BookRecord.SeriesID := FindOrCreateSeries(BookRecord.Series);
+
+  if BookRecord.SeqNumber > 5000 then
+    BookRecord.SeqNumber := 0;
+
+  BookRecord.Review := Trim(BookRecord.Review);
+  BookRecord.Code := IfThen(BookRecord.Review = '', 0, 1);
+  BookRecord.Annotation := LeftStr(Trim(BookRecord.Annotation), ANNOTATION_SIZE_LIMIT);
+
+  query := FDatabase.NewQuery(SQL_INSERT);
+  try
+    query.SetParam(1, BookRecord.Title);
+    query.SetParam(2, BookRecord.Folder);
+    query.SetParam(3, BookRecord.FileName);
+    query.SetParam(4, BookRecord.FileExt);
+    query.SetParam(5, BookRecord.InsideNo);
+    if NO_SERIE_ID <> BookRecord.SeriesID then
+    begin
+      query.SetParam(6, BookRecord.SeriesID);
+      query.SetParam(7, BookRecord.SeqNumber);
+    end
+    else
+    begin
+      query.SetNullParam(6);
+      query.SetNullParam(7);
+    end;
+    query.SetParam(8, BookRecord.Code);
+    query.SetParam(9, BookRecord.Size);
+    query.SetParam(10, BookRecord.LibID);
+    query.SetParam(11, BookRecord.IsDeleted);
+    query.SetParam(12, BookRecord.IsLocal);
+    query.SetParam(13, BookRecord.Date);
+    query.SetParam(14, BookRecord.Lang);
+    query.SetParam(15, BookRecord.LibRate);
+    query.SetParam(16, BookRecord.KeyWords);
+    query.SetParam(17, BookRecord.Rate);
+    query.SetParam(18, BookRecord.Progress);
+
+    if BookRecord.Review = '' then
+      query.SetNullParam(19)
+    else
+      query.SetBlobParam(19, BookRecord.Review);
+
+    if BookRecord.Annotation = '' then
+      query.SetNullParam(20)
+    else
+      query.SetParam(20, LeftStr(BookRecord.Annotation, ANNOTATION_SIZE_LIMIT));
+
+    query.SetParam(21, BookRecord.BookKey.BookID);
+
+    query.ExecSQL;
+
+    BookRecord.BookKey.BookID := FDatabase.LastInsertRowID;
+    BookRecord.BookKey.DatabaseID := DMUser.ActiveCollectionInfo.ID;
+  finally
+    query.Free;
+  end;
+
+  CleanBookGenres(BookRecord.BookKey.BookID);
+  InsertBookGenres(BookRecord.BookKey.BookID, BookRecord.Genres);
+
+  CleanBookAuthors(BookRecord.BookKey.BookID);
+  InsertBookAuthors(BookRecord.BookKey.BookID, BookRecord.Authors);
+
+  DMUser.UpdateBook(BookRecord);
+end;
+
 procedure TBookCollection_SQLite.DeleteBook(const BookKey: TBookKey);
 const
   //
@@ -1995,4 +2106,3 @@ begin
 end;
 
 end.
-

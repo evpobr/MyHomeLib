@@ -46,7 +46,7 @@ type
     //
     function InsertBook(BookRecord: TBookRecord; const CheckFileName: Boolean; const FullCheck: Boolean): Integer; virtual; abstract;
     procedure GetBookRecord(const BookKey: TBookKey; out BookRecord: TBookRecord; const LoadMemos: Boolean); virtual; abstract;
-    procedure UpdateBook(const BookRecord: TBookRecord); virtual; abstract;
+    procedure UpdateBook(BookRecord: TBookRecord); virtual; abstract;
     procedure DeleteBook(const BookKey: TBookKey); virtual; abstract;
     procedure AddBookToGroup(const BookKey: TBookKey; const GroupID: Integer);
 
