@@ -119,6 +119,7 @@ type
     FEof: Boolean;
     FSQL: string;
 
+    function GetParamIndex(const ParamName: string): Integer; inline;
     function GetColumns(const I: Integer): string; inline;
     function GetFields(const I: Integer): string; inline;
     function GetFieldIndex(const FieldName: string): Integer;
@@ -136,25 +137,28 @@ type
     //
     // Установка параметров
     //
-    procedure ParamsClear;
+    procedure ParamsClear; inline;
 
     procedure SetParam(const ParamIndex: Integer; const Value: Int64); overload; inline;
-    procedure SetParam(const ParamName: string; const Value: Int64); overload; inline;
     procedure SetParam(const ParamIndex: Integer; const Value: Double); overload; inline;
-    procedure SetParam(const ParamName: string; const Value: Double); overload; inline;
     procedure SetParam(const ParamIndex: Integer; const Value: string); overload; inline;
-    procedure SetParam(const ParamName: string; const Value: string); overload; inline;
     procedure SetParam(const ParamIndex: Integer; const Value: Boolean); overload; inline;
-    procedure SetParam(const ParamName: string; const Value: Boolean); overload; inline;
     procedure SetParam(const ParamIndex: Integer; const Value: TDateTime); overload;
-    procedure SetParam(const ParamName: string; const Value: TDateTime); overload; inline;
 
     procedure SetBlobParam(const ParamIndex: Integer; const Value: TStream); overload;
-    procedure SetBlobParam(const ParamName: string; const Value: TStream); overload; inline;
     procedure SetBlobParam(const ParamIndex: Integer; const Value: string); overload;
-    procedure SetBlobParam(const ParamName: string; const Value: string); overload; inline;
 
     procedure SetNullParam(const ParamIndex: Integer); overload; inline;
+
+    procedure SetParam(const ParamName: string; const Value: Int64); overload; inline;
+    procedure SetParam(const ParamName: string; const Value: Double); overload; inline;
+    procedure SetParam(const ParamName: string; const Value: string); overload; inline;
+    procedure SetParam(const ParamName: string; const Value: Boolean); overload; inline;
+    procedure SetParam(const ParamName: string; const Value: TDateTime); overload; inline;
+
+    procedure SetBlobParam(const ParamName: string; const Value: TStream); overload; inline;
+    procedure SetBlobParam(const ParamName: string; const Value: string); overload; inline;
+
     procedure SetNullParam(const ParamName: string); overload; inline;
 
     //
@@ -512,34 +516,27 @@ begin
   SQLite3_clear_bindings(FStmt);
 end;
 
-procedure TSQLiteQuery.SetParam(const ParamIndex: Integer; const Value: Int64);
-begin
-  if SQLITE_OK <> SQLite3_bind_int64(FStmt, ParamIndex, Value) then
-    FDatabase.RaiseError(c_errorbindingparam, FSQL);
-end;
-
-procedure TSQLiteQuery.SetParam(const ParamName: string; const Value: Int64);
+function TSQLiteQuery.GetParamIndex(const ParamName: string): Integer;
 var
   i: Integer;
 begin
   i := SQLite3_bind_parameter_index(FStmt, PUTF8Char(UTF8String(ParamName)));
   if i > 0 then
-    SetParam(i, Value);
+    Result := i - 1
+  else
+    FDatabase.RaiseError(c_errorbindingparam, FSQL);
+end;
+
+procedure TSQLiteQuery.SetParam(const ParamIndex: Integer; const Value: Int64);
+begin
+  if SQLITE_OK <> SQLite3_bind_int64(FStmt, ParamIndex + 1, Value) then
+    FDatabase.RaiseError(c_errorbindingparam, FSQL);
 end;
 
 procedure TSQLiteQuery.SetParam(const ParamIndex: Integer; const Value: Double);
 begin
-  if SQLITE_OK <> SQLite3_bind_double(FStmt, ParamIndex, Value) then
+  if SQLITE_OK <> SQLite3_bind_double(FStmt, ParamIndex + 1, Value) then
     FDatabase.RaiseError(c_errorbindingparam, FSQL);
-end;
-
-procedure TSQLiteQuery.SetParam(const ParamName: string; const Value: Double);
-var
-  i: Integer;
-begin
-  i := SQLite3_bind_parameter_index(FStmt, PUTF8Char(UTF8String(ParamName)));
-  if i > 0 then
-    SetParam(i, Value);
 end;
 
 procedure TSQLiteQuery.SetParam(const ParamIndex: Integer; const Value: string);
@@ -547,17 +544,8 @@ var
   valueUTF8: UTF8String;
 begin
   valueUTF8 := UTF8String(Value);
-  if SQLITE_OK <> SQLite3_bind_text(FStmt, ParamIndex, PUTF8Char(valueUTF8), Length(valueUTF8), SQLITE_TRANSIENT) then
+  if SQLITE_OK <> SQLite3_bind_text(FStmt, ParamIndex + 1, PUTF8Char(valueUTF8), Length(valueUTF8), SQLITE_TRANSIENT) then
     FDatabase.RaiseError(c_errorbindingparam, FSQL);
-end;
-
-procedure TSQLiteQuery.SetParam(const ParamName: string; const Value: string);
-var
-  i: Integer;
-begin
-  i := SQLite3_bind_parameter_index(FStmt, PUTF8Char(UTF8String(ParamName)));
-  if i > 0 then
-    SetParam(i, Value);
 end;
 
 procedure TSQLiteQuery.SetParam(const ParamIndex: Integer; const Value: Boolean);
@@ -568,27 +556,9 @@ begin
     SetParam(ParamIndex, 0);
 end;
 
-procedure TSQLiteQuery.SetParam(const ParamName: string; const Value: Boolean);
-var
-  i: Integer;
-begin
-  i := SQLite3_bind_parameter_index(FStmt, PUTF8Char(UTF8String(ParamName)));
-  if i > 0 then
-    SetParam(i, Value);
-end;
-
 procedure TSQLiteQuery.SetParam(const ParamIndex: Integer; const Value: TDateTime);
 begin
   SetParam(ParamIndex, DateTimeToStr(Value, SQLite_FormatSettings));
-end;
-
-procedure TSQLiteQuery.SetParam(const ParamName: string; const Value: TDateTime);
-var
-  i: Integer;
-begin
-  i := SQLite3_bind_parameter_index(FStmt, PUTF8Char(UTF8String(ParamName)));
-  if i > 0 then
-    SetParam(i, Value);
 end;
 
 procedure TSQLiteQuery.SetBlobParam(const ParamIndex: Integer; const Value: TStream);
@@ -604,17 +574,8 @@ begin
     FDatabase.RaiseError(c_errormemoryblob, '');
 
   Value.Read(ptrBuff^, iSize);
-  if SQLITE_OK <> SQLite3_Bind_Blob(FStmt, ParamIndex, ptrBuff, iSize, SQLite3_Free) then
+  if SQLITE_OK <> SQLite3_Bind_Blob(FStmt, ParamIndex + 1, ptrBuff, iSize, SQLite3_Free) then
     FDatabase.RaiseError(c_errorbindingparam, FSQL);
-end;
-
-procedure TSQLiteQuery.SetBlobParam(const ParamName: string; const Value: TStream);
-var
-  i: Integer;
-begin
-  i := SQLite3_bind_parameter_index(FStmt, PUTF8Char(UTF8String(ParamName)));
-  if i > 0 then
-    SetBlobParam(i, Value);
 end;
 
 procedure TSQLiteQuery.SetBlobParam(const ParamIndex: Integer; const Value: string);
@@ -629,28 +590,50 @@ begin
   end;
 end;
 
-procedure TSQLiteQuery.SetBlobParam(const ParamName: string; const Value: string);
-var
-  i: Integer;
-begin
-  i := SQLite3_bind_parameter_index(FStmt, PUTF8Char(UTF8String(ParamName)));
-  if i > 0 then
-    SetBlobParam(i, Value);
-end;
-
 procedure TSQLiteQuery.SetNullParam(const ParamIndex: Integer);
 begin
-  if SQLITE_OK <> SQLite3_bind_null(FStmt, ParamIndex) then
+  if SQLITE_OK <> SQLite3_bind_null(FStmt, ParamIndex + 1) then
     FDatabase.RaiseError(c_errorbindingparam, FSQL);
 end;
 
-procedure TSQLiteQuery.SetNullParam(const ParamName: string);
-var
-  i: Integer;
+procedure TSQLiteQuery.SetParam(const ParamName: string; const Value: Int64);
 begin
-  i := SQLite3_bind_parameter_index(FStmt, PUTF8Char(UTF8String(ParamName)));
-  if i > 0 then
-    SetNullParam(i);
+  SetParam(GetParamIndex(ParamName), Value);
+end;
+
+procedure TSQLiteQuery.SetParam(const ParamName: string; const Value: Double);
+begin
+  SetParam(GetParamIndex(ParamName), Value);
+end;
+
+procedure TSQLiteQuery.SetParam(const ParamName: string; const Value: string);
+begin
+  SetParam(GetParamIndex(ParamName), Value);
+end;
+
+procedure TSQLiteQuery.SetParam(const ParamName: string; const Value: Boolean);
+begin
+  SetParam(GetParamIndex(ParamName), Value);
+end;
+
+procedure TSQLiteQuery.SetParam(const ParamName: string; const Value: TDateTime);
+begin
+  SetParam(GetParamIndex(ParamName), Value);
+end;
+
+procedure TSQLiteQuery.SetBlobParam(const ParamName: string; const Value: TStream);
+begin
+  SetBlobParam(GetParamIndex(ParamName), Value);
+end;
+
+procedure TSQLiteQuery.SetBlobParam(const ParamName: string; const Value: string);
+begin
+  SetBlobParam(GetParamIndex(ParamName), Value);
+end;
+
+procedure TSQLiteQuery.SetNullParam(const ParamName: string);
+begin
+  SetNullParam(GetParamIndex(ParamName));
 end;
 
 function TSQLiteQuery.GetFields(const I: Integer): string;

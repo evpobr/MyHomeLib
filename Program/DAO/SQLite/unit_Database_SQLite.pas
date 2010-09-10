@@ -666,7 +666,7 @@ var
     case Mode of
       amByBook:
         begin
-          query.SetParam(1, FilterValue^.ValueInt);
+          query.SetParam(0, FilterValue^.ValueInt);
         end;
 
       amFullFilter:
@@ -833,7 +833,7 @@ begin
   query := FCollection.FDatabase.NewQuery(SQLCount);
   try
     if Mode = gmByBook then
-      query.SetParam(1, FilterValue^.ValueInt);
+      query.SetParam(0, FilterValue^.ValueInt);
     query.Open;
     if query.Eof then
       FNumRecords := 0
@@ -846,7 +846,7 @@ begin
   FGenres := FCollection.FDatabase.NewQuery(SQLRows);
   try
     if Mode = gmByBook then
-      FGenres.SetParam(1, FilterValue^.ValueInt);
+      FGenres.SetParam(0, FilterValue^.ValueInt);
     FGenres.Open;
   except
     FreeAndNil(FGenres);
@@ -1023,11 +1023,11 @@ begin
   query := FDatabase.NewQuery(IfThen(Value = '', SQL_DELETE, SQL_UPDATE));
   try
     if Value = '' then
-      query.SetParam(1, PropID)
+      query.SetParam(0, PropID)
     else
     begin
-      query.SetBlobParam(1, Value);
-      query.SetParam(2, PropID);
+      query.SetBlobParam(0, Value);
+      query.SetParam(1, PropID);
     end;
 
     query.ExecSQL;
@@ -1055,7 +1055,7 @@ var
   begin
     query := FDatabase.NewQuery(IfThen(bookInfo.LibID = 0, SQL_BY_BOOKID, SQL_BY_LIBID));
     try
-      query.SetParam(1, IfThen(bookInfo.LibID = 0, bookInfo.BookID, bookInfo.LibID));
+      query.SetParam(0, IfThen(bookInfo.LibID = 0, bookInfo.BookID, bookInfo.LibID));
       query.Open;
       if query.Eof then
         BookID := 0
@@ -1193,7 +1193,7 @@ begin
     else
       S := TPath.GetFileNameWithoutExtension(FileName);
 
-    query.SetParam(1, s);
+    query.SetParam(0, s);
 
     query.Open;
 
@@ -1212,9 +1212,9 @@ var
 begin
   query := FDatabase.NewQuery(IfThen(IncludeFolder, SQL_SELECT_BY_FOLDER_AND_FILENAME, SQL_SELECT_BY_FILENAME));
   try
-    query.SetParam(1, BookRecord.FileName);
+    query.SetParam(0, BookRecord.FileName);
     if IncludeFolder then
-      query.SetParam(2, BookRecord.Folder);
+      query.SetParam(1, BookRecord.Folder);
 
     query.Open;
 
@@ -1239,10 +1239,10 @@ begin
 
   insertQuery := FDatabase.NewQuery(SQL_INSERT);
   try
-    insertQuery.SetParam(1, GenreData.GenreCode);
-    insertQuery.SetParam(2, GenreData.ParentCode);
-    insertQuery.SetParam(3, GenreData.FB2GenreCode);
-    insertQuery.SetParam(4, GenreData.GenreAlias);
+    insertQuery.SetParam(0, GenreData.GenreCode);
+    insertQuery.SetParam(1, GenreData.ParentCode);
+    insertQuery.SetParam(2, GenreData.FB2GenreCode);
+    insertQuery.SetParam(3, GenreData.GenreAlias);
     insertQuery.ExecSQL;
 
     FGenreCache.Add(GenreData);
@@ -1314,7 +1314,7 @@ var
 begin
   query := FDatabase.NewQuery(SQL);
   try
-    query.SetParam(1, AuthorID);
+    query.SetParam(0, AuthorID);
     query.Open;
 
     if not query.Eof then
@@ -1343,18 +1343,18 @@ var
 begin
   searchQuery := FDatabase.NewQuery(SQL_SELECT);
   try
-    searchQuery.SetParam(1, Author.LastName);
-    searchQuery.SetParam(2, Author.FirstName);
-    searchQuery.SetParam(3, Author.MiddleName);
+    searchQuery.SetParam(0, Author.LastName);
+    searchQuery.SetParam(1, Author.FirstName);
+    searchQuery.SetParam(2, Author.MiddleName);
     searchQuery.Open;
 
     if searchQuery.Eof then
     begin
       insertQuery := FDatabase.NewQuery(SQL_INSERT);
       try
-        insertQuery.SetParam(1, Author.LastName);
-        insertQuery.SetParam(2, Author.FirstName);
-        insertQuery.SetParam(3, Author.MiddleName);
+        insertQuery.SetParam(0, Author.LastName);
+        insertQuery.SetParam(1, Author.FirstName);
+        insertQuery.SetParam(2, Author.MiddleName);
         insertQuery.ExecSQL;
 
         Result := FDatabase.LastInsertRowID;
@@ -1386,14 +1386,14 @@ begin
 
     searchQuery := FDatabase.NewQuery(SQL_SELECT);
     try
-      searchQuery.SetParam(1, Title);
+      searchQuery.SetParam(0, Title);
       searchQuery.Open;
 
       if searchQuery.Eof then
       begin
         insertQuery := FDatabase.NewQuery(SQL_INSERT);
         try
-          insertQuery.SetParam(1, Title);
+          insertQuery.SetParam(0, Title);
           insertQuery.ExecSQL;
 
           Result := FDatabase.LastInsertRowID;
@@ -1479,42 +1479,42 @@ begin
 
     query := FDatabase.NewQuery(SQL_INSERT);
     try
-      query.SetParam(1, BookRecord.Title);
-      query.SetParam(2, BookRecord.Folder);
-      query.SetParam(3, BookRecord.FileName);
-      query.SetParam(4, BookRecord.FileExt);
-      query.SetParam(5, BookRecord.InsideNo);
+      query.SetParam(0, BookRecord.Title);
+      query.SetParam(1, BookRecord.Folder);
+      query.SetParam(2, BookRecord.FileName);
+      query.SetParam(3, BookRecord.FileExt);
+      query.SetParam(4, BookRecord.InsideNo);
       if NO_SERIE_ID <> BookRecord.SeriesID then
       begin
-        query.SetParam(6, BookRecord.SeriesID);
-        query.SetParam(7, BookRecord.SeqNumber);
+        query.SetParam(5, BookRecord.SeriesID);
+        query.SetParam(6, BookRecord.SeqNumber);
       end
       else
       begin
+        query.SetNullParam(5);
         query.SetNullParam(6);
-        query.SetNullParam(7);
       end;
-      query.SetParam(8, BookRecord.Code);
-      query.SetParam(9, BookRecord.Size);
-      query.SetParam(10, BookRecord.LibID);
-      query.SetParam(11, BookRecord.IsDeleted);
-      query.SetParam(12, BookRecord.IsLocal);
-      query.SetParam(13, BookRecord.Date);
-      query.SetParam(14, BookRecord.Lang);
-      query.SetParam(15, BookRecord.LibRate);
-      query.SetParam(16, BookRecord.KeyWords);
-      query.SetParam(17, BookRecord.Rate);
-      query.SetParam(18, BookRecord.Progress);
+      query.SetParam(7, BookRecord.Code);
+      query.SetParam(8, BookRecord.Size);
+      query.SetParam(9, BookRecord.LibID);
+      query.SetParam(10, BookRecord.IsDeleted);
+      query.SetParam(11, BookRecord.IsLocal);
+      query.SetParam(12, BookRecord.Date);
+      query.SetParam(13, BookRecord.Lang);
+      query.SetParam(14, BookRecord.LibRate);
+      query.SetParam(15, BookRecord.KeyWords);
+      query.SetParam(16, BookRecord.Rate);
+      query.SetParam(17, BookRecord.Progress);
 
       if BookRecord.Review = '' then
-        query.SetNullParam(19)
+        query.SetNullParam(18)
       else
-        query.SetBlobParam(19, BookRecord.Review);
+        query.SetBlobParam(18, BookRecord.Review);
 
       if BookRecord.Annotation = '' then
-        query.SetNullParam(20)
+        query.SetNullParam(19)
       else
-        query.SetParam(20, LeftStr(BookRecord.Annotation, ANNOTATION_SIZE_LIMIT));
+        query.SetParam(19, LeftStr(BookRecord.Annotation, ANNOTATION_SIZE_LIMIT));
 
       query.ExecSQL;
 
@@ -1550,7 +1550,7 @@ begin
   begin
     Table := FDatabase.NewQuery(SQL);
     try
-      Table.SetParam(1, BookKey.BookID);
+      Table.SetParam(0, BookKey.BookID);
       Table.Open;
 
       Assert(not Table.Eof);
@@ -1655,44 +1655,44 @@ begin
 
   query := FDatabase.NewQuery(SQL_INSERT);
   try
-    query.SetParam(1, BookRecord.Title);
-    query.SetParam(2, BookRecord.Folder);
-    query.SetParam(3, BookRecord.FileName);
-    query.SetParam(4, BookRecord.FileExt);
-    query.SetParam(5, BookRecord.InsideNo);
+    query.SetParam(0, BookRecord.Title);
+    query.SetParam(1, BookRecord.Folder);
+    query.SetParam(2, BookRecord.FileName);
+    query.SetParam(3, BookRecord.FileExt);
+    query.SetParam(4, BookRecord.InsideNo);
     if NO_SERIE_ID <> BookRecord.SeriesID then
     begin
-      query.SetParam(6, BookRecord.SeriesID);
-      query.SetParam(7, BookRecord.SeqNumber);
+      query.SetParam(5, BookRecord.SeriesID);
+      query.SetParam(6, BookRecord.SeqNumber);
     end
     else
     begin
+      query.SetNullParam(5);
       query.SetNullParam(6);
-      query.SetNullParam(7);
     end;
-    query.SetParam(8, BookRecord.Code);
-    query.SetParam(9, BookRecord.Size);
-    query.SetParam(10, BookRecord.LibID);
-    query.SetParam(11, BookRecord.IsDeleted);
-    query.SetParam(12, BookRecord.IsLocal);
-    query.SetParam(13, BookRecord.Date);
-    query.SetParam(14, BookRecord.Lang);
-    query.SetParam(15, BookRecord.LibRate);
-    query.SetParam(16, BookRecord.KeyWords);
-    query.SetParam(17, BookRecord.Rate);
-    query.SetParam(18, BookRecord.Progress);
+    query.SetParam(7, BookRecord.Code);
+    query.SetParam(8, BookRecord.Size);
+    query.SetParam(9, BookRecord.LibID);
+    query.SetParam(10, BookRecord.IsDeleted);
+    query.SetParam(11, BookRecord.IsLocal);
+    query.SetParam(12, BookRecord.Date);
+    query.SetParam(13, BookRecord.Lang);
+    query.SetParam(14, BookRecord.LibRate);
+    query.SetParam(15, BookRecord.KeyWords);
+    query.SetParam(16, BookRecord.Rate);
+    query.SetParam(17, BookRecord.Progress);
 
     if BookRecord.Review = '' then
-      query.SetNullParam(19)
+      query.SetNullParam(18)
     else
-      query.SetBlobParam(19, BookRecord.Review);
+      query.SetBlobParam(18, BookRecord.Review);
 
     if BookRecord.Annotation = '' then
-      query.SetNullParam(20)
+      query.SetNullParam(19)
     else
-      query.SetParam(20, LeftStr(BookRecord.Annotation, ANNOTATION_SIZE_LIMIT));
+      query.SetParam(19, LeftStr(BookRecord.Annotation, ANNOTATION_SIZE_LIMIT));
 
-    query.SetParam(21, BookRecord.BookKey.BookID);
+    query.SetParam(20, BookRecord.BookKey.BookID);
 
     query.ExecSQL;
 
@@ -1736,8 +1736,8 @@ begin
 
   query := FDatabase.NewQuery(SQL_DELETE_SERIES);
   try
-    query.SetParam(1, BookKey.BookID);
-    query.SetParam(2, NO_SERIE_ID);
+    query.SetParam(0, BookKey.BookID);
+    query.SetParam(1, NO_SERIE_ID);
     query.ExecSQL;
   finally
     query.Free;
@@ -1752,7 +1752,7 @@ begin
 
   query := FDatabase.NewQuery(SQL_DELETE_BOOKS);
   try
-    query.SetParam(1, BookKey.BookID);
+    query.SetParam(0, BookKey.BookID);
     query.ExecSQL;
   finally
     query.Free;
@@ -1771,7 +1771,7 @@ begin
   begin
     Query := FDatabase.NewQuery(SQL);
     try
-      Query.SetParam(1, BookKey.BookID);
+      Query.SetParam(0, BookKey.BookID);
       Query.Open;
 
       if not Query.Eof then
@@ -1796,7 +1796,7 @@ begin
   begin
     query := FDatabase.NewQuery(SQL);
     try
-      query.SetParam(1, BookKey.BookID);
+      query.SetParam(0, BookKey.BookID);
       query.Open;
 
       if not query.Eof then
@@ -1826,12 +1826,12 @@ begin
 
   query := FDatabase.NewQuery(SQL_UPDATE);
   try
-    query.SetParam(1, NewCode);
+    query.SetParam(0, NewCode);
     if NewCode = 0 then
-      query.SetNullParam(2)
+      query.SetNullParam(1)
     else
-      query.SetBlobParam(2, NewReview);
-    query.SetParam(3, BookKey.BookID);
+      query.SetBlobParam(1, NewReview);
+    query.SetParam(2, BookKey.BookID);
 
     query.ExecSQL;
   finally
@@ -1854,8 +1854,8 @@ begin
 
   query := FDatabase.NewQuery(SQL_UPDATE);
   try
-    query.SetParam(1, Progress);
-    query.SetParam(2, BookKey.BookID);
+    query.SetParam(0, Progress);
+    query.SetParam(1, BookKey.BookID);
 
     query.ExecSQL;
   finally
@@ -1878,8 +1878,8 @@ begin
 
   query := FDatabase.NewQuery(SQL_UPDATE);
   try
-    query.SetParam(1, Rate);
-    query.SetParam(2, BookKey.BookID);
+    query.SetParam(0, Rate);
+    query.SetParam(1, BookKey.BookID);
 
     query.ExecSQL;
   finally
@@ -1902,8 +1902,8 @@ begin
 
   query := FDatabase.NewQuery(SQL_UPDATE);
   try
-    query.SetParam(1, AState);
-    query.SetParam(2, BookKey.BookID);
+    query.SetParam(0, AState);
+    query.SetParam(1, BookKey.BookID);
 
     query.ExecSQL;
   finally
@@ -1922,8 +1922,8 @@ var
 begin
   query := FDatabase.NewQuery(UpdateSQL);
   try
-    query.SetParam(1, NewValue);
-    query.SetParam(2, BookID);
+    query.SetParam(0, NewValue);
+    query.SetParam(1, BookID);
 
     query.ExecSQL;
   finally
@@ -1971,7 +1971,7 @@ begin
   begin
     query := FDatabase.NewQuery(SQL);
     try
-      query.SetParam(1, SeriesID);
+      query.SetParam(0, SeriesID);
       query.Open;
 
       if not query.Eof then
@@ -2047,7 +2047,7 @@ var
 begin
   query := FDatabase.NewQuery(SQL_DELETE);
   try
-    query.SetParam(1, BookID);
+    query.SetParam(0, BookID);
     query.ExecSQL;
   finally
     query.Free;
@@ -2070,8 +2070,8 @@ begin
       begin
         if -1 = insertedIds.IndexOf(Author.AuthorID) then
         begin
-            query.SetParam(1, Author.AuthorID);
-            query.SetParam(2, BookID);
+            query.SetParam(0, Author.AuthorID);
+            query.SetParam(1, BookID);
             query.ExecSQL;
             insertedIds.Add(Author.AuthorID);
         end;
@@ -2092,7 +2092,7 @@ var
 begin
   query := FDatabase.NewQuery(SQL_DELETE);
   try
-    query.SetParam(1, BookID);
+    query.SetParam(0, BookID);
     query.ExecSQL;
   finally
     query.Free;
@@ -2116,8 +2116,8 @@ begin
       begin
         if -1 = insertedCodes.IndexOf(Genre.GenreCode) then
         begin
-          query.SetParam(1, BookID);
-          query.SetParam(2, Genre.GenreCode);
+          query.SetParam(0, BookID);
+          query.SetParam(1, Genre.GenreCode);
           query.ExecSQL;
           insertedCodes.Add(Genre.GenreCode);
         end;
