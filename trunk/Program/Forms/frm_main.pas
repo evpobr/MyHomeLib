@@ -4299,7 +4299,7 @@ begin
 
             if ShowSer then
             begin
-              if SeriesID = NO_SERIE_ID then
+              if SeriesID = NO_SERIES_ID then
               begin
                 //
                 // книга без серии
@@ -5037,7 +5037,7 @@ begin
     if S = NO_SERIES_TITLE then
     begin
       // Clear the series for all books in DB:
-      BookCollection.ChangeBookSeriesID(Data^.SeriesID, NO_SERIE_ID, DMUser.ActiveCollectionInfo.ID);
+      BookCollection.ChangeBookSeriesID(Data^.SeriesID, NO_SERIES_ID, DMUser.ActiveCollectionInfo.ID);
       FillAllBooksTree;
     end
     else
@@ -5047,6 +5047,9 @@ begin
       Tree.RepaintNode(Node);
     end;
   end;
+
+  UpdatePositions;
+  InitCollection(True);
 end;
 
 procedure TfrmMain.AddGroupExecute(Sender: TObject);

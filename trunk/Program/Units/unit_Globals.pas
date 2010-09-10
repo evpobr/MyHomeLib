@@ -886,7 +886,7 @@ procedure TBookRecord.Clear;
 begin
   Title := '';
 
-  SeriesID := NO_SERIE_ID;
+  SeriesID := NO_SERIES_ID;
   Series := NO_SERIES_TITLE;
 
   Folder := '';

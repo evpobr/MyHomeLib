@@ -1145,7 +1145,7 @@ begin
   //
   if NO_SERIES_TITLE = BookRecord.Series then
   begin
-    BookRecord.SeriesID := NO_SERIE_ID;
+    BookRecord.SeriesID := NO_SERIES_ID;
   end
   else
   begin
@@ -1183,7 +1183,7 @@ begin
     try
       FBooksLibID.Value := BookRecord.LibID;
       FBooksTitle.Value := BookRecord.Title;
-      if NO_SERIE_ID <> BookRecord.SeriesID then
+      if NO_SERIES_ID <> BookRecord.SeriesID then
       begin
         FBooksSeriesID.Value := BookRecord.SeriesID;
         FBooksSeqNumber.Value := BookRecord.SeqNumber;
@@ -1241,7 +1241,7 @@ begin
     //
     // Если книга входила в серию (SeriesID <> 1) проверим, не пора ли удалить серию.
     //
-    if SeriesID <> NO_SERIE_ID then
+    if SeriesID <> NO_SERIES_ID then
     begin
       if not FBooks.Locate(SERIES_ID_FIELD, SeriesID, []) then
       begin
@@ -1491,7 +1491,7 @@ end;
 
 function TBookCollection_ABS.GetSeriesTitle(SeriesID: Integer): string;
 begin
-  if (NO_SERIE_ID <> SeriesID) and FSeries.Locate(SERIES_ID_FIELD, SeriesID, []) then
+  if (NO_SERIES_ID <> SeriesID) and FSeries.Locate(SERIES_ID_FIELD, SeriesID, []) then
     Result := FSeriesSeriesTitle.Value
   else
     Result := NO_SERIES_TITLE;
@@ -1500,7 +1500,7 @@ end;
 procedure TBookCollection_ABS.SetSeriesTitle(const SeriesID: Integer; const NewSeriesTitle: string);
 begin
   Assert(FSeries.Active);
-  Assert(SeriesID <> NO_SERIE_ID);
+  Assert(SeriesID <> NO_SERIES_ID);
   Assert(NewSeriesTitle <> NO_SERIES_TITLE);
 
   if (FSeries.Locate(SERIES_ID_FIELD, SeriesID, [])) then
@@ -1524,7 +1524,7 @@ begin
 
   if NO_SERIES_TITLE = Title then
   begin
-    Result := NO_SERIE_ID;
+    Result := NO_SERIES_ID;
     Exit;
   end;
 
@@ -1557,12 +1557,12 @@ begin
 
   VerifyCurrentCollection(DatabaseID);
 
-  if NO_SERIE_ID = NewSeriesID then
+  if NO_SERIES_ID = NewSeriesID then
     newSerie := 'NULL'
   else
     newSerie := Format('%u', [NewSeriesID]);
 
-  if NO_SERIE_ID = OldSeriesID then
+  if NO_SERIES_ID = OldSeriesID then
     oldSerie := 'IS NULL'
   else
     oldSerie := Format('= %u', [NewSeriesID]);
@@ -1819,7 +1819,7 @@ begin
   FBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []);
   FBooks.Edit;
   try
-    if NO_SERIE_ID = SeriesID then
+    if NO_SERIES_ID = SeriesID then
       FBooksSeriesID.Clear
     else
       FBooksSeriesID.Value := SeriesID;

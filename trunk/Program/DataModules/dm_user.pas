@@ -811,7 +811,7 @@ begin
     BookRecord.InsideNo := AllBooksInsideNo.Value;
     if AllBooksSeriesID.IsNull then
     begin
-      BookRecord.SeriesID := NO_SERIE_ID;
+      BookRecord.SeriesID := NO_SERIES_ID;
       BookRecord.SeqNumber := 0;
     end
     else
@@ -842,7 +842,7 @@ begin
       Reader := TReader.Create(Stream, 4096);
       try
         BookRecord.Series := Reader.ReadString;
-        Assert((BookRecord.SeriesID = NO_SERIE_ID) = (BookRecord.Series = NO_SERIES_TITLE));
+        Assert((BookRecord.SeriesID = NO_SERIES_ID) = (BookRecord.Series = NO_SERIES_TITLE));
 
         Reader.ReadListBegin;
         while not Reader.EndOfList do
@@ -1083,7 +1083,7 @@ begin
   begin
     AllBooks.Edit;
     try
-      if NO_SERIE_ID = SeriesID then
+      if NO_SERIES_ID = SeriesID then
         AllBooksSeriesID.Clear
       else
         AllBooksSeriesID.Value := SeriesID;
@@ -1112,12 +1112,12 @@ var
 begin
   if OldSeriesID <> NewSeriesID then
   begin
-    if NO_SERIE_ID = NewSeriesID then
+    if NO_SERIES_ID = NewSeriesID then
       newSerie := 'NULL'
     else
       newSerie := Format('%u', [NewSeriesID]);
 
-    if NO_SERIE_ID = OldSeriesID then
+    if NO_SERIES_ID = OldSeriesID then
       oldSerie := 'IS NULL'
     else
       oldSerie := Format('= %u', [OldSeriesID]);
