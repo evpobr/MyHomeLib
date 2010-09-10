@@ -75,7 +75,7 @@ type
 
     function FindOrCreateSeries(const Title: string): Integer; virtual; abstract;
     procedure SetSeriesTitle(const SeriesID: Integer; const NewSeriesTitle: string); virtual; abstract;
-    procedure ChangeBookSeriesID(const OldID: Integer; const NewID: Integer; const DatabaseID: Integer); virtual; abstract;
+    procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer); virtual; abstract;
 
     procedure SetStringProperty(const PropID: Integer; const Value: string); virtual; abstract;
     procedure SetIntProperty(const PropID: Integer; const Value: Integer);

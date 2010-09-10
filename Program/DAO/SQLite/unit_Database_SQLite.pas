@@ -172,8 +172,7 @@ type
 
     function FindOrCreateSeries(const Title: string): Integer; override;
     procedure SetSeriesTitle(const SeriesID: Integer; const NewSeriesTitle: string); override;
-    // procedure ChangeBookSeriesID(const OldID: Integer; const NewID: Integer; const DatabaseID: Integer); override;
-    //
+    procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer); override;
     procedure SetStringProperty(const PropID: Integer; const Value: string); override;
 
     procedure ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc); override;
@@ -1428,6 +1427,46 @@ begin
   end;
 end;
 
+// Change SeriesID value for all books in the current database with old SeriesID value
+procedure TBookCollection_SQLite.ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer);
+const
+  SQL_UPDATE_BOOKS = 'UPDATE Books SET SeriesID = ? WHERE SeriesID = ? ';
+  SQL_DELETE_SERIES = 'DELETE FROM Series WHERE SeriesID = ? ';
+var
+  Query: TSQLiteQuery;
+  NewSeries: string;
+  OldSeries: string;
+begin
+  Assert(OldSeriesID <> NewSeriesID);
+
+  VerifyCurrentCollection(DatabaseID);
+
+  Query := FDatabase.NewQuery(SQL_UPDATE_BOOKS);
+  try
+    if (NewSeriesID <> NO_SERIES_ID) then
+      Query.SetParam(0, NewSeriesID);
+    if (OldSeriesID <> NO_SERIES_ID) then
+      Query.SetParam(1, OldSeriesID);
+    Query.ExecSQL;
+  finally
+    FreeAndNil(Query);
+  end;
+
+  // Clean up empty series:
+  if NO_SERIES_ID <> OldSeriesID then
+  begin
+    Query := FDatabase.NewQuery(SQL_DELETE_SERIES);
+    try
+      Query.SetParam(0, OldSeriesID);
+    finally
+      FreeAndNil(Query);
+    end;
+  end;
+
+  // Обновим информацию в группах
+  DMUser.ChangeBookSeriesID(OldSeriesID, NewSeriesID, DatabaseID);
+end;
+
 function TBookCollection_SQLite.InsertBook(BookRecord: TBookRecord; const CheckFileName: Boolean; const FullCheck: Boolean): Integer;
 const
   SQL_INSERT =
@@ -1624,9 +1663,9 @@ const
   SQL_INSERT =
     'UPDATE Books SET ' +
     'Title = ?,     Folder = ?,    FileName = ?,   Ext = ?,      InsideNo = ?, ' +  // 01 .. 05
-    'SeriesID = ?,  SeqNumber = ?, Code = ?,       BookSize = ?, LibID = ?, ' +     // 06 .. 10
-    'IsDeleted = ?, IsLocal = ?,   UpdateDate = ?, Lang = ?,     LibRate = ?, ' +   // 11 .. 15
-    'KeyWords = ?,  Rate = ?,      Progress = ?,   Review = ?,   Annotation = ?' +  // 16 .. 20
+    'SeqNumber = ?, Code = ?,       BookSize = ?, LibID = ?, ' +     // 06 .. 9
+    'IsDeleted = ?, IsLocal = ?,   UpdateDate = ?, Lang = ?,     LibRate = ?, ' +   // 10 .. 14
+    'KeyWords = ?,  Rate = ?,      Progress = ?,   Review = ?,   Annotation = ?' +  // 15 .. 19
     'WHERE BookID = ? ';
 var
   i: Integer;
@@ -1672,6 +1711,9 @@ begin
   BookRecord.Code := IfThen(BookRecord.Review = '', 0, 1);
   BookRecord.Annotation := LeftStr(Trim(BookRecord.Annotation), ANNOTATION_SIZE_LIMIT);
 
+  // Update the book's series and clean up unused series:
+  SetSeriesID(BookRecord.BookKey, BookRecord.SeriesID);
+
   query := FDatabase.NewQuery(SQL_INSERT);
   try
     query.SetParam(0, BookRecord.Title);
@@ -1679,39 +1721,34 @@ begin
     query.SetParam(2, BookRecord.FileName);
     query.SetParam(3, BookRecord.FileExt);
     query.SetParam(4, BookRecord.InsideNo);
+    // SeriesID was set by SetSeriesID, so just change the SeqNumber
     if NO_SERIES_ID <> BookRecord.SeriesID then
-    begin
-      query.SetParam(5, BookRecord.SeriesID);
-      query.SetParam(6, BookRecord.SeqNumber);
-    end
+      query.SetParam(5, BookRecord.SeqNumber)
     else
-    begin
       query.SetNullParam(5);
-      query.SetNullParam(6);
-    end;
-    query.SetParam(7, BookRecord.Code);
-    query.SetParam(8, BookRecord.Size);
-    query.SetParam(9, BookRecord.LibID);
-    query.SetParam(10, BookRecord.IsDeleted);
-    query.SetParam(11, BookRecord.IsLocal);
-    query.SetParam(12, BookRecord.Date);
-    query.SetParam(13, BookRecord.Lang);
-    query.SetParam(14, BookRecord.LibRate);
-    query.SetParam(15, BookRecord.KeyWords);
-    query.SetParam(16, BookRecord.Rate);
-    query.SetParam(17, BookRecord.Progress);
+    query.SetParam(6, BookRecord.Code);
+    query.SetParam(7, BookRecord.Size);
+    query.SetParam(8, BookRecord.LibID);
+    query.SetParam(9, BookRecord.IsDeleted);
+    query.SetParam(10, BookRecord.IsLocal);
+    query.SetParam(11, BookRecord.Date);
+    query.SetParam(12, BookRecord.Lang);
+    query.SetParam(13, BookRecord.LibRate);
+    query.SetParam(14, BookRecord.KeyWords);
+    query.SetParam(15, BookRecord.Rate);
+    query.SetParam(16, BookRecord.Progress);
 
     if BookRecord.Review = '' then
-      query.SetNullParam(18)
+      query.SetNullParam(17)
     else
-      query.SetBlobParam(18, BookRecord.Review);
+      query.SetBlobParam(17, BookRecord.Review);
 
     if BookRecord.Annotation = '' then
-      query.SetNullParam(19)
+      query.SetNullParam(18)
     else
-      query.SetParam(19, LeftStr(BookRecord.Annotation, ANNOTATION_SIZE_LIMIT));
+      query.SetParam(18, LeftStr(BookRecord.Annotation, ANNOTATION_SIZE_LIMIT));
 
-    query.SetParam(20, BookRecord.BookKey.BookID);
+    query.SetParam(19, BookRecord.BookKey.BookID);
 
     query.ExecSQL;
   finally
