@@ -88,7 +88,7 @@ type
     //
     //
     function FindOrCreateSeries(const Title: string): Integer;
-    procedure SetSeriesTitle(const SeriesID: Integer; const NewTitle: string);
+    procedure SetSeriesTitle(const SeriesID: Integer; const NewSeriesTitle: string);
     procedure ChangeBookSeriesID(const OldID: Integer; const NewID: Integer; const DatabaseID: Integer);
 
     procedure SetStringProperty(const PropID: Integer; const Value: string);
