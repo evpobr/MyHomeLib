@@ -186,7 +186,7 @@ type
     procedure ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc); override;
     procedure ExportUserData(data: TUserData); override;
     procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer); override;
-    procedure UpdateBook(const BookRecord: TBookRecord); override;
+    procedure UpdateBook(BookRecord: TBookRecord); override;
     function SetReview(const BookKey: TBookKey; const Review: string): Integer; override;
     function GetReview(const BookKey: TBookKey): string; override;
     procedure SetProgress(const BookKey: TBookKey; const Progress: Integer); override;
@@ -1700,7 +1700,7 @@ begin
 end;
 
 // Полностью обновляет информацию о книге с сохранением BookID:
-procedure TBookCollection_ABS.UpdateBook(const BookRecord: TBookRecord);
+procedure TBookCollection_ABS.UpdateBook(BookRecord: TBookRecord);
 begin
   VerifyCurrentCollection(BookRecord.BookKey.DatabaseID);
   Assert(FBooks.Active);

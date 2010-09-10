@@ -57,7 +57,7 @@ type
     //
     function InsertBook(BookRecord: TBookRecord; const CheckFileName: Boolean; const FullCheck: Boolean): Integer; // превратить в процедуру
     procedure GetBookRecord(const BookKey: TBookKey; out BookRecord: TBookRecord; const LoadMemos: Boolean);
-    procedure UpdateBook(const BookRecord: TBookRecord);
+    procedure UpdateBook(BookRecord: TBookRecord);
     procedure DeleteBook(const BookKey: TBookKey);
     procedure AddBookToGroup(const BookKey: TBookKey; const GroupID: Integer);
 
