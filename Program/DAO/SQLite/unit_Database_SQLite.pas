@@ -28,7 +28,6 @@ uses
   unit_Database_Abstract;
 
 type
-  // The class is NOT THREAD-SAFE as the connection instance FDatabase is not.
   TBookCollection_SQLite = class(TBookCollection)
   strict private type
     //-------------------------------------------------------------------------
@@ -188,7 +187,7 @@ type
 
     procedure CompactDatabase; override;
     procedure RepairDatabase; override;
-    // procedure ReloadGenres(const FileName: string); override;
+    procedure ReloadGenres(const FileName: string); override;
     procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer); override;
 
     procedure TruncateTablesBeforeImport; override;
@@ -198,7 +197,7 @@ type
     procedure InternalLoadGenres;
 
   strict private
-    FDatabase: TSQLiteDatabase; // NOT THREAD-SAFE (query parameters are stored on the object)!
+    FDatabase: TSQLiteDatabase;
 
     procedure InternalUpdateField(const BookID: Integer; const UpdateSQL: string; const NewValue: string);
     procedure GetAuthor(AuthorID: Integer; var Author: TAuthorData);
@@ -2120,6 +2119,23 @@ end;
 procedure TBookCollection_SQLite.RepairDatabase;
 begin
   // Not supported for SQLite, skip
+end;
+
+procedure TBookCollection_SQLite.ReloadGenres(const FileName: string);
+const
+  SQL_DELETE_GENRES = 'DELETE FROM Genres ';
+  SQL_DELETE_GENRE_LIST = 'DELETE FROM Genre_List WHERE GenreCode NOT IN (SELECT GenreCode FROM Genres) ';
+begin
+  //
+  // почистить таблицу Genres
+  //
+  FDatabase.ExecSQL(SQL_DELETE_GENRES);
+  FGenreCache.Clear;
+
+  LoadGenres(FileName);
+
+  // Remove missing genre reference:
+  FDatabase.ExecSQL(SQL_DELETE_GENRE_LIST);
 end;
 
 procedure TBookCollection_SQLite.GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
