@@ -1763,44 +1763,17 @@ begin
   DMUser.UpdateBook(BookRecord);
 end;
 
+// Delete the book, all dependent tables are cleared by a matching trigger
 procedure TBookCollection_SQLite.DeleteBook(const BookKey: TBookKey);
 const
   //
-  // Предлагаю обойтись триггерами
-  //
-
-  //
   // TODO: BUG - мы никогда не записываем в SeriesID значение NO_SERIE_ID
   //
-
-  SQL_DELETE_SERIES = 'DELETE FROM Series WHERE SeriesID in ' +
-    '(SELECT b.SeriesID FROM Books b WHERE b.BookID = :v0 AND b.SeriesID <> :v1 GROUP BY b.SeriesID HAVING COUNT(*) <= 1) ';
-  SQL_DELETE_AUTHORS = 'DELETE FROM Authors WHERE NOT AuthorID in (SELECT DISTINCT al.AuthorID FROM Author_List al) ';
-  SQL_DELETE_BOOKS = 'DELETE FROM Books WHERE BookID = :v0 ';
-
+  SQL_DELETE_BOOKS = 'DELETE FROM Books WHERE BookID = ? ';
 var
   query: TSQLiteQuery;
 begin
   VerifyCurrentCollection(BookKey.DatabaseID);
-
-  CleanBookGenres(BookKey.BookID);
-  CleanBookAuthors(BookKey.BookID);
-
-  query := FDatabase.NewQuery(SQL_DELETE_SERIES);
-  try
-    query.SetParam(0, BookKey.BookID);
-    query.SetParam(1, NO_SERIES_ID);
-    query.ExecSQL;
-  finally
-    query.Free;
-  end;
-
-  query := FDatabase.NewQuery(SQL_DELETE_AUTHORS);
-  try
-    query.ExecSQL;
-  finally
-    query.Free;
-  end;
 
   query := FDatabase.NewQuery(SQL_DELETE_BOOKS);
   try
