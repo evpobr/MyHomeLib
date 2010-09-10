@@ -26,7 +26,7 @@ uses
   unit_WorkerThread,
   unit_Globals,
   unit_Database,
-  unit_Database_Abstract;
+  unit_Interfaces;
 
 type
   TFields = (
@@ -74,7 +74,7 @@ type
   protected
     procedure WorkFunction; override;
     procedure GetFields(const StructureInfo: string);
-    procedure Import(CheckFiles: Boolean; BookCollection: TBookCollection);
+    procedure Import(CheckFiles: Boolean; BookCollection: IBookCollection);
 
   public
     property DBFileName: string read FDBFileName write FDBFileName;
@@ -347,7 +347,7 @@ begin
   end;
 end;
 
-procedure TImportInpxThread.Import(CheckFiles: Boolean; BookCollection: TBookCollection);
+procedure TImportInpxThread.Import(CheckFiles: Boolean; BookCollection: IBookCollection);
 var
   BookList: TStringList;
   i: Integer;
@@ -474,23 +474,19 @@ end;
 
 procedure TImportInpxThread.WorkFunction;
 var
-  BookCollection: TBookCollection;
+  BookCollection: IBookCollection;
 begin
-  BookCollection := CreateBookCollection(DBFileName, False);
+  BookCollection := GetBookCollection(DBFileName);
+  BookCollection.BeginBulkOperation;
   try
-    BookCollection.BeginBulkOperation;
-    try
-      Import(False, BookCollection);
-      BookCollection.EndBulkOperation(True);
-    except
-      on E: Exception do
-      begin
-        Teletype(E.Message, tsError);
-        BookCollection.EndBulkOperation(False);
-      end;
+    Import(False, BookCollection);
+    BookCollection.EndBulkOperation(True);
+  except
+    on E: Exception do
+    begin
+      Teletype(E.Message, tsError);
+      BookCollection.EndBulkOperation(False);
     end;
-  finally
-    FreeAndNil(BookCollection);
   end;
 end;
 

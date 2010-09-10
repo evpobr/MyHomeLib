@@ -534,9 +534,9 @@ begin
 
   if Mode in [bmByGenre, bmByAuthor, bmBySeries] then
   begin
-    if FCollection.HideDeleted then
+    if FCollection.GetHideDeleted then
       AddToWhere(Where, ' b.' + BOOK_DELETED_FIELD + ' = False ');
-    if FCollection.ShowLocalOnly then
+    if FCollection.GetShowLocalOnly then
       AddToWhere(Where, ' b.' + BOOK_LOCAL_FIELD + ' = True ');
   end;
 
@@ -727,32 +727,32 @@ begin
     amFullFilter:
       begin
         Result := 'SELECT DISTINCT a.' + AUTHOR_ID_FIELD + ' FROM Authors a ';
-        if FCollection.HideDeleted or FCollection.ShowLocalOnly then
+        if FCollection.GetHideDeleted or FCollection.GetShowLocalOnly then
         begin
           Result := Result + ' INNER JOIN Author_List al ON a.' + AUTHOR_ID_FIELD + ' = al.' + AUTHOR_ID_FIELD + ' INNER JOIN Books b ON al.' + BOOK_ID_FIELD + ' = b.' + BOOK_ID_FIELD + ' ';
-          if FCollection.HideDeleted then
+          if FCollection.GetHideDeleted then
             AddToWhere(Where, ' b.' + BOOK_DELETED_FIELD + ' = False ');
-          if FCollection.ShowLocalOnly then
+          if FCollection.GetShowLocalOnly then
             AddToWhere(Where, ' b.' + BOOK_LOCAL_FIELD + ' = True ');
         end;
 
         // Add an author type filter:
-        if FCollection.AuthorFilterType <> '' then
+        if FCollection.GetAuthorFilterType <> '' then
         begin
-          if FCollection.AuthorFilterType = ALPHA_FILTER_NON_ALPHA then
+          if FCollection.GetAuthorFilterType = ALPHA_FILTER_NON_ALPHA then
           begin
             AddToWhere(Where, Format(
               '(POS(UPPER(SUBSTRING(a.%0:s, 1, 1)), "%1:s") = 0) AND (POS(UPPER(SUBSTRING(a.%0:s, 1, 1)), "%2:s") = 0)',
               [AUTHOR_LASTTNAME_FIELD, ENGLISH_ALPHABET, RUSSIAN_ALPHABET]
             ));
           end
-          else if FCollection.AuthorFilterType <> ALPHA_FILTER_ALL then
+          else if FCollection.GetAuthorFilterType <> ALPHA_FILTER_ALL then
           begin
-            Assert(Length(FCollection.AuthorFilterType) = 1);
-            Assert(TCharacter.IsUpper(FCollection.AuthorFilterType, 1));
+            Assert(Length(FCollection.GetAuthorFilterType) = 1);
+            Assert(TCharacter.IsUpper(FCollection.GetAuthorFilterType, 1));
             AddToWhere(Where, Format(
               'UPPER(a.%0:s) LIKE "%1:s%%"',                                // начинается на заданную букву
-              [AUTHOR_LASTTNAME_FIELD, FCollection.AuthorFilterType]
+              [AUTHOR_LASTTNAME_FIELD, FCollection.GetAuthorFilterType]
             ));
           end;
         end;
@@ -902,30 +902,30 @@ begin
     smFullFilter:
     begin
       Result := 'SELECT DISTINCT s.' + SERIES_ID_FIELD + ', s.' + SERIES_TITLE_FIELD + ' FROM Series s ';
-      if FCollection.HideDeleted or FCollection.ShowLocalOnly then
+      if FCollection.GetHideDeleted or FCollection.GetShowLocalOnly then
       begin
         Result := Result + ' INNER JOIN Books b ON s.' + SERIES_ID_FIELD + ' = b.' + SERIES_ID_FIELD + ' ';
-        if FCollection.HideDeleted then
+        if FCollection.GetHideDeleted then
           AddToWhere(Where, ' b.' + BOOK_DELETED_FIELD + ' = False ');
-        if FCollection.ShowLocalOnly then
+        if FCollection.GetShowLocalOnly then
           AddToWhere(Where, ' b.' + BOOK_LOCAL_FIELD + ' = True ');
       end;
 
       // Series type filter
-      if FCollection.SeriesFilterType <> '' then
+      if FCollection.GetSeriesFilterType <> '' then
       begin
-        if FCollection.SeriesFilterType = ALPHA_FILTER_NON_ALPHA then
+        if FCollection.GetSeriesFilterType = ALPHA_FILTER_NON_ALPHA then
           AddToWhere(Where, Format(
             '(POS(UPPER(SUBSTRING(s.%0:s, 1, 1)), "%1:s") = 0) AND (POS(UPPER(SUBSTRING(s.%0:s, 1, 1)), "%2:s") = 0)',
             [SERIES_TITLE_FIELD, ENGLISH_ALPHABET, RUSSIAN_ALPHABET]
           ))
-        else if FCollection.SeriesFilterType <> ALPHA_FILTER_ALL then
+        else if FCollection.GetSeriesFilterType <> ALPHA_FILTER_ALL then
         begin
-          Assert(Length(FCollection.SeriesFilterType) = 1);
-          Assert(TCharacter.IsUpper(FCollection.SeriesFilterType, 1));
+          Assert(Length(FCollection.GetSeriesFilterType) = 1);
+          Assert(TCharacter.IsUpper(FCollection.GetSeriesFilterType, 1));
           AddToWhere(Where, Format(
             'UPPER(s.%0:s) LIKE "%1:s%%"',                                // начинается на заданную букву
-            [SERIES_TITLE_FIELD, FCollection.SeriesFilterType]
+            [SERIES_TITLE_FIELD, FCollection.GetSeriesFilterType]
           ));
         end;
       end;

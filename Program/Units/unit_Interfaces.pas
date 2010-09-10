@@ -109,6 +109,19 @@ type
     procedure ReloadGenres(const FileName: string);
 
     procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
+
+    procedure TruncateTablesBeforeImport;
+
+    procedure VerifyCurrentCollection(const DatabaseID: Integer);
+
+    procedure SetHideDeleted(const HideDeleted: Boolean);
+    function GetHideDeleted: Boolean;
+    procedure SetShowLocalOnly(const ShowLocalOnly: Boolean);
+    function GetShowLocalOnly: Boolean;
+    procedure SetSeriesFilterType(const SeriesFilterType: string);
+    function GetSeriesFilterType: string;
+    procedure SetAuthorFilterType(const AuthorFilterType: string);
+    function GetAuthorFilterType: string;
   end;
 
   ILogger = interface

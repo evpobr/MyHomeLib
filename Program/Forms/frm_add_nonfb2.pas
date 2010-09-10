@@ -39,8 +39,8 @@ uses
   Menus,
   files_list,
   unit_Database,
-  unit_Database_Abstract,
   unit_globals,
+  unit_Interfaces,
   FBDDocument,
   FBDAuthorTable,
   Buttons, MHLSimplePanel;
@@ -162,7 +162,7 @@ type
     property OnSetControlsState: TChangeStateEvent read FOnSetControlsState write FOnSetControlsState;
 
   private
-    FLibrary: TBookCollection;
+    FLibrary: IBookCollection;
     FRootPath: string;
     function CheckEmptyFields(Data: PFileData): Boolean;
   end;
@@ -175,7 +175,6 @@ implementation
 uses
   IOUtils,
   dm_user,
-  unit_Interfaces,
   frm_genre_tree,
   unit_TreeUtils,
   unit_Consts,

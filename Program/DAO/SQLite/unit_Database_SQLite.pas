@@ -400,10 +400,10 @@ var
 
     if Mode in [bmByGenre, bmByAuthor, bmBySeries] then
     begin
-      if FCollection.HideDeleted then
+      if FCollection.GetHideDeleted then
         query.SetParam(':IsDeleted', False);
 
-      if FCollection.ShowLocalOnly then
+      if FCollection.GetShowLocalOnly then
         query.SetParam(':IsLocal', True);
     end;
   end;
@@ -447,10 +447,10 @@ begin
 
   if Mode in [bmByGenre, bmByAuthor, bmBySeries] then
   begin
-    if FCollection.HideDeleted then
+    if FCollection.GetHideDeleted then
       AddToWhere(Where, ' b.IsDeleted = :IsDeleted');
 
-    if FCollection.ShowLocalOnly then
+    if FCollection.GetShowLocalOnly then
       AddToWhere(Where, ' b.IsLocal = :IsLocal ');
   end;
 
@@ -669,18 +669,18 @@ var
 
       amFullFilter:
         begin
-          if FCollection.HideDeleted then
+          if FCollection.GetHideDeleted then
             query.SetParam(':IsDeleted', False);
 
-          if FCollection.ShowLocalOnly then
+          if FCollection.GetShowLocalOnly then
             query.SetParam(':IsLocal', True);
 
           if
-            (FCollection.AuthorFilterType <> '') and
-            (FCollection.AuthorFilterType <> ALPHA_FILTER_ALL) and
-            (FCollection.AuthorFilterType <> ALPHA_FILTER_NON_ALPHA)
+            (FCollection.GetAuthorFilterType <> '') and
+            (FCollection.GetAuthorFilterType <> ALPHA_FILTER_ALL) and
+            (FCollection.GetAuthorFilterType <> ALPHA_FILTER_NON_ALPHA)
           then
-            query.SetParam(':FilterType', FCollection.AuthorFilterType + '%');
+            query.SetParam(':FilterType', FCollection.GetAuthorFilterType + '%');
         end;
     end;
   end;
@@ -705,27 +705,27 @@ begin
     amFullFilter:
       begin
         FromList := 'Author_List al ';
-        if FCollection.HideDeleted or FCollection.ShowLocalOnly then
+        if FCollection.GetHideDeleted or FCollection.GetShowLocalOnly then
           FromList := FromList + 'INNER JOIN Books b ON al.BookID = b.BookID ';
         FromList := FromList + 'INNER JOIN Authors a ON a.AuthorID = al.AuthorID ';
 
-        if FCollection.HideDeleted then
+        if FCollection.GetHideDeleted then
           AddToWhere(Where, ' b.IsDeleted = :IsDeleted ');
 
-        if FCollection.ShowLocalOnly then
+        if FCollection.GetShowLocalOnly then
           AddToWhere(Where, ' b.IsLocal = :IsLocal ');
 
-        if FCollection.AuthorFilterType = ALPHA_FILTER_NON_ALPHA then
+        if FCollection.GetAuthorFilterType = ALPHA_FILTER_NON_ALPHA then
         begin
           AddToWhere(Where,
             '(UPPER(SUBSTR(a.LastName, 1, 1)) NOT IN (' + ENGLISH_ALPHABET_SEPARATORS + ')) AND ' +
             '(UPPER(SUBSTR(a.LastName, 1, 1)) NOT IN (' + RUSSIAN_ALPHABET_SEPARATORS + '))'
           );
         end
-        else if (FCollection.AuthorFilterType <> '') and (FCollection.AuthorFilterType <> ALPHA_FILTER_ALL) then
+        else if (FCollection.GetAuthorFilterType <> '') and (FCollection.GetAuthorFilterType <> ALPHA_FILTER_ALL) then
         begin
-          Assert(Length(FCollection.AuthorFilterType) = 1);
-          Assert(TCharacter.IsUpper(FCollection.AuthorFilterType, 1));
+          Assert(Length(FCollection.GetAuthorFilterType) = 1);
+          Assert(TCharacter.IsUpper(FCollection.GetAuthorFilterType, 1));
           AddToWhere(Where,
             'UPPER(a.LastName) LIKE :FilterType'  // начинается на заданную букву
           );
@@ -903,18 +903,18 @@ var
   begin
     if Mode = smFullFilter then
     begin
-      if FCollection.HideDeleted then
+      if FCollection.GetHideDeleted then
         query.SetParam(':IsDeleted', False);
 
-      if FCollection.ShowLocalOnly then
+      if FCollection.GetShowLocalOnly then
         query.SetParam(':IsLocal', True);
 
       if
-        (FCollection.SeriesFilterType <> '') and
-        (FCollection.SeriesFilterType <> ALPHA_FILTER_NON_ALPHA) and
-        (FCollection.SeriesFilterType <> ALPHA_FILTER_ALL)
+        (FCollection.GetSeriesFilterType <> '') and
+        (FCollection.GetSeriesFilterType <> ALPHA_FILTER_NON_ALPHA) and
+        (FCollection.GetSeriesFilterType <> ALPHA_FILTER_ALL)
       then
-        query.SetParam(':FilterType', FCollection.SeriesFilterType + '%');
+        query.SetParam(':FilterType', FCollection.GetSeriesFilterType + '%');
     end;
   end;
 
@@ -931,30 +931,30 @@ begin
     smFullFilter:
     begin
       SQLRows := 'SELECT DISTINCT s.SeriesID, s.SeriesTitle FROM Series s ';
-      if FCollection.HideDeleted or FCollection.ShowLocalOnly then
+      if FCollection.GetHideDeleted or FCollection.GetShowLocalOnly then
       begin
         SQLRows := SQLRows + ' INNER JOIN Books b ON s.SeriesID = b.SeriesID ';
-        if FCollection.HideDeleted then
+        if FCollection.GetHideDeleted then
           AddToWhere(Where, ' b.IsDeleted = :IsDeleted ');
 
-        if FCollection.ShowLocalOnly then
+        if FCollection.GetShowLocalOnly then
           AddToWhere(Where, ' b.IsLocal = :IsLocal ');
       end;
 
       // Series type filter
-      if FCollection.SeriesFilterType <> '' then
+      if FCollection.GetSeriesFilterType <> '' then
       begin
-        if FCollection.SeriesFilterType = ALPHA_FILTER_NON_ALPHA then
+        if FCollection.GetSeriesFilterType = ALPHA_FILTER_NON_ALPHA then
         begin
           AddToWhere(Where,
             '(UPPER(SUBSTR(s.SeriesTitle, 1, 1)) NOT IN (' + ENGLISH_ALPHABET_SEPARATORS + ')) AND ' +
             '(UPPER(SUBSTR(s.SeriesTitle, 1, 1)) NOT IN (' + RUSSIAN_ALPHABET_SEPARATORS + '))'
           );
         end
-        else if FCollection.SeriesFilterType <> ALPHA_FILTER_ALL then
+        else if FCollection.GetSeriesFilterType <> ALPHA_FILTER_ALL then
         begin
-          Assert(Length(FCollection.SeriesFilterType) = 1);
-          Assert(TCharacter.IsUpper(FCollection.SeriesFilterType, 1));
+          Assert(Length(FCollection.GetSeriesFilterType) = 1);
+          Assert(TCharacter.IsUpper(FCollection.GetSeriesFilterType, 1));
           AddToWhere(Where,
             'UPPER(s.SeriesTitle) LIKE :FilterType'   // начинается на заданную букву
           );

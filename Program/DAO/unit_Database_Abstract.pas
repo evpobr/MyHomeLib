@@ -144,10 +144,14 @@ type
     FGenreCache: TGenreCache;
 
   public
-    property HideDeleted: Boolean read FHideDeleted write FHideDeleted;
-    property ShowLocalOnly: Boolean read FShowLocalOnly write FShowLocalOnly;
-    property SeriesFilterType: string read FSeriesFilterType write FSeriesFilterType;
-    property AuthorFilterType: string read FAuthorFilterType write FAuthorFilterType;
+    procedure SetHideDeleted(const HideDeleted: Boolean);
+    function GetHideDeleted: Boolean;
+    procedure SetShowLocalOnly(const ShowLocalOnly: Boolean);
+    function GetShowLocalOnly: Boolean;
+    procedure SetSeriesFilterType(const SeriesFilterType: string);
+    function GetSeriesFilterType: string;
+    procedure SetAuthorFilterType(const AuthorFilterType: string);
+    function GetAuthorFilterType: string;
   end;
 
 resourcestring
@@ -392,6 +396,46 @@ begin
   Result := ByFB2Code[FB2Code];
   while Result.ParentCode <> '' do
     Result := Items[Result.ParentCode];
+end;
+
+procedure TBookCollection.SetHideDeleted(const HideDeleted: Boolean);
+begin
+  FHideDeleted := HideDeleted;
+end;
+
+function TBookCollection.GetHideDeleted: Boolean;
+begin
+  Result := FHideDeleted;
+end;
+
+procedure TBookCollection.SetShowLocalOnly(const ShowLocalOnly: Boolean);
+begin
+  FShowLocalOnly := ShowLocalOnly;
+end;
+
+function TBookCollection.GetShowLocalOnly: Boolean;
+begin
+  Result := FShowLocalOnly;
+end;
+
+procedure TBookCollection.SetSeriesFilterType(const SeriesFilterType: string);
+begin
+  FSeriesFilterType := SeriesFilterType;
+end;
+
+function TBookCollection.GetSeriesFilterType: string;
+begin
+  Result := FSeriesFilterType;
+end;
+
+procedure TBookCollection.SetAuthorFilterType(const AuthorFilterType: string);
+begin
+  FAuthorFilterType := AuthorFilterType;
+end;
+
+function TBookCollection.GetAuthorFilterType: string;
+begin
+  Result := FAuthorFilterType;
 end;
 
 end.
