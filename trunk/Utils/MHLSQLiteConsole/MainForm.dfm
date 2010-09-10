@@ -225,6 +225,7 @@ object frmMain: TfrmMain
         Width = 568
         Height = 20
         Align = alClient
+        Layout = tlCenter
         ExplicitWidth = 3
         ExplicitHeight = 13
       end
@@ -245,6 +246,7 @@ object frmMain: TfrmMain
         Width = 568
         Height = 20
         Align = alClient
+        Layout = tlCenter
         ExplicitWidth = 3
         ExplicitHeight = 13
       end
@@ -265,6 +267,7 @@ object frmMain: TfrmMain
         Width = 568
         Height = 20
         Align = alClient
+        Layout = tlCenter
         ExplicitWidth = 3
         ExplicitHeight = 13
       end

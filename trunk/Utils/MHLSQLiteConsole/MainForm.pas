@@ -174,8 +174,6 @@ begin
         while not q.Eof do
         begin
           Inc(nRows);
-          if nRows >= MAX_FETCH_ROW then
-            Break;
           q.Next;
         end;
         sw.Stop;
