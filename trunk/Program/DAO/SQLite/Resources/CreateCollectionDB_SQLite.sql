@@ -127,6 +127,14 @@ CREATE TRIGGER [TRBooks_AU] AFTER UPDATE ON [Books]
         SearchAnnotation = UPPER(TRIM(NEW.Annotation))
     WHERE BookID = NEW.BookID ;
   END;--
+CREATE TRIGGER [TRBooks_BD] BEFORE DELETE ON [Books]
+  BEGIN
+    DELETE FROM Genre_List WHERE BookID = OLD.BookID;
+    DELETE FROM Author_List WHERE BookID = OLD.BookID;
+    DELETE FROM Series WHERE SeriesID IN (SELECT b.SeriesID FROM Books b WHERE  b.SeriesID = OLD.SeriesID GROUP BY b.SeriesID HAVING COUNT(b.SeriesID) <= 1);
+    DELETE FROM Authors WHERE NOT AuthorID in (SELECT DISTINCT al.AuthorID FROM Author_List al);
+  END;--
+
 
 DROP TABLE IF EXISTS [Genre_List];--
 CREATE TABLE [Genre_List] (
