@@ -42,7 +42,6 @@ uses
   unit_MHL_strings,
   unit_Globals,
   unit_Database,
-  unit_Database_Abstract,
   unit_Interfaces;
 
 resourcestring
@@ -70,7 +69,7 @@ var
   totalBooks: Integer;
   processedBooks: Integer;
   NewFolder: string;
-  BookCollection: TBookCollection;
+  BookCollection: IBookCollection;
   BookIterator: IBookIterator;
   BookRecord: TBookRecord;
 begin

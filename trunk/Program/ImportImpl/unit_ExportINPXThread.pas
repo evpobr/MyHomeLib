@@ -65,7 +65,6 @@ uses
   unit_Settings,
   unit_MHL_strings,
   unit_Database,
-  unit_Database_Abstract,
   unit_Interfaces;
 
 resourcestring
@@ -96,7 +95,7 @@ end;
 
 procedure TExport2INPXThread.WorkFunction;
 var
-  BookCollection: TBookCollection;
+  BookCollection: IBookCollection;
   slFileList: TStringList;
   slHelper: TStringList;
   cINPRecord: string;
@@ -121,35 +120,31 @@ begin
   try
     slHelper := TStringList.Create;
     try
-      BookCollection := CreateBookCollection(FCollectionDBFileName, False);
+      BookCollection := GetBookCollection(FCollectionDBFileName);
+      BookIterator := BookCollection.GetBookIterator(bmAll, True);
       try
-        BookIterator := BookCollection.GetBookIterator(bmAll, True);
-        try
-          totalBooks := BookIterator.RecordCount;
-          while BookIterator.Next(R) do
-          begin
-            if Canceled then
-              Exit;
+        totalBooks := BookIterator.RecordCount;
+        while BookIterator.Next(R) do
+        begin
+          if Canceled then
+            Exit;
 
-            cINPRecord := INPRecordCreate(R);
-            Assert(cINPRecord <> '');
+          cINPRecord := INPRecordCreate(R);
+          Assert(cINPRecord <> '');
 
-            slHelper.Add(cINPRecord);
+          slHelper.Add(cINPRecord);
 
-            Inc(processedBooks);
-            if (processedBooks mod ProcessedItemThreshold) = 0 then
-              SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
-            SetProgress(processedBooks * 100 div totalBooks);
-          end;
-          Assert(processedBooks = totalBooks);
-          SetProgress(100);
-        finally
-          BookIterator := nil;
+          Inc(processedBooks);
+          if (processedBooks mod ProcessedItemThreshold) = 0 then
+            SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
+          SetProgress(processedBooks * 100 div totalBooks);
         end;
+        Assert(processedBooks = totalBooks);
+        SetProgress(100);
       finally
-        FreeAndNil(BookCollection);
+        BookIterator := nil;
       end;
-
+ 
       SetComment(rstrSaving);
 
       slHelper.SaveToFile(FTempPath + BOOKS_INFO_FILE, TEncoding.UTF8);

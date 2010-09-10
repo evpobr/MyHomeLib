@@ -968,7 +968,6 @@ uses
   dm_user,
   unit_Columns,
   unit_Database,
-  unit_Database_Abstract,
   frm_statistic,
   frm_splash,
   frm_settings,
@@ -1504,7 +1503,7 @@ var
   SavedCursor: TCursor;
   CollectionType: Integer;
   EmptySearchCriteria: TBookSearchCriteria;
-  BookCollection: TBookCollection;
+  BookCollection: IBookCollection;
 begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -1633,8 +1632,8 @@ begin
     ShowLocalOnlyUpdate(nil);
 
     BookCollection := GetActiveBookCollection;
-    BookCollection.ShowLocalOnly := IsOnline and Settings.ShowLocalOnly;
-    BookCollection.HideDeleted := (not IsPrivate) and Settings.HideDeletedBooks;
+    BookCollection.SetShowLocalOnly(IsOnline and Settings.ShowLocalOnly);
+    BookCollection.SetHideDeleted((not IsPrivate) and Settings.HideDeletedBooks);
     //BookCollection.SetTableState(True);
 
     FillAuthorTree(tvAuthors, BookCollection.GetAuthorIterator(amFullFilter), FLastAuthorID);
@@ -1989,7 +1988,7 @@ procedure TfrmMain.btnSwitchTreeModeClick(Sender: TObject);
 var
   SavedCursor: TCursor;
   Page: Integer;
-  BookCollection: TBookCollection;
+  BookCollection: IBookCollection;
   FilterValue: TFilterValue;
 begin
   SavedCursor := Screen.Cursor;
@@ -2103,7 +2102,7 @@ end;
 procedure TfrmMain.FillAllBooksTree;
 var
   SavedCursor: TCursor;
-  BookCollection: TBookCollection;
+  BookCollection: IBookCollection;
   FilterValue: TFilterValue;
 begin
   SavedCursor := Screen.Cursor;
@@ -2478,8 +2477,6 @@ end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
-  FreeBookCollectionMap;
-
   // SQ
   FreeAndNil(FPresets);
 
@@ -3588,7 +3585,7 @@ var
   Tree: TBookTree;
   Node: PVirtualNode;
   Data: PBookRecord;
-  BookCollection: TBookCollection;
+  BookCollection: IBookCollection;
   SavedCursor: TCursor;
 begin
   SavedCursor := Screen.Cursor;
@@ -3854,7 +3851,7 @@ end;
 procedure TfrmMain.HideDeletedBooksExecute(Sender: TObject);
 var
   SavedCursor: TCursor;
-  BookCollection: TBookCollection;
+  BookCollection: IBookCollection;
 begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -3864,7 +3861,7 @@ begin
     Settings.HideDeletedBooks := not Settings.HideDeletedBooks;
 
     BookCollection := GetActiveBookCollection;
-    BookCollection.HideDeleted := Settings.HideDeletedBooks;
+    BookCollection.SetHideDeleted(Settings.HideDeletedBooks);
 
     FillAuthorTree(tvAuthors, BookCollection.GetAuthorIterator(amFullFilter), FLastAuthorID);
     FillSeriesTree(tvSeries, BookCollection.GetSeriesIterator(smFullFilter), FLastSeriesID);
@@ -3916,7 +3913,7 @@ end;
 
 function TfrmMain.InternalSetAuthorFilter(Button: TToolButton): string;
 var
-  BookCollection: TBookCollection;
+  BookCollection: IBookCollection;
 begin
   if Assigned(FLastLetterA) then
     FLastLetterA.Down := False;
@@ -3926,7 +3923,7 @@ begin
   Result := TCharacter.ToUpper(Button.Caption);
 
   BookCollection := GetActiveBookCollection;
-  BookCollection.AuthorFilterType := Result;
+  BookCollection.SetAuthorFilterType(Result);
 
   FillAuthorTree(tvAuthors, BookCollection.GetAuthorIterator(amFullFilter), FLastAuthorID);
 
@@ -3977,7 +3974,7 @@ begin
 
   Result := TCharacter.ToUpper(Button.Caption);
 
-  GetActiveBookCollection.SeriesFilterType := Result;
+  GetActiveBookCollection.SetSeriesFilterType(Result);
 
   if (Result = ALPHA_FILTER_ALL) or (Result = ALPHA_FILTER_NON_ALPHA) then
   begin
@@ -4028,7 +4025,7 @@ end;
 procedure TfrmMain.ShowLocalOnlyExecute(Sender: TObject);
 var
   SavedCursor: TCursor;
-  BookCollection: TBookCollection;
+  BookCollection: IBookCollection;
 begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -4038,7 +4035,7 @@ begin
     Settings.ShowLocalOnly := not Settings.ShowLocalOnly;
 
     BookCollection := GetActiveBookCollection;
-    BookCollection.ShowLocalOnly := Settings.ShowLocalOnly;
+    BookCollection.SetShowLocalOnly(Settings.ShowLocalOnly);
 
     FillAuthorTree(tvAuthors, BookCollection.GetAuthorIterator(amFullFilter), FLastAuthorID);
     FillSeriesTree(tvSeries, BookCollection.GetSeriesIterator(smFullFilter), FLastSeriesID);
@@ -4507,7 +4504,7 @@ var
   Tree: TBookTree;
   Node, OldNode: PVirtualNode;
   Data: PBookRecord;
-  ALibrary: TBookCollection;
+  ALibrary: IBookCollection;
   BookFileName: string;
   SavedCursor: TCursor;
 begin
@@ -4596,7 +4593,7 @@ procedure TfrmMain.miDeleteFilesClick(Sender: TObject);
 var
   DatabaseID: Integer;
   FilePath: string;
-  BookCollection: TBookCollection;
+  BookCollection: IBookCollection;
 begin
   DatabaseID := DMUser.ActiveCollectionInfo.ID;
   BookCollection := GetActiveBookCollection;
@@ -4943,7 +4940,7 @@ var
   NodeB: PVirtualNode;
   DataB: PBookRecord;
   Tree: TBookTree;
-  ALibrary: TBookCollection;
+  ALibrary: IBookCollection;
 begin
   if ActiveView = FavoritesView then
   begin
@@ -4995,7 +4992,7 @@ var
   AuthID: Integer;
   S: string;
   SeriesID: Integer;
-  BookCollection: TBookCollection;
+  BookCollection: IBookCollection;
 begin
   if ActiveView = FavoritesView then
   begin
@@ -5288,7 +5285,7 @@ end;
 procedure TfrmMain.BookSetRateExecute(Sender: TObject);
 var
   NewRate: Integer;
-  BookCollection: TBookCollection;
+  BookCollection: IBookCollection;
 begin
   if Sender = acBookSetRate1 then
     NewRate := 1
@@ -5491,7 +5488,7 @@ var
   GroupID: Integer;
   GroupData: PGroupData;
   SavedCursor: TCursor;
-  BookCollection: TBookCollection;
+  BookCollection: IBookCollection;
 begin
   GetActiveTree(Tree);
   Assert(Assigned(Tree));
@@ -5981,7 +5978,7 @@ var
 
   strReview: string;
   NewCode: Integer;
-  BookCollection: TBookCollection;
+  BookCollection: IBookCollection;
 begin
   GetActiveTree(Tree);
   Assert(Assigned(Tree));
@@ -6472,7 +6469,7 @@ end;
 
 procedure TfrmMain.MarkAsReadedExecute(Sender: TObject);
 var
-  BookCollection: TBookCollection;
+  BookCollection: IBookCollection;
 begin
   BookCollection := GetActiveBookCollection;
 
@@ -6509,7 +6506,7 @@ end;
 
 procedure TfrmMain.UpdateGenresExecute(Sender: TObject);
 var
-  ALibrary: TBookCollection;
+  ALibrary: IBookCollection;
   AFileName: string;
 begin
   //DMCollection.DBCollection.Connected := False;
@@ -6997,7 +6994,7 @@ var
   Tree: TBookTree;
   Data: PBookRecord;
   Node: PVirtualNode;
-  BookCollection: TBookCollection;
+  BookCollection: IBookCollection;
   OldID: Integer;
 begin
   //

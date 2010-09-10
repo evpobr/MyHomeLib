@@ -47,7 +47,7 @@ uses
   unit_Settings,
   unit_WorkerThread,
   unit_Database,
-  unit_Database_Abstract;
+  unit_Interfaces;
 
 resourcestring
   rstrDownloadProgress = 'Загружено: %u%% из %u байт';
@@ -133,7 +133,7 @@ end;
 
 procedure TLibUpdateThread.WorkFunction;
 var
-  BookCollection: TBookCollection;
+  BookCollection: IBookCollection;
   i: integer;
   UserDataBackup: TUserData;
 begin

@@ -113,12 +113,12 @@ implementation
 
 uses
   unit_Database,
-  unit_Database_Abstract,
   unit_Settings,
   unit_globals,
   unit_ImportInpxThread,
   unit_Consts,
-  unit_mhl_strings;
+  unit_mhl_strings,
+  unit_Interfaces;
 
 resourcestring
   rstrCaptionCancel = 'Отмена';
@@ -541,7 +541,7 @@ end;
 
 function TfrmNCWizard.CreateCollection: Boolean;
 var
-  ALibrary: TBookCollection;
+  ALibrary: IBookCollection;
 begin
   Assert(Assigned(FProgressPage));
 

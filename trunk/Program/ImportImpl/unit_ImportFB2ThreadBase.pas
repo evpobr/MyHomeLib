@@ -29,8 +29,8 @@ uses
   unit_Globals,
   unit_WorkerThread,
   unit_Database,
-  unit_Database_Abstract,
-  unit_Templater;
+  unit_Templater,
+  unit_Interfaces;
 
 type
   TImportFB2ThreadBase = class(TWorker)
@@ -38,7 +38,7 @@ type
     FCollectionRoot: string;
     FCollectionDBFileName: string;
 
-    FLibrary: TBookCollection;
+    FLibrary: IBookCollection;
     FTemplater: TTemplater;
     FFiles: TStringList;
     FFilesList: TFilesList;
@@ -260,28 +260,24 @@ end;
 
 procedure TImportFB2ThreadBase.WorkFunction;
 begin
-  FLibrary := CreateBookCollection(FCollectionDBFileName, False);
+  FLibrary := GetBookCollection(FCollectionDBFileName);
+  FFiles := TStringList.Create;
   try
-    FFiles := TStringList.Create;
+    ScanFolder;
+
+    if Canceled then
+      Exit;
+
+    FLibrary.BeginBulkOperation;
     try
-      ScanFolder;
-
-      if Canceled then
-        Exit;
-
-      FLibrary.BeginBulkOperation;
-      try
-        ProcessFileList;
-        FLibrary.EndBulkOperation(True);
-      except
-        FLibrary.EndBulkOperation(False);
-        raise;
-      end;
-    finally
-      FreeAndNil(FFiles);
+      ProcessFileList;
+      FLibrary.EndBulkOperation(True);
+    except
+      FLibrary.EndBulkOperation(False);
+      raise;
     end;
   finally
-    FreeAndNil(FLibrary);
+    FreeAndNil(FFiles);
   end;
 end;
 
