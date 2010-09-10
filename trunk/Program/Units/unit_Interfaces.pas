@@ -89,7 +89,7 @@ type
     //
     function FindOrCreateSeries(const Title: string): Integer;
     procedure SetSeriesTitle(const SeriesID: Integer; const NewSeriesTitle: string);
-    procedure ChangeBookSeriesID(const OldID: Integer; const NewID: Integer; const DatabaseID: Integer);
+    procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer);
 
     procedure SetStringProperty(const PropID: Integer; const Value: string);
     procedure SetIntProperty(const PropID: Integer; const Value: Integer);
