@@ -220,7 +220,7 @@ type
     //
     function HasCollections: Boolean;
     function FindFirstExternalCollection: Boolean;
-    function FindFirstExistingCollectionID(const PrefferedID: Integer): Integer;
+    function FindFirstExistingCollectionID(const PreferredID: Integer): Integer;
 
     function ActivateGroup(const ID: Integer): Boolean;
 
@@ -280,74 +280,6 @@ type
   public
     property ActiveCollectionInfo: TCollectionInfo read FActiveCollectionInfo;
   end;
-
-//  TOldCollectionInfo = class
-//  private
-//    FSysDataModule: TDMUser;
-//
-//    function GetActive: Boolean;
-//
-//    function GetID: Integer;
-//
-//    function GetName: string;
-//    procedure SetName(const Value: string);
-//
-//    function GetRootFolder: string;
-//    procedure SetRootFolder(const Value: string);
-//
-//    function GetDBFileName: string;
-//    procedure SetDBFileName(const Value: string);
-//
-//    function GetNotes: string;
-//    procedure SetNotes(const Value: string);
-//
-//    function GetUser: string;
-//    procedure SetUser(const Value: string);
-//
-//    function GetPassword: string;
-//    procedure SetPassword(const Value: string);
-//
-//    function GetCreationDate: TDateTime;
-//    procedure SetCreationDate(const Value: TDateTime);
-//
-//    function GetVersion: Integer;
-//    procedure SetVersion(const Value: Integer);
-//
-//    function GetCollectionType: COLLECTION_TYPE;
-//    procedure SetCollectionType(const Value: COLLECTION_TYPE);
-//
-//    function GetAllowDelete: Boolean;
-//    procedure SetAllowDelete(const Value: Boolean);
-//
-//    function GetURL: string;
-//    procedure SetURL(const Value: string);
-//
-//    function GetScript: string;
-//    procedure SetScript(const Value: string);
-//
-//  public
-//    procedure Edit;
-//    procedure Save;
-//    procedure Cancel;
-//
-//    procedure UpdateSettings(ASettings: TStrings);
-//
-//    property Active: Boolean read GetActive;
-//
-//    property ID: Integer read GetID;
-//    property Name: string read GetName write SetName;
-//    property RootFolder: string read GetRootFolder write SetRootFolder;
-//    property DBFileName: string read GetDBFileName write SetDBFileName;
-//    property Notes: string read GetNotes write SetNotes;
-//    property CreationDate: TDateTime read GetCreationDate { write SetCreationDate } ;
-//    property Version: Integer read GetVersion write SetVersion;
-//    property CollectionType: COLLECTION_TYPE read GetCollectionType { write SetCollectionType } ;
-//    property AllowDelete: Boolean read GetAllowDelete { write SetAllowDelete } ;
-//    property User: string read GetUser write SetUser;
-//    property Password: string read GetPassword write SetPassword;
-//    property URL: string read GetURL write SetURL;
-//    property Script: string read GetScript write SetScript;
-//  end;
 
 var
   DMUser: TDMUser;
@@ -649,8 +581,7 @@ begin
     finally
       Stream.Free;
     end;
-
-    CollectionInfo.Settings.DelimitedText := tblBasesSettings.Value;
+//    CollectionInfo.Settings.DelimitedText := tblBasesSettings.Value;
   end
   else
     CollectionInfo.Clear;
@@ -759,7 +690,7 @@ begin
   end;
 end;
 
-function TDMUser.FindFirstExistingCollectionID(const PrefferedID: Integer): Integer;
+function TDMUser.FindFirstExistingCollectionID(const PreferredID: Integer): Integer;
 var
   CollectionInfoIterator: ICollectionInfoIterator;
   CollectionInfo: TCollectionInfo;
@@ -773,7 +704,7 @@ begin
     begin
       if FileExists(CollectionInfo.DBFileName) then
       begin
-        if CollectionInfo.ID = PrefferedID then
+        if CollectionInfo.ID = PreferredID then
         begin
           //
           // Пользователь предпочитает эту коллекцию, она доступна -> выходим
