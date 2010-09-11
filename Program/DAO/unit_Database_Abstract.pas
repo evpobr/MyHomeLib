@@ -323,13 +323,19 @@ procedure TBookCollection.VerifyCurrentCollection(const DatabaseID: Integer);
 var
   BookCollectionName: string;
   CurrentCollectionName: string;
+  CollectionInfo: TCollectionInfo;
 begin
   if DatabaseID <> DMUser.ActiveCollectionInfo.ID then
   begin
-    if (DMUser.SelectCollection(DatabaseID)) then
-      BookCollectionName := DMUser.CurrentCollectionInfo.Name
-    else
-      BookCollectionName := '';
+    CollectionInfo := TCollectionInfo.Create;
+    try
+      if DMUser.GetCollectionInfo(DatabaseID, CollectionInfo) then
+        BookCollectionName := CollectionInfo.Name
+      else
+        BookCollectionName := '';
+    finally
+
+    end;
     raise ENotSupportedException.Create(Format(rstrErrorOnlyForCurrentCollection, [DMUser.ActiveCollectionInfo.Name, BookCollectionName]));
   end;
 end;

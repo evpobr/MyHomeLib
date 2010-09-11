@@ -114,7 +114,8 @@ uses
   dm_user,
   unit_Helpers,
   unit_Consts,
-  unit_Errors;
+  unit_Errors,
+  unit_Globals;
 
 resourcestring
   rstrChooseDataFolder = 'Выберите папку для сохранения данных';
@@ -237,6 +238,7 @@ procedure TfrmBases.btnSaveClick(Sender: TObject);
 var
   ADBFileName: string;
   ARootFolder: string;
+  CollectionInfo: TCollectionInfo;
 begin
   if (DisplayName = '') or (DBFileName = '') or (RootFolder = '') then
   begin
@@ -288,27 +290,21 @@ begin
     Exit;
   end;
 
-  with DMUser do
-  begin
-    if SelectCollection(CollectionID) then
-    begin
-      CurrentCollectionInfo.Edit;
-      try
-        CurrentCollectionInfo.Name := DisplayName;
-        CurrentCollectionInfo.RootFolder := ARootFolder;
-        CurrentCollectionInfo.DBFileName := ADBFileName;
-        CurrentCollectionInfo.Notes := Description;
-        CurrentCollectionInfo.URL := URL;
-        CurrentCollectionInfo.User := User;
-        CurrentCollectionInfo.Password := Pass;
-        CurrentCollectionInfo.Script := Script;
+  CollectionInfo := TCollectionInfo.Create;
+  try
+    CollectionInfo.ID := CollectionID;
+    CollectionInfo.Name := DisplayName;
+    CollectionInfo.RootFolder := ARootFolder;
+    CollectionInfo.DBFileName := ADBFileName;
+    CollectionInfo.Notes := Description;
+    CollectionInfo.URL := URL;
+    CollectionInfo.User := User;
+    CollectionInfo.Password := Pass;
+    CollectionInfo.Script := Script;
 
-        CurrentCollectionInfo.Save;
-      except
-        CurrentCollectionInfo.Cancel;
-        raise;
-      end;
-    end;
+    DMUser.UpdateCollectionInfo(CollectionInfo);
+  finally
+    FreeAndNil(CollectionInfo);
   end;
 
   ModalResult := mrOk;
