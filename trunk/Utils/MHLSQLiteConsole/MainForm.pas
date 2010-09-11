@@ -59,7 +59,7 @@ type
     procedure Connect;
     procedure Disconnect;
     procedure DoSelect(const SQL: string);
-    procedure SetPrepareTimeCaption(const Elapsed: TTimeSpan);
+    function FormatElapsedTime(const Elapsed: TTimeSpan): string;
   public
 
   end;
@@ -94,12 +94,12 @@ begin
   q := FDatabase.NewQuery(edQuery.Lines.Text);
   try
     sw.Stop;
-    SetPrepareTimeCaption(sw.Elapsed);
+    prepareTime.Caption := FormatElapsedTime(sw.Elapsed);
 
-    sw.Reset;
+    sw := TStopwatch.StartNew;
     q.ExecSQL;
     sw.Stop;
-    execTime.Caption := string(sw.Elapsed);
+    execTime.Caption := FormatElapsedTime(sw.Elapsed);
     rowsFetched.Caption := IntToStr(0);
   finally
     q.Free;
@@ -166,9 +166,9 @@ begin
       q := FDatabase.NewQuery(SQL);
       try
         sw.Stop;
-        SetPrepareTimeCaption(sw.Elapsed);
+        prepareTime.Caption := FormatElapsedTime(sw.Elapsed);
 
-        sw.Reset;
+        sw := TStopwatch.StartNew;
         q.Open;
         nRows := 0;
         while not q.Eof do
@@ -177,7 +177,7 @@ begin
           q.Next;
         end;
         sw.Stop;
-        execTime.Caption := string(sw.Elapsed);
+        execTime.Caption := FormatElapsedTime(sw.Elapsed);
         rowsFetched.Caption := IntToStr(nRows);
 
         nColumns := q.ColCount;
@@ -215,9 +215,9 @@ begin
   Disconnect;
 end;
 
-procedure TfrmMain.SetPrepareTimeCaption(const Elapsed: TTimeSpan);
+function TfrmMain.FormatElapsedTime(const Elapsed: TTimeSpan): string;
 begin
-  prepareTime.Caption := Format('%.2d:%.2d:%.2d:%.3d', [Elapsed.Hours, Elapsed.Minutes, Elapsed.Seconds, Elapsed.Milliseconds]);
+  Result := Format('%.2d:%.2d:%.2d:%.3d', [Elapsed.Hours, Elapsed.Minutes, Elapsed.Seconds, Elapsed.Milliseconds]);
 end;
 
 end.
