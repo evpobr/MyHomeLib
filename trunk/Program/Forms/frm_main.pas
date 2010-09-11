@@ -1758,11 +1758,12 @@ procedure TfrmMain.CreateCollectionMenu;
 var
   SubItem: TMenuItem;
   ActiveCollectionID: Integer;
-  IsOnData: Boolean;
+  CollectionInfoIterator: ICollectionInfoIterator;
+  CollectionInfo: TCollectionInfo;
 
-  function GetCollectionTypeImageIndex: Integer;
+  function GetCollectionTypeImageIndex(const CollectionType: COLLECTION_TYPE): Integer;
   begin
-    case DMUser.CurrentCollectionInfo.CollectionType of
+    case CollectionType of
       CT_PRIVATE_FB: Result := 18;
       CT_PRIVATE_NONFB: Result := 8;
       CT_LIBRUSEC_LOCAL_FB: Result := 14;
@@ -1783,44 +1784,48 @@ begin
   miCopyToCollection.Clear;
   pmCollection.Items.Clear;
 
-  IsOnData := DMUser.FindFirstCollection;
-  while IsOnData do
-  begin
-    if ActiveCollectionID <> DMUser.CurrentCollectionInfo.ID then
+  CollectionInfo := TCollectionInfo.Create;
+  try
+    CollectionInfoIterator := DMUser.GetCollectionInfoIterator;
+    while CollectionInfoIterator.Next(CollectionInfo) do
     begin
-      // ----------------------------
-      SubItem := TMenuItem.Create(miCollSelect);
-      SubItem.Caption := DMUser.CurrentCollectionInfo.Name;
-      SubItem.Tag := DMUser.CurrentCollectionInfo.ID;
-      SubItem.OnClick := miActiveCollectionClick;
-      SubItem.ImageIndex := GetCollectionTypeImageIndex;
-      miCollSelect.Add(SubItem);
-
-      // ----------------------------
-      SubItem := TMenuItem.Create(pmCollection);
-      SubItem.Caption := DMUser.CurrentCollectionInfo.Name;
-      SubItem.Tag := DMUser.CurrentCollectionInfo.ID;
-      SubItem.OnClick := miActiveCollectionClick;
-      SubItem.ImageIndex := GetCollectionTypeImageIndex;
-      pmCollection.Items.Add(SubItem);
-
-      // ----------------------------------
-      if
-        isPrivateCollection(DMUser.CurrentCollectionInfo.CollectionType) and
-        isFB2Collection(DMUser.CurrentCollectionInfo.CollectionType) and
-        IsFB2
-      then
+      if ActiveCollectionID <> CollectionInfo.ID then
       begin
-        SubItem := TMenuItem.Create(miCopyToCollection);
-        SubItem.Caption := DMUser.CurrentCollectionInfo.Name;
-        SubItem.Tag := DMUser.CurrentCollectionInfo.ID;
-        SubItem.OnClick := CopyToCollectionClick;
-        SubItem.ImageIndex := GetCollectionTypeImageIndex;
+        // ----------------------------
+        SubItem := TMenuItem.Create(miCollSelect);
+        SubItem.Caption := CollectionInfo.Name;
+        SubItem.Tag := CollectionInfo.ID;
+        SubItem.OnClick := miActiveCollectionClick;
+        SubItem.ImageIndex := GetCollectionTypeImageIndex(CollectionInfo.CollectionType);
+        miCollSelect.Add(SubItem);
 
-        miCopyToCollection.Add(SubItem);
+        // ----------------------------
+        SubItem := TMenuItem.Create(pmCollection);
+        SubItem.Caption := CollectionInfo.Name;
+        SubItem.Tag := CollectionInfo.ID;
+        SubItem.OnClick := miActiveCollectionClick;
+        SubItem.ImageIndex := GetCollectionTypeImageIndex(CollectionInfo.CollectionType);
+        pmCollection.Items.Add(SubItem);
+
+        // ----------------------------------
+        if
+          isPrivateCollection(CollectionInfo.CollectionType) and
+          isFB2Collection(CollectionInfo.CollectionType) and
+          IsFB2
+        then
+        begin
+          SubItem := TMenuItem.Create(miCopyToCollection);
+          SubItem.Caption := CollectionInfo.Name;
+          SubItem.Tag := CollectionInfo.ID;
+          SubItem.OnClick := CopyToCollectionClick;
+          SubItem.ImageIndex := GetCollectionTypeImageIndex(CollectionInfo.CollectionType);
+
+          miCopyToCollection.Add(SubItem);
+        end;
       end;
     end;
-    IsOnData := DMUser.FindNextCollection;
+  finally
+    FreeAndNil(CollectionInfo);
   end;
 
   miCopyToCollection.Enabled := (miCopyToCollection.Count > 0);
@@ -1950,7 +1955,7 @@ begin
   try
     if frmNCWizard.ShowModal = mrOk then
     begin
-      Settings.ActiveCollection := DMUser.CurrentCollectionInfo.ID;
+      Settings.ActiveCollection := DMUser.ActiveCollectionInfo.ID;
       InitCollection(True);
       Result := True;
     end
@@ -2129,6 +2134,8 @@ function TfrmMain.CheckLibUpdates(Auto: Boolean): Boolean;
 var
   i: Integer;
   UpdatesInfo: TUpdateInfoList;
+  CollectionInfoIterator: ICollectionInfoIterator;
+  CollectionInfo: TCollectionInfo;
 begin
   if not Auto then
     ShowPopup(rstrCheckingUpdates);
@@ -2139,16 +2146,22 @@ begin
 
   UpdatesInfo.UpdateExternalVersions;
 
-  DMUser.FindFirstCollection;
-  repeat
-    for i := 0 to UpdatesInfo.Count - 1 do
-      if UpdatesInfo[i].CheckCodes(DMUser.CurrentCollectionInfo.Name, DMUser.CurrentCollectionInfo.CollectionType, DMUser.CurrentCollectionInfo.ID) then
-        if UpdatesInfo[i].CheckVersion(Settings.UpdatePath, DMUser.CurrentCollectionInfo.Version) then
-        begin
-          Result := True;
-          Break;
-        end;
-  until not DMUser.FindNextCollection;
+  CollectionInfo := TCollectionInfo.Create;
+  try
+    CollectionInfoIterator := DMUser.GetCollectionInfoIterator;
+    while CollectionInfoIterator.Next(CollectionInfo) do
+    begin
+      for i := 0 to UpdatesInfo.Count - 1 do
+        if UpdatesInfo[i].CheckCodes(CollectionInfo.Name, CollectionInfo.CollectionType, CollectionInfo.ID) then
+          if UpdatesInfo[i].CheckVersion(Settings.UpdatePath, CollectionInfo.Version) then
+          begin
+            Result := True;
+            Break;
+          end;
+    end;
+  finally
+    FreeAndNil(CollectionInfo);
+  end;
 
   if not Auto then
   begin
@@ -2273,6 +2286,8 @@ begin
 end;
 
 procedure TfrmMain.LoadLastCollection;
+var
+  CollectionID: Integer;
 begin
   //
   // этот метод вызывается и в том случае, если коллекций нет совсем (и никогда небыло)
@@ -2282,7 +2297,8 @@ begin
   //
   if DMUser.HasCollections then
   begin
-    if not DMUser.FindFirstExistingCollection(Settings.ActiveCollection) then
+    CollectionID := DMUser.FindFirstExistingCollectionID(Settings.ActiveCollection);
+    if CollectionID < 0 then
     begin
       MHLShowError(rstrCollectionFileNotFound, [DMUser.ActiveCollectionInfo.DBFileName]);
       //
@@ -2295,7 +2311,7 @@ begin
     //
     // небольшой хак. Будет правильнее передавать ID коллекции в InitCollection
     //
-    Settings.ActiveCollection := DMUser.CurrentCollectionInfo.ID;
+    Settings.ActiveCollection := CollectionID;
 
     frmSplash.lblState.Caption := rstrMainLoadingCollection;
   end;
@@ -3262,6 +3278,8 @@ var
   Data: PBookRecord;
   Tag: Integer;
   X: Integer;
+  CollectionInfo: TCollectionInfo;
+  CollectionType: COLLECTION_TYPE;
 
   procedure Stars(Value: Integer);
   var
@@ -3299,8 +3317,14 @@ begin
     //
     // The book belongs to an online collection and is available locally (already downloaded)
     //
-    DMUser.SelectCollection(Data^.BookKey.DatabaseID);
-    if (Data^.IsLocal) and isOnlineCollection(DMUser.CurrentCollectionInfo.CollectionType) then
+    CollectionInfo := TCollectionInfo.Create;
+    try
+      DMUser.GetCollectionInfo(Data^.BookKey.DatabaseID, CollectionInfo);
+      CollectionType := CollectionInfo.CollectionType;
+    finally
+      FreeAndNil(CollectionInfo);
+    end;
+    if (Data^.IsLocal) and isOnlineCollection(CollectionType) then
       ilFileTypes.Draw(TargetCanvas, X, CellRect.Top + 1, 7);
 
     //
@@ -3587,6 +3611,7 @@ var
   Data: PBookRecord;
   BookCollection: IBookCollection;
   SavedCursor: TCursor;
+  CollectionInfo: TCollectionInfo;
 begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -3599,10 +3624,15 @@ begin
 
     GetActiveTree(Tree);
     ID := (Sender as TMenuItem).Tag;
-    if not DMUser.SelectCollection(ID) then
-      Exit;
+    CollectionInfo := TCollectionInfo.Create;
+    try
+      if not DMUser.GetCollectionInfo(ID, CollectionInfo) then
+        Exit;
+    finally
+      FreeAndNil(CollectionInfo);
+    end;
 
-    BookCollection := GetBookCollection(DMUser.CurrentCollectionInfo.DBFileName);
+    BookCollection := GetBookCollection(DMUser.ActiveCollectionInfo.DBFileName);
     Node := Tree.GetFirst;
     while Assigned(Node) do
     begin
@@ -3790,6 +3820,7 @@ var
   BookFileName: string;
   BookFormat: TBookFormat;
   WorkFile: string;
+  CollectionInfo: TCollectionInfo;
 begin
   Assert(BookRecord.nodeType = ntBookInfo);
 
@@ -3803,9 +3834,12 @@ begin
     begin
       if BookFormat = bfFb2Zip then
       begin
-        if (DMUser.SelectCollection(BookRecord.BookKey.DatabaseID)) then
-        begin
-          if (not BookRecord.IsLocal) and isOnlineCollection(DMUser.CurrentCollectionInfo.CollectionType) then
+        CollectionInfo := TCollectionInfo.Create;
+        try
+          if not DMUser.GetCollectionInfo(BookRecord.BookKey.DatabaseID, CollectionInfo) then
+            Assert(False);
+
+          if (not BookRecord.IsLocal) and isOnlineCollection(CollectionInfo.CollectionType) then
           begin
             // A not-yet-downloaded book of an online collection, can download only if book's collection is selected
             GetActiveBookCollection.VerifyCurrentCollection(BookRecord.BookKey.DatabaseID);
@@ -3814,9 +3848,9 @@ begin
             if not FileExists(BookFileName) then
               Exit; // если файла нет, значит закачка не удалась, и юзер об  этом уже знает
           end;
-        end
-        else
-          Assert(False);
+        finally
+          FreeAndNil(CollectionInfo);
+        end;
       end;
 
       Assert(Length(BookRecord.Authors) > 0);
@@ -4570,23 +4604,29 @@ end;
 procedure TfrmMain.DeleteCollectionExecute(Sender: TObject);
 var
   DBFileName: string;
+  CollectionInfoIterator: ICollectionInfoIterator;
+  CollectionInfo: TCollectionInfo;
 begin
-  if DMUser.SelectCollection(DMUser.ActiveCollectionInfo.ID) then
-  begin
-    { TODO -oNickR -cUsability : Думаю, стоит сделать специальный диалог для этого случая. Тогда мы сможем спросить, удалять файл коллекции или нет. }
-    if MessageDlg(rstrRemoveCollection + '"' + DMUser.ActiveCollectionInfo.Name + '"?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
-      Exit;
+  { TODO -oNickR -cUsability : Думаю, стоит сделать специальный диалог для этого случая. Тогда мы сможем спросить, удалять файл коллекции или нет. }
+  if MessageDlg(rstrRemoveCollection + '"' + DMUser.ActiveCollectionInfo.Name + '"?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+    Exit;
 
-    // Delete current collection and choose another:
-    DBFileName := DMUser.ActiveCollectionInfo.DBFileName;
-    DMUser.DeleteCollection(DMUser.ActiveCollectionInfo.ID);
-    DropCollectionDatabase(DBFileName);
+  // Delete current collection and choose another:
+  DBFileName := DMUser.ActiveCollectionInfo.DBFileName;
+  DMUser.DeleteCollection(DMUser.ActiveCollectionInfo.ID);
+  DropCollectionDatabase(DBFileName);
 
-    Settings.ActiveCollection := DMUser.CurrentCollectionInfo.ID;
-    InitCollection(True);
-  end
-  else
-    Assert(False);
+  CollectionInfo := TCollectionInfo.Create;
+  try
+    CollectionInfoIterator := DMUser.GetCollectionInfoIterator;
+    if CollectionInfoIterator.Next(CollectionInfo) then
+      Settings.ActiveCollection := CollectionInfo.ID
+    else
+      Settings.ActiveCollection := INVALID_COLLECTION_ID;
+  finally
+    FreeAndNil(CollectionInfo);
+  end;
+  InitCollection(True);
 end;
 
 procedure TfrmMain.miDeleteFilesClick(Sender: TObject);
@@ -5955,13 +5995,19 @@ end;
 procedure TfrmMain.miActiveCollectionClick(Sender: TObject);
 var
   i: Integer;
+  CollectionInfo: TCollectionInfo;
 begin
   i := (Sender as TMenuItem).Tag;
-  if DMUser.SelectCollection(i) then
-  begin
-    (Sender as TMenuItem).Checked := True;
-    Settings.ActiveCollection := i;
-    InitCollection(True);
+  CollectionInfo := TCollectionInfo.Create;
+  try
+    if DMUser.GetCollectionInfo(i, CollectionInfo) then
+    begin
+      (Sender as TMenuItem).Checked := True;
+      Settings.ActiveCollection := i;
+      InitCollection(True);
+    end;
+  finally
+    FreeAndNil(CollectionInfo);
   end;
 end;
 
@@ -6114,6 +6160,7 @@ var
   Data: PBookRecord;
   FullAuthorName: string;
   SavedCursor: TCursor;
+  CollectionInfo: TCollectionInfo;
 begin
   GetActiveTree(Tree);
 
@@ -6140,16 +6187,21 @@ begin
   try
     if Data^.BookKey.DatabaseID <> DMUser.ActiveCollectionInfo.ID then
     begin
-      if DMUser.SelectCollection(Data^.BookKey.DatabaseID) then
-      begin
-        Settings.ActiveCollection := Data^.BookKey.DatabaseID;
-        InitCollection(True);
-      end
-      else
-      begin
-        Screen.Cursor := SavedCursor;
-        MHLShowError(rstrCollectionNotRegistered);
-        Exit;
+      CollectionInfo := TCollectionInfo.Create;
+      try
+        if DMUser.GetCollectionInfo(Data^.BookKey.DatabaseID, CollectionInfo) then
+        begin
+          Settings.ActiveCollection := Data^.BookKey.DatabaseID;
+          InitCollection(True);
+        end
+        else
+        begin
+          Screen.Cursor := SavedCursor;
+          MHLShowError(rstrCollectionNotRegistered);
+          Exit;
+        end;
+      finally
+        FreeAndNil(CollectionInfo);
       end;
 
       Assert(Length(Data^.Authors) > 0);

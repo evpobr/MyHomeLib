@@ -25,7 +25,8 @@ uses
   SysUtils,
   Generics.Collections,
   VirtualTrees,
-  IdHTTP;
+  IdHTTP,
+  unit_Consts;
 
 //
 // Global consts
@@ -247,6 +248,50 @@ type
   end;
 
   // --------------------------------------------------------------------------
+  TCollectionInfo = class(TObject)
+  public
+  private
+    FID: Integer;
+    FName: string;
+    FRootFolder: string;
+    FDBFileName: string;
+    FNotes: string;
+    FUser: string;
+    FPassword: string;
+    FCreationDate: TDateTime;
+    FVersion: Integer;
+    FCollectionType: COLLECTION_TYPE;
+    FAllowDelete: Boolean;
+    FURL: string;
+    FScript: string;
+    FSettings: TStrings;
+
+    function GetRootPath: string;
+
+  public
+    constructor Create;
+    destructor Destroy; override;
+
+    procedure Clear;
+
+    property ID: Integer read FID write FID;
+    property Name: string read FName write FName;
+    property RootFolder: string read FRootFolder write FRootFolder;
+    property RootPath: string read GetRootPath;
+    property DBFileName: string read FDBFileName write FDBFileName;
+    property Notes: string read FNotes write FNotes;
+    property CreationDate: TDateTime read FCreationDate write FCreationDate;
+    property Version: Integer read FVersion write FVersion;
+    property CollectionType: COLLECTION_TYPE read FCollectionType write FCollectionType;
+    property AllowDelete: Boolean read FAllowDelete write FAllowDelete;
+    property User: string read FUser write FUser;
+    property Password: string read FPassword write FPassword;
+    property URL: string read FURL write FURL;
+    property Script: string read FScript write FScript;
+    property Settings: TStrings read FSettings;
+  end;
+
+  // --------------------------------------------------------------------------
   TBookNodeType = (ntAuthorInfo = 1, ntSeriesInfo, ntBookInfo);
 
   PBookRecord = ^TBookRecord;
@@ -422,7 +467,6 @@ uses
   ZipForge,
   unit_Errors,
   unit_Settings,
-  unit_Consts,
   ShlObj,
   unit_fb2ToText,
   unit_Helpers,
@@ -862,6 +906,45 @@ begin
       Result := Format('<a href="%s">%s</a>', [genre.GenreCode, genre.GenreAlias]);
     end
   );
+end;
+
+{ TCollectionInfo }
+
+constructor TCollectionInfo.Create;
+begin
+  inherited Create;
+  FSettings := TStringList.Create;
+
+  Clear;
+end;
+
+destructor TCollectionInfo.Destroy;
+begin
+  FreeAndNil(FSettings);
+  inherited Destroy;
+end;
+
+function TCollectionInfo.GetRootPath: string;
+begin
+  Result := IncludeTrailingPathDelimiter(FRootFolder);
+end;
+
+procedure TCollectionInfo.Clear;
+begin
+  FID := INVALID_COLLECTION_ID;
+  FName := '';
+  FRootFolder := '';
+  FDBFileName := '';
+  FNotes := '';
+  FCreationDate := 0;
+  FVersion := UNVERSIONED_COLLECTION;
+  FCollectionType := CT_PRIVATE_FB;
+  FAllowDelete := False;
+  FUser := '';
+  FPassword := '';
+  FURL := '';
+  FScript := '';
+  FSettings.Clear;
 end;
 
 function CreateBookKey(BookID: Integer; DatabaseID: Integer): TBookKey;

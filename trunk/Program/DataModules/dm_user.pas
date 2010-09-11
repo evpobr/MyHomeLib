@@ -34,9 +34,6 @@ uses
 type
   TCollectionProp = (cpDisplayName, cpFileName, cpRootFolder);
 
-  TActiveCollectionInfo = class;
-  TCollectionInfo = class;
-
   TDMUser = class(TDataModule)
     DBUser: TABSDatabase;
 
@@ -152,9 +149,30 @@ type
     end;
     // << TGroupIteratorImpl
 
+    TCollectionInfoIteratorImpl = class(TInterfacedObject, ICollectionInfoIterator)
+    public
+      constructor Create(User: TDMUser);
+      destructor Destroy; override;
+
+    protected
+      //
+      // IGroupIterator
+      //
+      function Next(out CollectionInfo: TCollectionInfo): Boolean;
+      function RecordCount: Integer;
+
+    private
+      FUser: TDMUser;
+      FBases: TABSQuery;
+      FBasesID: TIntegerField;
+
+      function CreateSQL: string;
+    end;
+    // << TCollectionInfoIteratorImpl
+
   private
-    FActiveCollectionInfo: TActiveCollectionInfo;
-    FCollectionInfo: TCollectionInfo;
+    FActiveCollectionInfo: TCollectionInfo;
+//    FCollectionInfo: TOldCollectionInfo;
 
   private
     function InternalFindGroup(const GroupName: string): Boolean; overload; inline;
@@ -162,15 +180,13 @@ type
     function InternalAddGroup(const GroupName: string; out GroupID: Integer): Boolean;
     procedure InternalClearGroup(GroupID: Integer; RemoveGroup: Boolean);
 
-  public const
-    INVALID_COLLECTION_ID = MHL_INVALID_ID;
-
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    function SelectCollection(CollectionID: Integer): Boolean;
     function ActivateCollection(CollectionID: Integer): Boolean;
+    function GetCollectionInfo(const CollectionID: Integer; out CollectionInfo: TCollectionInfo): Boolean;
+    procedure UpdateCollectionInfo(const CollectionInfo: TCollectionInfo);
 
     procedure RegisterCollection(
       const DisplayName: string;
@@ -203,11 +219,8 @@ type
     // Active Collection
     //
     function HasCollections: Boolean;
-    function FindFirstCollection: Boolean;
-    function FindNextCollection: Boolean;
     function FindFirstExternalCollection: Boolean;
-    function FindNextExternalCollection: Boolean;
-    function FindFirstExistingCollection(const PrefferedID: Integer): Boolean;
+    function FindFirstExistingCollectionID(const PrefferedID: Integer): Integer;
 
     function ActivateGroup(const ID: Integer): Boolean;
 
@@ -262,121 +275,79 @@ type
     //Iterators:
     function GetBookIterator(const Filter: string): IBookIterator;
     function GetGroupIterator: IGroupIterator;
+    function GetCollectionInfoIterator: ICollectionInfoIterator;
 
   public
-    property ActiveCollectionInfo: TActiveCollectionInfo read FActiveCollectionInfo;
-    property CurrentCollectionInfo: TCollectionInfo read FCollectionInfo;
+    property ActiveCollectionInfo: TCollectionInfo read FActiveCollectionInfo;
   end;
 
-  TCollectionInfo = class
-  private
-    FSysDataModule: TDMUser;
-
-    function GetActive: Boolean;
-
-    function GetID: Integer;
-
-    function GetName: string;
-    procedure SetName(const Value: string);
-
-    function GetRootFolder: string;
-    procedure SetRootFolder(const Value: string);
-
-    function GetDBFileName: string;
-    procedure SetDBFileName(const Value: string);
-
-    function GetNotes: string;
-    procedure SetNotes(const Value: string);
-
-    function GetUser: string;
-    procedure SetUser(const Value: string);
-
-    function GetPassword: string;
-    procedure SetPassword(const Value: string);
-
-    function GetCreationDate: TDateTime;
-    procedure SetCreationDate(const Value: TDateTime);
-
-    function GetVersion: Integer;
-    procedure SetVersion(const Value: Integer);
-
-    function GetCollectionType: COLLECTION_TYPE;
-    procedure SetCollectionType(const Value: COLLECTION_TYPE);
-
-    function GetAllowDelete: Boolean;
-    procedure SetAllowDelete(const Value: Boolean);
-
-    function GetURL: string;
-    procedure SetURL(const Value: string);
-
-    function GetScript: string;
-    procedure SetScript(const Value: string);
-
-  public
-    procedure Edit;
-    procedure Save;
-    procedure Cancel;
-
-    procedure UpdateSettings(ASettings: TStrings);
-
-    property Active: Boolean read GetActive;
-
-    property ID: Integer read GetID;
-    property Name: string read GetName write SetName;
-    property RootFolder: string read GetRootFolder write SetRootFolder;
-    property DBFileName: string read GetDBFileName write SetDBFileName;
-    property Notes: string read GetNotes write SetNotes;
-    property CreationDate: TDateTime read GetCreationDate { write SetCreationDate } ;
-    property Version: Integer read GetVersion write SetVersion;
-    property CollectionType: COLLECTION_TYPE read GetCollectionType { write SetCollectionType } ;
-    property AllowDelete: Boolean read GetAllowDelete { write SetAllowDelete } ;
-    property User: string read GetUser write SetUser;
-    property Password: string read GetPassword write SetPassword;
-    property URL: string read GetURL write SetURL;
-    property Script: string read GetScript write SetScript;
-  end;
-
-  TActiveCollectionInfo = class(TObject)
-  private
-    FID: Integer;
-    FName: string;
-    FRootFolder: string;
-    FDBFileName: string;
-    FNotes: string;
-    FUser: string;
-    FPassword: string;
-    FCreationDate: TDateTime;
-    FVersion: Integer;
-    FCollectionType: COLLECTION_TYPE;
-    FAllowDelete: Boolean;
-    FURL: string;
-    FScript: string;
-    FSettings: TStrings;
-
-    function GetRootPath: string;
-
-  public
-    constructor Create;
-    destructor Destroy; override;
-
-    procedure Clear;
-
-    property ID: Integer read FID;
-    property Name: string read FName;
-    property RootFolder: string read FRootFolder;
-    property RootPath: string read GetRootPath;
-    property DBFileName: string read FDBFileName;
-    property Notes: string read FNotes;
-    property CreationDate: TDateTime read FCreationDate;
-    property Version: Integer read FVersion;
-    property CollectionType: COLLECTION_TYPE read FCollectionType;
-    property AllowDelete: Boolean read FAllowDelete;
-    property User: string read FUser;
-    property Password: string read FPassword;
-    property URL: string read FURL;
-    property Script: string read FScript;
-    property Settings: TStrings read FSettings;
-  end;
+//  TOldCollectionInfo = class
+//  private
+//    FSysDataModule: TDMUser;
+//
+//    function GetActive: Boolean;
+//
+//    function GetID: Integer;
+//
+//    function GetName: string;
+//    procedure SetName(const Value: string);
+//
+//    function GetRootFolder: string;
+//    procedure SetRootFolder(const Value: string);
+//
+//    function GetDBFileName: string;
+//    procedure SetDBFileName(const Value: string);
+//
+//    function GetNotes: string;
+//    procedure SetNotes(const Value: string);
+//
+//    function GetUser: string;
+//    procedure SetUser(const Value: string);
+//
+//    function GetPassword: string;
+//    procedure SetPassword(const Value: string);
+//
+//    function GetCreationDate: TDateTime;
+//    procedure SetCreationDate(const Value: TDateTime);
+//
+//    function GetVersion: Integer;
+//    procedure SetVersion(const Value: Integer);
+//
+//    function GetCollectionType: COLLECTION_TYPE;
+//    procedure SetCollectionType(const Value: COLLECTION_TYPE);
+//
+//    function GetAllowDelete: Boolean;
+//    procedure SetAllowDelete(const Value: Boolean);
+//
+//    function GetURL: string;
+//    procedure SetURL(const Value: string);
+//
+//    function GetScript: string;
+//    procedure SetScript(const Value: string);
+//
+//  public
+//    procedure Edit;
+//    procedure Save;
+//    procedure Cancel;
+//
+//    procedure UpdateSettings(ASettings: TStrings);
+//
+//    property Active: Boolean read GetActive;
+//
+//    property ID: Integer read GetID;
+//    property Name: string read GetName write SetName;
+//    property RootFolder: string read GetRootFolder write SetRootFolder;
+//    property DBFileName: string read GetDBFileName write SetDBFileName;
+//    property Notes: string read GetNotes write SetNotes;
+//    property CreationDate: TDateTime read GetCreationDate { write SetCreationDate } ;
+//    property Version: Integer read GetVersion write SetVersion;
+//    property CollectionType: COLLECTION_TYPE read GetCollectionType { write SetCollectionType } ;
+//    property AllowDelete: Boolean read GetAllowDelete { write SetAllowDelete } ;
+//    property User: string read GetUser write SetUser;
+//    property Password: string read GetPassword write SetPassword;
+//    property URL: string read GetURL write SetURL;
+//    property Script: string read GetScript write SetScript;
+//  end;
 
 var
   DMUser: TDMUser;
@@ -514,6 +485,60 @@ begin
   Result := 'SELECT g.' + GROUP_ID_FIELD + ', g.' + GROUP_NAME_FIELD + ', g. ' + GROUP_ALLOWDELETE_FIELD + ' FROM Groups g ';
 end;
 
+{ TCollectionInfoIteratorImpl }
+
+constructor TDMUser.TCollectionInfoIteratorImpl.Create(User: TDMUser);
+var
+  pLogger: IIntervalLogger;
+begin
+  inherited Create;
+
+  Assert(Assigned(User));
+
+  FUser := User;
+
+  FBases := TABSQuery.Create(FUser.DBUser);
+  FBases.DatabaseName := FUser.DBUser.DatabaseName;
+  FBases.SQL.Text := CreateSQL;
+  FBases.ReadOnly := True;
+
+  pLogger := GetIntervalLogger('TCollectionInfoIteratorImpl.Create', FBases.SQL.Text);
+  FBases.Active := True;
+  pLogger := nil;
+
+  FBasesID := FBases.FieldByName(ID_FIELD) as TIntegerField;
+end;
+
+destructor TDMUser.TCollectionInfoIteratorImpl.Destroy;
+begin
+  FreeAndNil(FBases);
+
+  inherited Destroy;
+end;
+
+// Read next record (if present), return True if read
+function TDMUser.TCollectionInfoIteratorImpl.Next(out CollectionInfo: TCollectionInfo): Boolean;
+begin
+  Result := not FBases.Eof;
+
+  if Result then
+  begin
+    FUser.GetCollectionInfo(FBasesID.Value, CollectionInfo);
+    FBases.Next;
+  end;
+end;
+
+function TDMUser.TCollectionInfoIteratorImpl.RecordCount: Integer;
+begin
+  Result := FBases.RecordCount;
+end;
+
+function TDMUser.TCollectionInfoIteratorImpl.CreateSQL: string;
+begin
+  Result := 'SELECT b.' + ID_FIELD + ' FROM Bases b ';
+end;
+
+
 { TDMUser }
 
 procedure TDMUser.GetBookLibID(const BookKey: TBookKey; out ARes: String);
@@ -538,15 +563,11 @@ constructor TDMUser.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 
-  FActiveCollectionInfo := TActiveCollectionInfo.Create;
-
-  FCollectionInfo := TCollectionInfo.Create;
-  FCollectionInfo.FSysDataModule := Self;
+  FActiveCollectionInfo := TCollectionInfo.Create;
 end;
 
 destructor TDMUser.Destroy;
 begin
-  FreeAndNil(FCollectionInfo);
   FreeAndNil(FActiveCollectionInfo);
   inherited Destroy;
 end;
@@ -587,52 +608,100 @@ begin
     tblBases.Cancel;
     raise;
   end;
+
+  // Switch to the newly added collection:
+  ActivateCollection(tblBasesID.Value);
 end;
 
-function TDMUser.SelectCollection(CollectionID: Integer): Boolean;
-begin
-  Result := tblBases.Locate(ID_FIELD, CollectionID, []);
-end;
-
-function TDMUser.ActivateCollection(CollectionID: Integer): Boolean;
+function TDMUser.GetCollectionInfo(const CollectionID: Integer; out CollectionInfo: TCollectionInfo): Boolean;
 var
   Stream: TABSBlobStream;
 begin
-  Result := SelectCollection(CollectionID);
+  Assert(tblBases.Active);
+
+  Result := tblBases.Locate(ID_FIELD, CollectionID, []);
   if Result then
   begin
-    FActiveCollectionInfo.FID := CollectionID;
-    FActiveCollectionInfo.FName := tblBasesBaseName.Value;
-    FActiveCollectionInfo.FRootFolder := tblBasesRootFolder.Value;
-    FActiveCollectionInfo.FDBFileName := tblBasesDBFileName.Value;
-    FActiveCollectionInfo.FNotes := tblBasesNotes.Value;
-    FActiveCollectionInfo.FUser := tblBasesUser.Value;
-    FActiveCollectionInfo.FPassword := tblBasesPass.Value;
-    FActiveCollectionInfo.FCreationDate := tblBasesDate.Value;
+    CollectionInfo.ID := CollectionID;
+    CollectionInfo.Name := tblBasesBaseName.Value;
+    CollectionInfo.RootFolder := tblBasesRootFolder.Value;
+    CollectionInfo.DBFileName := tblBasesDBFileName.Value;
+    CollectionInfo.Notes := tblBasesNotes.Value;
+    CollectionInfo.User := tblBasesUser.Value;
+    CollectionInfo.Password := tblBasesPass.Value;
+    CollectionInfo.CreationDate := tblBasesDate.Value;
     if tblBasesVersion.IsNull then
-      FActiveCollectionInfo.FVersion := UNVERSIONED_COLLECTION
+      CollectionInfo.Version := UNVERSIONED_COLLECTION
     else
-      FActiveCollectionInfo.FVersion := tblBasesVersion.Value;
-    FActiveCollectionInfo.FCollectionType := tblBasesCode.Value;
+      CollectionInfo.Version := tblBasesVersion.Value;
+    CollectionInfo.CollectionType := tblBasesCode.Value;
     if tblBasesAllowDelete.IsNull then
-      FActiveCollectionInfo.FAllowDelete := True
+      CollectionInfo.AllowDelete := True
     else
-      FActiveCollectionInfo.FAllowDelete := tblBasesAllowDelete.Value;
-    FActiveCollectionInfo.FURL := tblBasesURL.Value;
-    FActiveCollectionInfo.FScript := tblBasesConnection.Value;
+      CollectionInfo.AllowDelete := tblBasesAllowDelete.Value;
+    CollectionInfo.URL := tblBasesURL.Value;
+    CollectionInfo.Script := tblBasesConnection.Value;
 
     Stream := TABSBlobStream.Create(tblBasesSettings, bmRead);
     try
-      Assert(Assigned(FActiveCollectionInfo.FSettings));
-      FActiveCollectionInfo.FSettings.LoadFromStream(Stream);
+      Assert(Assigned(CollectionInfo.Settings));
+      CollectionInfo.Settings.LoadFromStream(Stream);
     finally
       Stream.Free;
     end;
 
-    FActiveCollectionInfo.FSettings.DelimitedText := tblBasesSettings.Value;
+    CollectionInfo.Settings.DelimitedText := tblBasesSettings.Value;
   end
   else
-    FActiveCollectionInfo.Clear;
+    CollectionInfo.Clear;
+end;
+
+procedure TDMUser.UpdateCollectionInfo(const CollectionInfo: TCollectionInfo);
+var
+  Stream: TABSBlobStream;
+begin
+  Assert(CollectionInfo.ID > 0);
+  Assert(tblBases.Active);
+
+  // TODO UpdateCollectionInfo
+  if not tblBases.Locate(ID_FIELD, CollectionInfo.ID, []) then
+    Assert(False);
+
+  try
+    tblBases.Edit;
+
+    tblBasesBaseName.Value := CollectionInfo.Name;
+    tblBasesRootFolder.Value := ExcludeTrailingPathDelimiter(CollectionInfo.RootFolder);
+    tblBasesDBFileName.Value := CollectionInfo.DBFileName;
+    tblBasesNotes.Value := CollectionInfo.Notes;
+    tblBasesDate.Value := CollectionInfo.CreationDate;
+    tblBasesVersion.Value := CollectionInfo.Version;
+    tblBasesCode.Value := CollectionInfo.CollectionType;
+    tblBasesAllowDelete.Value := CollectionInfo.AllowDelete;
+    tblBasesUser.Value := CollectionInfo.User;
+    tblBasesPass.Value := CollectionInfo.Password;
+    tblBasesURL.Value := CollectionInfo.URL;
+    tblBasesConnection.Value := CollectionInfo.Script;
+
+    Stream := TABSBlobStream.Create(tblBasesSettings, bmWrite);
+    try
+      CollectionInfo.Settings.SaveToStream(Stream);
+    finally
+      Stream.Free;
+    end;
+
+    tblBases.Post;
+  except
+    tblBases.Cancel;
+    raise
+  end;
+
+end;
+
+function TDMUser.ActivateCollection(CollectionID: Integer): Boolean;
+begin
+  Assert(CollectionID > 0);
+  Result := GetCollectionInfo(CollectionID, FActiveCollectionInfo);
 end;
 
 function TDMUser.FindCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer): Boolean;
@@ -661,89 +730,70 @@ end;
 
 function TDMUser.HasCollections: Boolean;
 begin
-  Assert(tblBases.Active);
-  Result := not tblBases.IsEmpty;
-end;
-
-function TDMUser.FindFirstCollection: Boolean;
-begin
-  tblBases.First;
-  Result := not tblBases.Eof;
+  Result := (DMUser.GetCollectionInfoIterator.RecordCount > 0);
 end;
 
 function TDMUser.FindFirstExternalCollection: Boolean;
+var
+  CollectionInfoIterator: ICollectionInfoIterator;
+  CollectionInfo: TCollectionInfo;
 begin
   Result := False;
-  if tblBases.IsEmpty then
+
+  CollectionInfoIterator := GetCollectionInfoIterator;
+  if CollectionInfoIterator.RecordCount = 0 then
     Exit;
 
-  tblBases.First;
-  while not tblBases.Eof do
-  begin
-    if isExternalCollection(CurrentCollectionInfo.CollectionType) then
+  CollectionInfo := TCollectionInfo.Create;
+  try
+    while CollectionInfoIterator.Next(CollectionInfo) do
     begin
-      Result := True;
-      Exit;
-    end;
-
-    tblBases.Next;
-  end;
-end;
-
-function TDMUser.FindNextCollection: Boolean;
-begin
-  tblBases.Next;
-  Result := not tblBases.Eof;
-end;
-
-function TDMUser.FindNextExternalCollection: Boolean;
-begin
-  tblBases.Next;
-
-  while not tblBases.Eof do
-  begin
-    if isExternalCollection(CurrentCollectionInfo.CollectionType) then
-    begin
-      Result := True;
-      Exit;
-    end;
-
-    tblBases.Next;
-  end;
-
-  Result := False;
-end;
-
-function TDMUser.FindFirstExistingCollection(const PrefferedID: Integer): Boolean;
-var
-  ID: Integer;
-begin
-  ID := TDMUser.INVALID_COLLECTION_ID;
-
-  if FindFirstCollection then
-    repeat
-      if FileExists(CurrentCollectionInfo.DBFileName) then
+      if isExternalCollection(CollectionInfo.CollectionType) then
       begin
-        if CurrentCollectionInfo.ID = PrefferedID then
+        Result := True;
+        Exit;
+      end;
+    end;
+  finally
+    FreeAndNil(CollectionInfo);
+  end;
+end;
+
+function TDMUser.FindFirstExistingCollectionID(const PrefferedID: Integer): Integer;
+var
+  CollectionInfoIterator: ICollectionInfoIterator;
+  CollectionInfo: TCollectionInfo;
+begin
+  Result := INVALID_COLLECTION_ID;
+
+  CollectionInfo := TCollectionInfo.Create;
+  try
+    CollectionInfoIterator := DMUser.GetCollectionInfoIterator;
+    while CollectionInfoIterator.Next(CollectionInfo) do
+    begin
+      if FileExists(CollectionInfo.DBFileName) then
+      begin
+        if CollectionInfo.ID = PrefferedID then
         begin
           //
           // Пользователь предпочитает эту коллекцию, она доступна -> выходим
           //
-          ID := CurrentCollectionInfo.ID;
+          Result := CollectionInfo.ID;
           Break;
         end;
 
-        if ID = TDMUser.INVALID_COLLECTION_ID then
+        if Result = INVALID_COLLECTION_ID then
         begin
           //
           // Запомним первую доступную коллекцию
           //
-          ID := CurrentCollectionInfo.ID;
+          Result := CollectionInfo.ID;
         end;
       end;
-    until not FindNextCollection;
-
-    Result := (INVALID_COLLECTION_ID <> ID);
+    end;
+  finally
+    FreeAndNil(CollectionInfo);
+  end;
 end;
 
 procedure TDMUser.DeleteCollection(CollectionID: Integer);
@@ -884,10 +934,10 @@ begin
       Stream.Free;
     end;
 
-    if SelectCollection(BookRecord.BookKey.DatabaseID) then
+    if tblBases.Locate(ID_FIELD, BookRecord.BookKey.DatabaseID, []) then
     begin
       // Please notice that the collection for a book in a group might not match ActiveCollection
-      // Need to use values from tblBases instead (the record was located by SelectCollection)
+      // Need to use values from tblBases instead
       BookRecord.CollectionName := tblBasesBaseName.Value;
       BookRecord.CollectionRoot := IncludeTrailingPathDelimiter(tblBasesRootFolder.Value);
     end
@@ -1146,6 +1196,11 @@ end;
 function TDMUser.GetGroupIterator: IGroupIterator;
 begin
   Result := TGroupIteratorImpl.Create(Self);
+end;
+
+function TDMUser.GetCollectionInfoIterator: ICollectionInfoIterator;
+begin
+  Result := TCollectionInfoIteratorImpl.Create(Self);
 end;
 
 procedure TDMUser.SetFolder(const BookKey: TBookKey; const Folder: string);
@@ -1472,246 +1527,6 @@ begin
     InternalAddGroup(group.GroupName, GroupID);
     group.GroupID := GroupID;
   end;
-end;
-
-{ TMHLCollection }
-
-procedure TCollectionInfo.Edit;
-begin
-  FSysDataModule.tblBases.Edit;
-end;
-
-procedure TCollectionInfo.Save;
-begin
-  FSysDataModule.tblBases.Post;
-end;
-
-procedure TCollectionInfo.Cancel;
-begin
-  FSysDataModule.tblBases.Cancel;
-end;
-
-function TCollectionInfo.GetActive: Boolean;
-begin
-  Assert(Assigned(FSysDataModule));
-  Result := FSysDataModule.tblBases.Active and not FSysDataModule.tblBasesID.IsNull;
-end;
-
-function TCollectionInfo.GetID: Integer;
-begin
-  Assert(Assigned(FSysDataModule));
-  if FSysDataModule.tblBasesID.IsNull then
-    Result := NO_ACTIVECOLLECTION_ID
-  else
-    Result := FSysDataModule.tblBasesID.Value;
-end;
-
-function TCollectionInfo.GetName: string;
-begin
-  Assert(Assigned(FSysDataModule));
-  if FSysDataModule.tblBasesBaseName.IsNull then
-    Result := rstrNamelessColection
-  else
-    Result := FSysDataModule.tblBasesBaseName.Value;
-end;
-
-procedure TCollectionInfo.SetName(const Value: string);
-begin
-  Assert(Assigned(FSysDataModule));
-  FSysDataModule.tblBasesBaseName.Value := Value;
-end;
-
-function TCollectionInfo.GetRootFolder: string;
-begin
-  Assert(Assigned(FSysDataModule));
-  Result := FSysDataModule.tblBasesRootFolder.Value;
-end;
-
-procedure TCollectionInfo.SetRootFolder(const Value: string);
-begin
-  Assert(Assigned(FSysDataModule));
-  FSysDataModule.tblBasesRootFolder.Value := ExcludeTrailingPathDelimiter(Value);
-end;
-
-function TCollectionInfo.GetScript: string;
-begin
-  Assert(Assigned(FSysDataModule));
-  Result := FSysDataModule.tblBasesConnection.Value;
-end;
-
-procedure TCollectionInfo.SetScript(const Value: string);
-begin
-  Assert(Assigned(FSysDataModule));
-  FSysDataModule.tblBasesConnection.Value := Value;
-end;
-
-function TCollectionInfo.GetDBFileName: string;
-begin
-  Assert(Assigned(FSysDataModule));
-  Result := FSysDataModule.tblBasesDBFileName.Value;
-end;
-
-procedure TCollectionInfo.SetDBFileName(const Value: string);
-begin
-  Assert(Assigned(FSysDataModule));
-  FSysDataModule.tblBasesDBFileName.Value := Value;
-end;
-
-function TCollectionInfo.GetNotes: string;
-begin
-  Assert(Assigned(FSysDataModule));
-  Result := FSysDataModule.tblBasesNotes.Value;
-end;
-
-procedure TCollectionInfo.SetNotes(const Value: string);
-begin
-  Assert(Assigned(FSysDataModule));
-  FSysDataModule.tblBasesNotes.Value := Value;
-end;
-
-function TCollectionInfo.GetURL: string;
-begin
-  Result := FSysDataModule.tblBasesURL.Value;
-end;
-
-function TCollectionInfo.GetUser: string;
-begin
-  Assert(Assigned(FSysDataModule));
-  Result := FSysDataModule.tblBasesUser.Value;
-end;
-
-procedure TCollectionInfo.SetURL(const Value: string);
-begin
-  FSysDataModule.tblBasesURL.Value := Value;
-end;
-
-procedure TCollectionInfo.SetUser(const Value: string);
-begin
-  Assert(Assigned(FSysDataModule));
-  FSysDataModule.tblBasesUser.Value := Value;
-end;
-
-function TCollectionInfo.GetPassword: string;
-begin
-  Assert(Assigned(FSysDataModule));
-  Result := FSysDataModule.tblBasesPass.Value;
-end;
-
-procedure TCollectionInfo.SetPassword(const Value: string);
-begin
-  Assert(Assigned(FSysDataModule));
-  FSysDataModule.tblBasesPass.Value := Value;
-end;
-
-function TCollectionInfo.GetCreationDate: TDateTime;
-begin
-  Assert(Assigned(FSysDataModule));
-  Result := FSysDataModule.tblBasesDate.Value;
-end;
-
-procedure TCollectionInfo.SetCreationDate(const Value: TDateTime);
-begin
-  Assert(Assigned(FSysDataModule));
-  FSysDataModule.tblBasesDate.Value := Value;
-end;
-
-function TCollectionInfo.GetVersion: Integer;
-begin
-  Assert(Assigned(FSysDataModule));
-  if FSysDataModule.tblBasesVersion.IsNull then
-    Result := UNVERSIONED_COLLECTION
-  else
-    Result := FSysDataModule.tblBasesVersion.Value;
-end;
-
-procedure TCollectionInfo.SetVersion(const Value: Integer);
-begin
-  Assert(Assigned(FSysDataModule));
-  FSysDataModule.tblBasesVersion.Value := Value;
-end;
-
-procedure TCollectionInfo.UpdateSettings(ASettings: TStrings);
-var
-  Stream: TABSBlobStream;
-begin
-  Assert(Assigned(FSysDataModule));
-  Assert(Assigned(ASettings));
-
-  Stream := TABSBlobStream.Create(FSysDataModule.tblBasesSettings, bmWrite);
-  try
-    ASettings.SaveToStream(Stream);
-  finally
-    Stream.Free;
-  end;
-end;
-
-function TCollectionInfo.GetCollectionType: COLLECTION_TYPE;
-begin
-  Assert(Assigned(FSysDataModule));
-  Result := FSysDataModule.tblBasesCode.Value;
-
-  if Result = CT_DEPRICATED_ONLINE_FB then
-    Result := CT_LIBRUSEC_ONLINE_FB;
-end;
-
-procedure TCollectionInfo.SetCollectionType(const Value: COLLECTION_TYPE);
-begin
-  Assert(Assigned(FSysDataModule));
-  FSysDataModule.tblBasesCode.Value := Value;
-end;
-
-function TCollectionInfo.GetAllowDelete: Boolean;
-begin
-  Assert(Assigned(FSysDataModule));
-  if FSysDataModule.tblBasesAllowDelete.IsNull then
-    Result := True
-  else
-    Result := FSysDataModule.tblBasesAllowDelete.Value;
-end;
-
-procedure TCollectionInfo.SetAllowDelete(const Value: Boolean);
-begin
-  Assert(Assigned(FSysDataModule));
-  FSysDataModule.tblBasesAllowDelete.Value := Value;
-end;
-
-{ TMHLActiveCollection }
-
-constructor TActiveCollectionInfo.Create;
-begin
-  inherited Create;
-  FSettings := TStringList.Create;
-
-  Clear;
-end;
-
-destructor TActiveCollectionInfo.Destroy;
-begin
-  FreeAndNil(FSettings);
-  inherited Destroy;
-end;
-
-function TActiveCollectionInfo.GetRootPath: string;
-begin
-  Result := IncludeTrailingPathDelimiter(FRootFolder);
-end;
-
-procedure TActiveCollectionInfo.Clear;
-begin
-  FID := DMUser.INVALID_COLLECTION_ID;
-  FName := '';
-  FRootFolder := '';
-  FDBFileName := '';
-  FNotes := '';
-  FCreationDate := 0;
-  FVersion := UNVERSIONED_COLLECTION;
-  FCollectionType := CT_PRIVATE_FB;
-  FAllowDelete := False;
-  FUser := '';
-  FPassword := '';
-  FURL := '';
-  FScript := '';
-  FSettings.Clear;
 end;
 
 end.

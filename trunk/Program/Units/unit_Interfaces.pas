@@ -34,6 +34,7 @@ type
   IGenreIterator = IIterator<TGenreData>;
   ISeriesIterator = IIterator<TSeriesData>;
   IGroupIterator = IIterator<TGroupData>;
+  ICollectionInfoIterator = IIterator<TCollectionInfo>;
 
   TGUIUpdateExtraProc = reference to procedure(
     const BookKey: TBookKey;

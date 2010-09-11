@@ -22,18 +22,19 @@ unit unit_Import;
 interface
 
 uses
-  dm_user;
+  dm_user,
+  unit_Globals;
   
 procedure ImportFB2(
-  ACollection: TActiveCollectionInfo
+  ACollection: TCollectionInfo
   );
 
 procedure ImportFB2ZIP(
-  ACollection: TActiveCollectionInfo
+  ACollection: TCollectionInfo
   );
 
 procedure ImportFBD(
-  ACollection: TActiveCollectionInfo
+  ACollection: TCollectionInfo
   );
 
 implementation
@@ -48,7 +49,7 @@ uses
   unit_Consts;
 
 procedure ImportFB2(
-  ACollection: TActiveCollectionInfo
+  ACollection: TCollectionInfo
   );
 var
   worker: TImportFB2Thread;
@@ -70,7 +71,7 @@ begin
 end;
 
 procedure ImportFB2ZIP(
-  ACollection: TActiveCollectionInfo
+  ACollection: TCollectionInfo
   );
 var
   worker: TImportFB2ZIPThread;
@@ -92,7 +93,7 @@ begin
 end;
 
 procedure ImportFBD(
-  ACollection: TActiveCollectionInfo
+  ACollection: TCollectionInfo
   );
 var
   worker: TImportFBDThread;
