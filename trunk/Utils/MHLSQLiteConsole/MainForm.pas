@@ -217,7 +217,7 @@ end;
 
 function TfrmMain.FormatElapsedTime(const Elapsed: TTimeSpan): string;
 begin
-  Result := Format('%.2d:%.2d:%.2d:%.3d', [Elapsed.Hours, Elapsed.Minutes, Elapsed.Seconds, Elapsed.Milliseconds]);
+  Result := Format('%.2d:%.2d:%.2d.%.3d', [Elapsed.Hours, Elapsed.Minutes, Elapsed.Seconds, Elapsed.Milliseconds]);
 end;
 
 end.
