@@ -129,7 +129,7 @@ begin
   logString := Format('%s; %s; %s; %s' + CRLF,
     [
       FormatDateTime('c', Now),
-      Format('%.2d:%.2d:%.2d:%.3d', [Elapsed.Hours, Elapsed.Minutes, Elapsed.Seconds, Elapsed.Milliseconds]),
+      Format('%.2d:%.2d:%.2d.%.3d', [Elapsed.Hours, Elapsed.Minutes, Elapsed.Seconds, Elapsed.Milliseconds]),
       Trim(logMessage),
       Trim(extraInfo)
     ]);
