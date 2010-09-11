@@ -2,74 +2,98 @@ object frmMain: TfrmMain
   Left = 0
   Top = 0
   Caption = 'MHL SQLite simple console'
-  ClientHeight = 619
-  ClientWidth = 742
+  ClientHeight = 779
+  ClientWidth = 970
   Color = clBtnFace
-  Constraints.MinHeight = 500
-  Constraints.MinWidth = 400
+  Constraints.MinHeight = 654
+  Constraints.MinWidth = 523
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -14
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
   OnDestroy = FormDestroy
-  PixelsPerInch = 96
-  TextHeight = 13
+  PixelsPerInch = 120
+  TextHeight = 17
   object pnButtons: TMHLSimplePanel
-    Left = 654
+    Left = 855
     Top = 0
-    Width = 88
-    Height = 619
+    Width = 115
+    Height = 779
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
     Align = alRight
     TabOrder = 0
     DesignSize = (
-      88
-      619)
+      115
+      779)
     object btnExecute: TButton
-      Left = 6
-      Top = 73
-      Width = 75
-      Height = 25
+      Left = 8
+      Top = 95
+      Width = 98
+      Height = 33
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
       Caption = '&Execute'
       Enabled = False
       TabOrder = 2
       OnClick = btnExecuteClick
     end
     object btnOpen: TButton
-      Left = 6
-      Top = 8
-      Width = 75
-      Height = 25
+      Left = 8
+      Top = 10
+      Width = 98
+      Height = 33
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
       Caption = 'Open'
       TabOrder = 0
       OnClick = btnOpenClick
     end
     object btnSelect: TButton
-      Left = 6
-      Top = 42
-      Width = 75
-      Height = 25
+      Left = 8
+      Top = 55
+      Width = 98
+      Height = 33
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
       Caption = '&Select'
       Enabled = False
       TabOrder = 1
       OnClick = btnSelectClick
     end
     object btnClear: TButton
-      Left = 6
-      Top = 546
-      Width = 75
-      Height = 25
+      Left = 8
+      Top = 714
+      Width = 98
+      Height = 33
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
       Anchors = [akLeft, akBottom]
       Caption = '&Clear'
       TabOrder = 3
       OnClick = btnClearClick
     end
     object btnExplain: TButton
-      Left = 6
-      Top = 104
-      Width = 75
-      Height = 25
+      Left = 8
+      Top = 136
+      Width = 98
+      Height = 33
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
       Caption = 'E&xplain'
       Enabled = False
       TabOrder = 4
@@ -79,55 +103,69 @@ object frmMain: TfrmMain
   object pnContent: TMHLSimplePanel
     Left = 0
     Top = 0
-    Width = 654
-    Height = 619
+    Width = 855
+    Height = 779
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
     Align = alClient
     TabOrder = 1
     object MHLSplitter1: TMHLSplitter
       Left = 0
-      Top = 229
-      Width = 654
-      Height = 4
+      Top = 300
+      Width = 855
+      Height = 6
       Cursor = crVSplit
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
       Align = alTop
       ResizeControl = edQuery
-      ExplicitLeft = 1
-      ExplicitTop = 236
-      ExplicitWidth = 779
+      ExplicitTop = 299
     end
     object pnDBName: TMHLSimplePanel
       AlignWithMargins = True
-      Left = 3
-      Top = 3
-      Width = 648
-      Height = 32
+      Left = 4
+      Top = 4
+      Width = 847
+      Height = 42
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
       Align = alTop
       TabOrder = 2
       object dbName: TLabel
         Left = 0
         Top = 0
-        Width = 648
-        Height = 32
+        Width = 847
+        Height = 42
+        Margins.Left = 4
+        Margins.Top = 4
+        Margins.Right = 4
+        Margins.Bottom = 4
         Align = alClient
         AutoSize = False
         EllipsisPosition = epPathEllipsis
         Layout = tlCenter
-        ExplicitLeft = 176
-        ExplicitTop = 16
-        ExplicitWidth = 31
-        ExplicitHeight = 13
       end
     end
     object edQuery: TMemo
       AlignWithMargins = True
-      Left = 3
-      Top = 41
-      Width = 648
-      Height = 185
+      Left = 4
+      Top = 54
+      Width = 847
+      Height = 242
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
       Align = alTop
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -16
+      Font.Height = -22
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
@@ -135,10 +173,14 @@ object frmMain: TfrmMain
     end
     object lv: TListView
       AlignWithMargins = True
-      Left = 3
-      Top = 236
-      Width = 648
-      Height = 310
+      Left = 4
+      Top = 310
+      Width = 847
+      Height = 373
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
       Align = alClient
       Columns = <>
       HideSelection = False
@@ -148,16 +190,20 @@ object frmMain: TfrmMain
     end
     object pnStat: TGridPanel
       AlignWithMargins = True
-      Left = 3
-      Top = 552
-      Width = 648
-      Height = 64
+      Left = 4
+      Top = 691
+      Width = 847
+      Height = 84
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
       Align = alBottom
       BevelOuter = bvNone
       ColumnCollection = <
         item
           SizeStyle = ssAbsolute
-          Value = 80.000000000000000000
+          Value = 100.000000000000000000
         end
         item
           Value = 100.000000000000000000
@@ -211,19 +257,26 @@ object frmMain: TfrmMain
       object Label1: TLabel
         Left = 0
         Top = 0
-        Width = 80
+        Width = 100
         Height = 20
+        Margins.Left = 4
+        Margins.Top = 4
+        Margins.Right = 4
+        Margins.Bottom = 4
         Align = alClient
         Caption = 'Prepare time:'
         Layout = tlCenter
-        ExplicitWidth = 65
-        ExplicitHeight = 13
+        ExplicitWidth = 90
       end
       object prepareTime: TLabel
-        Left = 80
+        Left = 100
         Top = 0
-        Width = 568
+        Width = 747
         Height = 20
+        Margins.Left = 4
+        Margins.Top = 4
+        Margins.Right = 4
+        Margins.Bottom = 4
         Align = alClient
         Layout = tlCenter
         ExplicitWidth = 3
@@ -232,19 +285,28 @@ object frmMain: TfrmMain
       object Label3: TLabel
         Left = 0
         Top = 20
-        Width = 80
+        Width = 100
         Height = 20
+        Margins.Left = 4
+        Margins.Top = 4
+        Margins.Right = 4
+        Margins.Bottom = 4
         Align = alClient
         Caption = 'Exec time:'
         Layout = tlCenter
-        ExplicitWidth = 50
-        ExplicitHeight = 13
+        ExplicitTop = 26
+        ExplicitWidth = 65
+        ExplicitHeight = 17
       end
       object execTime: TLabel
-        Left = 80
+        Left = 100
         Top = 20
-        Width = 568
+        Width = 747
         Height = 20
+        Margins.Left = 4
+        Margins.Top = 4
+        Margins.Right = 4
+        Margins.Bottom = 4
         Align = alClient
         Layout = tlCenter
         ExplicitWidth = 3
@@ -253,19 +315,28 @@ object frmMain: TfrmMain
       object Label5: TLabel
         Left = 0
         Top = 40
-        Width = 80
+        Width = 100
         Height = 20
+        Margins.Left = 4
+        Margins.Top = 4
+        Margins.Right = 4
+        Margins.Bottom = 4
         Align = alClient
         Caption = 'Rows fetched:'
         Layout = tlCenter
-        ExplicitWidth = 70
-        ExplicitHeight = 13
+        ExplicitTop = 52
+        ExplicitWidth = 88
+        ExplicitHeight = 17
       end
       object rowsFetched: TLabel
-        Left = 80
+        Left = 100
         Top = 40
-        Width = 568
+        Width = 747
         Height = 20
+        Margins.Left = 4
+        Margins.Top = 4
+        Margins.Right = 4
+        Margins.Bottom = 4
         Align = alClient
         Layout = tlCenter
         ExplicitWidth = 3
