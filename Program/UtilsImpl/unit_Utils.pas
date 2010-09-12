@@ -34,7 +34,6 @@ implementation
 uses
   Controls,
   Forms,
-  dm_user,
   unit_SyncOnLineThread,
   frm_SyncOnLineProgressForm,
   unit_SyncFoldersThread,

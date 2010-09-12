@@ -18,7 +18,6 @@ uses
   Forms,
   Dialogs,
   Windows,
-  dm_user,
   ABSMain,
   unit_Globals;
 

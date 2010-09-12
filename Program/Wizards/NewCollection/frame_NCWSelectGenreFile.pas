@@ -44,7 +44,7 @@ var
 
 implementation
 
-uses unit_Helpers, dm_user;
+uses unit_Helpers;
 
 resourcestring
   rstrStandartGenres = 'Использовать файл описания жанров, поставляемый с программой.';

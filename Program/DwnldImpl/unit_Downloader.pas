@@ -100,7 +100,6 @@ uses
   StrUtils,
   DateUtils,
   unit_Settings,
-  dm_user,
   unit_Consts,
   unit_MHL_strings,
   unit_Messages,

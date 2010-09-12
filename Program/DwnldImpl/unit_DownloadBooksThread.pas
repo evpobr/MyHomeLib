@@ -71,7 +71,6 @@ implementation
 uses
   Windows,
   SysUtils,
-  dm_user,
   unit_Settings,
   frm_main;
 

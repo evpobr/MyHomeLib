@@ -965,7 +965,6 @@ uses
   Math,
   fictionbook_21,
   unit_FB2Utils,
-  dm_user,
   unit_Columns,
   unit_Database,
   frm_statistic,

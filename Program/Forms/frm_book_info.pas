@@ -118,7 +118,6 @@ uses
   Clipbrd,
   FictionBook_21,
   unit_ReviewParser,
-  dm_user,
   CommCtrl,
   StrUtils,
   unit_MHLHelpers,

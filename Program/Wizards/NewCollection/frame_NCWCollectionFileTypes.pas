@@ -50,7 +50,6 @@ var
 implementation
 
 uses
-  dm_user,
   unit_NCWParams;
 
 resourcestring
