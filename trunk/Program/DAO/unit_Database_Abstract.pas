@@ -162,7 +162,6 @@ implementation
 
 uses
   SysUtils,
-  dm_user,
   unit_Errors,
   unit_Consts,
   unit_Database;

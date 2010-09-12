@@ -48,7 +48,6 @@ var
 implementation
 
 uses
-  dm_user,
   unit_Consts,
   CommCtrl,
   unit_Database,

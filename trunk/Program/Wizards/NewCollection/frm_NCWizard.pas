@@ -32,7 +32,6 @@ uses
   StdCtrls,
   ExtCtrls,
   Dialogs,
-  dm_user,
   frame_WizardPageBase,
   frame_DecorativePageBase,
   frame_InteriorPageBase,

@@ -74,7 +74,6 @@ uses
   Windows,
   SysUtils,
   IOUtils,
-  dm_user,
   unit_Consts,
   unit_Settings,
   unit_MHLHelpers,

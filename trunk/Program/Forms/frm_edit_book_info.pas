@@ -100,7 +100,6 @@ implementation
 
 uses
   SysUtils,
-  dm_user,
   frm_genre_tree,
   frm_edit_author,
   unit_TreeUtils,

@@ -280,7 +280,6 @@ uses
   unit_SearchUtils,
   unit_Errors,
   unit_Settings,
-  dm_user,
   unit_ABSUtils,
   unit_Database,
   unit_SystemDatabase;

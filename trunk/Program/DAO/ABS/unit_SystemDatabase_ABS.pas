@@ -557,6 +557,14 @@ end;
 destructor TSystemData.Destroy;
 begin
   FreeAndNil(FActiveCollectionInfo);
+
+  FreeAndNil(AllBookGroups);
+  FreeAndNil(AllBooks);
+  FreeAndNil(Groups);
+  FreeAndNil(tblBases);
+
+  FreeAndNil(FDatabase);
+
   inherited Destroy;
 end;
 

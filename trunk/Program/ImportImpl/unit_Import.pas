@@ -22,7 +22,6 @@ unit unit_Import;
 interface
 
 uses
-  dm_user,
   unit_Globals;
   
 procedure ImportFB2(

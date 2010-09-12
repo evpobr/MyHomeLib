@@ -43,7 +43,6 @@ procedure FillGroupsList(Tree: TVirtualStringTree; SelectID: Integer = MHL_INVAL
 implementation
 
 uses
-  dm_user,
   UserData,
   Generics.Collections,
   unit_Database,

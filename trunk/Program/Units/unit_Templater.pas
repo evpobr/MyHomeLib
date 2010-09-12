@@ -53,8 +53,7 @@ implementation
 
 uses
   SysUtils,
-  unit_Consts,
-  dm_user;
+  unit_Consts;
 
 constructor TTemplater.Create;
 begin

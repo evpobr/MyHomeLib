@@ -216,7 +216,6 @@ uses
   Character,
   Generics.Collections,
   SQLite3,
-  dm_user,
   DateUtils,
   Math,
   StrUtils,

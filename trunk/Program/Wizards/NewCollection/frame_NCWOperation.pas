@@ -50,8 +50,6 @@ var
 
 implementation
 
-uses dm_user;
-
 resourcestring
   rstrCreateNew = 'Выберите этот пункт для создания пустых коллекций';
   rstrAddExists = 'Подключить ранее созданную коллекцию. Необходим файл коллекции *.hlc';
