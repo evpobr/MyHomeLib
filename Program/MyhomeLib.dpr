@@ -121,7 +121,10 @@ uses
   unit_Database_ABS in 'DAO\ABS\unit_Database_ABS.pas',
   unit_Database_SQLite in 'DAO\SQLite\unit_Database_SQLite.pas',
   unit_Database_Abstract in 'DAO\unit_Database_Abstract.pas',
-  unit_SystemDatabase in 'DAO\unit_SystemDatabase.pas';
+  unit_SystemDatabase in 'DAO\unit_SystemDatabase.pas',
+  unit_SystemDatabase_Abstract in 'DAO\unit_SystemDatabase_Abstract.pas',
+  unit_ABSUtils in 'DAO\ABS\unit_ABSUtils.pas',
+  unit_SystemDatabase_ABS in 'DAO\ABS\unit_SystemDatabase_ABS.pas';
 
 {$R *.res}
 
