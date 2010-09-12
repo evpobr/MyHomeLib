@@ -3,6 +3,7 @@ unit unit_SystemDatabase;
 interface
 
 uses
+  unit_SystemDatabase_Abstract,
   unit_SystemDatabase_ABS;
 
   procedure CreateSystemTables(const DBUserFile: string);
@@ -31,7 +32,7 @@ begin
   begin
     EnterCriticalSection(SystemDataLock);
     if not Assigned(SystemData) then
-      SystemData := TSystemData.Create(Settings.SystemFileName[sfSystemDB]);
+      SystemData := TSystemData_ABS.Create(Settings.SystemFileName[sfSystemDB]);
     LeaveCriticalSection(SystemDataLock);
   end;
 

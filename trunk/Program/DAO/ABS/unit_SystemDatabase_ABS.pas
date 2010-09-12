@@ -26,10 +26,11 @@ uses
   unit_Globals,
   unit_Consts,
   unit_Interfaces,
-  UserData;
+  UserData,
+  unit_SystemDatabase_Abstract;
 
 type
-  TSystemData = class
+  TSystemData_ABS = class(TSystemData)
   private
     FDatabase: TABSDatabase;
     FDefaultSession: Boolean;
@@ -93,7 +94,7 @@ type
   type
     TBookIteratorImpl = class(TInterfacedObject, IBookIterator)
     public
-      constructor Create(User: TSystemData; const Filter: string);
+      constructor Create(User: TSystemData_ABS; const Filter: string);
       destructor Destroy; override;
 
     protected
@@ -104,7 +105,7 @@ type
       function RecordCount: Integer;
 
     private
-      FUser: TSystemData;
+      FUser: TSystemData_ABS;
       FBooks: TABSQuery;
       FBookID: TIntegerField;
       FDatabaseID: TIntegerField;
@@ -116,7 +117,7 @@ type
 
     TGroupIteratorImpl = class(TInterfacedObject, IGroupIterator)
     public
-      constructor Create(User: TSystemData);
+      constructor Create(User: TSystemData_ABS);
       destructor Destroy; override;
 
     protected
@@ -127,7 +128,7 @@ type
       function RecordCount: Integer;
 
     private
-      FUser: TSystemData;
+      FUser: TSystemData_ABS;
       FGroups: TABSQuery;
       FGroupID: TIntegerField;
       FGroupName: TWideStringField;
@@ -139,7 +140,7 @@ type
 
     TCollectionInfoIteratorImpl = class(TInterfacedObject, ICollectionInfoIterator)
     public
-      constructor Create(User: TSystemData);
+      constructor Create(User: TSystemData_ABS);
       destructor Destroy; override;
 
     protected
@@ -150,16 +151,13 @@ type
       function RecordCount: Integer;
 
     private
-      FUser: TSystemData;
+      FUser: TSystemData_ABS;
       FBases: TABSQuery;
       FBasesID: TIntegerField;
 
       function CreateSQL: string;
     end;
     // << TCollectionInfoIteratorImpl
-
-  private
-    FActiveCollectionInfo: TCollectionInfo;
 
   private
     function InternalFindGroup(const GroupName: string): Boolean; overload; inline;
@@ -171,9 +169,9 @@ type
     constructor Create(const DBSystemFile: string; ADefaultSession: Boolean = True);
     destructor Destroy; override;
 
-    function ActivateCollection(CollectionID: Integer): Boolean;
-    function GetCollectionInfo(const CollectionID: Integer; out CollectionInfo: TCollectionInfo): Boolean;
-    procedure UpdateCollectionInfo(const CollectionInfo: TCollectionInfo);
+    function ActivateCollection(CollectionID: Integer): Boolean; override;
+    function GetCollectionInfo(const CollectionID: Integer; out CollectionInfo: TCollectionInfo): Boolean; override;
+    procedure UpdateCollectionInfo(const CollectionInfo: TCollectionInfo); override;
 
     procedure RegisterCollection(
       const DisplayName: string;
@@ -187,86 +185,73 @@ type
       const Script: string = '';
       const User: string = '';
       const Password: string = ''
-    );
+    ); override;
 
     function FindCollectionWithProp(
       PropID: TCollectionProp;
       const Value: string;
       IgnoreID: Integer = INVALID_COLLECTION_ID
-    ): Boolean;
+    ): Boolean; override;
 
-    procedure DeleteCollection(CollectionID: Integer);
+    procedure DeleteCollection(CollectionID: Integer); override;
 
 //    procedure SetTableState(State: Boolean);
 
   public
-    procedure GetBookLibID(const BookKey: TBookKey; out ARes: string); deprecated;
+    procedure GetBookLibID(const BookKey: TBookKey; out ARes: string); override;// deprecated;
 
-    //
-    // Active Collection
-    //
-    function HasCollections: Boolean;
-    function FindFirstExternalCollection: Boolean;
-    function FindFirstExistingCollectionID(const PreferredID: Integer): Integer;
-
-    function ActivateGroup(const ID: Integer): Boolean;
+    function ActivateGroup(const ID: Integer): Boolean; override;
 
 
     //
     //
     //
-    procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord);
-    procedure DeleteBook(const BookKey: TBookKey);
+    procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord); override;
+    procedure DeleteBook(const BookKey: TBookKey); override;
 
-    procedure SetExtra(const BookKey: TBookKey; extra: TBookExtra);
-    procedure SetRate(const BookKey: TBookKey; Rate: Integer);
-    procedure SetProgress(const BookKey: TBookKey; Progress: Integer);
-    function GetAnnotation(const BookKey: TBookKey): string;
-    procedure SetAnnotation(const BookKey: TBookKey; const Annotation: string);
-    function GetReview(const BookKey: TBookKey): string;
-    function SetReview(const BookKey: TBookKey; const Review: string): Integer;
-    procedure SetLocal(const BookKey: TBookKey; Value: Boolean);
-    procedure SetFileName(const BookKey: TBookKey; const FileName: string);
-    procedure SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
-    procedure SetFolder(const BookKey: TBookKey; const Folder: string);
+    procedure SetExtra(const BookKey: TBookKey; extra: TBookExtra); override;
+    procedure SetRate(const BookKey: TBookKey; Rate: Integer); override;
+    procedure SetProgress(const BookKey: TBookKey; Progress: Integer); override;
+    function GetReview(const BookKey: TBookKey): string; override;
+    function SetReview(const BookKey: TBookKey; const Review: string): Integer; override;
+    procedure SetLocal(const BookKey: TBookKey; Value: Boolean); override;
+    procedure SetFileName(const BookKey: TBookKey; const FileName: string); override;
+    procedure SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer); override;
+    procedure SetFolder(const BookKey: TBookKey; const Folder: string); override;
 
-    procedure UpdateBook(const BookRecord: TBookRecord);
+    procedure UpdateBook(const BookRecord: TBookRecord); override;
 
     //
     // Работа с группами
     //
-    function AddGroup(const GroupName: string): Boolean;
-    function RenameGroup(GroupID: Integer; const NewName: string): Boolean;
-    procedure DeleteGroup(GroupID: Integer);
-    procedure ClearGroup(GroupID: Integer);
-    function GetGroup(const GroupID: Integer): TGroupData;
+    function AddGroup(const GroupName: string): Boolean; override;
+    function RenameGroup(GroupID: Integer; const NewName: string): Boolean; override;
+    procedure DeleteGroup(GroupID: Integer); override;
+    procedure ClearGroup(GroupID: Integer); override;
+    function GetGroup(const GroupID: Integer): TGroupData; override;
 
-    procedure AddBookToGroup(const BookKey: TBookKey; GroupID: Integer; const BookRecord: TBookRecord);
-    procedure DeleteFromGroup(const BookKey: TBookKey; GroupID: Integer);
-    procedure RemoveUnusedBooks;
+    procedure AddBookToGroup(const BookKey: TBookKey; GroupID: Integer; const BookRecord: TBookRecord); override;
+    procedure DeleteFromGroup(const BookKey: TBookKey; GroupID: Integer); override;
+    procedure RemoveUnusedBooks; override;
     procedure CopyBookToGroup(
       const BookKey: TBookKey;
       SourceGroupID: Integer;
       TargetGroupID: Integer;
       MoveBook: Boolean
-    );
+    ); override;
 
     //
     // Пользовательские данные
     //
-    procedure ExportUserData(data: TUserData);
-    procedure ImportUserData(data: TUserData);
+    procedure ImportUserData(data: TUserData); override;
 
     // Batch update methods:
-    procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer);
+    procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer); override;
 
     //Iterators:
-    function GetBookIterator(const Filter: string): IBookIterator;
-    function GetGroupIterator: IGroupIterator;
-    function GetCollectionInfoIterator: ICollectionInfoIterator;
-
-  public
-    property ActiveCollectionInfo: TCollectionInfo read FActiveCollectionInfo;
+    function GetBookIterator(const Filter: string): IBookIterator; override;
+    function GetGroupIterator: IGroupIterator; override;
+    function GetCollectionInfoIterator: ICollectionInfoIterator; override;
 
   strict private
     procedure MountTables(const Mounted: Boolean);
@@ -344,7 +329,7 @@ end;
 
 { TBookIteratorImpl }
 
-constructor TSystemData.TBookIteratorImpl.Create(User: TSystemData; const Filter: string);
+constructor TSystemData_ABS.TBookIteratorImpl.Create(User: TSystemData_ABS; const Filter: string);
 var
   pLogger: IIntervalLogger;
 begin
@@ -365,7 +350,7 @@ begin
   FDatabaseID := FBooks.FieldByName(DB_ID_FIELD) as TIntegerField;
 end;
 
-destructor TSystemData.TBookIteratorImpl.Destroy;
+destructor TSystemData_ABS.TBookIteratorImpl.Destroy;
 begin
   FreeAndNil(FBooks);
 
@@ -373,7 +358,7 @@ begin
 end;
 
 // Read next record (if present), return True if read
-function TSystemData.TBookIteratorImpl.Next(out BookRecord: TBookRecord): Boolean;
+function TSystemData_ABS.TBookIteratorImpl.Next(out BookRecord: TBookRecord): Boolean;
 begin
   Result := not FBooks.Eof;
 
@@ -384,12 +369,12 @@ begin
   end;
 end;
 
-function TSystemData.TBookIteratorImpl.RecordCount: Integer;
+function TSystemData_ABS.TBookIteratorImpl.RecordCount: Integer;
 begin
   Result := FBooks.RecordCount;
 end;
 
-function TSystemData.TBookIteratorImpl.CreateSQL(const Filter: string): string;
+function TSystemData_ABS.TBookIteratorImpl.CreateSQL(const Filter: string): string;
 var
   Where: string;
 begin
@@ -401,7 +386,7 @@ end;
 
 { TGroupIteratorImpl }
 
-constructor TSystemData.TGroupIteratorImpl.Create(User: TSystemData);
+constructor TSystemData_ABS.TGroupIteratorImpl.Create(User: TSystemData_ABS);
 var
   pLogger: IIntervalLogger;
 begin
@@ -423,7 +408,7 @@ begin
   FAllowDelete := FGroups.FieldByName(GROUP_ALLOWDELETE_FIELD) as TBooleanField;
 end;
 
-destructor TSystemData.TGroupIteratorImpl.Destroy;
+destructor TSystemData_ABS.TGroupIteratorImpl.Destroy;
 begin
   FreeAndNil(FGroups);
 
@@ -431,7 +416,7 @@ begin
 end;
 
 // Read next record (if present), return True if read
-function TSystemData.TGroupIteratorImpl.Next(out Group: TGroupData): Boolean;
+function TSystemData_ABS.TGroupIteratorImpl.Next(out Group: TGroupData): Boolean;
 begin
   Result := not FGroups.Eof;
 
@@ -444,19 +429,19 @@ begin
   end;
 end;
 
-function TSystemData.TGroupIteratorImpl.RecordCount: Integer;
+function TSystemData_ABS.TGroupIteratorImpl.RecordCount: Integer;
 begin
   Result := FGroups.RecordCount;
 end;
 
-function TSystemData.TGroupIteratorImpl.CreateSQL: string;
+function TSystemData_ABS.TGroupIteratorImpl.CreateSQL: string;
 begin
   Result := 'SELECT g.' + GROUP_ID_FIELD + ', g.' + GROUP_NAME_FIELD + ', g. ' + GROUP_ALLOWDELETE_FIELD + ' FROM Groups g ';
 end;
 
 { TCollectionInfoIteratorImpl }
 
-constructor TSystemData.TCollectionInfoIteratorImpl.Create(User: TSystemData);
+constructor TSystemData_ABS.TCollectionInfoIteratorImpl.Create(User: TSystemData_ABS);
 var
   pLogger: IIntervalLogger;
 begin
@@ -476,7 +461,7 @@ begin
   FBasesID := FBases.FieldByName(ID_FIELD) as TIntegerField;
 end;
 
-destructor TSystemData.TCollectionInfoIteratorImpl.Destroy;
+destructor TSystemData_ABS.TCollectionInfoIteratorImpl.Destroy;
 begin
   FreeAndNil(FBases);
 
@@ -484,7 +469,7 @@ begin
 end;
 
 // Read next record (if present), return True if read
-function TSystemData.TCollectionInfoIteratorImpl.Next(out CollectionInfo: TCollectionInfo): Boolean;
+function TSystemData_ABS.TCollectionInfoIteratorImpl.Next(out CollectionInfo: TCollectionInfo): Boolean;
 begin
   Result := not FBases.Eof;
 
@@ -495,20 +480,20 @@ begin
   end;
 end;
 
-function TSystemData.TCollectionInfoIteratorImpl.RecordCount: Integer;
+function TSystemData_ABS.TCollectionInfoIteratorImpl.RecordCount: Integer;
 begin
   Result := FBases.RecordCount;
 end;
 
-function TSystemData.TCollectionInfoIteratorImpl.CreateSQL: string;
+function TSystemData_ABS.TCollectionInfoIteratorImpl.CreateSQL: string;
 begin
   Result := 'SELECT b.' + ID_FIELD + ' FROM Bases b ';
 end;
 
 
-{ TSystemData }
+{ TSystemData_ABS }
 
-procedure TSystemData.GetBookLibID(const BookKey: TBookKey; out ARes: String);
+procedure TSystemData_ABS.GetBookLibID(const BookKey: TBookKey; out ARes: String);
 begin
   Assert(AllBooks.Active);
 
@@ -521,13 +506,15 @@ begin
   ARes := AllBooksLibID.AsString;
 end;
 
-function TSystemData.ActivateGroup(const ID: Integer): Boolean;
+function TSystemData_ABS.ActivateGroup(const ID: Integer): Boolean;
 begin
   Result := Groups.Locate(GROUP_ID_FIELD, ID, []);
 end;
 
-constructor TSystemData.Create(const DBSystemFile: string; ADefaultSession: Boolean = True);
+constructor TSystemData_ABS.Create(const DBSystemFile: string; ADefaultSession: Boolean = True);
 begin
+  inherited Create;
+
   FDefaultSession := ADefaultSession;
   if not FDefaultSession then
   begin
@@ -550,14 +537,10 @@ begin
   AllBookGroups := TABSTableEx.Create(FDatabase, 'BookGroups');
 
   MountTables(True);
-
-  FActiveCollectionInfo := TCollectionInfo.Create;
 end;
 
-destructor TSystemData.Destroy;
+destructor TSystemData_ABS.Destroy;
 begin
-  FreeAndNil(FActiveCollectionInfo);
-
   FreeAndNil(AllBookGroups);
   FreeAndNil(AllBooks);
   FreeAndNil(Groups);
@@ -568,7 +551,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TSystemData.RegisterCollection(
+procedure TSystemData_ABS.RegisterCollection(
   const DisplayName: string;
   const RootFolder: string;
   const DBFileName: string;
@@ -609,7 +592,7 @@ begin
   ActivateCollection(tblBasesID.Value);
 end;
 
-function TSystemData.GetCollectionInfo(const CollectionID: Integer; out CollectionInfo: TCollectionInfo): Boolean;
+function TSystemData_ABS.GetCollectionInfo(const CollectionID: Integer; out CollectionInfo: TCollectionInfo): Boolean;
 var
   Stream: TABSBlobStream;
 begin
@@ -651,7 +634,7 @@ begin
     CollectionInfo.Clear;
 end;
 
-procedure TSystemData.UpdateCollectionInfo(const CollectionInfo: TCollectionInfo);
+procedure TSystemData_ABS.UpdateCollectionInfo(const CollectionInfo: TCollectionInfo);
 var
   Stream: TABSBlobStream;
 begin
@@ -693,13 +676,13 @@ begin
 
 end;
 
-function TSystemData.ActivateCollection(CollectionID: Integer): Boolean;
+function TSystemData_ABS.ActivateCollection(CollectionID: Integer): Boolean;
 begin
   Assert(CollectionID > 0);
   Result := GetCollectionInfo(CollectionID, FActiveCollectionInfo);
 end;
 
-function TSystemData.FindCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer): Boolean;
+function TSystemData_ABS.FindCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer): Boolean;
 const
   Fields: array [TCollectionProp] of string = (BASE_NAME_FIELD, 'DBFileName', 'RootFolder');
 begin
@@ -723,75 +706,7 @@ begin
   end;
 end;
 
-function TSystemData.HasCollections: Boolean;
-begin
-  Result := (GetCollectionInfoIterator.RecordCount > 0);
-end;
-
-function TSystemData.FindFirstExternalCollection: Boolean;
-var
-  CollectionInfoIterator: ICollectionInfoIterator;
-  CollectionInfo: TCollectionInfo;
-begin
-  Result := False;
-
-  CollectionInfoIterator := GetCollectionInfoIterator;
-  if CollectionInfoIterator.RecordCount = 0 then
-    Exit;
-
-  CollectionInfo := TCollectionInfo.Create;
-  try
-    while CollectionInfoIterator.Next(CollectionInfo) do
-    begin
-      if isExternalCollection(CollectionInfo.CollectionType) then
-      begin
-        Result := True;
-        Exit;
-      end;
-    end;
-  finally
-    FreeAndNil(CollectionInfo);
-  end;
-end;
-
-function TSystemData.FindFirstExistingCollectionID(const PreferredID: Integer): Integer;
-var
-  CollectionInfoIterator: ICollectionInfoIterator;
-  CollectionInfo: TCollectionInfo;
-begin
-  Result := INVALID_COLLECTION_ID;
-
-  CollectionInfo := TCollectionInfo.Create;
-  try
-    CollectionInfoIterator := GetCollectionInfoIterator;
-    while CollectionInfoIterator.Next(CollectionInfo) do
-    begin
-      if FileExists(CollectionInfo.DBFileName) then
-      begin
-        if CollectionInfo.ID = PreferredID then
-        begin
-          //
-          // Пользователь предпочитает эту коллекцию, она доступна -> выходим
-          //
-          Result := CollectionInfo.ID;
-          Break;
-        end;
-
-        if Result = INVALID_COLLECTION_ID then
-        begin
-          //
-          // Запомним первую доступную коллекцию
-          //
-          Result := CollectionInfo.ID;
-        end;
-      end;
-    end;
-  finally
-    FreeAndNil(CollectionInfo);
-  end;
-end;
-
-procedure TSystemData.DeleteCollection(CollectionID: Integer);
+procedure TSystemData_ABS.DeleteCollection(CollectionID: Integer);
 const
   DELETE_REL_QUERY = 'DELETE FROM BookGroups WHERE DatabaseID = %u';
   DELETE_BOOKS_QUERY = 'DELETE FROM Books WHERE DatabaseID = %u';
@@ -809,12 +724,12 @@ begin
   try
     // Delete books from groups by DatabaseID:
     Query.SQL.Text := Format(DELETE_REL_QUERY, [CollectionID]);
-    pLogger := GetIntervalLogger('TSystemData.DeleteCollection', Query.SQL.Text);
+    pLogger := GetIntervalLogger('TSystemData_ABS.DeleteCollection', Query.SQL.Text);
     Query.ExecSQL;
     pLogger := nil;
 
     Query.SQL.Text := Format(DELETE_BOOKS_QUERY, [CollectionID]);
-    pLogger := GetIntervalLogger('TSystemData.DeleteCollection', Query.SQL.Text);
+    pLogger := GetIntervalLogger('TSystemData_ABS.DeleteCollection', Query.SQL.Text);
     Query.ExecSQL;
     pLogger := nil;
   finally
@@ -828,7 +743,7 @@ begin
   tblBases.First;
 end;
 
-procedure TSystemData.GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord);
+procedure TSystemData_ABS.GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord);
 var
   Stream: TABSBlobStream;
   Reader: TReader;
@@ -935,7 +850,7 @@ begin
     Assert(False);
 end;
 
-procedure TSystemData.DeleteBook(const BookKey: TBookKey);
+procedure TSystemData_ABS.DeleteBook(const BookKey: TBookKey);
 const
   SQL_DELETE_FROM_BOOK_GROUPS: string = 'DELETE FROM BookGroups WHERE BookID = %u AND DatabaseID = %u ';
   SQL_DELETE_FROM_BOOKS: string = 'DELETE FROM Books WHERE BookID = %u AND DatabaseID = %u ';
@@ -946,12 +861,12 @@ begin
   Query := TABSQueryEx.Create(FDatabase, '');
   try
     Query.SQL.Text := Format(SQL_DELETE_FROM_BOOK_GROUPS, [BookKey.BookID, BookKey.DatabaseID]);
-    pLogger := GetIntervalLogger('TSystemData.DeleteBook', Query.SQL.Text);
+    pLogger := GetIntervalLogger('TSystemData_ABS.DeleteBook', Query.SQL.Text);
     Query.ExecSQL;
     pLogger := nil;
 
     Query.SQL.Text := Format(SQL_DELETE_FROM_BOOKS, [BookKey.BookID, BookKey.DatabaseID]);
-    pLogger := GetIntervalLogger('TSystemData.DeleteBook', Query.SQL.Text);
+    pLogger := GetIntervalLogger('TSystemData_ABS.DeleteBook', Query.SQL.Text);
     Query.ExecSQL;
     pLogger := nil;
   finally
@@ -959,7 +874,7 @@ begin
   end;
 end;
 
-procedure TSystemData.SetExtra(const BookKey: TBookKey; extra: TBookExtra);
+procedure TSystemData_ABS.SetExtra(const BookKey: TBookKey; extra: TBookExtra);
 begin
   Assert(AllBooks.Active);
   if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
@@ -980,7 +895,7 @@ begin
   end;
 end;
 
-procedure TSystemData.SetRate(const BookKey: TBookKey; Rate: Integer);
+procedure TSystemData_ABS.SetRate(const BookKey: TBookKey; Rate: Integer);
 begin
   Assert(AllBooks.Active);
   if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
@@ -996,7 +911,7 @@ begin
   end;
 end;
 
-procedure TSystemData.SetProgress(const BookKey: TBookKey; Progress: Integer);
+procedure TSystemData_ABS.SetProgress(const BookKey: TBookKey; Progress: Integer);
 begin
   Assert(AllBooks.Active);
   if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
@@ -1012,35 +927,7 @@ begin
   end;
 end;
 
-function TSystemData.GetAnnotation(const BookKey: TBookKey): string;
-begin
-  Assert(AllBooks.Active);
-  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
-    Result := AllBooksAnnotation.Value
-  else
-    Result := '';
-end;
-
-procedure TSystemData.SetAnnotation(const BookKey: TBookKey; const Annotation: string);
-begin
-  Assert(AllBooks.Active);
-  if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
-  begin
-    AllBooks.Edit;
-    try
-      if Annotation = '' then
-        AllBooksAnnotation.Clear
-      else
-        AllBooksAnnotation.Value := Annotation;
-      AllBooks.Post;
-    except
-      AllBooks.Cancel;
-      raise;
-    end;
-  end;
-end;
-
-function TSystemData.GetReview(const BookKey: TBookKey): string;
+function TSystemData_ABS.GetReview(const BookKey: TBookKey): string;
 begin
   Assert(AllBooks.Active);
   if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
@@ -1049,7 +936,7 @@ begin
     Result := '';
 end;
 
-function TSystemData.SetReview(const BookKey: TBookKey; const Review: string): Integer;
+function TSystemData_ABS.SetReview(const BookKey: TBookKey; const Review: string): Integer;
 begin
   Assert(AllBooks.Active);
   Result := 0;
@@ -1076,7 +963,7 @@ begin
   end;
 end;
 
-procedure TSystemData.SetLocal(const BookKey: TBookKey; Value: Boolean);
+procedure TSystemData_ABS.SetLocal(const BookKey: TBookKey; Value: Boolean);
 begin
   Assert(AllBooks.Active);
   if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
@@ -1092,7 +979,7 @@ begin
   end;
 end;
 
-procedure TSystemData.SetFileName(const BookKey: TBookKey; const FileName: string);
+procedure TSystemData_ABS.SetFileName(const BookKey: TBookKey; const FileName: string);
 begin
   Assert(AllBooks.Active);
   if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
@@ -1108,7 +995,7 @@ begin
   end;
 end;
 
-procedure TSystemData.SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
+procedure TSystemData_ABS.SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
 begin
   Assert(AllBooks.Active);
   if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf([BookKey.BookID, BookKey.DatabaseID]), []) then
@@ -1133,7 +1020,7 @@ begin
 end;
 
 // Change SeriesID value for all books having provided DatabaseID and old SeriesID value
-procedure TSystemData.ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer);
+procedure TSystemData_ABS.ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer);
 const
   UPDATE_SQL = 'UPDATE Books SET ' + SERIES_ID_FIELD + ' = %s WHERE ' + DB_ID_FIELD + ' = %u AND ' + SERIES_ID_FIELD + ' %s';
 var
@@ -1156,7 +1043,7 @@ begin
 
     Query := TABSQueryEx.Create(FDatabase, Format(UPDATE_SQL, [newSerie, DatabaseID, oldSerie]));
     try
-      pLogger := GetIntervalLogger('TSystemData.ChangeBookSeriesID', Query.SQL.Text);
+      pLogger := GetIntervalLogger('TSystemData_ABS.ChangeBookSeriesID', Query.SQL.Text);
       Query.ExecSQL;
       pLogger := nil;
     finally
@@ -1168,22 +1055,22 @@ end;
 // Return an iterator working on the User data Books dataset
 // No need to free the iterator when done as it's a TInterfacedObject
 // and knows to self destroy when no longer referenced.
-function TSystemData.GetBookIterator(const Filter: string): IBookIterator;
+function TSystemData_ABS.GetBookIterator(const Filter: string): IBookIterator;
 begin
   Result := TBookIteratorImpl.Create(Self, Filter);
 end;
 
-function TSystemData.GetGroupIterator: IGroupIterator;
+function TSystemData_ABS.GetGroupIterator: IGroupIterator;
 begin
   Result := TGroupIteratorImpl.Create(Self);
 end;
 
-function TSystemData.GetCollectionInfoIterator: ICollectionInfoIterator;
+function TSystemData_ABS.GetCollectionInfoIterator: ICollectionInfoIterator;
 begin
   Result := TCollectionInfoIteratorImpl.Create(Self);
 end;
 
-procedure TSystemData.SetFolder(const BookKey: TBookKey; const Folder: string);
+procedure TSystemData_ABS.SetFolder(const BookKey: TBookKey; const Folder: string);
 begin
   Assert(AllBooks.Active);
   if AllBooks.Locate(BOOK_ID_DB_ID_FIELDS, VarArrayOf
@@ -1200,7 +1087,7 @@ begin
   end;
 end;
 
-procedure TSystemData.UpdateBook(const BookRecord: TBookRecord);
+procedure TSystemData_ABS.UpdateBook(const BookRecord: TBookRecord);
 begin
 
 end;
@@ -1208,14 +1095,14 @@ end;
 //
 // Создать группу
 //
-function TSystemData.AddGroup(const GroupName: string): Boolean;
+function TSystemData_ABS.AddGroup(const GroupName: string): Boolean;
 var
   GroupID: Integer;
 begin
   Result := InternalAddGroup(GroupName, GroupID);
 end;
 
-function TSystemData.RenameGroup(GroupID: Integer; const NewName: string): Boolean;
+function TSystemData_ABS.RenameGroup(GroupID: Integer; const NewName: string): Boolean;
 begin
   Result := False;
   if InternalFindGroup(GroupID) then
@@ -1233,12 +1120,12 @@ begin
   end;
 end;
 
-function TSystemData.InternalFindGroup(const GroupName: string): Boolean;
+function TSystemData_ABS.InternalFindGroup(const GroupName: string): Boolean;
 begin
   Result := Groups.Locate(GROUP_NAME_FIELD, GroupName, []);
 end;
 
-function TSystemData.InternalFindGroup(GroupID: Integer): Boolean;
+function TSystemData_ABS.InternalFindGroup(GroupID: Integer): Boolean;
 begin
   Result := Groups.Locate(GROUP_ID_FIELD, GroupID, []);
 end;
@@ -1246,7 +1133,7 @@ end;
 //
 // Очищает текущую группу
 //
-function TSystemData.InternalAddGroup(const GroupName: string; out GroupID: Integer): Boolean;
+function TSystemData_ABS.InternalAddGroup(const GroupName: string; out GroupID: Integer): Boolean;
 begin
   Result := not InternalFindGroup(GroupName);
   if Result then
@@ -1264,7 +1151,7 @@ begin
   GroupID := GroupsGroupID.Value;
 end;
 
-procedure TSystemData.InternalClearGroup(GroupID: Integer; RemoveGroup: Boolean);
+procedure TSystemData_ABS.InternalClearGroup(GroupID: Integer; RemoveGroup: Boolean);
 const
   SQL_DELETE_BOOKGROUPS = 'DELETE FROM BookGroups WHERE GroupID = %u ';
 var
@@ -1276,7 +1163,7 @@ begin
   //
   query := TABSQueryEx.Create(FDatabase, Format(SQL_DELETE_BOOKGROUPS, [GroupID]));
   try
-    pLogger := GetIntervalLogger('TSystemData.InternalClearGroup', Query.SQL.Text);
+    pLogger := GetIntervalLogger('TSystemData_ABS.InternalClearGroup', Query.SQL.Text);
     query.ExecSQL;
     pLogger := nil;
   finally
@@ -1301,7 +1188,7 @@ end;
 //
 // Удалить группу
 //
-procedure TSystemData.DeleteGroup(GroupID: Integer);
+procedure TSystemData_ABS.DeleteGroup(GroupID: Integer);
 begin
   InternalClearGroup(GroupID, True);
 end;
@@ -1309,12 +1196,12 @@ end;
 //
 // Очистить
 //
-procedure TSystemData.ClearGroup(GroupID: Integer);
+procedure TSystemData_ABS.ClearGroup(GroupID: Integer);
 begin
   InternalClearGroup(GroupID, False);
 end;
 
-function TSystemData.GetGroup(const GroupID: Integer): TGroupData;
+function TSystemData_ABS.GetGroup(const GroupID: Integer): TGroupData;
 const
   SQL = 'SELECT g.GroupName, g.AllowDelete FROM Groups g WHERE g.GroupID = %u ';
 var
@@ -1323,7 +1210,7 @@ var
 begin
   query := TABSQueryEx.Create(FDatabase, Format(SQL, [GroupID]));
   try
-    Logger := GetIntervalLogger('TSystemData.GetGroup', Query.SQL.Text);
+    Logger := GetIntervalLogger('TSystemData_ABS.GetGroup', Query.SQL.Text);
     query.ExecSQL;
     Logger := nil;
   finally
@@ -1332,7 +1219,7 @@ begin
 
 end;
 
-procedure TSystemData.AddBookToGroup(
+procedure TSystemData_ABS.AddBookToGroup(
   const BookKey: TBookKey;
   GroupID: Integer;
   const BookRecord: TBookRecord
@@ -1422,9 +1309,9 @@ end;
 // Удалить указанную книгу из указанной группы.
 // NOTE: этот метод не удаляет неиспользуемые книги !!! После его вызова обязательно нужно вызвать RemoveUnusedBooks
 //
-procedure TSystemData.DeleteFromGroup(const BookKey: TBookKey; GroupID: Integer);
+procedure TSystemData_ABS.DeleteFromGroup(const BookKey: TBookKey; GroupID: Integer);
 const
-  SQL_DELETE_BOOKGROUPS = 'DELETE FROM BookGroups WHERE BookID = %0.u AND GroupID = %1.u ';
+  SQL_DELETE_BOOKGROUPS = 'DELETE FROM BookGroups WHERE BookID = %0:u AND GroupID = %1:u ';
 var
   query: TABSQuery;
   pLogger: IIntervalLogger;
@@ -1434,7 +1321,7 @@ begin
   //
   query := TABSQueryEx.Create(FDatabase, Format(SQL_DELETE_BOOKGROUPS, [BookKey.BookID, GroupID]));
   try
-    pLogger := GetIntervalLogger('TSystemData.DeleteFromGroup', Query.SQL.Text);
+    pLogger := GetIntervalLogger('TSystemData_ABS.DeleteFromGroup', Query.SQL.Text);
     query.ExecSQL;
     pLogger := nil;
   finally
@@ -1445,7 +1332,7 @@ end;
 //
 // Удалить книги, не входящие в группы
 //
-procedure TSystemData.RemoveUnusedBooks;
+procedure TSystemData_ABS.RemoveUnusedBooks;
 const
   SQL: string =
       'DELETE FROM Books b WHERE NOT EXISTS( ' +
@@ -1458,7 +1345,7 @@ var
 begin
   Query := TABSQueryEx.Create(FDatabase, SQL);
   try
-    pLogger := GetIntervalLogger('TSystemData.RemoveUnusedBooks', Query.SQL.Text);
+    pLogger := GetIntervalLogger('TSystemData_ABS.RemoveUnusedBooks', Query.SQL.Text);
     Query.ExecSQL;
     pLogger := nil;
   finally
@@ -1466,7 +1353,7 @@ begin
   end;
 end;
 
-procedure TSystemData.CopyBookToGroup(
+procedure TSystemData_ABS.CopyBookToGroup(
   const BookKey: TBookKey;
   SourceGroupID: Integer;
   TargetGroupID: Integer;
@@ -1506,31 +1393,7 @@ begin
   end;
 end;
 
-procedure TSystemData.ExportUserData(data: TUserData);
-var
-  CollectionID: Integer;
-  BookGroup: TBookGroup;
-  GroupIterator: IGroupIterator;
-  GroupData: TGroupData;
-  BookIterator: IBookIterator;
-  BookRecord: TBookRecord;
-begin
-  Assert(Assigned(data));
-
-  CollectionID := ActiveCollectionInfo.ID;
-
-  GroupIterator := GetGroupIterator;
-  while GroupIterator.Next(GroupData) do
-  begin
-    BookGroup := data.Groups.AddGroup(GroupData.GroupID, GroupData.Text);
-
-    BookIterator := GetBookIterator(Format('bg.%0:s = %1:d AND bg.%2:s = %3:d', [GROUP_ID_FIELD, GroupData.GroupID, DB_ID_FIELD, CollectionID]));
-    while BookIterator.Next(BookRecord) do
-      BookGroup.AddBook(BookRecord.BookKey.BookID, BookRecord.LibID);
-  end;
-end;
-
-procedure TSystemData.ImportUserData(data: TUserData);
+procedure TSystemData_ABS.ImportUserData(data: TUserData);
 var
   group: TBookGroup;
   GroupID: Integer;
@@ -1544,7 +1407,7 @@ begin
   end;
 end;
 
-procedure TSystemData.MountTables(const Mounted: Boolean);
+procedure TSystemData_ABS.MountTables(const Mounted: Boolean);
 begin
   tblBases.Active := Mounted;
   Groups.Active := Mounted;
