@@ -62,7 +62,8 @@ uses
   unit_settings,
   unit_Consts,
   unit_Globals,
-  ZipForge;
+  ZipForge,
+  unit_SystemDatabase;
 
 resourcestring
   rstrShowCollectionType = 'Укажите название коллекции.';
@@ -215,7 +216,7 @@ begin
       Exit;
     end;
 
-    if DMUser.FindCollectionWithProp(cpDisplayName, strValue) then
+    if GetSystemData.FindCollectionWithProp(cpDisplayName, strValue) then
     begin
       ShowPageMessage(Format(rstrCollectionAlreadyExists, [strValue]), 2);
       Exit;
@@ -240,8 +241,8 @@ begin
       Exit;
     end;
 
-    if DMUser.FindCollectionWithProp(cpFileName, strValue + COLLECTION_EXTENSION) or
-       DMUser.FindCollectionWithProp(cpFileName, Settings.DataPath + strValue + COLLECTION_EXTENSION) then
+    if GetSystemData.FindCollectionWithProp(cpFileName, strValue + COLLECTION_EXTENSION) or
+       GetSystemData.FindCollectionWithProp(cpFileName, Settings.DataPath + strValue + COLLECTION_EXTENSION) then
     begin
       ShowPageMessage(Format(rstrFileAlreadyExistsInDB, [strValue]), 2);
       Exit;

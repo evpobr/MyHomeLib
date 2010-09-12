@@ -42,7 +42,8 @@ uses
   unit_MHL_strings,
   unit_Globals,
   unit_Database,
-  unit_Interfaces;
+  unit_Interfaces,
+  unit_SystemDatabase;
 
 resourcestring
   rstrBuildingFileList = 'Построение списка файлов ...';
@@ -74,12 +75,12 @@ var
   BookRecord: TBookRecord;
 begin
   processedBooks := 0;
-  FRootPath := DMUser.ActiveCollectionInfo.RootPath;
+  FRootPath := GetSystemData.ActiveCollectionInfo.RootPath;
 
   FFiles := TFilesList.Create(nil);
   try
     FFiles.OnFile := OnFile;
-    FFiles.TargetPath := DMUser.ActiveCollectionInfo.RootFolder;
+    FFiles.TargetPath := GetSystemData.ActiveCollectionInfo.RootFolder;
 
     FList := TStringList.Create;
     try

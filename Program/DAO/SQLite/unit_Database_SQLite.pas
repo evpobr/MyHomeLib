@@ -225,7 +225,8 @@ uses
   unit_Logger,
   unit_SearchUtils,
   unit_Settings,
-  unit_Errors;
+  unit_Errors,
+  unit_SystemDatabase;
 
 const
   INIT_ROWS_ARR: array[0 .. 1] of Boolean = (False, True);
@@ -324,7 +325,7 @@ begin
 
   Assert(Assigned(Collection));
 
-  FCollectionID := DMUser.ActiveCollectionInfo.ID;
+  FCollectionID := GetSystemData.ActiveCollectionInfo.ID;
   FLoadMemos := LoadMemos;
   FCollection := Collection;
 
@@ -353,7 +354,7 @@ begin
 
   if Result then
   begin
-    Assert(DMUser.ActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
+    Assert(GetSystemData.ActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
     BookID := FBooks.FieldAsInt(0);
     FCollection.GetBookRecord(CreateBookKey(BookID, FCollectionID), BookRecord, FLoadMemos);
     FBooks.Next;
@@ -381,7 +382,7 @@ var
     case Mode of
       bmByGenre:
       begin
-        if isFB2Collection(DMUser.ActiveCollectionInfo.CollectionType) or not Settings.ShowSubGenreBooks then
+        if isFB2Collection(GetSystemData.ActiveCollectionInfo.CollectionType) or not Settings.ShowSubGenreBooks then
           query.SetParam(':GenreCode', FilterValue^.ValueString)
         else
           query.SetParam(':GenreCode', FilterValue^.ValueString + '%');
@@ -421,7 +422,7 @@ begin
     begin
       Assert(Assigned(FilterValue));
       SQLRows := 'SELECT b.BookID FROM Genre_List gl INNER JOIN Books b ON gl.BookID = b.BookID ';
-      if isFB2Collection(DMUser.ActiveCollectionInfo.CollectionType) or not Settings.ShowSubGenreBooks then
+      if isFB2Collection(GetSystemData.ActiveCollectionInfo.CollectionType) or not Settings.ShowSubGenreBooks then
         AddToWhere(Where, 'gl.GenreCode = :GenreCode')
       else
         AddToWhere(Where, 'gl.GenreCode LIKE :GenreCode');
@@ -615,7 +616,7 @@ begin
 
   Assert(Assigned(Collection));
 
-  FCollectionID := DMUser.ActiveCollectionInfo.ID;
+  FCollectionID := GetSystemData.ActiveCollectionInfo.ID;
   FCollection := Collection;
 
   PrepareData(Mode, FilterValue);
@@ -637,7 +638,7 @@ begin
 
   if Result then
   begin
-    Assert(DMUser.ActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
+    Assert(GetSystemData.ActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
 
     AuthorID := FAuthors.FieldAsInt(0);
     FCollection.GetAuthor(AuthorID, AuthorData);
@@ -770,7 +771,7 @@ begin
 
   Assert(Assigned(Collection));
 
-  FCollectionID := DMUser.ActiveCollectionInfo.ID;
+  FCollectionID := GetSystemData.ActiveCollectionInfo.ID;
   FCollection := Collection;
 
   PrepareData(Mode, FilterValue);
@@ -792,7 +793,7 @@ begin
 
   if Result then
   begin
-    Assert(DMUser.ActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
+    Assert(GetSystemData.ActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
     GenreCode := FGenres.FieldAsString(0);
     FCollection.GetGenre(GenreCode, GenreData);
     FGenres.Next;
@@ -860,7 +861,7 @@ begin
 
   Assert(Assigned(Collection));
 
-  FCollectionID := DMUser.ActiveCollectionInfo.ID;
+  FCollectionID := GetSystemData.ActiveCollectionInfo.ID;
   FCollection := Collection;
 
   PrepareData(Mode);
@@ -880,7 +881,7 @@ begin
 
   if Result then
   begin
-    Assert(DMUser.ActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
+    Assert(GetSystemData.ActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
     SeriesData.SeriesID := FSeries.FieldAsInt(0);
     SeriesData.SeriesTitle := FSeries.FieldAsString(1);
     FSeries.Next;
@@ -1066,7 +1067,7 @@ var
     Result := BookID > 0;
     if Result then
     begin
-      BookKey := CreateBookKey(BookID, DMUser.ActiveCollectionInfo.ID);
+      BookKey := CreateBookKey(BookID, GetSystemData.ActiveCollectionInfo.ID);
     end;
   end;
 
@@ -1117,7 +1118,7 @@ begin
     //
     // Обновим информацию в группах
     //
-    DMUser.SetExtra(BookKey, extra);
+    GetSystemData.SetExtra(BookKey, extra);
 
     //
     // Дадим возможность главному окну обновить измененные ноды
@@ -1128,7 +1129,7 @@ begin
   //
   // Создадим пользовательские группы
   //
-  DMUser.ImportUserData(data);
+  GetSystemData.ImportUserData(data);
 
   //
   // Добавим книги в группы
@@ -1171,7 +1172,7 @@ begin
   finally
     query.Free;
   end;
-  DMUser.ExportUserData(data);
+  GetSystemData.ExportUserData(data);
 end;
 
 function TBookCollection_SQLite.CheckFileInCollection(const FileName: string; const FullNameSearch: Boolean; const ZipFolder: Boolean): Boolean;
@@ -1463,7 +1464,7 @@ begin
   end;
 
   // Обновим информацию в группах
-  DMUser.ChangeBookSeriesID(OldSeriesID, NewSeriesID, DatabaseID);
+  GetSystemData.ChangeBookSeriesID(OldSeriesID, NewSeriesID, DatabaseID);
 end;
 
 function TBookCollection_SQLite.InsertBook(BookRecord: TBookRecord; const CheckFileName: Boolean; const FullCheck: Boolean): Integer;
@@ -1576,7 +1577,7 @@ begin
       query.ExecSQL;
 
       BookRecord.BookKey.BookID := FDatabase.LastInsertRowID;
-      BookRecord.BookKey.DatabaseID := DMUser.ActiveCollectionInfo.ID;
+      BookRecord.BookKey.DatabaseID := GetSystemData.ActiveCollectionInfo.ID;
     finally
       query.Free;
     end;
@@ -1603,7 +1604,7 @@ var
 begin
   BookRecord.Clear;
 
-  if BookKey.DatabaseID = DMUser.ActiveCollectionInfo.ID then
+  if BookKey.DatabaseID = GetSystemData.ActiveCollectionInfo.ID then
   begin
     Table := FDatabase.NewQuery(SQL);
     try
@@ -1636,8 +1637,8 @@ begin
       BookRecord.KeyWords := Table.FieldAsString(15);
       BookRecord.Rate := Table.FieldAsInt(16);
       BookRecord.Progress := Table.FieldAsInt(17);
-      BookRecord.CollectionRoot := DMUser.ActiveCollectionInfo.RootPath;
-      BookRecord.CollectionName := DMUser.ActiveCollectionInfo.Name;
+      BookRecord.CollectionRoot := GetSystemData.ActiveCollectionInfo.RootPath;
+      BookRecord.CollectionName := GetSystemData.ActiveCollectionInfo.Name;
 
       GetBookGenres(BookRecord.BookKey.BookID, BookRecord.Genres, @(BookRecord.RootGenre));
       GetBookAuthors(BookRecord.BookKey.BookID, BookRecord.Authors);
@@ -1654,7 +1655,7 @@ begin
     end;
   end
   else
-    DMUser.GetBookRecord(BookKey, BookRecord);
+    GetSystemData.GetBookRecord(BookKey, BookRecord);
 end;
 
 procedure TBookCollection_SQLite.UpdateBook(BookRecord: TBookRecord);
@@ -1760,7 +1761,7 @@ begin
   CleanBookAuthors(BookRecord.BookKey.BookID);
   InsertBookAuthors(BookRecord.BookKey.BookID, BookRecord.Authors);
 
-  DMUser.UpdateBook(BookRecord);
+  GetSystemData.UpdateBook(BookRecord);
 end;
 
 // Delete the book, all dependent tables are cleared by a matching trigger
@@ -1783,7 +1784,7 @@ begin
     query.Free;
   end;
 
-  DMUser.DeleteBook(BookKey);
+  GetSystemData.DeleteBook(BookKey);
 end;
 
 function TBookCollection_SQLite.GetLibID(const BookKey: TBookKey): string;
@@ -1792,7 +1793,7 @@ const
 var
   Query: TSQLiteQuery;
 begin
-  if BookKey.DatabaseID = DMUser.ActiveCollectionInfo.ID then
+  if BookKey.DatabaseID = GetSystemData.ActiveCollectionInfo.ID then
   begin
     Query := FDatabase.NewQuery(SQL);
     try
@@ -1808,7 +1809,7 @@ begin
     end;
   end
   else
-    DMUser.GetBookLibID(BookKey, Result);
+    GetSystemData.GetBookLibID(BookKey, Result);
 end;
 
 function TBookCollection_SQLite.GetReview(const BookKey: TBookKey): string;
@@ -1817,7 +1818,7 @@ const
 var
   query: TSQLiteQuery;
 begin
-  if BookKey.DatabaseID = DMUser.ActiveCollectionInfo.ID then
+  if BookKey.DatabaseID = GetSystemData.ActiveCollectionInfo.ID then
   begin
     query := FDatabase.NewQuery(SQL);
     try
@@ -1833,7 +1834,7 @@ begin
     end;
   end
   else
-    Result := DMUser.GetReview(BookKey);
+    Result := GetSystemData.GetReview(BookKey);
 end;
 
 function TBookCollection_SQLite.SetReview(const BookKey: TBookKey; const Review: string): Integer;
@@ -1866,7 +1867,7 @@ begin
   //
   // Обновим информацию в группах
   //
-  Result := NewCode or DMUser.SetReview(BookKey, NewReview);
+  Result := NewCode or GetSystemData.SetReview(BookKey, NewReview);
 end;
 
 procedure TBookCollection_SQLite.SetProgress(const BookKey: TBookKey; const Progress: Integer);
@@ -1890,7 +1891,7 @@ begin
   //
   // Обновим информацию в группах
   //
-  DMUser.SetProgress(BookKey, Progress);
+  GetSystemData.SetProgress(BookKey, Progress);
 end;
 
 procedure TBookCollection_SQLite.SetRate(const BookKey: TBookKey; const Rate: Integer);
@@ -1914,7 +1915,7 @@ begin
   //
   // Обновим информацию в группах
   //
-  DMUser.SetRate(BookKey, Rate);
+  GetSystemData.SetRate(BookKey, Rate);
 end;
 
 procedure TBookCollection_SQLite.SetLocal(const BookKey: TBookKey; const AState: Boolean);
@@ -1938,7 +1939,7 @@ begin
   //
   // Обновим информацию в группах
   //
-  DMUser.SetLocal(BookKey, AState);
+  GetSystemData.SetLocal(BookKey, AState);
 end;
 
 procedure TBookCollection_SQLite.InternalUpdateField(const BookID: Integer; const UpdateSQL: string; const NewValue: string);
@@ -1967,7 +1968,7 @@ begin
   //
   // Обновим информацию в группах
   //
-  DMUser.SetFolder(BookKey, Folder);
+  GetSystemData.SetFolder(BookKey, Folder);
 end;
 
 procedure TBookCollection_SQLite.SetFileName(const BookKey: TBookKey; const FileName: string);
@@ -1981,7 +1982,7 @@ begin
   //
   // Обновим информацию в группах
   //
-  DMUser.SetFileName(BookKey, FileName);
+  GetSystemData.SetFileName(BookKey, FileName);
 end;
 
 procedure TBookCollection_SQLite.SetSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
@@ -2039,7 +2040,7 @@ begin
   end;
 
   // Обновим информацию в группах
-  DMUser.SetBookSeriesID(BookKey, SeriesID);
+  GetSystemData.SetBookSeriesID(BookKey, SeriesID);
 end;
 
 function TBookCollection_SQLite.GetSeriesTitle(SeriesID: Integer): string;

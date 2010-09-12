@@ -79,7 +79,8 @@ uses
   unit_Settings,
   unit_MHLHelpers,
   unit_WriteFb2Info,
-  unit_Database;
+  unit_Database,
+  unit_SystemDatabase;
 
 resourcestring
   rstrCheckTemplateValidity = 'Проверьте правильность шаблона';
@@ -229,7 +230,7 @@ var
   totalBooks: Integer;
   Res: Boolean;
 begin
-  FCollectionRoot := DMUser.ActiveCollectionInfo.RootPath;
+  FCollectionRoot := GetSystemData.ActiveCollectionInfo.RootPath;
 
   FZipper := TZipForge.Create(nil);
   try

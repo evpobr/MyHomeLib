@@ -134,6 +134,8 @@ type
     bfRaw     // A raw file = any other book format
   );
 
+  TCollectionProp = (cpDisplayName, cpFileName, cpRootFolder);
+
   PBookKey = ^TBookKey;
   TBookKey = record
     BookID: Integer;

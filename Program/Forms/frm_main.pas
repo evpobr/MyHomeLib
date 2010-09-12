@@ -996,7 +996,8 @@ uses
   frm_ConverToFBD,
   frmEditAuthorEx,
   unit_Lib_Updates,
-  frm_EditGroup;
+  frm_EditGroup,
+  unit_SystemDatabase;
 
 resourcestring
   rstrFileNotFoundMsg = 'Файл %s не найден!' + CRLF + 'Проверьте настройки коллекции!';
@@ -1515,7 +1516,7 @@ begin
     //
     // Если коллекций нет - запустим мастера создания коллекции.
     //
-    if not DMUser.HasCollections then
+    if not GetSystemData.HasCollections then
     begin
       frmMain.Caption := 'MyHomeLib';
       Screen.Cursor := SavedCursor;
@@ -1530,12 +1531,12 @@ begin
     //
     // Активировать коллекцию
     //
-    DMUser.ActivateCollection(Settings.ActiveCollection);
+    GetSystemData.ActivateCollection(Settings.ActiveCollection);
 
-    frmMain.Caption := 'MyHomeLib - ' + DMUser.ActiveCollectionInfo.Name;
+    frmMain.Caption := 'MyHomeLib - ' + GetSystemData.ActiveCollectionInfo.Name;
 
     // определяем типы коллекции
-    CollectionType := DMUser.ActiveCollectionInfo.CollectionType;
+    CollectionType := GetSystemData.ActiveCollectionInfo.CollectionType;
     IsPrivate := isPrivateCollection(CollectionType);
     IsOnline := isOnlineCollection(CollectionType);
     IsLocal := isLocalCollection(CollectionType);
@@ -1555,7 +1556,7 @@ begin
     ///tbtnFBD.Enabled := IsPrivate and not IsFB2;
     ///miConverToFBD.Visible := IsPrivate and not IsFB2;
     ///tbtnAutoFBD.Enabled := IsPrivate and not IsFB2;
-    ///miDeleteBook.Visible := IsPrivate; // DMUser.ActiveCollection.AllowDelete;
+    ///miDeleteBook.Visible := IsPrivate; // GetSystemData.ActiveCollection.AllowDelete;
     ///tbtnDeleteBook.Enabled := IsPrivate;
     ///miDeleteFiles.Visible := IsOnline and (ActiveView <> FavoritesView);
 
@@ -1778,7 +1779,7 @@ var
   end;
 
 begin
-  ActiveCollectionID := DMUser.ActiveCollectionInfo.ID;
+  ActiveCollectionID := GetSystemData.ActiveCollectionInfo.ID;
 
   miCollSelect.Clear;
   miCopyToCollection.Clear;
@@ -1786,7 +1787,7 @@ begin
 
   CollectionInfo := TCollectionInfo.Create;
   try
-    CollectionInfoIterator := DMUser.GetCollectionInfoIterator;
+    CollectionInfoIterator := GetSystemData.GetCollectionInfoIterator;
     while CollectionInfoIterator.Next(CollectionInfo) do
     begin
       if ActiveCollectionID <> CollectionInfo.ID then
@@ -1841,7 +1842,7 @@ begin
   pmGroups.Items.Clear;
   pmiGroups.Clear;
 
-  GroupIterator := DMUser.GetGroupIterator;
+  GroupIterator := GetSystemData.GetGroupIterator;
   while GroupIterator.Next(Group) do
   begin
     //
@@ -1879,7 +1880,7 @@ begin
   pmiScripts.Clear;
   mmiScripts.Clear;
 
-  if isFB2Collection(DMUser.ActiveCollectionInfo.CollectionType) then
+  if isFB2Collection(GetSystemData.ActiveCollectionInfo.CollectionType) then
   begin
     for i := 0 to 5 do
     begin
@@ -1955,7 +1956,7 @@ begin
   try
     if frmNCWizard.ShowModal = mrOk then
     begin
-      Settings.ActiveCollection := DMUser.ActiveCollectionInfo.ID;
+      Settings.ActiveCollection := GetSystemData.ActiveCollectionInfo.ID;
       InitCollection(True);
       Result := True;
     end
@@ -2034,7 +2035,7 @@ begin
       end;
 
       3: FillBooksTree(tvBooksSR, BookCollection.Search(FSearchCriteria, False), True,  True, nil);  // поиск
-      4: FillBooksTree(tvBooksF,  DMUser.GetBookIterator(GroupBookFIlter), True,  True, @FLastGroupBookID);  // избранное
+      4: FillBooksTree(tvBooksF,  GetSystemData.GetBookIterator(GroupBookFIlter), True,  True, @FLastGroupBookID);  // избранное
     end;
 
     SetHeaderPopUp;
@@ -2124,7 +2125,7 @@ begin
     FilterValue := GenreBookFilter;
     FillBooksTree(tvBooksG, BookCollection.GetBookIterator(bmByGenre, False, @FilterValue),   True,  True, @FLastGenreBookID);  // жанры
 
-    FillBooksTree(tvBooksF, DMUser.GetBookIterator(GroupBookFIlter), True,  True, @FLastGroupBookID);  // избранное
+    FillBooksTree(tvBooksF, GetSystemData.GetBookIterator(GroupBookFIlter), True,  True, @FLastGroupBookID);  // избранное
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -2148,7 +2149,7 @@ begin
 
   CollectionInfo := TCollectionInfo.Create;
   try
-    CollectionInfoIterator := DMUser.GetCollectionInfoIterator;
+    CollectionInfoIterator := GetSystemData.GetCollectionInfoIterator;
     while CollectionInfoIterator.Next(CollectionInfo) do
     begin
       for i := 0 to UpdatesInfo.Count - 1 do
@@ -2173,7 +2174,7 @@ end;
 
 procedure TfrmMain.TheFirstRun;
 begin
-  if not DMUser.HasCollections then
+  if not GetSystemData.HasCollections then
     DeleteFile(Settings.WorkPath + CHECK_FILE)
   else if FileExists(Settings.WorkPath + CHECK_FILE) and (Application.MessageBox(PWideChar(rstrNeedDBUpgrade), PWideChar(rstrFirstRun), mb_YesNo) = mrYes) then
   begin
@@ -2295,12 +2296,12 @@ begin
   //
   // пока оставляю старую логику
   //
-  if DMUser.HasCollections then
+  if GetSystemData.HasCollections then
   begin
-    CollectionID := DMUser.FindFirstExistingCollectionID(Settings.ActiveCollection);
+    CollectionID := GetSystemData.FindFirstExistingCollectionID(Settings.ActiveCollection);
     if CollectionID < 0 then
     begin
-      MHLShowError(rstrCollectionFileNotFound, [DMUser.ActiveCollectionInfo.DBFileName]);
+      MHLShowError(rstrCollectionFileNotFound, [GetSystemData.ActiveCollectionInfo.DBFileName]);
       //
       // Мне кажется, это очень жестко по отношению к пользователю.
       // Может лучше вернуть ошибку и запустить мастера создания коллекции?
@@ -2328,6 +2329,7 @@ procedure TfrmMain.FormCreate(Sender: TObject);
 var
   PresetFile: string;
   preset: TSearchPreset;
+  DBFileName: string;
 begin
   Application.OnHelp := OnHelpHandler;
   UseLatestCommonDialogs := True;
@@ -2420,12 +2422,11 @@ begin
 
   frmSplash.lblState.Caption := rstrMainConnectToDb;
 
-  DMUser.DBUser.DatabaseFileName := Settings.SystemFileName[sfSystemDB];
-  if not FileExists(DMUser.DBUser.DatabaseFileName) then
-    CreateSystemTables(DMUser.DBUser.DatabaseFileName);
+  DBFileName := Settings.SystemFileName[sfSystemDB];
+  if not FileExists(DBFileName) then
+    CreateSystemTables(DBFileName);
 
-  DMUser.DBUser.Connected := True;
-  DMUser.SetTableState(True);
+  GetSystemData; // mount
 
   // ------------------------------------------------------------------------------
   // Проверка обновлений
@@ -2955,12 +2956,12 @@ begin
 
     if FLastGroupID <> Data^.GroupID then
     begin
-      lblGroups.Caption := DMUser.GroupsGroupName.Value;
+      lblGroups.Caption := GetSystemData.GetGroup(Data^.GroupID).Text;
       FLastGroupID := Data^.GroupID;
       FLastGroupBookID.Clear;
     end;
 
-    FillBooksTree(tvBooksF, DMUser.GetBookIterator(GroupBookFIlter), True, True, @FLastGroupBookID);
+    FillBooksTree(tvBooksF, GetSystemData.GetBookIterator(GroupBookFIlter), True, True, @FLastGroupBookID);
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -3000,42 +3001,48 @@ var
   end;
 
 begin
-  SourceGroupID := DMUser.GroupsGroupID.Value;
+// Where can we get a replacement for DMUser.GroupsGroupID.Value ?
+  Assert(False, 'Not implemented yet!')
 
-  GroupData := tvGroups.GetNodeData(tvGroups.DropTargetNode);
-  Assert(Assigned(GroupData));
-  TargetGroupID := GroupData^.GroupID;
-
-  Nodes := tvBooksF.GetSortedSelection(False);
-
-  // сканируем выделенные ноды.
-  // если есть потомки, выделяем их тоже
-  for i := 0 to High(Nodes) do
-    SelectChildNodes(Nodes[i]);
-
-  // составляем новый список выделенных
-  Nodes := tvBooksF.GetSortedSelection(False);
-
-  // переносим данные
-  for i := 0 to High(Nodes) do
-  begin
-    BookData := tvBooksF.GetNodeData(Nodes[i]);
-    if BookData^.nodeType = ntBookInfo then
-    begin
-      DMUser.CopyBookToGroup(BookData^.BookKey, SourceGroupID, TargetGroupID, ssShift in Shift);
-    end;
-  end;
-  FillBooksTree(tvBooksF, DMUser.GetBookIterator(GroupBookFIlter), True, True, @FLastGroupBookID);
+//  SourceGroupID := DMUser.GroupsGroupID.Value;
+//
+//  GroupData := tvGroups.GetNodeData(tvGroups.DropTargetNode);
+//  Assert(Assigned(GroupData));
+//  TargetGroupID := GroupData^.GroupID;
+//
+//  Nodes := tvBooksF.GetSortedSelection(False);
+//
+//  // сканируем выделенные ноды.
+//  // если есть потомки, выделяем их тоже
+//  for i := 0 to High(Nodes) do
+//    SelectChildNodes(Nodes[i]);
+//
+//  // составляем новый список выделенных
+//  Nodes := tvBooksF.GetSortedSelection(False);
+//
+//  // переносим данные
+//  for i := 0 to High(Nodes) do
+//  begin
+//    BookData := tvBooksF.GetNodeData(Nodes[i]);
+//    if BookData^.nodeType = ntBookInfo then
+//    begin
+//      GetSystemData.CopyBookToGroup(BookData^.BookKey, SourceGroupID, TargetGroupID, ssShift in Shift);
+//    end;
+//  end;
+//  FillBooksTree(tvBooksF, GetSystemData.GetBookIterator(GroupBookFIlter), True, True, @FLastGroupBookID);
 end;
 
 procedure TfrmMain.tvGroupsDragOver(Sender: TBaseVirtualTree; Source: TObject; Shift: TShiftState; State: TDragState; Pt: TPoint; Mode: TDropMode; var Effect: Integer; var Accept: Boolean);
 var
   Data: PGroupData;
 begin
-  Data := tvGroups.GetNodeData(tvGroups.DropTargetNode);
-  if Assigned(Data) then
-    if Data^.GroupID <> DMUser.GroupsGroupID.Value then
-      Accept := True;
+// Where can we get a replacement for DMUser.GroupsGroupID.Value ?
+  Assert(False, 'Not implemented yet!')
+
+//  Data := tvGroups.GetNodeData(tvGroups.DropTargetNode);
+//  if Assigned(Data) then
+//    if Data^.GroupID <> DMUser.GroupsGroupID.Value then
+//      Accept := True;
 end;
 
 procedure TfrmMain.FreeGroupNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -3319,7 +3326,7 @@ begin
     //
     CollectionInfo := TCollectionInfo.Create;
     try
-      DMUser.GetCollectionInfo(Data^.BookKey.DatabaseID, CollectionInfo);
+      GetSystemData.GetCollectionInfo(Data^.BookKey.DatabaseID, CollectionInfo);
       CollectionType := CollectionInfo.CollectionType;
     finally
       FreeAndNil(CollectionInfo);
@@ -3626,13 +3633,13 @@ begin
     ID := (Sender as TMenuItem).Tag;
     CollectionInfo := TCollectionInfo.Create;
     try
-      if not DMUser.GetCollectionInfo(ID, CollectionInfo) then
+      if not GetSystemData.GetCollectionInfo(ID, CollectionInfo) then
         Exit;
     finally
       FreeAndNil(CollectionInfo);
     end;
 
-    BookCollection := GetBookCollection(DMUser.ActiveCollectionInfo.DBFileName);
+    BookCollection := GetBookCollection(GetSystemData.ActiveCollectionInfo.DBFileName);
     Node := Tree.GetFirst;
     while Assigned(Node) do
     begin
@@ -3705,7 +3712,7 @@ begin
   SaveFolderTemplate := Settings.FolderTemplate;
   ScriptID := (Sender as TComponent).Tag;
 
-  if isFB2Collection(DMUser.ActiveCollectionInfo.CollectionType) then
+  if isFB2Collection(GetSystemData.ActiveCollectionInfo.CollectionType) then
   begin
     case ScriptID of
       850: ExportMode := emFB2;
@@ -3765,7 +3772,7 @@ begin
     Settings.Scripts[ScriptID].TMPParams := TMPParams;
   end;
 
-  if isOnlineCollection(DMUser.ActiveCollectionInfo.CollectionType) then
+  if isOnlineCollection(GetSystemData.ActiveCollectionInfo.CollectionType) then
     unit_ExportToDevice.DownloadBooks(BookIDList);
   unit_ExportToDevice.ExportToDevice(Settings.DeviceDir, BookIDList, ExportMode, Files);
 
@@ -3836,7 +3843,7 @@ begin
       begin
         CollectionInfo := TCollectionInfo.Create;
         try
-          if not DMUser.GetCollectionInfo(BookRecord.BookKey.DatabaseID, CollectionInfo) then
+          if not GetSystemData.GetCollectionInfo(BookRecord.BookKey.DatabaseID, CollectionInfo) then
             Assert(False);
 
           if (not BookRecord.IsLocal) and isOnlineCollection(CollectionInfo.CollectionType) then
@@ -4608,17 +4615,17 @@ var
   CollectionInfo: TCollectionInfo;
 begin
   { TODO -oNickR -cUsability : Думаю, стоит сделать специальный диалог для этого случая. Тогда мы сможем спросить, удалять файл коллекции или нет. }
-  if MessageDlg(rstrRemoveCollection + '"' + DMUser.ActiveCollectionInfo.Name + '"?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+  if MessageDlg(rstrRemoveCollection + '"' + GetSystemData.ActiveCollectionInfo.Name + '"?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
     Exit;
 
   // Delete current collection and choose another:
-  DBFileName := DMUser.ActiveCollectionInfo.DBFileName;
-  DMUser.DeleteCollection(DMUser.ActiveCollectionInfo.ID);
+  DBFileName := GetSystemData.ActiveCollectionInfo.DBFileName;
+  GetSystemData.DeleteCollection(GetSystemData.ActiveCollectionInfo.ID);
   DropCollectionDatabase(DBFileName);
 
   CollectionInfo := TCollectionInfo.Create;
   try
-    CollectionInfoIterator := DMUser.GetCollectionInfoIterator;
+    CollectionInfoIterator := GetSystemData.GetCollectionInfoIterator;
     if CollectionInfoIterator.Next(CollectionInfo) then
       Settings.ActiveCollection := CollectionInfo.ID
     else
@@ -4635,7 +4642,7 @@ var
   FilePath: string;
   BookCollection: IBookCollection;
 begin
-  DatabaseID := DMUser.ActiveCollectionInfo.ID;
+  DatabaseID := GetSystemData.ActiveCollectionInfo.ID;
   BookCollection := GetActiveBookCollection;
 
   ProcessNodes(
@@ -4717,7 +4724,7 @@ begin
     Assert(Assigned(BookData));
     if IsSelectedBookNode(BookNode, BookData) then
     begin
-      if not BookData^.IsLocal and (BookData^.BookKey.DatabaseID = DMUser.ActiveCollectionInfo.ID) then
+      if not BookData^.IsLocal and (BookData^.BookKey.DatabaseID = GetSystemData.ActiveCollectionInfo.ID) then
       begin
         if not BookInDownloadList(BookData^.BookKey) then
         begin
@@ -4917,17 +4924,17 @@ var
   BookRecord: TBookRecord;
   URL: string;
 begin
-  if isExternalCollection(DMUser.ActiveCollectionInfo.CollectionType) then
+  if isExternalCollection(GetSystemData.ActiveCollectionInfo.CollectionType) then
   begin
     //
     // TODO -oNickR : Думаю, стоит приделать к этому диалогу возможность запоминать выбор пользователя и переходить на сайт без вопроса
     //
-    if MHLShowWarning(Format(rstrGoToLibrarySite, [DMUser.ActiveCollectionInfo.URL]), mbYesNo) = mrYes then
+    if MHLShowWarning(Format(rstrGoToLibrarySite, [GetSystemData.ActiveCollectionInfo.URL]), mbYesNo) = mrYes then
     begin
-      BookKey := CreateBookKey(BookID, DMUser.ActiveCollectionInfo.ID);
+      BookKey := CreateBookKey(BookID, GetSystemData.ActiveCollectionInfo.ID);
       GetActiveBookCollection.GetBookRecord(BookKey, BookRecord, False);
       { TODO -oNickR -cLibDesc : этот URL должен формироваться обвязкой библиотеки, т к его формат может меняться }
-      URL := Format('%sb/%u/edit', [DMUser.ActiveCollectionInfo.URL, BookRecord.LibID]);
+      URL := Format('%sb/%u/edit', [GetSystemData.ActiveCollectionInfo.URL, BookRecord.LibID]);
       SimpleShellExecute(Handle, URL);
     end;
     Result := True;
@@ -5074,7 +5081,7 @@ begin
     if S = NO_SERIES_TITLE then
     begin
       // Clear the series for all books in DB:
-      BookCollection.ChangeBookSeriesID(Data^.SeriesID, NO_SERIES_ID, DMUser.ActiveCollectionInfo.ID);
+      BookCollection.ChangeBookSeriesID(Data^.SeriesID, NO_SERIES_ID, GetSystemData.ActiveCollectionInfo.ID);
       FillAllBooksTree;
     end
     else
@@ -5095,7 +5102,7 @@ var
 begin
   if NewGroup(GroupName) then
   begin
-    if DMUser.AddGroup(GroupName) then
+    if GetSystemData.AddGroup(GroupName) then
     begin
       CreateGroupsMenu;
       FillGroupsList(tvGroups, FLastGroupID);
@@ -5118,7 +5125,7 @@ begin
 
   if EditGroup(GroupName) then
   begin
-    if DMUser.RenameGroup(Data^.GroupID, GroupName) then
+    if GetSystemData.RenameGroup(Data^.GroupID, GroupName) then
     begin
       CreateGroupsMenu;
       FillGroupsList(tvGroups, FLastGroupID);
@@ -5138,7 +5145,7 @@ begin
 
   if Data^.CanDelete then
   begin
-    DMUser.DeleteGroup(Data^.GroupID);
+    GetSystemData.DeleteGroup(Data^.GroupID);
 
     CreateGroupsMenu;
     FillGroupsList(tvGroups, FLastGroupID);
@@ -5162,9 +5169,9 @@ begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
-    DMUser.ClearGroup(GroupData^.GroupID);
+    GetSystemData.ClearGroup(GroupData^.GroupID);
 
-    FillBooksTree(tvBooksF, DMUser.GetBookIterator(GroupBookFIlter), True, True, @FLastGroupBookID); // избранное
+    FillBooksTree(tvBooksF, GetSystemData.GetBookIterator(GroupBookFIlter), True, True, @FLastGroupBookID); // избранное
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -5397,7 +5404,7 @@ end;
 
 function TfrmMain.UpdateEditAction(Action: TAction): Boolean;
 begin
-  Result := isOnlineCollection(DMUser.ActiveCollectionInfo.CollectionType);
+  Result := isOnlineCollection(GetSystemData.ActiveCollectionInfo.CollectionType);
 
   if Result then
     Action.Enabled := False;
@@ -5581,7 +5588,7 @@ begin
   GroupData := tvGroups.GetNodeData(tvGroups.GetFirstSelected);
   if Assigned(GroupData) and (GroupData^.GroupID = GroupID) then
   begin
-    FillBooksTree(tvBooksF, DMUser.GetBookIterator(GroupBookFIlter), True, True, @FLastGroupBookID); // Группы
+    FillBooksTree(tvBooksF, GetSystemData.GetBookIterator(GroupBookFIlter), True, True, @FLastGroupBookID); // Группы
   end;
 end;
 
@@ -5620,7 +5627,7 @@ begin
           Data := Tree.GetNodeData(Node);
           if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
           begin
-            DMUser.DeleteFromGroup(Data.BookKey, GroupData^.GroupID);
+            GetSystemData.DeleteFromGroup(Data.BookKey, GroupData^.GroupID);
 
             Inc(booksProcessed);
             StatusProgress := booksProcessed * 100 div booksToProcess;
@@ -5631,9 +5638,9 @@ begin
       //
       // удалить информацию о книгах, не входящих ни в одну группу
       //
-      DMUser.RemoveUnusedBooks;
+      GetSystemData.RemoveUnusedBooks;
 
-      FillBooksTree(tvBooksF, DMUser.GetBookIterator(GroupBookFIlter), True, True, @FLastGroupBookID);
+      FillBooksTree(tvBooksF, GetSystemData.GetBookIterator(GroupBookFIlter), True, True, @FLastGroupBookID);
     finally
       ShowStatusProgress := False;
     end;
@@ -5688,7 +5695,7 @@ procedure TfrmMain.ImportFb2Execute(Sender: TObject);
 begin
 //  DMCollection.DBCollection.Connected := False;
 
-  unit_Import.ImportFB2(DMUser.ActiveCollectionInfo);
+  unit_Import.ImportFB2(GetSystemData.ActiveCollectionInfo);
 
   InitCollection(True);
 end;
@@ -5708,7 +5715,7 @@ procedure TfrmMain.ImportFb2ZipExecute(Sender: TObject);
 begin
 //  DMCollection.DBCollection.Connected := False;
 
-  unit_Import.ImportFB2ZIP(DMUser.ActiveCollectionInfo);
+  unit_Import.ImportFB2ZIP(GetSystemData.ActiveCollectionInfo);
 
   InitCollection(True);
 end;
@@ -5717,7 +5724,7 @@ procedure TfrmMain.ImportFBDExecute(Sender: TObject);
 begin
 //  DMCollection.DBCollection.Connected := False;
 
-  unit_Import.ImportFBD(DMUser.ActiveCollectionInfo);
+  unit_Import.ImportFBD(GetSystemData.ActiveCollectionInfo);
 
   InitCollection(True);
 end;
@@ -6000,7 +6007,7 @@ begin
   i := (Sender as TMenuItem).Tag;
   CollectionInfo := TCollectionInfo.Create;
   try
-    if DMUser.GetCollectionInfo(i, CollectionInfo) then
+    if GetSystemData.GetCollectionInfo(i, CollectionInfo) then
     begin
       (Sender as TMenuItem).Checked := True;
       Settings.ActiveCollection := i;
@@ -6040,7 +6047,7 @@ begin
     //
     // ревью можно изменять только для книг из текущей коллекции
     //
-    ReviewEditable := (Data^.BookKey.DatabaseID = DMUser.ActiveCollectionInfo.ID);
+    ReviewEditable := (Data^.BookKey.DatabaseID = GetSystemData.ActiveCollectionInfo.ID);
 
     frmBookDetails := TfrmBookDetails.Create(Application);
     try
@@ -6074,10 +6081,10 @@ begin
       if IsOnline and ReviewEditable then
       begin
         { TODO -oNickR -cLibDesc : этот URL должен формироваться обвязкой библиотеки, т к его формат может меняться }
-        if DMUser.ActiveCollectionInfo.URL = '' then
+        if GetSystemData.ActiveCollectionInfo.URL = '' then
           URL := Format('%sb/%d/', [Settings.InpxURL, Data^.LibID])
         else
-          URL := Format('%sb/%d/', [DMUser.ActiveCollectionInfo.URL, Data^.LibID]);
+          URL := Format('%sb/%d/', [GetSystemData.ActiveCollectionInfo.URL, Data^.LibID]);
 
         frmBookDetails.AllowOnlineReview(URL);
       end;
@@ -6185,11 +6192,11 @@ begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
-    if Data^.BookKey.DatabaseID <> DMUser.ActiveCollectionInfo.ID then
+    if Data^.BookKey.DatabaseID <> GetSystemData.ActiveCollectionInfo.ID then
     begin
       CollectionInfo := TCollectionInfo.Create;
       try
-        if DMUser.GetCollectionInfo(Data^.BookKey.DatabaseID, CollectionInfo) then
+        if GetSystemData.GetCollectionInfo(Data^.BookKey.DatabaseID, CollectionInfo) then
         begin
           Settings.ActiveCollection := Data^.BookKey.DatabaseID;
           InitCollection(True);
@@ -6287,7 +6294,7 @@ procedure TfrmMain.SyncFilesExecute(Sender: TObject);
 begin
   UpdatePositions;
 
-  if isOnlineCollection(DMUser.ActiveCollectionInfo.CollectionType) then
+  if isOnlineCollection(GetSystemData.ActiveCollectionInfo.CollectionType) then
     unit_Utils.SyncOnLineFiles
   else
     unit_Utils.SyncFolders;
@@ -6303,10 +6310,10 @@ begin
   begin
     UpdatePositions;
 
-    ActiveCollectionID := DMUser.ActiveCollectionInfo.ID;
+    ActiveCollectionID := GetSystemData.ActiveCollectionInfo.ID;
     StartLibUpdate;
     Settings.ActiveCollection := ActiveCollectionID;
-    DMUser.ActivateCollection(ActiveCollectionID);
+    GetSystemData.ActivateCollection(ActiveCollectionID);
     InitCollection(True);
   end;
 end;
@@ -6335,7 +6342,7 @@ procedure TfrmMain.CompactDataBaseExecute(Sender: TObject);
 begin
   GetActiveBookCollection.CompactDatabase;
 
-  DMUser.SetTableState(True);
+  //GetSystemData.SetTableState(True);
 end;
 
 procedure TfrmMain.Conver2FBDExecute(Sender: TObject);
@@ -6511,7 +6518,7 @@ begin
     frmBases.tsConnectionInfo.TabVisible := IsOnline;
     if frmBases.ShowModal = mrOk then
     begin
-      Assert(Settings.ActiveCollection = DMUser.ActiveCollectionInfo.ID);
+      Assert(Settings.ActiveCollection = GetSystemData.ActiveCollectionInfo.ID);
       InitCollection(True);
     end;
   finally
@@ -6563,7 +6570,7 @@ var
 begin
   //DMCollection.DBCollection.Connected := False;
   ALibrary := GetActiveBookCollection;
-  if isFB2Collection(DMUser.ActiveCollectionInfo.CollectionType) then
+  if isFB2Collection(GetSystemData.ActiveCollectionInfo.CollectionType) then
     ALibrary.ReloadGenres(Settings.SystemFileName[sfGenresFB2])
   else if unit_Helpers.GetFileName(fnGenreList, AFileName) then
     ALibrary.ReloadGenres(AFileName);
@@ -6574,7 +6581,7 @@ procedure TfrmMain.RepairDataBaseExecute(Sender: TObject);
 begin
   GetActiveBookCollection.RepairDatabase;
 
-  DMUser.SetTableState(True);
+//  GetSystemData.SetTableState(True);
 end;
 
 procedure TfrmMain.ChangeSettingsExecute(Sender: TObject);
@@ -6694,7 +6701,7 @@ begin
       BtnFav_add.DropdownMenu := pmGroups;
       BtnFav_add.ImageIndex := 15;
       pmiGroups.Visible := True;
-      ///miDeleteFiles.Visible := isOnlineCollection(DMUser.ActiveCollection.CollectionType);
+      ///miDeleteFiles.Visible := isOnlineCollection(GetSystemData.ActiveCollection.CollectionType);
     end;
 
   end;
@@ -6937,7 +6944,7 @@ procedure TfrmMain.BtnFav_addClick(Sender: TObject);
 begin
   if ActiveView = FavoritesView then
     DeleteBookFromGroup(Sender)
-  else if DMUser.ActivateGroup(FAVORITES_GROUP_ID) then
+  else if GetSystemData.ActivateGroup(FAVORITES_GROUP_ID) then
     AddBookToGroup(Sender);
 end;
 
@@ -7091,7 +7098,7 @@ begin
 
   ALibrary := TMHLLibrary.Create(nil);
   try
-    ALibrary.DatabaseFileName := DMUser.ActiveCollection.DBFileName;
+    ALibrary.DatabaseFileName := GetSystemData.ActiveCollection.DBFileName;
     ALibrary.Active := True;
 
     ALibrary.BeginBulkOperation;
@@ -7103,7 +7110,7 @@ begin
       ALibrary.EndBulkOperation(False);
     end;
 
-    DMUser.ChangeBookID(OldID, Data^.BookKey.BookID);
+    GetSystemData.ChangeBookID(OldID, Data^.BookKey.BookID);
 
     Data^.Title := BookRecord.Title;
     Data^.Genres := BookRecord.Genres;
@@ -7148,7 +7155,7 @@ end;
 
 function TfrmMain.GenreBookFilter: TFilterValue;
 begin
-  if isFB2Collection(DMUser.ActiveCollectionInfo.CollectionType) or not Settings.ShowSubGenreBooks then
+  if isFB2Collection(GetSystemData.ActiveCollectionInfo.CollectionType) or not Settings.ShowSubGenreBooks then
     Result.ValueString := FLastGenreCode
   else
     Result.ValueString := FLastGenreCode + IfThen(FLastGenreIsContainer, '.', '');

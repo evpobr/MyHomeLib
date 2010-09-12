@@ -118,7 +118,8 @@ uses
   unit_ImportInpxThread,
   unit_Consts,
   unit_mhl_strings,
-  unit_Interfaces;
+  unit_Interfaces,
+  unit_SystemDatabase;
 
 resourcestring
   rstrCaptionCancel = 'Отмена';
@@ -694,7 +695,7 @@ begin
   //
   // TODO -oNickR -cRO Mode Support: сохранять относительные пути
   //
-  DMUser.RegisterCollection(
+  GetSystemData.RegisterCollection(
     FParams.DisplayName,
     FParams.CollectionRoot,
     FParams.CollectionFile,

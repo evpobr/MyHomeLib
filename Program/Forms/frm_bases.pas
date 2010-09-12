@@ -115,7 +115,8 @@ uses
   unit_Helpers,
   unit_Consts,
   unit_Errors,
-  unit_Globals;
+  unit_Globals,
+  unit_SystemDatabase;
 
 resourcestring
   rstrChooseDataFolder = 'Выберите папку для сохранения данных';
@@ -123,17 +124,21 @@ resourcestring
 {$R *.dfm}
 
 procedure TfrmBases.FormShow(Sender: TObject);
+var
+  CollectionInfo: TCollectionInfo;
 begin
-  CollectionID := DMUser.ActiveCollectionInfo.ID;
+  CollectionInfo := GetSystemData.ActiveCollectionInfo;
 
-  DisplayName := DMUser.ActiveCollectionInfo.Name;
-  DBFileName := DMUser.ActiveCollectionInfo.DBFileName;
-  RootFolder := DMUser.ActiveCollectionInfo.RootFolder;
-  Description := DMUser.ActiveCollectionInfo.Notes;
-  URL := DMUser.ActiveCollectionInfo.URL;
-  Pass := DMUser.ActiveCollectionInfo.Password;
-  User := DMUser.ActiveCollectionInfo.User;
-  Script := DMUser.ActiveCollectionInfo.Script;
+  CollectionID := CollectionInfo.ID;
+
+  DisplayName := CollectionInfo.Name;
+  DBFileName := CollectionInfo.DBFileName;
+  RootFolder := CollectionInfo.RootFolder;
+  Description := CollectionInfo.Notes;
+  URL := CollectionInfo.URL;
+  Pass := CollectionInfo.Password;
+  User := CollectionInfo.User;
+  Script := CollectionInfo.Script;
 end;
 
 function TfrmBases.GetDisplayName: string;
@@ -249,7 +254,7 @@ begin
   //
   // Проверим название коллекции
   //
-  if DMUser.FindCollectionWithProp(cpDisplayName, DisplayName, CollectionID) then
+  if GetSystemData.FindCollectionWithProp(cpDisplayName, DisplayName, CollectionID) then
   begin
     MessageDlg(Format(rstrCollectionAlreadyExists, [DisplayName]), mtError, [mbOk], 0);
     Exit;
@@ -284,7 +289,7 @@ begin
     Exit;
   end;
 
-  if DMUser.FindCollectionWithProp(cpFileName, ADBFileName, CollectionID) then
+  if GetSystemData.FindCollectionWithProp(cpFileName, ADBFileName, CollectionID) then
   begin
     MessageDlg(Format(rstrFileAlreadyExistsInDB, [ADBFileName]), mtError, [mbOk], 0);
     Exit;
@@ -302,7 +307,7 @@ begin
     CollectionInfo.Password := Pass;
     CollectionInfo.Script := Script;
 
-    DMUser.UpdateCollectionInfo(CollectionInfo);
+    GetSystemData.UpdateCollectionInfo(CollectionInfo);
   finally
     FreeAndNil(CollectionInfo);
   end;

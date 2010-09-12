@@ -29,7 +29,6 @@ uses
   function GetBookCollection(const DBCollectionFile: string): IBookCollection;
   function GetActiveBookCollection: IBookCollection;
 
-  procedure CreateSystemTables(const DBUserFile: string);
   procedure CreateCollectionTables(const DBCollectionFile: string; const GenresFileName: string);
   procedure DropCollectionDatabase(const DBCollectionFile: string);
 
@@ -41,8 +40,10 @@ uses
   Generics.Collections,
   SysUtils,
   dm_user,
+  unit_Settings,
   unit_Database_ABS,
-  unit_Database_SQLite;
+  unit_Database_SQLite,
+  unit_SystemDatabase;
 
 type
   TCollectionCache = class
@@ -107,7 +108,7 @@ end;
 
 function GetActiveBookCollection: IBookCollection;
 begin
-  Result := GetBookCollection(DMUser.ActiveCollectionInfo.DBFileName);
+  Result := GetBookCollection(GetSystemData.ActiveCollectionInfo.DBFileName);
 end;
 
 procedure DropCollectionDatabase(const DBCollectionFile: string);
@@ -124,12 +125,6 @@ begin
   end;
 
   DeleteFile(DBCollectionFile);
-end;
-
-procedure CreateSystemTables(const DBUserFile: string);
-begin
-  // So far, there is only an ABS implementation for the system DB connection (DMUser)
-  CreateSystemTables_ABS(DBUserFile);
 end;
 
 procedure CreateCollectionTables(const DBCollectionFile: string; const GenresFileName: string);
@@ -225,5 +220,5 @@ initialization
 
 finalization
   FreeAndNil(g_CollectionCache);
-
 end.
+
