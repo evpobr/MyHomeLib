@@ -46,7 +46,8 @@ uses
   dm_user,
   UserData,
   Generics.Collections,
-  unit_Database;
+  unit_Database,
+  unit_SystemDatabase;
 
 procedure GetSelections(Tree: TBookTree; out List: TSelectionList);
 var
@@ -291,7 +292,7 @@ begin
       Tree.Clear;
       SelectedNode := nil;
 
-      GroupIterator := DMUser.GetGroupIterator;
+      GroupIterator := GetSystemData.GetGroupIterator;
       while GroupIterator.Next(Group) do
       begin
         Node := Tree.AddChild(nil);

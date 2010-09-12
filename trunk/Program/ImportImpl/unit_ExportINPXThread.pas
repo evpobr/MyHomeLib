@@ -65,7 +65,8 @@ uses
   unit_Settings,
   unit_MHL_strings,
   unit_Database,
-  unit_Interfaces;
+  unit_Interfaces,
+  unit_SystemDatabase;
 
 resourcestring
   rstrVersionFrom = 'Версия от ';
@@ -78,17 +79,20 @@ const
   { TImportXMLThread }
 
 constructor TExport2INPXThread.Create;
+var
+  CollectionInfo: TCollectionInfo;
 begin
   inherited Create;
 
   FTempPath := Settings.TempPath;
 
-  FCollectionType := DMUser.ActiveCollectionInfo.CollectionType;
-  FCollectionVersion := DMUser.ActiveCollectionInfo.Version;
-  FCollectionName := DMUser.ActiveCollectionInfo.Name;
-  FCollectionDBFileName := DMUser.ActiveCollectionInfo.DBFileName;
+  CollectionInfo := GetSystemData.ActiveCollectionInfo;
+  FCollectionType := CollectionInfo.CollectionType;
+  FCollectionVersion := CollectionInfo.Version;
+  FCollectionName := CollectionInfo.Name;
+  FCollectionDBFileName := CollectionInfo.DBFileName;
 
-  FCollectionNotes := DMUser.ActiveCollectionInfo.Notes;
+  FCollectionNotes := CollectionInfo.Notes;
   if FCollectionNotes = '' then
     FCollectionNotes := rstrVersionFrom + DateToStr(Now);
 end;

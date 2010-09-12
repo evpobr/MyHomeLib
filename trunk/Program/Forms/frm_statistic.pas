@@ -51,7 +51,8 @@ uses
   dm_user,
   unit_Consts,
   CommCtrl,
-  unit_Database;
+  unit_Database,
+  unit_SystemDatabase;
 
 resourcestring
   rstrUnknown = 'unknown';
@@ -65,16 +66,16 @@ var
   BooksCount: Integer;
   SeriesCount: Integer;
 begin
-  if DMUser.ActiveCollectionInfo.Version = UNVERSIONED_COLLECTION then
+  if GetSystemData.ActiveCollectionInfo.Version = UNVERSIONED_COLLECTION then
     Version := rstrUnknown
   else
-    Version := IntToStr(DMUser.ActiveCollectionInfo.Version);
+    Version := IntToStr(GetSystemData.ActiveCollectionInfo.Version);
   GetActiveBookCollection.GetStatistics(AuthorsCount, BooksCount, SeriesCount);
 
-  lvInfo.Items[0].SubItems[0] := DMUser.ActiveCollectionInfo.Name;
-  lvInfo.Items[1].SubItems[0] := DateToStr(DMUser.ActiveCollectionInfo.CreationDate);
+  lvInfo.Items[0].SubItems[0] := GetSystemData.ActiveCollectionInfo.Name;
+  lvInfo.Items[1].SubItems[0] := DateToStr(GetSystemData.ActiveCollectionInfo.CreationDate);
   lvInfo.Items[2].SubItems[0] := Version;
-  lvInfo.Items[3].SubItems[0] := DMUser.ActiveCollectionInfo.Notes;
+  lvInfo.Items[3].SubItems[0] := GetSystemData.ActiveCollectionInfo.Notes;
 
   lvInfo.Items[4].SubItems[0] := IntToStr(AuthorsCount);
   lvInfo.Items[5].SubItems[0] := IntToStr(BooksCount);

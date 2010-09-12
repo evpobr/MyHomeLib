@@ -181,7 +181,8 @@ uses
   unit_Settings,
   unit_MHLHelpers,
   unit_Helpers,
-  frm_author_list;
+  frm_author_list,
+  unit_SystemDatabase;
 
 resourcestring
   rstrFileNotSelected = 'Файл не выбран!';
@@ -644,9 +645,9 @@ begin
   Tree.Clear;
   Tree.NodeDataSize := SizeOf(TFileData);
 
-  FRootPath := DMUser.ActiveCollectionInfo.RootPath;
+  FRootPath := GetSystemData.ActiveCollectionInfo.RootPath;
 
-  flFiles.TargetPath := DMUser.ActiveCollectionInfo.RootFolder;
+  flFiles.TargetPath := GetSystemData.ActiveCollectionInfo.RootFolder;
   flFiles.Process;
   SortTree;
 end;

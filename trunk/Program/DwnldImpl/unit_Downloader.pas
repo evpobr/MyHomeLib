@@ -105,7 +105,8 @@ uses
   unit_MHL_strings,
   unit_Messages,
   unit_Helpers,
-  unit_Database;
+  unit_Database,
+  unit_SystemDatabase;
 
 resourcestring
   rstrWrongCredentials = 'Неправильный логин/пароль';
@@ -271,13 +272,13 @@ begin
     // TODO: достаточно стремная операция - получение информации из глобальных объектов. Убрать нафиг!!!
     //
     ConstParams.Values['LIBID'] := GetActiveBookCollection.GetLibID(BookKey);;
-    ConstParams.Values['USER'] := DMUser.ActiveCollectionInfo.User;
-    ConstParams.Values['PASS'] := DMUser.ActiveCollectionInfo.Password;
-    ConstParams.Values['URL'] := DMUser.ActiveCollectionInfo.URL;
+    ConstParams.Values['USER'] := GetSystemData.ActiveCollectionInfo.User;
+    ConstParams.Values['PASS'] := GetSystemData.ActiveCollectionInfo.Password;
+    ConstParams.Values['URL'] := GetSystemData.ActiveCollectionInfo.URL;
 
     CL := TStringList.Create;
     try
-      CL.Text := DMUser.ActiveCollectionInfo.Script;
+      CL.Text := GetSystemData.ActiveCollectionInfo.Script;
       SetLength(Commands, CL.Count);
 
       FParams := TIdMultiPartFormDataStream.Create;

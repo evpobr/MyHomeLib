@@ -42,7 +42,8 @@ uses
   unit_libupdateThread,
   frm_info_popup,
   frm_search,
-  frm_main;
+  frm_main,
+  unit_SystemDatabase;
 
 resourcestring
   rstrUpdateCollections = 'Обновление коллекций';
@@ -54,8 +55,8 @@ var
 begin
   worker := TSyncOnLineThread.Create;
   try
-    worker.CollectionID := DMUser.ActiveCollectionInfo.ID;
-    worker.CollectionRoot := DMUser.ActiveCollectionInfo.RootPath;
+    worker.CollectionID := GetSystemData.ActiveCollectionInfo.ID;
+    worker.CollectionRoot := GetSystemData.ActiveCollectionInfo.RootPath;
 
     frmProgress := TSyncOnLineProgressForm.Create(Application);
     try

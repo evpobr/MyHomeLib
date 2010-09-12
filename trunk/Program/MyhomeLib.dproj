@@ -251,9 +251,10 @@
 			<DCCReference Include="DAO\SQLite\Lib\SQLite3.pas"/>
 			<DCCReference Include="DAO\SQLite\Lib\SQLite3UDF.pas"/>
 			<DCCReference Include="DAO\SQLite\Lib\SQLiteWrap.pas"/>
-			<DCCReference Include="DAO\unit_Database_Abstract.pas"/>
 			<DCCReference Include="DAO\ABS\unit_Database_ABS.pas"/>
 			<DCCReference Include="DAO\SQLite\unit_Database_SQLite.pas"/>
+			<DCCReference Include="DAO\unit_Database_Abstract.pas"/>
+			<DCCReference Include="DAO\unit_SystemDatabase.pas"/>
 			<RcItem Include="Resources\Images\16x16\star_small.png">
 				<ResourceType>RCData</ResourceType>
 				<ResourceId>smallStar</ResourceId>

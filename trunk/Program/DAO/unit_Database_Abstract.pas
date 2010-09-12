@@ -25,7 +25,8 @@ uses
   Generics.Collections,
   UserData,
   unit_Globals,
-  unit_Interfaces;
+  unit_Interfaces,
+  unit_SystemDatabase;
 
 type
   TBookCollection = class abstract (TInterfacedObject, IBookCollection)
@@ -154,10 +155,6 @@ type
     function GetAuthorFilterType: string;
   end;
 
-resourcestring
-  rstrFavoritesGroupName = 'Избранное';
-  rstrToReadGroupName = 'К прочтению';
-
 const
   DATABASE_VERSION = '1000';
 
@@ -167,7 +164,8 @@ uses
   SysUtils,
   dm_user,
   unit_Errors,
-  unit_Consts;
+  unit_Consts,
+  unit_Database;
 
 { TBookCollection }
 
@@ -325,18 +323,18 @@ var
   CurrentCollectionName: string;
   CollectionInfo: TCollectionInfo;
 begin
-  if DatabaseID <> DMUser.ActiveCollectionInfo.ID then
+  if DatabaseID <> GetSystemData.ActiveCollectionInfo.ID then
   begin
     CollectionInfo := TCollectionInfo.Create;
     try
-      if DMUser.GetCollectionInfo(DatabaseID, CollectionInfo) then
+      if GetSystemData.GetCollectionInfo(DatabaseID, CollectionInfo) then
         BookCollectionName := CollectionInfo.Name
       else
         BookCollectionName := '';
     finally
 
     end;
-    raise ENotSupportedException.Create(Format(rstrErrorOnlyForCurrentCollection, [DMUser.ActiveCollectionInfo.Name, BookCollectionName]));
+    raise ENotSupportedException.Create(Format(rstrErrorOnlyForCurrentCollection, [GetSystemData.ActiveCollectionInfo.Name, BookCollectionName]));
   end;
 end;
 
@@ -348,7 +346,7 @@ begin
 
   GetBookRecord(BookKey, BookRecord, True);
 
-  DMUser.AddBookToGroup(BookKey, GroupID, BookRecord);
+  GetSystemData.AddBookToGroup(BookKey, GroupID, BookRecord);
 end;
 
 { TBookCollection.TGenreCache }

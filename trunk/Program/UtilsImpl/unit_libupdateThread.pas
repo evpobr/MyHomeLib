@@ -47,7 +47,8 @@ uses
   unit_Settings,
   unit_WorkerThread,
   unit_Database,
-  unit_Interfaces;
+  unit_Interfaces,
+  unit_SystemDatabase;
 
 resourcestring
   rstrDownloadProgress = 'Загружено: %u%% из %u байт';
@@ -157,8 +158,8 @@ begin
           if not Settings.Updates[i].Available then
             Continue;
 
-          DMUser.ActivateCollection(Settings.Updates[i].CollectionID);
-          DMUser.GetCollectionInfo(Settings.Updates[i].CollectionID, CollectionInfo);
+          GetSystemData.ActivateCollection(Settings.Updates[i].CollectionID);
+          GetSystemData.GetCollectionInfo(Settings.Updates[i].CollectionID, CollectionInfo);
           Teletype(Format(rstrCollectionUpdate, [Settings.Updates[i].Name, Settings.Updates[i].ExternalVersion]), tsInfo);
 
           if Settings.Updates[i].Local then
@@ -220,7 +221,7 @@ begin
           end;
 
           CollectionInfo.Version := GetLibUpdateVersion(True);
-          DMUser.UpdateCollectionInfo(CollectionInfo);
+          GetSystemData.UpdateCollectionInfo(CollectionInfo);
 
           Teletype(rstrReady,tsInfo);
         end; //for .. with
