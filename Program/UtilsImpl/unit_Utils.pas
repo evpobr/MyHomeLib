@@ -54,8 +54,8 @@ var
 begin
   worker := TSyncOnLineThread.Create;
   try
-    worker.CollectionID := GetSystemData.ActiveCollectionInfo.ID;
-    worker.CollectionRoot := GetSystemData.ActiveCollectionInfo.RootPath;
+    worker.CollectionID := GetSystemData.GetActiveCollectionInfo.ID;
+    worker.CollectionRoot := GetSystemData.GetActiveCollectionInfo.RootPath;
 
     frmProgress := TSyncOnLineProgressForm.Create(Application);
     try

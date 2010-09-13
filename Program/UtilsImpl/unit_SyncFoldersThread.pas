@@ -74,12 +74,12 @@ var
   BookRecord: TBookRecord;
 begin
   processedBooks := 0;
-  FRootPath := GetSystemData.ActiveCollectionInfo.RootPath;
+  FRootPath := GetSystemData.GetActiveCollectionInfo.RootPath;
 
   FFiles := TFilesList.Create(nil);
   try
     FFiles.OnFile := OnFile;
-    FFiles.TargetPath := GetSystemData.ActiveCollectionInfo.RootFolder;
+    FFiles.TargetPath := GetSystemData.GetActiveCollectionInfo.RootFolder;
 
     FList := TStringList.Create;
     try

@@ -85,7 +85,7 @@ begin
 
   FTempPath := Settings.TempPath;
 
-  CollectionInfo := GetSystemData.ActiveCollectionInfo;
+  CollectionInfo := GetSystemData.GetActiveCollectionInfo;
   FCollectionType := CollectionInfo.CollectionType;
   FCollectionVersion := CollectionInfo.Version;
   FCollectionName := CollectionInfo.Name;

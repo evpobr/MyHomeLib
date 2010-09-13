@@ -174,7 +174,7 @@ var
   ADatabase: TSQLiteDatabase;
   StringList: TStringList;
   StructureDDL: string;
-  SystemData: TSystemData;
+  SystemData: ISystemData;
 begin
   ADatabase := TSQLiteDatabase.Create(DBUserFile);
   try
@@ -196,12 +196,8 @@ begin
   // Зададим дефлотные группы
   //
   SystemData := TSystemData_SQLite.Create(DBUserFile);
-  try
-    SystemData.AddGroup(rstrFavoritesGroupName, False);
-    SystemData.AddGroup(rstrToReadGroupName, False);
-  finally
-    FreeAndNil(SystemData);
-  end;
+  SystemData.AddGroup(rstrFavoritesGroupName, False);
+  SystemData.AddGroup(rstrToReadGroupName, False);
 end;
 
 { TBookIteratorImpl }

@@ -76,11 +76,15 @@ var
   g_CollectionCache: TCollectionCache;
 
 function CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True): IBookCollection;
+var
+  systemData: ISystemData;
 begin
+  systemData := CreateSystemData(ADefaultSession);
+
 {$IFDEF USE_SQLITE}
-  Result := TBookCollection_SQLite.Create(DBCollectionFile);
+  Result := TBookCollection_SQLite.Create(DBCollectionFile, systemData);
 {$ELSE}
-  Result := TBookCollection_ABS.Create(DBCollectionFile, ADefaultSession);
+  Result := TBookCollection_ABS.Create(DBCollectionFile, systemData, ADefaultSession);
 {$ENDIF}
 end;
 
@@ -107,7 +111,7 @@ end;
 
 function GetActiveBookCollection: IBookCollection;
 begin
-  Result := GetBookCollection(GetSystemData.ActiveCollectionInfo.DBFileName);
+  Result := GetBookCollection(GetSystemData.GetActiveCollectionInfo.DBFileName);
 end;
 
 procedure DropCollectionDatabase(const DBCollectionFile: string);

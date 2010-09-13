@@ -126,7 +126,7 @@ procedure TfrmBases.FormShow(Sender: TObject);
 var
   CollectionInfo: TCollectionInfo;
 begin
-  CollectionInfo := GetSystemData.ActiveCollectionInfo;
+  CollectionInfo := GetSystemData.GetActiveCollectionInfo;
 
   CollectionID := CollectionInfo.ID;
 
