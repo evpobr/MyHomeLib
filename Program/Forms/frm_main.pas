@@ -1874,12 +1874,21 @@ var
   Item, ItemP, ItemM: TMenuItem;
   F: Integer;
   i: Integer;
+  DBFileName: string;
+  fb2Collection: Boolean;
 begin
   pmScripts.Items.Clear;
   pmiScripts.Clear;
   mmiScripts.Clear;
 
-  if isFB2Collection(GetSystemData.ActiveCollectionInfo.CollectionType) then
+  DBFileName := Settings.SystemFileName[sfSystemDB];
+  if (FileExists(DBFileName)) then
+    // Calculate, only if the system database is already created:
+    fb2Collection := isFB2Collection(GetSystemData.ActiveCollectionInfo.CollectionType)
+  else
+    fb2Collection := False;
+
+  if fb2Collection then
   begin
     for i := 0 to 5 do
     begin
@@ -1950,6 +1959,7 @@ end;
 function TfrmMain.ShowNCWizard: Boolean;
 var
   frmNCWizard: TfrmNCWizard;
+  n: Integer;
 begin
   frmNCWizard := TfrmNCWizard.Create(Application);
   try
@@ -2422,7 +2432,7 @@ begin
   frmSplash.lblState.Caption := rstrMainConnectToDb;
 
   DBFileName := Settings.SystemFileName[sfSystemDB];
-  if not FileExists(DBFileName) then
+  if (not FileExists(DBFileName)) then
     CreateSystemTables(DBFileName);
 
   GetSystemData; // mount

@@ -225,42 +225,13 @@ uses
   unit_SearchUtils,
   unit_Settings,
   unit_Errors,
-  unit_SystemDatabase;
+  unit_SystemDatabase,
+  unit_SQLiteUtils;
 
 const
   INIT_ROWS_ARR: array[0 .. 1] of Boolean = (False, True);
   ANNOTATION_SIZE_LIMIT = 4096;
 
-
-// Read provided resource file as a string list (split by ';')
-// This is done as ExecSQL works with only one statement at a time
-function ReadResourceAsStringList(const ResourceName: string): TStringList;
-var
-  ResourceStream: TStream;
-  Text: string;
-begin
-  ResourceStream := TResourceStream.Create(HInstance, ResourceName, RT_RCDATA);
-  try
-    Result := TStringList.Create;
-
-    // Load the file:
-    Result.LoadFromStream(ResourceStream);
-
-    // Clean up the text:
-    Text := Result.Text;
-    StrReplace(CRLF, ' ', Text);
-    StrReplace(LF, ' ', Text);
-    StrReplace('--', '@', Text);
-
-    // Split by ';'
-    Result.Clear;
-    Result.StrictDelimiter := True; // so that spaces are ignored
-    Result.Delimiter := '@';
-    Result.DelimitedText := Text;
-  finally
-    FreeAndNil(ResourceStream);
-  end;
-end;
 
 // Generate table structure and minimal data for a new collection
 procedure CreateCollectionTables_SQLite(const DBCollectionFile: string; const GenresFileName: string);
