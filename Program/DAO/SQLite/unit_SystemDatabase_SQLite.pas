@@ -131,16 +131,16 @@ type
 //    procedure DeleteGroup(GroupID: Integer); override;
 //    procedure ClearGroup(GroupID: Integer); override;
     function GetGroup(const GroupID: Integer): TGroupData; override;
-//
-//    procedure AddBookToGroup(const BookKey: TBookKey; GroupID: Integer; const BookRecord: TBookRecord); override;
+
+    procedure AddBookToGroup(const BookKey: TBookKey; GroupID: Integer; const BookRecord: TBookRecord); override;
 //    procedure DeleteFromGroup(const BookKey: TBookKey; GroupID: Integer); override;
 //    procedure RemoveUnusedBooks; override;
-//    procedure CopyBookToGroup(
-//      const BookKey: TBookKey;
-//      SourceGroupID: Integer;
-//      TargetGroupID: Integer;
-//      MoveBook: Boolean
-//    ); override;
+    procedure CopyBookToGroup(
+      const BookKey: TBookKey;
+      SourceGroupID: Integer;
+      TargetGroupID: Integer;
+      MoveBook: Boolean
+    ); override;
 //
 //    //
 //    // Пользовательские данные
@@ -166,6 +166,7 @@ implementation
 uses
   Classes,
   SysUtils,
+  IOUtils,
   unit_SQLiteUtils;
 
 // Generate table structure and minimal system data
@@ -723,6 +724,182 @@ begin
     FreeAndNil(Query);
   end;
 end;
+
+procedure TSystemData_SQLite.AddBookToGroup(
+  const BookKey: TBookKey;
+  GroupID: Integer;
+  const BookRecord: TBookRecord
+);
+const
+  SQL_SELECT = 'SELECT BookID FROM Books WHERE BookID = ? AND DatabaseID = ? ';
+  SQL_INSERT = 'INSERT INTO BOOKS (' +
+    'LibID, Title, SeriesID, SeqNumber, UpdateDate, ' + // 0 .. 4
+    'LibRate, Lang, Folder, FileName, InsideNo, ' +     // 5 .. 9
+    'Ext, BookSize, Code, IsLocal, IsDeleted, ' +       // 10 .. 14
+    'KeyWords, Rate, Progress, Annotation, Review, ' +  // 15 .. 19
+    'ExtraInfo, BookID, DatabaseID ) ' +                // 20 .. 22
+    'SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ';
+
+var
+  stream: TStream;
+  writer: TWriter;
+  author: TAuthorData;
+  genre: TGenreData;
+  query: TSQLiteQuery;
+  exists: Boolean;
+begin
+  query := FDatabase.NewQuery(SQL_SELECT);
+  try
+    query.SetParam(0, BookKey.BookID);
+    query.SetParam(1, BookKey.DatabaseID);
+    query.Open;
+    exists := not query.Eof;
+  finally
+    FreeAndNil(query);
+  end;
+
+  if not exists then
+  begin
+    query := FDatabase.NewQuery(SQL_INSERT);
+    try
+      query.SetParam(0, BookRecord.LibID);
+      query.SetParam(1, BookRecord.Title);
+      query.SetParam(2, BookRecord.SeriesID);
+      query.SetParam(3, BookRecord.SeqNumber);
+      query.SetParam(4, BookRecord.Date);
+      query.SetParam(5, BookRecord.LibRate);
+      query.SetParam(6, BookRecord.Lang);
+      query.SetParam(7, TPath.Combine(FActiveCollectionInfo.RootFolder, BookRecord.Folder));
+      query.SetParam(8, BookRecord.FileName);
+      query.SetParam(9, BookRecord.InsideNo);
+      query.SetParam(10, BookRecord.FileExt);
+      query.SetParam(11, BookRecord.Size);
+      query.SetParam(12, BookRecord.Code);
+      query.SetParam(13, BookRecord.IsLocal);
+      query.SetParam(14, BookRecord.IsDeleted);
+      query.SetParam(15, BookRecord.KeyWords);
+      query.SetParam(16, BookRecord.Rate);
+      query.SetParam(17, BookRecord.Progress);
+      query.SetBlobParam(18, BookRecord.Annotation);
+      query.SetBlobParam(19, BookRecord.Review);
+
+      stream := TMemoryStream.Create;
+      try
+        writer := TWriter.Create(stream, 4096);
+        try
+          writer.WriteString(BookRecord.Series);
+
+          writer.WriteListBegin;
+          for Author in BookRecord.Authors do
+          begin
+            writer.WriteString(Author.LastName);
+            writer.WriteString(Author.FirstName);
+            writer.WriteString(Author.MiddleName);
+            writer.WriteInteger(Author.AuthorID);
+          end;
+          writer.WriteListEnd;
+
+          writer.WriteListBegin;
+          for genre in BookRecord.Genres do
+          begin
+            writer.WriteString(genre.GenreCode);
+            writer.WriteString(genre.FB2GenreCode);
+            writer.WriteString(genre.GenreAlias);
+          end;
+          writer.WriteListEnd;
+        finally
+          FreeAndNil(writer);
+        end;
+        query.SetBlobParam(20, stream);
+      finally
+        stream.Free;
+      end;
+
+      query.SetParam(21, BookKey.BookID);
+      query.SetParam(22, BookKey.DatabaseID);
+
+      query.ExecSQL;
+    finally
+      FreeAndNil(query);
+    end;
+  end;
+
+  //
+  // Поместить книгу в нужную группу
+  //
+  CopyBookToGroup(BookKey, 0, GroupID, False);
+end;
+
+procedure TSystemData_SQLite.CopyBookToGroup(
+  const BookKey: TBookKey;
+  SourceGroupID: Integer;
+  TargetGroupID: Integer;
+  MoveBook: Boolean
+);
+const
+  SQL_SELECT = 'SELECT BookID FROM BookGroups WHERE GroupID = ? AND BookID = ? AND DatabaseID = ? ';
+  SQL_MOVE = 'UPDATE BookGroups SET GroupID = ? WHERE GroupID = ? AND BookID = ? AND DatabaseID = ? ';
+  SQL_ADD = 'INSERT INTO BookGroups (GroupID, BookID, DatabaseID) SELECT ?, ?, ? ';
+var
+  query: TSQLiteQuery;
+  foundTarget: Boolean;
+  foundSource: Boolean;
+begin
+  query := FDatabase.NewQuery(SQL_SELECT);
+  try
+    query.SetParam(0, TargetGroupID);
+    query.SetParam(1, BookKey.BookID);
+    query.SetParam(2, BookKey.DatabaseID);
+    query.Open;
+    foundTarget := not query.Eof;
+  finally
+    FreeAndNil(query);
+  end;
+
+  if foundTarget then
+    Exit; // Skip, book already in the target group
+
+  if MoveBook then
+  begin
+    query := FDatabase.NewQuery(SQL_SELECT);
+    try
+      query.SetParam(0, SourceGroupID);
+      query.SetParam(1, BookKey.BookID);
+      query.SetParam(2, BookKey.DatabaseID);
+      query.Open;
+      foundSource := not query.Eof;
+    finally
+      FreeAndNil(query);
+    end;
+
+    if foundSource then
+    begin
+      query := FDatabase.NewQuery(SQL_MOVE);
+      try
+        query.SetParam(0, TargetGroupID);
+        query.SetParam(1, SourceGroupID);
+        query.SetParam(2, BookKey.BookID);
+        query.SetParam(3, BookKey.DatabaseID);
+        query.ExecSQL;
+      finally
+        FreeAndnil(query);
+      end;
+    end;
+  end
+  else
+  begin
+    query := FDatabase.NewQuery(SQL_ADD);
+    try
+      query.SetParam(0, TargetGroupID);
+      query.SetParam(1, BookKey.BookID);
+      query.SetParam(2, BookKey.DatabaseID);
+      query.ExecSQL;
+    finally
+      FreeAndnil(query);
+    end;
+  end;
+end;
+
 
 function TSystemData_SQLite.GetBookIterator(const GroupID: Integer; const DatabaseID: Integer = INVALID_COLLECTION_ID): IBookIterator;
 begin

@@ -105,7 +105,8 @@ uses
   unit_Messages,
   unit_Helpers,
   unit_Database,
-  unit_SystemDatabase;
+  unit_SystemDatabase,
+  unit_Interfaces;
 
 resourcestring
   rstrWrongCredentials = 'Неправильный логин/пароль';
@@ -264,7 +265,10 @@ var
   CL: TStringList;
   Commands: array of TCommand;
   i: Integer;
+  SystemData: ISystemData;
 begin
+  SystemData := GetSystemData;
+
   ConstParams := TStringList.Create;
   try
     //

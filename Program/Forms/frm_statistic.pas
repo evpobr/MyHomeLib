@@ -51,7 +51,8 @@ uses
   unit_Consts,
   CommCtrl,
   unit_Database,
-  unit_SystemDatabase;
+  unit_SystemDatabase,
+  unit_Interfaces;
 
 resourcestring
   rstrUnknown = 'unknown';
@@ -64,17 +65,19 @@ var
   AuthorsCount: Integer;
   BooksCount: Integer;
   SeriesCount: Integer;
+  SystemData: ISystemData;
 begin
-  if GetSystemData.GetActiveCollectionInfo.Version = UNVERSIONED_COLLECTION then
+  SystemData := GetSystemData;
+  if SystemData.GetActiveCollectionInfo.Version = UNVERSIONED_COLLECTION then
     Version := rstrUnknown
   else
-    Version := IntToStr(GetSystemData.GetActiveCollectionInfo.Version);
+    Version := IntToStr(SystemData.GetActiveCollectionInfo.Version);
   GetActiveBookCollection.GetStatistics(AuthorsCount, BooksCount, SeriesCount);
 
-  lvInfo.Items[0].SubItems[0] := GetSystemData.GetActiveCollectionInfo.Name;
-  lvInfo.Items[1].SubItems[0] := DateToStr(GetSystemData.GetActiveCollectionInfo.CreationDate);
+  lvInfo.Items[0].SubItems[0] := SystemData.GetActiveCollectionInfo.Name;
+  lvInfo.Items[1].SubItems[0] := DateToStr(SystemData.GetActiveCollectionInfo.CreationDate);
   lvInfo.Items[2].SubItems[0] := Version;
-  lvInfo.Items[3].SubItems[0] := GetSystemData.GetActiveCollectionInfo.Notes;
+  lvInfo.Items[3].SubItems[0] := SystemData.GetActiveCollectionInfo.Notes;
 
   lvInfo.Items[4].SubItems[0] := IntToStr(AuthorsCount);
   lvInfo.Items[5].SubItems[0] := IntToStr(BooksCount);

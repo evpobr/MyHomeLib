@@ -1,6 +1,6 @@
 unit unit_SystemDatabase;
 
-{.$DEFINE USE_SQLITE}
+{$DEFINE USE_SQLITE}
 
 interface
 

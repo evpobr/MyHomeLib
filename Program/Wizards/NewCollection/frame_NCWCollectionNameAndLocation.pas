@@ -16,7 +16,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, frame_InteriorPageBase, StdCtrls, ExtCtrls, unit_StaticTip, unit_AutoCompleteEdit;
+  Dialogs, frame_InteriorPageBase, StdCtrls, ExtCtrls, unit_StaticTip, unit_AutoCompleteEdit,
+  dm_user, unit_Interfaces;
 
 type
   TframeNCWNameAndLocation = class(TInteriorPageBase)
@@ -194,6 +195,7 @@ end;
 function TframeNCWNameAndLocation.IsDataValid(Sender: TObject = nil): Boolean;
 var
   strValue: string;
+  SystemData: ISystemData;
 
   function CheckThis(Control: TObject): Boolean;
   begin
@@ -202,6 +204,8 @@ var
 
 begin
   Result := False;
+
+  SystemData := GetSystemData;
 
   //
   // Проверим название коллекции
@@ -215,7 +219,7 @@ begin
       Exit;
     end;
 
-    if GetSystemData.FindCollectionWithProp(cpDisplayName, strValue) then
+    if SystemData.FindCollectionWithProp(cpDisplayName, strValue) then
     begin
       ShowPageMessage(Format(rstrCollectionAlreadyExists, [strValue]), 2);
       Exit;
@@ -240,8 +244,8 @@ begin
       Exit;
     end;
 
-    if GetSystemData.FindCollectionWithProp(cpFileName, strValue + COLLECTION_EXTENSION) or
-       GetSystemData.FindCollectionWithProp(cpFileName, Settings.DataPath + strValue + COLLECTION_EXTENSION) then
+    if SystemData.FindCollectionWithProp(cpFileName, strValue + COLLECTION_EXTENSION) or
+       SystemData.FindCollectionWithProp(cpFileName, Settings.DataPath + strValue + COLLECTION_EXTENSION) then
     begin
       ShowPageMessage(Format(rstrFileAlreadyExistsInDB, [strValue]), 2);
       Exit;

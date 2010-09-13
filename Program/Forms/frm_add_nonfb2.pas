@@ -640,13 +640,17 @@ begin
 end;
 
 procedure TfrmAddnonfb2.ScanFolder;
+var
+  SystemData: ISystemData;
 begin
+  SystemData := GetSystemData;
+
   Tree.Clear;
   Tree.NodeDataSize := SizeOf(TFileData);
 
-  FRootPath := GetSystemData.GetActiveCollectionInfo.RootPath;
+  FRootPath := SystemData.GetActiveCollectionInfo.RootPath;
 
-  flFiles.TargetPath := GetSystemData.GetActiveCollectionInfo.RootFolder;
+  flFiles.TargetPath := SystemData.GetActiveCollectionInfo.RootFolder;
   flFiles.Process;
   SortTree;
 end;
