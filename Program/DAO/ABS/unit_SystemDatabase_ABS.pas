@@ -94,7 +94,7 @@ type
   type
     TBookIteratorImpl = class(TInterfacedObject, IBookIterator)
     public
-      constructor Create(User: TSystemData_ABS; const Filter: string);
+      constructor Create(User: TSystemData_ABS; const GroupID: Integer; const DatabaseID: Integer);
       destructor Destroy; override;
 
     protected
@@ -110,7 +110,7 @@ type
       FBookID: TIntegerField;
       FDatabaseID: TIntegerField;
 
-      function CreateSQL(const Filter: string): string;
+      function CreateSQL(const GroupID: Integer; const DatabaseID: Integer): string;
     end;
     // << TBookIteratorImpl
 
@@ -249,7 +249,7 @@ type
     procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer); override;
 
     //Iterators:
-    function GetBookIterator(const Filter: string): IBookIterator; override;
+    function GetBookIterator(const GroupID: Integer; const DatabaseID: Integer = INVALID_COLLECTION_ID): IBookIterator; override;
     function GetGroupIterator: IGroupIterator; override;
     function GetCollectionInfoIterator: ICollectionInfoIterator; override;
 
@@ -329,7 +329,7 @@ end;
 
 { TBookIteratorImpl }
 
-constructor TSystemData_ABS.TBookIteratorImpl.Create(User: TSystemData_ABS; const Filter: string);
+constructor TSystemData_ABS.TBookIteratorImpl.Create(User: TSystemData_ABS; const GroupID: Integer; const DatabaseID: Integer);
 var
   pLogger: IIntervalLogger;
 begin
@@ -339,7 +339,7 @@ begin
 
   FUser := User;
 
-  FBooks := TABSQueryEx.Create(FUser.FDatabase, CreateSQL(Filter));
+  FBooks := TABSQueryEx.Create(FUser.FDatabase, CreateSQL(GroupID, DatabaseID));
   FBooks.ReadOnly := True;
 
   pLogger := GetIntervalLogger('TBookIteratorImpl.Create', FBooks.SQL.Text);
@@ -374,14 +374,14 @@ begin
   Result := FBooks.RecordCount;
 end;
 
-function TSystemData_ABS.TBookIteratorImpl.CreateSQL(const Filter: string): string;
+function TSystemData_ABS.TBookIteratorImpl.CreateSQL(const GroupID: Integer; const DatabaseID: Integer): string;
 var
   Where: string;
 begin
   Result := 'SELECT b.BookID, b.DatabaseID FROM BookGroups bg INNER JOIN Books b ON bg.BookID = b.BookID AND bg.DatabaseID = b.DatabaseID ';
-
-  if Filter <> '' then
-    Result := Result + ' WHERE ' + Filter + ' ';
+  Result := Result + ' WHERE bg.GroupID=' + IntToStr(GroupID);
+  if (DatabaseID <> INVALID_COLLECTION_ID) then
+    Result := Result + ' AND bg.DatabaseID=' + IntToStr(DatabaseID);
 end;
 
 { TGroupIteratorImpl }
@@ -1055,9 +1055,9 @@ end;
 // Return an iterator working on the User data Books dataset
 // No need to free the iterator when done as it's a TInterfacedObject
 // and knows to self destroy when no longer referenced.
-function TSystemData_ABS.GetBookIterator(const Filter: string): IBookIterator;
+function TSystemData_ABS.GetBookIterator(const GroupID: Integer; const DatabaseID: Integer = INVALID_COLLECTION_ID): IBookIterator;
 begin
-  Result := TBookIteratorImpl.Create(Self, Filter);
+  Result := TBookIteratorImpl.Create(Self, GroupID, DatabaseID);
 end;
 
 function TSystemData_ABS.GetGroupIterator: IGroupIterator;

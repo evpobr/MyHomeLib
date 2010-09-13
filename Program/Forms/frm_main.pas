@@ -903,7 +903,6 @@ type
     function AuthorBookFilter: TFilterValue;
     function SeriesBookFilter: TFilterValue;
     function GenreBookFilter: TFilterValue;
-    function GroupBookFilter: string;
 
     //
     function GetBookNode(const Tree: TBookTree; const BookKey: TBookKey): PVirtualNode; overload;
@@ -2044,7 +2043,7 @@ begin
       end;
 
       3: FillBooksTree(tvBooksSR, BookCollection.Search(FSearchCriteria, False), True,  True, nil);  // поиск
-      4: FillBooksTree(tvBooksF,  GetSystemData.GetBookIterator(GroupBookFIlter), True,  True, @FLastGroupBookID);  // избранное
+      4: FillBooksTree(tvBooksF,  GetSystemData.GetBookIterator(FLastGroupID), True,  True, @FLastGroupBookID);  // избранное
     end;
 
     SetHeaderPopUp;
@@ -2134,7 +2133,7 @@ begin
     FilterValue := GenreBookFilter;
     FillBooksTree(tvBooksG, BookCollection.GetBookIterator(bmByGenre, False, @FilterValue),   True,  True, @FLastGenreBookID);  // жанры
 
-    FillBooksTree(tvBooksF, GetSystemData.GetBookIterator(GroupBookFIlter), True,  True, @FLastGroupBookID);  // избранное
+    FillBooksTree(tvBooksF, GetSystemData.GetBookIterator(FLastGroupID), True,  True, @FLastGroupBookID);  // избранное
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -2970,7 +2969,7 @@ begin
       FLastGroupBookID.Clear;
     end;
 
-    FillBooksTree(tvBooksF, GetSystemData.GetBookIterator(GroupBookFIlter), True, True, @FLastGroupBookID);
+    FillBooksTree(tvBooksF, GetSystemData.GetBookIterator(FLastGroupID), True, True, @FLastGroupBookID);
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -3038,7 +3037,7 @@ begin
 //      GetSystemData.CopyBookToGroup(BookData^.BookKey, SourceGroupID, TargetGroupID, ssShift in Shift);
 //    end;
 //  end;
-//  FillBooksTree(tvBooksF, GetSystemData.GetBookIterator(GroupBookFIlter), True, True, @FLastGroupBookID);
+//  FillBooksTree(tvBooksF, GetSystemData.GetBookIterator(FLastGroupID), True, True, @FLastGroupBookID);
 end;
 
 procedure TfrmMain.tvGroupsDragOver(Sender: TBaseVirtualTree; Source: TObject; Shift: TShiftState; State: TDragState; Pt: TPoint; Mode: TDropMode; var Effect: Integer; var Accept: Boolean);
@@ -5180,7 +5179,7 @@ begin
   try
     GetSystemData.ClearGroup(GroupData^.GroupID);
 
-    FillBooksTree(tvBooksF, GetSystemData.GetBookIterator(GroupBookFIlter), True, True, @FLastGroupBookID); // избранное
+    FillBooksTree(tvBooksF, GetSystemData.GetBookIterator(FLastGroupID), True, True, @FLastGroupBookID); // избранное
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -5597,7 +5596,7 @@ begin
   GroupData := tvGroups.GetNodeData(tvGroups.GetFirstSelected);
   if Assigned(GroupData) and (GroupData^.GroupID = GroupID) then
   begin
-    FillBooksTree(tvBooksF, GetSystemData.GetBookIterator(GroupBookFIlter), True, True, @FLastGroupBookID); // Группы
+    FillBooksTree(tvBooksF, GetSystemData.GetBookIterator(FLastGroupID), True, True, @FLastGroupBookID); // Группы
   end;
 end;
 
@@ -5649,7 +5648,7 @@ begin
       //
       GetSystemData.RemoveUnusedBooks;
 
-      FillBooksTree(tvBooksF, GetSystemData.GetBookIterator(GroupBookFIlter), True, True, @FLastGroupBookID);
+      FillBooksTree(tvBooksF, GetSystemData.GetBookIterator(FLastGroupID), True, True, @FLastGroupBookID);
     finally
       ShowStatusProgress := False;
     end;
@@ -7170,8 +7169,4 @@ begin
     Result.ValueString := FLastGenreCode + IfThen(FLastGenreIsContainer, '.', '');
 end;
 
-function TfrmMain.GroupBookFilter: string;
-begin
-  Result := Format('bg.%s = %d', [GROUP_ID_FIELD, FLastGroupID]);
-end;
 end.
