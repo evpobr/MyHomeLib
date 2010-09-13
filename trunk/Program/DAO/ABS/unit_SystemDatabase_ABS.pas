@@ -162,7 +162,7 @@ type
   private
     function InternalFindGroup(const GroupName: string): Boolean; overload; inline;
     function InternalFindGroup(GroupID: Integer): Boolean; overload; inline;
-    function InternalAddGroup(const GroupName: string; out GroupID: Integer): Boolean;
+    function InternalAddGroup(const GroupName: string; out GroupID: Integer; const AllowDelete: Boolean = True): Boolean;
     procedure InternalClearGroup(GroupID: Integer; RemoveGroup: Boolean);
 
   public
@@ -224,7 +224,7 @@ type
     //
     // Работа с группами
     //
-    function AddGroup(const GroupName: string): Boolean; override;
+    function AddGroup(const GroupName: string; const AllowDelete: Boolean = True): Boolean; override;
     function RenameGroup(GroupID: Integer; const NewName: string): Boolean; override;
     procedure DeleteGroup(GroupID: Integer); override;
     procedure ClearGroup(GroupID: Integer); override;
@@ -1095,7 +1095,7 @@ end;
 //
 // Создать группу
 //
-function TSystemData_ABS.AddGroup(const GroupName: string): Boolean;
+function TSystemData_ABS.AddGroup(const GroupName: string; const AllowDelete: Boolean = True): Boolean;
 var
   GroupID: Integer;
 begin
@@ -1133,7 +1133,7 @@ end;
 //
 // Очищает текущую группу
 //
-function TSystemData_ABS.InternalAddGroup(const GroupName: string; out GroupID: Integer): Boolean;
+function TSystemData_ABS.InternalAddGroup(const GroupName: string; out GroupID: Integer; const AllowDelete: Boolean = True): Boolean;
 begin
   Result := not InternalFindGroup(GroupName);
   if Result then
@@ -1141,7 +1141,7 @@ begin
     Groups.Append;
     try
       GroupsGroupName.Value := GroupName;
-      GroupsAllowDelete.Value := True;
+      GroupsAllowDelete.Value := AllowDelete;
       Groups.Post;
     except
       Groups.Cancel;
@@ -1213,6 +1213,8 @@ begin
     Logger := GetIntervalLogger('TSystemData_ABS.GetGroup', Query.SQL.Text);
     query.ExecSQL;
     Logger := nil;
+
+    // TODO: load TGroupData from the query
   finally
     FreeAndNil(Query);
   end;

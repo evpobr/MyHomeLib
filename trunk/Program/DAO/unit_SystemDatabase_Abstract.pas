@@ -30,7 +30,7 @@ type
     FActiveCollectionInfo: TCollectionInfo;
 
   public
-    constructor Create;
+    constructor Create; virtual;
     destructor Destroy; override;
 
   public // virtual
@@ -58,7 +58,6 @@ type
     ): Boolean; virtual; abstract;
     procedure DeleteCollection(CollectionID: Integer); virtual; abstract;
 
-  public // virtual
     procedure GetBookLibID(const BookKey: TBookKey; out ARes: string); virtual; abstract; // deprecated;
 
     function ActivateGroup(const ID: Integer): Boolean; virtual; abstract;
@@ -81,7 +80,7 @@ type
     //
     // Работа с группами
     //
-    function AddGroup(const GroupName: string): Boolean; virtual; abstract;
+    function AddGroup(const GroupName: string; const AllowDelete: Boolean = True): Boolean; virtual; abstract;
     function RenameGroup(GroupID: Integer; const NewName: string): Boolean; virtual; abstract;
     procedure DeleteGroup(GroupID: Integer); virtual; abstract;
     procedure ClearGroup(GroupID: Integer); virtual; abstract;

@@ -1,10 +1,13 @@
 unit unit_SystemDatabase;
 
+{.$DEFINE USE_SQLITE}
+
 interface
 
 uses
   unit_SystemDatabase_Abstract,
-  unit_SystemDatabase_ABS;
+  unit_SystemDatabase_ABS,
+  unit_SystemDatabase_SQLite;
 
   procedure CreateSystemTables(const DBUserFile: string);
   function GetSystemData: TSystemData;
@@ -22,8 +25,11 @@ var
 
 procedure CreateSystemTables(const DBUserFile: string);
 begin
-  // So far, there is only an ABS implementation for the system DB connection (GetSystemData)
+{$IFDEF USE_SQLITE}
+  CreateSystemTables_SQLite(DBUserFile);
+{$ELSE}
   CreateSystemTables_ABS(DBUserFile);
+{$ENDIF}
 end;
 
 function GetSystemData: TSystemData;
@@ -32,7 +38,13 @@ begin
   begin
     EnterCriticalSection(SystemDataLock);
     if not Assigned(SystemData) then
+    begin
+{$IFDEF USE_SQLITE}
+      SystemData := TSystemData_SQLite.Create(Settings.SystemFileName[sfSystemDB]);
+{$ELSE}
       SystemData := TSystemData_ABS.Create(Settings.SystemFileName[sfSystemDB]);
+{$ENDIF}
+    end;
     LeaveCriticalSection(SystemDataLock);
   end;
 
