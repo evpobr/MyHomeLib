@@ -137,7 +137,10 @@ var
   i: integer;
   UserDataBackup: TUserData;
   CollectionInfo: TCollectionInfo;
+  SystemData: ISystemData;
 begin
+  SystemData := GetSystemData;
+
   UserDataBackup := nil;
   FidHTTP := TidHTTP.Create(nil);
   try
@@ -157,8 +160,8 @@ begin
           if not Settings.Updates[i].Available then
             Continue;
 
-          GetSystemData.ActivateCollection(Settings.Updates[i].CollectionID);
-          GetSystemData.GetCollectionInfo(Settings.Updates[i].CollectionID, CollectionInfo);
+          SystemData.ActivateCollection(Settings.Updates[i].CollectionID);
+          SystemData.GetCollectionInfo(Settings.Updates[i].CollectionID, CollectionInfo);
           Teletype(Format(rstrCollectionUpdate, [Settings.Updates[i].Name, Settings.Updates[i].ExternalVersion]), tsInfo);
 
           if Settings.Updates[i].Local then
@@ -220,7 +223,7 @@ begin
           end;
 
           CollectionInfo.Version := GetLibUpdateVersion(True);
-          GetSystemData.UpdateCollectionInfo(CollectionInfo);
+          SystemData.UpdateCollectionInfo(CollectionInfo);
 
           Teletype(rstrReady,tsInfo);
         end; //for .. with

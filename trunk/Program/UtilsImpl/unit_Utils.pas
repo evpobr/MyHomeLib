@@ -42,7 +42,8 @@ uses
   frm_info_popup,
   frm_search,
   frm_main,
-  unit_SystemDatabase;
+  unit_SystemDatabase,
+  unit_Interfaces;
 
 resourcestring
   rstrUpdateCollections = 'Обновление коллекций';
@@ -51,11 +52,14 @@ procedure SyncOnLineFiles;
 var
   worker: TSyncOnLineThread;
   frmProgress: TSyncOnLineProgressForm;
+  SystemData: ISystemData;
 begin
+  SystemData := GetSystemData;
+
   worker := TSyncOnLineThread.Create;
   try
-    worker.CollectionID := GetSystemData.GetActiveCollectionInfo.ID;
-    worker.CollectionRoot := GetSystemData.GetActiveCollectionInfo.RootPath;
+    worker.CollectionID := SystemData.GetActiveCollectionInfo.ID;
+    worker.CollectionRoot := SystemData.GetActiveCollectionInfo.RootPath;
 
     frmProgress := TSyncOnLineProgressForm.Create(Application);
     try

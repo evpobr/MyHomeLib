@@ -582,11 +582,16 @@ procedure TSQLiteQuery.SetBlobParam(const ParamIndex: Integer; const Value: stri
 var
   strStream: TStringStream;
 begin
-  strStream := TStringStream.Create(Value, TEncoding.UTF8, False);
-  try
-    SetBlobParam(ParamIndex, strStream);
-  finally
-    strStream.Free;
+  if Value = '' then
+    SetNullParam(ParamIndex)
+  else
+  begin
+    strStream := TStringStream.Create(Value, TEncoding.UTF8, False);
+    try
+      SetBlobParam(ParamIndex, strStream);
+    finally
+      strStream.Free;
+    end;
   end;
 end;
 

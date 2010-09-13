@@ -36,7 +36,8 @@ uses
   ExtCtrls,
   unit_StaticTip,
   unit_AutoCompleteEdit,
-  ComCtrls;
+  ComCtrls,
+  unit_Interfaces;
 
 type
   TfrmBases = class(TForm)
@@ -74,6 +75,7 @@ type
 
   private
     CollectionID: Integer;
+    FSystemData: ISystemData;
 
     function GetDisplayName: string;
     procedure SetDisplayName(const Value: string);
@@ -126,7 +128,8 @@ procedure TfrmBases.FormShow(Sender: TObject);
 var
   CollectionInfo: TCollectionInfo;
 begin
-  CollectionInfo := GetSystemData.GetActiveCollectionInfo;
+  FSystemData := GetSystemData;
+  CollectionInfo := FSystemData.GetActiveCollectionInfo;
 
   CollectionID := CollectionInfo.ID;
 
@@ -253,7 +256,7 @@ begin
   //
   // Проверим название коллекции
   //
-  if GetSystemData.FindCollectionWithProp(cpDisplayName, DisplayName, CollectionID) then
+  if FSystemData.FindCollectionWithProp(cpDisplayName, DisplayName, CollectionID) then
   begin
     MessageDlg(Format(rstrCollectionAlreadyExists, [DisplayName]), mtError, [mbOk], 0);
     Exit;
@@ -288,7 +291,7 @@ begin
     Exit;
   end;
 
-  if GetSystemData.FindCollectionWithProp(cpFileName, ADBFileName, CollectionID) then
+  if FSystemData.FindCollectionWithProp(cpFileName, ADBFileName, CollectionID) then
   begin
     MessageDlg(Format(rstrFileAlreadyExistsInDB, [ADBFileName]), mtError, [mbOk], 0);
     Exit;
@@ -306,7 +309,7 @@ begin
     CollectionInfo.Password := Pass;
     CollectionInfo.Script := Script;
 
-    GetSystemData.UpdateCollectionInfo(CollectionInfo);
+    FSystemData.UpdateCollectionInfo(CollectionInfo);
   finally
     FreeAndNil(CollectionInfo);
   end;
