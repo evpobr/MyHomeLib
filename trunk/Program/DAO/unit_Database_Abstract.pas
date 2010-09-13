@@ -130,7 +130,7 @@ type
     end;
 
   protected
-    constructor Create;
+    constructor Create(const SystemData: ISystemData);
     destructor Destroy; override;
 
     procedure GetGenre(const GenreCode: string; var Genre: TGenreData);
@@ -143,6 +143,7 @@ type
     FShowLocalOnly: Boolean;
     FHideDeleted: Boolean;
     FGenreCache: TGenreCache;
+    FSystemData: ISystemData;
 
   public
     procedure SetHideDeleted(const HideDeleted: Boolean);
@@ -255,10 +256,11 @@ begin
 end;
 
 // Filter out duplicates by author ID
-constructor TBookCollection.Create;
+constructor TBookCollection.Create(const SystemData: ISystemData);
 begin
   inherited Create;
   FGenreCache := TGenreCache.Create;
+  FSystemData := SystemData;
 end;
 
 destructor TBookCollection.Destroy;
@@ -322,18 +324,18 @@ var
   CurrentCollectionName: string;
   CollectionInfo: TCollectionInfo;
 begin
-  if DatabaseID <> GetSystemData.ActiveCollectionInfo.ID then
+  if DatabaseID <> FSystemData.GetActiveCollectionInfo.ID then
   begin
     CollectionInfo := TCollectionInfo.Create;
     try
-      if GetSystemData.GetCollectionInfo(DatabaseID, CollectionInfo) then
+      if FSystemData.GetCollectionInfo(DatabaseID, CollectionInfo) then
         BookCollectionName := CollectionInfo.Name
       else
         BookCollectionName := '';
     finally
 
     end;
-    raise ENotSupportedException.Create(Format(rstrErrorOnlyForCurrentCollection, [GetSystemData.ActiveCollectionInfo.Name, BookCollectionName]));
+    raise ENotSupportedException.Create(Format(rstrErrorOnlyForCurrentCollection, [FSystemData.GetActiveCollectionInfo.Name, BookCollectionName]));
   end;
 end;
 
@@ -345,7 +347,7 @@ begin
 
   GetBookRecord(BookKey, BookRecord, True);
 
-  GetSystemData.AddBookToGroup(BookKey, GroupID, BookRecord);
+  FSystemData.AddBookToGroup(BookKey, GroupID, BookRecord);
 end;
 
 { TBookCollection.TGenreCache }

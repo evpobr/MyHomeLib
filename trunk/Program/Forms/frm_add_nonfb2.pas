@@ -644,9 +644,9 @@ begin
   Tree.Clear;
   Tree.NodeDataSize := SizeOf(TFileData);
 
-  FRootPath := GetSystemData.ActiveCollectionInfo.RootPath;
+  FRootPath := GetSystemData.GetActiveCollectionInfo.RootPath;
 
-  flFiles.TargetPath := GetSystemData.ActiveCollectionInfo.RootFolder;
+  flFiles.TargetPath := GetSystemData.GetActiveCollectionInfo.RootFolder;
   flFiles.Process;
   SortTree;
 end;

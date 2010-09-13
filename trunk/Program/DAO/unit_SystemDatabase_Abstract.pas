@@ -25,7 +25,7 @@ uses
   UserData;
 
 type
-  TSystemData = class abstract
+  TSystemData = class abstract(TInterfacedObject, ISystemData)
   protected
     FActiveCollectionInfo: TCollectionInfo;
 
@@ -113,9 +113,7 @@ type
     function HasCollections: Boolean;
     function FindFirstExistingCollectionID(const PreferredID: Integer): Integer;
     procedure ExportUserData(data: TUserData);
-
-  public
-    property ActiveCollectionInfo: TCollectionInfo read FActiveCollectionInfo;
+    function GetActiveCollectionInfo: TCollectionInfo;
   end;
 
 resourcestring
@@ -200,7 +198,7 @@ var
 begin
   Assert(Assigned(data));
 
-  CollectionID := ActiveCollectionInfo.ID;
+  CollectionID := FActiveCollectionInfo.ID;
 
   GroupIterator := GetGroupIterator;
   while GroupIterator.Next(GroupData) do
@@ -211,6 +209,11 @@ begin
     while BookIterator.Next(BookRecord) do
       BookGroup.AddBook(BookRecord.BookKey.BookID, BookRecord.LibID);
   end;
+end;
+
+function TSystemData.GetActiveCollectionInfo: TCollectionInfo;
+begin
+  Result := FActiveCollectionInfo;
 end;
 
 end.

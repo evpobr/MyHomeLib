@@ -39,6 +39,7 @@ type
     public
       constructor Create(
         Collection: TBookCollection_ABS;
+        const SystemData: ISystemData;
         const Mode: TBookIteratorMode;
         const LoadMemos: Boolean;
         const FilterValue: PFilterValue;
@@ -53,6 +54,7 @@ type
 
     strict private
       FCollection: TBookCollection_ABS;
+      FSystemData: ISystemData;
       FBooks: TABSQuery;
       FBookID: TIntegerField;
 
@@ -69,6 +71,7 @@ type
     public
       constructor Create(
         Collection: TBookCollection_ABS;
+        SystemData: ISystemData;
         const Mode: TAuthorIteratorMode;
         const FilterValue: PFilterValue
       );
@@ -81,6 +84,7 @@ type
 
     strict private
       FCollection: TBookCollection_ABS;
+      FSystemData: ISystemData;
       FAuthors: TABSQuery;
       FAuthorID: TIntegerField;
       FCollectionID: Integer; // Active collection's ID at the time the iterator was created
@@ -92,7 +96,7 @@ type
     //-------------------------------------------------------------------------
     TGenreIteratorImpl = class(TInterfacedObject, IGenreIterator)
     public
-      constructor Create(Collection: TBookCollection_ABS; const Mode: TGenreIteratorMode; const FilterValue: PFilterValue);
+      constructor Create(Collection: TBookCollection_ABS; const SystemData: ISystemData; const Mode: TGenreIteratorMode; const FilterValue: PFilterValue);
       destructor Destroy; override;
 
     protected
@@ -102,6 +106,7 @@ type
 
     strict private
       FCollection: TBookCollection_ABS;
+      FSystemData: ISystemData;
       FGenres: TABSQuery;
       FGenreCode: TWideStringField;
       FCollectionID: Integer; // Active collection's ID at the time the iterator was created
@@ -113,7 +118,7 @@ type
     //-------------------------------------------------------------------------
     TSeriesIteratorImpl = class(TInterfacedObject, ISeriesIterator)
     public
-      constructor Create(Collection: TBookCollection_ABS; const Mode: TSeriesIteratorMode);
+      constructor Create(Collection: TBookCollection_ABS; const SystemData: ISystemData; const Mode: TSeriesIteratorMode);
       destructor Destroy; override;
 
     protected
@@ -125,6 +130,7 @@ type
 
     strict private
       FCollection: TBookCollection_ABS;
+      FSystemData: ISystemData;
       FSeries: TABSQuery;
       FSeriesID: TIntegerField;
       FSeriesTitle: TWideStringField;
@@ -139,7 +145,7 @@ type
     procedure InternalLoadGenres;
 
   public
-    constructor Create(const DBCollectionFile: string; ADefaultSession: Boolean = True);
+    constructor Create(const DBCollectionFile: string; const SystemData: ISystemData; ADefaultSession: Boolean = True);
     destructor Destroy; override;
 
     procedure ReloadGenres(const FileName: string); override;
@@ -295,7 +301,7 @@ var
   createScript: TStream;
   createQuery: TABSQuery;
 
-  ALibrary: TBookCollection_ABS;
+  ALibrary: IBookCollection;
 begin
   ADatabase := TABSDatabase.Create(nil);
   try
@@ -324,19 +330,16 @@ begin
   end;
 
   // Now that we have the DB structure in place for DBCollectionFile, we can create an instance of the library for it:
-  ALibrary := TBookCollection_ABS.Create(DBCollectionFile);
-  try
-    // Fill metadata version and creation date:
-    ALibrary.SetStringProperty(SETTING_VERSION, DATABASE_VERSION);
-    ALibrary.SetStringProperty(SETTING_CREATION_DATE, FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now));
+  ALibrary := TBookCollection_ABS.Create(DBCollectionFile, GetSystemData);
 
-    //
-    // Заполним таблицу жанров
-    //
-    ALibrary.LoadGenres(GenresFileName);
-  finally
-    FreeAndNil(ALibrary);
-  end;
+  // Fill metadata version and creation date:
+  ALibrary.SetStringProperty(SETTING_VERSION, DATABASE_VERSION);
+  ALibrary.SetStringProperty(SETTING_CREATION_DATE, FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now));
+
+  //
+  // Заполним таблицу жанров
+  //
+  ALibrary.LoadGenres(GenresFileName);
 end;
 
 // ------------------------------------------------------------------------------
@@ -345,6 +348,7 @@ end;
 
 constructor TBookCollection_ABS.TBookIteratorImpl.Create(
   Collection: TBookCollection_ABS;
+  const SystemData: ISystemData;
   const Mode: TBookIteratorMode;
   const LoadMemos: Boolean;
   const FilterValue: PFilterValue;
@@ -356,10 +360,12 @@ begin
   inherited Create;
 
   Assert(Assigned(Collection));
+  Assert(Assigned(SystemData));
 
-  FCollectionID := GetSystemData.ActiveCollectionInfo.ID;
   FLoadMemos := LoadMemos;
   FCollection := Collection;
+  FSystemData := SystemData;
+  FCollectionID := FSystemData.GetActiveCollectionInfo.ID;
 
   FBooks := TABSQueryEx.Create(FCollection.FDatabase, CreateSQL(Mode, FilterValue, SearchCriteria));
   FBooks.ReadOnly := True;
@@ -386,7 +392,7 @@ begin
 
   if Result then
   begin
-    Assert(GetSystemData.ActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
+    Assert(FSystemData.GetActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
     FCollection.GetBookRecord(CreateBookKey(FBookID.Value, FCollectionID), BookRecord, FLoadMemos);
     FBooks.Next;
   end;
@@ -416,7 +422,7 @@ begin
       Assert(Assigned(FilterValue));
       Result :=
         'SELECT b.' + BOOK_ID_FIELD + ' FROM Genre_List gl INNER JOIN Books b ON gl.' + BOOK_ID_FIELD + ' = b.' + BOOK_ID_FIELD + ' ';
-      if isFB2Collection(GetSystemData.ActiveCollectionInfo.CollectionType) or not Settings.ShowSubGenreBooks then
+      if isFB2Collection(FSystemData.GetActiveCollectionInfo.CollectionType) or not Settings.ShowSubGenreBooks then
         AddToWhere(Where, Format('gl.GenreCode = ''%s''', [FilterValue^.ValueString]))
       else
         AddToWhere(Where, Format('gl.GenreCode LIKE ''%s%''', [FilterValue^.ValueString]));
@@ -569,6 +575,7 @@ end;
 
 constructor TBookCollection_ABS.TAuthorIteratorImpl.Create(
   Collection: TBookCollection_ABS;
+  SystemData: ISystemData;
   const Mode: TAuthorIteratorMode;
   const FilterValue: PFilterValue
 );
@@ -578,9 +585,12 @@ begin
   inherited Create;
 
   Assert(Assigned(Collection));
+  Assert(Assigned(SystemData));
 
-  FCollectionID := GetSystemData.ActiveCollectionInfo.ID;
   FCollection := Collection;
+  FSystemData := SystemData;
+  FCollectionID := FSystemData.GetActiveCollectionInfo.ID;
+
 
   FAuthors := TABSQueryEx.Create(FCollection.FDatabase, CreateSQL(Mode, FilterValue));
   FAuthors.ReadOnly := True;
@@ -607,7 +617,7 @@ begin
 
   if Result then
   begin
-    Assert(GetSystemData.ActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
+    Assert(FSystemData.GetActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
     FCollection.GetAuthor(FAuthorID.Value, AuthorData);
     FAuthors.Next;
   end;
@@ -684,16 +694,18 @@ end;
 
 { TGenreIteratorImpl }
 
-constructor TBookCollection_ABS.TGenreIteratorImpl.Create(Collection: TBookCollection_ABS; const Mode: TGenreIteratorMode; const FilterValue: PFilterValue);
+constructor TBookCollection_ABS.TGenreIteratorImpl.Create(Collection: TBookCollection_ABS; const SystemData: ISystemData; const Mode: TGenreIteratorMode; const FilterValue: PFilterValue);
 var
   pLogger: IIntervalLogger;
 begin
   inherited Create;
 
   Assert(Assigned(Collection));
+  Assert(Assigned(SystemData));
 
-  FCollectionID := GetSystemData.ActiveCollectionInfo.ID;
   FCollection := Collection;
+  FSystemData := SystemData;
+  FCollectionID := FSystemData.GetActiveCollectionInfo.ID;
 
   FGenres := TABSQueryEx.Create(FCollection.FDatabase, CreateSQL(Mode, FilterValue));
   FGenres.ReadOnly := True;
@@ -720,7 +732,7 @@ begin
 
   if Result then
   begin
-    Assert(GetSystemData.ActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
+    Assert(FSystemData.GetActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
     FCollection.GetGenre(FGenreCode.Value, GenreData);
     FGenres.Next;
   end;
@@ -755,16 +767,18 @@ end;
 
 { TSeriesIteratorImpl }
 
-constructor TBookCollection_ABS.TSeriesIteratorImpl.Create(Collection: TBookCollection_ABS; const Mode: TSeriesIteratorMode);
+constructor TBookCollection_ABS.TSeriesIteratorImpl.Create(Collection: TBookCollection_ABS; const SystemData: ISystemData; const Mode: TSeriesIteratorMode);
 var
   pLogger: IIntervalLogger;
 begin
   inherited Create;
 
   Assert(Assigned(Collection));
+  Assert(Assigned(SystemData));
 
-  FCollectionID := GetSystemData.ActiveCollectionInfo.ID;
   FCollection := Collection;
+  FSystemData := SystemData;
+  FCollectionID := FSystemData.GetActiveCollectionInfo.ID;
 
   FSeries := TABSQueryEx.Create(FCollection.FDatabase, CreateSQL(Mode));
   FSeries.ReadOnly := True;
@@ -792,7 +806,7 @@ begin
 
   if Result then
   begin
-    Assert(GetSystemData.ActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
+    Assert(FSystemData.GetActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
     SeriesData.SeriesID := FSeriesID.Value;
     SeriesData.SeriesTitle := FSeriesTitle.Value;
     FSeries.Next;
@@ -854,9 +868,9 @@ end;
 
 { TABSBookCollection }
 
-constructor TBookCollection_ABS.Create(const DBCollectionFile: string; ADefaultSession: Boolean = True);
+constructor TBookCollection_ABS.Create(const DBCollectionFile: string; const SystemData: ISystemData; ADefaultSession: Boolean = True);
 begin
-  inherited Create;
+  inherited Create(SystemData);
 
   FDefaultSession := ADefaultSession;
 
@@ -1180,7 +1194,7 @@ begin
         FAuthors.Delete;
     end;
 
-    GetSystemData.DeleteBook(BookKey);
+    FSystemData.DeleteBook(BookKey);
   end;
 end;
 
@@ -1188,7 +1202,7 @@ procedure TBookCollection_ABS.GetBookRecord(const BookKey: TBookKey; out BookRec
 begin
   BookRecord.Clear;
 
-  if BookKey.DatabaseID = GetSystemData.ActiveCollectionInfo.ID then
+  if BookKey.DatabaseID = FSystemData.GetActiveCollectionInfo.ID then
   begin
     Assert(FBooks.Active);
 
@@ -1199,7 +1213,7 @@ begin
     end;
 
     BookRecord.BookKey.BookID := FBooksBookID.Value;
-    BookRecord.BookKey.DatabaseID := GetSystemData.ActiveCollectionInfo.ID;
+    BookRecord.BookKey.DatabaseID := FSystemData.GetActiveCollectionInfo.ID;
     BookRecord.Title := FBooksTitle.Value;
     BookRecord.Folder := FBooksFolder.Value;
     BookRecord.FileName := FBooksFileName.Value;
@@ -1223,8 +1237,8 @@ begin
     BookRecord.NodeType := ntBookInfo;
     BookRecord.Rate := FBooksRate.Value;
     BookRecord.Progress := FBooksProgress.Value;
-    BookRecord.CollectionRoot := GetSystemData.ActiveCollectionInfo.RootPath;
-    BookRecord.CollectionName := GetSystemData.ActiveCollectionInfo.Name;
+    BookRecord.CollectionRoot := FSystemData.GetActiveCollectionInfo.RootPath;
+    BookRecord.CollectionName := FSystemData.GetActiveCollectionInfo.Name;
 
     GetBookGenres(BookRecord.BookKey.BookID, BookRecord.Genres, @(BookRecord.RootGenre));
     GetBookAuthors(BookRecord.BookKey.BookID, BookRecord.Authors);
@@ -1241,7 +1255,7 @@ begin
     end;
   end
   else
-    GetSystemData.GetBookRecord(BookKey, BookRecord);
+    FSystemData.GetBookRecord(BookKey, BookRecord);
 end;
 
 procedure TBookCollection_ABS.CleanBookAuthors(const BookID: Integer);
@@ -1346,27 +1360,27 @@ function TBookCollection_ABS.GetBookIterator(const Mode: TBookIteratorMode; cons
 var
   EmptySearchCriteria: TBookSearchCriteria;
 begin
-  Result := TBookIteratorImpl.Create(Self, Mode, LoadMemos, FilterValue, EmptySearchCriteria);
+  Result := TBookIteratorImpl.Create(Self, FSystemData, Mode, LoadMemos, FilterValue, EmptySearchCriteria);
 end;
 
 function TBookCollection_ABS.Search(const SearchCriteria: TBookSearchCriteria; const LoadMemos: Boolean): IBookIterator;
 begin
-  Result := TBookIteratorImpl.Create(Self, bmSearch, LoadMemos, nil, SearchCriteria);
+  Result := TBookIteratorImpl.Create(Self, FSystemData, bmSearch, LoadMemos, nil, SearchCriteria);
 end;
 
 function TBookCollection_ABS.GetAuthorIterator(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue): IAuthorIterator;
 begin
-  Result := TAuthorIteratorImpl.Create(Self, Mode, FilterValue);
+  Result := TAuthorIteratorImpl.Create(Self, FSystemData, Mode, FilterValue);
 end;
 
 function TBookCollection_ABS.GetGenreIterator(const Mode: TGenreIteratorMode; const FilterValue: PFilterValue = nil): IGenreIterator;
 begin
-  Result := TGenreIteratorImpl.Create(Self, Mode, FilterValue);
+  Result := TGenreIteratorImpl.Create(Self, FSystemData, Mode, FilterValue);
 end;
 
 function TBookCollection_ABS.GetSeriesIterator(const Mode: TSeriesIteratorMode): ISeriesIterator;
 begin
-  Result := TSeriesIteratorImpl.Create(Self, Mode);
+  Result := TSeriesIteratorImpl.Create(Self, FSystemData, Mode);
 end;
 
 procedure TBookCollection_ABS.InternalLoadGenres;
@@ -1491,7 +1505,7 @@ begin
   end;
 
   // Обновим информацию в группах
-  GetSystemData.ChangeBookSeriesID(OldSeriesID, NewSeriesID, DatabaseID);
+  FSystemData.ChangeBookSeriesID(OldSeriesID, NewSeriesID, DatabaseID);
 end;
 
 procedure TBookCollection_ABS.ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc);
@@ -1511,7 +1525,7 @@ var
 
     if Result then
     begin
-      BookKey := CreateBookKey(FBooksBookID.Value, GetSystemData.ActiveCollectionInfo.ID);
+      BookKey := CreateBookKey(FBooksBookID.Value, FSystemData.GetActiveCollectionInfo.ID);
     end;
   end;
 
@@ -1545,7 +1559,7 @@ begin
     //
     // Обновим информацию в группах
     //
-    GetSystemData.SetExtra(BookKey, extra);
+    FSystemData.SetExtra(BookKey, extra);
 
     //
     // Дадим возможность главному окну обновить измененные ноды
@@ -1556,7 +1570,7 @@ begin
   //
   // Создадим пользовательские группы
   //
-  GetSystemData.ImportUserData(data);
+  FSystemData.ImportUserData(data);
 
   //
   // Добавим книги в группы
@@ -1597,7 +1611,7 @@ begin
     FBooks.Next;
   end;
 
-  GetSystemData.ExportUserData(data);
+  FSystemData.ExportUserData(data);
 end;
 
 procedure TBookCollection_ABS.GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
@@ -1624,7 +1638,7 @@ begin
 
   end;
 
-  GetSystemData.UpdateBook(BookRecord);
+  FSystemData.UpdateBook(BookRecord);
 end;
 
 function TBookCollection_ABS.SetReview(const BookKey: TBookKey; const Review: string): Integer;
@@ -1662,12 +1676,12 @@ begin
   //
   // Обновим информацию в группах
   //
-  Result := Result or GetSystemData.SetReview(BookKey, NewReview);
+  Result := Result or FSystemData.SetReview(BookKey, NewReview);
 end;
 
 function TBookCollection_ABS.GetReview(const BookKey: TBookKey): string;
 begin
-  if BookKey.DatabaseID = GetSystemData.ActiveCollectionInfo.ID then
+  if BookKey.DatabaseID = FSystemData.GetActiveCollectionInfo.ID then
   begin
     Assert(FBooks.Active);
     if FBooks.Locate(BOOK_ID_FIELD, BookKey.BookID, []) then
@@ -1676,7 +1690,7 @@ begin
       Result := '';
   end
   else
-    Result := GetSystemData.GetReview(BookKey);
+    Result := FSystemData.GetReview(BookKey);
 end;
 
 procedure TBookCollection_ABS.SetProgress(const BookKey: TBookKey; const Progress: Integer);
@@ -1699,7 +1713,7 @@ begin
   //
   // Обновим информацию в группах
   //
-  GetSystemData.SetProgress(BookKey, Progress);
+  FSystemData.SetProgress(BookKey, Progress);
 end;
 
 procedure TBookCollection_ABS.SetRate(const BookKey: TBookKey; const Rate: Integer);
@@ -1722,7 +1736,7 @@ begin
   //
   // Обновим информацию в группах
   //
-  GetSystemData.SetRate(BookKey, Rate);
+  FSystemData.SetRate(BookKey, Rate);
 end;
 
 procedure TBookCollection_ABS.SetSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
@@ -1744,7 +1758,7 @@ begin
   end;
 
   // Обновим информацию в группах
-  GetSystemData.SetBookSeriesID(BookKey, SeriesID);
+  FSystemData.SetBookSeriesID(BookKey, SeriesID);
 end;
 
 procedure TBookCollection_ABS.SetFolder(const BookKey: TBookKey; const Folder: string);
@@ -1765,7 +1779,7 @@ begin
   end;
 
   // Обновим информацию в группах
-  GetSystemData.SetFolder(BookKey, Folder);
+  FSystemData.SetFolder(BookKey, Folder);
 end;
 
 procedure TBookCollection_ABS.SetFileName(const BookKey: TBookKey; const FileName: string);
@@ -1786,7 +1800,7 @@ begin
   end;
 
   // Обновим информацию в группах
-  GetSystemData.SetFileName(BookKey, FileName);
+  FSystemData.SetFileName(BookKey, FileName);
 end;
 
 procedure TBookCollection_ABS.SetLocal(const BookKey: TBookKey; const AState: Boolean);
@@ -1805,12 +1819,12 @@ begin
     end;
   end;
 
-  GetSystemData.SetLocal(BookKey, AState);
+  FSystemData.SetLocal(BookKey, AState);
 end;
 
 function TBookCollection_ABS.GetLibID(const BookKey: TBookKey): string;
 begin
-  if BookKey.DatabaseID = GetSystemData.ActiveCollectionInfo.ID then
+  if BookKey.DatabaseID = FSystemData.GetActiveCollectionInfo.ID then
   begin
     Assert(FBooks.Active);
 
@@ -1824,7 +1838,7 @@ begin
     Result := FBooksLibID.AsString;
   end
   else
-    GetSystemData.GetBookLibID(BookKey, Result);
+    FSystemData.GetBookLibID(BookKey, Result);
 end;
 
 // Clear contents of collection tables (except for Settings and Genres)

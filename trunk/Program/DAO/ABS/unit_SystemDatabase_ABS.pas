@@ -1248,7 +1248,7 @@ begin
       AllBooksDate.Value := BookRecord.Date;
       AllBooksLibRate.Value := BookRecord.LibRate;
       AllBooksLang.Value := BookRecord.Lang;
-      AllBooksFolder.Value := TPath.Combine(ActiveCollectionInfo.RootFolder, BookRecord.Folder);
+      AllBooksFolder.Value := TPath.Combine(FActiveCollectionInfo.RootFolder, BookRecord.Folder);
       AllBooksFileName.Value := BookRecord.FileName;
       AllBooksInsideNo.Value := BookRecord.InsideNo;
       AllBooksExt.Value := BookRecord.FileExt;

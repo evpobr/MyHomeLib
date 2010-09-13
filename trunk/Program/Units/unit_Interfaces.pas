@@ -21,6 +21,7 @@ interface
 
 uses
   unit_Globals,
+  unit_Consts,
   UserData;
 
 type
@@ -40,6 +41,90 @@ type
     const BookKey: TBookKey;
     extra: TBookExtra
   );
+
+  ISystemData = interface
+    ['{3896E4C6-8E2F-42F3-9FB2-91753258E9B7}']
+
+    function GetCollectionInfo(const CollectionID: Integer; out CollectionInfo: TCollectionInfo): Boolean;
+    procedure UpdateCollectionInfo(const CollectionInfo: TCollectionInfo);
+
+    function ActivateCollection(CollectionID: Integer): Boolean;
+    procedure RegisterCollection(
+      const DisplayName: string;
+      const RootFolder: string;
+      const DBFileName: string;
+      CollectionType: COLLECTION_TYPE;
+      AllowDelete: Boolean;
+      Version: Integer = UNVERSIONED_COLLECTION;
+      const Notes: string = '';
+      const URL: string = '';
+      const Script: string = '';
+      const User: string = '';
+      const Password: string = ''
+    );
+    function FindCollectionWithProp(
+      PropID: TCollectionProp;
+      const Value: string;
+      IgnoreID: Integer = INVALID_COLLECTION_ID
+    ): Boolean;
+    procedure DeleteCollection(CollectionID: Integer);
+
+    procedure GetBookLibID(const BookKey: TBookKey; out ARes: string);  // deprecated;
+
+    function ActivateGroup(const ID: Integer): Boolean;
+
+    procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord);
+    procedure DeleteBook(const BookKey: TBookKey);
+    procedure UpdateBook(const BookRecord: TBookRecord);
+
+    procedure SetExtra(const BookKey: TBookKey; extra: TBookExtra);
+    procedure SetRate(const BookKey: TBookKey; Rate: Integer);
+    procedure SetProgress(const BookKey: TBookKey; Progress: Integer);
+    function GetReview(const BookKey: TBookKey): string;
+    function SetReview(const BookKey: TBookKey; const Review: string): Integer;
+    procedure SetLocal(const BookKey: TBookKey; Value: Boolean);
+    procedure SetFileName(const BookKey: TBookKey; const FileName: string);
+    procedure SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
+    procedure SetFolder(const BookKey: TBookKey; const Folder: string);
+
+    //
+    // Работа с группами
+    //
+    function AddGroup(const GroupName: string; const AllowDelete: Boolean = True): Boolean;
+    function RenameGroup(GroupID: Integer; const NewName: string): Boolean;
+    procedure DeleteGroup(GroupID: Integer);
+    procedure ClearGroup(GroupID: Integer);
+    function GetGroup(const GroupID: Integer): TGroupData;
+
+    procedure AddBookToGroup(const BookKey: TBookKey; GroupID: Integer; const BookRecord: TBookRecord);
+    procedure DeleteFromGroup(const BookKey: TBookKey; GroupID: Integer);
+    procedure RemoveUnusedBooks;
+    procedure CopyBookToGroup(
+      const BookKey: TBookKey;
+      SourceGroupID: Integer;
+      TargetGroupID: Integer;
+      MoveBook: Boolean
+    );
+
+    //
+    // Пользовательские данные
+    //
+    procedure ImportUserData(data: TUserData);
+    procedure ExportUserData(data: TUserData);
+
+    // Batch update methods:
+    procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer);
+
+    //Iterators:
+    function GetBookIterator(const GroupID: Integer; const DatabaseID: Integer = INVALID_COLLECTION_ID): IBookIterator;
+    function GetGroupIterator: IGroupIterator;
+    function GetCollectionInfoIterator: ICollectionInfoIterator;
+
+    function HasCollections: Boolean;
+    function FindFirstExistingCollectionID(const PreferredID: Integer): Integer;
+    function GetActiveCollectionInfo: TCollectionInfo;
+  end;
+
 
   IBookCollection = interface
     ['{B1BB5762-2942-48C3-90E3-3154405EC01B}']
@@ -108,6 +193,7 @@ type
 
     function GetTopGenreAlias(const FB2Code: string): string;
     procedure ReloadGenres(const FileName: string);
+    procedure LoadGenres(const GenresFileName: string);
 
     procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
 
@@ -124,6 +210,7 @@ type
     procedure SetAuthorFilterType(const AuthorFilterType: string);
     function GetAuthorFilterType: string;
   end;
+
 
   ILogger = interface
     ['{E0BE38F4-2911-4FD7-8CA2-B6E3981BBFC0}']

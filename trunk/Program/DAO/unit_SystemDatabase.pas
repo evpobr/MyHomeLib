@@ -5,12 +5,14 @@ unit unit_SystemDatabase;
 interface
 
 uses
-  unit_SystemDatabase_Abstract,
+  unit_Interfaces,
   unit_SystemDatabase_ABS,
   unit_SystemDatabase_SQLite;
 
   procedure CreateSystemTables(const DBUserFile: string);
-  function GetSystemData: TSystemData;
+
+  function CreateSystemData(ADefaultSession: Boolean = True): ISystemData;
+  function GetSystemData: ISystemData;
 
 implementation
 
@@ -20,8 +22,8 @@ uses
   unit_Settings;
 
 var
-  SystemData: TSystemData;
-  SystemDataLock: TRTLCriticalSection;
+  g_SystemData: ISystemData;
+  g_SystemDataLock: TRTLCriticalSection;
 
 procedure CreateSystemTables(const DBUserFile: string);
 begin
@@ -32,32 +34,35 @@ begin
 {$ENDIF}
 end;
 
-function GetSystemData: TSystemData;
+function CreateSystemData(ADefaultSession: Boolean = True): ISystemData;
 begin
-  if not Assigned(SystemData) then
-  begin
-    EnterCriticalSection(SystemDataLock);
-    if not Assigned(SystemData) then
-    begin
 {$IFDEF USE_SQLITE}
-      SystemData := TSystemData_SQLite.Create(Settings.SystemFileName[sfSystemDB]);
+  Result := TSystemData_SQLite.Create(Settings.SystemFileName[sfSystemDB]);
 {$ELSE}
-      SystemData := TSystemData_ABS.Create(Settings.SystemFileName[sfSystemDB]);
+  Result := TSystemData_ABS.Create(Settings.SystemFileName[sfSystemDB], ADefaultSession);
 {$ENDIF}
-    end;
-    LeaveCriticalSection(SystemDataLock);
+end;
+
+function GetSystemData: ISystemData;
+begin
+  if not Assigned(g_SystemData) then
+  begin
+    EnterCriticalSection(g_SystemDataLock);
+    if not Assigned(g_SystemData) then
+      g_SystemData := CreateSystemData;
+    LeaveCriticalSection(g_SystemDataLock);
   end;
 
-  Result := SystemData;
+  Result := g_SystemData;
 end;
 
 
 initialization
-  SystemData := nil; // do not load to support first-time App start-up without system data
-  InitializeCriticalSection(SystemDataLock);
+  g_SystemData := nil; // do not load to support first-time App start-up without system data
+  InitializeCriticalSection(g_SystemDataLock);
 
 finalization
-  FreeAndNil(SystemData);
-  DeleteCriticalSection(SystemDataLock);
+  g_SystemData := nil;
+  DeleteCriticalSection(g_SystemDataLock);
 end.
 

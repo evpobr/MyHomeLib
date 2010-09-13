@@ -271,13 +271,13 @@ begin
     // TODO: достаточно стремная операция - получение информации из глобальных объектов. Убрать нафиг!!!
     //
     ConstParams.Values['LIBID'] := GetActiveBookCollection.GetLibID(BookKey);;
-    ConstParams.Values['USER'] := GetSystemData.ActiveCollectionInfo.User;
-    ConstParams.Values['PASS'] := GetSystemData.ActiveCollectionInfo.Password;
-    ConstParams.Values['URL'] := GetSystemData.ActiveCollectionInfo.URL;
+    ConstParams.Values['USER'] := GetSystemData.GetActiveCollectionInfo.User;
+    ConstParams.Values['PASS'] := GetSystemData.GetActiveCollectionInfo.Password;
+    ConstParams.Values['URL'] := GetSystemData.GetActiveCollectionInfo.URL;
 
     CL := TStringList.Create;
     try
-      CL.Text := GetSystemData.ActiveCollectionInfo.Script;
+      CL.Text := GetSystemData.GetActiveCollectionInfo.Script;
       SetLength(Commands, CL.Count);
 
       FParams := TIdMultiPartFormDataStream.Create;

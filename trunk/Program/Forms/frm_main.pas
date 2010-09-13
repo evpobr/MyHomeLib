@@ -1531,10 +1531,10 @@ begin
     //
     GetSystemData.ActivateCollection(Settings.ActiveCollection);
 
-    frmMain.Caption := 'MyHomeLib - ' + GetSystemData.ActiveCollectionInfo.Name;
+    frmMain.Caption := 'MyHomeLib - ' + GetSystemData.GetActiveCollectionInfo.Name;
 
     // определ€ем типы коллекции
-    CollectionType := GetSystemData.ActiveCollectionInfo.CollectionType;
+    CollectionType := GetSystemData.GetActiveCollectionInfo.CollectionType;
     IsPrivate := isPrivateCollection(CollectionType);
     IsOnline := isOnlineCollection(CollectionType);
     IsLocal := isLocalCollection(CollectionType);
@@ -1777,7 +1777,7 @@ var
   end;
 
 begin
-  ActiveCollectionID := GetSystemData.ActiveCollectionInfo.ID;
+  ActiveCollectionID := GetSystemData.GetActiveCollectionInfo.ID;
 
   miCollSelect.Clear;
   miCopyToCollection.Clear;
@@ -1883,7 +1883,7 @@ begin
   DBFileName := Settings.SystemFileName[sfSystemDB];
   if (FileExists(DBFileName)) then
     // Calculate, only if the system database is already created:
-    fb2Collection := isFB2Collection(GetSystemData.ActiveCollectionInfo.CollectionType)
+    fb2Collection := isFB2Collection(GetSystemData.GetActiveCollectionInfo.CollectionType)
   else
     fb2Collection := False;
 
@@ -1964,7 +1964,7 @@ begin
   try
     if frmNCWizard.ShowModal = mrOk then
     begin
-      Settings.ActiveCollection := GetSystemData.ActiveCollectionInfo.ID;
+      Settings.ActiveCollection := GetSystemData.GetActiveCollectionInfo.ID;
       InitCollection(True);
       Result := True;
     end
@@ -2309,7 +2309,7 @@ begin
     CollectionID := GetSystemData.FindFirstExistingCollectionID(Settings.ActiveCollection);
     if CollectionID < 0 then
     begin
-      MHLShowError(rstrCollectionFileNotFound, [GetSystemData.ActiveCollectionInfo.DBFileName]);
+      MHLShowError(rstrCollectionFileNotFound, [GetSystemData.GetActiveCollectionInfo.DBFileName]);
       //
       // ћне кажетс€, это очень жестко по отношению к пользователю.
       // ћожет лучше вернуть ошибку и запустить мастера создани€ коллекции?
@@ -3647,7 +3647,7 @@ begin
       FreeAndNil(CollectionInfo);
     end;
 
-    BookCollection := GetBookCollection(GetSystemData.ActiveCollectionInfo.DBFileName);
+    BookCollection := GetBookCollection(GetSystemData.GetActiveCollectionInfo.DBFileName);
     Node := Tree.GetFirst;
     while Assigned(Node) do
     begin
@@ -3720,7 +3720,7 @@ begin
   SaveFolderTemplate := Settings.FolderTemplate;
   ScriptID := (Sender as TComponent).Tag;
 
-  if isFB2Collection(GetSystemData.ActiveCollectionInfo.CollectionType) then
+  if isFB2Collection(GetSystemData.GetActiveCollectionInfo.CollectionType) then
   begin
     case ScriptID of
       850: ExportMode := emFB2;
@@ -3780,7 +3780,7 @@ begin
     Settings.Scripts[ScriptID].TMPParams := TMPParams;
   end;
 
-  if isOnlineCollection(GetSystemData.ActiveCollectionInfo.CollectionType) then
+  if isOnlineCollection(GetSystemData.GetActiveCollectionInfo.CollectionType) then
     unit_ExportToDevice.DownloadBooks(BookIDList);
   unit_ExportToDevice.ExportToDevice(Settings.DeviceDir, BookIDList, ExportMode, Files);
 
@@ -4623,12 +4623,12 @@ var
   CollectionInfo: TCollectionInfo;
 begin
   { TODO -oNickR -cUsability : ƒумаю, стоит сделать специальный диалог дл€ этого случа€. “огда мы сможем спросить, удал€ть файл коллекции или нет. }
-  if MessageDlg(rstrRemoveCollection + '"' + GetSystemData.ActiveCollectionInfo.Name + '"?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+  if MessageDlg(rstrRemoveCollection + '"' + GetSystemData.GetActiveCollectionInfo.Name + '"?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
     Exit;
 
   // Delete current collection and choose another:
-  DBFileName := GetSystemData.ActiveCollectionInfo.DBFileName;
-  GetSystemData.DeleteCollection(GetSystemData.ActiveCollectionInfo.ID);
+  DBFileName := GetSystemData.GetActiveCollectionInfo.DBFileName;
+  GetSystemData.DeleteCollection(GetSystemData.GetActiveCollectionInfo.ID);
   DropCollectionDatabase(DBFileName);
 
   CollectionInfo := TCollectionInfo.Create;
@@ -4650,7 +4650,7 @@ var
   FilePath: string;
   BookCollection: IBookCollection;
 begin
-  DatabaseID := GetSystemData.ActiveCollectionInfo.ID;
+  DatabaseID := GetSystemData.GetActiveCollectionInfo.ID;
   BookCollection := GetActiveBookCollection;
 
   ProcessNodes(
@@ -4732,7 +4732,7 @@ begin
     Assert(Assigned(BookData));
     if IsSelectedBookNode(BookNode, BookData) then
     begin
-      if not BookData^.IsLocal and (BookData^.BookKey.DatabaseID = GetSystemData.ActiveCollectionInfo.ID) then
+      if not BookData^.IsLocal and (BookData^.BookKey.DatabaseID = GetSystemData.GetActiveCollectionInfo.ID) then
       begin
         if not BookInDownloadList(BookData^.BookKey) then
         begin
@@ -4932,17 +4932,17 @@ var
   BookRecord: TBookRecord;
   URL: string;
 begin
-  if isExternalCollection(GetSystemData.ActiveCollectionInfo.CollectionType) then
+  if isExternalCollection(GetSystemData.GetActiveCollectionInfo.CollectionType) then
   begin
     //
     // TODO -oNickR : ƒумаю, стоит приделать к этому диалогу возможность запоминать выбор пользовател€ и переходить на сайт без вопроса
     //
-    if MHLShowWarning(Format(rstrGoToLibrarySite, [GetSystemData.ActiveCollectionInfo.URL]), mbYesNo) = mrYes then
+    if MHLShowWarning(Format(rstrGoToLibrarySite, [GetSystemData.GetActiveCollectionInfo.URL]), mbYesNo) = mrYes then
     begin
-      BookKey := CreateBookKey(BookID, GetSystemData.ActiveCollectionInfo.ID);
+      BookKey := CreateBookKey(BookID, GetSystemData.GetActiveCollectionInfo.ID);
       GetActiveBookCollection.GetBookRecord(BookKey, BookRecord, False);
       { TODO -oNickR -cLibDesc : этот URL должен формироватьс€ обв€зкой библиотеки, т к его формат может мен€тьс€ }
-      URL := Format('%sb/%u/edit', [GetSystemData.ActiveCollectionInfo.URL, BookRecord.LibID]);
+      URL := Format('%sb/%u/edit', [GetSystemData.GetActiveCollectionInfo.URL, BookRecord.LibID]);
       SimpleShellExecute(Handle, URL);
     end;
     Result := True;
@@ -5089,7 +5089,7 @@ begin
     if S = NO_SERIES_TITLE then
     begin
       // Clear the series for all books in DB:
-      BookCollection.ChangeBookSeriesID(Data^.SeriesID, NO_SERIES_ID, GetSystemData.ActiveCollectionInfo.ID);
+      BookCollection.ChangeBookSeriesID(Data^.SeriesID, NO_SERIES_ID, GetSystemData.GetActiveCollectionInfo.ID);
       FillAllBooksTree;
     end
     else
@@ -5412,7 +5412,7 @@ end;
 
 function TfrmMain.UpdateEditAction(Action: TAction): Boolean;
 begin
-  Result := isOnlineCollection(GetSystemData.ActiveCollectionInfo.CollectionType);
+  Result := isOnlineCollection(GetSystemData.GetActiveCollectionInfo.CollectionType);
 
   if Result then
     Action.Enabled := False;
@@ -5703,7 +5703,7 @@ procedure TfrmMain.ImportFb2Execute(Sender: TObject);
 begin
 //  DMCollection.DBCollection.Connected := False;
 
-  unit_Import.ImportFB2(GetSystemData.ActiveCollectionInfo);
+  unit_Import.ImportFB2(GetSystemData.GetActiveCollectionInfo);
 
   InitCollection(True);
 end;
@@ -5723,7 +5723,7 @@ procedure TfrmMain.ImportFb2ZipExecute(Sender: TObject);
 begin
 //  DMCollection.DBCollection.Connected := False;
 
-  unit_Import.ImportFB2ZIP(GetSystemData.ActiveCollectionInfo);
+  unit_Import.ImportFB2ZIP(GetSystemData.GetActiveCollectionInfo);
 
   InitCollection(True);
 end;
@@ -5732,7 +5732,7 @@ procedure TfrmMain.ImportFBDExecute(Sender: TObject);
 begin
 //  DMCollection.DBCollection.Connected := False;
 
-  unit_Import.ImportFBD(GetSystemData.ActiveCollectionInfo);
+  unit_Import.ImportFBD(GetSystemData.GetActiveCollectionInfo);
 
   InitCollection(True);
 end;
@@ -6055,7 +6055,7 @@ begin
     //
     // ревью можно измен€ть только дл€ книг из текущей коллекции
     //
-    ReviewEditable := (Data^.BookKey.DatabaseID = GetSystemData.ActiveCollectionInfo.ID);
+    ReviewEditable := (Data^.BookKey.DatabaseID = GetSystemData.GetActiveCollectionInfo.ID);
 
     frmBookDetails := TfrmBookDetails.Create(Application);
     try
@@ -6089,10 +6089,10 @@ begin
       if IsOnline and ReviewEditable then
       begin
         { TODO -oNickR -cLibDesc : этот URL должен формироватьс€ обв€зкой библиотеки, т к его формат может мен€тьс€ }
-        if GetSystemData.ActiveCollectionInfo.URL = '' then
+        if GetSystemData.GetActiveCollectionInfo.URL = '' then
           URL := Format('%sb/%d/', [Settings.InpxURL, Data^.LibID])
         else
-          URL := Format('%sb/%d/', [GetSystemData.ActiveCollectionInfo.URL, Data^.LibID]);
+          URL := Format('%sb/%d/', [GetSystemData.GetActiveCollectionInfo.URL, Data^.LibID]);
 
         frmBookDetails.AllowOnlineReview(URL);
       end;
@@ -6200,7 +6200,7 @@ begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
-    if Data^.BookKey.DatabaseID <> GetSystemData.ActiveCollectionInfo.ID then
+    if Data^.BookKey.DatabaseID <> GetSystemData.GetActiveCollectionInfo.ID then
     begin
       CollectionInfo := TCollectionInfo.Create;
       try
@@ -6302,7 +6302,7 @@ procedure TfrmMain.SyncFilesExecute(Sender: TObject);
 begin
   UpdatePositions;
 
-  if isOnlineCollection(GetSystemData.ActiveCollectionInfo.CollectionType) then
+  if isOnlineCollection(GetSystemData.GetActiveCollectionInfo.CollectionType) then
     unit_Utils.SyncOnLineFiles
   else
     unit_Utils.SyncFolders;
@@ -6318,7 +6318,7 @@ begin
   begin
     UpdatePositions;
 
-    ActiveCollectionID := GetSystemData.ActiveCollectionInfo.ID;
+    ActiveCollectionID := GetSystemData.GetActiveCollectionInfo.ID;
     StartLibUpdate;
     Settings.ActiveCollection := ActiveCollectionID;
     GetSystemData.ActivateCollection(ActiveCollectionID);
@@ -6526,7 +6526,7 @@ begin
     frmBases.tsConnectionInfo.TabVisible := IsOnline;
     if frmBases.ShowModal = mrOk then
     begin
-      Assert(Settings.ActiveCollection = GetSystemData.ActiveCollectionInfo.ID);
+      Assert(Settings.ActiveCollection = GetSystemData.GetActiveCollectionInfo.ID);
       InitCollection(True);
     end;
   finally
@@ -6578,7 +6578,7 @@ var
 begin
   //DMCollection.DBCollection.Connected := False;
   ALibrary := GetActiveBookCollection;
-  if isFB2Collection(GetSystemData.ActiveCollectionInfo.CollectionType) then
+  if isFB2Collection(GetSystemData.GetActiveCollectionInfo.CollectionType) then
     ALibrary.ReloadGenres(Settings.SystemFileName[sfGenresFB2])
   else if unit_Helpers.GetFileName(fnGenreList, AFileName) then
     ALibrary.ReloadGenres(AFileName);
@@ -7163,7 +7163,7 @@ end;
 
 function TfrmMain.GenreBookFilter: TFilterValue;
 begin
-  if isFB2Collection(GetSystemData.ActiveCollectionInfo.CollectionType) or not Settings.ShowSubGenreBooks then
+  if isFB2Collection(GetSystemData.GetActiveCollectionInfo.CollectionType) or not Settings.ShowSubGenreBooks then
     Result.ValueString := FLastGenreCode
   else
     Result.ValueString := FLastGenreCode + IfThen(FLastGenreIsContainer, '.', '');
