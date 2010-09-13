@@ -105,7 +105,7 @@ type
     procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer); virtual; abstract;
 
     //Iterators:
-    function GetBookIterator(const Filter: string): IBookIterator; virtual; abstract;
+    function GetBookIterator(const GroupID: Integer; const DatabaseID: Integer = INVALID_COLLECTION_ID): IBookIterator; virtual; abstract;
     function GetGroupIterator: IGroupIterator; virtual; abstract;
     function GetCollectionInfoIterator: ICollectionInfoIterator; virtual; abstract;
 
@@ -207,7 +207,7 @@ begin
   begin
     BookGroup := data.Groups.AddGroup(GroupData.GroupID, GroupData.Text);
 
-    BookIterator := GetBookIterator(Format('bg.%0:s = %1:d AND bg.%2:s = %3:d', [GROUP_ID_FIELD, GroupData.GroupID, DB_ID_FIELD, CollectionID]));
+    BookIterator := GetBookIterator(GroupData.GroupID, CollectionID);
     while BookIterator.Next(BookRecord) do
       BookGroup.AddBook(BookRecord.BookKey.BookID, BookRecord.LibID);
   end;

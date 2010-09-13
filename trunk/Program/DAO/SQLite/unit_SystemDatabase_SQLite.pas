@@ -13,25 +13,26 @@ type
   TSystemData_SQLite = class(TSystemData)
   strict private
   type
-//    TBookIteratorImpl = class(TInterfacedObject, IBookIterator)
-//    public
-//      constructor Create(User: TSystemData_SQLite; const Filter: string);
-//      destructor Destroy; override;
-//
-//    protected
-//      //
-//      // IBookIterator
-//      //
-//      function Next(out BookRecord: TBookRecord): Boolean;
-//      function RecordCount: Integer;
-//
-//    private
-//      FUser: TSystemData_SQLite;
-//      FBooks: TSQLiteQuery;
-//
-//      procedure PrepareData(const Filter: string);
-//    end;
-//    // << TBookIteratorImpl
+    TBookIteratorImpl = class(TInterfacedObject, IBookIterator)
+    public
+      constructor Create(User: TSystemData_SQLite; const GroupID: Integer; const DatabaseID: Integer);
+      destructor Destroy; override;
+
+    protected
+      //
+      // IBookIterator
+      //
+      function Next(out BookRecord: TBookRecord): Boolean;
+      function RecordCount: Integer;
+
+    private
+      FUser: TSystemData_SQLite;
+      FBooks: TSQLiteQuery;
+      FRecordCount: Integer;
+
+      procedure PrepareData(const GroupID: Integer; const DatabaseID: Integer);
+    end;
+    // << TBookIteratorImpl
 
     TGroupIteratorImpl = class(TInterfacedObject, IGroupIterator)
     public
@@ -107,7 +108,7 @@ type
 //
 //    function ActivateGroup(const ID: Integer): Boolean; override;
 //
-//    procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord); override;
+    procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord); override;
 //    procedure DeleteBook(const BookKey: TBookKey); override;
 //    procedure UpdateBook(const BookRecord: TBookRecord); override;
 //
@@ -149,8 +150,8 @@ type
 //    // Batch update methods:
 //    procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer); override;
 //
-//    //Iterators:
-//    function GetBookIterator(const Filter: string): IBookIterator; override;
+    //Iterators:
+    function GetBookIterator(const GroupID: Integer; const DatabaseID: Integer = INVALID_COLLECTION_ID): IBookIterator; override;
     function GetGroupIterator: IGroupIterator; override;
     function GetCollectionInfoIterator: ICollectionInfoIterator; override;
 
@@ -201,6 +202,85 @@ begin
   finally
     FreeAndNil(SystemData);
   end;
+end;
+
+{ TBookIteratorImpl }
+
+constructor TSystemData_SQLite.TBookIteratorImpl.Create(User: TSystemData_SQLite; const GroupID: Integer; const DatabaseID: Integer);
+var
+  pLogger: IIntervalLogger;
+begin
+  inherited Create;
+
+  Assert(Assigned(User));
+
+  FUser := User;
+
+  PrepareData(GroupID, DatabaseID);
+end;
+
+destructor TSystemData_SQLite.TBookIteratorImpl.Destroy;
+begin
+  FreeAndNil(FBooks);
+
+  inherited Destroy;
+end;
+
+// Read next record (if present), return True if read
+function TSystemData_SQLite.TBookIteratorImpl.Next(out BookRecord: TBookRecord): Boolean;
+var
+  bookID: Integer;
+  databaseID: Integer;
+begin
+  Result := not FBooks.Eof;
+
+  if Result then
+  begin
+    bookID := FBooks.FieldAsInt(0);
+    databaseID := FBooks.FieldAsInt(1);
+
+    FUser.GetBookRecord(CreateBookKey(bookID, databaseID), BookRecord);
+    FBooks.Next;
+  end;
+end;
+
+function TSystemData_SQLite.TBookIteratorImpl.RecordCount: Integer;
+begin
+  Result := FRecordCount;
+end;
+
+procedure TSystemData_SQLite.TBookIteratorImpl.PrepareData(const GroupID: Integer; const DatabaseID: Integer);
+var
+  sqlCount: string;
+  sqlRows: string;
+  query: TSQLiteQuery;
+begin
+  sqlCount := 'SELECT COUNT(*) FROM BookGroups bg INNER JOIN Books b ON bg.BookID = b.BookID AND bg.DatabaseID = b.DatabaseID ' +
+    ' WHERE bg.GroupID = ? ';
+  sqlRows := 'SELECT b.BookID, b.DatabaseID FROM BookGroups bg INNER JOIN Books b ON bg.BookID = b.BookID AND bg.DatabaseID = b.DatabaseID ' +
+    ' WHERE bg.GroupID = ? ';
+  if (DatabaseID <> INVALID_COLLECTION_ID) then
+  begin
+    sqlCount := sqlCount + ' AND bg.DatabaseID = ? ';
+    sqlRows := sqlRows + ' AND bg.DatabaseID = ? ';
+  end;
+
+  query := FUser.FDatabase.NewQuery(sqlCount);
+  try
+    query.SetParam(0, GroupID);
+    if (DatabaseID <> INVALID_COLLECTION_ID) then
+      query.SetParam(1, DatabaseID);
+    query.Open;
+    FRecordCount := query.FieldAsInt(0);
+  finally
+    FreeAndNil(query);
+  end;
+
+  FBooks := FUser.FDatabase.NewQuery(sqlRows);
+  FBooks.SetParam(0, GroupID);
+  if (DatabaseID <> INVALID_COLLECTION_ID) then
+    FBooks.SetParam(1, DatabaseID);
+  FBooks.Open;
 end;
 
 { TGroupIteratorImpl }
@@ -479,6 +559,125 @@ begin
   end;
 end;
 
+procedure TSystemData_SQLite.GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord);
+const
+  SQL_SELECT = 'SELECT ' +
+    'LibID, Title, SeriesID, SeqNumber, UpdateDate, ' + // 0 .. 4
+    'LibRate, Lang, Folder, FileName, InsideNo, ' +     // 5 .. 9
+    'Ext, BookSize, Code, IsLocal, IsDeleted, ' +       // 10 .. 14
+    'KeyWords, Rate, Progress, Annotation, Review, ' +  // 15 .. 19
+    'ExtraInfo ' +                                      // 20
+    'FROM Books WHERE BookID = ? AND DatabaseID = ? ';
+var
+  stream: TStream;
+  reader: TReader;
+  author: TAuthorData;
+  genre: TGenreData;
+  query: TSQLiteQuery;
+  collectionInfo: TCollectionInfo;
+begin
+  query := FDatabase.NewQuery(SQL_SELECT);
+  try
+    query.SetParam(0, BookKey.BookID);
+    query.SetParam(1, BookKey.DatabaseID);
+    query.Open;
+    Assert(not query.Eof);
+
+    BookRecord.LibID := query.FieldAsInt(0);
+    BookRecord.Title := query.FieldAsString(1);
+    if query.FieldIsNull(2) then
+    begin
+      BookRecord.SeriesID := NO_SERIES_ID;
+      BookRecord.SeqNumber := 0;
+    end
+    else
+    begin
+      BookRecord.SeriesID := query.FieldAsInt(2);
+      BookRecord.SeqNumber := query.FieldAsInt(3);
+    end;
+    BookRecord.Date := query.FieldAsDateTime(4);
+    BookRecord.Rate := query.FieldAsInt(5);
+    BookRecord.Lang := query.FieldAsString(6);
+    BookRecord.Folder := query.FieldAsString(7);
+    BookRecord.FileName := query.FieldAsString(8);
+    BookRecord.InsideNo := query.FieldAsInt(9);
+    BookRecord.FileExt := query.FieldAsString(10);
+    BookRecord.Size := query.FieldAsInt(11);
+    BookRecord.Code := query.FieldAsInt(12);
+    BookRecord.IsLocal := query.FieldAsBoolean(13);
+    BookRecord.IsDeleted := query.FieldAsBoolean(14);
+    BookRecord.KeyWords := query.FieldAsString(15);
+    BookRecord.LibRate := query.FieldAsInt(16);
+    BookRecord.Progress := query.FieldAsInt(17);
+    BookRecord.Annotation := query.FieldAsBlobString(18);
+    BookRecord.Review := query.FieldAsBlobString(19);
+    BookRecord.NodeType := ntBookInfo;
+    BookRecord.BookKey := BookKey;
+
+    stream := query.FieldAsBlob(20);
+    try
+      reader := TReader.Create(stream, 4096);
+      try
+        BookRecord.Series := reader.ReadString;
+        Assert((BookRecord.SeriesID = NO_SERIES_ID) = (BookRecord.Series = NO_SERIES_TITLE));
+
+        reader.ReadListBegin;
+        while not reader.EndOfList do
+        begin
+          Author.LastName := reader.ReadString;
+          Author.FirstName := reader.ReadString;
+          Author.MiddleName := reader.ReadString;
+          Author.AuthorID := reader.ReadInteger;
+
+          TAuthorsHelper.Add(
+            BookRecord.Authors,
+            Author.LastName,
+            Author.FirstName,
+            Author.MiddleName,
+            Author.AuthorID
+          );
+        end;
+        reader.ReadListEnd;
+
+        reader.ReadListBegin;
+        while not reader.EndOfList do
+        begin
+          Genre.GenreCode := reader.ReadString;
+          Genre.FB2GenreCode := reader.ReadString;
+          Genre.GenreAlias := reader.ReadString;
+
+          TGenresHelper.Add(
+            BookRecord.Genres,
+            Genre.GenreCode,
+            Genre.GenreAlias,
+            Genre.FB2GenreCode
+          );
+        end;
+        reader.ReadListEnd;
+      finally
+        reader.Free;
+      end;
+    finally
+      Stream.Free;
+    end;
+  finally
+    FreeAndNil(query);
+  end;
+
+  if GetCollectionInfo(BookRecord.BookKey.DatabaseID, collectionInfo) then
+  begin
+    // Please notice that the collection for a book in a group might not match ActiveCollection
+    // Need to use values from tblBases instead
+    BookRecord.CollectionName := collectionInfo.Name;
+    BookRecord.CollectionRoot := IncludeTrailingPathDelimiter(collectionInfo.RootFolder);
+  end
+  else
+  begin
+    BookRecord.CollectionName := rstrUnknownCollection;
+    BookRecord.CollectionRoot := '';
+  end;
+end;
+
 // Result: true if added
 function TSystemData_SQLite.AddGroup(const GroupName: string; const AllowDelete: Boolean = True): Boolean;
 const
@@ -527,6 +726,11 @@ begin
   finally
     FreeAndNil(Query);
   end;
+end;
+
+function TSystemData_SQLite.GetBookIterator(const GroupID: Integer; const DatabaseID: Integer = INVALID_COLLECTION_ID): IBookIterator;
+begin
+  Result := TBookIteratorImpl.Create(Self, GroupID, DatabaseID);
 end;
 
 function TSystemData_SQLite.GetGroupIterator: IGroupIterator;
