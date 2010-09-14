@@ -81,8 +81,8 @@ type
     destructor Destroy; override;
 
     function GetCollectionInfo(const CollectionID: Integer; out CollectionInfo: TCollectionInfo): Boolean; override;
-//    procedure UpdateCollectionInfo(const CollectionInfo: TCollectionInfo); override;
-//
+    procedure UpdateCollectionInfo(const CollectionInfo: TCollectionInfo); override;
+
     function ActivateCollection(CollectionID: Integer): Boolean; override;
     procedure RegisterCollection(
       const DisplayName: string;
@@ -465,6 +465,60 @@ begin
     begin
       CollectionInfo.Clear;
     end;
+  finally
+    FreeAndNil(query);
+  end;
+end;
+
+procedure TSystemData_SQLite.UpdateCollectionInfo(const CollectionInfo: TCollectionInfo);
+const
+  SQL_SELECT = 'SELECT ID FROM Bases WHERE ID = ? ';
+  SQL_UPDATE = 'UPDATE Bases SET ' +
+    'BaseName = ?, RootFolder = ?, DBFileName = ?, Notes = ?, CreationDate = ?, ' + // 0  .. 4
+    'Version = ?, Code = ?, AllowDelete = ?, Settings = ?, URL = ?, ' +             // 5  .. 9
+    'LibUser = ?, LibPassword = ?, ConnectionScript = ? ' +                         // 10 .. 12
+    'WHERE ID = ? ';                                                                // 13
+var
+  query: TSQLiteQuery;
+  stream: TStream;
+begin
+  Assert(CollectionInfo.ID > 0);
+
+  query := FDatabase.NewQuery(SQL_SELECT);
+  try
+    query.SetParam(0, CollectionInfo.ID);
+    query.Open;
+    Assert(not query.Eof);
+  finally
+    FreeAndNil(query);
+  end;
+
+  query := FDatabase.NewQuery(SQL_UPDATE);
+  try
+    query.SetParam(0, CollectionInfo.Name);
+    query.SetParam(1, ExcludeTrailingPathDelimiter(CollectionInfo.RootFolder));
+    query.SetParam(2, CollectionInfo.DBFileName);
+    query.SetParam(3, CollectionInfo.Notes);
+    query.SetParam(4, CollectionInfo.CreationDate);
+    query.SetParam(5, CollectionInfo.Version);
+    query.SetParam(6, CollectionInfo.CollectionType);
+    query.SetParam(7, CollectionInfo.AllowDelete);
+
+// TODO: Fix SQLite binary stream support
+//    stream := TMemoryStream.Create;
+//    try
+//      CollectionInfo.Settings.SaveToStream(stream);
+//      query.SetBlobParam(8, stream);
+//    finally
+//      FreeAndNil(stream);
+//    end;
+
+    query.SetParam(9, CollectionInfo.URL);
+    query.SetParam(10, CollectionInfo.User);
+    query.SetParam(11, CollectionInfo.Password);
+    query.SetBlobParam(12, CollectionInfo.Script);
+    query.SetParam(13, CollectionInfo.ID);
+    query.ExecSQL;
   finally
     FreeAndNil(query);
   end;
