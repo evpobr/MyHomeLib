@@ -1009,10 +1009,7 @@ end;
 function TBookCollection_ABS.InsertBook(BookRecord: TBookRecord; const CheckFileName: Boolean; const FullCheck: Boolean): Integer;
 var
   i: Integer;
-  Author: TAuthorData;
-
   Res: Boolean;
-
 begin
   Assert(FAuthors.Active);
   Assert(FAuthorList.Active);

@@ -260,6 +260,7 @@
 			<DCCReference Include="DAO\ABS\unit_SystemDatabase_ABS.pas"/>
 			<DCCReference Include="DAO\SQLite\unit_SQLiteUtils.pas"/>
 			<DCCReference Include="DAO\SQLite\unit_SystemDatabase_SQLite.pas"/>
+			<DCCReference Include="Units\unit_ProgressEngine.pas"/>
 			<RcItem Include="Resources\Images\16x16\star_small.png">
 				<ResourceType>RCData</ResourceType>
 				<ResourceId>smallStar</ResourceId>

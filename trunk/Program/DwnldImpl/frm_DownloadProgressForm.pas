@@ -44,7 +44,9 @@ type
 
   protected
     procedure StartWorker; override;
+
     procedure OpenProgress; override;
+    procedure SetProgressHint(Style: TProgressBarStyle; State: TProgressBarState); override;
     procedure ShowProgress(Percent: Integer); override;
     procedure SetComment(const Comment: string); override;
     procedure ShowTeletype(const Msg: string; Severity: TTeletypeSeverity); override;
@@ -72,6 +74,11 @@ procedure TDownloadProgressForm.OpenProgress;
 begin
   pbCurrent.Position := 0;
   pbTotal.Position := 0;
+end;
+
+procedure TDownloadProgressForm.SetProgressHint(Style: TProgressBarStyle; State: TProgressBarState);
+begin
+  // ничего не делаем
 end;
 
 procedure TDownloadProgressForm.SetComment2(const Current, Total: string);

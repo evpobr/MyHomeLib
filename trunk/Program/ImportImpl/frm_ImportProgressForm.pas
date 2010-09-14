@@ -31,6 +31,7 @@ type
   private
   protected
     procedure OpenProgress; override;
+    procedure SetProgressHint(Style: TProgressBarStyle; State: TProgressBarState); override;
     procedure ShowProgress(Percent: Integer); override;
     procedure ShowTeletype(const Msg: string; Severity: TTeletypeSeverity); override;
     procedure SetComment(const Comment: string); override;
@@ -54,6 +55,12 @@ end;
 procedure TImportProgressForm.OpenProgress;
 begin
   ProgressBar.Position := 0;
+end;
+
+procedure TImportProgressForm.SetProgressHint(Style: TProgressBarStyle; State: TProgressBarState);
+begin
+  ProgressBar.Style := Style;
+  ProgressBar.State := State;
 end;
 
 procedure TImportProgressForm.SetComment(const Comment: string);

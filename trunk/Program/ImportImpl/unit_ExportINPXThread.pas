@@ -27,7 +27,7 @@ uses
 
 type
   TExport2INPXThread = class(TWorker)
-  private
+  strict private
     FTempPath: string;
 
     FCollectionName: string;
@@ -40,8 +40,7 @@ type
 
     FGenresType: TGenresType;
 
-    function INPRecordCreate(const R: TBookRecord): string;
-    procedure INPXPack(const INPXFileName: string; const FileList: TStrings);
+    procedure INPRecordCreate(const R: TBookRecord; writer: TStreamWriter);
 
   protected
     procedure WorkFunction; override;
@@ -61,6 +60,7 @@ uses
   StrUtils,
   ZipForge,
   unit_Consts,
+  unit_Helpers,
   unit_Settings,
   unit_MHL_strings,
   unit_Database,
@@ -68,7 +68,7 @@ uses
   unit_SystemDatabase;
 
 resourcestring
-  rstrVersionFrom = 'Версия от ';
+  rstrVersionFrom = 'Версия от ddddd';
   rstrExportingCollection = 'Экспортируем коллекцию.';
   rstrSaving = 'Сохраняем документ. Подождите, пожалуйста.';
 
@@ -93,193 +93,151 @@ begin
 
   FCollectionNotes := CollectionInfo.Notes;
   if FCollectionNotes = '' then
-    FCollectionNotes := rstrVersionFrom + DateToStr(Now);
+    FCollectionNotes := FormatDateTime(rstrVersionFrom, Now);
 end;
 
 procedure TExport2INPXThread.WorkFunction;
 var
   BookCollection: IBookCollection;
-  slFileList: TStringList;
-  slHelper: TStringList;
-  cINPRecord: string;
-
-  cVersion: string;
-
-  totalBooks: Integer;
-  processedBooks: Integer;
   R: TBookRecord;
   BookIterator: IBookIterator;
+
+  inpxStream: TMemoryStream;
+  inpxWriter: TStreamWriter;
+  inpxZIP: TZipForge;
 begin
   SetComment(rstrExportingCollection);
-
-  processedBooks := 0;
 
   if isFB2Collection(FCollectionType) then
     FGenresType := gtFb2
   else
     FGenresType := gtAny;
 
-  slFileList := TStringList.Create;
+  inpxStream := TMemoryStream.Create;
   try
-    slHelper := TStringList.Create;
+    inpxWriter := TStreamWriter.Create(inpxStream, TEncoding.UTF8);
     try
       BookCollection := GetBookCollection(FCollectionDBFileName);
-      BookIterator := BookCollection.GetBookIterator(bmAll, True);
       try
-        totalBooks := BookIterator.RecordCount;
-        while BookIterator.Next(R) do
-        begin
-          if Canceled then
-            Exit;
+        BookIterator := BookCollection.GetBookIterator(bmAll, True);
+        try
+          FProgressEngine.Init(BookIterator.RecordCount, rstrBookProcessedMsg1, rstrBookProcessedMsg2);
 
-          cINPRecord := INPRecordCreate(R);
-          Assert(cINPRecord <> '');
+          while BookIterator.Next(R) do
+          begin
+            if Canceled then
+              Exit;
 
-          slHelper.Add(cINPRecord);
+            INPRecordCreate(R, inpxWriter);
 
-          Inc(processedBooks);
-          if (processedBooks mod ProcessedItemThreshold) = 0 then
-            SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
-          SetProgress(processedBooks * 100 div totalBooks);
+            FProgressEngine.AddProgress;
+          end;
+        finally
+          BookIterator := nil;
         end;
-        Assert(processedBooks = totalBooks);
-        SetProgress(100);
+
+        FProgressEngine.Finish;
       finally
-        BookIterator := nil;
+        BookCollection := nil;
       end;
- 
-      SetComment(rstrSaving);
-
-      slHelper.SaveToFile(FTempPath + BOOKS_INFO_FILE, TEncoding.UTF8);
-      slFileList.Add(FTempPath + BOOKS_INFO_FILE);
-
-      //
-      // Создаём файл version.info
-      //
-      cVersion := IntToStr(FCollectionVersion); // Получаем дату в формате '20091231'
-      if Length(cVersion) <> 8 then
-      begin                            // Если длина строки не равна 8, то получаем текущую дату
-        cVersion := DateToStr(Date()); // Получаем дату в формате '2009-12-31'
-        Delete(cVersion, 5, 1);        // Получаем дату в формате '200912-31'
-        Delete(cVersion, 7, 1);        // Получаем дату в формате '20091231'
-      end;
-
-      slHelper.Clear;
-      slHelper.Add(cVersion);
-      slHelper.SaveToFile(FTempPath + VERINFO_FILENAME);
-      slFileList.Add(FTempPath + VERINFO_FILENAME);
-
-      //
-      // Записываем файл structure.info
-      //
-      slHelper.Clear;
-      slHelper.Add('AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;INSNO;FOLDER;LANG;KEYWORDS;');
-      slHelper.SaveToFile(FTempPath + STRUCTUREINFO_FILENAME);
-      slFileList.Add(FTempPath + STRUCTUREINFO_FILENAME);
     finally
-      FreeAndNil(slHelper);
+      inpxWriter.Free;
     end;
 
+    inpxStream.Position := 0;
+
+    FProgressEngine.Init(-1, rstrSaving, rstrSaving);
+
     //
-    // Упаковываем файлы в zip-архив и устанавливаем комментарий
+    // Все готово - пакуем
     //
-    INPXPack(INPXFileName, slFileList);
+    inpxZIP := TZipForge.Create(nil);
+    try
+      inpxZIP.FileName := INPXFileName;
+      inpxZIP.BaseDir := FTempPath;
+      inpxZIP.OpenArchive(fmCreate);
+
+      inpxZIP.AddFromStream(BOOKS_INFO_FILE, inpxStream);
+
+      if UNVERSIONED_COLLECTION = FCollectionVersion then
+        inpxZIP.AddFromString(VERINFO_FILENAME, FormatDateTime('yyyymmdd', Now))
+      else
+        inpxZIP.AddFromString(VERINFO_FILENAME, IntToStr(FCollectionVersion));
+
+      inpxZIP.AddFromString(
+        STRUCTUREINFO_FILENAME,
+        'AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;INSNO;FOLDER;LANG;KEYWORDS;'
+      );
+
+      //
+      // Устанавливаем комментарий для INPX-файла
+      //
+      inpxZIP.Comment :=
+        FCollectionName + CRLF +
+        ExtractFileName(FCollectionDBFileName) + CRLF +
+        IntToStr(FCollectionType) + CRLF +
+        FCollectionNotes;
+
+      inpxZIP.CloseArchive;
+    finally
+      inpxZIP.Free;
+    end;
   finally
-    slFileList.Free;
+    inpxStream.Free;
   end;
 end;
 
-procedure TExport2INPXThread.INPXPack(const INPXFileName: string; const FileList: TStrings);
+procedure TExport2INPXThread.INPRecordCreate(const R: TBookRecord; writer: TStreamWriter);
 var
-  ZIP: TZipForge;
-  nIndex: Integer;
-begin
-  //
-  // Удаляем INPX-файл, если он уже существует
-  //
-  if FileExists(INPXFileName) then
-    SysUtils.DeleteFile(INPXFileName);
-  //
-  // Создаем экземпляр TZipForge, инициализируем и открываем его
-  //
-  ZIP := TZipForge.Create(Application.MainForm);
-  try
-    ZIP.FileName := INPXFileName;
-    ZIP.BaseDir := FTempPath;
-    ZIP.OpenArchive(fmCreate);
-
-    //
-    // Перемещаем файлы в архив согласно списку FileList
-    //
-    for nIndex := 0 to FileList.Count - 1 do
-      ZIP.MoveFiles(FileList[nIndex]);
-
-    //
-    // Устанавливаем комментарий для INPX-файла
-    //
-    ZIP.Comment :=
-      FCollectionName + CRLF +
-      ExtractFileName(FCollectionDBFileName) + CRLF +
-      IntToStr(FCollectionType) + CRLF +
-      FCollectionNotes;
-    ZIP.CloseArchive;
-  finally
-    ZIP.Free;
-  end;
-end;
-
-function TExport2INPXThread.INPRecordCreate(const R: TBookRecord): string;
-var
-  author: TAuthorData;
   strAuthors: string;
-  genre: TGenreData;
   strGenres: string;
   strFileExt: string;
 begin
   //
   // Список авторов
   //
-  for author in R.Authors do
-  begin
-    strAuthors := strAuthors +
-      author.LastName + INPX_SUBITEM_DELIMITER +
-      author.FirstName + INPX_SUBITEM_DELIMITER +
-      author.MiddleName +
-      INPX_ITEM_DELIMITER;
-  end;
-  if strAuthors = '' then
-    strAuthors := INPX_ITEM_DELIMITER;
+  strAuthors :=
+    TArrayUtils.Join<TAuthorData>(
+      R.Authors,
+      INPX_ITEM_DELIMITER,
+      function(const a: TAuthorData): string
+      begin
+        Result := a.LastName + INPX_SUBITEM_DELIMITER + a.FirstName + INPX_SUBITEM_DELIMITER + a.MiddleName;
+      end
+    ) + INPX_ITEM_DELIMITER;
 
   //
   // Список жанров
   //
-  for genre in R.Genres do
-  begin
-    strGenres := strGenres +
-      IfThen(FGenresType = gtFb2, genre.FB2GenreCode, genre.GenreCode) + INPX_ITEM_DELIMITER;
-  end;
-  if strGenres = '' then
-    strGenres := INPX_ITEM_DELIMITER;
+  strGenres :=
+    TArrayUtils.Join<TGenreData>(
+      R.Genres,
+      INPX_ITEM_DELIMITER,
+      function(const g: TGenreData): string
+      begin
+        Result := IfThen(FGenresType = gtFb2, g.FB2GenreCode, g.GenreCode);
+      end
+    ) + INPX_ITEM_DELIMITER;
 
   strFileExt := R.FileExt;
   Delete(strFileExt, 1, 1);
 
-  Result :=
-    strAuthors                           + INPX_FIELD_DELIMITER + // 0 - authors list
-    strGenres                            + INPX_FIELD_DELIMITER + // 1 - genres list
-    Trim(R.Title)                        + INPX_FIELD_DELIMITER + // 2 - book title
-    Trim(R.Series)                       + INPX_FIELD_DELIMITER + // 3 - book series' title
-    IntToStr(R.SeqNumber)                + INPX_FIELD_DELIMITER + // 4 - book series' no
-    CheckSymbols(Trim(R.FileName))       + INPX_FIELD_DELIMITER + // 5 - book filename
-    IntToStr(R.Size)                     + INPX_FIELD_DELIMITER + // 6 - unpacked book filesize
-    IntToStr(R.LibID)                    + INPX_FIELD_DELIMITER + // 7 - book LibID
-    IfThen(R.IsDeleted, '1', '0')        + INPX_FIELD_DELIMITER + // 8 - book deleted flag
-    strFileExt                           + INPX_FIELD_DELIMITER + // 9 - book fileext
-    FormatDateTime('yyyy-mm-dd', R.Date) + INPX_FIELD_DELIMITER + // 10 - book data added
-    IntToStr(R.InsideNo)                 + INPX_FIELD_DELIMITER + // 11 - File InsideNo in archive
-    R.Folder                             + INPX_FIELD_DELIMITER + // 12 - Base folder/base archive name
-    R.Lang                               + INPX_FIELD_DELIMITER + // 12 - language
-    R.KeyWords                           + INPX_FIELD_DELIMITER;  // 13 - keywords
+  writer.Write(strAuthors);                           writer.Write(INPX_FIELD_DELIMITER);
+  writer.Write(strGenres);                            writer.Write(INPX_FIELD_DELIMITER);
+  writer.Write(Trim(R.Title));                        writer.Write(INPX_FIELD_DELIMITER);
+  writer.Write(Trim(R.Series));                       writer.Write(INPX_FIELD_DELIMITER);
+  writer.Write(R.SeqNumber);                          writer.Write(INPX_FIELD_DELIMITER);
+  writer.Write(CheckSymbols(Trim(R.FileName)));       writer.Write(INPX_FIELD_DELIMITER);
+  writer.Write(R.Size);                               writer.Write(INPX_FIELD_DELIMITER);
+  writer.Write(R.LibID);                              writer.Write(INPX_FIELD_DELIMITER);
+  writer.Write(IfThen(R.IsDeleted, '1', '0'));        writer.Write(INPX_FIELD_DELIMITER);
+  writer.Write(strFileExt);                           writer.Write(INPX_FIELD_DELIMITER);
+  writer.Write(FormatDateTime('yyyy-mm-dd', R.Date)); writer.Write(INPX_FIELD_DELIMITER);
+  writer.Write(R.InsideNo);                           writer.Write(INPX_FIELD_DELIMITER);
+  writer.Write(R.Folder);                             writer.Write(INPX_FIELD_DELIMITER);
+  writer.Write(R.Lang);                               writer.Write(INPX_FIELD_DELIMITER);
+  writer.Write(R.KeyWords);                           writer.Write(INPX_FIELD_DELIMITER);
+  writer.WriteLine;
 end;
 
 end.

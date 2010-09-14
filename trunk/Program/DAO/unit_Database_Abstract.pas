@@ -131,7 +131,6 @@ type
 
   protected
     constructor Create(const SystemData: ISystemData);
-    destructor Destroy; override;
 
     procedure GetGenre(const GenreCode: string; var Genre: TGenreData);
     procedure GetBookGenres(BookID: Integer; var BookGenres: TBookGenres; RootGenre: PGenreData = nil);
@@ -146,6 +145,8 @@ type
     FSystemData: ISystemData;
 
   public
+    destructor Destroy; override;
+
     procedure SetHideDeleted(const HideDeleted: Boolean);
     function GetHideDeleted: Boolean;
     procedure SetShowLocalOnly(const ShowLocalOnly: Boolean);

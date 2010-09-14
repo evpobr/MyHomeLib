@@ -156,7 +156,10 @@ type
     FDefaultScript: Integer;
 
     // IMPORT_SECTION
-    FCheckExistsFiles: Boolean;
+    //
+    // UNUSED
+    //
+    //FCheckExistsFiles: Boolean;
 
     FInitialDirs: TStringList;
 
@@ -379,7 +382,10 @@ type
     property Scripts: TScripts read FScripts;
     property DefaultScript: Integer read FDefaultScript write FDefaultScript;
 
-    property CheckExistsFiles: Boolean read FCheckExistsFiles write FCheckExistsFiles;
+    //
+    // UNUSED
+    //
+    // property CheckExistsFiles: Boolean read FCheckExistsFiles write FCheckExistsFiles;
 
     property InitialDir[const key: string]: string read GetInitialDir write SetInitialDir;
 
@@ -772,7 +778,9 @@ begin
     //
     // IMPORT_SECTION
     //
-    FCheckExistsFiles := iniFile.ReadBool(IMPORT_SECTION, 'CheckFB2Exist', True);
+    // UNUSED
+    //
+    //FCheckExistsFiles := iniFile.ReadBool(IMPORT_SECTION, 'CheckFB2Exist', True);
 
     //
     // BEHAVIOR_SECTION
@@ -935,7 +943,9 @@ begin
     //
     // IMPORT_SECTION
     //
-    iniFile.WriteBool(IMPORT_SECTION, 'CheckFB2Exist', FCheckExistsFiles);
+    // UNUSED
+    //
+    //iniFile.WriteBool(IMPORT_SECTION, 'CheckFB2Exist', FCheckExistsFiles);
 
     //
     // BEHAVIOR_SECTION

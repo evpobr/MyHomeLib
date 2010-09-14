@@ -17,12 +17,15 @@ interface
 uses
   Classes,
   Windows,
-  SysUtils;
+  SysUtils,
+  ComCtrls,
+  unit_ProgressEngine;
 
 type
   TTeletypeSeverity = (tsInfo, tsWarning, tsError);
 
   TOpenProgressEvent = procedure of object;
+  TProgressHintEvent = procedure (Style: TProgressBarStyle; State: TProgressBarState) of object;
   TProgressEvent = procedure (Percent: Integer) of object;
   TCloseProgressEvent = procedure of object;
   TTeletypeEvent = procedure (const Msg: string; Severity: TTeletypeSeverity) of object;
@@ -30,10 +33,12 @@ type
   TShowMessageEvent = function (const Text: string; Flags: Longint = MB_OK): Integer of object;
 
   TWorker = class(TThread)
-  private
+  strict private
     FFinished: Boolean;
     FCancel: Boolean;
 
+    FProgressStyle: TProgressBarStyle;
+    FProgressState: TProgressBarState;
     FPercent: Integer;
     FComment: string;
     FSeverity: TTeletypeSeverity;
@@ -43,27 +48,33 @@ type
     FMessageFlags: Integer;
     FMessageResult: Integer;
 
-  private
+  strict private
     FOnProgress: TProgressEvent;
+    FProgressHint: TProgressHintEvent;
     FOnOpenProgress: TOpenProgressEvent;
     FOnCloseProgress: TCloseProgressEvent;
     FOnTeletype: TTeletypeEvent;
     FOnSetComment: TSetCommentEvent;
-    FOnShowMessage: TShowMessageEvent; 
+    FOnShowMessage: TShowMessageEvent;
 
     procedure DoOpenProgress;
+    procedure DoProgressHint;
     procedure DoSetProgress;
     procedure DoCloseProgress;
     procedure DoTeletype;
     procedure DoSetComment;
     procedure DoShowMessage;
 
+  strict protected
+    FProgressEngine: TProgressEngine;
+
   protected
     const ProcessedItemThreshold = 100;
 
   protected
     procedure OpenProgress;
-    procedure SetProgress(APercent: integer);
+    procedure SetProgressHint(Style: TProgressBarStyle; State: TProgressBarState = pbsNormal);
+    procedure SetProgress(APercent: Integer);
     procedure CloseProgress;
     procedure Teletype(const Msg: string; Severity: TTeletypeSeverity = tsInfo);
     procedure SetComment(const Comment: string);
@@ -78,6 +89,7 @@ type
 
   public
     property OnOpenProgress: TOpenProgressEvent read FOnOpenProgress write FOnOpenProgress;
+    property OnProgressHint: TProgressHintEvent read FProgressHint write FProgressHint;
     property OnProgress: TProgressEvent read FOnProgress write FOnProgress;
     property OnCloseProgress: TCloseProgressEvent read FOnCloseProgress write FOnCloseProgress;
     property OnTeletype: TTeletypeEvent read FOnTeletype write FOnTeletype;
@@ -117,8 +129,25 @@ procedure TWorker.OpenProgress;
 begin
   FFinished := False;
   FPercent := 0;
+
+  FProgressEngine.Init(0, '', '');
+
   Synchronize(DoOpenProgress);
   Synchronize(DoSetProgress);
+end;
+
+// ============================================================================
+procedure TWorker.DoProgressHint;
+begin
+  if Assigned(FProgressHint) then
+    FProgressHint(FProgressStyle, FProgressState);
+end;
+
+procedure TWorker.SetProgressHint(Style: TProgressBarStyle; State: TProgressBarState = pbsNormal);
+begin
+  FProgressStyle := Style;
+  FProgressState := State;
+  Synchronize(DoProgressHint);
 end;
 
 // ============================================================================
@@ -160,6 +189,7 @@ end;
 
 procedure TWorker.CloseProgress;
 begin
+  FProgressEngine.Finish;
   FPercent := 100;
   FFinished := True;
   Synchronize(DoSetProgress);
@@ -208,11 +238,20 @@ procedure TWorker.Execute;
 begin
   CoInitializeEx(nil, COINIT_MULTITHREADED or COINIT_APARTMENTTHREADED);
   try
-    OpenProgress;
+    FProgressEngine := TProgressEngine.Create;
     try
-      WorkFunction;
+      FProgressEngine.OnSetProgress := SetProgress;
+      FProgressEngine.OnSetComment := SetComment;
+      FProgressEngine.OnProgressHint := SetProgressHint;
+
+      OpenProgress;
+      try
+        WorkFunction;
+      finally
+        CloseProgress;
+      end;
     finally
-      CloseProgress;
+      FreeAndNil(FProgressEngine);
     end;
   finally
     CoUninitialize;
