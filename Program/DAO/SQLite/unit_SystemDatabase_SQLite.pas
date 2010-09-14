@@ -127,7 +127,7 @@ type
 //    // Работа с группами
 //    //
     function AddGroup(const GroupName: string; const AllowDelete: Boolean = True): Boolean; override;
-//    function RenameGroup(GroupID: Integer; const NewName: string): Boolean; override;
+    function RenameGroup(GroupID: Integer; const NewName: string): Boolean; override;
     procedure DeleteGroup(GroupID: Integer); override;
     procedure ClearGroup(GroupID: Integer); override;
     function GetGroup(const GroupID: Integer): TGroupData; override;
@@ -159,6 +159,8 @@ type
     FDatabase: TSQLiteDatabase;
 
     procedure InternalClearGroup(GroupID: Integer; RemoveGroup: Boolean);
+    function InternalFindGroup(const GroupName: string): Boolean; overload; inline;
+    function InternalFindGroup(GroupID: Integer): Boolean; overload; inline;
   end;
 
 procedure CreateSystemTables_SQLite(const DBUserFile: string);
@@ -737,6 +739,23 @@ begin
   end;
 end;
 
+function TSystemData_SQLite.RenameGroup(GroupID: Integer; const NewName: string): Boolean;
+const
+  SQL = 'UPDATE Groups SET GroupName = ? WHERE GroupID = ? ';
+var
+  query: TSQLiteQuery;
+begin
+  Result := False;
+  if InternalFindGroup(GroupID) then
+  begin
+    query := FDatabase.NewQuery(SQL);
+    query.SetParam(0, NewName);
+    query.SetParam(1, GroupID);
+    query.ExecSQL;
+    Result := True;
+  end;
+end;
+
 //
 // Удалить группу
 //
@@ -1043,5 +1062,38 @@ begin
     query.ExecSQL;
   end;
 end;
+
+function TSystemData_SQLite.InternalFindGroup(const GroupName: string): Boolean;
+const
+  SQL = 'SELECT GroupID FROM Groups WHERE GroupName = ? ';
+var
+  query: TSQLiteQuery;
+begin
+  query := FDatabase.NewQuery(SQL);
+  try
+    query.SetParam(0, GroupName);
+    query.Open;
+    Result := not query.Eof;
+  finally
+    FreeAndNil(query);
+  end;
+end;
+
+function TSystemData_SQLite.InternalFindGroup(GroupID: Integer): Boolean;
+const
+  SQL = 'SELECT GroupID FROM Groups WHERE GroupID = ? ';
+var
+  query: TSQLiteQuery;
+begin
+  query := FDatabase.NewQuery(SQL);
+  try
+    query.SetParam(0, GroupID);
+    query.Open;
+    Result := not query.Eof;
+  finally
+    FreeAndNil(query);
+  end;
+end;
+
 
 end.
