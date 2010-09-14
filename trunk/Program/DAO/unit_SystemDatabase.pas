@@ -1,3 +1,18 @@
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Authors             eg
+  * Created             12.09.2010
+  * Description
+  *
+  * $Id$
+  *
+  * History
+  *
+  ****************************************************************************** *)
 unit unit_SystemDatabase;
 
 {$DEFINE USE_SQLITE}

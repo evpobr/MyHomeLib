@@ -28,7 +28,7 @@ type
     private
       FUser: TSystemData_SQLite;
       FBooks: TSQLiteQuery;
-      FRecordCount: Integer;
+      FCount: TSQLiteQuery;
 
       procedure PrepareData(const GroupID: Integer; const DatabaseID: Integer);
     end;
@@ -49,7 +49,7 @@ type
     private
       FUser: TSystemData_SQLite;
       FGroups: TSQLiteQuery;
-      FRecordCount: Integer;
+      FCount: TSQLiteQuery;
 
       procedure PrepareData;
     end;
@@ -70,7 +70,7 @@ type
     private
       FUser: TSystemData_SQLite;
       FBases: TSQLiteQuery;
-      FRecordCount: Integer;
+      FCount: TSQLiteQuery;
 
       procedure PrepareData;
     end;
@@ -219,6 +219,7 @@ end;
 destructor TSystemData_SQLite.TBookIteratorImpl.Destroy;
 begin
   FreeAndNil(FBooks);
+  FreeAndNil(FCount);
 
   inherited Destroy;
 end;
@@ -243,14 +244,17 @@ end;
 
 function TSystemData_SQLite.TBookIteratorImpl.RecordCount: Integer;
 begin
-  Result := FRecordCount;
+  Assert(Assigned(FCount), 'Calling RecordCount more than once!');
+
+  FCount.Open;
+  Result := FCount.FieldAsInt(0);
+  FreeAndNil(FCount);
 end;
 
 procedure TSystemData_SQLite.TBookIteratorImpl.PrepareData(const GroupID: Integer; const DatabaseID: Integer);
 var
   sqlCount: string;
   sqlRows: string;
-  query: TSQLiteQuery;
 begin
   sqlCount := 'SELECT COUNT(*) FROM BookGroups bg INNER JOIN Books b ON bg.BookID = b.BookID AND bg.DatabaseID = b.DatabaseID ' +
     ' WHERE bg.GroupID = ? ';
@@ -262,16 +266,10 @@ begin
     sqlRows := sqlRows + ' AND bg.DatabaseID = ? ';
   end;
 
-  query := FUser.FDatabase.NewQuery(sqlCount);
-  try
-    query.SetParam(0, GroupID);
-    if (DatabaseID <> INVALID_COLLECTION_ID) then
-      query.SetParam(1, DatabaseID);
-    query.Open;
-    FRecordCount := query.FieldAsInt(0);
-  finally
-    FreeAndNil(query);
-  end;
+  FCount := FUser.FDatabase.NewQuery(sqlCount);
+  FCount.SetParam(0, GroupID);
+  if (DatabaseID <> INVALID_COLLECTION_ID) then
+    FCount.SetParam(1, DatabaseID);
 
   FBooks := FUser.FDatabase.NewQuery(sqlRows);
   FBooks.SetParam(0, GroupID);
@@ -296,6 +294,7 @@ end;
 destructor TSystemData_SQLite.TGroupIteratorImpl.Destroy;
 begin
   FreeAndNil(FGroups);
+  FreeAndNil(FCount);
 
   inherited Destroy;
 end;
@@ -316,7 +315,11 @@ end;
 
 function TSystemData_SQLite.TGroupIteratorImpl.RecordCount: Integer;
 begin
-  Result := FRecordCount;
+  Assert(Assigned(FCount), 'Calling RecordCount more than once!');
+
+  FCount.Open;
+  Result := FCount.FieldAsInt(0);
+  FreeAndNil(FCount);
 end;
 
 procedure TSystemData_SQLite.TGroupIteratorImpl.PrepareData;
@@ -324,7 +327,7 @@ const
   SQL_COUNT = 'SELECT COUNT(*) FROM Groups ';
   SQL_ROWS = 'SELECT g.GroupID, g.GroupName, g.AllowDelete FROM Groups g ';
 begin
-  FRecordCount := FUser.FDatabase.GetTableInt(SQL_COUNT);
+  FCount := FUser.FDatabase.NewQuery(SQL_COUNT);
 
   FGroups := FUser.FDatabase.NewQuery(SQL_ROWS);
   FGroups.Open;
@@ -346,6 +349,7 @@ end;
 destructor TSystemData_SQLite.TCollectionInfoIteratorImpl.Destroy;
 begin
   FreeAndNil(FBases);
+  FreeAndNil(FCount);
 
   inherited Destroy;
 end;
@@ -364,7 +368,11 @@ end;
 
 function TSystemData_SQLite.TCollectionInfoIteratorImpl.RecordCount: Integer;
 begin
-  Result := FRecordCount;
+  Assert(Assigned(FCount), 'Calling RecordCount more than once!');
+
+  FCount.Open;
+  Result := FCount.FieldAsInt(0);
+  FreeAndNil(FCount);
 end;
 
 procedure TSystemData_SQLite.TCollectionInfoIteratorImpl.PrepareData;
@@ -372,7 +380,7 @@ const
   SQL_COUNT = 'SELECT COUNT(*) FROM Bases b ';
   SQL_ROWS = 'SELECT b.ID FROM Bases b ';
 begin
-  FRecordCount := FUser.FDatabase.GetTableInt(SQL_COUNT);
+  FCount := FUser.FDatabase.NewQuery(SQL_COUNT);
 
   FBases := FUser.FDatabase.NewQuery(SQL_ROWS);
   FBases.Open;
