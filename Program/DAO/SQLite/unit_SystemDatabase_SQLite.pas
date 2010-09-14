@@ -128,13 +128,13 @@ type
 //    //
     function AddGroup(const GroupName: string; const AllowDelete: Boolean = True): Boolean; override;
 //    function RenameGroup(GroupID: Integer; const NewName: string): Boolean; override;
-//    procedure DeleteGroup(GroupID: Integer); override;
-//    procedure ClearGroup(GroupID: Integer); override;
+    procedure DeleteGroup(GroupID: Integer); override;
+    procedure ClearGroup(GroupID: Integer); override;
     function GetGroup(const GroupID: Integer): TGroupData; override;
 
     procedure AddBookToGroup(const BookKey: TBookKey; GroupID: Integer; const BookRecord: TBookRecord); override;
-//    procedure DeleteFromGroup(const BookKey: TBookKey; GroupID: Integer); override;
-//    procedure RemoveUnusedBooks; override;
+    procedure DeleteFromGroup(const BookKey: TBookKey; GroupID: Integer); override;
+    procedure RemoveUnusedBooks; override;
     procedure CopyBookToGroup(
       const BookKey: TBookKey;
       SourceGroupID: Integer;
@@ -157,6 +157,8 @@ type
 
   private
     FDatabase: TSQLiteDatabase;
+
+    procedure InternalClearGroup(GroupID: Integer; RemoveGroup: Boolean);
   end;
 
 procedure CreateSystemTables_SQLite(const DBUserFile: string);
@@ -735,6 +737,22 @@ begin
   end;
 end;
 
+//
+// Удалить группу
+//
+procedure TSystemData_SQLite.DeleteGroup(GroupID: Integer);
+begin
+  InternalClearGroup(GroupID, True);
+end;
+
+//
+// Очистить
+//
+procedure TSystemData_SQLite.ClearGroup(GroupID: Integer);
+begin
+  InternalClearGroup(GroupID, False);
+end;
+
 function TSystemData_SQLite.GetGroup(const GroupID: Integer): TGroupData;
 const
   SQL = 'SELECT g.GroupName, g.AllowDelete FROM Groups g WHERE g.GroupID = ? ';
@@ -861,6 +879,50 @@ begin
   CopyBookToGroup(BookKey, 0, GroupID, False);
 end;
 
+//
+// Удалить указанную книгу из указанной группы.
+// NOTE: этот метод не удаляет неиспользуемые книги !!! После его вызова обязательно нужно вызвать RemoveUnusedBooks
+//
+procedure TSystemData_SQLite.DeleteFromGroup(const BookKey: TBookKey; GroupID: Integer);
+const
+  SQL_DELETE_BOOKGROUPS = 'DELETE FROM BookGroups WHERE BookID = ? AND GroupID = ? ';
+var
+  query: TSQLiteQuery;
+begin
+  //
+  // Удалить книги из группы
+  //
+  query := FDatabase.NewQuery(SQL_DELETE_BOOKGROUPS);
+  try
+    query.SetParam(0, BookKey.BookID);
+    query.SetParam(1, GroupID);
+    query.ExecSQL;
+  finally
+    FreeAndNil(query);
+  end;
+end;
+
+//
+// Удалить книги, не входящие в группы
+//
+procedure TSystemData_SQLite.RemoveUnusedBooks;
+const
+  SQL: string =
+      'DELETE FROM Books WHERE NOT EXISTS( ' +
+      ' SELECT 1 FROM BookGroups g ' +
+      ' WHERE g.BookID = Books.BookID AND g.DatabaseID = Books.DatabaseID ' +
+      ')';
+var
+  query: TSQLiteQuery;
+begin
+  query := FDatabase.NewQuery(SQL);
+  try
+    query.ExecSQL;
+  finally
+    FreeAndNil(Query);
+  end;
+end;
+
 procedure TSystemData_SQLite.CopyBookToGroup(
   const BookKey: TBookKey;
   SourceGroupID: Integer;
@@ -947,5 +1009,39 @@ begin
   Result := TCollectionInfoIteratorImpl.Create(Self);
 end;
 
+procedure TSystemData_SQLite.InternalClearGroup(GroupID: Integer; RemoveGroup: Boolean);
+const
+  SQL_DELETE_BOOKGROUPS = 'DELETE FROM BookGroups WHERE GroupID = ? ';
+  SQL_DELETE_GROUPS = 'DELETE FROM Groups WHERE GroupID = ? AND AllowDelete = ? ';
+var
+  query: TSQLiteQuery;
+begin
+  //
+  // Удалить книги из группы
+  //
+  query := FDatabase.NewQuery(SQL_DELETE_BOOKGROUPS);
+  try
+    query.SetParam(0, GroupID);
+    query.ExecSQL;
+  finally
+    FreeAndNil(Query);
+  end;
+
+  //
+  // Удалить неиспользуемые книги
+  //
+  RemoveUnusedBooks;
+
+  //
+  // Удалить группу
+  //
+  if RemoveGroup then
+  begin
+    query := FDatabase.NewQuery(SQL_DELETE_GROUPS);
+    query.SetParam(0, GroupID);
+    query.SetParam(1, True); // Delete only if AllowDelete is true
+    query.ExecSQL;
+  end;
+end;
 
 end.
