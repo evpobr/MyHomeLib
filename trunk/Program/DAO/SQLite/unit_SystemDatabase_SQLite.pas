@@ -106,8 +106,8 @@ type
 //
 //    procedure GetBookLibID(const BookKey: TBookKey; out ARes: string); override; // deprecated;
 //
-//    function ActivateGroup(const ID: Integer): Boolean; override;
-//
+    function ActivateGroup(const ID: Integer): Boolean; override;
+
     procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord); override;
 //    procedure DeleteBook(const BookKey: TBookKey); override;
 //    procedure UpdateBook(const BookRecord: TBookRecord); override;
@@ -564,6 +564,22 @@ begin
   end;
 end;
 
+function TSystemData_SQLite.ActivateGroup(const ID: Integer): Boolean;
+const
+  SQL_SELECT = 'SELECT GroupID FROM Groups WHERE GroupID = ? ';
+var
+  query: TSQLiteQuery;
+begin
+  query := FDatabase.NewQuery(SQL_SELECT);
+  try
+    query.SetParam(0, ID);
+    query.Open;
+    Result := not query.Eof;
+  finally
+    FreeAndNil(query);
+  end;
+end;
+
 procedure TSystemData_SQLite.GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord);
 const
   SQL_SELECT = 'SELECT ' +
@@ -619,67 +635,73 @@ begin
     BookRecord.NodeType := ntBookInfo;
     BookRecord.BookKey := BookKey;
 
-    stream := query.FieldAsBlob(20);
-    try
-      reader := TReader.Create(stream, 4096);
-      try
-        BookRecord.Series := reader.ReadString;
-        Assert((BookRecord.SeriesID = NO_SERIES_ID) = (BookRecord.Series = NO_SERIES_TITLE));
-
-        reader.ReadListBegin;
-        while not reader.EndOfList do
-        begin
-          Author.LastName := reader.ReadString;
-          Author.FirstName := reader.ReadString;
-          Author.MiddleName := reader.ReadString;
-          Author.AuthorID := reader.ReadInteger;
-
-          TAuthorsHelper.Add(
-            BookRecord.Authors,
-            Author.LastName,
-            Author.FirstName,
-            Author.MiddleName,
-            Author.AuthorID
-          );
-        end;
-        reader.ReadListEnd;
-
-        reader.ReadListBegin;
-        while not reader.EndOfList do
-        begin
-          Genre.GenreCode := reader.ReadString;
-          Genre.FB2GenreCode := reader.ReadString;
-          Genre.GenreAlias := reader.ReadString;
-
-          TGenresHelper.Add(
-            BookRecord.Genres,
-            Genre.GenreCode,
-            Genre.GenreAlias,
-            Genre.FB2GenreCode
-          );
-        end;
-        reader.ReadListEnd;
-      finally
-        reader.Free;
-      end;
-    finally
-      Stream.Free;
-    end;
+// TODO: Fix SQLite binary stream support
+//    stream := query.FieldAsBlob(20);
+//    try
+//      reader := TReader.Create(stream, 4096);
+//      try
+//        BookRecord.Series := reader.ReadString;
+//        Assert((BookRecord.SeriesID = NO_SERIES_ID) = (BookRecord.Series = NO_SERIES_TITLE));
+//
+//        reader.ReadListBegin;
+//        while not reader.EndOfList do
+//        begin
+//          Author.LastName := reader.ReadString;
+//          Author.FirstName := reader.ReadString;
+//          Author.MiddleName := reader.ReadString;
+//          Author.AuthorID := reader.ReadInteger;
+//
+//          TAuthorsHelper.Add(
+//            BookRecord.Authors,
+//            Author.LastName,
+//            Author.FirstName,
+//            Author.MiddleName,
+//            Author.AuthorID
+//          );
+//        end;
+//        reader.ReadListEnd;
+//
+//        reader.ReadListBegin;
+//        while not reader.EndOfList do
+//        begin
+//          Genre.GenreCode := reader.ReadString;
+//          Genre.FB2GenreCode := reader.ReadString;
+//          Genre.GenreAlias := reader.ReadString;
+//
+//          TGenresHelper.Add(
+//            BookRecord.Genres,
+//            Genre.GenreCode,
+//            Genre.GenreAlias,
+//            Genre.FB2GenreCode
+//          );
+//        end;
+//        reader.ReadListEnd;
+//      finally
+//        reader.Free;
+//      end;
+//    finally
+//      Stream.Free;
+//    end;
   finally
     FreeAndNil(query);
   end;
 
-  if GetCollectionInfo(BookRecord.BookKey.DatabaseID, collectionInfo) then
-  begin
-    // Please notice that the collection for a book in a group might not match ActiveCollection
-    // Need to use values from tblBases instead
-    BookRecord.CollectionName := collectionInfo.Name;
-    BookRecord.CollectionRoot := IncludeTrailingPathDelimiter(collectionInfo.RootFolder);
-  end
-  else
-  begin
-    BookRecord.CollectionName := rstrUnknownCollection;
-    BookRecord.CollectionRoot := '';
+  collectionInfo := TCollectionInfo.Create;
+  try
+    if GetCollectionInfo(BookRecord.BookKey.DatabaseID, collectionInfo) then
+    begin
+      // Please notice that the collection for a book in a group might not match ActiveCollection
+      // Need to use values from tblBases instead
+      BookRecord.CollectionName := collectionInfo.Name;
+      BookRecord.CollectionRoot := IncludeTrailingPathDelimiter(collectionInfo.RootFolder);
+    end
+    else
+    begin
+      BookRecord.CollectionName := rstrUnknownCollection;
+      BookRecord.CollectionRoot := '';
+    end;
+  finally
+    FreeAndNil(collectionInfo);
   end;
 end;
 
@@ -791,37 +813,38 @@ begin
       query.SetBlobParam(18, BookRecord.Annotation);
       query.SetBlobParam(19, BookRecord.Review);
 
-      stream := TMemoryStream.Create;
-      try
-        writer := TWriter.Create(stream, 4096);
-        try
-          writer.WriteString(BookRecord.Series);
-
-          writer.WriteListBegin;
-          for Author in BookRecord.Authors do
-          begin
-            writer.WriteString(Author.LastName);
-            writer.WriteString(Author.FirstName);
-            writer.WriteString(Author.MiddleName);
-            writer.WriteInteger(Author.AuthorID);
-          end;
-          writer.WriteListEnd;
-
-          writer.WriteListBegin;
-          for genre in BookRecord.Genres do
-          begin
-            writer.WriteString(genre.GenreCode);
-            writer.WriteString(genre.FB2GenreCode);
-            writer.WriteString(genre.GenreAlias);
-          end;
-          writer.WriteListEnd;
-        finally
-          FreeAndNil(writer);
-        end;
-        query.SetBlobParam(20, stream);
-      finally
-        stream.Free;
-      end;
+// TODO: Fix SQLite binary stream support
+//      stream := TMemoryStream.Create;
+//      try
+//        writer := TWriter.Create(stream, 4096);
+//        try
+//          writer.WriteString(BookRecord.Series);
+//
+//          writer.WriteListBegin;
+//          for Author in BookRecord.Authors do
+//          begin
+//            writer.WriteString(Author.LastName);
+//            writer.WriteString(Author.FirstName);
+//            writer.WriteString(Author.MiddleName);
+//            writer.WriteInteger(Author.AuthorID);
+//          end;
+//          writer.WriteListEnd;
+//
+//          writer.WriteListBegin;
+//          for genre in BookRecord.Genres do
+//          begin
+//            writer.WriteString(genre.GenreCode);
+//            writer.WriteString(genre.FB2GenreCode);
+//            writer.WriteString(genre.GenreAlias);
+//          end;
+//          writer.WriteListEnd;
+//        finally
+//          FreeAndNil(writer);
+//        end;
+//        query.SetBlobParam(20, stream);
+//      finally
+//        stream.Free;
+//      end;
 
       query.SetParam(21, BookKey.BookID);
       query.SetParam(22, BookKey.DatabaseID);
