@@ -102,8 +102,8 @@ type
       const Value: string;
       IgnoreID: Integer = INVALID_COLLECTION_ID
     ): Boolean; override;
-//    procedure DeleteCollection(CollectionID: Integer); override;
-//
+    procedure DeleteCollection(CollectionID: Integer); override;
+
 //    procedure GetBookLibID(const BookKey: TBookKey; out ARes: string); override; // deprecated;
 //
     function ActivateGroup(const ID: Integer): Boolean; override;
@@ -620,6 +620,52 @@ begin
   finally
     FreeAndNil(CollectionInfo);
   end;
+end;
+
+procedure TSystemData_SQLite.DeleteCollection(CollectionID: Integer);
+const
+  DELETE_REL_QUERY = 'DELETE FROM BookGroups WHERE DatabaseID = ? ';
+  DELETE_BOOKS_QUERY = 'DELETE FROM Books WHERE DatabaseID = ? ';
+  DELETE_BASES_QUERY = 'DELETE FROM Bases WHERE ID = ? ';
+var
+  query: TSQLiteQuery;
+begin
+  //
+  // 1. Удалить все книги этой коллекции из групп
+  // 2. Удалить коллекцию из списка коллекций
+  //
+
+  query := FDatabase.NewQuery(DELETE_REL_QUERY);
+  try
+    // Delete books from groups by DatabaseID:
+    query.SetParam(0, CollectionID);
+    query.ExecSQL;
+  finally
+    FreeAndNil(query);
+  end;
+
+  query := FDatabase.NewQuery(DELETE_BOOKS_QUERY);
+  try
+    // Delete books from groups by DatabaseID:
+    query.SetParam(0, CollectionID);
+    query.ExecSQL;
+  finally
+    FreeAndNil(query);
+  end;
+
+  query := FDatabase.NewQuery(DELETE_BASES_QUERY);
+  try
+    // Delete books from groups by DatabaseID:
+    query.SetParam(0, CollectionID);
+    query.ExecSQL;
+  finally
+    FreeAndNil(query);
+  end;
+
+  // The first collection becomes the current one:
+  collectionID := FindFirstExistingCollectionID(1);
+  if collectionID > 0 then
+    ActivateCollection(collectionID);
 end;
 
 function TSystemData_SQLite.ActivateGroup(const ID: Integer): Boolean;
