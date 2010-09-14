@@ -1714,8 +1714,9 @@ end;
 
 procedure TfrmMain.CreateScriptMenu;
 const
-    ExpTypes : array [0..5] of string = ('  fb2','  fb2.zip','  LRF','  txt', ' epub', '  pdf');
-    Icons: array [0..5] of integer = (18,19,20,21,24,25);
+    Size = 5;
+    ExpTypes : array [0..Size] of string = ('  fb2','  fb2.zip','  LRF','  txt', ' epub', '  pdf');
+    Icons: array [0..Size] of integer = (18,19,20,21,24,25);
 var
   Item, ItemP, ItemM: TMenuItem;
   F:integer;
@@ -1728,14 +1729,14 @@ begin
 
   if isFB2Collection(DMUser.ActiveCollection.CollectionType) then
   begin
-    for I := 0 to 5 do
+    for I := 0 to Size do
     begin
       Item := TMenuItem.Create(pmScripts);
       Item.Caption := ExpTypes[i];
       Item.Tag := 850 + i;
       Item.OnClick := tbSendToDeviceClick;
       Item.ImageIndex := i;
-      pmScripts.Items.Insert(i, Item);
+      pmScripts.Items.Add(Item);
     end;
 
     if Settings.Scripts.Count > 0 then
@@ -1743,8 +1744,10 @@ begin
       Item := TMenuItem.Create(pmScripts);
       Item.Caption := '-';
       Item.Tag := 0;
-      pmScripts.Items.Insert(6, Item);
+      pmScripts.Items.Add(Item);
     end;
+
+
 
     tbSendToDevice.ImageIndex := Icons[ord(Settings.ExportMode)];
 //    pmScripts.Items[i].Caption := '>> ' + ExpTypes[i] + ' <<';
@@ -1781,6 +1784,24 @@ begin
     ItemM.OnClick := tbSendToDeviceClick;
     mmiScripts.Insert(i, ItemM);
   end;
+
+  // Добавляем Выбор папки
+
+  if pmScripts.Items.Count > 0 then
+  begin
+    Item := TMenuItem.Create(pmScripts);
+    Item.Caption := '-';
+    Item.Tag := 0;
+    pmScripts.Items.Add(Item);
+  end;
+
+  Item := TMenuItem.Create(pmScripts);
+  Item.OnClick := tbSendToDeviceClick;
+  Item.Caption := 'Выбор папки ...';
+  Item.ImageIndex := 10;
+  Item.Tag := 799;
+  pmScripts.Items.Add(Item);
+
 
   if pmiScripts.Count > 0 then
   begin
@@ -3339,6 +3360,11 @@ begin
     853: ExportMode := emTxt;
     854: ExportMode := emEpub;
     855: ExportMode := emPDF;
+    799: begin
+           ExportMode := Settings.ExportMode;
+           if not GetFolderName(Handle, 'Укажите путь', AFolder) then Exit;
+           Settings.DeviceDir := AFolder;
+         end
     else ExportMode := Settings.ExportMode;
   end
   else
