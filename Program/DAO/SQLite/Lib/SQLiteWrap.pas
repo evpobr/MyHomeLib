@@ -713,9 +713,6 @@ begin
 end;
 
 function TSQLiteQuery.FieldAsBlob(I: Integer): TStream;
-var
-  iNumBytes: Integer;
-  ptr: Pointer;
 begin
   Result := TMemoryStream.Create;
   LoadBlob(i, Result);
@@ -770,8 +767,6 @@ begin
 end;
 
 function TSQLiteQuery.Next: Boolean;
-var
-  iStepResult: Integer;
 begin
   FEof := True;
   case SQLite3_Step(FStmt) of

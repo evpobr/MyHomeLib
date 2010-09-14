@@ -43,6 +43,7 @@ resourcestring
   //
   //
   //
+  rstrBookProcessedMsg1 = 'Обработано книг: %u';
   rstrBookProcessedMsg2 = 'Обработано книг: %u из %u';
 
   //

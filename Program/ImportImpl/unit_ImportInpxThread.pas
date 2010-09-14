@@ -58,7 +58,7 @@ type
   end;
 
   TImportInpxThread = class(TWorker)
-  private
+  strict private
     FDBFileName: string;
     FCollectionRoot: string;
     FCollectionType: Integer;
@@ -358,7 +358,7 @@ var
   CurrentFile: string;
   ArchItem: TZFArchiveItem;
   IsOnline: Boolean;
-  FileStream: TMemoryStream;
+  inpStream: TMemoryStream;
   StructureInfo: string;
 begin
   filesProcessed := 0;
@@ -382,6 +382,10 @@ begin
 
     GetFields(StructureInfo);
 
+    //
+    // TODO - добавить чтение и установку версии
+    //
+
     if (unZip.FindFirst('*.inp', ArchItem, faAnyFile - faDirectory)) then
     begin
       repeat
@@ -394,13 +398,13 @@ begin
 
         BookList := TStringList.Create;
         try
-          FileStream := TMemoryStream.Create;
+          inpStream := TMemoryStream.Create;
           try
-            unZip.ExtractToStream(CurrentFile, FileStream);
-            FileStream.Seek(0, soBeginning);
-            BookList.LoadFromStream(FileStream, TEncoding.UTF8);
+            unZip.ExtractToStream(CurrentFile, inpStream);
+            inpStream.Seek(0, soBeginning);
+            BookList.LoadFromStream(inpStream, TEncoding.UTF8);
           finally
-            FreeAndNil(FileStream);
+            FreeAndNil(inpStream);
           end;
 
           for j := 0 to BookList.Count - 1 do
@@ -442,6 +446,7 @@ begin
                 SetProgress(Round((i + j / BookList.Count) * 100 / unZip.FileCount));
                 SetComment(Format(rstrAddedBooks, [filesProcessed]));
               end;
+
             except
               on E: EConvertError do
                 Teletype(Format(rstrErrorInpStructure, [CurrentFile, j]), tsError);

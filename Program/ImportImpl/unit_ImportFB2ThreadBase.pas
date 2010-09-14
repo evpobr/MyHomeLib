@@ -50,7 +50,10 @@ type
     FZipFolder: Boolean;
     FFullNameSearch: Boolean;
 
-    FCheckExistsFiles: Boolean;
+    //
+    // UNUSED
+    //
+    //FCheckExistsFiles: Boolean;
 
     procedure ScanFolder;
 
@@ -83,6 +86,7 @@ Settings.ImportPath
 }
 
 uses
+  ComCtrls,
   unit_Settings,
   unit_Consts,
   Dialogs;
@@ -209,21 +213,29 @@ var
 begin
   if ExtractFileExt(F.Name) = FTargetExt then
   begin
-    if FCheckExistsFiles then
-    begin
-      if Settings.EnableSort then
-        FileName := FFilesList.LastDir + F.Name
-      else
-        FileName := ExtractRelativePath(FCollectionRoot, FFilesList.LastDir) + F.Name;
-      if not FLibrary.CheckFileInCollection(FileName, FFullNameSearch, FZipFolder) then
-        FFiles.Add(FFilesList.LastDir + F.Name);
-    end;
+    //
+    // UNUSED
+    //
+    //if FCheckExistsFiles then
+    //begin
+    if Settings.EnableSort then
+      FileName := FFilesList.LastDir + F.Name
+    else
+      FileName := ExtractRelativePath(FCollectionRoot, FFilesList.LastDir) + F.Name;
+
+    if not FLibrary.CheckFileInCollection(FileName, FFullNameSearch, FZipFolder) then
+      FFiles.Add(FFilesList.LastDir + F.Name);
+    //
+    // UNUSED
+    //
+    //end;
   end;
 
   //
   // сколько найдем файлов неизвестно => зациклим прогресс
   //
-  SetProgress(FFiles.Count mod 100);
+  //SetProgress(FFiles.Count mod 100);
+  //FProgressEngine.AddProgress;
 
   if Canceled then
     Abort;
@@ -231,11 +243,15 @@ end;
 
 procedure TImportFB2ThreadBase.ScanFolder;
 begin
-  SetProgress(0);
-  SetComment(rstrScanningAll);
+  FProgressEngine.Init(-1, rstrScanningAll, rstrScanningAll);
+  //SetProgress(0);
+  //SetComment(rstrScanningAll);
   Teletype(rstrScanningFolders);
 
-  FCheckExistsFiles := Settings.CheckExistsFiles;
+  //
+  // UNUSED
+  //
+  //FCheckExistsFiles := Settings.CheckExistsFiles;
 
   FFilesList := TFilesList.Create(nil);
   try
@@ -251,7 +267,8 @@ begin
       FFilesList.Process;
     except
       on EAbort do
-        { nothing } ;
+        FProgressEngine.Finish;
+        //{ nothing } ;
     end;
   finally
     FreeAndNil(FFilesList);
@@ -282,3 +299,4 @@ begin
 end;
 
 end.
+

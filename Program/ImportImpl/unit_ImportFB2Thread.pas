@@ -64,9 +64,10 @@ var
   AddedBooks: integer;
   FileName: string;
 begin
-  SetProgress(0);
+  FProgressEngine.Init(FFiles.Count, rstrProcessedFiles, rstrProcessedFiles);
   Teletype(Format(rstrFoundFiles, [FFiles.Count]));
   AddedBooks := 0;
+
   FTemplater:= TTemplater.Create;
   for i := 0 to FFiles.Count - 1 do
   begin
@@ -102,11 +103,10 @@ begin
         Teletype(Format(rstrStructureError, [R.Folder, R.FileName + FB2_EXTENSION]), tsError);
     end;
 
-    if ((i + 1) mod ProcessedItemThreshold) = 0 then
-      SetComment(Format(rstrProcessedFiles, [i + 1, FFiles.Count]));
-    SetProgress((i + 1) * 100 div FFiles.Count);
+    FProgressEngine.AddProgress;
   end;
   FTemplater.Free;
+
   Teletype(Format(rstrAddedFiles, [AddedBooks, FFiles.Count]),tsInfo);
 end;
 

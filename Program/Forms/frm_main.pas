@@ -6869,8 +6869,6 @@ begin
     Exit;
 
   unit_Export.Export2INPX(FileName);
-
-  InitCollection(True);
 end;
 
 procedure TfrmMain.cbPresetNameSelect(Sender: TObject);

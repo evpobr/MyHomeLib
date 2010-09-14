@@ -20,8 +20,16 @@ unit frm_BaseProgressForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, unit_WorkerThread;
+  Windows,
+  Messages,
+  SysUtils,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  unit_WorkerThread,
+  ComCtrls;
 
 type
   TProgressFormBase = class(TForm)
@@ -35,6 +43,7 @@ type
     procedure StartWorker; virtual;
 
     procedure OpenProgress; virtual; abstract;
+    procedure SetProgressHint(Style: TProgressBarStyle; State: TProgressBarState); virtual; abstract;
     procedure ShowProgress(Percent: Integer); virtual; abstract;
     procedure CloseProgress; virtual;
     procedure ShowTeletype(const Msg: string; Severity: TTeletypeSeverity); virtual; abstract;
@@ -93,6 +102,7 @@ begin
     Exit;
 
   FWorker.OnOpenProgress := OpenProgress;
+  FWorker.OnProgressHint := SetProgressHint;
   FWorker.OnProgress := ShowProgress;
   FWorker.OnCloseProgress := CloseProgress;
   FWorker.OnTeletype := ShowTeletype;
