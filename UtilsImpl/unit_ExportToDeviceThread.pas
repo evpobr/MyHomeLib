@@ -276,7 +276,10 @@ var
   params: string;
 begin
   params := Format('"%s" "%s"',[InpFile,ChangeFileExt(OutFile, '.epub')]);
-  Result := ExecAndWait(Settings.AppPath + 'converters\fb2epub\fb2epub.exe',params, SW_HIDE)
+  Result := ExecAndWait(Settings.AppPath + 'converters\fb2epub\fb2epub.exe',params, SW_HIDE);
+
+  if not Result then MessageDlg('Конвертер fb2epub не установлен! Скачайте конвретер с сайта the-ebook.org и распакуйте в папку "...converters\fb2epub\"', mtError, [mbOK], 0);
+
 end;
 
 function TExportToDeviceThread.fb2PDF(InpFile,OutFile:string):boolean;
@@ -284,7 +287,9 @@ var
   params: string;
 begin
   params := Format('"%s" "%s"',[InpFile,ChangeFileExt(OutFile, '.pdf')]);
-  Result := ExecAndWait(Settings.AppPath + 'converters\fb2pdf\fb2pdf.cmd',params, SW_HIDE)
+  Result := ExecAndWait(Settings.AppPath + 'converters\fb2pdf\fb2pdf.cmd',params, SW_HIDE);
+
+  if not Result then MessageDlg('Конвертер fb2pdf не установлен! Скачайте конвретер с сайта the-ebook.org и распакуйте в папку "...converters\fb2pdf\"', mtError, [mbOK], 0);
 end;
 
 procedure TExportToDeviceThread.SetTable(ATable: TAbsTable);
