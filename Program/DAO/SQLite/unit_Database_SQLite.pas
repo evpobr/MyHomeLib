@@ -52,9 +52,9 @@ type
       FCollection: TBookCollection_SQLite;
       FSystemData: ISystemData;
       FBooks: TSQLiteQuery;
+      FCount: TSQLiteQuery;
       FCollectionID: Integer; // Active collection's ID at the time the iterator was created
       FLoadMemos: Boolean;
-      FNumRecords: Integer;
 
       procedure PrepareData(const Mode: TBookIteratorMode; const FilterValue: PFilterValue; const SearchCriteria: TBookSearchCriteria);
       procedure PrepareSearchData(const SearchCriteria: TBookSearchCriteria);
@@ -81,8 +81,8 @@ type
       FCollection: TBookCollection_SQLite;
       FSystemData: ISystemData;
       FAuthors: TSQLiteQuery;
+      FCount: TSQLiteQuery;
       FCollectionID: Integer; // Active collection's ID at the time the iterator was created
-      FNumRecords: Integer;
 
       procedure PrepareData(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue);
     end;
@@ -103,8 +103,8 @@ type
       FCollection: TBookCollection_SQLite;
       FSystemData: ISystemData;
       FGenres: TSQLiteQuery;
+      FCount: TSQLiteQuery;
       FCollectionID: Integer; // Active collection's ID at the time the iterator was created
-      FNumRecords: Integer;
 
       procedure PrepareData(const Mode: TGenreIteratorMode; const FilterValue: PFilterValue);
     end;
@@ -127,8 +127,8 @@ type
       FCollection: TBookCollection_SQLite;
       FSystemData: ISystemData;
       FSeries: TSQLiteQuery;
+      FCount: TSQLiteQuery;
       FCollectionID: Integer; // Active collection's ID at the time the iterator was created
-      FNumRecords: Integer;
 
       procedure PrepareData(const Mode: TSeriesIteratorMode);
     end;
@@ -235,7 +235,6 @@ uses
   unit_SQLiteUtils;
 
 const
-  INIT_ROWS_ARR: array[0 .. 1] of Boolean = (False, True);
   ANNOTATION_SIZE_LIMIT = 4096;
 
 
@@ -316,6 +315,7 @@ end;
 destructor TBookCollection_SQLite.TBookIteratorImpl.Destroy;
 begin
   FreeAndNil(FBooks);
+  FreeAndNil(FCount);
 
   inherited Destroy;
 end;
@@ -338,7 +338,11 @@ end;
 
 function TBookCollection_SQLite.TBookIteratorImpl.RecordCount: Integer;
 begin
-  Result := FNumRecords;
+  Assert(Assigned(FCount), 'Calling RecordCount more than once!');
+
+  FCount.Open;
+  Result := FCount.FieldAsInt(0);
+  FreeAndNil(FCount);
 end;
 
 procedure TBookCollection_SQLite.TBookIteratorImpl.PrepareData(
@@ -350,7 +354,6 @@ var
   Where: string;
   SQLRows: string;
   SQLCount: string;
-  query: TSQLiteQuery;
 
   procedure SetParams(query: TSQLiteQuery; const Mode: TBookIteratorMode);
   begin
@@ -433,17 +436,8 @@ begin
   SQLRows := SQLRows + Where;
   SQLCount := 'SELECT COUNT(*) FROM (' + SQLRows + ') ROWS ';
 
-  query := FCollection.FDatabase.NewQuery(SQLCount);
-  try
-    SetParams(query, Mode);
-    query.Open;
-    if query.Eof then
-      FNumRecords := 0
-    else
-      FNumRecords := query.FieldAsInt(0);
-  finally
-    query.Free;
-  end;
+  FCount := FCollection.FDatabase.NewQuery(SQLCount);
+  SetParams(FCount, Mode);
 
   FBooks := FCollection.FDatabase.NewQuery(SQLRows);
   try
@@ -466,117 +460,108 @@ var
   SQLCount: string;
   InitRows: Boolean;
 begin
-  for InitRows in INIT_ROWS_ARR do
-  begin
-    SQLRows := '';
+  SQLRows := '';
 
-    try
-      // ------------------------ авторы ----------------------------------------
-      FilterString := '';
-      if SearchCriteria.FullName <> '' then
-      begin
-        AddToFilter('a.SearchName ',
-          PrepareQuery(SearchCriteria.FullName, True),
-          False, FilterString);
-        if FilterString <> '' then
-        begin
-          FilterString := SQL_START_STR +
-            ' FROM Authors a INNER JOIN Author_List b ON (a.AuthorID = b.AuthorID) WHERE '
-            + FilterString;
-
-          SQLRows := SQLRows + FilterString;
-        end;
-      end;
-
-      // ------------------------ серия -----------------------------------------
-      FilterString := '';
-      if SearchCriteria.Series <> '' then
-      begin
-        AddToFilter('s.SearchSeriesTitle', PrepareQuery(SearchCriteria.Series, True), False, FilterString);
-
-        if FilterString <> '' then
-        begin
-          FilterString := SQL_START_STR +
-            ' FROM Series s JOIN Books b ON b.SeriesID = s.SeriesID WHERE ' +
-            FilterString;
-
-          if SQLRows <> '' then
-            SQLRows := SQLRows + ' INTERSECT ';
-
-          SQLRows := SQLRows + FilterString;
-        end;
-      end;
-
-      // -------------------------- жанр ----------------------------------------
-      FilterString := '';
-      if (SearchCriteria.Genre <> '') then
+  try
+    // ------------------------ авторы ----------------------------------------
+    FilterString := '';
+    if SearchCriteria.FullName <> '' then
+    begin
+      AddToFilter('a.SearchName ',
+      PrepareQuery(SearchCriteria.FullName, True),
+        False, FilterString);
+      if FilterString <> '' then
       begin
         FilterString := SQL_START_STR +
-          ' FROM Genre_List g JOIN Books b ON b.BookID = g.BookID WHERE (' +
-          SearchCriteria.Genre + ')';
+          ' FROM Authors a INNER JOIN Author_List b ON (a.AuthorID = b.AuthorID) WHERE '
+          + FilterString;
 
-        if SQLRows <> '' then
+        SQLRows := SQLRows + FilterString;
+      end;
+    end;
+
+    // ------------------------ серия -----------------------------------------
+    FilterString := '';
+    if SearchCriteria.Series <> '' then
+    begin
+      AddToFilter('s.SearchSeriesTitle', PrepareQuery(SearchCriteria.Series, True), False, FilterString);
+
+      if FilterString <> '' then
+      begin
+        FilterString := SQL_START_STR +
+          ' FROM Series s JOIN Books b ON b.SeriesID = s.SeriesID WHERE ' +
+           FilterString;
+              if SQLRows <> '' then
           SQLRows := SQLRows + ' INTERSECT ';
 
         SQLRows := SQLRows + FilterString;
       end;
-
-      // -------------------  все остальное   -----------------------------------
-      FilterString := '';
-      AddToFilter('b.SearchAnnotation', PrepareQuery(SearchCriteria.Annotation, True), False, FilterString);
-      AddToFilter('b.SearchTitle', PrepareQuery(SearchCriteria.Title, True), False, FilterString);
-      AddToFilter('b.SearchFileName', PrepareQuery(SearchCriteria.FileName, True), False, FilterString);
-      AddToFilter('b.SearchFolder', PrepareQuery(SearchCriteria.Folder, True), False, FilterString);
-      AddToFilter('b.SearchExt', PrepareQuery(SearchCriteria.FileExt, True), False, FilterString);
-      AddToFilter('b.SearchLang', PrepareQuery(SearchCriteria.Lang, True, False), False, FilterString);
-      AddToFilter('b.SearchKeyWords', PrepareQuery(SearchCriteria.KeyWord, True), False, FilterString);
-      //
-      if SearchCriteria.DateIdx = -1 then
-        AddToFilter('b.UpdateDate', PrepareQuery(SearchCriteria.DateText, False), False, FilterString)
-      else
-        case SearchCriteria.DateIdx of
-          0: AddToFilter('b.UpdateDate', Format('> "%s"', [FormatDateTime(DT_FORMAT, IncDay(Now, -1))]), False, FilterString);
-          1: AddToFilter('b.UpdateDate', Format('> "%s"', [FormatDateTime(DT_FORMAT, IncDay(Now, -3))]), False, FilterString);
-          2: AddToFilter('b.UpdateDate', Format('> "%s"', [FormatDateTime(DT_FORMAT, IncDay(Now, -7))]), False, FilterString);
-          3: AddToFilter('b.UpdateDate', Format('> "%s"', [FormatDateTime(DT_FORMAT, IncDay(Now, -14))]), False, FilterString);
-          4: AddToFilter('b.UpdateDate', Format('> "%s"', [FormatDateTime(DT_FORMAT, IncDay(Now, -30))]), False, FilterString);
-          5: AddToFilter('b.UpdateDate', Format('> "%s"', [FormatDateTime(DT_FORMAT, IncDay(Now, -90))]), False, FilterString);
-        end;
-
-      case SearchCriteria.DownloadedIdx of
-        1: AddToFilter('b.IsLocal ', '= 1', False, FilterString);
-        2: AddToFilter('b.IsLocal ', '= 0', False, FilterString);
-      end;
-
-      if SearchCriteria.Deleted then
-        AddToFilter('b.IsDeleted ', '= 0', False, FilterString);
-
-      if FilterString <> '' then
-      begin
-        if SQLRows <> '' then
-          SQLRows := SQLRows + ' INTERSECT ';
-        SQLRows := SQLRows + SQL_START_STR + ' FROM Books b WHERE ' + FilterString;
-      end;
-    except
-      on E: Exception do
-        raise Exception.Create(rstrFilterParamError);
     end;
 
-    if SQLRows = '' then
-      raise Exception.Create(rstrCheckFilterParams);
-
-    // InitRows - workaround for the need to reset params between invocations to receive a new dataset
-    if InitRows then
+    // -------------------------- жанр ----------------------------------------
+    FilterString := '';
+    if (SearchCriteria.Genre <> '') then
     begin
-      FBooks := FCollection.FDatabase.NewQuery(SQLRows);
-      FBooks.Open;
-    end
+      FilterString := SQL_START_STR +
+        ' FROM Genre_List g JOIN Books b ON b.BookID = g.BookID WHERE (' +
+       SearchCriteria.Genre + ')';
+
+      if SQLRows <> '' then
+        SQLRows := SQLRows + ' INTERSECT ';
+
+      SQLRows := SQLRows + FilterString;
+    end;
+
+    // -------------------  все остальное   -----------------------------------
+    FilterString := '';
+    AddToFilter('b.SearchAnnotation', PrepareQuery(SearchCriteria.Annotation, True), False, FilterString);
+    AddToFilter('b.SearchTitle', PrepareQuery(SearchCriteria.Title, True), False, FilterString);
+    AddToFilter('b.SearchFileName', PrepareQuery(SearchCriteria.FileName, True), False, FilterString);
+    AddToFilter('b.SearchFolder', PrepareQuery(SearchCriteria.Folder, True), False, FilterString);
+    AddToFilter('b.SearchExt', PrepareQuery(SearchCriteria.FileExt, True), False, FilterString);
+    AddToFilter('b.SearchLang', PrepareQuery(SearchCriteria.Lang, True, False), False, FilterString);
+    AddToFilter('b.SearchKeyWords', PrepareQuery(SearchCriteria.KeyWord, True), False, FilterString);
+    //
+    if SearchCriteria.DateIdx = -1 then
+      AddToFilter('b.UpdateDate', PrepareQuery(SearchCriteria.DateText, False), False, FilterString)
     else
-    begin
-      SQLCount := 'SELECT COUNT(*) FROM (' + SQLRows + ') ROWS ';
-      FNumRecords := FCollection.FDatabase.GetTableInt(SQLCount);
+      case SearchCriteria.DateIdx of
+        0: AddToFilter('b.UpdateDate', Format('> "%s"', [FormatDateTime(DT_FORMAT, IncDay(Now, -1))]), False, FilterString);
+        1: AddToFilter('b.UpdateDate', Format('> "%s"', [FormatDateTime(DT_FORMAT, IncDay(Now, -3))]), False, FilterString);
+        2: AddToFilter('b.UpdateDate', Format('> "%s"', [FormatDateTime(DT_FORMAT, IncDay(Now, -7))]), False, FilterString);
+        3: AddToFilter('b.UpdateDate', Format('> "%s"', [FormatDateTime(DT_FORMAT, IncDay(Now, -14))]), False, FilterString);
+        4: AddToFilter('b.UpdateDate', Format('> "%s"', [FormatDateTime(DT_FORMAT, IncDay(Now, -30))]), False, FilterString);
+        5: AddToFilter('b.UpdateDate', Format('> "%s"', [FormatDateTime(DT_FORMAT, IncDay(Now, -90))]), False, FilterString);
+      end;
+
+    case SearchCriteria.DownloadedIdx of
+      1: AddToFilter('b.IsLocal ', '= 1', False, FilterString);
+      2: AddToFilter('b.IsLocal ', '= 0', False, FilterString);
     end;
+
+    if SearchCriteria.Deleted then
+      AddToFilter('b.IsDeleted ', '= 0', False, FilterString);
+
+    if FilterString <> '' then
+    begin
+      if SQLRows <> '' then
+        SQLRows := SQLRows + ' INTERSECT ';
+      SQLRows := SQLRows + SQL_START_STR + ' FROM Books b WHERE ' + FilterString;
+    end;
+  except
+    on E: Exception do
+      raise Exception.Create(rstrFilterParamError);
   end;
+
+  if SQLRows = '' then
+    raise Exception.Create(rstrCheckFilterParams);
+
+  // InitRows - workaround for the need to reset params between invocations to receive a new dataset
+  SQLCount := 'SELECT COUNT(*) FROM (' + SQLRows + ') ROWS ';
+  FCount := FCollection.FDatabase.NewQuery(SQLCount);
+
+  FBooks := FCollection.FDatabase.NewQuery(SQLRows);
+  FBooks.Open;
 end;
 
 { TAuthorIteratorImpl }
@@ -603,6 +588,7 @@ end;
 destructor TBookCollection_SQLite.TAuthorIteratorImpl.Destroy;
 begin
   FreeAndNil(FAuthors);
+  FreeAndNil(FCount);
 
   inherited Destroy;
 end;
@@ -627,7 +613,11 @@ end;
 
 function TBookCollection_SQLite.TAuthorIteratorImpl.RecordCount: Integer;
 begin
-  Result := FNumRecords;
+  Assert(Assigned(FCount), 'Calling RecordCount more than once!');
+
+  FCount.Open;
+  Result := FCount.FieldAsInt(0);
+  FreeAndNil(FCount);
 end;
 
 procedure TBookCollection_SQLite.TAuthorIteratorImpl.PrepareData(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue);
@@ -636,7 +626,6 @@ var
   Where: string;
   SQLRows: string;
   SQLCount: string;
-  query: TSQLiteQuery;
 
   procedure SetParams(query: TSQLiteQuery; const Mode: TAuthorIteratorMode);
   begin
@@ -719,17 +708,8 @@ begin
       Assert(False);
   end;
 
-  query := FCollection.FDatabase.NewQuery(SQLCount);
-  try
-    SetParams(query, Mode);
-    query.Open;
-    if query.Eof then
-      FNumRecords := 0
-    else
-      FNumRecords := query.FieldAsInt(0);
-  finally
-    query.Free;
-  end;
+  FCount := FCollection.FDatabase.NewQuery(SQLCount);
+  SetParams(FCount, Mode);
 
   FAuthors := FCollection.FDatabase.NewQuery(SQLRows);
   try
@@ -760,6 +740,7 @@ end;
 destructor TBookCollection_SQLite.TGenreIteratorImpl.Destroy;
 begin
   FreeAndNil(FGenres);
+  FreeAndNil(FCount);
 
   inherited Destroy;
 end;
@@ -782,14 +763,17 @@ end;
 
 function TBookCollection_SQLite.TGenreIteratorImpl.RecordCount: Integer;
 begin
-  Result := FNumRecords;
+  Assert(Assigned(FCount), 'Calling RecordCount more than once!');
+
+  FCount.Open;
+  Result := FCount.FieldAsInt(0);
+  FreeAndNil(FCount);
 end;
 
 procedure TBookCollection_SQLite.TGenreIteratorImpl.PrepareData(const Mode: TGenreIteratorMode; const FilterValue: PFilterValue);
 var
   SQLRows: String;
   SQLCount: String;
-  query: TSQLiteQuery;
 begin
   case Mode of
     gmAll:
@@ -809,18 +793,9 @@ begin
       Assert(False);
   end;
 
-  query := FCollection.FDatabase.NewQuery(SQLCount);
-  try
-    if Mode = gmByBook then
-      query.SetParam(0, FilterValue^.ValueInt);
-    query.Open;
-    if query.Eof then
-      FNumRecords := 0
-    else
-      FNumRecords := query.FieldAsInt(0);
-  finally
-    query.Free;
-  end;
+  FCount := FCollection.FDatabase.NewQuery(SQLCount);
+  if Mode = gmByBook then
+    FCount.SetParam(0, FilterValue^.ValueInt);
 
   FGenres := FCollection.FDatabase.NewQuery(SQLRows);
   try
@@ -853,6 +828,7 @@ end;
 destructor TBookCollection_SQLite.TSeriesIteratorImpl.Destroy;
 begin
   FreeAndNil(FSeries);
+  FreeAndNil(FCount);
 
   inherited Destroy;
 end;
@@ -873,7 +849,11 @@ end;
 
 function TBookCollection_SQLite.TSeriesIteratorImpl.RecordCount: Integer;
 begin
-  Result := FNumRecords;
+  Assert(Assigned(FCount), 'Calling RecordCount more than once!');
+
+  FCount.Open;
+  Result := FCount.FieldAsInt(0);
+  FreeAndNil(FCount);
 end;
 
 procedure TBookCollection_SQLite.TSeriesIteratorImpl.PrepareData(const Mode: TSeriesIteratorMode);
@@ -881,7 +861,6 @@ var
   Where: string;
   SQLRows: string;
   SQLCount: string;
-  query: TSQLiteQuery;
 
   procedure SetParams(query: TSQLiteQuery; const Mode: TSeriesIteratorMode);
   begin
@@ -954,17 +933,9 @@ begin
       Assert(False);
   end;
 
-  query := FCollection.FDatabase.NewQuery(SQLCount);
-  try
-    SetParams(query, Mode);
-    query.Open;
-    if query.Eof then
-      FNumRecords := 0
-    else
-      FNumRecords := query.FieldAsInt(0);
-  finally
-    query.Free;
-  end;
+  FCount := FCollection.FDatabase.NewQuery(SQLCount);
+  SetParams(FCount, Mode);
+  FCount.Open;
 
   FSeries := FCollection.FDatabase.NewQuery(SQLRows);
   try
