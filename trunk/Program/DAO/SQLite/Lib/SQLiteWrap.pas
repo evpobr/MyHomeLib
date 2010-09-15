@@ -571,13 +571,18 @@ begin
   Value.Position := 0;
   iSize := Value.Size;
 
-  ptrBuff := SQlite3_Malloc(iSize);
-  if not Assigned(ptrBuff) then
-    FDatabase.RaiseError(c_errormemoryblob, '');
+  if iSize <> 0 then
+  begin
+    ptrBuff := SQlite3_Malloc(iSize);
+    if not Assigned(ptrBuff) then
+      FDatabase.RaiseError(c_errormemoryblob, '');
 
-  Value.Read(ptrBuff^, iSize);
-  if SQLITE_OK <> SQLite3_Bind_Blob(FStmt, ParamIndex + 1, ptrBuff, iSize, SQLite3_Free) then
-    FDatabase.RaiseError(c_errorbindingparam, FSQL);
+    Value.Read(ptrBuff^, iSize);
+    if SQLITE_OK <> SQLite3_Bind_Blob(FStmt, ParamIndex + 1, ptrBuff, iSize, SQLite3_Free) then
+      FDatabase.RaiseError(c_errorbindingparam, FSQL);
+  end
+  else
+    SetNullParam(ParamIndex);
 end;
 
 procedure TSQLiteQuery.SetBlobParam(const ParamIndex: Integer; const Value: string);
