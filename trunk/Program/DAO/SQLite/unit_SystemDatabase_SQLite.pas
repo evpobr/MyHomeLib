@@ -415,8 +415,10 @@ end;
 
 function TSystemData_SQLite.GetCollectionInfo(const CollectionID: Integer; out CollectionInfo: TCollectionInfo): Boolean;
 const
-  SQL_SELECT = 'SELECT bs.BaseName, bs.RootFolder, bs.DBFileName, bs.Code, bs.CreationDate, ' +
-    'bs.Version, bs.AllowDelete, bs.Notes, bs.LibUser, bs.LibPassword, bs.URL, bs.ConnectionScript, bs.Settings ' +
+  SQL_SELECT = 'SELECT ' +
+    'bs.BaseName, bs.RootFolder, bs.DBFileName, bs.Code, bs.CreationDate, ' + // 0  .. 4
+    'bs.Version, bs.AllowDelete, bs.Notes, bs.LibUser, bs.LibPassword, ' +    // 5  .. 9
+    'bs.URL, bs.ConnectionScript, bs.Settings ' +                             // 10 .. 12
     'FROM Bases bs WHERE bs.ID = ?';
 var
   query: TSQLiteQuery;
@@ -450,7 +452,7 @@ begin
       CollectionInfo.User := query.FieldAsString(8);
       CollectionInfo.Password := query.FieldAsString(9);
       CollectionInfo.URL := query.FieldAsString(10);
-      CollectionInfo.Script := query.FieldAsString(11);
+      CollectionInfo.Script := query.FieldAsBlobString(11);
 
       stream := query.FieldAsBlob(12);
       try
