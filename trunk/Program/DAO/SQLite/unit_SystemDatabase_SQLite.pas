@@ -1408,10 +1408,13 @@ begin
   try
     for group in data.Groups do
     begin
-      query.SetParam(0, group.GroupName);
-      query.SetParam(1, True);
-      query.ExecSQL;
-      group.GroupID := FDatabase.LastInsertRowID;
+      if not InternalFindGroup(group.GroupName) then
+      begin
+        query.SetParam(0, group.GroupName);
+        query.SetParam(1, True);
+        query.ExecSQL;
+        group.GroupID := FDatabase.LastInsertRowID;
+      end;
     end;
   finally
     FreeAndNil(query);
