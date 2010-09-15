@@ -28,6 +28,8 @@ pre-Delphi 2009
   with Delphi 2009+.
 }
 
+{$DEFINE USELOGGER}
+
 unit SQLiteWrap;
 
 interface
@@ -226,8 +228,6 @@ resourcestring
 implementation
 
 uses
-{.$DEFINE USELOGGER}
-
 {$IFDEF USELOGGER}
   unit_Logger,
   unit_Interfaces,
