@@ -87,6 +87,7 @@ CREATE TABLE [Books] (
   [SearchAnnotation] VARCHAR(4096) COLLATE SYSTEM_NOCASE
 );--
 CREATE INDEX [IXBooks_SeriesID_SeqNumber] ON [Books] ([SeriesID], [SeqNumber]);--
+CREATE INDEX [IXBooks_SeriesID_IsDeleted_IsLocal] ON [Books] ([SeriesID], [IsDeleted], [IsLocal]);--
 CREATE INDEX [IXBooks_Title] ON [Books] ([Title]);--
 CREATE INDEX [IXBooks_FileName] ON [Books] ([FileName]);--
 CREATE INDEX [IXBooks_Folder] ON [Books] ([Folder]);--
