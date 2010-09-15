@@ -299,7 +299,7 @@ begin
 
   CollectionInfo := TCollectionInfo.Create;
   try
-    CollectionInfo.ID := CollectionID;
+    FSystemData.GetCollectionInfo(CollectionID, CollectionInfo);
     CollectionInfo.Name := DisplayName;
     CollectionInfo.RootFolder := ARootFolder;
     CollectionInfo.DBFileName := ADBFileName;
