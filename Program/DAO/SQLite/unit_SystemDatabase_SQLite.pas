@@ -1397,27 +1397,42 @@ end;
 
 procedure TSystemData_SQLite.ImportUserData(data: TUserData);
 const
+  SQL_SELECT = 'SELECT GroupID FROM Groups WHERE GroupName = ? ';
   SQL_INSERT = 'INSERT INTO Groups (GroupName, AllowDelete) SELECT ?, ? ';
 var
   group: TBookGroup;
-  query: TSQLiteQuery;
+  querySelect: TSQLiteQuery;
+  queryInsert: TSQLiteQuery;
+
 begin
   Assert(Assigned(data));
 
-  query := FDatabase.NewQuery(SQL_INSERT);
+  querySelect := FDatabase.NewQuery(SQL_SELECT);
   try
-    for group in data.Groups do
-    begin
-      if not InternalFindGroup(group.GroupName) then
+    queryInsert := FDatabase.NewQuery(SQL_INSERT);
+    try
+      for group in data.Groups do
       begin
-        query.SetParam(0, group.GroupName);
-        query.SetParam(1, True);
-        query.ExecSQL;
-        group.GroupID := FDatabase.LastInsertRowID;
+        querySelect.Reset;
+        querySelect.SetParam(0, group.GroupName);
+        querySelect.Open;
+        if not querySelect.Eof then
+          group.GroupID := querySelect.FieldAsInt(0)
+        else
+        begin
+          queryInsert.Reset;
+          queryInsert.SetParam(0, group.GroupName);
+          queryInsert.SetParam(1, True);
+          queryInsert.ExecSQL;
+          group.GroupID := FDatabase.LastInsertRowID;
+        end;
       end;
+
+    finally
+      FreeAndNil(queryInsert);
     end;
   finally
-    FreeAndNil(query);
+    FreeAndNil(querySelect);
   end;
 end;
 
