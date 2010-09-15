@@ -3208,7 +3208,8 @@ end;
 
 procedure TfrmMain.btnClearFavoritesClick(Sender: TObject);
 begin
-  if MessageDlg('Удалить все книги из активной группы?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then Exit;
+  if (DMUser.tblGrouppedBooks.RecordCount > 0) and
+     (MessageDlg('Удалить все книги из активной группы?', mtConfirmation, [mbYes, mbNo], 0) = mrNo) then Exit;
 
   Screen.Cursor := crHourGlass;
   try
@@ -5481,6 +5482,7 @@ begin
 
   // активируем последнюю группу в списке
   tvGroups.Selected[tvGroups.GetLast] := True;
+
 end;
 
 procedure TfrmMain.miAboutClick(Sender: TObject);
@@ -6687,6 +6689,7 @@ begin
     FillGroupsList;
     CreateGroupsMenu;
     FillBooksTree(0,tvBooksF,Nil,DMUser.tblGrouppedBooks,true, true);
+
   end;
 end;
 
@@ -6694,14 +6697,21 @@ procedure TfrmMain.btnDeleteGroupClick(Sender: TObject);
 var
   Data: PGroupData;
 begin
-  Data := tvGroups.GetNodeData(tvGroups.FocusedNode);
+  Data := tvGroups.GetNodeData(tvGroups.GetFirstSelected);
   if Data = Nil then Exit;
+
   if DMUser.ActivateGroup(Data.ID) and
      DMUser.tblGroupListAllowDelete.Value then
   begin
-    btnClearFavoritesClick(Sender);
-    DMUser.tblGroupList.Delete;
+    if DMUser.tblGrouppedBooks.RecordCount > 0 then
+    begin
+      ShowMessage('Нельзя удалить непустую группу!');
+      Exit;
+    end
+    else
+      if MessageDlg(Format('Удалить группу %s ?',[Data.Text]), mtConfirmation, [mbYes, mbNo], 0) = mrNo then Exit;
 
+    DMUser.tblGroupList.Delete;
     FillGroupsList;
     CreateGroupsMenu;
     FillBooksTree(0,tvBooksF,Nil,DMUser.tblGrouppedBooks,true, true);
