@@ -504,14 +504,13 @@ begin
     query.SetParam(6, CollectionInfo.CollectionType);
     query.SetParam(7, CollectionInfo.AllowDelete);
 
-// TODO: Fix SQLite binary stream support
-//    stream := TMemoryStream.Create;
-//    try
-//      CollectionInfo.Settings.SaveToStream(stream);
-//      query.SetBlobParam(8, stream);
-//    finally
-//      FreeAndNil(stream);
-//    end;
+    stream := TMemoryStream.Create;
+    try
+      CollectionInfo.Settings.SaveToStream(stream);
+      query.SetBlobParam(8, stream);
+    finally
+      FreeAndNil(stream);
+    end;
 
     query.SetParam(9, CollectionInfo.URL);
     query.SetParam(10, CollectionInfo.User);
