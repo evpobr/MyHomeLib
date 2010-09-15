@@ -604,8 +604,10 @@ begin
   begin
     Assert(FSystemData.GetActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
 
-    AuthorID := FAuthors.FieldAsInt(0);
-    FCollection.GetAuthor(AuthorID, AuthorData);
+    AuthorData.AuthorID := FAuthors.FieldAsInt(0);
+    AuthorData.LastName := FAuthors.FieldAsString(1);
+    AuthorData.FirstName := FAuthors.FieldAsString(2);
+    AuthorData.MiddleName := FAuthors.FieldAsString(3);
 
     FAuthors.Next;
   end;
@@ -659,14 +661,14 @@ begin
   case Mode of
     amAll:
       begin
-        SQLRows := 'SELECT AuthorID FROM Authors ORDER BY LastName, FirstName, MiddleName';
+        SQLRows := 'SELECT AuthorID, LastName, FirstName, MiddleName FROM Authors ORDER BY LastName, FirstName, MiddleName';
         SQLCount := 'SELECT COUNT(*) FROM Authors';
       end;
 
     amByBook:
       begin
         Assert(Assigned(FilterValue));
-        SQLRows := 'SELECT al.AuthorID FROM Author_List al INNER JOIN Authors a ON al.AuthorID = a.AuthorID WHERE BookID = :v0 ORDER BY a.LastName, a.FirstName, a.MiddleName ';
+        SQLRows := 'SELECT a.AuthorID, a.LastName, a.FirstName, a.MiddleName FROM Author_List al INNER JOIN Authors a ON al.AuthorID = a.AuthorID WHERE BookID = :v0 ORDER BY a.LastName, a.FirstName, a.MiddleName ';
         SQLCount := 'SELECT COUNT(*) FROM Author_List WHERE BookID = :v0';
       end;
 
@@ -699,9 +701,9 @@ begin
           );
         end;
 
-        SQLRows := 'SELECT DISTINCT al.AuthorID FROM ' + FromList + Where;
+        SQLRows := 'SELECT DISTINCT a.AuthorID FROM ' + FromList + Where;
         SQLCount := 'SELECT COUNT(*) FROM (' + SQLRows + ') ROWS ';
-        SQLRows := 'SELECT DISTINCT al.AuthorID FROM ' + FromList + Where + ' ORDER BY a.LastName, a.FirstName, a.MiddleName ';
+        SQLRows := 'SELECT DISTINCT a.AuthorID, a.LastName, a.FirstName, a.MiddleName FROM ' + FromList + Where + ' ORDER BY a.LastName, a.FirstName, a.MiddleName ';
       end;
 
     else
