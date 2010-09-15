@@ -448,6 +448,8 @@ end;
 
 procedure TSQLiteDatabase.RegisterSystemCollateAndFunc;
 begin
+  ///SQLite3_Enable_Load_Extension(FDB, 1);
+  ///SQLite3_Load_Extension(FDB, 'MHLSQLiteExt', nil, nil);
   SQLite3_Create_Collation(FDB, PUTF8Char('SYSTEM'), SQLITE_UTF16, nil, @SystemCollate);
   SQLite3_Create_Collation(FDB, PUTF8Char('SYSTEM_NOCASE'), SQLITE_UTF16, nil, @SystemCollateNoCase);
   AddFunction('UPPER', 1, SQLITE_ANY, SystemUpperString);
@@ -709,6 +711,7 @@ begin
   begin
     ptr := Sqlite3_ColumnBlob(FStmt, i);
     Stream.WriteBuffer(ptr^, iNumBytes);
+    Stream.Position := 0;
   end;
 end;
 
