@@ -90,6 +90,7 @@ const
 
 type
   PUTF8Char = PAnsiChar;
+  PPUTF8Char = ^PUTF8Char;
 
   TSQLite3DB = Pointer;
   TSQLiteStmt = Pointer;
@@ -432,6 +433,18 @@ function SQLite3_Value_text16(
 function SQLite3_Value_type(
   Value: Pointer
   ): Integer; cdecl; external SQLiteDLL name 'sqlite3_value_type';
+
+function SQLite3_Enable_Load_Extension(
+  db: TSQLite3DB;
+  nEnable: Integer
+  ): Integer; cdecl; external SQLiteDLL name 'sqlite3_enable_load_extension';
+
+function SQLite3_Load_Extension(
+  db: TSQLite3DB;
+  pszFile: PUTF8Char;
+  pszProc: PUTF8Char;
+  ppszErrMsg: PPUTF8Char
+  ): Integer; cdecl; external SQLiteDLL name 'sqlite3_load_extension';
 
 function SQLiteErrorStr(SQLiteErrorCode: Integer): string;
 
