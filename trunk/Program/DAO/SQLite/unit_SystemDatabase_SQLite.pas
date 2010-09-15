@@ -117,10 +117,10 @@ type
     procedure SetRate(const BookKey: TBookKey; Rate: Integer); override;
     procedure SetProgress(const BookKey: TBookKey; Progress: Integer); override;
     function GetReview(const BookKey: TBookKey): string; override;
-//    function SetReview(const BookKey: TBookKey; const Review: string): Integer; override;
-//    procedure SetLocal(const BookKey: TBookKey; Value: Boolean); override;
-//    procedure SetFileName(const BookKey: TBookKey; const FileName: string); override;
-//    procedure SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer); override;
+    function SetReview(const BookKey: TBookKey; const Review: string): Integer; override;
+    procedure SetLocal(const BookKey: TBookKey; Value: Boolean); override;
+    procedure SetFileName(const BookKey: TBookKey; const FileName: string); override;
+    procedure SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer); override;
 //    procedure SetFolder(const BookKey: TBookKey; const Folder: string); override;
 //
 //
@@ -996,6 +996,81 @@ begin
       Result := query.FieldAsBlobString(0)
     else
       Result := '';
+  finally
+    FreeAndNil(query);
+  end;
+end;
+
+function TSystemData_SQLite.SetReview(const BookKey: TBookKey; const Review: string): Integer;
+const
+  SQL_UPDATE = 'UPDATE Books Set Review = ?, Code = ? WHERE BookID = ? AND DatabaseID = ? ';
+var
+  query: TSQLiteQuery;
+begin
+  query := FDatabase.NewQuery(SQL_UPDATE);
+  try
+    query.SetBlobParam(0, Review);
+    if Review = '' then
+      query.SetParam(1, 0)
+    else
+      query.SetParam(1, 1);
+    query.SetParam(2, BookKey.BookID);
+    query.SetParam(3, BookKey.DatabaseID);
+    query.ExecSQL;
+  finally
+    FreeAndNil(query);
+  end;
+end;
+
+procedure TSystemData_SQLite.SetLocal(const BookKey: TBookKey; Value: Boolean);
+const
+  SQL_UPDATE = 'UPDATE Books SET IsLocal = ? WHERE BookID = ? AND DatabaseID = ? ';
+var
+  query: TSQLiteQuery;
+begin
+  query := FDatabase.NewQuery(SQL_UPDATE);
+  try
+    query.SetParam(0, Value);
+    query.SetParam(1, BookKey.BookID);
+    query.SetParam(2, BookKey.DatabaseID);
+    query.ExecSQL;
+  finally
+    FreeAndNil(query);
+  end;
+end;
+
+procedure TSystemData_SQLite.SetFileName(const BookKey: TBookKey; const FileName: string);
+const
+  SQL_UPDATE = 'UPDATE Books SET FileName = ? WHERE BookID = ? AND DatabaseID = ? ';
+var
+  query: TSQLiteQuery;
+begin
+  query := FDatabase.NewQuery(SQL_UPDATE);
+  try
+    query.SetParam(0, FileName);
+    query.SetParam(1, BookKey.BookID);
+    query.SetParam(2, BookKey.DatabaseID);
+    query.ExecSQL;
+  finally
+    FreeAndNil(query);
+  end;
+end;
+
+procedure TSystemData_SQLite.SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
+const
+  SQL_UPDATE = 'UPDATE Books SET SeriesID = ? WHERE BookID = ? AND DatabaseID = ? ';
+var
+  query: TSQLiteQuery;
+begin
+  query := FDatabase.NewQuery(SQL_UPDATE);
+  try
+    if NO_SERIES_ID = SeriesID then
+      query.SetNullParam(0)
+    else
+      query.SetParam(0, SeriesID);
+    query.SetParam(1, BookKey.BookID);
+    query.SetParam(2, BookKey.DatabaseID);
+    query.ExecSQL;
   finally
     FreeAndNil(query);
   end;
