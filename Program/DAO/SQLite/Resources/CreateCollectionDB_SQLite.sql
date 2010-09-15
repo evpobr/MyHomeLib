@@ -143,7 +143,7 @@ CREATE TABLE [Genre_List] (
   [BookID] INTEGER NOT NULL,
   CONSTRAINT "PKGenreList" PRIMARY KEY ([BookID], [GenreCode])
 );--
-CREATE INDEX [IXGenreList_BookID] ON [Genre_List] ([BookID]);--
+CREATE INDEX [IXGenreList_GenreCode_BookID] ON [Genre_List] ([GenreCode], [BookID]);--
 
 DROP TABLE IF EXISTS [Author_List];--
 CREATE TABLE [Author_List] (
