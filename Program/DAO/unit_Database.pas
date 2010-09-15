@@ -25,7 +25,7 @@ interface
 uses
   unit_Interfaces;
 
-  function CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True): IBookCollection;
+  function CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True; const SystemData: ISystemData = nil): IBookCollection;
   function GetBookCollection(const DBCollectionFile: string): IBookCollection;
   function GetActiveBookCollection: IBookCollection;
 
@@ -75,16 +75,19 @@ type
 var
   g_CollectionCache: TCollectionCache;
 
-function CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True): IBookCollection;
+function CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True; const SystemData: ISystemData = nil): IBookCollection;
 var
-  systemData: ISystemData;
+  usedSystemData: ISystemData;
 begin
-  systemData := GetSystemData;
+  if Assigned(SystemData) then
+    usedSystemData := SystemData
+  else
+    usedSystemData := GetSystemData;
 
 {$IFDEF USE_SQLITE}
-  Result := TBookCollection_SQLite.Create(DBCollectionFile, systemData);
+  Result := TBookCollection_SQLite.Create(DBCollectionFile, usedSystemData);
 {$ELSE}
-  Result := TBookCollection_ABS.Create(DBCollectionFile, systemData, ADefaultSession);
+  Result := TBookCollection_ABS.Create(DBCollectionFile, usedSystemData, ADefaultSession);
 {$ENDIF}
 end;
 
