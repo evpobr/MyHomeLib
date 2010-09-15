@@ -150,6 +150,6 @@ CREATE TABLE [Author_List] (
   [BookID] INTEGER NOT NULL,
   CONSTRAINT "PKAuthorList" PRIMARY KEY ([BookID], [AuthorID])
 );--
-CREATE INDEX [IXAuthorList_BookID] ON [Author_List] ([BookID]);--
+CREATE INDEX [IXAuthorList_AuthorID_BookID] ON [Author_List] ([AuthorID], [BookID]);--
 
 
