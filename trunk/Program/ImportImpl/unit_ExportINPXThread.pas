@@ -121,22 +121,23 @@ begin
       try
         BookIterator := BookCollection.GetBookIterator(bmAll, True);
         try
-          FProgressEngine.Init(BookIterator.RecordCount, rstrBookProcessedMsg1, rstrBookProcessedMsg2);
+          FProgressEngine.BeginOperation(BookIterator.RecordCount, rstrBookProcessedMsg1, rstrBookProcessedMsg2);
+          try
+            while BookIterator.Next(R) do
+            begin
+              if Canceled then
+                Exit;
 
-          while BookIterator.Next(R) do
-          begin
-            if Canceled then
-              Exit;
+              INPRecordCreate(R, inpxWriter);
 
-            INPRecordCreate(R, inpxWriter);
-
-            FProgressEngine.AddProgress;
+              FProgressEngine.AddProgress;
+            end;
+          finally
+            FProgressEngine.EndOperation;
           end;
         finally
           BookIterator := nil;
         end;
-
-        FProgressEngine.Finish;
       finally
         BookCollection := nil;
       end;
@@ -144,43 +145,45 @@ begin
       inpxWriter.Free;
     end;
 
-    inpxStream.Position := 0;
-
-    FProgressEngine.Init(-1, rstrSaving, rstrSaving);
-
-    //
-    // Все готово - пакуем
-    //
-    inpxZIP := TZipForge.Create(nil);
+    FProgressEngine.BeginOperation(-1, rstrSaving, rstrSaving);
     try
-      inpxZIP.FileName := INPXFileName;
-      inpxZIP.BaseDir := FTempPath;
-      inpxZIP.OpenArchive(fmCreate);
-
-      inpxZIP.AddFromStream(BOOKS_INFO_FILE, inpxStream);
-
-      if UNVERSIONED_COLLECTION = FCollectionVersion then
-        inpxZIP.AddFromString(VERINFO_FILENAME, FormatDateTime('yyyymmdd', Now))
-      else
-        inpxZIP.AddFromString(VERINFO_FILENAME, IntToStr(FCollectionVersion));
-
-      inpxZIP.AddFromString(
-        STRUCTUREINFO_FILENAME,
-        'AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;INSNO;FOLDER;LANG;KEYWORDS;'
-      );
-
+      inpxStream.Position := 0;
       //
-      // Устанавливаем комментарий для INPX-файла
+      // Все готово - пакуем
       //
-      inpxZIP.Comment :=
-        FCollectionName + CRLF +
-        ExtractFileName(FCollectionDBFileName) + CRLF +
-        IntToStr(FCollectionType) + CRLF +
-        FCollectionNotes;
+      inpxZIP := TZipForge.Create(nil);
+      try
+        inpxZIP.FileName := INPXFileName;
+        inpxZIP.BaseDir := FTempPath;
+        inpxZIP.OpenArchive(fmCreate);
 
-      inpxZIP.CloseArchive;
+        inpxZIP.AddFromStream(BOOKS_INFO_FILE, inpxStream);
+
+        if UNVERSIONED_COLLECTION = FCollectionVersion then
+          inpxZIP.AddFromString(VERINFO_FILENAME, FormatDateTime('yyyymmdd', Now))
+        else
+          inpxZIP.AddFromString(VERINFO_FILENAME, IntToStr(FCollectionVersion));
+
+        inpxZIP.AddFromString(
+          STRUCTUREINFO_FILENAME,
+          'AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;INSNO;FOLDER;LANG;KEYWORDS;'
+        );
+
+        //
+        // Устанавливаем комментарий для INPX-файла
+        //
+        inpxZIP.Comment :=
+          FCollectionName + CRLF +
+          ExtractFileName(FCollectionDBFileName) + CRLF +
+          IntToStr(FCollectionType) + CRLF +
+          FCollectionNotes;
+
+        inpxZIP.CloseArchive;
+      finally
+        inpxZIP.Free;
+      end;
     finally
-      inpxZIP.Free;
+      FProgressEngine.EndOperation;
     end;
   finally
     inpxStream.Free;

@@ -40,7 +40,6 @@ uses
   unit_Templater;
 
 resourcestring
-  rstrFoundFiles = 'Обнаружено файлов: %u';
   rstrStructureError = 'Ошибка структуры fb2: %s.zip -> %s';
   rstrProcessedFiles = 'Обработано файлов: %u из %u';
   rstrAddedFiles = 'Добавлено файлов: %u из %u';
@@ -64,50 +63,56 @@ var
   AddedBooks: integer;
   FileName: string;
 begin
-  FProgressEngine.Init(FFiles.Count, rstrProcessedFiles, rstrProcessedFiles);
-  Teletype(Format(rstrFoundFiles, [FFiles.Count]));
-  AddedBooks := 0;
+  FProgressEngine.BeginOperation(FFiles.Count, rstrProcessedFiles, rstrProcessedFiles);
+  try
+    AddedBooks := 0;
 
-  FTemplater:= TTemplater.Create;
-  for i := 0 to FFiles.Count - 1 do
-  begin
-    if Canceled then
-      Break;
-
-    R.Clear;
-    FileName := ExtractFileName(FFiles[i]);
-    R.FileExt := ExtractFileExt(FileName);
-    R.FileName := TPath.GetFileNameWithoutExtension(FileName);
-
-    R.Size := unit_Helpers.GetFileSize(FFiles[i]);
-    R.Date := Now;
-    R.IsLocal := True;
+    FTemplater:= TTemplater.Create;
     try
-      if Settings.EnableSort then
+      for i := 0 to FFiles.Count - 1 do
       begin
-        R.Folder := ExtractFilePath(FFiles[i]);
-        book := LoadFictionBook(FFiles[i]);
-        GetBookInfo(book, R);
-        SortFiles(R); // изменит R.Folder и R.FileName
-      end
-      else
-      begin
-        R.Folder := ExtractRelativePath(FCollectionRoot, ExtractFilePath(FFiles[i]));
-        book := LoadFictionBook(FFiles[i]);
-        GetBookInfo(book, R);
+        if Canceled then
+          Break;
+
+        R.Clear;
+        FileName := ExtractFileName(FFiles[i]);
+        R.FileExt := ExtractFileExt(FileName);
+        R.FileName := TPath.GetFileNameWithoutExtension(FileName);
+
+        R.Size := unit_Helpers.GetFileSize(FFiles[i]);
+        R.Date := Now;
+        R.IsLocal := True;
+        try
+          if Settings.EnableSort then
+          begin
+            R.Folder := ExtractFilePath(FFiles[i]);
+            book := LoadFictionBook(FFiles[i]);
+            GetBookInfo(book, R);
+            SortFiles(R); // изменит R.Folder и R.FileName
+          end
+          else
+          begin
+            R.Folder := ExtractRelativePath(FCollectionRoot, ExtractFilePath(FFiles[i]));
+            book := LoadFictionBook(FFiles[i]);
+            GetBookInfo(book, R);
+          end;
+          FLibrary.InsertBook(R, True, True);
+          Inc(AddedBooks);
+        except
+          on e: Exception do
+            Teletype(Format(rstrStructureError, [R.Folder, R.FileName + FB2_EXTENSION]), tsError);
+        end;
+
+        FProgressEngine.AddProgress;
       end;
-      FLibrary.InsertBook(R, True, True);
-      Inc(AddedBooks);
-    except
-      on e: Exception do
-        Teletype(Format(rstrStructureError, [R.Folder, R.FileName + FB2_EXTENSION]), tsError);
+    finally
+      FTemplater.Free;
     end;
 
-    FProgressEngine.AddProgress;
+    Teletype(Format(rstrAddedFiles, [AddedBooks, FFiles.Count]),tsInfo);
+  finally
+    FProgressEngine.EndOperation;
   end;
-  FTemplater.Free;
-
-  Teletype(Format(rstrAddedFiles, [AddedBooks, FFiles.Count]),tsInfo);
 end;
 
 end.
