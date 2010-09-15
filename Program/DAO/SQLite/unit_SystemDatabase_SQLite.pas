@@ -121,12 +121,12 @@ type
     procedure SetLocal(const BookKey: TBookKey; Value: Boolean); override;
     procedure SetFileName(const BookKey: TBookKey; const FileName: string); override;
     procedure SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer); override;
-//    procedure SetFolder(const BookKey: TBookKey; const Folder: string); override;
-//
-//
-//    //
-//    // Работа с группами
-//    //
+    procedure SetFolder(const BookKey: TBookKey; const Folder: string); override;
+
+
+    //
+    // Работа с группами
+    //
     function AddGroup(const GroupName: string; const AllowDelete: Boolean = True): Boolean; override;
     function RenameGroup(GroupID: Integer; const NewName: string): Boolean; override;
     procedure DeleteGroup(GroupID: Integer); override;
@@ -142,15 +142,15 @@ type
       TargetGroupID: Integer;
       MoveBook: Boolean
     ); override;
-//
-//    //
-//    // Пользовательские данные
-//    //
-//    procedure ImportUserData(data: TUserData); override;
-//
-//    // Batch update methods:
-//    procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer); override;
-//
+
+    //
+    // Пользовательские данные
+    //
+    procedure ImportUserData(data: TUserData); override;
+
+    // Batch update methods:
+    procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer); override;
+
     //Iterators:
     function GetBookIterator(const GroupID: Integer; const DatabaseID: Integer = INVALID_COLLECTION_ID): IBookIterator; override;
     function GetGroupIterator: IGroupIterator; override;
@@ -1076,6 +1076,23 @@ begin
   end;
 end;
 
+procedure TSystemData_SQLite.SetFolder(const BookKey: TBookKey; const Folder: string);
+const
+  SQL_UPDATE = 'UPDATE Books SET Folder = ? WHERE BookID = ? AND DatabaseID = ? ';
+var
+  query: TSQLiteQuery;
+begin
+  query := FDatabase.NewQuery(SQL_UPDATE);
+  try
+    query.SetParam(0, Folder);
+    query.SetParam(1, BookKey.BookID);
+    query.SetParam(2, BookKey.DatabaseID);
+    query.ExecSQL;
+  finally
+    FreeAndNil(query);
+  end;
+end;
+
 // Result: true if added
 function TSystemData_SQLite.AddGroup(const GroupName: string; const AllowDelete: Boolean = True): Boolean;
 const
@@ -1378,6 +1395,57 @@ begin
   end;
 end;
 
+procedure TSystemData_SQLite.ImportUserData(data: TUserData);
+const
+  SQL_INSERT = 'INSERT INTO Groups (GroupName, AllowDelete) SELECT ?, ? ';
+var
+  group: TBookGroup;
+  query: TSQLiteQuery;
+begin
+  Assert(Assigned(data));
+
+  query := FDatabase.NewQuery(SQL_INSERT);
+  try
+    for group in data.Groups do
+    begin
+      query.SetParam(0, group.GroupName);
+      query.SetParam(1, True);
+      query.ExecSQL;
+      group.GroupID := FDatabase.LastInsertRowID;
+    end;
+  finally
+    FreeAndNil(query);
+  end;
+end;
+
+// Change SeriesID value for all books having DatabaseID and old SeriesID value
+procedure TSystemData_SQLite.ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer);
+const
+  UPDATE_SQL = 'UPDATE Books SET SeriesID = ? WHERE DatabaseID = ? AND SeriesID = ? ';
+var
+  query: TSQLiteQuery;
+begin
+  if OldSeriesID <> NewSeriesID then
+  begin
+    query := FDatabase.NewQuery(UPDATE_SQL);
+    try
+      if NO_SERIES_ID = NewSeriesID then
+        query.SetNullParam(0)
+      else
+        query.SetParam(0, NewSeriesID);
+
+      query.SetParam(1, DatabaseID);
+
+      if NO_SERIES_ID = OldSeriesID then
+        query.SetNullParam(2)
+      else
+        query.SetParam(2, OldSeriesID);
+      query.ExecSQL;
+    finally
+      FreeAndNil(query);
+    end;
+  end;
+end;
 
 function TSystemData_SQLite.GetBookIterator(const GroupID: Integer; const DatabaseID: Integer = INVALID_COLLECTION_ID): IBookIterator;
 begin
