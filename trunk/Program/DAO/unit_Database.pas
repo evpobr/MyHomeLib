@@ -79,7 +79,7 @@ function CreateBookCollection(const DBCollectionFile: string; ADefaultSession: B
 var
   systemData: ISystemData;
 begin
-  systemData := CreateSystemData(ADefaultSession);
+  systemData := GetSystemData;
 
 {$IFDEF USE_SQLITE}
   Result := TBookCollection_SQLite.Create(DBCollectionFile, systemData);
