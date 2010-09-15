@@ -8,7 +8,7 @@
   * Created             08.09.2010
   * Description
   *
-  * $Id: unit_ProgressInfo.pas 663 2010-08-31 07:52:54Z nrymanov@gmail.com $
+  * $Id$
   *
   * History
   *
@@ -62,8 +62,8 @@ type
     constructor Create;
     //destructor Done; override;
 
-    procedure Init(const Total: Integer; const ShortCommentFormat: string; const LongCommentFormat: string);
-    procedure Finish;
+    procedure BeginOperation(const Total: Integer; const ShortCommentFormat: string; const LongCommentFormat: string);
+    procedure EndOperation;
     procedure AddProgress(const Value: Integer = 1);
     function GetProgress: Integer;
     function GetComment: string;
@@ -87,7 +87,7 @@ begin
   inherited Create;
 end;
 
-procedure TProgressEngine.Init(const Total: Integer; const ShortCommentFormat, LongCommentFormat: string);
+procedure TProgressEngine.BeginOperation(const Total: Integer; const ShortCommentFormat, LongCommentFormat: string);
 begin
   FTotal := Total;
   FCurrent := 0;
@@ -121,10 +121,13 @@ begin
     FSetComment(GetComment);
 end;
 
-procedure TProgressEngine.Finish;
+procedure TProgressEngine.EndOperation;
 begin
+  if Assigned(FProgressHint) then
+    FProgressHint(pbstNormal, pbsNormal);
+
   if Assigned(FSetProgress) then
-    FSetProgress(GetProgress);
+    FSetProgress(100);
 
   if Assigned(FSetComment) then
     FSetComment(GetComment);

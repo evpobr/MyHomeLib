@@ -1,14 +1,18 @@
-{******************************************************************************}
-{                                                                              }
-{ MyHomeLib                                                                    }
-{                                                                              }
-{ Version 0.9                                                                  }
-{ 20.08.2008                                                                   }
-{ Copyright (c) Aleksey Penkov  alex.penkov@gmail.com                          }
-{                                                                              }
-{ @author Nick Rymanov nrymanov@gmail.com                                      }
-{                                                                              }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
+  * Created             20.08.2008
+  * Description
+  *
+  * $Id$
+  *
+  * History
+  *
+  ****************************************************************************** *)
 
 unit unit_WorkerThread;
 
@@ -130,7 +134,7 @@ begin
   FFinished := False;
   FPercent := 0;
 
-  FProgressEngine.Init(0, '', '');
+  FProgressEngine.BeginOperation(0, '', '');
 
   Synchronize(DoOpenProgress);
   Synchronize(DoSetProgress);
@@ -189,10 +193,8 @@ end;
 
 procedure TWorker.CloseProgress;
 begin
-  FProgressEngine.Finish;
-  FPercent := 100;
+  FProgressEngine.EndOperation;
   FFinished := True;
-  Synchronize(DoSetProgress);
   Synchronize(DoCloseProgress);
 end;
 

@@ -95,6 +95,7 @@ resourcestring
   rstrCheckTemplateValidity = 'Проверьте правильность шаблона';
   rstrScanningOne = 'Сканируем %s';
   rstrScanningAll = 'Сканируем...';
+  rstrFoundFiles = 'Обнаружено файлов: %u';
   rstrScanningFolders = 'Сканирование папок...';
 
 { TImportFB2Thread }
@@ -213,11 +214,6 @@ var
 begin
   if ExtractFileExt(F.Name) = FTargetExt then
   begin
-    //
-    // UNUSED
-    //
-    //if FCheckExistsFiles then
-    //begin
     if Settings.EnableSort then
       FileName := FFilesList.LastDir + F.Name
     else
@@ -225,17 +221,7 @@ begin
 
     if not FLibrary.CheckFileInCollection(FileName, FFullNameSearch, FZipFolder) then
       FFiles.Add(FFilesList.LastDir + F.Name);
-    //
-    // UNUSED
-    //
-    //end;
   end;
-
-  //
-  // сколько найдем файлов неизвестно => зациклим прогресс
-  //
-  //SetProgress(FFiles.Count mod 100);
-  //FProgressEngine.AddProgress;
 
   if Canceled then
     Abort;
@@ -243,35 +229,32 @@ end;
 
 procedure TImportFB2ThreadBase.ScanFolder;
 begin
-  FProgressEngine.Init(-1, rstrScanningAll, rstrScanningAll);
-  //SetProgress(0);
-  //SetComment(rstrScanningAll);
-  Teletype(rstrScanningFolders);
-
-  //
-  // UNUSED
-  //
-  //FCheckExistsFiles := Settings.CheckExistsFiles;
-
-  FFilesList := TFilesList.Create(nil);
+  FProgressEngine.BeginOperation(-1, rstrScanningAll, rstrScanningAll);
   try
-    FFilesList.OnDirectory := ShowCurrentDir;
-    FFilesList.OnFile := AddFile2List;
+    Teletype(rstrScanningFolders);
 
-    if Settings.EnableSort then
-      FFilesList.TargetPath := Settings.ImportPath
-    else
-      FFilesList.TargetPath := FCollectionRoot;
-
+    FFilesList := TFilesList.Create(nil);
     try
-      FFilesList.Process;
-    except
-      on EAbort do
-        FProgressEngine.Finish;
-        //{ nothing } ;
+      FFilesList.OnDirectory := ShowCurrentDir;
+      FFilesList.OnFile := AddFile2List;
+
+      if Settings.EnableSort then
+        FFilesList.TargetPath := Settings.ImportPath
+      else
+        FFilesList.TargetPath := FCollectionRoot;
+
+      try
+        FFilesList.Process;
+        Teletype(Format(rstrFoundFiles, [FFiles.Count]));
+      except
+        on EAbort do
+          { ignore} ;
+      end;
+    finally
+      FreeAndNil(FFilesList);
     end;
   finally
-    FreeAndNil(FFilesList);
+    FProgressEngine.EndOperation;
   end;
 end;
 
