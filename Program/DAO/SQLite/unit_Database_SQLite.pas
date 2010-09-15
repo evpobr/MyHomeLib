@@ -302,6 +302,7 @@ begin
   FSystemData := SystemData;
   FCollection := Collection;
   FCollectionID := FSystemData.GetActiveCollectionInfo.ID;
+  Assert(FCollectionID > 0);
 
   if Mode = bmSearch then
   begin
@@ -580,7 +581,9 @@ begin
 
   FCollection := Collection;
   FSystemData := SystemData;
+
   FCollectionID := FSystemData.GetActiveCollectionInfo.ID;
+  Assert(FCollectionID > 0);
 
   PrepareData(Mode, FilterValue);
 end;
@@ -735,6 +738,7 @@ begin
   FCollection := Collection;
   FSystemData := SystemData;
   FCollectionID := FSystemData.GetActiveCollectionInfo.ID;
+  Assert(FCollectionID > 0);
 
   PrepareData(Mode, FilterValue);
 end;
@@ -823,6 +827,7 @@ begin
   FCollection := Collection;
   FSystemData := SystemData;
   FCollectionID := FSystemData.GetActiveCollectionInfo.ID;
+  Assert(FCollectionID > 0);
 
   PrepareData(Mode);
 end;

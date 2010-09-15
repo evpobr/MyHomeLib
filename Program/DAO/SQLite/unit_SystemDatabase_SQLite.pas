@@ -5,6 +5,7 @@ interface
 uses
   unit_SystemDatabase_Abstract,
   SQLiteWrap,
+  UserData,
   unit_Interfaces,
   unit_Globals,
   unit_Consts;
@@ -104,18 +105,18 @@ type
     ): Boolean; override;
     procedure DeleteCollection(CollectionID: Integer); override;
 
-//    procedure GetBookLibID(const BookKey: TBookKey; out ARes: string); override; // deprecated;
-//
+    procedure GetBookLibID(const BookKey: TBookKey; out ARes: string); override; // deprecated;
+
     function ActivateGroup(const ID: Integer): Boolean; override;
 
     procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord); override;
-//    procedure DeleteBook(const BookKey: TBookKey); override;
-//    procedure UpdateBook(const BookRecord: TBookRecord); override;
-//
-//    procedure SetExtra(const BookKey: TBookKey; extra: TBookExtra); override;
-//    procedure SetRate(const BookKey: TBookKey; Rate: Integer); override;
-//    procedure SetProgress(const BookKey: TBookKey; Progress: Integer); override;
-//    function GetReview(const BookKey: TBookKey): string; override;
+    procedure DeleteBook(const BookKey: TBookKey); override;
+    procedure UpdateBook(const BookRecord: TBookRecord); override;
+
+    procedure SetExtra(const BookKey: TBookKey; extra: TBookExtra); override;
+    procedure SetRate(const BookKey: TBookKey; Rate: Integer); override;
+    procedure SetProgress(const BookKey: TBookKey; Progress: Integer); override;
+    function GetReview(const BookKey: TBookKey): string; override;
 //    function SetReview(const BookKey: TBookKey; const Review: string): Integer; override;
 //    procedure SetLocal(const BookKey: TBookKey; Value: Boolean); override;
 //    procedure SetFileName(const BookKey: TBookKey; const FileName: string); override;
@@ -424,6 +425,8 @@ var
   query: TSQLiteQuery;
   stream: TStream;
 begin
+  Assert(CollectionID > 0);
+
   query := FDatabase.NewQuery(SQL_SELECT);
   try
     query.SetParam(0, CollectionID);
@@ -669,6 +672,24 @@ begin
     ActivateCollection(collectionID);
 end;
 
+procedure TSystemData_SQLite.GetBookLibID(const BookKey: TBookKey; out ARes: String);
+const
+  SQL_SELECT = 'SELECT LibID FROM Books WHERE BookID = ? ';
+var
+  query: TSQLiteQuery;
+begin
+  query := FDatabase.NewQuery(SQL_SELECT);
+  try
+    query.SetParam(0, BookKey.BookID);
+    query.Open;
+    Assert(not query.Eof);
+
+    ARes := IntToStr(query.FieldAsInt(0));
+  finally
+    FreeAndNil(query);
+  end;
+end;
+
 function TSystemData_SQLite.ActivateGroup(const ID: Integer): Boolean;
 const
   SQL_SELECT = 'SELECT GroupID FROM Groups WHERE GroupID = ? ';
@@ -806,6 +827,177 @@ begin
     end;
   finally
     FreeAndNil(collectionInfo);
+  end;
+end;
+
+procedure TSystemData_SQLite.DeleteBook(const BookKey: TBookKey);
+const
+  SQL_DELETE_FROM_BOOK_GROUPS: string = 'DELETE FROM BookGroups WHERE BookID = ? AND DatabaseID = ? ';
+  SQL_DELETE_FROM_BOOKS: string = 'DELETE FROM Books WHERE BookID = ? AND DatabaseID = ? ';
+var
+  query: TSQLiteQuery;
+begin
+  query := FDatabase.NewQuery(SQL_DELETE_FROM_BOOK_GROUPS);
+  try
+    query.SetParam(0, BookKey.BookID);
+    query.SetParam(1, BookKey.DatabaseID);
+    query.ExecSQL;
+  finally
+    FreeAndNil(query);
+  end;
+end;
+
+procedure TSystemData_SQLite.UpdateBook(const BookRecord: TBookRecord);
+const
+  SQL_UPDATE = 'UPDATE Books ' +
+    'SET LibID = ?, Title = ?, SeriesID = ?, SeqNumber = ?, UpdateDate = ?, ' + // 0 .. 4
+    'LibRate = ?, Lang = ?, Folder = ?, FileName = ?, InsideNo = ?, ' +         // 5 .. 9
+    'Ext = ?, BookSize = ?, Code = ?, IsLocal = ?, IsDeleted = ?, ' +           // 10 .. 14
+    'KeyWords = ?, Rate = ?, Progress = ?, Annotation = ?, Review = ?, ' +      // 15 .. 19
+    'ExtraInfo = ? ' +                                                          // 20
+    'WHERE BookID = ? DatabaseID = ? ';                                         // 21 .. 22
+var
+  stream: TStream;
+  writer: TWriter;
+  author: TAuthorData;
+  genre: TGenreData;
+  query: TSQLiteQuery;
+  exists: Boolean;
+begin
+  query := FDatabase.NewQuery(SQL_UPDATE);
+  try
+    query.SetParam(0, BookRecord.LibID);
+    query.SetParam(1, BookRecord.Title);
+    query.SetParam(2, BookRecord.SeriesID);
+    query.SetParam(3, BookRecord.SeqNumber);
+    query.SetParam(4, BookRecord.Date);
+    query.SetParam(5, BookRecord.LibRate);
+    query.SetParam(6, BookRecord.Lang);
+    query.SetParam(7, TPath.Combine(FActiveCollectionInfo.RootFolder, BookRecord.Folder));
+    query.SetParam(8, BookRecord.FileName);
+    query.SetParam(9, BookRecord.InsideNo);
+    query.SetParam(10, BookRecord.FileExt);
+    query.SetParam(11, BookRecord.Size);
+    query.SetParam(12, BookRecord.Code);
+    query.SetParam(13, BookRecord.IsLocal);
+    query.SetParam(14, BookRecord.IsDeleted);
+    query.SetParam(15, BookRecord.KeyWords);
+    query.SetParam(16, BookRecord.Rate);
+    query.SetParam(17, BookRecord.Progress);
+    query.SetBlobParam(18, BookRecord.Annotation);
+    query.SetBlobParam(19, BookRecord.Review);
+
+    stream := TMemoryStream.Create;
+    try
+      writer := TWriter.Create(stream, 4096);
+      try
+        writer.WriteString(BookRecord.Series);
+
+        writer.WriteListBegin;
+        for Author in BookRecord.Authors do
+        begin
+          writer.WriteString(Author.LastName);
+          writer.WriteString(Author.FirstName);
+          writer.WriteString(Author.MiddleName);
+          writer.WriteInteger(Author.AuthorID);
+        end;
+        writer.WriteListEnd;
+
+        writer.WriteListBegin;
+        for genre in BookRecord.Genres do
+        begin
+          writer.WriteString(genre.GenreCode);
+          writer.WriteString(genre.FB2GenreCode);
+          writer.WriteString(genre.GenreAlias);
+        end;
+        writer.WriteListEnd;
+      finally
+        FreeAndNil(writer);
+      end;
+      query.SetBlobParam(20, stream);
+    finally
+      stream.Free;
+    end;
+
+    query.SetParam(21, BookRecord.BookKey.BookID);
+    query.SetParam(22, BookRecord.BookKey.DatabaseID);
+
+    query.ExecSQL;
+  finally
+    FreeAndNil(query);
+  end;
+end;
+
+procedure TSystemData_SQLite.SetExtra(const BookKey: TBookKey; extra: TBookExtra);
+const
+  SQL_UPDATE = 'UPDATE Books Set LibRate = ?, Progress = ?, Review = ? WHERE BookID = ? AND DatabaseID = ? ';
+var
+  query: TSQLiteQuery;
+begin
+  query := FDatabase.NewQuery(SQL_UPDATE);
+  try
+    query.SetParam(0, extra.Rating);
+    query.SetParam(1, extra.Progress);
+    query.SetBlobParam(2, extra.Review);
+    query.SetParam(3, BookKey.BookID);
+    query.SetParam(4, BookKey.DatabaseID);
+    query.ExecSQL;
+  finally
+    FreeAndNil(query);
+  end;
+end;
+
+procedure TSystemData_SQLite.SetRate(const BookKey: TBookKey; Rate: Integer);
+const
+  SQL_UPDATE = 'UPDATE Books Set LibRate = ? WHERE BookID = ? AND DatabaseID = ? ';
+var
+  query: TSQLiteQuery;
+begin
+  query := FDatabase.NewQuery(SQL_UPDATE);
+  try
+    query.SetParam(0, Rate);
+    query.SetParam(1, BookKey.BookID);
+    query.SetParam(2, BookKey.DatabaseID);
+    query.ExecSQL;
+  finally
+    FreeAndNil(query);
+  end;
+end;
+
+procedure TSystemData_SQLite.SetProgress(const BookKey: TBookKey; Progress: Integer);
+const
+  SQL_UPDATE = 'UPDATE Books Set Progress = ? WHERE BookID = ? AND DatabaseID = ? ';
+var
+  query: TSQLiteQuery;
+begin
+  query := FDatabase.NewQuery(SQL_UPDATE);
+  try
+    query.SetParam(0, Progress);
+    query.SetParam(1, BookKey.BookID);
+    query.SetParam(2, BookKey.DatabaseID);
+    query.ExecSQL;
+  finally
+    FreeAndNil(query);
+  end;
+end;
+
+function TSystemData_SQLite.GetReview(const BookKey: TBookKey): string;
+const
+  SQL_SELECT = 'SELECT Review WHERE BookID = ? AND DatabaseID = ? ';
+var
+  query: TSQLiteQuery;
+begin
+  query := FDatabase.NewQuery(SQL_SELECT);
+  try
+    query.SetParam(0, BookKey.BookID);
+    query.SetParam(1, BookKey.DatabaseID);
+    query.Open;
+    if not query.Eof  then
+      Result := query.FieldAsBlobString(0)
+    else
+      Result := '';
+  finally
+    FreeAndNil(query);
   end;
 end;
 
