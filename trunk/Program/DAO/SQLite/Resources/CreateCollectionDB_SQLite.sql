@@ -9,7 +9,7 @@
 -- Created             04.09.2010
 -- Description
 --
--- Id: unit_Database_SQLite.pas 764 2010-09-15 14:01:35Z eg_ $
+-- $Id$
 --
 -- History
 --
