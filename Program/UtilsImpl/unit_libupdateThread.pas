@@ -47,7 +47,8 @@ uses
   unit_WorkerThread,
   unit_Database,
   unit_Interfaces,
-  unit_SystemDatabase;
+  unit_SystemDatabase,
+  unit_Logger;
 
 resourcestring
   rstrDownloadProgress = 'Загружено: %u%% из %u байт';
@@ -246,6 +247,7 @@ begin
       on E: Exception do
       begin
         Teletype(rstrUpdateFailed, tsError);
+        GetLogger.Log('TLibUpdateThread.WorkFunction ERROR', E.Message);
         DeleteFile(Settings.WorkPath + Settings.Updates.Items[i].UpdateFile);
       end;
     end;

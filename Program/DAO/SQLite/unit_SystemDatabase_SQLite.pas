@@ -500,7 +500,7 @@ end;
 procedure TSystemData_SQLite.UpdateCollectionInfo(const CollectionInfo: TCollectionInfo);
 const
 {$IFOPT D+}
-  SQL_SELECT = 'SELECT ID FROM Bases WHERE DatabaseID = ? ';
+  SQL_SELECT = 'SELECT DatabaseID FROM Bases WHERE DatabaseID = ? ';
 {$ENDIF}
   SQL_UPDATE = 'UPDATE Bases SET ' +
     'BaseName = ?, RootFolder = ?, DBFileName = ?, Notes = ?, CreationDate = ?, ' + // 0  .. 4

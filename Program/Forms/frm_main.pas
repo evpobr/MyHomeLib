@@ -989,6 +989,7 @@ uses
   unit_ExportToDevice,
   unit_Helpers,
   unit_Errors,
+  unit_Logger,
   frm_NCWizard,
   frm_editor,
   unit_SearchUtils,
@@ -2882,7 +2883,10 @@ var
   SavedCursor: TCursor;
   Data: PGenreData;
   FilterValue: TFilterValue;
+  logger: IIntervalLogger;
 begin
+  logger := GetIntervalLogger('TfrmMain.tvGenresChange', '');
+
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
