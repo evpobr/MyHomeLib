@@ -6072,26 +6072,32 @@ begin
       // загрузим книгу в стрим и отдадим его форме для чтения из него информации
       // сейчас мы грузим только fb2 или fbd, т к больше ничего разбирать не умеем
       //
-      try
-        bookStream := Data^.GetBookDescriptorStream;
+      if Data^.IsLocal then
+      begin
+        // Load FB2 info only for local files that can provide one
         try
-          frmBookDetails.FillBookInfo(Data^, bookStream)
-        finally
-          FreeAndNil(bookStream);
+          bookStream := Data^.GetBookDescriptorStream;
+          try
+            frmBookDetails.FillBookInfo(Data^, bookStream)
+          finally
+            FreeAndNil(bookStream);
+          end;
+        except
+          //
+          // Скорее всего произошла ошибка при чтении файла (не найден, а должен был быть)
+          // или при парсинге книги (загрузили какую-то ерунду).
+          // Покажем сообщение об ощибке и загрузим только библиотечную информацию
+          //
+          on e: Exception do
+          begin
+            if not (e is ENotSupportedException) then
+              MHLShowError(e.Message);
+            frmBookDetails.FillBookInfo(Data^, nil);
+          end;
         end;
-      except
-        //
-        // Скорее всего произошла ошибка при чтении файла (не найден, а должен был быть)
-        // или при парсинге книги (загрузили какую-то ерунду).
-        // Покажем сообщение об ощибке и загрузим только библиотечную информацию
-        //
-        on e: Exception do
-        begin
-          if not (e is ENotSupportedException) then
-            MHLShowError(e.Message);
-          frmBookDetails.FillBookInfo(Data^, nil);
-        end;
-      end;
+      end
+      else
+        frmBookDetails.FillBookInfo(Data^, nil);
 
       frmBookDetails.mmReview.ReadOnly := not ReviewEditable;
 
