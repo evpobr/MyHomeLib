@@ -1,3 +1,20 @@
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Author(s)           eg
+  *                     Nick Rymanov    nrymanov@gmail.com
+  * Created             04.09.2010
+  * Description
+  *
+  * $Id$
+  *
+  * History
+  *
+  ****************************************************************************** *)
+
 unit unit_SQLiteUtils;
 
 interface
@@ -11,38 +28,78 @@ implementation
 
 uses
   Windows,
-  unit_Globals,
   unit_Consts,
-  SysUtils;
+  SysUtils,
+  StrUtils;
 
-// Read provided resource file as a string list (split by ';')
+const
+  SQL_COMMENT = '--';
+  SCRIPT_NEXT = SQL_COMMENT + '@@';
+
+//
+// Read provided resource file as a string list (split by '--@@')
 // This is done as ExecSQL works with only one statement at a time
+//
 function ReadResourceAsStringList(const ResourceName: string): TStringList;
 var
-  ResourceStream: TStream;
-  Text: string;
+  rStream: TStream;
+  rScript: TStringList;
+  i: Integer;
+  strStatement: string;
 begin
-  ResourceStream := TResourceStream.Create(HInstance, ResourceName, RT_RCDATA);
+  Result := TStringList.Create;
   try
-    Result := TStringList.Create;
+    rStream := TResourceStream.Create(HInstance, ResourceName, RT_RCDATA);
+    try
+      rScript := TStringList.Create;
+      try
+        rScript.LoadFromStream(rStream);
 
-    // Load the file:
-    Result.LoadFromStream(ResourceStream);
+        strStatement := '';
+        for i := 0 to rScript.Count - 1 do
+        begin
+          //
+          // Пропустим пустые строки
+          //
+          if Trim(rScript[i]) = '' then
+            Continue;
 
-    // Clean up the text:
-    Text := Result.Text;
-    StrReplace(CRLF, ' ', Text);
-    StrReplace(LF, ' ', Text);
-    StrReplace('--', '@', Text);
+          //
+          // Нашли конец команды. Запомним и начнем следующий цикл.
+          //
+          if StartsText(SCRIPT_NEXT, rScript[i]) then
+          begin
+            if strStatement <> '' then
+              Result.Add(strStatement);
+            strStatement := '';
+            Continue;
+          end;
 
-    // Split by ';'
-    Result.Clear;
-    Result.StrictDelimiter := True; // so that spaces are ignored
-    Result.Delimiter := '@';
-    Result.DelimitedText := Text;
-  finally
-    FreeAndNil(ResourceStream);
+          //
+          // Пропустим коментарии
+          //
+          if StartsText(SQL_COMMENT, TrimLeft(rScript[i])) then
+            Continue;
+
+          strStatement := strStatement + rScript[i] + CRLF;
+        end;
+
+        //
+        // Последняя команда может не иметь маркера завершения.
+        //
+        if strStatement <> '' then
+          Result.Add(strStatement);
+      finally
+        rScript.Free;
+      end;
+    finally
+      rStream.Free;
+    end;
+  except
+    FreeAndNil(Result);
+    raise;
   end;
 end;
+
 
 end.

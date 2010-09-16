@@ -1,3 +1,19 @@
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Author(s)           eg
+  * Created             04.09.2010
+  * Description
+  *
+  * $Id$
+  *
+  * History
+  *
+  ****************************************************************************** *)
+
 unit unit_SystemDatabase_SQLite;
 
 interface
@@ -186,10 +202,17 @@ begin
   try
     StringList := ReadResourceAsStringList('CreateSystemDB_SQLite');
     try
-      for StructureDDL in StringList do
-      begin
-        if Trim(StructureDDL) <> '' then
-          ADatabase.ExecSQL(StructureDDL);
+      ADatabase.Start;
+      try
+        for StructureDDL in StringList do
+        begin
+          if Trim(StructureDDL) <> '' then
+            ADatabase.ExecSQL(StructureDDL);
+        end;
+        ADatabase.Commit;
+      except
+        ADatabase.Rollback;
+        raise;
       end;
     finally
       FreeAndNil(StringList);
@@ -464,7 +487,6 @@ begin
       finally
         FreeAndNil(stream);
       end;
-
     end
     else
     begin
@@ -477,7 +499,9 @@ end;
 
 procedure TSystemData_SQLite.UpdateCollectionInfo(const CollectionInfo: TCollectionInfo);
 const
+{$IFOPT D+}
   SQL_SELECT = 'SELECT ID FROM Bases WHERE ID = ? ';
+{$ENDIF}
   SQL_UPDATE = 'UPDATE Bases SET ' +
     'BaseName = ?, RootFolder = ?, DBFileName = ?, Notes = ?, CreationDate = ?, ' + // 0  .. 4
     'Version = ?, Code = ?, AllowDelete = ?, Settings = ?, URL = ?, ' +             // 5  .. 9
@@ -489,6 +513,7 @@ var
 begin
   Assert(CollectionInfo.ID > 0);
 
+{$IFOPT D+}
   query := FDatabase.NewQuery(SQL_SELECT);
   try
     query.SetParam(0, CollectionInfo.ID);
@@ -497,6 +522,7 @@ begin
   finally
     FreeAndNil(query);
   end;
+{$ENDIF}
 
   query := FDatabase.NewQuery(SQL_UPDATE);
   try
@@ -586,7 +612,6 @@ begin
   // Switch to the newly added collection:
   ActivateCollection(collectionID);
 end;
-
 
 function TSystemData_SQLite.FindCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer): Boolean;
 var
@@ -771,6 +796,9 @@ begin
         reader.ReadListBegin;
         while not reader.EndOfList do
         begin
+          //
+          // не полагаемся на порядок вычисления аргументов, т к важен порядок чтения строк
+          //
           Author.LastName := reader.ReadString;
           Author.FirstName := reader.ReadString;
           Author.MiddleName := reader.ReadString;
