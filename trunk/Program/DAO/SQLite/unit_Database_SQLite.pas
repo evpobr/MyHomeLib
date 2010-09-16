@@ -250,10 +250,17 @@ begin
   try
     StringList := ReadResourceAsStringList('CreateCollectionDB_SQLite');
     try
-      for StructureDDL in StringList do
-      begin
-        if Trim(StructureDDL) <> '' then
-          ADatabase.ExecSQL(StructureDDL);
+      ADatabase.Start;
+      try
+        for StructureDDL in StringList do
+        begin
+          if Trim(StructureDDL) <> '' then
+            ADatabase.ExecSQL(StructureDDL);
+        end;
+        ADatabase.Commit;
+      except
+        ADatabase.Rollback;
+        raise;
       end;
     finally
       FreeAndNil(StringList);
@@ -975,8 +982,8 @@ end;
 
 procedure TBookCollection_SQLite.SetStringProperty(const PropID: Integer; const Value: string);
 const
-  SQL_DELETE = 'DELETE FROM Settings WHERE ID = ?';
-  SQL_UPDATE = 'UPDATE Settings SET SettingValue = ? WHERE ID = ?';
+  SQL_DELETE = 'DELETE FROM Settings WHERE SettingID = ?';
+  SQL_UPDATE = 'UPDATE Settings SET SettingValue = ? WHERE SettingID = ?';
 var
   query: TSQLiteQuery;
 begin
