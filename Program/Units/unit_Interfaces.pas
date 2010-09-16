@@ -45,7 +45,7 @@ type
   ISystemData = interface
     ['{3896E4C6-8E2F-42F3-9FB2-91753258E9B7}']
 
-    function GetCollectionInfo(const CollectionID: Integer; out CollectionInfo: TCollectionInfo): Boolean;
+    function GetCollectionInfo(const CollectionID: Integer; CollectionInfo: TCollectionInfo): Boolean;
     procedure UpdateCollectionInfo(const CollectionInfo: TCollectionInfo);
 
     function ActivateCollection(CollectionID: Integer): Boolean;

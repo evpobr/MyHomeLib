@@ -19,6 +19,8 @@ unit unit_SystemDatabase_SQLite;
 interface
 
 uses
+  Windows,
+  Generics.Collections,
   unit_SystemDatabase_Abstract,
   SQLiteWrap,
   UserData,
@@ -97,7 +99,7 @@ type
     constructor Create(const DBUserFile: string);
     destructor Destroy; override;
 
-    function GetCollectionInfo(const CollectionID: Integer; out CollectionInfo: TCollectionInfo): Boolean; override;
+    function GetCollectionInfo(const CollectionID: Integer; CollectionInfo: TCollectionInfo): Boolean; override;
     procedure UpdateCollectionInfo(const CollectionInfo: TCollectionInfo); override;
 
     function ActivateCollection(CollectionID: Integer): Boolean; override;
@@ -174,6 +176,8 @@ type
 
   private
     FDatabase: TSQLiteDatabase;
+    FCollectionInfoCache: TObjectDictionary<Integer, TCollectionInfo>;
+    FLock: TRTLCriticalSection;
 
     procedure InternalClearGroup(GroupID: Integer; RemoveGroup: Boolean);
     function InternalFindGroup(const GroupName: string): Boolean; overload; inline;
@@ -419,11 +423,15 @@ end;
 constructor TSystemData_SQLite.Create(const DBUserFile: string);
 var
   collectionID: Integer;
+
 begin
   inherited Create;
 
   Assert(FileExists(DBUserFile));
   FDatabase := TSQLiteDatabase.Create(DBUserFile);
+
+  FCollectionInfoCache := TObjectDictionary<Integer, TCollectionInfo>.Create([doOwnsValues]);
+  InitializeCriticalSection(FLock);
 
   collectionID := FindFirstExistingCollectionID(1);
   if collectionID > 0 then
@@ -434,10 +442,12 @@ destructor TSystemData_SQLite.Destroy;
 begin
   inherited Destroy;
 
+  DeleteCriticalSection(FLock);
+  FreeAndNil(FCollectionInfoCache);
   FreeAndNil(FDatabase);
 end;
 
-function TSystemData_SQLite.GetCollectionInfo(const CollectionID: Integer; out CollectionInfo: TCollectionInfo): Boolean;
+function TSystemData_SQLite.GetCollectionInfo(const CollectionID: Integer; CollectionInfo: TCollectionInfo): Boolean;
 const
   SQL_SELECT = 'SELECT ' +
     'bs.BaseName, bs.RootFolder, bs.DBFileName, bs.Code, bs.CreationDate, ' + // 0  .. 4
@@ -447,53 +457,77 @@ const
 var
   query: TSQLiteQuery;
   stream: TStream;
+  tempCollectionInfo: TCollectionInfo;
 begin
   Assert(CollectionID > 0);
 
-  query := FDatabase.NewQuery(SQL_SELECT);
+  EnterCriticalSection(FLock);
   try
-    query.SetParam(0, CollectionID);
-    query.Open;
-    Result := not query.Eof;
-    if not query.Eof then
+    if FCollectionInfoCache.ContainsKey(CollectionID) then
     begin
-      CollectionInfo.ID := CollectionID;
-      CollectionInfo.Name := query.FieldAsString(0);
-      CollectionInfo.RootFolder := query.FieldAsString(1);
-      CollectionInfo.DBFileName := query.FieldAsString(2);
-      CollectionInfo.CollectionType := query.FieldAsInt(3); // code
-      CollectionInfo.CreationDate := query.FieldAsDateTime(4);
-
-      if query.FieldIsNull(5) then
-        CollectionInfo.Version := UNVERSIONED_COLLECTION
-      else
-        CollectionInfo.Version := query.FieldAsInt(5);
-
-      if query.FieldIsNull(6) then
-        CollectionInfo.AllowDelete := True
-      else
-        CollectionInfo.AllowDelete := query.FieldAsBoolean(6);
-
-      CollectionInfo.Notes := query.FieldAsString(7);
-      CollectionInfo.User := query.FieldAsString(8);
-      CollectionInfo.Password := query.FieldAsString(9);
-      CollectionInfo.URL := query.FieldAsString(10);
-      CollectionInfo.Script := query.FieldAsBlobString(11);
-
-      stream := query.FieldAsBlob(12);
-      try
-        Assert(Assigned(CollectionInfo.Settings));
-        CollectionInfo.Settings.LoadFromStream(stream);
-      finally
-        FreeAndNil(stream);
-      end;
+      Result := True; // found
+      CollectionInfo.InitFrom(FCollectionInfoCache[CollectionID]);
     end
     else
     begin
-      CollectionInfo.Clear;
+      // Not in cache yet, locate and load from DB
+      query := FDatabase.NewQuery(SQL_SELECT);
+      try
+        query.SetParam(0, CollectionID);
+        query.Open;
+        Result := not query.Eof;
+        if not query.Eof then
+        begin
+          CollectionInfo.ID := CollectionID;
+          CollectionInfo.Name := query.FieldAsString(0);
+          CollectionInfo.RootFolder := query.FieldAsString(1);
+          CollectionInfo.DBFileName := query.FieldAsString(2);
+          CollectionInfo.CollectionType := query.FieldAsInt(3); // code
+          CollectionInfo.CreationDate := query.FieldAsDateTime(4);
+
+          if query.FieldIsNull(5) then
+            CollectionInfo.Version := UNVERSIONED_COLLECTION
+          else
+            CollectionInfo.Version := query.FieldAsInt(5);
+
+          if query.FieldIsNull(6) then
+            CollectionInfo.AllowDelete := True
+          else
+            CollectionInfo.AllowDelete := query.FieldAsBoolean(6);
+
+          CollectionInfo.Notes := query.FieldAsString(7);
+          CollectionInfo.User := query.FieldAsString(8);
+          CollectionInfo.Password := query.FieldAsString(9);
+          CollectionInfo.URL := query.FieldAsString(10);
+          CollectionInfo.Script := query.FieldAsBlobString(11);
+
+          stream := query.FieldAsBlob(12);
+          try
+            Assert(Assigned(CollectionInfo.Settings));
+            CollectionInfo.Settings.LoadFromStream(stream);
+          finally
+            FreeAndNil(stream);
+          end;
+        end
+        else
+        begin
+          CollectionInfo.Clear;
+        end;
+      finally
+        FreeAndNil(query);
+      end;
+
+      tempCollectionInfo := TCollectionInfo.Create();
+      try
+        tempCollectionInfo.InitFrom(CollectionInfo);
+        FCollectionInfoCache.Add(CollectionID, tempCollectionInfo);
+      except
+        FreeAndNil(tempCollectionInfo); // free only if didn't pass reference to the map
+        raise;
+      end;
     end;
   finally
-    FreeAndNil(query);
+    LeaveCriticalSection(FLock);
   end;
 end;
 
@@ -510,6 +544,7 @@ const
 var
   query: TSQLiteQuery;
   stream: TStream;
+  tempCollectionInfo: TCollectionInfo;
 begin
   Assert(CollectionInfo.ID > 0);
 
@@ -552,6 +587,22 @@ begin
   finally
     FreeAndNil(query);
   end;
+
+  EnterCriticalSection(FLock);
+  try
+    tempCollectionInfo := TCollectionInfo.Create();
+    try
+      tempCollectionInfo.InitFrom(CollectionInfo);
+      FCollectionInfoCache.Remove(tempCollectionInfo.ID);
+      FCollectionInfoCache.Add(tempCollectionInfo.ID, tempCollectionInfo);
+    except
+      FreeAndNil(tempCollectionInfo);
+      raise;
+    end;
+  finally
+    LeaveCriticalSection(FLock);
+  end;
+
 end;
 
 function TSystemData_SQLite.ActivateCollection(CollectionID: Integer): Boolean;

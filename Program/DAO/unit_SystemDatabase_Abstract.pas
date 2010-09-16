@@ -34,7 +34,7 @@ type
     destructor Destroy; override;
 
   public // virtual
-    function GetCollectionInfo(const CollectionID: Integer; out CollectionInfo: TCollectionInfo): Boolean; virtual; abstract;
+    function GetCollectionInfo(const CollectionID: Integer; CollectionInfo: TCollectionInfo): Boolean; virtual; abstract;
     procedure UpdateCollectionInfo(const CollectionInfo: TCollectionInfo); virtual; abstract;
 
     function ActivateCollection(CollectionID: Integer): Boolean; virtual; abstract;

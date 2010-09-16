@@ -170,7 +170,7 @@ type
     destructor Destroy; override;
 
     function ActivateCollection(CollectionID: Integer): Boolean; override;
-    function GetCollectionInfo(const CollectionID: Integer; out CollectionInfo: TCollectionInfo): Boolean; override;
+    function GetCollectionInfo(const CollectionID: Integer; CollectionInfo: TCollectionInfo): Boolean; override;
     procedure UpdateCollectionInfo(const CollectionInfo: TCollectionInfo); override;
 
     procedure RegisterCollection(
@@ -592,7 +592,7 @@ begin
   ActivateCollection(tblBasesID.Value);
 end;
 
-function TSystemData_ABS.GetCollectionInfo(const CollectionID: Integer; out CollectionInfo: TCollectionInfo): Boolean;
+function TSystemData_ABS.GetCollectionInfo(const CollectionID: Integer; CollectionInfo: TCollectionInfo): Boolean;
 var
   Stream: TABSBlobStream;
 begin
