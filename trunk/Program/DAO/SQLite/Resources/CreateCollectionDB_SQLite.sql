@@ -15,60 +15,60 @@
 --
 -------------------------------------------------------------------------------
 
-DROP TABLE IF EXISTS Settings
+DROP TABLE IF EXISTS Settings;
 --@@
 
-DROP TABLE IF EXISTS Series
+DROP TABLE IF EXISTS Series;
 --@@
 
-DROP TABLE IF EXISTS Genres
+DROP TABLE IF EXISTS Genres;
 --@@
 
-DROP TABLE IF EXISTS Authors
+DROP TABLE IF EXISTS Authors;
 --@@
 
-DROP TABLE IF EXISTS Books
+DROP TABLE IF EXISTS Books;
 --@@
 
-DROP TABLE IF EXISTS Genre_List
+DROP TABLE IF EXISTS Genre_List;
 --@@
 
-DROP TABLE IF EXISTS Author_List
+DROP TABLE IF EXISTS Author_List;
 --@@
 
 CREATE TABLE Settings (
   SettingID    INTEGER NOT NULL PRIMARY KEY,
   SettingValue BLOB
-)
+);
 --@@
 
 CREATE TABLE Series (
   SeriesID          INTEGER     NOT NULL                       PRIMARY KEY AUTOINCREMENT,
   SeriesTitle       VARCHAR(80) NOT NULL COLLATE SYSTEM_NOCASE UNIQUE,
   SearchSeriesTitle VARCHAR(80)          COLLATE NOCASE
-)
+);
 --@@
 
-CREATE INDEX IXSeries_Title ON Series (SeriesTitle)
+CREATE INDEX IXSeries_Title ON Series (SeriesTitle);
 --@@
 
-CREATE INDEX IXSeries_SearchSeriesTitle ON Series (SearchSeriesTitle)
+CREATE INDEX IXSeries_SearchSeriesTitle ON Series (SearchSeriesTitle);
 --@@
 
 CREATE TRIGGER TRSeries_AI AFTER INSERT ON Series
   BEGIN
-    UPDATE Series 
+    UPDATE Series
     SET SearchSeriesTitle = UPPER(NEW.SeriesTitle)
     WHERE SeriesID = NEW.SeriesID;
-  END
+  END;
 --@@
 
 CREATE TRIGGER TRSeries_AU AFTER UPDATE ON Series
   BEGIN
-    UPDATE Series 
+    UPDATE Series
     SET SearchSeriesTitle = UPPER(NEW.SeriesTitle)
     WHERE SeriesID = NEW.SeriesID;
-  END
+  END;
 --@@
 
 CREATE TABLE Genres (
@@ -76,16 +76,16 @@ CREATE TABLE Genres (
   ParentCode VARCHAR(20)          COLLATE NOCASE,
   FB2Code    VARCHAR(20)          COLLATE NOCASE,
   GenreAlias VARCHAR(50) NOT NULL COLLATE SYSTEM_NOCASE
-)
+);
 --@@
 
-CREATE UNIQUE INDEX IXGenres_ParentCode_GenreCode ON Genres (ParentCode, GenreCode)
+CREATE UNIQUE INDEX IXGenres_ParentCode_GenreCode ON Genres (ParentCode, GenreCode);
 --@@
 
-CREATE INDEX IXGenres_FB2Code ON Genres (FB2Code)
+CREATE INDEX IXGenres_FB2Code ON Genres (FB2Code);
 --@@
 
-CREATE INDEX IXGenres_GenreAlias ON Genres (GenreAlias)
+CREATE INDEX IXGenres_GenreAlias ON Genres (GenreAlias);
 --@@
 
 CREATE TABLE Authors (
@@ -94,13 +94,13 @@ CREATE TABLE Authors (
   FirstName  VARCHAR(128)          COLLATE SYSTEM_NOCASE,
   MiddleName VARCHAR(128)          COLLATE SYSTEM_NOCASE,
   SearchName VARCHAR(512)          COLLATE NOCASE
-)
+);
 --@@
 
-CREATE INDEX IXAuthors_FullName ON Authors (LastName, FirstName, MiddleName)
+CREATE INDEX IXAuthors_FullName ON Authors (LastName, FirstName, MiddleName);
 --@@
 
-CREATE INDEX IXAuthors_SearchName ON Authors (SearchName)
+CREATE INDEX IXAuthors_SearchName ON Authors (SearchName);
 --@@
 
 CREATE TRIGGER TRAuthors_AI AFTER INSERT ON Authors
@@ -108,15 +108,15 @@ CREATE TRIGGER TRAuthors_AI AFTER INSERT ON Authors
     UPDATE Authors
     SET SearchName = UPPER(NEW.LastName) || CASE WHEN IFNULL(NEW.FirstName,'')='' THEN '' ELSE ' ' END || UPPER(IFNULL(NEW.FirstName, '')) || CASE WHEN IFNULL(NEW.MiddleName,'') = '' THEN '' ELSE ' ' END || UPPER(IFNULL(NEW.MiddleName, ''))
     WHERE AuthorID = NEW.AuthorID ;
-  END
+  END;
 --@@
 
 CREATE TRIGGER TRAuthors_AU AFTER UPDATE ON Authors
   BEGIN
-    UPDATE Authors 
+    UPDATE Authors
     SET SearchName = UPPER(NEW.LastName) || CASE WHEN IFNULL(NEW.FirstName,'')='' THEN '' ELSE ' ' END || UPPER(IFNULL(NEW.FirstName, '')) || CASE WHEN IFNULL(NEW.MiddleName,'') = '' THEN '' ELSE ' ' END || UPPER(IFNULL(NEW.MiddleName, ''))
     WHERE AuthorID = NEW.AuthorID ;
-  END
+  END;
 --@@
 
 CREATE TABLE Books (
@@ -148,61 +148,61 @@ CREATE TABLE Books (
   SearchExt        VARCHAR(10)           COLLATE NOCASE,
   SearchKeyWords   VARCHAR(255)          COLLATE NOCASE,
   SearchAnnotation VARCHAR(4096)         COLLATE NOCASE
-)
+);
 --@@
 
-CREATE INDEX IXBooks_SeriesID_SeqNumber ON Books (SeriesID, SeqNumber)
+CREATE INDEX IXBooks_SeriesID_SeqNumber ON Books (SeriesID, SeqNumber);
 --@@
 
-CREATE INDEX IXBooks_SeriesID_IsDeleted_IsLocal ON Books (SeriesID, IsDeleted, IsLocal)
+CREATE INDEX IXBooks_SeriesID_IsDeleted_IsLocal ON Books (SeriesID, IsDeleted, IsLocal);
 --@@
 
-CREATE INDEX IXBooks_Title ON Books (Title)
+CREATE INDEX IXBooks_Title ON Books (Title);
 --@@
 
-CREATE INDEX IXBooks_FileName ON Books (FileName)
+CREATE INDEX IXBooks_FileName ON Books (FileName);
 --@@
 
-CREATE INDEX IXBooks_Folder ON Books (Folder)
+CREATE INDEX IXBooks_Folder ON Books (Folder);
 --@@
 
-CREATE INDEX IXBooks_IsDeleted ON Books (IsDeleted)
+CREATE INDEX IXBooks_IsDeleted ON Books (IsDeleted);
 --@@
 
-CREATE INDEX IXBooks_UpdateDate ON Books (UpdateDate)
+CREATE INDEX IXBooks_UpdateDate ON Books (UpdateDate);
 --@@
 
-CREATE INDEX IXBooks_IsLocal ON Books (IsLocal)
+CREATE INDEX IXBooks_IsLocal ON Books (IsLocal);
 --@@
 
-CREATE INDEX IXBooks_LibID ON Books (LibID)
+CREATE INDEX IXBooks_LibID ON Books (LibID);
 --@@
 
-CREATE INDEX IXBooks_KeyWords ON Books (KeyWords)
+CREATE INDEX IXBooks_KeyWords ON Books (KeyWords);
 --@@
 
-CREATE INDEX IXBooks_BookID_IsDeleted_IsLocal ON Books (BookID, IsDeleted, IsLocal)
+CREATE INDEX IXBooks_BookID_IsDeleted_IsLocal ON Books (BookID, IsDeleted, IsLocal);
 --@@
 
-CREATE INDEX IXBooks_SearchTitle ON Books (SearchTitle)
+CREATE INDEX IXBooks_SearchTitle ON Books (SearchTitle);
 --@@
 
-CREATE INDEX IXBooks_SearchLang ON Books (SearchLang)
+CREATE INDEX IXBooks_SearchLang ON Books (SearchLang);
 --@@
 
-CREATE INDEX IXBooks_SearchFolder ON Books (SearchFolder)
+CREATE INDEX IXBooks_SearchFolder ON Books (SearchFolder);
 --@@
 
-CREATE INDEX IXBooks_SearchFileName ON Books (SearchFileName)
+CREATE INDEX IXBooks_SearchFileName ON Books (SearchFileName);
 --@@
 
-CREATE INDEX IXBooks_SearchExt ON Books (SearchExt)
+CREATE INDEX IXBooks_SearchExt ON Books (SearchExt);
 --@@
 
-CREATE INDEX IXBooks_SearchKeyWords ON Books (SearchKeyWords)
+CREATE INDEX IXBooks_SearchKeyWords ON Books (SearchKeyWords);
 --@@
 
-CREATE INDEX IXBooks_SearchAnnotation ON Books (SearchAnnotation)
+CREATE INDEX IXBooks_SearchAnnotation ON Books (SearchAnnotation);
 --@@
 
 CREATE TRIGGER TRBooks_AI AFTER INSERT ON Books
@@ -217,8 +217,8 @@ CREATE TRIGGER TRBooks_AI AFTER INSERT ON Books
       SearchKeyWords   = UPPER(NEW.KeyWords),
       SearchAnnotation = UPPER(NEW.Annotation)
     WHERE
-      BookID = NEW.BookID ;
-  END
+      BookID = NEW.BookID;
+  END;
 --@@
 
 CREATE TRIGGER TRBooks_AU AFTER UPDATE OF Title, Lang, Folder, FileName, Ext, KeyWords, Annotation ON Books
@@ -233,8 +233,8 @@ CREATE TRIGGER TRBooks_AU AFTER UPDATE OF Title, Lang, Folder, FileName, Ext, Ke
       SearchKeyWords   = UPPER(NEW.KeyWords),
       SearchAnnotation = UPPER(NEW.Annotation)
     WHERE
-      BookID = NEW.BookID ;
-  END
+      BookID = NEW.BookID;
+  END;
 --@@
 
 CREATE TRIGGER TRBooks_BD BEFORE DELETE ON Books
@@ -243,7 +243,7 @@ CREATE TRIGGER TRBooks_BD BEFORE DELETE ON Books
     DELETE FROM Author_List WHERE BookID = OLD.BookID;
     DELETE FROM Series WHERE SeriesID IN (SELECT b.SeriesID FROM Books b WHERE  b.SeriesID = OLD.SeriesID GROUP BY b.SeriesID HAVING COUNT(b.SeriesID) <= 1);
     DELETE FROM Authors WHERE NOT AuthorID in (SELECT DISTINCT al.AuthorID FROM Author_List al);
-  END
+  END;
 --@@
 
 CREATE TABLE Genre_List (
@@ -251,20 +251,19 @@ CREATE TABLE Genre_List (
   BookID    INTEGER     NOT NULL,
 
   CONSTRAINT "PKGenreList" PRIMARY KEY (BookID, GenreCode)
-)
+);
 --@@
 
-CREATE INDEX IXGenreList_GenreCode_BookID ON Genre_List (GenreCode, BookID)
+CREATE INDEX IXGenreList_GenreCode_BookID ON Genre_List (GenreCode, BookID);
 --@@
-
 
 CREATE TABLE Author_List (
   AuthorID INTEGER NOT NULL,
   BookID   INTEGER NOT NULL,
 
   CONSTRAINT "PKAuthorList" PRIMARY KEY (BookID, AuthorID)
-)
+);
 --@@
 
-CREATE INDEX IXAuthorList_AuthorID_BookID ON Author_List (AuthorID, BookID)
+CREATE INDEX IXAuthorList_AuthorID_BookID ON Author_List (AuthorID, BookID);
 --@@

@@ -406,7 +406,7 @@ end;
 procedure TSystemData_SQLite.TCollectionInfoIteratorImpl.PrepareData;
 const
   SQL_COUNT = 'SELECT COUNT(*) FROM Bases b ';
-  SQL_ROWS = 'SELECT b.ID FROM Bases b ';
+  SQL_ROWS = 'SELECT b.DatabaseID FROM Bases b ';
 begin
   FCount := FUser.FDatabase.NewQuery(SQL_COUNT);
 
@@ -443,7 +443,7 @@ const
     'bs.BaseName, bs.RootFolder, bs.DBFileName, bs.Code, bs.CreationDate, ' + // 0  .. 4
     'bs.Version, bs.AllowDelete, bs.Notes, bs.LibUser, bs.LibPassword, ' +    // 5  .. 9
     'bs.URL, bs.ConnectionScript, bs.Settings ' +                             // 10 .. 12
-    'FROM Bases bs WHERE bs.ID = ?';
+    'FROM Bases bs WHERE bs.DatabaseID = ?';
 var
   query: TSQLiteQuery;
   stream: TStream;
@@ -500,13 +500,13 @@ end;
 procedure TSystemData_SQLite.UpdateCollectionInfo(const CollectionInfo: TCollectionInfo);
 const
 {$IFOPT D+}
-  SQL_SELECT = 'SELECT ID FROM Bases WHERE ID = ? ';
+  SQL_SELECT = 'SELECT ID FROM Bases WHERE DatabaseID = ? ';
 {$ENDIF}
   SQL_UPDATE = 'UPDATE Bases SET ' +
     'BaseName = ?, RootFolder = ?, DBFileName = ?, Notes = ?, CreationDate = ?, ' + // 0  .. 4
     'Version = ?, Code = ?, AllowDelete = ?, Settings = ?, URL = ?, ' +             // 5  .. 9
     'LibUser = ?, LibPassword = ?, ConnectionScript = ? ' +                         // 10 .. 12
-    'WHERE ID = ? ';                                                                // 13
+    'WHERE DatabaseID = ? ';                                                        // 13
 var
   query: TSQLiteQuery;
   stream: TStream;
@@ -653,35 +653,10 @@ end;
 
 procedure TSystemData_SQLite.DeleteCollection(CollectionID: Integer);
 const
-  DELETE_REL_QUERY = 'DELETE FROM BookGroups WHERE DatabaseID = ? ';
-  DELETE_BOOKS_QUERY = 'DELETE FROM Books WHERE DatabaseID = ? ';
-  DELETE_BASES_QUERY = 'DELETE FROM Bases WHERE ID = ? ';
+  DELETE_BASES_QUERY = 'DELETE FROM Bases WHERE DatabaseID = ? ';
 var
   query: TSQLiteQuery;
 begin
-  //
-  // 1. Удалить все книги этой коллекции из групп
-  // 2. Удалить коллекцию из списка коллекций
-  //
-
-  query := FDatabase.NewQuery(DELETE_REL_QUERY);
-  try
-    // Delete books from groups by DatabaseID:
-    query.SetParam(0, CollectionID);
-    query.ExecSQL;
-  finally
-    FreeAndNil(query);
-  end;
-
-  query := FDatabase.NewQuery(DELETE_BOOKS_QUERY);
-  try
-    // Delete books from groups by DatabaseID:
-    query.SetParam(0, CollectionID);
-    query.ExecSQL;
-  finally
-    FreeAndNil(query);
-  end;
-
   query := FDatabase.NewQuery(DELETE_BASES_QUERY);
   try
     // Delete books from groups by DatabaseID:
@@ -1259,8 +1234,14 @@ begin
       query.SetParam(15, BookRecord.KeyWords);
       query.SetParam(16, BookRecord.Rate);
       query.SetParam(17, BookRecord.Progress);
-      query.SetBlobParam(18, BookRecord.Annotation);
-      query.SetBlobParam(19, BookRecord.Review);
+      if BookRecord.Annotation = '' then
+        query.SetNullParam(18)
+      else
+        query.SetParam(18, BookRecord.Annotation);
+      if BookRecord.Review = '' then
+        query.SetNullParam(19)
+      else
+        query.SetBlobParam(19, BookRecord.Review);
 
       stream := TMemoryStream.Create;
       try
