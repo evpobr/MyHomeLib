@@ -259,6 +259,16 @@ begin
     raise ESQLiteException.CreateFmt(c_failopen, [FileName, s]);
   end;
 
+  //
+  // !!!!!!!! TEST ONLY !!!!!!!!
+  //
+  ExecSQL('PRAGMA synchronous = NORMAL');
+  ExecSQL('PRAGMA cache_size = 16000');
+  ExecSQL('PRAGMA count_changes = 0');
+  //
+  // !!!!!!!! TEST ONLY !!!!!!!!
+  //
+
   RegisterSystemCollateAndFunc;
 end;
 
