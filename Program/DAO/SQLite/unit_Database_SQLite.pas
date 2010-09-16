@@ -1540,7 +1540,7 @@ begin
       if BookRecord.Annotation = '' then
         query.SetNullParam(19)
       else
-        query.SetParam(19, LeftStr(BookRecord.Annotation, ANNOTATION_SIZE_LIMIT));
+        query.SetParam(19, BookRecord.Annotation);
 
       query.ExecSQL;
 
