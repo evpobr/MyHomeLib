@@ -108,7 +108,7 @@ end;
 
 procedure TfrmMain.btnExplainClick(Sender: TObject);
 begin
-  DoSelect('EXPLAIN ' + edQuery.Lines.Text);
+  DoSelect('EXPLAIN QUERY PLAN ' + edQuery.Lines.Text);
 end;
 
 procedure TfrmMain.btnOpenClick(Sender: TObject);
