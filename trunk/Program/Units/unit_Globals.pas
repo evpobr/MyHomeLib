@@ -274,6 +274,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
+    constructor InitFrom(const Source: TCollectionInfo); overload;
     procedure Clear;
 
     property ID: Integer read FID write FID;
@@ -918,6 +919,38 @@ begin
   FSettings := TStringList.Create;
 
   Clear;
+end;
+
+constructor TCollectionInfo.InitFrom(const Source: TCollectionInfo);
+var
+  stream: TStream;
+begin
+  Assert(Assigned(Source));
+
+  FID := Source.ID;
+  FName := Source.Name;
+  FRootFolder := Source.RootFolder;
+  FDBFileName := Source.DBFileName;
+  FNotes := Source.Notes;
+  FUser := Source.User;
+  FPassword := Source.Password;
+  FCreationDate := Source.CreationDate;
+  FVersion := Source.Version;
+  FCollectionType := Source.CollectionType;
+  FAllowDelete := Source.AllowDelete;
+  FURL := Source.URL;
+  FScript := Source.Script;
+
+  if Assigned(Source.Settings) then
+  begin
+    stream := TMemoryStream.Create;
+    try
+      Source.Settings.SaveToStream(stream);
+      FSettings.LoadFromStream(stream);
+    finally
+      FreeAndNil(stream);
+    end;
+  end;
 end;
 
 destructor TCollectionInfo.Destroy;
