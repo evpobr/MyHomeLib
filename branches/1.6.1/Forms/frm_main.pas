@@ -191,7 +191,6 @@ type
     mmiScripts: TMenuItem;
     miSyncOnline: TMenuItem;
     btnSwitchTreeMode: TToolButton;
-    tbtnWizard: TToolButton;
     tbtnShowLocalOnly: TToolButton;
     tbtnDownloadList_Add: TToolButton;
     N1: TMenuItem;
@@ -2103,6 +2102,9 @@ begin
   //------------------------------------------------------------------------------
   //  Проверка обновлений
   //------------------------------------------------------------------------------
+  if not frmMain.Active then Exit;
+
+
   tmrCheckUpdates.Enabled := False;
 
   spStatus.Caption := 'Проверка обновлений ...';
@@ -4237,7 +4239,7 @@ begin
               if (ExtractFileExt(Folder) = ZIP_EXTENSION) then
                 DeleteFile(FCollectionRoot + Folder)
               else
-                DeleteFile(FCollectionRoot + Folder + FileName + Ext);
+                DeleteFile(FCollectionRoot + Folder + FileName);
             end;
           end;
           ALibrary.BeginBulkOperation;
