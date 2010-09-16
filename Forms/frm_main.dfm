@@ -293,30 +293,22 @@ object frmMain: TfrmMain
       ImageIndex = 10
       Style = tbsSeparator
     end
-    object tbtnWizard: TToolButton
+    object tbtnSelect: TToolButton
       Left = 260
       Top = 0
-      Hint = #1052#1072#1089#1090#1077#1088' '#1076#1086#1073#1072#1074#1083#1077#1085#1080#1103' '#1082#1086#1083#1083#1077#1082#1094#1080#1081
-      Caption = 'tbtnWizard'
-      ImageIndex = 5
-      ParentShowHint = False
-      ShowHint = True
-      OnClick = ShowNewCollectionWizard
-    end
-    object tbtnSelect: TToolButton
-      Left = 301
-      Top = 0
-      Hint = #1042#1099#1073#1088#1072#1090#1100' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
+      Hint = #1057#1086#1079#1076#1072#1090#1100' / '#1042#1099#1073#1088#1072#1090#1100#13#10#1082#1086#1083#1083#1077#1082#1094#1080#1102
       Caption = #1042#1099#1073#1088#1072#1090#1100' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
       DropdownMenu = pmCollection
       EnableDropdown = True
-      ImageIndex = 6
+      ImageIndex = 5
       Indeterminate = True
       ParentShowHint = False
       ShowHint = True
+      Style = tbsDropDown
+      OnClick = ShowNewCollectionWizard
     end
     object ToolButton3: TToolButton
-      Left = 342
+      Left = 316
       Top = 0
       Width = 20
       Caption = 'ToolButton3'
@@ -324,7 +316,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object BtnFav_add: TToolButton
-      Left = 362
+      Left = 336
       Top = 0
       Hint = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1080#1079#1073#1088#1072#1085#1085#1086#1077
       Caption = 'BtnFav_add'
@@ -334,7 +326,7 @@ object frmMain: TfrmMain
       OnClick = BtnFav_addClick
     end
     object ToolButton7: TToolButton
-      Left = 418
+      Left = 392
       Top = 0
       Width = 20
       Caption = 'ToolButton7'
@@ -342,7 +334,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbSelectAll: TToolButton
-      Left = 438
+      Left = 412
       Top = 0
       Hint = #1054#1090#1084#1077#1090#1080#1090#1100' '#1074#1089#1077
       Caption = 'tbSelectAll'
@@ -350,7 +342,7 @@ object frmMain: TfrmMain
       OnClick = tbSelectAllClick
     end
     object tbCollapse: TToolButton
-      Left = 479
+      Left = 453
       Top = 0
       Hint = #1056#1072#1079#1074#1077#1088#1085#1091#1090#1100'/'#1057#1074#1077#1088#1085#1091#1090#1100' '#1089#1087#1080#1089#1086#1082
       Caption = 'tbCollapse'
@@ -358,7 +350,7 @@ object frmMain: TfrmMain
       OnClick = tbCollapseClick
     end
     object btnRefreshCollection: TToolButton
-      Left = 520
+      Left = 494
       Top = 0
       Hint = #1054#1073#1085#1086#1074#1080#1090#1100' '#1089#1087#1080#1089#1086#1082
       Caption = 'btnRefreshCollection'
@@ -366,7 +358,7 @@ object frmMain: TfrmMain
       OnClick = miRefreshClick
     end
     object ToolButton1: TToolButton
-      Left = 561
+      Left = 535
       Top = 0
       Width = 20
       Caption = 'ToolButton1'
@@ -374,7 +366,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object btnSwitchTreeMode: TToolButton
-      Left = 581
+      Left = 555
       Top = 0
       Hint = #1055#1077#1088#1077#1082#1083#1102#1095#1080#1090#1100' '#1074' '#1088#1077#1078#1080#1084' "'#1058#1072#1073#1083#1080#1094#1072'"'
       Caption = 'btnSwitchTreeMode'
@@ -382,7 +374,7 @@ object frmMain: TfrmMain
       OnClick = btnSwitchTreeModeClick
     end
     object tbtnShowDeleted: TToolButton
-      Left = 622
+      Left = 596
       Top = 0
       Hint = #1057#1082#1088#1099#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077' '#1085#1072' lib.rus.ec'
       Caption = 'tbtnShowDeleted'
@@ -390,7 +382,7 @@ object frmMain: TfrmMain
       OnClick = tbtnShowDeletedClick
     end
     object tbtnShowLocalOnly: TToolButton
-      Left = 663
+      Left = 637
       Top = 0
       Hint = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1090#1086#1083#1100#1082#1086' '#1089#1082#1072#1095#1072#1085#1085#1099#1077' '#1082#1085#1080#1075#1080
       Caption = 'tbtnShowLocalOnly'
@@ -398,7 +390,7 @@ object frmMain: TfrmMain
       OnClick = tbtnShowLocalOnlyClick
     end
     object tbtnShowCover: TToolButton
-      Left = 704
+      Left = 678
       Top = 0
       Hint = #1055#1086#1082#1072#1079#1072#1090#1100'/'#1057#1082#1088#1099#1090#1100' '#1086#1073#1083#1086#1078#1082#1091
       Caption = 'tbtnShowCover'
@@ -406,7 +398,7 @@ object frmMain: TfrmMain
       OnClick = tbtnShowCoverClick
     end
     object ToolButton5: TToolButton
-      Left = 745
+      Left = 719
       Top = 0
       Width = 21
       Caption = 'ToolButton5'
@@ -414,7 +406,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnSettings: TToolButton
-      Left = 766
+      Left = 740
       Top = 0
       Hint = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
       Caption = 'tbtnSettings'
@@ -422,7 +414,7 @@ object frmMain: TfrmMain
       OnClick = miSettingsClick
     end
     object tbtnHelp: TToolButton
-      Left = 807
+      Left = 781
       Top = 0
       Hint = #1057#1087#1088#1072#1074#1082#1072
       Caption = 'tbtnHelp'
@@ -802,6 +794,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 1
@@ -2271,6 +2264,7 @@ object frmMain: TfrmMain
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        MarginMin = 150
         ParentFont = False
         SizeBarWidth = 5
         TabOrder = 0
@@ -3551,7 +3545,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 312
     Bitmap = {
-      494C01011B000002180220002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C01011B0000021C0220002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -7259,7 +7253,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 256
     Bitmap = {
-      494C010125002700DC0110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010125002700E00110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000040000000A0000000010020000000000000A0
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -8618,7 +8612,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 368
     Bitmap = {
-      494C01010B003801D80110001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C01010B003801DC0110001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -9148,7 +9142,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 480
     Bitmap = {
-      494C010118001A00DC0120002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C010118001A00E00120002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12855,7 +12849,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 424
     Bitmap = {
-      494C010112004800DC0110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010112004800E00110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000005000000001002000000000000050
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
