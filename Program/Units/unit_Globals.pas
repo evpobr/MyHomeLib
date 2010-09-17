@@ -921,8 +921,6 @@ begin
 end;
 
 procedure TCollectionInfo.Assign(Source: TPersistent);
-var
-  Other: TCollectionInfo;
 begin
   if Source is TCollectionInfo then
   begin

@@ -18,7 +18,6 @@ uses
   Forms,
   Dialogs,
   Windows,
-  ABSMain,
   unit_Globals;
 
 procedure ExportToDevice(

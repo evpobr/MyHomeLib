@@ -578,7 +578,6 @@ begin
 
     Result := True;
   except
-    //on e: EABSException do
     on e: Exception do
     begin
       FProgressPage.ShowTeletype(e.Message, tsError);

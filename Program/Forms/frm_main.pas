@@ -40,7 +40,6 @@ uses
   ImgList,
   Clipbrd,
   Menus,
-  ABSMain,
   ShellAPI,
   unit_Globals,
   unit_Interfaces,

@@ -454,7 +454,7 @@ end;
 
 class function TArrayUtils.Join(const Values: array of string; const itemDelimeter: string): string;
 var
-  i, L, R: Integer;
+  L, R: Integer;
 begin
   if Length(Values) = 0 then
     Exit;

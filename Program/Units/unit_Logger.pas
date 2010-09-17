@@ -8,7 +8,7 @@
   * Created             31.08.2010
   * Description         Базовая поддержка записи сообщений в лог-файл
   *
-  * $Id: unit_Consts.pas 657 2010-08-29 02:07:36Z eg_ $
+  * $Id$
   *
   * History
   *

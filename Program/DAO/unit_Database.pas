@@ -18,8 +18,6 @@
 
 unit unit_Database;
 
-{$DEFINE USE_SQLITE}
-
 interface
 
 uses
@@ -40,7 +38,6 @@ uses
   Generics.Collections,
   SysUtils,
   unit_Settings,
-  unit_Database_ABS,
   unit_Database_SQLite,
   unit_SystemDatabase;
 
@@ -84,11 +81,7 @@ begin
   else
     usedSystemData := GetSystemData;
 
-{$IFDEF USE_SQLITE}
   Result := TBookCollection_SQLite.Create(DBCollectionFile, usedSystemData);
-{$ELSE}
-  Result := TBookCollection_ABS.Create(DBCollectionFile, usedSystemData, ADefaultSession);
-{$ENDIF}
 end;
 
 function GetBookCollection(const DBCollectionFile: string): IBookCollection;
@@ -135,11 +128,7 @@ end;
 
 procedure CreateCollectionTables(const DBCollectionFile: string; const GenresFileName: string);
 begin
-{$IFDEF USE_SQLITE}
   CreateCollectionTables_SQLite(DBCollectionFile, GenresFileName);
-{$ELSE}
-  CreateCollectionTables_ABS(DBCollectionFile, GenresFileName);
-{$ENDIF}
 end;
 
 { TCollectionCache<I>.TInterfaceAdapter }

@@ -9,7 +9,7 @@
   * Created             20.08.2008
   * Description
   *
-  * $Id: $
+  * $Id$
   *
   * History
   *

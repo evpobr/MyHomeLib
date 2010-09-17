@@ -34,7 +34,6 @@ requires
   IndyCore,
   IndySystem,
   IndyProtocols,
-  vclAbsDBd13,
   vclZipForged13,
   VirtualTreesD14;
 

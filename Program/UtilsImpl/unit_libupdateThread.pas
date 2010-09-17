@@ -1,3 +1,20 @@
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Authors Aleksey Penkov   alex.penkov@gmail.com
+  *         Nick Rymanov     nrymanov@gmail.com
+  * Created                  20.08.2008
+  * Description
+  *
+  * $Id$
+  *
+  * History
+  *
+  ****************************************************************************** *)
+
 unit unit_libupdateThread;
 
 interface
@@ -7,7 +24,6 @@ uses
   Classes,
   SysUtils,
   unit_ImportInpxThread,
-  ABSMain,
   IdHTTP,
   IdComponent,
   UserData;
@@ -85,8 +101,7 @@ begin
   FOnImportUserData := OnImportUserData;
 end;
 
-procedure TLibUpdateThread.HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
-  AWorkCount: Int64);
+procedure TLibUpdateThread.HTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
 var
   ElapsedTime : Cardinal;
   Speed: string;
@@ -109,8 +124,7 @@ begin
   end;
 end;
 
-procedure TLibUpdateThread.HTTPWorkBegin(ASender: TObject;
-  AWorkMode: TWorkMode; AWorkCountMax: Int64);
+procedure TLibUpdateThread.HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
 begin
   SetComment(rstrConnectingToServer);
   FDownloadSize := AWorkCountMax;

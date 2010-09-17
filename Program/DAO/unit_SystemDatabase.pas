@@ -15,13 +15,10 @@
   ****************************************************************************** *)
 unit unit_SystemDatabase;
 
-{$DEFINE USE_SQLITE}
-
 interface
 
 uses
   unit_Interfaces,
-  unit_SystemDatabase_ABS,
   unit_SystemDatabase_SQLite;
 
   procedure CreateSystemTables(const DBUserFile: string);
@@ -42,20 +39,12 @@ var
 
 procedure CreateSystemTables(const DBUserFile: string);
 begin
-{$IFDEF USE_SQLITE}
   CreateSystemTables_SQLite(DBUserFile);
-{$ELSE}
-  CreateSystemTables_ABS(DBUserFile);
-{$ENDIF}
 end;
 
 function CreateSystemData(ADefaultSession: Boolean = True): ISystemData;
 begin
-{$IFDEF USE_SQLITE}
   Result := TSystemData_SQLite.Create(Settings.SystemFileName[sfSystemDB]);
-{$ELSE}
-  Result := TSystemData_ABS.Create(Settings.SystemFileName[sfSystemDB], ADefaultSession);
-{$ENDIF}
 end;
 
 function GetSystemData: ISystemData;
