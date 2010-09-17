@@ -198,9 +198,16 @@ type
 
     procedure TruncateTablesBeforeImport; override;
 
+    procedure StartBatchUpdate; override;
+    procedure AfterBatchUpdate; override;
+    procedure FinishBatchUpdate; override;
+
   protected
     procedure InsertGenreIfMissing(const GenreData: TGenreData); override;
     procedure InternalLoadGenres;
+
+  private
+    FTriggersEnabled: Boolean;
 
   strict private
     FDatabase: TSQLiteDatabase;
@@ -466,7 +473,6 @@ var
   FilterString: string;
   SQLRows: string;
   SQLCount: string;
-  InitRows: Boolean;
 begin
   SQLRows := '';
 
@@ -698,16 +704,17 @@ begin
         if FCollection.GetAuthorFilterType = ALPHA_FILTER_NON_ALPHA then
         begin
           AddToWhere(Where,
-            '(UPPER(SUBSTR(a.LastName, 1, 1)) NOT IN (' + ENGLISH_ALPHABET_SEPARATORS + ')) AND ' +
-            '(UPPER(SUBSTR(a.LastName, 1, 1)) NOT IN (' + RUSSIAN_ALPHABET_SEPARATORS + '))'
+            '(MHL_UPPER(SUBSTR(a.LastName, 1, 1)) NOT IN (' + ENGLISH_ALPHABET_SEPARATORS + ')) AND ' +
+            '(MHL_UPPER(SUBSTR(a.LastName, 1, 1)) NOT IN (' + RUSSIAN_ALPHABET_SEPARATORS + '))'
           );
         end
         else if (FCollection.GetAuthorFilterType <> '') and (FCollection.GetAuthorFilterType <> ALPHA_FILTER_ALL) then
         begin
           Assert(Length(FCollection.GetAuthorFilterType) = 1);
           Assert(TCharacter.IsUpper(FCollection.GetAuthorFilterType, 1));
+          // TODO -cSQL performance: не оптимизируется при использовании выражения
           AddToWhere(Where,
-            'UPPER(a.LastName) LIKE :FilterType'  // начинается на заданную букву
+            'MHL_UPPER(a.LastName) LIKE :FilterType'  // начинается на заданную букву
           );
         end;
 
@@ -924,16 +931,17 @@ begin
         if FCollection.GetSeriesFilterType = ALPHA_FILTER_NON_ALPHA then
         begin
           AddToWhere(Where,
-            '(UPPER(SUBSTR(s.SeriesTitle, 1, 1)) NOT IN (' + ENGLISH_ALPHABET_SEPARATORS + ')) AND ' +
-            '(UPPER(SUBSTR(s.SeriesTitle, 1, 1)) NOT IN (' + RUSSIAN_ALPHABET_SEPARATORS + '))'
+            '(MHL_UPPER(SUBSTR(s.SeriesTitle, 1, 1)) NOT IN (' + ENGLISH_ALPHABET_SEPARATORS + ')) AND ' +
+            '(MHL_UPPER(SUBSTR(s.SeriesTitle, 1, 1)) NOT IN (' + RUSSIAN_ALPHABET_SEPARATORS + '))'
           );
         end
         else if FCollection.GetSeriesFilterType <> ALPHA_FILTER_ALL then
         begin
           Assert(Length(FCollection.GetSeriesFilterType) = 1);
           Assert(TCharacter.IsUpper(FCollection.GetSeriesFilterType, 1));
+          // TODO -cSQL performance: не оптимизируется при использовании выражения
           AddToWhere(Where,
-            'UPPER(s.SeriesTitle) LIKE :FilterType'   // начинается на заданную букву
+            'MHL_UPPER(s.SeriesTitle) LIKE :FilterType'   // начинается на заданную букву
           );
         end;
       end;
@@ -964,12 +972,58 @@ end;
 //-----------------------------------------------------------------------------
 
 { TBookCollection_SQLite }
+function CreateFullAuthorName(pCtx: TSQLite3Context; nArgs: Integer; Args: TSQLite3Value): string; inline;
+var
+  LastName: string;
+  FirstName: string;
+  MiddleName: string;
+begin
+  LastName := SQLite3_Value_text16(Args^); Inc(Args);
+  FirstName := SQLite3_Value_text16(Args^); Inc(Args);
+  MiddleName := SQLite3_Value_text16(Args^);
+
+  Result := TAuthorData.FormatName(LastName, FirstName, MiddleName);
+end;
+
+procedure fullAuthorName(pCtx: TSQLite3Context; nArgs: Integer; Args: TSQLite3Value); cdecl;
+var
+  FullName: string;
+begin
+  FullName := CreateFullAuthorName(pCtx, nArgs, Args);
+  SQLite3_Result_Text16(pCtx, PWideChar(FullName), -1, SQLITE_TRANSIENT);
+end;
+
+procedure fullAuthorNameEx(pCtx: TSQLite3Context; nArgs: Integer; Args: TSQLite3Value); cdecl;
+var
+  FullName: string;
+begin
+  FullName := TCharacter.ToUpper(CreateFullAuthorName(pCtx, nArgs, Args));
+  SQLite3_Result_Text16(pCtx, PWideChar(FullName), -1, SQLITE_TRANSIENT);
+end;
+
+procedure getIsTriggersOn(pCtx: TSQLite3Context; nArgs: Integer; Args: TSQLite3Value); cdecl;
+var
+  db: TBookCollection_SQLite;
+begin
+  db := TBookCollection_SQLite(SQLite3_User_Data(pCtx));
+  if Assigned(db) then
+    SQLite3_Result_Int(pCtx, IfThen(db.FTriggersEnabled, 1, 0))
+  else
+    SQLite3_Result_Int(pCtx, 1);
+end;
 
 constructor TBookCollection_SQLite.Create(const DBCollectionFile: string; const SystemData: ISystemData);
 begin
   inherited Create(SystemData);
 
   FDatabase := TSQLiteDatabase.Create(DBCollectionFile);
+
+  FTriggersEnabled := True;
+
+  FDatabase.AddFunction('MHL_FULLNAME',    3, fullAuthorName);
+  FDatabase.AddFunction('MHL_FULLNAME',    4, fullAuthorNameEx);
+  FDatabase.AddFunction('MHL_TRIGGERS_ON', 0, getIsTriggersOn, SQLITE_ANY, Self);
+
   InternalLoadGenres;
 end;
 
@@ -2106,6 +2160,35 @@ var
 begin
   for TableName in TABLE_NAMES do
     FDatabase.ExecSQL(Format(SQL_TRUNCATE, [TableName]));
+end;
+
+procedure TBookCollection_SQLite.StartBatchUpdate;
+begin
+  FTriggersEnabled := False;
+end;
+
+procedure TBookCollection_SQLite.AfterBatchUpdate;
+begin
+  FDatabase.ExecSQL('UPDATE Series SET SearchSeriesTitle = MHL_UPPER(SeriesTitle)');
+  FDatabase.ExecSQL('UPDATE Authors SET SearchName = MHL_FULLNAME(LastName, FirstName, MiddleName, 1)');
+  FDatabase.ExecSQL(
+    'UPDATE Books ' +
+    'SET ' +
+    '  SearchTitle      = MHL_UPPER(Title), ' +
+    '  SearchLang       = MHL_UPPER(Lang), ' +
+    '  SearchFolder     = MHL_UPPER(Folder), ' +
+    '  SearchFileName   = MHL_UPPER(FileName), ' +
+    '  SearchExt        = MHL_UPPER(Ext), ' +
+    '  SearchKeyWords   = MHL_UPPER(KeyWords), ' +
+    '  SearchAnnotation = MHL_UPPER(Annotation)'
+  );
+
+  FDatabase.ExecSQL('ANALYZE');
+end;
+
+procedure TBookCollection_SQLite.FinishBatchUpdate;
+begin
+  FTriggersEnabled := True;
 end;
 
 procedure TBookCollection_SQLite.CleanBookAuthors(const BookID: Integer);

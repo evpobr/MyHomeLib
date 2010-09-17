@@ -103,8 +103,19 @@ type
     function Version: string;
 
     { Add custom sorting procedure as new Collate.}
-    procedure AddCustomCollate(name: string; xCompare: TCollateXCompare);
-    procedure AddFunction(const FunctionName: string; const nArg: Integer; PrefferedEncoding: Integer; xFunc: TxFunc);
+    procedure AddCustomCollate(
+      const CollateName: string;
+      xCompare: TCollateXCompare;
+      PrefferedEncoding: Integer = SQLITE_UTF16_ALIGNED
+    );
+
+    procedure AddFunction(
+      const FunctionName: string;
+      const nArg: Integer;
+      xFunc: TxFunc;
+      PrefferedEncoding: Integer = SQLITE_ANY;
+      pUserDate: Pointer = nil
+    );
 
     { SQLite database handler.}
     property DB: TSQLite3DB read FDB;
@@ -232,6 +243,7 @@ uses
   unit_Logger,
   unit_Interfaces,
 {$ENDIF}
+  Math,
   SQLite3UDF;
 
 const
@@ -263,10 +275,9 @@ begin
   // !!!!!!!! TEST ONLY !!!!!!!!
   //
   ExecSQL('PRAGMA synchronous = NORMAL');
-
-// Slow down:
-//  ExecSQL('PRAGMA cache_size = 16000');
-//  ExecSQL('PRAGMA count_changes = 0');
+  // Slow down:
+  //  ExecSQL('PRAGMA cache_size = 16000');
+  //  ExecSQL('PRAGMA count_changes = 0');
   //
   // !!!!!!!! TEST ONLY !!!!!!!!
   //
@@ -453,28 +464,31 @@ begin
   Result := string(UTF8String(SQLite3_Version));
 end;
 
-procedure TSQLiteDatabase.AddCustomCollate(name: string; xCompare: TCollateXCompare);
+procedure TSQLiteDatabase.AddCustomCollate(const CollateName: string; xCompare: TCollateXCompare; PrefferedEncoding: Integer = SQLITE_UTF16_ALIGNED);
+var
+  nRc: Integer;
 begin
-  SQLite3_Create_Collation(FDB, PUTF8Char(UTF8String(name)), SQLITE_UTF8, nil, xCompare);
+  nRc := SQLite3_Create_Collation(FDB, PUTF8Char(UTF8String(CollateName)), PrefferedEncoding, nil, xCompare);
+  if SQLITE_OK <> nRc then
+    RaiseError('', 'CollateName');
+end;
+
+procedure TSQLiteDatabase.AddFunction(const FunctionName: string; const nArg: Integer; xFunc: TxFunc; PrefferedEncoding: Integer = SQLITE_ANY; pUserDate: Pointer = nil);
+var
+  nRc: Integer;
+begin
+  nRc := SQLite3_Create_Function(FDB, PUTF8Char(UTF8String(FunctionName)), nArg, PrefferedEncoding, pUserDate, @xFunc, nil, nil);
+  if SQLITE_OK <> nRc then
+    RaiseError('', FunctionName);
 end;
 
 procedure TSQLiteDatabase.RegisterSystemCollateAndFunc;
 begin
-  ///SQLite3_Enable_Load_Extension(FDB, 1);
-  ///SQLite3_Load_Extension(FDB, 'MHLSQLiteExt', nil, nil);
-  SQLite3_Create_Collation(FDB, PUTF8Char('SYSTEM'), SQLITE_UTF16, nil, @SystemCollate);
-  SQLite3_Create_Collation(FDB, PUTF8Char('SYSTEM_NOCASE'), SQLITE_UTF16, nil, @SystemCollateNoCase);
-  AddFunction('UPPER', 1, SQLITE_ANY, SystemUpperString);
-  AddFunction('LOWER', 1, SQLITE_ANY, SystemLowerString);
-end;
+  AddCustomCollate('MHL_SYSTEM',        SystemCollate);
+  AddCustomCollate('MHL_SYSTEM_NOCASE', SystemCollateNoCase);
 
-procedure TSQLiteDatabase.AddFunction(const FunctionName: string; const nArg: Integer; PrefferedEncoding: Integer; xFunc: TxFunc);
-var
-  nRc: Integer;
-begin
-  nRc := SQLite3_Create_Function(FDB, PUTF8Char(UTF8String(FunctionName)), nArg, PrefferedEncoding, nil, @xFunc, nil, nil);
-  if SQLITE_OK <> nRc then
-    RaiseError('', FunctionName);
+  AddFunction('MHL_UPPER', 1, SystemUpperString);
+  AddFunction('MHL_LOWER', 1, SystemLowerString);
 end;
 
 { TSQLiteQuery }

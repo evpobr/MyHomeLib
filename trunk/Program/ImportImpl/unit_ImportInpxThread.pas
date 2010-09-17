@@ -385,88 +385,95 @@ begin
     //
     // TODO - добавить чтение и установку версии
     //
+    BookCollection.StartBatchUpdate;
+    try
+      if (unZip.FindFirst('*.inp', ArchItem, faAnyFile - faDirectory)) then
+      begin
+        repeat
+          CurrentFile := ArchItem.FileName;
 
-    if (unZip.FindFirst('*.inp', ArchItem, faAnyFile - faDirectory)) then
-    begin
-      repeat
-        CurrentFile := ArchItem.FileName;
+          if not IsOnline and (CurrentFile = 'extra.inp') then
+            Continue;
 
-        if not IsOnline and (CurrentFile = 'extra.inp') then
-          Continue;
+          Teletype(Format(rstrProcessingFile, [CurrentFile]), tsInfo);
 
-        Teletype(Format(rstrProcessingFile, [CurrentFile]), tsInfo);
-
-        BookList := TStringList.Create;
-        try
-          inpStream := TMemoryStream.Create;
+          BookList := TStringList.Create;
           try
-            unZip.ExtractToStream(CurrentFile, inpStream);
-            inpStream.Seek(0, soBeginning);
-            BookList.LoadFromStream(inpStream, TEncoding.UTF8);
-          finally
-            FreeAndNil(inpStream);
-          end;
-
-          for j := 0 to BookList.Count - 1 do
-          begin
+            inpStream := TMemoryStream.Create;
             try
-              ParseData(BookList[j], IsOnline, R);
-              if IsOnline then
-              begin
-                //
-                // TODO: здесь некоторая фигня. Что будет, если этот INPX описывает не-FB2 коллекцию?
-                //
-
-                // И\Иванов Иван\1234 Просто книга.fb2.zip
-                R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;
-                // Сохраним отметку о существовании файла
-                R.IsLocal := FileExists(FCollectionRoot + R.Folder);
-              end
-              else
-              begin
-                if not FUseStoredFolder then
-                begin
-                  // 98058-98693.inp -> 98058-98693.zip
-                  R.Folder := ChangeFileExt(CurrentFile, ZIP_EXTENSION);
-                  //
-                  R.InsideNo := j;
-                end
-              end;
-
-              try
-                if BookCollection.InsertBook(R, CheckFiles, False) <> 0 then
-                  Inc(filesProcessed);
-              except
-                on E: Exception do
-                  raise EDBError.Create(E.Message);
-              end;
-
-              if (filesProcessed mod ProcessedItemThreshold) = 0 then
-              begin
-                SetProgress(Round((i + j / BookList.Count) * 100 / unZip.FileCount));
-                SetComment(Format(rstrAddedBooks, [filesProcessed]));
-              end;
-
-            except
-              on E: EConvertError do
-                Teletype(Format(rstrErrorInpStructure, [CurrentFile, j]), tsError);
-              on E: EDBError do
-                Teletype(Format(rstrDBErrorInp, [CurrentFile, j]), tsError);
-              on E: Exception do
-                Teletype(E.Message, tsError);
+              unZip.ExtractToStream(CurrentFile, inpStream);
+              inpStream.Seek(0, soBeginning);
+              BookList.LoadFromStream(inpStream, TEncoding.UTF8);
+            finally
+              FreeAndNil(inpStream);
             end;
+
+            for j := 0 to BookList.Count - 1 do
+            begin
+              try
+                ParseData(BookList[j], IsOnline, R);
+                if IsOnline then
+                begin
+                  //
+                  // TODO: здесь некоторая фигня. Что будет, если этот INPX описывает не-FB2 коллекцию?
+                  //
+
+                  // И\Иванов Иван\1234 Просто книга.fb2.zip
+                  R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;
+                  // Сохраним отметку о существовании файла
+                  R.IsLocal := FileExists(FCollectionRoot + R.Folder);
+                end
+                else
+                begin
+                  if not FUseStoredFolder then
+                  begin
+                    // 98058-98693.inp -> 98058-98693.zip
+                    R.Folder := ChangeFileExt(CurrentFile, ZIP_EXTENSION);
+                    //
+                    R.InsideNo := j;
+                  end
+                end;
+
+                try
+                  if BookCollection.InsertBook(R, CheckFiles, False) <> 0 then
+                    Inc(filesProcessed);
+                except
+                  on E: Exception do
+                    raise EDBError.Create(E.Message);
+                end;
+
+                if (filesProcessed mod ProcessedItemThreshold) = 0 then
+                begin
+                  SetProgress(Round((i + j / BookList.Count) * 100 / unZip.FileCount));
+                  SetComment(Format(rstrAddedBooks, [filesProcessed]));
+                end;
+
+              except
+                on E: EConvertError do
+                  Teletype(Format(rstrErrorInpStructure, [CurrentFile, j]), tsError);
+                on E: EDBError do
+                  Teletype(Format(rstrDBErrorInp, [CurrentFile, j]), tsError);
+                on E: Exception do
+                  Teletype(E.Message, tsError);
+              end;
+            end;
+          finally
+            FreeAndNil(BookList);
           end;
-        finally
-          FreeAndNil(BookList);
-        end;
 
-        Inc(i);
-        if Canceled then
-          Break;
-      until (not unZip.FindNext(ArchItem));
+          Inc(i);
+          if Canceled then
+            Break;
+        until (not unZip.FindNext(ArchItem));
+      end;
+
+      Teletype(Format(rstrAddedBooks, [filesProcessed]), tsInfo);
+
+      FProgressEngine.BeginOperation(-1, 'Updating database. Please wait...', '');
+      BookCollection.AfterBatchUpdate;
+    finally
+      BookCollection.FinishBatchUpdate;
     end;
-
-    Teletype(Format(rstrAddedBooks, [filesProcessed]), tsInfo);
   finally
     unZip.Free;
   end;

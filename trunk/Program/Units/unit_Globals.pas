@@ -250,8 +250,7 @@ type
   end;
 
   // --------------------------------------------------------------------------
-  TCollectionInfo = class(TObject)
-  public
+  TCollectionInfo = class(TPersistent)
   private
     FID: Integer;
     FName: string;
@@ -274,7 +273,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    constructor InitFrom(const Source: TCollectionInfo); overload;
+    procedure Assign(Source: TPersistent); override;
     procedure Clear;
 
     property ID: Integer read FID write FID;
@@ -921,36 +920,29 @@ begin
   Clear;
 end;
 
-constructor TCollectionInfo.InitFrom(const Source: TCollectionInfo);
+procedure TCollectionInfo.Assign(Source: TPersistent);
 var
-  stream: TStream;
+  Other: TCollectionInfo;
 begin
-  Assert(Assigned(Source));
-
-  FID := Source.ID;
-  FName := Source.Name;
-  FRootFolder := Source.RootFolder;
-  FDBFileName := Source.DBFileName;
-  FNotes := Source.Notes;
-  FUser := Source.User;
-  FPassword := Source.Password;
-  FCreationDate := Source.CreationDate;
-  FVersion := Source.Version;
-  FCollectionType := Source.CollectionType;
-  FAllowDelete := Source.AllowDelete;
-  FURL := Source.URL;
-  FScript := Source.Script;
-
-  if Assigned(Source.Settings) then
+  if Source is TCollectionInfo then
   begin
-    stream := TMemoryStream.Create;
-    try
-      Source.Settings.SaveToStream(stream);
-      FSettings.LoadFromStream(stream);
-    finally
-      FreeAndNil(stream);
-    end;
-  end;
+    FID := TCollectionInfo(Source).FID;
+    FName := TCollectionInfo(Source).FName;
+    FRootFolder := TCollectionInfo(Source).FRootFolder;
+    FDBFileName := TCollectionInfo(Source).FDBFileName;
+    FNotes := TCollectionInfo(Source).FNotes;
+    FUser := TCollectionInfo(Source).FUser;
+    FPassword := TCollectionInfo(Source).FPassword;
+    FCreationDate := TCollectionInfo(Source).FCreationDate;
+    FVersion := TCollectionInfo(Source).FVersion;
+    FCollectionType := TCollectionInfo(Source).FCollectionType;
+    FAllowDelete := TCollectionInfo(Source).FAllowDelete;
+    FURL := TCollectionInfo(Source).FURL;
+    FScript := TCollectionInfo(Source).FScript;
+    FSettings.Assign(TCollectionInfo(Source).FSettings);
+  end
+  else
+    inherited Assign(Source);
 end;
 
 destructor TCollectionInfo.Destroy;

@@ -204,6 +204,10 @@ type
     function GetLibID(const BookKey: TBookKey): string; override; // deprecated;
     procedure TruncateTablesBeforeImport; override;
 
+    procedure StartBatchUpdate; override;
+    procedure AfterBatchUpdate; override;
+    procedure FinishBatchUpdate; override;
+
     procedure CompactDatabase; override;
     procedure RepairDatabase; override;
 
@@ -1863,6 +1867,21 @@ begin
   finally
     MountTables(True);
   end;
+end;
+
+procedure TBookCollection_ABS.StartBatchUpdate;
+begin
+  // NOP
+end;
+
+procedure TBookCollection_ABS.AfterBatchUpdate;
+begin
+  // NOP
+end;
+
+procedure TBookCollection_ABS.FinishBatchUpdate;
+begin
+  // NOP
 end;
 
 procedure TBookCollection_ABS.CompactDatabase;

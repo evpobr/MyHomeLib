@@ -34,10 +34,10 @@ type
     destructor Destroy; override;
 
   public // virtual
-    function GetCollectionInfo(const CollectionID: Integer; CollectionInfo: TCollectionInfo): Boolean; virtual; abstract;
+    procedure GetCollectionInfo(const CollectionID: Integer; CollectionInfo: TCollectionInfo); virtual; abstract;
     procedure UpdateCollectionInfo(const CollectionInfo: TCollectionInfo); virtual; abstract;
 
-    function ActivateCollection(CollectionID: Integer): Boolean; virtual; abstract;
+    procedure ActivateCollection(CollectionID: Integer); virtual; abstract;
     procedure RegisterCollection(
       const DisplayName: string;
       const RootFolder: string;
@@ -185,7 +185,6 @@ begin
     FreeAndNil(CollectionInfo);
   end;
 end;
-
 
 procedure TSystemData.ExportUserData(data: TUserData);
 var
