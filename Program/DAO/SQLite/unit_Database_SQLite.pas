@@ -1493,16 +1493,13 @@ function TBookCollection_SQLite.InsertBook(BookRecord: TBookRecord; const CheckF
 const
   SQL_INSERT =
     'INSERT INTO Books (' +
-    'Title,     Folder,    FileName,   Ext,      InsideNo, ' +  // 01 .. 05
-    'SeriesID,  SeqNumber, Code,       BookSize, LibID, ' +     // 06 .. 10
-    'IsDeleted, IsLocal,   UpdateDate, Lang,     LibRate, ' +   // 11 .. 15
-    'KeyWords,  Rate,      Progress,   Review,   Annotation' +  // 16 .. 20
+    'Title,     Folder,    FileName,   Ext,      InsideNo, ' +  // 0  .. 04
+    'SeriesID,  SeqNumber, BookSize,   LibID, ' +               // 05 .. 08
+    'IsDeleted, IsLocal,   UpdateDate, Lang,     LibRate, ' +   // 09 .. 13
+    'KeyWords,  Rate,      Progress,   Review,   Annotation' +  // 14 .. 18
     ') ' +
     'VALUES (' +
-    ':v01, :v02, :v03, :v04, :v05, ' +
-    ':v06, :v07, :v08, :v09, :v10, ' +
-    ':v11, :v12, :v13, :v14, :v15, ' +
-    ':v16, :v17, :v18, :v19, :v20' +
+    '?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ' +
     ')';
 var
   i: Integer;
@@ -1574,27 +1571,26 @@ begin
         query.SetNullParam(5);
         query.SetNullParam(6);
       end;
-      query.SetParam(7, BookRecord.Code);
-      query.SetParam(8, BookRecord.Size);
-      query.SetParam(9, BookRecord.LibID);
-      query.SetParam(10, BookRecord.IsDeleted);
-      query.SetParam(11, BookRecord.IsLocal);
-      query.SetParam(12, BookRecord.Date);
-      query.SetParam(13, BookRecord.Lang);
-      query.SetParam(14, BookRecord.LibRate);
-      query.SetParam(15, BookRecord.KeyWords);
-      query.SetParam(16, BookRecord.Rate);
-      query.SetParam(17, BookRecord.Progress);
+      query.SetParam(7, BookRecord.Size);
+      query.SetParam(8, BookRecord.LibID);
+      query.SetParam(9, BookRecord.IsDeleted);
+      query.SetParam(10, BookRecord.IsLocal);
+      query.SetParam(11, BookRecord.Date);
+      query.SetParam(12, BookRecord.Lang);
+      query.SetParam(13, BookRecord.LibRate);
+      query.SetParam(14, BookRecord.KeyWords);
+      query.SetParam(15, BookRecord.Rate);
+      query.SetParam(16, BookRecord.Progress);
 
       if BookRecord.Review = '' then
-        query.SetNullParam(18)
+        query.SetNullParam(17)
       else
-        query.SetBlobParam(18, BookRecord.Review);
+        query.SetBlobParam(17, BookRecord.Review);
 
       if BookRecord.Annotation = '' then
-        query.SetNullParam(19)
+        query.SetNullParam(18)
       else
-        query.SetParam(19, BookRecord.Annotation);
+        query.SetParam(18, BookRecord.Annotation);
 
       query.ExecSQL;
 
@@ -1616,9 +1612,9 @@ const
   SQL =
     'SELECT ' +
     'b.Title, b.Folder, b.FileName, b.Ext, b.InsideNo, ' +        // 0  .. 4
-    'b.SeriesID, b.SeqNumber, b.Code, b.BookSize, b.LibID, ' +    // 5  .. 9
-    'b.IsDeleted, b.IsLocal, b.UpdateDate, b.Lang, b.LibRate, ' + // 10 .. 14
-    'b.KeyWords, b.Rate, b.Progress, b.Review, b.Annotation ' +   // 15 .. 19
+    'b.SeriesID, b.SeqNumber, b.BookSize, b.LibID, ' +            // 5  .. 8
+    'b.IsDeleted, b.IsLocal, b.UpdateDate, b.Lang, b.LibRate, ' + // 09 .. 13
+    'b.KeyWords, b.Rate, b.Progress, b.Review, b.Annotation ' +   // 14 .. 18
     'FROM Books b ' +
     'WHERE BookID = ?';
 var
@@ -1648,19 +1644,23 @@ begin
         BookRecord.Series := GetSeriesTitle(BookRecord.SeriesID);
         BookRecord.SeqNumber := Table.FieldAsInt(6);
       end;
-      BookRecord.Code := Table.FieldAsInt(7);
-      BookRecord.Size := Table.FieldAsInt(8);
-      BookRecord.LibID := Table.FieldAsInt(9);
-      BookRecord.IsDeleted := Table.FieldAsBoolean(10);
-      BookRecord.IsLocal := Table.FieldAsBoolean(11);
-      BookRecord.Date := Table.FieldAsDateTime(12);
-      BookRecord.Lang := Table.FieldAsString(13);
-      BookRecord.LibRate := Table.FieldAsInt(14);
-      BookRecord.KeyWords := Table.FieldAsString(15);
-      BookRecord.Rate := Table.FieldAsInt(16);
-      BookRecord.Progress := Table.FieldAsInt(17);
+      BookRecord.Size := Table.FieldAsInt(7);
+      BookRecord.LibID := Table.FieldAsInt(8);
+      BookRecord.IsDeleted := Table.FieldAsBoolean(9);
+      BookRecord.IsLocal := Table.FieldAsBoolean(10);
+      BookRecord.Date := Table.FieldAsDateTime(11);
+      BookRecord.Lang := Table.FieldAsString(12);
+      BookRecord.LibRate := Table.FieldAsInt(13);
+      BookRecord.KeyWords := Table.FieldAsString(14);
+      BookRecord.Rate := Table.FieldAsInt(15);
+      BookRecord.Progress := Table.FieldAsInt(16);
       BookRecord.CollectionRoot := FSystemData.GetActiveCollectionInfo.RootPath;
       BookRecord.CollectionName := FSystemData.GetActiveCollectionInfo.Name;
+
+      if (not Table.FieldIsNull(17)) then // review
+        BookRecord.Code := 1
+      else
+        BookRecord.Code := 0;
 
       GetBookGenres(BookRecord.BookKey.BookID, BookRecord.Genres, @(BookRecord.RootGenre));
       GetBookAuthors(BookRecord.BookKey.BookID, BookRecord.Authors);
@@ -1669,8 +1669,8 @@ begin
       begin
         // TODO - rethink when to load the memo fields.
         //
-        BookRecord.Review := Table.FieldAsBlobString(18);
-        BookRecord.Annotation := Table.FieldAsString(19);
+        BookRecord.Review := Table.FieldAsBlobString(17);
+        BookRecord.Annotation := Table.FieldAsString(18);
       end;
     finally
       FreeAndNil(Table);
@@ -1684,10 +1684,10 @@ procedure TBookCollection_SQLite.UpdateBook(BookRecord: TBookRecord);
 const
   SQL_INSERT =
     'UPDATE Books SET ' +
-    'Title = ?,     Folder = ?,    FileName = ?,   Ext = ?,      InsideNo = ?, ' +  // 01 .. 05
-    'SeqNumber = ?, Code = ?,       BookSize = ?, LibID = ?, ' +     // 06 .. 9
-    'IsDeleted = ?, IsLocal = ?,   UpdateDate = ?, Lang = ?,     LibRate = ?, ' +   // 10 .. 14
-    'KeyWords = ?,  Rate = ?,      Progress = ?,   Review = ?,   Annotation = ?' +  // 15 .. 19
+    'Title = ?,     Folder = ?,    FileName = ?,   Ext = ?,      InsideNo = ?, ' +  // 0  .. 04
+    'SeqNumber = ?, BookSize = ?, LibID = ?, ' +                                    // 05 .. 07
+    'IsDeleted = ?, IsLocal = ?,   UpdateDate = ?, Lang = ?,     LibRate = ?, ' +   // 08 .. 12
+    'KeyWords = ?,  Rate = ?,      Progress = ?,   Review = ?,   Annotation = ?' +  // 13 .. 17
     'WHERE BookID = ? ';
 var
   i: Integer;
@@ -1748,29 +1748,28 @@ begin
       query.SetParam(5, BookRecord.SeqNumber)
     else
       query.SetNullParam(5);
-    query.SetParam(6, BookRecord.Code);
-    query.SetParam(7, BookRecord.Size);
-    query.SetParam(8, BookRecord.LibID);
-    query.SetParam(9, BookRecord.IsDeleted);
-    query.SetParam(10, BookRecord.IsLocal);
-    query.SetParam(11, BookRecord.Date);
-    query.SetParam(12, BookRecord.Lang);
-    query.SetParam(13, BookRecord.LibRate);
-    query.SetParam(14, BookRecord.KeyWords);
-    query.SetParam(15, BookRecord.Rate);
-    query.SetParam(16, BookRecord.Progress);
+    query.SetParam(6, BookRecord.Size);
+    query.SetParam(7, BookRecord.LibID);
+    query.SetParam(8, BookRecord.IsDeleted);
+    query.SetParam(9, BookRecord.IsLocal);
+    query.SetParam(10, BookRecord.Date);
+    query.SetParam(11, BookRecord.Lang);
+    query.SetParam(12, BookRecord.LibRate);
+    query.SetParam(13, BookRecord.KeyWords);
+    query.SetParam(14, BookRecord.Rate);
+    query.SetParam(15, BookRecord.Progress);
 
     if BookRecord.Review = '' then
-      query.SetNullParam(17)
+      query.SetNullParam(16)
     else
-      query.SetBlobParam(17, BookRecord.Review);
+      query.SetBlobParam(16, BookRecord.Review);
 
     if BookRecord.Annotation = '' then
-      query.SetNullParam(18)
+      query.SetNullParam(17)
     else
-      query.SetParam(18, LeftStr(BookRecord.Annotation, ANNOTATION_SIZE_LIMIT));
+      query.SetParam(17, LeftStr(BookRecord.Annotation, ANNOTATION_SIZE_LIMIT));
 
-    query.SetParam(19, BookRecord.BookKey.BookID);
+    query.SetParam(18, BookRecord.BookKey.BookID);
 
     query.ExecSQL;
   finally
@@ -1861,7 +1860,7 @@ end;
 
 function TBookCollection_SQLite.SetReview(const BookKey: TBookKey; const Review: string): Integer;
 const
-  SQL_UPDATE = 'UPDATE Books SET Code = ?, Review = ? WHERE BookID = ?';
+  SQL_UPDATE = 'UPDATE Books SET Review = ? WHERE BookID = ?';
 var
   NewReview: string;
   NewCode: Integer;
@@ -1875,11 +1874,7 @@ begin
   query := FDatabase.NewQuery(SQL_UPDATE);
   try
     query.SetParam(0, NewCode);
-    if NewCode = 0 then
-      query.SetNullParam(1)
-    else
-      query.SetBlobParam(1, NewReview);
-    query.SetParam(2, BookKey.BookID);
+    query.SetParam(1, BookKey.BookID);
 
     query.ExecSQL;
   finally
