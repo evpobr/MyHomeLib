@@ -342,6 +342,10 @@ function SQLite3_Create_Function16(
   xFinal: TxFinal
   ): Integer; cdecl; external SQLiteDLL name 'sqlite3_create_function16';
 
+function SQLite3_User_Data(
+  pCtx: TSQLite3Context
+  ): Pointer; cdecl; external SQLiteDLL name 'sqlite3_user_data';
+
 procedure SQLite3_Result_Blob(
   pCtx: TSQLite3Context;
   Value: Pointer;

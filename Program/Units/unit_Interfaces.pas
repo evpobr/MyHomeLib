@@ -9,7 +9,7 @@
   * Created             03.09.2010
   * Description
   *
-  * $Id: unit_Interfaces.pas 631 2010-08-26 04:00:58Z eg_ $
+  * $Id$
   *
   * History
   *
@@ -20,13 +20,19 @@ unit unit_Interfaces;
 interface
 
 uses
+  Classes,
   unit_Globals,
   unit_Consts,
   UserData;
 
 type
-  IIterator<T> = interface
+  IIterator<T: record> = interface
     function Next(out v: T): Boolean;
+    function RecordCount: Integer;
+  end;
+
+  IObjectIterator<T: TPersistent> = interface
+    function Next(v: T): Boolean;
     function RecordCount: Integer;
   end;
 
@@ -35,7 +41,8 @@ type
   IGenreIterator = IIterator<TGenreData>;
   ISeriesIterator = IIterator<TSeriesData>;
   IGroupIterator = IIterator<TGroupData>;
-  ICollectionInfoIterator = IIterator<TCollectionInfo>;
+
+  ICollectionInfoIterator = IObjectIterator<TCollectionInfo>;
 
   TGUIUpdateExtraProc = reference to procedure(
     const BookKey: TBookKey;
@@ -45,10 +52,11 @@ type
   ISystemData = interface
     ['{3896E4C6-8E2F-42F3-9FB2-91753258E9B7}']
 
-    function GetCollectionInfo(const CollectionID: Integer; CollectionInfo: TCollectionInfo): Boolean;
+    procedure GetCollectionInfo(const CollectionID: Integer; CollectionInfo: TCollectionInfo);
     procedure UpdateCollectionInfo(const CollectionInfo: TCollectionInfo);
 
-    function ActivateCollection(CollectionID: Integer): Boolean;
+    procedure ActivateCollection(CollectionID: Integer);
+
     procedure RegisterCollection(
       const DisplayName: string;
       const RootFolder: string;
@@ -198,6 +206,10 @@ type
     procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
 
     procedure TruncateTablesBeforeImport;
+
+    procedure StartBatchUpdate;
+    procedure AfterBatchUpdate;
+    procedure FinishBatchUpdate;
 
     procedure VerifyCurrentCollection(const DatabaseID: Integer);
 

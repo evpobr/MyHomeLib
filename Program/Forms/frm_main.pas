@@ -3650,8 +3650,7 @@ begin
     ID := (Sender as TMenuItem).Tag;
     CollectionInfo := TCollectionInfo.Create;
     try
-      if not FSystemData.GetCollectionInfo(ID, CollectionInfo) then
-        Exit;
+      FSystemData.GetCollectionInfo(ID, CollectionInfo);
     finally
       FreeAndNil(CollectionInfo);
     end;
@@ -3860,8 +3859,7 @@ begin
       begin
         CollectionInfo := TCollectionInfo.Create;
         try
-          if not FSystemData.GetCollectionInfo(BookRecord.BookKey.DatabaseID, CollectionInfo) then
-            Assert(False);
+          FSystemData.GetCollectionInfo(BookRecord.BookKey.DatabaseID, CollectionInfo);
 
           if (not BookRecord.IsLocal) and isOnlineCollection(CollectionInfo.CollectionType) then
           begin
@@ -6024,12 +6022,10 @@ begin
   i := (Sender as TMenuItem).Tag;
   CollectionInfo := TCollectionInfo.Create;
   try
-    if FSystemData.GetCollectionInfo(i, CollectionInfo) then
-    begin
-      (Sender as TMenuItem).Checked := True;
-      Settings.ActiveCollection := i;
-      InitCollection(True);
-    end;
+    FSystemData.GetCollectionInfo(i, CollectionInfo);
+    (Sender as TMenuItem).Checked := True;
+    Settings.ActiveCollection := i;
+    InitCollection(True);
   finally
     FreeAndNil(CollectionInfo);
   end;
@@ -6219,17 +6215,11 @@ begin
     begin
       CollectionInfo := TCollectionInfo.Create;
       try
-        if FSystemData.GetCollectionInfo(Data^.BookKey.DatabaseID, CollectionInfo) then
-        begin
-          Settings.ActiveCollection := Data^.BookKey.DatabaseID;
-          InitCollection(True);
-        end
-        else
-        begin
-          Screen.Cursor := SavedCursor;
-          MHLShowError(rstrCollectionNotRegistered);
-          Exit;
-        end;
+        FSystemData.GetCollectionInfo(Data^.BookKey.DatabaseID, CollectionInfo);
+
+        Settings.ActiveCollection := Data^.BookKey.DatabaseID;
+
+        InitCollection(True);
       finally
         FreeAndNil(CollectionInfo);
       end;

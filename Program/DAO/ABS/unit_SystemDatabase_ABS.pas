@@ -145,9 +145,9 @@ type
 
     protected
       //
-      // IGroupIterator
+      // ICollectionInfoIterator
       //
-      function Next(out CollectionInfo: TCollectionInfo): Boolean;
+      function Next(CollectionInfo: TCollectionInfo): Boolean;
       function RecordCount: Integer;
 
     private
@@ -169,8 +169,8 @@ type
     constructor Create(const DBSystemFile: string; ADefaultSession: Boolean = True);
     destructor Destroy; override;
 
-    function ActivateCollection(CollectionID: Integer): Boolean; override;
-    function GetCollectionInfo(const CollectionID: Integer; CollectionInfo: TCollectionInfo): Boolean; override;
+    procedure ActivateCollection(CollectionID: Integer); override;
+    procedure GetCollectionInfo(const CollectionID: Integer; CollectionInfo: TCollectionInfo); override;
     procedure UpdateCollectionInfo(const CollectionInfo: TCollectionInfo); override;
 
     procedure RegisterCollection(
@@ -469,8 +469,10 @@ begin
 end;
 
 // Read next record (if present), return True if read
-function TSystemData_ABS.TCollectionInfoIteratorImpl.Next(out CollectionInfo: TCollectionInfo): Boolean;
+function TSystemData_ABS.TCollectionInfoIteratorImpl.Next(CollectionInfo: TCollectionInfo): Boolean;
 begin
+  Assert(Assigned(CollectionInfo));
+
   Result := not FBases.Eof;
 
   if Result then
@@ -592,14 +594,14 @@ begin
   ActivateCollection(tblBasesID.Value);
 end;
 
-function TSystemData_ABS.GetCollectionInfo(const CollectionID: Integer; CollectionInfo: TCollectionInfo): Boolean;
+procedure TSystemData_ABS.GetCollectionInfo(const CollectionID: Integer; CollectionInfo: TCollectionInfo);
 var
   Stream: TABSBlobStream;
 begin
   Assert(tblBases.Active);
+  Assert(Assigned(CollectionInfo));
 
-  Result := tblBases.Locate(ID_FIELD, CollectionID, []);
-  if Result then
+  if tblBases.Locate(ID_FIELD, CollectionID, []) then
   begin
     CollectionInfo.ID := CollectionID;
     CollectionInfo.Name := tblBasesBaseName.Value;
@@ -628,10 +630,12 @@ begin
     finally
       Stream.Free;
     end;
-//    CollectionInfo.Settings.DelimitedText := tblBasesSettings.Value;
   end
   else
+  begin
     CollectionInfo.Clear;
+    Assert(False);
+  end;
 end;
 
 procedure TSystemData_ABS.UpdateCollectionInfo(const CollectionInfo: TCollectionInfo);
@@ -676,10 +680,10 @@ begin
 
 end;
 
-function TSystemData_ABS.ActivateCollection(CollectionID: Integer): Boolean;
+procedure TSystemData_ABS.ActivateCollection(CollectionID: Integer);
 begin
   Assert(CollectionID > 0);
-  Result := GetCollectionInfo(CollectionID, FActiveCollectionInfo);
+  GetCollectionInfo(CollectionID, FActiveCollectionInfo);
 end;
 
 function TSystemData_ABS.FindCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer): Boolean;

@@ -104,6 +104,10 @@ type
 
     procedure TruncateTablesBeforeImport; virtual; abstract;
 
+    procedure StartBatchUpdate; virtual; abstract;
+    procedure AfterBatchUpdate; virtual; abstract;
+    procedure FinishBatchUpdate; virtual; abstract;
+
   protected // virtual
     procedure InsertGenreIfMissing(const GenreData: TGenreData); virtual; abstract;
 
@@ -322,19 +326,16 @@ end;
 procedure TBookCollection.VerifyCurrentCollection(const DatabaseID: Integer);
 var
   BookCollectionName: string;
-  CurrentCollectionName: string;
   CollectionInfo: TCollectionInfo;
 begin
   if DatabaseID <> FSystemData.GetActiveCollectionInfo.ID then
   begin
     CollectionInfo := TCollectionInfo.Create;
     try
-      if FSystemData.GetCollectionInfo(DatabaseID, CollectionInfo) then
-        BookCollectionName := CollectionInfo.Name
-      else
-        BookCollectionName := '';
+      FSystemData.GetCollectionInfo(DatabaseID, CollectionInfo);
+      BookCollectionName := CollectionInfo.Name;
     finally
-
+      CollectionInfo.Free;
     end;
     raise ENotSupportedException.Create(Format(rstrErrorOnlyForCurrentCollection, [FSystemData.GetActiveCollectionInfo.Name, BookCollectionName]));
   end;

@@ -15,6 +15,9 @@
 --
 -------------------------------------------------------------------------------
 
+PRAGMA page_size = 16384;
+--@@
+
 DROP TABLE IF EXISTS Settings;
 --@@
 
@@ -43,8 +46,8 @@ CREATE TABLE Settings (
 --@@
 
 CREATE TABLE Series (
-  SeriesID          INTEGER     NOT NULL                       PRIMARY KEY AUTOINCREMENT,
-  SeriesTitle       VARCHAR(80) NOT NULL COLLATE SYSTEM_NOCASE UNIQUE,
+  SeriesID          INTEGER     NOT NULL                           PRIMARY KEY AUTOINCREMENT,
+  SeriesTitle       VARCHAR(80) NOT NULL COLLATE MHL_SYSTEM_NOCASE UNIQUE,
   SearchSeriesTitle VARCHAR(80)          COLLATE NOCASE
 );
 --@@
@@ -55,27 +58,28 @@ CREATE INDEX IXSeries_Title ON Series (SeriesTitle);
 CREATE INDEX IXSeries_SearchSeriesTitle ON Series (SearchSeriesTitle);
 --@@
 
-CREATE TRIGGER TRSeries_AI AFTER INSERT ON Series
+CREATE TRIGGER TRSeries_AI AFTER INSERT ON Series WHEN MHL_TRIGGERS_ON()
   BEGIN
     UPDATE Series
-    SET SearchSeriesTitle = UPPER(NEW.SeriesTitle)
+    SET SearchSeriesTitle = MHL_UPPER(NEW.SeriesTitle)
     WHERE SeriesID = NEW.SeriesID;
   END;
 --@@
 
-CREATE TRIGGER TRSeries_AU AFTER UPDATE ON Series
+CREATE TRIGGER TRSeries_AU AFTER UPDATE ON Series WHEN MHL_TRIGGERS_ON()
   BEGIN
     UPDATE Series
-    SET SearchSeriesTitle = UPPER(NEW.SeriesTitle)
+    SET SearchSeriesTitle = MHL_UPPER(NEW.SeriesTitle)
     WHERE SeriesID = NEW.SeriesID;
+    SELECT 1;
   END;
 --@@
 
 CREATE TABLE Genres (
-  GenreCode  VARCHAR(20) NOT NULL COLLATE NOCASE PRIMARY KEY,
+  GenreCode  VARCHAR(20) NOT NULL COLLATE NOCASE            PRIMARY KEY,
   ParentCode VARCHAR(20)          COLLATE NOCASE,
   FB2Code    VARCHAR(20)          COLLATE NOCASE,
-  GenreAlias VARCHAR(50) NOT NULL COLLATE SYSTEM_NOCASE
+  GenreAlias VARCHAR(50) NOT NULL COLLATE MHL_SYSTEM_NOCASE
 );
 --@@
 
@@ -89,10 +93,10 @@ CREATE INDEX IXGenres_GenreAlias ON Genres (GenreAlias);
 --@@
 
 CREATE TABLE Authors (
-  AuthorID   INTEGER      NOT NULL                       PRIMARY KEY AUTOINCREMENT,
-  LastName   VARCHAR(128) NOT NULL COLLATE SYSTEM_NOCASE,
-  FirstName  VARCHAR(128)          COLLATE SYSTEM_NOCASE,
-  MiddleName VARCHAR(128)          COLLATE SYSTEM_NOCASE,
+  AuthorID   INTEGER      NOT NULL                           PRIMARY KEY AUTOINCREMENT,
+  LastName   VARCHAR(128) NOT NULL COLLATE MHL_SYSTEM_NOCASE,
+  FirstName  VARCHAR(128)          COLLATE MHL_SYSTEM_NOCASE,
+  MiddleName VARCHAR(128)          COLLATE MHL_SYSTEM_NOCASE,
   SearchName VARCHAR(512)          COLLATE NOCASE
 );
 --@@
@@ -103,43 +107,43 @@ CREATE INDEX IXAuthors_FullName ON Authors (LastName, FirstName, MiddleName);
 CREATE INDEX IXAuthors_SearchName ON Authors (SearchName);
 --@@
 
-CREATE TRIGGER TRAuthors_AI AFTER INSERT ON Authors
+CREATE TRIGGER TRAuthors_AI AFTER INSERT ON Authors WHEN MHL_TRIGGERS_ON()
   BEGIN
     UPDATE Authors
-    SET SearchName = UPPER(NEW.LastName) || CASE WHEN IFNULL(NEW.FirstName,'')='' THEN '' ELSE ' ' END || UPPER(IFNULL(NEW.FirstName, '')) || CASE WHEN IFNULL(NEW.MiddleName,'') = '' THEN '' ELSE ' ' END || UPPER(IFNULL(NEW.MiddleName, ''))
+    SET SearchName = MHL_FULLNAME(NEW.LastName, NEW.FirstName, NEW.MiddleName, 1)
     WHERE AuthorID = NEW.AuthorID ;
   END;
 --@@
 
-CREATE TRIGGER TRAuthors_AU AFTER UPDATE ON Authors
+CREATE TRIGGER TRAuthors_AU AFTER UPDATE ON Authors WHEN MHL_TRIGGERS_ON()
   BEGIN
     UPDATE Authors
-    SET SearchName = UPPER(NEW.LastName) || CASE WHEN IFNULL(NEW.FirstName,'')='' THEN '' ELSE ' ' END || UPPER(IFNULL(NEW.FirstName, '')) || CASE WHEN IFNULL(NEW.MiddleName,'') = '' THEN '' ELSE ' ' END || UPPER(IFNULL(NEW.MiddleName, ''))
+    SET SearchName = MHL_FULLNAME(NEW.LastName, NEW.FirstName, NEW.MiddleName, 1)
     WHERE AuthorID = NEW.AuthorID ;
   END;
 --@@
 
 CREATE TABLE Books (
-  BookID           INTEGER      NOT NULL                       PRIMARY KEY AUTOINCREMENT,
+  BookID           INTEGER      NOT NULL                           PRIMARY KEY AUTOINCREMENT,
   LibID            INTEGER      NOT NULL,
-  Title            VARCHAR(150) NOT NULL COLLATE SYSTEM_NOCASE,
+  Title            VARCHAR(150) NOT NULL COLLATE MHL_SYSTEM_NOCASE,
   SeriesID         INTEGER,
   SeqNumber        INTEGER,
   UpdateDate       VARCHAR(23)  NOT NULL,
-  LibRate          INTEGER      NOT NULL                       DEFAULT 0,
-  Lang             VARCHAR(2)            COLLATE SYSTEM_NOCASE,
-  Folder           VARCHAR(200)          COLLATE SYSTEM_NOCASE,
-  FileName         VARCHAR(170) NOT NULL COLLATE SYSTEM_NOCASE,
+  LibRate          INTEGER      NOT NULL                           DEFAULT 0,
+  Lang             VARCHAR(2)            COLLATE MHL_SYSTEM_NOCASE,
+  Folder           VARCHAR(200)          COLLATE MHL_SYSTEM_NOCASE,
+  FileName         VARCHAR(170) NOT NULL COLLATE MHL_SYSTEM_NOCASE,
   InsideNo         INTEGER      NOT NULL,
-  Ext              VARCHAR(10)           COLLATE SYSTEM_NOCASE,
+  Ext              VARCHAR(10)           COLLATE MHL_SYSTEM_NOCASE,
   BookSize         INTEGER,
-  Code             INTEGER      NOT NULL                       DEFAULT 0,
-  IsLocal          INTEGER      NOT NULL                       DEFAULT 0,
-  IsDeleted        INTEGER      NOT NULL                       DEFAULT 0,
-  KeyWords         VARCHAR(255)          COLLATE SYSTEM_NOCASE,
-  Rate             INTEGER      NOT NULL                       DEFAULT 0,
-  Progress         INTEGER      NOT NULL                       DEFAULT 0,
-  Annotation       VARCHAR(4096)         COLLATE SYSTEM_NOCASE,
+  Code             INTEGER      NOT NULL                           DEFAULT 0,
+  IsLocal          INTEGER      NOT NULL                           DEFAULT 0,
+  IsDeleted        INTEGER      NOT NULL                           DEFAULT 0,
+  KeyWords         VARCHAR(255)          COLLATE MHL_SYSTEM_NOCASE,
+  Rate             INTEGER      NOT NULL                           DEFAULT 0,
+  Progress         INTEGER      NOT NULL                           DEFAULT 0,
+  Annotation       VARCHAR(4096)         COLLATE MHL_SYSTEM_NOCASE,
   Review           BLOB,
   SearchTitle      VARCHAR(150)          COLLATE NOCASE,
   SearchLang       VARCHAR(2)            COLLATE NOCASE,
@@ -205,33 +209,33 @@ CREATE INDEX IXBooks_SearchKeyWords ON Books (SearchKeyWords);
 CREATE INDEX IXBooks_SearchAnnotation ON Books (SearchAnnotation);
 --@@
 
-CREATE TRIGGER TRBooks_AI AFTER INSERT ON Books
+CREATE TRIGGER TRBooks_AI AFTER INSERT ON Books WHEN MHL_TRIGGERS_ON()
   BEGIN
     UPDATE Books
     SET
-      SearchTitle      = UPPER(NEW.Title),
-      SearchLang       = UPPER(NEW.Lang),
-      SearchFolder     = UPPER(NEW.Folder),
-      SearchFileName   = UPPER(NEW.FileName),
-      SearchExt        = UPPER(NEW.Ext),
-      SearchKeyWords   = UPPER(NEW.KeyWords),
-      SearchAnnotation = UPPER(NEW.Annotation)
+      SearchTitle      = MHL_UPPER(NEW.Title),
+      SearchLang       = MHL_UPPER(NEW.Lang),
+      SearchFolder     = MHL_UPPER(NEW.Folder),
+      SearchFileName   = MHL_UPPER(NEW.FileName),
+      SearchExt        = MHL_UPPER(NEW.Ext),
+      SearchKeyWords   = MHL_UPPER(NEW.KeyWords),
+      SearchAnnotation = MHL_UPPER(NEW.Annotation)
     WHERE
       BookID = NEW.BookID;
   END;
 --@@
 
-CREATE TRIGGER TRBooks_AU AFTER UPDATE OF Title, Lang, Folder, FileName, Ext, KeyWords, Annotation ON Books
+CREATE TRIGGER TRBooks_AU AFTER UPDATE OF Title, Lang, Folder, FileName, Ext, KeyWords, Annotation ON Books WHEN MHL_TRIGGERS_ON()
   BEGIN
     UPDATE Books
     SET
-      SearchTitle      = UPPER(NEW.Title),
-      SearchLang       = UPPER(NEW.Lang),
-      SearchFolder     = UPPER(NEW.Folder),
-      SearchFileName   = UPPER(NEW.FileName),
-      SearchExt        = UPPER(NEW.Ext),
-      SearchKeyWords   = UPPER(NEW.KeyWords),
-      SearchAnnotation = UPPER(NEW.Annotation)
+      SearchTitle      = MHL_UPPER(NEW.Title),
+      SearchLang       = MHL_UPPER(NEW.Lang),
+      SearchFolder     = MHL_UPPER(NEW.Folder),
+      SearchFileName   = MHL_UPPER(NEW.FileName),
+      SearchExt        = MHL_UPPER(NEW.Ext),
+      SearchKeyWords   = MHL_UPPER(NEW.KeyWords),
+      SearchAnnotation = MHL_UPPER(NEW.Annotation)
     WHERE
       BookID = NEW.BookID;
   END;
