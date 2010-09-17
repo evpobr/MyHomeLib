@@ -100,6 +100,7 @@ resourcestring
   rstrAddedBooks = 'Добавлено %u книг';
   rstrErrorInpStructure = 'Ошибка структуры inp. Файл %s, Строка %u ';
   rstrDBErrorInp = 'Ошибка базы данных при импорте книги. Файл %s, Строка %u ';
+  rstrUpdatingDB = 'Обновление базы данных. Пожалуйста, подождите ... ';
 
 const
   FieldsDescr: array [1 .. 20] of TFieldDescr = (
@@ -469,7 +470,7 @@ begin
 
       Teletype(Format(rstrAddedBooks, [filesProcessed]), tsInfo);
 
-      FProgressEngine.BeginOperation(-1, 'Updating database. Please wait...', '');
+      FProgressEngine.BeginOperation(-1, rstrUpdatingDB, '');
       BookCollection.AfterBatchUpdate;
     finally
       BookCollection.FinishBatchUpdate;
