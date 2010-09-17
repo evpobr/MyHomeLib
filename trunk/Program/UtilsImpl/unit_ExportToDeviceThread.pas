@@ -19,7 +19,6 @@ uses
   unit_WorkerThread,
   unit_globals,
   Dialogs,
-  ABSMain,
   ZipForge,
   unit_Templater;
 

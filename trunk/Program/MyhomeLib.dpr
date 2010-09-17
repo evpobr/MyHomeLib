@@ -1,23 +1,31 @@
-
-{******************************************************************************}
-{                                                                              }
-{                                 MyHomeLib                                    }
-{                                                                              }
-{              Copyright (c) 2008,2009 Aleksey Penkov  alex.penkov@gmail.com   }
-{                                                                              }
-{                               http://home-lib.net                            }
-{                                                                              }
-{ This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.                               }
-{                                                                              }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov (alex.penkov@gmail.com)
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation, either version 3 of the License, or
+  * (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  *
+  * Author(s)           Aleksey Penkov (alex.penkov@gmail.com)
+  *                     Nick Rymanov (nrymanov@gmail.com)
+  *                     eg_
+  *
+  * Home: http://home-lib.net
+  *   or: http://www.assembla.com/spaces/myhomelib
+  *
+  * $Id$
+  *
+  * History
+  *
+  ****************************************************************************** *)
 
 program MyhomeLib;
 
@@ -118,13 +126,10 @@ uses
   SQLite3 in 'DAO\SQLite\Lib\SQLite3.pas',
   SQLite3UDF in 'DAO\SQLite\Lib\SQLite3UDF.pas',
   SQLiteWrap in 'DAO\SQLite\Lib\SQLiteWrap.pas',
-  unit_Database_ABS in 'DAO\ABS\unit_Database_ABS.pas',
   unit_Database_SQLite in 'DAO\SQLite\unit_Database_SQLite.pas',
   unit_Database_Abstract in 'DAO\unit_Database_Abstract.pas',
   unit_SystemDatabase in 'DAO\unit_SystemDatabase.pas',
   unit_SystemDatabase_Abstract in 'DAO\unit_SystemDatabase_Abstract.pas',
-  unit_ABSUtils in 'DAO\ABS\unit_ABSUtils.pas',
-  unit_SystemDatabase_ABS in 'DAO\ABS\unit_SystemDatabase_ABS.pas',
   unit_SQLiteUtils in 'DAO\SQLite\unit_SQLiteUtils.pas',
   unit_SystemDatabase_SQLite in 'DAO\SQLite\unit_SystemDatabase_SQLite.pas',
   unit_ProgressEngine in 'Units\unit_ProgressEngine.pas';
@@ -147,17 +152,17 @@ begin
   Application.Title := 'MyHomeLib';
   frmSplash := TfrmSplash.Create(Application);
   try
-    frmSplash.Show;   // Display the splash screen
+    frmSplash.Show;
     frmSplash.Update; // Update the splash screen to ensure it gets drawn
 
-    // Важно! сначала создаем датамодули и главную форму
-    // а потом - остальные формы!
+    // Важно! сначала создаем датамодули и главную форму, а потом - остальные формы!
     Application.CreateForm(TDMUser, DMUser);
-  Application.CreateForm(TfrmMain, frmMain);
-  Application.CreateForm(TfrmGenreTree, frmGenreTree);
-  frmSplash.Hide;  // Hide the splash screen
+    Application.CreateForm(TfrmMain, frmMain);
+    Application.CreateForm(TfrmGenreTree, frmGenreTree);
+
+    frmSplash.Hide;
   finally
-    frmSplash.Free;  // Free the splash screen
+    frmSplash.Free;
   end;
 
   Application.Run;

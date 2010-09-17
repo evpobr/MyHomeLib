@@ -20,6 +20,7 @@ interface
 
 uses
   Windows,
+  SysUtils,
   Generics.Collections,
   unit_SystemDatabase_Abstract,
   SQLiteWrap,
@@ -190,8 +191,9 @@ implementation
 
 uses
   Classes,
-  SysUtils,
   IOUtils,
+  SQLite3,
+  unit_Logger,
   unit_SQLiteUtils;
 
 // Generate table structure and minimal system data
@@ -236,8 +238,6 @@ end;
 { TBookIteratorImpl }
 
 constructor TSystemData_SQLite.TBookIteratorImpl.Create(User: TSystemData_SQLite; const GroupID: Integer; const DatabaseID: Integer);
-var
-  pLogger: IIntervalLogger;
 begin
   inherited Create;
 
@@ -681,6 +681,7 @@ begin
       cpRootFolder:
         Match := (CollectionInfo.RootFolder = Value);
       else
+        Match := False;
         Assert(False);
       end;
 
@@ -1063,6 +1064,10 @@ begin
     query.SetParam(2, BookKey.BookID);
     query.SetParam(3, BookKey.DatabaseID);
     query.ExecSQL;
+
+    //
+    // TODO : set Result
+    //
   finally
     FreeAndNil(query);
   end;
@@ -1547,7 +1552,7 @@ begin
     query.SetParam(0, GroupID);
     query.ExecSQL;
   finally
-    FreeAndNil(Query);
+    FreeAndNil(query);
   end;
 
   //
@@ -1561,9 +1566,13 @@ begin
   if RemoveGroup then
   begin
     query := FDatabase.NewQuery(SQL_DELETE_GROUPS);
-    query.SetParam(0, GroupID);
-    query.SetParam(1, True); // Delete only if AllowDelete is true
-    query.ExecSQL;
+    try
+      query.SetParam(0, GroupID);
+      query.SetParam(1, True); // Delete only if AllowDelete is true
+      query.ExecSQL;
+    finally
+      FreeAndNil(query);
+    end;
   end;
 end;
 

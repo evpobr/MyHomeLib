@@ -52,7 +52,6 @@
 			<DCCReference Include="IndyCore.dcp"/>
 			<DCCReference Include="IndySystem.dcp"/>
 			<DCCReference Include="IndyProtocols.dcp"/>
-			<DCCReference Include="vclAbsDBd13.dcp"/>
 			<DCCReference Include="vclZipForged13.dcp"/>
 			<DCCReference Include="VirtualTreesD14.dcp"/>
 			<DCCReference Include="unit_StaticTip.pas"/>

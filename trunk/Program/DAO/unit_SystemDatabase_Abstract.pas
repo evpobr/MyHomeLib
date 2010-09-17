@@ -30,7 +30,7 @@ type
     FActiveCollectionInfo: TCollectionInfo;
 
   public
-    constructor Create; virtual;
+    constructor Create;
     destructor Destroy; override;
 
   public // virtual
@@ -134,6 +134,7 @@ uses
 
 constructor TSystemData.Create;
 begin
+  inherited Create;
   FActiveCollectionInfo := TCollectionInfo.Create;
 end;
 
