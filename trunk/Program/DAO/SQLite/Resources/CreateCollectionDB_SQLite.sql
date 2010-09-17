@@ -137,7 +137,6 @@ CREATE TABLE Books (
   InsideNo         INTEGER      NOT NULL,
   Ext              VARCHAR(10)           COLLATE MHL_SYSTEM_NOCASE,
   BookSize         INTEGER,
-  Code             INTEGER      NOT NULL                           DEFAULT 0,
   IsLocal          INTEGER      NOT NULL                           DEFAULT 0,
   IsDeleted        INTEGER      NOT NULL                           DEFAULT 0,
   KeyWords         VARCHAR(255)          COLLATE MHL_SYSTEM_NOCASE,

@@ -756,9 +756,9 @@ const
   SQL_SELECT = 'SELECT ' +
     'LibID, Title, SeriesID, SeqNumber, UpdateDate, ' + // 0 .. 4
     'LibRate, Lang, Folder, FileName, InsideNo, ' +     // 5 .. 9
-    'Ext, BookSize, Code, IsLocal, IsDeleted, ' +       // 10 .. 14
-    'KeyWords, Rate, Progress, Annotation, Review, ' +  // 15 .. 19
-    'ExtraInfo ' +                                      // 20
+    'Ext, BookSize, IsLocal, IsDeleted, ' +             // 10 .. 13
+    'KeyWords, Rate, Progress, Annotation, Review, ' +  // 14 .. 18
+    'ExtraInfo ' +                                      // 19
     'FROM Books WHERE BookID = ? AND DatabaseID = ? ';
 var
   stream: TStream;
@@ -797,16 +797,19 @@ begin
     BookRecord.InsideNo := query.FieldAsInt(9);
     BookRecord.FileExt := query.FieldAsString(10);
     BookRecord.Size := query.FieldAsInt(11);
-    BookRecord.Code := query.FieldAsInt(12);
-    BookRecord.IsLocal := query.FieldAsBoolean(13);
-    BookRecord.IsDeleted := query.FieldAsBoolean(14);
-    BookRecord.KeyWords := query.FieldAsString(15);
-    BookRecord.LibRate := query.FieldAsInt(16);
-    BookRecord.Progress := query.FieldAsInt(17);
-    BookRecord.Annotation := query.FieldAsBlobString(18);
-    BookRecord.Review := query.FieldAsBlobString(19);
+    BookRecord.IsLocal := query.FieldAsBoolean(12);
+    BookRecord.IsDeleted := query.FieldAsBoolean(13);
+    BookRecord.KeyWords := query.FieldAsString(14);
+    BookRecord.LibRate := query.FieldAsInt(15);
+    BookRecord.Progress := query.FieldAsInt(16);
+    BookRecord.Annotation := query.FieldAsBlobString(17);
+    BookRecord.Review := query.FieldAsBlobString(18);
+    if BookRecord.Review <> '' then
+      BookRecord.Code := 1
+    else
+      BookRecord.Code := 0;
 
-    stream := query.FieldAsBlob(20);
+    stream := query.FieldAsBlob(19);
     try
       reader := TReader.Create(stream, 4096);
       try
@@ -899,10 +902,10 @@ const
   SQL_UPDATE = 'UPDATE Books ' +
     'SET LibID = ?, Title = ?, SeriesID = ?, SeqNumber = ?, UpdateDate = ?, ' + // 0 .. 4
     'LibRate = ?, Lang = ?, Folder = ?, FileName = ?, InsideNo = ?, ' +         // 5 .. 9
-    'Ext = ?, BookSize = ?, Code = ?, IsLocal = ?, IsDeleted = ?, ' +           // 10 .. 14
-    'KeyWords = ?, Rate = ?, Progress = ?, Annotation = ?, Review = ?, ' +      // 15 .. 19
-    'ExtraInfo = ? ' +                                                          // 20
-    'WHERE BookID = ? DatabaseID = ? ';                                         // 21 .. 22
+    'Ext = ?, BookSize = ?, IsLocal = ?, IsDeleted = ?, ' +                     // 10 .. 13
+    'KeyWords = ?, Rate = ?, Progress = ?, Annotation = ?, Review = ?, ' +      // 14 .. 18
+    'ExtraInfo = ? ' +                                                          // 19
+    'WHERE BookID = ? DatabaseID = ? ';                                         // 20 .. 21
 var
   stream: TStream;
   writer: TWriter;
@@ -925,14 +928,13 @@ begin
     query.SetParam(9, BookRecord.InsideNo);
     query.SetParam(10, BookRecord.FileExt);
     query.SetParam(11, BookRecord.Size);
-    query.SetParam(12, BookRecord.Code);
-    query.SetParam(13, BookRecord.IsLocal);
-    query.SetParam(14, BookRecord.IsDeleted);
-    query.SetParam(15, BookRecord.KeyWords);
-    query.SetParam(16, BookRecord.Rate);
-    query.SetParam(17, BookRecord.Progress);
-    query.SetBlobParam(18, BookRecord.Annotation);
-    query.SetBlobParam(19, BookRecord.Review);
+    query.SetParam(12, BookRecord.IsLocal);
+    query.SetParam(13, BookRecord.IsDeleted);
+    query.SetParam(14, BookRecord.KeyWords);
+    query.SetParam(15, BookRecord.Rate);
+    query.SetParam(16, BookRecord.Progress);
+    query.SetBlobParam(17, BookRecord.Annotation);
+    query.SetBlobParam(18, BookRecord.Review);
 
     stream := TMemoryStream.Create;
     try
@@ -961,13 +963,13 @@ begin
       finally
         FreeAndNil(writer);
       end;
-      query.SetBlobParam(20, stream);
+      query.SetBlobParam(19, stream);
     finally
       stream.Free;
     end;
 
-    query.SetParam(21, BookRecord.BookKey.BookID);
-    query.SetParam(22, BookRecord.BookKey.DatabaseID);
+    query.SetParam(20, BookRecord.BookKey.BookID);
+    query.SetParam(21, BookRecord.BookKey.DatabaseID);
 
     query.ExecSQL;
   finally
@@ -1050,19 +1052,15 @@ end;
 
 function TSystemData_SQLite.SetReview(const BookKey: TBookKey; const Review: string): Integer;
 const
-  SQL_UPDATE = 'UPDATE Books Set Review = ?, Code = ? WHERE BookID = ? AND DatabaseID = ? ';
+  SQL_UPDATE = 'UPDATE Books Set Review = ? WHERE BookID = ? AND DatabaseID = ? ';
 var
   query: TSQLiteQuery;
 begin
   query := FDatabase.NewQuery(SQL_UPDATE);
   try
     query.SetBlobParam(0, Review);
-    if Review = '' then
-      query.SetParam(1, 0)
-    else
-      query.SetParam(1, 1);
-    query.SetParam(2, BookKey.BookID);
-    query.SetParam(3, BookKey.DatabaseID);
+    query.SetParam(1, BookKey.BookID);
+    query.SetParam(2, BookKey.DatabaseID);
     query.ExecSQL;
 
     //
@@ -1237,10 +1235,10 @@ const
   SQL_INSERT = 'INSERT INTO BOOKS (' +
     'LibID, Title, SeriesID, SeqNumber, UpdateDate, ' + // 0 .. 4
     'LibRate, Lang, Folder, FileName, InsideNo, ' +     // 5 .. 9
-    'Ext, BookSize, Code, IsLocal, IsDeleted, ' +       // 10 .. 14
-    'KeyWords, Rate, Progress, Annotation, Review, ' +  // 15 .. 19
-    'ExtraInfo, BookID, DatabaseID ) ' +                // 20 .. 22
-    'SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ';
+    'Ext, BookSize, IsLocal, IsDeleted, ' +             // 10 .. 13
+    'KeyWords, Rate, Progress, Annotation, Review, ' +  // 14 .. 18
+    'ExtraInfo, BookID, DatabaseID ) ' +                // 19 .. 21
+    'SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ';
 
 var
   stream: TStream;
@@ -1276,20 +1274,19 @@ begin
       query.SetParam(9, BookRecord.InsideNo);
       query.SetParam(10, BookRecord.FileExt);
       query.SetParam(11, BookRecord.Size);
-      query.SetParam(12, BookRecord.Code);
-      query.SetParam(13, BookRecord.IsLocal);
-      query.SetParam(14, BookRecord.IsDeleted);
-      query.SetParam(15, BookRecord.KeyWords);
-      query.SetParam(16, BookRecord.Rate);
-      query.SetParam(17, BookRecord.Progress);
+      query.SetParam(12, BookRecord.IsLocal);
+      query.SetParam(13, BookRecord.IsDeleted);
+      query.SetParam(14, BookRecord.KeyWords);
+      query.SetParam(15, BookRecord.Rate);
+      query.SetParam(16, BookRecord.Progress);
       if BookRecord.Annotation = '' then
+        query.SetNullParam(17)
+      else
+        query.SetParam(17, BookRecord.Annotation);
+      if BookRecord.Review = '' then
         query.SetNullParam(18)
       else
-        query.SetParam(18, BookRecord.Annotation);
-      if BookRecord.Review = '' then
-        query.SetNullParam(19)
-      else
-        query.SetBlobParam(19, BookRecord.Review);
+        query.SetBlobParam(18, BookRecord.Review);
 
       stream := TMemoryStream.Create;
       try
@@ -1318,13 +1315,13 @@ begin
         finally
           FreeAndNil(writer);
         end;
-        query.SetBlobParam(20, stream);
+        query.SetBlobParam(19, stream);
       finally
         stream.Free;
       end;
 
-      query.SetParam(21, BookKey.BookID);
-      query.SetParam(22, BookKey.DatabaseID);
+      query.SetParam(20, BookKey.BookID);
+      query.SetParam(21, BookKey.DatabaseID);
 
       query.ExecSQL;
     finally
