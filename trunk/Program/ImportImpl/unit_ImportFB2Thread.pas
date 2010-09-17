@@ -81,7 +81,7 @@ begin
 
         R.Size := unit_Helpers.GetFileSize(FFiles[i]);
         R.Date := Now;
-        R.IsLocal := True;
+        Include(R.BookProps, bpIsLocal);
         try
           if Settings.EnableSort then
           begin

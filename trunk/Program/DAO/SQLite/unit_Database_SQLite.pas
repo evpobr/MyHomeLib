@@ -1551,7 +1551,10 @@ begin
       BookRecord.SeqNumber := 0;
 
     BookRecord.Review := Trim(BookRecord.Review);
-    BookRecord.Code := IfThen(BookRecord.Review = '', 0, 1);
+    if BookRecord.Review <> '' then
+      Include(BookRecord.BookProps, bpHasReview)
+    else
+      Exclude(BookRecord.BookProps, bpHasReview);
     BookRecord.Annotation := LeftStr(Trim(BookRecord.Annotation), ANNOTATION_SIZE_LIMIT);
 
     query := FDatabase.NewQuery(SQL_INSERT);
@@ -1573,8 +1576,8 @@ begin
       end;
       query.SetParam(7, BookRecord.Size);
       query.SetParam(8, BookRecord.LibID);
-      query.SetParam(9, BookRecord.IsDeleted);
-      query.SetParam(10, BookRecord.IsLocal);
+      query.SetParam(9, bpIsDeleted in BookRecord.BookProps);
+      query.SetParam(10, bpIsLocal in BookRecord.BookProps);
       query.SetParam(11, BookRecord.Date);
       query.SetParam(12, BookRecord.Lang);
       query.SetParam(13, BookRecord.LibRate);
@@ -1646,8 +1649,14 @@ begin
       end;
       BookRecord.Size := Table.FieldAsInt(7);
       BookRecord.LibID := Table.FieldAsInt(8);
-      BookRecord.IsDeleted := Table.FieldAsBoolean(9);
-      BookRecord.IsLocal := Table.FieldAsBoolean(10);
+      if Table.FieldAsBoolean(9) then
+        Include(BookRecord.BookProps, bpIsDeleted)
+      else
+        Exclude(BookRecord.BookProps, bpIsDeleted);
+      if Table.FieldAsBoolean(10) then
+        Include(BookRecord.BookProps, bpIsLocal)
+      else
+        Exclude(BookRecord.BookProps, bpIsLocal);
       BookRecord.Date := Table.FieldAsDateTime(11);
       BookRecord.Lang := Table.FieldAsString(12);
       BookRecord.LibRate := Table.FieldAsInt(13);
@@ -1658,9 +1667,9 @@ begin
       BookRecord.CollectionName := FSystemData.GetActiveCollectionInfo.Name;
 
       if (not Table.FieldIsNull(17)) then // review
-        BookRecord.Code := 1
+        Include(BookRecord.BookProps, bpHasReview)
       else
-        BookRecord.Code := 0;
+        Exclude(BookRecord.BookProps, bpHasReview);
 
       GetBookGenres(BookRecord.BookKey.BookID, BookRecord.Genres, @(BookRecord.RootGenre));
       GetBookAuthors(BookRecord.BookKey.BookID, BookRecord.Authors);
@@ -1730,7 +1739,10 @@ begin
     BookRecord.SeqNumber := 0;
 
   BookRecord.Review := Trim(BookRecord.Review);
-  BookRecord.Code := IfThen(BookRecord.Review = '', 0, 1);
+  if BookRecord.Review <> '' then
+    Include(BookRecord.BookProps, bpHasReview)
+  else
+    Exclude(BookRecord.BookProps, bpHasReview);
   BookRecord.Annotation := LeftStr(Trim(BookRecord.Annotation), ANNOTATION_SIZE_LIMIT);
 
   // Update the book's series and clean up unused series:
@@ -1750,8 +1762,8 @@ begin
       query.SetNullParam(5);
     query.SetParam(6, BookRecord.Size);
     query.SetParam(7, BookRecord.LibID);
-    query.SetParam(8, BookRecord.IsDeleted);
-    query.SetParam(9, BookRecord.IsLocal);
+    query.SetParam(8, bpIsDeleted in BookRecord.BookProps);
+    query.SetParam(9, bpIsLocal in BookRecord.BookProps);
     query.SetParam(10, BookRecord.Date);
     query.SetParam(11, BookRecord.Lang);
     query.SetParam(12, BookRecord.LibRate);
@@ -1873,7 +1885,7 @@ begin
 
   query := FDatabase.NewQuery(SQL_UPDATE);
   try
-    query.SetParam(0, NewCode);
+    query.SetBlobParam(0, NewReview);
     query.SetParam(1, BookKey.BookID);
 
     query.ExecSQL;

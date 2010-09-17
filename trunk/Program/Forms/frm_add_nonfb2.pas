@@ -480,12 +480,10 @@ begin
     FBookRecord.Folder := '';
   FBookRecord.FileName := Data^.FileName;
   FBookRecord.FileExt := Data^.Ext;
-  FBookRecord.Code := 0;
+  FBookRecord.BookProps := [];
   FBookRecord.InsideNo := 0;
   FBookRecord.SeqNumber := StrToIntDef(edSN.Text, 0);
   FBookRecord.LibID := 0;
-  FBookRecord.IsLocal := True;
-  FBookRecord.IsDeleted := False;
   FBookRecord.Size := Data^.Size;
   FBookRecord.Date := Now;
   FBookRecord.KeyWords := edKeyWords.Text;

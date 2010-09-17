@@ -296,6 +296,9 @@ type
   // --------------------------------------------------------------------------
   TBookNodeType = (ntAuthorInfo = 1, ntSeriesInfo, ntBookInfo);
 
+  TBookProp = (bpIsLocal = 1, bpIsDeleted, bpHasReview);
+  TBookProps = set of TBookProp;
+
   PBookRecord = ^TBookRecord;
   TBookRecord = record
     nodeType: TBookNodeType;
@@ -312,9 +315,7 @@ type
     SeqNumber: Integer;
     Progress: Integer;
     LibRate: Integer;
-    Code: Integer;
-    IsLocal: Boolean;
-    IsDeleted: Boolean;
+    BookProps: TBookProps;
     Date: TDateTime;
     FileExt: string;
 
@@ -1004,14 +1005,12 @@ begin
   ClearAuthors;
   ClearGenres;
 
-  Code := 0;
+  BookProps := [];
   Size := 0;
   InsideNo := 0;
   SeqNumber := 0;
   libID := 0;
 
-  IsDeleted := False;
-  IsLocal := False;
   Date := 0;
 
   Review := '';
