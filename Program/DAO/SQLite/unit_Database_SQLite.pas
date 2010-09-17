@@ -704,8 +704,8 @@ begin
         if FCollection.GetAuthorFilterType = ALPHA_FILTER_NON_ALPHA then
         begin
           AddToWhere(Where,
-            '(MHL_UPPER(SUBSTR(a.LastName, 1, 1)) NOT IN (' + ENGLISH_ALPHABET_SEPARATORS + ')) AND ' +
-            '(MHL_UPPER(SUBSTR(a.LastName, 1, 1)) NOT IN (' + RUSSIAN_ALPHABET_SEPARATORS + '))'
+            '(SUBSTR(a.SearchName, 1, 1) NOT IN (' + ENGLISH_ALPHABET_SEPARATORS + ')) AND ' +
+            '(SUBSTR(a.SearchName, 1, 1) NOT IN (' + RUSSIAN_ALPHABET_SEPARATORS + '))'
           );
         end
         else if (FCollection.GetAuthorFilterType <> '') and (FCollection.GetAuthorFilterType <> ALPHA_FILTER_ALL) then
@@ -714,7 +714,7 @@ begin
           Assert(TCharacter.IsUpper(FCollection.GetAuthorFilterType, 1));
           // TODO -cSQL performance: не оптимизируется при использовании выражения
           AddToWhere(Where,
-            'MHL_UPPER(a.LastName) LIKE :FilterType'  // начинается на заданную букву
+            'a.SearchName LIKE :FilterType'  // начинается на заданную букву
           );
         end;
 
@@ -931,8 +931,8 @@ begin
         if FCollection.GetSeriesFilterType = ALPHA_FILTER_NON_ALPHA then
         begin
           AddToWhere(Where,
-            '(MHL_UPPER(SUBSTR(s.SeriesTitle, 1, 1)) NOT IN (' + ENGLISH_ALPHABET_SEPARATORS + ')) AND ' +
-            '(MHL_UPPER(SUBSTR(s.SeriesTitle, 1, 1)) NOT IN (' + RUSSIAN_ALPHABET_SEPARATORS + '))'
+            '(SUBSTR(s.SearchSeriesTitle, 1, 1) NOT IN (' + ENGLISH_ALPHABET_SEPARATORS + ')) AND ' +
+            '(SUBSTR(s.SearchSeriesTitle, 1, 1) NOT IN (' + RUSSIAN_ALPHABET_SEPARATORS + '))'
           );
         end
         else if FCollection.GetSeriesFilterType <> ALPHA_FILTER_ALL then
@@ -941,7 +941,7 @@ begin
           Assert(TCharacter.IsUpper(FCollection.GetSeriesFilterType, 1));
           // TODO -cSQL performance: не оптимизируется при использовании выражения
           AddToWhere(Where,
-            'MHL_UPPER(s.SeriesTitle) LIKE :FilterType'   // начинается на заданную букву
+            's.SearchSeriesTitle LIKE :FilterType'   // начинается на заданную букву
           );
         end;
       end;
