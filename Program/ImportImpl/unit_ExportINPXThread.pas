@@ -233,7 +233,7 @@ begin
   writer.Write(CheckSymbols(Trim(R.FileName)));       writer.Write(INPX_FIELD_DELIMITER);
   writer.Write(R.Size);                               writer.Write(INPX_FIELD_DELIMITER);
   writer.Write(R.LibID);                              writer.Write(INPX_FIELD_DELIMITER);
-  writer.Write(IfThen(R.IsDeleted, '1', '0'));        writer.Write(INPX_FIELD_DELIMITER);
+  writer.Write(IfThen(bpIsDeleted in R.BookProps, '1', '0')); writer.Write(INPX_FIELD_DELIMITER);
   writer.Write(strFileExt);                           writer.Write(INPX_FIELD_DELIMITER);
   writer.Write(FormatDateTime('yyyy-mm-dd', R.Date)); writer.Write(INPX_FIELD_DELIMITER);
   writer.Write(R.InsideNo);                           writer.Write(INPX_FIELD_DELIMITER);

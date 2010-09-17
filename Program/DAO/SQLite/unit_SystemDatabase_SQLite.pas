@@ -797,17 +797,23 @@ begin
     BookRecord.InsideNo := query.FieldAsInt(9);
     BookRecord.FileExt := query.FieldAsString(10);
     BookRecord.Size := query.FieldAsInt(11);
-    BookRecord.IsLocal := query.FieldAsBoolean(12);
-    BookRecord.IsDeleted := query.FieldAsBoolean(13);
+    if query.FieldAsBoolean(12) then
+      Include(BookRecord.BookProps, bpIsLocal)
+    else
+      Exclude(BookRecord.BookProps, bpIsLocal);
+    if query.FieldAsBoolean(13) then
+      Include(BookRecord.BookProps, bpIsDeleted)
+    else
+      Exclude(BookRecord.BookProps, bpIsDeleted);
     BookRecord.KeyWords := query.FieldAsString(14);
     BookRecord.LibRate := query.FieldAsInt(15);
     BookRecord.Progress := query.FieldAsInt(16);
     BookRecord.Annotation := query.FieldAsBlobString(17);
     BookRecord.Review := query.FieldAsBlobString(18);
     if BookRecord.Review <> '' then
-      BookRecord.Code := 1
+      Include(BookRecord.BookProps, bpHasReview)
     else
-      BookRecord.Code := 0;
+      Exclude(BookRecord.BookProps, bpHasReview);
 
     stream := query.FieldAsBlob(19);
     try
@@ -928,8 +934,8 @@ begin
     query.SetParam(9, BookRecord.InsideNo);
     query.SetParam(10, BookRecord.FileExt);
     query.SetParam(11, BookRecord.Size);
-    query.SetParam(12, BookRecord.IsLocal);
-    query.SetParam(13, BookRecord.IsDeleted);
+    query.SetParam(12, bpIsLocal in BookRecord.BookProps);
+    query.SetParam(13, bpIsDeleted in BookRecord.BookProps);
     query.SetParam(14, BookRecord.KeyWords);
     query.SetParam(15, BookRecord.Rate);
     query.SetParam(16, BookRecord.Progress);
@@ -1063,9 +1069,10 @@ begin
     query.SetParam(2, BookKey.DatabaseID);
     query.ExecSQL;
 
-    //
-    // TODO : set Result
-    //
+    if Review <> '' then
+      Result := 1
+    else
+      Result := 0;
   finally
     FreeAndNil(query);
   end;
@@ -1274,8 +1281,8 @@ begin
       query.SetParam(9, BookRecord.InsideNo);
       query.SetParam(10, BookRecord.FileExt);
       query.SetParam(11, BookRecord.Size);
-      query.SetParam(12, BookRecord.IsLocal);
-      query.SetParam(13, BookRecord.IsDeleted);
+      query.SetParam(12, bpIsLocal in BookRecord.BookProps);
+      query.SetParam(13, bpIsDeleted in BookRecord.BookProps);
       query.SetParam(14, BookRecord.KeyWords);
       query.SetParam(15, BookRecord.Rate);
       query.SetParam(16, BookRecord.Progress);

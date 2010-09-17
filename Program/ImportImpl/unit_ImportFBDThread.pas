@@ -145,7 +145,7 @@ begin
               R.Folder := ExtractRelativePath(FCollectionRoot, ExtractFilePath(FFiles[i]));
               R.FileName := ExtractFilename(FFiles[i]);
               R.Date := Now;
-              R.IsLocal := True;
+              Include(R.BookProps, bpIsLocal);
               FZipper.ExtractToStream(ArchiveItem.FileName,FS);
               if not Assigned(FS) then
                 Continue;

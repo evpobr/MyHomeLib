@@ -3162,7 +3162,7 @@ begin
 
     if Settings.ShowBookCover or Settings.ShowBookAnnotation then
     begin
-      if IsLocal or Data^.IsLocal then
+      if IsLocal or (bpIsLocal in Data^.BookProps) then
       begin
         try
           bookStream := Data^.GetBookDescriptorStream;
@@ -3347,7 +3347,7 @@ begin
     finally
       FreeAndNil(CollectionInfo);
     end;
-    if (Data^.IsLocal) and isOnlineCollection(CollectionType) then
+    if (bpIsLocal in Data^.BookProps) and isOnlineCollection(CollectionType) then
       ilFileTypes.Draw(TargetCanvas, X, CellRect.Top + 1, 7);
 
     //
@@ -3359,7 +3359,7 @@ begin
     //
     // У книги есть аннотация
     //
-    if Data^.Code = 1 then
+    if bpHasReview in Data^.BookProps then
       ilFileTypes.Draw(TargetCanvas, X + 25, CellRect.Top + 1, 9);
   end
   else if (Tag = COL_RATE) then
@@ -3493,9 +3493,9 @@ begin
     TargetCanvas.Font.Style := [fsBold]
   else if not Sender.Selected[Node] then
   begin
-    if Data^.IsLocal then
+    if (bpIsLocal in Data^.BookProps) then
       TargetCanvas.Font.Color := Settings.LocalColor;
-    if Data^.IsDeleted then
+    if (bpIsDeleted in Data^.BookProps) then
       TargetCanvas.Font.Color := Settings.DeletedColor;
   end;
 end;
@@ -3860,7 +3860,7 @@ begin
         try
           FSystemData.GetCollectionInfo(BookRecord.BookKey.DatabaseID, CollectionInfo);
 
-          if (not BookRecord.IsLocal) and isOnlineCollection(CollectionInfo.CollectionType) then
+          if (not (bpIsLocal in BookRecord.BookProps)) and isOnlineCollection(CollectionInfo.CollectionType) then
           begin
             // A not-yet-downloaded book of an online collection, can download only if book's collection is selected
             GetActiveBookCollection.VerifyCurrentCollection(BookRecord.BookKey.DatabaseID);
@@ -4588,7 +4588,7 @@ begin
       begin
         BookFileName := Data^.GetBookFileName;
 
-        if (IsOnline and Data^.IsLocal) and DeleteFile(BookFileName) then
+        if (IsOnline and (bpIsLocal in Data^.BookProps)) and DeleteFile(BookFileName) then
           SetBookLocalStatus(Data^.BookKey, False)
         else
         begin
@@ -4675,7 +4675,7 @@ begin
           // игнорируем все ошибки
         end;
 
-        if Data^.IsLocal then
+        if (bpIsLocal in Data^.BookProps) then
           BookCollection.SetLocal(Data^.BookKey, False);
 
         UpdateNodes(
@@ -4683,7 +4683,7 @@ begin
           procedure(BookData: PBookRecord)
           begin
             Assert(Assigned(BookData));
-            BookData^.IsLocal := False;
+            Exclude(BookData^.BookProps, bpIsLocal);
           end
         );
       end;
@@ -4738,7 +4738,7 @@ begin
     Assert(Assigned(BookData));
     if IsSelectedBookNode(BookNode, BookData) then
     begin
-      if not BookData^.IsLocal and (BookData^.BookKey.DatabaseID = FSystemData.GetActiveCollectionInfo.ID) then
+      if not (bpIsLocal in BookData^.BookProps) and (BookData^.BookKey.DatabaseID = FSystemData.GetActiveCollectionInfo.ID) then
       begin
         if not BookInDownloadList(BookData^.BookKey) then
         begin
@@ -6067,7 +6067,7 @@ begin
       // загрузим книгу в стрим и отдадим его форме для чтения из него информации
       // сейчас мы грузим только fb2 или fbd, т к больше ничего разбирать не умеем
       //
-      if Data^.IsLocal then
+      if (bpIsLocal in Data^.BookProps) then
       begin
         // Load FB2 info only for local files that can provide one
         try
@@ -6107,7 +6107,7 @@ begin
         frmBookDetails.AllowOnlineReview(URL);
       end;
 
-      if Data^.Code = 1 then
+      if bpHasReview in Data^.BookProps then
         //
         // ревью уже есть - покажем его
         //
@@ -6131,7 +6131,10 @@ begin
       procedure(BookData: PBookRecord)
       begin
         Assert(Assigned(BookData));
-        BookData^.Code := NewCode;
+        if NewCode = 1 then
+          Include(BookData^.BookProps, bpHasReview)
+        else
+          Exclude(BookData^.BookProps, bpHasReview);
       end
     );
   finally
@@ -6788,7 +6791,10 @@ begin
     procedure(BookData: PBookRecord)
     begin
       Assert(Assigned(BookData));
-      BookData^.IsLocal := IsLocal;
+      if IsLocal then
+        Include(BookData^.BookProps, bpIsLocal)
+      else
+        Exclude(BookData^.BookProps, bpIsLocal);
     end
   );
 end;
@@ -6843,7 +6849,7 @@ begin
             if extra.Progress <> 0 then
               BookData^.Progress := extra.Progress;
             if extra.Review <> '' then
-              BookData^.Code := 1;
+              Include(BookData^.BookProps, bpHasReview);
           end
         );
       end

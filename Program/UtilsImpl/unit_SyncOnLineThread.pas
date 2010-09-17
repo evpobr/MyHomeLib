@@ -87,13 +87,13 @@ begin
       BookFile := BookRecord.GetBookFileName;
       IsLocal := FileExists(BookFile);
 
-      if Settings.DeleteDeleted and IsLocal and BookRecord.IsDeleted then
+      if Settings.DeleteDeleted and IsLocal and (bpIsDeleted in BookRecord.BookProps) then
       begin
         SysUtils.DeleteFile(BookFile);
         IsLocal := False;
       end;
 
-      if BookRecord.IsLocal <> IsLocal then
+      if (bpIsLocal in BookRecord.BookProps) <> IsLocal then
         unit_Messages.BookLocalStatusChanged(BookRecord.BookKey, IsLocal);
     except
       on E: Exception do
