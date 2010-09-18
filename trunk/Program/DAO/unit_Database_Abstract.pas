@@ -51,9 +51,7 @@ type
     procedure DeleteBook(const BookKey: TBookKey); virtual; abstract;
     procedure AddBookToGroup(const BookKey: TBookKey; const GroupID: Integer);
 
-    function GetLibID(const BookKey: TBookKey): string; virtual; abstract; // deprecated;
     function GetReview(const BookKey: TBookKey): string; virtual; abstract;
-
     function SetReview(const BookKey: TBookKey; const Review: string): Integer; virtual; abstract;
     procedure SetProgress(const BookKey: TBookKey; const Progress: Integer); virtual; abstract;
     procedure SetRate(const BookKey: TBookKey; const Rate: Integer); virtual; abstract;

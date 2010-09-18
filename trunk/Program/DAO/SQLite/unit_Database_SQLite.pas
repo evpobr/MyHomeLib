@@ -153,7 +153,6 @@ type
     procedure UpdateBook(BookRecord: TBookRecord); override;
     procedure DeleteBook(const BookKey: TBookKey); override;
 
-    function GetLibID(const BookKey: TBookKey): string; override; // deprecated;
     function GetReview(const BookKey: TBookKey): string; override;
     function SetReview(const BookKey: TBookKey; const Review: string): Integer; override;
     procedure SetProgress(const BookKey: TBookKey; const Progress: Integer); override;
@@ -1818,31 +1817,6 @@ begin
   end;
 
   FSystemData.DeleteBook(BookKey);
-end;
-
-function TBookCollection_SQLite.GetLibID(const BookKey: TBookKey): string;
-const
-  SQL = 'SELECT b.LibID FROM Books b WHERE b.BookID = ? ';
-var
-  Query: TSQLiteQuery;
-begin
-  if BookKey.DatabaseID = FSystemData.GetActiveCollectionInfo.ID then
-  begin
-    Query := FDatabase.NewQuery(SQL);
-    try
-      Query.SetParam(0, BookKey.BookID);
-      Query.Open;
-
-      if not Query.Eof then
-        Result := IntToStr(Query.FieldAsInt(0))
-      else
-        Result := '';
-    finally
-      FreeAndNil(Query);
-    end;
-  end
-  else
-    FSystemData.GetBookLibID(BookKey, Result);
 end;
 
 function TBookCollection_SQLite.GetReview(const BookKey: TBookKey): string;

@@ -77,8 +77,6 @@ type
     ): Boolean;
     procedure DeleteCollection(CollectionID: Integer);
 
-    procedure GetBookLibID(const BookKey: TBookKey; out ARes: string);  // deprecated;
-
     function ActivateGroup(const ID: Integer): Boolean;
 
     procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord);
@@ -155,7 +153,6 @@ type
     procedure DeleteBook(const BookKey: TBookKey);
     procedure AddBookToGroup(const BookKey: TBookKey; const GroupID: Integer);
 
-    function GetLibID(const BookKey: TBookKey): string;
     function GetReview(const BookKey: TBookKey): string;
 
     function SetReview(const BookKey: TBookKey; const Review: string): Integer; // превратить в процедуру
