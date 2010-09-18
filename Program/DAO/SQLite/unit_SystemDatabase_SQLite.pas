@@ -124,8 +124,6 @@ type
     ): Boolean; override;
     procedure DeleteCollection(CollectionID: Integer); override;
 
-    procedure GetBookLibID(const BookKey: TBookKey; out ARes: string); override; // deprecated;
-
     function ActivateGroup(const ID: Integer): Boolean; override;
 
     procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord); override;
@@ -715,24 +713,6 @@ begin
   collectionID := FindFirstExistingCollectionID(1);
   if collectionID > 0 then
     ActivateCollection(collectionID);
-end;
-
-procedure TSystemData_SQLite.GetBookLibID(const BookKey: TBookKey; out ARes: String);
-const
-  SQL_SELECT = 'SELECT LibID FROM Books WHERE BookID = ? ';
-var
-  query: TSQLiteQuery;
-begin
-  query := FDatabase.NewQuery(SQL_SELECT);
-  try
-    query.SetParam(0, BookKey.BookID);
-    query.Open;
-    Assert(not query.Eof);
-
-    ARes := IntToStr(query.FieldAsInt(0));
-  finally
-    FreeAndNil(query);
-  end;
 end;
 
 function TSystemData_SQLite.ActivateGroup(const ID: Integer): Boolean;

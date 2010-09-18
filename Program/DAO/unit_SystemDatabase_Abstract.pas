@@ -58,8 +58,6 @@ type
     ): Boolean; virtual; abstract;
     procedure DeleteCollection(CollectionID: Integer); virtual; abstract;
 
-    procedure GetBookLibID(const BookKey: TBookKey; out ARes: string); virtual; abstract; // deprecated;
-
     function ActivateGroup(const ID: Integer): Boolean; virtual; abstract;
 
     procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord); virtual; abstract;

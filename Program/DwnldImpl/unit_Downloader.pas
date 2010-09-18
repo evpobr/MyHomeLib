@@ -64,11 +64,12 @@ type
 
     FFile: string;
 
-    function DoDownload(const BookKey: TBookKey): Boolean;
-    function Query(Kind: TQueryKind; const URL: string): boolean;
-    procedure AddParam(const Name: string; const Value: string);
-    function CheckResponce: boolean;
+    function DoDownload(const BookRecord: TBookRecord): Boolean;
+
+    function AddParam(const Name: string; const Value: string): Boolean;
+    function Query(Kind: TQueryKind; const URL: string): Boolean;
     function CheckRedirect: boolean;
+    function CheckResponce: boolean;
     function Pause(Time: Integer): boolean;
 
     procedure HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
@@ -150,9 +151,10 @@ begin
   inherited Destroy;
 end;
 
-procedure TDownloader.AddParam(const Name: string; const Value: string);
+function TDownloader.AddParam(const Name: string; const Value: string): Boolean;
 begin
   FParams.AddFormField(Name, Value);
+  Result := True;
 end;
 
 function TDownloader.CheckRedirect: boolean;
@@ -200,9 +202,9 @@ var
 begin
   Result := False;
 
-  GetActiveBookCollection.GetBookRecord(BookKey, BookRecord, false);
+  GetActiveBookCollection.GetBookRecord(BookKey, BookRecord, False);
   FFile := BookRecord.GetBookFileName;
-  if FileExists(FFile) or DoDownload(BookKey) then
+  if FileExists(FFile) or DoDownload(BookRecord) then
   begin
     unit_Messages.BookLocalStatusChanged(BookKey, True);
     Result := True;
@@ -259,7 +261,7 @@ begin
   FOnSetComment(rstrReadyMessage, '');
 end;
 
-function TDownloader.DoDownload(const BookKey: TBookKey): Boolean;
+function TDownloader.DoDownload(const BookRecord: TBookRecord): Boolean;
 var
   ConstParams: TStringList;
   CL: TStringList;
@@ -274,7 +276,7 @@ begin
     //
     // TODO: достаточно стремная операция - получение информации из глобальных объектов. Убрать нафиг!!!
     //
-    ConstParams.Values['LIBID'] := GetActiveBookCollection.GetLibID(BookKey);;
+    ConstParams.Values['LIBID'] := IntToStr(BookRecord.LibID);
     ConstParams.Values['USER'] := GetSystemData.GetActiveCollectionInfo.User;
     ConstParams.Values['PASS'] := GetSystemData.GetActiveCollectionInfo.Password;
     ConstParams.Values['URL'] := GetSystemData.GetActiveCollectionInfo.URL;
@@ -295,26 +297,12 @@ begin
 
             ParseCommand(ConstParams, CL[i], Commands[i]);
             case Commands[i].Code of
-              0:
-                begin
-                  AddParam(Commands[i].Params[1], Commands[i].Params[2]);
-                  Result := True;
-                end;
-
-              1:
-                Result := Query(qkGet, Commands[i].Params[1]);
-
-              2:
-                Result := Query(qkPost, Commands[i].Params[1]);
-
-              3:
-                Result := CheckRedirect;
-
-              4:
-                Result := CheckResponce;
-
-              5:
-                Result := Pause(StrToInt(Commands[i].Params[1]));
+              0: Result := AddParam(Commands[i].Params[1], Commands[i].Params[2]);
+              1: Result := Query(qkGet, Commands[i].Params[1]);
+              2: Result := Query(qkPost, Commands[i].Params[1]);
+              3: Result := CheckRedirect;
+              4: Result := CheckResponce;
+              5: Result := Pause(StrToInt(Commands[i].Params[1]));
             end;
 
             if not Result then
@@ -341,11 +329,10 @@ var
 begin
   Command.Code := -1;
 
-  StrReplace('%LIBID%', ConstParams.Values['LIBID'], S);
-  StrReplace('%USER%', ConstParams.Values['USER'], S);
-  StrReplace('%PASS%', ConstParams.Values['PASS'], S);
-  StrReplace('%URL%', ConstParams.Values['URL'], S);
-
+  StrReplace('%LIBID%',  ConstParams.Values['LIBID'], S);
+  StrReplace('%USER%',   ConstParams.Values['USER'], S);
+  StrReplace('%PASS%',   ConstParams.Values['PASS'], S);
+  StrReplace('%URL%',    ConstParams.Values['URL'], S);
   StrReplace('%RESURL%', FNewURL, S);
 
   p := Pos(' ', S);
