@@ -122,14 +122,14 @@ begin
   FChanged := False;
 
   if frmGenreTree.tvGenresTree.GetFirstSelected = nil then
-    FillGenresTree(frmGenreTree.tvGenresTree);
+    FillGenresTree(frmGenreTree.tvGenresTree, GetActiveBookCollection.GetGenreIterator(gmAll));
 
   cbSeries.Items.Clear;
   SeriesIterator := GetActiveBookCollection.GetSeriesIterator(smAll);
   while SeriesIterator.Next(SeriesData) do
     cbSeries.Items.Add(SeriesData.SeriesTitle);
 
-  FillGenresTree(frmGenreTree.tvGenresTree);
+  FillGenresTree(frmGenreTree.tvGenresTree, GetActiveBookCollection.GetGenreIterator(gmAll));
 
   PrepareForm;
 end;

@@ -1639,8 +1639,8 @@ begin
 
     FillAuthorTree(tvAuthors, BookCollection.GetAuthorIterator(amFullFilter), FLastAuthorID);
     FillSeriesTree(tvSeries, BookCollection.GetSeriesIterator(smFullFilter), FLastSeriesID);
-    FillGenresTree(tvGenres, False, FLastGenreCode);
-    FillGroupsList(tvGroups, FLastGroupID);
+    FillGenresTree(tvGenres, BookCollection.GetGenreIterator(gmAll), False, FLastGenreCode);
+    FillGroupsList(tvGroups, GetSystemData.GetGroupIterator, FLastGroupID);
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -2465,7 +2465,7 @@ begin
 
   LoadLastCollection;
 
-  FillGroupsList(tvGroups, FLastGroupID);
+  FillGroupsList(tvGroups, GetSystemData.GetGroupIterator, FLastGroupID);
   CreateGroupsMenu;
 
   TheFirstRun;
@@ -5014,7 +5014,7 @@ begin
 
   GetActiveTree(Tree);
 
-  FillGenresTree(frmGenreTree.tvGenresTree);
+  FillGenresTree(frmGenreTree.tvGenresTree, GetActiveBookCollection.GetGenreIterator(gmAll));
 
   if frmGenreTree.ShowModal = mrOk then
   begin
@@ -5119,7 +5119,7 @@ begin
     if FSystemData.AddGroup(GroupName) then
     begin
       CreateGroupsMenu;
-      FillGroupsList(tvGroups, FLastGroupID);
+      FillGroupsList(tvGroups, GetSystemData.GetGroupIterator, FLastGroupID);
     end
     else
       MHLShowError(rstrGroupAlreadyExists);
@@ -5142,7 +5142,7 @@ begin
     if FSystemData.RenameGroup(Data^.GroupID, GroupName) then
     begin
       CreateGroupsMenu;
-      FillGroupsList(tvGroups, FLastGroupID);
+      FillGroupsList(tvGroups, GetSystemData.GetGroupIterator, FLastGroupID);
     end
     else
       MHLShowError(rstrGroupAlreadyExists);
@@ -5162,7 +5162,7 @@ begin
     FSystemData.DeleteGroup(Data^.GroupID);
 
     CreateGroupsMenu;
-    FillGroupsList(tvGroups, FLastGroupID);
+    FillGroupsList(tvGroups, GetSystemData.GetGroupIterator, FLastGroupID);
   end
   else
     MHLShowError(rstrUnableDeleteBuiltinGroupError);
@@ -5943,7 +5943,7 @@ var
 begin
   frmGenres := TfrmGenreTree.Create(Application);
   try
-    FillGenresTree(frmGenres.tvGenresTree);
+    FillGenresTree(frmGenres.tvGenresTree, GetActiveBookCollection.GetGenreIterator(gmAll));
     if frmGenres.ShowModal = mrOk then
     begin
       frmGenres.GetSelectedGenres(Genres);
@@ -6860,7 +6860,7 @@ begin
     //
     // Обновим список групп. Побочным эффектом будет перечитывание списка книг на странице "Группы"
     //
-    FillGroupsList(tvGroups, FLastGroupID);
+    FillGroupsList(tvGroups, GetSystemData.GetGroupIterator, FLastGroupID);
   finally
     Screen.Cursor := SavedCursor;
   end;

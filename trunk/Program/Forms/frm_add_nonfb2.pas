@@ -278,7 +278,7 @@ begin
   ScanFolder;
 
   FillLists;
-  FillGenresTree(frmGenreTree.tvGenresTree, True);
+  FillGenresTree(frmGenreTree.tvGenresTree, FLibrary.GetGenreIterator(gmAll), True);
   pcPages.ActivePageIndex := 0;
 
   FBD.CoverSizeCode := 4;
