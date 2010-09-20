@@ -20,18 +20,12 @@ unit frm_statistic;
 interface
 
 uses
-  Windows,
-  Messages,
-  SysUtils,
-  Variants,
   Classes,
-  Graphics,
   Controls,
   Forms,
-  Dialogs,
   ComCtrls,
   StdCtrls,
-  ExtCtrls;
+  unit_Interfaces;
 
 type
   TfrmStat = class(TForm)
@@ -39,7 +33,7 @@ type
     lvInfo: TListView;
 
   public
-    procedure LoadCollectionInfo;
+    procedure LoadCollectionInfo(const Collection: IBookCollection);
   end;
 
 var
@@ -48,18 +42,17 @@ var
 implementation
 
 uses
+  SysUtils,
   unit_Consts,
-  CommCtrl,
-  unit_Database,
-  unit_SystemDatabase,
-  unit_Interfaces;
+  unit_Helpers,
+  unit_SystemDatabase;
 
 resourcestring
   rstrUnknown = 'unknown';
 
 {$R *.dfm}
 
-procedure TfrmStat.LoadCollectionInfo;
+procedure TfrmStat.LoadCollectionInfo(const Collection: IBookCollection);
 var
   Version: string;
   AuthorsCount: Integer;
@@ -67,13 +60,18 @@ var
   SeriesCount: Integer;
   SystemData: ISystemData;
 begin
+  Assert(Assigned(Collection));
+
   SystemData := GetSystemData;
   if SystemData.GetActiveCollectionInfo.Version = UNVERSIONED_COLLECTION then
     Version := rstrUnknown
   else
     Version := IntToStr(SystemData.GetActiveCollectionInfo.Version);
-  GetActiveBookCollection.GetStatistics(AuthorsCount, BooksCount, SeriesCount);
+  Collection.GetStatistics(AuthorsCount, BooksCount, SeriesCount);
 
+  //
+  // Заполним данные
+  //
   lvInfo.Items[0].SubItems[0] := SystemData.GetActiveCollectionInfo.Name;
   lvInfo.Items[1].SubItems[0] := DateToStr(SystemData.GetActiveCollectionInfo.CreationDate);
   lvInfo.Items[2].SubItems[0] := Version;
@@ -83,9 +81,8 @@ begin
   lvInfo.Items[5].SubItems[0] := IntToStr(BooksCount);
   lvInfo.Items[6].SubItems[0] := IntToStr(SeriesCount);
 
-  { TODO -oNickR -cCore : создать функцию в helpers }
-  ListView_SetColumnWidth(lvInfo.Handle, 0, LVSCW_AUTOSIZE);
-  ListView_SetColumnWidth(lvInfo.Handle, 1, LVSCW_AUTOSIZE);
+  lvInfo.AutosizeColumn(0);
+  lvInfo.AutosizeColumn(1);
 end;
 
 end.

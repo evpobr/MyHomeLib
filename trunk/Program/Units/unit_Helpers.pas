@@ -24,6 +24,7 @@ uses
   Classes,
   StdCtrls,
   Dialogs,
+  ComCtrls,
   Graphics,
   Generics.Collections;
 
@@ -102,6 +103,10 @@ type
     ); overload;
   end;
 
+  TListViewHelper = class helper for TListView
+    procedure AutosizeColumn(nColumn: Integer);
+  end;
+
 function SimpleShellExecute(
   hWnd: HWND;
   const FileName: string;
@@ -119,6 +124,7 @@ uses
   IOUtils,
   Forms,
   unit_Settings,
+  CommCtrl,
   ShlObj,
   ShellAPI,
   ActiveX;
@@ -630,6 +636,13 @@ begin
     PChar(Directory),
     ShowCmd
   );
+end;
+
+{ TListViewHelper }
+
+procedure TListViewHelper.AutosizeColumn(nColumn: Integer);
+begin
+  ListView_SetColumnWidth(Self.Handle, nColumn, LVSCW_AUTOSIZE);
 end;
 
 end.

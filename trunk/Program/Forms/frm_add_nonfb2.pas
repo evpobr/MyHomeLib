@@ -43,7 +43,8 @@ uses
   unit_Interfaces,
   FBDDocument,
   FBDAuthorTable,
-  Buttons, MHLSimplePanel;
+  Buttons,
+  MHLSimplePanel;
 
 type
   TfrmAddnonfb2 = class(TForm)
@@ -148,8 +149,10 @@ type
     procedure AddAuthorFromList(Sender: TObject);
 
   private
+    FCollection: IBookCollection;
+    FRootPath: string;
+
     FBookRecord: TBookRecord;
-    FOnSetControlsState: TChangeStateEvent;
 
     procedure PrepareBookRecord;
     procedure CommitData;
@@ -158,13 +161,11 @@ type
     procedure FillLists;
     procedure SortTree;
     procedure FillFBDData;
-  public
-    property OnSetControlsState: TChangeStateEvent read FOnSetControlsState write FOnSetControlsState;
 
-  private
-    FLibrary: IBookCollection;
-    FRootPath: string;
     function CheckEmptyFields(Data: PFileData): Boolean;
+
+  public
+    property Collection: IBookCollection read FCollection write FCollection;
   end;
 
 var
@@ -196,9 +197,11 @@ var
   SeriesIterator: ISeriesIterator;
   SeriesData: TSeriesData;
 begin
+  Assert(Assigned(FCollection));
+
   cbSeries.Items.BeginUpdate;
   try
-    SeriesIterator := FLibrary.GetSeriesIterator(smAll);
+    SeriesIterator := FCollection.GetSeriesIterator(smAll);
     while SeriesIterator.Next(SeriesData) do
       cbSeries.Items.Add(SeriesData.SeriesTitle);
   finally
@@ -257,28 +260,23 @@ end;
 
 procedure TfrmAddnonfb2.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
-  FLibrary := Nil;
-
-  Assert(Assigned(FOnSetControlsState));
-  FOnSetControlsState(True);
-
   Settings.ForceConvertToFBD := cbForceConvertToFBD.Checked;
   CanClose := True;
 end;
 
 procedure TfrmAddnonfb2.FormShow(Sender: TObject);
 begin
+  Assert(Assigned(FCollection));
+
   cbForceConvertToFBD.Checked := Settings.ForceConvertToFBD;
 
   miClearAllClick(Sender);
   lblGenre.Caption := '';
 
-  FLibrary := GetActiveBookCollection;
-
   ScanFolder;
 
   FillLists;
-  FillGenresTree(frmGenreTree.tvGenresTree, FLibrary.GetGenreIterator(gmAll), True);
+  FillGenresTree(frmGenreTree.tvGenresTree, FCollection.GetGenreIterator(gmAll), True);
   pcPages.ActivePageIndex := 0;
 
   FBD.CoverSizeCode := 4;
@@ -379,7 +377,9 @@ var
   Next: PVirtualNode;
   Data: PFileData;
 begin
-  FLibrary.InsertBook(FBookRecord, True, True);
+  Assert(Assigned(FCollection));
+
+  FCollection.InsertBook(FBookRecord, True, True);
 
   FBookRecord.Clear;
 
@@ -499,7 +499,8 @@ var
 begin
   frmAuthorList := TfrmAuthorList.Create(Application);
   try
-    FillAuthorTree(frmAuthorList.tvAuthorList, GetActiveBookCollection.GetAuthorIterator(amAll));
+    Assert(Assigned(FCollection));
+    FillAuthorTree(frmAuthorList.tvAuthorList, FCollection.GetAuthorIterator(amAll));
 
     if frmAuthorList.ShowModal = mrOk then
     begin
@@ -614,7 +615,8 @@ begin
   if Settings.Readers.Find(Ext) = nil then
     Exit;
 
-  if FLibrary.CheckFileInCollection(F.Name, False, True) then
+  Assert(Assigned(FCollection));
+  if FCollection.CheckFileInCollection(F.Name, False, True) then
     Exit;
 
   FullName := ExtractRelativePath(FRootPath, flFiles.LastDir + F.Name);

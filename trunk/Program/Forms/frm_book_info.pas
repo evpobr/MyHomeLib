@@ -117,8 +117,8 @@ implementation
 uses
   Clipbrd,
   FictionBook_21,
+  unit_Helpers,
   unit_ReviewParser,
-  CommCtrl,
   StrUtils,
   unit_MHLHelpers,
   unit_FB2Utils;
@@ -230,10 +230,10 @@ end;
 procedure TfrmBookDetails.FormShow(Sender: TObject);
 begin
   // TODO перенести под конец заполнения ?
-  ListView_SetColumnWidth(lvFileInfo.Handle, 0, LVSCW_AUTOSIZE);
-  ListView_SetColumnWidth(lvFileInfo.Handle, 1, LVSCW_AUTOSIZE);
-  ListView_SetColumnWidth(lvInfo.Handle, 0, LVSCW_AUTOSIZE);
-  ListView_SetColumnWidth(lvInfo.Handle, 1, LVSCW_AUTOSIZE);
+  lvFileInfo.AutosizeColumn(0);
+  lvFileInfo.AutosizeColumn(1);
+  lvInfo.AutosizeColumn(0);
+  lvInfo.AutosizeColumn(1);
 end;
 
 function TfrmBookDetails.GetReview: string;
