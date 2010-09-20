@@ -4981,6 +4981,7 @@ begin
 
   frmEditBook := TfrmEditBookInfo.Create(Application);
   try
+    frmEditBook.Collection := GetActiveBookCollection;
     frmEditBook.OnGetBook := OnGetBookHandler;
     frmEditBook.OnSelectBook := OnSelectBookHandler;
     frmEditBook.OnUpdateBook := OnUpdateBookHandler;
@@ -6298,7 +6299,7 @@ var
 begin
   frmStat := TfrmStat.Create(Application);
   try
-    frmStat.LoadCollectionInfo;
+    frmStat.LoadCollectionInfo(GetActiveBookCollection);
     frmStat.ShowModal;
   finally
     frmStat.Free;
@@ -6754,7 +6755,7 @@ var
 begin
   frmAddBooks := TfrmAddnonfb2.Create(Application);
   try
-    frmAddBooks.OnSetControlsState := OnSetControlsStateHandler;
+    frmAddBooks.Collection := GetActiveBookCollection;
     frmAddBooks.ShowModal;
     InitCollection(True);
   finally

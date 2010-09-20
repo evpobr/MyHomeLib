@@ -15,10 +15,6 @@
   *
   ****************************************************************************** *)
 
-{
-Note: у этой формы слишком сильная зависимость от главной формы. Было бы неплохо от этого избавится.
-}
-
 unit frm_edit_book_info;
 
 interface
@@ -34,7 +30,8 @@ uses
   ComCtrls,
   Forms,
   Dialogs,
-  unit_Globals;
+  unit_Globals,
+  unit_Interfaces;
 
 type
   TfrmEditBookInfo = class(TForm)
@@ -74,6 +71,7 @@ type
     procedure btnPrevBookClick(Sender: TObject);
 
   private
+    FCollection: IBookCollection;
     FBookRecord: TBookRecord;
     FChanged: Boolean;
 
@@ -87,6 +85,8 @@ type
     procedure DoNextBook(const MoveForward: Boolean);
 
   public
+    property Collection: IBookCollection read FCollection write FCollection;
+
     property OnHelp: TOnHelpEvent read FOnHelp write FOnHelp;
     property OnGetBook: TGetBookEvent read FOnGetBook write FOnGetBook;
     property OnSelectBook: TSelectBookEvent read FOnSelectBook write FOnSelectBook;
@@ -104,9 +104,7 @@ uses
   frm_edit_author,
   unit_TreeUtils,
   VirtualTrees,
-  unit_Consts,
-  unit_Database,
-  unit_Interfaces;
+  unit_Consts;
 
 resourcestring
   rstrProvideAtLeastOneAuthor = 'Укажите минимум одного автора!';
@@ -119,17 +117,24 @@ var
   SeriesIterator: ISeriesIterator;
   SeriesData: TSeriesData;
 begin
+  Assert(Assigned(FCollection));
+
   FChanged := False;
 
   if frmGenreTree.tvGenresTree.GetFirstSelected = nil then
-    FillGenresTree(frmGenreTree.tvGenresTree, GetActiveBookCollection.GetGenreIterator(gmAll));
+    FillGenresTree(frmGenreTree.tvGenresTree, FCollection.GetGenreIterator(gmAll));
 
-  cbSeries.Items.Clear;
-  SeriesIterator := GetActiveBookCollection.GetSeriesIterator(smAll);
-  while SeriesIterator.Next(SeriesData) do
-    cbSeries.Items.Add(SeriesData.SeriesTitle);
+  cbSeries.Items.BeginUpdate;
+  try
+    cbSeries.Items.Clear;
+    SeriesIterator := FCollection.GetSeriesIterator(smAll);
+    while SeriesIterator.Next(SeriesData) do
+      cbSeries.Items.Add(SeriesData.SeriesTitle);
+  finally
+    cbSeries.Items.EndUpdate;
+  end;
 
-  FillGenresTree(frmGenreTree.tvGenresTree, GetActiveBookCollection.GetGenreIterator(gmAll));
+  FillGenresTree(frmGenreTree.tvGenresTree, FCollection.GetGenreIterator(gmAll));
 
   PrepareForm;
 end;
