@@ -32,22 +32,20 @@ type
 
 function FindParentInTree(Tree: TVirtualStringTree; const Folder: string): PVirtualNode;
 function FindSeriesInTree(Tree: TBookTree; Parent: PVirtualNode; SeriesID: Integer): PVirtualNode;
-procedure SelectBookById(Tree: TBookTree; ID: Integer);
 procedure GetSelections(Tree: TBookTree; out List: TSelectionList);
 
-procedure FillAuthorTree(Tree: TVirtualStringTree; AuthorIterator: IAuthorIterator; SelectID: Integer = MHL_INVALID_ID);
-procedure FillSeriesTree(Tree: TVirtualStringTree; SeriesIterator: ISeriesIterator; SelectID: Integer = MHL_INVALID_ID);
-procedure FillGenresTree(Tree: TVirtualStringTree; FillFB2: Boolean = False; const SelectCode: string = '');
-procedure FillGroupsList(Tree: TVirtualStringTree; SelectID: Integer = MHL_INVALID_ID);
+procedure FillAuthorTree(Tree: TVirtualStringTree; const AuthorIterator: IAuthorIterator; SelectID: Integer = MHL_INVALID_ID);
+procedure FillSeriesTree(Tree: TVirtualStringTree; const SeriesIterator: ISeriesIterator; SelectID: Integer = MHL_INVALID_ID);
+procedure FillGenresTree(Tree: TVirtualStringTree; const GenreIterator: IGenreIterator; FillFB2: Boolean = False; const SelectCode: string = '');
+procedure FillGroupsList(Tree: TVirtualStringTree; const GroupIterator: IGroupIterator; SelectID: Integer = MHL_INVALID_ID);
 
 implementation
 
 uses
   UserData,
-  Generics.Collections,
-  unit_Database,
-  unit_SystemDatabase;
+  Generics.Collections;
 
+// ============================================================================
 procedure GetSelections(Tree: TBookTree; out List: TSelectionList);
 var
   Node: PVirtualNode;
@@ -62,6 +60,7 @@ begin
   end;
 end;
 
+// ============================================================================
 function FindParentInTree(Tree: TVirtualStringTree; const Folder: string): PVirtualNode;
 var
   Node: PVirtualNode;
@@ -85,6 +84,7 @@ begin
   end;
 end;
 
+// ============================================================================
 function FindSeriesInTree(Tree: TBookTree; Parent: PVirtualNode; SeriesID: Integer): PVirtualNode;
 var
   Node: PVirtualNode;
@@ -109,25 +109,6 @@ begin
   end;
 end;
 
-procedure SelectBookById(Tree: TBookTree; ID: Integer);
-var
-  Node: PVirtualNode;
-  Data: PBookRecord;
-begin
-  Node := Tree.GetFirst;
-  while Assigned(Node) do
-  begin
-    Data := Tree.GetNodeData(Node);
-    Assert(Assigned(Data));
-    if Data.BookKey.BookID = ID then
-    begin
-      Tree.Selected[Node] := True;
-      Break;
-    end;
-    Node := Tree.GetNext(Node);
-  end;
-end;
-
 // ============================================================================
 procedure SafeSelectNode(Tree: TVirtualStringTree; Node: PVirtualNode);
 begin
@@ -145,7 +126,8 @@ begin
   end;
 end;
 
-procedure FillAuthorTree(Tree: TVirtualStringTree;  AuthorIterator: IAuthorIterator; SelectID: Integer = MHL_INVALID_ID);
+// ============================================================================
+procedure FillAuthorTree(Tree: TVirtualStringTree; const AuthorIterator: IAuthorIterator; SelectID: Integer = MHL_INVALID_ID);
 var
   Node: PVirtualNode;
   NodeData: PAuthorData;
@@ -183,7 +165,8 @@ begin
   end;
 end;
 
-procedure FillSeriesTree(Tree: TVirtualStringTree; SeriesIterator: ISeriesIterator; SelectID: Integer = MHL_INVALID_ID);
+// ============================================================================
+procedure FillSeriesTree(Tree: TVirtualStringTree; const SeriesIterator: ISeriesIterator; SelectID: Integer = MHL_INVALID_ID);
 var
   Node: PVirtualNode;
   Data: PSeriesData;
@@ -221,7 +204,8 @@ begin
   end;
 end;
 
-procedure FillGenresTree(Tree: TVirtualStringTree; FillFB2: Boolean = False; const SelectCode: string = '');
+// ============================================================================
+procedure FillGenresTree(Tree: TVirtualStringTree; const GenreIterator: IGenreIterator; FillFB2: Boolean = False; const SelectCode: string = '');
 var
   GenreNode: PVirtualNode;
   Data: PGenreData;
@@ -229,7 +213,6 @@ var
   Nodes: TDictionary<string, PVirtualNode>;
   ParentNode: PVirtualNode;
   SelectedNode: PVirtualNode;
-  GenreIterator: IGenreIterator;
 begin
   Tree.NodeDataSize := SizeOf(TGenreData);
 
@@ -242,7 +225,6 @@ begin
         Tree.Clear;
         SelectedNode := nil;
 
-        GenreIterator := GetActiveBookCollection.GetGenreIterator(gmAll);
         while GenreIterator.Next(Genre) do
         begin
           ParentNode := nil;
@@ -276,12 +258,12 @@ begin
   end;
 end;
 
-procedure FillGroupsList(Tree: TVirtualStringTree; SelectID: Integer = MHL_INVALID_ID);
+// ============================================================================
+procedure FillGroupsList(Tree: TVirtualStringTree; const GroupIterator: IGroupIterator; SelectID: Integer = MHL_INVALID_ID);
 var
   Node: PVirtualNode;
   Data: PGroupData;
   SelectedNode: PVirtualNode;
-  GroupIterator: IGroupIterator;
   Group: TGroupData;
 begin
   Tree.BeginSynch;
@@ -291,7 +273,6 @@ begin
       Tree.Clear;
       SelectedNode := nil;
 
-      GroupIterator := GetSystemData.GetGroupIterator;
       while GroupIterator.Next(Group) do
       begin
         Node := Tree.AddChild(nil);
