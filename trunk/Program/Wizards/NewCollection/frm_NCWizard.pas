@@ -400,6 +400,7 @@ end;
 procedure TfrmNCWizard.AfterShowPage;
 begin
   Assert(IsValidPageIndex(FCurrentPage));
+
   if PROGRESS_PAGE_ID = FCurrentPage then
   begin
     CorrectParams;
@@ -425,9 +426,8 @@ begin
       //
       RegisterCollection;
     end;
-  end;
-
-  if DOWNLOAD_PAGE_ID = FCurrentPage then
+  end
+  else if DOWNLOAD_PAGE_ID = FCurrentPage then
   begin
     AdjustButtons([wbCancel],[wbCancel]);
     try
@@ -541,7 +541,7 @@ end;
 
 function TfrmNCWizard.CreateCollection: Boolean;
 var
-  ALibrary: IBookCollection;
+  Collection: IBookCollection;
 begin
   Assert(Assigned(FProgressPage));
 
@@ -562,15 +562,15 @@ begin
       Assert(FileExists(FParams.GenreFile));
       CreateCollectionTables(FParams.CollectionFile, FParams.GenreFile);
 
-      ALibrary := GetBookCollection(FParams.CollectionFile);
+      Collection := GetBookCollection(FParams.CollectionFile);
       //
       // Установить свойства коллекции
       //
-      ALibrary.SetStringProperty(SETTING_NOTES, FParams.Notes);
-      ALibrary.SetIntProperty(SETTING_DATA_VERSION, UNVERSIONED_COLLECTION);
-      ALibrary.SetIntProperty(SETTING_CODE, FParams.CollectionCode);
-      ALibrary.SetStringProperty(SETTING_URL, FParams.URL);
-      ALibrary.SetStringProperty(SETTING_DOWNLOAD_SCRIPT, FParams.Script);
+      Collection.SetStringProperty(SETTING_NOTES, FParams.Notes);
+      Collection.SetIntProperty(SETTING_DATA_VERSION, UNVERSIONED_COLLECTION);
+      Collection.SetIntProperty(SETTING_CODE, FParams.CollectionCode);
+      Collection.SetStringProperty(SETTING_URL, FParams.URL);
+      Collection.SetStringProperty(SETTING_DOWNLOAD_SCRIPT, FParams.Script);
       FProgressPage.ShowProgress(60);
     end;
 
@@ -608,7 +608,11 @@ begin
   FWorker := nil;
 
   case FParams.CollectionType of
-    ltEmpty: ;
+    ltEmpty:
+    begin
+      Result := False;
+      Exit;
+    end;
 
     ltLRELocal, ltLREOnline:
     begin
@@ -654,11 +658,7 @@ begin
     end;
   end;
 
-  if not Assigned(FWorker) then
-  begin
-    Result := False;
-    Exit;
-  end;
+  Assert(Assigned(FWorker));
 
   FProgressPage.SetComment(rstrDataImport);
   FProgressPage.ShowTeletype(rstrDataImporting, tsInfo);

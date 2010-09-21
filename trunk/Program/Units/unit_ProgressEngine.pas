@@ -25,7 +25,6 @@
 TODO:
   - названи€ методов не очень удачные
   - плохо обрабатываетс€ Total = 0
-  - нет поддержки подопераций
   - необходимо иметь возможность мен€ть сообщение вместе с основным прогрессом
 
 *)
@@ -35,18 +34,22 @@ unit unit_ProgressEngine;
 interface
 
 uses
-  ComCtrls;
+  ComCtrls,
+  Math,
+  StrUtils;
 
 type
-  TProgressEvent = procedure (Percent: Integer) of object;
-  TSetCommentEvent = procedure (const Msg: string) of object;
   TProgressHintEvent = procedure (Style: TProgressBarStyle; State: TProgressBarState) of object;
+  TSetCommentEvent = procedure (const Msg: string) of object;
+  TProgressEvent = procedure (Percent: Integer) of object;
 
   TProgressEngine = class
   private const
     DefaultThreshold = 500;
 
   private
+    FParentEngine: TProgressEngine;
+
     FTotal: Integer;
     FCurrent: Integer;
     FPercent: Integer;
@@ -54,37 +57,118 @@ type
     FShortCommentFormat: string;
     FLongCommentFormat: string;
 
-    FSetProgress: TProgressEvent;
-    FSetComment: TSetCommentEvent;
+    FUseSubPercent: Boolean;
+    FSubPercent: Integer;
+
     FProgressHint: TProgressHintEvent;
+    FSetComment: TSetCommentEvent;
+    FSetProgress: TProgressEvent;
+
+    FSubProgressHint: TProgressHintEvent;
+    FSetSubComment: TSetCommentEvent;
+    FSetSubProgress: TProgressEvent;
+
+    function IsPreciseProgress: Boolean; inline;
+    function IsSubOperation: Boolean; inline;
+
+    procedure ProgressChanged;
+
+    procedure DoSetProgressHint(Style: TProgressBarStyle; State: TProgressBarState);
+    procedure DoSetComment(const Value: string);
+    procedure DoSetProgress(const Value: Integer);
+
+    procedure DoSetSubProgressHint(Style: TProgressBarStyle; State: TProgressBarState);
+    procedure DoSetSubComment(const Value: string);
+    procedure DoSetSubProgress(const Value: Integer);
+
+    procedure BeginSubOperation(const PreciseProgress: Boolean);
+    procedure SetSubProgressHint(Style: TProgressBarStyle; State: TProgressBarState);
+    procedure SetSubComment(const Value: string);
+    procedure SetSubProgress(const Value: Integer);
 
   public
-    constructor Create;
+    constructor Create(BaseEngine: TProgressEngine = nil);
     //destructor Done; override;
 
     procedure BeginOperation(const Total: Integer; const ShortCommentFormat: string; const LongCommentFormat: string);
     procedure EndOperation;
     procedure AddProgress(const Value: Integer = 1);
-    function GetProgress: Integer;
-    function GetComment: string;
 
-    property OnSetProgress: TProgressEvent read FSetProgress write FSetProgress;
-    property OnSetComment: TSetCommentEvent read FSetComment write FSetComment;
+    function GetProgress: Integer; inline;
+    function GetComment: string; inline;
+
     property OnProgressHint: TProgressHintEvent read FProgressHint write FProgressHint;
+    property OnSetComment: TSetCommentEvent read FSetComment write FSetComment;
+    property OnSetProgress: TProgressEvent read FSetProgress write FSetProgress;
+
+    property OnSubProgressHint: TProgressHintEvent read FSubProgressHint write FSubProgressHint;
+    property OnSetSubComment: TSetCommentEvent read FSetSubComment write FSetSubComment;
+    property OnSetSubProgress: TProgressEvent read FSetSubProgress write FSetSubProgress;
   end;
 
 implementation
 
 uses
-  SysUtils,
-  StrUtils,
-  Math;
+  SysUtils;
 
 { TProgressInfo }
 
-constructor TProgressEngine.Create;
+constructor TProgressEngine.Create(BaseEngine: TProgressEngine = nil);
 begin
   inherited Create;
+  FParentEngine := BaseEngine;
+end;
+
+function TProgressEngine.IsPreciseProgress: Boolean;
+begin
+  Result := (FTotal > 0);
+end;
+
+function TProgressEngine.IsSubOperation: Boolean;
+begin
+  Result := Assigned(FParentEngine);
+end;
+
+procedure TProgressEngine.DoSetProgressHint(Style: TProgressBarStyle; State: TProgressBarState);
+begin
+  if IsSubOperation then
+    FParentEngine.SetSubProgressHint(Style, State)
+  else if Assigned(FProgressHint) then
+    FProgressHint(Style, State);
+end;
+
+procedure TProgressEngine.DoSetComment(const Value: string);
+begin
+  if IsSubOperation then
+    FParentEngine.SetSubComment(Value)
+  else if Assigned(FSetComment) then
+    FSetComment(Value);
+end;
+
+procedure TProgressEngine.DoSetProgress(const Value: Integer);
+begin
+  if IsSubOperation then
+    FParentEngine.SetSubProgress(Value)
+  else if Assigned(FSetProgress) then
+    FSetProgress(Value);
+end;
+
+procedure TProgressEngine.DoSetSubProgressHint(Style: TProgressBarStyle; State: TProgressBarState);
+begin
+  if not IsSubOperation and Assigned(FSubProgressHint) then
+    FSubProgressHint(Style, State);
+end;
+
+procedure TProgressEngine.DoSetSubProgress(const Value: Integer);
+begin
+  if not IsSubOperation and Assigned(FSetSubProgress) then
+    FSetSubProgress(Value);
+end;
+
+procedure TProgressEngine.DoSetSubComment(const Value: string);
+begin
+  if not IsSubOperation and Assigned(FSetSubComment) then
+    FSetSubComment(Value);
 end;
 
 procedure TProgressEngine.BeginOperation(const Total: Integer; const ShortCommentFormat, LongCommentFormat: string);
@@ -93,8 +177,11 @@ begin
   FCurrent := 0;
   FPercent := 0;
 
+  FUseSubPercent := False;
+  FSubPercent := 0;
+
   FThreshold := 0;
-  if FTotal > 0 then
+  if IsPreciseProgress then
   begin
     FThreshold := Min(FTotal div 20, DefaultThreshold);
     if FThreshold = 0 then
@@ -106,74 +193,115 @@ begin
   FShortCommentFormat := ShortCommentFormat;
   FLongCommentFormat := LongCommentFormat;
 
-  if Assigned(FProgressHint) then
-  begin
-    if FTotal > 0 then
-      FProgressHint(pbstNormal, pbsNormal)
-    else
-      FProgressHint(pbstMarquee, pbsNormal);
-  end;
+  //
+  // Ёто вложенна€ операци€. —ообщим родительской операции о своем начале.
+  //
+  if IsSubOperation then
+    FParentEngine.BeginSubOperation(IsPreciseProgress);
 
-  if Assigned(FSetProgress) then
-    FSetProgress(GetProgress);
-
-  if Assigned(FSetComment) then
-    FSetComment(GetComment);
+  //
+  // Ќастроим GUI и приведем его в начальное состо€ние.
+  //
+  if IsPreciseProgress then
+    DoSetProgressHint(pbstNormal, pbsNormal)
+  else
+    DoSetProgressHint(pbstMarquee, pbsNormal);
+  DoSetProgress(GetProgress);
+  DoSetComment(GetComment);
 end;
 
 procedure TProgressEngine.EndOperation;
 begin
-  if Assigned(FProgressHint) then
-    FProgressHint(pbstNormal, pbsNormal);
-
-  if Assigned(FSetProgress) then
-    FSetProgress(100);
-
-  if Assigned(FSetComment) then
-    FSetComment(GetComment);
+  DoSetProgressHint(pbstNormal, pbsNormal);
+  DoSetProgress(100);
+  DoSetComment(GetComment);
 end;
 
-procedure TProgressEngine.AddProgress(const Value: Integer);
+procedure TProgressEngine.ProgressChanged;
 var
   Percent: Integer;
 begin
-  Inc(FCurrent, Value);
-  if FTotal > 0 then
+  if IsPreciseProgress then
   begin
+    //
+    // Ёта операци€ использует точный прогресс
+    //
     Percent := Min(FCurrent * 100 div FTotal, 100);
-    if FPercent <> Percent then
+
+    //
+    // ¬ложенна€ операци€ использует точный прогресс. ”чтем его.
+    //
+    if FUseSubPercent then
+    begin
+      Inc(Percent, FSubPercent div FTotal);
+    end;
+
+    if Percent > FPercent then
     begin
       FPercent := Percent;
-      if Assigned(FSetProgress) then
-        FSetProgress(GetProgress);
+      DoSetProgress(GetProgress);
     end;
     if ((FCurrent mod FThreshold) = 0) then
     begin
-      if Assigned(FSetComment) then
-        FSetComment(GetComment);
+      DoSetComment(GetComment);
     end;
   end
   else
   begin
+    //
+    // цикличный прогресс. ѕрогресс вложенно й операции не учитываем.
+    //
     if ((FCurrent mod FThreshold) = 0) then
     begin
-      if Assigned(FSetComment) then
-        FSetComment(GetComment);
+      DoSetComment(GetComment);
     end;
     if (FThreshold < 100) and (FCurrent >= (FThreshold * 10)) then
       FThreshold := Min(FCurrent div 5, DefaultThreshold);
   end;
 end;
 
+procedure TProgressEngine.AddProgress(const Value: Integer);
+begin
+  //
+  // —читаем, что подопераци€ закончена и пока не начнетс€ нова€ операци€ игнорируем подпрогресс.
+  //
+  FSubPercent := 0;
+  FUseSubPercent := False;
+  Inc(FCurrent, Value);
+  ProgressChanged;
+end;
+
 function TProgressEngine.GetProgress: Integer;
 begin
-  Result := Min(IfThen(FTotal > 0, FPercent, FCurrent), 100);
+  Result := Min(IfThen(IsPreciseProgress, FPercent, FCurrent), 100);
 end;
 
 function TProgressEngine.GetComment: string;
 begin
-  Result := Format(IfThen(FTotal > 0, FLongCommentFormat, FShortCommentFormat), [FCurrent, FTotal]);
+  Result := Format(IfThen(IsPreciseProgress, FLongCommentFormat, FShortCommentFormat), [FCurrent, FTotal]);
 end;
 
+procedure TProgressEngine.BeginSubOperation(const PreciseProgress: Boolean);
+begin
+  FUseSubPercent := PreciseProgress;
+  FSubPercent := 0;
+end;
+
+procedure TProgressEngine.SetSubProgressHint(Style: TProgressBarStyle; State: TProgressBarState);
+begin
+  DoSetSubProgressHint(Style, State);
+end;
+
+procedure TProgressEngine.SetSubComment(const Value: string);
+begin
+  DoSetSubComment(Value);
+end;
+
+procedure TProgressEngine.SetSubProgress(const Value: Integer);
+begin
+  FSubPercent := Value;
+  DoSetSubProgress(Value);
+  ProgressChanged;
+end;
 
 end.

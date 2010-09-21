@@ -610,8 +610,6 @@ end;
 
 // Read next record (if present), return True if read
 function TBookCollection_SQLite.TAuthorIteratorImpl.Next(out AuthorData: TAuthorData): Boolean;
-var
-  AuthorID: Integer;
 begin
   Result := not FAuthors.Eof;
 
@@ -1455,8 +1453,6 @@ const
   SQL_DELETE_SERIES = 'DELETE FROM Series WHERE SeriesID = ? ';
 var
   Query: TSQLiteQuery;
-  NewSeries: string;
-  OldSeries: string;
 begin
   Assert(OldSeriesID <> NewSeriesID);
 
@@ -1699,7 +1695,6 @@ const
     'WHERE BookID = ? ';
 var
   i: Integer;
-  NameConflict: Boolean;
   query: TSQLiteQuery;
 begin
   Assert(BookRecord.FileName <> '');

@@ -1963,7 +1963,6 @@ end;
 function TfrmMain.ShowNCWizard: Boolean;
 var
   frmNCWizard: TfrmNCWizard;
-  n: Integer;
 begin
   frmNCWizard := TfrmNCWizard.Create(Application);
   try
@@ -5051,7 +5050,6 @@ var
   Tree: TBookTree;
   Data: PBookRecord;
   Node: PVirtualNode;
-  AuthID: Integer;
   S: string;
   SeriesID: Integer;
   BookCollection: IBookCollection;
@@ -5938,8 +5936,6 @@ end;
 procedure TfrmMain.ShowGenreEditor(Sender: TObject);
 var
   frmGenres: TfrmGenreTree;
-  Data: PGenreData;
-  Node: PVirtualNode;
   Genres: TBookGenres;
 begin
   frmGenres := TfrmGenreTree.Create(Application);
