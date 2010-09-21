@@ -1430,20 +1430,11 @@ end;
 procedure TBookCollection_SQLite.SetSeriesTitle(const SeriesID: Integer; const NewSeriesTitle: string);
 const
   SQL_UPDATE = 'UPDATE Series Set SeriesTitle = ? WHERE BookID = ? ';
-var
-  Query: TSQLiteQuery;
 begin
   Assert(SeriesID <> NO_SERIES_ID);
   Assert(NewSeriesTitle <> NO_SERIES_TITLE);
 
-  Query := FDatabase.NewQuery(SQL_UPDATE);
-  try
-    Query.SetParam(0, NewSeriesTitle);
-    Query.SetParam(1, SeriesID);
-    Query.ExecSQL;
-  finally
-    FreeAndNil(Query);
-  end;
+  FDatabase.ExecSQL(SQL_UPDATE, [NewSeriesTitle, SeriesID]);
 end;
 
 // Change SeriesID value for all books in the current database with old SeriesID value
@@ -1475,6 +1466,9 @@ begin
     Query := FDatabase.NewQuery(SQL_DELETE_SERIES);
     try
       Query.SetParam(0, OldSeriesID);
+      //
+      // TODO : а где ExecSQL ?
+      //
     finally
       FreeAndNil(Query);
     end;
@@ -1794,22 +1788,11 @@ end;
 // Delete the book, all dependent tables are cleared by a matching trigger
 procedure TBookCollection_SQLite.DeleteBook(const BookKey: TBookKey);
 const
-  //
-  // TODO: BUG - мы никогда не записываем в SeriesID значение NO_SERIE_ID
-  //
   SQL_DELETE_BOOKS = 'DELETE FROM Books WHERE BookID = ? ';
-var
-  query: TSQLiteQuery;
 begin
   VerifyCurrentCollection(BookKey.DatabaseID);
 
-  query := FDatabase.NewQuery(SQL_DELETE_BOOKS);
-  try
-    query.SetParam(0, BookKey.BookID);
-    query.ExecSQL;
-  finally
-    query.Free;
-  end;
+  FDatabase.ExecSQL(SQL_DELETE_BOOKS, [BookKey.BookID]);
 
   FSystemData.DeleteBook(BookKey);
 end;
@@ -1871,20 +1854,10 @@ end;
 procedure TBookCollection_SQLite.SetProgress(const BookKey: TBookKey; const Progress: Integer);
 const
   SQL_UPDATE = 'UPDATE Books SET Progress = ? WHERE BookID = ?';
-var
-  query: TSQLiteQuery;
 begin
   VerifyCurrentCollection(BookKey.DatabaseID);
 
-  query := FDatabase.NewQuery(SQL_UPDATE);
-  try
-    query.SetParam(0, Progress);
-    query.SetParam(1, BookKey.BookID);
-
-    query.ExecSQL;
-  finally
-    query.Free;
-  end;
+  FDatabase.ExecSQL(SQL_UPDATE, [Progress, BookKey.BookID]);
 
   //
   // Обновим информацию в группах
@@ -1895,20 +1868,10 @@ end;
 procedure TBookCollection_SQLite.SetRate(const BookKey: TBookKey; const Rate: Integer);
 const
   SQL_UPDATE = 'UPDATE Books SET Rate = ? WHERE BookID = ?';
-var
-  query: TSQLiteQuery;
 begin
   VerifyCurrentCollection(BookKey.DatabaseID);
 
-  query := FDatabase.NewQuery(SQL_UPDATE);
-  try
-    query.SetParam(0, Rate);
-    query.SetParam(1, BookKey.BookID);
-
-    query.ExecSQL;
-  finally
-    query.Free;
-  end;
+  FDatabase.ExecSQL(SQL_UPDATE, [Rate, BookKey.BookID]);
 
   //
   // Обновим информацию в группах
@@ -1919,20 +1882,10 @@ end;
 procedure TBookCollection_SQLite.SetLocal(const BookKey: TBookKey; const AState: Boolean);
 const
   SQL_UPDATE = 'UPDATE Books SET IsLocal = ? WHERE BookID = ?';
-var
-  query: TSQLiteQuery;
 begin
   VerifyCurrentCollection(BookKey.DatabaseID);
 
-  query := FDatabase.NewQuery(SQL_UPDATE);
-  try
-    query.SetParam(0, AState);
-    query.SetParam(1, BookKey.BookID);
-
-    query.ExecSQL;
-  finally
-    query.Free;
-  end;
+  FDatabase.ExecSQL(SQL_UPDATE, [AState, BookKey.BookID]);
 
   //
   // Обновим информацию в группах
@@ -1999,7 +1952,7 @@ begin
   try
     Query.SetParam(0, BookKey.BookID);
     Query.Open;
-    if not Query.Eof  then
+    if not Query.Eof then
     begin
       OldSeriesID := Query.FieldAsInt(0);
       CountBooksInASeries := Query.FieldAsInt(1);
@@ -2044,23 +1997,12 @@ end;
 function TBookCollection_SQLite.GetSeriesTitle(SeriesID: Integer): string;
 const
   SQL = 'SELECT s.SeriesTitle FROM Series s WHERE s.SeriesID = ?';
-var
-  query: TSQLiteQuery;
 begin
   Result := NO_SERIES_TITLE;
 
   if (NO_SERIES_ID <> SeriesID) then
   begin
-    query := FDatabase.NewQuery(SQL);
-    try
-      query.SetParam(0, SeriesID);
-      query.Open;
-
-      if not query.Eof then
-        Result := query.FieldAsString(0);
-    finally
-      query.Free;
-    end;
+    Result := FDatabase.QuerySingleString(SQL, [SeriesID]);
   end
 end;
 
@@ -2082,10 +2024,8 @@ begin
 end;
 
 procedure TBookCollection_SQLite.CompactDatabase;
-const
-  SQL = 'VACUUM';
 begin
-  FDatabase.ExecSQL(SQL);
+  FDatabase.CompactDatabase;
 end;
 
 procedure TBookCollection_SQLite.RepairDatabase;
@@ -2117,13 +2057,13 @@ var
   Sql: string;
 begin
   Sql := Format(SQL_SELECT, ['Authors']);
-  AuthorsCount := FDatabase.GetTableInt(Sql);
+  AuthorsCount := FDatabase.QuerySingleInt(Sql);
 
   Sql := Format(SQL_SELECT, ['Books']);
-  BooksCount := FDatabase.GetTableInt(Sql);
+  BooksCount := FDatabase.QuerySingleInt(Sql);
 
   Sql := Format(SQL_SELECT, ['Series']);
-  SeriesCount := FDatabase.GetTableInt(Sql);
+  SeriesCount := FDatabase.QuerySingleInt(Sql);
 end;
 
 // Clear contents of collection tables (except for Settings and Genres)
@@ -2145,8 +2085,22 @@ end;
 
 procedure TBookCollection_SQLite.AfterBatchUpdate;
 begin
-  FDatabase.ExecSQL('UPDATE Series SET SearchSeriesTitle = MHL_UPPER(SeriesTitle)');
-  FDatabase.ExecSQL('UPDATE Authors SET SearchName = MHL_FULLNAME(LastName, FirstName, MiddleName, 1)');
+  FDatabase.ExecSQL(
+    'UPDATE Series ' +
+    'SET ' +
+    '  SearchSeriesTitle = MHL_UPPER(SeriesTitle) ' +
+    'WHERE ' +
+    '  SearchSeriesTitle IS NULL'
+  );
+
+  FDatabase.ExecSQL(
+    'UPDATE Authors ' +
+    'SET ' +
+    '  SearchName = MHL_FULLNAME(LastName, FirstName, MiddleName, 1) ' +
+    'WHERE ' +
+    '  SearchName IS NULL'
+  );
+
   FDatabase.ExecSQL(
     'UPDATE Books ' +
     'SET ' +
@@ -2156,10 +2110,12 @@ begin
     '  SearchFileName   = MHL_UPPER(FileName), ' +
     '  SearchExt        = MHL_UPPER(Ext), ' +
     '  SearchKeyWords   = MHL_UPPER(KeyWords), ' +
-    '  SearchAnnotation = MHL_UPPER(Annotation)'
+    '  SearchAnnotation = MHL_UPPER(Annotation) ' +
+    'WHERE ' +
+    '  SearchTitle IS NULL'
   );
 
-  FDatabase.ExecSQL('ANALYZE');
+  FDatabase.ReindexDatabase;
 end;
 
 procedure TBookCollection_SQLite.FinishBatchUpdate;
@@ -2170,16 +2126,8 @@ end;
 procedure TBookCollection_SQLite.CleanBookAuthors(const BookID: Integer);
 const
   SQL_DELETE = 'DELETE FROM Author_List WHERE BookID = ? ';
-var
-  query: TSQLiteQuery;
 begin
-  query := FDatabase.NewQuery(SQL_DELETE);
-  try
-    query.SetParam(0, BookID);
-    query.ExecSQL;
-  finally
-    query.Free;
-  end;
+  FDatabase.ExecSQL(SQL_DELETE, [BookID]);
 end;
 
 procedure TBookCollection_SQLite.InsertBookAuthors(const BookID: Integer; const Authors: TBookAuthors);
@@ -2215,16 +2163,8 @@ end;
 procedure TBookCollection_SQLite.CleanBookGenres(const BookID: Integer);
 const
   SQL_DELETE = 'DELETE FROM Genre_List WHERE BookID = ?';
-var
-  query: TSQLiteQuery;
 begin
-  query := FDatabase.NewQuery(SQL_DELETE);
-  try
-    query.SetParam(0, BookID);
-    query.ExecSQL;
-  finally
-    query.Free;
-  end;
+  FDatabase.ExecSQL(SQL_DELETE, [BookID]);
 end;
 
 // Add book genres for the book specified by BookID
