@@ -4612,7 +4612,7 @@ begin
   // Delete current collection and choose another:
   DBFileName := FSystemData.GetActiveCollectionInfo.DBFileName;
   FSystemData.DeleteCollection(FSystemData.GetActiveCollectionInfo.ID);
-  DropCollectionDatabase(DBFileName);
+  FSystemData.DropBookCollectionDatabase(DBFileName);
 
   CollectionInfo := TCollectionInfo.Create;
   CollectionInfoIterator := FSystemData.GetCollectionInfoIterator;

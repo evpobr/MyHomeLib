@@ -115,6 +115,9 @@ type
     ): Boolean; virtual; abstract;
     procedure DeleteCollection(CollectionID: Integer); virtual; abstract;
 
+    procedure CreateBookCollectionDatabase(const DBCollectionFile: string; const GenresFileName: string); virtual; abstract;
+    procedure DropBookCollectionDatabase(const DBCollectionFile: string); virtual; abstract;
+
     function ActivateGroup(const ID: Integer): Boolean; virtual; abstract;
 
     procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord); virtual; abstract;

@@ -132,6 +132,9 @@ type
     ): Boolean; override;
     procedure DeleteCollection(CollectionID: Integer); override;
 
+    procedure CreateBookCollectionDatabase(const DBCollectionFile: string; const GenresFileName: string); override;
+    procedure DropBookCollectionDatabase(const DBCollectionFile: string); override;
+
     function ActivateGroup(const ID: Integer): Boolean; override;
 
     procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord); override;
@@ -200,7 +203,8 @@ uses
   IOUtils,
   SQLite3,
   unit_Logger,
-  unit_SQLiteUtils;
+  unit_SQLiteUtils,
+  unit_Database_SQLite;
 
 // Generate table structure and minimal system data
 procedure CreateSystemTables_SQLite(const DBUserFile: string);
@@ -731,6 +735,18 @@ begin
   collectionID := FindFirstExistingCollectionID(1);
   if collectionID > 0 then
     ActivateCollection(collectionID);
+end;
+
+procedure TSystemData_SQLite.CreateBookCollectionDatabase(const DBCollectionFile: string; const GenresFileName: string);
+begin
+  CreateCollectionTables_SQLite(DBCollectionFile, GenresFileName);
+end;
+
+procedure TSystemData_SQLite.DropBookCollectionDatabase(const DBCollectionFile: string);
+begin
+  Assert(DBCollectionFile <> '');
+
+  DeleteFile(DBCollectionFile);
 end;
 
 function TSystemData_SQLite.ActivateGroup(const ID: Integer): Boolean;
