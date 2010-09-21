@@ -54,6 +54,7 @@ type
     FDB: TSQLite3DB;
 
   protected
+    procedure SetParams(query: TSQLiteQuery; const Params: array of const);
     procedure RegisterSystemCollateAndFunc;
     procedure RaiseError(const s, SQL: string);
 
@@ -72,35 +73,41 @@ type
     destructor Destroy; override;
 
     { Run SQL command with result. }
-    function NewQuery(const SQL: string): TSQLiteQuery;
+    function NewQuery(const SQL: string): TSQLiteQuery; overload; inline;
+    function NewQuery(const SQL: string; const Params: array of const): TSQLiteQuery; overload;
 
     { Run SQL command without result. }
-    procedure ExecSQL(const SQL : string); overload;
+    procedure ExecSQL(const SQL : string); overload; inline;
     procedure ExecSQL(const SQL : string; const Params: array of const); overload;
 
+    procedure CompactDatabase; inline;
+    procedure ReindexDatabase; inline;
+
     { Run SQL command and number from first field in first row is returned. }
-    function GetTableInt(const SQL: string): Int64; deprecated;
-    function GetTableString(const SQL: string): string; deprecated;
-    procedure GetTableStrings(const SQL: string; const Value: TStrings); deprecated;
+    function QuerySingleInt(const SQL: string): Int64; overload; inline;
+    function QuerySingleInt(const SQL: string; const Params: array of const): Int64; overload;
+
+    function QuerySingleString(const SQL: string): string; overload; inline;
+    function QuerySingleString(const SQL: string; const Params: array of const): string; overload;
 
     { Return @True if database is in transaction state.}
-    function InTransaction: Boolean;
+    function InTransaction: Boolean; inline;
     procedure Start(const name: string = ''; const param: string = '');
     procedure Commit(const name: string = '');
     procedure Rollback(const name: string = '');
 
     { Get ROWID of last inserted row.}
-    function LastInsertRowID: Int64;
+    function LastInsertRowID: Int64; inline;
 
     { Return number of modified rows by last query.}
-    function LastChangedRows: Int64;
+    function LastChangedRows: Int64; inline;
 
     { Set wait timeout. if database is locked, then it wait this timeout.
        If database is not released within this timeout, then error is returned.}
     procedure SetTimeout(Value: Integer);
 
     { Return SQLite engine version.}
-    function Version: string;
+    function Version: string; inline;
 
     { Add custom sorting procedure as new Collate.}
     procedure AddCustomCollate(
@@ -177,7 +184,7 @@ type
     //
     // доступ к полям
     //
-    function FieldIsNull(I: Integer): Boolean;
+    function FieldIsNull(I: Integer): Boolean; inline;
     function FieldAsString(I: Integer): string;
     function FieldAsInt(I: Integer): Int64; inline;
     function FieldAsBoolean(I: Integer): Boolean;
@@ -309,102 +316,113 @@ begin
     raise ESQLiteException.CreateFmt(s, [SQL, c_nomessage]);
 end;
 
+procedure TSQLiteDatabase.SetParams(query: TSQLiteQuery; const Params: array of const);
+var
+  i: Integer;
+begin
+  Assert(Assigned(query));
+
+  for i := 0 to High(Params) do
+  case Params[i].VType of
+    vtInteger:       query.SetParam(i, Params[i].VInteger);
+    vtBoolean:       query.SetParam(i, Params[i].VBoolean);
+    //vtChar:          query.SetParam(i, Params[i].VChar);
+    //vtExtended:      query.SetParam(i, Params[i].VExtended^);
+    //vtString:        query.SetParam(i, Params[i].VString^);
+    //vtPChar:         query.SetParam(i, Params[i].VPChar);
+    //vtObject:        query.SetParam(i, Params[i].VObject.ClassName);
+    //vtClass:         query.SetParam(i, Params[i].VClass.ClassName);
+    //vtWideChar:;
+    //vtPWideChar:;
+    vtAnsiString:    query.SetParam(i, string(Params[i].VAnsiString));
+    //vtCurrency:      query.SetParam(i, Params[i].VCurrency^);
+    //vtVariant:       query.SetParam(i, Params[i].VVariant^);
+    vtInt64:         query.SetParam(i, Params[i].VInt64^);
+    vtUnicodeString: query.SetParam(i, string(Params[i].VUnicodeString));
+  else
+    raise ESQLiteException.Create('Unsupported param type');
+  end;
+end;
+
 function TSQLiteDatabase.NewQuery(const SQL: string): TSQLiteQuery;
 begin
   Result := TSQLiteQuery.Create(Self, SQL);
 end;
 
-procedure TSQLiteDatabase.ExecSQL(const SQL: string);
-var
-  query: TSQLiteQuery;
+function TSQLiteDatabase.NewQuery(const SQL: string; const Params: array of const): TSQLiteQuery;
 begin
-  query := NewQuery(SQL);
-  try
-    query.ExecSQL;
-  finally
-    query.Free;
-  end;
+  Result := TSQLiteQuery.Create(Self, SQL);
+  SetParams(Result, Params);
+end;
+
+procedure TSQLiteDatabase.ExecSQL(const SQL: string);
+begin
+  ExecSQL(SQL, []);
 end;
 
 procedure TSQLiteDatabase.ExecSQL(const SQL : string; const Params: array of const);
 var
   query: TSQLiteQuery;
-  i: Integer;
 begin
-  query := NewQuery(SQL);
+  query := NewQuery(SQL, Params);
   try
-    for i := 0 to High(Params) do
-    case Params[i].VType of
-      vtInteger:       query.SetParam(i, Params[i].VInteger);
-      vtBoolean:       query.SetParam(i, Params[i].VBoolean);
-      //vtChar:          query.SetParam(i, Params[i].VChar);
-      //vtExtended:      query.SetParam(i, Params[i].VExtended^);
-      //vtString:        query.SetParam(i, Params[i].VString^);
-      //vtPChar:         query.SetParam(i, Params[i].VPChar);
-      //vtObject:        query.SetParam(i, Params[i].VObject.ClassName);
-      //vtClass:         query.SetParam(i, Params[i].VClass.ClassName);
-      //vtWideChar:;
-      //vtPWideChar:;
-      vtAnsiString:    query.SetParam(i, string(Params[i].VAnsiString));
-      //vtCurrency:      query.SetParam(i, Params[i].VCurrency^);
-      //vtVariant:       query.SetParam(i, Params[i].VVariant^);
-      vtInt64:         query.SetParam(i, Params[i].VInt64^);
-      vtUnicodeString: query.SetParam(i, string(Params[i].VUnicodeString));
-    else
-      raise ESQLiteException.Create('Unsupported param type');
-    end;
-
     query.ExecSQL;
   finally
     query.Free;
   end;
 end;
 
-function TSQLiteDatabase.GetTableInt(const SQL: string): Int64;
+procedure TSQLiteDatabase.CompactDatabase;
+const
+  SQL = 'VACUUM';
+begin
+  ExecSQL(SQL);
+end;
+
+procedure TSQLiteDatabase.ReindexDatabase;
+const
+  SQL = 'ANALYZE';
+begin
+  ExecSQL(SQL);
+end;
+
+function TSQLiteDatabase.QuerySingleInt(const SQL: string): Int64;
+begin
+  Result := QuerySingleInt(SQL, []);
+end;
+
+function TSQLiteDatabase.QuerySingleInt(const SQL: string; const Params: array of const): Int64;
 var
-  Query: TSQLiteQuery;
+  query: TSQLiteQuery;
 begin
   Result := 0;
-  Query := NewQuery(SQL);
+  query := NewQuery(SQL, Params);
   try
-    Query.Open;
-    if not Query.EOF then
-      Result := Query.FieldAsInt(0);
+    query.Open;
+    if not query.EOF then
+      Result := query.FieldAsInt(0);
   finally
-    Query.Free;
+    query.Free;
   end;
 end;
 
-function TSQLiteDatabase.GetTableString(const SQL: string): string;
+function TSQLiteDatabase.QuerySingleString(const SQL: string): string;
+begin
+  Result := QuerySingleString(SQL, []);
+end;
+
+function TSQLiteDatabase.QuerySingleString(const SQL: string; const Params: array of const): string;
 var
-  Query: TSQLiteQuery;
+  query: TSQLiteQuery;
 begin
   Result := '';
-  Query := NewQuery(SQL);
+  query := NewQuery(SQL, Params);
   try
-    Query.Open;
-    if not Query.EOF then
-      Result := Query.FieldAsString(0);
+    query.Open;
+    if not query.EOF then
+      Result := query.FieldAsString(0);
   finally
-    Query.Free;
-  end;
-end;
-
-procedure TSQLiteDatabase.GetTableStrings(const SQL: string; const Value: TStrings);
-var
-  Query: TSQLiteQuery;
-begin
-  Value.Clear;
-  Query := NewQuery(SQL);
-  try
-    Query.Open;
-    while not Query.EOF do
-    begin
-      Value.Add(Query.FieldAsString(0));
-      Query.Next;
-    end;
-  finally
-    Query.Free;
+    query.Free;
   end;
 end;
 
