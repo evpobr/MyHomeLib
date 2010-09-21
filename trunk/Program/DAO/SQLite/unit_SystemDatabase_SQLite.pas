@@ -30,14 +30,6 @@ uses
   unit_Consts;
 
 type
-  TCollectionInfoAdapter = class
-  private
-    FValue: ICollectionInfo;
-
-  public
-    property Value: ICollectionInfo read FValue write FValue;
-  end;
-
   TSystemData_SQLite = class(TSystemData)
   strict private
   type
@@ -188,8 +180,7 @@ type
 
   private
     FDatabase: TSQLiteDatabase;
-    FCollectionInfoCache: TObjectDictionary<Integer, TCollectionInfoAdapter>;
-    FLock: TRTLCriticalSection;
+    FCollectionInfoCache: TCollectionInfoCache;
 
     procedure InternalClearGroup(GroupID: Integer; RemoveGroup: Boolean);
     function InternalFindGroup(const GroupName: string): Boolean; overload; inline;
@@ -444,8 +435,7 @@ begin
   Assert(FileExists(DBUserFile));
   FDatabase := TSQLiteDatabase.Create(DBUserFile);
 
-  FCollectionInfoCache := TObjectDictionary<Integer, TCollectionInfoAdapter>.Create([doOwnsValues]);
-  InitializeCriticalSection(FLock);
+  FCollectionInfoCache := TCollectionInfoCache.Create;;
 
   collectionID := FindFirstExistingCollectionID(1);
   if collectionID > 0 then
@@ -456,7 +446,6 @@ destructor TSystemData_SQLite.Destroy;
 begin
   inherited Destroy;
 
-  DeleteCriticalSection(FLock);
   FreeAndNil(FCollectionInfoCache);
   FreeAndNil(FDatabase);
 end;
@@ -472,13 +461,12 @@ var
   query: TSQLiteQuery;
   stream: TStream;
   tempCollectionInfo: TCollectionInfo;
-  collectionInfoAdapter: TCollectionInfoAdapter;
 begin
   Assert(CollectionID > 0);
 
-  EnterCriticalSection(FLock);
+  FCollectionInfoCache.LockMap;
   try
-    if not FCollectionInfoCache.ContainsKey(CollectionID) then
+    if not FCollectionInfoCache.ContainsKey(IntToStr(CollectionID)) then
     begin
       query := FDatabase.NewQuery(SQL_SELECT);
       try
@@ -518,13 +506,7 @@ begin
               FreeAndNil(stream);
             end;
 
-            collectionInfoAdapter := TCollectionInfoAdapter.Create;
-            try
-              collectionInfoAdapter.Value := tempCollectionInfo;
-              FCollectionInfoCache.Add(CollectionID, collectionInfoAdapter);
-            except
-              FreeAndNil(collectionInfoAdapter);
-            end;
+            FCollectionInfoCache.Add(IntToStr(CollectionID), tempCollectionInfo);
           except
             tempCollectionInfo.Free;
             raise;
@@ -536,9 +518,11 @@ begin
     end;
 
     Result := TCollectionInfo.Create;
-    Result.Assign(FCollectionInfoCache[CollectionID].Value);
+    Result.Assign(
+      FCollectionInfoCache.Get(IntToStr(CollectionID))
+    );
   finally
-    LeaveCriticalSection(FLock);
+    FCollectionInfoCache.UnlockMap;
   end;
 end;
 
@@ -556,7 +540,6 @@ var
   query: TSQLiteQuery;
   stream: TStream;
   tempCollectionInfo: TCollectionInfo;
-  collectionInfoAdapter: TCollectionInfoAdapter;
 begin
   Assert(CollectionInfo.ID > 0);
 
@@ -600,26 +583,19 @@ begin
     FreeAndNil(query);
   end;
 
-  EnterCriticalSection(FLock);
+  FCollectionInfoCache.LockMap;
   try
     tempCollectionInfo := TCollectionInfo.Create;
     try
       tempCollectionInfo.Assign(CollectionInfo);
-      FCollectionInfoCache.Remove(tempCollectionInfo.GetID);
-
-      collectionInfoAdapter := TCollectionInfoAdapter.Create;
-      try
-        collectionInfoAdapter.Value := tempCollectionInfo;
-        FCollectionInfoCache.Add(tempCollectionInfo.GetID, collectionInfoAdapter);
-      except
-        FreeAndNil(collectionInfoAdapter);
-      end;
+      FCollectionInfoCache.Remove(IntToStr(tempCollectionInfo.GetID));
+      FCollectionInfoCache.Add(IntToStr(tempCollectionInfo.GetID), tempCollectionInfo);
     except
       FreeAndNil(tempCollectionInfo);
       raise;
     end;
   finally
-    LeaveCriticalSection(FLock);
+    FCollectionInfoCache.UnlockMap;
   end;
 
 end;

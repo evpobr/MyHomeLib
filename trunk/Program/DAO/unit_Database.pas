@@ -35,38 +35,11 @@ uses
   SysUtils,
   unit_Settings,
   unit_Database_SQLite,
-  unit_SystemDatabase;
-
-type
-  TCollectionCache = class
-  private type
-    TInterfaceAdapter = class
-    public
-      constructor Create(const Value: IBookCollection);
-
-    private
-      FValue: IBookCollection;
-    end;
-
-  private
-    FMap: TObjectDictionary<string, TInterfaceAdapter>;
-    FLock: TRTLCriticalSection;
-
-  public
-    constructor Create;
-    destructor Destroy; override;
-
-    procedure LockMap; inline;
-    procedure UnlockMap; inline;
-
-    function ContainsKey(const key: string): Boolean;
-    procedure Add(const key: string; const Value: IBookCollection);
-    function Get(const key: string): IBookCollection;
-    procedure Remove(const key: string);
-  end;
+  unit_SystemDatabase,
+  unit_SystemDatabase_Abstract;
 
 var
-  g_CollectionCache: TCollectionCache;
+  g_CollectionCache: TBookCollectionCache;
 
 function GetBookCollection(const DBCollectionFile: string): IBookCollection;
 begin
@@ -94,87 +67,8 @@ begin
   Result := GetBookCollection(GetSystemData.GetActiveCollectionInfo.DBFileName);
 end;
 
-{ TCollectionCache<I>.TInterfaceAdapter }
-
-constructor TCollectionCache.TInterfaceAdapter.Create(const Value: IBookCollection);
-begin
-  inherited Create;
-  FValue := Value;
-end;
-
-{ TCollectionCache<I> }
-
-constructor TCollectionCache.Create;
-begin
-  inherited;
-  InitializeCriticalSection(FLock);
-  FMap := TObjectDictionary<string, TInterfaceAdapter>.Create([doOwnsValues]);
-end;
-
-destructor TCollectionCache.Destroy;
-begin
-  LockMap;    // Make sure nobody else is inside the list.
-  try
-    FMap.Free;
-    inherited Destroy;
-  finally
-    UnlockMap;
-    DeleteCriticalSection(FLock);
-  end;
-end;
-
-procedure TCollectionCache.LockMap;
-begin
-  EnterCriticalSection(FLock);
-end;
-
-procedure TCollectionCache.UnlockMap;
-begin
-  LeaveCriticalSection(FLock);
-end;
-
-function TCollectionCache.ContainsKey(const key: string): Boolean;
-begin
-  LockMap;
-  try
-    Result := FMap.ContainsKey(key);
-  finally
-    UnlockMap;
-  end;
-end;
-
-procedure TCollectionCache.Add(const key: string; const Value: IBookCollection);
-begin
-  LockMap;
-  try
-    FMap.Add(key, TInterfaceAdapter.Create(Value));
-  finally
-    UnlockMap;
-  end;
-end;
-
-function TCollectionCache.Get(const key: string): IBookCollection;
-begin
-  LockMap;
-  try
-    Result := FMap[key].FValue;
-  finally
-    UnlockMap;
-  end;
-end;
-
-procedure TCollectionCache.Remove(const key: string);
-begin
-  LockMap;
-  try
-    FMap.Remove(key);
-  finally
-    UnlockMap;
-  end;
-end;
-
 initialization
-  g_CollectionCache := TCollectionCache.Create;
+  g_CollectionCache := TBookCollectionCache.Create;
 
 finalization
   FreeAndNil(g_CollectionCache);
