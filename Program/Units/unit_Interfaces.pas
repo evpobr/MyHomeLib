@@ -26,7 +26,10 @@ uses
   UserData;
 
 type
-  ICollectionInfo = interface
+  ICacheable = interface
+  end;
+
+  ICollectionInfo = interface(ICacheable)
     ['{6D459AD9-8D14-4F90-B36E-A42BFF229E47}']
 
     function GetID: Integer;
@@ -140,6 +143,8 @@ type
     procedure DropBookCollectionDatabase(const DBCollectionFile: string);
 
     function CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True): IBookCollection;
+    function GetBookCollection(const DBCollectionFile: string): IBookCollection;
+    function GetActiveBookCollection: IBookCollection;
 
     function ActivateGroup(const ID: Integer): Boolean;
 
@@ -195,7 +200,7 @@ type
     function GetActiveCollectionInfo: ICollectionInfo;
   end;
 
-  IBookCollection = interface
+  IBookCollection = interface(ICacheable)
     ['{B1BB5762-2942-48C3-90E3-3154405EC01B}']
 
     //
