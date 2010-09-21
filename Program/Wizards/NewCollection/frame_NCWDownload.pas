@@ -54,8 +54,8 @@ type
     function Activate(LoadData: Boolean): Boolean; override;
     function Deactivate(CheckData: Boolean): Boolean; override;
 
-    procedure Stop;
     procedure Download;
+    procedure Stop;
   end;
 
 var

@@ -60,7 +60,6 @@ end;
 procedure TSyncOnLineThread.WorkFunction;
 var
   BookFile: string;
-  BookKey: TBookKey;
 
   totalBooks: Integer;
   processedBooks: Integer;

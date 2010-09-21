@@ -49,6 +49,8 @@ type
     extra: TBookExtra
   );
 
+  IBookCollection = interface;
+
   ISystemData = interface
     ['{3896E4C6-8E2F-42F3-9FB2-91753258E9B7}']
 
@@ -130,7 +132,6 @@ type
     function FindFirstExistingCollectionID(const PreferredID: Integer): Integer;
     function GetActiveCollectionInfo: TCollectionInfo;
   end;
-
 
   IBookCollection = interface
     ['{B1BB5762-2942-48C3-90E3-3154405EC01B}']
