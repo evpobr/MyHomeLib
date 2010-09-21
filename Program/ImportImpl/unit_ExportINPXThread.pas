@@ -79,7 +79,7 @@ const
 
 constructor TExport2INPXThread.Create;
 var
-  CollectionInfo: TCollectionInfo;
+  CollectionInfo: ICollectionInfo;
 begin
   inherited Create;
 

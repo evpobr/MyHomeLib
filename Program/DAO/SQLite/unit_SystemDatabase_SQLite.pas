@@ -30,6 +30,14 @@ uses
   unit_Consts;
 
 type
+  TCollectionInfoAdapter = class
+  private
+    FValue: ICollectionInfo;
+
+  public
+    property Value: ICollectionInfo read FValue write FValue;
+  end;
+
   TSystemData_SQLite = class(TSystemData)
   strict private
   type
@@ -84,7 +92,7 @@ type
       //
       // ICollectionInfoIterator
       //
-      function Next(CollectionInfo: TCollectionInfo): Boolean;
+      function Next(CollectionInfo: ICollectionInfo): Boolean;
       function RecordCount: Integer;
 
     private
@@ -100,8 +108,8 @@ type
     constructor Create(const DBUserFile: string);
     destructor Destroy; override;
 
-    procedure GetCollectionInfo(const CollectionID: Integer; CollectionInfo: TCollectionInfo); override;
-    procedure UpdateCollectionInfo(const CollectionInfo: TCollectionInfo); override;
+    function GetCollectionInfo(const CollectionID: Integer): ICollectionInfo; override;
+    procedure UpdateCollectionInfo(const CollectionInfo: ICollectionInfo); override;
 
     procedure ActivateCollection(CollectionID: Integer); override;
     procedure RegisterCollection(
@@ -175,7 +183,7 @@ type
 
   private
     FDatabase: TSQLiteDatabase;
-    FCollectionInfoCache: TObjectDictionary<Integer, TCollectionInfo>;
+    FCollectionInfoCache: TObjectDictionary<Integer, TCollectionInfoAdapter>;
     FLock: TRTLCriticalSection;
 
     procedure InternalClearGroup(GroupID: Integer; RemoveGroup: Boolean);
@@ -385,7 +393,7 @@ begin
 end;
 
 // Read next record (if present), return True if read
-function TSystemData_SQLite.TCollectionInfoIteratorImpl.Next(CollectionInfo: TCollectionInfo): Boolean;
+function TSystemData_SQLite.TCollectionInfoIteratorImpl.Next(CollectionInfo: ICollectionInfo): Boolean;
 begin
   Assert(Assigned(CollectionInfo));
 
@@ -393,7 +401,7 @@ begin
 
   if Result then
   begin
-    FUser.GetCollectionInfo(FBases.FieldAsInt(0), CollectionInfo);
+    CollectionInfo.Assign(FUser.GetCollectionInfo(FBases.FieldAsInt(0)));
     FBases.Next;
   end;
 end;
@@ -430,7 +438,7 @@ begin
   Assert(FileExists(DBUserFile));
   FDatabase := TSQLiteDatabase.Create(DBUserFile);
 
-  FCollectionInfoCache := TObjectDictionary<Integer, TCollectionInfo>.Create([doOwnsValues]);
+  FCollectionInfoCache := TObjectDictionary<Integer, TCollectionInfoAdapter>.Create([doOwnsValues]);
   InitializeCriticalSection(FLock);
 
   collectionID := FindFirstExistingCollectionID(1);
@@ -447,7 +455,7 @@ begin
   FreeAndNil(FDatabase);
 end;
 
-procedure TSystemData_SQLite.GetCollectionInfo(const CollectionID: Integer; CollectionInfo: TCollectionInfo);
+function TSystemData_SQLite.GetCollectionInfo(const CollectionID: Integer): ICollectionInfo;
 const
   SQL_SELECT = 'SELECT ' +
     'bs.BaseName, bs.RootFolder, bs.DBFileName, bs.Code, bs.CreationDate, ' + // 0  .. 4
@@ -458,9 +466,9 @@ var
   query: TSQLiteQuery;
   stream: TStream;
   tempCollectionInfo: TCollectionInfo;
+  collectionInfoAdapter: TCollectionInfoAdapter;
 begin
   Assert(CollectionID > 0);
-  Assert(Assigned(CollectionInfo));
 
   EnterCriticalSection(FLock);
   try
@@ -474,38 +482,43 @@ begin
         begin
           tempCollectionInfo := TCollectionInfo.Create;
           try
-            tempCollectionInfo.ID := CollectionID;
-            tempCollectionInfo.Name := query.FieldAsString(0);
-            tempCollectionInfo.RootFolder := query.FieldAsString(1);
-            tempCollectionInfo.DBFileName := query.FieldAsString(2);
-            tempCollectionInfo.CollectionType := query.FieldAsInt(3); // code
-            tempCollectionInfo.CreationDate := query.FieldAsDateTime(4);
+            tempCollectionInfo.SetID(CollectionID);
+            tempCollectionInfo.SetName(query.FieldAsString(0));
+            tempCollectionInfo.SetRootFolder(query.FieldAsString(1));
+            tempCollectionInfo.SetDBFileName(query.FieldAsString(2));
+            tempCollectionInfo.SetCollectionType(query.FieldAsInt(3)); // code
+            tempCollectionInfo.SetCreationDate(query.FieldAsDateTime(4));
 
             if query.FieldIsNull(5) then
-              tempCollectionInfo.Version := UNVERSIONED_COLLECTION
+              tempCollectionInfo.SetVersion(UNVERSIONED_COLLECTION)
             else
-              tempCollectionInfo.Version := query.FieldAsInt(5);
+              tempCollectionInfo.SetVersion(query.FieldAsInt(5));
 
             if query.FieldIsNull(6) then
-              tempCollectionInfo.AllowDelete := True
+              tempCollectionInfo.SetAllowDelete(True)
             else
-              tempCollectionInfo.AllowDelete := query.FieldAsBoolean(6);
+              tempCollectionInfo.SetAllowDelete(query.FieldAsBoolean(6));
 
-            tempCollectionInfo.Notes := query.FieldAsString(7);
-            tempCollectionInfo.User := query.FieldAsString(8);
-            tempCollectionInfo.Password := query.FieldAsString(9);
-            tempCollectionInfo.URL := query.FieldAsString(10);
-            tempCollectionInfo.Script := query.FieldAsBlobString(11);
+            tempCollectionInfo.SetNotes(query.FieldAsString(7));
+            tempCollectionInfo.SetUser(query.FieldAsString(8));
+            tempCollectionInfo.SetPassword(query.FieldAsString(9));
+            tempCollectionInfo.SetURL(query.FieldAsString(10));
+            tempCollectionInfo.SetScript(query.FieldAsBlobString(11));
 
             stream := query.FieldAsBlob(12);
             try
-              Assert(Assigned(tempCollectionInfo.Settings));
-              tempCollectionInfo.Settings.LoadFromStream(stream);
+              tempCollectionInfo.GetSettings.LoadFromStream(stream);
             finally
               FreeAndNil(stream);
             end;
 
-            FCollectionInfoCache.Add(CollectionID, tempCollectionInfo);
+            collectionInfoAdapter := TCollectionInfoAdapter.Create;
+            try
+              collectionInfoAdapter.Value := tempCollectionInfo;
+              FCollectionInfoCache.Add(CollectionID, collectionInfoAdapter);
+            except
+              FreeAndNil(collectionInfoAdapter);
+            end;
           except
             tempCollectionInfo.Free;
             raise;
@@ -516,13 +529,14 @@ begin
       end;
     end;
 
-    CollectionInfo.Assign(FCollectionInfoCache[CollectionID]);
+    Result := TCollectionInfo.Create;
+    Result.Assign(FCollectionInfoCache[CollectionID].Value);
   finally
     LeaveCriticalSection(FLock);
   end;
 end;
 
-procedure TSystemData_SQLite.UpdateCollectionInfo(const CollectionInfo: TCollectionInfo);
+procedure TSystemData_SQLite.UpdateCollectionInfo(const CollectionInfo: ICollectionInfo);
 const
 {$IFOPT D+}
   SQL_SELECT = 'SELECT DatabaseID FROM Bases WHERE DatabaseID = ? ';
@@ -536,6 +550,7 @@ var
   query: TSQLiteQuery;
   stream: TStream;
   tempCollectionInfo: TCollectionInfo;
+  collectionInfoAdapter: TCollectionInfoAdapter;
 begin
   Assert(CollectionInfo.ID > 0);
 
@@ -584,8 +599,15 @@ begin
     tempCollectionInfo := TCollectionInfo.Create;
     try
       tempCollectionInfo.Assign(CollectionInfo);
-      FCollectionInfoCache.Remove(tempCollectionInfo.ID);
-      FCollectionInfoCache.Add(tempCollectionInfo.ID, tempCollectionInfo);
+      FCollectionInfoCache.Remove(tempCollectionInfo.GetID);
+
+      collectionInfoAdapter := TCollectionInfoAdapter.Create;
+      try
+        collectionInfoAdapter.Value := tempCollectionInfo;
+        FCollectionInfoCache.Add(tempCollectionInfo.GetID, collectionInfoAdapter);
+      except
+        FreeAndNil(collectionInfoAdapter);
+      end;
     except
       FreeAndNil(tempCollectionInfo);
       raise;
@@ -599,7 +621,7 @@ end;
 procedure TSystemData_SQLite.ActivateCollection(CollectionID: Integer);
 begin
   Assert(CollectionID > 0);
-  GetCollectionInfo(CollectionID, FActiveCollectionInfo);
+  FActiveCollectionInfo := GetCollectionInfo(CollectionID);
 end;
 
 procedure TSystemData_SQLite.RegisterCollection(
@@ -658,7 +680,7 @@ end;
 function TSystemData_SQLite.FindCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer): Boolean;
 var
   CollectionInfoIterator: ICollectionInfoIterator;
-  CollectionInfo: TCollectionInfo;
+  CollectionInfo: ICollectionInfo;
   Match: Boolean;
 begin
   CollectionInfoIterator := GetCollectionInfoIterator;
@@ -668,29 +690,25 @@ begin
     Exit;
 
   CollectionInfo := TCollectionInfo.Create;
-  try
-    while (CollectionInfoIterator.Next(CollectionInfo)) do
-    begin
-      case PropID of
-      cpDisplayName:
-        Match := (CollectionInfo.Name = Value);
-      cpFileName:
-        Match := (CollectionInfo.DBFileName = Value);
-      cpRootFolder:
-        Match := (CollectionInfo.RootFolder = Value);
-      else
-        Match := False;
-        Assert(False);
-      end;
-
-      if Match and ((IgnoreID = INVALID_COLLECTION_ID) or (IgnoreID <> CollectionInfo.ID)) then
-      begin
-        Result := True;
-        Exit;
-      end;
+  while (CollectionInfoIterator.Next(CollectionInfo)) do
+  begin
+    case PropID of
+    cpDisplayName:
+      Match := (CollectionInfo.Name = Value);
+    cpFileName:
+      Match := (CollectionInfo.DBFileName = Value);
+    cpRootFolder:
+      Match := (CollectionInfo.RootFolder = Value);
+    else
+      Match := False;
+      Assert(False);
     end;
-  finally
-    FreeAndNil(CollectionInfo);
+
+    if Match and ((IgnoreID = INVALID_COLLECTION_ID) or (IgnoreID <> CollectionInfo.ID)) then
+    begin
+      Result := True;
+      Exit;
+    end;
   end;
 end;
 
@@ -746,7 +764,7 @@ var
   author: TAuthorData;
   genre: TGenreData;
   query: TSQLiteQuery;
-  collectionInfo: TCollectionInfo;
+  collectionInfo: ICollectionInfo;
 begin
   query := FDatabase.NewQuery(SQL_SELECT);
   try
@@ -848,21 +866,16 @@ begin
     FreeAndNil(query);
   end;
 
-  collectionInfo := TCollectionInfo.Create;
   try
-    try
-      GetCollectionInfo(BookRecord.BookKey.DatabaseID, collectionInfo);
-      // Please notice that the collection for a book in a group might not match ActiveCollection
-      // Need to use values from tblBases instead
-      BookRecord.CollectionName := collectionInfo.Name;
-      BookRecord.CollectionRoot := IncludeTrailingPathDelimiter(collectionInfo.RootFolder);
-    except
-      BookRecord.CollectionName := rstrUnknownCollection;
-      BookRecord.CollectionRoot := '';
-      Assert(False);
-    end;
-  finally
-    FreeAndNil(collectionInfo);
+    collectionInfo := GetCollectionInfo(BookRecord.BookKey.DatabaseID);
+    // Please notice that the collection for a book in a group might not match ActiveCollection
+    // Need to use values from tblBases instead
+    BookRecord.CollectionName := collectionInfo.Name;
+    BookRecord.CollectionRoot := IncludeTrailingPathDelimiter(collectionInfo.RootFolder);
+  except
+    BookRecord.CollectionName := rstrUnknownCollection;
+    BookRecord.CollectionRoot := '';
+    Assert(False);
   end;
 end;
 
