@@ -26,6 +26,60 @@ uses
   UserData;
 
 type
+  ICollectionInfo = interface
+    ['{6D459AD9-8D14-4F90-B36E-A42BFF229E47}']
+
+    function GetID: Integer;
+    procedure SetID(const NewID: Integer);
+    function GetName: string;
+    procedure SetName(const NewName: string);
+    function GetRootFolder: string;
+    procedure SetRootFolder(const NewRootFolder: string);
+    function GetDBFileName: string;
+    procedure SetDBFileName(const NewDBFileName: string);
+    function GetNotes: string;
+    procedure SetNotes(const NewNotes: string);
+    function GetUser: string;
+    procedure SetUser(const NewUser: string);
+    function GetPassword: string;
+    procedure SetPassword(const NewPassword: string);
+    function GetCreationDate: TDateTime;
+    procedure SetCreationDate(const NewCreationDate: TDateTime);
+    function GetVersion: Integer;
+    procedure SetVersion(const NewVersion: Integer);
+    function GetCollectionType: COLLECTION_TYPE;
+    procedure SetCollectionType(const NewCollectionType: COLLECTION_TYPE);
+    function GetAllowDelete: Boolean;
+    procedure SetAllowDelete(const NewAllowDelete: Boolean);
+    function GetURL: string;
+    procedure SetURL(const NewURL: string);
+    function GetScript: string;
+    procedure SetScript(const NewScript: string);
+
+    function GetSettings: TStrings;
+    function GetRootPath: string;
+
+    procedure Assign(Source: ICollectionInfo);
+    procedure Clear;
+
+    property ID: Integer read GetID write SetID;
+    property Name: string read GetName write SetName;
+    property RootFolder: string read GetRootFolder write SetRootFolder;
+    property DBFileName: string read GetDBFileName write SetDBFileName;
+    property Notes: string read GetNotes write SetNotes;
+    property CreationDate: TDateTime read GetCreationDate write SetCreationDate;
+    property Version: Integer read GetVersion write SetVersion;
+    property CollectionType: COLLECTION_TYPE read GetCollectionType write SetCollectionType;
+    property AllowDelete: Boolean read GetAllowDelete write SetAllowDelete;
+    property User: string read GetUser write SetUser;
+    property Password: string read GetPassword write SetPassword;
+    property URL: string read GetURL write SetURL;
+    property Script: string read GetScript write SetScript;
+
+    property Settings: TStrings read GetSettings;
+    property RootPath: string read GetRootPath;
+  end;
+
   IIterator<T: record> = interface
     function Next(out v: T): Boolean;
     function RecordCount: Integer;
@@ -42,7 +96,10 @@ type
   ISeriesIterator = IIterator<TSeriesData>;
   IGroupIterator = IIterator<TGroupData>;
 
-  ICollectionInfoIterator = IObjectIterator<TCollectionInfo>;
+  ICollectionInfoIterator = interface
+    function Next(v: ICollectionInfo): Boolean;
+    function RecordCount: Integer;
+  end;
 
   TGUIUpdateExtraProc = reference to procedure(
     const BookKey: TBookKey;
@@ -54,8 +111,8 @@ type
   ISystemData = interface
     ['{3896E4C6-8E2F-42F3-9FB2-91753258E9B7}']
 
-    procedure GetCollectionInfo(const CollectionID: Integer; CollectionInfo: TCollectionInfo);
-    procedure UpdateCollectionInfo(const CollectionInfo: TCollectionInfo);
+    function GetCollectionInfo(const CollectionID: Integer): ICollectionInfo;
+    procedure UpdateCollectionInfo(const CollectionInfo: ICollectionInfo);
 
     procedure ActivateCollection(CollectionID: Integer);
 
@@ -130,7 +187,7 @@ type
 
     function HasCollections: Boolean;
     function FindFirstExistingCollectionID(const PreferredID: Integer): Integer;
-    function GetActiveCollectionInfo: TCollectionInfo;
+    function GetActiveCollectionInfo: ICollectionInfo;
   end;
 
   IBookCollection = interface
@@ -220,7 +277,6 @@ type
     procedure SetAuthorFilterType(const AuthorFilterType: string);
     function GetAuthorFilterType: string;
   end;
-
 
   ILogger = interface
     ['{E0BE38F4-2911-4FD7-8CA2-B6E3981BBFC0}']

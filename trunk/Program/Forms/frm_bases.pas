@@ -126,7 +126,7 @@ resourcestring
 
 procedure TfrmBases.FormShow(Sender: TObject);
 var
-  CollectionInfo: TCollectionInfo;
+  CollectionInfo: ICollectionInfo;
 begin
   FSystemData := GetSystemData;
   CollectionInfo := FSystemData.GetActiveCollectionInfo;
@@ -245,7 +245,7 @@ procedure TfrmBases.btnSaveClick(Sender: TObject);
 var
   ADBFileName: string;
   ARootFolder: string;
-  CollectionInfo: TCollectionInfo;
+  CollectionInfo: ICollectionInfo;
 begin
   if (DisplayName = '') or (DBFileName = '') or (RootFolder = '') then
   begin
@@ -297,22 +297,17 @@ begin
     Exit;
   end;
 
-  CollectionInfo := TCollectionInfo.Create;
-  try
-    FSystemData.GetCollectionInfo(CollectionID, CollectionInfo);
-    CollectionInfo.Name := DisplayName;
-    CollectionInfo.RootFolder := ARootFolder;
-    CollectionInfo.DBFileName := ADBFileName;
-    CollectionInfo.Notes := Description;
-    CollectionInfo.URL := URL;
-    CollectionInfo.User := User;
-    CollectionInfo.Password := Pass;
-    CollectionInfo.Script := Script;
+  CollectionInfo := FSystemData.GetCollectionInfo(CollectionID);
+  CollectionInfo.Name := DisplayName;
+  CollectionInfo.RootFolder := ARootFolder;
+  CollectionInfo.DBFileName := ADBFileName;
+  CollectionInfo.Notes := Description;
+  CollectionInfo.URL := URL;
+  CollectionInfo.User := User;
+  CollectionInfo.Password := Pass;
+  CollectionInfo.Script := Script;
 
-    FSystemData.UpdateCollectionInfo(CollectionInfo);
-  finally
-    FreeAndNil(CollectionInfo);
-  end;
+  FSystemData.UpdateCollectionInfo(CollectionInfo);
 
   ModalResult := mrOk;
 end;

@@ -151,7 +151,7 @@ var
   BookCollection: IBookCollection;
   i: integer;
   UserDataBackup: TUserData;
-  CollectionInfo: TCollectionInfo;
+  CollectionInfo: ICollectionInfo;
   SystemData: ISystemData;
 begin
   SystemData := GetSystemData;
@@ -168,95 +168,90 @@ begin
     SetComment(rstrCheckingUpdate);
 
     try
-      CollectionInfo := TCollectionInfo.Create;
-      try
-        for i := 0 to Settings.Updates.Count - 1 do
+      for i := 0 to Settings.Updates.Count - 1 do
+      begin
+        if not Settings.Updates[i].Available then
+          Continue;
+
+        SystemData.ActivateCollection(Settings.Updates[i].CollectionID);
+        CollectionInfo := SystemData.GetCollectionInfo(Settings.Updates[i].CollectionID);
+        Teletype(Format(rstrCollectionUpdate, [Settings.Updates[i].Name, Settings.Updates[i].ExternalVersion]), tsInfo);
+
+        if Settings.Updates[i].Local then
+          Teletype(rstrUpdatingFromLocalArchive, tsInfo)
+        else
         begin
-          if not Settings.Updates[i].Available then
+          Teletype(rstrDownloadingUpdates, tsInfo);
+          if not Settings.Updates.DownloadUpdate(i, FidHTTP) then
+          begin
+            Teletype(rstrUpdateFailedDownload, tsInfo);
             Continue;
-
-          SystemData.ActivateCollection(Settings.Updates[i].CollectionID);
-          SystemData.GetCollectionInfo(Settings.Updates[i].CollectionID, CollectionInfo);
-          Teletype(Format(rstrCollectionUpdate, [Settings.Updates[i].Name, Settings.Updates[i].ExternalVersion]), tsInfo);
-
-          if Settings.Updates[i].Local then
-            Teletype(rstrUpdatingFromLocalArchive, tsInfo)
-          else
-          begin
-            Teletype(rstrDownloadingUpdates, tsInfo);
-            if not Settings.Updates.DownloadUpdate(i, FidHTTP) then
-            begin
-              Teletype(rstrUpdateFailedDownload, tsInfo);
-              Continue;
-            end;
           end;
+        end;
 
-          if Canceled then
-          begin
-            DeleteFile(Settings.WorkPath + Settings.Updates.Items[i].UpdateFile);
-            Teletype(rstrCancelledByUser, tsInfo);
-            Exit;
-          end;
-
-          InpxFileName := Settings.UpdatePath + Settings.Updates[i].UpdateFile;
-
-          DBFileName := CollectionInfo.DBFileName;
-          CollectionRoot := CollectionInfo.RootPath;
-          CollectionType := CollectionInfo.CollectionType;
-
-          //Truncate won't work with TBookCollection.Create(DBFileName, False)
-          BookCollection := GetBookCollection(DBFileName);
-          BookCollection.BeginBulkOperation;
-          try
-            if Settings.Updates[i].Full then
-            begin
-              // Backup user data:
-              Teletype(Format(rstrBackupUserData, [Settings.Updates[i].Name]),tsInfo);
-              UserDataBackup := TUserData.Create;
-              BookCollection.ExportUserData(UserDataBackup);
-
-              // clear most tables in a collection
-              Teletype(Format(rstrRemovingOldCollection, [Settings.Updates[i].Name]),tsInfo);
-              BookCollection.TruncateTablesBeforeImport;
-            end; //if FULL
-
-            //  импортирум данные
-            Teletype(rstrImportIntoCollection, tsInfo);
-            Import(not Settings.Updates[i].Full, BookCollection);
-
-            if (UserDataBackup <> nil) then // a full import mode, had a backup before the process
-            begin
-              // Restore user data:
-              Teletype(Format(rstrRestoreUserData, [Settings.Updates[i].Name]),tsInfo);
-              FOnImportUserData(UserDataBackup);
-            end;
-
-            BookCollection.EndBulkOperation(True);
-          except
-            BookCollection.EndBulkOperation(False);
-            raise;
-          end;
-
-          CollectionInfo.Version := GetLibUpdateVersion(True);
-          SystemData.UpdateCollectionInfo(CollectionInfo);
-
-          Teletype(rstrReady,tsInfo);
-        end; //for .. with
-
-        Teletype(rstrUpdateComplete,tsInfo);
-        for i := 0 to Settings.Updates.Count - 1 do
+        if Canceled then
         begin
-          if FileExists(Settings.UpdatePath + Settings.Updates[i].UpdateFile) then
-            if Settings.Updates[i].UpdateFile <> 'librusec_update.zip' then
-              DeleteFile(Settings.UpdatePath + Settings.Updates[i].UpdateFile)
-            else
-              ReplaceFiles;
-         end;
+          DeleteFile(Settings.WorkPath + Settings.Updates.Items[i].UpdateFile);
+          Teletype(rstrCancelledByUser, tsInfo);
+          Exit;
+        end;
 
-         SetComment(rstrReady);
-      finally
-        FreeAndNil(CollectionInfo);
+        InpxFileName := Settings.UpdatePath + Settings.Updates[i].UpdateFile;
+
+        DBFileName := CollectionInfo.DBFileName;
+        CollectionRoot := CollectionInfo.RootPath;
+        CollectionType := CollectionInfo.CollectionType;
+
+        //Truncate won't work with TBookCollection.Create(DBFileName, False)
+        BookCollection := GetBookCollection(DBFileName);
+        BookCollection.BeginBulkOperation;
+        try
+          if Settings.Updates[i].Full then
+          begin
+            // Backup user data:
+            Teletype(Format(rstrBackupUserData, [Settings.Updates[i].Name]),tsInfo);
+            UserDataBackup := TUserData.Create;
+            BookCollection.ExportUserData(UserDataBackup);
+
+            // clear most tables in a collection
+            Teletype(Format(rstrRemovingOldCollection, [Settings.Updates[i].Name]),tsInfo);
+            BookCollection.TruncateTablesBeforeImport;
+          end; //if FULL
+
+          //  импортирум данные
+          Teletype(rstrImportIntoCollection, tsInfo);
+          Import(not Settings.Updates[i].Full, BookCollection);
+
+          if (UserDataBackup <> nil) then // a full import mode, had a backup before the process
+          begin
+            // Restore user data:
+            Teletype(Format(rstrRestoreUserData, [Settings.Updates[i].Name]),tsInfo);
+            FOnImportUserData(UserDataBackup);
+          end;
+
+          BookCollection.EndBulkOperation(True);
+        except
+          BookCollection.EndBulkOperation(False);
+          raise;
+        end;
+
+        CollectionInfo.Version := GetLibUpdateVersion(True);
+        SystemData.UpdateCollectionInfo(CollectionInfo);
+
+        Teletype(rstrReady,tsInfo);
+      end; //for .. with
+
+      Teletype(rstrUpdateComplete,tsInfo);
+      for i := 0 to Settings.Updates.Count - 1 do
+      begin
+        if FileExists(Settings.UpdatePath + Settings.Updates[i].UpdateFile) then
+          if Settings.Updates[i].UpdateFile <> 'librusec_update.zip' then
+            DeleteFile(Settings.UpdatePath + Settings.Updates[i].UpdateFile)
+          else
+            ReplaceFiles;
       end;
+
+      SetComment(rstrReady);
     except
       on E: Exception do
       begin

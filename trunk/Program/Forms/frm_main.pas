@@ -997,7 +997,8 @@ uses
   frmEditAuthorEx,
   unit_Lib_Updates,
   frm_EditGroup,
-  unit_SystemDatabase;
+  unit_SystemDatabase,
+  unit_SystemDatabase_abstract;
 
 resourcestring
   rstrFileNotFoundMsg = 'Файл %s не найден!' + CRLF + 'Проверьте настройки коллекции!';
@@ -1760,7 +1761,7 @@ var
   SubItem: TMenuItem;
   ActiveCollectionID: Integer;
   CollectionInfoIterator: ICollectionInfoIterator;
-  CollectionInfo: TCollectionInfo;
+  CollectionInfo: ICollectionInfo;
 
   function GetCollectionTypeImageIndex(const CollectionType: COLLECTION_TYPE): Integer;
   begin
@@ -1786,47 +1787,43 @@ begin
   pmCollection.Items.Clear;
 
   CollectionInfo := TCollectionInfo.Create;
-  try
-    CollectionInfoIterator := FSystemData.GetCollectionInfoIterator;
-    while CollectionInfoIterator.Next(CollectionInfo) do
+  CollectionInfoIterator := FSystemData.GetCollectionInfoIterator;
+  while CollectionInfoIterator.Next(CollectionInfo) do
+  begin
+    if ActiveCollectionID <> CollectionInfo.ID then
     begin
-      if ActiveCollectionID <> CollectionInfo.ID then
+      // ----------------------------
+      SubItem := TMenuItem.Create(miCollSelect);
+      SubItem.Caption := CollectionInfo.Name;
+      SubItem.Tag := CollectionInfo.ID;
+      SubItem.OnClick := miActiveCollectionClick;
+      SubItem.ImageIndex := GetCollectionTypeImageIndex(CollectionInfo.CollectionType);
+      miCollSelect.Add(SubItem);
+
+      // ----------------------------
+      SubItem := TMenuItem.Create(pmCollection);
+      SubItem.Caption := CollectionInfo.Name;
+      SubItem.Tag := CollectionInfo.ID;
+      SubItem.OnClick := miActiveCollectionClick;
+      SubItem.ImageIndex := GetCollectionTypeImageIndex(CollectionInfo.CollectionType);
+      pmCollection.Items.Add(SubItem);
+
+      // ----------------------------------
+      if
+        isPrivateCollection(CollectionInfo.CollectionType) and
+        isFB2Collection(CollectionInfo.CollectionType) and
+        IsFB2
+      then
       begin
-        // ----------------------------
-        SubItem := TMenuItem.Create(miCollSelect);
+        SubItem := TMenuItem.Create(miCopyToCollection);
         SubItem.Caption := CollectionInfo.Name;
         SubItem.Tag := CollectionInfo.ID;
-        SubItem.OnClick := miActiveCollectionClick;
+        SubItem.OnClick := CopyToCollectionClick;
         SubItem.ImageIndex := GetCollectionTypeImageIndex(CollectionInfo.CollectionType);
-        miCollSelect.Add(SubItem);
 
-        // ----------------------------
-        SubItem := TMenuItem.Create(pmCollection);
-        SubItem.Caption := CollectionInfo.Name;
-        SubItem.Tag := CollectionInfo.ID;
-        SubItem.OnClick := miActiveCollectionClick;
-        SubItem.ImageIndex := GetCollectionTypeImageIndex(CollectionInfo.CollectionType);
-        pmCollection.Items.Add(SubItem);
-
-        // ----------------------------------
-        if
-          isPrivateCollection(CollectionInfo.CollectionType) and
-          isFB2Collection(CollectionInfo.CollectionType) and
-          IsFB2
-        then
-        begin
-          SubItem := TMenuItem.Create(miCopyToCollection);
-          SubItem.Caption := CollectionInfo.Name;
-          SubItem.Tag := CollectionInfo.ID;
-          SubItem.OnClick := CopyToCollectionClick;
-          SubItem.ImageIndex := GetCollectionTypeImageIndex(CollectionInfo.CollectionType);
-
-          miCopyToCollection.Add(SubItem);
-        end;
+        miCopyToCollection.Add(SubItem);
       end;
     end;
-  finally
-    FreeAndNil(CollectionInfo);
   end;
 
   miCopyToCollection.Enabled := (miCopyToCollection.Count > 0);
@@ -2148,7 +2145,7 @@ var
   i: Integer;
   UpdatesInfo: TUpdateInfoList;
   CollectionInfoIterator: ICollectionInfoIterator;
-  CollectionInfo: TCollectionInfo;
+  CollectionInfo: ICollectionInfo;
 begin
   if not Auto then
     ShowPopup(rstrCheckingUpdates);
@@ -2160,20 +2157,16 @@ begin
   UpdatesInfo.UpdateExternalVersions;
 
   CollectionInfo := TCollectionInfo.Create;
-  try
-    CollectionInfoIterator := FSystemData.GetCollectionInfoIterator;
-    while CollectionInfoIterator.Next(CollectionInfo) do
-    begin
-      for i := 0 to UpdatesInfo.Count - 1 do
-        if UpdatesInfo[i].CheckCodes(CollectionInfo.Name, CollectionInfo.CollectionType, CollectionInfo.ID) then
-          if UpdatesInfo[i].CheckVersion(Settings.UpdatePath, CollectionInfo.Version) then
-          begin
-            Result := True;
-            Break;
-          end;
-    end;
-  finally
-    FreeAndNil(CollectionInfo);
+  CollectionInfoIterator := FSystemData.GetCollectionInfoIterator;
+  while CollectionInfoIterator.Next(CollectionInfo) do
+  begin
+    for i := 0 to UpdatesInfo.Count - 1 do
+      if UpdatesInfo[i].CheckCodes(CollectionInfo.Name, CollectionInfo.CollectionType, CollectionInfo.ID) then
+        if UpdatesInfo[i].CheckVersion(Settings.UpdatePath, CollectionInfo.Version) then
+        begin
+          Result := True;
+          Break;
+        end;
   end;
 
   if not Auto then
@@ -3300,7 +3293,7 @@ var
   Data: PBookRecord;
   Tag: Integer;
   X: Integer;
-  CollectionInfo: TCollectionInfo;
+  CollectionInfo: ICollectionInfo;
   CollectionType: COLLECTION_TYPE;
 
   procedure Stars(Value: Integer);
@@ -3339,13 +3332,8 @@ begin
     //
     // The book belongs to an online collection and is available locally (already downloaded)
     //
-    CollectionInfo := TCollectionInfo.Create;
-    try
-      FSystemData.GetCollectionInfo(Data^.BookKey.DatabaseID, CollectionInfo);
-      CollectionType := CollectionInfo.CollectionType;
-    finally
-      FreeAndNil(CollectionInfo);
-    end;
+    CollectionInfo := FSystemData.GetCollectionInfo(Data^.BookKey.DatabaseID);
+    CollectionType := CollectionInfo.CollectionType;
     if (bpIsLocal in Data^.BookProps) and isOnlineCollection(CollectionType) then
       ilFileTypes.Draw(TargetCanvas, X, CellRect.Top + 1, 7);
 
@@ -3633,7 +3621,7 @@ var
   Data: PBookRecord;
   BookCollection: IBookCollection;
   SavedCursor: TCursor;
-  CollectionInfo: TCollectionInfo;
+  CollectionInfo: ICollectionInfo;
 begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -3646,12 +3634,7 @@ begin
 
     GetActiveTree(Tree);
     ID := (Sender as TMenuItem).Tag;
-    CollectionInfo := TCollectionInfo.Create;
-    try
-      FSystemData.GetCollectionInfo(ID, CollectionInfo);
-    finally
-      FreeAndNil(CollectionInfo);
-    end;
+    CollectionInfo := FSystemData.GetCollectionInfo(ID);
 
     BookCollection := GetBookCollection(FSystemData.GetActiveCollectionInfo.DBFileName);
     Node := Tree.GetFirst;
@@ -3841,7 +3824,7 @@ var
   BookFileName: string;
   BookFormat: TBookFormat;
   WorkFile: string;
-  CollectionInfo: TCollectionInfo;
+  CollectionInfo: ICollectionInfo;
 begin
   Assert(BookRecord.nodeType = ntBookInfo);
 
@@ -3855,21 +3838,16 @@ begin
     begin
       if BookFormat = bfFb2Zip then
       begin
-        CollectionInfo := TCollectionInfo.Create;
-        try
-          FSystemData.GetCollectionInfo(BookRecord.BookKey.DatabaseID, CollectionInfo);
+        CollectionInfo := FSystemData.GetCollectionInfo(BookRecord.BookKey.DatabaseID);
 
-          if (not (bpIsLocal in BookRecord.BookProps)) and isOnlineCollection(CollectionInfo.CollectionType) then
-          begin
-            // A not-yet-downloaded book of an online collection, can download only if book's collection is selected
-            GetActiveBookCollection.VerifyCurrentCollection(BookRecord.BookKey.DatabaseID);
-            DownloadBooks;
-            /// TODO : RESTORE ??? Tree.RepaintNode(Tree.GetFirstSelected);
-            if not FileExists(BookFileName) then
-              Exit; // если файла нет, значит закачка не удалась, и юзер об  этом уже знает
-          end;
-        finally
-          FreeAndNil(CollectionInfo);
+        if (not (bpIsLocal in BookRecord.BookProps)) and isOnlineCollection(CollectionInfo.CollectionType) then
+        begin
+          // A not-yet-downloaded book of an online collection, can download only if book's collection is selected
+          GetActiveBookCollection.VerifyCurrentCollection(BookRecord.BookKey.DatabaseID);
+          DownloadBooks;
+          /// TODO : RESTORE ??? Tree.RepaintNode(Tree.GetFirstSelected);
+          if not FileExists(BookFileName) then
+            Exit; // если файла нет, значит закачка не удалась, и юзер об  этом уже знает
         end;
       end;
 
@@ -4625,7 +4603,7 @@ procedure TfrmMain.DeleteCollectionExecute(Sender: TObject);
 var
   DBFileName: string;
   CollectionInfoIterator: ICollectionInfoIterator;
-  CollectionInfo: TCollectionInfo;
+  CollectionInfo: ICollectionInfo;
 begin
   { TODO -oNickR -cUsability : Думаю, стоит сделать специальный диалог для этого случая. Тогда мы сможем спросить, удалять файл коллекции или нет. }
   if MessageDlg(rstrRemoveCollection + '"' + FSystemData.GetActiveCollectionInfo.Name + '"?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
@@ -4637,15 +4615,11 @@ begin
   DropCollectionDatabase(DBFileName);
 
   CollectionInfo := TCollectionInfo.Create;
-  try
-    CollectionInfoIterator := FSystemData.GetCollectionInfoIterator;
-    if CollectionInfoIterator.Next(CollectionInfo) then
-      Settings.ActiveCollection := CollectionInfo.ID
-    else
-      Settings.ActiveCollection := INVALID_COLLECTION_ID;
-  finally
-    FreeAndNil(CollectionInfo);
-  end;
+  CollectionInfoIterator := FSystemData.GetCollectionInfoIterator;
+  if CollectionInfoIterator.Next(CollectionInfo) then
+    Settings.ActiveCollection := CollectionInfo.ID
+  else
+    Settings.ActiveCollection := INVALID_COLLECTION_ID;
   InitCollection(True);
 end;
 
@@ -6013,18 +5987,13 @@ end;
 procedure TfrmMain.miActiveCollectionClick(Sender: TObject);
 var
   i: Integer;
-  CollectionInfo: TCollectionInfo;
+  CollectionInfo: ICollectionInfo;
 begin
   i := (Sender as TMenuItem).Tag;
-  CollectionInfo := TCollectionInfo.Create;
-  try
-    FSystemData.GetCollectionInfo(i, CollectionInfo);
-    (Sender as TMenuItem).Checked := True;
-    Settings.ActiveCollection := i;
-    InitCollection(True);
-  finally
-    FreeAndNil(CollectionInfo);
-  end;
+  CollectionInfo := FSystemData.GetCollectionInfo(i);
+  (Sender as TMenuItem).Checked := True;
+  Settings.ActiveCollection := i;
+  InitCollection(True);
 end;
 
 procedure TfrmMain.ShowBookInfo(Sender: TObject);
@@ -6185,7 +6154,7 @@ var
   Data: PBookRecord;
   FullAuthorName: string;
   SavedCursor: TCursor;
-  CollectionInfo: TCollectionInfo;
+  CollectionInfo: ICollectionInfo;
 begin
   GetActiveTree(Tree);
 
@@ -6212,16 +6181,11 @@ begin
   try
     if Data^.BookKey.DatabaseID <> FSystemData.GetActiveCollectionInfo.ID then
     begin
-      CollectionInfo := TCollectionInfo.Create;
-      try
-        FSystemData.GetCollectionInfo(Data^.BookKey.DatabaseID, CollectionInfo);
+      CollectionInfo := FSystemData.GetCollectionInfo(Data^.BookKey.DatabaseID);
 
-        Settings.ActiveCollection := Data^.BookKey.DatabaseID;
+      Settings.ActiveCollection := Data^.BookKey.DatabaseID;
 
-        InitCollection(True);
-      finally
-        FreeAndNil(CollectionInfo);
-      end;
+      InitCollection(True);
 
       Assert(Length(Data^.Authors) > 0);
       FullAuthorName := Data^.Authors[0].GetFullName;

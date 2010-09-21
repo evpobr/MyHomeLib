@@ -323,19 +323,14 @@ end;
 
 procedure TBookCollection.VerifyCurrentCollection(const DatabaseID: Integer);
 var
-  BookCollectionName: string;
-  CollectionInfo: TCollectionInfo;
+  bookCollectionName: string;
+  collectionInfo: ICollectionInfo;
 begin
   if DatabaseID <> FSystemData.GetActiveCollectionInfo.ID then
   begin
-    CollectionInfo := TCollectionInfo.Create;
-    try
-      FSystemData.GetCollectionInfo(DatabaseID, CollectionInfo);
-      BookCollectionName := CollectionInfo.Name;
-    finally
-      CollectionInfo.Free;
-    end;
-    raise ENotSupportedException.Create(Format(rstrErrorOnlyForCurrentCollection, [FSystemData.GetActiveCollectionInfo.Name, BookCollectionName]));
+    collectionInfo := FSystemData.GetCollectionInfo(DatabaseID);
+    bookCollectionName := collectionInfo.Name;
+    raise ENotSupportedException.Create(Format(rstrErrorOnlyForCurrentCollection, [FSystemData.GetActiveCollectionInfo.Name, bookCollectionName]));
   end;
 end;
 
