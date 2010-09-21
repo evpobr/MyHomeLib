@@ -27,9 +27,6 @@ uses
   function GetBookCollection(const DBCollectionFile: string): IBookCollection;
   function GetActiveBookCollection: IBookCollection;
 
-  procedure CreateCollectionTables(const DBCollectionFile: string; const GenresFileName: string);
-  procedure DropCollectionDatabase(const DBCollectionFile: string);
-
 implementation
 
 uses
@@ -108,27 +105,6 @@ end;
 function GetActiveBookCollection: IBookCollection;
 begin
   Result := GetBookCollection(GetSystemData.GetActiveCollectionInfo.DBFileName);
-end;
-
-procedure DropCollectionDatabase(const DBCollectionFile: string);
-begin
-  Assert(DBCollectionFile <> '');
-  Assert(Assigned(g_CollectionCache));
-
-  g_CollectionCache.LockMap;
-  try
-    if g_CollectionCache.ContainsKey(DBCollectionFile) then
-      g_CollectionCache.Remove(DBCollectionFile);
-  finally
-    g_CollectionCache.UnlockMap;
-  end;
-
-  DeleteFile(DBCollectionFile);
-end;
-
-procedure CreateCollectionTables(const DBCollectionFile: string; const GenresFileName: string);
-begin
-  CreateCollectionTables_SQLite(DBCollectionFile, GenresFileName);
 end;
 
 { TCollectionCache<I>.TInterfaceAdapter }

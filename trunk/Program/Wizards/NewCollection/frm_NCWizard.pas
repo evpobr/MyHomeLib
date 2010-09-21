@@ -560,7 +560,7 @@ begin
       { TODO -oNickR -cUsability : проверять существование на соответствующей странице с выдачей предупреждения }
       //Assert(not FileExists(FParams.CollectionFile));
       Assert(FileExists(FParams.GenreFile));
-      CreateCollectionTables(FParams.CollectionFile, FParams.GenreFile);
+      GetSystemData.CreateBookCollectionDatabase(FParams.CollectionFile, FParams.GenreFile);
 
       Collection := GetBookCollection(FParams.CollectionFile);
       //
