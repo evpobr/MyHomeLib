@@ -135,6 +135,8 @@ type
     procedure CreateBookCollectionDatabase(const DBCollectionFile: string; const GenresFileName: string); override;
     procedure DropBookCollectionDatabase(const DBCollectionFile: string); override;
 
+    function CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True): IBookCollection; override;
+
     function ActivateGroup(const ID: Integer): Boolean; override;
 
     procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord); override;
@@ -747,6 +749,11 @@ begin
   Assert(DBCollectionFile <> '');
 
   DeleteFile(DBCollectionFile);
+end;
+
+function TSystemData_SQLite.CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True): IBookCollection;
+begin
+  Result := TBookCollection_SQLite.Create(DBCollectionFile, Self);
 end;
 
 function TSystemData_SQLite.ActivateGroup(const ID: Integer): Boolean;

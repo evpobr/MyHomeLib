@@ -118,6 +118,8 @@ type
     procedure CreateBookCollectionDatabase(const DBCollectionFile: string; const GenresFileName: string); virtual; abstract;
     procedure DropBookCollectionDatabase(const DBCollectionFile: string); virtual; abstract;
 
+    function CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True): IBookCollection; virtual; abstract;
+
     function ActivateGroup(const ID: Integer): Boolean; virtual; abstract;
 
     procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord); virtual; abstract;

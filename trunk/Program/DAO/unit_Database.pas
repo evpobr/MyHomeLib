@@ -23,7 +23,6 @@ interface
 uses
   unit_Interfaces;
 
-  function CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True; const SystemData: ISystemData = nil): IBookCollection;
   function GetBookCollection(const DBCollectionFile: string): IBookCollection;
   function GetActiveBookCollection: IBookCollection;
 
@@ -69,18 +68,6 @@ type
 var
   g_CollectionCache: TCollectionCache;
 
-function CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True; const SystemData: ISystemData = nil): IBookCollection;
-var
-  usedSystemData: ISystemData;
-begin
-  if Assigned(SystemData) then
-    usedSystemData := SystemData
-  else
-    usedSystemData := GetSystemData;
-
-  Result := TBookCollection_SQLite.Create(DBCollectionFile, usedSystemData);
-end;
-
 function GetBookCollection(const DBCollectionFile: string): IBookCollection;
 begin
   Assert(DBCollectionFile <> '');
@@ -94,7 +81,7 @@ begin
     end
     else
     begin
-      Result := CreateBookCollection(DBCollectionFile);
+      Result := GetSystemData.CreateBookCollection(DBCollectionFile);
       g_CollectionCache.Add(DBCollectionFile, Result);
     end;
   finally

@@ -139,6 +139,8 @@ type
     procedure CreateBookCollectionDatabase(const DBCollectionFile: string; const GenresFileName: string);
     procedure DropBookCollectionDatabase(const DBCollectionFile: string);
 
+    function CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True): IBookCollection;
+
     function ActivateGroup(const ID: Integer): Boolean;
 
     procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord);
