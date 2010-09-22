@@ -28,7 +28,6 @@ uses
   files_list,
   unit_Globals,
   unit_WorkerThread,
-  unit_Database,
   unit_Templater,
   unit_Interfaces;
 
@@ -87,9 +86,10 @@ Settings.ImportPath
 
 uses
   ComCtrls,
+  Dialogs,
   unit_Settings,
   unit_Consts,
-  Dialogs;
+  unit_SystemDatabase;
 
 resourcestring
   rstrCheckTemplateValidity = 'Проверьте правильность шаблона';
@@ -260,7 +260,7 @@ end;
 
 procedure TImportFB2ThreadBase.WorkFunction;
 begin
-  FLibrary := GetBookCollection(FCollectionDBFileName);
+  FLibrary := GetSystemData.GetBookCollection(FCollectionDBFileName);
   FFiles := TStringList.Create;
   try
     ScanFolder;

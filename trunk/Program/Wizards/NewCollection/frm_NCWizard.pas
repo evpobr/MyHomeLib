@@ -111,7 +111,6 @@ var
 implementation
 
 uses
-  unit_Database,
   unit_Settings,
   unit_globals,
   unit_ImportInpxThread,
@@ -562,7 +561,7 @@ begin
       Assert(FileExists(FParams.GenreFile));
       GetSystemData.CreateBookCollectionDatabase(FParams.CollectionFile, FParams.GenreFile);
 
-      Collection := GetBookCollection(FParams.CollectionFile);
+      Collection := GetSystemData.GetBookCollection(FParams.CollectionFile);
       //
       // Установить свойства коллекции
       //

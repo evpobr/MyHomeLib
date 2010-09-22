@@ -38,7 +38,6 @@ uses
   ComCtrls,
   Menus,
   files_list,
-  unit_Database,
   unit_globals,
   unit_Interfaces,
   FBDDocument,

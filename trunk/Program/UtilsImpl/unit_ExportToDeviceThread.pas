@@ -77,7 +77,6 @@ uses
   unit_Settings,
   unit_MHLHelpers,
   unit_WriteFb2Info,
-  unit_Database,
   unit_SystemDatabase;
 
 resourcestring
@@ -104,7 +103,7 @@ begin
   //
   // TODO : заменить вызов этих методов на потокобезопасные методы, принимающие BookID и DatabaseID
   //
-  GetActiveBookCollection.GetBookRecord(BookKey, R, False);
+  GetSystemData.GetActiveBookCollection.GetBookRecord(BookKey, R, False);
 
   // —формируем им€ каталога в соответствии с заданным темплейтом
   if FTemplater.SetTemplate(Settings.FolderTemplate, TpPath) = ErFine then

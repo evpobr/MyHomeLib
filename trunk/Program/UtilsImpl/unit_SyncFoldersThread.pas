@@ -40,7 +40,6 @@ uses
   unit_Consts,
   unit_MHL_strings,
   unit_Globals,
-  unit_Database,
   unit_Interfaces,
   unit_SystemDatabase;
 
@@ -89,7 +88,7 @@ begin
       SetComment(rstrBuildingFileList);
       FFiles.Process;
 
-      BookCollection := GetActiveBookCollection;
+      BookCollection := SystemData.GetActiveBookCollection;
       BookIterator := BookCollection.GetBookIterator(bmAll, True);
       totalBooks := BookIterator.RecordCount;
       while BookIterator.Next(BookRecord) do
