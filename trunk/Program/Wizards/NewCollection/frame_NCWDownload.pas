@@ -54,7 +54,7 @@ type
     function Activate(LoadData: Boolean): Boolean; override;
     function Deactivate(CheckData: Boolean): Boolean; override;
 
-    procedure Download;
+    function Download: Boolean;
     procedure Stop;
   end;
 
@@ -80,6 +80,8 @@ resourcestring
 
 function TframeNCWDownload.Activate(LoadData: Boolean): Boolean;
 begin
+  Assert(FPParams^.Operation = otInpxDownload);
+
   lblStatus.Caption := rstrConnecting;
   Bar.Position := 0;
 
@@ -91,18 +93,20 @@ begin
   Result := True;
 end;
 
-procedure TframeNCWDownload.Download;
+function TframeNCWDownload.Download: Boolean;
 var
-  Responce: TMemoryStream;
+  Responce: TFileStream;
 begin
+  Result := False;
   FTerminated := False;
-  Responce := TMemoryStream.Create;
+
+  Responce := TFileStream.Create(FPParams^.INPXFile, fmCreate);
   try
     HTTP.Get(FPParams^.INPXUrl, Responce);
     if not FTerminated then
     begin
-      Responce.SaveToFile(FPParams^.INPXFile);
       FPParams^.Operation := otInpx;
+      Result := True;
     end;
   finally
     Responce.Free;

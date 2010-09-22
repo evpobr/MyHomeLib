@@ -68,6 +68,8 @@ function TframeNCWCollectionFileTypes.Activate(LoadData: Boolean): Boolean;
 var
   rb: TRadioButton;
 begin
+  Assert(FPParams^.Operation = otNew);
+
   if LoadData then
   begin
     if ftFB2 = FPParams^.FileTypes then

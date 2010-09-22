@@ -122,7 +122,6 @@ uses
   frm_EditGroup in 'Forms\frm_EditGroup.pas' {frmEditGroup},
   unit_Logger in 'Units\unit_Logger.pas',
   unit_Interfaces in 'Units\unit_Interfaces.pas',
-  unit_Database in 'DAO\unit_Database.pas',
   SQLite3 in 'DAO\SQLite\Lib\SQLite3.pas',
   SQLite3UDF in 'DAO\SQLite\Lib\SQLite3UDF.pas',
   SQLiteWrap in 'DAO\SQLite\Lib\SQLiteWrap.pas',
@@ -158,9 +157,10 @@ begin
 
     // Важно! сначала создаем датамодули и главную форму, а потом - остальные формы!
     Application.CreateForm(TDMUser, DMUser);
-  Application.CreateForm(TfrmMain, frmMain);
-  Application.CreateForm(TfrmGenreTree, frmGenreTree);
-  frmSplash.Hide;
+    Application.CreateForm(TfrmMain, frmMain);
+    Application.CreateForm(TfrmGenreTree, frmGenreTree);
+    
+    frmSplash.Hide;
   finally
     frmSplash.Free;
   end;

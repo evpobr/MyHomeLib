@@ -251,7 +251,6 @@
 			</DCCReference>
 			<DCCReference Include="Units\unit_Logger.pas"/>
 			<DCCReference Include="Units\unit_Interfaces.pas"/>
-			<DCCReference Include="DAO\unit_Database.pas"/>
 			<DCCReference Include="DAO\SQLite\Lib\SQLite3.pas"/>
 			<DCCReference Include="DAO\SQLite\Lib\SQLite3UDF.pas"/>
 			<DCCReference Include="DAO\SQLite\Lib\SQLiteWrap.pas"/>

@@ -1768,11 +1768,10 @@ var
     case CollectionType of
       CT_PRIVATE_FB: Result := 18;
       CT_PRIVATE_NONFB: Result := 8;
-      CT_LIBRUSEC_LOCAL_FB: Result := 14;
-      CT_LIBRUSEC_ONLINE_FB: Result := 4;
-      CT_GENESIS_LOCAL_NONFB: Result := 8; { TODO -oNickR -cUsability : нарисовать иконку }
-      CT_GENESIS_ONLINE_NONFB: Result := 8; { TODO -oNickR -cUsability : нарисовать иконку }
-      CT_LIBRUSEC_USR: Result := 8;
+      CT_EXTERNAL_LOCAL_FB: Result := 14;
+      CT_EXTERNAL_LOCAL_NONFB: Result := 8;
+      CT_EXTERNAL_ONLINE_FB: Result := 4;
+      CT_EXTERNAL_ONLINE_NONFB: Result := 8;
     else
       // Assert(False);
       Result := 8; { TODO -oNickR -cUsability : нарисовать иконку }

@@ -1064,13 +1064,13 @@ begin
       else
       begin
         // Добавим апдейты по умолчанию
-        FUpdateList.Add('Lib.rus.ec [FB2]',        '', 'last_librusec.info',       'librusec_update.zip',       True,  CT_LIBRUSEC_LOCAL_FB);
-        FUpdateList.Add('Lib.rus.ec [FB2]',        '', '',                         'daily_update.zip',          False, CT_LIBRUSEC_LOCAL_FB);
-        FUpdateList.Add('Lib.rus.ec OnLine [FB2]', '', 'last_librusec.info',       'librusec_update.zip',       True,  CT_LIBRUSEC_ONLINE_FB);
-        FUpdateList.Add('Lib.rus.ec OnLine [FB2]', '', 'last_extra.info',          'extra_update.zip',          False, CT_LIBRUSEC_ONLINE_FB);
-        FUpdateList.Add('Lib.rus.ec [USR]',        '', 'last_usr.info',            'usr_update.zip',            True,  CT_LIBRUSEC_USR);
-        FUpdateList.Add('Flibusta OnLine [FB2]',   '', 'last_flibusta.info',       'flubusta_update.zip',       True,  CT_LIBRUSEC_ONLINE_FB);
-        FUpdateList.Add('Flibusta OnLine [FB2]',   '', 'last_flibusta_extra.info', 'flibusta_extra_update.zip', False, CT_LIBRUSEC_ONLINE_FB);
+        FUpdateList.Add('Lib.rus.ec [FB2]',        '', 'last_librusec.info',       'librusec_update.zip',       True,  CT_EXTERNAL_LOCAL_FB);
+        FUpdateList.Add('Lib.rus.ec [FB2]',        '', '',                         'daily_update.zip',          False, CT_EXTERNAL_LOCAL_FB);
+        FUpdateList.Add('Lib.rus.ec OnLine [FB2]', '', 'last_librusec.info',       'librusec_update.zip',       True,  CT_EXTERNAL_ONLINE_FB);
+        FUpdateList.Add('Lib.rus.ec OnLine [FB2]', '', 'last_extra.info',          'extra_update.zip',          False, CT_EXTERNAL_ONLINE_FB);
+        FUpdateList.Add('Lib.rus.ec [USR]',        '', 'last_usr.info',            'usr_update.zip',            True,  CT_EXTERNAL_LOCAL_NONFB);
+        FUpdateList.Add('Flibusta OnLine [FB2]',   '', 'last_flibusta.info',       'flubusta_update.zip',       True,  CT_EXTERNAL_ONLINE_FB);
+        FUpdateList.Add('Flibusta OnLine [FB2]',   '', 'last_flibusta_extra.info', 'flibusta_extra_update.zip', False, CT_EXTERNAL_ONLINE_FB);
       end;
     finally
       sl.Free;

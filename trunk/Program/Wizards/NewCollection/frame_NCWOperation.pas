@@ -97,7 +97,7 @@ begin
   if rbNew.Checked then
   begin
     FPParams^.Operation := otNew;
-    FPParams^.CollectionType := ltEmpty;
+    FPParams^.CollectionType := ltUser;
   end
   else if rbExisting.Checked then
     FPParams^.Operation := otExisting

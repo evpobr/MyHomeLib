@@ -52,19 +52,22 @@ type
     lvCollections: TListView;
     MHLSimplePanel1: TMHLSimplePanel;
     btnSelectINPX: TButton;
-    procedure OnSetCollectionType(Sender: TObject);
+    procedure OnSetINPXSource(Sender: TObject);
     procedure edINPXPathButtonClick(Sender: TObject);
-    procedure lvCollectionsChange(Sender: TObject; Item: TListItem;
-      Change: TItemChange);
+    procedure lvCollectionsChange(Sender: TObject; Item: TListItem; Change: TItemChange);
+
   private
-    FCollections: array of TCollectionDesc;
     FGroups: array of string;
+    FCollections: array of TCollectionDesc;
+
+    FCollection: TCollectionDesc;
 
     procedure LoadDescriptions;
+    procedure FillList;
+
   public
     function Activate(LoadData: Boolean): Boolean; override;
     function Deactivate(CheckData: Boolean): Boolean; override;
-    procedure FillList;
   end;
 
 var
@@ -73,26 +76,26 @@ var
 implementation
 
 uses
+  IOUtils,
   unit_Settings,
   unit_Helpers,
-  ZipForge,
   IniFiles;
 
 resourcestring
   rstrServerDownload = 'Выбранный файл INPX будет скачан с сервера.';
   rstrLocal = 'Коллекция на основе файла *.inpx. Укажите путь к файлу.';
-  rstrGroupLibrusec = 'Библиотека Lib.rus.ec';
-  rstrGroupFlibusta = 'Библиотека Flibusta';
-  rstrGroupTraum = 'Библиотека Траума';
-  rstrLibrusecFB2 = 'Архивы FB2 (fb2-xxxxxx-xxxxxx.zip)';
-  rstrLibrusecUSR = 'Архивы USR (usr-xxxxxx-xxxxxx.zip)';
-  rstrLibrusecAll = 'Все архивы (fb2-xxxxxx-xxxxxx.zip и usr-xxxxxx-xxxxxx.zip)';
-  rstrLibrusecOnline = 'Книги скачиваются по запросу с серввера lib.rus.ec (необходима регистрация)';
-  rstrFlibustaOnline = 'Книги скачиваются по запросу с сервера flibusta.net';
-  rstrTraum_2_11_FB2 = 'Библиотека Траума 2.11';
-  rstrTraum_2_12_FB2 = 'Библиотека Траума 2.12';
-  rstrTraum_2_13_FB2 = 'Библиотека Траума 2.13 (только FB2)';
-  rstrTraum_2_13_All = 'Библиотека Траума 2.13 (Полная)';
+  //rstrGroupLibrusec = 'Библиотека Lib.rus.ec';
+  //rstrGroupFlibusta = 'Библиотека Flibusta';
+  //rstrGroupTraum = 'Библиотека Траума';
+  //rstrLibrusecFB2 = 'Архивы FB2 (fb2-xxxxxx-xxxxxx.zip)';
+  //rstrLibrusecUSR = 'Архивы USR (usr-xxxxxx-xxxxxx.zip)';
+  //rstrLibrusecAll = 'Все архивы (fb2-xxxxxx-xxxxxx.zip и usr-xxxxxx-xxxxxx.zip)';
+  //rstrLibrusecOnline = 'Книги скачиваются по запросу с серввера lib.rus.ec (необходима регистрация)';
+  //rstrFlibustaOnline = 'Книги скачиваются по запросу с сервера flibusta.net';
+  //rstrTraum_2_11_FB2 = 'Библиотека Траума 2.11';
+  //rstrTraum_2_12_FB2 = 'Библиотека Траума 2.12';
+  //rstrTraum_2_13_FB2 = 'Библиотека Траума 2.13 (только FB2)';
+  //rstrTraum_2_13_All = 'Библиотека Траума 2.13 (Полная)';
 
 {$R *.dfm}
 
@@ -102,6 +105,7 @@ const
   INPX_KEY_PREFIX = 'Inpx';
   INPX_GROUP_KEY_PREFIX = 'Group';
 
+(*
   DefaultGroups: array [0 .. 2] of string = (rstrGroupLibrusec, rstrGroupFlibusta, rstrGroupTraum);
 
   DefaultCollections: array [0 .. 8] of TCollectionDesc =
@@ -116,74 +120,7 @@ const
     (Group: 2; Title: 'Traum 2.13 [FB2]';        Desc: rstrTraum_2_13_FB2; INPX: 'Traum_2-13_fb2.inpx'),
     (Group: 2; Title: 'Traum 2.13 [ALLBOOKS]';   Desc: rstrTraum_2_13_All; INPX: 'Traum_2-13_full.inpx')
   );
-
-function TframeNCWInpxSource.Activate(LoadData: Boolean): Boolean;
-begin
-  if LoadData then
-  begin
-    FillList;
-    rbLocal.Checked := True;
-    OnSetCollectionType(rbLocal);
-  end;
-  Result := True;
-end;
-
-function TframeNCWInpxSource.Deactivate(CheckData: Boolean): Boolean;
-begin
-  if rbLocal.Checked then
-  begin
-    FPParams^.INPXFile := edINPXPath.Text;
-  end
-  else
-    FPParams^.Operation := otDownload;
-
-  Result := True;
-end;
-
-procedure TframeNCWInpxSource.edINPXPathButtonClick(Sender: TObject);
-var
-  key: TMHLFileName;
-  AFileName: string;
-begin
-  key := fnOpenINPX;
-  if FPParams^.Operation = otExisting then
-    key := fnOpenCollection;
-
-  if GetFileName(key, AFileName) then
-  begin
-    edINPXPath.Text := AFileName;
-  end;
-end;
-
-procedure TframeNCWInpxSource.FillList;
-var
-  I: integer;
-  G: TListGroup;
-  Item: TListItem;
-begin
-  LoadDescriptions;
-
-  lvCollections.Items.BeginUpdate;
-  try
-    lvCollections.Groups.Clear;
-    lvCollections.Items.Clear;
-
-    for I := 0 to High(FGroups) do
-    begin
-      G := lvCollections.Groups.Add;
-      G.Header := FGroups[I];
-    end;
-
-    for I := 0 to High(FCollections) do
-    begin
-      Item := lvCollections.Items.Add;
-      Item.Caption := FCollections[I].Title;
-      Item.GroupID := FCollections[I].Group;
-    end;
-  finally
-    lvCollections.Items.EndUpdate;
-  end;
-end;
+*)
 
 procedure TframeNCWInpxSource.LoadDescriptions;
 var
@@ -251,19 +188,113 @@ begin
   end;
 end;
 
-procedure TframeNCWInpxSource.lvCollectionsChange(Sender: TObject; Item: TListItem; Change: TItemChange);
+procedure TframeNCWInpxSource.FillList;
+var
+  I: integer;
+  G: TListGroup;
+  Item: TListItem;
 begin
-  pageHint.Caption := FCollections[Item.Index].Desc;
-  FPParams^.INPXFile := Settings.WorkPath + FCollections[Item.Index].INPX;
-  FPParams^.INPXUrl := Settings.InpxURL + FCollections[Item.Index].INPX;
+  LoadDescriptions;
+
+  lvCollections.Items.BeginUpdate;
+  try
+    lvCollections.Groups.Clear;
+    lvCollections.Items.Clear;
+
+    for I := 0 to High(FGroups) do
+    begin
+      G := lvCollections.Groups.Add;
+      G.Header := FGroups[I];
+    end;
+
+    for I := 0 to High(FCollections) do
+    begin
+      Item := lvCollections.Items.Add;
+      Item.Caption := FCollections[I].Title;
+      Item.GroupID := FCollections[I].Group;
+    end;
+
+    if lvCollections.Items.Count > 0 then
+    begin
+      lvCollections.Selected := lvCollections.Items[0];
+      lvCollections.ItemFocused := lvCollections.Selected;
+      FCollection := FCollections[0];
+    end;
+  finally
+    lvCollections.Items.EndUpdate;
+  end;
 end;
 
-procedure TframeNCWInpxSource.OnSetCollectionType(Sender: TObject);
+function TframeNCWInpxSource.Activate(LoadData: Boolean): Boolean;
+begin
+  Assert(FPParams^.Operation in [otInpx, otInpxDownload]);
+  if LoadData then
+  begin
+    FillList;
+    rbLocal.Checked := True;
+    rbDownload.Enabled := (lvCollections.Items.Count > 0);
+
+    OnSetINPXSource(rbLocal);
+  end;
+  Result := True;
+end;
+
+function TframeNCWInpxSource.Deactivate(CheckData: Boolean): Boolean;
+begin
+  Assert(Assigned(lvCollections.Selected));
+
+  if rbLocal.Checked then
+  begin
+    FPParams^.INPXFile := edINPXPath.Text;
+  end
+  else
+  begin
+    FPParams^.Operation := otInpxDownload;
+    FPParams^.INPXFile := TPath.Combine(Settings.WorkPath, FCollection.INPX);
+    //
+    // TODO: необходимо хранить URL для получения INPX. Иначе все INPX должны лежать на одном сервере.
+    //
+    FPParams^.INPXUrl := Settings.InpxURL + FCollection.INPX;
+  end;
+
+  Result := True;
+end;
+
+procedure TframeNCWInpxSource.edINPXPathButtonClick(Sender: TObject);
+var
+  AFileName: string;
+begin
+  if GetFileName(fnOpenINPX, AFileName) then
+  begin
+    edINPXPath.Text := AFileName;
+  end;
+end;
+
+procedure TframeNCWInpxSource.lvCollectionsChange(Sender: TObject; Item: TListItem; Change: TItemChange);
+begin
+  if (Change = ctState) and Assigned(lvCollections.Selected) then
+  begin
+    FCollection := FCollections[lvCollections.ItemIndex];
+    pageHint.Caption := FCollection.Desc;
+  end;
+end;
+
+procedure TframeNCWInpxSource.OnSetINPXSource(Sender: TObject);
 begin
   if Sender = rbLocal then
     pageHint.Caption := rstrLocal
   else
-    pageHint.Caption := rstrServerDownload;
+  begin
+    Assert(lvCollections.Items.Count > 0);
+
+    if not Assigned(lvCollections.Selected) then
+      lvCollections.Selected := lvCollections.ItemFocused;
+    if not Assigned(lvCollections.Selected) then
+      lvCollections.Selected := lvCollections.Items[0];
+
+    Assert(Assigned(lvCollections.Selected));
+    lvCollectionsChange(Self, lvCollections.Selected, ctState);
+  end;
 
   edINPXPath.Enabled := rbLocal.Checked;
   btnSelectINPX.Enabled := rbLocal.Checked;
