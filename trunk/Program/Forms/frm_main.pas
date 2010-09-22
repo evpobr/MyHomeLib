@@ -978,6 +978,7 @@ uses
   frm_add_nonfb2,
   frm_about,
   unit_MHLHelpers,
+  unit_MHLGenerics,
   unit_TreeUtils,
   unit_MHL_strings,
   unit_Settings,
@@ -998,7 +999,7 @@ uses
   unit_Lib_Updates,
   frm_EditGroup,
   unit_SystemDatabase,
-  unit_SystemDatabase_abstract;
+  unit_SystemDatabase_Abstract;
 
 resourcestring
   rstrFileNotFoundMsg = 'Файл %s не найден!' + CRLF + 'Проверьте настройки коллекции!';
@@ -1786,7 +1787,6 @@ begin
   miCopyToCollection.Clear;
   pmCollection.Items.Clear;
 
-  CollectionInfo := TCollectionInfo.Create;
   CollectionInfoIterator := FSystemData.GetCollectionInfoIterator;
   while CollectionInfoIterator.Next(CollectionInfo) do
   begin
@@ -2156,7 +2156,6 @@ begin
 
   UpdatesInfo.UpdateExternalVersions;
 
-  CollectionInfo := TCollectionInfo.Create;
   CollectionInfoIterator := FSystemData.GetCollectionInfoIterator;
   while CollectionInfoIterator.Next(CollectionInfo) do
   begin
@@ -4614,7 +4613,6 @@ begin
   FSystemData.DeleteCollection(FSystemData.GetActiveCollectionInfo.ID);
   FSystemData.DropBookCollectionDatabase(DBFileName);
 
-  CollectionInfo := TCollectionInfo.Create;
   CollectionInfoIterator := FSystemData.GetCollectionInfoIterator;
   if CollectionInfoIterator.Next(CollectionInfo) then
     Settings.ActiveCollection := CollectionInfo.ID

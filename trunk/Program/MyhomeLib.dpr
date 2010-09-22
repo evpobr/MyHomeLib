@@ -132,7 +132,8 @@ uses
   unit_SystemDatabase_Abstract in 'DAO\unit_SystemDatabase_Abstract.pas',
   unit_SQLiteUtils in 'DAO\SQLite\unit_SQLiteUtils.pas',
   unit_SystemDatabase_SQLite in 'DAO\SQLite\unit_SystemDatabase_SQLite.pas',
-  unit_ProgressEngine in 'Units\unit_ProgressEngine.pas';
+  unit_ProgressEngine in 'Units\unit_ProgressEngine.pas',
+  unit_MHLGenerics in 'Units\unit_MHLGenerics.pas';
 
 {$R *.res}
 
@@ -157,10 +158,9 @@ begin
 
     // Важно! сначала создаем датамодули и главную форму, а потом - остальные формы!
     Application.CreateForm(TDMUser, DMUser);
-    Application.CreateForm(TfrmMain, frmMain);
-    Application.CreateForm(TfrmGenreTree, frmGenreTree);
-
-    frmSplash.Hide;
+  Application.CreateForm(TfrmMain, frmMain);
+  Application.CreateForm(TfrmGenreTree, frmGenreTree);
+  frmSplash.Hide;
   finally
     frmSplash.Free;
   end;

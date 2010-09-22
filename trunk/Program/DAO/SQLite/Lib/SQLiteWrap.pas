@@ -1,32 +1,22 @@
-{: @abstract(SQLite 3.x object based wrapper)
-
-Can be used for object based access to SQLite3 databases.
-
-Note: Requires Sqlite 3.6.8 and higher!
-
-Designed for Delphi 6+ and Freepascal, Unicode support for Delphi 2009+
-
-  MyHomeLib version, Sep 2010
-    Full rework of the wrapper by Nick to properly support multi-threading and unicode
-
-  V2.0.0  29 June 2010
-    Ported to D2009 Unicode by Roger Lascelles (support@veecad.com)
-
-  V1.0.0
-    by Lukáš Gebauer at http://www.ararat.cz/doku.php/en:sqlitewrap.
-    based on work by Tim Anderson (tim@itwriting.com)
-
-UNICODE HANDLING:
-Delphi 2009+
-  Pass data as native UnicodeString. Datas are converted to SQLite native
-  UTF-8 internally.
-
-pre-Delphi 2009
-  Pass data as UTF8String (it is AnsiString contains UTF8 datas) and you must
-  convert data to UTF-8 explicitly!
-  Pasing data by UTF8String typed variable made your source forward compatible
-  with Delphi 2009+.
-}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Author(s)           Nick Rymanov    nrymanov@gmail.com
+  *                     eg
+  * Created             04.09.2010
+  * Description         Simple SQLite wrapper.
+  *                     Based on work by
+  *                     Lukáš Gebauer at http://www.ararat.cz/doku.php/en:sqlitewrap and
+  *                     Tim Anderson (tim@itwriting.com)
+  *
+  * $Id$
+  *
+  * History
+  *
+  ****************************************************************************** *)
 
 {$DEFINE USELOGGER}
 
@@ -182,7 +172,7 @@ type
     procedure SetNullParam(const ParamName: string); overload; inline;
 
     //
-    // äîñòóï ê ïîëÿì
+    // Fields access
     //
     function FieldIsNull(I: Integer): Boolean; inline;
     function FieldAsString(I: Integer): string;
