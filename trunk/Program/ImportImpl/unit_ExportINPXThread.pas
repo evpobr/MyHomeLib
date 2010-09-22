@@ -60,7 +60,7 @@ uses
   StrUtils,
   ZipForge,
   unit_Consts,
-  unit_Helpers,
+  unit_MHLGenerics,
   unit_Settings,
   unit_MHL_strings,
   unit_Database,
