@@ -32,6 +32,7 @@ type
     procedure Add(const key: TKeyType; const Value: T);
     function Get(const key: TKeyType): T;
     procedure Remove(const key: TKeyType);
+    procedure Clear;
   end;
 
   TConversion<T> = reference to function(const items: T): string;
@@ -149,6 +150,16 @@ begin
   LockMap;
   try
     FMap.Remove(key);
+  finally
+    UnlockMap;
+  end;
+end;
+
+procedure TInterfaceCache<TKeyType, T>.Clear;
+begin
+  LockMap;
+  try
+    FMap.Clear;
   finally
     UnlockMap;
   end;

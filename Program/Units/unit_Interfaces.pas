@@ -142,6 +142,7 @@ type
     function CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True): IBookCollection;
     function GetBookCollection(const DBCollectionFile: string): IBookCollection;
     function GetActiveBookCollection: IBookCollection;
+    procedure ClearBookCollectionCache;
 
     function ActivateGroup(const ID: Integer): Boolean;
 
