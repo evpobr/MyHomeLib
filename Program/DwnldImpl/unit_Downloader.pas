@@ -275,7 +275,7 @@ begin
     //
     // TODO: достаточно стремная операция - получение информации из глобальных объектов. Убрать нафиг!!!
     //
-    ConstParams.Values['LIBID'] := IntToStr(BookRecord.LibID);
+    ConstParams.Values['LIBID'] := BookRecord.LibID;
     ConstParams.Values['USER'] := GetSystemData.GetActiveCollectionInfo.User;
     ConstParams.Values['PASS'] := GetSystemData.GetActiveCollectionInfo.Password;
     ConstParams.Values['URL'] := GetSystemData.GetActiveCollectionInfo.URL;

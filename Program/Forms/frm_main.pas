@@ -4721,7 +4721,7 @@ begin
           DownloadData^.Title := BookData^.Title;
           DownloadData^.Size := BookData^.Size;
           DownloadData^.FileName := BookData^.GetBookFileName;
-          DownloadData^.URL := Format(Settings.InpxURL + 'b/%d/get', [BookData^.LibID]);
+          DownloadData^.URL := Format(Settings.InpxURL + 'b/%s/get', [BookData^.LibID]);
           DownloadData^.State := dsWait;
           Include(DownloadNode.States, vsInitialUserData);
         end;
@@ -4918,7 +4918,7 @@ begin
       BookKey := CreateBookKey(BookID, FSystemData.GetActiveCollectionInfo.ID);
       FSystemData.GetActiveBookCollection.GetBookRecord(BookKey, BookRecord, False);
       { TODO -oNickR -cLibDesc : этот URL должен формироваться обвязкой библиотеки, т к его формат может меняться }
-      URL := Format('%sb/%u/edit', [FSystemData.GetActiveCollectionInfo.URL, BookRecord.LibID]);
+      URL := Format('%sb/%s/edit', [FSystemData.GetActiveCollectionInfo.URL, BookRecord.LibID]);
       SimpleShellExecute(Handle, URL);
     end;
     Result := True;
@@ -6063,9 +6063,9 @@ begin
       begin
         { TODO -oNickR -cLibDesc : этот URL должен формироваться обвязкой библиотеки, т к его формат может меняться }
         if FSystemData.GetActiveCollectionInfo.URL = '' then
-          URL := Format('%sb/%d/', [Settings.InpxURL, Data^.LibID])
+          URL := Format('%sb/%s/', [Settings.InpxURL, Data^.LibID])
         else
-          URL := Format('%sb/%d/', [FSystemData.GetActiveCollectionInfo.URL, Data^.LibID]);
+          URL := Format('%sb/%s/', [FSystemData.GetActiveCollectionInfo.URL, Data^.LibID]);
 
         frmBookDetails.AllowOnlineReview(URL);
       end;

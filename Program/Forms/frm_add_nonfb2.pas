@@ -482,7 +482,7 @@ begin
   FBookRecord.BookProps := [];
   FBookRecord.InsideNo := 0;
   FBookRecord.SeqNumber := StrToIntDef(edSN.Text, 0);
-  FBookRecord.LibID := 0;
+  FBookRecord.LibID := '';
   FBookRecord.Size := Data^.Size;
   FBookRecord.Date := Now;
   FBookRecord.KeyWords := edKeyWords.Text;

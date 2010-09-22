@@ -276,7 +276,7 @@ type
     FileExt: string;
 
     FileName: string;
-    LibID: Integer;
+    LibID: string;
     Folder: string;
     InsideNo: Integer;
     RootGenre: TGenreData;
@@ -397,7 +397,7 @@ type
   function CompareDate(d1, d2: TDateTime): Integer; inline;
 
   function GenerateBookLocation(const FullName: string): string;
-  function GenerateFileName(const Title: string; libID: Integer): string;
+  function GenerateFileName(const Title: string; libID: string): string;
 
   procedure DebugOut(const DebugMessage: string); overload;
   procedure DebugOut(const DebugMessage: string; const Args: array of const ); overload;
@@ -701,14 +701,14 @@ begin
   Result := IncludeTrailingPathDelimiter(Letter) + IncludeTrailingPathDelimiter(AuthorName);
 end;
 
-function GenerateFileName(const Title: string; libID: Integer): string;
+function GenerateFileName(const Title: string; libID: string): string;
 var
   BookTitle: string;
 begin
   BookTitle := Trim(CheckSymbols(Title));
   if BookTitle = '' then
     BookTitle := rstrNoTitle;
-  Result := IntToStr(libID) + ' ' + BookTitle;
+  Result := libID + ' ' + BookTitle;
 end;
 
 { TAuthorRecord }
@@ -902,7 +902,7 @@ begin
   Size := 0;
   InsideNo := 0;
   SeqNumber := 0;
-  libID := 0;
+  libID := '';
 
   Date := 0;
 

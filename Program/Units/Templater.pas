@@ -220,7 +220,7 @@ begin
 
     6:
       begin // 'id',        - ID книги
-        Result := IntToStr(params.LibID);
+        Result := params.LibID;
         Exit;
       end;
 
