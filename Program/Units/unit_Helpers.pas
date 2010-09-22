@@ -55,57 +55,15 @@ type
     fnOpenCoverImage
   );
 
+  TListViewHelper = class helper for TListView
+    procedure AutosizeColumn(nColumn: Integer);
+  end;
+
 function GetFileName(key: TMHLFileName; out FileName: string): Boolean;
 
 function GetFolderName(Handle: Integer; const Caption: string; var strFolder: string): Boolean;
 
 function CreateImageFromResource(GraphicClass: TGraphicClass; const ResName: string; ResType: PChar = RT_RCDATA): TGraphic;
-
-//
-// возможо, это не лучшее место для следующих функций.
-// TODO : вынести эти функции в отдельный модуль
-//
-
-type
-  TConversion<T> = reference to function(const items: T): string;
-  TValueSetter<T> = reference to procedure(var Item: T; const Value: string);
-
-  TArrayUtils = class
-  public
-    class function Join(
-      const Values: array of string;
-      const itemDelimeter: string
-    ): string; overload;
-
-    class function Join<T>(
-      const Values: array of T;
-      const itemDelimeter: string;
-      const Converter: TConversion<T>
-    ): string; overload;
-
-    class function Join<T>(
-      const Values: TEnumerable<T>;
-      const itemDelimeter: string;
-      const Converter: TConversion<T>
-    ): string; overload;
-
-    class procedure Split(
-      const Value: string;
-      const itemDelimeter: string;
-      var AItems: array of string
-    ); overload;
-
-    class procedure Split<T>(
-      const Value: string;
-      const itemDelimeter: string;
-      var AItems: array of T;
-      const Setter: TValueSetter<T>
-    ); overload;
-  end;
-
-  TListViewHelper = class helper for TListView
-    procedure AutosizeColumn(nColumn: Integer);
-  end;
 
 function SimpleShellExecute(
   hWnd: HWND;
@@ -453,149 +411,6 @@ begin
     Result.LoadFromStream(s);
   finally
     s.Free;
-  end;
-end;
-
-{ TArrayUtils }
-
-class function TArrayUtils.Join(const Values: array of string; const itemDelimeter: string): string;
-var
-  L, R: Integer;
-begin
-  if Length(Values) = 0 then
-    Exit;
-
-  L := Low(Values);
-  R := High(Values);
-
-  Result := Values[L];
-  Inc(L);
-
-  while L <= R do
-  begin
-    Result := Result + itemDelimeter + Values[L];
-    Inc(L);
-  end;
-end;
-
-class function TArrayUtils.Join<T>(const Values: array of T; const itemDelimeter: string; const Converter: TConversion<T>): string;
-var
-  i, L, R: Integer;
-begin
-  if Length(Values) = 0 then
-    Exit;
-
-  L := Low(Values);
-  R := High(Values);
-
-  Result := Converter(Values[L]);
-  Inc(L);
-
-  while L <= R do
-  begin
-    Result := Result + itemDelimeter + Converter(Values[L]);
-    Inc(L);
-  end;
-end;
-
-class function TArrayUtils.Join<T>(
-  const Values: TEnumerable<T>;
-  const itemDelimeter: string;
-  const Converter: TConversion<T>
-  ): string;
-var
-  Enum: TEnumerator<T>;
-begin
-  Enum := Values.GetEnumerator();
-  try
-    if Enum.MoveNext then
-    begin
-      Result := Converter(Enum.Current);
-      while Enum.MoveNext do
-        Result := Result + itemDelimeter + Converter(Enum.Current);
-    end;
-  finally
-    Enum.Free;
-  end;
-end;
-
-class procedure TArrayUtils.Split(
-  const Value: string;
-  const itemDelimeter: string;
-  var AItems: array of string
-);
-var
-  ValueLen: Integer;
-  SeparatorLen: Integer;
-  StartPos: Integer;
-  SeparatorPos: Integer;
-
-  ItemsLen: Integer;
-
-  s: string;
-begin
-  ValueLen := Length(Value);
-  SeparatorLen := Length(itemDelimeter);
-  StartPos := 1;
-  ItemsLen := Length(AItems);
-
-  SeparatorPos := PosEx(itemDelimeter, Value, StartPos);
-  while SeparatorPos <> 0 do
-  begin
-    s := Copy(Value, StartPos, SeparatorPos - StartPos);
-    StartPos := SeparatorPos + SeparatorLen;
-    SeparatorPos := PosEx(itemDelimeter, Value, StartPos);
-
-    //SetLength(AItems, ItemsLen + 1);
-    AItems[ItemsLen] := s;
-    Inc(ItemsLen);
-  end;
-
-  if StartPos < ValueLen then
-  begin
-    s := Copy(Value, StartPos, ValueLen);
-    //SetLength(Items, ItemsLen + 1);
-    AItems[ItemsLen] := s;
-  end;
-end;
-
-class procedure TArrayUtils.Split<T>(
-  const Value: string;
-  const itemDelimeter: string;
-  var AItems: array of T;
-  const Setter: TValueSetter<T>
-);
-var
-  ValueLen: Integer;
-  SeparatorLen: Integer;
-  StartPos: Integer;
-  SeparatorPos: Integer;
-
-  ItemsLen: Integer;
-
-  s: string;
-begin
-  ValueLen := Length(Value);
-  SeparatorLen := Length(itemDelimeter);
-  StartPos := 1;
-  ItemsLen := Length(AItems);
-
-  SeparatorPos := PosEx(itemDelimeter, Value, StartPos);
-  while SeparatorPos <> 0 do
-  begin
-    s := Copy(Value, StartPos, SeparatorPos - StartPos);
-    StartPos := SeparatorPos + SeparatorLen;
-    SeparatorPos := PosEx(itemDelimeter, Value, StartPos);
-    //SetLength(AItems, ItemsLen + 1);
-    Setter(AItems[ItemsLen], s);
-    Inc(ItemsLen);
-  end;
-
-  if StartPos < ValueLen then
-  begin
-    s := Copy(Value, StartPos, ValueLen);
-    //SetLength(AItems, ItemsLen + 1);
-    Setter(AItems[ItemsLen], s);
   end;
 end;
 

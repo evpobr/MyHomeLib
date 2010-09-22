@@ -77,10 +77,8 @@ uses
   SysUtils,
   IOUtils,
   Character,
-  ///unit_MHLTypes,
   unit_Consts,
-  unit_MHLHelpers,
-  unit_Helpers;
+  unit_MHLGenerics;
 
 { TStringsTemplater }
 

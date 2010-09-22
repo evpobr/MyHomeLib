@@ -428,8 +428,7 @@ uses
   unit_Settings,
   ShlObj,
   unit_fb2ToText,
-  unit_Helpers,
-  unit_MHLHelpers;
+  unit_MHLGenerics;
 
 resourcestring
   rstrUnableToLaunch = ' Не удалось запустить %s ! ';
