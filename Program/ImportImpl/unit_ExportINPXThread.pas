@@ -63,7 +63,6 @@ uses
   unit_MHLGenerics,
   unit_Settings,
   unit_MHL_strings,
-  unit_Database,
   unit_Interfaces,
   unit_SystemDatabase;
 
@@ -117,7 +116,7 @@ begin
   try
     inpxWriter := TStreamWriter.Create(inpxStream, TEncoding.UTF8);
     try
-      BookCollection := GetBookCollection(FCollectionDBFileName);
+      BookCollection := GetSystemData.GetBookCollection(FCollectionDBFileName);
       try
         BookIterator := BookCollection.GetBookIterator(bmAll, True);
         try

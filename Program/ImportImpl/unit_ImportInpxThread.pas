@@ -25,7 +25,6 @@ uses
   Windows,
   unit_WorkerThread,
   unit_Globals,
-  unit_Database,
   unit_Interfaces;
 
 type
@@ -89,11 +88,12 @@ implementation
 uses
   Classes,
   SysUtils,
+  ZipForge,
   unit_Settings,
   unit_Consts,
   unit_Helpers,
   unit_Errors,
-  ZipForge;
+  unit_SystemDatabase;
 
 resourcestring
   rstrProcessingFile = 'Обрабатываем файл %s';
@@ -497,7 +497,7 @@ procedure TImportInpxThread.WorkFunction;
 var
   BookCollection: IBookCollection;
 begin
-  BookCollection := GetBookCollection(DBFileName);
+  BookCollection := GetSystemData.GetBookCollection(DBFileName);
   BookCollection.BeginBulkOperation;
   try
     Import(False, BookCollection);

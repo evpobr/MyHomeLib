@@ -44,8 +44,8 @@ uses
   unit_Settings,
   unit_MHL_strings,
   unit_Messages,
-  unit_Database,
-  unit_Interfaces;
+  unit_Interfaces,
+  unit_SystemDatabase;
 
 resourcestring
   rstrProblemsWithABook = 'Какие-то проблемы с книгой ';
@@ -70,7 +70,7 @@ var
 begin
   processedBooks := 0;
 
-  BookIterator := GetActiveBookCollection.GetBookIterator(bmAll, True);
+  BookIterator := GetSystemData.GetActiveBookCollection.GetBookIterator(bmAll, True);
   totalBooks := BookIterator.RecordCount;
   while BookIterator.Next(BookRecord) do
   begin

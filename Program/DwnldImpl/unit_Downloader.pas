@@ -105,7 +105,6 @@ uses
   unit_MHL_strings,
   unit_Messages,
   unit_Helpers,
-  unit_Database,
   unit_SystemDatabase,
   unit_Interfaces;
 
@@ -202,7 +201,7 @@ var
 begin
   Result := False;
 
-  GetActiveBookCollection.GetBookRecord(BookKey, BookRecord, False);
+  GetSystemData.GetActiveBookCollection.GetBookRecord(BookKey, BookRecord, False);
   FFile := BookRecord.GetBookFileName;
   if FileExists(FFile) or DoDownload(BookRecord) then
   begin

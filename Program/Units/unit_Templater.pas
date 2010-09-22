@@ -21,7 +21,6 @@ interface
 
 uses
   FictionBook_21,
-  unit_Database,
   unit_Globals;
 
 const

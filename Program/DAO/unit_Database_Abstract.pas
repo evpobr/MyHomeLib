@@ -167,8 +167,7 @@ implementation
 uses
   SysUtils,
   unit_Errors,
-  unit_Consts,
-  unit_Database;
+  unit_Consts;
 
 { TBookCollection }
 

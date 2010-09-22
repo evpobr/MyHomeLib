@@ -61,7 +61,6 @@ uses
   unit_Consts,
   unit_Settings,
   unit_WorkerThread,
-  unit_Database,
   unit_Interfaces,
   unit_SystemDatabase,
   unit_Logger;
@@ -203,7 +202,7 @@ begin
         CollectionType := CollectionInfo.CollectionType;
 
         //Truncate won't work with TBookCollection.Create(DBFileName, False)
-        BookCollection := GetBookCollection(DBFileName);
+        BookCollection := GetSystemData.GetBookCollection(DBFileName);
         BookCollection.BeginBulkOperation;
         try
           if Settings.Updates[i].Full then
