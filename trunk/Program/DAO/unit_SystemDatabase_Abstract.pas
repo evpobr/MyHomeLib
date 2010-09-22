@@ -186,6 +186,7 @@ type
 
     function GetBookCollection(const DBCollectionFile: string): IBookCollection;
     function GetActiveBookCollection: IBookCollection;
+    procedure ClearBookCollectionCache;
   end;
 
 resourcestring
@@ -483,6 +484,11 @@ function TSystemData.GetActiveBookCollection: IBookCollection;
 begin
   Assert(FActiveCollectionInfo.ID > 0);
   Result := GetBookCollection(FActiveCollectionInfo.DBFileName);
+end;
+
+procedure TSystemData.ClearBookCollectionCache;
+begin
+  FBookCollectionCache.Clear;
 end;
 
 end.
