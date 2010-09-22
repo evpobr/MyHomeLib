@@ -26,10 +26,7 @@ uses
   UserData;
 
 type
-  ICacheable = interface
-  end;
-
-  ICollectionInfo = interface(ICacheable)
+  ICollectionInfo = interface
     ['{6D459AD9-8D14-4F90-B36E-A42BFF229E47}']
 
     function GetID: Integer;
@@ -62,7 +59,6 @@ type
     function GetSettings: TStrings;
     function GetRootPath: string;
 
-    procedure Assign(Source: ICollectionInfo);
     procedure Clear;
 
     property ID: Integer read GetID write SetID;
@@ -93,16 +89,17 @@ type
     function RecordCount: Integer;
   end;
 
+  IInterfaceIterator<T: IInterface> = interface
+    function Next(out v: T): Boolean;
+    function RecordCount: Integer;
+  end;
+
   IBookIterator = IIterator<TBookRecord>;
   IAuthorIterator = IIterator<TAuthorData>;
   IGenreIterator = IIterator<TGenreData>;
   ISeriesIterator = IIterator<TSeriesData>;
   IGroupIterator = IIterator<TGroupData>;
-
-  ICollectionInfoIterator = interface
-    function Next(v: ICollectionInfo): Boolean;
-    function RecordCount: Integer;
-  end;
+  ICollectionInfoIterator = IInterfaceIterator<ICollectionInfo>;
 
   TGUIUpdateExtraProc = reference to procedure(
     const BookKey: TBookKey;
@@ -200,7 +197,7 @@ type
     function GetActiveCollectionInfo: ICollectionInfo;
   end;
 
-  IBookCollection = interface(ICacheable)
+  IBookCollection = interface
     ['{B1BB5762-2942-48C3-90E3-3154405EC01B}']
 
     //

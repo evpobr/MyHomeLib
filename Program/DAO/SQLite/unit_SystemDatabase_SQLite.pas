@@ -84,7 +84,7 @@ type
       //
       // ICollectionInfoIterator
       //
-      function Next(CollectionInfo: ICollectionInfo): Boolean;
+      function Next(out CollectionInfo: ICollectionInfo): Boolean;
       function RecordCount: Integer;
 
     private
@@ -390,15 +390,13 @@ begin
 end;
 
 // Read next record (if present), return True if read
-function TSystemData_SQLite.TCollectionInfoIteratorImpl.Next(CollectionInfo: ICollectionInfo): Boolean;
+function TSystemData_SQLite.TCollectionInfoIteratorImpl.Next(out CollectionInfo: ICollectionInfo): Boolean;
 begin
-  Assert(Assigned(CollectionInfo));
-
   Result := not FBases.Eof;
 
   if Result then
   begin
-    CollectionInfo.Assign(FUser.GetCollectionInfo(FBases.FieldAsInt(0)));
+    CollectionInfo := FUser.GetCollectionInfo(FBases.FieldAsInt(0));
     FBases.Next;
   end;
 end;
@@ -428,14 +426,13 @@ end;
 constructor TSystemData_SQLite.Create(const DBUserFile: string);
 var
   collectionID: Integer;
-
 begin
   inherited Create;
 
   Assert(FileExists(DBUserFile));
   FDatabase := TSQLiteDatabase.Create(DBUserFile);
 
-  FCollectionInfoCache := TCollectionInfoCache.Create;;
+  FCollectionInfoCache := TCollectionInfoCache.Create;
 
   collectionID := FindFirstExistingCollectionID(1);
   if collectionID > 0 then
@@ -444,10 +441,9 @@ end;
 
 destructor TSystemData_SQLite.Destroy;
 begin
-  inherited Destroy;
-
   FreeAndNil(FCollectionInfoCache);
   FreeAndNil(FDatabase);
+  inherited Destroy;
 end;
 
 function TSystemData_SQLite.GetCollectionInfo(const CollectionID: Integer): ICollectionInfo;
@@ -460,13 +456,13 @@ const
 var
   query: TSQLiteQuery;
   stream: TStream;
-  tempCollectionInfo: TCollectionInfo;
+  tempCollectionInfo: ICollectionInfo;
 begin
   Assert(CollectionID > 0);
 
   FCollectionInfoCache.LockMap;
   try
-    if not FCollectionInfoCache.ContainsKey(IntToStr(CollectionID)) then
+    if not FCollectionInfoCache.ContainsKey(CollectionID) then
     begin
       query := FDatabase.NewQuery(SQL_SELECT);
       try
@@ -475,52 +471,44 @@ begin
         if not query.Eof then
         begin
           tempCollectionInfo := TCollectionInfo.Create;
+          tempCollectionInfo.SetID(CollectionID);
+          tempCollectionInfo.SetName(query.FieldAsString(0));
+          tempCollectionInfo.SetRootFolder(query.FieldAsString(1));
+          tempCollectionInfo.SetDBFileName(query.FieldAsString(2));
+          tempCollectionInfo.SetCollectionType(query.FieldAsInt(3)); // code
+          tempCollectionInfo.SetCreationDate(query.FieldAsDateTime(4));
+
+          if query.FieldIsNull(5) then
+            tempCollectionInfo.SetVersion(UNVERSIONED_COLLECTION)
+          else
+            tempCollectionInfo.SetVersion(query.FieldAsInt(5));
+
+          if query.FieldIsNull(6) then
+            tempCollectionInfo.SetAllowDelete(True)
+          else
+            tempCollectionInfo.SetAllowDelete(query.FieldAsBoolean(6));
+
+          tempCollectionInfo.SetNotes(query.FieldAsString(7));
+          tempCollectionInfo.SetUser(query.FieldAsString(8));
+          tempCollectionInfo.SetPassword(query.FieldAsString(9));
+          tempCollectionInfo.SetURL(query.FieldAsString(10));
+          tempCollectionInfo.SetScript(query.FieldAsBlobString(11));
+
+          stream := query.FieldAsBlob(12);
           try
-            tempCollectionInfo.SetID(CollectionID);
-            tempCollectionInfo.SetName(query.FieldAsString(0));
-            tempCollectionInfo.SetRootFolder(query.FieldAsString(1));
-            tempCollectionInfo.SetDBFileName(query.FieldAsString(2));
-            tempCollectionInfo.SetCollectionType(query.FieldAsInt(3)); // code
-            tempCollectionInfo.SetCreationDate(query.FieldAsDateTime(4));
-
-            if query.FieldIsNull(5) then
-              tempCollectionInfo.SetVersion(UNVERSIONED_COLLECTION)
-            else
-              tempCollectionInfo.SetVersion(query.FieldAsInt(5));
-
-            if query.FieldIsNull(6) then
-              tempCollectionInfo.SetAllowDelete(True)
-            else
-              tempCollectionInfo.SetAllowDelete(query.FieldAsBoolean(6));
-
-            tempCollectionInfo.SetNotes(query.FieldAsString(7));
-            tempCollectionInfo.SetUser(query.FieldAsString(8));
-            tempCollectionInfo.SetPassword(query.FieldAsString(9));
-            tempCollectionInfo.SetURL(query.FieldAsString(10));
-            tempCollectionInfo.SetScript(query.FieldAsBlobString(11));
-
-            stream := query.FieldAsBlob(12);
-            try
-              tempCollectionInfo.GetSettings.LoadFromStream(stream);
-            finally
-              FreeAndNil(stream);
-            end;
-
-            FCollectionInfoCache.Add(IntToStr(CollectionID), tempCollectionInfo);
-          except
-            tempCollectionInfo.Free;
-            raise;
+            tempCollectionInfo.GetSettings.LoadFromStream(stream);
+          finally
+            FreeAndNil(stream);
           end;
+
+          FCollectionInfoCache.Add(CollectionID, tempCollectionInfo);
         end;
       finally
         FreeAndNil(query);
       end;
     end;
 
-    Result := TCollectionInfo.Create;
-    Result.Assign(
-      FCollectionInfoCache.Get(IntToStr(CollectionID))
-    );
+    Result := FCollectionInfoCache.Get(CollectionID);
   finally
     FCollectionInfoCache.UnlockMap;
   end;
@@ -539,8 +527,8 @@ const
 var
   query: TSQLiteQuery;
   stream: TStream;
-  tempCollectionInfo: TCollectionInfo;
 begin
+  Assert(Assigned(CollectionInfo));
   Assert(CollectionInfo.ID > 0);
 
 {$IFOPT D+}
@@ -585,19 +573,14 @@ begin
 
   FCollectionInfoCache.LockMap;
   try
-    tempCollectionInfo := TCollectionInfo.Create;
-    try
-      tempCollectionInfo.Assign(CollectionInfo);
-      FCollectionInfoCache.Remove(IntToStr(tempCollectionInfo.GetID));
-      FCollectionInfoCache.Add(IntToStr(tempCollectionInfo.GetID), tempCollectionInfo);
-    except
-      FreeAndNil(tempCollectionInfo);
-      raise;
-    end;
+    //
+    // заменить на AddOrSet или Replace
+    //
+    FCollectionInfoCache.Remove(CollectionInfo.GetID);
+    FCollectionInfoCache.Add(CollectionInfo.GetID, CollectionInfo);
   finally
     FCollectionInfoCache.UnlockMap;
   end;
-
 end;
 
 procedure TSystemData_SQLite.ActivateCollection(CollectionID: Integer);
@@ -668,10 +651,13 @@ begin
   CollectionInfoIterator := GetCollectionInfoIterator;
 
   Result := False;
+
+  //
+  // Скорее всего это лишнее...
+  //
   if CollectionInfoIterator.RecordCount = 0 then
     Exit;
 
-  CollectionInfo := TCollectionInfo.Create;
   while (CollectionInfoIterator.Next(CollectionInfo)) do
   begin
     case PropID of
@@ -697,17 +683,8 @@ end;
 procedure TSystemData_SQLite.DeleteCollection(CollectionID: Integer);
 const
   DELETE_BASES_QUERY = 'DELETE FROM Bases WHERE DatabaseID = ? ';
-var
-  query: TSQLiteQuery;
 begin
-  query := FDatabase.NewQuery(DELETE_BASES_QUERY);
-  try
-    // Delete books from groups by DatabaseID:
-    query.SetParam(0, CollectionID);
-    query.ExecSQL;
-  finally
-    FreeAndNil(query);
-  end;
+  FDatabase.ExecSQL(DELETE_BASES_QUERY, [CollectionID]);
 
   // The first collection becomes the current one:
   collectionID := FindFirstExistingCollectionID(1);

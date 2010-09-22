@@ -25,6 +25,7 @@ uses
   unit_Globals,
   unit_Consts,
   unit_Interfaces,
+  unit_MHLGenerics,
   UserData;
 
 type
@@ -76,7 +77,6 @@ type
     function GetSettings: TStrings;
     function GetRootPath: string;
 
-    procedure Assign(Source: ICollectionInfo);
     procedure Clear;
 
   public
@@ -84,38 +84,9 @@ type
     destructor Destroy; override;
   end;
 
-
   // --------------------------------------------------------------------------
-
-  TCache<T: ICacheable> = class
-  private type
-    TInterfaceAdapter = class
-    public
-      constructor Create(const Value: T);
-
-    private
-      FValue: T;
-    end;
-
-  private
-    FMap: TObjectDictionary<string, TInterfaceAdapter>;
-    FLock: TRTLCriticalSection;
-
-  public
-    constructor Create;
-    destructor Destroy; override;
-
-    procedure LockMap; inline;
-    procedure UnlockMap; inline;
-
-    function ContainsKey(const key: string): Boolean;
-    procedure Add(const key: string; const Value: T);
-    function Get(const key: string): T;
-    procedure Remove(const key: string);
-  end;
-
-  TBookCollectionCache = TCache<IBookCollection>;
-  TCollectionInfoCache = TCache<ICollectionInfo>;
+  TCollectionInfoCache = TInterfaceCache<Integer, ICollectionInfo>;
+  TBookCollectionCache = TInterfaceCache<string, IBookCollection>;
 
   // --------------------------------------------------------------------------
 
@@ -239,26 +210,6 @@ begin
   FSettings := TStringList.Create;
 
   Clear;
-end;
-
-procedure TCollectionInfo.Assign(Source: ICollectionInfo);
-begin
-  FID := Source.ID;
-  FName := Source.Name;
-  FRootFolder := Source.RootFolder;
-  FDBFileName := Source.DBFileName;
-  FNotes := Source.Notes;
-  FUser := Source.User;
-  FPassword := Source.Password;
-  FCreationDate := Source.CreationDate;
-  FVersion := Source.Version;
-  FCollectionType := Source.CollectionType;
-  FAllowDelete := Source.AllowDelete;
-  FURL := Source.URL;
-  FScript := Source.Script;
-
-  Assert(Assigned(Source.Settings));
-  FSettings.Assign(Source.Settings);
 end;
 
 destructor TCollectionInfo.Destroy;
@@ -425,100 +376,20 @@ begin
   FScript := NewScript;
 end;
 
-{ TCache<I>.TInterfaceAdapter }
-
-constructor TCache<T>.TInterfaceAdapter.Create(const Value: T);
-begin
-  inherited Create;
-  FValue := Value;
-end;
-
-{ TCache<I> }
-
-constructor TCache<T>.Create;
-begin
-  inherited;
-  InitializeCriticalSection(FLock);
-  FMap := TObjectDictionary<string, TInterfaceAdapter>.Create([doOwnsValues]);
-end;
-
-destructor TCache<T>.Destroy;
-begin
-  LockMap;    // Make sure nobody else is inside the list.
-  try
-    FMap.Free;
-    inherited Destroy;
-  finally
-    UnlockMap;
-    DeleteCriticalSection(FLock);
-  end;
-end;
-
-procedure TCache<T>.LockMap;
-begin
-  EnterCriticalSection(FLock);
-end;
-
-procedure TCache<T>.UnlockMap;
-begin
-  LeaveCriticalSection(FLock);
-end;
-
-function TCache<T>.ContainsKey(const key: string): Boolean;
-begin
-  LockMap;
-  try
-    Result := FMap.ContainsKey(key);
-  finally
-    UnlockMap;
-  end;
-end;
-
-procedure TCache<T>.Add(const key: string; const Value: T);
-begin
-  LockMap;
-  try
-    FMap.Add(key, TInterfaceAdapter.Create(Value));
-  finally
-    UnlockMap;
-  end;
-end;
-
-function TCache<T>.Get(const key: string): T;
-begin
-  LockMap;
-  try
-    Result := FMap[key].FValue;
-  finally
-    UnlockMap;
-  end;
-end;
-
-procedure TCache<T>.Remove(const key: string);
-begin
-  LockMap;
-  try
-    FMap.Remove(key);
-  finally
-    UnlockMap;
-  end;
-end;
-
 { TSystemData }
 
 constructor TSystemData.Create;
 begin
   inherited Create;
-  FActiveCollectionInfo := TCollectionInfo.Create;
 
   FBookCollectionCache := TBookCollectionCache.Create;
 end;
 
 destructor TSystemData.Destroy;
 begin
-  inherited Destroy;
-
+  FActiveCollectionInfo := nil;
   FreeAndNil(FBookCollectionCache);
+  inherited Destroy;
 end;
 
 function TSystemData.HasCollections: Boolean;
@@ -528,23 +399,22 @@ end;
 
 function TSystemData.FindFirstExistingCollectionID(const PreferredID: Integer): Integer;
 var
-  CollectionInfoIterator: ICollectionInfoIterator;
-  CollectionInfo: ICollectionInfo;
+  it: ICollectionInfoIterator;
+  Info: ICollectionInfo;
 begin
   Result := INVALID_COLLECTION_ID;
 
-  CollectionInfo := TCollectionInfo.Create;
-  CollectionInfoIterator := GetCollectionInfoIterator;
-  while CollectionInfoIterator.Next(CollectionInfo) do
+  it := GetCollectionInfoIterator;
+  while it.Next(Info) do
   begin
-    if FileExists(CollectionInfo.DBFileName) then
+    if FileExists(Info.DBFileName) then
     begin
-      if CollectionInfo.ID = PreferredID then
+      if Info.ID = PreferredID then
       begin
         //
         // Пользователь предпочитает эту коллекцию, она доступна -> выходим
         //
-        Result := CollectionInfo.ID;
+        Result := Info.ID;
         Break;
       end;
 
@@ -553,7 +423,7 @@ begin
         //
         // Запомним первую доступную коллекцию
         //
-        Result := CollectionInfo.ID;
+        Result := Info.ID;
       end;
     end;
   end;
@@ -585,6 +455,7 @@ end;
 
 function TSystemData.GetActiveCollectionInfo: ICollectionInfo;
 begin
+  Assert(Assigned(FActiveCollectionInfo));
   Result := FActiveCollectionInfo;
 end;
 
