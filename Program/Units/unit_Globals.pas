@@ -36,9 +36,9 @@ const
   {
     0000 0000
     \ /   |
-    |    - 0 - fb2, 1 - non-fb2
-    |
-    |-- 00 - пользовательская, 10 - внешняя локальная, 11 - внешняя онлайн
+     |    - тип содержимого
+     |
+     |-- тип коллекции
 
     Младшее слово - тип содержимого
     Пока определены следующие типы:
@@ -50,47 +50,43 @@ const
     0000        : пользовательская коллекция (всегда локальная)
     0001 - 07FF : внешние локальные коллекции
     0800 - 0FFF : внешние онлайн коллекции
-
-    Note: Установленный старший бит указывает на онлайн коллекцию
     }
 
   //
   // тип содержимого
   //
-  CONTENT_FB = $0000;
-  CONTENT_NONFB = $0001;
-
-  //
-  // расположения библиотеки
-  //
-  LOCATION_LOCAL = $00000000;
-  LOCATION_ONLINE = $08000000;
+  CONTENT_FB       = $00000000;
+  CONTENT_NONFB    = $00000001;
 
   //
   // предопределенные библиотеки
   //
-  LIBRARY_PRIVATE = $00000000;
-  LIBRARY_LIBRUSEC = $00010000;
-  LIBRARY_GENESIS = $00020000;
+  LIBRARY_PRIVATE  = $00000000;
+  LIBRARY_EXTERNAL = $00010000;
+
+  //
+  // расположения библиотеки
+  //
+  LOCATION_LOCAL   = $00000000;
+  LOCATION_ONLINE  = $08000000;
 
   //
   // различные маски
   //
-  CT_CONTENT_MASK = $00000001;
+  CT_CONTENT_MASK  = $00000001;
   CT_LOCATION_MASK = $08000000;
-  CT_TYPE_MASK = $08030000;
-  CT_MASK = CT_CONTENT_MASK or CT_TYPE_MASK;
+  CT_TYPE_MASK     = $08030000;
+  CT_MASK          = CT_CONTENT_MASK or CT_TYPE_MASK;
 
   //
   // Несколько предопределенных типов
   //
-  CT_PRIVATE_FB = LIBRARY_PRIVATE or CONTENT_FB; // 0000 0000 -
-  CT_PRIVATE_NONFB = LIBRARY_PRIVATE or CONTENT_NONFB; // 0000 0001 -
-  CT_LIBRUSEC_LOCAL_FB = LOCATION_LOCAL or LIBRARY_LIBRUSEC or CONTENT_FB; // 0001 0000 - local lib.rus.ec
-  CT_LIBRUSEC_ONLINE_FB = LOCATION_ONLINE or LIBRARY_LIBRUSEC or CONTENT_FB; // 0801 0000 - online lib.rus.ec
-  CT_GENESIS_LOCAL_NONFB = LOCATION_LOCAL or LIBRARY_GENESIS or CONTENT_NONFB; // 0002 0001 - local Genesis
-  CT_GENESIS_ONLINE_NONFB = LOCATION_ONLINE or LIBRARY_GENESIS or CONTENT_NONFB; // 0802 0001 - online Genesis
-  CT_LIBRUSEC_USR = LOCATION_LOCAL or LIBRARY_LIBRUSEC or CONTENT_NONFB; // 0001 0001 - online Genesis
+  CT_PRIVATE_FB            = LIBRARY_PRIVATE or LIBRARY_PRIVATE  or CONTENT_FB;    // 0000 0000 -
+  CT_PRIVATE_NONFB         = LIBRARY_PRIVATE or LIBRARY_PRIVATE  or CONTENT_NONFB; // 0000 0001 -
+  CT_EXTERNAL_LOCAL_FB     = LOCATION_LOCAL  or LIBRARY_EXTERNAL or CONTENT_FB;    // 0001 0000 - local lib.rus.ec
+  CT_EXTERNAL_ONLINE_FB    = LOCATION_ONLINE or LIBRARY_EXTERNAL or CONTENT_FB;    // 0801 0000 - online lib.rus.ec
+  CT_EXTERNAL_LOCAL_NONFB  = LOCATION_LOCAL  or LIBRARY_EXTERNAL or CONTENT_NONFB; // 0001 0001 - local Genesis
+  CT_EXTERNAL_ONLINE_NONFB = LOCATION_ONLINE or LIBRARY_EXTERNAL or CONTENT_NONFB; // 0001 0001 - online Genesis
 
   CT_DEPRICATED_ONLINE_FB = 99;
 

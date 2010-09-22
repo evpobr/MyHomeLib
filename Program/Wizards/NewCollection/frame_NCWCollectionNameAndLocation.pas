@@ -79,27 +79,13 @@ resourcestring
 procedure TframeNCWNameAndLocation.GetCollectionDataFromINPX;
 var
   Zip: TZipForge;
-  S: AnsiString;
+  S: string;
   Script: string;
-
-  function GetParam(var S: AnsiString): string;
-  var
-    p: Integer;
-  begin
-    p := Pos(CRLF, S);
-    if p <> 0 then
-    begin
-      Result := Copy(S, 1, p - 1);
-      Delete(S, 1, p + 1);
-    end
-    else
-    begin
-      Result := S;
-      S := '';
-    end;
-  end;
-
+  slHelper: TStringList;
+  i: Integer;
 begin
+  Assert(FPParams^.INPXFile <> '');
+
   if (FPParams^.INPXFile = '') or not (FileExists(FPParams^.INPXFile)) then
     Exit;
 
@@ -112,35 +98,60 @@ begin
       Zip.CloseArchive;
     except
       on E: Exception do
+      begin
         MessageDlg(rstrDamagedArchive, mtError, [mbOK], 0);
+        Exit;
+      end;
     end;
   finally
     Zip.Free;
   end;
 
+  slHelper := TStringList.Create;
   try
-    edCollectionName.Text := GetParam(S);
-    edCollectionFile.Text := GetParam(S);
-    FPParams^.CollectionCode  := StrToInt(GetParam(S));
-    FPParams^.Notes  := GetParam(S);
-    if S <> '' then FPParams^.URL := GetParam(S);
-    Script := '';
-    while S <> '' do
-      Script := Script + GetParam(S) + CRLF;
-    FPParams^.Script := Script;
-  except
+    slHelper.Text := S;
+
+    if slHelper.Count > 0 then
+      edCollectionName.Text := slHelper[0];
+
+    if slHelper.Count > 1 then
+      edCollectionFile.Text := slHelper[1];
+
+    if slHelper.Count > 2 then
+      FPParams^.CollectionCode := StrToIntDef(slHelper[2], CT_PRIVATE_FB);
+
+    if slHelper.Count > 3 then
+      FPParams^.Notes := slHelper[3];
+
+    if slHelper.Count > 4 then
+      FPParams^.URL := slHelper[4];
+
+    for i := 5 to slHelper.Count - 1 do
+      FPParams^.Script := FPParams^.Script + slHelper[i] + CRLF;
+  finally
+    slHelper.Free;
   end;
 
   case FPParams^.CollectionCode of
-             CT_PRIVATE_FB: FPParams^.CollectionType := ltUserFB2;
-          CT_PRIVATE_NONFB: FPParams^.CollectionType := ltUserAny;
-      CT_LIBRUSEC_LOCAL_FB: FPParams^.CollectionType := ltLRELocal;
-           CT_LIBRUSEC_USR: FPParams^.CollectionType := ltLRELocal;
-     CT_LIBRUSEC_ONLINE_FB: FPParams^.CollectionType := ltLREOnline;
+    CT_PRIVATE_FB:
+      FPParams^.CollectionType := ltUserFB;
+
+    CT_PRIVATE_NONFB:
+      FPParams^.CollectionType := ltUserAny;
+
+    CT_EXTERNAL_LOCAL_FB:
+      FPParams^.CollectionType := ltExternalLocalFB;
+
+    CT_EXTERNAL_LOCAL_NONFB:
+      FPParams^.CollectionType := ltExternalLocalAny;
+
+    CT_EXTERNAL_ONLINE_FB:
+      FPParams^.CollectionType := ltExternalOnlineFB;
+
+    CT_EXTERNAL_ONLINE_NONFB:
+      FPParams^.CollectionType := ltExternalOnlineAny;
   end;
-
 end;
-
 
 procedure TframeNCWNameAndLocation.ShowPageMessage(const Message: string; AImageIndex: Integer);
 begin
@@ -158,7 +169,8 @@ function TframeNCWNameAndLocation.Activate(LoadData: Boolean): Boolean;
 begin
   if LoadData then
   begin
-    GetCollectionDataFromINPX;
+    if FPParams^.Operation = otInpx then
+      GetCollectionDataFromINPX;
     IsDataValid;
   end;
 
@@ -264,7 +276,9 @@ begin
       Exit;
     end;
   end;
+
   HidePageMessage;
+
   Result := True;
 end;
 
