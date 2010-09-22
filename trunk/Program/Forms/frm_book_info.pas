@@ -298,7 +298,7 @@ begin
     AddItem(lvFileInfo, rstrAdded, DateToStr(bookInfo.Date), GroupID);
   end;
   { TODO -oNickR -cUsability : для онлайн коллекций необходимо показывать следующие поля }
-  // libID: Integer;    ???
+  // libID: string;    ???
   // LibRate: Integer;  ???
   // URI: string;       ???
 

@@ -327,7 +327,7 @@ begin
   MaskElements[10].value := Trim(R.Title);
 
   MaskElements[11].templ := 'id';
-  MaskElements[11].value := IntToStr(R.LibID);
+  MaskElements[11].value := R.LibID;
 
   // Цикл удаления "пустых" блоков
   for i := Low(MaskElements) to High(MaskElements) do

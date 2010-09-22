@@ -257,9 +257,9 @@ begin
           begin
             // relevant only for online collections in which will used to access the remote book by this id
             if OnlineCollection then
-              R.LibID := StrToIntDef(slParams[i], 0) // внутр. номер
+              R.LibID := slParams[i] // внутр. номер
             else
-              R.LibID := 0;
+              R.LibID := '';
           end;
 
         flDeleted:

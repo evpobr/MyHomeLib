@@ -30,21 +30,21 @@ type
   private
     FNodeName: string;
     FBookID: Integer;
-    FLibID: Integer;
+    FLibID: string;
 
     procedure Load(element: IXMLDOMNode);
     procedure Save(doc: IXMLDOMDocument; parentElement: IXMLDOMElement);
 
   protected
     constructor Create(const nodeName: string); overload;
-    constructor Create(const nodeName: string; BookID: Integer; LibID: Integer); overload;
+    constructor Create(const nodeName: string; BookID: Integer; LibID: string); overload;
     constructor Create(const nodeName: string; element: IXMLDOMNode); overload;
 
     procedure SaveData(doc: IXMLDOMDocument; thisElement: IXMLDOMElement); virtual;
 
   public
     property BookID: Integer read FBookID write FBookID;
-    property LibID: Integer read FLibID write FLibID;
+    property LibID: string read FLibID write FLibID;
   end;
 
   TBookExtra = class(TBookInfo)
@@ -61,7 +61,7 @@ type
   public
     constructor Create(
       BookID: Integer;
-      LibID: Integer;
+      LibID: string;
       Rating: Integer;
       Progress: Integer;
       const Review: string
@@ -81,7 +81,7 @@ type
   public
     procedure AddExtra(
       BookID: Integer;
-      LibID: Integer;
+      LibID: string;
       Rating: Integer;
       Progress: Integer;
       const Review: string
@@ -90,7 +90,7 @@ type
 
   TGroupBook = class(TBookInfo)
   protected
-    constructor Create(BookID: Integer; LibID: Integer); overload;
+    constructor Create(BookID: Integer; LibID: string); overload;
     constructor Create(element: IXMLDOMNode); overload;
   end;
 
@@ -106,7 +106,7 @@ type
     procedure Save(doc: IXMLDOMDocument; parentElement: IXMLDOMElement);
 
   public
-    procedure AddBook(BookID: Integer; LibID: Integer);
+    procedure AddBook(BookID: Integer; LibID: string);
 
     property GroupID: Integer read FGroupID write FGroupID;
     property GroupName: string read FGroupName write FGroupName;
@@ -169,7 +169,7 @@ begin
   FNodeName := nodeName;
 end;
 
-constructor TBookInfo.Create(const nodeName: string; BookID: Integer; LibID: Integer);
+constructor TBookInfo.Create(const nodeName: string; BookID: Integer; LibID: string);
 begin
   Create(nodeName);
   FBookID := BookID;
@@ -192,7 +192,7 @@ begin
 
   Node := element.attributes.getNamedItem(ATTRIBUTE_LIBID);
   if Assigned(Node) then
-    FLibID := StrToIntDef(Node.Text, 0);
+    FLibID := Node.Text;
 end;
 
 procedure TBookInfo.Save(doc: IXMLDOMDocument; parentElement: IXMLDOMElement);
@@ -211,7 +211,7 @@ begin
     thisElement.setAttribute(ATTRIBUTE_ID, FBookID);
   end;
 
-  if FLibID <> 0 then
+  if FLibID <> '' then
   begin
     thisElement.setAttribute(ATTRIBUTE_LIBID, FLibID);
   end;
@@ -227,7 +227,7 @@ end;
 
 constructor TBookExtra.Create(
   BookID: Integer;
-  LibID: Integer;
+  LibID: string;
   Rating: Integer;
   Progress: Integer;
   const Review: string
@@ -290,7 +290,7 @@ end;
 
 { TBookExtras }
 
-procedure TBookExtras.AddExtra(BookID, LibID, Rating, Progress: Integer; const Review: string);
+procedure TBookExtras.AddExtra(BookID: Integer; LibID: string; Rating, Progress: Integer; const Review: string);
 begin
   Add(TBookExtra.Create(BookID, LibID, Rating, Progress, Review));
 end;
@@ -333,7 +333,7 @@ end;
 
 { TGroupBook }
 
-constructor TGroupBook.Create(BookID, LibID: Integer);
+constructor TGroupBook.Create(BookID: Integer; LibID: string);
 begin
   inherited Create(ELEMENT_BOOK, BookID, LibID);
 end;
@@ -405,7 +405,7 @@ begin
   parentElement.appendChild(xmlGroup);
 end;
 
-procedure TBookGroup.AddBook(BookID, LibID: Integer);
+procedure TBookGroup.AddBook(BookID: Integer; LibID: string);
 begin
   Add(TGroupBook.Create(BookID, LibID));
 end;

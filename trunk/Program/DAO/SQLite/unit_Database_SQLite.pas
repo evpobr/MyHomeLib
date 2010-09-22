@@ -1071,9 +1071,12 @@ var
     query: TSQLiteQuery;
     BookID: Integer;
   begin
-    query := FDatabase.NewQuery(IfThen(bookInfo.LibID = 0, SQL_BY_BOOKID, SQL_BY_LIBID));
+    query := FDatabase.NewQuery(IfThen(bookInfo.LibID = '', SQL_BY_BOOKID, SQL_BY_LIBID));
     try
-      query.SetParam(0, IfThen(bookInfo.LibID = 0, bookInfo.BookID, bookInfo.LibID));
+      if bookInfo.LibID = '' then
+        query.SetParam(0, bookInfo.BookID)
+      else
+        query.SetParam(0, bookInfo.LibID);
       query.Open;
       if query.Eof then
         BookID := 0
@@ -1182,7 +1185,7 @@ begin
     begin
       data.Extras.AddExtra(
         query.FieldAsInt(0),        // BookID
-        query.FieldAsInt(1),        // LibID
+        query.FieldAsString(1),     // LibID
         query.FieldAsInt(2),        // Rate
         query.FieldAsInt(3),        // Progress
         query.FieldAsBlobString(4)  // Review
@@ -1637,7 +1640,7 @@ begin
         BookRecord.SeqNumber := Table.FieldAsInt(6);
       end;
       BookRecord.Size := Table.FieldAsInt(7);
-      BookRecord.LibID := Table.FieldAsInt(8);
+      BookRecord.LibID := Table.FieldAsString(8);
       if Table.FieldAsBoolean(9) then
         Include(BookRecord.BookProps, bpIsDeleted)
       else

@@ -751,7 +751,7 @@ begin
 
     BookRecord.NodeType := ntBookInfo;
     BookRecord.BookKey := BookKey;
-    BookRecord.LibID := query.FieldAsInt(0);
+    BookRecord.LibID := query.FieldAsString(0);
     BookRecord.Title := query.FieldAsString(1);
     if query.FieldIsNull(2) then
     begin
