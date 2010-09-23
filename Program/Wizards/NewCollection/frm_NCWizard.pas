@@ -112,13 +112,15 @@ implementation
 
 uses
   Math,
+  IOUtils,
   unit_Settings,
   unit_globals,
   unit_ImportInpxThread,
   unit_Consts,
   unit_mhl_strings,
   unit_Interfaces,
-  unit_SystemDatabase;
+  unit_SystemDatabase,
+  unit_Helpers;
 
 resourcestring
   rstrCaptionCancel = 'Отмена';
@@ -448,39 +450,14 @@ end;
 
 procedure TfrmNCWizard.CorrectParams;
 begin
-  //
-  // TODO -oNickR: интересно, почему каталог для книг и коллекции создается только в случае относительных путей?
-  //
   if '' = ExtractFileExt(FParams.CollectionFile) then
     FParams.CollectionFile := ChangeFileExt(FParams.CollectionFile, COLLECTION_EXTENSION);
 
-  if FParams.RelativePaths then
-  begin
-    //
-    // TODO -oNickR: на мой взгляд, определение относительных путей тут неправильное
-    //
-    if ExtractFilePath(FParams.CollectionFile) = '' then
-    begin
-      FParams.CollectionFile := IncludeTrailingPathDelimiter(DATA_DIR_NAME) + FParams.CollectionFile;
-      CreateFolders(Settings.AppPath, DATA_DIR_NAME);
-    end;
+  FParams.CollectionFile := ExpandFileNameEx(Settings.DataDir, FParams.CollectionFile);
+  FParams.CollectionRoot := ExpandFileNameEx(Settings.DataDir, FParams.CollectionRoot);
 
-    FParams.CollectionRoot := ExcludeTrailingPathDelimiter(FParams.CollectionRoot);
-
-    if not DirectoryExists(FParams.CollectionRoot) then
-      CreateDir(FParams.CollectionRoot);
-  end
-  else
-  begin
-    //
-    // DONE -oNickR -cBug: в качестве базового каталого необходимо использовать DataPath
-    //
-    if ExtractFilePath(FParams.CollectionFile) = '' then
-      FParams.CollectionFile := Settings.DataPath + FParams.CollectionFile;
-    FParams.CollectionFile := ExpandFileName(FParams.CollectionFile);
-
-    FParams.CollectionRoot := ExcludeTrailingPathDelimiter(ExpandFileName(FParams.CollectionRoot));
-  end;
+  TDirectory.CreateDirectory(TPath.GetDirectoryName(FParams.CollectionFile));
+  TDirectory.CreateDirectory(FParams.CollectionRoot);
 
   //
   // определим реальный код коллекции

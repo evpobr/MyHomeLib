@@ -32,7 +32,6 @@ type
     Label8: TLabel;
     edCollectionName: TEdit;
     pageHint: TMHLStaticTip;
-    cbRelativePath: TCheckBox;
     procedure btnNewFileClick(Sender: TObject);
     procedure btnSelectRootClick(Sender: TObject);
     procedure CheckControlData(Sender: TObject);
@@ -182,7 +181,6 @@ begin
   FPParams^.DisplayName := edCollectionName.Text;
   FPParams^.CollectionFile := edCollectionFile.Text;
   FPParams^.CollectionRoot := edCollectionRoot.Text;
-  FPParams^.RelativePaths := cbRelativePath.Checked;
 
   if CheckData then
   begin

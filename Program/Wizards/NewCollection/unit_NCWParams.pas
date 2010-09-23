@@ -54,7 +54,6 @@ type
     DisplayName: string;
     CollectionFile: string;
     CollectionRoot: string;
-    RelativePaths: Boolean;
 
     INPXFile: string;
 
