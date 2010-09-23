@@ -399,8 +399,8 @@ begin
   with FWorker as TImportInpxThread do
   begin
     {* CollectionID := FParams.CollectionID; *}
-    DBFileName := FParams.CollectionFile;
-    CollectionRoot := FParams.CollectionRoot;
+    DBFileName := TMHLSettings.ExpantCollectionFileName(FParams.CollectionFile);
+    CollectionRoot := TMHLSettings.ExpantCollectionRoot(FParams.CollectionRoot);
     CollectionType := FParams.CollectionCode;
     InpxFileName := FParams.INPXFile;
 
@@ -437,29 +437,14 @@ begin
 end;
 
 procedure TNewCollectionWizard.RegisterCollection;
-var
-  FVersion: Integer;
 begin
   FProgressPage.ShowTeletype(rstrRegistration, tsInfo);
 
-  //
-  // TODO -oNickR: BUG версия коллекции больше не храниться в этом файле.
-  // Версия данных коллекции должна устанавливаться при импорте из INPX или при обновлении коллекции
-  //
-  FVersion := 0; // GetLibUpdateVersion(True);
-
-  //
-  // TODO -oNickR -cRO Mode Support: сохранять относительные пути
-  //
   GetSystemData.RegisterCollection(
     FParams.DisplayName,
     FParams.CollectionRoot,
     FParams.CollectionFile,
-    FParams.CollectionCode,
-    FVersion,
-    FParams.Notes,
-    FParams.URL,
-    FParams.Script
+    FParams.CollectionCode
   );
 end;
 

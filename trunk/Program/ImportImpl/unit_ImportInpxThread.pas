@@ -364,8 +364,10 @@ var
   CurrentFile: string;
   ArchItem: TZFArchiveItem;
   IsOnline: Boolean;
-  inpStream: TMemoryStream;
+  inpStream: TStream;
   StructureInfo: string;
+  header: TINPXHeader;
+  strVersion: string;
 begin
   filesProcessed := 0;
   i := 0;
@@ -455,6 +457,9 @@ begin
                 begin
                   SetProgress(Round((i + j / BookList.Count) * 100 / unZip.FileCount));
                   SetComment(Format(rstrAddedBooks, [filesProcessed]));
+
+                  if Canceled then
+                    Break;
                 end;
 
               except
@@ -480,6 +485,20 @@ begin
 
       FProgressEngine.BeginOperation(-1, rstrUpdatingDB, '');
       BookCollection.AfterBatchUpdate;
+
+      //
+      // Прочитать и установить свойства коллекции
+      //
+      header.ParseString(unZip.Comment);
+      BookCollection.SetStringProperty(SETTING_NOTES, header.Notes);
+      BookCollection.SetStringProperty(SETTING_URL, header.URL);
+      BookCollection.SetStringProperty(SETTING_DOWNLOAD_SCRIPT, header.Script);
+
+      if unZip.FindFirst(VERINFO_FILENAME, ArchItem, faAnyFile - faDirectory) then
+      begin
+        unZip.ExtractToString(ArchItem.FileName, strVersion);
+        BookCollection.SetIntProperty(SETTING_DATA_VERSION, StrToIntDef(strVersion, UNVERSIONED_COLLECTION));
+      end;
     finally
       BookCollection.FinishBatchUpdate;
     end;

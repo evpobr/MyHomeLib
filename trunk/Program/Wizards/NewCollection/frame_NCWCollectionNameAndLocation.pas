@@ -78,10 +78,7 @@ resourcestring
 procedure TframeNCWNameAndLocation.GetCollectionDataFromINPX;
 var
   Zip: TZipForge;
-  S: string;
-  Script: string;
-  slHelper: TStringList;
-  i: Integer;
+  header: TINPXHeader;
 begin
   Assert(FPParams^.INPXFile <> '');
 
@@ -93,7 +90,33 @@ begin
     try
       Zip.FileName := FPParams^.INPXFile;
       Zip.OpenArchive(fmOpenRead);
-      S := Zip.Comment;
+
+      header.ParseString(Zip.Comment);
+
+      edCollectionName.Text := header.Name;
+      edCollectionFile.Text := header.FileName;
+      FPParams^.CollectionCode := header.ContentType;
+
+      case FPParams^.CollectionCode of
+        CT_PRIVATE_FB:
+          FPParams^.CollectionType := ltUserFB;
+
+        CT_PRIVATE_NONFB:
+          FPParams^.CollectionType := ltUserAny;
+
+        CT_EXTERNAL_LOCAL_FB:
+          FPParams^.CollectionType := ltExternalLocalFB;
+
+        CT_EXTERNAL_LOCAL_NONFB:
+          FPParams^.CollectionType := ltExternalLocalAny;
+
+        CT_EXTERNAL_ONLINE_FB:
+          FPParams^.CollectionType := ltExternalOnlineFB;
+
+        CT_EXTERNAL_ONLINE_NONFB:
+          FPParams^.CollectionType := ltExternalOnlineAny;
+      end;
+
       Zip.CloseArchive;
     except
       on E: Exception do
@@ -104,51 +127,6 @@ begin
     end;
   finally
     Zip.Free;
-  end;
-
-  slHelper := TStringList.Create;
-  try
-    slHelper.Text := S;
-
-    if slHelper.Count > 0 then
-      edCollectionName.Text := slHelper[0];
-
-    if slHelper.Count > 1 then
-      edCollectionFile.Text := slHelper[1];
-
-    if slHelper.Count > 2 then
-      FPParams^.CollectionCode := StrToIntDef(slHelper[2], CT_PRIVATE_FB);
-
-    if slHelper.Count > 3 then
-      FPParams^.Notes := slHelper[3];
-
-    if slHelper.Count > 4 then
-      FPParams^.URL := slHelper[4];
-
-    for i := 5 to slHelper.Count - 1 do
-      FPParams^.Script := FPParams^.Script + slHelper[i] + CRLF;
-  finally
-    slHelper.Free;
-  end;
-
-  case FPParams^.CollectionCode of
-    CT_PRIVATE_FB:
-      FPParams^.CollectionType := ltUserFB;
-
-    CT_PRIVATE_NONFB:
-      FPParams^.CollectionType := ltUserAny;
-
-    CT_EXTERNAL_LOCAL_FB:
-      FPParams^.CollectionType := ltExternalLocalFB;
-
-    CT_EXTERNAL_LOCAL_NONFB:
-      FPParams^.CollectionType := ltExternalLocalAny;
-
-    CT_EXTERNAL_ONLINE_FB:
-      FPParams^.CollectionType := ltExternalOnlineFB;
-
-    CT_EXTERNAL_ONLINE_NONFB:
-      FPParams^.CollectionType := ltExternalOnlineAny;
   end;
 end;
 

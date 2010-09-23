@@ -122,13 +122,7 @@ type
       const DisplayName: string;
       const RootFolder: string;
       const DBFileName: string;
-      CollectionType: COLLECTION_TYPE;
-      Version: Integer = UNVERSIONED_COLLECTION;
-      const Notes: string = '';
-      const URL: string = '';
-      const Script: string = '';
-      const User: string = '';
-      const Password: string = ''
+      CollectionType: COLLECTION_TYPE
     ): Integer; override;
 
     procedure DeleteCollection(CollectionID: Integer); override;
@@ -618,19 +612,13 @@ function TSystemData_SQLite.RegisterCollection(
   const DisplayName: string;
   const RootFolder: string;
   const DBFileName: string;
-  CollectionType: COLLECTION_TYPE;
-  Version: Integer;
-  const Notes: string;
-  const URL: string;
-  const Script: string;
-  const User: string;
-  const Password: string
+  CollectionType: COLLECTION_TYPE
   ): Integer;
 const
   SQL_INSERT =
     'INSERT INTO Bases ' +
-          '(BaseName, RootFolder, DBFileName, Code, CreationDate, Version, Notes, LibUser, LibPassword, URL, ConnectionScript) ' +
-    'VALUES(?,        ?,          ?,          ?,    ?,            ?,       ?,     ?,       ?,           ?,   ?)';
+          '(BaseName, RootFolder, DBFileName, Code, CreationDate) ' +
+    'VALUES(?,        ?,          ?,          ?,    ?)';
 var
   storedRoot: string;
   storedFileName: string;
@@ -650,15 +638,6 @@ begin
     query.SetParam(2, storedFileName);
     query.SetParam(3, CollectionType);
     query.SetParam(4, Now);
-    query.SetParam(5, Version);
-    query.SetParam(6, Notes);
-    query.SetParam(7, User);
-    query.SetParam(8, Password);
-    query.SetParam(9, URL);
-    if Script <> '' then
-      query.SetBlobParam(10, Script)
-    else
-      query.SetNullParam(10);
 
     query.ExecSQL;
 

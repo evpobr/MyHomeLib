@@ -116,13 +116,7 @@ type
       const DisplayName: string;
       const RootFolder: string;
       const DBFileName: string;
-      CollectionType: COLLECTION_TYPE;
-      Version: Integer = UNVERSIONED_COLLECTION;
-      const Notes: string = '';
-      const URL: string = '';
-      const Script: string = '';
-      const User: string = '';
-      const Password: string = ''
+      CollectionType: COLLECTION_TYPE
     ): Integer; virtual; abstract;
 
     procedure DeleteCollection(CollectionID: Integer); virtual; abstract;
