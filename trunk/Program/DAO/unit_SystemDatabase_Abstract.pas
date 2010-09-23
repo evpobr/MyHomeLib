@@ -95,21 +95,31 @@ type
     FActiveCollectionInfo: ICollectionInfo;
     FBookCollectionCache: TBookCollectionCache;
 
+    function InternalCreateCollection(const DBCollectionFile: string): IBookCollection; virtual; abstract;
+
   public
-    constructor Create;
-    destructor Destroy; override;
+    //
+    // ISystemData
+    //
 
-  public // virtual
-    function GetCollectionInfo(const CollectionID: Integer): ICollectionInfo; virtual; abstract;
-    procedure UpdateCollectionInfo(const CollectionInfo: ICollectionInfo); virtual; abstract;
+    //
+    // Создание, регистрация и удаление коллекций
+    //
+    function CreateCollection(
+      const DisplayName: string;
+      const RootFolder: string;
+      const DBFileName: string;
+      CollectionType: COLLECTION_TYPE;
+      const GenresFileName: string
+    ): Integer; virtual; abstract;
 
-    procedure ActivateCollection(CollectionID: Integer); virtual; abstract;
+    procedure CreateCollectionDatabase(const DBCollectionFile: string; const GenresFileName: string); virtual; abstract;
+
     procedure RegisterCollection(
       const DisplayName: string;
       const RootFolder: string;
       const DBFileName: string;
       CollectionType: COLLECTION_TYPE;
-      AllowDelete: Boolean;
       Version: Integer = UNVERSIONED_COLLECTION;
       const Notes: string = '';
       const URL: string = '';
@@ -117,20 +127,27 @@ type
       const User: string = '';
       const Password: string = ''
     ); virtual; abstract;
-    function FindCollectionWithProp(
-      PropID: TCollectionProp;
-      const Value: string;
-      IgnoreID: Integer = INVALID_COLLECTION_ID
-    ): Boolean; virtual; abstract;
+
     procedure DeleteCollection(CollectionID: Integer); virtual; abstract;
+    procedure DropCollectionDatabase(const DBCollectionFile: string); virtual; abstract;
 
-    procedure CreateBookCollectionDatabase(const DBCollectionFile: string; const GenresFileName: string); virtual; abstract;
-    procedure DropBookCollectionDatabase(const DBCollectionFile: string); virtual; abstract;
+    function HasCollections: Boolean;
+    function HasCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer = INVALID_COLLECTION_ID): Boolean; virtual; abstract;
+    function FindFirstExistingCollectionID(const PreferredID: Integer): Integer;
 
-    function CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True): IBookCollection; virtual; abstract;
+    function GetCollectionInfo(const CollectionID: Integer): ICollectionInfo; virtual; abstract;
+    procedure UpdateCollectionInfo(const CollectionInfo: ICollectionInfo); virtual; abstract;
 
+    function GetCollection(const DBCollectionFile: string): IBookCollection;
+
+    procedure ActivateCollection(CollectionID: Integer); virtual; abstract;
+    function GetActiveCollectionInfo: ICollectionInfo;
+    function GetActiveCollection: IBookCollection;
     function ActivateGroup(const ID: Integer): Boolean; virtual; abstract;
 
+    //
+    // Работа с книгами
+    //
     procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord); virtual; abstract;
     procedure DeleteBook(const BookKey: TBookKey); virtual; abstract;
     procedure UpdateBook(const BookRecord: TBookRecord); virtual; abstract;
@@ -140,35 +157,30 @@ type
     procedure SetProgress(const BookKey: TBookKey; Progress: Integer); virtual; abstract;
     function GetReview(const BookKey: TBookKey): string; virtual; abstract;
     function SetReview(const BookKey: TBookKey; const Review: string): Integer; virtual; abstract;
+
     procedure SetLocal(const BookKey: TBookKey; Value: Boolean); virtual; abstract;
     procedure SetFileName(const BookKey: TBookKey; const FileName: string); virtual; abstract;
     procedure SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer); virtual; abstract;
     procedure SetFolder(const BookKey: TBookKey; const Folder: string); virtual; abstract;
 
-
     //
     // Работа с группами
     //
     function AddGroup(const GroupName: string; const AllowDelete: Boolean = True): Boolean; virtual; abstract;
-    function RenameGroup(GroupID: Integer; const NewName: string): Boolean; virtual; abstract;
-    procedure DeleteGroup(GroupID: Integer); virtual; abstract;
-    procedure ClearGroup(GroupID: Integer); virtual; abstract;
     function GetGroup(const GroupID: Integer): TGroupData; virtual; abstract;
+    function RenameGroup(GroupID: Integer; const NewName: string): Boolean; virtual; abstract;
+    procedure ClearGroup(GroupID: Integer); virtual; abstract;
+    procedure DeleteGroup(GroupID: Integer); virtual; abstract;
 
     procedure AddBookToGroup(const BookKey: TBookKey; GroupID: Integer; const BookRecord: TBookRecord); virtual; abstract;
+    procedure CopyBookToGroup(const BookKey: TBookKey; SourceGroupID: Integer; TargetGroupID: Integer; MoveBook: Boolean); virtual; abstract;
     procedure DeleteFromGroup(const BookKey: TBookKey; GroupID: Integer); virtual; abstract;
-    procedure RemoveUnusedBooks; virtual; abstract;
-    procedure CopyBookToGroup(
-      const BookKey: TBookKey;
-      SourceGroupID: Integer;
-      TargetGroupID: Integer;
-      MoveBook: Boolean
-    ); virtual; abstract;
 
     //
     // Пользовательские данные
     //
     procedure ImportUserData(data: TUserData); virtual; abstract;
+    procedure ExportUserData(data: TUserData);
 
     // Batch update methods:
     procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer); virtual; abstract;
@@ -178,15 +190,15 @@ type
     function GetGroupIterator: IGroupIterator; virtual; abstract;
     function GetCollectionInfoIterator: ICollectionInfoIterator; virtual; abstract;
 
-  public
-    function HasCollections: Boolean;
-    function FindFirstExistingCollectionID(const PreferredID: Integer): Integer;
-    procedure ExportUserData(data: TUserData);
-    function GetActiveCollectionInfo: ICollectionInfo;
+    //
+    // Служебные методы
+    //
+    procedure ClearCollectionCache;
+    procedure RemoveUnusedBooks; virtual; abstract;
 
-    function GetBookCollection(const DBCollectionFile: string): IBookCollection;
-    function GetActiveBookCollection: IBookCollection;
-    procedure ClearBookCollectionCache;
+  public
+    constructor Create;
+    destructor Destroy; override;
   end;
 
 resourcestring
@@ -460,7 +472,7 @@ begin
   Result := FActiveCollectionInfo;
 end;
 
-function TSystemData.GetBookCollection(const DBCollectionFile: string): IBookCollection;
+function TSystemData.GetCollection(const DBCollectionFile: string): IBookCollection;
 begin
   Assert(DBCollectionFile <> '');
 
@@ -472,7 +484,7 @@ begin
     end
     else
     begin
-      Result := CreateBookCollection(DBCollectionFile);
+      Result := InternalCreateCollection(DBCollectionFile);
       FBookCollectionCache.Add(DBCollectionFile, Result);
     end;
   finally
@@ -480,13 +492,13 @@ begin
   end;
 end;
 
-function TSystemData.GetActiveBookCollection: IBookCollection;
+function TSystemData.GetActiveCollection: IBookCollection;
 begin
   Assert(FActiveCollectionInfo.ID > 0);
-  Result := GetBookCollection(FActiveCollectionInfo.DBFileName);
+  Result := GetCollection(FActiveCollectionInfo.DBFileName);
 end;
 
-procedure TSystemData.ClearBookCollectionCache;
+procedure TSystemData.ClearCollectionCache;
 begin
   FBookCollectionCache.Clear;
 end;

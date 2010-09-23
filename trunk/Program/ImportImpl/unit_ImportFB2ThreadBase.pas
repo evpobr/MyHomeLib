@@ -260,7 +260,7 @@ end;
 
 procedure TImportFB2ThreadBase.WorkFunction;
 begin
-  FLibrary := GetSystemData.GetBookCollection(FCollectionDBFileName);
+  FLibrary := GetSystemData.GetCollection(FCollectionDBFileName);
   FFiles := TStringList.Create;
   try
     ScanFolder;

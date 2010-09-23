@@ -67,7 +67,7 @@ initialization
 
 finalization
   if Assigned(g_SystemData) then
-    g_SystemData.ClearBookCollectionCache; // remove circular references so that memory can be freed
+    g_SystemData.ClearCollectionCache; // remove circular references so that memory can be freed
   g_SystemData := nil;
   DeleteCriticalSection(g_SystemDataLock);
 end.

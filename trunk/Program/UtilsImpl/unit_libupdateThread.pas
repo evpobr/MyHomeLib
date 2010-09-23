@@ -202,7 +202,7 @@ begin
         CollectionType := CollectionInfo.CollectionType;
 
         //Truncate won't work with TBookCollection.Create(DBFileName, False)
-        BookCollection := GetSystemData.GetBookCollection(DBFileName);
+        BookCollection := GetSystemData.GetCollection(DBFileName);
         BookCollection.BeginBulkOperation;
         try
           if Settings.Updates[i].Full then

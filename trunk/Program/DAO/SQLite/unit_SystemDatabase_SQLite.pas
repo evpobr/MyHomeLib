@@ -96,20 +96,32 @@ type
     end;
     // << TCollectionInfoIteratorImpl
 
+  protected
+    function InternalCreateCollection(const DBCollectionFile: string): IBookCollection; override;
+
   public
     constructor Create(const DBUserFile: string);
     destructor Destroy; override;
 
-    function GetCollectionInfo(const CollectionID: Integer): ICollectionInfo; override;
-    procedure UpdateCollectionInfo(const CollectionInfo: ICollectionInfo); override;
+  public
+    //
+    // ISystemData
+    //
+    function CreateCollection(
+      const DisplayName: string;
+      const RootFolder: string;
+      const DBFileName: string;
+      CollectionType: COLLECTION_TYPE;
+      const GenresFileName: string
+    ): Integer; override;
 
-    procedure ActivateCollection(CollectionID: Integer); override;
+    procedure CreateCollectionDatabase(const DBCollectionFile: string; const GenresFileName: string); override;
+
     procedure RegisterCollection(
       const DisplayName: string;
       const RootFolder: string;
       const DBFileName: string;
       CollectionType: COLLECTION_TYPE;
-      AllowDelete: Boolean;
       Version: Integer = UNVERSIONED_COLLECTION;
       const Notes: string = '';
       const URL: string = '';
@@ -117,18 +129,22 @@ type
       const User: string = '';
       const Password: string = ''
     ); override;
-    function FindCollectionWithProp(
-      PropID: TCollectionProp;
-      const Value: string;
-      IgnoreID: Integer = INVALID_COLLECTION_ID
-    ): Boolean; override;
+
     procedure DeleteCollection(CollectionID: Integer); override;
+    procedure DropCollectionDatabase(const DBCollectionFile: string); override;
 
-    procedure CreateBookCollectionDatabase(const DBCollectionFile: string; const GenresFileName: string); override;
-    procedure DropBookCollectionDatabase(const DBCollectionFile: string); override;
+    // function HasCollections: Boolean; // use base implementation
+    function HasCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer = INVALID_COLLECTION_ID): Boolean; override;
+    // function FindFirstExistingCollectionID(const PreferredID: Integer): Integer; // use base implementation
 
-    function CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True): IBookCollection; override;
+    function GetCollectionInfo(const CollectionID: Integer): ICollectionInfo; override;
+    procedure UpdateCollectionInfo(const CollectionInfo: ICollectionInfo); override;
 
+    // function GetCollection(const DBCollectionFile: string): IBookCollection; // use base implementation
+
+    procedure ActivateCollection(CollectionID: Integer); override;
+    // function GetActiveCollectionInfo: ICollectionInfo; // use base implementation
+    // function GetActiveBookCollection: IBookCollection; // use base implementation
     function ActivateGroup(const ID: Integer): Boolean; override;
 
     procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord); override;
@@ -145,30 +161,24 @@ type
     procedure SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer); override;
     procedure SetFolder(const BookKey: TBookKey; const Folder: string); override;
 
-
     //
     // Работа с группами
     //
     function AddGroup(const GroupName: string; const AllowDelete: Boolean = True): Boolean; override;
-    function RenameGroup(GroupID: Integer; const NewName: string): Boolean; override;
-    procedure DeleteGroup(GroupID: Integer); override;
-    procedure ClearGroup(GroupID: Integer); override;
     function GetGroup(const GroupID: Integer): TGroupData; override;
+    function RenameGroup(GroupID: Integer; const NewName: string): Boolean; override;
+    procedure ClearGroup(GroupID: Integer); override;
+    procedure DeleteGroup(GroupID: Integer); override;
 
     procedure AddBookToGroup(const BookKey: TBookKey; GroupID: Integer; const BookRecord: TBookRecord); override;
+    procedure CopyBookToGroup(const BookKey: TBookKey; SourceGroupID: Integer; TargetGroupID: Integer; MoveBook: Boolean); override;
     procedure DeleteFromGroup(const BookKey: TBookKey; GroupID: Integer); override;
-    procedure RemoveUnusedBooks; override;
-    procedure CopyBookToGroup(
-      const BookKey: TBookKey;
-      SourceGroupID: Integer;
-      TargetGroupID: Integer;
-      MoveBook: Boolean
-    ); override;
 
     //
     // Пользовательские данные
     //
     procedure ImportUserData(data: TUserData); override;
+    // procedure ExportUserData(data: TUserData); // use base implementation
 
     // Batch update methods:
     procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer); override;
@@ -177,6 +187,12 @@ type
     function GetBookIterator(const GroupID: Integer; const DatabaseID: Integer = INVALID_COLLECTION_ID): IBookIterator; override;
     function GetGroupIterator: IGroupIterator; override;
     function GetCollectionInfoIterator: ICollectionInfoIterator; override;
+
+    //
+    // Служебные методы
+    //
+    // procedure ClearCollectionCache; // use base implementation
+    procedure RemoveUnusedBooks; override;
 
   private
     FDatabase: TSQLiteDatabase;
@@ -449,9 +465,9 @@ end;
 function TSystemData_SQLite.GetCollectionInfo(const CollectionID: Integer): ICollectionInfo;
 const
   SQL_SELECT = 'SELECT ' +
-    'bs.BaseName, bs.RootFolder, bs.DBFileName, bs.Code, bs.CreationDate, ' + // 0  .. 4
-    'bs.Version, bs.AllowDelete, bs.Notes, bs.LibUser, bs.LibPassword, ' +    // 5  .. 9
-    'bs.URL, bs.ConnectionScript, bs.Settings ' +                             // 10 .. 12
+    'bs.BaseName, bs.RootFolder, bs.DBFileName, bs.Code, bs.CreationDate, ' + // 0 .. 4
+    'bs.Version, bs.Notes, bs.LibUser, bs.LibPassword, '                    + // 5 .. 8
+    'bs.URL, bs.ConnectionScript, bs.Settings ' +                             // 9 .. 11
     'FROM Bases bs WHERE bs.DatabaseID = ?';
 var
   query: TSQLiteQuery;
@@ -483,18 +499,13 @@ begin
           else
             tempCollectionInfo.SetVersion(query.FieldAsInt(5));
 
-          if query.FieldIsNull(6) then
-            tempCollectionInfo.SetAllowDelete(True)
-          else
-            tempCollectionInfo.SetAllowDelete(query.FieldAsBoolean(6));
+          tempCollectionInfo.SetNotes(query.FieldAsString(6));
+          tempCollectionInfo.SetUser(query.FieldAsString(7));
+          tempCollectionInfo.SetPassword(query.FieldAsString(8));
+          tempCollectionInfo.SetURL(query.FieldAsString(9));
+          tempCollectionInfo.SetScript(query.FieldAsBlobString(10));
 
-          tempCollectionInfo.SetNotes(query.FieldAsString(7));
-          tempCollectionInfo.SetUser(query.FieldAsString(8));
-          tempCollectionInfo.SetPassword(query.FieldAsString(9));
-          tempCollectionInfo.SetURL(query.FieldAsString(10));
-          tempCollectionInfo.SetScript(query.FieldAsBlobString(11));
-
-          stream := query.FieldAsBlob(12);
+          stream := query.FieldAsBlob(11);
           try
             tempCollectionInfo.GetSettings.LoadFromStream(stream);
           finally
@@ -520,10 +531,10 @@ const
   SQL_SELECT = 'SELECT DatabaseID FROM Bases WHERE DatabaseID = ? ';
 {$ENDIF}
   SQL_UPDATE = 'UPDATE Bases SET ' +
-    'BaseName = ?, RootFolder = ?, DBFileName = ?, Notes = ?, CreationDate = ?, ' + // 0  .. 4
-    'Version = ?, Code = ?, AllowDelete = ?, Settings = ?, URL = ?, ' +             // 5  .. 9
-    'LibUser = ?, LibPassword = ?, ConnectionScript = ? ' +                         // 10 .. 12
-    'WHERE DatabaseID = ? ';                                                        // 13
+    'BaseName = ?, RootFolder = ?, DBFileName = ?, Notes = ?, CreationDate = ?, ' + // 0 .. 4
+    'Version = ?, Code = ?, Settings = ?, URL = ?, ' +                              // 5 .. 8
+    'LibUser = ?, LibPassword = ?, ConnectionScript = ? ' +                         // 9 .. 11
+    'WHERE DatabaseID = ? ';                                                        // 12
 var
   query: TSQLiteQuery;
   stream: TStream;
@@ -551,21 +562,21 @@ begin
     query.SetParam(4, CollectionInfo.CreationDate);
     query.SetParam(5, CollectionInfo.Version);
     query.SetParam(6, CollectionInfo.CollectionType);
-    query.SetParam(7, CollectionInfo.AllowDelete);
 
     stream := TMemoryStream.Create;
     try
       CollectionInfo.Settings.SaveToStream(stream);
-      query.SetBlobParam(8, stream);
+      query.SetBlobParam(7, stream);
     finally
       FreeAndNil(stream);
     end;
 
-    query.SetParam(9, CollectionInfo.URL);
-    query.SetParam(10, CollectionInfo.User);
-    query.SetParam(11, CollectionInfo.Password);
-    query.SetBlobParam(12, CollectionInfo.Script);
-    query.SetParam(13, CollectionInfo.ID);
+    query.SetParam(8, CollectionInfo.URL);
+    query.SetParam(9, CollectionInfo.User);
+    query.SetParam(10, CollectionInfo.Password);
+    query.SetBlobParam(11, CollectionInfo.Script);
+    query.SetParam(12, CollectionInfo.ID);
+
     query.ExecSQL;
   finally
     FreeAndNil(query);
@@ -594,7 +605,6 @@ procedure TSystemData_SQLite.RegisterCollection(
   const RootFolder: string;
   const DBFileName: string;
   CollectionType: COLLECTION_TYPE;
-  AllowDelete: Boolean;
   Version: Integer;
   const Notes: string;
   const URL: string;
@@ -605,7 +615,7 @@ procedure TSystemData_SQLite.RegisterCollection(
 const
   SQL_INSERT = 'INSERT INTO Bases ' +
     '(BaseName, RootFolder, DBFileName, Code, CreationDate, ' +
-    'Version, AllowDelete, Notes, LibUser, LibPassword, URL, ConnectionScript) ' +
+    'Version, Notes, LibUser, LibPassword, URL, ConnectionScript) ' +
     'SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ';
 var
   query: TSQLiteQuery;
@@ -622,15 +632,14 @@ begin
     query.SetParam(3, CollectionType);
     query.SetParam(4, Now);
     query.SetParam(5, Version);
-    query.SetParam(6, AllowDelete);
-    query.SetParam(7, Notes);
-    query.SetParam(8, User);
-    query.SetParam(9,Password);
-    query.SetParam(10,URL);
+    query.SetParam(6, Notes);
+    query.SetParam(7, User);
+    query.SetParam(8,Password);
+    query.SetParam(9,URL);
     if Script <> '' then
-      query.SetBlobParam(11, Script)
+      query.SetBlobParam(10, Script)
     else
-      query.SetNullParam(11);
+      query.SetNullParam(10);
 
     query.ExecSQL;
     collectionID := FDatabase.LastInsertRowID;
@@ -642,7 +651,7 @@ begin
   ActivateCollection(collectionID);
 end;
 
-function TSystemData_SQLite.FindCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer): Boolean;
+function TSystemData_SQLite.HasCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer): Boolean;
 var
   CollectionInfoIterator: ICollectionInfoIterator;
   CollectionInfo: ICollectionInfo;
@@ -692,19 +701,54 @@ begin
     ActivateCollection(collectionID);
 end;
 
-procedure TSystemData_SQLite.CreateBookCollectionDatabase(const DBCollectionFile: string; const GenresFileName: string);
+function TSystemData_SQLite.CreateCollection(
+  const DisplayName: string;
+  const RootFolder: string;
+  const DBFileName: string;
+  CollectionType: COLLECTION_TYPE;
+  const GenresFileName: string
+  ): Integer;
+const
+  SQL_INSERT =
+    'INSERT INTO Bases (BaseName, RootFolder, DBFileName, CreationDate, Code) ' +
+    'VALUES(?, ?, ?)';
+var
+  query: TSQLiteQuery;
+begin
+  CreateCollectionTables_SQLite(DBFileName, GenresFileName);
+
+  //
+  // регистрируем коллекцию
+  //
+  query := FDatabase.NewQuery(SQL_INSERT);
+  try
+    query.SetParam(0, DisplayName);
+    query.SetParam(1, RootFolder);
+    query.SetParam(2, DBFileName);
+    query.SetParam(3, Now);
+    query.SetParam(4, CollectionType);
+
+    query.ExecSQL;
+
+    Result := FDatabase.LastInsertRowID;
+  finally
+    FreeAndNil(query);
+  end;
+end;
+
+procedure TSystemData_SQLite.CreateCollectionDatabase(const DBCollectionFile: string; const GenresFileName: string);
 begin
   CreateCollectionTables_SQLite(DBCollectionFile, GenresFileName);
 end;
 
-procedure TSystemData_SQLite.DropBookCollectionDatabase(const DBCollectionFile: string);
+procedure TSystemData_SQLite.DropCollectionDatabase(const DBCollectionFile: string);
 begin
   Assert(DBCollectionFile <> '');
 
   DeleteFile(DBCollectionFile);
 end;
 
-function TSystemData_SQLite.CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True): IBookCollection;
+function TSystemData_SQLite.InternalCreateCollection(const DBCollectionFile: string): IBookCollection;
 begin
   Result := TBookCollection_SQLite.Create(DBCollectionFile, Self);
 end;

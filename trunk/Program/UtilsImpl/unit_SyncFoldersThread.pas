@@ -88,7 +88,7 @@ begin
       SetComment(rstrBuildingFileList);
       FFiles.Process;
 
-      BookCollection := SystemData.GetActiveBookCollection;
+      BookCollection := SystemData.GetActiveCollection;
       BookIterator := BookCollection.GetBookIterator(bmAll, True);
       totalBooks := BookIterator.RecordCount;
       while BookIterator.Next(BookRecord) do

@@ -62,8 +62,7 @@ CREATE TABLE Groups (
   GroupID     INTEGER      NOT NULL                           PRIMARY KEY AUTOINCREMENT,
   GroupName   VARCHAR(255) NOT NULL COLLATE MHL_SYSTEM_NOCASE UNIQUE,
   AllowDelete INTEGER      NOT NULL,
-  Notes       BLOB,
-  Icon        BLOB
+  Notes       BLOB
 );
 --@@
 
@@ -87,10 +86,8 @@ CREATE TABLE Bases (
   Notes            VARCHAR(255)          COLLATE MHL_SYSTEM_NOCASE,
   CreationDate     VARCHAR(23)  NOT NULL,
   Version          INTEGER,
-  Code             INTEGER,
-  AllowDelete      INTEGER      NOT NULL,
+  Code             INTEGER      NOT NULL,
   Settings         BLOB,
-  Icon             BLOB,
   URL              VARCHAR(255)          COLLATE MHL_SYSTEM_NOCASE,
   LibUser          VARCHAR(50)           COLLATE MHL_SYSTEM_NOCASE,
   LibPassword      VARCHAR(50)           COLLATE MHL_SYSTEM_NOCASE,

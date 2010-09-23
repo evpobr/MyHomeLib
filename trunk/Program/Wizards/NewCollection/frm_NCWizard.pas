@@ -558,7 +558,7 @@ begin
       { TODO -oNickR -cUsability : проверять существование на соответствующей странице с выдачей предупреждения }
       //Assert(not FileExists(FParams.CollectionFile));
       Assert(FileExists(FParams.GenreFile));
-      {* FParams.CollectionID := *} GetSystemData.CreateBookCollectionDatabase(FParams.CollectionFile, {*FParams.CollectionCode,*} FParams.GenreFile);
+      {* FParams.CollectionID := *} GetSystemData.CreateCollectionDatabase(FParams.CollectionFile, FParams.GenreFile);
 
       //
       // Установить свойства коллекции
@@ -662,7 +662,6 @@ begin
     FParams.CollectionRoot,
     FParams.CollectionFile,
     FParams.CollectionCode,
-    isPrivateCollection(FParams.CollectionCode),
     FVersion,
     FParams.Notes,
     FParams.URL,

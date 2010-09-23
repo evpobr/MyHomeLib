@@ -231,7 +231,7 @@ begin
       Exit;
     end;
 
-    if SystemData.FindCollectionWithProp(cpDisplayName, strValue) then
+    if SystemData.HasCollectionWithProp(cpDisplayName, strValue) then
     begin
       ShowPageMessage(Format(rstrCollectionAlreadyExists, [strValue]), 2);
       Exit;
@@ -256,8 +256,8 @@ begin
       Exit;
     end;
 
-    if SystemData.FindCollectionWithProp(cpFileName, strValue + COLLECTION_EXTENSION) or
-       SystemData.FindCollectionWithProp(cpFileName, Settings.DataPath + strValue + COLLECTION_EXTENSION) then
+    if SystemData.HasCollectionWithProp(cpFileName, strValue + COLLECTION_EXTENSION) or
+       SystemData.HasCollectionWithProp(cpFileName, Settings.DataPath + strValue + COLLECTION_EXTENSION) then
     begin
       ShowPageMessage(Format(rstrFileAlreadyExistsInDB, [strValue]), 2);
       Exit;
