@@ -87,6 +87,7 @@ uses
   CommCtrl,
   ShlObj,
   ShellAPI,
+  ShLwApi,
   ActiveX;
 
 // ============================================================================
@@ -135,15 +136,11 @@ end;
 
 function ExpandFileNameEx(const basePath: string; const path: string): string;
 var
-  saveDir: string;
+  pathBuf: array[0..MAX_PATH] of WideChar;
 begin
-  saveDir := TDirectory.GetCurrentDirectory;
-  try
-    TDirectory.SetCurrentDirectory(basePath);
-    Result := TPath.GetFullPath(path);
-  finally
-    TDirectory.SetCurrentDirectory(saveDir);
-  end;
+  Result := TPath.Combine(basePath, path);
+  if PathCanonicalizeW(pathBuf, PWideChar(Result)) then
+    Result := pathBuf;
 end;
 
 // ============================================================================
