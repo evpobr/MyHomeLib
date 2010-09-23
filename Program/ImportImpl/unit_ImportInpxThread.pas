@@ -497,7 +497,7 @@ procedure TImportInpxThread.WorkFunction;
 var
   BookCollection: IBookCollection;
 begin
-  BookCollection := GetSystemData.GetBookCollection(DBFileName);
+  BookCollection := GetSystemData.GetCollection(DBFileName);
   BookCollection.BeginBulkOperation;
   try
     Import(False, BookCollection);

@@ -116,7 +116,7 @@ begin
   try
     inpxWriter := TStreamWriter.Create(inpxStream, TEncoding.UTF8);
     try
-      BookCollection := GetSystemData.GetBookCollection(FCollectionDBFileName);
+      BookCollection := GetSystemData.GetCollection(FCollectionDBFileName);
       try
         BookIterator := BookCollection.GetBookIterator(bmAll, True);
         try

@@ -1404,7 +1404,7 @@ begin
         if FSearchCriteria.DateIdx= -1 then
           FSearchCriteria.DateText := cbDate.Text;
 
-        BookIterator := FSystemData.GetActiveBookCollection.Search(FSearchCriteria, False);
+        BookIterator := FSystemData.GetActiveCollection.Search(FSearchCriteria, False);
 
         // —тавим фильтр
         StatusMessage := rstrApplyingFilter;
@@ -1633,7 +1633,7 @@ begin
     HideDeletedBooksUpdate(nil);
     ShowLocalOnlyUpdate(nil);
 
-    BookCollection := FSystemData.GetActiveBookCollection;
+    BookCollection := FSystemData.GetActiveCollection;
     BookCollection.SetShowLocalOnly(IsOnline and Settings.ShowLocalOnly);
     BookCollection.SetHideDeleted((not IsPrivate) and Settings.HideDeletedBooks);
     //BookCollection.SetTableState(True);
@@ -2021,7 +2021,7 @@ begin
 
     SetColumns;
 
-    BookCollection := FSystemData.GetActiveBookCollection;
+    BookCollection := FSystemData.GetActiveCollection;
     case Page of
       0:
       begin
@@ -2121,7 +2121,7 @@ begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
-    BookCollection := FSystemData.GetActiveBookCollection;
+    BookCollection := FSystemData.GetActiveCollection;
 
     FilterValue := AuthorBookFilter;
     FillBooksTree(tvBooksA, BookCollection.GetBookIterator(bmByAuthor, False, @FilterValue), False, True, @FLastAuthorBookID);  // авторы
@@ -2753,7 +2753,7 @@ begin
     end;
 
     FilterValue := AuthorBookFilter;
-    FillBooksTree(tvBooksA, FSystemData.GetActiveBookCollection.GetBookIterator(bmByAuthor, False, @FilterValue), False, True, @FLastAuthorBookID); // авторы
+    FillBooksTree(tvBooksA, FSystemData.GetActiveCollection.GetBookIterator(bmByAuthor, False, @FilterValue), False, True, @FLastAuthorBookID); // авторы
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -2823,7 +2823,7 @@ begin
     end;
 
     FilterValue := SeriesBookFilter;
-    FillBooksTree(tvBooksS, FSystemData.GetActiveBookCollection.GetBookIterator(bmBySeries, False, @FilterValue), False, False, @FLastSeriesBookID); // авторы
+    FillBooksTree(tvBooksS, FSystemData.GetActiveCollection.GetBookIterator(bmBySeries, False, @FilterValue), False, False, @FLastSeriesBookID); // авторы
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -2897,7 +2897,7 @@ begin
     end;
 
     FilterValue := GenreBookFilter;
-    FillBooksTree(tvBooksG, FSystemData.GetActiveBookCollection.GetBookIterator(bmByGenre, False, @FilterValue), True, True, @FLastGenreBookID);
+    FillBooksTree(tvBooksG, FSystemData.GetActiveCollection.GetBookIterator(bmByGenre, False, @FilterValue), True, True, @FLastGenreBookID);
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -3633,7 +3633,7 @@ begin
     ID := (Sender as TMenuItem).Tag;
     CollectionInfo := FSystemData.GetCollectionInfo(ID);
 
-    BookCollection := FSystemData.GetBookCollection(FSystemData.GetActiveCollectionInfo.DBFileName);
+    BookCollection := FSystemData.GetCollection(FSystemData.GetActiveCollectionInfo.DBFileName);
     Node := Tree.GetFirst;
     while Assigned(Node) do
     begin
@@ -3840,7 +3840,7 @@ begin
         if (not (bpIsLocal in BookRecord.BookProps)) and isOnlineCollection(CollectionInfo.CollectionType) then
         begin
           // A not-yet-downloaded book of an online collection, can download only if book's collection is selected
-          FSystemData.GetActiveBookCollection.VerifyCurrentCollection(BookRecord.BookKey.DatabaseID);
+          FSystemData.GetActiveCollection.VerifyCurrentCollection(BookRecord.BookKey.DatabaseID);
           DownloadBooks;
           /// TODO : RESTORE ??? Tree.RepaintNode(Tree.GetFirstSelected);
           if not FileExists(BookFileName) then
@@ -3889,7 +3889,7 @@ begin
 
     Settings.HideDeletedBooks := not Settings.HideDeletedBooks;
 
-    BookCollection := FSystemData.GetActiveBookCollection;
+    BookCollection := FSystemData.GetActiveCollection;
     BookCollection.SetHideDeleted(Settings.HideDeletedBooks);
 
     FillAuthorTree(tvAuthors, BookCollection.GetAuthorIterator(amFullFilter), FLastAuthorID);
@@ -3951,7 +3951,7 @@ begin
 
   Result := TCharacter.ToUpper(Button.Caption);
 
-  BookCollection := FSystemData.GetActiveBookCollection;
+  BookCollection := FSystemData.GetActiveCollection;
   BookCollection.SetAuthorFilterType(Result);
 
   FillAuthorTree(tvAuthors, BookCollection.GetAuthorIterator(amFullFilter), FLastAuthorID);
@@ -4003,7 +4003,7 @@ begin
 
   Result := TCharacter.ToUpper(Button.Caption);
 
-  FSystemData.GetActiveBookCollection.SetSeriesFilterType(Result);
+  FSystemData.GetActiveCollection.SetSeriesFilterType(Result);
 
   if (Result = ALPHA_FILTER_ALL) or (Result = ALPHA_FILTER_NON_ALPHA) then
   begin
@@ -4031,7 +4031,7 @@ begin
 
     AFilter := InternalSetSerieFilter(Button);
 
-    FillSeriesTree(tvSeries, FSystemData.GetActiveBookCollection.GetSeriesIterator(smFullFilter), FLastSeriesID);
+    FillSeriesTree(tvSeries, FSystemData.GetActiveCollection.GetSeriesIterator(smFullFilter), FLastSeriesID);
 
     Assert(Length(AFilter) < 2);
     SetTextNoChange(edLocateSeries, AFilter);
@@ -4063,7 +4063,7 @@ begin
 
     Settings.ShowLocalOnly := not Settings.ShowLocalOnly;
 
-    BookCollection := FSystemData.GetActiveBookCollection;
+    BookCollection := FSystemData.GetActiveCollection;
     BookCollection.SetShowLocalOnly(Settings.ShowLocalOnly);
 
     FillAuthorTree(tvAuthors, BookCollection.GetAuthorIterator(amFullFilter), FLastAuthorID);
@@ -4548,7 +4548,7 @@ begin
 
   GetActiveTree(Tree);
 
-  ALibrary := FSystemData.GetActiveBookCollection;
+  ALibrary := FSystemData.GetActiveCollection;
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
@@ -4609,7 +4609,7 @@ begin
   // Delete current collection and choose another:
   DBFileName := FSystemData.GetActiveCollectionInfo.DBFileName;
   FSystemData.DeleteCollection(FSystemData.GetActiveCollectionInfo.ID);
-  FSystemData.DropBookCollectionDatabase(DBFileName);
+  FSystemData.DropCollectionDatabase(DBFileName);
 
   CollectionInfoIterator := FSystemData.GetCollectionInfoIterator;
   if CollectionInfoIterator.Next(CollectionInfo) then
@@ -4626,7 +4626,7 @@ var
   BookCollection: IBookCollection;
 begin
   DatabaseID := FSystemData.GetActiveCollectionInfo.ID;
-  BookCollection := FSystemData.GetActiveBookCollection;
+  BookCollection := FSystemData.GetActiveCollection;
 
   ProcessNodes(
     procedure (Tree: TBookTree; Node: PVirtualNode)
@@ -4915,7 +4915,7 @@ begin
     if MHLShowWarning(Format(rstrGoToLibrarySite, [FSystemData.GetActiveCollectionInfo.URL]), mbYesNo) = mrYes then
     begin
       BookKey := CreateBookKey(BookID, FSystemData.GetActiveCollectionInfo.ID);
-      FSystemData.GetActiveBookCollection.GetBookRecord(BookKey, BookRecord, False);
+      FSystemData.GetActiveCollection.GetBookRecord(BookKey, BookRecord, False);
       { TODO -oNickR -cLibDesc : этот URL должен формироватьс€ обв€зкой библиотеки, т к его формат может мен€тьс€ }
       URL := Format('%sb/%s/edit', [FSystemData.GetActiveCollectionInfo.URL, BookRecord.LibID]);
       SimpleShellExecute(Handle, URL);
@@ -4950,7 +4950,7 @@ begin
 
   frmEditBook := TfrmEditBookInfo.Create(Application);
   try
-    frmEditBook.Collection := FSystemData.GetActiveBookCollection;
+    frmEditBook.Collection := FSystemData.GetActiveCollection;
     frmEditBook.OnGetBook := OnGetBookHandler;
     frmEditBook.OnSelectBook := OnSelectBookHandler;
     frmEditBook.OnUpdateBook := OnUpdateBookHandler;
@@ -4984,11 +4984,11 @@ begin
 
   GetActiveTree(Tree);
 
-  FillGenresTree(frmGenreTree.tvGenresTree, FSystemData.GetActiveBookCollection.GetGenreIterator(gmAll));
+  FillGenresTree(frmGenreTree.tvGenresTree, FSystemData.GetActiveCollection.GetGenreIterator(gmAll));
 
   if frmGenreTree.ShowModal = mrOk then
   begin
-    ALibrary := FSystemData.GetActiveBookCollection;
+    ALibrary := FSystemData.GetActiveCollection;
     NodeB := Tree.GetFirst;
     while Assigned(NodeB) do
     begin
@@ -5040,7 +5040,7 @@ begin
     Exit;
 
   S := Data^.Series;
-  BookCollection := FSystemData.GetActiveBookCollection;
+  BookCollection := FSystemData.GetActiveCollection;
 
   if Data^.nodeType = ntBookInfo then // Standing on a book node, change/add series info
   begin
@@ -5330,7 +5330,7 @@ begin
   else
     NewRate := 0;
 
-  BookCollection := FSystemData.GetActiveBookCollection;
+  BookCollection := FSystemData.GetActiveCollection;
   ProcessNodes(
     procedure (Tree: TBookTree; Node: PVirtualNode)
     var
@@ -5542,7 +5542,7 @@ begin
     StatusProgress := 0;
     ShowStatusProgress := True;
     try
-      BookCollection := FSystemData.GetActiveBookCollection;
+      BookCollection := FSystemData.GetActiveCollection;
       ProcessNodes(
         procedure (Tree: TBookTree; Node: PVirtualNode)
         var
@@ -5910,7 +5910,7 @@ var
 begin
   frmGenres := TfrmGenreTree.Create(Application);
   try
-    FillGenresTree(frmGenres.tvGenresTree, FSystemData.GetActiveBookCollection.GetGenreIterator(gmAll));
+    FillGenresTree(frmGenres.tvGenresTree, FSystemData.GetActiveCollection.GetGenreIterator(gmAll));
     if frmGenres.ShowModal = mrOk then
     begin
       frmGenres.GetSelectedGenres(Genres);
@@ -6016,7 +6016,7 @@ begin
 
   FFormBusy := True;
   try
-    BookCollection := FSystemData.GetActiveBookCollection;
+    BookCollection := FSystemData.GetActiveCollection;
 
     //
     // ревью можно измен€ть только дл€ книг из текущей коллекции
@@ -6255,7 +6255,7 @@ var
 begin
   frmStat := TfrmStat.Create(Application);
   try
-    frmStat.LoadCollectionInfo(FSystemData.GetActiveBookCollection);
+    frmStat.LoadCollectionInfo(FSystemData.GetActiveCollection);
     frmStat.ShowModal;
   finally
     frmStat.Free;
@@ -6312,7 +6312,7 @@ end;
 
 procedure TfrmMain.CompactDataBaseExecute(Sender: TObject);
 begin
-  FSystemData.GetActiveBookCollection.CompactDatabase;
+  FSystemData.GetActiveCollection.CompactDatabase;
 
   //FSystemData.SetTableState(True);
 end;
@@ -6420,7 +6420,7 @@ begin
 
   Data := TUserData.Create;
   try
-    FSystemData.GetActiveBookCollection.ExportUserData(Data);
+    FSystemData.GetActiveCollection.ExportUserData(Data);
     Data.Save(FileName);
   finally
     Data.Free;
@@ -6502,7 +6502,7 @@ procedure TfrmMain.MarkAsReadedExecute(Sender: TObject);
 var
   BookCollection: IBookCollection;
 begin
-  BookCollection := FSystemData.GetActiveBookCollection;
+  BookCollection := FSystemData.GetActiveCollection;
 
   ProcessNodes(
     procedure (Tree: TBookTree; Node: PVirtualNode)
@@ -6541,7 +6541,7 @@ var
   AFileName: string;
 begin
   //DMCollection.DBCollection.Connected := False;
-  ALibrary := FSystemData.GetActiveBookCollection;
+  ALibrary := FSystemData.GetActiveCollection;
   if isFB2Collection(FSystemData.GetActiveCollectionInfo.CollectionType) then
     ALibrary.ReloadGenres(Settings.SystemFileName[sfGenresFB2])
   else if unit_Helpers.GetFileName(fnGenreList, AFileName) then
@@ -6551,7 +6551,7 @@ end;
 
 procedure TfrmMain.RepairDataBaseExecute(Sender: TObject);
 begin
-  FSystemData.GetActiveBookCollection.RepairDatabase;
+  FSystemData.GetActiveCollection.RepairDatabase;
 
 //  FSystemData.SetTableState(True);
 end;
@@ -6711,7 +6711,7 @@ var
 begin
   frmAddBooks := TfrmAddnonfb2.Create(Application);
   try
-    frmAddBooks.Collection := FSystemData.GetActiveBookCollection;
+    frmAddBooks.Collection := FSystemData.GetActiveCollection;
     frmAddBooks.ShowModal;
     InitCollection(True);
   finally
@@ -6741,7 +6741,7 @@ end;
 
 procedure TfrmMain.SetBookLocalStatus(const BookKey: TBookKey; IsLocal: Boolean);
 begin
-  FSystemData.GetActiveBookCollection.SetLocal(BookKey, IsLocal);
+  FSystemData.GetActiveCollection.SetLocal(BookKey, IsLocal);
 
   UpdateNodes(
     BookKey,
@@ -6788,7 +6788,7 @@ begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
-    FSystemData.GetActiveBookCollection.ImportUserData(
+    FSystemData.GetActiveCollection.ImportUserData(
       UserDataSource,
       procedure(const BookKey: TBookKey; extra: TBookExtra)
       begin
@@ -7017,7 +7017,7 @@ begin
 
   Assert(Assigned(Data) and (Data^.nodeType = ntBookInfo));
 
-  FSystemData.GetActiveBookCollection.GetBookRecord(Data^.BookKey, BookRecord, True);
+  FSystemData.GetActiveCollection.GetBookRecord(Data^.BookKey, BookRecord, True);
 end;
 
 // Invoked when it's time to update the current book in DB
@@ -7040,7 +7040,7 @@ begin
   //
   Assert(BookRecord.nodeType = ntBookInfo);
 
-  BookCollection := FSystemData.GetActiveBookCollection;
+  BookCollection := FSystemData.GetActiveCollection;
   BookCollection.BeginBulkOperation;
   try
     BookCollection.UpdateBook(BookRecord);
@@ -7105,7 +7105,7 @@ begin
   Assert(BookRecord.nodeType = ntBookInfo);
 
   NewFileName := BookRecord.FileName + ZIP_EXTENSION;
-  FSystemData.GetActiveBookCollection.SetFileName(BookRecord.BookKey, NewFileName);
+  FSystemData.GetActiveCollection.SetFileName(BookRecord.BookKey, NewFileName);
   UpdateNodes(
     BookRecord.BookKey,
     procedure(BookData: PBookRecord)

@@ -1,3 +1,19 @@
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
+  * Created             23.09.2010
+  * Description
+  *
+  * $Id$
+  *
+  * History
+  *
+  ****************************************************************************** *)
+
 unit unit_MHLGenerics;
 
 interface
@@ -7,18 +23,18 @@ uses
   Generics.Collections;
 
 type
-  TInterfaceCache<TKeyType; T: IInterface> = class
+  TInterfaceCache<TKey; TValue: IInterface> = class
   private type
     TInterfaceAdapter = class
     public
-      constructor Create(const Value: T);
+      constructor Create(const Value: TValue);
 
     private
-      FValue: T;
+      FValue: TValue;
     end;
 
   private
-    FMap: TObjectDictionary<TKeyType, TInterfaceAdapter>;
+    FMap: TObjectDictionary<TKey, TInterfaceAdapter>;
     FLock: TRTLCriticalSection;
 
   public
@@ -28,10 +44,11 @@ type
     procedure LockMap; inline;
     procedure UnlockMap; inline;
 
-    function ContainsKey(const key: TKeyType): Boolean;
-    procedure Add(const key: TKeyType; const Value: T);
-    function Get(const key: TKeyType): T;
-    procedure Remove(const key: TKeyType);
+    function ContainsKey(const key: TKey): Boolean;
+    procedure Add(const key: TKey; const Value: TValue);
+    procedure AddOrSetValue(const Key: TKey; const Value: TValue);
+    function Get(const key: TKey): TValue;
+    procedure Remove(const key: TKey);
     procedure Clear;
   end;
 
@@ -39,6 +56,10 @@ type
   TValueSetter<T> = reference to procedure(var Item: T; const Value: string);
 
   TArrayUtils = class
+  public type
+    TStringArray = array of string;
+    TValuesArray<T> = array of T;
+
   public
     class function Join(
       const Values: array of string;
@@ -60,13 +81,13 @@ type
     class procedure Split(
       const Value: string;
       const itemDelimeter: string;
-      var AItems: array of string
+      var Items: TStringArray
     ); overload;
 
     class procedure Split<T>(
       const Value: string;
       const itemDelimeter: string;
-      var AItems: array of T;
+      var Items: TValuesArray<T>;
       const Setter: TValueSetter<T>
     ); overload;
   end;
@@ -76,24 +97,24 @@ implementation
 uses
   StrUtils;
 
-{ TInterfaceCache<TKeyType, T>.TInterfaceAdapter }
+{ TInterfaceCache<TKey, TValue>.TInterfaceAdapter }
 
-constructor TInterfaceCache<TKeyType, T>.TInterfaceAdapter.Create(const Value: T);
+constructor TInterfaceCache<TKey, TValue>.TInterfaceAdapter.Create(const Value: TValue);
 begin
   inherited Create;
   FValue := Value;
 end;
 
-{ TInterfaceCache<TKeyType, T> }
+{ TInterfaceCache<TKey, TValue> }
 
-constructor TInterfaceCache<TKeyType, T>.Create;
+constructor TInterfaceCache<TKey, TValue>.Create;
 begin
   inherited Create;
   InitializeCriticalSection(FLock);
-  FMap := TObjectDictionary<TKeyType, TInterfaceAdapter>.Create([doOwnsValues]);
+  FMap := TObjectDictionary<TKey, TInterfaceAdapter>.Create([doOwnsValues]);
 end;
 
-destructor TInterfaceCache<TKeyType, T>.Destroy;
+destructor TInterfaceCache<TKey, TValue>.Destroy;
 begin
   LockMap;    // Make sure nobody else is inside the list.
   try
@@ -105,17 +126,17 @@ begin
   end;
 end;
 
-procedure TInterfaceCache<TKeyType, T>.LockMap;
+procedure TInterfaceCache<TKey, TValue>.LockMap;
 begin
   EnterCriticalSection(FLock);
 end;
 
-procedure TInterfaceCache<TKeyType, T>.UnlockMap;
+procedure TInterfaceCache<TKey, TValue>.UnlockMap;
 begin
   LeaveCriticalSection(FLock);
 end;
 
-function TInterfaceCache<TKeyType, T>.ContainsKey(const key: TKeyType): Boolean;
+function TInterfaceCache<TKey, TValue>.ContainsKey(const key: TKey): Boolean;
 begin
   LockMap;
   try
@@ -125,7 +146,7 @@ begin
   end;
 end;
 
-procedure TInterfaceCache<TKeyType, T>.Add(const key: TKeyType; const Value: T);
+procedure TInterfaceCache<TKey, TValue>.Add(const key: TKey; const Value: TValue);
 begin
   LockMap;
   try
@@ -135,7 +156,17 @@ begin
   end;
 end;
 
-function TInterfaceCache<TKeyType, T>.Get(const key: TKeyType): T;
+procedure TInterfaceCache<TKey, TValue>.AddOrSetValue(const Key: TKey; const Value: TValue);
+begin
+  LockMap;
+  try
+    FMap.AddOrSetValue(key, TInterfaceAdapter.Create(Value));
+  finally
+    UnlockMap;
+  end;
+end;
+
+function TInterfaceCache<TKey, TValue>.Get(const key: TKey): TValue;
 begin
   LockMap;
   try
@@ -145,7 +176,7 @@ begin
   end;
 end;
 
-procedure TInterfaceCache<TKeyType, T>.Remove(const key: TKeyType);
+procedure TInterfaceCache<TKey, TValue>.Remove(const key: TKey);
 begin
   LockMap;
   try
@@ -155,7 +186,7 @@ begin
   end;
 end;
 
-procedure TInterfaceCache<TKeyType, T>.Clear;
+procedure TInterfaceCache<TKey, TValue>.Clear;
 begin
   LockMap;
   try
@@ -231,7 +262,7 @@ end;
 class procedure TArrayUtils.Split(
   const Value: string;
   const itemDelimeter: string;
-  var AItems: array of string
+  var Items: TStringArray
 );
 var
   ValueLen: Integer;
@@ -246,7 +277,7 @@ begin
   ValueLen := Length(Value);
   SeparatorLen := Length(itemDelimeter);
   StartPos := 1;
-  ItemsLen := Length(AItems);
+  ItemsLen := Length(Items);
 
   SeparatorPos := PosEx(itemDelimeter, Value, StartPos);
   while SeparatorPos <> 0 do
@@ -255,23 +286,23 @@ begin
     StartPos := SeparatorPos + SeparatorLen;
     SeparatorPos := PosEx(itemDelimeter, Value, StartPos);
 
-    //SetLength(AItems, ItemsLen + 1);
-    AItems[ItemsLen] := s;
+    SetLength(Items, ItemsLen + 1);
+    Items[ItemsLen] := s;
     Inc(ItemsLen);
   end;
 
   if StartPos < ValueLen then
   begin
     s := Copy(Value, StartPos, ValueLen);
-    //SetLength(Items, ItemsLen + 1);
-    AItems[ItemsLen] := s;
+    SetLength(Items, ItemsLen + 1);
+    Items[ItemsLen] := s;
   end;
 end;
 
 class procedure TArrayUtils.Split<T>(
   const Value: string;
   const itemDelimeter: string;
-  var AItems: array of T;
+  var Items: TValuesArray<T>;
   const Setter: TValueSetter<T>
 );
 var
@@ -287,7 +318,7 @@ begin
   ValueLen := Length(Value);
   SeparatorLen := Length(itemDelimeter);
   StartPos := 1;
-  ItemsLen := Length(AItems);
+  ItemsLen := Length(Items);
 
   SeparatorPos := PosEx(itemDelimeter, Value, StartPos);
   while SeparatorPos <> 0 do
@@ -295,16 +326,16 @@ begin
     s := Copy(Value, StartPos, SeparatorPos - StartPos);
     StartPos := SeparatorPos + SeparatorLen;
     SeparatorPos := PosEx(itemDelimeter, Value, StartPos);
-    //SetLength(AItems, ItemsLen + 1);
-    Setter(AItems[ItemsLen], s);
+    SetLength(Items, ItemsLen + 1);
+    Setter(Items[ItemsLen], s);
     Inc(ItemsLen);
   end;
 
   if StartPos < ValueLen then
   begin
     s := Copy(Value, StartPos, ValueLen);
-    //SetLength(AItems, ItemsLen + 1);
-    Setter(AItems[ItemsLen], s);
+    SetLength(Items, ItemsLen + 1);
+    Setter(Items[ItemsLen], s);
   end;
 end;
 

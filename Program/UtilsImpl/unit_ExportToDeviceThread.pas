@@ -103,7 +103,7 @@ begin
   //
   // TODO : заменить вызов этих методов на потокобезопасные методы, принимающие BookID и DatabaseID
   //
-  GetSystemData.GetActiveBookCollection.GetBookRecord(BookKey, R, False);
+  GetSystemData.GetActiveCollection.GetBookRecord(BookKey, R, False);
 
   // —формируем им€ каталога в соответствии с заданным темплейтом
   if FTemplater.SetTemplate(Settings.FolderTemplate, TpPath) = ErFine then

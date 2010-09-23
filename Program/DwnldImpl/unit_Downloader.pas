@@ -201,7 +201,7 @@ var
 begin
   Result := False;
 
-  GetSystemData.GetActiveBookCollection.GetBookRecord(BookKey, BookRecord, False);
+  GetSystemData.GetActiveCollection.GetBookRecord(BookKey, BookRecord, False);
   FFile := BookRecord.GetBookFileName;
   if FileExists(FFile) or DoDownload(BookRecord) then
   begin

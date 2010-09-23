@@ -49,8 +49,6 @@ type
     procedure SetVersion(const NewVersion: Integer);
     function GetCollectionType: COLLECTION_TYPE;
     procedure SetCollectionType(const NewCollectionType: COLLECTION_TYPE);
-    function GetAllowDelete: Boolean;
-    procedure SetAllowDelete(const NewAllowDelete: Boolean);
     function GetURL: string;
     procedure SetURL(const NewURL: string);
     function GetScript: string;
@@ -69,7 +67,6 @@ type
     property CreationDate: TDateTime read GetCreationDate write SetCreationDate;
     property Version: Integer read GetVersion write SetVersion;
     property CollectionType: COLLECTION_TYPE read GetCollectionType write SetCollectionType;
-    property AllowDelete: Boolean read GetAllowDelete write SetAllowDelete;
     property User: string read GetUser write SetUser;
     property Password: string read GetPassword write SetPassword;
     property URL: string read GetURL write SetURL;
@@ -111,17 +108,32 @@ type
   ISystemData = interface
     ['{3896E4C6-8E2F-42F3-9FB2-91753258E9B7}']
 
-    function GetCollectionInfo(const CollectionID: Integer): ICollectionInfo;
-    procedure UpdateCollectionInfo(const CollectionInfo: ICollectionInfo);
+    //
+    // Создание, регистрация и удаление коллекций
+    //
 
-    procedure ActivateCollection(CollectionID: Integer);
+    //
+    // Создание новой коллекции
+    //
+    function CreateCollection(
+      const DisplayName: string;
+      const RootFolder: string;
+      const DBFileName: string;
+      CollectionType: COLLECTION_TYPE;
+      const GenresFileName: string
+    ): Integer;
 
+    procedure CreateCollectionDatabase(const DBCollectionFile: string; const GenresFileName: string); deprecated;
+
+    //
+    // Регистрация существующей коллекции
+    // TODO: переделать
+    //
     procedure RegisterCollection(
       const DisplayName: string;
       const RootFolder: string;
       const DBFileName: string;
       CollectionType: COLLECTION_TYPE;
-      AllowDelete: Boolean;
       Version: Integer = UNVERSIONED_COLLECTION;
       const Notes: string = '';
       const URL: string = '';
@@ -129,23 +141,31 @@ type
       const User: string = '';
       const Password: string = ''
     );
-    function FindCollectionWithProp(
-      PropID: TCollectionProp;
-      const Value: string;
-      IgnoreID: Integer = INVALID_COLLECTION_ID
-    ): Boolean;
+
+    //
+    // Удаление коллекции
+    // TODO: объединить в один метод
+    //
     procedure DeleteCollection(CollectionID: Integer);
+    procedure DropCollectionDatabase(const DBCollectionFile: string);
 
-    procedure CreateBookCollectionDatabase(const DBCollectionFile: string; const GenresFileName: string);
-    procedure DropBookCollectionDatabase(const DBCollectionFile: string);
+    function HasCollections: Boolean;
+    function HasCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer = INVALID_COLLECTION_ID): Boolean;
+    function FindFirstExistingCollectionID(const PreferredID: Integer): Integer;
 
-    function CreateBookCollection(const DBCollectionFile: string; ADefaultSession: Boolean = True): IBookCollection;
-    function GetBookCollection(const DBCollectionFile: string): IBookCollection;
-    function GetActiveBookCollection: IBookCollection;
-    procedure ClearBookCollectionCache;
+    function GetCollectionInfo(const CollectionID: Integer): ICollectionInfo;
+    procedure UpdateCollectionInfo(const CollectionInfo: ICollectionInfo);
 
-    function ActivateGroup(const ID: Integer): Boolean;
+    function GetCollection(const DBCollectionFile: string): IBookCollection;
 
+    procedure ActivateCollection(CollectionID: Integer); deprecated;
+    function GetActiveCollectionInfo: ICollectionInfo; deprecated;
+    function GetActiveCollection: IBookCollection; deprecated;
+    function ActivateGroup(const ID: Integer): Boolean; deprecated;
+
+    //
+    // Работа с книгами
+    //
     procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord);
     procedure DeleteBook(const BookKey: TBookKey);
     procedure UpdateBook(const BookRecord: TBookRecord);
@@ -164,20 +184,14 @@ type
     // Работа с группами
     //
     function AddGroup(const GroupName: string; const AllowDelete: Boolean = True): Boolean;
-    function RenameGroup(GroupID: Integer; const NewName: string): Boolean;
-    procedure DeleteGroup(GroupID: Integer);
-    procedure ClearGroup(GroupID: Integer);
     function GetGroup(const GroupID: Integer): TGroupData;
+    function RenameGroup(GroupID: Integer; const NewName: string): Boolean;
+    procedure ClearGroup(GroupID: Integer);
+    procedure DeleteGroup(GroupID: Integer);
 
     procedure AddBookToGroup(const BookKey: TBookKey; GroupID: Integer; const BookRecord: TBookRecord);
+    procedure CopyBookToGroup(const BookKey: TBookKey; SourceGroupID: Integer; TargetGroupID: Integer; MoveBook: Boolean);
     procedure DeleteFromGroup(const BookKey: TBookKey; GroupID: Integer);
-    procedure RemoveUnusedBooks;
-    procedure CopyBookToGroup(
-      const BookKey: TBookKey;
-      SourceGroupID: Integer;
-      TargetGroupID: Integer;
-      MoveBook: Boolean
-    );
 
     //
     // Пользовательские данные
@@ -185,17 +199,23 @@ type
     procedure ImportUserData(data: TUserData);
     procedure ExportUserData(data: TUserData);
 
+    //
     // Batch update methods:
+    //
     procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer);
 
-    //Iterators:
+    //
+    // Iterators
+    //
     function GetBookIterator(const GroupID: Integer; const DatabaseID: Integer = INVALID_COLLECTION_ID): IBookIterator;
     function GetGroupIterator: IGroupIterator;
     function GetCollectionInfoIterator: ICollectionInfoIterator;
 
-    function HasCollections: Boolean;
-    function FindFirstExistingCollectionID(const PreferredID: Integer): Integer;
-    function GetActiveCollectionInfo: ICollectionInfo;
+    //
+    // Служебные методы
+    //
+    procedure ClearCollectionCache;
+    procedure RemoveUnusedBooks;
   end;
 
   IBookCollection = interface

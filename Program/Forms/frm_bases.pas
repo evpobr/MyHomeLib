@@ -256,7 +256,7 @@ begin
   //
   // Проверим название коллекции
   //
-  if FSystemData.FindCollectionWithProp(cpDisplayName, DisplayName, CollectionID) then
+  if FSystemData.HasCollectionWithProp(cpDisplayName, DisplayName, CollectionID) then
   begin
     MessageDlg(Format(rstrCollectionAlreadyExists, [DisplayName]), mtError, [mbOk], 0);
     Exit;
@@ -291,7 +291,7 @@ begin
     Exit;
   end;
 
-  if FSystemData.FindCollectionWithProp(cpFileName, ADBFileName, CollectionID) then
+  if FSystemData.HasCollectionWithProp(cpFileName, ADBFileName, CollectionID) then
   begin
     MessageDlg(Format(rstrFileAlreadyExistsInDB, [ADBFileName]), mtError, [mbOk], 0);
     Exit;
