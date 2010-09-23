@@ -450,15 +450,6 @@ end;
 
 procedure TfrmNCWizard.CorrectParams;
 begin
-  if '' = ExtractFileExt(FParams.CollectionFile) then
-    FParams.CollectionFile := ChangeFileExt(FParams.CollectionFile, COLLECTION_EXTENSION);
-
-  FParams.CollectionFile := ExpandFileNameEx(Settings.DataDir, FParams.CollectionFile);
-  FParams.CollectionRoot := ExpandFileNameEx(Settings.DataDir, FParams.CollectionRoot);
-
-  TDirectory.CreateDirectory(TPath.GetDirectoryName(FParams.CollectionFile));
-  TDirectory.CreateDirectory(FParams.CollectionRoot);
-
   //
   // определим реальный код коллекции
   //

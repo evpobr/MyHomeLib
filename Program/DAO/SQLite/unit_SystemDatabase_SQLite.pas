@@ -98,6 +98,7 @@ type
 
   protected
     function InternalCreateCollection(const DBCollectionFile: string): IBookCollection; override;
+    procedure PrepareCollectionPath(var CollectionRoot: string; var CollectionFile: string);
 
   public
     constructor Create(const DBUserFile: string);
@@ -475,7 +476,6 @@ var
   query: TSQLiteQuery;
   stream: TStream;
   tempCollectionInfo: ICollectionInfo;
-  dataDirPath: string;
 begin
   Assert(CollectionID > 0);
 
@@ -496,9 +496,8 @@ begin
           //
           // восстановить абсолютные пути
           //
-          dataDirPath := Settings.DataPath;
-          tempCollectionInfo.SetRootFolder(ExpandFileNameEx(dataDirPath, query.FieldAsString(1)));
-          tempCollectionInfo.SetDBFileName(ExpandFileNameEx(dataDirPath, query.FieldAsString(2)));
+          tempCollectionInfo.SetRootFolder(TMHLSettings.ExpantCollectionRoot(query.FieldAsString(1)));
+          tempCollectionInfo.SetDBFileName(TMHLSettings.ExpantCollectionFileName(query.FieldAsString(2)));
 
           tempCollectionInfo.SetCollectionType(query.FieldAsInt(3)); // code
           tempCollectionInfo.SetCreationDate(query.FieldAsDateTime(4));
@@ -547,6 +546,8 @@ const
 var
   query: TSQLiteQuery;
   stream: TStream;
+  storedRoot: string;
+  storedFileName: string;
 begin
   Assert(Assigned(CollectionInfo));
   Assert(CollectionInfo.ID > 0);
@@ -562,11 +563,15 @@ begin
   end;
 {$ENDIF}
 
+  storedRoot := CollectionInfo.RootFolder;
+  storedFileName := CollectionInfo.DBFileName;
+  PrepareCollectionPath(storedRoot, storedFileName);
+
   query := FDatabase.NewQuery(SQL_UPDATE);
   try
     query.SetParam(0, CollectionInfo.Name);
-    query.SetParam(1, ExcludeTrailingPathDelimiter(CollectionInfo.RootFolder));
-    query.SetParam(2, CollectionInfo.DBFileName);
+    query.SetParam(1, storedRoot);
+    query.SetParam(2, storedFileName);
     query.SetParam(3, CollectionInfo.Notes);
     query.SetParam(4, CollectionInfo.CreationDate);
     query.SetParam(5, CollectionInfo.Version);
@@ -627,17 +632,13 @@ const
           '(BaseName, RootFolder, DBFileName, Code, CreationDate, Version, Notes, LibUser, LibPassword, URL, ConnectionScript) ' +
     'VALUES(?,        ?,          ?,          ?,    ?,            ?,       ?,     ?,       ?,           ?,   ?)';
 var
-  dataDirPath: string;
   storedRoot: string;
   storedFileName: string;
   query: TSQLiteQuery;
 begin
-  //
-  // Преобразовать пути в относительные
-  //
-  dataDirPath := Settings.DataPath;
-  storedRoot := ExcludeTrailingPathDelimiter(ExtractRelativePath(dataDirPath, RootFolder));
-  storedFileName := ExtractRelativePath(dataDirPath, DBFileName);
+  storedRoot := RootFolder;
+  storedFileName := DBFileName;
+  PrepareCollectionPath(storedRoot, storedFileName);
 
   //
   // регистрируем коллекцию
@@ -675,6 +676,7 @@ var
   CollectionInfoIterator: ICollectionInfoIterator;
   CollectionInfo: ICollectionInfo;
   Match: Boolean;
+  searchValue: string;
 begin
   CollectionInfoIterator := GetCollectionInfoIterator;
 
@@ -686,15 +688,29 @@ begin
   if CollectionInfoIterator.RecordCount = 0 then
     Exit;
 
+  case PropID of
+  cpRootFolder:
+    searchValue := TMHLSettings.ExpantCollectionRoot(Value);
+
+  cpFileName:
+    searchValue := TMHLSettings.ExpantCollectionFileName(Value);
+
+  else
+    searchValue := Value;
+  end;
+
   while (CollectionInfoIterator.Next(CollectionInfo)) do
   begin
     case PropID of
     cpDisplayName:
-      Match := (CollectionInfo.Name = Value);
+      Match := (CollectionInfo.Name = searchValue);
+
     cpFileName:
-      Match := (CollectionInfo.DBFileName = Value);
+      Match := (CollectionInfo.DBFileName = searchValue);
+
     cpRootFolder:
-      Match := (CollectionInfo.RootFolder = Value);
+      Match := (CollectionInfo.RootFolder = searchValue);
+
     else
       Match := False;
       Assert(False);
@@ -739,12 +755,9 @@ var
 begin
   CreateCollectionTables_SQLite(DBFileName, GenresFileName);
 
-  //
-  // Преобразовать пути в относительные
-  //
-  dataDirPath := Settings.DataPath;
-  storedRoot := ExtractRelativePath(dataDirPath, RootFolder);
-  storedFileName := ExtractRelativePath(dataDirPath, DBFileName);
+  storedRoot := RootFolder;
+  storedFileName := DBFileName;
+  PrepareCollectionPath(storedRoot, storedFileName);
 
   //
   // регистрируем коллекцию
@@ -1654,5 +1667,28 @@ begin
   end;
 end;
 
+procedure TSystemData_SQLite.PrepareCollectionPath(var CollectionRoot, CollectionFile: string);
+var
+  dataDirPath: string;
+begin
+  //
+  // Получим полные пути. Если были указаны относительные пути, то в качестве базового используем DataPath.
+  //
+  CollectionRoot := TMHLSettings.ExpantCollectionRoot(CollectionRoot);
+  CollectionFile := TMHLSettings.ExpantCollectionFileName(CollectionFile);
+
+  //
+  // Создадим необходимые каталоги
+  //
+  TDirectory.CreateDirectory(CollectionRoot);
+  TDirectory.CreateDirectory(TPath.GetDirectoryName(CollectionFile));
+
+  //
+  // Получим относительные пути. В качестве базового используем DataPath.
+  //
+  dataDirPath := Settings.DataPath;
+  CollectionRoot := ExtractRelativePath(dataDirPath, CollectionRoot);
+  CollectionFile := ExtractRelativePath(dataDirPath, CollectionFile);
+end;
 
 end.
