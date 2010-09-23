@@ -484,7 +484,6 @@ begin
       Teletype(Format(rstrAddedBooks, [filesProcessed]), tsInfo);
 
       FProgressEngine.BeginOperation(-1, rstrUpdatingDB, '');
-      BookCollection.AfterBatchUpdate;
 
       //
       // Прочитать и установить свойства коллекции
@@ -497,8 +496,11 @@ begin
       if unZip.FindFirst(VERINFO_FILENAME, ArchItem, faAnyFile - faDirectory) then
       begin
         unZip.ExtractToString(ArchItem.FileName, strVersion);
+        strVersion := Trim(strVersion);
         BookCollection.SetIntProperty(SETTING_DATA_VERSION, StrToIntDef(strVersion, UNVERSIONED_COLLECTION));
       end;
+
+      BookCollection.AfterBatchUpdate;
     finally
       BookCollection.FinishBatchUpdate;
     end;
