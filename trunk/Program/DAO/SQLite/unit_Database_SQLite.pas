@@ -1034,23 +1034,23 @@ end;
 procedure TBookCollection_SQLite.SetStringProperty(const PropID: Integer; const Value: string);
 const
   SQL_DELETE = 'DELETE FROM Settings WHERE SettingID = ?';
-  SQL_UPDATE = 'UPDATE Settings SET SettingValue = ? WHERE SettingID = ?';
+  SQL_INSERT = 'INSERT INTO Settings (SettingID, SettingValue) VALUES (?, ?)';
 var
   query: TSQLiteQuery;
 begin
-  query := FDatabase.NewQuery(IfThen(Value = '', SQL_DELETE, SQL_UPDATE));
-  try
-    if Value = '' then
-      query.SetParam(0, PropID)
-    else
-    begin
-      query.SetBlobParam(0, Value);
-      query.SetParam(1, PropID);
-    end;
+  FDatabase.ExecSQL(SQL_DELETE, [PropID]);
 
-    query.ExecSQL;
-  finally
-    query.Free;
+  if Value <> '' then
+  begin
+    query := FDatabase.NewQuery(SQL_INSERT);
+    try
+      query.SetParam(0, PropID);
+      query.SetBlobParam(1, Value);
+
+      query.ExecSQL;
+    finally
+      query.Free;
+    end;
   end;
 
   //

@@ -71,7 +71,6 @@ CREATE TRIGGER TRSeries_AU AFTER UPDATE ON Series WHEN MHL_TRIGGERS_ON()
     UPDATE Series
     SET SearchSeriesTitle = MHL_UPPER(NEW.SeriesTitle)
     WHERE SeriesID = NEW.SeriesID;
-    SELECT 1;
   END;
 --@@
 
