@@ -1,9 +1,9 @@
-object frmNCWizard: TfrmNCWizard
+object MHLWizardBase: TMHLWizardBase
   Left = 0
   Top = 0
   HelpContext = 136
   BorderStyle = bsDialog
-  Caption = 'MyHomeLib - '#1052#1072#1089#1090#1077#1088' '#1089#1086#1079#1076#1072#1085#1080#1103' '#1082#1086#1083#1083#1077#1082#1094#1080#1080
+  Caption = 'MyHomeLib - '#1052#1072#1089#1090#1077#1088
   ClientHeight = 394
   ClientWidth = 520
   Color = clBtnFace

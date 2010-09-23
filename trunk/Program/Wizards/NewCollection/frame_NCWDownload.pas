@@ -66,8 +66,7 @@ implementation
 uses
   SysUtils,
   DateUtils,
-  unit_NCWParams,
-  frm_NCWizard;
+  unit_NCWParams;
 
 resourcestring
   rstrConnecting = 'Подключение ...';

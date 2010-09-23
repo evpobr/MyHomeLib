@@ -748,15 +748,14 @@ const
     'INSERT INTO Bases (BaseName, RootFolder, DBFileName, CreationDate, Code) ' +
     'VALUES(?, ?, ?, ?, ?)';
 var
-  dataDirPath: string;
   storedRoot: string;
   storedFileName: string;
   query: TSQLiteQuery;
 begin
-  CreateCollectionTables_SQLite(DBFileName, GenresFileName);
+  CreateCollectionTables_SQLite(TMHLSettings.ExpantCollectionFileName(DBFileName), GenresFileName);
 
-  storedRoot := RootFolder;
   storedFileName := DBFileName;
+  storedRoot := RootFolder;
   PrepareCollectionPath(storedRoot, storedFileName);
 
   //
@@ -779,8 +778,12 @@ begin
 end;
 
 procedure TSystemData_SQLite.CreateCollectionDatabase(const DBCollectionFile: string; const GenresFileName: string);
+var
+  storedFileName: string;
 begin
-  CreateCollectionTables_SQLite(DBCollectionFile, GenresFileName);
+  storedFileName := TMHLSettings.ExpantCollectionFileName(DBCollectionFile);
+  TDirectory.CreateDirectory(TPath.GetDirectoryName(storedFileName));
+  CreateCollectionTables_SQLite(storedFileName, GenresFileName);
 end;
 
 procedure TSystemData_SQLite.DropCollectionDatabase(const DBCollectionFile: string);

@@ -145,11 +145,11 @@
 			</DCCReference>
 			<DCCReference Include="UtilsImpl\unit_ExportToDevice.pas"/>
 			<DCCReference Include="UtilsImpl\unit_ExportToDeviceThread.pas"/>
-			<DCCReference Include="Wizards\NewCollection\frame_DecorativePageBase.pas">
+			<DCCReference Include="Wizards\Base\frame_DecorativePageBase.pas">
 				<Form>DecorativePageBase</Form>
 				<DesignClass>TFrame</DesignClass>
 			</DCCReference>
-			<DCCReference Include="Wizards\NewCollection\frame_InteriorPageBase.pas">
+			<DCCReference Include="Wizards\Base\frame_InteriorPageBase.pas">
 				<Form>InteriorPageBase</Form>
 				<DesignClass>TFrame</DesignClass>
 			</DCCReference>
@@ -157,8 +157,8 @@
 				<Form>frameNCWWelcom</Form>
 				<DesignClass>TFrame</DesignClass>
 			</DCCReference>
-			<DCCReference Include="Wizards\NewCollection\frm_NCWizard.pas">
-				<Form>frmNCWizard</Form>
+			<DCCReference Include="Wizards\Base\frm_MHLWizardBase.pas">
+				<Form>MHLWizardBase</Form>
 			</DCCReference>
 			<DCCReference Include="Wizards\NewCollection\frame_NCWOperation.pas">
 				<Form>frameNCWOperation</Form>
@@ -184,7 +184,7 @@
 				<Form>frameNCWProgress</Form>
 				<DesignClass>TFrame</DesignClass>
 			</DCCReference>
-			<DCCReference Include="Wizards\NewCollection\frame_WizardPageBase.pas">
+			<DCCReference Include="Wizards\Base\frame_WizardPageBase.pas">
 				<Form>WizardPageBase</Form>
 				<DesignClass>TFrame</DesignClass>
 			</DCCReference>
@@ -262,6 +262,9 @@
 			<DCCReference Include="DAO\SQLite\unit_SystemDatabase_SQLite.pas"/>
 			<DCCReference Include="Units\unit_ProgressEngine.pas"/>
 			<DCCReference Include="Units\unit_MHLGenerics.pas"/>
+			<DCCReference Include="Wizards\NewCollection\frm_NewCollectionWizard.pas">
+				<Form>NewCollectionWizard</Form>
+			</DCCReference>
 			<RcItem Include="Resources\Images\16x16\star_small.png">
 				<ResourceType>RCData</ResourceType>
 				<ResourceId>smallStar</ResourceId>
