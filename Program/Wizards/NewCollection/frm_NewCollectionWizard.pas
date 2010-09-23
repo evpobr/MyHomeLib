@@ -16,7 +16,7 @@
   *
   ****************************************************************************** *)
 
-unit frm_NCWizard;
+unit frm_NewCollectionWizard;
 
 interface
 
@@ -24,46 +24,40 @@ uses
   Windows,
   Messages,
   SysUtils,
-  Variants,
   Classes,
-  Graphics,
   Controls,
   Forms,
+  Dialogs,
   StdCtrls,
   ExtCtrls,
-  Dialogs,
-  frame_WizardPageBase,
-  frame_DecorativePageBase,
-  frame_InteriorPageBase,
+  unit_WorkerThread,
   unit_NCWParams,
+  frame_WizardPageBase,
   frame_NCWWelcom,
   frame_NCWOperation,
   frame_NCWInpxSource,
+  frame_NCWDownload,
   frame_NCWCollectionNameAndLocation,
   frame_NCWCollectionFileTypes,
   frame_NCWSelectGenreFile,
   frame_NCWProgress,
   frame_NCWFinish,
-  frame_NCWDownload,
-  unit_WorkerThread;
+  frm_MHLWizardBase;
 
 type
-  TfrmNCWizard = class(TForm)
-    pnButtons: TPanel;
-    btnForward: TButton;
-    btnBackward: TButton;
-    btnCancel: TButton;
-    procedure FormCreate(Sender: TObject);
-    procedure DoChangePage(Sender: TObject);
-    procedure OnCancel(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+  TNewCollectionWizard = class(TMHLWizardBase)
+  private const
+    WELCOM_PAGE_ID = 0;
+    OPERATION_PAGE_ID = 1;
+    INPXSOURCE_PAGE_ID = 2;
+    DOWNLOAD_PAGE_ID = 3;
+    NAMEANDLOCATION_PAGE_ID = 4;
+    FILETYPES_PAGE_ID = 5;
+    GENREFILE_PAGE_ID = 6;
+    PROGRESS_PAGE_ID = 7;
+    FINISH_PAGE_ID = 8;
 
   private
-    procedure PMWorkerDone(var Message: TMessage); message PM_WORKERDONE;
-
-  strict private
-    FParams: TNCWParams;
-
     FWelcomPage: TframeNCWWelcom;
     FCollectionTypePage: TframeNCWOperation;
     FInpxSourcePage: TframeNCWInpxSource;
@@ -74,22 +68,8 @@ type
     FProgressPage: TframeNCWProgress;
     FFinishPage: TframeNCWFinish;
 
-    FPages: array of TWizardPageBase;
-    FCurrentPage: Integer;
-
+    FParams: TNCWParams;
     FWorker: TWorker;
-    FModalResult: TModalResult;
-
-    procedure AdjustButtons(VisibleButtons: TWizardButtons; EnabledButtons: TWizardButtons);
-    function AddPage(pageClass: TWizardPageClass): TWizardPageBase;
-    procedure ShowPage(PageIndex: Integer);
-    function GetPageIndex(goNext: Boolean): Integer;
-    function IsPageVisible(PageIndex: Integer): Boolean;
-    function IsValidPageIndex(PageIndex: Integer): Boolean; inline;
-
-    function ActivePage: TWizardPageBase;
-
-    procedure AfterShowPage;
 
     procedure CorrectParams;
     function CreateCollection: Boolean;
@@ -101,30 +81,36 @@ type
 
     function ShowMessage(const Text: string; Flags: Longint = MB_OK): Integer;
 
+  protected
+    procedure PMWorkerDone(var Message: TMessage); message PM_WORKERDONE;
+
+    procedure InitWizard; override;
+    function IsPageVisible(PageIndex: Integer): Boolean; override;
+    procedure AfterShowPage; override;
+    function CanCloseWizard: Boolean; override;
+    procedure CancelWizard; override;
+
   public
     destructor Destroy; override;
   end;
 
 var
-  frmNCWizard: TfrmNCWizard;
+  NewCollectionWizard: TNewCollectionWizard;
 
 implementation
 
 uses
   Math,
-  IOUtils,
+  unit_MHL_strings,
+  unit_Globals,
   unit_Settings,
-  unit_globals,
-  unit_ImportInpxThread,
-  unit_Consts,
-  unit_mhl_strings,
   unit_Interfaces,
   unit_SystemDatabase,
-  unit_Helpers;
+  unit_ImportInpxThread;
+
+{$R *.dfm}
 
 resourcestring
-  rstrCaptionCancel = 'Отмена';
-  rstrCaptionClose = 'Закрыть';
   rstrCreationCollection = 'Создание коллекции';
   rstrDataImport = 'Импорт данныx';
   rstrDataImporting = 'Импортируем данные';
@@ -132,60 +118,44 @@ resourcestring
   rstrDownloadFailed = 'Закачка не удалась. Сервер сообщает об ошибке.';
   rstrImportDoneWithErrors = 'Импорт закончен с ошибками. Продолжить регистрацию коллекции ?';
 
-{$R *.dfm}
-
-const
-  NO_ACTIVE_PAGE = -1;
-
-  WELCOM_PAGE_ID = 0;
-  OPERATION_PAGE_ID = 1;
-  INPXSOURCE_PAGE_ID = 2;
-  DOWNLOAD_PAGE_ID = 3;
-  NAMEANDLOCATION_PAGE_ID = 4;
-  FILETYPES_PAGE_ID = 5;
-  GENREFILE_PAGE_ID = 6;
-  PROGRESS_PAGE_ID = 7;
-  FINISH_PAGE_ID = 8;
-
-destructor TfrmNCWizard.Destroy;
+destructor TNewCollectionWizard.Destroy;
 begin
   CloseWorker;
   inherited;
 end;
 
-function TfrmNCWizard.AddPage(pageClass: TWizardPageClass): TWizardPageBase;
+procedure TNewCollectionWizard.InitWizard;
 var
-  n: Integer;
+  frame: TWizardPageBase;
 begin
-  Result := pageClass.Create(Self);
-  Result.Parent := Self;
+  //
+  // Проинициализируем параметры по умолчанию
+  //
+  FParams.Operation := otNew;
+  FParams.CollectionType := ltUser;
+  FParams.FileTypes := ftFB2;
+  FParams.DefaultGenres := True;
 
-  n := Length(FPages);
-  SetLength(FPages, n + 1);
-  FPages[n] := Result;
+  FWelcomPage := AddPage(TframeNCWWelcom) as TframeNCWWelcom;
+  FCollectionTypePage := AddPage(TframeNCWOperation) as TframeNCWOperation;
+  FInpxSourcePage := AddPage(TframeNCWInpxSource) as TframeNCWInpxSource;
+  FDownloadPage := AddPage(TframeNCWDownload) as TframeNCWDownload;
+  FNameAndLocationPage := AddPage(TframeNCWNameAndLocation) as TframeNCWNameAndLocation;
+  FFileTypesPage := AddPage(TframeNCWCollectionFileTypes) as TframeNCWCollectionFileTypes;
+  FSelectGenreFilePage := AddPage(TframeNCWSelectGenreFile) as TframeNCWSelectGenreFile;
+  FProgressPage := AddPage(TframeNCWProgress) as TframeNCWProgress;
+  FFinishPage := AddPage(TframeNCWFinish) as TframeNCWFinish;
+
+  for frame in FPages do
+    frame.Initialize(@FParams);
+
+  SetProxySettings(FDownloadPage.HTTP);
+
+  { TODO -oAlex -cRefactoring : Костыль! может быть его пристроить в другое место? }
+  FFinishPage.lblPageHint.Caption := '';
 end;
 
-function TfrmNCWizard.GetPageIndex(goNext: Boolean): Integer;
-begin
-  Result := FCurrentPage;
-  while IsValidPageIndex(Result) do
-  begin
-    if goNext then
-      Inc(Result)
-    else
-      Dec(Result);
-
-    if IsPageVisible(Result) then
-      Break;
-  end;
-end;
-
-function TfrmNCWizard.IsValidPageIndex(PageIndex: Integer): Boolean;
-begin
-  Result := (Low(FPages) <= PageIndex) and (PageIndex <= High(FPages));
-end;
-
-function TfrmNCWizard.IsPageVisible(PageIndex: Integer): Boolean;
+function TNewCollectionWizard.IsPageVisible(PageIndex: Integer): Boolean;
 begin
   case PageIndex of
     WELCOM_PAGE_ID:
@@ -220,188 +190,7 @@ begin
   end;
 end;
 
-procedure TfrmNCWizard.AdjustButtons(VisibleButtons: TWizardButtons; EnabledButtons: TWizardButtons);
-begin
-  btnBackward.Enabled := wbGoPrev in EnabledButtons;
-  btnForward.Enabled := wbGoNext in EnabledButtons;
-  btnCancel.Enabled := (wbCancel in EnabledButtons) or (wbFinish in EnabledButtons);
-
-  if wbCancel in EnabledButtons then
-  begin
-    btnCancel.Caption := rstrCaptionCancel;
-    FModalResult := mrCancel;
-  end
-  else
-  begin
-    btnCancel.Caption := rstrCaptionClose;
-    FModalResult := mrOk;
-  end;
-end;
-
-procedure TfrmNCWizard.ShowPage(PageIndex: Integer);
-var
-  Buttons: TWizardButtons;
-begin
-  Assert(IsValidPageIndex(PageIndex));
-
-  FPages[PageIndex].Enabled := True;
-  FPages[PageIndex].Visible := True;
-  FPages[PageIndex].BringToFront;
-
-  if IsValidPageIndex(FCurrentPage) then
-  begin
-    FPages[FCurrentPage].Enabled := False;
-    FPages[FCurrentPage].Visible := False;
-  end;
-
-  FCurrentPage := PageIndex;
-
-  Assert(nil <> ActivePage);
-  AfterShowPage;
-
-  Buttons := ActivePage.PageButtons;
-  AdjustButtons(Buttons, Buttons);
-end;
-
-function TfrmNCWizard.ActivePage: TWizardPageBase;
-begin
-  Assert(IsValidPageIndex(FCurrentPage));
-
-  if IsValidPageIndex(FCurrentPage) then
-    Result := FPages[FCurrentPage]
-  else
-    Result := nil;
-end;
-
-procedure TfrmNCWizard.DoChangePage(Sender: TObject);
-var
-  goForward: Boolean;
-  pageIndex: Integer;
-begin
-  goForward := (Sender = btnForward);
-
-  if IsValidPageIndex(FCurrentPage) and ActivePage.Deactivate(goForward) then
-  begin
-    pageIndex := GetPageIndex(goForward);
-
-    if not FPages[pageIndex].Activate(goForward) then
-      Exit;
-
-    ShowPage(pageIndex);
-  end;
-end;
-
-procedure TfrmNCWizard.CancelWorker;
-begin
-  if Assigned(FWorker) then
-  begin
-    if FWorker.Finished then
-      Exit;
-
-    if not FWorker.Canceled then
-      if ShowMessage(rstrCancelOperationWarningMsg, MB_OKCANCEL or MB_ICONEXCLAMATION) = IDCANCEL then
-        Exit;
-
-    FWorker.Cancel;
-    AdjustButtons([], []);
-  end;
-end;
-
-procedure TfrmNCWizard.CloseWorker;
-begin
-  if Assigned(FWorker) then
-  begin
-    FWorker.WaitFor;
-    FreeAndNil(FWorker);
-  end;
-end;
-
-procedure TfrmNCWizard.OnCancel(Sender: TObject);
-begin
-  if DOWNLOAD_PAGE_ID = FCurrentPage then
-  begin
-    FDownloadPage.Stop;
-  end;
-
-  if Assigned(FWorker) then
-  begin
-    //
-    // Запущен рабочий поток -> остановим его.
-    //
-    CancelWorker;
-    Exit;
-  end;
-
-  ModalResult := FModalResult;
-end;
-
-procedure TfrmNCWizard.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-begin
-  //
-  // необходимо останавливать закачку INPX если она активна
-  //
-
-  if Assigned(FWorker) and not FWorker.Finished then
-  begin
-    //
-    // Запущен рабочий поток -> остановим его.
-    //
-    CancelWorker;
-    CanClose := False;
-  end;
-end;
-
-procedure TfrmNCWizard.FormCreate(Sender: TObject);
-var
-  frame: TWizardPageBase;
-begin
-  FModalResult := mrCancel;
-
-  //
-  // Проинициализируем параметры по умолчанию
-  //
-  FParams.Operation := otNew;
-  FParams.CollectionType := ltUser;
-  FParams.FileTypes := ftFB2;
-  FParams.DefaultGenres := True;
-
-  FWelcomPage := AddPage(TframeNCWWelcom) as TframeNCWWelcom;
-  FCollectionTypePage := AddPage(TframeNCWOperation) as TframeNCWOperation;
-  FInpxSourcePage := AddPage(TframeNCWInpxSource) as TframeNCWInpxSource;
-  FDownloadPage := AddPage(TframeNCWDownload) as TframeNCWDownload;
-  FNameAndLocationPage := AddPage(TframeNCWNameAndLocation) as TframeNCWNameAndLocation;
-  FFileTypesPage := AddPage(TframeNCWCollectionFileTypes) as TframeNCWCollectionFileTypes;
-  FSelectGenreFilePage := AddPage(TframeNCWSelectGenreFile) as TframeNCWSelectGenreFile;
-  FProgressPage := AddPage(TframeNCWProgress) as TframeNCWProgress;
-  FFinishPage := AddPage(TframeNCWFinish) as TframeNCWFinish;
-
-  for frame in FPages do
-  begin
-    frame.Align := alClient;
-    //
-    // Constraints необходимо проверять _ДО_ скрытия страницы
-    //
-    if Constraints.MinHeight < frame.Constraints.MinHeight then
-      Constraints.MinHeight := frame.Constraints.MinHeight;
-    if Constraints.MinWidth < frame.Constraints.MinWidth then
-      Constraints.MinWidth := frame.Constraints.MinWidth;
-
-    frame.Enabled := False;
-    frame.Visible := False;
-    frame.Initialize(@FParams);
-  end;
-
-  { TODO -oAlex -cRefactoring : Костыль! может быть его пристроить в другое место? }
-
-  FFinishPage.lblPageHint.Caption := '';
-
-  SetProxySettings(FDownloadPage.HTTP);
-
-  FCurrentPage := NO_ACTIVE_PAGE;
-  ShowPage(0);
-end;
-
-procedure TfrmNCWizard.AfterShowPage;
+procedure TNewCollectionWizard.AfterShowPage;
 begin
   Assert(IsValidPageIndex(FCurrentPage));
 
@@ -448,7 +237,44 @@ begin
   end;
 end;
 
-procedure TfrmNCWizard.CorrectParams;
+function TNewCollectionWizard.CanCloseWizard: Boolean;
+begin
+  //
+  // необходимо останавливать закачку INPX если она активна
+  //
+  if Assigned(FWorker) and not FWorker.Finished then
+  begin
+    //
+    // Запущен рабочий поток -> остановим его.
+    //
+    CancelWorker;
+    Result := False;
+    Exit;
+  end;
+
+  Result := inherited CanCloseWizard;
+end;
+
+procedure TNewCollectionWizard.CancelWizard;
+begin
+  if DOWNLOAD_PAGE_ID = FCurrentPage then
+  begin
+    FDownloadPage.Stop;
+  end;
+
+  if Assigned(FWorker) then
+  begin
+    //
+    // Запущен рабочий поток -> остановим его.
+    //
+    CancelWorker;
+    Exit;
+  end;
+
+  inherited CancelWizard;
+end;
+
+procedure TNewCollectionWizard.CorrectParams;
 begin
   //
   // определим реальный код коллекции
@@ -505,7 +331,7 @@ begin
   Assert(FileExists(FParams.GenreFile));
 end;
 
-function TfrmNCWizard.CreateCollection: Boolean;
+function TNewCollectionWizard.CreateCollection: Boolean;
 //var
 //  Collection: IBookCollection;
 begin
@@ -553,7 +379,7 @@ begin
   end;
 end;
 
-function TfrmNCWizard.StartImportData: Boolean;
+function TNewCollectionWizard.StartImportData: Boolean;
 begin
   Assert(Assigned(FProgressPage));
 
@@ -610,7 +436,7 @@ begin
   Result := True;
 end;
 
-procedure TfrmNCWizard.RegisterCollection;
+procedure TNewCollectionWizard.RegisterCollection;
 var
   FVersion: Integer;
 begin
@@ -637,15 +463,40 @@ begin
   );
 end;
 
-function TfrmNCWizard.ShowMessage(const Text: string; Flags: Integer): Integer;
+function TNewCollectionWizard.ShowMessage(const Text: string; Flags: Integer): Integer;
 begin
   Result := Application.MessageBox(PChar(Text), PChar(Application.Title), Flags);
+end;
+
+procedure TNewCollectionWizard.CancelWorker;
+begin
+  if Assigned(FWorker) then
+  begin
+    if FWorker.Finished then
+      Exit;
+
+    if not FWorker.Canceled then
+      if ShowMessage(rstrCancelOperationWarningMsg, MB_OKCANCEL or MB_ICONEXCLAMATION) = IDCANCEL then
+        Exit;
+
+    FWorker.Cancel;
+    AdjustButtons([], []);
+  end;
+end;
+
+procedure TNewCollectionWizard.CloseWorker;
+begin
+  if Assigned(FWorker) then
+  begin
+    FWorker.WaitFor;
+    FreeAndNil(FWorker);
+  end;
 end;
 
 //
 // Рабочий поток завершил свою работу
 //
-procedure TfrmNCWizard.PMWorkerDone(var Message: TMessage);
+procedure TNewCollectionWizard.PMWorkerDone(var Message: TMessage);
 var
   DontChangePage: Boolean;
   IgnoreErrors : Boolean;
@@ -692,4 +543,3 @@ begin
 end;
 
 end.
-

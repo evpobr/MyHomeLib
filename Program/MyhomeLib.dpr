@@ -74,17 +74,17 @@ uses
   frm_ExportToDeviceProgressForm in 'UtilsImpl\frm_ExportToDeviceProgressForm.pas' {ExportToDeviceProgressForm},
   unit_ExportToDevice in 'UtilsImpl\unit_ExportToDevice.pas',
   unit_ExportToDeviceThread in 'UtilsImpl\unit_ExportToDeviceThread.pas',
-  frame_DecorativePageBase in 'Wizards\NewCollection\frame_DecorativePageBase.pas' {DecorativePageBase: TFrame},
-  frame_InteriorPageBase in 'Wizards\NewCollection\frame_InteriorPageBase.pas' {InteriorPageBase: TFrame},
+  frame_DecorativePageBase in 'Wizards\Base\frame_DecorativePageBase.pas' {DecorativePageBase: TFrame},
+  frame_InteriorPageBase in 'Wizards\Base\frame_InteriorPageBase.pas' {InteriorPageBase: TFrame},
   frame_NCWWelcom in 'Wizards\NewCollection\frame_NCWWelcom.pas' {frameNCWWelcom: TFrame},
-  frm_NCWizard in 'Wizards\NewCollection\frm_NCWizard.pas' {frmNCWizard},
+  frm_MHLWizardBase in 'Wizards\Base\frm_MHLWizardBase.pas' {MHLWizardBase},
   frame_NCWOperation in 'Wizards\NewCollection\frame_NCWOperation.pas' {frameNCWOperation: TFrame},
   frame_NCWFinish in 'Wizards\NewCollection\frame_NCWFinish.pas' {frameNCWFinish: TFrame},
   frame_NCWInpxSource in 'Wizards\NewCollection\frame_NCWInpxSource.pas' {frameNCWInpxSource: TFrame},
   frame_NCWCollectionNameAndLocation in 'Wizards\NewCollection\frame_NCWCollectionNameAndLocation.pas' {frameNCWNameAndLocation: TFrame},
   frame_NCWSelectGenreFile in 'Wizards\NewCollection\frame_NCWSelectGenreFile.pas' {frameNCWSelectGenreFile: TFrame},
   frame_NCWProgress in 'Wizards\NewCollection\frame_NCWProgress.pas' {frameNCWProgress: TFrame},
-  frame_WizardPageBase in 'Wizards\NewCollection\frame_WizardPageBase.pas' {WizardPageBase: TFrame},
+  frame_WizardPageBase in 'Wizards\Base\frame_WizardPageBase.pas' {WizardPageBase: TFrame},
   unit_NCWParams in 'Wizards\NewCollection\unit_NCWParams.pas',
   frame_NCWCollectionFileTypes in 'Wizards\NewCollection\frame_NCWCollectionFileTypes.pas' {frameNCWCollectionFileTypes: TFrame},
   unit_fb2ToText in 'UtilsImpl\unit_fb2ToText.pas',
@@ -132,7 +132,8 @@ uses
   unit_SQLiteUtils in 'DAO\SQLite\unit_SQLiteUtils.pas',
   unit_SystemDatabase_SQLite in 'DAO\SQLite\unit_SystemDatabase_SQLite.pas',
   unit_ProgressEngine in 'Units\unit_ProgressEngine.pas',
-  unit_MHLGenerics in 'Units\unit_MHLGenerics.pas';
+  unit_MHLGenerics in 'Units\unit_MHLGenerics.pas',
+  frm_NewCollectionWizard in 'Wizards\NewCollection\frm_NewCollectionWizard.pas' {NewCollectionWizard};
 
 {$R *.res}
 
@@ -157,10 +158,9 @@ begin
 
     // Важно! сначала создаем датамодули и главную форму, а потом - остальные формы!
     Application.CreateForm(TDMUser, DMUser);
-    Application.CreateForm(TfrmMain, frmMain);
-    Application.CreateForm(TfrmGenreTree, frmGenreTree);
-    
-    frmSplash.Hide;
+  Application.CreateForm(TfrmMain, frmMain);
+  Application.CreateForm(TfrmGenreTree, frmGenreTree);
+  frmSplash.Hide;
   finally
     frmSplash.Free;
   end;

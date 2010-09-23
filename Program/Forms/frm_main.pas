@@ -989,7 +989,7 @@ uses
   unit_Helpers,
   unit_Errors,
   unit_Logger,
-  frm_NCWizard,
+  frm_NewCollectionWizard,
   frm_editor,
   unit_SearchUtils,
   unit_WriteFb2Info,
@@ -1957,9 +1957,9 @@ end;
 
 function TfrmMain.ShowNCWizard: Boolean;
 var
-  frmNCWizard: TfrmNCWizard;
+  frmNCWizard: TNewCollectionWizard;
 begin
-  frmNCWizard := TfrmNCWizard.Create(Application);
+  frmNCWizard := TNewCollectionWizard.Create(Application);
   try
     if frmNCWizard.ShowModal = mrOk then
     begin
