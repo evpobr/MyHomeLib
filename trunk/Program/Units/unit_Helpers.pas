@@ -38,6 +38,8 @@ procedure SetTextNoChange(editControl: TCustomEdit; const newText: string);
 
 function GetFileSize(const FileName: string): Integer;
 
+function ExpandFileNameEx(const basePath: string; const path: string): string;
+
 type
   TMHLFileName = (
     fnGenreList,
@@ -129,6 +131,19 @@ begin
 
   Result := Windows.GetFileSize(hFile, nil);
   SysUtils.FileClose(hFile);
+end;
+
+function ExpandFileNameEx(const basePath: string; const path: string): string;
+var
+  saveDir: string;
+begin
+  saveDir := TDirectory.GetCurrentDirectory;
+  try
+    TDirectory.SetCurrentDirectory(basePath);
+    Result := TPath.GetFullPath(path);
+  finally
+    TDirectory.SetCurrentDirectory(saveDir);
+  end;
 end;
 
 // ============================================================================

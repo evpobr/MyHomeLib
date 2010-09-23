@@ -17,7 +17,7 @@ object frmNCWizard: TfrmNCWizard
   Scaled = False
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
-  PixelsPerInch = 120
+  PixelsPerInch = 96
   TextHeight = 13
   object pnButtons: TPanel
     Left = 0

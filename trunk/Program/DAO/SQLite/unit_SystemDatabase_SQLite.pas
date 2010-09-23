@@ -213,7 +213,9 @@ uses
   SQLite3,
   unit_Logger,
   unit_SQLiteUtils,
-  unit_Database_SQLite;
+  unit_Database_SQLite,
+  unit_Settings,
+  unit_Helpers;
 
 // Generate table structure and minimal system data
 procedure CreateSystemTables_SQLite(const DBUserFile: string);
@@ -473,6 +475,7 @@ var
   query: TSQLiteQuery;
   stream: TStream;
   tempCollectionInfo: ICollectionInfo;
+  dataDirPath: string;
 begin
   Assert(CollectionID > 0);
 
@@ -489,8 +492,14 @@ begin
           tempCollectionInfo := TCollectionInfo.Create;
           tempCollectionInfo.SetID(CollectionID);
           tempCollectionInfo.SetName(query.FieldAsString(0));
-          tempCollectionInfo.SetRootFolder(query.FieldAsString(1));
-          tempCollectionInfo.SetDBFileName(query.FieldAsString(2));
+
+          //
+          // восстановить абсолютные пути
+          //
+          dataDirPath := Settings.DataPath;
+          tempCollectionInfo.SetRootFolder(ExpandFileNameEx(dataDirPath, query.FieldAsString(1)));
+          tempCollectionInfo.SetDBFileName(ExpandFileNameEx(dataDirPath, query.FieldAsString(2)));
+
           tempCollectionInfo.SetCollectionType(query.FieldAsInt(3)); // code
           tempCollectionInfo.SetCreationDate(query.FieldAsDateTime(4));
 
@@ -613,29 +622,38 @@ function TSystemData_SQLite.RegisterCollection(
   const Password: string
   ): Integer;
 const
-  SQL_INSERT = 'INSERT INTO Bases ' +
-    '(BaseName, RootFolder, DBFileName, Code, CreationDate, ' +
-    'Version, Notes, LibUser, LibPassword, URL, ConnectionScript) ' +
-    'SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ';
+  SQL_INSERT =
+    'INSERT INTO Bases ' +
+          '(BaseName, RootFolder, DBFileName, Code, CreationDate, Version, Notes, LibUser, LibPassword, URL, ConnectionScript) ' +
+    'VALUES(?,        ?,          ?,          ?,    ?,            ?,       ?,     ?,       ?,           ?,   ?)';
 var
+  dataDirPath: string;
+  storedRoot: string;
+  storedFileName: string;
   query: TSQLiteQuery;
-  collectionID: Integer;
 begin
+  //
+  // ѕреобразовать пути в относительные
+  //
+  dataDirPath := Settings.DataPath;
+  storedRoot := ExcludeTrailingPathDelimiter(ExtractRelativePath(dataDirPath, RootFolder));
+  storedFileName := ExtractRelativePath(dataDirPath, DBFileName);
+
   //
   // регистрируем коллекцию
   //
   query := FDatabase.NewQuery(SQL_INSERT);
   try
     query.SetParam(0, DisplayName);
-    query.SetParam(1, RootFolder);
-    query.SetParam(2, DBFileName);
+    query.SetParam(1, storedRoot);
+    query.SetParam(2, storedFileName);
     query.SetParam(3, CollectionType);
     query.SetParam(4, Now);
     query.SetParam(5, Version);
     query.SetParam(6, Notes);
     query.SetParam(7, User);
-    query.SetParam(8,Password);
-    query.SetParam(9,URL);
+    query.SetParam(8, Password);
+    query.SetParam(9, URL);
     if Script <> '' then
       query.SetBlobParam(10, Script)
     else
@@ -649,7 +667,7 @@ begin
   end;
 
   // Switch to the newly added collection:
-  ActivateCollection(collectionID);
+  ActivateCollection(Result);
 end;
 
 function TSystemData_SQLite.HasCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer): Boolean;
@@ -714,9 +732,19 @@ const
     'INSERT INTO Bases (BaseName, RootFolder, DBFileName, CreationDate, Code) ' +
     'VALUES(?, ?, ?, ?, ?)';
 var
+  dataDirPath: string;
+  storedRoot: string;
+  storedFileName: string;
   query: TSQLiteQuery;
 begin
   CreateCollectionTables_SQLite(DBFileName, GenresFileName);
+
+  //
+  // ѕреобразовать пути в относительные
+  //
+  dataDirPath := Settings.DataPath;
+  storedRoot := ExtractRelativePath(dataDirPath, RootFolder);
+  storedFileName := ExtractRelativePath(dataDirPath, DBFileName);
 
   //
   // регистрируем коллекцию
@@ -724,8 +752,8 @@ begin
   query := FDatabase.NewQuery(SQL_INSERT);
   try
     query.SetParam(0, DisplayName);
-    query.SetParam(1, RootFolder);
-    query.SetParam(2, DBFileName);
+    query.SetParam(1, storedRoot);
+    query.SetParam(2, storedFileName);
     query.SetParam(3, Now);
     query.SetParam(4, CollectionType);
 

@@ -1,16 +1,16 @@
 inherited frameNCWNameAndLocation: TframeNCWNameAndLocation
   Width = 460
-  Height = 290
-  Constraints.MinHeight = 290
+  Height = 270
+  Constraints.MinHeight = 270
   Constraints.MinWidth = 460
   ExplicitWidth = 460
-  ExplicitHeight = 290
+  ExplicitHeight = 270
   object Label1: TLabel [0]
     AlignWithMargins = True
     Left = 14
-    Top = 64
+    Top = 61
     Width = 432
-    Height = 32
+    Height = 26
     Margins.Left = 14
     Margins.Top = 5
     Margins.Right = 14
@@ -20,12 +20,13 @@ inherited frameNCWNameAndLocation: TframeNCWNameAndLocation
       ' '#1087#1083#1072#1085#1080#1088#1091#1077#1090#1077' '#1093#1088#1072#1085#1080#1090#1100' '#1082#1085#1080#1075#1080'.'
     Transparent = True
     WordWrap = True
-    ExplicitWidth = 416
+    ExplicitTop = 64
+    ExplicitWidth = 425
   end
   object pageHint: TMHLStaticTip [1]
     AlignWithMargins = True
     Left = 14
-    Top = 228
+    Top = 204
     Width = 432
     Height = 58
     Margins.Left = 14
@@ -46,15 +47,15 @@ inherited frameNCWNameAndLocation: TframeNCWNameAndLocation
     inherited lblSubTitle: TLabel
       Width = 425
       Caption = #1059#1082#1072#1078#1080#1090#1077' '#1085#1072#1079#1074#1072#1085#1080#1077' '#1080' '#1088#1072#1089#1087#1086#1083#1086#1078#1077#1085#1080#1077' '#1092#1072#1081#1083#1086#1074' '#1082#1086#1083#1083#1077#1082#1094#1080#1080
-      ExplicitWidth = 324
+      ExplicitWidth = 278
     end
   end
   object Panel2: TPanel
     AlignWithMargins = True
     Left = 7
-    Top = 109
+    Top = 100
     Width = 446
-    Height = 116
+    Height = 101
     Margins.Left = 7
     Margins.Top = 10
     Margins.Right = 7
@@ -64,28 +65,28 @@ inherited frameNCWNameAndLocation: TframeNCWNameAndLocation
     TabOrder = 1
     DesignSize = (
       446
-      116)
+      101)
     object Label9: TLabel
       Left = 21
       Top = 42
-      Width = 101
-      Height = 16
+      Width = 87
+      Height = 13
       Caption = '&'#1060#1072#1081#1083' '#1082#1086#1083#1083#1077#1082#1094#1080#1080':'
       FocusControl = edCollectionFile
     end
     object Label5: TLabel
       Left = 21
       Top = 69
-      Width = 101
-      Height = 16
+      Width = 87
+      Height = 13
       Caption = '&'#1055#1072#1087#1082#1072' '#1089' '#1082#1085#1080#1075#1072#1084#1080':'
       FocusControl = edCollectionRoot
     end
     object Label8: TLabel
       Left = 21
       Top = 15
-      Width = 126
-      Height = 16
+      Width = 109
+      Height = 13
       Caption = '&'#1053#1072#1079#1074#1072#1085#1080#1077' '#1082#1086#1083#1083#1077#1082#1094#1080#1080':'
       FocusControl = edCollectionName
     end
@@ -93,7 +94,7 @@ inherited frameNCWNameAndLocation: TframeNCWNameAndLocation
       Left = 136
       Top = 39
       Width = 225
-      Height = 24
+      Height = 21
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 1
       OnChange = edCollectionFileChange
@@ -114,7 +115,7 @@ inherited frameNCWNameAndLocation: TframeNCWNameAndLocation
       Left = 136
       Top = 66
       Width = 225
-      Height = 24
+      Height = 21
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 3
       OnChange = CheckControlData
@@ -135,19 +136,11 @@ inherited frameNCWNameAndLocation: TframeNCWNameAndLocation
       Left = 136
       Top = 12
       Width = 225
-      Height = 24
+      Height = 21
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 0
       OnChange = edCollectionNameChange
       OnEnter = CheckControlData
-    end
-    object cbRelativePath: TCheckBox
-      Left = 136
-      Top = 93
-      Width = 225
-      Height = 17
-      Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1086#1090#1085#1086#1089#1080#1090#1077#1083#1100#1085#1099#1077' '#1087#1091#1090#1080' '
-      TabOrder = 5
     end
   end
 end
