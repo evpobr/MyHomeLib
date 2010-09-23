@@ -129,7 +129,7 @@ type
     // Регистрация существующей коллекции
     // TODO: переделать
     //
-    procedure RegisterCollection(
+    function RegisterCollection(
       const DisplayName: string;
       const RootFolder: string;
       const DBFileName: string;
@@ -140,7 +140,7 @@ type
       const Script: string = '';
       const User: string = '';
       const Password: string = ''
-    );
+    ): Integer;
 
     //
     // Удаление коллекции

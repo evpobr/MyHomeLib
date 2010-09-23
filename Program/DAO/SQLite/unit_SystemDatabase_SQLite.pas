@@ -117,7 +117,7 @@ type
 
     procedure CreateCollectionDatabase(const DBCollectionFile: string; const GenresFileName: string); override;
 
-    procedure RegisterCollection(
+    function RegisterCollection(
       const DisplayName: string;
       const RootFolder: string;
       const DBFileName: string;
@@ -128,7 +128,7 @@ type
       const Script: string = '';
       const User: string = '';
       const Password: string = ''
-    ); override;
+    ): Integer; override;
 
     procedure DeleteCollection(CollectionID: Integer); override;
     procedure DropCollectionDatabase(const DBCollectionFile: string); override;
@@ -600,7 +600,7 @@ begin
   FActiveCollectionInfo := GetCollectionInfo(CollectionID);
 end;
 
-procedure TSystemData_SQLite.RegisterCollection(
+function TSystemData_SQLite.RegisterCollection(
   const DisplayName: string;
   const RootFolder: string;
   const DBFileName: string;
@@ -611,7 +611,7 @@ procedure TSystemData_SQLite.RegisterCollection(
   const Script: string;
   const User: string;
   const Password: string
-  );
+  ): Integer;
 const
   SQL_INSERT = 'INSERT INTO Bases ' +
     '(BaseName, RootFolder, DBFileName, Code, CreationDate, ' +
@@ -642,7 +642,8 @@ begin
       query.SetNullParam(10);
 
     query.ExecSQL;
-    collectionID := FDatabase.LastInsertRowID;
+
+    Result := FDatabase.LastInsertRowID;
   finally
     FreeAndNil(query);
   end;
@@ -711,7 +712,7 @@ function TSystemData_SQLite.CreateCollection(
 const
   SQL_INSERT =
     'INSERT INTO Bases (BaseName, RootFolder, DBFileName, CreationDate, Code) ' +
-    'VALUES(?, ?, ?)';
+    'VALUES(?, ?, ?, ?, ?)';
 var
   query: TSQLiteQuery;
 begin

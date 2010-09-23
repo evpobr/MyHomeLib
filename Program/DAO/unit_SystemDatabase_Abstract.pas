@@ -41,7 +41,6 @@ type
     FCreationDate: TDateTime;
     FVersion: Integer;
     FCollectionType: COLLECTION_TYPE;
-    FAllowDelete: Boolean;
     FURL: string;
     FScript: string;
     FSettings: TStrings;
@@ -67,8 +66,6 @@ type
     procedure SetVersion(const NewVersion: Integer);
     function GetCollectionType: COLLECTION_TYPE;
     procedure SetCollectionType(const NewCollectionType: COLLECTION_TYPE);
-    function GetAllowDelete: Boolean;
-    procedure SetAllowDelete(const NewAllowDelete: Boolean);
     function GetURL: string;
     procedure SetURL(const NewURL: string);
     function GetScript: string;
@@ -115,7 +112,7 @@ type
 
     procedure CreateCollectionDatabase(const DBCollectionFile: string; const GenresFileName: string); virtual; abstract;
 
-    procedure RegisterCollection(
+    function RegisterCollection(
       const DisplayName: string;
       const RootFolder: string;
       const DBFileName: string;
@@ -126,7 +123,7 @@ type
       const Script: string = '';
       const User: string = '';
       const Password: string = ''
-    ); virtual; abstract;
+    ): Integer; virtual; abstract;
 
     procedure DeleteCollection(CollectionID: Integer); virtual; abstract;
     procedure DropCollectionDatabase(const DBCollectionFile: string); virtual; abstract;
@@ -241,7 +238,6 @@ begin
   FCreationDate := 0;
   FVersion := UNVERSIONED_COLLECTION;
   FCollectionType := CT_PRIVATE_FB;
-  FAllowDelete := False;
   FUser := '';
   FPassword := '';
   FURL := '';
@@ -357,16 +353,6 @@ end;
 procedure TCollectionInfo.SetCollectionType(const NewCollectionType: COLLECTION_TYPE);
 begin
   FCollectionType := NewCollectionType;
-end;
-
-function TCollectionInfo.GetAllowDelete: Boolean;
-begin
-  Result := FAllowDelete;
-end;
-
-procedure TCollectionInfo.SetAllowDelete(const NewAllowDelete: Boolean);
-begin
-  FAllowDelete := NewAllowDelete;
 end;
 
 function TCollectionInfo.GetURL: string;
