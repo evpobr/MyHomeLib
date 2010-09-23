@@ -104,6 +104,7 @@ var
   inpxStream: TMemoryStream;
   inpxWriter: TStreamWriter;
   inpxZIP: TZipForge;
+  header: TINPXHeader;
 begin
   SetComment(rstrExportingCollection);
 
@@ -171,11 +172,14 @@ begin
         //
         // Устанавливаем комментарий для INPX-файла
         //
-        inpxZIP.Comment :=
-          FCollectionName + CRLF +
-          ExtractFileName(FCollectionDBFileName) + CRLF +
-          IntToStr(FCollectionType) + CRLF +
-          FCollectionNotes;
+        header.Name := FCollectionName;
+        header.FileName := ExtractFileName(FCollectionDBFileName);
+        header.ContentType := FCollectionType;
+        header.Notes := FCollectionNotes;
+        //header.URL := TODO
+        //header.Script := TODO
+
+        inpxZIP.Comment := header.AsString;
 
         inpxZIP.CloseArchive;
       finally

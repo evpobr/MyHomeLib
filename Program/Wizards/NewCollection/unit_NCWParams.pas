@@ -60,9 +60,9 @@ type
     //
     // необходимо перенести загрузку и установку этих значений в TImportInpxThread
     //
-    Notes: string;
-    URL: string;
-    Script: string;
+    //Notes: string;
+    //URL: string;
+    //Script: string;
     INPXUrl: string;
 
     //

@@ -20,7 +20,6 @@ inherited frameNCWNameAndLocation: TframeNCWNameAndLocation
       ' '#1087#1083#1072#1085#1080#1088#1091#1077#1090#1077' '#1093#1088#1072#1085#1080#1090#1100' '#1082#1085#1080#1075#1080'.'
     Transparent = True
     WordWrap = True
-    ExplicitTop = 64
     ExplicitWidth = 425
   end
   object pageHint: TMHLStaticTip [1]

@@ -1052,6 +1052,10 @@ begin
   finally
     query.Free;
   end;
+
+  //
+  // TODO: обновить CollectionInfo
+  //
 end;
 
 procedure TBookCollection_SQLite.ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc);

@@ -357,6 +357,30 @@ type
     ValueString: string;
   end;
 
+  //
+  // Вспомогательная структура для обработки заголовков INPX
+  //
+  // Структура заголовка
+  // 1. Название коллекции
+  // 2. Название файла коллекции
+  // 3. Тип коллекции
+  // 4. Notes
+  // 5. URL
+  // 6. Все оставшиеся строки содержат скрипт подключения
+  //
+  TINPXHeader = record
+    Name: string;
+    FileName: string;
+    ContentType: COLLECTION_TYPE;
+    Notes: string;
+    URL: string;
+    Script: string;
+
+    procedure Clear;
+    function AsString: string;
+    procedure ParseString(const Value: string);
+  end;
+
 // ============================================================================
 //
 // helpers
@@ -1411,6 +1435,62 @@ begin
     end;
   finally
     Zip.Free;
+  end;
+end;
+
+{ TINPXHeader }
+
+procedure TINPXHeader.Clear;
+begin
+  Name := '';
+  FileName := '';
+  ContentType := CT_PRIVATE_FB;
+  Notes := '';
+  URL := '';
+  Script := '';
+end;
+
+function TINPXHeader.AsString: string;
+begin
+  Result :=
+    Name + CRLF +
+    ExtractFileName(FileName) + CRLF +
+    IntToStr(ContentType) + CRLF +
+    Notes + CRLF +
+    URL + CRLF +
+    Script;
+end;
+
+procedure TINPXHeader.ParseString(const Value: string);
+var
+  slHelper: TStringList;
+  i: Integer;
+begin
+  Clear;
+
+  slHelper := TStringList.Create;
+  try
+    slHelper.Text := Value;
+
+    if slHelper.Count > 0 then
+      Name := slHelper[0];
+
+    if slHelper.Count > 1 then
+      FileName := slHelper[1];
+
+    if slHelper.Count > 2 then
+      ContentType := StrToIntDef(slHelper[2], CT_PRIVATE_FB);
+
+    if slHelper.Count > 3 then
+      Notes := slHelper[3];
+
+    if slHelper.Count > 4 then
+      URL := slHelper[4];
+
+    for i := 5 to slHelper.Count - 1 do
+      Script := Script + slHelper[i] + CRLF;
+  finally
+    slHelper.Free;
   end;
 end;
 
