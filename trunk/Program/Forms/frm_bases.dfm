@@ -35,7 +35,7 @@ object frmBases: TfrmBases
       object MHLStaticTip1: TMHLStaticTip
         AlignWithMargins = True
         Left = 10
-        Top = 138
+        Top = 122
         Width = 407
         Height = 62
         Margins.Left = 10
@@ -78,14 +78,6 @@ object frmBases: TfrmBases
         Height = 13
         Caption = '&'#1053#1072#1079#1074#1072#1085#1080#1077' '#1082#1086#1083#1083#1077#1082#1094#1080#1080':'
         FocusControl = edCollectionName
-      end
-      object cbRelativePath: TCheckBox
-        Left = 126
-        Top = 115
-        Width = 221
-        Height = 17
-        Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1086#1090#1085#1086#1089#1080#1090#1077#1083#1100#1085#1099#1077' '#1087#1091#1090#1080' '
-        TabOrder = 6
       end
       object edDescription: TEdit
         Left = 126

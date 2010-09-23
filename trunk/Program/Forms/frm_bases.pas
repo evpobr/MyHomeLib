@@ -44,7 +44,6 @@ type
     pcCollectionInfo: TPageControl;
     tsGeneralInfo: TTabSheet;
     tsConnectionInfo: TTabSheet;
-    cbRelativePath: TCheckBox;
     MHLStaticTip1: TMHLStaticTip;
     edDescription: TEdit;
     lblCollectionDescription: TLabel;
@@ -117,7 +116,8 @@ uses
   unit_Consts,
   unit_Errors,
   unit_Globals,
-  unit_SystemDatabase;
+  unit_SystemDatabase,
+  unit_Settings;
 
 resourcestring
   rstrChooseDataFolder = 'Выберите папку для сохранения данных';
@@ -243,8 +243,8 @@ end;
 
 procedure TfrmBases.btnSaveClick(Sender: TObject);
 var
-  ADBFileName: string;
-  ARootFolder: string;
+  storedRoot: string;
+  storedFileName: string;
   CollectionInfo: ICollectionInfo;
 begin
   if (DisplayName = '') or (DBFileName = '') or (RootFolder = '') then
@@ -263,44 +263,30 @@ begin
   end;
 
   //
-  // TODO -oNickR -cBug: в качестве базового каталого необходимо использовать DataPath
+  // Получим абсолютные пути. В качестве базового каталого используется DataPath.
   //
-  if not cbRelativePath.Checked then
-  begin
-    ADBFileName := ExpandFileName(DBFileName);
-    if '' = ExtractFileExt(ADBFileName) then
-      ADBFileName := ChangeFileExt(ADBFileName, COLLECTION_EXTENSION);
-
-    ARootFolder := ExcludeTrailingPathDelimiter(ExpandFileName(RootFolder));
-  end
-  else
-  begin
-    ADBFileName := DBFileName;
-    if '' = ExtractFileExt(ADBFileName) then
-      ADBFileName := ChangeFileExt(ADBFileName, COLLECTION_EXTENSION);
-
-    ARootFolder := ExcludeTrailingPathDelimiter(RootFolder);
-  end;
+  storedRoot := TMHLSettings.ExpantCollectionRoot(RootFolder);
+  storedFileName := TMHLSettings.ExpantCollectionFileName(DBFileName);
 
   //
   // Проверим название и существование файла
   //
-  if not FileExists(ADBFileName) then
+  if not FileExists(storedFileName) then
   begin
-    MessageDlg(Format(rstrFileDoesntExists, [ADBFileName]), mtError, [mbOk], 0);
+    MessageDlg(Format(rstrFileDoesntExists, [storedFileName]), mtError, [mbOk], 0);
     Exit;
   end;
 
-  if FSystemData.HasCollectionWithProp(cpFileName, ADBFileName, CollectionID) then
+  if FSystemData.HasCollectionWithProp(cpFileName, storedFileName, CollectionID) then
   begin
-    MessageDlg(Format(rstrFileAlreadyExistsInDB, [ADBFileName]), mtError, [mbOk], 0);
+    MessageDlg(Format(rstrFileAlreadyExistsInDB, [storedFileName]), mtError, [mbOk], 0);
     Exit;
   end;
 
   CollectionInfo := FSystemData.GetCollectionInfo(CollectionID);
   CollectionInfo.Name := DisplayName;
-  CollectionInfo.RootFolder := ARootFolder;
-  CollectionInfo.DBFileName := ADBFileName;
+  CollectionInfo.RootFolder := storedRoot;
+  CollectionInfo.DBFileName := storedFileName;
   CollectionInfo.Notes := Description;
   CollectionInfo.URL := URL;
   CollectionInfo.User := User;

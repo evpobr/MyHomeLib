@@ -257,6 +257,9 @@ type
     procedure LoadSettings;
     procedure SaveSettings;
 
+    class function ExpantCollectionRoot(const rootFolder: string): string;
+    class function ExpantCollectionFileName(const FileName: string): string;
+
   public
     property AppPath: string read FAppPath;
 
@@ -1380,6 +1383,21 @@ end;
 class destructor TMHLSettings.Destroy;
 begin
   FreeAndNil(mg_objSettings);
+end;
+
+class function TMHLSettings.ExpantCollectionRoot(const rootFolder: string): string;
+begin
+  Assert(Assigned(mg_objSettings));
+  Result := IncludeTrailingPathDelimiter(ExpandFileNameEx(mg_objSettings.DataPath, rootFolder));
+end;
+
+class function TMHLSettings.ExpantCollectionFileName(const FileName: string): string;
+begin
+  Assert(Assigned(mg_objSettings));
+  Result := FileName;
+  if '' = ExtractFileExt(Result) then
+    Result := ChangeFileExt(Result, COLLECTION_EXTENSION);
+  Result := ExpandFileNameEx(mg_objSettings.DataPath, Result);
 end;
 
 end.
