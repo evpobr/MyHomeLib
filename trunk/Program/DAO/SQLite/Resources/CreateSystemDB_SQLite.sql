@@ -93,7 +93,6 @@ CREATE TABLE Bases (
   --
   Notes            VARCHAR(255)          COLLATE MHL_SYSTEM_NOCASE,
   CreationDate     VARCHAR(23)  NOT NULL,
-  Settings         BLOB,
   URL              VARCHAR(255)          COLLATE MHL_SYSTEM_NOCASE,
   ConnectionScript BLOB
 );

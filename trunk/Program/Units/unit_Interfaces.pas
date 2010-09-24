@@ -54,7 +54,6 @@ type
     function GetScript: string;
     procedure SetScript(const NewScript: string);
 
-    function GetSettings: TStrings;
     function GetRootPath: string;
 
     procedure Clear;
@@ -72,7 +71,6 @@ type
     property URL: string read GetURL write SetURL;
     property Script: string read GetScript write SetScript;
 
-    property Settings: TStrings read GetSettings;
     property RootPath: string read GetRootPath;
   end;
 

@@ -266,7 +266,7 @@ begin
   // Получим абсолютные пути. В качестве базового каталого используется DataPath.
   //
   storedRoot := TMHLSettings.ExpantCollectionRoot(RootFolder);
-  storedFileName := TMHLSettings.ExpantCollectionFileName(DBFileName);
+  storedFileName := TMHLSettings.ExpandCollectionFileName(DBFileName);
 
   //
   // Проверим название и существование файла

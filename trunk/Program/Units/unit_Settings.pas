@@ -258,7 +258,7 @@ type
     procedure SaveSettings;
 
     class function ExpantCollectionRoot(const rootFolder: string): string;
-    class function ExpantCollectionFileName(const FileName: string): string;
+    class function ExpandCollectionFileName(const FileName: string): string;
 
   public
     property AppPath: string read FAppPath;
@@ -1391,7 +1391,7 @@ begin
   Result := IncludeTrailingPathDelimiter(ExpandFileNameEx(mg_objSettings.DataPath, rootFolder));
 end;
 
-class function TMHLSettings.ExpantCollectionFileName(const FileName: string): string;
+class function TMHLSettings.ExpandCollectionFileName(const FileName: string): string;
 begin
   Assert(Assigned(mg_objSettings));
   Result := FileName;
