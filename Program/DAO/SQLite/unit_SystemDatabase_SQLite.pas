@@ -462,8 +462,8 @@ function TSystemData_SQLite.GetCollectionInfo(const CollectionID: Integer): ICol
 const
   SQL_SELECT = 'SELECT ' +
     'bs.BaseName, bs.RootFolder, bs.DBFileName, bs.Code, bs.CreationDate, ' + // 0 .. 4
-    'bs.DataVersion, bs.Notes, bs.LibUser, bs.LibPassword, '                    + // 5 .. 8
-    'bs.URL, bs.ConnectionScript, bs.Settings ' +                             // 9 .. 11
+    'bs.DataVersion, bs.Notes, bs.LibUser, bs.LibPassword, '                + // 5 .. 8
+    'bs.URL, bs.ConnectionScript ' +                                          // 9 .. 10
     'FROM Bases bs WHERE bs.DatabaseID = ?';
 var
   query: TSQLiteQuery;
@@ -483,6 +483,7 @@ begin
         if not query.Eof then
         begin
           tempCollectionInfo := TCollectionInfo.Create;
+          tempCollectionInfo.Clear;
           tempCollectionInfo.SetID(CollectionID);
           tempCollectionInfo.SetName(query.FieldAsString(0));
 
@@ -490,7 +491,7 @@ begin
           // восстановить абсолютные пути
           //
           tempCollectionInfo.SetRootFolder(TMHLSettings.ExpantCollectionRoot(query.FieldAsString(1)));
-          tempCollectionInfo.SetDBFileName(TMHLSettings.ExpantCollectionFileName(query.FieldAsString(2)));
+          tempCollectionInfo.SetDBFileName(TMHLSettings.ExpandCollectionFileName(query.FieldAsString(2)));
 
           tempCollectionInfo.SetCollectionType(query.FieldAsInt(3)); // code
           tempCollectionInfo.SetCreationDate(query.FieldAsDateTime(4));
@@ -505,13 +506,6 @@ begin
           tempCollectionInfo.SetPassword(query.FieldAsString(8));
           tempCollectionInfo.SetURL(query.FieldAsString(9));
           tempCollectionInfo.SetScript(query.FieldAsBlobString(10));
-
-          stream := query.FieldAsBlob(11);
-          try
-            tempCollectionInfo.GetSettings.LoadFromStream(stream);
-          finally
-            FreeAndNil(stream);
-          end;
 
           FCollectionInfoCache.Add(CollectionID, tempCollectionInfo);
         end;
@@ -534,9 +528,9 @@ const
   SQL_UPDATE =
     'UPDATE Bases SET ' +
       'BaseName = ?, RootFolder = ?, DBFileName = ?, Notes = ?, CreationDate = ?, ' + // 0 .. 4
-      'DataVersion = ?, Code = ?, Settings = ?, URL = ?, ' +                          // 5 .. 8
-      'LibUser = ?, LibPassword = ?, ConnectionScript = ? ' +                         // 9 .. 11
-    'WHERE DatabaseID = ? ';                                                        // 12
+      'DataVersion = ?, Code = ?, URL = ?, ' +                                        // 5 .. 7
+      'LibUser = ?, LibPassword = ?, ConnectionScript = ? ' +                         // 8 .. 10
+    'WHERE DatabaseID = ? ';                                                          // 11
 var
   query: TSQLiteQuery;
   stream: TStream;
@@ -570,20 +564,11 @@ begin
     query.SetParam(4, CollectionInfo.CreationDate);
     query.SetParam(5, CollectionInfo.DataVersion);
     query.SetParam(6, CollectionInfo.CollectionType);
-
-    stream := TMemoryStream.Create;
-    try
-      CollectionInfo.Settings.SaveToStream(stream);
-      query.SetBlobParam(7, stream);
-    finally
-      FreeAndNil(stream);
-    end;
-
-    query.SetParam(8, CollectionInfo.URL);
-    query.SetParam(9, CollectionInfo.User);
-    query.SetParam(10, CollectionInfo.Password);
-    query.SetBlobParam(11, CollectionInfo.Script);
-    query.SetParam(12, CollectionInfo.ID);
+    query.SetParam(7, CollectionInfo.URL);
+    query.SetParam(8, CollectionInfo.User);
+    query.SetParam(9, CollectionInfo.Password);
+    query.SetBlobParam(10, CollectionInfo.Script);
+    query.SetParam(11, CollectionInfo.ID);
 
     query.ExecSQL;
   finally
@@ -624,7 +609,7 @@ var
   CollectionType: COLLECTION_TYPE;
   query: TSQLiteQuery;
 begin
-  absFileName := TMHLSettings.ExpantCollectionFileName(DBFileName);
+  absFileName := TMHLSettings.ExpandCollectionFileName(DBFileName);
 
   if TBookCollection_SQLite.IsValidCollection(absFileName, CollectionType) then
   begin
@@ -682,7 +667,7 @@ begin
     searchValue := TMHLSettings.ExpantCollectionRoot(Value);
 
   cpFileName:
-    searchValue := TMHLSettings.ExpantCollectionFileName(Value);
+    searchValue := TMHLSettings.ExpandCollectionFileName(Value);
 
   else
     searchValue := Value;
@@ -757,7 +742,7 @@ var
   storedFileName: string;
   query: TSQLiteQuery;
 begin
-  absDBFileName := TMHLSettings.ExpantCollectionFileName(DBFileName);
+  absDBFileName := TMHLSettings.ExpandCollectionFileName(DBFileName);
 
   TBookCollection_SQLite.CreateCollection(absDBFileName, CollectionType, GenresFileName);
   try
@@ -1676,7 +1661,7 @@ begin
   // ѕолучим полные пути. ≈сли были указаны относительные пути, то в качестве базового используем DataPath.
   //
   CollectionRoot := TMHLSettings.ExpantCollectionRoot(CollectionRoot);
-  CollectionFile := TMHLSettings.ExpantCollectionFileName(CollectionFile);
+  CollectionFile := TMHLSettings.ExpandCollectionFileName(CollectionFile);
 
   //
   // —оздадим необходимые каталоги

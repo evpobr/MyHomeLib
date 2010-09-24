@@ -43,7 +43,6 @@ type
     FCollectionType: COLLECTION_TYPE;
     FURL: string;
     FScript: string;
-    FSettings: TStrings;
 
   public // interface methods
     function GetID: Integer;
@@ -71,14 +70,9 @@ type
     function GetScript: string;
     procedure SetScript(const NewScript: string);
 
-    function GetSettings: TStrings;
     function GetRootPath: string;
 
     procedure Clear;
-
-  public
-    constructor Create;
-    destructor Destroy; override;
   end;
 
   // --------------------------------------------------------------------------
@@ -204,20 +198,6 @@ uses
 
 { TCollectionInfo }
 
-constructor TCollectionInfo.Create;
-begin
-  inherited Create;
-  FSettings := TStringList.Create;
-
-  Clear;
-end;
-
-destructor TCollectionInfo.Destroy;
-begin
-  FreeAndNil(FSettings);
-  inherited Destroy;
-end;
-
 procedure TCollectionInfo.Clear;
 begin
   FID := INVALID_COLLECTION_ID;
@@ -232,17 +212,11 @@ begin
   FPassword := '';
   FURL := '';
   FScript := '';
-  FSettings.Clear;
 end;
 
 function TCollectionInfo.GetRootPath: string;
 begin
   Result := IncludeTrailingPathDelimiter(FRootFolder);
-end;
-
-function TCollectionInfo.GetSettings: TStrings;
-begin
-  Result := FSettings;
 end;
 
 function TCollectionInfo.GetID: Integer;
