@@ -54,7 +54,7 @@ resourcestring
 
 procedure TfrmStat.LoadCollectionInfo(const Collection: IBookCollection);
 var
-  Version: string;
+  DataVersion: string;
   AuthorsCount: Integer;
   BooksCount: Integer;
   SeriesCount: Integer;
@@ -63,10 +63,10 @@ begin
   Assert(Assigned(Collection));
 
   SystemData := GetSystemData;
-  if SystemData.GetActiveCollectionInfo.Version = UNVERSIONED_COLLECTION then
-    Version := rstrUnknown
+  if SystemData.GetActiveCollectionInfo.DataVersion = UNVERSIONED_COLLECTION then
+    DataVersion := rstrUnknown
   else
-    Version := IntToStr(SystemData.GetActiveCollectionInfo.Version);
+    DataVersion := IntToStr(SystemData.GetActiveCollectionInfo.DataVersion);
   Collection.GetStatistics(AuthorsCount, BooksCount, SeriesCount);
 
   //
@@ -74,7 +74,7 @@ begin
   //
   lvInfo.Items[0].SubItems[0] := SystemData.GetActiveCollectionInfo.Name;
   lvInfo.Items[1].SubItems[0] := DateToStr(SystemData.GetActiveCollectionInfo.CreationDate);
-  lvInfo.Items[2].SubItems[0] := Version;
+  lvInfo.Items[2].SubItems[0] := DataVersion;
   lvInfo.Items[3].SubItems[0] := SystemData.GetActiveCollectionInfo.Notes;
 
   lvInfo.Items[4].SubItems[0] := IntToStr(AuthorsCount);

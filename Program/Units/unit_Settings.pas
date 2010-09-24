@@ -48,7 +48,7 @@ type
     sfLibRusEcUpdate,
     sfAppVerInfo,
     sfLibRusEcInpx,
-    sfCollectionVerInfo,
+    // sfCollectionVerInfo, // UNUSED
     sfColumnsStore,
     sfDownloadsStore,
     sfDownloadErrorLog,
@@ -1314,7 +1314,7 @@ begin
     sfLibRusEcUpdate: Result := UpdatePath + LIBRUSEC_UPDATE_FILENAME;
     sfLibRusEcInpx: Result := WorkPath + LIBRUSEC_INPX_FILENAME;
     sfAppVerInfo: Result := WorkPath + PROGRAM_VERINFO_FILENAME;
-    sfCollectionVerInfo: Result := TempPath + COLLECTION_VERINFO_FILENAME;
+    // sfCollectionVerInfo: Result := TempPath + COLLECTION_VERINFO_FILENAME;   // UNUSED
     sfColumnsStore: Result := WorkPath + COLUMNS_STORE_FILENAME;
     sfDownloadsStore: Result := WorkPath + DOWNLOADS_STORE_FILENAME;
     sfDownloadErrorLog: Result := WorkPath + DOWNLOAD_ERRORLOG_FILENAME;

@@ -39,7 +39,7 @@ type
     FUser: string;
     FPassword: string;
     FCreationDate: TDateTime;
-    FVersion: Integer;
+    FDataVersion: Integer;
     FCollectionType: COLLECTION_TYPE;
     FURL: string;
     FScript: string;
@@ -62,8 +62,8 @@ type
     procedure SetPassword(const NewPassword: string);
     function GetCreationDate: TDateTime;
     procedure SetCreationDate(const NewCreationDate: TDateTime);
-    function GetVersion: Integer;
-    procedure SetVersion(const NewVersion: Integer);
+    function GetDataVersion: Integer;
+    procedure SetDataVersion(const NewVersion: Integer);
     function GetCollectionType: COLLECTION_TYPE;
     procedure SetCollectionType(const NewCollectionType: COLLECTION_TYPE);
     function GetURL: string;
@@ -110,17 +110,13 @@ type
       const GenresFileName: string
     ): Integer; virtual; abstract;
 
-    procedure CreateCollectionDatabase(const DBCollectionFile: string; const GenresFileName: string); virtual; abstract;
-
     function RegisterCollection(
-      const DisplayName: string;
-      const RootFolder: string;
       const DBFileName: string;
-      CollectionType: COLLECTION_TYPE
+      const DisplayName: string;
+      const RootFolder: string
     ): Integer; virtual; abstract;
 
-    procedure DeleteCollection(CollectionID: Integer); virtual; abstract;
-    procedure DropCollectionDatabase(const DBCollectionFile: string); virtual; abstract;
+    procedure DeleteCollection(CollectionID: Integer; RemoveFromDisk: Boolean = True); virtual; abstract;
 
     function HasCollections: Boolean;
     function HasCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer = INVALID_COLLECTION_ID): Boolean; virtual; abstract;
@@ -230,7 +226,7 @@ begin
   FDBFileName := '';
   FNotes := '';
   FCreationDate := 0;
-  FVersion := UNVERSIONED_COLLECTION;
+  FDataVersion := UNVERSIONED_COLLECTION;
   FCollectionType := CT_PRIVATE_FB;
   FUser := '';
   FPassword := '';
@@ -329,14 +325,14 @@ begin
   FCreationDate := NewCreationDate;
 end;
 
-function TCollectionInfo.GetVersion: Integer;
+function TCollectionInfo.GetDataVersion: Integer;
 begin
-  Result := FVersion;
+  Result := FDataVersion;
 end;
 
-procedure TCollectionInfo.SetVersion(const NewVersion: Integer);
+procedure TCollectionInfo.SetDataVersion(const NewVersion: Integer);
 begin
-  FVersion := NewVersion;
+  FDataVersion := NewVersion;
 end;
 
 function TCollectionInfo.GetCollectionType: COLLECTION_TYPE;

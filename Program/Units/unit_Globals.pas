@@ -425,7 +425,6 @@ type
   procedure SetProxySettings(var IdHTTP: TidHTTP);
 
   function GetSpecialPath(CSIDL: word): string;
-  function GetLibUpdateVersion(Full: Boolean): Integer; deprecated;
   function ExecAndWait(const FileName, Params: string; const WinState: word): Boolean;
 
   function CleanExtension(const Ext: string): string;
@@ -968,7 +967,7 @@ end;
 function TBookRecord.GenerateLocation: string;
 begin
   Assert(AuthorCount > 0);
-  Result := Copy(GenerateBookLocation(Authors[0].GetFullName) + GenerateFileName(Title, libID), 1, MAXFOLDERLENGTH - 10);
+  Result := GenerateBookLocation(Authors[0].GetFullName) + GenerateFileName(Title, libID);
 end;
 
 procedure TBookRecord.ClearAuthors;
@@ -1337,35 +1336,6 @@ begin
   finally
     HTTP.Free;
   end;
-end;
-
-function GetLibUpdateVersion(Full: Boolean): Integer;
-var
-  f: Text;
-  S: string;
-begin
-  //
-  // TODO -oNickR: BUG версия коллекции больше не храниться в этом файле.
-  // Версия данных коллекции должна устанавливаться при импорте из INPX или при обновлении коллекции
-  //
-  Result := 0;
-  S := Settings.SystemFileName[sfCollectionVerInfo];
-
-  if FileExists(S) then
-  begin
-    AssignFile(f, S);
-    try
-      Reset(f);
-      Readln(f, S);
-      CloseFile(f);
-      Result := StrToIntDef(S, 0);
-    except
-      on EInOutError do
-        { не смогли открыть файл } ;
-    end;
-  end
-  else
-    Result := UNVERSIONED_COLLECTION;
 end;
 
 function ExecAndWait(const FileName, Params: string; const WinState: word): Boolean;

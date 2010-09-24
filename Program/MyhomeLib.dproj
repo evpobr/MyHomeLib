@@ -52,7 +52,7 @@
 			<DCC_DebugDCUs>true</DCC_DebugDCUs>
 			<DCC_DependencyCheckOutputName>Debug\Bin\MyhomeLib.exe</DCC_DependencyCheckOutputName>
 			<Version>7.0</Version>
-			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
+			<DCC_Define>DEBUG;USELOGGER;$(DCC_Define)</DCC_Define>
 			<DCC_MapFile>3</DCC_MapFile>
 			<DCC_Optimize>False</DCC_Optimize>
 			<DCC_DebugInfoInExe>True</DCC_DebugInfoInExe>

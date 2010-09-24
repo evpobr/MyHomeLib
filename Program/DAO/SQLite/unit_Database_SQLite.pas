@@ -134,6 +134,24 @@ type
     end;
     // << TSeriesIteratorImpl
 
+  private const
+    //
+    // При изменении схемы базы данных необходимо изменить следующее значение
+    //
+    DATABASE_VERSION = '{FEC8CB6F-300A-4b92-86D1-7B40867F782B}';
+
+  public
+    class procedure CreateCollection(
+      const DBFileName: string;
+      CollectionType: COLLECTION_TYPE;
+      const GenresFileName: string
+    );
+
+    class function IsValidCollection(
+      const DBFileName: string;
+      out CollectionType: COLLECTION_TYPE
+    ): Boolean;
+
   public
     constructor Create(const DBCollectionFile: string; const SystemData: ISystemData);
     destructor Destroy; override;
@@ -218,8 +236,6 @@ type
     function IsFileNameConflict(const BookRecord: TBookRecord; const IncludeFolder: Boolean): Boolean;
   end;
 
-procedure CreateCollectionTables_SQLite(const DBCollectionFile: string; const GenresFileName: string);
-
 implementation
 
 uses
@@ -240,19 +256,19 @@ uses
   unit_SystemDatabase,
   unit_SQLiteUtils;
 
-const
-  ANNOTATION_SIZE_LIMIT = 4096;
-
-
 // Generate table structure and minimal data for a new collection
-procedure CreateCollectionTables_SQLite(const DBCollectionFile: string; const GenresFileName: string);
+class procedure TBookCollection_SQLite.CreateCollection(
+  const DBFileName: string;
+  CollectionType: COLLECTION_TYPE;
+  const GenresFileName: string
+);
 var
   ADatabase: TSQLiteDatabase;
   StringList: TStringList;
   StructureDDL: string;
   BookCollection: IBookCollection;
 begin
-  ADatabase := TSQLiteDatabase.Create(DBCollectionFile);
+  ADatabase := TSQLiteDatabase.Create(DBFileName);
   try
     StringList := ReadResourceAsStringList('CreateCollectionDB_SQLite');
     try
@@ -276,20 +292,53 @@ begin
   end;
 
   // Now that we have the DB structure in place, can create a collection instance:
-  BookCollection := TBookCollection_SQLite.Create(DBCollectionFile, GetSystemData);
+  BookCollection := TBookCollection_SQLite.Create(DBFileName, GetSystemData);
   BookCollection.BeginBulkOperation;
   try
-    // Fill metadata version and creation date:
-    BookCollection.SetStringProperty(SETTING_VERSION, DATABASE_VERSION);
+    //
+    // Fill metadata version and creation date
+    //
+    BookCollection.SetStringProperty(SETTING_SCHEMA_VERSION, DATABASE_VERSION);
+    BookCollection.SetIntProperty(SETTING_CODE, CollectionType);
     BookCollection.SetStringProperty(SETTING_CREATION_DATE, FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now));
 
-    // Fill the Genres table:
+    //
+    // Fill the Genres table
+    //
     BookCollection.LoadGenres(GenresFileName);
 
     BookCollection.EndBulkOperation(True);
   except
     BookCollection.EndBulkOperation(False);
     raise;
+  end;
+end;
+
+class function TBookCollection_SQLite.IsValidCollection(
+  const DBFileName: string;
+  out CollectionType: COLLECTION_TYPE
+  ): Boolean;
+const
+  GET_SETTING_SQL = 'SELECT SettingValue FROM Settings WHERE SettingID = ?';
+var
+  FDatabase: TSQLiteDatabase;
+begin
+  try
+    FDatabase := TSQLiteDatabase.Create(DBFileName);
+    try
+      //
+      // Получим из таблицы Settings значение версии и если оно совпадает, то считаем, что это нормальная коллекция
+      //
+      Result := (DATABASE_VERSION = FDatabase.QuerySingleString(GET_SETTING_SQL, [SETTING_SCHEMA_VERSION]));
+      if Result then
+      begin
+        CollectionType := FDatabase.QuerySingleInt(GET_SETTING_SQL, [SETTING_CODE]);
+      end;
+    finally
+      FDatabase.Free;
+    end;
+  except
+    Result := False;
   end;
 end;
 
@@ -945,7 +994,7 @@ begin
 
       SQLRows := SQLRows + Where;
       SQLCount := 'SELECT COUNT(*) FROM (' + SQLRows + ') ROWS ';
-      SQLRows := SQLRows + ' ORDER BY s.' + SERIES_TITLE_FIELD;
+      SQLRows := SQLRows + ' ORDER BY s.SeriesTitle';
     end;
 
     else
@@ -1551,7 +1600,7 @@ begin
       Include(BookRecord.BookProps, bpHasReview)
     else
       Exclude(BookRecord.BookProps, bpHasReview);
-    BookRecord.Annotation := LeftStr(Trim(BookRecord.Annotation), ANNOTATION_SIZE_LIMIT);
+    BookRecord.Annotation := BookRecord.Annotation;
 
     query := FDatabase.NewQuery(SQL_INSERT);
     try
@@ -1738,7 +1787,7 @@ begin
     Include(BookRecord.BookProps, bpHasReview)
   else
     Exclude(BookRecord.BookProps, bpHasReview);
-  BookRecord.Annotation := LeftStr(Trim(BookRecord.Annotation), ANNOTATION_SIZE_LIMIT);
+  BookRecord.Annotation := BookRecord.Annotation;
 
   // Update the book's series and clean up unused series:
   SetSeriesID(BookRecord.BookKey, BookRecord.SeriesID);
@@ -1774,7 +1823,7 @@ begin
     if BookRecord.Annotation = '' then
       query.SetNullParam(17)
     else
-      query.SetParam(17, LeftStr(BookRecord.Annotation, ANNOTATION_SIZE_LIMIT));
+      query.SetParam(17, BookRecord.Annotation);
 
     query.SetParam(18, BookRecord.BookKey.BookID);
 

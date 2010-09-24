@@ -45,8 +45,8 @@ type
     procedure SetPassword(const NewPassword: string);
     function GetCreationDate: TDateTime;
     procedure SetCreationDate(const NewCreationDate: TDateTime);
-    function GetVersion: Integer;
-    procedure SetVersion(const NewVersion: Integer);
+    function GetDataVersion: Integer;
+    procedure SetDataVersion(const NewVersion: Integer);
     function GetCollectionType: COLLECTION_TYPE;
     procedure SetCollectionType(const NewCollectionType: COLLECTION_TYPE);
     function GetURL: string;
@@ -65,7 +65,7 @@ type
     property DBFileName: string read GetDBFileName write SetDBFileName;
     property Notes: string read GetNotes write SetNotes;
     property CreationDate: TDateTime read GetCreationDate write SetCreationDate;
-    property Version: Integer read GetVersion write SetVersion;
+    property DataVersion: Integer read GetDataVersion write SetDataVersion;
     property CollectionType: COLLECTION_TYPE read GetCollectionType write SetCollectionType;
     property User: string read GetUser write SetUser;
     property Password: string read GetPassword write SetPassword;
@@ -123,25 +123,19 @@ type
       const GenresFileName: string
     ): Integer;
 
-    procedure CreateCollectionDatabase(const DBCollectionFile: string; const GenresFileName: string); deprecated;
-
     //
     // Регистрация существующей коллекции
-    // TODO: переделать
     //
     function RegisterCollection(
-      const DisplayName: string;
-      const RootFolder: string;
       const DBFileName: string;
-      CollectionType: COLLECTION_TYPE
+      const DisplayName: string;
+      const RootFolder: string
     ): Integer;
 
     //
     // Удаление коллекции
-    // TODO: объединить в один метод
     //
-    procedure DeleteCollection(CollectionID: Integer);
-    procedure DropCollectionDatabase(const DBCollectionFile: string);
+    procedure DeleteCollection(CollectionID: Integer; RemoveFromDisk: Boolean = True);
 
     function HasCollections: Boolean;
     function HasCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer = INVALID_COLLECTION_ID): Boolean;
@@ -300,6 +294,7 @@ type
     function GetAuthorFilterType: string;
   end;
 
+{$IFDEF USELOGGER}
   ILogger = interface
     ['{E0BE38F4-2911-4FD7-8CA2-B6E3981BBFC0}']
     procedure Log(const logMessage: string; const extraInfo: string);
@@ -313,6 +308,7 @@ type
   IScopeLogger = interface(ILogger)
     ['{B3497AEA-D495-4425-8C1A-24EBA789E3DE}']
   end;
+{$ENDIF}
 
   IParamsParser<T> = interface
     function CheckLiteral(const literalValue: string): Boolean;

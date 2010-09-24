@@ -57,7 +57,7 @@ object frmMain: TfrmMain
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  PixelsPerInch = 120
+  PixelsPerInch = 96
   TextHeight = 13
   object tlbrMain: TToolBar
     Left = 0
@@ -1364,7 +1364,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 49
-              Width = 193
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
@@ -1374,7 +1374,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 3
-              Width = 193
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1056#1072#1079#1084#1077#1097#1077#1085#1080#1077
@@ -1442,7 +1442,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 22
-              Width = 193
+              Width = 197
               Height = 21
               Align = alTop
               Style = csDropDownList
@@ -1453,12 +1453,13 @@ object frmMain: TfrmMain
                 #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1074#1089#1077
                 #1058#1086#1083#1100#1082#1086' '#1089#1082#1072#1095#1072#1085#1085#1099#1077
                 #1058#1086#1083#1100#1082#1086' '#1053#1045' '#1089#1082#1072#1095#1072#1085#1085#1099#1077)
+              ExplicitWidth = 193
             end
             object edFKeyWords: TMHLButtonedEdit
               AlignWithMargins = True
               Left = 3
               Top = 68
-              Width = 193
+              Width = 197
               Height = 21
               Hint = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
               Align = alTop
@@ -1467,19 +1468,17 @@ object frmMain: TfrmMain
               TabOrder = 3
               OnKeyDown = PresetFieldKeyDown
               OnRightButtonClick = ShowExpressionEditor
-              ExplicitWidth = 197
             end
             object cbDeleted: TCheckBox
               AlignWithMargins = True
               Left = 5
               Top = 95
-              Width = 191
+              Width = 195
               Height = 17
               Margins.Left = 5
               Align = alTop
               Caption = #1057#1082#1088#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
               TabOrder = 4
-              ExplicitWidth = 195
             end
           end
           object ctpFile: TCategoryPanel

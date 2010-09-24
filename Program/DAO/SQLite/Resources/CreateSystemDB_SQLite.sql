@@ -81,16 +81,20 @@ CREATE INDEX IXBookGroups_BookID_DatabaseID ON BookGroups (DatabaseID, BookID);
 CREATE TABLE Bases (
   DatabaseID       INTEGER      NOT NULL                           PRIMARY KEY AUTOINCREMENT,
   BaseName         VARCHAR(64)  NOT NULL COLLATE MHL_SYSTEM_NOCASE UNIQUE,
-  RootFolder       VARCHAR(128) NOT NULL COLLATE MHL_SYSTEM_NOCASE,
   DBFileName       VARCHAR(128) NOT NULL COLLATE MHL_SYSTEM_NOCASE,
-  Notes            VARCHAR(255)          COLLATE MHL_SYSTEM_NOCASE,
-  CreationDate     VARCHAR(23)  NOT NULL,
-  Version          INTEGER,
+  RootFolder       VARCHAR(128) NOT NULL COLLATE MHL_SYSTEM_NOCASE,
+  DataVersion      INTEGER,
   Code             INTEGER      NOT NULL,
-  Settings         BLOB,
-  URL              VARCHAR(255)          COLLATE MHL_SYSTEM_NOCASE,
   LibUser          VARCHAR(50)           COLLATE MHL_SYSTEM_NOCASE,
   LibPassword      VARCHAR(50)           COLLATE MHL_SYSTEM_NOCASE,
+
+  --
+  -- следующие поля должны храниться в самой коллекции. Здесь им не место.
+  --
+  Notes            VARCHAR(255)          COLLATE MHL_SYSTEM_NOCASE,
+  CreationDate     VARCHAR(23)  NOT NULL,
+  Settings         BLOB,
+  URL              VARCHAR(255)          COLLATE MHL_SYSTEM_NOCASE,
   ConnectionScript BLOB
 );
 --@@

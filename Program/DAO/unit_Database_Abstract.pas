@@ -159,9 +159,6 @@ type
     function GetAuthorFilterType: string;
   end;
 
-const
-  DATABASE_VERSION = '1000';
-
 implementation
 
 uses

@@ -29,27 +29,42 @@ const
   CRLF = CR + LF;
 
   MHL_INVALID_ID = -1;
-  INVALID_COLLECTION_ID = MHL_INVALID_ID;
 
-  INPX_FIELD_DELIMITER = Chr(4);
-  INPX_ITEM_DELIMITER = ':';
+  INVALID_COLLECTION_ID  = MHL_INVALID_ID;
+  NO_ACTIVECOLLECTION_ID = MHL_INVALID_ID;
+  NO_SERIES_ID           = MHL_INVALID_ID;
+
+  //
+  // Значения полей по умолчанию
+  //
+  UNVERSIONED_COLLECTION = MHL_INVALID_ID;
+  NO_SERIES_TITLE = '';
+  FAVORITES_GROUP_ID = 1;
+  UNKNOWN_GENRE_CODE = '0.0';
+
+  //
+  // Разделители полей в INPX
+  //
+  INPX_FIELD_DELIMITER   = Chr(4);
+  INPX_ITEM_DELIMITER    = ':';
   INPX_SUBITEM_DELIMITER = ',';
 
+  //
+  // Наиболее часто используемые расширения файлов
+  //
   COLLECTION_EXTENSION_SHORT = 'hlc';
-  COLLECTION_EXTENSION = '.' + COLLECTION_EXTENSION_SHORT;          // .hlc
+  COLLECTION_EXTENSION       = '.' + COLLECTION_EXTENSION_SHORT; // .hlc
 
-  FB2_EXTENSION_SHORT = 'fb2';
-  FB2_EXTENSION = '.' + FB2_EXTENSION_SHORT;                        // .fb2
+  FB2_EXTENSION_SHORT        = 'fb2';
+  FB2_EXTENSION              = '.' + FB2_EXTENSION_SHORT;        // .fb2
 
-  ZIP_EXTENSION_SHORT = 'zip';
-  ZIP_EXTENSION = '.' + ZIP_EXTENSION_SHORT;                        // .zip
+  ZIP_EXTENSION_SHORT        = 'zip';
+  ZIP_EXTENSION              = '.' + ZIP_EXTENSION_SHORT;        // .zip
 
-  FBD_EXTENSION_SHORT = 'fbd';
-  FBD_EXTENSION = '.' + FBD_EXTENSION_SHORT;                        // .fbd
+  FBD_EXTENSION_SHORT        = 'fbd';
+  FBD_EXTENSION              = '.' + FBD_EXTENSION_SHORT;        // .fbd
 
-  FB2ZIP_EXTENSION = FB2_EXTENSION + ZIP_EXTENSION;                 // .fb2.zip
-
-  UNKNOWN_GENRE_CODE = '0.0';
+  FB2ZIP_EXTENSION           = FB2_EXTENSION + ZIP_EXTENSION;    // .fb2.zip
 
   //
   // Алфавиты
@@ -64,8 +79,7 @@ const
   //
   // Некоторые пути
   //
-  DATA_DIR_NAME = 'Data';
-  PRESET_DIR_NAME = 'Presets';
+  DATA_DIR_NAME   = 'Data';
 
   //
   // Предефайненные имена файлов
@@ -77,7 +91,6 @@ const
   SERVER_ERRORLOG_FILENAME = 'server_error.html';
   IMPORT_ERRORLOG_FILENAME = 'import_errors.log';
   APP_HELP_FILENAME = 'MyHomeLib.chm';
-  // FILELIST_FILENAME = 'FileList.lst';
   LIBRUSEC_UPDATE_FILENAME = 'librusec_update.zip';
   // EXTRA_UPDATE_FILENAME = 'extra_update.zip';
   LIBRUSEC_UPDATEVERINFO_FILENAME = 'last_collection.info';
@@ -86,23 +99,11 @@ const
   STRUCTUREINFO_FILENAME = 'structure.info';
   PROGRAM_VERINFO_FILENAME = 'last_version.info';
   LIBRUSEC_INPX_FILENAME = 'librusec.inpx';
-  COLLECTION_VERINFO_FILENAME = 'version.info';
   COLUMNS_STORE_FILENAME = 'columns.ini';
   DOWNLOADS_STORE_FILENAME = 'downloads.sav';
   DOWNLOAD_ERRORLOG_FILENAME = 'download_errors.log';
   COLLECTIONS_FILENAME = 'collections.ini';
   PRESETS_FILENAME = 'presets.cxml';
-
-  //
-  // Значения полей по умолчанию
-  //
-  NO_ACTIVECOLLECTION_ID = MHL_INVALID_ID;
-  UNVERSIONED_COLLECTION = MHL_INVALID_ID;
-
-  NO_SERIES_ID = MHL_INVALID_ID;
-  NO_SERIES_TITLE = '';
-
-  FAVORITES_GROUP_ID = 1;
 
   //
   // Номера вкладок в главном окне ( = tags)
@@ -175,123 +176,40 @@ const
   //
   // Поля поиска
   //
-  SF_AUTHORS = 'Authors';
-  SF_TITLE = 'Title';
-  SF_SERIES = 'Series';
+  SF_AUTHORS     = 'Authors';
+  SF_TITLE       = 'Title';
+  SF_SERIES      = 'Series';
   SF_GENRE_TITLE = 'Genres';
   SF_GENRE_CODES = 'GenreCodes';
-  SF_ANNOTATION = 'Annotation';
+  SF_ANNOTATION  = 'Annotation';
 
-  SF_FILE = 'File';
-  SF_FOLDER = 'Folder';
-  SF_EXTENSION = 'Extension';
+  SF_FILE        = 'File';
+  SF_FOLDER      = 'Folder';
+  SF_EXTENSION   = 'Extension';
 
-  SF_DOWNLOADED = 'Downloaded';
-  SF_KEYWORDS = 'Keywords';
-  SF_DELETED = 'Deleted';
-  SF_DATE = 'Date';
-  SF_LANG = 'Lang';
-
-  //
-  // некоторые ограничения  для БД
-  //
-  MAXFOLDERLENGTH = 200; // максимальная длина поля folder/ все что больше - обрезается
-  INDEXSIZE = 12;        // размер индексных полей
-
-  //
-  // Некоторые (чаще всего используемые) имена полей
-  //
-  ID_FIELD = 'ID';
-  BASE_NAME_FIELD = 'BaseName';
-
-  BOOK_ID_FIELD = 'BookID';
-  BOOK_LIBID_FIELD = 'LibID';
-  BOOK_FOLDER_FIELD = 'Folder';
-  BOOK_FILENAME_FIELD = 'FileName';
-  BOOK_TITLE_FIELD = 'Title';
-  BOOK_ANNOTATION_FIELD = 'Annotation';
-  BOOK_REVIEW_FIELD = 'Review';
-  BOOK_RATE_FIELD = 'Rate';
-  BOOK_PROGRESS_FIELD = 'Progress';
-
-  BOOK_SEQNUMBER_FIELD = 'SeqNumber';
-  BOOK_DATE_FIELD = 'UpdateDate';
-  BOOK_LIBRATE_FIELD = 'LibRate';
-  BOOK_LANG_FIELD = 'Lang';
-  BOOK_INSIDENO_FIELD = 'InsideNo';
-  BOOK_EXT_FIELD = 'Ext';
-  BOOK_SIZE_FIELD = 'BookSize';
-  BOOK_CODE_FIELD = 'Code';
-  BOOK_LOCAL_FIELD = 'IsLocal';
-  BOOK_DELETED_FIELD = 'IsDeleted';
-  BOOK_KEYWORDS_FIELD = 'KeyWords';
-  BOOK_EXTRAINFO_FIELD = 'ExtraInfo';
-
-  DB_ID_FIELD = 'DatabaseID';
-
-  SERIES_ID_FIELD = 'SeriesID';
-  SERIES_TITLE_FIELD = 'SeriesTitle';
-
-  GENRE_CODE_FIELD = 'GenreCode';
-  GENRE_PARENTCODE_FIELD = 'ParentCode';
-  GENRE_FB2CODE_FIELD = 'FB2Code';
-  GENRE_ALIAS_FIELD = 'GenreAlias';
-
-  GROUP_ID_FIELD = 'GroupID';
-  GROUP_NAME_FIELD = 'GroupName';
-  GROUP_ALLOWDELETE_FIELD = 'AllowDelete';
-
-  AUTHOR_ID_FIELD = 'AuthorID';
-  AUTHOR_LASTTNAME_FIELD = 'LastName';
-  AUTHOR_FIRSTNAME_FIELD = 'FirstName';
-  AUTHOR_MIDDLENAME_FIELD = 'MiddleName';
-
-  HAS_LOCAL_BOOKS = 'HasLocalBooks';
-  HAS_NONDELETED_BOOKS = 'HasNonDeletedBooks';
-
-  SETTING_VALIE_FIELD = 'SettingValue';
-
-  //
-  // индексные поля
-  //
-  AUTHOR_FULLNAME_FIELDS = AUTHOR_LASTTNAME_FIELD + ';' + AUTHOR_FIRSTNAME_FIELD + ';' + AUTHOR_MIDDLENAME_FIELD;
-  AUTHOR_ID_BOOK_ID_FIELDS = AUTHOR_ID_FIELD + ';' + BOOK_ID_FIELD;
-
-  SERIE_ID_SEQNUMBER_FIELDS = SERIES_ID_FIELD + ';' + BOOK_SEQNUMBER_FIELD;
-
-  GENRE_PARENTCODE_CODE_FIELDS = GENRE_PARENTCODE_FIELD + ';' + GENRE_CODE_FIELD;
-  GENRE_CODE_BOOK_ID_FIELDS = GENRE_CODE_FIELD + ';' + BOOK_ID_FIELD;
-
-  BOOK_ID_DB_ID_FIELDS = BOOK_ID_FIELD + ';' + DB_ID_FIELD;
-  GROUP_ID_BOOK_ID_DB_ID_FIELDS = GROUP_ID_FIELD + ';' + BOOK_ID_FIELD + ';' + DB_ID_FIELD;
-
-  PX_INDEX = 'PXIndex';
+  SF_DOWNLOADED  = 'Downloaded';
+  SF_KEYWORDS    = 'Keywords';
+  SF_DELETED     = 'Deleted';
+  SF_DATE        = 'Date';
+  SF_LANG        = 'Lang';
 
   //
   // Индексы свойств коллекции
   //
-  SETTING_VERSION = 0;
-  SETTING_CREATION_DATE = 1;
-  SETTING_NOTES = 2;
-  SETTING_DATA_VERSION = 3;
-  SETTING_CODE = 4;
-  SETTING_URL = 6;
+  SETTING_SCHEMA_VERSION  = 0;
+  SETTING_CREATION_DATE   = 1;
+  SETTING_NOTES           = 2;
+  SETTING_DATA_VERSION    = 3;
+  SETTING_CODE            = 4;
+  SETTING_URL             = 6;
   SETTING_DOWNLOAD_SCRIPT = 7;
-  SETTING_POSITIONS = 8;
+  SETTING_POSITIONS       = 8;
 
   //
   // специальные значения фильтров
   //
-  ALPHA_FILTER_ALL = '*';
+  ALPHA_FILTER_ALL       = '*';
   ALPHA_FILTER_NON_ALPHA = '#';
-
-  //
-  // позиции в коллекции
-  //
-  LAST_AUTHOR_ID = 'lastAuthorID';
-  LAST_AUTHOR_BOOK_ID = 'lastAuthorBookID';
-  LAST_SERIEs_ID = 'lastSeriesID';
-  LAST_SERIES_BOOK_ID = 'lastSerieBookID';
 
 type
   TColumnSet = set of 0 .. 255;
