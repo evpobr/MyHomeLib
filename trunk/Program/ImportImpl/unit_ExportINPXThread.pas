@@ -86,7 +86,7 @@ begin
 
   CollectionInfo := GetSystemData.GetActiveCollectionInfo;
   FCollectionType := CollectionInfo.CollectionType;
-  FCollectionVersion := CollectionInfo.Version;
+  FCollectionVersion := CollectionInfo.DataVersion;
   FCollectionName := CollectionInfo.Name;
   FCollectionDBFileName := CollectionInfo.DBFileName;
 

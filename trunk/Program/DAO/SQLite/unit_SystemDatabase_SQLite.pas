@@ -116,17 +116,13 @@ type
       const GenresFileName: string
     ): Integer; override;
 
-    procedure CreateCollectionDatabase(const DBCollectionFile: string; const GenresFileName: string); override;
-
     function RegisterCollection(
-      const DisplayName: string;
-      const RootFolder: string;
       const DBFileName: string;
-      CollectionType: COLLECTION_TYPE
+      const DisplayName: string;
+      const RootFolder: string
     ): Integer; override;
 
-    procedure DeleteCollection(CollectionID: Integer); override;
-    procedure DropCollectionDatabase(const DBCollectionFile: string); override;
+    procedure DeleteCollection(CollectionID: Integer; RemoveFromDisk: Boolean = True); override;
 
     // function HasCollections: Boolean; // use base implementation
     function HasCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer = INVALID_COLLECTION_ID): Boolean; override;
@@ -211,6 +207,9 @@ uses
   unit_Database_SQLite,
   unit_Settings,
   unit_Helpers;
+
+resourcestring
+  rstrInvalidCollection = 'Файл %s не является коллекцией.';
 
 // Generate table structure and minimal system data
 procedure CreateSystemTables_SQLite(const DBUserFile: string);
@@ -463,7 +462,7 @@ function TSystemData_SQLite.GetCollectionInfo(const CollectionID: Integer): ICol
 const
   SQL_SELECT = 'SELECT ' +
     'bs.BaseName, bs.RootFolder, bs.DBFileName, bs.Code, bs.CreationDate, ' + // 0 .. 4
-    'bs.Version, bs.Notes, bs.LibUser, bs.LibPassword, '                    + // 5 .. 8
+    'bs.DataVersion, bs.Notes, bs.LibUser, bs.LibPassword, '                    + // 5 .. 8
     'bs.URL, bs.ConnectionScript, bs.Settings ' +                             // 9 .. 11
     'FROM Bases bs WHERE bs.DatabaseID = ?';
 var
@@ -497,9 +496,9 @@ begin
           tempCollectionInfo.SetCreationDate(query.FieldAsDateTime(4));
 
           if query.FieldIsNull(5) then
-            tempCollectionInfo.SetVersion(UNVERSIONED_COLLECTION)
+            tempCollectionInfo.SetDataVersion(UNVERSIONED_COLLECTION)
           else
-            tempCollectionInfo.SetVersion(query.FieldAsInt(5));
+            tempCollectionInfo.SetDataVersion(query.FieldAsInt(5));
 
           tempCollectionInfo.SetNotes(query.FieldAsString(6));
           tempCollectionInfo.SetUser(query.FieldAsString(7));
@@ -532,10 +531,11 @@ const
 {$IFOPT D+}
   SQL_SELECT = 'SELECT DatabaseID FROM Bases WHERE DatabaseID = ? ';
 {$ENDIF}
-  SQL_UPDATE = 'UPDATE Bases SET ' +
-    'BaseName = ?, RootFolder = ?, DBFileName = ?, Notes = ?, CreationDate = ?, ' + // 0 .. 4
-    'Version = ?, Code = ?, Settings = ?, URL = ?, ' +                              // 5 .. 8
-    'LibUser = ?, LibPassword = ?, ConnectionScript = ? ' +                         // 9 .. 11
+  SQL_UPDATE =
+    'UPDATE Bases SET ' +
+      'BaseName = ?, RootFolder = ?, DBFileName = ?, Notes = ?, CreationDate = ?, ' + // 0 .. 4
+      'DataVersion = ?, Code = ?, Settings = ?, URL = ?, ' +                          // 5 .. 8
+      'LibUser = ?, LibPassword = ?, ConnectionScript = ? ' +                         // 9 .. 11
     'WHERE DatabaseID = ? ';                                                        // 12
 var
   query: TSQLiteQuery;
@@ -568,7 +568,7 @@ begin
     query.SetParam(2, storedFileName);
     query.SetParam(3, CollectionInfo.Notes);
     query.SetParam(4, CollectionInfo.CreationDate);
-    query.SetParam(5, CollectionInfo.Version);
+    query.SetParam(5, CollectionInfo.DataVersion);
     query.SetParam(6, CollectionInfo.CollectionType);
 
     stream := TMemoryStream.Create;
@@ -609,45 +609,55 @@ begin
 end;
 
 function TSystemData_SQLite.RegisterCollection(
-  const DisplayName: string;
-  const RootFolder: string;
   const DBFileName: string;
-  CollectionType: COLLECTION_TYPE
+  const DisplayName: string;
+  const RootFolder: string
   ): Integer;
 const
   SQL_INSERT =
-    'INSERT INTO Bases ' +
-          '(BaseName, RootFolder, DBFileName, Code, CreationDate) ' +
-    'VALUES(?,        ?,          ?,          ?,    ?)';
+    'INSERT INTO Bases (BaseName, RootFolder, DBFileName, CreationDate, Code) ' +
+    'VALUES(?, ?, ?, ?, ?)';
 var
+  absFileName: string;
   storedRoot: string;
   storedFileName: string;
+  CollectionType: COLLECTION_TYPE;
   query: TSQLiteQuery;
 begin
-  storedRoot := RootFolder;
-  storedFileName := DBFileName;
-  PrepareCollectionPath(storedRoot, storedFileName);
+  absFileName := TMHLSettings.ExpantCollectionFileName(DBFileName);
 
-  //
-  // регистрируем коллекцию
-  //
-  query := FDatabase.NewQuery(SQL_INSERT);
-  try
-    query.SetParam(0, DisplayName);
-    query.SetParam(1, storedRoot);
-    query.SetParam(2, storedFileName);
-    query.SetParam(3, CollectionType);
-    query.SetParam(4, Now);
+  if TBookCollection_SQLite.IsValidCollection(absFileName, CollectionType) then
+  begin
+    storedRoot := RootFolder;
+    storedFileName := DBFileName;
+    PrepareCollectionPath(storedRoot, storedFileName);
 
-    query.ExecSQL;
+    //
+    // регистрируем коллекцию
+    //
+    query := FDatabase.NewQuery(SQL_INSERT);
+    try
+      query.SetParam(0, DisplayName);
+      query.SetParam(1, storedRoot);
+      query.SetParam(2, storedFileName);
+      query.SetParam(3, Now);
+      query.SetParam(4, CollectionType);
 
-    Result := FDatabase.LastInsertRowID;
-  finally
-    FreeAndNil(query);
+      query.ExecSQL;
+
+      Result := FDatabase.LastInsertRowID;
+
+      //
+      // TODO : принудительно обновить свойства коллекции
+      //
+    finally
+      FreeAndNil(query);
+    end;
+  end
+  else
+  begin
+    raise Exception.CreateFmt(rstrInvalidCollection, [DBFileName]);
   end;
-
-  // Switch to the newly added collection:
-  ActivateCollection(Result);
 end;
 
 function TSystemData_SQLite.HasCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer): Boolean;
@@ -703,11 +713,26 @@ begin
   end;
 end;
 
-procedure TSystemData_SQLite.DeleteCollection(CollectionID: Integer);
+procedure TSystemData_SQLite.DeleteCollection(CollectionID: Integer; RemoveFromDisk: Boolean = True);
 const
   DELETE_BASES_QUERY = 'DELETE FROM Bases WHERE DatabaseID = ? ';
+var
+  info: ICollectionInfo;
+  DBFileName: string;
 begin
+  //
+  // Почистить кэши
+  //
+  info := GetCollectionInfo(CollectionID);
+  DBFileName := info.DBFileName;
+
+  FBookCollectionCache.Remove(DBFileName);
+  FCollectionInfoCache.Remove(CollectionID);
+
   FDatabase.ExecSQL(DELETE_BASES_QUERY, [CollectionID]);
+
+  if RemoveFromDisk then
+    DeleteFile(DBFileName);
 
   // The first collection becomes the current one:
   collectionID := FindFirstExistingCollectionID(1);
@@ -727,49 +752,43 @@ const
     'INSERT INTO Bases (BaseName, RootFolder, DBFileName, CreationDate, Code) ' +
     'VALUES(?, ?, ?, ?, ?)';
 var
+  absDBFileName: string;
   storedRoot: string;
   storedFileName: string;
   query: TSQLiteQuery;
 begin
-  CreateCollectionTables_SQLite(TMHLSettings.ExpantCollectionFileName(DBFileName), GenresFileName);
+  absDBFileName := TMHLSettings.ExpantCollectionFileName(DBFileName);
 
-  storedFileName := DBFileName;
-  storedRoot := RootFolder;
-  PrepareCollectionPath(storedRoot, storedFileName);
-
-  //
-  // регистрируем коллекцию
-  //
-  query := FDatabase.NewQuery(SQL_INSERT);
+  TBookCollection_SQLite.CreateCollection(absDBFileName, CollectionType, GenresFileName);
   try
-    query.SetParam(0, DisplayName);
-    query.SetParam(1, storedRoot);
-    query.SetParam(2, storedFileName);
-    query.SetParam(3, Now);
-    query.SetParam(4, CollectionType);
+    storedFileName := DBFileName;
+    storedRoot := RootFolder;
+    PrepareCollectionPath(storedRoot, storedFileName);
 
-    query.ExecSQL;
+    //
+    // регистрируем коллекцию
+    //
+    query := FDatabase.NewQuery(SQL_INSERT);
+    try
+      query.SetParam(0, DisplayName);
+      query.SetParam(1, storedRoot);
+      query.SetParam(2, storedFileName);
+      query.SetParam(3, Now);
+      query.SetParam(4, CollectionType);
 
-    Result := FDatabase.LastInsertRowID;
-  finally
-    FreeAndNil(query);
+      query.ExecSQL;
+
+      Result := FDatabase.LastInsertRowID;
+    finally
+      FreeAndNil(query);
+    end;
+  except
+    //
+    // в случае неудачной регистрации удалим файл коллекции
+    //
+    DeleteFile(absDBFileName);
+    raise;
   end;
-end;
-
-procedure TSystemData_SQLite.CreateCollectionDatabase(const DBCollectionFile: string; const GenresFileName: string);
-var
-  storedFileName: string;
-begin
-  storedFileName := TMHLSettings.ExpantCollectionFileName(DBCollectionFile);
-  TDirectory.CreateDirectory(TPath.GetDirectoryName(storedFileName));
-  CreateCollectionTables_SQLite(storedFileName, GenresFileName);
-end;
-
-procedure TSystemData_SQLite.DropCollectionDatabase(const DBCollectionFile: string);
-begin
-  Assert(DBCollectionFile <> '');
-
-  DeleteFile(DBCollectionFile);
 end;
 
 function TSystemData_SQLite.InternalCreateCollection(const DBCollectionFile: string): IBookCollection;

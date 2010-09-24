@@ -18,14 +18,20 @@ unit unit_Logger;
 
 interface
 
+{$IFDEF USELOGGER}
+
 uses
   unit_Interfaces;
 
 function GetLogger: ILogger;
 function GetIntervalLogger(const intervalName: string; const extraInfo: string): IIntervalLogger;
-function GetScopeLogger(const scopeName: string): IScopeLogger;
+function GetScopeLogger(const scopeName: string; const extraInfo: string = ''): IScopeLogger;
+
+{$ENDIF}
 
 implementation
+
+{$IFDEF USELOGGER}
 
 uses
   Windows,
@@ -76,9 +82,9 @@ type
     FStopwatch: TStopwatch;
   end;
 
-  TScopeLoggerImpl = class(TLoggerImpl, IScopeLogger)
+  TScopeLoggerImpl = class(TIntervalLoggerImpl, IScopeLogger)
   private
-    constructor Create(const scopeName: string);
+    constructor Create(const scopeName: string; const extraInfo: string);
     destructor Destroy; override;
 
   protected
@@ -171,9 +177,9 @@ end;
 
 { TScopeLoggerImpl }
 
-constructor TScopeLoggerImpl.Create(const scopeName: string);
+constructor TScopeLoggerImpl.Create(const scopeName: string; const extraInfo: string);
 begin
-  inherited Create;
+  inherited Create(scopeName, extraInfo);
   FScopeName := scopeName;
   TGlobalLogger.Log(FScopeName, '>>>>>>>>>>>>>> - enter');
 end;
@@ -194,9 +200,11 @@ begin
   Result := TIntervalLoggerImpl.Create(intervalName, extraInfo);
 end;
 
-function GetScopeLogger(const scopeName: string): IScopeLogger;
+function GetScopeLogger(const scopeName: string; const extraInfo: string): IScopeLogger;
 begin
-  Result := TScopeLoggerImpl.Create(scopeName);
+  Result := TScopeLoggerImpl.Create(scopeName, extraInfo);
 end;
+
+{$ENDIF}
 
 end.

@@ -234,9 +234,6 @@ begin
           raise;
         end;
 
-        CollectionInfo.Version := GetLibUpdateVersion(True);
-        SystemData.UpdateCollectionInfo(CollectionInfo);
-
         Teletype(rstrReady,tsInfo);
       end; //for .. with
 
@@ -255,7 +252,9 @@ begin
       on E: Exception do
       begin
         Teletype(rstrUpdateFailed, tsError);
+{$IFDEF USELOGGER}
         GetLogger.Log('TLibUpdateThread.WorkFunction ERROR', E.Message);
+{$ENDIF}
         DeleteFile(Settings.WorkPath + Settings.Updates.Items[i].UpdateFile);
       end;
     end;

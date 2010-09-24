@@ -69,6 +69,11 @@ type
     // реальный тип коллекции
     //
     CollectionCode: COLLECTION_TYPE;
+
+    //
+    // ID новой коллекции (созданной или подключенной)
+    //
+    CollectionID: Integer;
   end;
 
 implementation

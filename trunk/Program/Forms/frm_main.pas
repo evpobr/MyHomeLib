@@ -1963,6 +1963,7 @@ begin
   try
     if frmNCWizard.ShowModal = mrOk then
     begin
+      FSystemData.ActivateCollection(frmNCWizard.NewCollectionID);
       Settings.ActiveCollection := FSystemData.GetActiveCollectionInfo.ID;
       InitCollection(True);
       Result := True;
@@ -2159,7 +2160,7 @@ begin
   begin
     for i := 0 to UpdatesInfo.Count - 1 do
       if UpdatesInfo[i].CheckCodes(CollectionInfo.Name, CollectionInfo.CollectionType, CollectionInfo.ID) then
-        if UpdatesInfo[i].CheckVersion(Settings.UpdatePath, CollectionInfo.Version) then
+        if UpdatesInfo[i].CheckVersion(Settings.UpdatePath, CollectionInfo.DataVersion) then
         begin
           Result := True;
           Break;
@@ -2731,7 +2732,14 @@ var
   SavedCursor: TCursor;
   Data: PAuthorData;
   FilterValue: TFilterValue;
+{$IFDEF USELOGGER}
+  logger: IScopeLogger;
+{$ENDIF}
 begin
+{$IFDEF USELOGGER}
+  logger := GetScopeLogger('TfrmMain.tvAuthorsChange');
+{$ENDIF}
+
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
@@ -2801,7 +2809,14 @@ var
   SavedCursor: TCursor;
   Data: PSeriesData;
   FilterValue: TFilterValue;
+{$IFDEF USELOGGER}
+  logger: IScopeLogger;
+{$ENDIF}
 begin
+{$IFDEF USELOGGER}
+  logger := GetScopeLogger('TfrmMain.tvSeriesChange');
+{$ENDIF}
+
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
@@ -2871,9 +2886,13 @@ var
   SavedCursor: TCursor;
   Data: PGenreData;
   FilterValue: TFilterValue;
-  logger: IIntervalLogger;
+{$IFDEF USELOGGER}
+  logger: IScopeLogger;
+{$ENDIF}
 begin
-  logger := GetIntervalLogger('TfrmMain.tvGenresChange', '');
+{$IFDEF USELOGGER}
+  logger := GetScopeLogger('TfrmMain.tvGenresChange');
+{$ENDIF}
 
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -2945,7 +2964,14 @@ procedure TfrmMain.tvGroupsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
   SavedCursor: TCursor;
   Data: PGroupData;
+{$IFDEF USELOGGER}
+  logger: IScopeLogger;
+{$ENDIF}
 begin
+{$IFDEF USELOGGER}
+  logger := GetScopeLogger('TfrmMain.tvGroupsChange');
+{$ENDIF}
+
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
@@ -4598,7 +4624,6 @@ end;
 
 procedure TfrmMain.DeleteCollectionExecute(Sender: TObject);
 var
-  DBFileName: string;
   CollectionInfoIterator: ICollectionInfoIterator;
   CollectionInfo: ICollectionInfo;
 begin
@@ -4607,9 +4632,7 @@ begin
     Exit;
 
   // Delete current collection and choose another:
-  DBFileName := FSystemData.GetActiveCollectionInfo.DBFileName;
-  FSystemData.DeleteCollection(FSystemData.GetActiveCollectionInfo.ID);
-  FSystemData.DropCollectionDatabase(DBFileName);
+  FSystemData.DeleteCollection(FSystemData.GetActiveCollectionInfo.ID, True);
 
   CollectionInfoIterator := FSystemData.GetCollectionInfoIterator;
   if CollectionInfoIterator.Next(CollectionInfo) then

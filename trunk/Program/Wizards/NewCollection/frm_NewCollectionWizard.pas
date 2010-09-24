@@ -74,7 +74,6 @@ type
     procedure CorrectParams;
     function CreateCollection: Boolean;
     function StartImportData: Boolean;
-    procedure RegisterCollection;
 
     procedure CloseWorker;
     procedure CancelWorker;
@@ -92,6 +91,8 @@ type
 
   public
     destructor Destroy; override;
+
+    function NewCollectionID: Integer; inline;
   end;
 
 var
@@ -122,6 +123,11 @@ destructor TNewCollectionWizard.Destroy;
 begin
   CloseWorker;
   inherited;
+end;
+
+function TNewCollectionWizard.NewCollectionID: Integer;
+begin
+  Result := FParams.CollectionID;
 end;
 
 procedure TNewCollectionWizard.InitWizard;
@@ -231,7 +237,6 @@ begin
       // ничего ждать не нужно, нечего импортировать
       // можно переходить на следующую страницу
       //
-      RegisterCollection;
       DoChangePage(btnForward);
     end;
   end;
@@ -332,8 +337,6 @@ begin
 end;
 
 function TNewCollectionWizard.CreateCollection: Boolean;
-//var
-//  Collection: IBookCollection;
 begin
   Assert(Assigned(FProgressPage));
 
@@ -343,27 +346,33 @@ begin
   FProgressPage.SetComment(rstrCreationCollection);
 
   try
-    //
-    // Создаем коллекцию
-    //
-    if FParams.Operation <> otExisting then
+    if FParams.Operation = otExisting then
     begin
+      //
+      // Подключаем коллекцию
+      //
+      FParams.CollectionID := GetSystemData.RegisterCollection(
+        FParams.CollectionFile,
+        FParams.DisplayName,
+        FParams.CollectionRoot
+      );
+    end
+    else // if FParams.Operation <> otExisting then
+    begin
+      //
+      // Создаем коллекцию
+      //
       FProgressPage.ShowTeletype(rstrCreationCollection, tsInfo);
       { TODO -oNickR -cUsability : проверять существование на соответствующей странице с выдачей предупреждения }
       //Assert(not FileExists(FParams.CollectionFile));
       Assert(FileExists(FParams.GenreFile));
-      {* FParams.CollectionID := *} GetSystemData.CreateCollectionDatabase(FParams.CollectionFile, FParams.GenreFile);
-
-      //
-      // Установить свойства коллекции
-      //
-      //Collection := GetSystemData.GetBookCollection(FParams.CollectionFile);
-      //Collection.SetStringProperty(SETTING_NOTES, FParams.Notes);
-      //Collection.SetIntProperty(SETTING_DATA_VERSION, UNVERSIONED_COLLECTION);
-      //Collection.SetIntProperty(SETTING_CODE, FParams.CollectionCode);
-      //Collection.SetStringProperty(SETTING_URL, FParams.URL);
-      //Collection.SetStringProperty(SETTING_DOWNLOAD_SCRIPT, FParams.Script);
-      //FProgressPage.ShowProgress(60);
+      FParams.CollectionID := GetSystemData.CreateCollection(
+        FParams.DisplayName,
+        FParams.CollectionRoot,
+        FParams.CollectionFile,
+        FParams.CollectionCode,
+        FParams.GenreFile
+      );
     end;
 
     FProgressPage.ShowProgress(100);
@@ -371,11 +380,7 @@ begin
     Result := True;
   except
     on e: Exception do
-    begin
       FProgressPage.ShowTeletype(e.Message, tsError);
-      if FileExists(FParams.CollectionFile) then
-        DeleteFile(FParams.CollectionFile);
-    end;
   end;
 end;
 
@@ -436,18 +441,6 @@ begin
   Result := True;
 end;
 
-procedure TNewCollectionWizard.RegisterCollection;
-begin
-  FProgressPage.ShowTeletype(rstrRegistration, tsInfo);
-
-  GetSystemData.RegisterCollection(
-    FParams.DisplayName,
-    FParams.CollectionRoot,
-    FParams.CollectionFile,
-    FParams.CollectionCode
-  );
-end;
-
 function TNewCollectionWizard.ShowMessage(const Text: string; Flags: Integer): Integer;
 begin
   Result := Application.MessageBox(PChar(Text), PChar(Application.Title), Flags);
@@ -483,30 +476,30 @@ end;
 //
 procedure TNewCollectionWizard.PMWorkerDone(var Message: TMessage);
 var
-  DontChangePage: Boolean;
+  stayOnCurrentPage: Boolean;
   IgnoreErrors : Boolean;
 begin
   //
-  // Если во время работы небыло ошибок и поток небыл остановлен пользователем
+  // Если во время работы небыло ошибок и поток не был остановлен пользователем
   //
+  IgnoreErrors := True;
   if FProgressPage.HasErrors then
     IgnoreErrors := (MessageDlg(rstrImportDoneWithErrors, mtWarning, [mbYes,mbNo], 0) = mrYes);
 
-  DontChangePage := (not IgnoreErrors) or FWorker.Canceled;
+  stayOnCurrentPage := (not IgnoreErrors) or FWorker.Canceled;
 
   //
   // Закрыть и уничтожить рабочий поток
   //
   CloseWorker;
 
-  //
-  // все в порядке -> переходим на следующую страницу
-  //
-  if DontChangePage then
+  if stayOnCurrentPage then
   begin
     //
     // TODO: пользователь отказался от продолжения, надо уничтожить _созданную_ коллекцию
     //
+    GetSystemData.DeleteCollection(FParams.CollectionID);
+
     if FProgressPage.HasErrors then
     begin
       FProgressPage.ShowSaveLogPanel(True);
@@ -522,7 +515,10 @@ begin
   end
   else
   begin
-    RegisterCollection;
+    //
+    // все в порядке -> переходим на следующую страницу
+    //
+    ///RegisterCollection;
     DoChangePage(btnForward);
   end;
 end;
