@@ -103,6 +103,7 @@ implementation
 uses
   Math,
   unit_MHL_strings,
+  unit_Consts,
   unit_Globals,
   unit_Settings,
   unit_Interfaces,
@@ -405,7 +406,7 @@ begin
   begin
     {* CollectionID := FParams.CollectionID; *}
     DBFileName := TMHLSettings.ExpandCollectionFileName(FParams.CollectionFile);
-    CollectionRoot := TMHLSettings.ExpantCollectionRoot(FParams.CollectionRoot);
+    CollectionRoot := TMHLSettings.ExpandCollectionRoot(FParams.CollectionRoot);
     CollectionType := FParams.CollectionCode;
     InpxFileName := FParams.INPXFile;
 

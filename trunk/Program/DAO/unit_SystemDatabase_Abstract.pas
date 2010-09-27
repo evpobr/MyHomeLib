@@ -113,8 +113,11 @@ type
     procedure DeleteCollection(CollectionID: Integer; RemoveFromDisk: Boolean = True); virtual; abstract;
 
     function HasCollections: Boolean;
-    function HasCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer = INVALID_COLLECTION_ID): Boolean; virtual; abstract;
+    function HasCollectionWithProp(PropID: TPropertyID; const Value: string; IgnoreID: Integer = INVALID_COLLECTION_ID): Boolean; virtual; abstract;
     function FindFirstExistingCollectionID(const PreferredID: Integer): Integer;
+
+    procedure SetProperty(const CollectionID: Integer; const PropID: TPropertyID; const Value: Variant); virtual; abstract;
+    function GetProperty(const CollectionID: Integer; const PropID: TPropertyID): Variant; virtual; abstract;
 
     function GetCollectionInfo(const CollectionID: Integer): ICollectionInfo; virtual; abstract;
     procedure UpdateCollectionInfo(const CollectionInfo: ICollectionInfo); virtual; abstract;

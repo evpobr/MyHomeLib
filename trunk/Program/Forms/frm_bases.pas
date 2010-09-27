@@ -256,7 +256,7 @@ begin
   //
   // Проверим название коллекции
   //
-  if FSystemData.HasCollectionWithProp(cpDisplayName, DisplayName, CollectionID) then
+  if FSystemData.HasCollectionWithProp(PROP_DISPLAYNAME, DisplayName, CollectionID) then
   begin
     MessageDlg(Format(rstrCollectionAlreadyExists, [DisplayName]), mtError, [mbOk], 0);
     Exit;
@@ -265,7 +265,7 @@ begin
   //
   // Получим абсолютные пути. В качестве базового каталого используется DataPath.
   //
-  storedRoot := TMHLSettings.ExpantCollectionRoot(RootFolder);
+  storedRoot := TMHLSettings.ExpandCollectionRoot(RootFolder);
   storedFileName := TMHLSettings.ExpandCollectionFileName(DBFileName);
 
   //
@@ -277,7 +277,7 @@ begin
     Exit;
   end;
 
-  if FSystemData.HasCollectionWithProp(cpFileName, storedFileName, CollectionID) then
+  if FSystemData.HasCollectionWithProp(PROP_DATAFILE, storedFileName, CollectionID) then
   begin
     MessageDlg(Format(rstrFileAlreadyExistsInDB, [storedFileName]), mtError, [mbOk], 0);
     Exit;

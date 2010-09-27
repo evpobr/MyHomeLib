@@ -136,13 +136,20 @@ type
     procedure DeleteCollection(CollectionID: Integer; RemoveFromDisk: Boolean = True);
 
     function HasCollections: Boolean;
-    function HasCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer = INVALID_COLLECTION_ID): Boolean;
+    function HasCollectionWithProp(PropID: TPropertyID; const Value: string; IgnoreID: Integer = INVALID_COLLECTION_ID): Boolean;
     function FindFirstExistingCollectionID(const PreferredID: Integer): Integer;
+
+    //
+    // Свойства коллекции
+    //
+    procedure SetProperty(const CollectionID: Integer; const PropID: TPropertyID; const Value: Variant);
+    function GetProperty(const CollectionID: Integer; const PropID: TPropertyID): Variant;
 
     function GetCollectionInfo(const CollectionID: Integer): ICollectionInfo;
     procedure UpdateCollectionInfo(const CollectionInfo: ICollectionInfo);
 
-    function GetCollection(const DBCollectionFile: string): IBookCollection;
+    function GetCollection(const DBCollectionFile: string): IBookCollection; deprecated;
+    //function GetCollectionByID(const CollectionID: Integer): IBookCollection;
 
     procedure ActivateCollection(CollectionID: Integer); deprecated;
     function GetActiveCollectionInfo: ICollectionInfo; deprecated;
@@ -254,8 +261,16 @@ type
     procedure SetSeriesTitle(const SeriesID: Integer; const NewSeriesTitle: string);
     procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer);
 
-    procedure SetStringProperty(const PropID: Integer; const Value: string);
-    procedure SetIntProperty(const PropID: Integer; const Value: Integer);
+    //
+    // Свойства коллекции
+    //
+    function ID: Integer;
+    function Code: COLLECTION_TYPE;
+    function Root: string;
+
+    procedure SetProperty(const PropID: TPropertyID; const Value: Variant);
+    function GetProperty(const PropID: TPropertyID): Variant;
+    procedure UpdateProperies;
 
     procedure ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc);
     procedure ExportUserData(data: TUserData);

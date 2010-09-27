@@ -79,6 +79,7 @@ type
     property DBFileName: string read FDBFileName write FDBFileName;
     property CollectionRoot: string read FCollectionRoot write SetCollectionRoot;
     property CollectionType: COLLECTION_TYPE read FCollectionType write FCollectionType;
+
     property InpxFileName: string read FInpxFileName write FInpxFileName;
     property GenresType: TGenresType read FGenresType write FGenresType;
   end;
@@ -489,15 +490,15 @@ begin
       // Прочитать и установить свойства коллекции
       //
       header.ParseString(unZip.Comment);
-      BookCollection.SetStringProperty(SETTING_NOTES, header.Notes);
-      BookCollection.SetStringProperty(SETTING_URL, header.URL);
-      BookCollection.SetStringProperty(SETTING_DOWNLOAD_SCRIPT, header.Script);
+      BookCollection.SetProperty(PROP_NOTES, header.Notes);
+      BookCollection.SetProperty(PROP_URL, header.URL);
+      BookCollection.SetProperty(PROP_CONNECTIONSCRIPT, header.Script);
 
       if unZip.FindFirst(VERINFO_FILENAME, ArchItem, faAnyFile - faDirectory) then
       begin
         unZip.ExtractToString(ArchItem.FileName, strVersion);
         strVersion := Trim(strVersion);
-        BookCollection.SetIntProperty(SETTING_DATA_VERSION, StrToIntDef(strVersion, UNVERSIONED_COLLECTION));
+        BookCollection.SetProperty(PROP_DATAVERSION, StrToIntDef(strVersion, UNVERSIONED_COLLECTION));
       end;
 
       BookCollection.AfterBatchUpdate;

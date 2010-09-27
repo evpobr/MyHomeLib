@@ -257,7 +257,7 @@ type
     procedure LoadSettings;
     procedure SaveSettings;
 
-    class function ExpantCollectionRoot(const rootFolder: string): string;
+    class function ExpandCollectionRoot(const rootFolder: string): string;
     class function ExpandCollectionFileName(const FileName: string): string;
 
   public
@@ -1385,7 +1385,7 @@ begin
   FreeAndNil(mg_objSettings);
 end;
 
-class function TMHLSettings.ExpantCollectionRoot(const rootFolder: string): string;
+class function TMHLSettings.ExpandCollectionRoot(const rootFolder: string): string;
 begin
   Assert(Assigned(mg_objSettings));
   Result := IncludeTrailingPathDelimiter(ExpandFileNameEx(mg_objSettings.DataPath, rootFolder));

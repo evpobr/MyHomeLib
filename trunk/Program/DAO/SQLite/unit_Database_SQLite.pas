@@ -142,6 +142,7 @@ type
 
   public
     class procedure CreateCollection(
+      const SystemData: ISystemData;
       const DBFileName: string;
       CollectionType: COLLECTION_TYPE;
       const GenresFileName: string
@@ -153,7 +154,8 @@ type
     ): Boolean;
 
   public
-    constructor Create(const DBCollectionFile: string; const SystemData: ISystemData);
+    constructor Create(const CollectionInfo: ICollectionInfo; const SystemData: ISystemData);
+    constructor CreateTemp(const DBFileName: string; const SystemData: ISystemData);
     destructor Destroy; override;
 
     // Iterators:
@@ -195,7 +197,13 @@ type
     function FindOrCreateSeries(const Title: string): Integer; override;
     procedure SetSeriesTitle(const SeriesID: Integer; const NewSeriesTitle: string); override;
     procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer); override;
-    procedure SetStringProperty(const PropID: Integer; const Value: string); override;
+
+    //
+    // Свойства коллекции
+    //
+    procedure SetProperty(const PropID: TPropertyID; const Value: Variant); override;
+    function GetProperty(const PropID: TPropertyID): Variant; override;
+    procedure UpdateProperies; override;
 
     procedure ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc); override;
     procedure ExportUserData(data: TUserData); override;
@@ -243,6 +251,7 @@ uses
   Windows,
   Character,
   Generics.Collections,
+  Variants,
   SQLite3,
   DateUtils,
   Math,
@@ -258,6 +267,7 @@ uses
 
 // Generate table structure and minimal data for a new collection
 class procedure TBookCollection_SQLite.CreateCollection(
+  const SystemData: ISystemData;
   const DBFileName: string;
   CollectionType: COLLECTION_TYPE;
   const GenresFileName: string
@@ -291,16 +301,18 @@ begin
     FreeAndNil(ADatabase);
   end;
 
-  // Now that we have the DB structure in place, can create a collection instance:
-  BookCollection := TBookCollection_SQLite.Create(DBFileName, GetSystemData);
+  //
+  // Now that we have the DB structure in place, can create a collection instance
+  //
+  BookCollection := TBookCollection_SQLite.CreateTemp(DBFileName, SystemData);
   BookCollection.BeginBulkOperation;
   try
     //
     // Fill metadata version and creation date
     //
-    BookCollection.SetStringProperty(SETTING_SCHEMA_VERSION, DATABASE_VERSION);
-    BookCollection.SetIntProperty(SETTING_CODE, CollectionType);
-    BookCollection.SetStringProperty(SETTING_CREATION_DATE, FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now));
+    BookCollection.SetProperty(PROP_SCHEMA_VERSION, DATABASE_VERSION);
+    BookCollection.SetProperty(PROP_CODE, CollectionType);
+    BookCollection.SetProperty(PROP_CREATIONDATE, Now);
 
     //
     // Fill the Genres table
@@ -329,10 +341,10 @@ begin
       //
       // Получим из таблицы Settings значение версии и если оно совпадает, то считаем, что это нормальная коллекция
       //
-      Result := (DATABASE_VERSION = FDatabase.QuerySingleString(GET_SETTING_SQL, [SETTING_SCHEMA_VERSION]));
+      Result := (DATABASE_VERSION = FDatabase.QuerySingleString(GET_SETTING_SQL, [PROP_SCHEMA_VERSION]));
       if Result then
       begin
-        CollectionType := FDatabase.QuerySingleInt(GET_SETTING_SQL, [SETTING_CODE]);
+        CollectionType := FDatabase.QuerySingleInt(GET_SETTING_SQL, [PROP_CODE]);
       end;
     finally
       FDatabase.Free;
@@ -1058,11 +1070,31 @@ begin
     SQLite3_Result_Int(pCtx, 1);
 end;
 
-constructor TBookCollection_SQLite.Create(const DBCollectionFile: string; const SystemData: ISystemData);
+constructor TBookCollection_SQLite.Create(const CollectionInfo: ICollectionInfo; {const DBCollectionFile: string;} const SystemData: ISystemData);
 begin
-  inherited Create(SystemData);
+  Assert(Assigned(CollectionInfo));
+  Assert(Assigned(SystemData));
 
-  FDatabase := TSQLiteDatabase.Create(DBCollectionFile);
+  inherited Create(CollectionInfo, SystemData);
+
+  FDatabase := TSQLiteDatabase.Create(CollectionInfo.DBFileName);
+
+  FTriggersEnabled := True;
+
+  FDatabase.AddFunction('MHL_FULLNAME',    3, fullAuthorName);
+  FDatabase.AddFunction('MHL_FULLNAME',    4, fullAuthorNameEx);
+  FDatabase.AddFunction('MHL_TRIGGERS_ON', 0, getIsTriggersOn, SQLITE_ANY, Self);
+
+  InternalLoadGenres;
+end;
+
+constructor TBookCollection_SQLite.CreateTemp(const DBFileName: string; const SystemData: ISystemData);
+begin
+  Assert(Assigned(SystemData));
+
+  inherited Create(nil, SystemData);
+
+  FDatabase := TSQLiteDatabase.Create(DBFileName);
 
   FTriggersEnabled := True;
 
@@ -1080,21 +1112,30 @@ begin
   inherited Destroy;
 end;
 
-procedure TBookCollection_SQLite.SetStringProperty(const PropID: Integer; const Value: string);
+procedure TBookCollection_SQLite.SetProperty(const PropID: TPropertyID; const Value: Variant);
 const
   SQL_DELETE = 'DELETE FROM Settings WHERE SettingID = ?';
   SQL_INSERT = 'INSERT INTO Settings (SettingID, SettingValue) VALUES (?, ?)';
 var
   query: TSQLiteQuery;
 begin
-  FDatabase.ExecSQL(SQL_DELETE, [PropID]);
-
-  if Value <> '' then
+  if isCollectionProp(PropID) then
   begin
+    FDatabase.ExecSQL(SQL_DELETE, [PropID]);
+
+    if VarIsNull(Value) or VarIsEmpty(Value) then
+      Exit;
+
     query := FDatabase.NewQuery(SQL_INSERT);
     try
       query.SetParam(0, PropID);
-      query.SetBlobParam(1, Value);
+
+      case propertyType(PropID) of
+        PROP_TYPE_INTEGER:  query.SetParam(1, Integer(Value));
+        PROP_TYPE_DATETIME: query.SetParam(1, TDateTime(Value));
+        PROP_TYPE_BOOLEAN:  query.SetParam(1, Boolean(Value));
+        PROP_TYPE_STRING:   query.SetParam(1, string(Value));
+      end;
 
       query.ExecSQL;
     finally
@@ -1102,9 +1143,72 @@ begin
     end;
   end;
 
-  //
-  // TODO: обновить CollectionInfo
-  //
+  if isSystemProp(PropID) and Assigned(FCollectionInfo) then
+  begin
+    FSystemData.SetProperty(ID, PropID, Value);
+  end;
+end;
+
+function TBookCollection_SQLite.GetProperty(const PropID: TPropertyID): Variant;
+const
+  SQL = 'SELECT SettingValue FROM Settings WHERE SettingID = ?';
+var
+  query: TSQLiteQuery;
+begin
+  if isCollectionProp(PropID) then
+  begin
+    query := FDatabase.NewQuery(SQL);
+    try
+      query.SetParam(0, PropID);
+
+      query.Open;
+      if not query.Eof then
+      begin
+        case propertyType(PropID) of
+          PROP_TYPE_INTEGER:  Result := query.FieldAsInt(0);
+          PROP_TYPE_DATETIME: Result := query.FieldAsDateTime(0);
+          PROP_TYPE_BOOLEAN:  Result := query.FieldAsBoolean(0);
+          PROP_TYPE_STRING:   Result := query.FieldAsString(0);
+        end;
+      end;
+    finally
+      query.Free;
+    end;
+  end
+  else
+    Result := FSystemData.GetProperty(ID, PropID);
+end;
+
+procedure TBookCollection_SQLite.UpdateProperies;
+const
+  SQL = 'SELECT SettingID, SettingValue FROM Settings';
+var
+  query: TSQLiteQuery;
+  PropID: TPropertyID;
+  Value: Variant;
+begin
+  query := FDatabase.NewQuery(SQL);
+  try
+    query.Open;
+
+    while not query.Eof do
+    begin
+      PropID := query.FieldAsInt(0);
+      if isSystemProp(PropID) then
+      begin
+        case propertyType(PropID) of
+          PROP_TYPE_INTEGER:  Value := query.FieldAsInt(1);
+          PROP_TYPE_DATETIME: Value := query.FieldAsDateTime(1);
+          PROP_TYPE_BOOLEAN:  Value := query.FieldAsBoolean(1);
+          PROP_TYPE_STRING:   Value := query.FieldAsString(1);
+        end;
+        FSystemData.SetProperty(ID, PropID, Value);
+      end;
+      query.Next;
+    end;
+  finally
+    query.Free;
+  end;
 end;
 
 procedure TBookCollection_SQLite.ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc);
