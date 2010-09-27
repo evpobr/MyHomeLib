@@ -42,6 +42,7 @@ var
 implementation
 
 uses
+  Variants,
   SysUtils,
   unit_Consts,
   unit_Helpers,
@@ -54,28 +55,29 @@ resourcestring
 
 procedure TfrmStat.LoadCollectionInfo(const Collection: IBookCollection);
 var
+  vVersion: Variant;
   DataVersion: string;
   AuthorsCount: Integer;
   BooksCount: Integer;
   SeriesCount: Integer;
-  SystemData: ISystemData;
 begin
   Assert(Assigned(Collection));
 
-  SystemData := GetSystemData;
-  if SystemData.GetActiveCollectionInfo.DataVersion = UNVERSIONED_COLLECTION then
+  Collection.GetStatistics(AuthorsCount, BooksCount, SeriesCount);
+
+  vVersion := Collection.GetProperty(PROP_DATAVERSION);
+  if VarIsEmpty(vVersion) then
     DataVersion := rstrUnknown
   else
-    DataVersion := IntToStr(SystemData.GetActiveCollectionInfo.DataVersion);
-  Collection.GetStatistics(AuthorsCount, BooksCount, SeriesCount);
+    DataVersion := IntToStr(vVersion);
 
   //
   // Заполним данные
   //
-  lvInfo.Items[0].SubItems[0] := SystemData.GetActiveCollectionInfo.Name;
-  lvInfo.Items[1].SubItems[0] := DateToStr(SystemData.GetActiveCollectionInfo.CreationDate);
+  lvInfo.Items[0].SubItems[0] := Collection.GetProperty(PROP_DISPLAYNAME);
+  lvInfo.Items[1].SubItems[0] := DateToStr(Collection.GetProperty(PROP_CREATIONDATE));
   lvInfo.Items[2].SubItems[0] := DataVersion;
-  lvInfo.Items[3].SubItems[0] := SystemData.GetActiveCollectionInfo.Notes;
+  lvInfo.Items[3].SubItems[0] := Collection.GetProperty(PROP_NOTES);
 
   lvInfo.Items[4].SubItems[0] := IntToStr(AuthorsCount);
   lvInfo.Items[5].SubItems[0] := IntToStr(BooksCount);

@@ -28,70 +28,9 @@ uses
   IdHTTP,
   unit_Consts;
 
-//
-// Global consts
-//
-// -----------------------------------------------------------------------------
-const
-  {
-    0000 0000
-    \ /   |
-     |    - тип содержимого
-     |
-     |-- тип коллекции
-
-    Младшее слово - тип содержимого
-    Пока определены следующие типы:
-    0000        : книги в fb2
-    0001        : книги не в fb2
-
-    Старшее слово - тип коллекции
-    Определены следующие диапазоны:
-    0000        : пользовательская коллекция (всегда локальная)
-    0001 - 07FF : внешние локальные коллекции
-    0800 - 0FFF : внешние онлайн коллекции
-    }
-
-  //
-  // тип содержимого
-  //
-  CONTENT_FB       = $00000000;
-  CONTENT_NONFB    = $00000001;
-
-  //
-  // предопределенные библиотеки
-  //
-  LIBRARY_PRIVATE  = $00000000;
-  LIBRARY_EXTERNAL = $00010000;
-
-  //
-  // расположения библиотеки
-  //
-  LOCATION_LOCAL   = $00000000;
-  LOCATION_ONLINE  = $08000000;
-
-  //
-  // различные маски
-  //
-  CT_CONTENT_MASK  = $00000001;
-  CT_LOCATION_MASK = $08000000;
-  CT_TYPE_MASK     = $08030000;
-  CT_MASK          = CT_CONTENT_MASK or CT_TYPE_MASK;
-
-  //
-  // Несколько предопределенных типов
-  //
-  CT_PRIVATE_FB            = LIBRARY_PRIVATE or LIBRARY_PRIVATE  or CONTENT_FB;    // 0000 0000 -
-  CT_PRIVATE_NONFB         = LIBRARY_PRIVATE or LIBRARY_PRIVATE  or CONTENT_NONFB; // 0000 0001 -
-  CT_EXTERNAL_LOCAL_FB     = LOCATION_LOCAL  or LIBRARY_EXTERNAL or CONTENT_FB;    // 0001 0000 - local lib.rus.ec
-  CT_EXTERNAL_ONLINE_FB    = LOCATION_ONLINE or LIBRARY_EXTERNAL or CONTENT_FB;    // 0801 0000 - online lib.rus.ec
-  CT_EXTERNAL_LOCAL_NONFB  = LOCATION_LOCAL  or LIBRARY_EXTERNAL or CONTENT_NONFB; // 0001 0001 - local Genesis
-  CT_EXTERNAL_ONLINE_NONFB = LOCATION_ONLINE or LIBRARY_EXTERNAL or CONTENT_NONFB; // 0001 0001 - online Genesis
-
-  CT_DEPRICATED_ONLINE_FB = 99;
-
 type
   COLLECTION_TYPE = Integer;
+  TPropertyID = Integer;
 
   TTXTEncoding = (enUTF8, en1251, enUnicode, enUnknown);
 
@@ -129,8 +68,6 @@ type
     bfFbd,    // An (FBD + a raw book file) packed together in a zip
     bfRaw     // A raw file = any other book format
   );
-
-  TCollectionProp = (cpDisplayName, cpFileName, cpRootFolder);
 
   PBookKey = ^TBookKey;
   TBookKey = record
@@ -388,12 +325,18 @@ type
 // ============================================================================
   function CreateBookKey(BookID: Integer; DatabaseID: Integer): TBookKey; inline;
 
+  // -----------------------------------------------------------------------------
   function isPrivateCollection(t: COLLECTION_TYPE): Boolean; inline;
   function isExternalCollection(t: COLLECTION_TYPE): Boolean; inline;
   function isLocalCollection(t: COLLECTION_TYPE): Boolean; inline;
   function isOnlineCollection(t: COLLECTION_TYPE): Boolean; inline;
   function isFB2Collection(t: COLLECTION_TYPE): Boolean; inline;
   function isNonFB2Collection(t: COLLECTION_TYPE): Boolean; inline;
+
+  // -----------------------------------------------------------------------------
+  function isSystemProp(propID: TPropertyID): Boolean; inline;
+  function isCollectionProp(propID: TPropertyID): Boolean; inline;
+  function propertyType(propID: TPropertyID): Integer; inline;
 
   // -----------------------------------------------------------------------------
   function Transliterate(const Input: string): string;
@@ -496,6 +439,22 @@ end;
 function isNonFB2Collection(t: COLLECTION_TYPE): Boolean; inline;
 begin
   Result := (t and CT_CONTENT_MASK) = CONTENT_NONFB;
+end;
+
+// -----------------------------------------------------------------------------
+function isSystemProp(propID: TPropertyID): Boolean; inline;
+begin
+  Result := (propID and PROP_CLASS_SYSTEM) = PROP_CLASS_SYSTEM;
+end;
+
+function isCollectionProp(propID: TPropertyID): Boolean; inline;
+begin
+  Result := (propID and PROP_CLASS_COLLECTION) = PROP_CLASS_COLLECTION;
+end;
+
+function propertyType(propID: TPropertyID): Integer; inline;
+begin
+  Result := (propID and PROP_TYPE_MASK);
 end;
 
 // -----------------------------------------------------------------------------

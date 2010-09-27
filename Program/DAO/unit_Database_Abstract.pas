@@ -76,8 +76,16 @@ type
     procedure SetSeriesTitle(const SeriesID: Integer; const NewSeriesTitle: string); virtual; abstract;
     procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer); virtual; abstract;
 
-    procedure SetStringProperty(const PropID: Integer; const Value: string); virtual; abstract;
-    procedure SetIntProperty(const PropID: Integer; const Value: Integer);
+    //
+    // Свойства коллекции
+    //
+    function ID: Integer;
+    function Code: COLLECTION_TYPE;
+    function Root: string;
+
+    procedure SetProperty(const PropID: TPropertyID; const Value: Variant); virtual; abstract;
+    function GetProperty(const PropID: TPropertyID): Variant; virtual; abstract;
+    procedure UpdateProperies; virtual; abstract;
 
     procedure ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc); virtual; abstract;
     procedure ExportUserData(data: TUserData); virtual; abstract;
@@ -132,7 +140,7 @@ type
     end;
 
   protected
-    constructor Create(const SystemData: ISystemData);
+    constructor Create(const CollectionInfo: ICollectionInfo; const SystemData: ISystemData);
 
     procedure GetGenre(const GenreCode: string; var Genre: TGenreData);
     procedure GetBookGenres(BookID: Integer; var BookGenres: TBookGenres; RootGenre: PGenreData = nil);
@@ -145,6 +153,7 @@ type
     FHideDeleted: Boolean;
     FGenreCache: TGenreCache;
     FSystemData: ISystemData;
+    FCollectionInfo: ICollectionInfo;
 
   public
     destructor Destroy; override;
@@ -167,14 +176,6 @@ uses
   unit_Consts;
 
 { TBookCollection }
-
-procedure TBookCollection.SetIntProperty(const PropID: Integer; const Value: Integer);
-begin
-  if Value = 0 then
-    Exit;
-
-  SetStringProperty(PropID, IntToStr(Value));
-end;
 
 procedure TBookCollection.LoadGenres(const GenresFileName: string);
 var
@@ -255,11 +256,12 @@ begin
 end;
 
 // Filter out duplicates by author ID
-constructor TBookCollection.Create(const SystemData: ISystemData);
+constructor TBookCollection.Create(const CollectionInfo: ICollectionInfo; const SystemData: ISystemData);
 begin
   inherited Create;
   FGenreCache := TGenreCache.Create;
   FSystemData := SystemData;
+  FCollectionInfo := CollectionInfo;
 end;
 
 destructor TBookCollection.Destroy;
@@ -432,6 +434,24 @@ end;
 function TBookCollection.GetAuthorFilterType: string;
 begin
   Result := FAuthorFilterType;
+end;
+
+function TBookCollection.ID: Integer;
+begin
+  Assert(Assigned(FCollectionInfo));
+  Result := FCollectionInfo.ID;
+end;
+
+function TBookCollection.Code: COLLECTION_TYPE;
+begin
+  Assert(Assigned(FCollectionInfo));
+  Result := FCollectionInfo.CollectionType;
+end;
+
+function TBookCollection.Root: string;
+begin
+  Assert(Assigned(FCollectionInfo));
+  Result := FCollectionInfo.RootFolder;
 end;
 
 end.

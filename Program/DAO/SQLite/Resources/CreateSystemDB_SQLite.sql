@@ -85,8 +85,8 @@ CREATE TABLE Bases (
   RootFolder       VARCHAR(128) NOT NULL COLLATE MHL_SYSTEM_NOCASE,
   DataVersion      INTEGER,
   Code             INTEGER      NOT NULL,
-  LibUser          VARCHAR(50)           COLLATE MHL_SYSTEM_NOCASE,
-  LibPassword      VARCHAR(50)           COLLATE MHL_SYSTEM_NOCASE,
+  LibUser          VARCHAR(50),
+  LibPassword      VARCHAR(50),
 
   --
   -- следующие поля должны храниться в самой коллекции. Здесь им не место.

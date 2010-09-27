@@ -125,8 +125,11 @@ type
     procedure DeleteCollection(CollectionID: Integer; RemoveFromDisk: Boolean = True); override;
 
     // function HasCollections: Boolean; // use base implementation
-    function HasCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer = INVALID_COLLECTION_ID): Boolean; override;
+    function HasCollectionWithProp(PropID: TPropertyID; const Value: string; IgnoreID: Integer = INVALID_COLLECTION_ID): Boolean; override;
     // function FindFirstExistingCollectionID(const PreferredID: Integer): Integer; // use base implementation
+
+    procedure SetProperty(const CollectionID: Integer; const PropID: TPropertyID; const Value: Variant); override;
+    function GetProperty(const CollectionID: Integer; const PropID: TPropertyID): Variant; override;
 
     function GetCollectionInfo(const CollectionID: Integer): ICollectionInfo; override;
     procedure UpdateCollectionInfo(const CollectionInfo: ICollectionInfo); override;
@@ -467,7 +470,6 @@ const
     'FROM Bases bs WHERE bs.DatabaseID = ?';
 var
   query: TSQLiteQuery;
-  stream: TStream;
   tempCollectionInfo: ICollectionInfo;
 begin
   Assert(CollectionID > 0);
@@ -490,7 +492,7 @@ begin
           //
           // восстановить абсолютные пути
           //
-          tempCollectionInfo.SetRootFolder(TMHLSettings.ExpantCollectionRoot(query.FieldAsString(1)));
+          tempCollectionInfo.SetRootFolder(TMHLSettings.ExpandCollectionRoot(query.FieldAsString(1)));
           tempCollectionInfo.SetDBFileName(TMHLSettings.ExpandCollectionFileName(query.FieldAsString(2)));
 
           tempCollectionInfo.SetCollectionType(query.FieldAsInt(3)); // code
@@ -533,7 +535,6 @@ const
     'WHERE DatabaseID = ? ';                                                          // 11
 var
   query: TSQLiteQuery;
-  stream: TStream;
   storedRoot: string;
   storedFileName: string;
 begin
@@ -593,59 +594,7 @@ begin
   FActiveCollectionInfo := GetCollectionInfo(CollectionID);
 end;
 
-function TSystemData_SQLite.RegisterCollection(
-  const DBFileName: string;
-  const DisplayName: string;
-  const RootFolder: string
-  ): Integer;
-const
-  SQL_INSERT =
-    'INSERT INTO Bases (BaseName, RootFolder, DBFileName, CreationDate, Code) ' +
-    'VALUES(?, ?, ?, ?, ?)';
-var
-  absFileName: string;
-  storedRoot: string;
-  storedFileName: string;
-  CollectionType: COLLECTION_TYPE;
-  query: TSQLiteQuery;
-begin
-  absFileName := TMHLSettings.ExpandCollectionFileName(DBFileName);
-
-  if TBookCollection_SQLite.IsValidCollection(absFileName, CollectionType) then
-  begin
-    storedRoot := RootFolder;
-    storedFileName := DBFileName;
-    PrepareCollectionPath(storedRoot, storedFileName);
-
-    //
-    // регистрируем коллекцию
-    //
-    query := FDatabase.NewQuery(SQL_INSERT);
-    try
-      query.SetParam(0, DisplayName);
-      query.SetParam(1, storedRoot);
-      query.SetParam(2, storedFileName);
-      query.SetParam(3, Now);
-      query.SetParam(4, CollectionType);
-
-      query.ExecSQL;
-
-      Result := FDatabase.LastInsertRowID;
-
-      //
-      // TODO : принудительно обновить свойства коллекции
-      //
-    finally
-      FreeAndNil(query);
-    end;
-  end
-  else
-  begin
-    raise Exception.CreateFmt(rstrInvalidCollection, [DBFileName]);
-  end;
-end;
-
-function TSystemData_SQLite.HasCollectionWithProp(PropID: TCollectionProp; const Value: string; IgnoreID: Integer): Boolean;
+function TSystemData_SQLite.HasCollectionWithProp(PropID: TPropertyID; const Value: string; IgnoreID: Integer): Boolean;
 var
   CollectionInfoIterator: ICollectionInfoIterator;
   CollectionInfo: ICollectionInfo;
@@ -663,10 +612,10 @@ begin
     Exit;
 
   case PropID of
-  cpRootFolder:
-    searchValue := TMHLSettings.ExpantCollectionRoot(Value);
+  PROP_ROOTFOLDER:
+    searchValue := TMHLSettings.ExpandCollectionRoot(Value);
 
-  cpFileName:
+  PROP_DATAFILE:
     searchValue := TMHLSettings.ExpandCollectionFileName(Value);
 
   else
@@ -676,13 +625,13 @@ begin
   while (CollectionInfoIterator.Next(CollectionInfo)) do
   begin
     case PropID of
-    cpDisplayName:
+    PROP_DISPLAYNAME:
       Match := (CollectionInfo.Name = searchValue);
 
-    cpFileName:
+    PROP_DATAFILE:
       Match := (CollectionInfo.DBFileName = searchValue);
 
-    cpRootFolder:
+    PROP_ROOTFOLDER:
       Match := (CollectionInfo.RootFolder = searchValue);
 
     else
@@ -695,6 +644,92 @@ begin
       Result := True;
       Exit;
     end;
+  end;
+end;
+
+function FieldByPropID(const PropID: TPropertyID): string;
+begin
+  Assert(isSystemProp(PropID));
+
+  case PropID of
+    PROP_ID:               Result := 'DatabaseID';
+    PROP_DATAFILE:         Result := 'DBFileName';
+    PROP_CODE:             Result := 'Code';
+    PROP_DISPLAYNAME:      Result := 'BaseName';
+    PROP_ROOTFOLDER:       Result := 'RootFolder';
+    PROP_LIBUSER:          Result := 'LibUser';
+    PROP_LIBPASSWORD:      Result := 'LibPassword';
+    PROP_URL:              Result := 'URL';
+    PROP_CONNECTIONSCRIPT: Result := 'ConnectionScript';
+    PROP_DATAVERSION:      Result := 'DataVersion';
+  else
+    Assert(False);
+  end;
+end;
+
+procedure TSystemData_SQLite.SetProperty(const CollectionID: Integer; const PropID: TPropertyID; const Value: Variant);
+const
+  SQL_UPDATE = 'UPDATE Bases SET %s = ? WHERE DatabaseID = ?';
+var
+  FieldName: string;
+  query: TSQLiteQuery;
+begin
+  Assert(CollectionID <> INVALID_COLLECTION_ID);
+  Assert(isSystemProp(PropID));
+
+  case PropID of
+    PROP_ID:         Assert(False); // DatabaseID
+    PROP_DATAFILE:   Assert(False); // DBFileName
+    PROP_CODE:       Assert(False); // Code
+    PROP_ROOTFOLDER: ;  // TODO привести путь к относительному
+  end;
+
+  FieldName := FieldByPropID(PropID);
+
+  query := FDatabase.NewQuery(Format(SQL_UPDATE, [FieldName]));
+  try
+    case propertyType(PropID) of
+      PROP_TYPE_INTEGER:  query.SetParam(0, Integer(Value));
+      PROP_TYPE_DATETIME: query.SetParam(0, TDateTime(Value));
+      PROP_TYPE_BOOLEAN:  query.SetParam(0, Boolean(Value));
+      PROP_TYPE_STRING:   query.SetParam(0, string(Value));
+    end;
+
+    query.SetParam(1, CollectionID);
+
+    query.ExecSQL;
+  finally
+    query.Free;
+  end;
+end;
+
+function TSystemData_SQLite.GetProperty(const CollectionID: Integer; const PropID: TPropertyID): Variant;
+const
+  SQL = 'SELECT %s FROM Bases WHERE DatabaseID = ?';
+var
+  FieldName: string;
+  query: TSQLiteQuery;
+begin
+  Assert(CollectionID <> INVALID_COLLECTION_ID);
+  Assert(isSystemProp(PropID));
+
+  FieldName := FieldByPropID(PropID);
+  query := FDatabase.NewQuery(Format(SQL, [FieldName]));
+  try
+    query.SetParam(0, CollectionID);
+
+    query.Open;
+    if not query.Eof then
+    begin
+      case propertyType(PropID) of
+        PROP_TYPE_INTEGER:  Result := query.FieldAsInt(0);
+        PROP_TYPE_DATETIME: Result := query.FieldAsDateTime(0);
+        PROP_TYPE_BOOLEAN:  Result := query.FieldAsBoolean(0);
+        PROP_TYPE_STRING:   Result := query.FieldAsString(0);
+      end;
+    end;
+  finally
+    query.Free;
   end;
 end;
 
@@ -744,7 +779,8 @@ var
 begin
   absDBFileName := TMHLSettings.ExpandCollectionFileName(DBFileName);
 
-  TBookCollection_SQLite.CreateCollection(absDBFileName, CollectionType, GenresFileName);
+  TBookCollection_SQLite.CreateCollection(Self, absDBFileName, CollectionType, GenresFileName);
+
   try
     storedFileName := DBFileName;
     storedRoot := RootFolder;
@@ -776,9 +812,81 @@ begin
   end;
 end;
 
-function TSystemData_SQLite.InternalCreateCollection(const DBCollectionFile: string): IBookCollection;
+function TSystemData_SQLite.RegisterCollection(
+  const DBFileName: string;
+  const DisplayName: string;
+  const RootFolder: string
+  ): Integer;
+const
+  SQL_INSERT =
+    'INSERT INTO Bases (BaseName, RootFolder, DBFileName, CreationDate, Code) ' +
+    'VALUES(?, ?, ?, ?, ?)';
+var
+  absFileName: string;
+  storedRoot: string;
+  storedFileName: string;
+  CollectionType: COLLECTION_TYPE;
+  query: TSQLiteQuery;
 begin
-  Result := TBookCollection_SQLite.Create(DBCollectionFile, Self);
+  absFileName := TMHLSettings.ExpandCollectionFileName(DBFileName);
+
+  if TBookCollection_SQLite.IsValidCollection(absFileName, CollectionType) then
+  begin
+    storedRoot := RootFolder;
+    storedFileName := DBFileName;
+    PrepareCollectionPath(storedRoot, storedFileName);
+
+    //
+    // регистрируем коллекцию
+    //
+    query := FDatabase.NewQuery(SQL_INSERT);
+    try
+      query.SetParam(0, DisplayName);
+      query.SetParam(1, storedRoot);
+      query.SetParam(2, storedFileName);
+      query.SetParam(3, Now);
+      query.SetParam(4, CollectionType);
+
+      query.ExecSQL;
+
+      Result := FDatabase.LastInsertRowID;
+
+      //
+      // TODO : принудительно обновить свойства коллекции
+      //
+      // Collection.UpdateProperies;
+    finally
+      FreeAndNil(query);
+    end;
+  end
+  else
+  begin
+    raise Exception.CreateFmt(rstrInvalidCollection, [DBFileName]);
+  end;
+end;
+
+function TSystemData_SQLite.InternalCreateCollection(const DBCollectionFile: string): IBookCollection;
+var
+  CollectionInfoIterator: ICollectionInfoIterator;
+  CollectionInfo: ICollectionInfo;
+  Match: Boolean;
+  searchValue: string;
+begin
+  CollectionInfoIterator := GetCollectionInfoIterator;
+
+  searchValue := TMHLSettings.ExpandCollectionFileName(DBCollectionFile);
+
+  while (CollectionInfoIterator.Next(CollectionInfo)) do
+  begin
+    if CollectionInfo.DBFileName = searchValue then
+    begin
+      Result := TBookCollection_SQLite.Create(CollectionInfo, Self);
+      Exit;
+    end;
+  end;
+
+  Assert(False);
+  Result := nil;
 end;
 
 function TSystemData_SQLite.ActivateGroup(const ID: Integer): Boolean;
@@ -959,7 +1067,6 @@ var
   author: TAuthorData;
   genre: TGenreData;
   query: TSQLiteQuery;
-  exists: Boolean;
 begin
   query := FDatabase.NewQuery(SQL_UPDATE);
   try
@@ -1660,7 +1767,7 @@ begin
   //
   // Получим полные пути. Если были указаны относительные пути, то в качестве базового используем DataPath.
   //
-  CollectionRoot := TMHLSettings.ExpantCollectionRoot(CollectionRoot);
+  CollectionRoot := TMHLSettings.ExpandCollectionRoot(CollectionRoot);
   CollectionFile := TMHLSettings.ExpandCollectionFileName(CollectionFile);
 
   //

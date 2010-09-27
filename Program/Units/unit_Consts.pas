@@ -194,22 +194,93 @@ const
   SF_LANG        = 'Lang';
 
   //
-  // Индексы свойств коллекции
-  //
-  SETTING_SCHEMA_VERSION  = 0;
-  SETTING_CREATION_DATE   = 1;
-  SETTING_NOTES           = 2;
-  SETTING_DATA_VERSION    = 3;
-  SETTING_CODE            = 4;
-  SETTING_URL             = 6;
-  SETTING_DOWNLOAD_SCRIPT = 7;
-  SETTING_POSITIONS       = 8;
-
-  //
   // специальные значения фильтров
   //
   ALPHA_FILTER_ALL       = '*';
   ALPHA_FILTER_NON_ALPHA = '#';
+
+  {
+    0000 0000
+    \ /   |
+     |    - тип содержимого
+     |
+     |-- тип коллекции
+
+    Младшее слово - тип содержимого
+    Пока определены следующие типы:
+    0000        : книги в fb2
+    0001        : книги не в fb2
+
+    Старшее слово - тип коллекции
+    Определены следующие диапазоны:
+    0000        : пользовательская коллекция (всегда локальная)
+    0001 - 07FF : внешние локальные коллекции
+    0800 - 0FFF : внешние онлайн коллекции
+    }
+
+  //
+  // тип содержимого
+  //
+  CONTENT_FB       = $00000000;
+  CONTENT_NONFB    = $00000001;
+
+  //
+  // предопределенные библиотеки
+  //
+  LIBRARY_PRIVATE  = $00000000;
+  LIBRARY_EXTERNAL = $00010000;
+
+  //
+  // расположения библиотеки
+  //
+  LOCATION_LOCAL   = $00000000;
+  LOCATION_ONLINE  = $08000000;
+
+  //
+  // различные маски
+  //
+  CT_CONTENT_MASK  = $00000001;
+  CT_LOCATION_MASK = $08000000;
+  CT_TYPE_MASK     = $08030000;
+  CT_MASK          = CT_CONTENT_MASK or CT_TYPE_MASK;
+
+  //
+  // Несколько предопределенных типов
+  //
+  CT_PRIVATE_FB            = LIBRARY_PRIVATE or LIBRARY_PRIVATE  or CONTENT_FB;    // 0000 0000 -
+  CT_PRIVATE_NONFB         = LIBRARY_PRIVATE or LIBRARY_PRIVATE  or CONTENT_NONFB; // 0000 0001 -
+  CT_EXTERNAL_LOCAL_FB     = LOCATION_LOCAL  or LIBRARY_EXTERNAL or CONTENT_FB;    // 0001 0000 - local lib.rus.ec
+  CT_EXTERNAL_ONLINE_FB    = LOCATION_ONLINE or LIBRARY_EXTERNAL or CONTENT_FB;    // 0801 0000 - online lib.rus.ec
+  CT_EXTERNAL_LOCAL_NONFB  = LOCATION_LOCAL  or LIBRARY_EXTERNAL or CONTENT_NONFB; // 0001 0001 - local Genesis
+  CT_EXTERNAL_ONLINE_NONFB = LOCATION_ONLINE or LIBRARY_EXTERNAL or CONTENT_NONFB; // 0001 0001 - online Genesis
+
+  //
+  // Свойства коллекции
+  //
+  PROP_CLASS_SYSTEM     = $10000000;
+  PROP_CLASS_COLLECTION = $20000000;
+  PROP_CLASS_BOTH       = PROP_CLASS_SYSTEM or PROP_CLASS_COLLECTION;
+  PROP_CLASS_MASK       = $F0000000;
+
+  PROP_TYPE_INTEGER     = $00010000;
+  PROP_TYPE_DATETIME    = $00020000;
+  PROP_TYPE_BOOLEAN     = $00030000;
+  PROP_TYPE_STRING      = $00040000;
+  PROP_TYPE_MASK        = $0FFF0000;
+
+  PROP_ID               = PROP_CLASS_SYSTEM     or PROP_TYPE_INTEGER  or $0000;
+  PROP_DATAFILE         = PROP_CLASS_SYSTEM     or PROP_TYPE_INTEGER  or $0001;
+  PROP_CODE             = PROP_CLASS_BOTH       or PROP_TYPE_INTEGER  or $0002;
+  PROP_DISPLAYNAME      = PROP_CLASS_SYSTEM     or PROP_TYPE_STRING   or $0003;
+  PROP_ROOTFOLDER       = PROP_CLASS_SYSTEM     or PROP_TYPE_STRING   or $0004;
+  PROP_LIBUSER          = PROP_CLASS_SYSTEM     or PROP_TYPE_STRING   or $0005;
+  PROP_LIBPASSWORD      = PROP_CLASS_SYSTEM     or PROP_TYPE_STRING   or $0006;
+  PROP_URL              = PROP_CLASS_BOTH       or PROP_TYPE_STRING   or $0007;
+  PROP_CONNECTIONSCRIPT = PROP_CLASS_BOTH       or PROP_TYPE_STRING   or $0008;
+  PROP_DATAVERSION      = PROP_CLASS_BOTH       or PROP_TYPE_INTEGER  or $0009;
+  PROP_NOTES            = PROP_CLASS_COLLECTION or PROP_TYPE_STRING   or $000A;
+  PROP_CREATIONDATE     = PROP_CLASS_COLLECTION or PROP_TYPE_DATETIME or $000B;
+  PROP_SCHEMA_VERSION   = PROP_CLASS_COLLECTION or PROP_TYPE_STRING   or $000C;
 
 type
   TColumnSet = set of 0 .. 255;
