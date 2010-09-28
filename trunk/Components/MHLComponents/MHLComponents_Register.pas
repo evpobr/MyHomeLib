@@ -34,7 +34,9 @@ uses
   BookTreeView,
   BookInfoPanel,
   MHLSimplePanel,
-  MHLButtonedEdit;
+  MHLButtonedEdit,
+  FBDAuthorTable,
+  FBDDocument;
 
 const
   PAGE_NAME = 'MHLComponents';
@@ -52,7 +54,9 @@ begin
     TMHLSimplePanel,
     TBookTree,
     TInfoPanel,
-    TMHLButtonedEdit
+    TMHLButtonedEdit,
+    TFBDAuthorTable,
+    TFBDDocument
     ]
   );
 end;
