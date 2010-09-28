@@ -2,7 +2,7 @@
 		<PropertyGroup>
 			<ProjectGuid>{D86FD5A7-BE1F-417C-BEB7-6020DDD97B5F}</ProjectGuid>
 			<MainSource>MHLComponents.dpk</MainSource>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 			<ProjectVersion>12.0</ProjectVersion>
 		</PropertyGroup>
@@ -20,6 +20,7 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_SymbolReferenceInfo>1</DCC_SymbolReferenceInfo>
 			<DCC_DcuOutput>.\Units</DCC_DcuOutput>
 			<DesignOnlyPackage>false</DesignOnlyPackage>
 			<DCC_DependencyCheckOutputName>C:\Documents and Settings\All Users\Documents\RAD Studio\7.0\Bpl\MHLComponents.bpl</DCC_DependencyCheckOutputName>
@@ -29,14 +30,13 @@
 			<DCC_Platform>x86</DCC_Platform>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
-			<DCC_DcuOutput>Units\</DCC_DcuOutput>
 			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
 			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
 			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
 			<DCC_DebugInformation>false</DCC_DebugInformation>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
-			<DCC_DcuOutput>Units\Debug\</DCC_DcuOutput>
+			<DCC_DcuOutput>.\Units\Debug</DCC_DcuOutput>
 			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
 		</PropertyGroup>
 		<ItemGroup>
@@ -48,12 +48,12 @@
 			<DCCReference Include="xmlrtl.dcp"/>
 			<DCCReference Include="vclx.dcp"/>
 			<DCCReference Include="vclimg.dcp"/>
-			<DCCReference Include="dbrtl.dcp"/>
 			<DCCReference Include="IndyCore.dcp"/>
 			<DCCReference Include="IndySystem.dcp"/>
 			<DCCReference Include="IndyProtocols.dcp"/>
 			<DCCReference Include="vclZipForged13.dcp"/>
 			<DCCReference Include="VirtualTreesD14.dcp"/>
+			<DCCReference Include="soaprtl.dcp"/>
 			<DCCReference Include="unit_StaticTip.pas"/>
 			<DCCReference Include="files_list.pas"/>
 			<DCCReference Include="MHLComponents_Register.pas"/>
@@ -67,6 +67,11 @@
 			<DCCReference Include="BookTreeView.pas"/>
 			<DCCReference Include="MHLSimplePanel.pas"/>
 			<DCCReference Include="MHLButtonedEdit.pas"/>
+			<DCCReference Include="FBDDocument.pas"/>
+			<DCCReference Include="fbd_xml.pas"/>
+			<DCCReference Include="FBDAuthorTable.pas">
+				<Form>frmEditAuthorFull</Form>
+			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -121,7 +126,11 @@
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
 					</VersionInfoKeys>
-					<Excluded_Packages/>
+					<Excluded_Packages>
+						<Excluded_Packages Name="C:\Documents and Settings\All Users\Documents\RAD Studio\7.0\Bpl\FBD.bpl">(untitled)</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dcloffice2k140.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclofficexp140.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+					</Excluded_Packages>
 				</Delphi.Personality>
 			</BorlandProject>
 			<ProjectFileVersion>12</ProjectFileVersion>

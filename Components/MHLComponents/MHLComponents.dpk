@@ -30,12 +30,12 @@ requires
   xmlrtl,
   vclx,
   vclimg,
-  dbrtl,
   IndyCore,
   IndySystem,
   IndyProtocols,
   vclZipForged13,
-  VirtualTreesD14;
+  VirtualTreesD14,
+  soaprtl;
 
 contains
   unit_StaticTip in 'unit_StaticTip.pas',
@@ -50,6 +50,9 @@ contains
   MHLSplitter in 'MHLSplitter.pas',
   BookTreeView in 'BookTreeView.pas',
   MHLSimplePanel in 'MHLSimplePanel.pas',
-  MHLButtonedEdit in 'MHLButtonedEdit.pas';
+  MHLButtonedEdit in 'MHLButtonedEdit.pas',
+  FBDDocument in 'FBDDocument.pas',
+  fbd_xml in 'fbd_xml.pas',
+  FBDAuthorTable in 'FBDAuthorTable.pas' {frmEditAuthorFull};
 
 end.
