@@ -265,6 +265,7 @@
 			<DCCReference Include="Wizards\NewCollection\frm_NewCollectionWizard.pas">
 				<Form>NewCollectionWizard</Form>
 			</DCCReference>
+			<DCCReference Include="ImportImpl\unit_CollectionWorkerThread.pas"/>
 			<RcItem Include="Resources\Images\16x16\star_small.png">
 				<ResourceType>RCData</ResourceType>
 				<ResourceId>smallStar</ResourceId>

@@ -28,7 +28,7 @@ uses
   unit_Database_Abstract;
 
 type
-  TBookCollection_SQLite = class(TBookCollection)
+  TBookCollection_SQLite = class(TBookCollection, IBookCollection)
   strict private type
     //-------------------------------------------------------------------------
     TBookIteratorImpl = class(TInterfacedObject, IBookIterator)
@@ -154,82 +154,80 @@ type
     ): Boolean;
 
   public
-    constructor Create(const CollectionInfo: ICollectionInfo; const SystemData: ISystemData);
+    constructor Create(const CollectionInfo: TCollectionInfo; const SystemData: ISystemData);
     constructor CreateTemp(const DBFileName: string; const SystemData: ISystemData);
     destructor Destroy; override;
+
+  protected
+    //
+    // IBookCollection
+    //
 
     // Iterators:
     function GetAuthorIterator(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue = nil): IAuthorIterator; override;
     function GetGenreIterator(const Mode: TGenreIteratorMode; const FilterValue: PFilterValue = nil): IGenreIterator; override;
-    function GetSeriesIterator(const Mode: TSeriesIteratorMode): ISeriesIterator; override;
-    function GetBookIterator(const Mode: TBookIteratorMode; const LoadMemos: Boolean; const FilterValue: PFilterValue = nil): IBookIterator; override;
-    function Search(const SearchCriteria: TBookSearchCriteria; const LoadMemos: Boolean): IBookIterator; override;
+    function GetSeriesIterator(const Mode: TSeriesIteratorMode): ISeriesIterator;
+    function GetBookIterator(const Mode: TBookIteratorMode; const LoadMemos: Boolean; const FilterValue: PFilterValue = nil): IBookIterator;
+    function Search(const SearchCriteria: TBookSearchCriteria; const LoadMemos: Boolean): IBookIterator;
 
     //
     //
     //
-    function InsertBook(BookRecord: TBookRecord; const CheckFileName: Boolean; const FullCheck: Boolean): Integer; override;
+    function InsertBook(BookRecord: TBookRecord; const CheckFileName: Boolean; const FullCheck: Boolean): Integer;
     procedure GetBookRecord(const BookKey: TBookKey; out BookRecord: TBookRecord; const LoadMemos: Boolean); override;
-    procedure UpdateBook(BookRecord: TBookRecord); override;
-    procedure DeleteBook(const BookKey: TBookKey); override;
+    procedure UpdateBook(BookRecord: TBookRecord);
+    procedure DeleteBook(const BookKey: TBookKey);
 
-    function GetReview(const BookKey: TBookKey): string; override;
-    function SetReview(const BookKey: TBookKey; const Review: string): Integer; override;
-    procedure SetProgress(const BookKey: TBookKey; const Progress: Integer); override;
-    procedure SetRate(const BookKey: TBookKey; const Rate: Integer); override;
-    procedure SetLocal(const BookKey: TBookKey; const AState: Boolean); override;
-    procedure SetFolder(const BookKey: TBookKey; const Folder: string); override;
-    procedure SetFileName(const BookKey: TBookKey; const FileName: string); override;
-    procedure SetSeriesID(const BookKey: TBookKey; const SeriesID: Integer); override;
-
-    //
-    // манипул€ции с авторами книги
-    //
-    procedure CleanBookAuthors(const BookID: Integer); override;
-    procedure InsertBookAuthors(const BookID: Integer; const Authors: TBookAuthors); override;
+    function GetReview(const BookKey: TBookKey): string;
+    function SetReview(const BookKey: TBookKey; const Review: string): Integer;
+    procedure SetProgress(const BookKey: TBookKey; const Progress: Integer);
+    procedure SetRate(const BookKey: TBookKey; const Rate: Integer);
+    procedure SetLocal(const BookKey: TBookKey; const AState: Boolean);
+    procedure SetFolder(const BookKey: TBookKey; const Folder: string);
+    procedure SetFileName(const BookKey: TBookKey; const FileName: string);
+    procedure SetSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
 
     //
-    // манипул€ции с жанрами книги
+    // манипул€ции с авторами и жанрами книги
     //
-    procedure CleanBookGenres(const BookID: Integer); override;
-    procedure InsertBookGenres(const BookID: Integer; const Genres: TBookGenres); override;
+    procedure SetBookAuthors(const BookID: Integer; const Authors: TBookAuthors; Replace: Boolean);
+    procedure SetBookGenres(const BookID: Integer; const Genres: TBookGenres; Replace: Boolean);
 
-    function FindOrCreateSeries(const Title: string): Integer; override;
-    procedure SetSeriesTitle(const SeriesID: Integer; const NewSeriesTitle: string); override;
-    procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer); override;
+    function FindOrCreateSeries(const Title: string): Integer;
+    procedure SetSeriesTitle(const SeriesID: Integer; const NewSeriesTitle: string);
+    procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer);
 
     //
     // —войства коллекции
     //
-    procedure SetProperty(const PropID: TPropertyID; const Value: Variant); override;
-    function GetProperty(const PropID: TPropertyID): Variant; override;
-    procedure UpdateProperies; override;
+    procedure SetProperty(const PropID: TPropertyID; const Value: Variant);
+    function GetProperty(const PropID: TPropertyID): Variant;
+    procedure UpdateProperies;
 
-    procedure ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc); override;
-    procedure ExportUserData(data: TUserData); override;
+    procedure ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc);
+    procedure ExportUserData(data: TUserData);
 
-    function CheckFileInCollection(const FileName: string; const FullNameSearch: Boolean; const ZipFolder: Boolean): Boolean; override;
+    function CheckFileInCollection(const FileName: string; const FullNameSearch: Boolean; const ZipFolder: Boolean): Boolean;
 
     //
     // Bulk operation
     //
-    procedure BeginBulkOperation; override;
-    procedure EndBulkOperation(Commit: Boolean = True); override;
+    procedure BeginBulkOperation;
+    procedure EndBulkOperation(Commit: Boolean = True);
 
-    procedure CompactDatabase; override;
-    procedure RepairDatabase; override;
-    procedure ReloadGenres(const FileName: string); override;
-    procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer); override;
+    procedure CompactDatabase;
+    procedure RepairDatabase;
+    procedure ReloadGenres(const FileName: string);
+    procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer);
 
-    procedure TruncateTablesBeforeImport; override;
+    procedure TruncateTablesBeforeImport;
 
-    procedure StartBatchUpdate; override;
-    procedure AfterBatchUpdate; override;
-    procedure FinishBatchUpdate; override;
+    procedure StartBatchUpdate;
+    procedure AfterBatchUpdate;
+    procedure FinishBatchUpdate;
 
   protected
     procedure InsertGenreIfMissing(const GenreData: TGenreData); override;
-    procedure InternalLoadGenres;
 
   private
     FTriggersEnabled: Boolean;
@@ -237,6 +235,7 @@ type
   strict private
     FDatabase: TSQLiteDatabase;
 
+    procedure InternalLoadGenres;
     procedure InternalUpdateField(const BookID: Integer; const UpdateSQL: string; const NewValue: string);
     procedure GetAuthor(AuthorID: Integer; var Author: TAuthorData);
     function GetSeriesTitle(SeriesID: Integer): string;
@@ -375,7 +374,7 @@ begin
   FLoadMemos := LoadMemos;
   FSystemData := SystemData;
   FCollection := Collection;
-  FCollectionID := FSystemData.GetActiveCollectionInfo.ID;
+  FCollectionID := FCollection.CollectionID;
   Assert(FCollectionID > 0);
 
   if Mode = bmSearch then
@@ -404,7 +403,6 @@ begin
 
   if Result then
   begin
-    Assert(FSystemData.GetActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
     BookID := FBooks.FieldAsInt(0);
     FCollection.GetBookRecord(CreateBookKey(BookID, FCollectionID), BookRecord, FLoadMemos);
     FBooks.Next;
@@ -435,7 +433,7 @@ var
     case Mode of
       bmByGenre:
       begin
-        if isFB2Collection(FSystemData.GetActiveCollectionInfo.CollectionType) or not Settings.ShowSubGenreBooks then
+        if isFB2Collection(FCollection.CollectionCode) or not Settings.ShowSubGenreBooks then
           query.SetParam(':GenreCode', FilterValue^.ValueString)
         else
           query.SetParam(':GenreCode', FilterValue^.ValueString + '%');
@@ -475,7 +473,7 @@ begin
     begin
       Assert(Assigned(FilterValue));
       SQLRows := 'SELECT b.BookID FROM Genre_List gl INNER JOIN Books b ON gl.BookID = b.BookID ';
-      if isFB2Collection(FSystemData.GetActiveCollectionInfo.CollectionType) or not Settings.ShowSubGenreBooks then
+      if isFB2Collection(FCollection.CollectionCode) or not Settings.ShowSubGenreBooks then
         AddToWhere(Where, 'gl.GenreCode = :GenreCode')
       else
         AddToWhere(Where, 'gl.GenreCode LIKE :GenreCode');
@@ -652,10 +650,9 @@ begin
   Assert(Assigned(Collection));
   Assert(Assigned(SystemData));
 
-  FCollection := Collection;
   FSystemData := SystemData;
-
-  FCollectionID := FSystemData.GetActiveCollectionInfo.ID;
+  FCollection := Collection;
+  FCollectionID := FCollection.CollectionID;
   Assert(FCollectionID > 0);
 
   PrepareData(Mode, FilterValue);
@@ -676,8 +673,6 @@ begin
 
   if Result then
   begin
-    Assert(FSystemData.GetActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
-
     AuthorData.AuthorID := FAuthors.FieldAsInt(0);
     AuthorData.LastName := FAuthors.FieldAsString(1);
     AuthorData.FirstName := FAuthors.FieldAsString(2);
@@ -807,9 +802,9 @@ begin
   Assert(Assigned(Collection));
   Assert(Assigned(SystemData));
 
-  FCollection := Collection;
   FSystemData := SystemData;
-  FCollectionID := FSystemData.GetActiveCollectionInfo.ID;
+  FCollection := Collection;
+  FCollectionID := FCollection.CollectionID;
   Assert(FCollectionID > 0);
 
   PrepareData(Mode, FilterValue);
@@ -832,7 +827,6 @@ begin
 
   if Result then
   begin
-    Assert(FSystemData.GetActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
     GenreCode := FGenres.FieldAsString(0);
     FCollection.GetGenre(GenreCode, GenreData);
     FGenres.Next;
@@ -895,10 +889,9 @@ begin
   Assert(Assigned(Collection));
   Assert(Assigned(SystemData));
 
-
-  FCollection := Collection;
   FSystemData := SystemData;
-  FCollectionID := FSystemData.GetActiveCollectionInfo.ID;
+  FCollection := Collection;
+  FCollectionID := FCollection.CollectionID;
   Assert(FCollectionID > 0);
 
   PrepareData(Mode);
@@ -919,7 +912,6 @@ begin
 
   if Result then
   begin
-    Assert(FSystemData.GetActiveCollectionInfo.ID = FCollectionID); // shouldn't happen
     SeriesData.SeriesID := FSeries.FieldAsInt(0);
     SeriesData.SeriesTitle := FSeries.FieldAsString(1);
     FSeries.Next;
@@ -1070,12 +1062,11 @@ begin
     SQLite3_Result_Int(pCtx, 1);
 end;
 
-constructor TBookCollection_SQLite.Create(const CollectionInfo: ICollectionInfo; {const DBCollectionFile: string;} const SystemData: ISystemData);
+constructor TBookCollection_SQLite.Create(const CollectionInfo: TCollectionInfo; const SystemData: ISystemData);
 begin
-  Assert(Assigned(CollectionInfo));
   Assert(Assigned(SystemData));
 
-  inherited Create(CollectionInfo, SystemData);
+  inherited Create(SystemData, CollectionInfo);
 
   FDatabase := TSQLiteDatabase.Create(CollectionInfo.DBFileName);
 
@@ -1092,7 +1083,7 @@ constructor TBookCollection_SQLite.CreateTemp(const DBFileName: string; const Sy
 begin
   Assert(Assigned(SystemData));
 
-  inherited Create(nil, SystemData);
+  inherited CreateTemp(SystemData);
 
   FDatabase := TSQLiteDatabase.Create(DBFileName);
 
@@ -1143,9 +1134,9 @@ begin
     end;
   end;
 
-  if isSystemProp(PropID) and Assigned(FCollectionInfo) then
+  if isSystemProp(PropID) and (INVALID_COLLECTION_ID <>  CollectionID) then
   begin
-    FSystemData.SetProperty(ID, PropID, Value);
+    FSystemData.SetProperty(CollectionID, PropID, Value);
   end;
 end;
 
@@ -1176,7 +1167,10 @@ begin
     end;
   end
   else
-    Result := FSystemData.GetProperty(ID, PropID);
+  begin
+    Assert(INVALID_COLLECTION_ID <>  CollectionID);
+    Result := FSystemData.GetProperty(CollectionID, PropID);
+  end;
 end;
 
 procedure TBookCollection_SQLite.UpdateProperies;
@@ -1202,7 +1196,7 @@ begin
           PROP_TYPE_BOOLEAN:  Value := query.FieldAsBoolean(1);
           PROP_TYPE_STRING:   Value := query.FieldAsString(1);
         end;
-        FSystemData.SetProperty(ID, PropID, Value);
+        FSystemData.SetProperty(CollectionID, PropID, Value);
       end;
       query.Next;
     end;
@@ -1246,7 +1240,7 @@ var
     Result := BookID > 0;
     if Result then
     begin
-      BookKey := CreateBookKey(BookID, FSystemData.GetActiveCollectionInfo.ID);
+      BookKey := CreateBookKey(BookID, CollectionID);
     end;
   end;
 
@@ -1747,13 +1741,13 @@ begin
       query.ExecSQL;
 
       BookRecord.BookKey.BookID := FDatabase.LastInsertRowID;
-      BookRecord.BookKey.DatabaseID := FSystemData.GetActiveCollectionInfo.ID;
+      BookRecord.BookKey.DatabaseID := CollectionID;
     finally
       query.Free;
     end;
 
-    InsertBookGenres(BookRecord.BookKey.BookID, BookRecord.Genres);
-    InsertBookAuthors(BookRecord.BookKey.BookID, BookRecord.Authors);
+    SetBookGenres(BookRecord.BookKey.BookID, BookRecord.Genres, False);
+    SetBookAuthors(BookRecord.BookKey.BookID, BookRecord.Authors, False);
 
     Result := BookRecord.BookKey.BookID;
   end;
@@ -1774,7 +1768,7 @@ var
 begin
   BookRecord.Clear;
 
-  if BookKey.DatabaseID = FSystemData.GetActiveCollectionInfo.ID then
+  if BookKey.DatabaseID = CollectionID then
   begin
     Table := FDatabase.NewQuery(SQL);
     try
@@ -1812,8 +1806,8 @@ begin
       BookRecord.KeyWords := Table.FieldAsString(14);
       BookRecord.Rate := Table.FieldAsInt(15);
       BookRecord.Progress := Table.FieldAsInt(16);
-      BookRecord.CollectionRoot := FSystemData.GetActiveCollectionInfo.RootPath;
-      BookRecord.CollectionName := FSystemData.GetActiveCollectionInfo.Name;
+      BookRecord.CollectionRoot := FSystemData.GetActiveCollectionInfo.GetRootPath;
+      BookRecord.CollectionName := FSystemData.GetActiveCollectionInfo.DisplayName;
 
       if (not Table.FieldIsNull(17)) then // review
         Include(BookRecord.BookProps, bpHasReview)
@@ -1936,11 +1930,8 @@ begin
     query.Free;
   end;
 
-  CleanBookGenres(BookRecord.BookKey.BookID);
-  InsertBookGenres(BookRecord.BookKey.BookID, BookRecord.Genres);
-
-  CleanBookAuthors(BookRecord.BookKey.BookID);
-  InsertBookAuthors(BookRecord.BookKey.BookID, BookRecord.Authors);
+  SetBookGenres(BookRecord.BookKey.BookID, BookRecord.Genres, True);
+  SetBookAuthors(BookRecord.BookKey.BookID, BookRecord.Authors, True);
 
   FSystemData.UpdateBook(BookRecord);
 end;
@@ -1963,7 +1954,7 @@ const
 var
   query: TSQLiteQuery;
 begin
-  if BookKey.DatabaseID = FSystemData.GetActiveCollectionInfo.ID then
+  if BookKey.DatabaseID = CollectionID then
   begin
     query := FDatabase.NewQuery(SQL);
     try
@@ -2283,21 +2274,18 @@ begin
   FTriggersEnabled := True;
 end;
 
-procedure TBookCollection_SQLite.CleanBookAuthors(const BookID: Integer);
+procedure TBookCollection_SQLite.SetBookAuthors(const BookID: Integer; const Authors: TBookAuthors; Replace: Boolean);
 const
   SQL_DELETE = 'DELETE FROM Author_List WHERE BookID = ? ';
-begin
-  FDatabase.ExecSQL(SQL_DELETE, [BookID]);
-end;
-
-procedure TBookCollection_SQLite.InsertBookAuthors(const BookID: Integer; const Authors: TBookAuthors);
-const
   SQL_INSERT = 'INSERT INTO Author_List (AuthorID, BookID) VALUES(?, ?)';
 var
   insertedIds: TList<Integer>;
   query: TSQLiteQuery;
   Author: TAuthorData;
 begin
+  if Replace then
+    FDatabase.ExecSQL(SQL_DELETE, [BookID]);
+
   insertedIds := TList<Integer>.Create;
   try
     query := FDatabase.NewQuery(SQL_INSERT);
@@ -2320,22 +2308,21 @@ begin
   end;
 end;
 
-procedure TBookCollection_SQLite.CleanBookGenres(const BookID: Integer);
+//
+// Add or replace book genres for the book specified by BookID
+//
+procedure TBookCollection_SQLite.SetBookGenres(const BookID: Integer; const Genres: TBookGenres; Replace: Boolean);
 const
   SQL_DELETE = 'DELETE FROM Genre_List WHERE BookID = ?';
-begin
-  FDatabase.ExecSQL(SQL_DELETE, [BookID]);
-end;
-
-// Add book genres for the book specified by BookID
-procedure TBookCollection_SQLite.InsertBookGenres(const BookID: Integer; const Genres: TBookGenres);
-const
   SQL_INSERT = 'INSERT INTO Genre_List (BookID, GenreCode) VALUES(?, ?)';
 var
   insertedCodes: TList<string>;
   Genre: TGenreData;
   query: TSQLiteQuery;
 begin
+  if Replace then
+    FDatabase.ExecSQL(SQL_DELETE, [BookID]);
+
   insertedCodes := TList<string>.Create;
   try
     query := FDatabase.NewQuery(SQL_INSERT);

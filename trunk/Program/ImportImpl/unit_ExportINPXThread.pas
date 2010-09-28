@@ -30,6 +30,7 @@ type
   strict private
     FTempPath: string;
 
+    FCollectionID: Integer;
     FCollectionName: string;
     FCollectionDBFileName: string;
     FCollectionType: COLLECTION_TYPE;
@@ -78,16 +79,19 @@ const
 
 constructor TExport2INPXThread.Create;
 var
-  CollectionInfo: ICollectionInfo;
+  CollectionInfo: TCollectionInfo;
 begin
   inherited Create;
 
   FTempPath := Settings.TempPath;
 
   CollectionInfo := GetSystemData.GetActiveCollectionInfo;
+
+  FCollectionID := CollectionInfo.ID;
+
   FCollectionType := CollectionInfo.CollectionType;
   FCollectionVersion := CollectionInfo.DataVersion;
-  FCollectionName := CollectionInfo.Name;
+  FCollectionName := CollectionInfo.DisplayName;
   FCollectionDBFileName := CollectionInfo.DBFileName;
 
   FCollectionNotes := CollectionInfo.Notes;
@@ -117,7 +121,7 @@ begin
   try
     inpxWriter := TStreamWriter.Create(inpxStream, TEncoding.UTF8);
     try
-      BookCollection := GetSystemData.GetCollection(FCollectionDBFileName);
+      BookCollection := GetSystemData.GetCollection(FCollectionID);
       try
         BookIterator := BookCollection.GetBookIterator(bmAll, True);
         try

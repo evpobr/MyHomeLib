@@ -66,43 +66,16 @@ type
     pnButtons: TPanel;
     btnOk: TButton;
     btnCancel: TButton;
-
-    procedure FormShow(Sender: TObject);
     procedure edDBFileButtonClick(Sender: TObject);
     procedure edDBFolderButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
 
   private
-    CollectionID: Integer;
     FSystemData: ISystemData;
+    FCollection: IBookCollection;
 
-    function GetDisplayName: string;
-    procedure SetDisplayName(const Value: string);
-    function GetDBFileName: string;
-    procedure SetDBFileName(const Value: string);
-    function GetRootFolder: string;
-    procedure SetRootFolder(const Value: string);
-    function GetDescription: string;
-    procedure SetDescription(const Value: string);
-    function GetPass: string;
-    function GetScript: string;
-    function GetURL: string;
-    function GetUser: string;
-    procedure SetPass(const Value: string);
-    procedure SetScript(const Value: string);
-    procedure SetURL(const Value: string);
-    procedure SetUser(const Value: string);
-
-    property DisplayName: string read GetDisplayName write SetDisplayName;
-    property DBFileName: string read GetDBFileName write SetDBFileName;
-    property RootFolder: string read GetRootFolder write SetRootFolder;
-    property Description: string read GetDescription write SetDescription;
-    property URL: string read GetURL write SetURL;
-    property User: string read GetUser write SetUser;
-    property Pass: string read GetPass write SetPass;
-    property Script: string read GetScript write SetScript;
   public
-
+    procedure SetCollection(const SystemData: ISystemData; const Collection: IBookCollection);
   end;
 
 var
@@ -116,7 +89,6 @@ uses
   unit_Consts,
   unit_Errors,
   unit_Globals,
-  unit_SystemDatabase,
   unit_Settings;
 
 resourcestring
@@ -124,103 +96,23 @@ resourcestring
 
 {$R *.dfm}
 
-procedure TfrmBases.FormShow(Sender: TObject);
-var
-  CollectionInfo: ICollectionInfo;
+procedure TfrmBases.SetCollection(const SystemData: ISystemData; const Collection: IBookCollection);
 begin
-  FSystemData := GetSystemData;
-  CollectionInfo := FSystemData.GetActiveCollectionInfo;
+  Assert(Assigned(SystemData));
+  Assert(Assigned(Collection));
+  FSystemData := SystemData;
+  FCollection := Collection;
 
-  CollectionID := CollectionInfo.ID;
+  tsConnectionInfo.TabVisible := isOnlineCollection(FCollection.CollectionCode);
 
-  DisplayName := CollectionInfo.Name;
-  DBFileName := CollectionInfo.DBFileName;
-  RootFolder := CollectionInfo.RootFolder;
-  Description := CollectionInfo.Notes;
-  URL := CollectionInfo.URL;
-  Pass := CollectionInfo.Password;
-  User := CollectionInfo.User;
-  Script := CollectionInfo.Script;
-end;
-
-function TfrmBases.GetDisplayName: string;
-begin
-  Result := Trim(edCollectionName.Text);
-end;
-
-procedure TfrmBases.SetDisplayName(const Value: string);
-begin
-  edCollectionName.Text := Value;
-end;
-
-function TfrmBases.GetPass: string;
-begin
-  Result := edPass.Text;
-end;
-
-procedure TfrmBases.SetPass(const Value: string);
-begin
-  edPass.Text := Value;
-end;
-
-function TfrmBases.GetDBFileName: string;
-begin
-  Result := Trim(edCollectionFile.Text);
-end;
-
-function TfrmBases.GetDescription: string;
-begin
-  Result := Trim(edDescription.Text);
-end;
-
-procedure TfrmBases.SetDescription(const Value: string);
-begin
-  edDescription.Text := Value;
-end;
-
-procedure TfrmBases.SetDBFileName(const Value: string);
-begin
-  edCollectionFile.Text := Value;
-end;
-
-function TfrmBases.GetRootFolder: string;
-begin
-  Result := Trim(edCollectionRoot.Text);
-end;
-
-procedure TfrmBases.SetRootFolder(const Value: string);
-begin
-  edCollectionRoot.Text := Value;
-end;
-
-function TfrmBases.GetScript: string;
-begin
-  Result := mmScript.Lines.Text;
-end;
-
-procedure TfrmBases.SetScript(const Value: string);
-begin
-  mmScript.Lines.Text := Value;
-end;
-
-function TfrmBases.GetURL: string;
-begin
-  Result := edURL.Text;
-end;
-
-procedure TfrmBases.SetURL(const Value: string);
-begin
-  edURL.Text := Value;
-end;
-
-function TfrmBases.GetUser: string;
-begin
-  Result := edUser.Text;
-end;
-
-procedure TfrmBases.SetUser(const Value: string);
-begin
-  edUser.Text := Value;
+  edCollectionName.Text := FCollection.GetProperty(PROP_DISPLAYNAME);
+  edCollectionFile.Text := FCollection.GetProperty(PROP_DATAFILE);
+  edCollectionRoot.Text := FCollection.GetProperty(PROP_ROOTFOLDER);
+  edDescription.Text := FCollection.GetProperty(PROP_NOTES);
+  edURL.Text := FCollection.GetProperty(PROP_URL);
+  edPass.Text := FCollection.GetProperty(PROP_LIBPASSWORD);
+  edUser.Text := FCollection.GetProperty(PROP_LIBUSER);
+  mmScript.Lines.Text := FCollection.GetProperty(PROP_CONNECTIONSCRIPT);
 end;
 
 procedure TfrmBases.edDBFileButtonClick(Sender: TObject);
@@ -243,11 +135,18 @@ end;
 
 procedure TfrmBases.btnSaveClick(Sender: TObject);
 var
+  CollectionName: string;
   storedRoot: string;
   storedFileName: string;
-  CollectionInfo: ICollectionInfo;
 begin
-  if (DisplayName = '') or (DBFileName = '') or (RootFolder = '') then
+  //
+  // Получим абсолютные пути. В качестве базового каталого используется DataPath.
+  //
+  CollectionName := Trim(edCollectionName.Text);
+  storedRoot := TMHLSettings.ExpandCollectionRoot(Trim(edCollectionRoot.Text));
+  storedFileName := TMHLSettings.ExpandCollectionFileName(edCollectionFile.Text);
+
+  if (CollectionName = '') or (storedFileName = '') or (storedRoot = '') then
   begin
     MessageDlg(rstrAllFieldsShouldBeFilled, mtError, [mbOk], 0);
     Exit;
@@ -256,17 +155,11 @@ begin
   //
   // Проверим название коллекции
   //
-  if FSystemData.HasCollectionWithProp(PROP_DISPLAYNAME, DisplayName, CollectionID) then
+  if FSystemData.HasCollectionWithProp(PROP_DISPLAYNAME, CollectionName, FCollection.CollectionID) then
   begin
-    MessageDlg(Format(rstrCollectionAlreadyExists, [DisplayName]), mtError, [mbOk], 0);
+    MessageDlg(Format(rstrCollectionAlreadyExists, [CollectionName]), mtError, [mbOk], 0);
     Exit;
   end;
-
-  //
-  // Получим абсолютные пути. В качестве базового каталого используется DataPath.
-  //
-  storedRoot := TMHLSettings.ExpandCollectionRoot(RootFolder);
-  storedFileName := TMHLSettings.ExpandCollectionFileName(DBFileName);
 
   //
   // Проверим название и существование файла
@@ -277,23 +170,20 @@ begin
     Exit;
   end;
 
-  if FSystemData.HasCollectionWithProp(PROP_DATAFILE, storedFileName, CollectionID) then
+  if FSystemData.HasCollectionWithProp(PROP_DATAFILE, storedFileName, FCollection.CollectionID) then
   begin
     MessageDlg(Format(rstrFileAlreadyExistsInDB, [storedFileName]), mtError, [mbOk], 0);
     Exit;
   end;
 
-  CollectionInfo := FSystemData.GetCollectionInfo(CollectionID);
-  CollectionInfo.Name := DisplayName;
-  CollectionInfo.RootFolder := storedRoot;
-  CollectionInfo.DBFileName := storedFileName;
-  CollectionInfo.Notes := Description;
-  CollectionInfo.URL := URL;
-  CollectionInfo.User := User;
-  CollectionInfo.Password := Pass;
-  CollectionInfo.Script := Script;
-
-  FSystemData.UpdateCollectionInfo(CollectionInfo);
+  FCollection.SetProperty(PROP_DISPLAYNAME, CollectionName);
+  FCollection.SetProperty(PROP_DATAFILE, storedFileName);
+  FCollection.SetProperty(PROP_ROOTFOLDER, storedRoot);
+  FCollection.SetProperty(PROP_NOTES, Trim(edDescription.Text));
+  FCollection.SetProperty(PROP_URL, edURL.Text);
+  FCollection.SetProperty(PROP_LIBPASSWORD, edPass.Text);
+  FCollection.SetProperty(PROP_LIBUSER, edUser.Text);
+  FCollection.SetProperty(PROP_CONNECTIONSCRIPT, mmScript.Lines.Text);
 
   ModalResult := mrOk;
 end;

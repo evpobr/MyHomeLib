@@ -34,7 +34,7 @@ type
     procedure SortFiles(var R: TBookRecord); override;
 
   public
-    constructor Create(const CollectionRoot: string; const DBFileName: string);
+    constructor Create(const CollectionID: Integer; const CollectionRoot: string; const DBFileName: string);
   end;
 
 implementation
@@ -58,9 +58,9 @@ resourcestring
 
 { TImportFB2Thread }
 
-constructor TImportFBDThread.Create(const CollectionRoot: string; const DBFileName: string);
+constructor TImportFBDThread.Create(const CollectionID: Integer; const CollectionRoot: string; const DBFileName: string);
 begin
-  inherited Create(CollectionRoot, DBFileName);
+  inherited Create(CollectionID, CollectionRoot, DBFileName);
 
   FTargetExt := ZIP_EXTENSION;
   FZipFolder := False;

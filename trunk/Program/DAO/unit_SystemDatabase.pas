@@ -23,7 +23,7 @@ uses
 
   procedure CreateSystemTables(const DBUserFile: string);
 
-  function CreateSystemData(ADefaultSession: Boolean = True): ISystemData;
+  function CreateSystemData: ISystemData;
   function GetSystemData: ISystemData;
 
 implementation
@@ -42,7 +42,7 @@ begin
   CreateSystemTables_SQLite(DBUserFile);
 end;
 
-function CreateSystemData(ADefaultSession: Boolean = True): ISystemData;
+function CreateSystemData: ISystemData;
 begin
   Result := TSystemData_SQLite.Create(Settings.SystemFileName[sfSystemDB]);
 end;

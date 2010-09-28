@@ -133,7 +133,8 @@ uses
   unit_SystemDatabase_SQLite in 'DAO\SQLite\unit_SystemDatabase_SQLite.pas',
   unit_ProgressEngine in 'Units\unit_ProgressEngine.pas',
   unit_MHLGenerics in 'Units\unit_MHLGenerics.pas',
-  frm_NewCollectionWizard in 'Wizards\NewCollection\frm_NewCollectionWizard.pas' {NewCollectionWizard};
+  frm_NewCollectionWizard in 'Wizards\NewCollection\frm_NewCollectionWizard.pas' {NewCollectionWizard},
+  unit_CollectionWorkerThread in 'ImportImpl\unit_CollectionWorkerThread.pas';
 
 {$R *.res}
 

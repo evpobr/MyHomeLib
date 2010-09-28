@@ -34,6 +34,7 @@ uses
 type
   TImportFB2ThreadBase = class(TWorker)
   protected
+    FCollectionID: Integer;
     FCollectionRoot: string;
     FCollectionDBFileName: string;
 
@@ -69,7 +70,7 @@ type
     procedure SortFiles(var R: TBookRecord); virtual;
 
   public
-    constructor Create(const CollectionRoot: string; const DBFileName: string);
+    constructor Create(const CollectionID: Integer; const CollectionRoot: string; const DBFileName: string);
   end;
 
 implementation
@@ -100,10 +101,10 @@ resourcestring
 
 { TImportFB2Thread }
 
-constructor TImportFB2ThreadBase.Create(const CollectionRoot: string; const DBFileName: string);
+constructor TImportFB2ThreadBase.Create(const CollectionID: Integer; const CollectionRoot: string; const DBFileName: string);
 begin
   inherited Create;
-
+  FCollectionID := CollectionID;
   FCollectionRoot := CollectionRoot;
   FCollectionDBFileName := DBFileName;
 end;
@@ -260,7 +261,7 @@ end;
 
 procedure TImportFB2ThreadBase.WorkFunction;
 begin
-  FLibrary := GetSystemData.GetCollection(FCollectionDBFileName);
+  FLibrary := GetSystemData.GetCollection(FCollectionID);
   FFiles := TStringList.Create;
   try
     ScanFolder;

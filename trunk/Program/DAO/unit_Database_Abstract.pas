@@ -29,92 +29,27 @@ uses
   unit_SystemDatabase;
 
 type
-  TBookCollection = class abstract (TInterfacedObject, IBookCollection)
-  public // virtual
-    //
-    // IBookCollection
-    //
-
-    // Iterators:
+  TBookCollection = class abstract (TInterfacedObject)
+  protected
     function GetAuthorIterator(const Mode: TAuthorIteratorMode; const FilterValue: PFilterValue = nil): IAuthorIterator; virtual; abstract;
     function GetGenreIterator(const Mode: TGenreIteratorMode; const FilterValue: PFilterValue = nil): IGenreIterator; virtual; abstract;
-    function GetSeriesIterator(const Mode: TSeriesIteratorMode): ISeriesIterator; virtual; abstract;
-    function GetBookIterator(const Mode: TBookIteratorMode; const LoadMemos: Boolean; const FilterValue: PFilterValue = nil): IBookIterator; virtual; abstract;
-    function Search(const SearchCriteria: TBookSearchCriteria; const LoadMemos: Boolean): IBookIterator; virtual; abstract;
 
-    //
-    //
-    //
-    function InsertBook(BookRecord: TBookRecord; const CheckFileName: Boolean; const FullCheck: Boolean): Integer; virtual; abstract;
     procedure GetBookRecord(const BookKey: TBookKey; out BookRecord: TBookRecord; const LoadMemos: Boolean); virtual; abstract;
-    procedure UpdateBook(BookRecord: TBookRecord); virtual; abstract;
-    procedure DeleteBook(const BookKey: TBookKey); virtual; abstract;
     procedure AddBookToGroup(const BookKey: TBookKey; const GroupID: Integer);
-
-    function GetReview(const BookKey: TBookKey): string; virtual; abstract;
-    function SetReview(const BookKey: TBookKey; const Review: string): Integer; virtual; abstract;
-    procedure SetProgress(const BookKey: TBookKey; const Progress: Integer); virtual; abstract;
-    procedure SetRate(const BookKey: TBookKey; const Rate: Integer); virtual; abstract;
-    procedure SetLocal(const BookKey: TBookKey; const AState: Boolean); virtual; abstract;
-    procedure SetFolder(const BookKey: TBookKey; const Folder: string); virtual; abstract;
-    procedure SetFileName(const BookKey: TBookKey; const FileName: string); virtual; abstract;
-    procedure SetSeriesID(const BookKey: TBookKey; const SeriesID: Integer); virtual; abstract;
-
-    //
-    // манипул€ции с авторами книги
-    //
-    procedure CleanBookAuthors(const BookID: Integer); virtual; abstract;
-    procedure InsertBookAuthors(const BookID: Integer; const Authors: TBookAuthors); virtual; abstract;
-
-    //
-    // манипул€ции с жанрами книги
-    //
-    procedure CleanBookGenres(const BookID: Integer); virtual; abstract;
-    procedure InsertBookGenres(const BookID: Integer; const Genres: TBookGenres); virtual; abstract;
-
-    function FindOrCreateSeries(const Title: string): Integer; virtual; abstract;
-    procedure SetSeriesTitle(const SeriesID: Integer; const NewSeriesTitle: string); virtual; abstract;
-    procedure ChangeBookSeriesID(const OldSeriesID: Integer; const NewSeriesID: Integer; const DatabaseID: Integer); virtual; abstract;
 
     //
     // —войства коллекции
     //
-    function ID: Integer;
-    function Code: COLLECTION_TYPE;
-    function Root: string;
-
-    procedure SetProperty(const PropID: TPropertyID; const Value: Variant); virtual; abstract;
-    function GetProperty(const PropID: TPropertyID): Variant; virtual; abstract;
-    procedure UpdateProperies; virtual; abstract;
-
-    procedure ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc); virtual; abstract;
-    procedure ExportUserData(data: TUserData); virtual; abstract;
-
-    function CheckFileInCollection(const FileName: string; const FullNameSearch: Boolean; const ZipFolder: Boolean): Boolean; virtual; abstract;
+    function CollectionID: Integer;
+    function CollectionCode: COLLECTION_TYPE;
+    function CollectionRoot: string;
 
     //
     // очень странна€ ф-и€. Ќужна только в одном месте и то, не €сно, нужна ли на самом деле.
     //
     function GetTopGenreAlias(const FB2Code: string): string;
 
-    //
-    // Bulk operation
-    //
-    procedure BeginBulkOperation; virtual; abstract;
-    procedure EndBulkOperation(Commit: Boolean = True); virtual; abstract;
-
-    procedure CompactDatabase; virtual; abstract;
-    procedure RepairDatabase; virtual; abstract;
-    procedure ReloadGenres(const FileName: string); virtual; abstract;
-    procedure GetStatistics(out AuthorsCount: Integer; out BooksCount: Integer; out SeriesCount: Integer); virtual; abstract;
-
-    procedure TruncateTablesBeforeImport; virtual; abstract;
-
-    procedure StartBatchUpdate; virtual; abstract;
-    procedure AfterBatchUpdate; virtual; abstract;
-    procedure FinishBatchUpdate; virtual; abstract;
-
-  protected // virtual
+  protected
     procedure InsertGenreIfMissing(const GenreData: TGenreData); virtual; abstract;
 
   public
@@ -140,8 +75,6 @@ type
     end;
 
   protected
-    constructor Create(const CollectionInfo: ICollectionInfo; const SystemData: ISystemData);
-
     procedure GetGenre(const GenreCode: string; var Genre: TGenreData);
     procedure GetBookGenres(BookID: Integer; var BookGenres: TBookGenres; RootGenre: PGenreData = nil);
     procedure GetBookAuthors(BookID: Integer; var BookAuthors: TBookAuthors);
@@ -153,9 +86,11 @@ type
     FHideDeleted: Boolean;
     FGenreCache: TGenreCache;
     FSystemData: ISystemData;
-    FCollectionInfo: ICollectionInfo;
+    FCollectionInfo: TCollectionInfo;
 
   public
+    constructor Create(const SystemData: ISystemData; const CollectionInfo: TCollectionInfo);
+    constructor CreateTemp(const SystemData: ISystemData);
     destructor Destroy; override;
 
     procedure SetHideDeleted(const HideDeleted: Boolean);
@@ -255,13 +190,20 @@ begin
   end;
 end;
 
-// Filter out duplicates by author ID
-constructor TBookCollection.Create(const CollectionInfo: ICollectionInfo; const SystemData: ISystemData);
+constructor TBookCollection.Create(const SystemData: ISystemData; const CollectionInfo: TCollectionInfo);
 begin
   inherited Create;
   FGenreCache := TGenreCache.Create;
   FSystemData := SystemData;
   FCollectionInfo := CollectionInfo;
+end;
+
+constructor TBookCollection.CreateTemp(const SystemData: ISystemData);
+begin
+  inherited Create;
+  FGenreCache := TGenreCache.Create;
+  FSystemData := SystemData;
+  FCollectionInfo.Clear
 end;
 
 destructor TBookCollection.Destroy;
@@ -322,13 +264,13 @@ end;
 procedure TBookCollection.VerifyCurrentCollection(const DatabaseID: Integer);
 var
   bookCollectionName: string;
-  collectionInfo: ICollectionInfo;
+  collectionInfo: TCollectionInfo;
 begin
-  if DatabaseID <> FSystemData.GetActiveCollectionInfo.ID then
+  if DatabaseID <> CollectionID then
   begin
     collectionInfo := FSystemData.GetCollectionInfo(DatabaseID);
-    bookCollectionName := collectionInfo.Name;
-    raise ENotSupportedException.Create(Format(rstrErrorOnlyForCurrentCollection, [FSystemData.GetActiveCollectionInfo.Name, bookCollectionName]));
+    bookCollectionName := collectionInfo.DisplayName;
+    raise ENotSupportedException.Create(Format(rstrErrorOnlyForCurrentCollection, [FSystemData.GetActiveCollectionInfo.DisplayName, bookCollectionName]));
   end;
 end;
 
@@ -436,21 +378,21 @@ begin
   Result := FAuthorFilterType;
 end;
 
-function TBookCollection.ID: Integer;
+function TBookCollection.CollectionID: Integer;
 begin
-  Assert(Assigned(FCollectionInfo));
+  //Assert(INVALID_COLLECTION_ID <> FCollectionInfo.ID);
   Result := FCollectionInfo.ID;
 end;
 
-function TBookCollection.Code: COLLECTION_TYPE;
+function TBookCollection.CollectionCode: COLLECTION_TYPE;
 begin
-  Assert(Assigned(FCollectionInfo));
+  Assert(INVALID_COLLECTION_ID <> FCollectionInfo.ID);
   Result := FCollectionInfo.CollectionType;
 end;
 
-function TBookCollection.Root: string;
+function TBookCollection.CollectionRoot: string;
 begin
-  Assert(Assigned(FCollectionInfo));
+  Assert(INVALID_COLLECTION_ID <> FCollectionInfo.ID);
   Result := FCollectionInfo.RootFolder;
 end;
 

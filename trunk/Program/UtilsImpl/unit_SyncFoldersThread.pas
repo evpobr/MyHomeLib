@@ -1,31 +1,38 @@
-{******************************************************************************}
-{                                                                              }
-{ MyHomeLib                                                                    }
-{                                                                              }
-{ Version 1.1                                                                  }
-{                                                                              }
-{ Copyright (c) 2009 Aleksey Penkov  alex.penkov@gmail.com                     }
-{                                                                              }
-{                                                                              }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Author(s)           Aleksey Penkov (alex.penkov@gmail.com)
+  *                     Nick Rymanov (nrymanov@gmail.com)
+  * Created             20.08.2008
+  * Description
+  *
+  * $Id$
+  *
+  * History
+  *
+  ****************************************************************************** *)
 
 unit unit_SyncFoldersThread;
 
 interface
 
 uses
+  Windows,
   Classes,
   SysUtils,
   unit_WorkerThread,
-  files_list,
-  Windows;
+  unit_CollectionWorkerThread,
+  files_list;
 
 type
-  TSyncFoldersThread = class(TWorker)
+  TSyncFoldersThread = class(TCollectionWorker)
   private
     FFiles: TFilesList;
     FList: TStringList;
-    FRootPath: string;
+    FCollectionRoot: string;
 
     procedure OnFile(Sender: TObject; const F: TSearchRec);
     function FindNewFolder(const FileName: string): string;
@@ -40,8 +47,7 @@ uses
   unit_Consts,
   unit_MHL_strings,
   unit_Globals,
-  unit_Interfaces,
-  unit_SystemDatabase;
+  unit_Interfaces;
 
 resourcestring
   rstrBuildingFileList = 'Построение списка файлов ...';
@@ -55,7 +61,7 @@ begin
   Result := '*';
   for i := 0 to FList.Count - 1 do
     if Pos(FileName, FList[i]) <> 0 then
-      Result := ExtractRelativePath(FRootPath, ExtractFilePath(FList[i]));
+      Result := ExtractRelativePath(FCollectionRoot, ExtractFilePath(FList[i]));
 end;
 
 procedure TSyncFoldersThread.OnFile(Sender: TObject; const F: TSearchRec);
@@ -65,32 +71,33 @@ end;
 
 procedure TSyncFoldersThread.WorkFunction;
 var
-  totalBooks: Integer;
-  processedBooks: Integer;
-  NewFolder: string;
-  BookCollection: IBookCollection;
   BookIterator: IBookIterator;
   BookRecord: TBookRecord;
-  SystemData: ISystemData;
+  NewFolder: string;
 begin
-  SystemData := GetSystemData;
+  Assert(Assigned(FSystemData));
+  Assert(Assigned(FCollection));
+  FCollectionRoot := FCollection.GetProperty(PROP_ROOTFOLDER);
 
-  processedBooks := 0;
-  FRootPath := SystemData.GetActiveCollectionInfo.RootPath;
-
-  FFiles := TFilesList.Create(nil);
+  FList := TStringList.Create;
   try
-    FFiles.OnFile := OnFile;
-    FFiles.TargetPath := SystemData.GetActiveCollectionInfo.RootFolder;
-
-    FList := TStringList.Create;
+    FProgressEngine.BeginOperation(-1, rstrBuildingFileList, rstrBuildingFileList);
     try
-      SetComment(rstrBuildingFileList);
-      FFiles.Process;
+      FFiles := TFilesList.Create(nil);
+      try
+        FFiles.OnFile := OnFile;
+        FFiles.TargetPath := FCollectionRoot;
+        FFiles.Process;
+      finally
+        FFiles.Free;
+      end;
+    finally
+      FProgressEngine.EndOperation;
+    end;
 
-      BookCollection := SystemData.GetActiveCollection;
-      BookIterator := BookCollection.GetBookIterator(bmAll, True);
-      totalBooks := BookIterator.RecordCount;
+    BookIterator := FCollection.GetBookIterator(bmAll, True);
+    FProgressEngine.BeginOperation(BookIterator.RecordCount, rstrBookProcessedMsg1, rstrBookProcessedMsg2);
+    try
       while BookIterator.Next(BookRecord) do
       begin
         if Canceled then
@@ -98,26 +105,24 @@ begin
 
         if not FileExists(BookRecord.GetBookFileName)  then
         begin
+          //
+          // Попробуем найти файл с таким же именем и размером. Если нашли, то заменим старый путь к файлу новым.
+          //
           NewFolder := FindNewFolder(BookRecord.FileName + ' ' + IntToStr(BookRecord.Size));
           if NewFolder <> '*' then
           begin
             BookRecord.Folder := NewFolder;
-            BookCollection.SetFolder(BookRecord.BookKey, BookRecord.Folder);
+            FCollection.SetFolder(BookRecord.BookKey, BookRecord.Folder);
           end;
         end;
 
-        Inc(processedBooks);
-        if (processedBooks mod ProcessedItemThreshold) = 0 then
-            SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
-        SetProgress(processedBooks * 100 div totalBooks);
+        FProgressEngine.AddProgress;
       end;
-
-      SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
     finally
-      FList.Free;
+      FProgressEngine.EndOperation;
     end;
   finally
-    FFiles.Free;
+    FList.Free;
   end;
 end;
 
