@@ -35,7 +35,7 @@ type
     procedure ProcessFileList; override;
 
   public
-    constructor Create(const CollectionRoot: string; const DBFileName: string);
+    constructor Create(const CollectionID: Integer; const CollectionRoot: string; const DBFileName: string);
   end;
 
 
@@ -60,9 +60,9 @@ resourcestring
 
 { TImportFB2ZIPThread }
 
-constructor TImportFB2ZIPThread.Create(const CollectionRoot: string; const DBFileName: string);
+constructor TImportFB2ZIPThread.Create(const CollectionID: Integer; const CollectionRoot: string; const DBFileName: string);
 begin
-  inherited Create(CollectionRoot, DBFileName);
+  inherited Create(CollectionID, CollectionRoot, DBFileName);
 
   FTargetExt := ZIP_EXTENSION;
   FZipFolder := True;

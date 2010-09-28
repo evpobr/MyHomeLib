@@ -318,6 +318,24 @@ type
     procedure ParseString(const Value: string);
   end;
 
+  TCollectionInfo = record
+    ID: Integer;
+    DisplayName: string;
+    RootFolder: string;
+    DBFileName: string;
+    Notes: string;
+    User: string;
+    Password: string;
+    DataVersion: Integer;
+    CollectionType: COLLECTION_TYPE;
+    URL: string;
+    Script: string;
+
+    procedure Clear;
+    function GetRootPath: string;
+  end;
+
+
 // ============================================================================
 //
 // helpers
@@ -1421,6 +1439,28 @@ begin
   finally
     slHelper.Free;
   end;
+end;
+
+{ TCollectionInfo }
+
+procedure TCollectionInfo.Clear;
+begin
+  ID := INVALID_COLLECTION_ID;
+  DisplayName := '';
+  RootFolder := '';
+  DBFileName := '';
+  Notes := '';
+  DataVersion := UNVERSIONED_COLLECTION;
+  CollectionType := CT_PRIVATE_FB;
+  User := '';
+  Password := '';
+  URL := '';
+  Script := '';
+end;
+
+function TCollectionInfo.GetRootPath: string;
+begin
+  Result := IncludeTrailingPathDelimiter(RootFolder);
 end;
 
 end.

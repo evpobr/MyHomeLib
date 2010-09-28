@@ -227,7 +227,7 @@ var
   totalBooks: Integer;
   Res: Boolean;
 begin
-  FCollectionRoot := GetSystemData.GetActiveCollectionInfo.RootPath;
+  FCollectionRoot := GetSystemData.GetActiveCollectionInfo.GetRootPath;
 
   FZipper := TZipForge.Create(nil);
   try

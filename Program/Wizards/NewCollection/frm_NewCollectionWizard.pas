@@ -404,10 +404,7 @@ begin
   FWorker := TImportInpxThread.Create;
   with FWorker as TImportInpxThread do
   begin
-    {* CollectionID := FParams.CollectionID; *}
-    DBFileName := TMHLSettings.ExpandCollectionFileName(FParams.CollectionFile);
-    CollectionRoot := TMHLSettings.ExpandCollectionRoot(FParams.CollectionRoot);
-    CollectionType := FParams.CollectionCode;
+    CollectionID := FParams.CollectionID;
     InpxFileName := FParams.INPXFile;
 
     case FParams.CollectionType of

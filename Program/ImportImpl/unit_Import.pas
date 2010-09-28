@@ -26,15 +26,15 @@ uses
   unit_Interfaces;
   
 procedure ImportFB2(
-  ACollection: ICollectionInfo
+  ACollection: TCollectionInfo
   );
 
 procedure ImportFB2ZIP(
-  ACollection: ICollectionInfo
+  ACollection: TCollectionInfo
   );
 
 procedure ImportFBD(
-  ACollection: ICollectionInfo
+  ACollection: TCollectionInfo
   );
 
 implementation
@@ -49,13 +49,13 @@ uses
   unit_Consts;
 
 procedure ImportFB2(
-  ACollection: ICollectionInfo
+  ACollection: TCollectionInfo
   );
 var
   worker: TImportFB2Thread;
   frmProgress: TImportProgressFormEx;
 begin
-  worker := TImportFB2Thread.Create(ACollection.RootPath, ACollection.DBFileName);
+  worker := TImportFB2Thread.Create(ACollection.ID, ACollection.GetRootPath, ACollection.DBFileName);
   try
     frmProgress := TImportProgressFormEx.Create(Application);
     try
@@ -71,13 +71,13 @@ begin
 end;
 
 procedure ImportFB2ZIP(
-  ACollection: ICollectionInfo
+  ACollection: TCollectionInfo
   );
 var
   worker: TImportFB2ZIPThread;
   frmProgress: TImportProgressFormEx;
 begin
-  worker := TImportFB2ZIPThread.Create(ACollection.RootPath, ACollection.DBFileName);
+  worker := TImportFB2ZIPThread.Create(ACollection.ID, ACollection.GetRootPath, ACollection.DBFileName);
   try
     frmProgress := TImportProgressFormEx.Create(Application);
     try
@@ -93,13 +93,13 @@ begin
 end;
 
 procedure ImportFBD(
-  ACollection: ICollectionInfo
+  ACollection: TCollectionInfo
   );
 var
   worker: TImportFBDThread;
   frmProgress: TImportProgressFormEx;
 begin
-  worker := TImportFBDThread.Create(ACollection.RootPath, ACollection.DBFileName);
+  worker := TImportFBDThread.Create(ACollection.ID, ACollection.GetRootPath, ACollection.DBFileName);
   try
     frmProgress := TImportProgressFormEx.Create(Application);
     try

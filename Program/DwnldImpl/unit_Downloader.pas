@@ -205,6 +205,7 @@ begin
   FFile := BookRecord.GetBookFileName;
   if FileExists(FFile) or DoDownload(BookRecord) then
   begin
+    GetSystemData.GetActiveCollection.SetLocal(BookKey, True);
     unit_Messages.BookLocalStatusChanged(BookKey, True);
     Result := True;
   end;

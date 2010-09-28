@@ -647,7 +647,7 @@ begin
   Tree.Clear;
   Tree.NodeDataSize := SizeOf(TFileData);
 
-  FRootPath := SystemData.GetActiveCollectionInfo.RootPath;
+  FRootPath := SystemData.GetActiveCollectionInfo.GetRootPath;
 
   flFiles.TargetPath := SystemData.GetActiveCollectionInfo.RootFolder;
   flFiles.Process;

@@ -58,16 +58,13 @@ type
 
   TImportInpxThread = class(TWorker)
   strict private
-    FDBFileName: string;
-    FCollectionRoot: string;
-    FCollectionType: Integer;
+    FCollectionID: Integer;
     FInpxFileName: string;
     FGenresType: TGenresType;
 
     FFields: array of TFields;
     FUseStoredFolder: Boolean;
 
-    procedure SetCollectionRoot(const Value: string);
     procedure ParseData(const input: string; const OnlineCollection: Boolean; var R: TBookRecord);
 
   protected
@@ -76,9 +73,7 @@ type
     procedure Import(CheckFiles: Boolean; BookCollection: IBookCollection);
 
   public
-    property DBFileName: string read FDBFileName write FDBFileName;
-    property CollectionRoot: string read FCollectionRoot write SetCollectionRoot;
-    property CollectionType: COLLECTION_TYPE read FCollectionType write FCollectionType;
+    property CollectionID: Integer read FCollectionID write FCollectionID;
 
     property InpxFileName: string read FInpxFileName write FInpxFileName;
     property GenresType: TGenresType read FGenresType write FGenresType;
@@ -89,6 +84,7 @@ implementation
 uses
   Classes,
   SysUtils,
+  IOUtils,
   ZipForge,
   unit_Settings,
   unit_Consts,
@@ -356,6 +352,7 @@ end;
 
 procedure TImportInpxThread.Import(CheckFiles: Boolean; BookCollection: IBookCollection);
 var
+  FCollectionRoot: string;
   BookList: TStringList;
   i: Integer;
   j: Integer;
@@ -374,7 +371,9 @@ begin
   i := 0;
   SetProgress(0);
 
-  IsOnline := isOnlineCollection(CollectionType);
+  IsOnline := isOnlineCollection(BookCollection.CollectionCode);
+  FCollectionRoot := BookCollection.GetProperty(PROP_ROOTFOLDER);
+
   SetLength(FFields, 0);
   FUseStoredFolder := False;
 
@@ -430,7 +429,7 @@ begin
                   // И\Иванов Иван\1234 Просто книга.fb2.zip
                   R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;
                   // Сохраним отметку о существовании файла
-                  if FileExists(FCollectionRoot + R.Folder) then
+                  if FileExists(TPath.Combine(FCollectionRoot, R.Folder)) then
                     Include(R.BookProps, bpIsLocal)
                   else
                     Exclude(R.BookProps, bpIsLocal);
@@ -510,16 +509,11 @@ begin
   end;
 end;
 
-procedure TImportInpxThread.SetCollectionRoot(const Value: string);
-begin
-  FCollectionRoot := IncludeTrailingPathDelimiter(Value);
-end;
-
 procedure TImportInpxThread.WorkFunction;
 var
   BookCollection: IBookCollection;
 begin
-  BookCollection := GetSystemData.GetCollection(DBFileName);
+  BookCollection := GetSystemData.GetCollection(FCollectionID);
   BookCollection.BeginBulkOperation;
   try
     Import(False, BookCollection);

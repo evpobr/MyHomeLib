@@ -1,13 +1,18 @@
-{******************************************************************************}
-{                                                                              }
-{ MyHomeLib                                                                    }
-{                                                                              }
-{ Version 0.9                                                                  }
-{ 20.08.2008                                                                   }
-{ Copyright (c) Aleksey Penkov  alex.penkov@gmail.com                          }
-{                                                                              }
-{                                                                              }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
+  * Created             20.08.2008
+  * Description
+  *
+  * $Id$
+  *
+  * History
+  *
+  ****************************************************************************** *)
 
 unit unit_Utils;
 
@@ -56,11 +61,8 @@ var
 begin
   SystemData := GetSystemData;
 
-  worker := TSyncOnLineThread.Create;
+  worker := TSyncOnLineThread.Create(SystemData.GetActiveCollectionInfo.ID);
   try
-    worker.CollectionID := SystemData.GetActiveCollectionInfo.ID;
-    worker.CollectionRoot := SystemData.GetActiveCollectionInfo.RootPath;
-
     frmProgress := TSyncOnLineProgressForm.Create(Application);
     try
       frmProgress.WorkerThread := worker;
@@ -77,8 +79,11 @@ procedure SyncFolders;
 var
   worker: TSyncFoldersThread;
   frmProgress: TSyncOnLineProgressForm;
+  SystemData: ISystemData;
 begin
-  worker := TSyncFoldersThread.Create;
+  SystemData := GetSystemData;
+
+  worker := TSyncFoldersThread.Create(SystemData.GetActiveCollectionInfo.ID);
   try
     frmProgress := TSyncOnLineProgressForm.Create(Application);
     try

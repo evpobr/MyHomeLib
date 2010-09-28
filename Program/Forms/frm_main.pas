@@ -1534,7 +1534,7 @@ begin
     //
     FSystemData.ActivateCollection(Settings.ActiveCollection);
 
-    frmMain.Caption := 'MyHomeLib - ' + FSystemData.GetActiveCollectionInfo.Name;
+    frmMain.Caption := 'MyHomeLib - ' + FSystemData.GetActiveCollectionInfo.DisplayName;
 
     // определ€ем типы коллекции
     CollectionType := FSystemData.GetActiveCollectionInfo.CollectionType;
@@ -1761,7 +1761,7 @@ var
   SubItem: TMenuItem;
   ActiveCollectionID: Integer;
   CollectionInfoIterator: ICollectionInfoIterator;
-  CollectionInfo: ICollectionInfo;
+  CollectionInfo: TCollectionInfo;
 
   function GetCollectionTypeImageIndex(const CollectionType: COLLECTION_TYPE): Integer;
   begin
@@ -1792,7 +1792,7 @@ begin
     begin
       // ----------------------------
       SubItem := TMenuItem.Create(miCollSelect);
-      SubItem.Caption := CollectionInfo.Name;
+      SubItem.Caption := CollectionInfo.DisplayName;
       SubItem.Tag := CollectionInfo.ID;
       SubItem.OnClick := miActiveCollectionClick;
       SubItem.ImageIndex := GetCollectionTypeImageIndex(CollectionInfo.CollectionType);
@@ -1800,7 +1800,7 @@ begin
 
       // ----------------------------
       SubItem := TMenuItem.Create(pmCollection);
-      SubItem.Caption := CollectionInfo.Name;
+      SubItem.Caption := CollectionInfo.DisplayName;
       SubItem.Tag := CollectionInfo.ID;
       SubItem.OnClick := miActiveCollectionClick;
       SubItem.ImageIndex := GetCollectionTypeImageIndex(CollectionInfo.CollectionType);
@@ -1814,7 +1814,7 @@ begin
       then
       begin
         SubItem := TMenuItem.Create(miCopyToCollection);
-        SubItem.Caption := CollectionInfo.Name;
+        SubItem.Caption := CollectionInfo.DisplayName;
         SubItem.Tag := CollectionInfo.ID;
         SubItem.OnClick := CopyToCollectionClick;
         SubItem.ImageIndex := GetCollectionTypeImageIndex(CollectionInfo.CollectionType);
@@ -2144,7 +2144,7 @@ var
   i: Integer;
   UpdatesInfo: TUpdateInfoList;
   CollectionInfoIterator: ICollectionInfoIterator;
-  CollectionInfo: ICollectionInfo;
+  CollectionInfo: TCollectionInfo;
 begin
   if not Auto then
     ShowPopup(rstrCheckingUpdates);
@@ -2159,7 +2159,7 @@ begin
   while CollectionInfoIterator.Next(CollectionInfo) do
   begin
     for i := 0 to UpdatesInfo.Count - 1 do
-      if UpdatesInfo[i].CheckCodes(CollectionInfo.Name, CollectionInfo.CollectionType, CollectionInfo.ID) then
+      if UpdatesInfo[i].CheckCodes(CollectionInfo.DisplayName, CollectionInfo.CollectionType, CollectionInfo.ID) then
         if UpdatesInfo[i].CheckVersion(Settings.UpdatePath, CollectionInfo.DataVersion) then
         begin
           Result := True;
@@ -3316,7 +3316,7 @@ var
   Data: PBookRecord;
   Tag: Integer;
   X: Integer;
-  CollectionInfo: ICollectionInfo;
+  CollectionInfo: TCollectionInfo;
   CollectionType: COLLECTION_TYPE;
 
   procedure Stars(Value: Integer);
@@ -3644,7 +3644,7 @@ var
   Data: PBookRecord;
   BookCollection: IBookCollection;
   SavedCursor: TCursor;
-  CollectionInfo: ICollectionInfo;
+  CollectionInfo: TCollectionInfo;
 begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -3659,7 +3659,7 @@ begin
     ID := (Sender as TMenuItem).Tag;
     CollectionInfo := FSystemData.GetCollectionInfo(ID);
 
-    BookCollection := FSystemData.GetCollection(FSystemData.GetActiveCollectionInfo.DBFileName);
+    BookCollection := FSystemData.GetCollection(FSystemData.GetActiveCollectionInfo.ID);
     Node := Tree.GetFirst;
     while Assigned(Node) do
     begin
@@ -3847,7 +3847,7 @@ var
   BookFileName: string;
   BookFormat: TBookFormat;
   WorkFile: string;
-  CollectionInfo: ICollectionInfo;
+  CollectionInfo: TCollectionInfo;
 begin
   Assert(BookRecord.nodeType = ntBookInfo);
 
@@ -4589,7 +4589,10 @@ begin
         BookFileName := Data^.GetBookFileName;
 
         if (IsOnline and (bpIsLocal in Data^.BookProps)) and DeleteFile(BookFileName) then
-          SetBookLocalStatus(Data^.BookKey, False)
+        begin
+          ALibrary.SetLocal(Data^.BookKey, False);
+          SetBookLocalStatus(Data^.BookKey, False);
+        end
         else
         begin
           if Settings.DeleteFiles then
@@ -4625,10 +4628,10 @@ end;
 procedure TfrmMain.DeleteCollectionExecute(Sender: TObject);
 var
   CollectionInfoIterator: ICollectionInfoIterator;
-  CollectionInfo: ICollectionInfo;
+  CollectionInfo: TCollectionInfo;
 begin
   { TODO -oNickR -cUsability : ƒумаю, стоит сделать специальный диалог дл€ этого случа€. “огда мы сможем спросить, удал€ть файл коллекции или нет. }
-  if MessageDlg(rstrRemoveCollection + '"' + FSystemData.GetActiveCollectionInfo.Name + '"?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+  if MessageDlg(rstrRemoveCollection + '"' + FSystemData.GetActiveCollectionInfo.DisplayName + '"?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
     Exit;
 
   // Delete current collection and choose another:
@@ -4648,8 +4651,8 @@ var
   FilePath: string;
   BookCollection: IBookCollection;
 begin
-  DatabaseID := FSystemData.GetActiveCollectionInfo.ID;
   BookCollection := FSystemData.GetActiveCollection;
+  DatabaseID := BookCollection.CollectionID;
 
   ProcessNodes(
     procedure (Tree: TBookTree; Node: PVirtualNode)
@@ -5022,8 +5025,7 @@ begin
 
         ALibrary.BeginBulkOperation;
         try
-          ALibrary.CleanBookGenres(DataB.BookKey.BookID);
-          ALibrary.InsertBookGenres(DataB.BookKey.BookID, DataB^.Genres);
+          ALibrary.SetBookGenres(DataB.BookKey.BookID, DataB^.Genres, True);
 
           ALibrary.EndBulkOperation(True); // commit
         except
@@ -5699,8 +5701,6 @@ end;
 
 procedure TfrmMain.ImportFb2Execute(Sender: TObject);
 begin
-//  DMCollection.DBCollection.Connected := False;
-
   unit_Import.ImportFB2(FSystemData.GetActiveCollectionInfo);
 
   InitCollection(True);
@@ -5719,8 +5719,6 @@ end;
 
 procedure TfrmMain.ImportFb2ZipExecute(Sender: TObject);
 begin
-//  DMCollection.DBCollection.Connected := False;
-
   unit_Import.ImportFB2ZIP(FSystemData.GetActiveCollectionInfo);
 
   InitCollection(True);
@@ -5728,8 +5726,6 @@ end;
 
 procedure TfrmMain.ImportFBDExecute(Sender: TObject);
 begin
-//  DMCollection.DBCollection.Connected := False;
-
   unit_Import.ImportFBD(FSystemData.GetActiveCollectionInfo);
 
   InitCollection(True);
@@ -6006,7 +6002,7 @@ end;
 procedure TfrmMain.miActiveCollectionClick(Sender: TObject);
 var
   i: Integer;
-  CollectionInfo: ICollectionInfo;
+  CollectionInfo: TCollectionInfo;
 begin
   i := (Sender as TMenuItem).Tag;
   CollectionInfo := FSystemData.GetCollectionInfo(i);
@@ -6044,7 +6040,7 @@ begin
     //
     // ревью можно измен€ть только дл€ книг из текущей коллекции
     //
-    ReviewEditable := (Data^.BookKey.DatabaseID = FSystemData.GetActiveCollectionInfo.ID);
+    ReviewEditable := (Data^.BookKey.DatabaseID = BookCollection.CollectionID);
 
     frmBookDetails := TfrmBookDetails.Create(Application);
     try
@@ -6173,7 +6169,7 @@ var
   Data: PBookRecord;
   FullAuthorName: string;
   SavedCursor: TCursor;
-  CollectionInfo: ICollectionInfo;
+  CollectionInfo: TCollectionInfo;
 begin
   GetActiveTree(Tree);
 
@@ -6292,9 +6288,13 @@ begin
   if isOnlineCollection(FSystemData.GetActiveCollectionInfo.CollectionType) then
     unit_Utils.SyncOnLineFiles
   else
+  begin
     unit_Utils.SyncFolders;
-
-  InitCollection(True);
+    //
+    // ѕока это нужно, т к рабочий поток не сообщает основному об изменении свойств книги
+    //
+    InitCollection(True);
+  end;
 end;
 
 procedure TfrmMain.UpdateOnlineCollectionExecute(Sender: TObject);
@@ -6510,7 +6510,7 @@ var
 begin
   frmBases := TfrmBases.Create(Application);
   try
-    frmBases.tsConnectionInfo.TabVisible := IsOnline;
+    frmBases.SetCollection(FSystemData, FSystemData.GetActiveCollection);
     if frmBases.ShowModal = mrOk then
     begin
       Assert(Settings.ActiveCollection = FSystemData.GetActiveCollectionInfo.ID);
@@ -6560,23 +6560,20 @@ end;
 
 procedure TfrmMain.UpdateGenresExecute(Sender: TObject);
 var
-  ALibrary: IBookCollection;
+  Collection: IBookCollection;
   AFileName: string;
 begin
-  //DMCollection.DBCollection.Connected := False;
-  ALibrary := FSystemData.GetActiveCollection;
-  if isFB2Collection(FSystemData.GetActiveCollectionInfo.CollectionType) then
-    ALibrary.ReloadGenres(Settings.SystemFileName[sfGenresFB2])
+  Collection := FSystemData.GetActiveCollection;
+  if isFB2Collection(Collection.CollectionCode) then
+    Collection.ReloadGenres(Settings.SystemFileName[sfGenresFB2])
   else if unit_Helpers.GetFileName(fnGenreList, AFileName) then
-    ALibrary.ReloadGenres(AFileName);
+    Collection.ReloadGenres(AFileName);
   InitCollection(True);
 end;
 
 procedure TfrmMain.RepairDataBaseExecute(Sender: TObject);
 begin
   FSystemData.GetActiveCollection.RepairDatabase;
-
-//  FSystemData.SetTableState(True);
 end;
 
 procedure TfrmMain.ChangeSettingsExecute(Sender: TObject);
@@ -6764,8 +6761,6 @@ end;
 
 procedure TfrmMain.SetBookLocalStatus(const BookKey: TBookKey; IsLocal: Boolean);
 begin
-  FSystemData.GetActiveCollection.SetLocal(BookKey, IsLocal);
-
   UpdateNodes(
     BookKey,
     procedure(BookData: PBookRecord)

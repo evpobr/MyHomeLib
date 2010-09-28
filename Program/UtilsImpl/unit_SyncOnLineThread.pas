@@ -1,13 +1,18 @@
-{******************************************************************************}
-{                                                                              }
-{ MyHomeLib                                                                    }
-{                                                                              }
-{ Version 0.9                                                                  }
-{ 20.08.2008                                                                   }
-{ Copyright (c) Aleksey Penkov  alex.penkov@gmail.com                          }
-{                                                                              }
-{                                                                              }
-{******************************************************************************}
+(* *****************************************************************************
+  *
+  * MyHomeLib
+  *
+  * Copyright (C) 2008-2010 Aleksey Penkov
+  *
+  * Author(s)           Nick Rymanov (nrymanov@gmail.com)
+  * Created             20.08.2008
+  * Description
+  *
+  * $Id$
+  *
+  * History
+  *
+  ****************************************************************************** *)
 
 unit unit_SyncOnLineThread;
 
@@ -17,95 +22,78 @@ uses
   Windows,
   Classes,
   SysUtils,
-  unit_WorkerThread;
+  unit_WorkerThread,
+  unit_CollectionWorkerThread;
 
 type
-  TSyncOnLineThread = class(TWorker)
-  private
-    FCollectionID: Integer;
-    FCollectionRoot: string;
-
-    procedure SetCollectionRoot(const Value: string);
-
+  TSyncOnLineThread = class(TCollectionWorker)
   protected
     procedure WorkFunction; override;
-
-  public
-    property CollectionID: Integer read FCollectionID write FCollectionID;
-    property CollectionRoot: string read FCollectionRoot write SetCollectionRoot;
   end;
 
 implementation
 
 uses
-  Forms,
   IOUtils,
+  unit_Consts,
   unit_Globals,
   unit_Settings,
   unit_MHL_strings,
   unit_Messages,
-  unit_Interfaces,
-  unit_SystemDatabase;
-
-resourcestring
-  rstrProblemsWithABook = 'Какие-то проблемы с книгой ';
+  unit_Interfaces;
 
 { TImportXMLThread }
 
-procedure TSyncOnLineThread.SetCollectionRoot(const Value: string);
-begin
-  FCollectionRoot := IncludeTrailingPathDelimiter(Value);
-end;
-
 procedure TSyncOnLineThread.WorkFunction;
 var
+  FCollectionRoot: string;
+  BookIterator: IBookIterator;
+
   BookFile: string;
 
-  totalBooks: Integer;
-  processedBooks: Integer;
-
   IsLocal: Boolean;
-  BookIterator: IBookIterator;
   BookRecord: TBookRecord;
 begin
-  processedBooks := 0;
+  Assert(Assigned(FSystemData));
+  Assert(Assigned(FCollection));
+  FCollectionRoot := FCollection.GetProperty(PROP_ROOTFOLDER);
+  BookIterator := FCollection.GetBookIterator(bmAll, True);
 
-  BookIterator := GetSystemData.GetActiveCollection.GetBookIterator(bmAll, True);
-  totalBooks := BookIterator.RecordCount;
-  while BookIterator.Next(BookRecord) do
-  begin
-    if Canceled then
-      Exit;
+  FProgressEngine.BeginOperation(BookIterator.RecordCount, rstrBookProcessedMsg1, rstrBookProcessedMsg2);
+  try
+    while BookIterator.Next(BookRecord) do
+    begin
+      if Canceled then
+        Exit;
 
-    try
-      //
-      //  Проверяем был ли файл закачан ранее и ставим отметку в базу
-      //
-      // TODO -cBug: это работает не всегда. См. схему хранения расположения книги
-      //
-      BookFile := BookRecord.GetBookFileName;
-      IsLocal := FileExists(BookFile);
+      try
+        //
+        //  Проверяем был ли файл закачан ранее и ставим отметку в базу
+        //
+        BookFile := BookRecord.GetBookFileName;
+        IsLocal := TFile.Exists(BookFile);
 
-      if Settings.DeleteDeleted and IsLocal and (bpIsDeleted in BookRecord.BookProps) then
-      begin
-        SysUtils.DeleteFile(BookFile);
-        IsLocal := False;
+        if Settings.DeleteDeleted and IsLocal and (bpIsDeleted in BookRecord.BookProps) then
+        begin
+          TFile.Delete(BookFile);
+          IsLocal := False;
+        end;
+
+        if (bpIsLocal in BookRecord.BookProps) <> IsLocal then
+        begin
+          FCollection.SetLocal(BookRecord.BookKey, IsLocal);
+          unit_Messages.BookLocalStatusChanged(BookRecord.BookKey, IsLocal);
+        end;
+      except
+        on E: Exception do
+          Teletype(e.Message, tsError);
       end;
 
-      if (bpIsLocal in BookRecord.BookProps) <> IsLocal then
-        unit_Messages.BookLocalStatusChanged(BookRecord.BookKey, IsLocal);
-    except
-      on E: Exception do
-        Application.MessageBox(PChar(rstrProblemsWithABook + BookFile), '', MB_OK);
+      FProgressEngine.AddProgress;
     end;
-
-    Inc(processedBooks);
-    if (processedBooks mod ProcessedItemThreshold) = 0 then
-      SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
-    SetProgress(processedBooks * 100 div totalBooks);
+  finally
+    FProgressEngine.EndOperation;
   end;
-
-  SetComment(Format(rstrBookProcessedMsg2, [processedBooks, totalBooks]));
 end;
 
 end.

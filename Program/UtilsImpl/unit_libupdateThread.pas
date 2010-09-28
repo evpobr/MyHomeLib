@@ -150,7 +150,7 @@ var
   BookCollection: IBookCollection;
   i: integer;
   UserDataBackup: TUserData;
-  CollectionInfo: ICollectionInfo;
+  CollectionInfo: TCollectionInfo;
   SystemData: ISystemData;
 begin
   SystemData := GetSystemData;
@@ -197,12 +197,8 @@ begin
 
         InpxFileName := Settings.UpdatePath + Settings.Updates[i].UpdateFile;
 
-        DBFileName := CollectionInfo.DBFileName;
-        CollectionRoot := CollectionInfo.RootPath;
-        CollectionType := CollectionInfo.CollectionType;
-
         //Truncate won't work with TBookCollection.Create(DBFileName, False)
-        BookCollection := GetSystemData.GetCollection(DBFileName);
+        BookCollection := GetSystemData.GetCollection(CollectionInfo.ID);
         BookCollection.BeginBulkOperation;
         try
           if Settings.Updates[i].Full then

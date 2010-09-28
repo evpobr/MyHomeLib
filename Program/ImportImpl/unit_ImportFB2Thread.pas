@@ -22,7 +22,7 @@ type
   protected
     procedure ProcessFileList; override;
   public
-    constructor Create(const CollectionRoot: string; const DBFileName: string);
+    constructor Create(const CollectionID: Integer; const CollectionRoot: string; const DBFileName: string);
   end;
 
 implementation
@@ -46,9 +46,9 @@ resourcestring
 
 { TImportFB2Thread }
 
-constructor TImportFB2Thread.Create(const CollectionRoot: string; const DBFileName: string);
+constructor TImportFB2Thread.Create(const CollectionID: Integer; const CollectionRoot: string; const DBFileName: string);
 begin
-  inherited Create(CollectionRoot, DBFileName);
+  inherited Create(CollectionID, CollectionRoot, DBFileName);
 
   FTargetExt := FB2_EXTENSION;
   FZipFolder := False;

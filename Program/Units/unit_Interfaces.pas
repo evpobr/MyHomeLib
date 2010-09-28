@@ -26,54 +26,6 @@ uses
   UserData;
 
 type
-  ICollectionInfo = interface
-    ['{6D459AD9-8D14-4F90-B36E-A42BFF229E47}']
-
-    function GetID: Integer;
-    procedure SetID(const NewID: Integer);
-    function GetName: string;
-    procedure SetName(const NewName: string);
-    function GetRootFolder: string;
-    procedure SetRootFolder(const NewRootFolder: string);
-    function GetDBFileName: string;
-    procedure SetDBFileName(const NewDBFileName: string);
-    function GetNotes: string;
-    procedure SetNotes(const NewNotes: string);
-    function GetUser: string;
-    procedure SetUser(const NewUser: string);
-    function GetPassword: string;
-    procedure SetPassword(const NewPassword: string);
-    function GetCreationDate: TDateTime;
-    procedure SetCreationDate(const NewCreationDate: TDateTime);
-    function GetDataVersion: Integer;
-    procedure SetDataVersion(const NewVersion: Integer);
-    function GetCollectionType: COLLECTION_TYPE;
-    procedure SetCollectionType(const NewCollectionType: COLLECTION_TYPE);
-    function GetURL: string;
-    procedure SetURL(const NewURL: string);
-    function GetScript: string;
-    procedure SetScript(const NewScript: string);
-
-    function GetRootPath: string;
-
-    procedure Clear;
-
-    property ID: Integer read GetID write SetID;
-    property Name: string read GetName write SetName;
-    property RootFolder: string read GetRootFolder write SetRootFolder;
-    property DBFileName: string read GetDBFileName write SetDBFileName;
-    property Notes: string read GetNotes write SetNotes;
-    property CreationDate: TDateTime read GetCreationDate write SetCreationDate;
-    property DataVersion: Integer read GetDataVersion write SetDataVersion;
-    property CollectionType: COLLECTION_TYPE read GetCollectionType write SetCollectionType;
-    property User: string read GetUser write SetUser;
-    property Password: string read GetPassword write SetPassword;
-    property URL: string read GetURL write SetURL;
-    property Script: string read GetScript write SetScript;
-
-    property RootPath: string read GetRootPath;
-  end;
-
   IIterator<T: record> = interface
     function Next(out v: T): Boolean;
     function RecordCount: Integer;
@@ -94,7 +46,7 @@ type
   IGenreIterator = IIterator<TGenreData>;
   ISeriesIterator = IIterator<TSeriesData>;
   IGroupIterator = IIterator<TGroupData>;
-  ICollectionInfoIterator = IInterfaceIterator<ICollectionInfo>;
+  ICollectionInfoIterator = IIterator<TCollectionInfo>;
 
   TGUIUpdateExtraProc = reference to procedure(
     const BookKey: TBookKey;
@@ -145,16 +97,14 @@ type
     procedure SetProperty(const CollectionID: Integer; const PropID: TPropertyID; const Value: Variant);
     function GetProperty(const CollectionID: Integer; const PropID: TPropertyID): Variant;
 
-    function GetCollectionInfo(const CollectionID: Integer): ICollectionInfo;
-    procedure UpdateCollectionInfo(const CollectionInfo: ICollectionInfo);
+    function GetCollectionInfo(const CollectionID: Integer): TCollectionInfo;
 
-    function GetCollection(const DBCollectionFile: string): IBookCollection; deprecated;
-    //function GetCollectionByID(const CollectionID: Integer): IBookCollection;
+    function GetCollection(const CollectionID: Integer): IBookCollection;
 
-    procedure ActivateCollection(CollectionID: Integer); deprecated;
-    function GetActiveCollectionInfo: ICollectionInfo; deprecated;
-    function GetActiveCollection: IBookCollection; deprecated;
-    function ActivateGroup(const ID: Integer): Boolean; deprecated;
+    procedure ActivateCollection(CollectionID: Integer); //deprecated;
+    function GetActiveCollectionInfo: TCollectionInfo; //deprecated;
+    function GetActiveCollection: IBookCollection; //deprecated;
+    function ActivateGroup(const ID: Integer): Boolean; //deprecated;
 
     //
     // –абота с книгами
@@ -243,16 +193,10 @@ type
     procedure SetSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
 
     //
-    // манипул€ции с авторами книги
+    // манипул€ции с авторами и жанрами книги
     //
-    procedure CleanBookAuthors(const BookID: Integer); // заменить Integer на TBookKey
-    procedure InsertBookAuthors(const BookID: Integer; const Authors: TBookAuthors); // заменить Integer на TBookKey
-
-    //
-    // манипул€ции с жанрами книги
-    //
-    procedure CleanBookGenres(const BookID: Integer); // заменить Integer на TBookKey
-    procedure InsertBookGenres(const BookID: Integer; const Genres: TBookGenres); // заменить Integer на TBookKey
+    procedure SetBookAuthors(const BookID: Integer; const Authors: TBookAuthors; Replace: Boolean); // заменить Integer на TBookKey
+    procedure SetBookGenres(const BookID: Integer; const Genres: TBookGenres; Replace: Boolean); // заменить Integer на TBookKey
 
     //
     //
@@ -264,9 +208,9 @@ type
     //
     // —войства коллекции
     //
-    function ID: Integer;
-    function Code: COLLECTION_TYPE;
-    function Root: string;
+    function CollectionID: Integer;
+    function CollectionCode: COLLECTION_TYPE;
+    function CollectionRoot: string;
 
     procedure SetProperty(const PropID: TPropertyID; const Value: Variant);
     function GetProperty(const PropID: TPropertyID): Variant;
