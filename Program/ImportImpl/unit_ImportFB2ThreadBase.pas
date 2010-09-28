@@ -28,17 +28,13 @@ uses
   files_list,
   unit_Globals,
   unit_WorkerThread,
+  unit_CollectionWorkerThread,
   unit_Templater,
   unit_Interfaces;
 
 type
-  TImportFB2ThreadBase = class(TWorker)
+  TImportFB2ThreadBase = class(TCollectionWorker)
   protected
-    FCollectionID: Integer;
-    FCollectionRoot: string;
-    FCollectionDBFileName: string;
-
-    FLibrary: IBookCollection;
     FTemplater: TTemplater;
     FFiles: TStringList;
     FFilesList: TFilesList;
@@ -49,11 +45,6 @@ type
     FTargetExt: string;
     FZipFolder: Boolean;
     FFullNameSearch: Boolean;
-
-    //
-    // UNUSED
-    //
-    //FCheckExistsFiles: Boolean;
 
     procedure ScanFolder;
 
@@ -68,9 +59,6 @@ type
     procedure ProcessFileList; virtual; abstract;
     procedure GetBookInfo(book: IXMLFictionBook; var R: TBookRecord);
     procedure SortFiles(var R: TBookRecord); virtual;
-
-  public
-    constructor Create(const CollectionID: Integer; const CollectionRoot: string; const DBFileName: string);
   end;
 
 implementation
@@ -86,11 +74,9 @@ Settings.ImportPath
 }
 
 uses
-  ComCtrls,
   Dialogs,
   unit_Settings,
-  unit_Consts,
-  unit_SystemDatabase;
+  unit_Consts;
 
 resourcestring
   rstrCheckTemplateValidity = 'Проверьте правильность шаблона';
@@ -100,14 +86,6 @@ resourcestring
   rstrScanningFolders = 'Сканирование папок...';
 
 { TImportFB2Thread }
-
-constructor TImportFB2ThreadBase.Create(const CollectionID: Integer; const CollectionRoot: string; const DBFileName: string);
-begin
-  inherited Create;
-  FCollectionID := CollectionID;
-  FCollectionRoot := CollectionRoot;
-  FCollectionDBFileName := DBFileName;
-end;
 
 procedure TImportFB2ThreadBase.GetBookInfo(book: IXMLFictionBook; var R: TBookRecord);
 var
@@ -144,7 +122,7 @@ begin
         R.Annotation := R.Annotation + CRLF + Annotation.P.Items[i].OnlyText;
 
     if R.GenreCount > 0 then
-      R.RootGenre.GenreAlias := Trim(FLibrary.GetTopGenreAlias(R.Genres[0].FB2GenreCode));
+      R.RootGenre.GenreAlias := Trim(FCollection.GetTopGenreAlias(R.Genres[0].FB2GenreCode));
   end;
 end;
 
@@ -220,7 +198,7 @@ begin
     else
       FileName := ExtractRelativePath(FCollectionRoot, FFilesList.LastDir) + F.Name;
 
-    if not FLibrary.CheckFileInCollection(FileName, FFullNameSearch, FZipFolder) then
+    if not FCollection.CheckFileInCollection(FileName, FFullNameSearch, FZipFolder) then
       FFiles.Add(FFilesList.LastDir + F.Name);
   end;
 
@@ -261,7 +239,6 @@ end;
 
 procedure TImportFB2ThreadBase.WorkFunction;
 begin
-  FLibrary := GetSystemData.GetCollection(FCollectionID);
   FFiles := TStringList.Create;
   try
     ScanFolder;
@@ -269,12 +246,12 @@ begin
     if Canceled then
       Exit;
 
-    FLibrary.BeginBulkOperation;
+    FCollection.BeginBulkOperation;
     try
       ProcessFileList;
-      FLibrary.EndBulkOperation(True);
+      FCollection.EndBulkOperation(True);
     except
-      FLibrary.EndBulkOperation(False);
+      FCollection.EndBulkOperation(False);
       raise;
     end;
   finally

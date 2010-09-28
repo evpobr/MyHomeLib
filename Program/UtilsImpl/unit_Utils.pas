@@ -23,9 +23,9 @@ uses
   Dialogs,
   UserData;
 
-procedure SyncOnLineFiles;
+procedure SyncOnLineFiles(const CollectionID: Integer);
 
-procedure SyncFolders;
+procedure SyncFolders(const CollectionID: Integer);
 
 function LibrusecUpdate(OnImportUserData: TOnImportUserDataEvent): Boolean;
 
@@ -37,7 +37,6 @@ procedure LocateBook;
 implementation
 
 uses
-  Controls,
   Forms,
   unit_SyncOnLineThread,
   frm_SyncOnLineProgressForm,
@@ -47,21 +46,17 @@ uses
   frm_info_popup,
   frm_search,
   frm_main,
-  unit_SystemDatabase,
   unit_Interfaces;
 
 resourcestring
   rstrUpdateCollections = 'Обновление коллекций';
 
-procedure SyncOnLineFiles;
+procedure SyncOnLineFiles(const CollectionID: Integer);
 var
   worker: TSyncOnLineThread;
   frmProgress: TSyncOnLineProgressForm;
-  SystemData: ISystemData;
 begin
-  SystemData := GetSystemData;
-
-  worker := TSyncOnLineThread.Create(SystemData.GetActiveCollectionInfo.ID);
+  worker := TSyncOnLineThread.Create(CollectionID);
   try
     frmProgress := TSyncOnLineProgressForm.Create(Application);
     try
@@ -75,15 +70,12 @@ begin
   end;
 end;
 
-procedure SyncFolders;
+procedure SyncFolders(const CollectionID: Integer);
 var
   worker: TSyncFoldersThread;
   frmProgress: TSyncOnLineProgressForm;
-  SystemData: ISystemData;
 begin
-  SystemData := GetSystemData;
-
-  worker := TSyncFoldersThread.Create(SystemData.GetActiveCollectionInfo.ID);
+  worker := TSyncFoldersThread.Create(CollectionID);
   try
     frmProgress := TSyncOnLineProgressForm.Create(Application);
     try
@@ -134,7 +126,7 @@ end;
 
 procedure ShowPopup(const Msg: string);
 begin
-  frmInfoPopup := TfrmInfoPopup.Create(Nil);
+  frmInfoPopup := TfrmInfoPopup.Create(nil);
   frmInfoPopup.lblText.Caption := Msg;
   frmInfoPopup.Refresh;
   frmInfoPopup.Show;
@@ -142,7 +134,7 @@ end;
 
 procedure HidePopup;
 begin
-  if frmInfoPopup <> Nil then
+  if Assigned(frmInfoPopup) then
   begin
     frmInfoPopup.Hide;
     frmInfoPopup.Free;

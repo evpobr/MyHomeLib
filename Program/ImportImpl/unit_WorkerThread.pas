@@ -84,6 +84,9 @@ type
     procedure SetComment(const Comment: string);
     function ShowMessage(const Text: string; Flags: Longint {= MB_OK}): Integer;
 
+    procedure Initialize; virtual;
+    procedure Uninitialize; virtual;
+
     procedure Execute; override;
     procedure WorkFunction; virtual; abstract;
 
@@ -236,9 +239,21 @@ begin
 end;
 
 // ============================================================================
-procedure TWorker.Execute;
+procedure TWorker.Initialize;
 begin
   CoInitializeEx(nil, COINIT_MULTITHREADED or COINIT_APARTMENTTHREADED);
+end;
+
+// ============================================================================
+procedure TWorker.Uninitialize;
+begin
+  CoUninitialize;
+end;
+
+// ============================================================================
+procedure TWorker.Execute;
+begin
+  Initialize;
   try
     FProgressEngine := TProgressEngine.Create;
     try
@@ -256,7 +271,7 @@ begin
       FreeAndNil(FProgressEngine);
     end;
   finally
-    CoUninitialize;
+    Uninitialize;
   end;
 end;
 

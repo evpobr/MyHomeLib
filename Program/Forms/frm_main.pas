@@ -5701,7 +5701,7 @@ end;
 
 procedure TfrmMain.ImportFb2Execute(Sender: TObject);
 begin
-  unit_Import.ImportFB2(FSystemData.GetActiveCollectionInfo);
+  unit_Import.ImportFB2(FSystemData.GetActiveCollectionInfo.ID);
 
   InitCollection(True);
 end;
@@ -5719,14 +5719,14 @@ end;
 
 procedure TfrmMain.ImportFb2ZipExecute(Sender: TObject);
 begin
-  unit_Import.ImportFB2ZIP(FSystemData.GetActiveCollectionInfo);
+  unit_Import.ImportFB2ZIP(FSystemData.GetActiveCollectionInfo.ID);
 
   InitCollection(True);
 end;
 
 procedure TfrmMain.ImportFBDExecute(Sender: TObject);
 begin
-  unit_Import.ImportFBD(FSystemData.GetActiveCollectionInfo);
+  unit_Import.ImportFBD(FSystemData.GetActiveCollectionInfo.ID);
 
   InitCollection(True);
 end;
@@ -6286,10 +6286,10 @@ begin
   UpdatePositions;
 
   if isOnlineCollection(FSystemData.GetActiveCollectionInfo.CollectionType) then
-    unit_Utils.SyncOnLineFiles
+    unit_Utils.SyncOnLineFiles(FSystemData.GetActiveCollectionInfo.ID)
   else
   begin
-    unit_Utils.SyncFolders;
+    unit_Utils.SyncFolders(FSystemData.GetActiveCollectionInfo.ID);
     //
     // Пока это нужно, т к рабочий поток не сообщает основному об изменении свойств книги
     //

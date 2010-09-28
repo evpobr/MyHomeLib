@@ -35,7 +35,7 @@ type
     procedure ProcessFileList; override;
 
   public
-    constructor Create(const CollectionID: Integer; const CollectionRoot: string; const DBFileName: string);
+    constructor Create(const CollectionID: Integer);
   end;
 
 
@@ -60,9 +60,9 @@ resourcestring
 
 { TImportFB2ZIPThread }
 
-constructor TImportFB2ZIPThread.Create(const CollectionID: Integer; const CollectionRoot: string; const DBFileName: string);
+constructor TImportFB2ZIPThread.Create(const CollectionID: Integer);
 begin
-  inherited Create(CollectionID, CollectionRoot, DBFileName);
+  inherited Create(CollectionID);
 
   FTargetExt := ZIP_EXTENSION;
   FZipFolder := True;
@@ -176,7 +176,7 @@ begin
                 if not Settings.EnableSort then
                 begin
                   R.Folder := ExtractRelativePath(FCollectionRoot, AZipFileName);
-                  if FLibrary.InsertBook(R, True, True) <> 0 then
+                  if FCollection.InsertBook(R, True, True) <> 0 then
                     Inc(AddCount);
                 end;
               except
@@ -200,7 +200,7 @@ begin
           begin
             R.Folder := AZipFileName;
             SortFiles(R);
-            if FLibrary.InsertBook(R, True, True) <> 0 then
+            if FCollection.InsertBook(R, True, True) <> 0 then
               Inc(AddCount);
           end;
         except

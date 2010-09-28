@@ -28,17 +28,24 @@ type
     FCollectionID: Integer;
 
   protected
+    //
+    // эти поля будут инициализированы только в рабочем потоке
+    //
     FSystemData: ISystemData;
     FCollection: IBookCollection;
+    FCollectionRoot: string;
+
+    procedure Initialize; override;
+    procedure Uninitialize; override;
 
   public
     constructor Create(const CollectionID: Integer);
-    destructor Destroy; override;
   end;
 
 implementation
 
 uses
+  unit_Consts,
   unit_SystemDatabase;
 
 { TCollectionWorker }
@@ -46,16 +53,23 @@ uses
 constructor TCollectionWorker.Create(const CollectionID: Integer);
 begin
   inherited Create;
-
   FCollectionID := CollectionID;
-  FSystemData := CreateSystemData;
-  FCollection := FSystemData.GetCollection(FCollectionID);
 end;
 
-destructor TCollectionWorker.Destroy;
+procedure TCollectionWorker.Initialize;
+begin
+  inherited Initialize;
+  FSystemData := CreateSystemData;
+  Assert(Assigned(FSystemData));
+  FCollection := FSystemData.GetCollection(FCollectionID);
+  Assert(Assigned(FCollection));
+  FCollectionRoot := FCollection.GetProperty(PROP_ROOTFOLDER);
+end;
+
+procedure TCollectionWorker.Uninitialize;
 begin
   FSystemData.ClearCollectionCache;
-  inherited Destroy;
+  inherited Uninitialize;
 end;
 
 end.

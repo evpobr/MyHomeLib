@@ -22,7 +22,7 @@ type
   protected
     procedure ProcessFileList; override;
   public
-    constructor Create(const CollectionID: Integer; const CollectionRoot: string; const DBFileName: string);
+    constructor Create(const CollectionID: Integer);
   end;
 
 implementation
@@ -46,9 +46,9 @@ resourcestring
 
 { TImportFB2Thread }
 
-constructor TImportFB2Thread.Create(const CollectionID: Integer; const CollectionRoot: string; const DBFileName: string);
+constructor TImportFB2Thread.Create(const CollectionID: Integer);
 begin
-  inherited Create(CollectionID, CollectionRoot, DBFileName);
+  inherited Create(CollectionID);
 
   FTargetExt := FB2_EXTENSION;
   FZipFolder := False;
@@ -96,7 +96,7 @@ begin
             book := LoadFictionBook(FFiles[i]);
             GetBookInfo(book, R);
           end;
-          FLibrary.InsertBook(R, True, True);
+          FCollection.InsertBook(R, True, True);
           Inc(AddedBooks);
         except
           on e: Exception do
