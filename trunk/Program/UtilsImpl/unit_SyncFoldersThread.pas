@@ -32,7 +32,6 @@ type
   private
     FFiles: TFilesList;
     FList: TStringList;
-    FCollectionRoot: string;
 
     procedure OnFile(Sender: TObject; const F: TSearchRec);
     function FindNewFolder(const FileName: string): string;
@@ -77,7 +76,6 @@ var
 begin
   Assert(Assigned(FSystemData));
   Assert(Assigned(FCollection));
-  FCollectionRoot := FCollection.GetProperty(PROP_ROOTFOLDER);
 
   FList := TStringList.Create;
   try

@@ -34,7 +34,7 @@ type
     procedure SortFiles(var R: TBookRecord); override;
 
   public
-    constructor Create(const CollectionID: Integer; const CollectionRoot: string; const DBFileName: string);
+    constructor Create(const CollectionID: Integer);
   end;
 
 implementation
@@ -58,9 +58,9 @@ resourcestring
 
 { TImportFB2Thread }
 
-constructor TImportFBDThread.Create(const CollectionID: Integer; const CollectionRoot: string; const DBFileName: string);
+constructor TImportFBDThread.Create(const CollectionID: Integer);
 begin
-  inherited Create(CollectionID, CollectionRoot, DBFileName);
+  inherited Create(CollectionID);
 
   FTargetExt := ZIP_EXTENSION;
   FZipFolder := False;
@@ -179,7 +179,7 @@ begin
           if Settings.EnableSort then
             SortFiles(R);
 
-          if IsValid and (BookFileName = FBDFileName) and (FLibrary.InsertBook(R, True, True)<>0) then
+          if IsValid and (BookFileName = FBDFileName) and (FCollection.InsertBook(R, True, True)<>0) then
             Inc(AddCount)
           else
           begin

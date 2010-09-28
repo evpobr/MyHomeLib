@@ -46,7 +46,6 @@ uses
 
 procedure TSyncOnLineThread.WorkFunction;
 var
-  FCollectionRoot: string;
   BookIterator: IBookIterator;
 
   BookFile: string;
@@ -56,7 +55,6 @@ var
 begin
   Assert(Assigned(FSystemData));
   Assert(Assigned(FCollection));
-  FCollectionRoot := FCollection.GetProperty(PROP_ROOTFOLDER);
   BookIterator := FCollection.GetBookIterator(bmAll, True);
 
   FProgressEngine.BeginOperation(BookIterator.RecordCount, rstrBookProcessedMsg1, rstrBookProcessedMsg2);
