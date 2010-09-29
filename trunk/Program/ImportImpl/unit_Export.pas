@@ -21,7 +21,7 @@ unit unit_Export;
 
 interface
 
-procedure Export2INPX(const FileName: string);
+procedure Export2INPX(const CollectionID: Integer; const FileName: string);
 
 implementation
 
@@ -30,14 +30,13 @@ uses
   unit_ExportINPXThread,
   frm_ExportProgressForm;
 
-procedure Export2INPX(const FileName: string);
+procedure Export2INPX(const CollectionID: Integer; const FileName: string);
 var
   worker: TExport2INPXThread;
   frmProgress: TExportProgressForm;
 begin
-  worker := TExport2INPXThread.Create;
+  worker := TExport2INPXThread.Create(CollectionID, FileName);
   try
-    worker.INPXFileName := FileName;
     frmProgress := TExportProgressForm.Create(Application);
     try
       frmProgress.WorkerThread := worker;

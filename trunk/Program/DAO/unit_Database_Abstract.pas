@@ -44,6 +44,8 @@ type
     function CollectionCode: COLLECTION_TYPE;
     function CollectionRoot: string;
 
+    function GetProperty(const PropID: TPropertyID): Variant; virtual; abstract;
+
     //
     // очень странная ф-ия. Нужна только в одном месте и то, не ясно, нужна ли на самом деле.
     //
@@ -263,14 +265,16 @@ end;
 
 procedure TBookCollection.VerifyCurrentCollection(const DatabaseID: Integer);
 var
+  thisCollectionName: string;
   bookCollectionName: string;
   collectionInfo: TCollectionInfo;
 begin
   if DatabaseID <> CollectionID then
   begin
+    thisCollectionName := GetProperty(PROP_DISPLAYNAME);
     collectionInfo := FSystemData.GetCollectionInfo(DatabaseID);
     bookCollectionName := collectionInfo.DisplayName;
-    raise ENotSupportedException.Create(Format(rstrErrorOnlyForCurrentCollection, [FSystemData.GetActiveCollectionInfo.DisplayName, bookCollectionName]));
+    raise ENotSupportedException.Create(Format(rstrErrorOnlyForCurrentCollection, [thisCollectionName, bookCollectionName]));
   end;
 end;
 
