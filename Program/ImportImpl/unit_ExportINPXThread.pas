@@ -22,41 +22,34 @@ interface
 
 uses
   Classes,
+  unit_Globals,
   unit_WorkerThread,
-  unit_Globals;
+  unit_CollectionWorkerThread;
 
 type
-  TExport2INPXThread = class(TWorker)
+  TExport2INPXThread = class(TCollectionWorker)
   strict private
     FTempPath: string;
-
-    FCollectionID: Integer;
-    FCollectionName: string;
-    FCollectionDBFileName: string;
-    FCollectionType: COLLECTION_TYPE;
-    FCollectionVersion: Integer;
-    FCollectionNotes: string;
-
     FINPXFileName: string;
 
     FGenresType: TGenresType;
+    FCollectionVersion: string;
 
     procedure INPRecordCreate(const R: TBookRecord; writer: TStreamWriter);
 
   protected
+    procedure Initialize; override;
     procedure WorkFunction; override;
 
   public
-    constructor Create;
-
-    property INPXFileName: string read FINPXFileName write FINPXFileName;
+    constructor Create(const CollectionID: Integer; const INPXFileName: string);
   end;
 
 implementation
 
 uses
   Windows,
-  Forms,
+  Variants,
   SysUtils,
   StrUtils,
   ZipForge,
@@ -64,8 +57,7 @@ uses
   unit_MHLGenerics,
   unit_Settings,
   unit_MHL_strings,
-  unit_Interfaces,
-  unit_SystemDatabase;
+  unit_Interfaces;
 
 resourcestring
   rstrVersionFrom = 'Версия от ddddd';
@@ -77,31 +69,34 @@ const
 
   { TImportXMLThread }
 
-constructor TExport2INPXThread.Create;
-var
-  CollectionInfo: TCollectionInfo;
+constructor TExport2INPXThread.Create(const CollectionID: Integer; const INPXFileName: string);
 begin
-  inherited Create;
-
+  inherited Create(CollectionID);
+  FINPXFileName := INPXFileName;
   FTempPath := Settings.TempPath;
+end;
 
-  CollectionInfo := GetSystemData.GetActiveCollectionInfo;
+procedure TExport2INPXThread.Initialize;
+var
+  vVersion: Variant;
+begin
+  inherited Initialize;
+  Assert(Assigned(FCollection));
 
-  FCollectionID := CollectionInfo.ID;
+  if isFB2Collection(FCollection.CollectionCode) then
+    FGenresType := gtFb2
+  else
+    FGenresType := gtAny;
 
-  FCollectionType := CollectionInfo.CollectionType;
-  FCollectionVersion := CollectionInfo.DataVersion;
-  FCollectionName := CollectionInfo.DisplayName;
-  FCollectionDBFileName := CollectionInfo.DBFileName;
-
-  FCollectionNotes := CollectionInfo.Notes;
-  if FCollectionNotes = '' then
-    FCollectionNotes := FormatDateTime(rstrVersionFrom, Now);
+  vVersion := FCollection.GetProperty(PROP_DATAVERSION);
+  if VarIsEmpty(vVersion) then
+    FCollectionVersion := FormatDateTime('yyyymmdd', Now)
+  else
+    FCollectionVersion := IntToStr(vVersion);
 end;
 
 procedure TExport2INPXThread.WorkFunction;
 var
-  BookCollection: IBookCollection;
   R: TBookRecord;
   BookIterator: IBookIterator;
 
@@ -110,40 +105,32 @@ var
   inpxZIP: TZipForge;
   header: TINPXHeader;
 begin
-  SetComment(rstrExportingCollection);
+  Assert(Assigned(FCollection));
 
-  if isFB2Collection(FCollectionType) then
-    FGenresType := gtFb2
-  else
-    FGenresType := gtAny;
+  SetComment(rstrExportingCollection);
 
   inpxStream := TMemoryStream.Create;
   try
     inpxWriter := TStreamWriter.Create(inpxStream, TEncoding.UTF8);
     try
-      BookCollection := GetSystemData.GetCollection(FCollectionID);
+      BookIterator := FCollection.GetBookIterator(bmAll, True);
       try
-        BookIterator := BookCollection.GetBookIterator(bmAll, True);
+        FProgressEngine.BeginOperation(BookIterator.RecordCount, rstrBookProcessedMsg1, rstrBookProcessedMsg2);
         try
-          FProgressEngine.BeginOperation(BookIterator.RecordCount, rstrBookProcessedMsg1, rstrBookProcessedMsg2);
-          try
-            while BookIterator.Next(R) do
-            begin
-              if Canceled then
-                Exit;
+          while BookIterator.Next(R) do
+          begin
+            if Canceled then
+              Exit;
 
-              INPRecordCreate(R, inpxWriter);
+            INPRecordCreate(R, inpxWriter);
 
-              FProgressEngine.AddProgress;
-            end;
-          finally
-            FProgressEngine.EndOperation;
+            FProgressEngine.AddProgress;
           end;
         finally
-          BookIterator := nil;
+          FProgressEngine.EndOperation;
         end;
       finally
-        BookCollection := nil;
+        BookIterator := nil;
       end;
     finally
       inpxWriter.Free;
@@ -157,16 +144,13 @@ begin
       //
       inpxZIP := TZipForge.Create(nil);
       try
-        inpxZIP.FileName := INPXFileName;
+        inpxZIP.FileName := FINPXFileName;
         inpxZIP.BaseDir := FTempPath;
         inpxZIP.OpenArchive(fmCreate);
 
         inpxZIP.AddFromStream(BOOKS_INFO_FILE, inpxStream);
 
-        if UNVERSIONED_COLLECTION = FCollectionVersion then
-          inpxZIP.AddFromString(VERINFO_FILENAME, FormatDateTime('yyyymmdd', Now))
-        else
-          inpxZIP.AddFromString(VERINFO_FILENAME, IntToStr(FCollectionVersion));
+        inpxZIP.AddFromString(VERINFO_FILENAME, FCollectionVersion);
 
         inpxZIP.AddFromString(
           STRUCTUREINFO_FILENAME,
@@ -176,12 +160,12 @@ begin
         //
         // Устанавливаем комментарий для INPX-файла
         //
-        header.Name := FCollectionName;
-        header.FileName := ExtractFileName(FCollectionDBFileName);
-        header.ContentType := FCollectionType;
-        header.Notes := FCollectionNotes;
-        //header.URL := TODO
-        //header.Script := TODO
+        header.Name := FCollection.GetProperty(PROP_DISPLAYNAME);
+        header.FileName := ExtractFileName(FCollection.GetProperty(PROP_DATAFILE));
+        header.ContentType := FCollection.CollectionCode;
+        header.Notes := FCollection.GetProperty(PROP_NOTES);
+        header.URL := FCollection.GetProperty(PROP_URL);
+        header.Script := FCollection.GetProperty(PROP_CONNECTIONSCRIPT);
 
         inpxZIP.Comment := header.AsString;
 

@@ -64,7 +64,7 @@ type
 
     FFile: string;
 
-    function DoDownload(const BookRecord: TBookRecord): Boolean;
+    function DoDownload(const CollectionInfo: TCollectionInfo; const BookRecord: TBookRecord): Boolean;
 
     function AddParam(const Name: string; const Value: string): Boolean;
     function Query(Kind: TQueryKind; const URL: string): Boolean;
@@ -197,15 +197,23 @@ end;
 
 function TDownloader.Download(const BookKey: TBookKey): boolean;
 var
+  SystemData: ISystemData;
+  CollectionInfo: TCollectionInfo;
+  Collection: IBookCollection;
   BookRecord: TBookRecord;
 begin
   Result := False;
 
-  GetSystemData.GetActiveCollection.GetBookRecord(BookKey, BookRecord, False);
+  SystemData := GetSystemData;
+  CollectionInfo := SystemData.GetCollectionInfo(BookKey.DatabaseID);
+
+  Collection := SystemData.GetCollection(BookKey.DatabaseID);
+  Collection.GetBookRecord(BookKey, BookRecord, False);
+
   FFile := BookRecord.GetBookFileName;
-  if FileExists(FFile) or DoDownload(BookRecord) then
+  if FileExists(FFile) or DoDownload(CollectionInfo, BookRecord) then
   begin
-    GetSystemData.GetActiveCollection.SetLocal(BookKey, True);
+    Collection.SetLocal(BookKey, True);
     unit_Messages.BookLocalStatusChanged(BookKey, True);
     Result := True;
   end;
@@ -261,29 +269,26 @@ begin
   FOnSetComment(rstrReadyMessage, '');
 end;
 
-function TDownloader.DoDownload(const BookRecord: TBookRecord): Boolean;
+function TDownloader.DoDownload(const CollectionInfo: TCollectionInfo; const BookRecord: TBookRecord): Boolean;
 var
   ConstParams: TStringList;
   CL: TStringList;
   Commands: array of TCommand;
   i: Integer;
-  SystemData: ISystemData;
 begin
-  SystemData := GetSystemData;
-
   ConstParams := TStringList.Create;
   try
     //
     // TODO: достаточно стремная операция - получение информации из глобальных объектов. Убрать нафиг!!!
     //
     ConstParams.Values['LIBID'] := BookRecord.LibID;
-    ConstParams.Values['USER'] := GetSystemData.GetActiveCollectionInfo.User;
-    ConstParams.Values['PASS'] := GetSystemData.GetActiveCollectionInfo.Password;
-    ConstParams.Values['URL'] := GetSystemData.GetActiveCollectionInfo.URL;
+    ConstParams.Values['USER'] := CollectionInfo.User;
+    ConstParams.Values['PASS'] := CollectionInfo.Password;
+    ConstParams.Values['URL'] := CollectionInfo.URL;
 
     CL := TStringList.Create;
     try
-      CL.Text := GetSystemData.GetActiveCollectionInfo.Script;
+      CL.Text := CollectionInfo.Script;
       SetLength(Commands, CL.Count);
 
       FParams := TIdMultiPartFormDataStream.Create;

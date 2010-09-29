@@ -6848,7 +6848,7 @@ begin
   if not GetFileName(fnSaveINPX, FileName) then
     Exit;
 
-  unit_Export.Export2INPX(FileName);
+  unit_Export.Export2INPX(FSystemData.GetActiveCollectionInfo.ID, FileName);
 end;
 
 procedure TfrmMain.cbPresetNameSelect(Sender: TObject);

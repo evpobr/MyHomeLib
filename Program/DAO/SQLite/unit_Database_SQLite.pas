@@ -201,7 +201,7 @@ type
     // Свойства коллекции
     //
     procedure SetProperty(const PropID: TPropertyID; const Value: Variant);
-    function GetProperty(const PropID: TPropertyID): Variant;
+    function GetProperty(const PropID: TPropertyID): Variant; override;
     procedure UpdateProperies;
 
     procedure ImportUserData(data: TUserData; guiUpdateCallback: TGUIUpdateExtraProc);
@@ -1806,8 +1806,8 @@ begin
       BookRecord.KeyWords := Table.FieldAsString(14);
       BookRecord.Rate := Table.FieldAsInt(15);
       BookRecord.Progress := Table.FieldAsInt(16);
-      BookRecord.CollectionRoot := FSystemData.GetActiveCollectionInfo.GetRootPath;
-      BookRecord.CollectionName := FSystemData.GetActiveCollectionInfo.DisplayName;
+      BookRecord.CollectionRoot := CollectionRoot;
+      BookRecord.CollectionName := GetProperty(PROP_DISPLAYNAME);
 
       if (not Table.FieldIsNull(17)) then // review
         Include(BookRecord.BookProps, bpHasReview)
