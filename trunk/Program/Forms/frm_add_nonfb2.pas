@@ -180,8 +180,7 @@ uses
   unit_Settings,
   unit_MHLHelpers,
   unit_Helpers,
-  frm_author_list,
-  unit_SystemDatabase;
+  frm_author_list;
 
 resourcestring
   rstrFileNotSelected = 'Файл не выбран!';
@@ -639,17 +638,13 @@ begin
 end;
 
 procedure TfrmAddnonfb2.ScanFolder;
-var
-  SystemData: ISystemData;
 begin
-  SystemData := GetSystemData;
-
   Tree.Clear;
   Tree.NodeDataSize := SizeOf(TFileData);
 
-  FRootPath := SystemData.GetActiveCollectionInfo.GetRootPath;
+  FRootPath := FCollection.CollectionRoot;
 
-  flFiles.TargetPath := SystemData.GetActiveCollectionInfo.RootFolder;
+  flFiles.TargetPath := FRootPath;
   flFiles.Process;
   SortTree;
 end;

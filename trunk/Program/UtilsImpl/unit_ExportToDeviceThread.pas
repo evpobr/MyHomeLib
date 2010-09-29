@@ -20,49 +20,58 @@ uses
   unit_globals,
   Dialogs,
   ZipForge,
-  unit_Templater;
+  unit_Templater,
+  unit_Interfaces;
 
 type
   TExportToDeviceThread = class(TWorker)
   private type
     TFileOprecord = record
-      SArch: string;
-      SNo: Integer;
-      TargetFolder: string;
-      TargetFileName: string;
+      SourceFile: string;
+      TargetFile: string;
     end;
 
+  protected
+    //
+    // эти пол€ будут инициализированы только в рабочем потоке
+    //
+    FSystemData: ISystemData;
+
   private
-    FZipper: TZipForge;
+    FAppPath: string;
+    FTempPath: string;
+    FFolderTemplate: string;
+    FFileNameTemplate: string;
+    FOverwriteFB2Info: Boolean;
+    FTXTEncoding: TTXTEncoding;
 
     FFileOprecord: TFileOprecord;
 
     FBookFormat: TBookFormat;
     FBookIdList: TBookIdList;
     FTemplater: TTemplater;
-    FCollectionRoot: string;
     FExportMode: TExportMode;
-    ///FIsTmp: Boolean;
     FProcessedFiles: string;
     FDeviceDir: string;
 
-    // procedure ShowZipErrorMessage(Sender: TObject; ErrCode: integer; Message: string);
     function fb2Lrf(const InpFile: string; const OutFile: string): Boolean;
     function fb2EPUB(const InpFile: string; const OutFile: string): Boolean;
     function fb2PDF(const InpFile: string; const OutFile: string): Boolean;
-
-    procedure SetDeviceDir(const Value: string);
 
   strict private
     function PrepareFile(const BookKey: TBookKey): Boolean;
     function SendFileToDevice: Boolean;
 
   protected
+    procedure Initialize; override;
+    procedure Uninitialize; override;
     procedure WorkFunction; override;
 
   public
-    property DeviceDir: string read FDeviceDir write SetDeviceDir;
+    constructor Create;
+
     property BookIdList: TBookIdList read FBookIdList write FBookIdList;
+    property DeviceDir: string read FDeviceDir write FDeviceDir;
     property ProcessedFiles: string read FProcessedFiles;
     property ExportMode: TExportMode read FExportMode write FExportMode;
   end;
@@ -89,65 +98,83 @@ resourcestring
 
 { TExportToDeviceThread }
 
+constructor TExportToDeviceThread.Create;
+var
+  FSettings: TMHLSettings;
+begin
+  inherited Create;
+  FSettings := Settings;
+  FAppPath := FSettings.AppPath;
+  FTempPath := FSettings.TempPath;
+  FFolderTemplate := FSettings.FolderTemplate;
+  FFileNameTemplate := FSettings.FileNameTemplate;
+  FOverwriteFB2Info := FSettings.OverwriteFB2Info;
+  FTXTEncoding := FSettings.TXTEncoding;
+end;
+
 //
 // ќпредел€ем им€ файла, если нужно - предварительно распаковываем
 // формируем названи€ папок и файла
 //
 function TExportToDeviceThread.PrepareFile(const BookKey: TBookKey): Boolean;
 var
+  Collection: IBookCollection;
   R: TBookRecord;
+  FTargetFolder: string;
+  FTargetFileName: string;
 begin
-  { DONE -oalex : рефакторинг: разобрать на отдельные модули, разобратьс€ с логикой }
   Result := False;
 
-  //
-  // TODO : заменить вызов этих методов на потокобезопасные методы, принимающие BookID и DatabaseID
-  //
-  GetSystemData.GetActiveCollection.GetBookRecord(BookKey, R, False);
+  Collection := FSystemData.GetCollection(BookKey.DatabaseID);
+  Collection.GetBookRecord(BookKey, R, False);
 
+  //
   // —формируем им€ каталога в соответствии с заданным темплейтом
-  if FTemplater.SetTemplate(Settings.FolderTemplate, TpPath) = ErFine then
-    FFileOprecord.TargetFolder := FTemplater.ParseString(R, TpPath)
+  //
+  if FTemplater.SetTemplate(FFolderTemplate, TpPath) = ErFine then
+    FTargetFolder := FTemplater.ParseString(R, TpPath)
   else
   begin
     Dialogs.ShowMessage(rstrCheckTemplateValidity);
     Exit;
   end;
-  FFileOprecord.TargetFolder := IncludeTrailingPathDelimiter(Trim(CheckSymbols(FFileOprecord.TargetFolder)));
+  FTargetFolder := IncludeTrailingPathDelimiter(Trim(CheckSymbols(FTargetFolder)));
+
+  CreateFolders(DeviceDir, FTargetFolder);
 
   //
   // —формируем им€ файла в соответствии с заданным темплейтом
   //
-  if FTemplater.SetTemplate(Settings.FileNameTemplate, TpFile) = ErFine then
-    FFileOprecord.TargetFileName := FTemplater.ParseString(R, TpFile)
+  if FTemplater.SetTemplate(FFileNameTemplate, TpFile) = ErFine then
+    FTargetFileName := FTemplater.ParseString(R, TpFile)
   else
   begin
     Dialogs.ShowMessage(rstrCheckTemplateValidity);
     Exit;
   end;
-  FFileOprecord.TargetFileName := Trim(CheckSymbols(FFileOprecord.TargetFileName));
-  FFileOprecord.TargetFileName := FFileOprecord.TargetFileName + R.FileExt;
+  FTargetFileName := Trim(CheckSymbols(FTargetFileName)) + R.FileExt;
 
-  FBookFormat := R.GetBookFormat;
-  FFileOprecord.SArch := R.GetBookFileName;
-  FFileOprecord.SNo := R.InsideNo;
+  FFileOprecord.TargetFile := TPath.Combine(FTargetFolder, FTargetFileName);
+  FFileOprecord.SourceFile := R.GetBookFileName;
 
   //
   // ≈сли файл в архиве - распаковываем в $tmp
   //
-  if FBookFormat in [bfFb2Zip, bfFbd] then
+  FBookFormat := R.GetBookFormat;
+  if FBookFormat in [bfFb2, bfFb2Zip, bfFbd] then
   begin
-    if not FileExists(FFileOprecord.SArch) then
+    if not FileExists(FFileOprecord.SourceFile) then
     begin
       ShowMessage(rstrArchiveNotFound, MB_ICONERROR or MB_OK);
       Exit;
     end;
 
-    R.SaveBookToFile(TPath.Combine(Settings.TempPath, FFileOprecord.TargetFileName));
-  end;
+    FFileOprecord.SourceFile := TPath.Combine(FTempPath, FTargetFileName);
+    R.SaveBookToFile(FFileOprecord.SourceFile);
 
-  if (R.FileExt = FB2_EXTENSION) and Settings.OverwriteFB2Info then
-    WriteFb2InfoToFile(R, FFileOprecord.SArch);
+    if (FBookFormat in [bfFb2, bfFb2Zip]) and FOverwriteFB2Info then
+      WriteFb2InfoToFile(R, FFileOprecord.SourceFile);
+  end;
 
   Result := True;
 end;
@@ -156,40 +183,38 @@ function TExportToDeviceThread.SendFileToDevice: Boolean;
 var
   DestFileName: string;
 begin
-  if not FileExists(FFileOprecord.SArch) then
+  if not FileExists(FFileOprecord.SourceFile) then
   begin
-    ShowMessage(Format(rstrFileNotFound, [FFileOprecord.SArch]), MB_ICONERROR or MB_OK);
+    ShowMessage(Format(rstrFileNotFound, [FFileOprecord.SourceFile]), MB_ICONERROR or MB_OK);
     Result := False;
     Exit;
   end;
 
-  CreateFolders(DeviceDir, FFileOprecord.TargetFolder);
-  DestFileName := TPath.Combine(DeviceDir, FFileOprecord.TargetFolder) + FFileOprecord.TargetFileName;
+  DestFileName := TPath.Combine(FDeviceDir, FFileOprecord.TargetFile);
 
+  //
+  // TODO -cBug: тут некотора€ фигн€. ћы вызываем конверторы, даже если исходна€ книга не FB2. я помню, что режим дл€ не-FB2 книг выставл€етс€ более-менее правильно, но...
+  //
   Result := True;
-
   case FExportMode of
     emFB2:
-      unit_globals.CopyFile(FFileOprecord.SArch, DestFileName);
+      unit_globals.CopyFile(FFileOprecord.SourceFile, DestFileName);
 
     emFB2Zip:
-      unit_globals.ZipFile(FFileOprecord.SArch, DestFileName + ZIP_EXTENSION);
+      unit_globals.ZipFile(FFileOprecord.SourceFile, DestFileName + ZIP_EXTENSION);
 
     emTxt:
-      unit_globals.ConvertToTxt(FFileOprecord.SArch, DestFileName, Settings.TXTEncoding);
+      unit_globals.ConvertToTxt(FFileOprecord.SourceFile, DestFileName, FTXTEncoding);
 
     emLrf:
-      Result := fb2Lrf(FFileOprecord.SArch, DestFileName);
+      Result := fb2Lrf(FFileOprecord.SourceFile, DestFileName);
 
     emEpub:
-      Result := fb2EPUB(FFileOprecord.SArch, DestFileName);
+      Result := fb2EPUB(FFileOprecord.SourceFile, DestFileName);
 
     emPDF:
-      Result := fb2PDF(FFileOprecord.SArch, DestFileName);
+      Result := fb2PDF(FFileOprecord.SourceFile, DestFileName);
   end;
-
-  // if FIsTmp then
-  // SysUtils.DeleteFile(FFileOpRecord.SArch);
 end;
 
 function TExportToDeviceThread.fb2Lrf(const InpFile: string; const OutFile: string): Boolean;
@@ -197,7 +222,7 @@ var
   params: string;
 begin
   params := Format('-i "%s" -o "%s"', [InpFile, ChangeFileExt(OutFile, '.lrf')]);
-  Result := ExecAndWait(Settings.AppPath + 'converters\fb2lrf\fb2lrf_c.exe', params, SW_HIDE)
+  Result := ExecAndWait(FAppPath + 'converters\fb2lrf\fb2lrf_c.exe', params, SW_HIDE);
 end;
 
 function TExportToDeviceThread.fb2EPUB(const InpFile: string; const OutFile: string): Boolean;
@@ -205,7 +230,7 @@ var
   params: string;
 begin
   params := Format('"%s" "%s"', [InpFile, ChangeFileExt(OutFile, '.epub')]);
-  Result := ExecAndWait(Settings.AppPath + 'converters\fb2epub\fb2epub.exe', params, SW_HIDE)
+  Result := ExecAndWait(FAppPath + 'converters\fb2epub\fb2epub.exe', params, SW_HIDE);
 end;
 
 function TExportToDeviceThread.fb2PDF(const InpFile: string; const OutFile: string): Boolean;
@@ -213,12 +238,22 @@ var
   params: string;
 begin
   params := Format('"%s" "%s"', [InpFile, ChangeFileExt(OutFile, '.pdf')]);
-  Result := ExecAndWait(Settings.AppPath + 'converters\fb2pdf\fb2pdf.cmd', params, SW_HIDE)
+  Result := ExecAndWait(FAppPath + 'converters\fb2pdf\fb2pdf.cmd', params, SW_HIDE);
 end;
 
-procedure TExportToDeviceThread.SetDeviceDir(const Value: string);
+procedure TExportToDeviceThread.Initialize;
 begin
-  FDeviceDir := Value;
+  inherited Initialize;
+  FSystemData := CreateSystemData;
+  Assert(Assigned(FSystemData));
+  FTemplater := TTemplater.Create;
+end;
+
+procedure TExportToDeviceThread.Uninitialize;
+begin
+  FTemplater.Free;
+  FSystemData.ClearCollectionCache;
+  inherited Uninitialize;
 end;
 
 procedure TExportToDeviceThread.WorkFunction;
@@ -227,51 +262,39 @@ var
   totalBooks: Integer;
   Res: Boolean;
 begin
-  FCollectionRoot := GetSystemData.GetActiveCollectionInfo.GetRootPath;
-
-  FZipper := TZipForge.Create(nil);
+  FProgressEngine.BeginOperation(Length(FBookIdList), rstrFilesProcessed, rstrFilesProcessed);
   try
-    FTemplater := TTemplater.Create;
-    try
-      // FZipper.OnMessage := ShowZipErrorMessage;
-      totalBooks := Length(FBookIdList);
+    totalBooks := Length(FBookIdList);
 
-      for i := 0 to totalBooks - 1 do
+    for i := 0 to totalBooks - 1 do
+    begin
+      if Canceled then
+        Break;
+
+      Res := PrepareFile(FBookIdList[i].BookKey);
+      if Res then
       begin
-        Res := PrepareFile(FBookIdList[i].BookKey);
-        if Res then
-        begin
-          if i = 0 then
-            FProcessedFiles := FFileOprecord.SArch;
+        if i = 0 then
+          FProcessedFiles := FFileOprecord.SourceFile;
 
-          Res := SendFileToDevice;
-        end;
-
-        if not Res and (i < totalBooks - 1) then
-        begin
-          //
-          // TODO -oNickR -cUsability : предусмотреть возможность сказать "да дл€ всех"
-          //
-          Canceled := (ShowMessage(rstrProcessRemainingFiles, MB_ICONQUESTION or MB_YESNO) = IDNO);
-        end;
-
-        SetComment(Format(rstrFilesProcessed, [i + 1, totalBooks]));
-        SetProgress(i * 100 div totalBooks);
-
-        if Canceled then
-        begin
-          SetComment(rstrCompleted);
-          Break;
-        end;
+        Res := SendFileToDevice;
       end;
 
-      SetComment(Format(rstrFilesProcessed, [i + 1, totalBooks]));
-    finally
-      FreeAndNil(FTemplater);
+      if not Res and (i < totalBooks - 1) then
+      begin
+        //
+        // TODO -oNickR -cUsability : предусмотреть возможность сказать "да дл€ всех"
+        //
+        Canceled := (ShowMessage(rstrProcessRemainingFiles, MB_ICONQUESTION or MB_YESNO) = IDNO);
+      end;
+
+      FProgressEngine.AddProgress;
     end;
+
   finally
-    FreeAndNil(FZipper);
+    FProgressEngine.EndOperation;
   end;
 end;
 
 end.
+
