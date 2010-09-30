@@ -15,7 +15,6 @@ object frmBases: TfrmBases
   Font.Style = []
   OldCreateOrder = False
   Position = poMainFormCenter
-  OnShow = FormShow
   PixelsPerInch = 120
   TextHeight = 17
   object pcCollectionInfo: TPageControl
@@ -37,10 +36,6 @@ object frmBases: TfrmBases
       Margins.Right = 4
       Margins.Bottom = 4
       Caption = #1054#1089#1085#1086#1074#1085#1099#1077
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         557
         275)
@@ -111,7 +106,7 @@ object frmBases: TfrmBases
         Left = 165
         Top = 115
         Width = 380
-        Height = 21
+        Height = 25
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
@@ -122,7 +117,7 @@ object frmBases: TfrmBases
         Left = 165
         Top = 80
         Width = 274
-        Height = 21
+        Height = 25
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
@@ -135,7 +130,7 @@ object frmBases: TfrmBases
         Left = 165
         Top = 44
         Width = 274
-        Height = 21
+        Height = 25
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
@@ -148,7 +143,7 @@ object frmBases: TfrmBases
         Left = 165
         Top = 9
         Width = 380
-        Height = 21
+        Height = 25
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
