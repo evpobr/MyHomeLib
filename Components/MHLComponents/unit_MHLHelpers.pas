@@ -22,8 +22,7 @@ interface
 
 uses
   Classes,
-  SysUtils,
-  ZipForge;
+  SysUtils;
 
 //
 // String helpers
@@ -51,11 +50,6 @@ type
 
 function DetectStreamFormat(Stream: TStream): TStreamFormat;
 
-//
-// ZIP helpers
-//
-function GetFileNameZip(Zip: TZipForge; No: Integer): string;
-
 function GetFormattedSize(sizeInBytes: Integer; showBytes: Boolean = False): string;
 
 function GetFileVersion(const FilePath: string): string;
@@ -68,7 +62,8 @@ uses
   Windows,
   ActiveX,
   UrlMon,
-  Graphics;
+  Graphics,
+  StrUtils;
 
 function DecodeBase64(const CinLine: AnsiString): AnsiString;
 const
@@ -180,21 +175,6 @@ begin
   finally
     Stream.Seek(0, soFromBeginning);
   end;
-end;
-
-function GetFileNameZip(Zip: TZipForge; No: Integer): string;
-var
-  i: Integer;
-  ArchItem: TZFArchiveItem;
-begin
-  i := 0;
-  if (Zip.FindFirst('*.*', ArchItem, faAnyFile - faDirectory)) then
-    while i <> No do
-    begin
-      Zip.FindNext(ArchItem);   { TODO : стоит проверять результат этого вызова }
-      Inc(i);
-    end;
-  Result := ArchItem.FileName;
 end;
 
 function GetFormattedSize(sizeInBytes: Integer; showBytes: Boolean = False): string;

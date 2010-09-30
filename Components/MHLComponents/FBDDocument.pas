@@ -113,7 +113,6 @@ type
 
     function GetAuthors(ListType: TAuthorListType): TAuthorDataList;
     procedure SetAuthors(List: TAuthorDataList; ListType: TAuthorListType);
-    function ExtractBook(TempFolder: string): string;
     procedure AddSeries(SeriesType: TSeriesListType; const Title: string; const No: integer);
     procedure LoadFBDFromFile(Folder, Filename, Ext: string);
     procedure AutoLoadCover;
@@ -138,13 +137,14 @@ uses
   Forms,
   XMLDoc,
   XMLIntf,
-  ZipForge,
   ClipBrd,
   EncdDecd,
   ActiveX,
   Dialogs,
   pngimage,
-  jpeg;
+  jpeg,
+  IOUtils,
+  unit_MHLArchiveHelpers;
 
 const
   FBD_EXTENSION = '.fbd';
@@ -198,33 +198,26 @@ end;
 
 function TFBDDocument.Load(Folder, Filename, Ext: string; NoCover: boolean = False):boolean;
 var
-  Zip: TZipForge;
   Input, Output: TMemoryStream;
+  idxFile: Integer;
 
   CoverID: string;
   i: integer;
   IMG: TGraphic;
 
-  F: TZFArchiveItem;
   Lines: TStringList;
 begin
   Result := False;
   SetFileNames(Folder, Filename, Ext);
   FCoverData.Str := '';
-  Input := TMemoryStream.Create;
+  Input := nil;
   Lines := TstringList.Create;
   try
-    Zip := TZipForge.Create(nil);
-    try
-      Zip.FileName := FZipFileName;
-      Zip.OpenArchive;
-      if Zip.FindFirst('*.fbd',F) then
-        Zip.ExtractToStream(F.FileName,Input)
-    finally
-      Zip.Free;
-    end;
+    idxFile := GetIdxByExtInZip(FZipFileName, '.fbd');
+    if idxFile > 0 then
+      Input := UnzipToStream(FZipFileName, idxFile);
 
-    if Input.Size > 0 then
+    if Assigned(Input) and (Input.Size > 0) then
     begin
       FFBD := LoadFictionBook(Input);
 
@@ -292,8 +285,8 @@ begin
     Result := True;
   end;
   finally
-    Input.Free;
-    Lines.Free;
+    FreeAndNil(Input);
+    FreeAndNil(Lines);
   end;
 end;
 
@@ -503,77 +496,42 @@ end;
 
 function TFBDDocument.CreateZip(EditorMode: boolean):boolean;
 var
-  Zip: TZipForge;
-  F: TZFArchiveItem;
+  zipFileName: string;
+  bookFileName: string;
+  fbdFileName: string;
+  numFiles: Integer;
 begin
   Result := False;
-  Zip := TZipForge.Create(nil);
-  try
-    zip.FileName := FZipFileName;
-    zip.BaseDir := FFolder;
-    if EditorMode then
-    begin
-      zip.OpenArchive;
-      zip.DeleteFiles(FFBDFileName);
-      zip.AddFiles(FFBDFileName);
-      SysUtils.DeleteFile(FFolder + FFBDFileName);
-      Result := True;
-    end
-    else
-    begin
-      zip.OpenArchive(fmCreate);
-      zip.AddFiles(FBookFileName);
-      zip.AddFiles(FFBDFileName);
 
-      if zip.FindFirst(FBookFileName,F) and
-           zip.FindFirst(FFBDFileName,F)
-      then
-        try
-          zip.TestFiles('*.*');
-          Result := True;
-          SysUtils.DeleteFile(FFolder + FFBDFileName);
-          SysUtils.DeleteFile(FFolder + FBookFileName);
-        except
-        end; // if
-      zip.CloseArchive;
+  zipFileName := TPath.Combine(FFolder, FZipFileName);
+  bookFileName := TPath.Combine(FFolder, FBookFileName);
+  fbdFileName := TPath.Combine(FFolder, FFBDFileName);
+
+  if EditorMode then
+  begin
+    ZipReplaceFile(fbdFileName, zipFileName);
+    Result := TestZip(zipFileName);
+
+    if Result then
+      SysUtils.DeleteFile(fbdFileName);
+  end
+  else
+  begin
+    ZipFiles(
+      [fbdFileName, bookFileName],
+      TPath.Combine(FFolder, FZipFileName)
+    );
+    Result := TestZip(zipFileName);
+
+    if Result then
+    begin
+      SysUtils.DeleteFile(fbdFileName);
+      SysUtils.DeleteFile(bookFileName);
     end;
-  finally
-    Zip.Free;
   end;
 
   if not Result then
     MessageDlg(rstrErrorCreatingFBD, mtError, [mbOK], 0);
-end;
-
-function TFBDDocument.ExtractBook(TempFolder: string):string;
-var
-  F: TZFArchiveItem;
-  Zip: TZipForge;
-  MS: TMemoryStream;
-begin
-  Zip := TZipForge.Create(Nil);
-  try
-    Zip.FileName := FZipFileName;
-    Zip.OpenArchive;
-
-    if zip.FindFirst('*.*',F) then
-    repeat
-      if ExtractFileExt(F.FileName) <> FBD_EXTENSION then
-      begin
-        try
-          MS := TMemoryStream.Create;
-          Zip.ExtractToStream(F.FileName, MS);
-          MS.SaveToFile(TempFolder + F.FileName);
-          Result := TempFolder + F.FileName;
-        finally
-          MS.Free;
-        end;
-        Break;
-      end;
-    until not zip.FindNext(F) ;
-  finally
-    Zip.Free;
-  end;
 end;
 
 {--------------------  Списки авторов ----------------------------------------}
@@ -767,19 +725,13 @@ end;
 
 procedure TFBDDocument.GetFBDFileNames(out Description: string);
 var
-  F: TZFArchiveItem;
-  Zip: TZipForge;
+  idxFile: Integer;
 begin
-  Zip := TZipForge.Create(Nil);
-  try
-    Zip.FileName := FZipFileName;
-    Zip.OpenArchive;
-
-    zip.FindFirst('*.fbd', F);
-    Description := F.FileName;
-  finally
-    Zip.Free;
-  end;
+  idxFile := GetIdxByExtInZip(FZipFileName, '.fbd');
+  if idxFile >= 0 then
+    Description := GetFileNameInZip(FZipFileName, idxFile)
+  else
+    Description := '';
 end;
 
 procedure TFBDDocument.CreateImage(ext: string; var IMG: TGraphic; var ImageType: TCoverImageType);

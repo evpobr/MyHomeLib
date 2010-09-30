@@ -33,7 +33,6 @@ requires
   IndyCore,
   IndySystem,
   IndyProtocols,
-  vclZipForged13,
   VirtualTreesD14,
   soaprtl;
 
@@ -53,6 +52,8 @@ contains
   MHLButtonedEdit in 'MHLButtonedEdit.pas',
   FBDDocument in 'FBDDocument.pas',
   fbd_xml in 'fbd_xml.pas',
-  FBDAuthorTable in 'FBDAuthorTable.pas' {frmEditAuthorFull};
+  FBDAuthorTable in 'FBDAuthorTable.pas' {frmEditAuthorFull},
+  sevenzip in 'sevenzip.pas',
+  unit_MHLArchiveHelpers in 'unit_MHLArchiveHelpers.pas';
 
 end.
