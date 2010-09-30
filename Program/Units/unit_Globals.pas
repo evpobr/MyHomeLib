@@ -368,7 +368,6 @@ type
   function CreateFolders(const Root: string; const Path: string): Boolean;
   procedure CopyFile(const SourceFileName: string; const DestFileName: string);
   procedure ConvertToTxt(const SourceFileName: string; DestFileName: string; Enc: TTXTEncoding);
-  procedure ZipFile(const FileName: string; const ZipFileName: string);
 
   function InclideUrlSlash(const S: string): string;
 
@@ -390,7 +389,6 @@ type
 
   function CleanExtension(const Ext: string): string;
 
-  function TestArchive(const FileName: string): Boolean;
 
 implementation
 
@@ -401,14 +399,12 @@ uses
   Math,
   IOUtils,
   Character,
-  ZFConst,
-  ZFExcept,
-  ZipForge,
   unit_Errors,
   unit_Settings,
   ShlObj,
   unit_fb2ToText,
-  unit_MHLGenerics;
+  unit_MHLGenerics,
+  unit_MHLArchiveHelpers;
 
 resourcestring
   rstrUnableToLaunch = ' Не удалось запустить %s ! ';
@@ -570,23 +566,6 @@ begin
     Converter.Convert(SourceFileName, DestFileName, Enc);
   finally
     Converter.Free;
-  end;
-end;
-
-procedure ZipFile(const FileName: string; const ZipFileName: string);
-var
-  ziper: TZipForge;
-begin
-  ziper := TZipForge.Create(nil);
-  try
-    ziper.FileName := ZipFileName;
-    ziper.BaseDir := ExtractFilePath(FileName);
-    ziper.TempDir := Settings.TempDir;
-    ziper.OpenArchive(fmCreate);
-    ziper.AddFiles(ExtractFileName(FileName));
-    ziper.CloseArchive;
-  finally
-    ziper.Free;
   end;
 end;
 
@@ -1032,23 +1011,6 @@ function TBookRecord.GetBookStream: TStream;
 var
   BookFormat: TBookFormat;
   BookFileName: string;
-  Zip: TZipForge;
-
-  function GetFileNameZip(Zip: TZipForge; No: Integer): string;
-  var
-    i: Integer;
-    ArchItem: TZFArchiveItem;
-  begin
-    i := 0;
-    if (Zip.FindFirst('*.*', ArchItem, faAnyFile - faDirectory)) then
-      while i <> No do
-      begin
-        Zip.FindNext(ArchItem);
-        Inc(i);
-      end;
-    Result := ArchItem.FileName;
-  end;
-
 begin
   Result := nil;
   BookFileName := GetBookFileName;
@@ -1056,32 +1018,10 @@ begin
   BookFormat := GetBookFormat;
   if BookFormat in [bfFb2Zip, bfFbd] then
   begin
-    Zip := TZipForge.Create(nil);
     try
-      Zip.BaseDir := Settings.ReadPath;
-      Zip.TempDir := Settings.TempDir;
-      Zip.FileName := BookFileName;
-      try
-        Zip.OpenArchive(fmOpenRead);
-        Result := TMemoryStream.Create;
-        try
-          Zip.ExtractToStream(GetFileNameZip(Zip, InsideNo), Result);
-          Zip.CloseArchive;
-        except
-          FreeAndNil(Result);
-          raise;
-        end;
-      except
-        on e: EZFException do
-        begin
-          if e.NativeError = ErCannotOpenFile then
-            raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName])
-          else
-            raise;
-        end;
-      end;
-    finally
-      FreeAndNil(Zip);
+      Result := UnzipToStream(TPath.Combine(Settings.ReadPath, BookFileName), InsideNo);
+    except
+      raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName]);
     end;
   end
   else // bfFb2, bfRaw
@@ -1109,9 +1049,9 @@ end;
 //  For bfRaw - raise ENotSupportedException exception
 function TBookRecord.GetBookDescriptorStream: TStream;
 var
-  BookFileName: string;
-  Zip: TZipForge;
-  ArciveItem: TZFArchiveItem;
+  bookFileName: string;
+  zipFileName: string;
+  idxFile: Integer;
 begin
   case GetBookFormat of
     bfFb2, bfFb2Zip:
@@ -1121,41 +1061,19 @@ begin
 
     bfFbd:
       begin
-        BookFileName := GetBookFileName;
+        bookFileName := GetBookFileName;
+        zipFileName := TPath.Combine(Settings.ReadPath, bookFileName);
 
-        Zip := TZipForge.Create(nil);
         try
-          Zip.BaseDir := Settings.ReadPath;
-          Zip.TempDir := Settings.TempDir;
-          Zip.FileName := BookFileName;
-
-          try
-            Zip.OpenArchive(fmOpenRead);
-
-            Result := TMemoryStream.Create;
-            try
-              if Zip.FindFirst('*' + FBD_EXTENSION, ArciveItem) then
-                Zip.ExtractToStream(ArciveItem.FileName, Result)
-              else // not a valid FBD structure
-                raise EBookNotFound.CreateFmt(rstrBookNotFoundInArchive, [BookFileName]);
-
-              Zip.CloseArchive;
-            except
-              FreeAndNil(Result);
-              raise;
-            end;
-          except
-            on e: EZFException do
-            begin
-              if e.NativeError = ErCannotOpenFile then
-                raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName])
-              else
-                raise;
-            end;
-          end;
-        finally
-          FreeAndNil(Zip);
+          idxFile := GetIdxByExtInZip(zipFileName, FBD_EXTENSION);
+        except
+          raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName])
         end;
+
+        if idxFile < 0 then // not a valid FBD structure
+          raise EBookNotFound.CreateFmt(rstrBookNotFoundInArchive, [BookFileName]);
+
+        Result := UnzipToStream(zipFileName, idxFile);
       end;
 
     bfRaw:
@@ -1362,27 +1280,6 @@ begin
   Result := Trim(Ext);
   if (Result <> '') and (Result[1] = '.') then
     Delete(Result, 1, 1);
-end;
-
-function TestArchive(const FileName: string): Boolean;
-var
-  Zip: TZipForge;
-begin
-  Zip := TZipForge.Create(nil);
-  try
-    Zip.FileName := FileName;
-    Zip.TempDir := Settings.TempDir;
-    try
-      Zip.OpenArchive(fmOpenRead);
-      Zip.TestFiles('*.*');
-      Zip.CloseArchive;
-      Result := True;
-    except
-      Result := False;
-    end;
-  finally
-    Zip.Free;
-  end;
 end;
 
 { TINPXHeader }

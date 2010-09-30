@@ -19,7 +19,6 @@ uses
   unit_WorkerThread,
   unit_globals,
   Dialogs,
-  ZipForge,
   unit_Templater,
   unit_Interfaces;
 
@@ -85,6 +84,7 @@ uses
   unit_Consts,
   unit_Settings,
   unit_MHLHelpers,
+  unit_MHLArchiveHelpers,
   unit_WriteFb2Info,
   unit_SystemDatabase;
 
@@ -201,7 +201,7 @@ begin
       unit_globals.CopyFile(FFileOprecord.SourceFile, DestFileName);
 
     emFB2Zip:
-      unit_globals.ZipFile(FFileOprecord.SourceFile, DestFileName + ZIP_EXTENSION);
+      ZipFiles([FFileOprecord.SourceFile], DestFileName + ZIP_EXTENSION);
 
     emTxt:
       unit_globals.ConvertToTxt(FFileOprecord.SourceFile, DestFileName, FTXTEncoding);
