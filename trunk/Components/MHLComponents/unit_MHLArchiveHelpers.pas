@@ -319,6 +319,7 @@ begin
       end;
     end;
   end;
+  zipIn := nil;
 
   zipOut.SaveToFile(ZipFileName);
 end;
