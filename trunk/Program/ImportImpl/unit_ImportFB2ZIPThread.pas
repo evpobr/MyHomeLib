@@ -21,15 +21,11 @@ interface
 
 uses
   Windows,
-  ZipForge,
   unit_ImportFB2ThreadBase,
   unit_Globals;
 
 type
   TImportFB2ZIPThread = class(TImportFB2ThreadBase)
-  private
-    FZipper: TZipForge;
-
   protected
     procedure SortFiles(var R: TBookRecord); override;
     procedure ProcessFileList; override;
@@ -48,7 +44,8 @@ uses
   unit_WorkerThread,
   unit_Consts,
   unit_Settings,
-  fictionbook_21;
+  fictionbook_21,
+  unit_MHLArchiveHelpers;
 
 resourcestring
   rstrErrorUnpackingWithCode = 'Ошибка распаковки архива %s, Код: %d';
@@ -71,7 +68,7 @@ end;
 procedure TImportFB2ZIPThread.SortFiles(var R: TBookRecord);
 var
   FileName, NewFileName, NewFolder: string;
-  F: TZfArchiveItem;
+  zipFileName: string;
 begin
   FileName := ExtractFileName(R.Folder);
 
@@ -92,11 +89,8 @@ begin
     R.Folder :=  NewFolder;
 
     try
-      FZipper.FileName := FCollectionRoot + NewFolder;
-      FZipper.OpenArchive(fmOpenReadWrite);
-      FZipper.FindFirst('*.fb2', F);
-      FZipper.RenameFile(F.FileName, NewFileName + FB2_EXTENSION);
-      FZipper.CloseArchive;
+      zipFileName := TPath.Combine(FCollectionRoot, NewFolder);
+      ZipRenameAll(NewFileName, zipFileName); // assuming there are only fb2 files there
       R.FileName := NewFileName;
     except
       // ничего не делаем
@@ -124,94 +118,83 @@ var
   AddCount:Integer;
   DefectCount:Integer;
 
-  ArchiveItem: TZFArchiveItem;
-
   NoErrors: boolean;
+  idxFile: Integer;
+  zipFileName: string;
 begin
   AddCount := 0;
   DefectCount := 0;
 
   FProgressEngine.BeginOperation(FFiles.Count, rstrProcessedArchives, rstrProcessedArchives);
   try
-    FZipper := TZipForge.Create(nil);
-    try
-      for i := 0 to FFiles.Count - 1 do
-      begin
-        if Canceled then
-          Break;
+    for i := 0 to FFiles.Count - 1 do
+    begin
+      if Canceled then
+        Break;
 
-        AZipFileName := FFiles[i];
+      AZipFileName := FFiles[i];
 
-        NoErrors := True;
-        try
-          FZipper.FileName := FFiles[i];
-          FZipper.OpenArchive(fmOpenRead);
-          j := 0;
-          if (FZipper.FindFirst('*.*', ArchiveItem, faAnyFile - faDirectory)) then
-          repeat
-            R.Clear;
-
-            FS := TMemoryStream.Create;
-            try
-              AFileName := ArchiveItem.FileName;
-              R.FileExt := ExtractFileExt(AFileName);
-              if R.FileExt <> FB2_EXTENSION then
-              begin
-                Inc(j);     // переходим к следующему файлу
-                Continue;
-              end;
-
-              R.FileName := TPath.GetFileNameWithoutExtension(AFileName);
-              R.Size := ArchiveItem.UncompressedSize;
-              R.InsideNo := j;
-              R.Date := Now;
-              Include(R.BookProps, bpIsLocal);
-              FZipper.ExtractToStream(AFileName, FS);
-              if not Assigned(FS) then
-                Continue;
-
-              try
-                book := LoadFictionBook(FS);
-                GetBookInfo(book, R);
-                if not Settings.EnableSort then
-                begin
-                  R.Folder := ExtractRelativePath(FCollectionRoot, AZipFileName);
-                  if FCollection.InsertBook(R, True, True) <> 0 then
-                    Inc(AddCount);
-                end;
-              except
-                on e: Exception do
-                begin
-                  NoErrors := False;
-                  Teletype(Format(rstrErrorFB2Structure, [AZipFileName, R.FileName + FB2_EXTENSION]), tsError);
-                  //Teletype(e.Message, tsError);
-                  Inc(DefectCount);
-                end;
-              end;
-            finally
-              FS.Free;
-            end;
-            Inc(j);
-          until (not FZipper.FindNext(ArchiveItem));
-
-          FZipper.CloseArchive;
-
-          if Settings.EnableSort and NoErrors and (j = 1) then
+      NoErrors := True;
+      try
+        j := 0;
+        zipFileName := FFiles[i];
+        idxFile := GetIdxFileInZip(zipFileName);
+        if (idxFile >= 0) then
+        repeat
+          R.Clear;
+          AFileName := GetFileNameInZip(zipFileName, idxFile);;
+          R.FileExt := ExtractFileExt(AFileName);
+          if R.FileExt <> FB2_EXTENSION then
           begin
-            R.Folder := AZipFileName;
-            SortFiles(R);
-            if FCollection.InsertBook(R, True, True) <> 0 then
-              Inc(AddCount);
+            Inc(j);     // переходим к следующему файлу
+            Continue;
           end;
-        except
-          on e: Exception do
-             Teletype(rstrErrorUnpacking + AZipFileName, tsError);
-        end;
 
-        FProgressEngine.AddProgress;
+          R.FileName := TPath.GetFileNameWithoutExtension(AFileName);
+          R.Size := GetFileSizeInZip(AFileName, idxFile);
+          R.InsideNo := j;
+          R.Date := Now;
+          Include(R.BookProps, bpIsLocal);
+          FS := UnzipToStream(AFileName, idxFile);
+          try
+            try
+              book := LoadFictionBook(FS);
+              GetBookInfo(book, R);
+              if not Settings.EnableSort then
+              begin
+                R.Folder := ExtractRelativePath(FCollectionRoot, AZipFileName);
+                if FCollection.InsertBook(R, True, True) <> 0 then
+                  Inc(AddCount);
+              end;
+            except
+              on e: Exception do
+              begin
+                NoErrors := False;
+                Teletype(Format(rstrErrorFB2Structure, [AZipFileName, R.FileName + FB2_EXTENSION]), tsError);
+                //Teletype(e.Message, tsError);
+                Inc(DefectCount);
+              end;
+            end;
+          finally
+            FreeAndNil(FS);
+          end;
+          Inc(j);
+          idxFile := GetIdxFileInZip(zipFileName, idxFile + 1);
+        until (idxFile < 0);
+
+        if Settings.EnableSort and NoErrors and (j = 1) then
+        begin
+          R.Folder := AZipFileName;
+          SortFiles(R);
+          if FCollection.InsertBook(R, True, True) <> 0 then
+            Inc(AddCount);
+        end;
+      except
+        on e: Exception do
+           Teletype(rstrErrorUnpacking + AZipFileName, tsError);
       end;
-    finally
-      FreeAndNil(FZipper);
+
+      FProgressEngine.AddProgress;
     end;
 
     Teletype(Format(rstrAddedBooks, [AddCount, DefectCount]));

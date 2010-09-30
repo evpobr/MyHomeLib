@@ -970,7 +970,7 @@ const
     'Ext = ?, BookSize = ?, IsLocal = ?, IsDeleted = ?, ' +                     // 10 .. 13
     'KeyWords = ?, Rate = ?, Progress = ?, Annotation = ?, Review = ?, ' +      // 14 .. 18
     'ExtraInfo = ? ' +                                                          // 19
-    'WHERE BookID = ? DatabaseID = ? ';                                         // 20 .. 21
+    'WHERE BookID = ? AND DatabaseID = ? ';                                         // 20 .. 21
 var
   stream: TStream;
   writer: TWriter;

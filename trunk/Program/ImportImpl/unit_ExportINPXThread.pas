@@ -52,12 +52,13 @@ uses
   Variants,
   SysUtils,
   StrUtils,
-  ZipForge,
+  IOUtils,
   unit_Consts,
   unit_MHLGenerics,
   unit_Settings,
   unit_MHL_strings,
-  unit_Interfaces;
+  unit_Interfaces,
+  unit_MHLArchiveHelpers;
 
 resourcestring
   rstrVersionFrom = 'Версия от ddddd';
@@ -102,8 +103,9 @@ var
 
   inpxStream: TMemoryStream;
   inpxWriter: TStreamWriter;
-  inpxZIP: TZipForge;
   header: TINPXHeader;
+  sources: array[0 .. 3] of TStreamSource;
+  i: Integer;
 begin
   Assert(Assigned(FCollection));
 
@@ -139,23 +141,18 @@ begin
     FProgressEngine.BeginOperation(-1, rstrSaving, rstrSaving);
     try
       inpxStream.Position := 0;
-      //
-      // Все готово - пакуем
-      //
-      inpxZIP := TZipForge.Create(nil);
+      for i := 0 to 3 do
+        sources[i].Stream := nil;
+
       try
-        inpxZIP.FileName := FINPXFileName;
-        inpxZIP.BaseDir := FTempPath;
-        inpxZIP.OpenArchive(fmCreate);
+        sources[0].Name := BOOKS_INFO_FILE;
+        sources[0].Stream := inpxStream;
 
-        inpxZIP.AddFromStream(BOOKS_INFO_FILE, inpxStream);
+        sources[1].Name := VERINFO_FILENAME;
+        sources[1].Stream := TStringStream.Create(FCollectionVersion);
 
-        inpxZIP.AddFromString(VERINFO_FILENAME, FCollectionVersion);
-
-        inpxZIP.AddFromString(
-          STRUCTUREINFO_FILENAME,
-          'AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;INSNO;FOLDER;LANG;KEYWORDS;'
-        );
+        sources[2].Name := STRUCTUREINFO_FILENAME;
+        sources[2].Stream := TStringStream.Create('AUTHOR;GENRE;TITLE;SERIES;SERNO;FILE;SIZE;LIBID;DEL;EXT;DATE;INSNO;FOLDER;LANG;KEYWORDS;');
 
         //
         // Устанавливаем комментарий для INPX-файла
@@ -166,18 +163,20 @@ begin
         header.Notes := FCollection.GetProperty(PROP_NOTES);
         header.URL := FCollection.GetProperty(PROP_URL);
         header.Script := FCollection.GetProperty(PROP_CONNECTIONSCRIPT);
+        //
+        sources[3].Name := COLLECTIONINFO_FILENAME;
+        sources[3].Stream := TStringStream.Create(header.AsString);
 
-        inpxZIP.Comment := header.AsString;
-
-        inpxZIP.CloseArchive;
+        ZipStreams(sources, FINPXFileName);
       finally
-        inpxZIP.Free;
+      for i := 1 to 3 do // the 0-index INPX stream will be freed later
+        FreeAndNil(sources[i].Stream);
       end;
     finally
       FProgressEngine.EndOperation;
     end;
   finally
-    inpxStream.Free;
+    FreeAndNil(inpxStream);
   end;
 end;
 

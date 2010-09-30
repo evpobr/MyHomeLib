@@ -106,7 +106,8 @@ uses
   unit_Messages,
   unit_Helpers,
   unit_SystemDatabase,
-  unit_Interfaces;
+  unit_Interfaces,
+  unit_MHLArchiveHelpers;
 
 resourcestring
   rstrWrongCredentials = 'Неправильный логин/пароль';
@@ -185,7 +186,7 @@ begin
       else
       begin
         FResponce.SaveToFile(FFile);
-        Result := TestArchive(FFile);
+        Result := TestZip(FFile);
         if not Result then
           DeleteFile(PChar(FFile));
       end;

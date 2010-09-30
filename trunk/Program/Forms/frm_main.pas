@@ -49,7 +49,6 @@ uses
   jpeg,
   DB,
   DBTables,
-  ZipForge,
   unit_DownloadManagerThread,
   unit_Messages,
   files_list,

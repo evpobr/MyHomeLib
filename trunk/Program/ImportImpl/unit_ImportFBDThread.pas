@@ -20,14 +20,13 @@ unit unit_ImportFBDThread;
 interface
 
 uses
-  ZipForge,
   unit_ImportFB2ThreadBase,
   unit_Globals;
 
 type
   TImportFBDThread = class(TImportFB2ThreadBase)
-  private
-    FZipper: TZipForge;
+//  private
+//    FZipper: I7zInArchive;
 
   protected
     procedure ProcessFileList; override;
@@ -46,7 +45,8 @@ uses
   unit_WorkerThread,
   FictionBook_21,
   unit_Consts,
-  unit_Settings;
+  unit_Settings,
+  unit_MHLArchiveHelpers;
 
 resourcestring
   rstrFoundNewArchives = 'Обнаружено новых архивов: %u';
@@ -70,7 +70,6 @@ end;
 procedure TImportFBDThread.SortFiles(var R: TBookRecord);
 var
   NewFileName, NewFolder, Ext: string;
-  F:  TZFArchiveItem;
 begin
   NewFolder := GetNewFolder(Settings.FBDFolderTemplate, R);
 
@@ -86,15 +85,7 @@ begin
     R.FileName := NewFileName + ZIP_EXTENSION;
 
     try
-      FZipper.FileName := FCollectionRoot + NewFolder + NewFileName + ZIP_EXTENSION;
-      FZipper.OpenArchive(fmOpenReadWrite);
-
-      if (FZipper.FindFirst('*.*', F,faAnyFile-faDirectory)) then
-      repeat
-        Ext := ExtractFileExt(F.FileName);
-        FZipper.RenameFile(F.FileName, NewFileName + Ext);
-      until (not FZipper.FindNext(F));
-      FZipper.CloseArchive;
+      ZipRenameAll(NewFileName, FCollectionRoot + NewFolder + NewFileName + ZIP_EXTENSION);
     except
       // ничего не делаем
     end;
@@ -113,7 +104,8 @@ var
   AddCount:Integer;
   DefectCount:Integer;
   IsValid : boolean;
-  ArchiveItem: TZFArchiveItem;
+  idxFile: Integer;
+  fileName: string;
 
 begin
   AddCount := 0;
@@ -121,39 +113,36 @@ begin
 
   FProgressEngine.BeginOperation(FFiles.Count, rstrProcessedArchives, rstrProcessedArchives);
   try
-    FZipper := TZipForge.Create(nil);
-    try
-      for i := 0 to FFiles.Count - 1 do
-      begin
-        if Canceled then
-          Break;
-        IsValid := False;
-        AZipFileName := FFiles[i];
+    for i := 0 to FFiles.Count - 1 do
+    begin
+      if Canceled then
+        Break;
+      IsValid := False;
+      AZipFileName := FFiles[i];
 
-        Assert(ExtractFileExt(AZipFileName) = ZIP_EXTENSION);
-        FZipper.FileName := AZipFileName;
-        try
-          FZipper.OpenArchive(fmOpenRead);
-          j := 0;
-          R.Clear;
-          if (FZipper.FindFirst('*.*',ArchiveItem,faAnyFile-faDirectory)) then
-          repeat
-            Ext := ExtractFileExt(ArchiveItem.FileName);
-            if Ext = FBD_EXTENSION then
+      Assert(ExtractFileExt(AZipFileName) = ZIP_EXTENSION);
+      try
+        j := 0;
+        R.Clear;
+        idxFile := GetIdxFileInZip(AZipFileName);
+        if (idxFile >= 0) then
+        repeat
+          fileName := GetFileNameInZip(AZipFileName, idxFile);
+          Ext := ExtractFileExt(fileName);
+          if Ext = FBD_EXTENSION then
+          begin
+            FS := UnzipToStream(AZipFileName, idxFile);
             try
-              FS := TMemoryStream.Create;
               R.Folder := ExtractRelativePath(FCollectionRoot, ExtractFilePath(FFiles[i]));
               R.FileName := ExtractFilename(FFiles[i]);
               R.Date := Now;
               Include(R.BookProps, bpIsLocal);
-              FZipper.ExtractToStream(ArchiveItem.FileName,FS);
-              if not Assigned(FS) then
-                Continue;
+
               try
                 book := LoadFictionBook(FS);
                 GetBookInfo(book, R);
                 IsValid := True;
-                FBDFileName := TPath.GetFileNameWithoutExtension(ArchiveItem.FileName);
+                FBDFileName := TPath.GetFileNameWithoutExtension(fileName);
               except
                 on e: Exception do
                 begin
@@ -163,38 +152,37 @@ begin
                 end;
               end; //try
             finally
-              FS.Free;
-            end
-            else
-            begin
-              R.InsideNo := j;
-              R.FileExt := Ext;
-              BookFileName := TPath.GetFileNameWithoutExtension(ArchiveItem.FileName);
-              R.Size := FZipper.Size;
+              FreeAndNil(FS);
             end;
-            Inc(j);
-          until (not FZipper.FindNext(ArchiveItem));
-          FZipper.CloseArchive;
-
-          if Settings.EnableSort then
-            SortFiles(R);
-
-          if IsValid and (BookFileName = FBDFileName) and (FCollection.InsertBook(R, True, True)<>0) then
-            Inc(AddCount)
+          end
           else
           begin
-            Teletype(rstrErrorFBD + AZipFileName, tsError);
-            Inc(DefectCount);
+            R.InsideNo := j;
+            R.FileExt := Ext;
+            BookFileName := TPath.GetFileNameWithoutExtension(fileName);
+            R.Size := GetFileSizeInZip(AZipFileName, idxFile);
           end;
-        except
-          on e: Exception do
-            Teletype(rstrErrorUnpacking + AZipFileName, tsError);
-        end;
+          Inc(j);
 
-        FProgressEngine.AddProgress;
+          idxFile := GetIdxFileInZip(AZipFileName, idxFile + 1);
+        until (idxFile < 0);
+
+        if Settings.EnableSort then
+          SortFiles(R);
+
+        if IsValid and (BookFileName = FBDFileName) and (FCollection.InsertBook(R, True, True)<>0) then
+          Inc(AddCount)
+        else
+        begin
+          Teletype(rstrErrorFBD + AZipFileName, tsError);
+          Inc(DefectCount);
+        end;
+      except
+        on e: Exception do
+          Teletype(rstrErrorUnpacking + AZipFileName, tsError);
       end;
-    finally
-      FreeAndNil(FZipper);
+
+      FProgressEngine.AddProgress;
     end;
 
     Teletype(Format(rstrBooksAdded, [AddCount, DefectCount]));

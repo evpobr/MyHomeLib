@@ -61,8 +61,8 @@ uses
   unit_settings,
   unit_Consts,
   unit_Globals,
-  ZipForge,
-  unit_SystemDatabase;
+  unit_SystemDatabase,
+  unit_MHLArchiveHelpers;
 
 resourcestring
   rstrShowCollectionType = 'Укажите название коллекции.';
@@ -77,8 +77,8 @@ resourcestring
 
 procedure TframeNCWNameAndLocation.GetCollectionDataFromINPX;
 var
-  Zip: TZipForge;
   header: TINPXHeader;
+  idxFile: Integer;
 begin
   Assert(FPParams^.INPXFile <> '');
 
@@ -86,47 +86,39 @@ begin
     Exit;
 
   try
-    Zip := TZipForge.Create(self);
-    try
-      Zip.FileName := FPParams^.INPXFile;
-      Zip.OpenArchive(fmOpenRead);
+    idxFile := GetIdxByFileNameInZip(FPParams^.INPXFile, COLLECTIONINFO_FILENAME);
+    if idxFile >= 0 then
+      header.ParseString(UnzipToString(FPParams^.INPXFile, idxFile));
 
-      header.ParseString(Zip.Comment);
+    edCollectionName.Text := header.Name;
+    edCollectionFile.Text := header.FileName;
+    FPParams^.CollectionCode := header.ContentType;
 
-      edCollectionName.Text := header.Name;
-      edCollectionFile.Text := header.FileName;
-      FPParams^.CollectionCode := header.ContentType;
+    case FPParams^.CollectionCode of
+      CT_PRIVATE_FB:
+        FPParams^.CollectionType := ltUserFB;
 
-      case FPParams^.CollectionCode of
-        CT_PRIVATE_FB:
-          FPParams^.CollectionType := ltUserFB;
+      CT_PRIVATE_NONFB:
+        FPParams^.CollectionType := ltUserAny;
 
-        CT_PRIVATE_NONFB:
-          FPParams^.CollectionType := ltUserAny;
+      CT_EXTERNAL_LOCAL_FB:
+        FPParams^.CollectionType := ltExternalLocalFB;
 
-        CT_EXTERNAL_LOCAL_FB:
-          FPParams^.CollectionType := ltExternalLocalFB;
+      CT_EXTERNAL_LOCAL_NONFB:
+        FPParams^.CollectionType := ltExternalLocalAny;
 
-        CT_EXTERNAL_LOCAL_NONFB:
-          FPParams^.CollectionType := ltExternalLocalAny;
+      CT_EXTERNAL_ONLINE_FB:
+        FPParams^.CollectionType := ltExternalOnlineFB;
 
-        CT_EXTERNAL_ONLINE_FB:
-          FPParams^.CollectionType := ltExternalOnlineFB;
-
-        CT_EXTERNAL_ONLINE_NONFB:
-          FPParams^.CollectionType := ltExternalOnlineAny;
-      end;
-
-      Zip.CloseArchive;
-    except
-      on E: Exception do
-      begin
-        MessageDlg(rstrDamagedArchive, mtError, [mbOK], 0);
-        Exit;
-      end;
+      CT_EXTERNAL_ONLINE_NONFB:
+        FPParams^.CollectionType := ltExternalOnlineAny;
     end;
-  finally
-    Zip.Free;
+  except
+    on E: Exception do
+    begin
+      MessageDlg(rstrDamagedArchive, mtError, [mbOK], 0);
+      Exit;
+    end;
   end;
 end;
 
