@@ -854,7 +854,7 @@ begin
       BookRecord.SeqNumber := query.FieldAsInt(3);
     end;
     BookRecord.Date := query.FieldAsDateTime(4);
-    BookRecord.Rate := query.FieldAsInt(5);
+    BookRecord.LibRate := query.FieldAsInt(5);
     BookRecord.Lang := query.FieldAsString(6);
     BookRecord.Folder := query.FieldAsString(7);
     BookRecord.FileName := query.FieldAsString(8);
@@ -870,7 +870,7 @@ begin
     else
       Exclude(BookRecord.BookProps, bpIsDeleted);
     BookRecord.KeyWords := query.FieldAsString(14);
-    BookRecord.LibRate := query.FieldAsInt(15);
+    BookRecord.Rate := query.FieldAsInt(15);
     BookRecord.Progress := query.FieldAsInt(16);
     BookRecord.Annotation := query.FieldAsBlobString(17);
     BookRecord.Review := query.FieldAsBlobString(18);
