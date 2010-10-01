@@ -139,8 +139,8 @@ begin
         zipFileName := FFiles[i];
         numFb2FilesInZip := 0;
         idxFile := GetIdxFileInZip(zipFileName);
-        if (idxFile >= 0) then
-        repeat
+        while (idxFile >= 0) do
+        begin
           R.Clear;
           AFileName := GetFileNameInZip(zipFileName, idxFile);;
           R.FileExt := ExtractFileExt(AFileName);
@@ -177,7 +177,7 @@ begin
             end;
           end;
           idxFile := GetIdxFileInZip(zipFileName, idxFile + 1);
-        until (idxFile < 0);
+        end; // while
 
         if Settings.EnableSort and NoErrors and (numFb2FilesInZip = 1) then
         begin
