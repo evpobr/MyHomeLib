@@ -355,7 +355,7 @@ var
 begin
   Assert(No >= 0);
 
-  binStream := UnzipToStream(ZipFileName, No);//  stream.SaveToFile('c:\temp\zzz.txt');
+  binStream := UnzipToStream(ZipFileName, No);
   try
     strStream := TStringStream.Create;
     try
