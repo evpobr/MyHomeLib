@@ -248,10 +248,10 @@ begin
     COL_LIBRATE:
       begin
         Caption := rstrLibrate;
-        MaxWidth := 60;
-        MinWidth := 60;
+        MaxWidth := 100;
+        MinWidth := 70;
         Alignment := taCenter;
-        Options := Fix;
+        Options := Rez;
       end;
 
     COL_STATE:
