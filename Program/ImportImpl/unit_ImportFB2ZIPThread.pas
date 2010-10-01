@@ -109,7 +109,6 @@ end;
 procedure TImportFB2ZIPThread.ProcessFileList;
 var
   i: Integer;
-  j: Integer;
   R: TBookRecord;
   AZipFileName: string;
   AFileName:    string;
@@ -120,6 +119,7 @@ var
 
   NoErrors: boolean;
   idxFile: Integer;
+  numFb2FilesInZip: Integer;
   zipFileName: string;
 begin
   AddCount := 0;
@@ -136,53 +136,50 @@ begin
 
       NoErrors := True;
       try
-        j := 0;
         zipFileName := FFiles[i];
+        numFb2FilesInZip := 0;
         idxFile := GetIdxFileInZip(zipFileName);
         if (idxFile >= 0) then
         repeat
           R.Clear;
           AFileName := GetFileNameInZip(zipFileName, idxFile);;
           R.FileExt := ExtractFileExt(AFileName);
-          if R.FileExt <> FB2_EXTENSION then
+          if R.FileExt = FB2_EXTENSION then
           begin
-            Inc(j);     // переходим к следующему файлу
-            Continue;
-          end;
-
-          R.FileName := TPath.GetFileNameWithoutExtension(AFileName);
-          R.Size := GetFileSizeInZip(AFileName, idxFile);
-          R.InsideNo := j;
-          R.Date := Now;
-          Include(R.BookProps, bpIsLocal);
-          FS := UnzipToStream(AFileName, idxFile);
-          try
+            Inc(numFb2FilesInZip);
+            R.FileName := TPath.GetFileNameWithoutExtension(AFileName);
+            R.Size := GetFileSizeInZip(zipFileName, idxFile);
+            R.InsideNo := idxFile;
+            R.Date := Now;
+            Include(R.BookProps, bpIsLocal);
+            FS := UnzipToStream(zipFileName, idxFile);
             try
-              book := LoadFictionBook(FS);
-              GetBookInfo(book, R);
-              if not Settings.EnableSort then
-              begin
-                R.Folder := ExtractRelativePath(FCollectionRoot, AZipFileName);
-                if FCollection.InsertBook(R, True, True) <> 0 then
-                  Inc(AddCount);
+              try
+                book := LoadFictionBook(FS);
+                GetBookInfo(book, R);
+                if not Settings.EnableSort then
+                begin
+                  R.Folder := ExtractRelativePath(FCollectionRoot, AZipFileName);
+                  if FCollection.InsertBook(R, True, True) <> 0 then
+                    Inc(AddCount);
+                end;
+              except
+                on e: Exception do
+                begin
+                  NoErrors := False;
+                  Teletype(Format(rstrErrorFB2Structure, [AZipFileName, R.FileName + FB2_EXTENSION]), tsError);
+                  //Teletype(e.Message, tsError);
+                  Inc(DefectCount);
+                end;
               end;
-            except
-              on e: Exception do
-              begin
-                NoErrors := False;
-                Teletype(Format(rstrErrorFB2Structure, [AZipFileName, R.FileName + FB2_EXTENSION]), tsError);
-                //Teletype(e.Message, tsError);
-                Inc(DefectCount);
-              end;
+            finally
+              FreeAndNil(FS);
             end;
-          finally
-            FreeAndNil(FS);
           end;
-          Inc(j);
           idxFile := GetIdxFileInZip(zipFileName, idxFile + 1);
         until (idxFile < 0);
 
-        if Settings.EnableSort and NoErrors and (j = 1) then
+        if Settings.EnableSort and NoErrors and (numFb2FilesInZip = 1) then
         begin
           R.Folder := AZipFileName;
           SortFiles(R);
