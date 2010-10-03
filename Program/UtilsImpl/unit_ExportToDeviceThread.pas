@@ -218,6 +218,12 @@ begin
 
     emPDF:
       Result := fb2PDF(FFileOprecord.SourceFile, DestFileName);
+
+    emFB2SevenZip:
+      begin
+        archiver := TArchiver.Create(DestFileName + SEVENZIP_EXTENSION);
+        archiver.ArchiveFiles([FFileOprecord.SourceFile]);
+      end;
   end;
 end;
 
