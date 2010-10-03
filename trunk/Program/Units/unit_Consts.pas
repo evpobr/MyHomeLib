@@ -61,10 +61,14 @@ const
   ZIP_EXTENSION_SHORT        = 'zip';
   ZIP_EXTENSION              = '.' + ZIP_EXTENSION_SHORT;        // .zip
 
+  SEVENZIP_EXTENSION_SHORT   = '7z';
+  SEVENZIP_EXTENSION         = '.' + SEVENZIP_EXTENSION_SHORT;  // .7z
+
   FBD_EXTENSION_SHORT        = 'fbd';
   FBD_EXTENSION              = '.' + FBD_EXTENSION_SHORT;        // .fbd
 
-  FB2ZIP_EXTENSION           = FB2_EXTENSION + ZIP_EXTENSION;    // .fb2.zip
+  FB2ZIP_EXTENSION           = FB2_EXTENSION + ZIP_EXTENSION;      // .fb2.zip
+  FB2SEVENZIP_EXTENSION      = FB2_EXTENSION + SEVENZIP_EXTENSION; // .fb2.7z
 
   //
   // Алфавиты

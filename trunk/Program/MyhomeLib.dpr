@@ -64,7 +64,6 @@ uses
   unit_Helpers in 'Units\unit_Helpers.pas',
   frm_ImportProgressFormEx in 'ImportImpl\frm_ImportProgressFormEx.pas' {ImportProgressFormEx},
   unit_ImportFB2ThreadBase in 'ImportImpl\unit_ImportFB2ThreadBase.pas',
-  unit_ImportFB2ZIPThread in 'ImportImpl\unit_ImportFB2ZIPThread.pas',
   unit_ImportInpxThread in 'ImportImpl\unit_ImportInpxThread.pas',
   unit_Export in 'ImportImpl\unit_Export.pas',
   frm_ExportProgressForm in 'ImportImpl\frm_ExportProgressForm.pas' {ExportProgressForm},
@@ -134,7 +133,8 @@ uses
   unit_ProgressEngine in 'Units\unit_ProgressEngine.pas',
   unit_MHLGenerics in 'Units\unit_MHLGenerics.pas',
   frm_NewCollectionWizard in 'Wizards\NewCollection\frm_NewCollectionWizard.pas' {NewCollectionWizard},
-  unit_CollectionWorkerThread in 'ImportImpl\unit_CollectionWorkerThread.pas';
+  unit_CollectionWorkerThread in 'ImportImpl\unit_CollectionWorkerThread.pas',
+  unit_ImportFB2ArchiveThread in 'ImportImpl\unit_ImportFB2ArchiveThread.pas';
 
 {$R *.res}
 

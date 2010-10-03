@@ -161,7 +161,7 @@ begin
   // Если файл в архиве - распаковываем в $tmp
   //
   FBookFormat := R.GetBookFormat;
-  if FBookFormat in [bfFb2, bfFb2Zip, bfFbd] then
+  if FBookFormat in [bfFb2, bfFb2Archive, bfFbd] then
   begin
     if not FileExists(FFileOprecord.SourceFile) then
     begin
@@ -172,7 +172,7 @@ begin
     FFileOprecord.SourceFile := TPath.Combine(FTempPath, FTargetFileName);
     R.SaveBookToFile(FFileOprecord.SourceFile);
 
-    if (FBookFormat in [bfFb2, bfFb2Zip]) and FOverwriteFB2Info then
+    if (FBookFormat in [bfFb2, bfFb2Archive]) and FOverwriteFB2Info then
       WriteFb2InfoToFile(R, FFileOprecord.SourceFile);
   end;
 

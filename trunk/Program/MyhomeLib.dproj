@@ -133,7 +133,6 @@
 				<Form>ImportProgressFormEx</Form>
 			</DCCReference>
 			<DCCReference Include="ImportImpl\unit_ImportFB2ThreadBase.pas"/>
-			<DCCReference Include="ImportImpl\unit_ImportFB2ZIPThread.pas"/>
 			<DCCReference Include="ImportImpl\unit_ImportInpxThread.pas"/>
 			<DCCReference Include="ImportImpl\unit_Export.pas"/>
 			<DCCReference Include="ImportImpl\frm_ExportProgressForm.pas">
@@ -270,6 +269,7 @@
 				<Form>NewCollectionWizard</Form>
 			</DCCReference>
 			<DCCReference Include="ImportImpl\unit_CollectionWorkerThread.pas"/>
+			<DCCReference Include="ImportImpl\unit_ImportFB2ArchiveThread.pas"/>
 			<RcItem Include="Resources\Images\16x16\star_small.png">
 				<ResourceType>RCData</ResourceType>
 				<ResourceId>smallStar</ResourceId>
