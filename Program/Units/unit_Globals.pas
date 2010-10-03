@@ -1011,6 +1011,7 @@ function TBookRecord.GetBookStream: TStream;
 var
   BookFormat: TBookFormat;
   BookFileName: string;
+  archiver: IArchiver;
 begin
   Result := nil;
   BookFileName := GetBookFileName;
@@ -1019,7 +1020,8 @@ begin
   if BookFormat in [bfFb2Zip, bfFbd] then
   begin
     try
-      Result := UnzipToStream(TPath.Combine(Settings.ReadPath, BookFileName), InsideNo);
+      archiver := TArchiver.Create(TPath.Combine(Settings.ReadPath, BookFileName));
+      Result := archiver.UnarchiveToStream(InsideNo);
     except
       raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName]);
     end;
@@ -1050,8 +1052,9 @@ end;
 function TBookRecord.GetBookDescriptorStream: TStream;
 var
   bookFileName: string;
-  zipFileName: string;
+  archiveFileName: string;
   idxFile: Integer;
+  archiver: IArchiver;
 begin
   case GetBookFormat of
     bfFb2, bfFb2Zip:
@@ -1062,10 +1065,11 @@ begin
     bfFbd:
       begin
         bookFileName := GetBookFileName;
-        zipFileName := TPath.Combine(Settings.ReadPath, bookFileName);
+        archiveFileName := TPath.Combine(Settings.ReadPath, bookFileName);
+        archiver := TArchiver.Create(archiveFileName);
 
         try
-          idxFile := GetIdxByExtInZip(zipFileName, FBD_EXTENSION);
+          idxFile := archiver.GetIdxByExt(FBD_EXTENSION);
         except
           raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName])
         end;
@@ -1073,7 +1077,7 @@ begin
         if idxFile < 0 then // not a valid FBD structure
           raise EBookNotFound.CreateFmt(rstrBookNotFoundInArchive, [BookFileName]);
 
-        Result := UnzipToStream(zipFileName, idxFile);
+        Result := archiver.UnarchiveToStream(idxFile);
       end;
 
     bfRaw:

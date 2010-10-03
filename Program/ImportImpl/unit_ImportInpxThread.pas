@@ -366,6 +366,7 @@ var
   strVersion: string;
   idxFile: Integer;
   numFiles: Integer;
+  archiver: IArchiver;
 begin
   filesProcessed := 0;
   i := 0;
@@ -377,9 +378,10 @@ begin
   SetLength(FFields, 0);
   FUseStoredFolder := False;
 
-  idxFile := GetIdxByFileNameInZip(FInpxFileName, STRUCTUREINFO_FILENAME);
+  archiver := TArchiver.Create(FInpxFileName, afZip);
+  idxFile := archiver.GetIdxByFileName(STRUCTUREINFO_FILENAME);
   if idxFile >= 0 then
-    StructureInfo := UnzipToString(FInpxFileName, idxFile)
+    StructureInfo := archiver.UnarchiveToString(idxFile)
   else
     StructureInfo := DEFAULTSTRUCTURE;
 
@@ -390,12 +392,12 @@ begin
   //
   BookCollection.StartBatchUpdate;
   try
-    numFiles := GetNumFilesInZip(FInpxFileName);
-    idxFile := GetIdxByExtInZip(FInpxFileName, '.inp');
+    numFiles := archiver.GetNumFiles;
+    idxFile := archiver.GetIdxByExt('.inp');
     if idxFile >= 0 then
     begin
       repeat
-        CurrentFile := GetFileNameInZip(FInpxFileName, idxFile);
+        CurrentFile := archiver.GetFileName(idxFile);
 
         if not IsOnline and (CurrentFile = 'extra.inp') then
           Continue;
@@ -404,7 +406,7 @@ begin
 
         BookList := TStringList.Create;
         try
-          inpStream := UnzipToStream(FInpxFileName, idxFile);
+          inpStream := archiver.UnarchiveToStream(idxFile);
           try
             inpStream.Seek(0, soBeginning);
             BookList.LoadFromStream(inpStream, TEncoding.UTF8);
@@ -475,7 +477,7 @@ begin
         if Canceled then
           Break;
 
-        idxFile := GetIdxByExtInZip(FInpxFileName, '.inp', idxFile + 1);
+        idxFile := archiver.GetIdxByExt('.inp', idxFile + 1);
       until (idxFile < 0);
     end;
 
@@ -486,19 +488,19 @@ begin
     //
     // Прочитать и установить свойства коллекции
     //
-    idxFile := GetIdxByFileNameInZip(FInpxFileName, COLLECTIONINFO_FILENAME);
+    idxFile := archiver.GetIdxByFileName(COLLECTIONINFO_FILENAME);
     if idxFile >= 0 then
     begin
-      header.ParseString(UnzipToString(FInpxFileName, idxFile));
+      header.ParseString(archiver.UnarchiveToString(idxFile));
       BookCollection.SetProperty(PROP_NOTES, header.Notes);
       BookCollection.SetProperty(PROP_URL, header.URL);
       BookCollection.SetProperty(PROP_CONNECTIONSCRIPT, header.Script);
     end;
 
-    idxFile := GetIdxByFileNameInZip(FInpxFileName, VERINFO_FILENAME);
+    idxFile := archiver.GetIdxByFileName(VERINFO_FILENAME);
     if idxFile >= 0 then
     begin
-      strVersion := UnzipToString(FInpxFileName, idxFile);
+      strVersion := archiver.UnarchiveToString(idxFile);
       strVersion := Trim(strVersion);
       BookCollection.SetProperty(PROP_DATAVERSION, StrToIntDef(strVersion, UNVERSIONED_COLLECTION));
     end;

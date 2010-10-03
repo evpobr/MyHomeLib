@@ -168,6 +168,7 @@ function TDownloader.CheckResponce: boolean;
 var
   Path: string;
   Str: TStringList;
+  archiver: IArchiver;
 begin
   Path := ExtractFileDir(FFile);
   CreateFolders('', Path);
@@ -186,7 +187,8 @@ begin
       else
       begin
         FResponce.SaveToFile(FFile);
-        Result := TestZip(FFile);
+        archiver := TArchiver.Create(FFile);
+        Result := archiver.Test;
         if not Result then
           DeleteFile(PChar(FFile));
       end;

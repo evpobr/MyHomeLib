@@ -182,6 +182,7 @@ end;
 function TExportToDeviceThread.SendFileToDevice: Boolean;
 var
   DestFileName: string;
+  archiver: IArchiver;
 begin
   if not FileExists(FFileOprecord.SourceFile) then
   begin
@@ -201,7 +202,10 @@ begin
       unit_globals.CopyFile(FFileOprecord.SourceFile, DestFileName);
 
     emFB2Zip:
-      ZipFiles([FFileOprecord.SourceFile], DestFileName + ZIP_EXTENSION);
+      begin
+        archiver := TArchiver.Create(DestFileName + ZIP_EXTENSION);
+        archiver.ArchiveFiles([FFileOprecord.SourceFile]);
+      end;
 
     emTxt:
       unit_globals.ConvertToTxt(FFileOprecord.SourceFile, DestFileName, FTXTEncoding);
