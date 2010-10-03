@@ -1867,8 +1867,8 @@ end;
 
 procedure TfrmMain.CreateScriptMenu;
 const
-  ExpTypes: array [0 .. 5] of string = ('  fb2', '  fb2.zip', '  LRF', '  txt', ' epub', '  pdf');
-  Icons: array [0 .. 5] of Integer = (18, 19, 20, 21, 24, 25);
+  ExpTypes: array [0 .. 6] of string = ('  fb2', '  fb2.zip', '  LRF', '  txt', ' epub', '  pdf', '  fb2.7z');
+  Icons: array [0 .. 6] of Integer = (18, 19, 20, 21, 24, 25, 19);
 var
   Item, ItemP, ItemM: TMenuItem;
   F: Integer;
@@ -1892,7 +1892,7 @@ begin
 
   if fb2Collection then
   begin
-    for i := 0 to 5 do
+    for i := 0 to 6 do
     begin
       Item := TMenuItem.Create(pmScripts);
       Item.Caption := ExpTypes[i];
@@ -1907,7 +1907,7 @@ begin
       Item := TMenuItem.Create(pmScripts);
       Item.Caption := '-';
       Item.Tag := 0;
-      pmScripts.Items.Insert(6, Item);
+      pmScripts.Items.Insert(7, Item);
     end;
 
     tbSendToDevice.ImageIndex := Icons[ord(Settings.ExportMode)];
@@ -3744,6 +3744,7 @@ begin
       853: ExportMode := emTxt;
       854: ExportMode := emEpub;
       855: ExportMode := emPDF;
+      856: ExportMode := emFB2SevenZip;
     else
       ExportMode := Settings.ExportMode;
     end
