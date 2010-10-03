@@ -966,14 +966,14 @@ begin
     //BookContainer is either empty or a path
     LongFileName := TPath.Combine(BookContainer, FileName);
 
-    if ExtractFileExt(LongFileName) = ZIP_EXTENSION then
+    if AnsiLowercase(ExtractFileExt(LongFileName)) = ZIP_EXTENSION then
       Result := bfFbd
     else if FileExt = FB2_EXTENSION then
       Result := bfFb2
   end
   else
   begin
-    temp := ExtractFileExt(BookContainer);
+    temp := AnsiLowercase(ExtractFileExt(BookContainer));
     if (temp = ZIP_EXTENSION) or (temp = SEVENZIP_EXTENSION) then
       Result := bfFb2Archive;
   end;
