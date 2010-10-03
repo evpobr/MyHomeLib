@@ -70,6 +70,7 @@ end;
 procedure TImportFBDThread.SortFiles(var R: TBookRecord);
 var
   NewFileName, NewFolder, Ext: string;
+  archiver: IArchiver;
 begin
   NewFolder := GetNewFolder(Settings.FBDFolderTemplate, R);
 
@@ -85,7 +86,8 @@ begin
     R.FileName := NewFileName + ZIP_EXTENSION;
 
     try
-      ZipRenameAll(NewFileName, FCollectionRoot + NewFolder + NewFileName + ZIP_EXTENSION);
+      archiver := TArchiver.Create(FCollectionRoot + NewFolder + NewFileName + ZIP_EXTENSION);
+      archiver.ArchiveRenameAll(NewFileName);
     except
       // ничего не делаем
     end;
@@ -97,7 +99,8 @@ var
   i: Integer;
   j: Integer;
   R: TBookRecord;
-  AZipFileName, Ext: string;
+  archiveFileName, Ext: string;
+  archiver: IArchiver;
   BookFileName, FBDFileName: string;
   book: IXMLFictionBook;
   FS: TMemoryStream;
@@ -118,20 +121,21 @@ begin
       if Canceled then
         Break;
       IsValid := False;
-      AZipFileName := FFiles[i];
+      archiveFileName := FFiles[i];
 
-      Assert(ExtractFileExt(AZipFileName) = ZIP_EXTENSION);
+      Assert(ExtractFileExt(archiveFileName) = ZIP_EXTENSION);
       try
         j := 0;
         R.Clear;
-        idxFile := GetIdxFileInZip(AZipFileName);
+        archiver := TArchiver.Create(archiveFileName);
+        idxFile := archiver.GetNextFileIdx;
         if (idxFile >= 0) then
         repeat
-          fileName := GetFileNameInZip(AZipFileName, idxFile);
+          fileName := archiver.GetFileName(idxFile);
           Ext := ExtractFileExt(fileName);
           if Ext = FBD_EXTENSION then
           begin
-            FS := UnzipToStream(AZipFileName, idxFile);
+            FS := archiver.UnarchiveToStream(idxFile);
             try
               R.Folder := ExtractRelativePath(FCollectionRoot, ExtractFilePath(FFiles[i]));
               R.FileName := ExtractFilename(FFiles[i]);
@@ -146,7 +150,7 @@ begin
               except
                 on e: Exception do
                 begin
-                  Teletype(Format(rstrErrorFB2Structure, [AZipFileName, R.FileName]), tsError);
+                  Teletype(Format(rstrErrorFB2Structure, [archiveFileName, R.FileName]), tsError);
                   //Teletype(e.Message, tsError);
                   Inc(DefectCount);
                 end;
@@ -160,11 +164,11 @@ begin
             R.InsideNo := j;
             R.FileExt := Ext;
             BookFileName := TPath.GetFileNameWithoutExtension(fileName);
-            R.Size := GetFileSizeInZip(AZipFileName, idxFile);
+            R.Size := archiver.GetFileSize(idxFile);
           end;
           Inc(j);
 
-          idxFile := GetIdxFileInZip(AZipFileName, idxFile + 1);
+          idxFile := archiver.GetNextFileIdx(idxFile + 1);
         until (idxFile < 0);
 
         if Settings.EnableSort then
@@ -174,12 +178,12 @@ begin
           Inc(AddCount)
         else
         begin
-          Teletype(rstrErrorFBD + AZipFileName, tsError);
+          Teletype(rstrErrorFBD + archiveFileName, tsError);
           Inc(DefectCount);
         end;
       except
         on e: Exception do
-          Teletype(rstrErrorUnpacking + AZipFileName, tsError);
+          Teletype(rstrErrorUnpacking + archiveFileName, tsError);
       end;
 
       FProgressEngine.AddProgress;

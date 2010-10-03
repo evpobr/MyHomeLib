@@ -55,7 +55,7 @@ type
   private
     FFBDFilename: string;
     FBookFilename: string;
-    FZipFilename: string;
+    FArchiveFilename: string;
     FFolder: string;
     FProgramUsed: string;
 
@@ -84,7 +84,7 @@ type
     procedure SetMemo(Value: TMemo);
     procedure SetTImage(Value: TImage);
     function SaveFBD: Boolean;
-    function CreateZip(EditorMode: Boolean): boolean;
+    function CreateArchive(EditorMode: Boolean): boolean;
     procedure GetFBDFileNames(out Description: string);
     procedure ResizeImage;
     function ExecAndWait(const FileName, Params: string; const WinState: Word): Boolean;
@@ -158,7 +158,7 @@ begin
   FFBDFilename := FileName + FBD_EXTENSION;
   FBookFileName := FileName + Ext;
   FFolder := Folder;
-  FZipFilename := Folder + FileName + ZIP_EXTENSION;
+  FArchiveFilename := Folder + FileName + ZIP_EXTENSION;
 end;
 
 procedure TFBDDocument.SetMemo(Value: TMemo);
@@ -200,6 +200,7 @@ function TFBDDocument.Load(Folder, Filename, Ext: string; NoCover: boolean = Fal
 var
   Input, Output: TMemoryStream;
   idxFile: Integer;
+  archiver: IArchiver;
 
   CoverID: string;
   i: integer;
@@ -213,9 +214,10 @@ begin
   Input := nil;
   Lines := TstringList.Create;
   try
-    idxFile := GetIdxByExtInZip(FZipFileName, '.fbd');
+    archiver := TArchiver.Create(FArchiveFilename);
+    idxFile := archiver.GetIdxByExt('.fbd');
     if idxFile > 0 then
-      Input := UnzipToStream(FZipFileName, idxFile);
+      Input := archiver.UnarchiveToStream(idxFile);
 
     if Assigned(Input) and (Input.Size > 0) then
     begin
@@ -412,7 +414,7 @@ end;
 procedure TFBDDocument.Save(EditorMode: boolean);
 begin
   if SaveFBD then
-    CreateZip(EditorMode);
+    CreateArchive(EditorMode);
 end;
 
 function TFBDDocument.SaveFBD : boolean;
@@ -494,34 +496,34 @@ begin
   end;
 end;
 
-function TFBDDocument.CreateZip(EditorMode: boolean):boolean;
+function TFBDDocument.CreateArchive(EditorMode: boolean):boolean;
 var
-  zipFileName: string;
+  archiveFileName: string;
   bookFileName: string;
   fbdFileName: string;
   numFiles: Integer;
+  archiver: IArchiver;
 begin
   Result := False;
 
-  zipFileName := TPath.Combine(FFolder, FZipFileName);
+  archiveFileName := TPath.Combine(FFolder, FArchiveFilename);
   bookFileName := TPath.Combine(FFolder, FBookFileName);
   fbdFileName := TPath.Combine(FFolder, FFBDFileName);
 
+  archiver := TArchiver.Create(archiveFileName);
+
   if EditorMode then
   begin
-    ZipReplaceFile(fbdFileName, zipFileName);
-    Result := TestZip(zipFileName);
+    archiver.ArchiveReplaceFile(fbdFileName);
+    Result := archiver.Test;
 
     if Result then
       SysUtils.DeleteFile(fbdFileName);
   end
   else
   begin
-    ZipFiles(
-      [fbdFileName, bookFileName],
-      TPath.Combine(FFolder, FZipFileName)
-    );
-    Result := TestZip(zipFileName);
+    archiver.ArchiveFiles([fbdFileName, bookFileName]);
+    Result := archiver.Test;
 
     if Result then
     begin
@@ -726,10 +728,12 @@ end;
 procedure TFBDDocument.GetFBDFileNames(out Description: string);
 var
   idxFile: Integer;
+  archiver: IArchiver;
 begin
-  idxFile := GetIdxByExtInZip(FZipFileName, '.fbd');
+  archiver := TArchiver.Create(FArchiveFilename);
+  idxFile := archiver.GetIdxByExt('.fbd');
   if idxFile >= 0 then
-    Description := GetFileNameInZip(FZipFileName, idxFile)
+    Description := archiver.GetFileName(idxFile)
   else
     Description := '';
 end;

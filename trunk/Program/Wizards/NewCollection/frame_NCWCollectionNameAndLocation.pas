@@ -79,6 +79,7 @@ procedure TframeNCWNameAndLocation.GetCollectionDataFromINPX;
 var
   header: TINPXHeader;
   idxFile: Integer;
+  archiver: IArchiver;
 begin
   Assert(FPParams^.INPXFile <> '');
 
@@ -86,9 +87,10 @@ begin
     Exit;
 
   try
-    idxFile := GetIdxByFileNameInZip(FPParams^.INPXFile, COLLECTIONINFO_FILENAME);
+    archiver := TArchiver.Create(FPParams^.INPXFile, afZip);
+    idxFile := archiver.GetIdxByFileName(COLLECTIONINFO_FILENAME);
     if idxFile >= 0 then
-      header.ParseString(UnzipToString(FPParams^.INPXFile, idxFile));
+      header.ParseString(archiver.UnarchiveToString(idxFile));
 
     edCollectionName.Text := header.Name;
     edCollectionFile.Text := header.FileName;

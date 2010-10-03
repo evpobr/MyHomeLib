@@ -106,6 +106,7 @@ var
   header: TINPXHeader;
   sources: array[0 .. 3] of TStreamSource;
   i: Integer;
+  archiver: IArchiver;
 begin
   Assert(Assigned(FCollection));
 
@@ -167,7 +168,8 @@ begin
         sources[3].Name := COLLECTIONINFO_FILENAME;
         sources[3].Stream := TStringStream.Create(header.AsString);
 
-        ZipStreams(sources, FINPXFileName);
+        archiver := TArchiver.Create(FINPXFileName, afZip);
+        archiver.ArchiveStreams(sources);
       finally
       for i := 1 to 3 do // the 0-index INPX stream will be freed later
         FreeAndNil(sources[i].Stream);
