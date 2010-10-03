@@ -15,23 +15,27 @@
   *
   ****************************************************************************** *)
 
-unit unit_ImportFB2ZIPThread;
+unit unit_ImportFB2ArchiveThread;
 
 interface
 
 uses
   Windows,
   unit_ImportFB2ThreadBase,
-  unit_Globals;
+  unit_Globals,
+  unit_MHLArchiveHelpers;
 
 type
-  TImportFB2ZIPThread = class(TImportFB2ThreadBase)
+  TImportFB2ArchiveThread = class(TImportFB2ThreadBase)
   protected
     procedure SortFiles(var R: TBookRecord); override;
     procedure ProcessFileList; override;
 
   public
-    constructor Create(const CollectionID: Integer);
+    constructor Create(const CollectionID: Integer; const ArchiveFormat: TArchiveFormat);
+
+  protected
+    FFb2ArchiveExt: string;
   end;
 
 
@@ -44,8 +48,7 @@ uses
   unit_WorkerThread,
   unit_Consts,
   unit_Settings,
-  fictionbook_21,
-  unit_MHLArchiveHelpers;
+  fictionbook_21;
 
 resourcestring
   rstrErrorUnpackingWithCode = 'Ошибка распаковки архива %s, Код: %d';
@@ -55,17 +58,33 @@ resourcestring
   rstrProcessedArchives = 'Обработано архивов: %u из %u';
   rstrAddedBooks = 'Добавленo книг: %u, пропущено книг: %u';
 
-{ TImportFB2ZIPThread }
+{ TImportFB2ArchiveThread }
 
-constructor TImportFB2ZIPThread.Create(const CollectionID: Integer);
+constructor TImportFB2ArchiveThread.Create(const CollectionID: Integer; const ArchiveFormat: TArchiveFormat);
 begin
   inherited Create(CollectionID);
 
-  FTargetExt := ZIP_EXTENSION;
+  case ArchiveFormat of
+    afZip:
+      begin
+        FTargetExt := ZIP_EXTENSION;
+        FFb2ArchiveExt := FB2ZIP_EXTENSION;
+      end;
+
+    af7Z:
+      begin
+        FTargetExt := SEVENZIP_EXTENSION;
+        FFb2ArchiveExt := FB2SEVENZIP_EXTENSION;
+      end;
+
+    else
+      Assert(False, 'Not supported');
+  end;
+
   FZipFolder := True;
 end;
 
-procedure TImportFB2ZIPThread.SortFiles(var R: TBookRecord);
+procedure TImportFB2ArchiveThread.SortFiles(var R: TBookRecord);
 var
   FileName, NewFileName, NewFolder: string;
   archiveFileName: string;
@@ -85,7 +104,7 @@ begin
   if NewFileName <> '' then
   begin
     NewFolder := R.Folder;
-    StrReplace(FileName, NewFileName + FB2ZIP_EXTENSION, NewFolder);
+    StrReplace(FileName, NewFileName + FFb2ArchiveExt, NewFolder);
     RenameFile(FCollectionRoot + R.Folder, FCollectionRoot + NewFolder);
     R.Folder :=  NewFolder;
 
@@ -101,14 +120,14 @@ begin
 end;
 
 {
-procedure TImportFB2ZIPThread.ShowZipErrorMessage(Sender: TObject; ErrCode: Integer; Message: string);
+procedure TImportFB2ArchiveThread.ShowZipErrorMessage(Sender: TObject; ErrCode: Integer; Message: string);
 begin
   if ErrCode <> 0 then
     Teletype(Format(rstrErrorUnpackingWithCode, [FZipper.FileName, 0]), tsError);
 end;
 }
 
-procedure TImportFB2ZIPThread.ProcessFileList;
+procedure TImportFB2ArchiveThread.ProcessFileList;
 var
   i: Integer;
   R: TBookRecord;

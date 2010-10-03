@@ -63,10 +63,10 @@ type
   );
 
   TBookFormat = (
-    bfFb2,    // A pure FB2 file
-    bfFb2Zip, // An FB2 packed in a ZIP
-    bfFbd,    // An (FBD + a raw book file) packed together in a zip
-    bfRaw     // A raw file = any other book format
+    bfFb2,        // A pure FB2 file
+    bfFb2Archive, // An FB2 packed in ZIP or 7z (or another supported archive)
+    bfFbd,        // An (FBD + a raw book file) packed together in a zip
+    bfRaw         // A raw file = any other book format
   );
 
   PBookKey = ^TBookKey;
@@ -952,6 +952,7 @@ var
   BookContainer: string;
   PathLen: Integer;
   LongFileName: string;
+  temp: string;
 begin
   Result := bfRaw; // default
   BookContainer := TPath.Combine(CollectionRoot, Folder);
@@ -972,8 +973,9 @@ begin
   end
   else
   begin
-    if ExtractFileExt(BookContainer) = ZIP_EXTENSION then
-      Result := bfFb2Zip;
+    temp := ExtractFileExt(BookContainer);
+    if (temp = ZIP_EXTENSION) or (temp = SEVENZIP_EXTENSION) then
+      Result := bfFb2Archive;
   end;
 
   if (Result = bfRaw) and (FileExt = FB2_EXTENSION) then
@@ -990,7 +992,7 @@ begin
   BookFormat := GetBookFormat;
   if BookFormat = bfFBD then
     Result := TPath.Combine(BookContainer, FileName)
-  else if BookFormat = bfFb2Zip then
+  else if BookFormat = bfFb2Archive then
     Result := BookContainer
   else // bfFb2 or bfRaw
     Result := TPath.Combine(BookContainer, FileName) + FileExt;
@@ -1017,7 +1019,7 @@ begin
   BookFileName := GetBookFileName;
 
   BookFormat := GetBookFormat;
-  if BookFormat in [bfFb2Zip, bfFbd] then
+  if BookFormat in [bfFb2Archive, bfFbd] then
   begin
     try
       archiver := TArchiver.Create(TPath.Combine(Settings.ReadPath, BookFileName));
@@ -1057,7 +1059,7 @@ var
   archiver: IArchiver;
 begin
   case GetBookFormat of
-    bfFb2, bfFb2Zip:
+    bfFb2, bfFb2Archive:
       begin
         Result := GetBookStream;
       end;

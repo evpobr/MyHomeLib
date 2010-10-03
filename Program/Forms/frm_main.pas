@@ -485,6 +485,8 @@ type
     acCollectionSyncFiles: TAction;
     acCollectionRepair: TAction;
     acCollectionCompact: TAction;
+    acImportFb2SevenZip: TAction;
+    fb27z1: TMenuItem;
 
     //
     // События формы
@@ -563,6 +565,7 @@ type
     procedure ShowCollectionSettingsExecute(Sender: TObject);
     procedure ShowCollectionStatisticsExecute(Sender: TObject);
     procedure ImportFb2ZipExecute(Sender: TObject);
+    procedure ImportFb2SevenZipExecute(Sender: TObject);
     procedure ImportFb2Execute(Sender: TObject);
     procedure ImportFb2Update(Sender: TObject);
     procedure ImportNonFB2Execute(Sender: TObject);
@@ -997,7 +1000,8 @@ uses
   unit_Lib_Updates,
   frm_EditGroup,
   unit_SystemDatabase,
-  unit_SystemDatabase_Abstract;
+  unit_SystemDatabase_Abstract,
+  unit_MHLArchiveHelpers;
 
 resourcestring
   rstrFileNotFoundMsg = 'Файл %s не найден!' + CRLF + 'Проверьте настройки коллекции!';
@@ -3856,9 +3860,9 @@ begin
     BookFileName := BookRecord.GetBookFileName;
     BookFormat := BookRecord.GetBookFormat;
 
-    if BookFormat in [bfFb2Zip, bfFbd] then
+    if BookFormat in [bfFb2Archive, bfFbd] then
     begin
-      if BookFormat = bfFb2Zip then
+      if BookFormat = bfFb2Archive then
       begin
         CollectionInfo := FSystemData.GetCollectionInfo(BookRecord.BookKey.DatabaseID);
 
@@ -5718,7 +5722,14 @@ end;
 
 procedure TfrmMain.ImportFb2ZipExecute(Sender: TObject);
 begin
-  unit_Import.ImportFB2ZIP(FSystemData.GetActiveCollectionInfo.ID);
+  unit_Import.ImportFB2Archive(FSystemData.GetActiveCollectionInfo.ID, afZip);
+
+  InitCollection(True);
+end;
+
+procedure TfrmMain.ImportFb2SevenZipExecute(Sender: TObject);
+begin
+  unit_Import.ImportFB2Archive(FSystemData.GetActiveCollectionInfo.ID, af7Z);
 
   InitCollection(True);
 end;

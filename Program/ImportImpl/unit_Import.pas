@@ -23,11 +23,12 @@ interface
 
 uses
   unit_Globals,
-  unit_Interfaces;
+  unit_Interfaces,
+  unit_MHLArchiveHelpers;
   
 procedure ImportFB2(const CollectionID: Integer);
 
-procedure ImportFB2ZIP(const CollectionID: Integer);
+procedure ImportFB2Archive(const CollectionID: Integer; const ArchiveFormat: TArchiveFormat);
 
 procedure ImportFBD(const CollectionID: Integer);
 
@@ -36,7 +37,7 @@ implementation
 uses
   Forms,
   unit_ImportFB2Thread,
-  unit_ImportFB2ZIPThread,
+  unit_ImportFB2ArchiveThread,
   unit_ImportFBDThread,
   frm_ImportProgressForm,
   frm_ImportProgressFormEx,
@@ -62,12 +63,12 @@ begin
   end;
 end;
 
-procedure ImportFB2ZIP(const CollectionID: Integer);
+procedure ImportFB2Archive(const CollectionID: Integer; const ArchiveFormat: TArchiveFormat);
 var
-  worker: TImportFB2ZIPThread;
+  worker: TImportFB2ArchiveThread;
   frmProgress: TImportProgressFormEx;
 begin
-  worker := TImportFB2ZIPThread.Create(CollectionID);
+  worker := TImportFB2ArchiveThread.Create(CollectionID, ArchiveFormat);
   try
     frmProgress := TImportProgressFormEx.Create(Application);
     try
