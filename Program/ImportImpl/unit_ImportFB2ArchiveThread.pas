@@ -71,12 +71,6 @@ begin
         FFb2ArchiveExt := FB2ZIP_EXTENSION;
       end;
 
-    af7Z:
-      begin
-        FTargetExt := SEVENZIP_EXTENSION;
-        FFb2ArchiveExt := FB2SEVENZIP_EXTENSION;
-      end;
-
     else
       Assert(False, 'Not supported');
   end;

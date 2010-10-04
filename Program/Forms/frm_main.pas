@@ -485,8 +485,6 @@ type
     acCollectionSyncFiles: TAction;
     acCollectionRepair: TAction;
     acCollectionCompact: TAction;
-    acImportFb2SevenZip: TAction;
-    fb27z1: TMenuItem;
 
     //
     // События формы
@@ -565,7 +563,6 @@ type
     procedure ShowCollectionSettingsExecute(Sender: TObject);
     procedure ShowCollectionStatisticsExecute(Sender: TObject);
     procedure ImportFb2ZipExecute(Sender: TObject);
-    procedure ImportFb2SevenZipExecute(Sender: TObject);
     procedure ImportFb2Execute(Sender: TObject);
     procedure ImportFb2Update(Sender: TObject);
     procedure ImportNonFB2Execute(Sender: TObject);
@@ -1867,8 +1864,8 @@ end;
 
 procedure TfrmMain.CreateScriptMenu;
 const
-  ExpTypes: array [0 .. 6] of string = ('  fb2', '  fb2.zip', '  fb2.7z', '  LRF', '  txt', ' epub', '  pdf');
-  Icons: array [0 .. 6] of Integer = (18, 19, 19, 20, 21, 24, 25);
+  ExpTypes: array [0 .. 5] of string = ('  fb2', '  fb2.zip', '  LRF', '  txt', ' epub', '  pdf');
+  Icons: array [0 .. 5] of Integer = (18, 19, 20, 21, 24, 25);
 var
   Item, ItemP, ItemM: TMenuItem;
   F: Integer;
@@ -1892,7 +1889,7 @@ begin
 
   if fb2Collection then
   begin
-    for i := 0 to 6 do
+    for i := 0 to 5 do
     begin
       Item := TMenuItem.Create(pmScripts);
       Item.Caption := ExpTypes[i];
@@ -1907,7 +1904,7 @@ begin
       Item := TMenuItem.Create(pmScripts);
       Item.Caption := '-';
       Item.Tag := 0;
-      pmScripts.Items.Insert(7, Item);
+      pmScripts.Items.Insert(6, Item);
     end;
 
     tbSendToDevice.ImageIndex := Icons[ord(Settings.ExportMode)];
@@ -3740,11 +3737,10 @@ begin
     case ScriptID of
       850: ExportMode := emFB2;
       851: ExportMode := emFB2Zip;
-      852: ExportMode := emFB2SevenZip;
-      853: ExportMode := emLrf;
-      854: ExportMode := emTxt;
-      855: ExportMode := emEpub;
-      856: ExportMode := emPDF;
+      852: ExportMode := emLrf;
+      853: ExportMode := emTxt;
+      854: ExportMode := emEpub;
+      855: ExportMode := emPDF;
     else
       ExportMode := Settings.ExportMode;
     end
@@ -5724,13 +5720,6 @@ end;
 procedure TfrmMain.ImportFb2ZipExecute(Sender: TObject);
 begin
   unit_Import.ImportFB2Archive(FSystemData.GetActiveCollectionInfo.ID, afZip);
-
-  InitCollection(True);
-end;
-
-procedure TfrmMain.ImportFb2SevenZipExecute(Sender: TObject);
-begin
-  unit_Import.ImportFB2Archive(FSystemData.GetActiveCollectionInfo.ID, af7Z);
 
   InitCollection(True);
 end;

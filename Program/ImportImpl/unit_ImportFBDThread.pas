@@ -25,9 +25,6 @@ uses
 
 type
   TImportFBDThread = class(TImportFB2ThreadBase)
-//  private
-//    FZipper: I7zInArchive;
-
   protected
     procedure ProcessFileList; override;
     procedure SortFiles(var R: TBookRecord); override;
