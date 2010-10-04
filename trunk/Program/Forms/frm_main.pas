@@ -1867,8 +1867,8 @@ end;
 
 procedure TfrmMain.CreateScriptMenu;
 const
-  ExpTypes: array [0 .. 6] of string = ('  fb2', '  fb2.zip', '  LRF', '  txt', ' epub', '  pdf', '  fb2.7z');
-  Icons: array [0 .. 6] of Integer = (18, 19, 20, 21, 24, 25, 19);
+  ExpTypes: array [0 .. 6] of string = ('  fb2', '  fb2.zip', '  fb2.7z', '  LRF', '  txt', ' epub', '  pdf');
+  Icons: array [0 .. 6] of Integer = (18, 19, 19, 20, 21, 24, 25);
 var
   Item, ItemP, ItemM: TMenuItem;
   F: Integer;
@@ -3740,11 +3740,11 @@ begin
     case ScriptID of
       850: ExportMode := emFB2;
       851: ExportMode := emFB2Zip;
-      852: ExportMode := emLrf;
-      853: ExportMode := emTxt;
-      854: ExportMode := emEpub;
-      855: ExportMode := emPDF;
-      856: ExportMode := emFB2SevenZip;
+      852: ExportMode := emFB2SevenZip;
+      853: ExportMode := emLrf;
+      854: ExportMode := emTxt;
+      855: ExportMode := emEpub;
+      856: ExportMode := emPDF;
     else
       ExportMode := Settings.ExportMode;
     end

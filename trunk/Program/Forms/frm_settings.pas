@@ -394,11 +394,11 @@ begin
   case rgDeviceFormat.ItemIndex of
     0: Settings.ExportMode := emFB2;
     1: Settings.ExportMode := emFB2Zip;
-    2: Settings.ExportMode := emLrf;
-    3: Settings.ExportMode := emTxt;
-    4: Settings.ExportMode := emEpub;
-    5: Settings.ExportMode := emPDF;
-    6: Settings.ExportMode := emFB2SevenZip;
+    2: Settings.ExportMode := emFB2SevenZip;
+    3: Settings.ExportMode := emLrf;
+    4: Settings.ExportMode := emTxt;
+    5: Settings.ExportMode := emEpub;
+    6: Settings.ExportMode := emPDF;
   end;
 
   Settings.FolderTemplate := edFolderTemplate.Text;
