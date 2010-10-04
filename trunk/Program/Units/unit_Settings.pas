@@ -682,11 +682,10 @@ begin
     case iniFile.ReadInteger(SYSTEM_SECTION, 'ExpFormat', 0) of
       0: FExportMode := emFB2;
       1: FExportMode := emFB2Zip;
-      2: FExportMode := emFB2SevenZip;
-      3: FExportMode := emLrf;
-      4: FExportMode := emTxt;
-      5: FExportMode := emEpub;
-      6: FExportMode := emPDF;
+      2: FExportMode := emLrf;
+      3: FExportMode := emTxt;
+      4: FExportMode := emEpub;
+      5: FExportMode := emPDF;
     end;
 
     case iniFile.ReadInteger(SYSTEM_SECTION, 'TXTEncoding', 0) of

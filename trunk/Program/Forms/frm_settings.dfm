@@ -202,7 +202,6 @@ object frmSettings: TfrmSettings
             Items.Strings = (
               '.fb2'
               '.fb2.zip'
-              '.fb2.7z'
               '.lrf '
               '.txt'
               '.epub'
