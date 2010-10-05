@@ -71,6 +71,9 @@ const
   SQLITE_ROW         = 100; //sqlite3_step() has another row ready
   SQLITE_DONE        = 101; //sqlite3_step() has finished executing
 
+  //
+  // Fundamental Datatypes
+  //
   SQLITE_INTEGER = 1;
   SQLITE_FLOAT   = 2;
   SQLITE_TEXT    = 3;
@@ -78,6 +81,9 @@ const
   SQLITE_BLOB    = 4;
   SQLITE_NULL    = 5;
 
+  //
+  // These constant define integer codes that represent the various text encodings supported by SQLite.
+  //
   SQLITE_UTF8           = 1;
   SQLITE_UTF16LE        = 2;
   SQLITE_UTF16BE        = 3;
@@ -85,8 +91,34 @@ const
   SQLITE_ANY            = 5; // sqlite3_create_function only
   SQLITE_UTF16_ALIGNED  = 8; // sqlite3_create_collation only
 
+  //
+  // Constants Defining Special Destructor Behavior
+  //
   SQLITE_STATIC    {: TSQLite3Destructor} = Pointer(0);
   SQLITE_TRANSIENT {: TSQLite3Destructor} = Pointer(-1);
+
+  //
+  // Flags For File Open Operations
+  //
+  SQLITE_OPEN_READONLY       =  $00000001;  // Ok for sqlite3_open_v2()
+  SQLITE_OPEN_READWRITE      =  $00000002;  // Ok for sqlite3_open_v2()
+  SQLITE_OPEN_CREATE         =  $00000004;  // Ok for sqlite3_open_v2()
+  SQLITE_OPEN_DELETEONCLOSE  =  $00000008;  // VFS only
+  SQLITE_OPEN_EXCLUSIVE      =  $00000010;  // VFS only
+  SQLITE_OPEN_AUTOPROXY      =  $00000020;  // VFS only
+  SQLITE_OPEN_MAIN_DB        =  $00000100;  // VFS only
+  SQLITE_OPEN_TEMP_DB        =  $00000200;  // VFS only
+  SQLITE_OPEN_TRANSIENT_DB   =  $00000400;  // VFS only
+  SQLITE_OPEN_MAIN_JOURNAL   =  $00000800;  // VFS only
+  SQLITE_OPEN_TEMP_JOURNAL   =  $00001000;  // VFS only
+  SQLITE_OPEN_SUBJOURNAL     =  $00002000;  // VFS only
+  SQLITE_OPEN_MASTER_JOURNAL =  $00004000;  // VFS only
+  SQLITE_OPEN_NOMUTEX        =  $00008000;  // Ok for sqlite3_open_v2()
+  SQLITE_OPEN_FULLMUTEX      =  $00010000;  // Ok for sqlite3_open_v2()
+  SQLITE_OPEN_SHAREDCACHE    =  $00020000;  // Ok for sqlite3_open_v2()
+  SQLITE_OPEN_PRIVATECACHE   =  $00040000;  // Ok for sqlite3_open_v2()
+  SQLITE_OPEN_WAL            =  $00080000;  // VFS only
+
 
 type
   PUTF8Char = PAnsiChar;
@@ -112,17 +144,17 @@ function SQLite3_Version: PUTF8Char; cdecl; external SQLiteDLL name 'sqlite3_lib
 
 function SQLite3_Open(
   filename: PUTF8Char; // Database filename (UTF-8)
-  var db: TSQLite3DB    // OUT: SQLite db handle
+  var db: TSQLite3DB   // OUT: SQLite db handle
   ): Integer; cdecl; external SQLiteDLL name 'sqlite3_open';
 
 function SQLite3_Open16(
   FileName: PWideChar; // Database filename (UTF-16)
-  var db: TSQLite3DB    // OUT: SQLite db handle
+  var db: TSQLite3DB   // OUT: SQLite db handle
   ): Integer; cdecl; external SQLiteDLL name 'sqlite3_open16';
 
 function SQLite3_Open_v2(
   FileName: PUTF8Char; // Database filename (UTF-8) */
-  var db: TSQLite3DB;   // OUT: SQLite db handle */
+  var db: TSQLite3DB;  // OUT: SQLite db handle */
   flags: Integer;      // Flags
   zVfs: PUTF8Char      // Name of VFS module to use
   ): Integer; cdecl; external SQLiteDLL name 'sqlite3_open_v2';
@@ -174,7 +206,7 @@ function SQLite3_Changes(
   ): Integer; cdecl; external SQLiteDLL name 'sqlite3_changes';
 
 function SQLite3_Prepare_v2(
-  db: TSQLite3DB;             // Database handle
+  db: TSQLite3DB;            // Database handle
   SQLStatement: PUTF8Char;   // SQL statement, UTF-8 encoded
   nBytes: Integer;           // Maximum length of SQLStatement in bytes
   var hStmt: TSQLiteStmt;    // OUT: Statement handle
@@ -182,7 +214,7 @@ function SQLite3_Prepare_v2(
   ): Integer; cdecl; external SQLiteDLL name 'sqlite3_prepare_v2';
 
 function SQLite3_Prepare16_v2(
-  db: TSQLite3DB;             // Database handle
+  db: TSQLite3DB;            // Database handle
   SQLStatement: PWideChar;   // SQL statement, UTF-16 encoded
   nBytes: Integer;           // Maximum length of SQLStatement in bytes
   var hStmt: TSQLiteStmt;    // OUT: Statement handle

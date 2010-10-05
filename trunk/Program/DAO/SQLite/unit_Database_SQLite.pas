@@ -1246,7 +1246,6 @@ var
 
 begin
   Assert(Assigned(data));
-  Assert(Assigned(guiUpdateCallback));
 
   //
   // Заполним рейтинги, review и признак прочитанности
@@ -1296,7 +1295,8 @@ begin
     //
     // Дадим возможность главному окну обновить измененные ноды
     //
-    guiUpdateCallback(BookKey, extra);
+    if Assigned(guiUpdateCallback) then
+      guiUpdateCallback(BookKey, extra);
   end;
 
   //
