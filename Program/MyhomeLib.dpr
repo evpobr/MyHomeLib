@@ -134,7 +134,8 @@ uses
   unit_MHLGenerics in 'Units\unit_MHLGenerics.pas',
   frm_NewCollectionWizard in 'Wizards\NewCollection\frm_NewCollectionWizard.pas' {NewCollectionWizard},
   unit_CollectionWorkerThread in 'ImportImpl\unit_CollectionWorkerThread.pas',
-  unit_ImportFB2ArchiveThread in 'ImportImpl\unit_ImportFB2ArchiveThread.pas';
+  unit_ImportFB2ArchiveThread in 'ImportImpl\unit_ImportFB2ArchiveThread.pas',
+  unit_treeController in 'Forms\unit_treeController.pas';
 
 {$R *.res}
 
@@ -159,9 +160,10 @@ begin
 
     // Важно! сначала создаем датамодули и главную форму, а потом - остальные формы!
     Application.CreateForm(TDMUser, DMUser);
-  Application.CreateForm(TfrmMain, frmMain);
-  Application.CreateForm(TfrmGenreTree, frmGenreTree);
-  frmSplash.Hide;
+    Application.CreateForm(TfrmMain, frmMain);
+    Application.CreateForm(TfrmGenreTree, frmGenreTree);
+    
+    frmSplash.Hide;
   finally
     frmSplash.Free;
   end;
