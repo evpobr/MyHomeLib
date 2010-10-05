@@ -1601,30 +1601,33 @@ var
 begin
   Assert(OldSeriesID <> NewSeriesID);
 
-  VerifyCurrentCollection(DatabaseID);
-
-  Query := FDatabase.NewQuery(SQL_UPDATE_BOOKS);
-  try
-    if (NewSeriesID <> NO_SERIES_ID) then
-      Query.SetParam(0, NewSeriesID);
-    if (OldSeriesID <> NO_SERIES_ID) then
-      Query.SetParam(1, OldSeriesID);
-    Query.ExecSQL;
-  finally
-    FreeAndNil(Query);
-  end;
-
-  // Clean up empty series:
-  if NO_SERIES_ID <> OldSeriesID then
+  if (DatabaseID <> CollectionID) then
+    FSystemData.GetCollection(DatabaseID).ChangeBookSeriesID(OldSeriesID, NewSeriesID, DatabaseID)
+  else
   begin
-    Query := FDatabase.NewQuery(SQL_DELETE_SERIES);
+    Query := FDatabase.NewQuery(SQL_UPDATE_BOOKS);
     try
-      Query.SetParam(0, OldSeriesID);
-      //
-      // TODO : а где ExecSQL ?
-      //
+      if (NewSeriesID <> NO_SERIES_ID) then
+        Query.SetParam(0, NewSeriesID);
+      if (OldSeriesID <> NO_SERIES_ID) then
+        Query.SetParam(1, OldSeriesID);
+      Query.ExecSQL;
     finally
       FreeAndNil(Query);
+    end;
+
+    // Clean up empty series:
+    if NO_SERIES_ID <> OldSeriesID then
+    begin
+      Query := FDatabase.NewQuery(SQL_DELETE_SERIES);
+      try
+        Query.SetParam(0, OldSeriesID);
+        //
+        // TODO : а где ExecSQL ?
+        //
+      finally
+        FreeAndNil(Query);
+      end;
     end;
   end;
 
@@ -1846,92 +1849,96 @@ var
   query: TSQLiteQuery;
 begin
   Assert(BookRecord.FileName <> '');
-  VerifyCurrentCollection(BookRecord.BookKey.DatabaseID);
 
-  BookRecord.Normalize;
-
-  //
-  // Создадим отсутствующих авторов
-  //
-  Assert(BookRecord.AuthorCount > 0);
-  for i := 0 to BookRecord.AuthorCount - 1 do
-    BookRecord.Authors[i].AuthorID := InsertAuthorIfMissing(BookRecord.Authors[i]);
-
-  //
-  // Определяем код жанра
-  //
-  Assert(BookRecord.GenreCount > 0);
-  for i := 0 to BookRecord.GenreCount - 1 do
-  begin
-    //
-    // Если fb2 код указан, переводим его в универсальный код
-    //
-    if BookRecord.Genres[i].FB2GenreCode <> '' then
-      BookRecord.Genres[i] := FGenreCache.ByFB2Code[BookRecord.Genres[i].FB2GenreCode]
-    else
-      BookRecord.Genres[i] := FGenreCache[BookRecord.Genres[i].GenreCode];
-  end;
-
-  //
-  // создадим отсутствующую серию
-  //
-  BookRecord.SeriesID := FindOrCreateSeries(BookRecord.Series);
-
-  if BookRecord.SeqNumber > 5000 then
-    BookRecord.SeqNumber := 0;
-
-  BookRecord.Review := Trim(BookRecord.Review);
-  if BookRecord.Review <> '' then
-    Include(BookRecord.BookProps, bpHasReview)
+  if (BookRecord.BookKey.DatabaseID <> CollectionID) then
+    FSystemData.GetCollection(BookRecord.BookKey.DatabaseID).UpdateBook(BookRecord)
   else
-    Exclude(BookRecord.BookProps, bpHasReview);
-  BookRecord.Annotation := BookRecord.Annotation;
+  begin
+    BookRecord.Normalize;
 
-  // Update the book's series and clean up unused series:
-  SetSeriesID(BookRecord.BookKey, BookRecord.SeriesID);
+    //
+    // Создадим отсутствующих авторов
+    //
+    Assert(BookRecord.AuthorCount > 0);
+    for i := 0 to BookRecord.AuthorCount - 1 do
+      BookRecord.Authors[i].AuthorID := InsertAuthorIfMissing(BookRecord.Authors[i]);
 
-  query := FDatabase.NewQuery(SQL_INSERT);
-  try
-    query.SetParam(0, BookRecord.Title);
-    query.SetParam(1, BookRecord.Folder);
-    query.SetParam(2, BookRecord.FileName);
-    query.SetParam(3, BookRecord.FileExt);
-    query.SetParam(4, BookRecord.InsideNo);
-    // SeriesID was set by SetSeriesID, so just change the SeqNumber
-    if NO_SERIES_ID <> BookRecord.SeriesID then
-      query.SetParam(5, BookRecord.SeqNumber)
+    //
+    // Определяем код жанра
+    //
+    Assert(BookRecord.GenreCount > 0);
+    for i := 0 to BookRecord.GenreCount - 1 do
+    begin
+      //
+      // Если fb2 код указан, переводим его в универсальный код
+      //
+      if BookRecord.Genres[i].FB2GenreCode <> '' then
+        BookRecord.Genres[i] := FGenreCache.ByFB2Code[BookRecord.Genres[i].FB2GenreCode]
+      else
+        BookRecord.Genres[i] := FGenreCache[BookRecord.Genres[i].GenreCode];
+    end;
+
+    //
+    // создадим отсутствующую серию
+    //
+    BookRecord.SeriesID := FindOrCreateSeries(BookRecord.Series);
+
+    if BookRecord.SeqNumber > 5000 then
+      BookRecord.SeqNumber := 0;
+
+    BookRecord.Review := Trim(BookRecord.Review);
+    if BookRecord.Review <> '' then
+      Include(BookRecord.BookProps, bpHasReview)
     else
-      query.SetNullParam(5);
-    query.SetParam(6, BookRecord.Size);
-    query.SetParam(7, BookRecord.LibID);
-    query.SetParam(8, bpIsDeleted in BookRecord.BookProps);
-    query.SetParam(9, bpIsLocal in BookRecord.BookProps);
-    query.SetParam(10, BookRecord.Date);
-    query.SetParam(11, BookRecord.Lang);
-    query.SetParam(12, BookRecord.LibRate);
-    query.SetParam(13, BookRecord.KeyWords);
-    query.SetParam(14, BookRecord.Rate);
-    query.SetParam(15, BookRecord.Progress);
+      Exclude(BookRecord.BookProps, bpHasReview);
+    BookRecord.Annotation := BookRecord.Annotation;
 
-    if BookRecord.Review = '' then
-      query.SetNullParam(16)
-    else
-      query.SetBlobParam(16, BookRecord.Review);
+    // Update the book's series and clean up unused series:
+    SetSeriesID(BookRecord.BookKey, BookRecord.SeriesID);
 
-    if BookRecord.Annotation = '' then
-      query.SetNullParam(17)
-    else
-      query.SetParam(17, BookRecord.Annotation);
+    query := FDatabase.NewQuery(SQL_INSERT);
+    try
+      query.SetParam(0, BookRecord.Title);
+      query.SetParam(1, BookRecord.Folder);
+      query.SetParam(2, BookRecord.FileName);
+      query.SetParam(3, BookRecord.FileExt);
+      query.SetParam(4, BookRecord.InsideNo);
+      // SeriesID was set by SetSeriesID, so just change the SeqNumber
+      if NO_SERIES_ID <> BookRecord.SeriesID then
+        query.SetParam(5, BookRecord.SeqNumber)
+      else
+        query.SetNullParam(5);
+      query.SetParam(6, BookRecord.Size);
+      query.SetParam(7, BookRecord.LibID);
+      query.SetParam(8, bpIsDeleted in BookRecord.BookProps);
+      query.SetParam(9, bpIsLocal in BookRecord.BookProps);
+      query.SetParam(10, BookRecord.Date);
+      query.SetParam(11, BookRecord.Lang);
+      query.SetParam(12, BookRecord.LibRate);
+      query.SetParam(13, BookRecord.KeyWords);
+      query.SetParam(14, BookRecord.Rate);
+      query.SetParam(15, BookRecord.Progress);
 
-    query.SetParam(18, BookRecord.BookKey.BookID);
+      if BookRecord.Review = '' then
+        query.SetNullParam(16)
+      else
+        query.SetBlobParam(16, BookRecord.Review);
 
-    query.ExecSQL;
-  finally
-    query.Free;
+      if BookRecord.Annotation = '' then
+        query.SetNullParam(17)
+      else
+        query.SetParam(17, BookRecord.Annotation);
+
+      query.SetParam(18, BookRecord.BookKey.BookID);
+
+      query.ExecSQL;
+    finally
+      query.Free;
+    end;
+
+    SetBookGenres(BookRecord.BookKey.BookID, BookRecord.Genres, True);
+    SetBookAuthors(BookRecord.BookKey.BookID, BookRecord.Authors, True);
   end;
-
-  SetBookGenres(BookRecord.BookKey.BookID, BookRecord.Genres, True);
-  SetBookAuthors(BookRecord.BookKey.BookID, BookRecord.Authors, True);
 
   FSystemData.UpdateBook(BookRecord);
 end;
@@ -1941,9 +1948,10 @@ procedure TBookCollection_SQLite.DeleteBook(const BookKey: TBookKey);
 const
   SQL_DELETE_BOOKS = 'DELETE FROM Books WHERE BookID = ? ';
 begin
-  VerifyCurrentCollection(BookKey.DatabaseID);
-
-  FDatabase.ExecSQL(SQL_DELETE_BOOKS, [BookKey.BookID]);
+  if BookKey.DatabaseID <> CollectionID then
+    FSystemData.GetCollection(BookKey.DatabaseID).DeleteBook(BookKey)
+  else
+    FDatabase.ExecSQL(SQL_DELETE_BOOKS, [BookKey.BookID]);
 
   FSystemData.DeleteBook(BookKey);
 end;
@@ -1981,19 +1989,22 @@ var
   NewCode: Integer;
   query: TSQLiteQuery;
 begin
-  VerifyCurrentCollection(BookKey.DatabaseID);
+  if BookKey.DatabaseID <> CollectionID then
+    NewCode := FSystemData.GetCollection(BookKey.DatabaseID).SetReview(BookKey, Review)
+  else
+  begin
+    NewReview := Trim(Review);
+    NewCode := IfThen(NewReview = '', 0, 1);
 
-  NewReview := Trim(Review);
-  NewCode := IfThen(NewReview = '', 0, 1);
+    query := FDatabase.NewQuery(SQL_UPDATE);
+    try
+      query.SetBlobParam(0, NewReview);
+      query.SetParam(1, BookKey.BookID);
 
-  query := FDatabase.NewQuery(SQL_UPDATE);
-  try
-    query.SetBlobParam(0, NewReview);
-    query.SetParam(1, BookKey.BookID);
-
-    query.ExecSQL;
-  finally
-    query.Free;
+      query.ExecSQL;
+    finally
+      query.Free;
+    end;
   end;
 
   //
@@ -2006,9 +2017,10 @@ procedure TBookCollection_SQLite.SetProgress(const BookKey: TBookKey; const Prog
 const
   SQL_UPDATE = 'UPDATE Books SET Progress = ? WHERE BookID = ?';
 begin
-  VerifyCurrentCollection(BookKey.DatabaseID);
-
-  FDatabase.ExecSQL(SQL_UPDATE, [Progress, BookKey.BookID]);
+  if BookKey.DatabaseID <> CollectionID then
+    FSystemData.GetCollection(BookKey.DatabaseID).SetProgress(BookKey, Progress)
+  else
+    FDatabase.ExecSQL(SQL_UPDATE, [Progress, BookKey.BookID]);
 
   //
   // Обновим информацию в группах
@@ -2020,9 +2032,10 @@ procedure TBookCollection_SQLite.SetRate(const BookKey: TBookKey; const Rate: In
 const
   SQL_UPDATE = 'UPDATE Books SET Rate = ? WHERE BookID = ?';
 begin
-  VerifyCurrentCollection(BookKey.DatabaseID);
-
-  FDatabase.ExecSQL(SQL_UPDATE, [Rate, BookKey.BookID]);
+  if BookKey.DatabaseID <> CollectionID then
+    FSystemData.GetCollection(BookKey.DatabaseID).SetRate(BookKey, Rate)
+  else
+    FDatabase.ExecSQL(SQL_UPDATE, [Rate, BookKey.BookID]);
 
   //
   // Обновим информацию в группах
@@ -2034,9 +2047,10 @@ procedure TBookCollection_SQLite.SetLocal(const BookKey: TBookKey; const AState:
 const
   SQL_UPDATE = 'UPDATE Books SET IsLocal = ? WHERE BookID = ?';
 begin
-  VerifyCurrentCollection(BookKey.DatabaseID);
-
-  FDatabase.ExecSQL(SQL_UPDATE, [AState, BookKey.BookID]);
+  if BookKey.DatabaseID <> CollectionID then
+    FSystemData.GetCollection(BookKey.DatabaseID).SetLocal(BookKey, AState)
+  else
+    FDatabase.ExecSQL(SQL_UPDATE, [AState, BookKey.BookID]);
 
   //
   // Обновим информацию в группах
@@ -2063,9 +2077,10 @@ procedure TBookCollection_SQLite.SetFolder(const BookKey: TBookKey; const Folder
 const
   SQL_UPDATE = 'UPDATE Books SET Folder = ? WHERE BookID = ?';
 begin
-  VerifyCurrentCollection(BookKey.DatabaseID);
-
-  InternalUpdateField(BookKey.BookID, SQL_UPDATE, Folder);
+  if BookKey.DatabaseID <> CollectionID then
+    FSystemData.GetCollection(BookKey.DatabaseID).SetFolder(BookKey, Folder)
+  else
+    InternalUpdateField(BookKey.BookID, SQL_UPDATE, Folder);
 
   //
   // Обновим информацию в группах
@@ -2077,9 +2092,10 @@ procedure TBookCollection_SQLite.SetFileName(const BookKey: TBookKey; const File
 const
   SQL_UPDATE = 'UPDATE Books SET FileName = ? WHERE BookID = ?';
 begin
-  VerifyCurrentCollection(BookKey.DatabaseID);
-
-  InternalUpdateField(BookKey.BookID, SQL_UPDATE, FileName);
+  if BookKey.DatabaseID <> CollectionID then
+    FSystemData.GetCollection(BookKey.DatabaseID).SetFileName(BookKey, FileName)
+  else
+    InternalUpdateField(BookKey.BookID, SQL_UPDATE, FileName);
 
   //
   // Обновим информацию в группах
@@ -2097,47 +2113,50 @@ var
   OldSeriesID: Integer;
   CountBooksInASeries: Integer;
 begin
-  VerifyCurrentCollection(BookKey.DatabaseID);
-
-  Query := FDatabase.NewQuery(SQL_SELECT_OLD_SERIES);
-  try
-    Query.SetParam(0, BookKey.BookID);
-    Query.Open;
-    if not Query.Eof then
-    begin
-      OldSeriesID := Query.FieldAsInt(0);
-      CountBooksInASeries := Query.FieldAsInt(1);
-    end
-    else
-    begin
-      OldSeriesID := 0;
-      CountBooksInASeries := 0;
-    end;
-  finally
-    FreeAndNil(Query);
-  end;
-
-  Query := FDatabase.NewQuery(SQL_UPDATE);
-  try
-    if NO_SERIES_ID = SeriesID then
-      Query.SetNullParam(0)
-    else
-      Query.SetParam(0, SeriesID);
-    Query.SetParam(1, BookKey.BookID);
-    Query.ExecSQL;
-  finally
-    FreeAndNil(Query);
-  end;
-
-  if (CountBooksInASeries = 1) AND (OldSeriesID <> SeriesID) then
+  if BookKey.DatabaseID <> CollectionID then
+    FSystemData.GetCollection(BookKey.DatabaseID).SetSeriesID(BookKey, SeriesID)
+  else
   begin
-    // was a single book in a series and was just removed from it
-    Query := FDatabase.NewQuery(SQL_DELETE);
+    Query := FDatabase.NewQuery(SQL_SELECT_OLD_SERIES);
     try
-      Query.SetParam(0, OldSeriesID);
+      Query.SetParam(0, BookKey.BookID);
+      Query.Open;
+      if not Query.Eof then
+      begin
+        OldSeriesID := Query.FieldAsInt(0);
+        CountBooksInASeries := Query.FieldAsInt(1);
+      end
+      else
+      begin
+        OldSeriesID := 0;
+        CountBooksInASeries := 0;
+      end;
+    finally
+      FreeAndNil(Query);
+    end;
+
+    Query := FDatabase.NewQuery(SQL_UPDATE);
+    try
+      if NO_SERIES_ID = SeriesID then
+        Query.SetNullParam(0)
+      else
+        Query.SetParam(0, SeriesID);
+      Query.SetParam(1, BookKey.BookID);
       Query.ExecSQL;
     finally
       FreeAndNil(Query);
+    end;
+
+    if (CountBooksInASeries = 1) AND (OldSeriesID <> SeriesID) then
+    begin
+      // was a single book in a series and was just removed from it
+      Query := FDatabase.NewQuery(SQL_DELETE);
+      try
+        Query.SetParam(0, OldSeriesID);
+        Query.ExecSQL;
+      finally
+        FreeAndNil(Query);
+      end;
     end;
   end;
 
