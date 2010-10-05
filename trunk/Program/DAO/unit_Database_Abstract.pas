@@ -282,9 +282,10 @@ procedure TBookCollection.AddBookToGroup(const BookKey: TBookKey; const GroupID:
 var
   BookRecord: TBookRecord;
 begin
-  VerifyCurrentCollection(BookKey.DatabaseID);
-
-  GetBookRecord(BookKey, BookRecord, True);
+  if (BookKey.DatabaseID <> CollectionID) then
+    FSystemData.GetCollection(CollectionID).AddBookToGroup(BookKey, GroupID)
+  else
+    GetBookRecord(BookKey, BookRecord, True);
 
   FSystemData.AddBookToGroup(BookKey, GroupID, BookRecord);
 end;

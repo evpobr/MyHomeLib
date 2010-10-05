@@ -208,10 +208,12 @@ uses
   unit_SQLiteUtils,
   unit_Database_SQLite,
   unit_Settings,
-  unit_Helpers;
+  unit_Helpers,
+  unit_Errors;
 
 resourcestring
   rstrInvalidCollection = 'Файл %s не является коллекцией.';
+  rstrFailedToMountDB = 'Ошибка загрузки файла коллекции %s';
 
 // Generate table structure and minimal system data
 procedure CreateSystemTables_SQLite(const DBUserFile: string);
@@ -791,7 +793,11 @@ begin
   CollectionInfo := GetCollectionInfo(CollectionID);
   if CollectionInfo.ID <> INVALID_COLLECTION_ID then
   begin
-    Result := TBookCollection_SQLite.Create(CollectionInfo, Self);
+    try
+      Result := TBookCollection_SQLite.Create(CollectionInfo, Self);
+    except
+      raise EDBError.CreateFmt(rstrFailedToMountDB, [CollectionInfo.DBFileName]);
+    end;
     Exit;
   end;
 
