@@ -404,11 +404,6 @@ type
     FBD1: TMenuItem;
     FBD2: TMenuItem;
     acGroupEdit: TAction;
-    N53: TMenuItem;
-    N54: TMenuItem;
-    N55: TMenuItem;
-    N56: TMenuItem;
-    N57: TMenuItem;
     pmGroupActions: TPopupMenu;
     N9: TMenuItem;
     N26: TMenuItem;
@@ -486,6 +481,11 @@ type
     acCollectionSyncFiles: TAction;
     acCollectionRepair: TAction;
     acCollectionCompact: TAction;
+    N24: TMenuItem;
+    N43: TMenuItem;
+    N80: TMenuItem;
+    N81: TMenuItem;
+    N82: TMenuItem;
 
     //
     // События формы
