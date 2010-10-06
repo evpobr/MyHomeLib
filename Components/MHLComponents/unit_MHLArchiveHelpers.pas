@@ -100,6 +100,8 @@ type
     FArchiveFormatGUID: TGUID; // one of the values defined in the sevenzip unit
   end;
 
+  function IsArchiveExt(const FileName: string): Boolean;
+
 implementation
 
 uses
@@ -108,6 +110,9 @@ uses
   IOUtils,
   sevenzip;
 
+const
+  ZIP_EXTENSION = '.zip';
+  SEVENZIP_EXTENSION = '.7z';
 
 constructor TArchiver.Create(const ArchiveFileName: string; const ArchiveFormat: TArchiveFormat);
 begin
@@ -132,9 +137,9 @@ begin
   FArchiveFileName := ArchiveFileName;
 
   ext := AnsiLowerCase(TPath.GetExtension(ArchiveFileName));
-  if ext = '.zip' then
+  if ext = ZIP_EXTENSION then
     FArchiveFormatGUID := CLSID_CFormatZip
-  else if ext = '.7z' then
+  else if ext = SEVENZIP_EXTENSION then
     FArchiveFormatGUID := CLSID_CFormat7z
   else // should haved used a constructor with an explicit format instead
     raise Exception.CreateFmt('Unrecognized archive format: "%s"', [ext]);
@@ -476,6 +481,14 @@ begin
   except
     Result := False;
   end;
+end;
+
+function IsArchiveExt(const FileName: string): Boolean;
+var
+  ext: string;
+begin
+  ext := AnsiLowercase(ExtractFileExt(FileName));
+  Result := (ext = ZIP_EXTENSION) or (ext = SEVENZIP_EXTENSION);
 end;
 
 end.

@@ -50,7 +50,7 @@ type
   private
     FidHTTP: TidHttp;
     FParams: TIdMultiPartFormDataStream;
-    FResponce: TMemoryStream;
+    FResponse: TMemoryStream;
 
     FOnSetProgress: TProgressEvent;
     FOnSetComment: TSetCommentEvent;
@@ -168,15 +168,16 @@ function TDownloader.CheckResponce: boolean;
 var
   Path: string;
   Str: TStringList;
+  ext: string;
   archiver: IArchiver;
 begin
   Path := ExtractFileDir(FFile);
   CreateFolders('', Path);
-  FResponce.Position := 0;
+  FResponse.Position := 0;
 
   Str := TStringList.Create;
   try
-    Str.LoadFromStream(FResponce);
+    Str.LoadFromStream(FResponse);
     if Str.Count > 0 then
     begin
       if (Pos('<!DOCTYPE', Str[0]) <> 0) or (Pos('overload', Str[0]) <> 0) or (Pos('not found', Str[0]) <> 0) then
@@ -186,11 +187,15 @@ begin
       end
       else
       begin
-        FResponce.SaveToFile(FFile);
-        archiver := TArchiver.Create(FFile);
-        Result := archiver.Test;
-        if not Result then
-          DeleteFile(PChar(FFile));
+        FResponse.SaveToFile(FFile);
+        if IsArchiveExt(FFile) then
+        begin
+          // Test archive integrity only if it's an archive
+          archiver := TArchiver.Create(FFile);
+          Result := archiver.Test;
+          if not Result then
+            DeleteFile(PChar(FFile));
+        end;
       end;
     end;
   finally
@@ -291,7 +296,7 @@ begin
 
       FParams := TIdMultiPartFormDataStream.Create;
       try
-        FResponce := TMemoryStream.Create;
+        FResponse := TMemoryStream.Create;
         try
           for i := 0 to CL.Count - 1 do
           begin
@@ -312,7 +317,7 @@ begin
               Break;
           end;
         finally
-          FResponce.Free;
+          FResponse.Free;
         end;
       finally
         FParams.Free;
@@ -405,13 +410,13 @@ begin
       qkGet:
         begin
           FNoProgress := False;
-          FidHTTP.Get(URL, FResponce);
+          FidHTTP.Get(URL, FResponse);
         end;
 
       qkPost:
         begin
           FNoProgress := True;
-          FidHTTP.Post(URL, FParams, FResponce);
+          FidHTTP.Post(URL, FParams, FResponse);
         end;
     end;
     Result := True;

@@ -952,7 +952,6 @@ var
   BookContainer: string;
   PathLen: Integer;
   LongFileName: string;
-  temp: string;
 begin
   Result := bfRaw; // default
   BookContainer := TPath.Combine(CollectionRoot, Folder);
@@ -973,8 +972,7 @@ begin
   end
   else
   begin
-    temp := AnsiLowercase(ExtractFileExt(BookContainer));
-    if (temp = ZIP_EXTENSION) or (temp = SEVENZIP_EXTENSION) then
+    if IsArchiveExt(BookContainer) then
       Result := bfFb2Archive;
   end;
 
