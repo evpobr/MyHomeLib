@@ -1254,10 +1254,14 @@ begin
   if InternalFindGroup(GroupID) then
   begin
     query := FDatabase.NewQuery(SQL);
-    query.SetParam(0, NewName);
-    query.SetParam(1, GroupID);
-    query.ExecSQL;
-    Result := True;
+    try
+      query.SetParam(0, NewName);
+      query.SetParam(1, GroupID);
+      query.ExecSQL;
+      Result := True;
+    finally
+      FreeAndNil(query);
+    end;
   end;
 end;
 
