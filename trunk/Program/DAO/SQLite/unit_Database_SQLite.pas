@@ -1628,10 +1628,10 @@ begin
         FreeAndNil(Query);
       end;
     end;
-  end;
 
-  // Обновим информацию в группах
-  FSystemData.ChangeBookSeriesID(OldSeriesID, NewSeriesID, DatabaseID);
+    // Обновим информацию в группах
+    FSystemData.ChangeBookSeriesID(OldSeriesID, NewSeriesID, DatabaseID);
+  end;
 end;
 
 function TBookCollection_SQLite.InsertBook(BookRecord: TBookRecord; const CheckFileName: Boolean; const FullCheck: Boolean): Integer;
@@ -1937,9 +1937,9 @@ begin
 
     SetBookGenres(BookRecord.BookKey.BookID, BookRecord.Genres, True);
     SetBookAuthors(BookRecord.BookKey.BookID, BookRecord.Authors, True);
-  end;
 
-  FSystemData.UpdateBook(BookRecord);
+    FSystemData.UpdateBook(BookRecord);
+  end;
 end;
 
 // Delete the book, all dependent tables are cleared by a matching trigger
@@ -1950,9 +1950,11 @@ begin
   if BookKey.DatabaseID <> CollectionID then
     FSystemData.GetCollection(BookKey.DatabaseID).DeleteBook(BookKey)
   else
+  begin
     FDatabase.ExecSQL(SQL_DELETE_BOOKS, [BookKey.BookID]);
 
-  FSystemData.DeleteBook(BookKey);
+    FSystemData.DeleteBook(BookKey);
+  end;
 end;
 
 function TBookCollection_SQLite.GetReview(const BookKey: TBookKey): string;
@@ -2004,12 +2006,12 @@ begin
     finally
       query.Free;
     end;
-  end;
 
-  //
-  // Обновим информацию в группах
-  //
-  Result := NewCode or FSystemData.SetReview(BookKey, NewReview);
+    //
+    // Обновим информацию в группах
+    //
+    Result := NewCode or FSystemData.SetReview(BookKey, NewReview);
+  end;
 end;
 
 procedure TBookCollection_SQLite.SetProgress(const BookKey: TBookKey; const Progress: Integer);
@@ -2019,12 +2021,14 @@ begin
   if BookKey.DatabaseID <> CollectionID then
     FSystemData.GetCollection(BookKey.DatabaseID).SetProgress(BookKey, Progress)
   else
+  begin
     FDatabase.ExecSQL(SQL_UPDATE, [Progress, BookKey.BookID]);
 
-  //
-  // Обновим информацию в группах
-  //
-  FSystemData.SetProgress(BookKey, Progress);
+    //
+    // Обновим информацию в группах
+    //
+    FSystemData.SetProgress(BookKey, Progress);
+  end;
 end;
 
 procedure TBookCollection_SQLite.SetRate(const BookKey: TBookKey; const Rate: Integer);
@@ -2034,12 +2038,14 @@ begin
   if BookKey.DatabaseID <> CollectionID then
     FSystemData.GetCollection(BookKey.DatabaseID).SetRate(BookKey, Rate)
   else
+  begin
     FDatabase.ExecSQL(SQL_UPDATE, [Rate, BookKey.BookID]);
 
-  //
-  // Обновим информацию в группах
-  //
-  FSystemData.SetRate(BookKey, Rate);
+    //
+    // Обновим информацию в группах
+    //
+    FSystemData.SetRate(BookKey, Rate);
+  end;
 end;
 
 procedure TBookCollection_SQLite.SetLocal(const BookKey: TBookKey; const AState: Boolean);
@@ -2049,12 +2055,14 @@ begin
   if BookKey.DatabaseID <> CollectionID then
     FSystemData.GetCollection(BookKey.DatabaseID).SetLocal(BookKey, AState)
   else
+  begin
     FDatabase.ExecSQL(SQL_UPDATE, [AState, BookKey.BookID]);
 
-  //
-  // Обновим информацию в группах
-  //
-  FSystemData.SetLocal(BookKey, AState);
+    //
+    // Обновим информацию в группах
+    //
+    FSystemData.SetLocal(BookKey, AState);
+  end;
 end;
 
 procedure TBookCollection_SQLite.InternalUpdateField(const BookID: Integer; const UpdateSQL: string; const NewValue: string);
@@ -2079,12 +2087,14 @@ begin
   if BookKey.DatabaseID <> CollectionID then
     FSystemData.GetCollection(BookKey.DatabaseID).SetFolder(BookKey, Folder)
   else
+  begin
     InternalUpdateField(BookKey.BookID, SQL_UPDATE, Folder);
 
-  //
-  // Обновим информацию в группах
-  //
-  FSystemData.SetFolder(BookKey, Folder);
+    //
+    // Обновим информацию в группах
+    //
+    FSystemData.SetFolder(BookKey, Folder);
+  end;
 end;
 
 procedure TBookCollection_SQLite.SetFileName(const BookKey: TBookKey; const FileName: string);
@@ -2094,12 +2104,14 @@ begin
   if BookKey.DatabaseID <> CollectionID then
     FSystemData.GetCollection(BookKey.DatabaseID).SetFileName(BookKey, FileName)
   else
+  begin
     InternalUpdateField(BookKey.BookID, SQL_UPDATE, FileName);
 
-  //
-  // Обновим информацию в группах
-  //
-  FSystemData.SetFileName(BookKey, FileName);
+    //
+    // Обновим информацию в группах
+    //
+    FSystemData.SetFileName(BookKey, FileName);
+  end;
 end;
 
 procedure TBookCollection_SQLite.SetSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
@@ -2157,10 +2169,10 @@ begin
         FreeAndNil(Query);
       end;
     end;
-  end;
 
-  // Обновим информацию в группах
-  FSystemData.SetBookSeriesID(BookKey, SeriesID);
+    // Обновим информацию в группах
+    FSystemData.SetBookSeriesID(BookKey, SeriesID);
+  end;
 end;
 
 function TBookCollection_SQLite.GetSeriesTitle(SeriesID: Integer): string;

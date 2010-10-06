@@ -1069,7 +1069,7 @@ end;
 
 procedure TSystemData_SQLite.SetRate(const BookKey: TBookKey; Rate: Integer);
 const
-  SQL_UPDATE = 'UPDATE Books Set LibRate = ? WHERE BookID = ? AND DatabaseID = ? ';
+  SQL_UPDATE = 'UPDATE Books Set Rate = ? WHERE BookID = ? AND DatabaseID = ? ';
 var
   query: TSQLiteQuery;
 begin
