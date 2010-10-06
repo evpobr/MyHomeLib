@@ -6348,12 +6348,12 @@ begin
 
   tbSendToDevice.Enabled := ToolBuutonVisible;
   btnSwitchTreeMode.Enabled := not((ActiveView = SeriesView) or (ActiveView = DownloadView));
+  miGoToAuthor.Visible := ActiveView in [SeriesView, GenresView, SearchView, FavoritesView];
 
   case ActiveView of
     FavoritesView:
       begin
         // actions
-        miGoToAuthor.Visible := True;
         miDelFavorites.Visible := True;
         miAddFavorites.Visible := False;
         BtnFav_add.Hint := rstrRemoveFromGroup;
@@ -6373,7 +6373,6 @@ begin
   else
     begin
       // actions
-      miGoToAuthor.Visible := False;
       miDelFavorites.Visible := False;
       miAddFavorites.Visible := True;
       BtnFav_add.Hint := rstrAddToFavorites;
