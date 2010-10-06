@@ -756,6 +756,7 @@ type
     procedure SaveFb2DataAfterEdit(R: TBookRecord);
     function ShowNCWizard: boolean;
     procedure LoadLastCollection;
+    procedure SelectFirstBook(Tree: TVirtualStringTree);
     property ActiveView: TView read GetActiveView;
   end;
 
@@ -2353,6 +2354,20 @@ end;
 //
 // —писок книг
 //
+procedure TfrmMain.SelectFirstBook( Tree: TVirtualStringTree);
+var
+  Node: PVirtualNode;
+begin
+  Node := Tree.GetFirst;
+  if Node = Nil then Exit;
+
+  if Node.ChildCount > 0 then
+    Node := Tree.GetFirstChild(Node);
+
+  Tree.Selected[Node] := True;
+end;
+
+
 function TfrmMain.GetText(Tag: integer; Data: PBookData):string;
 begin
     case Tag  of
@@ -2663,6 +2678,7 @@ begin
   dmCollection.tblAuthors.Locate('A_ID', ID, []);
   lblAuthor.Caption := Data.Text;
   FillBooksTree(ID, tvBooksA, dmCollection.tblAuthor_List, dmCollection.tblBooksA, False, True); // авторы
+
 end;
 
 procedure TfrmMain.tvSeriesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -3363,15 +3379,16 @@ begin
     853: ExportMode := emTxt;
     854: ExportMode := emEpub;
     855: ExportMode := emPDF;
-    799: begin
-           ExportMode := Settings.ExportMode;
-           if not GetFolderName(Handle, '”кажите путь', AFolder) then Exit;
-           Settings.DeviceDir := AFolder;
-         end
     else ExportMode := Settings.ExportMode;
   end
   else
     ExportMode := emFb2;
+
+  if ScriptID = 799 then        // выбор папки; не зависит от формата
+  begin
+    if not GetFolderName(Handle, '”кажите путь', AFolder) then Exit;
+    Settings.DeviceDir := AFolder;
+  end;
 
   Dec(ScriptID, 901);
 
@@ -4059,6 +4076,7 @@ begin
               4: lblBooksTotalF.Caption := Format('(%d)', [i]);
               3: lblTotalBooksFL.Caption := Format('(%d)', [i]);
             end;
+
 
           finally
             spProgress.Percent := 100;
