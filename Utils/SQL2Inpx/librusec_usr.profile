@@ -16,7 +16,9 @@ Short=librusec_usr
 Fb2Only=0
 Info name=last_usr.info
 MaxCompress=1
-Folder=F:\Books\USR
-FileMask=*.zip
+Folder=F:\Books\test
+FileMask=usr*.zip
 oldFormat=0
+Post-Query=
+UseRole=0
 

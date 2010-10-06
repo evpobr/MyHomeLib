@@ -111,6 +111,7 @@ var
   Query: string;
   ID: integer;
 begin
+  Result := '';
   if fb2only then
     Query := QS + 'FROM libbook B WHERE B.FileType = "fb2" and B.BookId = ' +
       IntToStr(BookID)

@@ -313,18 +313,23 @@ begin
                 (ArchItem.FileName) + 'fb21899-12-30';
           end
           else // не фб2
-          begin
             if not cbFb2Only.Checked then
-            begin
-              S := Lib.GetBookRecord(ArchItem.FileName);
-              if S = '' then
-                S := 'неизвестный,автор,:other:0' + ShortName
-                  (ArchItem.FileName) + '' + ExtractFileExt
-                  (ArchItem.FileName) + '1899-12-30';
-            end
-            else // если только fb2
-              S := 'неизвестный,автор,:other:01899-12-30';
-          end;
+          begin
+            try
+              BookID := StrToInt(ShortName(ArchItem.FileName));
+              S := Lib.GetBookRecord(BookID);
+            except
+              on E: Exception do
+                S := Lib.GetBookRecord(ArchItem.FileName);
+            end;
+            if S = '' then
+              S := 'неизвестный,автор,:other:0' + ShortName
+                (ArchItem.FileName) + '' + ExtractFileExt
+                (ArchItem.FileName) + '1899-12-30';
+          end
+          else // если только fb2
+            S := 'неизвестный,автор,:other:01899-12-30';
+
           Result.Add(S);
           inc(j);
           if (j mod 100) = 0 then
@@ -550,21 +555,21 @@ begin
       end
       else
         CMD.Clear;
-        CMD.Add(Format('"%s" -h localhost -u %s %s < "%s"',
-            [edMySQL.Text, Lib.Connection.Username, edDBName.Text, DumpName]));
-        CMD.SaveToFile(FAppPath + 'import.bat');
-        ExecAndWait(FAppPath + 'import.bat','',0);
+      CMD.Add(Format('"%s" -h localhost -u %s %s < "%s"', [edMySQL.Text,
+          Lib.Connection.Username, edDBName.Text, DumpName]));
+      CMD.SaveToFile(FAppPath + 'import.bat');
+      ExecAndWait(FAppPath + 'import.bat', '', 0);
       OK;
     end;
     if mmQuery.Lines.Count > 0 then
-    try
-      Log(TimeToStr(Now) + ' ' + 'Постобработка ...');
-      Lib.Query.SQL.Clear;
-      Lib.Query.SQL.AddStrings(mmQuery.Lines);
-      Lib.Query.Execute;
-    except
-      Log('Ошибка постобработки');
-    end;
+      try
+        Log(TimeToStr(Now) + ' ' + 'Постобработка ...');
+        Lib.Query.SQL.Clear;
+        Lib.Query.SQL.AddStrings(mmQuery.Lines);
+        Lib.Query.Execute;
+      except
+        Log('Ошибка постобработки');
+      end;
     Log(TimeToStr(Now) + ' ' + 'Готово');
   finally
     Responce.Free;
@@ -575,9 +580,9 @@ end;
 
 procedure TfrmMain.dbImportExtExecute(Sender: TObject);
 begin
-  FUseInternal := False;
+  FUseInternal := false;
   dbImportExecute(Sender);
-  FUseInternal := True;
+  FUseInternal := true;
 end;
 
 procedure TfrmMain.Disablecontrols;
@@ -641,7 +646,7 @@ begin
   ReadINI;
   FFileList := TStringList.Create;
   FZipList := TStringList.Create;
-  FUseInternal := True;
+  FUseInternal := true;
 end;
 
 procedure TfrmMain.HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
@@ -758,6 +763,7 @@ begin
   Comment := edTitle.Text + #13#10 + edInpxName.Text + #13#10 + edCode.Text +
     #13#10 + edDescr.Text + #13#10 + edURL.Text + #13#10 + mmScript.Text;
 
+  Zip.AddFromString('collection.info', Comment);
   Zip.Comment := String(Comment);
   Zip.CloseArchive;
 end;
@@ -836,7 +842,6 @@ begin
     F.WriteBool('DATA', 'oldFormat', cbOldFormat.Checked);
     F.WriteBool('DATA', 'UseRole', cbUseRole.Checked);
     F.UpdateFile;
-
 
   finally
     F.Free;
