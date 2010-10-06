@@ -32,37 +32,40 @@ type
   TDownloadProgressEvent = procedure (Current, Total: Integer) of object;
   TDownloadSetCommentEvent = procedure (const Current, Total: string) of object;
 
-  TLibUpdateThread = class(TImportInpxThread)
+  TLibUpdateThread = class(TImportInpxThreadBase)
   private
     FidHTTP: TidHTTP;
     FDownloadSize: Integer;
     FStartDate : TDateTime;
     FUpdated: Boolean;
-    FOnImportUserData: TOnImportUserDataEvent;
 
     function ReplaceFiles: Boolean;
 
   protected
+    procedure Initialize; override;
+    procedure Uninitialize; override;
     procedure WorkFunction; override;
     procedure HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: int64);
     procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
     procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
 
   public
-    constructor Create(OnImportUserData: TOnImportUserDataEvent);
+    constructor Create;
     property Updated: Boolean read FUpdated;
   end;
 
 implementation
 
 uses
+  IOUtils,
   DateUtils,
   unit_Globals,
   unit_Consts,
   unit_Settings,
+  dm_user,
   unit_WorkerThread,
+  unit_Lib_Updates,
   unit_Interfaces,
-  unit_SystemDatabase,
   unit_Logger;
 
 resourcestring
@@ -93,11 +96,13 @@ resourcestring
 
 { TLibUpdateThread }
 
-constructor TLibUpdateThread.Create(OnImportUserData: TOnImportUserDataEvent);
+constructor TLibUpdateThread.Create;
 begin
-  inherited Create;
-  Assert(Assigned(OnImportUserData));
-  FOnImportUserData := OnImportUserData;
+  inherited Create(MHL_INVALID_ID);
+  //
+  // —ейчас считаетс€, что обновлени€ могут быть только дл€ коллекций, содержащих fb2 жанры
+  //
+  FGenresType := gtFb2;
 end;
 
 procedure TLibUpdateThread.HTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
@@ -131,8 +136,7 @@ begin
   SetProgress(0);
 end;
 
-procedure TLibUpdateThread.HTTPWorkEnd(ASender: TObject;
-  AWorkMode: TWorkMode);
+procedure TLibUpdateThread.HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
 begin
   SetProgress(100);
   SetComment(rstrReady);
@@ -145,118 +149,139 @@ begin
   DeleteFile(Settings.SystemFileName[sfLibRusEcUpdate]);
 end;
 
+procedure TLibUpdateThread.Initialize;
+begin
+  inherited Initialize;
+
+  FidHTTP := TidHTTP.Create(nil);
+
+  FidHTTP.OnWork := HTTPWork;
+  FidHTTP.OnWorkBegin := HTTPWorkBegin;
+  FidHTTP.OnWorkEnd := HTTPWorkEnd;
+  FidHTTP.HandleRedirects := True;
+
+  SetProxySettings(FidHTTP);
+end;
+
+procedure TLibUpdateThread.Uninitialize;
+begin
+  FreeAndNil(FidHTTP);
+
+  inherited Uninitialize;
+end;
+
 procedure TLibUpdateThread.WorkFunction;
 var
-  BookCollection: IBookCollection;
   i: integer;
+  InpxFileName: string;
+  updateInfo: TUpdateInfo;
+  Collection: IBookCollection;
   UserDataBackup: TUserData;
-  CollectionInfo: TCollectionInfo;
-  SystemData: ISystemData;
 begin
-  SystemData := GetSystemData;
+  SetComment(rstrCheckingUpdate);
 
-  UserDataBackup := nil;
-  FidHTTP := TidHTTP.Create(nil);
   try
-    FidHTTP.OnWork := HTTPWork;
-    FidHTTP.OnWorkBegin := HTTPWorkBegin;
-    FidHTTP.OnWorkEnd := HTTPWorkEnd;
-    FidHTTP.HandleRedirects := True;
-    SetProxySettings(FidHTTP);
+    for i := 0 to Settings.Updates.Count - 1 do
+    begin
+      updateInfo := Settings.Updates[i];
 
-    SetComment(rstrCheckingUpdate);
+      if not updateInfo.Available then
+        Continue;
 
-    try
-      for i := 0 to Settings.Updates.Count - 1 do
+      Teletype(Format(rstrCollectionUpdate, [updateInfo.Name, updateInfo.ExternalVersion]), tsInfo);
+
+      if updateInfo.Local then
+        Teletype(rstrUpdatingFromLocalArchive, tsInfo)
+      else
       begin
-        if not Settings.Updates[i].Available then
+        Teletype(rstrDownloadingUpdates, tsInfo);
+        if not Settings.Updates.DownloadUpdate(i, FidHTTP) then
+        begin
+          Teletype(rstrUpdateFailedDownload, tsInfo);
           Continue;
-
-        SystemData.ActivateCollection(Settings.Updates[i].CollectionID);
-        CollectionInfo := SystemData.GetCollectionInfo(Settings.Updates[i].CollectionID);
-        Teletype(Format(rstrCollectionUpdate, [Settings.Updates[i].Name, Settings.Updates[i].ExternalVersion]), tsInfo);
-
-        if Settings.Updates[i].Local then
-          Teletype(rstrUpdatingFromLocalArchive, tsInfo)
-        else
-        begin
-          Teletype(rstrDownloadingUpdates, tsInfo);
-          if not Settings.Updates.DownloadUpdate(i, FidHTTP) then
-          begin
-            Teletype(rstrUpdateFailedDownload, tsInfo);
-            Continue;
-          end;
         end;
+      end;
 
-        if Canceled then
-        begin
-          DeleteFile(Settings.WorkPath + Settings.Updates.Items[i].UpdateFile);
-          Teletype(rstrCancelledByUser, tsInfo);
-          Exit;
-        end;
+      if Canceled then
+      begin
+        DeleteFile(TPath.Combine(Settings.WorkPath, Settings.Updates.Items[i].UpdateFile));
+        Teletype(rstrCancelledByUser, tsInfo);
+        Exit;
+      end;
 
-        InpxFileName := Settings.UpdatePath + Settings.Updates[i].UpdateFile;
+      InpxFileName := TPath.Combine(Settings.UpdatePath, updateInfo.UpdateFile);
 
-        //Truncate won't work with TBookCollection.Create(DBFileName, False)
-        BookCollection := GetSystemData.GetCollection(CollectionInfo.ID);
-        BookCollection.BeginBulkOperation;
+      //Truncate won't work with TBookCollection.Create(DBFileName, False)
+      Collection := FSystemData.GetCollection(updateInfo.CollectionID);
+      Collection.BeginBulkOperation;
+      try
+        UserDataBackup := TUserData.Create;
         try
-          if Settings.Updates[i].Full then
+          if updateInfo.Full then
           begin
             // Backup user data:
-            Teletype(Format(rstrBackupUserData, [Settings.Updates[i].Name]),tsInfo);
-            UserDataBackup := TUserData.Create;
-            BookCollection.ExportUserData(UserDataBackup);
+            Teletype(Format(rstrBackupUserData, [updateInfo.Name]), tsInfo);
+            Collection.ExportUserData(UserDataBackup);
 
             // clear most tables in a collection
-            Teletype(Format(rstrRemovingOldCollection, [Settings.Updates[i].Name]),tsInfo);
-            BookCollection.TruncateTablesBeforeImport;
+            Teletype(Format(rstrRemovingOldCollection, [updateInfo.Name]), tsInfo);
+            Collection.TruncateTablesBeforeImport;
           end; //if FULL
 
           //  импортирум данные
           Teletype(rstrImportIntoCollection, tsInfo);
-          Import(not Settings.Updates[i].Full, BookCollection);
+          Import(InpxFileName, not updateInfo.Full, Collection);
 
-          if (UserDataBackup <> nil) then // a full import mode, had a backup before the process
+          if updateInfo.Full then // a full import mode, had a backup before the process
           begin
+            Assert(Assigned(UserDataBackup));
             // Restore user data:
-            Teletype(Format(rstrRestoreUserData, [Settings.Updates[i].Name]),tsInfo);
-            FOnImportUserData(UserDataBackup);
+            Teletype(Format(rstrRestoreUserData, [updateInfo.Name]),tsInfo);
+            Collection.ImportUserData(UserDataBackup, nil);
           end;
-
-          BookCollection.EndBulkOperation(True);
-        except
-          BookCollection.EndBulkOperation(False);
-          raise;
+        finally
+          FreeAndNil(UserDataBackup);
         end;
 
-        Teletype(rstrReady,tsInfo);
-      end; //for .. with
-
-      Teletype(rstrUpdateComplete,tsInfo);
-      for i := 0 to Settings.Updates.Count - 1 do
-      begin
-        if FileExists(Settings.UpdatePath + Settings.Updates[i].UpdateFile) then
-          if Settings.Updates[i].UpdateFile <> 'librusec_update.zip' then
-            DeleteFile(Settings.UpdatePath + Settings.Updates[i].UpdateFile)
-          else
-            ReplaceFiles;
+        Collection.EndBulkOperation(True);
+      except
+        Collection.EndBulkOperation(False);
+        raise;
       end;
 
-      SetComment(rstrReady);
-    except
-      on E: Exception do
+      Teletype(rstrReady, tsInfo);
+    end; //for .. with
+
+    Teletype(rstrUpdateComplete, tsInfo);
+    for i := 0 to Settings.Updates.Count - 1 do
+    begin
+      updateInfo := Settings.Updates[i];
+
+      //
+      // Ќазначение этого странного кода мне не пон€тно. —корее всего рудимент.
+      //
+      if FileExists(Settings.UpdatePath + updateInfo.UpdateFile) then
       begin
-        Teletype(rstrUpdateFailed, tsError);
-{$IFDEF USELOGGER}
-        GetLogger.Log('TLibUpdateThread.WorkFunction ERROR', E.Message);
-{$ENDIF}
-        DeleteFile(Settings.WorkPath + Settings.Updates.Items[i].UpdateFile);
+        if updateInfo.UpdateFile <> 'librusec_update.zip' then
+          DeleteFile(Settings.UpdatePath + updateInfo.UpdateFile)
+        else
+          ReplaceFiles;
       end;
     end;
-  finally
-    FreeAndNil(FidHTTP);
-    FreeAndNil(UserDataBackup);
+
+    SetComment(rstrReady);
+  except
+    on E: Exception do
+    begin
+      Teletype(rstrUpdateFailed, tsError);
+{$IFDEF USELOGGER}
+      GetLogger.Log('TLibUpdateThread.WorkFunction ERROR', E.Message);
+{$ENDIF}
+      //
+      // TODO -cBug: вообще говор€, значение i здесь неопределено
+      //
+      DeleteFile(Settings.WorkPath + Settings.Updates.Items[i].UpdateFile);
+    end;
   end;
 end;
 

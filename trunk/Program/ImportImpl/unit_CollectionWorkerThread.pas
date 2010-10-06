@@ -46,7 +46,7 @@ implementation
 
 uses
   unit_Consts,
-  unit_SystemDatabase;
+  dm_user;
 
 { TCollectionWorker }
 
@@ -59,11 +59,16 @@ end;
 procedure TCollectionWorker.Initialize;
 begin
   inherited Initialize;
-  FSystemData := CreateSystemData;
+
+  FSystemData := DMUser.GetSystemDBConnection;
   Assert(Assigned(FSystemData));
-  FCollection := FSystemData.GetCollection(FCollectionID);
-  Assert(Assigned(FCollection));
-  FCollectionRoot := FCollection.GetProperty(PROP_ROOTFOLDER);
+
+  if FCollectionID <> MHL_INVALID_ID then
+  begin
+    FCollection := FSystemData.GetCollection(FCollectionID);
+    Assert(Assigned(FCollection));
+    FCollectionRoot := FCollection.GetProperty(PROP_ROOTFOLDER);
+  end;
 end;
 
 procedure TCollectionWorker.Uninitialize;

@@ -24,6 +24,7 @@ interface
 uses
   Windows,
   unit_WorkerThread,
+  unit_CollectionWorkerThread,
   unit_Globals,
   unit_Interfaces;
 
@@ -56,27 +57,28 @@ type
     FType: TFields;
   end;
 
-  TImportInpxThread = class(TWorker)
-  strict private
-    FCollectionID: Integer;
-    FInpxFileName: string;
+  TImportInpxThreadBase = class(TCollectionWorker)
+  protected
     FGenresType: TGenresType;
 
     FFields: array of TFields;
     FUseStoredFolder: Boolean;
 
+  protected
+    procedure GetFields(const StructureInfo: string);
     procedure ParseData(const input: string; const OnlineCollection: Boolean; var R: TBookRecord);
+    procedure Import(const INPXFileName: string; CheckFiles: Boolean; BookCollection: IBookCollection);
+  end;
+
+  TImportInpxThread = class(TImportInpxThreadBase)
+  protected
+    FInpxFileName: string;
 
   protected
     procedure WorkFunction; override;
-    procedure GetFields(const StructureInfo: string);
-    procedure Import(CheckFiles: Boolean; BookCollection: IBookCollection);
 
   public
-    property CollectionID: Integer read FCollectionID write FCollectionID;
-
-    property InpxFileName: string read FInpxFileName write FInpxFileName;
-    property GenresType: TGenresType read FGenresType write FGenresType;
+    constructor Create(const CollectionID: Integer; const INPXFileName: string; GenresType: TGenresType);
   end;
 
 implementation
@@ -86,11 +88,10 @@ uses
   SysUtils,
   IOUtils,
   unit_MHLArchiveHelpers,
-  unit_Settings,
   unit_Consts,
   unit_Helpers,
   unit_Errors,
-  unit_SystemDatabase;
+  dm_user;
 
 resourcestring
   rstrProcessingFile = 'Обрабатываем файл %s';
@@ -160,7 +161,7 @@ begin
   end;
 end;
 
-procedure TImportInpxThread.ParseData(const input: string; const OnlineCollection: Boolean; var R: TBookRecord);
+procedure TImportInpxThreadBase.ParseData(const input: string; const OnlineCollection: Boolean; var R: TBookRecord);
 var
   p, i: Integer;
   slParams: TStringList;
@@ -307,7 +308,7 @@ begin
   end;
 end;
 
-procedure TImportInpxThread.GetFields(const StructureInfo: string);
+procedure TImportInpxThreadBase.GetFields(const StructureInfo: string);
 const
   del = ';';
 var
@@ -350,9 +351,9 @@ begin
   end;
 end;
 
-procedure TImportInpxThread.Import(CheckFiles: Boolean; BookCollection: IBookCollection);
+procedure TImportInpxThreadBase.Import(const INPXFileName: string; CheckFiles: Boolean; BookCollection: IBookCollection);
 var
-  FCollectionRoot: string;
+  CollectionRoot: string;
   BookList: TStringList;
   i: Integer;
   j: Integer;
@@ -373,12 +374,12 @@ begin
   SetProgress(0);
 
   IsOnline := isOnlineCollection(BookCollection.CollectionCode);
-  FCollectionRoot := BookCollection.GetProperty(PROP_ROOTFOLDER);
+  CollectionRoot := BookCollection.GetProperty(PROP_ROOTFOLDER);
 
   SetLength(FFields, 0);
   FUseStoredFolder := False;
 
-  archiver := TArchiver.Create(FInpxFileName, afZip);
+  archiver := TArchiver.Create(INPXFileName, afZip);
   idxFile := archiver.GetIdxByFileName(STRUCTUREINFO_FILENAME);
   if idxFile >= 0 then
     StructureInfo := archiver.UnarchiveToString(idxFile)
@@ -387,9 +388,6 @@ begin
 
   GetFields(StructureInfo);
 
-  //
-  // TODO - добавить чтение и установку версии
-  //
   BookCollection.StartBatchUpdate;
   try
     numFiles := archiver.GetNumFiles;
@@ -427,7 +425,7 @@ begin
                 // И\Иванов Иван\1234 Просто книга.fb2.zip
                 R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;
                 // Сохраним отметку о существовании файла
-                if FileExists(TPath.Combine(FCollectionRoot, R.Folder)) then
+                if FileExists(TPath.Combine(CollectionRoot, R.Folder)) then
                   Include(R.BookProps, bpIsLocal)
                 else
                   Exclude(R.BookProps, bpIsLocal);
@@ -511,20 +509,26 @@ begin
   end;
 end;
 
-procedure TImportInpxThread.WorkFunction;
-var
-  BookCollection: IBookCollection;
+constructor TImportInpxThread.Create(const CollectionID: Integer; const INPXFileName: string; GenresType: TGenresType);
 begin
-  BookCollection := GetSystemData.GetCollection(FCollectionID);
-  BookCollection.BeginBulkOperation;
+  inherited Create(CollectionID);
+  FInpxFileName := INPXFileName;
+  FGenresType := GenresType;
+end;
+
+procedure TImportInpxThread.WorkFunction;
+begin
+  Assert(Assigned(FCollection));
+
+  FCollection.BeginBulkOperation;
   try
-    Import(False, BookCollection);
-    BookCollection.EndBulkOperation(True);
+    Import(FInpxFileName, False, FCollection);
+    FCollection.EndBulkOperation(True);
   except
     on E: Exception do
     begin
       Teletype(E.Message, tsError);
-      BookCollection.EndBulkOperation(False);
+      FCollection.EndBulkOperation(False);
     end;
   end;
 end;

@@ -245,6 +245,7 @@ uses
   frm_edit_reader,
   frm_edit_script,
   unit_Settings,
+  dm_user,
   unit_Helpers,
   htmlhlp,
   frm_create_mask,

@@ -177,7 +177,7 @@ uses
   frm_genre_tree,
   unit_TreeUtils,
   unit_Consts,
-  unit_Settings,
+  dm_user,
   unit_MHLHelpers,
   unit_Helpers,
   frm_author_list;

@@ -42,7 +42,7 @@ uses
   unit_WorkerThread,
   FictionBook_21,
   unit_Consts,
-  unit_Settings,
+  dm_user,
   unit_MHLArchiveHelpers;
 
 resourcestring

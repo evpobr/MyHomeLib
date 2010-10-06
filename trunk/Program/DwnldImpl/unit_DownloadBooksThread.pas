@@ -25,6 +25,7 @@ uses
   unit_globals,
   Dialogs,
   Forms,
+  unit_Interfaces,
   unit_Downloader;
 
 type
@@ -71,7 +72,7 @@ implementation
 uses
   Windows,
   SysUtils,
-  unit_Settings,
+  dm_user,
   frm_main;
 
 resourcestring
@@ -86,49 +87,56 @@ var
   i: Integer;
   totalBooks: Integer;
   Res: integer;
+  FSystemDB: ISystemData;
 begin
-  Canceled := False;
-  FIgnoreErrors := False;
-
-  FDownloader := TDownloader.Create;
+  FSystemDB := DMUser.GetSystemDBConnection;
   try
-    FDownloader.OnSetComment := SetComment2;
-    FDownloader.OnProgress := SetProgress2;
+    Canceled := False;
+    FIgnoreErrors := False;
 
-    totalBooks := High(FBookIdList) + 1;
-    SetComment2(' ', Format(rstrDownloaded, [0, totalBooks]));
+    FDownloader := TDownloader.Create;
+    try
+      FDownloader.OnSetComment := SetComment2;
+      FDownloader.OnProgress := SetProgress2;
 
-    for i := 0 to totalBooks - 1 do
-    begin
-      SetComment2(rstrConnecting, '');
+      totalBooks := High(FBookIdList) + 1;
+      SetComment2(' ', Format(rstrDownloaded, [0, totalBooks]));
 
-      FBookIdList[i].Res := FDownloader.Download(FBookIdList[i].BookKey);
-      if
-        (not Canceled) and                // это реальная ошибка, а не отмена операции пользователем
-        (not FBookIdList[i].Res) and      //
-        (i < totalBooks - 1) and          // для последней книги вопрос смысла не имеет
-        (not Settings.ErrorLog) and       //
-        (not FIgnoreErrors)               //
-      then
+      for i := 0 to totalBooks - 1 do
       begin
-        Res := ShowMessage(rstrIgnoreDownloadErrors, MB_ICONQUESTION or MB_YESNO);
-        FIgnoreErrors := (Res = IDYES);
+        SetComment2(rstrConnecting, '');
+
+        FBookIdList[i].Res := FDownloader.Download(FSystemDB, FBookIdList[i].BookKey);
+        if
+          (not Canceled) and                // это реальная ошибка, а не отмена операции пользователем
+          (not FBookIdList[i].Res) and      //
+          (i < totalBooks - 1) and          // для последней книги вопрос смысла не имеет
+          (not Settings.ErrorLog) and       //
+          (not FIgnoreErrors)               //
+        then
+        begin
+          Res := ShowMessage(rstrIgnoreDownloadErrors, MB_ICONQUESTION or MB_YESNO);
+          FIgnoreErrors := (Res = IDYES);
+        end;
+
+        SetComment2(rstrDone, Format(rstrDownloaded, [i + 1, totalBooks]));
+        SetProgress2(100, (i + 1) * 100 div totalBooks);
+
+        if Canceled then
+        begin
+          SetComment2(' ', rstrOperationCompleted);
+          Break;
+        end;
+
+        if FNoPause then
+          Sleep(Settings.DwnldInterval);
       end;
-
-      SetComment2(rstrDone, Format(rstrDownloaded, [i + 1, totalBooks]));
-      SetProgress2(100, (i + 1) * 100 div totalBooks);
-
-      if Canceled then
-      begin
-        SetComment2(' ', rstrOperationCompleted);
-        Break;
-      end;
-
-      if FNoPause then
-        Sleep(Settings.DwnldInterval);
+    finally
+      FDownloader.Free;
     end;
   finally
-    FDownloader.Free;
+    FSystemDB.ClearCollectionCache;
+    FSystemDB := nil;
   end;
 end;
 

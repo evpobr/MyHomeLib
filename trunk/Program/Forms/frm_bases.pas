@@ -89,7 +89,7 @@ uses
   unit_Consts,
   unit_Errors,
   unit_Globals,
-  unit_Settings;
+  dm_user;
 
 resourcestring
   rstrChooseDataFolder = 'Выберите папку для сохранения данных';
@@ -143,8 +143,8 @@ begin
   // Получим абсолютные пути. В качестве базового каталого используется DataPath.
   //
   CollectionName := Trim(edCollectionName.Text);
-  storedRoot := TMHLSettings.ExpandCollectionRoot(Trim(edCollectionRoot.Text));
-  storedFileName := TMHLSettings.ExpandCollectionFileName(edCollectionFile.Text);
+  storedRoot := Settings.ExpandCollectionRoot(Trim(edCollectionRoot.Text));
+  storedFileName := Settings.ExpandCollectionFileName(edCollectionFile.Text);
 
   if (CollectionName = '') or (storedFileName = '') or (storedRoot = '') then
   begin

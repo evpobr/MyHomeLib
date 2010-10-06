@@ -36,7 +36,7 @@ uses
   FictionBook_21,
   unit_Helpers,
   unit_Consts,
-  unit_Settings,
+  dm_user,
   unit_Templater;
 
 resourcestring

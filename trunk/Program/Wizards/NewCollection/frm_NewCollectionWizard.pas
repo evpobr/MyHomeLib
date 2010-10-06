@@ -106,8 +106,8 @@ uses
   unit_Consts,
   unit_Globals,
   unit_Settings,
+  dm_user,
   unit_Interfaces,
-  unit_SystemDatabase,
   unit_ImportInpxThread;
 
 {$R *.dfm}
@@ -352,7 +352,7 @@ begin
       //
       // ѕодключаем коллекцию
       //
-      FParams.CollectionID := GetSystemData.RegisterCollection(
+      FParams.CollectionID := SystemDB.RegisterCollection(
         FParams.CollectionFile,
         FParams.DisplayName,
         FParams.CollectionRoot
@@ -367,7 +367,7 @@ begin
       { TODO -oNickR -cUsability : провер€ть существование на соответствующей странице с выдачей предупреждени€ }
       //Assert(not FileExists(FParams.CollectionFile));
       Assert(FileExists(FParams.GenreFile));
-      FParams.CollectionID := GetSystemData.CreateCollection(
+      FParams.CollectionID := SystemDB.CreateCollection(
         FParams.DisplayName,
         FParams.CollectionRoot,
         FParams.CollectionFile,
@@ -386,6 +386,8 @@ begin
 end;
 
 function TNewCollectionWizard.StartImportData: Boolean;
+var
+  GenresType: TGenresType;
 begin
   Assert(Assigned(FProgressPage));
 
@@ -401,25 +403,17 @@ begin
   Assert(not Assigned(FWorker));
   FWorker := nil;
 
-  FWorker := TImportInpxThread.Create;
-  with FWorker as TImportInpxThread do
-  begin
-    CollectionID := FParams.CollectionID;
-    InpxFileName := FParams.INPXFile;
+  case FParams.CollectionType of
+    ltUserFB, ltExternalLocalFB, ltExternalOnlineFB:
+      GenresType := gtFb2;
 
-    case FParams.CollectionType of
-      ltUserFB, ltExternalLocalFB, ltExternalOnlineFB:
-        GenresType := gtFb2;
+    ltUserAny, ltExternalLocalAny, ltExternalOnlineAny:
+      GenresType := gtAny;
 
-      ltUserAny, ltExternalLocalAny, ltExternalOnlineAny:
-        GenresType := gtAny;
-
-      else
-        Assert(False);
-    end;
+    else
+      Assert(False);
   end;
-
-  Assert(Assigned(FWorker));
+  FWorker := TImportInpxThread.Create(FParams.CollectionID, FParams.INPXFile, GenresType);
 
   FProgressPage.SetComment(rstrDataImport);
   FProgressPage.ShowTeletype(rstrDataImporting, tsInfo);
@@ -496,7 +490,7 @@ begin
     //
     // TODO: пользователь отказалс€ от продолжени€, надо уничтожить _созданную_ коллекцию
     //
-    GetSystemData.DeleteCollection(FParams.CollectionID);
+    SystemDB.DeleteCollection(FParams.CollectionID);
 
     if FProgressPage.HasErrors then
     begin

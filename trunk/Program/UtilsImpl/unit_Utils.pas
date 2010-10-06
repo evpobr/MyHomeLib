@@ -27,7 +27,7 @@ procedure SyncOnLineFiles(const CollectionID: Integer);
 
 procedure SyncFolders(const CollectionID: Integer);
 
-function LibrusecUpdate(OnImportUserData: TOnImportUserDataEvent): Boolean;
+function LibrusecUpdate: Boolean;
 
 procedure ShowPopup(const Msg: string);
 procedure HidePopup;
@@ -89,12 +89,12 @@ begin
   end;
 end;
 
-function LibrusecUpdate(OnImportUserData: TOnImportUserDataEvent): boolean;
+function LibrusecUpdate: Boolean;
 var
   worker : TLibUpdateThread;
   ProgressForm : TImportProgressFormEx;
 begin
-  worker := TLibUpdateThread.Create(OnImportUserData);
+  worker := TLibUpdateThread.Create;
   try
     ProgressForm := TImportProgressFormEx.Create(Application);
     ProgressForm.Caption := rstrUpdateCollections;

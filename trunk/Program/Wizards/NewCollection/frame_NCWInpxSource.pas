@@ -78,6 +78,7 @@ implementation
 uses
   IOUtils,
   unit_Settings,
+  dm_user,
   unit_Helpers,
   IniFiles;
 

@@ -259,9 +259,8 @@ uses
   unit_Consts,
   unit_Logger,
   unit_SearchUtils,
-  unit_Settings,
+  dm_user,
   unit_Errors,
-  unit_SystemDatabase,
   unit_SQLiteUtils;
 
 // Generate table structure and minimal data for a new collection

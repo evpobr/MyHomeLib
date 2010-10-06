@@ -83,7 +83,7 @@ uses
   StrUtils,
   IOUtils,
   Forms,
-  unit_Settings,
+  dm_user,
   CommCtrl,
   ShlObj,
   ShellAPI,

@@ -30,7 +30,8 @@ uses
   IdStackConsts,
   IdWinsock2,
   IdMultipartFormData,
-  unit_Globals;
+  unit_Globals,
+  unit_Interfaces;
 
 type
   TQueryKind = (qkGet, qkPost);
@@ -64,7 +65,7 @@ type
 
     FFile: string;
 
-    function DoDownload(const CollectionInfo: TCollectionInfo; const BookRecord: TBookRecord): Boolean;
+    function DoDownload(const Collection: IBookCollection; const BookRecord: TBookRecord): Boolean;
 
     function AddParam(const Name: string; const Value: string): Boolean;
     function Query(Kind: TQueryKind; const URL: string): Boolean;
@@ -85,7 +86,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    function Download(const BookKey: TBookKey): boolean;
+    function Download(const ASystemDB: ISystemData; const BookKey: TBookKey): boolean;
     procedure Stop;
 
     property IgnoreErrors: Boolean read FIgnoreErrors write FIgnoreErrors;
@@ -101,12 +102,11 @@ uses
   StrUtils,
   DateUtils,
   unit_Settings,
+  dm_user,
   unit_Consts,
   unit_MHL_strings,
   unit_Messages,
   unit_Helpers,
-  unit_SystemDatabase,
-  unit_Interfaces,
   unit_MHLArchiveHelpers;
 
 resourcestring
@@ -198,23 +198,18 @@ begin
   end;
 end;
 
-function TDownloader.Download(const BookKey: TBookKey): boolean;
+function TDownloader.Download(const ASystemDB: ISystemData; const BookKey: TBookKey): Boolean;
 var
-  SystemData: ISystemData;
-  CollectionInfo: TCollectionInfo;
   Collection: IBookCollection;
   BookRecord: TBookRecord;
 begin
   Result := False;
 
-  SystemData := GetSystemData;
-  CollectionInfo := SystemData.GetCollectionInfo(BookKey.DatabaseID);
-
-  Collection := SystemData.GetCollection(BookKey.DatabaseID);
+  Collection := ASystemDB.GetCollection(BookKey.DatabaseID);
   Collection.GetBookRecord(BookKey, BookRecord, False);
 
   FFile := BookRecord.GetBookFileName;
-  if FileExists(FFile) or DoDownload(CollectionInfo, BookRecord) then
+  if FileExists(FFile) or DoDownload(Collection, BookRecord) then
   begin
     Collection.SetLocal(BookKey, True);
     unit_Messages.BookLocalStatusChanged(BookKey, True);
@@ -272,7 +267,7 @@ begin
   FOnSetComment(rstrReadyMessage, '');
 end;
 
-function TDownloader.DoDownload(const CollectionInfo: TCollectionInfo; const BookRecord: TBookRecord): Boolean;
+function TDownloader.DoDownload(const Collection: IBookCollection; const BookRecord: TBookRecord): Boolean;
 var
   ConstParams: TStringList;
   CL: TStringList;
@@ -285,13 +280,13 @@ begin
     // TODO: достаточно стремная операция - получение информации из глобальных объектов. Убрать нафиг!!!
     //
     ConstParams.Values['LIBID'] := BookRecord.LibID;
-    ConstParams.Values['USER'] := CollectionInfo.User;
-    ConstParams.Values['PASS'] := CollectionInfo.Password;
-    ConstParams.Values['URL'] := CollectionInfo.URL;
+    ConstParams.Values['USER'] := Collection.GetProperty(PROP_LIBUSER);
+    ConstParams.Values['PASS'] := Collection.GetProperty(PROP_LIBPASSWORD);
+    ConstParams.Values['URL'] := Collection.GetProperty(PROP_URL);
 
     CL := TStringList.Create;
     try
-      CL.Text := CollectionInfo.Script;
+      CL.Text := Collection.GetProperty(PROP_CONNECTIONSCRIPT);
       SetLength(Commands, CL.Count);
 
       FParams := TIdMultiPartFormDataStream.Create;

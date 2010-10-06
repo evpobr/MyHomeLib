@@ -37,7 +37,7 @@ uses
   IOUtils,
   unit_Consts,
   unit_Globals,
-  unit_Settings,
+  dm_user,
   unit_MHL_strings,
   unit_Messages,
   unit_Interfaces;

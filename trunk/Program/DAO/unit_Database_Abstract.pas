@@ -25,8 +25,7 @@ uses
   Generics.Collections,
   UserData,
   unit_Globals,
-  unit_Interfaces,
-  unit_SystemDatabase;
+  unit_Interfaces;
 
 type
   TBookCollection = class abstract (TInterfacedObject)

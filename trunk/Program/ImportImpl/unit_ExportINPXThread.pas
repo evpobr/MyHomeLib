@@ -55,7 +55,7 @@ uses
   IOUtils,
   unit_Consts,
   unit_MHLGenerics,
-  unit_Settings,
+  dm_user,
   unit_MHL_strings,
   unit_Interfaces,
   unit_MHLArchiveHelpers;

@@ -47,7 +47,7 @@ uses
   IOUtils,
   unit_WorkerThread,
   unit_Consts,
-  unit_Settings,
+  dm_user,
   fictionbook_21;
 
 resourcestring

@@ -101,6 +101,9 @@ type
     procedure PrepareCollectionPath(var CollectionRoot: string; var CollectionFile: string);
 
   public
+    class procedure CreateSystemTables(const DBUserFile: string);
+
+  public
     constructor Create(const DBUserFile: string);
     destructor Destroy; override;
 
@@ -195,8 +198,6 @@ type
     function InternalFindGroup(GroupID: Integer): Boolean; overload; inline;
   end;
 
-procedure CreateSystemTables_SQLite(const DBUserFile: string);
-
 implementation
 
 uses
@@ -207,7 +208,7 @@ uses
   unit_Logger,
   unit_SQLiteUtils,
   unit_Database_SQLite,
-  unit_Settings,
+  dm_user,
   unit_Helpers,
   unit_Errors;
 
@@ -216,7 +217,7 @@ resourcestring
   rstrFailedToMountDB = 'Ошибка загрузки файла коллекции %s';
 
 // Generate table structure and minimal system data
-procedure CreateSystemTables_SQLite(const DBUserFile: string);
+class procedure TSystemData_SQLite.CreateSystemTables(const DBUserFile: string);
 var
   ADatabase: TSQLiteDatabase;
   StringList: TStringList;
@@ -484,8 +485,8 @@ begin
       //
       // восстановить абсолютные пути
       //
-      Result.RootFolder := TMHLSettings.ExpandCollectionRoot(query.FieldAsString(1));
-      Result.DBFileName := TMHLSettings.ExpandCollectionFileName(query.FieldAsString(2));
+      Result.RootFolder := Settings.ExpandCollectionRoot(query.FieldAsString(1));
+      Result.DBFileName := Settings.ExpandCollectionFileName(query.FieldAsString(2));
 
       Result.CollectionType := query.FieldAsInt(3); // code
 
@@ -524,10 +525,10 @@ begin
 
   case PropID of
   PROP_ROOTFOLDER:
-    searchValue := TMHLSettings.ExpandCollectionRoot(Value);
+    searchValue := Settings.ExpandCollectionRoot(Value);
 
   PROP_DATAFILE:
-    searchValue := TMHLSettings.ExpandCollectionFileName(Value);
+    searchValue := Settings.ExpandCollectionFileName(Value);
 
   else
     searchValue := Value;
@@ -649,9 +650,9 @@ begin
   if not VarIsEmpty(Result) then
   begin
     if PROP_DATAFILE = PropID then
-      Result := TMHLSettings.ExpandCollectionFileName(Result)
+      Result := Settings.ExpandCollectionFileName(Result)
     else if PROP_ROOTFOLDER = PropID then
-      Result := TMHLSettings.ExpandCollectionRoot(Result);
+      Result := Settings.ExpandCollectionRoot(Result);
   end;
 end;
 
@@ -698,7 +699,7 @@ var
   storedFileName: string;
   query: TSQLiteQuery;
 begin
-  absDBFileName := TMHLSettings.ExpandCollectionFileName(DBFileName);
+  absDBFileName := Settings.ExpandCollectionFileName(DBFileName);
 
   TBookCollection_SQLite.CreateCollection(Self, absDBFileName, CollectionType, GenresFileName);
 
@@ -749,7 +750,7 @@ var
   CollectionType: COLLECTION_TYPE;
   query: TSQLiteQuery;
 begin
-  absFileName := TMHLSettings.ExpandCollectionFileName(DBFileName);
+  absFileName := Settings.ExpandCollectionFileName(DBFileName);
 
   if TBookCollection_SQLite.IsValidCollection(absFileName, CollectionType) then
   begin
@@ -1683,8 +1684,8 @@ begin
   //
   // Получим полные пути. Если были указаны относительные пути, то в качестве базового используем DataPath.
   //
-  CollectionRoot := TMHLSettings.ExpandCollectionRoot(CollectionRoot);
-  CollectionFile := TMHLSettings.ExpandCollectionFileName(CollectionFile);
+  CollectionRoot := Settings.ExpandCollectionRoot(CollectionRoot);
+  CollectionFile := Settings.ExpandCollectionFileName(CollectionFile);
 
   //
   // Создадим необходимые каталоги
