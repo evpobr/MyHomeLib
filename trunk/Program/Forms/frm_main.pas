@@ -1584,6 +1584,9 @@ begin
     FillSeriesTree(tvSeries, FCollection.GetSeriesIterator(smFullFilter), FLastSeriesID);
     FillGenresTree(tvGenres, FCollection.GetGenreIterator(gmAll), False, FLastGenreCode);
     FillGroupsList(tvGroups, FSystemData.GetGroupIterator, FLastGroupID);
+
+    if ActiveView = AuthorsView then
+      miGoToAuthor.Visible := False;
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -5899,6 +5902,7 @@ begin
     pgControl.ActivePageIndex := 0;
     edLocateAuthor.Text := FullAuthorName;
     LocateBook(Data.Title, False);
+    miGoToAuthor.Visible := False;
   finally
     Screen.Cursor := SavedCursor;
   end;
