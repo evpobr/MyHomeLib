@@ -44,7 +44,7 @@ type
     pcCollectionInfo: TPageControl;
     tsGeneralInfo: TTabSheet;
     tsConnectionInfo: TTabSheet;
-    MHLStaticTip1: TMHLStaticTip;
+    warningMessage: TMHLStaticTip;
     edDescription: TEdit;
     lblCollectionDescription: TLabel;
     lblCollectionRoot: TLabel;
@@ -53,7 +53,6 @@ type
     edCollectionName: TEdit;
     lblCollectionFile: TLabel;
     lblCollectionName: TLabel;
-    btnNewFile: TButton;
     btnSelectRoot: TButton;
     lblUser: TLabel;
     edUser: TEdit;
@@ -66,9 +65,9 @@ type
     pnButtons: TPanel;
     btnOk: TButton;
     btnCancel: TButton;
-    procedure edDBFileButtonClick(Sender: TObject);
     procedure edDBFolderButtonClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
 
   private
     FSystemData: ISystemData;
@@ -115,15 +114,6 @@ begin
   mmScript.Lines.Text := FCollection.GetProperty(PROP_CONNECTIONSCRIPT);
 end;
 
-procedure TfrmBases.edDBFileButtonClick(Sender: TObject);
-var
-  AFileName: string;
-begin
-  { TODO -oNickR -cBug : совершенно непонятно почему, после вызова этого метода форма теряет фокус }
-  if GetFileName(fnOpenCollection, AFileName) then
-    edCollectionFile.Text := AFileName;
-end;
-
 procedure TfrmBases.edDBFolderButtonClick(Sender: TObject);
 var
   AFolder: string;
@@ -131,6 +121,12 @@ begin
   AFolder := edCollectionRoot.Text;
   if GetFolderName(Handle, rstrChooseDataFolder, AFolder) then
     edCollectionRoot.Text := AFolder;
+end;
+
+procedure TfrmBases.FormCreate(Sender: TObject);
+begin
+  warningMessage.Images := DMUser.SeverityImagesBig;
+  warningMessage.ImageIndex := TDMUser.iiWarning;
 end;
 
 procedure TfrmBases.btnSaveClick(Sender: TObject);
@@ -177,7 +173,6 @@ begin
   end;
 
   FCollection.SetProperty(PROP_DISPLAYNAME, CollectionName);
-  FCollection.SetProperty(PROP_DATAFILE, storedFileName);
   FCollection.SetProperty(PROP_ROOTFOLDER, storedRoot);
   FCollection.SetProperty(PROP_NOTES, Trim(edDescription.Text));
   FCollection.SetProperty(PROP_URL, edURL.Text);
