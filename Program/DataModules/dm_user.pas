@@ -38,6 +38,11 @@ type
 
     function InternalGetSystemDB(const FileName: string): ISystemData; inline;
 
+  public const
+    iiInfo = 0;
+    iiWarning = 1;
+    iiError = 2;
+
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
