@@ -33,11 +33,10 @@ uses
   IniFiles,
   unit_Scripts,
   unit_Readers,
-  unit_globals,
+  unit_Globals,
   unit_Lib_Updates;
 
 type
-
   TMHLSystemFile = (
     sfSystemDB,
     sfGenresFB2,
@@ -242,14 +241,6 @@ type
     procedure SetImportDir(const Value: string);
     function GetImportPath: string;
 
-  private
-    class var
-      mg_objSettings: TMHLSettings;
-
-  public
-    class constructor Create;
-    class destructor Destroy;
-
   public
     constructor Create;
     destructor Destroy; override;
@@ -257,8 +248,8 @@ type
     procedure LoadSettings;
     procedure SaveSettings;
 
-    class function ExpandCollectionRoot(const rootFolder: string): string;
-    class function ExpandCollectionFileName(const FileName: string): string;
+    function ExpandCollectionRoot(const rootFolder: string): string;
+    function ExpandCollectionFileName(const FileName: string): string;
 
   public
     property AppPath: string read FAppPath;
@@ -288,7 +279,6 @@ type
     property ReadDir: string read FReadDir write SetReadDir;
     property ReadPath: string read GetReadPath;
 
-    // TODO : REMOVE property TransliterateFileName: Boolean read FTransliterate write FTransliterate;
     property ActiveCollection: Integer read FActiveCollection write FActiveCollection;
     property CheckUpdate: Boolean read FDoCheckUpdate write FDoCheckUpdate;
     property CheckExternalLibUpdate: Boolean read FCheckExternalLibUpdate write FCheckExternalLibUpdate;
@@ -410,8 +400,6 @@ type
     property FBDFileTemplate: string read FFBDFileTemplate write FFBDFileTemplate;
   end;
 
-function Settings: TMHLSettings; inline;
-
 implementation
 
 uses
@@ -423,13 +411,6 @@ uses
   IOUtils,
   WinInet,
   unit_Helpers;
-
-function Settings: TMHLSettings;
-begin
-  Assert(Assigned(TMHLSettings.mg_objSettings));
-
-  Result := TMHLSettings.mg_objSettings;
-end;
 
 const
   TOOLS_DIR_NAME = 'Tools';
@@ -1375,29 +1356,17 @@ begin
   FReadDir := SafeGetDirName(Value);
 end;
 
-class constructor TMHLSettings.Create;
+function TMHLSettings.ExpandCollectionRoot(const rootFolder: string): string;
 begin
-  mg_objSettings := TMHLSettings.Create;
+  Result := IncludeTrailingPathDelimiter(ExpandFileNameEx(DataPath, rootFolder));
 end;
 
-class destructor TMHLSettings.Destroy;
+function TMHLSettings.ExpandCollectionFileName(const FileName: string): string;
 begin
-  FreeAndNil(mg_objSettings);
-end;
-
-class function TMHLSettings.ExpandCollectionRoot(const rootFolder: string): string;
-begin
-  Assert(Assigned(mg_objSettings));
-  Result := IncludeTrailingPathDelimiter(ExpandFileNameEx(mg_objSettings.DataPath, rootFolder));
-end;
-
-class function TMHLSettings.ExpandCollectionFileName(const FileName: string): string;
-begin
-  Assert(Assigned(mg_objSettings));
   Result := FileName;
   if '' = ExtractFileExt(Result) then
     Result := ChangeFileExt(Result, COLLECTION_EXTENSION);
-  Result := ExpandFileNameEx(mg_objSettings.DataPath, Result);
+  Result := ExpandFileNameEx(DataPath, Result);
 end;
 
 end.

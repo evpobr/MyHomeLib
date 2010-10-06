@@ -960,6 +960,7 @@ uses
   unit_TreeUtils,
   unit_MHL_strings,
   unit_Settings,
+  dm_user,
   unit_Import,
   unit_Consts,
   unit_Export,
@@ -976,7 +977,6 @@ uses
   frmEditAuthorEx,
   unit_Lib_Updates,
   frm_EditGroup,
-  unit_SystemDatabase,
   unit_SystemDatabase_Abstract,
   unit_MHLArchiveHelpers;
 
@@ -1270,8 +1270,6 @@ end;
 
 procedure TfrmMain.ReadINIData;
 begin
-  Settings.LoadSettings;
-
   SetColors;
 
   //
@@ -1313,45 +1311,6 @@ begin
   ctpFile.Collapsed := Settings.FileSRCollapsed;
   ctpOther.Collapsed := Settings.OtherSRCollapsed;
 end;
-
-(*
-
-SELECT DISTINCT
-   Author_List.BookID
-FROM
-  Authors a INNER JOIN Author_List b ON (a.AuthorID = b.AuthorID)
-WHERE
-  UPPER(
-    LastName +
-    CASE WHEN FirstName IS NULL THEN '' ELSE ' ' END + FirstName +
-    CASE WHEN MiddleName IS NULL THEN '' ELSE ' ' END + MiddleName
-  ) LIKE "ААРХ%"
-
-intersect
-
-SELECT DISTINCT B1."BookID", B1."SeriesID"
-FROM "Books" B1
- INNER JOIN "Genre_List"  G5 ON (B1."BookID" = G5."BookID")
- INNER JOIN "Genres"      G6 ON (G5."GenreCode" = G6."GenreCode")
-WHERE
-  (G6.GenreCode = "0.3.4")
-
-intersect
-
-SELECT DISTINCT B1."BookID", B1."SeriesID"
-FROM "Books" B1
- INNER JOIN "Series"      S7 ON (B1."SeriesID" = S7."SeriesID")
-WHERE
-  (UPPER(S7.SeriesTitle) LIKE "ИЗ%")
-
-intersect
-
-SELECT DISTINCT B1."BookID", B1."SeriesID"
-FROM "Books" B1
-WHERE
-  (UPPER(b1.Title) LIKE "Д%")
-
-*)
 
 procedure TfrmMain.DoApplyFilter(Sender: TObject);
 var
@@ -1862,15 +1821,7 @@ begin
   mmiScripts.Clear;
 
   //Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
-  DBFileName := Settings.SystemFileName[sfSystemDB];
-  if FileExists(DBFileName) and Assigned(FCollection) then
-  begin
-    // Calculate, only if the system database is already created:
-    FSystemData := GetSystemData;
-    fb2Collection := isFB2Collection(FCollection.CollectionCode);
-  end
-  else
-    fb2Collection := False;
+  fb2Collection := Assigned(FCollection) and isFB2Collection(FCollection.CollectionCode);
 
   if fb2Collection then
   begin
@@ -2167,7 +2118,7 @@ begin
   begin
     RenameFile(Settings.SystemFileName[sfLibRusEcInpx], Settings.SystemFileName[sfLibRusEcUpdate]);
     DeleteFile(Settings.WorkPath + CHECK_FILE);
-    if unit_Utils.LibrusecUpdate(OnImportUserDataHandler) then
+    if unit_Utils.LibrusecUpdate then
       InitCollection(True);
   end;
 end;
@@ -2214,7 +2165,7 @@ end;
 
 procedure TfrmMain.StartLibUpdate;
 begin
-  if unit_Utils.LibrusecUpdate(OnImportUserDataHandler) then
+  if unit_Utils.LibrusecUpdate then
     InitCollection(True);
 end;
 
@@ -2317,12 +2268,13 @@ procedure TfrmMain.FormCreate(Sender: TObject);
 var
   PresetFile: string;
   preset: TSearchPreset;
-  DBFileName: string;
 begin
   Application.OnHelp := OnHelpHandler;
   UseLatestCommonDialogs := True;
 
-  /// Assert(Assigned(FSystemData));
+  FSystemData := SystemDB;
+
+  Assert(Assigned(FSystemData));
   FController := TTreeController.Create(FSystemData);
 
   //
@@ -2397,9 +2349,6 @@ begin
 
   ReadINIData;
 
-  TDirectory.CreateDirectory(Settings.TempDir);
-  TDirectory.CreateDirectory(Settings.DataDir);
-
   //
   // загрузка списка пресетов для поиска
   //
@@ -2427,12 +2376,6 @@ begin
 
   frmSplash.lblState.Caption := rstrMainConnectToDb;
 
-  DBFileName := Settings.SystemFileName[sfSystemDB];
-  if (not FileExists(DBFileName)) then
-    CreateSystemTables(DBFileName);
-
-  FSystemData := GetSystemData; // mount
-
   // ------------------------------------------------------------------------------
   // Проверка обновлений
   // ------------------------------------------------------------------------------
@@ -2457,7 +2400,7 @@ begin
 
   LoadLastCollection;
 
-  FillGroupsList(tvGroups, GetSystemData.GetGroupIterator, FLastGroupID);
+  FillGroupsList(tvGroups, FSystemData.GetGroupIterator, FLastGroupID);
   CreateGroupsMenu;
 
   TheFirstRun;
@@ -4853,7 +4796,7 @@ begin
     if FSystemData.AddGroup(GroupName) then
     begin
       CreateGroupsMenu;
-      FillGroupsList(tvGroups, GetSystemData.GetGroupIterator, FLastGroupID);
+      FillGroupsList(tvGroups, FSystemData.GetGroupIterator, FLastGroupID);
     end
     else
       MHLShowError(rstrGroupAlreadyExists);
@@ -4876,7 +4819,7 @@ begin
     if FSystemData.RenameGroup(Data^.GroupID, GroupName) then
     begin
       CreateGroupsMenu;
-      FillGroupsList(tvGroups, GetSystemData.GetGroupIterator, FLastGroupID);
+      FillGroupsList(tvGroups, FSystemData.GetGroupIterator, FLastGroupID);
     end
     else
       MHLShowError(rstrGroupAlreadyExists);
@@ -4896,7 +4839,7 @@ begin
     FSystemData.DeleteGroup(Data^.GroupID);
 
     CreateGroupsMenu;
-    FillGroupsList(tvGroups, GetSystemData.GetGroupIterator, FLastGroupID);
+    FillGroupsList(tvGroups, FSystemData.GetGroupIterator, FLastGroupID);
   end
   else
     MHLShowError(rstrUnableDeleteBuiltinGroupError);
@@ -6581,7 +6524,7 @@ begin
     //
     // Обновим список групп. Побочным эффектом будет перечитывание списка книг на странице "Группы"
     //
-    FillGroupsList(tvGroups, GetSystemData.GetGroupIterator, FLastGroupID);
+    FillGroupsList(tvGroups, FSystemData.GetGroupIterator, FLastGroupID);
   finally
     Screen.Cursor := SavedCursor;
   end;

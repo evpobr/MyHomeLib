@@ -31,7 +31,7 @@ uses
   FictionBook_21,
   unit_Helpers,
   unit_Consts,
-  unit_Settings,
+  dm_user,
   XMLDoc,
   SysUtils,
   unit_Templater,

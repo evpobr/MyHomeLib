@@ -45,8 +45,7 @@ uses
   Variants,
   SysUtils,
   unit_Consts,
-  unit_Helpers,
-  unit_SystemDatabase;
+  unit_Helpers;
 
 resourcestring
   rstrUnknown = 'unknown';

@@ -83,7 +83,7 @@ uses
   Math,
   StrUtils,
   unit_Consts,
-  unit_Settings,
+  dm_user,
   unit_MHLHelpers;
 
 resourcestring

@@ -5,14 +5,14 @@ object frmAddnonfb2: TfrmAddnonfb2
   ActiveControl = pcPages
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = #1044#1086#1073#1072#1074#1083#1077#1085#1080#1077' '#1082#1085#1080#1075' '#1074' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
-  ClientHeight = 694
-  ClientWidth = 983
+  ClientHeight = 531
+  ClientWidth = 752
   Color = clBtnFace
-  Constraints.MinHeight = 739
-  Constraints.MinWidth = 994
+  Constraints.MinHeight = 565
+  Constraints.MinWidth = 760
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -14
+  Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
@@ -20,28 +20,21 @@ object frmAddnonfb2: TfrmAddnonfb2
   OnCloseQuery = FormCloseQuery
   OnShow = FormShow
   DesignSize = (
-    983
-    694)
-  PixelsPerInch = 120
-  TextHeight = 17
+    752
+    531)
+  PixelsPerInch = 96
+  TextHeight = 13
   object pcPages: TPageControl
     AlignWithMargins = True
-    Left = 4
-    Top = 4
-    Width = 975
-    Height = 639
-    Margins.Left = 4
-    Margins.Top = 4
-    Margins.Right = 4
-    Margins.Bottom = 51
+    Left = 3
+    Top = 3
+    Width = 746
+    Height = 489
+    Margins.Bottom = 39
     ActivePage = tsBookInfo
     Align = alClient
     TabOrder = 0
     object tsFiles: TTabSheet
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       Caption = #1060#1072#1081#1083#1099
       ExplicitLeft = 0
       ExplicitTop = 0
@@ -49,14 +42,10 @@ object frmAddnonfb2: TfrmAddnonfb2
       ExplicitHeight = 0
       object Tree: TVirtualStringTree
         AlignWithMargins = True
-        Left = 4
-        Top = 4
-        Width = 959
-        Height = 480
-        Margins.Left = 4
-        Margins.Top = 4
-        Margins.Right = 4
-        Margins.Bottom = 4
+        Left = 3
+        Top = 3
+        Width = 732
+        Height = 364
         Align = alClient
         Header.AutoSizeIndex = 0
         Header.DefaultHeight = 17
@@ -75,8 +64,8 @@ object frmAddnonfb2: TfrmAddnonfb2
         OnFreeNode = TreeFreeNode
         OnGetText = TreeGetText
         OnPaintText = TreePaintText
-        ExplicitWidth = 957
-        ExplicitHeight = 471
+        ExplicitWidth = 733
+        ExplicitHeight = 370
         Columns = <
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring, coAllowFocus]
@@ -98,75 +87,51 @@ object frmAddnonfb2: TfrmAddnonfb2
       end
       object gbOptions: TGroupBox
         AlignWithMargins = True
-        Left = 4
-        Top = 492
-        Width = 959
-        Height = 111
-        Margins.Left = 4
-        Margins.Top = 4
-        Margins.Right = 4
-        Margins.Bottom = 4
+        Left = 3
+        Top = 373
+        Width = 732
+        Height = 85
         Align = alBottom
         Caption = #1054#1087#1094#1080#1080
         TabOrder = 1
-        ExplicitTop = 483
-        ExplicitWidth = 957
+        ExplicitTop = 379
+        ExplicitWidth = 733
         object Label1: TLabel
-          Left = 286
-          Top = 52
-          Width = 160
-          Height = 17
-          Margins.Left = 4
-          Margins.Top = 4
-          Margins.Right = 4
-          Margins.Bottom = 4
+          Left = 219
+          Top = 40
+          Width = 126
+          Height = 13
           Caption = #1055#1086#1089#1083#1077' '#1076#1086#1073#1072#1074#1083#1077#1085#1080#1103' '#1082#1085#1080#1075#1080
         end
         object cbAutoSeries: TCheckBox
-          Left = 10
-          Top = 81
-          Width = 221
-          Height = 22
-          Margins.Left = 4
-          Margins.Top = 4
-          Margins.Right = 4
-          Margins.Bottom = 4
+          Left = 8
+          Top = 62
+          Width = 169
+          Height = 17
           Caption = #1059#1074#1077#1083#1080#1095#1080#1074#1072#1090#1100' '#1085#1086#1084#1077#1088' '#1074' '#1089#1077#1088#1080#1080
           TabOrder = 2
         end
         object cbSelectFileName: TCheckBox
-          Left = 10
-          Top = 21
-          Width = 190
-          Height = 22
-          Margins.Left = 4
-          Margins.Top = 4
-          Margins.Right = 4
-          Margins.Bottom = 4
+          Left = 8
+          Top = 16
+          Width = 145
+          Height = 17
           Caption = #1042#1099#1076#1077#1083#1103#1090#1100' '#1085#1072#1079#1074#1072#1085#1080#1077
           TabOrder = 0
         end
         object cbNoAuthorAllowed: TCheckBox
-          Left = 10
-          Top = 51
-          Width = 190
-          Height = 22
-          Margins.Left = 4
-          Margins.Top = 4
-          Margins.Right = 4
-          Margins.Bottom = 4
+          Left = 8
+          Top = 39
+          Width = 145
+          Height = 17
           Caption = #1044#1086#1073#1072#1074#1083#1103#1090#1100' '#1073#1077#1079' '#1072#1074#1090#1086#1088#1072
           TabOrder = 1
         end
         object cbClearOptions: TComboBox
-          Left = 464
-          Top = 48
-          Width = 249
-          Height = 25
-          Margins.Left = 4
-          Margins.Top = 4
-          Margins.Right = 4
-          Margins.Bottom = 4
+          Left = 355
+          Top = 37
+          Width = 190
+          Height = 21
           Style = csDropDownList
           TabOrder = 3
           Items.Strings = (
@@ -176,14 +141,10 @@ object frmAddnonfb2: TfrmAddnonfb2
             #1053#1077' '#1086#1095#1080#1097#1072#1090#1100' '#1087#1086#1083#1103)
         end
         object cbForceConvertToFBD: TCheckBox
-          Left = 286
-          Top = 25
-          Width = 177
-          Height = 18
-          Margins.Left = 4
-          Margins.Top = 4
-          Margins.Right = 4
-          Margins.Bottom = 4
+          Left = 219
+          Top = 19
+          Width = 135
+          Height = 14
           Caption = #1050#1086#1085#1074#1077#1088#1090#1080#1088#1086#1074#1072#1090#1100' '#1074' FBD'
           Checked = True
           State = cbChecked
@@ -192,184 +153,124 @@ object frmAddnonfb2: TfrmAddnonfb2
       end
     end
     object tsBookInfo: TTabSheet
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       Caption = #1050#1085#1080#1075#1072
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
       ExplicitHeight = 0
       object Label2: TLabel
-        Left = 10
-        Top = 22
-        Width = 38
-        Height = 17
-        Margins.Left = 4
-        Margins.Top = 4
-        Margins.Right = 4
-        Margins.Bottom = 4
+        Left = 8
+        Top = 17
+        Width = 30
+        Height = 13
         Caption = #1060#1072#1081#1083':'
       end
       object Label3: TLabel
-        Left = 10
-        Top = 98
-        Width = 64
-        Height = 17
-        Margins.Left = 4
-        Margins.Top = 4
-        Margins.Right = 4
-        Margins.Bottom = 4
+        Left = 8
+        Top = 75
+        Width = 52
+        Height = 13
         Caption = #1053#1072#1079#1074#1072#1085#1080#1077':'
       end
       object gbExtraInfo: TGroupBox
-        Left = 4
-        Top = 458
-        Width = 714
-        Height = 141
-        Margins.Left = 4
-        Margins.Top = 4
-        Margins.Right = 4
-        Margins.Bottom = 4
+        Left = 3
+        Top = 350
+        Width = 546
+        Height = 108
         Caption = #1044#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1072#1103' &'#1080#1085#1092#1086#1088#1084#1072#1094#1080#1103
         TabOrder = 0
         object lblGenre: TLabel
-          Left = 135
-          Top = 31
-          Width = 461
-          Height = 21
-          Margins.Left = 4
-          Margins.Top = 4
-          Margins.Right = 4
-          Margins.Bottom = 4
+          Left = 103
+          Top = 24
+          Width = 353
+          Height = 16
           AutoSize = False
           Caption = '-------'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
-          Font.Height = -15
+          Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
         end
         object Label6: TLabel
-          Left = 9
-          Top = 31
-          Width = 52
-          Height = 17
-          Margins.Left = 4
-          Margins.Top = 4
-          Margins.Right = 4
-          Margins.Bottom = 4
+          Left = 7
+          Top = 24
+          Width = 40
+          Height = 13
           Caption = '&'#1046#1072#1085#1088#1099':'
           FocusControl = lblGenre
         end
         object Label4: TLabel
-          Left = 9
-          Top = 69
-          Width = 44
-          Height = 17
-          Margins.Left = 4
-          Margins.Top = 4
-          Margins.Right = 4
-          Margins.Bottom = 4
+          Left = 7
+          Top = 53
+          Width = 35
+          Height = 13
           Caption = #1057'&'#1077#1088#1080#1103':'
           FocusControl = lblGenre
         end
         object Label5: TLabel
-          Left = 531
-          Top = 69
-          Width = 99
-          Height = 17
-          Margins.Left = 4
-          Margins.Top = 4
-          Margins.Right = 4
-          Margins.Bottom = 4
+          Left = 406
+          Top = 53
+          Width = 76
+          Height = 13
           Caption = #1053#1086'&'#1084#1077#1088' '#1074' '#1089#1077#1088#1080#1080':'
           FocusControl = edSN
         end
         object Label7: TLabel
-          Left = 9
-          Top = 105
-          Width = 112
-          Height = 17
-          Margins.Left = 4
-          Margins.Top = 4
-          Margins.Right = 4
-          Margins.Bottom = 4
+          Left = 7
+          Top = 80
+          Width = 90
+          Height = 13
           Caption = '&'#1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072':'
           FocusControl = edKeyWords
         end
         object Label8: TLabel
-          Left = 531
-          Top = 105
-          Width = 37
-          Height = 17
-          Margins.Left = 4
-          Margins.Top = 4
-          Margins.Right = 4
-          Margins.Bottom = 4
+          Left = 406
+          Top = 80
+          Width = 30
+          Height = 13
           Caption = '&'#1071#1079#1099#1082':'
           FocusControl = cbLang
         end
         object btnShowGenres: TButton
-          Left = 604
-          Top = 25
-          Width = 98
-          Height = 33
-          Margins.Left = 4
-          Margins.Top = 4
-          Margins.Right = 4
-          Margins.Bottom = 4
+          Left = 462
+          Top = 19
+          Width = 75
+          Height = 25
           Caption = '&'#1042#1099#1073#1088#1072#1090#1100
           TabOrder = 0
           OnClick = btnShowGenresClick
         end
         object cbSeries: TComboBox
-          Left = 135
-          Top = 65
-          Width = 363
+          Left = 103
+          Top = 50
+          Width = 278
           Height = 21
-          Margins.Left = 4
-          Margins.Top = 4
-          Margins.Right = 4
-          Margins.Bottom = 4
           TabOrder = 1
         end
         object edSN: TEdit
-          Left = 638
-          Top = 65
-          Width = 64
+          Left = 488
+          Top = 50
+          Width = 49
           Height = 21
-          Margins.Left = 4
-          Margins.Top = 4
-          Margins.Right = 4
-          Margins.Bottom = 4
           Alignment = taRightJustify
           MaxLength = 3
           NumbersOnly = True
           TabOrder = 2
         end
         object edKeyWords: TEdit
-          Left = 135
-          Top = 101
-          Width = 363
+          Left = 103
+          Top = 77
+          Width = 278
           Height = 21
-          Margins.Left = 4
-          Margins.Top = 4
-          Margins.Right = 4
-          Margins.Bottom = 4
           TabOrder = 3
         end
         object cbLang: TComboBox
-          Left = 638
-          Top = 101
-          Width = 64
-          Height = 25
-          Margins.Left = 4
-          Margins.Top = 4
-          Margins.Right = 4
-          Margins.Bottom = 4
+          Left = 488
+          Top = 77
+          Width = 49
+          Height = 21
           Style = csDropDownList
           TabOrder = 4
           Items.Strings = (
@@ -409,14 +310,10 @@ object frmAddnonfb2: TfrmAddnonfb2
       end
       object btnNext: TBitBtn
         AlignWithMargins = True
-        Left = 728
-        Top = 548
-        Width = 189
-        Height = 51
-        Margins.Left = 4
-        Margins.Top = 4
-        Margins.Right = 4
-        Margins.Bottom = 4
+        Left = 557
+        Top = 419
+        Width = 144
+        Height = 39
         Caption = #1044#1072#1083#1100#1096#1077
         DoubleBuffered = True
         Glyph.Data = {
@@ -467,50 +364,35 @@ object frmAddnonfb2: TfrmAddnonfb2
         OnClick = btnNextClick
       end
       object gbFDBCover: TGroupBox
-        Left = 4
-        Top = 129
-        Width = 227
-        Height = 321
-        Margins.Left = 4
-        Margins.Top = 4
-        Margins.Right = 4
-        Margins.Bottom = 4
+        Left = 3
+        Top = 99
+        Width = 174
+        Height = 245
         Caption = #1054#1073#1083#1086#1078#1082#1072
         TabOrder = 2
         DesignSize = (
-          227
-          321)
+          174
+          245)
         object FCover: TImage
           AlignWithMargins = True
-          Left = 6
-          Top = 23
-          Width = 215
-          Height = 247
+          Left = 5
+          Top = 18
+          Width = 164
+          Height = 188
           Hint = #1054#1073#1083#1086#1078#1082#1072
-          Margins.Left = 4
-          Margins.Top = 4
-          Margins.Right = 4
-          Margins.Bottom = 4
           Align = alTop
           Center = True
           ParentShowHint = False
           Proportional = True
           ShowHint = True
           Stretch = True
-          ExplicitLeft = 7
-          ExplicitTop = 24
-          ExplicitWidth = 214
         end
         object btnPasteCover: TButton
-          Left = 118
-          Top = 280
-          Width = 103
-          Height = 34
+          Left = 90
+          Top = 214
+          Width = 79
+          Height = 26
           Hint = #1042#1089#1090#1072#1074#1080#1090#1100' '#1080#1079' '#1073#1091#1092#1077#1088#1072
-          Margins.Left = 4
-          Margins.Top = 4
-          Margins.Right = 4
-          Margins.Bottom = 4
           Anchors = [akLeft, akBottom]
           Caption = #1048#1079' '#1073#1091#1092#1077#1088#1072
           ImageIndex = 0
@@ -520,15 +402,11 @@ object frmAddnonfb2: TfrmAddnonfb2
           OnClick = btnPasteCoverClick
         end
         object btnLoad: TButton
-          Left = 5
-          Top = 280
-          Width = 105
-          Height = 34
+          Left = 4
+          Top = 214
+          Width = 80
+          Height = 26
           Hint = #1047#1072#1075#1088#1091#1079#1080#1090#1100' '#1080#1079' '#1092#1072#1081#1083#1072
-          Margins.Left = 4
-          Margins.Top = 4
-          Margins.Right = 4
-          Margins.Bottom = 4
           Anchors = [akLeft, akBottom]
           Caption = #1048#1079' '#1092#1072#1081#1083#1072
           ImageIndex = 1
@@ -540,14 +418,10 @@ object frmAddnonfb2: TfrmAddnonfb2
       end
       object btnCopyToFamily: TButton
         Tag = 555
-        Left = 143
-        Top = 54
-        Width = 85
-        Height = 32
-        Margins.Left = 4
-        Margins.Top = 4
-        Margins.Right = 4
-        Margins.Bottom = 4
+        Left = 109
+        Top = 41
+        Width = 65
+        Height = 25
         Caption = #1060#1072#1084#1080#1083#1080#1103
         TabOrder = 3
         TabStop = False
@@ -555,57 +429,41 @@ object frmAddnonfb2: TfrmAddnonfb2
       end
       object btnCopyToName: TButton
         Tag = 666
-        Left = 235
-        Top = 54
-        Width = 85
-        Height = 32
-        Margins.Left = 4
-        Margins.Top = 4
-        Margins.Right = 4
-        Margins.Bottom = 4
+        Left = 180
+        Top = 41
+        Width = 65
+        Height = 25
         Caption = #1048#1084#1103
         TabOrder = 4
         TabStop = False
         OnClick = btnCopyToNameClick
       end
       object btnCopyToSeries: TButton
-        Left = 421
-        Top = 54
-        Width = 85
-        Height = 32
-        Margins.Left = 4
-        Margins.Top = 4
-        Margins.Right = 4
-        Margins.Bottom = 4
+        Left = 322
+        Top = 41
+        Width = 65
+        Height = 25
         Caption = #1057#1077#1088#1080#1103
         TabOrder = 5
         TabStop = False
         OnClick = btnCopyToSeriesClick
       end
       object btnCopyToTitle: TButton
-        Left = 328
-        Top = 54
-        Width = 85
-        Height = 32
-        Margins.Left = 4
-        Margins.Top = 4
-        Margins.Right = 4
-        Margins.Bottom = 4
+        Left = 251
+        Top = 41
+        Width = 65
+        Height = 25
         Caption = #1053#1072#1079#1074#1072#1085#1080#1077
         TabOrder = 6
         TabStop = False
         OnClick = btnCopyToTitleClick
       end
       object btnOpenBook: TBitBtn
-        Left = 514
-        Top = 16
-        Width = 98
-        Height = 32
+        Left = 393
+        Top = 12
+        Width = 75
+        Height = 25
         Hint = #1054#1090#1082#1088#1099#1090#1100' '#1082#1085#1080#1075#1091
-        Margins.Left = 4
-        Margins.Top = 4
-        Margins.Right = 4
-        Margins.Bottom = 4
         Caption = #1054#1090#1082#1088#1099#1090#1100
         DoubleBuffered = True
         ParentDoubleBuffered = False
@@ -615,15 +473,11 @@ object frmAddnonfb2: TfrmAddnonfb2
         OnClick = btnFileOpenClick
       end
       object btnRenameFile: TBitBtn
-        Left = 620
-        Top = 16
-        Width = 98
-        Height = 32
+        Left = 474
+        Top = 12
+        Width = 75
+        Height = 25
         Hint = #1055#1077#1088#1077#1080#1084#1077#1085#1086#1074#1072#1090#1100' '#1092#1072#1081#1083
-        Margins.Left = 4
-        Margins.Top = 4
-        Margins.Right = 4
-        Margins.Bottom = 4
         Caption = #1055#1077#1088#1077#1080#1084#1077#1085#1086#1074#1072#1090#1100
         DoubleBuffered = True
         ParentDoubleBuffered = False
@@ -633,58 +487,37 @@ object frmAddnonfb2: TfrmAddnonfb2
         OnClick = miRenameFileClick
       end
       object edFileName: TEdit
-        Left = 88
-        Top = 18
-        Width = 418
+        Left = 67
+        Top = 14
+        Width = 320
         Height = 21
-        Margins.Left = 4
-        Margins.Top = 4
-        Margins.Right = 4
-        Margins.Bottom = 4
         TabStop = False
         PopupMenu = pmEdit
         ReadOnly = True
         TabOrder = 9
       end
       object edTitle: TEdit
-        Left = 86
-        Top = 94
-        Width = 620
+        Left = 66
+        Top = 72
+        Width = 474
         Height = 21
-        Margins.Left = 4
-        Margins.Top = 4
-        Margins.Right = 4
-        Margins.Bottom = 4
         TabOrder = 10
       end
       object MHLSimplePanel1: TMHLSimplePanel
-        Left = 239
-        Top = 129
-        Width = 479
-        Height = 321
-        Margins.Left = 4
-        Margins.Top = 4
-        Margins.Right = 4
-        Margins.Bottom = 4
+        Left = 183
+        Top = 99
+        Width = 366
+        Height = 245
         TabOrder = 11
         object PageControl1: TPageControl
           Left = 0
           Top = 0
-          Width = 479
-          Height = 321
-          Margins.Left = 4
-          Margins.Top = 4
-          Margins.Right = 4
-          Margins.Bottom = 4
+          Width = 366
+          Height = 245
           ActivePage = TabSheet1
           Align = alClient
           TabOrder = 0
-          ExplicitHeight = 320
           object TabSheet1: TTabSheet
-            Margins.Left = 4
-            Margins.Top = 4
-            Margins.Right = 4
-            Margins.Bottom = 4
             Caption = #1040#1074#1090#1086#1088#1099' '#1082#1085#1080#1075#1080
             ExplicitLeft = 0
             ExplicitTop = 0
@@ -692,26 +525,18 @@ object frmAddnonfb2: TfrmAddnonfb2
             ExplicitHeight = 0
             object alBookAuthors: TFBDAuthorTable
               AlignWithMargins = True
-              Left = 4
-              Top = 4
-              Width = 460
-              Height = 276
-              Margins.Left = 4
-              Margins.Top = 4
-              Margins.Right = 4
-              Margins.Bottom = 4
+              Left = 3
+              Top = 3
+              Width = 352
+              Height = 211
               Align = alClient
               TabOrder = 0
               DesignSize = (
-                463
-                281)
+                352
+                211)
             end
           end
           object TabSheet2: TTabSheet
-            Margins.Left = 4
-            Margins.Top = 4
-            Margins.Right = 4
-            Margins.Bottom = 4
             Caption = #1040#1074#1090#1086#1088#1099' '#1076#1086#1082#1091#1084#1077#1085#1090#1072
             ImageIndex = 1
             ExplicitLeft = 0
@@ -720,26 +545,18 @@ object frmAddnonfb2: TfrmAddnonfb2
             ExplicitHeight = 0
             object alFBDAuthors: TFBDAuthorTable
               AlignWithMargins = True
-              Left = 4
-              Top = 4
-              Width = 460
-              Height = 276
-              Margins.Left = 4
-              Margins.Top = 4
-              Margins.Right = 4
-              Margins.Bottom = 4
+              Left = 3
+              Top = 3
+              Width = 352
+              Height = 211
               Align = alClient
               TabOrder = 0
               DesignSize = (
-                463
-                281)
+                352
+                211)
             end
           end
           object TabSheet3: TTabSheet
-            Margins.Left = 4
-            Margins.Top = 4
-            Margins.Right = 4
-            Margins.Bottom = 4
             Caption = #1040#1085#1085#1086#1090#1072#1094#1080#1103
             ImageIndex = 2
             ExplicitLeft = 0
@@ -748,14 +565,10 @@ object frmAddnonfb2: TfrmAddnonfb2
             ExplicitHeight = 0
             object mmAnnotation: TMemo
               AlignWithMargins = True
-              Left = 4
-              Top = 4
-              Width = 460
-              Height = 276
-              Margins.Left = 4
-              Margins.Top = 4
-              Margins.Right = 4
-              Margins.Bottom = 4
+              Left = 3
+              Top = 3
+              Width = 352
+              Height = 211
               Align = alClient
               ScrollBars = ssBoth
               TabOrder = 0
@@ -763,10 +576,6 @@ object frmAddnonfb2: TfrmAddnonfb2
             end
           end
           object TabSheet4: TTabSheet
-            Margins.Left = 4
-            Margins.Top = 4
-            Margins.Right = 4
-            Margins.Bottom = 4
             Caption = #1048#1079#1076#1072#1090#1077#1083#1100
             ImageIndex = 3
             ExplicitLeft = 0
@@ -774,103 +583,71 @@ object frmAddnonfb2: TfrmAddnonfb2
             ExplicitWidth = 0
             ExplicitHeight = 0
             DesignSize = (
-              471
-              289)
+              358
+              217)
             object RzLabel4: TLabel
-              Left = 43
-              Top = 60
-              Width = 34
-              Height = 17
-              Margins.Left = 4
-              Margins.Top = 4
-              Margins.Right = 4
-              Margins.Bottom = 4
+              Left = 33
+              Top = 46
+              Width = 27
+              Height = 13
               Caption = 'ISBN:'
               FocusControl = edISBN
             end
             object RzLabel6: TLabel
-              Left = 160
-              Top = 25
-              Width = 44
-              Height = 17
-              Margins.Left = 4
-              Margins.Top = 4
-              Margins.Right = 4
-              Margins.Bottom = 4
+              Left = 122
+              Top = 19
+              Width = 35
+              Height = 13
               Anchors = [akTop, akRight]
               Caption = #1043#1086#1088#1086#1076':'
               FocusControl = edCity
             end
             object RzLabel7: TLabel
-              Left = 269
-              Top = 60
-              Width = 28
-              Height = 17
-              Margins.Left = 4
-              Margins.Top = 4
-              Margins.Right = 4
-              Margins.Bottom = 4
+              Left = 206
+              Top = 46
+              Width = 23
+              Height = 13
               Anchors = [akTop, akRight]
               Caption = #1043#1086#1076':'
               FocusControl = edYear
             end
             object RzLabel5: TLabel
-              Left = 10
-              Top = 25
-              Width = 64
-              Height = 17
-              Margins.Left = 4
-              Margins.Top = 4
-              Margins.Right = 4
-              Margins.Bottom = 4
+              Left = 8
+              Top = 19
+              Width = 52
+              Height = 13
               Caption = #1053#1072#1079#1074#1072#1085#1080#1077':'
               FocusControl = edPublisher
             end
             object edISBN: TEdit
-              Left = 86
-              Top = 56
-              Width = 176
+              Left = 66
+              Top = 43
+              Width = 134
               Height = 21
-              Margins.Left = 4
-              Margins.Top = 4
-              Margins.Right = 4
-              Margins.Bottom = 4
               Anchors = [akLeft, akTop, akRight]
               TabOrder = 0
             end
             object edPublisher: TEdit
-              Left = 86
-              Top = 21
-              Width = 66
+              Left = 66
+              Top = 16
+              Width = 50
               Height = 21
-              Margins.Left = 4
-              Margins.Top = 4
-              Margins.Right = 4
-              Margins.Bottom = 4
               Anchors = [akLeft, akTop, akRight]
               TabOrder = 1
             end
             object edYear: TEdit
-              Left = 307
-              Top = 56
-              Width = 79
+              Left = 235
+              Top = 43
+              Width = 60
               Height = 21
-              Margins.Left = 4
-              Margins.Top = 4
-              Margins.Right = 4
-              Margins.Bottom = 4
               Anchors = [akTop, akRight]
               TabOrder = 2
             end
             object edCity: TEdit
-              Left = 213
-              Top = 21
-              Width = 173
+              Left = 163
+              Top = 16
+              Width = 132
               Height = 21
-              Margins.Left = 4
-              Margins.Top = 4
-              Margins.Right = 4
-              Margins.Bottom = 4
               Anchors = [akTop, akRight]
               TabOrder = 3
             end
@@ -880,14 +657,10 @@ object frmAddnonfb2: TfrmAddnonfb2
     end
   end
   object btnClose: TBitBtn
-    Left = 622
-    Top = 650
-    Width = 105
-    Height = 34
-    Margins.Left = 4
-    Margins.Top = 4
-    Margins.Right = 4
-    Margins.Bottom = 4
+    Left = 476
+    Top = 497
+    Width = 80
+    Height = 26
     Anchors = [akRight, akBottom]
     Caption = #1047#1072#1082#1088#1099#1090#1100
     DoubleBuffered = True

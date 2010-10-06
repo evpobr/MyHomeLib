@@ -75,7 +75,7 @@ Settings.ImportPath
 
 uses
   Dialogs,
-  unit_Settings,
+  dm_user,
   unit_Consts;
 
 resourcestring

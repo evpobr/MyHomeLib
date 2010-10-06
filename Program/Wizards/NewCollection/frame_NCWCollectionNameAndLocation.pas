@@ -58,10 +58,8 @@ uses
   unit_Helpers,
   unit_NCWParams,
   unit_Errors,
-  unit_settings,
   unit_Consts,
   unit_Globals,
-  unit_SystemDatabase,
   unit_MHLArchiveHelpers;
 
 resourcestring
@@ -187,7 +185,7 @@ var
 begin
   Result := False;
 
-  SystemData := GetSystemData;
+  SystemData := SystemDB;
 
   //
   // Проверим название коллекции

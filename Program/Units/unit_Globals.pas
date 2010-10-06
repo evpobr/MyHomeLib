@@ -400,7 +400,7 @@ uses
   IOUtils,
   Character,
   unit_Errors,
-  unit_Settings,
+  dm_user,
   ShlObj,
   unit_fb2ToText,
   unit_MHLGenerics,

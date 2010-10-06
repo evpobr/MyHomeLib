@@ -83,10 +83,10 @@ uses
   IOUtils,
   unit_Consts,
   unit_Settings,
+  dm_user,
   unit_MHLHelpers,
   unit_MHLArchiveHelpers,
-  unit_WriteFb2Info,
-  unit_SystemDatabase;
+  unit_WriteFb2Info;
 
 resourcestring
   rstrCheckTemplateValidity = 'Проверьте правильность шаблона';
@@ -248,7 +248,7 @@ end;
 procedure TExportToDeviceThread.Initialize;
 begin
   inherited Initialize;
-  FSystemData := CreateSystemData;
+  FSystemData := DMUser.GetSystemDBConnection;
   Assert(Assigned(FSystemData));
   FTemplater := TTemplater.Create;
 end;

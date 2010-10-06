@@ -126,7 +126,6 @@ uses
   SQLiteWrap in 'DAO\SQLite\Lib\SQLiteWrap.pas',
   unit_Database_SQLite in 'DAO\SQLite\unit_Database_SQLite.pas',
   unit_Database_Abstract in 'DAO\unit_Database_Abstract.pas',
-  unit_SystemDatabase in 'DAO\unit_SystemDatabase.pas',
   unit_SystemDatabase_Abstract in 'DAO\unit_SystemDatabase_Abstract.pas',
   unit_SQLiteUtils in 'DAO\SQLite\unit_SQLiteUtils.pas',
   unit_SystemDatabase_SQLite in 'DAO\SQLite\unit_SystemDatabase_SQLite.pas',
@@ -160,6 +159,8 @@ begin
 
     // Важно! сначала создаем датамодули и главную форму, а потом - остальные формы!
     Application.CreateForm(TDMUser, DMUser);
+    DMUser.Init;
+
     Application.CreateForm(TfrmMain, frmMain);
     Application.CreateForm(TfrmGenreTree, frmGenreTree);
     
