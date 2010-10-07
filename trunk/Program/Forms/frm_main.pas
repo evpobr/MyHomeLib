@@ -827,6 +827,7 @@ type
     procedure OnSetControlsStateHandler(State: Boolean);
 
     procedure LocateBook(const Text: string; MoveForward: Boolean);
+    procedure LocateAuthorAndBook(const FullAuthorName: string; const BookKey: TBookKey);
 
     procedure SetFormState;
 
@@ -2947,8 +2948,8 @@ begin
 
     if Settings.ShowBookCover or Settings.ShowBookAnnotation then
     begin
-      if IsLocal or (bpIsLocal in Data^.BookProps) then
-      begin
+      if (bpIsLocal in Data^.BookProps) then
+        begin
         try
           bookStream := Data^.GetBookDescriptorStream;
           try
@@ -5549,6 +5550,41 @@ begin
   end;
 end;
 
+// Locate book in the Authors' panel
+procedure TfrmMain.LocateAuthorAndBook(const FullAuthorName: string; const BookKey: TBookKey);
+var
+  Node: PVirtualNode;
+  BookData: PBookRecord;
+  Tree: TBookTree;
+  AuthorData: PAuthorData;
+  FilterValue: TFilterValue;
+begin
+  // Locate the author (using the text box) and fill the authors' book tree:
+  edLocateAuthor.Text := FullAuthorName;
+  edLocateAuthorChange(nil);
+  AuthorData := tvAuthors.GetNodeData(tvAuthors.FocusedNode);
+  FLastAuthorID := AuthorData.AuthorID;
+  FilterValue.ValueInt := AuthorData.AuthorID;
+  FillBooksTree(tvBooksA, FCollection.GetBookIterator(bmByAuthor, False, @FilterValue), False, True, nil);  // авторы
+
+  // Locate the book by key:
+  Node := tvBooksA.GetFirst;
+  while Assigned(Node) do
+  begin
+    BookData := tvBooksA.GetNodeData(Node);
+    Assert(Assigned(BookData));
+    if BookKey.IsSameAs(BookData.BookKey) then
+    begin
+      FFirstFoundBook := Node;
+      FLastFoundBook := Node;
+      FLastAuthorBookID := BookData.BookKey; // ir relevant for locate, fill just in case
+
+      Exit;
+    end;
+    Node := tvBooksA.GetNext(Node);
+  end;
+end;
+
 procedure TfrmMain.edLocateAuthorChange(Sender: TObject);
 var
   Button: TToolButton;
@@ -5884,14 +5920,12 @@ begin
   try
     if Data^.BookKey.DatabaseID <> FCollection.CollectionID then
     begin
-      CollectionInfo := FSystemData.GetCollectionInfo(Data^.BookKey.DatabaseID);
-
-      Settings.ActiveCollection := Data^.BookKey.DatabaseID;
-
-      InitCollection(True);
-
       Assert(Length(Data^.Authors) > 0);
       FullAuthorName := Data^.Authors[0].GetFullName;
+
+      CollectionInfo := FSystemData.GetCollectionInfo(Data^.BookKey.DatabaseID);
+      Settings.ActiveCollection := Data^.BookKey.DatabaseID;
+      InitCollection(True);
     end
     else
     begin
@@ -5900,9 +5934,8 @@ begin
     end;
 
     pgControl.ActivePageIndex := 0;
-    edLocateAuthor.Text := FullAuthorName;
-    LocateBook(Data.Title, False);
-    miGoToAuthor.Visible := False;
+    pgControlChange(nil);
+    LocateAuthorAndBook(FullAuthorName, Data.BookKey);
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -6013,8 +6046,8 @@ begin
   if Assigned(Data) then
   begin
     pgControl.ActivePageIndex := 0;
-    edLocateAuthor.Text := Data.Author;
-    LocateBook(Data.Title, False);
+    pgControlChange(nil);
+    LocateAuthorAndBook(Data.Author, Data.BookKey);
   end;
 end;
 
