@@ -5890,6 +5890,7 @@ var
   Tree: TBookTree;
   Node: PVirtualNode;
   Data: PBookRecord;
+  BookKey: TBookKey;
   FullAuthorName: string;
   SavedCursor: TCursor;
   CollectionInfo: TCollectionInfo;
@@ -5922,20 +5923,23 @@ begin
     begin
       Assert(Length(Data^.Authors) > 0);
       FullAuthorName := Data^.Authors[0].GetFullName;
+      BookKey := Data^.BookKey;
 
       CollectionInfo := FSystemData.GetCollectionInfo(Data^.BookKey.DatabaseID);
       Settings.ActiveCollection := Data^.BookKey.DatabaseID;
+      // Please notice, that after the following line, Data no longer points to the correct book:
       InitCollection(True);
     end
     else
     begin
       Assert(Length(Data^.Authors) > 0);
       FullAuthorName := Data^.Authors[0].GetFullName;
+      BookKey := Data^.BookKey;
     end;
 
     pgControl.ActivePageIndex := PAGE_AUTHORS;
     pgControlChange(nil);
-    LocateAuthorAndBook(FullAuthorName, Data.BookKey);
+    LocateAuthorAndBook(FullAuthorName, BookKey);
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -6047,7 +6051,7 @@ begin
   begin
     pgControl.ActivePageIndex := PAGE_AUTHORS;
     pgControlChange(nil);
-    LocateAuthorAndBook(Data.Author, Data.BookKey);
+    LocateAuthorAndBook(Data.Author, Data^.BookKey);
   end;
 end;
 
