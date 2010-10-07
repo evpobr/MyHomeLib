@@ -5933,7 +5933,7 @@ begin
       FullAuthorName := Data^.Authors[0].GetFullName;
     end;
 
-    pgControl.ActivePageIndex := 0;
+    pgControl.ActivePageIndex := PAGE_AUTHORS;
     pgControlChange(nil);
     LocateAuthorAndBook(FullAuthorName, Data.BookKey);
   finally
@@ -6045,7 +6045,7 @@ begin
   Data := tvDownloadList.GetNodeData(tvDownloadList.FocusedNode);
   if Assigned(Data) then
   begin
-    pgControl.ActivePageIndex := 0;
+    pgControl.ActivePageIndex := PAGE_AUTHORS;
     pgControlChange(nil);
     LocateAuthorAndBook(Data.Author, Data.BookKey);
   end;
