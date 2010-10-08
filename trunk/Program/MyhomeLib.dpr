@@ -134,7 +134,8 @@ uses
   frm_NewCollectionWizard in 'Wizards\NewCollection\frm_NewCollectionWizard.pas' {NewCollectionWizard},
   unit_CollectionWorkerThread in 'ImportImpl\unit_CollectionWorkerThread.pas',
   unit_ImportFB2ArchiveThread in 'ImportImpl\unit_ImportFB2ArchiveThread.pas',
-  unit_treeController in 'Forms\unit_treeController.pas';
+  unit_treeController in 'Forms\unit_treeController.pas',
+  unit_Events in 'Units\unit_Events.pas';
 
 {$R *.res}
 
@@ -159,7 +160,7 @@ begin
 
     // Важно! сначала создаем датамодули и главную форму, а потом - остальные формы!
     Application.CreateForm(TDMUser, DMUser);
-    DMUser.Init;
+  DMUser.Init;
 
     Application.CreateForm(TfrmMain, frmMain);
     Application.CreateForm(TfrmGenreTree, frmGenreTree);
