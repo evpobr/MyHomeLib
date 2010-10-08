@@ -1899,13 +1899,12 @@ function TfrmMain.ShowNCWizard: Boolean;
 var
   frmNCWizard: TNewCollectionWizard;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
   frmNCWizard := TNewCollectionWizard.Create(Application);
   try
     if frmNCWizard.ShowModal = mrOk then
     begin
       FSystemData.ActivateCollection(frmNCWizard.NewCollectionID);
-      Settings.ActiveCollection := FCollection.CollectionID;
+      Settings.ActiveCollection := frmNCWizard.NewCollectionID;
       InitCollection(True);
       Result := True;
     end
@@ -2599,7 +2598,6 @@ var
   logger: IScopeLogger;
 {$ENDIF}
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
 {$IFDEF USELOGGER}
   logger := GetScopeLogger('TfrmMain.tvAuthorsChange');
 {$ENDIF}
@@ -2625,7 +2623,8 @@ begin
     end;
 
     FilterValue := AuthorBookFilter;
-    FillBooksTree(tvBooksA, FCollection.GetBookIterator(bmByAuthor, False, @FilterValue), False, True, @FLastAuthorBookID); // авторы
+    if Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID) then
+      FillBooksTree(tvBooksA, FCollection.GetBookIterator(bmByAuthor, False, @FilterValue), False, True, @FLastAuthorBookID); // авторы
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -2657,7 +2656,6 @@ begin
   logger := GetScopeLogger('TfrmMain.tvSeriesChange');
 {$ENDIF}
 
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
@@ -2679,7 +2677,8 @@ begin
     end;
 
     FilterValue := SeriesBookFilter;
-    FillBooksTree(tvBooksS, FCollection.GetBookIterator(bmBySeries, False, @FilterValue), False, False, @FLastSeriesBookID); // авторы
+    if Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID) then
+      FillBooksTree(tvBooksS, FCollection.GetBookIterator(bmBySeries, False, @FilterValue), False, False, @FLastSeriesBookID); // авторы
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -2711,7 +2710,6 @@ begin
   logger := GetScopeLogger('TfrmMain.tvGenresChange');
 {$ENDIF}
 
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
@@ -2734,7 +2732,8 @@ begin
     end;
 
     FilterValue := GenreBookFilter;
-    FillBooksTree(tvBooksG, FCollection.GetBookIterator(bmByGenre, False, @FilterValue), True, True, @FLastGenreBookID);
+    if Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID) then
+      FillBooksTree(tvBooksG, FCollection.GetBookIterator(bmByGenre, False, @FilterValue), True, True, @FLastGenreBookID);
   finally
     Screen.Cursor := SavedCursor;
   end;
