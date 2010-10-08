@@ -31,7 +31,8 @@ uses
   Forms,
   Dialogs,
   unit_Globals,
-  unit_Interfaces;
+  unit_Interfaces,
+  unit_Events;
 
 type
   TfrmEditBookInfo = class(TForm)

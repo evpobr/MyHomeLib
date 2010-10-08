@@ -34,7 +34,8 @@ uses
   ImgList,
   FBDDocument,
   FBDAuthorTable,
-  unit_Globals;
+  unit_Globals,
+  unit_Events;
 
 type
   TfrmConvertToFBD = class(TForm)
