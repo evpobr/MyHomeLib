@@ -986,7 +986,7 @@ resourcestring
   rstrCreatingFilter = 'Подготовка фильтра ...';
   rstrApplyingFilter = 'Применяем фильтр ...';
   rstrNoUpdatesAvailable = 'Нет доступных обновлений';
-  rstrCannotEditFavoritesError = 'Редактирование книг из избранного или списка закачек невозможно.';
+  rstrNotFromDownloadsError = 'Операция недоступна из списка закачек.';
   rstrUnableDeleteBuiltinGroupError = 'Нельзя удалить встроенную группу!';
   rstrCheckingUpdates = 'Проверка обновлений ...';
   rstrGroupAlreadyExists = 'Группа с таким именем уже существует!';
@@ -999,7 +999,7 @@ resourcestring
   rstrShuttingDown = 'отключаемся';
   rstrNeedDBUpgrade = 'Вы успешно обновили программу. Для нормальной работы необходимо обновить струткуру таблиц БД. Сделать это прямо сейчас?';
   rstrFirstRun = 'MyHomeLib - первый запуск';
-  rstrToConvertChangeCollection = 'Для конвертирования книги перейдите в соответствующую коллекцию';
+//  rstrToConvertChangeTab = 'Для конвертирования книги перейдите на другую страницу.';
   rstrCollectionFileNotFound = 'Файл коллекции не найден.' + CRLF + 'Невозможно запустить программу.';
   // rstrStartCollectionUpdate = 'Доступно обновление коллекций.' + CRLF + ' Начать обновление ?';
   rstrStarting = 'Старт ...';
@@ -2130,9 +2130,9 @@ begin
   //
   // Очень стремный метод. Режим редактирования\создания FBD для формы не ставиться, форма ничего не проверяет...
   //
-  if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
+  if (ActiveView = DownloadView) then
   begin
-    MHLShowWarning(rstrToConvertChangeCollection);
+    MHLShowWarning(rstrNotFromDownloadsError);
     Exit;
   end;
 
@@ -3529,6 +3529,7 @@ var
   CollectionInfo: TCollectionInfo;
 begin
   Assert(Assigned(FCollection));
+
   Assert(BookRecord.nodeType = ntBookInfo);
 
   SavedCursor := Screen.Cursor;
@@ -3545,8 +3546,10 @@ begin
 
         if (not (bpIsLocal in BookRecord.BookProps)) and isOnlineCollection(CollectionInfo.CollectionType) then
         begin
-          // A not-yet-downloaded book of an online collection, can download only if book's collection is selected
-          FCollection.VerifyCurrentCollection(BookRecord.BookKey.DatabaseID);
+// Why do we need to verify this? The code doesn't even use FCollection
+//          // A not-yet-downloaded book of an online collection, can download only if book's collection is selected
+//          FCollection.VerifyCurrentCollection(BookRecord.BookKey.DatabaseID);
+
           DownloadBooks;
           /// TODO : RESTORE ??? Tree.RepaintNode(Tree.GetFirstSelected);
           if not FileExists(BookFileName) then
@@ -4644,9 +4647,9 @@ var
   frmEditBook: TfrmEditBookInfo;
 begin
   Assert(Assigned(FCollection));
-  if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
+  if (ActiveView = DownloadView) then
   begin
-    MHLShowWarning(rstrCannotEditFavoritesError);
+    MHLShowWarning(rstrNotFromDownloadsError);
     Exit;
   end;
 
@@ -4661,7 +4664,10 @@ begin
 
   frmEditBook := TfrmEditBookInfo.Create(Application);
   try
-    frmEditBook.Collection := FCollection;
+    if Data^.BookKey.DatabaseID <> FCollection.CollectionID then
+      frmEditBook.Collection := FSystemData.GetCollection(Data^.BookKey.DatabaseID)
+    else
+      frmEditBook.Collection := FCollection;
     frmEditBook.OnGetBook := OnGetBookHandler;
     frmEditBook.OnSelectBook := OnSelectBookHandler;
     frmEditBook.OnUpdateBook := OnUpdateBookHandler;
@@ -6070,9 +6076,9 @@ var
   Data: PBookRecord;
   frmConvert: TfrmConvertToFBD;
 begin
-  if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
+  if (ActiveView = DownloadView) then
   begin
-    MHLShowWarning(rstrToConvertChangeCollection);
+    MHLShowWarning(rstrNotFromDownloadsError);
     Exit;
   end;
 
@@ -6750,8 +6756,8 @@ var
   Tree: TBookTree;
   Node: PVirtualNode;
   Data: PBookRecord;
+  BookCollection: IBookCollection;
 begin
-  Assert(Assigned(FCollection));
   //
   // Locate the selected book record and pass it to the edit form
   //
@@ -6760,8 +6766,14 @@ begin
   Data := Tree.GetNodeData(Node);
 
   Assert(Assigned(Data) and (Data^.nodeType = ntBookInfo));
+  Assert(Assigned(FCollection));
 
-  FCollection.GetBookRecord(Data^.BookKey, BookRecord, True);
+  if (Data^.BookKey.DatabaseID <> FCollection.CollectionID) then
+    BookCollection := FSystemData.GetCollection(Data^.BookKey.DatabaseID)
+  else
+    BookCollection := FCollection;
+
+  BookCollection.GetBookRecord(Data^.BookKey, BookRecord, True);
 end;
 
 // Invoked when it's time to update the current book in DB
@@ -6771,6 +6783,7 @@ var
   Data: PBookRecord;
   Node: PVirtualNode;
   OldID: Integer;
+  BookCollection: IBookCollection;
 begin
   //
   // TODO : этот метод надо срочно переписать.
@@ -6781,15 +6794,20 @@ begin
   //
   // См. TfrmMain.OnChangeBook2ZipHandler как пример верной реализации
   //
-  Assert(Assigned(FCollection));
   Assert(BookRecord.nodeType = ntBookInfo);
 
-  FCollection.BeginBulkOperation;
+  Assert(Assigned(FCollection));
+  if (BookRecord.BookKey.DatabaseID <> FCollection.CollectionID) then
+    BookCollection := FSystemData.GetCollection(BookRecord.BookKey.DatabaseID)
+  else
+    BookCollection := FCollection;
+
+  BookCollection.BeginBulkOperation;
   try
-    FCollection.UpdateBook(BookRecord);
-    FCollection.EndBulkOperation(True);
+    BookCollection.UpdateBook(BookRecord);
+    BookCollection.EndBulkOperation(True);
   except
-    FCollection.EndBulkOperation(False);
+    BookCollection.EndBulkOperation(False);
   end;
   {
   UpdateNodes(
@@ -6844,12 +6862,18 @@ end;
 procedure TfrmMain.OnChangeBook2ZipHandler(const BookRecord: TBookRecord);
 var
   NewFileName: string;
+  BookCollection: IBookCollection;
 begin
   Assert(Assigned(FCollection));
+  if (BookRecord.BookKey.DatabaseID <> FCollection.CollectionID) then
+    BookCollection := FSystemData.GetCollection(BookRecord.BookKey.DatabaseID)
+  else
+    BookCollection := FCollection;
+
   Assert(BookRecord.nodeType = ntBookInfo);
 
   NewFileName := BookRecord.FileName + ZIP_EXTENSION;
-  FCollection.SetFileName(BookRecord.BookKey, NewFileName);
+  BookCollection.SetFileName(BookRecord.BookKey, NewFileName);
   UpdateNodes(
     BookRecord.BookKey,
     procedure(BookData: PBookRecord)

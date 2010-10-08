@@ -244,14 +244,6 @@ type
   end;
 
   // --------------------------------------------------------------------------
-  TBookEvent = procedure(const BookRecord: TBookRecord) of object;
-  TSelectBookEvent = procedure(MoveForward: Boolean) of object;
-  TGetBookEvent = procedure(var BookRecord: TBookRecord) of object;
-  TChangeStateEvent = procedure(State: Boolean) of object;
-  TOnLocateBookEvent = procedure(const Text: string; MoveForward: Boolean) of object;
-  TOnHelpEvent = function(Command: Word; Data: Integer; var CallHelp: Boolean): Boolean of object;
-
-  // --------------------------------------------------------------------------
   PFileData = ^TFileData;
   TFileData = record
     FullPath, FileName, Folder, Ext, Title: string;

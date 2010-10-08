@@ -33,7 +33,8 @@ uses
   Mask,
   ExtCtrls,
   MHLSimplePanel,
-  unit_Globals;
+  unit_Globals,
+  unit_Events;
 
 type
   TfrmBookSearch = class(TForm)
