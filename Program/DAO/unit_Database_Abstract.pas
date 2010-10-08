@@ -42,6 +42,8 @@ type
     function CollectionID: Integer;
     function CollectionCode: COLLECTION_TYPE;
     function CollectionRoot: string;
+    function CollectionDisplayName: string;
+    function CollectionURL: string;
 
     function GetProperty(const PropID: TPropertyID): Variant; virtual; abstract;
 
@@ -398,6 +400,18 @@ function TBookCollection.CollectionRoot: string;
 begin
   Assert(INVALID_COLLECTION_ID <> FCollectionInfo.ID);
   Result := FCollectionInfo.RootFolder;
+end;
+
+function TBookCollection.CollectionDisplayName: string;
+begin
+  Assert(INVALID_COLLECTION_ID <> FCollectionInfo.ID);
+  Result := FCollectionInfo.DisplayName;
+end;
+
+function TBookCollection.CollectionURL: string;
+begin
+  Assert(INVALID_COLLECTION_ID <> FCollectionInfo.ID);
+  Result := FCollectionInfo.URL;
 end;
 
 end.

@@ -35,7 +35,6 @@ type
 
   TSystemData = class abstract(TInterfacedObject)
   protected
-    FActiveCollectionInfo: TCollectionInfo;
     FCollectionCache: TBookCollectionCache;
 
     function InternalCreateCollection(const CollectionID: Integer): IBookCollection; virtual; abstract;
@@ -49,13 +48,10 @@ type
 
     function GetCollection(const CollectionID: Integer): IBookCollection;
 
-    function GetActiveCollectionInfo: TCollectionInfo;
-    function GetActiveCollection: IBookCollection;
-
     //
     // Пользовательские данные
     //
-    procedure ExportUserData(data: TUserData);
+    procedure ExportUserData(data: TUserData; const DatabaseID: Integer);
 
     //Iterators:
     function GetBookIterator(const GroupID: Integer; const DatabaseID: Integer = INVALID_COLLECTION_ID): IBookIterator; virtual; abstract;
@@ -135,9 +131,8 @@ begin
   end;
 end;
 
-procedure TSystemData.ExportUserData(data: TUserData);
+procedure TSystemData.ExportUserData(data: TUserData; const DatabaseID: Integer);
 var
-  CollectionID: Integer;
   BookGroup: TBookGroup;
   GroupIterator: IGroupIterator;
   GroupData: TGroupData;
@@ -146,23 +141,15 @@ var
 begin
   Assert(Assigned(data));
 
-  CollectionID := FActiveCollectionInfo.ID;
-
   GroupIterator := GetGroupIterator;
   while GroupIterator.Next(GroupData) do
   begin
     BookGroup := data.Groups.AddGroup(GroupData.GroupID, GroupData.Text);
 
-    BookIterator := GetBookIterator(GroupData.GroupID, CollectionID);
+    BookIterator := GetBookIterator(GroupData.GroupID, DatabaseID);
     while BookIterator.Next(BookRecord) do
       BookGroup.AddBook(BookRecord.BookKey.BookID, BookRecord.LibID);
   end;
-end;
-
-function TSystemData.GetActiveCollectionInfo: TCollectionInfo;
-begin
-  Assert(INVALID_COLLECTION_ID <> FActiveCollectionInfo.ID);
-  Result := FActiveCollectionInfo;
 end;
 
 function TSystemData.GetCollection(const CollectionID: Integer): IBookCollection;
@@ -182,12 +169,6 @@ begin
   finally
     FCollectionCache.UnlockMap;
   end;
-end;
-
-function TSystemData.GetActiveCollection: IBookCollection;
-begin
-  Assert(FActiveCollectionInfo.ID > 0);
-  Result := GetCollection(FActiveCollectionInfo.ID);
 end;
 
 procedure TSystemData.ClearCollectionCache;

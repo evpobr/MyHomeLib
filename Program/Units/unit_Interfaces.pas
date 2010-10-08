@@ -85,7 +85,7 @@ type
     //
     // Удаление коллекции
     //
-    procedure DeleteCollection(CollectionID: Integer; RemoveFromDisk: Boolean = True);
+    procedure DeleteCollection(const CollectionID: Integer; const RemoveFromDisk: Boolean = True);
 
     function HasCollections: Boolean;
     function HasCollectionWithProp(PropID: TPropertyID; const Value: string; IgnoreID: Integer = INVALID_COLLECTION_ID): Boolean;
@@ -101,9 +101,6 @@ type
 
     function GetCollection(const CollectionID: Integer): IBookCollection;
 
-    procedure ActivateCollection(CollectionID: Integer); //deprecated;
-    function GetActiveCollectionInfo: TCollectionInfo; //deprecated;
-    function GetActiveCollection: IBookCollection; //deprecated;
     function ActivateGroup(const ID: Integer): Boolean; //deprecated;
 
     //
@@ -140,7 +137,7 @@ type
     // Пользовательские данные
     //
     procedure ImportUserData(data: TUserData);
-    procedure ExportUserData(data: TUserData);
+    procedure ExportUserData(data: TUserData; const DatabaseID: Integer);
 
     //
     // Batch update methods:
@@ -211,6 +208,8 @@ type
     function CollectionID: Integer;
     function CollectionCode: COLLECTION_TYPE;
     function CollectionRoot: string;
+    function CollectionDisplayName: string;
+    function CollectionURL: string;
 
     procedure SetProperty(const PropID: TPropertyID; const Value: Variant);
     function GetProperty(const PropID: TPropertyID): Variant;
