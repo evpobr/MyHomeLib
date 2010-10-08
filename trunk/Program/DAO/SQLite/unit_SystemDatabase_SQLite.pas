@@ -125,7 +125,7 @@ type
       const RootFolder: string
     ): Integer;
 
-    procedure DeleteCollection(CollectionID: Integer; RemoveFromDisk: Boolean = True);
+    procedure DeleteCollection(const CollectionID: Integer; const RemoveFromDisk: Boolean = True);
 
     // function HasCollections: Boolean; // use base implementation
     function HasCollectionWithProp(PropID: TPropertyID; const Value: string; IgnoreID: Integer = INVALID_COLLECTION_ID): Boolean;
@@ -138,9 +138,6 @@ type
 
     // function GetCollectionByID(const CollectionID: Integer): IBookCollection; // use base implementation
 
-    procedure ActivateCollection(CollectionID: Integer);
-    // function GetActiveCollectionInfo: ICollectionInfo; // use base implementation
-    // function GetActiveBookCollection: IBookCollection; // use base implementation
     function ActivateGroup(const ID: Integer): Boolean;
 
     procedure GetBookRecord(const BookKey: TBookKey; var BookRecord: TBookRecord);
@@ -441,17 +438,11 @@ end;
 {TSystemData_SQLite}
 
 constructor TSystemData_SQLite.Create(const DBUserFile: string);
-var
-  collectionID: Integer;
 begin
   inherited Create;
 
   Assert(FileExists(DBUserFile));
   FDatabase := TSQLiteDatabase.Create(DBUserFile);
-
-  collectionID := FindFirstExistingCollectionID(1);
-  if collectionID > 0 then
-    ActivateCollection(collectionID);
 end;
 
 destructor TSystemData_SQLite.Destroy;
@@ -504,12 +495,6 @@ begin
   finally
     FreeAndNil(query);
   end;
-end;
-
-procedure TSystemData_SQLite.ActivateCollection(CollectionID: Integer);
-begin
-  Assert(CollectionID > 0);
-  FActiveCollectionInfo := GetCollectionInfo(CollectionID);
 end;
 
 function TSystemData_SQLite.HasCollectionWithProp(PropID: TPropertyID; const Value: string; IgnoreID: Integer): Boolean;
@@ -656,7 +641,7 @@ begin
   end;
 end;
 
-procedure TSystemData_SQLite.DeleteCollection(CollectionID: Integer; RemoveFromDisk: Boolean = True);
+procedure TSystemData_SQLite.DeleteCollection(const CollectionID: Integer; const RemoveFromDisk: Boolean = True);
 const
   DELETE_BASES_QUERY = 'DELETE FROM Bases WHERE DatabaseID = ? ';
 var
@@ -675,11 +660,6 @@ begin
 
   if RemoveFromDisk then
     DeleteFile(DBFileName);
-
-  // The first collection becomes the current one:
-  collectionID := FindFirstExistingCollectionID(1);
-  if collectionID > 0 then
-    ActivateCollection(collectionID);
 end;
 
 function TSystemData_SQLite.CreateCollection(
@@ -984,7 +964,10 @@ var
   author: TAuthorData;
   genre: TGenreData;
   query: TSQLiteQuery;
+  collectionInfo: TCollectionInfo;
 begin
+  collectionInfo := GetCollectionInfo(BookRecord.BookKey.DatabaseID);
+
   query := FDatabase.NewQuery(SQL_UPDATE);
   try
     query.SetParam(0, BookRecord.LibID);
@@ -994,7 +977,7 @@ begin
     query.SetParam(4, BookRecord.Date);
     query.SetParam(5, BookRecord.LibRate);
     query.SetParam(6, BookRecord.Lang);
-    query.SetParam(7, TPath.Combine(FActiveCollectionInfo.RootFolder, BookRecord.Folder));
+    query.SetParam(7, TPath.Combine(collectionInfo.RootFolder, BookRecord.Folder));
     query.SetParam(8, BookRecord.FileName);
     query.SetParam(9, BookRecord.InsideNo);
     query.SetParam(10, BookRecord.FileExt);
@@ -1323,7 +1306,10 @@ var
   genre: TGenreData;
   query: TSQLiteQuery;
   exists: Boolean;
+  collectionInfo: TCollectionInfo;
 begin
+  collectionInfo := GetCollectionInfo(BookKey.DatabaseID);
+
   query := FDatabase.NewQuery(SQL_SELECT);
   try
     query.SetParam(0, BookKey.BookID);
@@ -1345,7 +1331,7 @@ begin
       query.SetParam(4, BookRecord.Date);
       query.SetParam(5, BookRecord.LibRate);
       query.SetParam(6, BookRecord.Lang);
-      query.SetParam(7, TPath.Combine(FActiveCollectionInfo.RootFolder, BookRecord.Folder));
+      query.SetParam(7, TPath.Combine(collectionInfo.RootFolder, BookRecord.Folder));
       query.SetParam(8, BookRecord.FileName);
       query.SetParam(9, BookRecord.InsideNo);
       query.SetParam(10, BookRecord.FileExt);

@@ -1344,7 +1344,7 @@ begin
   finally
     query.Free;
   end;
-  FSystemData.ExportUserData(data);
+  FSystemData.ExportUserData(data, CollectionID);
 end;
 
 function TBookCollection_SQLite.CheckFileInCollection(const FileName: string; const FullNameSearch: Boolean; const ZipFolder: Boolean): Boolean;

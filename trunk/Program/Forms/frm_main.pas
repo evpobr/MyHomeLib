@@ -1000,7 +1000,7 @@ resourcestring
   rstrNeedDBUpgrade = 'Вы успешно обновили программу. Для нормальной работы необходимо обновить струткуру таблиц БД. Сделать это прямо сейчас?';
   rstrFirstRun = 'MyHomeLib - первый запуск';
   rstrToConvertChangeCollection = 'Для конвертирования книги перейдите в соответствующую коллекцию';
-  rstrCollectionFileNotFound = 'Файл коллекции "%s" не найден.' + CRLF + 'Невозможно запустить программу.';
+  rstrCollectionFileNotFound = 'Файл коллекции не найден.' + CRLF + 'Невозможно запустить программу.';
   // rstrStartCollectionUpdate = 'Доступно обновление коллекций.' + CRLF + ' Начать обновление ?';
   rstrStarting = 'Старт ...';
   rstrUnfinishedDownloads = 'В списке есть незавершенные закачки!' + CRLF + 'Вы все еще хотите выйти из программы?';
@@ -1344,7 +1344,7 @@ begin
         if FSearchCriteria.DateIdx= -1 then
           FSearchCriteria.DateText := cbDate.Text;
 
-        Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+        Assert(Assigned(FCollection));
         BookIterator := FCollection.Search(FSearchCriteria, False);
 
         // Ставим фильтр
@@ -1448,6 +1448,7 @@ var
   SavedCursor: TCursor;
   CollectionType: Integer;
   EmptySearchCriteria: TBookSearchCriteria;
+  collectionInfo: TCollectionInfo;
 begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -1471,15 +1472,10 @@ begin
       Exit;
     end;
 
-    //
-    // Активировать коллекцию
-    //
-    FSystemData.ActivateCollection(Settings.ActiveCollection);
-
     FCollection := FSystemData.GetCollection(Settings.ActiveCollection);
 
-    Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
-    frmMain.Caption := 'MyHomeLib - ' + FSystemData.GetActiveCollectionInfo.DisplayName;
+    Assert(Assigned(FCollection));
+    frmMain.Caption := 'MyHomeLib - ' + FCollection.CollectionDisplayName;
 
     // определяем типы коллекции
     CollectionType := FCollection.CollectionCode;
@@ -1725,7 +1721,7 @@ var
   end;
 
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   ActiveCollectionID := FCollection.CollectionID;
 
   miCollSelect.Clear;
@@ -1824,7 +1820,7 @@ begin
   pmiScripts.Clear;
   mmiScripts.Clear;
 
-  //Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  //Assert(Assigned(FCollection));
   fb2Collection := Assigned(FCollection) and isFB2Collection(FCollection.CollectionCode);
 
   if fb2Collection then
@@ -1903,7 +1899,6 @@ begin
   try
     if frmNCWizard.ShowModal = mrOk then
     begin
-      FSystemData.ActivateCollection(frmNCWizard.NewCollectionID);
       Settings.ActiveCollection := frmNCWizard.NewCollectionID;
       InitCollection(True);
       Result := True;
@@ -1944,7 +1939,7 @@ var
   Page: Integer;
   FilterValue: TFilterValue;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
@@ -2058,7 +2053,7 @@ var
   SavedCursor: TCursor;
   FilterValue: TFilterValue;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
@@ -2230,6 +2225,7 @@ end;
 procedure TfrmMain.LoadLastCollection;
 var
   CollectionID: Integer;
+  collectionInfo: TCollectionInfo;
 begin
   //
   // этот метод вызывается и в том случае, если коллекций нет совсем (и никогда небыло)
@@ -2237,13 +2233,14 @@ begin
   //
   // пока оставляю старую логику
   //
-  //Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  //Assert(Assigned(FCollection));
   if FSystemData.HasCollections then
   begin
     CollectionID := FSystemData.FindFirstExistingCollectionID(Settings.ActiveCollection);
     if CollectionID < 0 then
     begin
-      MHLShowError(rstrCollectionFileNotFound, [FSystemData.GetActiveCollectionInfo.DBFileName]);
+      // if was unable to find CollectionID, do not know DBFileName either:
+      MHLShowError(rstrCollectionFileNotFound);
       //
       // Мне кажется, это очень жестко по отношению к пользователю.
       // Может лучше вернуть ошибку и запустить мастера создания коллекции?
@@ -2623,7 +2620,7 @@ begin
     end;
 
     FilterValue := AuthorBookFilter;
-    if Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID) then
+    if Assigned(FCollection) then
       FillBooksTree(tvBooksA, FCollection.GetBookIterator(bmByAuthor, False, @FilterValue), False, True, @FLastAuthorBookID); // авторы
   finally
     Screen.Cursor := SavedCursor;
@@ -2677,7 +2674,7 @@ begin
     end;
 
     FilterValue := SeriesBookFilter;
-    if Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID) then
+    if Assigned(FCollection) then
       FillBooksTree(tvBooksS, FCollection.GetBookIterator(bmBySeries, False, @FilterValue), False, False, @FLastSeriesBookID); // авторы
   finally
     Screen.Cursor := SavedCursor;
@@ -2732,7 +2729,7 @@ begin
     end;
 
     FilterValue := GenreBookFilter;
-    if Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID) then
+    if Assigned(FCollection) then
       FillBooksTree(tvBooksG, FCollection.GetBookIterator(bmByGenre, False, @FilterValue), True, True, @FLastGenreBookID);
   finally
     Screen.Cursor := SavedCursor;
@@ -3327,7 +3324,7 @@ var
   SavedCursor: TCursor;
   CollectionInfo: TCollectionInfo;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
@@ -3400,7 +3397,7 @@ var
   Tree: TBookTree;
   ExportMode: TExportMode;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   GetActiveTree(Tree);
   FillBookIdList(Tree, BookIDList);
 
@@ -3531,7 +3528,7 @@ var
   WorkFile: string;
   CollectionInfo: TCollectionInfo;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   Assert(BookRecord.nodeType = ntBookInfo);
 
   SavedCursor := Screen.Cursor;
@@ -3590,7 +3587,7 @@ procedure TfrmMain.HideDeletedBooksExecute(Sender: TObject);
 var
   SavedCursor: TCursor;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
@@ -3650,7 +3647,7 @@ end;
 
 function TfrmMain.InternalSetAuthorFilter(Button: TToolButton): string;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   if Assigned(FLastLetterA) then
     FLastLetterA.Down := False;
   FLastLetterA := Button;
@@ -3702,7 +3699,7 @@ end;
 
 function TfrmMain.InternalSetSerieFilter(Button: TToolButton): string;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   if Assigned(FLastLetterS) then
     FLastLetterS.Down := False;
   FLastLetterS := Button;
@@ -3728,7 +3725,7 @@ var
   Button: TToolButton;
   AFilter: string;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   SaveCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
@@ -3763,7 +3760,7 @@ procedure TfrmMain.ShowLocalOnlyExecute(Sender: TObject);
 var
   SavedCursor: TCursor;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
@@ -4243,7 +4240,7 @@ var
   BookFileName: string;
   SavedCursor: TCursor;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   if ActiveView = FavoritesView then
   begin
     MHLShowWarning(rstrChangeCollectionToRemoveABook);
@@ -4310,10 +4307,10 @@ var
   CollectionInfoIterator: ICollectionInfoIterator;
   CollectionInfo: TCollectionInfo;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
 
   { TODO -oNickR -cUsability : Думаю, стоит сделать специальный диалог для этого случая. Тогда мы сможем спросить, удалять файл коллекции или нет. }
-  if MessageDlg(rstrRemoveCollection + '"' + FSystemData.GetActiveCollectionInfo.DisplayName + '"?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+  if MessageDlg(rstrRemoveCollection + '"' + FCollection.CollectionDisplayName + '"?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
     Exit;
 
   //
@@ -4336,7 +4333,7 @@ var
   DatabaseID: Integer;
   FilePath: string;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   DatabaseID := FCollection.CollectionID;
 
   ProcessNodes(
@@ -4403,7 +4400,7 @@ var
   end;
 
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   if ActiveView = DownloadView then
   begin
     btnDeleteDownloadClick(Sender);
@@ -4619,18 +4616,18 @@ var
   BookRecord: TBookRecord;
   URL: string;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   if isExternalCollection(FCollection.CollectionCode) then
   begin
     //
     // TODO -oNickR : Думаю, стоит приделать к этому диалогу возможность запоминать выбор пользователя и переходить на сайт без вопроса
     //
-    if MHLShowWarning(Format(rstrGoToLibrarySite, [FSystemData.GetActiveCollectionInfo.URL]), mbYesNo) = mrYes then
+    if MHLShowWarning(Format(rstrGoToLibrarySite, [FCollection.CollectionURL]), mbYesNo) = mrYes then
     begin
       BookKey := CreateBookKey(BookID, FCollection.CollectionID);
       FCollection.GetBookRecord(BookKey, BookRecord, False);
       { TODO -oNickR -cLibDesc : этот URL должен формироваться обвязкой библиотеки, т к его формат может меняться }
-      URL := Format('%sb/%s/edit', [FSystemData.GetActiveCollectionInfo.URL, BookRecord.LibID]);
+      URL := Format('%sb/%s/edit', [FCollection.CollectionURL, BookRecord.LibID]);
       SimpleShellExecute(Handle, URL);
     end;
     Result := True;
@@ -4646,7 +4643,7 @@ var
   Node: PVirtualNode;
   frmEditBook: TfrmEditBookInfo;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   if (ActiveView = FavoritesView) or (ActiveView = DownloadView) then
   begin
     MHLShowWarning(rstrCannotEditFavoritesError);
@@ -4686,7 +4683,7 @@ var
   DataB: PBookRecord;
   Tree: TBookTree;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   if ActiveView = FavoritesView then
   begin
     MHLShowWarning(rstrUnableToEditBooksFromFavourites);
@@ -4735,7 +4732,7 @@ var
   S: string;
   SeriesID: Integer;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   if ActiveView = FavoritesView then
   begin
     MHLShowWarning(rstrUnableToEditBooksFromFavourites);
@@ -5027,7 +5024,7 @@ procedure TfrmMain.BookSetRateExecute(Sender: TObject);
 var
   NewRate: Integer;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   if Sender = acBookSetRate1 then
     NewRate := 1
   else if Sender = acBookSetRate2 then
@@ -5097,7 +5094,7 @@ end;
 
 function TfrmMain.UpdateEditAction(Action: TAction): Boolean;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   Result := isOnlineCollection(FCollection.CollectionCode);
 
   if Result then
@@ -5230,7 +5227,7 @@ var
   GroupData: PGroupData;
   SavedCursor: TCursor;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   GetActiveTree(Tree);
   Assert(Assigned(Tree));
 
@@ -5386,7 +5383,7 @@ end;
 
 procedure TfrmMain.ImportFb2Execute(Sender: TObject);
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   unit_Import.ImportFB2(FCollection.CollectionID);
 
   InitCollection(True);
@@ -5405,7 +5402,7 @@ end;
 
 procedure TfrmMain.ImportFb2ZipExecute(Sender: TObject);
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   unit_Import.ImportFB2Archive(FCollection.CollectionID, afZip);
 
   InitCollection(True);
@@ -5413,7 +5410,7 @@ end;
 
 procedure TfrmMain.ImportFBDExecute(Sender: TObject);
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   unit_Import.ImportFBD(FCollection.CollectionID);
 
   InitCollection(True);
@@ -5650,7 +5647,7 @@ var
   frmGenres: TfrmGenreTree;
   Genres: TBookGenres;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   frmGenres := TfrmGenreTree.Create(Application);
   try
     FillGenresTree(frmGenres.tvGenresTree, FCollection.GetGenreIterator(gmAll));
@@ -5749,7 +5746,7 @@ var
   strReview: string;
   NewCode: Integer;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   GetActiveTree(Tree);
   Assert(Assigned(Tree));
 
@@ -5802,10 +5799,10 @@ begin
       if IsOnline and ReviewEditable then
       begin
         { TODO -oNickR -cLibDesc : этот URL должен формироваться обвязкой библиотеки, т к его формат может меняться }
-        if FSystemData.GetActiveCollectionInfo.URL = '' then
+        if FCollection.CollectionURL = '' then
           URL := Format('%sb/%s/', [Settings.InpxURL, Data^.LibID])
         else
-          URL := Format('%sb/%s/', [FSystemData.GetActiveCollectionInfo.URL, Data^.LibID]);
+          URL := Format('%sb/%s/', [FCollection.CollectionURL, Data^.LibID]);
 
         frmBookDetails.AllowOnlineReview(URL);
       end;
@@ -5894,7 +5891,7 @@ var
   SavedCursor: TCursor;
   CollectionInfo: TCollectionInfo;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   GetActiveTree(Tree);
 
   Node := Tree.FocusedNode;
@@ -5997,7 +5994,7 @@ procedure TfrmMain.ShowCollectionStatisticsExecute(Sender: TObject);
 var
   frmStat: TfrmStat;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   frmStat := TfrmStat.Create(Application);
   try
     frmStat.LoadCollectionInfo(FCollection);
@@ -6009,7 +6006,7 @@ end;
 
 procedure TfrmMain.SyncFilesExecute(Sender: TObject);
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   UpdatePositions;
 
   if isOnlineCollection(FCollection.CollectionCode) then
@@ -6028,7 +6025,7 @@ procedure TfrmMain.UpdateOnlineCollectionExecute(Sender: TObject);
 var
   ActiveCollectionID: Integer;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   if CheckLibUpdates(False) then
   begin
     UpdatePositions;
@@ -6036,7 +6033,6 @@ begin
     ActiveCollectionID := FCollection.CollectionID;
     StartLibUpdate;
     Settings.ActiveCollection := ActiveCollectionID;
-    FSystemData.ActivateCollection(ActiveCollectionID);
     InitCollection(True);
   end;
 end;
@@ -6063,7 +6059,7 @@ end;
 
 procedure TfrmMain.CompactDataBaseExecute(Sender: TObject);
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   FCollection.CompactDatabase;
 end;
 
@@ -6165,7 +6161,7 @@ var
   FileName: string;
   Data: TUserData;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   if not unit_Helpers.GetFileName(fnSaveUserData, FileName) then
     Exit;
 
@@ -6236,7 +6232,7 @@ procedure TfrmMain.ShowCollectionSettingsExecute(Sender: TObject);
 var
   frmBases: TfrmBases;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   frmBases := TfrmBases.Create(Application);
   try
     frmBases.SetCollection(FSystemData, FCollection);
@@ -6252,7 +6248,7 @@ end;
 
 procedure TfrmMain.MarkAsReadedExecute(Sender: TObject);
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
 
   ProcessNodes(
     procedure (Tree: TBookTree; Node: PVirtualNode)
@@ -6289,7 +6285,7 @@ procedure TfrmMain.UpdateGenresExecute(Sender: TObject);
 var
   AFileName: string;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   if isFB2Collection(FCollection.CollectionCode) then
     FCollection.ReloadGenres(Settings.SystemFileName[sfGenresFB2])
   else if unit_Helpers.GetFileName(fnGenreList, AFileName) then
@@ -6299,7 +6295,7 @@ end;
 
 procedure TfrmMain.RepairDataBaseExecute(Sender: TObject);
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   FCollection.RepairDatabase;
 end;
 
@@ -6455,7 +6451,7 @@ procedure TfrmMain.ImportNonFB2Execute(Sender: TObject);
 var
   frmAddBooks: TfrmAddnonfb2;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   frmAddBooks := TfrmAddnonfb2.Create(Application);
   try
     frmAddBooks.Collection := FCollection;
@@ -6530,7 +6526,7 @@ procedure TfrmMain.OnImportUserDataHandler(const UserDataSource: TUserData);
 var
   SavedCursor: TCursor;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
@@ -6573,7 +6569,7 @@ procedure TfrmMain.Export2INPXExecute(Sender: TObject);
 var
   FileName: string;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   if not GetFileName(fnSaveINPX, FileName) then
     Exit;
 
@@ -6755,7 +6751,7 @@ var
   Node: PVirtualNode;
   Data: PBookRecord;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   //
   // Locate the selected book record and pass it to the edit form
   //
@@ -6785,7 +6781,7 @@ begin
   //
   // См. TfrmMain.OnChangeBook2ZipHandler как пример верной реализации
   //
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   Assert(BookRecord.nodeType = ntBookInfo);
 
   FCollection.BeginBulkOperation;
@@ -6849,7 +6845,7 @@ procedure TfrmMain.OnChangeBook2ZipHandler(const BookRecord: TBookRecord);
 var
   NewFileName: string;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   Assert(BookRecord.nodeType = ntBookInfo);
 
   NewFileName := BookRecord.FileName + ZIP_EXTENSION;
@@ -6876,7 +6872,7 @@ end;
 
 function TfrmMain.GenreBookFilter: TFilterValue;
 begin
-  Assert(Assigned(FCollection) and (FCollection.CollectionID = FSystemData.GetActiveCollection.CollectionID));
+  Assert(Assigned(FCollection));
   if isFB2Collection(FCollection.CollectionCode) or not Settings.ShowSubGenreBooks then
     Result.ValueString := FLastGenreCode
   else
