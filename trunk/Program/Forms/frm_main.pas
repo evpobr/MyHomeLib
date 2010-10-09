@@ -1595,8 +1595,65 @@ begin
 end;
 
 procedure TfrmMain.GenreLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
+var
+  SavedCursor: TCursor;
+  GenreCode: string;
+  Node: PVirtualNode;
+  GenreData: PGenreData;
+  BookTree: TBookTree;
+  BookData: PBookRecord;
+  BookKey: TBookKey;
+  FilterValue: TFilterValue;
 begin
-//
+  Assert(Assigned(FCollection));
+
+  // Get current book's key:
+  GetActiveTree(BookTree);
+  Node := BookTree.GetFirstSelected;
+  BookData := BookTree.GetNodeData(Node);
+  if not Assigned(BookData) or (BookData^.nodeType <> ntBookInfo) then
+    Exit;
+  BookKey := BookData^.BookKey;
+
+  SavedCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    // Make sure current collection matches the book's one:
+    if BookKey.DatabaseID <> FCollection.CollectionID then
+    begin
+      Settings.ActiveCollection := BookKey.DatabaseID;
+      InitCollection(True);
+    end;
+
+    // Change page to Genres:
+    pgControl.ActivePageIndex := PAGE_GENRES;
+    pgControlChange(nil);
+
+    // Locate the genre:
+    GenreCode := Link;
+    Node := tvGenres.GetFirst;
+    while Assigned(Node) do
+    begin
+      GenreData := tvGenres.GetNodeData(Node);
+      Assert(Assigned(GenreData));
+      if GenreData^.GenreCode = GenreCode then
+      begin
+        tvGenres.Selected[Node] := True;
+        tvGenres.FocusedNode := Node;
+        FLastGenreCode := GenreCode;
+        FLastGenreIsContainer := (Node^.ChildCount > 0);
+        Break;
+      end;
+      Node := tvGenres.GetNext(Node);
+    end;
+
+    // Fill book tree and locate the book:
+    FilterValue := GenreBookFilter; // uses FLastGenreCode initialized earlier
+    FLastGenreBookID := BookKey;
+    FillBooksTree(tvBooksG, FCollection.GetBookIterator(bmByGenre, False, @FilterValue),  True,  True, @FLastGenreBookID);
+  finally
+    Screen.Cursor := SavedCursor;
+  end;
 end;
 
 procedure TfrmMain.AuthorLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
@@ -5555,36 +5612,19 @@ end;
 // Locate book in the Authors' panel
 procedure TfrmMain.LocateAuthorAndBook(const FullAuthorName: string; const BookKey: TBookKey);
 var
-  Node: PVirtualNode;
-  BookData: PBookRecord;
-  Tree: TBookTree;
   AuthorData: PAuthorData;
   FilterValue: TFilterValue;
 begin
-  // Locate the author (using the text box) and fill the authors' book tree:
+  // Locate the author (using the text box):
   edLocateAuthor.Text := FullAuthorName;
   edLocateAuthorChange(nil);
   AuthorData := tvAuthors.GetNodeData(tvAuthors.FocusedNode);
   FLastAuthorID := AuthorData.AuthorID;
+
+  // Locate the book:
   FilterValue.ValueInt := AuthorData.AuthorID;
-  FillBooksTree(tvBooksA, FCollection.GetBookIterator(bmByAuthor, False, @FilterValue), False, True, nil);  // авторы
-
-  // Locate the book by key:
-  Node := tvBooksA.GetFirst;
-  while Assigned(Node) do
-  begin
-    BookData := tvBooksA.GetNodeData(Node);
-    Assert(Assigned(BookData));
-    if BookKey.IsSameAs(BookData.BookKey) then
-    begin
-      FFirstFoundBook := Node;
-      FLastFoundBook := Node;
-      FLastAuthorBookID := BookData.BookKey; // ir relevant for locate, fill just in case
-
-      Exit;
-    end;
-    Node := tvBooksA.GetNext(Node);
-  end;
+  FLastAuthorBookID := BookKey;
+  FillBooksTree(tvBooksA, FCollection.GetBookIterator(bmByAuthor, False, @FilterValue), False, True, @FLastAuthorBookID);  // авторы
 end;
 
 procedure TfrmMain.edLocateAuthorChange(Sender: TObject);
@@ -5592,7 +5632,7 @@ var
   Button: TToolButton;
 begin
   //
-  // Проверим текущий фильтр и изменим его если нужо
+  // Проверим текущий фильтр и изменим его если нужно
   //
   Assert(Assigned(FLastLetterA));
   Button := GetFilterButton(FAuthorBars, edLocateAuthor.Text);
@@ -5895,7 +5935,6 @@ var
   BookKey: TBookKey;
   FullAuthorName: string;
   SavedCursor: TCursor;
-  CollectionInfo: TCollectionInfo;
 begin
   Assert(Assigned(FCollection));
   GetActiveTree(Tree);
@@ -5927,7 +5966,6 @@ begin
       FullAuthorName := Data^.Authors[0].GetFullName;
       BookKey := Data^.BookKey;
 
-      CollectionInfo := FSystemData.GetCollectionInfo(Data^.BookKey.DatabaseID);
       Settings.ActiveCollection := Data^.BookKey.DatabaseID;
       // Please notice, that after the following line, Data no longer points to the correct book:
       InitCollection(True);
@@ -6897,7 +6935,7 @@ end;
 function TfrmMain.GenreBookFilter: TFilterValue;
 begin
   Assert(Assigned(FCollection));
-  if isFB2Collection(FCollection.CollectionCode) or not Settings.ShowSubGenreBooks then
+  if isFB2Collection(FCollection.CollectionCode) or (not Settings.ShowSubGenreBooks) then
     Result.ValueString := FLastGenreCode
   else
     Result.ValueString := FLastGenreCode + IfThen(FLastGenreIsContainer, '.', '');
