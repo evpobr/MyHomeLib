@@ -5622,9 +5622,9 @@ begin
   FLastAuthorID := AuthorData.AuthorID;
 
   // Locate the book:
-  FilterValue.ValueInt := AuthorData.AuthorID;
+  FilterValue := AuthorBookFilter; // uses FLastAuthorID
   FLastAuthorBookID := BookKey;
-  FillBooksTree(tvBooksA, FCollection.GetBookIterator(bmByAuthor, False, @FilterValue), False, True, @FLastAuthorBookID);  // авторы
+  FillBooksTree(tvBooksA, FCollection.GetBookIterator(bmByAuthor, False, @FilterValue), False, True, @FLastAuthorBookID);
 end;
 
 procedure TfrmMain.edLocateAuthorChange(Sender: TObject);
