@@ -113,12 +113,26 @@ begin
 end;
 
 procedure TDownloadManagerThread.Finished;
+var
+  node: PVirtualNode;
 begin
   if FCurrentData <> nil then
     if Not FError then
     begin
       FCurrentData.State := dsOk ;
-      frmMain.tvDownloadList.DeleteNode(FCurrentNode);
+
+      // Need to search before delete, to prevent Access Violation
+      node := frmMain.tvDownloadList.GetFirst;
+      while Assigned(node) do
+      begin
+        if node = FCurrentNode then
+        begin
+          frmMain.tvDownloadList.DeleteNode(FCurrentNode);
+          break;
+        end;
+        node := frmMain.tvDownloadList.GetNext(node);
+      end;
+
       FCurrentNode := nil;
       FCurrentData := nil;
       inc(FProcessed);
