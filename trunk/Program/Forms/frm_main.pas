@@ -987,6 +987,7 @@ resourcestring
   rstrApplyingFilter = 'Применяем фильтр ...';
   rstrNoUpdatesAvailable = 'Нет доступных обновлений';
   rstrNotFromDownloadsError = 'Операция недоступна из списка закачек.';
+  rstrNotForExtension = 'Операция недоступна для файлов с расширением %s';
   rstrUnableDeleteBuiltinGroupError = 'Нельзя удалить встроенную группу!';
   rstrCheckingUpdates = 'Проверка обновлений ...';
   rstrGroupAlreadyExists = 'Группа с таким именем уже существует!';
@@ -1495,7 +1496,6 @@ begin
 
     ///miImport.Visible := IsPrivate;
     ///miBookEdit.Visible := IsPrivate;
-    ///tbtnFBD.Enabled := IsPrivate and not IsFB2;
     ///miConverToFBD.Visible := IsPrivate and not IsFB2;
     ///tbtnAutoFBD.Enabled := IsPrivate and not IsFB2;
     ///miDeleteBook.Visible := IsPrivate; // FSystemData.ActiveCollection.AllowDelete;
@@ -1505,6 +1505,13 @@ begin
     ///miDownloadBooks.Visible := IsOnline;
 
     // Коллекция
+
+    // Группа
+
+    // Редактирование
+    acEditConver2FBD.Enabled := IsPrivate and not IsFB2;
+
+    // Вид
 
     // Инструменты
 
@@ -6201,6 +6208,12 @@ begin
   Data := Tree.GetNodeData(Node);
   if not Assigned(Data) or (Data^.nodeType <> ntBookInfo) then
     Exit;
+
+  if (Data^.FileExt = FB2_EXTENSION) then
+  begin
+    MHLShowWarning(Format(rstrNotForExtension, [Data^.FileExt]));
+    Exit;
+  end;
 
   frmConvert := TfrmConvertToFBD.Create(Application);
   try
