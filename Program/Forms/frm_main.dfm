@@ -412,7 +412,7 @@ object frmMain: TfrmMain
           TabOrder = 2
           OnResize = InfoPanelResize
           OnAuthorLinkClicked = AuthorLinkClicked
-          OnSerieLinkClicked = SerieLinkClicked
+          OnSeriesLinkClicked = SeriesLinkClicked
           OnGenreLinkClicked = GenreLinkClicked
         end
         object pnAuthorBooksTitle: TMHLSimplePanel
@@ -716,7 +716,7 @@ object frmMain: TfrmMain
           TabOrder = 2
           OnResize = InfoPanelResize
           OnAuthorLinkClicked = AuthorLinkClicked
-          OnSerieLinkClicked = SerieLinkClicked
+          OnSeriesLinkClicked = SeriesLinkClicked
           OnGenreLinkClicked = GenreLinkClicked
         end
         object pnSerieBooksTitle: TMHLSimplePanel
@@ -985,7 +985,7 @@ object frmMain: TfrmMain
           TabOrder = 2
           OnResize = InfoPanelResize
           OnAuthorLinkClicked = AuthorLinkClicked
-          OnSerieLinkClicked = SerieLinkClicked
+          OnSeriesLinkClicked = SeriesLinkClicked
           OnGenreLinkClicked = GenreLinkClicked
         end
         object tvBooksG: TBookTree
@@ -1116,7 +1116,7 @@ object frmMain: TfrmMain
           TabOrder = 2
           OnResize = InfoPanelResize
           OnAuthorLinkClicked = AuthorLinkClicked
-          OnSerieLinkClicked = SerieLinkClicked
+          OnSeriesLinkClicked = SeriesLinkClicked
           OnGenreLinkClicked = GenreLinkClicked
         end
         object pnlFullSearch: TMHLSimplePanel
@@ -1759,7 +1759,7 @@ object frmMain: TfrmMain
           TabOrder = 2
           OnResize = InfoPanelResize
           OnAuthorLinkClicked = AuthorLinkClicked
-          OnSerieLinkClicked = SerieLinkClicked
+          OnSeriesLinkClicked = SeriesLinkClicked
           OnGenreLinkClicked = GenreLinkClicked
           DesignSize = (
             539

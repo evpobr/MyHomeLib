@@ -40,7 +40,7 @@ type
     FAnnotation: TMemo;
     FOnAuthorLinkClicked: TSysLinkEvent;
     FOnGenreLinkClicked: TSysLinkEvent;
-    FOnSerieLinkClicked: TSysLinkEvent;
+    FOnSeriesLinkClicked: TSysLinkEvent;
 
     function GetShowCover: boolean;
     procedure SetShowCover(const Value: boolean);
@@ -140,7 +140,7 @@ type
     property ShowAnnotation: Boolean read GetShowAnnotation write SetShowAnnotation default True;
 
     property OnAuthorLinkClicked: TSysLinkEvent read FOnAuthorLinkClicked write FOnAuthorLinkClicked;
-    property OnSerieLinkClicked: TSysLinkEvent read FOnSerieLinkClicked write FOnSerieLinkClicked;
+    property OnSeriesLinkClicked: TSysLinkEvent read FOnSeriesLinkClicked write FOnSeriesLinkClicked;
     property OnGenreLinkClicked: TSysLinkEvent read FOnGenreLinkClicked write FOnGenreLinkClicked;
   end;
 
@@ -262,8 +262,8 @@ begin
   end
   else if Sender = FSeries then
   begin
-    if Assigned(FOnSerieLinkClicked) then
-      FOnSerieLinkClicked(Self, Link, LinkType);
+    if Assigned(FOnSeriesLinkClicked) then
+      FOnSeriesLinkClicked(Self, Link, LinkType);
   end
   else if Sender = FGenres then
   begin

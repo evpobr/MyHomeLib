@@ -700,7 +700,7 @@ type
     procedure FreeDownloadNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure AuthorLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
     procedure GenreLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
-    procedure SerieLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
+    procedure SeriesLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
     procedure UpdateBookAction(Sender: TObject);
     procedure StatusBarDrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel; const Rect: TRect);
     procedure StatusBarResize(Sender: TObject);
@@ -742,7 +742,7 @@ type
     procedure GetActiveTree(var Tree: TBookTree);
     procedure Selection(SelState: Boolean);
     procedure LocateAuthor(const Text: string);
-    procedure LocateSerie(const Text: string);
+    procedure LocateSeries(const Text: string);
 
     procedure CloseCollection;
     procedure InitCollection(ApplyAuthorFilter: Boolean);
@@ -820,7 +820,7 @@ type
     //
     // Обработчик события для кнопок алфавитного тулбара на странице "Серии"
     //
-    function InternalSetSerieFilter(Button: TToolButton): string;
+    function InternalSetSeriesFilter(Button: TToolButton): string;
     procedure OnSetSerieFilter(Sender: TObject);
 
   public
@@ -1589,9 +1589,59 @@ begin
   end;
 end;
 
-procedure TfrmMain.SerieLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
+procedure TfrmMain.SeriesLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
+var
+  savedCursor: TCursor;
+  seriesID: Integer;
+  seriesTitle: string;
+  node: PVirtualNode;
+  seriesData: PSeriesData;
+  bookTree: TBookTree;
+  bookData: PBookRecord;
+  bookKey: TBookKey;
+  filterValue: TFilterValue;
 begin
-//
+  Assert(Assigned(FCollection));
+
+  // Get current book's key:
+  GetActiveTree(bookTree);
+  node := bookTree.GetFirstSelected;
+  bookData := bookTree.GetNodeData(node);
+  if not Assigned(bookData) or (bookData^.nodeType <> ntBookInfo) then
+    Exit;
+  bookKey := bookData^.BookKey;
+
+  seriesID := StrToInt(Link);
+  if bookData.SeriesID <> seriesID then
+    Exit // shouldn't happen, just in case
+  else
+    seriesTitle := bookData^.Series;
+
+  savedCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+  try
+    // Make sure current collection matches the book's one:
+    if bookKey.DatabaseID <> FCollection.CollectionID then
+    begin
+      Settings.ActiveCollection := bookKey.DatabaseID;
+      InitCollection(True);
+    end;
+
+    // Change page to Genres:
+    pgControl.ActivePageIndex := PAGE_SERIES;
+    pgControlChange(nil);
+
+    FLastSeriesID := seriesID;
+    edLocateSeries.Text := seriesTitle;
+    edLocateSeriesChange(nil);
+
+    // Fill book tree and locate the book:
+    filterValue := SeriesBookFilter; // uses FLastSeriesID initialized earlier
+    FLastSeriesBookID := bookKey;
+    FillBooksTree(tvBooksS, FCollection.GetBookIterator(bmBySeries, False, @FilterValue), False, False, @FLastSeriesBookID); // серии
+  finally
+    Screen.Cursor := savedCursor;
+  end;
 end;
 
 procedure TfrmMain.GenreLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
@@ -3023,7 +3073,7 @@ begin
     InfoPanel.SetBookInfo(
       Data^.Title,
       TAuthorsHelper.GetLinkList(Data^.Authors),
-      Data^.Series,
+      TSeriesHelper.GetLink(Data^.SeriesID, Data^.Series),
       TGenresHelper.GetLinkList(Data^.Genres)
     );
 
@@ -3785,7 +3835,7 @@ begin
   end;
 end;
 
-function TfrmMain.InternalSetSerieFilter(Button: TToolButton): string;
+function TfrmMain.InternalSetSeriesFilter(Button: TToolButton): string;
 begin
   Assert(Assigned(FCollection));
   if Assigned(FLastLetterS) then
@@ -3796,6 +3846,8 @@ begin
   Result := TCharacter.ToUpper(Button.Caption);
 
   FCollection.SetSeriesFilterType(Result);
+
+  FillSeriesTree(tvSeries, FCollection.GetSeriesIterator(smFullFilter), FLastSeriesID);
 
   if (Result = ALPHA_FILTER_ALL) or (Result = ALPHA_FILTER_NON_ALPHA) then
   begin
@@ -3822,7 +3874,7 @@ begin
     Assert(Sender is TToolButton);
     Button := Sender as TToolButton;
 
-    AFilter := InternalSetSerieFilter(Button);
+    AFilter := InternalSetSeriesFilter(Button);
 
     FillSeriesTree(tvSeries, FCollection.GetSeriesIterator(smFullFilter), FLastSeriesID);
 
@@ -5564,7 +5616,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.LocateSerie(const Text: string);
+procedure TfrmMain.LocateSeries(const Text: string);
 var
   Node: PVirtualNode;
   Data: PSeriesData;
@@ -5781,22 +5833,22 @@ end;
 
 procedure TfrmMain.edLocateSeriesChange(Sender: TObject);
 var
-  S: string;
-  OldText: string;
+  Button: TToolButton;
 begin
   if Length(edLocateSeries.Text) = 0 then
     Exit;
 
-  S := AnsiUpperCase(Copy(edLocateSeries.Text, 1, 1));
-  if S <> FLastLetterS.Caption then
+  //
+  // Проверим текущий фильтр и изменим его если нужно
+  //
+  Assert(Assigned(FLastLetterS));
+  Button := GetFilterButton(FSerieBars, edLocateSeries.Text);
+  if Assigned(Button) and (Button <> FLastLetterA) then
   begin
-    OldText := edLocateSeries.Text;
-    ChangeLetterButton(S);
-    edLocateSeries.Text := OldText;
-    edLocateSeries.Perform(WM_KEYDOWN, VK_RIGHT, 0);
+    InternalSetSeriesFilter(Button);
   end;
 
-  LocateSerie(edLocateSeries.Text);
+  LocateSeries(edLocateSeries.Text);
 end;
 
 procedure TfrmMain.ShowAboutExecute(Sender: TObject);

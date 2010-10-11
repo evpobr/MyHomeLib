@@ -136,6 +136,11 @@ type
     SeriesTitle: string;
   end;
 
+  TSeriesHelper = class
+  public
+    class function GetLink(const SeriesID: Integer; const SeriesTitle: string): string;
+  end;
+
   // --------------------------------------------------------------------------
   PGenreData = ^TGenreData;
   TGenreData = record
@@ -782,6 +787,13 @@ begin
       Result := Format('<a href="%d">%s</a>', [Author.AuthorID, Author.GetFullName(True)]);
     end
   );
+end;
+
+{ TSeriesHelper }
+
+class function TSeriesHelper.GetLink(const SeriesID: Integer; const SeriesTitle: string): string;
+begin
+  Result := Format('<a href="%d">%s</a>', [SeriesID, SeriesTitle]);
 end;
 
 { TGenreData }
