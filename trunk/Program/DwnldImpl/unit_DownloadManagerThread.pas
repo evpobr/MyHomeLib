@@ -265,30 +265,34 @@ begin
     FTotal := frmMain.tvDownloadList.AbsoluteIndex(frmMain.tvDownloadList.GetLast);
 
     FDownloader := TDownloader.Create;
-    FDownloader.OnSetComment := SetComment;
-    FDownloader.OnProgress := SetProgress;
-
     try
-      Synchronize(GetCurrentFile);
-      repeat
-        if FError then
-          Sleep(30000);
-        Sleep(Settings.DwnldInterval);
-        FError := not FDownloader.Download(FSystemDB, FBookKey);
-        Synchronize(Finished);
+      FDownloader.OnSetComment := SetComment;
+      FDownloader.OnProgress := SetProgress;
 
+      try
         Synchronize(GetCurrentFile);
-        if FError and not FIgnoreErrors and not FCanceled then
-        begin
-          Res := Application.MessageBox(PWideChar(rstrIgnoreDownloadErrors),'', MB_YESNOCANCEL);
-          FCanceled := (Res = IDCANCEL);
-          FIgnoreErrors := (Res = IDYES);
-        end;
-      until FFinished or FCanceled;
-      Synchronize(Finished);
+        repeat
+          if FError then
+            Sleep(30000);
+          Sleep(Settings.DwnldInterval);
+          FError := not FDownloader.Download(FSystemDB, FBookKey);
+          Synchronize(Finished);
+
+          Synchronize(GetCurrentFile);
+          if FError and not FIgnoreErrors and not FCanceled then
+          begin
+            Res := Application.MessageBox(PWideChar(rstrIgnoreDownloadErrors),'', MB_YESNOCANCEL);
+            FCanceled := (Res = IDCANCEL);
+            FIgnoreErrors := (Res = IDYES);
+          end;
+        until FFinished or FCanceled;
+        Synchronize(Finished);
+      finally
+        FControlState := True;
+        Synchronize(SetControlsState);
+      end;
     finally
-      FControlState := True;
-      Synchronize(SetControlsState);
+      FreeAndNil(FDownloader)
     end;
   finally
     FSystemDB.ClearCollectionCache;

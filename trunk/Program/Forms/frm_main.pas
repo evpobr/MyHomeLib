@@ -2542,6 +2542,7 @@ begin
   Settings.SaveSettings;
 
   FreeAndNil(FController);
+  FreeAndNil(FDMThread);
 end;
 
 procedure TfrmMain.UpdatePositions;
