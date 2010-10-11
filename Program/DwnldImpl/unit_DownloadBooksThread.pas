@@ -132,7 +132,7 @@ begin
           Sleep(Settings.DwnldInterval);
       end;
     finally
-      FDownloader.Free;
+      FreeAndNil(FDownloader);
     end;
   finally
     FSystemDB.ClearCollectionCache;
