@@ -83,8 +83,9 @@ begin
   Node := tvGenresTree.GetFirstSelected;
   while Assigned(Node) do
   begin
-    Data := frmGenreTree.tvGenresTree.GetNodeData(Node);
-    TGenresHelper.Add(Genres, Data^.GenreCode, Data^.GenreAlias, Data^.FB2GenreCode);
+    Data := tvGenresTree.GetNodeData(Node);
+    if Assigned(Data) then
+      TGenresHelper.Add(Genres, Data^.GenreCode, Data^.GenreAlias, Data^.FB2GenreCode);
     Node := tvGenresTree.GetNextSelected(Node);
   end;
 end;
