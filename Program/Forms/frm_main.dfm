@@ -12055,6 +12055,7 @@ object frmMain: TfrmMain
     object acShowBookInfoPanel: TAction
       Category = #1042#1080#1076
       Caption = #1055#1072#1085#1077#1083#1100' '#1080#1085#1092#1086#1088#1084#1072#1094#1080#1080' '#1086' '#1082#1085#1080#1075#1077
+      Hint = #1055#1086#1082#1072#1079#1072#1090#1100'/'#1057#1087#1088#1103#1090#1072#1090#1100' '#1087#1072#1085#1077#1083#1100' '#1080#1085#1092#1086#1088#1084#1072#1094#1080#1080' '#1086' '#1082#1085#1080#1075#1077
       OnExecute = ShowBookInfoPanelExecute
       OnUpdate = ShowBookInfoPanelUpdate
     end
@@ -12073,6 +12074,7 @@ object frmMain: TfrmMain
     object acBookRead: TAction
       Category = #1050#1085#1080#1075#1072
       Caption = #1063#1080#1090#1072#1090#1100
+      Hint = #1063#1080#1090#1072#1090#1100
       OnExecute = ReadBookExecute
     end
     object acBookSend2Device: TAction
