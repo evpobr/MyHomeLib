@@ -889,7 +889,7 @@ type
     //
     function GetBookNode(const Tree: TBookTree; const BookKey: TBookKey): PVirtualNode; overload;
 
-    procedure FillBookIdList(const Tree: TBookTree; var BookIDList: TBookIdList);
+    procedure FillBookIdList(const Tree: TBookTree; var BookIDList: TBookIdList; const Uncheck: Boolean = True);
     procedure ClearLabels(Tag: Integer; Full: Boolean);
     procedure FillAllBooksTree;
     procedure ChangeLetterButton(const S: string);
@@ -3464,7 +3464,11 @@ var
   Node: PVirtualNode;
   Data: PBookRecord;
   SavedCursor: TCursor;
-  CollectionInfo: TCollectionInfo;
+  targetCollection: IBookCollection;
+  targetFileName: string;
+  bookFormat: TBookFormat;
+  bookIDList: TBookIdList;
+  bookIDStruct: TBookIdStruct;
 begin
   Assert(Assigned(FCollection));
   SavedCursor := Screen.Cursor;
@@ -3478,16 +3482,42 @@ begin
 
     GetActiveTree(Tree);
     ID := (Sender as TMenuItem).Tag;
-    CollectionInfo := FSystemData.GetCollectionInfo(ID);
+    targetCollection := FSystemData.GetCollection(ID);
+
+    FillBookIdList(Tree, bookIDList, False); // do not uncheck
+    if IsOnline then
+      unit_ExportToDevice.DownloadBooks(BookIDList);
 
     Node := Tree.GetFirst;
     while Assigned(Node) do
     begin
       Data := Tree.GetNodeData(Node);
-      if IsSelectedBookNode(Node, Data) then
+      for bookIDStruct in bookIDList do
+      begin
+        if bookIDStruct.BookKey.IsSameAs(Data^.BookKey) then
+          break; // found a match
+      end;
+      if bookIDStruct.BookKey.IsSameAs(Data^.BookKey) then // match
       begin
         FCollection.GetBookRecord(Data^.BookKey, R, True);
-        FCollection.InsertBook(R, True, True);
+
+        bookFormat := R.GetBookFormat;
+        Assert(bookFormat in [bfFb2Archive, bfFb2]);
+
+        if FileExists(R.GetBookFileName) then
+        begin
+          // TODO: use templates to generate targetFileName and modify R accordingly before inserting
+
+          // Store the file as a pure fb2
+          targetFileName := TPath.Combine(targetCollection.CollectionRoot, R.FileName);
+          targetFileName := TPath.ChangeExtension(targetFileName, FB2_EXTENSION);
+          R.SaveBookToFile(targetFileName);
+
+          // Add the book record to the target collection:
+          R.Folder := '';
+          targetCollection.InsertBook(R, True, True);
+        end;
+        // else - skip (probably failedto download)
       end;
 
       Node := Tree.GetNext(Node);
@@ -3502,7 +3532,7 @@ begin
   SetInfoPanelHeight((Sender as TWinControl).Height);
 end;
 
-procedure TfrmMain.FillBookIdList(const Tree: TBookTree; var BookIDList: TBookIdList);
+procedure TfrmMain.FillBookIdList(const Tree: TBookTree; var BookIDList: TBookIdList; const Uncheck: Boolean);
 var
   i: Integer;
   Node: PVirtualNode;
@@ -3519,7 +3549,8 @@ begin
       SetLength(BookIDList, i + 1);
       BookIDList[i].BookKey := Data^.BookKey;
       Inc(i);
-      Tree.CheckState[Node] := csUncheckedNormal;
+      if Uncheck then
+        Tree.CheckState[Node] := csUncheckedNormal;
     end;
     Node := Tree.GetNext(Node);
   end;
