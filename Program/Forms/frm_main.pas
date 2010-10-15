@@ -3522,6 +3522,10 @@ begin
 
       Node := Tree.GetNext(Node);
     end;
+
+    // uncheck:
+    SetLength(BookIDList, 0);
+    FillBookIdList(Tree, bookIDList, True);
   finally
     Screen.Cursor := SavedCursor;
   end;
