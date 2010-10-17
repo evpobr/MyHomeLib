@@ -591,6 +591,7 @@ begin
     AddToFilter('b.SearchFolder', PrepareQuery(SearchCriteria.Folder, True), False, FilterString);
     AddToFilter('b.SearchExt', PrepareQuery(SearchCriteria.FileExt, True), False, FilterString);
     AddToFilter('b.SearchLang', PrepareQuery(SearchCriteria.Lang, True, False), False, FilterString);
+    AddToFilter('b.LibRate', PrepareQuery(SearchCriteria.LibRate, False, False), False, FilterString);
     AddToFilter('b.SearchKeyWords', PrepareQuery(SearchCriteria.KeyWord, True), False, FilterString);
     //
     if SearchCriteria.DateIdx = -1 then

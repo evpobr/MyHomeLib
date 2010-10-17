@@ -197,6 +197,7 @@ const
   SF_DELETED     = 'Deleted';
   SF_DATE        = 'Date';
   SF_LANG        = 'Lang';
+  SF_LIBRATE     = 'LibRate';
 
   //
   // специальные значения фильтров

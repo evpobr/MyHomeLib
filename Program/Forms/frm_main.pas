@@ -486,6 +486,8 @@ type
     N80: TMenuItem;
     N81: TMenuItem;
     N82: TMenuItem;
+    Label8: TLabel;
+    cbLibRate: TComboBox;
 
     //
     // События формы
@@ -1340,6 +1342,7 @@ begin
         FSearchCriteria.Keyword := edFKeyWords.Text;
         FSearchCriteria.DownloadedIdx := cbDownloaded.ItemIndex;
         FSearchCriteria.Deleted := cbDeleted.Checked;
+        FSearchCriteria.LibRate := cbLibRate.Text;
 
         FSearchCriteria.DateIdx := cbDate.ItemIndex;
         if FSearchCriteria.DateIdx= -1 then
@@ -1381,6 +1384,7 @@ begin
   cbDeleted.Checked := False;
   cbDate.ItemIndex := -1;
   cbLang.ItemIndex := -1;
+  cbLibRate.ItemIndex := -1;
 
   cbPresetName.ItemIndex := -1;
 
@@ -5629,6 +5633,7 @@ begin
   preset.AddOrSetValue(SF_DELETED, BoolToStr(cbDeleted.Checked));
   preset.AddOrSetValue(SF_DATE, IntToStr(cbDate.ItemIndex));
   preset.AddOrSetValue(SF_LANG, IntToStr(cbLang.ItemIndex));
+  preset.AddOrSetValue(SF_LIBRATE, IntToStr(cbLibRate.ItemIndex));
 
   FPresets.Save(Settings.SystemFileName[sfPresets]);
 
@@ -6767,6 +6772,8 @@ begin
     cbDate.ItemIndex := EnsureRange(StrToIntDef(Value, -1), -1, cbDate.Items.Count - 1);
   if preset.TryGetValue(SF_LANG, Value) then
     cbLang.ItemIndex := EnsureRange(StrToIntDef(Value, -1), -1, cbLang.Items.Count - 1);
+  if preset.TryGetValue(SF_LIBRATE, Value) then
+    cbLibRate.ItemIndex := EnsureRange(StrToIntDef(Value, -1), -1, cbLibRate.Items.Count - 1);
 end;
 
 procedure TfrmMain.btnStartDownloadClick(Sender: TObject);

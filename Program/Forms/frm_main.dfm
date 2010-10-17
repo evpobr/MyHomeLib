@@ -1287,6 +1287,7 @@ object frmMain: TfrmMain
           Top = 3
           Width = 224
           Height = 427
+          VertScrollBar.Position = 250
           VertScrollBar.Tracking = True
           Align = alClient
           HeaderFont.Charset = DEFAULT_CHARSET
@@ -1296,21 +1297,21 @@ object frmMain: TfrmMain
           HeaderFont.Style = []
           TabOrder = 0
           object ctpOther: TCategoryPanel
-            Top = 436
-            Height = 209
+            Top = 186
+            Height = 239
             Caption = #1056#1072#1079#1085#1086#1077
             TabOrder = 2
             object Label30: TLabel
-              Left = 3
-              Top = 121
+              Left = 7
+              Top = 122
               Width = 26
               Height = 13
               Alignment = taRightJustify
               Caption = #1044#1072#1090#1072
             end
             object Label2: TLabel
-              Left = 3
-              Top = 148
+              Left = 7
+              Top = 149
               Width = 26
               Height = 13
               Alignment = taRightJustify
@@ -1336,8 +1337,16 @@ object frmMain: TfrmMain
               Caption = #1056#1072#1079#1084#1077#1097#1077#1085#1080#1077
               ExplicitWidth = 62
             end
+            object Label8: TLabel
+              Left = 7
+              Top = 176
+              Width = 38
+              Height = 13
+              Alignment = taRightJustify
+              Caption = #1054#1094#1077#1085#1082#1072
+            end
             object cbDate: TComboBox
-              Left = 35
+              Left = 55
               Top = 118
               Width = 99
               Height = 21
@@ -1353,7 +1362,7 @@ object frmMain: TfrmMain
                 #1079#1072' 3 '#1084#1077#1089#1103#1094#1072)
             end
             object cbLang: TComboBox
-              Left = 35
+              Left = 55
               Top = 145
               Width = 99
               Height = 21
@@ -1435,9 +1444,24 @@ object frmMain: TfrmMain
               Caption = #1057#1082#1088#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
               TabOrder = 4
             end
+            object cbLibRate: TComboBox
+              Left = 55
+              Top = 172
+              Width = 99
+              Height = 21
+              Style = csDropDownList
+              TabOrder = 5
+              OnKeyDown = PresetFieldKeyDown
+              Items.Strings = (
+                '1'
+                '2'
+                '3'
+                '4'
+                '5')
+            end
           end
           object ctpFile: TCategoryPanel
-            Top = 259
+            Top = 9
             Height = 177
             Caption = #1060#1072#1081#1083
             TabOrder = 1
@@ -1506,7 +1530,7 @@ object frmMain: TfrmMain
             end
           end
           object ctpBook: TCategoryPanel
-            Top = 0
+            Top = -250
             Height = 259
             Caption = #1050#1085#1080#1075#1072
             TabOrder = 0
