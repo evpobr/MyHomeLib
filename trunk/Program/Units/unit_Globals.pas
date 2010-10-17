@@ -278,6 +278,7 @@ type
     Lang: string;
     KeyWord: string;
     Deleted: Boolean;
+    LibRate: string;
 
     DownloadedIdx: Integer;
     DateIdx: Integer;
