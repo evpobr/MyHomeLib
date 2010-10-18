@@ -772,7 +772,7 @@ type
     // ѕровер€ет возможность редактировани€ информации (о книге, если задано).
     // ¬ случае если книга из онлайн коллекции предлагает перейти на сайт дл€ изменени€ информации там
     //
-    function IsLibRusecEdit(BookID: Integer): Boolean;
+    function IsLibRusecEdit(const BookKey: TBookKey): Boolean;
 
     //
     // ѕримен€ет операцию ProcessProc ко всем помеченным нодам или (ели ничего не отмечено) к текущей ноде.
@@ -4796,24 +4796,28 @@ begin
   *)
 end;
 
-function TfrmMain.IsLibRusecEdit(BookID: Integer): Boolean;
+function TfrmMain.IsLibRusecEdit(const BookKey: TBookKey): Boolean;
 var
-  BookKey: TBookKey;
   BookRecord: TBookRecord;
   URL: string;
+  BookCollection: IBookCollection;
 begin
-  Assert(Assigned(FCollection));
-  if isExternalCollection(FCollection.CollectionCode) then
+  if BookKey.DatabaseID <> FCollection.CollectionID then
+    BookCollection := FSystemData.GetCollection(BookKey.DatabaseID)
+  else
+    BookCollection := FCollection;
+
+  Assert(Assigned(BookCollection));
+  if isExternalCollection(BookCollection.CollectionCode) then
   begin
     //
     // TODO -oNickR : ƒумаю, стоит приделать к этому диалогу возможность запоминать выбор пользовател€ и переходить на сайт без вопроса
     //
-    if MHLShowWarning(Format(rstrGoToLibrarySite, [FCollection.CollectionURL]), mbYesNo) = mrYes then
+    if MHLShowWarning(Format(rstrGoToLibrarySite, [BookCollection.CollectionURL]), mbYesNo) = mrYes then
     begin
-      BookKey := CreateBookKey(BookID, FCollection.CollectionID);
-      FCollection.GetBookRecord(BookKey, BookRecord, False);
+      BookCollection.GetBookRecord(BookKey, BookRecord, False);
       { TODO -oNickR -cLibDesc : этот URL должен формироватьс€ обв€зкой библиотеки, т к его формат может мен€тьс€ }
-      URL := Format('%sb/%s/edit', [FCollection.CollectionURL, BookRecord.LibID]);
+      URL := Format('%sb/%s/edit', [BookCollection.CollectionURL, BookRecord.LibID]);
       SimpleShellExecute(Handle, URL);
     end;
     Result := True;
@@ -4842,7 +4846,7 @@ begin
   if not Assigned(Data) or (Data^.nodeType <> ntBookInfo) then
     Exit;
 
-  if IsLibRusecEdit(Data^.BookKey.BookID) then
+  if IsLibRusecEdit(Data^.BookKey) then
     Exit;
 
   frmEditBook := TfrmEditBookInfo.Create(Application);
@@ -4879,7 +4883,7 @@ begin
     Exit;
   end;
 
-  if IsLibRusecEdit(0) then
+  if IsLibRusecEdit(CreateBookKey(0, FCollection.CollectionID)) then
     Exit;
 
   GetActiveTree(Tree);
@@ -4934,7 +4938,7 @@ begin
   if not Assigned(Data) then
     Exit;
 
-  if IsLibRusecEdit(Data^.BookKey.BookID) then
+  if IsLibRusecEdit(Data^.BookKey) then
     Exit;
 
   S := Data^.Series;
