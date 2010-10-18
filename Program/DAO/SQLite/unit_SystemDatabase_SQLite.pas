@@ -1,3 +1,4 @@
+
 (* *****************************************************************************
   *
   * MyHomeLib
@@ -871,7 +872,8 @@ begin
       reader := TReader.Create(stream, 4096);
       try
         BookRecord.Series := reader.ReadString;
-        Assert((BookRecord.SeriesID = NO_SERIES_ID) = (BookRecord.Series = NO_SERIES_TITLE));
+        if BookRecord.SeriesID = NO_SERIES_ID then
+          BookRecord.Series := NO_SERIES_TITLE; // ignore the stored series title if series ID is empty
 
         reader.ReadListBegin;
         while not reader.EndOfList do
