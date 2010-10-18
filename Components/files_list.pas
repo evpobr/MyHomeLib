@@ -31,11 +31,13 @@ type
     FOnDirectory: TOnDirectoryEvent;
     FOnFile: TOnFileEvent;
     FTerminate: boolean;
+    FMask: string;
 
     procedure SetTargetPath(const S: string);
 
     procedure Recurs(const S: string; Level: Integer);
   public
+    constructor Create(AOuner: TComponent);
     procedure Process;
     procedure Stop;
   published
@@ -45,6 +47,7 @@ type
     property OnDirectory: TOnDirectoryEvent read FOnDirectory write FOnDirectory;
     property OnFile: TOnFileEvent read FOnFile write FOnFile;
     property Terminate: boolean read FTerminate;
+    property Mask: string write FMask;
   end;
 
 implementation
@@ -57,6 +60,12 @@ end;
 procedure TFilesList.Stop;
 begin
   FTerminate := True;
+end;
+
+constructor TFilesList.Create(AOuner: TComponent);
+begin
+  inherited Create(AOuner);
+  FMask := '*.*';
 end;
 
 procedure TFilesList.Process;
@@ -75,7 +84,7 @@ begin
   if Assigned(FOnDirectory) then
     FOnDirectory(Self, S);
 
-  if FindFirst(S + '*.*', faAnyFile, F) = 0 then
+  if FindFirst(S + FMask, faAnyFile, F) = 0 then
   begin
     repeat
       if FTerminate then Break;

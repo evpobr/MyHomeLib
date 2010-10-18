@@ -31,9 +31,9 @@ object frmAddnonfb2: TfrmAddnonfb2
     Width = 741
     Height = 467
     Margins.Bottom = 30
-    ActivePage = tsFiles
+    ActivePage = tsBookInfo
     Align = alClient
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     FixedDimension = 19
     object tsFiles: TRzTabSheet
