@@ -2117,8 +2117,9 @@ end;
 
 procedure TBookCollection_SQLite.SetSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
 const
-  SQL_SELECT_OLD_SERIES = 'SELECT IFNULL(b.SeriesID, 0), COUNT(*) FROM Books b WHERE BookID = ? GROUP BY b.SeriesID ';
+  SQL_SELECT_OLD_SERIES = 'SELECT IFNULL(b.SeriesID, 0) FROM Books b WHERE b.BookID = ? ';
   SQL_UPDATE = 'UPDATE Books SET SeriesID = ? WHERE BookID = ? ';
+  SQL_SELECT_COUNT_BOOKS_IN_SERIES = 'SELECT COUNT(*) FROM Books b WHERE b.SeriesID = ? ';
   SQL_DELETE = 'DELETE FROM Series WHERE SeriesID = ? ';
 var
   Query: TSQLiteQuery;
@@ -2129,23 +2130,7 @@ begin
     FSystemData.GetCollection(BookKey.DatabaseID).SetSeriesID(BookKey, SeriesID)
   else
   begin
-    Query := FDatabase.NewQuery(SQL_SELECT_OLD_SERIES);
-    try
-      Query.SetParam(0, BookKey.BookID);
-      Query.Open;
-      if not Query.Eof then
-      begin
-        OldSeriesID := Query.FieldAsInt(0);
-        CountBooksInASeries := Query.FieldAsInt(1);
-      end
-      else
-      begin
-        OldSeriesID := 0;
-        CountBooksInASeries := 0;
-      end;
-    finally
-      FreeAndNil(Query);
-    end;
+    OldSeriesID := FDatabase.QuerySingleInt(SQL_SELECT_OLD_SERIES, [BookKey.BookID]);
 
     Query := FDatabase.NewQuery(SQL_UPDATE);
     try
@@ -2159,7 +2144,9 @@ begin
       FreeAndNil(Query);
     end;
 
-    if (CountBooksInASeries = 1) AND (OldSeriesID <> SeriesID) then
+    CountBooksInASeries := FDatabase.QuerySingleInt(SQL_SELECT_COUNT_BOOKS_IN_SERIES, [OldSeriesID]);
+
+    if (CountBooksInASeries = 0) then
     begin
       // was a single book in a series and was just removed from it
       Query := FDatabase.NewQuery(SQL_DELETE);
