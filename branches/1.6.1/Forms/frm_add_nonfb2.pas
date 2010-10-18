@@ -214,7 +214,7 @@ var
   Author : TAuthorRecord;
 begin
   Author.Last := trim(edFileName.SelText);
-  alBookAuthors.AddRow(Author);
+  alBookAuthors.AddAuthor(Author);
 end;
 
 procedure TfrmAddnonfb2.btnCopyToNameClick(Sender: TObject);
@@ -492,7 +492,7 @@ begin
       Row.First := Data.First;
       Row.Middle := Data.Middle;
 
-      alBookAuthors.AddRow(Row);
+      alBookAuthors.AddAuthor(Row);
 
       Node := frmAuthorList.tvAuthorList.GetNextSelected(Node);
     end;
