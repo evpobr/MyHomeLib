@@ -6788,7 +6788,8 @@ begin
   btnPauseDownload.Enabled := True;
   btnStartDownload.Enabled := False;
 
-  FDMThread := TDownloadManagerThread.Create(False);
+  if not Assigned(FDMThread) then
+    FDMThread := TDownloadManagerThread.Create(False);
 end;
 
 procedure TfrmMain.btnPauseDownloadClick(Sender: TObject);
