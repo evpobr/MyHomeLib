@@ -6788,8 +6788,9 @@ begin
   btnPauseDownload.Enabled := True;
   btnStartDownload.Enabled := False;
 
-  if not Assigned(FDMThread) then
-    FDMThread := TDownloadManagerThread.Create(False);
+  // There is a memory leak caused by overwriting the variable without freeing the previous instance
+  // Need to redesign the manager before resolving the leak
+  FDMThread := TDownloadManagerThread.Create(False)
 end;
 
 procedure TfrmMain.btnPauseDownloadClick(Sender: TObject);
