@@ -28,6 +28,7 @@ uses
   Controls,
   Forms,
   Dialogs,
+  unit_Globals,
   unit_WorkerThread,
   ComCtrls;
 

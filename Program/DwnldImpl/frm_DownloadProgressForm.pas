@@ -29,6 +29,7 @@ uses
   SysUtils,
   Forms,
   Dialogs,
+  unit_Globals,
   frm_BaseProgressForm,
   unit_WorkerThread,
   unit_DownloadBooksThread;

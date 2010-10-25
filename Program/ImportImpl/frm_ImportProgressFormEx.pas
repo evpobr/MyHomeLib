@@ -20,7 +20,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, unit_WorkerThread, frm_ImportProgressForm, StdCtrls, ComCtrls,
+  Dialogs, unit_WorkerThread, frm_ImportProgressForm, StdCtrls, ComCtrls, unit_Globals,
   ExtCtrls;
 
 type

@@ -525,7 +525,6 @@ type
     //
     // —писок книг
     //
-    procedure tvBooksTreeAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; CellRect: TRect);
     procedure tvBooksTreeHeaderClick(Sender: TVTHeader; Column: TColumnIndex; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure tvBooksTreeMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure tvBooksTreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -681,15 +680,11 @@ type
     procedure N33Click(Sender: TObject);
     procedure btnStartDownloadClick(Sender: TObject);
     procedure btnPauseDownloadClick(Sender: TObject);
-    procedure tvDownloadListGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure btnDeleteDownloadClick(Sender: TObject);
     procedure mi_dwnl_LocateAuthorClick(Sender: TObject);
     procedure btnClearDownloadClick(Sender: TObject);
-    procedure tvDownloadListSaveNode(Sender: TBaseVirtualTree; Node: PVirtualNode; Stream: TStream);
-    procedure tvDownloadListLoadNode(Sender: TBaseVirtualTree; Node: PVirtualNode; Stream: TStream);
     procedure MoveDwnldListNodes(Sender: TObject);
     procedure BtnFav_addClick(Sender: TObject);
-    procedure tvDownloadListPaintText(Sender: TBaseVirtualTree; const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType);
     procedure BtnSaveClick(Sender: TObject);
     procedure edLocateAuthorKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure miAddToSearchClick(Sender: TObject);
@@ -698,8 +693,6 @@ type
     procedure miDeleteFilesClick(Sender: TObject);
     procedure pmiSelectAllClick(Sender: TObject);
     procedure tbtnAutoFBDClick(Sender: TObject);
-    procedure GetDownloadNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
-    procedure FreeDownloadNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure AuthorLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
     procedure GenreLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
     procedure SeriesLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
@@ -852,9 +845,6 @@ type
     FLastLetterS: TToolButton;
 
     FSortSettings: array [0 .. 5] of TSortSetting;
-
-    FStarImage: TPngImage;
-    FEmptyStarImage: TPngImage;
 
     FLastFoundBook: PVirtualNode;
     FFirstFoundBook: PVirtualNode;
@@ -2436,6 +2426,8 @@ begin
   FController.ConnectBooksTree(tvBooksSR);
   FController.ConnectBooksTree(tvBooksF);
 
+  FController.ConnectDownloadTree(tvDownloadList);
+
   //
   // событие OnGetNodeDataSize почему-то не обрабатываетс€, инициализируем вручную
   //
@@ -2553,12 +2545,6 @@ begin
   // ------------------------------------------------------------------------------
   frmSplash.lblState.Caption := rstrStarting;
 
-  //
-  // Create & Load "star" images from resources
-  //
-  FStarImage := CreateImageFromResource(TPngImage, 'smallStar') as TPngImage;
-  FEmptyStarImage := CreateImageFromResource(TPngImage, 'smallStarEmpty') as TPngImage;
-
   // загрузка списка закачек
   if FileExists(Settings.SystemFileName[sfDownloadsStore]) then
   begin
@@ -2589,9 +2575,6 @@ procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
   // SQ
   FreeAndNil(FPresets);
-
-  FreeAndNil(FStarImage);
-  FreeAndNil(FEmptyStarImage);
 
   tvDownloadList.SaveToFile(Settings.SystemFileName[sfDownloadsStore]);
 
@@ -3152,78 +3135,6 @@ begin
     Result := (Sender as TBookTree).Header.Columns[Column].Tag;
 end;
 
-procedure TfrmMain.tvBooksTreeAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; CellRect: TRect);
-var
-  Data: PBookRecord;
-  Tag: Integer;
-  X: Integer;
-  CollectionInfo: TCollectionInfo;
-  CollectionType: COLLECTION_TYPE;
-
-  procedure Stars(Value: Integer);
-  var
-    i: Integer;
-    X, Y: Integer;
-    w, h: Integer;
-  begin
-    w := FStarImage.Width;
-    h := FStarImage.Height;
-    X := CellRect.Left (* + (CellRect.Right - CellRect.Left - 10 {w} * 5) div 2 *) ;
-    Y := CellRect.Top + (CellRect.Bottom - CellRect.Top - h) div 2;
-    for i := 0 to 4 do
-    begin
-      if Value > i then
-        FStarImage.Draw(TargetCanvas, Rect(X, Y, X + w, Y + h))
-      else
-        FEmptyStarImage.Draw(TargetCanvas, Rect(X, Y, X + w, Y + h));
-      Inc(X, { w } 10);
-    end;
-  end;
-
-begin
-  Data := Sender.GetNodeData(Node);
-  Assert(Assigned(Data));
-
-  if Data^.nodeType <> ntBookInfo then
-    Exit;
-
-  Tag := GetTreeTag(Sender, Column);
-
-  X := (Sender as TBookTree).Header.Columns.Items[Column].Left;
-
-  if (Tag = COL_STATE) then
-  begin
-    //
-    // The book belongs to an online collection and is available locally (already downloaded)
-    //
-    CollectionInfo := FSystemData.GetCollectionInfo(Data^.BookKey.DatabaseID);
-    CollectionType := CollectionInfo.CollectionType;
-    if (bpIsLocal in Data^.BookProps) and isOnlineCollection(CollectionType) then
-      ilFileTypes.Draw(TargetCanvas, X, CellRect.Top + 1, 7);
-
-    //
-    //  нига прочитана
-    //
-    if Data^.Progress = 100 then
-      ilFileTypes.Draw(TargetCanvas, X + 10, CellRect.Top, 8);
-
-    //
-    // ” книги есть аннотаци€
-    //
-    if bpHasReview in Data^.BookProps then
-      ilFileTypes.Draw(TargetCanvas, X + 25, CellRect.Top + 1, 9);
-  end
-  else if (Tag = COL_RATE) then
-    Stars(Data^.Rate)
-  else if (Tag = COL_LIBRATE) then
-  begin
-    if Data^.LibRate <= 5 then
-      Stars(Data^.LibRate)
-    else
-      Stars(0);
-  end;
-end;
-
 procedure TfrmMain.tvBooksTreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 const
   CheckState: array [Boolean] of TCheckState = (csCheckedNormal, csUncheckedNormal);
@@ -3288,20 +3199,6 @@ begin
   end;
 end;
 
-procedure TfrmMain.FreeDownloadNodeData(Sender: TBaseVirtualTree; Node: PVirtualNode);
-var
-  Data: PDownloadData;
-begin
-  Data := Sender.GetNodeData(Node);
-  if Assigned(Data) then
-    Finalize(Data^);
-end;
-
-procedure TfrmMain.GetDownloadNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
-begin
-  NodeDataSize := SizeOf(TDownloadData);
-end;
-
 procedure TfrmMain.tvBooksTreeMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
   Node: PVirtualNode;
@@ -3333,100 +3230,6 @@ begin
       Tree.Selected[Selected] := True;
     end;
   end; // if
-end;
-
-procedure TfrmMain.tvDownloadListGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
-const
-  States: array [TDownloadState] of string = (rstrDownloadStateWaiting, rstrDownloadStateDownloading, rstrDownloadStateDone, rstrDownloadStateError);
-var
-  Data: PDownloadData;
-begin
-  Data := tvDownloadList.GetNodeData(Node);
-  case Column of
-    0: CellText := Data^.Author;
-    1: CellText := Data^.Title;
-    2: CellText := GetFormattedSize(Data^.Size);
-    3: CellText := States[Data^.State];
-  end;
-end;
-
-procedure TfrmMain.tvDownloadListLoadNode(Sender: TBaseVirtualTree; Node: PVirtualNode; Stream: TStream);
-var
-  Data: PDownloadData;
-  Size: Integer;
-  StrBuffer: PChar;
-
-  function GetString: string;
-  begin
-    Stream.Read(Size, SizeOf(Size));
-    StrBuffer := AllocMem(Size);
-    Stream.read(StrBuffer^, Size);
-    Result := (StrBuffer);
-    FreeMem(StrBuffer);
-  end;
-
-begin
-  Data := Sender.GetNodeData(Node);
-  // ID
-  Stream.Read(Data^.BookKey, SizeOf(Data^.BookKey));
-
-  Data^.Title := GetString;
-  Data^.Author := GetString;
-
-  // Size
-  Stream.Read(Data^.Size, SizeOf(Data^.Size));
-
-  Data^.FileName := GetString;
-  Data^.URL := GetString;
-
-  // State
-  Stream.Read(Data^.State, SizeOf(Data^.State));
-end;
-
-procedure TfrmMain.tvDownloadListPaintText(Sender: TBaseVirtualTree; const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType);
-var
-  Data: PDownloadData;
-begin
-  Data := Sender.GetNodeData(Node);
-  if Assigned(Data) and not Sender.Selected[Node] then
-    case Data.State of
-      dsRun: TargetCanvas.Font.Color := clGreen;
-      dsError: TargetCanvas.Font.Color := clRed;
-    end;
-end;
-
-procedure TfrmMain.tvDownloadListSaveNode(Sender: TBaseVirtualTree; Node: PVirtualNode; Stream: TStream);
-var
-  Data: PDownloadData;
-  Size: Integer;
-
-  procedure WriteString(const S: string);
-  begin
-    Size := ByteLength(S) + 1;
-    Stream.Write(Size, SizeOf(Size));
-    Stream.Write(PChar(S)^, Size);
-  end;
-
-begin
-  Data := Sender.GetNodeData(Node);
-
-  if not Assigned(Data) then
-    Exit;
-
-  // ID
-  Stream.Write(Data^.BookKey, SizeOf(Data^.BookKey));
-
-  WriteString(Data^.Title);
-  WriteString(Data^.Author);
-
-  // Size
-  Stream.Write(Data^.Size, SizeOf(Data^.Size));
-
-  WriteString(Data^.FileName);
-  WriteString(Data^.URL);
-
-  // State
-  Stream.Write(Data^.State, SizeOf(Data^.State));
 end;
 
 //

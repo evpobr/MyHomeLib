@@ -46,7 +46,7 @@ const
     toShowHorzGridLines,
     toShowRoot,
     toShowTreeLines,
-    toShowVertGridLines,
+    //toShowVertGridLines,
     toThemeAware,
     toUseBlendedImages
   ];
@@ -222,7 +222,7 @@ type
     //property OnFocusChanged;
     //property OnFocusChanging;
     property OnFreeNode;
-    //property OnGetCellIsEmpty;
+    property OnGetCellIsEmpty;
     //property OnGetCursor;
     //property OnGetHeaderCursor;
     property OnGetText;
@@ -295,6 +295,7 @@ implementation
 constructor TBookTreeOptions.Create(AOwner: TBaseVirtualTree);
 begin
   inherited;
+  AutoOptions := AutoOptions + [toAutoSpanColumns];
   MiscOptions := DefaultMiscOptions;
   PaintOptions := DefaultPaintOptions;
   SelectionOptions := DefaultSelectionOptions;

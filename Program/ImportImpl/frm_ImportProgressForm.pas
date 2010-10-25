@@ -20,7 +20,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, unit_WorkerThread, frm_BaseProgressForm, StdCtrls, ComCtrls;
+  Dialogs, unit_WorkerThread, frm_BaseProgressForm, StdCtrls, ComCtrls, unit_Globals;
 
 type
   TImportProgressForm = class(TProgressFormBase)

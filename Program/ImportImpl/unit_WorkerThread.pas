@@ -23,19 +23,11 @@ uses
   Windows,
   SysUtils,
   ComCtrls,
+  unit_Globals,
+  unit_Events,
   unit_ProgressEngine;
 
 type
-  TTeletypeSeverity = (tsInfo, tsWarning, tsError);
-
-  TOpenProgressEvent = procedure of object;
-  TProgressHintEvent = procedure (Style: TProgressBarStyle; State: TProgressBarState) of object;
-  TProgressEvent = procedure (Percent: Integer) of object;
-  TCloseProgressEvent = procedure of object;
-  TTeletypeEvent = procedure (const Msg: string; Severity: TTeletypeSeverity) of object;
-  TSetCommentEvent = procedure (const Msg: string) of object;
-  TShowMessageEvent = function (const Text: string; Flags: Longint = MB_OK): Integer of object;
-
   TWorker = class(TThread)
   strict private
     FFinished: Boolean;
@@ -55,11 +47,11 @@ type
   strict private
     FOnProgress: TProgressEvent;
     FProgressHint: TProgressHintEvent;
-    FOnOpenProgress: TOpenProgressEvent;
-    FOnCloseProgress: TCloseProgressEvent;
-    FOnTeletype: TTeletypeEvent;
-    FOnSetComment: TSetCommentEvent;
-    FOnShowMessage: TShowMessageEvent;
+    FOnOpenProgress: TProgressOpenEvent;
+    FOnCloseProgress: TProgressCloseEvent;
+    FOnTeletype: TProgressTeletypeEvent;
+    FOnSetComment: TProgressSetCommentEvent;
+    FOnShowMessage: TProgressShowMessageEvent;
 
     procedure DoOpenProgress;
     procedure DoProgressHint;
@@ -95,13 +87,13 @@ type
     procedure Cancel;
 
   public
-    property OnOpenProgress: TOpenProgressEvent read FOnOpenProgress write FOnOpenProgress;
+    property OnOpenProgress: TProgressOpenEvent read FOnOpenProgress write FOnOpenProgress;
     property OnProgressHint: TProgressHintEvent read FProgressHint write FProgressHint;
     property OnProgress: TProgressEvent read FOnProgress write FOnProgress;
-    property OnCloseProgress: TCloseProgressEvent read FOnCloseProgress write FOnCloseProgress;
-    property OnTeletype: TTeletypeEvent read FOnTeletype write FOnTeletype;
-    property OnSetComment: TSetCommentEvent read FOnSetComment write FOnSetComment;
-    property OnShowMessage: TShowMessageEvent read FOnShowMessage write FOnShowMessage;
+    property OnCloseProgress: TProgressCloseEvent read FOnCloseProgress write FOnCloseProgress;
+    property OnTeletype: TProgressTeletypeEvent read FOnTeletype write FOnTeletype;
+    property OnSetComment: TProgressSetCommentEvent read FOnSetComment write FOnSetComment;
+    property OnShowMessage: TProgressShowMessageEvent read FOnShowMessage write FOnShowMessage;
 
     property Canceled: Boolean read FCancel write FCancel;
     property Finished: Boolean read FFinished;

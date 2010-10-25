@@ -17,7 +17,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, frame_WizardPageBase, frame_InteriorPageBase, StdCtrls, ExtCtrls, ComCtrls,
-  unit_WorkerThread, unit_NCWParams;
+  unit_WorkerThread, unit_NCWParams, unit_Globals;
 
 const
   PM_WORKERDONE = WM_USER + 0;
