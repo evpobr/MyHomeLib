@@ -22,33 +22,31 @@ interface
 uses
   Classes,
   unit_WorkerThread,
-  unit_globals,
+  unit_Globals,
   Dialogs,
   Forms,
   unit_Interfaces,
+  unit_Events,
   unit_Downloader;
 
 type
-  TProgressEvent2 = procedure(Current, Total: Integer) of object;
-  TSetCommentEvent2 = procedure(const Current, Total: string) of object;
-
   TDownloadBooksThread = class(TWorker)
   private
-    FDownloader : TDownloader;
+    FDownloader: TDownloader;
 
     FBookIdList: TBookIdList;
 
     FOnSetProgress2: TProgressEvent2;
-    FOnSetComment2: TSetCommentEvent2;
+    FOnSetComment2: TProgressSetCommentEvent2;
 
     FCurrentComment: string;
     FTotalComment: string;
     FCurrentProgress: Integer;
     FTotalProgress: Integer;
 
-    FIgnoreErrors: boolean;
+    FIgnoreErrors: Boolean;
 
-    FNoPause: boolean;
+    FNoPause: Boolean;
 
     procedure DoSetComment2;
     procedure SetComment2(const Current, Total: string);
@@ -64,7 +62,7 @@ type
     property BookIdList: TBookIdList read FBookIdList write FBookIdList;
 
     property OnProgress2: TProgressEvent2 read FOnSetProgress2 write FOnSetProgress2;
-    property OnSetComment2: TSetCommentEvent2 read FOnSetComment2 write FOnSetComment2;
+    property OnSetComment2: TProgressSetCommentEvent2 read FOnSetComment2 write FOnSetComment2;
   end;
 
 implementation

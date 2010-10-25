@@ -29,6 +29,8 @@ uses
   unit_Consts;
 
 type
+  TTeletypeSeverity = (tsInfo, tsWarning, tsError);
+
   COLLECTION_TYPE = Integer;
   TPropertyID = Integer;
 
@@ -224,7 +226,6 @@ type
     //TODO - rethink when to load the memo fields. Today are loaded only when LoadMemos flag is True
     Annotation: string;
     Review: string;
-
 
     // ----------------------------------------------------
     function GetFileType: string;

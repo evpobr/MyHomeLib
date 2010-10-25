@@ -35,14 +35,9 @@ interface
 
 uses
   ComCtrls,
-  Math,
-  StrUtils;
+  unit_Events;
 
 type
-  TProgressHintEvent = procedure (Style: TProgressBarStyle; State: TProgressBarState) of object;
-  TSetCommentEvent = procedure (const Msg: string) of object;
-  TProgressEvent = procedure (Percent: Integer) of object;
-
   TProgressEngine = class
   private const
     DefaultThreshold = 500;
@@ -61,11 +56,11 @@ type
     FSubPercent: Integer;
 
     FProgressHint: TProgressHintEvent;
-    FSetComment: TSetCommentEvent;
+    FSetComment: TProgressSetCommentEvent;
     FSetProgress: TProgressEvent;
 
     FSubProgressHint: TProgressHintEvent;
-    FSetSubComment: TSetCommentEvent;
+    FSetSubComment: TProgressSetCommentEvent;
     FSetSubProgress: TProgressEvent;
 
     function IsPreciseProgress: Boolean; inline;
@@ -98,18 +93,20 @@ type
     function GetComment: string; inline;
 
     property OnProgressHint: TProgressHintEvent read FProgressHint write FProgressHint;
-    property OnSetComment: TSetCommentEvent read FSetComment write FSetComment;
+    property OnSetComment: TProgressSetCommentEvent read FSetComment write FSetComment;
     property OnSetProgress: TProgressEvent read FSetProgress write FSetProgress;
 
     property OnSubProgressHint: TProgressHintEvent read FSubProgressHint write FSubProgressHint;
-    property OnSetSubComment: TSetCommentEvent read FSetSubComment write FSetSubComment;
+    property OnSetSubComment: TProgressSetCommentEvent read FSetSubComment write FSetSubComment;
     property OnSetSubProgress: TProgressEvent read FSetSubProgress write FSetSubProgress;
   end;
 
 implementation
 
 uses
-  SysUtils;
+  SysUtils,
+  StrUtils,
+  Math;
 
 { TProgressInfo }
 
