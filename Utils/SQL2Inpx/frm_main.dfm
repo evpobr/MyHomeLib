@@ -22,7 +22,7 @@
     Top = 0
     Width = 660
     Height = 494
-    ActivePage = tsParams
+    ActivePage = TabSheet2
     Align = alClient
     TabOrder = 0
     object tsParams: TTabSheet
@@ -745,18 +745,10 @@
           Caption = 'Lang'
           FocusControl = DBEdit7
         end
-        object Label10: TLabel
-          Left = 306
-          Top = 54
-          Width = 7
-          Height = 13
-          Caption = 'N'
-          FocusControl = DBEdit8
-        end
         object Label11: TLabel
-          Left = 374
+          Left = 312
           Top = 51
-          Width = 46
+          Width = 73
           Height = 13
           Caption = 'keywords'
           FocusControl = DBEdit9
@@ -831,25 +823,15 @@
           ReadOnly = True
           TabOrder = 6
         end
-        object DBEdit8: TDBEdit
-          Left = 306
-          Top = 70
-          Width = 54
-          Height = 21
-          DataField = 'N'
-          DataSource = Lib.dsBook
-          ReadOnly = True
-          TabOrder = 7
-        end
         object DBEdit9: TDBEdit
-          Left = 366
+          Left = 304
           Top = 70
-          Width = 267
+          Width = 329
           Height = 21
           DataField = 'keywords'
           DataSource = Lib.dsBook
           ReadOnly = True
-          TabOrder = 8
+          TabOrder = 7
         end
       end
     end
@@ -1223,7 +1205,7 @@
     ExtractCorruptedFiles = False
     CompressionLevel = clFastest
     CompressionMode = 1
-    CurrentVersion = '5.02 '
+    CurrentVersion = '5.05 '
     SpanningMode = smNone
     SpanningOptions.AdvancedNaming = False
     SpanningOptions.VolumeSize = vsAutoDetect
@@ -1244,7 +1226,6 @@
   end
   object idFTP: TIdFTP
     IPVersion = Id_IPv4
-    AutoLogin = True
     TransferType = ftBinary
     ProxySettings.ProxyType = fpcmNone
     ProxySettings.Port = 0
@@ -1259,9 +1240,14 @@
     ProxyParams.BasicAuthentication = False
     ProxyParams.ProxyPort = 0
     Request.ContentLength = -1
+    Request.ContentRangeEnd = -1
+    Request.ContentRangeStart = -1
+    Request.ContentRangeInstanceLength = -1
     Request.Accept = 'text/html, */*'
     Request.BasicAuthentication = False
     Request.UserAgent = 'Mozilla/3.0 (compatible; Indy Library)'
+    Request.Ranges.Units = 'bytes'
+    Request.Ranges = <>
     HTTPOptions = [hoForceEncodeParams]
     Left = 440
     Top = 416

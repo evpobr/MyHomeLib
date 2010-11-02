@@ -8,7 +8,7 @@ uses
   ActnList, Menus, ZipForge, IdHTTP, IdBaseComponent, IdComponent,
   IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdFTP, DADump,
   MyDump, RzShellDialogs, RzEdit, RzBtnEdt, RzStatus, RzPanel, files_list,
-  JvComponentBase, JvZlibMultiple, DAScript;
+  DAScript;
 
 type
   TfrmMain = class(TForm)
@@ -106,8 +106,6 @@ type
     DBEdit6: TDBEdit;
     Label9: TLabel;
     DBEdit7: TDBEdit;
-    Label10: TLabel;
-    DBEdit8: TDBEdit;
     Label11: TLabel;
     DBEdit9: TDBEdit;
     TabSheet3: TTabSheet;
@@ -492,11 +490,6 @@ begin
       end;
       inc(i);
     end;
-    if ParamStr(i) = '-c' then
-    begin
-      mmLog.Lines.SaveToFile(FProfileName + '.log');
-      Close;
-    end;
     inc(i);
   end;
 end;
@@ -634,6 +627,13 @@ begin
   FFileList.Free;
   FZipList.Free;
   SaveINI;
+
+  if ParamStr(ParamCount - 1) = '-c' then
+  begin
+    mmLog.Lines.SaveToFile(FProfileName + '.log');
+    Close;
+  end;
+
 end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);

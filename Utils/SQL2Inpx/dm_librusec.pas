@@ -54,7 +54,7 @@ uses
   MemData;
 
 const
-  QS = 'SELECT B.BookId, B.Title, B.FileSize, B.FileType, B.Deleted, B.Time, B.Lang, B.N, B.KeyWords ';
+  QS = 'SELECT B.BookId, B.Title, B.FileSize, B.FileType, B.Deleted, B.Time, B.Lang, B.KeyWords ';
 {$R *.dfm}
 
 procedure TLib.BookAfterScroll(DataSet: TDataSet);
