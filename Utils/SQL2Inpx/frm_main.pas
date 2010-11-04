@@ -490,6 +490,7 @@ begin
       end;
       inc(i);
     end;
+    if ParamStr(i) = '-c' then Close;
     inc(i);
   end;
 end;
@@ -627,13 +628,7 @@ begin
   FFileList.Free;
   FZipList.Free;
   SaveINI;
-
-  if ParamStr(ParamCount - 1) = '-c' then
-  begin
-    mmLog.Lines.SaveToFile(FProfileName + '.log');
-    Close;
-  end;
-
+  mmLog.Lines.SaveToFile(FProfileName + '.log');
 end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
