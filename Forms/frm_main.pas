@@ -527,8 +527,7 @@ type
     //
     //
     //
-    procedure tvBooksTreeHeaderClick(Sender: TVTHeader; Column: TColumnIndex;
-      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure tvBooksTreeHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
     procedure tvBooksTreeCompareNodes(Sender: TBaseVirtualTree;
       Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
     procedure tvBooksTreePaintText(Sender: TBaseVirtualTree;
@@ -2475,34 +2474,33 @@ begin
 end;
 
 procedure TfrmMain.tvBooksTreeHeaderClick(Sender: TVTHeader;
-  Column: TColumnIndex; Button: TMouseButton; Shift: TShiftState;
-  X, Y: Integer);
+  HitInfo: TVTHeaderHitInfo);
 var
   Tree: TVirtualStringTree;
 begin
-  if Button = mbLeft then
+  if HitInfo.Button = mbLeft then
   begin
     GetActiveTree(Tree);
-    if (Settings.TreeModes[Tree.tag] = tmTree) or (Column < 0) then
+    if (Settings.TreeModes[Tree.tag] = tmTree) or (HitInfo.Column < 0) then
       Exit;
     // Меняем индекс сортирующей колонки на индекс колонки,
     // которая была нажата.
-    Tree.Header.SortColumn := Column;
+    Tree.Header.SortColumn := HitInfo.Column;
     // Сортируем всё дерево относительно этой колонки
     // и изменяем порядок сортировки на противополжный
     if Tree.Header.SortDirection = sdAscending then
     begin
       Tree.Header.SortDirection := sdDescending;
-      Tree.SortTree(Column, Tree.Header.SortDirection);
+      Tree.SortTree(HitInfo.Column, Tree.Header.SortDirection);
     end
     else
     begin
       Tree.Header.SortDirection := sdAscending;
-      Tree.SortTree(Column, Tree.Header.SortDirection);
+      Tree.SortTree(HitInfo.Column, Tree.Header.SortDirection);
     end;
 
     // запоминаем параметры для активного дерева
-    FSortSettings[Tree.tag].Column := Column;
+    FSortSettings[Tree.tag].Column := HitInfo.Column;
     FSortSettings[Tree.tag].Direction := Tree.Header.SortDirection;
   end;
 end;
