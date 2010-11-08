@@ -94,21 +94,21 @@ end;
 
 function TframeNCWDownload.Download: Boolean;
 var
-  Responce: TFileStream;
+  Response: TFileStream;
 begin
   Result := False;
   FTerminated := False;
 
-  Responce := TFileStream.Create(FPParams^.INPXFile, fmCreate);
+  Response := TFileStream.Create(FPParams^.INPXFile, fmCreate);
   try
-    HTTP.Get(FPParams^.INPXUrl, Responce);
+    HTTP.Get(FPParams^.INPXUrl, Response);
     if not FTerminated then
     begin
       FPParams^.Operation := otInpx;
       Result := True;
     end;
   finally
-    Responce.Free;
+    Response.Free;
   end;
 end;
 
