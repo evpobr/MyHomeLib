@@ -971,7 +971,8 @@ uses
   unit_Lib_Updates,
   frm_EditGroup,
   unit_SystemDatabase_Abstract,
-  unit_MHLArchiveHelpers;
+  unit_MHLArchiveHelpers,
+  frm_DeleteCollection;
 
 resourcestring
   rstrFileNotFoundMsg = 'Файл %s не найден!' + CRLF + 'Проверьте настройки коллекции!';
@@ -4293,28 +4294,36 @@ end;
 
 procedure TfrmMain.DeleteCollectionExecute(Sender: TObject);
 var
+  CollectionID: Integer;
+  deleteAction: TDeleteCollectionAction;
   CollectionInfoIterator: ICollectionInfoIterator;
   CollectionInfo: TCollectionInfo;
 begin
   Assert(Assigned(FCollection));
 
   { TODO -oNickR -cUsability : Думаю, стоит сделать специальный диалог для этого случая. Тогда мы сможем спросить, удалять файл коллекции или нет. }
-  if MessageDlg(rstrRemoveCollection + '"' + FCollection.CollectionDisplayName + '"?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
-    Exit;
+  deleteAction := AskDeleteCollectionAction;
+  if deleteAction in [dcaDelete, dcaUnregister] then
+  begin
+    CollectionID := FCollection.CollectionID;
 
-  //
-  // TODO: необходимо закрыть коллекцию перед удалением и закрыть ее в менеджере закачек
-  //
+    //
+    // TODO: необходимо закрыть коллекцию перед удалением и закрыть ее в менеджере закачек
+    //
+    CloseCollection;
+    FSystemData.DeleteCollection(CollectionID, dcaDelete = deleteAction);
 
-  // Delete current collection and choose another:
-  FSystemData.DeleteCollection(FCollection.CollectionID, True);
+    CollectionInfoIterator := FSystemData.GetCollectionInfoIterator;
+    if CollectionInfoIterator.Next(CollectionInfo) then
+      Settings.ActiveCollection := CollectionInfo.ID
+    else
+      Settings.ActiveCollection := INVALID_COLLECTION_ID;
 
-  CollectionInfoIterator := FSystemData.GetCollectionInfoIterator;
-  if CollectionInfoIterator.Next(CollectionInfo) then
-    Settings.ActiveCollection := CollectionInfo.ID
-  else
-    Settings.ActiveCollection := INVALID_COLLECTION_ID;
-  InitCollection(True);
+    InitCollection(True);
+  end;
+
+  //if MessageDlg(rstrRemoveCollection + '"' + FCollection.CollectionDisplayName + '"?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+  //  Exit;
 end;
 
 procedure TfrmMain.miDeleteFilesClick(Sender: TObject);
@@ -4614,7 +4623,7 @@ begin
   if isExternalCollection(BookCollection.CollectionCode) then
   begin
     //
-    // TODO -oNickR : Думаю, стоит приделать к этому диалогу возможность запоминать выбор пользователя и переходить на сайт без вопроса
+    // DONE -oNickR : Думаю, стоит приделать к этому диалогу возможность запоминать выбор пользователя и переходить на сайт без вопроса
     //
     if MHLShowWarning(Format(rstrGoToLibrarySite, [BookCollection.CollectionURL]), mbYesNo) = mrYes then
     begin
