@@ -5120,6 +5120,10 @@ begin
 
   Data := tvAuthors.GetNodeData(tvAuthors.GetFirstSelected);
   acEditAuthor.Enabled := Assigned(Data);
+
+  // Temporarily disable acEditAuthor for version 2.0, M1
+  // TODO: remove the following line when an implementation for EditAuthorExecute is available
+  acEditAuthor.Enabled := False;
 end;
 
 procedure TfrmMain.EditSerieUpdate(Sender: TObject);
