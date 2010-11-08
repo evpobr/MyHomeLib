@@ -271,6 +271,9 @@
 			<DCCReference Include="ImportImpl\unit_ImportFB2ArchiveThread.pas"/>
 			<DCCReference Include="Forms\unit_treeController.pas"/>
 			<DCCReference Include="Units\unit_Events.pas"/>
+			<DCCReference Include="Forms\frm_DeleteCollection.pas">
+				<Form>dlgDeleteCollection</Form>
+			</DCCReference>
 			<RcItem Include="Resources\Images\16x16\star_small.png">
 				<ResourceType>RCData</ResourceType>
 				<ResourceId>smallStar</ResourceId>
