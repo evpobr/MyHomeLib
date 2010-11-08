@@ -26,14 +26,17 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_RangeChecking>true</DCC_RangeChecking>
+			<DCC_IntegerOverflowCheck>true</DCC_IntegerOverflowCheck>
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;$(DCC_UnitAlias)</DCC_UnitAlias>
 			<DCC_UsePackage>vclx;vcl;dbrtl;bdertl;rtl;vclactnband;vcldb;vcldbx;dsnap;vclib;ibxpress;IndyCore;IndySystem;IndyProtocols;xmlrtl;inet;VclSmp;vclie;webdsnap;inetdbbde;inetdbxpress;soaprtl;vclribbon;DbxCommonDriver;DbxClientDriver;DBXInterBaseDriver;DBXMySQLDriver;dbexpress;dbxcds;ZipmasterD12;VirtualTreesD12;vclAbsDBd12;RaizeComponentsVcl;RaizeComponentsVclDb;lmdrtlx9rt_120;lmdrtl9rt_120;lmdcore9rt_120;lmdplugin1rt_120;MHLComponents;dclZipForged11;vclZipForged12</DCC_UsePackage>
 			<DCC_DependencyCheckOutputName>MyhomeLib.exe</DCC_DependencyCheckOutputName>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<DCC_RangeChecking>false</DCC_RangeChecking>
+			<DCC_IntegerOverflowCheck>false</DCC_IntegerOverflowCheck>
 			<BCC_DebugLineNumbers>true</BCC_DebugLineNumbers>
 			<ILINK_FullDebugInfo>true</ILINK_FullDebugInfo>
-			<DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
 			<BCC_SourceDebuggingOn>true</BCC_SourceDebuggingOn>
 			<DCC_Warnings>false</DCC_Warnings>
 			<DCC_Hints>false</DCC_Hints>
@@ -283,8 +286,8 @@
 						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
 						<VersionInfo Name="MajorVer">1</VersionInfo>
 						<VersionInfo Name="MinorVer">7</VersionInfo>
-						<VersionInfo Name="Release">0</VersionInfo>
-						<VersionInfo Name="Build">641</VersionInfo>
+						<VersionInfo Name="Release">1</VersionInfo>
+						<VersionInfo Name="Build">642</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">True</VersionInfo>
 						<VersionInfo Name="Special">True</VersionInfo>
@@ -296,7 +299,7 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">MyHomeLib</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription">MyHomeLib</VersionInfoKeys>
-						<VersionInfoKeys Name="FileVersion">1.7.0.641</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">1.7.1.642</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName">MyHomeLib</VersionInfoKeys>
 						<VersionInfoKeys Name="LegalCopyright">Алексей Пеньков</VersionInfoKeys>
 						<VersionInfoKeys Name="LegalTrademarks">MyHomeLib</VersionInfoKeys>
@@ -311,8 +314,16 @@
 						<Source Name="MainSource">MyhomeLib.dpr</Source>
 					</Source>
 					<Excluded_Packages>
-						<Excluded_Packages Name="$(BDSBIN)\dcloffice2k140.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
-						<Excluded_Packages Name="$(BDSBIN)\dclofficexp140.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\RaveReports\Lib\dclRave.bpl">Rave Reports 9.0 BE Package</Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\dcl31w150.bpl">Delphi 1.0 Compatibility Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\dclIntraweb_110_150.bpl">VCL for the Web 11.0 Design Package for Embarcadero RAD Studio XE</Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\dclwebsnap150.bpl">Embarcadero WebSnap Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\dclsoap150.bpl">Embarcadero SOAP Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\dclDeployCloud150.bpl">Embarcadero Deploy to the Cloud</Excluded_Packages>
+						<Excluded_Packages Name="C:\Program Files\Raize\CS4\Bin\VCL\CodeSiteExpressVcl_Design150.bpl">CodeSite Express 4.6.1</Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\dclmysqlmon150.bpl">Data Access Components for MySQL - TMySQLMonitor</Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\dcloffice2k150.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\dclofficexp150.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
 					</Excluded_Packages>
 				</Delphi.Personality>
 				<ModelSupport>False</ModelSupport>
