@@ -224,7 +224,7 @@ end;
 
 procedure TUpdateInfoList.SetURL(const Value: string);
 begin
-  FURL := InclideUrlSlash(Value);
+  FURL := IncludeUrlSlash(Value);
 end;
 
 { TUpdateInfo }
