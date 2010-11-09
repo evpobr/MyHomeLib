@@ -443,7 +443,7 @@ begin
   Settings.ReadTimeOut := udReadTimeOut.Position;
   Settings.DwnldInterval := udDwnldInterval.Position;
   Settings.AutoRunUpdate := cbAutoRunUpdate.Checked;
-  Settings.InpxURL := InclideUrlSlash(edINPXUrl.Text);
+  Settings.InpxURL := IncludeUrlSlash(edINPXUrl.Text);
 
   Settings.UpdateDir := edUpdateDir.Text;
 

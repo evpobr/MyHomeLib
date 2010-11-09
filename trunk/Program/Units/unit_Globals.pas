@@ -368,7 +368,7 @@ type
   procedure CopyFile(const SourceFileName: string; const DestFileName: string);
   procedure ConvertToTxt(const SourceFileName: string; DestFileName: string; Enc: TTXTEncoding);
 
-  function InclideUrlSlash(const S: string): string;
+  function IncludeUrlSlash(const S: string): string;
 
   function PosChr(aCh: Char; const S: string): Integer;
   function CompareInt(i1, i2: Integer): Integer; inline;
@@ -1119,11 +1119,15 @@ end;
 
 // ============================================================================
 
-function InclideUrlSlash(const S: string): string;
+function IncludeUrlSlash(const S: string): string;
 begin
   Result := S;
-  if Result[Length(Result)] <> '/' then
-    Result := Result + '/';
+  if Result <> '' then
+  begin
+    // relevant only for non-empty URL strings
+    if Result[Length(Result)] <> '/' then
+      Result := Result + '/';
+  end;
 end;
 
 function CompareDate(d1, d2: TDateTime): Integer;
@@ -1215,7 +1219,7 @@ var
 begin
   Result := False;
 
-  URL := InclideUrlSlash(Settings.UpdateURL) + IfThen(Full, LIBRUSEC_UPDATEVERINFO_FILENAME, EXTRA_UPDATEVERINFO_FILENAME);
+  URL := IncludeUrlSlash(Settings.UpdateURL) + IfThen(Full, LIBRUSEC_UPDATEVERINFO_FILENAME, EXTRA_UPDATEVERINFO_FILENAME);
 
   HTTP := TidHTTP.Create(nil);
   SetProxySettings(HTTP);

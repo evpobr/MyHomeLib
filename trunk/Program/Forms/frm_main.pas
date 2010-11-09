@@ -5942,7 +5942,7 @@ begin
       HTTP := TidHTTP.Create;
       SetProxySettings(HTTP);
       try
-        HTTP.Get(InclideUrlSlash(Settings.UpdateURL) + PROGRAM_VERINFO_FILENAME, LF);
+        HTTP.Get(IncludeUrlSlash(Settings.UpdateURL) + PROGRAM_VERINFO_FILENAME, LF);
       except
         on E: EIdSocketError do
           if E.LastError = 11001 then
