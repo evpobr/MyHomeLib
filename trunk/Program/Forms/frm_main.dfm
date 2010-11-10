@@ -3,7 +3,7 @@ object frmMain: TfrmMain
   Top = 0
   HelpContext = 2
   Caption = 'MyHomeLib'
-  ClientHeight = 586
+  ClientHeight = 605
   ClientWidth = 792
   Color = clBtnFace
   Constraints.MinHeight = 600
@@ -57,7 +57,7 @@ object frmMain: TfrmMain
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  PixelsPerInch = 120
+  PixelsPerInch = 96
   TextHeight = 13
   object tlbrMain: TToolBar
     Left = 0
@@ -98,7 +98,7 @@ object frmMain: TfrmMain
       OnClick = SendToDeviceExecute
     end
     object ToolButton13: TToolButton
-      Left = 142
+      Left = 138
       Top = 0
       Width = 8
       Caption = 'ToolButton13'
@@ -106,19 +106,19 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnRus: TToolButton
-      Left = 150
+      Left = 146
       Top = 0
       Action = acShowRusAlphabet
       ImageIndex = 3
     end
     object tbtnEng: TToolButton
-      Left = 191
+      Left = 187
       Top = 0
       Action = acShowEngAlphabet
       ImageIndex = 4
     end
     object ToolButton12: TToolButton
-      Left = 232
+      Left = 228
       Top = 0
       Width = 8
       Caption = 'ToolButton12'
@@ -126,7 +126,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnWizard: TToolButton
-      Left = 240
+      Left = 236
       Top = 0
       Action = acCollectionNew
       ImageIndex = 5
@@ -134,7 +134,7 @@ object frmMain: TfrmMain
       ShowHint = True
     end
     object tbtnSelect: TToolButton
-      Left = 281
+      Left = 277
       Top = 0
       Hint = #1042#1099#1073#1088#1072#1090#1100' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
       Caption = #1042#1099#1073#1088#1072#1090#1100' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
@@ -145,7 +145,7 @@ object frmMain: TfrmMain
       ShowHint = True
     end
     object ToolButton3: TToolButton
-      Left = 322
+      Left = 318
       Top = 0
       Width = 8
       Caption = 'ToolButton3'
@@ -153,7 +153,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object BtnFav_add: TToolButton
-      Left = 330
+      Left = 326
       Top = 0
       Hint = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1080#1079#1073#1088#1072#1085#1085#1086#1077
       Caption = 'BtnFav_add'
@@ -163,7 +163,7 @@ object frmMain: TfrmMain
       OnClick = BtnFav_addClick
     end
     object ToolButton7: TToolButton
-      Left = 390
+      Left = 382
       Top = 0
       Width = 8
       Caption = 'ToolButton7'
@@ -171,7 +171,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbSelectAll: TToolButton
-      Left = 398
+      Left = 390
       Top = 0
       Hint = #1054#1090#1084#1077#1090#1080#1090#1100' '#1074#1089#1077
       Caption = 'tbSelectAll'
@@ -179,7 +179,7 @@ object frmMain: TfrmMain
       OnClick = tbSelectAllClick
     end
     object tbCollapse: TToolButton
-      Left = 439
+      Left = 431
       Top = 0
       Hint = #1056#1072#1079#1074#1077#1088#1085#1091#1090#1100'/'#1057#1074#1077#1088#1085#1091#1090#1100' '#1089#1087#1080#1089#1086#1082
       Caption = 'tbCollapse'
@@ -187,7 +187,7 @@ object frmMain: TfrmMain
       OnClick = tbCollapseClick
     end
     object btnRefreshCollection: TToolButton
-      Left = 480
+      Left = 472
       Top = 0
       Hint = #1054#1073#1085#1086#1074#1080#1090#1100' '#1089#1087#1080#1089#1086#1082
       Caption = 'btnRefreshCollection'
@@ -195,7 +195,7 @@ object frmMain: TfrmMain
       OnClick = miRefreshClick
     end
     object ToolButton1: TToolButton
-      Left = 521
+      Left = 513
       Top = 0
       Width = 8
       Caption = 'ToolButton1'
@@ -203,7 +203,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object btnSwitchTreeMode: TToolButton
-      Left = 529
+      Left = 521
       Top = 0
       Hint = #1055#1077#1088#1077#1082#1083#1102#1095#1080#1090#1100' '#1074' '#1088#1077#1078#1080#1084' "'#1058#1072#1073#1083#1080#1094#1072'"'
       Caption = 'btnSwitchTreeMode'
@@ -211,25 +211,25 @@ object frmMain: TfrmMain
       OnClick = btnSwitchTreeModeClick
     end
     object tbtnShowDeleted: TToolButton
-      Left = 570
+      Left = 562
       Top = 0
       Action = acViewHideDeletedBooks
       ImageIndex = 12
     end
     object tbtnShowLocalOnly: TToolButton
-      Left = 611
+      Left = 603
       Top = 0
       Action = acViewShowLocalOnly
       ImageIndex = 13
     end
     object tbtnShowCover: TToolButton
-      Left = 652
+      Left = 644
       Top = 0
       Action = acShowBookInfoPanel
       ImageIndex = 14
     end
     object ToolButton5: TToolButton
-      Left = 693
+      Left = 685
       Top = 0
       Width = 8
       Caption = 'ToolButton5'
@@ -237,13 +237,13 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnSettings: TToolButton
-      Left = 701
+      Left = 693
       Top = 0
       Action = acToolsSettings
       ImageIndex = 17
     end
     object tbtnHelp: TToolButton
-      Left = 742
+      Left = 734
       Top = 0
       Action = acHelpHelp
       ImageIndex = 26
@@ -254,19 +254,21 @@ object frmMain: TfrmMain
     Left = 3
     Top = 65
     Width = 786
-    Height = 499
+    Height = 518
     HelpContext = 1
     ActivePage = tsByAuthor
     Align = alClient
     TabOrder = 2
     OnChange = pgControlChange
+    ExplicitHeight = 499
     object tsByAuthor: TTabSheet
       HelpContext = 135
       Caption = #1040#1074#1090#1086#1088#1099
+      ExplicitHeight = 471
       object AuthorsViewSplitter: TMHLSplitter
         Left = 230
         Top = 70
-        Height = 401
+        Height = 420
         MinSize = 230
         ResizeControl = pnAuthorsView
         ExplicitLeft = 392
@@ -277,9 +279,10 @@ object frmMain: TfrmMain
         Left = 0
         Top = 70
         Width = 230
-        Height = 401
+        Height = 420
         Align = alLeft
         TabOrder = 2
+        ExplicitHeight = 401
         object pnAuthorSearch: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
@@ -362,7 +365,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 224
-          Height = 363
+          Height = 382
           Align = alClient
           ChangeDelay = 250
           Header.AutoSizeIndex = 0
@@ -381,6 +384,7 @@ object frmMain: TfrmMain
           TreeOptions.SelectionOptions = [toFullRowSelect, toRightClickSelect]
           OnChange = tvAuthorsChange
           OnKeyDown = tvAuthorsKeyDown
+          ExplicitHeight = 363
           Columns = <>
         end
       end
@@ -388,12 +392,13 @@ object frmMain: TfrmMain
         Left = 233
         Top = 70
         Width = 545
-        Height = 401
+        Height = 420
         Align = alClient
         TabOrder = 3
+        ExplicitHeight = 401
         object AuthorBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 292
+          Top = 311
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -405,7 +410,7 @@ object frmMain: TfrmMain
         object ipnlAuthors: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 298
+          Top = 317
           Width = 539
           Height = 100
           Align = alBottom
@@ -414,6 +419,7 @@ object frmMain: TfrmMain
           OnAuthorLinkClicked = AuthorLinkClicked
           OnSeriesLinkClicked = SeriesLinkClicked
           OnGenreLinkClicked = GenreLinkClicked
+          ExplicitTop = 298
         end
         object pnAuthorBooksTitle: TMHLSimplePanel
           AlignWithMargins = True
@@ -456,7 +462,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 254
+          Height = 273
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -476,6 +482,7 @@ object frmMain: TfrmMain
           OnHeaderClick = tvBooksTreeHeaderClick
           OnKeyDown = tvBooksTreeKeyDown
           OnMouseUp = tvBooksTreeMouseUp
+          ExplicitHeight = 254
           Columns = <
             item
               BiDiMode = bdLeftToRight
@@ -568,14 +575,11 @@ object frmMain: TfrmMain
     object tsBySerie: TTabSheet
       HelpContext = 135
       Caption = #1057#1077#1088#1080#1080
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      ExplicitHeight = 471
       object SeriesViewSplitter: TMHLSplitter
         Left = 230
         Top = 70
-        Height = 401
+        Height = 420
         MinSize = 230
         ResizeControl = pnSeriesView
         ExplicitLeft = 392
@@ -586,15 +590,16 @@ object frmMain: TfrmMain
         Left = 0
         Top = 70
         Width = 230
-        Height = 401
+        Height = 420
         Align = alLeft
         TabOrder = 0
+        ExplicitHeight = 401
         object tvSeries: TVirtualStringTree
           AlignWithMargins = True
           Left = 3
           Top = 35
           Width = 224
-          Height = 363
+          Height = 382
           Align = alClient
           ChangeDelay = 250
           Header.AutoSizeIndex = 0
@@ -613,6 +618,7 @@ object frmMain: TfrmMain
           TreeOptions.SelectionOptions = [toFullRowSelect, toRightClickSelect]
           OnChange = tvSeriesChange
           OnKeyDown = tvSeriesKeyDown
+          ExplicitHeight = 363
           Columns = <>
         end
         object pnSerieSearch: TMHLSimplePanel
@@ -696,12 +702,13 @@ object frmMain: TfrmMain
         Left = 233
         Top = 70
         Width = 545
-        Height = 401
+        Height = 420
         Align = alClient
         TabOrder = 1
+        ExplicitHeight = 401
         object SerieBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 242
+          Top = 261
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -712,7 +719,7 @@ object frmMain: TfrmMain
         object ipnlSeries: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 248
+          Top = 267
           Width = 539
           Height = 150
           Align = alBottom
@@ -721,6 +728,7 @@ object frmMain: TfrmMain
           OnAuthorLinkClicked = AuthorLinkClicked
           OnSeriesLinkClicked = SeriesLinkClicked
           OnGenreLinkClicked = GenreLinkClicked
+          ExplicitTop = 248
         end
         object pnSerieBooksTitle: TMHLSimplePanel
           AlignWithMargins = True
@@ -740,20 +748,22 @@ object frmMain: TfrmMain
             Left = 432
             Top = 0
             Width = 107
-            Height = 13
+            Height = 26
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
             Layout = tlCenter
+            ExplicitHeight = 13
           end
           object lblSeries: TLabel
             Left = 0
             Top = 0
             Width = 90
-            Height = 13
+            Height = 26
             Align = alLeft
             Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1089#1077#1088#1080#1080
             Layout = tlCenter
+            ExplicitHeight = 13
           end
         end
         object tvBooksS: TBookTree
@@ -762,7 +772,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 204
+          Height = 223
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -781,6 +791,7 @@ object frmMain: TfrmMain
           OnHeaderClick = tvBooksTreeHeaderClick
           OnKeyDown = tvBooksTreeKeyDown
           OnMouseUp = tvBooksTreeMouseUp
+          ExplicitHeight = 204
           Columns = <
             item
               MinWidth = 30
@@ -878,14 +889,11 @@ object frmMain: TfrmMain
     object tsByGenre: TTabSheet
       HelpContext = 135
       Caption = #1046#1072#1085#1088#1099
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      ExplicitHeight = 471
       object GenresViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
-        Height = 471
+        Height = 490
         MinSize = 230
         ResizeControl = pnGenresView
         ExplicitLeft = 392
@@ -896,15 +904,16 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 230
-        Height = 471
+        Height = 490
         Align = alLeft
         TabOrder = 0
+        ExplicitHeight = 471
         object tvGenres: TVirtualStringTree
           AlignWithMargins = True
           Left = 3
           Top = 3
           Width = 224
-          Height = 465
+          Height = 484
           Align = alClient
           ChangeDelay = 250
           Header.AutoSizeIndex = 0
@@ -922,6 +931,7 @@ object frmMain: TfrmMain
           TreeOptions.PaintOptions = [toPopupMode, toShowButtons, toShowDropmark, toShowRoot, toShowTreeLines, toThemeAware, toUseBlendedImages]
           OnChange = tvGenresChange
           OnKeyDown = tvGenresKeyDown
+          ExplicitHeight = 465
           Columns = <>
         end
       end
@@ -929,12 +939,13 @@ object frmMain: TfrmMain
         Left = 233
         Top = 0
         Width = 545
-        Height = 471
+        Height = 490
         Align = alClient
         TabOrder = 1
+        ExplicitHeight = 471
         object GenreBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 362
+          Top = 381
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -961,26 +972,28 @@ object frmMain: TfrmMain
             Left = 432
             Top = 0
             Width = 107
-            Height = 13
+            Height = 26
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
             Layout = tlCenter
+            ExplicitHeight = 13
           end
           object lblGenreTitle: TLabel
             Left = 0
             Top = 0
             Width = 97
-            Height = 13
+            Height = 26
             Align = alLeft
             Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1078#1072#1085#1088#1072
             Layout = tlCenter
+            ExplicitHeight = 13
           end
         end
         object ipnlGenres: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 368
+          Top = 387
           Width = 539
           Height = 100
           Align = alBottom
@@ -989,6 +1002,7 @@ object frmMain: TfrmMain
           OnAuthorLinkClicked = AuthorLinkClicked
           OnSeriesLinkClicked = SeriesLinkClicked
           OnGenreLinkClicked = GenreLinkClicked
+          ExplicitTop = 368
         end
         object tvBooksG: TBookTree
           Tag = 2
@@ -996,7 +1010,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 324
+          Height = 343
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -1015,6 +1029,7 @@ object frmMain: TfrmMain
           OnHeaderClick = tvBooksTreeHeaderClick
           OnKeyDown = tvBooksTreeKeyDown
           OnMouseUp = tvBooksTreeMouseUp
+          ExplicitHeight = 324
           Columns = <
             item
               BiDiMode = bdLeftToRight
@@ -1078,14 +1093,11 @@ object frmMain: TfrmMain
     object tsSearch: TTabSheet
       HelpContext = 126
       Caption = #1055#1086#1080#1089#1082
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      ExplicitHeight = 471
       object SearchViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
-        Height = 471
+        Height = 490
         MinSize = 230
         ResizeControl = pnSearchView
         ExplicitLeft = 185
@@ -1096,12 +1108,13 @@ object frmMain: TfrmMain
         Left = 233
         Top = 0
         Width = 545
-        Height = 471
+        Height = 490
         Align = alClient
         TabOrder = 1
+        ExplicitHeight = 471
         object SearchBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 312
+          Top = 331
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -1114,7 +1127,7 @@ object frmMain: TfrmMain
         object ipnlSearch: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 318
+          Top = 337
           Width = 539
           Height = 150
           Align = alBottom
@@ -1123,6 +1136,7 @@ object frmMain: TfrmMain
           OnAuthorLinkClicked = AuthorLinkClicked
           OnSeriesLinkClicked = SeriesLinkClicked
           OnGenreLinkClicked = GenreLinkClicked
+          ExplicitTop = 318
         end
         object pnlFullSearch: TMHLSimplePanel
           AlignWithMargins = True
@@ -1143,7 +1157,7 @@ object frmMain: TfrmMain
             Left = 432
             Top = 0
             Width = 107
-            Height = 13
+            Height = 26
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
@@ -1154,6 +1168,7 @@ object frmMain: TfrmMain
             Font.Style = [fsBold]
             ParentFont = False
             Layout = tlCenter
+            ExplicitHeight = 13
           end
           object cbPresetName: TComboBox
             Left = 42
@@ -1187,7 +1202,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 274
+          Height = 293
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -1206,6 +1221,7 @@ object frmMain: TfrmMain
           OnHeaderClick = tvBooksTreeHeaderClick
           OnKeyDown = tvBooksTreeKeyDown
           OnMouseUp = tvBooksTreeMouseUp
+          ExplicitHeight = 274
           Columns = <
             item
               MaxWidth = 1000
@@ -1281,15 +1297,17 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 230
-        Height = 471
+        Height = 490
         Align = alLeft
         TabOrder = 0
+        ExplicitHeight = 471
         object SearchParams: TCategoryPanelGroup
           AlignWithMargins = True
           Left = 3
           Top = 3
           Width = 224
-          Height = 427
+          Height = 446
+          VertScrollBar.Position = 31
           VertScrollBar.Tracking = True
           Align = alClient
           HeaderFont.Charset = DEFAULT_CHARSET
@@ -1298,59 +1316,49 @@ object frmMain: TfrmMain
           HeaderFont.Name = 'Tahoma'
           HeaderFont.Style = []
           TabOrder = 0
+          ExplicitHeight = 652
           object ctpOther: TCategoryPanel
-            Top = 436
-            Height = 239
+            Top = 460
+            Height = 190
             Caption = #1056#1072#1079#1085#1086#1077
-            TabOrder = 2
-            ExplicitWidth = 185
+            TabOrder = 0
             object Label30: TLabel
-              Left = 7
-              Top = 122
+              Left = 52
+              Top = 72
               Width = 26
               Height = 13
               Alignment = taRightJustify
               Caption = #1044#1072#1090#1072
             end
             object Label2: TLabel
-              Left = 7
-              Top = 149
+              Left = 52
+              Top = 99
               Width = 26
               Height = 13
               Alignment = taRightJustify
               Caption = #1071#1079#1099#1082
             end
-            object Label3: TLabel
-              AlignWithMargins = True
-              Left = 3
-              Top = 49
-              Width = 193
-              Height = 13
-              Align = alTop
-              Caption = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
-              ExplicitWidth = 86
-            end
             object Label4: TLabel
               AlignWithMargins = True
               Left = 3
               Top = 3
-              Width = 193
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1056#1072#1079#1084#1077#1097#1077#1085#1080#1077
               ExplicitWidth = 62
             end
             object Label8: TLabel
-              Left = 7
-              Top = 176
+              Left = 52
+              Top = 126
               Width = 38
               Height = 13
               Alignment = taRightJustify
               Caption = #1054#1094#1077#1085#1082#1072
             end
             object cbDate: TComboBox
-              Left = 55
-              Top = 118
+              Left = 100
+              Top = 68
               Width = 99
               Height = 21
               Style = csDropDownList
@@ -1365,8 +1373,8 @@ object frmMain: TfrmMain
                 #1079#1072' 3 '#1084#1077#1089#1103#1094#1072)
             end
             object cbLang: TComboBox
-              Left = 55
-              Top = 145
+              Left = 100
+              Top = 95
               Width = 99
               Height = 21
               Style = csDropDownList
@@ -1410,7 +1418,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 22
-              Width = 193
+              Width = 197
               Height = 21
               Align = alTop
               Style = csDropDownList
@@ -1422,40 +1430,24 @@ object frmMain: TfrmMain
                 #1058#1086#1083#1100#1082#1086' '#1089#1082#1072#1095#1072#1085#1085#1099#1077
                 #1058#1086#1083#1100#1082#1086' '#1053#1045' '#1089#1082#1072#1095#1072#1085#1085#1099#1077)
             end
-            object edFKeyWords: TMHLButtonedEdit
-              AlignWithMargins = True
-              Left = 3
-              Top = 68
-              Width = 193
-              Height = 21
-              Hint = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
-              Align = alTop
-              ParentShowHint = False
-              ShowHint = True
-              TabOrder = 3
-              OnKeyDown = PresetFieldKeyDown
-              OnRightButtonClick = ShowExpressionEditor
-              ExplicitWidth = 197
-            end
             object cbDeleted: TCheckBox
               AlignWithMargins = True
               Left = 5
-              Top = 95
-              Width = 191
+              Top = 49
+              Width = 195
               Height = 17
               Margins.Left = 5
               Align = alTop
               Caption = #1057#1082#1088#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
-              TabOrder = 4
-              ExplicitWidth = 195
+              TabOrder = 3
             end
             object cbLibRate: TComboBox
-              Left = 55
-              Top = 172
+              Left = 100
+              Top = 122
               Width = 99
               Height = 21
               Style = csDropDownList
-              TabOrder = 5
+              TabOrder = 4
               OnKeyDown = PresetFieldKeyDown
               Items.Strings = (
                 '1'
@@ -1466,37 +1458,39 @@ object frmMain: TfrmMain
             end
           end
           object ctpFile: TCategoryPanel
-            Top = 259
+            Top = 283
             Height = 177
             Caption = #1060#1072#1081#1083
             TabOrder = 1
-            ExplicitWidth = 222
             object Label27: TLabel
               AlignWithMargins = True
               Left = 3
               Top = 3
-              Width = 19
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1048#1084#1103
+              ExplicitWidth = 19
             end
             object Label29: TLabel
               AlignWithMargins = True
               Left = 3
               Top = 95
-              Width = 18
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1058#1080#1087
+              ExplicitWidth = 18
             end
             object Label28: TLabel
               AlignWithMargins = True
               Left = 3
               Top = 49
-              Width = 72
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1055#1072#1087#1082#1072' ('#1072#1088#1093#1080#1074')'
+              ExplicitWidth = 72
             end
             object edFFile: TMHLButtonedEdit
               AlignWithMargins = True
@@ -1533,55 +1527,71 @@ object frmMain: TfrmMain
             end
           end
           object ctpBook: TCategoryPanel
-            Top = 0
-            Height = 259
+            Top = -31
+            Height = 314
             Caption = #1050#1085#1080#1075#1072
-            TabOrder = 0
-            ExplicitWidth = 222
+            TabOrder = 2
             object Label5: TLabel
               AlignWithMargins = True
               Left = 3
               Top = 3
-              Width = 31
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1040#1074#1090#1086#1088
+              ExplicitWidth = 31
             end
             object Label24: TLabel
               AlignWithMargins = True
               Left = 3
               Top = 49
-              Width = 48
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1053#1072#1079#1074#1072#1085#1080#1077
+              ExplicitWidth = 48
             end
             object Label26: TLabel
               AlignWithMargins = True
               Left = 3
               Top = 141
-              Width = 28
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1046#1072#1085#1088
+              ExplicitWidth = 28
             end
             object Label6: TLabel
               AlignWithMargins = True
               Left = 3
               Top = 95
-              Width = 31
+              Width = 197
               Height = 13
               Align = alTop
               Caption = #1057#1077#1088#1080#1103
+              ExplicitWidth = 31
             end
             object Label7: TLabel
               AlignWithMargins = True
               Left = 3
-              Top = 183
-              Width = 55
+              Top = 238
+              Width = 197
               Height = 13
               Align = alBottom
               Caption = #1040#1085#1085#1086#1090#1072#1094#1080#1103
+              ExplicitTop = 183
+              ExplicitWidth = 55
+            end
+            object Label3: TLabel
+              AlignWithMargins = True
+              Left = 3
+              Top = 191
+              Width = 197
+              Height = 14
+              Margins.Top = 0
+              Align = alTop
+              Caption = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
+              ExplicitTop = 193
             end
             object edFFullName: TMHLButtonedEdit
               AlignWithMargins = True
@@ -1632,7 +1642,7 @@ object frmMain: TfrmMain
             object edFAnnotation: TMHLButtonedEdit
               AlignWithMargins = True
               Left = 3
-              Top = 202
+              Top = 257
               Width = 197
               Height = 21
               Margins.Bottom = 10
@@ -1641,26 +1651,41 @@ object frmMain: TfrmMain
               OnKeyDown = PresetFieldKeyDown
               OnRightButtonClick = ShowExpressionEditor
             end
+            object edFKeyWords: TMHLButtonedEdit
+              AlignWithMargins = True
+              Left = 3
+              Top = 211
+              Width = 197
+              Height = 21
+              Hint = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
+              Align = alTop
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 5
+              OnKeyDown = PresetFieldKeyDown
+              OnRightButtonClick = ShowExpressionEditor
+            end
           end
         end
         object pnSearchControl: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
-          Top = 436
+          Top = 455
           Width = 224
           Height = 32
           Align = alBottom
           TabOrder = 1
+          ExplicitTop = 436
           object btnApplyFilter: TButton
             Left = 0
-            Top = 0
+            Top = 2
             Width = 75
             Height = 25
             Action = acApplyPreset
             TabOrder = 0
           end
           object btnClearFilterEdits: TButton
-            Left = 81
+            Left = 146
             Top = 2
             Width = 75
             Height = 25
@@ -1673,14 +1698,11 @@ object frmMain: TfrmMain
     object tsByGroup: TTabSheet
       HelpContext = 125
       Caption = #1043#1088#1091#1087#1087#1099
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      ExplicitHeight = 471
       object GroupsViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
-        Height = 471
+        Height = 490
         MinSize = 230
         ResizeControl = pnGroupsView
         ExplicitLeft = 392
@@ -1691,15 +1713,16 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 230
-        Height = 471
+        Height = 490
         Align = alLeft
         TabOrder = 0
+        ExplicitHeight = 471
         object tvGroups: TVirtualStringTree
           AlignWithMargins = True
           Left = 3
           Top = 3
           Width = 224
-          Height = 434
+          Height = 453
           Align = alClient
           ChangeDelay = 250
           Header.AutoSizeIndex = 0
@@ -1719,16 +1742,18 @@ object frmMain: TfrmMain
           OnDragOver = tvGroupsDragOver
           OnDragDrop = tvGroupsDragDrop
           OnKeyDown = tvGroupsKeyDown
+          ExplicitHeight = 434
           Columns = <>
         end
         object RzPanel8: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
-          Top = 443
+          Top = 462
           Width = 224
           Height = 25
           Align = alBottom
           TabOrder = 1
+          ExplicitTop = 443
           object btnAddGroup: TButton
             Left = 0
             Top = 0
@@ -1762,12 +1787,13 @@ object frmMain: TfrmMain
         Left = 233
         Top = 0
         Width = 545
-        Height = 471
+        Height = 490
         Align = alClient
         TabOrder = 1
+        ExplicitHeight = 471
         object GroupBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 312
+          Top = 331
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -1779,7 +1805,7 @@ object frmMain: TfrmMain
         object ipnlFavorites: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 318
+          Top = 337
           Width = 539
           Height = 150
           Align = alBottom
@@ -1788,6 +1814,7 @@ object frmMain: TfrmMain
           OnAuthorLinkClicked = AuthorLinkClicked
           OnSeriesLinkClicked = SeriesLinkClicked
           OnGenreLinkClicked = GenreLinkClicked
+          ExplicitTop = 318
           DesignSize = (
             539
             150)
@@ -1828,20 +1855,22 @@ object frmMain: TfrmMain
             Left = 432
             Top = 0
             Width = 107
-            Height = 13
+            Height = 26
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
             Layout = tlCenter
+            ExplicitHeight = 13
           end
           object lblGroups: TLabel
             Left = 0
             Top = 0
             Width = 102
-            Height = 13
+            Height = 26
             Align = alLeft
             Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1075#1088#1091#1087#1087#1099
             Layout = tlCenter
+            ExplicitHeight = 13
           end
         end
         object tvBooksF: TBookTree
@@ -1850,7 +1879,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 274
+          Height = 293
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -1869,6 +1898,7 @@ object frmMain: TfrmMain
           OnHeaderClick = tvBooksTreeHeaderClick
           OnKeyDown = tvBooksTreeKeyDown
           OnMouseUp = tvBooksTreeMouseUp
+          ExplicitHeight = 274
           Columns = <
             item
               BiDiMode = bdLeftToRight
@@ -1931,10 +1961,7 @@ object frmMain: TfrmMain
     object tsDownload: TTabSheet
       HelpContext = 108
       Caption = #1057#1087#1080#1089#1086#1082' '#1079#1072#1082#1072#1095#1077#1082
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      ExplicitHeight = 471
       object tlbrDownloadList: TToolBar
         AlignWithMargins = True
         Left = 3
@@ -2024,7 +2051,7 @@ object frmMain: TfrmMain
           Left = 226
           Top = 0
           Hint = 'Save'
-          Caption = 'Save'
+          Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
           ImageIndex = 8
           OnClick = BtnSaveClick
         end
@@ -2040,17 +2067,19 @@ object frmMain: TfrmMain
         Left = 0
         Top = 28
         Width = 778
-        Height = 443
+        Height = 462
         Align = alClient
         TabOrder = 1
+        ExplicitHeight = 443
         object RzPanel2: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
-          Top = 398
+          Top = 417
           Width = 772
           Height = 42
           Align = alBottom
           TabOrder = 1
+          ExplicitTop = 398
           object lblDownloadState: TLabel
             Left = 288
             Top = 19
@@ -2080,7 +2109,7 @@ object frmMain: TfrmMain
             Left = 662
             Top = 3
             Width = 107
-            Height = 13
+            Height = 36
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
@@ -2091,6 +2120,7 @@ object frmMain: TfrmMain
             Font.Style = [fsBold]
             ParentFont = False
             Layout = tlCenter
+            ExplicitHeight = 13
           end
           object pbDownloadProgress: TProgressBar
             Left = 0
@@ -2106,7 +2136,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 772
-          Height = 389
+          Height = 408
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.DefaultHeight = 17
@@ -2115,6 +2145,7 @@ object frmMain: TfrmMain
           Header.ParentFont = True
           PopupMenu = pmDownloadList
           TabOrder = 0
+          ExplicitHeight = 389
           Columns = <
             item
               Position = 0
@@ -2223,7 +2254,7 @@ object frmMain: TfrmMain
   end
   object StatusBar: TStatusBar
     Left = 0
-    Top = 567
+    Top = 586
     Width = 792
     Height = 19
     AutoHint = True
@@ -2240,12 +2271,13 @@ object frmMain: TfrmMain
       end>
     OnDrawPanel = StatusBarDrawPanel
     OnResize = StatusBarResize
+    ExplicitTop = 567
   end
   object MainMenu: TMainMenu
     Images = ilMainMenu
     OwnerDraw = True
-    Left = 264
-    Top = 336
+    Left = 40
+    Top = 384
     object miBook: TMenuItem
       Caption = #1050#1085#1080#1075#1072
       HelpContext = 105
@@ -2553,8 +2585,8 @@ object frmMain: TfrmMain
   object pmMain: TPopupMenu
     Images = ilMainMenu
     OwnerDraw = True
-    Left = 152
-    Top = 224
+    Left = 128
+    Top = 280
     object pmiReadBook: TMenuItem
       Caption = #1063#1080#1090#1072#1090#1100
       ImageIndex = 12
@@ -2694,8 +2726,8 @@ object frmMain: TfrmMain
   object pmAuthor: TPopupMenu
     OwnerDraw = True
     OnPopup = pmAuthorPopup
-    Left = 264
-    Top = 240
+    Left = 40
+    Top = 288
     object miCopyAuthor: TMenuItem
       Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1074' '#1073#1091#1092#1077#1088' '
       ShortCut = 16451
@@ -2716,10 +2748,10 @@ object frmMain: TfrmMain
     DrawingStyle = dsTransparent
     Height = 32
     Width = 32
-    Left = 48
-    Top = 224
+    Left = 280
+    Top = 280
     Bitmap = {
-      494C01011B0000024C0220002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C01011B000002500220002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -6424,10 +6456,10 @@ object frmMain: TfrmMain
   end
   object ilMainMenu: TImageList
     DrawingStyle = dsTransparent
-    Left = 48
-    Top = 176
+    Left = 280
+    Top = 232
     Bitmap = {
-      494C010125002700100210001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010125002700140210001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000040000000A0000000010020000000000000A0
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -7757,14 +7789,14 @@ object frmMain: TfrmMain
   object pmCollection: TPopupMenu
     Images = ilMainMenu
     OwnerDraw = True
-    Left = 264
-    Top = 288
+    Left = 40
+    Top = 336
   end
   object pmScripts: TPopupMenu
     Images = ilFileTypes
     OwnerDraw = True
-    Left = 264
-    Top = 192
+    Left = 40
+    Top = 240
     object MenuItem1: TMenuItem
       Caption = '324'
     end
@@ -7778,138 +7810,138 @@ object frmMain: TfrmMain
   object ilFileTypes: TImageList
     ColorDepth = cd32Bit
     DrawingStyle = dsTransparent
-    Left = 48
-    Top = 320
+    Left = 280
+    Top = 360
     Bitmap = {
-      494C01010A003801F80110001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C01010B003801080210001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000275970EF2B6581FF2B6581FF2B65
+      81FF2B6581FF2B6581FF2B6581FF2B6581FF122B3AFF1C4661FF1C4661FF1D3F
+      55FF1F2D36FF162D3CEF00000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000010101030101
       0106010101030000000000000000000000000101010301010106010101030000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000003B7C99FF4FA2C5FF4FA2C5FF4FA2
+      C5FF4FA2C5FF4FA2C5FF4FA2C5FF4FA2C5FF1C4860FF3186B4FF3186B4FF3466
+      81FFE99464FF284050FF00000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000101
-      0103000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
+      0103000000000000000000000000000000003F819EFF52A6CAFF52A6CAFF52A6
+      CAFF52A6CAFF52A6CAFF52A6CAFF52A6CAFF1F4B63FF368DBBFF368DBBFF3874
+      95FFE99464FF2C4D63FF00000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000303F0173379601FF3C9501FF4F6801BF000000000000
       000000000000000000000000000000000000010101030101010E010101160101
       010E01010103000000000101010601010111010101140101010B000000000101
-      0106000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
+      0106000000000000000000000000000000004486A2FF55ABCEFF55ABCEFF55AB
+      CEFF55ABCEFF55ABCEFF55ABCEFF55ABCEFF224F66FF3C94C1FF3C94C1FF3D7D
+      9EFFDCDCDCFF32566DFF00000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000002B3801665C8D01FF2AAD01FF0BAB01FF5C7901E11D2601440000
       000000000000000000000000000000000000010101080101011F0101012D0101
       011F010101080101010601010116010101240101012201010114000000000101
-      0103000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
+      010300000000000000000000000000000000498AA5FF58B0D1FF58B0D1FF58B0
+      D1FF58B0D1FF58B0D1FF58B0D1FF58B0D1FF265369FF419BC9FF419BC9FF4182
+      A3FFDCDCDCFF365D73FF00000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       000004050108516901C31EAB01FF33D901FF31D601FF2E9C01FF5A7D01E5161C
       0133000000000000000000000000000000000101010B0134FFFF010101400101
       0132010101190101011C0101012D0134FFFF0101012401010111000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000004E90A9FF5BB5D5FF5BB5D5FF5BB5
+      D5FF5BB5D5FF5BB5D5FF5BB5D5FF5BB5D5FF2B576CFF48A2CFFF47A2CEFF4588
+      A6FFDCDCDCFF3C6478FF00000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       00003545017F509001FF1EC101FF30D501FF34DA01FF2BD001FF379601FF3545
       017F000000000000000000000000000000000101010B0134FFFF010101510101
       014C0101013B0101013E0134FFFF010101380101011C01010106000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000005395AEFF5EBAD9FF5EBAD9FF5EBA
+      D9FF5EBAD9FF5EBAD9FF5EBAD9FF5BB5D5FF2E5A70FF4EA8D4FF4DA8D4FF4A8D
+      ABFFDCDCDCFF426A7EFF00000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000001015
       0126377701CC26BB01FF19BB01FF0E7F01B2149D01D933D901FF28B001FF5A8D
       01FF000000000000000000000000000000000101010B0134FFFF0101015A0101
       015A0101014C0134FFFF0101014E0101013E0101011901010103000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000589BB1FF62C0DDFF62C0DDFF62C0
+      DDFF62C0DDFF62C0DDFF62C0DDFF62C0DDFF3C7089FF3F7C99FF54AED9FF52A6
+      CEFF4D829BFF405E6EEF00000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000005A7D
       01E5309801FF0A9901E501170122010C01110111011916A601E51EC101FF4894
       01FF485D01AE080A011100000000000000000101010B0134FFFF0134FFFF0134
       FFFF0134FFFF0134FFFF010101430101013E0101012201010108000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000005D9FB5FF65C5E1FF65C5E1FF65C5
+      E1FF65C5E1FF65C5E1FF65C5E1FF65C5E1FF61B1CBFF3C7089FF3C7089FF59A2
+      C4FF547E91FF0101022000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000003088
       01E6036201990119012600000000000000000000000001190126139401CC1CBE
       01FF4B9101FF3545017F00000000000000000101010B0134FFFF010101490101
       013E01010122010101220134FFFF0101013E010101270101010B000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000063A4B9FF68CBE5FF68CBE5FF68CB
+      E5FF68CBE5FF68CBE5FF68CBE5FF68CBE5FF68CBE5FF63A4B9FF3B6578FF629F
+      BAFF547E91FF0000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       000000000000000000000000000000000000000000000000000000000000022A
       0140000000000000000000000000000000000000000000000000021C012B1196
       01D41E9C01FF567201D41218012A000000000101010B0134FFFF0101014C0101
       014901010135010101320134FFFF0101013B0101012201010108000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000068AABEFF6BD0E9FF6BD0E9FF6BD0
+      E9FF6BD0E9FF6BD0E9FF6BD0E9FF6BD0E9FF6BD0E9FF6BD0E9FF3F687CFF6CA6
+      C1FF547E91FF0000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000109
       010D088901D9309801FF5E8401F200000000010101080134FFFF010101430101
       014C01010146010101400134FFFF0101012D0101011401010103000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000006CAFC1FF6ED5EDFF6ED5EDFF6ED5
+      EDFF6ED5EDFF6ED5EDFF6ED5EDFF6ED5EDFF6ED5EDFF6ED5EDFF446C7EFF76AE
+      C7FF547E91FF0000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       000001170122037C01C3509001FF00000000010101030134FFFF0134FFFF0134
       FFFF0134FFFF0134FFFF01010122010101140101010600000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000072B4C5FF72DAF0FF72DAF0FF72DA
+      F0FF72DAF0FF72DAF0FF72DAF0FF72DAF0FF72DAF0FF72DAF0FF497081FF80B5
+      CEFF547E91FF0000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000001170122198001D0000000000000000001010103010101080101
       010B0101010B0101010B01010108010101030000000000000000000000000000
+      00000000000000000000000000000000000077B9CBFF75E0F6FF75E0F6FF75E0
+      F6FF75E0F6FF75E0F6FF75E0F6FF75E0F6FF75E0F6FF75E0F6FF4E7383FF89BB
+      D3FF547E91FF0000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000007DBFCFFF78E5FAFF78E5FAFF78E5
+      FAFF78E5FAFF78E5FAFF78E5FAFF78E5FAFF78E5FAFF78E5FAFF527586FF91C0
+      D7FF547E91FF0000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000004A6F78C083C4D3FF83C4D3FF83C4
+      D3FF83C4D3FF83C4D3FF83C4D3FF83C4D3FF83C4D3FF83C4D3FF6C8894FF4A6F
+      78C0152024800000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -8187,8 +8219,8 @@ object frmMain: TfrmMain
   object pmHeaders: TPopupMenu
     Images = ilFileTypes
     OwnerDraw = True
-    Left = 152
-    Top = 176
+    Left = 128
+    Top = 232
     object N3: TMenuItem
       Tag = 20
       Caption = #1040#1074#1090#1086#1088
@@ -8268,8 +8300,8 @@ object frmMain: TfrmMain
   end
   object pmTray: TPopupMenu
     OwnerDraw = True
-    Left = 152
-    Top = 368
+    Left = 128
+    Top = 424
     object N29: TMenuItem
       Caption = #1054#1090#1082#1088#1099#1090#1100'/'#1057#1074#1077#1088#1085#1091#1090#1100
       OnClick = TrayIconDblClick
@@ -8285,8 +8317,8 @@ object frmMain: TfrmMain
   object pmDownloadList: TPopupMenu
     Images = ilMainMenu
     OwnerDraw = True
-    Left = 152
-    Top = 320
+    Left = 128
+    Top = 376
     object mi_dwnl_LocateAuthor: TMenuItem
       Caption = #1055#1077#1088#1077#1081#1090#1080' '#1082' '#1072#1074#1090#1086#1088#1091
       ImageIndex = 35
@@ -8308,10 +8340,10 @@ object frmMain: TfrmMain
     DrawingStyle = dsTransparent
     Height = 32
     Width = 32
-    Left = 48
-    Top = 272
+    Left = 280
+    Top = 320
     Bitmap = {
-      494C010118001A00100220002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C010118001A00140220002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12017,8 +12049,8 @@ object frmMain: TfrmMain
   object pmGroups: TPopupMenu
     Images = ilMainMenu
     OwnerDraw = True
-    Left = 152
-    Top = 272
+    Left = 128
+    Top = 328
     object GroupMenuItem: TMenuItem
       OnClick = GroupMenuItemClick
     end
@@ -12457,7 +12489,7 @@ object frmMain: TfrmMain
     Left = 576
     Top = 264
     Bitmap = {
-      494C01010A000F00040010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C01010A000F00080010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000101010F010101170101011A0101
       011A0101011A0101011A0101011A0101011A0101011A0101011A0101011A0101
@@ -12861,8 +12893,8 @@ object frmMain: TfrmMain
       000000000000}
   end
   object pmGroupActions: TPopupMenu
-    Left = 264
-    Top = 392
+    Left = 40
+    Top = 440
     object N9: TMenuItem
       Action = acGroupCreate
     end

@@ -1795,14 +1795,17 @@ begin
       end;
       BookRecord.Size := Table.FieldAsInt(7);
       BookRecord.LibID := Table.FieldAsString(8);
+
       if Table.FieldAsBoolean(9) then
         Include(BookRecord.BookProps, bpIsDeleted)
       else
         Exclude(BookRecord.BookProps, bpIsDeleted);
+
       if Table.FieldAsBoolean(10) then
         Include(BookRecord.BookProps, bpIsLocal)
       else
         Exclude(BookRecord.BookProps, bpIsLocal);
+
       BookRecord.Date := Table.FieldAsDateTime(11);
       BookRecord.Lang := Table.FieldAsString(12);
       BookRecord.LibRate := Table.FieldAsInt(13);

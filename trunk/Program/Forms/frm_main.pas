@@ -270,12 +270,10 @@ type
     ctpOther: TCategoryPanel;
     Label30: TLabel;
     Label2: TLabel;
-    Label3: TLabel;
     Label4: TLabel;
     cbDate: TComboBox;
     cbLang: TComboBox;
     cbDownloaded: TComboBox;
-    edFKeyWords: TMHLButtonedEdit;
     cbDeleted: TCheckBox;
     ctpFile: TCategoryPanel;
     Label27: TLabel;
@@ -488,6 +486,8 @@ type
     N82: TMenuItem;
     Label8: TLabel;
     cbLibRate: TComboBox;
+    edFKeyWords: TMHLButtonedEdit;
+    Label3: TLabel;
 
     //
     // События формы
@@ -525,7 +525,7 @@ type
     //
     // Список книг
     //
-    procedure tvBooksTreeHeaderClick(Sender: TVTHeader; Column: TColumnIndex; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure tvBooksTreeHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
     procedure tvBooksTreeMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure tvBooksTreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure tvBooksTreeChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -1518,7 +1518,7 @@ begin
     ///pmiDownloadBooks.Visible := IsOnline;
 
     // --------- Панели онструментов ----------------------------------------------
-    ///tbtnDownloadList_Add.Visible := IsOnline;
+    tbtnDownloadList_Add.Visible := IsOnline;
 
     //
     // Поиск
@@ -2014,6 +2014,24 @@ begin
     ///ItemM.OnClick := tbSendToDeviceClick;
     mmiScripts.Insert(i, ItemM);
   end;
+
+  // Добавляем Выбор папки
+
+  if pmScripts.Items.Count > 0 then
+  begin
+    Item := TMenuItem.Create(pmScripts);
+    Item.Caption := '-';
+    Item.tag := 0;
+    pmScripts.Items.Add(Item);
+  end;
+
+  Item := TMenuItem.Create(pmScripts);
+  Item.OnClick := SendToDeviceExecute;
+  Item.Caption := 'Выбор папки ...';
+  Item.ImageIndex := 10;
+  Item.tag := 799;
+  pmScripts.Items.Add(Item);
+
 
   if pmiScripts.Count > 0 then
   begin
@@ -2675,26 +2693,20 @@ begin
   end;
 end;
 
-procedure TfrmMain.tvBooksTreeHeaderClick(
-  Sender: TVTHeader;
-  Column: TColumnIndex;
-  Button: TMouseButton;
-  Shift: TShiftState;
-  X, Y: Integer
-);
+procedure TfrmMain.tvBooksTreeHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
 var
   Tree: TBookTree;
 begin
-  if (Button = mbLeft) then
+  if (HitInfo.Button = mbLeft) then
   begin
     GetActiveTree(Tree);
-    if (Settings.TreeModes[Tree.Tag] = tmTree) or (Column < 0) then
+    if (Settings.TreeModes[Tree.Tag] = tmTree) or (HitInfo.Column < 0) then
       Exit;
 
     //
     // Меняем индекс сортирующей колонки на индекс колонки, которая была нажата.
     //
-    Tree.Header.SortColumn := Column;
+    Tree.Header.SortColumn := HitInfo.Column;
 
     //
     // Сортируем всё дерево относительно этой колонки и изменяем порядок сортировки на противополжный
@@ -2703,10 +2715,10 @@ begin
       Tree.Header.SortDirection := sdDescending
     else
       Tree.Header.SortDirection := sdAscending;
-    Tree.SortTree(Column, Tree.Header.SortDirection);
+    Tree.SortTree(HitInfo.Column, Tree.Header.SortDirection);
 
     // запоминаем параметры для активного дерева
-    FSortSettings[Tree.Tag].Column := Column;
+    FSortSettings[Tree.Tag].Column := HitInfo.Column;
     FSortSettings[Tree.Tag].Direction := Tree.Header.SortDirection;
   end;
 end;
@@ -3411,6 +3423,13 @@ begin
   end
   else
     ExportMode := emFB2;
+
+  if ScriptID = 799 then // выбор папки; не зависит от формата
+  begin
+    if not GetFolderName(Handle, 'Укажите путь', AFolder) then
+      Exit;
+    Settings.DeviceDir := AFolder;
+  end;
 
   Dec(ScriptID, 901);
 
@@ -5806,7 +5825,8 @@ begin
 
       frmBookDetails.mmReview.ReadOnly := not ReviewEditable;
 
-      if IsOnline and ReviewEditable then
+      //if IsOnline and ReviewEditable then         - логика нарушена
+      if not IsPrivate then
       begin
         { TODO -oNickR -cLibDesc : этот URL должен формироваться обвязкой библиотеки, т к его формат может меняться }
         if FCollection.CollectionURL = '' then
