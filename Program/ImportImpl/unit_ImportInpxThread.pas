@@ -432,6 +432,7 @@ begin
               end
               else
               begin
+                Include(R.BookProps, bpIsLocal);
                 if not FUseStoredFolder then
                 begin
                   // 98058-98693.inp -> 98058-98693.zip
