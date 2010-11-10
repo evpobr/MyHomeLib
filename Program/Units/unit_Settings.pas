@@ -717,7 +717,7 @@ begin
     FProxyPassword := DecodePassString(iniFile.ReadString(NETWORK_SECTION, 'proxy-pass', ''));
     FProxyPort := iniFile.ReadInteger(NETWORK_SECTION, 'proxy-port', 0);
     FUpdateURL := iniFile.ReadString(NETWORK_SECTION, 'update_server', 'http://home-lib.net/update/');
-    FInpxURL := iniFile.ReadString(NETWORK_SECTION, 'inpx-url', 'http://home-lib.net/download/inpx/test/');
+    FInpxURL := iniFile.ReadString(NETWORK_SECTION, 'inpx-url', 'http://home-lib.net/download/inpx/');
     FErrorLog := iniFile.ReadBool(NETWORK_SECTION, 'use_error_log', False);
     FTimeOut := iniFile.ReadInteger(NETWORK_SECTION, 'time-out', 5000);
     FReadTimeOut := iniFile.ReadInteger(NETWORK_SECTION, 'read_time-out', 50000);
