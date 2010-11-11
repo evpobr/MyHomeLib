@@ -109,7 +109,7 @@ uses
   StrUtils,
   WideStrUtils,
   IOUtils,
-  sevenzip;
+  unit_sevenzip;
 
 const
   ZIP_EXTENSION = '.zip';
