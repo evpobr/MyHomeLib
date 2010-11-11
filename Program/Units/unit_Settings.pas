@@ -1015,15 +1015,16 @@ var
   I: Integer;
   sl: TStringList;
   slHelper: TStringList;
-  iniFile: TIniFile;
+  INIFile: TMemIniFile;
 begin
   FUpdateList.Clear;
 
   FUpdateList.URL := FUpdateURL;
   FUpdateList.Path := UpdatePath;
 
-  iniFile := TIniFile.Create(SystemFileName[sfCollectionsStore]);
+  INIFile := TMemIniFile.Create(SystemFileName[sfCollectionsStore]);
   try
+    INIFile.Encoding := TEncoding.UTF8;
     // обрабатываем файл
     sl := TStringList.Create;
     try
