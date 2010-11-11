@@ -16,7 +16,7 @@
 (*                                                                              *)
 (********************************************************************************)
 
-unit sevenzip;
+unit unit_sevenzip;
 {$ALIGN ON}
 {$MINENUMSIZE 4}
 {$WARN SYMBOL_PLATFORM OFF}	
