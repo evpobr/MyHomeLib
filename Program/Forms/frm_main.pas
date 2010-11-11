@@ -488,6 +488,7 @@ type
     cbLibRate: TComboBox;
     edFKeyWords: TMHLButtonedEdit;
     Label3: TLabel;
+    tmrCheckUpdates: TTimer;
 
     //
     // События формы
@@ -699,6 +700,7 @@ type
     procedure UpdateBookAction(Sender: TObject);
     procedure StatusBarDrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel; const Rect: TRect);
     procedure StatusBarResize(Sender: TObject);
+    procedure tmrCheckUpdatesTimer(Sender: TObject);
 
   protected
     procedure WMGetSysCommand(var Message: TMessage); message WM_SYSCOMMAND;
@@ -2275,6 +2277,36 @@ begin
   end;
 end;
 
+
+// ------------------------------------------------------------------------------
+// Проверка обновлений
+// ------------------------------------------------------------------------------
+procedure TfrmMain.tmrCheckUpdatesTimer(Sender: TObject);
+begin
+  if not frmMain.Active then
+    Exit;
+
+  tmrCheckUpdates.Enabled := False;
+  StatusMessage := rstrCheckingUpdates;
+
+  if Settings.CheckUpdate then
+  begin
+    FAutoCheck := True;
+    CheckUpdatesExecute(nil);
+  end
+  else
+    FAutoCheck := False;
+
+  if Settings.CheckExternalLibUpdate then
+    if CheckLibUpdates(True) then
+      if Settings.AutoRunUpdate then
+        StartLibUpdate
+      else if MHLShowInfo(rstrCollectionUpdateAvailable, mbYesNo) = mrYes then
+        StartLibUpdate;
+
+  StatusMessage := rstrDownloadStateDone;
+end;
+
 procedure TfrmMain.tbtnAutoFBDClick(Sender: TObject);
 //var
 //  Tree: TBookTree;
@@ -2532,28 +2564,6 @@ begin
 
   frmSplash.lblState.Caption := rstrMainConnectToDb;
 
-  // ------------------------------------------------------------------------------
-  // Проверка обновлений
-  // ------------------------------------------------------------------------------
-
-  frmSplash.lblState.Caption := rstrMainCheckUpdates;
-  if Settings.CheckUpdate then
-  begin
-    FAutoCheck := True;
-    ///frmMain.miCheckUpdatesClick(nil);
-  end
-  else
-    FAutoCheck := False;
-
-  if Settings.CheckExternalLibUpdate then
-    if CheckLibUpdates(True) then
-      if Settings.AutoRunUpdate then
-        StartLibUpdate
-      else if MHLShowInfo(rstrCollectionUpdateAvailable, mbYesNo) = mrYes then
-        StartLibUpdate;
-
-  // ------------------------------------------------------------------------------
-
   LoadLastCollection;
 
   FillGroupsList(tvGroups, FSystemData.GetGroupIterator, FLastGroupID);
@@ -2575,6 +2585,7 @@ begin
     btnStartDownloadClick(Sender);
 
   SetFormState;
+  tmrCheckUpdates.Enabled := True;
 end;
 
 procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
