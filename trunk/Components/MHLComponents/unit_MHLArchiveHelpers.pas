@@ -107,6 +107,7 @@ implementation
 uses
   SysUtils,
   StrUtils,
+  WideStrUtils,
   IOUtils,
   sevenzip;
 
@@ -437,6 +438,7 @@ function TArchiver.UnarchiveToString(const No: Integer): String;
 var
   binStream: TMemoryStream;
   strStream: TStringStream;
+  S: String;
 begin
   Assert(No >= 0);
 
@@ -445,7 +447,13 @@ begin
     strStream := TStringStream.Create;
     try
       binStream.SaveToStream(strStream);
-      Result:= strStream.DataString;
+      S := strStream.DataString;
+      if HasUTF8BOM(strStream.DataString) then
+      begin
+        Delete(S, 1, 3);
+        Result := UTF8Decode(S);
+      end
+      else Result := S;
     finally
       FreeAndNil(strStream);
     end;

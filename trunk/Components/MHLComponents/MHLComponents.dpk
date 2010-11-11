@@ -33,7 +33,7 @@ requires
   IndyCore,
   IndySystem,
   IndyProtocols,
-  VirtualTreesD14,
+  VirtualTreesD,
   soaprtl;
 
 contains
