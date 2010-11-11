@@ -740,9 +740,25 @@ procedure TfrmMain.Pack(FN: string; Level: Integer);
 var
   i: Integer;
   Comment: string;
+  SL: TStringList;
 begin
+
+  Comment := edTitle.Text + #13#10 + edInpxName.Text + #13#10 + edCode.Text +
+    #13#10 + edDescr.Text + #13#10 + edURL.Text + #13#10 + mmScript.Text;
+
+  SL := TStringList.Create;
+  try
+    SL.Text := Comment;
+    SL.SaveToFile(FInpPath + 'collection.info', TEncoding.UTF8);
+    FFileList.Add('collection.info');
+  finally
+    SL.Free;
+  end;
+
   if FileExists(FOutPath + FN) then
     DeleteFile(FOutPath + FN);
+
+
 
   if Level = 0 then
     Zip.CompressionLevel := clNone
@@ -755,10 +771,7 @@ begin
   for i := 0 to FFileList.Count - 1 do
     Zip.AddFiles(FFileList[i]);
 
-  Comment := edTitle.Text + #13#10 + edInpxName.Text + #13#10 + edCode.Text +
-    #13#10 + edDescr.Text + #13#10 + edURL.Text + #13#10 + mmScript.Text;
 
-  Zip.AddFromString('collection.info', Comment);
   Zip.Comment := String(Comment);
   Zip.CloseArchive;
 end;

@@ -485,6 +485,10 @@
     object TabSheet2: TTabSheet
       Caption = #1058#1072#1073#1083#1080#1094#1099
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label2: TLabel
         Left = 507
         Top = 11
