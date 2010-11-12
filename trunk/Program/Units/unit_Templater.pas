@@ -319,7 +319,7 @@ begin
 
   MaskElements[9].templ := 'n';
   if R.SeqNumber <> 0 then
-    MaskElements[9].value := IntToStr(R.SeqNumber)
+    MaskElements[9].value := Format('%.2d', [R.SeqNumber])
   else
     MaskElements[9].value := '';
 
