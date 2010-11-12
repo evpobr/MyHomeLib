@@ -894,7 +894,6 @@ type
     procedure SetShowBookAnnotation(State: Boolean);
     procedure SetColumns;
     procedure SaveColumns;
-    function GetTreeTag(const Sender: TBaseVirtualTree; const Column: Integer): Integer;
     procedure SetHeaderPopUp;
     procedure DownloadBooks;
     function CheckActiveDownloads: Boolean;
@@ -1404,7 +1403,6 @@ end;
 procedure TfrmMain.CloseCollection;
 var
   FCursor: TCursor;
-//  BookCollection: TBookCollection;
 begin
   FCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -1436,6 +1434,8 @@ begin
     FLastGroupBookID.Clear;
 
     FCollection := nil;
+
+    UpdateActions;
   finally
     Screen.Cursor := FCursor;
   end;
@@ -1446,7 +1446,6 @@ var
   SavedCursor: TCursor;
   CollectionType: Integer;
   EmptySearchCriteria: TBookSearchCriteria;
-  collectionInfo: TCollectionInfo;
 begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -1588,6 +1587,8 @@ begin
 
     if ActiveView = AuthorsView then
       miGoToAuthor.Visible := False;
+
+    UpdateActions;
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -1599,7 +1600,6 @@ var
   seriesID: Integer;
   seriesTitle: string;
   node: PVirtualNode;
-  seriesData: PSeriesData;
   bookTree: TBookTree;
   bookData: PBookRecord;
   bookKey: TBookKey;
@@ -1951,7 +1951,6 @@ var
   Item, ItemP, ItemM: TMenuItem;
   F: Integer;
   i: Integer;
-  DBFileName: string;
   fb2Collection: Boolean;
 begin
   pmScripts.Items.Clear;
@@ -2411,7 +2410,6 @@ end;
 procedure TfrmMain.LoadLastCollection;
 var
   CollectionID: Integer;
-  collectionInfo: TCollectionInfo;
 begin
   //
   // этот метод вызывается и в том случае, если коллекций нет совсем (и никогда небыло)
@@ -2951,13 +2949,13 @@ procedure TfrmMain.tvGroupsDragDrop(
   var Effect: Integer;
   Mode: TDropMode
   );
-var
-  Nodes: TNodeArray;
-  i: Integer;
-  GroupData: PGroupData;
-  SourceGroupID: Integer;
-  TargetGroupID: Integer;
-  BookData: PBookRecord;
+//var
+  //Nodes: TNodeArray;
+  //i: Integer;
+  //GroupData: PGroupData;
+  //SourceGroupID: Integer;
+  //TargetGroupID: Integer;
+  //BookData: PBookRecord;
 
   procedure SelectChildNodes(ParentNode: PVirtualNode);
   var
@@ -3007,8 +3005,8 @@ begin
 end;
 
 procedure TfrmMain.tvGroupsDragOver(Sender: TBaseVirtualTree; Source: TObject; Shift: TShiftState; State: TDragState; Pt: TPoint; Mode: TDropMode; var Effect: Integer; var Accept: Boolean);
-var
-  Data: PGroupData;
+//var
+  //Data: PGroupData;
 begin
 // Where can we get a replacement for DMUser.GroupsGroupID.Value ?
   Assert(False, 'Not implemented yet!')
@@ -3149,14 +3147,6 @@ begin
     ///miConverToFBD.Tag := IfThen(isFBDDocument, 999, 0);
     ///miConverToFBD.Caption := IfThen(isFBDDocument, rstrEditFBD, rstrConvert2FBD);
   end;
-end;
-
-function TfrmMain.GetTreeTag(const Sender: TBaseVirtualTree; const Column: Integer): Integer;
-begin
-  if Column < 0 then
-    Result := -1
-  else
-    Result := (Sender as TBookTree).Header.Columns[Column].Tag;
 end;
 
 procedure TfrmMain.tvBooksTreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -6390,6 +6380,8 @@ procedure TfrmMain.pgControlChange(Sender: TObject);
 var
   ToolBuutonVisible: Boolean;
 begin
+  UpdateActions;
+
   // сбрасываем закладки быстрого поиска
   FLastFoundBook := nil;
   FFirstFoundBook := nil;

@@ -14,6 +14,8 @@
   *
   ****************************************************************************** *)
 
+{$WARN SYMBOL_PLATFORM OFF}
+
 unit frm_DeleteCollection;
 
 interface
