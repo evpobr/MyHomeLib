@@ -1434,8 +1434,6 @@ begin
     FLastGroupBookID.Clear;
 
     FCollection := nil;
-
-    UpdateActions;
   finally
     Screen.Cursor := FCursor;
   end;
