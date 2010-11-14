@@ -536,9 +536,27 @@ begin
 end;
 
 procedure TfrmAddnonfb2.btnNextClick(Sender: TObject);
+var
+  ZipFilename, BookFileName: string;
+
 begin
-  ///pcPages.ActivePage := tsFBD;
-end;
+  // Конвертация в FBD и добавление в базу
+  Screen.Cursor := crHourGlass;
+  Enabled := False;
+  try
+    PrepareBookRecord;
+    if cbForceConvertToFBD.Checked then
+    begin
+      FBD.New(FRootPath + FBookrecord.Folder, FBookrecord.FileName, FBookrecord.FileExt);
+      FillFBDData;
+      CommitData;
+    end
+      else CommitData;
+  finally
+    Enabled := True;
+    Screen.Cursor := crDefault;
+  end;
+ end;
 
 procedure TfrmAddnonfb2.btnPasteCoverClick(Sender: TObject);
 begin
