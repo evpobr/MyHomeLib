@@ -1284,7 +1284,6 @@ begin
   SetShowBookCover(Settings.ShowBookCover);
   SetShowBookAnnotation(Settings.ShowBookAnnotation);
 
-  CreateScriptMenu;
   if Settings.DefaultScript <> 0 then
   begin
     tbSendToDevice.Tag := 900 + Settings.DefaultScript;
@@ -1978,9 +1977,9 @@ begin
     for i := 0 to 5 do
     begin
       Item := TMenuItem.Create(pmScripts);
+      Item.OnClick := SendToDeviceExecute;  // если присваивать свойство action,  то не передается tag, и ничего не работает
       Item.Caption := ExpTypes[i];
       Item.Tag := 850 + i;
-      ///Item.OnClick := tbSendToDeviceClick;
       Item.ImageIndex := i;
       pmScripts.Items.Insert(i, Item);
     end;
@@ -2010,7 +2009,7 @@ begin
     Item := TMenuItem.Create(pmScripts);
     Item.Caption := Settings.Scripts[i].Title;
     Item.Tag := 901 + i;
-    ///Item.OnClick := tbSendToDeviceClick;
+    Item.OnClick := SendToDeviceExecute;
     Item.ImageIndex := 6;
     pmScripts.Items.Insert(i + F, Item);
 
@@ -2018,14 +2017,14 @@ begin
     ItemP := TMenuItem.Create(pmMain);
     ItemP.Caption := Settings.Scripts[i].Title;
     ItemP.Tag := 901 + i;
-    ///ItemP.OnClick := tbSendToDeviceClick;
+    Item.OnClick := SendToDeviceExecute;
     pmiScripts.Insert(i, ItemP);
 
     // ------ main -----------------
     ItemM := TMenuItem.Create(MainMenu);
     ItemM.Caption := Settings.Scripts[i].Title;
     ItemM.Tag := 901 + i;
-    ///ItemM.OnClick := tbSendToDeviceClick;
+    Item.OnClick := SendToDeviceExecute;
     mmiScripts.Insert(i, ItemM);
   end;
 
@@ -2040,7 +2039,7 @@ begin
   end;
 
   Item := TMenuItem.Create(pmScripts);
-  Item.Action := acBookSend2Device;
+  Item.OnClick := SendToDeviceExecute;
   Item.Caption := rstrSelectFolder;
   Item.ImageIndex := 10;
   Item.tag := 799;
@@ -6335,10 +6334,12 @@ begin
     frmSettings.ShowModal;
 
     Settings.SaveSettings;
+
   finally
     frmSettings.Free;
   end;
   ReadINIData;
+  CreateScriptMenu; // вынесено из readinidata во избежание дублирования
 end;
 
 procedure TfrmMain.SetHeaderPopUp;
