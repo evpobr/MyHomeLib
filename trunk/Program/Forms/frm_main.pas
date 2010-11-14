@@ -146,7 +146,6 @@ type
     ToolButton3: TToolButton;
     BtnFav_add: TToolButton;
     tbtnSettings: TToolButton;
-    tbtnSelect: TToolButton;
     pmScripts: TPopupMenu;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
@@ -1031,6 +1030,8 @@ resourcestring
   rstrAddToFavorites = 'Добавить в избранное';
   rstrAddToDownloads = 'Добавить в список закачек';
   rstrCollectionUpdateAvailable = 'Доступно обновление для коллекций.' + CRLF + ' Начать обновление ?';
+  rsrtNewCollectin = 'Новая коллекция ...';
+  rstrSelectFolder = 'Выбор папки ...';
 {$R *.dfm}
 
 //
@@ -1903,6 +1904,20 @@ begin
     end;
   end;
 
+  // Добавляем пункт вызова визарда (сначала - разделитель)
+  if pmCollection.Items.Count > 0 then
+  begin
+    SubItem := TMenuItem.Create(pmCollection);
+    SubItem.Caption := '-';
+    pmCollection.Items.Add(SubItem);
+  end;
+
+  SubItem := TMenuItem.Create(pmCollection);
+  SubItem.Caption := rsrtNewCollectin;
+  SubItem.Action := acCollectionNew;
+  SubItem.ImageIndex := 1;
+  pmCollection.Items.Add(SubItem);
+
   miCopyToCollection.Enabled := (miCopyToCollection.Count > 0);
   miCollSelect.Enabled := (miCollSelect.Count > 0);
 end;
@@ -2025,8 +2040,8 @@ begin
   end;
 
   Item := TMenuItem.Create(pmScripts);
-  Item.OnClick := SendToDeviceExecute;
-  Item.Caption := 'Выбор папки ...';
+  Item.Action := acBookSend2Device;
+  Item.Caption := rstrSelectFolder;
   Item.ImageIndex := 10;
   Item.tag := 799;
   pmScripts.Items.Add(Item);

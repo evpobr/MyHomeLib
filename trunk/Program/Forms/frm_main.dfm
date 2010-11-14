@@ -128,24 +128,15 @@ object frmMain: TfrmMain
     object tbtnWizard: TToolButton
       Left = 236
       Top = 0
-      Action = acCollectionNew
-      ImageIndex = 5
-      ParentShowHint = False
-      ShowHint = True
-    end
-    object tbtnSelect: TToolButton
-      Left = 277
-      Top = 0
-      Hint = #1042#1099#1073#1088#1072#1090#1100' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
       Caption = #1042#1099#1073#1088#1072#1090#1100' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
       DropdownMenu = pmCollection
-      EnableDropdown = True
       ImageIndex = 6
       ParentShowHint = False
       ShowHint = True
+      Style = tbsDropDown
     end
     object ToolButton3: TToolButton
-      Left = 318
+      Left = 292
       Top = 0
       Width = 8
       Caption = 'ToolButton3'
@@ -153,7 +144,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object BtnFav_add: TToolButton
-      Left = 326
+      Left = 300
       Top = 0
       Hint = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1080#1079#1073#1088#1072#1085#1085#1086#1077
       Caption = 'BtnFav_add'
@@ -163,7 +154,7 @@ object frmMain: TfrmMain
       OnClick = BtnFav_addClick
     end
     object ToolButton7: TToolButton
-      Left = 382
+      Left = 356
       Top = 0
       Width = 8
       Caption = 'ToolButton7'
@@ -171,7 +162,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbSelectAll: TToolButton
-      Left = 390
+      Left = 364
       Top = 0
       Hint = #1054#1090#1084#1077#1090#1080#1090#1100' '#1074#1089#1077
       Caption = 'tbSelectAll'
@@ -179,7 +170,7 @@ object frmMain: TfrmMain
       OnClick = tbSelectAllClick
     end
     object tbCollapse: TToolButton
-      Left = 431
+      Left = 405
       Top = 0
       Hint = #1056#1072#1079#1074#1077#1088#1085#1091#1090#1100'/'#1057#1074#1077#1088#1085#1091#1090#1100' '#1089#1087#1080#1089#1086#1082
       Caption = 'tbCollapse'
@@ -187,7 +178,7 @@ object frmMain: TfrmMain
       OnClick = tbCollapseClick
     end
     object btnRefreshCollection: TToolButton
-      Left = 472
+      Left = 446
       Top = 0
       Hint = #1054#1073#1085#1086#1074#1080#1090#1100' '#1089#1087#1080#1089#1086#1082
       Caption = 'btnRefreshCollection'
@@ -195,7 +186,7 @@ object frmMain: TfrmMain
       OnClick = miRefreshClick
     end
     object ToolButton1: TToolButton
-      Left = 513
+      Left = 487
       Top = 0
       Width = 8
       Caption = 'ToolButton1'
@@ -203,7 +194,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object btnSwitchTreeMode: TToolButton
-      Left = 521
+      Left = 495
       Top = 0
       Hint = #1055#1077#1088#1077#1082#1083#1102#1095#1080#1090#1100' '#1074' '#1088#1077#1078#1080#1084' "'#1058#1072#1073#1083#1080#1094#1072'"'
       Caption = 'btnSwitchTreeMode'
@@ -211,25 +202,25 @@ object frmMain: TfrmMain
       OnClick = btnSwitchTreeModeClick
     end
     object tbtnShowDeleted: TToolButton
-      Left = 562
+      Left = 536
       Top = 0
       Action = acViewHideDeletedBooks
       ImageIndex = 12
     end
     object tbtnShowLocalOnly: TToolButton
-      Left = 603
+      Left = 577
       Top = 0
       Action = acViewShowLocalOnly
       ImageIndex = 13
     end
     object tbtnShowCover: TToolButton
-      Left = 644
+      Left = 618
       Top = 0
       Action = acShowBookInfoPanel
       ImageIndex = 14
     end
     object ToolButton5: TToolButton
-      Left = 685
+      Left = 659
       Top = 0
       Width = 8
       Caption = 'ToolButton5'
@@ -237,13 +228,13 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnSettings: TToolButton
-      Left = 693
+      Left = 667
       Top = 0
       Action = acToolsSettings
       ImageIndex = 17
     end
     object tbtnHelp: TToolButton
-      Left = 734
+      Left = 708
       Top = 0
       Action = acHelpHelp
       ImageIndex = 26
@@ -736,20 +727,22 @@ object frmMain: TfrmMain
             Left = 432
             Top = 0
             Width = 107
-            Height = 13
+            Height = 26
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
             Layout = tlCenter
+            ExplicitHeight = 13
           end
           object lblSeries: TLabel
             Left = 0
             Top = 0
             Width = 90
-            Height = 13
+            Height = 26
             Align = alLeft
             Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1089#1077#1088#1080#1080
             Layout = tlCenter
+            ExplicitHeight = 13
           end
         end
         object tvBooksS: TBookTree
@@ -874,10 +867,6 @@ object frmMain: TfrmMain
     object tsByGenre: TTabSheet
       HelpContext = 135
       Caption = #1046#1072#1085#1088#1099
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GenresViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
@@ -957,20 +946,22 @@ object frmMain: TfrmMain
             Left = 432
             Top = 0
             Width = 107
-            Height = 13
+            Height = 26
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
             Layout = tlCenter
+            ExplicitHeight = 13
           end
           object lblGenreTitle: TLabel
             Left = 0
             Top = 0
             Width = 97
-            Height = 13
+            Height = 26
             Align = alLeft
             Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1078#1072#1085#1088#1072
             Layout = tlCenter
+            ExplicitHeight = 13
           end
         end
         object ipnlGenres: TInfoPanel
@@ -1821,20 +1812,22 @@ object frmMain: TfrmMain
             Left = 432
             Top = 0
             Width = 107
-            Height = 13
+            Height = 26
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
             Layout = tlCenter
+            ExplicitHeight = 13
           end
           object lblGroups: TLabel
             Left = 0
             Top = 0
             Width = 102
-            Height = 13
+            Height = 26
             Align = alLeft
             Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1075#1088#1091#1087#1087#1099
             Layout = tlCenter
+            ExplicitHeight = 13
           end
         end
         object tvBooksF: TBookTree
@@ -1924,10 +1917,6 @@ object frmMain: TfrmMain
     object tsDownload: TTabSheet
       HelpContext = 108
       Caption = #1057#1087#1080#1089#1086#1082' '#1079#1072#1082#1072#1095#1077#1082
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object tlbrDownloadList: TToolBar
         AlignWithMargins = True
         Left = 3
@@ -2073,7 +2062,7 @@ object frmMain: TfrmMain
             Left = 662
             Top = 3
             Width = 107
-            Height = 13
+            Height = 36
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
@@ -2084,6 +2073,7 @@ object frmMain: TfrmMain
             Font.Style = [fsBold]
             ParentFont = False
             Layout = tlCenter
+            ExplicitHeight = 13
           end
           object pbDownloadProgress: TProgressBar
             Left = 0
@@ -2192,7 +2182,7 @@ object frmMain: TfrmMain
       Style = tbsTextButton
     end
     object tbtnSplitter2: TToolButton
-      Left = 420
+      Left = 425
       Top = 0
       Width = 8
       Caption = 'tbtnSplitter2'
@@ -2200,14 +2190,14 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnFBD: TToolButton
-      Left = 428
+      Left = 433
       Top = 0
       Action = acEditConver2FBD
       Caption = ' '#1055#1088#1077#1086#1073#1088#1072#1079#1086#1074#1072#1090#1100' '#1074' FBD'
       Style = tbsTextButton
     end
     object tbtnAutoFBD: TToolButton
-      Left = 551
+      Left = 556
       Top = 0
       Action = acEditAutoConver2FBD
       Caption = ' '#1040#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080' '#1087#1088#1077#1086#1073#1088#1072#1079#1086#1074#1072#1090#1100' '#1074' FBD'
@@ -2712,7 +2702,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 280
     Bitmap = {
-      494C01011B000002580220002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C01011B0000025C0220002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -6420,7 +6410,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 232
     Bitmap = {
-      494C0101250027001C0210001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010125002700200210001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000040000000A0000000010020000000000000A0
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -7774,7 +7764,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 360
     Bitmap = {
-      494C01010B003801100210001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C01010B003801140210001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -8304,7 +8294,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 320
     Bitmap = {
-      494C010118001A001C0220002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C010118001A00200220002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12031,6 +12021,7 @@ object frmMain: TfrmMain
     Top = 320
   end
   object Actions: TActionList
+    Images = ilMainMenu
     Left = 576
     Top = 208
     object acShowMainToolbar: TAction
@@ -12090,11 +12081,13 @@ object frmMain: TfrmMain
       Category = #1050#1085#1080#1075#1072
       Caption = #1063#1080#1090#1072#1090#1100
       Hint = #1063#1080#1090#1072#1090#1100
+      ImageIndex = 12
       OnExecute = ReadBookExecute
     end
     object acBookSend2Device: TAction
       Category = #1050#1085#1080#1075#1072
       Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100' '#1085#1072' '#1091#1089#1090#1088#1086#1081#1089#1090#1074#1086
+      ImageIndex = 7
       OnExecute = SendToDeviceExecute
     end
     object acBookAdd2DownloadList: TAction
@@ -12111,6 +12104,7 @@ object frmMain: TfrmMain
     object acBookAdd2Favorites: TAction
       Category = #1050#1085#1080#1075#1072
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1080#1079#1073#1088#1072#1085#1085#1086#1077
+      ImageIndex = 13
     end
     object acBookAdd2Group: TAction
       Category = #1050#1085#1080#1075#1072
@@ -12254,17 +12248,21 @@ object frmMain: TfrmMain
     object acBookDelete: TAction
       Category = #1050#1085#1080#1075#1072
       Caption = #1059#1076#1072#1083#1080#1090#1100
+      ImageIndex = 0
       OnExecute = DeleteBookExecute
     end
     object acApplicationExit: TAction
       Category = #1050#1085#1080#1075#1072
       Caption = #1042#1099#1093#1086#1076
+      ImageIndex = 33
       OnExecute = QuitAppExecute
     end
     object acCollectionNew: TAction
       Category = #1050#1086#1083#1083#1077#1082#1094#1080#1103
       Caption = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1082#1086#1083#1083#1077#1082#1094#1080#1102
       Hint = #1052#1072#1089#1090#1077#1088' '#1076#1086#1073#1072#1074#1083#1077#1085#1080#1103' '#1082#1086#1083#1083#1077#1082#1094#1080#1081
+      ImageIndex = 1
+      ShortCut = 16462
       OnExecute = ShowNewCollectionWizard
     end
     object acCollectionSelect: TAction
@@ -12274,6 +12272,7 @@ object frmMain: TfrmMain
     object acCollectionProperties: TAction
       Category = #1050#1086#1083#1083#1077#1082#1094#1080#1103
       Caption = #1057#1074#1086#1081#1089#1090#1074#1072' '#1082#1086#1083#1083#1077#1082#1094#1080#1080
+      ImageIndex = 3
       OnExecute = ShowCollectionSettingsExecute
     end
     object acCollectionStatistics: TAction
@@ -12284,6 +12283,7 @@ object frmMain: TfrmMain
     object acCollectionDelete: TAction
       Category = #1050#1086#1083#1083#1077#1082#1094#1080#1103
       Caption = #1059#1076#1072#1083#1080#1090#1100
+      ImageIndex = 2
       OnExecute = DeleteCollectionExecute
     end
     object acViewTreeView: TAction
@@ -12337,12 +12337,14 @@ object frmMain: TfrmMain
       Category = #1048#1085#1089#1090#1088#1091#1084#1077#1085#1090#1099
       Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
       Hint = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
+      ImageIndex = 11
       OnExecute = ChangeSettingsExecute
     end
     object acHelpHelp: TAction
       Category = #1055#1086#1084#1086#1097#1100
       Caption = #1057#1087#1088#1072#1074#1082#1072
       Hint = #1057#1087#1088#1072#1074#1082#1072
+      ImageIndex = 17
       OnExecute = ShowHelpExecute
     end
     object acHelpCheckUpdates: TAction
@@ -12432,6 +12434,7 @@ object frmMain: TfrmMain
     object acCollectionSyncFiles: TAction
       Category = #1050#1086#1083#1083#1077#1082#1094#1080#1103
       Caption = #1057#1080#1085#1093#1088#1086#1085#1080#1079#1080#1088#1086#1074#1072#1090#1100' '#1092#1072#1081#1083#1099
+      ImageIndex = 9
       OnExecute = SyncFilesExecute
     end
     object acCollectionRepair: TAction
@@ -12450,7 +12453,7 @@ object frmMain: TfrmMain
     Left = 576
     Top = 264
     Bitmap = {
-      494C01010A000F00100010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C01010A000F00140010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000101010F010101170101011A0101
       011A0101011A0101011A0101011A0101011A0101011A0101011A0101011A0101
