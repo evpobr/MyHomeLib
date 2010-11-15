@@ -479,13 +479,14 @@ begin
   FBookRecord.FileName := Data^.FileName;
   FBookRecord.FileExt := Data^.Ext;
   FBookRecord.BookProps := [];
-  FBookRecord.InsideNo := 0;
+  FBookRecord.InsideNo := 1;
   FBookRecord.SeqNumber := StrToIntDef(edSN.Text, 0);
   FBookRecord.LibID := '';
   FBookRecord.Size := Data^.Size;
   FBookRecord.Date := Now;
   FBookRecord.KeyWords := edKeyWords.Text;
   FBookRecord.Lang := cbLang.Text;
+  Include(FBookrecord.BookProps, bpIsLocal);
 end;
 
 procedure TfrmAddnonfb2.AddAuthorFromList(Sender: TObject);
@@ -536,9 +537,6 @@ begin
 end;
 
 procedure TfrmAddnonfb2.btnNextClick(Sender: TObject);
-var
-  ZipFilename, BookFileName: string;
-
 begin
   // Конвертация в FBD и добавление в базу
   Screen.Cursor := crHourGlass;
@@ -547,7 +545,6 @@ begin
     PrepareBookRecord;
     if cbForceConvertToFBD.Checked then
     begin
-      FBD.New(FRootPath + FBookrecord.Folder, FBookrecord.FileName, FBookrecord.FileExt);
       FillFBDData;
       CommitData;
     end
@@ -555,6 +552,7 @@ begin
   finally
     Enabled := True;
     Screen.Cursor := crDefault;
+    pcPages.ActivePageIndex := 0;
   end;
  end;
 
