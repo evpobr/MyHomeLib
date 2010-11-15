@@ -505,10 +505,8 @@ object frmAddnonfb2: TfrmAddnonfb2
           ActivePage = TabSheet1
           Align = alClient
           TabOrder = 0
-          ExplicitWidth = 366
           object TabSheet1: TTabSheet
             Caption = #1040#1074#1090#1086#1088#1099' '#1082#1085#1080#1075#1080
-            ExplicitWidth = 358
             object alBookAuthors: TFBDAuthorTable
               AlignWithMargins = True
               Left = 3
@@ -517,7 +515,6 @@ object frmAddnonfb2: TfrmAddnonfb2
               Height = 211
               Align = alClient
               TabOrder = 0
-              ExplicitWidth = 352
               DesignSize = (
                 538
                 211)
@@ -526,7 +523,6 @@ object frmAddnonfb2: TfrmAddnonfb2
           object TabSheet2: TTabSheet
             Caption = #1040#1074#1090#1086#1088#1099' '#1076#1086#1082#1091#1084#1077#1085#1090#1072
             ImageIndex = 1
-            ExplicitWidth = 358
             object alFBDAuthors: TFBDAuthorTable
               AlignWithMargins = True
               Left = 3
@@ -535,7 +531,6 @@ object frmAddnonfb2: TfrmAddnonfb2
               Height = 211
               Align = alClient
               TabOrder = 0
-              ExplicitWidth = 352
               DesignSize = (
                 538
                 211)
@@ -544,7 +539,6 @@ object frmAddnonfb2: TfrmAddnonfb2
           object TabSheet3: TTabSheet
             Caption = #1040#1085#1085#1086#1090#1072#1094#1080#1103
             ImageIndex = 2
-            ExplicitWidth = 358
             object mmAnnotation: TMemo
               AlignWithMargins = True
               Left = 3
@@ -555,13 +549,11 @@ object frmAddnonfb2: TfrmAddnonfb2
               ScrollBars = ssBoth
               TabOrder = 0
               WordWrap = False
-              ExplicitWidth = 352
             end
           end
           object TabSheet4: TTabSheet
             Caption = #1048#1079#1076#1072#1090#1077#1083#1100
             ImageIndex = 3
-            ExplicitWidth = 358
             DesignSize = (
               544
               217)
@@ -608,7 +600,6 @@ object frmAddnonfb2: TfrmAddnonfb2
               Height = 21
               Anchors = [akLeft, akTop, akRight]
               TabOrder = 0
-              ExplicitWidth = 134
             end
             object edPublisher: TEdit
               Left = 66
@@ -617,7 +608,6 @@ object frmAddnonfb2: TfrmAddnonfb2
               Height = 21
               Anchors = [akLeft, akTop, akRight]
               TabOrder = 1
-              ExplicitWidth = 50
             end
             object edYear: TEdit
               Left = 421
@@ -626,7 +616,6 @@ object frmAddnonfb2: TfrmAddnonfb2
               Height = 21
               Anchors = [akTop, akRight]
               TabOrder = 2
-              ExplicitLeft = 235
             end
             object edCity: TEdit
               Left = 349
@@ -635,7 +624,6 @@ object frmAddnonfb2: TfrmAddnonfb2
               Height = 21
               Anchors = [akTop, akRight]
               TabOrder = 3
-              ExplicitLeft = 163
             end
           end
         end
