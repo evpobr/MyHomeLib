@@ -3025,10 +3025,10 @@ object frmSplash: TfrmSplash
   end
   object lblState: TLabel
     Left = 0
-    Top = 258
+    Top = 232
     Width = 401
-    Height = 1
-    Align = alClient
+    Height = 27
+    Align = alBottom
     Alignment = taCenter
     AutoSize = False
     Caption = #1048#1085#1080#1094#1080#1072#1083#1080#1079#1072#1094#1080#1103' ...'
@@ -3040,10 +3040,6 @@ object frmSplash: TfrmSplash
     ParentFont = False
     Transparent = True
     Layout = tlCenter
-    ExplicitLeft = 118
-    ExplicitTop = 240
-    ExplicitWidth = 164
-    ExplicitHeight = 13
   end
   object RzLabel1: TLabel
     Left = 340
