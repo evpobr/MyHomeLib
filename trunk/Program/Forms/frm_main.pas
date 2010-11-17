@@ -896,7 +896,6 @@ type
     procedure SetHeaderPopUp;
     procedure DownloadBooks;
     function CheckActiveDownloads: Boolean;
-    procedure TheFirstRun;
 
     function GetActiveView: TView;
     procedure StartLibUpdate;
@@ -1465,7 +1464,9 @@ begin
 
       DeleteFile(Settings.WorkPath + CHECK_FILE);
       Exit;
-    end;
+    end
+    else   // в противном случае активируем последнюю
+      LoadLastCollection;
 
     FCollection := FSystemData.GetCollection(Settings.ActiveCollection);
 
@@ -2275,20 +2276,6 @@ begin
   end;
 end;
 
-procedure TfrmMain.TheFirstRun;
-begin
-  if not FSystemData.HasCollections then
-    DeleteFile(Settings.WorkPath + CHECK_FILE)
-  else if FileExists(Settings.WorkPath + CHECK_FILE) and (Application.MessageBox(PWideChar(rstrNeedDBUpgrade), PWideChar(rstrFirstRun), mb_YesNo) = mrYes) then
-  begin
-    RenameFile(Settings.SystemFileName[sfLibRusEcInpx], Settings.SystemFileName[sfLibRusEcUpdate]);
-    DeleteFile(Settings.WorkPath + CHECK_FILE);
-    if unit_Utils.LibrusecUpdate then
-      InitCollection(True);
-  end;
-end;
-
-
 // ------------------------------------------------------------------------------
 // Проверка обновлений
 // ------------------------------------------------------------------------------
@@ -2423,13 +2410,6 @@ procedure TfrmMain.LoadLastCollection;
 var
   CollectionID: Integer;
 begin
-  //
-  // этот метод вызывается и в том случае, если коллекций нет совсем (и никогда небыло)
-  // а по смыслу, должен активировать последнюю коллекцию
-  //
-  // пока оставляю старую логику
-  //
-  //Assert(Assigned(FCollection));
   if FSystemData.HasCollections then
   begin
     CollectionID := FSystemData.FindFirstExistingCollectionID(Settings.ActiveCollection);
@@ -2451,8 +2431,6 @@ begin
 
     frmSplash.lblState.Caption := rstrMainLoadingCollection;
   end;
-
-  InitCollection(False);
 end;
 
 // ----------------------------------------------------------------------------
@@ -2488,16 +2466,6 @@ begin
   FController.ConnectBooksTree(tvBooksF);
 
   FController.ConnectDownloadTree(tvDownloadList);
-
-  //
-  // событие OnGetNodeDataSize почему-то не обрабатывается, инициализируем вручную
-  //
-  tvBooksA.NodeDataSize := SizeOf(TBookRecord);
-  tvBooksS.NodeDataSize := SizeOf(TBookRecord);
-  tvBooksG.NodeDataSize := SizeOf(TBookRecord);
-  tvBooksSR.NodeDataSize := SizeOf(TBookRecord);
-  tvBooksF.NodeDataSize := SizeOf(TBookRecord);
-  tvDownloadList.NodeDataSize := SizeOf(TDownloadData);
 
   // -----------------------------
 
@@ -2574,12 +2542,10 @@ begin
 
   frmSplash.lblState.Caption := rstrMainConnectToDb;
 
-  LoadLastCollection;
+  InitCollection(False);
 
   FillGroupsList(tvGroups, FSystemData.GetGroupIterator, FLastGroupID);
   CreateGroupsMenu;
-
-  TheFirstRun;
 
   // ------------------------------------------------------------------------------
   frmSplash.lblState.Caption := rstrStarting;
