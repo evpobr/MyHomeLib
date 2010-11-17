@@ -2,7 +2,7 @@
 		<PropertyGroup>
 			<ProjectGuid>{D86FD5A7-BE1F-417C-BEB7-6020DDD97B5F}</ProjectGuid>
 			<MainSource>MHLComponents.dpk</MainSource>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 			<ProjectVersion>12.2</ProjectVersion>
 			<Base>True</Base>
