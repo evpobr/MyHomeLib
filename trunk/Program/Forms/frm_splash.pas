@@ -21,7 +21,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, StdCtrls, jpeg, LMDPNGImage;
+  Dialogs, ExtCtrls, StdCtrls, jpeg, pngimage;
 
 type
   TfrmSplash = class(TForm)
