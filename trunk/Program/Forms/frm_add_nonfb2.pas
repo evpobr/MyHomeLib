@@ -180,7 +180,8 @@ uses
   dm_user,
   unit_MHLHelpers,
   unit_Helpers,
-  frm_author_list;
+  frm_author_list,
+  unit_MHLArchiveHelpers;
 
 resourcestring
   rstrFileNotSelected = 'Файл не выбран!';
@@ -479,7 +480,6 @@ begin
   FBookRecord.FileName := Data^.FileName;
   FBookRecord.FileExt := Data^.Ext;
   FBookRecord.BookProps := [];
-  FBookRecord.InsideNo := 1;
   FBookRecord.SeqNumber := StrToIntDef(edSN.Text, 0);
   FBookRecord.LibID := '';
   FBookRecord.Size := Data^.Size;
@@ -537,6 +537,8 @@ begin
 end;
 
 procedure TfrmAddnonfb2.btnNextClick(Sender: TObject);
+var
+  archiver: IArchiver;
 begin
   // Конвертация в FBD и добавление в базу
   Screen.Cursor := crHourGlass;
@@ -546,6 +548,12 @@ begin
     if cbForceConvertToFBD.Checked then
     begin
       FillFBDData;
+
+      // после создания архива нужно узнать реальный номер внутри
+      archiver := TArchiver.Create(TPath.Combine(FRootPath + FBookRecord.Folder, FBookRecord.FileName));
+      FBookRecord.InsideNo := archiver.GetIdxByExt(FBookRecord.FileExt);;
+
+      // заносим данные в БД
       CommitData;
     end
       else CommitData;

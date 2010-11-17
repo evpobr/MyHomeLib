@@ -254,6 +254,10 @@ object frmMain: TfrmMain
     object tsByAuthor: TTabSheet
       HelpContext = 135
       Caption = #1040#1074#1090#1086#1088#1099
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object AuthorsViewSplitter: TMHLSplitter
         Left = 230
         Top = 70
@@ -424,22 +428,20 @@ object frmMain: TfrmMain
             Left = 432
             Top = 0
             Width = 107
-            Height = 26
+            Height = 13
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
             Layout = tlCenter
-            ExplicitHeight = 13
           end
           object lblAuthor: TLabel
             Left = 0
             Top = 0
             Width = 112
-            Height = 26
+            Height = 13
             Align = alLeft
             Caption = #1055#1086#1083#1085#1086#1077' '#1080#1084#1103' '#1072#1074#1090#1086#1088#1072
             Layout = tlCenter
-            ExplicitHeight = 13
           end
         end
         object tvBooksA: TBookTree
@@ -559,6 +561,10 @@ object frmMain: TfrmMain
     object tsBySerie: TTabSheet
       HelpContext = 135
       Caption = #1057#1077#1088#1080#1080
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object SeriesViewSplitter: TMHLSplitter
         Left = 230
         Top = 70
@@ -1065,6 +1071,10 @@ object frmMain: TfrmMain
     object tsSearch: TTabSheet
       HelpContext = 126
       Caption = #1055#1086#1080#1089#1082
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object SearchViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
@@ -1126,7 +1136,7 @@ object frmMain: TfrmMain
             Left = 432
             Top = 0
             Width = 107
-            Height = 26
+            Height = 13
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
@@ -1137,7 +1147,6 @@ object frmMain: TfrmMain
             Font.Style = [fsBold]
             ParentFont = False
             Layout = tlCenter
-            ExplicitHeight = 13
           end
           object cbPresetName: TComboBox
             Left = 42
@@ -1287,6 +1296,7 @@ object frmMain: TfrmMain
             Height = 190
             Caption = #1056#1072#1079#1085#1086#1077
             TabOrder = 0
+            ExplicitWidth = 185
             object Label30: TLabel
               Left = 4
               Top = 72
@@ -1405,7 +1415,6 @@ object frmMain: TfrmMain
               Align = alTop
               Caption = #1057#1082#1088#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
               TabOrder = 3
-              ExplicitWidth = 191
             end
             object cbLibRate: TComboBox
               Left = 52
@@ -1460,7 +1469,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 22
-              Width = 193
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 0
@@ -1471,7 +1480,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 68
-              Width = 193
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 1
@@ -1482,7 +1491,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 114
-              Width = 193
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 2
@@ -1555,7 +1564,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 22
-              Width = 193
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 0
@@ -1566,7 +1575,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 68
-              Width = 193
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 1
@@ -1577,7 +1586,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 114
-              Width = 193
+              Width = 197
               Height = 21
               Align = alTop
               TabOrder = 2
@@ -1588,7 +1597,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 160
-              Width = 193
+              Width = 197
               Height = 21
               Margins.Bottom = 10
               Align = alTop
@@ -1601,7 +1610,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 257
-              Width = 193
+              Width = 197
               Height = 21
               Margins.Bottom = 10
               Align = alBottom
@@ -1613,7 +1622,7 @@ object frmMain: TfrmMain
               AlignWithMargins = True
               Left = 3
               Top = 210
-              Width = 193
+              Width = 197
               Height = 21
               Hint = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
               Align = alTop
@@ -1655,6 +1664,10 @@ object frmMain: TfrmMain
     object tsByGroup: TTabSheet
       HelpContext = 125
       Caption = #1043#1088#1091#1087#1087#1099
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object GroupsViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
@@ -2409,6 +2422,7 @@ object frmMain: TfrmMain
       end
       object FBD1: TMenuItem
         Action = acEditConver2FBD
+        Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100'/'#1055#1088#1077#1086#1073#1088#1072#1079#1086#1074#1072#1090#1100' '#1074' FBD'
       end
       object FBD2: TMenuItem
         Action = acEditAutoConver2FBD
@@ -2697,7 +2711,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 280
     Bitmap = {
-      494C01011B000002680220002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C01011B000002780220002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -6405,7 +6419,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 232
     Bitmap = {
-      494C0101250027002C0210001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101250027003C0210001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000040000000A0000000010020000000000000A0
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -7759,7 +7773,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 360
     Bitmap = {
-      494C01010B003801200210001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C01010B003801300210001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -8289,7 +8303,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 320
     Bitmap = {
-      494C010118001A002C0220002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C010118001A003C0220002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12448,7 +12462,7 @@ object frmMain: TfrmMain
     Left = 576
     Top = 264
     Bitmap = {
-      494C01010A000F00200010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C01010A000F00300010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000101010F010101170101011A0101
       011A0101011A0101011A0101011A0101011A0101011A0101011A0101011A0101

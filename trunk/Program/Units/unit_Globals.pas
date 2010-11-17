@@ -1018,6 +1018,7 @@ var
   BookFormat: TBookFormat;
   BookFileName: string;
   archiver: IArchiver;
+  idxFile: Integer;
 begin
   Result := nil;
   BookFileName := GetBookFileName;

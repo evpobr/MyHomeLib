@@ -155,7 +155,7 @@ var
   idxFile: Integer;
   archiveIn: I7zInArchive;
 begin
-  Assert(No >= 0);
+//  Assert(No >= 0);
 
   archiveIn := CreateInArchive(FArchiveFormatGUID);
   archiveIn.OpenFile(FArchiveFileName);
@@ -416,10 +416,10 @@ var
   archiveIn: I7zInArchive;
   idxFile: Integer;
 begin
-  Assert(No >= 0);
+//  Assert(No >= 0);
 
   idxFile := GetIdxIgnoringFolders(No);
-  Assert(idxFile >= 0);
+//  Assert(idxFile >= 0);
 
   archiveIn := CreateInArchive(FArchiveFormatGUID);
   archiveIn.OpenFile(FArchiveFileName);
