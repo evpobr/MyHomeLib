@@ -373,6 +373,10 @@
 						<Source Name="MainSource">MyhomeLib.dpr</Source>
 					</Source>
 					<Excluded_Packages>
+						<Excluded_Packages Name="C:\USERS\PUBLIC\DOCUMENTS\RAD STUDIO\8.0\bpl\dcllmdrtl10_150.bpl">LMD 2010 - Common Designtime Enhancements</Excluded_Packages>
+						<Excluded_Packages Name="C:\USERS\PUBLIC\DOCUMENTS\RAD STUDIO\8.0\bpl\dcllmdplugin10_150.bpl">LMD 2010 - Common PlugIn Components</Excluded_Packages>
+						<Excluded_Packages Name="C:\Users\Public\Documents\RAD Studio\8.0\Bpl\dcllmdrtlx10_150.bpl">LMD 2010 - Common Shared Components</Excluded_Packages>
+						<Excluded_Packages Name="c:\users\public\documents\rad studio\8.0\bpl\dcllmdcore10_150.bpl">LMD 2010 - LMD-Tools Core Components</Excluded_Packages>
 						<Excluded_Packages Name="$(BDSBIN)\dcloffice2k150.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
 						<Excluded_Packages Name="$(BDSBIN)\dclofficexp150.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
 					</Excluded_Packages>
