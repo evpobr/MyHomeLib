@@ -2428,9 +2428,7 @@ begin
     // небольшой хак. Будет правильнее передавать ID коллекции в InitCollection
     //
     Settings.ActiveCollection := CollectionID;
-
-    frmSplash.lblState.Caption := rstrMainLoadingCollection;
-  end;
+   end;
 end;
 
 // ----------------------------------------------------------------------------
@@ -2542,9 +2540,11 @@ begin
 
   frmSplash.lblState.Caption := rstrMainConnectToDb;
 
+  frmSplash.lblState.Caption := rstrMainLoadingCollection;
   InitCollection(False);
 
   FillGroupsList(tvGroups, FSystemData.GetGroupIterator, FLastGroupID);
+
   CreateGroupsMenu;
 
   // ------------------------------------------------------------------------------
