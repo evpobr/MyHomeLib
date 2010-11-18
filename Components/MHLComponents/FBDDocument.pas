@@ -216,7 +216,7 @@ begin
   try
     archiver := TArchiver.Create(FArchiveFilename);
     idxFile := archiver.GetIdxByExt('.fbd');
-    if idxFile > 0 then
+    if idxFile >= 0 then
       Input := archiver.UnarchiveToStream(idxFile);
 
     if Assigned(Input) and (Input.Size > 0) then
