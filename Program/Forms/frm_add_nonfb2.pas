@@ -539,7 +539,6 @@ end;
 procedure TfrmAddnonfb2.btnNextClick(Sender: TObject);
 var
   archiver: IArchiver;
-  s1, s2: string;
 begin
   // Конвертация в FBD и добавление в базу
   Screen.Cursor := crHourGlass;
