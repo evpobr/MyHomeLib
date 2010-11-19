@@ -450,7 +450,7 @@ begin
   begin
     Parent := Self;
     Left := FList.Left;
-    Top := FList.Top + FList.Height + 5 * Self.Margins.Top;
+    Top := FList.Top + FList.Height + 15;
     Width := 75;
     Caption := rstrAdd;
     TabOrder := 1;
