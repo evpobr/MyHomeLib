@@ -251,13 +251,7 @@ begin
   // Проверить на допустимые символы. Это нужно, но не всегда
   //
   if FTemplateType in [ttFile, ttPath] then
-  begin
-    for i := 1 to Length(Result) do
-    begin
-      if not TPath.IsValidFileNameChar(Result[i]) then
-        Result[i] := ' ';
-    end;
-  end;
+    Result := CleanFileName(Result);
 
   if Character.IsUpper(paramName, 1) then
   begin
