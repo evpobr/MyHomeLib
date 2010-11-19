@@ -700,6 +700,7 @@ type
     procedure StatusBarDrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel; const Rect: TRect);
     procedure StatusBarResize(Sender: TObject);
     procedure tmrCheckUpdatesTimer(Sender: TObject);
+    procedure RestorePositions;
 
   protected
     procedure WMGetSysCommand(var Message: TMessage); message WM_SYSCOMMAND;
@@ -1305,6 +1306,8 @@ begin
   ctpBook.Collapsed := Settings.BookSRCollapsed;
   ctpFile.Collapsed := Settings.FileSRCollapsed;
   ctpOther.Collapsed := Settings.OtherSRCollapsed;
+
+  pgControl.ActivePageIndex := Settings.ActivePage;
 end;
 
 procedure TfrmMain.DoApplyFilter(Sender: TObject);
@@ -1578,6 +1581,8 @@ begin
 
     FCollection.SetShowLocalOnly(IsOnline and Settings.ShowLocalOnly);
     FCollection.SetHideDeleted((not IsPrivate) and Settings.HideDeletedBooks);
+
+    RestorePositions; // временная заглушка, нужно сделать вызов зависимым от того, когда происходит инициализация
 
     FillAuthorTree(tvAuthors, FCollection.GetAuthorIterator(amFullFilter), FLastAuthorID);
     FillSeriesTree(tvSeries, FCollection.GetSeriesIterator(smFullFilter), FLastSeriesID);
@@ -2538,17 +2543,18 @@ begin
   if (ParamCount > 0) and (ParamStr(1) = '/clear') then
     ClearDir(Settings.DataDir);
 
-  frmSplash.lblState.Caption := rstrMainConnectToDb;
-
   frmSplash.lblState.Caption := rstrMainLoadingCollection;
+  frmSplash.lblState.Update;
+
   InitCollection(False);
+
 
   FillGroupsList(tvGroups, FSystemData.GetGroupIterator, FLastGroupID);
 
   CreateGroupsMenu;
 
   // ------------------------------------------------------------------------------
-  frmSplash.lblState.Caption := rstrStarting;
+
 
   // загрузка списка закачек
   if FileExists(Settings.SystemFileName[sfDownloadsStore]) then
@@ -2562,6 +2568,8 @@ begin
 
   SetFormState;
   tmrCheckUpdates.Enabled := True;
+  frmSplash.lblState.Caption := rstrStarting;
+  frmSplash.lblState.Update;
 end;
 
 procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -6286,6 +6294,11 @@ procedure TfrmMain.RepairDataBaseExecute(Sender: TObject);
 begin
   Assert(Assigned(FCollection));
   FCollection.RepairDatabase;
+end;
+
+procedure TfrmMain.RestorePositions;
+begin
+  FCollection.SetAuthorFilterType('А');
 end;
 
 procedure TfrmMain.ChangeSettingsExecute(Sender: TObject);
