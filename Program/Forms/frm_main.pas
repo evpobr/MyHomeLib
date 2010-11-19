@@ -6298,8 +6298,14 @@ begin
 end;
 
 procedure TfrmMain.RestorePositions;
+var
+  Button: TToolButton;
 begin
-  FCollection.SetAuthorFilterType('À');
+  Button := GetFilterButton(FAuthorBars, 'À');
+  InternalSetAuthorFilter(Button);
+
+  Button := GetFilterButton(FSerieBars, 'À');
+  InternalSetSeriesFilter(Button);
 end;
 
 procedure TfrmMain.ChangeSettingsExecute(Sender: TObject);
