@@ -1308,6 +1308,7 @@ begin
   ctpOther.Collapsed := Settings.OtherSRCollapsed;
 
   pgControl.ActivePageIndex := Settings.ActivePage;
+  pgControlChange(nil); // update the toolbar, etc
 end;
 
 procedure TfrmMain.DoApplyFilter(Sender: TObject);
