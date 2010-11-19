@@ -161,7 +161,7 @@ begin
           if R.FileExt = FB2_EXTENSION then
           begin
             Inc(numFb2FilesInZip);
-            R.FileName := TPath.GetFileNameWithoutExtension(AFileName);
+            R.FileName := TPath.GetFileNameWithoutExtension(CleanFileName(AFileName));
             R.Size := archiver.GetFileSize(idxFile);
             R.InsideNo := idxFile;
             R.Date := Now;

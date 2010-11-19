@@ -361,6 +361,7 @@ type
   function EncodePassString(const Input: string): string;
   function DecodePassString(const Input: string): string;
   procedure StrReplace(const s1: string; const s2: string; var s3: string);
+  function CleanFileName(const Input: string): string;
 
   function ClearDir(const DirectoryName: string): Boolean;
   //function IsRelativePath(const FileName: string): Boolean;
@@ -497,6 +498,20 @@ begin
   begin
     s3 := Copy(s3, 1, p - 1) + s2 + Copy(s3, p + Length(s1));
     p := Pos(s1, s3);
+  end;
+end;
+
+// Replace non-valid file name characters with spaces
+function CleanFileName(const Input: string): string;
+var
+  i: Integer;
+begin
+  Result := Input;
+
+  for i := 1 to Length(Result) do
+  begin
+    if not TPath.IsValidFileNameChar(Result[i]) then
+      Result[i] := ' ';
   end;
 end;
 
