@@ -72,7 +72,7 @@ var
 begin
   if Template = '' then
   begin
-    Result := ErTemplate;
+    if TemplType <> TpPath then Result := ErTemplate else Result := ErFine;
     Exit;
   end;
 
