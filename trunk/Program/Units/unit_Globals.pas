@@ -538,8 +538,8 @@ var
 begin
   if Path = '\' then
   begin
-    Assert(False);
-    FullPath := Root;
+//    Assert(False);
+    FullPath := Root + Path;
   end
   else
     FullPath := TPath.Combine(Root, Path);

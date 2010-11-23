@@ -23,7 +23,7 @@ object frmSettings: TfrmSettings
     Top = 3
     Width = 455
     Height = 385
-    ActivePage = tsDevices
+    ActivePage = tsInternet
     Align = alClient
     TabOrder = 1
     object tsDevices: TTabSheet
@@ -33,14 +33,13 @@ object frmSettings: TfrmSettings
       object pnDeviceOptions: TPanel
         AlignWithMargins = True
         Left = 3
-        Top = 63
+        Top = 61
         Width = 441
         Height = 356
         Align = alTop
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 1
-        ExplicitTop = 61
         object Label16: TLabel
           AlignWithMargins = True
           Left = 3
@@ -61,7 +60,7 @@ object frmSettings: TfrmSettings
           Left = 0
           Top = 19
           Width = 441
-          Height = 73
+          Height = 71
           Align = alTop
           AutoSize = True
           BevelOuter = bvNone
@@ -69,7 +68,7 @@ object frmSettings: TfrmSettings
           TabOrder = 0
           DesignSize = (
             441
-            73)
+            71)
           object Label14: TLabel
             AlignWithMargins = True
             Left = 9
@@ -121,7 +120,7 @@ object frmSettings: TfrmSettings
         end
         object pnFileFormat: TPanel
           Left = 0
-          Top = 92
+          Top = 90
           Width = 441
           Height = 52
           Align = alTop
@@ -169,9 +168,9 @@ object frmSettings: TfrmSettings
         end
         object pnNameFormat: TPanel
           Left = 0
-          Top = 144
+          Top = 142
           Width = 441
-          Height = 80
+          Height = 78
           Align = alTop
           AutoSize = True
           BevelOuter = bvNone
@@ -179,7 +178,7 @@ object frmSettings: TfrmSettings
           TabOrder = 2
           DesignSize = (
             441
-            80)
+            78)
           object Label18: TLabel
             AlignWithMargins = True
             Left = 9
@@ -257,7 +256,7 @@ object frmSettings: TfrmSettings
         end
         object pnOtherOpt: TPanel
           Left = 0
-          Top = 224
+          Top = 220
           Width = 441
           Height = 109
           Align = alTop
@@ -326,7 +325,7 @@ object frmSettings: TfrmSettings
         Left = 3
         Top = 3
         Width = 441
-        Height = 48
+        Height = 46
         Margins.Bottom = 9
         Align = alTop
         AutoSize = True
@@ -335,7 +334,7 @@ object frmSettings: TfrmSettings
         TabOrder = 0
         DesignSize = (
           441
-          48)
+          46)
         object Label15: TLabel
           AlignWithMargins = True
           Left = 3
@@ -789,7 +788,7 @@ object frmSettings: TfrmSettings
         Left = 3
         Top = 3
         Width = 441
-        Height = 99
+        Height = 95
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
@@ -797,7 +796,7 @@ object frmSettings: TfrmSettings
         TabOrder = 0
         DesignSize = (
           441
-          99)
+          95)
         object Label25: TLabel
           AlignWithMargins = True
           Left = 3
@@ -914,7 +913,7 @@ object frmSettings: TfrmSettings
       end
       object Panel7: TPanel
         Left = 0
-        Top = 105
+        Top = 101
         Width = 447
         Height = 176
         Align = alTop
@@ -1013,7 +1012,7 @@ object frmSettings: TfrmSettings
           Width = 424
           Height = 17
           Anchors = [akLeft, akTop, akRight]
-          Caption = #1047#1072#1087#1091#1089#1082#1072#1090#1100' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1077' '#1082#1072#1090#1072#1083#1086#1075#1072' '#1086#1085#1083#1072#1081#1085' '#1073#1080#1073#1083#1080#1086#1090#1077#1082' '#1072#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080
+          Caption = #1047#1072#1087#1091#1089#1082#1072#1090#1100' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1077' '#1073#1080#1073#1083#1080#1086#1090#1077#1082' '#1072#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080
           TabOrder = 5
         end
         object cbCheckColUpdate: TCheckBox
@@ -1023,7 +1022,7 @@ object frmSettings: TfrmSettings
           Width = 424
           Height = 17
           Anchors = [akLeft, akTop, akRight]
-          Caption = #1055#1088#1086#1074#1077#1088#1103#1090#1100' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1103' '#1082#1072#1090#1072#1083#1086#1075#1072' '#1086#1085#1083#1072#1081#1085' '#1073#1080#1073#1083#1080#1086#1090#1077#1082' '#1087#1088#1080' '#1079#1072#1087#1091#1089#1082#1077
+          Caption = #1055#1088#1086#1074#1077#1088#1103#1090#1100' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1103' '#1073#1080#1073#1083#1080#1086#1090#1077#1082
           TabOrder = 4
         end
         object cbUpdates: TCheckBox
@@ -1033,13 +1032,13 @@ object frmSettings: TfrmSettings
           Width = 424
           Height = 17
           Anchors = [akLeft, akTop, akRight]
-          Caption = #1055#1088#1086#1074#1077#1088#1103#1090#1100' '#1085#1072#1083#1080#1095#1080#1077' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081' '#1087#1088#1086#1075#1088#1072#1084#1084#1099' '#1087#1088#1080' '#1079#1072#1087#1091#1089#1082#1077
+          Caption = #1055#1088#1086#1074#1077#1088#1103#1090#1100' '#1085#1072#1083#1080#1095#1080#1077' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
           TabOrder = 6
         end
       end
       object Panel6: TPanel
         Left = 0
-        Top = 281
+        Top = 277
         Width = 447
         Height = 93
         Align = alTop

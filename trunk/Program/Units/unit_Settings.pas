@@ -657,7 +657,7 @@ begin
     FCheckExternalLibUpdate := iniFile.ReadBool(SYSTEM_SECTION, 'CheckLibrusecUpdates', True);
     FPromptDevicePath := iniFile.ReadBool(SYSTEM_SECTION, 'PromptDevicePath', True);
     FFolderTemplate := iniFile.ReadString(SYSTEM_SECTION, 'FolderTemplate', '%f\%s');
-    FFileNameTemplate := iniFile.ReadString(SYSTEM_SECTION, 'FileNameTemplate', '%n - %t');
+    FFileNameTemplate := iniFile.ReadString(SYSTEM_SECTION, 'FileNameTemplate', '[%n - ]%t');
     FRemoveSquareBrackets := iniFile.ReadBool(SYSTEM_SECTION, 'RemoveSquareBrackets', True);
 
     case iniFile.ReadInteger(SYSTEM_SECTION, 'ExpFormat', 0) of

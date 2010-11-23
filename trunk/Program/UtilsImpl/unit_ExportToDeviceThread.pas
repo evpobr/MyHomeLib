@@ -138,7 +138,9 @@ begin
     Dialogs.ShowMessage(rstrCheckTemplateValidity);
     Exit;
   end;
-  FTargetFolder := IncludeTrailingPathDelimiter(Trim(CheckSymbols(FTargetFolder)));
+
+  if FTargetFolder <> '' then
+    FTargetFolder := IncludeTrailingPathDelimiter(Trim(CheckSymbols(FTargetFolder)));
 
   CreateFolders(DeviceDir, FTargetFolder);
 
