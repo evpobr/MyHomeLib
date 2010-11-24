@@ -215,13 +215,13 @@ begin
       Collection := FSystemData.GetCollection(updateInfo.CollectionID);
       Collection.BeginBulkOperation;
       try
-        UserDataBackup := TUserData.Create;
+//        UserDataBackup := TUserData.Create;
         try
           if updateInfo.Full then
           begin
             // Backup user data:
-            Teletype(Format(rstrBackupUserData, [updateInfo.Name]), tsInfo);
-            Collection.ExportUserData(UserDataBackup);
+//            Teletype(Format(rstrBackupUserData, [updateInfo.Name]), tsInfo);
+//            Collection.ExportUserData(UserDataBackup);
 
             // clear most tables in a collection
             Teletype(Format(rstrRemovingOldCollection, [updateInfo.Name]), tsInfo);
@@ -232,15 +232,15 @@ begin
           Teletype(rstrImportIntoCollection, tsInfo);
           Import(InpxFileName, not updateInfo.Full, Collection);
 
-          if updateInfo.Full then // a full import mode, had a backup before the process
-          begin
-            Assert(Assigned(UserDataBackup));
-            // Restore user data:
-            Teletype(Format(rstrRestoreUserData, [updateInfo.Name]),tsInfo);
-            Collection.ImportUserData(UserDataBackup, nil);
-          end;
+//          if updateInfo.Full then // a full import mode, had a backup before the process
+//          begin
+//            Assert(Assigned(UserDataBackup));
+//            // Restore user data:
+//            Teletype(Format(rstrRestoreUserData, [updateInfo.Name]),tsInfo);
+//            Collection.ImportUserData(UserDataBackup, nil);
+//          end;
         finally
-          FreeAndNil(UserDataBackup);
+//          FreeAndNil(UserDataBackup);
         end;
 
         Collection.EndBulkOperation(True);

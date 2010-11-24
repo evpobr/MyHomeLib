@@ -308,10 +308,18 @@ begin
     begin
       FParams.DefaultGenres := True;
       FParams.FileTypes := ftFB2;
+      FParams.GenreFile := Settings.SystemFileName[sfGenresFB2]
     end;
 
-    ltUserAny, ltExternalLocalAny, ltExternalOnlineAny:
+    ltUserAny, ltExternalOnlineAny:
     begin
+      FParams.FileTypes := ftAny;
+      FParams.GenreFile := Settings.SystemFileName[sfGenresNonFB2];
+    end;
+
+    ltExternalLocalAny:
+    begin
+      FParams.GenreFile := Settings.SystemFileName[sfGenresFB2];
       FParams.FileTypes := ftAny;
     end;
   end;
@@ -319,20 +327,11 @@ begin
   //
   // заполним файл жанров
   //
-  if FParams.DefaultGenres then
-  begin
-    if FParams.FileTypes = ftFB2 then
-      FParams.GenreFile := Settings.SystemFileName[sfGenresFB2]
-    else
-      FParams.GenreFile := Settings.SystemFileName[sfGenresNonFB2];
-  end
-  else
-  begin
+  if not FParams.DefaultGenres then
     //
     // относительно текущего каталога
     //
     FParams.GenreFile := ExpandFileName(FParams.GenreFile);
-  end;
 
   Assert(FileExists(FParams.GenreFile));
 end;
@@ -404,10 +403,10 @@ begin
   FWorker := nil;
 
   case FParams.CollectionType of
-    ltUserFB, ltExternalLocalFB, ltExternalOnlineFB:
+    ltUserFB, ltExternalLocalFB, ltExternalOnlineFB, ltExternalLocalAny:
       GenresType := gtFb2;
 
-    ltUserAny, ltExternalLocalAny, ltExternalOnlineAny:
+    ltUserAny, ltExternalOnlineAny:
       GenresType := gtAny;
 
     else
