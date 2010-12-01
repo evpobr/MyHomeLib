@@ -331,7 +331,14 @@ begin
     //
     // относительно текущего каталога
     //
-    FParams.GenreFile := ExpandFileName(FParams.GenreFile);
+    FParams.GenreFile := ExpandFileName(FParams.GenreFile)
+  else if FParams.GenreFile = '' then
+  begin
+    if FParams.FileTypes = ftFB2 then
+      FParams.GenreFile := Settings.SystemFileName[sfGenresFB2]
+    else
+      FParams.GenreFile := Settings.SystemFileName[sfGenresNonFB2];
+  end;
 
   Assert(FileExists(FParams.GenreFile));
 end;
