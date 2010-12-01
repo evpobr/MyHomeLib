@@ -3273,8 +3273,6 @@ var
   Data: PBookRecord;
   SavedCursor: TCursor;
   targetCollection: IBookCollection;
-  targetFileName: string;
-  bookFormat: TBookFormat;
   bookIDList: TBookIdList;
   bookIDStruct: TBookIdStruct;
 begin
@@ -3293,8 +3291,6 @@ begin
     targetCollection := FSystemData.GetCollection(ID);
 
     FillBookIdList(Tree, bookIDList, False); // do not uncheck
-    if IsOnline then
-      unit_ExportToDevice.DownloadBooks(BookIDList);
 
     Node := Tree.GetFirst;
     while Assigned(Node) do
@@ -3308,24 +3304,7 @@ begin
       if bookIDStruct.BookKey.IsSameAs(Data^.BookKey) then // match
       begin
         FCollection.GetBookRecord(Data^.BookKey, R, True);
-
-        bookFormat := R.GetBookFormat;
-        Assert(bookFormat in [bfFb2Archive, bfFb2]);
-
-        if FileExists(R.GetBookFileName) then
-        begin
-          // TODO: use templates to generate targetFileName and modify R accordingly before inserting
-
-          // Store the file as a pure fb2
-          targetFileName := TPath.Combine(targetCollection.CollectionRoot, R.FileName);
-          targetFileName := TPath.ChangeExtension(targetFileName, FB2_EXTENSION);
-          R.SaveBookToFile(targetFileName);
-
-          // Add the book record to the target collection:
-          R.Folder := '';
-          targetCollection.InsertBook(R, True, True);
-        end;
-        // else - skip (probably failedto download)
+        targetCollection.InsertBook(R, True, True);
       end;
 
       Node := Tree.GetNext(Node);
