@@ -1262,12 +1262,12 @@ begin
       begin
         if Sql <> '' then
           Sql := Sql + ', ';
-        Sql := 'Progress = :NewProgress ';
+        Sql := Sql + 'Progress = :NewProgress ';
       end;
 
       if Sql <> '' then
       begin
-        Sql := 'UPDATE Books SET ' + Sql;
+        Sql := 'UPDATE Books SET ' + Sql + ' WHERE BookID = :BookID ';
 
         query := FDatabase.NewQuery(Sql);
         try
@@ -1276,6 +1276,8 @@ begin
 
           if extra.Progress <> 0 then
             query.SetParam(':NewProgress', extra.Progress);
+
+          query.SetParam(':BookID', BookKey.BookID);
 
           query.ExecSQL;
         finally
@@ -1341,6 +1343,7 @@ begin
         query.FieldAsInt(3),        // Progress
         query.FieldAsBlobString(4)  // Review
       );
+      query.Next;
     end;
   finally
     query.Free;
