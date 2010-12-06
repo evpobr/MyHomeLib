@@ -52,7 +52,7 @@ const
   //
   // Наиболее часто используемые расширения файлов
   //
-  COLLECTION_EXTENSION_SHORT = 'hlc';
+  COLLECTION_EXTENSION_SHORT = 'hlc2';
   COLLECTION_EXTENSION       = '.' + COLLECTION_EXTENSION_SHORT; // .hlc
 
   FB2_EXTENSION_SHORT        = 'fb2';
@@ -88,8 +88,8 @@ const
   //
   // Предефайненные имена файлов
   //
-  SETTINGS_FILE_NAME = 'myhomelib.ini';
-  SYSTEM_DATABASE_FILENAME = 'user.dbs';
+  SETTINGS_FILE_NAME = 'myhomelib2.ini';
+  SYSTEM_DATABASE_FILENAME = 'user.dbs2';
   GENRES_FB2_FILENAME = 'genres_fb2.glst';
   GENRES_NONFB2_FILENAME = 'genres_nonfb2.glst';
   SERVER_ERRORLOG_FILENAME = 'server_error.html';
@@ -103,11 +103,11 @@ const
   STRUCTUREINFO_FILENAME = 'structure.info';
   PROGRAM_VERINFO_FILENAME = 'last_version.info';
   LIBRUSEC_INPX_FILENAME = 'librusec.inpx';
-  COLUMNS_STORE_FILENAME = 'columns.ini';
+  COLUMNS_STORE_FILENAME = 'columns2.ini';
   DOWNLOADS_STORE_FILENAME = 'downloads.sav';
   DOWNLOAD_ERRORLOG_FILENAME = 'download_errors.log';
   COLLECTIONS_FILENAME = 'collections.ini';
-  PRESETS_FILENAME = 'presets.cxml';
+  PRESETS_FILENAME = 'presets.cxml2';
   COLLECTIONINFO_FILENAME = 'collection.info'; // file holding URL, Script, etc
 
   //
