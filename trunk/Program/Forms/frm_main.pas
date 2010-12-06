@@ -1378,8 +1378,11 @@ begin
   edFKeyWords.Text := '';
   cbDeleted.Checked := False;
   cbDate.ItemIndex := -1;
+  cbDate.Text := '';
   cbLang.ItemIndex := -1;
+  cbLang.Text := '';
   cbLibRate.ItemIndex := -1;
+  cbLibRate.Text := '';
 
   cbPresetName.ItemIndex := -1;
 
