@@ -6115,11 +6115,11 @@ var
   FileName: string;
 begin
   GetActiveTree(Tree);
-  FileName := (Settings.TempPath + 'book_list.' + Ext[(Sender as TMenuItem).Tag]);
+  FileName := (Settings.TempPath + 'book_list.' + Ext[(Sender as TAction).Tag]);
 
   FS := TFileStream.Create(FileName, fmCreate);
   try
-    case (Sender as TMenuItem).Tag of
+    case (Sender as TAction).Tag of
       351:
         Str := HTMLHead + Tree.ContentToHTML(tstAll) + HTMLFoot;
       352:
