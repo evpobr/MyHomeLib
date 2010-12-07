@@ -70,6 +70,9 @@ const
   FB2ZIP_EXTENSION           = FB2_EXTENSION + ZIP_EXTENSION;      // .fb2.zip
   FB2SEVENZIP_EXTENSION      = FB2_EXTENSION + SEVENZIP_EXTENSION; // .fb2.7z
 
+  GENRELIST_EXTENSION_SHORT  = 'glst';
+  GENRELIST_EXTENSION        = '.' + GENRELIST_EXTENSION_SHORT;
+
   //
   // Алфавиты
   //
@@ -90,8 +93,8 @@ const
   //
   SETTINGS_FILE_NAME = 'myhomelib2.ini';
   SYSTEM_DATABASE_FILENAME = 'user.dbs2';
-  GENRES_FB2_FILENAME = 'genres_fb2.glst';
-  GENRES_NONFB2_FILENAME = 'genres_nonfb2.glst';
+  GENRES_FB2_FILENAME = 'genres_fb2' + GENRELIST_EXTENSION;
+  GENRES_NONFB2_FILENAME = 'genres_nonfb2'  + GENRELIST_EXTENSION;
   SERVER_ERRORLOG_FILENAME = 'server_error.html';
   IMPORT_ERRORLOG_FILENAME = 'import_errors.log';
   APP_HELP_FILENAME = 'MyHomeLib.chm';
