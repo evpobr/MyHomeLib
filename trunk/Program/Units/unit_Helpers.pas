@@ -26,7 +26,8 @@ uses
   Dialogs,
   ComCtrls,
   Graphics,
-  Generics.Collections;
+  Generics.Collections,
+  unit_Consts;
 
 type
   TIniStringList = class(TStringList)
@@ -227,14 +228,14 @@ resourcestring
   //fnGenreList
   rstrGenreListDlgTitle = 'Выбор списка жанров';
   rstrGenreListDlgFilter = 'Список жанров MyHomeLib (*.glst)|*.glst|Все типы|*.*';
-  rstrGenreListDlgDefaultExt = 'glst';
+  rstrGenreListDlgDefaultExt = GENRELIST_EXTENSION_SHORT;
 
   // fnOpenCollection
   rstrOpenCollectionDlgTitle = 'Открыть файл коллекции';
   // fnSaveCollection
   rstrSaveCollectionDlgTitle = 'Сохранить файл коллекции';
-  rstrCollectionDlgFilter = 'Коллекция MyHomeLib (*.hlc)|*.hlc|Все типы|*.*';
-  rstrCollectionDlgDefaultExt = 'hlc';
+  rstrCollectionDlgFilter = 'Коллекция MyHomeLib (*.hlc2)|*.hlc2|Все типы|*.*';
+  rstrCollectionDlgDefaultExt = COLLECTION_EXTENSION_SHORT;
 
   // fnSelectReader
   rstrSelectReaderDlgTitle = 'Выбор программы для просмотра';
@@ -264,15 +265,15 @@ resourcestring
   rstrSaveINPXDlgFilter = 'Список книг MyHomeLib (*.inpx)|*.inpx|Все типы|*.*';
   rstrSaveINPXDlgDefaultExt = 'inpx';
 
-  //fnSaveUserData
-  rstrOpenUDDlgTitle = 'Импорт пользовательских данных';
-  rstrOpenUDDlgFilter = 'Пользовательские данные MyHomeLib (*.mhlud)|*.mhlud|Все типы|*.*';
-  rstrOpenUDDlgDefaultExt = 'mhlud';
-
   //fnOpenUserData
+  rstrOpenUDDlgTitle = 'Импорт пользовательских данных';
+  rstrOpenUDDlgFilter = 'Пользовательские данные MyHomeLib (mhlud, mhlud2)|*.mhlud2;*.mhlud|Все типы|*.*';
+  rstrOpenUDDlgDefaultExt = 'mhlud2';
+
+  //fnSaveUserData
   rstrSaveUDDlgTitle = 'Экспорт пользовательских данных';
-  rstrSaveUDDlgFilter = 'Пользовательские данные MyHomeLib (*.mhlud)|*.mhlud|Все типы|*.*';
-  rstrSaveUDDlgDefaultExt = 'mhlud';
+  rstrSaveUDDlgFilter = 'Пользовательские данные MyHomeLib (mhlud2)|*.mhlud2|Все типы|*.*';
+  rstrSaveUDDlgDefaultExt = 'mhlud2';
 
   //fnOpenCoverImage
   rstrOpenCIDlgTitle = 'Загрузка файла обложки';
