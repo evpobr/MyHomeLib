@@ -9,7 +9,7 @@ inherited frameNCWNameAndLocation: TframeNCWNameAndLocation
     AlignWithMargins = True
     Left = 14
     Top = 61
-    Width = 425
+    Width = 432
     Height = 26
     Margins.Left = 14
     Margins.Top = 5
@@ -20,6 +20,7 @@ inherited frameNCWNameAndLocation: TframeNCWNameAndLocation
       ' '#1087#1083#1072#1085#1080#1088#1091#1077#1090#1077' '#1093#1088#1072#1085#1080#1090#1100' '#1082#1085#1080#1075#1080'.'
     Transparent = True
     WordWrap = True
+    ExplicitWidth = 425
   end
   object pageHint: TMHLStaticTip [1]
     AlignWithMargins = True
@@ -38,12 +39,12 @@ inherited frameNCWNameAndLocation: TframeNCWNameAndLocation
     Width = 460
     ExplicitWidth = 460
     inherited lblTitle: TLabel
-      Width = 120
+      Width = 432
       Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1082#1086#1083#1083#1077#1082#1094#1080#1080
       ExplicitWidth = 120
     end
     inherited lblSubTitle: TLabel
-      Width = 278
+      Width = 425
       Caption = #1059#1082#1072#1078#1080#1090#1077' '#1085#1072#1079#1074#1072#1085#1080#1077' '#1080' '#1088#1072#1089#1087#1086#1083#1086#1078#1077#1085#1080#1077' '#1092#1072#1081#1083#1086#1074' '#1082#1086#1083#1083#1077#1082#1094#1080#1080
       ExplicitWidth = 278
     end

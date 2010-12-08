@@ -719,8 +719,8 @@ begin
     FUpdateURL := iniFile.ReadString(NETWORK_SECTION, 'update_server', 'http://home-lib.net/update/');
     FInpxURL := iniFile.ReadString(NETWORK_SECTION, 'inpx-url', 'http://home-lib.net/download/inpx/');
     FErrorLog := iniFile.ReadBool(NETWORK_SECTION, 'use_error_log', False);
-    FTimeOut := iniFile.ReadInteger(NETWORK_SECTION, 'time-out', 5000);
-    FReadTimeOut := iniFile.ReadInteger(NETWORK_SECTION, 'read_time-out', 50000);
+    FTimeOut := iniFile.ReadInteger(NETWORK_SECTION, 'time-out', 9000);
+    FReadTimeOut := iniFile.ReadInteger(NETWORK_SECTION, 'read_time-out', 90000);
     FDwnldInterval := iniFile.ReadInteger(NETWORK_SECTION, 'dwnld_interval', 0);
 
     FLibUsername := iniFile.ReadString(NETWORK_SECTION, 'lib-user', '');

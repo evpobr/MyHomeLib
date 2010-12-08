@@ -156,8 +156,6 @@ begin
   for frame in FPages do
     frame.Initialize(@FParams);
 
-  SetProxySettings(FDownloadPage.HTTP);
-
   { TODO -oAlex -cRefactoring :  остыль! может быть его пристроить в другое место? }
   FFinishPage.lblPageHint.Caption := '';
 end;
