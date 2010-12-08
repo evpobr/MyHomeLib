@@ -99,6 +99,7 @@ resourcestring
   rstrErrorInpStructure = 'Ошибка структуры inp. Файл %s, Строка %u ';
   rstrDBErrorInp = 'Ошибка базы данных при импорте книги. Файл %s, Строка %u ';
   rstrUpdatingDB = 'Обновление базы данных. Пожалуйста, подождите ... ';
+  rstrInvalidFormat = 'Неверный формат файла INPX!';
 
 const
   FieldsDescr: array [1 .. 20] of TFieldDescr = (
@@ -251,14 +252,7 @@ begin
         flSize:
           R.Size := StrToIntDef(slParams[i], 0); // Размер
 
-        flLibID:
-          begin
-            // relevant only for online collections in which will used to access the remote book by this id
-            if OnlineCollection then
-              R.LibID := slParams[i] // внутр. номер
-            else
-              R.LibID := '';
-          end;
+        flLibID: R.LibID := slParams[i]; // внутр. номер   ИСПОЛЬЗУЕТСЯ ВО ВСЕХ КОЛЛЕКЦИЯХ!
 
         flDeleted:
           begin
@@ -494,7 +488,9 @@ begin
       BookCollection.SetProperty(PROP_NOTES, header.Notes);
       BookCollection.SetProperty(PROP_URL, header.URL);
       BookCollection.SetProperty(PROP_CONNECTIONSCRIPT, header.Script);
-    end;
+    end
+    else
+      raise Exception.Create(rstrInvalidFormat);
 
     idxFile := archiver.GetIdxByFileName(VERINFO_FILENAME);
     if idxFile >= 0 then

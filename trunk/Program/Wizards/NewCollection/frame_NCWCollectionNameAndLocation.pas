@@ -42,7 +42,7 @@ type
     procedure ShowPageMessage(const Message: string; AImageIndex: Integer);
     procedure HidePageMessage;
     function IsDataValid(Sender: TObject = nil): Boolean;
-    procedure GetCollectionDataFromINPX;
+    function GetCollectionDataFromINPX:boolean;
 
   public
     function Activate(LoadData: Boolean): Boolean; override;
@@ -68,17 +68,19 @@ resourcestring
   rstrShowCollectionFolder = 'Укажите расположение папки с книгами.';
   rstrSelectFolder = 'Выберите папку с книгами';
   rstrDamagedArchive = 'Архив поврежден или имеет неправильный формат!';
+  rstrInvalidFormat = 'Неверный формат файла INPX!';
 
 {$R *.dfm}
 
 { TframeNCWNameAndLocation }
 
-procedure TframeNCWNameAndLocation.GetCollectionDataFromINPX;
+function TframeNCWNameAndLocation.GetCollectionDataFromINPX: boolean;
 var
   header: TINPXHeader;
   idxFile: Integer;
   archiver: IArchiver;
 begin
+  Result := False;
   Assert(FPParams^.INPXFile <> '');
 
   if (FPParams^.INPXFile = '') or not (FileExists(FPParams^.INPXFile)) then
@@ -88,7 +90,9 @@ begin
     archiver := TArchiver.Create(FPParams^.INPXFile, afZip);
     idxFile := archiver.GetIdxByFileName(COLLECTIONINFO_FILENAME);
     if idxFile >= 0 then
-      header.ParseString(archiver.UnarchiveToString(idxFile));
+      header.ParseString(archiver.UnarchiveToString(idxFile))
+    else
+      raise Exception.Create(rstrInvalidFormat);
 
     edCollectionName.Text := header.Name;
     edCollectionFile.Text := header.FileName;
@@ -113,10 +117,11 @@ begin
       CT_EXTERNAL_ONLINE_NONFB:
         FPParams^.CollectionType := ltExternalOnlineAny;
     end;
+    Result := True;
   except
     on E: Exception do
     begin
-      MessageDlg(rstrDamagedArchive, mtError, [mbOK], 0);
+      MessageDlg(E.Message, mtError, [mbOK], 0);
       Exit;
     end;
   end;
@@ -139,11 +144,10 @@ begin
   if LoadData then
   begin
     if FPParams^.Operation = otInpx then
-      GetCollectionDataFromINPX;
+      Result := GetCollectionDataFromINPX;
     IsDataValid;
-  end;
-
-  Result := True;
+  end
+  else Result := True;
 end;
 
 function TframeNCWNameAndLocation.Deactivate(CheckData: Boolean): Boolean;

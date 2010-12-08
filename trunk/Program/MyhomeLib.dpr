@@ -136,7 +136,8 @@ uses
   unit_ImportFB2ArchiveThread in 'ImportImpl\unit_ImportFB2ArchiveThread.pas',
   unit_treeController in 'Forms\unit_treeController.pas',
   unit_Events in 'Units\unit_Events.pas',
-  frm_DeleteCollection in 'Forms\frm_DeleteCollection.pas' {dlgDeleteCollection};
+  frm_DeleteCollection in 'Forms\frm_DeleteCollection.pas' {dlgDeleteCollection},
+  unit_ImportOldUserData in 'Units\unit_ImportOldUserData.pas';
 
 {$R *.res}
 
@@ -161,7 +162,7 @@ begin
 
     // Важно! сначала создаем датамодули и главную форму, а потом - остальные формы!
     Application.CreateForm(TDMUser, DMUser);
-    DMUser.Init;
+  DMUser.Init;
 
     Application.CreateForm(TfrmMain, frmMain);
     Application.CreateForm(TfrmGenreTree, frmGenreTree);

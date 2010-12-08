@@ -10,8 +10,6 @@
 {                                                                              }
 {******************************************************************************}
 
-{ TODO -oNickR -cBug : использовать настройки прокси при закачке файла. Сейчас они устанавливаются в коде самого визарда. }
-
 unit frame_NCWDownload;
 
 interface
@@ -66,7 +64,8 @@ implementation
 uses
   SysUtils,
   DateUtils,
-  unit_NCWParams;
+  unit_NCWParams,
+  unit_Globals;
 
 resourcestring
   rstrConnecting = 'Подключение ...';
@@ -101,6 +100,7 @@ begin
 
   Response := TFileStream.Create(FPParams^.INPXFile, fmCreate);
   try
+    SetProxySettings(HTTP);
     HTTP.Get(FPParams^.INPXUrl, Response);
     if not FTerminated then
     begin

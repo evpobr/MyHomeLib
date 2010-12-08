@@ -972,7 +972,7 @@ uses
   frm_EditGroup,
   unit_SystemDatabase_Abstract,
   unit_MHLArchiveHelpers,
-  frm_DeleteCollection;
+  frm_DeleteCollection, unit_ImportOldUserData;
 
 resourcestring
   rstrFileNotFoundMsg = 'Файл %s не найден!' + CRLF + 'Проверьте настройки коллекции!';
@@ -4355,6 +4355,8 @@ begin
   );
 end;
 
+
+
 procedure TfrmMain.Add2DownloadListExecute(Sender: TObject);
 var
   Tree: TBookTree;
@@ -6501,12 +6503,16 @@ begin
   if not GetFileName(fnOpenUserData, FileName) then
     Exit;
 
+
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
     Data := TUserData.Create;
     try
-      Data.Load(FileName);
+      if ExtractFileExt(FileName) = '.mhlud' then
+        LoadOldUserData(FileName, Data)
+      else
+        Data.Load(FileName);
       OnImportUserDataHandler(Data);
     finally
       Data.Free;
@@ -6515,6 +6521,8 @@ begin
     Screen.Cursor := SavedCursor;
   end;
 end;
+
+
 
 // Load user data from an in-memory instance of TUserData
 procedure TfrmMain.OnImportUserDataHandler(const UserDataSource: TUserData);
