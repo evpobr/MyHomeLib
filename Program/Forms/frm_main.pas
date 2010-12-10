@@ -450,9 +450,9 @@ type
     N67: TMenuItem;
     N68: TMenuItem;
     N69: TMenuItem;
-    N70: TMenuItem;
-    N71: TMenuItem;
-    N72: TMenuItem;
+    miAdd2Favorites: TMenuItem;
+    miAddToGroup: TMenuItem;
+    miRemoveFromGroup: TMenuItem;
     N73: TMenuItem;
     N74: TMenuItem;
     N75: TMenuItem;
@@ -684,7 +684,6 @@ type
     procedure mi_dwnl_LocateAuthorClick(Sender: TObject);
     procedure btnClearDownloadClick(Sender: TObject);
     procedure MoveDwnldListNodes(Sender: TObject);
-    procedure BtnFav_addClick(Sender: TObject);
     procedure BtnSaveClick(Sender: TObject);
     procedure edLocateAuthorKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure miAddToSearchClick(Sender: TObject);
@@ -701,6 +700,9 @@ type
     procedure StatusBarResize(Sender: TObject);
     procedure tmrCheckUpdatesTimer(Sender: TObject);
     procedure RestorePositions;
+    procedure acBookAdd2FavoritesExecute(Sender: TObject);
+    procedure acBookAdd2GroupExecute(Sender: TObject);
+    procedure acBookRemoveFromGroupExecute(Sender: TObject);
 
   protected
     procedure WMGetSysCommand(var Message: TMessage); message WM_SYSCOMMAND;
@@ -1938,6 +1940,7 @@ var
   Group: TGroupData;
 begin
   pmGroups.Items.Clear;
+  miAddToGroup.Clear;
   pmiGroups.Clear;
 
   GroupIterator := FSystemData.GetGroupIterator;
@@ -1961,6 +1964,13 @@ begin
       ItemP.Tag := Group.GroupID;
       ItemP.OnClick := GroupMenuItemClick;
       pmiGroups.Add(ItemP);
+
+      // подменю для контекстного в главном меню
+      ItemP := TMenuItem.Create(pmMain);
+      ItemP.Caption := Group.Text;
+      ItemP.Tag := Group.GroupID;
+      ItemP.OnClick := GroupMenuItemClick;
+      miAddToGroup.Add(ItemP);
     end;
   end;
 end;
@@ -4357,6 +4367,24 @@ end;
 
 
 
+procedure TfrmMain.acBookAdd2FavoritesExecute(Sender: TObject);
+begin
+  if ActiveView = FavoritesView then
+    DeleteBookFromGroup(Sender)
+  else if FSystemData.ActivateGroup(FAVORITES_GROUP_ID) then
+    AddBookToGroup(Sender);
+end;
+
+procedure TfrmMain.acBookAdd2GroupExecute(Sender: TObject);
+begin
+  if FSystemData.ActivateGroup(FAVORITES_GROUP_ID) then AddBookToGroup(Sender);
+end;
+
+procedure TfrmMain.acBookRemoveFromGroupExecute(Sender: TObject);
+begin
+  if ActiveView = FavoritesView then DeleteBookFromGroup(Sender)
+end;
+
 procedure TfrmMain.Add2DownloadListExecute(Sender: TObject);
 var
   Tree: TBookTree;
@@ -6393,6 +6421,9 @@ begin
         BtnFav_add.DropdownMenu := nil;
         BtnFav_add.ImageIndex := 16;
         pmiGroups.Visible := False;
+        miAddToGroup.Visible := False;
+        miAdd2Favorites.Visible := False;
+        miRemoveFromGroup.Visible := True;
         ///miDeleteFiles.Visible := False;
       end;
     DownloadView:
@@ -6412,6 +6443,9 @@ begin
       BtnFav_add.DropdownMenu := pmGroups;
       BtnFav_add.ImageIndex := 15;
       pmiGroups.Visible := True;
+      miAddToGroup.Visible := True;
+      miAdd2Favorites.Visible := True;
+      miRemoveFromGroup.Visible := False;
       ///miDeleteFiles.Visible := isOnlineCollection(FSystemData.ActiveCollection.CollectionType);
     end;
 
@@ -6661,14 +6695,6 @@ begin
   cbPresetName.Items.Delete(cbPresetName.ItemIndex);
   cbPresetName.ItemIndex := -1;
   cbPresetName.Text := '';
-end;
-
-procedure TfrmMain.BtnFav_addClick(Sender: TObject);
-begin
-  if ActiveView = FavoritesView then
-    DeleteBookFromGroup(Sender)
-  else if FSystemData.ActivateGroup(FAVORITES_GROUP_ID) then
-    AddBookToGroup(Sender);
 end;
 
 function TfrmMain.GetBookNode(const Tree: TBookTree; const BookKey: TBookKey): PVirtualNode;
