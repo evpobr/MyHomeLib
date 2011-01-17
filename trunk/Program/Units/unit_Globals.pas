@@ -357,7 +357,7 @@ type
 
   // -----------------------------------------------------------------------------
   function Transliterate(const Input: string): string;
-  function CheckSymbols(const Input: string): string;
+  function CheckSymbols(const Input: string; const Full: boolean = False): string;
   function EncodePassString(const Input: string): string;
   function DecodePassString(const Input: string): string;
   procedure StrReplace(const s1: string; const s2: string; var s3: string);
@@ -415,6 +415,7 @@ const
 
 const
   denied: set of AnsiChar = ['<', '>', ':', '"', '/', '|', '*', '?'];
+  denied_full: set of AnsiChar = ['<', '>', ':', '"', '/', '|', '*', '?', '\'];
 
 const
   TransL: array [0 .. 31] of string = ('a', 'b', 'v', 'g', 'd', 'e', 'zh', 'z', 'i', 'y', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'f', 'h', 'c', 'ch', 'sh', 'sch', '''', 'i', '''', 'e', 'yu', 'ya');
@@ -647,7 +648,7 @@ begin
   Result := conv;
 end;
 
-function CheckSymbols(const Input: string): string;
+function CheckSymbols(const Input: string; const Full: boolean = False): string;
 var
   S, conv: string;
   f: Integer;
@@ -655,10 +656,16 @@ begin
   conv := '';
   for f := 1 to Length(Input) do
   begin
-    if CharInSet(Input[f], denied) then
-      S := ' '
+    if Full then
+      if CharInSet(Input[f], denied_full) then
+        S := ' '
+      else
+        S := Input[f]
     else
-      S := Input[f];
+      if CharInSet(Input[f], denied) then
+        S := ' '
+      else
+        S := Input[f];
     conv := conv + S;
   end;
 

@@ -140,7 +140,7 @@ begin
   end;
 
   if FTargetFolder <> '' then
-    FTargetFolder := IncludeTrailingPathDelimiter(Trim(CheckSymbols(FTargetFolder)));
+    FTargetFolder := IncludeTrailingPathDelimiter(Trim(FTargetFolder));
 
   CreateFolders(DeviceDir, FTargetFolder);
 
@@ -154,7 +154,7 @@ begin
     Dialogs.ShowMessage(rstrCheckTemplateValidity);
     Exit;
   end;
-  FTargetFileName := Trim(CheckSymbols(FTargetFileName)) + R.FileExt;
+  FTargetFileName := Trim(FTargetFileName) + R.FileExt;
 
   FFileOprecord.TargetFile := TPath.Combine(FTargetFolder, FTargetFileName);
   FFileOprecord.SourceFile := R.GetBookFileName;
