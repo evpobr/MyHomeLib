@@ -40,6 +40,12 @@ begin
   FS := ReplaceStr(FS,'</i>','');
   FS := ReplaceStr(FS,'<emphasis>','');
   FS := ReplaceStr(FS,'</emphasis>','');
+  FS := ReplaceStr(FS,'<stanza>','');
+  FS := ReplaceStr(FS,'</stanza>','');
+  FS := ReplaceStr(FS,'<poem>','');
+  FS := ReplaceStr(FS,'</poem>','');
+  FS := ReplaceStr(FS,'<v>','');
+  FS := ReplaceStr(FS,'</v>','');
 end;
 
 procedure TFb2ToText.Convert(const FileIn: string; const FileOut: string; ResEncoding: TTXTEncoding);
