@@ -50,6 +50,7 @@ type
     FBookIdList: TBookIdList;
     FTemplater: TTemplater;
     FExportMode: TExportMode;
+    FExtractOnly: boolean;
     FProcessedFiles: string;
     FDeviceDir: string;
 
@@ -73,6 +74,7 @@ type
     property DeviceDir: string read FDeviceDir write FDeviceDir;
     property ProcessedFiles: string read FProcessedFiles;
     property ExportMode: TExportMode read FExportMode write FExportMode;
+    property ExtractOnly: boolean write FExtractOnly;
   end;
 
 implementation
@@ -283,7 +285,7 @@ begin
         if i = 0 then
           FProcessedFiles := FFileOprecord.SourceFile;
 
-        Res := SendFileToDevice;
+        if not FExtractOnly Then Res := SendFileToDevice;
       end;
 
       if not Res and (i < totalBooks - 1) then

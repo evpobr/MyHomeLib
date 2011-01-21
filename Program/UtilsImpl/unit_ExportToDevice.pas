@@ -23,7 +23,8 @@ uses
 procedure ExportToDevice(
   const DeviceDir: string;
   const IdList: TBookIdList;
-  Mode: TExportMode;
+  const Mode: TExportMode;
+  const ExtractOnly: Boolean;
   out ProcessedFiles:string
   );
 
@@ -44,7 +45,8 @@ resourcestring
 procedure ExportToDevice(
   const DeviceDir: string;
   const IdList: TBookIdList;
-  Mode: TExportMode;
+  const Mode: TExportMode;
+  const ExtractOnly: Boolean;
   out ProcessedFiles: string
   );
 var
@@ -56,6 +58,7 @@ begin
     worker.DeviceDir := DeviceDir;
     worker.BookIdList := IdList;
     worker.ExportMode := Mode;
+    worker.ExtractOnly := ExtractOnly;
     frmProgress := TExportToDeviceProgressForm.Create(Application);
     try
       frmProgress.Caption := rstrSendToDevice;
