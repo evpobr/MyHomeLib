@@ -3457,17 +3457,20 @@ begin
 
   if isOnlineCollection(FCollection.CollectionCode) then
     unit_ExportToDevice.DownloadBooks(BookIDList);
-  unit_ExportToDevice.ExportToDevice(Settings.DeviceDir, BookIDList, ExportMode, Files);
 
   if (ScriptID >= 0) and (Settings.Scripts[ScriptID].Path <> '%COPY%') then
   begin
+    unit_ExportToDevice.ExportToDevice(Settings.DeviceDir, BookIDList, ExportMode, True, Files);
     if Pos('%FILENAME%', Settings.Scripts[ScriptID].Params) <> 0 then
     begin
       StrReplace('%FILENAME%', Files, TMPParams);
       Settings.Scripts[ScriptID].TMPParams := TMPParams;
     end;
     Settings.Scripts[ScriptID].Run;
-  end;
+  end
+  else
+    unit_ExportToDevice.ExportToDevice(Settings.DeviceDir, BookIDList, ExportMode, False, Files);
+
 
   Settings.DeviceDir := SaveDeviceDir;
   Settings.FolderTemplate := SaveFolderTemplate;

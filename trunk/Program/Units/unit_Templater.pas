@@ -363,8 +363,8 @@ begin
   // Цикл замены элементов шаблона их значениями
   for i := 1 to COL_MASK_ELEMENTS do
   begin
-    StrReplace('%' + UpperCase(MaskElements[i].templ),
-      Transliterate(MaskElements[i].value), Result);
+    S := Transliterate(MaskElements[i].value);
+    StrReplace('%' + UpperCase(MaskElements[i].templ), S, Result);
     StrReplace('%' + MaskElements[i].templ, MaskElements[i].value, Result);
   end;
 
