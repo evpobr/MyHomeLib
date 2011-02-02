@@ -4257,13 +4257,21 @@ begin
       begin
         BookFileName := Data^.GetBookFileName;
 
-        if (IsOnline and (bpIsLocal in Data^.BookProps)) and DeleteFile(BookFileName) then
+        if IsOnline then
         begin
-          FCollection.SetLocal(Data^.BookKey, False);
-          SetBookLocalStatus(Data^.BookKey, False);
+          if (bpIsLocal in Data^.BookProps) and DeleteFile(BookFileName) then
+          begin
+            FCollection.SetLocal(Data^.BookKey, False);
+            SetBookLocalStatus(Data^.BookKey, False);
+          end
         end
         else
         begin
+          OldNode := Node;
+          Node := Tree.GetNext(Node);
+          Tree.DeleteNode(OldNode);
+          ClearLabels(Tree.Tag, False);
+
           if Settings.DeleteFiles then
           begin
             if not IsFB2 then
@@ -4280,14 +4288,8 @@ begin
             FCollection.EndBulkOperation(False);
           end;
         end;
-
-        OldNode := Node;
-        Node := Tree.GetNext(Node);
-        Tree.DeleteNode(OldNode);
-        ClearLabels(Tree.Tag, False);
-      end
-      else
-        Node := Tree.GetNext(Node);
+      end;
+      Node := Tree.GetNext(Node);
     end;
   finally
     Screen.Cursor := SavedCursor;
