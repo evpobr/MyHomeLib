@@ -25,6 +25,7 @@ uses
   SysUtils,
   unit_WorkerThread,
   unit_CollectionWorkerThread,
+  unit_MHLArchiveHelpers,
   files_list;
 
 type
@@ -32,7 +33,6 @@ type
   private
     FFiles: TFilesList;
     FList: TStringList;
-
     procedure OnFile(Sender: TObject; const F: TSearchRec);
     function FindNewFolder(const FileName: string): string;
 
@@ -64,8 +64,18 @@ begin
 end;
 
 procedure TSyncFoldersThread.OnFile(Sender: TObject; const F: TSearchRec);
+var
+  Archiver: IArchiver;
+  Size: integer;
 begin
-  FList.Add(FFiles.LastDir + F.Name + ' ' + IntToStr(F.Size));
+  if not IsArchiveExt(F.Name) then
+     FList.Add(FFiles.LastDir + F.Name + ' ' + IntToStr(F.Size))
+  else
+  begin
+    Archiver := TArchiver.Create(FFiles.LastDir + F.Name);
+    Size := Archiver.GetFileSize(0);
+    FList.Add(FFiles.LastDir + F.Name + ' ' + IntToStr(Size))
+  end;
 end;
 
 procedure TSyncFoldersThread.WorkFunction;
@@ -73,6 +83,9 @@ var
   BookIterator: IBookIterator;
   BookRecord: TBookRecord;
   NewFolder: string;
+  FileName: string;
+  BookFormat: TBookFormat;
+  BookContainer: string;
 begin
   Assert(Assigned(FSystemData));
   Assert(Assigned(FCollection));
@@ -101,15 +114,23 @@ begin
         if Canceled then
           Exit;
 
-        if not FileExists(BookRecord.GetBookFileName)  then
+        FileName := BookRecord.GetBookFileName;
+        if not FileExists(FileName)  then
         begin
           //
           // Попробуем найти файл с таким же именем и размером. Если нашли, то заменим старый путь к файлу новым.
           //
-          NewFolder := FindNewFolder(BookRecord.FileName + ' ' + IntToStr(BookRecord.Size));
+          NewFolder := FindNewFolder(ExtractFileName(FileName) + ' ' + IntToStr(BookRecord.Size));
           if NewFolder <> '*' then
           begin
-            BookRecord.Folder := NewFolder;
+            BookFormat := BookRecord.GetBookFormat;
+            BookContainer := BookRecord.GetBookContainer;
+            if BookFormat = bfFBD then
+              BookRecord.Folder := NewFolder
+            else if BookFormat = bfFb2Archive then
+                   BookRecord.Folder := NewFolder + ExtractFileName(FileName)
+                 else // bfFb2 or bfRaw
+                    BookRecord.Folder := NewFolder;
             FCollection.SetFolder(BookRecord.BookKey, BookRecord.Folder);
           end;
         end;

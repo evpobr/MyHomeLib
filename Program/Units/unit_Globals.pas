@@ -389,7 +389,6 @@ type
 
   function CleanExtension(const Ext: string): string;
 
-
 implementation
 
 uses
