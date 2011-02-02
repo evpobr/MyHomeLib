@@ -4263,7 +4263,8 @@ begin
           begin
             FCollection.SetLocal(Data^.BookKey, False);
             SetBookLocalStatus(Data^.BookKey, False);
-          end
+          end;
+          Node := Tree.GetNext(Node);
         end
         else
         begin
@@ -4288,8 +4289,9 @@ begin
             FCollection.EndBulkOperation(False);
           end;
         end;
-      end;
-      Node := Tree.GetNext(Node);
+      end
+      else
+        Node := Tree.GetNext(Node);
     end;
   finally
     Screen.Cursor := SavedCursor;
