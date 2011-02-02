@@ -1010,7 +1010,9 @@ resourcestring
   rstrCheckUsage = 'Проверить использование, возможна ошибка';
   rstrBuildingTheList = 'Построение списка ...';
   rstrChangeCollectionToRemoveABook = 'Для удаления книги перейдите в соответствующую коллекцию';
-  rstrRemoveSelectedBooks = 'Удалить отмеченные книги?';
+  rstrRemoveSelectedBooks = 'Удалить выбранные книги из базы?';
+  rstrRemoveSelectedBooksFiles = 'Удалить выбранные книги из базы вместе с файлами?';
+  rstrRemoveSelectedBooksOnLine = 'Удалить скачанные файлы?';
   rstrRemoveCollection = 'Удалить коллекцию ';
   rstrGoToLibrarySite = 'Изменения информации о книгах в онлайн-коллекциях возможно только на сайте.' + CRLF + 'Перейти на сайт электронной библиотеки "%s"?';
   rstrUnableToEditBooksFromFavourites = 'Редактирование книг из избранного невозможно.';
@@ -4231,6 +4233,7 @@ var
   Data: PBookRecord;
   BookFileName: string;
   SavedCursor: TCursor;
+  Msg: string;
 begin
   Assert(Assigned(FCollection));
   if ActiveView = FavoritesView then
@@ -4239,7 +4242,11 @@ begin
     Exit;
   end;
 
-  if MessageDlg(rstrRemoveSelectedBooks, mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+  if IsOnline then Msg :=  rstrRemoveSelectedBooksOnLine
+    else if Settings.DeleteFiles then Msg := rstrRemoveSelectedBooksFiles
+    else Msg := rstrRemoveSelectedBooks;
+
+  if MessageDlg(Msg, mtConfirmation, [mbYes, mbNo], 0) = mrNo then
     Exit;
 
   GetActiveTree(Tree);
