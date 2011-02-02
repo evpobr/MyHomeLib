@@ -130,21 +130,28 @@ begin
   Collection := FSystemData.GetCollection(BookKey.DatabaseID);
   Collection.GetBookRecord(BookKey, R, False);
 
-  //
-  // —формируем им€ каталога в соответствии с заданным темплейтом
-  //
-  if FTemplater.SetTemplate(FFolderTemplate, TpPath) = ErFine then
-    FTargetFolder := FTemplater.ParseString(R, TpPath)
-  else
+  // если не задействован скрипт, создаем папки
+  // если будет вызыватьс€ скрипт, то папки не нужны, все равно они не обрабатываютс€
+  // промежуточный файл остаетс€ во временной папке
+  if not FExtractOnly Then
   begin
-    Dialogs.ShowMessage(rstrCheckTemplateValidity);
-    Exit;
+
+    //
+    // —формируем им€ каталога в соответствии с заданным темплейтом
+    //
+    if FTemplater.SetTemplate(FFolderTemplate, TpPath) = ErFine then
+      FTargetFolder := FTemplater.ParseString(R, TpPath)
+    else
+    begin
+      Dialogs.ShowMessage(rstrCheckTemplateValidity);
+      Exit;
+    end;
+
+    if FTargetFolder <> '' then
+      FTargetFolder := IncludeTrailingPathDelimiter(Trim(FTargetFolder));
+
+    CreateFolders(DeviceDir, FTargetFolder);
   end;
-
-  if FTargetFolder <> '' then
-    FTargetFolder := IncludeTrailingPathDelimiter(Trim(FTargetFolder));
-
-  CreateFolders(DeviceDir, FTargetFolder);
 
   //
   // —формируем им€ файла в соответствии с заданным темплейтом
