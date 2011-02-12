@@ -18,6 +18,7 @@
 -------------------------------------------------------------------------------
 
 PRAGMA page_size = 16384;
+PRAGMA journal_mode = OFF;
 --@@
 
 DROP TABLE IF EXISTS Settings;

@@ -915,6 +915,7 @@ type
     function GetStatusProgress: Integer;
     function GetStatusMessage: string;
     procedure SetStatusMessage(const Value: string);
+    procedure UpdateAllEditActions;
     property ActiveView: TView read GetActiveView;
 
     property ShowStatusProgress: Boolean read GetShowStatusProgress write SetShowStatusProgress;
@@ -1601,6 +1602,7 @@ begin
       miGoToAuthor.Visible := False;
 
     UpdateActions;
+    UpdateAllEditActions;
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -3144,10 +3146,8 @@ begin
   if IsPrivate and IsNonFB2 then
   begin
     isFBDDocument := Data^.GetBookFormat = bfFbd;
-
-    ///miConverToFBD.Visible := True;
-    ///miConverToFBD.Tag := IfThen(isFBDDocument, 999, 0);
-    ///miConverToFBD.Caption := IfThen(isFBDDocument, rstrEditFBD, rstrConvert2FBD);
+    tbtnFBD.Caption := IfThen(isFBDDocument, rstrEditFBD, rstrConvert2FBD);
+    tbtnAutoFBD.Visible := isFBDDocument;
   end;
 end;
 
@@ -5128,6 +5128,18 @@ end;
 procedure TfrmMain.DeletePresetUpdate(Sender: TObject);
 begin
   acDeletePreset.Enabled := cbPresetName.Items.IndexOf(cbPresetName.Text) <> -1;
+end;
+
+procedure TfrmMain.UpdateAllEditActions;
+begin
+  UpdateEditAction(acEditAuthor);
+  UpdateEditAction(acEditSerie);
+  UpdateEditAction(acEditGenre);
+
+  tbtnAutoFBD.Visible := IsPrivate and not IsFB2;
+  tbtnFBD.Visible := IsPrivate and not IsFB2;
+
+  ChangeToolbarVisability(FMainBars, tlbrEdit, Settings.EditToolBarVisible);
 end;
 
 function TfrmMain.UpdateEditAction(Action: TAction): Boolean;
