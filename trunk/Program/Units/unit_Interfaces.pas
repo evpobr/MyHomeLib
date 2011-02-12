@@ -170,6 +170,10 @@ type
     function GetBookIterator(const Mode: TBookIteratorMode; const LoadMemos: Boolean; const FilterValue: PFilterValue = nil): IBookIterator;
     function Search(const SearchCriteria: TBookSearchCriteria; const LoadMemos: Boolean): IBookIterator;
 
+
+    // работа с авторами
+
+    procedure UpdateAuthor(Author : PAuthorData);
     //
     //
     //
@@ -178,6 +182,7 @@ type
     procedure UpdateBook(BookRecord: TBookRecord);
     procedure DeleteBook(const BookKey: TBookKey);
     procedure AddBookToGroup(const BookKey: TBookKey; const GroupID: Integer);
+
 
     function GetReview(const BookKey: TBookKey): string;
 

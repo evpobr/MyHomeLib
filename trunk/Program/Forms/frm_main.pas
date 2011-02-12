@@ -4478,167 +4478,30 @@ begin
 end;
 
 procedure TfrmMain.EditAuthorExecute(Sender: TObject);
-(*
 var
-  Tree: TVirtualStringTree;
-  Node: PVirtualNode;
-  Data: PBookRecord;
-  Res: Boolean;
-  S: string;
-
-  old_AiD: Integer;
-  new_AiD: Integer;
-
-  frmEditAuthor: TfrmEditAuthorDataEx;
-*)
+  Data: PAuthorData;
 begin
-  Assert(False, 'Not implementd yet!');
-
-  (*
-  if ActiveView = FavoritesView then
-  begin
-    MessageDlg(rstrUnableToEditBooksFromFavourites, mtWarning, [mbOk], 0);
-    Exit;
-  end;
-
-  if IsLibRusecEdit(0) then
-    Exit;
-
-  GetActiveTree(Tree);
-
-  Node := Tree.GetFirstSelected;
-  Data := Tree.GetNodeData(Node);
-  if not Assigned(Data) then
-    Exit;
-
-  DMCollection.AuthorBooks.Locate(BOOK_ID_FIELD, Data.BookID, []);
-  DMCollection.Authors.Locate(AUTHOR_ID_FIELD, DMCollection.AuthorBooks[AUTHOR_ID_FIELD], []);
-  old_AiD := DMCollection.AuthorBooks[AUTHOR_ID_FIELD];
-
-  frmEditAuthor := TfrmEditAuthorDataEx.Create(self);
+  Data := tvAuthors.GetNodeData(tvAuthors.GetFirstSelected);
   try
-    frmEditAuthor.LastName := DMCollection.AuthorsFamily.Value;
-    frmEditAuthor.FirstName := DMCollection.AuthorsName.Value;
-    frmEditAuthor.MidName := DMCollection.AuthorsMiddle.Value;
-
-    if frmEditAuthor.ShowModal = mrOk then
+    frmEditAuthorData := TfrmEditAuthorData.Create(Self);
+    with frmEditAuthorData do
     begin
-      S := Trim(AnsiUpperCase(frmEditAuthor.LastName + ' ' + frmEditAuthor.FirstName + ' ' + frmEditAuthor.MidName));
-
-      if (not frmEditAuthor.AddNew) and (not frmEditAuthor.SaveLinks) then
+      FirstName := Data.FirstName;
+      LastName := Data.LastName;
+      MidName := Data.MiddleName;
+      if ShowModal = mrOK then
       begin
-        // меняем только данные об авторе, все ссылки остаются на месте
-        if DMCollection.Authors.Locate(AUTHOR_FULLNAME_FIELDS, VarArrayOf([frmEditAuthor.LastName, frmEditAuthor.FirstName, frmEditAuthor.MidName]), [loCaseInsensitive]) then
-        begin
-          // если новый автор уже есть, меняем сслыки на него  (объединение)
-          new_AiD := DMCollection.AuthorsID.Value;
-          repeat
-            // меняем старые Id на новые
-            { TODO -oNickR -cRefactoring : можно заменить на один UPDATE }
-            DMCollection.AuthorBooks.MasterSource := nil;
+        Data.FirstName := FirstName;
+        Data.LastName := LastName;
+        Data.MiddleName := MidName;
 
-            Res := DMCollection.AuthorBooks.Locate(AUTHOR_ID_FIELD, old_AiD, []);
-            if Res then
-            begin
-              DMCollection.AuthorBooks.Edit;
-              DMCollection.AuthorBooksAuthorID.Value := new_AiD;
-              DMCollection.AuthorBooks.Post;
-            end;
-          until not Res;
-
-          // обновляем индексное поле
-          { TODO -oNickR -cRefactoring : можно заменить на один UPDATE }
-          repeat
-            // TODO -cBug: в поле FullName должен записываться только первый автор
-            Res := DMCollection.tblBooks.Locate(BOOK_FULLNAME_FIELD, AnsiUpperCase(Data^.GetAuthors), [loCaseInsensitive]);
-            if Res then
-            begin
-              DMCollection.tblBooks.Edit;
-              DMCollection.tblBooksFullName.Value := S;
-              DMCollection.tblBooks.Post;
-            end;
-          until not Res;
-
-          // старого автора удаляем
-          if DMCollection.Authors.Locate(AUTHOR_ID_FIELD, old_AiD, []) then
-            DMCollection.Authors.Delete;
-
-          DMCollection.AuthorBooks.MasterSource := DMCollection.dsAuthors;
-        end // if Locate
-        else // если нет - просто редактируем ФИО
-        begin
-          DMCollection.Authors.Edit;
-          DMCollection.AuthorsFamily.Value := frmEditAuthor.LastName;
-          DMCollection.AuthorsName.Value := frmEditAuthor.FirstName;
-          DMCollection.AuthorsMiddle.Value := frmEditAuthor.MidName;
-          DMCollection.Authors.Post;
-        end;
-
-        repeat
-          { TODO -oNickR -cRefactoring : можно заменить на один UPDATE }
-          Res := DMCollection.tblBooks.Locate(BOOK_FULLNAME_FIELD, AnsiUpperCase(Data^.GetAuthors), [loCaseInsensitive]);
-          if Res then
-          begin
-            DMCollection.tblBooks.Edit;
-            DMCollection.tblBooksFullName.Value := S;
-            DMCollection.tblBooks.Post;
-          end;
-        until not Res;
+        FCollection.UpdateAuthor(Data);
+        tvAuthors.RepaintNode(tvAuthors.GetFirstSelected);
       end;
-
-      if (frmEditAuthor.AddNew) then
-      begin // заменяем автора на нового
-        // добавляем нового автора
-        if not DMCollection.Authors.Locate(AUTHOR_FULLNAME_FIELDS, VarArrayOf([frmEditAuthor.LastName, frmEditAuthor.FirstName, frmEditAuthor.MidName]), [loCaseInsensitive]) then
-        begin
-          DMCollection.Authors.Insert;
-          DMCollection.AuthorsFamily.Value := frmEditAuthor.LastName;
-          DMCollection.AuthorsName.Value := frmEditAuthor.FirstName;
-          DMCollection.AuthorsMiddle.Value := frmEditAuthor.MidName;
-          DMCollection.Authors.Post;
-        end;
-
-        // меняем ссылки
-        DMCollection.AuthorBooks.MasterSource := nil;
-
-        Node := Tree.GetFirst;
-        while Assigned(Node) do
-        begin
-          Data := Tree.GetNodeData(Node);
-          if IsSelectedBookNode(Node, Data) then
-          begin
-            if not frmEditAuthor.SaveLinks then // заменяем ссылки
-            begin
-              if DMCollection.AuthorBooks.Locate(BOOK_ID_FIELD, Data.BookID, []) then
-              begin
-                DMCollection.AuthorBooks.Edit;
-                DMCollection.AuthorBooksAuthorID.Value := DMCollection.AuthorsID.Value;
-                DMCollection.AuthorBooks.Post;
-              end
-            end
-            else
-            begin // добавляем второго автора
-              DMCollection.AuthorBooks.Insert;
-              DMCollection.AuthorBooksAuthorID.Value := DMCollection.AuthorsID.Value;
-              DMCollection.AuthorBooksBookID.Value := Data.BookID;
-
-              DMCollection.AuthorBooks.Post;
-            end;
-            DMCollection.tblBooks.Locate(BOOK_ID_FIELD, Data.BookID, []);
-            DMCollection.tblBooks.Edit;
-            DMCollection.tblBooksFullName.Value := S;
-            DMCollection.tblBooks.Post;
-          end;
-          Node := Tree.GetNext(Node, False);
-        end;
-        DMCollection.AuthorBooks.MasterSource := DMCollection.dsAuthors;
-      end;
-      InitCollection(True);
     end;
   finally
-    frmEditAuthor.Free;
+    FreeAndNil(frmEditAuthorData);
   end;
-  *)
 end;
 
 function TfrmMain.IsLibRusecEdit(const BookKey: TBookKey): Boolean;
@@ -5174,10 +5037,6 @@ begin
 
   Data := tvAuthors.GetNodeData(tvAuthors.GetFirstSelected);
   acEditAuthor.Enabled := Assigned(Data);
-
-  // Temporarily disable acEditAuthor for version 2.0, M1
-  // TODO: remove the following line when an implementation for EditAuthorExecute is available
-  acEditAuthor.Enabled := False;
 end;
 
 procedure TfrmMain.EditSerieUpdate(Sender: TObject);

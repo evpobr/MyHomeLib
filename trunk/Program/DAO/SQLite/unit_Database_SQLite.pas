@@ -178,6 +178,8 @@ type
     procedure UpdateBook(BookRecord: TBookRecord);
     procedure DeleteBook(const BookKey: TBookKey);
 
+    procedure UpdateAuthor(Author : PAuthorData);
+
     function GetReview(const BookKey: TBookKey): string;
     function SetReview(const BookKey: TBookKey; const Review: string): Integer;
     procedure SetProgress(const BookKey: TBookKey; const Progress: Integer);
@@ -1839,6 +1841,27 @@ begin
   end
   else
     FSystemData.GetBookRecord(BookKey, BookRecord);
+end;
+
+procedure TBookCollection_SQLite.UpdateAuthor(Author : PAuthorData);
+const
+  SQL_INSERT =
+    'UPDATE Authors SET ' +
+    'FirstName = ?,     MiddleName = ?,    LastName = ? ' +
+    'WHERE AuthorID = ? ';
+var
+  query: TSQLiteQuery;
+begin
+  try
+    query := FDatabase.NewQuery(SQL_INSERT);
+    query.SetParam(0, Author.FirstName);
+    query.SetParam(1, Author.MiddleName);
+    query.SetParam(2, Author.LastName);
+    query.SetParam(3, Author.AuthorID);
+    query.ExecSQL;
+  finally
+    query.Free;
+  end;
 end;
 
 procedure TBookCollection_SQLite.UpdateBook(BookRecord: TBookRecord);
