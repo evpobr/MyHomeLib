@@ -5008,12 +5008,12 @@ end;
 function TfrmMain.UpdateEditAction(Action: TAction): Boolean;
 begin
   Assert(Assigned(FCollection));
-  Result := isOnlineCollection(FCollection.CollectionCode);
+  Result := isPrivateCollection(FCollection.CollectionCode);
 
   if Result then
-    Action.Enabled := False;
+    Action.Enabled := True;
 
-  Action.Visible := not Result;
+  Action.Visible := Result;
 end;
 
 procedure TfrmMain.EditAuthorUpdate(Sender: TObject);
