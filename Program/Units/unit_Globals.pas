@@ -1110,7 +1110,7 @@ begin
 
     bfRaw:
       begin
-        raise ENotSupportedException.Create(rstrErrorNotSupported);
+//        raise ENotSupportedException.Create(rstrErrorNotSupported);
       end;
   end;
 
