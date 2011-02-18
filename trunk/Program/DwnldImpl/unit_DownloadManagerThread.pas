@@ -282,13 +282,13 @@ begin
     try
       FDownloader.OnSetComment := SetComment;
       FDownloader.OnProgress := SetProgress;
-
       try
         Synchronize(GetCurrentFile);
         repeat
           if FError then
             Sleep(30000);
           Sleep(Settings.DwnldInterval);
+          FDownloader.IgnoreErrors := FIgnoreErrors;
           FError := not FDownloader.Download(FSystemDB, FBookKey);
           Synchronize(Finished);
 
