@@ -422,6 +422,7 @@ begin
     Result := True;
   except
     on E: EIdSocketError do
+    if not FIgnoreErrors then
     begin
       case E.LastError of
         WSAHOST_NOT_FOUND:

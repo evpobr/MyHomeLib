@@ -347,7 +347,7 @@
 						<VersionInfo Name="MajorVer">2</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
 						<VersionInfo Name="Release">0</VersionInfo>
-						<VersionInfo Name="Build">710</VersionInfo>
+						<VersionInfo Name="Build">711</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">True</VersionInfo>
 						<VersionInfo Name="Special">True</VersionInfo>
@@ -359,7 +359,7 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">MyHomeLib</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription">MyHomeLib</VersionInfoKeys>
-						<VersionInfoKeys Name="FileVersion">2.0.0.710</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">2.0.0.711</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName">MyHomeLib</VersionInfoKeys>
 						<VersionInfoKeys Name="LegalCopyright">Алексей Пеньков</VersionInfoKeys>
 						<VersionInfoKeys Name="LegalTrademarks">MyHomeLib</VersionInfoKeys>
