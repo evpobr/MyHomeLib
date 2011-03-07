@@ -57,6 +57,7 @@ type
     function fb2Lrf(const InpFile: string; const OutFile: string): Boolean;
     function fb2EPUB(const InpFile: string; const OutFile: string): Boolean;
     function fb2PDF(const InpFile: string; const OutFile: string): Boolean;
+    function fb2Mobi(const InpFile, OutFile: string): Boolean;
 
   strict private
     function PrepareFile(const BookKey: TBookKey): Boolean;
@@ -229,6 +230,9 @@ begin
 
     emPDF:
       Result := fb2PDF(FFileOprecord.SourceFile, DestFileName);
+
+    emMobi:
+      Result := fb2Mobi(FFileOprecord.SourceFile, DestFileName);
   end;
 end;
 
@@ -254,6 +258,14 @@ var
 begin
   params := Format('"%s" "%s"', [InpFile, ChangeFileExt(OutFile, '.pdf')]);
   Result := ExecAndWait(FAppPath + 'converters\fb2pdf\fb2pdf.cmd', params, SW_HIDE);
+end;
+
+function TExportToDeviceThread.fb2Mobi(const InpFile: string; const OutFile: string): Boolean;
+var
+  params: string;
+begin
+  params := Format('"%s" "%s" -nc -cl -us -nt', [InpFile, ChangeFileExt(OutFile, '.mobi')]);
+  Result := ExecAndWait(FAppPath + 'converters\fb2mobi\fb2mobi.exe', params, SW_HIDE);
 end;
 
 procedure TExportToDeviceThread.Initialize;

@@ -399,6 +399,7 @@ begin
     3: Settings.ExportMode := emTxt;
     4: Settings.ExportMode := emEpub;
     5: Settings.ExportMode := emPDF;
+    6: Settings.ExportMode := emMobi;
   end;
 
   Settings.FolderTemplate := edFolderTemplate.Text;
