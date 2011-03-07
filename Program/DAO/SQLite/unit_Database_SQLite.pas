@@ -1975,13 +1975,30 @@ end;
 // Delete the book, all dependent tables are cleared by a matching trigger
 procedure TBookCollection_SQLite.DeleteBook(const BookKey: TBookKey);
 const
-  SQL_DELETE_BOOKS = 'DELETE FROM Books WHERE BookID = ? ';
+  SQL_SELECT_ROWS = 'SELECT rowid FROM Books WHERE BookID = ?';
+  SQL_DELETE_BOOKS = 'DELETE FROM Books WHERE rowid = ? ';
+var
+  query: TSQLiteQuery;
+  ID: integer;
 begin
   if BookKey.DatabaseID <> CollectionID then
     FSystemData.GetCollection(BookKey.DatabaseID).DeleteBook(BookKey)
   else
   begin
-    FDatabase.ExecSQL(SQL_DELETE_BOOKS, [BookKey.BookID]);
+//    FDatabase.ExecSQL(SQL_DELETE_BOOKS, [BookKey.BookID]);
+    query := FDatabase.NewQuery(SQL_SELECT_ROWS);
+    try
+      query.SetParam(0, BookKey.BookID);
+      query.Open;
+      ID := query.FieldAsInt(0);
+      query.Free;
+
+      query := FDatabase.NewQuery(SQL_DELETE_BOOKS);
+      query.SetParam(0, ID);
+      query.Open;
+    finally
+      query.Free;
+    end;
 
     FSystemData.DeleteBook(BookKey);
   end;

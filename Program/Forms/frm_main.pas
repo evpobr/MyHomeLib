@@ -1981,8 +1981,9 @@ end;
 
 procedure TfrmMain.CreateScriptMenu;
 const
-  ExpTypes: array [0 .. 5] of string = ('  fb2', '  fb2.zip', '  LRF', '  txt', ' epub', '  pdf');
-  Icons: array [0 .. 5] of Integer = (18, 19, 20, 21, 24, 25);
+  ExpCount = 6;
+  ExpTypes: array [0 .. ExpCount] of string = ('  fb2', '  fb2.zip', '  LRF', '  txt', ' epub', '  pdf', ' .mobi');
+  Icons: array [0 .. ExpCount] of Integer = (18, 19, 20, 21, 24, 25, 20);
 var
   Item, ItemP, ItemM: TMenuItem;
   F: Integer;
@@ -1998,7 +1999,7 @@ begin
 
   if fb2Collection then
   begin
-    for i := 0 to 5 do
+    for i := 0 to ExpCount do
     begin
       Item := TMenuItem.Create(pmScripts);
       Item.OnClick := SendToDeviceExecute;  // если присваивать свойство action,  то не передается tag, и ничего не работает
@@ -2013,12 +2014,12 @@ begin
       Item := TMenuItem.Create(pmScripts);
       Item.Caption := '-';
       Item.Tag := 0;
-      pmScripts.Items.Insert(6, Item);
+      pmScripts.Items.Insert(ExpCount + 1, Item);
     end;
 
     tbSendToDevice.ImageIndex := Icons[ord(Settings.ExportMode)];
     // pmScripts.Items[i].Caption := '>> ' + ExpTypes[i] + ' <<';
-    F := 7;
+    F := ExpCount + 2;
   end
   else
   begin
@@ -3399,6 +3400,7 @@ begin
       853: ExportMode := emTxt;
       854: ExportMode := emEpub;
       855: ExportMode := emPDF;
+      856: ExportMode := emMobi;
     else
       ExportMode := Settings.ExportMode;
     end
@@ -4288,13 +4290,13 @@ begin
               DeleteFile(BookFileName);
           end;
 
-          FCollection.BeginBulkOperation;
-          try
+//          FCollection.BeginBulkOperation;
+//          try
             FCollection.DeleteBook(Data.BookKey);
-            FCollection.EndBulkOperation(True);
-          except
-            FCollection.EndBulkOperation(False);
-          end;
+//            FCollection.EndBulkOperation(True);
+//          except
+//            FCollection.EndBulkOperation(False);
+//          end;
         end;
       end
       else

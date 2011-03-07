@@ -88,7 +88,7 @@ type
   TBookIdList = array of TBookIdStruct;
 
   TAppLanguage = (alEng, alRus);
-  TExportMode = (emFB2, emFB2Zip, emLrf, emTxt, emEpub, emPDF);
+  TExportMode = (emFB2, emFB2Zip, emLrf, emTxt, emEpub, emPDF, emMobi);
 
   //
   // TreeView data records
