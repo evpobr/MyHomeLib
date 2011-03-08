@@ -333,15 +333,17 @@ end;
 function TBookCollection.TGenreCache.GetRootGenre(const Code: string): TGenreData;
 begin
   Result := Items[Code];
-  while Result.ParentCode <> '0' do
-    Result := Items[Result.ParentCode];
+  if Result.GenreCode <> '0.0' then
+    while Result.ParentCode <> '0' do
+      Result := Items[Result.ParentCode];
 end;
 
 function TBookCollection.TGenreCache.GetRootGenreByFB2Code(const FB2Code: string): TGenreData;
 begin
   Result := ByFB2Code[FB2Code];
-  while Result.ParentCode <> '0' do
-    Result := Items[Result.ParentCode];
+  if Result.GenreCode <> '0.0' then
+    while Result.ParentCode <> '0' do
+      Result := Items[Result.ParentCode];
 end;
 
 procedure TBookCollection.SetHideDeleted(const HideDeleted: Boolean);
