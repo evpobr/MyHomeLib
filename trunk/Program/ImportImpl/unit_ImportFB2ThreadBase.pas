@@ -191,7 +191,7 @@ procedure TImportFB2ThreadBase.AddFile2List(Sender: TObject; const F: TSearchRec
 var
   FileName: string;
 begin
-  if ExtractFileExt(F.Name) = FTargetExt then
+  if LowerCase(ExtractFileExt(F.Name)) = FTargetExt then
   begin
     if Settings.EnableSort then
       FileName := FFilesList.LastDir + F.Name

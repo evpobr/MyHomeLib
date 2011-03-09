@@ -86,6 +86,7 @@ inherited frameNCWInpxSource: TframeNCWInpxSource
         end>
       Enabled = False
       GroupView = True
+      ReadOnly = True
       TabOrder = 3
       ViewStyle = vsReport
       OnChange = lvCollectionsChange

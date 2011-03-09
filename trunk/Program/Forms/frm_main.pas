@@ -2039,17 +2039,17 @@ begin
     pmScripts.Items.Insert(i + F, Item);
 
     // ------ context -----------------
-    ItemP := TMenuItem.Create(pmMain);
+    ItemP := TMenuItem.Create(pmiScripts);
     ItemP.Caption := Settings.Scripts[i].Title;
     ItemP.Tag := 901 + i;
-    Item.OnClick := SendToDeviceExecute;
+    ItemP.OnClick := SendToDeviceExecute;
     pmiScripts.Insert(i, ItemP);
 
     // ------ main -----------------
     ItemM := TMenuItem.Create(MainMenu);
     ItemM.Caption := Settings.Scripts[i].Title;
     ItemM.Tag := 901 + i;
-    Item.OnClick := SendToDeviceExecute;
+    ItemM.OnClick := SendToDeviceExecute;
     mmiScripts.Insert(i, ItemM);
   end;
 
