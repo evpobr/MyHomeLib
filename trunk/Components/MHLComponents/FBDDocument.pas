@@ -119,6 +119,7 @@ type
     procedure DecodeCover(Path: string; FileName: string  = ''; Delete: boolean = True);
     procedure LoadCoverFromFile(FileName: string);
     procedure LoadCoverFromClpbrd;
+    function ExtractBook(TempFolder: string):string;
 
   published
     property Memo: TMemo read FMemo write SetMemo;
@@ -396,6 +397,26 @@ begin
     FFBD.Attributes['xmlns:xlink'] := 'http://www.w3.org/1999/xlink';
     FCoverData.Str := '';
   finally
+  end;
+end;
+
+function TFBDDocument.ExtractBook(TempFolder: string):string;
+var
+  archiver: IArchiver;
+  MS: TMemoryStream;
+  No: integer;
+begin
+
+  try
+    MS := TMemoryStream.Create;
+    archiver := TArchiver.Create(TPath.Combine(FFolder, FArchiveFilename));
+    No := archiver.GetIdxByExt('.fbd');
+    if No = 0 then No := 1 else No := 0;
+    MS := archiver.UnarchiveToStream(No);
+    Result := TPath.Combine(TempFolder, archiver.GetFileName(No));
+    MS.SaveToFile(Result);
+  finally
+    MS.Free;
   end;
 end;
 

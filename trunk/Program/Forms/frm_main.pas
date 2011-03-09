@@ -1984,6 +1984,7 @@ const
   ExpCount = 6;
   ExpTypes: array [0 .. ExpCount] of string = ('  fb2', '  fb2.zip', '  LRF', '  txt', ' epub', '  pdf', ' .mobi');
   Icons: array [0 .. ExpCount] of Integer = (18, 19, 20, 21, 24, 25, 20);
+  IconsSmall: array [0 .. ExpCount] of Integer = (0, 1, 2, 3, 4, 5, 11);
 var
   Item, ItemP, ItemM: TMenuItem;
   F: Integer;
@@ -2005,7 +2006,7 @@ begin
       Item.OnClick := SendToDeviceExecute;  // если присваивать свойство action,  то не передается tag, и ничего не работает
       Item.Caption := ExpTypes[i];
       Item.Tag := 850 + i;
-      Item.ImageIndex := i;
+      Item.ImageIndex := IconsSmall[i];
       pmScripts.Items.Insert(i, Item);
     end;
 
