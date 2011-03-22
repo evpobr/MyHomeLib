@@ -388,6 +388,7 @@ type
   function ExecAndWait(const FileName, Params: string; const WinState: word): Boolean;
 
   function CleanExtension(const Ext: string): string;
+  function c_GetTempPath: String;
 
 implementation
 
@@ -474,6 +475,13 @@ end;
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
+
+function c_GetTempPath: String;
+var
+  Buffer: array[0..65536] of Char;
+begin
+  SetString(Result, Buffer, GetTempPath(Sizeof(Buffer)-1,Buffer));
+end;
 
 function PosChr(aCh: Char; const S: string): Integer;
 var
