@@ -209,7 +209,7 @@ type
     function GetSystemFileName(fileType: TMHLSystemFile): string;
 
     function GetDataPath: string;
-    function GetTempPath: string;
+    function MHLGetTempPath: string;
     function GetWorkPath: string;
 
     function GetDevicePath: string;
@@ -258,7 +258,7 @@ type
     property DataPath: string read GetDataPath;
 
     property TempDir: string read FTempDir write FTempDir;
-    property TempPath: string read GetTempPath;
+    property TempPath: string read MHLGetTempPath;
 
     property WorkDir: string read FWorkDir;
     property WorkPath: string read GetWorkPath;
@@ -453,7 +453,6 @@ var
   I: Integer;
 
   DBFileName: string;
-
 begin
   inherited Create;
 
@@ -511,7 +510,8 @@ begin
   if UseLocalTemp then
     FTempDir := FAppPath + TEMP_DIR_NAME
   else
-    FTempDir := TPath.Combine(TPath.GetTempPath, '_myhomelib');
+    FTempDir := c_GetTempPath + '\_myhomelib';
+
 
   // -----------------------------------------------------
   FReaders := TReaders.Create;
@@ -1235,7 +1235,7 @@ begin
   Result := IncludeTrailingPathDelimiter(FDataDir);
 end;
 
-function TMHLSettings.GetTempPath: string;
+function TMHLSettings.MHLGetTempPath: string;
 begin
   Assert(FTempDir <> '');
   Result := IncludeTrailingPathDelimiter(FTempDir);
