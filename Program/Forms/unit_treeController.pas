@@ -422,8 +422,6 @@ begin
   Data := Sender.GetNodeData(Node);
   Assert(Assigned(Data));
 
-  Exit;
-
   Color := Settings.BGColor;
   case Data^.nodeType of
     ntAuthorInfo:

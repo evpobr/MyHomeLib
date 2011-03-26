@@ -888,7 +888,6 @@ type
     procedure FillBookIdList(const Tree: TBookTree; var BookIDList: TBookIdList; const Uncheck: Boolean = True);
     procedure ClearLabels(Tag: Integer; Full: Boolean);
     procedure FillAllBooksTree;
-    procedure ChangeLetterButton(const S: string);
     function CheckLibUpdates(Auto: Boolean): Boolean;
     procedure SetInfoPanelHeight(Height: Integer);
     procedure SetInfoPanelVisible(State: Boolean);
@@ -1191,29 +1190,6 @@ begin
   finally
     Columns.Free;
   end;
-end;
-
-procedure TfrmMain.ChangeLetterButton(const S: string);
-//var
-//  i: Integer;
-begin
-  {
-  for i := 0 to RusBar.ControlCount - 1 do
-    if RusBar.Controls[i] is TToolButton then
-      if (RusBar.Controls[i] as TToolButton).Caption = S then
-      begin
-        tbtnStarClick(RusBar.Controls[i] as TToolButton);
-        Exit;
-      end;
-
-  for i := 0 to EngBar.ControlCount - 1 do
-    if EngBar.Controls[i] is TToolButton then
-      if (EngBar.Controls[i] as TToolButton).Caption = S then
-      begin
-        tbtnStarClick(EngBar.Controls[i] as TToolButton);
-        Exit;
-      end;
-  }
 end;
 
 procedure TfrmMain.SetColors;
