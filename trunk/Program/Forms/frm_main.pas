@@ -2931,13 +2931,13 @@ procedure TfrmMain.tvGroupsDragDrop(
   var Effect: Integer;
   Mode: TDropMode
   );
-//var
-  //Nodes: TNodeArray;
-  //i: Integer;
-  //GroupData: PGroupData;
-  //SourceGroupID: Integer;
-  //TargetGroupID: Integer;
-  //BookData: PBookRecord;
+var
+  Nodes: TNodeArray;
+  i: Integer;
+  GroupData: PGroupData;
+  SourceGroupID: Integer;
+  TargetGroupID: Integer;
+  BookData: PBookRecord;
 
   procedure SelectChildNodes(ParentNode: PVirtualNode);
   var
@@ -2955,48 +2955,46 @@ procedure TfrmMain.tvGroupsDragDrop(
   end;
 
 begin
-// Where can we get a replacement for DMUser.GroupsGroupID.Value ?
-  Assert(False, 'Not implemented yet!')
 
-//  SourceGroupID := DMUser.GroupsGroupID.Value;
-//
-//  GroupData := tvGroups.GetNodeData(tvGroups.DropTargetNode);
-//  Assert(Assigned(GroupData));
-//  TargetGroupID := GroupData^.GroupID;
-//
-//  Nodes := tvBooksF.GetSortedSelection(False);
-//
-//  // сканируем выделенные ноды.
-//  // если есть потомки, выделяем их тоже
-//  for i := 0 to High(Nodes) do
-//    SelectChildNodes(Nodes[i]);
-//
-//  // составляем новый список выделенных
-//  Nodes := tvBooksF.GetSortedSelection(False);
-//
-//  // переносим данные
-//  for i := 0 to High(Nodes) do
-//  begin
-//    BookData := tvBooksF.GetNodeData(Nodes[i]);
-//    if BookData^.nodeType = ntBookInfo then
-//    begin
-//      FSystemData.CopyBookToGroup(BookData^.BookKey, SourceGroupID, TargetGroupID, ssShift in Shift);
-//    end;
-//  end;
-//  FillBooksTree(tvBooksF, FSystemData.GetBookIterator(FLastGroupID), True, True, @FLastGroupBookID);
+  SourceGroupID := FLastGroupID;
+
+  GroupData := tvGroups.GetNodeData(tvGroups.DropTargetNode);
+  Assert(Assigned(GroupData));
+  TargetGroupID := GroupData^.GroupID;
+
+  Nodes := tvBooksF.GetSortedSelection(False);
+
+  // сканируем выделенные ноды.
+  // если есть потомки, выделяем их тоже
+  for i := 0 to High(Nodes) do
+    SelectChildNodes(Nodes[i]);
+
+  // составляем новый список выделенных
+  Nodes := tvBooksF.GetSortedSelection(False);
+
+  // переносим данные
+  for i := 0 to High(Nodes) do
+  begin
+    BookData := tvBooksF.GetNodeData(Nodes[i]);
+    if BookData^.nodeType = ntBookInfo then
+    begin
+      FSystemData.CopyBookToGroup(BookData^.BookKey, SourceGroupID, TargetGroupID, ssShift in Shift);
+    end;
+  end;
+  FillBooksTree(tvBooksF, FSystemData.GetBookIterator(FLastGroupID), True, True, @FLastGroupBookID);
 end;
 
 procedure TfrmMain.tvGroupsDragOver(Sender: TBaseVirtualTree; Source: TObject; Shift: TShiftState; State: TDragState; Pt: TPoint; Mode: TDropMode; var Effect: Integer; var Accept: Boolean);
-//var
-  //Data: PGroupData;
+var
+ Data: PGroupData;
 begin
 // Where can we get a replacement for DMUser.GroupsGroupID.Value ?
-  Assert(False, 'Not implemented yet!')
+//  Assert(False, 'Not implemented yet!')
 
-//  Data := tvGroups.GetNodeData(tvGroups.DropTargetNode);
-//  if Assigned(Data) then
-//    if Data^.GroupID <> DMUser.GroupsGroupID.Value then
-//      Accept := True;
+  Data := tvGroups.GetNodeData(tvGroups.DropTargetNode);
+  if Assigned(Data) then
+    if Data^.GroupID <> FLastGroupID then
+      Accept := True;
 end;
 
 procedure TfrmMain.tvGroupsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
