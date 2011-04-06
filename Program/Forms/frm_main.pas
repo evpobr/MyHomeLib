@@ -858,8 +858,10 @@ type
     // т. к. обновление списка происходит с задержкой, значени€ могут не совпадать в ID выбранных элементов
     //
     FLastAuthorID: Integer;
+    FLastAutorStr: String;
     FLastAuthorBookID: TBookKey;
     FLastSeriesID: Integer;
+    FLastSeriesStr: string;
     FLastSeriesBookID: TBookKey;
     FLastGenreCode: string;
     FLastGenreIsContainer: Boolean;
@@ -1278,6 +1280,12 @@ begin
     miDevice.Tag := 0;
   end;
 
+  ipnlAuthors.Font.Size := Settings.ShortFontSize;
+  ipnlSeries.Font.Size := Settings.ShortFontSize;
+  ipnlGenres.Font.Size := Settings.ShortFontSize;
+  ipnlFavorites.Font.Size := Settings.ShortFontSize;
+  ipnlSearch.Font.Size := Settings.ShortFontSize;
+
   pnAuthorsView.Width := Settings.Splitters[0];
   pnSeriesView.Width := Settings.Splitters[1];
   pnGenresView.Width := Settings.Splitters[2];
@@ -1567,7 +1575,6 @@ begin
     FCollection.SetShowLocalOnly(IsOnline and Settings.ShowLocalOnly);
     FCollection.SetHideDeleted((not IsPrivate) and Settings.HideDeletedBooks);
 
-    RestorePositions; // временна€ заглушка, нужно сделать вызов зависимым от того, когда происходит инициализаци€
 
     FillAuthorTree(tvAuthors, FCollection.GetAuthorIterator(amFullFilter), FLastAuthorID);
     FillSeriesTree(tvSeries, FCollection.GetSeriesIterator(smFullFilter), FLastSeriesID);
@@ -1579,6 +1586,8 @@ begin
 
     UpdateActions;
     UpdateAllEditActions;
+
+    RestorePositions; // временна€ заглушка, нужно сделать вызов зависимым от того, когда происходит инициализаци€
   finally
     Screen.Cursor := SavedCursor;
   end;
@@ -2682,6 +2691,9 @@ begin
     Settings.FormTop := Top;
     Settings.FormLeft := Left;
   end;
+
+  Settings.LastAuthor := FLastAutorStr;
+  Settings.LastSeries := FLastSeriesStr;
 end;
 
 procedure TfrmMain.tvBooksTreeHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
@@ -2749,6 +2761,7 @@ begin
     begin
       lblAuthor.Caption := Data^.GetFullName;
       FLastAuthorID := Data^.AuthorID;
+      FLastAutorStr := Data^.GetFullName;
       FLastAuthorBookID.Clear;
     end;
 
@@ -2803,6 +2816,7 @@ begin
     begin
       lblSeries.Caption := Data^.SeriesTitle;
       FLastSeriesID := Data^.SeriesID;
+      FLastSeriesStr := Data^.SeriesTitle;
       FLastSeriesBookID.Clear;
     end;
 
@@ -6175,11 +6189,13 @@ procedure TfrmMain.RestorePositions;
 var
   Button: TToolButton;
 begin
-  Button := GetFilterButton(FAuthorBars, 'ј');
+  Button := GetFilterButton(FAuthorBars, Copy(Settings.LastAuthor, 1, 1));
   InternalSetAuthorFilter(Button);
+  LocateAuthor(Settings.LastAuthor);
 
-  Button := GetFilterButton(FSerieBars, 'ј');
+  Button := GetFilterButton(FSerieBars, Copy(Settings.LastSeries, 1, 1));
   InternalSetSeriesFilter(Button);
+  LocateSeries(Settings.LastSeries);
 end;
 
 procedure TfrmMain.ChangeSettingsExecute(Sender: TObject);
