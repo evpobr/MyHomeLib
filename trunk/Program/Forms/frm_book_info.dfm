@@ -23,7 +23,7 @@ object frmBookDetails: TfrmBookDetails
     Top = 53
     Width = 622
     Height = 388
-    ActivePage = tsFileInfo
+    ActivePage = tsReview
     Align = alClient
     DoubleBuffered = True
     ParentDoubleBuffered = False
@@ -113,10 +113,6 @@ object frmBookDetails: TfrmBookDetails
     end
     object tsReview: TTabSheet
       Caption = #1056#1077#1094#1077#1085#1079#1080#1103
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object mmReview: TMemo
         AlignWithMargins = True
         Left = 3
