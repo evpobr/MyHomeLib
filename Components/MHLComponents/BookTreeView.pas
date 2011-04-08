@@ -27,7 +27,8 @@ uses
 const
   DefaultSelectionOptions = [
     toFullRowSelect,
-    toRightClickSelect
+    toRightClickSelect,
+    toMultiSelect
   ];
 
   DefaultMiscOptions = [

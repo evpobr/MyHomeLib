@@ -1587,7 +1587,7 @@ begin
     UpdateActions;
     UpdateAllEditActions;
 
-    RestorePositions; // временная заглушка, нужно сделать вызов зависимым от того, когда происходит инициализация
+    if not ApplyAuthorFilter then RestorePositions;
   finally
     Screen.Cursor := SavedCursor;
   end;
