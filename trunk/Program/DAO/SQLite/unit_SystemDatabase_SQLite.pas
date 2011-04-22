@@ -1682,8 +1682,12 @@ begin
   //
   // Создадим необходимые каталоги
   //
-  TDirectory.CreateDirectory(CollectionRoot);
-  TDirectory.CreateDirectory(TPath.GetDirectoryName(CollectionFile));
+//  TDirectory.CreateDirectory(CollectionRoot);
+//  TDirectory.CreateDirectory(TPath.GetDirectoryName(CollectionFile));
+
+// создание каталогов в данном случае просто не имеет смысла и приводит к
+// ошибкам при попытке подключить сетевую папку!
+
 
   //
   // Получим относительные пути. В качестве базового используем DataPath.
