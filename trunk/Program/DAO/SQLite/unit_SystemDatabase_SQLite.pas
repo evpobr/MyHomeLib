@@ -637,8 +637,8 @@ begin
   begin
     if PROP_DATAFILE = PropID then
       Result := Settings.ExpandCollectionFileName(Result)
-    else if PROP_ROOTFOLDER = PropID then
-      Result := Settings.ExpandCollectionRoot(Result);
+//    else if PROP_ROOTFOLDER = PropID then
+//      Result := Settings.ExpandCollectionRoot(Result);
   end;
 end;
 
@@ -1670,8 +1670,6 @@ begin
 end;
 
 procedure TSystemData_SQLite.PrepareCollectionPath(var CollectionRoot, CollectionFile: string);
-var
-  dataDirPath: string;
 begin
   //
   // ѕолучим полные пути. ≈сли были указаны относительные пути, то в качестве базового используем DataPath.
@@ -1692,9 +1690,8 @@ begin
   //
   // ѕолучим относительные пути. ¬ качестве базового используем DataPath.
   //
-  dataDirPath := Settings.DataPath;
-  CollectionRoot := ExtractRelativePath(dataDirPath, CollectionRoot);
-  CollectionFile := ExtractRelativePath(dataDirPath, CollectionFile);
+  CollectionRoot := ExtractRelativePath(Settings.WorkPath, CollectionRoot);
+  CollectionFile := ExtractRelativePath(Settings.DataPath, CollectionFile);
 end;
 
 end.

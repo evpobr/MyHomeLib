@@ -1360,7 +1360,7 @@ end;
 
 function TMHLSettings.ExpandCollectionRoot(const rootFolder: string): string;
 begin
-  Result := IncludeTrailingPathDelimiter(ExpandFileNameEx(DataPath, rootFolder));
+  Result := IncludeTrailingPathDelimiter(ExpandFileNameEx(WorkPath, rootFolder));
 end;
 
 function TMHLSettings.ExpandCollectionFileName(const FileName: string): string;
