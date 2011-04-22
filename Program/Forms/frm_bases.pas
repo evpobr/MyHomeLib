@@ -136,11 +136,18 @@ var
   storedFileName: string;
 begin
   //
-  // Получим абсолютные пути. В качестве базового каталого используется DataPath.
+  // Получим абсолютные пути. В качестве базового каталого используется DataPath. <--- Иделогическая ошибка!
   //
+//  CollectionName := Trim(edCollectionName.Text);
+//  storedRoot := Settings.ExpandCollectionRoot(Trim(edCollectionRoot.Text));
+//  storedFileName := Settings.ExpandCollectionFileName(edCollectionFile.Text);
+
+  // Абсолютные пути нахрен не нужны, приводят к куче пробелм и тупых вопросов!
+
   CollectionName := Trim(edCollectionName.Text);
-  storedRoot := Settings.ExpandCollectionRoot(Trim(edCollectionRoot.Text));
-  storedFileName := Settings.ExpandCollectionFileName(edCollectionFile.Text);
+  storedRoot := Trim(edCollectionRoot.Text);
+  storedFileName := Trim(edCollectionFile.Text);
+
 
   if (CollectionName = '') or (storedFileName = '') or (storedRoot = '') then
   begin
