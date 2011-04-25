@@ -1983,7 +1983,7 @@ begin
   //Assert(Assigned(FCollection));
   fb2Collection := Assigned(FCollection) and isFB2Collection(FCollection.CollectionCode);
 
-  if fb2Collection then
+  if fb2Collection or Settings.AllowMixed then
   begin
     for i := 0 to ExpCount do
     begin
@@ -3380,7 +3380,7 @@ begin
   SaveFolderTemplate := Settings.FolderTemplate;
   ScriptID := (Sender as TComponent).Tag;
 
-  if isFB2Collection(FCollection.CollectionCode) then
+  if isFB2Collection(FCollection.CollectionCode) or Settings.AllowMixed then
   begin
     case ScriptID of
       850: ExportMode := emFB2;
@@ -6189,6 +6189,9 @@ procedure TfrmMain.RestorePositions;
 var
   Button: TToolButton;
 begin
+  if Settings.LastAuthor = '' then Settings.LastAuthor := 'À';
+  if Settings.LastSeries = '' then Settings.LastSeries := 'À';
+
   Button := GetFilterButton(FAuthorBars, Copy(Settings.LastAuthor, 1, 1));
   InternalSetAuthorFilter(Button);
   LocateAuthor(Settings.LastAuthor);
