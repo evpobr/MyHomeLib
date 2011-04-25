@@ -739,7 +739,8 @@ begin
     amByBook:
       begin
         Assert(Assigned(FilterValue));
-        SQLRows := 'SELECT a.AuthorID, a.LastName, a.FirstName, a.MiddleName FROM Author_List al INNER JOIN Authors a ON al.AuthorID = a.AuthorID WHERE BookID = :v0 ORDER BY a.LastName, a.FirstName, a.MiddleName ';
+//        SQLRows := 'SELECT a.AuthorID, a.LastName, a.FirstName, a.MiddleName FROM Author_List al INNER JOIN Authors a ON al.AuthorID = a.AuthorID WHERE BookID = :v0 ORDER BY a.LastName, a.FirstName, a.MiddleName ';
+        SQLRows := 'SELECT a.AuthorID, a.LastName, a.FirstName, a.MiddleName FROM Author_List al INNER JOIN Authors a ON al.AuthorID = a.AuthorID WHERE BookID = :v0 ';
         SQLCount := 'SELECT COUNT(*) FROM Author_List WHERE BookID = :v0';
       end;
 
@@ -775,7 +776,9 @@ begin
 
         SQLRows := 'SELECT DISTINCT a.AuthorID FROM ' + FromList + Where;
         SQLCount := 'SELECT COUNT(*) FROM (' + SQLRows + ') ROWS ';
-        SQLRows := 'SELECT DISTINCT a.AuthorID, a.LastName, a.FirstName, a.MiddleName FROM ' + FromList + Where + ' ORDER BY a.LastName, a.FirstName, a.MiddleName ';
+//        SQLRows := 'SELECT DISTINCT a.AuthorID, a.LastName, a.FirstName, a.MiddleName FROM ' + FromList + Where + ' ORDER BY a.LastName, a.FirstName, a.MiddleName ';
+        SQLRows := 'SELECT DISTINCT a.AuthorID, a.LastName, a.FirstName, a.MiddleName FROM ' + FromList + Where;
+
       end;
 
     else
