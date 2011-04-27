@@ -137,7 +137,8 @@ uses
   unit_Events in 'Units\unit_Events.pas',
   frm_DeleteCollection in 'Forms\frm_DeleteCollection.pas' {dlgDeleteCollection},
   unit_ImportOldUserData in 'Units\unit_ImportOldUserData.pas',
-  unit_SystemDatabase_SQLite in 'DAO\SQLite\unit_SystemDatabase_SQLite.pas';
+  unit_SystemDatabase_SQLite in 'DAO\SQLite\unit_SystemDatabase_SQLite.pas',
+  unit_ColorTabs in 'Units\unit_ColorTabs.pas';
 
 {$R *.res}
 
