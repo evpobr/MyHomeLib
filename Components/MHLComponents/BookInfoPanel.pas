@@ -42,8 +42,11 @@ type
     FOnGenreLinkClicked: TSysLinkEvent;
     FOnSeriesLinkClicked: TSysLinkEvent;
 
+    FColor: TColor;
+
     function GetShowCover: boolean;
     procedure SetShowCover(const Value: boolean);
+    procedure SetColor(Value: TColor);
 
     function GetShowAnnotation: Boolean;
     procedure SetShowAnnotation(const Value: Boolean);
@@ -79,7 +82,7 @@ type
     property Align;
     property Anchors;
     property BiDiMode;
-    property Color;
+    property Color read FColor write SetColor default clWindow;
     //property Constraints;
     property Ctl3D;
     property UseDockManager default True;
@@ -219,6 +222,7 @@ begin
   FAnnotation.Anchors := [akLeft, akTop, akRight, akBottom];
   FAnnotation.ReadOnly := True;
   FAnnotation.TextHint := rstrNoAnnotationHint;
+  FAnnotation.ScrollBars := ssVertical;
 
   //       300 200
   //0,  0, 300,  20
@@ -285,6 +289,15 @@ begin
   FAuthors.Caption := Autors;
   FSeries.Caption := Series;
   FGenres.Caption := Genres;
+end;
+
+procedure TInfoPanel.SetColor(Value: TColor);
+begin
+  if FColor <> Value then
+  begin
+    FColor := Value;
+    FAnnotation.Color := Value;
+  end;
 end;
 
 procedure TInfoPanel.SetBookCover(

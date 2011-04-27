@@ -57,7 +57,6 @@ type
     btnDeleteExt: TButton;
     btnChangeExt: TButton;
     btnAddExt: TButton;
-    pnASG: TPanel;
     pnCT: TPanel;
     pnBS: TPanel;
     pnCS: TPanel;
@@ -184,9 +183,10 @@ type
     Label32: TLabel;
     btnCA: TButton;
     btnCS: TButton;
-    btnASG: TButton;
     btnCT: TButton;
     btnBS: TButton;
+    pnASG: TPanel;
+    btnASG: TButton;
 
     procedure SaveSettingsClick(Sender: TObject);
     procedure ShowHelpClick(Sender: TObject);

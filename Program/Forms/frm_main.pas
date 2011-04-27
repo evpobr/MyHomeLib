@@ -70,7 +70,7 @@ uses
   SearchPresets,
   MHLButtonedEdit,
   UserData,
-  unit_treeController;
+  unit_treeController, unit_ColorTabs;
 
 type
   TfrmMain = class(TForm)
@@ -703,6 +703,8 @@ type
     procedure acBookAdd2FavoritesExecute(Sender: TObject);
     procedure acBookAdd2GroupExecute(Sender: TObject);
     procedure acBookRemoveFromGroupExecute(Sender: TObject);
+    procedure pgControlDrawTab(Control: TCustomTabControl; TabIndex: Integer;
+      const Rect: TRect; Active: Boolean);
 
   protected
     procedure WMGetSysCommand(var Message: TMessage); message WM_SYSCOMMAND;
@@ -1199,6 +1201,7 @@ var
   BGColor: TColor;
   TreeFontSize: Integer;
   FontColor: TColor;
+  ShortFontSize : Integer;
 
   procedure SetTreeViewColor(AControl: TBookTree);
   begin
@@ -1214,17 +1217,18 @@ var
     AControl.Font.Color := FontColor;
   end;
 
-  {
-  procedure SetEditColor(AControl: TRzEdit);
+  procedure SetPnlColor(AControl: TInfoPanel);
   begin
     AControl.Color := BGColor;
+    AControl.Font.Size := ShortFontSize;
     AControl.Font.Color := FontColor;
   end;
-  }
+
 begin
   BGColor := Settings.BGColor;
   TreeFontSize := Settings.TreeFontSize;
   FontColor := Settings.FontColor;
+  ShortFontSize := Settings.ShortFontSize;
 
   SetTreeViewColor2(tvAuthors);
   SetTreeViewColor(tvBooksA);
@@ -1237,15 +1241,37 @@ begin
   SetTreeViewColor(tvBooksF);
   SetTreeViewColor(tvDownloadList);
 
-  //SetEditColor(edFFullName);
-  //SetEditColor(edFTitle);
-  //SetEditColor(edFSeries);
-  //SetEditColor(edFGenre);
-  //SetEditColor(edFFile);
-  //SetEditColor(edFFolder);
-  //SetEditColor(edFExt);
-  //SetEditColor(edFKeyWords);
-  //SetEditColor(edFAnnotation);
+  edFFullName.Color := BGColor;
+  edFTitle.Color := BGColor;
+  edFSeries.Color := BGColor;
+  edFGenre.Color := BGColor;
+  edFFile.Color := BGColor;
+  edFFolder.Color := BGColor;
+  edFExt.Color := BGColor;
+  edFKeyWords.Color := BGColor;
+  edFAnnotation.Color := BGColor;
+
+  cbDate.Color := BGColor;
+  cbLang.Color := BGColor;
+  cbLibrate.Color := BGColor;
+
+  tsByAuthor.Color := clMenuBar;
+  tsBySerie.Color := clMenuBar;
+  tsByGenre.Color := clMenuBar;
+  tsByGroup.Color := clMenuBar;
+  tsSearch.Color := clMenuBar;
+  tsDownload.Color := clMenuBar;
+
+  edLocateAuthor.Color := BGColor;
+  edLocateSeries.Color := BGColor;
+  cbPresetName.Color := BGColor;
+
+  SetPnlColor(ipnlAuthors);
+  SetPnlColor(ipnlSeries);
+  SetPnlColor(ipnlGenres);
+  SetPnlColor(ipnlFavorites);
+  SetPnlColor(ipnlSearch);
+
 end;
 
 procedure TfrmMain.ReadINIData;
@@ -6350,6 +6376,31 @@ begin
   ///btnSwitchTreeMode.Hint := TreeHints[ord(Settings.TreeModes[pgControl.ActivePageIndex])];
 
   Settings.ActivePage := pgControl.ActivePageIndex;
+end;
+
+procedure TfrmMain.pgControlDrawTab(Control: TCustomTabControl;
+  TabIndex: Integer; const Rect: TRect; Active: Boolean);
+var
+  AText: string;
+  APoint: TPoint;
+begin
+  with (Control as TPageControl).Canvas do
+  begin
+    Brush.Color := clMenuBar;
+    FillRect(Rect);
+    AText := TPageControl(Control).Pages[TabIndex].Caption;
+    with Control.Canvas do
+    begin
+      APoint.x := (Rect.Right - Rect.Left) div 2 - TextWidth(AText) div 2;
+      APoint.y := (Rect.Bottom - Rect.Top) div 2 - TextHeight(AText) div 2;
+      TextRect(Rect, Rect.Left + APoint.x, Rect.Top + APoint.y, AText);
+
+//      if Active then Pen.Color := clBlue
+//        else Pen.Color :=  clMenuBar;
+//      Pen.Width := 3;
+//      MoveTo(2,3); LineTo(Rect.Right - 2, 3);
+    end;
+   end;
 end;
 
 procedure TfrmMain.ShowHelpExecute(Sender: TObject);
