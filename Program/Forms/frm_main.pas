@@ -699,12 +699,12 @@ type
     procedure StatusBarDrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel; const Rect: TRect);
     procedure StatusBarResize(Sender: TObject);
     procedure tmrCheckUpdatesTimer(Sender: TObject);
-    procedure RestorePositions;
     procedure acBookAdd2FavoritesExecute(Sender: TObject);
     procedure acBookAdd2GroupExecute(Sender: TObject);
     procedure acBookRemoveFromGroupExecute(Sender: TObject);
     procedure pgControlDrawTab(Control: TCustomTabControl; TabIndex: Integer;
       const Rect: TRect; Active: Boolean);
+    procedure tbtnWizardClick(Sender: TObject);
 
   protected
     procedure WMGetSysCommand(var Message: TMessage); message WM_SYSCOMMAND;
@@ -746,7 +746,7 @@ type
     procedure LocateSeries(const Text: string);
 
     procedure CloseCollection;
-    procedure InitCollection(ApplyAuthorFilter: Boolean);
+    procedure InitCollection(SetAlphabetFilter: Boolean);
 
     procedure CreateCollectionMenu;
     procedure CreateScriptMenu;
@@ -1460,11 +1460,14 @@ begin
   end;
 end;
 
-procedure TfrmMain.InitCollection(ApplyAuthorFilter: Boolean);
+procedure TfrmMain.InitCollection(SetAlphabetFilter: Boolean);
 var
   SavedCursor: TCursor;
   CollectionType: Integer;
   EmptySearchCriteria: TBookSearchCriteria;
+  Acount, Scount, GCount: integer;
+  Button: TToolButton;
+  FSA, FSS: string;
 begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -1503,41 +1506,8 @@ begin
     IsFB2 := isFB2Collection(CollectionType);
     IsNonFB2 := isNonFB2Collection(CollectionType);
 
-    // ----------------------------------------------------------------------------
-    // высталяем видимость пунктов меню в завичимости от типа коллекции
-    // ----------------------------------------------------------------------------
-
-    // ------    Главное меню   ---------------------------------------------------
-
-    // Книга
-
-    ///miImport.Visible := IsPrivate;
-    ///miBookEdit.Visible := IsPrivate;
-    ///miConverToFBD.Visible := IsPrivate and not IsFB2;
-    ///tbtnAutoFBD.Enabled := IsPrivate and not IsFB2;
-    ///miDeleteBook.Visible := IsPrivate; // FSystemData.ActiveCollection.AllowDelete;
-    ///tbtnDeleteBook.Enabled := IsPrivate;
-    ///miDeleteFiles.Visible := IsOnline and (ActiveView <> FavoritesView);
-
-    ///miDownloadBooks.Visible := IsOnline;
-
-    // Коллекция
-
-    // Группа
-
-    // Редактирование
     acEditConver2FBD.Enabled := IsPrivate and not IsFB2;
 
-    // Вид
-
-    // Инструменты
-
-    ///miSyncOnline.Visible := IsOnline or IsNonFB2;
-
-    // -------- Контекстное меню --------------------------------------------------
-
-    // pmiBookInfo.Visible := IsFB2;
-    ///pmiDownloadBooks.Visible := IsOnline;
 
     // --------- Панели онструментов ----------------------------------------------
     tbtnDownloadList_Add.Visible := IsOnline;
@@ -1556,42 +1526,6 @@ begin
 
     CreateCollectionMenu;
     CreateScriptMenu;
-
-    // SetCoversVisible((not IsNonFB2 and Settings.ShowInfoPanel)
-    // or (Settings.AllowMixed and Settings.ShowInfoPanel));
-
-    //if IsNonFB2 and not IsPrivate then
-    //  SetInfoPanelVisible(False)
-    //else
-    //  SetInfoPanelVisible(Settings.ShowInfoPanel);
-
-    // ----------------------------------------------------------------------------
-
-    // DMCollection.SetTableState(True);
-
-    // RESORE if Assigned(FLastLetterA) then
-    // RESORE   FLastLetterA.Down := False;
-
-    // RESORE DMCollection.Authors.Filtered := False;
-    //if ApplyAuthorFilter then
-    //begin
-      //if DMCollection.Authors.RecordCount > 500 then
-      //begin
-        // RESORE DMCollection.Authors.Filter := AUTHOR_LASTTNAME_FIELD + '="А*"';
-        // RESORE DMCollection.Authors.Filtered := True;
-        // RESORE ALetter.Down := True;
-        // RESORE FLastLetterA := ALetter;
-        // RESORE edLocateAuthor.Text := 'А';
-      //end
-      //else
-      //begin
-        // RESORE DMCollection.Authors.Filtered := False;
-        // RESTORE tbtnStar.Down := True;
-        // RESTORE FLastLetterA := tbtnStar;
-        // RESTORE edLocateAuthor.Text := '';
-      //end;
-    //end;
-
     //
     // Действия, видимость которых зависит от типа коллекции и которые доступны через тулбар, необходимо обновить вручную
     //
@@ -1601,20 +1535,41 @@ begin
     FCollection.SetShowLocalOnly(IsOnline and Settings.ShowLocalOnly);
     FCollection.SetHideDeleted((not IsPrivate) and Settings.HideDeletedBooks);
 
+    if SetAlphabetFilter then
+    begin
+      FCollection.GetStatistics(Acount, Scount, GCount);
+      if Acount > 500 then FSA := 'А' else FSA := '*';
+      if Scount > 500 then FSS := 'А' else FSS := '*';
+    end
+    else
+    begin
+      FSA := Settings.LastAuthor;
+      if FSA = '' then FSA := 'А';
 
-    FillAuthorTree(tvAuthors, FCollection.GetAuthorIterator(amFullFilter), FLastAuthorID);
-    FillSeriesTree(tvSeries, FCollection.GetSeriesIterator(smFullFilter), FLastSeriesID);
+      FSS := Settings.LastSeries;
+      if FSS = '' then FSS := 'А';
+    end;
+
+
+    Button := GetFilterButton(FAuthorBars, Copy(FSA, 1, 1));
+    InternalSetAuthorFilter(Button);
+    LocateAuthor(FSA);
+
+    Button := GetFilterButton(FSerieBars, Copy(FSS, 1, 1));
+    InternalSetSeriesFilter(Button);
+    LocateSeries(FSS);
+
     FillGenresTree(tvGenres, FCollection.GetGenreIterator(gmAll), False, FLastGenreCode);
     FillGroupsList(tvGroups, FSystemData.GetGroupIterator, FLastGroupID);
-
     if ActiveView = AuthorsView then
       miGoToAuthor.Visible := False;
 
     UpdateActions;
     UpdateAllEditActions;
 
-    if not ApplyAuthorFilter then RestorePositions;
   finally
+
+
     Screen.Cursor := SavedCursor;
   end;
 end;
@@ -2375,6 +2330,11 @@ begin
     OnSetControlsStateHandler(True);
   end;
   *)
+end;
+
+procedure TfrmMain.tbtnWizardClick(Sender: TObject);
+begin
+
 end;
 
 //
@@ -3635,7 +3595,7 @@ begin
   RealFilter := TCharacter.ToUpper(Copy(Filter, 1, 1));
 
   if not TCharacter.IsLetter(RealFilter, 1) then
-    RealFilter := ALPHA_FILTER_NON_ALPHA;
+    RealFilter := ALPHA_FILTER_ALL; //ALPHA_FILTER_NON_ALPHA;
 
   for barIndex := 0 to High(ToolBars) do
   begin
@@ -5189,7 +5149,7 @@ begin
           if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
           begin
             FCollection.AddBookToGroup(Data^.BookKey, GroupID);
-
+            Tree.CheckState[Node] := csUncheckedNormal;
             Inc(booksProcessed);
             StatusProgress := booksProcessed * 100 div booksToProcess;
           end;
@@ -6209,22 +6169,6 @@ procedure TfrmMain.RepairDataBaseExecute(Sender: TObject);
 begin
   Assert(Assigned(FCollection));
   FCollection.RepairDatabase;
-end;
-
-procedure TfrmMain.RestorePositions;
-var
-  Button: TToolButton;
-begin
-  if Settings.LastAuthor = '' then Settings.LastAuthor := 'А';
-  if Settings.LastSeries = '' then Settings.LastSeries := 'А';
-
-  Button := GetFilterButton(FAuthorBars, Copy(Settings.LastAuthor, 1, 1));
-  InternalSetAuthorFilter(Button);
-  LocateAuthor(Settings.LastAuthor);
-
-  Button := GetFilterButton(FSerieBars, Copy(Settings.LastSeries, 1, 1));
-  InternalSetSeriesFilter(Button);
-  LocateSeries(Settings.LastSeries);
 end;
 
 procedure TfrmMain.ChangeSettingsExecute(Sender: TObject);
