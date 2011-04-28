@@ -2648,6 +2648,9 @@ begin
       FLastGroupID := MHL_INVALID_ID;
     FLastGroupBookID.Clear;
   end;
+
+  Settings.LastAuthor := AuthorData^.GetFullName;
+  Settings.LastSeries := SerieData^.SeriesTitle;
 end;
 
 procedure TfrmMain.SaveMainFormSettings;
@@ -4548,7 +4551,7 @@ begin
     if frmEditBook.ShowModal = mrOk then
     begin
       UpdatePositions;
-      InitCollection(True);
+      InitCollection(False);
     end;
   finally
     frmEditBook.Free;
