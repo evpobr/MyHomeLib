@@ -860,7 +860,7 @@ type
     // т. к. обновление списка происходит с задержкой, значения могут не совпадать в ID выбранных элементов
     //
     FLastAuthorID: Integer;
-    FLastAutorStr: String;
+    FLastAuthorStr: String;
     FLastAuthorBookID: TBookKey;
     FLastSeriesID: Integer;
     FLastSeriesStr: string;
@@ -1281,6 +1281,9 @@ begin
   //
   // Синхронизация с настройками
   //
+  FLastAuthorStr := Settings.LastAuthor;
+  FLastSeriesStr := Settings.LastSeries;
+
   tlbrMain.Visible := Settings.ShowToolbar;
   tlbrEdit.Visible := Settings.EditToolBarVisible;
   tbarAuthorsRus.Visible := Settings.ShowRusBar;
@@ -1543,10 +1546,10 @@ begin
     end
     else
     begin
-      FSA := Settings.LastAuthor;
+      FSA := FLastAuthorStr;
       if FSA = '' then FSA := 'А';
 
-      FSS := Settings.LastSeries;
+      FSS := FLastSeriesStr;
       if FSS = '' then FSS := 'А';
     end;
 
@@ -1561,6 +1564,9 @@ begin
 
     FillGenresTree(tvGenres, FCollection.GetGenreIterator(gmAll), False, FLastGenreCode);
     FillGroupsList(tvGroups, FSystemData.GetGroupIterator, FLastGroupID);
+    CreateGroupsMenu;
+
+
     if ActiveView = AuthorsView then
       miGoToAuthor.Visible := False;
 
@@ -2539,11 +2545,6 @@ begin
 
   InitCollection(False);
 
-
-  FillGroupsList(tvGroups, FSystemData.GetGroupIterator, FLastGroupID);
-
-  CreateGroupsMenu;
-
   // ------------------------------------------------------------------------------
 
 
@@ -2610,7 +2611,9 @@ begin
     else
       FLastAuthorID := MHL_INVALID_ID;
     FLastAuthorBookID.Clear;
-  end;
+  end
+  else
+    FLastAuthorStr := AuthorData^.GetFullName;
 
   SerieData := tvSeries.GetNodeData(tvSeries.GetFirstSelected);
   if not Assigned(SerieData) or (FLastSeriesID <> SerieData^.SeriesID) then
@@ -2620,7 +2623,9 @@ begin
     else
       FLastSeriesID := MHL_INVALID_ID;
     FLastSeriesBookID.Clear;
-  end;
+  end
+  else
+    FLastseriesStr:= SerieData^.SeriesTitle;
 
   GenreData := tvGenres.GetNodeData(tvGenres.GetFirstSelected);
   if not Assigned(GenreData) or (FLastGenreCode <> GenreData^.GenreCode) then
@@ -2648,9 +2653,6 @@ begin
       FLastGroupID := MHL_INVALID_ID;
     FLastGroupBookID.Clear;
   end;
-
-  Settings.LastAuthor := AuthorData^.GetFullName;
-  Settings.LastSeries := SerieData^.SeriesTitle;
 end;
 
 procedure TfrmMain.SaveMainFormSettings;
@@ -2681,7 +2683,7 @@ begin
     Settings.FormLeft := Left;
   end;
 
-  Settings.LastAuthor := FLastAutorStr;
+  Settings.LastAuthor := FLastAuthorStr;
   Settings.LastSeries := FLastSeriesStr;
 end;
 
@@ -2750,7 +2752,7 @@ begin
     begin
       lblAuthor.Caption := Data^.GetFullName;
       FLastAuthorID := Data^.AuthorID;
-      FLastAutorStr := Data^.GetFullName;
+      FLastAuthorStr:= Data^.GetFullName;
       FLastAuthorBookID.Clear;
     end;
 
