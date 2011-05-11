@@ -74,9 +74,8 @@ begin
     Query := QS +
       ', F.FileName FROM libbook B, libfilename F WHERE B.BookId = F.BookId AND F.FileName = "' + FN + '"';
 
-  Book. SQL.Text := Query;
-  Book.Active := True;
-  cdsLibBook.Refresh;
+  ExecQuery(Query, Book);
+
   if Book.FieldByName('BookID').AsInteger <> 0 then
   begin
     Update;

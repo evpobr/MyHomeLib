@@ -3,7 +3,7 @@
 			<ProjectGuid>{BEAAC1EC-8211-48CD-85EC-58853EE6C4A6}</ProjectGuid>
 			<ProjectVersion>12.3</ProjectVersion>
 			<MainSource>sql2inpx.dpr</MainSource>
-			<Config Condition="'$(Config)'==''">Release</Config>
+			<Config Condition="'$(Config)'==''">Debug</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 			<Base>True</Base>
 			<Platform>Win32</Platform>
@@ -83,7 +83,7 @@
 						<Source Name="MainSource">sql2inpx.dpr</Source>
 					</Source>
 					<Parameters>
-						<Parameters Name="RunParams">-p librusec[online]</Parameters>
+						<Parameters Name="RunParams">-p librusec[usr]</Parameters>
 					</Parameters>
 					<VersionInfo>
 						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
