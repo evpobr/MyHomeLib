@@ -26,6 +26,20 @@ type
     cdsSeries: TClientDataSet;
     dsSeries: TDataSource;
     Query: TSQLQuery;
+    BookBookId: TIntegerField;
+    BookTitle: TWideStringField;
+    BookFileSize: TIntegerField;
+    BookFileType: TWideStringField;
+    BookDeleted: TWideStringField;
+    BookTime: TSQLTimeStampField;
+    BookLang: TWideStringField;
+    BookKeyWords: TWideStringField;
+    GenreGenreCode: TWideStringField;
+    AvtorLastName: TWideStringField;
+    AvtorFirstName: TWideStringField;
+    AvtorMiddleName: TWideStringField;
+    SeriesSeqName: TWideStringField;
+    SeriesSeqNumb: TIntegerField;
     procedure ConnectionAfterConnect(Sender: TObject);
     procedure cdsLibBookAfterScroll(DataSet: TDataSet);
   private
@@ -36,7 +50,7 @@ type
     procedure QueryGenre(BookID: integer);
     procedure QuerySeries(BookID: integer);
     function QueryRate(BookID: integer): string;
-    procedure Update;
+    procedure Update(ID: integer = 0);
     procedure ExecQuery(Query: string; var Table: TSqlQuery);
   public
     { Public declarations }
@@ -65,23 +79,29 @@ const
 function TLib.GetBookRecord(FN: string; fb2only: boolean;
   oldFormat: boolean): string;
 var
-  Query: string;
+  S: string;
+  ID: integer;
 begin
   if oldFormat then
-    Query := QS +
+    S := QS +
       ', F.FileName FROM libbook B, libfilenameold F WHERE B.BookId = F.BookId AND F.FileName = "' + FN + '"'
   else
-    Query := QS +
+    S := QS +
       ', F.FileName FROM libbook B, libfilename F WHERE B.BookId = F.BookId AND F.FileName = "' + FN + '"';
 
-  ExecQuery(Query, Book);
+  ExecQuery(S, Book);
+  ID := BookBookId.AsInteger;
 
-  if Book.FieldByName('BookID').AsInteger <> 0 then
+  if ID = 0 then
   begin
-    Update;
-    Result := RecordToString(FN);
-  end
-  else Result := '';
+    Result := '';
+    Exit;
+  end;
+
+  QueryAvtor(ID);
+  QueryGenre(ID);
+  QuerySeries(ID);
+  Result := RecordToString;
 end;
 
 function TLib.LastBookID: integer;
@@ -92,7 +112,7 @@ begin
   ExecQuery('Select Count(*) From libbook', Book);
   Count := Book.Fields[0].AsInteger;
   ExecQuery(Format('SELECT * FROM `libbook` LIMIT %d, 1;', [Count - 1]), Book);
-  Result :=  Book.FieldByName('BookId').AsInteger;
+  Result :=  BookBookId.AsInteger;
 end;
 
 function TLib.GetBookRecord(BookID: integer; fb2only: boolean = false): string;
@@ -107,7 +127,7 @@ begin
     Query := Format('%s FROM libbook B WHERE B.BookId = "%d";', [QS, BookID]);
 
   ExecQuery(Query, Book);
-  ID := Book.FieldByName('BookId').AsInteger;
+  ID := BookBookId.AsInteger;
 
   if ID = 0 then
   begin
@@ -146,10 +166,7 @@ end;
 
 function TLib.QueryRate(BookID: integer): string;
 begin
-  Query.SQL.Text := 'SELECT AVG(Rate) FROM Librate WHERE BookId = ' + IntToStr
-    (BookID);
-  Query.ExecSQL;
-  Query.Active := True;
+  ExecQuery('SELECT AVG(Rate) FROM Librate WHERE BookId = ' + IntToStr(BookID), Query);
   if Query.Fields[0].AsInteger <> 0 then
     Result := IntToStr(Query.Fields[0].AsInteger)
   else
@@ -181,8 +198,8 @@ begin
   Avtor.First;
   while not Avtor.Eof do
   begin
-    A := A + Avtor.FieldByName('LastName').AsWideString + ',' + Avtor.FieldByName('FirstName').AsWideString + ',' +
-      Avtor.FieldByName('MiddleName').AsWideString + ':';
+    A := A + AvtorLastName.AsWideString + ',' + AvtorFirstName.AsWideString + ',' +
+      AvtorMiddleName.AsWideString + ':';
     Avtor.Next;
   end;
   if A = ',,:' then
@@ -192,7 +209,7 @@ begin
   Genre.First;
   while not Lib.Genre.Eof do
   begin
-    G := G + Genre.FieldByName('GenreCode').AsWideString + ':';
+    G := G + GenreGenreCode.AsWideString + ':';
     Genre.Next;
   end;
   if G = ':' then
@@ -200,8 +217,8 @@ begin
 
   if Series.RecordCount > 0 then
   begin
-    S := copy(Series.FieldByName('SeqName').AsWideString, 1, 80);
-    SN := Series.FieldByName('SeqNumb').AsWideString;
+    S := copy(SeriesSeqName.AsWideString, 1, 80);
+    SN := SeriesSeqNumb.AsWideString;
   end
   else
   begin
@@ -209,13 +226,13 @@ begin
     S := '';
   end;
 
-  Del := Book.FieldByName('Deleted').AsWideString;
-  ID := Book.FieldByName('BookID').AsInteger;
+  Del := BookDeleted.AsWideString;
+  ID := BookBookID.AsInteger;
 
   if FN = '' then
   begin
     FN := IntToStr(ID);
-    Ext := Book.FieldByName('FileType').AsWideString;
+    Ext := BookFileType.AsWideString;
   end
   else
   begin
@@ -225,21 +242,21 @@ begin
       Delete(Ext, 1, 1);
   end;
 
-  DecodeDate(Book.FieldByName('Time').AsDateTime, Year, Month, Day);
+  DecodeDate(BookTime.AsDateTime, Year, Month, Day);
   Date := Format('%d-%.2d-%.2d', [Year, Month, Day]);
   Result := A + c + // авторы
     G + c + // жанры
-    trim(Book.FieldByName('Title').AsWideString) + c + // название
+    trim(BookTitle.AsWideString) + c + // название
     S + c + SN + c + // серия, номер
     FN + c + // имя файла
-    Book.FieldByName('FileSize').AsWideString + c + // размер
+    BookFileSize.AsWideString + c + // размер
     IntToStr(ID) + c + // LibID
     Del + c + // Deleted
     Ext + c + // type
     Date + c + // Date
-    Book.FieldByName('Lang').AsWideString + c + // Lang
+    BookLang.AsWideString + c + // Lang
     QueryRate(ID) + c + // N
-    Book.FieldByName('KeyWords').AsWideString + c; // Keywords
+    BookKeyWords.AsWideString + c; // Keywords
   Result := StringReplace(Result, #10, '', [rfReplaceAll]);
   Result := StringReplace(Result, #13, '', [rfReplaceAll]);
 end;
@@ -249,11 +266,9 @@ begin
   ExecQuery(QS + 'FROM libbook B', Book);
 end;
 
-procedure TLib.Update;
-var
-  ID: integer;
+procedure TLib.Update(ID: integer = 0);
 begin
-  ID := Book.FieldByName('BookId').AsInteger;
+  if ID = 0 then ID := BookBookId.AsInteger;
   cdsLibBook.Refresh;
 
   QueryAvtor(ID);

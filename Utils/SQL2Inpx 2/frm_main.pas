@@ -177,7 +177,7 @@ type
     procedure Connect;
 
     function ShortName(const FN: string): string;
-    procedure OK;
+    procedure OK(i:integer = 0; j:integer = 0);
   public
     { Public declarations }
     procedure Commands;
@@ -232,7 +232,7 @@ begin
     Zip.AddFiles(FInpPath + 'extra.inp');
     Zip.AddFiles(FInpPath + 'version.info');
     Zip.CloseArchive;
-    OK;
+    OK(j, 0);
     Log(TimeToStr(Now) + 'Готово');
   finally
     Screen.Cursor := crDefault;
@@ -258,6 +258,7 @@ var
   S: string;
   Result: TStringList;
   EOF: boolean;
+  NotFound: integer;
 begin
   FZipList.Clear;
   if edFolder.Text = '' then
@@ -283,6 +284,7 @@ begin
   try
     for i := 0 to FZipList.Count - 1 do
     begin
+      NotFound := 0;
       FN := ExtractFileName(FZipList[i]);
       Log(TimeToStr(Now) + ' ' + FN + '...');
       Zip.FileName := FZipList[i];
@@ -307,8 +309,11 @@ begin
                     S := Lib.GetBookRecord(ArchItem.FileName, true, false);
               end;
               if S = '' then
+              begin
                 S := 'неизвестный,автор,:other:0' + ShortName
                   (ArchItem.FileName) + 'fb21899-12-30';
+                Inc(NotFound);
+              end;
             end
             else // не фб2
               if not cbFb2Only.Checked then
@@ -338,22 +343,17 @@ begin
             begin
               lblS1.Caption := 'Обработано ' + IntToStr(j);
               Application.ProcessMessages;
-              //Result.SaveToFile(FInpPath + FN + '.inp', TEncoding.UTF8);
             end;
             EOF := Zip.FindNext(ArchItem);
           except
-//            on TDBXError do
-//            begin
-//              Sleep(20000);
-//              Connect;
-//            end;
+
           end;
         until (not EOF);
         FN := ShortName(FN);
       Result.SaveToFile(FInpPath + FN + '.inp', TEncoding.UTF8);
       FFileList.Add(FN + '.inp');
       Bar.Position := round((i + 1) / FZipList.Count * 100);
-      OK;
+      OK(j, NotFound);
     end;
     // FFileList.Add('extra.inp');
     Log(TimeToStr(Now) + ' ' + 'Упаковка ...');
@@ -739,9 +739,12 @@ begin
 end;
 
 procedure TfrmMain.OK;
+var
+  S: string;
 begin
-  mmLog.Lines[mmLog.Lines.Count - 1] := mmLog.Lines[mmLog.Lines.Count - 1]
-    + 'OK';
+  if i > 0 then S := Format('%s [%d,%d]', [mmLog.Lines[mmLog.Lines.Count - 1], i, j])
+    else S := mmLog.Lines[mmLog.Lines.Count - 1] + 'OK';
+  mmLog.Lines[mmLog.Lines.Count - 1] := S;
 end;
 
 procedure TfrmMain.Pack(FN: string; Level: Integer);

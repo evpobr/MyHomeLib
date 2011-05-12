@@ -40,6 +40,7 @@ object Lib: TLib
       'ServerCharSet=utf8')
     VendorLib = 'LIBMYSQL.dll'
     AfterConnect = ConnectionAfterConnect
+    Connected = True
     Left = 56
     Top = 32
   end
@@ -76,6 +77,45 @@ object Lib: TLib
     SQLConnection = Connection
     Left = 56
     Top = 112
+    object BookBookId: TIntegerField
+      FieldName = 'BookId'
+      Required = True
+    end
+    object BookTitle: TWideStringField
+      FieldName = 'Title'
+      Required = True
+      Size = 762
+    end
+    object BookFileSize: TIntegerField
+      FieldName = 'FileSize'
+      Required = True
+    end
+    object BookFileType: TWideStringField
+      FieldName = 'FileType'
+      Required = True
+      FixedChar = True
+      Size = 12
+    end
+    object BookDeleted: TWideStringField
+      FieldName = 'Deleted'
+      Required = True
+      FixedChar = True
+      Size = 3
+    end
+    object BookTime: TSQLTimeStampField
+      FieldName = 'Time'
+    end
+    object BookLang: TWideStringField
+      FieldName = 'Lang'
+      Required = True
+      FixedChar = True
+      Size = 6
+    end
+    object BookKeyWords: TWideStringField
+      FieldName = 'KeyWords'
+      Required = True
+      Size = 765
+    end
   end
   object Genre: TSQLQuery
     MaxBlobSize = -1
@@ -93,6 +133,10 @@ object Lib: TLib
     SQLConnection = Connection
     Left = 56
     Top = 192
+    object GenreGenreCode: TWideStringField
+      FieldName = 'GenreCode'
+      Size = 135
+    end
   end
   object dspGenre: TDataSetProvider
     DataSet = Genre
@@ -128,6 +172,21 @@ object Lib: TLib
     SQLConnection = Connection
     Left = 56
     Top = 264
+    object AvtorLastName: TWideStringField
+      FieldName = 'LastName'
+      Required = True
+      Size = 297
+    end
+    object AvtorFirstName: TWideStringField
+      FieldName = 'FirstName'
+      Required = True
+      Size = 297
+    end
+    object AvtorMiddleName: TWideStringField
+      FieldName = 'MiddleName'
+      Required = True
+      Size = 297
+    end
   end
   object dspAvtor: TDataSetProvider
     DataSet = Avtor
@@ -158,6 +217,14 @@ object Lib: TLib
     SQLConnection = Connection
     Left = 56
     Top = 320
+    object SeriesSeqName: TWideStringField
+      FieldName = 'SeqName'
+      Required = True
+      Size = 762
+    end
+    object SeriesSeqNumb: TIntegerField
+      FieldName = 'SeqNumb'
+    end
   end
   object dspSeries: TDataSetProvider
     DataSet = Series
