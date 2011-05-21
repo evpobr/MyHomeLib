@@ -1,0 +1,60 @@
+package MHLComponents;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  vcl,
+  xmlrtl,
+  vclx,
+  vclimg,
+  IndyCore,
+  IndySystem,
+  IndyProtocols,
+  VirtualTreesD,
+  soaprtl;
+
+contains
+  unit_StaticTip in 'unit_StaticTip.pas',
+  files_list in 'files_list.pas',
+  MHLComponents_Register in 'MHLComponents_Register.pas',
+  unit_AutoCompleteEdit in 'unit_AutoCompleteEdit.pas',
+  unit_MHLHelpers in 'unit_MHLHelpers.pas',
+  fictionbook_21 in 'fictionbook_21.pas',
+  unit_FB2Utils in 'unit_FB2Utils.pas',
+  BookInfoPanel in 'BookInfoPanel.pas',
+  MHLLinkLabel in 'MHLLinkLabel.pas',
+  MHLSplitter in 'MHLSplitter.pas',
+  BookTreeView in 'BookTreeView.pas',
+  MHLSimplePanel in 'MHLSimplePanel.pas',
+  MHLButtonedEdit in 'MHLButtonedEdit.pas',
+  FBDDocument in 'FBDDocument.pas',
+  fbd_xml in 'fbd_xml.pas',
+  FBDAuthorTable in 'FBDAuthorTable.pas' {frmEditAuthorFull},
+  unit_MHLArchiveHelpers in 'unit_MHLArchiveHelpers.pas',
+  unit_sevenzip in 'unit_sevenzip.pas',
+  SevenZipVCL in 'SevenZipVCL.pas';
+
+end.
