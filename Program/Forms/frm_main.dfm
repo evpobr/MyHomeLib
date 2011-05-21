@@ -254,10 +254,6 @@ object frmMain: TfrmMain
     object tsByAuthor: TTabSheet
       HelpContext = 135
       Caption = #1040#1074#1090#1086#1088#1099
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object AuthorsViewSplitter: TMHLSplitter
         Left = 230
         Top = 70
@@ -429,20 +425,22 @@ object frmMain: TfrmMain
             Left = 432
             Top = 0
             Width = 107
-            Height = 13
+            Height = 26
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
             Layout = tlCenter
+            ExplicitHeight = 13
           end
           object lblAuthor: TLabel
             Left = 0
             Top = 0
             Width = 112
-            Height = 13
+            Height = 26
             Align = alLeft
             Caption = #1055#1086#1083#1085#1086#1077' '#1080#1084#1103' '#1072#1074#1090#1086#1088#1072
             Layout = tlCenter
+            ExplicitHeight = 13
           end
         end
         object tvBooksA: TBookTree
@@ -567,10 +565,6 @@ object frmMain: TfrmMain
     object tsBySerie: TTabSheet
       HelpContext = 135
       Caption = #1057#1077#1088#1080#1080
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object SeriesViewSplitter: TMHLSplitter
         Left = 230
         Top = 70
@@ -740,20 +734,22 @@ object frmMain: TfrmMain
             Left = 432
             Top = 0
             Width = 107
-            Height = 13
+            Height = 26
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
             Layout = tlCenter
+            ExplicitHeight = 13
           end
           object lblSeries: TLabel
             Left = 0
             Top = 0
             Width = 90
-            Height = 13
+            Height = 26
             Align = alLeft
             Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1089#1077#1088#1080#1080
             Layout = tlCenter
+            ExplicitHeight = 13
           end
         end
         object tvBooksS: TBookTree
@@ -878,10 +874,6 @@ object frmMain: TfrmMain
     object tsByGenre: TTabSheet
       HelpContext = 135
       Caption = #1046#1072#1085#1088#1099
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GenresViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
@@ -961,20 +953,22 @@ object frmMain: TfrmMain
             Left = 432
             Top = 0
             Width = 107
-            Height = 13
+            Height = 26
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
             Layout = tlCenter
+            ExplicitHeight = 13
           end
           object lblGenreTitle: TLabel
             Left = 0
             Top = 0
             Width = 97
-            Height = 13
+            Height = 26
             Align = alLeft
             Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1078#1072#1085#1088#1072
             Layout = tlCenter
+            ExplicitHeight = 13
           end
         end
         object ipnlGenres: TInfoPanel
@@ -1673,10 +1667,6 @@ object frmMain: TfrmMain
     object tsByGroup: TTabSheet
       HelpContext = 125
       Caption = #1043#1088#1091#1087#1087#1099
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GroupsViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
@@ -1829,20 +1819,22 @@ object frmMain: TfrmMain
             Left = 432
             Top = 0
             Width = 107
-            Height = 13
+            Height = 26
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
             Layout = tlCenter
+            ExplicitHeight = 13
           end
           object lblGroups: TLabel
             Left = 0
             Top = 0
             Width = 102
-            Height = 13
+            Height = 26
             Align = alLeft
             Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1075#1088#1091#1087#1087#1099
             Layout = tlCenter
+            ExplicitHeight = 13
           end
         end
         object tvBooksF: TBookTree
@@ -1933,10 +1925,6 @@ object frmMain: TfrmMain
     object tsDownload: TTabSheet
       HelpContext = 108
       Caption = #1057#1087#1080#1089#1086#1082' '#1079#1072#1082#1072#1095#1077#1082
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object tlbrDownloadList: TToolBar
         AlignWithMargins = True
         Left = 3
@@ -2082,7 +2070,7 @@ object frmMain: TfrmMain
             Left = 662
             Top = 3
             Width = 107
-            Height = 13
+            Height = 36
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
@@ -2093,6 +2081,7 @@ object frmMain: TfrmMain
             Font.Style = [fsBold]
             ParentFont = False
             Layout = tlCenter
+            ExplicitHeight = 13
           end
           object pbDownloadProgress: TProgressBar
             Left = 0
@@ -2728,7 +2717,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 280
     Bitmap = {
-      494C01011B000002FC0220002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C01011B000002000320002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -6436,7 +6425,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 232
     Bitmap = {
-      494C010125002700C00210001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010125002700C40210001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000040000000A0000000010020000000000000A0
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -7790,7 +7779,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 360
     Bitmap = {
-      494C01010C003801C00210001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C01010C003801C40210001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -8452,7 +8441,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 320
     Bitmap = {
-      494C010118001A00C00220002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C010118001A00C40220002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12617,7 +12606,7 @@ object frmMain: TfrmMain
     Left = 576
     Top = 264
     Bitmap = {
-      494C01010A000F00B40010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C01010A000F00B80010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000101010F010101170101011A0101
       011A0101011A0101011A0101011A0101011A0101011A0101011A0101011A0101
@@ -13042,5 +13031,22 @@ object frmMain: TfrmMain
     OnTimer = tmrCheckUpdatesTimer
     Left = 424
     Top = 360
+  end
+  object ZipForge1: TZipForge
+    ExtractCorruptedFiles = False
+    CompressionLevel = clMax
+    CompressionMode = 9
+    CurrentVersion = '5.05 '
+    SpanningMode = smNone
+    SpanningOptions.AdvancedNaming = False
+    SpanningOptions.VolumeSize = vsAutoDetect
+    Options.FlushBuffers = True
+    Options.OEMFileNames = True
+    InMemory = False
+    Zip64Mode = zmAlways
+    UnicodeFilenames = True
+    EncryptionMethod = caPkzipClassic
+    Left = 480
+    Top = 536
   end
 end

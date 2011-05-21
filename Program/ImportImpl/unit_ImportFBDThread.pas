@@ -67,7 +67,7 @@ end;
 procedure TImportFBDThread.SortFiles(var R: TBookRecord);
 var
   NewFileName, NewFolder, Ext: string;
-  archiver: IArchiver;
+  archiver: TMHLZip;
 begin
   NewFolder := GetNewFolder(Settings.FBDFolderTemplate, R);
 
@@ -83,8 +83,8 @@ begin
     R.FileName := NewFileName + ZIP_EXTENSION;
 
     try
-      archiver := TArchiver.Create(FCollectionRoot + NewFolder + NewFileName + ZIP_EXTENSION);
-      archiver.ArchiveRenameAll(NewFileName);
+      archiver := TMHLZip.Create(FCollectionRoot + NewFolder + NewFileName + ZIP_EXTENSION);
+      archiver.RenameFile(FCollectionRoot + NewFolder + R.FileName, NewFileName);
     except
       // ничего не делаем
     end;
@@ -97,7 +97,7 @@ var
   j: Integer;
   R: TBookRecord;
   archiveFileName, Ext: string;
-  archiver: IArchiver;
+  archiver: TMHLZip;
   BookFileName, FBDFileName: string;
   book: IXMLFictionBook;
   FS: TMemoryStream;
@@ -124,15 +124,15 @@ begin
       try
         j := 0;
         R.Clear;
-        archiver := TArchiver.Create(archiveFileName);
-        idxFile := archiver.GetNextFileIdx;
+        archiver := TMHLZip.Create(archiveFileName);
+        idxFile := 0;
         if (idxFile >= 0) then
         repeat
-          fileName := archiver.GetFileName(idxFile);
+          fileName := archiver.GetFileNameById(idxFile);
           Ext := ExtractFileExt(fileName);
           if Ext = FBD_EXTENSION then
           begin
-            FS := archiver.UnarchiveToStream(idxFile);
+            archiver.ExtractToStream(idxFile, FS);
             try
               R.Folder := ExtractRelativePath(FCollectionRoot, ExtractFilePath(FFiles[i]));
               R.FileName := ExtractFilename(FFiles[i]);
@@ -161,11 +161,11 @@ begin
             R.InsideNo := j;
             R.FileExt := Ext;
             BookFileName := TPath.GetFileNameWithoutExtension(fileName);
-            R.Size := archiver.GetFileSize(idxFile);
+//            R.Size := archiver.GetFileSize(idxFile);
           end;
           Inc(j);
 
-          idxFile := archiver.GetNextFileIdx(idxFile + 1);
+          idxFile := idxFile + 1;
         until (idxFile < 0);
 
         if Settings.EnableSort then

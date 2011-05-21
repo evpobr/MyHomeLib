@@ -77,8 +77,8 @@ resourcestring
 function TframeNCWNameAndLocation.GetCollectionDataFromINPX: boolean;
 var
   header: TINPXHeader;
-  idxFile: Integer;
-  archiver: IArchiver;
+  s: string;
+  archiver: TMHLZip;
 begin
   Result := False;
   Assert(FPParams^.INPXFile <> '');
@@ -87,10 +87,12 @@ begin
     Exit;
 
   try
-    archiver := TArchiver.Create(FPParams^.INPXFile, afZip);
-    idxFile := archiver.GetIdxByFileName(COLLECTIONINFO_FILENAME);
-    if idxFile >= 0 then
-      header.ParseString(archiver.UnarchiveToString(idxFile))
+    archiver := TMHLZip.Create(FPParams^.INPXFile);
+    if archiver.Find(COLLECTIONINFO_FILENAME) then
+    begin
+      archiver.ExtractToString(COLLECTIONINFO_FILENAME, s);
+      header.ParseString(s);
+    end
     else
       raise Exception.Create(rstrInvalidFormat);
 

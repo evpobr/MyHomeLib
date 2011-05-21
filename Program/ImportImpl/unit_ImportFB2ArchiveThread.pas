@@ -48,7 +48,8 @@ uses
   unit_WorkerThread,
   unit_Consts,
   dm_user,
-  fictionbook_21;
+  fictionbook_21,
+  ZipForge;
 
 resourcestring
   rstrErrorUnpackingWithCode = 'Ошибка распаковки архива %s, Код: %d';
@@ -82,7 +83,7 @@ procedure TImportFB2ArchiveThread.SortFiles(var R: TBookRecord);
 var
   FileName, NewFileName, NewFolder: string;
   archiveFileName: string;
-  archiver: IArchiver;
+  archiver: TMHLZip;
 begin
   FileName := ExtractFileName(R.Folder);
 
@@ -101,14 +102,17 @@ begin
     StrReplace(FileName, NewFileName + FFb2ArchiveExt, NewFolder);
     RenameFile(FCollectionRoot + R.Folder, FCollectionRoot + NewFolder);
     R.Folder :=  NewFolder;
-
     try
-      archiveFileName := TPath.Combine(FCollectionRoot, NewFolder);
-      archiver := TArchiver.Create(archiveFileName);
-      archiver.ArchiveRenameAll(NewFileName); // assuming there are only fb2 files there
-      R.FileName := NewFileName;
-    except
-      // ничего не делаем
+      try
+        archiveFileName := TPath.Combine(FCollectionRoot, NewFolder);
+        archiver := TMHLZip.Create(archiveFileName);
+        archiver.RenameFile( FCollectionRoot +  NewFolder + FileName, NewFileName); // assuming there are only fb2 files there
+        R.FileName := NewFileName;
+      except
+        // ничего не делаем
+      end;
+    finally
+      FreeAndNil(archiver);
     end;
   end;
 end;
@@ -123,7 +127,7 @@ end;
 
 procedure TImportFB2ArchiveThread.ProcessFileList;
 var
-  i: Integer;
+  i, j: Integer;
   R: TBookRecord;
   AFileName:    string;
   book: IXMLFictionBook;
@@ -132,10 +136,9 @@ var
   DefectCount:Integer;
 
   NoErrors: boolean;
-  idxFile: Integer;
   numFb2FilesInZip: Integer;
   archiveFileName: string;
-  archiver: IArchiver;
+  Zip: TMHLZip;
 begin
   AddCount := 0;
   DefectCount := 0;
@@ -149,24 +152,22 @@ begin
 
       NoErrors := True;
       try
-        archiveFileName := FFiles[i];
-        archiver := TArchiver.Create(archiveFileName);
-        numFb2FilesInZip := 0;
-        idxFile := archiver.GetNextFileIdx;
-        while (idxFile >= 0) do
-        begin
+        Zip := TMHLZip.Create(FFiles[i]);
+        j := 0;
+        if Zip.Find('*.*') then
+        repeat
           R.Clear;
-          AFileName := archiver.GetFileName(idxFile);;
+          AFileName := Zip.Last.FileName;
           R.FileExt := ExtractFileExt(AFileName);
           if R.FileExt = FB2_EXTENSION then
           begin
             Inc(numFb2FilesInZip);
             R.FileName := TPath.GetFileNameWithoutExtension(CleanFileName(AFileName));
-            R.Size := archiver.GetFileSize(idxFile);
-            R.InsideNo := idxFile;
+            R.Size := Zip.Last.UncompressedSize;
+            R.InsideNo := j;
             R.Date := Now;
             Include(R.BookProps, bpIsLocal);
-            FS := archiver.UnarchiveToStream(idxFile);
+            Zip.ExtractToStream(AFileName,FS);
             try
               try
                 book := LoadFictionBook(FS);
@@ -190,9 +191,9 @@ begin
               FreeAndNil(FS);
             end;
           end;
-          idxFile := archiver.GetNextFileIdx(idxFile + 1);
-        end; // while
-
+          inc(j);
+        until not Zip.FindNext;
+        Zip.CloseArchive;
         if Settings.EnableSort and NoErrors and (numFb2FilesInZip = 1) then
         begin
           R.Folder := archiveFileName;
@@ -210,6 +211,7 @@ begin
 
     Teletype(Format(rstrAddedBooks, [AddCount, DefectCount]));
   finally
+    FreeAndNil(Zip);
     FProgressEngine.EndOperation;
   end;
 end;

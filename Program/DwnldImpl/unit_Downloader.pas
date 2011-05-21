@@ -169,7 +169,7 @@ var
   Path: string;
   Str: TStringList;
   ext: string;
-  archiver: IArchiver;
+  archiver: TMHLZip;
 begin
   Path := ExtractFileDir(FFile);
   CreateFolders('', Path);
@@ -191,10 +191,11 @@ begin
         if IsArchiveExt(FFile) then
         begin
           // Test archive integrity only if it's an archive
-          archiver := TArchiver.Create(FFile);
-          Result := archiver.Test;
+          archiver := TMHLZip.Create(FFile);
+          archiver.TestFiles('*.*');
           if not Result then
             DeleteFile(PChar(FFile));
+          FreeAndNil(archiver);
         end;
       end;
     end;

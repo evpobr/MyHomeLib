@@ -54,6 +54,7 @@ contains
   fbd_xml in 'fbd_xml.pas',
   FBDAuthorTable in 'FBDAuthorTable.pas' {frmEditAuthorFull},
   unit_MHLArchiveHelpers in 'unit_MHLArchiveHelpers.pas',
-  unit_sevenzip in 'unit_sevenzip.pas';
+  unit_sevenzip in 'unit_sevenzip.pas',
+  SevenZipVCL in 'SevenZipVCL.pas';
 
 end.

@@ -70,7 +70,7 @@ uses
   SearchPresets,
   MHLButtonedEdit,
   UserData,
-  unit_treeController, unit_ColorTabs;
+  unit_treeController, unit_ColorTabs, ZipForge;
 
 type
   TfrmMain = class(TForm)
@@ -488,6 +488,7 @@ type
     edFKeyWords: TMHLButtonedEdit;
     Label3: TLabel;
     tmrCheckUpdates: TTimer;
+    ZipForge1: TZipForge;
 
     //
     // События формы

@@ -538,7 +538,7 @@ end;
 
 procedure TfrmAddnonfb2.btnNextClick(Sender: TObject);
 var
-  archiver: IArchiver;
+  archiver: TMHLZip;
 begin
   // Конвертация в FBD и добавление в базу
   Screen.Cursor := crHourGlass;
@@ -551,7 +551,7 @@ begin
 
       // после создания архива нужно узнать реальный номер внутри
       FBookRecord.CollectionRoot := FRootPath;
-      archiver := TArchiver.Create(FBookRecord.GetBookFileName);
+      archiver := TMHLZip.Create(FBookRecord.GetBookFileName);
       FBookRecord.InsideNo := archiver.GetIdxByExt(FBookRecord.FileExt);;
 
       // заносим данные в БД

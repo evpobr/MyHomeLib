@@ -1046,7 +1046,7 @@ function TBookRecord.GetBookStream: TStream;
 var
   BookFormat: TBookFormat;
   BookFileName: string;
-  archiver: IArchiver;
+  archiver: TMHLZip;
   idxFile: Integer;
 begin
   Result := nil;
@@ -1056,10 +1056,15 @@ begin
   if BookFormat in [bfFb2Archive, bfFbd] then
   begin
     try
-      archiver := TArchiver.Create(TPath.Combine(Settings.ReadPath, BookFileName));
-      Result := archiver.UnarchiveToStream(InsideNo);
-    except
-      raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName]);
+      try
+        archiver := TMHLZip.Create(TPath.Combine(Settings.ReadPath, BookFileName));
+        result := TMemoryStream.Create;
+        archiver.ExtractToStream(InsideNo, result);
+      except
+        raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName]);
+      end;
+    finally
+      FreeAndNil(archiver);
     end;
   end
   else // bfFb2, bfRaw
@@ -1090,7 +1095,7 @@ var
   bookFileName: string;
   archiveFileName: string;
   idxFile: Integer;
-  archiver: IArchiver;
+  archiver: TMHLZip;
 begin
   case GetBookFormat of
     bfFb2, bfFb2Archive:
@@ -1100,20 +1105,24 @@ begin
 
     bfFbd:
       begin
-        bookFileName := GetBookFileName;
-        archiveFileName := TPath.Combine(Settings.ReadPath, bookFileName);
-        archiver := TArchiver.Create(archiveFileName);
-
         try
-          idxFile := archiver.GetIdxByExt(FBD_EXTENSION);
-        except
-          raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName])
+          bookFileName := GetBookFileName;
+          archiveFileName := TPath.Combine(Settings.ReadPath, bookFileName);
+          archiver := TMHLZip.Create(archiveFileName);
+
+          try
+            idxFile := archiver.GetIdxByExt(FBD_EXTENSION);
+          except
+            raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName])
+          end;
+
+          if idxFile < 0 then // not a valid FBD structure
+            raise EBookNotFound.CreateFmt(rstrBookNotFoundInArchive, [BookFileName]);
+
+           archiver.ExtractToStream(idxFile, Result);
+        finally
+          FreeAndNil(archiver);
         end;
-
-        if idxFile < 0 then // not a valid FBD structure
-          raise EBookNotFound.CreateFmt(rstrBookNotFoundInArchive, [BookFileName]);
-
-        Result := archiver.UnarchiveToStream(idxFile);
       end;
 
     bfRaw:
