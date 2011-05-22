@@ -912,7 +912,7 @@ type
     procedure UpdatePositions;
 
     function ShowNCWizard: Boolean;
-    procedure LoadLastCollection;
+    function LoadLastCollection: boolean;
     procedure SetShowStatusProgress(const Value: Boolean);
     procedure SetStatusProgress(const Value: Integer);
     function GetShowStatusProgress: Boolean;
@@ -1483,7 +1483,7 @@ begin
     //
     // Если коллекций нет - запустим мастера создания коллекции.
     //
-    if not FSystemData.HasCollections then
+    if (not LoadLastCollection)or (not FSystemData.HasCollections) then
     begin
       frmMain.Caption := 'MyHomeLib';
       Screen.Cursor := SavedCursor;
@@ -1493,9 +1493,7 @@ begin
 
       DeleteFile(Settings.WorkPath + CHECK_FILE);
       Exit;
-    end
-    else   // в противном случае активируем последнюю
-      LoadLastCollection;
+    end;
 
     FCollection := FSystemData.GetCollection(Settings.ActiveCollection);
 
@@ -2409,10 +2407,11 @@ begin
     StatusBar.Width - (StatusBar.Panels[1].Width + StatusBar.Panels[2].Width);
 end;
 
-procedure TfrmMain.LoadLastCollection;
+function TfrmMain.LoadLastCollection: boolean;
 var
   CollectionID: Integer;
 begin
+  Result := False;
   if FSystemData.HasCollections then
   begin
     CollectionID := FSystemData.FindFirstExistingCollectionID(Settings.ActiveCollection);
@@ -2420,18 +2419,14 @@ begin
     begin
       // if was unable to find CollectionID, do not know DBFileName either:
       MHLShowError(rstrCollectionFileNotFound);
-      //
-      // Мне кажется, это очень жестко по отношению к пользователю.
-      // Может лучше вернуть ошибку и запустить мастера создания коллекции?
-      //
-      Application.Terminate;
+      Exit;
     end;
-
     //
     // небольшой хак. Будет правильнее передавать ID коллекции в InitCollection
     //
     Settings.ActiveCollection := CollectionID;
-   end;
+    Result := True;
+  end;
 end;
 
 // ----------------------------------------------------------------------------
