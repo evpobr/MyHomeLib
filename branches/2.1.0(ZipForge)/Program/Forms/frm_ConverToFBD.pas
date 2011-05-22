@@ -213,9 +213,9 @@ begin
   //
   Folder := FBookRecord.GetBookContainer;
 
-  if
-    FEditorMode and
-    FBD.Load(Folder, TPath.GetFileNameWithoutExtension(FBookRecord.FileName), FBookRecord.FileExt)
+  if FEditorMode
+     and
+     FBD.Load(Folder, TPath.GetFileNameWithoutExtension(FBookRecord.FileName), FBookRecord.FileExt)
   then
   begin
     alFBDAuthors.Items := FBD.GetAuthors(atlFBD);

@@ -104,7 +104,6 @@ var
   AddCount:Integer;
   DefectCount:Integer;
   IsValid : boolean;
-  idxFile: Integer;
   fileName: string;
 
 begin
@@ -117,6 +116,7 @@ begin
     begin
       if Canceled then
         Break;
+
       IsValid := False;
       archiveFileName := FFiles[i];
 
@@ -125,14 +125,14 @@ begin
         j := 0;
         R.Clear;
         archiver := TMHLZip.Create(archiveFileName);
-        idxFile := 0;
-        if (idxFile >= 0) then
+        if archiver.Find('*.*') then
         repeat
-          fileName := archiver.GetFileNameById(idxFile);
+          fileName := archiver.LastName;
           Ext := ExtractFileExt(fileName);
           if Ext = FBD_EXTENSION then
           begin
-            archiver.ExtractToStream(idxFile, FS);
+            FS := TMemoryStream.Create;
+            archiver.ExtractToStream(archiver.LastName, FS);
             try
               R.Folder := ExtractRelativePath(FCollectionRoot, ExtractFilePath(FFiles[i]));
               R.FileName := ExtractFilename(FFiles[i]);
@@ -164,9 +164,7 @@ begin
 //            R.Size := archiver.GetFileSize(idxFile);
           end;
           Inc(j);
-
-          idxFile := idxFile + 1;
-        until (idxFile < 0);
+        until not archiver.FindNext;
 
         if Settings.EnableSort then
           SortFiles(R);

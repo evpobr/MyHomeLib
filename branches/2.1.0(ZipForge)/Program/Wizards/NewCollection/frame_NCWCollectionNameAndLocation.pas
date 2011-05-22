@@ -87,45 +87,46 @@ begin
     Exit;
 
   try
-    archiver := TMHLZip.Create(FPParams^.INPXFile);
-    if archiver.Find(COLLECTIONINFO_FILENAME) then
-    begin
-      archiver.ExtractToString(COLLECTIONINFO_FILENAME, s);
-      header.ParseString(s);
-    end
-    else
-      raise Exception.Create(rstrInvalidFormat);
+    try
+      archiver := TMHLZip.Create(FPParams^.INPXFile);
+      if archiver.Find(COLLECTIONINFO_FILENAME) then
+        header.ParseString(archiver.ExtractToString(COLLECTIONINFO_FILENAME))
+      else
+        raise Exception.Create(rstrInvalidFormat);
 
-    edCollectionName.Text := header.Name;
-    edCollectionFile.Text := header.FileName;
-    FPParams^.CollectionCode := header.ContentType;
+      edCollectionName.Text := header.Name;
+      edCollectionFile.Text := header.FileName;
+      FPParams^.CollectionCode := header.ContentType;
 
-    case FPParams^.CollectionCode of
-      CT_PRIVATE_FB:
-        FPParams^.CollectionType := ltUserFB;
+      case FPParams^.CollectionCode of
+        CT_PRIVATE_FB:
+          FPParams^.CollectionType := ltUserFB;
 
-      CT_PRIVATE_NONFB:
-        FPParams^.CollectionType := ltUserAny;
+        CT_PRIVATE_NONFB:
+          FPParams^.CollectionType := ltUserAny;
 
-      CT_EXTERNAL_LOCAL_FB:
-        FPParams^.CollectionType := ltExternalLocalFB;
+        CT_EXTERNAL_LOCAL_FB:
+          FPParams^.CollectionType := ltExternalLocalFB;
 
-      CT_EXTERNAL_LOCAL_NONFB:
-        FPParams^.CollectionType := ltExternalLocalAny;
+        CT_EXTERNAL_LOCAL_NONFB:
+          FPParams^.CollectionType := ltExternalLocalAny;
 
-      CT_EXTERNAL_ONLINE_FB:
-        FPParams^.CollectionType := ltExternalOnlineFB;
+        CT_EXTERNAL_ONLINE_FB:
+          FPParams^.CollectionType := ltExternalOnlineFB;
 
-      CT_EXTERNAL_ONLINE_NONFB:
-        FPParams^.CollectionType := ltExternalOnlineAny;
+        CT_EXTERNAL_ONLINE_NONFB:
+          FPParams^.CollectionType := ltExternalOnlineAny;
+      end;
+      Result := True;
+    except
+      on E: Exception do
+      begin
+        MessageDlg(E.Message, mtError, [mbOK], 0);
+        Exit;
+      end;
     end;
-    Result := True;
-  except
-    on E: Exception do
-    begin
-      MessageDlg(E.Message, mtError, [mbOK], 0);
-      Exit;
-    end;
+  finally
+    FreeAndNil(archiver);
   end;
 end;
 

@@ -157,13 +157,13 @@ begin
         if Zip.Find('*.*') then
         repeat
           R.Clear;
-          AFileName := Zip.Last.FileName;
+          AFileName := Zip.LastName;
           R.FileExt := ExtractFileExt(AFileName);
           if R.FileExt = FB2_EXTENSION then
           begin
             Inc(numFb2FilesInZip);
             R.FileName := TPath.GetFileNameWithoutExtension(CleanFileName(AFileName));
-            R.Size := Zip.Last.UncompressedSize;
+            R.Size := Zip.LastSize;
             R.InsideNo := j;
             R.Date := Now;
             Include(R.BookProps, bpIsLocal);
