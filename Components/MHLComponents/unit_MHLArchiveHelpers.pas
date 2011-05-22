@@ -30,9 +30,21 @@ type
   TMHLZip = class(TZipForge)
     private
       FLast: TZFArchiveItem;
+      FResult: Boolean;
+
+      procedure OnError(Sender:    TObject;
+                        FileName:    String;
+                        Operation:    TZFProcessOperation;
+                        NativeError:   Integer;
+                        ErrorCode:    Integer;
+                        ErrorMessage:   String;
+                        var Action:   TZFAction
+                        );
 
       function GetLastName: string;
       function GetLastSize: integer;
+
+
     public
       constructor Create(AFileName: string);
       function GetFileNameById(No: integer): string;
@@ -42,6 +54,7 @@ type
       function Find(No: integer): boolean; overload;
       function FindNext: boolean; overload;
       function ExtractToString(FileName: string):string;
+      function Test: Boolean;
 
       property LastName: string read GetLastName;
       property LastSize: integer read GetLastSize;
@@ -173,6 +186,18 @@ begin
   Result := Flast.UncompressedSize;
 end;
 
+procedure TMHLZip.OnError;
+begin
+  FResult := True;
+end;
+
+function TMHLZip.Test: Boolean;
+begin
+  FResult := False;
+  TestFiles('*.*');
+  Result := Result;
+end;
+
 constructor TMHLZip.Create(AFileName: string);
 begin
   Inherited Create(Nil);
@@ -187,6 +212,7 @@ begin
 
   FileName := AFileName;
   OpenArchive;
+  OnProcessFileFailure := OnError;
   FindFirst('*.*', FLast, faAnyFile - faDirectory);
 end;
 
