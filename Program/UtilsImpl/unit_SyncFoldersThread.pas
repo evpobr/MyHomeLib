@@ -72,9 +72,13 @@ begin
      FList.Add(FFiles.LastDir + F.Name + ' ' + IntToStr(F.Size))
   else
   begin
-    Archiver := TMHLZip.Create(FFiles.LastDir + F.Name);
-    Size := Archiver.LastSize;
-    FList.Add(FFiles.LastDir + F.Name + ' ' + IntToStr(Size))
+    try
+      Archiver := TMHLZip.Create(FFiles.LastDir + F.Name);
+      Size := Archiver.LastSize;
+      FList.Add(FFiles.LastDir + F.Name + ' ' + IntToStr(Size));
+    finally
+      FreeAndNil(archiver);
+    end;
   end;
 end;
 
