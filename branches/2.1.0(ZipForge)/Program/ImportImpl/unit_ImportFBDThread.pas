@@ -114,76 +114,76 @@ begin
   try
     for i := 0 to FFiles.Count - 1 do
     begin
-      if Canceled then
-        Break;
+      if Canceled then Break;
 
       IsValid := False;
       archiveFileName := FFiles[i];
 
       Assert(ExtractFileExt(archiveFileName) = ZIP_EXTENSION);
       try
-        j := 0;
-        R.Clear;
-        archiver := TMHLZip.Create(archiveFileName);
-        if archiver.Find('*.*') then
-        repeat
-          fileName := archiver.LastName;
-          Ext := ExtractFileExt(fileName);
-          if Ext = FBD_EXTENSION then
-          begin
-            FS := TMemoryStream.Create;
-            archiver.ExtractToStream(archiver.LastName, FS);
-            try
-              R.Folder := ExtractRelativePath(FCollectionRoot, ExtractFilePath(FFiles[i]));
-              R.FileName := ExtractFilename(FFiles[i]);
-              R.Date := Now;
-              Include(R.BookProps, bpIsLocal);
-
+        try
+          j := 0;
+          R.Clear;
+          archiver := TMHLZip.Create(archiveFileName);
+          if archiver.Find('*.*') then
+          repeat
+            fileName := archiver.LastName;
+            Ext := ExtractFileExt(fileName);
+            if Ext = FBD_EXTENSION then
+            begin
+              FS := TMemoryStream.Create;
               try
-                book := LoadFictionBook(FS);
-                GetBookInfo(book, R);
-                IsValid := True;
-                FBDFileName := TPath.GetFileNameWithoutExtension(fileName);
-              except
-                on e: Exception do
-                begin
-                  Teletype(Format(rstrErrorFB2Structure, [archiveFileName, R.FileName]), tsError);
-                  //Teletype(e.Message, tsError);
-                  Inc(DefectCount);
-                end;
-              end; //try
-            finally
-              FreeAndNil(FS);
+                try
+                  archiver.ExtractToStream(archiver.LastName, FS);
+                  R.Folder := ExtractRelativePath(FCollectionRoot, ExtractFilePath(FFiles[i]));
+                  R.FileName := ExtractFilename(FFiles[i]);
+                  R.Date := Now;
+                  Include(R.BookProps, bpIsLocal);
+                  try
+                    book := LoadFictionBook(FS);
+                    GetBookInfo(book, R);
+                    IsValid := True;
+                    FBDFileName := TPath.GetFileNameWithoutExtension(fileName);
+                  except
+                    on e: Exception do
+                        Teletype(Format(rstrErrorFB2Structure, [archiveFileName, R.FileName]), tsError);
+                  end;
+                except
+                    //Teletype(e.Message, tsError);
+                end; //try
+              finally
+                FreeAndNil(FS);
+              end;
+            end
+            else
+            begin
+              R.InsideNo := j;
+              R.FileExt := Ext;
+              BookFileName := TPath.GetFileNameWithoutExtension(fileName);
+              R.Size := archiver.LastSize;
             end;
-          end
+            Inc(j);
+          until not archiver.FindNext;
+
+          if Settings.EnableSort then
+            SortFiles(R);
+
+          if IsValid and (BookFileName = FBDFileName) and (FCollection.InsertBook(R, True, True)<>0) then
+            Inc(AddCount)
           else
           begin
-            R.InsideNo := j;
-            R.FileExt := Ext;
-            BookFileName := TPath.GetFileNameWithoutExtension(fileName);
-//            R.Size := archiver.GetFileSize(idxFile);
+            Teletype(rstrErrorFBD + archiveFileName, tsError);
+            Inc(DefectCount);
           end;
-          Inc(j);
-        until not archiver.FindNext;
-
-        if Settings.EnableSort then
-          SortFiles(R);
-
-        if IsValid and (BookFileName = FBDFileName) and (FCollection.InsertBook(R, True, True)<>0) then
-          Inc(AddCount)
-        else
-        begin
-          Teletype(rstrErrorFBD + archiveFileName, tsError);
-          Inc(DefectCount);
+        except
+          on e: Exception do
+            Teletype(rstrErrorUnpacking + archiveFileName, tsError);
         end;
-      except
-        on e: Exception do
-          Teletype(rstrErrorUnpacking + archiveFileName, tsError);
+      finally
+        FreeAndNil(archiver);
+        FProgressEngine.AddProgress;
       end;
-
-      FProgressEngine.AddProgress;
     end;
-
     Teletype(Format(rstrBooksAdded, [AddCount, DefectCount]));
   finally
     FProgressEngine.EndOperation;
