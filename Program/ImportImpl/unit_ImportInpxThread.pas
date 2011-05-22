@@ -374,15 +374,11 @@ begin
   SetLength(FFields, 0);
   FUseStoredFolder := False;
 
-
   BookCollection.StartBatchUpdate;
   try
     Zip := TMHLZip.Create(INPXFileName);
-
-
-
     if Zip.Find(STRUCTUREINFO_FILENAME) then
-      Zip.ExtractToString(STRUCTUREINFO_FILENAME, StructureInfo)
+      StructureInfo := Zip.ExtractToString(STRUCTUREINFO_FILENAME)
     else
       StructureInfo := DEFAULTSTRUCTURE;
 
@@ -391,7 +387,7 @@ begin
 
     if Zip.Find('*.inp') then
     repeat
-      CurrentFile:= Zip.Last.FileName;
+      CurrentFile:= Zip.LastName;
       if not IsOnline and (CurrentFile = 'extra.inp') then Continue;
 
       Teletype(Format(rstrProcessingFile, [CurrentFile]), tsInfo);
@@ -400,7 +396,7 @@ begin
       try
         try
           inpStream := TMemoryStream.Create;
-          Zip.ExtractToStream(Zip.Last.FileName, inpStream);
+          Zip.ExtractToStream(Zip.LastName, inpStream);
           inpStream.Seek(0, soBeginning);
           BookList.LoadFromStream(inpStream, TEncoding.UTF8);
         finally
@@ -471,11 +467,9 @@ begin
         if Canceled then
           Break;
 
-   until not Zip.FindNext;
-
+    until not Zip.FindNext;
 
     Teletype(Format(rstrAddedBooks, [filesProcessed]), tsInfo);
-
     FProgressEngine.BeginOperation(-1, rstrUpdatingDB, '');
 
     //
@@ -483,7 +477,7 @@ begin
     //
     if Zip.Find(COLLECTIONINFO_FILENAME) then
     begin
-      Zip.ExtractToString(Zip.Last.FileName, strCollection);
+      strCollection := Zip.ExtractToString(Zip.LastName);
       header.ParseString(strCollection);
       BookCollection.SetProperty(PROP_NOTES, header.Notes);
       BookCollection.SetProperty(PROP_URL, header.URL);
@@ -492,7 +486,7 @@ begin
 
     if Zip.Find(VERINFO_FILENAME)  then
     begin
-      Zip.ExtractToString(Zip.Last.FileName, strVersion);
+      strVersion := Zip.ExtractToString(Zip.LastName);
       strVersion := Trim(strVersion);
       BookCollection.SetProperty(PROP_DATAVERSION, StrToIntDef(strVersion, UNVERSIONED_COLLECTION));
     end;

@@ -1109,17 +1109,9 @@ begin
           bookFileName := GetBookFileName;
           archiveFileName := TPath.Combine(Settings.ReadPath, bookFileName);
           archiver := TMHLZip.Create(archiveFileName);
-
-          try
-            idxFile := archiver.GetIdxByExt(FBD_EXTENSION);
-          except
-            raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName])
-          end;
-
-          if idxFile < 0 then // not a valid FBD structure
-            raise EBookNotFound.CreateFmt(rstrBookNotFoundInArchive, [BookFileName]);
-
-           archiver.ExtractToStream(idxFile, Result);
+          Result := TMemoryStream.Create;
+          idxFile := archiver.GetIdxByExt(FBD_EXTENSION);
+          archiver.ExtractToStream(archiver.LastName, Result);
         finally
           FreeAndNil(archiver);
         end;
