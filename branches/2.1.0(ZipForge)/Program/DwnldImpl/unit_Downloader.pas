@@ -192,7 +192,7 @@ begin
         begin
           // Test archive integrity only if it's an archive
           archiver := TMHLZip.Create(FFile);
-          archiver.TestFiles('*.*');
+          Result := archiver.Test;
           if not Result then
             DeleteFile(PChar(FFile));
           FreeAndNil(archiver);
@@ -280,6 +280,7 @@ var
   Commands: array of TCommand;
   i: Integer;
 begin
+  Result := True;
   ConstParams := TStringList.Create;
   try
     //

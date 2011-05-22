@@ -535,7 +535,7 @@ begin
     if EditorMode then
     begin
       archiver.AddFiles(fbdFileName);
-      archiver.TestFiles;
+      Result := archiver.Test;
 
       if Result then
         SysUtils.DeleteFile(fbdFileName);
@@ -544,7 +544,7 @@ begin
     begin
       archiver.AddFiles(fbdFileName);
       archiver.AddFiles(bookFileName);
-      archiver.TestFiles;
+      Result := archiver.Test;
 
       if Result then
       begin
