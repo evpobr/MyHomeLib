@@ -137,7 +137,6 @@ var
 
   NoErrors: boolean;
   numFb2FilesInZip: Integer;
-  archiveFileName: string;
   Zip: TMHLZip;
 begin
   AddCount := 0;
@@ -152,66 +151,70 @@ begin
 
       NoErrors := True;
       try
-        Zip := TMHLZip.Create(FFiles[i]);
-        j := 0;
-        if Zip.Find('*.*') then
-        repeat
-          R.Clear;
-          AFileName := Zip.LastName;
-          R.FileExt := ExtractFileExt(AFileName);
-          if R.FileExt = FB2_EXTENSION then
-          begin
-            Inc(numFb2FilesInZip);
-            R.FileName := TPath.GetFileNameWithoutExtension(CleanFileName(AFileName));
-            R.Size := Zip.LastSize;
-            R.InsideNo := j;
-            R.Date := Now;
-            Include(R.BookProps, bpIsLocal);
-            Zip.ExtractToStream(AFileName,FS);
-            try
+        try
+          Zip := TMHLZip.Create(FFiles[i]);
+          j := 0;
+          if Zip.Find('*.*') then
+          repeat
+            R.Clear;
+            AFileName := Zip.LastName;
+            R.FileExt := ExtractFileExt(AFileName);
+            if R.FileExt = FB2_EXTENSION then
+            begin
+              Inc(numFb2FilesInZip);
+              R.FileName := TPath.GetFileNameWithoutExtension(CleanFileName(AFileName));
+              R.Size := Zip.LastSize;
+              R.InsideNo := j;
+              R.Date := Now;
+              Include(R.BookProps, bpIsLocal);
+              FS := TMemoryStream.Create;
+              Zip.ExtractToStream(AFileName,FS);
               try
-                book := LoadFictionBook(FS);
-                GetBookInfo(book, R);
-                if not Settings.EnableSort then
-                begin
-                  R.Folder := ExtractRelativePath(FCollectionRoot, archiveFileName);
-                  if FCollection.InsertBook(R, True, True) <> 0 then
-                    Inc(AddCount);
+                try
+                  book := LoadFictionBook(FS);
+                  GetBookInfo(book, R);
+                  if not Settings.EnableSort then
+                  begin
+                    R.Folder := ExtractRelativePath(FCollectionRoot, FFiles[i]);
+                    if FCollection.InsertBook(R, True, True) <> 0 then
+                      Inc(AddCount);
+                  end;
+                except
+                  on e: Exception do
+                  begin
+                    NoErrors := False;
+                    Teletype(Format(rstrErrorFB2Structure, [FFiles[i], R.FileName + FB2_EXTENSION]), tsError);
+                    //Teletype(e.Message, tsError);
+                    Inc(DefectCount);
+                  end;
                 end;
-              except
-                on e: Exception do
-                begin
-                  NoErrors := False;
-                  Teletype(Format(rstrErrorFB2Structure, [archiveFileName, R.FileName + FB2_EXTENSION]), tsError);
-                  //Teletype(e.Message, tsError);
-                  Inc(DefectCount);
-                end;
+              finally
+                FreeAndNil(FS);
               end;
-            finally
-              FreeAndNil(FS);
             end;
+            inc(j);
+          until not Zip.FindNext;
+          Zip.CloseArchive;
+          if Settings.EnableSort and NoErrors and (numFb2FilesInZip = 1) then
+          begin
+            R.Folder := FFiles[i];
+            SortFiles(R);
+            if FCollection.InsertBook(R, True, True) <> 0 then
+              Inc(AddCount);
           end;
-          inc(j);
-        until not Zip.FindNext;
-        Zip.CloseArchive;
-        if Settings.EnableSort and NoErrors and (numFb2FilesInZip = 1) then
-        begin
-          R.Folder := archiveFileName;
-          SortFiles(R);
-          if FCollection.InsertBook(R, True, True) <> 0 then
-            Inc(AddCount);
+        except
+          on e: Exception do
+             Teletype(rstrErrorUnpacking + FFiles[i], tsError);
         end;
-      except
-        on e: Exception do
-           Teletype(rstrErrorUnpacking + archiveFileName, tsError);
-      end;
 
-      FProgressEngine.AddProgress;
+        FProgressEngine.AddProgress;
+      finally
+        FreeAndNil(Zip);
+      end;
     end;
 
     Teletype(Format(rstrAddedBooks, [AddCount, DefectCount]));
   finally
-    FreeAndNil(Zip);
     FProgressEngine.EndOperation;
   end;
 end;
