@@ -1472,6 +1472,29 @@ var
   Acount, Scount, GCount: integer;
   Button: TToolButton;
   FSA, FSS: string;
+
+  procedure FindLastBook(ID: integer; Tree: TBookTree);
+  var Node: PVirtualNode;
+      Data: PBookRecord;
+  begin
+    if ID = 0 then Exit;
+    
+    Node := Tree.GetFirst;
+    while Node <> Nil do
+    begin
+      Data := Tree.GetNodeData(Node);
+      if Data.BookKey.BookID = ID then
+      begin
+        Tree.Selected[Node] := True;
+        Tree.FocusedNode := Node;
+        Break;
+      end;
+      Node := Tree.GetNext(Node);
+    end;
+  end;
+
+
+
 begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -1552,7 +1575,6 @@ begin
       if FSS = '' then FSS := 'À';
     end;
 
-
     Button := GetFilterButton(FAuthorBars, Copy(FSA, 1, 1));
     InternalSetAuthorFilter(Button);
     LocateAuthor(FSA);
@@ -1565,16 +1587,16 @@ begin
     FillGroupsList(tvGroups, FSystemData.GetGroupIterator, FLastGroupID);
     CreateGroupsMenu;
 
-
     if ActiveView = AuthorsView then
       miGoToAuthor.Visible := False;
 
     UpdateActions;
     UpdateAllEditActions;
 
+    FindLastBook(Settings.LastBookInAuthors, tvBooksA);
+    FindLastBook(Settings.LastBookInSeries, tvBooksS);
+
   finally
-
-
     Screen.Cursor := SavedCursor;
   end;
 end;
@@ -2681,6 +2703,9 @@ begin
 
   Settings.LastAuthor := FLastAuthorStr;
   Settings.LastSeries := FLastSeriesStr;
+
+  Settings.LastBookInAuthors := FLastAuthorBookID.BookID;
+  Settings.LastBookInSeries := FLastSeriesBookID.BookID;
 end;
 
 procedure TfrmMain.tvBooksTreeHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
@@ -5359,6 +5384,7 @@ begin
     begin
       tvAuthors.Selected[Node] := True;
       tvAuthors.FocusedNode := Node;
+      tvAuthorsChange(tvAuthors, Node);
       Exit;
     end;
     Node := tvAuthors.GetNext(Node);
@@ -5381,6 +5407,7 @@ begin
     begin
       tvSeries.Selected[Node] := True;
       tvSeries.FocusedNode := Node;
+      tvSeriesChange(tvSeries, Node);
       Exit;
     end;
     Node := tvSeries.GetNext(Node);
