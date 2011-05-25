@@ -206,7 +206,7 @@ begin
   CompressionMode := 9;
   SpanningMode := smNone;
   InMemory := False;
-  Zip64Mode := zmAlways;
+  Zip64Mode := zmAuto;
   UnicodeFilenames := True;
   EncryptionMethod := caPkzipClassic;
 
