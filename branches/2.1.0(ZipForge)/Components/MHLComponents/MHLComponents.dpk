@@ -34,7 +34,8 @@ requires
   IndySystem,
   IndyProtocols,
   VirtualTreesD,
-  soaprtl;
+  soaprtl,
+  vclZipForged15;
 
 contains
   unit_StaticTip in 'unit_StaticTip.pas',
@@ -53,8 +54,6 @@ contains
   FBDDocument in 'FBDDocument.pas',
   fbd_xml in 'fbd_xml.pas',
   FBDAuthorTable in 'FBDAuthorTable.pas' {frmEditAuthorFull},
-  unit_MHLArchiveHelpers in 'unit_MHLArchiveHelpers.pas',
-  unit_sevenzip in 'unit_sevenzip.pas',
-  SevenZipVCL in 'SevenZipVCL.pas';
+  unit_MHLArchiveHelpers in 'unit_MHLArchiveHelpers.pas';
 
 end.
