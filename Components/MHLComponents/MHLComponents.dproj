@@ -25,7 +25,6 @@
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
 			<DCC_DcuOutput>.\Units</DCC_DcuOutput>
-			<DesignOnlyPackage>false</DesignOnlyPackage>
 			<DCC_DependencyCheckOutputName>C:\Documents and Settings\All Users\Documents\RAD Studio\7.0\Bpl\MHLComponents.bpl</DCC_DependencyCheckOutputName>
 			<GenDll>true</GenDll>
 			<GenPackage>true</GenPackage>
@@ -33,6 +32,7 @@
 			<DCC_Platform>x86</DCC_Platform>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<DCC_DcuOutput>.\Units\Release</DCC_DcuOutput>
 			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
 			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
 			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
@@ -56,6 +56,7 @@
 			<DCCReference Include="IndyProtocols.dcp"/>
 			<DCCReference Include="VirtualTreesD.dcp"/>
 			<DCCReference Include="soaprtl.dcp"/>
+			<DCCReference Include="vclZipForged15.dcp"/>
 			<DCCReference Include="unit_StaticTip.pas"/>
 			<DCCReference Include="files_list.pas"/>
 			<DCCReference Include="MHLComponents_Register.pas"/>
@@ -75,8 +76,6 @@
 				<Form>frmEditAuthorFull</Form>
 			</DCCReference>
 			<DCCReference Include="unit_MHLArchiveHelpers.pas"/>
-			<DCCReference Include="unit_sevenzip.pas"/>
-			<DCCReference Include="SevenZipVCL.pas"/>
 			<BuildConfiguration Include="Debug">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>
@@ -129,7 +128,10 @@
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
 					</VersionInfoKeys>
-					<Excluded_Packages/>
+					<Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\dcloffice2k150.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\dclofficexp150.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+					</Excluded_Packages>
 				</Delphi.Personality>
 				<Platforms>
 					<Platform value="Win32">True</Platform>

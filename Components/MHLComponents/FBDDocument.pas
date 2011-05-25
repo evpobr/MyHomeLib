@@ -531,6 +531,7 @@ begin
 
   try
     archiver := TMHLZip.Create(archiveFileName);
+    archiver.BaseDir := FFolder;
 
     if EditorMode then
     begin
