@@ -48,7 +48,7 @@ type
     public
       constructor Create(AFileName: string);
       function GetFileNameById(No: integer): string;
-      procedure ExtractToStream(No: integer; Stream: TStream); overload;
+      function ExtractToStream(No: integer): TStream; overload;
       function GetIdxByExt(Ext: string): integer;
       function Find(FN: string):boolean;  overload;
       function Find(No: integer): boolean; overload;
@@ -88,10 +88,11 @@ end;
 
 { TMHLZip }
 
-procedure TMHLZip.ExtractToStream(No: integer; Stream: TStream);
+function TMHLZip.ExtractToStream(No: integer): TStream;
 begin
   GetFileNameByID(No);
-  ExtractToStream(FLast.FileName, Stream);
+  Result := TMemoryStream.Create;
+  ExtractToStream(FLast.FileName, Result);
 end;
 
 function TMHLZip.ExtractToString(FileName: string): string;
@@ -148,10 +149,12 @@ end;
 function TMHLZip.GetFileNameById(No: integer): string;
 var
   i: integer;
+  max : integer;
 begin
   i := 0;
+  max := FileCount;
   if (FindFirst('*.*', FLast, faAnyFile - faDirectory)) then
-  while i <> No do
+  while (i <> No) and (i <= max) do
   begin
     FindNext(FLast);
     Inc(i);
@@ -173,7 +176,7 @@ begin
       Break;
     end;
     inc(i);
-  until FindNext(FLast);
+  until not FindNext(FLast);
 end;
 
 function TMHLZip.GetLastName: string;

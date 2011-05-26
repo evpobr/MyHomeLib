@@ -410,7 +410,7 @@ begin
     archiver := TMHLZip.Create(TPath.Combine(FFolder, FArchiveFilename));
     No := archiver.GetIdxByExt('.fbd');
     if No = 0 then No := 1 else No := 0;
-    archiver.ExtractToStream(No, MS);
+    archiver.ExtractToStream(No);
     Result := TPath.Combine(TempFolder, archiver.LastName);
     MS.SaveToFile(Result);
   finally
