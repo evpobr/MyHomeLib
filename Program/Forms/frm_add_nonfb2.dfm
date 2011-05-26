@@ -36,10 +36,6 @@ object frmAddnonfb2: TfrmAddnonfb2
     TabOrder = 0
     object tsFiles: TTabSheet
       Caption = #1060#1072#1081#1083#1099
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Tree: TVirtualStringTree
         AlignWithMargins = True
         Left = 3
@@ -150,10 +146,6 @@ object frmAddnonfb2: TfrmAddnonfb2
     end
     object tsBookInfo: TTabSheet
       Caption = #1050#1085#1080#1075#1072
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label2: TLabel
         Left = 8
         Top = 17
@@ -515,10 +507,6 @@ object frmAddnonfb2: TfrmAddnonfb2
           TabOrder = 0
           object TabSheet1: TTabSheet
             Caption = #1040#1074#1090#1086#1088#1099' '#1082#1085#1080#1075#1080
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
             object alBookAuthors: TFBDAuthorTable
               AlignWithMargins = True
               Left = 3
@@ -535,10 +523,6 @@ object frmAddnonfb2: TfrmAddnonfb2
           object TabSheet2: TTabSheet
             Caption = #1040#1074#1090#1086#1088#1099' '#1076#1086#1082#1091#1084#1077#1085#1090#1072
             ImageIndex = 1
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
             object alFBDAuthors: TFBDAuthorTable
               AlignWithMargins = True
               Left = 3
@@ -555,10 +539,6 @@ object frmAddnonfb2: TfrmAddnonfb2
           object TabSheet3: TTabSheet
             Caption = #1040#1085#1085#1086#1090#1072#1094#1080#1103
             ImageIndex = 2
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
             object mmAnnotation: TMemo
               AlignWithMargins = True
               Left = 3
@@ -574,10 +554,6 @@ object frmAddnonfb2: TfrmAddnonfb2
           object TabSheet4: TTabSheet
             Caption = #1048#1079#1076#1072#1090#1077#1083#1100
             ImageIndex = 3
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
             DesignSize = (
               544
               217)

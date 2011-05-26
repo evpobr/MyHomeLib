@@ -551,9 +551,12 @@ begin
 
       // после создания архива нужно узнать реальный номер внутри
       FBookRecord.CollectionRoot := FRootPath;
-      archiver := TMHLZip.Create(FBookRecord.GetBookFileName);
-      FBookRecord.InsideNo := archiver.GetIdxByExt(FBookRecord.FileExt);;
-
+      try
+        archiver := TMHLZip.Create(FBookRecord.GetBookFileName);
+        FBookRecord.InsideNo := archiver.GetIdxByExt(FBookRecord.FileExt);
+      finally
+        FreeAndNil(archiver);
+      end;
       // заносим данные в БД
       CommitData;
     end

@@ -1058,8 +1058,7 @@ begin
     try
       try
         archiver := TMHLZip.Create(TPath.Combine(Settings.ReadPath, BookFileName));
-        result := TMemoryStream.Create;
-        archiver.ExtractToStream(InsideNo, result);
+        result := archiver.ExtractToStream(InsideNo);
       except
         raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName]);
       end;
@@ -1110,7 +1109,7 @@ begin
           archiveFileName := TPath.Combine(Settings.ReadPath, bookFileName);
           archiver := TMHLZip.Create(archiveFileName);
           Result := TMemoryStream.Create;
-          idxFile := archiver.GetIdxByExt(FBD_EXTENSION);
+          archiver.Find('*' + FBD_EXTENSION);
           archiver.ExtractToStream(archiver.LastName, Result);
         finally
           FreeAndNil(archiver);
