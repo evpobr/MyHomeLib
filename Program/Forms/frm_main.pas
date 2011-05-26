@@ -4291,13 +4291,13 @@ begin
               DeleteFile(BookFileName);
           end;
 
-//          FCollection.BeginBulkOperation;
-//          try
+          FCollection.BeginBulkOperation;
+          try
             FCollection.DeleteBook(Data.BookKey);
-//            FCollection.EndBulkOperation(True);
-//          except
-//            FCollection.EndBulkOperation(False);
-//          end;
+            FCollection.EndBulkOperation(True);
+          except
+            FCollection.EndBulkOperation(False);
+          end;
         end;
       end
       else
@@ -4566,6 +4566,13 @@ begin
       frmEditBook.Collection := FSystemData.GetCollection(Data^.BookKey.DatabaseID)
     else
       frmEditBook.Collection := FCollection;
+
+    if ActiveView = AuthorsView then
+       Settings.LastBookInAuthors := Data.BookKey.BookID;
+
+    if ActiveView = SeriesView then
+       Settings.LastBookInSeries := Data.BookKey.BookID;
+
     frmEditBook.OnGetBook := OnGetBookHandler;
     frmEditBook.OnSelectBook := OnSelectBookHandler;
     frmEditBook.OnUpdateBook := OnUpdateBookHandler;
@@ -4652,6 +4659,13 @@ begin
   if IsLibRusecEdit(Data^.BookKey) then
     Exit;
 
+//  if ActiveView = AuthorsView then
+//       Settings.LastBookInAuthors := Data.BookKey.BookID;
+//
+//  if ActiveView = SeriesView then
+//       Settings.LastBookInSeries := Data.BookKey.BookID;
+
+
   S := Data^.Series;
 
   if Data^.nodeType = ntBookInfo then // Standing on a book node, change/add series info
@@ -4686,9 +4700,6 @@ begin
       Tree.RepaintNode(Node);
     end;
   end;
-
-  UpdatePositions;
-  InitCollection(True);
 end;
 
 procedure TfrmMain.AddGroupExecute(Sender: TObject);
