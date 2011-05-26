@@ -462,7 +462,7 @@ const
 var
   query: TSQLiteQuery;
 begin
-  Assert(CollectionID > 0);
+//  Assert(CollectionID > 0);
 
   query := FDatabase.NewQuery(SQL_SELECT);
   try
