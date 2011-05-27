@@ -721,6 +721,7 @@ type
 
   private
     FDMThread: TDownloadManagerThread;
+    FCurrentBookOnly: Boolean;
 
     function IsSelectedBookNode(Node: PVirtualNode; Data: PBookRecord): Boolean;
 
@@ -755,11 +756,11 @@ type
     procedure CreateAlphabetToolbar;
 
     // Handlers:
-    procedure OnReadBookHandler(const BookRecord: TBookRecord; const CurrentBookOnly: boolean = false);
+    procedure OnReadBookHandler(const BookRecord: TBookRecord);
     procedure OnSelectBookHandler(MoveForward: Boolean);
     procedure OnGetBookHandler(var BookRecord: TBookRecord);
-    procedure OnUpdateBookHandler(const BookRecord: TBookRecord; const CurrentBookOnly: boolean = false);
-    procedure OnChangeBook2ZipHandler(const BookRecord: TBookRecord; const CurrentBookOnly: boolean = false);
+    procedure OnUpdateBookHandler(const BookRecord: TBookRecord);
+    procedure OnChangeBook2ZipHandler(const BookRecord: TBookRecord);
     function OnHelpHandler(Command: Word; Data: Integer; var CallHelp: Boolean): Boolean;
     procedure OnImportUserDataHandler(const UserDataSource: TUserData);
 
@@ -3521,7 +3522,9 @@ begin
   Data := Tree.GetNodeData(Tree.GetFirstSelected);
   if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
   begin
-    OnReadBookHandler(Data^, True);
+    FCurrentBookOnly := True;
+    OnReadBookHandler(Data^);
+    FCurrentBookOnly := False;
   end;
 end;
 
@@ -3555,7 +3558,7 @@ begin
 //          // A not-yet-downloaded book of an online collection, can download only if book's collection is selected
 //          FCollection.VerifyCurrentCollection(BookRecord.BookKey.DatabaseID);
 
-          DownloadBooks(CurrentBookOnly);
+          DownloadBooks(FCurrentBookOnly);
           /// TODO : RESTORE ??? Tree.RepaintNode(Tree.GetFirstSelected);
           if not FileExists(BookFileName) then
             Exit; // если файла нет, значит закачка не удалась, и юзер об  этом уже знает
