@@ -755,11 +755,11 @@ type
     procedure CreateAlphabetToolbar;
 
     // Handlers:
-    procedure OnReadBookHandler(const BookRecord: TBookRecord);
+    procedure OnReadBookHandler(const BookRecord: TBookRecord; const CurrentBookOnly: boolean = false);
     procedure OnSelectBookHandler(MoveForward: Boolean);
     procedure OnGetBookHandler(var BookRecord: TBookRecord);
-    procedure OnUpdateBookHandler(const BookRecord: TBookRecord);
-    procedure OnChangeBook2ZipHandler(const BookRecord: TBookRecord);
+    procedure OnUpdateBookHandler(const BookRecord: TBookRecord; const CurrentBookOnly: boolean = false);
+    procedure OnChangeBook2ZipHandler(const BookRecord: TBookRecord; const CurrentBookOnly: boolean = false);
     function OnHelpHandler(Command: Word; Data: Integer; var CallHelp: Boolean): Boolean;
     procedure OnImportUserDataHandler(const UserDataSource: TUserData);
 
@@ -901,7 +901,7 @@ type
     procedure SetColumns;
     procedure SaveColumns;
     procedure SetHeaderPopUp;
-    procedure DownloadBooks;
+    procedure DownloadBooks(CurrentBookOnly: boolean = False);
     function CheckActiveDownloads: Boolean;
 
     function GetActiveView: TView;
@@ -920,6 +920,7 @@ type
     function GetStatusMessage: string;
     procedure SetStatusMessage(const Value: string);
     procedure UpdateAllEditActions;
+    procedure AddCurrentToList(const Tree: TBookTree; var BookIDList: TBookIdList);
     property ActiveView: TView read GetActiveView;
 
     property ShowStatusProgress: Boolean read GetShowStatusProgress write SetShowStatusProgress;
@@ -3340,6 +3341,15 @@ begin
   SetInfoPanelHeight((Sender as TWinControl).Height);
 end;
 
+procedure TfrmMain.AddCurrentToList(const Tree: TBookTree; var BookIDList: TBookIdList);
+var
+  Data: PBookRecord;
+begin
+  Data := Tree.GetNodeData(Tree.FocusedNode);
+  SetLength(BookIDList, 1);
+  BookIDList[0].BookKey := Data^.BookKey;
+end;
+
 procedure TfrmMain.FillBookIdList(const Tree: TBookTree; var BookIDList: TBookIdList; const Uncheck: Boolean);
 var
   i: Integer;
@@ -3494,7 +3504,10 @@ var
 begin
   GetActiveTree(Tree);
 
-  FillBookIdList(Tree, BookIDList);
+  if CurrentBookOnly then
+    AddCurrentToList(Tree, BookIDList)
+  else
+    FillBookIdList(Tree, BookIDList);
   unit_ExportToDevice.DownloadBooks(BookIDList);
 end;
 
@@ -3508,11 +3521,11 @@ begin
   Data := Tree.GetNodeData(Tree.GetFirstSelected);
   if Assigned(Data) and (Data^.nodeType = ntBookInfo) then
   begin
-    OnReadBookHandler(Data^);
+    OnReadBookHandler(Data^, True);
   end;
 end;
 
-procedure TfrmMain.OnReadBookHandler(const BookRecord: TBookRecord);
+procedure TfrmMain.OnReadBookHandler;
 var
   SavedCursor: TCursor;
   BookFileName: string;
@@ -3542,7 +3555,7 @@ begin
 //          // A not-yet-downloaded book of an online collection, can download only if book's collection is selected
 //          FCollection.VerifyCurrentCollection(BookRecord.BookKey.DatabaseID);
 
-          DownloadBooks;
+          DownloadBooks(CurrentBookOnly);
           /// TODO : RESTORE ??? Tree.RepaintNode(Tree.GetFirstSelected);
           if not FileExists(BookFileName) then
             Exit; // если файла нет, значит закачка не удалась, и юзер об  этом уже знает
@@ -6719,7 +6732,7 @@ begin
 end;
 
 // Invoked when it's time to update the current book in DB
-procedure TfrmMain.OnUpdateBookHandler(const BookRecord: TBookRecord);
+procedure TfrmMain.OnUpdateBookHandler;
 var
   Tree: TBookTree;
   Data: PBookRecord;
@@ -6801,7 +6814,7 @@ end;
 
 // A raw file just became a zip archive (FBD + raw)
 // Change the book's file name in both the database and the trees
-procedure TfrmMain.OnChangeBook2ZipHandler(const BookRecord: TBookRecord);
+procedure TfrmMain.OnChangeBook2ZipHandler;
 var
   NewFileName: string;
   BookCollection: IBookCollection;
