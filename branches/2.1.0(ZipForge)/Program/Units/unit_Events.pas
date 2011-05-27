@@ -24,7 +24,7 @@ uses
   unit_Globals;
 
 type
-  TBookEvent = procedure(const BookRecord: TBookRecord; const CurrentBookOnly: boolean = false) of object;
+  TBookEvent = procedure(const BookRecord: TBookRecord) of object;
   TSelectBookEvent = procedure(MoveForward: Boolean) of object;
   TGetBookEvent = procedure(var BookRecord: TBookRecord) of object;
   TChangeStateEvent = procedure(State: Boolean) of object;
