@@ -66,7 +66,7 @@ end;
 
 procedure TImportFBDThread.SortFiles(var R: TBookRecord);
 var
-  NewFileName, NewFolder, Ext: string;
+  NewFileName, NewFolder: string;
   archiver: TMHLZip;
 begin
   NewFolder := GetNewFolder(Settings.FBDFolderTemplate, R);

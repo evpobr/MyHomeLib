@@ -111,7 +111,7 @@ begin
       if HasUTF8BOM(strStream.DataString) then
       begin
         Delete(S, 1, 3);
-        Result := UTF8Decode(S);
+        Result := UTF8ToString(S);
       end
       else Result := S;
     finally
@@ -198,7 +198,7 @@ function TMHLZip.Test: Boolean;
 begin
   FResult := False;
   TestFiles('*.*');
-  Result := Result;
+  Result := FResult;
 end;
 
 constructor TMHLZip.Create(AFileName: string);

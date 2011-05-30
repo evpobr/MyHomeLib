@@ -77,7 +77,6 @@ resourcestring
 function TframeNCWNameAndLocation.GetCollectionDataFromINPX: boolean;
 var
   header: TINPXHeader;
-  s: string;
   archiver: TMHLZip;
 begin
   Result := False;

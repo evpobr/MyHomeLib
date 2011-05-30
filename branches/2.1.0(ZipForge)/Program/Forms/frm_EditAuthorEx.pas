@@ -15,7 +15,7 @@
   *
   ****************************************************************************** *)
 
-unit frmEditAuthorEx;
+unit frm_EditAuthorEx;
 
 interface
 

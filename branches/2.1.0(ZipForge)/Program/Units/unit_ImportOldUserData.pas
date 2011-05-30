@@ -2,7 +2,12 @@ unit unit_ImportOldUserData;
 
 interface
 
-uses UserData, Classes, SysUtils, StrUtils, Generics.Collections;
+uses
+  unit_UserData,
+  Classes,
+  SysUtils,
+  StrUtils,
+  Generics.Collections;
 
 procedure LoadOldUserData(const FileName: string;
   var UserDataSource: TUserData);
@@ -125,7 +130,6 @@ procedure LoadOldUserData(const FileName: string;
 var
   SL: TStringList;
   i: Integer;
-  p: Integer;
 begin
   try
     SL := TStringList.Create;

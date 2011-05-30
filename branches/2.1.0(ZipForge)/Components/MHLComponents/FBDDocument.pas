@@ -340,7 +340,6 @@ end;
 
 procedure TFBDDocument.LoadCoverFromClpbrd;
 var
-  Icon: TJPEGImage;
   Input, Output: TMemoryStream;
   IMG: TGraphic;
   Lines : TStringList;
