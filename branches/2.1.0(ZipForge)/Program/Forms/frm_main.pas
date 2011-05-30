@@ -1529,7 +1529,6 @@ begin
     end;
 
     FCollection := FSystemData.GetCollection(Settings.ActiveCollection);
-    FCollection.GetBookIterator(bmAll, False, Nil);
 
     Assert(Assigned(FCollection));
     frmMain.Caption := 'MyHomeLib - ' + FCollection.CollectionDisplayName;
@@ -6287,6 +6286,8 @@ begin
         pmHeaders.Items[10].Checked := True;
       COL_LIBRATE:
         pmHeaders.Items[11].Checked := True;
+      COL_LIBID:
+        pmHeaders.Items[12].Checked := True;
     end;
   end;
   pmHeaders.Items[9].Visible := (Tree.Tag = PAGE_FAVORITES);
