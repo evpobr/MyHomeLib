@@ -44,9 +44,7 @@ type
     sfServerErrorLog,
     // sfImportErrorLog,  // UNUSED
     sfAppHelp,
-    sfLibRusEcUpdate,
     sfAppVerInfo,
-    sfLibRusEcInpx,
     // sfCollectionVerInfo, // UNUSED
     sfColumnsStore,
     sfDownloadsStore,
@@ -1271,8 +1269,6 @@ begin
     sfServerErrorLog: Result := WorkPath + SERVER_ERRORLOG_FILENAME;
     // sfImportErrorLog: Result := WorkPath + IMPORT_ERRORLOG_FILENAME;         // UNUSED
     sfAppHelp: Result := AppPath + APP_HELP_FILENAME;
-    sfLibRusEcUpdate: Result := UpdatePath + LIBRUSEC_UPDATE_FILENAME;
-    sfLibRusEcInpx: Result := WorkPath + LIBRUSEC_INPX_FILENAME;
     sfAppVerInfo: Result := WorkPath + PROGRAM_VERINFO_FILENAME;
     // sfCollectionVerInfo: Result := TempPath + COLLECTION_VERINFO_FILENAME;   // UNUSED
     sfColumnsStore: Result := WorkPath + COLUMNS_STORE_FILENAME;

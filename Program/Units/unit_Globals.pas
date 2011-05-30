@@ -1239,44 +1239,6 @@ begin
   IdHTTP.HandleRedirects := True;
 end;
 
-function CheckLibVersion(ALocalVersion: Integer; Full: Boolean; out ARemoteVersion: Integer): Boolean;
-var
-  HTTP: TidHTTP;
-  LF: TMemoryStream;
-  SL: TStringList;
-
-  URL: string;
-begin
-  Result := False;
-
-  URL := IncludeUrlSlash(Settings.UpdateURL) + IfThen(Full, LIBRUSEC_UPDATEVERINFO_FILENAME, EXTRA_UPDATEVERINFO_FILENAME);
-
-  HTTP := TidHTTP.Create(nil);
-  SetProxySettings(HTTP);
-  try
-    LF := TMemoryStream.Create;
-    try
-      HTTP.Get(URL, LF);
-      SL := TStringList.Create;
-      try
-        LF.Seek(0, soFromBeginning);
-        SL.LoadFromStream(LF);
-        if SL.Count > 0 then
-        begin
-          ARemoteVersion := StrToInt(SL[0]);
-          Result := (ALocalVersion < ARemoteVersion);
-        end;
-      finally
-        SL.Free;
-      end;
-    finally
-      LF.Free;
-    end;
-  finally
-    HTTP.Free;
-  end;
-end;
-
 function ExecAndWait(const FileName, Params: string; const WinState: word): Boolean;
 var
   StartInfo: TStartupInfo;
