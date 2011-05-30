@@ -680,7 +680,6 @@ object frmSettings: TfrmSettings
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
-          ExplicitTop = 19
           ExplicitWidth = 234
         end
         object btnCA: TButton
@@ -694,7 +693,7 @@ object frmSettings: TfrmSettings
         end
         object btnCS: TButton
           Left = 223
-          Top = 59
+          Top = 52
           Width = 75
           Height = 25
           Caption = #1048#1079#1084#1077#1085#1080#1090#1100
