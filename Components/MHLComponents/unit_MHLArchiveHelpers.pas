@@ -191,12 +191,12 @@ end;
 
 procedure TMHLZip.OnError;
 begin
-  FResult := True;
+  FResult := False;
 end;
 
 function TMHLZip.Test: Boolean;
 begin
-  FResult := False;
+  FResult := True;
   TestFiles('*.*');
   Result := FResult;
 end;
