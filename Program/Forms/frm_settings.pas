@@ -247,7 +247,6 @@ uses
   unit_Settings,
   dm_user,
   unit_Helpers,
-  htmlhlp,
   frm_create_mask,
   unit_Templater;
 

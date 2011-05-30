@@ -553,7 +553,7 @@ begin
   begin
     if proxyInfo^.dwAccessType = INTERNET_OPEN_TYPE_PROXY then
     begin
-      strProxy := proxyInfo^.lpszProxy;
+      strProxy := string(proxyInfo^.lpszProxy);
       if strProxy <> '' then
       begin
         if Pos('=', strProxy) <> 0 then

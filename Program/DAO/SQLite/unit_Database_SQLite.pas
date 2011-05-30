@@ -22,7 +22,7 @@ interface
 uses
   Classes,
   SQLiteWrap,
-  UserData,
+  unit_UserData,
   unit_Globals,
   unit_Interfaces,
   unit_Database_Abstract;
@@ -1979,8 +1979,6 @@ end;
 procedure TBookCollection_SQLite.DeleteBook(const BookKey: TBookKey);
 const
   SQL_DELETE_BOOKS = 'DELETE FROM Books WHERE BookID = ?';
-var
-  ID: integer;
 begin
   if BookKey.DatabaseID <> CollectionID then
     FSystemData.GetCollection(BookKey.DatabaseID).DeleteBook(BookKey)

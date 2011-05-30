@@ -1047,7 +1047,6 @@ var
   BookFormat: TBookFormat;
   BookFileName: string;
   archiver: TMHLZip;
-  idxFile: Integer;
 begin
   Result := nil;
   BookFileName := GetBookFileName;
@@ -1093,7 +1092,6 @@ function TBookRecord.GetBookDescriptorStream: TStream;
 var
   bookFileName: string;
   archiveFileName: string;
-  idxFile: Integer;
   archiver: TMHLZip;
 begin
   case GetBookFormat of

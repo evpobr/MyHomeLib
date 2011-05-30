@@ -26,7 +26,7 @@ uses
   unit_ImportInpxThread,
   IdHTTP,
   IdComponent,
-  UserData;
+  unit_UserData;
 
 type
   TDownloadProgressEvent = procedure (Current, Total: Integer) of object;

@@ -15,7 +15,7 @@
   *
   ****************************************************************************** *)
 
-unit TemplaterInternal;
+unit unit_TemplaterInternal;
 
 {$IFOPT D+}
 {.$DEFINE SUPPORT_DUMP}

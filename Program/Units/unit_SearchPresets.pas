@@ -15,7 +15,7 @@
   *
   ****************************************************************************** *)
 
-unit SearchPresets;
+unit unit_SearchPresets;
 
 interface
 
@@ -57,7 +57,7 @@ uses
   msxmldom,
   XMLConst,
   SysUtils,
-  xmlUtils;
+  unit_xmlUtils;
 
 resourcestring
   rstrInvalidPresetName = 'Неверное название пресета';

@@ -168,7 +168,6 @@ function TDownloader.CheckResponce: boolean;
 var
   Path: string;
   Str: TStringList;
-  ext: string;
   archiver: TMHLZip;
 begin
   Path := ExtractFileDir(FFile);

@@ -204,7 +204,6 @@
 				<Form>DownloadProgressForm</Form>
 			</DCCReference>
 			<DCCReference Include="Units\unit_Columns.pas"/>
-			<DCCReference Include="UtilsImpl\StoHtmlHelp.pas"/>
 			<DCCReference Include="DwnldImpl\unit_DownloadManagerThread.pas"/>
 			<DCCReference Include="Units\unit_Messages.pas"/>
 			<DCCReference Include="Units\unit_Lib_Updates.pas"/>
@@ -216,7 +215,6 @@
 			<DCCReference Include="Forms\frm_info_popup.pas">
 				<Form>frmInfoPopup</Form>
 			</DCCReference>
-			<DCCReference Include="Units\htmlhlp.pas"/>
 			<DCCReference Include="Forms\frm_search.pas">
 				<Form>frmBookSearch</Form>
 			</DCCReference>
@@ -241,14 +239,13 @@
 				<DesignClass>TFrame</DesignClass>
 			</DCCReference>
 			<DCCReference Include="Units\unit_Templater.pas"/>
-			<DCCReference Include="Forms\frmEditAuthorEx.pas">
+			<DCCReference Include="Forms\frm_EditAuthorEx.pas">
 				<Form>frmEditAuthorDataEx</Form>
 			</DCCReference>
-			<DCCReference Include="Units\Templater.pas"/>
-			<DCCReference Include="Units\TemplaterInternal.pas"/>
-			<DCCReference Include="Units\SearchPresets.pas"/>
-			<DCCReference Include="Units\UserData.pas"/>
-			<DCCReference Include="Units\xmlUtils.pas"/>
+			<DCCReference Include="Units\unit_TemplaterInternal.pas"/>
+			<DCCReference Include="Units\unit_SearchPresets.pas"/>
+			<DCCReference Include="Units\unit_UserData.pas"/>
+			<DCCReference Include="Units\unit_xmlUtils.pas"/>
 			<DCCReference Include="Forms\frm_EditGroup.pas">
 				<Form>frmEditGroup</Form>
 			</DCCReference>

@@ -53,7 +53,7 @@ uses
   unit_Messages,
   files_list,
   ActiveX,
-  htmlhlp,
+
   idStack,
   idComponent,
   IdBaseComponent,
@@ -67,10 +67,12 @@ uses
   ActnMan,
   MHLSimplePanel,
   BookTreeView,
-  SearchPresets,
+  unit_SearchPresets,
   MHLButtonedEdit,
-  UserData,
-  unit_treeController, unit_ColorTabs, ZipForge;
+  unit_UserData,
+  unit_treeController,
+  unit_ColorTabs,
+  ZipForge;
 
 type
   TfrmMain = class(TForm)
@@ -977,7 +979,7 @@ uses
   unit_SearchUtils,
   unit_WriteFb2Info,
   frm_ConverToFBD,
-  frmEditAuthorEx,
+  frm_EditAuthorEx,
   unit_Lib_Updates,
   frm_EditGroup,
   unit_SystemDatabase_Abstract,
@@ -6067,7 +6069,7 @@ begin
       351:
         Str := HTMLHead + Tree.ContentToHTML(tstAll) + HTMLFoot;
       352:
-        Str := Tree.ContentToUnicode(tstAll, Chr(9));
+        Str := AnsiString(Tree.ContentToUnicode(tstAll, Chr(9)));
       353:
         Str := Tree.ContentToRTF(tstAll);
     end;
@@ -6736,21 +6738,8 @@ end;
 // Invoked when it's time to update the current book in DB
 procedure TfrmMain.OnUpdateBookHandler;
 var
-  Tree: TBookTree;
-  Data: PBookRecord;
-  Node: PVirtualNode;
-  OldID: Integer;
   BookCollection: IBookCollection;
 begin
-  //
-  // TODO : этот метод надо срочно переписать.
-  // Проблемы:
-  //  1. возможно рассинхронизация данных из-за модификации базы через отдельное подсоединение
-  //  2. не обновляются ноды неактивных списков
-  //  3. просто много лишнего
-  //
-  // См. TfrmMain.OnChangeBook2ZipHandler как пример верной реализации
-  //
   Assert(BookRecord.nodeType = ntBookInfo);
 
   Assert(Assigned(FCollection));
@@ -6766,52 +6755,7 @@ begin
   except
     BookCollection.EndBulkOperation(False);
   end;
-  {
-  UpdateNodes(
-    BookRecord.BookKey,
-    procedure(BookData: PBookRecord)
-    begin
-      Assert(Assigned(BookData));
-      BookData^.FileName := NewFileName;
-    end
-  );
-  }
 
-  {
-  GetActiveTree(Tree);
-  Node := Tree.GetFirstSelected;
-
-  Data := Tree.GetNodeData(Node);
-  if not Assigned(Data) or (Data^.nodeType <> ntBookInfo) then
-    Exit;
-
-  OldID := Data^.BookKey.BookID;
-
-  ALibrary := TMHLLibrary.Create(nil);
-  try
-    ALibrary.DatabaseFileName := FSystemData.ActiveCollection.DBFileName;
-    ALibrary.Active := True;
-
-    ALibrary.BeginBulkOperation;
-    try
-      ALibrary.DeleteBook(Data^.BookKey);
-      Data^.BookKey.BookID := ALibrary.InsertBook(BookRecord, False, False);
-      ALibrary.EndBulkOperation(True);
-    except
-      ALibrary.EndBulkOperation(False);
-    end;
-
-    FSystemData.ChangeBookID(OldID, Data^.BookKey.BookID);
-
-    Data^.Title := BookRecord.Title;
-    Data^.Genres := BookRecord.Genres;
-    Data^.SeqNumber := BookRecord.SeqNumber;
-    Data^.Lang := BookRecord.Lang;
-    Tree.RepaintNode(Node);
-  finally
-    ALibrary.Free;
-  end;
-  }
 end;
 
 // A raw file just became a zip archive (FBD + raw)
