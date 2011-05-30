@@ -137,10 +137,11 @@ const
   COL_COLLECTION = 19;
   COL_LANG       = 21;
   COL_LIBRATE    = 22;
+  COL_LIBID      = 23;
 
   COL_STATE = 99;
 
-  ColumnTags: array [0 .. 12] of Integer = (
+  ColumnTags: array [0 .. 13] of Integer = (
     COL_AUTHOR,
     COL_TITLE,
     COL_SERIES,
@@ -153,6 +154,7 @@ const
     COL_COLLECTION,
     COL_LANG,
     COL_LIBRATE,
+    COL_LIBID,
     COL_STATE
   );
 

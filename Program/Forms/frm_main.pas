@@ -489,6 +489,7 @@ type
     Label3: TLabel;
     tmrCheckUpdates: TTimer;
     ZipForge1: TZipForge;
+    BookID1: TMenuItem;
 
     //
     // События формы

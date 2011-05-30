@@ -6,7 +6,7 @@
 			<DCC_DependencyCheckOutputName>Release\Bin\MyhomeLib.exe</DCC_DependencyCheckOutputName>
 			<MainSource>MyhomeLib.dpr</MainSource>
 			<ProjectVersion>12.3</ProjectVersion>
-			<Config Condition="'$(Config)'==''">Release</Config>
+			<Config Condition="'$(Config)'==''">Debug</Config>
 			<Base>True</Base>
 			<Platform>Win32</Platform>
 			<AppType>Application</AppType>
@@ -266,7 +266,7 @@
 			</DCCReference>
 			<DCCReference Include="ImportImpl\unit_CollectionWorkerThread.pas"/>
 			<DCCReference Include="ImportImpl\unit_ImportFB2ArchiveThread.pas"/>
-			<DCCReference Include="Forms\unit_treeController.pas"/>
+			<DCCReference Include="Units\unit_treeController.pas"/>
 			<DCCReference Include="Units\unit_Events.pas"/>
 			<DCCReference Include="Forms\frm_DeleteCollection.pas">
 				<Form>dlgDeleteCollection</Form>

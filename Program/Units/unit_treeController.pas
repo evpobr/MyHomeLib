@@ -356,6 +356,8 @@ begin
     // COL_LIBRATE   : Result := IntToStr(Data^.LibRate);
     COL_COLLECTION:
       Result := Data^.CollectionName;
+    COL_LIBID:
+      Result := Data^.LibID;
   end;
 end;
 
@@ -590,6 +592,7 @@ begin
       COL_DATE:    Result := CompareDate(Data1^.Date, Data2^.Date);
       COL_LANG:    Result := CompareStr(Data1^.Lang, Data2^.Lang);
       COL_LIBRATE: Result := CompareInt(Data1^.LibRate, Data2^.LibRate);
+      COL_LIBID:   Result := CompareSTr(Data1^.LibID, Data2^.LibID);
     end;
   end;
 end;
