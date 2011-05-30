@@ -125,8 +125,6 @@ uses
   SQLite3UDF in 'DAO\SQLite\Lib\SQLite3UDF.pas',
   SQLiteWrap in 'DAO\SQLite\Lib\SQLiteWrap.pas',
   unit_Database_SQLite in 'DAO\SQLite\unit_Database_SQLite.pas',
-  unit_Database_Abstract in 'DAO\unit_Database_Abstract.pas',
-  unit_SystemDatabase_Abstract in 'DAO\unit_SystemDatabase_Abstract.pas',
   unit_SQLiteUtils in 'DAO\SQLite\unit_SQLiteUtils.pas',
   unit_ProgressEngine in 'Units\unit_ProgressEngine.pas',
   unit_MHLGenerics in 'Units\unit_MHLGenerics.pas',
@@ -138,7 +136,9 @@ uses
   frm_DeleteCollection in 'Forms\frm_DeleteCollection.pas' {dlgDeleteCollection},
   unit_ImportOldUserData in 'Units\unit_ImportOldUserData.pas',
   unit_SystemDatabase_SQLite in 'DAO\SQLite\unit_SystemDatabase_SQLite.pas',
-  unit_ColorTabs in 'Units\unit_ColorTabs.pas';
+  unit_ColorTabs in 'Units\unit_ColorTabs.pas',
+  unit_Database_Abstract in 'DAO\unit_Database_Abstract.pas',
+  unit_SystemDatabase_Abstract in 'DAO\unit_SystemDatabase_Abstract.pas';
 
 {$R *.res}
 

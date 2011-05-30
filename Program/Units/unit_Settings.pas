@@ -94,11 +94,6 @@ type
     FShortFontSize: Integer;
     FAppLanguage: TAppLanguage;
     FActivePage: Integer;
-    FLastAuthor: string;
-    FLastSeries: string;
-    FLastBookInAuthors: Integer;
-    FLastBookInSeries: Integer;
-    FLastBookInFavorites: Integer;
     FSplitters: TSplitters;
     FTreeModes: TTreeModes;
     FWindowState: Integer;
@@ -316,11 +311,6 @@ type
     property RemoveSquarebrackets: Boolean read FRemoveSquareBrackets write FRemoveSquareBrackets;
 
     property ActivePage: Integer read FActivePage write FActivePage;
-    property LastAuthor: string read FLastAuthor write FLastAuthor;
-    property LastSeries: string read FLastSeries write FLastSeries;
-    property LastBookInSeries: Integer read FLastBookInSeries write FLastBookInSeries;
-    property LastBookInAuthors: Integer read FLastBookInAuthors write FLastBookInAuthors;
-    property LastBookInFavorites: Integer read FLastBookInFavorites write FLastBookInFavorites;
 
     property Splitters: TSplitters read FSplitters write FSplitters;
     property TreeModes: TTreeModes read FTreeModes write FTreeModes;
@@ -682,12 +672,6 @@ begin
     FTreeFontSize := iniFile.ReadInteger(INTERFACE_SECTION, 'FontSize', 8);
     FShortFontSize := iniFile.ReadInteger(INTERFACE_SECTION, 'ShortFontSize', 8);
     FActivePage := iniFile.ReadInteger(INTERFACE_SECTION, 'ActivePage', 0);
-    FLastAuthor := iniFile.ReadString(INTERFACE_SECTION, 'LastAuthor', 'À');
-    FLastSeries := iniFile.ReadString(INTERFACE_SECTION, 'LastSeries', 'À');
-
-    FLastBookInAuthors := iniFile.ReadInteger(INTERFACE_SECTION, 'LastBookInAuthors', 0);
-    FLastBookInSeries := iniFile.ReadInteger(INTERFACE_SECTION, 'LastBookInSeries', 0);
-    FLastBookInFavorites := iniFile.ReadInteger(INTERFACE_SECTION, 'LastBookInFavorites', 0);
 
     FFormHeight := iniFile.ReadInteger(INTERFACE_SECTION, 'FormHeight ', 850);
     FFormWidth := iniFile.ReadInteger(INTERFACE_SECTION, 'FormWidth ', 1000);
@@ -853,13 +837,6 @@ begin
     iniFile.WriteInteger(INTERFACE_SECTION, 'ShortFontSize', FShortFontSize);
     iniFile.WriteInteger(INTERFACE_SECTION, 'Lang', Ord(FAppLanguage));
     iniFile.WriteInteger(INTERFACE_SECTION, 'ActivePage', FActivePage);
-
-    iniFile.WriteString(INTERFACE_SECTION, 'LastAuthor', FLastAuthor);
-    iniFile.WriteString(INTERFACE_SECTION, 'LastSeries', FLastSeries);
-
-    iniFile.WriteInteger(INTERFACE_SECTION, 'LastBookInAuthors', FLastBookInAuthors);
-    iniFile.WriteInteger(INTERFACE_SECTION, 'LastBookInSeries', FLastBookInSeries);
-    iniFile.WriteInteger(INTERFACE_SECTION, 'LastBookInFavorites', FLastBookInFavorites);
 
     iniFile.WriteInteger(INTERFACE_SECTION, 'WindowState', WindowState);
 

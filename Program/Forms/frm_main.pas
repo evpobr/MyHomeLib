@@ -1284,9 +1284,6 @@ begin
   //
   // Синхронизация с настройками
   //
-  FLastAuthorStr := Settings.LastAuthor;
-  FLastSeriesStr := Settings.LastSeries;
-
   tlbrMain.Visible := Settings.ShowToolbar;
   tlbrEdit.Visible := Settings.EditToolBarVisible;
   tbarAuthorsRus.Visible := Settings.ShowRusBar;
@@ -1438,6 +1435,14 @@ begin
     // TODO : сохранить позиции
     //
 
+    if FCollection <> nil then
+    begin
+      FCollection.SetProperty(PROP_LAST_AUTHOR, FLastAuthorStr);
+      FCollection.SetProperty(PROP_LAST_AUTHOR_BOOK, FLastAuthorBookID.BookID);
+      FCollection.SetProperty(PROP_LAST_SERIES, FLastSeriesStr);
+      FCollection.SetProperty(PROP_LAST_SERIES_BOOK, FLastSeriesBookID.BookID);
+    end;
+
     tvAuthors.Clear;
     tvSeries.Clear;
     tvGenres.Clear;
@@ -1446,6 +1451,8 @@ begin
 
     SetTextNoChange(edLocateAuthor, '');
     SetTextNoChange(edLocateSeries, '');
+
+
 
     FLastAuthorID := MHL_INVALID_ID;
     FLastAuthorBookID.Clear;
@@ -1521,6 +1528,7 @@ begin
     end;
 
     FCollection := FSystemData.GetCollection(Settings.ActiveCollection);
+    FCollection.GetBookIterator(bmAll, False, Nil);
 
     Assert(Assigned(FCollection));
     frmMain.Caption := 'MyHomeLib - ' + FCollection.CollectionDisplayName;
@@ -1562,20 +1570,15 @@ begin
     FCollection.SetShowLocalOnly(IsOnline and Settings.ShowLocalOnly);
     FCollection.SetHideDeleted((not IsPrivate) and Settings.HideDeletedBooks);
 
-    if SetAlphabetFilter then
-    begin
-      FCollection.GetStatistics(Acount, Scount, GCount);
-      if Acount > 500 then FSA := 'А' else FSA := '*';
-      if Scount > 500 then FSS := 'А' else FSS := '*';
-    end
-    else
-    begin
-      FSA := FLastAuthorStr;
-      if FSA = '' then FSA := 'А';
+    FCollection.GetStatistics(Acount, Scount, GCount);
 
-      FSS := FLastSeriesStr;
-      if FSS = '' then FSS := 'А';
-    end;
+    FSA := FCollection.GetProperty(PROP_LAST_AUTHOR);
+    if FSA = '' then
+      if Acount > 500 then FSA := 'А' else FSA := '*';
+
+    FSS := FCollection.GetProperty(PROP_LAST_SERIES);
+    if FSS = '' then
+      if Scount > 500 then FSS := 'А' else FSS := '*';
 
     Button := GetFilterButton(FAuthorBars, Copy(FSA, 1, 1));
     InternalSetAuthorFilter(Button);
@@ -1595,8 +1598,8 @@ begin
     UpdateActions;
     UpdateAllEditActions;
 
-    FindLastBook(Settings.LastBookInAuthors, tvBooksA);
-    FindLastBook(Settings.LastBookInSeries, tvBooksS);
+    FindLastBook(FCollection.GetProperty(PROP_LAST_AUTHOR_BOOK), tvBooksA);
+    FindLastBook(FCollection.GetProperty(PROP_LAST_SERIES_BOOK), tvBooksS);
 
   finally
     Screen.Cursor := SavedCursor;
@@ -2611,6 +2614,8 @@ begin
 
   Settings.SaveSettings;
 
+  CloseCollection;
+
   FreeAndNil(FController);
   FreeAndNil(FDMThread);
 end;
@@ -2702,12 +2707,6 @@ begin
     Settings.FormTop := Top;
     Settings.FormLeft := Left;
   end;
-
-  Settings.LastAuthor := FLastAuthorStr;
-  Settings.LastSeries := FLastSeriesStr;
-
-  Settings.LastBookInAuthors := FLastAuthorBookID.BookID;
-  Settings.LastBookInSeries := FLastSeriesBookID.BookID;
 end;
 
 procedure TfrmMain.tvBooksTreeHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
@@ -4584,10 +4583,10 @@ begin
       frmEditBook.Collection := FCollection;
 
     if ActiveView = AuthorsView then
-       Settings.LastBookInAuthors := Data.BookKey.BookID;
+       FCollection.SetProperty(PROP_LAST_AUTHOR_BOOK, Data.BookKey.BookID);
 
     if ActiveView = SeriesView then
-       Settings.LastBookInSeries := Data.BookKey.BookID;
+       FCollection.SetProperty(PROP_LAST_SERIES_BOOK, Data.BookKey.BookID);
 
     frmEditBook.OnGetBook := OnGetBookHandler;
     frmEditBook.OnSelectBook := OnSelectBookHandler;
@@ -5669,10 +5668,8 @@ end;
 procedure TfrmMain.miActiveCollectionClick(Sender: TObject);
 var
   i: Integer;
-  CollectionInfo: TCollectionInfo;
 begin
   i := (Sender as TMenuItem).Tag;
-  CollectionInfo := FSystemData.GetCollectionInfo(i);
   (Sender as TMenuItem).Checked := True;
   Settings.ActiveCollection := i;
   InitCollection(True);
