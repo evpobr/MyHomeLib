@@ -248,7 +248,7 @@ begin
     begin
       updateInfo := Settings.Updates[i];
       if FileExists(Settings.UpdatePath + updateInfo.UpdateFile) then
-         DeleteFile(Settings.UpdatePath + updateInfo.UpdateFile)
+         DeleteFile(Settings.UpdatePath + updateInfo.UpdateFile);
     end;
 
     SetComment(rstrReady);
