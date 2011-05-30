@@ -98,10 +98,6 @@ const
   SERVER_ERRORLOG_FILENAME = 'server_error.html';
   IMPORT_ERRORLOG_FILENAME = 'import_errors.log';
   APP_HELP_FILENAME = 'MyHomeLib.chm';
-  LIBRUSEC_UPDATE_FILENAME = 'librusec_update.zip';
-  // EXTRA_UPDATE_FILENAME = 'extra_update.zip';
-  LIBRUSEC_UPDATEVERINFO_FILENAME = 'last_collection.info';
-  EXTRA_UPDATEVERINFO_FILENAME = 'extra_collection.info';
   VERINFO_FILENAME = 'version.info';
   STRUCTUREINFO_FILENAME = 'structure.info';
   PROGRAM_VERINFO_FILENAME = 'last_version.info';
