@@ -6395,10 +6395,13 @@ begin
       APoint.y := (Rect.Bottom - Rect.Top) div 2 - TextHeight(AText) div 2;
       TextRect(Rect, Rect.Left + APoint.x, Rect.Top + APoint.y, AText);
 
-//      if Active then Pen.Color := clBlue
-//        else Pen.Color :=  clMenuBar;
-//      Pen.Width := 3;
-//      MoveTo(2,3); LineTo(Rect.Right - 2, 3);
+      if Active then
+      begin
+        Pen.Color := $00EFD3C6;
+       // else Pen.Color :=  clMenuBar;
+        Pen.Width := 3;
+        MoveTo(Rect.Left + 3, Rect.Top + 4); LineTo(Rect.Right - 4, 4);
+      end;
     end;
    end;
 end;
