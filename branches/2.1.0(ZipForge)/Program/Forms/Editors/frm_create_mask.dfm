@@ -95,10 +95,6 @@ object frmCreateMask: TfrmCreateMask
     OnChange = PageControl1Change
     object TabSheet1: TTabSheet
       Caption = #1055#1088#1072#1074#1080#1083#1072' '#1087#1086#1089#1090#1088#1086#1077#1085#1080#1103' '#1096#1072#1073#1083#1086#1085#1072
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object stDescription: TMHLStaticTip
         Left = 0
         Top = 0

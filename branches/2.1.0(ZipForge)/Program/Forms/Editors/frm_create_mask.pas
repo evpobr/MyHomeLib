@@ -10,7 +10,7 @@
   * Created                  
   * Description              
   *
-  * $Id$
+  * $Id: frm_create_mask.pas 789 2010-09-17 15:49:55Z eg_ $
   *
   * History
   *

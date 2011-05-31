@@ -1,7 +1,7 @@
 inherited frmEditAuthorDataEx: TfrmEditAuthorDataEx
   ClientHeight = 195
   ExplicitWidth = 364
-  ExplicitHeight = 227
+  ExplicitHeight = 223
   PixelsPerInch = 96
   TextHeight = 13
   inherited pnButtons: TPanel

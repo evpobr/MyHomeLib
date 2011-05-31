@@ -9,7 +9,7 @@
   * Created                  20.08.2008
   * Description              
   *
-  * $Id$
+  * $Id: frm_edit_author.pas 543 2010-07-29 06:34:09Z nrymanov@gmail.com $
   *
   * ВНИМАНИЕ!!! Эта форма является базовой для TfrmEditAuthorDataEx.
   *             Любые изменения, сделанные в этой форме, будут влиять и на производную.
