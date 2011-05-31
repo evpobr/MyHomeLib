@@ -139,7 +139,6 @@ type
     tbtnEng: TToolButton;
     tbSelectAll: TToolButton;
     tbCollapse: TToolButton;
-    btnRefreshCollection: TToolButton;
     tbtnShowCover: TToolButton;
     tbtnShowDeleted: TToolButton;
     ToolButton12: TToolButton;
@@ -668,7 +667,6 @@ type
     procedure ShowBookInfo(Sender: TObject);
     procedure miCopyAuthorClick(Sender: TObject);
     procedure pgControlChange(Sender: TObject);
-    procedure miRefreshClick(Sender: TObject);
 
     procedure btnSwitchTreeModeClick(Sender: TObject);
     //
@@ -751,7 +749,7 @@ type
     procedure LocateSeries(const Text: string);
 
     procedure CloseCollection;
-    procedure InitCollection(SetAlphabetFilter: Boolean);
+    procedure InitCollection;
 
     procedure CreateCollectionMenu;
     procedure CreateScriptMenu;
@@ -925,6 +923,7 @@ type
     procedure SetStatusMessage(const Value: string);
     procedure UpdateAllEditActions;
     procedure AddCurrentToList(const Tree: TBookTree; var BookIDList: TBookIdList);
+    procedure SavePositions;
     property ActiveView: TView read GetActiveView;
 
     property ShowStatusProgress: Boolean read GetShowStatusProgress write SetShowStatusProgress;
@@ -1427,6 +1426,17 @@ begin
   frmMain.Enabled := State;
 end;
 
+procedure TfrmMain.SavePositions;
+begin
+  if FCollection <> nil then
+  begin
+    FCollection.SetProperty(PROP_LAST_AUTHOR, FLastAuthorStr);
+    FCollection.SetProperty(PROP_LAST_AUTHOR_BOOK, FLastAuthorBookID.BookID);
+    FCollection.SetProperty(PROP_LAST_SERIES, FLastSeriesStr);
+    FCollection.SetProperty(PROP_LAST_SERIES_BOOK, FLastSeriesBookID.BookID);
+  end;
+end;
+
 procedure TfrmMain.CloseCollection;
 var
   FCursor: TCursor;
@@ -1434,17 +1444,7 @@ begin
   FCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   try
-    //
-    // TODO : сохранить позиции
-    //
-
-    if FCollection <> nil then
-    begin
-      FCollection.SetProperty(PROP_LAST_AUTHOR, FLastAuthorStr);
-      FCollection.SetProperty(PROP_LAST_AUTHOR_BOOK, FLastAuthorBookID.BookID);
-      FCollection.SetProperty(PROP_LAST_SERIES, FLastSeriesStr);
-      FCollection.SetProperty(PROP_LAST_SERIES_BOOK, FLastSeriesBookID.BookID);
-    end;
+    SavePositions;
 
     tvAuthors.Clear;
     tvSeries.Clear;
@@ -1454,8 +1454,6 @@ begin
 
     SetTextNoChange(edLocateAuthor, '');
     SetTextNoChange(edLocateSeries, '');
-
-
 
     FLastAuthorID := MHL_INVALID_ID;
     FLastAuthorBookID.Clear;
@@ -1476,7 +1474,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.InitCollection(SetAlphabetFilter: Boolean);
+procedure TfrmMain.InitCollection;
 var
   SavedCursor: TCursor;
   CollectionType: Integer;
@@ -1642,7 +1640,7 @@ begin
     if bookKey.DatabaseID <> FCollection.CollectionID then
     begin
       Settings.ActiveCollection := bookKey.DatabaseID;
-      InitCollection(True);
+      InitCollection;
     end;
 
     // Change page to Genres:
@@ -1690,7 +1688,7 @@ begin
     if bookKey.DatabaseID <> FCollection.CollectionID then
     begin
       Settings.ActiveCollection := bookKey.DatabaseID;
-      InitCollection(True);
+      InitCollection;
     end;
 
     // Change page to Genres:
@@ -2093,7 +2091,7 @@ begin
     if frmNCWizard.ShowModal = mrOk then
     begin
       Settings.ActiveCollection := frmNCWizard.NewCollectionID;
-      InitCollection(True);
+      InitCollection;
       Result := True;
     end
     else
@@ -2378,7 +2376,7 @@ end;
 procedure TfrmMain.StartLibUpdate;
 begin
   if unit_Utils.LibrusecUpdate then
-    InitCollection(True);
+    InitCollection;
 end;
 
 function TfrmMain.GetShowStatusProgress: Boolean;
@@ -2568,7 +2566,7 @@ begin
   frmSplash.lblState.Caption := rstrMainLoadingCollection;
   frmSplash.lblState.Update;
 
-  InitCollection(False);
+  InitCollection;
 
   // ------------------------------------------------------------------------------
 
@@ -2612,11 +2610,9 @@ begin
   if DirectoryExists(Settings.TempDir) then
     ClearDir(Settings.TempDir);
 
+  SavePositions;
   SaveMainFormSettings;
-
   Settings.SaveSettings;
-
-  CloseCollection;
 
   FreeAndNil(FController);
   FreeAndNil(FDMThread);
@@ -4352,7 +4348,7 @@ begin
     else
       Settings.ActiveCollection := INVALID_COLLECTION_ID;
 
-    InitCollection(True);
+    InitCollection;
   end;
 
   //if MessageDlg(rstrRemoveCollection + '"' + FCollection.CollectionDisplayName + '"?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
@@ -4598,7 +4594,7 @@ begin
     if frmEditBook.ShowModal = mrOk then
     begin
       UpdatePositions;
-      InitCollection(False);
+      InitCollection;
     end;
   finally
     frmEditBook.Free;
@@ -4648,7 +4644,7 @@ begin
       NodeB := Tree.GetNext(NodeB);
     end;
     UpdatePositions;
-    InitCollection(True);
+    InitCollection;
   end;
 end;
 
@@ -5330,7 +5326,7 @@ begin
   Assert(Assigned(FCollection));
   unit_Import.ImportFB2(FCollection.CollectionID);
 
-  InitCollection(True);
+  InitCollection;
 end;
 
 procedure TfrmMain.ImportFb2Update(Sender: TObject);
@@ -5349,7 +5345,7 @@ begin
   Assert(Assigned(FCollection));
   unit_Import.ImportFB2Archive(FCollection.CollectionID, afZip);
 
-  InitCollection(True);
+  InitCollection;
 end;
 
 procedure TfrmMain.ImportFBDExecute(Sender: TObject);
@@ -5357,7 +5353,7 @@ begin
   Assert(Assigned(FCollection));
   unit_Import.ImportFBD(FCollection.CollectionID);
 
-  InitCollection(True);
+  InitCollection;
 end;
 
 procedure TfrmMain.SaveSearchPreset(Sender: TObject);
@@ -5506,7 +5502,7 @@ begin
     if BookKey.DatabaseID <> FCollection.CollectionID then
     begin
       Settings.ActiveCollection := BookKey.DatabaseID;
-      InitCollection(True);
+      InitCollection;
     end;
 
     // Change current page:
@@ -5674,7 +5670,7 @@ begin
   i := (Sender as TMenuItem).Tag;
   (Sender as TMenuItem).Checked := True;
   Settings.ActiveCollection := i;
-  InitCollection(True);
+  InitCollection;
 end;
 
 procedure TfrmMain.ShowBookInfo(Sender: TObject);
@@ -5939,7 +5935,7 @@ begin
     //
     // Пока это нужно, т к рабочий поток не сообщает основному об изменении свойств книги
     //
-    InitCollection(True);
+    InitCollection;
   end;
 end;
 
@@ -5955,7 +5951,7 @@ begin
     ActiveCollectionID := FCollection.CollectionID;
     StartLibUpdate;
     Settings.ActiveCollection := ActiveCollectionID;
-    InitCollection(True);
+    InitCollection;
   end;
 end;
 
@@ -6146,7 +6142,7 @@ end;
 
 function TfrmMain.OnHelpHandler(Command: Word; Data: Integer; var CallHelp: Boolean): Boolean;
 begin
-  if Data = 0 then
+  if Data = 1 then
     HtmlHelp(Application.Handle, PChar(Settings.SystemFileName[sfAppHelp]), HH_DISPLAY_TOC, 0)
   else
     HtmlHelp(Application.Handle, PChar(Settings.SystemFileName[sfAppHelp]), HH_HELP_CONTEXT, Data);
@@ -6165,7 +6161,7 @@ begin
     if frmBases.ShowModal = mrOk then
     begin
       Assert(Settings.ActiveCollection = FCollection.CollectionID);
-      InitCollection(True);
+      InitCollection;
     end;
   finally
     frmBases.Free;
@@ -6202,11 +6198,6 @@ begin
   );
 end;
 
-procedure TfrmMain.miRefreshClick(Sender: TObject);
-begin
-  InitCollection(True);
-end;
-
 procedure TfrmMain.UpdateGenresExecute(Sender: TObject);
 var
   AFileName: string;
@@ -6216,7 +6207,7 @@ begin
     FCollection.ReloadGenres(Settings.SystemFileName[sfGenresFB2])
   else if unit_Helpers.GetFileName(fnGenreList, AFileName) then
     FCollection.ReloadGenres(AFileName);
-  InitCollection(True);
+  InitCollection;
 end;
 
 procedure TfrmMain.RepairDataBaseExecute(Sender: TObject);
@@ -6312,7 +6303,7 @@ begin
   tbSelectAll.Enabled := ToolBuutonVisible;
   tbCollapse.Enabled := ToolBuutonVisible;
   tbtnRead.Enabled := ToolBuutonVisible;
-  btnRefreshCollection.Enabled := ToolBuutonVisible;
+//  btnRefreshCollection.Enabled := ToolBuutonVisible;
 
   tbSendToDevice.Enabled := ToolBuutonVisible;
   btnSwitchTreeMode.Enabled := not((ActiveView = SeriesView) or (ActiveView = DownloadView));
@@ -6398,7 +6389,6 @@ begin
       if Active then
       begin
         Pen.Color := $00EFD3C6;
-       // else Pen.Color :=  clMenuBar;
         Pen.Width := 3;
         MoveTo(Rect.Left + 3, Rect.Top + 4); LineTo(Rect.Right - 4, 4);
       end;
@@ -6422,7 +6412,7 @@ begin
   try
     frmAddBooks.Collection := FCollection;
     frmAddBooks.ShowModal;
-    InitCollection(True);
+    InitCollection;
   finally
     frmAddBooks.Free;
   end;

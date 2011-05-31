@@ -9,7 +9,7 @@
   * Created                  20.08.2008
   * Description              
   *
-  * $Id$
+  * $Id: frm_edit_book_info.pas 854 2010-10-08 13:43:19Z eg_ $
   *
   * History
   *

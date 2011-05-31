@@ -50,7 +50,6 @@ object frmEditAuthorData: TfrmEditAuthorData
     Caption = 'pnButtons'
     ShowCaption = False
     TabOrder = 3
-    ExplicitTop = 175
     DesignSize = (
       358
       41)

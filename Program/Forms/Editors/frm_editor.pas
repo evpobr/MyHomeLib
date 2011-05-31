@@ -9,7 +9,7 @@
   * Created                  20.08.2008
   * Description              
   *
-  * $Id$
+  * $Id: frm_editor.pas 632 2010-08-26 05:48:28Z eg_ $
   *
   * History
   *
