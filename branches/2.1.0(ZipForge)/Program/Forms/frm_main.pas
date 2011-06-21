@@ -4276,7 +4276,7 @@ begin
       Data := Tree.GetNodeData(Node);
       Assert(Assigned(Data));
 
-      if IsSelectedBookNode(Node, Data) then
+      if (Data.nodeType = ntBookInfo) and (IsSelectedBookNode(Node, Data)) then
       begin
         BookFileName := Data^.GetBookFileName;
 
@@ -6700,7 +6700,9 @@ begin
   Result :=
     Assigned(Node) and Assigned(Data) and
    (Data^.nodeType = ntBookInfo) and
-   ((Node^.CheckState = csCheckedNormal) or (vsSelected in Node.States));
+//   ((Node^.CheckState = csCheckedNormal) or (vsSelected in Node.States));
+   ((Node^.CheckState = csCheckedNormal));
+
 end;
 
 procedure TfrmMain.OnGetBookHandler(var BookRecord: TBookRecord);

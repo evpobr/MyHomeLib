@@ -254,7 +254,7 @@ CREATE TRIGGER TRBooks_AU AFTER UPDATE OF Title, Lang, Folder, FileName, Ext, Ke
 CREATE TRIGGER TRBooks_BD BEFORE DELETE ON Books
   BEGIN
     DELETE FROM Genre_List WHERE BookID = OLD.BookID;
-	  DELETE FROM Authors WHERE AuthorID in (SELECT DISTINCT AuthorID FROM Author_List WHERE BookID = OLD.BookID);
+--	  DELETE FROM Authors WHERE AuthorID in (SELECT DISTINCT AuthorID FROM Author_List WHERE BookID = OLD.BookID);
     DELETE FROM Author_List WHERE BookID = OLD.BookID;
     DELETE FROM Series WHERE SeriesID IN (SELECT b.SeriesID FROM Books b WHERE  b.SeriesID = OLD.SeriesID GROUP BY b.SeriesID HAVING COUNT(b.SeriesID) <= 1);
   END;

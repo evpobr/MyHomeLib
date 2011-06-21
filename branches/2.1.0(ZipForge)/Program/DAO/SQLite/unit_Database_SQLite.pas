@@ -1976,15 +1976,51 @@ begin
 end;
 
 // Delete the book, all dependent tables are cleared by a matching trigger
+//procedure TBookCollection_SQLite.DeleteBook(const BookKey: TBookKey);
+//const
+//  SQL_DELETE_BOOKS = 'DELETE FROM Books WHERE BookID = ?';
+//begin
+//  if BookKey.DatabaseID <> CollectionID then
+//    FSystemData.GetCollection(BookKey.DatabaseID).DeleteBook(BookKey)
+//  else
+//  begin
+//    FDatabase.ExecSQL(SQL_DELETE_BOOKS, [BookKey.BookID]);
+//    FSystemData.DeleteBook(BookKey);
+//  end;
+//end;
+
 procedure TBookCollection_SQLite.DeleteBook(const BookKey: TBookKey);
 const
   SQL_DELETE_BOOKS = 'DELETE FROM Books WHERE BookID = ?';
+var
+  query1, query2: TSQLiteQuery;
+  Count: Integer;
+  AuthorID: integer;
+  ID: Integer;
 begin
   if BookKey.DatabaseID <> CollectionID then
     FSystemData.GetCollection(BookKey.DatabaseID).DeleteBook(BookKey)
   else
   begin
-    FDatabase.ExecSQL(SQL_DELETE_BOOKS, [BookKey.BookID]);
+    ID := BookKey.BookID;
+    query1 := FDatabase.NewQuery('SELECT AuthorID FROM Author_List al WHERE al.BookID = ?;');
+    query1.SetParam(0, ID);
+    query1.Open;
+
+    while not query1.Eof do
+    begin
+      AuthorID := query1.FieldAsInt(0);
+      query2 := FDatabase.NewQuery('SELECT Count(*) FROM Author_List WHERE AuthorID = ?;');
+      query2.SetParam(0, AuthorID);
+      query2.Open;
+      Count := query2.FieldAsInt(0);
+      query2.Free;
+      if Count <= 1 then
+        FDatabase.ExecSQL('DELETE FROM Authors WHERE AuthorID = ?',[AuthorID]);
+      query1.Next;
+    end;
+    query1.Free;
+    FDatabase.ExecSQL(SQL_DELETE_BOOKS, [ID]);
     FSystemData.DeleteBook(BookKey);
   end;
 end;
