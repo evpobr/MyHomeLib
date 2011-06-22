@@ -473,7 +473,7 @@ begin
     bmByGenre:
     begin
       Assert(Assigned(FilterValue));
-      SQLRows := 'SELECT b.BookID FROM Genre_List gl INNER JOIN Books b ON gl.BookID = b.BookID ';
+      SQLRows := 'SELECT DISTINCT b.BookID FROM Genre_List gl INNER JOIN Books b ON gl.BookID = b.BookID ';
       if isFB2Collection(FCollection.CollectionCode) or not Settings.ShowSubGenreBooks then
         AddToWhere(Where, 'gl.GenreCode = :GenreCode')
       else
