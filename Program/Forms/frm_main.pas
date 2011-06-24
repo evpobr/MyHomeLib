@@ -6697,12 +6697,15 @@ end;
 
 function TfrmMain.IsSelectedBookNode(Node: PVirtualNode; Data: PBookRecord): Boolean;
 begin
-  Result :=
-    Assigned(Node) and Assigned(Data) and
-   (Data^.nodeType = ntBookInfo) and
-//   ((Node^.CheckState = csCheckedNormal) or (vsSelected in Node.States));
-   ((Node^.CheckState = csCheckedNormal));
-
+  if Settings.SelectedIsChecked then
+     Result :=
+        Assigned(Node) and Assigned(Data) and
+       (Data^.nodeType = ntBookInfo) and
+       ((Node^.CheckState = csCheckedNormal) or (vsSelected in Node.States))
+  else
+    Result :=
+      Assigned(Node) and Assigned(Data) and
+     (Data^.nodeType = ntBookInfo) and ((Node^.CheckState = csCheckedNormal));
 end;
 
 procedure TfrmMain.OnGetBookHandler(var BookRecord: TBookRecord);

@@ -59,66 +59,71 @@ implementation
 
 procedure TfrmEditor.btnLikeClick(Sender: TObject);
 var
-  p: integer;
-  AddText: string;
-  Offset: integer;
+   OldText: string;
+   p: integer;
+   AddText, InsText: string;
+   Offset : integer;
 begin
-  p := mmMemo.SelStart;
+  OldText := mmMemo.Lines.Text;
 
-  if Sender = btnLike then
+  p := mmMemo.SelStart;
+  if mmMemo.SelLength > 0 then
   begin
-    AddText := 'LIKE "%%"';
-    Offset := p + 7;
+    InsText := mmMemo.SelText;
+    Delete(OldText, p + 1, mmMemo.SelLength);
   end
-  else if Sender = btnEq then
-  begin
-    AddText := '=""';
-    Offset := p + 2;
-  end
-  else if Sender = btnNotEq then
-  begin
-    AddText := '<> ""';
-    Offset := p + 4;
-  end
-  else if Sender = btnLess then
-  begin
-    AddText := '<""';
-    Offset := p + 2;
-  end
-  else if Sender = btnGreat then
-  begin
-    AddText := '>""';
-    Offset := p + 2;
-  end
-  else if Sender = btnBraket then
-  begin
-    AddText := '("")';
-    Offset := p + 2;
-  end
-  else if Sender = btnAnd then
-  begin
-    AddText := ' AND ';
-    Offset := p + 5;
-  end
-  else if Sender = btnOr then
-  begin
-    AddText := ' OR ';
-    Offset := p + 4;
-  end
-  else if Sender = btnNot then
-  begin
-    AddText := ' NOT ';
-    Offset := p + 5;
-  end
-  else if Sender = btnCommas then
-  begin
-    AddText := '""';
-    Offset := p + 1;
-  end;
-  mmMemo.SelText := AddText;
+  else
+    InsText := '';
+
+  case (Sender as TButton).Tag of
+      50: begin
+            AddText := 'LIKE "%' + InsText + '%"';
+            OffSet  := P + 7;
+          end;
+      51: begin
+            AddText := '="' + InsText + '"';
+            OffSet  := P + 2;
+          end;
+      52: begin
+            AddText := '<> "' + InsText + '"';
+            OffSet  := P + 4;
+          end;
+      53: begin
+            AddText := '<"' + InsText + '"';
+            OffSet  := P + 2;
+          end;
+      54: begin
+            AddText := '>"' + InsText + '"';
+            OffSet  := P + 2;
+          end;
+      55: begin
+            AddText := '(' + InsText + '"")';
+            OffSet  := P + 2;
+          end;
+      56: begin
+            AddText := ' AND ';
+            OffSet  := P + 5;
+          end;
+      57: begin
+            AddText := ' OR ';
+            OffSet  := P + 4;
+          end;
+       58: begin
+            AddText := ' NOT ';
+            OffSet  := P + 5;
+          end;
+       59: begin
+            AddText := '"' + InsText + '"';
+            OffSet  := P + 1;
+          end;
+    end;
+  Insert(AddText + ' ',OldText, P + 1);
+
+  mmMemo.Lines.Text := OldText;
   mmMemo.SelStart := Offset;
   mmMemo.SelLength := 0;
-  mmMemo.SetFocus;
+
+  ActiveControl := mmMemo;
 end;
 
 function TfrmEditor.GetText: string;
