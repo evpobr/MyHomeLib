@@ -178,6 +178,7 @@ type
 
     FForceConvertToFBD: Boolean;
     FOverwriteFB2Info: Boolean;
+    FSelectedIsChecked: Boolean;
 
     // SORT_SECTION
     FEnableSort: Boolean;
@@ -375,6 +376,7 @@ type
 
     property DeleteDeleted: Boolean read FDeleteDeleted write FDeleteDeleted;
     property DeleteFiles: Boolean read FDeleteFiles write FDeleteFiles;
+    property SelectedIsChecked: Boolean read FSelectedIsChecked write FSelectedIsChecked;
 
     // SORT_SECTION
     property EnableSort: Boolean read FEnableSort write FEnableSort;
@@ -776,6 +778,7 @@ begin
     FForceConvertToFBD := iniFile.ReadBool(BEHAVIOR_SECTION, 'ForceConvertToFBD', True);
     FOverwriteFB2Info := iniFile.ReadBool(BEHAVIOR_SECTION, 'OverwriteFB2Info', False);
     FFBDBookHeaderTemplate := iniFile.ReadString(BEHAVIOR_SECTION, 'BookHeaderTemplate', '%t');
+    FSelectedIsChecked := iniFile.ReadBool(BEHAVIOR_SECTION, 'SelectedIsChecked', True);
 
     //
     // FILE_SORT_SECTION
@@ -934,6 +937,7 @@ begin
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ForceConvertToFBD', FForceConvertToFBD);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'OverwriteFB2Info', FOverwriteFB2Info);
     iniFile.WriteString(BEHAVIOR_SECTION, 'BookHeaderTemplate', FFBDBookHeaderTemplate);
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'SelectedIsChecked', FSelectedIsChecked);
 
     //
     // FILE_SORT_SECTION
