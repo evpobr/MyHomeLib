@@ -317,7 +317,6 @@ begin
 
   FBD.Cover := Cover;
   FBD.Save(False);
-
   FBookRecord.FileName := FBookRecord.FileName + ZIP_EXTENSION;
 end;
 
@@ -337,6 +336,7 @@ begin
   edYear.Clear;
 
   mmAnnotation.Lines.Clear;
+  FBD.ClearCover;
   FCover.Picture := nil;
 end;
 

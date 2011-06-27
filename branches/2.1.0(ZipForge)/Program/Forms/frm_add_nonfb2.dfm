@@ -31,7 +31,7 @@ object frmAddnonfb2: TfrmAddnonfb2
     Width = 746
     Height = 490
     Margins.Bottom = 39
-    ActivePage = tsBookInfo
+    ActivePage = tsFiles
     Align = alClient
     TabOrder = 0
     object tsFiles: TTabSheet
@@ -125,7 +125,9 @@ object frmAddnonfb2: TfrmAddnonfb2
           Width = 190
           Height = 21
           Style = csDropDownList
+          ItemIndex = 0
           TabOrder = 3
+          Text = #1054#1095#1080#1097#1072#1090#1100' '#1074#1089#1077' '#1087#1086#1083#1103
           Items.Strings = (
             #1054#1095#1080#1097#1072#1090#1100' '#1074#1089#1077' '#1087#1086#1083#1103
             #1054#1095#1080#1097#1072#1090#1100' '#1090#1086#1083#1100#1082#1086' '#1072#1074#1090#1086#1088#1086#1074
