@@ -120,7 +120,7 @@ type
     procedure LoadCoverFromFile(FileName: string);
     procedure LoadCoverFromClpbrd;
     function ExtractBook(TempFolder: string):string;
-
+    procedure ClearCover;
   published
     property Memo: TMemo read FMemo write SetMemo;
     property Image: TImage read FImage write SetTImage;
@@ -188,6 +188,11 @@ begin
     if Assigned(FImage) then
       FImage.FreeNotification(Self);
   end;
+end;
+
+procedure TFBDDocument.ClearCover;
+begin
+  FCoverData.Str := '';
 end;
 
 constructor TFBDDocument.Create(AOwner: TComponent);
