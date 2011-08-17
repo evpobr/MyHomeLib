@@ -53,7 +53,6 @@ uses
   unit_Messages,
   files_list,
   ActiveX,
-
   idStack,
   idComponent,
   IdBaseComponent,

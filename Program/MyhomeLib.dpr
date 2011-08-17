@@ -128,14 +128,14 @@ uses
   frm_NewCollectionWizard in 'Wizards\NewCollection\frm_NewCollectionWizard.pas' {NewCollectionWizard},
   unit_CollectionWorkerThread in 'ImportImpl\unit_CollectionWorkerThread.pas',
   unit_ImportFB2ArchiveThread in 'ImportImpl\unit_ImportFB2ArchiveThread.pas',
-  unit_treeController in 'Units\unit_treeController.pas',
   unit_Events in 'Units\unit_Events.pas',
   frm_DeleteCollection in 'Forms\frm_DeleteCollection.pas' {dlgDeleteCollection},
   unit_ImportOldUserData in 'Units\unit_ImportOldUserData.pas',
   unit_SystemDatabase_SQLite in 'DAO\SQLite\unit_SystemDatabase_SQLite.pas',
   unit_ColorTabs in 'Units\unit_ColorTabs.pas',
   unit_Database_Abstract in 'DAO\unit_Database_Abstract.pas',
-  unit_SystemDatabase_Abstract in 'DAO\unit_SystemDatabase_Abstract.pas';
+  unit_SystemDatabase_Abstract in 'DAO\unit_SystemDatabase_Abstract.pas',
+  unit_treeController in 'Units\unit_treeController.pas';
 
 {$R *.res}
 
