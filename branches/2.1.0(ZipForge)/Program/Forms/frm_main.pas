@@ -6396,10 +6396,8 @@ begin
 end;
 
 procedure TfrmMain.ShowHelpExecute(Sender: TObject);
-var
-  dummy: Boolean;
 begin
-  OnHelpHandler(0, 0, dummy);
+  HtmlHelp(Application.Handle, PChar(Settings.SystemFileName[sfAppHelp]), HH_DISPLAY_TOC, 0)
 end;
 
 procedure TfrmMain.ImportNonFB2Execute(Sender: TObject);
