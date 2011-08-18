@@ -380,10 +380,6 @@ var
   DisplayName: array [0 .. MAX_PATH] of Char;
   TempPath : array[0..MAX_PATH] of Char;
 begin
-  //
-  // TODO DONE -oNickR -cUsability : восстановить InitialDir
-  //
-
   Result := False;
 
   FillChar(BrowseInfo, SizeOf(TBrowseInfo), #0);
@@ -403,13 +399,7 @@ begin
   if Assigned(lpItemID) then
   begin
     Result := SHGetPathFromIDList(lpItemID, TempPath);
-    if Result then
-    begin
-      strFolder := StrPas(TempPath);
-      //
-      // TODO DONE -oNickR -cUsability : сохранить InitialDir
-      //
-    end;
+    if Result then strFolder := StrPas(TempPath);
     CoTaskMemFree(lpItemID);
   end;
 end;
