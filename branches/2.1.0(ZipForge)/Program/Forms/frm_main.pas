@@ -856,6 +856,7 @@ type
 
     FLastFoundBook: PVirtualNode;
     FFirstFoundBook: PVirtualNode;
+    FLastDeviceDir: string;
 
     //
     // автор и серия, которым _реально_ принадлежат книги, показываемые сейчас в списке
@@ -3374,7 +3375,6 @@ end;
 procedure TfrmMain.SendToDeviceExecute(Sender: TObject);
 var
   AFolder: string;
-  SaveDeviceDir: string;
   SaveFolderTemplate: string;
   TMPParams: string;
   ScriptID: Integer;
@@ -3395,7 +3395,6 @@ begin
     Exit;
   end;
 
-  SaveDeviceDir := Settings.DeviceDir;
   SaveFolderTemplate := Settings.FolderTemplate;
   ScriptID := (Sender as TComponent).Tag;
 
@@ -3418,23 +3417,26 @@ begin
 
   if ScriptID = 799 then // выбор папки; не зависит от формата
   begin
-    if not GetFolderName(Handle, 'Укажите путь', AFolder) then
+    if not GetFolderName(Handle, 'Укажите путь', FLastDeviceDir) then
       Exit;
-    Settings.DeviceDir := AFolder;
-  end;
-
-  Dec(ScriptID, 901);
-
-  if (ScriptID < 1) and (Settings.PromptDevicePath) then
+    AFolder := FLastDeviceDir;
+    Dec(ScriptID, 901);
+  end
+  else
   begin
-    if not GetFolderName(Handle, rstrProvideThePath, AFolder) then
-      Exit
-    else
-      { TODO -oNickR -cRefactoring : это временное изменение в настройках и оно не должно сохраняться при закрытии программы
-        Это изменение нужно только для работы функций ZipToDevice/FileToDevice и решается
-        параметрами этих функций
-      }
-      Settings.DeviceDir := AFolder;
+    Dec(ScriptID, 901);
+
+    if (ScriptID < 1) and (Settings.PromptDevicePath) then
+    begin
+      if not GetFolderName(Handle, rstrProvideThePath, FLastDeviceDir) then
+        Exit
+      else
+        { TODO -oNickR -cRefactoring : это временное изменение в настройках и оно не должно сохраняться при закрытии программы
+          Это изменение нужно только для работы функций ZipToDevice/FileToDevice и решается
+          параметрами этих функций
+        }
+        AFolder := Settings.DeviceDir;
+    end;
   end;
 
   if ScriptID >= 0 then
@@ -3483,8 +3485,6 @@ begin
   else
     unit_ExportToDevice.ExportToDevice(Settings.DeviceDir, BookIDList, ExportMode, False, Files);
 
-
-  Settings.DeviceDir := SaveDeviceDir;
   Settings.FolderTemplate := SaveFolderTemplate;
 end;
 

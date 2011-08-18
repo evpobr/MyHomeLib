@@ -30,6 +30,10 @@ object frmSettings: TfrmSettings
       HelpContext = 143
       Caption = 'tsDevices'
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object pnDeviceOptions: TPanel
         AlignWithMargins = True
         Left = 3
@@ -378,11 +382,15 @@ object frmSettings: TfrmSettings
       Caption = 'tsReaders'
       ImageIndex = 1
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label11: TLabel
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 441
+        Width = 173
         Height = 13
         Align = alTop
         Caption = #1058#1080#1087#1099' '#1092#1072#1081#1083#1086#1074' '#1080' '#1087#1088#1086#1089#1084#1086#1090#1088#1097#1080#1082#1080
@@ -392,7 +400,6 @@ object frmSettings: TfrmSettings
         Font.Name = 'Tahoma'
         Font.Style = [fsBold]
         ParentFont = False
-        ExplicitWidth = 173
       end
       object Panel1: TPanel
         Left = 0
@@ -462,6 +469,10 @@ object frmSettings: TfrmSettings
       Caption = 'tsInterface'
       ImageIndex = 2
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel8: TPanel
         AlignWithMargins = True
         Left = 3
@@ -477,7 +488,7 @@ object frmSettings: TfrmSettings
           AlignWithMargins = True
           Left = 3
           Top = 3
-          Width = 435
+          Width = 40
           Height = 13
           Align = alTop
           Caption = #1064#1088#1080#1092#1090
@@ -487,7 +498,6 @@ object frmSettings: TfrmSettings
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
-          ExplicitWidth = 40
         end
         object Label7: TLabel
           Left = 9
@@ -670,7 +680,7 @@ object frmSettings: TfrmSettings
           AlignWithMargins = True
           Left = 3
           Top = 3
-          Width = 435
+          Width = 234
           Height = 13
           Align = alTop
           Caption = #1044#1080#1092#1092#1077#1088#1077#1085#1094#1080#1072#1083#1100#1085#1099#1081' '#1092#1086#1085' '#1074' '#1089#1087#1080#1089#1082#1072#1093' '#1082#1085#1080#1075
@@ -680,7 +690,6 @@ object frmSettings: TfrmSettings
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
-          ExplicitWidth = 234
         end
         object btnCA: TButton
           Left = 223
@@ -785,6 +794,10 @@ object frmSettings: TfrmSettings
       Caption = 'tsInternet'
       ImageIndex = 4
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel5: TPanel
         AlignWithMargins = True
         Left = 3
@@ -1051,7 +1064,7 @@ object frmSettings: TfrmSettings
           AlignWithMargins = True
           Left = 3
           Top = 9
-          Width = 441
+          Width = 140
           Height = 13
           Margins.Top = 9
           Align = alTop
@@ -1062,7 +1075,6 @@ object frmSettings: TfrmSettings
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
-          ExplicitWidth = 140
         end
         object RzLabel7: TLabel
           Left = 8
@@ -1119,7 +1131,7 @@ object frmSettings: TfrmSettings
           Alignment = taRightJustify
           NumbersOnly = True
           TabOrder = 4
-          Text = '1'#160'000'
+          Text = '1000'
           OnExit = CheckNumValue
         end
         object edTimeOut: TEdit
@@ -1130,7 +1142,7 @@ object frmSettings: TfrmSettings
           Alignment = taRightJustify
           NumbersOnly = True
           TabOrder = 0
-          Text = '1'#160'000'
+          Text = '1000'
           OnChange = edTimeOutChange
           OnExit = CheckNumValue
         end
@@ -1175,11 +1187,15 @@ object frmSettings: TfrmSettings
       Caption = 'tsScripts'
       ImageIndex = 4
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label12: TLabel
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 441
+        Width = 51
         Height = 13
         Align = alTop
         Caption = #1057#1082#1088#1080#1087#1090#1099
@@ -1189,7 +1205,6 @@ object frmSettings: TfrmSettings
         Font.Name = 'Tahoma'
         Font.Style = [fsBold]
         ParentFont = False
-        ExplicitWidth = 51
       end
       object Panel2: TPanel
         Left = 0
@@ -1282,6 +1297,10 @@ object frmSettings: TfrmSettings
       Caption = 'tsBehavior'
       ImageIndex = 5
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel3: TPanel
         AlignWithMargins = True
         Left = 3
@@ -1466,6 +1485,10 @@ object frmSettings: TfrmSettings
       Caption = 'tsFileSort'
       ImageIndex = 6
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel4: TPanel
         AlignWithMargins = True
         Left = 3
