@@ -3395,6 +3395,7 @@ begin
     Exit;
   end;
 
+  AFolder := Settings.DeviceDir;
   SaveFolderTemplate := Settings.FolderTemplate;
   ScriptID := (Sender as TComponent).Tag;
 
@@ -3431,11 +3432,7 @@ begin
       if not GetFolderName(Handle, rstrProvideThePath, FLastDeviceDir) then
         Exit
       else
-        { TODO -oNickR -cRefactoring : это временное изменение в настройках и оно не должно сохраняться при закрытии программы
-          Это изменение нужно только для работы функций ZipToDevice/FileToDevice и решается
-          параметрами этих функций
-        }
-        AFolder := Settings.DeviceDir;
+        AFolder := FLastDeviceDir;
     end;
   end;
 
@@ -3452,19 +3449,19 @@ begin
       StrReplace('%TMP%', Settings.TempPath, TMPParams);
 
     if Pos('%DEST%', Settings.Scripts[ScriptID].Params) <> 0 then
-      StrReplace('%DEST%', Settings.DeviceDir, TMPParams);
+      StrReplace('%DEST%', AFolder, TMPParams);
 
     if Pos('%FOLDER ', Settings.Scripts[ScriptID].Params) <> 0 then
     begin
       StrReplace('%FOLDER ', '', TMPParams);
       p := Pos('%', TMPParams);
       S := Copy(TMPParams, 1, p - 1);
-      Settings.DeviceDir := S;
+      AFolder := S;
       Delete(TMPParams, 1, p);
     end;
 
     if (Settings.Scripts[ScriptID].Path = '%COPY%') and (Trim(TMPParams) <> '') then
-      Settings.DeviceDir := Trim(TMPParams);
+      AFolder := Trim(TMPParams);
 
     Settings.Scripts[ScriptID].TMPParams := TMPParams;
   end;
@@ -3474,7 +3471,7 @@ begin
 
   if (ScriptID >= 0) and (Settings.Scripts[ScriptID].Path <> '%COPY%') then
   begin
-    unit_ExportToDevice.ExportToDevice(Settings.DeviceDir, BookIDList, ExportMode, True, Files);
+    unit_ExportToDevice.ExportToDevice(AFolder, BookIDList, ExportMode, True, Files);
     if Pos('%FILENAME%', Settings.Scripts[ScriptID].Params) <> 0 then
     begin
       StrReplace('%FILENAME%', Files, TMPParams);
@@ -3483,7 +3480,7 @@ begin
     Settings.Scripts[ScriptID].Run;
   end
   else
-    unit_ExportToDevice.ExportToDevice(Settings.DeviceDir, BookIDList, ExportMode, False, Files);
+    unit_ExportToDevice.ExportToDevice(AFolder, BookIDList, ExportMode, False, Files);
 
   Settings.FolderTemplate := SaveFolderTemplate;
 end;
@@ -4298,11 +4295,11 @@ begin
           if Settings.DeleteFiles then
           begin
             if not IsFB2 then
-              //DeleteFile(BookFileName)
-              MoveToRecycle(BookFileName)
+              DeleteFile(BookFileName)
+              //MoveToRecycle(BookFileName) - работает странно. пока отключим
             else if IsFB2 and IsPrivate then
-              //DeleteFile(BookFileName);
-              MoveToRecycle(BookFileName);
+              DeleteFile(BookFileName);
+              //MoveToRecycle(BookFileName);
           end;
 
           FCollection.BeginBulkOperation;
