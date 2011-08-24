@@ -4298,9 +4298,11 @@ begin
           if Settings.DeleteFiles then
           begin
             if not IsFB2 then
-              DeleteFile(BookFileName)
+              //DeleteFile(BookFileName)
+              MoveToRecycle(BookFileName)
             else if IsFB2 and IsPrivate then
-              DeleteFile(BookFileName);
+              //DeleteFile(BookFileName);
+              MoveToRecycle(BookFileName);
           end;
 
           FCollection.BeginBulkOperation;
