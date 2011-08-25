@@ -38,11 +38,18 @@ type
     FGenreLabel: TLabel;
     FGenres: TMHLLinkLabel;
     FAnnotation: TMemo;
+    FInfoButton: TButton;
+
     FOnAuthorLinkClicked: TSysLinkEvent;
     FOnGenreLinkClicked: TSysLinkEvent;
     FOnSeriesLinkClicked: TSysLinkEvent;
+    FOnAnnotationClicked: TNotifyEvent;
 
     FColor: TColor;
+
+    FInfoShown: boolean;
+    FAnnotationStr: string;
+    FBookInfoStr: string;
 
     function GetShowCover: boolean;
     procedure SetShowCover(const Value: boolean);
@@ -54,7 +61,7 @@ type
     procedure UpdateLinkTexts;
 
     procedure OnLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
-
+    procedure OnAnnotationClicked(Sender: TObject);
   protected
     procedure Resize; override;
 
@@ -73,7 +80,8 @@ type
       );
 
     procedure SetBookAnnotation(
-      const Annotation: string
+      const Annotation: string;
+      const BookInfo: string = ''
       );
 
     procedure Clear;
@@ -223,6 +231,7 @@ begin
   FAnnotation.ReadOnly := True;
   FAnnotation.TextHint := rstrNoAnnotationHint;
   FAnnotation.ScrollBars := ssVertical;
+  FAnnotation.OnDblClick := OnAnnotationClicked;
 
   //       300 200
   //0,  0, 300,  20
@@ -255,6 +264,15 @@ procedure TInfoPanel.Resize;
 begin
   FCover.Width := GetCoverWidth(FCover.Height);
   inherited;
+end;
+
+procedure TInfoPanel.OnAnnotationClicked(Sender: TObject);
+begin
+  if Not FInfoShown then
+    FAnnotation.Lines.Text := FBookInfoStr
+  else
+    FAnnotation.Lines.Text := FAnnotationStr;
+  FInfoShown := not FInfoShown;
 end;
 
 procedure TInfoPanel.OnLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
@@ -307,10 +325,12 @@ begin
   FCover.Picture.Assign(BookCover);
 end;
 
-procedure TInfoPanel.SetBookAnnotation(
-  const Annotation: string
-  );
+procedure TInfoPanel.SetBookAnnotation;
 begin
+  FAnnotationStr := Annotation;
+  FBookInfoStr := BookInfo;
+  FInfoShown := False;
+
   FAnnotation.Lines.BeginUpdate;
   try
     FAnnotation.Lines.Text := Annotation;
@@ -330,6 +350,7 @@ begin
   FAnnotation.Lines.Clear;
   FCover.Picture.Assign(nil);
 end;
+
 
 function TInfoPanel.GetShowAnnotation: Boolean;
 begin

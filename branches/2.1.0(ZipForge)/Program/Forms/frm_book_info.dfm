@@ -31,6 +31,10 @@ object frmBookDetails: TfrmBookDetails
     object tsFileInfo: TTabSheet
       Caption = #1060#1072#1081#1083
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object lvFileInfo: TListView
         AlignWithMargins = True
         Left = 3
@@ -58,6 +62,10 @@ object frmBookDetails: TfrmBookDetails
     end
     object tsInfo: TTabSheet
       Caption = 'Fb2 '#1080#1085#1092#1086
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object imgCover: TImage
         AlignWithMargins = True
         Left = 3
