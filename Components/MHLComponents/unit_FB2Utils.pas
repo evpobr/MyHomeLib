@@ -28,9 +28,42 @@ uses
 function GetBookCoverStream(book: IXMLFictionBook): TStream;
 function GetBookCover(book: IXMLFictionBook): TGraphic;
 function GetBookAnnotation(book: IXMLFictionBook): string;
+function GetBookInfo(book: IXMLFictionBook): string;
 
 { TODO -oNickR -cRefactoring : доделать эту функцию. Для этого необходимо вынести определение TBookRecord в доступное место }
 // procedure GetBookInfo(book: IXMLFictionBook; var R: TBookRecord);
+
+const
+  dlmtr = ': ';
+
+resourcestring
+  rstrFileInfo = 'Информация о файле';
+  rstrFolder = 'Папка';
+  rstrFile = 'Файл';
+  rstrSize = 'Размер';
+  rstrAdded = 'Добавлен';
+  rstrGeneralInfo = 'Общая информация';
+  rstrTitle = 'Название';
+  rstrAuthors = 'Автор(ы)';
+  rstrSingleSeries = 'Серия';
+  rstrGenre = 'Жанр';
+  rstrKeywords = 'Ключевые слова';
+  rstrDate = 'Дата';
+  rstrBookLanguage = 'Язык книги';
+  rstrSourceLanguage = 'Язык оригинала';
+  rstrTranslators = 'Переводчик(и)';
+  rstrPublisherInfo = 'Издательская информация';
+  rstrPublisher = 'Издательство';
+  rstrCity = 'Город';
+  rstrYear = 'Год';
+  rstrISBN = 'ISBN';
+  rstrOCRInfo ='Информация о документе (OCR)';
+  rstrProgram = 'Программа';
+  rstrID = 'ID';
+  rstrVersion = 'Версия';
+  rstrSource = 'Источник';
+  rstrSourceAuthor = 'Автор источника';
+  rstrHistory = 'История';
 
 implementation
 
@@ -157,6 +190,55 @@ begin
     begin
       for i := 0 to Annotation.p.Count - 1 do
         sl.Add(Annotation.p[i].OnlyText);
+    end;
+
+    Result := sl.Text;
+  finally
+    sl.Free;
+  end;
+end;
+
+function GetBookInfo(book: IXMLFictionBook): string;
+var
+  i: Integer;
+  sl: TStringList;
+begin
+  Result := '';
+
+  sl := TStringList.Create;
+  try
+    with book.Description.Publishinfo do
+    begin
+      sl.Add(rstrPublisherInfo);
+      sl.Add(rstrTitle + dlmtr + Bookname.Text);
+      sl.Add(rstrPublisher + dlmtr + Publisher.Text);
+      sl.Add(rstrCity + dlmtr + City.Text);
+      sl.Add(rstrYear + dlmtr + Year);
+      sl.Add(rstrISBN + dlmtr + Isbn.Text);
+    end;
+
+    with book.Description.Documentinfo do
+    begin
+      sl.Add('');
+      sl.Add(rstrAuthors + dlmtr);
+      for i := 0 to Author.Count - 1 do
+        with Author[i] do
+          sl.Add(LastName.Text + Firstname.Text + Middlename.Text + NickName.Text);
+
+      sl.Add(rstrProgram + dlmtr + Programused.Text);
+      sl.Add(rstrDate + dlmtr + Date.Text);
+      sl.Add(rstrID + dlmtr + book.Description.Documentinfo.Id);
+      sl.Add(rstrVersion + dlmtr + Version);
+
+      sl.Add(rstrSource);
+      for i := 0 to Srcurl.Count - 1 do
+      begin
+        sl.Add(Srcurl[i]);
+      end;
+      sl.Add(rstrSourceAuthor + dlmtr + rstrSourceAuthor + Srcocr.Text);
+
+      for i := 0 to History.p.Count - 1 do
+        sl.Add( rstrHistory + dlmtr + History.p[i].OnlyText);
     end;
 
     Result := sl.Text;

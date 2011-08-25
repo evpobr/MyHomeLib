@@ -3040,6 +3040,8 @@ var
   imgBookCover: TGraphic;
   isFBDDocument: Boolean;
   StoredBookKey: PBookKey;
+
+  InfoStr: string;
 begin
   Tree := Sender as TBookTree;
 
@@ -3126,14 +3128,15 @@ begin
             //
             if Settings.ShowBookAnnotation then
             begin
-              InfoPanel.SetBookAnnotation(GetBookAnnotation(book));
+              InfoStr := rstrFile + dlmtr + Data.Folder + Data.FileName + Data.FileExt + #10#13+ GetBookInfo(book);
+              InfoPanel.SetBookAnnotation(GetBookAnnotation(book),InfoStr);
             end;
           finally
             FreeAndNil(bookStream);
           end;
         except
           InfoPanel.SetBookCover(nil);
-          InfoPanel.SetBookAnnotation('');
+          InfoPanel.SetBookAnnotation('', rstrFile + dlmtr + Data.Folder + Data.FileName + Data.FileExt);
         end;
       end
       else
