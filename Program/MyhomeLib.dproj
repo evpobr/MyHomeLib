@@ -4,7 +4,7 @@
 			<Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 			<DCC_DependencyCheckOutputName>Release\Bin\MyhomeLib.exe</DCC_DependencyCheckOutputName>
-			<MainSource>MyhomeLib.dpr</MainSource>
+			<MainSource>MyHomeLib.dpr</MainSource>
 			<ProjectVersion>12.3</ProjectVersion>
 			<Config Condition="'$(Config)'==''">Release</Config>
 			<Base>True</Base>
@@ -67,7 +67,7 @@
 			<DCC_ExeOutput>Debug\Bin</DCC_ExeOutput>
 		</PropertyGroup>
 		<ItemGroup>
-			<DelphiCompile Include="MyhomeLib.dpr">
+			<DelphiCompile Include="MyHomeLib.dpr">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
 			<DCCReference Include="Forms\frm_main.pas">
@@ -345,7 +345,7 @@
 						<VersionInfo Name="MajorVer">2</VersionInfo>
 						<VersionInfo Name="MinorVer">1</VersionInfo>
 						<VersionInfo Name="Release">1</VersionInfo>
-						<VersionInfo Name="Build">745</VersionInfo>
+						<VersionInfo Name="Build">746</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">True</VersionInfo>
 						<VersionInfo Name="Special">True</VersionInfo>
@@ -357,25 +357,21 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">MyHomeLib</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription">MyHomeLib</VersionInfoKeys>
-						<VersionInfoKeys Name="FileVersion">2.1.1.745</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">2.1.1.746</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName">MyHomeLib</VersionInfoKeys>
 						<VersionInfoKeys Name="LegalCopyright">Алексей Пеньков</VersionInfoKeys>
 						<VersionInfoKeys Name="LegalTrademarks">MyHomeLib</VersionInfoKeys>
 						<VersionInfoKeys Name="OriginalFilename">MyHomeLib.exe</VersionInfoKeys>
 						<VersionInfoKeys Name="ProductName">MyHomeLib</VersionInfoKeys>
-						<VersionInfoKeys Name="ProductVersion">1.5</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion">2.1</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
 						<VersionInfoKeys Name="SpecialBuild"/>
 						<VersionInfoKeys Name="PrivateBuild"/>
 					</VersionInfoKeys>
 					<Source>
-						<Source Name="MainSource">MyhomeLib.dpr</Source>
+						<Source Name="MainSource">MyHomeLib.dpr</Source>
 					</Source>
 					<Excluded_Packages>
-						<Excluded_Packages Name="C:\USERS\PUBLIC\DOCUMENTS\RAD STUDIO\8.0\bpl\dcllmdrtl10_150.bpl">LMD 2010 - Common Designtime Enhancements</Excluded_Packages>
-						<Excluded_Packages Name="C:\USERS\PUBLIC\DOCUMENTS\RAD STUDIO\8.0\bpl\dcllmdplugin10_150.bpl">LMD 2010 - Common PlugIn Components</Excluded_Packages>
-						<Excluded_Packages Name="C:\Users\Public\Documents\RAD Studio\8.0\Bpl\dcllmdrtlx10_150.bpl">LMD 2010 - Common Shared Components</Excluded_Packages>
-						<Excluded_Packages Name="c:\users\public\documents\rad studio\8.0\bpl\dcllmdcore10_150.bpl">LMD 2010 - LMD-Tools Core Components</Excluded_Packages>
 						<Excluded_Packages Name="$(BDSBIN)\dcloffice2k150.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
 						<Excluded_Packages Name="$(BDSBIN)\dclofficexp150.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
 					</Excluded_Packages>

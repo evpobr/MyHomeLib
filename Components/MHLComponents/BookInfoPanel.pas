@@ -81,7 +81,8 @@ type
 
     procedure SetBookAnnotation(
       const Annotation: string;
-      const BookInfo: string = ''
+      const BookInfo: string = '';
+      const Priority: boolean = False
       );
 
     procedure Clear;
@@ -329,11 +330,20 @@ procedure TInfoPanel.SetBookAnnotation;
 begin
   FAnnotationStr := Annotation;
   FBookInfoStr := BookInfo;
-  FInfoShown := False;
 
   FAnnotation.Lines.BeginUpdate;
   try
-    FAnnotation.Lines.Text := Annotation;
+    if not Priority then
+    begin
+      FAnnotation.Lines.Text := Annotation;
+      FInfoShown := False;
+    end
+    else
+    begin
+      FAnnotation.Lines.Text := BookInfo;
+      FInfoShown := True;
+    end;
+
     FAnnotation.SelStart := 0;
     FAnnotation.SelLength := 0;
   finally

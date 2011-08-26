@@ -490,6 +490,7 @@ type
     tmrCheckUpdates: TTimer;
     ZipForge1: TZipForge;
     BookID1: TMenuItem;
+    miBookInfoPriority: TMenuItem;
 
     //
     // События формы
@@ -1297,6 +1298,7 @@ begin
   SetInfoPanelVisible(Settings.ShowInfoPanel);
   SetShowBookCover(Settings.ShowBookCover);
   SetShowBookAnnotation(Settings.ShowBookAnnotation);
+  miBookInfoPriority.Checked := Settings.Fb2InfoPriority;
 
   if Settings.DefaultScript <> 0 then
   begin
@@ -2705,6 +2707,8 @@ begin
     Settings.FormTop := Top;
     Settings.FormLeft := Left;
   end;
+
+  Settings.Fb2InfoPriority := miBookInfoPriority.Checked;
 end;
 
 procedure TfrmMain.tvBooksTreeHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
@@ -3129,7 +3133,7 @@ begin
             if Settings.ShowBookAnnotation then
             begin
               InfoStr := rstrFile + dlmtr + Data.Folder + Data.FileName + Data.FileExt + #10#13+ GetBookInfo(book);
-              InfoPanel.SetBookAnnotation(GetBookAnnotation(book),InfoStr);
+              InfoPanel.SetBookAnnotation(GetBookAnnotation(book),InfoStr, miBookInfoPriority.Checked);
             end;
           finally
             FreeAndNil(bookStream);

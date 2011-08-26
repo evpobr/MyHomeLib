@@ -175,6 +175,7 @@ type
     FShowInfoPanel: Boolean;
     FShowBookCover: Boolean;
     FShowBookAnnotation: Boolean;
+    FFb2InfoPriority: Boolean;
 
     FForceConvertToFBD: Boolean;
     FOverwriteFB2Info: Boolean;
@@ -296,6 +297,7 @@ type
     property ShowInfoPanel: Boolean read FShowInfoPanel write FShowInfoPanel;
     property ShowBookCover: Boolean read FShowBookCover write FShowBookCover;
     property ShowBookAnnotation: Boolean read FShowBookAnnotation write FShowBookAnnotation;
+    property Fb2InfoPriority: Boolean read FFb2InfoPriority write FFb2InfoPriority;
 
     property AppLanguage: TAppLanguage read FAppLanguage write FAppLanguage;
     property HideDeletedBooks: Boolean read FDoNotShowDeleted write FDoNotShowDeleted;
@@ -762,6 +764,7 @@ begin
     FShowInfoPanel := iniFile.ReadBool(BEHAVIOR_SECTION, 'CoverPanel', True);
     FShowBookCover := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowCover', True);
     FShowBookAnnotation := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowAnnotation', True);
+    FFb2InfoPriority := iniFile.ReadBool(BEHAVIOR_SECTION, 'Fb2InfoPriority', False);
 
     FDoNotShowDeleted := iniFile.ReadBool(BEHAVIOR_SECTION, 'DoNotShowDeleted', True);
     FShowLocalOnly := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowLocalOnly', False);
@@ -923,6 +926,7 @@ begin
     iniFile.WriteBool(BEHAVIOR_SECTION, 'CoverPanel', FShowInfoPanel);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowCover', FShowBookCover);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowAnnotation', FShowBookAnnotation);
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'Fb2InfoPriority', FFb2InfoPriority);
 
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowSubGenreBooks', FShowSubGenreBooks);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'MinimizeToTray', FMinimizeToTray);
