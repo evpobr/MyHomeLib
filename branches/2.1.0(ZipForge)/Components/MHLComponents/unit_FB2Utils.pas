@@ -207,6 +207,22 @@ begin
 
   sl := TStringList.Create;
   try
+
+    with book.Description.Titleinfo do
+    begin
+      sl.Add(rstrYear + dlmtr + Date.Text);
+
+      sl.Add(rstrSingleSeries + dlmtr);
+      for i := 0 to Sequence.Count - 1 do
+        sl.Add(Sequence[i].Name);
+
+      sl.Add(rstrTranslators + dlmtr);
+      for i := 0 to Translator.Count - 1 do
+        with Translator[i] do
+          sl.Add(LastName.Text + Firstname.Text + Middlename.Text + NickName.Text);
+    end;
+    sl.Add('');
+
     with book.Description.Publishinfo do
     begin
       sl.Add(rstrPublisherInfo);
