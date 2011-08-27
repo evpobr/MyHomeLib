@@ -342,11 +342,13 @@ var
 
 begin
   //
-  try
+
     ffb2info.Clear;
+    FAnnotation.Clear;
 
     FFb2Info.Visible := FInfoPriority;
     FAnnotation.Visible := not FInfoPriority;
+
 
     with ffb2Info.Groups.Add do
     begin
@@ -355,100 +357,108 @@ begin
       AddItem(ffb2Info, rstrFile, FileName, GroupID);
     end;
 
-    // ---------------------------------------------
-    with book.Description.Titleinfo, ffb2info.Groups.Add do
-    begin
-      Header := rstrGeneralInfo;
-
-      AddItem(ffb2info, rstrTitle, Booktitle.Text, GroupID);
-
-      for i := 0 to Author.Count - 1 do
-      begin
-        with Author[i] do
-          tmpStr := FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
-        AddItem(ffb2info, IfThen(i = 0, rstrAuthors), tmpStr, GroupID);
-      end;
-
-      { TODO -oNickR -cUsability : показывать номер в серии }
-      for i := 0 to Sequence.Count - 1 do
-      begin
-        AddItem(ffb2info, IfThen(i = 0, rstrSingleSeries), Sequence[i].Name + ' ' + IntToStr(Sequence[i].Number), GroupID);
-      end;
-
-      { TODO -oNickR -cUsability : показывать алиасы вместо внутренних имен }
-      for i := 0 to Genre.Count - 1 do
-      begin
-        AddItem(ffb2info, IfThen(i = 0, rstrGenre), Genre[i], GroupID);
-      end;
-
-      AddItem(ffb2info, rstrKeywords, Keywords.Text, GroupID);
-      AddItem(ffb2info, rstrDate, Date.Text, GroupID);
-      AddItem(ffb2info, rstrBookLanguage, Lang, GroupID);
-      AddItem(ffb2info, rstrSourceLanguage, Srclang, GroupID);
-
-      for i := 0 to Translator.Count - 1 do
-      begin
-        with Translator[i] do
-          tmpStr := FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
-        AddItem(ffb2info, IfThen(i = 0, rstrTranslators), tmpStr, GroupID);
-      end;
+    try
+      with book.Description.Titleinfo do
+        for i := 0 to Annotation.p.Count - 1 do
+          FAnnotation.Lines.Add(Annotation.p[i].OnlyText);
+    except
+      //
     end;
 
     // ---------------------------------------------
-    with book.Description.Publishinfo, ffb2info.Groups.Add do
-    begin
-      Header := rstrPublisherInfo;
-
-      AddItem(ffb2info, rstrTitle, Bookname.Text, GroupID);
-
-      AddItem(ffb2info, rstrPublisher, Publisher.Text, GroupID);
-      AddItem(ffb2info, rstrCity, City.Text, GroupID);
-      AddItem(ffb2info, rstrYear, Year, GroupID);
-      AddItem(ffb2info, rstrISBN, Isbn.Text, GroupID);
-
-      { TODO -oNickR -cUsability : показывать номер в серии }
-      for i := 0 to Sequence.Count - 1 do
+    try
+      with book.Description.Titleinfo, ffb2info.Groups.Add do
       begin
-        AddItem(ffb2info, IfThen(i = 0, rstrSingleSeries), Sequence[i].Name + ' ' + IntToStr(Sequence[i].Number), GroupID);
+        Header := rstrGeneralInfo;
+
+        AddItem(ffb2info, rstrTitle, Booktitle.Text, GroupID);
+
+        for i := 0 to Author.Count - 1 do
+        begin
+          with Author[i] do
+            tmpStr := FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
+          AddItem(ffb2info, IfThen(i = 0, rstrAuthors), tmpStr, GroupID);
+        end;
+
+        for i := 0 to Sequence.Count - 1 do
+        begin
+          AddItem(ffb2info, IfThen(i = 0, rstrSingleSeries), Sequence[i].Name + ' ' + IntToStr(Sequence[i].Number), GroupID);
+        end;
+
+        { TODO -oNickR -cUsability : показывать алиасы вместо внутренних имен }
+        for i := 0 to Genre.Count - 1 do
+        begin
+          AddItem(ffb2info, IfThen(i = 0, rstrGenre), Genre[i], GroupID);
+        end;
+
+        AddItem(ffb2info, rstrKeywords, Keywords.Text, GroupID);
+        AddItem(ffb2info, rstrDate, Date.Text, GroupID);
+        AddItem(ffb2info, rstrBookLanguage, Lang, GroupID);
+        AddItem(ffb2info, rstrSourceLanguage, Srclang, GroupID);
+
+        for i := 0 to Translator.Count - 1 do
+        begin
+          with Translator[i] do
+            tmpStr := FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
+          AddItem(ffb2info, IfThen(i = 0, rstrTranslators), tmpStr, GroupID);
+        end;
       end;
+    except
+      //
     end;
 
-    // ---------------------------------------------
-    with book.Description.Documentinfo, ffb2info.Groups.Add do
-    begin
-      Header := rstrOCRInfo;
-      for i := 0 to Author.Count - 1 do
+    try
+      // ---------------------------------------------
+      with book.Description.Publishinfo, ffb2info.Groups.Add do
       begin
-        with Author[i] do
-          tmpStr := FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
-        AddItem(ffb2info, IfThen(i = 0, rstrAuthors), tmpStr, GroupID);
+        Header := rstrPublisherInfo;
+
+        AddItem(ffb2info, rstrTitle, Bookname.Text, GroupID);
+
+        AddItem(ffb2info, rstrPublisher, Publisher.Text, GroupID);
+        AddItem(ffb2info, rstrCity, City.Text, GroupID);
+        AddItem(ffb2info, rstrYear, Year, GroupID);
+        AddItem(ffb2info, rstrISBN, Isbn.Text, GroupID);
+
+        { TODO -oNickR -cUsability : показывать номер в серии }
+        for i := 0 to Sequence.Count - 1 do
+        begin
+          AddItem(ffb2info, IfThen(i = 0, rstrSingleSeries), Sequence[i].Name + ' ' + IntToStr(Sequence[i].Number), GroupID);
+        end;
       end;
-
-      AddItem(ffb2info, rstrProgram, Programused.Text, GroupID);
-      AddItem(ffb2info, rstrDate, Date.Text, GroupID);
-      AddItem(ffb2info, rstrID, book.Description.Documentinfo.Id, GroupID);
-      AddItem(ffb2info, rstrVersion, Version, GroupID);
-
-      for i := 0 to Srcurl.Count - 1 do
-      begin
-        AddItem(ffb2info, IfThen(i = 0, rstrSource), Srcurl[i], GroupID);
-      end;
-      AddItem(ffb2info, rstrSourceAuthor, Srcocr.Text, GroupID);
-
-      for i := 0 to History.p.Count - 1 do
-        AddItem(ffb2info, IfThen(i = 0, rstrHistory), History.p[i].OnlyText, GroupID);
+    except
+      //
     end;
 
-    FAnnotation.Clear;
-    with book.Description.Titleinfo do
-      for i := 0 to Annotation.p.Count - 1 do
-        FAnnotation.Lines.Add(Annotation.p[i].OnlyText);
+    try
+      // ---------------------------------------------
+      with book.Description.Documentinfo, ffb2info.Groups.Add do
+      begin
+        Header := rstrOCRInfo;
+        for i := 0 to Author.Count - 1 do
+        begin
+          with Author[i] do
+            tmpStr := FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
+          AddItem(ffb2info, IfThen(i = 0, rstrAuthors), tmpStr, GroupID);
+        end;
 
-  except
+        AddItem(ffb2info, rstrProgram, Programused.Text, GroupID);
+        AddItem(ffb2info, rstrDate, Date.Text, GroupID);
+        AddItem(ffb2info, rstrID, book.Description.Documentinfo.Id, GroupID);
+        AddItem(ffb2info, rstrVersion, Version, GroupID);
 
-    //
-    Assert(False);
-  end;
+        for i := 0 to Srcurl.Count - 1 do
+        begin
+          AddItem(ffb2info, IfThen(i = 0, rstrSource), Srcurl[i], GroupID);
+        end;
+        AddItem(ffb2info, rstrSourceAuthor, Srcocr.Text, GroupID);
+
+        for i := 0 to History.p.Count - 1 do
+          AddItem(ffb2info, IfThen(i = 0, rstrHistory), History.p[i].OnlyText, GroupID);
+      end;
+    except
+      //
+    end;
 end;
 
 procedure TInfoPanel.Resize;

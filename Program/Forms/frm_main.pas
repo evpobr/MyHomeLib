@@ -3113,8 +3113,8 @@ begin
         begin
         try
           bookStream := Data^.GetBookDescriptorStream;
+          if not Assigned(bookStream) then raise Exception.Create('File Not found!');
           try
-            Assert(Assigned(bookStream));
             book := LoadFictionBook(bookStream);
 
             //
