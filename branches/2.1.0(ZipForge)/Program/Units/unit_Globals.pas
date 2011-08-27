@@ -403,6 +403,7 @@ uses
   dm_user,
   ShlObj,
   unit_fb2ToText,
+  unit_Fb2Utils,
   unit_MHLGenerics,
   unit_MHLArchiveHelpers;
 
@@ -726,31 +727,7 @@ end;
 
 class function TAuthorData.FormatName(const LastName: string; const FirstName: string; const MiddleName: string; const nickName: string = ''; onlyInitials: Boolean = False): string;
 begin
-  Result := LastName;
-
-  if FirstName <> '' then
-  begin
-    if onlyInitials then
-      Result := Result + ' ' + FirstName[1] + '.'
-    else
-      Result := Result + ' ' + FirstName;
-  end;
-
-  if MiddleName <> '' then
-  begin
-    if onlyInitials then
-      Result := Result + ' ' + MiddleName[1] + '.'
-    else
-      Result := Result + ' ' + MiddleName;
-  end;
-
-  if nickName <> '' then
-  begin
-    if Result = '' then
-      Result := nickName
-    else
-      Result := Result + '(' + nickName + ')';
-  end;
+  Result := unit_Fb2Utils.FormatName(Lastname, Firstname, Middlename, NickName, onlyInitials)
 end;
 
 function TAuthorData.GetFullName(onlyInitials: Boolean = False): string;

@@ -491,6 +491,7 @@ type
     ZipForge1: TZipForge;
     BookID1: TMenuItem;
     miBookInfoPriority: TMenuItem;
+    acViewSetInfoPriority: TAction;
 
     //
     // События формы
@@ -707,6 +708,7 @@ type
     procedure pgControlDrawTab(Control: TCustomTabControl; TabIndex: Integer;
       const Rect: TRect; Active: Boolean);
     procedure tbtnWizardClick(Sender: TObject);
+    procedure acViewSetInfoPriorityExecute(Sender: TObject);
 
   protected
     procedure WMGetSysCommand(var Message: TMessage); message WM_SYSCOMMAND;
@@ -925,6 +927,7 @@ type
     procedure UpdateAllEditActions;
     procedure AddCurrentToList(const Tree: TBookTree; var BookIDList: TBookIdList);
     procedure SavePositions;
+    procedure SetBookInfoPriority(State: Boolean);
     property ActiveView: TView read GetActiveView;
 
     property ShowStatusProgress: Boolean read GetShowStatusProgress write SetShowStatusProgress;
@@ -1298,6 +1301,7 @@ begin
   SetInfoPanelVisible(Settings.ShowInfoPanel);
   SetShowBookCover(Settings.ShowBookCover);
   SetShowBookAnnotation(Settings.ShowBookAnnotation);
+  SetBookInfoPriority(Settings.Fb2InfoPriority);
   miBookInfoPriority.Checked := Settings.Fb2InfoPriority;
 
   if Settings.DefaultScript <> 0 then
@@ -2708,7 +2712,6 @@ begin
     Settings.FormLeft := Left;
   end;
 
-  Settings.Fb2InfoPriority := miBookInfoPriority.Checked;
 end;
 
 procedure TfrmMain.tvBooksTreeHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
@@ -3132,21 +3135,20 @@ begin
             //
             if Settings.ShowBookAnnotation then
             begin
-              InfoStr := rstrFile + dlmtr + Data.Folder + Data.FileName + Data.FileExt + #10#13+ GetBookInfo(book);
-              InfoPanel.SetBookAnnotation(GetBookAnnotation(book),InfoStr, miBookInfoPriority.Checked);
+              InfoPanel.SetBookAnnotation(book, Data.Folder, Data.FileName + Data.FileExt);
             end;
           finally
             FreeAndNil(bookStream);
           end;
         except
           InfoPanel.SetBookCover(nil);
-          InfoPanel.SetBookAnnotation('', rstrFile + dlmtr + Data.Folder + Data.FileName + Data.FileExt);
+          InfoPanel.SetBookAnnotation(nil);
         end;
       end
       else
       begin
         InfoPanel.SetBookCover(nil);
-        InfoPanel.SetBookAnnotation('');
+        InfoPanel.SetBookAnnotation(nil);
       end;
     end;
   end;
@@ -3842,6 +3844,15 @@ begin
   ipnlFavorites.ShowAnnotation := State;
 end;
 
+procedure TfrmMain.SetBookInfoPriority(State: Boolean);
+begin
+  ipnlAuthors.InfoPriority := State;
+  ipnlSeries.InfoPriority := State;
+  ipnlGenres.InfoPriority := State;
+  ipnlSearch.InfoPriority := State;
+  ipnlFavorites.InfoPriority := State;
+end;
+
 procedure TfrmMain.tbClearEdAuthorClick(Sender: TObject);
 begin
   SetTextNoChange(edLocateAuthor, '');
@@ -4418,6 +4429,12 @@ end;
 procedure TfrmMain.acBookRemoveFromGroupExecute(Sender: TObject);
 begin
   if ActiveView = FavoritesView then DeleteBookFromGroup(Sender)
+end;
+
+procedure TfrmMain.acViewSetInfoPriorityExecute(Sender: TObject);
+begin
+  Settings.Fb2InfoPriority := not Settings.Fb2InfoPriority ;
+  SetBookInfoPriority(Settings.Fb2InfoPriority);
 end;
 
 procedure TfrmMain.Add2DownloadListExecute(Sender: TObject);

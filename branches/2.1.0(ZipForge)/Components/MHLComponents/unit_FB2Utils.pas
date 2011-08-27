@@ -29,6 +29,7 @@ function GetBookCoverStream(book: IXMLFictionBook): TStream;
 function GetBookCover(book: IXMLFictionBook): TGraphic;
 function GetBookAnnotation(book: IXMLFictionBook): string;
 function GetBookInfo(book: IXMLFictionBook): string;
+function FormatName(const LastName: string; const FirstName: string; const MiddleName: string; const nickName: string = ''; onlyInitials: Boolean = False): string;
 
 { TODO -oNickR -cRefactoring : доделать эту функцию. Для этого необходимо вынести определение TBookRecord в доступное место }
 // procedure GetBookInfo(book: IXMLFictionBook; var R: TBookRecord);
@@ -212,10 +213,12 @@ begin
     begin
       sl.Add(rstrYear + dlmtr + Date.Text);
 
+      sl.Add('');
       sl.Add(rstrSingleSeries + dlmtr);
       for i := 0 to Sequence.Count - 1 do
         sl.Add(Sequence[i].Name);
 
+      sl.Add('');
       sl.Add(rstrTranslators + dlmtr);
       for i := 0 to Translator.Count - 1 do
         with Translator[i] do
@@ -225,7 +228,6 @@ begin
 
     with book.Description.Publishinfo do
     begin
-      sl.Add(rstrPublisherInfo);
       sl.Add(rstrTitle + dlmtr + Bookname.Text);
       sl.Add(rstrPublisher + dlmtr + Publisher.Text);
       sl.Add(rstrCity + dlmtr + City.Text);
@@ -246,15 +248,18 @@ begin
       sl.Add(rstrID + dlmtr + book.Description.Documentinfo.Id);
       sl.Add(rstrVersion + dlmtr + Version);
 
-      sl.Add(rstrSource);
+      sl.Add('');
+      sl.Add(rstrSource + dlmtr);
       for i := 0 to Srcurl.Count - 1 do
       begin
-        sl.Add(Srcurl[i]);
+        sl.Add('URL :' + Srcurl[i]);
       end;
-      sl.Add(rstrSourceAuthor + dlmtr + rstrSourceAuthor + Srcocr.Text);
+      sl.Add(rstrSourceAuthor + dlmtr + Srcocr.Text);
 
+      sl.Add('');
+      sl.Add(rstrHistory + dlmtr);
       for i := 0 to History.p.Count - 1 do
-        sl.Add( rstrHistory + dlmtr + History.p[i].OnlyText);
+        sl.Add(History.p[i].OnlyText);
     end;
 
     Result := sl.Text;
@@ -263,41 +268,33 @@ begin
   end;
 end;
 
-{
-procedure GetBookInfo(book: IXMLFictionBook; var R: TBookRecord);
-var
-  i: Integer;
+function FormatName;
 begin
-  with book.Description.Titleinfo do
+  Result := LastName;
+
+  if FirstName <> '' then
   begin
-  for i := 0 to Author.Count - 1 do
-  R.AddAuthor(Author[i].Lastname.Text, Author[i].Firstname.Text, Author[i].MiddleName.Text);
-
-  if Booktitle.IsTextElement then
-  R.Title := Booktitle.Text;
-
-  for i := 0 to Genre.Count - 1 do
-  R.AddGenreFB2('', Genre[i], '');
-
-  R.Lang := Lang;
-  R.KeyWords := KeyWords.Text;
-
-  if Sequence.Count > 0 then
-  begin
-  try
-  R.Series := Sequence[0].Name;
-  R.SeqNumber := Sequence[0].Number;
-  except
-  end;
+    if onlyInitials then
+      Result := Result + ' ' + FirstName[1] + '.'
+    else
+      Result := Result + ' ' + FirstName;
   end;
 
-  for i := 0 to Annotation.P.Count - 1 do
-  if Annotation.P[i].IsTextElement then
-  R.Annotation := R.Annotation + #10#13 + Annotation.P[i].OnlyText;
+  if MiddleName <> '' then
+  begin
+    if onlyInitials then
+      Result := Result + ' ' + MiddleName[1] + '.'
+    else
+      Result := Result + ' ' + MiddleName;
+  end;
 
-  ///R.RootGenre:= Trim(FLibrary.GetTopGenreAlias(R.Genres[0].GenreFb2Code));
+  if nickName <> '' then
+  begin
+    if Result = '' then
+      Result := nickName
+    else
+      Result := Result + '(' + nickName + ')';
   end;
 end;
-}
 
 end.
