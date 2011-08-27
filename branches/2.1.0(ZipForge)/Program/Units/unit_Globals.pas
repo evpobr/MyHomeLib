@@ -1071,6 +1071,8 @@ var
   archiveFileName: string;
   archiver: TMHLZip;
 begin
+  Result := nil;
+
   case GetBookFormat of
     bfFb2, bfFb2Archive:
       begin
@@ -1081,6 +1083,8 @@ begin
       begin
         try
           bookFileName := GetBookFileName;
+          if not FileExists(bookFileName) then Exit;
+
           archiveFileName := TPath.Combine(Settings.ReadPath, bookFileName);
           archiver := TMHLZip.Create(archiveFileName);
           Result := TMemoryStream.Create;
@@ -1097,7 +1101,6 @@ begin
       end;
   end;
 
-  Assert(Assigned(Result));
 end;
 
 // Save the book to a destination file
