@@ -91,7 +91,7 @@ object frmEditBookInfo: TfrmEditBookInfo
     AlignWithMargins = True
     Left = 66
     Top = 16
-    Width = 534
+    Width = 442
     Height = 21
     TabOrder = 0
     OnChange = edTChange
@@ -297,5 +297,18 @@ object frmEditBookInfo: TfrmEditBookInfo
       TabOrder = 3
       OnChange = edTChange
     end
+  end
+  object btnOpenBook: TButton
+    Left = 514
+    Top = 14
+    Width = 86
+    Height = 25
+    Hint = #1054#1090#1082#1088#1099#1090#1100' '#1082#1085#1080#1075#1091
+    Caption = #1054#1090#1082#1088#1099#1090#1100
+    ImageIndex = 2
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 4
+    OnClick = btnOpenBookClick
   end
 end

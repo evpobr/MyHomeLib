@@ -4608,6 +4608,7 @@ begin
     if ActiveView = SeriesView then
        FCollection.SetProperty(PROP_LAST_SERIES_BOOK, Data.BookKey.BookID);
 
+    frmEditBook.OnReadBook := OnReadBookHandler;
     frmEditBook.OnGetBook := OnGetBookHandler;
     frmEditBook.OnSelectBook := OnSelectBookHandler;
     frmEditBook.OnUpdateBook := OnUpdateBookHandler;

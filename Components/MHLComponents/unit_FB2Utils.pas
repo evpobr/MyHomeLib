@@ -44,6 +44,7 @@ resourcestring
   rstrSize = 'Размер';
   rstrAdded = 'Добавлен';
   rstrGeneralInfo = 'Общая информация';
+  rstrSrclInfo = 'Информация об источнике';
   rstrTitle = 'Название';
   rstrAuthors = 'Автор(ы)';
   rstrSingleSeries = 'Серия';
