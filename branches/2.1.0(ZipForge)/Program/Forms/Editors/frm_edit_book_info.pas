@@ -60,6 +60,7 @@ type
     Label7: TLabel;
     gbAuthors: TGroupBox;
     gbExtraInfo: TGroupBox;
+    btnOpenBook: TButton;
     procedure FormShow(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure btnGenresClick(Sender: TObject);
@@ -70,6 +71,7 @@ type
     procedure btnSaveClick(Sender: TObject);
     procedure btnNextBookClick(Sender: TObject);
     procedure btnPrevBookClick(Sender: TObject);
+    procedure btnOpenBookClick(Sender: TObject);
 
   private
     FCollection: IBookCollection;
@@ -78,6 +80,7 @@ type
 
     FOnHelp: TOnHelpEvent;
     FOnGetBook: TGetBookEvent;
+    FOnReadBook: TBookEvent;
     FOnUpdateBook: TBookEvent;
     FOnSelectBook: TSelectBookEvent;
 
@@ -88,6 +91,7 @@ type
   public
     property Collection: IBookCollection read FCollection write FCollection;
 
+    property OnReadBook: TBookEvent read FOnReadBook write FOnReadBook;
     property OnHelp: TOnHelpEvent read FOnHelp write FOnHelp;
     property OnGetBook: TGetBookEvent read FOnGetBook write FOnGetBook;
     property OnSelectBook: TSelectBookEvent read FOnSelectBook write FOnSelectBook;
@@ -256,6 +260,12 @@ end;
 procedure TfrmEditBookInfo.btnNextBookClick(Sender: TObject);
 begin
   DoNextBook(True);
+end;
+
+procedure TfrmEditBookInfo.btnOpenBookClick(Sender: TObject);
+begin
+  Assert(Assigned(FOnReadBook));
+  FOnReadBook(FBookRecord);
 end;
 
 procedure TfrmEditBookInfo.btnPrevBookClick(Sender: TObject);
