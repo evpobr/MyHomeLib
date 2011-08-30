@@ -1550,9 +1550,6 @@ begin
     acEditConver2FBD.Enabled := IsPrivate and not IsFB2;
 
 
-    // --------- Панели онструментов ----------------------------------------------
-    tbtnDownloadList_Add.Visible := IsOnline;
-
     //
     // Поиск
     //
@@ -1561,6 +1558,7 @@ begin
     // --------- Вкладки, прочее  -------------------------------------------------
 
     tsDownload.TabVisible := IsOnline;
+    acBookAdd2DownloadList.Visible := IsOnline;
 
     if not IsOnline and (ActiveView = DownloadView) then
       pgControl.ActivePageIndex := PAGE_AUTHORS;
