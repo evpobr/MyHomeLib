@@ -1088,7 +1088,7 @@ end;
 
 function TSystemData_SQLite.GetReview(const BookKey: TBookKey): string;
 const
-  SQL_SELECT = 'SELECT Review WHERE BookID = ? AND DatabaseID = ? ';
+  SQL_SELECT = 'SELECT Review FROM Books WHERE BookID = ? AND DatabaseID = ? ';
 var
   query: TSQLiteQuery;
 begin
