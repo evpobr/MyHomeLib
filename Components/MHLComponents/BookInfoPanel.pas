@@ -356,9 +356,12 @@ begin
 
   // ---------------------------------------------
   try
-    with book.Description.Titleinfo do
-      for i := 0 to Annotation.p.Count - 1 do
-        FAnnotation.Lines.Add(Annotation.p[i].OnlyText);
+    if (book <> nil) then
+    begin
+      with book.Description.Titleinfo do
+        for i := 0 to Annotation.p.Count - 1 do
+          FAnnotation.Lines.Add(Annotation.p[i].OnlyText);
+    end;
 
     FAnnotation.SelStart := 0;
     FAnnotation.SelLength := 0;
@@ -368,122 +371,134 @@ begin
 
   // ---------------------------------------------
   try
-    with book.Description.Titleinfo, ffb2info.Groups.Add do
+    if (book <> nil) then
     begin
-      Header := rstrGeneralInfo;
-
-      AddItem(ffb2info, rstrTitle, Booktitle.Text, GroupID);
-
-      for i := 0 to Author.Count - 1 do
+      with book.Description.Titleinfo, ffb2info.Groups.Add do
       begin
-        with Author[i] do
-          tmpStr := FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
-        AddItem(ffb2info, IfThen(i = 0, rstrAuthors), tmpStr, GroupID);
-      end;
+        Header := rstrGeneralInfo;
 
-      for i := 0 to Sequence.Count - 1 do
-      begin
-        AddItem(ffb2info, IfThen(i = 0, rstrSingleSeries), Sequence[i].Name + ' ' + IntToStr(Sequence[i].Number), GroupID);
-      end;
+        AddItem(ffb2info, rstrTitle, Booktitle.Text, GroupID);
 
-      { TODO -oNickR -cUsability : показывать алиасы вместо внутренних имен }
-      for i := 0 to Genre.Count - 1 do
-      begin
-        AddItem(ffb2info, IfThen(i = 0, rstrGenre), Genre[i], GroupID);
-      end;
+        for i := 0 to Author.Count - 1 do
+        begin
+          with Author[i] do
+            tmpStr := FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
+          AddItem(ffb2info, IfThen(i = 0, rstrAuthors), tmpStr, GroupID);
+        end;
 
-      AddItem(ffb2info, rstrKeywords, Keywords.Text, GroupID);
-      AddItem(ffb2info, rstrDate, Date.Text, GroupID);
-      AddItem(ffb2info, rstrBookLanguage, Lang, GroupID);
-      AddItem(ffb2info, rstrSourceLanguage, Srclang, GroupID);
+        for i := 0 to Sequence.Count - 1 do
+        begin
+          AddItem(ffb2info, IfThen(i = 0, rstrSingleSeries), Sequence[i].Name + ' ' + IntToStr(Sequence[i].Number), GroupID);
+        end;
 
-      for i := 0 to Translator.Count - 1 do
-      begin
-        with Translator[i] do
-          tmpStr := FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
-        AddItem(ffb2info, IfThen(i = 0, rstrTranslators), tmpStr, GroupID);
-      end;
-    end; //with
+        { TODO -oNickR -cUsability : показывать алиасы вместо внутренних имен }
+        for i := 0 to Genre.Count - 1 do
+        begin
+          AddItem(ffb2info, IfThen(i = 0, rstrGenre), Genre[i], GroupID);
+        end;
+
+        AddItem(ffb2info, rstrKeywords, Keywords.Text, GroupID);
+        AddItem(ffb2info, rstrDate, Date.Text, GroupID);
+        AddItem(ffb2info, rstrBookLanguage, Lang, GroupID);
+        AddItem(ffb2info, rstrSourceLanguage, Srclang, GroupID);
+
+        for i := 0 to Translator.Count - 1 do
+        begin
+          with Translator[i] do
+            tmpStr := FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
+          AddItem(ffb2info, IfThen(i = 0, rstrTranslators), tmpStr, GroupID);
+        end;
+      end; //with
+    end;
   except
     //
   end;
 
   // ---------------------------------------------
   try
-    with book.Description.Srctitleinfo, ffb2info.Groups.Add do
+    if (book <> nil) then
     begin
-      Header := rstrSrclInfo;
-
-      AddItem(ffb2info, rstrTitle, Booktitle.Text, GroupID);
-
-      for i := 0 to Author.Count - 1 do
+      with book.Description.Srctitleinfo, ffb2info.Groups.Add do
       begin
-        with Author[i] do
-          tmpStr := FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
-        AddItem(ffb2info, IfThen(i = 0, rstrAuthors), tmpStr, GroupID);
-      end;
+        Header := rstrSrclInfo;
 
-      for i := 0 to Sequence.Count - 1 do
-      begin
-        AddItem(ffb2info, IfThen(i = 0, rstrSingleSeries), Sequence[i].Name + ' ' + IntToStr(Sequence[i].Number), GroupID);
-      end;
+        AddItem(ffb2info, rstrTitle, Booktitle.Text, GroupID);
 
-      AddItem(ffb2info, rstrKeywords, Keywords.Text, GroupID);
-      AddItem(ffb2info, rstrDate, Date.Text, GroupID);
-      AddItem(ffb2info, rstrBookLanguage, Lang, GroupID);
-      AddItem(ffb2info, rstrSourceLanguage, Srclang, GroupID);
-    end; //with
+        for i := 0 to Author.Count - 1 do
+        begin
+          with Author[i] do
+            tmpStr := FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
+          AddItem(ffb2info, IfThen(i = 0, rstrAuthors), tmpStr, GroupID);
+        end;
+
+        for i := 0 to Sequence.Count - 1 do
+        begin
+          AddItem(ffb2info, IfThen(i = 0, rstrSingleSeries), Sequence[i].Name + ' ' + IntToStr(Sequence[i].Number), GroupID);
+        end;
+
+        AddItem(ffb2info, rstrKeywords, Keywords.Text, GroupID);
+        AddItem(ffb2info, rstrDate, Date.Text, GroupID);
+        AddItem(ffb2info, rstrBookLanguage, Lang, GroupID);
+        AddItem(ffb2info, rstrSourceLanguage, Srclang, GroupID);
+      end; //with
+    end;
   except
     //
   end;
 
   // ---------------------------------------------
   try
-    with book.Description.Publishinfo, ffb2info.Groups.Add do
+    if (book <> nil) then
     begin
-      Header := rstrPublisherInfo;
+      with book.Description.Publishinfo, ffb2info.Groups.Add do
+      begin
+        Header := rstrPublisherInfo;
 
-      AddItem(ffb2info, rstrTitle, Bookname.Text, GroupID);
+        AddItem(ffb2info, rstrTitle, Bookname.Text, GroupID);
 
-      AddItem(ffb2info, rstrPublisher, Publisher.Text, GroupID);
-      AddItem(ffb2info, rstrCity, City.Text, GroupID);
-      AddItem(ffb2info, rstrYear, Year, GroupID);
-      AddItem(ffb2info, rstrISBN, Isbn.Text, GroupID);
+        AddItem(ffb2info, rstrPublisher, Publisher.Text, GroupID);
+        AddItem(ffb2info, rstrCity, City.Text, GroupID);
+        AddItem(ffb2info, rstrYear, Year, GroupID);
+        AddItem(ffb2info, rstrISBN, Isbn.Text, GroupID);
 
-      { TODO -oNickR -cUsability : показывать номер в серии }
-      for i := 0 to Sequence.Count - 1 do
-        AddItem(ffb2info, IfThen(i = 0, rstrSingleSeries), Sequence[i].Name + ' ' + IntToStr(Sequence[i].Number), GroupID);
+        { TODO -oNickR -cUsability : показывать номер в серии }
+        for i := 0 to Sequence.Count - 1 do
+          AddItem(ffb2info, IfThen(i = 0, rstrSingleSeries), Sequence[i].Name + ' ' + IntToStr(Sequence[i].Number), GroupID);
 
-    end; //with
+      end; //with
+    end;
   except
     //
   end;
 
   // ---------------------------------------------
   try
-    with book.Description.Documentinfo, ffb2info.Groups.Add do
+    if (book <> nil) then
     begin
-      Header := rstrOCRInfo;
-      for i := 0 to Author.Count - 1 do
+      with book.Description.Documentinfo, ffb2info.Groups.Add do
       begin
-        with Author[i] do
-          tmpStr := FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
-        AddItem(ffb2info, IfThen(i = 0, rstrAuthors), tmpStr, GroupID);
-      end;
+        Header := rstrOCRInfo;
+        for i := 0 to Author.Count - 1 do
+        begin
+          with Author[i] do
+            tmpStr := FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
+          AddItem(ffb2info, IfThen(i = 0, rstrAuthors), tmpStr, GroupID);
+        end;
 
-      AddItem(ffb2info, rstrProgram, Programused.Text, GroupID);
-      AddItem(ffb2info, rstrDate, Date.Text, GroupID);
-      AddItem(ffb2info, rstrID, book.Description.Documentinfo.Id, GroupID);
-      AddItem(ffb2info, rstrVersion, Version, GroupID);
+        AddItem(ffb2info, rstrProgram, Programused.Text, GroupID);
+        AddItem(ffb2info, rstrDate, Date.Text, GroupID);
+        AddItem(ffb2info, rstrID, book.Description.Documentinfo.Id, GroupID);
+        AddItem(ffb2info, rstrVersion, Version, GroupID);
 
-      for i := 0 to Srcurl.Count - 1 do
-        AddItem(ffb2info, IfThen(i = 0, rstrSource), Srcurl[i], GroupID);
+        for i := 0 to Srcurl.Count - 1 do
+          AddItem(ffb2info, IfThen(i = 0, rstrSource), Srcurl[i], GroupID);
 
-      AddItem(ffb2info, rstrSourceAuthor, Srcocr.Text, GroupID);
+        AddItem(ffb2info, rstrSourceAuthor, Srcocr.Text, GroupID);
 
-      for i := 0 to History.p.Count - 1 do
-        AddItem(ffb2info, IfThen(i = 0, rstrHistory), History.p[i].OnlyText, GroupID);
-    end; //with
+        for i := 0 to History.p.Count - 1 do
+          AddItem(ffb2info, IfThen(i = 0, rstrHistory), History.p[i].OnlyText, GroupID);
+      end; //with
+    end;
   except
     //
   end;
