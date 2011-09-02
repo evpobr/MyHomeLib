@@ -23,7 +23,7 @@ object frmBookDetails: TfrmBookDetails
     Top = 53
     Width = 622
     Height = 388
-    ActivePage = tsReview
+    ActivePage = tsInfo
     Align = alClient
     DoubleBuffered = True
     ParentDoubleBuffered = False
@@ -99,8 +99,8 @@ object frmBookDetails: TfrmBookDetails
             Width = 175
           end
           item
+            AutoSize = True
             Caption = #1047#1085#1072#1095#1077#1085#1080#1077
-            Width = 150
           end>
         ColumnClick = False
         GroupView = True

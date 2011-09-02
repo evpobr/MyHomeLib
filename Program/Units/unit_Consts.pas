@@ -98,10 +98,6 @@ const
   SERVER_ERRORLOG_FILENAME = 'server_error.html';
   IMPORT_ERRORLOG_FILENAME = 'import_errors.log';
   APP_HELP_FILENAME = 'MyHomeLib.chm';
-  LIBRUSEC_UPDATE_FILENAME = 'librusec_update.zip';
-  // EXTRA_UPDATE_FILENAME = 'extra_update.zip';
-  LIBRUSEC_UPDATEVERINFO_FILENAME = 'last_collection.info';
-  EXTRA_UPDATEVERINFO_FILENAME = 'extra_collection.info';
   VERINFO_FILENAME = 'version.info';
   STRUCTUREINFO_FILENAME = 'structure.info';
   PROGRAM_VERINFO_FILENAME = 'last_version.info';
@@ -141,10 +137,11 @@ const
   COL_COLLECTION = 19;
   COL_LANG       = 21;
   COL_LIBRATE    = 22;
+  COL_LIBID      = 23;
 
   COL_STATE = 99;
 
-  ColumnTags: array [0 .. 12] of Integer = (
+  ColumnTags: array [0 .. 13] of Integer = (
     COL_AUTHOR,
     COL_TITLE,
     COL_SERIES,
@@ -157,6 +154,7 @@ const
     COL_COLLECTION,
     COL_LANG,
     COL_LIBRATE,
+    COL_LIBID,
     COL_STATE
   );
 
@@ -290,6 +288,13 @@ const
   PROP_NOTES            = PROP_CLASS_COLLECTION or PROP_TYPE_STRING   or $000A;
   PROP_CREATIONDATE     = PROP_CLASS_COLLECTION or PROP_TYPE_DATETIME or $000B;
   PROP_SCHEMA_VERSION   = PROP_CLASS_COLLECTION or PROP_TYPE_STRING   or $000C;
+
+  PROP_LAST_AUTHOR      = PROP_CLASS_COLLECTION or PROP_TYPE_STRING   or $000D;
+  PROP_LAST_AUTHOR_BOOK = PROP_CLASS_COLLECTION or PROP_TYPE_INTEGER  or $000F;
+
+  PROP_LAST_SERIES      = PROP_CLASS_COLLECTION or PROP_TYPE_STRING   or $0010;
+  PROP_LAST_SERIES_BOOK = PROP_CLASS_COLLECTION or PROP_TYPE_INTEGER  or $0011;
+
 
 type
   TColumnSet = set of 0 .. 255;

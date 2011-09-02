@@ -9,7 +9,7 @@
   * Created                  20.08.2008
   * Description              
   *
-  * $Id$
+  * $Id: frm_edit_script.pas 549 2010-08-13 08:02:58Z eg_ $
   *
   * History
   *

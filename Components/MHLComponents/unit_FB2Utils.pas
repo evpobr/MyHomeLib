@@ -28,9 +28,44 @@ uses
 function GetBookCoverStream(book: IXMLFictionBook): TStream;
 function GetBookCover(book: IXMLFictionBook): TGraphic;
 function GetBookAnnotation(book: IXMLFictionBook): string;
+function GetBookInfo(book: IXMLFictionBook): string;
+function FormatName(const LastName: string; const FirstName: string; const MiddleName: string; const nickName: string = ''; onlyInitials: Boolean = False): string;
 
 { TODO -oNickR -cRefactoring : доделать эту функцию. Для этого необходимо вынести определение TBookRecord в доступное место }
 // procedure GetBookInfo(book: IXMLFictionBook; var R: TBookRecord);
+
+const
+  dlmtr = ': ';
+
+resourcestring
+  rstrFileInfo = 'Информация о файле';
+  rstrFolder = 'Папка';
+  rstrFile = 'Файл';
+  rstrSize = 'Размер';
+  rstrAdded = 'Добавлен';
+  rstrGeneralInfo = 'Общая информация';
+  rstrSrclInfo = 'Информация об источнике';
+  rstrTitle = 'Название';
+  rstrAuthors = 'Автор(ы)';
+  rstrSingleSeries = 'Серия';
+  rstrGenre = 'Жанр';
+  rstrKeywords = 'Ключевые слова';
+  rstrDate = 'Дата';
+  rstrBookLanguage = 'Язык книги';
+  rstrSourceLanguage = 'Язык оригинала';
+  rstrTranslators = 'Переводчик(и)';
+  rstrPublisherInfo = 'Издательская информация';
+  rstrPublisher = 'Издательство';
+  rstrCity = 'Город';
+  rstrYear = 'Год';
+  rstrISBN = 'ISBN';
+  rstrOCRInfo ='Информация о документе (OCR)';
+  rstrProgram = 'Программа';
+  rstrID = 'ID';
+  rstrVersion = 'Версия';
+  rstrSource = 'Источник';
+  rstrSourceAuthor = 'Автор источника';
+  rstrHistory = 'История';
 
 implementation
 
@@ -165,41 +200,102 @@ begin
   end;
 end;
 
-{
-procedure GetBookInfo(book: IXMLFictionBook; var R: TBookRecord);
+function GetBookInfo(book: IXMLFictionBook): string;
 var
   i: Integer;
+  sl: TStringList;
 begin
-  with book.Description.Titleinfo do
-  begin
-  for i := 0 to Author.Count - 1 do
-  R.AddAuthor(Author[i].Lastname.Text, Author[i].Firstname.Text, Author[i].MiddleName.Text);
+  Result := '';
 
-  if Booktitle.IsTextElement then
-  R.Title := Booktitle.Text;
-
-  for i := 0 to Genre.Count - 1 do
-  R.AddGenreFB2('', Genre[i], '');
-
-  R.Lang := Lang;
-  R.KeyWords := KeyWords.Text;
-
-  if Sequence.Count > 0 then
-  begin
+  sl := TStringList.Create;
   try
-  R.Series := Sequence[0].Name;
-  R.SeqNumber := Sequence[0].Number;
-  except
-  end;
-  end;
 
-  for i := 0 to Annotation.P.Count - 1 do
-  if Annotation.P[i].IsTextElement then
-  R.Annotation := R.Annotation + #10#13 + Annotation.P[i].OnlyText;
+    with book.Description.Titleinfo do
+    begin
+      sl.Add(rstrYear + dlmtr + Date.Text);
 
-  ///R.RootGenre:= Trim(FLibrary.GetTopGenreAlias(R.Genres[0].GenreFb2Code));
+      sl.Add('');
+      sl.Add(rstrSingleSeries + dlmtr);
+      for i := 0 to Sequence.Count - 1 do
+        sl.Add(Sequence[i].Name);
+
+      sl.Add('');
+      sl.Add(rstrTranslators + dlmtr);
+      for i := 0 to Translator.Count - 1 do
+        with Translator[i] do
+          sl.Add(LastName.Text + Firstname.Text + Middlename.Text + NickName.Text);
+    end;
+    sl.Add('');
+
+    with book.Description.Publishinfo do
+    begin
+      sl.Add(rstrTitle + dlmtr + Bookname.Text);
+      sl.Add(rstrPublisher + dlmtr + Publisher.Text);
+      sl.Add(rstrCity + dlmtr + City.Text);
+      sl.Add(rstrYear + dlmtr + Year);
+      sl.Add(rstrISBN + dlmtr + Isbn.Text);
+    end;
+
+    with book.Description.Documentinfo do
+    begin
+      sl.Add('');
+      sl.Add(rstrAuthors + dlmtr);
+      for i := 0 to Author.Count - 1 do
+        with Author[i] do
+          sl.Add(LastName.Text + Firstname.Text + Middlename.Text + NickName.Text);
+
+      sl.Add(rstrProgram + dlmtr + Programused.Text);
+      sl.Add(rstrDate + dlmtr + Date.Text);
+      sl.Add(rstrID + dlmtr + book.Description.Documentinfo.Id);
+      sl.Add(rstrVersion + dlmtr + Version);
+
+      sl.Add('');
+      sl.Add(rstrSource + dlmtr);
+      for i := 0 to Srcurl.Count - 1 do
+      begin
+        sl.Add('URL :' + Srcurl[i]);
+      end;
+      sl.Add(rstrSourceAuthor + dlmtr + Srcocr.Text);
+
+      sl.Add('');
+      sl.Add(rstrHistory + dlmtr);
+      for i := 0 to History.p.Count - 1 do
+        sl.Add(History.p[i].OnlyText);
+    end;
+
+    Result := sl.Text;
+  finally
+    sl.Free;
   end;
 end;
-}
+
+function FormatName;
+begin
+  Result := LastName;
+
+  if FirstName <> '' then
+  begin
+    if onlyInitials then
+      Result := Result + ' ' + FirstName[1] + '.'
+    else
+      Result := Result + ' ' + FirstName;
+  end;
+
+  if MiddleName <> '' then
+  begin
+    if onlyInitials then
+      Result := Result + ' ' + MiddleName[1] + '.'
+    else
+      Result := Result + ' ' + MiddleName;
+  end;
+
+  if nickName <> '' then
+  begin
+    if Result = '' then
+      Result := nickName
+    else
+      Result := Result + '(' + nickName + ')';
+  end;
+end;
 
 end.

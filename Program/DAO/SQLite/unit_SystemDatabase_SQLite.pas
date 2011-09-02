@@ -25,7 +25,7 @@ uses
   Generics.Collections,
   unit_SystemDatabase_Abstract,
   SQLiteWrap,
-  UserData,
+  unit_UserData,
   unit_Interfaces,
   unit_Globals,
   unit_Consts;
@@ -462,7 +462,7 @@ const
 var
   query: TSQLiteQuery;
 begin
-  Assert(CollectionID > 0);
+//  Assert(CollectionID > 0);
 
   query := FDatabase.NewQuery(SQL_SELECT);
   try
@@ -1088,7 +1088,7 @@ end;
 
 function TSystemData_SQLite.GetReview(const BookKey: TBookKey): string;
 const
-  SQL_SELECT = 'SELECT Review WHERE BookID = ? AND DatabaseID = ? ';
+  SQL_SELECT = 'SELECT Review FROM Books WHERE BookID = ? AND DatabaseID = ? ';
 var
   query: TSQLiteQuery;
 begin

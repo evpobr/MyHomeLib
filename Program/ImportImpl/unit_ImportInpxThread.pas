@@ -355,13 +355,14 @@ var
   filesProcessed: Integer;
   CurrentFile: string;
   IsOnline: Boolean;
-  inpStream: TStream;
+  inpStream: TMemoryStream;
   StructureInfo: string;
   header: TINPXHeader;
   strVersion: string;
-  idxFile: Integer;
+  strCollection: string;
   numFiles: Integer;
-  archiver: IArchiver;
+  Zip: TMHLZip;
+
 begin
   filesProcessed := 0;
   i := 0;
@@ -373,38 +374,34 @@ begin
   SetLength(FFields, 0);
   FUseStoredFolder := False;
 
-  archiver := TArchiver.Create(INPXFileName, afZip);
-  idxFile := archiver.GetIdxByFileName(STRUCTUREINFO_FILENAME);
-  if idxFile >= 0 then
-    StructureInfo := archiver.UnarchiveToString(idxFile)
-  else
-    StructureInfo := DEFAULTSTRUCTURE;
-
-  GetFields(StructureInfo);
-
   BookCollection.StartBatchUpdate;
   try
-    numFiles := archiver.GetNumFiles;
-    idxFile := archiver.GetIdxByExt('.inp');
-    if idxFile >= 0 then
-    begin
-      repeat
-        CurrentFile := archiver.GetFileName(idxFile);
+    Zip := TMHLZip.Create(INPXFileName);
+    if Zip.Find(STRUCTUREINFO_FILENAME) then
+      StructureInfo := Zip.ExtractToString(STRUCTUREINFO_FILENAME)
+    else
+      StructureInfo := DEFAULTSTRUCTURE;
 
-        if not IsOnline and (CurrentFile = 'extra.inp') then
-          Continue;
+    GetFields(StructureInfo);
+    numFiles := Zip.FileCount;
 
-        Teletype(Format(rstrProcessingFile, [CurrentFile]), tsInfo);
+    if Zip.Find('*.inp') then
+    repeat
+      CurrentFile:= Zip.LastName;
+      if not IsOnline and (CurrentFile = 'extra.inp') then Continue;
 
-        BookList := TStringList.Create;
+      Teletype(Format(rstrProcessingFile, [CurrentFile]), tsInfo);
+
+      BookList := TStringList.Create;
+      try
         try
-          inpStream := archiver.UnarchiveToStream(idxFile);
-          try
-            inpStream.Seek(0, soBeginning);
-            BookList.LoadFromStream(inpStream, TEncoding.UTF8);
-          finally
-            FreeAndNil(inpStream);
-          end;
+          inpStream := TMemoryStream.Create;
+          Zip.ExtractToStream(Zip.LastName, inpStream);
+          inpStream.Seek(0, soBeginning);
+          BookList.LoadFromStream(inpStream, TEncoding.UTF8);
+        finally
+          FreeAndNil(inpStream);
+        end;
 
           for j := 0 to BookList.Count - 1 do
           begin
@@ -470,36 +467,34 @@ begin
         if Canceled then
           Break;
 
-        idxFile := archiver.GetIdxByExt('.inp', idxFile + 1);
-      until (idxFile < 0);
-    end;
+    until not Zip.FindNext;
 
     Teletype(Format(rstrAddedBooks, [filesProcessed]), tsInfo);
-
     FProgressEngine.BeginOperation(-1, rstrUpdatingDB, '');
 
     //
     // Прочитать и установить свойства коллекции
     //
-    idxFile := archiver.GetIdxByFileName(COLLECTIONINFO_FILENAME);
-    if idxFile >= 0 then
+    if Zip.Find(COLLECTIONINFO_FILENAME) then
     begin
-      header.ParseString(archiver.UnarchiveToString(idxFile));
+      strCollection := Zip.ExtractToString(Zip.LastName);
+      header.ParseString(strCollection);
       BookCollection.SetProperty(PROP_NOTES, header.Notes);
       BookCollection.SetProperty(PROP_URL, header.URL);
       BookCollection.SetProperty(PROP_CONNECTIONSCRIPT, header.Script);
     end;
 
-    idxFile := archiver.GetIdxByFileName(VERINFO_FILENAME);
-    if idxFile >= 0 then
+    if Zip.Find(VERINFO_FILENAME)  then
     begin
-      strVersion := archiver.UnarchiveToString(idxFile);
+      strVersion := Zip.ExtractToString(Zip.LastName);
       strVersion := Trim(strVersion);
       BookCollection.SetProperty(PROP_DATAVERSION, StrToIntDef(strVersion, UNVERSIONED_COLLECTION));
     end;
 
     BookCollection.AfterBatchUpdate;
   finally
+    FreeAndNil(Zip);
+    FreeAndNil(inpStream);
     BookCollection.FinishBatchUpdate;
   end;
 end;

@@ -2522,8 +2522,20 @@ begin
 end;
 
 function TXMLSequenceType.Get_Number: Integer;
+var
+  SourceVariant: OleVariant;
+  SourceType: TVarType;
 begin
-  Result := AttributeNodes['number'].NodeValue;
+  SourceVariant := AttributeNodes['number'].NodeValue;
+  SourceType := TVarData(SourceVariant).VType;
+  if (SourceType and varNull <> varNull) then
+  begin
+    Result := SourceVariant;
+  end
+  else
+  begin
+    Result := 0;
+  end;
 end;
 
 procedure TXMLSequenceType.Set_Number(Value: Integer);

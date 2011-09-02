@@ -194,7 +194,7 @@ end;
 function TExportToDeviceThread.SendFileToDevice: Boolean;
 var
   DestFileName: string;
-  archiver: IArchiver;
+  archiver: TMHLZip;
 begin
   if not FileExists(FFileOprecord.SourceFile) then
   begin
@@ -215,8 +215,13 @@ begin
 
     emFB2Zip:
       begin
-        archiver := TArchiver.Create(DestFileName + ZIP_EXTENSION);
-        archiver.ArchiveFiles([FFileOprecord.SourceFile]);
+        try
+          archiver := TMHLZip.Create(DestFileName + ZIP_EXTENSION);
+          archiver.BaseDir := Settings.TempDir;
+          archiver.AddFiles(FFileOprecord.SourceFile);
+        finally
+          FreeAndNil(archiver);
+        end;
       end;
 
     emTxt:

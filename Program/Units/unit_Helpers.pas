@@ -68,6 +68,8 @@ function GetFolderName(Handle: Integer; const Caption: string; var strFolder: st
 
 function CreateImageFromResource(GraphicClass: TGraphicClass; const ResName: string; ResType: PChar = RT_RCDATA): TGraphic;
 
+function MoveToRecycle(sFileName: string): Boolean;
+
 function SimpleShellExecute(
   hWnd: HWND;
   const FileName: string;
@@ -380,10 +382,6 @@ var
   DisplayName: array [0 .. MAX_PATH] of Char;
   TempPath : array[0..MAX_PATH] of Char;
 begin
-  //
-  // TODO DONE -oNickR -cUsability : восстановить InitialDir
-  //
-
   Result := False;
 
   FillChar(BrowseInfo, SizeOf(TBrowseInfo), #0);
@@ -403,13 +401,7 @@ begin
   if Assigned(lpItemID) then
   begin
     Result := SHGetPathFromIDList(lpItemID, TempPath);
-    if Result then
-    begin
-      strFolder := StrPas(TempPath);
-      //
-      // TODO DONE -oNickR -cUsability : сохранить InitialDir
-      //
-    end;
+    if Result then strFolder := StrPas(TempPath);
     CoTaskMemFree(lpItemID);
   end;
 end;
@@ -464,6 +456,20 @@ begin
     PChar(Directory),
     ShowCmd
   );
+end;
+
+function MoveToRecycle(sFileName: string): Boolean;
+var
+  fos: TSHFileOpStruct;
+begin
+  FillChar(fos, SizeOf(fos), 0);
+  with fos do
+  begin
+    wFunc  := FO_DELETE;
+    pFrom  := PChar(sFileName);
+    fFlags := FOF_ALLOWUNDO or FOF_NOCONFIRMATION or FOF_SILENT;
+  end;
+  Result := (0 = ShFileOperation(fos));
 end;
 
 { TListViewHelper }

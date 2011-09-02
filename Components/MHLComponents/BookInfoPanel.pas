@@ -23,7 +23,15 @@ uses
   Graphics,
   Classes,
   StdCtrls,
+  ComCtrls,
   ExtCtrls,
+  SysUtils,
+  Clipbrd,
+  Menus,
+  FictionBook_21,
+  StrUtils,
+  unit_MHLHelpers,
+  unit_FB2Utils,
   MHLLinkLabel;
 
 type
@@ -38,11 +46,19 @@ type
     FGenreLabel: TLabel;
     FGenres: TMHLLinkLabel;
     FAnnotation: TMemo;
+    FFb2Info: TListView;
+    FInfoButton: TButton;
+
     FOnAuthorLinkClicked: TSysLinkEvent;
     FOnGenreLinkClicked: TSysLinkEvent;
     FOnSeriesLinkClicked: TSysLinkEvent;
+    FOnAnnotationClicked: TNotifyEvent;
+    FMenu: TPopupMenu;
 
     FColor: TColor;
+
+
+    FInfoPriority: Boolean;
 
     function GetShowCover: boolean;
     procedure SetShowCover(const Value: boolean);
@@ -54,6 +70,9 @@ type
     procedure UpdateLinkTexts;
 
     procedure OnLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
+    procedure OnAnnotationClicked(Sender: TObject);
+    procedure SetInfoPriority(const Value: Boolean);
+    procedure CopyToClipboard(Sender: TObject);
 
   protected
     procedure Resize; override;
@@ -73,7 +92,9 @@ type
       );
 
     procedure SetBookAnnotation(
-      const Annotation: string
+      book: IXMLFictionBook;
+      const Folder: string = '';
+      const FileName: string = ''
       );
 
     procedure Clear;
@@ -141,6 +162,7 @@ type
 
     property ShowCover: Boolean read GetShowCover write SetShowCover default True;
     property ShowAnnotation: Boolean read GetShowAnnotation write SetShowAnnotation default True;
+    property InfoPriority: Boolean read FInfoPriority write SetInfoPriority default False;
 
     property OnAuthorLinkClicked: TSysLinkEvent read FOnAuthorLinkClicked write FOnAuthorLinkClicked;
     property OnSeriesLinkClicked: TSysLinkEvent read FOnSeriesLinkClicked write FOnSeriesLinkClicked;
@@ -153,15 +175,32 @@ resourcestring
   rstrSerieLabel = 'Серия:';
   rstrGenreLabel = 'Жанр(ы):';
   rstrNoAnnotationHint = 'Аннотация отсутствует';
+  rsrtCopyLabel = 'Копировать';
+  rsrtFiledLabel = 'Поле';
+  rsrtValueLabel = 'Значение';
 
 function GetCoverWidth(Height: Integer): Integer;
 begin
   Result := Height * 2 div 3;
 end;
 
+procedure TInfoPanel.CopyToClipboard(Sender: TObject);
+begin
+  Clipboard.AsText := FFb2Info.Selected.SubItems[0];
+end;
+
 constructor TInfoPanel.Create(AOwner: TComponent);
+var
+  Item: TMenuItem;
 begin
   inherited Create(AOwner);
+
+  FMenu := TPopupMenu.Create(Self);
+  Item := TMenuItem.Create(Self);
+  Item.Caption := rsrtCopyLabel;
+  Item.ShortCut := TextToShortCut('Ctrl+C'); //ShortCut(43,[ssCtrl]) ;
+  Item.OnClick :=  CopyToClipboard;
+  FMenu.Items.Add(Item);
 
   SetBounds(0, 0, 500, 200);
 
@@ -223,6 +262,35 @@ begin
   FAnnotation.ReadOnly := True;
   FAnnotation.TextHint := rstrNoAnnotationHint;
   FAnnotation.ScrollBars := ssVertical;
+  FAnnotation.OnDblClick := OnAnnotationClicked;
+  FAnnotation.Visible := not FInfoPriority;
+
+  FFb2Info := TListView.Create(FInfoPanel);
+
+  with FFb2Info do
+  begin
+    Parent := FInfoPanel;
+    AlignWithMargins := True;
+    with Columns.Add do begin
+      Caption := rsrtFiledLabel;
+      Width := 175;
+    end;
+    with Columns.Add do begin
+      Caption := rsrtValueLabel;
+      AutoSize := True;
+    end;
+    ColumnClick := False;
+    GroupView := True;
+    ReadOnly := True;
+    RowSelect := True;
+    TabOrder := 0;
+    ViewStyle := vsReport;
+    Anchors := [akLeft, akTop, akRight, akBottom];
+    OnDblClick := OnAnnotationClicked;
+    Visible := FInfoPriority;
+    PopupMenu := FMenu;
+  end;
+
 
   //       300 200
   //0,  0, 300,  20
@@ -244,17 +312,195 @@ begin
   FSerieLabel.SetBounds(0, 40, 70, 20);  FSeries.SetBounds(70, 40, 140, 20);
   FGenreLabel.SetBounds(0, 60, 70, 20);  FGenres.SetBounds(70, 60, 140, 20);
   FAnnotation.SetBounds(0, 80, 300, 120);
-
+  FFb2Info.SetBounds(0, 80, 300, 120);
   //
   //
   //
   Constraints.MinHeight := 150;
 end;
 
+procedure TInfoPanel.SetBookAnnotation;
+var
+  i: integer;
+  imgBookCover: TGraphic;
+  tmpStr: string;
+
+  procedure AddItem(listView: TListView; const Field: string; const Value: string; GroupID: integer = -1);
+  var
+    item: TListItem;
+  begin
+    if Trim(Value) <> '' then
+    begin
+      item := listView.Items.Add;
+      item.Caption := Field;
+      item.SubItems.Add(Value);
+      item.GroupID := GroupID;
+    end;
+  end;
+
+begin
+
+  ffb2info.Clear;
+  FAnnotation.Clear;
+
+  FFb2Info.Visible := FInfoPriority;
+  FAnnotation.Visible := not FInfoPriority;
+
+
+  with ffb2Info.Groups.Add do
+  begin
+    Header := rstrFileInfo;
+    AddItem(ffb2Info, rstrFolder, Folder, GroupID);
+    AddItem(ffb2Info, rstrFile, FileName, GroupID);
+  end;
+
+  // ---------------------------------------------
+  if (book = nil) then
+    Exit;
+
+  try
+    with book.Description.Titleinfo do
+      for i := 0 to Annotation.p.Count - 1 do
+        FAnnotation.Lines.Add(Annotation.p[i].OnlyText);
+
+    FAnnotation.SelStart := 0;
+    FAnnotation.SelLength := 0;
+  except
+    //
+  end;
+
+  // ---------------------------------------------
+  try
+    with book.Description.Titleinfo, ffb2info.Groups.Add do
+    begin
+      Header := rstrGeneralInfo;
+
+      AddItem(ffb2info, rstrTitle, Booktitle.Text, GroupID);
+
+      for i := 0 to Author.Count - 1 do
+      begin
+        with Author[i] do
+          tmpStr := FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
+        AddItem(ffb2info, IfThen(i = 0, rstrAuthors), tmpStr, GroupID);
+      end;
+
+      for i := 0 to Sequence.Count - 1 do
+      begin
+        AddItem(ffb2info, IfThen(i = 0, rstrSingleSeries), Sequence[i].Name + ' ' + IntToStr(Sequence[i].Number), GroupID);
+      end;
+
+      { TODO -oNickR -cUsability : показывать алиасы вместо внутренних имен }
+      for i := 0 to Genre.Count - 1 do
+      begin
+        AddItem(ffb2info, IfThen(i = 0, rstrGenre), Genre[i], GroupID);
+      end;
+
+      AddItem(ffb2info, rstrKeywords, Keywords.Text, GroupID);
+      AddItem(ffb2info, rstrDate, Date.Text, GroupID);
+      AddItem(ffb2info, rstrBookLanguage, Lang, GroupID);
+      AddItem(ffb2info, rstrSourceLanguage, Srclang, GroupID);
+
+      for i := 0 to Translator.Count - 1 do
+      begin
+        with Translator[i] do
+          tmpStr := FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
+        AddItem(ffb2info, IfThen(i = 0, rstrTranslators), tmpStr, GroupID);
+      end;
+    end; //with
+  except
+    //
+  end;
+
+  // ---------------------------------------------
+  try
+    with book.Description.Srctitleinfo, ffb2info.Groups.Add do
+    begin
+      Header := rstrSrclInfo;
+
+      AddItem(ffb2info, rstrTitle, Booktitle.Text, GroupID);
+
+      for i := 0 to Author.Count - 1 do
+      begin
+        with Author[i] do
+          tmpStr := FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
+        AddItem(ffb2info, IfThen(i = 0, rstrAuthors), tmpStr, GroupID);
+      end;
+
+      for i := 0 to Sequence.Count - 1 do
+      begin
+        AddItem(ffb2info, IfThen(i = 0, rstrSingleSeries), Sequence[i].Name + ' ' + IntToStr(Sequence[i].Number), GroupID);
+      end;
+
+      AddItem(ffb2info, rstrKeywords, Keywords.Text, GroupID);
+      AddItem(ffb2info, rstrDate, Date.Text, GroupID);
+      AddItem(ffb2info, rstrBookLanguage, Lang, GroupID);
+      AddItem(ffb2info, rstrSourceLanguage, Srclang, GroupID);
+    end; //with
+  except
+    //
+  end;
+
+  // ---------------------------------------------
+  try
+    with book.Description.Publishinfo, ffb2info.Groups.Add do
+    begin
+      Header := rstrPublisherInfo;
+
+      AddItem(ffb2info, rstrTitle, Bookname.Text, GroupID);
+
+      AddItem(ffb2info, rstrPublisher, Publisher.Text, GroupID);
+      AddItem(ffb2info, rstrCity, City.Text, GroupID);
+      AddItem(ffb2info, rstrYear, Year, GroupID);
+      AddItem(ffb2info, rstrISBN, Isbn.Text, GroupID);
+
+      { TODO -oNickR -cUsability : показывать номер в серии }
+      for i := 0 to Sequence.Count - 1 do
+        AddItem(ffb2info, IfThen(i = 0, rstrSingleSeries), Sequence[i].Name + ' ' + IntToStr(Sequence[i].Number), GroupID);
+    end; //with
+  except
+    //
+  end;
+
+  // ---------------------------------------------
+  try
+    with book.Description.Documentinfo, ffb2info.Groups.Add do
+    begin
+      Header := rstrOCRInfo;
+      for i := 0 to Author.Count - 1 do
+      begin
+        with Author[i] do
+          tmpStr := FormatName(Lastname.Text, Firstname.Text, Middlename.Text, NickName.Text);
+        AddItem(ffb2info, IfThen(i = 0, rstrAuthors), tmpStr, GroupID);
+      end;
+
+      AddItem(ffb2info, rstrProgram, Programused.Text, GroupID);
+      AddItem(ffb2info, rstrDate, Date.Text, GroupID);
+      AddItem(ffb2info, rstrID, book.Description.Documentinfo.Id, GroupID);
+      AddItem(ffb2info, rstrVersion, Version, GroupID);
+
+      for i := 0 to Srcurl.Count - 1 do
+        AddItem(ffb2info, IfThen(i = 0, rstrSource), Srcurl[i], GroupID);
+
+      AddItem(ffb2info, rstrSourceAuthor, Srcocr.Text, GroupID);
+
+      for i := 0 to History.p.Count - 1 do
+        AddItem(ffb2info, IfThen(i = 0, rstrHistory), History.p[i].OnlyText, GroupID);
+    end; //with
+  except
+    //
+  end;
+end;
+
 procedure TInfoPanel.Resize;
 begin
   FCover.Width := GetCoverWidth(FCover.Height);
   inherited;
+end;
+
+procedure TInfoPanel.OnAnnotationClicked(Sender: TObject);
+begin
+  FFb2Info.Visible := not FFb2Info.Visible;
+  FAnnotation.Visible := not FAnnotation.Visible;
 end;
 
 procedure TInfoPanel.OnLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
@@ -300,25 +546,19 @@ begin
   end;
 end;
 
+procedure TInfoPanel.SetInfoPriority(const Value: Boolean);
+begin
+  FInfoPriority := Value;
+
+  FFb2Info.Visible := FInfoPriority;
+  FAnnotation.Visible := not FInfoPriority;
+end;
+
 procedure TInfoPanel.SetBookCover(
   BookCover: TGraphic
   );
 begin
   FCover.Picture.Assign(BookCover);
-end;
-
-procedure TInfoPanel.SetBookAnnotation(
-  const Annotation: string
-  );
-begin
-  FAnnotation.Lines.BeginUpdate;
-  try
-    FAnnotation.Lines.Text := Annotation;
-    FAnnotation.SelStart := 0;
-    FAnnotation.SelLength := 0;
-  finally
-    FAnnotation.Lines.EndUpdate;
-  end;
 end;
 
 procedure TInfoPanel.Clear;
@@ -328,8 +568,10 @@ begin
   FSeries.Caption := '';
   FGenres.Caption := '';
   FAnnotation.Lines.Clear;
+  FFb2Info.Items.Clear;
   FCover.Picture.Assign(nil);
 end;
+
 
 function TInfoPanel.GetShowAnnotation: Boolean;
 begin
