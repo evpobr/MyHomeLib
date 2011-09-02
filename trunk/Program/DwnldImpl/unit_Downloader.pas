@@ -194,12 +194,12 @@ begin
           Result := archiver.Test;
           if not Result then
             DeleteFile(PChar(FFile));
-          FreeAndNil(archiver);
         end;
       end;
     end;
   finally
     Str.Free;
+    FreeAndNil(archiver);
   end;
 end;
 

@@ -88,6 +88,7 @@ begin
     except
       // ничего не делаем
     end;
+    FreeAndNil(archiver);
   end;
 end;
 
