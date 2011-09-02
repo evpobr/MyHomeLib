@@ -356,11 +356,7 @@ begin
 
   // ---------------------------------------------
   if (book = nil) then
-  begin
-    FAnnotation.SelStart := 0;
-    FAnnotation.SelLength := 0;
     Exit;
-  end;
 
   try
     with book.Description.Titleinfo do
