@@ -108,6 +108,7 @@ resourcestring
   rstrType = '“ип';
   rstrLang = 'язык';
   rstrLibrate = 'ќценка';
+  rstrLibID = 'BookID';
 
 const
   //
@@ -261,6 +262,15 @@ begin
         MinWidth := 35;
         Alignment := taCenter;
         Options := Fix - [coDraggable] + [coFixed];
+      end;
+
+    COL_LIBID:
+      begin
+        Caption := rstrLibID;
+        MaxWidth := 100;
+        MinWidth := 55;
+        Alignment := taCenter;
+        Options := Rez;
       end;
   end;
 end;

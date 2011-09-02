@@ -187,6 +187,7 @@ type
     btnBS: TButton;
     pnASG: TPanel;
     btnASG: TButton;
+    cbSelectedIsChecked: TCheckBox;
 
     procedure SaveSettingsClick(Sender: TObject);
     procedure ShowHelpClick(Sender: TObject);
@@ -247,7 +248,6 @@ uses
   unit_Settings,
   dm_user,
   unit_Helpers,
-  htmlhlp,
   frm_create_mask,
   unit_Templater;
 
@@ -362,6 +362,7 @@ begin
 
   cbOverwriteFB2Info.Checked := Settings.OverwriteFB2Info;
   edTitleTemplate.Text := Settings.BookHeaderTemplate;
+  cbSelectedIsChecked.Checked := Settings.SelectedIsChecked;
 
   //
   // Page 6 -  FileSort
@@ -464,6 +465,7 @@ begin
   Settings.OverwriteFB2Info := cbOverwriteFB2Info.Checked;
   Settings.BookHeaderTemplate := edTitleTemplate.Text;
   Settings.AutoStartDwnld := cbAutoStartDwnld.Checked;
+  Settings.SelectedIsChecked := cbSelectedIsChecked.Checked;
 
   // Page 6 -  FileSort
 

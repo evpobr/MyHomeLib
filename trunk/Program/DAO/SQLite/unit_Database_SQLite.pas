@@ -22,7 +22,7 @@ interface
 uses
   Classes,
   SQLiteWrap,
-  UserData,
+  unit_UserData,
   unit_Globals,
   unit_Interfaces,
   unit_Database_Abstract;
@@ -473,7 +473,7 @@ begin
     bmByGenre:
     begin
       Assert(Assigned(FilterValue));
-      SQLRows := 'SELECT b.BookID FROM Genre_List gl INNER JOIN Books b ON gl.BookID = b.BookID ';
+      SQLRows := 'SELECT DISTINCT b.BookID FROM Genre_List gl INNER JOIN Books b ON gl.BookID = b.BookID ';
       if isFB2Collection(FCollection.CollectionCode) or not Settings.ShowSubGenreBooks then
         AddToWhere(Where, 'gl.GenreCode = :GenreCode')
       else
@@ -1976,33 +1976,51 @@ begin
 end;
 
 // Delete the book, all dependent tables are cleared by a matching trigger
+//procedure TBookCollection_SQLite.DeleteBook(const BookKey: TBookKey);
+//const
+//  SQL_DELETE_BOOKS = 'DELETE FROM Books WHERE BookID = ?';
+//begin
+//  if BookKey.DatabaseID <> CollectionID then
+//    FSystemData.GetCollection(BookKey.DatabaseID).DeleteBook(BookKey)
+//  else
+//  begin
+//    FDatabase.ExecSQL(SQL_DELETE_BOOKS, [BookKey.BookID]);
+//    FSystemData.DeleteBook(BookKey);
+//  end;
+//end;
+
 procedure TBookCollection_SQLite.DeleteBook(const BookKey: TBookKey);
 const
-  SQL_SELECT_ROWS = 'SELECT rowid FROM Books WHERE BookID = ?';
-  SQL_DELETE_BOOKS = 'DELETE FROM Books WHERE rowid = ? ';
+  SQL_DELETE_BOOKS = 'DELETE FROM Books WHERE BookID = ?';
 var
-  query: TSQLiteQuery;
-  ID: integer;
+  query1, query2: TSQLiteQuery;
+  Count: Integer;
+  AuthorID: integer;
+  ID: Integer;
 begin
   if BookKey.DatabaseID <> CollectionID then
     FSystemData.GetCollection(BookKey.DatabaseID).DeleteBook(BookKey)
   else
   begin
-//    FDatabase.ExecSQL(SQL_DELETE_BOOKS, [BookKey.BookID]);
-    query := FDatabase.NewQuery(SQL_SELECT_ROWS);
-    try
-      query.SetParam(0, BookKey.BookID);
-      query.Open;
-      ID := query.FieldAsInt(0);
-      query.Free;
+    ID := BookKey.BookID;
+    query1 := FDatabase.NewQuery('SELECT AuthorID FROM Author_List al WHERE al.BookID = ?;');
+    query1.SetParam(0, ID);
+    query1.Open;
 
-      query := FDatabase.NewQuery(SQL_DELETE_BOOKS);
-      query.SetParam(0, ID);
-      query.Open;
-    finally
-      query.Free;
+    while not query1.Eof do
+    begin
+      AuthorID := query1.FieldAsInt(0);
+      query2 := FDatabase.NewQuery('SELECT Count(*) FROM Author_List WHERE AuthorID = ?;');
+      query2.SetParam(0, AuthorID);
+      query2.Open;
+      Count := query2.FieldAsInt(0);
+      query2.Free;
+      if Count <= 1 then
+        FDatabase.ExecSQL('DELETE FROM Authors WHERE AuthorID = ?',[AuthorID]);
+      query1.Next;
     end;
-
+    query1.Free;
+    FDatabase.ExecSQL(SQL_DELETE_BOOKS, [ID]);
     FSystemData.DeleteBook(BookKey);
   end;
 end;

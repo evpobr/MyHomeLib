@@ -65,16 +65,20 @@ end;
 
 procedure TSyncFoldersThread.OnFile(Sender: TObject; const F: TSearchRec);
 var
-  Archiver: IArchiver;
+  Archiver: TMHLZip;
   Size: integer;
 begin
   if not IsArchiveExt(F.Name) then
      FList.Add(FFiles.LastDir + F.Name + ' ' + IntToStr(F.Size))
   else
   begin
-    Archiver := TArchiver.Create(FFiles.LastDir + F.Name);
-    Size := Archiver.GetFileSize(0);
-    FList.Add(FFiles.LastDir + F.Name + ' ' + IntToStr(Size))
+    try
+      Archiver := TMHLZip.Create(FFiles.LastDir + F.Name);
+      Size := Archiver.LastSize;
+      FList.Add(FFiles.LastDir + F.Name + ' ' + IntToStr(Size));
+    finally
+      FreeAndNil(archiver);
+    end;
   end;
 end;
 

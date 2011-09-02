@@ -175,16 +175,8 @@ object frmMain: TfrmMain
       ImageIndex = 8
       OnClick = tbCollapseClick
     end
-    object btnRefreshCollection: TToolButton
-      Left = 431
-      Top = 0
-      Hint = #1054#1073#1085#1086#1074#1080#1090#1100' '#1089#1087#1080#1089#1086#1082
-      Caption = 'btnRefreshCollection'
-      ImageIndex = 9
-      OnClick = miRefreshClick
-    end
     object ToolButton1: TToolButton
-      Left = 472
+      Left = 431
       Top = 0
       Width = 8
       Caption = 'ToolButton1'
@@ -192,7 +184,7 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object btnSwitchTreeMode: TToolButton
-      Left = 480
+      Left = 439
       Top = 0
       Hint = #1055#1077#1088#1077#1082#1083#1102#1095#1080#1090#1100' '#1074' '#1088#1077#1078#1080#1084' "'#1058#1072#1073#1083#1080#1094#1072'"'
       Caption = 'btnSwitchTreeMode'
@@ -200,25 +192,25 @@ object frmMain: TfrmMain
       OnClick = btnSwitchTreeModeClick
     end
     object tbtnShowDeleted: TToolButton
-      Left = 521
+      Left = 480
       Top = 0
       Action = acViewHideDeletedBooks
       ImageIndex = 12
     end
     object tbtnShowLocalOnly: TToolButton
-      Left = 562
+      Left = 521
       Top = 0
       Action = acViewShowLocalOnly
       ImageIndex = 13
     end
     object tbtnShowCover: TToolButton
-      Left = 603
+      Left = 562
       Top = 0
       Action = acShowBookInfoPanel
       ImageIndex = 14
     end
     object ToolButton5: TToolButton
-      Left = 644
+      Left = 603
       Top = 0
       Width = 8
       Caption = 'ToolButton5'
@@ -226,13 +218,13 @@ object frmMain: TfrmMain
       Style = tbsSeparator
     end
     object tbtnSettings: TToolButton
-      Left = 652
+      Left = 611
       Top = 0
       Action = acToolsSettings
       ImageIndex = 17
     end
     object tbtnHelp: TToolButton
-      Left = 693
+      Left = 652
       Top = 0
       Action = acHelpHelp
       ImageIndex = 26
@@ -245,7 +237,7 @@ object frmMain: TfrmMain
     Width = 786
     Height = 518
     HelpContext = 1
-    ActivePage = tsSearch
+    ActivePage = tsByAuthor
     Align = alClient
     OwnerDraw = True
     TabOrder = 2
@@ -254,10 +246,6 @@ object frmMain: TfrmMain
     object tsByAuthor: TTabSheet
       HelpContext = 135
       Caption = #1040#1074#1090#1086#1088#1099
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object AuthorsViewSplitter: TMHLSplitter
         Left = 230
         Top = 70
@@ -407,6 +395,8 @@ object frmMain: TfrmMain
           Color = clBlack
           TabOrder = 2
           OnResize = InfoPanelResize
+          ShowAnnotation = False
+          InfoPriority = True
           OnAuthorLinkClicked = AuthorLinkClicked
           OnSeriesLinkClicked = SeriesLinkClicked
           OnGenreLinkClicked = GenreLinkClicked
@@ -429,20 +419,22 @@ object frmMain: TfrmMain
             Left = 432
             Top = 0
             Width = 107
-            Height = 13
+            Height = 26
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
             Layout = tlCenter
+            ExplicitHeight = 13
           end
           object lblAuthor: TLabel
             Left = 0
             Top = 0
             Width = 112
-            Height = 13
+            Height = 26
             Align = alLeft
             Caption = #1055#1086#1083#1085#1086#1077' '#1080#1084#1103' '#1072#1074#1090#1086#1088#1072
             Layout = tlCenter
+            ExplicitHeight = 13
           end
         end
         object tvBooksA: TBookTree
@@ -567,10 +559,6 @@ object frmMain: TfrmMain
     object tsBySerie: TTabSheet
       HelpContext = 135
       Caption = #1057#1077#1088#1080#1080
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object SeriesViewSplitter: TMHLSplitter
         Left = 230
         Top = 70
@@ -740,20 +728,22 @@ object frmMain: TfrmMain
             Left = 432
             Top = 0
             Width = 107
-            Height = 13
+            Height = 26
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
             Layout = tlCenter
+            ExplicitHeight = 13
           end
           object lblSeries: TLabel
             Left = 0
             Top = 0
             Width = 90
-            Height = 13
+            Height = 26
             Align = alLeft
             Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1089#1077#1088#1080#1080
             Layout = tlCenter
+            ExplicitHeight = 13
           end
         end
         object tvBooksS: TBookTree
@@ -878,10 +868,6 @@ object frmMain: TfrmMain
     object tsByGenre: TTabSheet
       HelpContext = 135
       Caption = #1046#1072#1085#1088#1099
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GenresViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
@@ -961,20 +947,22 @@ object frmMain: TfrmMain
             Left = 432
             Top = 0
             Width = 107
-            Height = 13
+            Height = 26
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
             Layout = tlCenter
+            ExplicitHeight = 13
           end
           object lblGenreTitle: TLabel
             Left = 0
             Top = 0
             Width = 97
-            Height = 13
+            Height = 26
             Align = alLeft
             Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1078#1072#1085#1088#1072
             Layout = tlCenter
+            ExplicitHeight = 13
           end
         end
         object ipnlGenres: TInfoPanel
@@ -1673,10 +1661,6 @@ object frmMain: TfrmMain
     object tsByGroup: TTabSheet
       HelpContext = 125
       Caption = #1043#1088#1091#1087#1087#1099
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GroupsViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
@@ -1829,20 +1813,22 @@ object frmMain: TfrmMain
             Left = 432
             Top = 0
             Width = 107
-            Height = 13
+            Height = 26
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
             Layout = tlCenter
+            ExplicitHeight = 13
           end
           object lblGroups: TLabel
             Left = 0
             Top = 0
             Width = 102
-            Height = 13
+            Height = 26
             Align = alLeft
             Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1075#1088#1091#1087#1087#1099
             Layout = tlCenter
+            ExplicitHeight = 13
           end
         end
         object tvBooksF: TBookTree
@@ -1933,10 +1919,6 @@ object frmMain: TfrmMain
     object tsDownload: TTabSheet
       HelpContext = 108
       Caption = #1057#1087#1080#1089#1086#1082' '#1079#1072#1082#1072#1095#1077#1082
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object tlbrDownloadList: TToolBar
         AlignWithMargins = True
         Left = 3
@@ -2082,7 +2064,7 @@ object frmMain: TfrmMain
             Left = 662
             Top = 3
             Width = 107
-            Height = 13
+            Height = 36
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
@@ -2093,6 +2075,7 @@ object frmMain: TfrmMain
             Font.Style = [fsBold]
             ParentFont = False
             Layout = tlCenter
+            ExplicitHeight = 13
           end
           object pbDownloadProgress: TProgressBar
             Left = 0
@@ -2487,6 +2470,12 @@ object frmMain: TfrmMain
         end
         object miShowBookAnnotation: TMenuItem
           Action = acShowBookAnnotation
+          AutoCheck = True
+        end
+        object miBookInfoPriority: TMenuItem
+          Action = acViewSetInfoPriority
+          AutoCheck = True
+          Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' BookInfo'
         end
       end
       object N76: TMenuItem
@@ -2577,10 +2566,7 @@ object frmMain: TfrmMain
       OnClick = SendToDeviceExecute
     end
     object pmiDownloadBooks: TMenuItem
-      Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1089#1087#1080#1089#1086#1082' '#1079#1072#1082#1072#1095#1077#1082
-      ImageIndex = 20
-      ShortCut = 16460
-      OnClick = Add2DownloadListExecute
+      Action = acBookAdd2DownloadList
     end
     object pmiScripts: TMenuItem
       Caption = #1047#1072#1087#1091#1089#1090#1080#1090#1100' '#1089#1082#1088#1080#1087#1090
@@ -2728,7 +2714,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 280
     Bitmap = {
-      494C01011B000002FC0220002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C01011B000002B40320002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -6436,7 +6422,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 232
     Bitmap = {
-      494C010125002700C00210001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010125002700780310001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000040000000A0000000010020000000000000A0
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -7790,7 +7776,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 360
     Bitmap = {
-      494C01010C003801C00210001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C01010C003801780310001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -8391,6 +8377,11 @@ object frmMain: TfrmMain
       Caption = #1054#1094#1077#1085#1082#1072
       OnClick = HeaderPopupItemClick
     end
+    object BookID1: TMenuItem
+      Tag = 23
+      Caption = 'BookID'
+      OnClick = HeaderPopupItemClick
+    end
     object N25: TMenuItem
       Caption = '-'
     end
@@ -8452,7 +8443,7 @@ object frmMain: TfrmMain
     Left = 280
     Top = 320
     Bitmap = {
-      494C010118001A00C00220002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
+      494C010118001A00780320002000FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -12252,6 +12243,8 @@ object frmMain: TfrmMain
       Category = #1050#1085#1080#1075#1072
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1089#1087#1080#1089#1086#1082' '#1079#1072#1082#1072#1095#1077#1082
       Hint = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1086#1095#1077#1088#1077#1076#1100' '#1079#1072#1075#1088#1091#1079#1082#1080
+      ImageIndex = 20
+      ShortCut = 16460
       OnExecute = Add2DownloadListExecute
     end
     object acBookMarkAsRead: TAction
@@ -12611,13 +12604,18 @@ object frmMain: TfrmMain
       Caption = #1057#1078#1072#1090#1100
       OnExecute = CompactDataBaseExecute
     end
+    object acViewSetInfoPriority: TAction
+      Category = #1042#1080#1076
+      Caption = 'acViewSetInfoPriority'
+      OnExecute = acViewSetInfoPriorityExecute
+    end
   end
   object ilToolImages: TImageList
     ColorDepth = cd32Bit
     Left = 576
     Top = 264
     Bitmap = {
-      494C01010A000F00B40010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C01010A000F006C0110001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000101010F010101170101011A0101
       011A0101011A0101011A0101011A0101011A0101011A0101011A0101011A0101
@@ -13042,5 +13040,22 @@ object frmMain: TfrmMain
     OnTimer = tmrCheckUpdatesTimer
     Left = 424
     Top = 360
+  end
+  object ZipForge1: TZipForge
+    ExtractCorruptedFiles = False
+    CompressionLevel = clMax
+    CompressionMode = 9
+    CurrentVersion = '5.06 '
+    SpanningMode = smNone
+    SpanningOptions.AdvancedNaming = False
+    SpanningOptions.VolumeSize = vsAutoDetect
+    Options.FlushBuffers = True
+    Options.OEMFileNames = True
+    InMemory = False
+    Zip64Mode = zmAlways
+    UnicodeFilenames = True
+    EncryptionMethod = caPkzipClassic
+    Left = 480
+    Top = 536
   end
 end

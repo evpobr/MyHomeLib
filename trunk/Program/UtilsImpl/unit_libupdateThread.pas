@@ -26,7 +26,7 @@ uses
   unit_ImportInpxThread,
   IdHTTP,
   IdComponent,
-  UserData;
+  unit_UserData;
 
 type
   TDownloadProgressEvent = procedure (Current, Total: Integer) of object;
@@ -38,8 +38,6 @@ type
     FDownloadSize: Integer;
     FStartDate : TDateTime;
     FUpdated: Boolean;
-
-    function ReplaceFiles: Boolean;
 
   protected
     procedure Initialize; override;
@@ -140,13 +138,6 @@ procedure TLibUpdateThread.HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
 begin
   SetProgress(100);
   SetComment(rstrReady);
-end;
-
-function TLibUpdateThread.ReplaceFiles: boolean;
-begin
-  DeleteFile(Settings.SystemFileName[sfLibRusEcInpx]);
-  CopyFile(Settings.SystemFileName[sfLibRusEcUpdate], Settings.SystemFileName[sfLibRusEcInpx]);
-  DeleteFile(Settings.SystemFileName[sfLibRusEcUpdate]);
 end;
 
 procedure TLibUpdateThread.Initialize;
@@ -256,17 +247,8 @@ begin
     for i := 0 to Settings.Updates.Count - 1 do
     begin
       updateInfo := Settings.Updates[i];
-
-      //
-      // Назначение этого странного кода мне не понятно. Скорее всего рудимент.
-      //
       if FileExists(Settings.UpdatePath + updateInfo.UpdateFile) then
-      begin
-        if updateInfo.UpdateFile <> 'librusec_update.zip' then
-          DeleteFile(Settings.UpdatePath + updateInfo.UpdateFile)
-        else
-          ReplaceFiles;
-      end;
+         DeleteFile(Settings.UpdatePath + updateInfo.UpdateFile);
     end;
 
     SetComment(rstrReady);

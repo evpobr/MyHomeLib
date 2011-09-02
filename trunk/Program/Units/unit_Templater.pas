@@ -131,8 +131,14 @@ begin
       if TemplatePart[i] = '[' then
       begin
         Inc(StackPos);
+        if (StackPos >= ColElements) then
+        begin
+          Result := ErTemplate; // prevent an access violation (exceeding "stack" var size)
+          Exit;
+        end;
         stack[StackPos].BegBlock := i;
         stack[StackPos].name := '';
+
       end;
 
       // Поиск элемента шаблона

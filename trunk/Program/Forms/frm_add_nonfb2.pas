@@ -317,7 +317,6 @@ begin
 
   FBD.Cover := Cover;
   FBD.Save(False);
-
   FBookRecord.FileName := FBookRecord.FileName + ZIP_EXTENSION;
 end;
 
@@ -337,6 +336,7 @@ begin
   edYear.Clear;
 
   mmAnnotation.Lines.Clear;
+  FBD.ClearCover;
   FCover.Picture := nil;
 end;
 
@@ -538,7 +538,7 @@ end;
 
 procedure TfrmAddnonfb2.btnNextClick(Sender: TObject);
 var
-  archiver: IArchiver;
+  archiver: TMHLZip;
 begin
   // Конвертация в FBD и добавление в базу
   Screen.Cursor := crHourGlass;
@@ -551,9 +551,12 @@ begin
 
       // после создания архива нужно узнать реальный номер внутри
       FBookRecord.CollectionRoot := FRootPath;
-      archiver := TArchiver.Create(FBookRecord.GetBookFileName);
-      FBookRecord.InsideNo := archiver.GetIdxByExt(FBookRecord.FileExt);;
-
+      try
+        archiver := TMHLZip.Create(FBookRecord.GetBookFileName);
+        FBookRecord.InsideNo := archiver.GetIdxByExt(FBookRecord.FileExt);
+      finally
+        FreeAndNil(archiver);
+      end;
       // заносим данные в БД
       CommitData;
     end

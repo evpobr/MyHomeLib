@@ -44,9 +44,7 @@ type
     sfServerErrorLog,
     // sfImportErrorLog,  // UNUSED
     sfAppHelp,
-    sfLibRusEcUpdate,
     sfAppVerInfo,
-    sfLibRusEcInpx,
     // sfCollectionVerInfo, // UNUSED
     sfColumnsStore,
     sfDownloadsStore,
@@ -94,11 +92,6 @@ type
     FShortFontSize: Integer;
     FAppLanguage: TAppLanguage;
     FActivePage: Integer;
-    FLastAuthor: string;
-    FLastSeries: string;
-    FLastBookInAuthors: Integer;
-    FLastBookInSeries: Integer;
-    FLastBookInFavorites: Integer;
     FSplitters: TSplitters;
     FTreeModes: TTreeModes;
     FWindowState: Integer;
@@ -182,9 +175,11 @@ type
     FShowInfoPanel: Boolean;
     FShowBookCover: Boolean;
     FShowBookAnnotation: Boolean;
+    FFb2InfoPriority: Boolean;
 
     FForceConvertToFBD: Boolean;
     FOverwriteFB2Info: Boolean;
+    FSelectedIsChecked: Boolean;
 
     // SORT_SECTION
     FEnableSort: Boolean;
@@ -302,6 +297,7 @@ type
     property ShowInfoPanel: Boolean read FShowInfoPanel write FShowInfoPanel;
     property ShowBookCover: Boolean read FShowBookCover write FShowBookCover;
     property ShowBookAnnotation: Boolean read FShowBookAnnotation write FShowBookAnnotation;
+    property Fb2InfoPriority: Boolean read FFb2InfoPriority write FFb2InfoPriority;
 
     property AppLanguage: TAppLanguage read FAppLanguage write FAppLanguage;
     property HideDeletedBooks: Boolean read FDoNotShowDeleted write FDoNotShowDeleted;
@@ -316,11 +312,6 @@ type
     property RemoveSquarebrackets: Boolean read FRemoveSquareBrackets write FRemoveSquareBrackets;
 
     property ActivePage: Integer read FActivePage write FActivePage;
-    property LastAuthor: string read FLastAuthor write FLastAuthor;
-    property LastSeries: string read FLastSeries write FLastSeries;
-    property LastBookInSeries: Integer read FLastBookInSeries write FLastBookInSeries;
-    property LastBookInAuthors: Integer read FLastBookInAuthors write FLastBookInAuthors;
-    property LastBookInFavorites: Integer read FLastBookInFavorites write FLastBookInFavorites;
 
     property Splitters: TSplitters read FSplitters write FSplitters;
     property TreeModes: TTreeModes read FTreeModes write FTreeModes;
@@ -387,6 +378,7 @@ type
 
     property DeleteDeleted: Boolean read FDeleteDeleted write FDeleteDeleted;
     property DeleteFiles: Boolean read FDeleteFiles write FDeleteFiles;
+    property SelectedIsChecked: Boolean read FSelectedIsChecked write FSelectedIsChecked;
 
     // SORT_SECTION
     property EnableSort: Boolean read FEnableSort write FEnableSort;
@@ -565,7 +557,7 @@ begin
   begin
     if proxyInfo^.dwAccessType = INTERNET_OPEN_TYPE_PROXY then
     begin
-      strProxy := proxyInfo^.lpszProxy;
+      strProxy := string(proxyInfo^.lpszProxy);
       if strProxy <> '' then
       begin
         if Pos('=', strProxy) <> 0 then
@@ -682,12 +674,6 @@ begin
     FTreeFontSize := iniFile.ReadInteger(INTERFACE_SECTION, 'FontSize', 8);
     FShortFontSize := iniFile.ReadInteger(INTERFACE_SECTION, 'ShortFontSize', 8);
     FActivePage := iniFile.ReadInteger(INTERFACE_SECTION, 'ActivePage', 0);
-    FLastAuthor := iniFile.ReadString(INTERFACE_SECTION, 'LastAuthor', 'À');
-    FLastSeries := iniFile.ReadString(INTERFACE_SECTION, 'LastSeries', 'À');
-
-    FLastBookInAuthors := iniFile.ReadInteger(INTERFACE_SECTION, 'LastBookInAuthors', 0);
-    FLastBookInSeries := iniFile.ReadInteger(INTERFACE_SECTION, 'LastBookInSeries', 0);
-    FLastBookInFavorites := iniFile.ReadInteger(INTERFACE_SECTION, 'LastBookInFavorites', 0);
 
     FFormHeight := iniFile.ReadInteger(INTERFACE_SECTION, 'FormHeight ', 850);
     FFormWidth := iniFile.ReadInteger(INTERFACE_SECTION, 'FormWidth ', 1000);
@@ -778,6 +764,7 @@ begin
     FShowInfoPanel := iniFile.ReadBool(BEHAVIOR_SECTION, 'CoverPanel', True);
     FShowBookCover := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowCover', True);
     FShowBookAnnotation := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowAnnotation', True);
+    FFb2InfoPriority := iniFile.ReadBool(BEHAVIOR_SECTION, 'Fb2InfoPriority', False);
 
     FDoNotShowDeleted := iniFile.ReadBool(BEHAVIOR_SECTION, 'DoNotShowDeleted', True);
     FShowLocalOnly := iniFile.ReadBool(BEHAVIOR_SECTION, 'ShowLocalOnly', False);
@@ -794,6 +781,7 @@ begin
     FForceConvertToFBD := iniFile.ReadBool(BEHAVIOR_SECTION, 'ForceConvertToFBD', True);
     FOverwriteFB2Info := iniFile.ReadBool(BEHAVIOR_SECTION, 'OverwriteFB2Info', False);
     FFBDBookHeaderTemplate := iniFile.ReadString(BEHAVIOR_SECTION, 'BookHeaderTemplate', '%t');
+    FSelectedIsChecked := iniFile.ReadBool(BEHAVIOR_SECTION, 'SelectedIsChecked', True);
 
     //
     // FILE_SORT_SECTION
@@ -853,13 +841,6 @@ begin
     iniFile.WriteInteger(INTERFACE_SECTION, 'ShortFontSize', FShortFontSize);
     iniFile.WriteInteger(INTERFACE_SECTION, 'Lang', Ord(FAppLanguage));
     iniFile.WriteInteger(INTERFACE_SECTION, 'ActivePage', FActivePage);
-
-    iniFile.WriteString(INTERFACE_SECTION, 'LastAuthor', FLastAuthor);
-    iniFile.WriteString(INTERFACE_SECTION, 'LastSeries', FLastSeries);
-
-    iniFile.WriteInteger(INTERFACE_SECTION, 'LastBookInAuthors', FLastBookInAuthors);
-    iniFile.WriteInteger(INTERFACE_SECTION, 'LastBookInSeries', FLastBookInSeries);
-    iniFile.WriteInteger(INTERFACE_SECTION, 'LastBookInFavorites', FLastBookInFavorites);
 
     iniFile.WriteInteger(INTERFACE_SECTION, 'WindowState', WindowState);
 
@@ -945,6 +926,7 @@ begin
     iniFile.WriteBool(BEHAVIOR_SECTION, 'CoverPanel', FShowInfoPanel);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowCover', FShowBookCover);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowAnnotation', FShowBookAnnotation);
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'Fb2InfoPriority', FFb2InfoPriority);
 
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ShowSubGenreBooks', FShowSubGenreBooks);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'MinimizeToTray', FMinimizeToTray);
@@ -959,6 +941,7 @@ begin
     iniFile.WriteBool(BEHAVIOR_SECTION, 'ForceConvertToFBD', FForceConvertToFBD);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'OverwriteFB2Info', FOverwriteFB2Info);
     iniFile.WriteString(BEHAVIOR_SECTION, 'BookHeaderTemplate', FFBDBookHeaderTemplate);
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'SelectedIsChecked', FSelectedIsChecked);
 
     //
     // FILE_SORT_SECTION
@@ -1294,8 +1277,6 @@ begin
     sfServerErrorLog: Result := WorkPath + SERVER_ERRORLOG_FILENAME;
     // sfImportErrorLog: Result := WorkPath + IMPORT_ERRORLOG_FILENAME;         // UNUSED
     sfAppHelp: Result := AppPath + APP_HELP_FILENAME;
-    sfLibRusEcUpdate: Result := UpdatePath + LIBRUSEC_UPDATE_FILENAME;
-    sfLibRusEcInpx: Result := WorkPath + LIBRUSEC_INPX_FILENAME;
     sfAppVerInfo: Result := WorkPath + PROGRAM_VERINFO_FILENAME;
     // sfCollectionVerInfo: Result := TempPath + COLLECTION_VERINFO_FILENAME;   // UNUSED
     sfColumnsStore: Result := WorkPath + COLUMNS_STORE_FILENAME;

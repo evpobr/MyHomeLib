@@ -54,6 +54,7 @@ var
 
   Templater: TTemplater;
 begin
+  Result := False;
   try
     { TODO -oNickR -cBug : MEMLEAK проверить }
     XML := TXmlDocument.Create(FileName);
@@ -104,6 +105,7 @@ begin
       end;
     end;
     XML.SaveToFile;
+    Result := True;
   except
 
   end;

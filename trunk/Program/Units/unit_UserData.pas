@@ -14,7 +14,7 @@
   *
   ****************************************************************************** *)
 
-unit UserData;
+unit unit_UserData;
 
 interface
 
@@ -145,7 +145,7 @@ uses
   msxmldom,
   XMLConst,
   SysUtils,
-  xmlUtils;
+  unit_xmlUtils;
 
 { TBookInfo }
 

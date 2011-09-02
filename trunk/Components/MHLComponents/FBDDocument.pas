@@ -120,7 +120,7 @@ type
     procedure LoadCoverFromFile(FileName: string);
     procedure LoadCoverFromClpbrd;
     function ExtractBook(TempFolder: string):string;
-
+    procedure ClearCover;
   published
     property Memo: TMemo read FMemo write SetMemo;
     property Image: TImage read FImage write SetTImage;
@@ -190,6 +190,11 @@ begin
   end;
 end;
 
+procedure TFBDDocument.ClearCover;
+begin
+  FCoverData.Str := '';
+end;
+
 constructor TFBDDocument.Create(AOwner: TComponent);
 begin
   inherited;
@@ -200,9 +205,7 @@ end;
 function TFBDDocument.Load(Folder, Filename, Ext: string; NoCover: boolean = False):boolean;
 var
   Input, Output: TMemoryStream;
-  idxFile: Integer;
-  archiver: IArchiver;
-
+  archiver: TMHLZip;
   CoverID: string;
   i: integer;
   IMG: TGraphic;
@@ -212,13 +215,12 @@ begin
   Result := False;
   SetFileNames(Folder, Filename, Ext);
   FCoverData.Str := '';
-  Input := nil;
   Lines := TstringList.Create;
   try
-    archiver := TArchiver.Create(FArchiveFilename);
-    idxFile := archiver.GetIdxByExt('.fbd');
-    if idxFile >= 0 then
-      Input := archiver.UnarchiveToStream(idxFile);
+    archiver := TMHLZip.Create(FArchiveFilename);
+    Input := TMemoryStream.Create;
+    if archiver.Find('*.fbd') then
+      archiver.ExtractToStream(archiver.LastName, Input);
 
     if Assigned(Input) and (Input.Size > 0) then
     begin
@@ -288,6 +290,7 @@ begin
     Result := True;
   end;
   finally
+    FreeAndNil(archiver);
     FreeAndNil(Input);
     FreeAndNil(Lines);
   end;
@@ -342,7 +345,6 @@ end;
 
 procedure TFBDDocument.LoadCoverFromClpbrd;
 var
-  Icon: TJPEGImage;
   Input, Output: TMemoryStream;
   IMG: TGraphic;
   Lines : TStringList;
@@ -402,21 +404,22 @@ end;
 
 function TFBDDocument.ExtractBook(TempFolder: string):string;
 var
-  archiver: IArchiver;
+  archiver: TMHLZip;
   MS: TMemoryStream;
   No: integer;
 begin
 
   try
     MS := TMemoryStream.Create;
-    archiver := TArchiver.Create(TPath.Combine(FFolder, FArchiveFilename));
+    archiver := TMHLZip.Create(TPath.Combine(FFolder, FArchiveFilename));
     No := archiver.GetIdxByExt('.fbd');
     if No = 0 then No := 1 else No := 0;
-    MS := archiver.UnarchiveToStream(No);
-    Result := TPath.Combine(TempFolder, archiver.GetFileName(No));
+    archiver.ExtractToStream(No);
+    Result := TPath.Combine(TempFolder, archiver.LastName);
     MS.SaveToFile(Result);
   finally
-    MS.Free;
+    FreeAndNil(archiver);
+    FreeAndNil(MS);
   end;
 end;
 
@@ -522,8 +525,7 @@ var
   archiveFileName: string;
   bookFileName: string;
   fbdFileName: string;
-  numFiles: Integer;
-  archiver: IArchiver;
+  archiver: TMHLZip;
 begin
   Result := False;
 
@@ -531,26 +533,32 @@ begin
   bookFileName := TPath.Combine(FFolder, FBookFileName);
   fbdFileName := TPath.Combine(FFolder, FFBDFileName);
 
-  archiver := TArchiver.Create(archiveFileName);
+  try
+    archiver := TMHLZip.Create(archiveFileName);
+    archiver.BaseDir := FFolder;
 
-  if EditorMode then
-  begin
-    archiver.ArchiveReplaceFile(fbdFileName);
-    Result := archiver.Test;
-
-    if Result then
-      SysUtils.DeleteFile(fbdFileName);
-  end
-  else
-  begin
-    archiver.ArchiveFiles([fbdFileName, bookFileName]);
-    Result := archiver.Test;
-
-    if Result then
+    if EditorMode then
     begin
-      SysUtils.DeleteFile(fbdFileName);
-      SysUtils.DeleteFile(bookFileName);
+      archiver.AddFiles(fbdFileName);
+      Result := archiver.Test;
+
+      if Result then
+        SysUtils.DeleteFile(fbdFileName);
+    end
+    else
+    begin
+      archiver.AddFiles(fbdFileName);
+      archiver.AddFiles(bookFileName);
+      Result := archiver.Test;
+
+      if Result then
+      begin
+        SysUtils.DeleteFile(fbdFileName);
+        SysUtils.DeleteFile(bookFileName);
+      end;
     end;
+  finally
+    FreeAndNil(archiver);
   end;
 
   if not Result then
@@ -749,14 +757,18 @@ end;
 procedure TFBDDocument.GetFBDFileNames(out Description: string);
 var
   idxFile: Integer;
-  archiver: IArchiver;
+  archiver: TMHLZip;
 begin
-  archiver := TArchiver.Create(FArchiveFilename);
-  idxFile := archiver.GetIdxByExt('.fbd');
-  if idxFile >= 0 then
-    Description := archiver.GetFileName(idxFile)
-  else
-    Description := '';
+  try
+    archiver := TMHLZip.Create(FArchiveFilename);
+    idxFile := archiver.GetIdxByExt('.fbd');
+    if idxFile >= 0 then
+      Description := archiver.LastName
+    else
+      Description := '';
+  finally
+    FreeAndNil(archiver);
+  end;
 end;
 
 procedure TFBDDocument.CreateImage(ext: string; var IMG: TGraphic; var ImageType: TCoverImageType);

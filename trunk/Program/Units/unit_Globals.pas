@@ -403,6 +403,7 @@ uses
   dm_user,
   ShlObj,
   unit_fb2ToText,
+  unit_Fb2Utils,
   unit_MHLGenerics,
   unit_MHLArchiveHelpers;
 
@@ -552,7 +553,7 @@ begin
   else
     FullPath := TPath.Combine(Root, Path);
 
-  Assert(TPath.IsPathRooted(FullPath));
+  //Assert(TPath.IsPathRooted(FullPath));
 
   Result := SysUtils.ForceDirectories(FullPath);
 end;
@@ -726,31 +727,7 @@ end;
 
 class function TAuthorData.FormatName(const LastName: string; const FirstName: string; const MiddleName: string; const nickName: string = ''; onlyInitials: Boolean = False): string;
 begin
-  Result := LastName;
-
-  if FirstName <> '' then
-  begin
-    if onlyInitials then
-      Result := Result + ' ' + FirstName[1] + '.'
-    else
-      Result := Result + ' ' + FirstName;
-  end;
-
-  if MiddleName <> '' then
-  begin
-    if onlyInitials then
-      Result := Result + ' ' + MiddleName[1] + '.'
-    else
-      Result := Result + ' ' + MiddleName;
-  end;
-
-  if nickName <> '' then
-  begin
-    if Result = '' then
-      Result := nickName
-    else
-      Result := Result + '(' + nickName + ')';
-  end;
+  Result := unit_Fb2Utils.FormatName(Lastname, Firstname, Middlename, NickName, onlyInitials)
 end;
 
 function TAuthorData.GetFullName(onlyInitials: Boolean = False): string;
@@ -1046,8 +1023,7 @@ function TBookRecord.GetBookStream: TStream;
 var
   BookFormat: TBookFormat;
   BookFileName: string;
-  archiver: IArchiver;
-  idxFile: Integer;
+  archiver: TMHLZip;
 begin
   Result := nil;
   BookFileName := GetBookFileName;
@@ -1056,10 +1032,14 @@ begin
   if BookFormat in [bfFb2Archive, bfFbd] then
   begin
     try
-      archiver := TArchiver.Create(TPath.Combine(Settings.ReadPath, BookFileName));
-      Result := archiver.UnarchiveToStream(InsideNo);
-    except
-      raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName]);
+      try
+        archiver := TMHLZip.Create(TPath.Combine(Settings.ReadPath, BookFileName));
+        result := archiver.ExtractToStream(InsideNo);
+      except
+        raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName]);
+      end;
+    finally
+      FreeAndNil(archiver);
     end;
   end
   else // bfFb2, bfRaw
@@ -1089,9 +1069,10 @@ function TBookRecord.GetBookDescriptorStream: TStream;
 var
   bookFileName: string;
   archiveFileName: string;
-  idxFile: Integer;
-  archiver: IArchiver;
+  archiver: TMHLZip;
 begin
+  Result := nil;
+
   case GetBookFormat of
     bfFb2, bfFb2Archive:
       begin
@@ -1100,20 +1081,18 @@ begin
 
     bfFbd:
       begin
-        bookFileName := GetBookFileName;
-        archiveFileName := TPath.Combine(Settings.ReadPath, bookFileName);
-        archiver := TArchiver.Create(archiveFileName);
-
         try
-          idxFile := archiver.GetIdxByExt(FBD_EXTENSION);
-        except
-          raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName])
+          bookFileName := GetBookFileName;
+          if not FileExists(bookFileName) then Exit;
+
+          archiveFileName := TPath.Combine(Settings.ReadPath, bookFileName);
+          archiver := TMHLZip.Create(archiveFileName);
+          Result := TMemoryStream.Create;
+          archiver.Find('*' + FBD_EXTENSION);
+          archiver.ExtractToStream(archiver.LastName, Result);
+        finally
+          FreeAndNil(archiver);
         end;
-
-        if idxFile < 0 then // not a valid FBD structure
-          raise EBookNotFound.CreateFmt(rstrBookNotFoundInArchive, [BookFileName]);
-
-        Result := archiver.UnarchiveToStream(idxFile);
       end;
 
     bfRaw:
@@ -1122,7 +1101,6 @@ begin
       end;
   end;
 
-  Assert(Assigned(Result));
 end;
 
 // Save the book to a destination file
@@ -1237,44 +1215,6 @@ begin
   IdHTTP.AllowCookies := True;
 
   IdHTTP.HandleRedirects := True;
-end;
-
-function CheckLibVersion(ALocalVersion: Integer; Full: Boolean; out ARemoteVersion: Integer): Boolean;
-var
-  HTTP: TidHTTP;
-  LF: TMemoryStream;
-  SL: TStringList;
-
-  URL: string;
-begin
-  Result := False;
-
-  URL := IncludeUrlSlash(Settings.UpdateURL) + IfThen(Full, LIBRUSEC_UPDATEVERINFO_FILENAME, EXTRA_UPDATEVERINFO_FILENAME);
-
-  HTTP := TidHTTP.Create(nil);
-  SetProxySettings(HTTP);
-  try
-    LF := TMemoryStream.Create;
-    try
-      HTTP.Get(URL, LF);
-      SL := TStringList.Create;
-      try
-        LF.Seek(0, soFromBeginning);
-        SL.LoadFromStream(LF);
-        if SL.Count > 0 then
-        begin
-          ARemoteVersion := StrToInt(SL[0]);
-          Result := (ALocalVersion < ARemoteVersion);
-        end;
-      finally
-        SL.Free;
-      end;
-    finally
-      LF.Free;
-    end;
-  finally
-    HTTP.Free;
-  end;
 end;
 
 function ExecAndWait(const FileName, Params: string; const WinState: word): Boolean;

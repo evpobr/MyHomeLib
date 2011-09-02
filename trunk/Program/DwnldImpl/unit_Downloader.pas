@@ -168,8 +168,7 @@ function TDownloader.CheckResponce: boolean;
 var
   Path: string;
   Str: TStringList;
-  ext: string;
-  archiver: IArchiver;
+  archiver: TMHLZip;
 begin
   Path := ExtractFileDir(FFile);
   CreateFolders('', Path);
@@ -191,10 +190,11 @@ begin
         if IsArchiveExt(FFile) then
         begin
           // Test archive integrity only if it's an archive
-          archiver := TArchiver.Create(FFile);
+          archiver := TMHLZip.Create(FFile);
           Result := archiver.Test;
           if not Result then
             DeleteFile(PChar(FFile));
+          FreeAndNil(archiver);
         end;
       end;
     end;
@@ -279,6 +279,7 @@ var
   Commands: array of TCommand;
   i: Integer;
 begin
+  Result := True;
   ConstParams := TStringList.Create;
   try
     //

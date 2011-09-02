@@ -9,13 +9,13 @@
   * Created                  20.08.2008
   * Description              
   *
-  * $Id$
+  * $Id: frm_EditAuthorEx.pas 1029 2011-05-30 07:31:14Z koreec $
   *
   * History
   *
   ****************************************************************************** *)
 
-unit frmEditAuthorEx;
+unit frm_EditAuthorEx;
 
 interface
 

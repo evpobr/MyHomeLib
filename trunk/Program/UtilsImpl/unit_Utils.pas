@@ -21,7 +21,7 @@ interface
 uses
   Windows,
   Dialogs,
-  UserData;
+  unit_UserData;
 
 procedure SyncOnLineFiles(const CollectionID: Integer);
 

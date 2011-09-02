@@ -123,35 +123,6 @@ uses
   unit_MHLHelpers,
   unit_FB2Utils;
 
-resourcestring
-  rstrFileInfo = 'Информация о файле';
-  rstrFolder = 'Папка';
-  rstrFile = 'Файл';
-  rstrSize = 'Размер';
-  rstrAdded = 'Добавлен';
-  rstrGeneralInfo = 'Общая информация';
-  rstrTitle = 'Название';
-  rstrAuthors = 'Автор(ы)';
-  rstrSingleSeries = 'Серия';
-  rstrGenre = 'Жанр';
-  rstrKeywords = 'Ключевые слова';
-  rstrDate = 'Дата';
-  rstrBookLanguage = 'Язык книги';
-  rstrSourceLanguage = 'Язык оригинала';
-  rstrTranslators = 'Переводчик(и)';
-  rstrPublisherInfo = 'Издательская информация';
-  rstrPublisher = 'Издательство';
-  rstrCity = 'Город';
-  rstrYear = 'Год';
-  rstrISBN = 'ISBN';
-  rstrOCRInfo ='Информация о документе (OCR)';
-  rstrProgram = 'Программа';
-  rstrID = 'ID';
-  rstrVersion = 'Версия';
-  rstrSource = 'Источник';
-  rstrSourceAuthor = 'Автор источника';
-  rstrHistory = 'История';
-
 
 {$R *.dfm}
 
