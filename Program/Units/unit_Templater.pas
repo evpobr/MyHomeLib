@@ -353,7 +353,7 @@ begin
   // Цикл удаления "пустых" блоков
   for i := Low(MaskElements) to High(MaskElements) do
     for j := Low(FBlocksMap) to High(FBlocksMap) do
-      if (MaskElements[i].templ = FBlocksMap[j].name) and
+      if (UpperCase(MaskElements[i].templ) = UpperCase(FBlocksMap[j].name)) and
         (MaskElements[i].value = '') then
         if (FBlocksMap[j].BegBlock <> 0) and (FBlocksMap[j].EndBlock <> 0) then
         begin
