@@ -101,7 +101,7 @@ begin
   QueryAvtor(ID);
   QueryGenre(ID);
   QuerySeries(ID);
-  Result := RecordToString;
+  Result := RecordToString(FN);
 end;
 
 function TLib.LastBookID: integer;

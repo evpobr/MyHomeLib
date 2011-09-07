@@ -29,10 +29,6 @@
     object tsParams: TTabSheet
       Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GroupBox1: TGroupBox
         Left = 3
         Top = 3
@@ -486,10 +482,6 @@
     object TabSheet2: TTabSheet
       Caption = #1058#1072#1073#1083#1080#1094#1099
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label2: TLabel
         Left = 507
         Top = 11
@@ -847,10 +839,6 @@
     object TabSheet3: TTabSheet
       Caption = #1044#1072#1084#1087
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object TGroupBox
         Left = 0
         Top = 0
@@ -1032,10 +1020,6 @@
     end
     object TabSheet1: TTabSheet
       Caption = #1051#1086#1075
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lblS1: TLabel
         Left = 304
         Top = 438
@@ -1222,7 +1206,7 @@
     ExtractCorruptedFiles = False
     CompressionLevel = clFastest
     CompressionMode = 1
-    CurrentVersion = '5.05 '
+    CurrentVersion = '5.06 '
     SpanningMode = smNone
     SpanningOptions.AdvancedNaming = False
     SpanningOptions.VolumeSize = vsAutoDetect

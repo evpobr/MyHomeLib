@@ -53,6 +53,7 @@ object Lib: TLib
     Top = 112
   end
   object cdsLibBook: TClientDataSet
+    Active = True
     Aggregates = <>
     FetchOnDemand = False
     Params = <>
@@ -67,13 +68,14 @@ object Lib: TLib
     Top = 112
   end
   object Book: TSQLQuery
+    Active = True
     MaxBlobSize = -1
     ParamCheck = False
     Params = <>
     SQL.Strings = (
       
         'SELECT B.BookId, B.Title, B.FileSize, B.FileType, B.Deleted, B.T' +
-        'ime, B.Lang, B.KeyWords FROM libbook B')
+        'ime, B.Lang, B.KeyWords FROM libbook B limit 25')
     SQLConnection = Connection
     Left = 56
     Top = 112

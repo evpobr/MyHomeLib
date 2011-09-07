@@ -3,7 +3,7 @@
 			<ProjectGuid>{BEAAC1EC-8211-48CD-85EC-58853EE6C4A6}</ProjectGuid>
 			<ProjectVersion>12.3</ProjectVersion>
 			<MainSource>sql2inpx.dpr</MainSource>
-			<Config Condition="'$(Config)'==''">Release</Config>
+			<Config Condition="'$(Config)'==''">Debug</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 			<Base>True</Base>
 			<Platform>Win32</Platform>
@@ -31,6 +31,8 @@
 			<DCC_Platform>x86</DCC_Platform>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
+			<DCC_RemoteDebug>true</DCC_RemoteDebug>
 			<DCC_DcuOutput>D:\DelphiProjects\MyHomeLib\SQL2Inpx 2\Out\Release\DCU\</DCC_DcuOutput>
 			<DCC_ExeOutput>D:\DelphiProjects\MyHomeLib\SQL2Inpx 2\Out\Release\BIN\</DCC_ExeOutput>
 			<DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
@@ -83,7 +85,7 @@
 						<Source Name="MainSource">sql2inpx.dpr</Source>
 					</Source>
 					<Parameters>
-						<Parameters Name="RunParams">-p librusec[usr]</Parameters>
+						<Parameters Name="RunParams">-p librusec[USR]</Parameters>
 					</Parameters>
 					<VersionInfo>
 						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
@@ -91,7 +93,7 @@
 						<VersionInfo Name="MajorVer">1</VersionInfo>
 						<VersionInfo Name="MinorVer">2</VersionInfo>
 						<VersionInfo Name="Release">1</VersionInfo>
-						<VersionInfo Name="Build">37</VersionInfo>
+						<VersionInfo Name="Build">38</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -103,7 +105,7 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName"/>
 						<VersionInfoKeys Name="FileDescription"/>
-						<VersionInfoKeys Name="FileVersion">1.2.1.37</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">1.2.1.38</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName"/>
 						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>
