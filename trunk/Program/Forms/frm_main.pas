@@ -6182,6 +6182,10 @@ begin
     if frmBases.ShowModal = mrOk then
     begin
       Assert(Settings.ActiveCollection = FCollection.CollectionID);
+      // Refresh the collection cache (so that each book picks up the altered root path):
+      FCollection := FSystemData.GetCollection(Settings.ActiveCollection, True);
+
+      // Init the trees:
       InitCollection;
     end;
   finally
