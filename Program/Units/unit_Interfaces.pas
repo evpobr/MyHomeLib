@@ -99,7 +99,7 @@ type
 
     function GetCollectionInfo(const CollectionID: Integer): TCollectionInfo;
 
-    function GetCollection(const CollectionID: Integer): IBookCollection;
+    function GetCollection(const CollectionID: Integer; const RefreshCache: Boolean = False): IBookCollection;
 
     function ActivateGroup(const ID: Integer): Boolean; //deprecated;
 

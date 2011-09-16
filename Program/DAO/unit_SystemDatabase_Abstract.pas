@@ -46,7 +46,7 @@ type
     function HasCollections: Boolean;
     function FindFirstExistingCollectionID(const PreferredID: Integer): Integer;
 
-    function GetCollection(const CollectionID: Integer): IBookCollection;
+    function GetCollection(const CollectionID: Integer; const RefreshCache: Boolean): IBookCollection;
 
     //
     // Пользовательские данные
@@ -152,11 +152,16 @@ begin
   end;
 end;
 
-function TSystemData.GetCollection(const CollectionID: Integer): IBookCollection;
+function TSystemData.GetCollection(const CollectionID: Integer; const RefreshCache: Boolean): IBookCollection;
 begin
   Assert(INVALID_COLLECTION_ID <> CollectionID);
   FCollectionCache.LockMap;
   try
+    if RefreshCache then
+    begin
+      FCollectionCache.Remove(CollectionID);
+    end;
+
     if FCollectionCache.ContainsKey(CollectionID) then
     begin
       Result := FCollectionCache.Get(CollectionID);
