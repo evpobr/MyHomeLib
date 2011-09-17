@@ -107,10 +107,9 @@ end;
 function TLib.LastBookID: integer;
 var
   Count: integer;
-  Query: string;
 begin
-  ExecQuery('Select Count(*) From libbook', Book);
-  Count := Book.Fields[0].AsInteger;
+  ExecQuery('Select Count(BookId) From libbook', Query);
+  Count := Query.Fields[0].AsInteger;
   ExecQuery(Format('SELECT * FROM `libbook` LIMIT %d, 1;', [Count - 1]), Book);
   Result :=  BookBookId.AsInteger;
 end;

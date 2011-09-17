@@ -489,83 +489,16 @@
         Height = 13
         Caption = 'ID:'
       end
-      object DBGrid3: TDBGrid
-        Left = 329
-        Top = 391
-        Width = 320
-        Height = 70
-        DataSource = Lib.dsGenre
-        TabOrder = 0
-        TitleFont.Charset = DEFAULT_CHARSET
-        TitleFont.Color = clWindowText
-        TitleFont.Height = -11
-        TitleFont.Name = 'Tahoma'
-        TitleFont.Style = []
-      end
-      object DBGrid4: TDBGrid
-        Left = 329
-        Top = 316
-        Width = 320
-        Height = 69
-        DataSource = Lib.dsSeries
-        TabOrder = 1
-        TitleFont.Charset = DEFAULT_CHARSET
-        TitleFont.Color = clWindowText
-        TitleFont.Height = -11
-        TitleFont.Name = 'Tahoma'
-        TitleFont.Style = []
-        Columns = <
-          item
-            Expanded = False
-            FieldName = 'SeqName'
-            Width = 220
-            Visible = True
-          end
-          item
-            Expanded = False
-            FieldName = 'SeqNumb'
-            Visible = True
-          end>
-      end
-      object DBGrid2: TDBGrid
-        Left = 3
-        Top = 316
-        Width = 320
-        Height = 145
-        DataSource = Lib.dsAvtor
-        TabOrder = 2
-        TitleFont.Charset = DEFAULT_CHARSET
-        TitleFont.Color = clWindowText
-        TitleFont.Height = -11
-        TitleFont.Name = 'Tahoma'
-        TitleFont.Style = []
-        Columns = <
-          item
-            Expanded = False
-            FieldName = 'FirstName'
-            Width = 100
-            Visible = True
-          end
-          item
-            Expanded = False
-            FieldName = 'MiddleName'
-            Width = 100
-            Visible = True
-          end
-          item
-            Expanded = False
-            FieldName = 'LastName'
-            Width = 100
-            Visible = True
-          end>
-      end
       object DBGrid1: TDBGrid
+        AlignWithMargins = True
         Left = 3
-        Top = 34
+        Top = 40
         Width = 646
-        Height = 164
+        Height = 317
+        Margins.Top = 40
+        Align = alClient
         DataSource = Lib.dsLibBook
-        TabOrder = 3
+        TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
         TitleFont.Height = -11
@@ -673,7 +606,7 @@
         Width = 240
         Height = 25
         DataSource = Lib.dsLibBook
-        TabOrder = 4
+        TabOrder = 1
       end
       object edIDSearch: TEdit
         Left = 528
@@ -681,15 +614,19 @@
         Width = 121
         Height = 21
         NumbersOnly = True
-        TabOrder = 5
+        TabOrder = 2
         OnKeyDown = edIDSearchKeyDown
       end
       object GroupBox6: TGroupBox
-        Left = 3
-        Top = 204
-        Width = 646
+        Left = 0
+        Top = 360
+        Width = 652
         Height = 106
-        TabOrder = 6
+        Align = alBottom
+        TabOrder = 3
+        ExplicitLeft = 3
+        ExplicitTop = 204
+        ExplicitWidth = 646
         object Label3: TLabel
           Left = 11
           Top = 8

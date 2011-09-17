@@ -32,9 +32,6 @@ type
     Pages: TPageControl;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
-    DBGrid3: TDBGrid;
-    DBGrid4: TDBGrid;
-    DBGrid2: TDBGrid;
     DBGrid1: TDBGrid;
     DBNavigator1: TDBNavigator;
     tsParams: TTabSheet;
