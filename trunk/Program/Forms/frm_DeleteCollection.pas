@@ -108,7 +108,7 @@ begin
       begin
         if mrDeleteCollection = vistaDlg.ModalResult then
           Result := dcaDelete
-        else
+        else if mrUnregisterCollection = vistaDlg.ModalResult  then
           Result := dcaUnregister;
       end;
     finally
@@ -123,7 +123,7 @@ begin
       begin
         if xpDlg.rbDelete.Checked then
           Result := dcaDelete
-        else
+        else if xpDlg.rbUnregister.Checked then
           Result := dcaUnregister;
       end;
     finally
