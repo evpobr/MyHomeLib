@@ -2305,13 +2305,25 @@ end;
 // Clear contents of collection tables (except for Settings and Genres)
 procedure TBookCollection_SQLite.TruncateTablesBeforeImport;
 const
-  SQL_TRUNCATE = 'DELETE FROM %s';
+  SQL_TRUNCATE = 'DROP TABLE %s';
   TABLE_NAMES: array [0 .. 4] of string = ('Author_List', 'Genre_List', 'Books', 'Authors', 'Series');
 var
   TableName: string;
+  StringList: TStringList;
+  StructureDDL: string;
+  BookCollection: IBookCollection;
+
 begin
   for TableName in TABLE_NAMES do
     FDatabase.ExecSQL(Format(SQL_TRUNCATE, [TableName]));
+
+  StringList := ReadResourceAsStringList('RecreateCollectionTables');
+  for StructureDDL in StringList do
+  begin
+    if Trim(StructureDDL) <> '' then
+      FDatabase.ExecSQL(StructureDDL);
+  end;
+
 end;
 
 procedure TBookCollection_SQLite.StartBatchUpdate;
