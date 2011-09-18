@@ -1292,7 +1292,7 @@ procedure TSystemData_SQLite.AddBookToGroup(
   const BookRecord: TBookRecord
 );
 const
-  SQL_SELECT = 'SELECT BookID FROM Books WHERE BookID = ? AND DatabaseID = ? ';
+  SQL_SELECT = 'SELECT Count(*) FROM Books WHERE BookID = ? AND DatabaseID = ? ';
   SQL_INSERT = 'INSERT INTO BOOKS (' +
     'LibID, Title, SeriesID, SeqNumber, UpdateDate, ' + // 0 .. 4
     'LibRate, Lang, Folder, FileName, InsideNo, ' +     // 5 .. 9
@@ -1317,7 +1317,7 @@ begin
     query.SetParam(0, BookKey.BookID);
     query.SetParam(1, BookKey.DatabaseID);
     query.Open;
-    exists := not query.Eof;
+    exists := query.FieldAsInt(0) <> 0;
   finally
     FreeAndNil(query);
   end;
