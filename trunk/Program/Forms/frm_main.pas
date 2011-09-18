@@ -725,6 +725,7 @@ type
   private
     FDMThread: TDownloadManagerThread;
     FCurrentBookOnly: Boolean;
+    FInvisible: Boolean;
 
     function IsSelectedBookNode(Node: PVirtualNode; Data: PBookRecord): Boolean;
 
@@ -1514,6 +1515,7 @@ var
 begin
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
+  FInvisible := True;
   try
     FSearchCriteria := EmptySearchCriteria;
 
@@ -1602,6 +1604,7 @@ begin
     UpdateActions;
     UpdateAllEditActions;
 
+    FInvisible := False;
     FindLastBook(FCollection.GetProperty(PROP_LAST_AUTHOR_BOOK), tvBooksA);
     FindLastBook(FCollection.GetProperty(PROP_LAST_SERIES_BOOK), tvBooksS);
 
@@ -3048,6 +3051,9 @@ var
 
   InfoStr: string;
 begin
+  if FInvisible then Exit;
+
+
   Tree := Sender as TBookTree;
 
   StoredBookKey := nil;
