@@ -167,7 +167,6 @@ var
   InpxFileName: string;
   updateInfo: TUpdateInfo;
   Collection: IBookCollection;
-  UserDataBackup: TUserData;
 begin
   SetComment(rstrCheckingUpdate);
 
@@ -206,33 +205,17 @@ begin
       Collection := FSystemData.GetCollection(updateInfo.CollectionID);
       Collection.BeginBulkOperation;
       try
-        UserDataBackup := TUserData.Create;
-        try
-          if updateInfo.Full then
-          begin
-            // Backup user data:
-            Teletype(Format(rstrBackupUserData, [updateInfo.Name]), tsInfo);
-            Collection.ExportUserData(UserDataBackup);
+        if updateInfo.Full then
+        begin
 
-            // clear most tables in a collection
-            Teletype(Format(rstrRemovingOldCollection, [updateInfo.Name]), tsInfo);
-            Collection.TruncateTablesBeforeImport;
-          end; //if FULL
+          // clear most tables in a collection
+          Teletype(Format(rstrRemovingOldCollection, [updateInfo.Name]), tsInfo);
+          Collection.TruncateTablesBeforeImport;
+        end; //if FULL
 
-          //  импортирум данные
-          Teletype(rstrImportIntoCollection, tsInfo);
-          Import(InpxFileName, not updateInfo.Full, Collection);
-
-          if updateInfo.Full then // a full import mode, had a backup before the process
-          begin
-            Assert(Assigned(UserDataBackup));
-            // Restore user data:
-            Teletype(Format(rstrRestoreUserData, [updateInfo.Name]),tsInfo);
-            Collection.ImportUserData(UserDataBackup, nil);
-          end;
-        finally
-          FreeAndNil(UserDataBackup);
-        end;
+        //  импортирум данные
+        Teletype(rstrImportIntoCollection, tsInfo);
+        Import(InpxFileName, not updateInfo.Full, Collection);
 
         Collection.EndBulkOperation(True);
       except
