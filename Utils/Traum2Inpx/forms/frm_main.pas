@@ -77,9 +77,9 @@ end;
 procedure TfrmMain.Pack;
 const
   Structure = 'AUTHOR;TITLE;SERIES;SERNO;GENRE;LIBID;INSNO;FILE;FOLDER;EXT;SIZE;LANG;DATE;';
-  CommentFB2 = 'Библиотека Траума [FB2]' + #13#10 + 'traum_local_fb2' + #13#10 + '65536' + #13#10 + 'Библиотека Траума. FB2';
-  CommentNonFB2 = 'Библиотека Траума [NONFB2]' + #13#10 + 'traum_local_fb2' + #13#10 + '65537' + #13#10 + 'Библиотека Траума. Не-FB2';
-  CommentALL = 'Библиотека Траума [AllBooks]' + #13#10 + 'traum_local_fb2' + #13#10 + '65537' + #13#10 + 'Библиотека Траума. Все книги';
+  CommentFB2 = 'Библиотека Траума [FB2]' + #13#10 + 'traum_local_fb2' + #13#10 + '0' + #13#10 + 'Библиотека Траума. FB2';
+  CommentNonFB2 = 'Библиотека Траума [NONFB2]' + #13#10 + 'traum_local_fb2' + #13#10 + '1' + #13#10 + 'Библиотека Траума. Не-FB2';
+  CommentALL = 'Библиотека Траума [AllBooks]' + #13#10 + 'traum_local_fb2' + #13#10 + '1' + #13#10 + 'Библиотека Траума. Все книги';
 
   FileList = 'structure.info' + #13#10 + 'collection.info' + #13#10 + 'version.info';
 

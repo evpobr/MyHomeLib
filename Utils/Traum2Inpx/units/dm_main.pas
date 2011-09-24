@@ -98,6 +98,15 @@ type
 
 {$R *.dfm}
 
+function ShortName(const FN: string): string;
+var
+  p: Integer;
+  Ext: string;
+begin
+  Ext := ExtractFileExt(FN);
+  Result := copy(FN, 1, Length(FN) - Length(Ext));
+end;
+
 procedure GetSeriesRecord(S: string; out Rec: TSeriesRecord);
 var
   p1, k : integer;
@@ -175,6 +184,7 @@ procedure GetBookRecord(S: string; out Rec: TBookRecord);
 var
   p1, k : integer;
   date: string;
+  filename: string;
 begin
   S := StringReplace(S, #4, '', [rfReplaceAll]);
   p1 := pos(dl, S);
@@ -208,19 +218,20 @@ begin
   delete(s, 1 , p1); //transl
 
   p1 := pos(dl, S);
-  Rec.path := copy(S,1,p1 - 1);
+  Rec.path := copy(S,1,p1 - 1);  //папка
   delete(s, 1 , p1);
 
   p1 := pos(dl, S);
-  Rec.fname := copy(S,1,p1 - 1);
+  filename := copy(S,1,p1 - 1); //имя файла
   delete(s, 1 , p1);
+
+  Rec.fname := ShortName(filename); //имя файла
+  Rec.Ftype := ExtractFileExt(filename);  //расширение
+  delete(Rec.Ftype, 1, 1);
 
   p1 := pos(dl, S);
   Rec.size := StrToInt(copy(S,1,p1 - 1));
   delete(s, 1 , p1);
-
-  Rec.Ftype := ExtractFileExt(Rec.fname);
-  delete(Rec.Ftype, 1, 1);
 
   p1 := pos(dl, S);
   delete(s, 1 , p1); //asize
@@ -438,8 +449,8 @@ begin
     G + c + // жанры
     tblBooksID.AsWideString + c + // LibID
     '0' + c + //insno
-    tblBooksfname.AsWideString + '.zip' + c + // имя файла
-    tblBookspath.AsWideString + c + // путь
+    tblBooksfname.AsWideString + c + // имя файла
+    tblBookspath.AsWideString + tblBooksfname.AsWideString + '.zip'+ c + // путь
     tblBooksfiletype.AsWideString + c + // тип
     tblBooksSize.AsWideString + c + // размер
     tblBooksLang.AsWideString + c + // Lang
@@ -468,7 +479,7 @@ var
         Res.Add(S);
         inc(j);
       end;
-      if (j mod 100) = 0 then
+      if (j mod 500) = 0 then
       begin
         FInfo.Caption := 'Добавленно ' + IntToStr(j);
         Application.ProcessMessages;
