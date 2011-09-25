@@ -63,7 +63,7 @@ begin
   FAppPath := ExtractFilePath(Application.ExeName);
 
   FInputDir := FAppPath + '\Input\';
-  FDBDir := FAppPath + 'Input\';
+  FDBDir := FAppPath + 'DB\';
   FInpPath := FAppPath + 'INP\';
   FOutPath := FAppPath + 'ARCH\';
 
@@ -75,9 +75,9 @@ end;
 procedure TfrmMain.Pack;
 const
   Structure = 'AUTHOR;TITLE;SERIES;SERNO;GENRE;LIBID;INSNO;FILE;FOLDER;EXT;SIZE;LANG;DATE;';
-  CommentFB2 = 'Библиотека Траума [FB2]' + #13#10 + 'traum_local_fb2' + #13#10 + '0' + #13#10 + 'Библиотека Траума. FB2';
-  CommentNonFB2 = 'Библиотека Траума [NONFB2]' + #13#10 + 'traum_local_fb2' + #13#10 + '1' + #13#10 + 'Библиотека Траума. Не-FB2';
-  CommentALL = 'Библиотека Траума [AllBooks]' + #13#10 + 'traum_local_fb2' + #13#10 + '1' + #13#10 + 'Библиотека Траума. Все книги';
+  CommentFB2 = 'Traum [FB2]' + #13#10 + 'traum_local_fb2' + #13#10 + '0' + #13#10 + 'Библиотека Траума. FB2';
+  CommentNonFB2 = 'Traum [NonFB2]' + #13#10 + 'traum_local_fb2' + #13#10 + '1' + #13#10 + 'Библиотека Траума. Не-FB2';
+  CommentALL = 'Traum [ALLBOOKS]' + #13#10 + 'traum_local_fb2' + #13#10 + '1' + #13#10 + 'Библиотека Траума. Все книги';
 
   FileList = 'structure.info' + #13#10 + 'collection.info' + #13#10 + 'version.info';
 
