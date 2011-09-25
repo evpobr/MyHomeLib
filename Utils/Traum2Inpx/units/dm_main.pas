@@ -282,7 +282,7 @@ begin
     Connect;
 
     SL := TStringList.Create;
-    FInfo.Caption := 'Книги ...';
+    FInfo.Caption := 'Импорт: Книги ...';
     SL.LoadFromFile(InputDir + 'book', TEncoding.GetEncoding('cp1251'));
     i := 0;
     for s in SL do
@@ -318,7 +318,7 @@ begin
 
 
     SL.Clear;
-    FInfo.Caption := 'Авторы ...';
+    FInfo.Caption := 'Импорт: Авторы ...';
     SL.LoadFromFile(InputDir + 'author', TEncoding.GetEncoding('cp1251'));
     i := 0;
     for s in SL do
@@ -345,7 +345,7 @@ begin
     end;
 
     SL.Clear;
-    FInfo.Caption := 'Серии ...';
+    FInfo.Caption := 'Импорт: Серии ...';
     SL.LoadFromFile(InputDir + 'series', TEncoding.GetEncoding('cp1251'));
     i := 0;
     tblBooks.IndexName := 'SeriesIDIndex';
@@ -369,7 +369,7 @@ begin
     end;
 
     SL.Clear;
-    FInfo.Caption := 'Жанры ...';
+    FInfo.Caption := 'Импорт: Жанры ...';
     SL.LoadFromFile(InputDir + 'booktags', TEncoding.GetEncoding('cp1251'));
     i := 0;
     tblBooks.IndexName := 'BookIDIndex';
@@ -450,7 +450,7 @@ begin
     tblBooksID.AsWideString + c + // LibID
     '0' + c + //insno
     tblBooksfname.AsWideString + c + // имя файла
-    tblBookspath.AsWideString + tblBooksfname.AsWideString + '.zip'+ c + // путь
+    tblBookspath.AsWideString + tblBooksfname.AsWideString + '.' + tblBooksFileType.AsWideString + '.zip'+ c + // путь
     tblBooksfiletype.AsWideString + c + // тип
     tblBooksSize.AsWideString + c + // размер
     tblBooksLang.AsWideString + c + // Lang
@@ -482,6 +482,7 @@ var
       if (j mod 500) = 0 then
       begin
         FInfo.Caption := 'Добавленно ' + IntToStr(j);
+        FProgress.Position := round(j/Max*100);
         Application.ProcessMessages;
       end;
       tblBooks.Next;
@@ -491,6 +492,8 @@ var
 
 begin
   j := 0;
+  tblBooks.Filtered := False;
+  Max := tblBooks.RecordCount;
   try
     Res := TStringList.Create;
 

@@ -54,9 +54,7 @@ procedure TfrmMain.Button2Click(Sender: TObject);
 begin
   Screen.Cursor := crHourGlass;
   dmTraum.PrepareINP(FInpPath);
-  Label1.Caption := 'Упаковка ...';
   Pack;
-  Label1.Caption := 'Готово';
   Screen.Cursor := crDefault;
 end;
 
@@ -65,7 +63,7 @@ begin
   FAppPath := ExtractFilePath(Application.ExeName);
 
   FInputDir := FAppPath + '\Input\';
-  FDBDir := FAppPath + '\Input\';
+  FDBDir := FAppPath + 'Input\';
   FInpPath := FAppPath + 'INP\';
   FOutPath := FAppPath + 'ARCH\';
 
@@ -110,7 +108,7 @@ var
 
 begin
   FFileList := TStringList.Create;
-
+  Label1.Caption := 'Упаковка ...'; Label1.Repaint;
   // общая часть
   SL := TStringList.Create;
   try
@@ -149,7 +147,7 @@ begin
     FFileList.Add('books_nonfb2_ru.inp');
     FFileList.Add('books_nonfb2_en.inp');
 
-    MakeZip('traum_local_all.inpx', CommentFB2);
+    MakeZip('traum_local_all.inpx', CommentALL);
 
 
     // non-fb2
@@ -162,11 +160,13 @@ begin
     FFileList.Add('books_nonfb2_ru.inp');
     FFileList.Add('books_nonfb2_en.inp');
 
-    MakeZip('traum_local_nonfb2.inpx', CommentFB2);
+    MakeZip('traum_local_nonfb2.inpx', CommentNonFB2);
 
   finally
     SL.Free;
     FFileList.Free;
+    Label1.Caption := 'Готово';
+    ProgressBar1.Position := 0;
   end;
 end;
 
