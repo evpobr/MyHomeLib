@@ -153,7 +153,7 @@ begin
     // non-fb2
     FFileList.text := FileList;
 
-    SL.Text := CommentAll;
+    SL.Text := CommentNonFB2;
     SL.SaveToFile(FInpPath + 'collection.info', TEncoding.UTF8);
     FFileList.Add('collection.info');
 
