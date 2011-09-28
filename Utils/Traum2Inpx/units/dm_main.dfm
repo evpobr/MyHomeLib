@@ -304,4 +304,38 @@ object dmTraum: TdmTraum
     Left = 104
     Top = 288
   end
+  object tblLinked: TABSTable
+    CurrentVersion = '6.09 '
+    DatabaseName = 'Traum'
+    InMemory = False
+    ReadOnly = False
+    Active = True
+    StoreDefs = True
+    IndexDefs = <
+      item
+        Name = 'IndexName'
+        Fields = 'author'
+        Options = [ixPrimary]
+      end>
+    IndexFieldNames = 'author'
+    FieldDefs = <
+      item
+        Name = 'author'
+        DataType = ftInteger
+      end
+      item
+        Name = 'linked'
+        DataType = ftInteger
+      end>
+    TableName = 'Linked'
+    Exclusive = False
+    Left = 248
+    Top = 160
+    object tblLinkedauthor: TIntegerField
+      FieldName = 'author'
+    end
+    object tblLinkedlinked: TIntegerField
+      FieldName = 'linked'
+    end
+  end
 end

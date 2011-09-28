@@ -38,6 +38,9 @@ type
     tblBooksFileType: TStringField;
     tblSeriesid: TIntegerField;
     tblSeriesname: TStringField;
+    tblLinked: TABSTable;
+    tblLinkedauthor: TIntegerField;
+    tblLinkedlinked: TIntegerField;
   private
     { Private declarations }
     FProgress : TProgressbar;
@@ -94,7 +97,10 @@ type
     name: string;
   end;
 
-
+  TLinkedRecord = record
+    author: integer;
+    linked: integer;
+  end;
 
 {$R *.dfm}
 
@@ -132,6 +138,19 @@ begin
   delete(s, 1 , p1);
 
   Rec.name := S;
+end;
+
+procedure GetLinkedRecord(S: string; out Rec: TLinkedRecord);
+var
+  p1, k : integer;
+begin
+  S := StringReplace(S, #4, '', [rfReplaceAll]);
+
+  p1 := pos(dl, S);
+  Rec.author := StrToInt(copy(S,1,p1 - 1));
+  delete(s, 1 , p1);
+
+  Rec.linked := StrToInt(S);
 end;
 
 procedure GetAuthorRecord(S: string; out Rec: TAuthorRecord);
@@ -250,6 +269,7 @@ begin
   tblSeries.Active := True;
   tblGenres.Active := True;
   tblBooks.Active := True;
+  tblLinked.Active := True;
 end;
 
 procedure TdmTraum.Disconnect;
@@ -259,6 +279,7 @@ begin
   tblSeries.Active := False;
   tblGenres.Active := False;
   tblBooks.Active := False;
+  tblLinked.Active := False;
 end;
 
 procedure TdmTraum.ImportData(InputDir: string);
@@ -269,6 +290,7 @@ var
   Author: TAuthorRecord;
   Book: TBookRecord;
   Series: TSeriesRecord;
+  Links: TLinkedRecord;
 
   i, Max: integer;
 
@@ -279,6 +301,7 @@ begin
     tblBooks.EmptyTable;
     tblSeries.EmptyTable;
     tblGenres.EmptyTable;
+    tblLinked.EmptyTable;
     Connect;
 
     SL := TStringList.Create;
@@ -316,6 +339,27 @@ begin
 
     end;
 
+    SL.Clear;
+    FInfo.Caption := 'Импорт: Связи ...';
+    SL.LoadFromFile(InputDir + 'authorlink', TEncoding.GetEncoding('cp1251'));
+    i := 0;
+    for s in SL do
+    begin
+      GetLinkedRecord(S, Links);
+
+      tblLinked.Insert;
+      tblLinkedAuthor.Value := Links.author;
+      tblLinkedLinked.Value := Links.linked;
+
+      tblLinked.Post;
+
+      inc(i);
+      if (i mod 100) = 0 then
+      begin
+        FProgress.Position := Round(i/SL.Count * 100);
+        Application.ProcessMessages;
+      end;
+    end;
 
     SL.Clear;
     FInfo.Caption := 'Импорт: Авторы ...';
@@ -324,17 +368,27 @@ begin
     for s in SL do
     begin
       GetAuthorRecord(S, Author);
-      tblBooks.FindKey([Author.Id]);
 
-      tblAuthor.Insert;
-      tblAuthorid.Value := Author.id;
-      tblAuthorFirstName.Value := Author.FirstName;
-      tblAuthorMidname.Value := Author.MidName;
-      tblAuthorLastname.Value := Author.LastName;
-      tblAuthorLang.Value := Author.Lang;
-      tblAuthorSeries.Value := Author.Series;
+      if tblLinked.FindKey([Author.ID]) then
+      begin
+        Author.id := tblLinkedLinked.Value;
+        tblBooks.FindKey([Author.Id]);
+      end
+      else
+      begin
+        tblBooks.FindKey([Author.Id]);
 
-      tblAuthor.Post;
+        tblAuthor.Insert;
+        tblAuthorid.Value := Author.id;
+        tblAuthorFirstName.Value := Author.FirstName;
+        tblAuthorMidname.Value := Author.MidName;
+        tblAuthorLastname.Value := Author.LastName;
+        tblAuthorLang.Value := Author.Lang;
+        tblAuthorSeries.Value := Author.Series;
+
+        tblAuthor.Post;
+
+      end;
 
       inc(i);
       if (i mod 100) = 0 then

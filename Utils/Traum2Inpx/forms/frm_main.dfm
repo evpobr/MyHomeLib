@@ -23,10 +23,6 @@ object frmMain: TfrmMain
     Align = alClient
     BevelOuter = bvSpace
     TabOrder = 0
-    ExplicitLeft = 3
-    ExplicitTop = 3
-    ExplicitWidth = 559
-    ExplicitHeight = 411
     object Label1: TLabel
       Left = 16
       Top = 125
