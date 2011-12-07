@@ -593,6 +593,7 @@ begin
       COL_LANG:    Result := CompareStr(Data1^.Lang, Data2^.Lang);
       COL_LIBRATE: Result := CompareInt(Data1^.LibRate, Data2^.LibRate);
       COL_LIBID:   Result := CompareSTr(Data1^.LibID, Data2^.LibID);
+      COL_TYPE:   Result := CompareSTr(Data1^.FileExt, Data2^.FileExt);
     end;
   end;
 end;

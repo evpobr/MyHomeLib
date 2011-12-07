@@ -492,6 +492,8 @@ type
     BookID1: TMenuItem;
     miBookInfoPriority: TMenuItem;
     acViewSetInfoPriority: TAction;
+    tmrSearchA: TTimer;
+    tmrSearchS: TTimer;
 
     //
     // События формы
@@ -661,7 +663,6 @@ type
     //
     procedure tbCollapseClick(Sender: TObject);
     procedure edLocateAuthorChange(Sender: TObject);
-    procedure edLocateSeriesChange(Sender: TObject);
     procedure miActiveCollectionClick(Sender: TObject);
     procedure CopyToCollectionClick(Sender: TObject);
     procedure miGoToAuthorClick(Sender: TObject);
@@ -709,6 +710,9 @@ type
       const Rect: TRect; Active: Boolean);
     procedure tbtnWizardClick(Sender: TObject);
     procedure acViewSetInfoPriorityExecute(Sender: TObject);
+    procedure tmrSearchSTimer(Sender: TObject);
+    procedure tmrSearchATimer(Sender: TObject);
+    procedure edLocateSeriesChange(Sender: TObject);
 
   protected
     procedure WMGetSysCommand(var Message: TMessage); message WM_SYSCOMMAND;
@@ -726,6 +730,8 @@ type
     FDMThread: TDownloadManagerThread;
     FCurrentBookOnly: Boolean;
     FInvisible: Boolean;
+    FKey: Integer;
+    FTimerDone: Boolean;
 
     function IsSelectedBookNode(Node: PVirtualNode; Data: PBookRecord): Boolean;
 
@@ -2334,6 +2340,64 @@ begin
 
   StatusMessage := rstrDownloadStateDone;
 end;
+
+procedure TfrmMain.tmrSearchATimer(Sender: TObject);
+var
+  Button: TToolButton;
+begin
+  tmrSearchA.Enabled := False;
+  FTimerDone := True;
+
+
+  if FTimerDone then
+  begin
+    FTimerDone := False;
+
+    Assert(Assigned(FLastLetterA));
+    Button := GetFilterButton(FAuthorBars, edLocateAuthor.Text);
+
+    if Assigned(Button) and (Button <> FLastLetterA) then
+    begin
+      InternalSetAuthorFilter(Button);
+    end;
+    LocateAuthor(edLocateAuthor.Text);
+  end;
+end;
+
+procedure TfrmMain.edLocateAuthorChange(Sender: TObject);
+begin
+  if not tmrSearchA.Enabled then
+  begin
+    tmrSearchA.Enabled := True;
+    FTimerDone := False;
+  end;
+end;
+
+
+procedure TfrmMain.tmrSearchSTimer(Sender: TObject);
+var
+  Button: TToolButton;
+begin
+  tmrSearchS.Enabled := False;
+  FTimerDone := True;
+
+
+  if FTimerDone then
+  begin
+    //
+    // Проверим текущий фильтр и изменим его если нужно
+    //
+    Assert(Assigned(FLastLetterS));
+    Button := GetFilterButton(FSerieBars, edLocateSeries.Text);
+    if Assigned(Button) and (Button <> FLastLetterA) then
+    begin
+      InternalSetSeriesFilter(Button);
+    end;
+
+    LocateSeries(edLocateSeries.Text);
+  end;
+end;
+
 
 procedure TfrmMain.tbtnAutoFBDClick(Sender: TObject);
 //var
@@ -5551,24 +5615,6 @@ begin
   end;
 end;
 
-procedure TfrmMain.edLocateAuthorChange(Sender: TObject);
-var
-  Button: TToolButton;
-begin
-  //
-  // Проверим текущий фильтр и изменим его если нужно
-  //
-  Assert(Assigned(FLastLetterA));
-  Button := GetFilterButton(FAuthorBars, edLocateAuthor.Text);
-  // Assert(Assigned(Button));
-
-  if Assigned(Button) and (Button <> FLastLetterA) then
-  begin
-    InternalSetAuthorFilter(Button);
-  end;
-
-  LocateAuthor(edLocateAuthor.Text);
-end;
 
 procedure TfrmMain.edLocateAuthorKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
@@ -5589,6 +5635,15 @@ begin
       tvSeries.Perform(WM_KEYDOWN, VK_DOWN, 0)
     else if Key = VK_RETURN then
       frmMain.ActiveControl := tvBooksS;
+  end;
+end;
+
+procedure TfrmMain.edLocateSeriesChange(Sender: TObject);
+begin
+  if not tmrSearchS.Enabled then
+  begin
+    tmrSearchS.Enabled := True;
+    FTimerDone := False;
   end;
 end;
 
@@ -5656,26 +5711,6 @@ begin
     edFGenre.Hint := '';
   end;
   Key := Chr(0);
-end;
-
-procedure TfrmMain.edLocateSeriesChange(Sender: TObject);
-var
-  Button: TToolButton;
-begin
-  if Length(edLocateSeries.Text) = 0 then
-    Exit;
-
-  //
-  // Проверим текущий фильтр и изменим его если нужно
-  //
-  Assert(Assigned(FLastLetterS));
-  Button := GetFilterButton(FSerieBars, edLocateSeries.Text);
-  if Assigned(Button) and (Button <> FLastLetterA) then
-  begin
-    InternalSetSeriesFilter(Button);
-  end;
-
-  LocateSeries(edLocateSeries.Text);
 end;
 
 procedure TfrmMain.ShowAboutExecute(Sender: TObject);
