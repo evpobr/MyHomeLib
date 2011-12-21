@@ -592,7 +592,7 @@ begin
       COL_DATE:    Result := CompareDate(Data1^.Date, Data2^.Date);
       COL_LANG:    Result := CompareStr(Data1^.Lang, Data2^.Lang);
       COL_LIBRATE: Result := CompareInt(Data1^.LibRate, Data2^.LibRate);
-      COL_LIBID:   Result := CompareSTr(Data1^.LibID, Data2^.LibID);
+      COL_LIBID:   Result := CompareInt(StrToInt(Data1^.LibID), StrToInt(Data2^.LibID));  { TODO : Потенциально опасный код: если BookId будет не целым, возникнут проблемы }
       COL_TYPE:   Result := CompareSTr(Data1^.FileExt, Data2^.FileExt);
     end;
   end;
