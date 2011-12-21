@@ -732,6 +732,7 @@ type
     FInvisible: Boolean;
     FKey: Integer;
     FTimerDone: Boolean;
+    FIgnoreAuthorChange: Boolean;
 
     function IsSelectedBookNode(Node: PVirtualNode; Data: PBookRecord): Boolean;
 
@@ -1519,6 +1520,7 @@ var
 
 
 begin
+  FIgnoreAuthorChange := True;
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
   FInvisible := True;
@@ -1594,6 +1596,8 @@ begin
 
     Button := GetFilterButton(FAuthorBars, Copy(FSA, 1, 1));
     InternalSetAuthorFilter(Button);
+
+    FIgnoreAuthorChange := False;
     LocateAuthor(FSA);
 
     Button := GetFilterButton(FSerieBars, Copy(FSS, 1, 1));
@@ -1629,6 +1633,7 @@ var
   bookData: PBookRecord;
   bookKey: TBookKey;
   filterValue: TFilterValue;
+  Button : TToolButton;
 begin
   Assert(Assigned(FCollection));
 
@@ -1656,18 +1661,25 @@ begin
       InitCollection;
     end;
 
-    // Change page to Genres:
-    pgControl.ActivePageIndex := PAGE_SERIES;
-    pgControlChange(nil);
-
     FLastSeriesID := seriesID;
-    edLocateSeries.Text := seriesTitle;
-    edLocateSeriesChange(nil);
+
+    Button := GetFilterButton(FSerieBars, seriesTitle);
+    if Assigned(Button) and (Button <> FLastLetterS) then
+    begin
+      InternalSetSeriesFilter(Button);
+    end;
+    LocateSeries(seriesTitle);
+
 
     // Fill book tree and locate the book:
     filterValue := SeriesBookFilter; // uses FLastSeriesID initialized earlier
     FLastSeriesBookID := bookKey;
     FillBooksTree(tvBooksS, FCollection.GetBookIterator(bmBySeries, False, @FilterValue), False, False, @FLastSeriesBookID); // серии
+
+    // Change page to Series:
+    pgControl.ActivePageIndex := PAGE_SERIES;
+    pgControlChange(nil);
+
   finally
     Screen.Cursor := savedCursor;
   end;
@@ -2389,7 +2401,7 @@ begin
     //
     Assert(Assigned(FLastLetterS));
     Button := GetFilterButton(FSerieBars, edLocateSeries.Text);
-    if Assigned(Button) and (Button <> FLastLetterA) then
+    if Assigned(Button) and (Button <> FLastLetterS) then
     begin
       InternalSetSeriesFilter(Button);
     end;
@@ -2826,6 +2838,9 @@ begin
 {$IFDEF USELOGGER}
   logger := GetScopeLogger('TfrmMain.tvAuthorsChange');
 {$ENDIF}
+
+  if FIgnoreAuthorChange then Exit;
+
 
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -5586,6 +5601,8 @@ var
   authorData: PAuthorData;
   filterValue: TFilterValue;
   savedCursor: TCursor;
+  Button : TToolButton;
+
 begin
   savedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -5596,20 +5613,30 @@ begin
       InitCollection;
     end;
 
-    // Change current page:
-    pgControl.ActivePageIndex := PAGE_AUTHORS;
-    pgControlChange(nil);
+    // Locate the author :
 
-    // Locate the author (using the text box):
-    edLocateAuthor.Text := FullAuthorName;
-    edLocateAuthorChange(nil);
+    Button := GetFilterButton(FAuthorBars, FullAuthorName);
+    if Assigned(Button) and (Button <> FLastLetterA) then
+    begin
+      FIgnoreAuthorChange := True;
+      InternalSetAuthorFilter(Button);
+    end;
+    FIgnoreAuthorChange := False;
+    LocateAuthor(FullAuthorName);
+
     authorData := tvAuthors.GetNodeData(tvAuthors.FocusedNode);
     FLastAuthorID := authorData.AuthorID;
 
     // Locate the book:
     filterValue := AuthorBookFilter; // uses FLastAuthorID
     FLastAuthorBookID := BookKey;
-    FillBooksTree(tvBooksA, FCollection.GetBookIterator(bmByAuthor, False, @filterValue), False, True, @FLastAuthorBookID);
+//    FillBooksTree(tvBooksA, FCollection.GetBookIterator(bmByAuthor, False, @filterValue), False, True, @FLastAuthorBookID);
+
+    // Change current page:
+    pgControl.ActivePageIndex := PAGE_AUTHORS;
+    pgControlChange(nil);
+
+
   finally
     Screen.Cursor := savedCursor;
   end;
