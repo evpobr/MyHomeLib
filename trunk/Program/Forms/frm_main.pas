@@ -1604,6 +1604,14 @@ begin
     InternalSetSeriesFilter(Button);
     LocateSeries(FSS);
 
+    // поскольку убрали обязательный FillBooksTree, нужно принудительно чистить список книг в случе пустого списка авторов
+    // в противном случае FillBooksTree вызывалъся повторно
+
+    if tvAuthors.GetFirst = nil then tvAuthorsChange(tvAuthors, nil);
+     if tvSeries.GetFirst = nil then tvAuthorsChange(tvSeries, nil);
+
+    //----------------------------------------------------------------------
+
     FillGenresTree(tvGenres, FCollection.GetGenreIterator(gmAll), False, FLastGenreCode);
     FillGroupsList(tvGroups, FSystemData.GetGroupIterator, FLastGroupID);
     CreateGroupsMenu;
@@ -2458,8 +2466,7 @@ end;
 
 procedure TfrmMain.StartLibUpdate;
 begin
-  if unit_Utils.LibrusecUpdate then
-    InitCollection;
+  unit_Utils.LibrusecUpdate;
 end;
 
 function TfrmMain.GetShowStatusProgress: Boolean;
