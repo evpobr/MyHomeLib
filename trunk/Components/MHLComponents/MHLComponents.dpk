@@ -1,20 +1,22 @@
 package MHLComponents;
 
 {$R *.res}
+{$R *.otares}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
-{$DEBUGINFO ON}
+{$DEBUGINFO OFF}
 {$EXTENDEDSYNTAX ON}
 {$IMPORTEDDATA ON}
 {$IOCHECKS ON}
-{$LOCALSYMBOLS ON}
+{$LOCALSYMBOLS OFF}
 {$LONGSTRINGS ON}
 {$OPENSTRINGS ON}
 {$OPTIMIZATION ON}
 {$OVERFLOWCHECKS OFF}
 {$RANGECHECKS OFF}
-{$REFERENCEINFO ON}
+{$REFERENCEINFO OFF}
 {$SAFEDIVIDE OFF}
 {$STACKFRAMES OFF}
 {$TYPEDADDRESS OFF}
@@ -22,6 +24,8 @@ package MHLComponents;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
+{$DEFINE RELEASE}
+{$ENDIF IMPLICITBUILDING}
 {$IMPLICITBUILD ON}
 
 requires
@@ -35,7 +39,7 @@ requires
   IndyProtocols,
   VirtualTreesD,
   soaprtl,
-  vclZipForged15;
+  vclZipForged16;
 
 contains
   unit_StaticTip in 'unit_StaticTip.pas',
