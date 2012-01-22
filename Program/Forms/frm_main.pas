@@ -772,7 +772,7 @@ type
     procedure OnGetBookHandler(var BookRecord: TBookRecord);
     procedure OnUpdateBookHandler(const BookRecord: TBookRecord);
     procedure OnChangeBook2ZipHandler(const BookRecord: TBookRecord);
-    function OnHelpHandler(Command: Word; Data: Integer; var CallHelp: Boolean): Boolean;
+    function OnHelpHandler(Command: Word; Data: NativeInt; var CallHelp: Boolean): Boolean;
     procedure OnImportUserDataHandler(const UserDataSource: TUserData);
 
   private type
@@ -6236,7 +6236,7 @@ begin
   SaveColumns;
 end;
 
-function TfrmMain.OnHelpHandler(Command: Word; Data: Integer; var CallHelp: Boolean): Boolean;
+function TfrmMain.OnHelpHandler(Command: Word; Data: NativeInt; var CallHelp: Boolean): Boolean;
 begin
   if Data = 1 then
     HtmlHelp(Application.Handle, PChar(Settings.SystemFileName[sfAppHelp]), HH_DISPLAY_TOC, 0)
