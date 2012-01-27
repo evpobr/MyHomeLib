@@ -29,8 +29,10 @@ uses
   unit_Globals,
   unit_WorkerThread,
   unit_CollectionWorkerThread,
+  unit_MHLArchiveHelpers,
   unit_Templater,
-  unit_Interfaces;
+  unit_Interfaces,
+  unit_Consts;
 
 type
   TImportFB2ThreadBase = class(TCollectionWorker)
@@ -55,10 +57,14 @@ type
     function GetNewFileName(FileName: string; R: TBookRecord): string;
 
   protected
-    procedure WorkFunction; override;
     procedure ProcessFileList; virtual; abstract;
+    procedure ProcessFileListArchive; virtual; abstract;
     procedure GetBookInfo(book: IXMLFictionBook; var R: TBookRecord);
     procedure SortFiles(var R: TBookRecord); virtual;
+
+  protected
+    FFb2ArchiveExt: string;
+    FArchiveFormat : TArchiveFormat;
   end;
 
 implementation
@@ -75,8 +81,7 @@ Settings.ImportPath
 
 uses
   Dialogs,
-  dm_user,
-  unit_Consts;
+  dm_user;
 
 resourcestring
   rstrCheckTemplateValidity = 'Проверьте правильность шаблона';
@@ -210,6 +215,7 @@ procedure TImportFB2ThreadBase.ScanFolder;
 begin
   FProgressEngine.BeginOperation(-1, rstrScanningAll, rstrScanningAll);
   try
+    FFiles.Clear;
     Teletype(rstrScanningFolders);
 
     FFilesList := TFilesList.Create(nil);
@@ -237,27 +243,7 @@ begin
   end;
 end;
 
-procedure TImportFB2ThreadBase.WorkFunction;
-begin
-  FFiles := TStringList.Create;
-  try
-    ScanFolder;
 
-    if Canceled then
-      Exit;
-
-    FCollection.BeginBulkOperation;
-    try
-      ProcessFileList;
-      FCollection.EndBulkOperation(True);
-    except
-      FCollection.EndBulkOperation(False);
-      raise;
-    end;
-  finally
-    FreeAndNil(FFiles);
-  end;
-end;
 
 end.
 
