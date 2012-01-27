@@ -1,14 +1,14 @@
 inherited frameNCWSelectGenreFile: TframeNCWSelectGenreFile
   Width = 460
-  Height = 220
+  Height = 280
   Constraints.MinHeight = 220
   Constraints.MinWidth = 460
   ExplicitWidth = 460
-  ExplicitHeight = 220
+  ExplicitHeight = 280
   object pageHint: TMHLStaticTip [0]
     AlignWithMargins = True
     Left = 14
-    Top = 151
+    Top = 172
     Width = 432
     Height = 58
     Margins.Left = 14
@@ -37,7 +37,7 @@ inherited frameNCWSelectGenreFile: TframeNCWSelectGenreFile
     Left = 0
     Top = 56
     Width = 460
-    Height = 92
+    Height = 113
     Margins.Left = 7
     Margins.Top = 7
     Margins.Right = 7
@@ -48,7 +48,7 @@ inherited frameNCWSelectGenreFile: TframeNCWSelectGenreFile
     TabOrder = 1
     DesignSize = (
       460
-      92)
+      113)
     object Label10: TLabel
       Left = 28
       Top = 65
@@ -108,6 +108,16 @@ inherited frameNCWSelectGenreFile: TframeNCWSelectGenreFile
       Enabled = False
       TabOrder = 3
       OnClick = btnGenreListClick
+    end
+    object cbAutoImport: TCheckBox
+      Left = 14
+      Top = 89
+      Width = 283
+      Height = 17
+      Caption = #1047#1072#1087#1091#1089#1090#1080#1090#1100' '#1080#1084#1087#1086#1088#1090' '#1087#1086#1089#1083#1077' '#1089#1086#1079#1076#1072#1085#1080' '#1082#1086#1083#1083#1077#1082#1094#1080#1080
+      Checked = True
+      State = cbChecked
+      TabOrder = 4
     end
   end
 end

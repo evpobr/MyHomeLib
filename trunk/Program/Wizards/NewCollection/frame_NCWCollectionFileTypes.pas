@@ -35,6 +35,7 @@ type
     rbSoreAnyFiles: TRadioButton;
     rbSoreFB2Files: TRadioButton;
     pageHint: TMHLStaticTip;
+    cbAutoImport: TCheckBox;
     procedure OnSetFileType(Sender: TObject);
 
   private
@@ -81,6 +82,8 @@ begin
     OnSetFileType(rb);
   end;
 
+  cbAutoImport.Enabled := rbSoreFB2Files.Checked;
+
   Result := True;
 end;
 
@@ -91,6 +94,7 @@ begin
   else {if rbSoreAnyFiles.Checked then}
     FPParams^.FileTypes := ftAny;
 
+  FPParams^.AutoImport := cbAutoImport.Checked;
   Result := True;
 end;
 
@@ -100,6 +104,8 @@ begin
     pageHint.Caption := rstrCollectionTypeFB2
   else if Sender = rbSoreAnyFiles  then
     pageHint.Caption := rstrCollectionTypeAny;
+
+  cbAutoImport.Enabled := rbSoreFB2Files.Checked;
 end;
 
 end.

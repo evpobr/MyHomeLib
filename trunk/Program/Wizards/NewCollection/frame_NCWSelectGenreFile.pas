@@ -27,6 +27,7 @@ type
     edGenreList: TMHLAutoCompleteEdit;
     btnGenreList: TButton;
     pageHint: TMHLStaticTip;
+    cbAutoImport: TCheckBox;
     procedure OnSetFileType(Sender: TObject);
     procedure btnGenreListClick(Sender: TObject);
 
@@ -99,6 +100,7 @@ function TframeNCWSelectGenreFile.Deactivate(CheckData: Boolean): Boolean;
 begin
   FPParams^.DefaultGenres := rbDefaultGenreFile.Checked;
   FPParams^.GenreFile := edGenreList.Text;
+
 
   if CheckData then
   begin
