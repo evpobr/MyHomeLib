@@ -26,9 +26,7 @@ uses
   unit_Interfaces,
   unit_MHLArchiveHelpers;
   
-procedure ImportFB2(const CollectionID: Integer);
-
-procedure ImportFB2Archive(const CollectionID: Integer; const ArchiveFormat: TArchiveFormat);
+procedure ImportFB2(const CollectionID: Integer; const ArchiveFormat: TArchiveFormat);
 
 procedure ImportFBD(const CollectionID: Integer);
 
@@ -43,12 +41,12 @@ uses
   frm_ImportProgressFormEx,
   unit_Consts;
 
-procedure ImportFB2(const CollectionID: Integer);
+procedure ImportFB2;
 var
   worker: TImportFB2Thread;
   frmProgress: TImportProgressFormEx;
 begin
-  worker := TImportFB2Thread.Create(CollectionID);
+  worker := TImportFB2Thread.Create(CollectionID, ArchiveFormat);
   try
     frmProgress := TImportProgressFormEx.Create(Application);
     try
@@ -63,25 +61,7 @@ begin
   end;
 end;
 
-procedure ImportFB2Archive(const CollectionID: Integer; const ArchiveFormat: TArchiveFormat);
-var
-  worker: TImportFB2ArchiveThread;
-  frmProgress: TImportProgressFormEx;
-begin
-  worker := TImportFB2ArchiveThread.Create(CollectionID, ArchiveFormat);
-  try
-    frmProgress := TImportProgressFormEx.Create(Application);
-    try
-      frmProgress.WorkerThread := worker;
-      frmProgress.btnSaveLog.Visible := True;
-      frmProgress.ShowModal;
-    finally
-      frmProgress.Free;
-    end;
-  finally
-    worker.Free;
-  end;
-end;
+
 
 procedure ImportFBD(const CollectionID: Integer);
 var

@@ -111,7 +111,6 @@ type
     N7: TMenuItem;
     miCollsettings: TMenuItem;
     miCopyToCollection: TMenuItem;
-    miFb2ZipImport: TMenuItem;
     miFb2Import: TMenuItem;
     miAbout: TMenuItem;
     miCheckUpdates: TMenuItem;
@@ -553,7 +552,6 @@ type
     procedure ShowNewCollectionWizard(Sender: TObject);
     procedure ShowCollectionSettingsExecute(Sender: TObject);
     procedure ShowCollectionStatisticsExecute(Sender: TObject);
-    procedure ImportFb2ZipExecute(Sender: TObject);
     procedure ImportFb2Execute(Sender: TObject);
     procedure ImportFb2Update(Sender: TObject);
     procedure ImportNonFB2Execute(Sender: TObject);
@@ -5437,7 +5435,7 @@ end;
 procedure TfrmMain.ImportFb2Execute(Sender: TObject);
 begin
   Assert(Assigned(FCollection));
-  unit_Import.ImportFB2(FCollection.CollectionID);
+  unit_Import.ImportFB2(FCollection.CollectionID, afZip);
 
   InitCollection;
 end;
@@ -5451,14 +5449,6 @@ begin
   Action := Sender as TAction;
   Action.Visible := IsPrivate and (IsFB2 or Settings.AllowMixed);
   Action.Enabled := Action.Visible;
-end;
-
-procedure TfrmMain.ImportFb2ZipExecute(Sender: TObject);
-begin
-  Assert(Assigned(FCollection));
-  unit_Import.ImportFB2Archive(FCollection.CollectionID, afZip);
-
-  InitCollection;
 end;
 
 procedure TfrmMain.ImportFBDExecute(Sender: TObject);
