@@ -71,6 +71,8 @@ type
     FParams: TNCWParams;
     FWorker: TWorker;
 
+    FAutoImport: boolean;
+
     procedure CorrectParams;
     function CreateCollection: Boolean;
     function StartImportData: Boolean;
@@ -93,6 +95,7 @@ type
     destructor Destroy; override;
 
     function NewCollectionID: Integer; inline;
+    property AutoImport:boolean  read FAutoImport;
   end;
 
 var
@@ -381,6 +384,8 @@ begin
     end;
 
     FProgressPage.ShowProgress(100);
+
+    FAutoImport := FParams.AutoImport;
 
     Result := True;
   except

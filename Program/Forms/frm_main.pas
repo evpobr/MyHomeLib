@@ -2123,6 +2123,13 @@ begin
     begin
       Settings.ActiveCollection := frmNCWizard.NewCollectionID;
       InitCollection;
+      if frmNCWizard.Autoimport and IsFB2 then
+      begin
+        Assert(Assigned(FCollection));
+        unit_Import.ImportFB2(FCollection.CollectionID, afZip);
+        InitCollection;
+      end;
+
       Result := True;
     end
     else

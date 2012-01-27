@@ -57,6 +57,8 @@ type
 
     INPXFile: string;
 
+    AutoImport: boolean;
+
     //
     // необходимо перенести загрузку и установку этих значений в TImportInpxThread
     //
