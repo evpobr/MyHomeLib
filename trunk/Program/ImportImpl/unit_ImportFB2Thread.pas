@@ -22,6 +22,11 @@ uses
 type
   TImportFB2Thread = class(TImportFB2ThreadBase)
   protected
+    FAddCount:Integer;
+    FDefectCount:Integer;
+    FArchAdded: Integer;
+    FFb2Added: Integer;
+
     procedure WorkFunction; override;
     procedure ProcessFileList; override;
     procedure ProcessFileListArchive; override;
@@ -53,7 +58,8 @@ resourcestring
   rstrErrorFB2Structure = 'Ошибка структуры fb2: %s -> %s';
   rstrErrorUnpacking = 'Ошибка распаковки архива: ';
   rstrProcessedArchives = 'Обработано архивов: %u из %u';
-  rstrAddedBooks = 'Добавленo книг: %u, пропущено книг: %u';
+  rstrAddedBooks = 'Добавленo книг: %u,; пропущено книг: %u';
+  rstrAddedBooksTotal = 'Добавленo всего книг: %u; пропущено всего книг: %u';
   rstrImportFB2 = 'Импорт файлов fb2:';
   rstrImportFB2Zip = 'Импорт файлов fb2.zip:';
 
@@ -73,13 +79,15 @@ var
   i: Integer;
   R: TBookRecord;
   book: IXMLFictionBook;
-  AddedBooks: integer;
   FileName: string;
+
+  Added, Defective: integer;
+
 begin
+  Added := 0; Defective := 0;
+
   FProgressEngine.BeginOperation(FFiles.Count, rstrProcessedFiles, rstrProcessedFiles);
   try
-    AddedBooks := 0;
-
     FTemplater:= TTemplater.Create;
     try
       for i := 0 to FFiles.Count - 1 do
@@ -110,10 +118,13 @@ begin
             GetBookInfo(book, R);
           end;
           FCollection.InsertBook(R, True, True);
-          Inc(AddedBooks);
+          Inc(Added);
         except
           on e: Exception do
+          begin
             Teletype(Format(rstrStructureError, [R.Folder, R.FileName + FB2_EXTENSION]), tsError);
+            Inc(Defective);
+          end;
         end;
 
         FProgressEngine.AddProgress;
@@ -122,7 +133,9 @@ begin
       FTemplater.Free;
     end;
 
-    Teletype(Format(rstrAddedFiles, [AddedBooks, FFiles.Count]),tsInfo);
+    Teletype(Format(rstrAddedBooks, [Added, Defective]),tsInfo);
+    FAddCount := Added;
+    FDefectCount := Defective;
   finally
     FProgressEngine.EndOperation;
   end;
@@ -135,15 +148,14 @@ var
   AFileName:    string;
   book: IXMLFictionBook;
   FS: TMemoryStream;
-  AddCount:Integer;
-  DefectCount:Integer;
 
   NoErrors: boolean;
   numFb2FilesInZip: Integer;
   Zip: TMHLZip;
+  Added, Defective: integer;
+
 begin
-  AddCount := 0;
-  DefectCount := 0;
+  Added := 0; Defective := 0;
 
   FProgressEngine.BeginOperation(FFiles.Count, rstrProcessedArchives, rstrProcessedArchives);
   try
@@ -180,7 +192,7 @@ begin
                   begin
                     R.Folder := ExtractRelativePath(FCollectionRoot, FFiles[i]);
                     if FCollection.InsertBook(R, True, True) <> 0 then
-                      Inc(AddCount);
+                      Inc(Added);
                   end;
                 except
                   on e: Exception do
@@ -188,7 +200,7 @@ begin
                     NoErrors := False;
                     Teletype(Format(rstrErrorFB2Structure, [FFiles[i], R.FileName + FB2_EXTENSION]), tsError);
                     //Teletype(e.Message, tsError);
-                    Inc(DefectCount);
+                    Inc(Defective);
                   end;
                 end;
               finally
@@ -203,7 +215,7 @@ begin
             R.Folder := FFiles[i];
             SortFiles(R);
             if FCollection.InsertBook(R, True, True) <> 0 then
-              Inc(AddCount);
+              Inc(Added);
           end;
         except
           on e: Exception do
@@ -215,8 +227,8 @@ begin
         FreeAndNil(Zip);
       end;
     end;
-
-    Teletype(Format(rstrAddedBooks, [AddCount, DefectCount]));
+    Inc(FAddCount, Added);
+    Inc(FDefectCount, Defective);
   finally
     FProgressEngine.EndOperation;
   end;
@@ -262,6 +274,9 @@ end;
 
 procedure TImportFB2Thread.WorkFunction;
 begin
+  FAddCount := 0;
+  FDefectCount := 0;
+
   FFiles := TStringList.Create;
   try
     // Import FB2
@@ -311,6 +326,7 @@ begin
     end;
 
   finally
+    Teletype(Format(rstrAddedBooksTotal, [FAddCount, FDefectCount]),tsInfo);
     FreeAndNil(FFiles);
   end;
 end;
