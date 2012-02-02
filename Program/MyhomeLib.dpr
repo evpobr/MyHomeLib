@@ -127,7 +127,6 @@ uses
   unit_MHLGenerics in 'Units\unit_MHLGenerics.pas',
   frm_NewCollectionWizard in 'Wizards\NewCollection\frm_NewCollectionWizard.pas' {NewCollectionWizard},
   unit_CollectionWorkerThread in 'ImportImpl\unit_CollectionWorkerThread.pas',
-  unit_ImportFB2ArchiveThread in 'ImportImpl\unit_ImportFB2ArchiveThread.pas',
   unit_Events in 'Units\unit_Events.pas',
   frm_DeleteCollection in 'Forms\frm_DeleteCollection.pas' {dlgDeleteCollection},
   unit_ImportOldUserData in 'Units\unit_ImportOldUserData.pas',

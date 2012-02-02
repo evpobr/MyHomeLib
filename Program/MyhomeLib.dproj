@@ -100,8 +100,8 @@
 			<DCC_DebugInformation>False</DCC_DebugInformation>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
-			<VerInfo_Build>762</VerInfo_Build>
-			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=2.1.4.762;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+			<VerInfo_Build>763</VerInfo_Build>
+			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=2.1.4.763;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
 			<VerInfo_Locale>1033</VerInfo_Locale>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
@@ -121,8 +121,8 @@
 			<DCC_ExeOutput>Debug\Bin</DCC_ExeOutput>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-			<VerInfo_Build>761</VerInfo_Build>
-			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=2.1.4.761;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+			<VerInfo_Build>762</VerInfo_Build>
+			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=2.1.4.762;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
 			<VerInfo_Locale>1033</VerInfo_Locale>
 		</PropertyGroup>
 		<ItemGroup>
@@ -321,7 +321,6 @@
 				<Form>NewCollectionWizard</Form>
 			</DCCReference>
 			<DCCReference Include="ImportImpl\unit_CollectionWorkerThread.pas"/>
-			<DCCReference Include="ImportImpl\unit_ImportFB2ArchiveThread.pas"/>
 			<DCCReference Include="Units\unit_Events.pas"/>
 			<DCCReference Include="Forms\frm_DeleteCollection.pas">
 				<Form>dlgDeleteCollection</Form>

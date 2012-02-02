@@ -35,7 +35,6 @@ implementation
 uses
   Forms,
   unit_ImportFB2Thread,
-  unit_ImportFB2ArchiveThread,
   unit_ImportFBDThread,
   frm_ImportProgressForm,
   frm_ImportProgressFormEx,
