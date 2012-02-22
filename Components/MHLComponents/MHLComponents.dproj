@@ -2,7 +2,7 @@
 		<PropertyGroup>
 			<ProjectGuid>{D86FD5A7-BE1F-417C-BEB7-6020DDD97B5F}</ProjectGuid>
 			<MainSource>MHLComponents.dpk</MainSource>
-			<Config Condition="'$(Config)'==''">Release</Config>
+			<Config Condition="'$(Config)'==''">Debug</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 			<ProjectVersion>13.4</ProjectVersion>
 			<Base>True</Base>
@@ -54,7 +54,7 @@
 		<PropertyGroup Condition="'$(Base_Win32)'!=''">
 			<Icon_MainIcon>MHLComponents_Icon1.ico</Icon_MainIcon>
 			<Debugger_RunParams>-p flibusta -extra -ftp -c</Debugger_RunParams>
-			<DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
+			<DCC_Namespace>Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
 			<VerInfo_Locale>1033</VerInfo_Locale>
 			<DCC_UsePackage>vclx;vcl;vclimg;vclZipForged16;$(DCC_UsePackage)</DCC_UsePackage>

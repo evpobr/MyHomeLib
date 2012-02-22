@@ -26,6 +26,7 @@ uses
 type
   TImportFBDThread = class(TImportFB2ThreadBase)
   protected
+    procedure WorkFunction; override;
     procedure ProcessFileList; override;
     procedure SortFiles(var R: TBookRecord); override;
 
@@ -89,6 +90,30 @@ begin
       // ничего не делаем
     end;
     FreeAndNil(archiver);
+  end;
+end;
+
+
+procedure TImportFBDThread.WorkFunction;
+begin
+
+  try
+    FFiles := TStringList.Create;
+
+    ScanFolder;
+    if Canceled then
+      Exit;
+
+    FCollection.BeginBulkOperation;
+    try
+      ProcessFileList;
+      FCollection.EndBulkOperation(True);
+    except
+      FCollection.EndBulkOperation(False);
+      raise;
+    end;
+  finally
+    FreeAndNil(FFiles);
   end;
 end;
 

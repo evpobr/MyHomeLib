@@ -20,6 +20,7 @@ uses
   unit_MHLArchiveHelpers;
 
 type
+
   TImportFB2Thread = class(TImportFB2ThreadBase)
   protected
     FAddCount:Integer;
