@@ -48,7 +48,7 @@ type
     public
       constructor Create(AFileName: string);
       function GetFileNameById(No: integer): string;
-      function ExtractToStream(No: integer): TStream; overload;
+      function ExtractToStream(No: integer): TMemoryStream; overload;
       function GetIdxByExt(Ext: string): integer;
       function Find(FN: string):boolean;  overload;
       function Find(No: integer): boolean; overload;
@@ -88,7 +88,7 @@ end;
 
 { TMHLZip }
 
-function TMHLZip.ExtractToStream(No: integer): TStream;
+function TMHLZip.ExtractToStream(No: integer): TMemoryStream;
 begin
   GetFileNameByID(No);
   Result := TMemoryStream.Create;
