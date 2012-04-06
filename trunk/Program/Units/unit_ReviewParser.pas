@@ -65,8 +65,9 @@ end;
 // targetList - an initialised list to be populated with reviews
 procedure TReviewParser.Parse(const url: string; targetList: TStringList);
 const
+  BEG_PREFIX = 'Впечатления о книге:';
   BLOCK_PREFIX = '/polka/show/';
-  END_ALL = '<div id=''newann''';
+  END_ALL = '<p><a href=/stat/r/';
   NAME_REVIEW_DELIM = ':';
 var
   page: string;
@@ -77,6 +78,9 @@ var
 begin
   Assert(Assigned(targetList));
   page := GetPage(url);
+
+  idxReviewBlockStart := Pos(BEG_PREFIX, page);
+  Delete(page, 1 , idxReviewBlockStart);
 
   idxReviewBlockStart := Pos(BLOCK_PREFIX, page);
   idxEndAllBookReviews := Pos(END_ALL, page);

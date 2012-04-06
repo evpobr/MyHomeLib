@@ -416,7 +416,7 @@ const
 
 const
   denied: set of AnsiChar = ['<', '>', ':', '"', '/', '|', '*', '?'];
-  denied_full: set of AnsiChar = ['<', '>', ':', '"', '/', '|', '*', '?', '\'];
+  denied_full: set of AnsiChar = ['<', '>', ':', '"', '/', '|', '*', '?', '\', '«', '»'];
 
 const
   TransL: array [0 .. 31] of string = ('a', 'b', 'v', 'g', 'd', 'e', 'zh', 'z', 'i', 'y', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'f', 'h', 'c', 'ch', 'sh', 'sch', '''', 'i', '''', 'e', 'yu', 'ya');
