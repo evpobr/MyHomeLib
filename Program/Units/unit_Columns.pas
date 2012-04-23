@@ -101,13 +101,13 @@ resourcestring
   rstrSeries = 'Серия';
   rstrNO = '№';
   rstrSize = 'Размер';
-  rstrRate = 'Рейтинг';
+  rstrRate = 'Моя оценка';
   rstrDate = 'Добавлено';
   rstrGenre = 'Жанр';
   rstrCollection = 'Коллекция';
   rstrType = 'Тип';
   rstrLang = 'Язык';
-  rstrLibrate = 'Оценка';
+  rstrLibrate = 'Рейтинг';
   rstrLibID = 'BookID';
 
 const
