@@ -24,7 +24,7 @@ uses
   unit_Globals;
 
 const
-  COL_MASK_ELEMENTS = 11;
+  COL_MASK_ELEMENTS = 12;
 
 type
   TErrorType = (ErFine, ErTemplate, ErBlocks, ErElements);
@@ -68,7 +68,7 @@ function TTemplater.ValidateTemplate(const Template: string;
 const
   { DONE : совпадает с названием константы }
   MASK_ELEMENTS: array [1 .. COL_MASK_ELEMENTS] of string = ('f', 'fa', 't',
-    's', 'n', 'id', 'g', 'ga', 'ff', 'fl', 'rg');
+    's', 'n', 'id', 'g', 'ga', 'ff', 'fl', 'rg', 'fn');
 var
   stack: array of TElement;
   h, k, i, j, StackPos, ElementPos, ColElements, last_char,
@@ -315,9 +315,6 @@ begin
   else
     MaskElements[4].value := '';
 
-  MaskElements[6].templ := 'fl';
-  MaskElements[6].value := MaskElements[4].value;
-
   MaskElements[5].templ := 'fa';
   AuthorName := '';
   if R.AuthorCount > 0 then
@@ -329,26 +326,39 @@ begin
     end;
   MaskElements[5].value := CheckSymbols(AuthorName, True);
 
-  MaskElements[7].templ := 'f';
+  MaskElements[6].templ := 'fl';
   if R.AuthorCount > 0 then
-    MaskElements[7].value := Trim(CheckSymbols(R.Authors[0].GetFullName, True))
+    MaskElements[6].value := Trim(CheckSymbols(R.Authors[0].FLastName, True))
+  else
+    MaskElements[6].value := '';
+
+  MaskElements[7].templ := 'fn';
+  if R.AuthorCount > 0 then
+    MaskElements[7].value := Trim(CheckSymbols(R.Authors[0].FLastName + ' ' + R.Authors[0].FFirstName, True))
   else
     MaskElements[7].value := '';
 
-  MaskElements[8].templ := 's';
-  MaskElements[8].value := Trim(CheckSymbols(R.Series, True));
-
-  MaskElements[9].templ := 'n';
-  if R.SeqNumber <> 0 then
-    MaskElements[9].value := Format('%.2d', [R.SeqNumber])
+  MaskElements[8].templ := 'f';
+  if R.AuthorCount > 0 then
+    MaskElements[8].value := Trim(CheckSymbols(R.Authors[0].GetFullName, True))
   else
-    MaskElements[9].value := '';
+    MaskElements[8].value := '';
 
-  MaskElements[10].templ := 't';
-  MaskElements[10].value := Trim(CheckSymbols(R.Title, True));
+  MaskElements[9].templ := 's';
+  MaskElements[9].value := Trim(CheckSymbols(R.Series, True));
 
-  MaskElements[11].templ := 'id';
-  MaskElements[11].value := R.LibID;
+  MaskElements[10].templ := 'n';
+  if R.SeqNumber <> 0 then
+    MaskElements[10].value := Format('%.2d', [R.SeqNumber])
+  else
+    MaskElements[10].value := '';
+
+  MaskElements[11].templ := 't';
+  MaskElements[11].value := Trim(CheckSymbols(R.Title, True));
+
+  MaskElements[12].templ := 'id';
+  MaskElements[12].value := R.LibID;
+
 
   // Цикл удаления "пустых" блоков
   for i := Low(MaskElements) to High(MaskElements) do
