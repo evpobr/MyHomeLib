@@ -318,9 +318,9 @@ begin
   MaskElements[5].templ := 'fa';
   AuthorName := '';
   if R.AuthorCount > 0 then
-    for i := Low(R.Authors) to High(R.Authors) do
+    for i := 0 to High(R.Authors) do
     begin
-      AuthorName := CheckSymbols(R.Authors[i].GetFullName(True), True);
+      AuthorName := AuthorName + CheckSymbols(R.Authors[i].GetFullName(True), True);
       if i < High(R.Authors) then
         AuthorName := AuthorName + ', ';
     end;

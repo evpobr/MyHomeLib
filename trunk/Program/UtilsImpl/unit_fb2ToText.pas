@@ -21,15 +21,10 @@ type
 
    TFb2ToText = class
    private
-     FSourceEncoding : TTXTEncoding;
-     FResEncoding : TTXTEncoding;
-
-     FIn, FOut: Text;
-
-     procedure ProceedString(const FS: string; const TagStart: string; const TagEnd: string);
+     function ProceedString(const FS: string; const TagStart: string; const TagEnd: string): string;
      procedure ClearString(var FS:String);
-     procedure GetEncoding(const S: string);
-
+     function GetEncoding(const S: string):TEncoding;
+     function ConvertEncoding(ResEncoding: TTXTEncoding):TEncoding;
   public
     procedure Convert(const FileIn: string; const FileOut: string; ResEncoding: TTXTEncoding);
   end;
@@ -42,6 +37,20 @@ uses
   StrUtils;
 
 procedure TFb2ToText.ClearString(var FS:String);
+  procedure DelTags(TagStart, TagEnd: string);
+  var
+    p1, p2: integer;
+  begin
+    repeat
+      p1 := pos(TagStart, FS);
+      if p1 <> 0 then
+      begin
+        p2 := PosEx(TagEnd, FS, p1);
+        Delete(FS, p1, p2 - p1 + Length(TagEnd));
+      end;
+    until p1 = 0;
+  end;
+
 begin
   FS := ReplaceStr(FS,'<strong>','');
   FS := ReplaceStr(FS,'</strong>','');
@@ -55,71 +64,84 @@ begin
   FS := ReplaceStr(FS,'</poem>','');
   FS := ReplaceStr(FS,'<v>','');
   FS := ReplaceStr(FS,'</v>','');
+  FS := ReplaceStr(FS,'<code>','');
+  FS := ReplaceStr(FS,'</code>','');
+
+  DelTags('<a ','a>');
+  DelTags('<image ','/>');
+
 end;
 
 procedure TFb2ToText.Convert(const FileIn: string; const FileOut: string; ResEncoding: TTXTEncoding);
 var
-  SA: AnsiString;
-  US:  UTF8String;
-  S: string;
+  p, i, j: integer;
+  S : string;
+  SLIn, SlOut: TStringList;
+  tmpStr: string;
 begin
-  FResEncoding := ResEncoding;
-
-  AssignFile(FIn, FileIn);
-  Reset(FIn);
-
-  AssignFile(FOut, FileOut);
-  Rewrite(FOut);
-
   try
-    Readln(FIn,S);
-    GetEncoding(S);
+    SlIn := TStringList.Create;
+    SlOut := TStringList.Create;
 
-    while (pos('<body',S) = 0) and not Eof(FIn) do
-      Readln(FIn,S);
+    SlIn.LoadFromFile(FileIn);
+    SlIn.LoadFromFile(FileIn, GetEncoding(SLIn[0]));
 
-    while  not Eof(FIn) do
+    i := 0;
+    while (pos('<body',SlIn[i]) = 0) do inc(i);
+
+    inc(i);
+
+    while (pos('</body>',SlIn[i]) = 0) do
     begin
-      case FSourceEncoding of
-        en1251, enUnknown:
-                begin
-                  Readln(FIn,SA);
-                  US := AnsiToUTF8(SA);
-                end;
-        enUTF8: Readln(FIn,US);
-      end;
-
-      S := UTF8ToString(US);
+      S := SlIn[i];
 
       if (pos('</section>',S) <> 0)  or
          (pos('</title>',S)   <> 0)  or
          (pos('<empty-line',S)<> 0)   or
          (pos('<subtitle>',S) <> 0)
       then
-        Writeln(FOut,'');
-      ClearString(S);
-      ProceedString(S,'<subtitle>','</subtitle>');
-      ProceedString(S,'<p>','</p>');
+        SLOut.Add('')
+      else
+      begin
+        ClearString(S);
+
+        tmpStr := ProceedString(S,'<subtitle>','</subtitle>');
+        if tmpStr <> '' then SLOut.Add(tmpStr);
+
+        tmpStr := ProceedString(S,'<p>','</p>');
+        if tmpStr <> '' then SLOut.Add(tmpStr);
+      end;
+
+      inc(i);
     end;
+    SlOut.SaveToFile(FileOut, ConvertEncoding(ResEncoding));
   finally
-    CloseFile(FIn);
-    CloseFile(FOut);
+    FreeAndNil(SlIn);
+    FreeAndNil(SlOut);
   end;
 end;
 
-procedure TFb2ToText.GetEncoding(const S: string);
+function TFb2ToText.ConvertEncoding(ResEncoding: TTXTEncoding): TEncoding;
 begin
-  FSourceEncoding := enUnknown;
-
-  if Pos('windows-1251', AnsiLowerCase(S)) <> 0 then
-    FSourceEncoding := en1251
-  else if Pos('utf-8', AnsiLowerCase(S)) <> 0 then
-    FSourceEncoding := enUTF8
-  else if Pos('unicode', AnsiLowerCase(S)) <> 0 then
-    FSourceEncoding := enUnicode;
+  case ResEncoding of
+    enUTF8: Result := TEncoding.UTF8;
+    en1251: Result := TEncoding.ANSI;
+    enUnicode: Result := TEncoding.Unicode;
+    enUnknown: Result := TEncoding.ASCII;
+  end;
 end;
 
-procedure TFb2ToText.ProceedString(const FS: string; const TagStart: string; const TagEnd: string);
+function TFb2ToText.GetEncoding(const S: string):TEncoding;
+begin
+  if Pos('windows-1251', AnsiLowerCase(S)) <> 0 then
+    Result := TEncoding.ANSI
+  else if Pos('utf-8', AnsiLowerCase(S)) <> 0 then
+    Result := TEncoding.UTF8
+  else if Pos('unicode', AnsiLowerCase(S)) <> 0 then
+    Result := TEncoding.Unicode;
+end;
+
+function TFb2ToText.ProceedString(const FS: string; const TagStart: string; const TagEnd: string): string;
 var
  p1, p2: Integer;
  L: Integer;
@@ -128,18 +150,13 @@ var
 begin
   L := Length(TagStart);
   p1 := Pos(TagStart, FS);
-
   US := FS;
-
+  Result := '';
   while p1 <> 0 do
   begin
     p2 := Pos(TagEnd, US);
     OS := Copy(US,p1 + L, p2 - p1 - L);
-    case FResEncoding of
-      en1251:    Writeln(FOut, UTF8toAnsi(UTF8Encode(OS)));
-      enUTF8:    Writeln(FOut, UTF8Encode(OS));
-      enUnicode: Writeln(FOut, OS);
-    end;
+    Result := Result + #13#10 + OS;
     Delete(US, 1, p2 + 3);
     p1 := Pos(TagStart, US);
   end;

@@ -150,7 +150,7 @@ begin
   if CheckBox1.Checked then
   begin
     TAuthorsHelper.Add(R.Authors, Edit1.Text, Edit2.Text, Edit3.Text);
-    TAuthorsHelper.Add(R.Authors, Edit4.Text, Edit5.Text, Edit6.Text);
+    TAuthorsHelper.Add(R.Authors, Edit6.Text, Edit4.Text, Edit5.Text);
   end;
   if CheckBox6.Checked then
   begin
