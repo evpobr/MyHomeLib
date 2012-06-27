@@ -156,7 +156,7 @@ begin
   begin
     p2 := Pos(TagEnd, US);
     OS := Copy(US,p1 + L, p2 - p1 - L);
-    Result := Result + #13#10 + OS;
+    Result := Result + OS;
     Delete(US, 1, p2 + 3);
     p1 := Pos(TagStart, US);
   end;
