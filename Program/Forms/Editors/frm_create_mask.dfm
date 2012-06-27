@@ -88,7 +88,7 @@ object frmCreateMask: TfrmCreateMask
     Top = 59
     Width = 434
     Height = 324
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Align = alBottom
     MultiLine = True
     TabOrder = 1
