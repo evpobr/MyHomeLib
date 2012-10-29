@@ -1033,7 +1033,7 @@ begin
   begin
     try
       try
-        archiver := TMHLZip.Create(TPath.Combine(Settings.ReadPath, BookFileName));
+        archiver := TMHLZip.Create(TPath.Combine(Settings.ReadPath, BookFileName), True);
         result := archiver.ExtractToStream(InsideNo);
       except
         raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName]);
@@ -1086,7 +1086,7 @@ begin
           if not FileExists(bookFileName) then Exit;
 
           archiveFileName := TPath.Combine(Settings.ReadPath, bookFileName);
-          archiver := TMHLZip.Create(archiveFileName);
+          archiver := TMHLZip.Create(archiveFileName, True);
           Result := TMemoryStream.Create;
           archiver.Find('*' + FBD_EXTENSION);
           archiver.ExtractToStream(archiver.LastName, Result);

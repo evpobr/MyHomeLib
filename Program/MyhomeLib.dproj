@@ -104,8 +104,8 @@
 		<PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
 			<VerInfo_Release>5</VerInfo_Release>
 			<Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
-			<VerInfo_Build>770</VerInfo_Build>
-			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=2.1.5.770;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+			<VerInfo_Build>773</VerInfo_Build>
+			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=2.1.5.773;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
 			<VerInfo_Locale>1033</VerInfo_Locale>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
@@ -442,7 +442,6 @@
 					<Excluded_Packages>
 						<Excluded_Packages Name="$(BDSBIN)\dcloffice2k160.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
 						<Excluded_Packages Name="$(BDSBIN)\dclofficexp160.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
-						<Excluded_Packages Name="D:\DelphiProjects\Libraries\PDF-In-The-Box\Delphi XE2\Pdf_InTheBox.bpl">File D:\DelphiProjects\Libraries\PDF-In-The-Box\Delphi XE2\Pdf_InTheBox.bpl not found</Excluded_Packages>
 					</Excluded_Packages>
 				</Delphi.Personality>
 				<ModelSupport>False</ModelSupport>

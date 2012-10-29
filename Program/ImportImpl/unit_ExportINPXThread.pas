@@ -168,7 +168,7 @@ begin
         sources[3].Name := COLLECTIONINFO_FILENAME;
         sources[3].Stream := TStringStream.Create(header.AsString);
 
-        archiver := TMHLZip.Create(FINPXFileName);
+        archiver := TMHLZip.Create(FINPXFileName, False);
         archiver.AddFromStream(sources[0].Name, sources[0].Stream);
         archiver.AddFromStream(sources[1].Name, sources[1].Stream);
         archiver.AddFromStream(sources[2].Name, sources[2].Stream);

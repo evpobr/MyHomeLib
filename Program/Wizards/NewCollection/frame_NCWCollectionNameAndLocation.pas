@@ -87,7 +87,7 @@ begin
 
   try
     try
-      archiver := TMHLZip.Create(FPParams^.INPXFile);
+      archiver := TMHLZip.Create(FPParams^.INPXFile, True);
       if archiver.Find(COLLECTIONINFO_FILENAME) then
         header.ParseString(archiver.ExtractToString(COLLECTIONINFO_FILENAME))
       else

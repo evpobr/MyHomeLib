@@ -84,7 +84,7 @@ begin
     R.FileName := NewFileName + ZIP_EXTENSION;
 
     try
-      archiver := TMHLZip.Create(FCollectionRoot + NewFolder + NewFileName + ZIP_EXTENSION);
+      archiver := TMHLZip.Create(FCollectionRoot + NewFolder + NewFileName + ZIP_EXTENSION, False);
       archiver.RenameFile(FCollectionRoot + NewFolder + R.FileName, NewFileName);
     except
       // ничего не делаем
@@ -150,7 +150,7 @@ begin
         try
           j := 0;
           R.Clear;
-          archiver := TMHLZip.Create(archiveFileName);
+          archiver := TMHLZip.Create(archiveFileName, True);
           if archiver.Find('*.*') then
           repeat
             fileName := archiver.LastName;
