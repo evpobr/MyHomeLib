@@ -217,7 +217,7 @@ begin
   FCoverData.Str := '';
   Lines := TstringList.Create;
   try
-    archiver := TMHLZip.Create(FArchiveFilename);
+    archiver := TMHLZip.Create(FArchiveFilename, True);
     Input := TMemoryStream.Create;
     if archiver.Find('*.fbd') then
       archiver.ExtractToStream(archiver.LastName, Input);
@@ -411,7 +411,7 @@ begin
 
   try
     MS := TMemoryStream.Create;
-    archiver := TMHLZip.Create(TPath.Combine(FFolder, FArchiveFilename));
+    archiver := TMHLZip.Create(TPath.Combine(FFolder, FArchiveFilename), True);
     No := archiver.GetIdxByExt('.fbd');
     if No = 0 then No := 1 else No := 0;
     MS := archiver.ExtractToStream(No);
@@ -534,7 +534,7 @@ begin
   fbdFileName := TPath.Combine(FFolder, FFBDFileName);
 
   try
-    archiver := TMHLZip.Create(archiveFileName);
+    archiver := TMHLZip.Create(archiveFileName, False);
     archiver.BaseDir := FFolder;
 
     if EditorMode then
@@ -760,7 +760,7 @@ var
   archiver: TMHLZip;
 begin
   try
-    archiver := TMHLZip.Create(FArchiveFilename);
+    archiver := TMHLZip.Create(FArchiveFilename, True);
     idxFile := archiver.GetIdxByExt('.fbd');
     if idxFile >= 0 then
       Description := archiver.LastName

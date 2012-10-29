@@ -376,7 +376,7 @@ begin
 
   BookCollection.StartBatchUpdate;
   try
-    Zip := TMHLZip.Create(INPXFileName);
+    Zip := TMHLZip.Create(INPXFileName, True);
     if Zip.Find(STRUCTUREINFO_FILENAME) then
       StructureInfo := Zip.ExtractToString(STRUCTUREINFO_FILENAME)
     else

@@ -46,7 +46,7 @@ type
 
 
     public
-      constructor Create(AFileName: string);
+      constructor Create(AFileName: string; RO: boolean);
       function GetFileNameById(No: integer): string;
       function ExtractToStream(No: integer): TMemoryStream; overload;
       function GetIdxByExt(Ext: string): integer;
@@ -201,9 +201,16 @@ begin
   Result := FResult;
 end;
 
-constructor TMHLZip.Create(AFileName: string);
+constructor TMHLZip.Create(AFileName: string; RO: boolean);
 begin
   Inherited Create(Nil);
+
+  if RO and not(FileExists(AFileName)) then
+  begin
+    FResult := False;
+    raise Exception.Create(Format('Архив %s не найден!',[AFileName]));
+  end;
+
   ExtractCorruptedFiles := False;
   CompressionLevel := clMax;
   CompressionMode := 9;

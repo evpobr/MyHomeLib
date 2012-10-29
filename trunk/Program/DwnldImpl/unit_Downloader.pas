@@ -190,7 +190,7 @@ begin
         if IsArchiveExt(FFile) then
         begin
           // Test archive integrity only if it's an archive
-          archiver := TMHLZip.Create(FFile);
+          archiver := TMHLZip.Create(FFile, True);
           Result := archiver.Test;
           if not Result then
             DeleteFile(PChar(FFile));

@@ -216,7 +216,7 @@ begin
     emFB2Zip:
       begin
         try
-          archiver := TMHLZip.Create(DestFileName + ZIP_EXTENSION);
+          archiver := TMHLZip.Create(DestFileName + ZIP_EXTENSION, False);
           archiver.BaseDir := Settings.TempDir;
           archiver.AddFiles(FFileOprecord.SourceFile);
         finally

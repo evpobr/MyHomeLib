@@ -552,7 +552,7 @@ begin
       // после создания архива нужно узнать реальный номер внутри
       FBookRecord.CollectionRoot := FRootPath;
       try
-        archiver := TMHLZip.Create(FBookRecord.GetBookFileName);
+        archiver := TMHLZip.Create(FBookRecord.GetBookFileName, True);
         FBookRecord.InsideNo := archiver.GetIdxByExt(FBookRecord.FileExt);
       finally
         FreeAndNil(archiver);

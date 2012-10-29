@@ -283,7 +283,6 @@ const
   XorColor = $00FFD8CE;
   DEF_GRIP_SIZE = 50;
 var
-  FrameBrush: HBRUSH;
   R: TRect;
 begin
   if not Transparent then

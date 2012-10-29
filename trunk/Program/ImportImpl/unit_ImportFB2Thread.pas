@@ -168,7 +168,7 @@ begin
       NoErrors := True;
       try
         try
-          Zip := TMHLZip.Create(FFiles[i]);
+          Zip := TMHLZip.Create(FFiles[i], True);
           j := 0;
           if Zip.Find('*.*') then
           repeat
@@ -261,7 +261,7 @@ begin
     try
       try
         archiveFileName := TPath.Combine(FCollectionRoot, NewFolder);
-        archiver := TMHLZip.Create(archiveFileName);
+        archiver := TMHLZip.Create(archiveFileName, False);
         archiver.RenameFile( FCollectionRoot +  NewFolder + FileName, NewFileName); // assuming there are only fb2 files there
         R.FileName := NewFileName;
       except
