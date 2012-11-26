@@ -442,8 +442,11 @@ var
   AParameters: string;
   ADirectory: string;
 begin
-  AFileName := SimpleQuoteString(FileName);
-  AParameters := SimpleQuoteString(Parameters);
+//  AFileName := SimpleQuoteString(FileName);
+//  AParameters := SimpleQuoteString(Parameters);
+  AFileName := FileName;
+  AParameters := Parameters;
+
   ADirectory := Directory;
   if ADirectory = '' then
     ADirectory := TPath.GetDirectoryName(Application.ExeName);
