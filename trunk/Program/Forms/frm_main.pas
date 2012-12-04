@@ -934,6 +934,7 @@ type
     procedure AddCurrentToList(const Tree: TBookTree; var BookIDList: TBookIdList);
     procedure SavePositions;
     procedure SetBookInfoPriority(State: Boolean);
+    procedure ShowBookDelete(Sender: TObject);
     property ActiveView: TView read GetActiveView;
 
     property ShowStatusProgress: Boolean read GetShowStatusProgress write SetShowStatusProgress;
@@ -1578,6 +1579,7 @@ begin
     //
     HideDeletedBooksUpdate(nil);
     ShowLocalOnlyUpdate(nil);
+    ShowBookDelete(nil);
 
     FCollection.SetShowLocalOnly(IsOnline and Settings.ShowLocalOnly);
     FCollection.SetHideDeleted((not IsPrivate) and Settings.HideDeletedBooks);
@@ -3892,6 +3894,11 @@ procedure TfrmMain.ShowLocalOnlyUpdate(Sender: TObject);
 begin
   acViewShowLocalOnly.Visible := IsOnline;
   acViewShowLocalOnly.Checked := Settings.ShowLocalOnly;
+end;
+
+procedure TfrmMain.ShowBookDelete(Sender: TObject);
+begin
+  acBookDelete.Visible := IsPrivate or IsOnline;
 end;
 
 procedure TfrmMain.SetInfoPanelHeight(Height: Integer);

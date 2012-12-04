@@ -442,10 +442,15 @@ var
   AParameters: string;
   ADirectory: string;
 begin
-//  AFileName := SimpleQuoteString(FileName);
-//  AParameters := SimpleQuoteString(Parameters);
-  AFileName := FileName;
-  AParameters := Parameters;
+  AFileName := SimpleQuoteString(FileName);
+
+  if pos('"', Parameters) = 0 then
+      AParameters := SimpleQuoteString(Parameters)
+    else
+      AParameters := Parameters;
+
+    //  AFileName := FileName;
+//  AParameters := Parameters;
 
   ADirectory := Directory;
   if ADirectory = '' then
