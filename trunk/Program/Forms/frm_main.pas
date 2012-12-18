@@ -3899,6 +3899,7 @@ end;
 procedure TfrmMain.ShowBookDelete(Sender: TObject);
 begin
   acBookDelete.Visible := IsPrivate or IsOnline;
+  acCollectionSyncFiles.Visible := IsPrivate or IsOnline;
 end;
 
 procedure TfrmMain.SetInfoPanelHeight(Height: Integer);
