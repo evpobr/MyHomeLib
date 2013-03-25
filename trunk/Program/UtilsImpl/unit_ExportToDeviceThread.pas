@@ -127,68 +127,75 @@ var
   FTargetFileName: string;
 begin
   Result := False;
+  try
 
-  Collection := FSystemData.GetCollection(BookKey.DatabaseID);
-  Collection.GetBookRecord(BookKey, R, False);
 
-  // если не задействован скрипт, создаем папки
-  // если будет вызываться скрипт, то папки не нужны, все равно они не обрабатываются
-  // промежуточный файл остается во временной папке
-  if not FExtractOnly Then
-  begin
+    Collection := FSystemData.GetCollection(BookKey.DatabaseID);
+    Collection.GetBookRecord(BookKey, R, False);
+
+    // если не задействован скрипт, создаем папки
+    // если будет вызываться скрипт, то папки не нужны, все равно они не обрабатываются
+    // промежуточный файл остается во временной папке
+    if not FExtractOnly Then
+    begin
+
+      //
+      // Сформируем имя каталога в соответствии с заданным темплейтом
+      //
+      if FTemplater.SetTemplate(FFolderTemplate, TpPath) = ErFine then
+        FTargetFolder := FTemplater.ParseString(R, TpPath)
+      else
+      begin
+        Dialogs.ShowMessage(rstrCheckTemplateValidity);
+        Exit;
+      end;
+
+      FTargetFolder := CleanFileName(FTargetFolder);
+      if FTargetFolder <> '' then
+        FTargetFolder := IncludeTrailingPathDelimiter(Trim(FTargetFolder));
+
+      CreateFolders(DeviceDir, FTargetFolder);
+    end;
 
     //
-    // Сформируем имя каталога в соответствии с заданным темплейтом
+    // Сформируем имя файла в соответствии с заданным темплейтом
     //
-    if FTemplater.SetTemplate(FFolderTemplate, TpPath) = ErFine then
-      FTargetFolder := FTemplater.ParseString(R, TpPath)
+    if FTemplater.SetTemplate(FFileNameTemplate, TpFile) = ErFine then
+      FTargetFileName := FTemplater.ParseString(R, TpFile)
     else
     begin
       Dialogs.ShowMessage(rstrCheckTemplateValidity);
       Exit;
     end;
+    FTargetFileName := CleanFileName(FTargetFileName);
+    FTargetFileName := Trim(FTargetFileName) + R.FileExt;
 
-    if FTargetFolder <> '' then
-      FTargetFolder := IncludeTrailingPathDelimiter(Trim(FTargetFolder));
+    FFileOprecord.TargetFile := TPath.Combine(FTargetFolder, FTargetFileName);
+    FFileOprecord.SourceFile := R.GetBookFileName;
 
-    CreateFolders(DeviceDir, FTargetFolder);
-  end;
-
-  //
-  // Сформируем имя файла в соответствии с заданным темплейтом
-  //
-  if FTemplater.SetTemplate(FFileNameTemplate, TpFile) = ErFine then
-    FTargetFileName := FTemplater.ParseString(R, TpFile)
-  else
-  begin
-    Dialogs.ShowMessage(rstrCheckTemplateValidity);
-    Exit;
-  end;
-  FTargetFileName := Trim(FTargetFileName) + R.FileExt;
-
-  FFileOprecord.TargetFile := TPath.Combine(FTargetFolder, FTargetFileName);
-  FFileOprecord.SourceFile := R.GetBookFileName;
-
-  //
-  // Если файл в архиве - распаковываем в $tmp
-  //
-  FBookFormat := R.GetBookFormat;
-  if FBookFormat in [bfFb2, bfFb2Archive, bfFbd] then
-  begin
-    if not FileExists(FFileOprecord.SourceFile) then
+    //
+    // Если файл в архиве - распаковываем в $tmp
+    //
+    FBookFormat := R.GetBookFormat;
+    if FBookFormat in [bfFb2, bfFb2Archive, bfFbd] then
     begin
-      ShowMessage(rstrArchiveNotFound, MB_ICONERROR or MB_OK);
-      Exit;
+      if not FileExists(FFileOprecord.SourceFile) then
+      begin
+        ShowMessage(rstrArchiveNotFound, MB_ICONERROR or MB_OK);
+        Exit;
+      end;
+
+      FFileOprecord.SourceFile := TPath.Combine(FTempPath, FTargetFileName);
+      R.SaveBookToFile(FFileOprecord.SourceFile);
+
+      if (FBookFormat in [bfFb2, bfFb2Archive]) and FOverwriteFB2Info then
+        WriteFb2InfoToFile(R, FFileOprecord.SourceFile);
     end;
 
-    FFileOprecord.SourceFile := TPath.Combine(FTempPath, FTargetFileName);
-    R.SaveBookToFile(FFileOprecord.SourceFile);
-
-    if (FBookFormat in [bfFb2, bfFb2Archive]) and FOverwriteFB2Info then
-      WriteFb2InfoToFile(R, FFileOprecord.SourceFile);
+    Result := True;
+  except
+    // подавляем исключения дабы не прерывать процесс
   end;
-
-  Result := True;
 end;
 
 function TExportToDeviceThread.SendFileToDevice: Boolean;
@@ -209,35 +216,39 @@ begin
   // TODO -cBug: тут некоторая фигня. Мы вызываем конверторы, даже если исходная книга не FB2. Я помню, что режим для не-FB2 книг выставляется более-менее правильно, но...
   //
   Result := True;
-  case FExportMode of
-    emFB2:
-      unit_globals.CopyFile(FFileOprecord.SourceFile, DestFileName);
+  try
+    case FExportMode of
+      emFB2:
+        unit_globals.CopyFile(FFileOprecord.SourceFile, DestFileName);
 
-    emFB2Zip:
-      begin
-        try
-          archiver := TMHLZip.Create(DestFileName + ZIP_EXTENSION, False);
-          archiver.BaseDir := Settings.TempDir;
-          archiver.AddFiles(FFileOprecord.SourceFile);
-        finally
-          FreeAndNil(archiver);
+      emFB2Zip:
+        begin
+          try
+            archiver := TMHLZip.Create(DestFileName + ZIP_EXTENSION, False);
+            archiver.BaseDir := Settings.TempDir;
+            archiver.AddFiles(FFileOprecord.SourceFile);
+          finally
+            FreeAndNil(archiver);
+          end;
         end;
-      end;
 
-    emTxt:
-      unit_globals.ConvertToTxt(FFileOprecord.SourceFile, DestFileName, FTXTEncoding);
+      emTxt:
+        unit_globals.ConvertToTxt(FFileOprecord.SourceFile, DestFileName, FTXTEncoding);
 
-    emLrf:
-      Result := fb2Lrf(FFileOprecord.SourceFile, DestFileName);
+      emLrf:
+        Result := fb2Lrf(FFileOprecord.SourceFile, DestFileName);
 
-    emEpub:
-      Result := fb2EPUB(FFileOprecord.SourceFile, DestFileName);
+      emEpub:
+        Result := fb2EPUB(FFileOprecord.SourceFile, DestFileName);
 
-    emPDF:
-      Result := fb2PDF(FFileOprecord.SourceFile, DestFileName);
+      emPDF:
+        Result := fb2PDF(FFileOprecord.SourceFile, DestFileName);
 
-    emMobi:
-      Result := fb2Mobi(FFileOprecord.SourceFile, DestFileName);
+      emMobi:
+        Result := fb2Mobi(FFileOprecord.SourceFile, DestFileName);
+    end;
+  except
+    // подавляем исключения дабы не прерывать процесс
   end;
 end;
 
