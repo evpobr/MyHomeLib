@@ -39,7 +39,7 @@ requires
   IndyProtocols,
   VirtualTreesD,
   soaprtl,
-  vclZipForged16;
+  vclZipForged17;
 
 contains
   unit_StaticTip in 'unit_StaticTip.pas',
