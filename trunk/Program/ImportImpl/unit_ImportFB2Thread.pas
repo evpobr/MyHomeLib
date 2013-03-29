@@ -110,7 +110,7 @@ begin
             R.Folder := ExtractFilePath(FFiles[i]);
             book := LoadFictionBook(FFiles[i]);
             GetBookInfo(book, R);
-             inherited SortFiles(R); // изменит R.Folder и R.FileName
+            SortFiles(R); // изменит R.Folder и R.FileName
           end
           else
           begin
@@ -160,8 +160,6 @@ begin
 
   FProgressEngine.BeginOperation(FFiles.Count, rstrProcessedArchives, rstrProcessedArchives);
   try
-    FTemplater:= TTemplater.Create;
-  try
     for i := 0 to FFiles.Count - 1 do
     begin
       if Canceled then
@@ -171,8 +169,7 @@ begin
       try
         try
           Zip := TMHLZip.Create(FFiles[i], True);
-          j := 0;
-          numFb2FilesInZip := 0;
+          j := 0; numFb2FilesInZip := 0;
           if Zip.Find('*.*') then
           repeat
             R.Clear;
@@ -231,9 +228,6 @@ begin
         FreeAndNil(Zip);
       end;
     end;
-    finally
-      FTemplater.Free;
-    end;
     Inc(FAddCount, Added);
     Inc(FDefectCount, Defective);
   finally
@@ -258,23 +252,26 @@ begin
   R.Folder := NewFolder + FileName;
 
   NewFileName := GetNewFileName(Settings.FB2FileTemplate, R);
-  if NewFileName <> '' then
+  if (NewFileName <> '') and (NewFileName <> TPath.GetFileNameWithoutExtension(FileName)) then
   begin
     NewFolder := R.Folder;
-    StrReplace(FileName, NewFileName + FFb2ArchiveExt, NewFolder);
-    RenameFile(FCollectionRoot + R.Folder, FCollectionRoot + NewFolder);
-    R.Folder :=  NewFolder;
-    try
+    if FileName <> NewFileName + FFb2ArchiveExt then
+    begin
+      StrReplace(FileName, NewFileName + FFb2ArchiveExt, NewFolder);
+      RenameFile(FCollectionRoot + R.Folder, FCollectionRoot + NewFolder);
+      R.Folder :=  NewFolder;
       try
-        archiveFileName := TPath.Combine(FCollectionRoot, NewFolder);
-        archiver := TMHLZip.Create(archiveFileName, False);
-        archiver.RenameFile({ FCollectionRoot +  NewFolder + }R.FileName+R.FileExt, NewFileName+R.FileExt); // assuming there are only fb2 files there
-        R.FileName := NewFileName;
-      except
-        // ничего не делаем
+        try
+          archiveFileName := TPath.Combine(FCollectionRoot, NewFolder);
+          archiver := TMHLZip.Create(archiveFileName, False);
+          archiver.RenameFile( FCollectionRoot +  NewFolder + FileName, NewFileName); // assuming there are only fb2 files there
+          R.FileName := NewFileName;
+        except
+          // ничего не делаем
+        end;
+      finally
+        FreeAndNil(archiver);
       end;
-    finally
-      FreeAndNil(archiver);
     end;
   end;
 end;

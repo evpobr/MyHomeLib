@@ -150,7 +150,6 @@ begin
         Exit;
       end;
 
-      FTargetFolder := CleanFileName(FTargetFolder);
       if FTargetFolder <> '' then
         FTargetFolder := IncludeTrailingPathDelimiter(Trim(FTargetFolder));
 
@@ -167,7 +166,6 @@ begin
       Dialogs.ShowMessage(rstrCheckTemplateValidity);
       Exit;
     end;
-    FTargetFileName := CleanFileName(FTargetFileName);
     FTargetFileName := Trim(FTargetFileName) + R.FileExt;
 
     FFileOprecord.TargetFile := TPath.Combine(FTargetFolder, FTargetFileName);
