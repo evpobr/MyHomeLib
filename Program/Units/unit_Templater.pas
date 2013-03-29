@@ -38,8 +38,8 @@ type
   TTemplater = class
   private
     FTemplate: string;
-    FBlocksMap: array of TElement;
-
+    FBlocksMap: array[0..255] of TElement;
+    ColElements: byte;
   public
     constructor Create;
 
@@ -70,8 +70,8 @@ const
   MASK_ELEMENTS: array [1 .. COL_MASK_ELEMENTS] of string = ('f', 'fa', 't',
     's', 'n', 'id', 'g', 'ga', 'ff', 'fl', 'rg', 'fn');
 var
-  stack: array of TElement;
-  h, k, i, j, StackPos, ElementPos, ColElements, last_char,
+  stack: array [0..255] of TElement;
+  h, k, i, j, StackPos, ElementPos, last_char,
     last_col_elements: Integer;
   bol, TemplEnd: boolean;
   TemplatePart: string;
@@ -96,8 +96,8 @@ begin
       Inc(ColElements);
 
   // Установка необходимой размерности и инициализация массивов
-  SetLength(stack, ColElements);
-  SetLength(FBlocksMap, ColElements);
+//  SetLength(stack, ColElements);
+  //SetLength(FBlocksMap, ColElements);
   for i := 0 to ColElements - 1 do
   begin
     stack[i].name := '';
@@ -212,7 +212,7 @@ begin
     end;
 
     // Проверка всех элементов на правильность написания
-    for h := Low(FBlocksMap) to High(FBlocksMap) do
+    for h := 0 to ColElements - 1 do
     begin
       if FBlocksMap[h].name <> '' then
       begin
@@ -265,7 +265,7 @@ begin
 
   // Спецсимволы чистим только для имени файла или пути к файлу
   if TemplType in [TpFile, TpPath] then
-    Template := CheckSymbols(Template);
+    Template := CheckSymbols(Template, False);
 
   if Result = ErFine then
     FTemplate := Trim(Template);
@@ -298,11 +298,11 @@ begin
   end;
 
   MaskElements[2].templ := 'rg';
-  MaskElements[2].value := Trim(CheckSymbols(R.RootGenre.GenreAlias, True));
+  MaskElements[2].value := Trim(CleanFileName(R.RootGenre.GenreAlias));
 
   MaskElements[3].templ := 'g';
   if R.GenreCount > 0 then
-    MaskElements[3].value := Trim(CheckSymbols(R.Genres[0].GenreAlias, True))
+    MaskElements[3].value := Trim(CleanFileName(R.Genres[0].GenreAlias))
   else
     MaskElements[3].value := '';
 
@@ -320,32 +320,32 @@ begin
   if R.AuthorCount > 0 then
     for i := 0 to High(R.Authors) do
     begin
-      AuthorName := AuthorName + CheckSymbols(R.Authors[i].GetFullName(True), True);
+      AuthorName := AuthorName + CleanFileName(R.Authors[i].GetFullName(True));
       if i < High(R.Authors) then
         AuthorName := AuthorName + ', ';
     end;
-  MaskElements[5].value := CheckSymbols(AuthorName, True);
+  MaskElements[5].value := CleanFileName(AuthorName);
 
   MaskElements[6].templ := 'fl';
   if R.AuthorCount > 0 then
-    MaskElements[6].value := Trim(CheckSymbols(R.Authors[0].FLastName, True))
+    MaskElements[6].value := Trim(CleanFileName(R.Authors[0].FLastName))
   else
     MaskElements[6].value := '';
 
   MaskElements[7].templ := 'fn';
   if R.AuthorCount > 0 then
-    MaskElements[7].value := Trim(CheckSymbols(R.Authors[0].FLastName + ' ' + R.Authors[0].FFirstName, True))
+    MaskElements[7].value := Trim(CleanFileName(R.Authors[0].FLastName + ' ' + R.Authors[0].FFirstName))
   else
     MaskElements[7].value := '';
 
   MaskElements[8].templ := 'f';
   if R.AuthorCount > 0 then
-    MaskElements[8].value := Trim(CheckSymbols(R.Authors[0].GetFullName, True))
+    MaskElements[8].value := Trim(CleanFileName(R.Authors[0].GetFullName))
   else
     MaskElements[8].value := '';
 
   MaskElements[9].templ := 's';
-  MaskElements[9].value := Trim(CheckSymbols(R.Series, True));
+  MaskElements[9].value := Trim(CleanFileName(R.Series));
 
   MaskElements[10].templ := 'n';
   if R.SeqNumber <> 0 then
@@ -354,7 +354,7 @@ begin
     MaskElements[10].value := '';
 
   MaskElements[11].templ := 't';
-  MaskElements[11].value := Trim(CheckSymbols(R.Title, True));
+  MaskElements[11].value := Trim(CleanFileName(R.Title));
 
   MaskElements[12].templ := 'id';
   MaskElements[12].value := R.LibID;
@@ -362,7 +362,7 @@ begin
 
   // Цикл удаления "пустых" блоков
   for i := Low(MaskElements) to High(MaskElements) do
-    for j := Low(FBlocksMap) to High(FBlocksMap) do
+    for j := 0 to ColElements - 1 do
       if (UpperCase(MaskElements[i].templ) = UpperCase(FBlocksMap[j].name)) and
         (MaskElements[i].value = '') then
         if (FBlocksMap[j].BegBlock <> 0) and (FBlocksMap[j].EndBlock <> 0) then

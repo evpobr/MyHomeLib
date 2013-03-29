@@ -121,7 +121,7 @@ type
   private
     FDatabase: TSQLiteDatabase;
     FStmt: TSQLiteStmt;
-    FColCount: Cardinal;
+    FColCount: Longint;
     FCols: TStringList;
     FRow: Cardinal;
     FEof: Boolean;
@@ -209,7 +209,7 @@ type
     property Eof: Boolean read FEof;
 
     {: Return number of fields in row.}
-    property ColCount: Cardinal read FColCount;
+    property ColCount: longint read FColCount;
 
     {: Number of current row.}
     property Row: Cardinal read FRow;
