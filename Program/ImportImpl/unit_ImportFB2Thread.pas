@@ -210,7 +210,6 @@ begin
             end;
             inc(j);
           until not Zip.FindNext;
-          Zip.CloseArchive;
           if Settings.EnableSort and NoErrors and (numFb2FilesInZip = 1) then
           begin
             R.Folder := FFiles[i];
@@ -225,6 +224,7 @@ begin
 
         FProgressEngine.AddProgress;
       finally
+        Zip.CloseArchive;
         FreeAndNil(Zip);
       end;
     end;
@@ -252,7 +252,7 @@ begin
   R.Folder := NewFolder + FileName;
 
   NewFileName := GetNewFileName(Settings.FB2FileTemplate, R);
-  if (NewFileName <> '') and (NewFileName <> TPath.GetFileNameWithoutExtension(FileName)) then
+  if NewFileName <> '' then
   begin
     NewFolder := R.Folder;
     if FileName <> NewFileName + FFb2ArchiveExt then

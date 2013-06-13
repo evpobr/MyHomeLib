@@ -150,7 +150,7 @@ begin
 
         Initialize(NodeData^);
         NodeData^ := AuthorData;
-        Include(Node^.States, vsInitialUserData);
+        Include(Node^.States, vsInitialized);
 
         if NodeData^.AuthorID = SelectID then
           SelectedNode := Node;
@@ -189,7 +189,7 @@ begin
 
         Initialize(Data^);
         Data^ := SeriesData;
-        Include(Node.States, vsInitialUserData);
+        Include(Node.States, vsInitialized);
 
         if Data^.SeriesID = SelectID then
           SelectedNode := Node;
@@ -238,7 +238,7 @@ begin
           Data^ := Genre;
           if not FillFB2 then
             Data^.FB2GenreCode := '';
-          Include(GenreNode.States, vsInitialUserData);
+          Include(GenreNode.States, vsInitialized);
 
           Nodes.AddOrSetValue(Data^.GenreCode, GenreNode);
 
@@ -280,7 +280,7 @@ begin
 
         Initialize(Data^);
         Data^ := Group;
-        Include(Node.States, vsInitialUserData);
+        Include(Node.States, vsInitialized);
 
         if Data^.GroupID = SelectID then
           SelectedNode := Node;

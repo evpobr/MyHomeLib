@@ -556,6 +556,9 @@ begin
   //Assert(TPath.IsPathRooted(FullPath));
 
   Result := SysUtils.ForceDirectories(FullPath);
+//  Result := False;
+//  while not Result do
+//    Result := DirectoryExists(FullPath);
 end;
 {$WARNINGS OFF}
 

@@ -71,7 +71,7 @@ uses
   unit_UserData,
   unit_treeController,
   unit_ColorTabs,
-  ZipForge;
+  ZipForge, System.Actions;
 
 type
   TfrmMain = class(TForm)
@@ -4144,7 +4144,7 @@ begin
                 Initialize(Data^);
                 Data^.nodeType := ntAuthorInfo;
                 Data^.Authors := BookRecord.Authors;
-                Include(AuthorNode.States, vsInitialUserData);
+                Include(AuthorNode.States, vsInitialized);
 
                 AuthorNodes.Add(Author, AuthorNode);
               end;
@@ -4185,7 +4185,7 @@ begin
                   Data^.nodeType := ntSeriesInfo;
                   Data^.SeriesID := SeriesID;
                   Data^.Series := BookRecord.Series;
-                  Include(SerieNode.States, vsInitialUserData);
+                  Include(SerieNode.States, vsInitialized);
                 end;
               end;
             end
@@ -4200,7 +4200,7 @@ begin
 
             Initialize(Data^);
             Data^ := BookRecord;
-            Include(BookNode.States, vsInitialUserData);
+            Include(BookNode.States, vsInitialized);
 
             if Assigned(SelectedID) and SelectedID^.IsSameAs(Data^.BookKey) then
               SelectedNode := BookNode;
@@ -4603,7 +4603,7 @@ begin
           DownloadData^.FileName := BookData^.GetBookFileName;
           DownloadData^.URL := Format(Settings.InpxURL + 'b/%s/get', [BookData^.LibID]);
           DownloadData^.State := dsWait;
-          Include(DownloadNode.States, vsInitialUserData);
+          Include(DownloadNode.States, vsInitialized);
         end;
       end;
 

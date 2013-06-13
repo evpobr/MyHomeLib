@@ -589,7 +589,7 @@ var
     Data^.Title := ExtractFileName(ExcludeTrailingPathdelimiter(Path));
     Data^.Folder := Path;
     Data^.DataType := dtFolder;
-    Include(Node^.States, vsInitialUserData);
+    Include(Node^.States, vsInitialized);
   end;
 
 begin
@@ -662,7 +662,7 @@ begin
   Data^.Folder := Path;
   Data^.Ext := Ext;
   Data^.Date := F.Time;
-  Include(CurrentNode.States, vsInitialUserData);
+  Include(CurrentNode.States, vsInitialized);
 end;
 
 procedure TfrmAddnonfb2.ScanFolder;
