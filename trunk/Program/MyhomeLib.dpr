@@ -2,7 +2,7 @@
   *
   * MyHomeLib
   *
-  * Copyright (C) 2008-2010 Aleksey Penkov (alex.penkov@gmail.com)
+  * Copyright (C) 2008-2013 Aleksey Penkov (alex.penkov@gmail.com)
   *
   * This program is free software: you can redistribute it and/or modify
   * it under the terms of the GNU General Public License as published by

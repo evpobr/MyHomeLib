@@ -24,7 +24,6 @@ object frmAbout: TfrmAbout
     Height = 289
     Align = alClient
     TabOrder = 0
-    ExplicitHeight = 311
     object versionInfoLabel: TLabel
       AlignWithMargins = True
       Left = 3
@@ -61,8 +60,8 @@ object frmAbout: TfrmAbout
       Height = 13
       Align = alTop
       Alignment = taCenter
-      Caption = '(c) 2010 '#1040#1083#1077#1082#1089#1077#1081' '#1055#1077#1085#1100#1082#1086#1074
-      ExplicitWidth = 131
+      Caption = '(c) 2008-2013 '#1040#1083#1077#1082#1089#1077#1081' '#1055#1077#1085#1100#1082#1086#1074
+      ExplicitWidth = 159
     end
     object RzLabel3: TLabel
       AlignWithMargins = True

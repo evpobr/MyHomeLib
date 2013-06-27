@@ -2,7 +2,7 @@
   *
   * MyHomeLib
   *
-  * Copyright (C) 2008-2010 Aleksey Penkov
+  * Copyright (C) 2008-2013 Aleksey Penkov
   *
   * Author(s)           Aleksey Penkov  alex.penkov@gmail.com
   * Created             12.02.2010
@@ -150,7 +150,6 @@ begin
 
         Initialize(NodeData^);
         NodeData^ := AuthorData;
-        Include(Node^.States, vsInitialized);
 
         if NodeData^.AuthorID = SelectID then
           SelectedNode := Node;
@@ -189,7 +188,6 @@ begin
 
         Initialize(Data^);
         Data^ := SeriesData;
-        Include(Node.States, vsInitialized);
 
         if Data^.SeriesID = SelectID then
           SelectedNode := Node;
@@ -238,7 +236,6 @@ begin
           Data^ := Genre;
           if not FillFB2 then
             Data^.FB2GenreCode := '';
-          Include(GenreNode.States, vsInitialized);
 
           Nodes.AddOrSetValue(Data^.GenreCode, GenreNode);
 
@@ -280,7 +277,6 @@ begin
 
         Initialize(Data^);
         Data^ := Group;
-        Include(Node.States, vsInitialized);
 
         if Data^.GroupID = SelectID then
           SelectedNode := Node;
