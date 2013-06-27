@@ -2,7 +2,7 @@
   *
   * MyHomeLib
   *
-  * Copyright (C) 2008-2010 Aleksey Penkov
+  * Copyright (C) 2008-2013 Aleksey Penkov
   *
   * Authors             Aleksey Penkov   alex.penkov@gmail.com
   *                     Nick Rymanov     nrymanov@gmail.com
@@ -728,7 +728,6 @@ type
     FDMThread: TDownloadManagerThread;
     FCurrentBookOnly: Boolean;
     FInvisible: Boolean;
-    FKey: Integer;
     FTimerDone: Boolean;
     FIgnoreAuthorChange: Boolean;
 
@@ -3142,7 +3141,6 @@ var
   isFBDDocument: Boolean;
   StoredBookKey: PBookKey;
 
-  InfoStr: string;
 begin
   if FInvisible then Exit;
 
@@ -3733,9 +3731,9 @@ begin
   if Filter = '' then
     Exit;
 
-  RealFilter := TCharacter.ToUpper(Copy(Filter, 1, 1));
+  RealFilter := Character.ToUpper(Copy(Filter, 1, 1));
 
-  if not TCharacter.IsLetter(RealFilter, 1) then
+  if not Character.IsLetter(RealFilter, 1) then
     RealFilter := ALPHA_FILTER_ALL; //ALPHA_FILTER_NON_ALPHA;
 
   for barIndex := 0 to High(ToolBars) do
@@ -3763,7 +3761,7 @@ begin
   FLastLetterA := Button;
   FLastLetterA.Down := True;
 
-  Result := TCharacter.ToUpper(Button.Caption);
+  Result := Character.ToUpper(Button.Caption);
 
   FCollection.SetAuthorFilterType(Result);
 
@@ -3815,7 +3813,7 @@ begin
   FLastLetterS := Button;
   FLastLetterS.Down := True;
 
-  Result := TCharacter.ToUpper(Button.Caption);
+  Result := Character.ToUpper(Button.Caption);
 
   FCollection.SetSeriesFilterType(Result);
 
@@ -4083,8 +4081,6 @@ var
   Max, i: Integer;
   Author: string;
 
-  IsGroupView: Boolean;
-
   AuthorNodes: TDictionary<string, PVirtualNode>;
 
   SeriesID: Integer;
@@ -4095,8 +4091,6 @@ var
 begin
   Assert(Assigned(Tree));
   Assert(Assigned(BookIterator));
-
-  IsGroupView := (Tree.Tag = 4);
 
   //
   // Если включен "плоский" режим отображения, принудительно сбрасываем ключи блокировки
@@ -4144,7 +4138,6 @@ begin
                 Initialize(Data^);
                 Data^.nodeType := ntAuthorInfo;
                 Data^.Authors := BookRecord.Authors;
-                Include(AuthorNode.States, vsInitialized);
 
                 AuthorNodes.Add(Author, AuthorNode);
               end;
@@ -4181,11 +4174,9 @@ begin
                   //
                   Data := Tree.GetNodeData(SerieNode);
 
-                  Initialize(Data^);
                   Data^.nodeType := ntSeriesInfo;
                   Data^.SeriesID := SeriesID;
                   Data^.Series := BookRecord.Series;
-                  Include(SerieNode.States, vsInitialized);
                 end;
               end;
             end
@@ -4197,10 +4188,7 @@ begin
             //
             BookNode := Tree.AddChild(SerieNode);
             Data := Tree.GetNodeData(BookNode);
-
-            Initialize(Data^);
             Data^ := BookRecord;
-            Include(BookNode.States, vsInitialized);
 
             if Assigned(SelectedID) and SelectedID^.IsSameAs(Data^.BookKey) then
               SelectedNode := BookNode;
@@ -4603,7 +4591,7 @@ begin
           DownloadData^.FileName := BookData^.GetBookFileName;
           DownloadData^.URL := Format(Settings.InpxURL + 'b/%s/get', [BookData^.LibID]);
           DownloadData^.State := dsWait;
-          Include(DownloadNode.States, vsInitialized);
+
         end;
       end;
 
