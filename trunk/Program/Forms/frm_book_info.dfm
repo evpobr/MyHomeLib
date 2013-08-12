@@ -23,7 +23,7 @@ object frmBookDetails: TfrmBookDetails
     Top = 53
     Width = 622
     Height = 388
-    ActivePage = tsInfo
+    ActivePage = tsFileInfo
     Align = alClient
     DoubleBuffered = True
     ParentDoubleBuffered = False
@@ -139,12 +139,12 @@ object frmBookDetails: TfrmBookDetails
           614
           33)
         object btnLoadReview: TButton
-          Left = 456
+          Left = 416
           Top = 3
-          Width = 75
+          Width = 115
           Height = 25
           Anchors = [akTop, akRight]
-          Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100
+          Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100' '#1089' '#1089#1072#1081#1090#1072
           TabOrder = 0
           OnClick = btnLoadReviewClick
         end

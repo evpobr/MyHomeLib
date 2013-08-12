@@ -26,7 +26,8 @@ uses
   Generics.Collections,
   VirtualTrees,
   IdHTTP,
-  unit_Consts;
+  unit_Consts,
+  Dialogs;
 
 type
   TTeletypeSeverity = (tsInfo, tsWarning, tsError);
@@ -1035,14 +1036,11 @@ begin
   if BookFormat in [bfFb2Archive, bfFbd] then
   begin
     try
-      try
-        archiver := TMHLZip.Create(TPath.Combine(Settings.ReadPath, BookFileName), True);
-        result := archiver.ExtractToStream(InsideNo);
-      except
-        raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName]);
-      end;
-    finally
+      archiver := TMHLZip.Create(TPath.Combine(Settings.ReadPath, BookFileName), True);
+      result := archiver.ExtractToStream(InsideNo);
       FreeAndNil(archiver);
+    except
+      raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName]);
     end;
   end
   else // bfFb2, bfRaw
