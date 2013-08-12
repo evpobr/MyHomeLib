@@ -101,6 +101,9 @@ begin
     targetList.Add('');
     idxReviewBlockStart := PosEx(BLOCK_PREFIX, page, idxReviewBlockStart + 1);
   end;
+
+  // финальная зачистка
+  targetList.Text := StringReplace(targetList.Text, '<div></div>','', [rfReplaceAll]);
 end;
 
 // Do a GET request and return result as a String
@@ -118,11 +121,15 @@ begin
     try
       FidHTTP.Get(url, outputStream);
 
+//      outputStream.Position := 0;
+//      outputStream.SaveToFile('e:\temp\test.out');
+
+
       outputStream.Position := 0;
-      responseList.LoadFromStream(outputStream, TEncoding.UTF8);
+      responseList.LoadFromStream(outputStream);
 
       if responseList.Count > 0 then
-        Result := responseList.Text;
+        Result := UTF8Decode(responseList.Text);
     finally
       outputStream.Free;
     end;

@@ -40,7 +40,7 @@ uses
   ComCtrls,
   unit_Globals,
   Menus,
-  ActnList;
+  ActnList, System.Actions;
 
 type
   TfrmBookDetails = class(TForm)
