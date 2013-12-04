@@ -36,7 +36,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    procedure Parse(const url: string; targetList: TStringList);
+    procedure Parse(const url: string; targetList, targetlistA: TStringList);
   end;
 
 implementation
@@ -63,7 +63,7 @@ end;
 // Get an HTML page and extract all available book reviews
 // url - the book's URL
 // targetList - an initialised list to be populated with reviews
-procedure TReviewParser.Parse(const url: string; targetList: TStringList);
+procedure TReviewParser.Parse(const url: string; targetList, targetlistA: TStringList);
 const
   NAME_REVIEW_DELIM = ':';
 var
@@ -72,7 +72,7 @@ var
   idxEndAllBookReviews: Integer;
   name: string;
   review: string;
-  BEG_PREFIX, BLOCK_PREFIX, END_ALL: string;
+  BEG_PREFIX, BLOCK_PREFIX, END_ALL, ANNOTATION_START, ANNOTATION_END: string;
 begin
   Assert(Assigned(targetList));
   page := GetPage(url);
@@ -86,24 +86,43 @@ begin
     Delete(page, 1 , idxReviewBlockStart);
   end
   else begin
+    ANNOTATION_START := '<h2>Аннотация</h2>';
+    ANNOTATION_END := '/forum>';
+
     BLOCK_PREFIX := '/polka/show/';
     END_ALL := '<div id=''newann''';
+
   end;
+
+  // аннотация
+  idxReviewBlockStart := Pos(ANNOTATION_START, page);
+  Delete(page, 1 , idxReviewBlockStart);
+  idxEndAllBookReviews := Pos(ANNOTATION_END, page);
+
+  while ((idxReviewBlockStart <> 0) and (idxReviewBlockStart < idxEndAllBookReviews)) do
+  begin
+    review := Extract(page, idxReviewBlockStart, '<p>','</p>');
+    targetlistA.Add(review);
+    idxReviewBlockStart := PosEx('<p>', page, idxReviewBlockStart + 1);
+  end;
+
+  // отзывы
 
   idxReviewBlockStart := Pos(BLOCK_PREFIX, page);
   idxEndAllBookReviews := Pos(END_ALL, page);
   while ((idxReviewBlockStart <> 0) and (idxReviewBlockStart < idxEndAllBookReviews)) do
   begin
     name := Extract(page, idxReviewBlockStart, '>', '<');
-    review := Extract(page, idxReviewBlockStart, '<br>', '<hr>');
+    review := Extract(page, idxReviewBlockStart, '<br>', '<div></div><hr>');
     targetList.Add(name + NAME_REVIEW_DELIM);
     targetList.Add(review);
     targetList.Add('');
     idxReviewBlockStart := PosEx(BLOCK_PREFIX, page, idxReviewBlockStart + 1);
   end;
 
-  // финальная зачистка
-  targetList.Text := StringReplace(targetList.Text, '<div></div>','', [rfReplaceAll]);
+  // post-cleaning
+  targetList.Text := ReplaceStr(targetList.Text,'&quot;','"');
+  targetList.Text := ReplaceStr(targetList.Text,'&gt;','');
 end;
 
 // Do a GET request and return result as a String

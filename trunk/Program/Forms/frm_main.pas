@@ -5773,7 +5773,7 @@ var
 
   URL: string;
 
-  strReview: string;
+  strReview, strAnnotation: string;
   NewCode: Integer;
 begin
   Assert(Assigned(FCollection));
@@ -5843,6 +5843,7 @@ begin
         // ревью уже есть - покажем его
         //
         frmBookDetails.Review := FCollection.GetReview(Data^.BookKey)
+
       else if IsOnline and ReviewEditable and Settings.AutoLoadReview then
         DownloadReview(frmBookDetails, URL);
 
@@ -5852,11 +5853,13 @@ begin
         Exit;
 
       strReview := frmBookDetails.Review;
+      strAnnotation := frmBookDetails.Annotation;
     finally
       FreeAndNil(frmBookDetails);
     end;
 
     NewCode := FCollection.SetReview(Data^.BookKey, strReview);
+    FCollection.SetAnnotation(Data^.BookKey, strAnnotation);
     UpdateNodes(
       Data^.BookKey,
       procedure(BookData: PBookRecord)

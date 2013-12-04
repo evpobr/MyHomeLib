@@ -113,8 +113,13 @@ type
     procedure SetExtra(const BookKey: TBookKey; extra: TBookExtra);
     procedure SetRate(const BookKey: TBookKey; Rate: Integer);
     procedure SetProgress(const BookKey: TBookKey; Progress: Integer);
+
     function GetReview(const BookKey: TBookKey): string;
     function SetReview(const BookKey: TBookKey; const Review: string): Integer;
+
+    function GetAnnotation(const BookKey: TBookKey): string;
+    procedure SetAnnotation(const BookKey: TBookKey; const Annotation: string);
+
     procedure SetLocal(const BookKey: TBookKey; Value: Boolean);
     procedure SetFileName(const BookKey: TBookKey; const FileName: string);
     procedure SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
@@ -187,6 +192,7 @@ type
     function GetReview(const BookKey: TBookKey): string;
 
     function SetReview(const BookKey: TBookKey; const Review: string): Integer; // превратить в процедуру
+    procedure SetAnnotation(const BookKey: TBookKey; const Annotation: string);
     procedure SetProgress(const BookKey: TBookKey; const Progress: Integer);
     procedure SetRate(const BookKey: TBookKey; const Rate: Integer);
     procedure SetLocal(const BookKey: TBookKey; const AState: Boolean);

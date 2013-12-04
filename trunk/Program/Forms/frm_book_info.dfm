@@ -23,7 +23,7 @@ object frmBookDetails: TfrmBookDetails
     Top = 53
     Width = 622
     Height = 388
-    ActivePage = tsFileInfo
+    ActivePage = tsReview
     Align = alClient
     DoubleBuffered = True
     ParentDoubleBuffered = False
@@ -112,7 +112,7 @@ object frmBookDetails: TfrmBookDetails
       end
     end
     object tsReview: TTabSheet
-      Caption = #1056#1077#1094#1077#1085#1079#1080#1103
+      Caption = #1056#1077#1094#1077#1085#1079#1080#1080' '#1089' '#1089#1072#1081#1090#1072
       object mmReview: TMemo
         AlignWithMargins = True
         Left = 3
@@ -158,6 +158,23 @@ object frmBookDetails: TfrmBookDetails
           TabOrder = 1
           OnClick = btnClearReviewClick
         end
+      end
+    end
+    object tsAnnotation: TTabSheet
+      Caption = #1040#1085#1085#1086#1090#1072#1094#1080#1103' '#1089' '#1089#1072#1081#1090#1072
+      ImageIndex = 3
+      object mmoAnnotation: TMemo
+        AlignWithMargins = True
+        Left = 3
+        Top = 3
+        Width = 608
+        Height = 354
+        Align = alClient
+        ScrollBars = ssVertical
+        TabOrder = 0
+        OnChange = mmReviewChange
+        ExplicitLeft = 6
+        ExplicitTop = 6
       end
     end
   end

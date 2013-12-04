@@ -182,6 +182,8 @@ type
 
     function GetReview(const BookKey: TBookKey): string;
     function SetReview(const BookKey: TBookKey; const Review: string): Integer;
+    procedure SetAnnotation(const BookKey: TBookKey; const Annotation: string);
+    function GetAnnotation(const BookKey: TBookKey): string;
     procedure SetProgress(const BookKey: TBookKey; const Progress: Integer);
     procedure SetRate(const BookKey: TBookKey; const Rate: Integer);
     procedure SetLocal(const BookKey: TBookKey; const AState: Boolean);
@@ -1486,6 +1488,32 @@ begin
   Result := TGenreIteratorImpl.Create(Self, FSystemData, Mode, FilterValue);
 end;
 
+function TBookCollection_SQLite.GetAnnotation(const BookKey: TBookKey): string;
+const
+  SQL = 'SELECT Annotation FROM Books WHERE BookID = ?';
+var
+  query: TSQLiteQuery;
+begin
+  if BookKey.DatabaseID = CollectionID then
+  begin
+    query := FDatabase.NewQuery(SQL);
+    try
+      query.SetParam(0, BookKey.BookID);
+      query.Open;
+
+      if not query.Eof then
+        Result := query.FieldAsBlobString(0)
+      else
+        Result := '';
+    finally
+      query.Free;
+    end;
+  end
+  else
+    Result := FSystemData.GetAnnotation(BookKey);
+
+end;
+
 procedure TBookCollection_SQLite.GetAuthor(AuthorID: Integer; var Author: TAuthorData);
 const
   SQL = 'SELECT LastName, FirstName, MiddleName FROM Authors WHERE AuthorID = ?';
@@ -2369,6 +2397,12 @@ end;
 procedure TBookCollection_SQLite.FinishBatchUpdate;
 begin
   FTriggersEnabled := True;
+end;
+
+procedure TBookCollection_SQLite.SetAnnotation(const BookKey: TBookKey;
+  const Annotation: string);
+begin
+
 end;
 
 procedure TBookCollection_SQLite.SetBookAuthors(const BookID: Integer; const Authors: TBookAuthors; Replace: Boolean);

@@ -65,6 +65,8 @@ type
     alBookInfo: TActionList;
     acCopyValue: TAction;
     miCopyValue: TMenuItem;
+    tsAnnotation: TTabSheet;
+    mmoAnnotation: TMemo;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure mmReviewChange(Sender: TObject);
@@ -78,6 +80,8 @@ type
     FReviewChanged: Boolean;
     function GetReview: string;
     procedure SetReview(const Value: string);
+    function GetAnnotation: string;
+    procedure SetAnnotation(const Value: string);
 
   public
     procedure AllowOnlineReview(const URL: string);
@@ -86,6 +90,7 @@ type
     procedure FillBookInfo(bookInfo: TBookRecord; bookStream: TStream);
 
     property Review: string read GetReview write SetReview;
+    property Annotation: string read GetAnnotation write SetAnnotation;
     property ReviewChanged: Boolean read FReviewChanged write FReviewChanged;
     property URL: string read FUrl write FUrl;
   end;
@@ -94,6 +99,7 @@ type
   private
     FForm: TfrmBookDetails;
     FReview: TStringList;
+    FAnnoatation: TStringList;
     FUrl: string;
 
     procedure StartDownload;
@@ -171,7 +177,7 @@ end;
 procedure TfrmBookDetails.Download;
 var
   reviewParser: TReviewParser;
-  Review: TStringList;
+  Review, Annotation: TStringList;
   SavedCursor: TCursor;
 begin
   btnLoadReview.Enabled := False;
@@ -181,13 +187,16 @@ begin
     reviewParser := TReviewParser.Create;
     try
       Review := TStringList.Create;
+      Annotation := TStringList.Create;
       try
-        reviewParser.Parse(FUrl, Review);
+        reviewParser.Parse(FUrl, Review, Annotation);
         mmReview.Lines.Assign(Review);
+        mmoAnnotation.Lines.Assign(Annotation);
 
         FReviewChanged := True;
       finally
         Review.Free;
+        Annotation.Free;
       end;
     finally
       reviewParser.Free;
@@ -205,6 +214,11 @@ begin
   lvFileInfo.AutosizeColumn(1);
   lvInfo.AutosizeColumn(0);
   lvInfo.AutosizeColumn(1);
+end;
+
+function TfrmBookDetails.GetAnnotation: string;
+begin
+  Result := mmoAnnotation.Lines.Text;
 end;
 
 function TfrmBookDetails.GetReview: string;
@@ -226,6 +240,11 @@ end;
 procedure TfrmBookDetails.btnLoadReviewClick(Sender: TObject);
 begin
   Download;
+end;
+
+procedure TfrmBookDetails.SetAnnotation(const Value: string);
+begin
+  mmoAnnotation.Lines.Text := Value;
 end;
 
 procedure TfrmBookDetails.SetReview(const Value: string);
@@ -412,7 +431,7 @@ begin
   try
     reviewParser := TReviewParser.Create;
     try
-      reviewParser.Parse(FUrl, FReview);
+      reviewParser.Parse(FUrl, FReview, FAnnoatation);
     finally
       reviewParser.Free;
     end;
@@ -434,6 +453,7 @@ begin
   // зато компоненты обнул€ютс€, поэтому провер€м по ним
 
   FForm.mmReview.Lines := FReview;
+  FForm.mmoAnnotation.Lines := FAnnoatation;
   FForm.btnLoadReview.Enabled := True;
   FForm.ReviewChanged := True;
   // FForm.RzPageControl1.ActivePageIndex := 1;
