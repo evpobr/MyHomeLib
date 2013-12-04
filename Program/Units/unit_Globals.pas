@@ -518,6 +518,8 @@ var
 begin
   Result := Input;
 
+  Result := StringReplace(Result,'.','',[rfReplaceAll]);
+
   for i := 1 to Length(Result) do
   begin
     if not TPath.IsValidFileNameChar(Result[i]) then

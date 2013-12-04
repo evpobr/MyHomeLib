@@ -150,6 +150,8 @@ type
     procedure SetProgress(const BookKey: TBookKey; Progress: Integer);
     function GetReview(const BookKey: TBookKey): string;
     function SetReview(const BookKey: TBookKey; const Review: string): Integer;
+    function GetAnnotation(const BookKey: TBookKey): string;
+    procedure SetAnnotation(const BookKey: TBookKey; const Annotation: string);
     procedure SetLocal(const BookKey: TBookKey; Value: Boolean);
     procedure SetFileName(const BookKey: TBookKey; const FileName: string);
     procedure SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
@@ -1162,6 +1164,24 @@ begin
   end;
 end;
 
+procedure TSystemData_SQLite.SetAnnotation(const BookKey: TBookKey;
+  const Annotation: string);
+const
+  SQL_UPDATE = 'UPDATE Books Set Annotation = ? WHERE BookID = ? AND DatabaseID = ? ';
+var
+  query: TSQLiteQuery;
+begin
+  query := FDatabase.NewQuery(SQL_UPDATE);
+  try
+    query.SetBlobParam(0, Annotation);
+    query.SetParam(1, BookKey.BookID);
+    query.SetParam(2, BookKey.DatabaseID);
+    query.ExecSQL;
+  finally
+    FreeAndNil(query);
+  end;
+end;
+
 procedure TSystemData_SQLite.SetBookSeriesID(const BookKey: TBookKey; const SeriesID: Integer);
 const
   SQL_UPDATE = 'UPDATE Books SET SeriesID = ? WHERE BookID = ? AND DatabaseID = ? ';
@@ -1581,6 +1601,11 @@ begin
       FreeAndNil(query);
     end;
   end;
+end;
+
+function TSystemData_SQLite.GetAnnotation(const BookKey: TBookKey): string;
+begin
+
 end;
 
 function TSystemData_SQLite.GetBookIterator(const GroupID: Integer; const DatabaseID: Integer = INVALID_COLLECTION_ID): IBookIterator;
