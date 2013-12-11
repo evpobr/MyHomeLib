@@ -281,6 +281,7 @@ type
     KeyWord: string;
     Deleted: Boolean;
     LibRate: string;
+    Readed: Boolean;  //Признак, что книга прочитана
 
     DownloadedIdx: Integer;
     DateIdx: Integer;
@@ -383,7 +384,9 @@ type
   procedure DebugOut(const DebugMessage: string); overload;
   procedure DebugOut(const DebugMessage: string; const Args: array of const ); overload;
 
-  procedure SetProxySettings(var IdHTTP: TidHTTP);
+  procedure SetProxySettings(var IdHTTP: TidHTTP; TypeProxy: integer = 0);
+  // TypeProxy=0 (по умолчанию) указывает, что настройки нужно брать из ProxyServer
+  // TypeProxy=1 указывает что настройки из ProxyServerUpdate
 
   function GetSpecialPath(CSIDL: word): string;
   function ExecAndWait(const FileName, Params: string; const WinState: word): Boolean;
@@ -1190,7 +1193,9 @@ begin
   Result := IncludeTrailingPathDelimiter(PChar(S));
 end;
 
-procedure SetProxySettings(var IdHTTP: TidHTTP);
+procedure SetProxySettings(var IdHTTP: TidHTTP; TypeProxy: integer = 0);
+begin
+  if TypeProxy = 0 then
 begin
   with IdHTTP.ProxyParams do
   begin
@@ -1208,6 +1213,32 @@ begin
     end;
     BasicAuthentication := True;
   end;
+  end  // if TypeProxy = 0 
+  else
+  begin //if TypeProxy = 1 указывает, что прокси для обновлений, а не скачивания книг
+    if Settings.UseProxyForUpdate then
+    begin
+      with IdHTTP.ProxyParams do
+      begin
+        ProxyServer := Settings.ProxyServerUpdate;
+        ProxyPort := Settings.ProxyPortUpdate;
+        ProxyUsername := Settings.ProxyUsernameUpdate;
+        ProxyPassword := Settings.ProxyPasswordUpdate;
+        BasicAuthentication := True;
+      end;  // with IdHTTP.ProxyParams
+    end  // if Settings.UseProxyForUpdate
+    else
+    begin
+      with IdHTTP.ProxyParams do
+      begin
+        ProxyServer := '';
+        ProxyPort := 0;
+        ProxyUsername := '';
+        ProxyPassword := '';
+        BasicAuthentication := True;
+      end;
+    end; // else Settings.UseProxyForUpdate
+  end; //else
 
   IdHTTP.Request.UserAgent := 'MyHomeLib/2.0 (compatible; Indy Library)';
 

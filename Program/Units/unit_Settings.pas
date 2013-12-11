@@ -123,6 +123,13 @@ type
     FIEProxyServer: string;
     FIEProxyPort: Integer;
 
+    // ƒополнительный прокси сервер дл€ обновлений
+    FUseProxyForUpdate: Boolean;
+    FProxyServerUpdate: string;
+    FProxyUsernameUpdate: string;
+    FProxyPasswordUpdate: string;
+    FProxyPortUpdate: Integer;
+
     // COLORS_SECTION
     FBookColor: TColor;
     FSeriesColor: TColor;
@@ -320,6 +327,13 @@ type
     property ProxyUsername: string read FProxyUsername write FProxyUsername;
     property ProxyPassword: string read FProxyPassword write FProxyPassword;
     property ProxyPort: Integer read FProxyPort write FProxyPort;
+
+    property UseProxyForUpdate: Boolean read FUseProxyForUpdate write FUseProxyForUpdate;
+    property ProxyServerUpdate: string read FProxyServerUpdate write FProxyServerUpdate;
+    property ProxyUsernameUpdate: string read FProxyUsernameUpdate write FProxyUsernameUpdate;
+    property ProxyPasswordUpdate: string read FProxyPasswordUpdate write FProxyPasswordUpdate;
+    property ProxyPortUpdate: Integer read FProxyPortUpdate write FProxyPortUpdate;
+
     property UpdateURL: string read FUpdateURL write FUpdateURL;
     property InpxURL: string read FInpxURL write FInpxURL;
     property ErrorLog: Boolean read FErrorLog write FErrorLog;
@@ -717,6 +731,12 @@ begin
     if FUseIESettings then
       GetIEProxySettings(FIEProxyServer, FIEProxyPort);
 
+    FProxyServerUpdate := iniFile.ReadString(NETWORK_SECTION, 'proxyupdate', '');
+    FProxyUsernameUpdate := iniFile.ReadString(NETWORK_SECTION, 'proxy-userupdate', '');
+    FProxyPasswordUpdate := DecodePassString(iniFile.ReadString(NETWORK_SECTION, 'proxy-passupdate', ''));
+    FProxyPortUpdate := iniFile.ReadInteger(NETWORK_SECTION, 'proxy-portupdate', 0);
+    FUseProxyForUpdate := iniFile.ReadBool(NETWORK_SECTION, 'use_proxy_update', False);
+
     //
     // COLORS_SECTION
     //
@@ -876,6 +896,12 @@ begin
 
     iniFile.WriteString(NETWORK_SECTION, 'lib-user', FLibUsername);
     iniFile.WriteString(NETWORK_SECTION, 'lib-pass', EncodePassString(FLibPassword));
+
+    iniFile.WriteBool(NETWORK_SECTION, 'use_proxy_update', FUseProxyForUpdate);
+    iniFile.WriteString(NETWORK_SECTION, 'proxyupdate', FProxyServerUpdate);
+    iniFile.WriteString(NETWORK_SECTION, 'proxy-userupdate', FProxyUsernameUpdate);
+    iniFile.WriteString(NETWORK_SECTION, 'proxy-passupdate', EncodePassString(FProxyPasswordUpdate));
+    iniFile.WriteInteger(NETWORK_SECTION, 'proxy-portupdate', FProxyPortUpdate);
 
     //
     // COLORS_SECTION

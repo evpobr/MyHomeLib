@@ -618,6 +618,10 @@ begin
     if SearchCriteria.Deleted then
       AddToFilter('b.IsDeleted ', '= 0', False, FilterString);
 
+     // Книга прочитанна
+    if SearchCriteria.Readed then
+     AddToFilter('b.Progress ', '> 0', False, FilterString);
+
     if FilterString <> '' then
     begin
       if SQLRows <> '' then

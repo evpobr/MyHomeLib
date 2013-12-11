@@ -493,6 +493,8 @@ type
     acViewSetInfoPriority: TAction;
     tmrSearchA: TTimer;
     tmrSearchS: TTimer;
+    cbLangSelect: TComboBox;  // Выбор языка отображения книг
+    cbReaded: TCheckBox;      // Выбор в поиске прочитанных книг
 
     //
     // События формы
@@ -711,6 +713,7 @@ type
     procedure tmrSearchSTimer(Sender: TObject);
     procedure tmrSearchATimer(Sender: TObject);
     procedure edLocateSeriesChange(Sender: TObject);
+    procedure cbLangSelectChange(Sender: TObject);  // Выбор языка в списке
 
   protected
     procedure WMGetSysCommand(var Message: TMessage); message WM_SYSCOMMAND;
@@ -771,6 +774,8 @@ type
     procedure OnChangeBook2ZipHandler(const BookRecord: TBookRecord);
     function OnHelpHandler(Command: Word; Data: NativeInt; var CallHelp: Boolean): Boolean;
     procedure OnImportUserDataHandler(const UserDataSource: TUserData);
+
+    procedure cbLangSelectVisibleAndPosition;  // Положение и видимость списка выбора языка
 
   private type
     TNodeProcessProc = reference to procedure(Tree: TBookTree; Node: PVirtualNode);
@@ -1370,6 +1375,7 @@ begin
         FSearchCriteria.DownloadedIdx := cbDownloaded.ItemIndex;
         FSearchCriteria.Deleted := cbDeleted.Checked;
         FSearchCriteria.LibRate := cbLibRate.Text;
+        FSearchCriteria.Readed := cbReaded.Checked;
 
         FSearchCriteria.DateIdx := cbDate.ItemIndex;
         if FSearchCriteria.DateIdx= -1 then
@@ -1415,6 +1421,7 @@ begin
   cbLang.Text := '';
   cbLibRate.ItemIndex := -1;
   cbLibRate.Text := '';
+  cbReaded.Checked := False;
 
   cbPresetName.ItemIndex := -1;
 
@@ -4088,6 +4095,8 @@ var
   BookRecord: TBookRecord;
   SavedCursor: TCursor;
 
+  SelectedLang: string;
+
 begin
   Assert(Assigned(Tree));
   Assert(Assigned(BookIterator));
@@ -4116,6 +4125,8 @@ begin
 
       StatusMessage := rstrBuildingTheList;
 
+      SelectedLang := cbLangSelect.Items[cbLangSelect.ItemIndex];
+
       i := 0;
       try
         AuthorNodes := TDictionary<string, PVirtualNode>.Create;
@@ -4124,6 +4135,17 @@ begin
 
           while BookIterator.Next(BookRecord) do
           begin
+            // Добавление в ComboBox отсутствующего в нем языка.
+            // Можно добавить сразу в список несколько языков как в cbLang
+            // но скорость работы с диском невелирует этот if Pos(
+            if Pos(BookRecord.Lang, cbLangSelect.Items.CommaText) = 0 then
+              cbLangSelect.Items.Add(BookRecord.Lang);
+
+            //    and ((BookRecord.Lang = 'ru') or (BookRecord.Lang = 'bg'))
+            // Соответственно добавление в дерево узла с выбранным языком (или любым
+            // при выборе '-') и пропуск всех остальных
+            if (BookRecord.Lang = SelectedLang) or (SelectedLang = '-')then
+              begin  // Выбор языка
             SeriesID := BookRecord.SeriesID;
 
             AuthorNode := nil;
@@ -4196,7 +4218,7 @@ begin
             Inc(i);
             StatusProgress := i * 100 div Max;
           end; // while
-
+            end; // Выбора языка
           //
           // Отсортировать дерево
           //
@@ -5491,6 +5513,7 @@ begin
   preset.AddOrSetValue(SF_DATE, IntToStr(cbDate.ItemIndex));
   preset.AddOrSetValue(SF_LANG, IntToStr(cbLang.ItemIndex));
   preset.AddOrSetValue(SF_LIBRATE, IntToStr(cbLibRate.ItemIndex));
+  preset.AddOrSetValue(SF_READED, BoolToStr(cbReaded.Checked));
 
   FPresets.Save(Settings.SystemFileName[sfPresets]);
 
@@ -6405,6 +6428,8 @@ begin
   btnSwitchTreeMode.Enabled := not((ActiveView = SeriesView) or (ActiveView = DownloadView));
   miGoToAuthor.Visible := ActiveView in [SeriesView, GenresView, SearchView, FavoritesView];
 
+  cbLangSelectVisibleAndPosition;
+
   case ActiveView of
     FavoritesView:
       begin
@@ -6426,6 +6451,8 @@ begin
         tbtnDownloadList_Add.Hint := rstrRemoveFromDownloadList;
         // actions
         btnSwitchTreeMode.Enabled := False;
+        cbLangSelect.ItemIndex := 0;
+        cbLangSelect.Visible := False;
         Exit;
       end;
   else
@@ -6632,6 +6659,44 @@ begin
   unit_Export.Export2INPX(FCollection.CollectionID, FileName);
 end;
 
+procedure TfrmMain.cbLangSelectChange(Sender: TObject);
+begin
+  FillAllBooksTree;
+end;
+
+procedure TfrmMain.cbLangSelectVisibleAndPosition;
+begin
+  // Процедура отвечает за позиционирование и видимость ComboBox'a выбора языка.
+
+  //AuthorsView, SeriesView, GenresView, SearchView, FavoritesView, DownloadView
+  cbLangSelect.Visible := ActiveView in [AuthorsView, SeriesView, GenresView, FavoritesView];
+  case ActiveView of
+    AuthorsView:
+      begin
+        cbLangSelect.Parent := pnAuthorBooksTitle;
+        // При переключении и возврате на вкладку "Автор" ComboBox перескакивает
+        // за "Количество книг", поэтому костыль.
+        cbLangSelect.Left := lblBooksTotalA.Left - 55;
+      end;
+    SeriesView:
+      begin
+        cbLangSelect.Parent := pnSerieBooksTitle;
+      end;
+    GenresView:
+      begin
+        cbLangSelect.Parent := pnGenreBooksTitle;
+      end;
+    SearchView:
+      begin
+        cbLangSelect.ItemIndex := 0;
+      end;
+    FavoritesView:
+      begin
+        cbLangSelect.Parent := pnGroupBooksTitle;
+      end;
+  end;
+end;
+
 procedure TfrmMain.cbPresetNameSelect(Sender: TObject);
 var
   preset: TSearchPreset;
@@ -6660,6 +6725,8 @@ begin
     cbLang.ItemIndex := EnsureRange(StrToIntDef(Value, -1), -1, cbLang.Items.Count - 1);
   if preset.TryGetValue(SF_LIBRATE, Value) then
     cbLibRate.ItemIndex := EnsureRange(StrToIntDef(Value, -1), -1, cbLibRate.Items.Count - 1);
+  if preset.TryGetValue(SF_READED, Value) then cbReaded.Checked := StrToBoolDef(Value, False);
+
 end;
 
 procedure TfrmMain.btnStartDownloadClick(Sender: TObject);

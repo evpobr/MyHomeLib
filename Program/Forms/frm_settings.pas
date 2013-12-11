@@ -188,6 +188,18 @@ type
     pnASG: TPanel;
     btnASG: TButton;
     cbSelectedIsChecked: TCheckBox;
+    Panel9: TPanel;     // Панель с выбором прокси для обновлений и компоненты на ней
+    Label33: TLabel;
+    lblProxyUserUpdate: TLabel;
+    edProxyUsernameUpdate: TEdit;
+    lblProxyPasswordUpdate: TLabel;
+    edProxyPasswordUpdate: TEdit;
+    lblProxyPortUpdate: TLabel;
+    edProxyPortUpdate: TEdit;
+    edProxyServerUpdate: TEdit;
+    lblProxyServerUpdate: TLabel;
+    rbDNotUseProxyForUpdate: TRadioButton;
+    rbUseProxyForUpdate: TRadioButton;
 
     procedure SaveSettingsClick(Sender: TObject);
     procedure ShowHelpClick(Sender: TObject);
@@ -217,6 +229,7 @@ type
     procedure cbPromptPathClick(Sender: TObject);
     procedure edTimeOutChange(Sender: TObject);
     procedure CheckNumValue(Sender: TObject);
+    procedure rbUseProxyForUpdateClick(Sender: TObject);
 
   private
     procedure SetPanelFontColor(Value: Graphics.TColor);
@@ -317,6 +330,13 @@ begin
   edProxyUsername.Text := Settings.ProxyUsername;
   edProxyPassword.Text := Settings.ProxyPassword;
 
+  rbUseProxyForUpdate.Checked := Settings.UseProxyForUpdate;
+  edProxyServerUpdate.Text := Settings.ProxyServerUpdate;
+  edProxyPortUpdate.Text := IntToStr(Settings.ProxyPortUpdate);
+  edProxyUsernameUpdate.Text := Settings.ProxyUsernameUpdate;
+  edProxyPasswordUpdate.Text := Settings.ProxyPasswordUpdate;
+
+
   edUpdateDir.Text := Settings.UpdateDir;
   edINPXUrl.Text := Settings.InpxURL;
   edUpdates.Text := Settings.UpdateURL;
@@ -381,8 +401,17 @@ begin
   cbUseIESettingsClick(nil);
   cbOverwriteFB2InfoClick(nil);
   cbEnableFileSortClick(nil);
+  rbUseProxyForUpdateClick(nil);
 
   tvSections.Select(tvSections.Items[0]);
+end;
+
+procedure TfrmSettings.rbUseProxyForUpdateClick(Sender: TObject);
+begin
+  edProxyServerUpdate.Enabled := rbUseProxyForUpdate.Checked;
+  edProxyPortUpdate.Enabled := rbUseProxyForUpdate.Checked;
+  edProxyUsernameUpdate.Enabled := rbUseProxyForUpdate.Checked;
+  edProxyPasswordUpdate.Enabled := rbUseProxyForUpdate.Checked;
 end;
 
 procedure TfrmSettings.SaveSettings;
@@ -446,6 +475,12 @@ begin
   Settings.DwnldInterval := udDwnldInterval.Position;
   Settings.AutoRunUpdate := cbAutoRunUpdate.Checked;
   Settings.InpxURL := IncludeUrlSlash(edINPXUrl.Text);
+  // Дополнительный прокси
+  Settings.UseProxyForUpdate := rbUseProxyForUpdate.Checked;
+  Settings.ProxyServerUpdate := edProxyServerUpdate.Text;
+  Settings.ProxyPortUpdate := StrToIntDef(edProxyPortUpdate.Text, 0);
+  Settings.ProxyUsernameUpdate := edProxyUsernameUpdate.Text;
+  Settings.ProxyPasswordUpdate := edProxyPasswordUpdate.Text;
 
   Settings.UpdateDir := edUpdateDir.Text;
 
@@ -793,7 +828,7 @@ var
   nMaxValue: Integer;
 begin
   EditControl := Sender as TEdit;
-  if EditControl = edProxyPort then
+  if (EditControl = edProxyPort) or (EditControl = edProxyPortUpdate) then
     UpDownControl := nil
   else if EditControl = edTimeOut then
     UpDownControl := udTimeOut
@@ -811,7 +846,7 @@ begin
     Exit;
   end;
 
-  if EditControl = edProxyPort then
+  if (EditControl = edProxyPort) or (EditControl = edProxyPortUpdate) then
   begin
     nMinValue := 0;
     nMaxValue := 65535;

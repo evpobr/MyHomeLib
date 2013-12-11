@@ -435,6 +435,22 @@ object frmMain: TfrmMain
             Layout = tlCenter
             ExplicitHeight = 13
           end
+          object cbLangSelect: TComboBox
+            AlignWithMargins = True
+            Left = 372
+            Top = 3
+            Width = 50
+            Height = 21
+            Margins.Right = 10
+            Align = alRight
+            Style = csDropDownList
+            ItemIndex = 0
+            TabOrder = 0
+            Text = '-'
+            OnChange = cbLangSelectChange
+            Items.Strings = (
+              '-')
+          end
         end
         object tvBooksA: TBookTree
           AlignWithMargins = True
@@ -1270,6 +1286,7 @@ object frmMain: TfrmMain
           Top = 3
           Width = 224
           Height = 446
+          VertScrollBar.Position = 245
           VertScrollBar.Tracking = True
           Align = alClient
           HeaderFont.Charset = DEFAULT_CHARSET
@@ -1279,21 +1296,20 @@ object frmMain: TfrmMain
           HeaderFont.Style = []
           TabOrder = 0
           object ctpOther: TCategoryPanel
-            Top = 491
-            Height = 190
+            Top = 246
             Caption = #1056#1072#1079#1085#1086#1077
             TabOrder = 0
             object Label30: TLabel
-              Left = 4
-              Top = 72
+              Left = 7
+              Top = 97
               Width = 26
               Height = 13
               Alignment = taRightJustify
               Caption = #1044#1072#1090#1072
             end
             object Label2: TLabel
-              Left = 4
-              Top = 99
+              Left = 7
+              Top = 124
               Width = 26
               Height = 13
               Alignment = taRightJustify
@@ -1310,16 +1326,16 @@ object frmMain: TfrmMain
               ExplicitWidth = 62
             end
             object Label8: TLabel
-              Left = 4
-              Top = 126
+              Left = 7
+              Top = 151
               Width = 38
               Height = 13
               Alignment = taRightJustify
               Caption = #1054#1094#1077#1085#1082#1072
             end
             object cbDate: TComboBox
-              Left = 52
-              Top = 68
+              Left = 55
+              Top = 93
               Width = 99
               Height = 21
               TabOrder = 0
@@ -1333,8 +1349,8 @@ object frmMain: TfrmMain
                 #1079#1072' 3 '#1084#1077#1089#1103#1094#1072)
             end
             object cbLang: TComboBox
-              Left = 52
-              Top = 95
+              Left = 55
+              Top = 120
               Width = 99
               Height = 21
               TabOrder = 1
@@ -1401,8 +1417,8 @@ object frmMain: TfrmMain
               TabOrder = 3
             end
             object cbLibRate: TComboBox
-              Left = 52
-              Top = 122
+              Left = 55
+              Top = 147
               Width = 99
               Height = 21
               TabOrder = 4
@@ -1414,9 +1430,20 @@ object frmMain: TfrmMain
                 '4'
                 '5')
             end
+            object cbReaded: TCheckBox
+              AlignWithMargins = True
+              Left = 5
+              Top = 72
+              Width = 195
+              Height = 17
+              Margins.Left = 5
+              Align = alTop
+              Caption = #1058#1086#1083#1100#1082#1086' '#1087#1088#1086#1095#1080#1090#1072#1085#1085#1099#1077
+              TabOrder = 5
+            end
           end
           object ctpFile: TCategoryPanel
-            Top = 314
+            Top = 69
             Height = 177
             Caption = #1060#1072#1081#1083
             TabOrder = 1
@@ -1485,7 +1512,7 @@ object frmMain: TfrmMain
             end
           end
           object ctpBook: TCategoryPanel
-            Top = 0
+            Top = -245
             Height = 314
             Caption = #1050#1085#1080#1075#1072
             TabOrder = 2
