@@ -200,6 +200,7 @@ const
   SF_LANG        = 'Lang';
   SF_LIBRATE     = 'LibRate';
 
+  SF_READED      = 'Readed';  // Для поиска прочитанных книг
   //
   // специальные значения фильтров
   //

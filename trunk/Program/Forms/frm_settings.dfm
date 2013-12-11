@@ -1053,13 +1053,14 @@ object frmSettings: TfrmSettings
       end
       object Panel6: TPanel
         Left = 0
-        Top = 277
+        Top = 399
         Width = 447
         Height = 93
         Align = alTop
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 2
+        ExplicitTop = 277
         object Label30: TLabel
           AlignWithMargins = True
           Left = 3
@@ -1179,6 +1180,149 @@ object frmSettings: TfrmSettings
           Max = 900000
           Increment = 1000
           TabOrder = 3
+        end
+      end
+      object Panel9: TPanel
+        AlignWithMargins = True
+        Left = 3
+        Top = 280
+        Width = 441
+        Height = 116
+        Align = alTop
+        AutoSize = True
+        BevelOuter = bvNone
+        Caption = ' '
+        TabOrder = 3
+        ExplicitTop = 104
+        DesignSize = (
+          441
+          116)
+        object Label33: TLabel
+          AlignWithMargins = True
+          Left = 3
+          Top = 3
+          Width = 435
+          Height = 13
+          Align = alTop
+          Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1082#1089#1080' '#1076#1083#1103' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          ExplicitWidth = 201
+        end
+        object lblProxyUserUpdate: TLabel
+          Left = 15
+          Top = 100
+          Width = 76
+          Height = 13
+          Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1100':'
+          Color = clMenuBar
+          FocusControl = edProxyUsernameUpdate
+          ParentColor = False
+          Transparent = True
+        end
+        object lblProxyPasswordUpdate: TLabel
+          Left = 277
+          Top = 98
+          Width = 41
+          Height = 13
+          Anchors = [akTop, akRight]
+          Caption = #1055#1072#1088#1086#1083#1100':'
+          Color = clMenuBar
+          FocusControl = edProxyPasswordUpdate
+          ParentColor = False
+          Transparent = True
+        end
+        object lblProxyPortUpdate: TLabel
+          Left = 327
+          Top = 71
+          Width = 29
+          Height = 13
+          Anchors = [akTop, akRight]
+          Caption = #1055#1086#1088#1090':'
+          Color = clMenuBar
+          FocusControl = edProxyPortUpdate
+          ParentColor = False
+          Transparent = True
+        end
+        object lblProxyServerUpdate: TLabel
+          Left = 15
+          Top = 70
+          Width = 41
+          Height = 13
+          Caption = #1057#1077#1088#1074#1077#1088':'
+          Color = clMenuBar
+          FocusControl = edProxyServerUpdate
+          ParentColor = False
+          Transparent = True
+        end
+        object edProxyUsernameUpdate: TEdit
+          Left = 94
+          Top = 95
+          Width = 172
+          Height = 21
+          Anchors = [akLeft, akTop, akRight]
+          TabOrder = 0
+        end
+        object edProxyPasswordUpdate: TEdit
+          Left = 325
+          Top = 95
+          Width = 104
+          Height = 21
+          Anchors = [akTop, akRight]
+          PasswordChar = '*'
+          TabOrder = 1
+        end
+        object edProxyPortUpdate: TEdit
+          Left = 361
+          Top = 68
+          Width = 68
+          Height = 21
+          Alignment = taRightJustify
+          Anchors = [akTop, akRight]
+          MaxLength = 5
+          NumbersOnly = True
+          TabOrder = 2
+          OnExit = CheckNumValue
+        end
+        object edProxyServerUpdate: TEdit
+          Left = 62
+          Top = 68
+          Width = 256
+          Height = 21
+          Anchors = [akLeft, akTop, akRight]
+          TabOrder = 3
+        end
+        object rbDNotUseProxyForUpdate: TRadioButton
+          AlignWithMargins = True
+          Left = 9
+          Top = 22
+          Width = 429
+          Height = 17
+          Margins.Left = 9
+          Align = alTop
+          Caption = #1053#1077' '#1080#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1087#1088#1086#1082#1089#1080' '#1076#1083#1103' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
+          Checked = True
+          TabOrder = 4
+          TabStop = True
+          OnClick = rbUseProxyForUpdateClick
+          ExplicitTop = 25
+        end
+        object rbUseProxyForUpdate: TRadioButton
+          AlignWithMargins = True
+          Left = 9
+          Top = 45
+          Width = 429
+          Height = 17
+          Margins.Left = 9
+          Align = alTop
+          Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1076#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1099#1081' '#1087#1088#1086#1082#1089#1080' '#1076#1083#1103' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
+          TabOrder = 5
+          OnClick = rbUseProxyForUpdateClick
+          ExplicitTop = 48
         end
       end
     end

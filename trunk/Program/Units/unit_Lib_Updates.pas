@@ -148,7 +148,7 @@ begin
   try
     HTTP := TidHTTP.Create(nil);
     try
-      SetProxySettings(HTTP);
+      SetProxySettings(HTTP, 1);
 
       for i := 0 to Count - 1 do
       begin

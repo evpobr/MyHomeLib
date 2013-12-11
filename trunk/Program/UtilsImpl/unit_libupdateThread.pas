@@ -151,7 +151,7 @@ begin
   FidHTTP.OnWorkEnd := HTTPWorkEnd;
   FidHTTP.HandleRedirects := True;
 
-  SetProxySettings(FidHTTP);
+  SetProxySettings(FidHTTP, 1);
 end;
 
 procedure TLibUpdateThread.Uninitialize;
