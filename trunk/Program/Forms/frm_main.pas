@@ -4144,8 +4144,7 @@ begin
             //    and ((BookRecord.Lang = 'ru') or (BookRecord.Lang = 'bg'))
             // —оответственно добавление в дерево узла с выбранным €зыком (или любым
             // при выборе '-') и пропуск всех остальных
-            if (BookRecord.Lang = SelectedLang) or (SelectedLang = '-')then
-              begin  // ¬ыбор €зыка
+            if (BookRecord.Lang <> SelectedLang) AND (SelectedLang <> '-')then Continue;
             SeriesID := BookRecord.SeriesID;
 
             AuthorNode := nil;
@@ -4218,7 +4217,6 @@ begin
             Inc(i);
             StatusProgress := i * 100 div Max;
           end; // while
-            end; // ¬ыбора €зыка
           //
           // ќтсортировать дерево
           //
