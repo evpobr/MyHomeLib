@@ -237,7 +237,7 @@ object frmMain: TfrmMain
     Width = 786
     Height = 518
     HelpContext = 1
-    ActivePage = tsDownload
+    ActivePage = tsByAuthor
     Align = alClient
     OwnerDraw = True
     TabOrder = 2
@@ -1286,7 +1286,6 @@ object frmMain: TfrmMain
           Top = 3
           Width = 224
           Height = 446
-          VertScrollBar.Position = 245
           VertScrollBar.Tracking = True
           Align = alClient
           HeaderFont.Charset = DEFAULT_CHARSET
@@ -1296,7 +1295,7 @@ object frmMain: TfrmMain
           HeaderFont.Style = []
           TabOrder = 0
           object ctpOther: TCategoryPanel
-            Top = 246
+            Top = 491
             Caption = #1056#1072#1079#1085#1086#1077
             TabOrder = 0
             object Label30: TLabel
@@ -1443,7 +1442,7 @@ object frmMain: TfrmMain
             end
           end
           object ctpFile: TCategoryPanel
-            Top = 69
+            Top = 314
             Height = 177
             Caption = #1060#1072#1081#1083
             TabOrder = 1
@@ -1512,7 +1511,7 @@ object frmMain: TfrmMain
             end
           end
           object ctpBook: TCategoryPanel
-            Top = -245
+            Top = 0
             Height = 314
             Caption = #1050#1085#1080#1075#1072
             TabOrder = 2
