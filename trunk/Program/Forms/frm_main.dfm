@@ -435,7 +435,20 @@ object frmMain: TfrmMain
             Layout = tlCenter
             ExplicitHeight = 13
           end
-          object cbLangSelect: TComboBox
+          object lblLang: TLabel
+            Left = 338
+            Top = 0
+            Width = 31
+            Height = 26
+            Align = alRight
+            Alignment = taRightJustify
+            Caption = #1071#1079#1099#1082
+            Layout = tlCenter
+            ExplicitLeft = 335
+            ExplicitTop = 6
+            ExplicitHeight = 13
+          end
+          object cbLangSelectA: TComboBox
             AlignWithMargins = True
             Left = 372
             Top = 3
@@ -447,7 +460,7 @@ object frmMain: TfrmMain
             ItemIndex = 0
             TabOrder = 0
             Text = '-'
-            OnChange = cbLangSelectChange
+            OnChange = cbLangSelectAChange
             Items.Strings = (
               '-')
           end
@@ -758,6 +771,36 @@ object frmMain: TfrmMain
             Layout = tlCenter
             ExplicitHeight = 13
           end
+          object lbl1: TLabel
+            Left = 338
+            Top = 0
+            Width = 31
+            Height = 26
+            Align = alRight
+            Alignment = taRightJustify
+            Caption = #1071#1079#1099#1082
+            Layout = tlCenter
+            ExplicitHeight = 13
+          end
+          object cbLangSelectS: TComboBox
+            Tag = 1
+            AlignWithMargins = True
+            Left = 372
+            Top = 3
+            Width = 50
+            Height = 21
+            Margins.Right = 10
+            Align = alRight
+            Style = csDropDownList
+            ItemIndex = 0
+            TabOrder = 0
+            Text = '-'
+            OnChange = cbLangSelectAChange
+            Items.Strings = (
+              '-')
+            ExplicitLeft = 380
+            ExplicitTop = 5
+          end
         end
         object tvBooksS: TBookTree
           Tag = 1
@@ -974,6 +1017,36 @@ object frmMain: TfrmMain
             Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1078#1072#1085#1088#1072
             Layout = tlCenter
             ExplicitHeight = 13
+          end
+          object lbl2: TLabel
+            Left = 338
+            Top = 0
+            Width = 31
+            Height = 26
+            Align = alRight
+            Alignment = taRightJustify
+            Caption = #1071#1079#1099#1082
+            Layout = tlCenter
+            ExplicitHeight = 13
+          end
+          object cbLangSelectG: TComboBox
+            Tag = 2
+            AlignWithMargins = True
+            Left = 372
+            Top = 3
+            Width = 50
+            Height = 21
+            Margins.Right = 10
+            Align = alRight
+            Style = csDropDownList
+            ItemIndex = 0
+            TabOrder = 0
+            Text = '-'
+            OnChange = cbLangSelectAChange
+            Items.Strings = (
+              '-')
+            ExplicitLeft = 380
+            ExplicitTop = 5
           end
         end
         object ipnlGenres: TInfoPanel
@@ -1847,6 +1920,36 @@ object frmMain: TfrmMain
             Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1075#1088#1091#1087#1087#1099
             Layout = tlCenter
             ExplicitHeight = 13
+          end
+          object lbl3: TLabel
+            Left = 338
+            Top = 0
+            Width = 31
+            Height = 26
+            Align = alRight
+            Alignment = taRightJustify
+            Caption = #1071#1079#1099#1082
+            Layout = tlCenter
+            ExplicitHeight = 13
+          end
+          object cbLangSelectF: TComboBox
+            Tag = 4
+            AlignWithMargins = True
+            Left = 372
+            Top = 3
+            Width = 50
+            Height = 21
+            Margins.Right = 10
+            Align = alRight
+            Style = csDropDownList
+            ItemIndex = 0
+            TabOrder = 0
+            Text = '-'
+            OnChange = cbLangSelectAChange
+            Items.Strings = (
+              '-')
+            ExplicitLeft = 380
+            ExplicitTop = 5
           end
         end
         object tvBooksF: TBookTree
