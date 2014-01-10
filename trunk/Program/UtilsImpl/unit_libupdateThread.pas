@@ -150,7 +150,6 @@ begin
   FidHTTP.OnWorkBegin := HTTPWorkBegin;
   FidHTTP.OnWorkEnd := HTTPWorkEnd;
   FidHTTP.HandleRedirects := True;
-
   SetProxySettings(FidHTTP, 1);
 end;
 
