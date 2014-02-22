@@ -55,7 +55,9 @@ type
 
     function GetNewFolder(Folder: string; R: TBookRecord): string;
     function GetNewFileName(FileName: string; R: TBookRecord): string;
-
+  public
+    constructor Create(CollectionID: integer);
+    destructor Destroy;
   protected
     procedure ProcessFileList; virtual; abstract;
     procedure ProcessFileListArchive; virtual; abstract;
@@ -91,6 +93,18 @@ resourcestring
   rstrScanningFolders = 'Сканирование папок...';
 
 { TImportFB2Thread }
+
+constructor TImportFB2ThreadBase.Create;
+begin
+  inherited Create(CollectionID);
+  FTemplater := TTemplater.Create;
+end;
+
+destructor TImportFB2ThreadBase.Destroy;
+begin
+  FreeAndNil(FTemplater);
+  inherited Destroy;
+end;
 
 procedure TImportFB2ThreadBase.GetBookInfo(book: IXMLFictionBook; var R: TBookRecord);
 var

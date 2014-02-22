@@ -31,7 +31,7 @@ type
     procedure WorkFunction; override;
     procedure ProcessFileList; override;
     procedure ProcessFileListArchive; override;
-    procedure SortFiles(var R: TBookRecord); override;
+    procedure SortFilesZip(var R: TBookRecord);
   public
     constructor Create(const CollectionID: Integer;  const ArchiveFormat: TArchiveFormat);
 
@@ -89,7 +89,6 @@ begin
 
   FProgressEngine.BeginOperation(FFiles.Count, rstrProcessedFiles, rstrProcessedFiles);
   try
-    FTemplater:= TTemplater.Create;
     try
       for i := 0 to FFiles.Count - 1 do
       begin
@@ -131,7 +130,6 @@ begin
         FProgressEngine.AddProgress;
       end;
     finally
-      FTemplater.Free;
     end;
 
     Teletype(Format(rstrAddedBooks, [Added, Defective]),tsInfo);
@@ -178,7 +176,9 @@ begin
             if R.FileExt = FB2_EXTENSION then
             begin
               Inc(numFb2FilesInZip);
-              R.FileName := TPath.GetFileNameWithoutExtension(CleanFileName(AFileName));
+
+              R.FileName := CleanFileName(TPath.GetFileNameWithoutExtension(AFileName));
+
               R.Size := Zip.LastSize;
               R.InsideNo := j;
               R.Date := Now;
@@ -213,7 +213,7 @@ begin
           if Settings.EnableSort and NoErrors and (numFb2FilesInZip = 1) then
           begin
             R.Folder := FFiles[i];
-            SortFiles(R);
+            SortFilesZip(R);
             if FCollection.InsertBook(R, True, True) <> 0 then
               Inc(Added);
           end;
@@ -235,9 +235,9 @@ begin
   end;
 end;
 
-procedure TImportFB2Thread.SortFiles(var R: TBookRecord);
+procedure TImportFB2Thread.SortFilesZip(var R: TBookRecord);
 var
-  FileName, NewFileName, NewFolder: string;
+  FileName, NewFileName, NewFolder, ext: string;
   archiveFileName: string;
   archiver: TMHLZip;
 begin
@@ -264,7 +264,7 @@ begin
         try
           archiveFileName := TPath.Combine(FCollectionRoot, NewFolder);
           archiver := TMHLZip.Create(archiveFileName, False);
-          archiver.RenameFile( FCollectionRoot +  NewFolder + FileName, NewFileName); // assuming there are only fb2 files there
+          archiver.RenameFile(R.FileName +  R.FileExt, NewFileName + R.FileExt); // assuming there are only fb2 files there
           R.FileName := NewFileName;
         except
           // ничего не делаем
