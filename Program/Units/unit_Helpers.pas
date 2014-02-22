@@ -41,6 +41,7 @@ function GetFileSize(const FileName: string): Integer;
 
 function ExpandFileNameEx(const basePath: string; const path: string): string;
 
+
 type
   TMHLFileName = (
     fnGenreList,

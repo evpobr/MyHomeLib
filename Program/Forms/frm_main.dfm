@@ -444,8 +444,6 @@ object frmMain: TfrmMain
             Alignment = taRightJustify
             Caption = #1071#1079#1099#1082
             Layout = tlCenter
-            ExplicitLeft = 335
-            ExplicitTop = 6
             ExplicitHeight = 13
           end
           object cbLangSelectA: TComboBox
@@ -798,8 +796,6 @@ object frmMain: TfrmMain
             OnChange = cbLangSelectAChange
             Items.Strings = (
               '-')
-            ExplicitLeft = 380
-            ExplicitTop = 5
           end
         end
         object tvBooksS: TBookTree
@@ -1045,8 +1041,6 @@ object frmMain: TfrmMain
             OnChange = cbLangSelectAChange
             Items.Strings = (
               '-')
-            ExplicitLeft = 380
-            ExplicitTop = 5
           end
         end
         object ipnlGenres: TInfoPanel
@@ -1948,8 +1942,6 @@ object frmMain: TfrmMain
             OnChange = cbLangSelectAChange
             Items.Strings = (
               '-')
-            ExplicitLeft = 380
-            ExplicitTop = 5
           end
         end
         object tvBooksF: TBookTree
@@ -2367,6 +2359,7 @@ object frmMain: TfrmMain
       end
       object N60: TMenuItem
         Action = acBookMarkAsRead
+        Caption = #1055#1088#1086#1095#1080#1090#1072#1085#1086
       end
       object N61: TMenuItem
         Caption = #1056#1077#1081#1090#1080#1085#1075
@@ -13162,7 +13155,7 @@ object frmMain: TfrmMain
     ExtractCorruptedFiles = False
     CompressionLevel = clMax
     CompressionMode = 9
-    CurrentVersion = '6.20 '
+    CurrentVersion = '6.30 '
     SpanningMode = smNone
     SpanningOptions.AdvancedNaming = False
     SpanningOptions.FirstVolumeSize = 0

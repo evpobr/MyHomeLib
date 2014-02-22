@@ -521,7 +521,8 @@ var
 begin
   Result := Input;
 
-  Result := StringReplace(Result,'.','',[rfReplaceAll]);
+  Result := StringReplace(Result,'..','',[rfReplaceAll]);
+  Result := StringReplace(Result,'...','',[rfReplaceAll]);
 
   for i := 1 to Length(Result) do
   begin
@@ -573,7 +574,7 @@ var
   SourceFile: TFileStream;
   DestFile: TFileStream;
 begin
-  SourceFile := TFileStream.Create(SourceFileName, fmOpenRead or fmShareDenyWrite);
+  SourceFile := TFileStream.Create(SourceFileName, fmOpenRead or fmShareDenyNone);
   try
     DestFile := TFileStream.Create(DestFileName, fmCreate or fmShareDenyRead);
     try
