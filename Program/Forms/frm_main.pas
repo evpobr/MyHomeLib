@@ -71,7 +71,8 @@ uses
   unit_UserData,
   unit_treeController,
   unit_ColorTabs,
-  ZipForge, System.Actions;
+  ZipForge,
+  System.Actions;
 
 type
   TfrmMain = class(TForm)
@@ -2863,10 +2864,10 @@ var
 {$ENDIF}
 begin
 {$IFDEF USELOGGER}
-  logger := GetScopeLogger('TfrmMain.tvAuthorsChange');
+//  logger := GetScopeLogger('TfrmMain.tvAuthorsChange');
 {$ENDIF}
 
-  if FIgnoreAuthorChange then Exit;
+  if (FIgnoreAuthorChange) or (Node = nil) then Exit;
 
 
   SavedCursor := Screen.Cursor;
@@ -3156,8 +3157,7 @@ var
   StoredBookKey: PBookKey;
 
 begin
-  if FInvisible then Exit;
-
+  if FInvisible or not Assigned(Node) then Exit;
 
   Tree := Sender as TBookTree;
 
@@ -3219,10 +3219,9 @@ begin
     if Settings.ShowBookCover or Settings.ShowBookAnnotation then
     begin
       if (bpIsLocal in Data^.BookProps) then
-        begin
-        try
-          bookStream := Data^.GetBookDescriptorStream;
-          if not Assigned(bookStream) then raise Exception.Create('File Not found!');
+      begin
+        bookStream := Data^.GetBookDescriptorStream;
+        if Assigned(bookStream) then
           try
             book := LoadFictionBook(bookStream);
 
@@ -3248,8 +3247,9 @@ begin
             end;
           finally
             FreeAndNil(bookStream);
-          end;
-        except
+          end
+        else begin
+          ShowMessage(Format('Файл  %s "%s/%s"%s не найден! Проверьте настройки коллекции.',[#10, Data.Folder, Data.FileName, #10]));
           InfoPanel.SetBookCover(nil);
           InfoPanel.SetBookAnnotation(nil);
         end;
