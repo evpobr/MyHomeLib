@@ -4,7 +4,7 @@ object frmSettings: TfrmSettings
   HelpContext = 144
   BorderStyle = bsDialog
   Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
-  ClientHeight = 432
+  ClientHeight = 545
   ClientWidth = 617
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -22,7 +22,7 @@ object frmSettings: TfrmSettings
     Left = 159
     Top = 3
     Width = 455
-    Height = 385
+    Height = 498
     ActivePage = tsBehavour
     Align = alClient
     TabOrder = 1
@@ -403,7 +403,7 @@ object frmSettings: TfrmSettings
       end
       object Panel1: TPanel
         Left = 0
-        Top = 342
+        Top = 455
         Width = 447
         Height = 33
         Align = alBottom
@@ -443,7 +443,7 @@ object frmSettings: TfrmSettings
         Left = 3
         Top = 22
         Width = 441
-        Height = 317
+        Height = 430
         Align = alClient
         Columns = <
           item
@@ -670,7 +670,7 @@ object frmSettings: TfrmSettings
         Left = 3
         Top = 203
         Width = 441
-        Height = 169
+        Height = 282
         Align = alClient
         AutoSize = True
         BevelOuter = bvNone
@@ -1065,7 +1065,7 @@ object frmSettings: TfrmSettings
           AlignWithMargins = True
           Left = 3
           Top = 9
-          Width = 140
+          Width = 441
           Height = 13
           Margins.Top = 9
           Align = alTop
@@ -1352,7 +1352,7 @@ object frmSettings: TfrmSettings
       end
       object Panel2: TPanel
         Left = 0
-        Top = 306
+        Top = 419
         Width = 447
         Height = 69
         Align = alBottom
@@ -1412,7 +1412,7 @@ object frmSettings: TfrmSettings
         Left = 3
         Top = 22
         Width = 441
-        Height = 281
+        Height = 394
         Align = alClient
         Columns = <
           item
@@ -1450,16 +1450,16 @@ object frmSettings: TfrmSettings
         Left = 3
         Top = 3
         Width = 441
-        Height = 363
+        Height = 476
         Margins.Bottom = 9
         Align = alClient
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 0
-        ExplicitTop = 7
+        ExplicitHeight = 363
         DesignSize = (
           441
-          363)
+          476)
         object Label6: TLabel
           AlignWithMargins = True
           Left = 3
@@ -1857,7 +1857,7 @@ object frmSettings: TfrmSettings
   end
   object pnButtons: TPanel
     Left = 0
-    Top = 391
+    Top = 504
     Width = 617
     Height = 41
     Align = alBottom
@@ -1906,7 +1906,7 @@ object frmSettings: TfrmSettings
     Left = 3
     Top = 5
     Width = 150
-    Height = 382
+    Height = 495
     Margins.Top = 5
     Margins.Bottom = 4
     Align = alLeft
