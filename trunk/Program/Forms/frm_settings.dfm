@@ -4,7 +4,7 @@ object frmSettings: TfrmSettings
   HelpContext = 144
   BorderStyle = bsDialog
   Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
-  ClientHeight = 545
+  ClientHeight = 444
   ClientWidth = 617
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -22,18 +22,16 @@ object frmSettings: TfrmSettings
     Left = 159
     Top = 3
     Width = 455
-    Height = 498
-    ActivePage = tsBehavour
+    Height = 397
+    ActivePage = tsProxy
     Align = alClient
     TabOrder = 1
     object tsDevices: TTabSheet
       HelpContext = 143
       Caption = 'tsDevices'
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      ExplicitTop = 6
+      ExplicitHeight = 488
       object pnDeviceOptions: TPanel
         AlignWithMargins = True
         Left = 3
@@ -382,15 +380,13 @@ object frmSettings: TfrmSettings
       Caption = 'tsReaders'
       ImageIndex = 1
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      ExplicitTop = 6
+      ExplicitHeight = 488
       object Label11: TLabel
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 173
+        Width = 441
         Height = 13
         Align = alTop
         Caption = #1058#1080#1087#1099' '#1092#1072#1081#1083#1086#1074' '#1080' '#1087#1088#1086#1089#1084#1086#1090#1088#1097#1080#1082#1080
@@ -400,16 +396,18 @@ object frmSettings: TfrmSettings
         Font.Name = 'Tahoma'
         Font.Style = [fsBold]
         ParentFont = False
+        ExplicitWidth = 173
       end
       object Panel1: TPanel
         Left = 0
-        Top = 455
+        Top = 336
         Width = 447
         Height = 33
         Align = alBottom
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 1
+        ExplicitTop = 455
         object btnAddExt: TButton
           Left = 3
           Top = 3
@@ -443,7 +441,7 @@ object frmSettings: TfrmSettings
         Left = 3
         Top = 22
         Width = 441
-        Height = 430
+        Height = 311
         Align = alClient
         Columns = <
           item
@@ -462,6 +460,7 @@ object frmSettings: TfrmSettings
         TabOrder = 0
         ViewStyle = vsReport
         OnDblClick = btnChangeExtClick
+        ExplicitHeight = 430
       end
     end
     object tsInterface: TTabSheet
@@ -469,10 +468,8 @@ object frmSettings: TfrmSettings
       Caption = 'tsInterface'
       ImageIndex = 2
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      ExplicitTop = 6
+      ExplicitHeight = 488
       object Panel8: TPanel
         AlignWithMargins = True
         Left = 3
@@ -488,7 +485,7 @@ object frmSettings: TfrmSettings
           AlignWithMargins = True
           Left = 3
           Top = 3
-          Width = 40
+          Width = 435
           Height = 13
           Align = alTop
           Caption = #1064#1088#1080#1092#1090
@@ -498,6 +495,7 @@ object frmSettings: TfrmSettings
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
+          ExplicitWidth = 40
         end
         object Label7: TLabel
           Left = 9
@@ -670,17 +668,18 @@ object frmSettings: TfrmSettings
         Left = 3
         Top = 203
         Width = 441
-        Height = 282
+        Height = 163
         Align = alClient
         AutoSize = True
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 1
+        ExplicitHeight = 282
         object Label32: TLabel
           AlignWithMargins = True
           Left = 3
           Top = 3
-          Width = 234
+          Width = 435
           Height = 13
           Align = alTop
           Caption = #1044#1080#1092#1092#1077#1088#1077#1085#1094#1080#1072#1083#1100#1085#1099#1081' '#1092#1086#1085' '#1074' '#1089#1087#1080#1089#1082#1072#1093' '#1082#1085#1080#1075
@@ -690,6 +689,7 @@ object frmSettings: TfrmSettings
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
+          ExplicitWidth = 234
         end
         object btnCA: TButton
           Left = 223
@@ -794,148 +794,19 @@ object frmSettings: TfrmSettings
       Caption = 'tsInternet'
       ImageIndex = 4
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object Panel5: TPanel
-        AlignWithMargins = True
-        Left = 3
-        Top = 3
-        Width = 441
-        Height = 95
-        Align = alTop
-        AutoSize = True
-        BevelOuter = bvNone
-        ShowCaption = False
-        TabOrder = 0
-        DesignSize = (
-          441
-          95)
-        object Label25: TLabel
-          AlignWithMargins = True
-          Left = 3
-          Top = 3
-          Width = 435
-          Height = 13
-          Align = alTop
-          Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1082#1089#1080
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsBold]
-          ParentFont = False
-          ExplicitWidth = 104
-        end
-        object lblProxyPassword: TLabel
-          Left = 280
-          Top = 77
-          Width = 41
-          Height = 13
-          Anchors = [akTop, akRight]
-          Caption = #1055#1072#1088#1086#1083#1100':'
-          Color = clMenuBar
-          FocusControl = edProxyPassword
-          ParentColor = False
-          Transparent = True
-          ExplicitLeft = 282
-        end
-        object lblProxyPort: TLabel
-          Left = 330
-          Top = 50
-          Width = 29
-          Height = 13
-          Anchors = [akTop, akRight]
-          Caption = #1055#1086#1088#1090':'
-          Color = clMenuBar
-          FocusControl = edProxyPort
-          ParentColor = False
-          Transparent = True
-          ExplicitLeft = 332
-        end
-        object lblProxyServer: TLabel
-          Left = 15
-          Top = 50
-          Width = 41
-          Height = 13
-          Caption = #1057#1077#1088#1074#1077#1088':'
-          Color = clMenuBar
-          FocusControl = edProxyServer
-          ParentColor = False
-          Transparent = True
-        end
-        object lblProxyUser: TLabel
-          Left = 15
-          Top = 77
-          Width = 76
-          Height = 13
-          Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1100':'
-          Color = clMenuBar
-          FocusControl = edProxyUsername
-          ParentColor = False
-          Transparent = True
-        end
-        object cbUseIESettings: TCheckBox
-          AlignWithMargins = True
-          Left = 9
-          Top = 22
-          Width = 429
-          Height = 17
-          Margins.Left = 9
-          Align = alTop
-          Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1085#1072#1089#1090#1088#1086#1081#1082#1080' Internet Explorer'
-          TabOrder = 0
-          OnClick = cbUseIESettingsClick
-        end
-        object edProxyPassword: TEdit
-          Left = 328
-          Top = 74
-          Width = 104
-          Height = 21
-          Anchors = [akTop, akRight]
-          PasswordChar = '*'
-          TabOrder = 4
-        end
-        object edProxyPort: TEdit
-          Left = 364
-          Top = 47
-          Width = 68
-          Height = 21
-          Alignment = taRightJustify
-          Anchors = [akTop, akRight]
-          MaxLength = 5
-          NumbersOnly = True
-          TabOrder = 2
-          OnExit = CheckNumValue
-        end
-        object edProxyServer: TEdit
-          Left = 62
-          Top = 47
-          Width = 256
-          Height = 21
-          Anchors = [akLeft, akTop, akRight]
-          TabOrder = 1
-        end
-        object edProxyUsername: TEdit
-          Left = 97
-          Top = 74
-          Width = 172
-          Height = 21
-          Anchors = [akLeft, akTop, akRight]
-          TabOrder = 3
-        end
-      end
+      ExplicitTop = 6
+      ExplicitHeight = 488
       object Panel7: TPanel
         Left = 0
-        Top = 101
+        Top = 0
         Width = 447
         Height = 176
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
         ShowCaption = False
-        TabOrder = 1
+        TabOrder = 0
+        ExplicitTop = 101
         DesignSize = (
           447
           176)
@@ -1053,14 +924,14 @@ object frmSettings: TfrmSettings
       end
       object Panel6: TPanel
         Left = 0
-        Top = 399
+        Top = 195
         Width = 447
         Height = 93
         Align = alTop
         BevelOuter = bvNone
         ShowCaption = False
-        TabOrder = 2
-        ExplicitTop = 277
+        TabOrder = 1
+        ExplicitTop = 399
         object Label30: TLabel
           AlignWithMargins = True
           Left = 3
@@ -1076,6 +947,7 @@ object frmSettings: TfrmSettings
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
+          ExplicitWidth = 140
         end
         object RzLabel7: TLabel
           Left = 8
@@ -1132,7 +1004,7 @@ object frmSettings: TfrmSettings
           Alignment = taRightJustify
           NumbersOnly = True
           TabOrder = 4
-          Text = '1000'
+          Text = '1'#160'000'
           OnExit = CheckNumValue
         end
         object edTimeOut: TEdit
@@ -1143,7 +1015,7 @@ object frmSettings: TfrmSettings
           Alignment = taRightJustify
           NumbersOnly = True
           TabOrder = 0
-          Text = '1000'
+          Text = '1'#160'000'
           OnChange = edTimeOutChange
           OnExit = CheckNumValue
         end
@@ -1185,145 +1057,240 @@ object frmSettings: TfrmSettings
       object Panel9: TPanel
         AlignWithMargins = True
         Left = 3
-        Top = 280
+        Top = 179
         Width = 441
-        Height = 116
+        Height = 13
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
         Caption = ' '
+        TabOrder = 2
+        ExplicitTop = 198
+      end
+    end
+    object tsProxy: TTabSheet
+      Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1082#1089#1080
+      ImageIndex = 7
+      ExplicitHeight = 470
+      DesignSize = (
+        447
+        369)
+      object lblProxyServer: TLabel
+        Left = 15
+        Top = 33
+        Width = 41
+        Height = 13
+        Caption = #1057#1077#1088#1074#1077#1088':'
+        Color = clMenuBar
+        FocusControl = edProxyServer
+        ParentColor = False
+        Transparent = True
+      end
+      object lblProxyPort: TLabel
+        Left = 330
+        Top = 33
+        Width = 29
+        Height = 13
+        Anchors = [akTop, akRight]
+        Caption = #1055#1086#1088#1090':'
+        Color = clMenuBar
+        FocusControl = edProxyPort
+        ParentColor = False
+        Transparent = True
+      end
+      object lblProxyPassword: TLabel
+        Left = 280
+        Top = 60
+        Width = 41
+        Height = 13
+        Anchors = [akTop, akRight]
+        Caption = #1055#1072#1088#1086#1083#1100':'
+        Color = clMenuBar
+        FocusControl = edProxyPassword
+        ParentColor = False
+        Transparent = True
+      end
+      object lblProxyUser: TLabel
+        Left = 15
+        Top = 60
+        Width = 76
+        Height = 13
+        Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1100':'
+        Color = clMenuBar
+        FocusControl = edProxyUsername
+        ParentColor = False
+        Transparent = True
+      end
+      object Label33: TLabel
+        AlignWithMargins = True
+        Left = 3
+        Top = 122
+        Width = 267
+        Height = 13
+        Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1082#1089#1080' '#1076#1083#1103' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1103' '#1082#1086#1083#1083#1077#1082#1094#1080#1081
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object lblProxyServerUpdate: TLabel
+        Left = 7
+        Top = 190
+        Width = 41
+        Height = 13
+        Caption = #1057#1077#1088#1074#1077#1088':'
+        Color = clMenuBar
+        FocusControl = edProxyServerUpdate
+        ParentColor = False
+        Transparent = True
+      end
+      object lblProxyPortUpdate: TLabel
+        Left = 319
+        Top = 191
+        Width = 29
+        Height = 13
+        Anchors = [akTop, akRight]
+        Caption = #1055#1086#1088#1090':'
+        Color = clMenuBar
+        FocusControl = edProxyPortUpdate
+        ParentColor = False
+        Transparent = True
+      end
+      object lblProxyPasswordUpdate: TLabel
+        Left = 269
+        Top = 218
+        Width = 41
+        Height = 13
+        Anchors = [akTop, akRight]
+        Caption = #1055#1072#1088#1086#1083#1100':'
+        Color = clMenuBar
+        FocusControl = edProxyPasswordUpdate
+        ParentColor = False
+        Transparent = True
+      end
+      object lblProxyUserUpdate: TLabel
+        Left = 7
+        Top = 220
+        Width = 76
+        Height = 13
+        Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1100':'
+        Color = clMenuBar
+        FocusControl = edProxyUsernameUpdate
+        ParentColor = False
+        Transparent = True
+      end
+      object cbUseIESettings: TCheckBox
+        AlignWithMargins = True
+        Left = 9
+        Top = 3
+        Width = 435
+        Height = 17
+        Margins.Left = 9
+        Align = alTop
+        Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1085#1072#1089#1090#1088#1086#1081#1082#1080' Internet Explorer'
+        TabOrder = 0
+        OnClick = cbUseIESettingsClick
+        ExplicitTop = 24
+      end
+      object edProxyServer: TEdit
+        Left = 62
+        Top = 30
+        Width = 256
+        Height = 21
+        Anchors = [akLeft, akTop, akRight]
+        TabOrder = 1
+      end
+      object edProxyPort: TEdit
+        Left = 364
+        Top = 30
+        Width = 68
+        Height = 21
+        Alignment = taRightJustify
+        Anchors = [akTop, akRight]
+        MaxLength = 5
+        NumbersOnly = True
+        TabOrder = 2
+        OnExit = CheckNumValue
+      end
+      object edProxyPassword: TEdit
+        Left = 328
+        Top = 57
+        Width = 104
+        Height = 21
+        Anchors = [akTop, akRight]
+        PasswordChar = '*'
         TabOrder = 3
-        ExplicitTop = 104
-        DesignSize = (
-          441
-          116)
-        object Label33: TLabel
-          AlignWithMargins = True
-          Left = 3
-          Top = 3
-          Width = 435
-          Height = 13
-          Align = alTop
-          Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1082#1089#1080' '#1076#1083#1103' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsBold]
-          ParentFont = False
-          ExplicitWidth = 201
-        end
-        object lblProxyUserUpdate: TLabel
-          Left = 15
-          Top = 100
-          Width = 76
-          Height = 13
-          Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1100':'
-          Color = clMenuBar
-          FocusControl = edProxyUsernameUpdate
-          ParentColor = False
-          Transparent = True
-        end
-        object lblProxyPasswordUpdate: TLabel
-          Left = 277
-          Top = 98
-          Width = 41
-          Height = 13
-          Anchors = [akTop, akRight]
-          Caption = #1055#1072#1088#1086#1083#1100':'
-          Color = clMenuBar
-          FocusControl = edProxyPasswordUpdate
-          ParentColor = False
-          Transparent = True
-        end
-        object lblProxyPortUpdate: TLabel
-          Left = 327
-          Top = 71
-          Width = 29
-          Height = 13
-          Anchors = [akTop, akRight]
-          Caption = #1055#1086#1088#1090':'
-          Color = clMenuBar
-          FocusControl = edProxyPortUpdate
-          ParentColor = False
-          Transparent = True
-        end
-        object lblProxyServerUpdate: TLabel
-          Left = 15
-          Top = 70
-          Width = 41
-          Height = 13
-          Caption = #1057#1077#1088#1074#1077#1088':'
-          Color = clMenuBar
-          FocusControl = edProxyServerUpdate
-          ParentColor = False
-          Transparent = True
-        end
-        object edProxyUsernameUpdate: TEdit
-          Left = 94
-          Top = 95
-          Width = 172
-          Height = 21
-          Anchors = [akLeft, akTop, akRight]
-          TabOrder = 0
-        end
-        object edProxyPasswordUpdate: TEdit
-          Left = 325
-          Top = 95
-          Width = 104
-          Height = 21
-          Anchors = [akTop, akRight]
-          PasswordChar = '*'
-          TabOrder = 1
-        end
-        object edProxyPortUpdate: TEdit
-          Left = 361
-          Top = 68
-          Width = 68
-          Height = 21
-          Alignment = taRightJustify
-          Anchors = [akTop, akRight]
-          MaxLength = 5
-          NumbersOnly = True
-          TabOrder = 2
-          OnExit = CheckNumValue
-        end
-        object edProxyServerUpdate: TEdit
-          Left = 62
-          Top = 68
-          Width = 256
-          Height = 21
-          Anchors = [akLeft, akTop, akRight]
-          TabOrder = 3
-        end
-        object rbDNotUseProxyForUpdate: TRadioButton
-          AlignWithMargins = True
-          Left = 9
-          Top = 22
-          Width = 429
-          Height = 17
-          Margins.Left = 9
-          Align = alTop
-          Caption = #1053#1077' '#1080#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1087#1088#1086#1082#1089#1080' '#1076#1083#1103' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
-          Checked = True
-          TabOrder = 4
-          TabStop = True
-          OnClick = rbUseProxyForUpdateClick
-          ExplicitTop = 25
-        end
-        object rbUseProxyForUpdate: TRadioButton
-          AlignWithMargins = True
-          Left = 9
-          Top = 45
-          Width = 429
-          Height = 17
-          Margins.Left = 9
-          Align = alTop
-          Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1076#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1099#1081' '#1087#1088#1086#1082#1089#1080' '#1076#1083#1103' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
-          TabOrder = 5
-          OnClick = rbUseProxyForUpdateClick
-          ExplicitTop = 48
-        end
+      end
+      object edProxyUsername: TEdit
+        Left = 97
+        Top = 57
+        Width = 172
+        Height = 21
+        Anchors = [akLeft, akTop, akRight]
+        TabOrder = 4
+      end
+      object rbDNotUseProxyForUpdate: TRadioButton
+        AlignWithMargins = True
+        Left = 9
+        Top = 141
+        Width = 435
+        Height = 17
+        Margins.Left = 9
+        Caption = #1053#1077' '#1080#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1087#1088#1086#1082#1089#1080' '#1076#1083#1103' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
+        Checked = True
+        TabOrder = 5
+        TabStop = True
+        OnClick = rbUseProxyForUpdateClick
+      end
+      object rbUseProxyForUpdate: TRadioButton
+        AlignWithMargins = True
+        Left = 9
+        Top = 164
+        Width = 435
+        Height = 17
+        Margins.Left = 9
+        Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1087#1088#1086#1082#1089#1080' '#1076#1083#1103' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
+        TabOrder = 6
+        OnClick = rbUseProxyForUpdateClick
+      end
+      object edProxyServerUpdate: TEdit
+        Left = 54
+        Top = 188
+        Width = 256
+        Height = 21
+        Anchors = [akLeft, akTop, akRight]
+        TabOrder = 7
+      end
+      object edProxyPortUpdate: TEdit
+        Left = 353
+        Top = 188
+        Width = 68
+        Height = 21
+        Alignment = taRightJustify
+        Anchors = [akTop, akRight]
+        MaxLength = 5
+        NumbersOnly = True
+        TabOrder = 8
+        OnExit = CheckNumValue
+      end
+      object edProxyPasswordUpdate: TEdit
+        Left = 317
+        Top = 215
+        Width = 104
+        Height = 21
+        Anchors = [akTop, akRight]
+        PasswordChar = '*'
+        TabOrder = 9
+      end
+      object edProxyUsernameUpdate: TEdit
+        Left = 86
+        Top = 215
+        Width = 172
+        Height = 21
+        Anchors = [akLeft, akTop, akRight]
+        TabOrder = 10
       end
     end
     object tsScripts: TTabSheet
@@ -1331,15 +1298,13 @@ object frmSettings: TfrmSettings
       Caption = 'tsScripts'
       ImageIndex = 4
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      ExplicitTop = 6
+      ExplicitHeight = 488
       object Label12: TLabel
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 51
+        Width = 441
         Height = 13
         Align = alTop
         Caption = #1057#1082#1088#1080#1087#1090#1099
@@ -1349,16 +1314,18 @@ object frmSettings: TfrmSettings
         Font.Name = 'Tahoma'
         Font.Style = [fsBold]
         ParentFont = False
+        ExplicitWidth = 51
       end
       object Panel2: TPanel
         Left = 0
-        Top = 419
+        Top = 300
         Width = 447
         Height = 69
         Align = alBottom
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 1
+        ExplicitTop = 419
         DesignSize = (
           447
           69)
@@ -1412,7 +1379,7 @@ object frmSettings: TfrmSettings
         Left = 3
         Top = 22
         Width = 441
-        Height = 394
+        Height = 275
         Align = alClient
         Columns = <
           item
@@ -1435,31 +1402,30 @@ object frmSettings: TfrmSettings
         TabOrder = 0
         ViewStyle = vsReport
         OnDblClick = btnEditScriptClick
+        ExplicitHeight = 394
       end
     end
     object tsBehavour: TTabSheet
       Caption = 'tsBehavior'
       ImageIndex = 5
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      ExplicitTop = 6
+      ExplicitHeight = 488
       object Panel3: TPanel
         AlignWithMargins = True
         Left = 3
         Top = 3
         Width = 441
-        Height = 476
+        Height = 357
         Margins.Bottom = 9
         Align = alClient
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 0
-        ExplicitHeight = 363
+        ExplicitHeight = 476
         DesignSize = (
           441
-          476)
+          357)
         object Label6: TLabel
           AlignWithMargins = True
           Left = 3
@@ -1574,7 +1540,6 @@ object frmSettings: TfrmSettings
           Color = clBtnFace
           ParentColor = False
           TabOrder = 6
-          ExplicitTop = 159
         end
         object cbOverwriteFB2Info: TCheckBox
           AlignWithMargins = True
@@ -1621,7 +1586,6 @@ object frmSettings: TfrmSettings
           Caption = #1054#1073#1088#1072#1073#1072#1090#1099#1074#1072#1090#1100' '#1074#1099#1076#1077#1083#1077#1085#1085#1099#1077'  '#1082#1072#1082' '#1086#1090#1084#1077#1095#1077#1085#1085#1099#1077' '
           TabOrder = 10
           OnClick = cbOverwriteFB2InfoClick
-          ExplicitTop = 187
         end
       end
     end
@@ -1629,10 +1593,8 @@ object frmSettings: TfrmSettings
       Caption = 'tsFileSort'
       ImageIndex = 6
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      ExplicitTop = 6
+      ExplicitHeight = 488
       object Panel4: TPanel
         AlignWithMargins = True
         Left = 3
@@ -1857,7 +1819,7 @@ object frmSettings: TfrmSettings
   end
   object pnButtons: TPanel
     Left = 0
-    Top = 504
+    Top = 403
     Width = 617
     Height = 41
     Align = alBottom
@@ -1865,6 +1827,7 @@ object frmSettings: TfrmSettings
     Caption = 'pnButtons'
     ShowCaption = False
     TabOrder = 2
+    ExplicitTop = 504
     DesignSize = (
       617
       41)
@@ -1906,7 +1869,7 @@ object frmSettings: TfrmSettings
     Left = 3
     Top = 5
     Width = 150
-    Height = 495
+    Height = 394
     Margins.Top = 5
     Margins.Bottom = 4
     Align = alLeft
@@ -1916,19 +1879,21 @@ object frmSettings: TfrmSettings
     TabOrder = 0
     OnChange = tvSectionsChange
     Items.NodeData = {
-      03070000003E0000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF000000
+      03080000003E0000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF000000
       000000000001101F0430043F043A0438042F0023044104420440043E04390441
       04420432043004340000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF00
       00000000000000010B220438043F044B0420004404300439043B043E04320430
       0000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF000000000000000001
       0918043D0442043504400444043504390441042E0000000000000000000000FF
       FFFFFFFFFFFFFFFFFFFFFF0000000000000000010818043D044204350440043D
-      04350442042C0000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF000000
-      0000000000010721043A04400438043F0442044B042A00000000000000000000
-      00FFFFFFFFFFFFFFFF00000000000000000000000001062004300437043D043E
-      043504400000000000000000000000FFFFFFFFFFFFFFFF000000000000000000
-      000000011121043E0440044204380440043E0432043A04300420004404300439
-      043B043E043204}
+      04350442042A0000000000000000000000FFFFFFFFFFFFFFFF00000000000000
+      000000000001061F0440043E043A04410438042C0000000000000000000000FF
+      FFFFFFFFFFFFFFFFFFFFFF0000000000000000010721043A04400438043F0442
+      044B042A0000000000000000000000FFFFFFFFFFFFFFFF000000000000000000
+      00000001062004300437043D043E043504400000000000000000000000FFFFFF
+      FFFFFFFFFF000000000000000000000000011121043E0440044204380440043E
+      0432043A04300420004404300439043B043E043204}
+    ExplicitHeight = 495
   end
   object dlgColors: TColorDialog
     Left = 32
