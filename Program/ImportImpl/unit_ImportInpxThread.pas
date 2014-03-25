@@ -362,13 +362,15 @@ var
   strCollection: string;
   numFiles: Integer;
   Zip: TMHLZip;
+  collectionCode: Integer;
 
 begin
   filesProcessed := 0;
   i := 0;
   SetProgress(0);
+  collectionCode := BookCollection.CollectionCode;
 
-  IsOnline := isOnlineCollection(BookCollection.CollectionCode);
+  IsOnline := isOnlineCollection(collectionCode);
   CollectionRoot := BookCollection.GetProperty(PROP_ROOTFOLDER);
 
   SetLength(FFields, 0);
@@ -409,12 +411,9 @@ begin
               ParseData(BookList[j], IsOnline, R);
               if IsOnline then
               begin
-                //
-                // TODO: здесь некоторая фигня. Что будет, если этот INPX описывает не-FB2 коллекцию?
-                //
 
-                // И\Иванов Иван\1234 Просто книга.fb2.zip
-                R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;
+                if 0 = (CONTENT_NONFB and collectionCode) then
+                  R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;  // И\Иванов Иван\1234 Просто книга.fb2.zip
                 // Сохраним отметку о существовании файла
                 if FileExists(TPath.Combine(CollectionRoot, R.Folder)) then
                   Include(R.BookProps, bpIsLocal)
