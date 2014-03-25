@@ -6,12 +6,14 @@
   *
   * Authors             Aleksey Penkov   alex.penkov@gmail.com
   *                     Nick Rymanov     nrymanov@gmail.com
-  * Created             
-  * Description         
+  *                     Eugene Sadovoi   evgeni@eniks.com
+  * Created
+  * Description
   *
   * $Id$
   *
   * History
+  * 2014-03-23 - Added support for generic online libraries
   *
   ****************************************************************************** *)
 
@@ -40,8 +42,10 @@ type
 
   TCommand = record
     Code: Integer;
-    Params: array [1 .. 5] of string;
+    Params: array of string;
   end;
+
+  TScenarioCommands = array of TCommand;
 
   TSetCommentEvent = procedure(const Current, Total: string) of object;
   TProgressEvent = procedure(Current, Total: Integer) of object;
@@ -65,13 +69,13 @@ type
 
     FFile: string;
 
-    function DoDownload(const Collection: IBookCollection; const BookRecord: TBookRecord): Boolean;
-
-    function AddParam(const Name: string; const Value: string): Boolean;
-    function Query(Kind: TQueryKind; const URL: string): Boolean;
-    function CheckRedirect: boolean;
-    function CheckResponce: boolean;
+    function AddParam(const Name: string; const Value: string): boolean;
+    function Query(Kind: TQueryKind; const Uri: string): boolean;
+    function CheckRedirect(): boolean;
+    function CheckResponce(): boolean;
     function Pause(Time: Integer): boolean;
+
+    function DoDownload(const Collection: IBookCollection; const BookRecord: TBookRecord): boolean;
 
     procedure HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
     procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
@@ -80,7 +84,7 @@ type
 
     procedure ProcessError(const LongMsg, ShortMsg, AFileName: string);
 
-    procedure ParseCommand(ConstParams: TStringList; S: string; out Command: TCommand);
+    function ParseCommands(const scenario: string; const macros: TStrings) : TScenarioCommands;
 
   public
     constructor Create;
@@ -89,7 +93,7 @@ type
     function Download(const ASystemDB: ISystemData; const BookKey: TBookKey): boolean;
     procedure Stop;
 
-    property IgnoreErrors: Boolean read FIgnoreErrors write FIgnoreErrors;
+    property IgnoreErrors: boolean read FIgnoreErrors write FIgnoreErrors;
 
     property OnProgress: TProgressEvent read FOnSetProgress write FOnSetProgress;
     property OnSetComment: TSetCommentEvent read FOnSetComment write FOnSetComment;
@@ -99,6 +103,8 @@ implementation
 
 uses
   Forms,
+  RTTI,
+  HTTPApp,
   StrUtils,
   DateUtils,
   unit_Settings,
@@ -107,11 +113,13 @@ uses
   unit_MHL_strings,
   unit_Messages,
   unit_Helpers,
+  unit_ImportInpxThread,
   unit_MHLArchiveHelpers;
 
 resourcestring
   rstrWrongCredentials = 'Неправильный логин/пароль';
-  rstrDownloadBlockedByServer = 'Загрузка файла заблокирована сервером!' + CRLF + ' Ответ сервера можно посмотреть в файле "server_error.html"';
+  rstrDownloadBlockedByServer = 'Загрузка файла заблокирована сервером!' + CRLF
+    + ' Ответ сервера можно посмотреть в файле "server_error.html"';
   rstrBlockedByServer = 'Заблокировано сервером';
   rstrSpeed = 'Загрузка: %s Kb/s';
   rstrDownloadError = 'Ошибка закачки';
@@ -119,14 +127,14 @@ resourcestring
   rstrError = 'Ошибка ';
   rstrTimeout = 'Закачка не удалась! Превышено время ожидания.';
   rstrConnectionError = 'Закачка не удалась! Ошибка подключения.';
-  rstrServerError = 'Закачка не удалась! Сервер сообщает об ошибке "%s".' + CRLF;
+  rstrServerError =
+    'Закачка не удалась! Сервер сообщает об ошибке "%s".' + CRLF;
   rstrErrorCode = 'Код Ошибки ';
 
 const
-  CommandList: array [0 .. 5] of string = ('ADD', 'GET', 'POST', 'REDIR', 'CHECK', 'PAUSE');
-  Params: array [0 .. 2] of string = ('%USER%', '%PASS%', '%RESURL%');
+  CommandList: array [0 .. 5] of string = ('CHECK', 'REDIR', 'PAUSE', 'GET', 'POST', 'ADD');
 
-{ TDownloader }
+  { TDownloader }
 
 constructor TDownloader.Create;
 begin
@@ -151,20 +159,20 @@ begin
   inherited Destroy;
 end;
 
-function TDownloader.AddParam(const Name: string; const Value: string): Boolean;
+function TDownloader.AddParam(const Name: string; const Value: string): boolean;
 begin
   FParams.AddFormField(Name, Value);
   Result := True;
 end;
 
-function TDownloader.CheckRedirect: boolean;
+function TDownloader.CheckRedirect(): boolean;
 begin
   Result := (FNewURL <> '');
   if not Result then
     raise EInvalidLogin.Create(rstrWrongCredentials);
 end;
 
-function TDownloader.CheckResponce: boolean;
+function TDownloader.CheckResponce(): boolean;
 var
   Path: string;
   Str: TStringList;
@@ -179,7 +187,8 @@ begin
     Str.LoadFromStream(FResponse);
     if Str.Count > 0 then
     begin
-      if (Pos('<!DOCTYPE', Str[0]) <> 0) or (Pos('overload', Str[0]) <> 0) or (Pos('not found', Str[0]) <> 0) then
+      if (Pos('<!DOCTYPE', Str[0]) <> 0) or (Pos('overload', Str[0]) <> 0) or
+        (Pos('not found', Str[0]) <> 0) then
       begin
         ProcessError(rstrDownloadBlockedByServer, rstrBlockedByServer, FFile);
         Str.SaveToFile(Settings.SystemFileName[sfServerErrorLog]);
@@ -203,7 +212,7 @@ begin
   end;
 end;
 
-function TDownloader.Download(const ASystemDB: ISystemData; const BookKey: TBookKey): Boolean;
+function TDownloader.Download(const ASystemDB: ISystemData; const BookKey: TBookKey): boolean;
 var
   Collection: IBookCollection;
   BookRecord: TBookRecord;
@@ -272,109 +281,174 @@ begin
   FOnSetComment(rstrReadyMessage, '');
 end;
 
-function TDownloader.DoDownload(const Collection: IBookCollection; const BookRecord: TBookRecord): Boolean;
+function TDownloader.DoDownload(const Collection: IBookCollection; const BookRecord: TBookRecord): boolean;
 var
+  ctx: TRttiContext;
   ConstParams: TStringList;
-  CL: TStringList;
-  Commands: array of TCommand;
+  Commands: TScenarioCommands;
+  field: TRttiField;
+  data, name: string;
   i: Integer;
+
 begin
   Result := True;
-  ConstParams := TStringList.Create;
+
   try
-    //
-    // TODO: достаточно стремная операция - получение информации из глобальных объектов. Убрать нафиг!!!
-    //
-    ConstParams.Values['LIBID'] := BookRecord.LibID;
-    ConstParams.Values['USER'] := Collection.GetProperty(PROP_LIBUSER);
-    ConstParams.Values['PASS'] := Collection.GetProperty(PROP_LIBPASSWORD);
-    ConstParams.Values['URL'] := Collection.GetProperty(PROP_URL);
+    ctx := TRttiContext.Create;
+    ConstParams := TStringList.Create;
+    FParams := TIdMultiPartFormDataStream.Create;
 
-    CL := TStringList.Create;
-    try
-      CL.Text := Collection.GetProperty(PROP_CONNECTIONSCRIPT);
-      SetLength(Commands, CL.Count);
+    // Add macro from collection info
+    ConstParams.Values['%USER%'] := Collection.GetProperty(PROP_LIBUSER);
+    ConstParams.Values['%PASS%'] := Collection.GetProperty(PROP_LIBPASSWORD);
+    ConstParams.Values['%URL%'] := Collection.GetProperty(PROP_URL);
 
-      FParams := TIdMultiPartFormDataStream.Create;
-      try
-        FResponse := TMemoryStream.Create;
-        try
-          for i := 0 to CL.Count - 1 do
+    // Build macro dictionary from book info
+    for field in ctx.GetType(TypeInfo(TBookRecord)).GetFields do
+    begin
+      if (nil <> field) and (nil <> field.FieldType) and
+        (('string' = field.FieldType.Name) or ('Integer' = field.FieldType.Name))
+      then
+      begin
+        name := '%' + UpperCase(field.Name) + '%';
+        if ('%FOLDER%' = name) or ('%COLLECTIONROOT%' = name) then
           begin
-            if Canceled then
-              Break;
+            data := DosPathToUnixPath(field.GetValue(Addr(BookRecord)).ToString());
+          end
+        else
+          data := field.GetValue(Addr(BookRecord)).ToString();
 
-            ParseCommand(ConstParams, CL[i], Commands[i]);
-            case Commands[i].Code of
-              0: Result := AddParam(Commands[i].Params[1], Commands[i].Params[2]);
-              1: Result := Query(qkGet, Commands[i].Params[1]);
-              2: Result := Query(qkPost, Commands[i].Params[1]);
-              3: Result := CheckRedirect;
-              4: Result := CheckResponce;
-              5: Result := Pause(StrToInt(Commands[i].Params[1]));
-            end;
+        StrReplace(' ', '%20', data);
+        ConstParams.Values[name] := data;
+      end;
+    end;
 
-            if not Result then
-              Break;
+    // Execute scenario
+    Commands := ParseCommands(Collection.GetProperty(PROP_CONNECTIONSCRIPT), ConstParams);
+    try
+      FResponse := TMemoryStream.Create;
+      try
+        for i := 0 to Length(Commands) - 1 do
+        begin
+          if Canceled then
+            Break;
+
+          case Commands[i].Code of
+            0: Result := CheckResponce;
+            1: Result := CheckRedirect;
+            2: Result := Pause(StrToInt(Commands[i].Params[0]));
+            3: Result := Query(qkGet, Commands[i].Params[0]);
+            4: Result := Query(qkPost, Commands[i].Params[0]);
+            5: Result := AddParam(Commands[i].Params[0], Commands[i].Params[1]);
           end;
-        finally
-          FResponse.Free;
+
+          if not Result then
+            Break;
         end;
       finally
-        FParams.Free;
+        FResponse.Free;
       end;
     finally
-      CL.Free;
+      FParams.Free;
     end;
+
   finally
+    ctx.Free;
     ConstParams.Free;
   end;
 end;
 
-procedure TDownloader.ParseCommand(ConstParams: TStringList; S: string; out Command: TCommand);
+function TDownloader.ParseCommands(const scenario: string; const macros: TStrings): TScenarioCommands;
 var
-  p, i: Integer;
-  s1: string;
+  parameters: TStringList;
+  commandStr: TStringList;
+  data, command: string;
+  commnadIndx: Integer;
+  commnadType: Integer;
+  index, param: Integer;
+  Commands: TScenarioCommands;
+
 begin
-  Command.Code := -1;
 
-  StrReplace('%LIBID%',  ConstParams.Values['LIBID'], S);
-  StrReplace('%USER%',   ConstParams.Values['USER'], S);
-  StrReplace('%PASS%',   ConstParams.Values['PASS'], S);
-  StrReplace('%URL%',    ConstParams.Values['URL'], S);
-  StrReplace('%RESURL%', FNewURL, S);
+  try
+    parameters := TStringList.Create;
+    commandStr := TStringList.Create;
 
-  p := Pos(' ', S);
-  if p <> 0 then
-  begin
-    s1 := Copy(S, 1, p - 1);
-    Delete(S, 1, p);
-  end
-  else
-    s1 := S;
-
-  for i := 0 to 5 do
-  begin
-    if CommandList[i] = s1 then
+    // Parse each command in scenario
+    commandStr.Text := scenario;
+    SetLength(Commands, commandStr.Count);
+    for commnadIndx := 0 to (commandStr.Count - 1) do
     begin
-      Command.Code := i;
-      Break;
+      Commands[commnadIndx].Code := -1;
+
+      // Get command
+      data := commandStr[commnadIndx];
+      index := Pos(' ', data);
+      if index <> 0 then
+      begin
+        command := Copy(data, 1, index - 1);
+        Delete(data, 1, index);
+      end
+      else
+        command := data;
+
+      // Identify and process command
+      for commnadType := 0 to (Length(CommandList) - 1) do
+      begin
+        if CommandList[commnadType] = command then
+        begin
+          Commands[commnadIndx].Code := commnadType;
+
+          case commnadType of
+            0 .. 1: // 'CHECK', 'REDIR'  - no parameters
+              SetLength(Commands[commnadIndx].Params, 0);
+
+            2: // 'PAUSE' - just one parameter
+              begin
+                SetLength(Commands[commnadIndx].Params, 1);
+                Commands[commnadIndx].Params[0] := data;
+              end;
+
+            3 .. 4: // 'GET', 'POST' - just one parameter
+              begin
+                // Replace all macros
+                for index := 0 to macros.Count - 1 do
+                  StrReplace(macros.Names[index],
+                    macros.ValueFromIndex[index], data);
+                // Save parameter
+                SetLength(Commands[commnadIndx].Params, 1);
+                Commands[commnadIndx].Params[0] := data;
+              end;
+
+          else // ADD and etc. - space delimited parameters
+            begin
+              parameters.Clear();
+              ExtractStrings([' '], [], PWideChar(data), parameters);
+              SetLength(Commands[commnadIndx].Params, parameters.Count);
+              for param := 0 to parameters.Count - 1 do
+              begin
+                data := parameters[param];
+                // Replace all macros
+                for index := 0 to macros.Count - 1 do
+                  StrReplace(macros.Names[index],
+                    macros.ValueFromIndex[index], data);
+                // Save parameter
+                Commands[commnadIndx].Params[param] := data;
+              end;
+            end;
+          end;
+
+          Break;
+        end;
+      end;
     end;
-  end;
 
-  p := Pos(' ', S);
-  i := 1;
-  while p <> 0 do
-  begin
-    s1 := Copy(S, 1, p - 1);
-    Command.Params[i] := s1;
-    Inc(i);
-    Delete(S, 1, p);
-    p := Pos(' ', S);
-  end;
+  Result := Commands;
 
-  if S <> '' then
-    Command.Params[i] := S
+  finally
+    parameters.Free;
+    commandStr.Free;
+  end;
 end;
 
 function TDownloader.Pause(Time: Integer): boolean;
@@ -396,16 +470,23 @@ begin
       Append(F)
     else
       Rewrite(F);
-    Writeln(F, Format('%s %s >> %s', [DateTimeToStr(Now), ShortMsg, AFileName]));
+    Writeln(F, Format('%s %s >> %s', [DateTimeToStr(Now), ShortMsg,
+      AFileName]));
     CloseFile(F);
   end;
   if not FIgnoreErrors then
     Application.MessageBox(PChar(LongMsg), PChar(rstrDownloadError));
 end;
 
-function TDownloader.Query(Kind: TQueryKind; const URL: string): boolean;
+function TDownloader.Query(Kind: TQueryKind; const Uri: string): boolean;
+var
+  URL: string;
+
 begin
   Result := False;
+  URL := Uri;
+  StrReplace('%RESURL%', FNewURL, URL);
+
   try
     case Kind of
       qkGet:
@@ -423,22 +504,26 @@ begin
     Result := True;
   except
     on E: EIdSocketError do
-    if not FIgnoreErrors then
-    begin
-      case E.LastError of
-        WSAHOST_NOT_FOUND:
-          ProcessError(rstrServerNotFound, rstrError + IntToStr(E.LastError), FFile);
+      if not FIgnoreErrors then
+      begin
+        case E.LastError of
+          WSAHOST_NOT_FOUND:
+            ProcessError(rstrServerNotFound,
+              rstrError + IntToStr(E.LastError), FFile);
 
-        Id_WSAETIMEDOUT:
-          ProcessError(rstrTimeout, rstrError + IntToStr(E.LastError), FFile);
-      else
-        ProcessError(rstrConnectionError, rstrError + IntToStr(E.LastError), FFile);
-      end; // case
-    end;
+          Id_WSAETIMEDOUT:
+            ProcessError(rstrTimeout, rstrError + IntToStr(E.LastError), FFile);
+        else
+          ProcessError(rstrConnectionError,
+            rstrError + IntToStr(E.LastError), FFile);
+        end; // case
+      end;
 
     on E: Exception do
-      if (FidHTTP.ResponseCode <> 405) and not((FidHTTP.ResponseCode = 404) and (FNewURL <> '')) then
-        ProcessError(Format(rstrServerError, [E.Message]), rstrErrorCode + IntToStr(FidHTTP.ResponseCode), FFile)
+      if (FidHTTP.ResponseCode <> 405) and
+        not((FidHTTP.ResponseCode = 404) and (FNewURL <> '')) then
+        ProcessError(Format(rstrServerError, [E.Message]),
+          rstrErrorCode + IntToStr(FidHTTP.ResponseCode), FFile)
       else
         Result := True;
   end; // try ... except
