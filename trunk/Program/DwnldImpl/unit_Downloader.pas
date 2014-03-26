@@ -320,16 +320,9 @@ begin
         else
           data := field.GetValue(Addr(BookRecord)).ToString();
 
-<<<<<<< .mine
         ConstParams.Values[name] := data;
       end;
     end;
-=======
-        StrReplace(' ', '%20', data);
-        ConstParams.Values[name] := data;
-      end;
-    end;
->>>>>>> .r1139
 
     // Execute scenario
     Commands := ParseCommands(Collection.GetProperty(PROP_CONNECTIONSCRIPT), ConstParams);
@@ -487,27 +480,14 @@ begin
     {$IFDEF MSWINDOWS} AnsiString(#13#10) {$ENDIF} + URL), PChar(rstrDownloadError));
 end;
 
-<<<<<<< .mine
 function TDownloader.Query(Kind: TQueryKind; const Uri: string): boolean;
-=======
-function TDownloader.Query(Kind: TQueryKind; const Uri: string): boolean;
-var
-  URL: string;
-
->>>>>>> .r1139
 begin
   Result := False;
-<<<<<<< .mine
 
   URL := Uri;
   // Add result of last operation
   StrReplace('%RESURL%', FNewURL, URL);
 
-=======
-  URL := Uri;
-  StrReplace('%RESURL%', FNewURL, URL);
-
->>>>>>> .r1139
   try
     case Kind of
       qkGet:
