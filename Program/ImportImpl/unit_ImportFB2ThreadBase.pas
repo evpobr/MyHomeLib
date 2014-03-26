@@ -122,7 +122,7 @@ begin
     begin
       R.Title := Booktitle.Text;
 
-      if Pos(' ', Booktitle.Text) <> 0 then
+      if Pos(AnsiString(#10), Booktitle.Text) <> 0 then
         begin
           StrReplace(AnsiString(#13#10), ' ', R.Title);
           StrReplace(AnsiString(#10), ' ', R.Title);
