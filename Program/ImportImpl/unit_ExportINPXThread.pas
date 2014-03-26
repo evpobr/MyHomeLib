@@ -221,6 +221,10 @@ begin
   strFileExt := R.FileExt;
   Delete(strFileExt, 1, 1);
 
+  // Cleanup title, slows it down but preserves integrity
+  StrReplace(AnsiString(#13#10), ' ', R.Title);
+  StrReplace(AnsiString(#10), ' ', R.Title);
+
   writer.Write(strAuthors);                           writer.Write(INPX_FIELD_DELIMITER);
   writer.Write(strGenres);                            writer.Write(INPX_FIELD_DELIMITER);
   writer.Write(Trim(R.Title));                        writer.Write(INPX_FIELD_DELIMITER);
