@@ -184,7 +184,7 @@ begin
     ExtractStrings(PChar(input), INPX_FIELD_DELIMITER, slParams);
 
     // -- костыль
-    if slParams.Count < High(FFields) then
+    if slParams.Count <= High(FFields) then
       Max := slParams.Count - 1
     else
       Max := High(FFields);
@@ -363,6 +363,7 @@ var
   numFiles: Integer;
   Zip: TMHLZip;
   collectionCode: Integer;
+  bookString: string;
 
 begin
   filesProcessed := 0;
@@ -408,7 +409,8 @@ begin
           for j := 0 to BookList.Count - 1 do
           begin
             try
-              ParseData(BookList[j], IsOnline, R);
+              bookString := BookList[j];
+              ParseData(bookString, IsOnline, R);
               if IsOnline then
               begin
 
