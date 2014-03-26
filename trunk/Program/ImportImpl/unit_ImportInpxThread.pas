@@ -363,7 +363,6 @@ var
   numFiles: Integer;
   Zip: TMHLZip;
   collectionCode: Integer;
-  bookString: string;
 
 begin
   filesProcessed := 0;
@@ -409,8 +408,7 @@ begin
           for j := 0 to BookList.Count - 1 do
           begin
             try
-              bookString := BookList[j];
-              ParseData(bookString, IsOnline, R);
+              ParseData(BookList[j], IsOnline, R);
               if IsOnline then
               begin
 
