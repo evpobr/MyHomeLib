@@ -27,6 +27,7 @@ uses
   SysUtils,
   Dialogs,
   IdHTTP,
+  IdURI,
   IdComponent,
   IdStack,
   IdStackConsts,
@@ -52,6 +53,7 @@ type
 
   TDownloader = class
   private
+    URL: string;
     FidHTTP: TidHttp;
     FParams: TIdMultiPartFormDataStream;
     FResponse: TMemoryStream;
@@ -318,10 +320,16 @@ begin
         else
           data := field.GetValue(Addr(BookRecord)).ToString();
 
+<<<<<<< .mine
+        ConstParams.Values[name] := data;
+      end;
+    end;
+=======
         StrReplace(' ', '%20', data);
         ConstParams.Values[name] := data;
       end;
     end;
+>>>>>>> .r1139
 
     // Execute scenario
     Commands := ParseCommands(Collection.GetProperty(PROP_CONNECTIONSCRIPT), ConstParams);
@@ -475,30 +483,43 @@ begin
     CloseFile(F);
   end;
   if not FIgnoreErrors then
-    Application.MessageBox(PChar(LongMsg), PChar(rstrDownloadError));
+    Application.MessageBox(PChar(LongMsg + {$IFDEF LINUX} AnsiChar(#10) {$ENDIF}
+    {$IFDEF MSWINDOWS} AnsiString(#13#10) {$ENDIF} + URL), PChar(rstrDownloadError));
 end;
 
+<<<<<<< .mine
+function TDownloader.Query(Kind: TQueryKind; const Uri: string): boolean;
+=======
 function TDownloader.Query(Kind: TQueryKind; const Uri: string): boolean;
 var
   URL: string;
 
+>>>>>>> .r1139
 begin
   Result := False;
+<<<<<<< .mine
+
+  URL := Uri;
+  // Add result of last operation
+  StrReplace('%RESURL%', FNewURL, URL);
+
+=======
   URL := Uri;
   StrReplace('%RESURL%', FNewURL, URL);
 
+>>>>>>> .r1139
   try
     case Kind of
       qkGet:
         begin
           FNoProgress := False;
-          FidHTTP.Get(URL, FResponse);
+          FidHTTP.Get(TIdURI.URLEncode(URL), FResponse);
         end;
 
       qkPost:
         begin
           FNoProgress := True;
-          FidHTTP.Post(URL, FParams, FResponse);
+          FidHTTP.Post(TIdURI.URLEncode(URL), FParams, FResponse);
         end;
     end;
     Result := True;
