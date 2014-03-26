@@ -119,7 +119,15 @@ begin
       TAuthorsHelper.Add(R.Authors, Author[i].Lastname.Text, Author[i].Firstname.Text, Author[i].MiddleName.Text);
 
     if Booktitle.IsTextElement then
+    begin
       R.Title := Booktitle.Text;
+
+      if Pos(' ', Booktitle.Text) <> 0 then
+        begin
+          StrReplace(AnsiString(#13#10), ' ', R.Title);
+          StrReplace(AnsiString(#10), ' ', R.Title);
+        end;
+    end;
 
     for i := 0 to Genre.Count - 1 do
       TGenresHelper.Add(R.Genres, '', '', Genre[i]);
