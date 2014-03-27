@@ -25,6 +25,8 @@ uses
   SysUtils,
   unit_ImportInpxThread,
   IdHTTP,
+  IdSocks,
+  IdSSLOpenSSL,
   IdComponent,
   unit_UserData;
 
@@ -35,6 +37,8 @@ type
   TLibUpdateThread = class(TImportInpxThreadBase)
   private
     FidHTTP: TidHTTP;
+    FidSocksInfo: TIdSocksInfo;
+    FidSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL;
     FDownloadSize: Integer;
     FStartDate : TDateTime;
     FUpdated: Boolean;
@@ -145,16 +149,20 @@ begin
   inherited Initialize;
 
   FidHTTP := TidHTTP.Create(nil);
+  FidSocksInfo := TIdSocksInfo.Create;
+  FidSSLIOHandlerSocketOpenSSL := TIdSSLIOHandlerSocketOpenSSL.Create;
 
   FidHTTP.OnWork := HTTPWork;
   FidHTTP.OnWorkBegin := HTTPWorkBegin;
   FidHTTP.OnWorkEnd := HTTPWorkEnd;
   FidHTTP.HandleRedirects := True;
-  SetProxySettings(FidHTTP, 1);
+  SetProxySettings(FidHTTP, FidSocksInfo, FidSSLIOHandlerSocketOpenSSL, 1);
 end;
 
 procedure TLibUpdateThread.Uninitialize;
 begin
+  FreeAndNil(FidSSLIOHandlerSocketOpenSSL);
+  FreeAndNil(FidSocksInfo);
   FreeAndNil(FidHTTP);
 
   inherited Uninitialize;

@@ -23,7 +23,9 @@ uses
   Windows,
   Classes,
   SysUtils,
-  IdHTTP;
+  IdHTTP,
+  IdSocks,
+  IdSSLOpenSSL;
 
 type
   TUpdateInfo = class(TCollectionItem)
@@ -139,6 +141,8 @@ end;
 procedure TUpdateInfoList.UpdateExternalVersions;
 var
   HTTP: TidHTTP;
+  IdSocksInfo: TIdSocksInfo;
+  IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL;
   LF: TMemoryStream;
   SL: TStringList;
   i: Integer;
@@ -147,8 +151,10 @@ begin
   LF := TMemoryStream.Create;
   try
     HTTP := TidHTTP.Create(nil);
+    IdSocksInfo := TIdSocksInfo.Create(nil);
+    IdSSLIOHandlerSocketOpenSSL := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
     try
-      SetProxySettings(HTTP, 1);
+      SetProxySettings(HTTP, IdSocksInfo, IdSSLIOHandlerSocketOpenSSL, 1);
 
       for i := 0 to Count - 1 do
       begin
@@ -173,6 +179,8 @@ begin
         end;
       end; // for
     finally
+      IdSSLIOHandlerSocketOpenSSL.Free;
+      IdSocksInfo.Free;
       HTTP.Free;
     end;
   finally

@@ -31,13 +31,19 @@ uses
   IdComponent,
   IdTCPConnection,
   IdTCPClient,
-  IdHTTP;
+  IdHTTP,
+  IdSocks,
+  IdSSLOpenSSL, IdCustomTransparentProxy, IdIOHandler, IdIOHandlerSocket,
+  IdIOHandlerStack, IdSSL;
 
 type
   TframeNCWDownload = class(TInteriorPageBase)
     HTTP: TIdHTTP;
+
     lblStatus: TLabel;
     Bar: TProgressBar;
+    IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL;
+    IdSocksInfo: TIdSocksInfo;
 
     procedure HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
     procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
@@ -100,7 +106,7 @@ begin
 
   Response := TFileStream.Create(FPParams^.INPXFile, fmCreate);
   try
-    SetProxySettings(HTTP);
+    SetProxySettings(HTTP, IdSocksInfo, IdSSLIOHandlerSocketOpenSSL, 1);
     HTTP.Get(FPParams^.INPXUrl, Response);
     if not FTerminated then
     begin

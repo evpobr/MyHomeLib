@@ -26,6 +26,8 @@ uses
   Generics.Collections,
   VirtualTrees,
   IdHTTP,
+  IdSocks,
+  IdSSLOpenSSL,
   unit_Consts,
   Dialogs;
 
@@ -384,9 +386,9 @@ type
   procedure DebugOut(const DebugMessage: string); overload;
   procedure DebugOut(const DebugMessage: string; const Args: array of const ); overload;
 
-  procedure SetProxySettings(var IdHTTP: TidHTTP; TypeProxy: integer = 0);
-  // TypeProxy=0 (по умолчанию) указывает, что настройки нужно брать из ProxyServer
-  // TypeProxy=1 указывает что настройки из ProxyServerUpdate
+  procedure SetProxySettings(var IdHTTP: TidHTTP; IdSocksInfo: TIdSocksInfo; IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL; UpdProxy: integer = 0);
+  // UpdProxy=0 (по умолчанию) указывает, что настройки нужно брать из ProxyServer
+  // UpdProxy=1 указывает что настройки из ProxyServerUpdate
 
   function GetSpecialPath(CSIDL: word): string;
   function ExecAndWait(const FileName, Params: string; const WinState: word): Boolean;
@@ -1194,9 +1196,9 @@ begin
   Result := IncludeTrailingPathDelimiter(PChar(S));
 end;
 
-procedure SetProxySettings(var IdHTTP: TidHTTP; TypeProxy: integer = 0);
+procedure SetProxySettings(var IdHTTP: TidHTTP; IdSocksInfo: TIdSocksInfo; IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL; UpdProxy: integer = 0);
 begin
-  if TypeProxy = 0 then
+  if UpdProxy = 0 then
 begin
   with IdHTTP.ProxyParams do
   begin
@@ -1207,11 +1209,61 @@ begin
     end
     else
     begin
+        case Settings.ProxyType of
+          0: begin  // HTTP прокси
+            IdHTTP.IOHandler := nil;
       ProxyServer := Settings.ProxyServer;
       ProxyPort := Settings.ProxyPort;
       ProxyUsername := Settings.ProxyUsername;
       ProxyPassword := Settings.ProxyPassword;
     end;
+          1: begin  // SOCKS4 прокси
+            ProxyServer := '';
+            ProxyPort := 0;
+            with IdSocksInfo do
+            begin
+              Version := svSocks4;
+              Host := Settings.ProxyServer;
+              Port := Settings.ProxyPort;
+              if Settings.ProxyUsername <> '' then
+              begin
+                Authentication := saUsernamePassword;
+                Username := Settings.ProxyUsername;
+                Password := Settings.ProxyPassword;
+              end
+              else
+              begin
+                Authentication := saNoAuthentication;
+              end;
+              IdSSLIOHandlerSocketOpenSSL.TransparentProxy := IdSocksInfo;
+              IdHTTP.IOHandler := IdSSLIOHandlerSocketOpenSSL;
+            end;
+          end;
+          2: begin  // SOCKS5 прокси
+            ProxyServer := '';
+            ProxyPort := 0;
+            with IdSocksInfo do
+            begin
+              Version := svSocks5;
+              Host := Settings.ProxyServer;
+              Port := Settings.ProxyPort;
+              if Settings.ProxyUsername <> '' then
+              begin
+                Authentication := saUsernamePassword;
+                Username := Settings.ProxyUsername;
+                Password := Settings.ProxyPassword;
+              end
+              else
+              begin
+                Authentication := saNoAuthentication;
+              end;
+              IdSSLIOHandlerSocketOpenSSL.TransparentProxy := IdSocksInfo;
+              IdHTTP.IOHandler := IdSSLIOHandlerSocketOpenSSL;
+            end;
+          end;
+        end;
+
+      end;
     BasicAuthentication := True;
   end;
   end  // if TypeProxy = 0 

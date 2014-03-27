@@ -1181,6 +1181,14 @@ object frmSettings: TfrmSettings
         ParentColor = False
         Transparent = True
       end
+      object lbProxyType: TLabel
+        AlignWithMargins = True
+        Left = 15
+        Top = 87
+        Width = 56
+        Height = 13
+        Caption = #1058#1080#1087' '#1087#1088#1086#1082#1089#1080
+      end
       object cbUseIESettings: TCheckBox
         AlignWithMargins = True
         Left = 9
@@ -1291,6 +1299,23 @@ object frmSettings: TfrmSettings
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         TabOrder = 10
+      end
+      object cbProxyType: TComboBox
+        AlignWithMargins = True
+        Left = 81
+        Top = 84
+        Width = 72
+        Height = 21
+        Margins.Left = 15
+        Margins.Right = 7
+        Style = csDropDownList
+        ItemIndex = 0
+        TabOrder = 11
+        Text = 'HTTP'
+        Items.Strings = (
+          'HTTP'
+          'SOCKS 4'
+          'SOCKS 5')
       end
     end
     object tsScripts: TTabSheet

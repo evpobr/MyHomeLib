@@ -57,6 +57,8 @@ uses
   idComponent,
   IdBaseComponent,
   IdHTTP,
+  IdSocks,
+  IdSSLOpenSSL,
   IdAntiFreezeBase,
   IdAntiFreeze,
   Buttons,
@@ -6002,13 +6004,19 @@ var
   i: Integer;
   S: string;
   HTTP: TidHTTP;
+  IdSocksInfo: TIdSocksInfo;
+  IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL;
+
 begin
   LF := TMemoryStream.Create;
   try
     SL := TStringList.Create;
     try
       HTTP := TidHTTP.Create;
-      SetProxySettings(HTTP);
+      IdSocksInfo := TIdSocksInfo.Create(nil);
+      IdSSLIOHandlerSocketOpenSSL := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+
+      SetProxySettings(HTTP, IdSocksInfo, IdSSLIOHandlerSocketOpenSSL);
       try
         HTTP.Get(IncludeUrlSlash(Settings.UpdateURL) + PROGRAM_VERINFO_FILENAME, LF);
       except
@@ -6036,6 +6044,8 @@ begin
           MHLShowInfo(rstrLatestVersion);
       FAutoCheck := False;
     finally
+      IdSSLIOHandlerSocketOpenSSL.Free;
+      IdSocksInfo.Free;
       HTTP.Free;
       SL.Free;
     end;
