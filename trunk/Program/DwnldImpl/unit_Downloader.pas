@@ -27,6 +27,8 @@ uses
   SysUtils,
   Dialogs,
   IdHTTP,
+  IdSocks,
+  IdSSLOpenSSL,
   IdURI,
   IdComponent,
   IdStack,
@@ -55,6 +57,9 @@ type
   private
     URL: string;
     FidHTTP: TidHttp;
+    FidSocksInfo: TIdSocksInfo;
+    FidSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL;
+
     FParams: TIdMultiPartFormDataStream;
     FResponse: TMemoryStream;
 
@@ -143,19 +148,23 @@ begin
   inherited Create;
 
   FidHTTP := TidHttp.Create;
+  FidSocksInfo := TIdSocksInfo.Create;
+  FidSSLIOHandlerSocketOpenSSL := TIdSSLIOHandlerSocketOpenSSL.Create;
   FidHTTP.OnWork := HTTPWork;
   FidHTTP.OnWorkBegin := HTTPWorkBegin;
   FidHTTP.OnWorkEnd := HTTPWorkEnd;
   FidHTTP.OnRedirect := HTTPRedirect;
   FidHTTP.HandleRedirects := True;
 
-  SetProxySettings(FidHTTP);
+  SetProxySettings(FidHTTP, FidSocksInfo, FidSSLIOHandlerSocketOpenSSL);
 
   FIgnoreErrors := False;
 end;
 
 destructor TDownloader.Destroy;
 begin
+  FreeAndNil(FidSSLIOHandlerSocketOpenSSL);
+  FreeAndNil(FidSocksInfo);
   FreeAndNil(FidHTTP);
 
   inherited Destroy;

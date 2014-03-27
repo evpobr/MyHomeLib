@@ -22,12 +22,16 @@ interface
 uses
   Classes,
   StrUtils,
-  IdHTTP;
+  IdHTTP,
+  IdSocks,
+  IdSSLOpenSSL;
 
 type
   TReviewParser = class
   strict private
     FidHTTP: TIdHTTP;
+    FidSocksInfo: TIdSocksInfo;
+    FidSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL;
 
     function GetPage(const url: string): string;
     function Extract(const page: string; const idxReviewBlockStart: Integer; const before: string; const after: string): string;
@@ -50,12 +54,17 @@ begin
   inherited Create;
 
   FidHTTP := TIdHTTP.Create;
-  SetProxySettings(FidHTTP);
+  FidSocksInfo := TIdSocksInfo.Create;
+  FidSSLIOHandlerSocketOpenSSL := TIdSSLIOHandlerSocketOpenSSL.Create;
+
+  SetProxySettings(FidHTTP, FidSocksInfo, FidSSLIOHandlerSocketOpenSSL);
 end;
 
 destructor TReviewParser.Destroy;
 begin
   // do not close the idHTTP, as it was not created by the ctor
+  FidSSLIOHandlerSocketOpenSSL.Free;
+  FidSocksInfo.Free;
   FidHTTP.Free;
   inherited Destroy;
 end;

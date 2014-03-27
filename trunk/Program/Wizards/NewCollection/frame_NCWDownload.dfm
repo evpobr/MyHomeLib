@@ -63,4 +63,18 @@ inherited frameNCWDownload: TframeNCWDownload
     Left = 16
     Top = 112
   end
+  object IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL
+    MaxLineAction = maException
+    Port = 0
+    DefaultPort = 0
+    SSLOptions.Mode = sslmUnassigned
+    SSLOptions.VerifyMode = []
+    SSLOptions.VerifyDepth = 0
+    Left = 192
+    Top = 112
+  end
+  object IdSocksInfo: TIdSocksInfo
+    Left = 72
+    Top = 112
+  end
 end

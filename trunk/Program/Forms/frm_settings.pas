@@ -199,6 +199,8 @@ type
     lblProxyPasswordUpdate: TLabel;
     edProxyUsernameUpdate: TEdit;
     lblProxyUserUpdate: TLabel;
+    lbProxyType: TLabel;
+    cbProxyType: TComboBox;
 
     procedure SaveSettingsClick(Sender: TObject);
     procedure ShowHelpClick(Sender: TObject);
@@ -334,7 +336,7 @@ begin
   edProxyPortUpdate.Text := IntToStr(Settings.ProxyPortUpdate);
   edProxyUsernameUpdate.Text := Settings.ProxyUsernameUpdate;
   edProxyPasswordUpdate.Text := Settings.ProxyPasswordUpdate;
-
+  cbProxyType.ItemIndex := Settings.ProxyType;
 
   edUpdateDir.Text := Settings.UpdateDir;
   edINPXUrl.Text := Settings.InpxURL;
@@ -480,6 +482,8 @@ begin
   Settings.ProxyPortUpdate := StrToIntDef(edProxyPortUpdate.Text, 0);
   Settings.ProxyUsernameUpdate := edProxyUsernameUpdate.Text;
   Settings.ProxyPasswordUpdate := edProxyPasswordUpdate.Text;
+
+  Settings.ProxyType := cbProxyType.ItemIndex;
 
   Settings.UpdateDir := edUpdateDir.Text;
 

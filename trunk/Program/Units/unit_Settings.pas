@@ -130,6 +130,8 @@ type
     FProxyPasswordUpdate: string;
     FProxyPortUpdate: Integer;
 
+    FProxyType: Integer;
+
     // COLORS_SECTION
     FBookColor: TColor;
     FSeriesColor: TColor;
@@ -333,6 +335,7 @@ type
     property ProxyUsernameUpdate: string read FProxyUsernameUpdate write FProxyUsernameUpdate;
     property ProxyPasswordUpdate: string read FProxyPasswordUpdate write FProxyPasswordUpdate;
     property ProxyPortUpdate: Integer read FProxyPortUpdate write FProxyPortUpdate;
+    property ProxyType: Integer read FProxyType write FProxyType;
 
     property UpdateURL: string read FUpdateURL write FUpdateURL;
     property InpxURL: string read FInpxURL write FInpxURL;
@@ -736,6 +739,7 @@ begin
     FProxyPasswordUpdate := DecodePassString(iniFile.ReadString(NETWORK_SECTION, 'proxy-passupdate', ''));
     FProxyPortUpdate := iniFile.ReadInteger(NETWORK_SECTION, 'proxy-portupdate', 0);
     FUseProxyForUpdate := iniFile.ReadBool(NETWORK_SECTION, 'use_proxy_update', False);
+    FProxyType := iniFile.ReadInteger(NETWORK_SECTION, 'proxy-type', 0);
 
     //
     // COLORS_SECTION
@@ -902,6 +906,8 @@ begin
     iniFile.WriteString(NETWORK_SECTION, 'proxy-userupdate', FProxyUsernameUpdate);
     iniFile.WriteString(NETWORK_SECTION, 'proxy-passupdate', EncodePassString(FProxyPasswordUpdate));
     iniFile.WriteInteger(NETWORK_SECTION, 'proxy-portupdate', FProxyPortUpdate);
+    iniFile.WriteInteger(NETWORK_SECTION, 'proxy-type', FProxyType);
+
 
     //
     // COLORS_SECTION
