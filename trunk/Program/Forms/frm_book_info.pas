@@ -449,13 +449,17 @@ end;
 procedure TReviewDownloadThread.Finish;
 begin
   if FForm.mmReview = nil then
+  begin
+    FForm.btnLoadReview.Enabled := True;
     Exit; // FForm почему-то не равно nil после уничтожени€.
   // зато компоненты обнул€ютс€, поэтому провер€м по ним
+  end;
 
   FForm.mmReview.Lines := FReview;
-  FForm.mmoAnnotation.Lines := FAnnoatation;
   FForm.btnLoadReview.Enabled := True;
   FForm.ReviewChanged := True;
+  if nil <> FAnnoatation then
+    FForm.mmoAnnotation.Lines := FAnnoatation;
   // FForm.RzPageControl1.ActivePageIndex := 1;
 end;
 
