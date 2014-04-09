@@ -976,12 +976,10 @@ var
   BookContainer: string;
   PathLen: Integer;
   LongFileName: string;
-  IsArchive: Boolean;
 begin
   Result := bfRaw; // default
   BookContainer := TPath.Combine(CollectionRoot, Folder);
   PathLen := Length(BookContainer);
-  IsArchive:= IsArchiveExt(BookContainer);
 
   if
     (PathLen = 0) or
@@ -998,11 +996,11 @@ begin
   end
   else
   begin
-    if (FileExt = FB2_EXTENSION) and IsArchive then
+    if (FileExt = FB2_EXTENSION) and IsArchiveExt(BookContainer) then
       Result := bfFb2Archive;
   end;
 
-  if (Result = bfRaw) and IsArchive then
+  if (Result = bfRaw) and (FileExt = FB2_EXTENSION) then
     Result := bfFb2
 end;
 
@@ -1108,7 +1106,7 @@ begin
 
     bfRaw:
       begin
-//        raise ENotSupportedException.Create(rstrErrorNotSupported);
+        raise ENotSupportedException.Create(rstrErrorNotSupported);
       end;
   end;
 
