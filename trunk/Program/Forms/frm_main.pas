@@ -490,7 +490,6 @@ type
     edFKeyWords: TMHLButtonedEdit;
     Label3: TLabel;
     tmrCheckUpdates: TTimer;
-    ZipForge1: TZipForge;
     BookID1: TMenuItem;
     miBookInfoPriority: TMenuItem;
     acViewSetInfoPriority: TAction;
@@ -3222,38 +3221,48 @@ begin
     begin
       if (bpIsLocal in Data^.BookProps) then
       begin
-        bookStream := Data^.GetBookDescriptorStream;
-        if Assigned(bookStream) then
-          try
-            book := LoadFictionBook(bookStream);
+        try
+          bookStream := Data^.GetBookDescriptorStream;
+          if Assigned(bookStream) then
+            try
+              book := LoadFictionBook(bookStream);
 
-            //
-            // Покажем обложку
-            //
-            if Settings.ShowBookCover then
-            begin
-              imgBookCover := GetBookCover(book);
-              try
-                InfoPanel.SetBookCover(imgBookCover);
-              finally
-                imgBookCover.Free;
+              //
+              // Покажем обложку
+              //
+              if Settings.ShowBookCover then
+              begin
+                imgBookCover := GetBookCover(book);
+                try
+                  InfoPanel.SetBookCover(imgBookCover);
+                finally
+                  imgBookCover.Free;
+                end;
               end;
-            end;
 
-            //
-            // Покажем аннотацию
-            //
-            if Settings.ShowBookAnnotation then
-            begin
-              InfoPanel.SetBookAnnotation(book, Data.Folder, Data.FileName + Data.FileExt);
-            end;
-          finally
-            FreeAndNil(bookStream);
-          end
-        else begin
-          ShowMessage(Format('Файл  %s "%s/%s"%s не найден! Проверьте настройки коллекции.',[#10, Data.Folder, Data.FileName, #10]));
-          InfoPanel.SetBookCover(nil);
-          InfoPanel.SetBookAnnotation(nil);
+              //
+              // Покажем аннотацию
+              //
+              if Settings.ShowBookAnnotation then
+              begin
+                InfoPanel.SetBookAnnotation(book, Data.Folder, Data.FileName + Data.FileExt);
+              end;
+            finally
+              FreeAndNil(bookStream);
+            end
+          else begin
+            ShowMessage(Format('Файл  %s "%s/%s"%s не найден! Проверьте настройки коллекции.',[#10, Data.Folder, Data.FileName, #10]));
+            InfoPanel.SetBookCover(nil);
+            InfoPanel.SetBookAnnotation(nil);
+          end;
+        except
+          on E : ENotSupportedException do
+               begin
+                InfoPanel.SetBookCover(nil);
+                InfoPanel.SetBookAnnotation(nil);
+               end;
+          else
+            raise;
         end;
       end
       else
