@@ -1532,8 +1532,7 @@ var
   end;
 
 
-
-begin
+  begin
   FIgnoreAuthorChange := True;
   SavedCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
