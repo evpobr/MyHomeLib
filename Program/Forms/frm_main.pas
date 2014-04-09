@@ -2868,7 +2868,11 @@ begin
 //  logger := GetScopeLogger('TfrmMain.tvAuthorsChange');
 {$ENDIF}
 
-  if (FIgnoreAuthorChange) or (Node = nil) then Exit;
+  if (FIgnoreAuthorChange) or (Node = nil) then
+  begin
+   tvBooksA.Clear;
+   Exit;
+  end;
 
 
   SavedCursor := Screen.Cursor;
@@ -3219,7 +3223,7 @@ begin
 
     if Settings.ShowBookCover or Settings.ShowBookAnnotation then
     begin
-      if (bpIsLocal in Data^.BookProps) then
+      if (bpIsLocal in Data^.BookProps) and (bfRaw <> Data^.GetBookFormat) then
       begin
         try
           bookStream := Data^.GetBookDescriptorStream;
