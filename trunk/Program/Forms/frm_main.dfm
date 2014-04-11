@@ -13151,25 +13151,6 @@ object frmMain: TfrmMain
     Left = 424
     Top = 360
   end
-  object ZipForge1: TZipForge
-    ExtractCorruptedFiles = False
-    CompressionLevel = clMax
-    CompressionMode = 9
-    CurrentVersion = '6.30 '
-    SpanningMode = smNone
-    SpanningOptions.AdvancedNaming = False
-    SpanningOptions.FirstVolumeSize = 0
-    SpanningOptions.VolumeSize = vsAutoDetect
-    SpanningOptions.CustomVolumeSize = 65536
-    Options.FlushBuffers = True
-    Options.OEMFileNames = True
-    InMemory = False
-    Zip64Mode = zmAlways
-    UnicodeFilenames = True
-    EncryptionMethod = caPkzipClassic
-    Left = 480
-    Top = 536
-  end
   object tmrSearchA: TTimer
     Enabled = False
     OnTimer = tmrSearchATimer
