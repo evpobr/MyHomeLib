@@ -157,7 +157,7 @@ begin
     AHInst := SimpleShellExecute(Application.Handle, FileName);
 
   if AHInst <= 32 then
-    raise Exception.Create(SysErrorMessage(AHInst) + ': ' + AReader.Path);
+    raise Exception.Create(SysErrorMessage(AHInst) + ': ' + FileName);
 end;
 
 procedure TReaders.SetReader(Index: Integer; const Value: TReaderDesc);
