@@ -30,8 +30,8 @@ object frmSettings: TfrmSettings
       HelpContext = 143
       Caption = 'tsDevices'
       TabVisible = False
-      ExplicitTop = 6
-      ExplicitHeight = 488
+      ExplicitTop = 24
+      ExplicitHeight = 369
       object pnDeviceOptions: TPanel
         AlignWithMargins = True
         Left = 3
@@ -380,8 +380,8 @@ object frmSettings: TfrmSettings
       Caption = 'tsReaders'
       ImageIndex = 1
       TabVisible = False
-      ExplicitTop = 6
-      ExplicitHeight = 488
+      ExplicitTop = 24
+      ExplicitHeight = 369
       object Label11: TLabel
         AlignWithMargins = True
         Left = 3
@@ -400,14 +400,14 @@ object frmSettings: TfrmSettings
       end
       object Panel1: TPanel
         Left = 0
-        Top = 336
+        Top = 354
         Width = 447
         Height = 33
         Align = alBottom
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 1
-        ExplicitTop = 455
+        ExplicitTop = 336
         object btnAddExt: TButton
           Left = 3
           Top = 3
@@ -441,7 +441,7 @@ object frmSettings: TfrmSettings
         Left = 3
         Top = 22
         Width = 441
-        Height = 311
+        Height = 329
         Align = alClient
         Columns = <
           item
@@ -460,7 +460,7 @@ object frmSettings: TfrmSettings
         TabOrder = 0
         ViewStyle = vsReport
         OnDblClick = btnChangeExtClick
-        ExplicitHeight = 430
+        ExplicitHeight = 311
       end
     end
     object tsInterface: TTabSheet
@@ -468,8 +468,8 @@ object frmSettings: TfrmSettings
       Caption = 'tsInterface'
       ImageIndex = 2
       TabVisible = False
-      ExplicitTop = 6
-      ExplicitHeight = 488
+      ExplicitTop = 24
+      ExplicitHeight = 369
       object Panel8: TPanel
         AlignWithMargins = True
         Left = 3
@@ -668,13 +668,13 @@ object frmSettings: TfrmSettings
         Left = 3
         Top = 203
         Width = 441
-        Height = 163
+        Height = 181
         Align = alClient
         AutoSize = True
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 1
-        ExplicitHeight = 282
+        ExplicitHeight = 163
         object Label32: TLabel
           AlignWithMargins = True
           Left = 3
@@ -794,8 +794,8 @@ object frmSettings: TfrmSettings
       Caption = 'tsInternet'
       ImageIndex = 4
       TabVisible = False
-      ExplicitTop = 6
-      ExplicitHeight = 488
+      ExplicitTop = 24
+      ExplicitHeight = 369
       object Panel7: TPanel
         Left = 0
         Top = 0
@@ -806,7 +806,6 @@ object frmSettings: TfrmSettings
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 0
-        ExplicitTop = 101
         DesignSize = (
           447
           176)
@@ -931,7 +930,6 @@ object frmSettings: TfrmSettings
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 1
-        ExplicitTop = 399
         object Label30: TLabel
           AlignWithMargins = True
           Left = 3
@@ -1065,16 +1063,17 @@ object frmSettings: TfrmSettings
         BevelOuter = bvNone
         Caption = ' '
         TabOrder = 2
-        ExplicitTop = 198
       end
     end
     object tsProxy: TTabSheet
       Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1082#1089#1080
       ImageIndex = 7
-      ExplicitHeight = 470
+      TabVisible = False
+      ExplicitTop = 24
+      ExplicitHeight = 369
       DesignSize = (
         447
-        369)
+        387)
       object lblProxyServer: TLabel
         Left = 15
         Top = 33
@@ -1200,7 +1199,6 @@ object frmSettings: TfrmSettings
         Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1085#1072#1089#1090#1088#1086#1081#1082#1080' Internet Explorer'
         TabOrder = 0
         OnClick = cbUseIESettingsClick
-        ExplicitTop = 24
       end
       object edProxyServer: TEdit
         Left = 62
@@ -1323,8 +1321,8 @@ object frmSettings: TfrmSettings
       Caption = 'tsScripts'
       ImageIndex = 4
       TabVisible = False
-      ExplicitTop = 6
-      ExplicitHeight = 488
+      ExplicitTop = 24
+      ExplicitHeight = 369
       object Label12: TLabel
         AlignWithMargins = True
         Left = 3
@@ -1343,14 +1341,14 @@ object frmSettings: TfrmSettings
       end
       object Panel2: TPanel
         Left = 0
-        Top = 300
+        Top = 318
         Width = 447
         Height = 69
         Align = alBottom
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 1
-        ExplicitTop = 419
+        ExplicitTop = 300
         DesignSize = (
           447
           69)
@@ -1404,7 +1402,7 @@ object frmSettings: TfrmSettings
         Left = 3
         Top = 22
         Width = 441
-        Height = 275
+        Height = 293
         Align = alClient
         Columns = <
           item
@@ -1427,30 +1425,30 @@ object frmSettings: TfrmSettings
         TabOrder = 0
         ViewStyle = vsReport
         OnDblClick = btnEditScriptClick
-        ExplicitHeight = 394
+        ExplicitHeight = 275
       end
     end
     object tsBehavour: TTabSheet
       Caption = 'tsBehavior'
       ImageIndex = 5
       TabVisible = False
-      ExplicitTop = 6
-      ExplicitHeight = 488
+      ExplicitTop = 24
+      ExplicitHeight = 369
       object Panel3: TPanel
         AlignWithMargins = True
         Left = 3
         Top = 3
         Width = 441
-        Height = 357
+        Height = 375
         Margins.Bottom = 9
         Align = alClient
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 0
-        ExplicitHeight = 476
+        ExplicitHeight = 357
         DesignSize = (
           441
-          357)
+          375)
         object Label6: TLabel
           AlignWithMargins = True
           Left = 3
@@ -1618,8 +1616,8 @@ object frmSettings: TfrmSettings
       Caption = 'tsFileSort'
       ImageIndex = 6
       TabVisible = False
-      ExplicitTop = 6
-      ExplicitHeight = 488
+      ExplicitTop = 24
+      ExplicitHeight = 369
       object Panel4: TPanel
         AlignWithMargins = True
         Left = 3
@@ -1852,7 +1850,6 @@ object frmSettings: TfrmSettings
     Caption = 'pnButtons'
     ShowCaption = False
     TabOrder = 2
-    ExplicitTop = 504
     DesignSize = (
       617
       41)
@@ -1918,7 +1915,6 @@ object frmSettings: TfrmSettings
       00000001062004300437043D043E043504400000000000000000000000FFFFFF
       FFFFFFFFFF000000000000000000000000011121043E0440044204380440043E
       0432043A04300420004404300439043B043E043204}
-    ExplicitHeight = 495
   end
   object dlgColors: TColorDialog
     Left = 32
