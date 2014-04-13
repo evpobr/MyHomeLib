@@ -519,7 +519,7 @@ begin
   if UseLocalTemp then
     FTempDir := FAppPath + TEMP_DIR_NAME
   else
-    FTempDir := c_GetTempPath + '\_myhomelib';
+    FTempDir := c_GetTempPath + '_myhomelib';
 
 
   // -----------------------------------------------------
