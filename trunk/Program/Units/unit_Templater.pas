@@ -24,7 +24,7 @@ uses
   unit_Globals;
 
 const
-  COL_MASK_ELEMENTS = 12;
+  COL_MASK_ELEMENTS = 13;
 
 type
   TErrorType = (ErFine, ErTemplate, ErBlocks, ErElements);
@@ -68,7 +68,7 @@ function TTemplater.ValidateTemplate(const Template: string;
 const
   { DONE : совпадает с названием константы }
   MASK_ELEMENTS: array [1 .. COL_MASK_ELEMENTS] of string = ('f', 'fa', 't',
-    's', 'n', 'id', 'g', 'ga', 'ff', 'fl', 'rg', 'fn');
+    's', 'n', 'id', 'g', 'ga', 'ff', 'fl', 'rg', 'fn', 'fc');
 var
   stack: array [0..255] of TElement;
   h, k, i, j, StackPos, ElementPos, last_char,
@@ -338,27 +338,37 @@ begin
   else
     MaskElements[7].value := '';
 
-  MaskElements[8].templ := 'f';
+  MaskElements[8].templ := 'fc';
+  if CurrentSelectedAuthor <> ''  then
+    MaskElements[8].value := CurrentSelectedAuthor
+  else
+    // ѕовтор алгоритма из пункта 9
   if R.AuthorCount > 0 then
     MaskElements[8].value := Trim(CleanFileName(R.Authors[0].GetFullName))
   else
     MaskElements[8].value := '';
 
-  MaskElements[9].templ := 's';
-  MaskElements[9].value := Trim(CleanFileName(R.Series));
-
-  MaskElements[10].templ := 'n';
-  if R.SeqNumber <> 0 then
-    MaskElements[10].value := Format('%.2d', [R.SeqNumber])
+  // ћожет помен€ть шаблон? т.к. при добавлении шаблонов на f приходитс€ мен€ть структуру.
+  MaskElements[9].templ := 'f';
+  if R.AuthorCount > 0 then
+    MaskElements[9].value := Trim(CleanFileName(R.Authors[0].GetFullName))
   else
-    MaskElements[10].value := '';
+    MaskElements[9].value := '';
 
-  MaskElements[11].templ := 't';
-  MaskElements[11].value := Trim(CleanFileName(R.Title));
+  MaskElements[10].templ := 's';
+  MaskElements[10].value := Trim(CleanFileName(R.Series));
 
-  MaskElements[12].templ := 'id';
-  MaskElements[12].value := R.LibID;
+  MaskElements[11].templ := 'n';
+  if R.SeqNumber <> 0 then
+    MaskElements[11].value := Format('%.2d', [R.SeqNumber])
+  else
+    MaskElements[11].value := '';
 
+  MaskElements[12].templ := 't';
+  MaskElements[12].value := Trim(CleanFileName(R.Title));
+
+  MaskElements[13].templ := 'id';
+  MaskElements[13].value := R.LibID;
 
   // ÷икл удалени€ "пустых" блоков
   for i := Low(MaskElements) to High(MaskElements) do

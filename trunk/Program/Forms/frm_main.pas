@@ -3521,6 +3521,11 @@ begin
   GetActiveTree(Tree);
   FillBookIdList(Tree, BookIDList);
 
+  if pgControl.ActivePage = tsByAuthor then
+    CurrentSelectedAuthor := lblAuthor.Caption
+  else
+    CurrentSelectedAuthor := '';
+
   if Length(BookIDList) = 0 then
   begin
     MHLShowError(rstrNoBookSelected);

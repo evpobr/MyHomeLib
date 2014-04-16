@@ -396,6 +396,9 @@ type
   function CleanExtension(const Ext: string): string;
   function c_GetTempPath: String;
 
+var
+  CurrentSelectedAuthor: string; //Текущий выбранный автор для передачи в парсер экспорта
+
 implementation
 
 uses

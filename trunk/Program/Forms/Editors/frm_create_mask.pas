@@ -133,18 +133,22 @@ var
   R: TBookRecord;
   code: Integer;
 begin
+  CurrentSelectedAuthor := '';
   if CheckBox2.Checked then
     R.Title := Edit7.Text;
   if CheckBox3.Checked then
     R.Series := Edit8.Text;
+//  if CheckBox5.Checked then
+//  begin
+//    code := StrToInt(Edit10.Text);
+//    if code = 1 then
+//      Include(R.BookProps, bpHasReview)
+//    else
+//      Exclude(R.BookProps, bpHasReview);
+//  end;
   if CheckBox5.Checked then
-  begin
-    code := StrToInt(Edit10.Text);
-    if code = 1 then
-      Include(R.BookProps, bpHasReview)
-    else
-      Exclude(R.BookProps, bpHasReview);
-  end;
+    R.LibID := Edit10.Text;
+
   if CheckBox4.Checked then
     R.SeqNumber := StrToInt(Edit9.Text);
   if CheckBox1.Checked then
