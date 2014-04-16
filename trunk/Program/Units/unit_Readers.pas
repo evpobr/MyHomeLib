@@ -149,6 +149,7 @@ var
   AHInst: HINST;
   path: string;
 begin
+  path := FileName;
   Ext := ExtractFileExt(FileName);
 
   AReader := Find(Ext);
@@ -158,13 +159,13 @@ begin
     AHInst := SimpleShellExecute(Application.Handle, FileName);
 
   if AHInst <= 32 then
+  begin
     // Если читалка не установлена для расширения, AReader.Path - Access Violation
-    if (nil <> AReader) then
-      path := AReader.Path
-    else
-      path := FileName;
+    if Assigned(AReader) then
+      path := AReader.Path;
 
     raise Exception.Create(SysErrorMessage(AHInst) + ': ' + path);
+  end;
 end;
 
 procedure TReaders.SetReader(Index: Integer; const Value: TReaderDesc);
