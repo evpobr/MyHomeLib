@@ -147,9 +147,7 @@ var
   Ext: string;
   AReader: TReaderDesc;
   AHInst: HINST;
-  path: string;
 begin
-  path := FileName;
   Ext := ExtractFileExt(FileName);
 
   AReader := Find(Ext);
@@ -162,9 +160,9 @@ begin
   begin
     // ≈сли читалка не установлена дл€ расширени€, AReader.Path - Access Violation
     if Assigned(AReader) then
-      path := AReader.Path;
-
-    raise Exception.Create(SysErrorMessage(AHInst) + ': ' + path);
+      raise Exception.Create(SysErrorMessage(AHInst) + ': ' + AReader.Path) // читалка не найдена
+    else
+      raise Exception.Create(SysErrorMessage(AHInst) + ': ' + FileName); // книга не найдена
   end;
 end;
 
