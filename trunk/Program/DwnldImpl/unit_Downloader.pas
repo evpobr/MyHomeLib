@@ -486,7 +486,7 @@ begin
   end;
   if not FIgnoreErrors then
     Application.MessageBox(PChar(LongMsg + {$IFDEF LINUX} AnsiChar(#10) {$ENDIF}
-    {$IFDEF MSWINDOWS} AnsiString(#13#10) {$ENDIF} + URL), PChar(rstrDownloadError));
+    {$IFDEF MSWINDOWS} AnsiString(CRLF) {$ENDIF} + URL), PChar(rstrDownloadError));
 end;
 
 function TDownloader.Query(Kind: TQueryKind; const Uri: string): boolean;
