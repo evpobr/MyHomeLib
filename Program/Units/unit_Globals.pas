@@ -71,7 +71,8 @@ type
     bfFb2,        // A pure FB2 file
     bfFb2Archive, // An FB2 packed in ZIP or 7z (or another supported archive)
     bfFbd,        // An (FBD + a raw book file) packed together in a zip
-    bfRaw         // A raw file = any other book format
+    bfRaw,         // A raw file = any other book format
+    bfRawArchive
   );
 
   PBookKey = ^TBookKey;
@@ -999,8 +1000,14 @@ begin
   end
   else
   begin
-    if (FileExt = FB2_EXTENSION) and IsArchiveExt(BookContainer) then
-      Result := bfFb2Archive;
+
+    if IsArchiveExt(BookContainer) then
+    begin
+      if (FileExt = FB2_EXTENSION) then
+        Result := bfFb2Archive
+      else
+        Result := bfRawArchive;
+    end;
   end;
 
   if (Result = bfRaw) and (FileExt = FB2_EXTENSION) then
@@ -1017,7 +1024,7 @@ begin
   BookFormat := GetBookFormat;
   if BookFormat = bfFBD then
     Result := TPath.Combine(BookContainer, FileName)
-  else if BookFormat = bfFb2Archive then
+  else if (BookFormat = bfFb2Archive) or (BookFormat = bfRawArchive)  then
     Result := BookContainer
   else // bfFb2 or bfRaw
     Result := TPath.Combine(BookContainer, FileName) + FileExt;
@@ -1044,7 +1051,18 @@ begin
   BookFileName := GetBookFileName;
 
   BookFormat := GetBookFormat;
-  if BookFormat in [bfFb2Archive, bfFbd] then
+  if BookFormat in [bfFb2Archive, bfFbd, bfRawArchive] then
+  begin
+    try
+      archiver := TMHLZip.Create(TPath.Combine(Settings.ReadPath, BookFileName), True);
+      result := archiver.ExtractToStream(InsideNo);
+      FreeAndNil(archiver);
+    except
+      raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName]);
+    end;
+  end
+  else
+  if BookFormat in [bfRawArchive] then
   begin
     try
       archiver := TMHLZip.Create(TPath.Combine(Settings.ReadPath, BookFileName), True);

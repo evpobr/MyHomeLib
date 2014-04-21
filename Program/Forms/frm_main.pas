@@ -3222,7 +3222,7 @@ begin
 
     if Settings.ShowBookCover or Settings.ShowBookAnnotation then
     begin
-      if (bpIsLocal in Data^.BookProps) and (bfRaw <> Data^.GetBookFormat) then
+      if (bpIsLocal in Data^.BookProps) and (bfRaw <> Data^.GetBookFormat) and (bfRawArchive <> Data^.GetBookFormat) then
       begin
         try
           bookStream := Data^.GetBookDescriptorStream;
@@ -3665,6 +3665,7 @@ var
   BookFormat: TBookFormat;
   WorkFile: string;
   CollectionInfo: TCollectionInfo;
+  bookstream: TMemoryStream;
 begin
   Assert(Assigned(FCollection));
 
@@ -3676,7 +3677,7 @@ begin
     BookFileName := BookRecord.GetBookFileName;
     BookFormat := BookRecord.GetBookFormat;
 
-    if BookFormat in [bfFb2Archive, bfFbd] then
+    if BookFormat in [bfFb2Archive, bfFbd, bfRawArchive] then
     begin
       if BookFormat = bfFb2Archive then
       begin
@@ -3684,9 +3685,9 @@ begin
 
         if (not (bpIsLocal in BookRecord.BookProps)) and isOnlineCollection(CollectionInfo.CollectionType) then
         begin
-// Why do we need to verify this? The code doesn't even use FCollection
-//          // A not-yet-downloaded book of an online collection, can download only if book's collection is selected
-//          FCollection.VerifyCurrentCollection(BookRecord.BookKey.DatabaseID);
+          // Why do we need to verify this? The code doesn't even use FCollection
+          //          // A not-yet-downloaded book of an online collection, can download only if book's collection is selected
+          //          FCollection.VerifyCurrentCollection(BookRecord.BookKey.DatabaseID);
 
           DownloadBooks(FCurrentBookOnly);
           /// TODO : RESTORE ??? Tree.RepaintNode(Tree.GetFirstSelected);
