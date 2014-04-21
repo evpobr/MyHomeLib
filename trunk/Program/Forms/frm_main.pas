@@ -3665,7 +3665,6 @@ var
   BookFormat: TBookFormat;
   WorkFile: string;
   CollectionInfo: TCollectionInfo;
-  bookstream: TMemoryStream;
 begin
   Assert(Assigned(FCollection));
 
