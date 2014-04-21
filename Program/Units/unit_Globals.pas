@@ -1061,17 +1061,6 @@ begin
       raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName]);
     end;
   end
-  else
-  if BookFormat in [bfRawArchive] then
-  begin
-    try
-      archiver := TMHLZip.Create(TPath.Combine(Settings.ReadPath, BookFileName), True);
-      result := archiver.ExtractToStream(InsideNo);
-      FreeAndNil(archiver);
-    except
-      raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName]);
-    end;
-  end
   else // bfFb2, bfRaw
   begin
     try
