@@ -78,16 +78,22 @@ const
 var
   page: string;
   idxReviewBlockStart: Integer;
+  idxReviewBlockEnd: Integer;
   idxEndAllBookReviews: Integer;
   name: string;
   review: string;
   BEG_PREFIX, BLOCK_PREFIX, END_ALL, ANNOTATION_START, ANNOTATION_END: string;
 begin
   Assert(Assigned(targetList));
+  Assert(Assigned(targetListA));
+
   page := GetPage(url);
 
   if pos('lib.rus.ec', URL) <> 0 then
   begin
+    ANNOTATION_START := '<h2>Аннотация</h2>';
+    ANNOTATION_END := '<script>';
+
     BEG_PREFIX := 'Впечатления о книге:';
     BLOCK_PREFIX := '/polka/show/';
     END_ALL := '<p><a href=/stat/r/';
@@ -106,14 +112,23 @@ begin
   // аннотация
   idxReviewBlockStart := Pos(ANNOTATION_START, page);
   Delete(page, 1 , idxReviewBlockStart);
+  idxReviewBlockStart := 1;
   idxEndAllBookReviews := Pos(ANNOTATION_END, page);
 
-  while ((idxReviewBlockStart <> 0) and (idxReviewBlockStart < idxEndAllBookReviews)) do
+  while ((idxReviewBlockStart <> idxReviewBlockEnd) and (idxReviewBlockStart < idxEndAllBookReviews)) do
   begin
-    review := Extract(page, idxReviewBlockStart, '<p>','</p>');
-    targetlistA.Add(review);
-    idxReviewBlockStart := PosEx('<p>', page, idxReviewBlockStart + 1);
+    idxReviewBlockStart := PosEx('<p>', page, idxReviewBlockStart);
+    idxReviewBlockEnd := PosEx('</p>', page, idxReviewBlockStart);
+
+    if idxReviewBlockEnd > idxEndAllBookReviews then Break;
+
+
+    review := Copy(page, idxReviewBlockStart + 3, idxReviewBlockEnd - 7 - idxReviewBlockStart);
+    if review <> '' then targetlistA.Add(review);
+    idxReviewBlockStart := PosEx('<p>', page, idxReviewBlockEnd);
   end;
+
+  targetListA.Text := ReplaceStr(targetListA.Text,'<br />','');
 
   // отзывы
 
