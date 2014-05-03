@@ -137,6 +137,7 @@ begin
   lvFileInfo.ShowColumnHeaders := False;
   lvInfo.ShowColumnHeaders := False;
   FReviewChanged := False;
+
 end;
 
 procedure TfrmBookDetails.acCopyValueExecute(Sender: TObject);
@@ -177,8 +178,9 @@ end;
 procedure TfrmBookDetails.Download;
 var
   reviewParser: TReviewParser;
-  Review, Annotation: TStringList;
   SavedCursor: TCursor;
+  Review, Annotation: TStringList;
+
 begin
   btnLoadReview.Enabled := False;
   SavedCursor := Screen.Cursor;
@@ -186,18 +188,21 @@ begin
   try
     reviewParser := TReviewParser.Create;
     try
-      Review := TStringList.Create;
-      Annotation := TStringList.Create;
       try
+        Review := TStringList.Create;
+        Annotation := TStringList.Create;
+
         reviewParser.Parse(FUrl, Review, Annotation);
-        mmReview.Lines.Assign(Review);
-        mmoAnnotation.Lines.Assign(Annotation);
+        mmReview.Lines.Text := Review.Text;
+        mmoAnnotation.Lines.Text := Annotation.Text;
 
         FReviewChanged := True;
       finally
-        Review.Free;
-        Annotation.Free;
+        FreeAndNil(Review);
+        FreeAndNil(Annotation);
       end;
+
+
     finally
       reviewParser.Free;
     end;
@@ -428,6 +433,7 @@ var
 begin
   Synchronize(StartDownload);
   FReview := TStringList.Create;
+  FAnnotation :=  TStringList.Create;
   try
     reviewParser := TReviewParser.Create;
     try
@@ -438,6 +444,7 @@ begin
   finally
     Synchronize(Finish);
     FreeAndNil(FReview);
+    FreeAndNil(FAnnotation);
   end;
 end;
 
