@@ -98,7 +98,7 @@ begin
         R.Clear;
         FileName := ExtractFileName(FFiles[i]);
         R.FileExt := ExtractFileExt(FileName);
-        R.FileName := TPath.GetFileNameWithoutExtension(FileName);
+        R.FileName := TPath.GetFileNameWithoutExtension(CleanFileName(FileName));
 
         R.Size := unit_Helpers.GetFileSize(FFiles[i]);
         R.Date := Now;
@@ -177,7 +177,7 @@ begin
             begin
               Inc(numFb2FilesInZip);
 
-              R.FileName := CleanFileName(TPath.GetFileNameWithoutExtension(AFileName));
+              R.FileName := TPath.GetFileNameWithoutExtension(CleanFileName(AFileName));
 
               R.Size := Zip.LastSize;
               R.InsideNo := j;
