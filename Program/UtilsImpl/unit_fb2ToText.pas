@@ -74,7 +74,7 @@ end;
 
 procedure TFb2ToText.Convert(const FileIn: string; const FileOut: string; ResEncoding: TTXTEncoding);
 var
-  p, i, j: integer;
+  i: integer;
   S : string;
   SLIn, SlOut: TStringList;
   tmpStr: string;

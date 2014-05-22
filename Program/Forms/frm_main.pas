@@ -3195,6 +3195,8 @@ begin
     Exit;
   end;
 
+
+  InfoPanel.Clear;
   Data := Tree.GetNodeData(Node);
 
   if not Assigned(Data) or (Data^.nodeType <> ntBookInfo) then
@@ -3202,7 +3204,6 @@ begin
     //
     // TODO : Может стоит показывать какую-нибудь информацию и в этом случае?
     //
-    InfoPanel.Clear;
     if Assigned(StoredBookKey) then
       StoredBookKey^.Clear;
     Exit;
@@ -3220,7 +3221,7 @@ begin
       TGenresHelper.GetLinkList(Data^.Genres)
     );
 
-    if Settings.ShowBookCover or Settings.ShowBookAnnotation then
+    if Settings.ShowBookCover or Settings.ShowBookAnnotation or Settings.Fb2InfoPriority then
     begin
       if (bpIsLocal in Data^.BookProps) and (bfRaw <> Data^.GetBookFormat) and (bfRawArchive <> Data^.GetBookFormat) then
       begin
@@ -3231,30 +3232,24 @@ begin
               book := LoadFictionBook(bookStream);
 
               //
-              // Покажем обложку
+              // Загрузим обложку
               //
-              if Settings.ShowBookCover then
-              begin
+              try
                 imgBookCover := GetBookCover(book);
-                try
-                  InfoPanel.SetBookCover(imgBookCover);
-                finally
-                  imgBookCover.Free;
-                end;
+                InfoPanel.SetBookCover(imgBookCover);
+              finally
+                imgBookCover.Free;
               end;
 
               //
-              // Покажем аннотацию
+              // Загрузим аннотацию и информацию
               //
-              if Settings.ShowBookAnnotation then
-              begin
-                InfoPanel.SetBookAnnotation(book, Data.Folder, Data.FileName + Data.FileExt);
-              end;
+              InfoPanel.SetBookAnnotation(book);
+              InfoPanel.SetFb2Info(book, Data.Folder, Data.FileName + Data.FileExt);
             finally
               FreeAndNil(bookStream);
             end
           else begin
-            ShowMessage(Format('Файл  %s "%s/%s"%s не найден! Проверьте настройки коллекции.',[#10, Data.Folder, Data.FileName, #10]));
             InfoPanel.SetBookCover(nil);
             InfoPanel.SetBookAnnotation(nil);
           end;

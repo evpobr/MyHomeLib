@@ -201,6 +201,7 @@ type
     lblProxyUserUpdate: TLabel;
     lbProxyType: TLabel;
     cbProxyType: TComboBox;
+    cbIgnoreArchives: TCheckBox;
 
     procedure SaveSettingsClick(Sender: TObject);
     procedure ShowHelpClick(Sender: TObject);
@@ -231,6 +232,7 @@ type
     procedure edTimeOutChange(Sender: TObject);
     procedure CheckNumValue(Sender: TObject);
     procedure rbUseProxyForUpdateClick(Sender: TObject);
+    procedure cbIgnoreArchivesClick(Sender: TObject);
 
   private
     procedure SetPanelFontColor(Value: Graphics.TColor);
@@ -384,6 +386,7 @@ begin
   cbOverwriteFB2Info.Checked := Settings.OverwriteFB2Info;
   edTitleTemplate.Text := Settings.BookHeaderTemplate;
   cbSelectedIsChecked.Checked := Settings.SelectedIsChecked;
+  cbIgnoreArchives.Checked := Settings.IgnoreAbsentArchives;
 
   //
   // Page 6 -  FileSort
@@ -504,6 +507,7 @@ begin
   Settings.BookHeaderTemplate := edTitleTemplate.Text;
   Settings.AutoStartDwnld := cbAutoStartDwnld.Checked;
   Settings.SelectedIsChecked := cbSelectedIsChecked.Checked;
+  Settings.IgnoreAbsentArchives := cbIgnoreArchives.Checked;
 
   // Page 6 -  FileSort
 
@@ -544,6 +548,7 @@ end;
 procedure TfrmSettings.ShowHelpClick(Sender: TObject);
 begin
   HtmlHelp(Application.Handle, PChar(Settings.SystemFileName[sfAppHelp]), HH_HELP_CONTEXT, pcSetPages.ActivePage.HelpContext);
+  frmSettings.FocusControl(btnOk);
 end;
 
 procedure TfrmSettings.SaveSettingsClick(Sender: TObject);
@@ -877,6 +882,11 @@ begin
     nValue := nMaxValue;
 
   EditControl.Text := IntToStr(nValue);
+end;
+
+procedure TfrmSettings.cbIgnoreArchivesClick(Sender: TObject);
+begin
+
 end;
 
 // ============================================================================

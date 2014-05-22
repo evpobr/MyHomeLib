@@ -189,6 +189,7 @@ type
     FForceConvertToFBD: Boolean;
     FOverwriteFB2Info: Boolean;
     FSelectedIsChecked: Boolean;
+    FIgnoreAbsentArchives: Boolean;
 
     // SORT_SECTION
     FEnableSort: Boolean;
@@ -373,6 +374,7 @@ type
     property OtherSRCollapsed: Boolean read FOtherSRCollapsed write FOtherSRCollapsed;
     property ForceConvertToFBD: Boolean read FForceConvertToFBD write FForceConvertToFBD;
     property OverwriteFB2Info: Boolean read FOverwriteFB2Info write FOverwriteFB2Info;
+    property IgnoreAbsentArchives: Boolean read FIgnoreAbsentArchives write FIgnoreAbsentArchives;
 
     property FullTextSearch: Boolean read FFullTextSearch write FFullTextSearch;
 
@@ -806,6 +808,8 @@ begin
     FOverwriteFB2Info := iniFile.ReadBool(BEHAVIOR_SECTION, 'OverwriteFB2Info', False);
     FFBDBookHeaderTemplate := iniFile.ReadString(BEHAVIOR_SECTION, 'BookHeaderTemplate', '%t');
     FSelectedIsChecked := iniFile.ReadBool(BEHAVIOR_SECTION, 'SelectedIsChecked', True);
+    FIgnoreAbsentArchives := iniFile.ReadBool(BEHAVIOR_SECTION, 'IgnoreAbsentArchives', True);
+
 
     //
     // FILE_SORT_SECTION
@@ -974,6 +978,7 @@ begin
     iniFile.WriteBool(BEHAVIOR_SECTION, 'OverwriteFB2Info', FOverwriteFB2Info);
     iniFile.WriteString(BEHAVIOR_SECTION, 'BookHeaderTemplate', FFBDBookHeaderTemplate);
     iniFile.WriteBool(BEHAVIOR_SECTION, 'SelectedIsChecked', FSelectedIsChecked);
+    iniFile.WriteBool(BEHAVIOR_SECTION, 'SelectedIsChecked', FIgnoreAbsentArchives);
 
     //
     // FILE_SORT_SECTION
