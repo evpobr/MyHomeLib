@@ -3,7 +3,7 @@ object frmMain: TfrmMain
   Top = 0
   HelpContext = 2
   Caption = 'MyHomeLib'
-  ClientHeight = 605
+  ClientHeight = 772
   ClientWidth = 792
   Color = clBtnFace
   Constraints.MinHeight = 600
@@ -235,7 +235,7 @@ object frmMain: TfrmMain
     Left = 3
     Top = 65
     Width = 786
-    Height = 518
+    Height = 685
     HelpContext = 1
     ActivePage = tsByAuthor
     Align = alClient
@@ -249,7 +249,7 @@ object frmMain: TfrmMain
       object AuthorsViewSplitter: TMHLSplitter
         Left = 230
         Top = 70
-        Height = 420
+        Height = 587
         MinSize = 230
         ResizeControl = pnAuthorsView
         ExplicitLeft = 392
@@ -260,7 +260,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 70
         Width = 230
-        Height = 420
+        Height = 587
         Align = alLeft
         TabOrder = 2
         object pnAuthorSearch: TMHLSimplePanel
@@ -345,7 +345,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 224
-          Height = 382
+          Height = 549
           Align = alClient
           ChangeDelay = 250
           Header.AutoSizeIndex = 0
@@ -370,26 +370,25 @@ object frmMain: TfrmMain
         Left = 233
         Top = 70
         Width = 545
-        Height = 420
+        Height = 587
         Align = alClient
         TabOrder = 3
         object AuthorBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 311
+          Top = 426
           Width = 545
           Height = 3
           Cursor = crVSplit
           Align = alBottom
           ResizeControl = ipnlAuthors
-          ExplicitTop = 32
-          ExplicitWidth = 179
+          ExplicitTop = 454
         end
         object ipnlAuthors: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 317
+          Top = 432
           Width = 539
-          Height = 100
+          Height = 152
           Align = alBottom
           Color = clBlack
           TabOrder = 2
@@ -468,7 +467,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 273
+          Height = 388
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.Height = 20
@@ -587,7 +586,7 @@ object frmMain: TfrmMain
       object SeriesViewSplitter: TMHLSplitter
         Left = 230
         Top = 70
-        Height = 420
+        Height = 587
         MinSize = 230
         ResizeControl = pnSeriesView
         ExplicitLeft = 392
@@ -598,7 +597,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 70
         Width = 230
-        Height = 420
+        Height = 587
         Align = alLeft
         TabOrder = 0
         object tvSeries: TVirtualStringTree
@@ -606,7 +605,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 224
-          Height = 382
+          Height = 549
           Align = alClient
           ChangeDelay = 250
           Header.AutoSizeIndex = 0
@@ -707,12 +706,12 @@ object frmMain: TfrmMain
         Left = 233
         Top = 70
         Width = 545
-        Height = 420
+        Height = 587
         Align = alClient
         TabOrder = 1
         object SerieBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 261
+          Top = 428
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -723,7 +722,7 @@ object frmMain: TfrmMain
         object ipnlSeries: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 267
+          Top = 434
           Width = 539
           Height = 150
           Align = alBottom
@@ -804,7 +803,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 223
+          Height = 390
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.Height = 20
@@ -922,7 +921,7 @@ object frmMain: TfrmMain
       object GenresViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
-        Height = 490
+        Height = 657
         MinSize = 230
         ResizeControl = pnGenresView
         ExplicitLeft = 392
@@ -933,7 +932,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 230
-        Height = 490
+        Height = 657
         Align = alLeft
         TabOrder = 0
         object tvGenres: TVirtualStringTree
@@ -941,7 +940,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 224
-          Height = 484
+          Height = 651
           Align = alClient
           ChangeDelay = 250
           Header.AutoSizeIndex = 0
@@ -965,12 +964,12 @@ object frmMain: TfrmMain
         Left = 233
         Top = 0
         Width = 545
-        Height = 490
+        Height = 657
         Align = alClient
         TabOrder = 1
         object GenreBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 381
+          Top = 548
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -1046,7 +1045,7 @@ object frmMain: TfrmMain
         object ipnlGenres: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 387
+          Top = 554
           Width = 539
           Height = 100
           Align = alBottom
@@ -1063,7 +1062,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 343
+          Height = 510
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.Height = 20
@@ -1147,7 +1146,7 @@ object frmMain: TfrmMain
       object SearchViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
-        Height = 490
+        Height = 657
         MinSize = 230
         ResizeControl = pnSearchView
         ExplicitLeft = 185
@@ -1158,12 +1157,12 @@ object frmMain: TfrmMain
         Left = 233
         Top = 0
         Width = 545
-        Height = 490
+        Height = 657
         Align = alClient
         TabOrder = 1
         object SearchBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 331
+          Top = 498
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -1176,7 +1175,7 @@ object frmMain: TfrmMain
         object ipnlSearch: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 337
+          Top = 504
           Width = 539
           Height = 150
           Align = alBottom
@@ -1251,7 +1250,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 293
+          Height = 460
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.Height = 20
@@ -1344,7 +1343,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 230
-        Height = 490
+        Height = 657
         Align = alLeft
         TabOrder = 0
         object SearchParams: TCategoryPanelGroup
@@ -1352,7 +1351,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 224
-          Height = 446
+          Height = 613
           VertScrollBar.Tracking = True
           Align = alClient
           HeaderFont.Charset = DEFAULT_CHARSET
@@ -1720,7 +1719,7 @@ object frmMain: TfrmMain
         object pnSearchControl: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
-          Top = 455
+          Top = 622
           Width = 224
           Height = 32
           Align = alBottom
@@ -1750,7 +1749,7 @@ object frmMain: TfrmMain
       object GroupsViewSplitter: TMHLSplitter
         Left = 230
         Top = 0
-        Height = 490
+        Height = 657
         MinSize = 230
         ResizeControl = pnGroupsView
         ExplicitLeft = 392
@@ -1761,7 +1760,7 @@ object frmMain: TfrmMain
         Left = 0
         Top = 0
         Width = 230
-        Height = 490
+        Height = 657
         Align = alLeft
         TabOrder = 0
         object tvGroups: TVirtualStringTree
@@ -1769,7 +1768,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 224
-          Height = 453
+          Height = 620
           Align = alClient
           ChangeDelay = 250
           Header.AutoSizeIndex = 0
@@ -1793,7 +1792,7 @@ object frmMain: TfrmMain
         object RzPanel8: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
-          Top = 462
+          Top = 629
           Width = 224
           Height = 25
           Align = alBottom
@@ -1831,12 +1830,12 @@ object frmMain: TfrmMain
         Left = 233
         Top = 0
         Width = 545
-        Height = 490
+        Height = 657
         Align = alClient
         TabOrder = 1
         object GroupBookInfoSplitter: TMHLSplitter
           Left = 0
-          Top = 331
+          Top = 498
           Width = 545
           Height = 3
           Cursor = crVSplit
@@ -1848,7 +1847,7 @@ object frmMain: TfrmMain
         object ipnlFavorites: TInfoPanel
           AlignWithMargins = True
           Left = 3
-          Top = 337
+          Top = 504
           Width = 539
           Height = 150
           Align = alBottom
@@ -1950,7 +1949,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 35
           Width = 539
-          Height = 293
+          Height = 460
           Align = alClient
           DragMode = dmAutomatic
           Header.AutoSizeIndex = 0
@@ -2136,13 +2135,13 @@ object frmMain: TfrmMain
         Left = 0
         Top = 28
         Width = 778
-        Height = 462
+        Height = 629
         Align = alClient
         TabOrder = 1
         object RzPanel2: TMHLSimplePanel
           AlignWithMargins = True
           Left = 3
-          Top = 417
+          Top = 584
           Width = 772
           Height = 42
           Align = alBottom
@@ -2203,7 +2202,7 @@ object frmMain: TfrmMain
           Left = 3
           Top = 3
           Width = 772
-          Height = 408
+          Height = 575
           Align = alClient
           Header.AutoSizeIndex = 0
           Header.Height = 20
@@ -2319,7 +2318,7 @@ object frmMain: TfrmMain
   end
   object StatusBar: TStatusBar
     Left = 0
-    Top = 586
+    Top = 753
     Width = 792
     Height = 19
     AutoHint = True

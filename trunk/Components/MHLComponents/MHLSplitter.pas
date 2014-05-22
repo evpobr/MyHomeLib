@@ -107,7 +107,7 @@ begin
   FMinSize := 30;
   FResizeStyle := rsPattern;
   FOldSize := -1;
-  if ThemeServices.ThemesEnabled then
+  if StyleServices.ThemesEnabled then
     ControlStyle := ControlStyle - [csOpaque]
   else
     ControlStyle := ControlStyle + [csOpaque];

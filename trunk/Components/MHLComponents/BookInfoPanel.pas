@@ -91,10 +91,15 @@ type
       BookCover: TGraphic
       );
 
-    procedure SetBookAnnotation(
+    procedure SetFb2Info(
       book: IXMLFictionBook;
       const Folder: string = '';
       const FileName: string = ''
+      );
+
+
+    procedure SetBookAnnotation(
+      book: IXMLFictionBook
       );
 
     procedure Clear;
@@ -321,8 +326,86 @@ end;
 
 procedure TInfoPanel.SetBookAnnotation;
 var
+  i: Integer;
+begin
+  FAnnotation.Clear;
+  FAnnotation.Visible := not FInfoPriority;
+
+
+  // ---------------------------------------------
+  if (book = nil) then
+    Exit;
+
+  try
+    with book.Description.Titleinfo do
+      for i := 0 to Annotation.p.Count - 1 do
+        FAnnotation.Lines.Add(Annotation.p[i].OnlyText);
+
+    FAnnotation.SelStart := 0;
+    FAnnotation.SelLength := 0;
+  except
+    //
+  end;
+end;
+
+procedure TInfoPanel.Resize;
+begin
+  FCover.Width := GetCoverWidth(FCover.Height);
+  inherited;
+end;
+
+procedure TInfoPanel.OnAnnotationClicked(Sender: TObject);
+begin
+  FFb2Info.Visible := not FFb2Info.Visible;
+  FAnnotation.Visible := not FAnnotation.Visible;
+end;
+
+procedure TInfoPanel.OnLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
+begin
+  if Sender = FAuthors then
+  begin
+    if Assigned(FOnAuthorLinkClicked) then
+      FOnAuthorLinkClicked(Self, Link, LinkType);
+  end
+  else if Sender = FSeries then
+  begin
+    if Assigned(FOnSeriesLinkClicked) then
+      FOnSeriesLinkClicked(Self, Link, LinkType);
+  end
+  else if Sender = FGenres then
+  begin
+    if Assigned(FOnGenreLinkClicked) then
+      FOnGenreLinkClicked(Self, Link, LinkType);
+  end
+  else
+    Assert(False);
+end;
+
+procedure TInfoPanel.SetBookInfo(
+  const BookTitle: string;
+  const Autors: string;
+  const Series: string;
+  const Genres: string
+);
+begin
+  FTitle.Caption := BookTitle;
+  FAuthors.Caption := Autors;
+  FSeries.Caption := Series;
+  FGenres.Caption := Genres;
+end;
+
+procedure TInfoPanel.SetColor(Value: TColor);
+begin
+  if FColor <> Value then
+  begin
+    FColor := Value;
+    FAnnotation.Color := Value;
+  end;
+end;
+
+procedure TInfoPanel.SetFb2Info(book: IXMLFictionBook; const Folder, FileName: string);
+var
   i: integer;
-  imgBookCover: TGraphic;
   tmpStr: string;
 
   procedure AddItem(listView: TListView; const Field: string; const Value: string; GroupID: integer = -1);
@@ -341,11 +424,7 @@ var
 begin
 
   ffb2info.Clear;
-  FAnnotation.Clear;
-
   FFb2Info.Visible := FInfoPriority;
-  FAnnotation.Visible := not FInfoPriority;
-
 
   with ffb2Info.Groups.Add do
   begin
@@ -355,19 +434,7 @@ begin
   end;
 
   // ---------------------------------------------
-  if (book = nil) then
-    Exit;
-
-  try
-    with book.Description.Titleinfo do
-      for i := 0 to Annotation.p.Count - 1 do
-        FAnnotation.Lines.Add(Annotation.p[i].OnlyText);
-
-    FAnnotation.SelStart := 0;
-    FAnnotation.SelLength := 0;
-  except
-    //
-  end;
+  if (book = nil) then   Exit;
 
   // ---------------------------------------------
   try
@@ -489,61 +556,7 @@ begin
   except
     //
   end;
-end;
 
-procedure TInfoPanel.Resize;
-begin
-  FCover.Width := GetCoverWidth(FCover.Height);
-  inherited;
-end;
-
-procedure TInfoPanel.OnAnnotationClicked(Sender: TObject);
-begin
-  FFb2Info.Visible := not FFb2Info.Visible;
-  FAnnotation.Visible := not FAnnotation.Visible;
-end;
-
-procedure TInfoPanel.OnLinkClicked(Sender: TObject; const Link: string; LinkType: TSysLinkType);
-begin
-  if Sender = FAuthors then
-  begin
-    if Assigned(FOnAuthorLinkClicked) then
-      FOnAuthorLinkClicked(Self, Link, LinkType);
-  end
-  else if Sender = FSeries then
-  begin
-    if Assigned(FOnSeriesLinkClicked) then
-      FOnSeriesLinkClicked(Self, Link, LinkType);
-  end
-  else if Sender = FGenres then
-  begin
-    if Assigned(FOnGenreLinkClicked) then
-      FOnGenreLinkClicked(Self, Link, LinkType);
-  end
-  else
-    Assert(False);
-end;
-
-procedure TInfoPanel.SetBookInfo(
-  const BookTitle: string;
-  const Autors: string;
-  const Series: string;
-  const Genres: string
-);
-begin
-  FTitle.Caption := BookTitle;
-  FAuthors.Caption := Autors;
-  FSeries.Caption := Series;
-  FGenres.Caption := Genres;
-end;
-
-procedure TInfoPanel.SetColor(Value: TColor);
-begin
-  if FColor <> Value then
-  begin
-    FColor := Value;
-    FAnnotation.Color := Value;
-  end;
 end;
 
 procedure TInfoPanel.SetInfoPriority(const Value: Boolean);
@@ -560,6 +573,7 @@ procedure TInfoPanel.SetBookCover(
 begin
   FCover.Picture.Assign(BookCover);
 end;
+
 
 procedure TInfoPanel.Clear;
 begin

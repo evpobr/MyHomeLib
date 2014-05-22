@@ -211,10 +211,10 @@ end;
 
 procedure TMHLLinkLabel.CNCtlColorStatic(var Message: TWMCtlColorStatic);
 begin
-  if ThemeServices.ThemesEnabled and Transparent then
+  if StyleServices.ThemesEnabled and Transparent then
   begin
     SetBkMode(Message.ChildDC, Windows.TRANSPARENT);
-    ThemeServices.DrawParentBackground(Handle, Message.ChildDC, nil, False);
+    StyleServices.DrawParentBackground(Handle, Message.ChildDC, nil, False);
     { Return an empty brush to prevent Windows from overpainting what we just have created. }
     Message.Result := GetStockObject(NULL_BRUSH);
   end

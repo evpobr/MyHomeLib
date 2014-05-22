@@ -1058,7 +1058,8 @@ begin
       result := archiver.ExtractToStream(InsideNo);
       FreeAndNil(archiver);
     except
-      raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName]);
+      if not Settings.IgnoreAbsentArchives then
+         raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName]);
     end;
   end
   else // bfFb2, bfRaw
