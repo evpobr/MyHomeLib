@@ -50,7 +50,8 @@ type
     sfDownloadsStore,
     sfDownloadErrorLog,
     sfCollectionsStore,
-    sfPresets
+    sfPresets,
+    sfUpdateLog
   );
 
   TSplitters = array of Integer;
@@ -1321,6 +1322,7 @@ begin
     sfDownloadErrorLog: Result := WorkPath + DOWNLOAD_ERRORLOG_FILENAME;
     sfCollectionsStore: Result := WorkPath + COLLECTIONS_FILENAME;
     sfPresets: Result := WorkPath + PRESETS_FILENAME;
+    sfUpdateLog: Result := WorkPath + UPDATE_LOGFILE;
   else
     Assert(False);
   end;

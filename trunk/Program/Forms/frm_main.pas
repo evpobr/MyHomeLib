@@ -2487,7 +2487,7 @@ end;
 
 procedure TfrmMain.StartLibUpdate;
 begin
-  unit_Utils.LibrusecUpdate;
+  unit_Utils.LibrusecUpdate(Settings.SystemFileName[sfUpdateLog]);
 end;
 
 function TfrmMain.GetShowStatusProgress: Boolean;
