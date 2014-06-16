@@ -27,7 +27,7 @@ procedure SyncOnLineFiles(const CollectionID: Integer);
 
 procedure SyncFolders(const CollectionID: Integer);
 
-function LibrusecUpdate: Boolean;
+function LibrusecUpdate(const LogFileName: string): Boolean;
 
 procedure ShowPopup(const Msg: string);
 procedure HidePopup;
@@ -46,7 +46,8 @@ uses
   frm_info_popup,
   frm_search,
   frm_main,
-  unit_Interfaces;
+  unit_Interfaces,
+  unit_Settings;
 
 resourcestring
   rstrUpdateCollections = 'Обновление коллекций';
@@ -89,7 +90,7 @@ begin
   end;
 end;
 
-function LibrusecUpdate: Boolean;
+function LibrusecUpdate(const LogFileName: string): Boolean;
 var
   worker : TLibUpdateThread;
   ProgressForm : TImportProgressFormEx;
@@ -102,6 +103,7 @@ begin
     try
       ProgressForm.WorkerThread := worker;
       ProgressForm.ShowModal;
+      ProgressForm.SaveErrorLog(LogFileName);
       Result := worker.Updated;
     finally
       ProgressForm.Free;

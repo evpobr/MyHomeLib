@@ -109,6 +109,7 @@ const
   PRESETS_FILENAME = 'presets.cxml2';
   COLLECTIONINFO_FILENAME = 'collection.info'; // file holding URL, Script, etc
   TEMP_FOLDER_NAME = '_myhomelib';
+  UPDATE_LOGFILE = 'update.log';
 
   //
   // Номера вкладок в главном окне ( = tags)

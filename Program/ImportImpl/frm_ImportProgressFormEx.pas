@@ -34,9 +34,8 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
   private
-    FErrors: TStringList;
     FCloseOnTimer: boolean;
-
+    FErrors: TStringList;
     procedure DoCloseForm(Sender: TObject);
 
   protected
@@ -45,6 +44,7 @@ type
 
   public
     property CloseOnTimer: Boolean read FCloseOnTimer write FCloseOnTimer;
+    procedure SaveErrorLog(AFileName: string);
   end;
 
 var
@@ -64,21 +64,9 @@ resourcestring
 
 procedure TImportProgressFormEx.btnSaveLogClick(Sender: TObject);
 var
-  AFileName: string;
+  FileName: string;
 begin
-  if GetFileName(fnSaveLog, AFileName) then
-  try
-    FErrors.SaveToFile(AFileName, TEncoding.Unicode);
-  except
-    on e: EFileStreamError do
-    begin
-      Application.MessageBox(
-        PChar(e.Message),
-        PChar(Application.Title),
-        MB_OK or MB_ICONERROR
-        );
-    end;
-  end;
+  if GetFileName(fnSaveLog, FileName) then SaveErrorLog(FileName);
 end;
 
 procedure TImportProgressFormEx.DoCloseForm(Sender: TObject);
@@ -110,6 +98,22 @@ begin
   inherited;
 end;
 
+procedure TImportProgressFormEx.SaveErrorLog;
+begin
+  try
+    FErrors.SaveToFile(AFileName, TEncoding.Unicode);
+  except
+    on e: EFileStreamError do
+    begin
+      Application.MessageBox(
+        PChar(e.Message),
+        PChar(Application.Title),
+        MB_OK or MB_ICONERROR
+        );
+    end;
+  end;
+end;
+
 procedure TImportProgressFormEx.ShowTeletype(const Msg: string; Severity: TTeletypeSeverity);
 var
   item: TListItem;
@@ -123,8 +127,8 @@ begin
   end;
   item.SubItems.Add(Msg);
 
-  if Severity = tsError then
-    FErrors.Add(Msg);
+//  if Severity = tsError then
+  FErrors.Add(Msg);
   errorLog.Perform(WM_KEYDOWN, VK_DOWN, 0);
 end;
 
