@@ -5965,7 +5965,7 @@ end;
 
 procedure TfrmMain.GoForumExecute(Sender: TObject);
 begin
-  SimpleShellExecute(Handle, 'http://myhomelib.org/');
+  SimpleShellExecute(Handle, 'http://forum.home-lib.net/');
 end;
 
 procedure TfrmMain.GoSiteExecute(Sender: TObject);
