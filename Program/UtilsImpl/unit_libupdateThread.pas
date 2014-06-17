@@ -91,7 +91,8 @@ resourcestring
   rstrCreatingCollection = 'Создание новой коллекции  "%s"...';
   rstrSpeed = 'Загрузка: %s Kb/s';
   rstrConnectingToServer = 'Подключение к серверу ...';
-  rstrCollectionUpdate = 'Обновление коллекции "%s" до версии %d:';
+  rstrOnlineCollectionUpdate = 'Обновление коллекции "%s" до версии %d:';
+  rstrLocalCollectionUpdate = 'Обновление коллекции "%s":';
   rstrUpdateFailedDownload = 'Загрузка обновлений не удалась.';
   rstrCancelledByUser = 'Операция отменена пользователем.';
   rstrImportIntoCollection = 'Импорт данных в коллекцию:';
@@ -175,6 +176,7 @@ var
   updateInfo: TUpdateInfo;
   Collection: IBookCollection;
   UserDataBackup: TUserData;
+  S: string;
 begin
   SetComment(rstrCheckingUpdate);
 
@@ -186,7 +188,11 @@ begin
       if not updateInfo.Available then
         Continue;
 
-      Teletype(Format(rstrCollectionUpdate, [updateInfo.Name, updateInfo.ExternalVersion]), tsInfo);
+      if updateInfo.ExternalVersion > 0 then
+         Teletype(Format(rstrOnlineCollectionUpdate, [updateInfo.Name, updateInfo.ExternalVersion]), tsInfo)
+      else
+         Teletype(Format(rstrLocalCollectionUpdate, [updateInfo.Name]), tsInfo);
+
 
       if updateInfo.Local then
         Teletype(rstrUpdatingFromLocalArchive, tsInfo)
