@@ -997,6 +997,7 @@ begin
     // INITIAL_DIRS_SECTION
     //
     SaveInitialDirs(iniFile);
+    iniFile.UpdateFile;
   finally
     iniFile.Free;
   end;
