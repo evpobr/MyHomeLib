@@ -224,19 +224,19 @@ type
     function GetReadPath: string;
     procedure SetReadDir(const Value: string);
 
-    procedure LoadReaders(iniFile: TIniFile);
-    procedure SaveReaders(iniFile: TIniFile);
+    procedure LoadReaders(iniFile: TMemIniFile);
+    procedure SaveReaders(iniFile: TMemIniFile);
 
     procedure LoadUpdates;
 
-    procedure LoadScripts(iniFile: TIniFile);
-    procedure SaveScripts(iniFile: TIniFile);
+    procedure LoadScripts(iniFile: TMemIniFile);
+    procedure SaveScripts(iniFile: TMemIniFile);
 
-    procedure SaveSplitters(iniFile: TIniFile);
-    procedure LoadSplitters(iniFile: TIniFile);
+    procedure SaveSplitters(iniFile: TMemIniFile);
+    procedure LoadSplitters(iniFile: TMemIniFile);
 
-    procedure LoadInitialDirs(iniFile: TIniFile);
-    procedure SaveInitialDirs(iniFile: TIniFile);
+    procedure LoadInitialDirs(iniFile: TMemIniFile);
+    procedure SaveInitialDirs(iniFile: TMemIniFile);
 
     function GetInitialDir(const key: string): string;
     procedure SetInitialDir(const key, Value: string);
@@ -649,9 +649,9 @@ end;
 
 procedure TMHLSettings.LoadSettings;
 var
-  iniFile: TIniFile;
+  iniFile: TMemIniFile;
 begin
-  iniFile := TIniFile.Create(GetSettingsFileName);
+  iniFile := TMemIniFile.Create(GetSettingsFileName, TEncoding.UTF8);
   try
     //
     // PATH_SECTION
@@ -839,9 +839,9 @@ end;
 
 procedure TMHLSettings.SaveSettings;
 var
-  iniFile: TIniFile;
+  iniFile: TMemIniFile;
 begin
-  iniFile := TIniFile.Create(GetSettingsFileName);
+  iniFile := TMemIniFile.Create(GetSettingsFileName, TEncoding.UTF8);
   try
     //
     // PATH_SECTION
@@ -1002,7 +1002,7 @@ begin
   end;
 end;
 
-procedure TMHLSettings.LoadSplitters(iniFile: TIniFile);
+procedure TMHLSettings.LoadSplitters(iniFile: TMemIniFile);
 var
   i: Integer;
   slHelper: TStringList;
@@ -1087,7 +1087,7 @@ begin
   end;
 end;
 
-procedure TMHLSettings.SaveSplitters(iniFile: TIniFile);
+procedure TMHLSettings.SaveSplitters(iniFile: TMemIniFile);
 var
   Splitter: Integer;
   Mode: TTreeMode;
@@ -1115,7 +1115,7 @@ begin
   end;
 end;
 
-procedure TMHLSettings.LoadReaders(iniFile: TIniFile);
+procedure TMHLSettings.LoadReaders(iniFile: TMemIniFile);
 var
   I: Integer;
   sl: TStringList;
@@ -1164,7 +1164,7 @@ begin
   end;
 end;
 
-procedure TMHLSettings.SaveReaders(iniFile: TIniFile);
+procedure TMHLSettings.SaveReaders(iniFile: TMemIniFile);
 var
   I: Integer;
   sl: TStringList;
@@ -1189,7 +1189,7 @@ begin
   end;
 end;
 
-procedure TMHLSettings.LoadScripts(iniFile: TIniFile);
+procedure TMHLSettings.LoadScripts(iniFile: TMemIniFile);
 var
   I: Integer;
   sl: TStringList;
@@ -1224,7 +1224,7 @@ begin
   end;
 end;
 
-procedure TMHLSettings.SaveScripts(iniFile: TIniFile);
+procedure TMHLSettings.SaveScripts(iniFile: TMemIniFile);
 var
   I: Integer;
   sl: TStringList;
@@ -1328,7 +1328,7 @@ begin
   end;
 end;
 
-procedure TMHLSettings.LoadInitialDirs(iniFile: TIniFile);
+procedure TMHLSettings.LoadInitialDirs(iniFile: TMemIniFile);
 var
   I: Integer;
   sl: TStringList;
@@ -1345,7 +1345,7 @@ begin
   end;
 end;
 
-procedure TMHLSettings.SaveInitialDirs(iniFile: TIniFile);
+procedure TMHLSettings.SaveInitialDirs(iniFile: TMemIniFile);
 var
   I: Integer;
 begin

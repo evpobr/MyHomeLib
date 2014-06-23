@@ -237,7 +237,7 @@ object frmMain: TfrmMain
     Width = 786
     Height = 685
     HelpContext = 1
-    ActivePage = tsByAuthor
+    ActivePage = tsSearch
     Align = alClient
     OwnerDraw = True
     TabOrder = 2
