@@ -31,7 +31,8 @@ uses
   ImgList,
   Themes,
   UxTheme,
-  DwmApi;
+  DwmApi,
+  System.UITypes;
 
 type
   TMHLStaticTip = class(TCustomLabel)
