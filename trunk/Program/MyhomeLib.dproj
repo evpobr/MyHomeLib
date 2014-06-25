@@ -93,8 +93,8 @@
         <VerInfo_MinorVer>2</VerInfo_MinorVer>
         <VerInfo_Release>0</VerInfo_Release>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
-        <VerInfo_Build>816</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=2.2.0.816;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=2.2;Comments=</VerInfo_Keys>
+        <VerInfo_Build>817</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=2.2.0.817;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=2.2;Comments=</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
@@ -431,6 +431,7 @@
                 <Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclBindCompFireDAC190.bpl">LiveBinding Expression Components FireDac</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclDataSnapClient190.bpl">Embarcadero DBExpress DataSnap Client Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclDataSnapCommon190.bpl">Embarcadero DBExpress DataSnap Common Design package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclDataSnapConnectors190.bpl">Embarcadero DataSnap Connector Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclDataSnapServer190.bpl">Embarcadero DBExpress DataSnap Server Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclDataSnapProviderClient190.bpl">Embarcadero DBExpress DataSnap Provider Client Components</Excluded_Packages>

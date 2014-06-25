@@ -695,12 +695,12 @@ begin
     FShortFontSize := iniFile.ReadInteger(INTERFACE_SECTION, 'ShortFontSize', 8);
     FActivePage := iniFile.ReadInteger(INTERFACE_SECTION, 'ActivePage', 0);
 
-    FFormHeight := iniFile.ReadInteger(INTERFACE_SECTION, 'FormHeight ', 850);
-    FFormWidth := iniFile.ReadInteger(INTERFACE_SECTION, 'FormWidth ', 1000);
-    FFormTop := iniFile.ReadInteger(INTERFACE_SECTION, 'FormTop ', 0);
-    FFormLeft := iniFile.ReadInteger(INTERFACE_SECTION, 'FormLeft ', 0);
+    FFormHeight := iniFile.ReadInteger(INTERFACE_SECTION, 'FormHeight', 850);
+    FFormWidth := iniFile.ReadInteger(INTERFACE_SECTION, 'FormWidth', 1000);
+    FFormTop := iniFile.ReadInteger(INTERFACE_SECTION, 'FormTop', 0);
+    FFormLeft := iniFile.ReadInteger(INTERFACE_SECTION, 'FormLeft', 0);
 
-    FInfoPanelHeight := iniFile.ReadInteger(INTERFACE_SECTION, 'InfoPanelHeight ', 250);
+    FInfoPanelHeight := iniFile.ReadInteger(INTERFACE_SECTION, 'InfoPanelHeight', 250);
 
     FBookSRCollapsed := iniFile.ReadBool(INTERFACE_SECTION, 'BookSR', False);
     FFileSRCollapsed := iniFile.ReadBool(INTERFACE_SECTION, 'FileSR', False);
@@ -873,12 +873,12 @@ begin
 
     iniFile.WriteInteger(INTERFACE_SECTION, 'WindowState', WindowState);
 
-    iniFile.WriteInteger(INTERFACE_SECTION, 'FormHeight ', FFormHeight);
-    iniFile.WriteInteger(INTERFACE_SECTION, 'FormWidth ', FFormWidth);
-    iniFile.WriteInteger(INTERFACE_SECTION, 'FormTop ', FFormTop);
-    iniFile.WriteInteger(INTERFACE_SECTION, 'FormLeft ', FFormLeft);
+    iniFile.WriteInteger(INTERFACE_SECTION, 'FormHeight', FFormHeight);
+    iniFile.WriteInteger(INTERFACE_SECTION, 'FormWidth', FFormWidth);
+    iniFile.WriteInteger(INTERFACE_SECTION, 'FormTop', FFormTop);
+    iniFile.WriteInteger(INTERFACE_SECTION, 'FormLeft', FFormLeft);
 
-    iniFile.WriteInteger(INTERFACE_SECTION, 'InfoPanelHeight ', FInfoPanelHeight);
+    iniFile.WriteInteger(INTERFACE_SECTION, 'InfoPanelHeight', FInfoPanelHeight);
 
     iniFile.WriteBool(INTERFACE_SECTION, 'BookSR', FBookSRCollapsed);
     iniFile.WriteBool(INTERFACE_SECTION, 'FileSR', FFileSRCollapsed);
