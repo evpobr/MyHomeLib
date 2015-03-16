@@ -1,5 +1,5 @@
 
-InpxCreator iproject originally hosted here has been moved to GitHub.
+InpxCreator project originally hosted here has been moved to GitHub.
 
 New project home:
 	sources: https://github.com/rupor-github/InpxCreator
