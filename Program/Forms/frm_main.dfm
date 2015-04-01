@@ -237,7 +237,7 @@ object frmMain: TfrmMain
     Width = 786
     Height = 685
     HelpContext = 1
-    ActivePage = tsByAuthor
+    ActivePage = tsSearch
     Align = alClient
     OwnerDraw = True
     TabOrder = 2
@@ -1220,7 +1220,7 @@ object frmMain: TfrmMain
           end
           object cbPresetName: TComboBox
             Left = 42
-            Top = 5
+            Top = 3
             Width = 126
             Height = 21
             AutoComplete = False
@@ -1229,7 +1229,7 @@ object frmMain: TfrmMain
           end
           object btnSavePreset: TButton
             Left = 174
-            Top = 0
+            Top = 1
             Width = 75
             Height = 25
             Action = acSavePreset
@@ -1237,7 +1237,7 @@ object frmMain: TfrmMain
           end
           object btnDeletePreset: TButton
             Left = 255
-            Top = 0
+            Top = 1
             Width = 75
             Height = 25
             Action = acDeletePreset
@@ -1352,6 +1352,7 @@ object frmMain: TfrmMain
           Top = 3
           Width = 224
           Height = 613
+          VertScrollBar.Position = 80
           VertScrollBar.Tracking = True
           Align = alClient
           HeaderFont.Charset = DEFAULT_CHARSET
@@ -1361,7 +1362,7 @@ object frmMain: TfrmMain
           HeaderFont.Style = []
           TabOrder = 0
           object ctpOther: TCategoryPanel
-            Top = 491
+            Top = 411
             Caption = #1056#1072#1079#1085#1086#1077
             TabOrder = 0
             object Label30: TLabel
@@ -1457,7 +1458,7 @@ object frmMain: TfrmMain
             object cbDownloaded: TComboBox
               AlignWithMargins = True
               Left = 3
-              Top = 19
+              Top = 22
               Width = 197
               Height = 21
               Align = alTop
@@ -1473,7 +1474,7 @@ object frmMain: TfrmMain
             object cbDeleted: TCheckBox
               AlignWithMargins = True
               Left = 5
-              Top = 46
+              Top = 49
               Width = 195
               Height = 17
               Margins.Left = 5
@@ -1498,7 +1499,7 @@ object frmMain: TfrmMain
             object cbReaded: TCheckBox
               AlignWithMargins = True
               Left = 5
-              Top = 69
+              Top = 72
               Width = 195
               Height = 17
               Margins.Left = 5
@@ -1508,7 +1509,7 @@ object frmMain: TfrmMain
             end
           end
           object ctpFile: TCategoryPanel
-            Top = 314
+            Top = 234
             Height = 177
             Caption = #1060#1072#1081#1083
             TabOrder = 1
@@ -1525,29 +1526,29 @@ object frmMain: TfrmMain
             object Label29: TLabel
               AlignWithMargins = True
               Left = 3
-              Top = 89
+              Top = 95
               Width = 197
               Height = 13
               Align = alTop
               Caption = #1058#1080#1087
-              ExplicitTop = 95
+              ExplicitTop = 89
               ExplicitWidth = 18
             end
             object Label28: TLabel
               AlignWithMargins = True
               Left = 3
-              Top = 46
+              Top = 49
               Width = 197
               Height = 13
               Align = alTop
               Caption = #1055#1072#1087#1082#1072' ('#1072#1088#1093#1080#1074')'
-              ExplicitTop = 49
+              ExplicitTop = 46
               ExplicitWidth = 72
             end
             object edFFile: TMHLButtonedEdit
               AlignWithMargins = True
               Left = 3
-              Top = 19
+              Top = 22
               Width = 197
               Height = 21
               Align = alTop
@@ -1558,7 +1559,7 @@ object frmMain: TfrmMain
             object edFFolder: TMHLButtonedEdit
               AlignWithMargins = True
               Left = 3
-              Top = 62
+              Top = 68
               Width = 197
               Height = 21
               Align = alTop
@@ -1569,7 +1570,7 @@ object frmMain: TfrmMain
             object edFExt: TMHLButtonedEdit
               AlignWithMargins = True
               Left = 3
-              Top = 105
+              Top = 114
               Width = 197
               Height = 21
               Align = alTop
@@ -1579,7 +1580,7 @@ object frmMain: TfrmMain
             end
           end
           object ctpBook: TCategoryPanel
-            Top = 0
+            Top = -80
             Height = 314
             Caption = #1050#1085#1080#1075#1072
             TabOrder = 2
@@ -1596,63 +1597,63 @@ object frmMain: TfrmMain
             object Label24: TLabel
               AlignWithMargins = True
               Left = 3
-              Top = 46
+              Top = 49
               Width = 197
               Height = 13
               Align = alTop
               Caption = #1053#1072#1079#1074#1072#1085#1080#1077
-              ExplicitTop = 49
+              ExplicitTop = 46
               ExplicitWidth = 48
             end
             object Label26: TLabel
               AlignWithMargins = True
               Left = 3
-              Top = 132
+              Top = 141
               Width = 197
               Height = 13
               Align = alTop
               Caption = #1046#1072#1085#1088
-              ExplicitTop = 141
+              ExplicitTop = 132
               ExplicitWidth = 28
             end
             object Label6: TLabel
               AlignWithMargins = True
               Left = 3
-              Top = 89
+              Top = 95
               Width = 197
               Height = 13
               Align = alTop
               Caption = #1057#1077#1088#1080#1103
-              ExplicitTop = 95
+              ExplicitTop = 89
               ExplicitWidth = 31
             end
             object Label7: TLabel
               AlignWithMargins = True
               Left = 3
-              Top = 241
+              Top = 238
               Width = 197
               Height = 13
               Align = alBottom
               Caption = #1040#1085#1085#1086#1090#1072#1094#1080#1103
-              ExplicitTop = 238
+              ExplicitTop = 241
               ExplicitWidth = 55
             end
             object Label3: TLabel
               AlignWithMargins = True
               Left = 3
-              Top = 179
+              Top = 191
               Width = 197
               Height = 13
               Margins.Top = 0
               Align = alTop
               Caption = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
-              ExplicitTop = 191
+              ExplicitTop = 179
               ExplicitWidth = 86
             end
             object edFFullName: TMHLButtonedEdit
               AlignWithMargins = True
               Left = 3
-              Top = 19
+              Top = 22
               Width = 197
               Height = 21
               Align = alTop
@@ -1663,7 +1664,7 @@ object frmMain: TfrmMain
             object edFTitle: TMHLButtonedEdit
               AlignWithMargins = True
               Left = 3
-              Top = 62
+              Top = 68
               Width = 197
               Height = 21
               Align = alTop
@@ -1674,7 +1675,7 @@ object frmMain: TfrmMain
             object edFSeries: TMHLButtonedEdit
               AlignWithMargins = True
               Left = 3
-              Top = 105
+              Top = 114
               Width = 197
               Height = 21
               Align = alTop
@@ -1685,7 +1686,7 @@ object frmMain: TfrmMain
             object edFGenre: TMHLButtonedEdit
               AlignWithMargins = True
               Left = 3
-              Top = 148
+              Top = 160
               Width = 197
               Height = 21
               Margins.Bottom = 10
@@ -1710,7 +1711,7 @@ object frmMain: TfrmMain
             object edFKeyWords: TMHLButtonedEdit
               AlignWithMargins = True
               Left = 3
-              Top = 195
+              Top = 210
               Width = 197
               Height = 21
               Hint = #1050#1083#1102#1095#1077#1074#1099#1077' '#1089#1083#1086#1074#1072
@@ -2184,7 +2185,7 @@ object frmMain: TfrmMain
             Left = 662
             Top = 3
             Width = 107
-            Height = 39
+            Height = 36
             Align = alRight
             Alignment = taRightJustify
             Caption = '('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1085#1080#1075')'
@@ -12480,7 +12481,6 @@ object frmMain: TfrmMain
       Category = #1055#1086#1080#1089#1082
       Caption = #1054#1095#1080#1089#1090#1080#1090#1100
       Hint = #1054#1095#1080#1089#1090#1080#1090#1100' '#1074#1089#1077' '#1087#1086#1083#1103
-      OnExecute = DoClearFilter
     end
     object acEditBook: TAction
       Category = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1085#1080#1077

@@ -657,7 +657,7 @@ type
     // Работа с Search Preset-ами
     //
     procedure cbPresetNameSelect(Sender: TObject);
-    procedure DoClearFilter(Sender: TObject);
+    procedure DoClearFilter(KeepPreset: boolean);
     procedure DoApplyFilter(Sender: TObject);
     procedure PresetFieldKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ShowGenreEditor(Sender: TObject);
@@ -1411,8 +1411,10 @@ begin
   end;
 end;
 
-procedure TfrmMain.DoClearFilter(Sender: TObject);
+procedure TfrmMain.DoClearFilter(KeepPreset: boolean);
 begin
+  if not KeepPreset then   cbPresetName.ItemIndex := -1;
+
   edFFullName.Text := '';
   edFTitle.Text := '';
   edFSeries.Text := '';
@@ -3393,8 +3395,7 @@ end;
 
 procedure TfrmMain.btnClearFilterEditsClick(Sender: TObject);
 begin
-  cbPresetName.ItemIndex := -1;
-  DoClearFilter(Sender);
+  DoClearFilter(False);
 end;
 
 procedure TfrmMain.MoveDwnldListNodes(Sender: TObject);
@@ -6771,7 +6772,7 @@ var
   preset: TSearchPreset;
   Value: string;
 begin
-  DoClearFilter(Sender);
+  DoClearFilter(True);
 
   preset := FPresets.GetPreset(cbPresetName.Text);
 
