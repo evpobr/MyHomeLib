@@ -26,12 +26,12 @@ uses
   Controls,
   StdCtrls,
   Graphics,
-  Windows,
+  WinAPi.Windows,
   Forms,
   ImgList,
   Themes,
-  UxTheme,
-  DwmApi,
+  WinAPi.UxTheme,
+  WinAPi.DwmApi,
   System.UITypes;
 
 type

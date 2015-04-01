@@ -175,7 +175,7 @@ begin
     // Если файл в архиве - распаковываем в $tmp
     //
     FBookFormat := R.GetBookFormat;
-    if FBookFormat in [bfFb2, bfFb2Archive, bfFbd] then
+    if FBookFormat in [bfFb2, bfFb2Archive, bfRawArchive, bfFbd] then
     begin
       if not FileExists(FFileOprecord.SourceFile) then
       begin

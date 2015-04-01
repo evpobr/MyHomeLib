@@ -3254,13 +3254,11 @@ begin
             InfoPanel.SetBookAnnotation(nil);
           end;
         except
-          on E : ENotSupportedException do
+          on E : Exception do
                begin
                 InfoPanel.SetBookCover(nil);
                 InfoPanel.SetBookAnnotation(nil);
                end;
-          else
-            raise;
         end;
       end
       else
@@ -5545,9 +5543,29 @@ begin
   preset.AddOrSetValue(SF_DOWNLOADED, IntToStr(cbDownloaded.ItemIndex));
   preset.AddOrSetValue(SF_KEYWORDS, edFKeyWords.Text);
   preset.AddOrSetValue(SF_DELETED, BoolToStr(cbDeleted.Checked));
-  preset.AddOrSetValue(SF_DATE, IntToStr(cbDate.ItemIndex));
+
+  if cbDate.ItemIndex = -1 then
+  begin
+    preset.AddOrSetValue(SF_DATE, IntToStr(-1));
+    preset.AddOrSetValue(SF_DATE_STR, cbDate.Text);
+  end
+  else begin
+    preset.AddOrSetValue(SF_DATE, IntToStr(cbDate.ItemIndex));
+    preset.AddOrSetValue(SF_DATE_STR, '');
+  end;
+
+  if cbLibRate.ItemIndex = -1 then
+  begin
+    preset.AddOrSetValue(SF_LIBRATE, IntToStr(-1));
+    preset.AddOrSetValue(SF_LIBRATE_STR, cbLibRate.Text);
+  end
+  else begin
+    preset.AddOrSetValue(SF_LIBRATE, IntToStr(cbLibRate.ItemIndex));
+    preset.AddOrSetValue(SF_LIBRATE_STR, '');
+  end;
+
+
   preset.AddOrSetValue(SF_LANG, IntToStr(cbLang.ItemIndex));
-  preset.AddOrSetValue(SF_LIBRATE, IntToStr(cbLibRate.ItemIndex));
   preset.AddOrSetValue(SF_READED, BoolToStr(cbReaded.Checked));
 
   FPresets.Save(Settings.SystemFileName[sfPresets]);
@@ -6744,12 +6762,23 @@ begin
     cbDownloaded.ItemIndex := EnsureRange(StrToIntDef(Value, 0), 0, cbDownloaded.Items.Count - 1);
   if preset.TryGetValue(SF_KEYWORDS, Value) then edFKeyWords.Text := Value;
   if preset.TryGetValue(SF_DELETED, Value) then cbDeleted.Checked := StrToBoolDef(Value, False);
+
   if preset.TryGetValue(SF_DATE, Value) then
+  begin
     cbDate.ItemIndex := EnsureRange(StrToIntDef(Value, -1), -1, cbDate.Items.Count - 1);
+    if cbDate.ItemIndex = -1 then
+     if preset.TryGetValue(SF_DATE_STR, Value) then cbDate.Text := Value;
+  end;
+
+  if preset.TryGetValue(SF_LIBRATE, Value) then
+  begin
+    cbLibRate.ItemIndex := EnsureRange(StrToIntDef(Value, -1), -1, cbLibRate.Items.Count - 1);
+    if cbLibRate.ItemIndex = -1 then
+     if preset.TryGetValue(SF_LIBRATE_STR, Value) then cbLibRate.Text := Value;
+  end;
+
   if preset.TryGetValue(SF_LANG, Value) then
     cbLang.ItemIndex := EnsureRange(StrToIntDef(Value, -1), -1, cbLang.Items.Count - 1);
-  if preset.TryGetValue(SF_LIBRATE, Value) then
-    cbLibRate.ItemIndex := EnsureRange(StrToIntDef(Value, -1), -1, cbLibRate.Items.Count - 1);
   if preset.TryGetValue(SF_READED, Value) then cbReaded.Checked := StrToBoolDef(Value, False);
 
 end;

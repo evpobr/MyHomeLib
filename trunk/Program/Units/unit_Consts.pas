@@ -199,8 +199,10 @@ const
   SF_KEYWORDS    = 'Keywords';
   SF_DELETED     = 'Deleted';
   SF_DATE        = 'Date';
+  SF_DATE_STR    = 'Date_Str';
   SF_LANG        = 'Lang';
   SF_LIBRATE     = 'LibRate';
+  SF_LIBRATE_STR = 'LibRate_Str';
 
   SF_READED      = 'Readed';  // Для поиска прочитанных книг
   //

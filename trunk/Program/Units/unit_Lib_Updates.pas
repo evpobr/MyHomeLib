@@ -172,6 +172,8 @@ begin
             SL.LoadFromStream(LF);
             if SL.Count > 0 then
               Items[i].FExternalVersion := StrToInt(SL[0]);
+
+            //SL.SaveToFile('E:\Temp\out.txt');
           finally
             SL.Free;
           end;
