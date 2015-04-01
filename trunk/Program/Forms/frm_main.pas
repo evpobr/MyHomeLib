@@ -503,7 +503,8 @@ type
     lblLang: TLabel;
     lbl1: TLabel;
     lbl2: TLabel;
-    lbl3: TLabel;      // Выбор в поиске прочитанных книг
+    lbl3: TLabel;
+    pmMarkSelected: TMenuItem;      // Выбор в поиске прочитанных книг
 
     //
     // События формы
@@ -722,7 +723,9 @@ type
     procedure tmrSearchSTimer(Sender: TObject);
     procedure tmrSearchATimer(Sender: TObject);
     procedure edLocateSeriesChange(Sender: TObject);
-    procedure cbLangSelectAChange(Sender: TObject);  // Выбор языка в списке
+    procedure cbLangSelectAChange(Sender: TObject);
+    procedure btnClearFilterEditsClick(Sender: TObject);
+    procedure pmMarkSelectedClick(Sender: TObject);  // Выбор языка в списке
 
   protected
     procedure WMGetSysCommand(var Message: TMessage); message WM_SYSCOMMAND;
@@ -1431,8 +1434,6 @@ begin
   cbLibRate.ItemIndex := -1;
   cbLibRate.Text := '';
   cbReaded.Checked := False;
-
-  cbPresetName.ItemIndex := -1;
 
   tvBooksSR.Clear;
   ClearLabels(PAGE_SEARCH, True);
@@ -3348,30 +3349,30 @@ var
   Tree: TBookTree;
   Selected: PVirtualNode;
 begin
-  if (Button = mbLeft) and (ssShift in Shift) then
-  begin
-    try
-      Tree := Sender as TBookTree;
-      ClearLabels(Tree.Tag, True);
-      Node := Tree.GetFirstSelected;
-      Selected := Node;
-      while Assigned(Node) do
-      begin
-        Data := Tree.GetNodeData(Node);
-        if Data^.nodeType = ntBookInfo then
-        begin
-          if Tree.CheckState[Node] = csCheckedNormal then
-            Tree.CheckState[Node] := csUncheckedNormal
-          else
-            Tree.CheckState[Node] := csCheckedNormal;
-          Tree.Selected[Node] := False;
-        end;
-        Node := Tree.GetNextSelected(Node);
-      end; // while
-    finally
-      Tree.Selected[Selected] := True;
-    end;
-  end; // if
+//  if (Button = mbLeft) and (ssShift in Shift) then
+//  begin
+//    try
+//      Tree := Sender as TBookTree;
+//      ClearLabels(Tree.Tag, True);
+//      Node := Tree.GetFirstSelected;
+//      Selected := Node;
+//      while Assigned(Node) do
+//      begin
+//        Data := Tree.GetNodeData(Node);
+//        if Data^.nodeType = ntBookInfo then
+//        begin
+//          if Tree.CheckState[Node] = csCheckedNormal then
+//            Tree.CheckState[Node] := csUncheckedNormal
+//          else
+//            Tree.CheckState[Node] := csCheckedNormal;
+//          Tree.Selected[Node] := False;
+//        end;
+//        Node := Tree.GetNextSelected(Node);
+//      end; // while
+//    finally
+//      Tree.Selected[Selected] := True;
+//    end;
+//  end; // if
 end;
 
 //
@@ -3388,6 +3389,12 @@ procedure TfrmMain.btnClearEdSeriesClick(Sender: TObject);
 begin
   edLocateSeries.Clear;
   frmMain.ActiveControl := edLocateSeries;
+end;
+
+procedure TfrmMain.btnClearFilterEditsClick(Sender: TObject);
+begin
+  cbPresetName.ItemIndex := -1;
+  DoClearFilter(Sender);
 end;
 
 procedure TfrmMain.MoveDwnldListNodes(Sender: TObject);
@@ -5981,6 +5988,25 @@ begin
   Tree.SelectAll(False);
 end;
 
+procedure TfrmMain.pmMarkSelectedClick(Sender: TObject);
+var
+  Node: PVirtualNode;
+  Tree: TBookTree;
+begin
+  GetActiveTree(Tree);
+  Tree.BeginUpdate;
+  try
+    Node := Tree.GetFirstSelected;
+    while Assigned(Node) do
+    begin
+      Node.CheckState := csCheckedNormal;
+      Node := Tree.GetNextSelected(Node);
+    end;
+  finally
+    Tree.EndUpdate;
+  end;
+end;
+
 procedure TfrmMain.GoForumExecute(Sender: TObject);
 begin
   SimpleShellExecute(Handle, 'http://forum.home-lib.net/');
@@ -6745,6 +6771,8 @@ var
   preset: TSearchPreset;
   Value: string;
 begin
+  DoClearFilter(Sender);
+
   preset := FPresets.GetPreset(cbPresetName.Text);
 
   if preset.TryGetValue(SF_AUTHORS, Value) then edFFullName.Text := Value;
