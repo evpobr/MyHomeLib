@@ -128,7 +128,7 @@ object frmEditor: TfrmEditor
       OnClick = btnLikeClick
     end
     object btnEq: TButton
-      Tag = 52
+      Tag = 51
       Left = 343
       Top = 11
       Width = 32

@@ -28,7 +28,8 @@ const
   DefaultSelectionOptions = [
     toFullRowSelect,
     toRightClickSelect,
-    toMultiSelect
+    toMultiSelect,
+    toSimpleDrawSelection
   ];
 
   DefaultMiscOptions = [
