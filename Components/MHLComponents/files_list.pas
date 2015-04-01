@@ -20,8 +20,8 @@ unit files_list;
 interface
 
 uses
-  Windows,
-  Messages,
+  WinApi.Windows,
+  WinApi.Messages,
   SysUtils,
   Classes;
 
