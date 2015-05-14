@@ -20,10 +20,10 @@ object frmBookDetails: TfrmBookDetails
   object pcBookInfo: TPageControl
     AlignWithMargins = True
     Left = 3
-    Top = 53
+    Top = 47
     Width = 622
-    Height = 388
-    ActivePage = tsFileInfo
+    Height = 394
+    ActivePage = tsReview
     Align = alClient
     DoubleBuffered = True
     ParentDoubleBuffered = False
@@ -36,7 +36,7 @@ object frmBookDetails: TfrmBookDetails
         Left = 3
         Top = 3
         Width = 608
-        Height = 354
+        Height = 360
         Align = alClient
         Columns = <
           item
@@ -58,16 +58,12 @@ object frmBookDetails: TfrmBookDetails
     end
     object tsInfo: TTabSheet
       Caption = 'Fb2 '#1080#1085#1092#1086
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object imgCover: TImage
         AlignWithMargins = True
         Left = 3
         Top = 3
         Width = 214
-        Height = 233
+        Height = 239
         Hint = #1054#1073#1083#1086#1078#1082#1072
         Align = alLeft
         Center = True
@@ -81,7 +77,7 @@ object frmBookDetails: TfrmBookDetails
       object mmShort: TMemo
         AlignWithMargins = True
         Left = 3
-        Top = 242
+        Top = 248
         Width = 608
         Height = 115
         Align = alBottom
@@ -95,7 +91,7 @@ object frmBookDetails: TfrmBookDetails
         Left = 223
         Top = 3
         Width = 388
-        Height = 233
+        Height = 239
         Align = alClient
         Columns = <
           item
@@ -122,7 +118,7 @@ object frmBookDetails: TfrmBookDetails
         Left = 3
         Top = 3
         Width = 608
-        Height = 321
+        Height = 327
         Align = alClient
         ScrollBars = ssVertical
         TabOrder = 0
@@ -130,7 +126,7 @@ object frmBookDetails: TfrmBookDetails
       end
       object pnReviewButtons: TPanel
         Left = 0
-        Top = 327
+        Top = 333
         Width = 614
         Height = 33
         Align = alBottom
@@ -167,16 +163,12 @@ object frmBookDetails: TfrmBookDetails
     object tsAnnotation: TTabSheet
       Caption = #1040#1085#1085#1086#1090#1072#1094#1080#1103' '#1089' '#1089#1072#1081#1090#1072
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object mmoAnnotation: TMemo
         AlignWithMargins = True
         Left = 3
         Top = 3
         Width = 608
-        Height = 354
+        Height = 360
         Align = alClient
         ScrollBars = ssVertical
         TabOrder = 0
@@ -211,7 +203,7 @@ object frmBookDetails: TfrmBookDetails
     Left = 0
     Top = 0
     Width = 628
-    Height = 50
+    Height = 44
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
@@ -227,7 +219,7 @@ object frmBookDetails: TfrmBookDetails
     object lblAuthors: TLabel
       AlignWithMargins = True
       Left = 9
-      Top = 28
+      Top = 25
       Width = 610
       Height = 13
       Align = alTop

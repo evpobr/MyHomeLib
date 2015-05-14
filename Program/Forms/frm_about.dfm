@@ -27,12 +27,13 @@ object frmAbout: TfrmAbout
     object versionInfoLabel: TLabel
       AlignWithMargins = True
       Left = 3
-      Top = 38
+      Top = 35
       Width = 202
       Height = 13
       Align = alTop
       Alignment = taCenter
       Caption = #1042#1077#1088#1089#1080#1103':'
+      ExplicitTop = 38
       ExplicitWidth = 39
     end
     object RzLabel1: TLabel
@@ -55,18 +56,18 @@ object frmAbout: TfrmAbout
     object RzLabel2: TLabel
       AlignWithMargins = True
       Left = 3
-      Top = 57
+      Top = 51
       Width = 202
       Height = 13
       Align = alTop
       Alignment = taCenter
-      Caption = '(c) 2008-2013 '#1040#1083#1077#1082#1089#1077#1081' '#1055#1077#1085#1100#1082#1086#1074
+      Caption = '(c) 2008-2015 '#1040#1083#1077#1082#1089#1077#1081' '#1055#1077#1085#1100#1082#1086#1074
       ExplicitWidth = 159
     end
     object RzLabel3: TLabel
       AlignWithMargins = True
       Left = 3
-      Top = 76
+      Top = 67
       Width = 202
       Height = 13
       Align = alTop
@@ -78,12 +79,13 @@ object frmAbout: TfrmAbout
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
+      ExplicitTop = 76
       ExplicitWidth = 115
     end
     object RzLabel4: TLabel
       AlignWithMargins = True
       Left = 3
-      Top = 165
+      Top = 157
       Width = 202
       Height = 13
       Align = alTop
@@ -95,34 +97,25 @@ object frmAbout: TfrmAbout
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
+      ExplicitTop = 165
       ExplicitWidth = 84
-    end
-    object RzLabel5: TLabel
-      AlignWithMargins = True
-      Left = 3
-      Top = 95
-      Width = 202
-      Height = 26
-      Align = alTop
-      Alignment = taCenter
-      Caption = #1040#1083#1077#1082#1089#1077#1081' '#1055#1077#1085#1100#1082#1086#1074#13#1053#1080#1082#1086#1083#1072#1081' '#1056#1099#1084#1072#1085#1086#1074
-      ExplicitWidth = 90
     end
     object RzLabel6: TLabel
       AlignWithMargins = True
       Left = 3
-      Top = 184
+      Top = 173
       Width = 202
       Height = 26
       Align = alTop
       Alignment = taCenter
       Caption = 'eg, Evgeniy_V, albert'#13' AlbanSpy, kaznelson, Olega'
+      ExplicitTop = 184
       ExplicitWidth = 137
     end
     object RzLabel7: TLabel
       AlignWithMargins = True
       Left = 3
-      Top = 127
+      Top = 125
       Width = 202
       Height = 13
       Align = alTop
@@ -134,18 +127,31 @@ object frmAbout: TfrmAbout
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
+      ExplicitTop = 127
       ExplicitWidth = 50
     end
     object RzLabel8: TLabel
       AlignWithMargins = True
       Left = 3
-      Top = 146
+      Top = 141
       Width = 202
       Height = 13
       Align = alTop
       Alignment = taCenter
       Caption = #1040#1083#1077#1082#1089#1077#1081' '#1053#1077#1093#1072#1081
+      ExplicitTop = 146
       ExplicitWidth = 76
+    end
+    object Label1: TLabel
+      AlignWithMargins = True
+      Left = 3
+      Top = 83
+      Width = 202
+      Height = 39
+      Align = alTop
+      Alignment = taCenter
+      Caption = #1040#1083#1077#1082#1089#1077#1081' '#1055#1077#1085#1100#1082#1086#1074#13#1053#1080#1082#1086#1083#1072#1081' '#1056#1099#1084#1072#1085#1086#1074#13#10'eg'
+      ExplicitWidth = 90
     end
     object RzURLLabel1: TMHLLinkLabel
       Left = 56
