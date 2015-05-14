@@ -63,9 +63,9 @@ end;
 destructor TReviewParser.Destroy;
 begin
   // do not close the idHTTP, as it was not created by the ctor
-  FidSSLIOHandlerSocketOpenSSL.Free;
-  FidSocksInfo.Free;
-  FidHTTP.Free;
+  FreeAndNil(FidSSLIOHandlerSocketOpenSSL);
+  FreeAndNil(FidSocksInfo);
+  FreeAndNil(FidHTTP);
   inherited Destroy;
 end;
 
@@ -82,30 +82,39 @@ var
   idxEndAllBookReviews: Integer;
   name: string;
   review: string;
-  BEG_PREFIX, BLOCK_PREFIX, END_ALL, ANNOTATION_START, ANNOTATION_END: string;
+  BEG_PREFIX, BLOCK_PREFIX, BLOCK_END, END_ALL, ANNOTATION_START, ANNOTATION_END: string;
+
+//  SL: TStringList;
 begin
   Assert(Assigned(targetList));
   Assert(Assigned(targetListA));
 
   page := GetPage(url);
 
+
+//  Sl := TStringList.Create;
+//  SL.LoadFromFile('E:\Temp\test.html', TEncoding.UTF8);
+//  Page := SL.Text;
+
+
   if pos('lib.rus.ec', URL) <> 0 then
   begin
     ANNOTATION_START := '<h2>Аннотация</h2>';
-    ANNOTATION_END := '<script>';
+    ANNOTATION_END := '<h3>';
 
-    BEG_PREFIX := 'Впечатления о книге:';
+    BEG_PREFIX := 'Впечатления';
     BLOCK_PREFIX := '/polka/show/';
-    END_ALL := '<p><a href=/stat/r/';
+    BLOCK_END := '<hr>';
+    END_ALL := '/stat/r/';
     idxReviewBlockStart := Pos(BEG_PREFIX, page);
-    Delete(page, 1 , idxReviewBlockStart);
   end
   else begin
     ANNOTATION_START := '<h2>Аннотация</h2>';
-    ANNOTATION_END := '/forum>';
+    ANNOTATION_END := '<form';
 
     BLOCK_PREFIX := '/polka/show/';
-    END_ALL := '<div id=''newann''';
+    BLOCK_END := '<div></div>';
+    END_ALL := 'newann';
 
   end;
 
@@ -123,12 +132,16 @@ begin
     if idxReviewBlockEnd > idxEndAllBookReviews then Break;
 
 
-    review := Copy(page, idxReviewBlockStart + 3, idxReviewBlockEnd - 7 - idxReviewBlockStart);
+    review := Copy(page, idxReviewBlockStart + 3, idxReviewBlockEnd - 3 - idxReviewBlockStart);
     if review <> '' then targetlistA.Add(review);
     idxReviewBlockStart := PosEx('<p>', page, idxReviewBlockEnd);
   end;
 
   targetListA.Text := ReplaceStr(targetListA.Text,'<br />','');
+  targetListA.Text := ReplaceStr(targetListA.Text,'<br>','');
+
+//  SL.Text := page;
+//  sl.SaveToFile('E:\temp\out.html');
 
   // отзывы
 
@@ -137,7 +150,7 @@ begin
   while ((idxReviewBlockStart <> 0) and (idxReviewBlockStart < idxEndAllBookReviews)) do
   begin
     name := Extract(page, idxReviewBlockStart, '>', '<');
-    review := Extract(page, idxReviewBlockStart, '<br>', '<div></div><hr>');
+    review := Extract(page, idxReviewBlockStart, '<br>', BLOCK_END);
     targetList.Add(name + NAME_REVIEW_DELIM);
     targetList.Add(review);
     targetList.Add('');
@@ -147,6 +160,7 @@ begin
   // post-cleaning
   targetList.Text := ReplaceStr(targetList.Text,'&quot;','"');
   targetList.Text := ReplaceStr(targetList.Text,'&gt;','');
+  targetList.Text := ReplaceStr(targetList.Text,'<hr>','');
 end;
 
 // Do a GET request and return result as a String

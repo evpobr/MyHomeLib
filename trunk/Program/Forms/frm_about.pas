@@ -38,10 +38,10 @@ type
     RzLabel2: TLabel;
     RzLabel3: TLabel;
     RzLabel4: TLabel;
-    RzLabel5: TLabel;
     RzLabel6: TLabel;
     RzLabel7: TLabel;
     RzLabel8: TLabel;
+    Label1: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure RzURLLabel1LinkClick(Sender: TObject; const Link: string; LinkType: TSysLinkType);
   private
