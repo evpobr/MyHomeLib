@@ -48,7 +48,6 @@ uses
   pngimage,
   jpeg,
   DB,
-  DBTables,
   unit_DownloadManagerThread,
   unit_Messages,
   files_list,
@@ -74,7 +73,7 @@ uses
   unit_treeController,
   unit_ColorTabs,
   ZipForge,
-  System.Actions;
+  System.Actions, System.ImageList;
 
 type
   TfrmMain = class(TForm)
