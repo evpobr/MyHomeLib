@@ -711,7 +711,7 @@ begin
   AuthorName := CheckSymbols(FullName); // Ф.И.О. - полностью!
 
   Letter := AuthorName[1];
-  if not IsLetterOrDigit(Letter) then
+  if not Letter.IsLetterOrDigit then
     Letter := '_';
 
   AuthorName := Trim(AuthorName);
