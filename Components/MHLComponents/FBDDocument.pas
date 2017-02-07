@@ -85,7 +85,6 @@ type
     procedure SetTImage(Value: TImage);
     function SaveFBD: Boolean;
     function CreateArchive(EditorMode: Boolean): boolean;
-    procedure GetFBDFileNames(out Description: string);
     procedure ResizeImage;
     function ExecAndWait(const FileName, Params: string; const WinState: Word): Boolean;
     procedure SetCoverSize(const Value: Integer);
@@ -453,7 +452,6 @@ var
   XML : TXMLDocument;
 
 begin
-  Result := False;
   MS := TMemoryStream.Create;
   SL := TStringList.Create;
   try
@@ -530,8 +528,6 @@ var
   fbdFileName: string;
   archiver: TMHLZip;
 begin
-  Result := False;
-
   archiveFileName := TPath.Combine(FFolder, FArchiveFilename);
   bookFileName := TPath.Combine(FFolder, FBookFileName);
   fbdFileName := TPath.Combine(FFolder, FFBDFileName);
@@ -754,23 +750,6 @@ begin
      rmMax    : Max;
      rmHeight : Height;
      rmWidth  : Width;
-  end;
-end;
-
-procedure TFBDDocument.GetFBDFileNames(out Description: string);
-var
-  idxFile: Integer;
-  archiver: TMHLZip;
-begin
-  try
-    archiver := TMHLZip.Create(FArchiveFilename, True);
-    idxFile := archiver.GetIdxByExt('.fbd');
-    if idxFile >= 0 then
-      Description := archiver.LastName
-    else
-      Description := '';
-  finally
-    FreeAndNil(archiver);
   end;
 end;
 
