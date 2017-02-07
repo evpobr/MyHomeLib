@@ -507,14 +507,17 @@ begin
     end;
 
     XML := TXMLDocument.Create(nil);
-    XML.Options := XML.Options + [doNodeAutoIndent];
-    XML.LoadFromXML(FFBD.XML);
-    XML.SaveToFile(FFolder + FFBDFileName);
-    XML.Active := False;
+    try
+      XML.Options := XML.Options + [doNodeAutoIndent];
+      XML.LoadFromXML(FFBD.XML);
+      XML.SaveToFile(FFolder + FFBDFileName);
+      XML.Active := False;
+    finally
+      XML.Free;
+    end;
 
     Result := True;
   finally
-    XML.Free;
     SL.Free;
     MS.Free;
   end;
