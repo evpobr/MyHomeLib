@@ -2,3 +2,7 @@
 # Handle line endings automatically for files detected as text
 # and leave all files detected as binary untouched.
 * text=auto
+
+*.pas encoding=cp1251
+*.dpr encoding=cp1251
+*.todo encoding=cp1251
