@@ -235,30 +235,32 @@ begin
           for i := 0 to FFBD.Binary.Count - 1 do
           begin
             if FFBD.Binary.Items[i].Id = CoverID then
-            try
+            begin
               Output := TMemoryStream.Create;
-              Lines.Clear;
-              Input.Clear;
-              Lines.Text := FFBD.Binary.Items[i].Text;
-              FCoverData.Str := FFBD.Binary.Items[i].Text;
+              try
+                Lines.Clear;
+                Input.Clear;
+                Lines.Text := FFBD.Binary.Items[i].Text;
+                FCoverData.Str := FFBD.Binary.Items[i].Text;
 
-              Lines.SaveToStream(Output);
+                Lines.SaveToStream(Output);
 
-              Output.Seek(0,soFromBeginning);
-              DecodeStream(Output, Input);
+                Output.Seek(0,soFromBeginning);
+                DecodeStream(Output, Input);
 
-              CreateImage(ExtractFileExt(CoverID), IMG, FCoverData.ImgType);
-              if Assigned(IMG) then
-              begin
-                Input.Seek(0,soFromBeginning);
-                IMG.LoadFromStream(Input);
-                FImage.Picture.Assign(IMG);
-                FImage.Invalidate;
-              end;
-            finally
-              IMG.Free;
-              Output.Free;
-            end; // for
+                CreateImage(ExtractFileExt(CoverID), IMG, FCoverData.ImgType);
+                if Assigned(IMG) then
+                begin
+                  Input.Seek(0,soFromBeginning);
+                  IMG.LoadFromStream(Input);
+                  FImage.Picture.Assign(IMG);
+                  FImage.Invalidate;
+                end;
+              finally
+                IMG.Free;
+                FreeAndNil(Output);
+              end; // for
+            end;
           end;
         end;
       end;
