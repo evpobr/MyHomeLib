@@ -66,3 +66,4 @@ __recovery/
 *.stat
 
 /Program/Out/Bin/*
+!/Program/sqlite3.dll
