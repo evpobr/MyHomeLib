@@ -52,7 +52,6 @@ type
     FOnAuthorLinkClicked: TSysLinkEvent;
     FOnGenreLinkClicked: TSysLinkEvent;
     FOnSeriesLinkClicked: TSysLinkEvent;
-    FOnAnnotationClicked: TNotifyEvent;
     FMenu: TPopupMenu;
 
     FColor: TColor;
