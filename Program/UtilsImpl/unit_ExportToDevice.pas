@@ -1,4 +1,4 @@
-(* *****************************************************************************
+п»ї(* *****************************************************************************
   *
   * MyHomeLib
   *
@@ -39,8 +39,8 @@ uses
   frm_DownloadProgressForm;
 
 resourcestring
-  rstrSendToDevice = 'Отправка на устройство';
-  rstrDownloadingBooks = 'Скачивание книг';
+  rstrSendToDevice = 'РћС‚РїСЂР°РІРєР° РЅР° СѓСЃС‚СЂРѕР№СЃС‚РІРѕ';
+  rstrDownloadingBooks = 'РЎРєР°С‡РёРІР°РЅРёРµ РєРЅРёРі';
 
 procedure ExportToDevice(
   const DeviceDir: string;

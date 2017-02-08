@@ -1,4 +1,4 @@
-(* *****************************************************************************
+п»ї(* *****************************************************************************
   *
   * MyHomeLib
   *
@@ -6,7 +6,7 @@
   *
   * Author(s)           Nick Rymanov (nrymanov@gmail.com)
   * Created             14.04.2010
-  * Description         Панель информации о книге
+  * Description         РџР°РЅРµР»СЊ РёРЅС„РѕСЂРјР°С†РёРё Рѕ РєРЅРёРіРµ
   *
   * $Id$
   *
@@ -176,12 +176,12 @@ type
 implementation
 
 resourcestring
-  rstrSerieLabel = 'Серия:';
-  rstrGenreLabel = 'Жанр(ы):';
-  rstrNoAnnotationHint = 'Аннотация отсутствует';
-  rsrtCopyLabel = 'Копировать';
-  rsrtFiledLabel = 'Поле';
-  rsrtValueLabel = 'Значение';
+  rstrSerieLabel = 'РЎРµСЂРёСЏ:';
+  rstrGenreLabel = 'Р–Р°РЅСЂ(С‹):';
+  rstrNoAnnotationHint = 'РђРЅРЅРѕС‚Р°С†РёСЏ РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚';
+  rsrtCopyLabel = 'РљРѕРїРёСЂРѕРІР°С‚СЊ';
+  rsrtFiledLabel = 'РџРѕР»Рµ';
+  rsrtValueLabel = 'Р—РЅР°С‡РµРЅРёРµ';
 
 function GetCoverWidth(Height: Integer): Integer;
 begin
@@ -305,10 +305,10 @@ begin
 
   if csDesigning in ComponentState then
   begin
-    FTitle.Caption := 'Название книги';
-    FAuthors.Caption := '<a>Автор книги</a> <a>Автор книги</a>';
-    FSeries.Caption := '<a>Название серии</a>';
-    FGenres.Caption := '<a>Название жанра</a> <a>Название жанра</a> <a>Название жанра</a>';
+    FTitle.Caption := 'РќР°Р·РІР°РЅРёРµ РєРЅРёРіРё';
+    FAuthors.Caption := '<a>РђРІС‚РѕСЂ РєРЅРёРіРё</a> <a>РђРІС‚РѕСЂ РєРЅРёРіРё</a>';
+    FSeries.Caption := '<a>РќР°Р·РІР°РЅРёРµ СЃРµСЂРёРё</a>';
+    FGenres.Caption := '<a>РќР°Р·РІР°РЅРёРµ Р¶Р°РЅСЂР°</a> <a>РќР°Р·РІР°РЅРёРµ Р¶Р°РЅСЂР°</a> <a>РќР°Р·РІР°РЅРёРµ Р¶Р°РЅСЂР°</a>';
   end;
 
   FTitle.SetBounds(0, 0, 300, 20);
@@ -455,7 +455,7 @@ begin
         AddItem(ffb2info, IfThen(i = 0, rstrSingleSeries), Sequence[i].Name + ' ' + IntToStr(Sequence[i].Number), GroupID);
       end;
 
-      { TODO -oNickR -cUsability : показывать алиасы вместо внутренних имен }
+      { TODO -oNickR -cUsability : РїРѕРєР°Р·С‹РІР°С‚СЊ Р°Р»РёР°СЃС‹ РІРјРµСЃС‚Рѕ РІРЅСѓС‚СЂРµРЅРЅРёС… РёРјРµРЅ }
       for i := 0 to Genre.Count - 1 do
       begin
         AddItem(ffb2info, IfThen(i = 0, rstrGenre), Genre[i], GroupID);
@@ -519,7 +519,7 @@ begin
       AddItem(ffb2info, rstrYear, Year, GroupID);
       AddItem(ffb2info, rstrISBN, Isbn.Text, GroupID);
 
-      { TODO -oNickR -cUsability : показывать номер в серии }
+      { TODO -oNickR -cUsability : РїРѕРєР°Р·С‹РІР°С‚СЊ РЅРѕРјРµСЂ РІ СЃРµСЂРёРё }
       for i := 0 to Sequence.Count - 1 do
         AddItem(ffb2info, IfThen(i = 0, rstrSingleSeries), Sequence[i].Name + ' ' + IntToStr(Sequence[i].Number), GroupID);
     end; //with
@@ -620,7 +620,7 @@ end;
 procedure TInfoPanel.UpdateLinkTexts;
 begin
   //
-  // TODO : задача этого метода превратить обрезанные линки в "Link Link и пр.", т е убрать невлезающие и добавить " и пр."
+  // TODO : Р·Р°РґР°С‡Р° СЌС‚РѕРіРѕ РјРµС‚РѕРґР° РїСЂРµРІСЂР°С‚РёС‚СЊ РѕР±СЂРµР·Р°РЅРЅС‹Рµ Р»РёРЅРєРё РІ "Link Link Рё РїСЂ.", С‚ Рµ СѓР±СЂР°С‚СЊ РЅРµРІР»РµР·Р°СЋС‰РёРµ Рё РґРѕР±Р°РІРёС‚СЊ " Рё РїСЂ."
   //
 end;
 

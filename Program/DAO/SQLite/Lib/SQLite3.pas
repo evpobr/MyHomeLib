@@ -1,4 +1,4 @@
-unit SQLite3;
+﻿unit SQLite3;
 
 {
   Simplified interface for SQLite.
@@ -7,7 +7,7 @@ unit SQLite3;
   V2.0.0  29 June 2010
 
   History
-  Reworked by Luk� Gebauer at http://www.ararat.cz/doku.php/en:sqlitewrap.
+  Reworked by Lukáš Gebauer at http://www.ararat.cz/doku.php/en:sqlitewrap.
   Updated for Sqlite 3 by Tim Anderson (tim@itwriting.com)
   Note: NOT COMPLETE for version 3, just minimal functionality
   Adapted from file created by Pablo Pissanetzky (pablo@myhtpc.net)

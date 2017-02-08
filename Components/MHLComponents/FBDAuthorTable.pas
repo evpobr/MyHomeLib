@@ -1,4 +1,4 @@
-(* *****************************************************************************
+п»ї(* *****************************************************************************
   *
   * MyHomeLib
   *
@@ -177,16 +177,16 @@ type
   end;
 
 resourcestring
-  rstrLastName = 'Фамилия';
-  rstrFirstName = 'Имя';
-  rstrMiddleName = 'Отчество';
+  rstrLastName = 'Р¤Р°РјРёР»РёСЏ';
+  rstrFirstName = 'РРјСЏ';
+  rstrMiddleName = 'РћС‚С‡РµСЃС‚РІРѕ';
   rstrNickName = 'Nick';
   rstrEmail = 'Email';
   rstrHomepage = 'Homepage';
-  rstrAdd = 'Добавить';
-  rstrChange = 'Изменить';
-  rstrDelete = 'Удалить';
-  rstrAddFromList = 'Из списка';
+  rstrAdd = 'Р”РѕР±Р°РІРёС‚СЊ';
+  rstrChange = 'РР·РјРµРЅРёС‚СЊ';
+  rstrDelete = 'РЈРґР°Р»РёС‚СЊ';
+  rstrAddFromList = 'РР· СЃРїРёСЃРєР°';
 
 implementation
 

@@ -1,4 +1,4 @@
-(* *****************************************************************************
+п»ї(* *****************************************************************************
   *
   * MyHomeLib
   *
@@ -11,7 +11,7 @@
   * $Id$
   *
   * History
-  * NickR 15.02.2010    Код переформатирован
+  * NickR 15.02.2010    РљРѕРґ РїРµСЂРµС„РѕСЂРјР°С‚РёСЂРѕРІР°РЅ
   *
   ****************************************************************************** *)
 
@@ -49,7 +49,7 @@ begin
     Exit;
   end;
 
-  // если FileMapping есть - то происходит OpenFileMapping
+  // РµСЃР»Рё FileMapping РµСЃС‚СЊ - С‚Рѕ РїСЂРѕРёСЃС…РѕРґРёС‚ OpenFileMapping
   MemHnd := CreateFileMapping(HWND($FFFFFFFF), nil, PAGE_READWRITE, 0, MemFileSize, PChar(MemFileName));
   if GetLastError <> ERROR_ALREADY_EXISTS then
   begin

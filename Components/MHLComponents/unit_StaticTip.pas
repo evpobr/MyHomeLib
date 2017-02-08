@@ -1,4 +1,4 @@
-  (* *****************************************************************************
+п»ї  (* *****************************************************************************
   *
   * MyHomeLib
   *
@@ -14,7 +14,7 @@
   *
   ****************************************************************************** *)
 
-{ TODO -oNickR : добавить поддержку тени }
+{ TODO -oNickR : РґРѕР±Р°РІРёС‚СЊ РїРѕРґРґРµСЂР¶РєСѓ С‚РµРЅРё }
 
 unit unit_StaticTip;
 
@@ -112,7 +112,7 @@ begin
   PaintBuffer := BeginBufferedPaint(Canvas.Handle, Rect, BPBF_TOPDOWNDIB, nil, MemDC);
   try
     //
-    // TODO -oNickR -cподдержка Vista : заменить на RoundRect
+    // TODO -oNickR -cРїРѕРґРґРµСЂР¶РєР° Vista : Р·Р°РјРµРЅРёС‚СЊ РЅР° RoundRect
     //
     FillRect(MemDC, Rect, Canvas.Brush.Handle);
     BufferedPaintMakeOpaque(PaintBuffer, @Rect);

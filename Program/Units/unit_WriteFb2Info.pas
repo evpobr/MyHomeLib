@@ -1,4 +1,4 @@
-(* *****************************************************************************
+п»ї(* *****************************************************************************
   *
   * MyHomeLib
   *
@@ -7,12 +7,12 @@
   * Author(s)           Matvienko Sergei  matv84@mail.ru
   *                     Aleksey Penkov  alex.penkov@gmail.com
   * Created             12.02.2010
-  * Description         Запись в fb2info информации из базы
+  * Description         Р—Р°РїРёСЃСЊ РІ fb2info РёРЅС„РѕСЂРјР°С†РёРё РёР· Р±Р°Р·С‹
   *
   * $Id$
   *
   * History
-  * NickR 15.02.2010    Код переформатирован
+  * NickR 15.02.2010    РљРѕРґ РїРµСЂРµС„РѕСЂРјР°С‚РёСЂРѕРІР°РЅ
   *
   ****************************************************************************** *)
 
@@ -38,7 +38,7 @@ uses
   Dialogs;
 
 resourcestring
-  rstrCheckTemplateValidity = 'Проверьте правильность шаблона';
+  rstrCheckTemplateValidity = 'РџСЂРѕРІРµСЂСЊС‚Рµ РїСЂР°РІРёР»СЊРЅРѕСЃС‚СЊ С€Р°Р±Р»РѕРЅР°';
 
 function WriteFb2InfoToFile(const BookRecord: TBookRecord; const FileName: string): Boolean;
 var
@@ -56,7 +56,7 @@ var
 begin
   Result := False;
   try
-    { TODO -oNickR -cBug : MEMLEAK проверить }
+    { TODO -oNickR -cBug : MEMLEAK РїСЂРѕРІРµСЂРёС‚СЊ }
     XML := TXmlDocument.Create(FileName);
 
     XML.Active := True;

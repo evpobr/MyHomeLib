@@ -1,4 +1,4 @@
-(* *****************************************************************************
+п»ї(* *****************************************************************************
   *
   * MyHomeLib
   *
@@ -50,7 +50,7 @@ uses
   unit_Settings;
 
 resourcestring
-  rstrUpdateCollections = 'Обновление коллекций';
+  rstrUpdateCollections = 'РћР±РЅРѕРІР»РµРЅРёРµ РєРѕР»Р»РµРєС†РёР№';
 
 procedure SyncOnLineFiles(const CollectionID: Integer);
 var
