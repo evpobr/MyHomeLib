@@ -44,6 +44,8 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
+        <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
+        <DCC_ExeOutput>.\$(Platform)\$(Config)</DCC_ExeOutput>
         <SanitizedProjectName>MyhomeLib</SanitizedProjectName>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <VerInfo_PreRelease>true</VerInfo_PreRelease>
@@ -65,15 +67,13 @@
         <DCC_DependencyCheckOutputName>MyhomeLib.exe</DCC_DependencyCheckOutputName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
-        <PostBuildEvent><![CDATA[copy sqlite3.dll Out\Bin
-copy genres_fb2.glst Out\Bin
-copy genres_nonfb2.glst Out\Bin
+        <PostBuildEvent><![CDATA[copy sqlite3.dll "$(OUTPUTDIR)"
+copy genres_fb2.glst "$(OUTPUTDIR)"
+copy genres_nonfb2.glst "$(OUTPUTDIR)"
 $(PostBuildEvent)]]></PostBuildEvent>
         <VerInfo_Build>0</VerInfo_Build>
-        <DCC_ExeOutput>Out\Bin\</DCC_ExeOutput>
         <VerInfo_MajorVer>1</VerInfo_MajorVer>
         <VerInfo_MinorVer>0</VerInfo_MinorVer>
-        <DCC_DcuOutput>Out\Units\</DCC_DcuOutput>
         <VerInfo_Release>0</VerInfo_Release>
         <DCC_Namespace>System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_Locale>1033</VerInfo_Locale>
@@ -89,19 +89,12 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
         <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
         <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
-        <DCC_ExeOutput>Release\Bin</DCC_ExeOutput>
-        <DCC_DcuOutput>Release\Units</DCC_DcuOutput>
-        <DCC_ObjOutput>Release\Units</DCC_ObjOutput>
-        <DCC_HppOutput>Release\Units</DCC_HppOutput>
         <DCC_AssertionsAtRuntime>False</DCC_AssertionsAtRuntime>
         <DCC_DebugInformation>0</DCC_DebugInformation>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
-        <DCC_DcuOutput>Out\Units</DCC_DcuOutput>
-        <DCC_ExeOutput>Out\Bin</DCC_ExeOutput>
         <VerInfo_MinorVer>2</VerInfo_MinorVer>
         <VerInfo_Release>0</VerInfo_Release>
-        <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <VerInfo_Build>822</VerInfo_Build>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=2.2.0.822;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=2.2;Comments=</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
@@ -117,17 +110,13 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCC_Optimize>False</DCC_Optimize>
         <DCC_DebugInfoInExe>True</DCC_DebugInfoInExe>
         <DCC_DebugVN>True</DCC_DebugVN>
-        <DCC_DcuOutput>Debug\Units</DCC_DcuOutput>
-        <DCC_ObjOutput>Debug\Units</DCC_ObjOutput>
-        <DCC_HppOutput>Debug\Units</DCC_HppOutput>
-        <DCC_ExeOutput>Debug\Bin</DCC_ExeOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <DCC_DcuOutput>Out\Units</DCC_DcuOutput>
-        <DCC_ExeOutput>Out\Bin</DCC_ExeOutput>
-        <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
+        <VerInfo_MajorVer>1</VerInfo_MajorVer>
+        <VerInfo_MinorVer>0</VerInfo_MinorVer>
+        <VerInfo_Release>0</VerInfo_Release>
         <VerInfo_Build>768</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=2.1.4.768;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.768;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <ItemGroup>
@@ -500,12 +489,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="Out\Bin\MyHomeLib.exe" Configuration="Release" Class="ProjectOutput">
-                    <Platform Name="Win32">
-                        <RemoteName>MyhomeLib.exe</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
                 <DeployFile LocalName="Resources\Images\16x16\remote-review.png" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
@@ -521,6 +504,12 @@ $(PostBuildEvent)]]></PostBuildEvent>
                 <DeployFile LocalName="Resources\Images\16x16\star_small_empty.png" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Out\Bin\MyHomeLib.exe" Configuration="Release" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>MyhomeLib.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -934,12 +923,12 @@ $(PostBuildEvent)]]></PostBuildEvent>
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
+                <ProjectRoot Platform="iOSSimulator" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Android" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="Win32" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
+                <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="OSX32" Name="$(PROJECTNAME).app"/>
-                <ProjectRoot Platform="iOSSimulator" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>
             </Deployment>
         </BorlandProject>
@@ -951,7 +940,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>copy sqlite3.dll Out\Bin&amp;&amp;copy genres_fb2.glst Out\Bin&amp;&amp;copy genres_nonfb2.glst Out\Bin</PostBuildEvent>
+        <PostBuildEvent>copy sqlite3.dll &quot;$(OUTPUTDIR)&quot;&amp;&amp;copy genres_fb2.glst &quot;$(OUTPUTDIR)&quot;&amp;&amp;copy genres_nonfb2.glst &quot;$(OUTPUTDIR)&quot;</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Debug' And '$(Platform)'=='Win32'">
@@ -959,7 +948,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>copy sqlite3.dll Out\Bin&amp;&amp;copy genres_fb2.glst Out\Bin&amp;&amp;copy genres_nonfb2.glst Out\Bin</PostBuildEvent>
+        <PostBuildEvent>copy sqlite3.dll &quot;$(OUTPUTDIR)&quot;&amp;&amp;copy genres_fb2.glst &quot;$(OUTPUTDIR)&quot;&amp;&amp;copy genres_nonfb2.glst &quot;$(OUTPUTDIR)&quot;</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
 </Project>
