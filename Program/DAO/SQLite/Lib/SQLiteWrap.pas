@@ -26,7 +26,7 @@ uses
   {$IFDEF WIN32}
   Windows,
   {$ENDIF}
-  SQLite3,
+  System.Sqlite,
   Classes,
   SysUtils;
 
@@ -39,7 +39,7 @@ type
   {: @abstract(Class for handling SQLite database)}
   TSQLiteDatabase = class(TObject)
   private
-    FDB: TSQLite3DB;
+    FDB: sqlite3;
 
   protected
     procedure SetParams(query: TSQLiteQuery; const Params: array of const);
@@ -100,7 +100,7 @@ type
     { Add custom sorting procedure as new Collate.}
     procedure AddCustomCollate(
       const CollateName: string;
-      xCompare: TCollateXCompare;
+      xCompare: TxCompare;
       PrefferedEncoding: Integer = SQLITE_UTF16_ALIGNED
     );
 
@@ -113,14 +113,14 @@ type
     );
 
     { SQLite database handler.}
-    property DB: TSQLite3DB read FDB;
+    property DB: sqlite3 read FDB;
   end;
 
   {: @abstract(Class for handling SQLite query result)}
   TSQLiteQuery = class(TObject)
   private
     FDatabase: TSQLiteDatabase;
-    FStmt: TSQLiteStmt;
+    FStmt: sqlite3_stmt;
     FColCount: Longint;
     FCols: TStringList;
     FRow: Cardinal;
@@ -239,7 +239,8 @@ uses
   unit_Interfaces,
 {$ENDIF}
   Math,
-  SQLite3UDF;
+  SQLite3UDF,
+  unit_SQLiteUtils;
 
 const
   DATE_FORMAT = 'yyyy-mm-dd';
@@ -257,7 +258,7 @@ var
 begin
   inherited Create;
 
-  if SQLite3_Open(PUTF8Char(UTF8String(FileName)), FDB) <> SQLITE_OK then
+  if SQLite3_Open(PAnsiChar(UTF8String(FileName)), FDB) <> SQLITE_OK then
   begin
     if Assigned(FDB) then
       s := string(UTF8String(SQLite3_ErrMsg(FDB)))
@@ -452,7 +453,7 @@ end;
 
 function TSQLiteDatabase.LastInsertRowID: int64;
 begin
-  Result := SQLite3_LastInsertRowID(FDB);
+  Result := sqlite3_last_insert_rowid(FDB);
 end;
 
 function TSQLiteDatabase.LastChangedRows: int64;
@@ -462,19 +463,19 @@ end;
 
 procedure TSQLiteDatabase.SetTimeout(Value: Integer);
 begin
-  SQLite3_BusyTimeout(FDB, Value);
+  sqlite3_busy_timeout(FDB, Value);
 end;
 
 function TSQLiteDatabase.Version: string;
 begin
-  Result := string(UTF8String(SQLite3_Version));
+  Result := SQLITE_VERSION;
 end;
 
-procedure TSQLiteDatabase.AddCustomCollate(const CollateName: string; xCompare: TCollateXCompare; PrefferedEncoding: Integer = SQLITE_UTF16_ALIGNED);
+procedure TSQLiteDatabase.AddCustomCollate(const CollateName: string; xCompare: TXCompare; PrefferedEncoding: Integer = SQLITE_UTF16_ALIGNED);
 var
   nRc: Integer;
 begin
-  nRc := SQLite3_Create_Collation(FDB, PUTF8Char(UTF8String(CollateName)), PrefferedEncoding, nil, xCompare);
+  nRc := SQLite3_Create_Collation(FDB, PAnsiChar(UTF8String(CollateName)), PrefferedEncoding, nil, xCompare);
   if SQLITE_OK <> nRc then
     RaiseError('', 'CollateName');
 end;
@@ -483,7 +484,7 @@ procedure TSQLiteDatabase.AddFunction(const FunctionName: string; const nArg: In
 var
   nRc: Integer;
 begin
-  nRc := SQLite3_Create_Function(FDB, PUTF8Char(UTF8String(FunctionName)), nArg, PrefferedEncoding, pUserDate, @xFunc, nil, nil);
+  nRc := SQLite3_Create_Function(FDB, PAnsiChar(UTF8String(FunctionName)), nArg, PrefferedEncoding, pUserDate, @xFunc, nil, nil);
   if SQLITE_OK <> nRc then
     RaiseError('', FunctionName);
 end;
@@ -501,7 +502,7 @@ end;
 
 constructor TSQLiteQuery.Create(const DB: TSQLiteDatabase; const SQL: string);
 var
-  NextSQLStatement: PUTF8Char;
+  NextSQLStatement: PAnsiChar;
   i: Integer;
 begin
   inherited Create;
@@ -512,7 +513,7 @@ begin
   FColCount := 0;
   FSQL := SQL;
 
-  if SQLITE_OK <> Sqlite3_Prepare_v2(FDatabase.FDB, PUTF8Char(UTF8String(FSQL)), -1, FStmt, NextSQLStatement) then
+  if SQLITE_OK <> Sqlite3_Prepare_v2(FDatabase.FDB, PAnsiChar(UTF8String(FSQL)), -1, FStmt, NextSQLStatement) then
     DB.RaiseError(c_errorsql, FSQL);
 
   if not Assigned(FStmt) then
@@ -520,9 +521,9 @@ begin
 
   //get data types
   FCols := TStringList.Create;
-  FColCount := SQLite3_ColumnCount(FStmt);
+  FColCount := sqlite3_column_count(FStmt);
   for i := 0 to FColCount - 1 do
-    FCols.Add(string(UTF8String(SQLite3_ColumnName(FStmt, i))));
+    FCols.Add(string(UTF8String(sqlite3_column_name(FStmt, i))));
 end;
 
 destructor TSQLiteQuery.Destroy;
@@ -554,7 +555,7 @@ function TSQLiteQuery.GetParamIndex(const ParamName: string): Integer;
 var
   i: Integer;
 begin
-  i := SQLite3_bind_parameter_index(FStmt, PUTF8Char(UTF8String(ParamName)));
+  i := SQLite3_bind_parameter_index(FStmt, PAnsiChar(UTF8String(ParamName)));
   if i > 0 then
     Result := i - 1
   else
@@ -578,7 +579,7 @@ var
   valueUTF8: UTF8String;
 begin
   valueUTF8 := UTF8String(Value);
-  if SQLITE_OK <> SQLite3_bind_text(FStmt, ParamIndex + 1, PUTF8Char(valueUTF8), Length(valueUTF8), SQLITE_TRANSIENT) then
+  if SQLITE_OK <> SQLite3_bind_text(FStmt, ParamIndex + 1, PAnsiChar(valueUTF8), Length(valueUTF8), TBindDestructor(SQLITE_TRANSIENT)) then
     FDatabase.RaiseError(c_errorbindingparam, FSQL);
 end;
 
@@ -682,7 +683,7 @@ end;
 
 function TSQLiteQuery.GetFields(const I: Integer): string;
 begin
-  Result := string(UTF8String(Sqlite3_ColumnText(FStmt, i)));
+  Result := string(UTF8String(sqlite3_column_text(FStmt, i)));
 end;
 
 function TSQLiteQuery.GetFieldIndex(const FieldName: string): Integer;
@@ -703,7 +704,7 @@ end;
 
 function TSQLiteQuery.FieldIsNull(I: Integer): Boolean;
 begin
-  Result := SQLite3_ColumnText(FStmt, i) = nil;
+  Result := sqlite3_column_text(FStmt, i) = nil;
 end;
 
 function TSQLiteQuery.FieldAsString(I: Integer): string;
@@ -713,7 +714,7 @@ end;
 
 function TSQLiteQuery.FieldAsInt(I: Integer): Int64;
 begin
-  Result := SQLite3_ColumnInt64(FStmt, i);
+  Result := sqlite3_column_int64(FStmt, i);
 end;
 
 function TSQLiteQuery.FieldAsBoolean(I: Integer): Boolean;
@@ -734,7 +735,7 @@ end;
 
 function TSQLiteQuery.FieldAsDouble(I: Integer): Double;
 begin
-  Result := SQLite3_ColumnDouble(FStmt, i);
+  Result := sqlite3_column_double(FStmt, i);
 end;
 
 procedure TSQLiteQuery.LoadBlob(I: Integer; Stream: TStream);
@@ -743,10 +744,10 @@ var
   ptr: Pointer;
 begin
   Assert(Assigned(Stream));
-  iNumBytes := SQLite3_ColumnBytes(FStmt, i);
+  iNumBytes := sqlite3_column_bytes(FStmt, i);
   if iNumBytes > 0 then
   begin
-    ptr := Sqlite3_ColumnBlob(FStmt, i);
+    ptr := sqlite3_column_blob(FStmt, i);
     Stream.WriteBuffer(ptr^, iNumBytes);
     Stream.Position := 0;
   end;
@@ -760,8 +761,8 @@ end;
 
 function TSQLiteQuery.FieldAsBlobPtr(I: Integer; out iNumBytes: Integer): Pointer;
 begin
-  iNumBytes := SQLite3_ColumnBytes(FStmt, i);
-  Result := SQLite3_ColumnBlob(FStmt, i);
+  iNumBytes := sqlite3_column_bytes(FStmt, i);
+  Result := sqlite3_column_blob(FStmt, i);
 end;
 
 function TSQLiteQuery.FieldAsBlobString(I: Integer): string;

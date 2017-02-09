@@ -204,7 +204,7 @@ uses
   Classes,
   Variants,
   IOUtils,
-  SQLite3,
+  System.Sqlite,
   unit_Logger,
   unit_SQLiteUtils,
   unit_Database_SQLite,

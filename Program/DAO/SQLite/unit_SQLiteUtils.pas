@@ -24,13 +24,16 @@ uses
 
   function ReadResourceAsStringList(const ResourceName: string): TStringList;
 
+  function SQLiteErrorStr(SQLiteErrorCode: Integer): string;
+
 implementation
 
 uses
   Windows,
   unit_Consts,
   SysUtils,
-  StrUtils;
+  StrUtils,
+  System.Sqlite;
 
 const
   SQL_COMMENT = '--';
@@ -98,6 +101,43 @@ begin
   except
     FreeAndNil(Result);
     raise;
+  end;
+end;
+
+function SQLiteErrorStr(SQLiteErrorCode: Integer): String;
+begin
+  case SQLiteErrorCode of
+    SQLITE_OK: Result := 'Successful result';
+    SQLITE_ERROR: Result := 'SQL error or missing database';
+    SQLITE_INTERNAL: Result := 'An internal logic error in SQLite';
+    SQLITE_PERM: Result := 'Access permission denied';
+    SQLITE_ABORT: Result := 'Callback routine requested an abort';
+    SQLITE_BUSY: Result := 'The database file is locked';
+    SQLITE_LOCKED: Result := 'A table in the database is locked';
+    SQLITE_NOMEM: Result := 'A malloc() failed';
+    SQLITE_READONLY: Result := 'Attempt to write a readonly database';
+    SQLITE_INTERRUPT: Result := 'Operation terminated by sqlite3_interrupt()';
+    SQLITE_IOERR: Result := 'Some kind of disk I/O error occurred';
+    SQLITE_CORRUPT: Result := 'The database disk image is malformed';
+    SQLITE_NOTFOUND: Result := '(Internal Only) Table or record not found';
+    SQLITE_FULL: Result := 'Insertion failed because database is full';
+    SQLITE_CANTOPEN: Result := 'Unable to open the database file';
+    SQLITE_PROTOCOL: Result := 'Database lock protocol error';
+    SQLITE_EMPTY: Result := 'Database is empty';
+    SQLITE_SCHEMA: Result := 'The database schema changed';
+    SQLITE_TOOBIG: Result := 'Too much data for one row of a table';
+    SQLITE_CONSTRAINT: Result := 'Abort due to contraint violation';
+    SQLITE_MISMATCH: Result := 'Data type mismatch';
+    SQLITE_MISUSE: Result := 'Library used incorrectly';
+    SQLITE_NOLFS: Result := 'Uses OS features not supported on host';
+    SQLITE_AUTH: Result := 'Authorization denied';
+    SQLITE_FORMAT: Result := 'Auxiliary database format error';
+    SQLITE_RANGE: Result := '2nd parameter to sqlite3_bind out of range';
+    SQLITE_NOTADB: Result := 'File opened that is not a database file';
+    SQLITE_ROW: Result := 'sqlite3_step() has another row ready';
+    SQLITE_DONE: Result := 'sqlite3_step() has finished executing';
+  else
+    Result := 'Unknown SQLite Error Code "' + IntToStr(SQLiteErrorCode) + '"';
   end;
 end;
 

@@ -255,7 +255,7 @@ uses
   Character,
   Generics.Collections,
   Variants,
-  SQLite3,
+  System.Sqlite,
   DateUtils,
   Math,
   StrUtils,
@@ -1033,44 +1033,46 @@ end;
 //-----------------------------------------------------------------------------
 
 { TBookCollection_SQLite }
-function CreateFullAuthorName(pCtx: TSQLite3Context; nArgs: Integer; Args: TSQLite3Value): string; inline;
+function CreateFullAuthorName(Context: sqlite3_context; Num: Integer; out Value: sqlite3_value): string; inline;
 var
   LastName: string;
   FirstName: string;
   MiddleName: string;
 begin
-  LastName := SQLite3_Value_text16(Args^); Inc(Args);
-  FirstName := SQLite3_Value_text16(Args^); Inc(Args);
-  MiddleName := SQLite3_Value_text16(Args^);
+  LastName := SQLite3_Value_text16(Value);
+  Inc(NativeInt(Value));
+  FirstName := SQLite3_Value_text16(Value);
+  Inc(NativeInt(Value));
+  MiddleName := SQLite3_Value_text16(Value);
 
   Result := TAuthorData.FormatName(LastName, FirstName, MiddleName);
 end;
 
-procedure fullAuthorName(pCtx: TSQLite3Context; nArgs: Integer; Args: TSQLite3Value); cdecl;
+procedure fullAuthorName(Context: sqlite3_context; Num: Integer; out Value: sqlite3_value); cdecl;
 var
   FullName: string;
 begin
-  FullName := CreateFullAuthorName(pCtx, nArgs, Args);
-  SQLite3_Result_Text16(pCtx, PWideChar(FullName), -1, SQLITE_TRANSIENT);
+  FullName := CreateFullAuthorName(Context, Num, Value);
+  SQLite3_Result_Text16(Context, PWideChar(FullName), -1, TResultDestructor(SQLITE_TRANSIENT));
 end;
 
-procedure fullAuthorNameEx(pCtx: TSQLite3Context; nArgs: Integer; Args: TSQLite3Value); cdecl;
+procedure fullAuthorNameEx(Context: sqlite3_context; Num: Integer; out Value: sqlite3_value); cdecl;
 var
   FullName: string;
 begin
-  FullName := TCharacter.ToUpper(CreateFullAuthorName(pCtx, nArgs, Args));
-  SQLite3_Result_Text16(pCtx, PWideChar(FullName), -1, SQLITE_TRANSIENT);
+  FullName := TCharacter.ToUpper(CreateFullAuthorName(Context, Num, Value));
+  SQLite3_Result_Text16(Context, PWideChar(FullName), -1, TResultDestructor(SQLITE_TRANSIENT));
 end;
 
-procedure getIsTriggersOn(pCtx: TSQLite3Context; nArgs: Integer; Args: TSQLite3Value); cdecl;
+procedure getIsTriggersOn(Context: sqlite3_context; Num: Integer; out Value: sqlite3_value); cdecl;
 var
   db: TBookCollection_SQLite;
 begin
-  db := TBookCollection_SQLite(SQLite3_User_Data(pCtx));
+  db := TBookCollection_SQLite(SQLite3_User_Data(Context));
   if Assigned(db) then
-    SQLite3_Result_Int(pCtx, IfThen(db.FTriggersEnabled, 1, 0))
+    SQLite3_Result_Int(Context, IfThen(db.FTriggersEnabled, 1, 0))
   else
-    SQLite3_Result_Int(pCtx, 1);
+    SQLite3_Result_Int(Context, 1);
 end;
 
 constructor TBookCollection_SQLite.Create(const CollectionInfo: TCollectionInfo; const SystemData: ISystemData);

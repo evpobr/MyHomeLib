@@ -272,7 +272,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         </DCCReference>
         <DCCReference Include="Units\unit_Logger.pas"/>
         <DCCReference Include="Units\unit_Interfaces.pas"/>
-        <DCCReference Include="DAO\SQLite\Lib\SQLite3.pas"/>
         <DCCReference Include="DAO\SQLite\Lib\SQLite3UDF.pas"/>
         <DCCReference Include="DAO\SQLite\Lib\SQLiteWrap.pas"/>
         <DCCReference Include="DAO\SQLite\unit_Database_SQLite.pas"/>
@@ -446,7 +445,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="Out\Bin\MyHomeLib.exe" Configuration="Release" Class="ProjectOutput">
+                <DeployFile LocalName="Win32\Release\MyHomeLib.exe" Configuration="Release" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>MyhomeLib.exe</RemoteName>
                         <Overwrite>true</Overwrite>
@@ -862,13 +861,13 @@ $(PostBuildEvent)]]></PostBuildEvent>
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>
+                <ProjectRoot Platform="iOSSimulator" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Android" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="Win32" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="OSX32" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
-                <ProjectRoot Platform="iOSSimulator" Name="$(PROJECTNAME).app"/>
+                <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>
             </Deployment>
         </BorlandProject>
         <ProjectFileVersion>12</ProjectFileVersion>

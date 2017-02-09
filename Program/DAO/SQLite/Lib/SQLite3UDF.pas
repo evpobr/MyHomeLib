@@ -19,12 +19,12 @@ unit SQLite3UDF;
 interface
 
 uses
-  SQLite3;
+  System.Sqlite;
 
 function SystemCollate(Userdta: Pointer; Buf1Len: Integer; Buf1: Pointer; Buf2Len: Integer; Buf2: Pointer): Integer; cdecl;
 function SystemCollateNoCase(Userdta: Pointer; Buf1Len: Integer; Buf1: Pointer; Buf2Len: Integer; Buf2: Pointer): Integer; cdecl;
-procedure SystemUpperString(pCtx: TSQLite3Context; nArgs: Integer; Args: TSQLite3Value); cdecl;
-procedure SystemLowerString(pCtx: TSQLite3Context; nArgs: Integer; Args: TSQLite3Value); cdecl;
+procedure SystemUpperString(Context: sqlite3_context; Num: Integer; out Value: sqlite3_value); cdecl;
+procedure SystemLowerString(Context: sqlite3_context; Num: Integer; out Value: sqlite3_value); cdecl;
 
 implementation
 
@@ -52,20 +52,20 @@ begin
   ) - CSTR_EQUAL;
 end;
 
-procedure SystemUpperString(pCtx: TSQLite3Context; nArgs: Integer; Args: TSQLite3Value); cdecl;
+procedure SystemUpperString(Context: sqlite3_context; Num: Integer; out Value: sqlite3_value); cdecl;
 var
   s: string;
 begin
-  s := SQLite3_Value_text16(Args^);
-  SQLite3_Result_Text16(pCtx, PWideChar(TCharacter.ToUpper(s)), -1, SQLITE_TRANSIENT);
+  s := SQLite3_Value_text16(Value);
+  SQLite3_Result_Text16(Context, PWideChar(TCharacter.ToUpper(s)), -1, TResultDestructor(SQLITE_TRANSIENT));
 end;
 
-procedure SystemLowerString(pCtx: TSQLite3Context; nArgs: Integer; Args: TSQLite3Value); cdecl;
+procedure SystemLowerString(Context: sqlite3_context; Num: Integer; out Value: sqlite3_value); cdecl;
 var
   s: string;
 begin
-  s := SQLite3_Value_text16(Args^);
-  SQLite3_Result_Text16(pCtx, PWideChar(TCharacter.ToLower(s)), -1, SQLITE_TRANSIENT);
+  s := SQLite3_Value_text16(Value);
+  SQLite3_Result_Text16(Context, PWideChar(TCharacter.ToLower(s)), -1, TResultDestructor(SQLITE_TRANSIENT));
 end;
 
 end.

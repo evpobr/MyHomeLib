@@ -118,7 +118,6 @@ uses
   frm_EditGroup in 'Forms\Editors\frm_EditGroup.pas' {frmEditGroup},
   unit_Logger in 'Units\unit_Logger.pas',
   unit_Interfaces in 'Units\unit_Interfaces.pas',
-  SQLite3 in 'DAO\SQLite\Lib\SQLite3.pas',
   SQLite3UDF in 'DAO\SQLite\Lib\SQLite3UDF.pas',
   SQLiteWrap in 'DAO\SQLite\Lib\SQLiteWrap.pas',
   unit_Database_SQLite in 'DAO\SQLite\unit_Database_SQLite.pas',
