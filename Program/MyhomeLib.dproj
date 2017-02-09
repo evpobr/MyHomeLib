@@ -37,28 +37,18 @@
         <CfgParent>Base</CfgParent>
         <Base>true</Base>
     </PropertyGroup>
-    <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_2)'=='true') or '$(Cfg_2_Win32)'!=''">
-        <Cfg_2_Win32>true</Cfg_2_Win32>
-        <CfgParent>Cfg_2</CfgParent>
-        <Cfg_2>true</Cfg_2>
-        <Base>true</Base>
-    </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
         <DCC_ExeOutput>.\$(Platform)\$(Config)</DCC_ExeOutput>
         <SanitizedProjectName>MyhomeLib</SanitizedProjectName>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
-        <VerInfo_PreRelease>true</VerInfo_PreRelease>
         <DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;Xml;Data;Datasnap;Web;Soap;Winapi;Bde;Xml.Win;$(DCC_Namespace)</DCC_Namespace>
-        <VerInfo_Build>764</VerInfo_Build>
+        <VerInfo_Build>822</VerInfo_Build>
         <VerInfo_MajorVer>2</VerInfo_MajorVer>
-        <VerInfo_MinorVer>1</VerInfo_MinorVer>
+        <VerInfo_MinorVer>2</VerInfo_MinorVer>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Release>4</VerInfo_Release>
         <VerInfo_Locale>1049</VerInfo_Locale>
-        <VerInfo_Private>true</VerInfo_Private>
-        <VerInfo_Special>true</VerInfo_Special>
-        <VerInfo_Keys>CompanyName=MyHomeLib;FileDescription=MyHomeLib;FileVersion=2.1.4.764;InternalName=MyHomeLib;LegalCopyright=Алексей Пеньков;LegalTrademarks=MyHomeLib;OriginalFilename=MyHomeLib.exe;ProductName=MyHomeLib;ProductVersion=2.1;Comments=;SpecialBuild=;PrivateBuild=</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=MyHomeLib;FileDescription=MyHomeLib;FileVersion=2.2.0.822;InternalName=MyHomeLib;LegalCopyright=Алексей Пеньков;LegalTrademarks=MyHomeLib;OriginalFilename=MyHomeLib.exe;ProductName=MyHomeLib;ProductVersion=2.2;Comments=</VerInfo_Keys>
         <DCC_Optimize>false</DCC_Optimize>
         <DCC_Inlining>off</DCC_Inlining>
         <DCC_DebugDCUs>true</DCC_DebugDCUs>
@@ -71,13 +61,7 @@
 copy genres_fb2.glst "$(OUTPUTDIR)"
 copy genres_nonfb2.glst "$(OUTPUTDIR)"
 $(PostBuildEvent)]]></PostBuildEvent>
-        <VerInfo_Build>0</VerInfo_Build>
-        <VerInfo_MajorVer>1</VerInfo_MajorVer>
-        <VerInfo_MinorVer>0</VerInfo_MinorVer>
-        <VerInfo_Release>0</VerInfo_Release>
         <DCC_Namespace>System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;$(DCC_Namespace)</DCC_Namespace>
-        <VerInfo_Locale>1033</VerInfo_Locale>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <DCC_Warnings>false</DCC_Warnings>
@@ -93,13 +77,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCC_DebugInformation>0</DCC_DebugInformation>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
-        <VerInfo_MinorVer>2</VerInfo_MinorVer>
-        <VerInfo_Release>0</VerInfo_Release>
-        <VerInfo_Build>822</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=2.2.0.822;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=2.2;Comments=</VerInfo_Keys>
-        <VerInfo_Locale>1033</VerInfo_Locale>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Cfg_2)'!=''">
+        <VerInfo_Debug>true</VerInfo_Debug>
         <DCC_RemoteDebug>true</DCC_RemoteDebug>
         <DCC_RunTimeTypeInfo>true</DCC_RunTimeTypeInfo>
         <DCC_DebugDCUs>true</DCC_DebugDCUs>
@@ -111,13 +89,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCC_DebugInfoInExe>True</DCC_DebugInfoInExe>
         <DCC_DebugVN>True</DCC_DebugVN>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <VerInfo_MajorVer>1</VerInfo_MajorVer>
-        <VerInfo_MinorVer>0</VerInfo_MinorVer>
-        <VerInfo_Release>0</VerInfo_Release>
-        <VerInfo_Build>768</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.768;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
-        <VerInfo_Locale>1033</VerInfo_Locale>
+    <PropertyGroup Condition="'$(Cfg_2)'!=''">
+        <VerInfo_Debug>true</VerInfo_Debug>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -399,35 +372,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <BorlandProject>
             <Delphi.Personality>
                 <Parameters/>
-                <VersionInfo>
-                    <VersionInfo Name="IncludeVerInfo">True</VersionInfo>
-                    <VersionInfo Name="AutoIncBuild">False</VersionInfo>
-                    <VersionInfo Name="MajorVer">2</VersionInfo>
-                    <VersionInfo Name="MinorVer">1</VersionInfo>
-                    <VersionInfo Name="Release">4</VersionInfo>
-                    <VersionInfo Name="Build">760</VersionInfo>
-                    <VersionInfo Name="Debug">False</VersionInfo>
-                    <VersionInfo Name="PreRelease">True</VersionInfo>
-                    <VersionInfo Name="Special">True</VersionInfo>
-                    <VersionInfo Name="Private">True</VersionInfo>
-                    <VersionInfo Name="DLL">False</VersionInfo>
-                    <VersionInfo Name="Locale">1049</VersionInfo>
-                    <VersionInfo Name="CodePage">1251</VersionInfo>
-                </VersionInfo>
-                <VersionInfoKeys>
-                    <VersionInfoKeys Name="CompanyName">MyHomeLib</VersionInfoKeys>
-                    <VersionInfoKeys Name="FileDescription">MyHomeLib</VersionInfoKeys>
-                    <VersionInfoKeys Name="FileVersion">2.1.4.760</VersionInfoKeys>
-                    <VersionInfoKeys Name="InternalName">MyHomeLib</VersionInfoKeys>
-                    <VersionInfoKeys Name="LegalCopyright">Алексей Пеньков</VersionInfoKeys>
-                    <VersionInfoKeys Name="LegalTrademarks">MyHomeLib</VersionInfoKeys>
-                    <VersionInfoKeys Name="OriginalFilename">MyHomeLib.exe</VersionInfoKeys>
-                    <VersionInfoKeys Name="ProductName">MyHomeLib</VersionInfoKeys>
-                    <VersionInfoKeys Name="ProductVersion">2.1</VersionInfoKeys>
-                    <VersionInfoKeys Name="Comments"/>
-                    <VersionInfoKeys Name="SpecialBuild"/>
-                    <VersionInfoKeys Name="PrivateBuild"/>
-                </VersionInfoKeys>
                 <Source>
                     <Source Name="MainSource">MyHomeLib.dpr</Source>
                 </Source>
@@ -923,12 +867,12 @@ $(PostBuildEvent)]]></PostBuildEvent>
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <ProjectRoot Platform="iOSSimulator" Name="$(PROJECTNAME).app"/>
+                <ProjectRoot Platform="OSX32" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Android" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="Win32" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
-                <ProjectRoot Platform="OSX32" Name="$(PROJECTNAME).app"/>
+                <ProjectRoot Platform="iOSSimulator" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>
             </Deployment>
         </BorlandProject>
