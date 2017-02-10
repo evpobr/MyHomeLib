@@ -555,6 +555,8 @@ function TSQLiteQuery.GetParamIndex(const ParamName: string): Integer;
 var
   i: Integer;
 begin
+  Result := 0;
+
   i := SQLite3_bind_parameter_index(FStmt, PAnsiChar(UTF8String(ParamName)));
   if i > 0 then
     Result := i - 1
