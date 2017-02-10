@@ -358,7 +358,7 @@ begin
   while nPos <= nLen do
   begin
     ch := strTemplate[nPos];
-    if not IsLetter(ch) then
+    if not ch.IsLetter then
       Break;
 
     strLiteral := strLiteral + ch;
