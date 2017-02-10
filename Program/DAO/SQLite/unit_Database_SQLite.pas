@@ -241,7 +241,6 @@ type
 
     procedure InternalLoadGenres;
     procedure InternalUpdateField(const BookID: Integer; const UpdateSQL: string; const NewValue: string);
-    procedure GetAuthor(AuthorID: Integer; var Author: TAuthorData);
     function GetSeriesTitle(SeriesID: Integer): string;
     function InsertAuthorIfMissing(const Author: TAuthorData): Integer;
     function IsFileNameConflict(const BookRecord: TBookRecord; const IncludeFolder: Boolean): Boolean;
@@ -1519,31 +1518,6 @@ begin
   else
     Result := FSystemData.GetAnnotation(BookKey);
 
-end;
-
-procedure TBookCollection_SQLite.GetAuthor(AuthorID: Integer; var Author: TAuthorData);
-const
-  SQL = 'SELECT LastName, FirstName, MiddleName FROM Authors WHERE AuthorID = ?';
-var
-  query: TSQLiteQuery;
-begin
-  query := FDatabase.NewQuery(SQL);
-  try
-    query.SetParam(0, AuthorID);
-    query.Open;
-
-    if not query.Eof then
-    begin
-      Author.AuthorID := AuthorID;
-      Author.LastName := query.FieldAsString(0);
-      Author.FirstName := query.FieldAsString(1);
-      Author.MiddleName := query.FieldAsString(2);
-    end
-    else
-      Author.Clear;
-  finally
-    FreeAndNil(query);
-  end;
 end;
 
 // Insert an Author if the name combination doesn't exist
