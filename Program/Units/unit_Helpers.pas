@@ -366,13 +366,6 @@ begin
       );
 end;
 
-function BrowseCallbackProc(hwnd: HWND; uMsg: UINT; lParam: LPARAM; lpData: LPARAM): Integer; stdcall;
-begin
-  if (uMsg = BFFM_INITIALIZED) then
-    SendMessage(hwnd, BFFM_SETSELECTION, 1, lpData);
-  BrowseCallbackProc := 0;
-end;
-
 function CreateImageFromResource(GraphicClass: TGraphicClass; const ResName: string; ResType: PChar): TGraphic;
 var
   s: TResourceStream;
