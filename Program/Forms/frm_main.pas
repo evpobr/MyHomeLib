@@ -970,6 +970,7 @@ uses
   DateUtils,
   IOUtils,
   Character,
+  Vcl.FileCtrl,
   Generics.Collections,
   Math,
   fictionbook_21,
@@ -3555,7 +3556,7 @@ begin
 
   if ScriptID = 799 then // выбор папки; не зависит от формата
   begin
-    if not GetFolderName(Handle, 'Укажите путь', FLastDeviceDir) then
+    if not SelectDirectory('Укажите путь', FLastDeviceDir, FLastDeviceDir, [sdNewUI, sdNewFolder]) then
       Exit;
     AFolder := FLastDeviceDir;
     Dec(ScriptID, 901);
@@ -3566,7 +3567,7 @@ begin
 
     if (ScriptID < 1) and (Settings.PromptDevicePath) then
     begin
-      if not GetFolderName(Handle, rstrProvideThePath, FLastDeviceDir) then
+      if not SelectDirectory(rstrProvideThePath, FLastDeviceDir, FLastDeviceDir, [sdNewUI, sdNewFolder]) then
         Exit
       else
         AFolder := FLastDeviceDir;

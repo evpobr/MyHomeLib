@@ -65,8 +65,6 @@ type
 
 function GetFileName(key: TMHLFileName; out FileName: string): Boolean;
 
-function GetFolderName(Handle: Integer; const Caption: string; var strFolder: string): Boolean;
-
 function CreateImageFromResource(GraphicClass: TGraphicClass; const ResName: string; ResType: PChar = RT_RCDATA): TGraphic;
 
 function MoveToRecycle(sFileName: string): Boolean;
@@ -373,38 +371,6 @@ begin
   if (uMsg = BFFM_INITIALIZED) then
     SendMessage(hwnd, BFFM_SETSELECTION, 1, lpData);
   BrowseCallbackProc := 0;
-end;
-
-function GetFolderName(Handle: Integer; const Caption: string; var strFolder: string): Boolean;
-var
-  BrowseInfo: TBrowseInfo;
-  lpItemID: PItemIDList;
-
-  DisplayName: array [0 .. MAX_PATH] of Char;
-  TempPath : array[0..MAX_PATH] of Char;
-begin
-  Result := False;
-
-  FillChar(BrowseInfo, SizeOf(TBrowseInfo), #0);
-
-  if 0 <> Handle then
-    BrowseInfo.hwndOwner := Handle
-  else
-    BrowseInfo.hwndOwner := Application.Handle;
-
-  BrowseInfo.pszDisplayName := @DisplayName;
-  BrowseInfo.lpszTitle := PChar(Caption);
-  BrowseInfo.ulFlags := BIF_RETURNONLYFSDIRS or BIF_USENEWUI;
-  BrowseInfo.lpfn := @BrowseCallbackProc;
-  BrowseInfo.lParam := LPARAM(PChar(strFolder));
-
-  lpItemID := SHBrowseForFolder(BrowseInfo);
-  if Assigned(lpItemID) then
-  begin
-    Result := SHGetPathFromIDList(lpItemID, TempPath);
-    if Result then strFolder := StrPas(TempPath);
-    CoTaskMemFree(lpItemID);
-  end;
 end;
 
 function CreateImageFromResource(GraphicClass: TGraphicClass; const ResName: string; ResType: PChar): TGraphic;

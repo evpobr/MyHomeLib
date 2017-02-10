@@ -256,6 +256,7 @@ implementation
 uses
   StrUtils,
   Character,
+  Vcl.FileCtrl,
   unit_Globals,
   unit_Readers,
   unit_Scripts,
@@ -911,7 +912,7 @@ begin
   end;
 
   AFolder := EditControl.Text;
-  if GetFolderName(Handle, rstrProvideFolder, AFolder) then
+  if SelectDirectory(rstrProvideFolder, AFolder, AFolder, [sdNewUI, sdNewFolder]) then
     EditControl.Text := AFolder;
 end;
 

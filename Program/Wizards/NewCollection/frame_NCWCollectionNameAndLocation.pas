@@ -55,6 +55,7 @@ var
 implementation
 
 uses
+  Vcl.FileCtrl,
   unit_Helpers,
   unit_NCWParams,
   unit_Errors,
@@ -277,7 +278,7 @@ procedure TframeNCWNameAndLocation.btnSelectRootClick(Sender: TObject);
 var
   AFolder: string;
 begin
-  if GetFolderName(Handle, rstrSelectFolder, AFolder) then
+  if SelectDirectory(rstrSelectFolder, AFolder, AFolder, [sdNewUI, sdNewFolder]) then
     edCollectionRoot.Text := AFolder;
 end;
 

@@ -84,6 +84,7 @@ implementation
 
 uses
   SysUtils,
+  Vcl.FileCtrl,
   unit_Helpers,
   unit_Consts,
   unit_Errors,
@@ -119,7 +120,7 @@ var
   AFolder: string;
 begin
   AFolder := edCollectionRoot.Text;
-  if GetFolderName(Handle, rstrChooseDataFolder, AFolder) then
+  if SelectDirectory(rstrChooseDataFolder, AFolder, AFolder, [sdNewUI, sdNewFolder]) then
     edCollectionRoot.Text := AFolder;
 end;
 
