@@ -2722,7 +2722,7 @@ begin
 
   tvDownloadList.SaveToFile(Settings.SystemFileName[sfDownloadsStore]);
 
-  if DirectoryExists(Settings.TempDir) then
+  if TDirectory.Exists(Settings.TempDir) then
     ClearDir(Settings.TempDir);
 
   SavePositions;
@@ -6201,7 +6201,7 @@ var
   dirPath: string;
 begin
   dirPath := ExcludeTrailingPathDelimiter(Settings.ReadPath);
-  if DirectoryExists(dirPath) then
+  if TDirectory.Exists(dirPath) then
     ClearDir(dirPath);
 end;
 
