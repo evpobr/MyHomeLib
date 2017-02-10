@@ -3238,8 +3238,8 @@ begin
               //
               // Загрузим обложку
               //
+              imgBookCover := GetBookCover(book);
               try
-                imgBookCover := GetBookCover(book);
                 InfoPanel.SetBookCover(imgBookCover);
               finally
                 imgBookCover.Free;
