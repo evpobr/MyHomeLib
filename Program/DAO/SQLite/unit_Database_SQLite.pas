@@ -1034,16 +1034,17 @@ end;
 
 { TBookCollection_SQLite }
 function CreateFullAuthorName(Context: sqlite3_context; Num: Integer; out Value: sqlite3_value): string; inline;
+type
+  sqlite3_value_array = array[0..MaxShort - 1] of sqlite3_value;
+  sqlite3_value_array_ptr = ^sqlite3_value_array;
 var
   LastName: string;
   FirstName: string;
   MiddleName: string;
 begin
-  LastName := SQLite3_Value_text16(Value);
-  Inc(NativeInt(Value));
-  FirstName := SQLite3_Value_text16(Value);
-  Inc(NativeInt(Value));
-  MiddleName := SQLite3_Value_text16(Value);
+  LastName := SQLite3_Value_text16(sqlite3_value_array_ptr(@Value)[0]);
+  FirstName := SQLite3_Value_text16(sqlite3_value_array_ptr(@Value)[1]);
+  MiddleName := SQLite3_Value_text16(sqlite3_value_array_ptr(@Value)[2]);
 
   Result := TAuthorData.FormatName(LastName, FirstName, MiddleName);
 end;
