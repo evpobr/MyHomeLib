@@ -2320,8 +2320,6 @@ var
   TableName: string;
   StringList: TStringList;
   StructureDDL: string;
-  BookCollection: IBookCollection;
-
 begin
   for TableName in TABLE_NAMES do
     FDatabase.ExecSQL(Format(SQL_TRUNCATE, [TableName]));
