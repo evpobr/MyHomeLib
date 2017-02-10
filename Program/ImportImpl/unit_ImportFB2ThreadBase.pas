@@ -57,7 +57,7 @@ type
     function GetNewFileName(FileName: string; R: TBookRecord): string;
   public
     constructor Create(CollectionID: integer);
-    destructor Destroy;
+    destructor Destroy; override;
   protected
     procedure ProcessFileList; virtual; abstract;
     procedure ProcessFileListArchive; virtual; abstract;
