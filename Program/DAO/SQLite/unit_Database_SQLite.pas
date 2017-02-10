@@ -773,7 +773,7 @@ begin
         else if (FCollection.GetAuthorFilterType <> '') and (FCollection.GetAuthorFilterType <> ALPHA_FILTER_ALL) then
         begin
           Assert(Length(FCollection.GetAuthorFilterType) = 1);
-          Assert(TCharacter.IsUpper(FCollection.GetAuthorFilterType, 1));
+          Assert(FCollection.GetAuthorFilterType[1].IsUpper);
           // TODO -cSQL performance: не оптимизируется при использовании выражения
           AddToWhere(Where,
             'a.SearchName LIKE :FilterType'  // начинается на заданную букву
@@ -999,7 +999,7 @@ begin
         else if FCollection.GetSeriesFilterType <> ALPHA_FILTER_ALL then
         begin
           Assert(Length(FCollection.GetSeriesFilterType) = 1);
-          Assert(TCharacter.IsUpper(FCollection.GetSeriesFilterType, 1));
+          Assert(FCollection.GetSeriesFilterType[1].IsUpper);
           // TODO -cSQL performance: не оптимизируется при использовании выражения
           AddToWhere(Where,
             's.SearchSeriesTitle LIKE :FilterType'   // начинается на заданную букву
@@ -1061,7 +1061,7 @@ procedure fullAuthorNameEx(Context: sqlite3_context; Num: Integer; out Value: sq
 var
   FullName: string;
 begin
-  FullName := TCharacter.ToUpper(CreateFullAuthorName(Context, Num, Value));
+  FullName := CreateFullAuthorName(Context, Num, Value).ToUpper;
   SQLite3_Result_Text16(Context, PWideChar(FullName), -1, TResultDestructor(SQLITE_TRANSIENT));
 end;
 
@@ -1597,7 +1597,7 @@ begin
     Result := NO_SERIES_ID
   else
   begin
-    SearchExpr := ToUpper(Trim(Title));
+    SearchExpr := Title.Trim.ToUpper;
 
     searchQuery := FDatabase.NewQuery(SQL_SELECT);
     try
