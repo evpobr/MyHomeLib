@@ -30,6 +30,7 @@ type
     procedure WorkFunction; override;
     procedure ProcessFileList; override;
     procedure SortFiles(var R: TBookRecord); override;
+    procedure ProcessFileListArchive; override;
 
   public
     constructor Create(const CollectionID: Integer);
@@ -216,6 +217,11 @@ begin
   finally
     FProgressEngine.EndOperation;
   end;
+end;
+
+procedure TImportFBDThread.ProcessFileListArchive;
+begin
+  raise ENotImplemented.Create('');
 end;
 
 end.
