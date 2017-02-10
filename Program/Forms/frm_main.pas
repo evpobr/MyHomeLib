@@ -26,6 +26,7 @@ uses
   System.RTLConsts,
   Windows,
   Messages,
+  System.Character,
   SysUtils,
   Variants,
   Classes,
@@ -970,7 +971,6 @@ uses
   StrUtils,
   DateUtils,
   IOUtils,
-  Character,
   Vcl.FileCtrl,
   Generics.Collections,
   Math,
@@ -3733,9 +3733,9 @@ begin
   if Filter = '' then
     Exit;
 
-  RealFilter := Character.ToUpper(Copy(Filter, 1, 1));
+  RealFilter := Copy(Filter, 1, 1).ToUpper;
 
-  if not Character.IsLetter(RealFilter, 1) then
+  if not RealFilter[1].IsLetter then
     RealFilter := ALPHA_FILTER_ALL; //ALPHA_FILTER_NON_ALPHA;
 
   for barIndex := 0 to High(ToolBars) do
@@ -3763,7 +3763,7 @@ begin
   FLastLetterA := Button;
   FLastLetterA.Down := True;
 
-  Result := Character.ToUpper(Button.Caption);
+  Result := String(Button.Caption).ToUpper;
 
   FCollection.SetAuthorFilterType(Result);
 
@@ -3815,7 +3815,7 @@ begin
   FLastLetterS := Button;
   FLastLetterS.Down := True;
 
-  Result := Character.ToUpper(Button.Caption);
+  Result := String(Button.Caption).ToUpper;
 
   FCollection.SetSeriesFilterType(Result);
 
