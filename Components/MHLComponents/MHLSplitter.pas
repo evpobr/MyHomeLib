@@ -19,7 +19,7 @@ unit MHLSplitter;
 interface
 
 uses
-  SysUtils, Classes, Types, Windows, Controls, Graphics, ExtCtrls;
+  System.UITypes, SysUtils, Classes, Types, Windows, Controls, Graphics, ExtCtrls;
 
 type
   TMHLSplitter = class(TGraphicControl)

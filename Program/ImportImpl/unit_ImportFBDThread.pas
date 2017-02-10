@@ -20,6 +20,7 @@ unit unit_ImportFBDThread;
 interface
 
 uses
+  Winapi.Windows,
   unit_ImportFB2ThreadBase,
   unit_Globals;
 
@@ -44,7 +45,8 @@ uses
   FictionBook_21,
   unit_Consts,
   dm_user,
-  unit_MHLArchiveHelpers;
+  unit_MHLArchiveHelpers,
+  unit_Settings;
 
 resourcestring
   rstrFoundNewArchives = 'Обнаружено новых архивов: %u';

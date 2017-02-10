@@ -22,6 +22,7 @@ interface
 uses
   Windows,
   Messages,
+  System.UITypes,
   Classes,
   Graphics,
   Controls,

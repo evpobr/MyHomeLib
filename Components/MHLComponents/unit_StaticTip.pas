@@ -21,6 +21,8 @@ unit unit_StaticTip;
 interface
 
 uses
+  System.Types,
+  System.UITypes,
   SysUtils,
   Classes,
   Controls,
@@ -31,8 +33,7 @@ uses
   ImgList,
   Themes,
   WinAPi.UxTheme,
-  WinAPi.DwmApi,
-  System.UITypes;
+  WinAPi.DwmApi;
 
 type
   TMHLStaticTip = class(TCustomLabel)

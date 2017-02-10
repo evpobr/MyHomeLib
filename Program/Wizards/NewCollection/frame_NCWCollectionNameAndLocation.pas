@@ -15,7 +15,7 @@ unit frame_NCWCollectionNameAndLocation;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  System.UITypes, Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, frame_InteriorPageBase, StdCtrls, ExtCtrls, unit_StaticTip, unit_AutoCompleteEdit,
   dm_user, unit_Interfaces;
 

@@ -55,6 +55,7 @@ implementation
 uses
   SysUtils,
   unit_Consts,
+  unit_Settings,
   dm_user;
 
 constructor TTemplater.Create;

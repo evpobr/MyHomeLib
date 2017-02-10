@@ -83,7 +83,8 @@ Settings.ImportPath
 
 uses
   Dialogs,
-  dm_user;
+  dm_user,
+  unit_Settings;
 
 resourcestring
   rstrCheckTemplateValidity = 'Проверьте правильность шаблона';

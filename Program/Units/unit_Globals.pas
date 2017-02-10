@@ -415,7 +415,8 @@ uses
   unit_fb2ToText,
   unit_Fb2Utils,
   unit_MHLGenerics,
-  unit_MHLArchiveHelpers;
+  unit_MHLArchiveHelpers,
+  unit_Settings;
 
 resourcestring
   rstrUnableToLaunch = ' Не удалось запустить %s ! ';

@@ -21,7 +21,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Mask, ExtCtrls, unit_AutoCompleteEdit;
+  Dialogs, StdCtrls, Mask, ExtCtrls, unit_AutoCompleteEdit, System.UITypes;
 
 type
   TfrmEditScript = class(TForm)

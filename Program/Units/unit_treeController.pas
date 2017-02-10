@@ -114,7 +114,8 @@ uses
   unit_Consts,
   dm_user,
   unit_Helpers,
-  unit_MHLHelpers;
+  unit_MHLHelpers,
+  unit_Settings;
 
 resourcestring
   rstrSingleSeries = 'Серия: %s';

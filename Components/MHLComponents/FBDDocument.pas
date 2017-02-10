@@ -27,6 +27,8 @@ interface
 
 uses
   Windows,
+  System.UITypes,
+  System.NetEncoding,
   SysUtils,
   Classes,
   Graphics,

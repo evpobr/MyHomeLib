@@ -40,7 +40,8 @@ uses
   dm_user,
   unit_MHL_strings,
   unit_Messages,
-  unit_Interfaces;
+  unit_Interfaces,
+  unit_Settings;
 
 { TImportXMLThread }
 

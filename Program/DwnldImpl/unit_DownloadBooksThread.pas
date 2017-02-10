@@ -71,7 +71,8 @@ uses
   Windows,
   SysUtils,
   dm_user,
-  frm_main;
+  frm_main,
+  unit_Settings;
 
 resourcestring
   rstrDownloaded = 'Скачано файлов: %u из %u';

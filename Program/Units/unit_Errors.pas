@@ -20,6 +20,7 @@ unit unit_Errors;
 interface
 
 uses
+  System.UITypes,
   SysUtils,
   Dialogs,
   unit_Consts;

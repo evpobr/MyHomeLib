@@ -74,7 +74,8 @@ uses
   IdException,
   Windows,
   dm_user,
-  IdMultipartFormData;
+  IdMultipartFormData,
+  unit_Settings;
 
 resourcestring
   rstrDone = 'Готово';

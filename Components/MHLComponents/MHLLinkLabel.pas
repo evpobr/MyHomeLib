@@ -19,6 +19,7 @@ unit MHLLinkLabel;
 interface
 
 uses
+  System.Types,
   SysUtils,
   Classes,
   Messages,

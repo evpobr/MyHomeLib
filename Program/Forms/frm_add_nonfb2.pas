@@ -22,6 +22,7 @@ interface
 
 uses
   Windows,
+  System.UITypes,
   Messages,
   SysUtils,
   Variants,
@@ -181,6 +182,7 @@ uses
   unit_MHLHelpers,
   unit_Helpers,
   frm_author_list,
+  unit_Settings,
   unit_MHLArchiveHelpers;
 
 resourcestring

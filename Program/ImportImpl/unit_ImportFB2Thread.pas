@@ -15,6 +15,7 @@ unit unit_ImportFB2Thread;
 interface
 
 uses
+  Winapi.Windows,
   unit_ImportFB2ThreadBase,
   unit_Globals,
   unit_MHLArchiveHelpers;
@@ -48,7 +49,8 @@ uses
   unit_Helpers,
   unit_Consts,
   dm_user,
-  unit_Templater;
+  unit_Templater,
+  unit_Settings;
 
 resourcestring
   rstrStructureError = 'Ошибка структуры fb2: %s.zip -> %s';

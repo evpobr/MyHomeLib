@@ -90,7 +90,8 @@ uses
   ShlObj,
   ShellAPI,
   ShLwApi,
-  ActiveX;
+  ActiveX,
+  unit_Settings;
 
 // ============================================================================
 // TIniStringList

@@ -54,6 +54,7 @@ uses
   StrUtils,
   IOUtils,
   unit_Consts,
+  unit_Settings,
   unit_MHLGenerics,
   dm_user,
   unit_MHL_strings,

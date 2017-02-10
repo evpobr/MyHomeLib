@@ -22,6 +22,8 @@ unit frm_main;
 interface
 
 uses
+  System.UITypes,
+  System.RTLConsts,
   Windows,
   Messages,
   SysUtils,

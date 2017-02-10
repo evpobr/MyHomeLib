@@ -20,8 +20,8 @@ unit frm_edit_reader;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Mask, ExtCtrls, unit_AutoCompleteEdit;
+  Windows, Messages, System.UITypes, SysUtils, Variants, Classes, Graphics,
+  Controls, Forms, Dialogs, StdCtrls, Mask, ExtCtrls, unit_AutoCompleteEdit;
 
 type
   TfrmEditReader = class(TForm)

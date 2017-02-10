@@ -34,6 +34,8 @@ unit unit_ProgressEngine;
 interface
 
 uses
+  System.Math,
+  System.StrUtils,
   ComCtrls,
   unit_Events;
 
@@ -104,9 +106,7 @@ type
 implementation
 
 uses
-  SysUtils,
-  StrUtils,
-  Math;
+  SysUtils;
 
 { TProgressInfo }
 
