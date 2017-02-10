@@ -49,6 +49,8 @@ begin
     Exit;
   end;
 
+  lpBaseAddress := nil;
+
   // если FileMapping есть - то происходит OpenFileMapping
   MemHnd := CreateFileMapping(HWND($FFFFFFFF), nil, PAGE_READWRITE, 0, MemFileSize, PChar(MemFileName));
   if GetLastError <> ERROR_ALREADY_EXISTS then
