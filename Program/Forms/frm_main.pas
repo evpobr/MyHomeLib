@@ -544,7 +544,6 @@ type
     // Список книг
     //
     procedure tvBooksTreeHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
-    procedure tvBooksTreeMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure tvBooksTreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure tvBooksTreeChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 
@@ -3344,39 +3343,6 @@ begin
     if Assigned(Node) then
       Tree.Selected[Node] := True;
   end;
-end;
-
-procedure TfrmMain.tvBooksTreeMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-var
-  Node: PVirtualNode;
-  Data: PBookRecord;
-  Tree: TBookTree;
-  Selected: PVirtualNode;
-begin
-//  if (Button = mbLeft) and (ssShift in Shift) then
-//  begin
-//    try
-//      Tree := Sender as TBookTree;
-//      ClearLabels(Tree.Tag, True);
-//      Node := Tree.GetFirstSelected;
-//      Selected := Node;
-//      while Assigned(Node) do
-//      begin
-//        Data := Tree.GetNodeData(Node);
-//        if Data^.nodeType = ntBookInfo then
-//        begin
-//          if Tree.CheckState[Node] = csCheckedNormal then
-//            Tree.CheckState[Node] := csUncheckedNormal
-//          else
-//            Tree.CheckState[Node] := csCheckedNormal;
-//          Tree.Selected[Node] := False;
-//        end;
-//        Node := Tree.GetNextSelected(Node);
-//      end; // while
-//    finally
-//      Tree.Selected[Selected] := True;
-//    end;
-//  end; // if
 end;
 
 //
