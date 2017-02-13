@@ -194,7 +194,6 @@ type
     FDatabase: TSQLiteDatabase;
 
     procedure InternalClearGroup(GroupID: Integer; RemoveGroup: Boolean);
-    function InternalFindGroup(const GroupName: string): Boolean; overload; inline;
     function InternalFindGroup(GroupID: Integer): Boolean; overload; inline;
   end;
 
@@ -1659,22 +1658,6 @@ begin
     finally
       FreeAndNil(query);
     end;
-  end;
-end;
-
-function TSystemData_SQLite.InternalFindGroup(const GroupName: string): Boolean;
-const
-  SQL = 'SELECT GroupID FROM Groups WHERE GroupName = ? ';
-var
-  query: TSQLiteQuery;
-begin
-  query := FDatabase.NewQuery(SQL);
-  try
-    query.SetParam(0, GroupName);
-    query.Open;
-    Result := not query.Eof;
-  finally
-    FreeAndNil(query);
   end;
 end;
 
