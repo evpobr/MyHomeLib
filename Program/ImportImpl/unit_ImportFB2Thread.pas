@@ -239,7 +239,7 @@ end;
 
 procedure TImportFB2Thread.SortFilesZip(var R: TBookRecord);
 var
-  FileName, NewFileName, NewFolder, ext: string;
+  FileName, NewFileName, NewFolder: string;
   archiveFileName: string;
   archiver: TMHLZip;
 begin

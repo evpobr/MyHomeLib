@@ -47,7 +47,6 @@ type
     FGenres: TMHLLinkLabel;
     FAnnotation: TMemo;
     FFb2Info: TListView;
-    FInfoButton: TButton;
 
     FOnAuthorLinkClicked: TSysLinkEvent;
     FOnGenreLinkClicked: TSysLinkEvent;
