@@ -211,15 +211,18 @@ begin
         begin
           // Test archive integrity only if it's an archive
           archiver := TMHLZip.Create(FFile, True);
-          Result := archiver.Test;
-          if not Result then
-            DeleteFile(PChar(FFile));
+          try
+            Result := archiver.Test;
+            if not Result then
+              DeleteFile(PChar(FFile));
+          finally
+            archiver.Free;
+          end;
         end;
       end;
     end;
   finally
     Str.Free;
-    FreeAndNil(archiver);
   end;
 end;
 
