@@ -209,6 +209,7 @@ uses
   unit_Database_SQLite,
   dm_user,
   unit_Helpers,
+  unit_Settings,
   unit_Errors;
 
 resourcestring
