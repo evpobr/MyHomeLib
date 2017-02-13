@@ -18,6 +18,8 @@
 
 unit frm_settings;
 
+{$WARN SYMBOL_PLATFORM OFF}
+
 interface
 
 uses

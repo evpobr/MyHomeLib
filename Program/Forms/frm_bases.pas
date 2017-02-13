@@ -21,6 +21,8 @@ TODO -oNickR : возможно, стоит здесь задавать свой
 
 unit frm_bases;
 
+{$WARN SYMBOL_PLATFORM OFF}
+
 interface
 
 uses

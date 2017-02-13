@@ -18,6 +18,8 @@
 
 unit frm_add_nonfb2;
 
+{$WARN SYMBOL_PLATFORM OFF}
+
 interface
 
 uses

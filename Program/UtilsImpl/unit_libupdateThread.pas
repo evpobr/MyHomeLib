@@ -176,7 +176,6 @@ var
   updateInfo: TUpdateInfo;
   Collection: IBookCollection;
   UserDataBackup: TUserData;
-  S: string;
 begin
   SetComment(rstrCheckingUpdate);
 

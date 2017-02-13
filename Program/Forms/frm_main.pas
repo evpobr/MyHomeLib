@@ -19,6 +19,8 @@
 
 unit frm_main;
 
+{$WARN SYMBOL_PLATFORM OFF}
+
 interface
 
 uses
