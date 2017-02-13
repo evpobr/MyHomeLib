@@ -22,7 +22,6 @@ interface
 
 uses
   System.Types,
-  System.UITypes,
   SysUtils,
   Classes,
   Controls,
@@ -31,6 +30,7 @@ uses
   WinAPi.Windows,
   Forms,
   ImgList,
+  System.UITypes,
   Themes,
   WinAPi.UxTheme,
   WinAPi.DwmApi;
