@@ -789,7 +789,6 @@ type
     procedure OnGetBookHandler(var BookRecord: TBookRecord);
     procedure OnUpdateBookHandler(const BookRecord: TBookRecord);
     procedure OnChangeBook2ZipHandler(const BookRecord: TBookRecord);
-    function OnHelpHandler(Command: Word; Data: NativeInt; var CallHelp: Boolean): Boolean;
     procedure OnImportUserDataHandler(const UserDataSource: TUserData);
 
   private type
@@ -974,6 +973,7 @@ uses
   DateUtils,
   IOUtils,
   Vcl.FileCtrl,
+  Vcl.HtmlHelpViewer,
   Generics.Collections,
   Math,
   fictionbook_21,
@@ -2583,9 +2583,6 @@ var
   PresetFile: string;
   preset: TSearchPreset;
 begin
-  Application.OnHelp := OnHelpHandler;
-  UseLatestCommonDialogs := True;
-
   FSystemData := SystemDB;
 
   Assert(Assigned(FSystemData));
@@ -4736,7 +4733,6 @@ begin
     frmEditBook.OnGetBook := OnGetBookHandler;
     frmEditBook.OnSelectBook := OnSelectBookHandler;
     frmEditBook.OnUpdateBook := OnUpdateBookHandler;
-    frmEditBook.OnHelp := OnHelpHandler;
 
     if frmEditBook.ShowModal = mrOk then
     begin
@@ -6313,16 +6309,6 @@ begin
   SaveColumns;
 end;
 
-function TfrmMain.OnHelpHandler(Command: Word; Data: NativeInt; var CallHelp: Boolean): Boolean;
-begin
-  if Data = 1 then
-    HtmlHelp(Application.Handle, PChar(Settings.SystemFileName[sfAppHelp]), HH_DISPLAY_TOC, 0)
-  else
-    HtmlHelp(Application.Handle, PChar(Settings.SystemFileName[sfAppHelp]), HH_HELP_CONTEXT, Data);
-
-  CallHelp := False;
-end;
-
 procedure TfrmMain.ShowCollectionSettingsExecute(Sender: TObject);
 var
   frmBases: TfrmBases;
@@ -6575,7 +6561,7 @@ end;
 
 procedure TfrmMain.ShowHelpExecute(Sender: TObject);
 begin
-  HtmlHelp(Application.Handle, PChar(Settings.SystemFileName[sfAppHelp]), HH_DISPLAY_TOC, 0);
+  Application.HelpShowTableOfContents;
 end;
 
 procedure TfrmMain.ImportNonFB2Execute(Sender: TObject);

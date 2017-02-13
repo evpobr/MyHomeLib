@@ -158,8 +158,9 @@ begin
 
     // Важно! сначала создаем датамодули и главную форму, а потом - остальные формы!
     Application.CreateForm(TDMUser, DMUser);
-  DMUser.Init;
+    DMUser.Init;
 
+    Application.HelpFile := Settings.SystemFileName[sfAppHelp];
     Application.CreateForm(TfrmMain, frmMain);
     Application.CreateForm(TfrmGenreTree, frmGenreTree);
     

@@ -551,8 +551,7 @@ end;
 
 procedure TfrmSettings.ShowHelpClick(Sender: TObject);
 begin
-  HtmlHelp(Application.Handle, PChar(Settings.SystemFileName[sfAppHelp]), HH_HELP_CONTEXT, pcSetPages.ActivePage.HelpContext);
-  frmSettings.FocusControl(btnOk);
+  Application.HelpContext(pcSetPages.ActivePage.HelpContext);
 end;
 
 procedure TfrmSettings.SaveSettingsClick(Sender: TObject);

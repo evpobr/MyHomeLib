@@ -63,7 +63,6 @@ type
     gbExtraInfo: TGroupBox;
     btnOpenBook: TButton;
     procedure FormShow(Sender: TObject);
-    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure btnGenresClick(Sender: TObject);
     procedure btnAddAuthorClick(Sender: TObject);
     procedure btnAChangeClick(Sender: TObject);
@@ -170,17 +169,6 @@ begin
   edSN.Text := IntToStr(FBookRecord.SeqNumber);
   edKeyWords.Text := FBookRecord.KeyWords;
   cbLang.Text := FBookRecord.Lang;
-end;
-
-procedure TfrmEditBookInfo.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-var
-  Dummy: boolean;
-begin
-  if Key = VK_F1 then
-  begin
-    Assert(Assigned(FOnHelp));
-    FOnHelp(0, 0, Dummy)
-  end;
 end;
 
 procedure TfrmEditBookInfo.btnGenresClick(Sender: TObject);

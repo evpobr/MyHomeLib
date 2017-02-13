@@ -1434,10 +1434,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsBehavior'
       ImageIndex = 5
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel3: TPanel
         AlignWithMargins = True
         Left = 3
@@ -1449,7 +1445,6 @@ object frmSettings: TfrmSettings
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 0
-        ExplicitTop = 7
         DesignSize = (
           441
           375)
@@ -1613,7 +1608,6 @@ object frmSettings: TfrmSettings
           Caption = #1054#1073#1088#1072#1073#1072#1090#1099#1074#1072#1090#1100' '#1074#1099#1076#1077#1083#1077#1085#1085#1099#1077'  '#1082#1072#1082' '#1086#1090#1084#1077#1095#1077#1085#1085#1099#1077' '
           TabOrder = 10
           OnClick = cbOverwriteFB2InfoClick
-          ExplicitTop = 215
         end
         object cbIgnoreArchives: TCheckBox
           AlignWithMargins = True
@@ -1634,10 +1628,6 @@ object frmSettings: TfrmSettings
       Caption = 'tsFileSort'
       ImageIndex = 6
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel4: TPanel
         AlignWithMargins = True
         Left = 3
