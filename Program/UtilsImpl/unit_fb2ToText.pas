@@ -127,7 +127,9 @@ begin
     enUTF8: Result := TEncoding.UTF8;
     en1251: Result := TEncoding.ANSI;
     enUnicode: Result := TEncoding.Unicode;
-    enUnknown: Result := TEncoding.ASCII;
+    enUnknown: Result := TEncoding.ASCII
+  else
+    Result := TEncoding.Default;
   end;
 end;
 
