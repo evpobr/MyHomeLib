@@ -2068,7 +2068,9 @@ var
   query: TSQLiteQuery;
 begin
   if BookKey.DatabaseID <> CollectionID then
-    NewCode := FSystemData.GetCollection(BookKey.DatabaseID).SetReview(BookKey, Review)
+  begin
+    Result := FSystemData.GetCollection(BookKey.DatabaseID).SetReview(BookKey, Review)
+  end
   else
   begin
     NewReview := Trim(Review);
