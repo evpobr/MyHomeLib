@@ -140,7 +140,9 @@ begin
   else if Pos('utf-8', AnsiLowerCase(S)) <> 0 then
     Result := TEncoding.UTF8
   else if Pos('unicode', AnsiLowerCase(S)) <> 0 then
-    Result := TEncoding.Unicode;
+    Result := TEncoding.Unicode
+  else
+    Result := TEncoding.Default;
 end;
 
 function TFb2ToText.ProceedString(const FS: string; const TagStart: string; const TagEnd: string): string;
