@@ -23,6 +23,7 @@ interface
 uses
   Classes,
   Graphics,
+  System.NetEncoding,
   fictionbook_21;
 
 function GetBookCoverStream(book: IXMLFictionBook): TStream;
@@ -83,7 +84,7 @@ function InternalGetBookCoverStream(book: IXMLFictionBook): TStream;
 var
   coverID: string;
   i: Integer;
-  outStr: AnsiString;
+  CoverBytes: TBytes;
 begin
   Result := nil;
 
@@ -99,11 +100,10 @@ begin
       begin
         if book.Binary[i].Id = coverID then
         begin
-          outStr := DecodeBase64(book.Binary[i].Text);
-
           Result := TMemoryStream.Create;
           try
-            Result.Write(PAnsiChar(outStr)^, Length(outStr));
+            CoverBytes := TNetEncoding.Base64.DecodeStringToBytes(book.Binary[i].Text);
+            Result.Write(CoverBytes[0], Length(CoverBytes));
           except
             FreeAndNil(Result);
           end;
