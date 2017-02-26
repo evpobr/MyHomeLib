@@ -6805,7 +6805,7 @@ begin
   begin
     Data := tvDownloadList.GetNodeData(List[i]);
     if Data.State <> dsRun then
-      tvDownloadList.DeleteNode(List[i], True);
+      tvDownloadList.DeleteNode(List[i]);
   end;
 end;
 

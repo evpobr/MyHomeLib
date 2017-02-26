@@ -4,7 +4,7 @@
         <MainSource>MHLComponents.dpk</MainSource>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
-        <ProjectVersion>17.2</ProjectVersion>
+        <ProjectVersion>18.2</ProjectVersion>
         <Base>True</Base>
         <AppType>Package</AppType>
         <FrameworkType>VCL</FrameworkType>
@@ -61,7 +61,7 @@
         <DCC_Namespace>Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <DCC_UsePackage>vclx;vcl;vclimg;vclZipForged16;VirtualTreesD;vclZipForged17;vclZipForged18;vclZipForged19;dclZipForged19;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UsePackage>vclx;vcl;vclimg;vclZipForged16;VirtualTreesD;vclZipForged17;vclZipForged18;vclZipForged19;dclZipForged19;vclZipForged24;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <DCC_DcuOutput>.\Units\Release</DCC_DcuOutput>
@@ -96,7 +96,7 @@
         <DCCReference Include="IndyProtocols.dcp"/>
         <DCCReference Include="VirtualTreesD.dcp"/>
         <DCCReference Include="soaprtl.dcp"/>
-        <DCCReference Include="vclZipForged22.dcp"/>
+        <DCCReference Include="vclZipForged24.dcp"/>
         <DCCReference Include="unit_StaticTip.pas"/>
         <DCCReference Include="files_list.pas"/>
         <DCCReference Include="MHLComponents_Register.pas"/>

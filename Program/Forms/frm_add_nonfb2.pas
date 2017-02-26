@@ -387,7 +387,7 @@ begin
   FBookRecord.Clear;
 
   Next := Tree.GetNext(Tree.GetFirstSelected);
-  Tree.DeleteNode(Tree.GetFirstSelected, True);
+  Tree.DeleteNode(Tree.GetFirstSelected);
   if Assigned(Next) then
     Tree.Selected[Next] := True;
 
@@ -711,7 +711,7 @@ begin
     end;
 
     if (Data.DataType = dtFolder) and (Parent.ChildCount = 0) then
-      Tree.DeleteNode(Parent, True);
+      Tree.DeleteNode(Parent);
 
     Parent := Tree.GetNext(Parent);
     Data := Tree.GetNodeData(Parent);
