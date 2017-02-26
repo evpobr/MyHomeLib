@@ -12,6 +12,8 @@
 
 unit frame_NCWCollectionNameAndLocation;
 
+{$WARN SYMBOL_PLATFORM OFF}
+
 interface
 
 uses
