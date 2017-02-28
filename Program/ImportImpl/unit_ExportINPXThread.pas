@@ -53,6 +53,7 @@ uses
   SysUtils,
   StrUtils,
   IOUtils,
+  jclCompression,
   unit_Consts,
   unit_Settings,
   unit_MHLGenerics,
@@ -107,7 +108,7 @@ var
   header: TINPXHeader;
   sources: array[0 .. 3] of TStreamSource;
   i: Integer;
-  archiver: TMHLZip;
+  archiver: TJclZipCompressArchive;
 begin
   Assert(Assigned(FCollection));
 
@@ -169,11 +170,12 @@ begin
         sources[3].Name := COLLECTIONINFO_FILENAME;
         sources[3].Stream := TStringStream.Create(header.AsString);
 
-        archiver := TMHLZip.Create(FINPXFileName, False);
-        archiver.AddFromStream(sources[0].Name, sources[0].Stream);
-        archiver.AddFromStream(sources[1].Name, sources[1].Stream);
-        archiver.AddFromStream(sources[2].Name, sources[2].Stream);
-        archiver.AddFromStream(sources[3].Name, sources[3].Stream);
+        archiver := TJclZipCompressArchive.Create(FINPXFileName);
+        archiver.AddFile(sources[0].Name, sources[0].Stream);
+        archiver.AddFile(sources[1].Name, sources[1].Stream);
+        archiver.AddFile(sources[2].Name, sources[2].Stream);
+        archiver.AddFile(sources[3].Name, sources[3].Stream);
+        archiver.Compress;
       finally
         FreeAndNil(archiver);
         for i := 1 to 3 do // the 0-index INPX stream will be freed later

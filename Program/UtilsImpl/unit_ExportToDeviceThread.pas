@@ -84,6 +84,7 @@ uses
   Windows,
   SysUtils,
   IOUtils,
+  jclCompression,
   unit_Consts,
   unit_Settings,
   dm_user,
@@ -199,7 +200,7 @@ end;
 function TExportToDeviceThread.SendFileToDevice: Boolean;
 var
   DestFileName: string;
-  archiver: TMHLZip;
+  archiver: TJclZipCompressArchive;
 begin
   if not FileExists(FFileOprecord.SourceFile) then
   begin
@@ -221,10 +222,10 @@ begin
 
       emFB2Zip:
         begin
+          archiver := TJclZipCompressArchive.Create(DestFileName + ZIP_EXTENSION);
           try
-            archiver := TMHLZip.Create(DestFileName + ZIP_EXTENSION, False);
-            archiver.BaseDir := Settings.TempDir;
-            archiver.AddFiles(FFileOprecord.SourceFile);
+            archiver.AddFile(TPath.GetFileName(FFileOprecord.SourceFile), FFileOprecord.SourceFile);
+            archiver.Compress;
           finally
             FreeAndNil(archiver);
           end;

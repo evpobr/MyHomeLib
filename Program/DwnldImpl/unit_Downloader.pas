@@ -114,6 +114,7 @@ uses
   HTTPApp,
   StrUtils,
   DateUtils,
+  jclCompression,
   unit_Settings,
   dm_user,
   unit_Consts,
@@ -187,8 +188,10 @@ function TDownloader.CheckResponce(): boolean;
 var
   Path: string;
   Str: TStringList;
-  archiver: TMHLZip;
+  archiver: TJclZipDecompressArchive;
 begin
+  Result := True;
+
   Path := ExtractFileDir(FFile);
   CreateFolders('', Path);
   FResponse.Position := 0;
@@ -209,14 +212,17 @@ begin
         FResponse.SaveToFile(FFile);
         if IsArchiveExt(FFile) then
         begin
-          // Test archive integrity only if it's an archive
-          archiver := TMHLZip.Create(FFile, True);
           try
-            Result := archiver.Test;
-            if not Result then
-              DeleteFile(PChar(FFile));
-          finally
-            archiver.Free;
+            // Test archive integrity only if it's an archive
+            archiver := TJclZipDecompressArchive.Create(FFile);
+            try
+              archiver.ListFiles;
+              Result := True;
+            finally
+              archiver.Free;
+            end;
+          except
+            DeleteFile(FFile);
           end;
         end;
       end;

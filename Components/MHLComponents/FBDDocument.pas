@@ -146,6 +146,7 @@ uses
   pngimage,
   jpeg,
   IOUtils,
+  jclCompression,
   unit_MHLArchiveHelpers;
 
 const
@@ -206,11 +207,11 @@ end;
 function TFBDDocument.Load(Folder, Filename, Ext: string; NoCover: boolean = False):boolean;
 var
   Input, Output: TMemoryStream;
-  archiver: TMHLZip;
+  archiver: TJclZipDecompressArchive;
   CoverID: string;
   i: integer;
   IMG: TGraphic;
-
+  PackedName: string;
   Lines: TStringList;
 begin
   Result := False;
@@ -218,10 +219,33 @@ begin
   FCoverData.Str := '';
   Lines := TstringList.Create;
   try
-    archiver := TMHLZip.Create(FArchiveFilename, True);
-    Input := TMemoryStream.Create;
-    if archiver.Find('*.fbd') then
-      archiver.ExtractToStream(archiver.LastName, Input);
+    archiver := TJclZipDecompressArchive.Create(FArchiveFilename);
+    try
+      archiver.ListFiles;
+      if archiver.ItemCount > 0 then
+      begin
+        for I := 0 to archiver.ItemCount - 1 do
+        begin
+          PackedName := String(archiver.Items[I].PackedName);
+          if PackedName.EndsWith('.fbd', True) and
+             (not archiver.Items[I].Directory) then
+          begin
+            Input := TMemoryStream.Create;
+            try
+              archiver.Items[I].OwnsStream := False;
+              archiver.Items[I].Stream := Input;
+              archiver.Items[I].Selected := True;
+              archiver.ExtractSelected;
+            except
+              FreeAndNil(Input);
+            end;
+            Break;
+          end;
+        end;
+      end;
+    finally
+      archiver.Free;
+    end;
 
     if Assigned(Input) and (Input.Size > 0) then
     begin
@@ -293,7 +317,6 @@ begin
     Result := True;
   end;
   finally
-    FreeAndNil(archiver);
     FreeAndNil(Input);
     FreeAndNil(Lines);
   end;
@@ -407,22 +430,43 @@ end;
 
 function TFBDDocument.ExtractBook(TempFolder: string):string;
 var
-  archiver: TMHLZip;
+  archiver: TjclZipDecompressArchive;
+  PackedName: string;
   MS: TMemoryStream;
   No: integer;
+  I: Integer;
 begin
-
+  archiver := TjclZipDecompressArchive.Create(TPath.Combine(FFolder, FArchiveFilename));
   try
-    MS := TMemoryStream.Create;
-    archiver := TMHLZip.Create(TPath.Combine(FFolder, FArchiveFilename), True);
-    No := archiver.GetIdxByExt('.fbd');
-    if No = 0 then No := 1 else No := 0;
-    MS := archiver.ExtractToStream(No);
-    Result := TPath.Combine(TempFolder, archiver.LastName);
-    MS.SaveToFile(Result);
+    archiver.ListFiles;
+    if archiver.ItemCount > 0 then
+    begin
+      for I := 0 to archiver.ItemCount - 1 do
+      begin
+        PackedName := archiver.Items[I].PackedName;
+        if PackedName.EndsWith('.fbd') then
+        begin
+          No := I;
+          if No = 0 then
+            No := 1
+          else
+            No := 0;
+          MS := TMemoryStream.Create;
+          try
+            Result := TPath.Combine(TempFolder, PackedName);
+            archiver.Items[No].OwnsStream := True;
+            archiver.Items[No].Stream := MS;
+            archiver.Items[No].Selected := True;
+            archiver.ExtractSelected(TempFolder);
+            MS.SaveToFile(Result);
+          finally
+            MS.Free;
+          end;
+        end;
+      end;
+    end;
   finally
-    FreeAndNil(archiver);
-    FreeAndNil(MS);
+    archiver.Free;
   end;
 end;
 
@@ -530,42 +574,48 @@ var
   archiveFileName: string;
   bookFileName: string;
   fbdFileName: string;
-  archiver: TMHLZip;
+  archiver: TJclZipCompressArchive;
 begin
+  Result := False;
+
   archiveFileName := TPath.Combine(FFolder, FArchiveFilename);
   bookFileName := TPath.Combine(FFolder, FBookFileName);
   fbdFileName := TPath.Combine(FFolder, FFBDFileName);
 
   try
-    archiver := TMHLZip.Create(archiveFileName, False);
-    archiver.BaseDir := FFolder;
-
     if EditorMode then
     begin
-      archiver.AddFiles(fbdFileName);
-      Result := archiver.Test;
-
-      if Result then
+      archiver := TJclZipCompressArchive.Create(archiveFileName);
+      try
+        archiver.AddFile(FFBDFileName, fbdFileName);
+        archiver.Compress;
         SysUtils.DeleteFile(fbdFileName);
+
+        Result := True;
+      finally
+        archiver.Free;
+      end;
     end
     else
     begin
-      archiver.AddFiles(fbdFileName);
-      archiver.AddFiles(bookFileName);
-      Result := archiver.Test;
+      archiver := TJclZipCompressArchive.Create(archiveFileName);
+      try
+        archiver.AddFile(FFBDFileName, fbdFileName);
+        archiver.AddFile(FBookFileName, bookFileName);
+        archiver.Compress;
 
-      if Result then
-      begin
         SysUtils.DeleteFile(fbdFileName);
         SysUtils.DeleteFile(bookFileName);
+
+        Result := True;
+      finally
+        archiver.Free;
       end;
     end;
-  finally
-    FreeAndNil(archiver);
+  except
+    if not Result then
+      MessageDlg(rstrErrorCreatingFBD, mtError, [mbOK], 0);
   end;
-
-  if not Result then
-    MessageDlg(rstrErrorCreatingFBD, mtError, [mbOK], 0);
 end;
 
 {--------------------  Списки авторов ----------------------------------------}

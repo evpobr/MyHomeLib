@@ -77,7 +77,6 @@ uses
   unit_UserData,
   unit_treeController,
   unit_ColorTabs,
-  ZipForge,
   System.Actions, System.ImageList;
 
 type

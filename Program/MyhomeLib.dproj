@@ -60,9 +60,12 @@
         <DCC_DependencyCheckOutputName>MyhomeLib.exe</DCC_DependencyCheckOutputName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
+        <AppEnableHighDPI>true</AppEnableHighDPI>
+        <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <UWP_DelphiLogo150>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_150.png</UWP_DelphiLogo150>
         <UWP_DelphiLogo44>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_44.png</UWP_DelphiLogo44>
         <PostBuildEvent><![CDATA[copy sqlite3.dll "$(OUTPUTDIR)"
+copy 7z.dll "$(OUTPUTDIR)"
 copy genres_fb2.glst "$(OUTPUTDIR)"
 copy genres_nonfb2.glst "$(OUTPUTDIR)"
 $(PostBuildEvent)]]></PostBuildEvent>
@@ -384,8 +387,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
                     <Source Name="MainSource">MyHomeLib.dpr</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k220.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp220.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k240.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp240.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
             <ModelSupport>False</ModelSupport>
@@ -925,7 +928,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>copy sqlite3.dll &quot;$(OUTPUTDIR)&quot;&amp;&amp;copy genres_fb2.glst &quot;$(OUTPUTDIR)&quot;&amp;&amp;copy genres_nonfb2.glst &quot;$(OUTPUTDIR)&quot;</PostBuildEvent>
+        <PostBuildEvent>copy sqlite3.dll &quot;$(OUTPUTDIR)&quot;&amp;&amp;copy 7z.dll &quot;$(OUTPUTDIR)&quot;&amp;&amp;copy genres_fb2.glst &quot;$(OUTPUTDIR)&quot;&amp;&amp;copy genres_nonfb2.glst &quot;$(OUTPUTDIR)&quot;</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Debug' And '$(Platform)'=='Win32'">
@@ -933,7 +936,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>copy sqlite3.dll &quot;$(OUTPUTDIR)&quot;&amp;&amp;copy genres_fb2.glst &quot;$(OUTPUTDIR)&quot;&amp;&amp;copy genres_nonfb2.glst &quot;$(OUTPUTDIR)&quot;</PostBuildEvent>
+        <PostBuildEvent>copy sqlite3.dll &quot;$(OUTPUTDIR)&quot;&amp;&amp;copy 7z.dll &quot;$(OUTPUTDIR)&quot;&amp;&amp;copy genres_fb2.glst &quot;$(OUTPUTDIR)&quot;&amp;&amp;copy genres_nonfb2.glst &quot;$(OUTPUTDIR)&quot;</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
 </Project>

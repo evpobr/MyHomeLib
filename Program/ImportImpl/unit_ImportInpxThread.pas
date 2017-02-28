@@ -87,6 +87,7 @@ uses
   Classes,
   SysUtils,
   IOUtils,
+  jclCompression,
   unit_MHLArchiveHelpers,
   unit_Consts,
   unit_Helpers,
@@ -356,13 +357,116 @@ var
   CurrentFile: string;
   IsOnline: Boolean;
   inpStream: TMemoryStream;
-  StructureInfo: string;
   header: TINPXHeader;
-  strVersion: string;
-  strCollection: string;
   numFiles: Integer;
-  Zip: TMHLZip;
+  Zip: TJclZipDecompressArchive;
+  ZipItem: TJclCompressionItem;
   collectionCode: Integer;
+
+  procedure InpxProcessStructureInfo(const AZip: TJclZipDecompressArchive);
+  var
+    I: Integer;
+    StructureInfoString: string;
+    StructureInfoStream: TStringStream;
+  begin
+    Assert(AZip <> nil);
+
+    StructureInfoString := '';
+
+    AZip.ListFiles;
+    if AZip.ItemCount > 0 then
+      for I := 0 to AZip.ItemCount - 1 do
+        if AZip.Items[I].PackedName = STRUCTUREINFO_FILENAME then
+        begin
+          StructureInfoStream := TStringStream.Create;
+          try
+            AZip.Items[I].OwnsStream := False;
+            AZip.Items[I].Stream := StructureInfoStream;
+            AZip.Items[I].Selected := True;
+            AZip.ExtractSelected;
+
+            StructureInfoString := StructureInfoStream.DataString;
+          finally
+            StructureInfoStream.Free;
+            AZip.Items[I].Selected := False;
+          end;
+        end;
+
+    if StructureInfoString = '' then
+      StructureInfoString := DEFAULTSTRUCTURE;
+
+    GetFields(StructureInfoString);
+  end;
+
+  procedure InpxProcessCollectionInfo(const AZip: TJclZipDecompressArchive;
+    ABookCollection: IBookCollection);
+  var
+    I: Integer;
+    CollectionInfoString: string;
+    CollectionInfoStream: TStringStream;
+  begin
+    Assert(AZip <> nil);
+    Assert(ABookCollection <> nil);
+
+    CollectionInfoString := '';
+
+    AZip.ListFiles;
+    if AZip.ItemCount > 0 then
+      for I := 0 to AZip.ItemCount - 1 do
+        if AZip.Items[I].PackedName = COLLECTIONINFO_FILENAME then
+        begin
+          CollectionInfoStream := TStringStream.Create;
+          try
+            AZip.Items[I].OwnsStream := False;
+            AZip.Items[I].Stream := CollectionInfoStream;
+            AZip.Items[I].Selected := True;
+            AZip.ExtractSelected;
+
+            CollectionInfoString := CollectionInfoStream.DataString;
+            header.ParseString(CollectionInfoString);
+            ABookCollection.SetProperty(PROP_NOTES, header.Notes);
+            ABookCollection.SetProperty(PROP_URL, header.URL);
+            ABookCollection.SetProperty(PROP_CONNECTIONSCRIPT, header.Script);
+          finally
+            CollectionInfoStream.Free;
+            AZip.Items[I].Selected := False;
+          end;
+        end;
+  end;
+
+  procedure InpxProcessVersionInfo(const AZip: TJclZipDecompressArchive;
+    ABookCollection: IBookCollection);
+  var
+    I: Integer;
+    VersionInfoString: string;
+    VersionInfoStream: TStringStream;
+  begin
+    Assert(AZip <> nil);
+    Assert(ABookCollection <> nil);
+
+    VersionInfoString := '';
+
+    AZip.ListFiles;
+    if AZip.ItemCount > 0 then
+      for I := 0 to AZip.ItemCount - 1 do
+        if AZip.Items[I].PackedName = VERINFO_FILENAME then
+        begin
+          VersionInfoStream := TStringStream.Create;
+          try
+            AZip.Items[I].OwnsStream := False;
+            AZip.Items[I].Stream := VersionInfoStream;
+            AZip.Items[I].Selected := True;
+            AZip.ExtractSelected;
+
+            VersionInfoString := VersionInfoStream.DataString;
+            VersionInfoString := Trim(VersionInfoString);
+            BookCollection.SetProperty(PROP_DATAVERSION, StrToIntDef(VersionInfoString, UNVERSIONED_COLLECTION));
+          finally
+            VersionInfoStream.Free;
+            AZip.Items[I].Selected := False;
+          end;
+        end;
+  end;
 
 begin
   filesProcessed := 0;
@@ -378,95 +482,109 @@ begin
 
   BookCollection.StartBatchUpdate;
   try
-    Zip := TMHLZip.Create(INPXFileName, True);
-    if Zip.Find(STRUCTUREINFO_FILENAME) then
-      StructureInfo := Zip.ExtractToString(STRUCTUREINFO_FILENAME)
-    else
-      StructureInfo := DEFAULTSTRUCTURE;
+    Zip := TJclZipDecompressArchive.Create(INPXFileName);
+    Zip.ListFiles;
 
-    GetFields(StructureInfo);
-    numFiles := Zip.FileCount;
+    InpxProcessStructureInfo(Zip);
 
-    if Zip.Find('*.inp') then
-    repeat
-      CurrentFile:= Zip.LastName;
-      if not IsOnline and (CurrentFile = 'extra.inp') then Continue;
+    numFiles := Zip.ItemCount;
+
+    for I := 0 to Zip.ItemCount - 1 do
+    begin
+      ZipItem := Zip.Items[I];
+      Assert(ZipItem <> nil);
+
+      // Skip directories
+      if ZipItem.Directory then
+        Continue;
+
+      CurrentFile:= String(Zip.Items[I].PackedName);
+
+      // Skip non-inp files
+      if not CurrentFile.EndsWith('.inp', True) then
+        Continue;
+
+      if not IsOnline and (CurrentFile = 'extra.inp') then
+        Continue;
 
       Teletype(Format(rstrProcessingFile, [CurrentFile]), tsInfo);
 
       BookList := TStringList.Create;
       try
+        inpStream := TMemoryStream.Create;
         try
-          inpStream := TMemoryStream.Create;
-          Zip.ExtractToStream(Zip.LastName, inpStream);
+          ZipItem.OwnsStream := False;
+          ZipItem.Stream := inpStream;
+          ZipItem.Selected := True;
+          Zip.ExtractSelected;
           inpStream.Seek(0, soBeginning);
           BookList.LoadFromStream(inpStream, TEncoding.UTF8);
         finally
           FreeAndNil(inpStream);
+          ZipItem.Selected := False;
         end;
 
-          for j := 0 to BookList.Count - 1 do
-          begin
-            try
-              ParseData(BookList[j], IsOnline, R);
-              if IsOnline then
-              begin
+        for j := 0 to BookList.Count - 1 do
+        begin
+          try
+            ParseData(BookList[j], IsOnline, R);
+            if IsOnline then
+            begin
 
-                if 0 = (CONTENT_NONFB and collectionCode) then
-                  R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;  // И\Иванов Иван\1234 Просто книга.fb2.zip
-                // Сохраним отметку о существовании файла
-                if FileExists(TPath.Combine(CollectionRoot, R.Folder)) then
-                  Include(R.BookProps, bpIsLocal)
-                else
-                  Exclude(R.BookProps, bpIsLocal);
-              end
+              if 0 = (CONTENT_NONFB and collectionCode) then
+                R.Folder := R.GenerateLocation + FB2ZIP_EXTENSION;  // И\Иванов Иван\1234 Просто книга.fb2.zip
+              // Сохраним отметку о существовании файла
+              if FileExists(TPath.Combine(CollectionRoot, R.Folder)) then
+                Include(R.BookProps, bpIsLocal)
               else
+                Exclude(R.BookProps, bpIsLocal);
+            end
+            else
+            begin
+              Include(R.BookProps, bpIsLocal);
+              if not FUseStoredFolder then
               begin
-                Include(R.BookProps, bpIsLocal);
-                if not FUseStoredFolder then
-                begin
-                  // 98058-98693.inp -> 98058-98693.zip
-                  R.Folder := ChangeFileExt(CurrentFile, ZIP_EXTENSION);
-                  //
-                  R.InsideNo := j;
-                end
-              end;
-
-              try
-                if BookCollection.InsertBook(R, CheckFiles, False) <> 0 then
-                  Inc(filesProcessed);
-              except
-                on E: Exception do
-                  raise EDBError.Create(E.Message);
-              end;
-
-              if (filesProcessed mod ProcessedItemThreshold) = 0 then
-              begin
-                SetProgress(Round((i + j / BookList.Count) * 100 / numFiles));
-                SetComment(Format(rstrAddedBooks, [filesProcessed]));
-
-                if Canceled then
-                  Break;
-              end;
-
-            except
-              on E: EConvertError do
-                Teletype(Format(rstrErrorInpStructure, [CurrentFile, j]), tsError);
-              on E: EDBError do
-                Teletype(Format(rstrDBErrorInp, [CurrentFile, j]), tsError);
-              on E: Exception do
-                Teletype(E.Message, tsError);
+                // 98058-98693.inp -> 98058-98693.zip
+                R.Folder := ChangeFileExt(CurrentFile, ZIP_EXTENSION);
+                //
+                R.InsideNo := j;
+              end
             end;
+
+            try
+              if BookCollection.InsertBook(R, CheckFiles, False) <> 0 then
+                Inc(filesProcessed);
+            except
+              on E: Exception do
+                raise EDBError.Create(E.Message);
+            end;
+
+            if (filesProcessed mod ProcessedItemThreshold) = 0 then
+            begin
+              SetProgress(Round((i + j / BookList.Count) * 100 / numFiles));
+              SetComment(Format(rstrAddedBooks, [filesProcessed]));
+
+              if Canceled then
+                Break;
+            end;
+
+          except
+            on E: EConvertError do
+              Teletype(Format(rstrErrorInpStructure, [CurrentFile, j]), tsError);
+            on E: EDBError do
+              Teletype(Format(rstrDBErrorInp, [CurrentFile, j]), tsError);
+            on E: Exception do
+              Teletype(E.Message, tsError);
           end;
-        finally
-          FreeAndNil(BookList);
         end;
+      finally
+        FreeAndNil(BookList);
+      end;
 
-        Inc(i);
-        if Canceled then
-          Break;
+      if Canceled then
+        Break;
 
-    until not Zip.FindNext;
+    end;
 
     Teletype(Format(rstrAddedBooks, [filesProcessed]), tsInfo);
     FProgressEngine.BeginOperation(-1, rstrUpdatingDB, '');
@@ -474,21 +592,9 @@ begin
     //
     // Прочитать и установить свойства коллекции
     //
-    if Zip.Find(COLLECTIONINFO_FILENAME) then
-    begin
-      strCollection := Zip.ExtractToString(Zip.LastName);
-      header.ParseString(strCollection);
-      BookCollection.SetProperty(PROP_NOTES, header.Notes);
-      BookCollection.SetProperty(PROP_URL, header.URL);
-      BookCollection.SetProperty(PROP_CONNECTIONSCRIPT, header.Script);
-    end;
+    InpxProcessCollectionInfo(Zip, BookCollection);
 
-    if Zip.Find(VERINFO_FILENAME)  then
-    begin
-      strVersion := Zip.ExtractToString(Zip.LastName);
-      strVersion := Trim(strVersion);
-      BookCollection.SetProperty(PROP_DATAVERSION, StrToIntDef(strVersion, UNVERSIONED_COLLECTION));
-    end;
+    InpxProcessVersionInfo(Zip, BookCollection);
 
     BookCollection.AfterBatchUpdate;
   finally

@@ -42,6 +42,7 @@ uses
   Classes,
   SysUtils,
   IOUtils,
+  jclCompression,
   unit_WorkerThread,
   FictionBook_21,
   unit_Consts,
@@ -70,8 +71,9 @@ end;
 
 procedure TImportFBDThread.SortFiles(var R: TBookRecord);
 var
-  NewFileName, NewFolder: string;
-  archiver: TMHLZip;
+  PackedName, OldFileName, NewFileName, NewFolder: string;
+  archiver: TJclZipUpdateArchive;
+  I: Integer;
 begin
   NewFolder := GetNewFolder(Settings.FBDFolderTemplate, R);
 
@@ -87,12 +89,26 @@ begin
     R.FileName := NewFileName + ZIP_EXTENSION;
 
     try
-      archiver := TMHLZip.Create(FCollectionRoot + NewFolder + NewFileName + ZIP_EXTENSION, False);
-      archiver.RenameFile(FCollectionRoot + NewFolder + R.FileName, NewFileName);
+      archiver := TJclZipUpdateArchive.Create(FCollectionRoot + NewFolder + NewFileName + ZIP_EXTENSION);
+      OldFileName := FCollectionRoot + NewFolder + R.FileName;
+      try
+        archiver.ListFiles;
+        for I := 0 to archiver.ItemCount - 1 do
+        begin
+          PackedName := String(archiver.Items[I].PackedName);
+          if PackedName = OldFileName then
+          begin
+            archiver.Items[I].PackedName := NewFileName;
+            archiver.Items[I].Selected := True;
+            archiver.Compress;
+          end;
+        end;
+      finally
+        archiver.Free;
+      end;
     except
       // ничего не делаем
     end;
-    FreeAndNil(archiver);
   end;
 end;
 
@@ -126,7 +142,7 @@ var
   j: Integer;
   R: TBookRecord;
   archiveFileName, Ext: string;
-  archiver: TMHLZip;
+  archiver: TJclZipDecompressArchive;
   BookFileName, FBDFileName: string;
   book: IXMLFictionBook;
   FS: TMemoryStream;
@@ -134,7 +150,8 @@ var
   DefectCount:Integer;
   IsValid : boolean;
   fileName: string;
-
+  FileSize: Int64;
+  ItemCount: Integer;
 begin
   AddCount := 0;
   DefectCount := 0;
@@ -151,19 +168,23 @@ begin
       Assert(ExtractFileExt(archiveFileName) = ZIP_EXTENSION);
       try
         try
-          j := 0;
           R.Clear;
-          archiver := TMHLZip.Create(archiveFileName, True);
-          if archiver.Find('*.*') then
-          repeat
-            fileName := archiver.LastName;
+          archiver := TJclZipDecompressArchive.Create(archiveFileName);
+          archiver.ListFiles;
+          if archiver.ItemCount > 0 then
+          for J := 0 to archiver.ItemCount - 1 do
+          begin
+            fileName := String(archiver.Items[J].PackedName);
             Ext := ExtractFileExt(fileName);
             if Ext = FBD_EXTENSION then
             begin
               FS := TMemoryStream.Create;
               try
                 try
-                  archiver.ExtractToStream(archiver.LastName, FS);
+                  archiver.Items[J].Stream := FS;
+                  archiver.Items[J].Selected := True;
+                  archiver.ExtractSelected;
+                  FileSize := FS.Size;
                   R.Folder := ExtractRelativePath(FCollectionRoot, ExtractFilePath(FFiles[i]));
                   R.FileName := ExtractFilename(FFiles[i]);
                   R.Date := Now;
@@ -181,6 +202,7 @@ begin
                     //Teletype(e.Message, tsError);
                 end; //try
               finally
+                archiver.UnselectAll;
                 FreeAndNil(FS);
               end;
             end
@@ -189,10 +211,9 @@ begin
               R.InsideNo := j;
               R.FileExt := Ext;
               BookFileName := TPath.GetFileNameWithoutExtension(fileName);
-              R.Size := archiver.LastSize;
+              R.Size := Integer(archiver.Items[J].FileSize);
             end;
-            Inc(j);
-          until not archiver.FindNext;
+          end;
 
           if Settings.EnableSort then
             SortFiles(R);

@@ -58,6 +58,7 @@ implementation
 
 uses
   Vcl.FileCtrl,
+  jclCompression,
   unit_Helpers,
   unit_NCWParams,
   unit_Errors,
@@ -80,7 +81,11 @@ resourcestring
 function TframeNCWNameAndLocation.GetCollectionDataFromINPX: boolean;
 var
   header: TINPXHeader;
-  archiver: TMHLZip;
+  archiver: TJclZipDecompressArchive;
+  PackedName: string;
+  CollectionInfoStream: TStringStream;
+  CollectionInfoFound: Boolean;
+  I: Integer;
 begin
   Result := False;
   Assert(FPParams^.INPXFile <> '');
@@ -88,47 +93,69 @@ begin
   if (FPParams^.INPXFile = '') or not (FileExists(FPParams^.INPXFile)) then
     Exit;
 
+  CollectionInfoFound := False;
   try
+    archiver := TJclZipDecompressArchive.Create(FPParams^.INPXFile);
     try
-      archiver := TMHLZip.Create(FPParams^.INPXFile, True);
-      if archiver.Find(COLLECTIONINFO_FILENAME) then
-        header.ParseString(archiver.ExtractToString(COLLECTIONINFO_FILENAME))
-      else
+      archiver.ListFiles;
+      if archiver.ItemCount <= 0 then
         raise Exception.Create(rstrInvalidFormat);
 
-      edCollectionName.Text := header.Name;
-      edCollectionFile.Text := header.FileName;
-      FPParams^.CollectionCode := header.ContentType;
-
-      case FPParams^.CollectionCode of
-        CT_PRIVATE_FB:
-          FPParams^.CollectionType := ltUserFB;
-
-        CT_PRIVATE_NONFB:
-          FPParams^.CollectionType := ltUserAny;
-
-        CT_EXTERNAL_LOCAL_FB:
-          FPParams^.CollectionType := ltExternalLocalFB;
-
-        CT_EXTERNAL_LOCAL_NONFB:
-          FPParams^.CollectionType := ltExternalLocalAny;
-
-        CT_EXTERNAL_ONLINE_FB:
-          FPParams^.CollectionType := ltExternalOnlineFB;
-
-        CT_EXTERNAL_ONLINE_NONFB:
-          FPParams^.CollectionType := ltExternalOnlineAny;
-      end;
-      Result := True;
-    except
-      on E: Exception do
+      for I := 0 to archiver.ItemCount - 1 do
       begin
-        MessageDlg(E.Message, mtError, [mbOK], 0);
-        Exit;
+        PackedName := String(archiver.Items[I].PackedName);
+        if PackedName = COLLECTIONINFO_FILENAME then
+        begin
+          CollectionInfoStream := TStringStream.Create;
+          try
+          archiver.Items[I].Stream := CollectionInfoStream;
+          archiver.Items[I].Selected := True;
+          archiver.ExtractSelected;
+          header.ParseString(CollectionInfoStream.DataString);
+          CollectionInfoFound := True;
+          finally
+            CollectionInfoStream.Free;
+          end;
+        end;
       end;
+    finally
+      archiver.Free;
     end;
-  finally
-    FreeAndNil(archiver);
+
+    if not CollectionInfoFound then
+      raise Exception.Create(rstrInvalidFormat);
+
+    edCollectionName.Text := header.Name;
+    edCollectionFile.Text := header.FileName;
+    FPParams^.CollectionCode := header.ContentType;
+
+    case FPParams^.CollectionCode of
+      CT_PRIVATE_FB:
+        FPParams^.CollectionType := ltUserFB;
+
+      CT_PRIVATE_NONFB:
+        FPParams^.CollectionType := ltUserAny;
+
+      CT_EXTERNAL_LOCAL_FB:
+        FPParams^.CollectionType := ltExternalLocalFB;
+
+      CT_EXTERNAL_LOCAL_NONFB:
+        FPParams^.CollectionType := ltExternalLocalAny;
+
+      CT_EXTERNAL_ONLINE_FB:
+        FPParams^.CollectionType := ltExternalOnlineFB;
+
+      CT_EXTERNAL_ONLINE_NONFB:
+        FPParams^.CollectionType := ltExternalOnlineAny;
+    end;
+    Result := True;
+
+  except
+    on E: Exception do
+    begin
+      MessageDlg(E.Message, mtError, [mbOK], 0);
+      Exit;
+    end;
   end;
 end;
 

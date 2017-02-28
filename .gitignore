@@ -68,3 +68,4 @@ __recovery/
 Release/
 Debug/
 !/Program/sqlite3.dll
+!/Program/7z.dll

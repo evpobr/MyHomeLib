@@ -177,6 +177,7 @@ implementation
 
 uses
   IOUtils,
+  jclCompression,
   frm_genre_tree,
   unit_TreeUtils,
   unit_Consts,
@@ -542,7 +543,9 @@ end;
 
 procedure TfrmAddnonfb2.btnNextClick(Sender: TObject);
 var
-  archiver: TMHLZip;
+  I: Integer;
+  PackedName: string;
+  Archiver: TJclZipDecompressArchive;
 begin
   // Конвертация в FBD и добавление в базу
   Screen.Cursor := crHourGlass;
@@ -555,11 +558,21 @@ begin
 
       // после создания архива нужно узнать реальный номер внутри
       FBookRecord.CollectionRoot := FRootPath;
+      Archiver := TJclZipDecompressArchive.Create(FBookRecord.GetBookFileName);
       try
-        archiver := TMHLZip.Create(FBookRecord.GetBookFileName, True);
-        FBookRecord.InsideNo := archiver.GetIdxByExt(FBookRecord.FileExt);
+        FBookRecord.InsideNo := -1;
+        Archiver.ListFiles;
+        for I := 0 to Archiver.ItemCount - 1 do
+        begin
+          PackedName := String(Archiver.Items[I].PackedName);
+          if PackedName.EndsWith(FBookRecord.FileExt, True) then
+          begin
+            FBookRecord.InsideNo := Integer(Archiver.Items[I].PackedIndex);
+            Break;
+          end;
+        end;
       finally
-        FreeAndNil(archiver);
+        Archiver.Free;
       end;
       // заносим данные в БД
       CommitData;

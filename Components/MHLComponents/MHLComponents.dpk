@@ -5,7 +5,7 @@ package MHLComponents;
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
-{$DEBUGINFO ON}
+{$DEBUGINFO OFF}
 {$EXTENDEDSYNTAX ON}
 {$IMPORTEDDATA ON}
 {$IOCHECKS ON}
@@ -38,7 +38,7 @@ requires
   IndyProtocols,
   VirtualTreesD,
   soaprtl,
-  vclZipForged24;
+  Jcl;
 
 contains
   unit_StaticTip in 'unit_StaticTip.pas',

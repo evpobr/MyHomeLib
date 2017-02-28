@@ -43,6 +43,7 @@ type
 implementation
 
 uses
+  jclCompression,
   unit_Consts,
   unit_MHL_strings,
   unit_Globals,
@@ -65,19 +66,25 @@ end;
 
 procedure TSyncFoldersThread.OnFile(Sender: TObject; const F: TSearchRec);
 var
-  Archiver: TMHLZip;
+  Archiver: TJclZipDecompressArchive;
   Size: integer;
 begin
+  Size := 0;
+
   if not IsArchiveExt(F.Name) then
      FList.Add(FFiles.LastDir + F.Name + ' ' + IntToStr(F.Size))
   else
   begin
+    Archiver := TJclZipDecompressArchive.Create(FFiles.LastDir + F.Name);
     try
-      Archiver := TMHLZip.Create(FFiles.LastDir + F.Name, True);
-      Size := Archiver.LastSize;
-      FList.Add(FFiles.LastDir + F.Name + ' ' + IntToStr(Size));
+      Archiver.ListFiles;
+      if Archiver.ItemCount > 0 then
+      begin
+        Size := Integer(Archiver.Items[0].FileSize);
+        FList.Add(FFiles.LastDir + F.Name + ' ' + IntToStr(Size));
+      end;
     finally
-      FreeAndNil(archiver);
+      Archiver.Free;
     end;
   end;
 end;

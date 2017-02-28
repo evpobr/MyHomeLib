@@ -44,6 +44,7 @@ uses
   Classes,
   SysUtils,
   IOUtils,
+  jclCompression,
   unit_WorkerThread,
   FictionBook_21,
   unit_Helpers,
@@ -152,7 +153,7 @@ var
 
   NoErrors: boolean;
   numFb2FilesInZip: Integer;
-  Zip: TMHLZip;
+  Zip: TJclZipDecompressArchive;
   Added, Defective: integer;
 
 begin
@@ -168,12 +169,14 @@ begin
       NoErrors := True;
       try
         try
-          Zip := TMHLZip.Create(FFiles[i], True);
-          j := 0; numFb2FilesInZip := 0;
-          if Zip.Find('*.*') then
-          repeat
+          Zip := TJclZipDecompressArchive.Create(FFiles[i]);
+          Zip.ListFiles;
+          numFb2FilesInZip := 0;
+          if Zip.ItemCount > 0 then
+          for J := 0 to Zip.ItemCount - 1 do
+          begin
             R.Clear;
-            AFileName := Zip.LastName;
+            AFileName := String(Zip.Items[J].PackedName);
             R.FileExt := ExtractFileExt(AFileName);
             if R.FileExt = FB2_EXTENSION then
             begin
@@ -181,12 +184,14 @@ begin
 
               R.FileName := TPath.GetFileNameWithoutExtension(CleanFileName(AFileName));
 
-              R.Size := Zip.LastSize;
+              R.Size := Integer(Zip.Items[J].FileSize);
               R.InsideNo := j;
               R.Date := Now;
               Include(R.BookProps, bpIsLocal);
               FS := TMemoryStream.Create;
-              Zip.ExtractToStream(AFileName,FS);
+              Zip.Items[J].Stream := FS;
+              Zip.Items[J].Selected := True;
+              Zip.ExtractSelected;
               try
                 try
                   book := LoadFictionBook(FS);
@@ -207,11 +212,12 @@ begin
                   end;
                 end;
               finally
+                Zip.Items[J].ReleaseStream;
+                Zip.Items[J].Selected := False;
                 FreeAndNil(FS);
               end;
             end;
-            inc(j);
-          until not Zip.FindNext;
+          end;
           if Settings.EnableSort and NoErrors and (numFb2FilesInZip = 1) then
           begin
             R.Folder := FFiles[i];
@@ -226,7 +232,6 @@ begin
 
         FProgressEngine.AddProgress;
       finally
-        Zip.CloseArchive;
         FreeAndNil(Zip);
       end;
     end;
@@ -239,9 +244,10 @@ end;
 
 procedure TImportFB2Thread.SortFilesZip(var R: TBookRecord);
 var
-  FileName, NewFileName, NewFolder: string;
+  FileName, PackedName, OldFileName, NewFileName, NewFolder: string;
   archiveFileName: string;
-  archiver: TMHLZip;
+  archiver: TJclZipUpdateArchive;
+  I: Integer;
 begin
   FileName := ExtractFileName(R.Folder);
 
@@ -263,16 +269,30 @@ begin
       RenameFile(FCollectionRoot + R.Folder, FCollectionRoot + NewFolder);
       R.Folder :=  NewFolder;
       try
+        archiveFileName := TPath.Combine(FCollectionRoot, NewFolder);
+        archiver := TJclZipUpdateArchive.Create(archiveFileName);
         try
-          archiveFileName := TPath.Combine(FCollectionRoot, NewFolder);
-          archiver := TMHLZip.Create(archiveFileName, False);
-          archiver.RenameFile(R.FileName +  R.FileExt, NewFileName + R.FileExt); // assuming there are only fb2 files there
-          R.FileName := NewFileName;
-        except
-          // ничего не делаем
+          archiver.ListFiles;
+          if archiver.ItemCount > 0 then
+          begin
+            OldFileName := R.FileName +  R.FileExt;
+            for I := 0 to archiver.ItemCount - 1 do
+            begin
+              PackedName := String(archiver.Items[I].PackedName);
+              if PackedName = OldFileName then
+              begin
+                archiver.Items[I].PackedName := NewFileName;
+                archiver.Compress;
+                R.FileName := NewFileName;
+                Break;
+              end;
+            end;
+          end;
+        finally
+          FreeAndNil(archiver);
         end;
-      finally
-        FreeAndNil(archiver);
+      except
+        // ничего не делаем
       end;
     end;
   end;

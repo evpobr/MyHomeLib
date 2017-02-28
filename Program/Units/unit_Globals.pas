@@ -29,6 +29,7 @@ uses
   IdSocks,
   IdSSLOpenSSL,
   unit_Consts,
+  jclCompression,
   Dialogs;
 
 type
@@ -1046,7 +1047,7 @@ function TBookRecord.GetBookStream: TStream;
 var
   BookFormat: TBookFormat;
   BookFileName: string;
-  archiver: TMHLZip;
+  archiver: TJclZipDecompressArchive;
 begin
   Result := nil;
   BookFileName := GetBookFileName;
@@ -1055,9 +1056,22 @@ begin
   if BookFormat in [bfFb2Archive, bfFbd, bfRawArchive] then
   begin
     try
-      archiver := TMHLZip.Create(TPath.Combine(Settings.ReadPath, BookFileName), True);
-      result := archiver.ExtractToStream(InsideNo);
-      FreeAndNil(archiver);
+      archiver := TJclZipDecompressArchive.Create(TPath.Combine(Settings.ReadPath, BookFileName));
+      try
+        archiver.ListFiles;
+        Result := TMemoryStream.Create;
+        try
+          archiver.Items[InsideNo].Stream := Result;
+          archiver.Items[InsideNo].OwnsStream := False;
+          archiver.Items[InsideNo].Selected := True;
+          archiver.ExtractSelected;
+        except
+          FreeAndNil(Result);
+          raise;
+        end;
+      finally
+        archiver.Free;
+      end;
     except
       if not Settings.IgnoreAbsentArchives then
          raise EBookNotFound.CreateFmt(rstrArchiveNotFound, [BookFileName]);
@@ -1090,7 +1104,8 @@ function TBookRecord.GetBookDescriptorStream: TStream;
 var
   bookFileName: string;
   archiveFileName: string;
-  archiver: TMHLZip;
+  archiver: TJclZipDecompressArchive;
+  I: Integer;
 begin
   Result := nil;
 
@@ -1102,17 +1117,34 @@ begin
 
     bfFbd:
       begin
+        bookFileName := GetBookFileName;
+        if not TFile.Exists(bookFileName) then
+          Exit;
+        archiveFileName := TPath.Combine(Settings.ReadPath, bookFileName);
+        archiver := TJclZipDecompressArchive.Create(archiveFileName);
+        if archiver = nil then
+          raise ENotSupportedException.Create(rstrErrorNotSupported);
         try
-          bookFileName := GetBookFileName;
-          if not FileExists(bookFileName) then Exit;
-
-          archiveFileName := TPath.Combine(Settings.ReadPath, bookFileName);
-          archiver := TMHLZip.Create(archiveFileName, True);
           Result := TMemoryStream.Create;
-          archiver.Find('*' + FBD_EXTENSION);
-          archiver.ExtractToStream(archiver.LastName, Result);
+          try
+            archiver.ListFiles;
+            if archiver.ItemCount > 0 then
+              for I := 0 to archiver.ItemCount - 1 do
+                if not archiver.Items[I].Directory then
+                  if String(archiver.Items[I].PackedExtension).ToLower = FBD_EXTENSION then
+                  begin
+                    archiver.Items[I].Stream := Result;
+                    archiver.Items[I].OwnsStream := False;
+                    archiver.Items[I].Selected := True;
+                    archiver.ExtractSelected;
+                    Break;
+                  end;
+          except
+            FreeAndNil(Result);
+            raise;
+          end;
         finally
-          FreeAndNil(archiver);
+          archiver.Free;
         end;
       end;
 
