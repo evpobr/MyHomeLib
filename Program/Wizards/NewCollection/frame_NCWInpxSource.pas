@@ -242,8 +242,6 @@ end;
 
 function TframeNCWInpxSource.Deactivate(CheckData: Boolean): Boolean;
 begin
-  Assert(Assigned(lvCollections.Selected));
-
   if rbLocal.Checked then
   begin
     FPParams^.INPXFile := edINPXPath.Text;
